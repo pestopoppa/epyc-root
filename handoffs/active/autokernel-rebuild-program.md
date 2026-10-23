@@ -2921,7 +2921,7 @@ are unaffected (the AK loop's bench arms pass it since R24-1). Serving floors an
   `data/cpu-model-characterization/q38fn-ud-iq4xs-b0ba1d427-20261020/llama_bench_stdout.json` (4/4 rows hardened).
 - **Rate:** 22 of 53 recent files carrying the field, about 42%, consistent with an uninitialised bool.
 
-- [ ] **LBH-1 — scan every stored llama-bench result since 2026-08-11 for unrequested hardened rows.** Cover research
+- [x] **LBH-1 — scan every stored llama-bench result since 2026-08-11 for unrequested hardened rows.** Cover research
       `benchmarks/results`, `data/`, `artifacts/`; `/mnt/raid0/llm/autokernel/campaigns` (every store, including
       `runtime-source-floors` and calibration/baseline-honesty receipts); every floor record and floor store
       (`floor-store/`, DS41/Q38FN/27B floors, `gpu_cpu_noise` `reps.jsonl`); `/mnt/raid0/llm/tmp/**` and root
@@ -2932,6 +2932,26 @@ are unaffected (the AK loop's bench arms pass it since R24-1). Serving floors an
       FIFOs named `*.json` under `tmp/`; a naive reader blocks on them). Output: one JSONL manifest row per file
       (path, build commit, rows true/false, request evidence, class) plus totals, written to a research artifact dir
       with SHA256SUMS.
+  - *(2026-10-23, workspace-f8, INF-70 REQUEST-UNKNOWN group classified; aggregates only.)* Method: no argv or
+    `autokernel_hardened` column survives (markdown output, no `--progress`), so the protocol was inferred from WALL CLOCK.
+    A hardened llama-bench run allocates 2 x reps contexts, runs a distinct warmup on each (2R full tests) and then the
+    measured plus synchronized replicate (2R more): about 4R full test executions against R+1 for an ordinary run.
+    Observed time = log birth-to-mtime (the log is opened at launch), minus region-lock wait, divided by the test time
+    implied by the log's own t/s rows; reps from the echoed argv, else the launching script. Result: a sharp bimodal
+    split with no overlap at R=5 (ordinary 4.3-6.8 test-equivalents, hardened 20.5-23.3, predicted 6 and 20), and the same
+    two clusters at R=3 (4.3-4.7 vs 13.6). Identical configurations alternate between the clusters, which is the
+    uninitialised-flag signature. Every Sept binary in the group carries the hardening code (`autokernel-harden` string in
+    `libllama-bench-impl.so` of the 10151..10226 builds), so no run is excluded by build. Scope: 22 run dirs hold llama-bench
+    markdown (170 files; 35 are aggregate or driver logs that repeat per-arm rows and are not counted as units);
+    `results-c5-20260902T103008Z` and `...103049Z` hold no bench output (aborted at the gate). Tally of 135 units:
+    **51 ordinary, 50 hardened, 34 unresolved** (31 timing-ambiguous because a cold 91 GB model load or an eviction wait
+    inflates the clock, 3 depth-sweep files where the fill time is unmodelled). No wall-clock-ambiguous unit is called
+    ordinary or hardened; 7 lean ordinary and 24 lean hardened, but only the R=5 leans are worth reading. Manifest (one row
+    per file with class, lean, k and observed seconds): scratch `/mnt/raid0/llm/tmp/lbh1-inf70-manifest/manifest.jsonl`,
+    SHA-256 `d3ef356ba7528def4fb3193300424d40fb5a604560949c8f560bc217d9d3870b`. Residual risk: timing is circumstantial;
+    a re-run on a V11-103 build with `--progress` or JSON output is the only proof, and the dispositions below say which
+    verdicts need it. Observed protocol effect on tg128 for identical configurations (sync10, sync3 pairs): within about
+    1.5 percent either way, pp512 noisier.
 - [ ] **LBH-2 — list every floor and verdict that consumed an affected row, and re-grade or invalidate it.** From the
       LBH-1 manifest, follow each file to the handoff, doc, ledger row or belief tuple that cites it (`git grep` the path
       and its run dir across root and research). For each: (a) mixed protocols inside one floor or one A/B arm =
@@ -2957,7 +2977,35 @@ are unaffected (the AK loop's bench arms pass it since R24-1). Serving floors an
       4. **KVU-LB1.b run 1 s2** (already ruled INVALID, `kv-unified-stack-rollout.md`).
       Done when every manifest row carries a disposition and every cited claim has its note.
   - *(2026-10-23, workspace-f8, LBH-2 owner.)* Lineage correction: `0492c2319` is not a v10 ancestor; the uninitialised flag reaches the production/champion line through `f744cc220` (2026-08-13); the Sept INF-70 builds `58c345093`, `20db1a5ab`, `c51e4dabf` carry it. Fleet scan widened to 2026-08-11 (regular files only): the same 22 tmp jsonl files; 703 text outputs carry the field, none hardened; all 320 AK hardened rows requested (same journal record as `--autokernel-harden`). LBH-2 stays OPEN for one group: the INF-70 measurement dirs (`tmp/inf70/agents/*`, `tmp/inf70/results-c5*`, Sept 2-21, builds 10196-10226) wrote markdown without `--progress`, so the protocol is REQUEST-UNKNOWN; close LBH-2 once LBH-1 classifies them and each cited INF-70 verdict carries a note. Wiki: `local-inference.md` / `quantization.md` W5 readings marked INVALID, `hardware-optimization.md` scope note on the hardened Q38FN anchor.
-- [ ] **LBH-3 — consumer guard: shared llama-bench parsers reject unrequested hardened rows (PROPOSED, research code,
+  - *(2026-10-23, workspace-f8, INF-70 group dispositions; claims live in `cpu-decode-roofline-program.md`, notes sit beside each.)*
+    Rule applied: (a) mixed protocols inside one A/B or ABAB = INVALID; (b) one protocol on every arm = RE-GRADE as a
+    hardened-protocol reading; (c) ordinary on every arm = UNAFFECTED. Timing-inferred, so INVALID here means "not
+    admissible as stated until re-measured on a V11-103 build", and an effect well above the roughly 1.5 percent protocol
+    band on tg128 is likely to survive in direction.
+    UNAFFECTED (all arms ordinary): `d1` (D1 null, -0.37%), `d7a` (the one hardened arm, A1, was already excluded for node skew),
+    `sync4` (SYNC-4), `prof` (profiler bench arms), `results-c5fu` (UD 9.18 t/s and the +10.5% uniform-over-UD),
+    `results-c5v2` INF-68 arms (10.14 anchor), `b2` thread arm, `c7-finish`, `fused`, `b10`, `b11`, `harness1` and the server
+    dirs (no llama-bench result units).
+    RE-GRADE (one protocol on every arm, hardened): `b3` (B3-a gate-up A/A/B), `merge-verify` (anchor 10196 vs merged 10202
+    and opt-out: cross-build comparison is valid, absolute numbers are hardened-protocol readings), `results-c5v2` OMP-ON
+    arm (10.09 / 9.69 / 9.67 at t48/t64/t96) as a hardened reading.
+    INVALID (provisional, protocols mixed across arms): `results-c5v2` OMP-stack-OFF -3% (ordinary arm against hardened arm)
+    and the 2.0x 1T-to-48T scaling (t1 arm unresolved); B3-k +3.07% slab-vs-merged and its same-binary flip (`b3k`: slab arms
+    ran 170 s, merged and no-slab arms 360 s for the same test, a 2.1x wall difference that decode speed cannot make; the
+    slab arms look ordinary and the others hardened); B4 `b4b`/`b4r` separation arms vs the uniform control (`b4`: mixed;
+    the `b4` full-override arm vs control is clean ordinary); SYNC-2 table (`sync2`, every round pairs at least one ordinary
+    with one hardened arm; +8.19% and +3.86% probably survive in direction, +0.87% EMPTY_SKIP does not); SYNC-10 splits
+    (`sync10`, 14 cells, 6 ordinary and 8 hardened, mixed inside every lever row); SYNC-3 (`sync3`, 3 ordinary and 3 hardened
+    mixed in base and both); D6 sweeps (`d6`: 5 ordinary and 7 hardened) and D6-PLACE 37-point sweep (`d6place`: 4 ordinary,
+    6 hardened, mixed inside Pb-B, Pb-K and Pb-P) for any between-arm contrast under about 2 percent; `b34` B3-4 ABA (units
+    timing-ambiguous, lean mixed).
+    UNRESOLVED (needs a V11-103 re-run or a stderr/argv source): `d8`/`d8x` (D8 +0.97% was already inside noise, which
+    protocol mixing can only widen; the +14% cross-binary D8x effect is far above the protocol band and its arms lean the
+    same protocol, so it stands), `be2-fa` depth sweeps (fill time unmodelled; its verdict is about bit-exactness, not speed).
+    Open for LBH-2: claims that cite these dirs by task name only (not by path) in the wiki and in docs/design/inf70-*.md have
+    not been walked; the wiki passages quoted above (`hardware-optimization.md` L5481-5726, `benchmark-methodology.md`
+    L5565/5613/5726) inherit the dispositions of their dirs.
+- [x] **LBH-3 — consumer guard: shared llama-bench parsers reject unrequested hardened rows (PROPOSED, research code,
       owner of `kernel_rnd/autokernel/execution/microbench.py` applies).** Today the check runs one way only:
       `LlamaBenchExpectation.check_row` (`microbench.py:1978`, `:2006`) calls `_check_autokernel_hardening` (`:1765`,
       rejects not-hardened when requested) only when `autokernel_seed is not None`, and `parse_llama_bench_json`
@@ -2972,3 +3020,20 @@ are unaffected (the AK loop's bench arms pass it since R24-1). Serving floors an
       (`benchmark/ab_probe.py`, `benchmark/gpu_cpu_noise/*`, `kernel_rnd/kernel_eval.sh:159-167`) adopt the shared
       check; (6) unit tests: requested+hardened accept, unrequested+hardened reject, requested+ordinary reject. Keep the
       guard after V11-103 lands: it is what keeps old binaries honest.
+  - *(2026-10-23, workspace-f8, LBH-3 DONE pending landing.)* Research branch `f8/lbh3-harden-guard` @ `bf8ce8a34`, based on
+    `eca48e399` (pushed as a branch only). `BenchRow` gains `autokernel_hardened_reported` and `hardened_state`
+    (`hardened` / `ordinary` / `unknown`; hardened-only receipt fields prove `hardened` even if the flag is dropped).
+    `LlamaBenchExpectation.check_row` now FAILs a hardened row when argv did not request `--autokernel-harden`
+    (the requested-but-ordinary direction is unchanged). A row that omits the flag is UNKNOWN: accepted with an explicit
+    note by default so pre-fix archives stay loadable, COULD_NOT_CHECK (falsy) with `strict_unknown=True`, which any consumer
+    gating a NEW claim should pass. The five inline-assertion scripts (`run_autokernel_gpu_discovery.py` x2,
+    `run_autokernel_gpu_factorial.py`, `run_autokernel_cpu_lane_calibration.py`, `run_autokernel_cpu_baseline_honesty.py`)
+    always request hardening, so they already failed on a missing or false flag; they now share one tuple and one helper,
+    `microbench.HARDENED_RECEIPT_FLAGS` / `incomplete_hardening_flags` (fail-closed on missing keys). `loop/production.py:419`
+    records `hardened` from the REQUESTED argv by design and is left as the request record; the row-side check is `check_row`.
+    `gpu_cpu_noise_driver.parse_bench_jsonl` never requests hardening, so it tags each parsed row `unrequested_hardened`
+    and each rep row carries the OR. `canonical_recipe.py`/`bench_canonical.sh` build argv only and parse nothing, and
+    `ab_probe.py` reads llama-bench JSON files without checking them; both are noted but not changed (their consumers are the
+    guarded ones above). Not changed: `direct_gpu_control.py` and `gpu_source_evidence.py` parse retained historical fixtures
+    without `check_row`. Tests: 7 new in `test_microbench.py`, 1 in `test_gpu_cpu_noise.py`; microbench, bench, production,
+    screening, discovery, execution-chain and blackbox suites 354+471 passed, gpu_cpu_noise 18 passed.

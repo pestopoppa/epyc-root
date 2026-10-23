@@ -160,6 +160,8 @@ Every row names its record and its conditions. **Measured** = a number someone r
 | fused decoder, same debug build, `-t 1` | fused 1350 ms vs graph 350 ms (**3.86×**); fused gemv 1141 / other 215 | measured (non-claim) | `2026-09-01-inf67.md`; safe only as a same-window ratio |
 | ~~28 ms gemv / 46 ms non-gemv~~, ~~65 µs × 144 = 9.4 ms~~ | **retired** | retired | a partition of the retired 74 ms; the constants are "unmatched by committed records" (INF-68 audit). The in-function medians above are the sourced equivalents |
 
+> *(2026-10-23, workspace-f8, LBH-2: llama-bench protocol defect, V11-103; INF-70 bench logs record no `autokernel_hardened` column, protocol inferred from wall clock, see LBH-1.)* C5 anchor table. 98.6 ms / 10.14 t/s (INF-68 evicted arm) and the UD 109 ms / 9.18 t/s row are ordinary-protocol readings: unaffected. The C5 build 10.09 / 9.69 / 9.67 (OMP stack ON) arm ran the hardened protocol, so it is a hardened-protocol reading; the OMP-OFF 9.76 (-3%) arm ran ordinary, so the -3% OMP effect and the 2.0x 1T scaling cross protocols: INVALID until re-measured. Direction of the OMP result is not in doubt, its size is.
+>
 **What the ledger says (measured 2026-09-02, profiler-confirmed).** With placement fixed, a 97 ms token is
 **63 ms in 941 weight-path nodes that reach only 40% of the machine's read bandwidth because they are
 small (the one big gemv reaches 94%), 33 ms in 3,468 nodes that move no weights (9.3 ms of it GET_ROWS on
@@ -463,6 +465,8 @@ Axis A's structural answer — fewer, fatter nodes — which this measurement no
       `n_tasks = 1` count for GET_ROWS is 175 in BOTH runs while its wall fell 3.6× — direct proof that the
       planned task count does not gate execution in this tree. Confirmation arms (anchor / pristine /
       prof-only / d8, plus a cross-binary greedy pair) running as D8x — the first four arms confirmed: anchor 10.43, pristine 10.15, committed d8 tip 11.87, d8 with the inert "off" knob 11.88. **`inf70/d8` merged into `exp/cpu-fusion-qwen4exp-20260829` on 2026-09-03 (operator direction; merge commit `bb5bec310`, then `9e75132e3` with D7b), verification running.**
+> *(2026-10-23, workspace-f8, LBH-2: llama-bench protocol defect, V11-103; INF-70 bench logs record no `autokernel_hardened` column, protocol inferred from wall clock, see LBH-1.)* D8 / D8x. The +0.97% same-binary ABA was already inside noise; protocol mixing can only widen it, so the null stands. The D8x +14% cross-binary effect (10.15-10.43 vs 11.87-11.88) is far above the ~1.5% tg128 protocol band and its arms lean one protocol: stands. `d8` arms are mixed (3 hardened, 1 lean ordinary): no sub-2% claim from that dir is admissible.
+
 - [ ] **D6 — the 796 small dense gemvs run at 40% of read bandwidth while the one big gemv runs at 94%.**
       B1 measured dense `mul_mat` 61.1 GB/s and `mul_mat_id` 61.8 GB/s against `lm_head` 143.9 GB/s — same
       op, same kernel, only the size differs, so per-call ramp/imbalance is the cost; the worst single node
@@ -590,6 +594,8 @@ Axis A's structural answer — fewer, fatter nodes — which this measurement no
       expected, the router precision changed; C9 is what would prove equivalence). **`IQ4_XS-uniform-gateup-r16`
       is the Axis B/D comparison baseline from here** (prefill equal within noise, decode and bytes better;
       the uniform file stays the era anchor, UD stays the served file). **B3-k DONE ✅ 2026-09-03** (subagent `b3k`, branch `inf70/b3k` `5eb7d5f05` on D1 `664096408`, build 10203): thread `ith` streams the contiguous range `[total·ith/nth, total·(ith+1)/nth)` of the flat (used-expert, row) space (~133 rows/181 KB of IQ4_XS gate-up, ~533 rows/256 KB of Q5_1 down, ≤ 2 adjacent slabs) instead of ten 14–54-row stripes; patches the iqk hooks (`iqk_dispatch.cpp`, `iqk_mul_mat.{cpp,h}`) that `GGML_IQK=1` actually runs, gated by `GGML_MMID_SLAB`. **Round-2 ABA, placement proven per arm, coherence-checked: slab-on 12.59/12.61 t/s (79.43/79.30 ms) vs merged tip 12.24/12.21 t/s (81.70/81.90 ms) = +3.07% decode (−2.43 ms/token), 12× the 0.25% baseline spread.** Same-binary flip attributes the whole gain to the slab partition (D1 alone −0.37%, null). Bit-identical logits on 3 prompts × 128 steps vs slab-off and the merged tip; `test-backend-ops -o MUL_MAT_ID -b CPU` 815/815 (six runs), `test-iqk-ser`, `test-llama-archs` pass. **Merged into `exp/cpu-fusion-qwen4exp-20260829` on 2026-09-03 (operator direction — "merge b3k if the round 2 confirms"; `--no-ff` merge commit `0d2af8194`; merged tree SHA `9e43dcbc8` bit-identical to the gated `inf70/b3k` tree, so the gates transfer verbatim — no combined-tree reverification needed). Carries D1 (`664096408`, cherry-pick of `1ba448e74`) as its bit-exact, null-on-its-own base.** Evidence: `/mnt/raid0/llm/tmp/inf70/agents/b3k/`.
+> *(2026-10-23, workspace-f8, LBH-2: llama-bench protocol defect, V11-103; INF-70 bench logs record no `autokernel_hardened` column, protocol inferred from wall clock, see LBH-1.)* B3. B3-a (gate-up A/A/B) ran hardened on every arm: re-grade as a hardened-protocol reading, comparison valid. B3-4 (`b34`) arms are timing-ambiguous with mixed leans: unresolved. **B3-k +3.07% slab vs merged tip, and the same-binary `GGML_MMID_SLAB` flip: INVALID (provisional).** The slab arms took 170 s and the merged and no-slab arms 360 s for the identical test, a 2.1x wall difference decode speed cannot cause: slab ran ordinary, merged and no-slab ran hardened, so the +3.07% (and the attribution of the whole gain to the slab) crosses protocols. Re-measure on a V11-103 build before B3-k is cited as a measured gain; D1 alone (-0.37%) is clean ordinary and stands.
+
 - [x] **B4 — the bytes budget: requantize what is streamed for no reason.** ✅ 2026-09-02 (subagent `b4`,
       `/mnt/raid0/llm/tmp/inf70/agents/b4/`) — three artifacts vs the uniform control, build 10196, t48, r5,
       placement proven in-window on every arm. Full override set `IQ4_XS-uniform-b4` (router F16 +
@@ -612,6 +618,8 @@ Axis A's structural answer — fewer, fatter nodes — which this measurement no
       prediction (`llamafile_sgemm` covers IQ4_NL, not Q5_1) — point the per-path profile at `mul_mat_id`
       for those two types before anyone uses IQ4_NL on a 640-wide expert tensor. Artifacts kept:
       `IQ4_XS-uniform-b4` and `IQ4_XS-uniform-b4r` (router-only, 98,267,083,136 B); `-b4b` deleted.
+> *(2026-10-23, workspace-f8, LBH-2: llama-bench protocol defect, V11-103; INF-70 bench logs record no `autokernel_hardened` column, protocol inferred from wall clock, see LBH-1.)* B4. The full-override arm vs the uniform control is ordinary on both sides: unaffected. The `b4b` and `b4r` separation arms mix ordinary and hardened readings against the control (for example the router-F16 arm: one hardened 8.92 t/s reading, one ordinary 10.39): INVALID (provisional) for the separation verdicts, not for the artifact byte counts.
+
 - [ ] **B5 — a quality-representative uniform artifact without the FP8 conversion.** The OP-32 uniform
       file is a quant-from-quant of the unsloth UD shards ("speed control only — not quality-representative",
       INF-68). Operator direction 2026-09-02: skip the FP8 download and converter run. The route is the
@@ -899,6 +907,8 @@ a GPU paying no per-node barrier at all. Tuning does not close it; a coarser gra
       **conservative r2–r4 figure is reported**. Commits `1150140fe` `3713f02a0` `25597fc97` `226847752`
       `20db1a5ab` on `inf70/sync2`, all knobs default OFF, nothing merged.
 
+> *(2026-10-23, workspace-f8, LBH-2: llama-bench protocol defect, V11-103; INF-70 bench logs record no `autokernel_hardened` column, protocol inferred from wall clock, see LBH-1.)* SYNC-2. The 4 paired rounds mix protocols: every round pairs at least one ordinary arm with a hardened arm. COLSPLIT +8.19% and TINY_SOLO +3.86% are well above the ~1.5% tg128 protocol band and probably survive in direction; their stated +-1.1-1.2% intervals and EMPTY_SKIP +0.87% do not: INVALID (provisional), re-measure on one protocol.
+
 - [x] **SYNC-10 COMPLETE 2026-09-05 — GO on the split, NO-GO on the vectorisation.** ✅ Lock released,
       nothing orphaned, `/workspace` untouched. Two commits on `inf70/sync10`, **not pushed, not merged**.
 
@@ -929,6 +939,8 @@ a GPU paying no per-node barrier at all. Tuning does not close it; a coarser gra
       typo killed all seven MTP arms, costing half a lock turn.
       Report: `/mnt/raid0/llm/tmp/inf70/agents/sync10/REPORT.md`, **6,339 words against a 900-word brief —
       flagged by the agent rather than hidden**; §6 carries ready-to-apply handoff rows.
+
+> *(2026-10-23, workspace-f8, LBH-2: llama-bench protocol defect, V11-103; INF-70 bench logs record no `autokernel_hardened` column, protocol inferred from wall clock, see LBH-1.)* SYNC-10. The P-cell matrix is 6 ordinary and 8 hardened readings, mixed inside every lever row: any between-lever contrast under ~2% is INVALID (provisional); the structural GO on the split rests on the larger effect and bit-identity gates and is not retired here.
 
 - [x] **SYNC-16 — COMPLETE ✅ 2026-09-07: the lever WORKS and does NOT PAY. NO-GO.** Branch
       `inf70/sync16` @ `6d8592fb8`, default OFF, not merged; report
@@ -2777,6 +2789,8 @@ CPU-only); extending `MADV_NOHUGEPAGE` to non-`ggml_aligned_malloc` buffers is a
       **Process note**: the agent **aborted its own first window** after rebuilding the shared library mid-run
       (mixed binaries, indefensible pairing) — all PIDs verified dead, lock released.
 
+> *(2026-10-23, workspace-f8, LBH-2: llama-bench protocol defect, V11-103; INF-70 bench logs record no `autokernel_hardened` column, protocol inferred from wall clock, see LBH-1.)* D6-PLACE. The 37-point sweep includes `d6place` Pb-B / Pb-K / Pb-P points with 4 ordinary and 6 hardened readings mixed inside each placement arm; the placement-vs-speed fit carries that protocol noise (tg128 effect ~1.5%), and the D6 dense sweeps (`d6`: 5 ordinary, 7 hardened) likewise: INVALID (provisional) for contrasts under ~2%.
+
 - [x] **MERGE-1 DONE 2026-09-06 — `exp/cpu-fusion-qwen4exp-20260829` advanced `c51e4dabf` → `13907877d`.** ✅
       Both merges real `--no-ff`, **neither conflicted**; fast-forwarded in place by the coordinator after
       verifying the tree clean and `c51e4dabf` an ancestor. **Production `/mnt/raid0/llm/llama.cpp` untouched
@@ -2884,6 +2898,8 @@ single-controller.** Anyone inheriting the old phrasing will hunt a step that do
       `00d79415a`, **not merged**.
       **Amdahl: this subsystem is CLOSED.** Perfect elimination of every copy leaves ~3.2% of the token, and
       the traffic is cache-served, so even that is optimistic.
+
+> *(2026-10-23, workspace-f8, LBH-2: llama-bench protocol defect, V11-103; INF-70 bench logs record no `autokernel_hardened` column, protocol inferred from wall clock, see LBH-1.)* SYNC-3. `sync3` base and both arms hold 3 ordinary and 3 hardened readings each: the NO-GO margin is protocol-confounded at the sub-2% level.
 
 - [x] **SYNC-9 — DONE ✅ 2026-09-07: implemented by SYNC-12 (nine lines, bit-identical, `skip_barrier` load-bearing), shipped as `GGML_EMPTY_SKIP` in the champion. 72 zero-sized `build_rs` nodes cost 0.173 ms/token for ZERO work** (98.8% dead, pure
       barrier). `ggml_nelements(dst) == 0`, so a skip in the node loop removes them; a node producing no
