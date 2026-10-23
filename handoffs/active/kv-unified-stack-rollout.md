@@ -909,7 +909,7 @@ is olympiad-style reasoning.
     `acc_peak` stays far below FP16 range at that length.
     - *(2026-10-21 triage)* open (no evidence found).
     - *(2026-10-22, KVU-LB1.c, intake-2455)* moved to the top of this open list: production v10 has no fix and the architect declares 262144 context.
-  - [ ] **CPU-FA-VKQ-1 — fold `2ad8bff36` into the champion (and so into v11).** (filed 2026-10-04, workspace-ec)
+  - [x] **CPU-FA-VKQ-1 — fold `2ad8bff36` into the champion (and so into v11).** (filed 2026-10-04, workspace-ec) ✅ 2026-10-23 CLOSED AS SUPERSEDED, NOT FOLDED BY DESIGN (ec's box, closed on the coordinator's instruction; the done-when was never met and will not be): the champion carries the hybrid port (FP16 + end-of-row overflow check, FP32 recompute of overflowed rows), manifest V11-086 states `2ad8bff36` is not carried, and the live successor is the register-resident arm (V11-086, `fa-vkq-reg-on-c-20261022` @ `8110933ba`, gate HOLD, timing `v11-086-cpu` BACKLOG). Triage: `/mnt/raid0/llm/tmp/c3-fold-prep/PLAN.md` section 1.
     Cherry-pick onto the current champion tip (`1bceceb05`, or the tip after KVU-16h-fold), CPU store build on the
     champion recipe, G0 plus `test-backend-ops -o FLASH_ATTN_EXT -b CPU` and the CPU FA harnesses v1/v2 (expect the
     F16-V cases to change, every other case bit-identical), then the guarded CAS advance and the standing receipt.
@@ -1087,7 +1087,7 @@ here: none of the RTG-57 ids remain undefined. The owner named in these texts (w
   - Content: the V11-FA-1 numbers (`perf_table.tsv`), the arms and builds, and the drafter's D=128 9-row shape.
   - Done when the draft is in `artifacts/v11-fa-ab-20261004/` and handed to the operator. Posting it is the operator's
     call.
-- [ ] **V11-FA-6 — the v11 candidate must carry #27870 (mandatory for DF2-9).** (filed 2026-10-04, workspace-ec)
+- [ ] **V11-FA-6 — the v11 candidate must carry #27870 (mandatory for DF2-9).** (filed 2026-10-04, workspace-ec) *(2026-10-23 triage, left open: the code part is DONE, `f88127a86` is an ancestor of champion 141e4bcf5 (V11-049 IN); the OWED part is the gate, scheduled in CH-29 as an extra `-c3-rwoff` GPU image (`FOLD_ROCWMMA=OFF`), `test-backend-ops -o FLASH_ATTN_EXT -b ROCm0` 640/640 and the df29 10-run probe. Plan: `/mnt/raid0/llm/tmp/c3-fold-prep/PLAN.md` sections 3-5.)*
   - The v11 rebase must contain `b74f590ea` (#27870).
   - Gate the candidate on the DF2-9 model probe (`df29/`, 10 runs, 0 non-finite).
   - Also gate it on `test-backend-ops -o FLASH_ATTN_EXT -b ROCm0` at 640/640 on the ROCWMMA-OFF route.

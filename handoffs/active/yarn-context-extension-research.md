@@ -237,7 +237,7 @@ KVU-16b / KVU-19 tax). YaRN is a separate long-context *mode*.
       before; logits 1.7e-11; native OK; 56/56 steps fused.
     - Notes: `artifacts/dca-yarn-kernel-20261004/NOTES.md`.
     - A separate fidelity gap at non-production weight scales is FD-DIV-1 in `cpu-fused-decoder-blocks.md`.
-  - [ ] **YARN-FN-FIX-fold — fold `5bfdcd18c` + `6c126e975` into the champion.** (filed 2026-10-04, workspace-ec)
+  - [x] **YARN-FN-FIX-fold — fold `5bfdcd18c` + `6c126e975` into the champion.** (filed 2026-10-04, workspace-ec) ✅ 2026-10-23 (triage by 3c4ca599's fold-prep subagent; ec's box, ticked on the coordinator's instruction): already folded, nothing to do. `git cherry 141e4bcf5 fork/experimental/fused-yarn-20261004` marks `5bfdcd18c`, `6c126e975` and `45d8f2937` patch-equivalent to champion commits `b86c725e2`, `39c7209e4`, `b0ba1d427` (manifest V11-019 IN; `test-qwen4exp-fused-rope` 3/3, OK again on candidate C's final build). Evidence: `/mnt/raid0/llm/tmp/c3-fold-prep/PLAN.md` section 1.
     Production keeps `GGML_FUSED_DECODE_OFF=1`, but the champion's fused path still writes `/tmp` files on every
     token and ignores rope parameters. Done when the champion tip carries both commits, with the fused-rope test
     green.
@@ -296,7 +296,7 @@ KVU-16b / KVU-19 tax). YaRN is a separate long-context *mode*.
 
 - [ ] **JETLONG-PROTO-INWINDOW-UB — use the normal ubatch in-window and switch to the small ubatch only above native.** Owner: workspace-ec. (filed 2026-10-06) Done when in-window prefill runs at the production ubatch with T1 still max-abs 0 and throughput recovered.
 
-- [ ] **LLAMA-EXP-BRANCHES-PUSH-OR-RETIRE — push or retire the local-only experimental llama.cpp branches.** Owner: workspace-ec. (filed 2026-10-07) Unpushed: jetlong-proto, jetlong-hip (`e6ea79421`), specwidth, champion-specwidth candidate `8e597b701`, kshift-probe, yarn-mscale. Done when each is pushed to its remote or retired with a recorded reason (no work lost).
+- [x] **LLAMA-EXP-BRANCHES-PUSH-OR-RETIRE — push or retire the local-only experimental llama.cpp branches.** Owner: workspace-ec. (filed 2026-10-07) ✅ 2026-10-23 (ec's box, ticked on the coordinator's instruction after an authoritative re-audit): all six named branches were already on `fork` at the same sha (jetlong-proto `f06123436`, jetlong-hip `e6ea79421`, specwidth `defa269af`, champion-specwidth `8e597b701`, kshift-probe `f9cb7cd32`, yarn-mscale `720a98e2a`). The re-audit (`/mnt/raid0/llm/tmp/c3-fold-prep/branch_audit.py`, all 190 local branches) found 11 other genuinely unpushed experimental branches and pushed them with plain non-force `git push fork`; it now reports 0 of 191 unpushed. Per-branch last commit, in-champion flag and keep/retire recommendation (nothing deleted): `/mnt/raid0/llm/tmp/c3-fold-prep/BRANCHES.md`. Unpushed: jetlong-proto, jetlong-hip (`e6ea79421`), specwidth, champion-specwidth candidate `8e597b701`, kshift-probe, yarn-mscale. Done when each is pushed to its remote or retired with a recorded reason (no work lost).
 
 - [ ] **EXECUTOR-WINDOW-CAP — decide whether operator_approved executor entries may exceed the 60 min window cap (MAX_WINDOW_S).** Owner: workspace-ec (the decision is the operator's; queue entry via the master index). (filed 2026-10-06) Alternative already planned: two windows with slot save/restore. Done when the operator rules and the executor or plan reflects it.
 
