@@ -352,6 +352,20 @@ SOURCES: dict[str, Source] = {s.name: s for s in (
                 "every verdict, A/A flag, control pattern and summary count is re-derived from the "
                 "rep digests and refused if it differs; two count tuples per (route, nth)",
            task="VB-AKX-ALL-26-CELLS-WIRE"),
+    Source("gpu-cpu-noise", "gpu_cpu_noise", _run_dirs("RUN_RECORD.json"),
+           default=Path("/mnt/raid0/llm/tmp/gpu-cpu-noise-20261021/runs"),
+           note="U4-NOISE-1 session dirs (RUN_RECORD.json, schedule.json, reps.jsonl, END.json, "
+                "ANALYSIS.json); prereg + schedule + every rep row re-hashed and every deterministic "
+                "bias / variance-ratio / sigma_add re-derived from the rows; aborted, dry and "
+                "unanalysed sessions decline; bootstrap CIs and verdicts carried verbatim",
+           task="VB-GPU-CPU-NOISE-WIRE"),
+    Source("launch-affinity", "launch_affinity",
+           lambda p: importlib.import_module("adapters.launch_affinity").units(p),
+           note="per-pid per-moment task-mask readings: epyc.launch_affinity.reading.v1 JSONL "
+                "(orch launch_affinity.py --record, serving_gate affinity_readings.jsonl; strict "
+                "self-hash + re-derived escapes) and the pre-hook diag/probe task dumps "
+                "(retrofit, no binary sha256); a reading with no readable task declines",
+           task="VB-LAUNCH-AFFINITY-WIRE"),
     Source("tale-budget", "tale_budget",
            _files("*.beliefs.jsonl", "**/*.beliefs.jsonl"),
            note="PRB-T4 `prb_t4_tale_gpu.py --out` dirs (`<results>.beliefs.jsonl` beside each "
