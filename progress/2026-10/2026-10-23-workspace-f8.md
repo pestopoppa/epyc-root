@@ -481,3 +481,15 @@ The API was reloaded on its own after 3c4ca599's fold gate exited.
   with no compute and no launcher, and it is exactly WP-15.3. WP-15.3's dangling pointer to `wp15_check.out` was repaired to
   `docs/design/wp-15-results-20261023.md`.
 - **Gaps closed with dated notes: 23**, across 8 handoffs, plus the WP-15.3 decline note.
+
+### Wrap-up gates
+
+| Gate | Result |
+|---|---|
+| Index regen + `index_state.py --check` | rc 0, 0 problems, under the wrapup lease after syncing to `7f63ec067` (already up to date). One warning: 139 handoffs declare no `**Scratch**`, including three touched here (agentic-serving-harness-fixes, gpu-serving-tie-in-program, within-role-placement-state-machine). |
+| Prune candidates (generated signal) | 0. Not operator-invoked, so nothing was pruned. |
+| README freshness | clean |
+| Wiki | not run (per-task wrap-up) |
+| `vidya sync --check` | FRESH: intake-2510, lag 0 |
+| Index rows | prepared for the owning session, not applied: UFH-14, UFH-16, RTG-58, RTG-59, INF-22, plus OP-82 / OP-83 in the master queue |
+| Scratch (Step 7b) | plan only. Nothing was removed. |
