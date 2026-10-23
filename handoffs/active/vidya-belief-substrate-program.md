@@ -2483,6 +2483,7 @@ RI-16's routing `stage_ms` is covered by VB-ROUTE-LAT above, not by a new task.
       - All 5 resealed rows pass `validate_row` in the origin/main adapter, and `native_rows` returns 5.
     - Next: `cli.py ingest kv-prefix-fork --path <resealed file>` requiring 5 of 5 (coordinator), then tick.
   - ✅ 2026-10-23 (f8): research `0208f4918` — `seal_record` hashes the JSON round-trip form (the adapter's digest form) + round-trip digest test; `scripts/benchmark/kpf174/reseal_records.py` wrote `/mnt/raid0/llm/tmp/f8-launchers-20261023/kpf17-4-19-1a-27b-dflash2/out/run/belief_measurements.resealed-vbkvupf5.jsonl` (5/5 resealed, only the digest changed, original kept). Re-ingest on origin/main `cli.py ingest kv-prefix-fork --path <resealed> --dry-run`: units 1, projected 1, refused 0, rows 5, frames 15 → 5 of 5.
+  - *(2026-10-23, f8; per-arm coverage note, no task to tick.)* 17.4b rules-v2 arms `kpf174b_c1_spec_off` and `kpf174b_junction_sweep` added to `CONFORMANCE_ARMS["KPF-17.4+17.4a+19.1a"]` (honest arms, pass fraction; no new rule). Fixture `kpf174b_rules_v2`. Dry-run: `kpf-gpu-followups/out/kpf174b-specoff` 1/2 and `kpf174b-sweep` 4/10 now project 1 each, refused 0. Their `records/*.json` copies are pretty-printed duplicates of the same records: they decline (the reader is JSONL-only) and are outside the source's discovery globs, so they never double-count.
 
 ## Research Intake Update — 2026-10-04 (decision tools, operator-approved Stage 4)
 

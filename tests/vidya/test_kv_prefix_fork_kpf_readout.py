@@ -101,3 +101,31 @@ def test_kpf174_would_project_once_writer_hash_is_sound(tmp_path):
     assert mut.metric == "kpf_mutant_detected_fraction" and mut.value == 1.0 and mut.reps == 2
     assert by_arm["kpf191a_mut_dft_no_transfer"][0].value == 1.0
     assert by_arm["kpf191a_flag_on"][0].value == round(2 / 3, 6)
+
+
+def test_kpf174b_rules_v2_arms_project_pass_fraction(tmp_path):
+    """17.4b (rules v2): the spec-off C1 and junction-sweep launches are declared honest arms -> pass fraction."""
+    sc = _copy(tmp_path, "kpf174b_rules_v2")
+    rows = _lines(sc)
+    assert {r["arm"] for r in rows} == {"kpf174b_c1_spec_off", "kpf174b_junction_sweep"}
+    assert all(kpf.is_conformance(r) and kpf.validate_row(r) == [] for r in rows)
+    natives = kpf.native_rows(sc)
+    assert len(natives) == 2
+    by_arm = {t.extra["arm"]: t for t in (kpf.project(n) for n in natives)}
+    spec_off, sweep = by_arm["kpf174b_c1_spec_off"], by_arm["kpf174b_junction_sweep"]
+    for t in (spec_off, sweep):
+        assert t.metric == "kpf_conformance_cell_pass_fraction" and not t.extra["mutant_arm"]
+        assert ct.grade(t)[0]                                           # the shared ladder decides
+    assert spec_off.value == round(1 / 2, 6) and spec_off.reps == 2
+    assert sweep.value == round(4 / 10, 6) and sweep.reps == 10
+    assert sweep.extra["counts"]["fail"] == 6 and spec_off.extra["counts"]["verdict"] == "FAIL"  # verbatim
+
+
+def test_kpf174b_unknown_arm_still_declined(tmp_path):
+    sc = _copy(tmp_path, "kpf174b_rules_v2")
+    rows = _lines(sc)
+    rows[1]["arm"] = "kpf174b_junction_sweep_v3"                         # not a declared arm of KPF-17.4+17.4a+19.1a
+    rows[1]["record_sha256"] = kpf._digest({k: v for k, v in rows[1].items() if k != "record_sha256"})
+    assert not kpf.is_conformance(rows[1]) and kpf.validate_row(rows[1])
+    sc.write_text("\n".join(json.dumps(r) for r in rows) + "\n")
+    assert kpf.native_rows(sc) == ()                                     # an undeclared arm voids the whole file

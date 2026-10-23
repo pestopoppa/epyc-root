@@ -84,12 +84,16 @@ _SUB_ARM_RE = {item: re.compile("^(?:" + "|".join(pats) + ")$") for item, pats i
 
 #: Conformance records (no fork-vs-fresh logits): ``kpf_task`` -> declared arms, exactly as the drivers emit them
 #: (research ``kpf13_restore_ab.py`` writes ``restore_<config>``; ``kpf174_swa_drafter.py`` writes the four launch arms,
-#: one per launch: honest, flag_on, and the two mutants). Counts come from the record's own verdict block
+#: one per launch: honest, flag_on, and the two mutants; 17.4b adds the rules-v2 spec-off C1 and junction-sweep
+#: launches). Counts come from the record's own verdict block
 #: (kpf13: ``equivalence.configs`` A+B; kpf174: ``launch_verdict``), never a pass word and never invented.
 CONFORMANCE_ARMS = {
     "KPF-13.1": (rf"restore_{_CFG}",),
     "KPF-17.4+17.4a+19.1a": (r"kpf174_191a_flag_off", r"kpf174_mut_dft_partial_noop", r"kpf191a_flag_on",
-                             r"kpf191a_mut_dft_no_transfer"),
+                             r"kpf191a_mut_dft_no_transfer",
+                             # 17.4b (rules v2): C1 honest launch with the drafter flags removed, and the junction
+                             # sweep. Both are honest launches (not mutants): they project the PASS fraction.
+                             r"kpf174b_c1_spec_off", r"kpf174b_junction_sweep"),
 }
 _CONF_RE = {t: re.compile("^(?:" + "|".join(p) + ")$") for t, p in CONFORMANCE_ARMS.items()}
 _MUTANT_ARMS = frozenset({"kpf174_mut_dft_partial_noop", "kpf191a_mut_dft_no_transfer"})
