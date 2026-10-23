@@ -78,6 +78,18 @@ SAMPLED_CPU_SOURCE_DIGEST_07333B884 = (
 # 07333b884 (cpu_profile.py c3a727bf2, f4a5d240b, dc1828a0a, plus closure dependencies).
 SAMPLED_CPU_SOURCE_DIGEST_MAIN_B93017DC9 = (
     "69dea977d0b0c62e30e5cb7f128e2b26090fcda510b436ec3c357d107146ca19")
+# --- ROLLING-PINS-BEGIN -------------------------------------------------------------------------
+# Append-only: research commit (FULL sha) -> sampled-CPU source-closure digest at that commit. The
+# LAST entry is the one tracked against research main. `scripts/vidya/producer_pins.py check` lists
+# it STALE when a closure file changed on research main since; `repin --apply` appends the new
+# entry (and ONLY edits this block). Older entries stay allow-listed: captures keep their identity.
+SAMPLED_CPU_ROLLING_PINS = {
+    "07333b88472fa2190bae23e93bbd4c3124674710": SAMPLED_CPU_SOURCE_DIGEST_07333B884,
+    "b93017dc980438a837ad7fac0e8612760dc1ff0e": SAMPLED_CPU_SOURCE_DIGEST_MAIN_B93017DC9,
+    "62c2e09da83a2493c40b2178081b27f237a2bebf": (
+        "d0bf62e916b221420d96a9e557d649c56ec78800dffd2d0c44cb9b448baef49f"),
+}
+# --- ROLLING-PINS-END ---------------------------------------------------------------------------
 TOPOLOGY_SCHEMA = "epyc.autokernel.cpu_topology.v1"
 SAMPLED_CPU_FLAG = "--sample-cpu"
 LEGACY_SCRIPT_FIELDS = "pid,tid,time,period,event,ip,sym,dso"
@@ -159,10 +171,8 @@ SAMPLED_CPU_CAPTURE = CaptureVersion(
     name="sampled-cpu-topology-v2", limitations=SAMPLED_CPU_LIMITATIONS, sampled_cpu=True,
     phase_fields=frozenset(_PHASE_FIELDS | {"topology"}),
     sample_fields=frozenset(_SAMPLE_FIELDS | {"location_periods"}),
-    bundle_source_digests=frozenset({SAMPLED_CPU_SOURCE_DIGEST_07333B884,
-                                     SAMPLED_CPU_SOURCE_DIGEST_MAIN_B93017DC9}),
-    loop_source_digests=frozenset({SAMPLED_CPU_SOURCE_DIGEST_07333B884,
-                                   SAMPLED_CPU_SOURCE_DIGEST_MAIN_B93017DC9}))
+    bundle_source_digests=frozenset(SAMPLED_CPU_ROLLING_PINS.values()),
+    loop_source_digests=frozenset(SAMPLED_CPU_ROLLING_PINS.values()))
 CAPTURE_VERSIONS = (LEGACY_CAPTURE, SAMPLED_CPU_CAPTURE)
 
 

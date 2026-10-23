@@ -318,6 +318,21 @@ SOURCES: dict[str, Source] = {s.name: s for s in (
            note="RUS-2 trace-length probe cells, OBSERVATION only (temperature and finish_reason "
                 "absent at source)",
            task="VB-RUS2-PROBE-WIRE"),
+    Source("gpu-leak-probe", "gpu_leak_probe",
+           _files("gpu_leak_probe.beliefs.jsonl", "*/gpu_leak_probe.beliefs.jsonl"),
+           note="GPU-LEAK-1/1d own-PID VRAM slope per arm (slopes re-derived from the recorded series), "
+                "OBSERVATION only; producer verdict carried verbatim",
+           task="VB-GPU-LEAK-WRITE"),
+    Source("v11-oracle-rerun", "v11_oracle_rerun",
+           _files("v11_oracle_rerun.beliefs.jsonl", "*/v11_oracle_rerun.beliefs.jsonl"),
+           note="V11-086 FP32-oracle rerun pass fraction per arm (value = passed/total of the same row), scorer "
+                "clause verdicts verbatim, OBSERVATION only",
+           task="VB-V11-ORACLE-WRITE"),
+    Source("ds41-w5d", "ds41_w5d",
+           _files("ds41_w5d.beliefs.jsonl", "*/ds41_w5d.beliefs.jsonl"),
+           note="DS41-W5d 1017 llama-bench baseline + MUL_MAT_ID pp512 ratio, re-derived from the recorded "
+                "values; VOID/INCOMPLETE halves project nothing",
+           task="VB-DS41-W5D-WRITE"),
     Source("ev19-gold-selfcheck", "ev19_gold_selfcheck",
            _files("ev19_gold_selfcheck.beliefs.jsonl", "*/ev19_gold_selfcheck.beliefs.jsonl"),
            note="EV-19 scorer/pool gold self-check per suite; scorer validity, never a model; "

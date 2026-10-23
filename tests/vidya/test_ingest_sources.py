@@ -240,6 +240,9 @@ BUILDERS = {
     "hil15a-auc": lambda tmp: _helpers("test_hil15a_auc").write(tmp),
     "repl-preview": lambda tmp: _helpers("test_repl_preview").write(tmp),
     "rus2-probe": lambda tmp: _helpers("test_rus2_probe").write(tmp),
+    "gpu-leak-probe": lambda tmp: _helpers("test_gpu_leak_probe").write(tmp),
+    "v11-oracle-rerun": lambda tmp: _helpers("test_v11_oracle_rerun").write(tmp),
+    "ds41-w5d": lambda tmp: _helpers("test_ds41_w5d").write(tmp),
     "hil17-attribution-ladder": lambda tmp: _helpers("test_hil17_attribution").write(tmp),
     "hil-lb1-loop-score": lambda tmp: _helpers("test_hil_lb1_loop_score").write(tmp),
     "ev19-gold-selfcheck": lambda tmp: (lambda m: m.write(tmp, *m.setup(tmp)))(

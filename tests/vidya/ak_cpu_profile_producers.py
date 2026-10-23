@@ -40,9 +40,15 @@ PRODUCERS = {
     "sampled-cpu@b93017dc9": ("b93017dc980438a837ad7fac0e8612760dc1ff0e",
                               profile.SAMPLED_CPU_CAPTURE,
                               profile.SAMPLED_CPU_SOURCE_DIGEST_MAIN_B93017DC9),
-    # The configured research tree as it is now.
-    "sampled-cpu@live": (None, profile.SAMPLED_CPU_CAPTURE, None),
 }
+# Every later rolling pin (VB-AK-PIN-REPIN appends one per re-pin) is its own producer, so a re-pin is
+# exercised against the exact research commit it names. The first two are spelled out above.
+for _commit, _digest in profile.SAMPLED_CPU_ROLLING_PINS.items():
+    if _commit[:9] not in {"07333b884", "b93017dc9"}:
+        PRODUCERS[f"sampled-cpu@{_commit[:9]}"] = (_commit, profile.SAMPLED_CPU_CAPTURE, _digest)
+# The configured research tree as it is now (the conformance tripwire: it goes red when research main
+# changes a closure file, which is what `scripts/vidya/producer_pins.py check` reports first).
+PRODUCERS["sampled-cpu@live"] = (None, profile.SAMPLED_CPU_CAPTURE, None)
 _TREES: dict[str, Path] = {}
 
 _BUNDLE = """

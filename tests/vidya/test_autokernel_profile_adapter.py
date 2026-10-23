@@ -116,9 +116,12 @@ def test_pinned_versions_are_closed():
     assert profile.SAMPLED_CPU_LIMITATIONS[:-2] == profile.LEGACY_LIMITATIONS[:-1]
     assert profile.SAMPLED_CPU_LIMITATIONS[-1] == profile.LEGACY_LIMITATIONS[-1]
     assert len(profile.SAMPLED_CPU_LIMITATIONS) == len(profile.LEGACY_LIMITATIONS) + 1
-    assert profile.SAMPLED_CPU_CAPTURE.bundle_source_digests == {
-        "54b4a0ef0df78ddda4ed22802ad84bd498381c00d329fe999c99b7e3678f9686",
-        "69dea977d0b0c62e30e5cb7f128e2b26090fcda510b436ec3c357d107146ca19"}
+    # Closed = exactly the rolling pins (VB-AK-PIN-REPIN appends; nothing else can widen the allow-list), and the
+    # two original pins are never dropped: captures keep their identity.
+    assert profile.SAMPLED_CPU_CAPTURE.bundle_source_digests == set(profile.SAMPLED_CPU_ROLLING_PINS.values())
+    assert {"54b4a0ef0df78ddda4ed22802ad84bd498381c00d329fe999c99b7e3678f9686",
+            "69dea977d0b0c62e30e5cb7f128e2b26090fcda510b436ec3c357d107146ca19"} <= \
+        profile.SAMPLED_CPU_CAPTURE.bundle_source_digests
     assert profile.SAMPLED_CPU_CAPTURE.loop_source_digests == \
         profile.SAMPLED_CPU_CAPTURE.bundle_source_digests
     assert not profile.SAMPLED_CPU_CAPTURE.bundle_source_digests & (

@@ -82,6 +82,13 @@ def is_sub_arm(arm: Any, item: Any) -> bool:
     return bool(rx and isinstance(arm, str) and rx.match(arm))
 
 
+#: KPF-26.1f: the task-outcome record (one per window). Its ``arm`` is this token, it carries ``kpf_outcome`` instead of
+#: ``equivalence``, and its attestation is the window's ``cases.jsonl`` (every case, transport errors counted as fails).
+OUTCOME_ARM = "kpf261_outcome"
+OUTCOME_ARMS = ("A", "B", "A2")  # A = flags off (baseline), B = flags on (treatment), A2 = flags-off rerun (spread)
+OUTCOME_KEYS = ("kpf_item", "seed", "manifest_digest", "manifest_sha256", "n_tasks", "n_cases", "reps", "per_arm",
+                "spread", "drop", "regress", "improve", "ctrl_regress", "ctrl_improve", "sign_test_p_regress",
+                "verdict", "reorder_decision", "gates", "rule", "treatment_applied", "finished_utc")
 _WINDOW = re.compile(r"^(?P<stem>.+)-(?P<arm>[AB])(?P<k>\d+)$")
 REQUIRED = ("run_id", "arm", "binary_sha256", "prompt_set_sha256", "window_id", "end_utc", "host", "argv",
             "equivalence", "rows", "record_sha256", "category")  # rows_sha256 absent = attested-absent (VB-KVU-PF.2)
@@ -93,17 +100,40 @@ def _digest(obj: Any) -> str:
     return hashlib.sha256(json.dumps(obj, sort_keys=True, separators=(",", ":")).encode()).hexdigest()
 
 
+def _validate_outcome(row: dict) -> list[str]:
+    out = row.get("kpf_outcome")
+    if not isinstance(out, dict):
+        return ["outcome record without kpf_outcome"]
+    problems = [f"kpf_outcome missing {k}" for k in OUTCOME_KEYS if out.get(k) is None or out.get(k) == ""]
+    per_arm = out.get("per_arm")
+    if not (isinstance(per_arm, dict) and set(per_arm) == set(OUTCOME_ARMS)):
+        problems.append(f"kpf_outcome.per_arm must hold exactly {list(OUTCOME_ARMS)} pass counts")
+    else:
+        for name, cell in per_arm.items():
+            n, ok = (cell or {}).get("n"), (cell or {}).get("pass")
+            if not (type(n) is int and type(ok) is int and 0 <= ok <= n and n == out.get("n_cases")):
+                problems.append(f"kpf_outcome.per_arm.{name} is not pass/n over n_cases")
+    if not row.get("rows_sha256"):
+        problems.append("outcome record without rows_sha256: the cases file is its only attestation")
+    return problems
+
+
 def validate_row(row: Any) -> list[str]:
     if not isinstance(row, dict):
         return ["row is not an object"]
     problems = []
     if row.get("schema") != SCHEMA:
         problems.append(f"schema is not {SCHEMA}")
+    outcome = row.get("arm") == OUTCOME_ARM
     for key in REQUIRED:
+        if outcome and key == "equivalence":
+            continue  # an outcome record scores task pass/fail, not fork-vs-fresh logits
         if row.get(key) in (None, "", [], {}):
             problems.append(f"missing {key}")
     arm = row.get("arm")
-    if arm not in ARMS:
+    if outcome:
+        problems.extend(_validate_outcome(row))
+    elif arm not in ARMS:
         if not is_sub_arm(arm, row.get("kpf18_item")):
             problems.append(f"arm {arm!r} not in {sorted(ARMS)} nor a declared KPF-18 sub-arm of item "
                             f"{row.get('kpf18_item')!r}")
@@ -263,6 +293,8 @@ def project(native: Any) -> ClaimTuple:
         raise ProjectionError("KPF row is not a runner-authored record: " + "; ".join(problems))
     sidecar = Path(native.get("sidecar_path") or ".")
     present = _rows_present(row, sidecar)
+    if row["arm"] == OUTCOME_ARM:
+        return _project_outcome(row, sidecar, present)
     if native.get("measure"):
         return _project_measure(native, row, sidecar, present)
     metric, value, unit, reps, basis = _metric(row)
@@ -352,6 +384,160 @@ def _project_measure(native: dict, row: dict, sidecar: Path, present: bool) -> C
         applicability=_applicability(row), observation=obs)
 
 
+# ------------------------------------------------------------------ KPF-26.1f: task-outcome records
+_OUTCOME_NORM = {"WITHIN_SPREAD": "null", "UNCHANGED": "null", "CHANGED": "regressed", "INVALID": "refused_scope"}
+
+
+def _project_outcome(row: dict, sidecar: Path, present: bool) -> ClaimTuple:
+    """One KPF-26.1 window: flag-on (B) pass rate against the flag-off (A) baseline, spread as the floor.
+
+    A normalisation of the producer's OWN verdict word into the observation vocabulary (``outcome_native`` keeps
+    it verbatim); the verdict is never re-derived here and the grade is ``claim_tuple.grade()``'s alone.
+    """
+    out = row["kpf_outcome"]
+    per = out["per_arm"]
+    rate = {k: per[k]["pass"] / per[k]["n"] for k in OUTCOME_ARMS}
+    verdict = out["verdict"]
+    obs: dict = {"anchor_value": rate["A"], "n_pairs": out["n_cases"], "outcome_native": str(verdict)[:120]}
+    if rate["A"]:
+        obs["effect_rel"] = (rate["B"] - rate["A"]) / rate["A"]
+        obs["noise_floor_rel"] = abs(out["spread"]) / rate["A"]
+    if verdict in _OUTCOME_NORM:
+        obs["outcome"] = _OUTCOME_NORM[verdict]
+        obs["decisive"] = verdict == "CHANGED"
+    if verdict == "INVALID":
+        failed = sorted(k for k, v in (out.get("gates") or {}).items() if v is not True)
+        obs["outcome_reason"] = ("predeclared validity gate(s) failed: " + ", ".join(failed))[:300] if failed else \
+            "producer verdict INVALID"
+    cells = ", ".join(f"{k} {per[k]['pass']}/{per[k]['n']}" for k in OUTCOME_ARMS)
+    locator = (f"kpf:{row['run_id']}:{row['arm']}:seed={out['seed']}:manifest={out['manifest_digest'][:16]}:"
+               f"bin={row['binary_sha256'][:16]}:win={row['window_id']}")
+    return ClaimTuple(
+        measurement_id="kpf-" + hashlib.sha256(row["record_sha256"].encode()).hexdigest()[:32],
+        metric="kpf261_flag_on_task_pass_rate", value=rate["B"], unit="fraction", date=row["end_utc"],
+        category=row["category"],
+        claim=(f"KPF-26.1 {row['window_id']} (seed {out['seed']}, manifest {out['manifest_digest'][:12]}): task pass "
+               f"{cells}; spread {out['spread']:g}, drop {out['drop']:g}, {out['regress']} regress / "
+               f"{out['improve']} improve; producer verdict {verdict} ({out['reorder_decision']}); "
+               f"one window, predeclared rule, no codified protocol"),
+        metric_direction="higher_better", protocol_id="", reps=out["n_cases"],
+        reps_basis="task cases scored per arm (every case counted; errors and timeouts are fails)",
+        attestation_path=str(_rows_path(row, sidecar)), attestation_sha256=row.get("rows_sha256") or "",
+        attestation_locator=locator, attestation_present=present,
+        attestation_verified=True if present else None, source_kind=SOURCE_KIND,
+        extra={"schema": row["schema"], "run_id": row["run_id"], "arm": row["arm"], "window_id": row["window_id"],
+               "seed": out["seed"], "manifest_digest": out["manifest_digest"], "per_arm": per,
+               "spread": out["spread"], "drop": out["drop"], "regress": out["regress"], "improve": out["improve"],
+               "ctrl_regress": out["ctrl_regress"], "ctrl_improve": out["ctrl_improve"],
+               "sign_test_p_regress": out["sign_test_p_regress"], "verdict": verdict,
+               "reorder_decision": out["reorder_decision"], "gates": out["gates"], "rule": out["rule"],
+               "treatment_applied": out["treatment_applied"], "binary_sha256": row["binary_sha256"],
+               "prompt_set_sha256": row["prompt_set_sha256"], "argv": row["argv"],
+               "argv_source": row.get("argv_source"), "host": row["host"], "end_utc": row["end_utc"],
+               "record_sha256": row["record_sha256"], "sidecar_path": str(sidecar)},
+        applicability=scope_from_argv(
+            row.get("argv"), binary=row.get("binary_realpath") or row.get("binary"),
+            binary_sha256=row.get("binary_sha256"), family="prompt_assembly",
+            varied=["ORCHESTRATOR_PREFIX_INDEX+ORCHESTRATOR_PREFIX_INDEX_FORK"]),
+        observation=obs)
+
+
+def _sha256_file(path: Path) -> str:
+    h = hashlib.sha256()
+    with open(path, "rb") as fh:
+        for chunk in iter(lambda: fh.read(1 << 20), b""):
+            h.update(chunk)
+    return h.hexdigest()
+
+
+def outcome_record(win_dir: str | Path, summary_path: str | Path, *, binary: str | Path, model: str, n_slots: int,
+                   host: str | None = None, run_id: str | None = None) -> dict:
+    """Build the ``epyc.kpf.run.v1`` outcome record for ONE KPF-26.1 window from its on-disk artefacts.
+
+    Re-derives from ``cases.jsonl`` (the per-arm pass counts and the regress / improve / ctrl counts) and refuses the
+    window when they disagree with ``summary.json``, when ``manifest.json``'s digest is not the summary's, or when the
+    window is not complete: a record is only as good as the files it can be re-hashed against. The verdict, the rule
+    text and the gates are carried VERBATIM from the runner's summary -- nothing is graded or re-decided here.
+    ``binary`` / ``model`` / ``n_slots`` are the launch facts the runner did not record (it wrote no launch argv); the
+    reconstructed argv says so in ``argv_source``.
+    """
+    import socket
+
+    win, summary_path = Path(win_dir), Path(summary_path)
+    summary = json.loads(summary_path.read_text())
+    manifest = json.loads((win / "manifest.json").read_text())
+    treatment = json.loads((win / "treatment.json").read_text()) if (win / "treatment.json").is_file() else {}
+    cases_path = win / "cases.jsonl"
+    cases = [json.loads(x) for x in cases_path.read_text().splitlines() if x.strip()]
+    if summary.get("complete") is not True or summary.get("stopped"):
+        raise ProjectionError(f"{summary_path}: window not complete (complete={summary.get('complete')!r}, "
+                              f"stopped={summary.get('stopped')!r}); an unfinished window is not a record")
+    if manifest.get("digest") != summary.get("manifest_digest") or manifest.get("seed") != summary.get("seed"):
+        raise ProjectionError(f"{summary_path}: manifest.json digest/seed disagree with the summary")
+    per_arm = {a: {"pass": sum(1 for c in cases if c["arm"] == a and c["pass"] is True),
+                   "n": sum(1 for c in cases if c["arm"] == a)} for a in OUTCOME_ARMS}
+    n_cases = summary["n_cases"]
+    if any(cell["n"] != n_cases for cell in per_arm.values()):
+        raise ProjectionError(f"{summary_path}: cases.jsonl does not hold n_cases={n_cases} cases for every arm")
+    cell: dict = {}
+    for c in cases:
+        cell.setdefault((c["rep"], c["wave"], c["step"]), {})[c["arm"]] = c["pass"] is True
+    derived = {"regress": sum(1 for v in cell.values() if v["A"] and not v["B"]),
+               "improve": sum(1 for v in cell.values() if not v["A"] and v["B"]),
+               "ctrl_regress": sum(1 for v in cell.values() if v["A"] and not v["A2"]),
+               "ctrl_improve": sum(1 for v in cell.values() if not v["A"] and v["A2"])}
+    for key, got in derived.items():
+        if summary.get(key) != got:
+            raise ProjectionError(f"{summary_path}: {key} is {summary.get(key)!r} in the summary but {got} in cases.jsonl")
+    rates = {a: per_arm[a]["pass"] / n_cases for a in OUTCOME_ARMS}
+    for a in OUTCOME_ARMS:
+        if abs(round(rates[a], 4) - summary["pass_rate"][a]) > 1e-9:
+            raise ProjectionError(f"{summary_path}: pass_rate[{a}] disagrees with cases.jsonl")
+    for key, got in (("spread", abs(rates["A"] - rates["A2"])), ("drop", rates["A"] - rates["B"])):
+        if abs(got - summary[key]) > 6e-5:
+            raise ProjectionError(f"{summary_path}: {key} {summary[key]!r} is not re-derivable from the pass counts")
+    binary_real = str(Path(binary).resolve())
+    argv = [binary_real, "-m", model, "-np", str(n_slots)]
+    out = {"kpf_item": "26.1", "seed": summary["seed"], "manifest_digest": summary["manifest_digest"],
+           "manifest_sha256": _sha256_file(win / "manifest.json"), "n_tasks": manifest.get("n_tasks"),
+           "n_cases": n_cases, "reps": summary.get("reps"), "per_arm": per_arm, "spread": summary["spread"],
+           "drop": summary["drop"], **derived, "sign_test_p_regress": summary["sign_test_p_regress"],
+           "verdict": summary["verdict"], "reorder_decision": summary["reorder_decision"],
+           "gates": summary["gates"], "rule": summary["rule"], "treatment_applied": treatment.get("applied"),
+           "baseline_transport_errors": summary.get("baseline_transport_errors"),
+           "B_transport_errors": summary.get("B_transport_errors"), "incomplete_cases": summary.get("incomplete_cases"),
+           "text_identical_A_B": summary.get("text_identical_A_B"),
+           "text_identical_A_A2_control": summary.get("text_identical_A_A2_control"),
+           "finished_utc": summary["finished_utc"]}
+    rid = run_id or f"kpf261-seed{summary['seed']}"
+    row = {"schema": SCHEMA, "kpf_task": "KPF-26.1", "run_id": rid, "arm": OUTCOME_ARM,
+           "binary": str(binary), "binary_realpath": binary_real, "binary_sha256": _sha256_file(Path(binary_real)),
+           "argv": argv,
+           "argv_source": {"source": "reconstructed",
+                           "basis": "binary from linkage.txt, model from the server log's load_model line, n_slots from "
+                                    "its n_slots line; the runner recorded no launch argv, so no other flag is claimed"},
+           "prompt_set": "manifest.json", "prompt_set_sha256": summary["manifest_digest"],
+           "window_id": f"{rid}-win", "start_utc": None, "end_utc": summary["finished_utc"],
+           "host": host or socket.gethostname(), "rows": str(cases_path.resolve()), "rows_sha256": _sha256_file(cases_path),
+           "kpf_outcome": out, "instrument_class": "task-outcome", "category": "CANDIDATE",
+           "grading_note": "one window, predeclared outcome rule, no codified protocol: an OBSERVATION; projects "
+                           "under VB-KVU-PF through claim_tuple.grade()"}
+    row["record_sha256"] = _digest(row)
+    return row
+
+
+def write_outcome_sidecar(sidecar: str | Path, row: dict) -> bool:
+    """Append ``row`` to a ``belief_measurements.jsonl`` unless its ``record_sha256`` is already there."""
+    path = Path(sidecar)
+    have = {json.loads(x).get("record_sha256") for x in path.read_text().splitlines() if x.strip()} \
+        if path.is_file() else set()
+    if row["record_sha256"] in have:
+        return False
+    with open(path, "a") as fh:
+        fh.write(json.dumps(row, sort_keys=True) + "\n")
+    return True
+
+
 def frames_for_sidecar(sidecar_path: str | Path, *, as_of: str) -> list[dict]:
     frames: list[dict] = []
     for native in native_rows(sidecar_path):
@@ -359,5 +545,31 @@ def frames_for_sidecar(sidecar_path: str | Path, *, as_of: str) -> list[dict]:
     return frames
 
 
+def main(argv: list[str] | None = None) -> int:
+    """``kv_prefix_fork.py write-outcome``: one KPF-26.1 window dir -> a line in ``belief_measurements.jsonl``."""
+    import argparse
+
+    ap = argparse.ArgumentParser(description=main.__doc__)
+    sub = ap.add_subparsers(dest="cmd", required=True)
+    w = sub.add_parser("write-outcome")
+    w.add_argument("--win-dir", required=True)
+    w.add_argument("--summary", required=True)
+    w.add_argument("--sidecar", required=True)
+    w.add_argument("--binary", required=True)
+    w.add_argument("--model", required=True)
+    w.add_argument("--n-slots", type=int, required=True)
+    w.add_argument("--run-id")
+    a = ap.parse_args(argv)
+    row = outcome_record(a.win_dir, a.summary, binary=a.binary, model=a.model, n_slots=a.n_slots, run_id=a.run_id)
+    print(json.dumps({"run_id": row["run_id"], "record_sha256": row["record_sha256"],
+                      "written": write_outcome_sidecar(a.sidecar, row)}))
+    return 0
+
+
 __all__ = ["ADAPTER_ID", "AUTHORITY", "SOURCE_KIND", "SCHEMA", "SIDECAR_NAME", "KPF18_SUB_ARMS", "is_sub_arm",
-           "native_rows", "project", "validate_row", "frames_for_sidecar"]
+           "native_rows", "project", "validate_row", "frames_for_sidecar", "OUTCOME_ARM", "outcome_record",
+           "write_outcome_sidecar"]
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
