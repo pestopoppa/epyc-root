@@ -2275,6 +2275,8 @@ production model at pairs=5, ~18% cadence overhead). Six operator decision items
         t48 13.46** (`progress/2026-08/2026-08-28.md:259`); 2026-09-02 reversed the order to **t48
         10.09 > t64 9.69** (`cpu-decode-roofline-program.md:376-392`). Nobody ever chased it.
 
+        > *(2026-10-23, workspace-f8, LBH-2.)* The 10.09 / 9.69 / 9.67 sweep is a hardened-protocol reading (same protocol on all three arms, so the order stands); the ordinary C5 anchor is 10.14 t/s, so the 2.76x floor movement is unchanged.
+
         **Design — 3 arms, everything else held at the champion recipe** (`ef81196d5` +
         `GGML_NOHUGEPAGE_PROCESS=1` at launch, `taskset -c 0-95 numactl --interleave=all`,
         `OMP_PROC_BIND=spread OMP_PLACES=cores`, MTP on, the 24-prompt production mix, both screens
@@ -2952,7 +2954,7 @@ are unaffected (the AK loop's bench arms pass it since R24-1). Serving floors an
     a re-run on a V11-103 build with `--progress` or JSON output is the only proof, and the dispositions below say which
     verdicts need it. Observed protocol effect on tg128 for identical configurations (sync10, sync3 pairs): within about
     1.5 percent either way, pp512 noisier.
-- [ ] **LBH-2 — list every floor and verdict that consumed an affected row, and re-grade or invalidate it.** From the
+- [x] **LBH-2 — list every floor and verdict that consumed an affected row, and re-grade or invalidate it.** From the
       LBH-1 manifest, follow each file to the handoff, doc, ledger row or belief tuple that cites it (`git grep` the path
       and its run dir across root and research). For each: (a) mixed protocols inside one floor or one A/B arm =
       INVALID (the floor's spread includes a protocol switch); (b) a single-protocol comparison where both arms ran
@@ -3005,6 +3007,21 @@ are unaffected (the AK loop's bench arms pass it since R24-1). Serving floors an
     Open for LBH-2: claims that cite these dirs by task name only (not by path) in the wiki and in docs/design/inf70-*.md have
     not been walked; the wiki passages quoted above (`hardware-optimization.md` L5481-5726, `benchmark-methodology.md`
     L5565/5613/5726) inherit the dispositions of their dirs.
+  - *(2026-10-23, workspace-f8, LBH-2 CLOSED; residual carried by LBH-2.1.)* Task-name-only citations walked (wiki, `docs/design/inf70-*`, handoffs): dated notes added at `wiki/hardware-optimization.md` (B3-k +3.07% INVALID provisional, server +3.9% unaffected; SYNC-2 +3.86% / +0.87% plain INVALID provisional; C5 10.09 / 9.69 / 9.67 relabelled hardened-protocol reading, ordinary anchor 10.14 so the 2.76x floor movement stands), `wiki/benchmark-methodology.md` (levers-do-not-compose table), `docs/design/inf70-cpu-fold-into-champion-20260907.md` (effect column) and the D4 thread-sweep passage in this file. No edit needed: D8x +14% (stands), D8 +0.97% (already called meaningless), D1, D7a, SYNC-4, SYNC-10 served +3.05%, D6-PLACE served +35.21%, fused/graph 3.86x (`fused` ordinary), the completed-handoff archive (historical; its B3-k +3.9% is a server reading). Remaining tmp/inf70 subdirs outside `agents/*` and `results-c5*` (`reanchor`, `reanchor2`, `longprompt`, `results-20260902T102729Z`, `results-20260921T093152Z`, `results-ds41scope-*`, the `c5*`/`c0*` nohup logs and `c5_*.sh` wrappers): all drive `llama-server` or the bandwidth/barrier micro-benches (`bench_readbw`, `bench_barrier`), or are outer logs of already-classified `results-c5*` dirs; none holds a llama-bench result unit, so UNAFFECTED with no claim to re-grade.
+- [ ] **LBH-2.1 — re-run the INF-70 llama-bench units whose protocol could not be resolved or was mixed (LOW-PRIORITY BACKLOG).**
+      Needs a V11-103 (fixed `parse_cmd_params`) llama-bench build, or explicit `--autokernel-harden` on every arm of
+      a contrast so both arms share a protocol; guard the output with the LBH-3 consumer guard
+      (`f8/lbh3-harden-guard` `bf8ce8a34`) and keep the same configs (model, threads, env, placement, binaries) as the
+      original arms. 34 units were unresolved by wall clock (`b34` 9, `b3k` 5, `d8` 2, `d8x` 6, `sync2` 7, `be2-fa` 3,
+      `results-c5v2` t1 arm 1, `b4` 1). Claims that would change, and the minimal set:
+      (1) B3-k bench ABA, slab vs merged vs `GGML_MMID_SLAB=0` (+3.07% and the same-binary flip); (2) SYNC-2 four paired
+      rounds (COLSPLIT +8.19%, TINY_SOLO +3.86%, EMPTY_SKIP +0.87%); (3) C5 `c5-omp-off` t48 and `c5-t1` arms on the C5
+      build (the -3% OMP-stack effect and the 2.0x 1T-to-48T scaling); (4) B3-4 ABA (`b34`); (5) B4 `b4b` / `b4r`
+      separation arms against the `b4` control. Optional, only if a claim above is cited again: SYNC-10 cells, D6 / D6-PLACE
+      sub-2% contrasts, SYNC-3 margin, D8 +0.97% (expected null). Not needed: D8x +14% and `be2-fa` (bit-exactness
+      verdict), whose conclusions stand. Cheapest route: (1)-(3) first, one protocol per contrast, ABAB; nothing is
+      owed by any live decision, so run only when a CPU window is free (correctness-class work needs no quiet host,
+      timing arms do).
 - [x] **LBH-3 — consumer guard: shared llama-bench parsers reject unrequested hardened rows (PROPOSED, research code,
       owner of `kernel_rnd/autokernel/execution/microbench.py` applies).** Today the check runs one way only:
       `LlamaBenchExpectation.check_row` (`microbench.py:1978`, `:2006`) calls `_check_autokernel_hardening` (`:1765`,

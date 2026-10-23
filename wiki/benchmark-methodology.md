@@ -5757,6 +5757,8 @@ the solo numbers predict the stack**, and the errors ran in both directions:
 | row/column-chunk elementwise split | +3.05% served | **+5.3%** |
 | barrier elision on single-task nodes | +3.86% plain | **below the 1.1% noise floor** |
 | zero-element node skip | +0.87% plain | **−0.2%** |
+
+> *(2026-10-23, workspace-f8, LBH-2: llama-bench ran the hardened protocol unrequested, V11-103; INF-70 bench logs record no `autokernel_hardened` column, so protocol is inferred from wall clock, LBH-1 manifest.)* The two "plain" solo readings in this table (+3.86% TINY_SOLO, +0.87% EMPTY_SKIP; SYNC-2) come from rounds that mix protocols and are INVALID (provisional) as stated; each lever's stack reading, which is the point of the table, is unaffected. The served readings (+3.05%, +3.12%, +3.04%, +1.0%) are llama-server based: unaffected.
 | vectorised Q8_K quantizer | +3.12% served | **+0.86% marginal** |
 | activation-quant grain split | +3.04% served | **+1.13% marginal** |
 | whole-process `PR_SET_THP_DISABLE` | **+1.0% served** | **−1.39% — NEGATIVE, and dropped** |

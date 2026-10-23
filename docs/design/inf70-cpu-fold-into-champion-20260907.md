@@ -40,6 +40,8 @@ Clone `/mnt/raid0/llm/llama.cpp-cpu-fusion-20260829` (private, **unpushed**), wo
 | D1 no batch-1 barrier | `664096408` | null (base for B3-k) |
 | **P0** IQ4_XS stays on direct iqk (repack at Ny≥32 was WRONG) | `99425578d` | long-prompt garbage → coherent 27/27 |
 | BE-1 `GGML_ROWEXACT_N` | `db6b715c9` | lossless mode; OFF by design |
+
+> *(2026-10-23, workspace-f8, LBH-2: llama-bench ran the hardened protocol unrequested, V11-103; INF-70 bench logs record no `autokernel_hardened` column, so protocol is inferred from wall clock, LBH-1 manifest.)* Effect-column readings affected by the classification: SYNC-2 "+3.86% plain alone" and B3-k "+3.07% bench" are INVALID (provisional; mixed-protocol rounds). B3-k "+3.9% served", SYNC-10 "+3.05%" and D6-PLACE "+35.21% served" are llama-server readings and unaffected; D6-PLACE "+32.21% plain" is far above the ~1.5% protocol band and stands in direction. D8 and D7a stand (arms ordinary or far above the band). The fold decisions rest on the served and bit-identity gates and are not reopened. Detail: `handoffs/active/cpu-decode-roofline-program.md`.
 | E2 MTP draft head port | `d83f63a45` | 23.16 t/s, 1.876× |
 | E2b-2 recurrent-state rollback | `4595b1bca`,`077123843`,`8136b3221`,`540b1e697` | checkpoints 407/113 → 0/0 |
 | BE-2 `GGML_FA_SPLIT_KV` knob | `c51e4dabf` | knob; `=0` free under MTP |

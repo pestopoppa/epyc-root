@@ -5481,6 +5481,8 @@ Thread `ith` takes the contiguous range `[total·ith/nth, total·(ith+1)/nth)` o
 (−2.43 ms/token), twelve times the baseline's round-to-round spread**, bit-identical logits. The gain is entirely the
 slab partition; the accompanying barrier removal is null on its own. Confirmed in the server path at +3.9%.
 
+> *(2026-10-23, workspace-f8, LBH-2: llama-bench ran the hardened protocol unrequested, V11-103; INF-70 bench logs record no `autokernel_hardened` column, so protocol is inferred from wall clock, LBH-1 manifest.)* The bench-path +3.07% is INVALID (provisional): the slab arms ran the ordinary protocol (170 s) and the merged-tip and no-slab arms the hardened one (360 s for the identical test), so the contrast crosses protocols. The server-path +3.9% (`llama-server`, no llama-bench rows) is unaffected and is the figure to cite until the bench ABA is re-measured. Disposition: `handoffs/active/cpu-decode-roofline-program.md` (B3).
+
 ### The NUMA eviction that reclaimed nothing (C7)
 
 `numactl --interleave=all` is a per-allocation *hint* the kernel abandons for any node with no free pages, and page
@@ -5722,6 +5724,8 @@ and +0.87% alone and fall **below the 1.1% noise floor** in the champion — bec
 was running its sub-2 MiB tensors on **one memory controller of four**, and fixing placement removed the
 stall they were partly hiding. **Re-measure levers in combination; never scale a solo number into a stack.**
 
+> *(2026-10-23, workspace-f8, LBH-2: llama-bench ran the hardened protocol unrequested, V11-103; INF-70 bench logs record no `autokernel_hardened` column, so protocol is inferred from wall clock, LBH-1 manifest.)* The two "alone" bench readings, TINY_SOLO +3.86% and EMPTY_SKIP +0.87% (SYNC-2), come from rounds that pair ordinary with hardened arms: INVALID (provisional) as stated. The conclusion they are used for here (both fall below the noise floor in the champion) rests on the served/stack readings and is not weakened. The +3.05% row-split is a served reading (SYNC-10 bench cells are mixed, the served figure is not): unaffected.
+
 **2. Combinations can be super-additive.** The product of the four solo gains predicted 1.5017 plain; the
 measured combination was **1.6934** — a **12.8% excess**. Levers that remove different classes of stall
 (bandwidth vs occupancy vs synchronisation) can unmask each other, so a stack's value is not derivable from
@@ -5843,6 +5847,8 @@ by measurement on 2026-09-02 —
 | **48** | **10.09** |
 | 64 | 9.69 |
 | 96 | 9.67 |
+
+> *(2026-10-23, workspace-f8, LBH-2: llama-bench ran the hardened protocol unrequested, V11-103; INF-70 bench logs record no `autokernel_hardened` column, so protocol is inferred from wall clock, LBH-1 manifest.)* The three C5 readings (OMP stack ON, build 10196) all ran the hardened protocol: they are hardened-protocol readings, valid as a within-sweep comparison (48 over 64 by 4.1% is above the ~1.5% protocol band). The ordinary-protocol C5 anchor is 10.14 t/s / 98.6 ms (INF-68 arm), within 0.5% of 10.09, so the 2.76x floor movement below is unchanged. B2's independent arm (9.57 / 9.53 / 10.26) ran ordinary and also puts 48 first.
 
 — with `B2`'s independent `-t 8,24,48` arm at 9.57 / 9.53 / 10.26. **48 won.** Comparability is a
 *consequence* of 48 having won, never the reason for it, and the value is codified as a measured
