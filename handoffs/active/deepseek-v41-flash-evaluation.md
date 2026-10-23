@@ -366,7 +366,7 @@ Closed §C items (C10a, C20 with C20a-c/e/h, C21-C25, C28-C32, C35-C40, C44, C45
   - On the full screen, today's gemv-2560 is 377.5 GB/s at 48 threads and 475.9 at 96.
   - Keep the operator's gate and target (30 / 45-50 t/s). Only re-derive the BW → t/s rows.
   - Repeat the reading on an idle host before quoting it as the ceiling.
-- [ ] DS41-C46 — **CPU keep anchor builds at `-j1`: check gcc `-j64` reproducibility.**
+- [x] DS41-C46 ✅ 2026-10-23 — **CPU keep anchor builds at `-j1`: check gcc `-j64` reproducibility.**
   - R23-40 (`f4f13116`, 2026-09-04) moved `build_champion` to `-j1` because hipcc gfx90a `libggml-hip.so` is not
     reproducible at `-j64`. The rule applies to CPU/gcc campaigns too, where it costs ~1 h per keep with 95 cores
     idle.
@@ -378,6 +378,12 @@ Closed §C items (C10a, C20 with C20a-c/e/h, C21-C25, C28-C32, C35-C40, C44, C45
     campaigns only. HIP stays at `-j1` until R23-41 (hipcc determinism flags).
   - If the digests differ, record which object differs and keep `-j1`.
   - The build takes CPU cores, so schedule it under a region claim that does not overlap a live measurement.
+  - **PASS (2026-10-23, job `ds41-c46-j64-repro`, done 16:52Z on q2; `/mnt/raid0/llm/tmp/ds41-c46/RESULT.json`).** Four clean
+    `-j64` builds of champion `141e4bcf5`: A and B serial, C and D concurrent under load. `object_digest` identical across all
+    four (303 objects, `e6802d0e…`); only informational difference is `tools/ui` `ui.cpp.o` (known non-deterministic web-UI
+    bundle). Libs: `libggml-base` SAME; `libggml-cpu`, `libggml`, `libllama` EXPLAINED (code identical, build-path/build-id
+    only) via libcmp. Closes the "holds under concurrent lane-build load" clause; `-j64` CPU anchor builds stay valid
+    (`anchor_build_jobs`, research `f1bf8d17d`). HIP stays `-j1` until R23-41.
 - [ ] DS41-C47 — **Confirm the first keep at the serving gate.**
   - Operator 2026-09-27: let the loop's serving gate decide (fires at 13.81% compounded or every 4 keeps); no early
     confirmation run. The keep's commit `cafb59c3` is now durable on `fork/experimental/fastload-ds41-20260925`
