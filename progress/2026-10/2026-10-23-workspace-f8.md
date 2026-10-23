@@ -369,7 +369,7 @@ ARMED at root `eadbb8fe8` (just before this scope). Launcher pid 1640838 was ali
 | Index regen + `index_state.py --check` | rc 0, 0 problems, in two passes: after syncing to `17d538c84`, then after syncing to `d59a5a2ea` (workspace-58's wrap-up) |
 | Prune candidates (generated signal) | 0, so nothing was pruned or archived |
 | README freshness | clean |
-| Wiki | Sweep 19 compiled into 4 pages: benchmark-methodology, inference-serving, kv-cache and hardware-optimization. A second pass added the KPF-LB1.1 verdict and the define-scope probe lesson. Merge with workspace-58's sweep 19: took main's manifest, kept both Last-compiled entries, recompiled the remaining 6-source delta. Lint: 0 errors. Bare `--touch` left a delta of 0. See the note below. |
+| Wiki | Sweep 19 compiled into 4 pages: benchmark-methodology, inference-serving, kv-cache and hardware-optimization. A second pass added the KPF-LB1.1 verdict and the define-scope probe lesson. A third pass added SPEC-GRAM.1(2) to speculative-decoding. Merge with workspace-58's sweep 19: took main's manifest, kept both Last-compiled entries, recompiled the remaining 6-source delta. Lint: 0 errors. Bare `--touch` left a delta of 0. See the note below. |
 | `vidya sync --check` | FRESH: intake-2510, lag 0 |
 | Index rows | prepared for the owning session, not applied |
 
