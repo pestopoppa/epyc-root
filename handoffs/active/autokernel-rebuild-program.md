@@ -2953,6 +2953,40 @@ are unaffected (the AK loop's bench arms pass it since R24-1). Serving floors an
          hardened-protocol reading, not an ordinary-bench number.
       4. **KVU-LB1.b run 1 s2** (already ruled INVALID, `kv-unified-stack-rollout.md`).
       Done when every manifest row carries a disposition and every cited claim has its note.
+      - *(2026-10-23, workspace-f8, LBH-2 pass 1: analysis only, no compute.)* Dispositions for every claim that
+        cites a JSON/JSONL file with unrequested hardened rows. Each claim has a dated note beside it.
+
+        | # | claim (owner) | protocol evidence | disposition |
+        |---|---|---|---|
+        | 1 | DS41-W5 llama-bench 1017 vs Sept Q4, tg128 −5.1% / pp512 −29.9% (`deepseek-v41-flash-evaluation.md` W5; `wiki/local-inference.md`, `wiki/quantization.md`) | one binary `3376147f8`; Sept file 2/2 rows hardened, 1017 file 2/2 ordinary; no harden flag in either argv | **INVALID**, rule (c). No same-protocol subset exists, and the Sept GGUF was deleted 2026-10-21. Re-measure filed as DS41-W5-LBR (options + spec). It gates DS41-W8a / S5. |
+        | 2 | DS41-C112 c4 bisect, first bad = `9b148baab` (`deepseek-v41-flash-evaluation.md` C112) | 17/28 arm files hardened, mixed inside the ABAB rounds | **HOLDS.** Strict same-round like-protocol pairs number at most one per step, too few for the bisect rule. Like-protocol re-pairing inside each step reproduces every step verdict, the nearest effect sits 8.8 pp from G/2, and the same-binary protocol shift is +0.15% (COR pp256). No re-run filed. |
+        | 3 | Q38FN thread-at-depth d0 anchor (`cpu-decode-roofline-program.md`; `wiki/hardware-optimization.md`) | 4/4 rows hardened, both arms | **Re-graded** to a hardened-protocol reading, rule (b). No claim compares it with an ordinary llama-bench number. |
+        | 4 | KVU-LB1.b run 1 s2 (`kv-unified-stack-rollout.md`) | 2 rows hardened | **INVALID** (ruled earlier); run 2 carries the guard. |
+        | 5 | the three tmp research-worktree copies of #3 (`ak-repack-gate-20261021/research`, `ds41-1017-ak-floor-20261022/research-wt`, `ds41-w5-20261021/research-wt`) | byte copies of #3 | same as #3; no claim cites the copies. |
+
+        - **Unaffected:**
+          - AK campaign stores: all 320 hardened rows in `ak-iqk-v9-20260813-r29..r43` / the A/A controls sit in the same
+            journal record as `--autokernel-harden` in the argv, so every row was requested.
+          - The 7 research `data/autokernel_controls_3pct_*` receipts: requested.
+          - `gpu-cpu-noise-20261021` run `20261022T170902Z`: 329 reps, all ordinary, on every condition.
+          - `docs/design/gpu-cpu-noise-contribution-prereg-20261021.md`: cites only W5 served decode.
+          - `autokernel-champion-aggregate.md`: the C112 shape gate follows #2, which holds.
+        - **Scan widened** (`harden_scan.py` variant, nice 19, regular files only):
+          - Over `/mnt/raid0/llm/tmp` back to 2026-08-11 rather than 30 days, it finds the same 22 hardened files.
+          - A text-output pass (`.out`/`.log`/`.txt`/`.err`) finds 703 files and 1,423 rows carrying the field, none of
+            them hardened.
+        - **Lineage correction:** on the production and champion line, the uninitialised field arrives with `f744cc220`
+          (2026-08-13), which carries the harden protocol into `tools/llama-bench`. `0492c2319` is not an ancestor of v10
+          `ffc1bac82` or of the INF-70 builds. The Sept INF-70 experimental builds (`58c345093` 10196, `20db1a5ab` 10226,
+          `c51e4dabf` 10221) carry the same `cmd_params params;` defect.
+        - **Still open, so LBH-2 stays unticked:**
+          - Markdown/CSV rows cannot show their protocol, and LBH-1 has to classify them.
+          - Of the `/mnt/raid0/llm/tmp` dirs that root handoffs cite, the measurement dirs on defect-carrying builds
+            are the INF-70 runs under `tmp/inf70/agents/*` and `tmp/inf70/results-c5*` (2026-09-02..21, builds
+            10196-10226, markdown output, no `--progress`). Their rows are REQUEST-UNKNOWN.
+          - The other cited hits are repo copies or docs (`ni08_*`, `*/benches/*`), pre-defect builds (6733-8382), or
+            a no-model argv check (`f8-launchers-20261022/akx-lb4-followups*`).
+          - Close LBH-2 once LBH-1 has classified the INF-70 class and each cited INF-70 verdict has its note.
 - [ ] **LBH-3 — consumer guard: shared llama-bench parsers reject unrequested hardened rows (PROPOSED, research code,
       owner of `kernel_rnd/autokernel/execution/microbench.py` applies).** Today the check runs one way only:
       `LlamaBenchExpectation.check_row` (`microbench.py:1978`, `:2006`) calls `_check_autokernel_hardening` (`:1765`,

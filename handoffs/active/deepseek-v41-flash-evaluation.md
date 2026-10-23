@@ -1038,6 +1038,23 @@ Closed §C items (C10a, C20 with C20a-c/e/h, C21-C25, C28-C32, C35-C40, C44, C45
   without `--autokernel-harden` (llama-bench uninitialised `autokernel_harden`, V11-103), mixed inside every ABAB
   pair, so the bisect compared protocols as well as commits. The first-bad verdict stands only if it holds on
   like-protocol pairs or a V11-103 re-run. Disposition tracked in LBH-2, `autokernel-rebuild-program.md`.
+  *(2026-10-23, workspace-f8, LBH-2 re-grade, analysis only.)* **Verdict HOLDS: first bad = `9b148baab`.**
+  Per-file protocol (pp256 decision metric): phase0 B O/H, T H/O, X O/H, Y H/H; s1 B H/H, M H/O; s2 B H/O, M O/H;
+  s3 B O/O, M O/H; s3-x B O/H, M H/H; s4 B H/H, M O/H (round 1/round 2, H = hardened, O = ordinary).
+  - Strict reading (same-round pairs with both arms on one protocol): every step has at most one such pair and
+    phase0 T has none, so the bisect's own rule (all of >= 2 rounds beyond G/2) cannot fire on strict pairs alone.
+  - Like-protocol re-pairing inside each step (same binaries, same minutes, rounds crossed only where the
+    protocols match): phase0 T vs B −21.92% (O/O) and −23.61% (H/H), so G/2 = −11.38% (was −11.37%), BAD at −10%;
+    s1 `e038b28f1` −25.05/−26.32% BAD; s2 `6f8e232aa` −2.55/−0.37% GOOD; s3-x `9b148baab` −21.39/−24.79% BAD
+    (s3 + s3-x same-round strict pairs: −23.37/−24.79%, BAD); s4 `ad8979943` −1.74/+1.07% GOOD. Every step's
+    verdict is unchanged, and the nearest like-protocol effect sits 8.8 pp from the threshold.
+  - Protocol size on the same binary: COR pp256 hardened 287.25 t/s (n=7) vs ordinary 286.80 (n=4), +0.15%, with
+    the ranges overlapping. A protocol shift of that size cannot move a step across an 11-pp threshold.
+  - The `GGML_MMID_SLAB=0` discriminator stands on like-protocol same-round pairs: X vs B +7.67% (O/O) and
+    +2.60% (H/H), against T −22%.
+  - The original s3 ambiguity came from a disturbed ordinary COR launch (s3 r2 B pp256 218.84 t/s, a pp5
+    sample at 38 t/s), not from the protocol. **No c4 re-run is filed.** Method: per-file `autokernel_hardened`
+    and `avg_ts` read from `runs/20261004T104009Z/*/bench-q38-r*-*.jsonl`, read-only.
 - [ ] DS41-C113 — **the DS41 launchers depend on a scratch worktree path.** (filed 2026-10-04; INC-20261004-cleanup-removed-load-bearing-worktree) `ds41_watchdog.sh`, `swap_*.sh` in
   `/mnt/raid0/llm/tmp/ds41-scope-20260926/` export `EPYC_ROOT_REPO=/mnt/raid0/llm/worktrees/root-main-epyc-root-repo`; its removal on 2026-10-04 crashed DS41 (02:25Z, relaunched 02:36Z).
   Point it at a pinned, marked-LOAD-BEARING path (or the canonical root clone), make the launcher fail fast with a named error when the path is missing, and stop the
@@ -1393,6 +1410,42 @@ Working notes (scratch, KEEP until W7): `/mnt/raid0/llm/tmp/ds41-1017-swap/` (`a
       its argv, while `bench-B-1017.json` ran ordinary (llama-bench uninitialised `autokernel_harden`, V11-103). The
       tg128 -5.1% and pp512 -29.9% are therefore INVALID until re-measured on a V11-103 build, and the DS41-W8a /
       S5 premise needs that re-measure first. Disposition tracked in LBH-2, `autokernel-rebuild-program.md`.
+      *(2026-10-23, workspace-f8, LBH-2 disposition: **INVALID**, confirmed per row.)* Both files are from one binary
+      (`3376147f8`, build 10339, `-t 48 -fa 1 -mmp 0 -p 512 -n 128 -r 2 -o json`; neither argv has
+      `--autokernel-harden`). `bench-B-1017.json`: pp512 87.945 and tg128 16.666 t/s, both rows `false`.
+      `bench-B-sept-q4.json`: pp512 125.386 and tg128 17.568 t/s, both rows `true`
+      (`autokernel_device_sync_mode: cpu_not_applicable`). No same-protocol subset exists: each file is uniform, no
+      other Sept Q4 llama-bench row on this build exists under `/mnt/raid0/llm/tmp`, and the Sept Q4 GGUF was deleted
+      at 2026-10-21T19:00Z (W7, graveyard row 99), so no partner row can be added now. The re-measure is
+      DS41-W5-LBR below.
+    - [ ] **DS41-W5-LBR — re-measure the 1017 vs Sept Q4 llama-bench delta on one protocol (LBH-2).** BACKLOG with
+      two named blockers: (1) the 2026-10-22 08:4xZ operator directive defers DS41-1017 tests other than the noise
+      floor; (2) arm A's GGUF is deleted, so the run needs an operator choice. Options: **(a)** re-acquire
+      `DeepSeek-V4.1-Flash-Q4.gguf` (518,596,067,328 B, about 16 h at the measured ~9 MB/s) and run the spec below;
+      **(b)** test S5's mechanism without Sept: extend the c2 MUL_MAT_ID microbench (DS41 expert shapes, MXFP4
+      CPU_REPACK vs Q4_K iqk; it was measured only at N=1/3) to the pp512 rows per expert (N=8, 16, 64), which is
+      model-free and takes minutes with no DS41-class RAM; **(c)** drop the delta and keep S5 record-only until W8a.
+      Recommendation: (b), because it answers the S5 premise directly. Spec for (a):
+      - Build: one llama-bench for both arms. Prefer a DS41-port build with the V11-103 fix (`141e4bcf5`) folded, in a
+        new build dir; otherwise `3376147f8` `build-cpu` with the guard. Prove the binary first (version string,
+        `verify_ggml_linkage.sh`).
+      - Arms and recipe: A = Sept Q4, B = 1017 MXFP4 (9 shards). Use the W5 env (`ds41-w5-20261021/bin/env.sh`:
+        `OMP_PROC_BIND=spread OMP_PLACES=cores OMP_WAIT_POLICY=active OMP_DYNAMIC=false GGML_IQK=1`, the build's
+        own `LD_LIBRARY_PATH`) and `taskset -c 0-95 numactl --interleave=all llama-bench -m <arm> -t 48 -fa 1 -mmp 0
+        -p 512 -n 128 -r 3 -o jsonl --progress` under `region-lock --cpu-list 0-95 --role bench`, on a quiet host.
+      - Design: ABBAAB (3 adjacent pairs), effect B/A − 1 per test. One DS41-class process at a time: wait for the
+        captured pid's death and for MemAvailable to recover before the next launch.
+      - Hardened-row guard (the Amendment 2 pattern in
+        `/mnt/raid0/llm/tmp/f8-launchers-20261022/locals-kvu-lb1-arch-decode-ab/job.sh`, `wait_mode`): once VmRSS
+        reaches 90% of the model bytes, a missing `benchmark 1/N: warmup` line within 30 s means the hardened
+        protocol. Kill our captured pid, verify it dead, and relaunch, up to 5 tries. After the run, every row must
+        carry `"autokernel_hardened": false`, or the session is INVALID; it is never re-paired. Keep the guard on a
+        V11-103 build too, where it proves the fix.
+      - Verdict: per test, the median and range over the 3 pairs; a sign claim only when all 3 pairs agree. There is
+        no calibrated DS41 llama-bench floor, so the grade is INDICATIVE. Rows go through the VB-DS41-1017-WIRE
+        producer.
+      - Gates DS41-W8a and AK seed S5 (`akm-ds41-1017-mxfp4-mmid-gemm-tiles`), whose premise is the −29.9%.
+      - Do not arm it while blocker (1) stands.
   - [ ] **DS41-W5a — NMSE spot checks for the MXFP4 expert path.** The CPU-only build has no second backend,
     so `test-backend-ops` has nothing to compare against. Use a served-shape MUL_MAT_ID MXFP4 case set (the
     `served_shape_cases.py` lane profile from the 1017 GGUF) against an f32-dequant reference, cap 5e-4.
@@ -1506,6 +1559,10 @@ Working notes (scratch, KEEP until W7): `/mnt/raid0/llm/tmp/ds41-1017-swap/` (`a
       - S4 `akm-ds41-1017-mxfp4-gemv-vector-e8m0-scale`.
     - S5 `akm-ds41-1017-mxfp4-mmid-gemm-tiles` (the likely cause of the −29.9% pp512, research `da71fa603`) is
       record-only. This target (`-np 1`, no drafter, cached 45-token prompt) cannot see prefill.
+      *(2026-10-23, workspace-f8, LBH-2.)* The −29.9% is INVALID because it compares a hardened run with an ordinary
+      one (see W5). S5's premise now rests on the code reading alone (`gemv` per routed row) until DS41-W5-LBR
+      re-measures it. The seed note in the campaign inbox (`store/inbox/30-ds41-1017-mxfp4-seeds-20261021.md`)
+      still quotes the number and was not edited, because it is a live campaign input.
     - Memory (276 GiB repack copy) is not an AK objective. The `capacity` dimension is only a guard.
 
 ### T — Gates (translated from INF-69 T0-T4 / T0-SPEC / T15)
