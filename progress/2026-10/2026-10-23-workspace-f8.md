@@ -230,3 +230,117 @@ and after the wrap-up started, `066dfb1c7` and `eadbb8fe8`.
 | README freshness | clean |
 | Wiki | sweep 18 compiled 16 sources into 8 pages; lint has 0 errors and no new warnings; bare `--touch`, delta 0 afterwards |
 | `vidya sync --check` | FRESH: intake-2510, lag 0 |
+
+## Afternoon 2026-10-23 (operator-invoked /wrap-up, subagent, branch `f8/wrapup-20261023-afternoon`)
+
+This section covers work since the midday wrap-up's index refresh (root `3d78270df`). Every item was checked against:
+
+- git: root, research `origin`, and the llama `fork` remote;
+- the launcher directories under `/mnt/raid0/llm/tmp/f8-launchers-2026102{2,3}/`;
+- the FILLERS register (`/mnt/raid0/llm/tmp/compute-flags/FILLERS.md`, 13:31Z);
+- the process table (13:50Z).
+
+f8's root commits in scope are `82d160708`, `5ab248d5b`, `0d14d6322`, `c78190978`, `ffc2d2fdd` and `647a9febc`. The other
+commits in range belong to other sessions: 3c4ca599's CH-28 CAS, GPU-LEAK-1a and YaRN gate, workspace-58's
+inference-backlog-scheduling skill, and the V11-086 and DS41-W5 records.
+
+### AKX-LB4-FU3 PASSED (10:05Z)
+
+- **Result:** `akx-lb4-followups-3` passed 36/36 at experimental `540578f55`, the iqk FA port re-cut onto champion
+  `49550eda5`. backend-ops passed 5207/5207.
+- **Recorded:** AKX-LB4-FU3 ticked at root `82d160708`. FILLERS row COMPLETE.
+- **Housekeeping:** launcher 845486 is gone. workspace-58's `grant-akx3-20261023.sh` (pid 864810) is still alive; its
+  step skips on `.complete`.
+
+### llama-bench hardening audit (LBH-1..3, CH-28)
+
+| Item | Result | Where |
+|---|---|---|
+| LBH-3 consumer guard | `check_row` FAILs a hardened row the argv did not request. A row without the flag is UNKNOWN (accepted with a note, or COULD_NOT_CHECK under `strict_unknown=True`). The five inline-assertion scripts share one helper. | research main `5c3ad96c3` (from `f8/lbh3-harden-guard` `bf8ce8a34`); ticked at root `5ab248d5b` |
+| LBH-1 INF-70 classification | The REQUEST-UNKNOWN group, classified by wall-clock signature: **51 ordinary / 50 hardened / 34 unresolved**. Dispositions are in `cpu-decode-roofline-program.md`. | root `5ab248d5b` |
+| LBH-2 close-out | Task-name citations in the wiki and `docs/design/inf70` got dated notes. The other INF-70 `tmp` subdirs are unaffected. LBH-2.1 (re-run the unresolved units) is filed as LOW-PRIORITY BACKLOG. | root `0d14d6322` |
+| CH-28 fold | Folded by 3c4ca599: champion `49550eda5` -> **`141e4bcf5`**, store images `*-20261023-141e4bcf5-lbh` (llama-bench build 10412), manifest V11-103 IN. `ak/champion/llama-cpp-ffc1bac82eec` on `fork` reads `141e4bcf5`. f8's LBH-2.1 note: the champion's llama-bench is clean. | root `d5c2b7195` (3c4ca599), `ffc2d2fdd` (f8), `316e9d70d` (CH-28b) |
+
+### Code-blocked rows cleared (operator directive: unwritten code is never a blocker)
+
+Subagents wrote the missing code for six FILLERS rows the same turn, and each row was armed. All launcher pids were
+alive at 13:50Z.
+
+| Row(s) | Code | State |
+|---|---|---|
+| `gpu-zos-1a-build` + `gpu-zos-1a` | fork `experimental/gpu-zos-debug-timings-20261023` @ `b5a524605`: champion `49550eda5` plus the CMake option `LLAMA_SERVER_DEBUG_TIMINGS`, default OFF | build row ARMED (pid 1715017, q0); measure row BACKLOG until the build passes |
+| `locals-ufh14-lb7-stall` | none needed (`-lv 4` champion image); B4j code-reading findings, B4j.1 and VB-LB7-STALL-WIRE recorded | ARMED (pid 1751059), root `c78190978` |
+| `kpf13-1-reduced` + `kpf13-1a-mtp-v3-cpu` + `kpf17-4-19-1a-27b-dflash2` (+ `kpf17-4-19-1a-gpu-build`) | research `f8/kpf-dflash2-gpu-20261023` @ `6a1dc7f94` (rules v3, `kpf174_swa_drafter.py`, 80 tests) | ARMED (pids 1982292 / 1982295 / 1982302 / 1982299). Root `647a9febc` corrected the stale "SWA range fix" blocker on KPF-17.4. |
+| `spec-gram-1` part 2 | fork `experimental/spec-gram-bench-20261023` @ `ecd0d822c` (grammar counters, `draft_n_steps`) | ARMED (pid 2014096, q0 after the zos build) |
+| `kpf18-s1-remainder` | research `f8/kpf18-s1-remainder` @ `e5f42334b` | ARMED (pid 2014098) |
+| `locals-ufh14-lb4-chatparser` | none; it ran as step `chat-parse` of `akx-lb4-followups` on 10-22 | COMPLETE (UFH14-LB4 ticked at root `c18f2e376`) |
+
+**Gap closed by this wrap-up.** Three of these were armed only in FILLERS and had no handoff record: GPU-ZOS-1a,
+SPEC-GRAM.1(2) and KPF-18-S1 remainder. Each now has a dated note.
+
+### `kpf18-item3-v2-sameshape`: the rc 75 was a self-conflict
+
+- **What happened:** the run at 00:40Z ended rc 75 with 0/3 valid loads. The filler engine already held the mi210_0
+  flock, and the gate then tried to claim it again.
+- **Fix:** the operator approved the edit, and the job's `job.sh` now passes `--no-device-claim` (13:27Z, backups kept).
+  The dry run was reported OK.
+- **Correction:** this replaces workspace-58's earlier "grant timing" attribution. Both readings are now in the handoff
+  under KPF-18.0d(item 3, rest).
+
+### GPU-LEAK-1: audit of the 7 f8 GPU jobs
+
+3c4ca599's probe (13:18Z) found that with HIP graphs ON, a GPU llama-server's own-pid VRAM grows about 290 MiB per
+request, and that `GGML_CUDA_DISABLE_GRAPHS=1` stops the growth.
+
+| Job | Requests on one load | Mitigation |
+|---|---|---|
+| `locals-kpf-lb1-1-27b-completion-turns` (KPF-LB1.1) | up to 4 x 24 | graphs disabled via `env` in the server argv; own-pid guard 61440 MiB |
+| `kpf18-s1-remainder` | 5 steps, one load | graphs disabled via the gate `--launch-prefix`; gate VRAM ceiling 62.5 -> 60 GiB |
+| `kpf13-1-reduced` | ~150-240 | graphs disabled via a job-local `numactl` PATH shim (the pinned driver strips `GGML_*`); `gl1_guard` 61440 MiB |
+| `kpf17-4-19-1a-27b-dflash2` | ~60 honest, ~30 per mutation | same shim + `gl1_guard` |
+| `gpu-zos-1a` | 28 (~56 GiB worst case) | graphs ON (they are the measured condition), SAFE; own-pid guard added |
+| `locals-ufh14-lb7-stall` | fresh server per session | graphs ON, SAFE; own-pid guard added |
+| `kpf18-item3-v2-sameshape` | 3 loads x ~18 | graphs ON, SAFE; gate ceiling 60 GiB |
+
+- **Shared helper:** `/mnt/raid0/llm/tmp/f8-launchers-20261023/gpu-leak-1/gpu_leak1.sh`. Its guard kills only the
+  job's own server, which it identifies by port plus `/proc` exe.
+- **Relayed to 3c4ca599:** KPF-LB1.1's capture grew +390 MiB over 13 requests, which suggests the growth depends on
+  request shape. This belongs to GPU-LEAK-1d.
+- **Gap closed by this wrap-up:** each owning handoff item now has a dated GPU-LEAK-1 note.
+
+### DHM-7.2a granite
+
+ARMED at root `eadbb8fe8` (just before this scope). Launcher pid 1640838 was alive at 13:50Z and is booked on q2 last.
+
+### Schedule (workspace-58, relayed)
+
+- **GPU chain from about 14:22Z:** `kpf18-s1-remainder` -> `kpf13-1-reduced` -> `gpu-zos-1a` ->
+  `kpf17-4-19-1a-27b-dflash2` -> `locals-ufh14-lb7-stall` -> `kpf18-item3-v2-sameshape`. KPF-LB1.1 was re-booked to
+  run after the chain, because the GPU-LEAK-1d probe (`gpu-leak1d-probe`, granted 13:31Z) took the MI210.
+- **CPU lanes after NEW-13:**
+  - q0: `gpu-zos-1a-build` -> `spec-gram-1`;
+  - q2: `kpf17-4-19-1a-gpu-build` -> `kpf13-1a-mtp-v3-cpu` -> `dhm72a-granite`.
+- **Not yet visible on disk at 13:50Z:** the only live afternoon writer, `grant-afternoon-20261023.sh` (pid 2046254,
+  armed 11:08Z), still lists LB1.1 first in Lane B, and it starts Lanes B-E only after NEW-13 releases 0-95. Its grant
+  ends 15:43Z at the latest. The re-booked order is workspace-58's to write. Nothing was changed here.
+
+### Checklist sync / derived actionables
+
+- **Flips attributable to f8 in scope `3d78270df..origin/main`: 4.** These are AKX-LB4-FU3, LBH-1, LBH-3 and LBH-2,
+  all committed by their owning commits and verified here. This wrap-up made 0 flips. The other flips in range belong
+  to other sessions: CH-28 and CH-28b, DS41-W5, YARN-AGG-1e and GPU-LEAK-1a.
+- **New tasks f8 filed in range: 3:** LBH-2.1, UFH14-B4j.1 and VB-LB7-STALL-WIRE.
+- **Filed by this wrap-up: 2.**
+  - **KPF-GL1** (in `kv-prefix-fork-and-paged-attention.md`): at each first run, prove that the graphs-disabled env
+    reached the server. For the shim jobs, read `gl1_guard.log`; for the `env`-argv jobs, read the record's argv.
+  - **LBH-3.1** (in `autokernel-rebuild-program.md`, derived from LBH-3's own "should pass `strict_unknown=True`"
+    sentence): both production `check_row` call sites still use the lenient default, so the fix landed with its strict
+    mode off.
+- **Declined 1, in writing:** the leak's shape-dependence is not filed here. It is 3c4ca599's GPU-LEAK-1d
+  (`gpu-serving-tie-in-program.md`), already relayed, with a probe running.
+- **Gaps closed with dated notes: 8.**
+  - `kv-prefix-fork-and-paged-attention.md` (5): KPF-13.1, KPF-17.4, the KPF-18.0d item-3 correction, KPF-18-S1
+    remainder, KPF-LB1.1.
+  - `gpu-serving-tie-in-program.md` (1): GPU-ZOS-1a.
+  - `speculative-decoding-mtp-refresh.md` (1): SPEC-GRAM.1(2).
+  - `agentic-serving-harness-fixes.md` (1): UFH14-LB7.
