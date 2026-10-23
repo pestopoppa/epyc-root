@@ -71,6 +71,7 @@ from typing import Any
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from claim_tuple import ClaimTuple, ProjectionError, REPO_ROOT, register, to_frames  # noqa: E402
+from adapters import _llama_bench_protocol as _lbp  # noqa: E402
 
 ADAPTER_ID = "vidya.adapters.inf70_roofline_ledger/v1"
 AUTHORITY = "measurement"
@@ -643,6 +644,11 @@ def _project_arm(native: dict, date: str) -> ClaimTuple:
     if not recipe.get("command"):
         raise ProjectionError("inf70 arm must retain the command line it was measured with")
 
+    # VB-LLAMA-BENCH-HARDEN-PROTOCOL: markdown carries no autokernel_hardened column, so the ROW is `unknown`
+    # by construction; the recorded command decides the request. Recorded beside the tuple, never graded.
+    protocol = _lbp.assess(row=None, argv=recipe["command"], build_commit=str(native["build"]),
+                           label=f"inf70 arm {native.get('arm')}", format_carries_flag=False)
+
     threads, test = row["threads"], row["test"]
     ident = f"inf70_{native['run_slug']}_arm_{native['arm']}_t{threads}_{test}"
     ident = re.sub(r"[^A-Za-z0-9_]+", "_", ident)
@@ -666,6 +672,7 @@ def _project_arm(native: dict, date: str) -> ClaimTuple:
         source_kind=SOURCE_KIND,
         extra={
             "arm": native["arm"],
+            "llama_bench_protocol": protocol,
             "threads": threads,
             "test": test,
             "stddev": row.get("stddev"),

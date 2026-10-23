@@ -32,6 +32,7 @@ from pathlib import Path
 from typing import Any, Callable, Iterable
 
 from claim_tuple import ProjectionError, to_frames
+from adapters._llama_bench_protocol import refusal_code  # noqa: E402
 
 Units = Callable[[Path], list[Path]]
 
@@ -592,6 +593,10 @@ def ingest(ledger, name: str, paths: Iterable[Path] | None, *, as_of: str,
                         rows += 1
             except ProjectionError as exc:
                 report["refused"].append({"unit": report_path(unit), "reason": str(exc)})
+                _code = refusal_code(str(exc))
+                if _code:
+                    by_code = report.setdefault("llama_bench_protocol_refused", {})
+                    by_code[_code] = by_code.get(_code, 0) + 1
                 continue
             if not got:
                 report["declined"].append(report_path(unit))

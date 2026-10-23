@@ -37,6 +37,7 @@ from typing import Any
 
 from claim_tuple import ClaimTuple, ProjectionError, to_frames
 
+from adapters._llama_bench_protocol import refusal_code as _protocol_refusal_code  # noqa: E402
 from adapters import (
     autokernel_aux_receipt,
     autokernel_codegen_summary,
@@ -225,6 +226,9 @@ def ingest_corpus(ledger, *, root: Path, as_of: str, limit: int | None = None,
     refusals: list[dict] = []
     diagnostics: list[dict] = []
     by_adapter: dict[str, int] = {}
+    # VB-LLAMA-BENCH-HARDEN-PROTOCOL: refusals of llama-bench rows whose protocol does not match their request,
+    # counted by code (they are also in `refused` and `refusal_sample`).
+    protocol_refused: dict[str, int] = {}
     # Unified arm records can appear both as a standalone carrier and in a journal.
     # Hold them until the complete walk proves that no same-ID conflicting carrier exists.
     unified_pending: dict[str, tuple[str, Path, object, object]] = {}
@@ -248,6 +252,9 @@ def ingest_corpus(ledger, *, root: Path, as_of: str, limit: int | None = None,
                 unaccepted += 1
                 continue
             refused += 1
+            _code = _protocol_refusal_code(str(exc))
+            if _code:
+                protocol_refused[_code] = protocol_refused.get(_code, 0) + 1
             refusals.append({"path": str(path), "schema": dispatch,
                              "reason": str(exc)})
             if on_refusal is not None:
@@ -272,6 +279,9 @@ def ingest_corpus(ledger, *, root: Path, as_of: str, limit: int | None = None,
                 tuples = module.project(native)
             except ProjectionError as exc:
                 refused += 1
+                _code = _protocol_refusal_code(str(exc))
+                if _code:
+                    protocol_refused[_code] = protocol_refused.get(_code, 0) + 1
                 refusals.append({"path": str(path), "schema": dispatch,
                                  "reason": str(exc)})
                 continue
@@ -346,6 +356,7 @@ def ingest_corpus(ledger, *, root: Path, as_of: str, limit: int | None = None,
         "frames_emitted": len(frames),
         "duplicate_measurements": duplicate_measurements,
         "refused": refused,
+        "llama_bench_protocol_refused": dict(sorted(protocol_refused.items())),
         # Schema matched this dispatcher's map but the adapter does not accept that
         # document as an entry point. A mapping miss, not a rederivation failure.
         "schema_not_an_entry_point": unaccepted,

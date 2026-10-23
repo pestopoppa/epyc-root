@@ -24,6 +24,7 @@ from typing import Any
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from claim_tuple import ClaimTuple, ProjectionError, register
+from adapters import _llama_bench_protocol as _lbp  # noqa: E402
 
 ADAPTER_ID = "vidya.adapters.autokernel_governed_receipt/v1"
 LIVE_SCHEMA = "epyc.autokernel.live_control_beliefs.v1"
@@ -401,6 +402,11 @@ def _direct_gpu_sources(basis, locator):
             if material is not None and entry in launches:
                 label, index, arm = entry["membership"]
                 rows = json.loads(raw["stdout"])
+                # VB-LLAMA-BENCH-HARDEN-PROTOCOL: the launch's recorded argv decides the request, the native
+                # row decides the protocol; a mismatch is refused before the pair means are compared.
+                for bench_row in rows:
+                    _lbp.assess(row=bench_row, argv=raw.get("argv"),
+                                label=f"direct GPU launch {entry['membership']}")
                 if (len(rows) != 1 or material["pairs"][label][index][arm + "_samples"] != [rows[0]["avg_ts"]]):
                     raise ProjectionError("direct GPU native process mean differs from original pair")
         if material is not None:
@@ -412,6 +418,8 @@ def _direct_gpu_sources(basis, locator):
             for key in ("open", "close"):
                 read(material["boundaries"][key], "direct-gpu-boundary")
         return declaration, material
+    except _lbp.LlamaBenchProtocolRefusal:
+        raise
     except (OSError, ValueError, KeyError, TypeError) as exc:
         raise ProjectionError(f"direct GPU original source cannot be reopened: {exc}") from exc
     finally:

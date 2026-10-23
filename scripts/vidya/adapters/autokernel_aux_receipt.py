@@ -20,6 +20,7 @@ from typing import Any
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from claim_tuple import ClaimTuple, ProjectionError, register
+from adapters import _llama_bench_protocol as _lbp  # noqa: E402
 
 ADAPTER_ID = "vidya.adapters.autokernel_aux_receipt/v1"
 PROJECTION_SCHEMA = "epyc.vidya.autokernel_aux_measurements.v1"
@@ -1173,6 +1174,12 @@ def _iq2_invocation_samples(block: dict, *, path: str, arm: str, model_path: str
     row = _iq2_mapping(invocation.get("row"), f"{path}.{arm}.row")
     if row.get("model_filename") != model_path:
         raise ProjectionError(f"{path}.{arm}.row changes model identity")
+    # VB-LLAMA-BENCH-HARDEN-PROTOCOL: the recorded argv (embedded receipt, else the spawn record) decides
+    # the request; the row decides the protocol. A disagreement is refused before any sample is projected.
+    spawn_record = invocation.get("spawn")
+    _lbp.assess(row=row, argv=embedded.get("argv") or (
+        spawn_record.get("argv") if isinstance(spawn_record, dict) else None),
+        label=f"{path}.{arm} llama-bench row")
     samples = tuple(
         _iq2_number(item, f"{path}.{arm}.samples[{index}]", positive=True)
         for index, item in enumerate(
@@ -1599,6 +1606,13 @@ def _gpu_identity(value: Any, *, frame: dict, factor: dict, arm: str) -> dict:
     return value
 
 
+def _gpu_run_protocol(run: dict, label: str) -> dict:
+    """VB-LLAMA-BENCH-HARDEN-PROTOCOL: a run's own argv and raw row decide its protocol (see the shared helper)."""
+    row = run.get("raw_row")
+    return _lbp.assess(row=row if isinstance(row, dict) else None, argv=run.get("argv"),
+                       label=f"{label} llama-bench row")
+
+
 def _validate_gpu_discovery_measurements(receipt: dict,
                                          measurements: list[dict]) -> None:
     schema = receipt.get("schema")
@@ -1618,6 +1632,8 @@ def _validate_gpu_discovery_measurements(receipt: dict,
                    or run.get("hip_residency_proved") is not True
                    for run, sample in zip(runs, samples))):
         raise ProjectionError("GPU discovery runs do not bind three resident samples")
+    for run_index, run in enumerate(runs):
+        _gpu_run_protocol(run, f"{runs_key}[{run_index}]")
     common, factor = _gpu_common(receipt, samples=samples)
     frame = receipt["frame"]
     if schema == _GPU_BANK_SCHEMA:
@@ -1741,7 +1757,12 @@ def native_rows(receipt: dict, *, receipt_locator: str = "",
             raise ProjectionError(
                 "GPU discovery v2 requires prospective producer-written belief rows")
         _validate_gpu_discovery_measurements(receipt, measurements)
+    protocol = None
+    if receipt.get("schema") in {_GPU_BANK_SCHEMA, _GPU_RESULT_SCHEMA}:
+        runs_key = "anchor_runs" if receipt["schema"] == _GPU_BANK_SCHEMA else "candidate_runs"
+        protocol = _gpu_run_protocol(receipt[runs_key][0], runs_key)
     return tuple({
+        **({"llama_bench_protocol": protocol} if protocol else {}),
         "receipt": receipt,
         "measurement": measurement,
         "measurement_index": index,
@@ -1830,6 +1851,8 @@ def project(native: Any) -> ClaimTuple:
                if measurement.get("measurement_sha256") else {}),
             **({"receipt_self_sha256": receipt["receipt_sha256"]}
                if receipt.get("receipt_sha256") else {}),
+            **({"llama_bench_protocol": native["llama_bench_protocol"]}
+               if isinstance(native.get("llama_bench_protocol"), dict) else {}),
             **extra,
         },
     )

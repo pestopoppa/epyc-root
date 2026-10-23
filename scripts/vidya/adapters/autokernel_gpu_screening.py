@@ -26,6 +26,7 @@ from typing import Any, Mapping
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from claim_tuple import ClaimTuple, ProjectionError, register  # noqa: E402
+from adapters import _llama_bench_protocol as _lbp  # noqa: E402
 
 ADAPTER_ID = "vidya.adapters.autokernel_gpu_screening/v1"
 PROJECTION_SCHEMA = "epyc.vidya.autokernel_gpu_screening_measurements.v1"
@@ -256,8 +257,20 @@ def _validate_sole_factor(factor: Any, *, anchor: dict | None = None,
     return factor
 
 
+def _run_protocol(run: Mapping[str, Any], arm: str) -> dict:
+    """VB-LLAMA-BENCH-HARDEN-PROTOCOL: the run's own argv and raw llama-bench row decide the protocol.
+
+    A run without a recorded argv or raw row is request/flag UNKNOWN (accepted, identity says so); a run whose
+    row disagrees with its argv, or a hardened row with no recoverable request, is REFUSED here, before grading.
+    """
+    row = run.get("raw_row")
+    return _lbp.assess(row=row if isinstance(row, Mapping) else None, argv=run.get("argv"),
+                       label=f"{arm}_run llama-bench row")
+
+
 def _validate_run(run: Any, *, samples: list[float], reps: int, arm: str) -> dict:
     run = _mapping(run, f"{arm}_run")
+    _run_protocol(run, arm)
     if run.get("samples") != samples or run.get("sample_count") != reps:
         raise ProjectionError(f"{arm} run does not bind the native raw sample vector")
     if run.get("hip_residency_proved") is not True:
@@ -556,7 +569,10 @@ def native_rows(receipt: dict, *, receipt_locator: str = "",
     expected = _validate_receipt(receipt)
     if measurements != expected:
         raise ProjectionError("GPU screening belief rows do not exactly rederive")
+    runs_key = "anchor_runs" if receipt.get("schema") == BANK_SCHEMA else "candidate_runs"
+    protocol = _run_protocol(receipt[runs_key][0], runs_key.split("_")[0])
     return tuple({
+        "llama_bench_protocol": protocol,
         "receipt": receipt,
         "measurement": measurement,
         "measurement_index": index,
@@ -619,6 +635,8 @@ def project(native: Mapping[str, Any]) -> ClaimTuple:
             "campaign_id": campaign_id,
             "native_measurement_id": local_id,
             "native_measurement_sha256": measurement.get("measurement_sha256", ""),
+            **({"llama_bench_protocol": native["llama_bench_protocol"]}
+               if isinstance(native.get("llama_bench_protocol"), dict) else {}),
             "receipt_self_sha256": receipt.get(
                 "baseline_sha256" if schema == BANK_SCHEMA else "result_sha256", ""),
             **dict(measurement.get("extra") or {}),
