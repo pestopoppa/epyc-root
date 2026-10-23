@@ -3022,6 +3022,7 @@ are unaffected (the AK loop's bench arms pass it since R24-1). Serving floors an
       verdict), whose conclusions stand. Cheapest route: (1)-(3) first, one protocol per contrast, ABAB; nothing is
       owed by any live decision, so run only when a CPU window is free (correctness-class work needs no quiet host,
       timing arms do).
+  - *(2026-10-23 ~11:10Z, relayed from 3c4ca599 via workspace-58.)* CH-28 folded: champion 49550eda5 -> 141e4bcf5 (fast-forward), images `kernels/builds/{cpu,gpu}-20261023-141e4bcf5-lbh` (10412, PROVENANCE present), V11-103 IN; gate: ctest PASS, 6/6 unrequested rows report hardened false, libs code-identical except libllama-server-impl web-UI gzip sizes. LBH-2.1 re-runs use the 141e4bcf5 image (no explicit --autokernel-harden needed). Production v10 still carries the bug until the next promotion.
 - [x] **LBH-3 — consumer guard: shared llama-bench parsers reject unrequested hardened rows (PROPOSED, research code,
       owner of `kernel_rnd/autokernel/execution/microbench.py` applies).** Today the check runs one way only:
       `LlamaBenchExpectation.check_row` (`microbench.py:1978`, `:2006`) calls `_check_autokernel_hardening` (`:1765`,
