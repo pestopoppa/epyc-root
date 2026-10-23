@@ -333,3 +333,27 @@ def test_floor_measuring_row_derives_quiet(tmp_path):
     # no build reference -> not a baseline measurement
     kw["dec"] = "noise unit for the thing"
     assert _derive(tmp_path, **kw).stdout.strip() != "block-timing-quiet"
+
+
+@pytest.mark.parametrize("text", [
+    "Indicative correctness, no throughput claim",
+    "not a timing run",
+    "no speed claim, exactness only; without timing",
+    "non-timing smoke",
+])
+def test_negated_timing_mentions_are_not_timing_signals(text):
+    assert not vf.has_timing_signal(text)
+
+
+@pytest.mark.parametrize("text", [
+    "throughput A/B vs champion",
+    "timing decision",
+    "indicative timing, 3 pairs",
+    "no warmup; tok/s is the metric",
+    "gate: no throughput regression vs champion",
+    "no tg loss > 1%",
+    "no regression in throughput",
+    "not a correctness-only check: latency A/B",
+])
+def test_real_timing_mentions_still_timing_signals(text):
+    assert vf.has_timing_signal(text)

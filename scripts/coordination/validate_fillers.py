@@ -105,6 +105,21 @@ KEEP_GATE_RE = re.compile(r"keep gate|\bKEEP\b|keep[ /]+(?:or|vs)|\bHOLD\b|fold 
 REGISTRY_FLOOR_RE = re.compile(r"registry[\w\s/-]{0,20}floor|floor[\w\s/-]{0,20}registry", re.I)
 TIMING_RE = re.compile(r"indicative|timing|tok/s|\bt/s\b|\bpp\d*\b|\btg\b|latency|"
                        r"throughput|wall[- ]?clock|ms/|\bhost gap\b", re.I)
+# A disclaimed mention ("no throughput claim", "not a timing run", "without timing", "non-timing") is not a
+# timing signal; nor is "indicative correctness" (indicative is a timing token only as "indicative timing/speed").
+_TIMING_TOK = TIMING_RE.pattern.replace("indicative|", "")
+# Only articles may sit between the negator and the token, and a token followed by regression/loss/drop is a timing
+# GATE ("no throughput regression", "no tg loss"), not a disclaimer: under-classifying a timing run is the worse error.
+NEGATED_TIMING_RE = re.compile(r"(?:\b(?:no|not|without|never)\b|\bnon-?)[\s-]+(?:(?:a|an|the|any)\s+)?(?:" + _TIMING_TOK
+                               + r")(?![\w/-]*[\s-]+(?:regression|loss|drop|degradation|delta|change))", re.I)
+INDICATIVE_CORRECTNESS_RE = re.compile(r"indicative[\s-]+(?:correctness|check|only)", re.I)
+
+
+def has_timing_signal(text: str) -> bool:
+    """TIMING_RE over text with negated/disclaimed timing mentions and 'indicative correctness' removed."""
+    return bool(TIMING_RE.search(INDICATIVE_CORRECTNESS_RE.sub(" ", NEGATED_TIMING_RE.sub(" ", text))))
+
+
 # A row that MEASURES a floor (A/A, noise unit/floor, floor calibration/pairs) for a build is a baseline
 # measurement: it cannot cite a floor file because it produces one.  Needs a build reference too.
 FLOOR_MEASURE_RE = re.compile(r"noise[- ](?:unit|floor)|\ba/?a[- ]floor|floor[- ](?:calibration|pairs?)|"
@@ -261,7 +276,7 @@ def derive_booking_class(cells: list[str], col: dict[str, int]) -> str:
         return "block-timing-quiet"
     if FLOOR_MEASURE_RE.search(dec + " " + g("min_effect")) and BUILD_REF_RE.search(dec):
         return "block-timing-quiet"
-    if TIMING_RE.search(" ".join((dec, g("min_effect"), notes))):
+    if has_timing_signal(" ".join((dec, g("min_effect"), notes))):
         return "block-timing-pairable"
     return "block-correctness"
 
