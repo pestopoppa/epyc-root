@@ -15,7 +15,7 @@ inference-bearing steps only; their design and documentation work may proceed (`
 | ID | Track | Handoff | Next action | Deps |
 |----|-------|---------|-------------|------|
 | UFH-13 | thesis experiment (PARKED) | [thesis-experiment-orchestrator-vs-strongest-model.md](thesis-experiment-orchestrator-vs-strongest-model.md) | ARCHSWAP-3b A-3 frontdoor scout-stage claim sample; else PARKED until autopilot trains on the swapped stack, then TE-reopen | — |
-| UFH-14 | agentic serving harness fixes | [agentic-serving-harness-fixes.md](agentic-serving-harness-fixes.md) | Reload API (LB10, LB3.2/3.3, LB11, grammar off 93055064); LB7 stall run (GPU chain); LB3.4 confirm run; DEPLOY-EC-2; A6a; A3a; A4a | INF-77, UFH-01 |
+| UFH-14 | agentic serving harness fixes | [agentic-serving-harness-fixes.md](agentic-serving-harness-fixes.md) | LB7.1 probe build + Amendment 1 (LB7 UNATTRIBUTED); post-reload proofs LB6.1/LB11.1; LB3.4 confirm run; DEPLOY-EC-2; A6a; A3a; A4a | INF-77, UFH-01 |
 | UFH-01 | harness selection and integration | [harness-selection-and-integration.md](harness-selection-and-integration.md) | Resolve HS-OD-4 token contract; prepare P6 shared tools and HS-19d.P0 source audits | RTG-09 |
 | UFH-15 | OpenCode shell integration | [opencode-shell-integration.md](opencode-shell-integration.md) | Validate remaining P0 override carry at the inference owner boundary; screen independent shell source follow-ons | UFH-01 |
 | UFH-03 | memento block reasoning compression | [memento-block-reasoning-compression.md](memento-block-reasoning-compression.md) | S2 Stage-1 format-learning smoke on Qwen3-0.6B (fill compliance/compression/MATH-500 table) | — |
@@ -27,7 +27,7 @@ inference-bearing steps only; their design and documentation work may proceed (`
 | UFH-10 | browser agent surface | [browser-agent-surface.md](browser-agent-surface.md) | Dormant — revisit when a workflow needs interactive browsing; mechanism advances via RTG-56 TD-12..15 | RTG-56, RTG-33 |
 | UFH-11 | AMD AI Lab website publication | [amd-ai-lab-website-publication.md](amd-ai-lab-website-publication.md) | WEB-1 — obtain the contact destination and reviewed-page launch choice for GitHub Pages | — |
 | UFH-12 | repl embedding retrieval | [repl-embedding-retrieval.md](repl-embedding-retrieval.md) | REPL-EMB-2.5/2.6 candidate-arm preflight, then 2.2+2.7 offline eval (2.4 write side first) | UFH-07, INF-78, EVL-37, UFH-01 |
-| UFH-16 | model exec containment | [model-exec-containment.md](model-exec-containment.md) | SEC-EXEC-POST-e1: exec_write_flags live at operator API reload (orch a73af3cc) + POST-d proofs; then e2 web_fetch_guard, e3 containment | — |
+| UFH-16 | model exec containment | [model-exec-containment.md](model-exec-containment.md) | SEC-EXEC-POST-e1: read first post-reload write_outside_root audit record + POST-d proofs; then e2 web_fetch_guard, e3 containment | — |
 
 ## Cross-domain
 

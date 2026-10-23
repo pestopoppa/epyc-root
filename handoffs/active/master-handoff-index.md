@@ -90,8 +90,8 @@ missed (measured: G9-disk sat unnoticed for two weeks and governed 227 GB).
 | OP-17 | Amend frozen-v9 attestation with llama ggml `0.16.0`, or retain an intentionally unverified complete-kernel-set fold | [autokernel-research-loop.md](autokernel-research-loop.md) AK6 dashboard residual | 2026-08-12 |
 | OP-25 | After C5-3 produces a live gfx90a correctness run, choose whether to leave SOL scoring disabled or port measured gfx90a constants for k215 only. Recommendation: k215-only if scoring is needed; never present the four >100×-headroom seeds as speed-of-light objectives | [agentic-rocm-kernel-authoring.md](agentic-rocm-kernel-authoring.md) C5 | 2026-08-16 |
 | OP-29 | Scope decision: is video generation a product need? Gates the 165 GB MiniMax-H3 Ref2VA + 10Eros-Max download (volume at 92%, 291 GB free) | [minimax-h3-video-generation-evaluation.md](minimax-h3-video-generation-evaluation.md) EVL-32 | 2026-08-30 |
-| OP-82 | SEC-ART-POST-g: root-own the template store + chattr +i its files (a), or rely on launch digest pins (b). Recommend (b) now, (a) after SEC-ART-POST-f. | [model-artifact-integrity.md](model-artifact-integrity.md) SEC-ART-POST-g | 2026-10-22 |
-| OP-83 | DHM-4: label the 100-item interrupt sheet (private, /mnt/raid0/llm/private/dev-harness-traces/mining/full-20261022T1310Z/dhm4_label_sheet.csv). | [dev-harness-trace-mining.md](dev-harness-trace-mining.md) DHM-4 | 2026-10-22 |
+| OP-83 | DHM-4: label the 30-item pilot (private, /mnt/raid0/llm/private/dev-harness-traces/mining/full-20261022T1310Z/dhm4_pilot30.csv), then run dhm4_pilot_check.py; the other 70 only if it prints PROCEED_TO_70. | [dev-harness-trace-mining.md](dev-harness-trace-mining.md) DHM-4 | 2026-10-22 |
+| OP-SEC-ART-POST-b | Run the prepared ratify command (signs all 4 template reviews; operator chose 'sign all 4 + strip the SYSTEM WARNING injection in a v2 template'); command in model-artifact-integrity.md SEC-ART-POST-b. | [model-artifact-integrity.md](model-artifact-integrity.md) SEC-ART-POST-b | 2026-10-23 |
 
 Full text for OP-1..OP-6 (including the closed OP-2 and the superseded narration) is preserved in
 [`../archived/master-handoff-index-history-through-2026-08-10.md`](../archived/master-handoff-index-history-through-2026-08-10.md).
@@ -138,7 +138,7 @@ nobody is moving.
 | pipeline-integration | 5 | 69 | 1 | 2026-08-25 |
 | research-evaluation | 44 | 539 | 18 | 2026-07-29 |
 | reviewer-control-plane | 6 | 28 | 12 | 2026-07-29 |
-| routing-and-optimization | 52 | 657 | 18 | 2026-07-29 |
+| routing-and-optimization | 52 | 658 | 18 | 2026-07-29 |
 | user-facing-harness | 14 | 143 | 17 | 2026-07-29 |
 <!-- END GENERATED index_state -->
 
