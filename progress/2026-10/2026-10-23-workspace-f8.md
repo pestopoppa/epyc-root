@@ -312,22 +312,26 @@ request, and that `GGML_CUDA_DISABLE_GRAPHS=1` stops the growth.
 
 ARMED at root `eadbb8fe8` (just before this scope). Launcher pid 1640838 was alive at 13:50Z and is booked on q2 last.
 
-### Schedule (workspace-58, relayed)
+### Schedule: relayed plan vs what ran (checked 14:05Z)
 
-- **GPU chain from about 14:22Z:** `kpf18-s1-remainder` -> `kpf13-1-reduced` -> `gpu-zos-1a` ->
-  `kpf17-4-19-1a-27b-dflash2` -> `locals-ufh14-lb7-stall` -> `kpf18-item3-v2-sameshape`. KPF-LB1.1 was re-booked to
-  run after the chain, because the GPU-LEAK-1d probe (`gpu-leak1d-probe`, granted 13:31Z) took the MI210.
-- **CPU lanes after NEW-13:**
-  - q0: `gpu-zos-1a-build` -> `spec-gram-1`;
-  - q2: `kpf17-4-19-1a-gpu-build` -> `kpf13-1a-mtp-v3-cpu` -> `dhm72a-granite`.
-- **Not yet visible on disk at 13:50Z:** the only live afternoon writer, `grant-afternoon-20261023.sh` (pid 2046254,
-  armed 11:08Z), still lists LB1.1 first in Lane B, and it starts Lanes B-E only after NEW-13 releases 0-95. Its grant
-  ends 15:43Z at the latest. The re-booked order is workspace-58's to write. Nothing was changed here.
+- **Relayed by workspace-58:** a GPU chain from about 14:22Z, with KPF-LB1.1 re-booked after it.
+- **What ran:** the live writer `grant-afternoon-20261023.sh` (pid 2046254) opened Lanes B-E as soon as NEW-13 ended
+  (13:52Z), and Lane B kept its on-disk order.
+  - **KPF-LB1.1** was granted at 13:54Z and **ended rc 0 at 13:56:31Z, VERDICT NO_CHANGE**. /completion turns 2+ had a
+    median hit of 0.818, and chat 0.951. 0 of 11 turns were below 10% on either lane, so no `message_delimiters` flag.
+    KPF-LB1, KPF-LB1.1 and its run box are ticked by this wrap-up.
+  - **`kpf18-s1-remainder`** has run since 13:56Z (grant to 14:31Z), graphs disabled. The live environ check passed.
+  - **`kpf17-4-19-1a-gpu-build`** COMPLETE at 13:54Z (q2). **`kpf13-1a-mtp-v3-cpu`** is running on q2 (grant to 14:49Z).
+  - **`gpu-zos-1a-build`** ended rc 1 at 13:54Z on a define-scope probe defect: a grep argument-order bug in the gate,
+    not a bad build. It was amended and re-run with no rebuild at 13:57Z, now 10/10 and `PASSED`.
+- **Open action for the main: arm `gpu-zos-1a` now.** Its FILLERS row is still BACKLOG with no pid. Lane B resolves the
+  pid when it reaches that step (after `kpf13-1-reduced`) and skips a row with no live launcher.
 
 ### Checklist sync / derived actionables
 
+- **Flips by this wrap-up: 3,** covering KPF-LB1, KPF-LB1.1 and its run box, from the 13:56Z NO_CHANGE verdict.
 - **Flips attributable to f8 in scope `3d78270df..origin/main`: 4.** These are AKX-LB4-FU3, LBH-1, LBH-3 and LBH-2,
-  all committed by their owning commits and verified here. This wrap-up made 0 flips. The other flips in range belong
+  all committed by their owning commits and verified here. The other flips in range belong
   to other sessions: CH-28 and CH-28b, DS41-W5, YARN-AGG-1e and GPU-LEAK-1a.
 - **New tasks f8 filed in range: 3:** LBH-2.1, UFH14-B4j.1 and VB-LB7-STALL-WIRE.
 - **Filed by this wrap-up: 3.**
@@ -336,9 +340,9 @@ ARMED at root `eadbb8fe8` (just before this scope). Launcher pid 1640838 was ali
   - **LBH-3.1** (in `autokernel-rebuild-program.md`, derived from LBH-3's own "should pass `strict_unknown=True`"
     sentence): both production `check_row` call sites still use the lenient default, so the fix landed with its strict
     mode off.
-  - **KPF-18-S1.7g** (under KPF-18-S1 remainder, time-sensitive): after GPU-LEAK-1d, the remainder job's step-7
-    HSF-4/5 rates are a graphs-off timing reading on a near-production argv. Restore graphs ON for step 7 before the
-    window, or keep the label and re-measure later. **The GPU chain starts about 14:22Z, so the main decides this.**
+  - **KPF-18-S1.7g** (under KPF-18-S1 remainder): after GPU-LEAK-1d, the remainder job's step-7 HSF-4/5 rates are a
+    graphs-off timing reading on a near-production argv. The window started graphs-off at 13:56Z, so: label those rates
+    and re-measure step 7 with graphs ON later.
 - **Declined 1, in writing:** the leak's shape-dependence is not filed here. It belongs to 3c4ca599's GPU-LEAK-1d
   (`gpu-serving-tie-in-program.md`), and it was relayed. GPU-LEAK-1d has since closed at root `17d538c84`: the
   exact production :8083 argv does not leak (1.7 MiB per request, graphs ON or OFF). The owner filed GPU-LEAK-1e,
