@@ -1,0 +1,3 @@
+{"id": "RATIFY-CLAUDE-MD-SKILL-POINTER-20261023", "operator": "Daniele", "time": "2026-10-23T15:05:14Z", "path": "CLAUDE.md",
+ "change": "one bullet under ## Session Management pointing at .claude/skills/inference-backlog-scheduling/",
+ "base": "c871aaad8913132ab82e89d98ef1e7c3f114be18", "script_sha256": "fe9be63a8f3556d058dde376e6dd5f0fdc2712bbb09dccd4d6e793183459d3bb"}

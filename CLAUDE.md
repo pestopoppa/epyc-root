@@ -106,6 +106,10 @@ The [measurement constitution](MEASUREMENT.md) is authoritative (protocol annexe
 - `scripts/session/health_check.sh` — system health
 - `scripts/session/verify_llama_cpp.sh` — branch safety
 - `scripts/nightshift/` — autonomous overnight runs
+- **Inference backlog piling up / compute idle while rows are queued?** The packing discipline (bins, derived
+  booking class, grant-writer invariants, the operator STATUS/ETA report) is the project skill
+  `.claude/skills/inference-backlog-scheduling/` on top of `docs/guides/agent-workflows/compute-fillers.md`;
+  `scripts/queue_status.py` there prints COMPLETE / RUNNING / BOOKED / ARMED-UNBOOKED / BACKLOG read-only.
 
 ## Historical Documentation Warning
 
