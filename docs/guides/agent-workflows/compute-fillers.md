@@ -69,7 +69,7 @@ Operator directive, relayed by the calendar owner. Every session that owns a fil
 22. **A filler's `--class` must match the grant shape the calendar owner actually writes.** `--class cpu+gpu` requires an `mi210_0` token in the grant; a whole-host CPU timing grant is `regions=0-95`, so a cpu+gpu launcher refuses it (`.ended rc=2`) and the quiet slot is lost. A CPU timing job that needs the GPU quiet is `--class cpu --gpu-quiet exclusive --claim-cpus 0-95` (`filler_run8.sh` allows it). Origin: 2026-10-22 19:27Z, C2 b-rerun #3 grant lost in 30 s. Before re-arming under a new launcher, dry-check its region parser against the grant line you expect.
 23. **Every subagent brief that creates a worktree must say "remove with `git worktree remove <path>`; NEVER `git worktree prune`" — for the sub-repos too.** The orchestrator and research clones are reachable at two paths (`/workspace/repos/<name>` and `/mnt/raid0/llm/<name>`), the same shape that let `prune` destroy all five root lanes on 2026-08-12. Origin: 2026-10-22, a task-set subagent ran `git worktree remove … && git worktree prune` in epyc-orchestrator; a scan of every orchestrator worktree's admin dir found no damage this time. Verify after any prune report: resolve each worktree's `.git` gitdir relative to the worktree dir and check it exists.
 23. **One live grant writer per region set; retire a superseded writer's every branch.** Before arming a new chain version, kill the old writer by its PID (verify dead) and list every OTHER live writer that can grant the same regions, including conditional early-trigger branches that fire on another job's end flag. Origin: 2026-10-22 16:47Z, an old `grant-f8-gitnexus` writer's early-7b branch granted f8 q0-q3 25 s before chain v11 granted gpu-cpu-noise the whole host; the double grant put 17.8 foreign cores under the noise run's warm-up and the session aborted (calendar owner error).
-24. **A window must exceed the job's min-window by the poll margin.** A launcher that polls every 45 s sees a grant up to a poll late, so a window equal to `--min-window` is refused (`.ended rc=3`). Write `end >= start + min_window + poll + 60 s`. Origin: 2026-10-22, `kpf60-p0-gpu` refused on a 1800 s window that equalled its minimum. `grant_ok.sh` gains this check (CTC-Q-A2).
+24. **A window must exceed the job's min-window by the poll margin.** A launcher that polls every 45 s sees a grant up to a poll late, so a window equal to `--min-window` is refused (`.ended rc=3`). Write `end >= start + min_window + poll + 60 s`. Origin: 2026-10-22, `kpf60-p0-gpu` refused on a 1800 s window that equalled its minimum. `grant_ok.sh --window-s` enforces it from the launcher's own argv (CTC-Q-A2; see *Grant gate* below).
 25. **Pinned GPU jobs re-pin every task after start until GPS-PIN-1 lands.** ROCr creates one early thread with an all-CPU affinity attribute, so `taskset -c 184-191` leaves 1 of ~196 llama-server tasks on 0-191 and a residency check that reads only the main thread passes falsely. Run `taskset -a -p -c <cpus> <own pid>` after health and check every `/proc/<pid>/task/*/status`; the package STACKCHG-GPUPIN-20261022 does it in production (`HSA_OVERRIDE_CPU_AFFINITY_DEBUG=0` plus re-pin plus refuse). Origin: gpu-cpu-noise session 20261022T164830Z (`residency_ok=false`), fixed in its driver by research `a1e94a002`. **The same helper thread fails a job driver's own read-back.** If a driver checks every task's affinity, it must either set `HSA_OVERRIDE_CPU_AFFINITY_DEBUG=0` before launching the server (that knob alone keeps 196/196 tasks on 184-191: P1 PASS, GPS-PIN-1c) or exempt the ROCr helper thread. Otherwise the check rejects the one thread on 0-191 and the job exits rc 1. Origin: kpf13-1-reduced and kpf17-4-19-1a rc 1 at ~14:2xZ on 2026-10-23. f8 fixed both ways: the knob in the shim plus driver pin research `922113ff7`.
 26. **A quality job runs under the role's registered serving env.** Copy the serving env from `model_registry.yaml` into the job's environment, not just the binary. Origin: 2026-10-22 19:36Z, the NEW-10 smoke ran Q38FN without `GGML_FUSED_DECODE_OFF=1`; the fused decode path (off in production) hit a repack bug and aborted with a heap corruption (FD-DIV-1 in `cpu-fused-decoder-blocks.md`).
 
@@ -89,6 +89,39 @@ Operator ask: structure the inference calendar with RAM in mind. Host RAM is a b
 - Unit: FILLERS.md column 6 is **peak host RAM in GiB = private/anon + file-mapped weights**. The DS41-1017 server is 739 GiB (276 private + 463 mapped).
 - Callers: grant writers (evening chains v4 to v9, the day and night GPU chains, the day CPU grants), the W6.2 `memgate.sh` (`ram_admit 739 ds41`; W6.2 was cancelled 2026-10-22), f8's job 67 launcher (cancelled 2026-10-22), and every subagent brief that loads a model. The calendar carries a 24 h RAM ledger beside the region table.
 - Not yet wired: AutoKernel `run.py` server launches (tracked in `handoffs/active/deepseek-v41-flash-evaluation.md`, DS41-W8d).
+
+## Grant gate: `grant_ok.sh` v2 (2026-10-23, CTC-Q-A2 + CTC-Q-C.1)
+
+`/mnt/raid0/llm/tmp/compute-flags/grant_ok.sh <row-id> <need_gib> [ds41]` is the one admission check a grant writer runs immediately before writing `grants/<id>.grant`: `validate_fillers.py --row <id> --for-grant`, then `ram_admit.sh`. v2 (`grant_ok.v2.sh` until the calendar owner swaps it in) keeps that legacy form byte-for-byte and adds optional launcher checks for the two rules writers kept breaking:
+
+```
+grant_ok.sh <row-id> <need_gib> [ds41] [--window-s N] [--regions R] [--reserve R] [--pid P]
+```
+
+- **The launcher** is `--pid P`, or by default the row's `pid=`. A wrapper pid (`bash -c '... setsid nohup bash launch.sh ...'`) is followed to its nearest live `filler_run*.sh` child with `--id <row-id>`; the `--inner` region-lock child is skipped. Its argv is read from `/proc/<pid>/cmdline` (read-only) and parsed the way `filler_run{,2..8}.sh` parse it: `--min-window --class --claim-cpus --gpu-quiet --no-fold-siblings --self-claim --gpu-threads`.
+- **`--window-s N`** (the window the writer is about to write): `N >= --min-window + 300 s`. Exactly-equal windows were refused `rc=3` three times (kpf60 10-22, rtepfx2 10-23, ch28 near-miss). The gate reads the minimum from the launcher's argv, not from the writer's hand-typed copy.
+- **`--regions R`** (the grant's `regions=` value) must pass the launcher's own `parse_regions` for its class: `cpu` takes no `mi210_0`, while `gpu` and `cpu+gpu` need `mi210_0`. This was the c2 `rc=2` on 10-22. R must also cover every region the launcher's region-lock claim takes: the `--claim-cpus` list folded onto quarters, plus `gpu-quiet` when it claims the GPU. `mi210_0` in R counts as gpu-quiet. A 0-95 claim therefore needs `0-95` or `q0,q1,q2,q3`.
+- **`--reserve R`** names regions the writer's claim-wait keeps free besides the grant. Two cases need it:
+  - `gpu-quiet` for `--class cpu --gpu-quiet exclusive --claim-cpus 0-95` (the grant is CPU-only);
+  - `0-95` for a GPU job whose claim is the whole host (`--class gpu --gpu-quiet exclusive` with no `--claim-cpus` on `filler_run2/6`).
+- **Class report (CTC-Q-C.1).** With any new flag, success prints `class=<derived>` from `validate_fillers.py --print-class`, followed by the launcher's claim. Callers set gpu-quiet from it rather than hand-picking quiet. `warn=quiet-claim-on-<class>-row` flags a whole-host exclusive launcher on a non-quiet row; `warn=quiet-row-launcher-not-whole-host-exclusive` flags the reverse.
+- **QUEUED check.** With any new flag, a row that is not `ARMED` with `ready=y` is refused. `--for-grant` alone passes a well-formed BACKLOG or COMPLETE row.
+
+Exit codes:
+
+| Code | Meaning |
+|---|---|
+| 0 | Admit |
+| 10 | Validator refuse (with the new flags, also: row not QUEUED) |
+| 11 | RAM refuse |
+| 12 | Window short |
+| 13 | Class/region mismatch: `parse_regions` refuses, the claim is not covered, a `--no-fold-siblings` claim is SMT-only, or a region token is unknown |
+| 14 | Launcher dead: no pid, a zombie, or a wrapper whose engine is gone |
+| 15 | Launcher argv unrecognised: no `filler_run*.sh --id <row>` under the pid. With `--window-s` only, the gate falls back to the row's min-window; `--regions` needs a recognised launcher |
+| 16 | Internal error |
+| 64 | Usage |
+
+Every refusal is one stdout line starting `refuse:`. Tests: `compute-flags/test_grant_ok_v2.sh`, which uses fixture `/proc` trees and compares the legacy form against v1 on the live queue. The writer-side call is in `.claude/skills/inference-backlog-scheduling/references/grant-writer-pattern.md`. Tracked copies: only `scripts/coordination/validate_fillers.py` is tracked, and it is identical to the live copy. A durable `scripts/coordination/grant_ok.sh` + `grant_ok_launcher.py` would be loop plane and is gated by D9, like `ram_admit.sh` (OP-RAMADMIT-D9).
 
 ## Owner duty: watch, why, fix, re-queue
 

@@ -108,7 +108,9 @@ Run this loop at every task boundary and on every watcher event (`event-watch-ws
   written early. Never edit a running `.sh` (writer, launcher or job): write vN+1 and swap it in.
 - Never grant an id that is `.complete`, or whose work is known done while its poller still polls
   (dhm-mining-full, df2-ubatch-census on 10-23). A stale poller takes a re-written grant.
-- `grant_ok.sh <id> <gib> [ds41]` before every grant: validator `--for-grant` plus `ram_admit`.
+- `grant_ok.sh <id> <gib> [ds41] --window-s N --regions R [--reserve R]` before every grant: validator
+  `--for-grant`, the launcher's own argv (min-window + 300, class/claim vs the grant line), the derived
+  class, `ram_admit` (`references/grant-writer-pattern.md`).
 - A GPU window is never booked on top of a q3 CPU claim you (or a peer) will hold, and q3 is never
   granted while a folded GPU job runs. Check the GPU lane before granting q3.
 - On any FAILED / `.ended rc≠0` / hard-end: read the log, name the cause, fix, re-queue, relay to
