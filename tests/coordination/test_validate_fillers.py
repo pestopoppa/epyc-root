@@ -350,6 +350,10 @@ def test_negated_timing_mentions_are_not_timing_signals(text):
     "timing decision",
     "indicative timing, 3 pairs",
     "no warmup; tok/s is the metric",
+    "gate: no throughput regression vs champion",
+    "no tg loss > 1%",
+    "no regression in throughput",
+    "not a correctness-only check: latency A/B",
 ])
 def test_real_timing_mentions_still_timing_signals(text):
     assert vf.has_timing_signal(text)

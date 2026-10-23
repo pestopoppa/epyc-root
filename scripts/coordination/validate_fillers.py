@@ -108,8 +108,10 @@ TIMING_RE = re.compile(r"indicative|timing|tok/s|\bt/s\b|\bpp\d*\b|\btg\b|latenc
 # A disclaimed mention ("no throughput claim", "not a timing run", "without timing", "non-timing") is not a
 # timing signal; nor is "indicative correctness" (indicative is a timing token only as "indicative timing/speed").
 _TIMING_TOK = TIMING_RE.pattern.replace("indicative|", "")
-NEGATED_TIMING_RE = re.compile(r"(?:\b(?:no|not|without|never)\b|\bnon-?)[\s-]+(?:[\w/-]+[\s-]+){0,3}?(?:" + _TIMING_TOK + r")",
-                               re.I)
+# Only articles may sit between the negator and the token, and a token followed by regression/loss/drop is a timing
+# GATE ("no throughput regression", "no tg loss"), not a disclaimer: under-classifying a timing run is the worse error.
+NEGATED_TIMING_RE = re.compile(r"(?:\b(?:no|not|without|never)\b|\bnon-?)[\s-]+(?:(?:a|an|the|any)\s+)?(?:" + _TIMING_TOK
+                               + r")(?![\w/-]*[\s-]+(?:regression|loss|drop|degradation|delta|change))", re.I)
 INDICATIVE_CORRECTNESS_RE = re.compile(r"indicative[\s-]+(?:correctness|check|only)", re.I)
 
 
