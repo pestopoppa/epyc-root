@@ -72,8 +72,53 @@ KPF18_SUB_ARMS = {
           r"parity_summary"),
     183: (r"chunk_split_cost", r"end_ckpt_position_and_multi_turn", r"request_lane", r"warm_vs_cold_long_prompt"),
     184: (r"item3_localisation",),
+    # 185 = KPF-18-S1 remainder (research kpf18 S1R driver): tail-only tail sweep, item-2 pcache grid g<G>s<S>, the
+    # long teacher-forced cell, KPF-19.1a flag-off geometry groups, and the step-7 hsf_L<L> length ladder.
+    # NB hsf_* timings were taken with graphs disabled (GGML_CUDA_DISABLE_GRAPHS=1 in launch_prefix): this adapter
+    # projects only equivalence counts / hit tokens for them, never a rate, so none is read as a production rate.
+    185: (r"A_tailonly_tail\d+", r"item2_pcache_g\d+s\d+", r"long_teacher_forced", r"kpf191a_flagoff_g\d+",
+          r"hsf_L\d+"),
 }
 _SUB_ARM_RE = {item: re.compile("^(?:" + "|".join(pats) + ")$") for item, pats in KPF18_SUB_ARMS.items()}
+
+
+#: Conformance records (no fork-vs-fresh logits): ``kpf_task`` -> declared arms, exactly as the drivers emit them
+#: (research ``kpf13_restore_ab.py`` writes ``restore_<config>``; ``kpf174_swa_drafter.py`` writes the four launch arms,
+#: one per launch: honest, flag_on, and the two mutants). Counts come from the record's own verdict block
+#: (kpf13: ``equivalence.configs`` A+B; kpf174: ``launch_verdict``), never a pass word and never invented.
+CONFORMANCE_ARMS = {
+    "KPF-13.1": (rf"restore_{_CFG}",),
+    "KPF-17.4+17.4a+19.1a": (r"kpf174_191a_flag_off", r"kpf174_mut_dft_partial_noop", r"kpf191a_flag_on",
+                             r"kpf191a_mut_dft_no_transfer"),
+}
+_CONF_RE = {t: re.compile("^(?:" + "|".join(p) + ")$") for t, p in CONFORMANCE_ARMS.items()}
+_MUTANT_ARMS = frozenset({"kpf174_mut_dft_partial_noop", "kpf191a_mut_dft_no_transfer"})
+
+
+def is_conformance(row: Any) -> bool:
+    """True iff the record is a declared conformance arm of its own ``kpf_task``."""
+    if not isinstance(row, dict):
+        return False
+    rx = _CONF_RE.get(row.get("kpf_task")) if isinstance(row.get("kpf_task"), str) else None
+    return bool(rx and isinstance(row.get("arm"), str) and rx.match(row["arm"]))
+
+
+def _conf_counts(row: dict) -> dict | None:
+    """The record's own pass/fail/attempts counts, or None when it ran zero cells (aborted launch)."""
+    if row.get("kpf_task") == "KPF-13.1":
+        cfgs = (row.get("equivalence") or {}).get("configs") or {}
+        cells = [cfgs.get(k) for k in ("A", "B")]
+        if not all(isinstance(c, dict) for c in cells):
+            return None
+        return {"attempts": sum(c["attempts"] for c in cells), "pass": sum(c["pass"] for c in cells),
+                "fail": sum(c["fail"] for c in cells), "invalid": sum(c.get("invalid") or 0 for c in cells),
+                "per_config": {k: {x: c.get(x) for x in ("verdict", "attempts", "pass", "fail", "invalid")}
+                               for k, c in zip("AB", cells)}}
+    v = row.get("launch_verdict")
+    if not isinstance(v, dict):
+        return None
+    return {"attempts": v["attempts"], "pass": v["pass"], "fail": v["fail"], "invalid": v.get("invalid") or 0,
+            "out_of_scope": v.get("out_of_scope") or 0, "verdict": v.get("verdict")}
 
 
 def is_sub_arm(arm: Any, item: Any) -> bool:
@@ -89,6 +134,7 @@ OUTCOME_ARMS = ("A", "B", "A2")  # A = flags off (baseline), B = flags on (treat
 OUTCOME_KEYS = ("kpf_item", "seed", "manifest_digest", "manifest_sha256", "n_tasks", "n_cases", "reps", "per_arm",
                 "spread", "drop", "regress", "improve", "ctrl_regress", "ctrl_improve", "sign_test_p_regress",
                 "verdict", "reorder_decision", "gates", "rule", "treatment_applied", "finished_utc")
+CONF_VARIED = {"KPF-13.1": ["restore_path"], "KPF-17.4+17.4a+19.1a": ["swa_drafter_launch_arm"]}
 _WINDOW = re.compile(r"^(?P<stem>.+)-(?P<arm>[AB])(?P<k>\d+)$")
 REQUIRED = ("run_id", "arm", "binary_sha256", "prompt_set_sha256", "window_id", "end_utc", "host", "argv",
             "equivalence", "rows", "record_sha256", "category")  # rows_sha256 absent = attested-absent (VB-KVU-PF.2)
@@ -118,6 +164,15 @@ def _validate_outcome(row: dict) -> list[str]:
     return problems
 
 
+def _intkeys(obj: Any) -> Any:
+    """Diagnostic only: ``obj`` with digit-string dict keys turned back into ints (never used to ACCEPT a row)."""
+    if isinstance(obj, dict):
+        return {(int(k) if isinstance(k, str) and k.isdigit() else k): _intkeys(v) for k, v in obj.items()}
+    if isinstance(obj, list):
+        return [_intkeys(v) for v in obj]
+    return obj
+
+
 def validate_row(row: Any) -> list[str]:
     if not isinstance(row, dict):
         return ["row is not an object"]
@@ -125,14 +180,29 @@ def validate_row(row: Any) -> list[str]:
     if row.get("schema") != SCHEMA:
         problems.append(f"schema is not {SCHEMA}")
     outcome = row.get("arm") == OUTCOME_ARM
+    conformance = is_conformance(row)
     for key in REQUIRED:
-        if outcome and key == "equivalence":
+        if (outcome or conformance) and key == "equivalence":
             continue  # an outcome record scores task pass/fail, not fork-vs-fresh logits
         if row.get(key) in (None, "", [], {}):
             problems.append(f"missing {key}")
     arm = row.get("arm")
     if outcome:
         problems.extend(_validate_outcome(row))
+    elif conformance:
+        n_cells = row.get("n_cells")
+        if type(n_cells) is not int or n_cells < 0:
+            problems.append("conformance record without an integer n_cells")
+        elif n_cells > 0:
+            try:
+                counts = _conf_counts(row)
+                ok = counts is not None and counts["attempts"] > 0 and counts["pass"] + counts["fail"] \
+                    + counts["invalid"] <= counts["attempts"]
+            except (KeyError, TypeError):
+                ok = False
+            if not ok:
+                problems.append("conformance record with cells but no verdict counts of its own "
+                                "(attempts/pass/fail): the counts cannot be invented on read")
     elif arm not in ARMS:
         if not is_sub_arm(arm, row.get("kpf18_item")):
             problems.append(f"arm {arm!r} not in {sorted(ARMS)} nor a declared KPF-18 sub-arm of item "
@@ -145,7 +215,13 @@ def validate_row(row: Any) -> list[str]:
     if not problems:
         body = {k: v for k, v in row.items() if k != "record_sha256"}
         if _digest(body) != row["record_sha256"]:
-            problems.append("record_sha256 does not re-derive")
+            if _digest(_intkeys(body)) == row["record_sha256"]:
+                problems.append("record_sha256 does not re-derive from the stored JSON; it re-derives only if "
+                                "digit-string dict keys are int (the writer hashed int-keyed dicts before JSON "
+                                "stringified them, which sorts keys differently): WRITE-SIDE defect, refused "
+                                "rather than weakening the integrity gate")
+            else:
+                problems.append("record_sha256 does not re-derive")
     return problems
 
 
@@ -174,7 +250,7 @@ def _applicability(row: dict) -> dict:
     return scope_from_argv(
         row.get("argv"), binary=row.get("binary_realpath") or row.get("binary"),
         binary_sha256=row.get("binary_sha256"), family=KNOB_FAMILY,
-        varied=VARIED_BY_ARM.get(row.get("arm")), dflash2=row.get("dflash2"),
+        varied=VARIED_BY_ARM.get(row.get("arm")) or CONF_VARIED.get(row.get("kpf_task")), dflash2=row.get("dflash2"),
         readback_ok=not (isinstance(readback, dict) and readback.get("proc_cmdline_matches_argv") is False))
 
 
@@ -295,6 +371,8 @@ def project(native: Any) -> ClaimTuple:
     present = _rows_present(row, sidecar)
     if row["arm"] == OUTCOME_ARM:
         return _project_outcome(row, sidecar, present)
+    if is_conformance(row):
+        return _project_conformance(row, sidecar, present)
     if native.get("measure"):
         return _project_measure(native, row, sidecar, present)
     metric, value, unit, reps, basis = _metric(row)
@@ -339,6 +417,50 @@ def project(native: Any) -> ClaimTuple:
         },
         applicability=_applicability(row),
     )
+
+
+def _project_conformance(row: dict, sidecar: Path, present: bool) -> ClaimTuple:
+    """A KPF-13.1 / KPF-17.4 conformance record: the record's OWN cell counts, as a pass (or detect) fraction.
+
+    A mutant arm projects the DETECTED fraction (cells that failed under the injected defect / attempts); every other
+    arm the pass fraction. A zero-cell record (aborted launch) projects as an attested zero-cell attempt:
+    ``kpf_conformance_cells_scored`` = 0, never dropped and never given a rate. The producer's verdict words and
+    ``decision_grade`` ride in ``extra`` verbatim; the grade is ``claim_tuple.grade()``'s alone.
+    """
+    arm, counts = row["arm"], _conf_counts(row)
+    mutant = arm in _MUTANT_ARMS
+    if row["n_cells"] == 0 or counts is None:
+        metric, value, unit, reps = "kpf_conformance_cells_scored", 0, "cells", 1
+        basis, shown = "aborted/zero-cell attempt: the launch scored no cell", "0 cells scored (aborted attempt)"
+    else:
+        num = counts["fail"] if mutant else counts["pass"]
+        metric = "kpf_mutant_detected_fraction" if mutant else "kpf_conformance_cell_pass_fraction"
+        value, unit, reps = round(num / counts["attempts"], 6), "fraction", counts["attempts"]
+        basis = "conformance cells attempted in this launch"
+        shown = f"{num}/{counts['attempts']} cells {'detected' if mutant else 'pass'}"
+    decisions = row.get("decisions") if isinstance(row.get("decisions"), dict) else \
+        (row.get("equivalence") or {}).get("decisions")
+    locator = (f"kpf:{row['run_id']}:{row['arm']}:task={row['kpf_task']}:ps={row['prompt_set_sha256'][:16]}:"
+               f"bin={row['binary_sha256'][:16]}:win={row['window_id']}")
+    return ClaimTuple(
+        measurement_id="kpf-" + hashlib.sha256(row["record_sha256"].encode()).hexdigest()[:32],
+        metric=metric, value=value, unit=unit, date=row["end_utc"], category=row["category"],
+        claim=(f"{row['kpf_task']} arm {arm}: {shown}; counts from the record's own verdict block, "
+               f"n per cell as listed, no codified protocol"),
+        metric_direction="higher_better", protocol_id="", reps=reps, reps_basis=basis,
+        attestation_path=str(_rows_path(row, sidecar)), attestation_sha256=row.get("rows_sha256") or "",
+        attestation_locator=locator, attestation_present=present,
+        attestation_verified=True if present else None, source_kind=SOURCE_KIND,
+        extra={"schema": row["schema"], "run_id": row["run_id"], "arm": arm, "kpf_task": row["kpf_task"],
+               "dflash2": bool(row.get("dflash2")), "counts": counts, "n_cells": row["n_cells"],
+               "mutant_arm": mutant, "decisions": decisions, "rules_sha256": row.get("rules_sha256"),
+               "attestation_absent": None if row.get("rows_sha256") else
+               "record carries no rows_sha256: the launch wrote no cells (attested-absent)",
+               "window_id": row["window_id"], "binary_sha256": row["binary_sha256"],
+               "prompt_set_sha256": row["prompt_set_sha256"], "host": row["host"], "argv": row["argv"],
+               "start_utc": row.get("start_utc"), "end_utc": row["end_utc"],
+               "record_sha256": row["record_sha256"], "sidecar_path": str(sidecar)},
+        applicability=_applicability(row))
 
 
 def _project_measure(native: dict, row: dict, sidecar: Path, present: bool) -> ClaimTuple:
@@ -567,6 +689,7 @@ def main(argv: list[str] | None = None) -> int:
 
 
 __all__ = ["ADAPTER_ID", "AUTHORITY", "SOURCE_KIND", "SCHEMA", "SIDECAR_NAME", "KPF18_SUB_ARMS", "is_sub_arm",
+           "CONFORMANCE_ARMS", "is_conformance",
            "native_rows", "project", "validate_row", "frames_for_sidecar", "OUTCOME_ARM", "outcome_record",
            "write_outcome_sidecar"]
 
