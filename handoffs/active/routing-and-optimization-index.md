@@ -59,7 +59,7 @@
 | RTG-54 | qwen chat template evaluation | [qwen-chat-template-evaluation.md](qwen-chat-template-evaluation.md) | **PRIORITY CT-12.5**: fold the injection server patch 6dfbc9e86 into the champion, then CT-12.3d; then CT-11 | — |
 | RTG-55 | promptforge mutation safety | [promptforge-mutation-safety-contract.md](promptforge-mutation-safety-contract.md) | MHS-3d — operator runs the v10 episodic re-pin RATIFY (run_v10_episodic_repin_ratify_20260917.sh); then MHS-12 | RTG-02 |
 | RTG-56 | typed decision plane | [typed-decision-plane.md](typed-decision-plane.md) | Run fresh three-arm shadow at the inference owner’s boundary; retain inference gates | — |
-| RTG-57 | kv unified stack rollout | [kv-unified-stack-rollout.md](kv-unified-stack-rollout.md) | KVU-16g-1 row-5c A/B; 64k coarse holdout (HPR-b); KVU-19b-rework-c2-cal; V11-FA-4/-6 into v11; fold-c1-p3; CPU-FA-VKQ-2 bench | RTG-19, RTG-36, INF-41 |
+| RTG-57 | kv unified stack rollout | [kv-unified-stack-rollout.md](kv-unified-stack-rollout.md) | KVU-LB1.d adopt always-F32 VKQ; KVU-16g-1 row-5c A/B; 64k holdout (HPR-b); KVU-19b-rework-c2-cal; V11-FA-4/-6; fold-c1-p3; CPU-FA-VKQ-2 | RTG-19, RTG-36, INF-41 |
 | RTG-58 | kv prefix fork and paged attention | [kv-prefix-fork-and-paged-attention.md](kv-prefix-fork-and-paged-attention.md) | KPF-64 night arms read-out; KPF-LB1.1 + KPF-18 item-3 v2 after W2; KPF-13.1 rules v3, KPF-13.1a; KPF-18.0b CPU; KPF-17.4 SWA; KPF-19.2 | RTG-57, RTG-27, INF-65 |
 | RTG-59 | model artifact integrity | [model-artifact-integrity.md](model-artifact-integrity.md) | SEC-ART-POST-f: recompile lean registry + stack_priors (next stack-change), then SEC-ART-2; POST-g chattr +i decision; POST-b/d | — |
 

@@ -15,7 +15,7 @@ inference-bearing steps only; their design and documentation work may proceed (`
 | ID | Track | Handoff | Next action | Deps |
 |----|-------|---------|-------------|------|
 | UFH-13 | thesis experiment (PARKED) | [thesis-experiment-orchestrator-vs-strongest-model.md](thesis-experiment-orchestrator-vs-strongest-model.md) | ARCHSWAP-3b A-3 frontdoor scout-stage claim sample; else PARKED until autopilot trains on the swapped stack, then TE-reopen | — |
-| UFH-14 | agentic serving harness fixes | [agentic-serving-harness-fixes.md](agentic-serving-harness-fixes.md) | Reload API (LB10 guard, LB3.2, LB11, LB3.1/LB6.2 logging live); LB3.1b 4-arm turn-1 run; DEPLOY-EC-2 live proofs; A6a; A3a; A4a | INF-77, UFH-01 |
+| UFH-14 | agentic serving harness fixes | [agentic-serving-harness-fixes.md](agentic-serving-harness-fixes.md) | Reload API (LB10, LB3.2, LB3.3, LB11, turn-1 grammar off 93055064); UFH14-LB3.4 confirm run; DEPLOY-EC-2 live proofs; A6a; A3a; A4a | INF-77, UFH-01 |
 | UFH-01 | harness selection and integration | [harness-selection-and-integration.md](harness-selection-and-integration.md) | Resolve HS-OD-4 token contract; prepare P6 shared tools and HS-19d.P0 source audits | RTG-09 |
 | UFH-15 | OpenCode shell integration | [opencode-shell-integration.md](opencode-shell-integration.md) | Validate remaining P0 override carry at the inference owner boundary; screen independent shell source follow-ons | UFH-01 |
 | UFH-03 | memento block reasoning compression | [memento-block-reasoning-compression.md](memento-block-reasoning-compression.md) | S2 Stage-1 format-learning smoke on Qwen3-0.6B (fill compliance/compression/MATH-500 table) | — |
