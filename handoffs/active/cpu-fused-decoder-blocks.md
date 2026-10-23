@@ -78,7 +78,8 @@ Checklist (the dashboard gate — flipped as the phases land):
   - **Keep `GGML_FUSED_DECODE_OFF=1` in production** until this is root-caused.
   - Done when the divergence and the double free are root-caused and fixed (fused ≡ graph within tolerance at
     w ∈ {0.05, 0.3, 1.0}), or the fused path is retired.
-  - *(2026-10-22, workspace-58 subagent, from NEW-10's smoke abort; box stays open: patch unbuilt.)* **Double free
+  - *(2026-10-23: FD-DIV-1a PASS. The real-model double free is fixed by `14c57cbe9` (GSQ falls through to the graph; UD fused path unchanged). **Still open:** the synthetic-weight divergence at w=0.05 and the w=1.0 abort of the repro, now FD-DIV-1b; plus the fold of `14c57cbe9` via the champion route.)*
+  - *(2026-10-22, workspace-58 subagent, from NEW-10's smoke abort; box stays open.)* **Double free
     root-caused on a real model.** The GSQ-RCO Q38FN IQ3_XXS GGUF aborted the production CPU `llama-completion`
     (fused path ON, i.e. without `GGML_FUSED_DECODE_OFF=1`) on the first decode token with the same "double free or
     corruption (out)". Chain:
@@ -99,13 +100,16 @@ Checklist (the dashboard gate — flipped as the phases land):
       dumps are gated on `GGML_FUSED_DECODE_TRACE`. Graph path untouched; production keeps `GGML_FUSED_DECODE_OFF=1`.
     - Whether the synthetic-weight divergence at w=0.05 has the same cause is not yet shown (the repro's synthetic
       weights are not repacked IQ4_NL); the ASAN repro below answers it.
-  - [ ] **FD-DIV-1a — build `14c57cbe9` and run three smokes (correctness, one build-role grant).** (1) GSQ IQ3_XXS
+  - [x] **FD-DIV-1a — build `14c57cbe9` and run three smokes (correctness, one build-role grant).** (1) GSQ IQ3_XXS
     with the fused path ON under the patch is byte-identical to the same model with `GGML_FUSED_DECODE_OFF=1`
     (the refusal falls through to the graph); (2) UD-IQ4_XS, patched build vs the production v10 store build,
     byte-identical greedy output; (3) optional: the FD-DIV-1 repro (`45d8f2937` `QFR_*` knobs) under ASAN at
     w ∈ {0.05, 0.3, 1.0}. Experimental branch only; v10 stays frozen; a fold goes through the champion route with a
     v11 manifest row. (filed 2026-10-22, workspace-58)
     - *(2026-10-23 15:3xZ, workspace-58 wrap-up; box stays open.)* IN PROGRESS: a workspace-58 subagent is preparing the job (launcher and FILLERS row). The slot is booked on q2 tonight after s5-cs8l4ab, and it runs if armed (calendar REVISION 15:2xZ). Not landed at this checkpoint.
+    - *(2026-10-23 16:43Z, workspace-58 wrap-up; **FD-DIV-1a PASS**, pass rule PREDECLARED.json sha256 `02251f47...`.)* Verdict `/mnt/raid0/llm/tmp/fd-div-1a-20261023/out/VERDICT.md`, receipt `/mnt/raid0/llm/tmp/fd-div-1a-20261023/out/fd_div_1a_receipt.json` (`epyc.fd_div_1a.smoke_receipt.v1`). Smoke 1 (GSQ IQ3_XXS, patched `14c57cbe9`, fused ON vs v10 `GGML_FUSED_DECODE_OFF=1`): byte-identical on 4 prompts; unpatched v10 fused ON still aborts (rc 134), defect reproduced. Smoke 2 (UD-IQ4_XS, patched vs v10): byte-identical. Smoke 3 (ASAN repro) SKIPPED: `tests/test-qwen4exp-fused-rope.cpp` exists only on `experimental/fused-yarn-20261004`; filed as FD-DIV-1b. Production keeps `GGML_FUSED_DECODE_OFF=1`; folding `14c57cbe9` goes through the champion route with a v11 manifest row.
+    - *Observation, no speed claim:* on UD-IQ4_XS, v10 fused-ON decode is ~1500-2000 ms/token vs ~70-87 ms/token on the graph (fused-off) path (descriptive, single runs); warrants a look.
+  - [ ] **FD-DIV-1b — port the FD-DIV-1 repro and run it under ASAN (filed 2026-10-23, workspace-58 wrap-up from FD-DIV-1a smoke 3).** `tests/test-qwen4exp-fused-rope.cpp` (`QFR_*` knobs) lives only on `experimental/fused-yarn-20261004` (`5bfdcd18c`, `6c126e975`, `45d8f2937` on top of five commits not in v10); `6c126e975` gates the same per-token trace output `14c57cbe9` gates, so the port is a merge with a known textual overlap, plus a second (ASAN) build. Run at w in (0.05, 0.3, 1.0). Done when it answers whether the synthetic-weight divergence has the repacked-IQ4_NL cause or another. Experimental branch only; own build-role grant.
 
 ## Validation strategy (learned the hard way — the arch test is self-consistent and cannot see graph-math errors)
 
