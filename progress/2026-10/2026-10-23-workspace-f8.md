@@ -110,3 +110,123 @@ reload box under UFH14-LB10 instead of filing a second reload task.
   - The 4-arm run is ARMED and booked (UFH14-LB3.1b, GRAM-LAZY-1).
   - The `kpf18-item3-v2` rc 75 and its re-grant.
   - The KPF-LB1.1 harness amendment, and `96c30079` landed.
+
+## Midday 2026-10-23 (operator-invoked /wrap-up, subagent, branch `f8/wrapup-20261023-midday`)
+
+Covers work since the morning wrap-up (root `8104f630e`). Each item below was checked against git (root, orchestrator,
+and the llama `fork` remote), the run records (`ENDED`, `VERDICT.json`, `RUN_RECORD.json`, grant `.ended`/`.complete`
+files), the FILLERS register and the process table. f8's root commits in scope: `704067d69`, `796b88016`,
+`919562ce7`, `fb29455a4`, `5220edd4a`, `870065c39`, `aa2dfaa80`, `228c0615d`, `20f80cb67`, `2fc213a5a`, `ad0635ae2`,
+and after the wrap-up started, `066dfb1c7` and `eadbb8fe8`.
+
+### gitnexus re-index (06:37-06:44Z)
+
+- epyc-root re-indexed cleanly: 78,127 nodes, 117,195 edges, rc 0 (`compute-flags/f8-gitnexus2-run.log`).
+- The epyc-orchestrator analyze segfaulted in its incremental pass. gitnexus warns that branch
+  `spec-dec-mtp-refresh-2026-06-22`, not `main`, owns the orchestrator's flat index slot.
+- Filed as NIB2-GNX-1 (root `704067d69`). FILLERS `f8-gitnexus2` is COMPLETE.
+
+### Champion advance `dd3d9721c` -> `49550eda5` (~07:20Z; coordinator 3c4ca599's CAS)
+
+| Item | Result | Evidence | Recorded |
+|---|---|---|---|
+| AKX-ALL-LB3 premeasure (on `dd3d9721c`) | **SPLIT_UNRESOLVED**. S(N) is 40-54% solid; F(N) read 0.7-3.6%, but the instrument failed: the perf window ran through state restores, templated symbols were truncated, and barrier wait was not charged to its op. FA is not the seed; which class is stays open. | `locals-akx-lb3-cpu-lc-premeasure/VERDICT.json` (07:06Z, rc 0) | root `796b88016`; AKX-ALL-LB3.2 filed (decisive instrument re-run) |
+| AKX-AUTO-6 | `detect` works on the first real advance. `plan` was blocked by a missing PROVENANCE.md; the builder (3c4ca599) wrote it, and `plan` is now actionable on the real store with one calibration. | read-only runs | root `796b88016`, `919562ce7`; AKX-AUTO-6.1 closed later at `eadbb8fe8` (research `de279ee09`). The AUTO-6 exercise box stays open (no relaunch yet). |
+| iqk FA port | Re-cut onto `49550eda5` as `experimental/locals-kernel-fixes-20261023` @ `540578f55` (on `fork`; `49550eda5` is its ancestor). | `git ls-remote fork` | AKX-LB4-FU3 filed; FILLERS row ARMED, launcher pid 845486 alive |
+| Fixes not in the new champion | `5f1eee195`, `452887155` (CH-LB1) and `0daa3ca8d` (UFH14-LB1) are not ancestors of `49550eda5` and not on the re-cut. They are on `experimental/locals-kernel-fixes-20261022` (on `fork`). | `git merge-base --is-ancestor` | **Gap closed by this wrap-up:** dated notes under CH-LB1.1 and UFH14-LB1.1 say the fold's trial merge goes onto `49550eda5` |
+
+### llama-bench uninitialised `autokernel_harden` (verified in source)
+
+- **Defect.** `parse_cmd_params` declared `cmd_params params;` and never copied `autokernel_harden` (nor the seed and
+  ready-timeout) from the defaults. About half of all llama-bench processes run without `--autokernel-harden` silently
+  ran the hardened protocol.
+- **How it showed.** KVU-LB1.b run 1 hit rc 124 at 08:16Z. Post-mortem at root `fb29455a4`: the cause was the
+  hardened protocol (40 x 8k depth fills per benchmark), not F32.
+- **Fix.** `fork` branch `experimental/llama-bench-harden-init-20261023` @ `141e4bcf5` (one commit on `49550eda5`:
+  llama-bench.cpp plus a test).
+- **Follow-through.**
+  - Root `228c0615d`: CH-28 fold, manifest V11-103 PEND, LBH-1..3, the consumer guard proposal, and belief wiring
+    (VB-LLAMA-BENCH-HARDEN-PROTOCOL plus a row in `scripts/vidya/adapters/README.md`).
+  - Root `20f80cb67`: INF-65 and INF-66 Next action.
+  - workspace-58 relayed the fleet alert, and a memory was saved.
+- **LBH-2 re-grade.** f8's additions were merged onto 3c4ca599's parallel records at root `2fc213a5a`:
+  - lineage via `f744cc220`;
+  - DS41-W5 llama-bench is INVALID (cross-protocol), with per-row evidence and the deleted Sept GGUF noted;
+  - the C112 bisect holds on an independent like-protocol re-analysis (first bad `9b148baab`);
+  - the Q38FN d0 anchor is relabelled a hardened-protocol reading;
+  - the wiki W5 readings are marked INVALID.
+
+  LBH-2 stays open for the INF-70 REQUEST-UNKNOWN group (September markdown outputs with no recoverable protocol).
+
+### turn1-grammar-4arm: PASSED 08:42Z (30/30 cells, not a mock)
+
+| Arm | Pass | t1 ms/token |
+|---|---|---|
+| off | 66.7% | 17.8 |
+| legacy | 40.0% | 23.6 |
+| call | 36.7% | 25.0 |
+| lazy-legacy | 3.3% | 54.8 |
+
+- **Off vs legacy:** +26.7 pp, 95% CI +10 to +46.7 (task-cluster bootstrap). The verdict file reads
+  `GRAM_LAZY_1_KEEP_LEGACY`, and for UFH14-LB3.1b `off: REMOVE_GRAMMAR`.
+- **Operator decision:** default OFF, on orchestrator main `93055064`.
+- **Recorded** at root `5220edd4a`, `870065c39` and `aa2dfaa80`:
+  - UFH14-LB3.1, LB3.1b and LB3.1c ticked;
+  - GRAM-LAZY-1 closed, and the lazy branch not landed;
+  - UFH14-LB3.4 (confirmation on a larger task set) filed.
+- **Later (`066dfb1c7`):** UFH14-LB3.3 done and LB11.1 implemented flag-off (orchestrator `f3ab78b2`).
+
+### KVU-LB1.b run 2 (`49550eda5`, Amendment 2): NO_COST at 09:40Z
+
+- **Decode medians:** N1@8k +1.38%, N5@8k +0.86%, N1@32k +1.05%, N5@32k +14.1% (one noisy pair). No cell reached
+  -1%.
+- **Prefill:** the probe reads about 0 (+1.8% / -0.1%), which matches the code: the tiled path always accumulates in
+  FP32.
+- **Row hygiene:** the hardened-row guard relaunched 9 sessions. Every row used is `autokernel_hardened: false`.
+- **Recorded** at root `ad0635ae2`, with KVU-LB1.d (adopt always-F32) filed.
+
+### FILLERS and schedule (checked 09:55Z)
+
+- **COMPLETE:** `f8-gitnexus2`, `turn1-grammar-4arm`, `locals-kvu-lb1-arch-decode-ab` and
+  `locals-akx-lb3-cpu-lc-premeasure`.
+- **Still ARMED, launchers alive:**
+  - `kpf18-item3-v2-sameshape` (pid 1965738), about 13:50Z;
+  - `locals-kpf-lb1-1-27b-completion-turns` (pid 3419004, repaired harness), about 14:25Z;
+  - `akx-lb4-followups-3` (pid 845486).
+
+  workspace-58's `grant-akx3-gap-20261023-v2.sh` and `grant-akx3-20261023.sh` (both alive) book FU3 on q2: a gap
+  window only if at least 3,300 s remain before 11:25Z, then after NEW-13 (by 21:55Z). **Gap closed by this wrap-up:**
+  a dated ARMED and booked note under AKX-LB4-FU3.
+- **Live at the operator's next API reload:** orchestrator `a498ffba`, `96c30079`, `93055064` and `a73af3cc` (all on
+  origin/main), plus `f3ab78b2` since. No :8000 listener exists, so none is live.
+
+### Checklist sync / derived actionables
+
+- **Flips attributable to f8 in scope `8104f630e..origin/main`: 7**, all committed by the owning commits and
+  verified here:
+  - UFH14-LB3.1, LB3.1b, LB3.1c and GRAM-LAZY-1;
+  - KVU-LB1.b;
+  - UFH14-LB3.3 and AKX-AUTO-6.1 (`066dfb1c7`, `eadbb8fe8`).
+
+  This wrap-up made 0 flips. The other flips in range (CH-22, CH-25, CH-26, HS-PROF-1 x4, CS-8.L4) belong to
+  3c4ca599.
+- **New tasks f8 filed in range: 11.** NIB2-GNX-1, AKX-AUTO-6.1, AKX-ALL-LB3.2, AKX-LB4-FU3, UFH14-LB3.4, CH-28,
+  LBH-1, LBH-2, LBH-3, VB-LLAMA-BENCH-HARDEN-PROTOCOL and KVU-LB1.d.
+- **Filed by this wrap-up: 2.** Both come from the LBH-2 W5 note, where they were stated in prose only:
+  - DS41-W5d: a MUL_MAT_ID microbench at pp512 shapes as a premise test with no model load. BLOCKED on the DS41
+    freeze.
+  - DS41-W5e: the campaign owner annotates the S5 inbox note's -29.9% as INVALID. This is the owner's single-writer
+    store.
+- **Declined 1, in writing.** PROVENANCE for the 7 non-champion 10-21/22 images is not filed: no loop needs them,
+  and AUTO-6.1's closing note records the same condition.
+- **Gaps closed with dated notes: 3** (CH-LB1.1, UFH14-LB1.1, AKX-LB4-FU3).
+
+### Wrap-up gates
+
+| Gate | Result |
+|---|---|
+| Index regen + `index_state.py --check` | rc 0, 0 problems |
+| Prune candidates (generated signal) | 0, so nothing was pruned or archived |
+| README freshness | clean |
+| Wiki | sweep 18 compiled 16 sources into 8 pages; lint has 0 errors and no new warnings; bare `--touch`, delta 0 afterwards |
+| `vidya sync --check` | FRESH: intake-2510, lag 0 |
