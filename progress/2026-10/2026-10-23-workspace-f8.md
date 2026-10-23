@@ -212,7 +212,7 @@ and after the wrap-up started, `066dfb1c7` and `eadbb8fe8`.
   3c4ca599.
 - **New tasks f8 filed in range: 11.** NIB2-GNX-1, AKX-AUTO-6.1, AKX-ALL-LB3.2, AKX-LB4-FU3, UFH14-LB3.4, CH-28,
   LBH-1, LBH-2, LBH-3, VB-LLAMA-BENCH-HARDEN-PROTOCOL and KVU-LB1.d.
-- **Filed by this wrap-up: 3.** Both come from the LBH-2 W5 note, where they were stated in prose only:
+- **Filed by this wrap-up: 4.** Both come from the LBH-2 W5 note, where they were stated in prose only:
   - DS41-W5d: a MUL_MAT_ID microbench at pp512 shapes as a premise test with no model load. BLOCKED on the DS41
     freeze.
   - DS41-W5e: the campaign owner annotates the S5 inbox note's -29.9% as INVALID. This is the owner's single-writer
@@ -324,17 +324,23 @@ ARMED at root `eadbb8fe8` (just before this scope). Launcher pid 1640838 was ali
   - **`kpf17-4-19-1a-gpu-build`** COMPLETE at 13:54Z (q2). **`kpf13-1a-mtp-v3-cpu`** is running on q2 (grant to 14:49Z).
   - **`gpu-zos-1a-build`** ended rc 1 at 13:54Z on a define-scope probe defect: a grep argument-order bug in the gate,
     not a bad build. It was amended and re-run with no rebuild at 13:57Z, now 10/10 and `PASSED`.
+- **`spec-gram-1` (SPEC-GRAM.1 part 2) PASSED at 14:03Z: GRAMMAR_STATE_OK / CLOSES_SPEC_GRAM_7_MTP.** It ran 128 of 128
+  cells. There were 0 schema-invalid constrained draft-mtp outputs, and T=0 identity was 14/16 (inside the allowance of
+  2). json_schema costs MTP draft acceptance -1.95 pp (CI -7.86 to +3.52), against a 10 pp threshold. This wrap-up
+  ticked the draft-mtp arm and filed the draft-dspark arm as BLOCKED by the DS41-1017 ruling, with a note under
+  SPEC-GRAM.7.
 - **Open action for the main: arm `gpu-zos-1a` now.** Its FILLERS row is still BACKLOG with no pid. Lane B resolves the
   pid when it reaches that step (after `kpf13-1-reduced`) and skips a row with no live launcher.
 
 ### Checklist sync / derived actionables
 
-- **Flips by this wrap-up: 3,** covering KPF-LB1, KPF-LB1.1 and its run box, from the 13:56Z NO_CHANGE verdict.
+- **Flips by this wrap-up: 4.** KPF-LB1, KPF-LB1.1 and its run box come from the 13:56Z NO_CHANGE verdict;
+  SPEC-GRAM.1(2) draft-mtp comes from the 14:03Z PASS.
 - **Flips attributable to f8 in scope `3d78270df..origin/main`: 4.** These are AKX-LB4-FU3, LBH-1, LBH-3 and LBH-2,
   all committed by their owning commits and verified here. The other flips in range belong
   to other sessions: CH-28 and CH-28b, DS41-W5, YARN-AGG-1e and GPU-LEAK-1a.
 - **New tasks f8 filed in range: 3:** LBH-2.1, UFH14-B4j.1 and VB-LB7-STALL-WIRE.
-- **Filed by this wrap-up: 3.**
+- **Filed by this wrap-up: 4.**
   - **KPF-GL1** (in `kv-prefix-fork-and-paged-attention.md`): at each first run, prove that the graphs-disabled env
     reached the server. For the shim jobs, read `gl1_guard.log`; for the `env`-argv jobs, read the record's argv.
   - **LBH-3.1** (in `autokernel-rebuild-program.md`, derived from LBH-3's own "should pass `strict_unknown=True`"
@@ -343,6 +349,8 @@ ARMED at root `eadbb8fe8` (just before this scope). Launcher pid 1640838 was ali
   - **KPF-18-S1.7g** (under KPF-18-S1 remainder): after GPU-LEAK-1d, the remainder job's step-7 HSF-4/5 rates are a
     graphs-off timing reading on a near-production argv. The window started graphs-off at 13:56Z, so: label those rates
     and re-measure step 7 with graphs ON later.
+  - **SPEC-GRAM.1(2) draft-dspark arm**: BLOCKED, with its blocker named as the operator's DS41-1017 ruling of
+    2026-10-22.
 - **Declined 1, in writing:** the leak's shape-dependence is not filed here. It belongs to 3c4ca599's GPU-LEAK-1d
   (`gpu-serving-tie-in-program.md`), and it was relayed. GPU-LEAK-1d has since closed at root `17d538c84`: the
   exact production :8083 argv does not leak (1.7 MiB per request, graphs ON or OFF). The owner filed GPU-LEAK-1e,
