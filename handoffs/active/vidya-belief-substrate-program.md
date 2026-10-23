@@ -2312,7 +2312,7 @@ RI-16's routing `stage_ms` is covered by VB-ROUTE-LAT above, not by a new task.
   - Cautions: one window per arm, and the GPU-vs-CPU offset is unexplained (YARN-DCA-XDEV).
   - Grade via `claim_tuple.grade()`; no new ladder. The row is applied.
   - Done when an adapter projects both slots' summaries.
-- [ ] **VB-SERVE-TIMING-1 — read side for the orchestrator per-call serving records** (`epyc.orchestrator.serving_call.v1`, orchestrator `src/backends/serving_calls.py`, orch main 9a0d38e0; filed 2026-10-03 from the workspace-89 prefill-share analysis). The write side is LIVE since 2026-10-03T04:59Z (orch 9a0d38e0 on main, API reload); the launch sidecar goes live at each server's next stack launch. Strict adapter steps:
+- [x] **VB-SERVE-TIMING-1 — read side for the orchestrator per-call serving records** (`epyc.orchestrator.serving_call.v1`, orchestrator `src/backends/serving_calls.py`, orch main 9a0d38e0; filed 2026-10-03 from the workspace-89 prefill-share analysis). The write side is LIVE since 2026-10-03T04:59Z (orch 9a0d38e0 on main, API reload); the launch sidecar goes live at each server's next stack launch. Strict adapter steps:
   - discover `logs/serving_calls/serving_calls.jsonl*`;
   - refuse lines whose `record_sha256` does not re-derive, or whose schema is not `serving_call.v1`;
   - project each `timings` metric (`prompt_ms`, `predicted_ms`, `prompt_per_second`, `predicted_per_second`, `draft_n_accepted/draft_n`) plus `queue.pre_dispatch_wait_ms` into `ClaimTuple`, with unit and `metric_direction` fixed by the schema (ms and wait: `lower_better`; t/s and acceptance: `higher_better`).
@@ -2323,6 +2323,7 @@ RI-16's routing `stage_ms` is covered by VB-ROUTE-LAT above, not by a new task.
   - Mark `server.identity_source="absent"` rows unscoped rather than inferring the launch.
 
   Grading: `Judged/Located` via `claim_tuple.grade()`; no new ladder and no backfill.
+  ✅ 2026-10-23 (3c4ca599): all adapter steps above already exist in `scripts/vidya/adapters/serving_call.py` (`project_record`, strict `record_sha256`/schema refusal, absent-timing skip) and are wired in `scripts/vidya/ingest_sources.py` (`orchestrator-serving-call`); `tests/vidya/test_serving_call_adapter.py` + `test_ingest_sources.py` 106 pass. The README source row was stale ("none (TODO)") and is corrected. Window aggregates stay under the 'Remaining window-aggregate design' note above (separate producer).
 
   Remaining window-aggregate design: seal native window membership and denominators before consumption; decide whether these are a separate producer or a projection over that sealed manifest. The accepted per-call reader emits no share. `cache_n` is validated native metadata, not a projected metric without an established improvement direction.
 
