@@ -493,3 +493,121 @@ The API was reloaded on its own after 3c4ca599's fold gate exited.
 | `vidya sync --check` | FRESH: intake-2510, lag 0 |
 | Index rows | prepared for the owning session, not applied: UFH-14, UFH-16, RTG-58, RTG-59, INF-22, plus OP-82 / OP-83 in the master queue |
 | Scratch (Step 7b) | plan only. Nothing was removed. |
+
+## Evening 2026-10-23 (per-task /wrap-up, subagent, branch `f8/wrapup-20261023-evening`)
+
+Not operator-invoked: Step 3 pruning and the Step 5 wiki sweep did not run. Scope is the f8 root commits on origin/main
+from `477335933` through `c7a45cc05` (16:19Z-17:09Z), after the late-afternoon wrap-up landed (`adffcd250`, 15:46Z), plus
+the research commits named below. Build results were read from each launcher's `launch.log` RESULT line.
+
+### Operator decisions taken via the decision tool
+
+| Item | Decision | Where it stands |
+|---|---|---|
+| DHM-4 (OP-83) | "30-item pilot first" | The pilot sits in the private pilot set. The operator labels it. |
+| OP-82, template store lock | "pins only, after POST-f". No chattr. | Recorded. OP-82 is out of the master queue (`477335933`). |
+| SEC-ART-POST-b | "digest + one ratify command", then "sign all 4 + strip the warning in v2" | The ratify command is on root branch `f8/sec-art-post-b-ratify` @ `8093e1ad1`. **The operator runs it; still pending.** |
+| NIB2-100 | "apply the n_params fix" | Applied, already ticked. |
+| Lint (D9) | "hooks + coordination only" | Each change was operator-acked. |
+| KPF-18-S1.7g | "re-measure step 7 with graphs ON" | Armed (row `kpf18-s1-step7-graphs-on`). |
+| kpf13 / kpf17 re-arm | "restart both" | Superseded by the read-outs below; follow-ups armed as `kpf-gpu-followups`. |
+| gpu-zos-1a | "start it now" | Armed and booked (below). |
+
+### Root commits
+
+| SHA | What |
+|---|---|
+| `477335933` | Applied the late-afternoon wrap-up's prepared rows (UFH-14, UFH-16, RTG-58, RTG-59, INF-22). Re-applied the operator-queue edit (OP-82 out, OP-83 pilot, OP-SEC-ART-POST-b in) that `f6b6d84c0` had lost. Recorded the POST-b decision and filed SEC-ART-POST-b.1 (v2 template). |
+| `bb3b8cda3` | SEC-ART-POST-b.1 note: `epyc-qwen3x-v2` prepared (research `6df1516a6`), not published or bound. |
+| `3d952c911` | PB-QCOST-1 confirm + q-axis launcher prepared, dry-clean (q axis ~50 min, 86 min total, min window 45 min). |
+| `4a53cefd4` | M4.1 / M4.2 launchers written and dry-clean. |
+| `4e7464a91` | KPF-13.1 / KPF-17.4 / KPF-19.1a GPU read-outs by predeclared rule; **KPF-17.4a ticked**; KPF-GL2 and VB-KVU-PF.4 filed. |
+| `bf19cc459` | RTG-58 next action updated after those read-outs. |
+| `97e8c05b0` | SPEC-RNG.1.2 note: runner (research `2f8af0e2d`) and build/run launchers prepared, dry-clean. |
+| `652885830` | UFH14-LB7.1 note: probe branch `6420fca59` (`LLAMA_LB7_PROBES`, default OFF), Amendment 1 (sha256 `2ec0eb59…7972`) and both launchers, dry-clean. |
+| `6f1443abd` | vidya: KPF read-out sidecars project (item 185, kpf13 / kpf174 conformance arms); **VB-KVU-PF.3 done**, .4 partial, .5 filed. |
+| `ec45e0b6a` | KPF-13.1b (kpf13 rules v4) and KPF-17.4b (kpf174 rules v2) prepared on one dry-clean GPU launcher; KPF-GL2 fix landed; VB-KVU-PF.5 write side fixed and 5 records resealed. |
+| `c7a45cc05` | **KPF-GL2, VB-KVU-PF.5 and VB-KVU-PF.4 ticked** (kpf174 5/5 re-ingest after the reseal). |
+
+### Research commits
+
+| SHA | Branch | What |
+|---|---|---|
+| `6df1516a6` | `f8/sec-art-post-b1-v2-template` | v2 chat template strips the template-authored tool-result SYSTEM WARNING. v2 sha256 `925def46621a…`. Render test: 128 renders byte-identical, 104 differ only by the stripped warning. |
+| `a5dfedf17`, `2f8af0e2d` | `f8/spec-rng-1-2-runner` | SPEC-RNG.1.2 runner: 6 arms (stateful/poskey x depth 0/3/7) plus 20 no-model tests; aborts rc 75 after 8 consecutive failures so the job can recycle the server. |
+| `e367af026` | (kpf) | KPF-GL2: per-launch records keep the affinity read-back and the HIP-graphs state. 89/89. |
+| `0208f4918` | (kpf) | kpf174 rules v2 (junction sweep, speculation-OFF c1 cell) and the VB-KVU-PF.5 record-seal fix. |
+| `1db8ac394` | `f8/kpf-gpu-followups-20261023` | kpf13 rules v4 (speculation-OFF discriminator, CB3 order probe, GPU clause). 115/115 per `ec45e0b6a`. |
+
+### GPU read-outs (from `4e7464a91`; predeclared rules)
+
+- **KPF-13.1** (DFlash2 GPU, rules v3): A FAIL 9/12, B FAIL 11/12, decision_grade true, investigate true. All 4 failures
+  are deterministic near-tie token divergences, controls identical, no acceptance drop. Child: KPF-13.1b.
+- **KPF-17.4 / KPF-19.1a:** FAIL. The real (non-near-tie) divergence sits at the c1=2148 junction only and does not depend
+  on drafter treatment. Child: KPF-17.4b. KPF-17.4a ticked: loss 0 at every junction, including c3 > swa_cells.
+
+### Infra fix: land.sh lost a hand edit
+
+- **Problem.** `/mnt/raid0/llm/tmp/f8-land/land.sh` took main's copy of `master-handoff-index.md` on any rebase conflict.
+  That silently dropped the OP-82/83 queue edit from `f6b6d84c0`, which sat outside the generated block. `477335933`
+  re-applied it.
+- **Fix.** land.sh now strips the generated block from the replayed commit's before/after copies. If anything else
+  changed, it aborts the rebase and exits 3.
+- **Lesson.** Auto-resolving a generated file must prove that the side being discarded changed only the generated part.
+
+### Orchestrator API
+
+Reloaded API-only (orchestrator component) after a CPU bench exited. It was never reloaded during a bench.
+
+### Builds
+
+| Row | Result | Time |
+|---|---|---|
+| `m4-srpf-gpu-build` (M4.1) | PASSED 10/10 | 16:54Z |
+| `spec-rng-1-2-gpu-build` | PASSED 9/9 | 16:55Z |
+| `ufh14-lb7-1-build` | PASSED 11/11 | 16:57Z |
+
+### Compute armed and booked with workspace-58 (GPU order)
+
+All of these are **armed, no result**.
+
+| # | Row | Booking | Decides |
+|---|---|---|---|
+| 1 | `kpf-gpu-followups` | armed 17:11Z, first grant ~18:22Z | KPF-13.1b, KPF-17.4b |
+| 2 | `kpf18-s1-step7-graphs-on` | after 1 | KPF-18-S1.7g |
+| 3 | `kpf18-item3-v2-sameshape` | after 2 | — |
+| 4 | `gpu-zos-1a` | after 3; residency check is now own-pid KFD VRAM >= 40 GiB, replacing log text | GPU-ZOS-1a |
+| 5 | `pb-qcost-1-confirm` | ~23:00Z | PB-QCOST-1 confirm + q axis |
+| 6 | `m4-srpf-pbhol`, `spec-rng-1-2-gpu-run`, `ufh14-lb7-1-probes` | early hours of 10-24; block-correctness, `--no-fold-siblings` | M4.2, SPEC-RNG.1.2, UFH14-LB7.1 |
+| 7 | `nib2-gnx1-reindex` | 10-24 ~13:15Z | NIB2-GNX-1 |
+
+### Open items
+
+- **Operator:** run the SEC-ART-POST-b ratify command (`f8/sec-art-post-b-ratify` @ `8093e1ad1`), and label the DHM-4
+  private pilot set (OP-83).
+- `filler_run2.sh` has 2 lint hits.
+- SEC-ART-POST-b.1 roll-out (publish + bind v2) happens at the next stack change.
+- KPF-18-S1.R3 needs a launcher.
+- CH-27 waits on workspace-7b's registry-plan paths.
+
+### Checklist sync
+
+| Item | State before | Action |
+|---|---|---|
+| KPF-17.4a, KPF-GL2, VB-KVU-PF.3/.4/.5 | `[x]` | none |
+| NIB2-100, NIB2-101 | `[x]` | none |
+| M4.1 | `[ ]`, build PASSED 10/10 | **ticked**, dated note (gate = the build) |
+| SPEC-RNG.1.2 | `[ ]` (box is the decision, not the build) | dated note: build PASSED 9/9, run armed |
+| UFH14-LB7.1 | `[ ]` (box is the probe stage) | dated note: build PASSED 11/11, probes armed |
+
+Index rows prepared for the owning session, not applied:
+- INF-22's next action still lists "M4.1 HIP build", which is now done.
+- OP-83 in the master queue names a private file path. Reword it to "the private pilot set".
+
+### Wrap-up gates
+
+| Gate | Result |
+|---|---|
+| `index_state.py --check` | rc 0 after regen (first run failed on freshness only); scratch warning unchanged (139) |
+| Agent log | skipped: `agent_log.sh` writes into the shared clone's `logs/` (gitignored), not the worktree |
+| Wiki / pruning | not run (per-task wrap-up) |
