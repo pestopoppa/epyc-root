@@ -377,3 +377,119 @@ ARMED at root `eadbb8fe8` (just before this scope). Launcher pid 1640838 was ali
 f8's 10:09-10:50Z handoff commits without compiling them. Sweep 19 compiled that content too: LBH-1/2 close-out, KPF-13.1
 rules v3, the KPF-17.4 drafter-SWA finding, the B4j idle-slot code reading and FU3. Sweep 19 also corrects sweep 17's
 grant-writer attribution of the rc 75.
+
+## Late afternoon 2026-10-23 (per-task /wrap-up, subagent, branch `f8/wrapup-20261023-late`)
+
+Not operator-invoked: Step 3 pruning and the Step 5 wiki sweep did not run. Scope is everything since root `540056d67`
+(the afternoon wrap-up landing). Each item was checked against:
+
+- git: root origin/main `7f63ec067`, research `origin`, orchestrator reflog;
+- the launcher dirs under `/mnt/raid0/llm/tmp/f8-launchers-20261023/`;
+- FILLERS (`/mnt/raid0/llm/tmp/compute-flags/FILLERS.md`, 15:34Z);
+- `ps -p` on the named pids (15:35Z).
+
+### UFH14-LB7 stall run: UNATTRIBUTED (15:05Z)
+
+- **Result.** `locals-ufh14-lb7-stall` ended rc 0 at 15:05:50Z: 6/6 sessions OK in ABBAAB order, 18/18 turns parsed in each,
+  champion GPU image 49550eda5/10411, verdict **UNATTRIBUTED** under PREDECLARATION §5, with no amendments.
+- **Gates.** It reproduced: the ON median gap was 42.7 / 33.6 / 47.6 s against OFF at 1.05 / 1.02 / 0.24 s. The instrument
+  held, with ON coverage 1.0 in all three pairs. The stall sits before prompt evaluation (pre-header share 1.0).
+- **Per group.** Median ΔW was 19.9 s for OTHER_PROMPT_LOAD, 11.0 s for OWN_PROMPT_LOAD, 8.8 s for NEIGHBOUR_IDLE_SAVE and
+  -0.6 s for QUEUE.
+- **Why it is UNATTRIBUTED.** OWNER failed because OTHER's share was 0.475 in pair s4/s3 (the rule needs f >= 0.5 in every
+  pair). SHARED failed because the two largest groups (OTHER + OWN) sum to a median f of 0.792, below the 0.8 bar.
+- **Report-only.** Restore copies run at a median 0.117 GiB/s, tagged transfer-count bound.
+- **Recorded as §6 prescribes.** The next stage is timing probes on an `experimental/` branch from 49550eda5 under a new
+  predeclaration amendment. That is filed as **UFH14-LB7.1**, with a two-row FILLERS-ready proposal, BACKLOG.
+- **Ticks and notes.** The run box is ticked. LB7 itself stays open: nothing is attributed, and the B4j.1 amendment is still
+  owed. B4j.1 got a note that its trigger has not fired. The FILLERS row was already COMPLETE, written by the engine.
+
+### Launchers armed or re-armed since the afternoon wrap-up
+
+All pids were alive at 15:35Z.
+
+| Row | Pid | Event | Recorded under |
+|---|---|---|---|
+| `gpu-zos-1a` | 3542586 | ARMED 14:38Z after the build PASSED (define-scope probe amendment); booked ~16:40Z by workspace-58 | GPU-ZOS-1a |
+| `kpf13-1-reduced` | 3733854 | Aborted rc 3 at 14:19Z: the driver read-back rejected the ROCm helper thread. Fixed by research `922113ff7` (branch `f8/kpf-readback-fix-20261023`; GPU-only exemption, cap 2, recorded). Pin and PINSHA moved `6a1dc7f94` -> `922113ff7`; the shim sets `HSA_OVERRIDE_CPU_AFFINITY_DEBUG=0`. RE-ARMED 14:51Z, after gpu-zos-1a. | KPF-13.1, GPS-PIN-2 |
+| `kpf17-4-19-1a-27b-dflash2` | 3733855 | The same abort, fix and re-arm | KPF-17.4 |
+| `kpf18-s1-step7-graphs-on` | 1192092 | ARMED 15:33Z (operator-approved graphs-ON re-measure; PREDECLARATION sha `79350337…`) | KPF-18-S1.7g |
+| `nib2-gnx1-reindex` | 1192093 | ARMED 15:33Z (whole-host CPU build role) | NIB2-GNX-1 |
+
+`kpf-28-ds41-ckpt` stays BACKLOG. Its blocker is now the operator's DS41-1017 hold, and DS41-CED.1 is deliberately not
+dispatched while it lasts. Both KPF-28 and DS41-CED.1 have dated notes.
+
+### Orchestrator API reload (14:59:25Z)
+
+The API was reloaded on its own after 3c4ca599's fold gate exited.
+
+- **Process.** uvicorn pid 3932317 started 14:59:25Z. The shared orchestrator clone has been at main `f3ab78b2` since
+  09:55:50Z (reflog).
+- **Now live.**
+  - LB10 `1e707b8d`;
+  - turn-1 grammar default off `93055064`;
+  - LB3.2 `a498ffba`;
+  - LB3.3 / LB11.1 `f3ab78b2`;
+  - LB11 `96c30079`;
+  - exec_write_flags `a73af3cc` (env `ORCHESTRATOR_FEATURE_EXEC_WRITE_FLAGS=1`);
+  - LB2/LB6 (`cbe542ca`, the landed `365b20c6`, plus `d0e0e477`).
+- **Not live:** orchestrator `a765945b` (KPF-26.1h, 3c4ca599) and `b254df4e` (HS-4-PB-TRUNC). Both are on origin/main after
+  `f3ab78b2`, so they wait for the next reload. KPF-26.1h2 got a note saying so.
+- **Ticked:** only the LB10 reload box, whose only remaining step was the reload plus the pid start-time check.
+- **Notes, not ticks:** SEC-EXEC-POST-e1 and POST-d, LB2.1, LB3.4, LB6.1, LB6.2, LB11 and LB11.1. Each still needs a live
+  proof, traffic, or a confirm run. For POST-e1, `tool_call_audit.jsonl` still has only 6 pre-reload records.
+
+### Verified only
+
+- **Operator decisions at `f6b6d84c0`:** DHM-4 30-item pilot, SEC-ART-POST-g / OP-82 option (b), SEC-ART-POST-b digest plus
+  one ratify command. All three are recorded correctly.
+- **Root commits:**
+  - `34addc0be`: PB-QCOST-1, HSF-4 and WP-15 notes present; VB-PBQ-1 filed.
+  - `abe8856dd`: UFH14-LB4.1 ticked; lint 72 -> 52.
+  - `84b0de13e`: NIB2-100 and NIB2-101 ticked; the LINT-PIPEFAIL D9 note is present.
+  - `8c3de9daa`: the M4 note is present; M4 is correctly not ticked.
+  - `3e1b5074c` / `1e07ec493` / `7f63ec067`: VB-LLAMA-BENCH-HARDEN-PROTOCOL and LBH-3.1 ticked; the INF-66 cell was refreshed.
+- **Research:** main `36b6f8baf` (LBH-3.1) is on origin/main.
+
+### Routed / pending
+
+- **AKX-AUTO-6/11 relaunch.** It went to workspace-7b's launcher, via workspace-58. The AKX-AUTO-6 exercise box got a note
+  that f8 owns the code and the ticks, not the relaunch.
+- **SEC-ART-POST-b.** The ratify script is prepared on root `f8/sec-art-post-b-ratify` @ `8093e1ad1`; it is not landed, and
+  the main session lands it. One CONCERN goes to the operator: a template-authored "SYSTEM WARNING" injection into tool
+  results on frontdoor and architect_critic. A dated note was added; the box is not ticked.
+
+### Checklist sync / derived actionables
+
+- **Flips by this wrap-up: 2.** The UFH14-LB7 run box (added as done) and the UFH14-LB10 API-reload box.
+- **f8 flips committed in scope `540056d67..origin/main`: 6.**
+  - UFH14-LB4.1 (`abe8856dd`);
+  - NIB2-100 and NIB2-101 (`84b0de13e`);
+  - SEC-ART-POST-g (`f6b6d84c0`);
+  - LBH-3.1 and VB-LLAMA-BENCH-HARDEN-PROTOCOL (`1e07ec493`).
+  The other flips in range belong to other sessions.
+- **Filed by this wrap-up: 4.**
+  - **UFH14-LB7.1**, the probe stage named by LB7's §6.
+  - **PB-QCOST-1 confirm-q**, the q axis (`-ub` 256/1024). Its FILLERS-ready proposal is one row, `pb-qcost-1-confirm`,
+    covering the confirm run plus the q axis.
+  - **M4.1**, the HIP candidate build of `c6ca031ac`.
+  - **M4.2**, PB-HOL-1 on the candidate.
+
+  Each has a FILLERS-ready proposal marked BACKLOG with a named blocker. The blockers are unwritten launchers or harness code,
+  which should be dispatched now rather than waited on, plus a timing-class window or the build row PASSED.
+- **Declined 1, in writing:** a new task for the WP-15 minimum-capture spec. It is passive logging on the production stack,
+  with no compute and no launcher, and it is exactly WP-15.3. WP-15.3's dangling pointer to `wp15_check.out` was repaired to
+  `docs/design/wp-15-results-20261023.md`.
+- **Gaps closed with dated notes: 23**, across 8 handoffs, plus the WP-15.3 decline note.
+
+### Wrap-up gates
+
+| Gate | Result |
+|---|---|
+| Index regen + `index_state.py --check` | rc 0, 0 problems, under the wrapup lease after syncing to `7f63ec067` (already up to date). One warning: 139 handoffs declare no `**Scratch**`, including three touched here (agentic-serving-harness-fixes, gpu-serving-tie-in-program, within-role-placement-state-machine). |
+| Prune candidates (generated signal) | 0. Not operator-invoked, so nothing was pruned. |
+| README freshness | clean |
+| Wiki | not run (per-task wrap-up) |
+| `vidya sync --check` | FRESH: intake-2510, lag 0 |
+| Index rows | prepared for the owning session, not applied: UFH-14, UFH-16, RTG-58, RTG-59, INF-22, plus OP-82 / OP-83 in the master queue |
+| Scratch (Step 7b) | plan only. Nothing was removed. |
