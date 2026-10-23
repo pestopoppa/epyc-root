@@ -1,0 +1,6 @@
+schema_version: "1.1"
+name: places-idle-quarters-safely
+expected_outcome: |
+  plan.md fills q1 and q2 now (spec-gram-2 / v12-build / kpf64-pass3 are the candidates) with windows that exceed each row's min window by at least 300 s, does not grant any CPU work on q3 while kpf19-gpu-fold holds it, orders v12-build before v12-gpu-ab, keeps ds41-w9-floor for the 05:00Z quiet window alone (739 GiB, one DS41 server), uses the no-fold yarn-ext-arms GPU slices beside CPU correctness work after the folded GPU chain, places the atomic 6.6 h kpf64-pass3 wholly inside one quarter-night, books the chain to 06:25Z with depth, never grants dhm-73 (complete, dead poller), dispatches a subagent for hil19-replay's missing launcher instead of recording it as blocked, and surfaces new14-quant's operator decision as options with a recommendation.
+context:
+  setup_script: place-files.sh

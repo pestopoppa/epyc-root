@@ -1,0 +1,6 @@
+schema_version: "1.1"
+name: status-eta-report
+expected_outcome: |
+  status.md uses the five buckets COMPLETED / RUNNING / BOOKED / ARMED-UNBOOKED / BACKLOG-with-blocker, grouped per session (f8, 3c4ca599, ws58), lists idle bins now (q1, q2), names the critical path and gives a UTC ETA for it, and includes a RAM note (one DS41-class item at a time). dhm-73 is COMPLETED (not armed), hil19-replay and new14-quant are BACKLOG with their blocker kind, kvu-lb2-arch and kpf19-gpu-fold are RUNNING with their grant ends, v12-build / v12-gpu-ab / spec-gram-2 are BOOKED in grant-day-20261104, the rest ARMED-UNBOOKED.
+context:
+  setup_script: place-files.sh
