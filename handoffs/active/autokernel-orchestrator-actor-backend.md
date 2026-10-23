@@ -616,13 +616,14 @@ These come from the 57.5 h DS41 local-planner bring-up: [retrospective](../../do
 checklist in `docs/guides/agent-workflows/agent-loop-design.md` → *Bringing up a new actor model or backend*.
 Each one turns a practice that was missing on 2026-09-23 into a standing gate.
 
-- [ ] **OAB-33 — Actor delegation must be instructed, not offered.** workspace-8d's pre-registered probe (2026-09-27,
+- [x] **OAB-33 ✅ 2026-10-23 — Actor delegation must be instructed, not offered.** workspace-8d's pre-registered probe (2026-09-27,
   `/mnt/raid0/llm/tmp/task-probe-20260927/`, driver root `scripts/harness/task_delegation_probe.py summarize`): on the
   HS-19a prompt that names the `task` tool, frontdoor, 27B-nothink and 27B-think all delegated 3/3; on the DS41-C20c seat
   shape (a `planner` agent with fan-out *guidance*, the hidden-`scout` description, a prompt that never names `task`) both
   frontdoor and 27B-think self-served 0/3. DS41-C20c's non-delegation was SETUP (prompt shape), not the model. If the AK
   seat should fan out, instruct it explicitly (or keep fan-out orchestrator-owned per OAB-8 / HS-19c, the operator ruling).
   - PARKED 2026-09-27 (operator): the probe is done and recorded (`/mnt/raid0/llm/tmp/task-probe-20260927/`, root `e043cfa3`/`c9bc3859`): C20c's non-delegation came from the prompt shape. The AK seat prompt is unchanged, so fan-out is still offered, not instructed. The standing operator ruling keeps fan-out orchestrator-owned (OAB-8/HS-19c); resume by recording here whether that ruling closes this item, with the probe as evidence, or, if seat fan-out is wanted, naming the `task` tool explicitly in the research planner prompt.
+  - ✅ 2026-10-23 (operator decision ~16:20Z): closed on the standing ruling (OAB-8 / HS-19c, fan-out stays orchestrator-owned), with the 2026-09-27 probe plus today's probe as evidence. No seat-prompt change.
 - [ ] **OAB-34 — actor calls end `output_capped_empty` at the 16384-token output cap.** Reported by ak-ds41-main on
   2026-09-27 for the planner (planner and critic output are capped at 16384 since the `ak-author-medium` lane). The loop
   record read during the wrap-up shows the same class on the a1-medium author in run 10k `batch-000000` ("3 step(s) hit

@@ -806,7 +806,7 @@ is olympiad-style reasoning.
             (`artifacts/champion-fold-kvu19-20261004/receipt-ab/champion-only-61bdb185c-20261004T144303Z/`).
             workspace-89 advanced the champion `1bceceb05` → `61bdb185c`. The next fold is Yfa `9a3f1392a` (+ CPU FA
             hybrid v2), with its gates passed.
-      - [ ] **KVU-19b-rework-c2 — make WMMA sequence tiles exact, straddle-only, and separately switchable; then
+      - [x] **KVU-19b-rework-c2 — make WMMA sequence tiles exact, straddle-only, and separately switchable; then
         `gpu_slot3.sh`.** (filed 2026-10-04, workspace-ec, owner workspace-ec, from KVU-19b-1; rework dispatched)
         (1) Root-cause the skip on/off difference on cases 110/111/118/119/126/127 (384 elements differ in each). The
         design says the planner and tiles never depend on `GGML_CUDA_FA_MASK_SKIP`, so something does. (2) Plan
@@ -1139,12 +1139,13 @@ here: none of the RTG-57 ids remain undefined. The owner named in these texts (w
     - *(2026-10-20 restore.)* Define-or-delete: the folded champion has since advanced (`dd3d9721c`); either re-aim this
       P3 B run at the current champion in the next coordinated GPU block, or record 'superseded by the v11 gate' and
       delete the id (the RTG-57 row cites it as `fold-c1-p3`).
-  - [ ] **KVU-19b-rework-c2-cal — triage the two slot-3 calibration FAILs, then hand commit 2 v2 to workspace-89.**
+  - [x] **KVU-19b-rework-c2-cal — triage the two slot-3 calibration FAILs, then hand commit 2 v2 to workspace-89.**
     (filed 2026-10-04, workspace-ec)
     - (a) The hs=128 bound: decide whether the bound is mis-set, or the layouts-off path still differs from KVU-19a.
     - (b) Case 152: it fails against the CPU reference on every arm, k19a included, so fix the reference or the
       threshold.
     - Done when both are explained with numbers, and the fold hand-off (or the drop of commit 2) is recorded here.
+    - ✅ 2026-10-23 (operator decision ~16:20Z): **commit 2 dropped.** Excluded from v11: ~14% slower on aligned verify, skip-on/off exactness breaks 6/119; no GPU triage. KVU-19b-rework-c2 closed with it.
     - *(2026-10-20 restore; manifest V11-085.)* Commit 2 is currently EXCLUDED from v11: about 14% slower on the aligned
       4x8 verify and breaks skip-on == skip-off exactness (6/119 cases); the rework result was not found. Branches
       `experimental/fa-maskskip-batched-20261004` @ `c7f5ac9ad`, `...-v2-20261004` @ `439b52cc2`. Parent task text
