@@ -636,9 +636,9 @@ DeepSeek-V4.1-Flash now serves the 1017 MXFP4-experts nine-shard build (501,602,
   | B2 17:09Z | 1017 | G1 | 16.34 ± 0.03 | 69.0 |
   | A2 18:55Z | 1017 | none | 15.99 ± 0.01 | 69.6 |
 
-  llama-bench, segment B (`-t 48 -fa 1 -mmp 0 -r 2`): 1017 pp512 87.94 / tg128 16.67; Sept pp512 125.39 / tg128 17.57.
+  llama-bench, segment B (`-t 48 -fa 1 -mmp 0 -r 2`): 1017 pp512 87.94 / tg128 16.67; Sept pp512 125.39 / tg128 17.57. **INVALID as a comparison (note 2026-10-23):** the Sept rows ran llama-bench's hardened protocol without asking for it (the uninitialised `autokernel_harden` defect, LBH in the AutoKernel rebuild handoff), and the 1017 rows ran the ordinary protocol. The re-measure is DS41-W5-LBR.
 - **Readings.**
-  - Under identical conditions (segment B), 1017 is **+8.1% on served decode** (15.01 vs 13.89 t/s). In llama-bench it is **−5.1% on tg128** and **−29.9% on pp512**: the `mxfp4_8x8_q8_0` repack prefill is slower than iqk Q4_K.
+  - Under identical conditions (segment B), 1017 is **+8.1% on served decode** (15.01 vs 13.89 t/s). The llama-bench reading (−5.1% on tg128, −29.9% on pp512) compares a hardened run with an ordinary one, so it is **INVALID** until DS41-W5-LBR re-measures it (note 2026-10-23). The served decode figure is a llama-server measurement and is unaffected.
   - **GPU impact: no measurable penalty.** The nearest pair, B2 (GPU on) against A2 (GPU off), is +2.2%, which is inside the drift.
   - **The drift is large.** 1017 went 12.87 → 15.01 → 16.34 → 15.99. A1 is a cold-state outlier, probably the first loads after the 15:57Z earlyoom event, so A1 against B is not a GPU effect.
 - **Memory footprint.** Each 1017 server holds about **276 GiB private RAM** (the repack) plus about **463 GiB mapped**. Two of them at once caused INC-20261021-earlyoom-session-kills (see the inference-serving page). The host rule is now one DS41-class server at a time.
@@ -649,7 +649,7 @@ DeepSeek-V4.1-Flash now serves the 1017 MXFP4-experts nine-shard build (501,602,
 
 ### Open questions
 
-- Is the −29.9% pp512 loss a property of the `mxfp4_8x8_q8_0` repack that a kernel can recover (W8), or the price of serving vendor precision?
+- Is 1017 prefill really slower than Sept Q4_K? The −29.9% pp512 is INVALID because of the protocol mix (DS41-W5-LBR). If a re-measure confirms the loss, is it a property of the `mxfp4_8x8_q8_0` repack that a kernel can recover (W8), or the price of serving vendor precision?
 - Does the 1017 drafter's alpha deficit survive more pairs (W6.2)?
 
 ### Source References
