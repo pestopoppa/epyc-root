@@ -14,7 +14,7 @@ for p in "$@"; do
     echo "  device   : $(stat -c %d "$p")"
     echo "  type     : $(stat -c %F "$p")"
     echo "  mount    : $(findmnt -T "$p" -o TARGET,SOURCE,FSTYPE -n 2>/dev/null || echo n/a)"
-    if stat -c %F "$p" | grep -q symbolic; then
+    if stat -c %F "$p" | grep symbolic >/dev/null; then
         echo "  LINK     : $(readlink "$p")"
     fi
 done

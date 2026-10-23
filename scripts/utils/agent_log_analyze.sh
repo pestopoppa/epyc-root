@@ -118,7 +118,7 @@ detect_loops() {
   grep '"cat":"CMD_INTENT"' "$LOG_FILE" |
     jq -r '.msg' 2>/dev/null |
     sort | uniq -c | sort -rn |
-    awk '$1 > 3 {print "  " $1 "x: " substr($0, index($0,$2))}' | head -10
+    awk '$1 > 3 {print "  " $1 "x: " substr($0, index($0,$2))}' | sed -n '1,10p'
   echo ""
 
   # Find repeated commands within same session
@@ -132,7 +132,7 @@ detect_loops() {
       grep '"cat":"CMD_INTENT"' |
       jq -r '.msg' 2>/dev/null |
       sort | uniq -c | sort -rn |
-      awk '$1 > 2 {print $0}' | head -3)
+      awk '$1 > 2 {print $0}' | sed -n '1,3p')
 
     if [[ -n "$repeated" ]]; then
       echo -e "  ${BLUE}Session: $session${NC}"
@@ -151,7 +151,7 @@ detect_loops() {
       date -d "$ts" +%s 2>/dev/null || echo "0"
     done |
     awk 'NR>1 {diff=$1-prev; if(diff<60 && diff>=0) count++; else count=1; if(count>5) print "  Burst at line " NR ": " count " commands in <60s"} {prev=$1}' |
-    head -5
+    sed -n '1,5p'
   echo ""
 }
 

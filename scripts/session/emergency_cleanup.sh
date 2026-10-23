@@ -64,7 +64,7 @@ if [ -d /tmp/claude ]; then
   echo ""
   echo "Analyzing /tmp/claude contents..."
   du -sh /tmp/claude 2>/dev/null || echo "  (cannot access)"
-  du -sh /tmp/claude/* 2>/dev/null | head -10 || true
+  du -sh /tmp/claude/* 2>/dev/null | sed -n '1,10p' || true
   echo ""
 
   echo "⚠️  This will DELETE /tmp/claude and ALL contents."

@@ -135,7 +135,7 @@ fi
 if [[ ! -f "$MODEL_PATH" ]]; then
   echo "ERROR: Model not found: $MODEL_PATH"
   echo "Available models:"
-  ls -lh "${MODELS_DIR}"/*.gguf | head -10
+  ls -lh "${MODELS_DIR}"/*.gguf | sed -n '1,10p'
   exit 1
 fi
 echo "[✓] Model found: $(basename $MODEL_PATH)"
@@ -311,7 +311,7 @@ echo "  kill $LLAMA_PID $ORCH_PID     # the pids this run started"
 echo "  ps -p $LLAMA_PID -p $ORCH_PID  # confirm they are gone; escalate to -9 only if not"
 echo ""
 echo "Memory usage:"
-free -h | head -2
+free -h | sed -n '1,2p'
 }
 
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then

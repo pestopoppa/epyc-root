@@ -58,7 +58,7 @@ findings="$(printf '%s' "$findings" | sed '/^[[:space:]]*$/d')"
 if [[ -n "$findings" ]]; then
   n=$(printf '%s\n' "$findings" | wc -l)
   echo "check_claims_grammar: $n line(s) look like uncited claims (need [P-<ID>, n, date, attest] or an observation marker):"
-  printf '%s\n' "$findings" | head -50
+  printf '%s\n' "$findings" | sed -n '1,50p'
   [[ "$n" -gt 50 ]] && echo "... ($((n-50)) more suppressed)"
   [[ "$STRICT" -eq 1 ]] && exit 1
 else

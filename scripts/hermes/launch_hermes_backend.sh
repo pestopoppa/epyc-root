@@ -40,7 +40,7 @@ if [[ ! -x "$LLAMA_SERVER" ]]; then
 fi
 
 # Check if port is already in use
-if ss -tlnp 2>/dev/null | grep -q ":${PORT} "; then
+if ss -tlnp 2>/dev/null | grep ":${PORT} " >/dev/null; then
     echo "WARNING: Port $PORT already in use. Kill existing process first."
     echo "  ss -tlnp | grep :${PORT}"
     exit 1

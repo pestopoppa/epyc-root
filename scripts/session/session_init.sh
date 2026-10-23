@@ -140,7 +140,7 @@ echo "--- Checking Python dependencies ---"
 if command -v uv &>/dev/null; then
   if [[ -f "${PROJECT_ROOT}/pyproject.toml" ]]; then
     cd "${PROJECT_ROOT}"
-    if uv sync --dry-run 2>&1 | grep -q "Would install"; then
+    if uv sync --dry-run 2>&1 | grep "Would install" >/dev/null; then
       echo "⚠ Dependencies out of sync. Running: uv sync"
       uv sync 2>&1 | tail -5
     else
@@ -273,7 +273,7 @@ tested_models=$(jq -r '.tested[]?.path // empty' "$TESTED_FILE" 2>/dev/null | so
 
 # Find untested models
 echo "$all_models" | while read -r model; do
-  if [ -n "$model" ] && ! echo "$tested_models" | grep -qF "$model"; then
+  if [ -n "$model" ] && ! echo "$tested_models" | grep -F "$model" >/dev/null; then
     echo "$model"
   fi
 done >"$UNTESTED_FILE"
@@ -303,7 +303,7 @@ if [ -f "$RESEARCH_REPORT" ]; then
   if grep -q "## Executive Summary" "$RESEARCH_REPORT"; then
     echo ""
     echo "Executive Summary:"
-    sed -n '/## Executive Summary/,/^## /p' "$RESEARCH_REPORT" | head -20
+    sed -n '/## Executive Summary/,/^## /p' "$RESEARCH_REPORT" | sed -n '1,20p'
   fi
 
   agent_observe "research_report" "exists"

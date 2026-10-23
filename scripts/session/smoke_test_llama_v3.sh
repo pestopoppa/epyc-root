@@ -251,7 +251,7 @@ if $RUN_FEATURES; then
     # Feature: --moe-n-expert (already tested in REAP load above, but verify flag parses)
     if [[ -f "$MODEL_WORKER" ]]; then
         log "Testing --moe-n-expert flag parsing..."
-        if "$CLI" -m "$MODEL_WORKER" -n 4 -p "Hi" --single-turn --moe-n-expert 4 -t 48 2>&1 | grep -qE "Generation:|eval time"; then
+        if "$CLI" -m "$MODEL_WORKER" -n 4 -p "Hi" --single-turn --moe-n-expert 4 -t 48 2>&1 | grep -E "Generation:|eval time" >/dev/null; then
             record_result "feature_moe_n_expert" "PASS" "Flag accepted, generation completed"
         else
             record_result "feature_moe_n_expert" "FAIL" "Generation failed with --moe-n-expert"
@@ -263,7 +263,7 @@ if $RUN_FEATURES; then
     # Feature: --lookup (prompt lookup decoding)
     if [[ -f "$MODEL_WORKER" ]]; then
         log "Testing --lookup flag..."
-        if "$CLI" -m "$MODEL_WORKER" -n 32 -p "The quick brown fox jumps over the lazy dog. The quick brown fox" --single-turn --lookup -t 48 2>&1 | grep -qE "Generation:|eval time"; then
+        if "$CLI" -m "$MODEL_WORKER" -n 32 -p "The quick brown fox jumps over the lazy dog. The quick brown fox" --single-turn --lookup -t 48 2>&1 | grep -E "Generation:|eval time" >/dev/null; then
             record_result "feature_lookup" "PASS" "Lookup decoding active"
         else
             record_result "feature_lookup" "FAIL" "Generation failed with --lookup"

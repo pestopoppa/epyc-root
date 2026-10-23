@@ -311,7 +311,7 @@ live_chat() {
     local base body
     base="$(resolve_base_url)"
     body='{"model":"","messages":[{"role":"user","content":"Reply with the single word OK."}],"max_tokens":16,"temperature":0,"seed":42}'
-    if _curl_json "${base}/chat/completions" "$body" | grep -q '"choices"'; then
+    if _curl_json "${base}/chat/completions" "$body" | grep '"choices"' >/dev/null; then
         DETAIL="chat completion returned choices"; return 0
     fi
     DETAIL="chat completion returned no choices"; return 1
@@ -338,7 +338,7 @@ live_tooluse() {
     local base body
     base="$(resolve_base_url)"
     body='{"model":"","messages":[{"role":"user","content":"What is 2+2? Use the calc tool."}],"max_tokens":64,"temperature":0,"seed":42,"tools":[{"type":"function","function":{"name":"calc","description":"evaluate an integer expression","parameters":{"type":"object","properties":{"expr":{"type":"string"}},"required":["expr"]}}}]}'
-    if _curl_json "${base}/chat/completions" "$body" | grep -Eq '"tool_calls"|"choices"'; then
+    if _curl_json "${base}/chat/completions" "$body" | grep -E '"tool_calls"|"choices"' >/dev/null; then
         DETAIL="tool schema accepted; response returned"; return 0
     fi
     DETAIL="tool-use request rejected or empty"; return 1
@@ -349,7 +349,7 @@ live_override() {
     local base body
     base="$(resolve_base_url)"
     body='{"model":"","messages":[{"role":"user","content":"ping"}],"max_tokens":16,"temperature":0,"seed":42,"x_orchestrator_role":"frontdoor","x_show_routing":true}'
-    if _curl_json "${base}/chat/completions" "$body" | grep -q '"choices"'; then
+    if _curl_json "${base}/chat/completions" "$body" | grep '"choices"' >/dev/null; then
         DETAIL="x_orchestrator_role override accepted"; return 0
     fi
     DETAIL="override request rejected"; return 1
