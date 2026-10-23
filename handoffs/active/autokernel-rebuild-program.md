@@ -2951,6 +2951,9 @@ are unaffected (the AK loop's bench arms pass it since R24-1). Serving floors an
          `data/cpu-model-characterization/q38fn-ud-iq4xs-b0ba1d427-20261020/llama_bench_stdout.json`: 4/4 rows
          hardened, t48 tg128 31.2 vs t96 24.8, pp512 212 vs 231): one protocol on both arms, so re-grade as a
          hardened-protocol reading, not an ordinary-bench number.
+      *(2026-10-23, 3c4ca599, dispositions applied.)* Items 1-3 carry dated notes in their home handoffs. Item 1: INVALID, W8a/S5 BLOCKED, task DS41-W5c (frozen).
+      Item 2: like-protocol re-analysis DONE, verdict survives at low strength (see DS41-C112 note). Item 3: re-graded as hardened-protocol reading.
+      Unaffected: `ds41-1017-ak-floor-20261022` (llama-server based, no hardened result rows; checked by workspace-58).
       4. **KVU-LB1.b run 1 s2** (already ruled INVALID, `kv-unified-stack-rollout.md`).
       Done when every manifest row carries a disposition and every cited claim has its note.
 - [ ] **LBH-3 — consumer guard: shared llama-bench parsers reject unrequested hardened rows (PROPOSED, research code,

@@ -1038,6 +1038,13 @@ Closed §C items (C10a, C20 with C20a-c/e/h, C21-C25, C28-C32, C35-C40, C44, C45
   without `--autokernel-harden` (llama-bench uninitialised `autokernel_harden`, V11-103), mixed inside every ABAB
   pair, so the bisect compared protocols as well as commits. The first-bad verdict stands only if it holds on
   like-protocol pairs or a V11-103 re-run. Disposition tracked in LBH-2, `autokernel-rebuild-program.md`.
+  *(2026-10-23, llama-bench harden UB, 3c4ca599: UNRELIABLE as filed; like-protocol re-analysis done, no compute.)* Re-read from the per-run
+  `bench-q38-r*-*.jsonl` (hardened flag per row) in the c4 run dir, keeping only same-round pairs whose arms share a protocol, pp256 effect vs reference B:
+  e038b28f1 r1 -25.0% (both hardened; r2 mixed); 6f8e232aa NO usable pair (both rounds mixed, the "GOOD" is protocol-confounded);
+  9b148baab r1 -23.4% (both ordinary) plus the repeat `s3-9b148baab-x` r2 -24.8% (both hardened); ad8979943 r2 +1.1% (both hardened; r1 mixed);
+  phase0 SLAB=0 arm X vs B +7.7% (r1, ordinary) and +2.6% (r2, hardened), while T (dd6c9cdbd) has no like pair. Result: the verdict
+  **survives** (9b148baab BAD in 2 like-protocol pairs, ad8979943 GOOD in 1 like pair, boundary sits between idx 3 and 4, the step-2 gap does not matter),
+  and the SLAB=0 recovery holds in both like pairs. Strength is low: n=1 like pair per step, no floor. Cannot support any -25% magnitude beyond sign.
 - [ ] DS41-C113 — **the DS41 launchers depend on a scratch worktree path.** (filed 2026-10-04; INC-20261004-cleanup-removed-load-bearing-worktree) `ds41_watchdog.sh`, `swap_*.sh` in
   `/mnt/raid0/llm/tmp/ds41-scope-20260926/` export `EPYC_ROOT_REPO=/mnt/raid0/llm/worktrees/root-main-epyc-root-repo`; its removal on 2026-10-04 crashed DS41 (02:25Z, relaunched 02:36Z).
   Point it at a pinned, marked-LOAD-BEARING path (or the canonical root clone), make the launcher fail fast with a named error when the path is missing, and stop the
@@ -1393,6 +1400,10 @@ Working notes (scratch, KEEP until W7): `/mnt/raid0/llm/tmp/ds41-1017-swap/` (`a
       its argv, while `bench-B-1017.json` ran ordinary (llama-bench uninitialised `autokernel_harden`, V11-103). The
       tg128 -5.1% and pp512 -29.9% are therefore INVALID until re-measured on a V11-103 build, and the DS41-W8a /
       S5 premise needs that re-measure first. Disposition tracked in LBH-2, `autokernel-rebuild-program.md`.
+      *(2026-10-23, llama-bench harden UB, 3c4ca599.)* Verdict: the "1017 vs Sept" llama-bench delta (tg128 -5.1%, pp512 -29.9%) is **INVALID**
+      (Sept arm hardened, 1017 arm ordinary). DS41-W8a and AK seed S5 are **BLOCKED** on a same-protocol re-measure, which waits on the
+      operator's DS41 freeze (2026-10-22). Not scheduled. Tasks below.
+      - [ ] **DS41-W5c — same-protocol re-measure of llama-bench 1017 vs Sept Q4 (tg128, pp512).** BLOCKED on: operator's DS41-1017 freeze (only the noise floor runs until AK kernel work) AND a V11-103 build (CH-28, `autokernel-champion-aggregate.md`) or an explicit `--autokernel-harden` on both arms. Do not schedule. (derived 2026-10-23 from LBH-2)
   - [ ] **DS41-W5a — NMSE spot checks for the MXFP4 expert path.** The CPU-only build has no second backend,
     so `test-backend-ops` has nothing to compare against. Use a served-shape MUL_MAT_ID MXFP4 case set (the
     `served_shape_cases.py` lane profile from the 1017 GGUF) against an f32-dequant reference, cap 5e-4.
@@ -1510,7 +1521,7 @@ Working notes (scratch, KEEP until W7): `/mnt/raid0/llm/tmp/ds41-1017-swap/` (`a
 
 ### T — Gates (translated from INF-69 T0-T4 / T0-SPEC / T15)
 
-  - [ ] **DS41-W8a — give the DS41-1017 AK target a prefill surface.** The campaign target runs `-np 1`, no drafter, one cached 45-token prompt, so it cannot see prefill; seed S5 (`akm-ds41-1017-mxfp4-mmid-gemm-tiles`, the likely cause of the −29.9% pp512 vs Sept Q4_K) stays record-only until the target adds `--keep-dimensions prefill_at_depth` with a `--longctx-surface` (or the W6 drafter's verify shapes). Needs its own floor (new recipe). (filed 2026-10-21 from the AK-seeding report) — **DEFERRED 2026-10-22, run cancelled** (operator 2026-10-22 08:4xZ: DS41-1017 tests other than the noise floor wait until AutoKernel kernel work is done; FILLERS row `ds41-1017-w8a-longctx-floor` CANCELLED). Not done; reopen when AK kernel work has landed.
+  - [ ] **DS41-W8a — give the DS41-1017 AK target a prefill surface.** The campaign target runs `-np 1`, no drafter, one cached 45-token prompt, so it cannot see prefill; seed S5 (`akm-ds41-1017-mxfp4-mmid-gemm-tiles`, the likely cause of the −29.9% pp512 vs Sept Q4_K) stays record-only (*2026-10-23, llama-bench harden UB: its -29.9% premise is INVALID, see DS41-W5; additionally BLOCKED on DS41-W5c*) until the target adds `--keep-dimensions prefill_at_depth` with a `--longctx-surface` (or the W6 drafter's verify shapes). Needs its own floor (new recipe). (filed 2026-10-21 from the AK-seeding report) — **DEFERRED 2026-10-22, run cancelled** (operator 2026-10-22 08:4xZ: DS41-1017 tests other than the noise floor wait until AutoKernel kernel work is done; FILLERS row `ds41-1017-w8a-longctx-floor` CANCELLED). Not done; reopen when AK kernel work has landed.
     - *(2026-10-21, note; W8a stays open.)* Traced on research `c036eaa40` (autokernel code = `c5997024e`).
       **W8a does not invalidate the 2026-10-22 decode floor.** The decode floor path is built only from the
       launch template, the anchor execution digest and the frozen decode requests (`run.py` 1113-1127, 1615-1636,

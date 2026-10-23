@@ -181,6 +181,10 @@ at 153 GB/s in the configuration that serves.
 > (llama-bench uninitialised `autokernel_harden`, V11-103). Both thread arms ran the same (hardened) protocol, so the
 > t48-vs-t96 direction is comparable, but the absolute numbers are hardened-protocol readings, not ordinary bench
 > numbers. Disposition tracked in LBH-2, `autokernel-rebuild-program.md`.
+>
+> *(2026-10-23, llama-bench harden UB, 3c4ca599.)* Re-graded: the Q38FN thread-at-depth d0 anchor (4/4 rows hardened, both arms) is a
+> **hardened-protocol reading**: internally consistent for the t48-vs-t96 comparison, but it does not describe the default serving protocol.
+> A default-protocol anchor needs a V11-103 build re-run; not scheduled while the host is on DS41/AK priorities.
 
 ## Axis C — measurement (FIRST; cheap, and it makes every other axis legible)
 
