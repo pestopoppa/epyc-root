@@ -24,7 +24,7 @@ SCAN="$(dirname "${BASH_SOURCE[0]}")/process_pattern_kill_scan.py"
 # still refuse a literal `pkill`/`pgrep` at a command position, because a missed
 # pattern kill costs another session's work and a false block costs a rephrase.
 if ! command -v python3 >/dev/null 2>&1 || [[ ! -f "$SCAN" ]]; then
-  if echo "$CMD" | grep -qE '(^|[;&|]|\s)(pkill)\s'; then
+  if echo "$CMD" | grep -E '(^|[;&|]|\s)(pkill)\s' >/dev/null; then
     echo "BLOCKED: the pattern-kill scanner is unavailable and this command invokes pkill." >&2
     echo "Refusing rather than guessing. Kill a PID you captured yourself, or use TaskStop." >&2
     exit 2
@@ -55,7 +55,7 @@ case "$VERDICT" in
     exit 0
     ;;
   SCANNER-FAILED)
-    if echo "$CMD" | grep -qE '(^|[;&|]|\s)(pkill)\s'; then
+    if echo "$CMD" | grep -E '(^|[;&|]|\s)(pkill)\s' >/dev/null; then
       echo "BLOCKED: the pattern-kill scanner errored and this command invokes pkill." >&2
       echo "Refusing rather than guessing." >&2
       exit 2

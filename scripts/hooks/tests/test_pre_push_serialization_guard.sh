@@ -66,7 +66,7 @@ fail() {
   printf '  FAIL %s\n         %s\n' "$1" "$2" >&2
   if [[ -s "${ERRFILE:-/dev/null}" ]]; then
     printf '         --- guard stderr ---\n' >&2
-    sed 's/^/         | /' "$ERRFILE" >&2 | head -40
+    sed 's/^/         | /' "$ERRFILE" >&2 | sed -n '1,40p'
   fi
 }
 

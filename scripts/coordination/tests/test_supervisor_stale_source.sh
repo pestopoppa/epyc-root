@@ -132,7 +132,7 @@ fi
 echo
 echo "  -- wiring: the loop's healthy path must reach the check --"
 healthy_block=$(sed -n '/while true; do/,/^      fi/p' "$SUP")
-if printf '%s' "$healthy_block" | grep -q 'check_stale_source'; then
+if printf '%s' "$healthy_block" | grep 'check_stale_source' >/dev/null; then
   echo "  PASS  loop healthy branch calls check_stale_source"; pass=$((pass+1))
 else
   echo "  FAIL  loop healthy branch does NOT call check_stale_source —"
@@ -140,7 +140,7 @@ else
   fail=$((fail+1))
 fi
 # ...and it must still be reachable from `once`, which cron uses.
-if sed -n '/^check_once()/,/^}/p' "$SUP" | grep -q 'check_stale_source'; then
+if sed -n '/^check_once()/,/^}/p' "$SUP" | grep 'check_stale_source' >/dev/null; then
   echo "  PASS  check_once still calls it (the cron path)"; pass=$((pass+1))
 else
   echo "  FAIL  check_once no longer calls it — cron \`once\` would stop checking"; fail=$((fail+1))

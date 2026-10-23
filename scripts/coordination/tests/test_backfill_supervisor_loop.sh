@@ -51,9 +51,9 @@ GUARD="$REPO/scripts/coordination/observer_guard.sh"
 pass=0; fail=0
 chk()  { if [ "$2" = "$3" ]; then echo "  PASS  $1"; pass=$((pass+1));
          else echo "  FAIL  $1 (got [$2], want [$3])"; fail=$((fail+1)); fi; }
-has()  { if printf '%s' "$2" | grep -qF -- "$3"; then echo "  PASS  $1"; pass=$((pass+1));
+has()  { if printf '%s' "$2" | grep -F -- "$3" >/dev/null; then echo "  PASS  $1"; pass=$((pass+1));
          else echo "  FAIL  $1 — output lacks [$3]"; fail=$((fail+1)); fi; }
-hasnt(){ if printf '%s' "$2" | grep -qF -- "$3"; then echo "  FAIL  $1 — output CONTAINS [$3]"; fail=$((fail+1));
+hasnt(){ if printf '%s' "$2" | grep -F -- "$3" >/dev/null; then echo "  FAIL  $1 — output CONTAINS [$3]"; fail=$((fail+1));
          else echo "  PASS  $1"; pass=$((pass+1)); fi; }
 
 STANDIN_PIDS=()
@@ -131,7 +131,7 @@ PY
     # just followed by a red suite. Caught here on the first attempt: the mutant
     # tree resolved EPYC_ROOT to its own throwaway dir, so it died sourcing
     # observer_guard.sh and "detected" all three mutations without running once.
-    if ! printf '%s' "$out" | grep -qF "PASS  loop actually ran"; then
+    if ! printf '%s' "$out" | grep -F "PASS  loop actually ran" >/dev/null; then
       echo "     FAIL  $name never STARTED — this is not a detection, it is a broken mutant tree"
       mut_fail=$((mut_fail+1)); return 0
     fi
@@ -210,7 +210,7 @@ spawn_standin() {
   local waited=0
   while (( waited < 50 )); do
     if [[ -r "/proc/$SC_STANDIN_PID/cmdline" ]] \
-       && tr '\0' ' ' < "/proc/$SC_STANDIN_PID/cmdline" | grep -qF "$SC_MARK"; then
+       && tr '\0' ' ' < "/proc/$SC_STANDIN_PID/cmdline" | grep -F "$SC_MARK" >/dev/null; then
       return 0
     fi
     sleep 0.1; waited=$((waited+1))
@@ -368,13 +368,13 @@ echo '== 5. `if health_ok` must not come back =='
 # re-collapses `unobservable` into "unhealthy, restart it" at the point of use.
 # The call sites must capture the code.
 # =========================================================================== #
-if printf '%s\n' "$loop_block" | grep -qE '^\s*(if|elif)\s+health_ok\s*;'; then
+if printf '%s\n' "$loop_block" | grep -E '^\s*(if|elif)\s+health_ok\s*;' >/dev/null; then
   echo "  FAIL  the loop uses \`if health_ok\` — that collapses the third state at the call site"
   fail=$((fail+1))
 else
   echo "  PASS  no bare \`if health_ok\` in the loop"; pass=$((pass+1))
 fi
-if printf '%s\n' "$loop_block" | grep -qF 'health_ok || rc=$?'; then
+if printf '%s\n' "$loop_block" | grep -F 'health_ok || rc=$?' >/dev/null; then
   echo "  PASS  the loop captures health_ok's exit code"; pass=$((pass+1))
 else
   echo "  FAIL  the loop does not capture health_ok's exit code"; fail=$((fail+1))

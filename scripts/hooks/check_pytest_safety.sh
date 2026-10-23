@@ -29,7 +29,7 @@ fi
 # match rather than letting an unchecked command through. A false block costs a
 # rephrase; a missed `-n auto` costs the machine.
 if ! command -v python3 >/dev/null 2>&1; then
-  if echo "$CMD" | grep -qP 'pytest.*-n\s*(auto|[0-9]+)'; then
+  if echo "$CMD" | grep -P 'pytest.*-n\s*(auto|[0-9]+)' >/dev/null; then
     echo "BLOCKED: python3 is unavailable for precise pytest-worker checking and this command" >&2
     echo "matches the broad pattern. Refusing rather than guessing. Use -n 8 (default)." >&2
     exit 2
@@ -47,7 +47,7 @@ case "$VERDICT" in
     ;;
   SCANNER-FAILED)
     # Same fail-closed posture as a missing python3.
-    if echo "$CMD" | grep -qP 'pytest.*-n\s*(auto|[0-9]+)'; then
+    if echo "$CMD" | grep -P 'pytest.*-n\s*(auto|[0-9]+)' >/dev/null; then
       echo "BLOCKED: the pytest-worker scanner failed and this command matches the broad" >&2
       echo "pattern. Refusing rather than guessing. Use -n 8 (default)." >&2
       exit 2

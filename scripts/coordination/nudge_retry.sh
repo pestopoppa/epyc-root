@@ -20,7 +20,7 @@ ATTEMPTS="${3:-12}"
 for i in $(seq 1 "$ATTEMPTS"); do
   out=$(timeout 90 python3 "${EPYC_TMUX_ADAPTER}" nudge \
           --agent "$AGENT" --min-interval-s 20 --message "$MSG" 2>&1 | tail -3)
-  if printf '%s' "$out" | grep -q 'nudged'; then
+  if printf '%s' "$out" | grep 'nudged' >/dev/null; then
     echo "[$AGENT] DELIVERED on attempt $i"
     exit 0
   fi

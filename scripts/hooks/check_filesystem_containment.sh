@@ -68,11 +68,11 @@ SCAN="$(dirname "${BASH_SOURCE[0]}")/filesystem_containment_scan.py"
 # skipping; it exists only so a broken python3 cannot re-open the gap.
 if ! command -v python3 >/dev/null 2>&1 || [[ ! -f "$SCAN" ]]; then
   if [[ "$MODE" == "--command" ]]; then
-    if printf '%s' "$VALUE" | grep -qE \
+    if printf '%s' "$VALUE" | grep -E \ >/dev/null
       '(^|[;&|]|\s)(sudo[[:space:]]+)?(mount|umount|mkfs|fdisk|parted|mkswap|systemctl|modprobe|shutdown|reboot)([[:space:]]|$)' ||
-       printf '%s' "$VALUE" | grep -qE \
+       printf '%s' "$VALUE" | grep -E \ >/dev/null
       '(^|[;&|]|\s)(sudo[[:space:]]+)?(apt|apt-get)[[:space:]]+(install|remove|purge)' ||
-       printf '%s' "$VALUE" | grep -qE \
+       printf '%s' "$VALUE" | grep -E \ >/dev/null
       '(^|[;&|]|\s)(sudo[[:space:]]+)?dpkg[[:space:]]+(-i|--install|-r|--remove)'; then
       echo "BLOCKED: the filesystem-containment scanner is unavailable and this command" >&2
       echo "invokes a privileged host-level verb. Refusing rather than guessing." >&2

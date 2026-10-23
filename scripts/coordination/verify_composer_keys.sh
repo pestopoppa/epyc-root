@@ -143,7 +143,7 @@ EOF
 }
 
 holds_text() {   # 0 == the sacrificial text is still in the composer
-    read_composer | grep -qF "$SACRIFICIAL"
+    read_composer | grep -F "$SACRIFICIAL" >/dev/null
 }
 
 RESULTS=()
@@ -179,7 +179,7 @@ run_candidate() {   # label, then the key sequence as a shell function name
     local observed; observed="$(read_composer)"
     if [[ "$observed" == UNREADABLE:* ]]; then
         record_result "$label" "UNREADABLE" "$observed"
-    elif echo "$observed" | grep -qF "$SACRIFICIAL"; then
+    elif echo "$observed" | grep -F "$SACRIFICIAL" >/dev/null; then
         record_result "$label" "no-op; text stays" "$observed"
     else
         record_result "$label" "CLEARED" "$observed"

@@ -184,7 +184,7 @@ is_timestamp_or_log_line() {
   # (`<s>.<ms>.<us>.<ns> <LEVEL> `), not on a looser digit rule: a broad "long
   # digit runs in logs are fine" exemption would be a real weakening, since logs
   # are exactly where a leaked token tends to land.
-  echo "$line" | grep -qE '^[0-9]+\.[0-9]{2}\.[0-9]{3}\.[0-9]{3} [IWEDT] ' && return 0
+  echo "$line" | grep -E '^[0-9]+\.[0-9]{2}\.[0-9]{3}\.[0-9]{3} [IWEDT] ' >/dev/null && return 0
   # Self-describing numeric JSON fields. ADDED 2026-08-02.
   # A digit run whose own KEY says it is a byte count, size or duration is not an
   # account number: `"total_shard_bytes": 238577580768` is a 238 GB model shard.
@@ -199,9 +199,13 @@ is_timestamp_or_log_line() {
   # commit of measurement evidence. Fixture coverage for this and the four sibling branches
   # landed in the same change; before it, the account_number rule's ONLY must-not-block row
   # was 10 digits and could not reach this regex at all.
-  echo "$line" | grep -qE '"[a-z0-9_]*(bytes(_[a-z0-9_]+)?|tokens|size|_ns|_us|_ms|elapsed|duration)"[[:space:]]*:[[:space:]]*[0-9]{12,19}\b' \
-    && ! echo "$line" | grep -qiE '(^|[^a-z])(account|card|customer|iban|routing|ssn)([^a-z]|$)' && return 0
-  echo "$line" | grep -qE '\b[0-9]{12,19}[[:space:]]+bytes([[:space:]]+(free|used|total))?\b' && return 0
+  # `n_params` ADDED 2026-10-21: llama-bench JSON carries `"model_n_params": 754638867584`
+  # (a parameter count) and blocked every bench-result commit outside the path-scoped
+  # is_benchmark_timing_line directory. Same rule: the key asserts its own semantics, and the
+  # account/card/customer guard below still wins on a line that names one.
+  echo "$line" | grep -E '"[a-z0-9_]*(bytes(_[a-z0-9_]+)?|tokens|size|n_params|_ns|_us|_ms|elapsed|duration)"[[:space:]]*:[[:space:]]*[0-9]{12,19}\b' >/dev/null \
+    && ! echo "$line" | grep -iE '(^|[^a-z])(account|card|customer|iban|routing|ssn)([^a-z]|$)' >/dev/null && return 0
+  echo "$line" | grep -E '\b[0-9]{12,19}[[:space:]]+bytes([[:space:]]+(free|used|total))?\b' >/dev/null && return 0
   return 1
 }
 
@@ -210,7 +214,7 @@ is_decimal_float_line() {
   # Common cases: temperature: 0.0736042256959058, threshold: 4.09045566671701.
   # Pattern: any `.` followed directly by 12+ digits.
   local line="$1"
-  echo "$line" | grep -qE '\.[0-9]{12,}' && return 0
+  echo "$line" | grep -E '\.[0-9]{12,}' >/dev/null && return 0
   # YAML-style numeric tuning keys typical in registry / config files.
   # If the line has `key: <number>` shape AND the number context is purely numeric
   # (no surrounding text), it's a config value, not an account number.
@@ -221,10 +225,10 @@ is_decimal_float_line() {
   # Found by adding a negative-control fixture row for the exemption itself.
   # `[^a-z]` treats `_` as a separator while still refusing mid-word hits: `discard`,
   # `wildcard` and `shard` do not match `card`, because there the letter before is [a-z].
-  echo "$line" | grep -qE '^\s*[A-Za-z_][A-Za-z0-9_]*\s*:' \
-    && echo "$line" | grep -qiE '(^|[^a-z])(account|card|customer|iban|routing|ssn)([^a-z]|$)' \
+  echo "$line" | grep -E '^\s*[A-Za-z_][A-Za-z0-9_]*\s*:' >/dev/null \
+    && echo "$line" | grep -iE '(^|[^a-z])(account|card|customer|iban|routing|ssn)([^a-z]|$)' >/dev/null \
     && return 1
-  echo "$line" | grep -qE '^\s*[a-z_][a-z0-9_]*\s*:\s*-?[0-9]+(\.[0-9]+)?(\s*#.*)?\s*$' && return 0
+  echo "$line" | grep -E '^\s*[a-z_][a-z0-9_]*\s*:\s*-?[0-9]+(\.[0-9]+)?(\s*#.*)?\s*$' >/dev/null && return 0
   return 1
 }
 
@@ -232,7 +236,7 @@ is_version_or_hash_line() {
   # Skip UUIDs / hashes. The account_number regex can otherwise catch the
   # all-digit tail group in UUIDs such as 550e8400-e29b-41d4-a716-446655440000.
   local line="$1"
-  echo "$line" | grep -qiE '\b[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\b' && return 0
+  echo "$line" | grep -iE '\b[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\b' >/dev/null && return 0
   return 1
 }
 
@@ -243,7 +247,7 @@ is_benchmark_prompt_hash_line() {
   local path="$1"
   local line="$2"
   [[ "$path" =~ ^benchmarks/results/(eval|orchestrator)/.+[.](jsonl|json)$ ]] || return 1
-  echo "$line" | grep -qE '"prompt_hash"[[:space:]]*:[[:space:]]*"[0-9]{12,19}"' && return 0
+  echo "$line" | grep -E '"prompt_hash"[[:space:]]*:[[:space:]]*"[0-9]{12,19}"' >/dev/null && return 0
   return 1
 }
 
@@ -284,7 +288,7 @@ is_benchmark_per_question_line() {
   local path="$1"
   local line="$2"
   [[ "$path" =~ (^|/)(artifacts|data)/.+/per_question[.]jsonl$ ]] || return 1
-  echo "$line" | grep -qE '"(arm|suite|question_id|qid)"[[:space:]]*:' && return 0
+  echo "$line" | grep -E '"(arm|suite|question_id|qid)"[[:space:]]*:' >/dev/null && return 0
   return 1
 }
 is_benchmark_timing_line() {
@@ -295,12 +299,12 @@ is_benchmark_timing_line() {
   local path="$1"
   local line="$2"
   [[ "$path" =~ ^data/(cpu-model-characterization|gpu-mi210)/.+/(llama_bench_stdout[.]json|stdout[.]log|summary[.](json|md))$ ]] || return 1
-  echo "$line" | grep -qE '"(avg_ns|stddev_ns)"[[:space:]]*:[[:space:]]*[0-9]{12,19}[,]?' && return 0
-  echo "$line" | grep -qE '"samples_ns"[[:space:]]*:[[:space:]]*\[[[:space:]]*[0-9]{12,19}([[:space:]]*,[[:space:]]*[0-9]{12,19})*[[:space:]]*\]' && return 0
+  echo "$line" | grep -E '"(avg_ns|stddev_ns)"[[:space:]]*:[[:space:]]*[0-9]{12,19}[,]?' >/dev/null && return 0
+  echo "$line" | grep -E '"samples_ns"[[:space:]]*:[[:space:]]*\[[[:space:]]*[0-9]{12,19}([[:space:]]*,[[:space:]]*[0-9]{12,19})*[[:space:]]*\]' >/dev/null && return 0
   if [[ "$path" =~ ^data/(cpu-model-characterization|gpu-mi210)/.+/summary[.]json$ ]]; then
-    echo "$line" | grep -qE '^[[:space:]]*[0-9]{12,19},?[[:space:]]*$' && return 0
+    echo "$line" | grep -E '^[[:space:]]*[0-9]{12,19},?[[:space:]]*$' >/dev/null && return 0
   fi
-  echo "$line" | grep -qE '"model_n_params"[[:space:]]*:[[:space:]]*[0-9]{12,19}[,]?' && return 0
+  echo "$line" | grep -E '"model_n_params"[[:space:]]*:[[:space:]]*[0-9]{12,19}[,]?' >/dev/null && return 0
   return 1
 }
 
@@ -310,7 +314,7 @@ is_perf_report_counter_line() {
   local path="$1"
   local line="$2"
   [[ "$path" =~ ^data/op2_canonical_window/.+/perf_report(_.*)?[.]txt$ ]] || return 1
-  echo "$line" | grep -qE '^# Event count [(]approx[.][)]:[[:space:]]*[0-9]{12,19}$' && return 0
+  echo "$line" | grep -E '^# Event count [(]approx[.][)]:[[:space:]]*[0-9]{12,19}$' >/dev/null && return 0
   return 1
 }
 
@@ -320,7 +324,7 @@ is_only_linux_vmalloc_total_counter_line() {
   # string. Remove only that raw_text occurrence in a scratch copy; any other
   # 12-19 digit candidate on the physical JSON line keeps the normal block path.
   local line="$1" sanitized
-  if echo "$line" | grep -qE '^VmallocTotal:[[:space:]]+13743895347199[[:space:]]kB$'; then
+  if echo "$line" | grep -E '^VmallocTotal:[[:space:]]+13743895347199[[:space:]]kB$' >/dev/null; then
     return 0
   fi
   sanitized="$(printf '%s\n' "$line" | command sed -E 's/((^[[:blank:]]*|[,{}][[:blank:]]*)"raw_text"[[:space:]]*:[[:space:]]*"[^"]*\\n)VmallocTotal:[[:space:]]+13743895347199[[:space:]]kB(\\n|")/\1\3/')"

@@ -67,7 +67,7 @@ while [ "$elapsed" -lt "$MAX" ]; do
     [ "${STRIKES[$w]}" -lt "$CONFIRM" ] && continue
     out=$(timeout 90 python3 "$ADAPTER" nudge --agent "$w" --min-interval-s 20 \
             --message "${MSG//<your-id>/$w}" 2>&1 | tail -3)
-    if printf '%s' "$out" | grep -q 'nudged'; then
+    if printf '%s' "$out" | grep 'nudged' >/dev/null; then
       log "RE-NUDGED $w after ${STRIKES[$w]} idle polls"
       STRIKES[$w]=0
     else

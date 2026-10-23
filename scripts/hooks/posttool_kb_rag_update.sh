@@ -68,7 +68,7 @@ fi
 
 # Match git commands that move HEAD. We grep tolerantly: cmd may contain
 # subshells, env prefixes, multiple statements, etc.
-if echo "$CMD" | grep -qE '\bgit\s+(commit|merge|pull|rebase|cherry-pick)\b'; then
+if echo "$CMD" | grep -E '\bgit\s+(commit|merge|pull|rebase|cherry-pick)\b' >/dev/null; then
   # Run the actual update in the background — PostToolUse should not block.
   # The hook is best-effort, but keep a durable log so skipped/failed updates
   # are auditable after the triggering command has returned.

@@ -80,7 +80,7 @@ if [[ "$TOOL" == "Bash" ]]; then
   if command -v python3 >/dev/null 2>&1 && [[ -f "$_DC_SCAN" ]]; then
     DC_VERDICT=$(printf '%s' "$CMD" | python3 "$_DC_SCAN" 2>/dev/null) || DC_VERDICT="write"
   else
-    DC_VERDICT=$(printf '%s' "$CMD" | grep -qE '(>|>>|\|[[:space:]]*(sudo[[:space:]]+)?tee([[:space:]]+-a)?)[[:space:]]*/proc/sys/vm/drop_caches|sysctl[^;&|]*\bvm\.drop_caches[[:space:]]*=' && echo write || echo "")
+    DC_VERDICT=$(printf '%s' "$CMD" | grep -E '(>|>>|\|[[:space:]]*(sudo[[:space:]]+)?tee([[:space:]]+-a)?)[[:space:]]*/proc/sys/vm/drop_caches|sysctl[^;&|]*\bvm\.drop_caches[[:space:]]*=' >/dev/null && echo write || echo "")
   fi
   if [[ "$DC_VERDICT" == "write" ]]; then
     if REGION=$(held_region); then
@@ -117,7 +117,7 @@ if [[ "$TOOL" == "Write" || "$TOOL" == "Edit" ]]; then
     [[ "$p" == "$$" || "$p" == "$PPID" ]] && continue
     comm=$(cat "$pid/comm" 2>/dev/null) || continue
     case "$comm" in bash|sh|zsh|dash|ksh) ;; *) continue ;; esac
-    if tr '\0' '\n' < "$pid/cmdline" 2>/dev/null | grep -qxF "$TARGET"; then
+    if tr '\0' '\n' < "$pid/cmdline" 2>/dev/null | grep -xF "$TARGET" >/dev/null; then
       cat >&2 <<EOF
 BLOCKED: $FILE is currently being executed by pid $p.
 

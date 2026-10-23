@@ -803,7 +803,7 @@ lock_holder_pid() {
     printf '%s\n' "$pid"
   done < <(find /proc/[0-9]*/fd -maxdepth 1 \
              \( -lname "$resolved" -o -lname "$file" \) -printf '%h\n' 2>/dev/null) \
-    | sort -un | head -1
+    | sort -un | sed -n '1,1p'
 }
 
 supervisor_status_line() {
