@@ -1460,4 +1460,26 @@ Operator-approved 2026-10-20 via research intake (plan sha256 recorded in the se
 - [ ] **KVU-LB1 — CPU FP16 V-accumulator follow-through from the upstream reading: attach our reduced repro, accumulator-peak probe data and hybrid-fix results to the existing upstream issue and PR instead of a new report (posting is the operator's call; record the link); use upstream's fused-F32 cost data in the decode A/B and run it on the architect's real decode path at N=1 and N=5; move the dense-MTP-head acceptance check above 64k up, since production v10 has no fix and the architect declares a 262144 context (intake-2455).**
   - [x] KVU-LB1.a upstream evidence posted on PR #29810 (operator-reviewed and approved 2026-10-22): https://github.com/ggml-org/llama.cpp/pull/29810#issuecomment-6340235109 — model-free repro (non-finite only for n_q<64 once n_kv*bias > 65504), F16-accumulator sub-overflow error 0.297 vs 4.1e-5 F32, fused-F32 op-time parity on Zen 5 (24 thr, 131072 cells), real-model peak 237.6 with a 2048-cell window; we back always-F32. The unsourced "two-pass ~3x" figure was dropped (raw log not retained). ✅ 2026-10-22
   - [ ] KVU-LB1.b decode A/B of fused-F32 on the architect's real decode path at N=1 and N=5 (compute; FILLERS row locals-kvu-lb1-arch-decode-ab, launcher armed 2026-10-22; rule in /mnt/raid0/llm/tmp/f8-launchers-20261022/locals-kvu-lb1-arch-decode-ab/PREDECLARATION.md)
+    - *(2026-10-23, run 1 post-mortem + redesign; workspace-f8)* Run 1 (07:06→08:16Z grant, champion dd3d9721c) ended rc=124 with s1-F16 OK and s2-F32 two cells into four.
+      **The cause was not F32.** llama-bench `parse_cmd_params()` never initialises `cmd_params::autokernel_harden` (UB, present since `0492c2319` 2026-08-11, so in v10 `ffc1bac82`, dd3d9721c and 49550eda5).
+      s2's process read it as true and silently ran the `--autokernel-harden` protocol: its jsonl rows carry `"autokernel_hardened": true`, and its stderr has no per-rep progress lines, because that branch prints none.
+      That protocol does a separate depth fill for each of 20 contexts plus each measured/replicate rep, so 40 x 8192-token fills per benchmark.
+      Timings: pp5@8k 07:12:43→07:39:52 (1629 s, ~40.7 s/fill) and tg64@8k →08:10:36 (1844 s, ~43.3 s/fill; the GPU job on SMT siblings 184-191 overlapped from 07:47).
+      The two 32k benchmarks would have taken another ~4-5 h.
+      For comparison, the non-hardened s1-F16 did ONE cached 8k fill (~37.5 s) and one 32k fill (~193 s), 306 s for the whole session.
+    - F32 code path (ops.cpp at dd3d9721c and 49550eda5): `GGML_FA_VKQ_*` is a once-per-process `static const` that acts only in `flash_attn_ext_f16_one_chunk`, which serves N<64 query rows (decode, pp5) and split-KV.
+      The tiled path (N>=64, i.e. every 512-token ubatch of a fill or prefill) always accumulates in FP32, whatever the knob says.
+      So F32 has **no prefill catastrophe**, and there is no case for keeping F16 for prefill.
+      The residual F32-hardened vs F16-plain per-fill gap (40.7 vs ~37.5 s, about 8%) is an upper bound, confounded by the hardened protocol: 20 contexts, different tokens, one F16 sample.
+      Confidence: high on where the time went (arithmetic closes within a few %); low on any F32 prefill cost (code says ~0; the run-2 probe tests it).
+      Bearing on KVU-LB1: "always F32" stays viable, and its cost question is decode-only (N=1, N=5), which run 2 measures.
+      The s2 tg64@8k figure (22.73 vs 23.65 t/s) is unpaired, from a different protocol and from another binary, so it is not evidence.
+    - Run 2 (PREDECLARATION.md **Amendment 2**, written before compute; thresholds, cells and ABBAAB unchanged):
+      - re-anchored to 49550eda5 / build 10411 (`kernels/builds/cpu-20261021-49550eda5-c-nemotron`, via `arch_common.sh`); run-1 data archived to `out/run1-dd3d9721c-20261023/` and excluded;
+      - hardened-protocol guard: a missing warmup line 30 s after the weights are resident triggers kill-own-pid and a relaunch, up to 5 attempts; any `autokernel_hardened: true` row makes the session INVALID;
+      - report-only `FILL_TIMES.json` and a prefill probe: pp512/pp2048 at d0, ABBA, -r 3, written to `PREFILL_PROBE.json`;
+      - window ~45-50 min expected, ~60 worst case. DRY_RUN=1 is clean.
+    - Fleet-wide follow-up (the owner must file it): about half of llama-bench processes on these builds run hardened unasked. 18 of 32 jsonl files under `tmp/cpu-backlog-20261004/c4` and `tmp/f8-launchers-20261022` carry `"autokernel_hardened": true` without the flag.
+      Fix: initialise the field (`params.autokernel_harden = cmd_params_defaults.autokernel_harden;` and the seed/timeout) in the experimental tree.
+      Until that lands, any llama-bench consumer must reject rows whose `autokernel_hardened` is true unless it asked for them.
   - [x] KVU-LB1.c move the dense-MTP-head acceptance check above 64k up in its owning queue (production v10 has no fix; architect declares 262144 ctx) ✅ 2026-10-22: the task is `CPU-FA-VKQ-3` in the CPU-FA-VKQ group of this file (was 4th of the open items); moved to the top of that open list.
