@@ -99,6 +99,59 @@ def strings_has(path: Path, needle: str) -> bool:
     r = subprocess.run(["strings", "-a", str(path)], capture_output=True, text=True)
     return needle in r.stdout
 
+# ----------------------------------------------------------------------------------------------- GPU host-thread pin (GPS-PIN-2)
+LAUNCH_AFFINITY_CANDIDATES = [Path("/mnt/raid0/llm/epyc-orchestrator/scripts/server/launch_affinity.py"),
+                              Path("/workspace/repos/epyc-orchestrator/scripts/server/launch_affinity.py")]
+_LA = None
+def launch_affinity():
+    """The orchestrator's canonical launch_affinity helper, loaded by path (stdlib-only). Absent => refuse, never launch unpinned."""
+    global _LA
+    if _LA is None:
+        import importlib.util
+        for c in LAUNCH_AFFINITY_CANDIDATES:
+            if c.exists():
+                spec = importlib.util.spec_from_file_location("v11_launch_affinity", c)
+                _LA = importlib.util.module_from_spec(spec); sys.modules[spec.name] = _LA; spec.loader.exec_module(_LA); break
+        else: die(5, "build-missing: orchestrator scripts/server/launch_affinity.py not found (refusing an unpinned-GPU launch)")
+    return _LA
+
+def pinned_env(env: dict, argv) -> dict:
+    """Layer 1: copy of env with HSA_OVERRIDE_CPU_AFFINITY_DEBUG=0 iff argv carries `taskset -c`. Recorded env_extra dicts are NOT touched
+    (the knob is launch plumbing, identical on every GPU arm; it is not part of any predeclared arm env)."""
+    e = dict(env); launch_affinity().apply_pinned_launch_env(e, argv); return e
+
+class PinPoll:
+    """Layer 2 for a run-to-completion child: poll while it runs, re-pin strays (pin_all_tasks), record the read.
+    record['ok'] False (child proof failed, zero readable polls, setter error, residual escape) => the caller refuses that run."""
+    def __init__(self, pid: int, cpus: str, interval_s: float = 0.5, proc_root=None, setter=None, launcher_pid: int | None = None):
+        la = launch_affinity()
+        self.la, self.pid, self.cpus, self.interval_s = la, pid, cpus, interval_s
+        self.kw = {k: v for k, v in (("proc_root", proc_root), ("setter", setter)) if v is not None}
+        self.child = la.parent_pid(pid, proc_root or la.DEFAULT_PROC_ROOT) == (os.getpid() if launcher_pid is None else launcher_pid)
+        self.polls, self.tasks_max, self.repinned, self.errors, self.escapes = 0, 0, [], [], []
+        self._stop = threading.Event(); self._t = None
+    def poll(self):
+        if not self.child: return
+        r = self.la.pin_all_tasks(self.pid, self.cpus, **self.kw)
+        if r.tasks_seen == 0: return
+        self.polls += 1; self.tasks_max = max(self.tasks_max, r.tasks_seen)
+        self.repinned += r.repinned; self.errors += r.errors; self.escapes += r.escapes_after
+    def _run(self):
+        while True:
+            self.poll()
+            if self._stop.wait(self.interval_s): return
+    def __enter__(self):
+        if self.child: self._t = threading.Thread(target=self._run, daemon=True); self._t.start()
+        return self
+    def __exit__(self, *a):
+        self._stop.set()
+        if self._t: self._t.join()
+    @property
+    def record(self) -> dict:
+        return {"pid": self.pid, "cpus": self.cpus, "child": self.child, "polls": self.polls, "tasks_max": self.tasks_max,
+                "repinned": self.repinned, "errors": self.errors, "escapes_after": self.escapes,
+                "ok": bool(self.child and self.polls > 0 and not self.errors and not self.escapes)}
+
 # ----------------------------------------------------------------------------------------------- process helpers (own children only)
 def kill_verified(p: subprocess.Popen, log=None) -> bool:
     if p.poll() is not None: return True
@@ -390,14 +443,21 @@ def gpu_preflight(ctx: Ctx, ports=(8083, 18183, 8197), model_footprint_gib=50):
     if tot > limit: bad.append(f"foreign KFD VRAM {tot} MiB > {limit} MiB")
     return bad
 
-def run_logged(argv, env, log: Path, timeout, cwd=None, ctx: Ctx | None = None):
+def run_logged(argv, env, log: Path, timeout, cwd=None, ctx: Ctx | None = None, pin_out: list | None = None):
+    """pin_out (a list) opts a `taskset -c` launch into the pin contract: knob on env, PinPoll while it runs, record appended to pin_out."""
+    if pin_out is not None: env = pinned_env(env, argv)
     with open(log, "w") as f:
         p = subprocess.Popen(argv, env=env, stdout=f, stderr=subprocess.STDOUT, cwd=cwd, start_new_session=False)
         if ctx: ctx.register(p.pid)
-        try: p.wait(timeout)
-        except subprocess.TimeoutExpired:
-            kill_verified(p, ctx.log if ctx else None); return 124, p.pid
-        return p.returncode, p.pid
+        watch = PinPoll(p.pid, GPU_THREADS) if pin_out is not None else None
+        try:
+            if watch: watch.__enter__()
+            try: p.wait(timeout)
+            except subprocess.TimeoutExpired:
+                kill_verified(p, ctx.log if ctx else None); return 124, p.pid
+            return p.returncode, p.pid
+        finally:
+            if watch: watch.__exit__(); pin_out.append(watch.record)
 
 def tbo(ctx, name, exe_build: Path, lib_build: Path, dev: str, backend: str, op: str, extra_env=None, timeout=1500, perf_filter=None):
     t = int(min(timeout, max(0, ctx.time_left() - 200)))
@@ -405,9 +465,13 @@ def tbo(ctx, name, exe_build: Path, lib_build: Path, dev: str, backend: str, op:
     log = ctx.dir / f"tbo_{name}.log"
     pre = ["taskset", "-c", GPU_THREADS, "numactl", "--membind=3", "--"] if dev == "gpu" else ["nice", "-n", "19"]
     argv = pre + [str(exe_build / "bin" / "test-backend-ops"), "perf" if perf_filter else "test", "-b", backend, "-o", op] + (["-p", perf_filter] if perf_filter else [])
-    rc, pid = run_logged(argv, lib_env(lib_build, dev, extra_env), log, t, ctx=ctx)
+    pins: list = []
+    rc, pid = run_logged(argv, lib_env(lib_build, dev, extra_env), log, t, ctx=ctx, pin_out=pins if dev == "gpu" else None)
     text = log.read_text(errors="replace")
     out = parse_tbo(text) | {"rc": rc, "log": str(log), "argv": argv}
+    if pins:
+        out["pin"] = pins[0]
+        if not pins[0]["ok"]: out |= {"rc": 125, "passed": 0, "pin_refused": True}   # D1: residual escape / unprovable pin => run refused
     if perf_filter: out["perf"] = {f"{k[0]}|{k[1]}|{k[2]}|{k[3]}": v for k, v in parse_tbo_perf(text).items()}
     ctx.say(f"tbo {name}: rc={rc} {out['passed']}/{out['total']} fails={out['n_fail_lines']}" if not perf_filter else f"tbo perf {name}: rc={rc} cases={len(out['perf'])}")
     return out
@@ -420,16 +484,20 @@ def gpu_bench_launch(ctx, tag, build: Path, model: Path, bench_args: list[str], 
             "-ngl", "99", "-fa", "1", "-mmp", "0", "-t", "8", "-o", "json"] + bench_args
     out_f, err_f = ctx.dir / f"bench_{tag}.json", ctx.dir / f"bench_{tag}.err"
     with open(out_f, "w") as fo, open(err_f, "w") as fe:
-        p = subprocess.Popen(argv, env=lib_env(build, "gpu", env_extra), stdout=fo, stderr=fe)
+        p = subprocess.Popen(argv, env=pinned_env(lib_env(build, "gpu", env_extra), argv), stdout=fo, stderr=fe)
         ctx.register(p.pid); res = Residency(p.pid, build)
-        try: p.wait(t)
-        except subprocess.TimeoutExpired: kill_verified(p, ctx.log)
+        with PinPoll(p.pid, GPU_THREADS) as watch:
+            try: p.wait(t)
+            except subprocess.TimeoutExpired: kill_verified(p, ctx.log)
         r = res.stop()
+    pin = watch.record
+    if not pin["ok"]:
+        return {"error": "pin refused (task outside " + GPU_THREADS + " or pin unprovable)", "pin": pin, "residency": r}
     if p.returncode is None or p.returncode != 0:
-        return {"error": f"llama-bench rc={p.returncode}", "residency": r, "err": err_f.read_text(errors="replace")[-400:]}
+        return {"error": f"llama-bench rc={p.returncode}", "pin": pin, "residency": r, "err": err_f.read_text(errors="replace")[-400:]}
     rows = parse_bench(out_f.read_text())
     ctx.say(f"bench {tag}: {len(rows)} cells; vram_max={r['pid_vram_mib_max']} MiB resident={r['resident']}")
-    return {"rows": rows, "residency": r, "argv": argv, "env_extra": env_extra or {}}
+    return {"rows": rows, "residency": r, "argv": argv, "env_extra": env_extra or {}, "pin": pin}
 
 def aba_bench(ctx, key, arms: dict, model, bench_args, launches=3):
     """arms = {name: (build, env_extra)}; order A B (B2) A B (B2) ... `launches` times. Returns {cells, launches, residency}."""
@@ -471,12 +539,17 @@ def greedy_arm(ctx, name, build: Path, env_extra=None, port=18183, with_long=Fal
     env = {"PATH": os.environ.get("PATH", ""), "HOME": os.environ.get("HOME", "/tmp")} | envd | (env_extra or {})
     if port_listening(port): return {"error": f"port {port} already listening (not ours)"}
     slog = ctx.dir / f"server-{name}.log"
+    env = pinned_env(env, argv)   # layer 1 (iff the 8083 argv carries `taskset -c`); out["env_extra"] below stays the declared arm env
     with open(slog, "w") as f: p = subprocess.Popen(argv, env=env, stdout=f, stderr=subprocess.STDOUT)
     ctx.register(p.pid)
     out = {"argv": argv, "env_extra": env_extra or {}, "pid": p.pid, "prompts": {}}
     try:
         h = wait_own_port(port, p, 900); out["port_proof"] = h
         if not h["ok"]: return out | {"error": h.get("why")}
+        pin = launch_affinity().enforce_launch_affinity(p.pid, argv, label=f"v11 greedy {name}", emit=lambda m: say(m, ctx.log))   # layer 2; None = unpinned/not ours
+        if pin is not None:
+            out["pin"] = pin.as_dict()
+            if not pin.ok: return out | {"error": "pin refused: task outside the taskset placement after re-pin"}   # D1; finally: kills own pid
         res = Residency(p.pid, build)
         props = json.loads(urllib.request.urlopen(f"http://127.0.0.1:{port}/props", timeout=10).read()); out["build_info"] = props.get("build_info")
         prompts = list(GREEDY_PROMPTS) + ([long_prompt()] if with_long else [])
