@@ -1623,6 +1623,27 @@ our **465 gfx90a SQ/TA/TCC counters** validated 2026-08-03.
       outside the imported set and must never be quoted as "FA is correct at long context".
       **Bounded by Z10:** if Z10 finds the denorm class present, run G10 with that hypothesis named
       rather than as an undirected sweep. [intake-1284#record]
+      **INTERIM 2026-10-23, GPU leg (session 3c4ca599; job `inf48-g10-gpu`, ended rc 5 at 22:30Z; `/mnt/raid0/llm/tmp/roi-prep-20261023/INF-48-G10/out/G10_gpu.json`).**
+      Branch `experimental/g10-fa-import-20261023` @ `933666a9d` (v10 `ffc1bac82` + test-only diff), ROCm0 = MI210 gfx90a, 25 cases one process each.
+      The CPU leg is CLEAN_SCOPED (25/25, default and `GGML_FA_SPLIT_KV=0`). **ROCm0: ACTIVE_DEFECT by the gate, FAIL=1, NOT_SUPPORTED=1, OK=23, and only 8/25 residency-proven.**
+      - **Case 25 FAILs, marginally, with residency PROVEN (6 qualifying VRAM samples):** `FLASH_ATTN_EXT hsk=256 hsv=256 nh=2 nr23=[16,1] kv=20000 nb=512`, F16 K/V, prec=f32:
+        ERR 5.02475e-4 > 5e-4 (0.5% over the tolerance). Cases 12, 13 (kv=16384, F16, nb=512) and 24 (kv=10000, F16, nb=512) pass, also with proven residency.
+        **Hypothesis (not yet discriminated, so NOT a defect record and NOT a clean pass):** the reference is the CPU backend's `use_ref` vec path, and in v10 that path always accumulates an
+        F16 V in an FP16 buffer (`ggml_compute_forward_flash_attn_ext_f16_one_chunk`, `ops.cpp:8910/8959/9000` at `933666a9d`, no knob). KP-1 (`docs/reference/kernel-manifests/llama-v11-manifest.md`;
+        V11-086) puts that oracle error at ~2.1e-8*kv, i.e. ~4.2e-4 at kv=20000, the size of the observed number. Only the F16-V cases see it (10-13, 20, 21, 24, 25).
+        **The knob first proposed for the check does not exist on this store:** `GGML_FA_VKQ_F32` is not compiled into `gpu-20261023-933666a9d-g10fa` (strings: `GGML_FA_SPLIT_KV` only; the VKQ knobs are in
+        the champion line, `141e4bcf5`, which has no g10 case set), and `GGML_FA_SPLIT_KV` is guarded by `!use_ref`, so it cannot move the reference at nb=512. The decisive arm is an FP32 oracle with
+        v10 GPU code: `/mnt/raid0/llm/tmp/roi-prep-20261023/INF-48-G10/g10_fp32ref_oracle.patch` (sha256 `40e029e7...`), built by the job into `gpu-20261023-933666a9d-g10fp32ref`.
+      - **Case 7 (`576/512` q8_0 MLA, kv=113, nb=1): NOT_SUPPORTED on ROCm0** (`supports_op` declines it, `[ROCm0]` in the log). Not a failure; no kv >= 10000 MLA shape exists in the import (cases 8, 9 are supported and pass).
+      - **Residency NOT proven for 17 cases (1-9, 14-21):** they finish in ~1 s, so the 0.5 s VRAM sampler saw < 2 qualifying samples; their OK results are NOT evidence of a GPU run (the job refused, rc 5, and withheld COMPLETE_GPU).
+        Fix landed in `/mnt/raid0/llm/tmp/roi-prep-20261023/INF-48-G10/g10_gpu_job.sh` (backup `.bak-preresidencyfix`): sampler 0.1 s, `--repeat-suite R --suite-seed S` per case (R=100 for the cheap shapes, retried x10 up to 3 attempts), and a verdict is
+        resume-skipped only when its residency is proven. **The criterion is unchanged** (own-PID KFD entry, `libggml-hip` mapped, >= 2 samples with own-PID VRAM >= 16 MiB). NOT_SUPPORTED is accepted only as a proven
+        no-op (ROCm0 banner in the log + `libggml-hip` mapped); it never becomes an OK.
+      - [ ] **G10-D (discriminate case 25).** Run `/mnt/raid0/llm/tmp/roi-prep-20261023/INF-48-G10/g10_case25_job.sh` (row and launcher drafted in `/mnt/raid0/llm/tmp/roi-prep-20261023/INF-48-G10/CASE25_ROW.md`, not armed): arms A v10 as-is, C FP32-oracle store (decisive), paired seeded P1/P2,
+        B `GGML_FA_SPLIT_KV=0` negative control, residency proven per arm. A fails and C passes all = ORACLE_CULPRIT (KP-1 class, record, not a GPU defect); C fails = real ROCm0 FA precision issue at kv=20000 nb=512.
+        Not feasible and skipped: a direct GPU-vs-FP32 number from `cpu-20261023-df3e0f8cf-fp32oracle-c` (the harness compares backends inside one process; that store is CPU-only; ERR prints only above tolerance).
+      - [ ] **G10-R (residency re-run).** Re-arm `inf48-g10-gpu` (launcher `/mnt/raid0/llm/tmp/roi-prep-20261023/INF-48-G10/launcher_gpu.cmd`) with the fixed job so cases 1-9 and 14-21 get proven residency, then re-read `out/G10_gpu.json`: the G10 row closes only
+        with every case proven or a proven-no-op NOT_SUPPORTED, and case 25 resolved by G10-D.
 - [x] **Z14 (Z) — DONE 2026-08-23: filed as [fla-org/flash-linear-attention#1163](https://github.com/fla-org/flash-linear-attention/issues/1163)**
       (operator-approved; posted under the operator's account). Read and pinned at HEAD
       `bc3b101dcb713ddc5bd8924b66754eb68b5ccf89`, with every claim re-verified against that revision
