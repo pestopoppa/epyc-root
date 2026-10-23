@@ -323,6 +323,13 @@ prefills only the suffix.
     - Also: add `--draft-debug` on a drafter-on pass to log the first draft block. Bring the CB3 order effect into scope with a CB repeat that follows an A fork and one that follows a CA.
     - Graphs-ON is not the discriminating variable, because graphs were off for every arm.
     - Cost: correctness class, about 15 min GPU on one load.
+    - *(2026-10-23 17:05Z, f8 subagent; PREPARED, not run.)* Rules v4 predeclared before compute: kpf13 rules v4 sha `cbd24433…`, `/mnt/raid0/llm/tmp/f8-launchers-20261023/kpf-gpu-followups/PREDECLARATION.md` (sha256 `8b3cbce1…`). Driver research `f8/kpf-gpu-followups-20261023` @ `1db8ac394` (pushed; detached pin `/mnt/raid0/llm/worktrees/research-kpf-gpu-followups-pin`; 115/115 tests). v3 and its verdicts are unchanged.
+      - Two launches on the v3 image a1f0c8cf9, with the same argv and the graphs-disabled shim: `default_specoff` first (the argv minus every drafter flag, which the read-back checks), then `default` with `--draft-debug`. `strings libllama-common.so` carries the `draft candidate %3d, pos %3d` format, and job.sh re-checks it at run time.
+      - Cells: the 4 v3 failures, plus g2-S2 and g3-S1 as checks, with K=3.
+      - CB3 order probe after the v3 order: `A3 [erase 3] CB_A_abs [regen 3] A4 CB_A_pres CA4 CB_CA_pres [erase 3] CA5 CB_CA_abs`. B is judged against CB1, CB2 and CB_A_abs (its own condition), and CB3 is no longer a judged control. `cb_order_effect` = none / predecessor / slot3_presence / other.
+      - GPU clause: two own-pid KFD VRAM samples per cell, taken during the cell. HIP graphs are read back and required DISABLED. The near-tie band is fixed at 0.031567. A drafter-on near-tie divergence is never by itself a restore failure; the spec-off launch decides.
+      - Decision `kpf13_1b_locus`: `target_restore_defect` if any spec-off arm fails, `draft_path` if all 12 pass.
+      - Launcher `/mnt/raid0/llm/tmp/f8-launchers-20261023/kpf-gpu-followups/` (FILLERS `kpf-gpu-followups`, together with KPF-17.4b on one grant). DRY rc 0. Not armed.
 - [x] **KPF-GL1 — prove at first run that the graphs-disabled env reached each f8 GPU server (GPU-LEAK-1 mitigation; filed 2026-10-23, f8 wrap-up).** `kpf13-1-reduced` and `kpf17-4-19-1a-27b-dflash2` use the PATH shim: read `out/gl1_guard.log`. `env has GGML_CUDA_DISABLE_GRAPHS=1` passes. `WARN ... LACKS` means the shim did not take: record the run's VRAM headroom as unmitigated in its RUN_RECORD and fix the shim before the next window. `kpf18-s1-remainder` and `locals-kpf-lb1-1-27b-completion-turns` set the variable with an explicit `env` in the launch argv: check the record's `launch_prefix` or argv field. Zero compute: read after each first run.
   - *(2026-10-23 14:05Z, f8 wrap-up.)* 2 of 4 jobs are proved; KPF-GL1 stays open until the other two first run.
   - *(2026-10-23 14:20Z, f8; ticked.)* The other two proved, both from their aborted first launch: `kpf13-1-reduced/out/gl1_guard.log` (server pid 3403273, port 18973) and `kpf17-4-19-1a-27b-dflash2/out/gl1_guard.log` (pid 3406356, port 18974) each read `env has GGML_CUDA_DISABLE_GRAPHS=1 (graphs disabled); VRAM limit 61440 MiB`, so the numactl PATH shim delivered the variable to the server env. `kpf18-s1-remainder` and the first two were proved earlier (launch_prefix / argv). All 4 of 4. The re-arms reuse the same shim; a `LACKS` warning in a later run reopens this.
@@ -334,6 +341,11 @@ prefills only the suffix.
   - Effect: none of today's 5 completed f8 GPU launch records carries the count (kpf13 default; kpf174 honest, mut_partial_noop, flag_on, mut_no_transfer). The `HSA_OVERRIDE_CPU_AFFINITY_DEBUG=0` (GPS-PIN-1) knob is therefore unproven for those runs. This does not affect their verdicts.
   - Fix: on the research branch, add the three keys to that projection, with a test that a GPU read-back with one exempt thread round-trips into the record. Move the pins at the next re-arm.
   - Until the fix lands: prove the knob live by sampling `/proc/<pid>/task/*/status` during the run.
+  - *(2026-10-23 17:05Z, f8 subagent.)* Fix landed on research `f8/kpf-gpu-followups-20261023` @ `e367af026` (in `1db8ac394`, pushed).
+    - One shared projection (`READBACK_RECORD_KEYS` / `readback_record`) now feeds both the kpf13 and the kpf174 record. It keeps `cpus_allowed_non_exempt`, `runtime_threads_unpinned` and `runtime_threads_unpinned_count`.
+    - It also keeps the server's own `/proc` environ values `env_GGML_CUDA_DISABLE_GRAPHS` and `env_HSA_OVERRIDE_CPU_AFFINITY_DEBUG`, plus `hip_graphs` (disabled iff the variable is set, the ggml-cuda `getenv != nullptr` test).
+    - Tests: a GPU read-back with one exempt thread round-trips through the real `read_back()` into the record and the belief line; count 0 is recorded when the knob holds; the kpf174 record keeps the same keys.
+    - The pin moves with the next launcher, `kpf-gpu-followups` (`/mnt/raid0/llm/tmp/f8-launchers-20261023/kpf-gpu-followups/PINSHA` = `1db8ac394`). Its first record is the first one able to prove the GPS-PIN-1 knob. Ready to tick on review.
 - [x] **KPF-14: launch ordering and seq-bit safety.** ✅ 2026-10-04
   - Take the fork at launch, before the `[TAG_IDLE_SLOT_CLEAR]` loop (L2469-2484), so an idle source is not
     cleared first.
@@ -429,6 +441,17 @@ prefills only the suffix.
     1. Run the g1/g2 c=2148 cells with speculation OFF. If X != C there, it is a target-restore defect at c1, independent of the drafter.
     2. Sweep the junction over c ∈ {2049, 2148, 2560, 3072, 4096} to find where the failure starts. The driver's junction list is fixed today, so this needs a driver option.
     3. Optional: run the same c1 cell on the CPU build of `82c16126f`, to separate GPU numerics from fork state.
+    - *(2026-10-23 17:05Z, f8 subagent; PREPARED, not run.)* Driver option added: kpf174 rules v2 (sha `2be6f9b0…`), research `f8/kpf-gpu-followups-20261023` @ `1db8ac394`. kpf174 rules v1 (sha `26b04e19…`) and its verdicts are unchanged.
+      - `--junctions` / `--build-junctions` override the cell junctions and the source's build points; L stays 14336.
+      - Launch `sweep`: speculation ON, c ∈ {2049, 2148, 2560, 3072, 4096}, each junction a cell and a build point.
+      - Launch `honest_specoff`: the argv minus every drafter flag, run in the ORIGINAL geometry (cells at 2148, build points 2148/4096/10240). Tokens only, with token-identical controls required.
+      - Decisions:
+        - `c1_locus`: `target_restore_defect` / `drafter_on_only`.
+        - `junction_onset`: the first failing c, and the pattern `none_fail` / `ubatch_misaligned_only` / `first_build_point_only` / `other`.
+        - `sweep_2148`.
+      - KPF-17.4 and 19.1a keep their v1 verdicts.
+      - Same image 82c16126f-kpf191, same argv and shim, K=3. Runs after KPF-13.1b in launcher `/mnt/raid0/llm/tmp/f8-launchers-20261023/kpf-gpu-followups/` (predeclaration as above). DRY rc 0.
+      - Item 3 (the CPU c1 cell) is not in this launcher.
 - [ ] **KPF-18: P1 gate (GPU window, :8083 production argv on the fork build; workspace-ec).** The matched
   instrument is the same binary with `--slot-fork-min-tokens 0` vs on, in alternating windows. Done when ALL hold:
   1. **Equivalence vs fresh.** Prompt set ≥ 32 trunk/suffix pairs (trunk 8k-80k, suffix 0.5-8k), greedy, DFlash2

@@ -2472,6 +2472,15 @@ RI-16's routing `stage_ms` is covered by VB-ROUTE-LAT above, not by a new task.
     - kpf13: dry-run ingest rows=2, projected, refused=0 (0 cells; 20/24 pass).
     - kpf174: still 0 of 5, and now for a different reason than the arm vocabulary: `record_sha256` does not re-derive. The writer hashes `geometry.pruned`, a dict with INT keys (`{2148, 4096, 10240}`), before JSON stringifies them, so `sort_keys` orders `[2148, 4096, 10240]` at write time but `["10240", "2148", "4096"]` on re-read. Re-sealing with int keys re-derives all 5. The read side refuses (with that reason in the message) rather than loosening the integrity gate. Write-side fix filed as **VB-KVU-PF.5**; the .4 done-condition (5/5) closes when it lands and the launch is re-recorded or the 5 records are re-sealed by the writer.
 - [ ] **VB-KVU-PF.5 — `kpf174_swa_drafter.py` `finish_record` hashes int-keyed `geometry.pruned`, so its `record_sha256` cannot be re-derived from the stored JSON** (filed 2026-10-23, f8 vb-kvu). Research-driver task, not a read-side one. Next step: in epyc-inference-research `scripts/benchmark/kpf174/kpf174_swa_drafter.py` (and any driver using `k13.sha256_json` over int-keyed dicts) stringify dict keys (e.g. `{str(c): ...}`) when building `geometry` or hash the JSON round-trip of the record; add a test that `sha256_json(json.loads(json.dumps(rec))) == rec['record_sha256']`; then a one-shot writer-side re-seal of the 5 records from `/mnt/raid0/llm/tmp/f8-launchers-20261023/kpf17-4-19-1a-27b-dflash2/out/run/belief_measurements.jsonl` (no field changes beyond the digest) and `cli.py ingest kv-prefix-fork --path` requiring 5 of 5.
+  - *(2026-10-23 17:05Z, f8 subagent; write side FIXED, re-ingest is the coordinator's.)* Cause confirmed on all 5 records: each stored sha equals the hash of its body with `geometry.pruned` keys turned back into ints.
+    - Fix on research `f8/kpf-gpu-followups-20261023` @ `0208f4918` (pushed, in `1db8ac394`). `kpf13_restore_ab.seal_record` hashes the JSON round-trip form, which is the adapter's `_digest` form, and both the kpf13 and kpf174 `finish_record` use it.
+    - Tests: `sha256_json(json.loads(json.dumps(rec))) == rec['record_sha256']` for a kpf174 record with int-keyed `pruned`, plus the adapter digest on the written record and the belief line.
+    - Re-seal script `scripts/benchmark/kpf174/reseal_records.py`. It writes a NEW file and never overwrites; it refuses a mismatch that the int-key cause does not explain.
+    - Applied: `/mnt/raid0/llm/tmp/f8-launchers-20261023/kpf17-4-19-1a-27b-dflash2/out/run/belief_measurements.resealed-vbkvupf5.jsonl`, sha256 `e312bb8b…`, with a `.manifest.json` beside it.
+      - 5/5 rows were resealed. No field changed beyond the digest (verified row by row).
+      - The original `belief_measurements.jsonl` (sha256 `1f5f9a81…`) is kept.
+      - All 5 resealed rows pass `validate_row` in the origin/main adapter, and `native_rows` returns 5.
+    - Next: `cli.py ingest kv-prefix-fork --path <resealed file>` requiring 5 of 5 (coordinator), then tick.
 
 ## Research Intake Update — 2026-10-04 (decision tools, operator-approved Stage 4)
 
