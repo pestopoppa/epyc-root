@@ -5,6 +5,22 @@
 **Last compiled**: 2026-10-22 (wrap-up sweep 10: native-window answer change is not regression, agent-made judge labels). Earlier: 2026-10-22 (wrap-up sweep 9: the native-window gate reads NOT-FAIL on 2 discordant pairs). Earlier: 2026-10-21 (wrap-up sweep 5: YARN-AGG-1/JUDGE-1 spec, Oolong adapter, K-shift fix queued). Earlier: 2026-10-06 (incremental root-wrap synthesis; prior compilation history: 2026-04-18 (+ 2026-05-20 incremental: intake-569 RoPE bounds + deep-dive))
 **Sources**: 23 documents (0 dedicated deep-dives, 5 cross-referenced deep-dives, 3 active handoffs, 15 intake entries)
 
+## Compiled Update — 2026-10-23 (wrap-up sweep 15, 3c4ca599): the YaRN native-window gate is FINAL: NOT-FAIL-underpowered
+
+**Confidence: verified** for the decision file; the result is a no-harm-detected reading, **not** an equivalence claim.
+
+- **Final decision** (`/mnt/raid0/llm/tmp/yarn-native-gate-out/decision.json`, 2026-10-23T13:02:40Z, plan `native-gate`, protocol `YARN-AGG-1/native-gate/net-paired-mcnemar/v1`): pooled native 185 pairs, b (A0 right / A1 wrong) = 1, c = 1, n_discordant = 2, one-sided exact McNemar p = 0.75, mean score diff A1-A0 = +0.004. This supersedes the 18-pair first pass in sweep 9 above.
+- **Per cell.** oolong_synth@131072: 152 pairs, 1/1. ruler mk_2, mk_3 and mv at 32k, 64k and 124k: 0/0 each (2-6 items per cell).
+- **Reading.** With two discordant pairs the gate cannot show a regression, and cannot show equivalence either. The handoff has no prescribed rule for NOT-FAIL-underpowered; YARN-AGG-1f (optional) proposes adding discordant-prone items (more Oolong at 64K-128K, harder multi-key items) and re-freezing a plan, done when n_discordant >= 10 or the operator declines.
+- **Process note.** The gate's first scratch-server run OOM'd from the v10 GPU build's per-request VRAM leak; the gate lib now recycles the server at 60 GiB (see GPU-LEAK-1 in the inference-serving page). Beliefs were ingested into the vidya ledger (30 rows, 90 frames).
+
+### Source References (2026-10-23 wrap-up sweep 15)
+
+- [yarn-context-extension-research](../handoffs/active/yarn-context-extension-research.md) — YARN-AGG-1e, YARN-AGG-1f
+- [3c4ca599 progress, 2026-10-23](../progress/2026-10/2026-10-23-3c4ca599.md) — gate FINAL and OOM root cause
+- [gpu-serving-tie-in-program](../handoffs/active/gpu-serving-tie-in-program.md) — GPU-LEAK-1
+
+---
 ## Compiled Update — 2026-10-22 (wrap-up sweep 10): a native-window answer change is not a quality regression, and the judge labels are agent-produced, not human
 
 **Confidence: verified** for the judge agreement figures (n=50, pinned cloud judge) and the gate-plan contents; **inferred** for what the native-window and extension arms will show, since only 18 native pairs have run.
