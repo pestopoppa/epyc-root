@@ -336,7 +336,7 @@ prefills only the suffix.
     - `kpf18-s1-remainder` (running since 13:56Z): the server's `/proc/<pid>/environ` carries `GGML_CUDA_DISABLE_GRAPHS=1` (read-only check).
     - `locals-kpf-lb1-1-27b-completion-turns`: the RUN_RECORD argv starts `env GGML_CUDA_DISABLE_GRAPHS=1`.
     - Still open: the two shim jobs, `kpf13-1-reduced` and `kpf17-4-19-1a-27b-dflash2`.
-- [ ] **KPF-GL2 — persist the GPU affinity read-back in the run record (filed 2026-10-23, f8 read-out).**
+- [x] **KPF-GL2 — persist the GPU affinity read-back in the run record (filed 2026-10-23, f8 read-out).**
   - The gap: `kpf13_restore_ab.py` @ `922113ff7` computes `runtime_threads_unpinned`, `runtime_threads_unpinned_count` and `cpus_allowed_non_exempt` in the server read-back, but the record's `argv_readback` projection (`exe_matches_binary` … `slot_fork_mode`) drops all three.
   - Effect: none of today's 5 completed f8 GPU launch records carries the count (kpf13 default; kpf174 honest, mut_partial_noop, flag_on, mut_no_transfer). The `HSA_OVERRIDE_CPU_AFFINITY_DEBUG=0` (GPS-PIN-1) knob is therefore unproven for those runs. This does not affect their verdicts.
   - Fix: on the research branch, add the three keys to that projection, with a test that a GPU read-back with one exempt thread round-trips into the record. Move the pins at the next re-arm.
@@ -346,6 +346,7 @@ prefills only the suffix.
     - It also keeps the server's own `/proc` environ values `env_GGML_CUDA_DISABLE_GRAPHS` and `env_HSA_OVERRIDE_CPU_AFFINITY_DEBUG`, plus `hip_graphs` (disabled iff the variable is set, the ggml-cuda `getenv != nullptr` test).
     - Tests: a GPU read-back with one exempt thread round-trips through the real `read_back()` into the record and the belief line; count 0 is recorded when the knob holds; the kpf174 record keeps the same keys.
     - The pin moves with the next launcher, `kpf-gpu-followups` (`/mnt/raid0/llm/tmp/f8-launchers-20261023/kpf-gpu-followups/PINSHA` = `1db8ac394`). Its first record is the first one able to prove the GPS-PIN-1 knob. Ready to tick on review.
+  - ✅ 2026-10-23 (f8, reviewed): research `e367af026` (on `f8/kpf-gpu-followups-20261023` @ 1db8ac394) keeps `cpus_allowed_non_exempt`, `runtime_threads_unpinned(_count)` and the server's own `env_GGML_CUDA_DISABLE_GRAPHS` / `env_HSA_OVERRIDE_CPU_AFFINITY_DEBUG` / `hip_graphs` in every kpf13 and kpf174 record; test drives a GPU read-back with one exempt thread through the real `read_back()`. 115/115 driver tests. The first live proof comes from the kpf-gpu-followups run.
 - [x] **KPF-14: launch ordering and seq-bit safety.** ✅ 2026-10-04
   - Take the fork at launch, before the `[TAG_IDLE_SLOT_CLEAR]` loop (L2469-2484), so an idle source is not
     cleared first.
