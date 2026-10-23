@@ -129,8 +129,10 @@ Run this loop at every task boundary and on every watcher event (`event-watch-ws
 - Every launcher is paired with a zero-token watcher by its owner at arm time; before idling for
   the night, list every armed job with its end flag and the watcher that covers it.
 - A choice only the operator can make (which reference, lift a hold, accept a redesign cost) is
-  surfaced as options + tradeoffs + a recommendation, **with the compute cost estimate first**,
-  while everything not depending on it keeps running.
+  written out where the plan is: **Context → 2-4 Options, each with its tradeoff on the same line
+  → Recommendation (labelled) → Default if unanswered**, with the compute cost estimate first.
+  "Recommendation stated in the package" is not a package; the operator reads the plan, not a
+  promise of one. Everything not depending on the answer keeps running.
 
 ## 6. Status / ETA report (the format the operator asked for)
 
