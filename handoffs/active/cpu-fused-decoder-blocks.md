@@ -105,6 +105,7 @@ Checklist (the dashboard gate — flipped as the phases land):
     byte-identical greedy output; (3) optional: the FD-DIV-1 repro (`45d8f2937` `QFR_*` knobs) under ASAN at
     w ∈ {0.05, 0.3, 1.0}. Experimental branch only; v10 stays frozen; a fold goes through the champion route with a
     v11 manifest row. (filed 2026-10-22, workspace-58)
+    - *(2026-10-23 15:3xZ, workspace-58 wrap-up; box stays open.)* IN PROGRESS: a workspace-58 subagent is preparing the job (launcher and FILLERS row). The slot is booked on q2 tonight after s5-cs8l4ab, and it runs if armed (calendar REVISION 15:2xZ). Not landed at this checkpoint.
 
 ## Validation strategy (learned the hard way — the arch test is self-consistent and cannot see graph-math errors)
 
