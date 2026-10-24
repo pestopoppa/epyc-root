@@ -1,7 +1,7 @@
 {
  "schema": "backlog_priority.v1",
  "generated_by": "scripts/handoffs/backlog_priority.py + scripts/handoffs/backlog_priority_curated.json",
- "generated_at": "2026-10-24T09:29Z",
+ "generated_at": "2026-10-24T21:12Z",
  "method": "Operator method 2026-10-24: inference items ranked by the inference-backlog-scheduling model (live > ready decision-bearing > routine; ROI = decision value per compute-hour; operator holds push down with the blocker named); non-inference tasks that gate an inference task inherit and rank just above it; non-inference tasks blocked by nothing are the top tier (T1 gates compute, T2 does not); everything else blocked follows its blockers. Row priority = its best open item. score = rank percentile among rows with open work (1.0 = highest). Approximate: ~120 curated items, the rest keyword heuristics; row Deps edges are coarse. Regenerate: python3 scripts/handoffs/backlog_priority.py (see dashboard/README.md).",
  "tiers": {
   "1": "T1 non-inference, unblocked, unblocks compute",
@@ -30,49 +30,9 @@
    "done": "already fixed in champion dcc853b55; test-yarn-kshift passes"
   },
   {
-   "row": "INF-67",
-   "task": "FD-DIV-1b — port the FD-DIV-1 repro and run it under ASAN (filed 2026-10-23, workspace-58 ",
-   "done": "fd-div-1b-asan row COMPLETE (coordinator fixing the row)"
-  },
-  {
-   "row": "INF-67",
-   "task": "(derived task) queue_status shows STALE-ARMED: fix the row (clerical) so the job becomes p",
-   "done": "fd-div-1b-asan row COMPLETE (coordinator fixing the row)"
-  },
-  {
-   "row": "EVL-47",
-   "task": "VB-CAL-OVERRUN-WIRE — emit estimate-vs-actual claim tuples from the compute-calendar overr",
-   "done": "landing 2026-10-24 (coordinator)"
-  },
-  {
-   "row": "EVL-47",
-   "task": "VB-LAUNCH-AFFINITY-WIRE — project per-task launch-affinity readings into claim tuples. Fil",
-   "done": "landing 2026-10-24 (coordinator)"
-  },
-  {
-   "row": "EVL-47",
-   "task": "VB-FUSED-DECODE-DIV-WIRE — adapter for the FD-DIV-1a smoke receipt (filed 2026-10-23, work",
-   "done": "landing 2026-10-24 (coordinator)"
-  },
-  {
-   "row": "EVL-47",
-   "task": "VB-NEW13-WIRE — write side for NEW-13-class weight-handoff receipts (filed 2026-10-23, wor",
-   "done": "landing 2026-10-24 (coordinator)"
-  },
-  {
    "row": "INF-65",
    "task": "CH-20.2 - `test-llama-archs` fixture generation aborts at `deepseek41` (\"Dense\": `key not ",
    "done": "patches done, handed to 3c4ca599 for C4 (/mnt/raid0/llm/tmp/ws58-ch24-20261024/patches/)"
-  },
-  {
-   "row": "EVL-47",
-   "task": "VB-FLOOR-REGISTRY-WIRE — floor-registry adapter (wiring task, filed with the write side 20",
-   "done": "landing 2026-10-24 (coordinator)"
-  },
-  {
-   "row": "INF-70",
-   "task": "XFER-3 — re-decide the served Q38FN file with the +25% gap. (filed 2026-10-04) UD stays th",
-   "done": "closed superseded (coordinator 2026-10-24)"
   }
  ],
  "rows": {
@@ -100,7 +60,7 @@
   "INF-26": {
    "tier": 1,
    "rank": 2,
-   "score": 0.9944,
+   "score": 0.9943,
    "basis": "T1 best open item (N): (derived task) fix the broken q38fn-armP coherence harness so the speed half can run",
    "unblocks": [],
    "blocker": ""
@@ -108,7 +68,7 @@
   "INF-65": {
    "tier": 1,
    "rank": 3,
-   "score": 0.9887,
+   "score": 0.9886,
    "basis": "T1 best open item (N): CH-LB1.1 — fold `5f1eee195` + `452887155` into the next champion through the fold ledger (",
    "unblocks": [
     "INF-66",
@@ -125,7 +85,7 @@
   "UFH-14": {
    "tier": 1,
    "rank": 4,
-   "score": 0.9831,
+   "score": 0.983,
    "basis": "T1 best open item (N): UFH14-LB1.1 — fold `0daa3ca8d` (with `452887155`) into the next champion through the fold ",
    "unblocks": [
     "RTG-30"
@@ -135,7 +95,7 @@
   "RTG-57": {
    "tier": 1,
    "rank": 5,
-   "score": 0.9774,
+   "score": 0.9773,
    "basis": "T1 best open item (N): KVU-LB1.d — adopt always-F32 VKQ accumulation on the CPU FA path (`GGML_FA_VKQ_F32=1`, or ",
    "unblocks": [
     "INF-59",
@@ -154,7 +114,7 @@
   "INF-62": {
    "tier": 1,
    "rank": 6,
-   "score": 0.9718,
+   "score": 0.9716,
    "basis": "T1 best open item (N): DF2-QWOPUS — scope + estimate training a DFlash2 head for Qwopus (before committing card-d",
    "unblocks": [
     "INF-65",
@@ -172,7 +132,7 @@
   "INF-64": {
    "tier": 1,
    "rank": 7,
-   "score": 0.9661,
+   "score": 0.9659,
    "basis": "T1 best open item (N): Re-screen the 19 historically proposed deletion modules individually and strip only proven",
    "unblocks": [
     "EVL-49",
@@ -193,8 +153,8 @@
   "INF-67": {
    "tier": 1,
    "rank": 8,
-   "score": 0.9605,
-   "basis": "T1 best open item (N): FD-DIV-1 — the Flash-Next (`qwen4exp`) fused decode diverges from the graph at non-product",
+   "score": 0.9602,
+   "basis": "T1 best open item (N): FD-OFF-PROD — declare `GGML_FUSED_DECODE_OFF=1` for production `architect_general` (:8074)",
    "unblocks": [
     "INF-70",
     "INF-72",
@@ -208,7 +168,7 @@
   "RTG-54": {
    "tier": 1,
    "rank": 9,
-   "score": 0.9548,
+   "score": 0.9545,
    "basis": "T1 best open item (N): CT-12.5 — fold `6dfbc9e86` into the champion via the fold-ledger route (fold request sent ",
    "unblocks": [],
    "blocker": ""
@@ -216,65 +176,26 @@
   "RTG-58": {
    "tier": 1,
    "rank": 10,
-   "score": 0.9492,
+   "score": 0.9489,
    "basis": "T1 best open item (N): KPF-62.2 — Extend `chunk_kv.py` for KPF-62 G1/G3 records. Add `KPF-62` to `PROGRAMS` and t",
    "unblocks": [
     "INF-81"
    ],
    "blocker": ""
   },
-  "INF-41": {
-   "tier": 1,
-   "rank": 11,
-   "score": 0.9435,
-   "basis": "T1 best open item (N): S-20 — make the cold-vision refusal fail fast (filed 2026-10-03, bring-up proof 9). With :",
-   "unblocks": [
-    "INF-59",
-    "INF-77",
-    "INF-78",
-    "INF-81",
-    "REV-02",
-    "REV-07",
-    "RTG-30",
-    "RTG-57",
-    "RTG-58",
-    "UFH-12",
-    "UFH-14"
-   ],
-   "blocker": ""
-  },
   "INF-81": {
    "tier": 1,
-   "rank": 12,
-   "score": 0.9379,
+   "rank": 11,
+   "score": 0.9432,
    "basis": "T1 best open item (N): AKX-ALL-LB4.9 — Fold attention sinks into the nek2 == 1 iqk merges (correctness enabler). ",
    "unblocks": [],
    "blocker": ""
   },
-  "INF-22": {
-   "tier": 1,
-   "rank": 13,
-   "score": 0.9322,
-   "basis": "T1 best open item (N): M4 — slot-order-independent (or shortest-remaining-prompt-first) batch fill in `update_slo",
-   "unblocks": [],
-   "blocker": ""
-  },
-  "EVL-37": {
-   "tier": 1,
-   "rank": 14,
-   "score": 0.9266,
-   "basis": "T1 best open item (N): S4-T1 — BUG: turns per task are never recorded. `ChatResponse.turns`",
-   "unblocks": [
-    "INF-78",
-    "UFH-12"
-   ],
-   "blocker": ""
-  },
   "INF-78": {
    "tier": 1,
-   "rank": 15,
-   "score": 0.9209,
-   "basis": "T1 best open item (N): OAB-28 — best-of member `ak-check` fence sits outside the lane fence set. The fence is cre",
+   "rank": 12,
+   "score": 0.9375,
+   "basis": "T1 best open item (N): OAB-29 — a fake-model wire test as the standard gate for any new actor seat. Add a scripte",
    "unblocks": [
     "UFH-12"
    ],
@@ -282,8 +203,8 @@
   },
   "UFH-01": {
    "tier": 1,
-   "rank": 16,
-   "score": 0.9153,
+   "rank": 13,
+   "score": 0.9318,
    "basis": "T1 best open item (N): HS-OD-4 — make the `max_tokens` contract explicit in default text REPL mode. APP79 (`src/a",
    "unblocks": [
     "INF-78",
@@ -298,8 +219,8 @@
   },
   "INF-73": {
    "tier": 1,
-   "rank": 17,
-   "score": 0.9096,
+   "rank": 14,
+   "score": 0.9261,
    "basis": "T1 best open item (N): Freeze the complete normally merged r6 source/reader/runner, obtain actual whole native ru",
    "unblocks": [
     "INF-74",
@@ -310,16 +231,16 @@
   },
   "UFH-12": {
    "tier": 1,
-   "rank": 18,
-   "score": 0.904,
-   "basis": "T1 best open item (N): REPL-EMB-2.9 - land the EG2 adoption code seam in epyc-orchestrator (package sections 3-5)",
+   "rank": 15,
+   "score": 0.9205,
+   "basis": "T1 best open item (N): REPL-EMB-2.10 - close migration-tool gaps B-1..B-5 and file the BGE-trained retrain list a",
    "unblocks": [],
    "blocker": ""
   },
   "INF-50": {
    "tier": 1,
-   "rank": 19,
-   "score": 0.8983,
+   "rank": 16,
+   "score": 0.9148,
    "basis": "T1 best open item (N): XGRAMMAR-A2 — port XGrammar's context-independent token-mask cache into llama-grammar.cpp ",
    "unblocks": [
     "INF-62",
@@ -337,42 +258,45 @@
   },
   "INF-75": {
    "tier": 1,
-   "rank": 20,
-   "score": 0.8927,
+   "rank": 17,
+   "score": 0.9091,
    "basis": "T1 best open item (N): AKX-P0d — base census for W1–W6 on the current champion-of-record.",
    "unblocks": [
     "INF-81"
    ],
    "blocker": ""
   },
-  "INF-23": {
-   "tier": 1,
-   "rank": 21,
-   "score": 0.887,
-   "basis": "T1 best open item (N): HSF-4.G — re-quote the HSF-4/5 source-rate sub-term from the graphs-ON step-7 run (filed 2",
-   "unblocks": [],
-   "blocker": ""
-  },
   "INF-74": {
    "tier": 1,
-   "rank": 22,
-   "score": 0.8814,
+   "rank": 18,
+   "score": 0.9034,
    "basis": "T1 best open item (N): CTC-Q-D: sweep-merge pass at registration: list rows with the same (model, build, argv-has",
    "unblocks": [],
    "blocker": ""
   },
+  "EVL-37": {
+   "tier": 1,
+   "rank": 19,
+   "score": 0.8977,
+   "basis": "T1 best open item (N): RTE-LOG-1 — Prompt-structure and chunk logging, and the B7 offline reader (privacy: hashes",
+   "unblocks": [
+    "INF-78",
+    "UFH-12"
+   ],
+   "blocker": ""
+  },
   "UFH-08": {
    "tier": 1,
-   "rank": 23,
-   "score": 0.8757,
+   "rank": 20,
+   "score": 0.892,
    "basis": "T1 best open item (N): HIL-15b: harder labelled task set (16-20 tool-requiring tasks in the 30-70% pass band, lcg",
    "unblocks": [],
    "blocker": ""
   },
   "EVL-50": {
    "tier": 1,
-   "rank": 24,
-   "score": 0.8701,
+   "rank": 21,
+   "score": 0.8864,
    "basis": "T1 best open item (N): CME-7T — Find why the first call of a run generates the full 2048-token budget (runs 0 and",
    "unblocks": [
     "EVL-47",
@@ -390,10 +314,18 @@
    ],
    "blocker": ""
   },
+  "INF-22": {
+   "tier": 2,
+   "rank": 22,
+   "score": 0.8807,
+   "basis": "T2 best open item (N): M4 — slot-order-independent (or shortest-remaining-prompt-first) batch fill in `update_slo",
+   "unblocks": [],
+   "blocker": ""
+  },
   "INF-70": {
    "tier": 2,
-   "rank": 25,
-   "score": 0.8644,
+   "rank": 23,
+   "score": 0.875,
    "basis": "T2 best open item (N): ABLATE-1 — `harness1/ablate.sh` is IMPLEMENTED AND UNIT-READY BUT NEVER DEMONSTRATED.",
    "unblocks": [
     "INF-72",
@@ -406,8 +338,8 @@
   },
   "INF-60": {
    "tier": 2,
-   "rank": 26,
-   "score": 0.8588,
+   "rank": 24,
+   "score": 0.8693,
    "basis": "T2 best open item (N): Q38-T7b — the needle test must use a neutral haystack and be asked in both arms. (filed 20",
    "unblocks": [
     "INF-61"
@@ -416,8 +348,8 @@
   },
   "INF-66": {
    "tier": 2,
-   "rank": 27,
-   "score": 0.8531,
+   "rank": 25,
+   "score": 0.8636,
    "basis": "T2 best open item (O): R21-5 — Standing community-intake → hypothesis-inbox pipeline. Operator 2026-08-31:",
    "unblocks": [
     "INF-73",
@@ -431,8 +363,8 @@
   },
   "INF-06": {
    "tier": 2,
-   "rank": 28,
-   "score": 0.8475,
+   "rank": 26,
+   "score": 0.858,
    "basis": "T2 best open item (N): AK test flakes - root-cause `test_gates.TheToolRunnerNeverTreatsAFailureAsOutput` (`Scratc",
    "unblocks": [
     "EVL-49",
@@ -451,16 +383,24 @@
   },
   "RTG-22": {
    "tier": 2,
-   "rank": 29,
-   "score": 0.8418,
+   "rank": 27,
+   "score": 0.8523,
    "basis": "T2 best open item (N): NIB2-98 (MEDIUM): enforce the one-DS41-class-server memory rule in tooling, not only in br",
+   "unblocks": [],
+   "blocker": ""
+  },
+  "INF-23": {
+   "tier": 2,
+   "rank": 28,
+   "score": 0.8466,
+   "basis": "T2 best open item (N): HSF-4 — Reload-vs-re-prefill crossover per lineup model (intake-2119#record, intake-2214#r",
    "unblocks": [],
    "blocker": ""
   },
   "INF-48": {
    "tier": 2,
-   "rank": 30,
-   "score": 0.8362,
+   "rank": 29,
+   "score": 0.8409,
    "basis": "T2 best open item (N): RVP-ATT-1 — desk check (no GPU): is an ATT thread-trace MFMA-efficiency metric obtainable ",
    "unblocks": [
     "EVL-49",
@@ -480,24 +420,24 @@
   },
   "INF-59": {
    "tier": 2,
-   "rank": 31,
-   "score": 0.8305,
+   "rank": 30,
+   "score": 0.8352,
    "basis": "T2 best open item (N): YARN-JUDGE-1 — Local judge for judged long-context cells (replaces the hosted-judge declin",
    "unblocks": [],
    "blocker": ""
   },
   "INF-72": {
    "tier": 2,
-   "rank": 32,
-   "score": 0.8249,
+   "rank": 31,
+   "score": 0.8295,
    "basis": "T2 best open item (N): RT-10 — DS41 tap hook and DS41 trace, then RT-6/RT-7 on DS41. The Q38FN tap records `ffn_m",
    "unblocks": [],
    "blocker": ""
   },
   "INF-77": {
    "tier": 2,
-   "rank": 33,
-   "score": 0.8192,
+   "rank": 32,
+   "score": 0.8239,
    "basis": "T2 best open item (N): DS41-W8b — in-place / mmap-friendly MXFP4 CPU repack (non-AK engineering). The repack copi",
    "unblocks": [
     "INF-78",
@@ -512,21 +452,20 @@
   },
   "INF-79": {
    "tier": 2,
-   "rank": 34,
-   "score": 0.8136,
+   "rank": 33,
+   "score": 0.8182,
    "basis": "T2 best open item (N): Follow-up: any production Step-Audio-2 use on transformers >=4.56 needs the same cache/kwa",
    "unblocks": [],
    "blocker": ""
   },
   "RTG-34": {
    "tier": 2,
-   "rank": 35,
-   "score": 0.8079,
+   "rank": 34,
+   "score": 0.8125,
    "basis": "T2 best open item (N): AIR-6 — deploy and canary live audit plus CPU lease enforcement. `coordinator-agent`, as",
    "unblocks": [
     "RTG-48",
     "RTG-49",
-    "RTG-50",
     "RTG-51",
     "RTG-52"
    ],
@@ -534,17 +473,17 @@
   },
   "RTG-59": {
    "tier": 2,
-   "rank": 36,
-   "score": 0.8023,
+   "rank": 35,
+   "score": 0.8068,
    "basis": "T2 best open item (N): SEC-ART-POST-f — Recompile the orchestrator lean registry + stack_priors from the master r",
    "unblocks": [],
    "blocker": ""
   },
   "EVL-10": {
    "tier": 2,
-   "rank": 37,
-   "score": 0.7966,
-   "basis": "T2 best open item (N): M-26 — `distill_skillbank` escalation count is always 0 (investigate; no fix assumed). `st",
+   "rank": 36,
+   "score": 0.8011,
+   "basis": "T2 best open item (N): CFI-2 — decide the memory-k widening needed to reach 256-token blocks on the episodic path",
    "unblocks": [
     "EVL-47",
     "EVL-49",
@@ -563,8 +502,8 @@
   },
   "INF-34": {
    "tier": 2,
-   "rank": 38,
-   "score": 0.791,
+   "rank": 37,
+   "score": 0.7955,
    "basis": "T2 best open item (N): PF1 (G) — measure the CPU-vs-MI210 prefill crossover for the served over-HBM MoE. Artifact",
    "unblocks": [
     "INF-44",
@@ -574,24 +513,24 @@
   },
   "RTG-42": {
    "tier": 2,
-   "rank": 39,
-   "score": 0.7853,
+   "rank": 38,
+   "score": 0.7898,
    "basis": "T2 best open item (N): WP-15.3 — capture two dispatch.v1 frontdoor windows (fit + holdout) after the next stack s",
    "unblocks": [],
    "blocker": ""
   },
   "EVL-52": {
    "tier": 2,
-   "rank": 40,
-   "score": 0.7797,
+   "rank": 39,
+   "score": 0.7841,
    "basis": "T2 best open item (O): DHM-4 — Prepare a 100-item operator labelling sheet of interrupts plus the next operator m",
    "unblocks": [],
    "blocker": ""
   },
   "RTG-41": {
    "tier": 2,
-   "rank": 41,
-   "score": 0.774,
+   "rank": 40,
+   "score": 0.7784,
    "basis": "T2 best open item (N): UTM-LB2.2 — Ingest projector events into the unified trace store (`src/trace/`, new EventS",
    "unblocks": [
     "EVL-52"
@@ -600,26 +539,46 @@
   },
   "UFH-16": {
    "tier": 2,
-   "rank": 42,
-   "score": 0.7684,
+   "rank": 41,
+   "score": 0.7727,
    "basis": "T2 best open item (O): SEC-EXEC-POST-d — Live proofs after the operator's API reload (`orchestrator_stack.py relo",
    "unblocks": [],
    "blocker": ""
   },
   "EVL-08": {
    "tier": 2,
-   "rank": 43,
-   "score": 0.7627,
+   "rank": 42,
+   "score": 0.767,
    "basis": "T2 best open item (N): CJ-17 — Repoint the judge before running anything (intake-1330#record; numbered CJ-11 unti",
    "unblocks": [
     "INF-76"
    ],
    "blocker": ""
   },
+  "INF-41": {
+   "tier": 2,
+   "rank": 43,
+   "score": 0.7614,
+   "basis": "T2 best open item (N): S-19 — re-bench `worker_vision`'s contention pairs before it is ever made HOT again (PACKA",
+   "unblocks": [
+    "INF-59",
+    "INF-77",
+    "INF-78",
+    "INF-81",
+    "REV-02",
+    "REV-07",
+    "RTG-30",
+    "RTG-57",
+    "RTG-58",
+    "UFH-12",
+    "UFH-14"
+   ],
+   "blocker": ""
+  },
   "INF-80": {
    "tier": 2,
    "rank": 44,
-   "score": 0.7571,
+   "score": 0.7557,
    "basis": "T2 best open item (N): EXL3-LB1d — fold the confirmed route into the AutoKernel GPU champion. (filed 2026-10-04) ",
    "unblocks": [],
    "blocker": ""
@@ -627,7 +586,7 @@
   "INF-43": {
    "tier": 2,
    "rank": 45,
-   "score": 0.7514,
+   "score": 0.75,
    "basis": "T2 best open item (N): T12 — Re-decide `-c` provisioning now that its cost is measured at ~zero. Production",
    "unblocks": [],
    "blocker": ""
@@ -635,7 +594,7 @@
   "INF-54": {
    "tier": 2,
    "rank": 46,
-   "score": 0.7458,
+   "score": 0.7443,
    "basis": "T2 best open item (N): Monitor llama.cpp PR #22836 (STQ1_0 kernel) for merge — SINGLE OWNER: this handoff (consol",
    "unblocks": [],
    "blocker": ""
@@ -643,7 +602,7 @@
   "INF-02": {
    "tier": 2,
    "rank": 47,
-   "score": 0.7401,
+   "score": 0.7386,
    "basis": "T2 best open item (N): S3-ACH-01 — spike a PreToolUse read-only allowlist gate for planner/critic actors. An acto",
    "unblocks": [],
    "blocker": ""
@@ -651,7 +610,7 @@
   "UFH-07": {
    "tier": 2,
    "rank": 48,
-   "score": 0.7345,
+   "score": 0.733,
    "basis": "T2 best open item (N): TOC-SP-3 — Verified-quote receipt for the spill worker summary. `_spill_output` (`environm",
    "unblocks": [
     "UFH-12"
@@ -661,7 +620,7 @@
   "INF-31": {
    "tier": 2,
    "rank": 49,
-   "score": 0.7288,
+   "score": 0.7273,
    "basis": "T2 best open item (N): DSA-IDX.1 — Fix the indexed sparse-attention op interface before D2.4 code (intake-2122#re",
    "unblocks": [
     "INF-77",
@@ -678,7 +637,7 @@
   "RTG-02": {
    "tier": 2,
    "rank": 50,
-   "score": 0.7232,
+   "score": 0.7216,
    "basis": "T2 best open item (N): AP-DGM-PROV — Freeze the shared EPYC selector-replay package. Snapshot the existing AutoPi",
    "unblocks": [
     "EVL-04",
@@ -689,7 +648,7 @@
   "RTG-11": {
    "tier": 2,
    "rank": 51,
-   "score": 0.7175,
+   "score": 0.7159,
    "basis": "T2 best open item (N): G5 (G) — extend this replay to N concurrent sessions with tool gaps, before any program-le",
    "unblocks": [],
    "blocker": ""
@@ -697,15 +656,15 @@
   "RTG-15": {
    "tier": 2,
    "rank": 52,
-   "score": 0.7119,
-   "basis": "T2 best open item (N): LRC-RI-EXTRACT-SOURCE — Make routing-data extraction honor explicit source and update-coun",
+   "score": 0.7102,
+   "basis": "T2 best open item (N): LRC-SDM-ACTION-SCORER — Add an experimental availability-aware task/action outcome scorer ",
    "unblocks": [],
    "blocker": ""
   },
   "RTG-56": {
    "tier": 2,
    "rank": 53,
-   "score": 0.7062,
+   "score": 0.7045,
    "basis": "T2 best open item (N): TD-1d.2b — concurrent in-process `llm_call`s are serialized by the cross-process `inferenc",
    "unblocks": [
     "INF-78",
@@ -716,7 +675,7 @@
   "EVL-48": {
    "tier": 2,
    "rank": 54,
-   "score": 0.7006,
+   "score": 0.6989,
    "basis": "T2 best open item (N): EAGLE-3 on pure-dense (L10) — needs a trained head + relax `target_layer_ids_n==3`; also g",
    "unblocks": [],
    "blocker": ""
@@ -724,7 +683,7 @@
   "INF-24": {
    "tier": 2,
    "rank": 55,
-   "score": 0.6949,
+   "score": 0.6932,
    "basis": "T2 best open item (N): P0 RCP prologue — RCP-W1 (reference relaunch + preflight), RCP-W2 (ledger materialize), RC",
    "unblocks": [],
    "blocker": ""
@@ -732,7 +691,7 @@
   "UFH-05": {
    "tier": 2,
    "rank": 56,
-   "score": 0.6893,
+   "score": 0.6875,
    "basis": "T2 best open item (N): RC-CVEC-HOOKS — Re-resolve control-vector hook coverage and fail loud on a silent no-op. A",
    "unblocks": [],
    "blocker": ""
@@ -740,7 +699,7 @@
   "PIP-04": {
    "tier": 2,
    "rank": 57,
-   "score": 0.6836,
+   "score": 0.6818,
    "basis": "T2 best open item (N): Re-index epyc-orchestrator with `scripts/gitnexus-analyze.sh` (never bare `gitnexus analyz",
    "unblocks": [],
    "blocker": ""
@@ -748,7 +707,7 @@
   "RTG-19": {
    "tier": 2,
    "rank": 58,
-   "score": 0.678,
+   "score": 0.6761,
    "basis": "T2 best open item (N): SSU-F18 — commit the moved-lineup plugin to the orchestrator tests before a disk reclaim r",
    "unblocks": [
     "INF-59",
@@ -768,7 +727,7 @@
   "EVL-02": {
    "tier": 2,
    "rank": 59,
-   "score": 0.6723,
+   "score": 0.6705,
    "basis": "T2 best open item (N): (Phase 2, if approved) build/validate the SWE-bench-Verified agentic scorer → FAIL_TO_PASS",
    "unblocks": [],
    "blocker": ""
@@ -776,7 +735,7 @@
   "EVL-33": {
    "tier": 2,
    "rank": 60,
-   "score": 0.6667,
+   "score": 0.6648,
    "basis": "T2 best open item (N): Step 3: implement fix (force </think> / suppress think scaffold at budget=0 for hybrid SSM",
    "unblocks": [],
    "blocker": ""
@@ -784,7 +743,7 @@
   "EVL-44": {
    "tier": 2,
    "rank": 61,
-   "score": 0.661,
+   "score": 0.6591,
    "basis": "T2 best open item (N): Close/relocate the LANDED/SUPERSEDED handoffs (v6-consolidation → completed; kb-rag K1–K7 ",
    "unblocks": [],
    "blocker": ""
@@ -792,7 +751,7 @@
   "INF-07": {
    "tier": 2,
    "rank": 62,
-   "score": 0.6554,
+   "score": 0.6534,
    "basis": "T2 best open item (O): DECISION for the operator — what should the folded overlap GATE? Recorded, not gating,",
    "unblocks": [
     "EVL-49",
@@ -803,7 +762,7 @@
   "INF-61": {
    "tier": 2,
    "rank": 63,
-   "score": 0.6497,
+   "score": 0.6477,
    "basis": "T2 best open item (N): Restore the MTP workload-gate finding somewhere durable — it was removed from the artifact",
    "unblocks": [],
    "blocker": ""
@@ -811,7 +770,7 @@
   "RTG-27": {
    "tier": 2,
    "rank": 64,
-   "score": 0.6441,
+   "score": 0.642,
    "basis": "T2 best open item (N): D4 — sampling-quality instrument-era row *(human-authored; AFTER D2+D3)*. The N13 kernel/A",
    "unblocks": [
     "INF-81",
@@ -822,7 +781,7 @@
   "EVL-36": {
    "tier": 2,
    "rank": 65,
-   "score": 0.6384,
+   "score": 0.6364,
    "basis": "T2 best open item (N): D-RI-CONTAIN — Add a killable, resource-limited CPython execution lane behind the existing",
    "unblocks": [],
    "blocker": ""
@@ -830,7 +789,7 @@
   "EVL-46": {
    "tier": 2,
    "rank": 66,
-   "score": 0.6328,
+   "score": 0.6307,
    "basis": "T2 best open item (N): TU-MH-1 — Make shared file-tool tasks executable acceptance tests for both REPL and OpenCo",
    "unblocks": [],
    "blocker": ""
@@ -838,7 +797,7 @@
   "INF-13": {
    "tier": 2,
    "rank": 67,
-   "score": 0.6271,
+   "score": 0.625,
    "basis": "T2 best open item (N): RRR — pure log post-processing, computable RETROACTIVELY over traces we already have. Refl",
    "unblocks": [],
    "blocker": ""
@@ -846,7 +805,7 @@
   "EVL-03": {
    "tier": 2,
    "rank": 68,
-   "score": 0.6215,
+   "score": 0.6193,
    "basis": "T2 best open item (N): Non-owned audit findings untouched (other owners / other agents' flux files): H2",
    "unblocks": [],
    "blocker": ""
@@ -854,7 +813,7 @@
   "EVL-05": {
    "tier": 2,
    "rank": 69,
-   "score": 0.6158,
+   "score": 0.6136,
    "basis": "T2 best open item (N): RE-1 · Math-Verify scoring flip + re-baseline (S, med-ROI; intake-377/379) — the `math_ver",
    "unblocks": [],
    "blocker": ""
@@ -862,7 +821,7 @@
   "EVL-12": {
    "tier": 2,
    "rank": 70,
-   "score": 0.6102,
+   "score": 0.608,
    "basis": "T2 best open item (N): E1 [loop·coord, after its queue] ARCH-1 — split the god-module *(PARTIAL 2026-07-21 verifi",
    "unblocks": [],
    "blocker": ""
@@ -870,7 +829,7 @@
   "EVL-20": {
    "tier": 2,
    "rank": 71,
-   "score": 0.6045,
+   "score": 0.6023,
    "basis": "T2 best open item (N): F1 — per-split GPU/CPU timing under static `-cmoe` on one MoE model; report",
    "unblocks": [],
    "blocker": ""
@@ -878,7 +837,7 @@
   "EVL-27": {
    "tier": 2,
    "rank": 72,
-   "score": 0.5989,
+   "score": 0.5966,
    "basis": "T2 best open item (N): W1 — D2 PR spearhead (1–2 weeks; specced in llama-cpp-dsa-contribution.md): the prompt-pro",
    "unblocks": [],
    "blocker": ""
@@ -886,7 +845,7 @@
   "EVL-29": {
    "tier": 2,
    "rank": 73,
-   "score": 0.5932,
+   "score": 0.5909,
    "basis": "T2 best open item (N): ID-8 — FrontierCS floor probe (~10 problems, one production arm) before any harness spend.",
    "unblocks": [],
    "blocker": ""
@@ -894,7 +853,7 @@
   "EVL-35": {
    "tier": 2,
    "rank": 74,
-   "score": 0.5876,
+   "score": 0.5852,
    "basis": "T2 best open item (O): RE-4.2 — non-saturation probe (operator quiet-window, current v8 topology re-attested, aut",
    "unblocks": [],
    "blocker": ""
@@ -902,7 +861,7 @@
   "EVL-42": {
    "tier": 2,
    "rank": 75,
-   "score": 0.5819,
+   "score": 0.5795,
    "basis": "T2 best open item (N): 2a-iii-followon. Bound process/thread COUNT via cgroup v2 `pids.max` — the correct mechani",
    "unblocks": [],
    "blocker": ""
@@ -910,7 +869,7 @@
   "INF-05": {
    "tier": 2,
    "rank": 76,
-   "score": 0.5763,
+   "score": 0.5739,
    "basis": "T2 best open item (N): P2 refresh validation against current-stack long-context/coding workload (Qwen3.6-era + Co",
    "unblocks": [],
    "blocker": ""
@@ -918,7 +877,7 @@
   "INF-16": {
    "tier": 2,
    "rank": 77,
-   "score": 0.5706,
+   "score": 0.5682,
    "basis": "T2 best open item (N): K10 — (follow-up) Lever A quiet-host re-eval: on a quiesced host (fresh-server/run, `fprin",
    "unblocks": [],
    "blocker": ""
@@ -926,7 +885,7 @@
   "INF-18": {
    "tier": 2,
    "rank": 78,
-   "score": 0.565,
+   "score": 0.5625,
    "basis": "T2 best open item (N): Explain the mechanism before this becomes a placement input. It is still bidirectional-onl",
    "unblocks": [],
    "blocker": ""
@@ -934,7 +893,7 @@
   "INF-20": {
    "tier": 2,
    "rank": 79,
-   "score": 0.5593,
+   "score": 0.5568,
    "basis": "T2 best open item (N): DR-3 — broader K2 admission runner/package: build the dry-run-first K2",
    "unblocks": [],
    "blocker": ""
@@ -942,7 +901,7 @@
   "INF-40": {
    "tier": 2,
    "rank": 80,
-   "score": 0.5537,
+   "score": 0.5511,
    "basis": "T2 best open item (N): Registry integration — now UNBLOCKED, and NOT yet done. The prior gate was \"registry",
    "unblocks": [],
    "blocker": ""
@@ -950,7 +909,7 @@
   "INF-58": {
    "tier": 2,
    "rank": 81,
-   "score": 0.548,
+   "score": 0.5455,
    "basis": "T2 best open item (O): V9-8. Implement and prospectively ratify the resident promotion fast path described in",
    "unblocks": [],
    "blocker": ""
@@ -958,7 +917,7 @@
   "REV-03": {
    "tier": 2,
    "rank": 82,
-   "score": 0.5424,
+   "score": 0.5398,
    "basis": "T2 best open item (O): RC-6a — operator PR + sign-off (human-amendment-only): land the drafted P-REV-1 blocks int",
    "unblocks": [],
    "blocker": ""
@@ -966,7 +925,7 @@
   "REV-06": {
    "tier": 2,
    "rank": 83,
-   "score": 0.5367,
+   "score": 0.5341,
    "basis": "T2 best open item (N): LB-1 — Reproduce + attribute the regression: which calls dominate (plan-review prompt coun",
    "unblocks": [],
    "blocker": ""
@@ -974,7 +933,7 @@
   "RTG-01": {
    "tier": 2,
    "rank": 84,
-   "score": 0.5311,
+   "score": 0.5284,
    "basis": "T2 best open item (N): AW-6: 48h bootstrap discovery run (>=50 envs / >=500 tools / >=500 tasks) with incremental",
    "unblocks": [],
    "blocker": ""
@@ -982,7 +941,7 @@
   "RTG-23": {
    "tier": 2,
    "rank": 85,
-   "score": 0.5254,
+   "score": 0.5227,
    "basis": "T2 best open item (N): W5 — regime-profiled offered load (NEXT INSTRUMENT ERA, pairs with batching",
    "unblocks": [],
    "blocker": ""
@@ -990,11 +949,10 @@
   "RTG-48": {
    "tier": 2,
    "rank": 86,
-   "score": 0.5198,
+   "score": 0.517,
    "basis": "T2 best open item (O): RTG48-C49-COMMENTS-D9 — publish the exact two-file cadence comment correction after D9 ack",
    "unblocks": [
     "RTG-49",
-    "RTG-50",
     "RTG-51",
     "RTG-52"
    ],
@@ -1003,7 +961,7 @@
   "RTG-52": {
    "tier": 2,
    "rank": 87,
-   "score": 0.5141,
+   "score": 0.5114,
    "basis": "T2 best open item (N): RTG52-D9-SOURCE — integrate reviewed target-selection and exact assignment-stdin source co",
    "unblocks": [],
    "blocker": ""
@@ -1011,7 +969,7 @@
   "EVL-13": {
    "tier": 2,
    "rank": 88,
-   "score": 0.5085,
+   "score": 0.5057,
    "basis": "T2 best open item (N): Cluster E — scoring → tracked as EV-CONF in [eval-tower-verification.md](eval-tower-verifi",
    "unblocks": [],
    "blocker": ""
@@ -1019,7 +977,7 @@
   "EVL-16": {
    "tier": 2,
    "rank": 89,
-   "score": 0.5028,
+   "score": 0.5,
    "basis": "T2 best open item (N): W8b — live candidate evidence after guard deploy: continue W8 candidate attempts under the",
    "unblocks": [],
    "blocker": ""
@@ -1027,7 +985,7 @@
   "EVL-19": {
    "tier": 2,
    "rank": 90,
-   "score": 0.4972,
+   "score": 0.4943,
    "basis": "T2 best open item (N): R2-current — accrue a current-era, trusted per-question ledger sufficient for a reproducib",
    "unblocks": [],
    "blocker": ""
@@ -1035,7 +993,7 @@
   "EVL-25": {
    "tier": 2,
    "rank": 91,
-   "score": 0.4915,
+   "score": 0.4886,
    "basis": "T2 best open item (N): W3 — GPU fine-tunes (MI210 present since 2026-07-02; the HW gate is CLEARED. The DATA gate",
    "unblocks": [],
    "blocker": ""
@@ -1043,7 +1001,7 @@
   "EVL-34": {
    "tier": 2,
    "rank": 92,
-   "score": 0.4859,
+   "score": 0.483,
    "basis": "T2 best open item (N): Build the Escalation-prediction surface (10,528 pos / 56,457 neg, already labelled and Rea",
    "unblocks": [],
    "blocker": ""
@@ -1051,7 +1009,7 @@
   "EVL-39": {
    "tier": 2,
    "rank": 93,
-   "score": 0.4802,
+   "score": 0.4773,
    "basis": "T2 best open item (N): E4 — Write the resolution into `rao-redel-substrate-spike.md` § caveat and master-index N1",
    "unblocks": [],
    "blocker": ""
@@ -1059,7 +1017,7 @@
   "INF-12": {
    "tier": 2,
    "rank": 94,
-   "score": 0.4746,
+   "score": 0.4716,
    "basis": "T2 best open item (N): Gate 2 MemoryAgentBench accuracy reproduction - GPU-only (CPU-infeasible)",
    "unblocks": [],
    "blocker": ""
@@ -1067,7 +1025,7 @@
   "INF-19": {
    "tier": 2,
    "rank": 95,
-   "score": 0.4689,
+   "score": 0.4659,
    "basis": "T2 best open item (N): G3-4 — future decision instrument (separate from G3-3). Select and run a decision-grade,",
    "unblocks": [],
    "blocker": ""
@@ -1075,7 +1033,7 @@
   "INF-30": {
    "tier": 2,
    "rank": 96,
-   "score": 0.4633,
+   "score": 0.4602,
    "basis": "T2 best open item (N): Z9 (Z, prerequisite for G18) — write the ~30-line pure-PyTorch constant-decay simple-GLA",
    "unblocks": [],
    "blocker": ""
@@ -1083,7 +1041,7 @@
   "INF-33": {
    "tier": 2,
    "rank": 97,
-   "score": 0.4576,
+   "score": 0.4545,
    "basis": "T2 best open item (N): Wire `hattention_recurrent()` into `HGatedDeltaNetAttention.forward` behind a `mode='fused",
    "unblocks": [],
    "blocker": ""
@@ -1091,7 +1049,7 @@
   "INF-56": {
    "tier": 2,
    "rank": 98,
-   "score": 0.452,
+   "score": 0.4489,
    "basis": "T2 best open item (N): S8-d (record, no work): our Expected Attention path is already cross-head/cross-layer UNIF",
    "unblocks": [],
    "blocker": ""
@@ -1099,7 +1057,7 @@
   "PIP-01": {
    "tier": 2,
    "rank": 99,
-   "score": 0.4463,
+   "score": 0.4432,
    "basis": "T2 best open item (N): S5: Implement reranker — HOLD as of 2026-06-12 gate analysis. Add reranking to `research.p",
    "unblocks": [],
    "blocker": ""
@@ -1107,7 +1065,7 @@
   "PIP-05": {
    "tier": 2,
    "rank": 100,
-   "score": 0.4407,
+   "score": 0.4375,
    "basis": "T2 best open item (N): Parser-quality comparison: evaluate LightOnOCR-2-1B only as a structural/table/reading-ord",
    "unblocks": [],
    "blocker": ""
@@ -1115,7 +1073,7 @@
   "REV-07": {
    "tier": 2,
    "rank": 101,
-   "score": 0.435,
+   "score": 0.4318,
    "basis": "T2 best open item (N): RM-2 — Anchor arms (guaranteed confirmation-tier): A0 gates-only (objective-verifier floor",
    "unblocks": [],
    "blocker": ""
@@ -1123,7 +1081,7 @@
   "RTG-10": {
    "tier": 2,
    "rank": 102,
-   "score": 0.4294,
+   "score": 0.4261,
    "basis": "T2 best open item (N): DCP-10 — Zero-decode discovery scoring on ContextBench (primary instrument). Per instance:",
    "unblocks": [],
    "blocker": ""
@@ -1131,7 +1089,7 @@
   "RTG-14": {
    "tier": 2,
    "rank": 103,
-   "score": 0.4237,
+   "score": 0.4205,
    "basis": "T2 best open item (N): P3-4. After ≥1 week of shadow data: enable enforcement for one signal at a time. Require a",
    "unblocks": [],
    "blocker": ""
@@ -1139,7 +1097,7 @@
   "RTG-21": {
    "tier": 2,
    "rank": 104,
-   "score": 0.4181,
+   "score": 0.4148,
    "basis": "T2 best open item (N): Production rollout decision: when/how routine coding edits auto-route to edit-mode",
    "unblocks": [],
    "blocker": ""
@@ -1147,7 +1105,7 @@
   "RTG-28": {
    "tier": 2,
    "rank": 105,
-   "score": 0.4124,
+   "score": 0.4091,
    "basis": "T2 best open item (N): TB-1 — Per-model budget curve. For each stack model, on a truncation-inducing suite",
    "unblocks": [],
    "blocker": ""
@@ -1155,7 +1113,7 @@
   "PIP-03": {
    "tier": 2,
    "rank": 106,
-   "score": 0.4068,
+   "score": 0.4034,
    "basis": "T2 best open item (N): ERNIE-ROCM-NEXT — prepare the next ≥1024² white-output hypothesis outside the DiT linears ",
    "unblocks": [],
    "blocker": ""
@@ -1163,7 +1121,7 @@
   "INF-76": {
    "tier": 2,
    "rank": 107,
-   "score": 0.4011,
+   "score": 0.3977,
    "basis": "T2 best open item (N): PAW-5 — Agent-loop candidates list. Identify ≤3 recurring fuzzy subtasks in the current ag",
    "unblocks": [],
    "blocker": ""
@@ -1171,7 +1129,7 @@
   "UFH-03": {
    "tier": 2,
    "rank": 108,
-   "score": 0.3955,
+   "score": 0.392,
    "basis": "T2 best open item (N): S2-CGE-1 — Feed complete, independently verified targets into Memento's existing SFT path ",
    "unblocks": [],
    "blocker": ""
@@ -1179,7 +1137,7 @@
   "UFH-15": {
    "tier": 2,
    "rank": 109,
-   "score": 0.3898,
+   "score": 0.3864,
    "basis": "T2 best open item (N): HS-4 P0 — shell integration, zero features (doc §4). Per-step state (boxes are ticked by t",
    "unblocks": [],
    "blocker": ""
@@ -1187,7 +1145,7 @@
   "EVL-04": {
    "tier": 2,
    "rank": 110,
-   "score": 0.3842,
+   "score": 0.3807,
    "basis": "T2 best open item (N): SEQ-B — the promotion gate is unreachable, but NOT because anything is broken.",
    "unblocks": [],
    "blocker": ""
@@ -1195,7 +1153,7 @@
   "EVL-07": {
    "tier": 2,
    "rank": 111,
-   "score": 0.3785,
+   "score": 0.375,
    "basis": "T2 best open item (N): RCP-W1 — Reference-lineup relaunch + preflight: `orchestrator_stack.py` relaunch under thr",
    "unblocks": [],
    "blocker": ""
@@ -1203,7 +1161,7 @@
   "EVL-14": {
    "tier": 2,
    "rank": 112,
-   "score": 0.3729,
+   "score": 0.3693,
    "basis": "T2 best open item (N): Identify calibration violations — which question types produce miscalibrated confidence? *",
    "unblocks": [],
    "blocker": ""
@@ -1211,7 +1169,7 @@
   "EVL-24": {
    "tier": 2,
    "rank": 113,
-   "score": 0.3672,
+   "score": 0.3636,
    "basis": "T2 best open item (N): W3 — reliability ladder (ongoing): `scripts/lab/promote_job.py` enforcing shadow → reviewe",
    "unblocks": [],
    "blocker": ""
@@ -1219,7 +1177,7 @@
   "EVL-30": {
    "tier": 2,
    "rank": 114,
-   "score": 0.3616,
+   "score": 0.358,
    "basis": "T2 best open item (N): Record the `epyc-orchestrator` `origin/main` red-test baseline so sessions stop reading it",
    "unblocks": [],
    "blocker": ""
@@ -1227,7 +1185,7 @@
   "INF-09": {
    "tier": 2,
    "rank": 115,
-   "score": 0.3559,
+   "score": 0.3523,
    "basis": "T2 best open item (N): PC-4 — experimental qwen35 prefill barrier/graph-fusion prototype:",
    "unblocks": [],
    "blocker": ""
@@ -1235,7 +1193,7 @@
   "PIP-02": {
    "tier": 2,
    "rank": 116,
-   "score": 0.3503,
+   "score": 0.3466,
    "basis": "T2 best open item (N): If PaddleOCR-VL's pipeline proves the concept and we want a one-kernel alternative, scope ",
    "unblocks": [],
    "blocker": ""
@@ -1243,7 +1201,7 @@
   "REV-05": {
    "tier": 2,
    "rank": 117,
-   "score": 0.3446,
+   "score": 0.3409,
    "basis": "T2 best open item (N): HG-1 — Threshold policy from H4/H5 reliability-by-confidence-bucket curves (per-domain).",
    "unblocks": [],
    "blocker": ""
@@ -1251,7 +1209,7 @@
   "RTG-03": {
    "tier": 2,
    "rank": 118,
-   "score": 0.339,
+   "score": 0.3352,
    "basis": "T2 best open item (N): [C1 fix #2] Manifest writer intent-not-realized gap — writer lives in",
    "unblocks": [],
    "blocker": ""
@@ -1259,7 +1217,7 @@
   "RTG-06": {
    "tier": 2,
    "rank": 119,
-   "score": 0.3333,
+   "score": 0.3295,
    "basis": "T2 best open item (O): W4 — promotion workflow + first cohort (recurring, ~half day/month): monthly pass per §C.3",
    "unblocks": [],
    "blocker": ""
@@ -1267,7 +1225,7 @@
   "RTG-07": {
    "tier": 2,
    "rank": 120,
-   "score": 0.3277,
+   "score": 0.3239,
    "basis": "T2 best open item (N): Q4 — does the interference model need E5 (NUMA×batch) first? STILL OPEN, but the premise",
    "unblocks": [],
    "blocker": ""
@@ -1275,7 +1233,7 @@
   "RTG-38": {
    "tier": 2,
    "rank": 121,
-   "score": 0.322,
+   "score": 0.3182,
    "basis": "T2 best open item (N): SS-BENCH-GATE — a stack reload must check for a running CPU bench, not just autopilot.",
    "unblocks": [],
    "blocker": ""
@@ -1283,7 +1241,7 @@
   "RTG-47": {
    "tier": 2,
    "rank": 122,
-   "score": 0.3164,
+   "score": 0.3125,
    "basis": "T2 best open item (N): Re-eyeball the tap's ACTIVE/streaming card path + live ↑/↓ counters once inference actuall",
    "unblocks": [],
    "blocker": ""
@@ -1291,7 +1249,7 @@
   "RTG-51": {
    "tier": 2,
    "rank": 123,
-   "score": 0.3107,
+   "score": 0.3068,
    "basis": "T2 best open item (N): Encode the authority split in Coordinator and Inference role files.",
    "unblocks": [],
    "blocker": ""
@@ -1299,7 +1257,7 @@
   "EVL-38": {
    "tier": 2,
    "rank": 124,
-   "score": 0.3051,
+   "score": 0.3011,
    "basis": "T2 best open item (N): Bring epyc-llama Standardized/L3 -> L4 (incremental_validation, generated_docs, health_aut",
    "unblocks": [],
    "blocker": ""
@@ -1307,7 +1265,7 @@
   "INF-42": {
    "tier": 2,
    "rank": 125,
-   "score": 0.2994,
+   "score": 0.2955,
    "basis": "T2 best open item (N): HRM-1: Pull `huggingface.co/sapientinc/HRM-Text-1B` and run a fair head-to-head against `Q",
    "unblocks": [],
    "blocker": ""
@@ -1315,7 +1273,7 @@
   "RTG-04": {
    "tier": 2,
    "rank": 126,
-   "score": 0.2938,
+   "score": 0.2898,
    "basis": "T2 best open item (N): BEP-3 — Autopilot search-space knob. If BEP-2 is positive, expose batch-vs-interleaved as ",
    "unblocks": [],
    "blocker": ""
@@ -1323,7 +1281,7 @@
   "RTG-05": {
    "tier": 2,
    "rank": 127,
-   "score": 0.2881,
+   "score": 0.2841,
    "basis": "T2 best open item (N): DCP-6 deploy attestation + inference gate: launch-code provenance is satisfied (`server_la",
    "unblocks": [],
    "blocker": ""
@@ -1331,7 +1289,7 @@
   "RTG-08": {
    "tier": 2,
    "rank": 128,
-   "score": 0.2825,
+   "score": 0.2784,
    "basis": "T2 best open item (N): CF candidate: add give-up-rate and uncertain-incorrect-rate as compaction-quality dimensio",
    "unblocks": [],
    "blocker": ""
@@ -1339,7 +1297,7 @@
   "RTG-13": {
    "tier": 2,
    "rank": 129,
-   "score": 0.2768,
+   "score": 0.2727,
    "basis": "T2 best open item (N): W6 — strategy provenance (impl 4.2, ~2 days, needs W1): `strategies.db` rows gain `evidenc",
    "unblocks": [],
    "blocker": ""
@@ -1347,17 +1305,15 @@
   "RTG-49": {
    "tier": 2,
    "rank": 130,
-   "score": 0.2712,
+   "score": 0.267,
    "basis": "T2 best open item (N): FM-2 — AdaMAST fixed-catalog grading pilot. Stage 1 (now): `adamast judge --taxonomy",
-   "unblocks": [
-    "RTG-50"
-   ],
+   "unblocks": [],
    "blocker": ""
   },
   "UFH-04": {
    "tier": 2,
    "rank": 131,
-   "score": 0.2655,
+   "score": 0.2614,
    "basis": "T2 best open item (N): Request-dispatcher 1-line wiring (feature_flag && is_research_like -> run_minddr) once MD-",
    "unblocks": [],
    "blocker": ""
@@ -1365,7 +1321,7 @@
   "EVL-41": {
    "tier": 2,
    "rank": 132,
-   "score": 0.2599,
+   "score": 0.2557,
    "basis": "T2 best open item (O): ESCALATED, NOT PATCHED — needs an operator/coordinator call before the guard lands.",
    "unblocks": [],
    "blocker": ""
@@ -1373,7 +1329,7 @@
   "INF-28": {
    "tier": 2,
    "rank": 133,
-   "score": 0.2542,
+   "score": 0.25,
    "basis": "T2 best open item (N): L-9P — conditional CPU throughput/config discovery. The prepared",
    "unblocks": [],
    "blocker": ""
@@ -1381,7 +1337,7 @@
   "INF-29": {
    "tier": 2,
    "rank": 134,
-   "score": 0.2486,
+   "score": 0.2443,
    "basis": "T2 best open item (N): CPU15-REVAL — Fresh canonical matrix if reopening: before enabling EP anywhere, run:",
    "unblocks": [],
    "blocker": ""
@@ -1389,7 +1345,7 @@
   "INF-49": {
    "tier": 2,
    "rank": 135,
-   "score": 0.2429,
+   "score": 0.2386,
    "basis": "T2 best open item (N): Re-evaluate Sarathi-Serve chunked-prefill for the eval-batch serving class (batched-decode",
    "unblocks": [],
    "blocker": ""
@@ -1397,7 +1353,7 @@
   "INF-51": {
    "tier": 2,
    "rank": 136,
-   "score": 0.2373,
+   "score": 0.233,
    "basis": "T2 best open item (N): Evaluate success criteria (<=10% loss at 50% budget, <=25% at 25%) per-workload, track per",
    "unblocks": [],
    "blocker": ""
@@ -1405,7 +1361,7 @@
   "RTG-20": {
    "tier": 2,
    "rank": 137,
-   "score": 0.2316,
+   "score": 0.2273,
    "basis": "T2 best open item (O): (620 follow-up — deferred, operator-gated) Wire a compile-blocking strict known-gap for nu",
    "unblocks": [],
    "blocker": ""
@@ -1413,55 +1369,57 @@
   "RTG-45": {
    "tier": 2,
    "rank": 138,
-   "score": 0.226,
+   "score": 0.2216,
    "basis": "T2 best open item (N): Monitor post-enable live telemetry for unexpected domain regressions, latency regressions,",
-   "unblocks": [],
-   "blocker": ""
-  },
-  "RTG-50": {
-   "tier": 2,
-   "rank": 139,
-   "score": 0.2203,
-   "basis": "T2 best open item (N): DB-1 — Establish whether the mapping is coherent. Before any implementation: can a task",
    "unblocks": [],
    "blocker": ""
   },
   "RTG-16": {
    "tier": 6,
-   "rank": 140,
-   "score": 0.2147,
+   "rank": 139,
+   "score": 0.2159,
    "basis": "T6 best open item (I): Fix `real_suite_v1` discriminability BEFORE certifying OP-1 (forward work from the audit a",
    "unblocks": [],
    "blocker": ""
   },
   "RTG-43": {
    "tier": 6,
-   "rank": 141,
-   "score": 0.209,
+   "rank": 140,
+   "score": 0.2102,
    "basis": "T6 best open item (I): Post-soak §5 cleanup (code + tests as ONE change): retire the legacy per-role build path —",
    "unblocks": [],
    "blocker": ""
   },
   "INF-44": {
    "tier": 7,
-   "rank": 142,
-   "score": 0.2034,
+   "rank": 141,
+   "score": 0.2045,
    "basis": "T7 best open item (N): BLOCKED on mi210-big-model-and-acceleration-roadmap.md PF1 (CPU-vs-MI210 prefill crossover",
    "unblocks": [],
    "blocker": "text names a blocker: BLOCKED on"
   },
   "RTG-39": {
    "tier": 7,
-   "rank": 143,
-   "score": 0.1977,
+   "rank": 142,
+   "score": 0.1989,
    "basis": "T7 best open item (N): BLOCKED: gated on strand-rust-coder-rustevo2-verification Phase B Pass@1",
    "unblocks": [],
    "blocker": "text names a blocker: BLOCKED"
   },
+  "RTG-46": {
+   "tier": 7,
+   "rank": 143,
+   "score": 0.1932,
+   "basis": "T7 best open item (O): BACKLOG-PRIORITY — land the operator-method total order (filed 2026-10-24, workspace-58). ",
+   "unblocks": [
+    "EVL-49"
+   ],
+   "blocker": "operator decision or approval pending"
+  },
   "EVL-01": {
    "tier": 7,
    "rank": 144,
-   "score": 0.1921,
+   "score": 0.1875,
    "basis": "T7 best open item (O): AFC-P5.E3 — run the n=30 compliance campaign. READY but HELD (operator: \"I will tell",
    "unblocks": [],
    "blocker": "operator decision or approval pending"
@@ -1469,7 +1427,7 @@
   "EVL-49": {
    "tier": 7,
    "rank": 145,
-   "score": 0.1864,
+   "score": 0.1818,
    "basis": "T7 best open item (N): S-04 — Capture contemporaneous E5 Stage-B readiness before future execution. The July stag",
    "unblocks": [],
    "blocker": "operator decision or approval pending"
@@ -1477,7 +1435,7 @@
   "INF-03": {
    "tier": 7,
    "rank": 146,
-   "score": 0.1808,
+   "score": 0.1761,
    "basis": "T7 best open item (I): INF03-REGAUDIT-RUNNER — PROPOSED: bind the MMQ timing runner to the exact passing static I",
    "unblocks": [],
    "blocker": "operator ruling: parked 2026-09-27"
@@ -1485,7 +1443,7 @@
   "INF-37": {
    "tier": 7,
    "rank": 147,
-   "score": 0.1751,
+   "score": 0.1705,
    "basis": "T7 best open item (N): INF37-MOE-Q8-FUSION — Qualify and implement a correctness-gated multi-token MoE GLU fusion",
    "unblocks": [],
    "blocker": "operator decision or approval pending"
@@ -1493,7 +1451,7 @@
   "RTG-09": {
    "tier": 7,
    "rank": 148,
-   "score": 0.1695,
+   "score": 0.1648,
    "basis": "T7 best open item (N): URE-2a — Non-authoritative live cascade shadow. After CJ-16 — now a LOCAL judge cascade (o",
    "unblocks": [
     "INF-78",
@@ -1510,7 +1468,7 @@
   "RTG-30": {
    "tier": 7,
    "rank": 149,
-   "score": 0.1638,
+   "score": 0.1591,
    "basis": "T7 best open item (N): RI-18c — apply the DROP (clause 1's pre-registered action). (filed 2026-10-03, from the RI",
    "unblocks": [],
    "blocker": "DS41-1017 hold (operator 2026-10-22: only the noise floor until AK kernel work)"
@@ -1518,7 +1476,7 @@
   "RTG-35": {
    "tier": 7,
    "rank": 150,
-   "score": 0.1582,
+   "score": 0.1534,
    "basis": "T7 best open item (N): REGION-SIBLING-1 — `region-lock` must map SMT-sibling CPUs to their physical core's region",
    "unblocks": [],
    "blocker": "operator decision or approval pending"
@@ -1526,7 +1484,7 @@
   "RTG-36": {
    "tier": 7,
    "rank": 151,
-   "score": 0.1525,
+   "score": 0.1477,
    "basis": "T7 best open item (N): SCG-PRIORS-WARM — `stack_priors` must not classify WARM-tier roles as `live_stack`. (filed",
    "unblocks": [
     "INF-59",
@@ -1546,7 +1504,7 @@
   "UFH-11": {
    "tier": 7,
    "rank": 152,
-   "score": 0.1469,
+   "score": 0.142,
    "basis": "T7 best open item (O): WEB-1 — operator publication choice: provide the contact destination (email, booking link,",
    "unblocks": [],
    "blocker": "operator decision or approval pending"
@@ -1554,7 +1512,7 @@
   "UFH-13": {
    "tier": 7,
    "rank": 153,
-   "score": 0.1412,
+   "score": 0.1364,
    "basis": "T7 best open item (N): TE-3 — build and freeze the manifest (zero inference).",
    "unblocks": [],
    "blocker": "PARKED/FROZEN by operator (UFH-13 parked until 2nd MI210 + swapped-stack autopilot)"
@@ -1562,7 +1520,7 @@
   "EVL-11": {
    "tier": 7,
    "rank": 154,
-   "score": 0.1356,
+   "score": 0.1307,
    "basis": "T7 best open item (N): BLOCKED: needs Harbor adapter + TB Core baseline (agent-world-env-synthesis) before MR/TB ",
    "unblocks": [],
    "blocker": "external: upstream PR / artifact / disk reclaim"
@@ -1570,7 +1528,7 @@
   "EVL-15": {
    "tier": 7,
    "rank": 155,
-   "score": 0.1299,
+   "score": 0.125,
    "basis": "T7 best open item (N): (Z) Fix the llama-server log retention hole. A correctness question about production",
    "unblocks": [],
    "blocker": "operator decision or approval pending"
@@ -1578,7 +1536,7 @@
   "EVL-21": {
    "tier": 7,
    "rank": 156,
-   "score": 0.1243,
+   "score": 0.1193,
    "basis": "T7 best open item (O): G1 · Ratify P-GPU-1 (operator; measurement trust boundary — human-amendment-only). [findin",
    "unblocks": [],
    "blocker": "operator decision or approval pending"
@@ -1586,7 +1544,7 @@
   "EVL-26": {
    "tier": 7,
    "rank": 157,
-   "score": 0.1186,
+   "score": 0.1136,
    "basis": "T7 best open item (O): W2 — the job (half day): `scripts/backup/backup_critical.sh` — restic preferred (dedupe+en",
    "unblocks": [],
    "blocker": "operator decision or approval pending"
@@ -1594,7 +1552,7 @@
   "EVL-31": {
    "tier": 7,
    "rank": 158,
-   "score": 0.113,
+   "score": 0.108,
    "basis": "T7 best open item (N): If the repo exists but no GGUF is available, convert from HF weights: `convert_hf_to_gguf.",
    "unblocks": [],
    "blocker": "operator decision or approval pending"
@@ -1602,7 +1560,7 @@
   "EVL-32": {
    "tier": 7,
    "rank": 159,
-   "score": 0.1073,
+   "score": 0.1023,
    "basis": "T7 best open item (O): Scope decision (operator): is video generation a product need at all? If not, close this",
    "unblocks": [],
    "blocker": "operator decision or approval pending"
@@ -1610,7 +1568,7 @@
   "EVL-43": {
    "tier": 7,
    "rank": 160,
-   "score": 0.1017,
+   "score": 0.0966,
    "basis": "T7 best open item (N): 0.1 Catalogue GPT-4.1 call sites: clone `github.com/stanford-oval/sliders` (MIT) into a sc",
    "unblocks": [],
    "blocker": "operator decision or approval pending"
@@ -1618,7 +1576,7 @@
   "EVL-45": {
    "tier": 7,
    "rank": 161,
-   "score": 0.096,
+   "score": 0.0909,
    "basis": "T7 best open item (O): Phase B single-instance RustEvo2 bench (USER APPROVAL REQUIRED) - Strand, Qwen2.5-Coder-14",
    "unblocks": [
     "RTG-39"
@@ -1628,7 +1586,7 @@
   "INF-04": {
    "tier": 7,
    "rank": 162,
-   "score": 0.0904,
+   "score": 0.0852,
    "basis": "T7 best open item (O): When evaluating AngelSlim compression, include the Hy3-FP8 flagship-MoE case as a test vec",
    "unblocks": [],
    "blocker": "external: upstream PR / artifact / disk reclaim"
@@ -1636,7 +1594,7 @@
   "INF-45": {
    "tier": 7,
    "rank": 163,
-   "score": 0.0847,
+   "score": 0.0795,
    "basis": "T7 best open item (N): Half vs full: a full instance (0-95) overlaps BOTH halves by construction.",
    "unblocks": [],
    "blocker": "operator stack bring-up event (stack is DOWN)"
@@ -1644,7 +1602,7 @@
   "INF-46": {
    "tier": 7,
    "rank": 164,
-   "score": 0.0791,
+   "score": 0.0739,
    "basis": "T7 best open item (O): P6b Operator-gated fresh-v8-experimental model-load + gate bench on `unsloth/Qwen3.6-35B-A",
    "unblocks": [],
    "blocker": "operator decision or approval pending"
@@ -1652,7 +1610,7 @@
   "INF-63": {
    "tier": 7,
    "rank": 165,
-   "score": 0.0734,
+   "score": 0.0682,
    "basis": "T7 best open item (O): Re-acquisition decision: re-download the pinned FP8 checkpoint (revision `f88480ebce48…`, ",
    "unblocks": [
     "INF-70",
@@ -1667,7 +1625,7 @@
   "REV-02": {
    "tier": 7,
    "rank": 166,
-   "score": 0.0678,
+   "score": 0.0625,
    "basis": "T7 best open item (I): GC-1a — Strict-IF / typed-emission claim-grade gate (P-REV-1): rerun on the approved claim",
    "unblocks": [
     "REV-07"
@@ -1677,7 +1635,7 @@
   "REV-09": {
    "tier": 7,
    "rank": 167,
-   "score": 0.0621,
+   "score": 0.0568,
    "basis": "T7 best open item (O): RA-13a — blind read-back pilot. HARNESS BUILT 2026-09-07 (`scripts/reviewer/blind_readback",
    "unblocks": [],
    "blocker": "operator decision or approval pending"
@@ -1685,7 +1643,7 @@
   "RTG-24": {
    "tier": 7,
    "rank": 168,
-   "score": 0.0565,
+   "score": 0.0511,
    "basis": "T7 best open item (O): P0.1 operator run/pause decision on autopilot candidate species",
    "unblocks": [],
    "blocker": "operator decision or approval pending"
@@ -1693,7 +1651,7 @@
   "RTG-29": {
    "tier": 7,
    "rank": 169,
-   "score": 0.0508,
+   "score": 0.0455,
    "basis": "T7 best open item (N): Step 4/5 GAT + SkillBank retrains - only if Fable 5 freeze gate (DAR-1 regret >=5%) justif",
    "unblocks": [],
    "blocker": "operator decision or approval pending"
@@ -1701,7 +1659,7 @@
   "RTG-32": {
    "tier": 7,
    "rank": 170,
-   "score": 0.0452,
+   "score": 0.0398,
    "basis": "T7 best open item (I): T0.1 — Confirm AutoPilot is stopped before touching `scripts/autopilot/*` or the registry.",
    "unblocks": [],
    "blocker": "operator decision or approval pending"
@@ -1709,7 +1667,7 @@
   "RTG-33": {
    "tier": 7,
    "rank": 171,
-   "score": 0.0395,
+   "score": 0.0341,
    "basis": "T7 best open item (N): SX-5: Load test — Folded into AR-3 Package D. Web_research sentinel suite (50q) provides r",
    "unblocks": [],
    "blocker": "external: upstream PR / artifact / disk reclaim"
@@ -1717,56 +1675,46 @@
   "RTG-40": {
    "tier": 7,
    "rank": 172,
-   "score": 0.0339,
+   "score": 0.0284,
    "basis": "T7 best open item (N): TR-4.3 Multi-turn composition: if our orchestrator runs multi-turn sessions, ensure subseq",
    "unblocks": [],
    "blocker": "PARKED/FROZEN by operator (UFH-13 parked until 2nd MI210 + swapped-stack autopilot)"
   },
-  "RTG-46": {
-   "tier": 7,
-   "rank": 173,
-   "score": 0.0282,
-   "basis": "T7 best open item (N): Graph layout reads as a lattice. At the spacing that makes nodes distinguishable, the grid",
-   "unblocks": [
-    "EVL-49"
-   ],
-   "blocker": "operator decision or approval pending"
-  },
   "RTG-55": {
    "tier": 7,
-   "rank": 174,
-   "score": 0.0226,
+   "rank": 173,
+   "score": 0.0227,
    "basis": "T7 best open item (O): MHS-3d — operator RATIFY of the v10 episodic re-pin (`RATIFY-V10-EPISODIC-REPIN-20260917`)",
    "unblocks": [],
    "blocker": "operator decision or approval pending"
   },
   "RTG-18": {
    "tier": 7,
-   "rank": 175,
-   "score": 0.0169,
+   "rank": 174,
+   "score": 0.017,
    "basis": "T7 best open item (N): Identify the change type: role model swap, shared-server consolidation, role retirement, t",
    "unblocks": [],
    "blocker": "an explicit DO-NOT-DISPATCH guard covers THIS box (§ Update Checklist For Any Model-Stack Change) — this is a reusable c"
   },
   "INF-52": {
    "tier": 7,
-   "rank": 176,
-   "score": 0.0113,
+   "rank": 175,
+   "score": 0.0114,
    "basis": "T7 best open item (N): Gate A — Pretrained checkpoint of a model we serve (Qwen2.5/3.5/3.6 family, or any base we",
    "unblocks": [],
    "blocker": "external: upstream PR / artifact / disk reclaim"
   },
   "INF-53": {
    "tier": 7,
-   "rank": 177,
-   "score": 0.0056,
+   "rank": 176,
+   "score": 0.0057,
    "basis": "T7 best open item (N): W2 — checkpoint gate + Q4 quality validation (bench-only when gate fires): watch for a Q4_",
    "unblocks": [],
    "blocker": "external: upstream PR / artifact / disk reclaim"
   },
   "RTG-17": {
    "tier": 7,
-   "rank": 178,
+   "rank": 177,
    "score": 0.0,
    "basis": "T7 best open item (N): W5 — GATED tail: unified cascade (Phase 3) (2–3 weeks IF ever opened): one calibrated bili",
    "unblocks": [],

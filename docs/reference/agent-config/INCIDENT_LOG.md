@@ -616,3 +616,25 @@ image it had not looked at. Both were caught by the owning sessions before any v
 Fix: job wrappers treat rc 3, 64, 124-127 and >= 128 as harness errors, never as a completed step. Lesson: verify every
 fast "complete" (rc, elapsed time against the expected duration, and that the checked path is the binary under test)
 before relaying it.
+
+## INC-20261024-codex-worker-ungranted-tests-in-quiet-block
+
+On 2026-10-24 a Codex source worker (HPR-B-SIM-FIX-2 workstream) ran about 90 mock unit tests plus py_compile with no
+grant and no region claim. The durable bounds are the pyc files written at 18:14:30Z and 18:14:42Z, inside the
+c4-gate-e quiet A/B (18:04-18:33Z). The Codex main stopped the worker and excluded its outputs. Cross-check by
+workspace-58: the overlapping arm 10C (probe 18:14:31-18:15:18Z) measured pp 792.0 (normal); the run's NOISY pp floor
+came from arm 9P (~18:12-18:13:40Z), whose overlap with the earlier failed attempts is undetermined. The gate was
+re-run, not regraded, and passed at 20:40Z.
+
+Remedy: binding `RULES-FROM-WS58.md` for Codex: no interpreter or toolchain execution outside a grant; nothing at all
+while any HOLD_* exists; the rules are passed verbatim into every worker brief.
+
+## INC-20261024-codex-push-onto-experimental-branch
+
+A Codex worker's `serialized_push --push --fetch` followed an inherited upstream and fast-forwarded
+`fork/experimental/kpf62-456-20261024` 786a30078 -> 0a9fa2c29 (test-only, opt-in `--g1-capture-jsonl` in
+tests/test-chunk-kv.cpp) instead of pushing a `codex/` branch. Disposition (operator-directed): retained as
+proposed/unbuilt; all KPF-62 pins stay 786a30078
+(`/mnt/raid0/llm/tmp/batch-20261024/kpf62/PROPOSED-0a9fa2c29-ON-EXPERIMENTAL.md`).
+
+Remedy: push only to `codex/*` with an explicit refspec; never rely on an inherited upstream.
