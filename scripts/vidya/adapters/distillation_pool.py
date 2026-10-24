@@ -347,7 +347,6 @@ def project(native: dict[str, Any]) -> ClaimTuple:
             decided_proposition=proposition,
             source_class="verifier",
             binding_kind="identity",
-            binding_ref=native["receipt_sha256"],
             observation={
                 "outcome_native": (
                     "distillation_pool_integrity_passed"

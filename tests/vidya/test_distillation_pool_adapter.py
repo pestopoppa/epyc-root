@@ -205,6 +205,9 @@ def test_actual_writer_reader_verifier_and_temp_ledger_round_trip(
     assert native["record"]["integrity"]["verdict"] is m25_counts_match
     claim = adapter.project(native)
     q, t, _reasons = grade(claim)
+    assert claim.binding_kind == "identity"
+    assert claim.binding_ref == ""
+    assert claim.decided_proposition == claim.claim
     as_of = datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
     frames = to_frames(
         claim, as_of=as_of, adapter_id=adapter.ADAPTER_ID, authority=adapter.AUTHORITY
@@ -247,6 +250,9 @@ def test_actual_writer_reader_verifier_and_temp_ledger_round_trip(
         if frame["frame_type"].endswith("evidence_supports_claim/v1")
     )
     assert stored_claim["assertion"]["display_text"] == claim.claim
+    assert stored_claim["assertion"]["binding_kind"] == "identity"
+    assert stored_claim["assertion"]["decided_proposition"] == claim.decided_proposition
+    assert "binding_ref" not in stored_claim["assertion"]
     assert stored_evidence["assertion"]["value"] == (1 if m25_counts_match else 0)
     assert stored_evidence["assertion"]["unit"] == "false_0_true_1"
     assert isolated_ledger.path == tmp_path / "isolated-ledger.jsonl"
