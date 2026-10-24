@@ -344,12 +344,13 @@ Do not rebuild the C++ accelerator — its source is lost and it never worked.
   2026-10-03). Its three measured pairs described the old placement (184-191, `-t 8`); the package moved them to
   `unknown_pairs` with reason `placement_withdrawn` (declared withdrawal, NOT a re-measurement; stamp
   `5d772b2c` → `560d489b`). A hot tier flip without a re-bench leaves contention_gate blind for vision.
-- [ ] **S-20 — make the cold-vision refusal fail fast** (filed 2026-10-03, bring-up proof 9). With :8086 down and
+- [x] **S-20 — make the cold-vision refusal fail fast** (filed 2026-10-03, bring-up proof 9). ✅ 2026-10-24. With :8086 down and
   `ORCHESTRATOR_VISION_VL_BACKEND=server`, an image request was refused correctly and spawned no `llama-mtmd-cli`,
   but the refusal took **27.9 s**. Expected: immediate ("All vision paths failed"). Find where the time goes
   (`chat_vision` tries :8086 as worker_vision, then as vision_escalation, then POSTs `/vision/analyze`; likely
   connect timeouts or retries on each hop), short-circuit when no vision server is listening and the backend is
   `server`, and add a test with a timing bound.
+  - 2026-10-24 source acceptance: the fresh-source audit found optional OCR was awaited before VL availability was checked. The published route now performs a deduplicated TCP-connect preflight before OCR/structured analysis in explicit server-only mode, with one 250 ms deadline and bounded cleanup. Healthy-server and auto/cli behavior retain their existing inference/OCR timeouts. Orchestrator source `846783d1` is on main via `84f6f6f1`; exact source/test blobs match tested pin `5fc97a54c65d1022ae780f74fd34476e2501c623`. Official calendar validation passed 16 tests (40 deselected, one warning), including all seven new refusal/deadline/cancellation/healthy-path cases; XML reported no failures, errors, or skips. This closes the source fix and required timing-bound test. No API reload or live latency measurement was performed; the original 27.9 s observation is retained as historical evidence. Runtime adoption belongs to the API owner at its reload boundary.
 
 **LensVLM activation trigger.** Materialize `MM-LENS-1`, `MM-LENS-2`, and their `VB-LENS-1` receipt only when visual-token processing is a measured latency, memory, or quality bottleneck on an EPYC workload, or a named deployment needs LensVLM. Until then this is a monitor record, not an active reproduction campaign.
 
@@ -1006,3 +1007,5 @@ capability against the resident VL server.
 - [x] **INF41-S20-SOURCE — honor explicit server-only vision policy at the route fallback boundary.** After configured role endpoints fail, refuse through the existing error contract without POSTing the legacy `/vision/analyze` endpoint. Preserve auto/cli/default behavior and healthy-server responses. Verify the actual handler with fake HTTP/OCR boundaries and exact source/case identities. This closes only redundant legacy fallback source behavior; parent S-20 timing diagnosis/bound and live cold-server acceptance remain separate. No service/model/CLI launch or latency claim.
 
 2026-10-07 MAIN accepted INF41-S20-SOURCE: [five hosted policy controls and original custody](../../artifacts/ni08/inf41-s20-source-20261007/README.md), APPdcccfa1d integrated/pushed. Explicit server-only mode omits legacy fallback; parent S-20 remains open for real timing diagnosis and cold-server acceptance.
+
+2026-10-24 S-20 checkpoint supersedes the 2026-10-07 open-source status above: the remaining availability preflight and timing-bound source tests are now complete. The historical INF41-S20-SOURCE result is unchanged. Live post-reload cold-path latency remains unmeasured; no live improvement is inferred from the mocked source tests.
