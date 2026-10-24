@@ -9,10 +9,25 @@
   },
   "kind": "project-wiki-source-manifest",
   "last_compile": "2026-10-24T09:29:22Z",
-  "mode": "touch",
-  "scan_time": "2026-10-24T09:29:22Z",
+  "last_touch": {
+    "advanced": {
+      "added": 0,
+      "changed": 4,
+      "removed": 0
+    },
+    "at": "2026-10-24T09:37:50Z",
+    "scope_paths": [
+      "handoffs/active/cpu-decode-roofline-program.md",
+      "handoffs/active/cpu-fused-decoder-blocks.md",
+      "handoffs/active/iqk-iquant-enablement.md",
+      "progress/2026-10/2026-10-24-workspace-58.md"
+    ],
+    "scope_types": []
+  },
+  "mode": "touch:scoped",
+  "scan_time": "2026-10-24T09:37:50Z",
   "schema_version": 1,
-  "source_set_hash": "638ff1ed84f9512cd7448312097a03f803bc0000956a3e10c25b6e18845c5430",
+  "source_set_hash": "cfabb4dd606cb57de5d239bf4c3c9e6179e06ca235c97639cf0c1861dd6d9038",
   "sources": [
     {
       "content_hash": "6c067235a74a3b9667dd4fad23684206476aeac1cdefe3b4e0a0824d3179c241",
@@ -311,18 +326,18 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "ac71b02b03211f59af49697cf3fabe8843ada9cd88973b58154d9985cab4c5eb",
-      "modified": "2026-10-24T09:12:53Z",
+      "content_hash": "b9dcb7661caf38337e98d5aaf5eecb7225639881e4ed56f4c8daff42223b405e",
+      "modified": "2026-10-24T09:35:37Z",
       "path": "handoffs/active/cpu-decode-roofline-program.md",
-      "size": 483650,
+      "size": 485363,
       "title": "CPU Decode Roofline Program \u2014 Qwen3.8-Flash-Next (qwen4exp) at the machine ceiling",
       "type": "handoff-active"
     },
     {
-      "content_hash": "5003c11e029c7fe4cf7b31e37a599d0b470ed92fe4280913c1376a80f456fc1b",
-      "modified": "2026-10-24T09:23:37Z",
+      "content_hash": "83a169247b256a7b432b09a79114daba9d4707bab2906c7cae3cf59c44194a8d",
+      "modified": "2026-10-24T09:35:37Z",
       "path": "handoffs/active/cpu-fused-decoder-blocks.md",
-      "size": 32808,
+      "size": 34713,
       "title": "CPU Fused Decoder Blocks (batch-1 decode megakernel)",
       "type": "handoff-active"
     },
@@ -727,10 +742,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "74c627195a68ae04d271d57a8f4cb25fb8b44ed2b709104ed779db386fd7069a",
-      "modified": "2026-10-24T09:12:53Z",
+      "content_hash": "c44c11a7810f39278fbd73eee08fa41323ffeadcd9772f1336343e9801192133",
+      "modified": "2026-10-24T09:35:37Z",
       "path": "handoffs/active/iqk-iquant-enablement.md",
-      "size": 55966,
+      "size": 56826,
       "title": "iqk IQ-quant Enablement \u2014 shipped in v8, residual research active",
       "type": "handoff-active"
     },
@@ -10519,10 +10534,10 @@
       "type": "progress"
     },
     {
-      "content_hash": "b1c55b7112edd5f33e745afb8dea233f4896d5eebb103b8923e7dbe8668097b7",
-      "modified": "2026-10-24T09:12:53Z",
+      "content_hash": "bbc1298008492e2afb258e4c28bdac86e9a215901b5613a7125e65bcfacf16bc",
+      "modified": "2026-10-24T09:35:37Z",
       "path": "progress/2026-10/2026-10-24-workspace-58.md",
-      "size": 4551,
+      "size": 8236,
       "title": "2026-10-24 \u2014 workspace-58 (compute calendar owner)",
       "type": "progress"
     },
