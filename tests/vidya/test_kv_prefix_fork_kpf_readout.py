@@ -184,3 +184,59 @@ def test_step7_graphs_on_hsf_records_validate_but_project_nothing(tmp_path):
     assert kpf.native_rows(sc) == ()                                  # declined, never a hit count of 0
     with pytest.raises(ct.ProjectionError, match="0 hit count"):
         kpf.project({"row": rows[0], "sidecar_path": str(sc)})
+
+
+# ------------------------------------------------------------------ VB-KPF174C-ARM
+# Fixture: one KPF-17.4c record written by research kpf174c_bisect.py @ 1157adc2f (its own main() and seal) against the
+# driver tests' allocator-faithful LayoutFake: no server, no model (window_id fixture-layoutfake-20261024, small
+# synthetic geometry). Aggregates only; the rows file is not shipped (attestation is absent wherever its declared path
+# does not exist).
+
+
+def test_kpf174c_bisect_projects_matched_pair_fraction_with_decision_words_verbatim(tmp_path):
+    sc = _copy(tmp_path, "kpf174c_bisect")
+    rows = _lines(sc)
+    assert len(rows) == 1 and rows[0]["arm"] == "kpf174c_bisect_spec_off" and rows[0]["kpf_task"] == "KPF-17.4c"
+    assert kpf.is_conformance(rows[0]) and kpf.validate_row(rows[0]) == []
+    natives = kpf.native_rows(sc)
+    assert len(natives) == 1
+    t = kpf.project(natives[0])
+    assert t.metric == "kpf174c_matched_pair_identical_fraction" and t.unit == "fraction"
+    assert (t.value, t.reps) == (1.0, 12) and "layout-matched pairs" in t.reps_basis
+    c = t.extra["counts"]
+    assert (c["attempts"], c["pass"], c["fail"], c["invalid"], c["out_of_scope"]) == (12, 12, 0, 0, 0)
+    assert c["verdict"] == "none_reproduced" and c["pairs_planned"] == 12 and c["cells_interrupted"] == 0
+    # the predeclared decision words ride in extra exactly as the record states them (never re-derived on read)
+    d = rows[0]["decisions"]
+    assert (t.extra["locus"], t.extra["explains_174b"], t.extra["decision_grade"]) == (
+        d["locus"], d["explains_174b"], d["decision_grade"])
+    assert t.extra["locus"] == "none_reproduced" and t.extra["explains_174b"] == "control_layout_numerics"
+    assert "none_reproduced" not in t.claim and "control_layout_numerics" not in t.claim
+    assert t.extra["rules_sha256"].startswith("b871d9a0") and not t.extra["mutant_arm"]
+    # the declared rows path may or may not exist on the reading host; either way the digest is the record's own
+    assert isinstance(t.attestation_present, bool) and t.attestation_sha256 == rows[0]["rows_sha256"]
+    assert t.applicability["varied"] == ["restore_path", "kv_layout"]
+    assert ct.grade(t)[0]                                               # the shared ladder decides
+
+
+def test_kpf174c_unknown_arm_still_declined(tmp_path):
+    sc = _copy(tmp_path, "kpf174c_bisect")
+    rows = _lines(sc)
+    rows[0]["arm"] = "kpf174c_bisect_spec_on"                            # not a declared arm of KPF-17.4c
+    rows[0]["record_sha256"] = kpf._digest({k: v for k, v in rows[0].items() if k != "record_sha256"})
+    assert not kpf.is_conformance(rows[0]) and kpf.validate_row(rows[0])
+    sc.write_text("\n".join(json.dumps(r) for r in rows) + "\n")
+    assert kpf.native_rows(sc) == ()                                     # an undeclared arm voids the whole file
+
+
+def test_kpf174c_counts_cannot_be_invented_or_overfull(tmp_path):
+    rows = _lines(_copy(tmp_path, "kpf174c_bisect"))
+    bare = {k: v for k, v in rows[0].items() if k != "launch_verdict"}
+    bare["record_sha256"] = kpf._digest({k: v for k, v in bare.items() if k != "record_sha256"})
+    assert any("cannot be invented" in p for p in kpf.validate_row(bare))
+    over = json.loads(json.dumps(rows[0]))
+    over["launch_verdict"]["invalid"] = 1                                # 12 + 0 + 1 > 12 attempts
+    over["record_sha256"] = kpf._digest({k: v for k, v in over.items() if k != "record_sha256"})
+    assert any("cannot be invented" in p for p in kpf.validate_row(over))
+    tampered = dict(rows[0], window_id="elsewhere")                      # the seal still binds every field
+    assert any("does not re-derive" in p for p in kpf.validate_row(tampered))

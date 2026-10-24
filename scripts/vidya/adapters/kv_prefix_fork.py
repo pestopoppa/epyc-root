@@ -98,8 +98,9 @@ _ITEM3V2 = re.compile(r"^item3v2_load(?P<load>\d+)$")
 #: Conformance records (no fork-vs-fresh logits): ``kpf_task`` -> declared arms, exactly as the drivers emit them
 #: (research ``kpf13_restore_ab.py`` writes ``restore_<config>``; ``kpf174_swa_drafter.py`` writes the four launch arms,
 #: one per launch: honest, flag_on, and the two mutants; 17.4b adds the rules-v2 spec-off C1 and junction-sweep
-#: launches). Counts come from the record's own verdict block
-#: (kpf13: ``equivalence.configs`` A+B; kpf174: ``launch_verdict``), never a pass word and never invented.
+#: launches; ``kpf174c_bisect.py`` writes the one KPF-17.4c spec-off bisect launch). Counts come from the record's own
+#: verdict block (kpf13: ``equivalence.configs`` A+B; kpf174 / kpf174c: ``launch_verdict``), never a pass word and never
+#: invented.
 CONFORMANCE_ARMS = {
     "KPF-13.1": (rf"restore_{_CFG}",),
     "KPF-17.4+17.4a+19.1a": (r"kpf174_191a_flag_off", r"kpf174_mut_dft_partial_noop", r"kpf191a_flag_on",
@@ -107,7 +108,14 @@ CONFORMANCE_ARMS = {
                              # 17.4b (rules v2): C1 honest launch with the drafter flags removed, and the junction
                              # sweep. Both are honest launches (not mutants): they project the PASS fraction.
                              r"kpf174b_c1_spec_off", r"kpf174b_junction_sweep"),
+    # VB-KPF174C-ARM: the KPF-17.4c target-restore bisect (rules epyc.kpf174c.rules.v1, speculation OFF). Its
+    # launch_verdict counts layout-matched PAIRS (Xc~Cmask, Xe~C0, Ks~C0 of each attempted cell), not cells.
+    "KPF-17.4c": (r"kpf174c_bisect_spec_off",),
 }
+#: tasks whose launch_verdict counts something other than cells: task -> (metric, reps basis, unit noun)
+CONF_PAIR_TASKS = {"KPF-17.4c": ("kpf174c_matched_pair_identical_fraction",
+                                 "layout-matched pairs (Xc~Cmask, Xe~C0, Ks~C0) attempted in this launch",
+                                 "layout-matched pairs bit-identical")}
 _CONF_RE = {t: re.compile("^(?:" + "|".join(p) + ")$") for t, p in CONFORMANCE_ARMS.items()}
 _MUTANT_ARMS = frozenset({"kpf174_mut_dft_partial_noop", "kpf191a_mut_dft_no_transfer"})
 
@@ -134,8 +142,11 @@ def _conf_counts(row: dict) -> dict | None:
     v = row.get("launch_verdict")
     if not isinstance(v, dict):
         return None
-    return {"attempts": v["attempts"], "pass": v["pass"], "fail": v["fail"], "invalid": v.get("invalid") or 0,
-            "out_of_scope": v.get("out_of_scope") or 0, "verdict": v.get("verdict")}
+    out = {"attempts": v["attempts"], "pass": v["pass"], "fail": v["fail"], "invalid": v.get("invalid") or 0,
+           "out_of_scope": v.get("out_of_scope") or 0, "verdict": v.get("verdict")}
+    # kpf174c: the unit and the attempt bookkeeping the writer states about its own counts, verbatim
+    out.update({k: v[k] for k in ("unit", "pairs_planned", "cells_attempted", "cells_interrupted") if k in v})
+    return out
 
 
 def is_sub_arm(arm: Any, item: Any) -> bool:
@@ -151,7 +162,8 @@ OUTCOME_ARMS = ("A", "B", "A2")  # A = flags off (baseline), B = flags on (treat
 OUTCOME_KEYS = ("kpf_item", "seed", "manifest_digest", "manifest_sha256", "n_tasks", "n_cases", "reps", "per_arm",
                 "spread", "drop", "regress", "improve", "ctrl_regress", "ctrl_improve", "sign_test_p_regress",
                 "verdict", "reorder_decision", "gates", "rule", "treatment_applied", "finished_utc")
-CONF_VARIED = {"KPF-13.1": ["restore_path"], "KPF-17.4+17.4a+19.1a": ["swa_drafter_launch_arm"]}
+CONF_VARIED = {"KPF-13.1": ["restore_path"], "KPF-17.4+17.4a+19.1a": ["swa_drafter_launch_arm"],
+               "KPF-17.4c": ["restore_path", "kv_layout"]}
 _WINDOW = re.compile(r"^(?P<stem>.+)-(?P<arm>[AB])(?P<k>\d+)$")
 REQUIRED = ("run_id", "arm", "binary_sha256", "prompt_set_sha256", "window_id", "end_utc", "host", "argv",
             "equivalence", "rows", "record_sha256", "category")  # rows_sha256 absent = attested-absent (VB-KVU-PF.2)
@@ -468,12 +480,21 @@ def _project_conformance(row: dict, sidecar: Path, present: bool) -> ClaimTuple:
     arm the pass fraction. A zero-cell record (aborted launch) projects as an attested zero-cell attempt:
     ``kpf_conformance_cells_scored`` = 0, never dropped and never given a rate. The producer's verdict words and
     ``decision_grade`` ride in ``extra`` verbatim; the grade is ``claim_tuple.grade()``'s alone.
+
+    VB-KPF174C-ARM: a ``CONF_PAIR_TASKS`` record (KPF-17.4c) counts layout-matched PAIRS, so it projects the
+    bit-identical pair fraction under its own metric name; its predeclared decision words (``locus``,
+    ``explains_174b``, ``decision_grade``) are copied into ``extra`` from the record's ``decisions``, never re-derived.
     """
     arm, counts = row["arm"], _conf_counts(row)
     mutant = arm in _MUTANT_ARMS
+    pair = CONF_PAIR_TASKS.get(row["kpf_task"])
     if row["n_cells"] == 0 or counts is None:
         metric, value, unit, reps = "kpf_conformance_cells_scored", 0, "cells", 1
         basis, shown = "aborted/zero-cell attempt: the launch scored no cell", "0 cells scored (aborted attempt)"
+    elif pair:
+        metric, basis, noun = pair
+        value, unit, reps = round(counts["pass"] / counts["attempts"], 6), "fraction", counts["attempts"]
+        shown = f"{counts['pass']}/{counts['attempts']} {noun}"
     else:
         num = counts["fail"] if mutant else counts["pass"]
         metric = "kpf_mutant_detected_fraction" if mutant else "kpf_conformance_cell_pass_fraction"
@@ -482,6 +503,7 @@ def _project_conformance(row: dict, sidecar: Path, present: bool) -> ClaimTuple:
         shown = f"{num}/{counts['attempts']} cells {'detected' if mutant else 'pass'}"
     decisions = row.get("decisions") if isinstance(row.get("decisions"), dict) else \
         (row.get("equivalence") or {}).get("decisions")
+    words = {k: (decisions or {}).get(k) for k in ("locus", "explains_174b", "decision_grade")} if pair else {}
     locator = (f"kpf:{row['run_id']}:{row['arm']}:task={row['kpf_task']}:ps={row['prompt_set_sha256'][:16]}:"
                f"bin={row['binary_sha256'][:16]}:win={row['window_id']}")
     return ClaimTuple(
@@ -501,7 +523,7 @@ def _project_conformance(row: dict, sidecar: Path, present: bool) -> ClaimTuple:
                "window_id": row["window_id"], "binary_sha256": row["binary_sha256"],
                "prompt_set_sha256": row["prompt_set_sha256"], "host": row["host"], "argv": row["argv"],
                "start_utc": row.get("start_utc"), "end_utc": row["end_utc"],
-               "record_sha256": row["record_sha256"], "sidecar_path": str(sidecar)},
+               "record_sha256": row["record_sha256"], "sidecar_path": str(sidecar), **words},
         applicability=_applicability(row))
 
 
