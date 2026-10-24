@@ -1,0 +1,80 @@
+{
+  "already_signed_before_this_run": [],
+  "decision": "SEC-ART-POST-b: the operator read the upstream -> served chat-template diffs and the agent-prepared security review digest, and signs server_mode.<role>.chat_template.template_diff_reviewed for the roles below (handoffs/active/model-artifact-integrity.md).",
+  "human_attestation": "RATIFY-SEC-ART-POST-B-20261023",
+  "landed": {
+    "epyc-inference-research": {
+      "base": "37fe0f50fc612efabfa1746f057829a27ee506fd",
+      "commit": "5baae2367f885ece4325887ed2989915c164cf0f",
+      "path": "orchestration/model_registry.yaml",
+      "ref": "origin/main"
+    },
+    "epyc-root": {
+      "commit": "the commit carrying this receipt",
+      "ref": "origin/main"
+    }
+  },
+  "pinned": {
+    "architect_critic": {
+      "diff": "data/template_reviews/architect_critic.diff",
+      "diff_sha256": "cfdc36542b761d30ece2d0c65fc33be67cbbf776b833cb39a0b7b251162d6cbc",
+      "served_source": "file:/mnt/raid0/llm/models/chat-templates/sha256/1443ea9ab4bb0a2663b1002a5d4baad970e9f0b2f42ca4ec12b4683838284551.jinja",
+      "served_template_sha256": "1443ea9ab4bb0a2663b1002a5d4baad970e9f0b2f42ca4ec12b4683838284551",
+      "upstream_template_sha256": "c3cf9e34abf4f9e36c2d72165aa9c132d3e2a725b6c2586aaa3a8af9d7a81041"
+    },
+    "architect_general": {
+      "diff": "data/template_reviews/architect_general.diff",
+      "diff_sha256": "3f80812a214ada4967559cdc49edd473063d7b6cafc98ce2d936c5e9bd1659cd",
+      "served_source": "gguf:/mnt/raid0/llm/models/unsloth/Qwen3.8-Flash-Next-GGUF/UD-IQ4_XS/Qwen3.8-Flash-Next-UD-IQ4_XS-00001-of-00003.gguf",
+      "served_template_sha256": "12827f24b742ea4e80cdc12dbcf9622227056b9f797252a3149263d4f9aaadce",
+      "upstream_template_sha256": "c3cf9e34abf4f9e36c2d72165aa9c132d3e2a725b6c2586aaa3a8af9d7a81041"
+    },
+    "frontdoor": {
+      "diff": "data/template_reviews/frontdoor.diff",
+      "diff_sha256": "98b0d55c261f388bf11b919be59e0ce2eb7971f89117d716414fa136388715df",
+      "served_source": "file:/mnt/raid0/llm/models/chat-templates/sha256/1443ea9ab4bb0a2663b1002a5d4baad970e9f0b2f42ca4ec12b4683838284551.jinja",
+      "served_template_sha256": "1443ea9ab4bb0a2663b1002a5d4baad970e9f0b2f42ca4ec12b4683838284551",
+      "upstream_template_sha256": "e84f32a23fdda27689f868aa4a1a5621f41133e51a48d7f3efcbea2839574259"
+    },
+    "worker_vision": {
+      "diff": "data/template_reviews/worker_vision.diff",
+      "diff_sha256": "05bdf611f26c4ad4af4a966400c697eb527ed5acb6d03fd01595d3101ea12bac",
+      "served_source": "gguf:/mnt/raid0/llm/models/lmstudio-community/Qwen3-VL-30B-A3B-Instruct-GGUF/Qwen3-VL-30B-A3B-Instruct-Q4_K_M.gguf",
+      "served_template_sha256": "3636d0f0bd6bef02654cdffdc447b79cb2cef8ab02cc75267345946291a489e4",
+      "upstream_template_sha256": "3636d0f0bd6bef02654cdffdc447b79cb2cef8ab02cc75267345946291a489e4"
+    }
+  },
+  "ratify_script_sha256": "1c2b25063483d784351b3ef01b7449a77e04b3b1809a30c138fd9393dc244d18",
+  "reloads_performed": [],
+  "review_digest": {
+    "note": "private, never committed; the sha256 binds what was read",
+    "path": "/mnt/raid0/llm/private/sec-art-post-b/TEMPLATE_REVIEW_DIGEST.md",
+    "sha256": "50c357749c54064da46aa8f9a0e49f9fd0d63f4cb08924469d8a6767b29e2516"
+  },
+  "schema": "epyc.operator_receipt.v1",
+  "signature_channel": "operator-run script (--attest typed confirmation + typed review-digest sha256)",
+  "signed_at": "2026-10-24T13:58:52.960542+00:00",
+  "signed_by": "Daniele",
+  "signed_by_uid": 1000,
+  "signed_lines": {
+    "architect_critic": "SIGNED reviewed_by=\"Daniele\" reviewed_on=2026-10-24 diff=data/template_reviews/architect_critic.diff diff_sha256=cfdc36542b761d30ece2d0c65fc33be67cbbf776b833cb39a0b7b251162d6cbc upstream_sha256_12=c3cf9e34abf4 served_sha256_12=1443ea9ab4bb review_digest_sha256=50c357749c54064da46aa8f9a0e49f9fd0d63f4cb08924469d8a6767b29e2516 gate=RATIFY-SEC-ART-POST-B-20261023",
+    "architect_general": "SIGNED reviewed_by=\"Daniele\" reviewed_on=2026-10-24 diff=data/template_reviews/architect_general.diff diff_sha256=3f80812a214ada4967559cdc49edd473063d7b6cafc98ce2d936c5e9bd1659cd upstream_sha256_12=c3cf9e34abf4 served_sha256_12=12827f24b742 review_digest_sha256=50c357749c54064da46aa8f9a0e49f9fd0d63f4cb08924469d8a6767b29e2516 gate=RATIFY-SEC-ART-POST-B-20261023",
+    "frontdoor": "SIGNED reviewed_by=\"Daniele\" reviewed_on=2026-10-24 diff=data/template_reviews/frontdoor.diff diff_sha256=98b0d55c261f388bf11b919be59e0ce2eb7971f89117d716414fa136388715df upstream_sha256_12=e84f32a23fdd served_sha256_12=1443ea9ab4bb review_digest_sha256=50c357749c54064da46aa8f9a0e49f9fd0d63f4cb08924469d8a6767b29e2516 gate=RATIFY-SEC-ART-POST-B-20261023",
+    "worker_vision": "SIGNED reviewed_by=\"Daniele\" reviewed_on=2026-10-24 diff=data/template_reviews/worker_vision.diff diff_sha256=05bdf611f26c4ad4af4a966400c697eb527ed5acb6d03fd01595d3101ea12bac upstream_sha256_12=3636d0f0bd6b served_sha256_12=3636d0f0bd6b review_digest_sha256=50c357749c54064da46aa8f9a0e49f9fd0d63f4cb08924469d8a6767b29e2516 gate=RATIFY-SEC-ART-POST-B-20261023"
+  },
+  "signed_roles": [
+    "frontdoor",
+    "worker_vision",
+    "architect_critic",
+    "architect_general"
+  ],
+  "status": "ratified",
+  "token": "RATIFY-SEC-ART-POST-B-20261023",
+  "validation": {
+    "check6_errors_staged": 0,
+    "new_errors_staged": 0,
+    "test_validate_model_registry_templates": "5 passed in 3.37s",
+    "validate_model_registry_rc_staged": 0,
+    "validate_model_registry_rc_unedited": 0
+  }
+}

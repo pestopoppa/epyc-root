@@ -1,0 +1,7 @@
+{
+  "gate_id": "RATIFY-SEC-ART-POST-B-20261023",
+  "indexed_by": "attest",
+  "receipt": "/mnt/raid0/llm/epyc-root/artifacts/operator/ratify_sec_art_post_b_20261023.json",
+  "schema_version": "session_bus.receipt_index.v1",
+  "status": "ratified"
+}
