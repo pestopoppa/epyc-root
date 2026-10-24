@@ -40,6 +40,11 @@ duties list in `docs/guides/agent-workflows/compute-fillers.md`. Times are UTC.
 | 10-24 01:17-05:00 | event watcher re-touched its stamp at re-arm, 4 s after `inf66.ended` | whole host + GPU idle 3.7 h | stamp persists across re-arms (watcher v2) |
 | 10-24 06:37 | day chain re-granted inf66 before its fix landed | (revoked 30 s later, before the launcher poll) | revoke = move `.grant` aside + `.ended reason=revoked` |
 | 10-24 06:37 | CH-27 had no FILLERS row or launcher at its slot | quiet slot went to the next items | a peer registers row + pid before its slot; the writer skips and releases |
+| 10-24 06:38-08:20 | q1/q3 idle about 2 h: no single-quarter row was armed anywhere | 34% quarter utilisation over 12 h (operator: "unacceptable") | quarter queue writer + peers arm one-quarter rows; non-inference follow-ups dispatched as filed |
+| 10-24 08:22-08:37 | g2conc-c3 driver argument-order bug, then INCOMPLETE on outputs capped by max_tokens | two short windows | offline tests, then answers finish (4096) with production prompts verbatim |
+| 10-24 09:11 | G2-CONC A4 FAIL: degeneracy detector misread LaTeX-dense correct math as a loop | gate FAIL recorded (not regraded) | detector v2.1 on independent fixtures, AMENDMENT 5, fresh re-run |
+| 10-24 09:21 | arm-P coherence NO-GO: the harness ran without the serving env; fused decode default-ON made even UD garbage | verdict void; surfaced FD-DIV-2 (v10 production wrong on the fused path) | harnesses copy the role's serving env; control arm must pass |
+| 10-24 09:0x | `serialized_push --acquire \| tail -1 && ...` masked a wrapup-lease refusal | regen ran unleased in a private worktree (no tracked change) | capture rc before chaining |
 
 Operator rulings that fix the objective (not incidents):
 

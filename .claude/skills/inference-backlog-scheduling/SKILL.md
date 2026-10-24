@@ -133,6 +133,21 @@ Run this loop at every task boundary and on every watcher event (`event-watch-ws
   writer's chain moves on. A repeated failure may use up a driver's retry budget for that arm.
 - Queue fields never contain `|`; edit queue files and `FILLERS.md` atomically (`.tmp` +
   `os.replace`), with a dated backup.
+- Fill single quarters from a queue, not one writer per job: `grant-ws58-quarters-*.sh` reads a queue file
+  (`id|launcher_pid|window_s|gib`, edited atomically), places items in order on the first free quarter
+  in parallel, grants each item once (a `.done` file; delete its line to re-queue), and treats
+  `grant_ok` rc 12 (precondition not ready) as "try the next item". A GPU job that folds onto q3 is
+  protected by a reservation flag the quarter writer honours, and the GPU writer removes the flag
+  after the job that needs q3. Order the GPU so q3-needing items run back to back.
+- A GPU writer step whose precondition is not ready yet retries until a deadline (`try_until`); it
+  does not skip on the first refusal.
+- Never pipe a lease/lock/gate command into `tail` inside an `&&` chain: the chain reads `tail`'s
+  status. Capture the rc to a file first (a wrapup-lease refusal was masked this way, 10-24).
+- Move a `.complete` marker aside BEFORE starting the replacement launcher; a launcher that sees the
+  marker at start exits "for good".
+- A correctness harness runs the role's production serving env (the codified recipe), never the bare
+  binary: on the C3 build, greedy decode without `GGML_FUSED_DECODE_OFF=1` was garbage while PPL looked
+  fine, because only one-token decode takes the fused path (10-24).
 
 ## 5. Coordination protocol
 
