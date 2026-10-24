@@ -1,4 +1,4 @@
-"""Strict-reader contract tests; fixtures are never projected or graded."""
+"""Strict-reader tests with synthetic refusal and isolated native-shaped CLI fixtures."""
 import hashlib
 import importlib.util
 import json
@@ -22,7 +22,7 @@ def _canonical(value):
 
 
 def _write_fixture(path: Path, *, projection_count=1, legacy_total=1,
-                   legacy_by_outcome=None):
+                   legacy_by_outcome=None, synthetic=True):
     if legacy_by_outcome is None:
         legacy_by_outcome = {"unknown": 1}
     rows = [{"id": "fixture-memory", "action_type": "escalation", "q_value": 0.8,
@@ -58,7 +58,7 @@ def _write_fixture(path: Path, *, projection_count=1, legacy_total=1,
         "invocation_id": "synthetic-fixture-invocation",
         "captured_at_utc": "2026-10-24T00:00:00Z",
         "capture_stage": "selected_pool_before_teacher",
-        "synthetic": True,
+        "synthetic": synthetic,
         "unit": "episodic_memory_pattern",
         "selector": {
             "method": "EpisodicStore.retrieve_by_similarity", "query_method": "zero_vector",
@@ -70,7 +70,8 @@ def _write_fixture(path: Path, *, projection_count=1, legacy_total=1,
             "backend": "FixtureEmbeddingStore", "use_faiss": True,
         },
         "teacher": {
-            "requested": "mock", "declared_model_id": "mock-fixture",
+            "requested": "mock" if synthetic else "claude",
+            "declared_model_id": "mock-fixture" if synthetic else "fixture-model",
             "actual_served_model_id": None, "actual_served_identity_basis": "unobserved",
         },
         "code_provenance": {
