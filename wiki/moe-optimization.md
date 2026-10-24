@@ -12,6 +12,13 @@
 - **RT-5 (schema, validator, 16 tests, C++ change spec) is met and on research main** (`ce1a1f4e5` is an ancestor of origin/main). The tap itself shipped under RT-1, and its traces carry the shape RT-6/7/8 consumed (prefill vs decode legs, T = 1 and 3). The DS41 part (hash layers, 128-expert DSpark/MTP layers, int16 ids) belongs to RT-10, which keeps RT-6 and RT-7 open.
 
 Sources: [moe-routing-tap-and-locality-measurement](../handoffs/active/moe-routing-tap-and-locality-measurement.md).
+## Compiled Update — 2026-10-24 (wrap-up sweep 21, workspace-58 delta): a cheap PPL screen for a faster Q38FN low-bit file
+
+- **Arm P: change only the expert gate/up from IQ3_S to IQ4_XS.** The old uniform file's +17.8% PPL came from degrading tensors the UD file keeps at Q8_0 (attn, ssm, shared experts), so arm P keeps every other tensor at its UD type (96,970 vs 89,332 MiB). PPL P 2.9701 vs UD 2.9761, i.e. equal, measured without iqk.
+- **The coherence half was void, not failed.** The harness ran without the serving env, so the default-ON fused decode made even the UD file produce garbage (see the FD-DIV-2 note in hardware-optimization). A v2 coherence run with the recipe env and the speed A/B (pp256 >= +27%, pp5 >= +19%, tg128 >= -2.0%, INDICATIVE on one quarter) are queued.
+- **Routing skew on the frontdoor model (RT-9).** Qwen3.6-35B-A3B top-10% expert share is 0.50 / 0.42 / 0.46 (prefill; code / prose / reasoning) against a uniform 0.104, with 0 of 40 layers at >= 0.60, so the written decision rule (>= 0.60 on >= 2 workloads) is not met on that model. The DS41 arm (RT-10) keeps the box open.
+
+Sources: [IQK i-quant enablement](../handoffs/active/iqk-iquant-enablement.md), [MoE routing tap and locality measurement](../handoffs/active/moe-routing-tap-and-locality-measurement.md), [CPU fused decoder blocks](../handoffs/active/cpu-fused-decoder-blocks.md)
 
 ## Compiled Update — 2026-10-22 (wrap-up sweep 7): the repacked MXFP4 expert GEMV now has a real correctness gate
 **Confidence: verified** for the gate run (named artifacts); **inferred** for the S1-S5 seed implications and W8b (not run).

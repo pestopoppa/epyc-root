@@ -42,6 +42,13 @@ confirm and confirm-R), [kv-prefix-fork-and-paged-attention](../handoffs/active/
 (KPF-18-S1.7g, KPF-19.1a side finding), [speculative-decoding-mtp-refresh](../handoffs/active/speculative-decoding-mtp-refresh.md)
 (SPEC-RNG.1.2 scope note), [non-inference-backlog](../handoffs/active/non-inference-backlog.md) (LINT-SIGPIPE-STRINGS-GREP-Q,
 LINT-PIPEFAIL-EARLY-EXIT), [workspace-f8 progress 2026-10-24](../progress/2026-10/2026-10-24-workspace-f8.md).
+## Compiled Update — 2026-10-24 (wrap-up sweep 21, workspace-58 delta): a degeneracy detector false positive, and an unrecoverable cross-protocol delta
+
+- **G2-CONC A4 gate failed on a detector false positive, recorded not regraded.** One item (LaTeX-dense correct math) flagged because the solo anchor was a 2-token answer and the concurrent answer 904 tokens ending in the same letter. Fix is detector v2.1 (17 fixtures: old detector wrong on 6, new on 0) under AMENDMENT 5, a fresh re-run, and a Fable tier-2 judge. A solo anchor of 1-2 tokens is classed SHORT (severity 0), so any flag on the long answer reads as REGRESSION; route such pairs to the judge.
+- **A delta whose arms ran different protocols is closed INVALID, not re-run.** The DS41 "1017 vs Sept" llama-bench delta (tg128 -5.1%, pp512 -29.9%) paired a hardened arm with an ordinary one, and the Sept GGUF is deleted, so no like-for-like arm can exist. Replacement is an absolute unhardened baseline with its CI plus a model-free MUL_MAT_ID microbench at the pp512 expert shapes; any seed premise quoting the -29.9% is void.
+- **Bench rows from the mixed-protocol audit keep their rule:** differences under about 1.5-2% inside a lever row are protocol-confounded; larger effects keep direction but need a same-protocol repeat.
+
+Sources: [CPU decode roofline program](../handoffs/active/cpu-decode-roofline-program.md), [DeepSeek-V4.1-Flash evaluation](../handoffs/active/deepseek-v41-flash-evaluation.md)
 
 ## Compiled Update — 2026-10-23 (wrap-up sweep 19, workspace-f8): the llama-bench audit closes, the guard landed with its strict mode off, and the rc 75 was a self-conflict
 

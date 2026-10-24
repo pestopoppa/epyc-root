@@ -17,6 +17,12 @@ may never carry `verified`. Retagged 2026-07-31.
 - **Not done:** the CS-47 accuracy re-score (820 clips x 6 arms; scripts hardcode CS-47 paths), so the box stays open.
 
 Sources: [conversation-stack](../handoffs/active/conversation-stack.md).
+## Compiled Update — 2026-10-24 (wrap-up sweep 21, 3c4ca599 delta): a tail-latency stratum for turn-taking
+
+- **CS-4.5 tail stratum built.** 82 CUT_IC/CUT_WAIT parent pairs x tails {0.3, 0.6, 1.0, 3.0, 4.0} s give 410 pairs / 820 clips, each bound to its PCM SHA-256 and its v2 parent's passing gate; reassembly is hash-exact and the v2 verifier still passes. The stratum is synthesized and ranking-only: `advance_eligible_strata` stays `human_recorded`, so it cannot advance a gate.
+- **Still owed:** the re-score leg and the natural control; audio (386 MB) lives outside git.
+
+Sources: [Conversation stack](../handoffs/active/conversation-stack.md)
 
 ## Compiled Update — 2026-10-23 (wrap-up sweep 18, workspace-f8): the Italian TTS normalizer and respelling are on by default
 

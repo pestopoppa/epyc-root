@@ -16,6 +16,13 @@
 - **Infra lesson: KFD returns a dead server's VRAM late.** Back-to-back GPU launches must poll for the drain (120 s, 2 s poll) before the empty-card check; it broke `kpf-gpu-followups` and `ufh14-lb7-1-probes` (38 GiB free < 50 GiB) and is now fixed in both drivers and recorded in the scheduling skill's incident ledger.
 
 Sources: [gpu-serving-tie-in-program](../handoffs/active/gpu-serving-tie-in-program.md), [heterogeneous-slot-fabric-residency](../handoffs/active/heterogeneous-slot-fabric-residency.md), [prefill-budget package](../docs/design/prefill-budget-8083-stack-change-package.md), [workspace-f8 progress](../progress/2026-10/2026-10-24-workspace-f8.md).
+## Compiled Update — 2026-10-24 (wrap-up sweep 21, workspace-58 delta): the fused qwen4exp decode is wrong on the real served model
+
+- **FD-DIV-2: v10 production fused decode disagrees with the graph path on the UD file.** The FD-DIV-1a informational row (fused vs graph on v10) was `fused_equals_graph=false` on all 4 prompts (first diff at byte 2-7) at 1485-2004 vs 69-87 ms/token, i.e. about 20x slower as well as wrong. The 1a smoke-2 PASS compared patched-fused against v10-fused, so it never tested correctness against the graph, and its decision line "production keeps `GGML_FUSED_DECODE_OFF=1`" was false for the production launcher: `architect_general` (:8074) sets no OFF knob.
+- **FD-DIV-1b closed ANOTHER_CAUSE.** Under ASAN the fused path diverges on F32/F16 weights (w=0.05 and 0.3) and aborts at w=1.0 with no ASAN error, so the divergence is not a memory-safety defect.
+- **Rule: a smoke that compares two builds of the same path is not a correctness test.** Compare against the reference path (graph), and read the production launcher before writing "production keeps X". Interim owner action is `FD-OFF-PROD` (declare the OFF knob for :8074, operator signature pending); the durable fix is a fused path that matches the graph byte-for-byte on the UD Paris/short/long prompts or a default-OFF knob in a promoted kernel.
+
+Sources: [CPU fused decoder blocks](../handoffs/active/cpu-fused-decoder-blocks.md), [Workspace-58 progress 2026-10-24](../progress/2026-10/2026-10-24-workspace-58.md)
 
 ## Compiled Update — 2026-10-24 (wrap-up sweep 20, 3c4ca599): champion C3 = dcc853b55, G10 case 25 was an FP16-reference artifact, and production `architect_general` runs the fused path (FD-OFF-PROD)
 

@@ -13,6 +13,12 @@
 - **DS41 draft-timing pricing is not a log task.** No log carries `draft timing draft-dspark` or `t_draft_us`, so no DS41 run on the timing patch has happened; pricing needs DS41-T7.1a (one profiled decode run), which sits behind the operator's 2026-10-22 hold on DS41 tests other than the noise floor.
 
 Sources: [speculative-decoding-mtp-refresh](../handoffs/active/speculative-decoding-mtp-refresh.md), [deepseek-v41-flash-evaluation](../handoffs/active/deepseek-v41-flash-evaluation.md), [workspace-f8 progress](../progress/2026-10/2026-10-24-workspace-f8.md).
+## Compiled Update — 2026-10-24 (wrap-up sweep 21, workspace-f8 delta): position-keyed spec RNG is not carried
+
+- **SPEC-RNG.1.2 verdict `DO-NOT-CARRY`: distribution-invariant, but no reproducibility gain.** Primary invariance passed at the V1 floor (all 18 cells ok, depth 3/7 drafted on 100% of requests with 82-85% of drafted tokens rejected, controls pass, acceptance unchanged), but the 48-pair probe gave `net_gain` 0 of 48 against a CARRY bar of >= 6. Position keying is therefore not folded into a champion; reopen only if a consumer needs seeded cross-batch reproducibility.
+- **The N=300 cut does not weaken the verdict.** The drive stopped at the window deadline (rule allows N <= 600); that bounds only the primary invariance power statement. DO-NOT-CARRY rests on the N-independent probe, so a full N=600 re-run can only repeat it. Grade INDICATIVE for correctness; no speed claim.
+
+Sources: [Speculative decoding and MTP refresh](../handoffs/active/speculative-decoding-mtp-refresh.md)
 
 ## Compiled Update — 2026-10-23 (wrap-up sweep 19, workspace-f8): json_schema survives MTP mid-draft rejections and costs about 2 pp of acceptance
 

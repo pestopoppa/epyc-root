@@ -27,6 +27,13 @@
 - **Residual is policy, not a defect.** Plain-text template tags (`<think>`, `</think>`, `<tool_call>`, `<tool_response>`, bare `｜DSML｜`) are text in llama.cpp, not control ids, and are deliberately untouched; escaping them would alter quoted code, so it is an operator call (recommended: leave unless a measured injection via these tags appears).
 
 Sources: [qwen-chat-template-evaluation](../handoffs/active/qwen-chat-template-evaluation.md).
+## Compiled Update — 2026-10-24 (wrap-up sweep 21, 3c4ca599 delta): the control-token neutraliser covers DS41, Mistral and BERT families
+
+- **CT-12b probe: 16 of 18 DS41 control spellings were open.** DeepSeek-V4.1-Flash writes its specials with fullwidth bars and U+2581 (`<｜begin▁of▁sentence｜>`), which the ASCII-bar default regex missed. The gemma-4 (18/18) and Llama-3.2 (10/10) families were already closed. The DS41 role and tool markers are plain text in the GGUF vocab (not control ids) but the template emits identical bytes, so a user-typed spelling is indistinguishable from a real role marker (44 text markers open).
+- **Fix is a wider default regex (orchestrator `7f949c7c`).** Bars `[|｜]`, a name class with `/` `▁` `"`, the DSML and `<SPECIAL_n>` and `<tts_*>` forms and the bracket specials (`[INST]`, `[CLS]`, ...). After it every vocab control spelling of every loadable family probes CLOSED. False-positive check over 74 MB of repo text added 85 matches in 8 files, all literal mentions of BERT/Mistral specials.
+- **Residual is policy.** Plain-text template tags (`<think>`, `<tool_call>`, `<tool_response>`, bare `｜DSML｜`) stay untouched, as for Qwen; escaping them would alter quoted code, so it waits for a measured injection through those tags.
+
+Sources: [Qwen chat template evaluation](../handoffs/active/qwen-chat-template-evaluation.md)
 
 ## Compiled Update — 2026-10-22 (wrap-up sweep 10): the stock Qwen3.6-35B template breaks the prefix property, and CT-THINK-CODER is an open owner decision
 

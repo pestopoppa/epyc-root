@@ -18,6 +18,13 @@
 - **KVU-16g-2 package component drafted, not deployed:** the decode-aware prefill budget flags for :8083 (see [hardware-optimization](hardware-optimization.md)). A KVU-12.1b 64k holdout (dense vs coarse, ~7.3 h, one CPU quarter) is prepared, not run.
 
 Sources: [kv-prefix-fork-and-paged-attention](../handoffs/active/kv-prefix-fork-and-paged-attention.md), [kv-unified-stack-rollout](../handoffs/active/kv-unified-stack-rollout.md), [qwen38-27b-replace-qwen36](../handoffs/active/qwen38-27b-replace-qwen36.md), [workspace-f8 progress 2026-10-24](../progress/2026-10/2026-10-24-workspace-f8.md), [prefill-budget package](../docs/design/prefill-budget-8083-stack-change-package.md).
+## Compiled Update — 2026-10-24 (wrap-up sweep 21, workspace-f8 delta): the slot-fabric source rates must come from the graphs-ON run
+
+- **KPF-18-S1.7g came out `graphs-sensitive`** (4 of 21 length-by-mode cells), so the HSF-4/5 source-rate sub-term must be re-quoted from the graphs-ON step-7 run, all numbers from that run. The difference is attributable to graphs ON, the knob and the fresh-load history jointly, not to HIP graphs alone.
+- **Graphs-disabled restore rates stay labelled as such.** tmpfs restore 8.26 / 9.27 / 6.15 GB/s and cold-disk restore 4.12 / 4.10 / 3.06 GB/s at 8k / 16k / 32k, and the earlier judgement that copies sit inside the 3-rep spread is retired (box HSF-4.G).
+- **Not yet judgeable:** the session-keyed dispatch probe still has 0 records with a session key (108 ever), so the fabric dispatch claim waits on live traffic from the restarted API.
+
+Sources: [Heterogeneous slot fabric residency](../handoffs/active/heterogeneous-slot-fabric-residency.md), [KV prefix fork and paged attention](../handoffs/active/kv-prefix-fork-and-paged-attention.md), [KV unified stack rollout](../handoffs/active/kv-unified-stack-rollout.md)
 
 ## Compiled Update — 2026-10-24 (wrap-up sweep 20, 3c4ca599): KPF-64 ran 8/8 arms (checkpoints are load-bearing on hybrids; the RAM tier added nothing at np=4), and INF-42 G1 shows no recall drop to 128K
 
