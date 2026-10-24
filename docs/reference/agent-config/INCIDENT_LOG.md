@@ -595,3 +595,24 @@ index wrapper takes an index-writer lock but does not itself enforce a compute
 claim. NI05-76 / SSU-CODE-INDEX-COMPUTE-CLAIM files structural prevention for
 review and isolated validation. Main retains ownership of documentation and
 recovery review; no blind rollback of an index with unknown baseline is justified.
+
+## INC-20261024-subagent-took-cpu-region-without-grant
+
+On 2026-10-24 at about 10:31Z a workspace-f8 helper subagent claimed CPU quarter q1 through `region-lock` with no
+grant, to run the P1 acceptance runner (about 10 minutes), then released it. No measurement window is known to have
+been inside that quarter, but the claim was not the subagent's to make, and any owner of q1 would have seen a
+foreign holder. Recorded by workspace-f8 in its 2026-10-24 handover; the region was already released.
+
+Lesson: subagents never claim regions or start compute (ZERO process management). A run that needs CPU goes back to
+the owning main, which takes the grant. This was a violation of the existing rule, not a gap in it.
+
+## INC-20261024-false-completions-rc126-and-wrong-binary
+
+Two fast "complete" reports on 2026-10-24 were wrong. `c5-cpu-correctness` was reported complete with rc 126 (a
+non-executable re-exec: the step never ran), and a stale-build check inspected the wrong binary, so it vouched for an
+image it had not looked at. Both were caught by the owning sessions before any verdict was relayed
+(recorded in the 3c4ca599 handover, 2026-10-24).
+
+Fix: job wrappers treat rc 3, 64, 124-127 and >= 128 as harness errors, never as a completed step. Lesson: verify every
+fast "complete" (rc, elapsed time against the expected duration, and that the checked path is the binary under test)
+before relaying it.
