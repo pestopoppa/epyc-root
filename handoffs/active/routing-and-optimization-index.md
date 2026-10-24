@@ -30,7 +30,7 @@
 | RTG-19 | model stack single source update pipeline | [model-stack-single-source-update-pipeline.md](model-stack-single-source-update-pipeline.md) | SSU-F8 owner confirmation; enumerate remaining W4 migrations from per-consumer source evidence | — |
 | RTG-20 | model stack update pipeline audit | [model-stack-update-pipeline-audit.md](model-stack-update-pipeline-audit.md) | Direct benchmark runtime enforcement only if promotion-gate coverage proves insufficient | — |
 | RTG-21 | multi file coding completion capability | [multi-file-coding-completion-capability.md](multi-file-coding-completion-capability.md) | MF-NDG-1 / MF-RR-1 — preserve extraction and completion metadata before rate checks | — |
-| RTG-22 | non inference backlog | [non-inference-backlog.md](non-inference-backlog.md) | NIB2-GNX-1: ff shared clone main to origin/main, incremental gitnexus analyze under build grant; ODL ingest preflight | — |
+| RTG-22 | non inference backlog | [non-inference-backlog.md](non-inference-backlog.md) | NIB2-GNX-1: read out nib2-gnx1-reindex-2 (armed), then write its index receipt; ODL ingest preflight | — |
 | RTG-23 | objective task rate goodput | [objective-task-rate-goodput.md](objective-task-rate-goodput.md) | W3e — merge sub/autopilot-safety, then add an objective policy whose TierSpec drops neg_cost (3-D ref point, era stamp, fence) | — |
 | RTG-24 | orchestration robustness audit 2026 07 11 | [orchestration-robustness-audit-2026-07-11.md](orchestration-robustness-audit-2026-07-11.md) | P0.1 operator run/pause decision on autopilot candidate species | — |
 | RTG-27 | prompt construction determinism | [prompt-construction-determinism.md](prompt-construction-determinism.md) | D3 — Run the P-BENCH canonical sampling-quality cert (`bench_canonical.sh`) in a clean window to certify items #1–3 | — |
@@ -59,8 +59,8 @@
 | RTG-54 | qwen chat template evaluation | [qwen-chat-template-evaluation.md](qwen-chat-template-evaluation.md) | **PRIORITY CT-12.5**: fold the injection server patch 6dfbc9e86 into the champion, then CT-12.3d; then CT-11 | — |
 | RTG-55 | promptforge mutation safety | [promptforge-mutation-safety-contract.md](promptforge-mutation-safety-contract.md) | MHS-3d — operator runs the v10 episodic re-pin RATIFY (run_v10_episodic_repin_ratify_20260917.sh); then MHS-12 | RTG-02 |
 | RTG-56 | typed decision plane | [typed-decision-plane.md](typed-decision-plane.md) | Run fresh three-arm shadow at the inference owner’s boundary; retain inference gates | — |
-| RTG-57 | kv unified stack rollout | [kv-unified-stack-rollout.md](kv-unified-stack-rollout.md) | KVU-LB1.d adopt always-F32 VKQ; KVU-16g-1 row-5c A/B; 64k holdout (HPR-b); KVU-19b-rework-c2-cal; V11-FA-4/-6; fold-c1-p3; CPU-FA-VKQ-2 | RTG-19, RTG-36, INF-41 |
-| RTG-58 | kv prefix fork and paged attention | [kv-prefix-fork-and-paged-attention.md](kv-prefix-fork-and-paged-attention.md) | KPF-13.1b resume kpf131b-specon -> KPF-17.4c bisect; KPF-18-S1.R3 predeclare+run; item 3 open (v2 FORK_EFFECT); KPF-64.3 E/F | RTG-57, RTG-27, INF-65 |
+| RTG-57 | kv unified stack rollout | [kv-unified-stack-rollout.md](kv-unified-stack-rollout.md) | HPR-b 64k staging fix + re-run; KVU-LB1.d always-F32 VKQ; KVU-16g-1 row-5c A/B; KVU-19b-rework-c2-cal; V11-FA-4/-6 | RTG-19, RTG-36, INF-41 |
+| RTG-58 | kv prefix fork and paged attention | [kv-prefix-fork-and-paged-attention.md](kv-prefix-fork-and-paged-attention.md) | KPF-17.4c bisect (armed); KPF-18-S1.R3 read-out; item-3 g3 v3 split; KPF-19.1a CPU leg running; KPF-64.3 E/F | RTG-57, RTG-27, INF-65 |
 | RTG-59 | model artifact integrity | [model-artifact-integrity.md](model-artifact-integrity.md) | SEC-ART-POST-f: recompile lean registry + stack_priors (next stack-change), then SEC-ART-2; POST-b ratify (operator) + v2 template; POST-d | — |
 
 ## Cross-domain

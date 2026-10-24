@@ -36,6 +36,15 @@ if [[ -f "$_sigpipe_checker" ]]; then
 fi
 unset _sigpipe_checker
 
+# Pipefail early-exit reader lint (warn-only): `producer | grep -q|-m|-l|head` under pipefail.
+_pf_checker="$(git rev-parse --show-toplevel)/scripts/lint/check_pipefail_early_exit.py"
+_pf_staged=$(git diff --cached --name-only --diff-filter=ACM -- '*.sh' '*.bash' 2>/dev/null || true)
+if [[ -f "$_pf_checker" && -n "$_pf_staged" ]]; then
+    # shellcheck disable=SC2086
+    (cd "$(git rev-parse --show-toplevel)" && python3 "$_pf_checker" $_pf_staged) || true
+fi
+unset _pf_checker _pf_staged
+
 # Mass-deletion warning (warn-only, never sets $status): a commit that removes >30% of a
 # handoffs/active/*.md without moving it to completed/archived (origin: 465954bc0, +12/-892).
 python3 "${HOOK_SRC_DIR}/handoff_mass_deletion_warn.py" "$@" || true
