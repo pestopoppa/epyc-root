@@ -1,18 +1,14 @@
 # Multiscreen Attention — Evaluation for EPYC Inference
 
-**Status**: ACTIVE — G1 long-context recall probe running under a full-instance region lock
+**Status**: ACTIVE — G1 CLOSED 2026-10-24 (no long-context recall drop to 128K on the frontdoor; ceiling result, see G1 RESULT); remaining rows open
 **Created**: 2026-04-04 (via research intake)
-**Updated**: 2026-08-27 (G1 recovered at 161/200; 163/200 persisted at wrap-up)
+**Updated**: 2026-10-24 (G1 finished on the MI210 path; previous: 2026-08-27 recovery at 161/200)
 **Categories**: kv_cache, inference_serving, ssm_hybrid
 **Scope note**: This handoff expanded beyond Multiscreen evaluation into a comprehensive sub-quadratic attention mechanism survey. Multiscreen-specific evaluation is Section 1. Log-Linear GDN readiness tracked in [log-linear-gated-deltanet-readiness.md](log-linear-gated-deltanet-readiness.md).
 
-## Start here — 2026-08-27
+## Start here — 2026-10-24
 
-The live task is [G1](#tasks), not the historical architecture watch below. The corrected external
-runner holds `q0`–`q3`, has 163/200 Q8 trials persisted and exact-match clean, and autonomously
-continues through the remaining Q8 grid, the required f16 control, summaries and lock release.
-Before treating release as safe, confirm the two legacy lease waiters expired; then let the queued
-region-locked INF-40 job acquire. Publish the per-length/per-depth recall curve when G1 completes.
+G1 is CLOSED (see the G1 RESULT under [Tasks](#tasks)): 100% recall at every length to 128K and 9/9 at 256K on the frontdoor, q8_0 KV equal to f16. That is a ceiling result on a needle task, so it rules out collapse-scale amnesia but does not bound subtler loss. The remaining open rows in this handoff are the next work; the architecture watch below is historical context.
 
 ## Historical survey status — 2026-04-21
 
@@ -464,8 +460,9 @@ See also the fifth GDN branch-map row in
 
 ### Tasks
 
-- [ ] **G1 (G) — the CoT-SFT amnesia probe, on our own production model.** *Highest-value compute row
+- [x] **G1 (G) — the CoT-SFT amnesia probe, on our own production model.** *Highest-value compute row
       of the wave: no port, no new model, no SALA, no training.*
+      **RESULT 2026-10-24 (3c4ca599; filler `inf42-g1-gpu`, MI210, production v10 store `gpu-20260921-ffc1bac82`, residency proven every chunk at 38 GiB; `/mnt/raid0/llm/tmp/inf42-g1-20261023/gpu/VERDICT.txt`): FINAL GATE CLOSED.** Frontdoor Qwen3.6-35B-A3B-MTP Q8_0, greedy, seed 42, `cache_prompt=false`. q8_0 KV: **100% recall at 4K, 32K, 64K and 128K (50/50 each, every depth 0.1-0.9)** and 9/9 at the 256K diagnostic; mean drop vs 4K 0.0 pp, CI [0.0, 0.0] at every length. f16-KV control: 100% at 4K and at 128K (drop 0.0 pp), so q8_0 KV costs nothing here. **Caveat: ceiling on the whole grid.** The probe shows no amnesia on this needle task, but it cannot rank configurations or bound a subtler long-context loss; a harder probe (multi-hop or distractor-dense) would be the next step if one is needed. The f16 phase first ended rc=7 as a FALSE failure (empty chunk gated for residency, 4K trial seeded with the 256K estimate); fixed in `jobs/g1_lib.sh` and `jobs/g1_gpu_job.sh` before the 10-24 grant.
 
       - [x] **Recover the live G1 execution without discarding persisted recall evidence.** ✅
         2026-08-27 — checkpointed 161 scored trials, captured logs/scripts/session provenance,
@@ -474,12 +471,13 @@ See also the fifth GDN branch-map row in
         then used OpenCode's displayed two-Escape interrupt confirmation to return its parent turn
         to an idle, operator-steerable composer; detached experiment daemons were untouched.
 
-      - [ ] **Fence the post-G1 compute handoff.** Before treating lock release as safe, re-resolve
+      - [x] **Fence the post-G1 compute handoff.** Before treating lock release as safe, re-resolve
         the identities of the legacy INF-40 lease waiter (`3847760`, deadline ~15:03Z) and EVL-08
         lease waiter (`3999604`, deadline ~15:57Z) and confirm they expired or were deliberately
         quiesced. Preserve the authoritative queued `inf40-moespec-bsweep` region-lock job
         (`774647`), which should acquire only after G1 releases `q0`–`q3`. PIDs are checkpoint
         identities, not reusable names; verify PID/start/cmdline at action time.
+        - *(2026-10-24, 3c4ca599.)* Obsolete and closed: none of `3847760`, `3999604`, `774647` exists any more (`ps` 2026-10-24), and G1 was finished on the MI210 GPU path under filler grants, not by releasing a held `q0`-`q3` claim.
 
       **Live execution checkpoint — 2026-08-27 07:46Z.** The initial launcher copied the 48-thread
       `:8080`/`:8180` serving-half argv but omitted that shape's CPU affinity, memory policy and
