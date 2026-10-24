@@ -75,6 +75,20 @@ def _run_dirs(marker: str) -> Units:
     return units
 
 
+def _run_dirs_any(*markers: str) -> Units:
+    """Like ``_run_dirs``, but a directory is a run when it holds ANY of ``markers`` (one source, two layouts)."""
+    def held(p: Path) -> bool:
+        return any((p / m).is_file() for m in markers)
+
+    def units(path: Path) -> list[Path]:
+        if not path.is_dir():
+            return []
+        if held(path):
+            return [path]
+        return sorted(p for p in path.iterdir() if p.is_dir() and held(p))
+    return units
+
+
 @dataclass(frozen=True)
 class Source:
     name: str
@@ -334,6 +348,15 @@ SOURCES: dict[str, Source] = {s.name: s for s in (
            note="DS41-W5d 1017 llama-bench baseline + MUL_MAT_ID pp512 ratio, re-derived from the recorded "
                 "values; VOID/INCOMPLETE halves project nothing",
            task="VB-DS41-W5D-WRITE"),
+    Source("spec-rng-1-2", "spec_rng_1_2", _run_dirs("VERDICT.json"),
+           note="SPEC-RNG.1.2 poskey depth-invariance launcher dirs (`VERDICT.json` + `out/records.jsonl` + "
+                "`out/verdict.json`); chi-square/acceptance re-derived from the request rows, INDICATIVE "
+                "correctness only, no throughput value; retrofit",
+           task="VB-SPEC-RNG-1-2-WIRE"),
+    Source("pb-qcost", "pb_qcost", _run_dirs_any("pb_qcost_1.jsonl", "out/run/pb_qcost_1.jsonl"),
+           note="PB-QCOST-1 prefill-cost run dirs (original `summary.json` layout and the confirm launcher "
+                "`VERDICT.json` layout); INDICATIVE, single-q caveat in applicability; OBSERVATION only; retrofit",
+           task="VB-PBQ-1"),
     Source("ev19-gold-selfcheck", "ev19_gold_selfcheck",
            _files("ev19_gold_selfcheck.beliefs.jsonl", "*/ev19_gold_selfcheck.beliefs.jsonl"),
            note="EV-19 scorer/pool gold self-check per suite; scorer validity, never a model; "

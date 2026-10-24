@@ -1,0 +1,119 @@
+{
+ "schema": "epyc.pbhol1.run.v1",
+ "status": "complete",
+ "verdict": "see verdict.py (PREDECLARATION.md)",
+ "arms": {
+  "A-srpf512": {
+   "ttft_ms": [
+    3365.2,
+    3379.3,
+    3376.2
+   ],
+   "median_ms": 3376.2
+  },
+  "B-srpf512": {
+   "ttft_ms": [
+    3365.0,
+    3365.6,
+    3366.6
+   ],
+   "median_ms": 3365.6
+  },
+  "C-srpf512": {
+   "ttft_ms": [
+    286.2,
+    285.6
+   ],
+   "median_ms": 285.9
+  }
+ },
+ "n_rows": 13,
+ "n_runs_attempted": 8,
+ "calibrations": [
+  {
+   "phase": "srpf512",
+   "long_ttft_s": 122.5146
+  }
+ ],
+ "prompts": {
+  "path": "/mnt/raid0/llm/tmp/overnight-20261020/kpf18-run/prompt_set.jsonl",
+  "sha256": "dc37cdf1c407956d83d7b7354f4e48964306228793fc9095add945a17f2994de",
+  "long_group": 6,
+  "long_tokens": 64000,
+  "short_group": 3,
+  "short_suffix_index": 0,
+  "short_tokens": 128,
+  "first_tokens_distinct": true
+ },
+ "binaries": [
+  "/mnt/raid0/llm/worktrees/llama-m4-srpf/build-hip-m4/bin/llama-server"
+ ],
+ "servers": [
+  {
+   "label": "pbhol-srpf512-20261023T202826Z",
+   "binary": "/mnt/raid0/llm/worktrees/llama-m4-srpf/build-hip-m4/bin/llama-server",
+   "binary_sha256": "901743a0fc26bc2b4e9cfcabe3c3f8d46c9cbd7d6249e088f41ba2af417e3d90",
+   "readback": {
+    "exe": "/mnt/raid0/llm/worktrees/llama-m4-srpf/build-hip-m4/bin/llama-server",
+    "exe_matches_binary": true,
+    "proc_cmdline": [
+     "/mnt/raid0/llm/worktrees/llama-m4-srpf/build-hip-m4/bin/llama-server",
+     "-m",
+     "/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf",
+     "--host",
+     "127.0.0.1",
+     "-np",
+     "3",
+     "-c",
+     "393216",
+     "-t",
+     "8",
+     "-b",
+     "512",
+     "-ub",
+     "512",
+     "--flash-attn",
+     "on",
+     "--jinja",
+     "-ctk",
+     "q8_0",
+     "-ctv",
+     "q8_0",
+     "--kv-unified",
+     "--no-mmap",
+     "-ngl",
+     "all",
+     "--cache-ram",
+     "65536",
+     "--chat-template-file",
+     "/mnt/raid0/llm/models/chat-templates/epyc-qwen3x-v1-terse.jinja",
+     "-md",
+     "/mnt/raid0/llm/models/Qwen3.8-27B-DFlash2-Q8_0.gguf",
+     "-ngld",
+     "99",
+     "--spec-type",
+     "draft-dflash",
+     "--spec-draft-n-max",
+     "7",
+     "--device",
+     "ROCm0",
+     "--slot-save-path",
+     "/mnt/raid0/llm/tmp/f8-launchers-20261023/m4-srpf-pbhol/out/srpf512/slot-save/pbhol-srpf512-20261023T202826Z",
+     "--device-draft",
+     "ROCm0",
+     "--no-cache-idle-slots",
+     "--port",
+     "18391",
+     "--metrics",
+     "--prefill-order",
+     "srpf"
+    ],
+    "proc_cmdline_matches_argv": true
+   },
+   "vram": {
+    "own_vram_peak_gib": 47.359
+   }
+  }
+ ],
+ "finished": "2026-10-23T20:36:55Z"
+}

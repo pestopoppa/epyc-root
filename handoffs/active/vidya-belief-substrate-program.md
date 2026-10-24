@@ -2485,7 +2485,7 @@ RI-16's routing `stage_ms` is covered by VB-ROUTE-LAT above, not by a new task.
   - ✅ 2026-10-23 (f8): research `0208f4918` — `seal_record` hashes the JSON round-trip form (the adapter's digest form) + round-trip digest test; `scripts/benchmark/kpf174/reseal_records.py` wrote `/mnt/raid0/llm/tmp/f8-launchers-20261023/kpf17-4-19-1a-27b-dflash2/out/run/belief_measurements.resealed-vbkvupf5.jsonl` (5/5 resealed, only the digest changed, original kept). Re-ingest on origin/main `cli.py ingest kv-prefix-fork --path <resealed> --dry-run`: units 1, projected 1, refused 0, rows 5, frames 15 → 5 of 5.
   - *(2026-10-23, f8; per-arm coverage note, no task to tick.)* 17.4b rules-v2 arms `kpf174b_c1_spec_off` and `kpf174b_junction_sweep` added to `CONFORMANCE_ARMS["KPF-17.4+17.4a+19.1a"]` (honest arms, pass fraction; no new rule). Fixture `kpf174b_rules_v2`. Dry-run: `kpf-gpu-followups/out/kpf174b-specoff` 1/2 and `kpf174b-sweep` 4/10 now project 1 each, refused 0. Their `records/*.json` copies are pretty-printed duplicates of the same records: they decline (the reader is JSONL-only) and are outside the source's discovery globs, so they never double-count.
 
-- [ ] **VB-KVU-PF.6 — the KPF-18 item-3 v2 sidecar voids on read, and the step-7 graphs-ON sidecar projects only a vacuous hit count (filed 2026-10-24, workspace-f8 read-out).** The `KV prefix fork / cache-aware dispatch` source row already covers both, so no new row is needed. The write side is live.
+- [x] **VB-KVU-PF.6 — the KPF-18 item-3 v2 sidecar voids on read, and the step-7 graphs-ON sidecar projects only a vacuous hit count (filed 2026-10-24, workspace-f8 read-out).** The `KV prefix fork / cache-aware dispatch` source row already covers both, so no new row is needed. The write side is live.
   - `kpf18-item3-v2-sameshape` (`/mnt/raid0/llm/tmp/f8-launchers-20261022/kpf18-item3-v2-sameshape/out/belief_measurements.jsonl`, 4 lines). `cli.py ingest kv-prefix-fork --dry-run` gives matched 1, projected 0, declined 1, rows 0. `validate_row` rejects all 4 lines because arm `item3v2_load<N>` is not a declared sub-arm of `kpf18_item` 3. The lines also carry no `kpf18_arm`, and line 3 is the budget-aborted partial load 2. The verdict (`FORK_EFFECT`, per-load classes) lives in the records' `extra.item3v2`, not in `equivalence` (vs_fresh n = 0).
   - `kpf18-s1-step7-graphs-on` (`/mnt/raid0/llm/tmp/f8-launchers-20261023/kpf18-s1-step7-graphs-on/out/belief_measurements.jsonl`). The dry run gives projected 1, rows 3, 9 frames, but each claim is `kpf_hit_tokens = 0`. The rates and the predeclared graphs-sensitivity label are not projected. The `KPF18_SUB_ARMS[185]` comment says `hsf_*` timings are graphs-disabled, which is false for this sidecar (graphs ON, proven from the server environ).
   - Next steps:
@@ -2493,6 +2493,13 @@ RI-16's routing `stage_ms` is covered by VB-ROUTE-LAT above, not by a new task.
     - Project the per-load class counts as the tuple. The aborted partial load must project as an attested incomplete attempt, not void the file.
     - For `hsf_L<L>`, either project nothing (decline) or project the per-cell medians with the run's graphs state read from `launch_prefix`/`env`. Never project a hit count of 0 as a measurement, and never word a claim as a graphs-only cause: the rule attributes the ON/OFF difference to graphs ON plus the knob plus the fresh load / step-7-only history jointly.
     - Add fixtures from both sidecars (aggregates only).
+  - ✅ 2026-10-24 (f8, branch `f8/vidya-wire-1024`): `kv_prefix_fork.py` now declares `KPF18_SUB_ARMS[3] = item3v2_load<N>`.
+    - Locator: the launcher wrote no `kpf18_arm`, so the record is located by its arm token plus its own `item3v2.load` (a partial record by `partial: true`). A `kpf18_arm` that is present must still match. This replaces the writer-side `kpf18_arm` step for this record set; a future item-3 writer should still emit it.
+    - Each load projects `kpf18_item3v2_judged_pairs_fork_effect_candidate`. This counts the judged pairs (the `*_recorded` pairs are left out) and keeps each pair's class, margin and floor in `extra`. The verdict word is not re-derived.
+    - The aborted partial load 2 projects `kpf18_item3v2_judged_pairs_scored = 0`, an attested incomplete attempt.
+    - `hsf_L<L>` records validate but project nothing (declined). No 0 hit count is projected, and no graphs-only wording is used. The per-cell medians wait on a write-side change: the hsf record must carry its own graphs state.
+    - Fixtures `kpf18_item3v2` and `kpf18_step7_graphs_on` (trimmed, resealed). Tests in `test_kv_prefix_fork_kpf_readout.py`; the S1R 14-of-14 test is now 11 of 14 with hsf declined.
+    - Dry runs with `--as-of 2026-10-24T09:00:00Z`: item3v2 gives matched 1, projected 1, rows 4, frames 12, refused 0. Step 7 gives matched 1, declined 1, rows 0.
 
 ## Research Intake Update — 2026-10-04 (decision tools, operator-approved Stage 4)
 
@@ -3393,8 +3400,30 @@ Source: research intake session intake-ist-slq-20261022, Stage-3 plan `/mnt/raid
     - The run did NOT write `belief_measurements.jsonl`, so the write-side ask above is still open.
     - No adapter covers either record set. Dry run 2026-10-24 with `--as-of 2026-10-24T08:00:00Z`: the closest kind, `pb-hol`, declines the run directory (matched 1, projected 0).
     - Widen this task to project the confirm run as well. Add per-n b (ms/token) and d (ms per token x cached token) with their CIs, and the per-phase proofs. The INDICATIVE grade and its cause (the sibling-summary path defect) must ride along in `applicability`.
-- [ ] **VB-M4-PBHOL-WIRE — adapter for the M4.2 PB-HOL-1-on-candidate records (filed 2026-10-24, workspace-f8 read-out).** `cli.py ingest pb-hol --path .../m4-srpf-pbhol/out --dry-run` matches 6 phase dirs and declines all 6 (0 projected): the adapter only knows the PB-HOL-1 arm names and the producer's own verdict. Extend `adapters/pb_hol.py` (or add a sibling) to read the phase-suffixed arms and the launcher `VERDICT.json` from `verdict.py`: one claim per C1 phase (B/A short-TTFT medians, n = valid reps), C2 off-identity, C3 byte identity with the champion-determinism control; invalid runs stay rows with their reasons; protocol = PREDECLARATION.md sha; scope from the argv readback. `claim_tuple.grade()` decides; no grade for INCOMPLETE; no new ladder. Source row in `scripts/vidya/adapters/README.md`.
+  - *(2026-10-24, f8, branch `f8/vidya-wire-1024`.)* The read side is done for both record sets: `adapters/pb_qcost.py` (`cli.py ingest pb-qcost`), tests in `tests/vidya/test_pb_qcost.py`.
+    - The original run gives 8 tuples: intercept, c-slope, noise and held-out P99 per n=1,4. The confirm run gives 18: the same four from ub-512, plus q-axis a/b/d/noise/P99 with the producer's bootstrap CIs.
+    - Everything is refit from the jsonl with the producer's own fit code, and the proofs are recomputed. The reader refuses on any difference.
+    - INDICATIVE and its cause ride in `applicability.recipe` and `extra`. Grades are Judged/Located.
+    - Dry runs: original gives matched 1, projected 1, rows 8, frames 24. Confirm gives matched 1, projected 1, rows 18, frames 54.
+    - **Left (write side):** neither producer emits `belief_measurements.jsonl`. The next PB-QCOST run must write one itself, with its grade cause in words; the confirm's VERDICT states no cause, so the adapter derives it from the missing sibling-summary path.
+
+- [x] **VB-M4-PBHOL-WIRE — adapter for the M4.2 PB-HOL-1-on-candidate records (filed 2026-10-24, workspace-f8 read-out).** `cli.py ingest pb-hol --path .../m4-srpf-pbhol/out --dry-run` matches 6 phase dirs and declines all 6 (0 projected): the adapter only knows the PB-HOL-1 arm names and the producer's own verdict. Extend `adapters/pb_hol.py` (or add a sibling) to read the phase-suffixed arms and the launcher `VERDICT.json` from `verdict.py`: one claim per C1 phase (B/A short-TTFT medians, n = valid reps), C2 off-identity, C3 byte identity with the champion-determinism control; invalid runs stay rows with their reasons; protocol = PREDECLARATION.md sha; scope from the argv readback. `claim_tuple.grade()` decides; no grade for INCOMPLETE; no new ladder. Source row in `scripts/vidya/adapters/README.md`.
+  - ✅ 2026-10-24 (f8, branch `f8/vidya-wire-1024`): `pb_hol.py` reads M4.2 phase dirs, with the launcher VERDICT/RUN_RECORD/PREDECLARATION re-hashed and the verdict partition re-derived. Each phase gives one claim:
+    - C1 srpf512 / srpf2048: 0.997x / 0.994x, n=3 valid, PASS.
+    - srpf2048cap0: informational.
+    - C2 off512: NOT_MEASURED, no value, 3 invalid runs with reasons.
+    - C3 on comp-m4off: 5/5 byte-identical.
+    - comp-champion control: 5/7.
+    - `protocol_id` is empty and no outcome is given while INCOMPLETE; all claims are Judged/Located.
+    - Dry run `m4-srpf-pbhol/out`: matched 6, projected 6, refused 0, rows 6, frames 18. Original `pb-hol-1/runs` is unchanged (2 units, 3 rows).
+    - Tests in `tests/vidya/test_pb_hol_m4.py`.
 - [ ] **VB-SPEC-RNG-1-2-WIRE — adapter for the SPEC-RNG.1.2 poskey depth-invariance records (filed 2026-10-24, workspace-f8 read-out).** Project `/mnt/raid0/llm/tmp/f8-launchers-20261023/spec-rng-1-2-gpu-run/` (`out/records.jsonl`, `out/verdict.json`, `VERDICT.json`) into ClaimTuples: one per comparison (P3/P7 primary, C3/C7/X0 controls; min p vs Bonferroni threshold, n per cell), acceptance per depth, and the probe (net_gain, sign p); the strict reader re-derives the chi-square and acceptance statistics from the request rows and refuses on a difference; `decided_proposition` = the verdict word with its rule sha `0af228a0...`; INDICATIVE correctness, no throughput value. `claim_tuple.grade()` decides; no new ladder. Write side: the runner (`f8/spec-rng-1-2-runner`) should emit `belief_measurements.jsonl` on its next use. Source row in `scripts/vidya/adapters/README.md`.
+  - *(2026-10-24, f8, branch `f8/vidya-wire-1024`.)* The read side is done: `adapters/spec_rng_1_2.py` (`cli.py ingest spec-rng-1-2`), tests in `tests/vidya/test_spec_rng_1_2.py`.
+    - Each valid run gives 8 verifier-class (unbound) observations: 5 comparisons, acceptance at depth 3 and 7, and the probe. Each carries `decided_proposition` = the verdict word plus the rule sha.
+    - Every statistic, gate and the verdict is re-derived from `out/records.jsonl` (stdlib chi-square, Welch and sign tests). The reader refuses on any difference.
+    - Grades are Judged/Located; no throughput is projected; INCONCLUSIVE runs are declined.
+    - Dry run: matched 1, projected 1, refused 0, rows 8, frames 24.
+    - **Left (write side, research):** the runner emits `belief_measurements.jsonl` on its next use, and its verdict files carry the rule sha and an ISO timestamp.
 
 
 ## Producer write-side wiring, 2026-10-23 (session 3c4ca599)
@@ -3414,3 +3443,7 @@ Source: research intake session intake-ist-slq-20261022, Stage-3 plan `/mnt/raid
   - It is a verified finding about tool state (index fresh at a commit), not a measurement. So, as with the NI52 code-intelligence row, it is dependency evidence: no ClaimTuple projection and no `evidence_supports_claim` until a shared dependency warrant rule exists.
   - Remaining: have the next re-index job write a self-hashed receipt (repo, branch, indexed commit, origin/main at read time, node/edge counts, gitnexus version) so that orchestrator impact checks can cite index freshness by sha.
   - Source row added to `scripts/vidya/adapters/README.md`.
+  - *(2026-10-24, f8, branch `f8/vidya-wire-1024`.)* The write-side tool now exists: `scripts/gitnexus-index-receipt.py` (`epyc.gitnexus.index_receipt.v1`, test `tests/test_gitnexus_index_receipt.py`).
+    - It is self-hashed with `content_sha256`. It reads the repo, branch, indexed commit, indexedAt and the node/edge counts from the index's own `.gitnexus/meta.json`, and records that file's sha256. It also records git HEAD, `origin/main` (the local ref, no fetch), the gitnexus version and the job RESULT sha.
+    - First receipt for this re-index: `/mnt/raid0/llm/tmp/f8-launchers-20261023/nib2-gnx1-reindex/out/index_receipt.json`. Its meta.json `indexedAt` is the job's 01:09:19Z, the index is fresh at HEAD `fd1a894`, and the clone's origin/main `26affbf` is 2 commits ahead.
+    - Left: the next re-index job calls the tool after `gitnexus-analyze.sh` returns 0. That is an external event: the next re-index.

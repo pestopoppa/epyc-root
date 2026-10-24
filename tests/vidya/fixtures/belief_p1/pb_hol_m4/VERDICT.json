@@ -1,0 +1,219 @@
+{
+ "verdict": "INCOMPLETE",
+ "conditions": {
+  "C1_srpf_B_over_A_lt_2": "PASS",
+  "C1_srpf512": "PASS",
+  "C1_srpf2048": "PASS",
+  "C2_off_identity_ratio": "NOT_MEASURED",
+  "C3_off_completions_byte_identical": "PASS"
+ },
+ "completions": {
+  "prompts": {
+   "p4000": {
+    "champion_deterministic": true,
+    "m4_off_identical": true,
+    "m4_passes_valid": [
+     true,
+     true
+    ]
+   },
+   "p512": {
+    "champion_deterministic": true,
+    "m4_off_identical": true,
+    "m4_passes_valid": [
+     true,
+     true
+    ]
+   },
+   "pair4k.0": {
+    "champion_deterministic": false,
+    "m4_off_identical": null,
+    "m4_passes_valid": [
+     true,
+     true
+    ]
+   },
+   "pair4k.1": {
+    "champion_deterministic": false,
+    "m4_off_identical": null,
+    "m4_passes_valid": [
+     true,
+     true
+    ]
+   },
+   "short128": {
+    "champion_deterministic": true,
+    "m4_off_identical": true,
+    "m4_passes_valid": [
+     true,
+     true
+    ]
+   },
+   "t16000": {
+    "champion_deterministic": true,
+    "m4_off_identical": true,
+    "m4_passes_valid": [
+     true,
+     true
+    ]
+   },
+   "t8000": {
+    "champion_deterministic": true,
+    "m4_off_identical": true,
+    "m4_passes_valid": [
+     true,
+     true
+    ]
+   }
+  },
+  "deterministic": [
+   "p4000",
+   "p512",
+   "short128",
+   "t16000",
+   "t8000"
+  ],
+  "mismatches": []
+ },
+ "phases": {
+  "srpf512": {
+   "attempted": 6,
+   "valid": 6,
+   "invalid": [],
+   "A": [
+    3365.2,
+    3379.3,
+    3376.2
+   ],
+   "B": [
+    3365.0,
+    3365.6,
+    3366.6
+   ],
+   "C": [
+    286.2,
+    285.6
+   ],
+   "medA": 3376.2,
+   "medB": 3365.6,
+   "ratio": 0.997,
+   "solo_64k_s": 122.5146,
+   "graphs": [
+    "ON"
+   ],
+   "own_vram_gib": [
+    46.608
+   ],
+   "solo_64k_vs_PBHOL1_119.9s_pct": 2.2,
+   "C_median_vs_PBHOL1_279.8ms_pct": 2.2
+  },
+  "srpf2048": {
+   "attempted": 6,
+   "valid": 6,
+   "invalid": [],
+   "A": [
+    6361.8,
+    6392.5,
+    6394.9
+   ],
+   "B": [
+    6353.4,
+    6352.0,
+    6375.3
+   ],
+   "C": [
+    287.0,
+    354.1
+   ],
+   "medA": 6392.5,
+   "medB": 6353.4,
+   "ratio": 0.994,
+   "solo_64k_s": 118.2952,
+   "graphs": [
+    "ON"
+   ],
+   "own_vram_gib": [
+    49.561
+   ],
+   "solo_64k_vs_PBHOL1_119.9s_pct": -1.3,
+   "C_median_vs_PBHOL1_279.8ms_pct": 14.6
+  },
+  "off512": {
+   "attempted": 6,
+   "valid": 3,
+   "invalid": [
+    {
+     "arm": "B-off512",
+     "rep": 1,
+     "why": "long finished before the short was answered"
+    },
+    {
+     "arm": "B-off512",
+     "rep": 2,
+     "why": "long finished before the short was answered"
+    },
+    {
+     "arm": "B-off512",
+     "rep": 3,
+     "why": "long finished before the short was answered"
+    }
+   ],
+   "A": [
+    3372.6,
+    3381.1,
+    3383.2
+   ],
+   "B": [],
+   "C": [
+    284.3,
+    287.2
+   ],
+   "medA": 3381.1,
+   "medB": null,
+   "ratio": null,
+   "solo_64k_s": 126.5176,
+   "graphs": [
+    "ON"
+   ],
+   "own_vram_gib": [
+    46.608
+   ],
+   "solo_64k_vs_PBHOL1_119.9s_pct": 5.5,
+   "C_median_vs_PBHOL1_279.8ms_pct": 2.1
+  },
+  "srpf2048cap0": {
+   "attempted": 6,
+   "valid": 6,
+   "invalid": [],
+   "A": [
+    12433.8,
+    12612.2,
+    12596.0
+   ],
+   "B": [
+    12556.5,
+    12578.3,
+    12685.1
+   ],
+   "C": [
+    285.5,
+    286.9
+   ],
+   "medA": 12596.0,
+   "medB": 12578.3,
+   "ratio": 0.999,
+   "solo_64k_s": 118.91210000000001,
+   "graphs": [
+    "ON"
+   ],
+   "own_vram_gib": [
+    49.561
+   ],
+   "solo_64k_vs_PBHOL1_119.9s_pct": -0.8,
+   "C_median_vs_PBHOL1_279.8ms_pct": 2.3
+  }
+ },
+ "runs_attempted_collision": 24,
+ "runs_valid_collision": 21,
+ "gating": "C1 AND C2 AND C3 (PREDECLARATION.md); srpf2048cap0 informational; the production gate is a separate step"
+}

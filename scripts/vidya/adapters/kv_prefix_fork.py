@@ -66,6 +66,10 @@ VARIED_BY_ARM = {"fork_off": ["slot_fork"], "fork_on": ["slot_fork"], "fork_on_d
 #: from the launched argv -- ``mtp``, ``dflash2``, ``nodraft``, ``draft-<x>`` -- or a ``--kpf-config-argv NAME``).
 _CFG = r"[A-Za-z0-9][A-Za-z0-9_.-]*"
 KPF18_SUB_ARMS = {
+    # 3 = KPF-18.0d(item 3, group 3) v2 same-shape control (launcher ``item3v2.py``, one record per fresh load N). Its
+    # verdict inputs ride in the record's own top-level ``item3v2`` block (per-load judged classes), not in
+    # ``equivalence`` (vs_fresh n = 0); see ``_project_item3v2``.
+    3: (r"item3v2_load\d+",),
     181: (r"A_(?:ckpt|tailonly)(?:_forkoff)?", r"B_identical_resend_and_child_eq_trunk(?:_forkoff)?",
           r"C_length_sweep_drafter_(?:on|off)", rf"D_hit_count_prediction_{_CFG}"),
     182: (r"cold_control_probe", rf"parity_{_CFG}_(?:drafter_on|request_off|launch)", rf"policy_control_{_CFG}",
@@ -74,12 +78,21 @@ KPF18_SUB_ARMS = {
     184: (r"item3_localisation",),
     # 185 = KPF-18-S1 remainder (research kpf18 S1R driver): tail-only tail sweep, item-2 pcache grid g<G>s<S>, the
     # long teacher-forced cell, KPF-19.1a flag-off geometry groups, and the step-7 hsf_L<L> length ladder.
-    # NB hsf_* timings were taken with graphs disabled (GGML_CUDA_DISABLE_GRAPHS=1 in launch_prefix): this adapter
-    # projects only equivalence counts / hit tokens for them, never a rate, so none is read as a production rate.
+    # NB hsf_* records are DECLARED (they validate, so they never void a file) but PROJECT NOTHING (VB-KVU-PF.6): their
+    # only projectable number would be a hit count of 0 (the step issues no fork), and their real content -- the
+    # save/restore per-cell medians in ``s1r.result`` -- carries no graphs state of its own. The graphs state differs
+    # per run (S1R base: graphs disabled in launch_prefix; step-7 rerun: graphs ON, proven only by the launcher's
+    # separate graphs_proof.json), so a rate projected from the record alone could not say which it is.
     185: (r"A_tailonly_tail\d+", r"item2_pcache_g\d+s\d+", r"long_teacher_forced", r"kpf191a_flagoff_g\d+",
           r"hsf_L\d+"),
 }
 _SUB_ARM_RE = {item: re.compile("^(?:" + "|".join(pats) + ")$") for item, pats in KPF18_SUB_ARMS.items()}
+#: sub-arms that validate but project nothing (see the 185 note above).
+_DECLINED_SUB_ARM = re.compile(r"^hsf_L\d+$")
+#: VB-KVU-PF.6: KPF-18 item-3 v2 load records. The launcher wrote no ``kpf18_arm``; the arm token is still sealed by
+#: ``record_sha256``, and a complete record's own ``item3v2.load`` must name the same load (a partial, budget-aborted
+#: record carries ``partial: true`` and no ``item3v2`` block).
+_ITEM3V2 = re.compile(r"^item3v2_load(?P<load>\d+)$")
 
 
 #: Conformance records (no fork-vs-fresh logits): ``kpf_task`` -> declared arms, exactly as the drivers emit them
@@ -168,6 +181,24 @@ def _validate_outcome(row: dict) -> list[str]:
     return problems
 
 
+def _validate_item3v2(row: dict) -> list[str]:
+    """The item-3 v2 locator, absent ``kpf18_arm``: the record's own load block (or its partial flag) must agree."""
+    load = int(_ITEM3V2.match(row["arm"])["load"])
+    block = row.get("item3v2")
+    if block is None:
+        return [] if row.get("partial") is True else [
+            "item3v2 record with neither an item3v2 block nor partial=true: nothing locates or scores it"]
+    if not isinstance(block, dict) or block.get("load") != load:
+        return [f"item3v2 block does not name load {load} (got {(block or {}).get('load')!r})"]
+    judged = block.get("judged")
+    if not (isinstance(judged, dict) and judged and all(
+            isinstance(c, dict) and isinstance(c.get("class"), str) for c in judged.values())):
+        return ["item3v2 block without per-pair judged classes of its own"]
+    if not isinstance(block.get("valid"), bool) or not isinstance(block.get("invalid_reasons"), list):
+        return ["item3v2 block without its own valid flag and invalid_reasons list"]
+    return []
+
+
 def _intkeys(obj: Any) -> Any:
     """Diagnostic only: ``obj`` with digit-string dict keys turned back into ints (never used to ACCEPT a row)."""
     if isinstance(obj, dict):
@@ -211,6 +242,8 @@ def validate_row(row: Any) -> list[str]:
         if not is_sub_arm(arm, row.get("kpf18_item")):
             problems.append(f"arm {arm!r} not in {sorted(ARMS)} nor a declared KPF-18 sub-arm of item "
                             f"{row.get('kpf18_item')!r}")
+        elif _ITEM3V2.match(arm) and row.get("kpf18_item") == 3 and "kpf18_arm" not in row:
+            problems.extend(_validate_item3v2(row))
         elif row.get("kpf18_arm") != arm:
             problems.append(f"sub-arm {arm!r} without the matching kpf18_arm locator ({row.get('kpf18_arm')!r})")
     rsha = row.get("rows_sha256")
@@ -343,7 +376,8 @@ def native_rows(sidecar_path: str | Path) -> tuple[dict, ...]:
         rows.append(row)
     if len({r["record_sha256"] for r in rows}) != len(rows):
         return ()
-    natives = [{"row": r, "sidecar_path": str(path), "attestation_present": _rows_present(r, path)} for r in rows]
+    natives = [{"row": r, "sidecar_path": str(path), "attestation_present": _rows_present(r, path)} for r in rows
+               if not _DECLINED_SUB_ARM.match(str(r.get("arm")))]
     return tuple(natives + _serving_natives(natives))
 
 
@@ -377,6 +411,10 @@ def project(native: Any) -> ClaimTuple:
         return _project_outcome(row, sidecar, present)
     if is_conformance(row):
         return _project_conformance(row, sidecar, present)
+    if _ITEM3V2.match(row["arm"]) and row.get("kpf18_item") == 3:
+        return _project_item3v2(row, sidecar, present)
+    if _DECLINED_SUB_ARM.match(row["arm"]):
+        raise ProjectionError(f"KPF sub-arm {row['arm']} projects nothing: its only number is a 0 hit count")
     if native.get("measure"):
         return _project_measure(native, row, sidecar, present)
     metric, value, unit, reps, basis = _metric(row)
@@ -465,6 +503,68 @@ def _project_conformance(row: dict, sidecar: Path, present: bool) -> ClaimTuple:
                "start_utc": row.get("start_utc"), "end_utc": row["end_utc"],
                "record_sha256": row["record_sha256"], "sidecar_path": str(sidecar)},
         applicability=_applicability(row))
+
+
+def _project_item3v2(row: dict, sidecar: Path, present: bool) -> ClaimTuple:
+    """VB-KVU-PF.6: one KPF-18 item-3 v2 load, as the record's OWN per-pair judged classes.
+
+    value = the number of JUDGED pairs (``item3v2.judged`` keys, less those the launcher itself names ``*_recorded``:
+    recorded, not judged, per its predeclaration) whose class is ``fork_effect_candidate``; reps = judged pairs. Every
+    pair's class, first divergence, margin and A/A floor ride in ``extra`` verbatim. The run verdict (``FORK_EFFECT``)
+    is the launcher's ``verdict.py`` over all loads and lives in VERDICT.json, not in a record: it is not re-derived
+    here. A budget-aborted partial load (``partial: true``, no block) and an invalid load project as attested
+    incomplete attempts (``kpf18_item3v2_judged_pairs_scored`` = 0) -- kept, never dropped, never given a count.
+    """
+    block = row.get("item3v2")
+    load = int(_ITEM3V2.match(row["arm"])["load"])
+    locator = (f"kpf:{row['run_id']}:{row['arm']}:item=3v2:ps={row['prompt_set_sha256'][:16]}:"
+               f"bin={row['binary_sha256'][:16]}:win={row['window_id']}")
+    common = dict(
+        measurement_id="kpf-" + hashlib.sha256(row["record_sha256"].encode()).hexdigest()[:32],
+        date=row["end_utc"], category=row["category"], protocol_id="",
+        attestation_path=str(_rows_path(row, sidecar)), attestation_sha256=row.get("rows_sha256") or "",
+        attestation_locator=locator, attestation_present=present,
+        attestation_verified=True if present else None, source_kind=SOURCE_KIND,
+        applicability=_applicability(row))
+    extra = {"schema": row["schema"], "run_id": row["run_id"], "arm": row["arm"], "kpf18_item": 3, "load": load,
+             "kpf18_arm": None, "locator_note": "launcher wrote no kpf18_arm; arm token + item3v2.load locate it",
+             "window_id": row["window_id"], "gpu_window_id": row.get("gpu_window_id"),
+             "binary_sha256": row["binary_sha256"], "prompt_set_sha256": row["prompt_set_sha256"],
+             "host": row["host"], "argv": row["argv"], "start_utc": row.get("start_utc"), "end_utc": row["end_utc"],
+             "record_sha256": row["record_sha256"], "sidecar_path": str(sidecar), "checks": row.get("checks")}
+    if not isinstance(block, dict) or block.get("valid") is not True:
+        reasons = list((block or {}).get("invalid_reasons") or []) if isinstance(block, dict) else []
+        why = "partial (budget-aborted) load" if row.get("partial") is True else "invalid load: " + "; ".join(
+            map(str, reasons))
+        return ClaimTuple(
+            metric="kpf18_item3v2_judged_pairs_scored", value=0, unit="judged stream pairs",
+            claim=(f"KPF-18 item 3 v2 load {load}: incomplete attempt ({why}); 0 judged pairs scored, does not "
+                   f"count toward the predeclared n"),
+            metric_direction="higher_better", reps=1,
+            reps_basis="aborted/incomplete attempt: the load scored no judged pair", **common,
+            extra={**extra, "partial": row.get("partial") is True, "valid": False, "invalid_reasons": reasons,
+                   "ttft_ms": row.get("ttft_ms"), "n_fork_tokens": row.get("n_fork_tokens")},
+            observation={"outcome_native": why[:120]})
+    judged = {k: v for k, v in block["judged"].items() if not k.endswith("_recorded")}
+    if not judged:
+        raise ProjectionError("item3v2 block has no judged (non-recorded) pair")
+    classes = {k: v["class"] for k, v in block["judged"].items()}
+    hits = sum(1 for v in judged.values() if v["class"] == "fork_effect_candidate")
+    shown = ", ".join(f"{k} {c}" for k, c in classes.items())
+    return ClaimTuple(
+        metric="kpf18_item3v2_judged_pairs_fork_effect_candidate", value=hits, unit="judged stream pairs",
+        claim=(f"KPF-18 item 3 v2 load {load} (fresh load, arm order {block.get('arm_order')}): {hits}/{len(judged)} "
+               f"judged pairs classed fork_effect_candidate (margin above the same-timing A/A floor); per pair: "
+               f"{shown}; *_recorded pairs are recorded, not judged; one load, no codified protocol"),
+        metric_direction="lower_better", reps=len(judged),
+        reps_basis="judged stream pairs on one fresh load (classes from the record's own item3v2 block)", **common,
+        extra={**extra, "valid": True, "invalid_reasons": [], "partial": False, "classes": classes,
+               "judged": {k: {f: v.get(f) for f in ("class", "first_divergence", "aa_first_divergence",
+                                                    "floor_max_abs_dlogprob", "margin_nofork", "n_compared")}
+                          for k, v in block["judged"].items()},
+               "arm_order": block.get("arm_order"), "block_order": block.get("block_order"),
+               "group": block.get("group"), "predeclaration_sha256": block.get("predeclaration_sha256")},
+        observation={"outcome_native": ",".join(f"{k}:{c}" for k, c in classes.items())[:120]})
 
 
 def _project_measure(native: dict, row: dict, sidecar: Path, present: bool) -> ClaimTuple:

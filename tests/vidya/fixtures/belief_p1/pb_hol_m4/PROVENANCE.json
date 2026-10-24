@@ -1,0 +1,35 @@
+{
+ "copied_verbatim": {
+  "PREDECLARATION.md": "c97394d2be1f054512eb3dfa430d86a56a9f7b19e427da67960f97f456caa027",
+  "RUN_RECORD.json": "9fd6ec2f7884d4ad6c814c200c3bd1238f2cb88434b76f8365a3eb4f2737dd93",
+  "VERDICT.json": "4b47d4b766fbb194a7ca69d04b72c8668a9a20b5982305f52c8bd79f580c2078"
+ },
+ "phases": {
+  "comp-champion": {
+   "original_rows_sha256": "998f6ac7608a7f6d9d812144a7c4603e7d57d8bea9d61e1d95bc03583c94b821",
+   "original_summary_sha256": "85637f3a005543ce7847463fc9c4d7bfdc24bce78904d320791a21f2600c4322"
+  },
+  "comp-m4off": {
+   "original_rows_sha256": "b1b92aef6aef2a1f8e69c0ff49543b0adeae711cfc1bd9bcd90cfffcde941d29",
+   "original_summary_sha256": "04c974b5278a18cff991982f507c87b5021b964c28cf95d0890ace36f21ce803"
+  },
+  "off512": {
+   "original_rows_sha256": "b07fb2d7db4100f9988255011045d494b15423446c0bf1b16e2dfe9f69efa4ff",
+   "original_summary_sha256": "608f3c66bc988438748580797d63f8ee282f5f9c93e77152c1a0662c948f52f7"
+  },
+  "srpf2048": {
+   "original_rows_sha256": "fcc61172651d1c53c2418329c8ea4e928c10e1f8981a62e0fd3bc9882bf80120",
+   "original_summary_sha256": "9b6a6f3149e7239b8ff10a0dcbf050074fae4680c0d3ea4bb8abfbf1d5095b00"
+  },
+  "srpf2048cap0": {
+   "original_rows_sha256": "9e1e9af03b884efe4f1436758225ae87fe357416ceaa9b49eb42d878ea5d2ac6",
+   "original_summary_sha256": "2597435bfb0e81dae9abc497c2b37221afb2b72230e0e5af977cfc8294e03e65"
+  },
+  "srpf512": {
+   "original_rows_sha256": "6f61f5ce0109d0950bc9b6b3c8b138149d410b225137658b70540af1bbe20a22",
+   "original_summary_sha256": "bf15af74b60b796c9709a64d5c5924bbd026d8d6c27fc02cf7a5ac2f2fc18dfb"
+  }
+ },
+ "source": "/mnt/raid0/llm/tmp/f8-launchers-20261023/m4-srpf-pbhol",
+ "trimmed": "summary.json: servers cut to label/binary/binary_sha256/readback(exe, exe_matches_binary, proc_cmdline, proc_cmdline_matches_argv)/vram.own_vram_peak_gib, graphs_proofs/residency dropped; pb_hol_1.jsonl: run rows cut to the fields the validity rule reads, calibration rows kept, port/graphs/residency/stop rows dropped; completion rows SYNTHETIC: each distinct real (tokens_sha256, text_sha256) pair is replaced by class k with tokens [k]*96 and text 'synthetic completion class k', digests re-hashed, so the real equality pattern (and VERDICT.json's completions detail) is preserved without copying real token ids; verdict.py and pb_hol_1.py are not copied (their RUN_RECORD digests are then reported as not re-hashed)"
+}

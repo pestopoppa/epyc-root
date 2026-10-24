@@ -1,0 +1,117 @@
+{
+ "schema": "epyc.pbhol1.run.v1",
+ "status": "complete",
+ "verdict": "see verdict.py (PREDECLARATION.md)",
+ "arms": {
+  "A-off512": {
+   "ttft_ms": [
+    3372.6,
+    3381.1,
+    3383.2
+   ],
+   "median_ms": 3381.1
+  },
+  "B-off512": {
+   "ttft_ms": [
+    74784.3,
+    74828.9,
+    74817.3
+   ],
+   "median_ms": 74817.3
+  },
+  "C-off512": {
+   "ttft_ms": [
+    284.3,
+    287.2
+   ],
+   "median_ms": 285.75
+  }
+ },
+ "n_rows": 13,
+ "n_runs_attempted": 8,
+ "calibrations": [
+  {
+   "phase": "off512",
+   "long_ttft_s": 126.5176
+  }
+ ],
+ "prompts": {
+  "path": "/mnt/raid0/llm/tmp/overnight-20261020/kpf18-run/prompt_set.jsonl",
+  "sha256": "dc37cdf1c407956d83d7b7354f4e48964306228793fc9095add945a17f2994de",
+  "long_group": 6,
+  "long_tokens": 64000,
+  "short_group": 3,
+  "short_suffix_index": 0,
+  "short_tokens": 128,
+  "first_tokens_distinct": true
+ },
+ "binaries": [
+  "/mnt/raid0/llm/worktrees/llama-m4-srpf/build-hip-m4/bin/llama-server"
+ ],
+ "servers": [
+  {
+   "label": "pbhol-off512-20261023T204841Z",
+   "binary": "/mnt/raid0/llm/worktrees/llama-m4-srpf/build-hip-m4/bin/llama-server",
+   "binary_sha256": "901743a0fc26bc2b4e9cfcabe3c3f8d46c9cbd7d6249e088f41ba2af417e3d90",
+   "readback": {
+    "exe": "/mnt/raid0/llm/worktrees/llama-m4-srpf/build-hip-m4/bin/llama-server",
+    "exe_matches_binary": true,
+    "proc_cmdline": [
+     "/mnt/raid0/llm/worktrees/llama-m4-srpf/build-hip-m4/bin/llama-server",
+     "-m",
+     "/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf",
+     "--host",
+     "127.0.0.1",
+     "-np",
+     "3",
+     "-c",
+     "393216",
+     "-t",
+     "8",
+     "-b",
+     "512",
+     "-ub",
+     "512",
+     "--flash-attn",
+     "on",
+     "--jinja",
+     "-ctk",
+     "q8_0",
+     "-ctv",
+     "q8_0",
+     "--kv-unified",
+     "--no-mmap",
+     "-ngl",
+     "all",
+     "--cache-ram",
+     "65536",
+     "--chat-template-file",
+     "/mnt/raid0/llm/models/chat-templates/epyc-qwen3x-v1-terse.jinja",
+     "-md",
+     "/mnt/raid0/llm/models/Qwen3.8-27B-DFlash2-Q8_0.gguf",
+     "-ngld",
+     "99",
+     "--spec-type",
+     "draft-dflash",
+     "--spec-draft-n-max",
+     "7",
+     "--device",
+     "ROCm0",
+     "--slot-save-path",
+     "/mnt/raid0/llm/tmp/f8-launchers-20261023/m4-srpf-pbhol/out/off512/slot-save/pbhol-off512-20261023T204841Z",
+     "--device-draft",
+     "ROCm0",
+     "--no-cache-idle-slots",
+     "--port",
+     "18391",
+     "--metrics"
+    ],
+    "proc_cmdline_matches_argv": true
+   },
+   "vram": {
+    "own_vram_peak_gib": 47.359
+   }
+  }
+ ],
+ "finished": "2026-10-23T21:00:34Z"
+}

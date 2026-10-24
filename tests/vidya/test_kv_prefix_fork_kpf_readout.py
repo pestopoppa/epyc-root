@@ -24,15 +24,17 @@ def _lines(path):
     return [json.loads(x) for x in path.read_text().splitlines() if x.strip()]
 
 
-def test_kpf18_item_185_projects_14_of_14(tmp_path):
+def test_kpf18_item_185_projects_11_of_14_hsf_declined(tmp_path):
     sc = _copy(tmp_path, "kpf18_s1r")
     rows = _lines(sc)
     assert len(rows) == 14 and {r["kpf18_item"] for r in rows} == {185}
     assert all(kpf.validate_row(r) == [] for r in rows)
     natives = kpf.native_rows(sc)
-    assert len(natives) == 14
+    # VB-KVU-PF.6: the 3 hsf_L<L> records validate (they never void the file) but project nothing: their only
+    # projectable number was a hit count of 0.
+    assert len(natives) == 11 and not any(n["row"]["arm"].startswith("hsf_L") for n in natives)
     tuples = [kpf.project(n) for n in natives]
-    assert len({t.measurement_id for t in tuples}) == 14
+    assert len({t.measurement_id for t in tuples}) == 11
     assert all(t.extra["kpf18_item"] == 185 and t.extra["kpf18_arm"] == t.extra["arm"] for t in tuples)
     assert all(ct.grade(t)[0] for t in tuples)                       # the shared ladder grades each (rows may be absent)
 
@@ -129,3 +131,56 @@ def test_kpf174b_unknown_arm_still_declined(tmp_path):
     assert not kpf.is_conformance(rows[1]) and kpf.validate_row(rows[1])
     sc.write_text("\n".join(json.dumps(r) for r in rows) + "\n")
     assert kpf.native_rows(sc) == ()                                     # an undeclared arm voids the whole file
+
+
+# ------------------------------------------------------------------ VB-KVU-PF.6
+# Fixtures are the two 2026-10-24 read-out sidecars, TRIMMED (item3v2 token streams, s1r per-cell detail and
+# counters dropped) and RESEALED with the adapter's own digest; their per-request rows files are not shipped.
+
+
+def test_item3v2_sameshape_projects_4_of_4_with_partial_load_kept(tmp_path):
+    sc = _copy(tmp_path, "kpf18_item3v2")
+    rows = _lines(sc)
+    assert [r["arm"] for r in rows] == ["item3v2_load0", "item3v2_load1", "item3v2_load2", "item3v2_load2"]
+    assert all("kpf18_arm" not in r for r in rows) and all(kpf.validate_row(r) == [] for r in rows)
+    tuples = [kpf.project(n) for n in kpf.native_rows(sc)]
+    assert len(tuples) == 4 and len({t.measurement_id for t in tuples}) == 4
+    full = [t for t in tuples if t.metric == "kpf18_item3v2_judged_pairs_fork_effect_candidate"]
+    partial = [t for t in tuples if t.metric == "kpf18_item3v2_judged_pairs_scored"]
+    assert len(full) == 3 and len(partial) == 1
+    for t in full:
+        # A_child is the one judged fork_effect_candidate; B_child_recorded is recorded, not judged.
+        assert (t.value, t.reps, t.metric_direction) == (1, 3, "lower_better")
+        assert t.extra["classes"]["A_child"] == "fork_effect_candidate"
+        assert t.extra["classes"]["B_child_recorded"] == "fork_effect_candidate"
+        assert t.extra["predeclaration_sha256"].startswith("417310869f16")
+        assert "FORK_EFFECT" not in t.claim                            # the run verdict is not re-derived on read
+    assert sorted(t.extra["load"] for t in full) == [0, 1, 2]
+    p = partial[0]
+    assert (p.value, p.reps, p.extra["partial"], p.extra["valid"]) == (0, 1, True, False)
+    assert p.observation["outcome_native"] == "partial (budget-aborted) load"
+    for t in tuples:
+        assert t.protocol_id == "" and ct.grade(t)[0] == "Judged"     # shared ladder decides: an OBSERVATION
+
+
+def test_item3v2_load_must_match_its_own_block_and_partial_needs_the_flag(tmp_path):
+    sc = _copy(tmp_path, "kpf18_item3v2")
+    rows = _lines(sc)
+    bad = dict(rows[0], arm="item3v2_load1")
+    assert any("does not name load 1" in p for p in kpf.validate_row(bad))
+    bare = {k: v for k, v in rows[2].items() if k != "partial"}
+    assert any("neither an item3v2 block nor partial" in p for p in kpf.validate_row(bare))
+    wrong_item = dict(rows[0], kpf18_item=184)
+    assert any("not in" in p for p in kpf.validate_row(wrong_item))
+    mismatched = dict(rows[0], kpf18_arm="item3v2_load9")            # a present locator must still match
+    assert any("matching kpf18_arm" in p for p in kpf.validate_row(mismatched))
+
+
+def test_step7_graphs_on_hsf_records_validate_but_project_nothing(tmp_path):
+    sc = _copy(tmp_path, "kpf18_step7_graphs_on")
+    rows = _lines(sc)
+    assert [r["arm"] for r in rows] == ["hsf_L8000", "hsf_L16000", "hsf_L32000"]
+    assert all(kpf.validate_row(r) == [] for r in rows)
+    assert kpf.native_rows(sc) == ()                                  # declined, never a hit count of 0
+    with pytest.raises(ct.ProjectionError, match="0 hit count"):
+        kpf.project({"row": rows[0], "sidecar_path": str(sc)})

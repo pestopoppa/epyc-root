@@ -1,0 +1,9 @@
+{"kind": "calibration", "phase": "srpf2048", "long_ttft_s": 118.2952}
+{"kind": "run", "phase": "srpf2048", "arm": "C", "rep": 1, "short_ttft_ms": 287.0, "short_http": 200, "short_error": null}
+{"kind": "run", "phase": "srpf2048", "arm": "A-srpf2048", "rep": 1, "short_ttft_ms": 6361.8, "short_http": 200, "short_error": null, "long_finished_before_abort": false, "long_progress_at_send": [34816, 0.54, 1792787998.916]}
+{"kind": "run", "phase": "srpf2048", "arm": "B-srpf2048", "rep": 1, "short_ttft_ms": 6353.4, "short_http": 200, "short_error": null, "long_finished_before_abort": false, "long_progress_at_send": [34816, 0.54, 1792788093.775]}
+{"kind": "run", "phase": "srpf2048", "arm": "A-srpf2048", "rep": 2, "short_ttft_ms": 6392.5, "short_http": 200, "short_error": null, "long_finished_before_abort": false, "long_progress_at_send": [34816, 0.54, 1792788189.05]}
+{"kind": "run", "phase": "srpf2048", "arm": "B-srpf2048", "rep": 2, "short_ttft_ms": 6352.0, "short_http": 200, "short_error": null, "long_finished_before_abort": false, "long_progress_at_send": [34816, 0.54, 1792788284.558]}
+{"kind": "run", "phase": "srpf2048", "arm": "A-srpf2048", "rep": 3, "short_ttft_ms": 6394.9, "short_http": 200, "short_error": null, "long_finished_before_abort": false, "long_progress_at_send": [34816, 0.54, 1792788379.791]}
+{"kind": "run", "phase": "srpf2048", "arm": "B-srpf2048", "rep": 3, "short_ttft_ms": 6375.3, "short_http": 200, "short_error": null, "long_finished_before_abort": false, "long_progress_at_send": [34816, 0.54, 1792788475.137]}
+{"kind": "run", "phase": "srpf2048", "arm": "C", "rep": 2, "short_ttft_ms": 354.1, "short_http": 200, "short_error": null}

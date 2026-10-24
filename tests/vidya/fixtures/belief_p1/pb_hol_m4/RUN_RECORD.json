@@ -1,0 +1,21 @@
+{
+ "item": "m4-srpf-pbhol",
+ "handoff": "gpu-serving-tie-in-program.md M4 / M4.2",
+ "verdict": "INCOMPLETE",
+ "phases_done": 6,
+ "phases_total": 6,
+ "stopped": null,
+ "window_id": "m4-srpf-pbhol-20261023T2028Z",
+ "branch": "experimental/m4-srpf-batch-fill-20261023",
+ "head": "c6ca031ac4d0a414412ad8b69fe36f059426f001",
+ "m4_llama_server_sha256": "901743a0fc26bc2b4e9cfcabe3c3f8d46c9cbd7d6249e088f41ba2af417e3d90",
+ "m4_libllama_common_sha256": "07803b552dc0ce7958697fcf74fbc4be5e39a814db184dd55598f4459f7c5fa7",
+ "champion_image": "gpu-20261023-141e4bcf5-lbh",
+ "predeclaration_sha256": "c97394d2be1f054512eb3dfa430d86a56a9f7b19e427da67960f97f456caa027",
+ "verdict_py_sha256": "379431a5d31611893dec9a42f3e762e27389f6d8a0773609ff0274b19f518cfe",
+ "pb_hol_1_py_sha256": "8d3b7f23111f66d95fe0ef4ed2274d7a32d403bb8a72295afd6b7bde5b998923",
+ "hip_graphs": "ON (proof per server in out/graphs_proof.<phase>.jsonl, from /proc/<pid>/environ)",
+ "own_pid_vram_guard_mib": 61440,
+ "claim": "mi210_0 + host threads 184-191 (filler_run7)",
+ "attempts": "ATTEMPTS.txt"
+}
