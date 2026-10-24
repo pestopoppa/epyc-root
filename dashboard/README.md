@@ -1027,6 +1027,21 @@ anywhere** (no inline `✅`, no `**Created**`/`**Updated**`) has no recoverable
 completion date, so it is attributed to the import week (2026-W09). Everything
 that carries a date is placed accurately.
 
+### Daily open-box flow (`daily_flow`)
+
+The primary trend chart on `/handoffs` plots **`daily_flow`**, produced by the same
+artifact and the same hook (no new endpoint, so the `timeline` registry entry,
+freshness envelope and `/api/health` probe already cover it). It replays a
+`git log --first-parent -M -p` pass (first-parent so merge commits show their diff;
+the replayed stock then equals the real tree, verified per file). One zero-filled row
+per day to today: `open_stock` (open `[ ]` boxes in `active/`+`blocked/` at end of
+day, net of removals), `ticked` (removed open box paired with an added `[x]`),
+`new_open` (added open box with no removed open partner; text-similarity >= 0.75
+pairs count as `reworded`, net zero), `born_ticked`, `removed_open`,
+`closed_by_completion` (open boxes in a handoff the day it moved to `completed/` or
+`archived/`) and `handoffs_completed`/`handoffs_archived`. The legacy `tasks_weekly`
+and `handoffs_weekly` keys are unchanged in shape but now include zero weeks.
+
 ### Keeping it fresh
 
 ```bash

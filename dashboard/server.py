@@ -1227,7 +1227,7 @@ def detail_payload(handoff_id: str) -> tuple[int, dict]:
 
 
 _TIMELINE_ABSENT = {"series": None, "tasks_weekly": None, "handoffs_weekly": None,
-                    "generated_at": None}
+                    "daily_flow": None, "generated_at": None}
 
 
 def _read_timeline_contract() -> tuple:

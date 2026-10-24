@@ -65,7 +65,8 @@ import re
 import subprocess
 import sys
 from collections import Counter
-from datetime import date, datetime, timezone
+from datetime import date, datetime, timedelta, timezone
+from difflib import SequenceMatcher
 from pathlib import Path
 
 STATES = ("active", "blocked", "completed", "archived")
@@ -145,9 +146,14 @@ def _iso_week(day: str) -> str:
     return f"{y}-W{w:02d}"
 
 
-def _run_git_log(repo: Path) -> str:
+def _run_git_log(repo: Path, first_parent: bool = False) -> str:
+    # first_parent: follow the main line only, and show merges as a diff against
+    # their first parent. Plain ``git log -p`` prints NO diff for merge commits, so a
+    # box change that landed via a merge is invisible and a replayed stock drifts
+    # from the real tree (measured: 39 boxes / 26 files on 2026-10-24).
     cmd = [
         "git", "-C", str(repo), "log", "--reverse", "-M", "--no-color",
+        *(["--first-parent"] if first_parent else []),
         "--format=%x00%H %aI", "-p", "--", "handoffs/",
     ]
     proc = subprocess.run(cmd, capture_output=True, text=True,
@@ -304,6 +310,201 @@ def _parse_commits(log_text: str):
     if sha is not None:
         results.append((sha, ts, blocks))
     return results
+
+
+# --------------------------------------------------------------------------
+# Daily open-box flow (operator-approved refinement, 2026-10-24)
+#
+# ``tasks_weekly`` counts every added ``- [ ]`` line as newly filed and never sees
+# removals, so rewording an open box looked like a new filing and the backlog
+# could not fall. ``daily_flow`` replays the SAME ``git log -p`` text but tracks the
+# per-file open-box STOCK, and pairs removed lines with added lines per commit.
+# One row per calendar day, zero-filled, ending today (counts are boxes):
+#   open_stock            open ``[ ]`` boxes in handoffs/active+blocked at end of day
+#   ticked                removed open box matched to an added ``[x]`` (same text or
+#                         similarity >= _SIM)
+#   new_open              added open box with NO removed open partner (really new)
+#   reworded              added open box paired with a removed open box (net zero)
+#   born_ticked           added ``[x]`` with no removed partner (filed already done)
+#   removed_open          open boxes deleted unmatched (line removed, or the whole
+#                         handoff deleted from active/blocked)
+#   closed_by_completion  open boxes still open in a handoff the day it moved from
+#                         active/blocked to completed/ or archived/
+#   handoffs_completed / handoffs_archived   handoffs moved to that state that day
+# Pairing is commit-wide and one-to-one.
+# --------------------------------------------------------------------------
+_SIM = 0.75
+_PAIR_LIMIT = 40000          # skip O(n*m) similarity on bulk-rewrite commits
+_LIVE = ("active", "blocked")
+_ANY_CHECKBOX_RE = re.compile(r"^([+-])\s*[-*]\s*\[([ xX])\]\s*(.*)$")
+_FLOW_FIELDS = ("ticked", "new_open", "reworded", "born_ticked", "removed_open",
+                "closed_by_completion", "handoffs_completed", "handoffs_archived")
+
+
+def _norm_text(text: str) -> str:
+    t = re.sub(r"[*_`]+", "", text)
+    t = re.split(r"✅|—|–|\bDONE\b", t, maxsplit=1)[0]
+    return re.sub(r"\s+", " ", t).strip().lower()[:200]
+
+
+def _similar(a: str, b: str) -> bool:
+    if a == b:
+        return True
+    if not a or not b:
+        return False
+    sm = SequenceMatcher(None, a, b, autojunk=False)
+    return (sm.real_quick_ratio() >= _SIM and sm.quick_ratio() >= _SIM
+            and sm.ratio() >= _SIM)
+
+
+def _pair_commit(removed: list, added: list, flow: Counter) -> None:
+    """Classify one commit's removed/added boxes (``[is_open, normalised_text]``),
+    consumed one-to-one: exact-text pairs first, then similarity pairs."""
+    r_used = [False] * len(removed)
+    a_done = [False] * len(added)
+    for exact in (True, False):
+        if not exact and len(removed) * len(added) > _PAIR_LIMIT:
+            break
+        for ai, (a_open, txt) in enumerate(added):
+            if a_done[ai]:
+                continue
+            for ri, (r_open, r_txt) in enumerate(removed):
+                if r_used[ri] or not r_open:
+                    continue
+                if (r_txt == txt) if exact else _similar(r_txt, txt):
+                    r_used[ri] = a_done[ai] = True
+                    flow["reworded" if a_open else "ticked"] += 1
+                    break
+    for ai, (a_open, _t) in enumerate(added):
+        if not a_done[ai]:
+            flow["new_open" if a_open else "born_ticked"] += 1
+    flow["removed_open"] += sum(1 for ri, (r_open, _t) in enumerate(removed)
+                                if r_open and not r_used[ri])
+
+
+def build_daily_flow(log_text: str, today: str | None = None) -> list[dict]:
+    """Daily open-box stock + flows from ``git log -M -p`` text (see block above)."""
+    counts: dict[str, int] = {}      # state/stem -> open boxes (every state tracked,
+    state_of: dict[str, str] = {}    # so a move back into active restores its stock)
+    days: dict[str, Counter] = {}
+    stock_eod: dict[str, int] = {}
+    st: dict = {"day": None, "blocks": [], "cur": None, "hunk": False, "seen": False}
+
+    def flush() -> None:
+        day = st["day"]
+        if not st["seen"] or day is None:
+            return
+        flow = days.setdefault(day, Counter())
+        removed: list = []
+        added: list = []
+        for b in st["blocks"]:
+            new_ss = _path_state_stem(b["new"])
+            old_ss = _path_state_stem(b["rename_from"] or b["old"])
+            if new_ss is None and old_ss is None:
+                continue
+            okey = f"{old_ss[0]}/{old_ss[1]}" if old_ss else None
+            nkey = f"{new_ss[0]}/{new_ss[1]}" if new_ss else None
+            if b["deleted"]:
+                if okey is not None:
+                    if old_ss[0] in _LIVE:
+                        flow["removed_open"] += counts.get(okey, 0)
+                    counts.pop(okey, None)
+                    state_of.pop(okey, None)
+                continue
+            if nkey is None:
+                continue
+            live_touch = new_ss[0] in _LIVE or bool(old_ss and old_ss[0] in _LIVE)
+            if okey and okey != nkey:
+                counts[nkey] = counts.pop(okey, 0)
+                state_of.pop(okey, None)
+            counts.setdefault(nkey, 0)
+            state_of[nkey] = new_ss[0]
+            d_open = 0
+            for sign, is_open, txt in b["boxes"]:
+                if is_open:
+                    d_open += 1 if sign == "+" else -1
+                if live_touch:
+                    (added if sign == "+" else removed).append([is_open, _norm_text(txt)])
+            counts[nkey] = max(0, counts[nkey] + d_open)
+            if old_ss and old_ss[0] in _LIVE and new_ss[0] in _TERMINAL:
+                flow["closed_by_completion"] += counts[nkey]
+                flow["handoffs_completed" if new_ss[0] == "completed"
+                     else "handoffs_archived"] += 1
+        _pair_commit(removed, added, flow)
+        stock_eod[day] = sum(n for k, n in counts.items() if state_of.get(k) in _LIVE)
+
+    for line in log_text.splitlines():
+        mc = _COMMIT_RE.match(line)
+        if mc:
+            flush()
+            try:
+                st["day"] = datetime.fromisoformat(mc.group(2)).date().isoformat()
+            except ValueError:
+                st["day"] = None
+            st.update(blocks=[], cur=None, hunk=False, seen=True)
+            continue
+        md = _DIFF_RE.match(line)
+        if md:
+            st["cur"] = {"old": md.group(1), "new": md.group(2), "deleted": False,
+                         "rename_from": None, "boxes": []}
+            st["blocks"].append(st["cur"])
+            st["hunk"] = False
+            continue
+        cur = st["cur"]
+        if cur is None:
+            continue
+        if line.startswith("@@"):
+            st["hunk"] = True
+            continue
+        if not st["hunk"]:
+            if line.startswith("deleted file mode"):
+                cur["deleted"] = True
+            else:
+                mrf = _RENAME_FROM_RE.match(line)
+                if mrf:
+                    cur["rename_from"] = mrf.group(1)
+            continue
+        mb = _ANY_CHECKBOX_RE.match(line)
+        if mb:
+            cur["boxes"].append((mb.group(1), mb.group(2) == " ", mb.group(3)))
+    flush()
+
+    if not stock_eod:
+        return []
+    today = today or datetime.now(timezone.utc).date().isoformat()
+    d = date.fromisoformat(min(stock_eod))
+    end = date.fromisoformat(max(max(stock_eod), today))
+    out: list[dict] = []
+    carry = 0
+    while d <= end:
+        ds = d.isoformat()
+        carry = stock_eod.get(ds, carry)
+        c = days.get(ds, Counter())
+        out.append({"date": ds, "open_stock": carry,
+                    **{f: c.get(f, 0) for f in _FLOW_FIELDS}})
+        d += timedelta(days=1)
+    return out
+
+
+def _fill_weeks(rows: list[dict], zero: dict) -> list[dict]:
+    """Continuous ISO weeks first..current with explicit zeros (empty weeks used to
+    be skipped, so the chart never plotted a zero-completion week)."""
+    if not rows:
+        return rows
+    by = {r["week"]: r for r in rows}
+
+    def monday(wk: str) -> date:
+        y, w = wk.split("-W")
+        return date.fromisocalendar(int(y), int(w), 1)
+
+    cur, last = monday(min(by)), max(monday(max(by)), datetime.now(timezone.utc).date())
+    out = []
+    while cur <= last:
+        y, w, _ = cur.isocalendar()
+        wk = f"{y}-W{w:02d}"
+        out.append(by.get(wk) or {"week": wk, **zero})
+        cur += timedelta(days=7)
+    return out
 
 
 def build_timeline(repo: Path) -> dict:
@@ -474,18 +675,19 @@ def build_timeline(repo: Path) -> dict:
         "series": series,
         "file_activity": file_activity,
         "next_action_repoints": repoints,
-        "tasks_weekly": [
+        "daily_flow": build_daily_flow(_run_git_log(repo, first_parent=True)),
+        "tasks_weekly": _fill_weeks([
             {"week": w, "tasks_completed": tasks_weekly.get(w, 0),
              "opened": opened_weekly.get(w, 0),
              "newly_filed": newly_filed_weekly.get(w, 0),
              "completed": tasks_weekly.get(w, 0)}
             for w in sorted(set(tasks_weekly) | set(opened_weekly) | set(newly_filed_weekly))
-        ],
-        "handoffs_weekly": [
+        ], {"tasks_completed": 0, "opened": 0, "newly_filed": 0, "completed": 0}),
+        "handoffs_weekly": _fill_weeks([
             {"week": w, "created": created_weekly.get(w, 0),
              "completed": completed_weekly.get(w, 0)}
             for w in sorted(set(created_weekly) | set(completed_weekly))
-        ],
+        ], {"created": 0, "completed": 0}),
         "totals": {
             "active": final.get("active", 0),
             "completed": final.get("completed", 0),

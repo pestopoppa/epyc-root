@@ -141,7 +141,7 @@ class TimelineEndToEndTests(unittest.TestCase):
         created = {r["week"]: r["created"] for r in data["handoffs_weekly"]}
         completed = {r["week"]: r["completed"] for r in data["handoffs_weekly"]}
         self.assertEqual(created.get(_iso_week("2026-01-10")), 1)
-        self.assertNotIn(_iso_week("2026-03-02"), created)  # no false March creation
+        self.assertEqual(created.get(_iso_week("2026-03-02")), 0)  # no false March creation (zero-filled week)
         self.assertEqual(completed.get(_iso_week("2026-03-10")), 1)
 
         # task completions land on their inline ✅ dates, not the commit date.
@@ -332,6 +332,99 @@ class NextActionRepointTests(unittest.TestCase):
     def test_escaped_pipe_does_not_shift_cells(self):
         self.assertEqual(bt._row_next_action(_row("DEM-01", r"a \| b")), r"a \| b")
         self.assertIsNone(bt._row_next_action("| DEM-01 | only | three |"))
+
+
+
+class DailyFlowTests(unittest.TestCase):
+    """Open-box stock + flows: rewording, removal, born-ticked, move to completed/,
+    a merge commit (needs --first-parent to be visible), and zero-filled days."""
+
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.root = Path(self.tmp.name)
+        self.g = GitRepo(self.root)
+        self.g.git("init", "-q", "-b", "main")
+        for d in ("active", "blocked", "completed"):
+            (self.root / "handoffs" / d).mkdir(parents=True)
+        self.a = self.root / "handoffs" / "active" / "a.md"
+        self.b = self.root / "handoffs" / "active" / "b.md"
+        # day 1: a has 3 open, b has 2 open
+        self.a.write_text("# A\n- [ ] alpha task one\n- [ ] beta task two\n- [ ] gamma third thing\n")
+        self.b.write_text("# B\n- [ ] delta item four\n- [ ] epsilon item five\n")
+        self.g.commit("2026-03-02T10:00:00")
+        # day 3: reword alpha (open->open, similar), tick beta, drop gamma,
+        # add a really new box and a born-ticked box
+        self.a.write_text("# A\n- [ ] alpha task one reworded\n- [x] beta task two \u2705 2026-03-04\n"
+                          "- [ ] brand new zeta box\n- [x] born done eta\n")
+        self.g.commit("2026-03-04T10:00:00")
+        # day 5: b moves to completed with its 2 open boxes
+        self.g.git("mv", "handoffs/active/b.md", "handoffs/completed/b.md")
+        self.g.commit("2026-03-06T10:00:00")
+
+    def tearDown(self):
+        self.tmp.cleanup()
+
+    def _flow(self):
+        log = bt._run_git_log(self.root, first_parent=True)
+        return {r["date"]: r for r in bt.build_daily_flow(log, today="2026-03-08")}
+
+    def test_stock_and_flows(self):
+        f = self._flow()
+        self.assertEqual(f["2026-03-02"]["open_stock"], 5)
+        self.assertEqual(f["2026-03-02"]["new_open"], 5)
+        d = f["2026-03-04"]
+        self.assertEqual(d["reworded"], 1)        # alpha reword is not a new filing
+        self.assertEqual(d["ticked"], 1)          # beta open -> [x] (same text)
+        self.assertEqual(d["new_open"], 1)        # only zeta is genuinely new
+        self.assertEqual(d["born_ticked"], 1)     # eta filed already done
+        self.assertEqual(d["removed_open"], 1)    # gamma dropped
+        # a: alpha + zeta open = 2; b: 2 -> 4 (stock nets removals/ticks)
+        self.assertEqual(d["open_stock"], 4)
+
+    def test_move_to_completed_closes_open_boxes(self):
+        f = self._flow()
+        d = f["2026-03-06"]
+        self.assertEqual(d["closed_by_completion"], 2)
+        self.assertEqual(d["handoffs_completed"], 1)
+        self.assertEqual(d["open_stock"], 2)      # only a's boxes remain
+        self.assertEqual(d["ticked"], 0)
+
+    def test_zero_days_filled_and_carry_stock(self):
+        f = self._flow()
+        self.assertIn("2026-03-03", f)
+        self.assertEqual(f["2026-03-03"]["open_stock"], 5)
+        self.assertEqual(f["2026-03-03"]["new_open"], 0)
+        self.assertEqual(f["2026-03-08"]["open_stock"], 2)  # carried to "today"
+        self.assertEqual(list(f)[-1], "2026-03-08")
+
+    def test_merge_commit_changes_are_counted(self):
+        self.g.git("checkout", "-q", "-b", "side")
+        self.a.write_text(self.a.read_text() + "- [ ] side branch box\n")
+        self.g.commit("2026-03-07T09:00:00")
+        self.g.git("checkout", "-q", "main")
+        (self.root / "other.txt").write_text("x")
+        self.g.commit("2026-03-07T10:00:00")
+        self.g.git("merge", "--no-ff", "-m", "merge side", "side", date="2026-03-07T11:00:00")
+        f = self._flow()
+        self.assertEqual(f["2026-03-08"]["open_stock"], 3)
+
+    def test_deleted_handoff_counts_as_removed_not_completed(self):
+        self.g.git("rm", "-q", "handoffs/active/a.md")
+        self.g.commit("2026-03-07T10:00:00")
+        d = self._flow()["2026-03-07"]
+        self.assertEqual(d["removed_open"], 2)
+        self.assertEqual(d["closed_by_completion"], 0)
+        self.assertEqual(d["open_stock"], 0)
+
+    def test_weekly_series_has_no_missing_weeks(self):
+        self.g.commit  # keep linter quiet
+        data = bt.build_timeline(self.root)
+        weeks = [r["week"] for r in data["tasks_weekly"]]
+        self.assertEqual(weeks, sorted(weeks))
+        ys = [tuple(int(x) for x in w.split("-W")) for w in weeks]
+        for (y1, w1), (y2, w2) in zip(ys, ys[1:]):
+            self.assertTrue((y2, w2) == (y1, w1 + 1) or (y2 == y1 + 1 and w2 == 1))
+        self.assertIn("daily_flow", data)
 
 
 if __name__ == "__main__":
