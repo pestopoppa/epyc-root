@@ -164,3 +164,78 @@ def test_scoped_store_ingest_is_idempotent_and_memoises_refusals(tmp_path):
     a = si.ingest_scoped_store(led2, bad, as_of="2026-10-24T00:00:00Z", memo_path=memo2)
     b = si.ingest_scoped_store(led2, bad, as_of="2026-10-24T00:01:00Z", memo_path=memo2)
     assert len(a["refusals"]) == 1 and b["served_shape_memo_refused"] == 1 and b["refusals"] == []
+
+
+def _recalibrate_against_current_recipe(store: Path, ts: str = "20261024T120000Z") -> Path:
+    """P1-PHASE2-SERVED-SHAPE-RECAL: a third run of the same anchor binary (same NMSE, same digests) that recorded
+    the sha256 the regenerated launch recipe has NOW."""
+    unit = store / "served_shape"
+    base = json.loads((unit / "calibration-20261021T154353Z.json").read_text())
+    launch = Path(base["provenance"]["launch"])
+    base["provenance"]["launch_sha256"] = _sha(launch.read_bytes())
+    base["provenance"]["measured_at"] = f"2026-10-24T{ts[9:11]}:{ts[11:13]}:{ts[13:15]}+00:00"
+    out = unit / f"calibration-{ts}.json"
+    _w(out, base)
+    return out
+
+
+def test_recalibration_against_current_recipe_binds_model_with_the_same_claim_ids(tmp_path):
+    store = make_store(tmp_path, launch_drift=True)
+    drifted = {t.measurement_id: t for t in tuples(store / "served_shape")}
+    assert all("model_file" not in t.applicability for t in drifted.values())
+    assert all("launch_bound_calibrations" not in t.extra for t in drifted.values())
+    _recalibrate_against_current_recipe(store)
+    rows = ss.native_rows(store / "served_shape")
+    assert rows[0]["launch"]["binding"] == "verified" and rows[0]["reps"] == 3
+    assert rows[0]["launch"]["bound_calibrations"] == ["calibration-20261024T120000Z.json"]
+    bound = {t.measurement_id: t for t in tuples(store / "served_shape")}
+    assert set(bound) == set(drifted)                      # same claim ids, re-scoped
+    for t in bound.values():
+        assert t.applicability["model_file"] == "other.gguf" and t.applicability["model_sha256"] == MODEL_SHA
+        assert t.extra["launch_binding"] == "verified"
+        assert t.extra["launch_bound_calibrations"] == ["calibration-20261024T120000Z.json"]
+        assert ct.grade(t)[:2] == ("Judged", "Located")
+
+
+def test_recalibration_with_different_nmse_or_binary_refuses_rather_than_binding(tmp_path):
+    store = make_store(tmp_path, launch_drift=True)
+    p = _recalibrate_against_current_recipe(store)
+    c = json.loads(p.read_text())
+    c["measurements"][1]["nmse"] = c["measurements"][1]["nmse"] * 1.5
+    p.write_text(json.dumps(c))
+    with pytest.raises(ct.ProjectionError, match="disagree on a NMSE"):
+        ss.native_rows(store / "served_shape")
+    store2 = make_store(tmp_path / "b", launch_drift=True)
+    p2 = _recalibrate_against_current_recipe(store2)
+    c2 = json.loads(p2.read_text())
+    c2["provenance"]["binary_digests"]["test-backend-ops"] = "1" * 64
+    p2.write_text(json.dumps(c2))
+    with pytest.raises(ct.ProjectionError, match="binary digests"):
+        ss.native_rows(store2 / "served_shape")
+
+
+def test_bound_calibrations_naming_different_models_refuse(tmp_path):
+    store = make_store(tmp_path, launch_drift=True)
+    p = _recalibrate_against_current_recipe(store)
+    other = tmp_path / "launch2.json"
+    _w(other, {"model": {"path": "/m/third.gguf", "sha256": "7" * 64}})
+    q = _recalibrate_against_current_recipe(store, ts="20261024T130000Z")
+    c = json.loads(q.read_text())
+    c["provenance"]["launch"], c["provenance"]["launch_sha256"] = str(other), _sha(other.read_bytes())
+    q.write_text(json.dumps(c))
+    assert p.is_file()
+    with pytest.raises(ct.ProjectionError, match="different models"):
+        ss.native_rows(store / "served_shape")
+
+
+def test_reingest_after_recalibration_reaches_the_model_target(tmp_path):
+    store = make_store(tmp_path, launch_drift=True)
+    led = Ledger(tmp_path / "ledger.jsonl")
+    ing.ingest(led, "autokernel-served-shape", [store / "served_shape"], as_of="2026-10-22T00:00:00Z")
+    target = lb.Target.from_mapping({"model_file": "other.gguf", "backend": "cpu"})
+    before = lb.evaluate_frames([r.frame for r in led], [target], as_of="2026-10-22T00:30:00Z")
+    assert before["tiers"].get("target", 0) == 0
+    _recalibrate_against_current_recipe(store, ts="20261022T120000Z")
+    ing.ingest(led, "autokernel-served-shape", [store / "served_shape"], as_of="2026-10-23T00:00:00Z")
+    after = lb.evaluate_frames([r.frame for r in led], [target], as_of="2026-10-23T00:30:00Z")
+    assert after["tiers"]["target"] == 4
