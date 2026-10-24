@@ -754,6 +754,22 @@ class TestClaudeWrapper(unittest.TestCase):
             env={"EPYC_FS_ACK": "operator: op 2026-08-23: test"})
         self.assertEqual(res.returncode, 0)
 
+    def test_degraded_mode_still_refuses_privileged_verbs(self):
+        """Without the scanner the wrapper falls back to literal greps. The
+        2026-10-23 pipefail rewrite broke their line continuations, so the
+        fallback allowed the incident's own `sudo mount` (it ran the patterns as
+        commands). A copy of the wrapper with no scanner beside it exercises it."""
+        with tempfile.TemporaryDirectory() as tmp:
+            lone = Path(tmp) / WRAPPER.name
+            lone.write_text(WRAPPER.read_text())
+            for cmd, rc in ((INCIDENT_CMD, 2), ("sudo apt-get install restic", 2),
+                            ("dpkg -i x.deb", 2), ("ls -la /tmp", 0)):
+                res = subprocess.run(
+                    ["/bin/bash", str(lone)], capture_output=True, text=True, timeout=60,
+                    input=json.dumps({"tool_name": "Bash", "tool_input": {"command": cmd}}))
+                self.assertEqual(res.returncode, rc, (cmd, res.stderr))
+                self.assertNotIn("command not found", res.stderr)
+
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)

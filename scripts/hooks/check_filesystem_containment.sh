@@ -73,12 +73,15 @@ SCAN="$(dirname "${BASH_SOURCE[0]}")/filesystem_containment_scan.py"
 # skipping; it exists only so a broken python3 cannot re-open the gap.
 if ! command -v python3 >/dev/null 2>&1 || [[ ! -f "$SCAN" ]]; then
   if [[ "$MODE" == "--command" ]]; then
-    if printf '%s' "$VALUE" | grep -E \ >/dev/null
-      '(^|[;&|]|\s)(sudo[[:space:]]+)?(mount|umount|mkfs|fdisk|parted|mkswap|systemctl|modprobe|shutdown|reboot)([[:space:]]|$)' ||
-       printf '%s' "$VALUE" | grep -E \ >/dev/null
-      '(^|[;&|]|\s)(sudo[[:space:]]+)?(apt|apt-get)[[:space:]]+(install|remove|purge)' ||
-       printf '%s' "$VALUE" | grep -E \ >/dev/null
-      '(^|[;&|]|\s)(sudo[[:space:]]+)?dpkg[[:space:]]+(-i|--install|-r|--remove)'; then
+    # `>/dev/null` goes AFTER the pattern: placed before it (2026-10-23 LINT-PIPEFAIL
+    # rewrite) the `\` escaped a space instead of continuing the line, so grep
+    # searched for " " and the pattern ran as its own command.
+    if printf '%s' "$VALUE" | grep -E \
+      '(^|[;&|]|\s)(sudo[[:space:]]+)?(mount|umount|mkfs|fdisk|parted|mkswap|systemctl|modprobe|shutdown|reboot)([[:space:]]|$)' >/dev/null ||
+       printf '%s' "$VALUE" | grep -E \
+      '(^|[;&|]|\s)(sudo[[:space:]]+)?(apt|apt-get)[[:space:]]+(install|remove|purge)' >/dev/null ||
+       printf '%s' "$VALUE" | grep -E \
+      '(^|[;&|]|\s)(sudo[[:space:]]+)?dpkg[[:space:]]+(-i|--install|-r|--remove)' >/dev/null; then
       echo "BLOCKED: the filesystem-containment scanner is unavailable and this command" >&2
       echo "invokes a privileged host-level verb. Refusing rather than guessing." >&2
       exit 2
