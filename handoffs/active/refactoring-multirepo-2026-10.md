@@ -1,12 +1,19 @@
 # Handoff: Refactoring — orchestrator, autopilot and AutoKernel (multi-repo debt program)
 
-**Status**: IN PROGRESS: wave 1 partly implemented (unreviewed); stopped by the operator 2026-10-24
+**Status**: PAUSED by the operator 2026-10-24 — wave 1 partly implemented and pushed (unreviewed); see Pending work
 **Created**: 2026-10-07
 **Updated**: 2026-10-24
 **Priority**: High
 **Scope**: epyc-orchestrator (`src/`, `scripts/`, `tests/`, `scripts/autopilot/`, `src/autopilot_core/`);
 epyc-inference-research `scripts/kernel_rnd/autokernel/`; epyc-root `scripts/hooks/` (guard bugs found on the way)
 **Estimated effort**: 382 findings → 26 packages (12 in wave 1, 14 in wave 2); ~150k LOC of approved deletion
+**Scratch**: per package, a git worktree of the target repo on a `refactor/<topic>` branch plus one scratch
+directory for briefs, logs and probe files. The 2026-10 run used `/workspace/wt/<pkg>` and
+`/tmp/claude-0/*/2773a866-6e4b-53fa-9304-d5960d8e1337/` inside an ephemeral cloud container (nothing on the
+host). A host session resuming this declares its own roots here before starting.
+
+**Start here:** the [Pending work](#pending-work) checklist is the queue; §Branches says what each pushed
+branch holds and how to merge it; per-finding evidence is in `research/refactor-audit-2026-10/findings-*.md`.
 
 Origin: cloud refactor-audit session (claude.ai/code session_01C4SLLAQhop8AA9rJJusAYj), run in an ephemeral
 4-CPU container on fresh clones, never on the host. Evidence, data and tooling:
@@ -17,6 +24,88 @@ Origin: cloud refactor-audit session (claude.ai/code session_01C4SLLAQhop8AA9rJJ
 > 2026-10-24). The owning session should add one row to `routing-and-optimization-index.md` (the index
 > that owns the related `orchestration-robustness-audit-2026-07-11.md`, RTG-24), with the next free RTG id:
 > `| RTG-<next> | refactoring program | [refactoring-multirepo-2026-10.md](refactoring-multirepo-2026-10.md) | review + merge the wave-1 refactor/* branches in the order in §Branches | refactor/hermetic-tests first |`
+
+## Pending work
+
+Checkbox per work package (finding ids in brackets; evidence in the findings files). `[x]` = committed on the
+named branch: implemented with targeted tests but NOT yet adversarially reviewed, which is its own open task below.
+
+### Done
+
+- [x] Audit of all three codebases: 17 units, 382 findings, adversarially verified except C4-C6 ✅ 2026-10-07
+- [x] Hermetic orchestrator test harness (`refactor/hermetic-tests`): 20,815 tests collect off the host ✅ 2026-10-07
+- [x] Containment-scanner bypass fixes + degraded-mode regression fix (`refactor/containment-scanner`) ✅ 2026-10-24
+- [x] Operator decisions on evaluator regime, AutoKernel prune, CI and scope recorded ✅ 2026-10-24
+- [x] Bug report, findings, metrics and package definitions published (`refactor/refactoring-plan`) ✅ 2026-10-24
+
+### Review and merge what is already pushed
+
+- [ ] Operator review of `refactor/containment-scanner` (safety boundary for INC-20260823); read `scripts/hooks/CONTAINMENT-SCANNER-CHANGES-FOR-REVIEW.md` on the branch, then merge or reject
+- [ ] Merge `refactor/hermetic-tests` into epyc-orchestrator main (every orchestrator branch contains it)
+- [ ] Adversarial review, then merge, of `refactor/config-registry` (O3)
+- [ ] Adversarial review, then merge, of `refactor/request-path` (O1 stage 1)
+- [ ] Adversarial review, then merge, of `refactor/test-hazards` (O7 partial; its 3 commits have no test report: run the suites first)
+- [ ] Adversarial review, then merge, of `refactor/autopilot-gate` (P2; B2-03 changes what is admitted to learning: review as a decision-semantics change)
+- [ ] Adversarial review, then merge, of `refactor/autopilot-loop` (P1 stage 1, test harness)
+- [ ] Adversarial review, then merge, of `refactor/scripts-cleanup` (O6; finish the A5-11 WIP commit and run the suites for the A5-01/A6-19/A5-05 deletions first)
+- [ ] Merge `refactor/autokernel-loop-bugs` only after the AutoKernel launch hold lifts, with a deliberate re-pin (workspace-58); finish the C1-05 WIP first (regression test + loop suite)
+- [ ] Delete the superseded `claude/vigilant-thompson-shpyh0` branches in epyc-root and epyc-orchestrator (operator)
+- [ ] Add this handoff's index row to `routing-and-optimization-index.md` (prepared text above; owning session applies it)
+
+### Wave 1: bugs, hazards, ruled deletions
+
+- [x] O1 (part): Inference request path: concurrency, event loop, failure semantics on `refactor/request-path` [A1-02, A2-01, A1-M2, A1-M1, A1-01, A4-M1, A2-04, A2-13, A1-17] ✅ 2026-10-24
+- [ ] O1 (rest): [A2-02, A2-M1, A2-M2, A2-03, A2-05, A2-11, A2-16]
+- [x] O3: Config / registry / runtime correctness and the stack-priors parse cost on `refactor/config-registry` [A3-01, A1-03, A3-19, A3-02, A3-07, A3-08, A3-09, A3-M1, A3-04, A3-06, A3-15, A3-05, A3-16, A4-08, A3-M2] ✅ 2026-10-24
+- [ ] O4: REPL / tools: permission bypasses and structured-mode defects [A4-01, A4-02, A4-03, A4-04, A4-14, A4-M3, A4-07, A4-06]
+- [ ] O5: Dashboard request-path cost and silent-empty panels [A1-04, A1-08, A1-13, A1-11, A1-21]
+- [x] O6 (part): Orchestrator scripts: live bugs and operator-ruled deletions on `refactor/scripts-cleanup` [A5-M1, A5-06, A5-07, A5-04, A5-12, A5-22, A5-M2, A5-01, A6-19, A5-05]; no test report for A5-01, A6-19, A5-05 ✅ 2026-10-24
+- [ ] O6 (rest): [A5-11, A5-23, A5-18, A5-02, A5-21] (WIP commit to finish: A5-11)
+- [x] O7 (part): Test-suite hazards and hygiene on `refactor/test-hazards` [A6-01, A6-02, A6-09]; no test report for A6-01, A6-02, A6-09 ✅ 2026-10-24
+- [ ] O7 (rest): [A6-M1, A6-03, A6-12, A6-13, A6-11, A6-17]
+- [x] P1 (part): Autopilot main loop: behavioural safety net, then loop bugs on `refactor/autopilot-loop` [B1-03, B5-02, B5-08, B1-15] ✅ 2026-10-24
+- [ ] P1 (rest): [B1-01, B1-M1, B1-M2, B1-04, B1-08, B1-09, B1-14, B1-13]
+- [x] P2: Autopilot safety gate and autopilot_core on `refactor/autopilot-gate` [B2-02, B2-03, B2-09, B2-11, B2-20, B2-17, B5-01, B5-M1, B5-M2, B5-16, B5-09, B5-13, B5-12] (B2-11 skipped: upstream already split SafetyGate.check; B2-17 no change, per the verifier) ✅ 2026-10-24
+- [ ] P3: Autopilot actions, config applicator, controller IO, planner, journal [B3-01, B3-02, B3-03, B3-05, B1-17, B3-06, B3-07, B3-08, B3-12, B3-M1, B3-04, B3-23, B4-01, B3-15, B3-16, B3-M2]
+- [ ] P4: Autopilot satellites: one-shot scripts, dead modules, small bugs [B4-03, B4-02, B4-19, B4-20, B4-13, B2-16, B4-16, B4-12, B4-06, B4-08, B4-09, B4-15, B4-M1, B4-M2, B4-04, B4-05]
+- [ ] K1: AutoKernel live-loop bugs and red tests [C1-05, C1-06, C1-14, C1-15, C1-M2, C1-24, C2-06, C5-08, C5-16, C6-05, C6-03, C6-04] (WIP commit to finish on `refactor/autokernel-loop-bugs`: C1-05)
+- [ ] K2: AutoKernel evaluator/execution integrity bugs (unit C4 was NOT adversarially verified) [C4-05, C4-06, C4-08, C4-10, C4-16, C3-02]
+
+### Wave 2: decision-dependent and structural
+
+- [ ] P5: Autopilot evaluator: ONE batched era event (operator decision 2026-10-24) [B5-03, B2-01, B2-M1, B2-M2, B2-10, B5-06, B5-07, B2-19, B2-04, B2-05, B2-06, B2-07, B2-08, B2-14, B2-15, B2-18, B2-12, B2-13, B5-14, B3-09]
+- [ ] K3: AutoKernel prune of the three unreachable planes (operator decision 2026-10-24) [C2-01, C1-04, C2-03, C2-05, C2-08, C2-12, C2-M2, C2-13, C3-03, C3-01, C3-M1, C3-13, C3-14, C3-18, C5-03, C5-15, C6-07, C6-17, C4-01, C4-02, C4-03, C4-11, C5-13, C5-12, C6-09, C5-06, C6-08, C2-09, C5-07, C2-M1]
+- [ ] K4: AutoKernel regrowth guard and CI repair (operator decision 2026-10-24) [C2-04, C5-02, C3-05, C1-02, C1-M3, C5-01, C6-01, C5-14, C6-13, C3-11, C2-02, C6-16]
+- [ ] O8: Orchestrator CI, honest gates, and the ni63 pin design (operator decision 2026-10-24) [A6-04, B1-M3, B5-10, B5-17, A6-13]
+- [ ] D1: Decompose the autopilot loop (_run_loop_inner) behind the P1 safety net [B1-02, B1-05, B1-12, B1-10, B1-06, B1-07, B1-11, B1-16, B1-18, B1-19]
+- [ ] D2: API layer: openai_compat and /chat de-duplication [A1-05, A1-06, A1-15, A1-19, A1-20, A1-12, A1-10, A1-14, A1-16, A1-18, A1-09, A1-07]
+- [x] D3 (part): Inference hot path: llama_server lanes, _execute_turn, escalation chain [A2-12] ✅ 2026-10-24
+- [ ] D3 (rest): [A2-22, A2-06, A2-09, A2-07, A2-08, A2-10, A2-14, A2-15, A2-17, A2-18, A2-19, A2-20, A2-21]
+- [ ] D4: AutoKernel run.main decomposition [C1-03, C1-M1, C1-01, C1-08, C1-10, C1-11, C1-12, C1-13, C1-16, C1-17, C1-18, C1-19, C1-20, C1-21, C1-23, C1-09, C1-07, C2-14, C2-15, C2-16]
+- [ ] D5: Config / registry / runtime consolidation [A3-03, A3-10, A3-11, A3-12, A3-13, A3-14, A3-17, A3-18, A3-20, A3-21, A3-22, A3-23, A3-24, A3-25]
+- [ ] D6: REPL / tools consolidation [A4-09, A4-12, A4-10, A4-17, A4-05, A4-11, A4-13, A4-15, A4-16, A4-18, A4-19, A4-20, A4-21, A4-22, A4-23, A4-M2]
+- [ ] D7: Orchestrator scripts structure (src<->scripts layering, sys.path, duplicated helpers) [A5-03, A5-08, A5-09, A5-13, A5-14, A5-15, A5-20, A5-24, A5-25, A5-M3]
+- [ ] D8: Orchestrator test-suite consolidation [A6-10, A6-05, A6-06, A6-07, A6-08, A6-14, A6-15, A6-16, A6-20, B5-18]
+- [ ] D9: Autopilot remaining structure (actions, planner, journal, reports) [B3-10, B3-11, B3-13, B3-14, B3-17, B3-18, B3-19, B3-20, B3-21, B3-22, B3-24, B3-25, B4-07, B4-10, B4-11, B4-14, B4-17, B4-18, B5-04, B5-05, B5-11, B5-15]
+- [ ] D10: AutoKernel remaining structure (controller, evaluator, execution, schemas, tests) [C3-04, C3-06, C3-07, C3-08, C3-09, C3-10, C3-12, C3-15, C3-16, C3-17, C3-19, C3-20, C3-21, C3-22, C3-M2, C4-04, C4-07, C4-09, C4-12, C4-13, C4-14, C4-15, C4-17, C4-18, C5-04, C5-09, C5-10, C5-11, C6-02, C6-06, C6-10, C6-11, C6-12, C6-14, C6-15, C6-18, C2-07, C2-10, C2-11]
+
+### Deferred, each with its blocker
+
+- [ ] A5-10, A5-16, A5-17, A5-19: restructure `scripts/server/orchestrator_stack.py`. Blocked: a live path on the host (workspace-58, 2026-10-24); run when that file is quiet
+- [ ] C5-05: delete the `campaign.py` CLI cluster (~20k LOC). Blocked: needs an operator decision (it is a fourth plane, not among the three approved)
+- [ ] Re-enable the AutoKernel guards workflow in GitHub after K4 lands (operator click)
+
+### Follow-ups found during the audit (not tied to a single package)
+
+- [ ] Correct `handoffs/active/autokernel-restart-and-strip.md`, if C4-01 holds: it says the plan marks three LIVE evaluator modules as verified-dead. C4-01 is from an UNVERIFIED unit; verify the import closure first, and until then do not act on that part of the strip plan
+- [ ] Re-pin `scripts/server/orchestrator_stack.py` in the ni63 `SOURCE_PINS`: stale on orchestrator main, 4 tests red there (fixed properly by O8's record-not-assert design)
+- [ ] Refresh `scripts/harness/strategy_projection_report_capture.py` `TRUSTED_APP_SOURCES`: 6 of 11 pins already stale at base (incl. `tier_specs.py`), so the tool refuses (found by O3)
+- [ ] Move `process_pattern_kill_scan.py`, `operator_apply_copy_scan.py` and `pytest_worker_scan.py` to `shell_scan.lex()`: they still use the old strip functions and share the escape/heredoc blind spots the containment scanner had
+- [ ] Containment scanner coverage for `restic restore --target`, `borg extract/delete/prune`, `rclone copyto/moveto/mkdir` (changes `--dump-rules`; regenerate the opencode config in the same change)
+- [ ] `.claude/skills/project-wiki/scripts/check_readme_freshness.py` hard-codes `/mnt/raid0/llm/<repo>`: off the host it reports all three READMEs as missing. Resolve repos relative to its own checkout or accept `--root`
+- [ ] `scripts/vidya/adapters/README.md` cites `test_vb_ap53_reproposal_rate.py (12)`; the file had 14 tests at base (found by P1). Owner: vidya-belief-substrate-program
+- [ ] Belief-kernel wiring: decide whether verified audit findings (`research/refactor-audit-2026-10/data/findings-*.json`) become a vidya source (adapter row + task in `vidya-belief-substrate-program.md`, a workspace-58 file)
+
 
 ## Problem
 
@@ -195,5 +284,8 @@ C1-22 disappears with the unified plane.
   since 84b0de13 its degraded mode allows `sudo mount`. Also: `scripts/harness/strategy_projection_report_capture.py`
   `TRUSTED_APP_SOURCES` has 6 of 11 pins stale at base (reported by O3).
 - **Unverified units**: C4, C5, C6 findings were never adversarially verified; the packages re-verify them first.
+- **Not filed (explicit decline)**: `scripts/hooks/tests/test_harness_guard_parity.py::test_generator_check_exits_zero`
+  fails identically on main in the container; it compares against the host's generated opencode config, so it
+  says nothing about this work.
 - **Usage pacing**: 6 concurrent agents exhausted a 5-hour window in about 55 minutes on 2026-10-24 (extra usage
   rejected: `out_of_credits`); 2 concurrent agents is the sustainable rate.
