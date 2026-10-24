@@ -723,3 +723,46 @@ def test_a_regime_that_disagrees_with_the_row_fingerprint_scopes_nothing(tmp_pat
     src, _, sup = _split(_frames(tmp_path, r))
     assert "applicability" not in src
     assert any("infra_fingerprint" in x for x in sup["provenance"]["grade_reasons"])
+
+
+# --- P1-PHASE2: fingerprint-only rows (no belief_scope) ---------------------------------------
+
+def _fp_row(trial_id, digest, **over):
+    r = row(trial_id, **over)
+    r["measurement"]["infra_fingerprint"] = digest
+    r["measurement"]["attestation"]["sha256"] = _entry_digest(r)
+    return r
+
+
+def test_a_row_with_only_an_infra_fingerprint_gets_the_regime_and_nothing_inferred(tmp_path):
+    src, _, _ = _split(_frames(tmp_path, _fp_row(1, "c" * 16)))
+    assert src["applicability"] == {"stack_regime": "c" * 16}   # no config_key / knob_family
+
+
+def test_fingerprint_only_row_carries_role_models_from_its_own_block(tmp_path):
+    r = row()
+    r["infra_fingerprint"] = {"digest": "c" * 16, "components": {"models": {"roles": {
+        "frontdoor@0": {"model_path": "/m/Qwen3.6-35B-A3B-MTP-Q8_0.gguf"},
+        "worker": {"model_path": "/m/gemma4-26B.gguf"}, "empty": {}}}}}
+    r["measurement"]["infra_fingerprint"] = "c" * 16
+    r["measurement"]["attestation"]["sha256"] = _entry_digest(r)
+    src, _, _ = _split(_frames(tmp_path, r))
+    assert src["applicability"] == {"stack_regime": "c" * 16, "role_models": {
+        "frontdoor": "Qwen3.6-35B-A3B-MTP-Q8_0.gguf", "worker": "gemma4-26B.gguf"}}
+
+
+def test_a_row_without_a_fingerprint_gets_no_regime_whatever_its_date(tmp_path):
+    for date in ("2026-08-12", "2026-10-24"):
+        r = row(timestamp=f"{date}T10:00:00+00:00")
+        r["measurement"]["date"] = date
+        r["measurement"]["attestation"]["sha256"] = _entry_digest(r)
+        src, _, _ = _split(_frames(tmp_path / date, r))
+        assert "applicability" not in src
+
+
+def test_belief_scope_wins_over_the_fingerprint_fallback(tmp_path):
+    r = row(belief_scope=SCOPE)
+    r["measurement"]["infra_fingerprint"] = "f" * 16
+    r["measurement"]["attestation"]["sha256"] = _entry_digest(r)
+    src, _, _ = _split(_frames(tmp_path, r))
+    assert src["applicability"]["config_key"] == SCOPE["config_key"]

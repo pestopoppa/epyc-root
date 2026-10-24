@@ -236,6 +236,38 @@ def _w6_generalization(eval_details) -> dict | None:
     return dict(report) if isinstance(report, dict) else None
 
 
+def _native_fingerprint_scope(row: dict) -> tuple[dict, str]:
+    """P1-PHASE2: scope for a row that carries an AP-55 fingerprint but NO ``belief_scope``.
+
+    Only what the row itself recorded: ``stack_regime`` is ``measurement.infra_fingerprint`` (the
+    digest the writer stamps), and ``role_models`` is the role -> model file map of the row's own
+    top-level ``infra_fingerprint.components.models.roles`` when that block is there (the same
+    derivation the orchestrator's ``trial_belief_scope`` uses). ``config_key`` and
+    ``knob_family`` are NOT derivable from a row without ``belief_scope`` (the action params are
+    not on the row in the bridge's key shape), so they are absent, explicitly. A row with no
+    fingerprint returns ``({}, "")``: no regime is ever invented, and never from the date.
+    """
+    digest = str((row.get("measurement") or {}).get("infra_fingerprint") or "").strip()
+    if not digest:
+        return {}, ""
+    scope: dict = {"stack_regime": digest}
+    fp = row.get("infra_fingerprint")
+    roles = (((fp.get("components") or {}).get("models") or {}).get("roles")
+             if isinstance(fp, dict) else None)
+    if isinstance(roles, dict):
+        role_models = {str(slot).split("@", 1)[0]: Path(str(r["model_path"])).name
+                       for slot, r in roles.items()
+                       if isinstance(r, dict) and r.get("model_path")}
+        if role_models:
+            scope["role_models"] = dict(sorted(role_models.items()))
+    try:
+        ClaimTuple(measurement_id="belief-scope-check", metric="belief_scope_check", value=0,
+                   date="", category="CANDIDATE", claim="belief_scope check", applicability=scope)
+    except ProjectionError as exc:
+        return {}, f"fingerprint scope refused by the carrier ({exc}): not scoped"
+    return scope, ""
+
+
 def belief_scope_applicability(row: dict) -> tuple[dict, str]:
     """(applicability, refusal reason) from the row's top-level ``belief_scope`` (P1-M).
 
@@ -252,7 +284,7 @@ def belief_scope_applicability(row: dict) -> tuple[dict, str]:
     """
     raw = row.get("belief_scope")
     if not isinstance(raw, dict) or not raw:
-        return {}, ""
+        return _native_fingerprint_scope(row)
     if raw.get("schema") != BELIEF_SCOPE_SCHEMA:
         return {}, f"belief_scope schema is not {BELIEF_SCOPE_SCHEMA}: not scoped"
     regime = raw.get("stack_regime")
