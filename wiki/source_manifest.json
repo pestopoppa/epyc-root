@@ -9,10 +9,27 @@
   },
   "kind": "project-wiki-source-manifest",
   "last_compile": "2026-10-24T07:58:56Z",
-  "mode": "touch",
-  "scan_time": "2026-10-24T07:58:56Z",
+  "last_touch": {
+    "advanced": {
+      "added": 0,
+      "changed": 6,
+      "removed": 0
+    },
+    "at": "2026-10-24T09:17:29Z",
+    "scope_paths": [
+      "docs/reference/kernel-manifests/llama-v11-manifest.md",
+      "handoffs/active/autokernel-champion-aggregate.md",
+      "handoffs/active/cpu-fused-decoder-blocks.md",
+      "handoffs/active/kv-prefix-fork-and-paged-attention.md",
+      "handoffs/active/multiscreen-attention-evaluation.md",
+      "progress/2026-10/2026-10-24-3c4ca599.md"
+    ],
+    "scope_types": []
+  },
+  "mode": "touch:scoped",
+  "scan_time": "2026-10-24T09:17:29Z",
   "schema_version": 1,
-  "source_set_hash": "e1d112f0616242dad0b210f8b615ac81f04a7d3593f8d729b15edd6d44e4b9dc",
+  "source_set_hash": "0ce7b71ab8ee051158414029cfdacbdb365fd0559b2b96bd597ab20fd3997f79",
   "sources": [
     {
       "content_hash": "6c067235a74a3b9667dd4fad23684206476aeac1cdefe3b4e0a0824d3179c241",
@@ -103,10 +120,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "8ef6bea793d7007de1124b219821e19227223ecc70a609445fb3795fe119830c",
-      "modified": "2026-10-24T07:55:28Z",
+      "content_hash": "9cbf5c46599b62fa813a225be26a8d79f4ba442c1b9931e3a4ecb2c2eeaf7e8c",
+      "modified": "2026-10-24T09:15:23Z",
       "path": "handoffs/active/autokernel-champion-aggregate.md",
-      "size": 157450,
+      "size": 161767,
       "title": "AutoKernel \u2014 the standing aggregate candidate (champion)",
       "type": "handoff-active"
     },
@@ -319,10 +336,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "4a0a55062fcf460a3fe04cfa5028901f4e3f83d2cc688afbb05d61d5cd7589ba",
-      "modified": "2026-10-24T07:55:28Z",
+      "content_hash": "5003c11e029c7fe4cf7b31e37a599d0b470ed92fe4280913c1376a80f456fc1b",
+      "modified": "2026-10-24T09:15:23Z",
       "path": "handoffs/active/cpu-fused-decoder-blocks.md",
-      "size": 31888,
+      "size": 32808,
       "title": "CPU Fused Decoder Blocks (batch-1 decode megakernel)",
       "type": "handoff-active"
     },
@@ -735,10 +752,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "8a0d20cd6fe4386f4f7f18201bfbb531b698deb58b05d666abfea27d4b796831",
-      "modified": "2026-10-24T07:55:28Z",
+      "content_hash": "c3cee77a6054360c97a6e5c48b489a0a64f200285df9571d0fadde437f9ff4de",
+      "modified": "2026-10-24T09:15:23Z",
       "path": "handoffs/active/kv-prefix-fork-and-paged-attention.md",
-      "size": 216911,
+      "size": 223756,
       "title": "KV prefix fork and paged attention: cross-slot prefix sharing, cache-aware dispatch, per-sequence KV views",
       "type": "handoff-active"
     },
@@ -943,10 +960,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "437fb449bcdec071f7897f0a912b60da772eef815cff2e64ff7dfb59191269ca",
-      "modified": "2026-10-24T07:55:28Z",
+      "content_hash": "4f35206471d57a27ae33d2ec5438fef60ef9dc7359ffb96236f9f95fa91a37aa",
+      "modified": "2026-10-24T09:15:23Z",
       "path": "handoffs/active/multiscreen-attention-evaluation.md",
-      "size": 68419,
+      "size": 69623,
       "title": "Multiscreen Attention \u2014 Evaluation for EPYC Inference",
       "type": "handoff-active"
     },
@@ -10511,10 +10528,10 @@
       "type": "progress"
     },
     {
-      "content_hash": "d2ab9dbd7f3990a210862e10b831b8eb4f6586993784b39eac263a037fba1f93",
-      "modified": "2026-10-24T07:55:28Z",
+      "content_hash": "92198c63e362f92f9849c275cb6909f2c11d0837bcd13e2c11fc78112b89e9b7",
+      "modified": "2026-10-24T09:15:23Z",
       "path": "progress/2026-10/2026-10-24-3c4ca599.md",
-      "size": 5549,
+      "size": 10517,
       "title": "2026-10-24 \u2014 3c4ca599 (coordinator main)",
       "type": "progress"
     },
@@ -11487,10 +11504,10 @@
       "type": "docs"
     },
     {
-      "content_hash": "1f6011ee35a302e34701b9f1360b4c83d80790432c54101d8fa7f2c4e31cb111",
-      "modified": "2026-10-24T07:55:28Z",
+      "content_hash": "f3412ff07a272e2ac114d9c048ad8c09cfe350b027972faa3e33e5a55990f010",
+      "modified": "2026-10-24T09:15:23Z",
       "path": "docs/reference/kernel-manifests/llama-v11-manifest.md",
-      "size": 82629,
+      "size": 88585,
       "title": "llama.cpp v11 release manifest",
       "type": "docs"
     },
