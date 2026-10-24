@@ -1042,6 +1042,23 @@ pairs count as `reworded`, net zero), `born_ticked`, `removed_open`,
 `archived/`) and `handoffs_completed`/`handoffs_archived`. The legacy `tasks_weekly`
 and `handoffs_weekly` keys are unchanged in shape but now include zero weeks.
 
+### Backlog graph ring = priority
+
+The graph's node rings encode **priority**, not liveness (liveness is in the tooltip).
+The page reads `priority` (0 lowest .. 1 highest), `priority_rank` (1 = highest) and
+`priority_basis` from `/api/handoff_graph` (`handoffs/active/.index-graph.json`, no new
+endpoint, same freshness envelope) and never derives them. No authored priority exists:
+the thin-row contract has no priority column, the indices are ordered by track, and
+`.index-state.json` has no rank. So `scripts/handoffs/index_state.py::derive_priority`
+orders rows by: open work (rows with none sort last) > `CURRENT-CAMPAIGN.md` membership
+(row id or handoff stem named in the newest dated block = 2, an older block = 1) > number
+of open rows transitively gated through `dep` edges > ready before blocked. Ties share a
+mid-rank percentile, so a large no-signal group is one colour on purpose. Ramp: 5 stops
+`#5468d8 -> #5a8fc0 -> #8c9a95 -> #c0b055 -> #ffe14a` (blue to yellow, monotone
+luminance, safe for red-green colour blindness, each >= 3.9:1 against the dark page).
+The page has only a dark theme. Dashed ring = file sits in `handoffs/blocked/`.
+Test: `tests/test_index_state_priority.py`.
+
 ### Keeping it fresh
 
 ```bash

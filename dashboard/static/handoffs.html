@@ -260,6 +260,7 @@
 
   section.graph .glegend{display:flex;gap:14px;flex-wrap:wrap;align-items:center;margin:2px 0 8px;font-size:12px;color:var(--muted)}
   section.graph .gsw{display:inline-block;width:11px;height:11px;border-radius:2px;margin-right:5px;vertical-align:-1px}
+  section.graph .gsw.prioramp{width:84px;height:10px;border-radius:3px;margin:0 4px}
   section.graph .gsw.ring{background:transparent;border:2.5px solid;border-radius:50%}
   section.graph .gsw.dot{border-radius:50%}
   section.graph .gsw.hatch{border-radius:50%;background:repeating-linear-gradient(45deg,#8b949e 0 2px,#0d1117 2px 4px)}
@@ -384,12 +385,10 @@
     </h2>
     <div class="glegend" id="graph-legend"></div>
     <div class="glegend">
-      <span class="muted">ring = liveness:</span>
-      <span><i class="gsw ring" style="border-color:#3fb950"></i>&le;7d</span>
-      <span><i class="gsw ring" style="border-color:#d29922"></i>8&ndash;30d</span>
-      <span><i class="gsw ring" style="border-color:#e5534b"></i>&gt;30d</span>
-      <span><i class="gsw ring" style="border-color:#6e7681"></i>never</span>
-      <span><i class="gsw ring" style="border-color:#8b949e;border-style:dashed"></i>blocked</span>
+      <span class="muted">ring = priority:</span>
+      <span>high</span><i class="gsw prioramp" style="background:linear-gradient(90deg,#ffe14a,#c0b055,#8c9a95,#5a8fc0,#5468d8)"></i><span>low</span>
+      <span><i class="gsw ring" style="border-color:#6e7681"></i>none</span>
+      <span><i class="gsw ring" style="border-color:#8b949e;border-style:dashed"></i>dashed = in handoffs/blocked/</span>
       <span class="muted">size &prop; open tasks &middot; fill = owning index (blended when a handoff links across domains) &middot; hover to reveal its links</span>
     </div>
     <p class="gnote muted" id="graph-note"></p>
@@ -1084,7 +1083,11 @@ async function loadTimeline(){
    cannot carry both:
      fill   = which index owns it, BLENDED toward the domains it links into, so a
               handoff that straddles two areas reads as straddling them.
-     ring   = liveness (days since a checkbox moved) — the signal indices never had.
+     ring   = PRIORITY, a sequential blue -> yellow ramp (5-stop, monotone luminance,
+              blue/yellow axis so deuteranopia/protanopia keep the ordering; every stop
+              >= 3.9:1 against the page background). Read verbatim from the producer
+              (`priority` 0..1 in index_graph.v2, index_state.derive_priority); the page
+              never derives it. Liveness moved to the tooltip (last advanced, age).
    A third, TEXTURE channel carries `readiness` (index_graph.v2), so it cannot
    collide with either colour channel:
      hatched disc = readiness "blocked" (some `dep` target still has open work)
@@ -1113,8 +1116,14 @@ const READINESS_STYLE = {
   blocked: {sw:"hatch", label:"blocked — a dep target still has open work"},
   no_open: {sw:"faded", label:"no open work (not \u201cdone\u201d)"},
 };
-const RING = d => (d===null||d===undefined) ? '#6e7681'
-              : d<=7 ? '#3fb950' : d<=30 ? '#d29922' : '#e5534b';
+const PRIO_STOPS = ["#5468d8","#5a8fc0","#8c9a95","#c0b055","#ffe14a"];   // low -> high
+const PRIO_NONE = "#6e7681";
+const RING = p => {                       // p in [0,1] or missing
+  if(typeof p!=="number" || !isFinite(p)) return PRIO_NONE;
+  const t=Math.max(0,Math.min(1,p))*(PRIO_STOPS.length-1), i=Math.min(PRIO_STOPS.length-2,Math.floor(t));
+  const a=_hex(PRIO_STOPS[i]), b=_hex(PRIO_STOPS[i+1]), f=t-i;
+  return `rgb(${a.map((v,k)=>Math.round(v+(b[k]-v)*f)).join(",")})`;
+};
 const SVGNS = "http://www.w3.org/2000/svg";
 // `el` is already taken by the HTML helper at the top of this file; a second
 // top-level `const el` is a SyntaxError that kills the WHOLE script block, not
@@ -1319,11 +1328,10 @@ async function loadGraph(){
     // Liveness is an OUTER halo, never an inset ring: measured, a flat 2px inset
     // ring took ~50% of a mean disc's area, so the liveness colour swamped the
     // domain fill and every band read amber regardless of ownership.
-    const halo=svgEl("circle",{cx:it.x,cy:it.y,r:it.r+1.4,fill:"none",
-      stroke:RING(n.age_days),"stroke-width":1.6});
-    // Blocked work is waiting, not stalled — dashed halo, no extra colour channel.
-    if(n.state==="blocked"){ halo.setAttribute("stroke-dasharray","3 2.5");
-      halo.setAttribute("stroke","#f0f6fc"); }
+    const halo=svgEl("circle",{cx:it.x,cy:it.y,r:it.r+1.8,fill:"none",
+      stroke:RING(n.priority),"stroke-width":2.6});
+    // Ring colour = priority. Dashed = file sits in handoffs/blocked/ (waiting, not stalled).
+    if(n.state==="blocked") halo.setAttribute("stroke-dasharray","4 2.5");
     gNode.appendChild(halo);
     const c=svgEl("g",{class:"node","data-readiness":n.readiness||""});
     const disc=svgEl("circle",{cx:it.x,cy:it.y,r:it.r,fill:it.fill});
@@ -1347,7 +1355,10 @@ async function loadGraph(){
         + (n.blocked?` · ${n.blocked} blocked`:"")
         + (n.readiness?`<br>readiness: <b>${n.readiness}</b>`
             + ((n.blocked_by&&n.blocked_by.length)?` on ${n.blocked_by.join(", ")}`:""):"")
-        + `<br>last advanced ${n.last_advanced||"never"}`
+        + (typeof n.priority==="number"?`<br>priority: <b>#${n.priority_rank}</b> of ${g.nodes.length}`
+            + ` (campaign ${(n.priority_basis&&n.priority_basis.campaign)||0}, unblocks ${(n.priority_basis&&n.priority_basis.unblocks)||0})`:"")
+        + `<br>liveness: last advanced ${n.last_advanced||"never"}`
+        + (n.age_days!=null?` (${n.age_days}d ago)`:"")
         + `<br>${linked.length} linked handoff${linked.length===1?"":"s"}`
         + (linked.length?`: ${linked.slice(0,12).join(", ")}${linked.length>12?"…":""}`:"")
         + `</div>`;

@@ -517,6 +517,75 @@ def derive_readiness(nodes: list[dict], edges: list[dict]) -> dict[str, int]:
     return counts
 
 
+def _campaign_tiers(nodes: list[dict], text: str) -> dict[str, int]:
+    """Campaign membership per row id: 2 = named in the NEWEST block of
+    CURRENT-CAMPAIGN.md, 1 = named in an older block, 0 = not named. A row is "named" when
+    its row id (word-bounded) or its handoff stem appears in the block."""
+    marks = [m.start() for m in re.finditer(r"(?m)^> \*\*20\d\d-\d\d-\d\d", text)]
+    newest = text[marks[0]:marks[1]] if len(marks) > 1 else (text[marks[0]:] if marks else "")
+    out: dict[str, int] = {}
+    for n in nodes:
+        pats = [r"\b" + re.escape(n["id"]) + r"\b"]
+        if n.get("handoff"):
+            pats.append(re.escape(n["handoff"][:-3] if n["handoff"].endswith(".md") else n["handoff"]))
+        rx = re.compile("|".join(pats))
+        out[n["id"]] = 2 if rx.search(newest) else (1 if rx.search(text) else 0)
+    return out
+
+
+def derive_priority(nodes: list[dict], edges: list[dict], campaign_text: str = "") -> dict:
+    """Derive a priority ordering for the backlog graph. Adds to every node:
+    ``priority`` (0.0 lowest .. 1.0 highest, mid-rank percentile so ties share a value),
+    ``priority_rank`` (1 = highest) and ``priority_basis`` ({campaign, unblocks}).
+
+    WHY DERIVED. The thin-row contract deliberately carries NO priority column (see
+    handoff-index-authoring.md: status/priority never go in a row), the index files are
+    ordered alphabetically by track, and ``.index-state.json`` has no rank field. So the only
+    honest signals are ones this repo already states:
+
+    1. ``campaign``: is the row named in CURRENT-CAMPAIGN.md (2 = newest block, 1 = older)?
+       The campaign file is the operator-facing record of what is being worked now.
+    2. ``unblocks``: how many rows with open work are (transitively) gated by this row via
+       ``dep`` edges. Finishing it frees that many.
+    Sort key, high to low: has open work, campaign tier, unblocks, ready-before-blocked.
+    A row with no open work is always lowest. This is an ordering, not a score: the
+    percentile only spreads it over the colour ramp."""
+    open_by_id = {n["id"]: n.get("open", 0) for n in nodes}
+    dependents: dict[str, set[str]] = {}
+    for e in edges:
+        if e.get("kind") == "dep":
+            dependents.setdefault(e["to"], set()).add(e["from"])
+    tiers = _campaign_tiers(nodes, campaign_text)
+    keys: dict[str, tuple] = {}
+    for n in nodes:
+        seen: set[str] = set()
+        stack = list(dependents.get(n["id"], ()))
+        while stack:
+            d = stack.pop()
+            if d in seen or d == n["id"]:
+                continue
+            seen.add(d)
+            stack.extend(dependents.get(d, ()))
+        unblocks = sum(1 for d in seen if open_by_id.get(d, 0) > 0)
+        n["priority_basis"] = {"campaign": tiers[n["id"]], "unblocks": unblocks}
+        keys[n["id"]] = (1 if n.get("open", 0) > 0 else 0, tiers[n["id"]], unblocks,
+                         1 if n.get("readiness") == "ready" else 0)
+    ordered = sorted(keys.values())
+    total = len(nodes)
+    first: dict[tuple, int] = {}
+    last: dict[tuple, int] = {}
+    for i, k in enumerate(ordered):
+        first.setdefault(k, i)
+        last[k] = i
+    for n in nodes:
+        k = keys[n["id"]]
+        mid = (first[k] + last[k]) / 2
+        n["priority"] = round(mid / (total - 1), 4) if total > 1 else 1.0
+        n["priority_rank"] = total - last[k]          # 1 = highest; ties share the best rank
+    return {"campaign_tiers": sum(1 for v in tiers.values() if v),
+            "campaign_newest": sum(1 for v in tiers.values() if v == 2)}
+
+
 def build_graph(state: dict) -> dict:
     """Node/edge view of the backlog for the dashboard's graph panel.
 
@@ -605,6 +674,11 @@ def build_graph(state: dict) -> dict:
         edges.append({"from": src, "to": dst, "kind": "ref", "weight": weight})
 
     readiness = derive_readiness(nodes, edges)
+    try:
+        campaign_text = (ACTIVE / "CURRENT-CAMPAIGN.md").read_text(encoding="utf-8", errors="replace")
+    except OSError:
+        campaign_text = ""
+    prio = derive_priority(nodes, edges, campaign_text)
 
     return {
         "schema": "index_graph.v2",
@@ -625,6 +699,13 @@ def build_graph(state: dict) -> dict:
                        "that 'done' would assert a completion the counts do not support",
         },
         "readiness_counts": readiness,
+        "priority_basis": {
+            "method": "derived (no authored priority field exists)",
+            "order": "has open work > CURRENT-CAMPAIGN.md membership (2 newest block, 1 older) "
+                     "> rows transitively gated via dep edges > ready before blocked",
+            "priority": "0.0 lowest .. 1.0 highest, mid-rank percentile; priority_rank 1 = highest",
+            **prio,
+        },
     }
 
 
