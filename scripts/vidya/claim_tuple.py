@@ -137,6 +137,9 @@ APPLICABILITY_KEYS = frozenset({
     # set it held fixed (`knobs`), the knob(s) its arms change (`varied`), and an AutoPilot
     # trial's role -> model_file map. All native declarations; inert to grading.
     "knob_family", "knobs", "varied", "role_models",
+    # serving-floor key (VB-FLOOR-REGISTRY-WIRE): native declarations of the floor registry entry; inert to grading.
+    "equivalence_key", "recipe_hash", "request_digest", "model_sha", "numerics_epoch", "claim_class",
+    "threads", "co_tenancy",
 })
 # `native`: every scope key came from the record itself. `store_manifest`: the record carries no
 # scope of its own and the store's manifest pinned it (the SOURCE_SCOPES basis, §3.1).
@@ -355,6 +358,8 @@ class ClaimTuple:
                 valid = isinstance(value, str) and _GIT_SHA.fullmatch(value) is not None
             elif name == "scope_basis":
                 valid = value in SCOPE_BASES
+            elif name == "threads":
+                valid = type(value) is int and value > 0
             elif name == "knob_family":
                 valid = (isinstance(value, str) and bool(value.strip())) or (
                     isinstance(value, list) and bool(value) and len(value) == len(set(value))
