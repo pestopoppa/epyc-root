@@ -1,0 +1,7 @@
+{
+  "gate_id": "RATIFY-CTXCKPT-HYBRID-20261024",
+  "indexed_by": "attest",
+  "receipt": "artifacts/operator/ratify_ctx_checkpoints_hybrid_20261024.receipt.json",
+  "schema_version": "session_bus.receipt_index.v1",
+  "status": "ratified"
+}
