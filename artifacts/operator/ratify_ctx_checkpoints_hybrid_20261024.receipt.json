@@ -1,0 +1,55 @@
+{
+  "argv_proof": "artifacts/operator/ratify-ctxckpt-hybrid-20261024/landing_argv_diff.txt",
+  "branch": "ratify/ctx-checkpoints-hybrid-20261024",
+  "decision": "--ctx-checkpoints 32 DECLARED on every hybrid serving role (server_mode.frontdoor, architect_critic, architect_general; gated-delta-net/SSM models) instead of inherited from the llama-server default. Equals the v10 default: behaviour unchanged. Evidence KPF-64.4; policy docs/design/ufh14-b4-prefix-cache-policy-20261003.md section 3.7.",
+  "effective": "behaviour: unchanged (32 == kernel default). Flag appears in each hybrid server's live argv at its next ordinary reload by its owning session; none performed by this script.",
+  "human_attestation": "RATIFY-CTXCKPT-HYBRID-20261024",
+  "hybrid_launch_targets": [
+    "frontdoor@8070",
+    "frontdoor@8080",
+    "frontdoor@8180",
+    "architect_general@8074",
+    "architect_critic@8083"
+  ],
+  "landed": {
+    "epyc-inference-research": {
+      "commit": "(landed before this run)",
+      "ref": "origin/main"
+    },
+    "epyc-orchestrator": {
+      "commit": "(landed before this run)",
+      "landing_regen_commit": "41c9731b2f7af07d2dbc125fdf286f056438a8d4",
+      "ref": "origin/main"
+    },
+    "epyc-root": {
+      "commit": "the commit carrying this receipt",
+      "ref": "origin/main"
+    }
+  },
+  "package": "artifacts/operator/ratify-ctxckpt-hybrid-20261024/PACKAGE.md",
+  "package_sha256": "eee33a847071948a120e583e26573d0dd9705d75051c5ca855a05aaa6bd1fb93",
+  "pinned_commits": {
+    "epyc-inference-research": "7e201b50efd66899a55aac98149e7238c5eed5a8",
+    "epyc-orchestrator": "aeb077cda08ce7ba6d9a92ce5a2717c9ae78fd03"
+  },
+  "pinned_sha256": {
+    "artifacts/operator/ratify-ctxckpt-hybrid-20261024/argv_after.json": "2edc2c1df296cde7170ccd656d9f97aadaffce398e08fc466f96959fce8524b6",
+    "artifacts/operator/ratify-ctxckpt-hybrid-20261024/argv_before.json": "36de55dc85e275ca69db2945a33e64103ad469f183060ef46a51a71cbb0b618e",
+    "artifacts/operator/ratify-ctxckpt-hybrid-20261024/argv_diff.txt": "14e0d478ebcffce46f8616320c1ad9a91f1f4dde86f7da5cf9b71682b0387d7f",
+    "artifacts/operator/ratify-ctxckpt-hybrid-20261024/gguf_arch.txt": "2ba83d6d482abaf500ac86dee265c84ad1465bd52b6c798f4661a9ca0fd8fa3b"
+  },
+  "pre_landing_origin_main": {
+    "epyc-inference-research": "5baae2367f885ece4325887ed2989915c164cf0f",
+    "epyc-orchestrator": "17db9a6ba89728af820cb8d14360cb0abc0253ae"
+  },
+  "ratify_script_sha256": "f07f61a5e9d4a48608a860ea49a3adf7b2efd8f365e4cc55db3f191a61c53556",
+  "reloads_performed": [],
+  "schema": "epyc.operator_receipt.v1",
+  "signature_channel": "operator-run script (--attest typed confirmation)",
+  "signed_at": "2026-10-24T14:04:52.870941+00:00",
+  "signed_by": "pestopoppa",
+  "signed_by_uid": 1000,
+  "status": "ratified",
+  "tests": "266 passed, 1 warning in 88.02s (0:01:28)",
+  "token": "RATIFY-CTXCKPT-HYBRID-20261024"
+}

@@ -1,0 +1,20 @@
+  + --ctx-checkpoints 32 ONLY  architect_critic@8083                arch=qwen35
+  + --ctx-checkpoints 32 ONLY  architect_general@8074               arch=qwen4exp
+  byte-identical               embedder@8090                        arch=bert
+  byte-identical               embedder_1@8091                      arch=bert
+  byte-identical               embedder_2@8092                      arch=bert
+  byte-identical               embedder_3@8093                      arch=bert
+  byte-identical               embedder_4@8094                      arch=bert
+  byte-identical               embedder_5@8095                      arch=bert
+  byte-identical               embedder_bge_m3@8098                 arch=bert
+  byte-identical               embedder_granite_97m_r2@8096         arch=modern-bert
+  byte-identical               embedder_multilingual_e5_base@8097   arch=bert
+  byte-identical               eval_batch_frontdoor@18070           arch=None
+  + --ctx-checkpoints 32 ONLY  frontdoor@8070                       arch=qwen35moe
+  + --ctx-checkpoints 32 ONLY  frontdoor@8080                       arch=qwen35moe
+  + --ctx-checkpoints 32 ONLY  frontdoor@8180                       arch=qwen35moe
+  byte-identical               speech:tts                           arch=None
+  byte-identical               speech:whisper                       arch=None
+  byte-identical               worker_fast@8102                     arch=qwen2
+  byte-identical               worker_vision@8086                   arch=qwen3vlmoe
+ARGV CHECK OK: 5 hybrid targets gain exactly --ctx-checkpoints 32; every other target byte-identical; hybrid set == GGUF-hybrid set
