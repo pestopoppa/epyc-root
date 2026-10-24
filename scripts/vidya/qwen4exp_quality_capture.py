@@ -532,6 +532,61 @@ def atomic_json(path: Path, record: dict[str, Any]) -> None:
         os.close(parent)
 
 
+def loaded_objects_from_seen(seen_so: dict[tuple, dict[str, Any]]) -> list[dict[str, Any]]:
+    """Seal the monitor_maps observations into per-object custody rows (shared by every capture mode)."""
+    loaded: list[dict[str, Any]] = []
+    for map_key, observed in sorted(seen_so.items(), key=lambda x: repr(x[0])):
+        raw_path, dev_major, dev_minor, map_inode, deleted = map_key
+        row = {
+            "path": raw_path,
+            "identity_state": "unknown",
+            "mapping_observation": {
+                "first": observed["mapping_first"], "latest": observed["mapping_latest"],
+                "sample_count": observed["mapping_sample_count"],
+                "sample_basis": "distinct maps snapshots containing this path/device/inode/deleted identity",
+                "deleted_mapping_observed": observed["deleted_mapping_observed"],
+            },
+            "live_identity_observation": {
+                "first": observed["live_first"], "latest": observed["live_latest"],
+                "sample_count": observed["live_hash_sample_count"],
+                "sample_basis": "successful stable same-inode content hash observations while child was live",
+                "identity_change_observation_count": observed["identity_change_observation_count"],
+                "first_changed_identity": observed["first_changed_identity"],
+                "error_observed": observed["live_identity_error"] is not None,
+            },
+            "compiled_knob_evidence": {"state": "unknown"},
+        }
+        if observed.get("live_identity_error"):
+            row["identity_error"] = observed["live_identity_error"]
+        live_first = observed["live_first"]
+        live_latest = observed["live_latest"]
+        if deleted or observed["deleted_mapping_observed"] or raw_path.endswith(" (deleted)"):
+            row["identity_error"] = "mapped object is deleted; replacement path is not evidence"
+        elif observed["live_identity_error"]:
+            pass
+        elif not live_latest:
+            row["identity_error"] = "no same-inode content hash was captured while child was live"
+        elif observed["identity_change_observation_count"]:
+            row["identity_error"] = "loaded object content identity changed during measured process"
+        else:
+            so = Path(raw_path)
+            try:
+                ident, evidence = compiled_knob_evidence(so)
+                if live_first["identity"] != live_latest["identity"] or ident != live_latest["identity"]:
+                    raise ValueError("loaded object changed between live samples and sealed read")
+                if (ident["inode"] != map_inode or os.major(ident["device"]) != dev_major or
+                        os.minor(ident["device"]) != dev_minor):
+                    raise ValueError("sealed library path does not name mapped device/inode")
+                row["after"] = ident
+                row["identity_state"] = "matched"
+                row["compiled_knob_evidence"] = {
+                    **evidence, "state": "present" if evidence["found_exact"] else "absent"}
+            except (OSError, ValueError) as exc:
+                row["identity_error"] = str(exc)
+        loaded.append(row)
+    return loaded
+
+
 def parse_env(pairs: list[str]) -> dict[str, str]:
     env = dict(os.environ)
     for pair in pairs:
@@ -544,7 +599,26 @@ def parse_env(pairs: list[str]) -> dict[str, str]:
     return env
 
 
+def _strip_mode(argv: list[str]) -> list[str]:
+    out, skip = [], False
+    for i, a in enumerate(argv):
+        if skip:
+            skip = False
+        elif a == "--mode":
+            skip = True
+        elif a != "--mode=weight-handoff":
+            out.append(a)
+    return out
+
+
 def main() -> int:
+    # VB-NEW13-WIRE: --mode weight-handoff wraps llama-weight-handoff; its own receipt contract lives in
+    # weight_handoff_capture.py (docstring there carries the exact C-L3 call line). Additive dispatch only.
+    _argv = sys.argv[1:]
+    if "--mode=weight-handoff" in _argv or any(a == "--mode" and i + 1 < len(_argv) and _argv[i + 1] == "weight-handoff"
+                                              for i, a in enumerate(_argv)):
+        import weight_handoff_capture
+        return weight_handoff_capture.main(_strip_mode(_argv))
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--run-id", required=True)
     ap.add_argument("--pair-id", required=True,
@@ -756,56 +830,7 @@ def main() -> int:
             refusal_message = ""
     else:
         refusal_message = ""
-    loaded: list[dict[str, Any]] = []
-    for map_key, observed in sorted(seen_so.items(), key=lambda x: repr(x[0])):
-        raw_path, dev_major, dev_minor, map_inode, deleted = map_key
-        row = {
-            "path": raw_path,
-            "identity_state": "unknown",
-            "mapping_observation": {
-                "first": observed["mapping_first"], "latest": observed["mapping_latest"],
-                "sample_count": observed["mapping_sample_count"],
-                "sample_basis": "distinct maps snapshots containing this path/device/inode/deleted identity",
-                "deleted_mapping_observed": observed["deleted_mapping_observed"],
-            },
-            "live_identity_observation": {
-                "first": observed["live_first"], "latest": observed["live_latest"],
-                "sample_count": observed["live_hash_sample_count"],
-                "sample_basis": "successful stable same-inode content hash observations while child was live",
-                "identity_change_observation_count": observed["identity_change_observation_count"],
-                "first_changed_identity": observed["first_changed_identity"],
-                "error_observed": observed["live_identity_error"] is not None,
-            },
-            "compiled_knob_evidence": {"state": "unknown"},
-        }
-        if observed.get("live_identity_error"):
-            row["identity_error"] = observed["live_identity_error"]
-        live_first = observed["live_first"]
-        live_latest = observed["live_latest"]
-        if deleted or observed["deleted_mapping_observed"] or raw_path.endswith(" (deleted)"):
-            row["identity_error"] = "mapped object is deleted; replacement path is not evidence"
-        elif observed["live_identity_error"]:
-            pass
-        elif not live_latest:
-            row["identity_error"] = "no same-inode content hash was captured while child was live"
-        elif observed["identity_change_observation_count"]:
-            row["identity_error"] = "loaded object content identity changed during measured process"
-        else:
-            so = Path(raw_path)
-            try:
-                ident, evidence = compiled_knob_evidence(so)
-                if live_first["identity"] != live_latest["identity"] or ident != live_latest["identity"]:
-                    raise ValueError("loaded object changed between live samples and sealed read")
-                if (ident["inode"] != map_inode or os.major(ident["device"]) != dev_major or
-                        os.minor(ident["device"]) != dev_minor):
-                    raise ValueError("sealed library path does not name mapped device/inode")
-                row["after"] = ident
-                row["identity_state"] = "matched"
-                row["compiled_knob_evidence"] = {
-                    **evidence, "state": "present" if evidence["found_exact"] else "absent"}
-            except (OSError, ValueError) as exc:
-                row["identity_error"] = str(exc)
-        loaded.append(row)
+    loaded = loaded_objects_from_seen(seen_so)
     spec_after = file_identity(a.metric_spec)
     metrics: list[dict[str, Any]] = []
     native_window: dict[str, Any] = {}

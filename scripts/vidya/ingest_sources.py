@@ -471,6 +471,27 @@ SOURCES: dict[str, Source] = {s.name: s for s in (
                 "self-hash + re-derived escapes) and the pre-hook diag/probe task dumps "
                 "(retrofit, no binary sha256); a reading with no readable task declines",
            task="VB-LAUNCH-AFFINITY-WIRE"),
+    Source("fused-decode-div", "fused_decode_div",
+           lambda p: importlib.import_module("adapters.fused_decode_div").units(p),
+           note="FD-DIV-1a epyc.fd_div_1a.smoke_receipt.v1 (one claim per decided smoke, byte identity "
+                "test vs ref re-derived; the v10 fused-ON abort rides as S1's defect control) and "
+                "FD-DIV-1b epyc.fd_div_1b.result.v1 (one claim per fixture cell, class re-derived); "
+                "skipped smokes and void controls decline; decode ms/token is observation only",
+           task="VB-FUSED-DECODE-DIV-WIRE"),
+    Source("calendar-overrun", "calendar_overrun",
+           lambda p: importlib.import_module("adapters.calendar_overrun").units(p),
+           note="compute-calendar grants/<id>.ended with appended key=value lines (estimated_wall_s, actual_wall_s|started, job_id, owner, step, regions, co_residents, np, ctx); ratio actual/estimated re-derived, hard-end rc 124/125/143 marked censored; legacy .ended with no estimate declines",
+           task="VB-CAL-OVERRUN-WIRE"),
+    Source("floor-registry", "floor_registry",
+           lambda p: importlib.import_module("adapters.floor_registry").units(p),
+           note="serving_floors: section of the research MASTER model_registry.yaml (one BASELINE per entry: "
+                "v1 reuses autokernel_serving_floor, v2 value=floor_pct reps=n unit=process; sealed "
+                "record_sha256 re-derived, mismatch refuses; claim_class=indicative refused as "
+                "decision-gating)",
+           task="VB-FLOOR-REGISTRY-WIRE"),
+    Source("weight-handoff", "weight_handoff", _files("*.weight-handoff.json", "**/*.weight-handoff.json"),
+           task="VB-NEW13-WIRE",
+           note="prospective captured llama-weight-handoff receipts only; per-arm KLD, R with paired-bootstrap CI and Gate 0 re-derived from kld.jsonl; NEW-13 v0 receipt never backfilled"),
     Source("tale-budget", "tale_budget",
            _files("*.beliefs.jsonl", "**/*.beliefs.jsonl"),
            note="PRB-T4 `prb_t4_tale_gpu.py --out` dirs (`<results>.beliefs.jsonl` beside each "

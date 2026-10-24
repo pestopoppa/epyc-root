@@ -292,7 +292,9 @@ def test_every_source_has_an_end_to_end_fixture_or_a_named_exemption():
         # Strict re-derivation over the real U4-NOISE-1 sessions, tamper refusals on a tmp copy and the
         # CLI dispatch count: test_gpu_cpu_noise_adapter.py. v1 readings + pre-hook dumps, refusals and the
         # real STACKCHG-GPUPIN evidence dispatch: test_launch_affinity_adapter.py.
-        "gpu-cpu-noise", "launch-affinity",
+        # FD-DIV-1a/1b strict re-derivation + real receipts: test_fused_decode_div_adapter.py.
+        "gpu-cpu-noise", "launch-affinity", "fused-decode-div",
+        "calendar-overrun", "floor-registry", "weight-handoff",
         # Exact producer pin + 9-shard binding refusal: test_ds41_1017_validation_adapter.py.
         "ds41-1017-validation",
         # Actual prospective DTAP producer/private CLI: test_dtap_timeout_report.py.

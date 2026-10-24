@@ -82,6 +82,7 @@ EXEMPT = {
                                            "the adapter re-hashes it live and refuses a different script",
     ("oolong", "VENDORED_SHA256"): "vendored upstream file, pinned on purpose",
     ("qwen4exp_quality", "READER_SHA256"): "in-tree reader (this repo), changes ride with the adapter commit",
+    ("weight_handoff", "READER_SHA256"): "in-tree reader (this repo), changes ride with the adapter commit",
     ("dtap_timeout_report", "REGISTRY_SHA"): "registry digest of a captured run, not a file on main",
     ("dtap_timeout_report", "PRODUCERS"): "allow-list of the harness copies a captured run carries; the reader "
                                           "compares the run's own bytes, never main's",

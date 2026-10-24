@@ -590,7 +590,7 @@ _FILE_SOURCES = (
     "hil17-attribution-ladder", "hil-lb1-loop-score",
     "ak-width-dimension", "ak-width-cells-cpu",
     "moe-routing",
-    "gpu-cpu-noise", "launch-affinity", "q38-serving-gate",
+    "gpu-cpu-noise", "launch-affinity", "q38-serving-gate", "fused-decode-div", "calendar-overrun", "floor-registry", "weight-handoff",
 )
 
 
