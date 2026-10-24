@@ -243,6 +243,7 @@ BUILDERS = {
     "gpu-leak-probe": lambda tmp: _helpers("test_gpu_leak_probe").write(tmp),
     "v11-oracle-rerun": lambda tmp: _helpers("test_v11_oracle_rerun").write(tmp),
     "ds41-w5d": lambda tmp: _helpers("test_ds41_w5d").write(tmp),
+    "akx-lb32": lambda tmp: _helpers("test_akx_lb32_adapter").write(tmp),
     "repl-embedder-parity": lambda tmp: _helpers("test_repl_embedder_parity").write(tmp),
     "q38-serving-gate": lambda tmp: _helpers("test_q38_serving_gate").write(tmp),
     "clbench-cache-hit": lambda tmp: _helpers("test_clbench_cache_hit").write(tmp),

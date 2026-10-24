@@ -395,6 +395,12 @@ SOURCES: dict[str, Source] = {s.name: s for s in (
                 "non-finite count re-derived from the recorded per-item cosines, gate verdict re-derived, "
                 "OBSERVATION only; vector parity, no recall or speed claim; 2026-10-20 results stay retrospective",
            task="VB-UFH12-PARITY"),
+    Source("akx-lb32", "akx_lb32",
+           _files("akx_lb32.beliefs.jsonl", "*/akx_lb32.beliefs.jsonl"),
+           note="AKX-ALL-LB3.2 Q38FN attribution run: FA node-wall share F(N) of the 64k step per (threads, N) and the "
+                "predeclared verdict/seed class, re-derived from the row's own F / max F / max S; VERDICT.json and the "
+                "frozen PREDECLARATION are attested; INVALID never projects; OBSERVATION only",
+           task="VB-AKX-LB32-WRITE"),
     Source("ds41-w5d", "ds41_w5d",
            _files("ds41_w5d.beliefs.jsonl", "*/ds41_w5d.beliefs.jsonl"),
            note="DS41-W5d 1017 llama-bench baseline + MUL_MAT_ID pp512 ratio, re-derived from the recorded "

@@ -1,0 +1,476 @@
+{
+ "item": "akx-lb3-2-attribution",
+ "gating": {
+  "rule": "PREDECLARATION.md (LB3.2)",
+  "thresholds": {
+   "F": 0.1,
+   "S": 0.1,
+   "overhead": 0.05,
+   "coverage_defect": 0.1,
+   "min_reps": 8
+  },
+  "cells": {
+   "1": {
+    "S_depth_share": 0.5,
+    "S_M_depth_share": 0.5,
+    "overhead_d512": 0.01,
+    "overhead_d64k": 0.01,
+    "t_ms": {
+     "G_d512": 50.0,
+     "G_d64k": 100.0,
+     "M_d512": 50.5,
+     "M_d64k": 101.0
+    },
+    "F_fa_wall_share": 0.06,
+    "reps_used_d64k": 10,
+    "coverage_defect_d64k": 0.02,
+    "class_share_d64k": {
+     "host:apply_ubatch": 0.0001,
+     "host:build_alloc": 0.0002,
+     "host:graph_overhead": 0.0,
+     "host:unattributed": 0.0,
+     "node:fa": 0.06,
+     "node:mask_build": 0.2,
+     "node:matmul": 0.3,
+     "node:solo_runs": 0.0
+    },
+    "class_depth_delta_share": {
+     "host:apply_ubatch": 0.0,
+     "host:build_alloc": 0.0,
+     "host:graph_overhead": 0.0,
+     "host:unattributed": 0.0,
+     "node:fa": 0.05,
+     "node:mask_build": 0.195,
+     "node:matmul": 0.15,
+     "node:solo_runs": 0.0
+    }
+   },
+   "2": {
+    "S_depth_share": 0.5,
+    "S_M_depth_share": 0.5,
+    "overhead_d512": 0.01,
+    "overhead_d64k": 0.01,
+    "t_ms": {
+     "G_d512": 50.0,
+     "G_d64k": 100.0,
+     "M_d512": 50.5,
+     "M_d64k": 101.0
+    },
+    "F_fa_wall_share": 0.06,
+    "reps_used_d64k": 10,
+    "coverage_defect_d64k": 0.02,
+    "class_share_d64k": {
+     "host:apply_ubatch": 0.0001,
+     "host:build_alloc": 0.0002,
+     "host:graph_overhead": 0.0,
+     "host:unattributed": 0.0,
+     "node:fa": 0.06,
+     "node:mask_build": 0.2,
+     "node:matmul": 0.3,
+     "node:solo_runs": 0.0
+    },
+    "class_depth_delta_share": {
+     "host:apply_ubatch": 0.0,
+     "host:build_alloc": 0.0,
+     "host:graph_overhead": 0.0,
+     "host:unattributed": 0.0,
+     "node:fa": 0.05,
+     "node:mask_build": 0.195,
+     "node:matmul": 0.15,
+     "node:solo_runs": 0.0
+    }
+   },
+   "3": {
+    "S_depth_share": 0.5,
+    "S_M_depth_share": 0.5,
+    "overhead_d512": 0.01,
+    "overhead_d64k": 0.01,
+    "t_ms": {
+     "G_d512": 50.0,
+     "G_d64k": 100.0,
+     "M_d512": 50.5,
+     "M_d64k": 101.0
+    },
+    "F_fa_wall_share": 0.06,
+    "reps_used_d64k": 10,
+    "coverage_defect_d64k": 0.02,
+    "class_share_d64k": {
+     "host:apply_ubatch": 0.0001,
+     "host:build_alloc": 0.0002,
+     "host:graph_overhead": 0.0,
+     "host:unattributed": 0.0,
+     "node:fa": 0.06,
+     "node:mask_build": 0.2,
+     "node:matmul": 0.3,
+     "node:solo_runs": 0.0
+    },
+    "class_depth_delta_share": {
+     "host:apply_ubatch": 0.0,
+     "host:build_alloc": 0.0,
+     "host:graph_overhead": 0.0,
+     "host:unattributed": 0.0,
+     "node:fa": 0.05,
+     "node:mask_build": 0.195,
+     "node:matmul": 0.15,
+     "node:solo_runs": 0.0
+    }
+   },
+   "4": {
+    "S_depth_share": 0.5,
+    "S_M_depth_share": 0.5,
+    "overhead_d512": 0.01,
+    "overhead_d64k": 0.01,
+    "t_ms": {
+     "G_d512": 50.0,
+     "G_d64k": 100.0,
+     "M_d512": 50.5,
+     "M_d64k": 101.0
+    },
+    "F_fa_wall_share": 0.06,
+    "reps_used_d64k": 10,
+    "coverage_defect_d64k": 0.02,
+    "class_share_d64k": {
+     "host:apply_ubatch": 0.0001,
+     "host:build_alloc": 0.0002,
+     "host:graph_overhead": 0.0,
+     "host:unattributed": 0.0,
+     "node:fa": 0.06,
+     "node:mask_build": 0.2,
+     "node:matmul": 0.3,
+     "node:solo_runs": 0.0
+    },
+    "class_depth_delta_share": {
+     "host:apply_ubatch": 0.0,
+     "host:build_alloc": 0.0,
+     "host:graph_overhead": 0.0,
+     "host:unattributed": 0.0,
+     "node:fa": 0.05,
+     "node:mask_build": 0.195,
+     "node:matmul": 0.15,
+     "node:solo_runs": 0.0
+    }
+   },
+   "5": {
+    "S_depth_share": 0.5,
+    "S_M_depth_share": 0.5,
+    "overhead_d512": 0.01,
+    "overhead_d64k": 0.01,
+    "t_ms": {
+     "G_d512": 50.0,
+     "G_d64k": 100.0,
+     "M_d512": 50.5,
+     "M_d64k": 101.0
+    },
+    "F_fa_wall_share": 0.06,
+    "reps_used_d64k": 10,
+    "coverage_defect_d64k": 0.02,
+    "class_share_d64k": {
+     "host:apply_ubatch": 0.0001,
+     "host:build_alloc": 0.0002,
+     "host:graph_overhead": 0.0,
+     "host:unattributed": 0.0,
+     "node:fa": 0.06,
+     "node:mask_build": 0.2,
+     "node:matmul": 0.3,
+     "node:solo_runs": 0.0
+    },
+    "class_depth_delta_share": {
+     "host:apply_ubatch": 0.0,
+     "host:build_alloc": 0.0,
+     "host:graph_overhead": 0.0,
+     "host:unattributed": 0.0,
+     "node:fa": 0.05,
+     "node:mask_build": 0.195,
+     "node:matmul": 0.15,
+     "node:solo_runs": 0.0
+    }
+   },
+   "8": {
+    "S_depth_share": 0.5,
+    "S_M_depth_share": 0.5,
+    "overhead_d512": 0.01,
+    "overhead_d64k": 0.01,
+    "t_ms": {
+     "G_d512": 50.0,
+     "G_d64k": 100.0,
+     "M_d512": 50.5,
+     "M_d64k": 101.0
+    },
+    "F_fa_wall_share": 0.06,
+    "reps_used_d64k": 10,
+    "coverage_defect_d64k": 0.02,
+    "class_share_d64k": {
+     "host:apply_ubatch": 0.0001,
+     "host:build_alloc": 0.0002,
+     "host:graph_overhead": 0.0,
+     "host:unattributed": 0.0,
+     "node:fa": 0.06,
+     "node:mask_build": 0.2,
+     "node:matmul": 0.3,
+     "node:solo_runs": 0.0
+    },
+    "class_depth_delta_share": {
+     "host:apply_ubatch": 0.0,
+     "host:build_alloc": 0.0,
+     "host:graph_overhead": 0.0,
+     "host:unattributed": 0.0,
+     "node:fa": 0.05,
+     "node:mask_build": 0.195,
+     "node:matmul": 0.15,
+     "node:solo_runs": 0.0
+    }
+   }
+  },
+  "max_F_N2to5": 0.06,
+  "max_S_N2to5": 0.5,
+  "mean_depth_delta_share_N2to5": {
+   "host:apply_ubatch": 0.0,
+   "host:build_alloc": 0.0,
+   "host:graph_overhead": 0.0,
+   "host:unattributed": 0.0,
+   "node:fa": 0.05,
+   "node:mask_build": 0.195,
+   "node:matmul": 0.15,
+   "node:solo_runs": 0.0
+  },
+  "seed_class": "node:mask_build",
+  "verdict": "SPLIT_UNRESOLVED"
+ },
+ "verdict": "SPLIT_UNRESOLVED",
+ "reported_t96": {
+  "rule": "PREDECLARATION.md (LB3.2)",
+  "thresholds": {
+   "F": 0.1,
+   "S": 0.1,
+   "overhead": 0.05,
+   "coverage_defect": 0.1,
+   "min_reps": 8
+  },
+  "cells": {
+   "1": {
+    "S_depth_share": 0.5,
+    "S_M_depth_share": 0.5,
+    "overhead_d512": 0.01,
+    "overhead_d64k": 0.01,
+    "t_ms": {
+     "G_d512": 50.0,
+     "G_d64k": 100.0,
+     "M_d512": 50.5,
+     "M_d64k": 101.0
+    },
+    "F_fa_wall_share": 0.07,
+    "reps_used_d64k": 10,
+    "coverage_defect_d64k": 0.02,
+    "class_share_d64k": {
+     "host:apply_ubatch": 0.0001,
+     "host:build_alloc": 0.0002,
+     "host:graph_overhead": 0.0,
+     "host:unattributed": 0.0,
+     "node:fa": 0.07,
+     "node:mask_build": 0.2,
+     "node:matmul": 0.3,
+     "node:solo_runs": 0.0
+    },
+    "class_depth_delta_share": {
+     "host:apply_ubatch": 0.0,
+     "host:build_alloc": 0.0,
+     "host:graph_overhead": 0.0,
+     "host:unattributed": 0.0,
+     "node:fa": 0.06,
+     "node:mask_build": 0.195,
+     "node:matmul": 0.15,
+     "node:solo_runs": 0.0
+    }
+   },
+   "2": {
+    "S_depth_share": 0.5,
+    "S_M_depth_share": 0.5,
+    "overhead_d512": 0.01,
+    "overhead_d64k": 0.01,
+    "t_ms": {
+     "G_d512": 50.0,
+     "G_d64k": 100.0,
+     "M_d512": 50.5,
+     "M_d64k": 101.0
+    },
+    "F_fa_wall_share": 0.07,
+    "reps_used_d64k": 10,
+    "coverage_defect_d64k": 0.02,
+    "class_share_d64k": {
+     "host:apply_ubatch": 0.0001,
+     "host:build_alloc": 0.0002,
+     "host:graph_overhead": 0.0,
+     "host:unattributed": 0.0,
+     "node:fa": 0.07,
+     "node:mask_build": 0.2,
+     "node:matmul": 0.3,
+     "node:solo_runs": 0.0
+    },
+    "class_depth_delta_share": {
+     "host:apply_ubatch": 0.0,
+     "host:build_alloc": 0.0,
+     "host:graph_overhead": 0.0,
+     "host:unattributed": 0.0,
+     "node:fa": 0.06,
+     "node:mask_build": 0.195,
+     "node:matmul": 0.15,
+     "node:solo_runs": 0.0
+    }
+   },
+   "3": {
+    "S_depth_share": 0.5,
+    "S_M_depth_share": 0.5,
+    "overhead_d512": 0.01,
+    "overhead_d64k": 0.01,
+    "t_ms": {
+     "G_d512": 50.0,
+     "G_d64k": 100.0,
+     "M_d512": 50.5,
+     "M_d64k": 101.0
+    },
+    "F_fa_wall_share": 0.07,
+    "reps_used_d64k": 10,
+    "coverage_defect_d64k": 0.02,
+    "class_share_d64k": {
+     "host:apply_ubatch": 0.0001,
+     "host:build_alloc": 0.0002,
+     "host:graph_overhead": 0.0,
+     "host:unattributed": 0.0,
+     "node:fa": 0.07,
+     "node:mask_build": 0.2,
+     "node:matmul": 0.3,
+     "node:solo_runs": 0.0
+    },
+    "class_depth_delta_share": {
+     "host:apply_ubatch": 0.0,
+     "host:build_alloc": 0.0,
+     "host:graph_overhead": 0.0,
+     "host:unattributed": 0.0,
+     "node:fa": 0.06,
+     "node:mask_build": 0.195,
+     "node:matmul": 0.15,
+     "node:solo_runs": 0.0
+    }
+   },
+   "4": {
+    "S_depth_share": 0.5,
+    "S_M_depth_share": 0.5,
+    "overhead_d512": 0.01,
+    "overhead_d64k": 0.01,
+    "t_ms": {
+     "G_d512": 50.0,
+     "G_d64k": 100.0,
+     "M_d512": 50.5,
+     "M_d64k": 101.0
+    },
+    "F_fa_wall_share": 0.07,
+    "reps_used_d64k": 10,
+    "coverage_defect_d64k": 0.02,
+    "class_share_d64k": {
+     "host:apply_ubatch": 0.0001,
+     "host:build_alloc": 0.0002,
+     "host:graph_overhead": 0.0,
+     "host:unattributed": 0.0,
+     "node:fa": 0.07,
+     "node:mask_build": 0.2,
+     "node:matmul": 0.3,
+     "node:solo_runs": 0.0
+    },
+    "class_depth_delta_share": {
+     "host:apply_ubatch": 0.0,
+     "host:build_alloc": 0.0,
+     "host:graph_overhead": 0.0,
+     "host:unattributed": 0.0,
+     "node:fa": 0.06,
+     "node:mask_build": 0.195,
+     "node:matmul": 0.15,
+     "node:solo_runs": 0.0
+    }
+   },
+   "5": {
+    "S_depth_share": 0.5,
+    "S_M_depth_share": 0.5,
+    "overhead_d512": 0.01,
+    "overhead_d64k": 0.01,
+    "t_ms": {
+     "G_d512": 50.0,
+     "G_d64k": 100.0,
+     "M_d512": 50.5,
+     "M_d64k": 101.0
+    },
+    "F_fa_wall_share": 0.07,
+    "reps_used_d64k": 10,
+    "coverage_defect_d64k": 0.02,
+    "class_share_d64k": {
+     "host:apply_ubatch": 0.0001,
+     "host:build_alloc": 0.0002,
+     "host:graph_overhead": 0.0,
+     "host:unattributed": 0.0,
+     "node:fa": 0.07,
+     "node:mask_build": 0.2,
+     "node:matmul": 0.3,
+     "node:solo_runs": 0.0
+    },
+    "class_depth_delta_share": {
+     "host:apply_ubatch": 0.0,
+     "host:build_alloc": 0.0,
+     "host:graph_overhead": 0.0,
+     "host:unattributed": 0.0,
+     "node:fa": 0.06,
+     "node:mask_build": 0.195,
+     "node:matmul": 0.15,
+     "node:solo_runs": 0.0
+    }
+   },
+   "8": {
+    "S_depth_share": 0.5,
+    "S_M_depth_share": 0.5,
+    "overhead_d512": 0.01,
+    "overhead_d64k": 0.01,
+    "t_ms": {
+     "G_d512": 50.0,
+     "G_d64k": 100.0,
+     "M_d512": 50.5,
+     "M_d64k": 101.0
+    },
+    "F_fa_wall_share": 0.07,
+    "reps_used_d64k": 10,
+    "coverage_defect_d64k": 0.02,
+    "class_share_d64k": {
+     "host:apply_ubatch": 0.0001,
+     "host:build_alloc": 0.0002,
+     "host:graph_overhead": 0.0,
+     "host:unattributed": 0.0,
+     "node:fa": 0.07,
+     "node:mask_build": 0.2,
+     "node:matmul": 0.3,
+     "node:solo_runs": 0.0
+    },
+    "class_depth_delta_share": {
+     "host:apply_ubatch": 0.0,
+     "host:build_alloc": 0.0,
+     "host:graph_overhead": 0.0,
+     "host:unattributed": 0.0,
+     "node:fa": 0.06,
+     "node:mask_build": 0.195,
+     "node:matmul": 0.15,
+     "node:solo_runs": 0.0
+    }
+   }
+  },
+  "max_F_N2to5": 0.07,
+  "max_S_N2to5": 0.5,
+  "mean_depth_delta_share_N2to5": {
+   "host:apply_ubatch": 0.0,
+   "host:build_alloc": 0.0,
+   "host:graph_overhead": 0.0,
+   "host:unattributed": 0.0,
+   "node:fa": 0.06,
+   "node:mask_build": 0.195,
+   "node:matmul": 0.15,
+   "node:solo_runs": 0.0
+  },
+  "seed_class": "node:mask_build",
+  "verdict": "SPLIT_UNRESOLVED"
+ }
+}
