@@ -1,0 +1,312 @@
+# Metrics: autokernel (/workspace/repos/epyc-inference-research/scripts/kernel_rnd/autokernel)
+
+files=318 loc=281466 code=240800 funcs=9521 broad_except=543 swallowed=48 prints=442 module_level_calls=43 global_stmts=7 hardcoded_/mnt/raid0=210 public_undoc_funcs=2947 no_module_doc=0 sys.path_mutations=20 shell=True=0
+
+## Largest files (loc)
+- scripts/kernel_rnd/autokernel/loop/run.py: 7395 loc, 177 funcs, max_func=5518, max_cc=1166
+- scripts/kernel_rnd/autokernel/release/t3.py: 6661 loc, 162 funcs, max_func=351, max_cc=56
+- scripts/kernel_rnd/autokernel/campaign.py: 5968 loc, 175 funcs, max_func=347, max_cc=110
+- scripts/kernel_rnd/autokernel/execution/microbench.py: 4734 loc, 126 funcs, max_func=241, max_cc=61
+- scripts/kernel_rnd/autokernel/loop/campaign_control.py: 4723 loc, 127 funcs, max_func=619, max_cc=225
+- scripts/kernel_rnd/autokernel/controller/hypotheses.py: 4493 loc, 125 funcs, max_func=190, max_cc=35
+- scripts/kernel_rnd/autokernel/release/readiness.py: 4312 loc, 130 funcs, max_func=116, max_cc=23
+- scripts/kernel_rnd/autokernel/release/packager.py: 4276 loc, 138 funcs, max_func=326, max_cc=65
+- scripts/kernel_rnd/autokernel/evaluator/correctness.py: 4160 loc, 108 funcs, max_func=162, max_cc=44
+- scripts/kernel_rnd/autokernel/journal.py: 4136 loc, 70 funcs, max_func=1043, max_cc=542
+- scripts/kernel_rnd/autokernel/loop/actors.py: 4134 loc, 128 funcs, max_func=458, max_cc=135
+- scripts/kernel_rnd/autokernel/execution/t0_provider.py: 4108 loc, 130 funcs, max_func=188, max_cc=36
+- scripts/kernel_rnd/autokernel/loop/gates.py: 4061 loc, 124 funcs, max_func=142, max_cc=70
+- scripts/kernel_rnd/autokernel/controller/discovery_controller.py: 3973 loc, 130 funcs, max_func=567, max_cc=143
+- scripts/kernel_rnd/autokernel/controller/gpu_source_evidence.py: 3932 loc, 106 funcs, max_func=187, max_cc=100
+- scripts/kernel_rnd/autokernel/schemas.py: 3825 loc, 96 funcs, max_func=212, max_cc=77
+- scripts/kernel_rnd/autokernel/controller/arena_cell_runner.py: 3697 loc, 92 funcs, max_func=380, max_cc=79
+- scripts/kernel_rnd/autokernel/evaluator/statistics.py: 3689 loc, 137 funcs, max_func=275, max_cc=25
+- scripts/kernel_rnd/autokernel/loop/resume.py: 3683 loc, 101 funcs, max_func=303, max_cc=85
+- scripts/kernel_rnd/autokernel/evaluator/integrity.py: 3661 loc, 129 funcs, max_func=167, max_cc=55
+- scripts/kernel_rnd/autokernel/controller/discovery_static_registry.py: 3523 loc, 84 funcs, max_func=417, max_cc=143
+- scripts/kernel_rnd/autokernel/evaluator/api.py: 3320 loc, 100 funcs, max_func=160, max_cc=37
+- scripts/kernel_rnd/autokernel/execution/worktree.py: 3203 loc, 113 funcs, max_func=163, max_cc=37
+- scripts/kernel_rnd/autokernel/evaluator/surface.py: 3195 loc, 120 funcs, max_func=222, max_cc=52
+- scripts/kernel_rnd/autokernel/controller/discovery_deployment_factory.py: 3079 loc, 81 funcs, max_func=295, max_cc=37
+- scripts/kernel_rnd/autokernel/loop/serial_run.py: 2662 loc, 67 funcs, max_func=423, max_cc=122
+- scripts/kernel_rnd/autokernel/release/plan.py: 2539 loc, 79 funcs, max_func=318, max_cc=63
+- scripts/kernel_rnd/autokernel/execution/live_controls.py: 2514 loc, 61 funcs, max_func=222, max_cc=63
+- scripts/kernel_rnd/autokernel/evaluator/recipes.py: 2471 loc, 69 funcs, max_func=106, max_cc=29
+- scripts/kernel_rnd/autokernel/loop/worker_lifecycle.py: 2471 loc, 88 funcs, max_func=384, max_cc=89
+- scripts/kernel_rnd/autokernel/loop/unified_worker.py: 2464 loc, 130 funcs, max_func=152, max_cc=90
+- scripts/kernel_rnd/autokernel/execution/cpu_region_claim.py: 2408 loc, 75 funcs, max_func=235, max_cc=43
+- scripts/kernel_rnd/autokernel/evaluator/controls.py: 2406 loc, 85 funcs, max_func=74, max_cc=17
+- scripts/kernel_rnd/autokernel/loop/serving.py: 2311 loc, 64 funcs, max_func=412, max_cc=128
+- scripts/kernel_rnd/autokernel/controller/do_not_repeat.py: 2205 loc, 58 funcs, max_func=113, max_cc=21
+- scripts/kernel_rnd/autokernel/loop/scheduling.py: 2091 loc, 100 funcs, max_func=185, max_cc=91
+- scripts/kernel_rnd/autokernel/loop/loop.py: 2055 loc, 59 funcs, max_func=839, max_cc=198
+- scripts/kernel_rnd/autokernel/adapters/qwentts_tts.py: 1981 loc, 75 funcs, max_func=111, max_cc=18
+- scripts/kernel_rnd/autokernel/loop/scoped_evidence.py: 1947 loc, 82 funcs, max_func=155, max_cc=83
+- scripts/kernel_rnd/autokernel/execution/chain.py: 1928 loc, 38 funcs, max_func=220, max_cc=29
+
+## Longest functions
+- scripts/kernel_rnd/autokernel/loop/run.py:1874 main len=5518 cc=1166 depth=7 nargs=1
+- scripts/kernel_rnd/autokernel/journal.py:1190 _validate_native_payload len=1043 cc=542 depth=28 nargs=2
+- scripts/kernel_rnd/autokernel/loop/run.py:5537 run_pooled len=940 cc=191 depth=3 nargs=0
+- scripts/kernel_rnd/autokernel/loop/loop.py:1194 _iterate len=839 cc=198 depth=7 nargs=27
+- scripts/kernel_rnd/autokernel/loop/campaign_control.py:959 _replay len=619 cc=225 depth=5 nargs=2
+- scripts/kernel_rnd/autokernel/controller/discovery_controller.py:3338 _run_controller_locked len=567 cc=143 depth=6 nargs=6
+- scripts/kernel_rnd/autokernel/loop/actors.py:2496 render_context len=458 cc=135 depth=4 nargs=2
+- scripts/kernel_rnd/autokernel/loop/serial_run.py:2236 _drive len=423 cc=122 depth=6 nargs=10
+- scripts/kernel_rnd/autokernel/controller/discovery_static_registry.py:2603 _reopen len=417 cc=143 depth=3 nargs=9
+- scripts/kernel_rnd/autokernel/loop/serving.py:926 _measure_once len=412 cc=128 depth=6 nargs=12
+- scripts/kernel_rnd/autokernel/loop/run.py:5789 commit_pooled len=395 cc=97 depth=5 nargs=4
+- scripts/kernel_rnd/autokernel/loop/worker_lifecycle.py:1465 _run_stage len=384 cc=89 depth=5 nargs=3
+- scripts/kernel_rnd/autokernel/controller/arena_cell_runner.py:2699 _run_worker_impl len=380 cc=42 depth=3 nargs=4
+- scripts/kernel_rnd/autokernel/loop/planned_serving.py:465 run_planned_comparison len=366 cc=138 depth=5 nargs=18
+- scripts/kernel_rnd/autokernel/release/t3.py:3159 verify_waiver len=351 cc=56 depth=4 nargs=9
+- scripts/kernel_rnd/autokernel/campaign.py:5618 main len=347 cc=94 depth=3 nargs=3
+- scripts/kernel_rnd/autokernel/controller/gpu_source_adapter.py:258 _is_resumable_stage_root len=340 cc=147 depth=7 nargs=3
+- scripts/kernel_rnd/autokernel/controller/discovery_static_registry.py:3195 _build_uncached len=329 cc=47 depth=4 nargs=4
+- scripts/kernel_rnd/autokernel/release/packager.py:3491 assemble_release_package len=326 cc=65 depth=3 nargs=19
+- scripts/kernel_rnd/autokernel/release/plan.py:2111 _compile_backend len=318 cc=63 depth=4 nargs=12
+- scripts/kernel_rnd/autokernel/loop/startup_factory.py:143 build_startup len=306 cc=110 depth=3 nargs=2
+- scripts/kernel_rnd/autokernel/campaign.py:1660 __post_init__ len=304 cc=110 depth=3 nargs=1
+- scripts/kernel_rnd/autokernel/release/t3.py:5768 calibration_request len=304 cc=54 depth=2 nargs=7
+- scripts/kernel_rnd/autokernel/loop/resume.py:3356 main len=303 cc=44 depth=2 nargs=1
+- scripts/kernel_rnd/autokernel/controller/discovery_controller.py:963 _plan len=301 cc=30 depth=3 nargs=5
+- scripts/kernel_rnd/autokernel/controller/discovery_deployment_factory.py:1022 _template_registry len=295 cc=18 depth=1 nargs=0
+- scripts/kernel_rnd/autokernel/loop/run.py:3579 gate_for len=294 cc=97 depth=0 nargs=1
+- scripts/kernel_rnd/autokernel/loop/run.py:3580 gate len=292 cc=97 depth=3 nargs=2
+- scripts/kernel_rnd/autokernel/loop/pipeline.py:186 run_pool len=279 cc=39 depth=2 nargs=22
+- scripts/kernel_rnd/autokernel/hypothesis_portfolio.py:539 _validate_hypotheses len=277 cc=139 depth=6 nargs=5
+- scripts/kernel_rnd/autokernel/evaluator/statistics.py:2477 solve_calibration len=275 cc=23 depth=4 nargs=1
+- scripts/kernel_rnd/autokernel/loop/resume.py:2124 reinstate_plan len=262 cc=85 depth=4 nargs=14
+- scripts/kernel_rnd/autokernel/candidate_record.py:36 build_candidate_record len=244 cc=45 depth=3 nargs=25
+- scripts/kernel_rnd/autokernel/loop/unified_planner.py:1088 plan_iteration len=243 cc=88 depth=6 nargs=17
+- scripts/kernel_rnd/autokernel/campaign.py:1268 load_calibration_bundle len=242 cc=99 depth=3 nargs=1
+- scripts/kernel_rnd/autokernel/execution/microbench.py:3933 run len=241 cc=58 depth=4 nargs=5
+- scripts/kernel_rnd/autokernel/loop/serving.py:1459 compare len=241 cc=69 depth=3 nargs=16
+- scripts/kernel_rnd/autokernel/release/t3.py:4119 phase_identity_preflight len=236 cc=41 depth=3 nargs=1
+- scripts/kernel_rnd/autokernel/execution/cpu_region_claim.py:1823 acquire_cpu_region_claim len=235 cc=43 depth=6 nargs=14
+- scripts/kernel_rnd/autokernel/loop/run.py:4891 _accumulate_after_keep len=235 cc=22 depth=3 nargs=1
+- scripts/kernel_rnd/autokernel/prepare_iqk_matched_pair.py:444 prepare len=233 cc=48 depth=3 nargs=1
+- scripts/kernel_rnd/autokernel/release/plan.py:1877 compile_release_plan len=232 cc=42 depth=3 nargs=13
+- scripts/kernel_rnd/autokernel/execution/microbench.py:4175 _run_block len=230 cc=34 depth=8 nargs=11
+- scripts/kernel_rnd/autokernel/least_commitment_receipts.py:950 project len=223 cc=52 depth=3 nargs=2
+- scripts/kernel_rnd/autokernel/evaluator/surface.py:1401 derive_affected_surface len=222 cc=52 depth=4 nargs=5
+- scripts/kernel_rnd/autokernel/execution/live_controls.py:1785 _validate_resume_existing len=222 cc=63 depth=4 nargs=2
+- scripts/kernel_rnd/autokernel/controller/discovery_deployment_factory.py:690 initialize_static_deployment_bundle len=221 cc=21 depth=2 nargs=2
+- scripts/kernel_rnd/autokernel/controller/discovery_supervisor.py:1449 supervise len=221 cc=29 depth=4 nargs=1
+- scripts/kernel_rnd/autokernel/execution/live_controls.py:2009 execute len=221 cc=15 depth=3 nargs=4
+- scripts/kernel_rnd/autokernel/execution/chain.py:1031 symbol_evidence len=220 cc=29 depth=2 nargs=9
+- scripts/kernel_rnd/autokernel/loop/serial_run.py:1300 main len=219 cc=70 depth=4 nargs=1
+- scripts/kernel_rnd/autokernel/journal.py:823 check_view_consistency len=218 cc=63 depth=3 nargs=2
+- scripts/kernel_rnd/autokernel/loop/serial_roster.py:15 build_targets len=218 cc=92 depth=3 nargs=5
+- scripts/kernel_rnd/autokernel/loop/loop.py:979 iterate len=213 cc=29 depth=3 nargs=23
+- scripts/kernel_rnd/autokernel/loop/pool.py:513 prune_anchor_generations len=213 cc=66 depth=5 nargs=7
+- scripts/kernel_rnd/autokernel/controller/discovery_static_registry.py:355 _validate_supervised_build_authority len=212 cc=88 depth=3 nargs=4
+- scripts/kernel_rnd/autokernel/schemas.py:2115 validate_candidate len=212 cc=77 depth=6 nargs=1
+- scripts/kernel_rnd/autokernel/execution/live_controls.py:2232 evaluate_existing len=210 cc=48 depth=3 nargs=2
+- scripts/kernel_rnd/autokernel/loop/standalone_inputs.py:510 materialize len=208 cc=77 depth=6 nargs=1
+- scripts/kernel_rnd/autokernel/loop/source_loo.py:34 execute_surface len=206 cc=54 depth=3 nargs=21
+
+## Highest cyclomatic complexity
+- scripts/kernel_rnd/autokernel/loop/run.py:1874 main cc=1166 len=5518
+- scripts/kernel_rnd/autokernel/journal.py:1190 _validate_native_payload cc=542 len=1043
+- scripts/kernel_rnd/autokernel/loop/campaign_control.py:959 _replay cc=225 len=619
+- scripts/kernel_rnd/autokernel/loop/loop.py:1194 _iterate cc=198 len=839
+- scripts/kernel_rnd/autokernel/loop/run.py:5537 run_pooled cc=191 len=940
+- scripts/kernel_rnd/autokernel/controller/gpu_source_adapter.py:258 _is_resumable_stage_root cc=147 len=340
+- scripts/kernel_rnd/autokernel/controller/discovery_controller.py:3338 _run_controller_locked cc=143 len=567
+- scripts/kernel_rnd/autokernel/controller/discovery_static_registry.py:2603 _reopen cc=143 len=417
+- scripts/kernel_rnd/autokernel/hypothesis_portfolio.py:539 _validate_hypotheses cc=139 len=277
+- scripts/kernel_rnd/autokernel/loop/planned_serving.py:465 run_planned_comparison cc=138 len=366
+- scripts/kernel_rnd/autokernel/loop/actors.py:2496 render_context cc=135 len=458
+- scripts/kernel_rnd/autokernel/loop/serving.py:926 _measure_once cc=128 len=412
+- scripts/kernel_rnd/autokernel/loop/serial_run.py:734 load_completed cc=122 len=161
+- scripts/kernel_rnd/autokernel/loop/serial_run.py:2236 _drive cc=122 len=423
+- scripts/kernel_rnd/autokernel/campaign.py:1660 __post_init__ cc=110 len=304
+- scripts/kernel_rnd/autokernel/loop/startup_factory.py:143 build_startup cc=110 len=306
+- scripts/kernel_rnd/autokernel/controller/gpu_source_evidence.py:542 __post_init__ cc=100 len=187
+- scripts/kernel_rnd/autokernel/campaign.py:1268 load_calibration_bundle cc=99 len=242
+- scripts/kernel_rnd/autokernel/loop/campaign_control.py:314 validate_snapshot_v3 cc=99 len=176
+- scripts/kernel_rnd/autokernel/loop/run.py:3579 gate_for cc=97 len=294
+- scripts/kernel_rnd/autokernel/loop/run.py:3580 gate cc=97 len=292
+- scripts/kernel_rnd/autokernel/loop/run.py:5789 commit_pooled cc=97 len=395
+- scripts/kernel_rnd/autokernel/controller/arena_campaign.py:145 __post_init__ cc=96 len=201
+- scripts/kernel_rnd/autokernel/campaign.py:5618 main cc=94 len=347
+- scripts/kernel_rnd/autokernel/loop/serial_roster.py:15 build_targets cc=92 len=218
+- scripts/kernel_rnd/autokernel/loop/scheduling.py:1553 select_stage cc=91 len=185
+- scripts/kernel_rnd/autokernel/loop/unified_worker.py:2128 reopen_deferred_result cc=90 len=152
+- scripts/kernel_rnd/autokernel/loop/worker_lifecycle.py:1465 _run_stage cc=89 len=384
+- scripts/kernel_rnd/autokernel/controller/discovery_static_registry.py:355 _validate_supervised_build_authority cc=88 len=212
+- scripts/kernel_rnd/autokernel/loop/unified_planner.py:1088 plan_iteration cc=88 len=243
+- scripts/kernel_rnd/autokernel/journal.py:3520 read_durable_batch cc=87 len=196
+- scripts/kernel_rnd/autokernel/loop/resume.py:2124 reinstate_plan cc=85 len=262
+- scripts/kernel_rnd/autokernel/loop/campaign_control.py:136 validate_snapshot_v2 cc=83 len=124
+- scripts/kernel_rnd/autokernel/loop/scoped_evidence.py:931 retrieve cc=83 len=155
+- scripts/kernel_rnd/autokernel/loop/campaign_service.py:579 main cc=80 len=198
+- scripts/kernel_rnd/autokernel/controller/arena_cell_runner.py:3384 validate_campaign_receipts cc=79 len=160
+- scripts/kernel_rnd/autokernel/loop/resolved_recipe.py:978 _validate_resolved_consistency cc=79 len=115
+- scripts/kernel_rnd/autokernel/loop/worker_lifecycle.py:710 _validate_event_data cc=79 len=150
+- scripts/kernel_rnd/autokernel/loop/native_retention_catalog.py:469 build_native_view cc=78 len=204
+- scripts/kernel_rnd/autokernel/execution/sandbox.py:475 __post_init__ cc=77 len=160
+
+## Big classes (>=400 lines)
+- scripts/kernel_rnd/autokernel/campaign.py:1582 CampaignSpec len=839
+- scripts/kernel_rnd/autokernel/campaign.py:2853 HostOps len=2258
+- scripts/kernel_rnd/autokernel/controller/arena_cell_runner.py:728 GovernedArenaCellRunner len=630
+- scripts/kernel_rnd/autokernel/controller/discovery_static_registry.py:1963 StaticGpuSourceBuilder len=1561
+- scripts/kernel_rnd/autokernel/controller/experiments.py:384 ExperimentStore len=458
+- scripts/kernel_rnd/autokernel/controller/gpu_source_adapter.py:931 GovernedGpuSourceAdapter len=454
+- scripts/kernel_rnd/autokernel/controller/hypotheses.py:1701 OperatorHypothesisStore len=579
+- scripts/kernel_rnd/autokernel/controller/hypotheses.py:3216 HypothesisTracker len=983
+- scripts/kernel_rnd/autokernel/execution/microbench.py:3742 MicrobenchRunner len=720
+- scripts/kernel_rnd/autokernel/execution/t0_provider.py:2830 ExecutedT0EvidenceProvider len=1020
+- scripts/kernel_rnd/autokernel/journal.py:2239 Journal len=1690
+- scripts/kernel_rnd/autokernel/loop/actors.py:3331 AgentPlanner len=666
+- scripts/kernel_rnd/autokernel/loop/bestof.py:693 AuthorPanel len=736
+- scripts/kernel_rnd/autokernel/loop/campaign_control.py:729 CampaignController len=3985
+- scripts/kernel_rnd/autokernel/loop/candidate_transactions.py:301 CandidateTransactions len=687
+- scripts/kernel_rnd/autokernel/loop/cpu_window.py:337 CpuWindow len=439
+- scripts/kernel_rnd/autokernel/loop/driver_execution.py:536 UnifiedDriverExecution len=494
+- scripts/kernel_rnd/autokernel/loop/evidence_feed.py:395 EvidenceFeed len=1046
+- scripts/kernel_rnd/autokernel/loop/lifecycle_observation.py:977 ObservationSession len=525
+- scripts/kernel_rnd/autokernel/loop/native_capture_control.py:168 NativeCaptureValidator len=769
+- scripts/kernel_rnd/autokernel/loop/native_server_t0_witness.py:128 NativeServerT0WitnessAdapter len=516
+- scripts/kernel_rnd/autokernel/loop/runtime_admission.py:274 RuntimeAdmission len=552
+- scripts/kernel_rnd/autokernel/loop/scheduling.py:1101 SchedulerEngine len=875
+- scripts/kernel_rnd/autokernel/loop/scoped_evidence.py:678 EvidenceIndex len=737
+- scripts/kernel_rnd/autokernel/loop/scratch.py:280 ScratchRegistry len=475
+- scripts/kernel_rnd/autokernel/loop/standalone_runtime.py:193 StandaloneRuntime len=530
+- scripts/kernel_rnd/autokernel/loop/unified_driver.py:492 UnifiedCampaignDriver len=670
+- scripts/kernel_rnd/autokernel/loop/unified_worker.py:1361 PlannedWorkerInvocation len=628
+- scripts/kernel_rnd/autokernel/loop/validation_consumer.py:127 ValidationConsumer len=504
+- scripts/kernel_rnd/autokernel/loop/worker_lifecycle.py:1090 WorkerLifecycle len=1364
+
+## Most swallowed broad excepts (except Exception: pass/continue/return const)
+- scripts/kernel_rnd/autokernel/loop/bestof.py: 7 swallowed / 20 broad; lines [1510, 1135, 1240, 1304, 586, 1311, 778]
+- scripts/kernel_rnd/autokernel/loop/standalone_runtime.py: 5 swallowed / 9 broad; lines [228, 271, 536, 622, 245]
+- scripts/kernel_rnd/autokernel/loop/loop.py: 4 swallowed / 11 broad; lines [781, 939, 1189, 1643]
+- scripts/kernel_rnd/autokernel/loop/maintenance_execution.py: 4 swallowed / 8 broad; lines [661, 672, 706, 725]
+- scripts/kernel_rnd/autokernel/loop/actors.py: 2 swallowed / 10 broad; lines [1863, 3718]
+- scripts/kernel_rnd/autokernel/loop/heartbeat.py: 2 swallowed / 4 broad; lines [137, 155]
+- scripts/kernel_rnd/autokernel/loop/kernel_coverage.py: 2 swallowed / 4 broad; lines [359, 372]
+- scripts/kernel_rnd/autokernel/loop/serving.py: 2 swallowed / 17 broad; lines [1002, 990]
+- scripts/kernel_rnd/autokernel/loop/worker_lifecycle.py: 2 swallowed / 13 broad; lines [1546, 2135]
+- scripts/kernel_rnd/autokernel/campaign.py: 1 swallowed / 19 broad; lines [3434]
+- scripts/kernel_rnd/autokernel/controller/hypotheses.py: 1 swallowed / 7 broad; lines [2278]
+- scripts/kernel_rnd/autokernel/evaluator/c3_epyc_tensor_capture.py: 1 swallowed / 3 broad; lines [1384]
+- scripts/kernel_rnd/autokernel/execution/t0_provider.py: 1 swallowed / 4 broad; lines [663]
+- scripts/kernel_rnd/autokernel/loop/actor_metrics.py: 1 swallowed / 5 broad; lines [484]
+- scripts/kernel_rnd/autokernel/loop/actor_serving.py: 1 swallowed / 1 broad; lines [145]
+- scripts/kernel_rnd/autokernel/loop/ak_check.py: 1 swallowed / 1 broad; lines [433]
+- scripts/kernel_rnd/autokernel/loop/cpu_profile.py: 1 swallowed / 7 broad; lines [1313]
+- scripts/kernel_rnd/autokernel/loop/cpu_window.py: 1 swallowed / 7 broad; lines [498]
+- scripts/kernel_rnd/autokernel/loop/evidence_feed.py: 1 swallowed / 7 broad; lines [712]
+- scripts/kernel_rnd/autokernel/loop/model_identity.py: 1 swallowed / 4 broad; lines [142]
+- scripts/kernel_rnd/autokernel/loop/native_model_preparation.py: 1 swallowed / 1 broad; lines [122]
+- scripts/kernel_rnd/autokernel/loop/profile_preparation.py: 1 swallowed / 6 broad; lines [468]
+- scripts/kernel_rnd/autokernel/loop/runtime_admission.py: 1 swallowed / 2 broad; lines [327]
+- scripts/kernel_rnd/autokernel/loop/runtime_arms.py: 1 swallowed / 2 broad; lines [488]
+- scripts/kernel_rnd/autokernel/loop/runtime_calibration.py: 1 swallowed / 3 broad; lines [406]
+- scripts/kernel_rnd/autokernel/loop/serving_gate.py: 1 swallowed / 1 broad; lines [71]
+- scripts/kernel_rnd/autokernel/loop/serving_preparation.py: 1 swallowed / 2 broad; lines [799]
+
+## Import-time module-level calls (potential side effects)
+- scripts/kernel_rnd/autokernel/loop/actors.py: 5 — home@66, access@67, backend_for@202, backend_for@207, home@1587
+- scripts/kernel_rnd/autokernel/campaign.py: 3 — drift_bound_from@466, drift_bound_from@467, max@473
+- scripts/kernel_rnd/autokernel/evaluator/c3_epyc_suite.py: 3 — hexdigest@82, sha256@82, encode@82
+- scripts/kernel_rnd/autokernel/evaluator/devices.py: 2 — ceil@87, _validate_vocabulary@478
+- scripts/kernel_rnd/autokernel/loop/cpu_fa_reference.py: 2 — with_name@58, vars@129
+- scripts/kernel_rnd/autokernel/loop/gates.py: 2 — next@1771, replace@1887
+- scripts/kernel_rnd/autokernel/schemas.py: 2 — hexdigest@323, sha256@323
+- scripts/kernel_rnd/autokernel/controller/build_recipe.py: 1 — profiling_variant@321
+- scripts/kernel_rnd/autokernel/controller/discovery_deployment_factory.py: 1 — with_name@603
+- scripts/kernel_rnd/autokernel/controller/loop_experiment_runner.py: 1 — dumps@78
+- scripts/kernel_rnd/autokernel/controller/loop_scaffold_runner.py: 1 — with_name@47
+- scripts/kernel_rnd/autokernel/evaluator/c3_apex_runner.py: 1 — with_name@65
+- scripts/kernel_rnd/autokernel/evaluator/recipes.py: 1 — _load_canonical_recipe@272
+- scripts/kernel_rnd/autokernel/execution/cpu_region_claim.py: 1 — max@285
+- scripts/kernel_rnd/autokernel/execution/live_controls.py: 1 — index@42
+- scripts/kernel_rnd/autokernel/execution/screening_baseline.py: 1 — sysconf@262
+- scripts/kernel_rnd/autokernel/execution/worktree.py: 1 — chr@802
+- scripts/kernel_rnd/autokernel/hypothesis_portfolio.py: 1 — with_name@1170
+- scripts/kernel_rnd/autokernel/loop/actor_preparation.py: 1 — gettempdir@342
+- scripts/kernel_rnd/autokernel/loop/cpu_fusion_reference.py: 1 — with_name@43
+- scripts/kernel_rnd/autokernel/loop/cpu_norm_reference.py: 1 — with_name@53
+- scripts/kernel_rnd/autokernel/loop/cpu_quant_reference.py: 1 — with_name@25
+- scripts/kernel_rnd/autokernel/loop/cpu_route_witness.py: 1 — with_name@31
+- scripts/kernel_rnd/autokernel/loop/gdn_reference.py: 1 — with_name@25
+- scripts/kernel_rnd/autokernel/loop/headline_admissibility.py: 1 — ceil@28
+- scripts/kernel_rnd/autokernel/loop/hotspots.py: 1 — _resolve_rocprof@86
+- scripts/kernel_rnd/autokernel/loop/procguard.py: 1 — home@77
+- scripts/kernel_rnd/autokernel/loop/residency.py: 1 — glob@40
+- scripts/kernel_rnd/autokernel/loop/scoped_evidence.py: 1 — content_hash@646
+- scripts/kernel_rnd/autokernel/loop/scratch.py: 1 — all@75
+- scripts/kernel_rnd/autokernel/loop/unified_worker.py: 1 — insert@32
+
+## sys.path mutations
+- scripts/kernel_rnd/autokernel/controller/arena_cell_runner.py: lines [2744]
+- scripts/kernel_rnd/autokernel/controller/arena_evaluator_child.py: lines [159]
+- scripts/kernel_rnd/autokernel/controller/arena_scaffold_evaluator.py: lines [79]
+- scripts/kernel_rnd/autokernel/controller/evoengineer_arena.py: lines [135]
+- scripts/kernel_rnd/autokernel/controller/geak_v1_arena.py: lines [207]
+- scripts/kernel_rnd/autokernel/controller/hip_authoring_arm.py: lines [377]
+- scripts/kernel_rnd/autokernel/controller/k_search_arena.py: lines [172]
+- scripts/kernel_rnd/autokernel/controller/kernelfoundry_arena.py: lines [140]
+- scripts/kernel_rnd/autokernel/controller/xe_forge_arena.py: lines [437]
+- scripts/kernel_rnd/autokernel/evaluator/c3_apex_runner.py: lines [1126]
+- scripts/kernel_rnd/autokernel/execution/device_sampler.py: lines [182]
+- scripts/kernel_rnd/autokernel/loop/ak_check.py: lines [393]
+- scripts/kernel_rnd/autokernel/loop/belief_context.py: lines [209]
+- scripts/kernel_rnd/autokernel/loop/claim.py: lines [63]
+- scripts/kernel_rnd/autokernel/loop/evidence_feed.py: lines [380]
+- scripts/kernel_rnd/autokernel/loop/serial_run.py: lines [570]
+- scripts/kernel_rnd/autokernel/loop/serving_beliefs.py: lines [160]
+- scripts/kernel_rnd/autokernel/loop/unified_worker.py: lines [32]
+- scripts/kernel_rnd/autokernel/resource/preflight.py: lines [123]
+- scripts/kernel_rnd/autokernel/storage.py: lines [126]
+
+## Private cross-module imports (from x import _y)
+- scripts/kernel_rnd/autokernel/loop/native_final_trial.py: driver_execution._terminal_body, native_producer_source._closed, native_producer_source._callables, native_producer_source._identity, driver_execution._terminal_body
+- scripts/kernel_rnd/autokernel/loop/actor_lifecycle.py: unified_driver._freeze, unified_driver._thaw, unified_driver._thaw
+- scripts/kernel_rnd/autokernel/loop/native_scientific_witness.py: native_producer_source._closed, native_producer_source._identity, native_producer_source._callables
+- scripts/kernel_rnd/autokernel/loop/native_server_t0_witness.py: native_producer_source._closed, native_producer_source._callables, native_producer_source._identity
+- scripts/kernel_rnd/autokernel/loop/runtime_admission.py: run._cpu_arm, run._rebind_build_dso, run._cpu_arm
+- scripts/kernel_rnd/autokernel/loop/runtime_arms.py: observation_binding._plain, observation_binding._plain, actors._runtime_pair
+- scripts/kernel_rnd/autokernel/loop/profile_preparation.py: driver_execution._terminal_body, driver_execution._terminal_body
+- scripts/kernel_rnd/autokernel/loop/residency.py: lifecycle_observation._key_values, lifecycle_observation._psi
+- scripts/kernel_rnd/autokernel/loop/source_loo.py: loop._now, run._cpu_arm
+- scripts/kernel_rnd/autokernel/controller/xe_forge_arena.py: xe_forge.agents.optimizer_agent._extract_code_from_response
+- scripts/kernel_rnd/autokernel/loop/actor_passthrough.py: claim._ensure_orchestrator_importable
+- scripts/kernel_rnd/autokernel/loop/campaign_service.py: campaign_control._stable_code_projection
+- scripts/kernel_rnd/autokernel/loop/claim.py: src.runtime.region_lock_cli._preflight
+- scripts/kernel_rnd/autokernel/loop/cross_target.py: archive._git_env
+- scripts/kernel_rnd/autokernel/loop/direct_gpu_control.py: runtime_admission._device_state
+- scripts/kernel_rnd/autokernel/loop/feed_runtime.py: validation_semantic_adapter._source_bytes
+- scripts/kernel_rnd/autokernel/loop/runtime_recovery.py: measurement_capture._plain
+- scripts/kernel_rnd/autokernel/loop/serial_scheduling.py: measurement_capture._plain
+
+## Duplicate function bodies across files (top 60 by duplicated lines)
+- len=12 x3: scripts/kernel_rnd/autokernel/controller/claude_codex_actor_critic.py:168 _atomic_write; scripts/kernel_rnd/autokernel/controller/loop_experiment_runner.py:119 _atomic_write; scripts/kernel_rnd/autokernel/controller/loop_scaffold_runner.py:129 _atomic_write
+- len=22 x2: scripts/kernel_rnd/autokernel/adapters/qwentts_tts.py:369 check_not_production_path; scripts/kernel_rnd/autokernel/adapters/whisper_stt.py:344 check_not_production_path
+- len=20 x2: scripts/kernel_rnd/autokernel/adapters/qwentts_tts.py:1018 check_declared_domains_cover_diff; scripts/kernel_rnd/autokernel/adapters/whisper_stt.py:1028 check_declared_domains_cover_diff
+- len=10 x3: scripts/kernel_rnd/autokernel/evaluator/api.py:1839 _combine; scripts/kernel_rnd/autokernel/evaluator/statistics.py:3598 _combine_checks; scripts/kernel_rnd/autokernel/execution/chain.py:466 _worst
+- len=19 x2: scripts/kernel_rnd/autokernel/adapters/qwentts_tts.py:527 binary_path; scripts/kernel_rnd/autokernel/adapters/whisper_stt.py:523 binary_path
+- len=19 x2: scripts/kernel_rnd/autokernel/controller/arena_cell_runner.py:175 _atomic_json; scripts/kernel_rnd/autokernel/controller/hip_authoring_arm.py:85 _atomic_json
+- len=15 x2: scripts/kernel_rnd/autokernel/evaluator/integrity.py:3576 _defines_this_module; scripts/kernel_rnd/autokernel/release/packager.py:3995 _defines_this_module
+- len=15 x2: scripts/kernel_rnd/autokernel/least_commitment_heldout.py:592 _write_json_exclusive; scripts/kernel_rnd/autokernel/prepare_iqk_matched_pair.py:113 _write_json_exclusive
+- len=13 x2: scripts/kernel_rnd/autokernel/adapters/qwentts_tts.py:1922 _source_is_this_module; scripts/kernel_rnd/autokernel/adapters/whisper_stt.py:1779 _source_is_this_module
+- len=13 x2: scripts/kernel_rnd/autokernel/adapters/qwentts_tts.py:1969 audit_device_vocabulary_delegation; scripts/kernel_rnd/autokernel/adapters/whisper_stt.py:1830 audit_device_vocabulary_delegation
+- len=12 x2: scripts/kernel_rnd/autokernel/adapters/qwentts_tts.py:556 expected_shared_libraries; scripts/kernel_rnd/autokernel/adapters/whisper_stt.py:554 expected_shared_libraries
+- len=12 x2: scripts/kernel_rnd/autokernel/adapters/qwentts_tts.py:975 check_domains_owned; scripts/kernel_rnd/autokernel/adapters/whisper_stt.py:985 check_domains_owned
+- len=12 x2: scripts/kernel_rnd/autokernel/adapters/qwentts_tts.py:1004 shared_core_paths; scripts/kernel_rnd/autokernel/adapters/whisper_stt.py:1015 shared_core_paths
+- len=12 x2: scripts/kernel_rnd/autokernel/release/packager.py:454 _under_production_tree; scripts/kernel_rnd/autokernel/release/t3.py:574 _under_production_tree
+- len=11 x2: scripts/kernel_rnd/autokernel/controller/build_recipe.py:158 sha256; scripts/kernel_rnd/autokernel/loop/serving.py:425 recipe_hash
+- len=11 x2: scripts/kernel_rnd/autokernel/evaluator/controls.py:1448 _rank_key_or_none; scripts/kernel_rnd/autokernel/execution/control_runner.py:1073 _rank_key_or_none
+- len=8 x2: scripts/kernel_rnd/autokernel/adapters/qwentts_tts.py:290 freeze_scope; scripts/kernel_rnd/autokernel/adapters/whisper_stt.py:250 freeze_scope
+- len=8 x2: scripts/kernel_rnd/autokernel/adapters/qwentts_tts.py:300 refuse_llama_champion; scripts/kernel_rnd/autokernel/adapters/whisper_stt.py:260 refuse_llama_champion
+- len=8 x2: scripts/kernel_rnd/autokernel/adapters/qwentts_tts.py:583 _require_member; scripts/kernel_rnd/autokernel/adapters/whisper_stt.py:582 _require_member
+- len=8 x2: scripts/kernel_rnd/autokernel/adapters/qwentts_tts.py:660 to_dict; scripts/kernel_rnd/autokernel/adapters/whisper_stt.py:673 to_dict
+- len=8 x2: scripts/kernel_rnd/autokernel/adapters/qwentts_tts.py:1097 env; scripts/kernel_rnd/autokernel/adapters/whisper_stt.py:1110 env
+- len=8 x2: scripts/kernel_rnd/autokernel/controller/discovery_deployment_factory.py:2496 _passed; scripts/kernel_rnd/autokernel/controller/gpu_source_evidence.py:1241 _check_result_passed
+- len=8 x2: scripts/kernel_rnd/autokernel/execution/cpu_region_claim.py:1275 _try_flock_ex; scripts/kernel_rnd/autokernel/resource/device_claim.py:757 _try_flock_ex
+- len=7 x2: scripts/kernel_rnd/autokernel/adapters/qwentts_tts.py:1165 to_dict; scripts/kernel_rnd/autokernel/adapters/whisper_stt.py:1166 to_dict
+- len=7 x2: scripts/kernel_rnd/autokernel/loop/native_retention_catalog.py:103 _freeze; scripts/kernel_rnd/autokernel/loop/standalone_inputs.py:65 _freeze

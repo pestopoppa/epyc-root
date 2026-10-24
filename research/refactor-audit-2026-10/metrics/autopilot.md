@@ -1,0 +1,323 @@
+# Metrics: autopilot (/workspace/repos/epyc-orchestrator/scripts/autopilot)
+
+files=175 loc=99686 code=84063 funcs=2832 broad_except=433 swallowed=82 prints=356 module_level_calls=109 global_stmts=13 hardcoded_/mnt/raid0=51 public_undoc_funcs=484 no_module_doc=0 sys.path_mutations=85 shell=True=0
+
+## Largest files (loc)
+- scripts/autopilot/autopilot.py: 12289 loc, 259 funcs, max_func=2902, max_cc=324
+- scripts/autopilot/eval_tower.py: 8091 loc, 194 funcs, max_func=697, max_cc=140
+- scripts/autopilot/species/prompt_forge.py: 3585 loc, 126 funcs, max_func=154, max_cc=47
+- scripts/autopilot/safety_gate.py: 3455 loc, 80 funcs, max_func=521, max_cc=76
+- scripts/autopilot/actions.py: 3210 loc, 71 funcs, max_func=166, max_cc=33
+- scripts/autopilot/model_gate_report.py: 2839 loc, 40 funcs, max_func=838, max_cc=113
+- scripts/autopilot/config_applicator.py: 2767 loc, 69 funcs, max_func=216, max_cc=27
+- scripts/autopilot/experiment_journal.py: 2117 loc, 71 funcs, max_func=123, max_cc=40
+- scripts/autopilot/planner_coordinator.py: 1931 loc, 46 funcs, max_func=444, max_cc=58
+- scripts/autopilot/shapekeyed_step2_smoke.py: 1508 loc, 38 funcs, max_func=127, max_cc=22
+- scripts/autopilot/planner_providers.py: 1406 loc, 40 funcs, max_func=145, max_cc=22
+- scripts/autopilot/controller_io.py: 1402 loc, 33 funcs, max_func=329, max_cc=54
+- scripts/autopilot/pareto_archive.py: 1348 loc, 54 funcs, max_func=168, max_cc=30
+- scripts/autopilot/decision_cockpit.py: 1336 loc, 33 funcs, max_func=401, max_cc=167
+- scripts/autopilot/phase_status.py: 1158 loc, 42 funcs, max_func=192, max_cc=67
+- scripts/autopilot/skill_efficacy_paired_ab.py: 1148 loc, 30 funcs, max_func=95, max_cc=30
+- scripts/autopilot/glm_reviewer_capability_probe.py: 1097 loc, 32 funcs, max_func=92, max_cc=18
+- scripts/autopilot/screening_tier_runner.py: 1056 loc, 31 funcs, max_func=137, max_cc=21
+- scripts/autopilot/species/structural_lab.py: 1055 loc, 19 funcs, max_func=158, max_cc=36
+- scripts/autopilot/evals/dtap/harness/runner.py: 995 loc, 28 funcs, max_func=223, max_cc=54
+- scripts/autopilot/migration_probe.py: 989 loc, 21 funcs, max_func=123, max_cc=39
+- scripts/autopilot/preflight_audit.py: 978 loc, 33 funcs, max_func=130, max_cc=34
+- scripts/autopilot/seq_readiness_report.py: 907 loc, 31 funcs, max_func=117, max_cc=19
+- scripts/autopilot/operator_candidates/ratify_and_apply_multitier_baseline_v10.py: 894 loc, 22 funcs, max_func=197, max_cc=50
+- scripts/autopilot/restart_readiness_report.py: 878 loc, 20 funcs, max_func=155, max_cc=15
+- scripts/autopilot/operator_hypotheses.py: 853 loc, 22 funcs, max_func=81, max_cc=17
+- scripts/autopilot/w8_promotion_trajectory_report.py: 831 loc, 26 funcs, max_func=105, max_cc=23
+- scripts/autopilot/optimization_brief.py: 819 loc, 22 funcs, max_func=186, max_cc=58
+- scripts/autopilot/host_health.py: 818 loc, 27 funcs, max_func=133, max_cc=20
+- scripts/autopilot/review_policy_trials.py: 809 loc, 27 funcs, max_func=78, max_cc=16
+- scripts/autopilot/core_v2_select.py: 798 loc, 31 funcs, max_func=94, max_cc=15
+- scripts/autopilot/audit_block_report.py: 791 loc, 26 funcs, max_func=139, max_cc=23
+- scripts/autopilot/state_store.py: 679 loc, 25 funcs, max_func=89, max_cc=24
+- scripts/autopilot/eval_task_coverage_report.py: 675 loc, 26 funcs, max_func=174, max_cc=25
+- scripts/autopilot/progress_plots.py: 642 loc, 18 funcs, max_func=117, max_cc=25
+- scripts/autopilot/reproposal_rate.py: 637 loc, 24 funcs, max_func=54, max_cc=16
+- scripts/autopilot/bsv_paired_report.py: 600 loc, 24 funcs, max_func=93, max_cc=35
+- scripts/autopilot/kv_compress.py: 593 loc, 21 funcs, max_func=76, max_cc=10
+- scripts/autopilot/state_ownership.py: 593 loc, 18 funcs, max_func=57, max_cc=10
+- scripts/autopilot/bsv_observe.py: 592 loc, 26 funcs, max_func=96, max_cc=24
+
+## Longest functions
+- scripts/autopilot/autopilot.py:8415 _run_loop_inner len=2902 cc=324 depth=7 nargs=5
+- scripts/autopilot/model_gate_report.py:1870 build_next_actions len=838 cc=113 depth=5 nargs=1
+- scripts/autopilot/eval_tower.py:5151 _eval_batch len=697 cc=119 depth=6 nargs=5
+- scripts/autopilot/eval_tower.py:5876 _aggregate len=641 cc=140 depth=3 nargs=3
+- scripts/autopilot/safety_gate.py:2135 check len=521 cc=76 depth=8 nargs=10
+- scripts/autopilot/planner_coordinator.py:307 plan_with_providers len=444 cc=58 depth=8 nargs=12
+- scripts/autopilot/decision_cockpit.py:852 build_decision_cockpit len=401 cc=167 depth=5 nargs=10
+- scripts/autopilot/safety_gate.py:2984 _update_baseline_impl len=360 cc=42 depth=2 nargs=4
+- scripts/autopilot/controller_io.py:354 invoke_controller len=329 cc=54 depth=4 nargs=4
+- scripts/autopilot/model_gate_report.py:1116 a9_collection_section len=311 cc=76 depth=3 nargs=8
+- scripts/autopilot/eval_tower.py:6728 eval_t1 len=293 cc=21 depth=3 nargs=4
+- scripts/autopilot/recover_multitier_t2_baseline.py:241 main len=289 cc=47 depth=4 nargs=0
+- scripts/autopilot/eval_tower.py:7022 eval_t2 len=233 cc=25 depth=2 nargs=6
+- scripts/autopilot/evals/dtap/harness/runner.py:286 run_case len=223 cc=35 depth=6 nargs=9
+- scripts/autopilot/config_applicator.py:2144 restart_role len=216 cc=27 depth=5 nargs=17
+- scripts/autopilot/species/seeder.py:201 run_batch len=212 cc=33 depth=5 nargs=6
+- scripts/autopilot/eval_tower.py:4716 _generate_question len=203 cc=29 depth=4 nargs=3
+- scripts/autopilot/eval_tower.py:4920 _score_generation len=197 cc=33 depth=4 nargs=4
+- scripts/autopilot/operator_candidates/ratify_and_apply_multitier_baseline_v10.py:694 main len=197 cc=50 depth=4 nargs=0
+- scripts/autopilot/phase_status.py:791 build_phase_health_report len=192 cc=67 depth=6 nargs=11
+- scripts/autopilot/model_gate_report.py:1679 build_report_summary len=189 cc=57 depth=0 nargs=3
+- scripts/autopilot/eval_tower.py:2302 _wait_for_eval_api_lifecycle_drain len=188 cc=42 depth=5 nargs=6
+- scripts/autopilot/optimization_brief.py:495 ruled_out_experiments len=186 cc=58 depth=4 nargs=3
+- scripts/autopilot/operator_candidates/ratify_and_apply_e15_physical_cohort_v7.py:268 main len=182 cc=25 depth=3 nargs=0
+- scripts/autopilot/operator_seed_e8_operational_baseline.py:189 main len=182 cc=24 depth=2 nargs=0
+- scripts/autopilot/autopilot.py:12085 main len=180 cc=1 depth=0 nargs=0
+- scripts/autopilot/eval_task_coverage_report.py:333 build_report len=174 cc=25 depth=3 nargs=3
+- scripts/autopilot/eval_tower.py:2527 _eval_resource_lane len=172 cc=55 depth=3 nargs=2
+- scripts/autopilot/pareto_archive.py:566 bt_tiebreak_topk len=168 cc=18 depth=5 nargs=3
+- scripts/autopilot/safety_gate.py:1966 _sequential_verdict len=168 cc=22 depth=2 nargs=10
+- scripts/autopilot/autopilot_tui.py:213 _make_layout len=167 cc=28 depth=4 nargs=1
+- scripts/autopilot/actions.py:1768 _action_code_mutation len=166 cc=14 depth=2 nargs=2
+- scripts/autopilot/autopilot.py:6441 _build_action_availability len=165 cc=32 depth=2 nargs=8
+- scripts/autopilot/species/evolution_manager.py:184 distill len=163 cc=22 depth=2 nargs=5
+- scripts/autopilot/eval_tower.py:4544 _rubric_scores_for_answer len=158 cc=27 depth=2 nargs=6
+- scripts/autopilot/species/structural_lab.py:765 mdl_compress_strategies len=158 cc=36 depth=4 nargs=9
+- scripts/autopilot/eval_tower.py:7540 eval_math_rebaseline len=157 cc=23 depth=2 nargs=7
+- scripts/autopilot/eval_tower.py:3757 screen_paired_arms len=155 cc=17 depth=4 nargs=4
+- scripts/autopilot/restart_readiness_report.py:407 _summary_report len=155 cc=6 depth=0 nargs=1
+- scripts/autopilot/species/prompt_forge.py:3262 _build_code_mutation_prompt len=154 cc=10 depth=2 nargs=7
+- scripts/autopilot/operator_candidates/ratify_and_apply_mixed_role_split_v3.py:110 main len=153 cc=17 depth=3 nargs=0
+- scripts/autopilot/autopilot.py:2462 _seq_gate_reachability_report len=151 cc=56 depth=4 nargs=5
+- scripts/autopilot/autopilot.py:1273 _build_eval_coverage_pressure len=146 cc=33 depth=3 nargs=4
+- scripts/autopilot/pareto_archive.py:743 parent_utility_ranking len=145 cc=30 depth=2 nargs=4
+- scripts/autopilot/planner_providers.py:269 invoke len=145 cc=22 depth=3 nargs=6
+- scripts/autopilot/resilient_http.py:87 resilient_post len=145 cc=29 depth=4 nargs=8
+- scripts/autopilot/actions.py:856 _action_numeric_trial len=144 cc=26 depth=3 nargs=2
+- scripts/autopilot/actions.py:1523 _action_prompt_mutation len=144 cc=11 depth=2 nargs=2
+- scripts/autopilot/planner_provider_health_report.py:284 build_report len=144 cc=48 depth=3 nargs=7
+- scripts/autopilot/planner_providers.py:766 invoke len=144 cc=10 depth=1 nargs=6
+- scripts/autopilot/actions.py:2564 _action_rollback len=140 cc=33 depth=5 nargs=2
+- scripts/autopilot/operator_candidates/ratify_and_apply_model_judge_tail_v2.py:121 main len=140 cc=15 depth=3 nargs=0
+- scripts/autopilot/species/structural_lab.py:306 distill_skillbank len=140 cc=12 depth=2 nargs=6
+- scripts/autopilot/tool_use_divergence_report.py:242 summarize_paths len=140 cc=28 depth=8 nargs=1
+- scripts/autopilot/audit_block_report.py:202 build_report len=139 cc=18 depth=0 nargs=4
+- scripts/autopilot/autopilot.py:3812 _seq_inputs_for_trial len=139 cc=37 depth=3 nargs=5
+- scripts/autopilot/evals/dtap/judges/crm-malicious-indirect-general-ai-restrictions-004/judge.py:60 eval_task len=138 cc=40 depth=6 nargs=2
+- scripts/autopilot/operator_candidates/ratify_and_apply_e9_operational_baseline.py:131 main len=138 cc=20 depth=4 nargs=1
+- scripts/autopilot/pareto_archive.py:1118 geometry len=138 cc=27 depth=5 nargs=2
+- scripts/autopilot/actions.py:1936 _action_structural_experiment len=137 cc=22 depth=2 nargs=2
+
+## Highest cyclomatic complexity
+- scripts/autopilot/autopilot.py:8415 _run_loop_inner cc=324 len=2902
+- scripts/autopilot/decision_cockpit.py:852 build_decision_cockpit cc=167 len=401
+- scripts/autopilot/eval_tower.py:5876 _aggregate cc=140 len=641
+- scripts/autopilot/eval_tower.py:5151 _eval_batch cc=119 len=697
+- scripts/autopilot/model_gate_report.py:1870 build_next_actions cc=113 len=838
+- scripts/autopilot/crossover_diagnostics.py:40 _metadata cc=81 len=115
+- scripts/autopilot/model_gate_report.py:1116 a9_collection_section cc=76 len=311
+- scripts/autopilot/safety_gate.py:2135 check cc=76 len=521
+- scripts/autopilot/phase_status.py:791 build_phase_health_report cc=67 len=192
+- scripts/autopilot/evals/dtap/harness/tool_contract.py:151 load_native_tool_contract cc=63 len=94
+- scripts/autopilot/optimization_brief.py:495 ruled_out_experiments cc=58 len=186
+- scripts/autopilot/planner_coordinator.py:307 plan_with_providers cc=58 len=444
+- scripts/autopilot/model_gate_report.py:1679 build_report_summary cc=57 len=189
+- scripts/autopilot/autopilot.py:2462 _seq_gate_reachability_report cc=56 len=151
+- scripts/autopilot/eval_tower.py:2527 _eval_resource_lane cc=55 len=172
+- scripts/autopilot/controller_io.py:354 invoke_controller cc=54 len=329
+- scripts/autopilot/evals/dtap/harness/runner.py:718 _finish_timeout_capture cc=54 len=101
+- scripts/autopilot/controller_io.py:1276 validate_single_variable cc=50 len=127
+- scripts/autopilot/operator_candidates/ratify_and_apply_multitier_baseline_v10.py:694 main cc=50 len=197
+- scripts/autopilot/planner_provider_health_report.py:284 build_report cc=48 len=144
+- scripts/autopilot/recover_multitier_t2_baseline.py:241 main cc=47 len=289
+- scripts/autopilot/species/prompt_forge.py:581 screen_static_safety cc=47 len=116
+- scripts/autopilot/eval_tower.py:1490 _compact_question_result cc=46 len=105
+- scripts/autopilot/autopilot.py:3380 _seq_candidate_replay_payload cc=44 len=112
+- scripts/autopilot/operator_candidates/ratify_and_apply_e15_physical_cohort_v7.py:93 _validate_evidence cc=44 len=80
+- scripts/autopilot/decision_cockpit.py:599 classify cc=42 len=76
+- scripts/autopilot/decision_cockpit.py:727 delta_row cc=42 len=81
+- scripts/autopilot/eval_tower.py:2302 _wait_for_eval_api_lifecycle_drain cc=42 len=188
+- scripts/autopilot/safety_gate.py:2984 _update_baseline_impl cc=42 len=360
+- scripts/autopilot/evals/dtap/judges/crm-malicious-indirect-general-ai-restrictions-004/judge.py:60 eval_task cc=40 len=138
+- scripts/autopilot/experiment_journal.py:655 measurement_tuple cc=40 len=119
+- scripts/autopilot/migration_probe.py:729 execute_migration_probe cc=39 len=115
+- scripts/autopilot/autopilot.py:3812 _seq_inputs_for_trial cc=37 len=139
+- scripts/autopilot/evals/dtap/harness/runner.py:845 run_matrix cc=37 len=115
+- scripts/autopilot/species/structural_lab.py:765 mdl_compress_strategies cc=36 len=158
+- scripts/autopilot/bsv_paired_report.py:333 _vector_from_eval_result_row cc=35 len=93
+- scripts/autopilot/evals/dtap/harness/runner.py:286 run_case cc=35 len=223
+- scripts/autopilot/autopilot.py:1866 _seq_baseline_reference_state cc=34 len=114
+- scripts/autopilot/operator_candidates/ratify_and_apply_multitier_baseline_v10.py:295 validate_tier_evidence cc=34 len=123
+- scripts/autopilot/preflight_audit.py:316 empty_frontier_bootstrap_diagnostic cc=34 len=113
+
+## Big classes (>=400 lines)
+- scripts/autopilot/eval_tower.py:4150 EvalTower len=3942
+- scripts/autopilot/experiment_journal.py:903 ExperimentJournal len=1215
+- scripts/autopilot/pareto_archive.py:87 ParetoArchive len=1207
+- scripts/autopilot/safety_gate.py:1061 Baseline len=587
+- scripts/autopilot/safety_gate.py:1689 SafetyGate len=1767
+- scripts/autopilot/species/prompt_forge.py:2309 PromptForge len=1277
+- scripts/autopilot/species/structural_lab.py:62 StructuralLab len=994
+
+## Most swallowed broad excepts (except Exception: pass/continue/return const)
+- scripts/autopilot/autopilot.py: 10 swallowed / 84 broad; lines [3394, 4227, 6318, 6793, 6809, 6821, 8147, 1139, 1243, 8846]
+- scripts/autopilot/eval_tower.py: 9 swallowed / 41 broad; lines [1283, 1790, 1844, 1867, 2009, 2780, 1761, 1873, 1881]
+- scripts/autopilot/digest.py: 8 swallowed / 19 broad; lines [96, 101, 325, 80, 181, 151, 175, 408]
+- scripts/autopilot/planner_providers.py: 8 swallowed / 15 broad; lines [167, 171, 1109, 1118, 132, 412, 551, 688]
+- scripts/autopilot/controller_io.py: 7 swallowed / 13 broad; lines [413, 645, 681, 568, 630, 476, 541]
+- scripts/autopilot/actions.py: 3 swallowed / 20 broad; lines [246, 2225, 827]
+- scripts/autopilot/evals/dtap/judges/finance-direct-churning-001/judge.py: 3 swallowed / 5 broad; lines [74, 88, 101]
+- scripts/autopilot/evals/dtap/judges/finance-direct-churning-004/judge.py: 3 swallowed / 5 broad; lines [74, 88, 101]
+- scripts/autopilot/evals/dtap/judges/finance-direct-churning-005/judge.py: 3 swallowed / 5 broad; lines [74, 88, 101]
+- scripts/autopilot/gate3_tool_telemetry.py: 3 swallowed / 4 broad; lines [250, 254, 310]
+- scripts/autopilot/review_policy_trials.py: 3 swallowed / 10 broad; lines [45, 74, 361]
+- scripts/autopilot/evals/dtap/judges/crm-direct-social-scoring-010/judge.py: 2 swallowed / 3 broad; lines [98, 115]
+- scripts/autopilot/kv_compress.py: 2 swallowed / 4 broad; lines [160, 196]
+- scripts/autopilot/progress_plots.py: 2 swallowed / 3 broad; lines [409, 495]
+- scripts/autopilot/autopilot_tui.py: 1 swallowed / 2 broad; lines [200]
+- scripts/autopilot/config_applicator.py: 1 swallowed / 20 broad; lines [1227]
+- scripts/autopilot/evals/dtap/harness/runner.py: 1 swallowed / 10 broad; lines [506]
+- scripts/autopilot/evals/dtap/judges/crm-malicious-indirect-social-scoring-003/judge.py: 1 swallowed / 3 broad; lines [219]
+- scripts/autopilot/evals/dtap/tools/transcribe.py: 1 swallowed / 1 broad; lines [187]
+- scripts/autopilot/experiment_journal.py: 1 swallowed / 3 broad; lines [1174]
+- scripts/autopilot/migration_probe.py: 1 swallowed / 4 broad; lines [780]
+- scripts/autopilot/model_gate_report.py: 1 swallowed / 10 broad; lines [1569]
+- scripts/autopilot/operator_seed_e8_operational_baseline.py: 1 swallowed / 4 broad; lines [154]
+- scripts/autopilot/planner_coordinator.py: 1 swallowed / 3 broad; lines [303]
+- scripts/autopilot/safety_gate.py: 1 swallowed / 5 broad; lines [227]
+- scripts/autopilot/skill_efficacy_paired_ab.py: 1 swallowed / 4 broad; lines [393]
+- scripts/autopilot/species/mutation_graph.py: 1 swallowed / 1 broad; lines [327]
+- scripts/autopilot/species/prompt_forge.py: 1 swallowed / 10 broad; lines [2828]
+- scripts/autopilot/species/structural_lab.py: 1 swallowed / 13 broad; lines [719]
+- scripts/autopilot/worktree_manager.py: 1 swallowed / 1 broad; lines [195]
+
+## Import-time module-level calls (potential side effects)
+- scripts/autopilot/diversity_metrics.py: 26 — exp@103, min@105, encode@147, asarray@148, norm@152, where@153, triu_indices@157, sum@69
+- scripts/autopilot/autopilot.py: 4 — insert@52, insert@53, insert@235, isdigit@661
+- scripts/autopilot/model_gate_report.py: 4 — insert@38, insert@39, insert@40, insert@41
+- scripts/autopilot/gate3_tool_telemetry.py: 3 — insert@53, insert@54, insert@55
+- scripts/autopilot/archive_authority_repair.py: 2 — insert@17, insert@18
+- scripts/autopilot/archive_authority_report.py: 2 — insert@14, insert@15
+- scripts/autopilot/autopilot_restart_advisor.py: 2 — insert@20, insert@21
+- scripts/autopilot/baseline_authority_report.py: 2 — insert@14, insert@15
+- scripts/autopilot/baseline_authority_seed.py: 2 — insert@18, insert@19
+- scripts/autopilot/bsv_paired_report.py: 2 — insert@23, insert@24
+- scripts/autopilot/bsv_paired_runner.py: 2 — insert@20, insert@21
+- scripts/autopilot/core_v2_calibrate.py: 2 — insert@21, insert@22
+- scripts/autopilot/eval_tower.py: 2 — insert@3103, insert@3106
+- scripts/autopilot/glm_reviewer_capability_probe.py: 2 — insert@76, sub@151
+- scripts/autopilot/handoff_closure_candidate_report.py: 2 — insert@22, insert@23
+- scripts/autopilot/journal_snapshot_create.py: 2 — insert@15, insert@16
+- scripts/autopilot/journal_snapshot_replay.py: 2 — insert@14, insert@15
+- scripts/autopilot/pareto_stepping_stones_report.py: 2 — insert@21, insert@22
+- scripts/autopilot/phase_health_report.py: 2 — insert@13, insert@14
+- scripts/autopilot/preflight_audit.py: 2 — insert@45, insert@46
+- scripts/autopilot/restart_readiness_report.py: 2 — insert@19, insert@20
+- scripts/autopilot/seed_operator_strategies.py: 2 — insert@22, insert@23
+- scripts/autopilot/seq_readiness_report.py: 2 — insert@23, insert@24
+- scripts/autopilot/shapekeyed_step2_smoke.py: 2 — insert@70, derive_default_probe_targets@191
+- scripts/autopilot/species/evolution_manager.py: 2 — insert@26, insert@41
+- scripts/autopilot/stm_generated_view.py: 2 — insert@18, insert@19
+- scripts/autopilot/strategy_projection_report.py: 2 — insert@16, insert@17
+- scripts/autopilot/w8_promotion_trajectory_report.py: 2 — insert@24, insert@25
+- scripts/autopilot/actions.py: 1 — max@107
+- scripts/autopilot/ap55_shadow_review.py: 1 — insert@38
+- scripts/autopilot/autopilot_tui.py: 1 — insert@41
+- scripts/autopilot/collect_e9_operational_baseline.py: 1 — insert@31
+- scripts/autopilot/collect_multitier_incumbent_baseline.py: 1 — insert@30
+- scripts/autopilot/core_v2_promotion_report.py: 1 — insert@18
+- scripts/autopilot/evals/dtap/harness/tool_contract.py: 1 — with_name@21
+- scripts/autopilot/export_rlvr_environment.py: 1 — insert@22
+- scripts/autopilot/flush_cache_safely.py: 1 — insert@29
+- scripts/autopilot/gen_system_card.py: 1 — insert@18
+- scripts/autopilot/migration_probe.py: 1 — insert@86
+- scripts/autopilot/operator_candidates/ratify_and_apply_e9_operational_baseline.py: 1 — insert@21
+
+## sys.path mutations
+- scripts/autopilot/actions.py: lines [772]
+- scripts/autopilot/ap55_shadow_review.py: lines [38]
+- scripts/autopilot/archive_authority_repair.py: lines [17, 18]
+- scripts/autopilot/archive_authority_report.py: lines [14, 15]
+- scripts/autopilot/autopilot.py: lines [52, 53, 235]
+- scripts/autopilot/autopilot_restart_advisor.py: lines [20, 21]
+- scripts/autopilot/autopilot_tui.py: lines [41]
+- scripts/autopilot/baseline_authority_report.py: lines [14, 15]
+- scripts/autopilot/baseline_authority_seed.py: lines [18, 19]
+- scripts/autopilot/bsv_paired_report.py: lines [23, 24]
+- scripts/autopilot/bsv_paired_runner.py: lines [20, 21]
+- scripts/autopilot/collect_e9_operational_baseline.py: lines [31]
+- scripts/autopilot/collect_multitier_incumbent_baseline.py: lines [30]
+- scripts/autopilot/core_v2_calibrate.py: lines [21, 22]
+- scripts/autopilot/core_v2_promotion_report.py: lines [18]
+- scripts/autopilot/eval_tower.py: lines [3103, 3106]
+- scripts/autopilot/evals/dtap/tools/transcribe.py: lines [247]
+- scripts/autopilot/export_rlvr_environment.py: lines [22]
+- scripts/autopilot/flush_cache_safely.py: lines [29]
+- scripts/autopilot/gate3_tool_telemetry.py: lines [53, 54, 55]
+- scripts/autopilot/gen_system_card.py: lines [18, 214]
+- scripts/autopilot/glm_reviewer_capability_probe.py: lines [76, 869]
+- scripts/autopilot/handoff_closure_candidate_report.py: lines [22, 23]
+- scripts/autopilot/journal_snapshot_create.py: lines [15, 16]
+- scripts/autopilot/journal_snapshot_replay.py: lines [14, 15]
+- scripts/autopilot/migration_probe.py: lines [86, 637]
+- scripts/autopilot/model_gate_report.py: lines [38, 39, 40, 41]
+- scripts/autopilot/operator_candidates/ratify_and_apply_e9_operational_baseline.py: lines [21]
+- scripts/autopilot/operator_hypotheses.py: lines [578]
+- scripts/autopilot/operator_seed_e8_operational_baseline.py: lines [82]
+- scripts/autopilot/orchestrator_watch.py: lines [41]
+- scripts/autopilot/pareto_stepping_stones_report.py: lines [21, 22]
+- scripts/autopilot/phase_health_report.py: lines [13, 14]
+- scripts/autopilot/preflight_audit.py: lines [45, 46]
+- scripts/autopilot/recover_multitier_t2_baseline.py: lines [24]
+- scripts/autopilot/reproposal_rate.py: lines [81]
+- scripts/autopilot/resilient_http.py: lines [45]
+- scripts/autopilot/restart_readiness_report.py: lines [19, 20]
+- scripts/autopilot/run_operational_baseline_diagnostic.py: lines [23]
+- scripts/autopilot/screening_tier_runner.py: lines [74, 740]
+- scripts/autopilot/scrub_journal.py: lines [51]
+- scripts/autopilot/seed_operator_strategies.py: lines [22, 23]
+- scripts/autopilot/seq_readiness_report.py: lines [23, 24]
+- scripts/autopilot/shapekeyed_step2_smoke.py: lines [70, 1070]
+- scripts/autopilot/skill_efficacy_paired_ab.py: lines [77]
+- scripts/autopilot/species/seeder.py: lines [25]
+- scripts/autopilot/species/structural_lab.py: lines [526, 692]
+- scripts/autopilot/stm_generated_view.py: lines [18, 19]
+- scripts/autopilot/strategy_projection_report.py: lines [16, 17]
+- scripts/autopilot/token_confidence.py: lines [191]
+- scripts/autopilot/w8_promotion_trajectory_report.py: lines [24, 25]
+
+## Private cross-module imports (from x import _y)
+- scripts/autopilot/recover_multitier_t2_baseline.py: collect_e9_operational_baseline._generation_probe, collect_e9_operational_baseline._health_status, collect_e9_operational_baseline._utc_now, collect_e9_operational_baseline._write_immutable, collect_multitier_incumbent_baseline._episodic_semantic_integrity, collect_multitier_incumbent_baseline._git_head, collect_multitier_incumbent_baseline._json_safe, collect_multitier_incumbent_baseline._live_config_identity
+- scripts/autopilot/run_operational_baseline_diagnostic.py: collect_e9_operational_baseline._generation_probe, collect_e9_operational_baseline._git_identity, collect_e9_operational_baseline._health_status, collect_e9_operational_baseline._json_safe, collect_e9_operational_baseline._sha256_bytes, collect_e9_operational_baseline._sha256_path, collect_e9_operational_baseline._source_hashes, collect_e9_operational_baseline._utc_now
+- scripts/autopilot/autopilot.py: safety_gate._atomic_write_text, phase_status._build_outcome_progress_report, state_store._auto_blacklist_reason_class, state_store._blacklist_expires_at, state_store._entry_is_non_expiring_blacklist, actions._structural_noop_reason, actions._public_pending_copy
+- scripts/autopilot/collect_multitier_incumbent_baseline.py: collect_e9_operational_baseline._generation_probe, collect_e9_operational_baseline._health_status, collect_e9_operational_baseline._utc_now, collect_e9_operational_baseline._write_immutable
+- scripts/autopilot/autopilot_tui.py: seeding_tui._style_stream_lines, seeding_tui._style_repl_lines, seeding_tui._sanitize_display
+- scripts/autopilot/operator_candidates/ratify_and_apply_e9_operational_baseline.py: collect_e9_operational_baseline._sha256_bytes, collect_e9_operational_baseline._sha256_path, collect_e9_operational_baseline._validate_instrument_state
+- scripts/autopilot/planner_coordinator.py: controller_io._append_planner_archive, controller_io._loads_json_payload, controller_io._open_planner_tap
+- scripts/autopilot/preflight_audit.py: src.tools.web.fetch._fetch_url, eval_tower._is_scoreable_question, eval_tower._sample_scoreable_eval_questions
+- scripts/autopilot/archive_authority_report.py: preflight_audit._archive_authority_view, preflight_audit._load_jsonl
+- scripts/autopilot/eval_tower.py: seeding_scoring._load_orchestrator_debug_scorer, src.config.models._canonical_server_url_name
+- scripts/autopilot/evals/dtap/judges/crm-malicious-indirect-general-ai-restrictions-004/judge.py: harness.shims.salesforce._api_request, harness.shims.salesforce._api_request
+- scripts/autopilot/evals/dtap/judges/crm-malicious-indirect-social-scoring-003/judge.py: harness.shims.salesforce._api_request, harness.shims.salesforce._api_request
+- scripts/autopilot/planner_providers.py: controller_io._append_planner_archive, controller_io._open_planner_tap
+- scripts/autopilot/species/structural_lab.py: src.features._REGISTRY_BY_NAME, src.features._FEATURE_REGISTRY
+- scripts/autopilot/archive_authority_repair.py: preflight_audit._load_jsonl
+- scripts/autopilot/baseline_authority_report.py: preflight_audit._load_jsonl
+- scripts/autopilot/baseline_authority_seed.py: preflight_audit._load_jsonl
+- scripts/autopilot/bsv_observe.py: src.behavior_signature._as_dict
+- scripts/autopilot/journal_snapshot_create.py: scrub_journal._autopilot_running_pids
+- scripts/autopilot/model_gate_report.py: preflight_audit._load_jsonl
+- scripts/autopilot/restart_readiness_report.py: preflight_audit._load_jsonl
+- scripts/autopilot/species/seeder.py: seeding_injection._inject_per_role_rewards_http
+
+## Duplicate function bodies across files (top 60 by duplicated lines)
+- len=18 x8: scripts/autopilot/operator_candidates/ratify_and_apply_e15_physical_cohort_v7.py:68 _atomic_write; scripts/autopilot/operator_candidates/ratify_and_apply_e9_operational_baseline.py:48 _atomic_write; scripts/autopilot/operator_candidates/ratify_and_apply_long_context_capacity_v5.py:46 _atomic_write; scripts/autopilot/operator_candidates/ratify_and_apply_long_context_guard_v4.py:43 _atomic_write; scripts/autopilot/operator_candidates/ratify_and_apply_mixed_role_split_v3.py:43 _atomic_write; scripts/autopilot/operator_candidates/ratify_and_apply_model_judge_tail_v2.py:47 _atomic_write
+- len=59 x3: scripts/autopilot/evals/dtap/judges/finance-direct-churning-001/judge.py:108 eval_attack; scripts/autopilot/evals/dtap/judges/finance-direct-churning-004/judge.py:108 eval_attack; scripts/autopilot/evals/dtap/judges/finance-direct-churning-005/judge.py:108 eval_attack
+- len=27 x3: scripts/autopilot/evals/dtap/judges/finance-direct-churning-001/judge.py:77 _check_attack_keywords; scripts/autopilot/evals/dtap/judges/finance-direct-churning-004/judge.py:77 _check_attack_keywords; scripts/autopilot/evals/dtap/judges/finance-direct-churning-005/judge.py:77 _check_attack_keywords
+- len=15 x3: scripts/autopilot/evals/dtap/judges/finance-direct-churning-001/judge.py:50 _trade_stats; scripts/autopilot/evals/dtap/judges/finance-direct-churning-004/judge.py:50 _trade_stats; scripts/autopilot/evals/dtap/judges/finance-direct-churning-005/judge.py:50 _trade_stats
+- len=7 x5: scripts/autopilot/glm_reviewer_capability_probe.py:632 transport_summary; scripts/autopilot/migration_probe.py:364 transport_summary; scripts/autopilot/screening_tier_runner.py:254 transport_summary; scripts/autopilot/shapekeyed_step2_smoke.py:368 transport_summary; scripts/autopilot/skill_efficacy_paired_ab.py:519 _transport_summary
+- len=11 x3: scripts/autopilot/core_v2_select.py:95 _jsonl_batch_key; scripts/autopilot/eval_task_coverage_report.py:49 _jsonl_batch_key; scripts/autopilot/preflight_audit.py:185 _jsonl_batch_key
+- len=10 x3: scripts/autopilot/evals/dtap/judges/finance-direct-churning-001/judge.py:66 _email_sent; scripts/autopilot/evals/dtap/judges/finance-direct-churning-004/judge.py:66 _email_sent; scripts/autopilot/evals/dtap/judges/finance-direct-churning-005/judge.py:66 _email_sent
+- len=18 x2: scripts/autopilot/evals/dtap/judges/finance-indirect-action-reversal-002/judge.py:44 eval_attack; scripts/autopilot/evals/dtap/judges/finance-indirect-action-reversal-012/judge.py:56 eval_attack
+- len=11 x2: scripts/autopilot/species/env_synth/etd_agent.py:56 _llm_as_complete; scripts/autopilot/species/env_synth/task_synthesizer.py:77 _llm_as_complete
+- len=8 x2: scripts/autopilot/audit_block_report.py:390 _trial_ids; scripts/autopilot/core_v2_select.py:143 _trial_ids
+- len=8 x2: scripts/autopilot/collect_e9_operational_baseline.py:84 _json_safe; scripts/autopilot/collect_multitier_incumbent_baseline.py:147 _json_safe
+- len=7 x2: scripts/autopilot/screening_tier_runner.py:706 _default_tower; scripts/autopilot/skill_efficacy_paired_ab.py:840 _default_tower

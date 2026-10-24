@@ -1,0 +1,85 @@
+# Churn: orch_tests (commits touching file, since 2026-08-01)
+     15 tests/unit/test_stack_change_guard.py
+     15 tests/unit/test_dashboard_helpers.py
+     14 tests/unit/test_eval_tower_concurrency_metrics.py
+     12 tests/unit/test_orchestrator_stack_reload.py
+     12 tests/unit/test_inference_mixin.py
+     11 tests/unit/test_typed_decisions_native.py
+     11 tests/unit/test_dashboard_route_html.py
+     11 tests/unit/test_build_server_command_helpers.py
+     10 tests/unit/test_q_scorer.py
+     10 tests/unit/test_kb_rag_force_dedup.py
+      9 tests/unit/test_stack_priors_compiler.py
+      9 tests/unit/test_repl_executor.py
+      9 tests/unit/test_openai_client_tool_mode.py
+      9 tests/unit/test_e9_operational_baseline.py
+      8 tests/unit/test_objective_rate_flip.py
+      8 tests/conftest.py
+      7 tests/unit/test_typed_decisions_measure.py
+      7 tests/unit/test_stack_change_pipeline.py
+      7 tests/unit/test_e8_quality_baseline_v5.py
+      7 tests/unit/test_config_consolidation.py
+      6 tests/unit/test_v1_escalation.py
+      6 tests/unit/test_typed_decisions.py
+      6 tests/unit/test_planner_evidence.py
+      6 tests/unit/test_pipeline_routing.py
+      6 tests/unit/test_passthrough_route.py
+      6 tests/unit/test_multitier_baseline_collector.py
+      6 tests/unit/test_llama_server.py
+      6 tests/unit/test_invocation_log_request_scope.py
+      6 tests/unit/test_config.py
+      6 tests/unit/test_ap54_eval_knowledge_fence.py
+      5 tests/unit/test_start_authority_daemon.py
+      5 tests/unit/test_stack_numa_evict.py
+      5 tests/unit/test_stack_manifest_imports.py
+      5 tests/unit/test_stack_change_pipeline_simulated_fixtures.py
+      5 tests/unit/test_seeding_orchestrator.py
+      5 tests/unit/test_prompt_builders.py
+      5 tests/unit/test_openai_compat_default_golden.py
+      5 tests/unit/test_gpu_window_executor.py
+      5 tests/unit/test_eval_tower_question_persistence.py
+      5 tests/unit/test_debug_scorer_td21_parse_exclusion.py
+      5 tests/unit/test_dashboard_region_locks.py
+      5 tests/unit/test_context_overflow_handling.py
+      5 tests/unit/test_config_lineup_liveness.py
+      5 tests/unit/test_autopilot_planner_coordinator.py
+      4 tests/unit/test_structured_output_repair.py
+      4 tests/unit/test_shapekeyed_step2_smoke.py
+      4 tests/unit/test_scheduling_contention.py
+      4 tests/unit/test_runtime_flags.py
+      4 tests/unit/test_retrieval_encoder_onnx_threads.py
+      4 tests/unit/test_repl_routing.py
+      4 tests/unit/test_quarter_stack_smoke.py
+      4 tests/unit/test_prefix_index_flag_off.py
+      4 tests/unit/test_persister.py
+      4 tests/unit/test_orchestrator_stack_threads.py
+      4 tests/unit/test_openai_compat_backend_failure_status.py
+      4 tests/unit/test_oab7_context_bundle.py
+      4 tests/unit/test_oab3_quiescence_witness.py
+      4 tests/unit/test_lock_fifo_queue.py
+      4 tests/unit/test_lab_run_job.py
+      4 tests/unit/test_gate_frontier_c_and_b.py
+
+# Monthly insertions/deletions (python only) for: tests
+2026-01 +20157 -225 net=19932
+2026-02 +55884 -9538 net=46346
+2026-03 +1994 -40 net=1954
+2026-04 +19439 -300 net=19139
+2026-05 +20361 -173 net=20188
+2026-06 +53207 -1933 net=51274
+2026-07 +89573 -3063 net=86510
+2026-08 +33735 -2619 net=31116
+2026-09 +59208 -3674 net=55534
+2026-10 +24950 -2791 net=22159
+
+# Commits per month
+     28 2026-01
+    127 2026-02
+      5 2026-03
+     38 2026-04
+    123 2026-05
+    803 2026-06
+    707 2026-07
+    156 2026-08
+    273 2026-09
+    241 2026-10

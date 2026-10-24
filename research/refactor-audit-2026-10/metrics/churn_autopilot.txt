@@ -1,0 +1,83 @@
+# Churn: autopilot (commits touching file, since 2026-08-01)
+     53 scripts/autopilot/autopilot.py
+     44 scripts/autopilot/eval_tower.py
+     17 scripts/autopilot/safety_gate.py
+     14 scripts/autopilot/experiment_journal.py
+     13 src/autopilot_core/tier_specs.py
+     10 scripts/autopilot/species/prompt_forge.py
+     10 scripts/autopilot/collect_e9_operational_baseline.py
+     10 scripts/autopilot/actions.py
+      7 scripts/autopilot/operator_candidates/ratify_and_apply_e9_operational_baseline.py
+      7 scripts/autopilot/evals/dtap/harness/runner.py
+      7 scripts/autopilot/config_applicator.py
+      7 scripts/autopilot/collect_multitier_incumbent_baseline.py
+      6 src/autopilot_core/journal_snapshot_replay.py
+      6 scripts/autopilot/controller_io.py
+      5 src/autopilot_core/measurement_guards.py
+      5 src/autopilot_core/journal_reconstruction.py
+      5 scripts/autopilot/start_authority_daemon.py
+      5 scripts/autopilot/planner_coordinator.py
+      4 src/autopilot_core/sequential_verdict.py
+      4 src/autopilot_core/infra_fingerprint.py
+      4 src/autopilot_core/__init__.py
+      4 scripts/autopilot/state_ownership.py
+      4 scripts/autopilot/species/evolution_manager.py
+      4 scripts/autopilot/shapekeyed_step2_smoke.py
+      4 scripts/autopilot/recover_multitier_t2_baseline.py
+      4 scripts/autopilot/evals/dtap/tests/test_tool_contract.py
+      4 scripts/autopilot/evals/dtap/harness/endpoint.py
+      4 scripts/autopilot/evals/dtap/harness/cli.py
+      4 scripts/autopilot/core_v2_select.py
+      3 src/autopilot_core/planner_evidence.py
+      3 src/autopilot_core/action_identity.py
+      3 scripts/autopilot/species/env_synth/task_synthesizer.py
+      3 scripts/autopilot/run_operational_baseline_diagnostic.py
+      3 scripts/autopilot/pareto_archive.py
+      3 scripts/autopilot/operator_seed_e8_operational_baseline.py
+      3 scripts/autopilot/kv_compress.py
+      3 scripts/autopilot/evals/dtap/tests/test_dtap_harness.py
+      3 scripts/autopilot/eval_leakage_monitor.py
+      2 src/autopilot_core/pareto_math.py
+      2 src/autopilot_core/live_reproductions.py
+      2 src/autopilot_core/ap55_promotion_gate.py
+      2 scripts/autopilot/worktree_manager.py
+      2 scripts/autopilot/vidya_planner_bridge.py
+      2 scripts/autopilot/token_confidence.py
+      2 scripts/autopilot/state_store.py
+      2 scripts/autopilot/species/structural_lab.py
+      2 scripts/autopilot/species/env_synth/etd_agent.py
+      2 scripts/autopilot/review_policy_trials.py
+      2 scripts/autopilot/reproposal_rate.py
+      2 scripts/autopilot/preflight_audit.py
+      2 scripts/autopilot/planner_roster.py
+      2 scripts/autopilot/planner_providers.py
+      2 scripts/autopilot/operator_candidates/ratify_and_apply_multitier_baseline_v10.py
+      2 scripts/autopilot/operator_candidates/ratify_and_apply_e13_operational_baseline.py
+      2 scripts/autopilot/operator_candidates/ratify_and_apply_e12_operational_baseline.py
+      2 scripts/autopilot/model_gate_report.py
+      2 scripts/autopilot/evals/dtap/tools/transcribe.py
+      2 scripts/autopilot/evals/dtap/tests/test_failure_ledger.py
+      2 scripts/autopilot/evals/dtap/harness/tool_contract.py
+      2 scripts/autopilot/evals/dtap/harness/failure_ledger.py
+
+# Monthly insertions/deletions (python only) for: scripts/autopilot src/autopilot_core
+2026-01 +0 -0 net=0
+2026-02 +0 -0 net=0
+2026-03 +4406 -6 net=4400
+2026-04 +5612 -175 net=5437
+2026-05 +10836 -1798 net=9038
+2026-06 +23913 -2649 net=21264
+2026-07 +35914 -3795 net=32119
+2026-08 +20435 -1344 net=19091
+2026-09 +14888 -996 net=13892
+2026-10 +4258 -320 net=3938
+
+# Commits per month
+      6 2026-03
+     35 2026-04
+     70 2026-05
+    300 2026-06
+    308 2026-07
+     90 2026-08
+     78 2026-09
+     30 2026-10

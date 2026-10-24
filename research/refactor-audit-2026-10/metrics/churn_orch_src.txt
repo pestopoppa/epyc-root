@@ -1,0 +1,85 @@
+# Churn: orch_src (commits touching file, since 2026-08-01)
+     30 src/llm_primitives/inference.py
+     29 src/api/routes/dashboard.py
+     23 src/api/routes/openai_compat.py
+     22 src/api/routes/chat.py
+     18 src/api/routes/chat_pipeline/repl_executor.py
+     17 src/backends/llama_server.py
+     16 src/api/models/openai.py
+     14 src/graph/helpers.py
+     14 src/features.py
+     13 src/registry/stack_priors.py
+     13 src/config/models.py
+     13 src/autopilot_core/tier_specs.py
+     11 src/typed_decisions/native.py
+     11 src/roles.py
+     11 src/retrieval/kb_rag.py
+     11 src/llm_primitives/primitives.py
+     10 src/typed_decisions/measure.py
+     10 src/repl_environment/environment.py
+     10 src/backends/context_limits.py
+     10 src/api/routes/passthrough.py
+     10 src/api/routes/chat_pipeline/routing_decision.py
+      9 src/typed_decisions/runner.py
+      9 src/backends/concurrency_aware.py
+      9 src/api/routes/chat_review.py
+      9 src/api/models/requests.py
+      8 src/scheduling/kv_pool_admission.py
+      8 src/retrieval/colbert_encoder.py
+      8 src/repl_environment/context.py
+      8 src/inference/model_server.py
+      8 src/backends/serving_calls.py
+      8 src/api/routes/chat_pipeline/scout_stage.py
+      8 src/api/routes/chat_pipeline/proactive_stage.py
+      8 src/api/models/responses.py
+      7 src/structured_output/repair.py
+      7 src/proactive_delegation/review_service.py
+      6 src/graph/langgraph/nodes.py
+      6 src/autopilot_core/journal_snapshot_replay.py
+      6 src/api/routes/v1_escalation.py
+      6 src/api/routes/dashboard_topology.py
+      6 src/api/routes/chat_pipeline/direct_stage.py
+      6 src/api/routes/chat_delegation.py
+      5 src/typed_decisions/bench.py
+      5 src/runtime/cpu_region_lock.py
+      5 src/repl_environment/external_access.py
+      5 src/repl_environment/context_bundle.py
+      5 src/repl_environment/combined_ops.py
+      5 src/repl_environment/code_search.py
+      5 src/registry/tool_registry.py
+      5 src/prompt_builders/code_utils.py
+      5 src/autopilot_core/measurement_guards.py
+      5 src/autopilot_core/journal_reconstruction.py
+      5 src/api/routes/chat_pipeline/stream_adapter.py
+      5 src/api/routes/chat_pipeline/stages.py
+      5 src/api/routes/chat_pipeline/routing.py
+      4 src/session/sqlite_store.py
+      4 src/scheduling/contention.py
+      4 src/runtime/gpu_window_executor.py
+      4 src/runtime/gpu_quiet_lock.py
+      4 src/repl_environment/knowledge_fence.py
+      4 src/repl_environment/file_exploration.py
+
+# Monthly insertions/deletions (python only) for: src
+2026-01 +55123 -13039 net=42084
+2026-02 +38179 -14072 net=24107
+2026-03 +4241 -393 net=3848
+2026-04 +20860 -10904 net=9956
+2026-05 +21039 -3580 net=17459
+2026-06 +17228 -3734 net=13494
+2026-07 +25759 -2337 net=23422
+2026-08 +12118 -1522 net=10596
+2026-09 +39744 -3462 net=36282
+2026-10 +19238 -2635 net=16603
+
+# Commits per month
+     36 2026-01
+    175 2026-02
+     17 2026-03
+     73 2026-04
+    160 2026-05
+    336 2026-06
+    235 2026-07
+     78 2026-08
+    179 2026-09
+    115 2026-10

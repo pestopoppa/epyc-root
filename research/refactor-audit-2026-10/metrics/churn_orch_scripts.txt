@@ -1,0 +1,85 @@
+# Churn: orch_scripts (commits touching file, since 2026-08-01)
+     53 scripts/autopilot/autopilot.py
+     44 scripts/autopilot/eval_tower.py
+     38 scripts/server/orchestrator_stack.py
+     18 scripts/benchmark/debug_scorer.py
+     17 scripts/autopilot/safety_gate.py
+     14 scripts/server/stack_commands.py
+     14 scripts/autopilot/experiment_journal.py
+     11 scripts/server/stack_manifest.py
+     11 scripts/registry/stack_change_pipeline.py
+     10 scripts/server/contention_matrix.py
+     10 scripts/autopilot/species/prompt_forge.py
+     10 scripts/autopilot/collect_e9_operational_baseline.py
+     10 scripts/autopilot/actions.py
+      9 scripts/validate/stack_change_guard.py
+      7 scripts/server/stack_numa.py
+      7 scripts/autopilot/operator_candidates/ratify_and_apply_e9_operational_baseline.py
+      7 scripts/autopilot/evals/dtap/harness/runner.py
+      7 scripts/autopilot/config_applicator.py
+      7 scripts/autopilot/collect_multitier_incumbent_baseline.py
+      7 scripts/analysis/mf_vbs1_verify_before_stop.py
+      7 scripts/analysis/eval_suite_discriminability.py
+      6 scripts/benchmark/seeding_orchestrator.py
+      6 scripts/autopilot/controller_io.py
+      6 scripts/autokernel_actor_cli.py
+      5 scripts/server/stack_env.py
+      5 scripts/server/embedder_placement_gate.py
+      5 scripts/kb_rag/parallel_reembed.py
+      5 scripts/autopilot/start_authority_daemon.py
+      5 scripts/autopilot/planner_coordinator.py
+      4 scripts/server/autokernel_enrollment.py
+      4 scripts/maintenance/reseed_episodic_store.py
+      4 scripts/benchmark/seeding_scoring.py
+      4 scripts/autopilot/state_ownership.py
+      4 scripts/autopilot/species/evolution_manager.py
+      4 scripts/autopilot/shapekeyed_step2_smoke.py
+      4 scripts/autopilot/recover_multitier_t2_baseline.py
+      4 scripts/autopilot/evals/dtap/tests/test_tool_contract.py
+      4 scripts/autopilot/evals/dtap/harness/endpoint.py
+      4 scripts/autopilot/evals/dtap/harness/cli.py
+      4 scripts/autopilot/core_v2_select.py
+      4 scripts/analysis/readjudicate_sequential_candidates.py
+      4 scripts/analysis/gate_frontier_replay.py
+      3 scripts/validate/reasoning_effort_certifications.py
+      3 scripts/server/stack_paths.py
+      3 scripts/server/stack_numa_evict.py
+      3 scripts/server/env_attestation.py
+      3 scripts/server/bench_core_claim.py
+      3 scripts/server/affinity_preflight.py
+      3 scripts/review/review_replay_50.py
+      3 scripts/maintenance/check_episodic_integrity.py
+      3 scripts/graph_router/embed_soft_label_dataset.py
+      3 scripts/autopilot/species/env_synth/task_synthesizer.py
+      3 scripts/autopilot/run_operational_baseline_diagnostic.py
+      3 scripts/autopilot/pareto_archive.py
+      3 scripts/autopilot/operator_seed_e8_operational_baseline.py
+      3 scripts/autopilot/kv_compress.py
+      3 scripts/autopilot/evals/dtap/tests/test_dtap_harness.py
+      3 scripts/autopilot/eval_leakage_monitor.py
+      2 scripts/validate/kernel_freeze_scope.py
+      2 scripts/validate/default_template_topology_parity.py
+
+# Monthly insertions/deletions (python only) for: scripts
+2026-01 +1901 -108 net=1793
+2026-02 +29012 -192 net=28820
+2026-03 +7459 -183 net=7276
+2026-04 +11399 -473 net=10926
+2026-05 +26710 -8543 net=18167
+2026-06 +58105 -4401 net=53704
+2026-07 +98699 -7365 net=91334
+2026-08 +31775 -3436 net=28339
+2026-09 +25750 -1636 net=24114
+2026-10 +7085 -711 net=6374
+
+# Commits per month
+     19 2026-01
+     32 2026-02
+     27 2026-03
+     61 2026-04
+    135 2026-05
+    572 2026-06
+    569 2026-07
+    133 2026-08
+    157 2026-09
+     73 2026-10

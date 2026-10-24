@@ -1,0 +1,540 @@
+# Metrics: orch_scripts_all (/workspace/repos/epyc-orchestrator/scripts)
+
+files=536 loc=271952 code=228575 funcs=7708 broad_except=942 swallowed=192 prints=2537 module_level_calls=443 global_stmts=28 hardcoded_/mnt/raid0=246 public_undoc_funcs=1912 no_module_doc=22 sys.path_mutations=278 shell=True=5
+
+## Largest files (loc)
+- scripts/autopilot/autopilot.py: 12289 loc, 259 funcs, max_func=2902, max_cc=324
+- scripts/autopilot/eval_tower.py: 8091 loc, 194 funcs, max_func=697, max_cc=140
+- scripts/benchmark/run_e8_quality_baseline_reseed.py: 4159 loc, 110 funcs, max_func=299, max_cc=78
+- scripts/autopilot/species/prompt_forge.py: 3585 loc, 126 funcs, max_func=154, max_cc=47
+- scripts/server/orchestrator_stack.py: 3499 loc, 75 funcs, max_func=537, max_cc=58
+- scripts/autopilot/safety_gate.py: 3455 loc, 80 funcs, max_func=521, max_cc=76
+- scripts/validate/stack_change_guard.py: 3283 loc, 89 funcs, max_func=258, max_cc=64
+- scripts/autopilot/actions.py: 3210 loc, 71 funcs, max_func=166, max_cc=33
+- scripts/benchmark/validate_e8_quality_baseline_v5.py: 3057 loc, 34 funcs, max_func=1020, max_cc=402
+- scripts/benchmark/deprecated/seed_specialist_routing_v1.py: 2920 loc, 45 funcs, max_func=430, max_cc=47
+- scripts/autopilot/model_gate_report.py: 2839 loc, 40 funcs, max_func=838, max_cc=113
+- scripts/autopilot/config_applicator.py: 2767 loc, 69 funcs, max_func=216, max_cc=27
+- scripts/server/stack_commands.py: 2753 loc, 66 funcs, max_func=641, max_cc=115
+- scripts/server/contention_matrix.py: 2434 loc, 53 funcs, max_func=196, max_cc=36
+- scripts/benchmark/debug_scorer.py: 2325 loc, 60 funcs, max_func=154, max_cc=32
+- scripts/autopilot/experiment_journal.py: 2117 loc, 71 funcs, max_func=123, max_cc=40
+- scripts/server/stack_manifest.py: 1970 loc, 42 funcs, max_func=169, max_cc=47
+- scripts/benchmark/eval_batch_serving_evaltower_window.py: 1950 loc, 55 funcs, max_func=218, max_cc=54
+- scripts/autopilot/planner_coordinator.py: 1931 loc, 46 funcs, max_func=444, max_cc=58
+- scripts/benchmark/finalize_e8_quality_baseline_v5_recovery_r2.py: 1743 loc, 24 funcs, max_func=305, max_cc=133
+- scripts/registry/stack_change_pipeline.py: 1669 loc, 57 funcs, max_func=147, max_cc=17
+- scripts/benchmark/seed_specialist_routing.py: 1597 loc, 14 funcs, max_func=819, max_cc=85
+- scripts/benchmark/recover_e8_quality_baseline_v5_partial_r2.py: 1595 loc, 47 funcs, max_func=205, max_cc=60
+- scripts/benchmark/complete_e8_quality_baseline_v5_final_c1.py: 1572 loc, 36 funcs, max_func=156, max_cc=53
+- scripts/attest/generate_attestation.py: 1509 loc, 50 funcs, max_func=227, max_cc=66
+- scripts/autopilot/shapekeyed_step2_smoke.py: 1508 loc, 38 funcs, max_func=127, max_cc=22
+- scripts/benchmark/seed_specialist_routing_v2.py: 1458 loc, 14 funcs, max_func=706, max_cc=73
+- scripts/autopilot/planner_providers.py: 1406 loc, 40 funcs, max_func=145, max_cc=22
+- scripts/autopilot/controller_io.py: 1402 loc, 33 funcs, max_func=329, max_cc=54
+- scripts/graph_router/plan_offline_reward_pairwise_holdout_expansion.py: 1380 loc, 34 funcs, max_func=253, max_cc=52
+- scripts/benchmark/prepare_e8_quality_baseline_v5_partial_r2_race_retry.py: 1361 loc, 37 funcs, max_func=210, max_cc=71
+- scripts/benchmark/final_c1_retry.py: 1359 loc, 30 funcs, max_func=173, max_cc=89
+- scripts/autopilot/pareto_archive.py: 1348 loc, 54 funcs, max_func=168, max_cc=30
+- scripts/benchmark/seeding_eval.py: 1338 loc, 23 funcs, max_func=269, max_cc=40
+- scripts/autopilot/decision_cockpit.py: 1336 loc, 33 funcs, max_func=401, max_cc=167
+- scripts/tasks/harvest_tasks.py: 1286 loc, 38 funcs, max_func=151, max_cc=51
+- scripts/benchmark/run_e8_quality_baseline_v5.py: 1281 loc, 32 funcs, max_func=232, max_cc=43
+- scripts/benchmark/seeding_orchestrator.py: 1230 loc, 21 funcs, max_func=440, max_cc=71
+- scripts/maintenance/purge_eval_leak_memories_20260917.py: 1229 loc, 39 funcs, max_func=251, max_cc=86
+- scripts/autopilot/phase_status.py: 1158 loc, 42 funcs, max_func=192, max_cc=67
+
+## Longest functions
+- scripts/autopilot/autopilot.py:8415 _run_loop_inner len=2902 cc=324 depth=7 nargs=5
+- scripts/benchmark/validate_e8_quality_baseline_v5.py:1997 validate len=1020 cc=402 depth=5 nargs=12
+- scripts/autopilot/model_gate_report.py:1870 build_next_actions len=838 cc=113 depth=5 nargs=1
+- scripts/benchmark/seed_specialist_routing.py:729 main len=819 cc=85 depth=8 nargs=0
+- scripts/benchmark/seed_specialist_routing_v2.py:703 main len=706 cc=73 depth=8 nargs=0
+- scripts/autopilot/eval_tower.py:5151 _eval_batch len=697 cc=119 depth=6 nargs=5
+- scripts/autopilot/eval_tower.py:5876 _aggregate len=641 cc=140 depth=3 nargs=3
+- scripts/server/stack_commands.py:1342 cmd_start len=641 cc=115 depth=6 nargs=1
+- scripts/server/orchestrator_stack.py:1804 start_server len=537 cc=58 depth=3 nargs=15
+- scripts/autopilot/safety_gate.py:2135 check len=521 cc=76 depth=8 nargs=10
+- scripts/autopilot/planner_coordinator.py:307 plan_with_providers len=444 cc=58 depth=8 nargs=12
+- scripts/benchmark/seeding_orchestrator.py:791 call_orchestrator_forced len=440 cc=71 depth=5 nargs=25
+- scripts/benchmark/deprecated/seed_specialist_routing_v1.py:2484 main len=430 cc=47 depth=8 nargs=0
+- scripts/autopilot/decision_cockpit.py:852 build_decision_cockpit len=401 cc=167 depth=5 nargs=10
+- scripts/benchmark/seed_specialist_routing.py:264 run_batch_3way len=385 cc=41 depth=7 nargs=14
+- scripts/benchmark/seed_specialist_routing_v2.py:251 run_batch_3way len=374 cc=40 depth=7 nargs=12
+- scripts/autopilot/safety_gate.py:2984 _update_baseline_impl len=360 cc=42 depth=2 nargs=4
+- scripts/benchmark/resume_e8_quality_baseline_v5.py:681 execute len=349 cc=54 depth=4 nargs=1
+- scripts/benchmark/validate_e8_quality_baseline_v5.py:1181 validate_recovery_r2_context len=336 cc=160 depth=2 nargs=13
+- scripts/analysis/ri10_canary_sample_report.py:113 build_report len=333 cc=64 depth=6 nargs=6
+- scripts/autopilot/controller_io.py:354 invoke_controller len=329 cc=54 depth=4 nargs=4
+- scripts/server/stack_commands.py:2128 cmd_reload len=329 cc=65 depth=8 nargs=1
+- scripts/benchmark/seeding_legacy.py:180 evaluate_question len=328 cc=60 depth=5 nargs=13
+- scripts/graph_router/train_verifier_head.py:354 train_and_eval len=313 cc=42 depth=4 nargs=18
+- scripts/autopilot/model_gate_report.py:1116 a9_collection_section len=311 cc=76 depth=3 nargs=8
+- scripts/benchmark/finalize_e8_quality_baseline_v5_recovery_r2.py:1398 execute len=305 cc=50 depth=3 nargs=1
+- scripts/benchmark/corpus_quality_gate.py:733 main len=300 cc=34 depth=4 nargs=0
+- scripts/benchmark/run_e8_quality_baseline_reseed.py:3681 execute len=299 cc=69 depth=5 nargs=2
+- scripts/autopilot/eval_tower.py:6728 eval_t1 len=293 cc=21 depth=3 nargs=4
+- scripts/autopilot/recover_multitier_t2_baseline.py:241 main len=289 cc=47 depth=4 nargs=0
+- scripts/benchmark/finalize_e8_quality_baseline_v5_recovery_r2.py:1113 _rewrite_for_recovery len=283 cc=29 depth=3 nargs=3
+- scripts/server/orchestrator_stack.py:2427 start_orchestrator len=277 cc=22 depth=3 nargs=3
+- scripts/benchmark/seeding_eval.py:1070 evaluate_question_per_role len=269 cc=40 depth=4 nargs=7
+- scripts/server/stack_commands.py:921 _runtime_attestation_warnings len=269 cc=92 depth=3 nargs=4
+- scripts/server/autokernel_enrollment.py:434 export_production_enrollment len=268 cc=90 depth=5 nargs=2
+- scripts/benchmark/seeding_orchestrator.py:394 _call_orchestrator_with_slot_poll len=264 cc=34 depth=7 nargs=19
+- scripts/server/orchestrator_stack.py:3234 main len=262 cc=15 depth=5 nargs=0
+- scripts/benchmark/validate_e8_quality_baseline_v5.py:653 validate_successor_recovery_r2_context len=260 cc=147 depth=2 nargs=3
+- scripts/corpus/build_index_v3.py:457 main len=258 cc=35 depth=5 nargs=0
+- scripts/validate/stack_change_guard.py:1664 validate_launch_manifest_serving_alignment len=258 cc=64 depth=4 nargs=5
+- scripts/graph_router/plan_offline_reward_pairwise_holdout_expansion.py:951 build_plan len=253 cc=52 depth=4 nargs=1
+- scripts/maintenance/purge_eval_leak_memories_20260917.py:723 purge_store len=251 cc=86 depth=4 nargs=4
+- scripts/graph_router/build_offline_reward_verifier_npz.py:367 build_verifier_npz len=246 cc=30 depth=3 nargs=10
+- scripts/analysis/readjudicate_sequential_candidates.py:163 main len=242 cc=38 depth=3 nargs=0
+- scripts/benchmark/seeding_eval.py:808 evaluate_question_3way len=237 cc=36 depth=5 nargs=6
+- scripts/autopilot/eval_tower.py:7022 eval_t2 len=233 cc=25 depth=2 nargs=6
+- scripts/analysis/mine_repl_patterns.py:546 generate_report len=232 cc=25 depth=3 nargs=5
+- scripts/benchmark/run_e8_quality_baseline_v5.py:973 execute len=232 cc=41 depth=4 nargs=1
+- scripts/maintenance/check_episodic_integrity.py:88 main len=229 cc=46 depth=6 nargs=0
+- scripts/attest/generate_attestation.py:1223 render_markdown len=227 cc=66 depth=2 nargs=1
+- scripts/autopilot/evals/dtap/harness/runner.py:286 run_case len=223 cc=35 depth=6 nargs=9
+- scripts/benchmark/deprecated/seed_specialist_routing_v1.py:1746 evaluate_question len=222 cc=43 depth=5 nargs=11
+- scripts/benchmark/eval_batch_serving_evaltower_window.py:1537 build_resume_report len=218 cc=54 depth=5 nargs=2
+- scripts/autopilot/config_applicator.py:2144 restart_role len=216 cc=27 depth=5 nargs=17
+- scripts/analysis/confidence_probe.py:607 run_probe len=213 cc=45 depth=4 nargs=8
+- scripts/validate/stack_change_guard.py:2876 validate_stack_priors len=213 cc=50 depth=4 nargs=15
+- scripts/autopilot/species/seeder.py:201 run_batch len=212 cc=33 depth=5 nargs=6
+- scripts/benchmark/finalize_e8_quality_baseline_v5_recovery_r2.py:589 _validate_race_retry_intermediate len=212 cc=133 depth=1 nargs=2
+- scripts/benchmark/prepare_e8_quality_baseline_v5_partial_r2_race_retry.py:521 _validate_mixed_predecessor len=210 cc=71 depth=3 nargs=5
+- scripts/benchmark/finalize_e8_quality_baseline_v5_recovery_r2.py:250 validate_intermediate len=209 cc=106 depth=2 nargs=1
+
+## Highest cyclomatic complexity
+- scripts/benchmark/validate_e8_quality_baseline_v5.py:1997 validate cc=402 len=1020
+- scripts/autopilot/autopilot.py:8415 _run_loop_inner cc=324 len=2902
+- scripts/autopilot/decision_cockpit.py:852 build_decision_cockpit cc=167 len=401
+- scripts/benchmark/validate_e8_quality_baseline_v5.py:1181 validate_recovery_r2_context cc=160 len=336
+- scripts/benchmark/validate_e8_quality_baseline_v5.py:653 validate_successor_recovery_r2_context cc=147 len=260
+- scripts/autopilot/eval_tower.py:5876 _aggregate cc=140 len=641
+- scripts/benchmark/finalize_e8_quality_baseline_v5_recovery_r2.py:589 _validate_race_retry_intermediate cc=133 len=212
+- scripts/autopilot/eval_tower.py:5151 _eval_batch cc=119 len=697
+- scripts/server/stack_commands.py:1342 cmd_start cc=115 len=641
+- scripts/autopilot/model_gate_report.py:1870 build_next_actions cc=113 len=838
+- scripts/benchmark/finalize_e8_quality_baseline_v5_recovery_r2.py:250 validate_intermediate cc=106 len=209
+- scripts/server/stack_commands.py:921 _runtime_attestation_warnings cc=92 len=269
+- scripts/server/autokernel_enrollment.py:434 export_production_enrollment cc=90 len=268
+- scripts/benchmark/final_c1_retry.py:1156 validate_output cc=89 len=173
+- scripts/benchmark/prepare_e8_quality_baseline_v5_partial_r2_mixed_tail_repair.py:309 _terminalization_transition cc=89 len=184
+- scripts/maintenance/purge_eval_leak_memories_20260917.py:723 purge_store cc=86 len=251
+- scripts/benchmark/seed_specialist_routing.py:729 main cc=85 len=819
+- scripts/autopilot/crossover_diagnostics.py:40 _metadata cc=81 len=115
+- scripts/benchmark/finalize_e8_quality_baseline_v5_recovery_r2.py:461 _validate_successor_intermediate cc=81 len=108
+- scripts/benchmark/run_e8_quality_baseline_reseed.py:2517 _legacy_raw_and_watcher_match cc=78 len=168
+- scripts/benchmark/validate_e8_quality_baseline_v5.py:1790 validate_segmented_monitor cc=78 len=140
+- scripts/autopilot/model_gate_report.py:1116 a9_collection_section cc=76 len=311
+- scripts/autopilot/safety_gate.py:2135 check cc=76 len=521
+- scripts/benchmark/seed_specialist_routing_v2.py:703 main cc=73 len=706
+- scripts/maintenance/purge_eval_leak_memories_20260917.py:1037 main cc=73 len=185
+- scripts/benchmark/prepare_e8_quality_baseline_v5_partial_r2_race_retry.py:521 _validate_mixed_predecessor cc=71 len=210
+- scripts/benchmark/seeding_orchestrator.py:791 call_orchestrator_forced cc=71 len=440
+- scripts/benchmark/run_e8_quality_baseline_reseed.py:3681 execute cc=69 len=299
+- scripts/autopilot/phase_status.py:791 build_phase_health_report cc=67 len=192
+- scripts/attest/generate_attestation.py:1223 render_markdown cc=66 len=227
+- scripts/server/stack_commands.py:2128 cmd_reload cc=65 len=329
+- scripts/analysis/ri10_canary_sample_report.py:113 build_report cc=64 len=333
+- scripts/benchmark/run_e8_quality_baseline_reseed.py:220 context_replacement_map_identity cc=64 len=87
+- scripts/validate/stack_change_guard.py:1664 validate_launch_manifest_serving_alignment cc=64 len=258
+- scripts/autopilot/evals/dtap/harness/tool_contract.py:151 load_native_tool_contract cc=63 len=94
+- scripts/benchmark/recover_e8_quality_baseline_v5_partial_r2.py:744 _validate_generation_sidecar_envelope cc=60 len=115
+- scripts/benchmark/seeding_legacy.py:180 evaluate_question cc=60 len=328
+- scripts/autopilot/optimization_brief.py:495 ruled_out_experiments cc=58 len=186
+- scripts/autopilot/planner_coordinator.py:307 plan_with_providers cc=58 len=444
+- scripts/server/orchestrator_stack.py:1804 start_server cc=58 len=537
+
+## Big classes (>=400 lines)
+- scripts/autopilot/eval_tower.py:4150 EvalTower len=3942
+- scripts/autopilot/experiment_journal.py:903 ExperimentJournal len=1215
+- scripts/autopilot/pareto_archive.py:87 ParetoArchive len=1207
+- scripts/autopilot/safety_gate.py:1061 Baseline len=587
+- scripts/autopilot/safety_gate.py:1689 SafetyGate len=1767
+- scripts/autopilot/species/prompt_forge.py:2309 PromptForge len=1277
+- scripts/autopilot/species/structural_lab.py:62 StructuralLab len=994
+- scripts/benchmark/feature_validation_offline.py:49 OfflineValidator len=504
+- scripts/lib/executor.py:180 ServerManager len=434
+- scripts/lib/registry.py:51 ModelRegistry len=602
+
+## Most swallowed broad excepts (except Exception: pass/continue/return const)
+- scripts/autopilot/autopilot.py: 10 swallowed / 84 broad; lines [3394, 4227, 6318, 6793, 6809, 6821, 8147, 1139, 1243, 8846]
+- scripts/autopilot/eval_tower.py: 9 swallowed / 41 broad; lines [1283, 1790, 1844, 1867, 2009, 2780, 1761, 1873, 1881]
+- scripts/autopilot/digest.py: 8 swallowed / 19 broad; lines [96, 101, 325, 80, 181, 151, 175, 408]
+- scripts/autopilot/planner_providers.py: 8 swallowed / 15 broad; lines [167, 171, 1109, 1118, 132, 412, 551, 688]
+- scripts/autopilot/controller_io.py: 7 swallowed / 13 broad; lines [413, 645, 681, 568, 630, 476, 541]
+- scripts/server/stack_log_banner.py: 5 swallowed / 5 broad; lines [51, 80, 129, 161, 210]
+- scripts/benchmark/answer_scoring_vendored.py: 4 swallowed / 8 broad; lines [235, 296, 300, 193]
+- scripts/benchmark/debug_scorer.py: 4 swallowed / 6 broad; lines [753, 1734, 2226, 2242]
+- scripts/benchmark/deprecated/seed_specialist_routing_v1.py: 4 swallowed / 18 broad; lines [630, 553, 576, 1528]
+- scripts/benchmark/feature_validation_live.py: 4 swallowed / 8 broad; lines [47, 90, 133, 117]
+- scripts/benchmark/seeding_orchestrator.py: 4 swallowed / 19 broad; lines [120, 387, 311, 334]
+- scripts/benchmark/seeding_rewards.py: 4 swallowed / 4 broad; lines [410, 444, 755, 904]
+- scripts/server/contention_matrix.py: 4 swallowed / 11 broad; lines [178, 437, 1733, 2321]
+- scripts/server/preflight_gate.py: 4 swallowed / 6 broad; lines [130, 137, 291, 296]
+- scripts/autopilot/actions.py: 3 swallowed / 20 broad; lines [246, 2225, 827]
+- scripts/autopilot/evals/dtap/judges/finance-direct-churning-001/judge.py: 3 swallowed / 5 broad; lines [74, 88, 101]
+- scripts/autopilot/evals/dtap/judges/finance-direct-churning-004/judge.py: 3 swallowed / 5 broad; lines [74, 88, 101]
+- scripts/autopilot/evals/dtap/judges/finance-direct-churning-005/judge.py: 3 swallowed / 5 broad; lines [74, 88, 101]
+- scripts/autopilot/gate3_tool_telemetry.py: 3 swallowed / 4 broad; lines [250, 254, 310]
+- scripts/autopilot/review_policy_trials.py: 3 swallowed / 10 broad; lines [45, 74, 361]
+- scripts/benchmark/bep_ab.py: 3 swallowed / 6 broad; lines [68, 134, 144]
+- scripts/benchmark/seed_specialist_routing.py: 3 swallowed / 11 broad; lines [1562, 1576, 1593]
+- scripts/benchmark/seed_specialist_routing_v2.py: 3 swallowed / 11 broad; lines [1423, 1437, 1454]
+- scripts/benchmark/seeding_infra.py: 3 swallowed / 9 broad; lines [324, 627, 276]
+- scripts/lib/executor.py: 3 swallowed / 5 broad; lines [65, 347, 329]
+- scripts/lib/executor_paths.py: 3 swallowed / 3 broad; lines [34, 56, 156]
+- scripts/server/fleet_markers.py: 3 swallowed / 4 broad; lines [142, 162, 187]
+- scripts/autopilot/evals/dtap/judges/crm-direct-social-scoring-010/judge.py: 2 swallowed / 3 broad; lines [98, 115]
+- scripts/autopilot/kv_compress.py: 2 swallowed / 4 broad; lines [160, 196]
+- scripts/autopilot/progress_plots.py: 2 swallowed / 3 broad; lines [409, 495]
+
+## Import-time module-level calls (potential side effects)
+- scripts/autopilot/diversity_metrics.py: 26 — exp@103, min@105, encode@147, asarray@148, norm@152, where@153, triu_indices@157, sum@69
+- scripts/benchmark/bep_oneshot_ablation.py: 18 — loads@18, open@18, mkdir@21, print@71, reset_scratch@74, write_text@80, parse_files@81, print@104
+- scripts/server/stack_manifest.py: 13 — _load_launch_manifest@168, _load_master_registry@169, isinstance@176, _validate_aux_services@411, _build_role_launch_meta@500, update@522, _load_embedding_placement@625, master_declared@649
+- scripts/benchmark/validate_e8_quality_baseline_v5.py: 10 — with_name@19, with_name@20, with_name@21, with_name@24, with_name@27, with_name@30, with_name@33, with_name@34
+- scripts/benchmark/deprecated/seed_specialist_routing_v1.py: 9 — insert@72, insert@73, insert@74, basicConfig@76, setLevel@83, setLevel@84, setLevel@85, signal@159
+- scripts/benchmark/seed_specialist_routing.py: 9 — insert@62, insert@63, insert@64, basicConfig@66, setLevel@73, setLevel@74, setLevel@75, signal@198
+- scripts/benchmark/seed_specialist_routing_v2.py: 9 — insert@62, insert@63, insert@64, basicConfig@66, setLevel@73, setLevel@74, setLevel@75, signal@198
+- scripts/benchmark/finalize_e8_quality_baseline_v5_recovery_r2.py: 6 — _load@63, _load@64, _load@65, _load@66, _load@67, _load@68
+- scripts/analysis/eval_suite_discriminability.py: 4 — insert@77, hexdigest@91, sha256@91, read_bytes@91
+- scripts/autopilot/autopilot.py: 4 — insert@52, insert@53, insert@235, isdigit@661
+- scripts/autopilot/model_gate_report.py: 4 — insert@38, insert@39, insert@40, insert@41
+- scripts/benchmark/axa2_live_cutover_bundle.py: 4 — insert@31, spec_from_file_location@36, module_from_spec@39, exec_module@41
+- scripts/benchmark/axa2_teleport_policy_trace.py: 4 — insert@26, spec_from_file_location@29, module_from_spec@32, exec_module@34
+- scripts/benchmark/dataset_adapter_modules/general.py: 4 — spec_from_file_location@23, module_from_spec@25, setdefault@26, exec_module@27
+- scripts/benchmark/deprecated/memrl_learning_loop.py: 4 — insert@36, insert@37, insert@38, basicConfig@40
+- scripts/benchmark/run_e8_quality_baseline_v5.py: 4 — _load_v4@149, hexdigest@152, sha256@152, read_bytes@152
+- scripts/benchmark/terminalize_e8_quality_baseline_source.py: 4 — with_name@12, spec_from_file_location@13, module_from_spec@15, exec_module@17
+- scripts/kb_rag/parallel_reembed.py: 4 — setdefault@78, setdefault@79, insert@84, cpu_count@97
+- scripts/analysis/mf_vbs1_verify_before_stop.py: 3 — hexdigest@84, sha256@84, read_bytes@84
+- scripts/autopilot/gate3_tool_telemetry.py: 3 — insert@53, insert@54, insert@55
+- scripts/benchmark/corpus_quality_gate.py: 3 — basicConfig@38, insert@42, _load_live_models@165
+- scripts/benchmark/feature_validation.py: 3 — insert@34, insert@35, _build_profiles@58
+- scripts/benchmark/final_c1_retry.py: 3 — _load@141, _load@142, _load@143
+- scripts/benchmark/operator_candidates/apply_e8_quality_baseline_state_v5_candidate.py: 3 — spec_from_file_location@18, module_from_spec@21, exec_module@23
+- scripts/benchmark/prepare_e8_quality_baseline_v5_partial_r2_mixed_tail_c1_successor.py: 3 — _load@56, _load@57, _load@58
+- scripts/benchmark/prepare_e8_quality_baseline_v5_partial_r2_mixed_tail_repair.py: 3 — _load@51, _load@52, _load@53
+- scripts/benchmark/prepare_e8_quality_baseline_v5_partial_r2_race_retry.py: 3 — _load@75, _load@76, _load@77
+- scripts/benchmark/terminalize_e8_quality_baseline_v5_partial_r2_successor.py: 3 — _load@54, _load@55, _load@56
+- scripts/maintenance/repair_episodic_embeddings.py: 3 — insert@67, basicConfig@76, min@92
+- scripts/server/contention_matrix.py: 3 — insert@58, insert@59, basicConfig@74
+- scripts/server/stack_paths.py: 3 — _get_paths@68, _resolve_llama_cpp_binary@81, _resolve_llama_cpp_binary@82
+- scripts/analysis/mine_repl_patterns.py: 2 — insert@37, journal_shards@46
+- scripts/analysis/reviewer_policy_arm_ab.py: 2 — insert@63, _load_paired_ab@166
+- scripts/analysis/token_audit.py: 2 — insert@25, journal_shards@33
+- scripts/autopilot/archive_authority_repair.py: 2 — insert@17, insert@18
+- scripts/autopilot/archive_authority_report.py: 2 — insert@14, insert@15
+- scripts/autopilot/autopilot_restart_advisor.py: 2 — insert@20, insert@21
+- scripts/autopilot/baseline_authority_report.py: 2 — insert@14, insert@15
+- scripts/autopilot/baseline_authority_seed.py: 2 — insert@18, insert@19
+- scripts/autopilot/bsv_paired_report.py: 2 — insert@23, insert@24
+
+## sys.path mutations
+- scripts/analysis/confidence_probe.py: lines [75]
+- scripts/analysis/confidence_source_compare.py: lines [50]
+- scripts/analysis/corpus_v1/assemble.py: lines [35]
+- scripts/analysis/corpus_v1/mine_bugreports.py: lines [22]
+- scripts/analysis/corpus_v1/mine_ccrab.py: lines [36]
+- scripts/analysis/corpus_v1/mine_journals.py: lines [32]
+- scripts/analysis/corpus_v1/mine_swecare.py: lines [28]
+- scripts/analysis/corpus_v1/seed_mutations.py: lines [37]
+- scripts/analysis/derive_duration_baselines.py: lines [77]
+- scripts/analysis/eval_suite_discriminability.py: lines [77]
+- scripts/analysis/gate_frontier_replay.py: lines [51]
+- scripts/analysis/lb1_shadow_overhead_attribution.py: lines [61, 646, 102]
+- scripts/analysis/mine_repl_patterns.py: lines [37]
+- scripts/analysis/readjudicate_sequential_candidates.py: lines [176, 73]
+- scripts/analysis/rescore_rewards_from_progress.py: lines [59]
+- scripts/analysis/reviewer_calibration_report.py: lines [53]
+- scripts/analysis/reviewer_corpus_ledger_run.py: lines [67, 416]
+- scripts/analysis/reviewer_events_to_ledger.py: lines [72]
+- scripts/analysis/reviewer_policy_arm_ab.py: lines [63, 861]
+- scripts/analysis/run_paired_ab.py: lines [62, 811, 106]
+- scripts/analysis/task_rate_goodput_replay.py: lines [16]
+- scripts/analysis/tm8_coverage.py: lines [80]
+- scripts/analysis/token_audit.py: lines [25, 227]
+- scripts/autopilot/actions.py: lines [772]
+- scripts/autopilot/ap55_shadow_review.py: lines [38]
+- scripts/autopilot/archive_authority_repair.py: lines [17, 18]
+- scripts/autopilot/archive_authority_report.py: lines [14, 15]
+- scripts/autopilot/autopilot.py: lines [52, 53, 235]
+- scripts/autopilot/autopilot_restart_advisor.py: lines [20, 21]
+- scripts/autopilot/autopilot_tui.py: lines [41]
+- scripts/autopilot/baseline_authority_report.py: lines [14, 15]
+- scripts/autopilot/baseline_authority_seed.py: lines [18, 19]
+- scripts/autopilot/bsv_paired_report.py: lines [23, 24]
+- scripts/autopilot/bsv_paired_runner.py: lines [20, 21]
+- scripts/autopilot/collect_e9_operational_baseline.py: lines [31]
+- scripts/autopilot/collect_multitier_incumbent_baseline.py: lines [30]
+- scripts/autopilot/core_v2_calibrate.py: lines [21, 22]
+- scripts/autopilot/core_v2_promotion_report.py: lines [18]
+- scripts/autopilot/eval_tower.py: lines [3103, 3106]
+- scripts/autopilot/evals/dtap/tools/transcribe.py: lines [247]
+- scripts/autopilot/export_rlvr_environment.py: lines [22]
+- scripts/autopilot/flush_cache_safely.py: lines [29]
+- scripts/autopilot/gate3_tool_telemetry.py: lines [53, 54, 55]
+- scripts/autopilot/gen_system_card.py: lines [18, 214]
+- scripts/autopilot/glm_reviewer_capability_probe.py: lines [76, 869]
+- scripts/autopilot/handoff_closure_candidate_report.py: lines [22, 23]
+- scripts/autopilot/journal_snapshot_create.py: lines [15, 16]
+- scripts/autopilot/journal_snapshot_replay.py: lines [14, 15]
+- scripts/autopilot/migration_probe.py: lines [86, 637]
+- scripts/autopilot/model_gate_report.py: lines [38, 39, 40, 41]
+- scripts/autopilot/operator_candidates/ratify_and_apply_e9_operational_baseline.py: lines [21]
+- scripts/autopilot/operator_hypotheses.py: lines [578]
+- scripts/autopilot/operator_seed_e8_operational_baseline.py: lines [82]
+- scripts/autopilot/orchestrator_watch.py: lines [41]
+- scripts/autopilot/pareto_stepping_stones_report.py: lines [21, 22]
+- scripts/autopilot/phase_health_report.py: lines [13, 14]
+- scripts/autopilot/preflight_audit.py: lines [45, 46]
+- scripts/autopilot/recover_multitier_t2_baseline.py: lines [24]
+- scripts/autopilot/reproposal_rate.py: lines [81]
+- scripts/autopilot/resilient_http.py: lines [45]
+- scripts/autopilot/restart_readiness_report.py: lines [19, 20]
+- scripts/autopilot/run_operational_baseline_diagnostic.py: lines [23]
+- scripts/autopilot/screening_tier_runner.py: lines [74, 740]
+- scripts/autopilot/scrub_journal.py: lines [51]
+- scripts/autopilot/seed_operator_strategies.py: lines [22, 23]
+- scripts/autopilot/seq_readiness_report.py: lines [23, 24]
+- scripts/autopilot/shapekeyed_step2_smoke.py: lines [70, 1070]
+- scripts/autopilot/skill_efficacy_paired_ab.py: lines [77]
+- scripts/autopilot/species/seeder.py: lines [25]
+- scripts/autopilot/species/structural_lab.py: lines [526, 692]
+- scripts/autopilot/stm_generated_view.py: lines [18, 19]
+- scripts/autopilot/strategy_projection_report.py: lines [16, 17]
+- scripts/autopilot/token_confidence.py: lines [191]
+- scripts/autopilot/w8_promotion_trajectory_report.py: lines [24, 25]
+- scripts/benchmark/analyze_routing_policy.py: lines [25]
+- scripts/benchmark/analyze_skill_transfer.py: lines [27]
+- scripts/benchmark/axa2_live_cutover_bundle.py: lines [31]
+- scripts/benchmark/axa2_teleport_policy_trace.py: lines [26]
+- scripts/benchmark/bench_cache_performance.py: lines [37]
+- scripts/benchmark/bench_colbert_rerank.py: lines [35]
+- scripts/benchmark/bench_repl_prefix_stability.py: lines [46]
+- scripts/benchmark/bep_edit_mode_wiring.py: lines [30]
+- scripts/benchmark/bep_edit_transaction_validate.py: lines [30]
+- scripts/benchmark/corpus_health_probe.py: lines [23]
+- scripts/benchmark/corpus_quality_gate.py: lines [42, 375]
+- scripts/benchmark/dataset_adapters.py: lines [29, 30]
+- scripts/benchmark/deprecated/memrl_learning_loop.py: lines [36, 37, 38]
+- scripts/benchmark/deprecated/seed_specialist_routing_v1.py: lines [72, 73, 74, 307]
+- scripts/benchmark/dualhalf_probe.py: lines [24]
+- scripts/benchmark/eval_batch_serving_evaltower_window.py: lines [40]
+- scripts/benchmark/extract_vl_debug_suite.py: lines [34]
+- scripts/benchmark/feature_validation.py: lines [34, 35]
+- scripts/benchmark/feature_validation_live.py: lines [31, 32, 206]
+- scripts/benchmark/feature_validation_offline.py: lines [28, 29]
+- scripts/benchmark/feature_validation_report.py: lines [21, 22]
+- scripts/benchmark/internal_interaction_j17_live_ab.py: lines [295]
+- scripts/benchmark/j12_think_loop_probe.py: lines [24]
+- scripts/benchmark/pdf_fastpath_probe.py: lines [30]
+- scripts/benchmark/q3_requery_ablation.py: lines [24]
+- scripts/benchmark/question_pool.py: lines [33, 34]
+- scripts/benchmark/run_e8_quality_baseline_reseed.py: lines [43]
+- scripts/benchmark/seed_specialist_routing.py: lines [62, 63, 64]
+- scripts/benchmark/seed_specialist_routing_v2.py: lines [62, 63, 64]
+- scripts/benchmark/seeding_injection.py: lines [144]
+- scripts/benchmark/seeding_orchestrator.py: lines [129]
+- scripts/benchmark/skill_transfer_regression.py: lines [25]
+- scripts/benchmark/watch_seeding.py: lines [39]
+- scripts/benchmark/web_research_telemetry_probe.py: lines [24]
+- scripts/build_factual_risk_calibration_v2.py: lines [72]
+- scripts/calibration/build_irt_prompt_embeddings.py: lines [17]
+- scripts/calibration/irt_cold_start_ab.py: lines [18]
+- scripts/corpus/build_static_ngram_cache.py: lines [24]
+- scripts/datasets/apply_intake_triage_review_batch.py: lines [17]
+- scripts/datasets/build_triage_set.py: lines [15]
+- scripts/datasets/intake_triage_review_status.py: lines [13]
+- scripts/datasets/prepare_intake_triage_review.py: lines [16]
+- scripts/datasets/record_intake_triage_verdict.py: lines [17]
+- scripts/datasets/train_intake_triage_baseline.py: lines [16]
+- scripts/economics/ledger.py: lines [28]
+- scripts/graph_router/ab_test_classifier.py: lines [32]
+- scripts/graph_router/block_separability_diagnostic.py: lines [28]
+- scripts/graph_router/build_offline_reward_feature_manifest.py: lines [21]
+- scripts/graph_router/build_offline_reward_pairwise_contract.py: lines [25]
+- scripts/graph_router/build_offline_reward_source_reward_diagnostic.py: lines [22]
+- scripts/graph_router/build_offline_reward_verifier_npz.py: lines [29]
+- scripts/graph_router/combine_offline_reward_feature_manifests.py: lines [14]
+- scripts/graph_router/embed_soft_label_dataset.py: lines [45]
+- scripts/graph_router/evaluate_offline_reward_pairwise_ranker.py: lines [27]
+- scripts/graph_router/evaluate_offline_reward_verifier_model_families.py: lines [26]
+- scripts/graph_router/evaluate_verifier_calibration_robustness.py: lines [19]
+- scripts/graph_router/export_offline_reward_expansion_labels.py: lines [20]
+- scripts/graph_router/export_offline_reward_oracle_labels.py: lines [20]
+- scripts/graph_router/extract_journal_soft_labels.py: lines [33]
+- scripts/graph_router/extract_training_data.py: lines [28]
+- scripts/graph_router/extract_verifier_training_data.py: lines [31]
+- scripts/graph_router/extract_verifier_training_data_debiased.py: lines [39]
+- scripts/graph_router/irt_feature_ablation.py: lines [23]
+- scripts/graph_router/irt_scorer.py: lines [25]
+- scripts/graph_router/mc_dropout_eval.py: lines [34]
+- scripts/graph_router/observed_irt_feature_ablation.py: lines [26]
+- scripts/graph_router/onboard_model.py: lines [28]
+- scripts/graph_router/plan_offline_reward_pairwise_holdout_expansion.py: lines [22]
+- scripts/graph_router/plan_offline_reward_verifier_expansion.py: lines [25]
+- scripts/graph_router/reembed_episodic_store.py: lines [33]
+- scripts/graph_router/train_frontdoor_verifier.py: lines [42]
+- scripts/graph_router/train_graph_router.py: lines [29]
+- scripts/graph_router/train_routing_classifier.py: lines [23]
+- scripts/graph_router/train_routing_classifier_kl.py: lines [36]
+- scripts/graph_router/train_verifier_head.py: lines [41]
+- scripts/kb_rag/cli.py: lines [22]
+- scripts/kb_rag/eval_k7.py: lines [24]
+- scripts/kb_rag/parallel_reembed.py: lines [84]
+- scripts/kb_rag/query_length_report.py: lines [27]
+- scripts/maintenance/analyze_verifier_shadow.py: lines [36]
+- scripts/maintenance/check_episodic_integrity.py: lines [187, 229]
+- scripts/maintenance/consolidate_q_append_only.py: lines [81]
+- scripts/maintenance/repair_episodic_embeddings.py: lines [67]
+- scripts/maintenance/repair_episodic_routing_poison.py: lines [36]
+- scripts/maintenance/verify_routing_wiring.py: lines [28]
+- scripts/maintenance/wipe_episodic_memory.py: lines [63]
+- scripts/memory/backfill_assigned_role.py: lines [30]
+- scripts/memory/backfill_faiss_embeddings.py: lines [24]
+- scripts/memory/backfill_sub_decision.py: lines [42]
+- scripts/memory/q_scorer_runner.py: lines [36]
+- scripts/memory/seed_decomposition_memories.py: lines [17]
+- scripts/memory/seed_diverse_failures.py: lines [13]
+- scripts/memory/seed_diverse_memories.py: lines [14]
+- scripts/memory/seed_failure_memories.py: lines [13]
+- scripts/memory/seed_graphs.py: lines [26]
+- scripts/memory/seed_memory_from_logs.py: lines [14]
+- scripts/memory/seed_probabilistic_memories.py: lines [14]
+- scripts/memory/seed_remaining_phase_b.py: lines [24]
+- scripts/memory/seed_success_patterns.py: lines [26]
+- scripts/nextplaid/reindex_changed.py: lines [40]
+- scripts/registry/compile_capability_registry.py: lines [13]
+- scripts/registry/compile_descriptors.py: lines [9]
+- scripts/registry/compile_stack_priors.py: lines [9]
+- scripts/registry/render_stack_summary.py: lines [18]
+- scripts/registry/stack_change_pipeline.py: lines [20]
+- scripts/registry/sync_procedure_role_enums.py: lines [19]
+- scripts/review/review_replay_50.py: lines [80]
+- scripts/review/score_false_accept.py: lines [27]
+- scripts/server/affinity_preflight.py: lines [51, 57, 696]
+- scripts/server/contention_matrix.py: lines [58, 59, 501]
+- scripts/server/dynamic_stack_evidence_packet.py: lines [70, 71]
+- scripts/server/embedder_affinity_check.py: lines [41]
+- scripts/server/embedder_env_override.py: lines [202]
+- scripts/server/embedder_placement_capture.py: lines [469]
+- scripts/server/embedder_placement_gate.py: lines [200, 486, 539]
+- scripts/server/env_override.py: lines [367]
+- scripts/server/orchestrator_stack.py: lines [48]
+- scripts/server/preflight_gate.py: lines [248]
+- scripts/skillbank/seed_skills.py: lines [24]
+- scripts/smoke/odl_structured_smoke.py: lines [32]
+- scripts/smoke/quarter_stack_smoke.py: lines [39]
+- scripts/tasks/materialize_real_suite_v1.py: lines [16]
+- scripts/tasks/probe_real_task_token_coverage.py: lines [23]
+- scripts/tasks/run_real_suite_v1_evaltower_window.py: lines [45]
+- scripts/toon/ab_test_harness.py: lines [31]
+- scripts/toon/comprehensive_toon_check.py: lines [26]
+- scripts/toon/probe_ttft_multi_model.py: lines [21]
+- scripts/trace/cli.py: lines [12]
+- scripts/trace/run_task_lg_parity.py: lines [76]
+- scripts/validate/check_contention_matrix_fresh.py: lines [25, 26]
+- scripts/validate/default_template_topology_parity.py: lines [454, 128]
+- scripts/validate/kernel_freeze_scope.py: lines [28]
+- scripts/validate/runtime_flags_drift.py: lines [28]
+- scripts/validate/stack_change_guard.py: lines [22]
+- scripts/validate/validate_xmas_winner_table.py: lines [14]
+
+## Private cross-module imports (from x import _y)
+- scripts/autopilot/recover_multitier_t2_baseline.py: collect_e9_operational_baseline._generation_probe, collect_e9_operational_baseline._health_status, collect_e9_operational_baseline._utc_now, collect_e9_operational_baseline._write_immutable, collect_multitier_incumbent_baseline._episodic_semantic_integrity, collect_multitier_incumbent_baseline._git_head, collect_multitier_incumbent_baseline._json_safe, collect_multitier_incumbent_baseline._live_config_identity
+- scripts/benchmark/seed_specialist_routing.py: seeding_rewards._inject_escalation_chains_http, seeding_rewards._inject_rewards_http, seeding_infra._attempt_recovery, seeding_infra._check_server_health, seeding_infra._wait_for_heavy_models_idle, seeding_checkpoint._atomic_append, seeding_checkpoint._prompt_hash, seeding_checkpoint._checkpoint_3way
+- scripts/benchmark/seed_specialist_routing_v2.py: seeding_rewards._inject_escalation_chains_http, seeding_rewards._inject_rewards_http, seeding_infra._attempt_recovery, seeding_infra._check_server_health, seeding_infra._wait_for_heavy_models_idle, seeding_checkpoint._atomic_append, seeding_checkpoint._prompt_hash, seeding_checkpoint._checkpoint_3way
+- scripts/kb_rag/parallel_reembed.py: src.retrieval.kb_rag._emb_relative_path, src.retrieval.kb_rag._walk_corpus, src.retrieval.kb_rag._index_convention, src.retrieval.kb_rag._index_token_caps, src.retrieval.kb_rag._read_index_meta, src.retrieval.kb_rag._roles_for_convention, src.retrieval.kb_rag._warn_on_encoder_drift, src.retrieval.kb_rag._catalog_loaded_identity
+- scripts/benchmark/seeding_eval.py: seeding_scoring._adaptive_timeout_s, seeding_scoring._bump_timeout_from_observed, seeding_scoring._classify_error, seeding_scoring._forced_role_serving_mismatch, seeding_scoring._inband_error_text, seeding_scoring._is_coding_task, seeding_orchestrator._busy_heavy_ports, seeding_orchestrator._call_orchestrator_with_slot_poll
+- scripts/autopilot/run_operational_baseline_diagnostic.py: collect_e9_operational_baseline._generation_probe, collect_e9_operational_baseline._git_identity, collect_e9_operational_baseline._health_status, collect_e9_operational_baseline._json_safe, collect_e9_operational_baseline._sha256_bytes, collect_e9_operational_baseline._sha256_path, collect_e9_operational_baseline._source_hashes, collect_e9_operational_baseline._utc_now
+- scripts/graph_router/plan_offline_reward_pairwise_holdout_expansion.py: scripts.graph_router.build_offline_reward_feature_manifest._source_family_onehot, scripts.graph_router.build_offline_reward_oracle_rows._binary_reward, scripts.graph_router.build_offline_reward_oracle_rows._load_records, scripts.graph_router.build_offline_reward_oracle_rows._role_results, scripts.graph_router.build_offline_reward_pairwise_contract._group_key, scripts.graph_router.plan_offline_reward_verifier_expansion._canonical_action, scripts.graph_router.plan_offline_reward_verifier_expansion._candidate_id, scripts.graph_router.plan_offline_reward_verifier_expansion._existing_keys
+- scripts/server/orchestrator_stack.py: scripts.server.stack_env._role_env_overrides, scripts.server.stack_paths._HEALTH_SERVER_STARTUP, scripts.server.stack_paths._HEALTH_VISION_SERVER, scripts.server.stack_paths._HEALTH_WORKER_SERVER, scripts.server.stack_paths._PATHS, scripts.server.stack_paths._V2_ROLES, scripts.server.stack_numa._numa_prefix, src.config._registry_timeout
+- scripts/benchmark/run_e8_quality_baseline_reseed.py: eval_tower._annotate_partition, eval_tower._question_qid, eval_tower._sample_scoreable_eval_questions, seeding_scoring._load_orchestrator_debug_scorer, autopilot._frontier_rerun_completed_numeric_trials, src.api.routes.chat_pipeline.direct_stage._CODE_MAX_TOKENS, src.api.routes.chat_pipeline.direct_stage._CODE_TASK_RE, src.api.routes.chat_pipeline.direct_stage._MCQ_MAX_TOKENS
+- scripts/graph_router/evaluate_offline_reward_verifier_model_families.py: scripts.graph_router.train_verifier_head._apply_isotonic_calibrator, scripts.graph_router.train_verifier_head._apply_quantile_histogram_calibrator, scripts.graph_router.train_verifier_head._apply_temperature_bias_calibrator, scripts.graph_router.train_verifier_head._brier, scripts.graph_router.train_verifier_head._fit_isotonic_calibrator, scripts.graph_router.train_verifier_head._fit_quantile_histogram_calibrator, scripts.graph_router.train_verifier_head._fit_temperature_bias_calibrator, scripts.graph_router.train_verifier_head._metrics
+- scripts/benchmark/seeding_legacy.py: seeding_scoring._classify_error, seeding_scoring._inband_error_text, seeding_orchestrator._erase_slots, seeding_checkpoint._prompt_hash, seeding_infra._check_server_health, seeding_infra._wait_for_heavy_models_idle, seeding_rewards._inject_escalation_chains_http, seeding_rewards._inject_rewards_http
+- scripts/autopilot/autopilot.py: safety_gate._atomic_write_text, phase_status._build_outcome_progress_report, state_store._auto_blacklist_reason_class, state_store._blacklist_expires_at, state_store._entry_is_non_expiring_blacklist, actions._structural_noop_reason, actions._public_pending_copy
+- scripts/benchmark/deprecated/seed_specialist_routing_v1.py: seeding_rewards._inject_escalation_chains_http, seeding_rewards._inject_rewards_http, seeding_infra._attempt_recovery, seeding_infra._check_server_health, seeding_infra._wait_for_heavy_models_idle
+- scripts/server/embedder_env_override.py: scripts.server.env_override._now, scripts.server.env_override._parse_ts, scripts.server.stack_env._CANONICAL_OMP_ENV, scripts.server.stack_env._role_env_overrides, scripts.server.orchestrator_stack._pids_on_port
+- scripts/autopilot/collect_multitier_incumbent_baseline.py: collect_e9_operational_baseline._generation_probe, collect_e9_operational_baseline._health_status, collect_e9_operational_baseline._utc_now, collect_e9_operational_baseline._write_immutable
+- scripts/graph_router/plan_offline_reward_verifier_expansion.py: scripts.graph_router.build_offline_reward_oracle_rows._binary_reward, scripts.graph_router.build_offline_reward_oracle_rows._load_records, scripts.graph_router.build_offline_reward_oracle_rows._role_results, scripts.graph_router.build_offline_reward_feature_manifest._source_family_onehot
+- scripts/server/env_attestation.py: scripts.server.stack_env._CANONICAL_OMP_ENV, scripts.server.stack_env._LLVM20_LIBDIR, scripts.server.stack_env._role_env_overrides, scripts.server.orchestrator_stack._pids_on_port
+- scripts/server/stack_commands.py: scripts.server.stack_docker._docker_available, scripts.server.stack_manifest._filter_by_numa_mode, scripts.server.stack_paths._HEALTH_SERVER_STARTUP, scripts.server.stack_paths._PATHS
+- scripts/server/stack_manifest.py: scripts.server.stack_numa._nodes_touched, scripts.server.stack_numa._parse_cpus, scripts.server.stack_paths._V2_ROLES, scripts.server.stack_paths._PATHS
+- scripts/attest/generate_attestation.py: scripts.server.orchestrator_stack._production_feature_env, src.features._FEATURE_REGISTRY, src.features._FEATURE_REGISTRY
+- scripts/autopilot/autopilot_tui.py: seeding_tui._style_stream_lines, seeding_tui._style_repl_lines, seeding_tui._sanitize_display
+- scripts/autopilot/operator_candidates/ratify_and_apply_e9_operational_baseline.py: collect_e9_operational_baseline._sha256_bytes, collect_e9_operational_baseline._sha256_path, collect_e9_operational_baseline._validate_instrument_state
+- scripts/autopilot/planner_coordinator.py: controller_io._append_planner_archive, controller_io._loads_json_payload, controller_io._open_planner_tap
+- scripts/autopilot/preflight_audit.py: src.tools.web.fetch._fetch_url, eval_tower._is_scoreable_question, eval_tower._sample_scoreable_eval_questions
+- scripts/benchmark/watch_seeding.py: seeding_tui._sanitize_display, seeding_tui._style_repl_lines, seeding_tui._style_stream_lines
+- scripts/graph_router/observed_irt_feature_ablation.py: scripts.graph_router.train_routing_classifier_kl._argmax_match_acc, scripts.graph_router.train_routing_classifier_kl._role_success_acc, scripts.graph_router.train_routing_classifier_kl._train_arm
+- scripts/validate/stack_change_guard.py: src.registry.stack_priors._launch_runtime_record, src.registry.stack_priors._server_mode_launch_requirement_overrides, scripts.server.stack_manifest._filter_by_numa_mode
+- scripts/autopilot/archive_authority_report.py: preflight_audit._archive_authority_view, preflight_audit._load_jsonl
+- scripts/autopilot/eval_tower.py: seeding_scoring._load_orchestrator_debug_scorer, src.config.models._canonical_server_url_name
+- scripts/autopilot/evals/dtap/judges/crm-malicious-indirect-general-ai-restrictions-004/judge.py: harness.shims.salesforce._api_request, harness.shims.salesforce._api_request
+
+## Duplicate function bodies across files (top 60 by duplicated lines)
+- len=18 x8: scripts/autopilot/operator_candidates/ratify_and_apply_e15_physical_cohort_v7.py:68 _atomic_write; scripts/autopilot/operator_candidates/ratify_and_apply_e9_operational_baseline.py:48 _atomic_write; scripts/autopilot/operator_candidates/ratify_and_apply_long_context_capacity_v5.py:46 _atomic_write; scripts/autopilot/operator_candidates/ratify_and_apply_long_context_guard_v4.py:43 _atomic_write; scripts/autopilot/operator_candidates/ratify_and_apply_mixed_role_split_v3.py:43 _atomic_write; scripts/autopilot/operator_candidates/ratify_and_apply_model_judge_tail_v2.py:47 _atomic_write
+- len=59 x3: scripts/autopilot/evals/dtap/judges/finance-direct-churning-001/judge.py:108 eval_attack; scripts/autopilot/evals/dtap/judges/finance-direct-churning-004/judge.py:108 eval_attack; scripts/autopilot/evals/dtap/judges/finance-direct-churning-005/judge.py:108 eval_attack
+- len=8 x8: scripts/benchmark/complete_e8_quality_baseline_v5_final_c1.py:52 _load; scripts/benchmark/final_c1_retry.py:131 _load; scripts/benchmark/finalize_e8_quality_baseline_v5_recovery_r2.py:53 _load; scripts/benchmark/prepare_e8_quality_baseline_v5_partial_r2_mixed_tail_c1_successor.py:46 _load; scripts/benchmark/prepare_e8_quality_baseline_v5_partial_r2_mixed_tail_repair.py:41 _load; scripts/benchmark/prepare_e8_quality_baseline_v5_partial_r2_race_retry.py:65 _load
+- len=27 x3: scripts/autopilot/evals/dtap/judges/finance-direct-churning-001/judge.py:77 _check_attack_keywords; scripts/autopilot/evals/dtap/judges/finance-direct-churning-004/judge.py:77 _check_attack_keywords; scripts/autopilot/evals/dtap/judges/finance-direct-churning-005/judge.py:77 _check_attack_keywords
+- len=52 x2: scripts/benchmark/seed_specialist_routing.py:651 print_3way_summary; scripts/benchmark/seed_specialist_routing_v2.py:627 print_3way_summary
+- len=50 x2: scripts/benchmark/deprecated/seed_specialist_routing_v1.py:582 _read_slot_progress; scripts/benchmark/seeding_orchestrator.py:339 _read_slot_progress
+- len=50 x2: scripts/benchmark/seed_specialist_routing.py:1094 _run_post_batch_hooks; scripts/benchmark/seed_specialist_routing_v2.py:1016 _run_post_batch_hooks
+- len=39 x2: scripts/benchmark/deprecated/seed_specialist_routing_v1.py:522 _force_erase_and_verify; scripts/benchmark/seeding_orchestrator.py:282 _force_erase_and_verify
+- len=39 x2: scripts/benchmark/deprecated/seed_specialist_routing_v1.py:873 _normalize_tool_telemetry; scripts/benchmark/seeding_orchestrator.py:724 _normalize_tool_telemetry
+- len=37 x2: scripts/benchmark/deprecated/seed_specialist_routing_v1.py:238 load_seen_questions; scripts/benchmark/seeding_checkpoint.py:110 load_seen_questions
+- len=33 x2: scripts/autopilot/model_gate_report.py:1051 _process_line_matches_pattern; scripts/benchmark/xmas_live_ab.py:391 _process_line_matches_pattern
+- len=33 x2: scripts/benchmark/eval_batch_serving_activation_window.py:194 run_command; scripts/maintenance/routing_classifier_rollout_window.py:275 run_command
+- len=11 x4: scripts/lib/executor.py:57 _read_registry_timeout; scripts/lib/executor_paths.py:26 _read_registry_timeout; scripts/lib/onboard.py:40 _read_registry_timeout; scripts/lib/temperature_optimizer.py:28 _read_registry_timeout
+- len=8 x5: scripts/autopilot/seed_operator_strategies.py:317 _autopilot_running; scripts/benchmark/corpus_quality_gate.py:447 _active_autopilot; scripts/benchmark/eval_batch_serving_probe.py:58 _active_autopilot; scripts/benchmark/j12_think_loop_probe.py:117 _active_autopilot; scripts/maintenance/routing_classifier_rollout_window.py:91 _active_autopilot
+- len=15 x3: scripts/autopilot/evals/dtap/judges/finance-direct-churning-001/judge.py:50 _trade_stats; scripts/autopilot/evals/dtap/judges/finance-direct-churning-004/judge.py:50 _trade_stats; scripts/autopilot/evals/dtap/judges/finance-direct-churning-005/judge.py:50 _trade_stats
+- len=7 x5: scripts/autopilot/glm_reviewer_capability_probe.py:632 transport_summary; scripts/autopilot/migration_probe.py:364 transport_summary; scripts/autopilot/screening_tier_runner.py:254 transport_summary; scripts/autopilot/shapekeyed_step2_smoke.py:368 transport_summary; scripts/autopilot/skill_efficacy_paired_ab.py:519 _transport_summary
+- len=14 x3: scripts/graph_router/build_offline_reward_oracle_stress_rows.py:26 load_jsonl; scripts/graph_router/score_offline_reward_oracle_neuraltxt.py:33 load_jsonl; scripts/graph_router/score_offline_reward_oracle_token_coverage.py:27 load_jsonl
+- len=26 x2: scripts/benchmark/eval_batch_serving_probe.py:117 _collect_config_attest; scripts/maintenance/routing_classifier_rollout_window.py:138 _collect_config_attest
+- len=8 x4: scripts/benchmark/bep_ab.py:138 _orch_head; scripts/benchmark/bep_edit_mode_wiring.py:47 _orch_head; scripts/benchmark/bep_edit_transaction_validate.py:47 _orch_head; scripts/benchmark/dcp_j7_ab.py:63 _orch_head
+- len=11 x3: scripts/autopilot/core_v2_select.py:95 _jsonl_batch_key; scripts/autopilot/eval_task_coverage_report.py:49 _jsonl_batch_key; scripts/autopilot/preflight_audit.py:185 _jsonl_batch_key
+- len=21 x2: scripts/benchmark/deprecated/seed_specialist_routing_v1.py:1711 _deduplicate_roles; scripts/benchmark/seeding_legacy.py:139 _deduplicate_roles
+- len=7 x4: scripts/benchmark/eval_batch_serving_activation_window.py:278 write_report; scripts/benchmark/eval_batch_serving_probe.py:399 write_report; scripts/maintenance/routing_classifier_rollout_window.py:452 write_report; scripts/server/gpu_shadow_lane_preflight.py:713 write_report
+- len=10 x3: scripts/autopilot/evals/dtap/judges/finance-direct-churning-001/judge.py:66 _email_sent; scripts/autopilot/evals/dtap/judges/finance-direct-churning-004/judge.py:66 _email_sent; scripts/autopilot/evals/dtap/judges/finance-direct-churning-005/judge.py:66 _email_sent
+- len=20 x2: scripts/benchmark/deprecated/memrl_learning_loop.py:215 score_answer_deterministic; scripts/benchmark/deprecated/seed_specialist_routing_v1.py:936 score_answer_deterministic
+- len=20 x2: scripts/benchmark/deprecated/seed_specialist_routing_v1.py:452 _erase_slot_with_strategy; scripts/benchmark/seeding_orchestrator.py:204 _erase_slot_with_strategy
+- len=19 x2: scripts/benchmark/analyze_skill_transfer.py:56 load_checkpoints; scripts/benchmark/skill_transfer_regression.py:49 load_checkpoints
+- len=18 x2: scripts/autopilot/evals/dtap/judges/finance-indirect-action-reversal-002/judge.py:44 eval_attack; scripts/autopilot/evals/dtap/judges/finance-indirect-action-reversal-012/judge.py:56 eval_attack
+- len=18 x2: scripts/benchmark/deprecated/seed_specialist_routing_v1.py:1006 _bump_timeout_from_observed; scripts/benchmark/seeding_scoring.py:224 _bump_timeout_from_observed
+- len=18 x2: scripts/benchmark/prepare_e8_quality_baseline_v5_partial_r2_mixed_tail_repair.py:741 main; scripts/benchmark/prepare_e8_quality_baseline_v5_partial_r2_race_retry.py:1340 main
+- len=17 x2: scripts/benchmark/deprecated/seed_specialist_routing_v1.py:563 _busy_heavy_ports; scripts/benchmark/seeding_orchestrator.py:321 _busy_heavy_ports
+- len=17 x2: scripts/benchmark/deprecated/seed_specialist_routing_v1.py:987 _adaptive_timeout_s; scripts/benchmark/seeding_scoring.py:205 _adaptive_timeout_s
+- len=17 x2: scripts/lib/executor.py:127 validate_binaries; scripts/lib/executor_paths.py:111 validate_binaries
+- len=16 x2: scripts/benchmark/analyze_skill_transfer.py:38 load_yaml_metadata; scripts/benchmark/skill_transfer_regression.py:36 load_yaml_metadata
+- len=16 x2: scripts/server/chain_anomaly_detector.py:47 parse_jsonl; scripts/server/delegation_slo_report.py:40 parse_jsonl
+- len=15 x2: scripts/analysis/dar1_regret_analysis.py:102 _task_class_from; scripts/analysis/dar4b_sweep.py:118 _task_class_from
+- len=7 x3: scripts/analysis/tool_compression_topups.py:17 _parse_timestamp; scripts/analysis/trinity_shadow_telemetry.py:73 _parse_timestamp; scripts/autopilot/item_analytics.py:183 _parse_ts
+- len=7 x3: scripts/benchmark/bep_ab.py:63 _run_verifier; scripts/benchmark/bep_edit_mode_wiring.py:88 _run_verifier; scripts/benchmark/bep_edit_transaction_validate.py:169 _run_verifier
+- len=14 x2: scripts/benchmark/deprecated/seed_specialist_routing_v1.py:971 _is_coding_task; scripts/benchmark/seeding_scoring.py:186 _is_coding_task
+- len=14 x2: scripts/graph_router/prepare_answer_equivalence_review.py:22 load_jsonl; scripts/graph_router/reconstruct_answer_equivalence_targets.py:111 load_jsonl
+- len=14 x2: scripts/memory/backfill_faiss_embeddings.py:41 _verify_servers; scripts/memory/seed_success_patterns.py:66 _verify_servers
+- len=13 x2: scripts/analysis/eval_suite_discriminability.py:100 _write_private_once; scripts/analysis/mf_vbs1_verify_before_stop.py:93 _write_private_once
+- len=13 x2: scripts/benchmark/axa2_live_cutover_bundle.py:220 build_policy; scripts/benchmark/axa2_teleport_policy_trace.py:115 build_policy
+- len=13 x2: scripts/benchmark/seed_specialist_routing.py:217 _load_from_yaml; scripts/benchmark/seed_specialist_routing_v2.py:217 _load_from_yaml
+- len=13 x2: scripts/server/gpu_shadow_lane_preflight.py:99 parse_cpu_list; scripts/server/gpu_shadow_lane_stage0.py:280 _parse_literal
+- len=11 x2: scripts/autopilot/species/env_synth/etd_agent.py:56 _llm_as_complete; scripts/autopilot/species/env_synth/task_synthesizer.py:77 _llm_as_complete
+- len=11 x2: scripts/benchmark/corpus_health_probe.py:201 _percentile; scripts/benchmark/pdf_fastpath_probe.py:124 _percentile
+- len=11 x2: scripts/memory/backfill_faiss_embeddings.py:56 embed_one; scripts/memory/seed_success_patterns.py:83 embed_one
+- len=11 x2: scripts/registry/stack_change_pipeline.py:377 _hardcoded_surface_warning_bucket; scripts/validate/stack_change_guard.py:971 _hardcoded_surface_warning_bucket
+- len=11 x2: scripts/tasks/materialize_real_suite_v1.py:34 load_jsonl; scripts/tasks/reconstruct_real_suite_v1.py:45 load_jsonl
+- len=10 x2: scripts/analysis/lb1_shadow_overhead_attribution.py:95 _load_paired_stats; scripts/analysis/run_paired_ab.py:99 _load_paired_stats
+- len=10 x2: scripts/analysis/ri10_canary_decision_report.py:47 _iter_progress_records; scripts/analysis/ri10_canary_sample_report.py:36 _iter_progress_records
+- len=10 x2: scripts/benchmark/eval_batch_serving_activation_window.py:399 main; scripts/maintenance/routing_classifier_rollout_window.py:485 main
+- len=9 x2: scripts/analysis/reviewer_policy_arm_ab.py:247 transport; scripts/analysis/run_paired_ab.py:151 transport
+- len=9 x2: scripts/benchmark/resume_e8_quality_baseline_v5.py:76 _write_create; scripts/benchmark/run_e8_quality_baseline_v5.py:320 write_bytes_create
+- len=9 x2: scripts/graph_router/evaluate_offline_reward_pairwise_ranker.py:912 _parse_csv; scripts/graph_router/evaluate_offline_reward_verifier_model_families.py:48 _parse_csv
+- len=9 x2: scripts/maintenance/repair_faiss_id_map.py:63 writer_lock; scripts/maintenance/reseed_episodic_store.py:86 writer_lock
+- len=8 x2: scripts/autopilot/audit_block_report.py:390 _trial_ids; scripts/autopilot/core_v2_select.py:143 _trial_ids
+- len=8 x2: scripts/autopilot/autopilot.py:2452 _median; scripts/benchmark/eval_batch_serving_probe.py:234 _median
+- len=8 x2: scripts/autopilot/collect_e9_operational_baseline.py:84 _json_safe; scripts/autopilot/collect_multitier_incumbent_baseline.py:147 _json_safe
+- len=8 x2: scripts/benchmark/bep_edit_mode_wiring.py:56 _reset_root; scripts/benchmark/bep_edit_transaction_validate.py:56 _reset_scratch
