@@ -1,0 +1,6 @@
+{
+  "path": "handoffs/active/autokernel-champion-aggregate.md",
+  "row": "CH-24",
+  "old": "they are inert only because Q38FN serving sets `GGML_FUSED_DECODE_OFF=1` (found 2026-10-22 by the NEW-10 smoke-abort RCA).",
+  "new": "found 2026-10-22 by the NEW-10 smoke-abort RCA. **Premise corrected 2026-10-24:** they were NOT inert in production. No serving surface set `GGML_FUSED_DECODE_OFF=1`: stack_env's `architect_general` block was empty, the launcher strips every undeclared GGML_* key, and the registry's `optimal_cpu_serving.env` is descriptive and read by no code, so :8074 ran the default-ON fused path. `/tmp/qwen4exp-builds` has 52 files rewritten after 2026-09-22, the last at 2026-10-22T19:36 (names and mtimes only, in `artifacts/operator/ratify-fused-off-archgen-20261024/qwen4exp_builds_listing.txt`; mtimes do not say which process wrote them). RATIFY-FUSED-OFF-ARCHGEN-20261024 declares OFF=1 on architect_general, so production is inert from :8074's next launch; the gate or strip is still owed for v11 because any fused-ON run still writes them."
+}

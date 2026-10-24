@@ -1,0 +1,58 @@
+# /tmp/qwen4exp-builds: files with mtime newer than 2026-09-22 (the v10 freeze date).
+# NAMES AND MTIMES ONLY; contents were not read or copied. Captured 2026-10-24T09:16:23Z by session 3c4ca599 (subagent).
+# command: find /tmp/qwen4exp-builds -maxdepth 1 -type f -newermt 2026-09-22 -printf '%TY-%Tm-%TdT%TH:%TM:%TS %f' (host local time, sorted)
+# directory total: 1421 files; newer than 2026-09-22: 52
+# directory mtime 2026-09-07 13:55:48: no entry was created after it, so these are in-place rewrites of existing names.
+# mtimes do not identify the writing process.
+2026-10-03T17:55:26 f_moe_logits_1.bin
+2026-10-03T17:55:27 f_moe_dn_24.bin
+2026-10-03T17:55:27 f_moe_dn_25.bin
+2026-10-03T17:55:27 f_moe_dn_26.bin
+2026-10-03T17:55:27 f_moe_up_24.bin
+2026-10-03T17:55:27 f_moe_up_25.bin
+2026-10-03T17:55:27 f_moe_up_26.bin
+2026-10-03T17:55:28 f_attn_ffnmixed_3.bin
+2026-10-03T17:55:28 f_attn_ffnxn_3.bin
+2026-10-03T17:55:28 f_attn_gate_3.bin
+2026-10-03T17:55:28 f_attn_gated_3.bin
+2026-10-03T17:55:28 f_attn_gsig_3.bin
+2026-10-03T17:55:28 f_attn_info_3.txt
+2026-10-03T17:55:28 f_attn_inject_3.bin
+2026-10-03T17:55:28 f_attn_k_3.bin
+2026-10-03T17:55:28 f_attn_kall_3.bin
+2026-10-03T17:55:28 f_attn_kpre_3.bin
+2026-10-03T17:55:28 f_attn_mixed_3.bin
+2026-10-03T17:55:28 f_attn_moe1_3.bin
+2026-10-03T17:55:28 f_attn_out_3.bin
+2026-10-03T17:55:28 f_attn_out_pre_3.bin
+2026-10-03T17:55:28 f_attn_q_3.bin
+2026-10-03T17:55:28 f_attn_q_in_3.bin
+2026-10-03T17:55:28 f_attn_qpre_3.bin
+2026-10-03T17:55:28 f_attn_selected_3.bin
+2026-10-03T17:55:28 f_attn_v_3.bin
+2026-10-03T17:55:28 f_attn_vall_3.bin
+2026-10-03T17:55:28 f_attn_xn_3.bin
+2026-10-03T17:55:28 f_conv_0.bin
+2026-10-03T17:55:28 f_conv_1.bin
+2026-10-03T17:55:28 f_conv_2.bin
+2026-10-03T17:55:28 f_nodes_0.bin
+2026-10-03T17:55:28 f_nodes_1.bin
+2026-10-03T17:55:28 f_nodes_2.bin
+2026-10-03T17:55:28 f_ple_conv.bin
+2026-10-03T17:55:28 f_ple_emb.bin
+2026-10-03T17:55:28 f_ple_gate.bin
+2026-10-03T17:55:28 f_ple_key.bin
+2026-10-03T17:55:28 f_ple_keyn.bin
+2026-10-03T17:55:28 f_ple_normconv.bin
+2026-10-03T17:55:28 f_ple_queryn.bin
+2026-10-03T17:55:28 f_ple_rows.bin
+2026-10-03T17:55:28 f_ple_val.bin
+2026-10-03T17:55:28 f_ple_win.bin
+2026-10-03T17:55:28 flash_info.txt
+2026-10-03T17:55:28 flash_k.bin
+2026-10-03T17:55:28 flash_m.bin
+2026-10-03T17:55:28 flash_q.bin
+2026-10-03T17:55:28 flash_v.bin
+2026-10-04T04:48:44 f_moe_logits_0.bin
+2026-10-22T19:36:11 f_embd_tok.bin
+2026-10-22T19:36:11 f_res_hc.bin

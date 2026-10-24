@@ -1,0 +1,25 @@
+# RATIFY-FUSED-OFF-ARCHGEN-20261024 composed launch-env proof (offline; nothing launched)
+# export: python -m scripts.server.autokernel_enrollment --instance-mode both (real build_server_command + build_launch_env, prepare_runtime_dirs=False)
+# before: epyc-orchestrator origin/main 7f949c7c (unmodified)   after: branch tip bd6123ee   research master (both): origin/main d13848b1 (unchanged)
+# compared by: ratify_fused_decode_off_architect_general_20261024.sh --compare env_before.json env_after.json
+# rule: architect_general@8074 environment == before + {GGML_FUSED_DECODE_OFF: '1'}; every other field of every target (argv, command_argv, environment, environment_unsets, topology, workload, aliases, artifacts, runtime_requirements, ...) identical
+  byte-identical                       architect_critic@8083                aliases=['coder_escalation', 'ingest_long_context']
+  + GGML_FUSED_DECODE_OFF=1 ONLY       architect_general@8074               aliases=[]
+  byte-identical                       embedder@8090                        aliases=[]
+  byte-identical                       embedder_1@8091                      aliases=[]
+  byte-identical                       embedder_2@8092                      aliases=[]
+  byte-identical                       embedder_3@8093                      aliases=[]
+  byte-identical                       embedder_4@8094                      aliases=[]
+  byte-identical                       embedder_5@8095                      aliases=[]
+  byte-identical                       embedder_bge_m3@8098                 aliases=[]
+  byte-identical                       embedder_granite_97m_r2@8096         aliases=[]
+  byte-identical                       embedder_multilingual_e5_base@8097   aliases=[]
+  byte-identical                       eval_batch_frontdoor@18070           aliases=[]
+  byte-identical                       frontdoor@8070                       aliases=['worker_summarize', 'worker_general', 'worker_explore', 'worker_math', 'toolrunner', 'worker']
+  byte-identical                       frontdoor@8080                       aliases=[]
+  byte-identical                       frontdoor@8180                       aliases=[]
+  byte-identical                       speech:tts                           aliases=[]
+  byte-identical                       speech:whisper                       aliases=[]
+  byte-identical                       worker_fast@8102                     aliases=[]
+  byte-identical                       worker_vision@8086                   aliases=['vision_escalation']
+ENV CHECK OK: architect_general@8074 gains exactly GGML_FUSED_DECODE_OFF=1 and carries no alias role; every other field of all 19 targets is byte-identical
