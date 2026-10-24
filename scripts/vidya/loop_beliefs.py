@@ -1900,6 +1900,21 @@ def check_seeds(items: Iterable[Mapping[str, Any]],
 
 
 def prepare(consumer: str, targets: Iterable[Mapping[str, Any]] | Mapping[str, Any], *,
+            read_log: str | Path | None = None, **kwargs: Any) -> dict[str, Any]:
+    """`_prepare_impl` plus one append-only read record (`read_counter.record_read`) per call,
+    ready or refused. A failed log write is reported in `read_log_error`, never a refusal."""
+    answer = _prepare_impl(consumer, targets, **kwargs)
+    try:
+        err = _load_file_module("vidya_read_counter", HERE / "read_counter.py").record_read(
+            answer, ledger=answer.get("ledger_path"), read_log=read_log)
+    except Exception as exc:  # noqa: BLE001
+        err = f"{type(exc).__name__}: {exc}"[:300]
+    if err:
+        answer["read_log_error"] = err
+    return answer
+
+
+def _prepare_impl(consumer: str, targets: Iterable[Mapping[str, Any]] | Mapping[str, Any], *,
             ledger: str | Path | None = None, index_path: str | Path | None = None,
             as_of: str | None = None, escalate_after_s: float = DEFAULT_ESCALATE_AFTER_S,
             alarm_state: str | Path | None = None, alarm_config: str | Path | None = None,
@@ -2005,6 +2020,8 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("--consumer", required=True)
     p.add_argument("--target-json", required=True, help="a target object or a list of them")
     p.add_argument("--ledger", default=None)
+    p.add_argument("--read-log", default=None,
+                   help="append-only read log (default: reads.jsonl beside the ledger)")
     p.add_argument("--index", default=None)
     p.add_argument("--as-of", default=None)
     p.add_argument("--escalate-after-s", type=float, default=DEFAULT_ESCALATE_AFTER_S)
@@ -2021,6 +2038,8 @@ def main(argv: list[str] | None = None) -> int:
                    help="refusal memo dir for --source-root (default <ledger dir>/loop-memo)")
     p.add_argument("--reply-field", default="relies_on_claims",
                    help="the consumer's reply field for declared reliance (AutoPilot: vidya_claim_ids)")
+    sub.add_parser("read-counter", add_help=False,
+                   help="empty vs non-empty reads per consumer/target (see read_counter.py --help)")
     c = sub.add_parser("check-seeds", help="admissibility of preseeded/degraded-mode work items "
                                            "against a known-good snapshot")
     c.add_argument("--consumer", required=True)
@@ -2035,6 +2054,9 @@ def main(argv: list[str] | None = None) -> int:
     a.add_argument("--escalate-after-s", type=float, default=DEFAULT_ESCALATE_AFTER_S)
     a.add_argument("--alarm-state", default=None)
     a.add_argument("--alarm-config", default=None)
+    raw_argv = list(sys.argv[1:] if argv is None else argv)
+    if raw_argv[:1] == ["read-counter"]:
+        return _load_file_module("vidya_read_counter", HERE / "read_counter.py").main(raw_argv[1:])
     args = parser.parse_args(argv)
     if args.cmd == "alarm":
         out = raise_refusal_alarm(args.consumer, args.reason, args.detail,
@@ -2061,7 +2083,7 @@ def main(argv: list[str] | None = None) -> int:
     except ValueError as exc:
         print(json.dumps({"schema": SCHEMA, "status": "usage_error", "detail": str(exc)}))
         return EXIT_USAGE
-    answer = prepare(args.consumer, raw, ledger=args.ledger, index_path=args.index,
+    answer = prepare(args.consumer, raw, read_log=args.read_log, ledger=args.ledger, index_path=args.index,
                      as_of=args.as_of, escalate_after_s=args.escalate_after_s,
                      alarm_state=args.alarm_state, alarm_config=args.alarm_config,
                      max_claims=args.max_claims, max_bytes=args.max_bytes,
