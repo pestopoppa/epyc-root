@@ -1,37 +1,101 @@
-# HSF-4 results, source-rate sub-term and log re-run (2026-10-23, workspace-f8)
+# HSF-4 results, source-rate sub-term and log re-run (2026-10-23, workspace-f8; source rates re-quoted graphs ON 2026-10-24)
 
 Task: `handoffs/active/heterogeneous-slot-fabric-residency.md` HSF-4 (reload-vs-re-prefill crossover per lineup model;
 per-role uncached-prompt-length histogram with alpha(B) and the ceiling alpha(B)*(1 - 1/rho)). The analytic half (2026-10-20)
 and the llama-server-log half (2026-10-21) are already in the handoff. This pass adds (a) the source-rate sub-term
-from today's KPF-18-S1 remainder step 7 and (b) the serving_call.v1 / dispatch.v1 re-run the handoff left open.
-No inference was run; step 7 is a recorded measurement from earlier today.
+from KPF-18-S1 step 7 and (b) the serving_call.v1 / dispatch.v1 re-run the handoff left open.
+No inference was run for this document; step 7 (graphs disabled, 2026-10-23T14:18Z) and its graphs-ON re-measure
+KPF-18-S1.7g (2026-10-23T18:47-18:49Z) are recorded measurements.
+
+**2026-10-24 revision (HSF-4.G).** KPF-18-S1.7g came out `graphs-sensitive` (4 of 21 (L, mode) cells), so by its
+predeclared rule HSF-4/5 use the **graphs-ON numbers, all of them, from that run**. The source rates, the ratios, the
+crossover and the transfer-versus-stall comparison below are recomputed from the ON medians. The graphs-disabled
+table is kept, labelled, for the record. The code-path judgement that the copies would sit inside the 3-rep spread is
+retired (section "Retired"). Attribution of every ON-versus-OFF difference: **graphs ON plus the
+`HSA_OVERRIDE_CPU_AFFINITY_DEBUG=0` knob plus the fresh load / step-7-only history, jointly; NOT HIP graphs alone.**
+The host KV mirror costing that consumes these rates is `docs/design/hsf-5-host-kv-mirror-costing-20261024.md`.
 
 ## Headline
 
-- **Source rates are now measured, but only as GRAPHS-DISABLED values** (see the labelled section). For the 27B on the
-  production-shaped :8083 argv at L = 8000 / 16000 / 32000 tokens: tmpfs restore 8.26 / 9.27 / 6.15 GB/s, cold-disk
-  restore 4.12 / 4.10 / 3.06 GB/s, tmpfs save 3.06 / 3.09 / 2.89 GB/s, disk save 1.59 / 1.73 / 0.80 GB/s.
-- **Restore versus re-prefill, 27B (copy-and-apply only):** restoring the slot file takes 52.7 / 77.1 / 206.8 ms from tmpfs
-  and 105.6 / 174.2 / 416.2 ms from cold disk, against measured re-prefill of 10.9 / 23.2 / 51.6 s (n = 0 idle control,
-  1.3659 / 1.4514 / 1.6132 ms/token, graphs ON). That is 207 / 301 / 250 x (tmpfs) and 103 / 133 / 124 x (cold disk).
-  Crossover prefix length (restore cheaper than re-prefill above it): about 14 tokens from tmpfs, 28 from cold disk
-  (fixed 150 MiB recurrent-state restore, 19 ms or 38 ms, over a re-prefill cost of about 1.36 ms/token). The analytic
-  "~6 tokens" used the 28.9 GB/s H2D plateau only; the measured source path makes it 14 to 28.
+- **Source rates (graphs ON, the HSF-4/5 rates).** 27B on the production-shaped :8083 argv, L = 8000 / 16000 / 32000
+  tokens: tmpfs restore 8.58 / 8.50 / 7.29 GB/s (50.8 / 84.1 / 174.6 ms), cold-disk restore 3.92 / 3.94 / 3.79 GB/s
+  (111.0 / 181.3 / 335.6 ms), tmpfs save 3.21 / 3.19 / 3.17 GB/s (135.9 / 223.9 / 400.7 ms), disk save 1.70 / 1.69 /
+  1.68 GB/s (255.7 / 422.2 / 758.5 ms), `--cache-ram` save stall 111.0 / 160.5 / 189.2 ms, load stall 77.9 / 55.1 / 83.2 ms.
+- **Restore versus re-prefill, 27B (copy-and-apply only):** against measured idle re-prefill of 10.93 / 23.22 / 51.62 s
+  (n = 0 control, 1.3659 / 1.4514 / 1.6132 ms/token, graphs ON) the restore is 215 / 276 / 296 x cheaper from tmpfs,
+  98 / 128 / 154 x from cold disk, 140 / 421 / 620 x from `--cache-ram` (raw load stall). Crossover prefix length
+  (restore cheaper above it): about **13 tokens from tmpfs, 30 from cold disk** (graphs-OFF figures were 14 and 28).
 - **This does not rehabilitate the 60-820x line.** The HSF-LB1 correction stands: the measured end-to-end ON-arm pre-eval
-  stall is 43.5 s (median, 20-29k cached tokens, 15 turns, one rep). Step 7's largest single transfer is 1.58 s (32k-token
-  disk save), 27 x smaller than that stall, so a single save or restore cannot explain it; attribution stays with
-  UFH14-LB7. Step 7 prices one clean transfer, not a stall.
-- **Done: NO.** Not ticked. Remaining: the rates are graphs-off (KPF-18-S1.7g is the open decision and was not touched),
+  stall is 43.5 s (median, 20-29k cached tokens, 15 turns, one rep). The largest single transfer in the graphs-ON run is
+  the 32k-token disk save, 758.5 ms median (768.1 ms worst rep), **57 x smaller than that stall** (graphs-OFF said 27 x,
+  from a 1580.9 ms median that the ON run did not reproduce). A single save or restore cannot explain the stall;
+  attribution stays with UFH14-LB7.
+- **Done: NO for HSF-4 as a whole.** The source-rate sub-term is now closed on graphs-ON numbers (HSF-4.G). Still open:
   the serving_call.v1 / dispatch.v1 per-role histogram has no usable sample (below), and the placement KV-recovery term
-  still needs the end-to-end restore cost from LB7. A dated note was written.
+  still needs the end-to-end restore cost from LB7.
 
-## (a) Source-rate table, GRAPHS DISABLED
+## (a) Source-rate table, GRAPHS ON (the HSF-4/5 source rates)
 
-LABEL: **every rate and ms value below was measured with `GGML_CUDA_DISABLE_GRAPHS=1`** (KPF-18-S1 remainder PREDECLARATION
-amendment 2026-10-23T13:25Z, GPU-LEAK-1). Not the production condition. Do not quote them as the production rate.
-Source: `VERDICT.json` `items.step7_hsf`, status `MEASURED` (n >= 3 valid in every mode at every L; hot disk restore n = 1).
-Unit: GB/s = 1e9 bytes/s, ms medians of 3. Model: Qwen3.8-27B-Q8_0, fork build `gpu-20261020-a1f0c8cf9`, `-np 4 -b/-ub 512
---kv-unified --cache-ram 65536 --no-cache-idle-slots`, host threads 184-191.
+LABEL: **graphs ON** (no `GGML_CUDA_DISABLE_GRAPHS` in the server's `/proc/<pid>/environ`, `out/graphs_proof.json`;
+`HSA_OVERRIDE_CPU_AFFINITY_DEBUG=0` also set; fresh load, step 7 only). Source: KPF-18-S1.7g
+`/mnt/raid0/llm/tmp/f8-launchers-20261023/kpf18-s1-step7-graphs-on/VERDICT.json` -> `step7_graphs_on_result`, verdict
+`MEASURED` (n = 3 valid in every timed mode at every L; hot disk restore n = 1). Rule sha256
+`79350337f0342562830a728bf8ca0448c9ae292d75cd7b12a612aa20221684d2` (= sha256 of that run's `PREDECLARATION.md` and the
+`predeclaration_sha256` field of the VERDICT; `excluded_predeclaration_mismatch` is empty). Unit: GB/s = 1e9 bytes/s,
+ms medians of 3. Model: Qwen3.8-27B-Q8_0 + DFlash2 drafter, fork build `gpu-20261020-a1f0c8cf9` (binary sha256
+`2be7a16e…`, not the v10 production binary), `-np 4 -c 393216 -b/-ub 512 --kv-unified --cache-ram 65536
+--no-cache-idle-slots`, host threads 184-191, numactl --membind=3. Peak own-pid VRAM 49,726 MiB.
+
+| L (tokens) | slot-file bytes | tmpfs save ms (GB/s) | tmpfs restore ms (GB/s) | disk save ms (GB/s) | cold-disk restore ms (GB/s) | hot-disk restore ms (GB/s), n = 1 | derived disk-only read (GB/s) |
+|---|---|---|---|---|---|---|---|
+| 8000 | 435,646,768 | 135.9 (3.21) | 50.8 (8.58) | 255.7 (1.70) | 111.0 (3.92) | 44.9 (9.70) | 7.23 |
+| 16000 | 714,398,768 | 223.9 (3.19) | 84.1 (8.50) | 422.2 (1.69) | 181.3 (3.94) | 77.7 (9.19) | 7.35 |
+| 32000 | 1,271,902,768 | 400.7 (3.17) | 174.6 (7.29) | 758.5 (1.68) | 335.6 (3.79) | 153.4 (8.29) | 7.90 |
+
+`--cache-ram` (stall = TTFT minus prompt_ms; bytes = slot-file bytes at L plus the evicted slot's checkpoint, drafter state
+NOT counted, so every rate is a lower bound):
+
+| L | save stall ms | load stall ms (raw GB/s) | filler-eviction baseline stall ms | baseline-subtracted save GB/s | baseline-subtracted load GB/s | entry bytes |
+|---|---|---|---|---|---|---|
+| 8000 | 111.0 | 77.9 (13.12) | 49.4 | 14.18 | 36.18 | 1,032,233,140 |
+| 16000 | 160.5 | 55.1 (23.77) | 1.62 | 7.25 | 24.49 | 1,310,985,140 |
+| 32000 | 189.2 | 83.2 (21.57) | 1.45 | 9.11 | 22.84 | 1,868,489,140 |
+
+Cautions inside the data:
+- The L = 8000 baseline stall is again an outlier (49.4 ms against 1.62 and 1.45 ms); graphs-OFF had 37.2 ms there. It
+  reproduced on a fresh step-7-only load, so it is a first-measured-length effect, not load history. The baseline-subtracted
+  L = 8000 load rate (36.18 GB/s) exceeds the 28.89 GB/s H2D plateau and is physically not a copy rate: do not use the
+  L = 8000 derived `--cache-ram` rates. Use the raw stalls.
+- The disk-save spread is wide (172-272 ms at 8000, 459-768 ms at 32000), fsync medians 0.9-2.7 ms.
+- Bytes versus tokens: 34,844 B/token plus 156.9 MB (149.6 MiB) fixed (same bytes in both runs).
+- Cold restores had residency 0.0 (mincore), so they read from disk.
+- The slot endpoints serialize the target context only (KV, recurrent state, token ids). The draft model's state is not
+  restored and must be rebuilt, which is outside these rates.
+- HSF-5's gather rate is NOT COVERED (no mapped-host UMBP gather code exists).
+
+### Which cells were graphs-sensitive (KPF-18-S1.7g, `compare.py`)
+
+Rule (predeclared): per (L, mode), sensitive iff |median_ON - median_OFF| > max(range_ON, range_OFF), range = ms_max - ms_min,
+n = 3 on both sides. Four of 21 cells are sensitive:
+
+| L | mode | median OFF ms | median ON ms | delta ms | max range ms |
+|---|---|---|---|---|---|
+| 8000 | cache_baseline | 37.215 | 49.401 | +12.186 | 11.822 |
+| 16000 | cache_baseline | 1.263 | 1.620 | +0.357 | 0.186 |
+| 32000 | disk_restore_cold | 416.198 | 335.568 | -80.630 | 25.053 |
+| 32000 | cache_load | 77.270 | 83.245 | +5.975 | 5.375 |
+
+Derived rates inherit sensitivity from any component: both `--cache-ram` rates at 8000 and 16000, the load rate at 32000 and
+the 32000 derived disk-only read are sensitive. Note that the 32000 disk save moved from 1580.9 to 758.5 ms yet is labelled
+insensitive, because the OFF run's own range was 1641 ms. The overall label is `graphs-sensitive`, so all HSF-4/5 numbers
+come from the ON run. Attribution, again: graphs ON + the knob + fresh load / step-7-only history jointly, not graphs alone.
+
+## (a-off) Source-rate table, GRAPHS DISABLED (kept for the record; NOT the HSF-4/5 rates)
+
+LABEL: **every rate and ms value in this subsection was measured with `GGML_CUDA_DISABLE_GRAPHS=1`** (KPF-18-S1 remainder
+PREDECLARATION amendment 2026-10-23T13:25Z, GPU-LEAK-1), after ~20 minutes of earlier steps on the same load. Not the production
+condition and superseded for HSF-4/5 by the graphs-ON table above. Source: `kpf18-s1-remainder/VERDICT.json` `items.step7_hsf`,
+copied verbatim as `kpf18-s1-step7-graphs-on/base_VERDICT_graphsoff.json` (sha256 e9d02f33…).
 
 | L (tokens) | slot-file bytes | tmpfs save ms (GB/s) | tmpfs restore ms (GB/s) | disk save ms (GB/s) | cold-disk restore ms (GB/s) | derived disk-only read (GB/s) | --cache-ram save stall ms | --cache-ram load stall ms (raw GB/s) |
 |---|---|---|---|---|---|---|---|---|
@@ -39,51 +103,32 @@ Unit: GB/s = 1e9 bytes/s, ms medians of 3. Model: Qwen3.8-27B-Q8_0, fork build `
 | 16000 | 714,398,768 | 231.4 (3.09) | 77.1 (9.27) | 412.9 (1.73) | 174.2 (4.10) | 7.36 | 144.2 | 45.7 (24.4) |
 | 32000 | 1,271,902,768 | 439.4 (2.89) | 206.8 (6.15) | 1580.9 (0.80) | 416.2 (3.06) | 6.07 | 205.0 | 77.3 (23.9) |
 
-Bytes versus tokens: slope 34,844 B/token plus 156.9 MB (149.6 MiB) fixed, matching the earlier prompt_save fit
-(34,840 B/token, 149.63 MiB). Cold restores had residency 0.0 (mincore), so they read from disk.
+## Retired: the code-path judgement on HIP graphs
 
-Cautions inside the data:
-- `--cache-ram` rates use the stall (TTFT minus prompt_ms), not a copy timer. The L = 8000 baseline stall is 37.2 ms against
-  1.26 ms at 16000 and 1.55 ms at 32000, a 26x outlier in the first length measured; the baseline-subtracted load rate at
-  8000 (32.6 GB/s) exceeds the 28.9 GB/s H2D plateau and is the least reliable cell. The raw columns above are not
-  baseline-subtracted. The drafter state is in the cache entry but not in the byte count, so rates are lower bounds.
-- Disk-save varies 178-292 ms across 3 reps at L = 8000 (fsync 75 ms in one rep).
-- HSF-5's gather rate is NOT COVERED (no code exists).
-- The slot save/restore endpoints serialize the target context only (KV, recurrent state, token ids). The draft model's
-  state is not restored and must be rebuilt, which is outside these rates.
+The 2026-10-23 version of this document judged from the code path, before any graphs-ON measurement, that save/restore are
+hipMemcpy plus file I/O outside graph nodes, so "any difference [would] sit inside the 3-rep spread". **That judgement is
+retired.** The measurement contradicts it for 32000 cold-disk restore (-80.6 ms against a 25.1 ms spread) and 32000
+`--cache-ram` load (+6.0 ms against 5.4 ms), and for both baseline cells. The 17 insensitive cells do not rescue it: the
+predeclared rule is per-cell and the overall label decides. No mechanism is claimed for the four cells either, because the
+run cannot separate graphs from the knob and the load history. The memory note is unchanged: graphs-on holds captured
+graph/exec memory (GPU-LEAK-1d: ~1.7 MiB per request on the production shape), irrelevant to a copy rate unless VRAM is tight.
 
-### Could HIP graphs plausibly affect a save/restore rate?
-
-Judgment from code path, not from a measurement (no graphs-on step 7 exists):
-- **tmpfs/disk save and restore: unlikely.** Both are `ggml_backend_tensor_get/set` copies (hipMemcpy D2H / H2D) around file I/O.
-  Graphs change how compute kernels are launched; the copies are not graph nodes. With the server idle at each request there
-  is no outstanding graph work for the copy to wait on. I expect any difference to sit inside the 3-rep spread (for example
-  tmpfs restore 52.0-56.6 ms at 8000, +/- 4 %), but this is an expectation.
-- **`--cache-ram` save/load stalls: possible but small.** These are measured as TTFT minus prompt_ms, so they include
-  the non-prompt work of the same request (slot setup, first-token decode, draft resync) which does run through graphs.
-  Baseline subtraction cancels the part common to both arms, which leaves graph-dependent work only if it differs between
-  the arms; no evidence either way.
-- **Memory side effect:** graphs-on holds captured graph/exec memory (GPU-LEAK-1: 290 MiB per request on the E1 scratch shape,
-  1.7 MiB on the production shape), which is irrelevant to a copy rate unless VRAM is tight.
-- The mechanism leans toward "no meaningful effect", but a graphs-ON re-measure (KPF-18-S1.7g) is the only thing that can
-  say so. That decision is open; this document does not resolve it.
-
-## Restore-versus-re-prefill crossover, 27B (uses graphs-off rates, labelled)
+## Restore-versus-re-prefill crossover, 27B (graphs ON)
 
 | L | re-prefill s (idle, measured ms/token x L, graphs ON, 1 rep) | tmpfs restore ms | cold-disk restore ms | `--cache-ram` load stall ms (raw) | ratio re-prefill / tmpfs | / cold disk | / cache-ram |
 |---|---|---|---|---|---|---|---|
-| 8000 | 10.93 | 52.7 | 105.6 | 68.8 | 207 | 103 | 159 |
-| 16000 | 23.22 | 77.1 | 174.2 | 45.7 | 301 | 133 | 509 |
-| 32000 | 51.62 | 206.8 | 416.2 | 77.3 | 250 | 124 | 668 |
+| 8000 | 10.93 | 50.8 | 111.0 | 77.9 | 215 | 98 | 140 |
+| 16000 | 23.22 | 84.1 | 181.3 | 55.1 | 276 | 128 | 421 |
+| 32000 | 51.62 | 174.6 | 335.6 | 83.2 | 296 | 154 | 620 |
 
-Crossover prefix tokens, linear model (restore = fixed + 34,844 B/token over the measured rate; re-prefill about 1.36
-ms/token at small L): tmpfs 19.0 ms + 4.2 us/token, crossover 14 tokens; cold disk 38.1 ms + 8.5 us/token, crossover 28.
-These are graphs-off copy rates against a graphs-on re-prefill rate, so the ratio mixes the two conditions; if graphs-on
-copy rates are similar (the expectation above), the ratios hold to the stated precision. Recompute from the 7g re-measure.
+Crossover prefix tokens, linear model (restore = 156.9 MB fixed + 34,844 B/token over the L = 8000 measured rate, the
+lowest length measured; re-prefill 1.3659 ms/token): tmpfs 18.3 ms + 4.06 us/token, crossover **13 tokens**; cold disk
+40.0 ms + 8.88 us/token, crossover **30 tokens**. Both copy rates and the re-prefill rate are now graphs ON, so the
+ratio no longer mixes conditions. (Graphs-OFF figures: 14 and 28 tokens; 207 / 301 / 250 x and 103 / 133 / 124 x.)
 
-Save-side cost per idle-slot demotion (graphs off): a 32k-token slot costs 0.44 s to tmpfs, 1.58 s to disk, 0.21 s to
-`--cache-ram`. A neighbour demotion inside someone else's TTFT is therefore a sub-2-s term per slot at 32k, which is
-below the 43.5 s stall by a factor of 20 or more; this constrains LB7's attribution, it does not make it.
+Save-side cost per idle-slot demotion (graphs ON): a 32k-token slot costs 0.40 s to tmpfs, 0.76 s to disk, 0.19 s to
+`--cache-ram`. A neighbour demotion inside someone else's TTFT is therefore a sub-1-s term per slot at 32k, below the
+43.5 s stall by a factor of 57 or more; this constrains LB7's attribution, it does not make it.
 
 ## (b) Per-role histogram and ceilings
 
@@ -115,7 +160,7 @@ Request share below B / alpha(B) / ceiling:
 
 (The 64K row reads the ceiling off the 65,536 cut, so it is only a bound.)
 
-**serving_call.v1 / dispatch.v1 re-run (done today, not usable as a per-role histogram).** Union of three orchestrator
+**serving_call.v1 / dispatch.v1 re-run (done 2026-10-23, not usable as a per-role histogram).** Union of three orchestrator
 roots (`epyc-orchestrator`, `worktrees/f8-turn1-grammar-lazy`, `worktrees/hil15a-fix-20261022`): 478 serving_call.v1 rows (14 with no
 `result`), 481 dispatch.v1 dispatch records, 459 joined on request_id. Per role (uncached = prompt_tokens - cached_prompt_tokens):
 frontdoor n = 352 (p50 1,402 / p90 2,662 / p99 2,959 / max 3,124), coder_escalation n = 60 (684 / 3,058 / 3,271 / 3,370),
@@ -127,17 +172,26 @@ The 2026-10-21 log table remains the best available. Re-run it when real frontdo
 
 ## Data provenance
 
-- `/mnt/raid0/llm/tmp/f8-launchers-20261023/kpf18-s1-remainder/VERDICT.json` e9d02f3302b1cb9e59d4d677310855b171dc8bb5819726c1393b71ebbda56106
-- `.../PREDECLARATION.md` fec95598f3ae418b28141a768f458c51eb1952304386646e1aac0b5176722dc8; `.../RUN_RECORD.json` dbfdda560b7aa79a958799837bea8987212cf78e7d985c68622630a2c8e3ed16; `.../out/belief_measurements.jsonl` 3fb62336c63ad51091a96d7fd8c129114db87346abe118d6dee34974f1ffeae8
+- Graphs ON (the HSF-4/5 source rates): `/mnt/raid0/llm/tmp/f8-launchers-20261023/kpf18-s1-step7-graphs-on/VERDICT.json`
+  9868e8bc4219e61f3045687bebd857b8ee65b1fda60772a02ff77927c515956d; `PREDECLARATION.md`
+  79350337f0342562830a728bf8ca0448c9ae292d75cd7b12a612aa20221684d2; `RUN_RECORD.json`
+  9ddcc5e2722611216d4b1b395480f688bbce873988bea2b01cb8b413364555de; `compare.py`
+  73412452e5076412fea0ac2d25343b9a016bac8c6fe295fadc56b4a18852d4d1; `out/graphs_proof.json`
+  0fee50687294c42ca601f1f23e83624fa4722f0b3abebef9e04c8d5fad4537d9; `out/belief_measurements.jsonl`
+  2d074994edfb673ad47c7ead765bbffc9678f37ef8bf2384c56bad45c917c318; records `out/records/kpf18-20261023T184732Z-1.json`
+  343c8541…, `-184749Z-2.json` 3ed1e16c…, `-184819Z-3.json` fd062761…; window id `kpf18-s1-step7-graphs-on-20261023T1847Z`.
+- Graphs disabled: `/mnt/raid0/llm/tmp/f8-launchers-20261023/kpf18-s1-remainder/VERDICT.json` e9d02f3302b1cb9e59d4d677310855b171dc8bb5819726c1393b71ebbda56106
+  (identical bytes as `kpf18-s1-step7-graphs-on/base_VERDICT_graphsoff.json`)
+- `.../kpf18-s1-remainder/PREDECLARATION.md` fec95598f3ae418b28141a768f458c51eb1952304386646e1aac0b5176722dc8; `.../RUN_RECORD.json` dbfdda560b7aa79a958799837bea8987212cf78e7d985c68622630a2c8e3ed16; `.../out/belief_measurements.jsonl` 3fb62336c63ad51091a96d7fd8c129114db87346abe118d6dee34974f1ffeae8
 - `/mnt/raid0/llm/tmp/hsf4-wp15-20261021/hsf4_results.json` 30987331ad71311872c60c31daf1e614f26d65bf17c937b9979753d8a3666349; `rows.json` 76cf16467c0c18e33d689a69144445343d116a178ed27b516e1b5a6946fbf498
 - `/mnt/raid0/llm/tmp/analytics-20261020/HSF-4/REPORT.md` a4e19530f8bd0304792c4b42b4098adc80db174986287e08761555b4d4574656
 - `/mnt/raid0/llm/tmp/pb-qcost-1/runs/20261021T212922Z/pb_qcost_1.jsonl` a82cdf93dc8ca304703f057822586d61f746600bc8791036a3d7023e41c2699e (n = 0 control re-prefill rates)
 - serving_calls / dispatch (sha256): `epyc-orchestrator/logs/serving_calls/serving_calls.jsonl` 3281cab8006b5fb647365aae389ed4529ecad6daca85f4f1fb6a67299395b856, `logs/dispatch/dispatch.jsonl` 49f44be8272fe706697a007a2a87d1c0be2b1436e5eea2e3dbe29d37bf7b048b; f8-turn1-grammar-lazy serving_calls 34e0ad6a4d2d2b9ad7af1ef784e318101d4a1ea3c21e10b4f8b3aee734e1f142, dispatch ced65b76090b72f3c28018aaea18aadfacc89711983c3e87d2d1d81f12e635f4; hil15a-fix serving_calls f145be3138fb6934b0095a41d92b29dfe7232e625b10c89f8f88b0515468018f, dispatch 53acceb8247a8d3cf005d1e7a1bf62b9976d351a1d7fe2f207148fe3a711be29
 - Scripts (scratch, not committed): `/mnt/raid0/llm/tmp/f8-prodstack-20261023/{hsf4_restore.py,join.py}` sha256 a142c766b17b6c75d849a353db9c36a0c19acbbef65d53d03f5961167e88d15d and 57e90d2dd4a8b1a64998f0e2abadc4a5516839ea238f03bcc852859fccce50cb.
 
-## Compute proposal (NOT armed)
+## Compute
 
-Graphs-ON re-measure of step 7 is KPF-18-S1.7g and is the operator's open decision; no new row is proposed here. If 7g
-is taken, the launcher is the existing `kpf18-s1-remainder` job with step 7 only and `GGML_CUDA_DISABLE_GRAPHS` unset
-(about 10 min after a 2-5 min load). The only new request from this analysis: fix the L = 8000 `--cache-ram` baseline
-(repeat the filler-eviction baseline x3 at the start AND the end of the step, so the first-length outlier is detectable).
+KPF-18-S1.7g is done (2026-10-23T18:47-18:49Z, PASSED). No new compute row is proposed. The remaining instrument fix
+stands: the L = 8000 `--cache-ram` baseline outlier reproduced in both runs, so a future step-7 run should repeat the
+filler-eviction baseline x3 at the start AND the end of the step, so a first-length effect is detectable and the
+L = 8000 derived `--cache-ram` rates become usable.
