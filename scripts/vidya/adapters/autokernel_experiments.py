@@ -47,8 +47,17 @@ must be a pure function of the row, because a projection that depended on what t
 holds would emit different frames for the same attempt on re-run. De-duplicating the PRESENTATION
 (one value-bearing line per capture) is the reader's job, through that id.
 
-RETROFIT. `observation.retrofit` is True for every row with no top-level `belief_capture` in its
-payload, i.e. every row written before the producer hook (Phase 2) exists.
+RETROFIT vs PROSPECTIVE (belief redesign Phase 2). `observation.retrofit` is True for every row
+with no top-level `belief_capture` in its payload, i.e. every row written before the producer hook
+(research `loop/archive.record` -> `controller/experiment_capture.py`) existed. A row WITH one is
+projected as prospective (`retrofit` False) only after `capture_refusal` accepts it: the capture's
+schema is `CAPTURE_SCHEMA`, its `content_sha256` re-hashes from its own `subject`, and that subject
+equals the subject re-derived HERE from the stored row (`_capture_subject`: the projected columns,
+the `research_scope` model/sha/quant/backend/surface, the measured comparison fields, the build,
+and a digest of the rest of the payload). Any difference refuses the row (counted under
+`not_projected["belief_capture_<reason>"]`); it is never silently demoted to retrofit, because a
+row whose seal does not match is a claim nobody stands behind. The research module and
+`_capture_subject` are the same contract written twice (no research import): change both.
 
 Stdlib + ROOT `scripts/vidya` only. No research-repo import; no grading rule here.
 """
@@ -119,6 +128,12 @@ _ATTEMPT = re.compile(r"[^\s\x00-\x1f\x7f]{1,200}\Z")
 _OP_FAILED = re.compile(r"^([A-Z][A-Z0-9_]{2,})\s+failed\b")
 _SERVING_SURFACE = re.compile(r"^serving:(?P<recipe>\S+)$")
 
+#: The producer's self-hashed experiments-row capture (research controller/experiment_capture.py).
+CAPTURE_SCHEMA = "epyc.autokernel.experiment_belief_capture.v1"
+_CAPTURE_MEASUREMENT_KEYS = ("metric", "surface", "anchor_tok_s", "anchor_samples",
+                             "candidate_tok_s", "candidate_samples", "effect", "effect_pct",
+                             "noise_floor_pct", "floor_pct", "pairs", "decisive", "np")
+
 STATEMENT_MAX = 240
 REASON_MAX = 300
 PROPOSITION_MAX = 1000
@@ -174,6 +189,21 @@ def _text(value: Any, limit: int | None = None) -> str:
 def _canon(value: Any) -> bytes:
     return json.dumps(value, sort_keys=True, separators=(",", ":"), ensure_ascii=False,
                       allow_nan=False).encode()
+
+
+def _finite(value: Any) -> Any:
+    """Non-finite floats -> None, recursively (SQLite stores NaN as NULL; the producer seals so)."""
+    if isinstance(value, float) and not math.isfinite(value):
+        return None
+    if isinstance(value, Mapping):
+        return {str(key): _finite(item) for key, item in value.items()}
+    if isinstance(value, (list, tuple)):
+        return [_finite(item) for item in value]
+    return value
+
+
+def _capture_canon(value: Any) -> bytes:
+    return _canon(_finite(value))
 
 
 # ============================================================================== read side
@@ -332,6 +362,9 @@ def classify(row: Mapping[str, Any]) -> tuple[str | None, str]:
     payload = row.get("payload")
     if not isinstance(payload, Mapping):
         return None, "payload_unreadable"
+    refused = capture_refusal(row, payload)
+    if refused:
+        return None, f"belief_capture_{refused}"
     if status in VERIFIER_STATUSES:
         if status == "gate_refused" and _refusal_gate(payload) not in CORRECTNESS_GATES:
             return None, "scope_gate"
@@ -430,8 +463,64 @@ def serving_claim_id(payload: Mapping[str, Any]) -> str | None:
 
 
 def _is_retrofit(payload: Mapping[str, Any]) -> bool:
-    capture = payload.get("belief_capture")
-    return not (isinstance(capture, Mapping) and bool(capture))
+    """No producer capture. A row that has one reaches projection only once it verified."""
+    return "belief_capture" not in payload
+
+
+def _capture_subject(row: Mapping[str, Any], payload: Mapping[str, Any]) -> dict:
+    """The subject the producer sealed, re-derived from the STORED row (same rule, written twice)."""
+    scope = payload.get("research_scope")
+    research_scope = None
+    if isinstance(scope, Mapping):
+        model = scope.get("model")
+        research_scope = {
+            "model_path": model.get("path") if isinstance(model, Mapping) else model,
+            "model_sha256": model.get("sha256") if isinstance(model, Mapping) else None,
+            "quant": scope.get("quant"), "backend": scope.get("backend"),
+            "measurement_surface": scope.get("measurement_surface")}
+    comparison = _comparison(row, payload)
+    measurement = {key: comparison[key] for key in _CAPTURE_MEASUREMENT_KEYS if key in comparison}
+    plan = comparison.get("measurement_plan")
+    if isinstance(plan, Mapping) and "instrument" in plan:
+        measurement["instrument"] = plan["instrument"]
+    serving = comparison.get("belief_capture")
+    if isinstance(serving, Mapping) and "capture_id" in serving:
+        measurement["serving_capture_id"] = serving["capture_id"]
+    rest = {key: value for key, value in payload.items() if key != "belief_capture"}
+    return _finite({
+        "row": {name: row.get(name) for name in _COLUMNS},
+        "research_scope": research_scope,
+        "measurement": measurement,
+        "build": {"spawn_parent": row.get("spawn_parent"),
+                  "champion_head": payload.get("champion_head")},
+        "payload_sha256": hashlib.sha256(_capture_canon(rest)).hexdigest()})
+
+
+def capture_refusal(row: Mapping[str, Any], payload: Mapping[str, Any]) -> str | None:
+    """None when the payload has no capture or its capture seals exactly this row; else why not.
+
+    Reasons: `schema` (not a v1 experiments capture), `malformed`, `hash_mismatch` (the subject
+    does not re-hash to `content_sha256`), `disagrees_with_row` (the seal is intact but the row
+    it rides on says something else), `unencodable`.
+    """
+    if "belief_capture" not in payload:
+        return None
+    capture = payload["belief_capture"]
+    if not isinstance(capture, Mapping) or capture.get("schema") != CAPTURE_SCHEMA:
+        return "schema"
+    subject = capture.get("subject")
+    sealed = capture.get("content_sha256")
+    if not isinstance(subject, Mapping) or not isinstance(sealed, str) or not _HEX64.fullmatch(sealed):
+        return "malformed"
+    try:
+        body = _capture_canon(subject)
+        if hashlib.sha256(body).hexdigest() != sealed:
+            return "hash_mismatch"
+        if body != _capture_canon(_capture_subject(row, payload)):
+            return "disagrees_with_row"
+    except (TypeError, ValueError):
+        return "unencodable"
+    return None
 
 
 def _applicability(row: Mapping[str, Any], payload: Mapping[str, Any],
@@ -590,7 +679,9 @@ def project(row: dict, *, store_manifest: dict) -> ClaimTuple | None:
                "serving_claim_id": serving,
                "belief_receipt_id": _text(payload.get("belief_receipt_id")) or None,
                "candidate_diff_sha256": _text(payload.get("candidate_diff_sha256")) or None,
-               "result_sha256": row.get("result_sha256")})
+               "result_sha256": row.get("result_sha256"),
+               **({"belief_capture_sha256": payload["belief_capture"]["content_sha256"]}
+                  if not observation["retrofit"] else {})})
     if disposition == "verifier":
         fields.update(source_class="verifier", decided_proposition=proposition, binding_kind="")
     return _make_tuple(fields, applicability, observation)
@@ -629,7 +720,8 @@ def ingest(stores: Iterable[Path], *, as_of: str | None = None,
     report: dict[str, Any] = {
         "schema": REPORT_SCHEMA, "dry_run": ledger_path is None, "stores": [], "rows_read": 0,
         "by_status": {}, "projected": 0, "by_disposition": {}, "not_projected": {},
-        "by_scope_basis": {}, "by_outcome": {}, "retrofit": 0, "projection_errors": [],
+        "by_scope_basis": {}, "by_outcome": {}, "retrofit": 0, "prospective": 0,
+        "projection_errors": [],
         "frames": 0}
     incoming: list[dict] = []
 
@@ -664,6 +756,7 @@ def ingest(stores: Iterable[Path], *, as_of: str | None = None,
             bump(report["by_outcome"], observation["outcome"])
             bump(report["by_scope_basis"], applicability_of(tup).get("scope_basis", "unscoped"))
             report["retrofit"] += bool(observation.get("retrofit"))
+            report["prospective"] += not observation.get("retrofit")
             if ledger_path is not None:
                 incoming.extend(to_frames(tup, as_of=as_of, adapter_id=ADAPTER_ID))
             else:
@@ -682,6 +775,6 @@ def ingest(stores: Iterable[Path], *, as_of: str | None = None,
     return report
 
 
-__all__ = ["ADAPTER_ID", "applicability_of", "build_store_manifest",
+__all__ = ["ADAPTER_ID", "CAPTURE_SCHEMA", "applicability_of", "build_store_manifest", "capture_refusal",
            "check_ledger_target", "classify", "ingest", "measurement_id", "native_rows",
            "observation_of", "project", "serving_claim_id"]

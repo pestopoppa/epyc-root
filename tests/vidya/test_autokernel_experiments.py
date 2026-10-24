@@ -595,9 +595,117 @@ def test_retrofit_unless_the_row_has_a_belief_capture(store):
     for tup in projected(store).values():
         if tup is not None:
             assert exp.observation_of(tup)["retrofit"] is True
+            assert "belief_capture_sha256" not in tup.extra
+    # a capture that is not the producer's v1 seal is REFUSED, never read as prospective and
+    # never silently demoted to retrofit
     row = next(r for r in exp.native_rows(store) if r["rowid"] == rowid_of("kept"))
     row["payload"] = {**row["payload"], "belief_capture": {"capture_sha256": aid("c")}}
-    assert exp.observation_of(exp.project(row, store_manifest=MANIFEST))["retrofit"] is False
+    assert exp.classify(row) == (None, "belief_capture_schema")
+    assert exp.project(row, store_manifest=MANIFEST) is None
+
+
+#: frame ids of the retrofit fixture projected by the Phase-1 adapter (origin/main 3418c3adc,
+#: before the Phase-2 capture verifier): the verifier must not move a single retrofit frame.
+PHASE1_FRAMES = (33, "699f291e9ac5ebb6b1bb72ccf7ea43d93bab91d572067996b16d2e3dd57cfb91")
+
+
+def test_retrofit_frame_ids_are_unchanged_by_the_capture_verifier(store):
+    ids = [f["frame_id"] for t in projected(store).values() if t is not None
+           for f in to_frames(t, as_of="2026-10-21T12:00:00Z", adapter_id=exp.ADAPTER_ID)]
+    assert (len(ids), hashlib.sha256("\n".join(ids).encode()).hexdigest()) == PHASE1_FRAMES
+
+
+# ------------------------------------------------------------------------------ Phase 2: prospective
+
+#: Rows written by the RESEARCH writer (`loop/archive.record` -> `controller/experiment_capture.py`,
+#: branch f8/ak-exp-belief-capture-20261024), read back from SQLite: the cross-repo contract test.
+PROSPECTIVE = json.loads((Path(__file__).parent / "fixtures/autokernel_experiments/"
+                          "prospective_rows.json").read_text())["rows"]
+_ALL_COLUMNS = (*exp._COLUMNS, "payload")
+
+
+def make_prospective_store(tmp_path, name="pstore", edit=None):
+    store = tmp_path / name
+    store.mkdir()
+    conn = sqlite3.connect(store / "experiments.db")
+    conn.executescript(SCHEMA)
+    for row in PROSPECTIVE:
+        row = dict(row)
+        if edit:
+            row = edit(row)
+        conn.execute(f"INSERT INTO experiments ({','.join(_ALL_COLUMNS)}) VALUES "
+                     f"({','.join('?' for _ in _ALL_COLUMNS)})", [row[c] for c in _ALL_COLUMNS])
+    conn.commit()
+    conn.close()
+    return store
+
+
+def test_producer_rows_verify_and_project_as_prospective(tmp_path):
+    store = make_prospective_store(tmp_path)
+    rows = exp.native_rows(store)
+    assert [r["status"] for r in rows] == ["keep_candidate", "gate_refused", "anchor_verified",
+                                           "measured_null"]
+    for row in rows:
+        assert exp.capture_refusal(row, row["payload"]) is None, row["status"]
+        tup = exp.project(row, store_manifest=MANIFEST)
+        assert tup is not None, row["status"]
+        assert exp.observation_of(tup)["retrofit"] is False
+        assert tup.extra["belief_capture_sha256"] == row["payload"]["belief_capture"]["content_sha256"]
+        assert grade(tup)[:2] == ("Judged", "Located")  # no protocol: prospective is not graded up
+        frames = to_frames(tup, as_of="2026-10-24T12:00:00Z", adapter_id=exp.ADAPTER_ID)
+        assert all(f["provenance"].get("retrofit") is not True for f in frames)
+    kept = exp.project(rows[0], store_manifest=MANIFEST)
+    assert exp.applicability_of(kept)["model_sha256"] == hashlib.sha256(b"model").hexdigest()
+    assert exp.observation_of(kept)["n_pairs"] == 5
+    # the NaN effect column and the inf floor were sealed as null, as SQLite stores them
+    assert rows[3]["effect_fraction"] is None
+    report = exp.ingest([store], store_manifests={str(store): MANIFEST})
+    assert (report["projected"], report["prospective"], report["retrofit"]) == (4, 4, 0)
+
+
+def _refused(tmp_path, name, edit):
+    store = make_prospective_store(tmp_path, name=name, edit=edit)
+    return {r["status"]: exp.classify(r) for r in exp.native_rows(store)}
+
+
+def _payload_edit(fn):
+    def edit(row):
+        payload = json.loads(row["payload"])
+        fn(payload)
+        return {**row, "payload": json.dumps(payload, sort_keys=True)}
+    return edit
+
+
+@pytest.mark.parametrize("name,edit,reason", [
+    ("status", lambda r: {**r, "status": "kept"} if r["status"] == "keep_candidate" else r,
+     "disagrees_with_row"),
+    ("effect", lambda r: {**r, "effect_fraction": 0.5} if r["status"] == "keep_candidate" else r,
+     "disagrees_with_row"),
+    ("recorded", lambda r: {**r, "recorded_at": "2026-10-25T00:00:00Z"}, "disagrees_with_row"),
+    ("pairs", _payload_edit(lambda p: p.get("comparison", {}).update(pairs=9)
+                            if "comparison" in p else None), "disagrees_with_row"),
+    ("model_sha", _payload_edit(lambda p: p["research_scope"]["model"].update(sha256="e" * 64)
+                                if "research_scope" in p else None), "disagrees_with_row"),
+    ("unprojected", _payload_edit(lambda p: p.update(reason="edited after the fact")),
+     "disagrees_with_row"),
+    ("subject", _payload_edit(lambda p: p["belief_capture"]["subject"]["row"].update(
+        mechanism_id="akm-forged")), "hash_mismatch"),
+    ("schema", _payload_edit(lambda p: p["belief_capture"].update(schema="v0")), "schema"),
+    ("malformed", _payload_edit(lambda p: p["belief_capture"].update(content_sha256="x")),
+     "malformed"),
+])
+def test_a_capture_that_does_not_seal_its_row_is_refused(tmp_path, name, edit, reason):
+    verdicts = _refused(tmp_path, name, edit)
+    touched = {status: v for status, v in verdicts.items() if v[0] is None}
+    assert touched, name
+    assert all(v == (None, f"belief_capture_{reason}") for v in touched.values()), (name, verdicts)
+
+
+def test_refused_captures_are_counted_not_dropped(tmp_path):
+    store = make_prospective_store(tmp_path, edit=lambda r: {**r, "recorded_at": "2026-10-25T00:00:00Z"})
+    report = exp.ingest([store], store_manifests={str(store): MANIFEST})
+    assert report["projected"] == 0 and report["rows_read"] == 4
+    assert report["not_projected"] == {"belief_capture_disagrees_with_row": 4}
 
 
 # ------------------------------------------------------------------------------ ingest / CLI

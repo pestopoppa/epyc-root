@@ -588,6 +588,24 @@ def _tier_of(ev, claim_id):
     return {c["claim_id"]: c["tier"] for c in ev["claims"]}.get(claim_id)
 
 
+def test_focus_symbols_rank_claims_on_those_symbols_first_and_never_filter(tmp_path, alarm):
+    """DESIGN §7.5: `focus_symbols` (AutoKernel passes its owned targets' symbols) is a ranking
+    boost inside a group, never a filter."""
+    focus = _loop("on-focus", mech="akm-focus", symbol="mul_mat_q", date="2026-10-04T04:00:00Z")
+    newer = _loop("off-focus", mech="akm-other", symbol="ggml_iqk_try_mul_mat_id",
+                  date="2026-10-05T04:00:00Z")
+    path = _write(tmp_path, focus, newer)
+    _, plain = _ev(tmp_path, alarm, path, DS41_Q4_T)
+    ids = [c["claim_id"] for c in plain["claims"]]
+    assert ids.index(_cid(newer)) < ids.index(_cid(focus))     # recency without a focus
+    _, boosted = _ev(tmp_path, alarm, path, {**DS41_Q4_T, "focus_symbols": ["mul_mat_q"]})
+    ids = [c["claim_id"] for c in boosted["claims"]]
+    assert ids.index(_cid(focus)) < ids.index(_cid(newer))     # the focus symbol first
+    assert {_cid(focus), _cid(newer)} <= set(ids)               # and nothing filtered out
+    _, unknown = _ev(tmp_path, alarm, path, {**DS41_Q4_T, "focus_symbols": ["not_a_symbol"]})
+    assert [c["claim_id"] for c in unknown["claims"]] == [c["claim_id"] for c in plain["claims"]]
+
+
 def test_device_only_claims_never_reach_the_target_tier(tmp_path, alarm):
     hosts = [_host(f"inf70-{i}", value=f"{390 + i}.5") for i in range(5)]
     own = _loop("ds41-own", mech="akm-own")
