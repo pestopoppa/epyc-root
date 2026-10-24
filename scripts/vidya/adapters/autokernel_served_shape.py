@@ -17,9 +17,10 @@ cap; a difference is REFUSED. A calibration that does not reproduce the manifest
 is ignored; no matching calibration => refuse. All matching calibrations must share the anchor's binary digests
 and agree exactly on every NMSE (the seeded oracle is deterministic); their number is ``reps``. The anchor build's
 files named in ``binary_digests`` are RE-HASHED when the build directory exists. ``launch_sha256`` is re-hashed
-against the launch recipe: on a match the recipe's ``model`` (path + sha256) scopes the claims to the model file;
-on a MISMATCH the model binding is NOT declared (the recipe was regenerated after the calibration), the tuples
-carry the lane/anchor scope only and ``extra.launch_binding`` says why. Nothing is inferred.
+against the launch recipe, for EVERY matching calibration: when at least one recorded the sha256 the recipe has now,
+that recipe's ``model`` (path + sha256) scopes the claims to the model file and ``extra.launch_bound_calibrations``
+names the bound runs; when none did (the recipe was regenerated after every calibration), the model binding is NOT
+declared, the tuples carry the lane/anchor scope only and ``extra.launch_binding`` says why. Nothing is inferred.
 
 PROJECTION ONLY. ``claim_tuple.grade()`` decides; no ladder here. Per (shape, quant type), across widths n=1..5:
 
@@ -135,6 +136,42 @@ def _rederive(cal: dict, caps: dict, rel: dict) -> bool:
     return all((b := derive_bound(nm[k], k in rel)) is not None and _close(b, caps[k]) for k in caps)
 
 
+def _launch_binding(matching: list[tuple[Path, dict]]) -> dict:
+    """The launch recipe is the only place the model file is named. EVERY matching calibration is checked (they
+    share the anchor binary and every NMSE, so any one of them is the same reading): the model binding is declared
+    when at least one of them recorded the sha256 its launch recipe has NOW, and only from that recipe. A recipe
+    regenerated after an earlier calibration therefore stays drifted for that run, while a re-calibration against
+    the current recipe binds the unit (P1-PHASE2-SERVED-SHAPE-RECAL). Bound runs that name different models refuse.
+    No recipe on disk => absent; none bound => drifted against the newest run."""
+    launch = {"binding": "absent", "model_file": "", "model_sha256": ""}
+    bound: dict[str, tuple[str, str]] = {}
+    drift = ""
+    for path, cal in sorted(matching, key=lambda pc: str(pc[1]["provenance"].get("measured_at") or "")):
+        prov = cal["provenance"]
+        launch_path = Path(str(prov.get("launch") or ""))
+        if not launch_path.is_file():
+            continue
+        actual = _sha(launch_path)
+        if actual != prov.get("launch_sha256"):
+            drift = f"drifted: launch recipe sha256 {actual[:12]} != calibration {str(prov.get('launch_sha256'))[:12]}"
+            continue
+        model = (_json(launch_path).get("model") or {})
+        if not _HEX64.fullmatch(str(model.get("sha256") or "")) or not model.get("path"):
+            raise ProjectionError("served-shape launch recipe names no model path/sha256")
+        bound[path.name] = (Path(model["path"]).name, model["sha256"])
+    if bound:
+        models = set(bound.values())
+        if len(models) != 1:
+            raise ProjectionError(f"served-shape calibrations bound to current launch recipes name different models: "
+                                  f"{sorted(models)}")
+        (model_file, model_sha), = models
+        return {"binding": "verified", "model_file": model_file, "model_sha256": model_sha,
+                "bound_calibrations": sorted(bound)}
+    if drift:
+        return {"binding": drift, "model_file": "", "model_sha256": ""}
+    return launch
+
+
 def native_rows(unit_dir: str | Path) -> list[dict]:
     unit = Path(unit_dir)
     if unit.is_file():
@@ -184,20 +221,7 @@ def native_rows(unit_dir: str | Path) -> list[dict]:
             rehashed.append(name)
         else:
             not_rehashed.append(name)
-    # launch recipe: the only place the model file is named.
-    prov = first["provenance"]
-    launch_path = Path(str(prov.get("launch") or ""))
-    launch = {"binding": "absent", "model_file": "", "model_sha256": ""}
-    if launch_path.is_file():
-        actual = _sha(launch_path)
-        if actual == prov.get("launch_sha256"):
-            model = (_json(launch_path).get("model") or {})
-            if not _HEX64.fullmatch(str(model.get("sha256") or "")) or not model.get("path"):
-                raise ProjectionError("served-shape launch recipe names no model path/sha256")
-            launch = {"binding": "verified", "model_file": Path(model["path"]).name, "model_sha256": model["sha256"]}
-        else:
-            launch = {"binding": f"drifted: launch recipe sha256 {actual[:12]} != calibration {str(prov.get('launch_sha256'))[:12]}",
-                      "model_file": "", "model_sha256": ""}
+    launch = _launch_binding(matching)
     measured = max(str(c["provenance"].get("measured_at") or "") for _, c in matching)
     nmse = {(r["shape_name"], r["type_a"], r["n"]): float(r["nmse"]) for r in first["measurements"]}
     groups: dict[tuple, list] = {}
@@ -266,7 +290,10 @@ def _extra(row: dict) -> dict:
             "anchor_commit": row["anchor_commit"], "per_width": row["widths"], "calibrations": row["calibrations"],
             "manifests": row["manifests"], "patch_sha256": row["patch_sha256"], "launch_binding": row["launch"]["binding"],
             "rehashed": row["rehashed"], "not_rehashed": row["not_rehashed"], "cap_rule": SOURCE_ARTIFACT,
-            "unit_dir": row["unit_dir"], "retrofit": True}
+            "unit_dir": row["unit_dir"], "retrofit": True,
+            # only when bound, so a drifted unit projects exactly as before (no ledger churn)
+            **({"launch_bound_calibrations": row["launch"]["bound_calibrations"]}
+               if row["launch"].get("bound_calibrations") else {})}
 
 
 def _common(row: dict, metric: str, value: float, unit: str, claim: str, **kw) -> ClaimTuple:
