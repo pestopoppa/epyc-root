@@ -280,3 +280,48 @@ The midday section was written while the four sweep subagents were still running
 - Agent F: the hpr-b fix, the R3 read-out, the LB7.1 tick and 4 launchers.
 - Agent G: GPU-ZOS-2.1, HSF-5.P, AKX-ALL-LB3.2a and the AC9 cap.
 - Agent H: review of 6 pushed branches.
+
+## Afternoon 2026-10-24: merges, approvals, final launches, consolidation (operator-invoked full /wrap-up, main thread)
+
+The operator consolidated to two sessions. workspace-f8's plans transfer to workspace-58 (calendar, read-outs, dispatch); 3c4ca599 keeps the kernel/champion line. This wrap-up was run by the main thread itself, with no new subagents, after every in-flight subagent had returned. The handover file is `/mnt/raid0/llm/tmp/handover-f8-to-ws58-20261024.md`.
+
+### Landed since the late-morning section (391e3fa73)
+| What | Where |
+|---|---|
+| SEC-ART-1.1 pins + strict-at-`start` (reviewed: LOW risk, pins re-hashed vs HF and on-disk GGUFs) | research `7b157602` merged; shared research clone ff-only to `99301fa14` (operator-approved); orch `26d0d033` merged (orch main `1eff8145`); root `af42f04f8` ticks SEC-ART-1 / 1.1 |
+| Six reviewed f8 branches merged (review: all MERGE) | research `bbb502812` (KVU-12.1 cell hash), `759a20113` (PB-QCOST write side), `58ce732e8` (SPEC-RNG.1.2 write side), `41c334e6e` (ak-exp belief_capture); orch `a85973a9` (AP3 scoped spin-up), `efe37dbb` (UFH14-LB6.2); recorded in root `f9fa2312a` |
+| D9 hook: pipefail early-exit lint wired warn-only into `scripts/hooks/pre-commit.extras` (operator-acked) + 7 index rows | root `dd8703b13` |
+| KVU-12.3 close scoped to quiet-dominated traffic (only 5 busy turns; pooled fallback; 4.52% vs 5%); KVU-12.3b busy-subset re-check filed with a traffic trigger | root `9a8e29942` |
+| AC9 option A (knob tier capped at 8 when target claims exist) + GPU-ZOS-2.1 tick | root `1f3a14a4d` |
+| VB-KVU-PF.7 (R3 sidecar projects) | root `f20caeda3` |
+| VB-HSF5P-WRITE reader + fixture | root `37b33fa61` |
+| VB-AKX-LB32-WRITE reader + AKX-ALL-LB3.2a tick | root `ff5c63e26` |
+| Agent F: hpr-b staging fix, R3 read-out (NOT_SATISFIED / FORK_OUTSIDE, R4 filed), LB7.1 tick, 4 launchers | root `c8563b0cc`, `d7cdfd11a`, `495a62d0f` |
+| Index next actions (RTG-58, INF-22) | root `d1e2c1390` |
+
+### Code on branches (not merged; owner review or build grant pending)
+- Fork `experimental/gpu-zos-2-one-step-lag-20261024` @ `6af3192c7`: `LLAMA_ZOS2`, default OFF. `test-sampling-greedy-fast` passes 1296/1296. Finding: :8083 always sends temperature 0.1/0.2 plus repeat_penalty 1.1, so greedy-fast never engages on production traffic; only lazy-save and overlap-process can help there.
+- Fork `experimental/hsf-5p-host-kv-mirror-20261024` @ `14d0f7fa2`: `--kv-host-mirror`, default OFF. Never compiled; the build is the armed `hsf-5p-build`.
+- Research `f8/akx-lb3-2a-attribution-20261024` @ `c0d77e890` (40 tests pass) and fork `experimental/akx-lb3-2a-optiming-20261024` @ `1bb7bf894` (not built).
+- Research `f8/kpf18-r4-20261024` @ `6e8ae35a2` (kpf18 suite 136/136), pinned for the R4 launcher (BACKLOG).
+
+### Operator decisions this afternoon
+- Started with approval: kpf17-4c-bisect, ufh14-lb1-1-fold (one build covering both the LB1 fix and the CH-LB1.1 GDN guard; content checked identical), ufh14-lb3-4-confirm, kpf18-0b-item2-rest, p1-phase2-served-shape-calib, kpf18-item3-g3-v3, m4-2b-champion-control, hsf-5p-build, hsf-5p-microbench and akx-lb3-2-attribution.
+- M4.2b amended before compute to the paired A-B-A-B design. C2_paired = 22.05 × the geometric mean of candidate/champion C2 over adjacent pairs, judged against the unchanged 22.05x ±10% band. The 2.8 ms C-solo drift check now only flags a pair.
+- AC9: option A first (landed). It still failed for a second cause: target-tier crowding, with KPF item 7 ranked 54th of 64. The operator then chose to AMEND AC9 to collected-evidence presence plus the count line. Not implemented yet; transfers to workspace-58.
+- API-only reload approved, to run after nib2-gnx1-reindex-2 fast-forwards the shared orch clone: `orchestrator_stack.py reload orchestrator` and nothing else.
+
+### Results of finished runs, read-outs owed (verdict files only, not yet read out by rule)
+- **m4-2b-champion-control:** `VERDICT.json` gives PASS. Under its rule that means M4.2 passes and the production gate is next.
+- **kpf17-4c-bisect:** `decisions.locus = none_reproduced`, decision_grade true. The layout-matched arms do not reproduce the c1 divergence, consistent with the 17.4b confound.
+- **kpf191a-cpu-27b-dflash2:** on CPU, honest / flag_on / honest_specoff PASS, both mutants DETECTED, and `c1_locus = drafter_on_only`.
+- **kpf18-item3-g3-v3:** `verdict = TARGET_SIDE`.
+- **pb-qcost-1-confirm-r:** label "confirm CONFIRMED; q axis PASS; grade INDICATIVE"; run-level UNCONTENDED, ub512 UNCONTENDED. The grade is INDICATIVE from some other phase, to be read per its amendment.
+
+### Incident (own)
+At 10:31Z a helper agent took a q1 region-lock ("f8-ac9-knobcap") with no grant, ahead of another session's champion build (C5). It ran the P1 acceptance runner, which had exited by ~10:41Z, and q1 was released. All briefs now forbid any claim or region-lock (the BRIEF_COMMON "No claims" rule).
+
+### Checklist and gates
+- Checkboxes this stretch: SEC-ART-1, SEC-ART-1.1, UFH14-LB6.2, P1-PHASE2-AKEXP-MERGE, VB-KVU-PF.7, VB-HSF5P-WRITE, VB-AKX-LB32-WRITE, AKX-ALL-LB3.2a, GPU-ZOS-2.1, KPF-18-S1.R3 and UFH14-LB7.1 ticked; KVU-12.3b and KPF-18-S1.R4 filed open.
+- Declines: none new.
+- `index_state.py --check` exits 0. README freshness: no warnings. The vidya sync check is reported in the wrap-up output.
