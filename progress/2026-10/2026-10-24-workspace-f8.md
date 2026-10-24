@@ -103,3 +103,45 @@ Other agents are preparing the read-outs. Nothing here is a verdict beyond the R
 | `index_state.py --check` | rc 0 on the first run; scratch warning unchanged (139) |
 | Agent log | skipped: `agent_log.sh` writes into the shared clone's `logs/` (gitignored), not the worktree |
 | Wiki / pruning | not run (per-task wrap-up) |
+
+## Morning 2026-10-24: overnight read-outs (per-task /wrap-up, subagent)
+
+### Root commits
+
+| SHA | Content |
+|---|---|
+| `3837a842c` | M4.2 (INCOMPLETE, C2 NOT_MEASURED) and SPEC-RNG.1.2 (DO-NOT-CARRY, ticked) read-outs; VB-M4-PBHOL-WIRE and VB-SPEC-RNG-1-2-WIRE filed |
+| `788f2a641` | master index rollup regenerated after the rebase (land.sh) |
+| `5d674dd53` | GPU read-outs: KPF-18-S1.7g graphs-sensitive, item-3 v2 FORK_EFFECT, GPU-ZOS-1a OPEN; HSF-4.G, GPU-ZOS-2 and VB-KVU-PF.6 filed |
+| `7d76d190e` | PB-QCOST-1 confirm (CONFIRMED, q axis PASS, INDICATIVE; confirm-R filed) and nib2-gnx1-reindex (PASSED at `fd1a894`, not ticked) read-outs |
+| `f14fc6274` | INF-22 next action (M4.2 INCOMPLETE -> M4.2a); INF-50 drops SPEC-RNG.1.2 |
+| `56cc57bdd` | next actions for INF-22, INF-23, RTG-58 and RTG-22; GPU-ZOS-1a residency-check amendment note |
+
+### Read-outs (every verdict is by its predeclared rule)
+
+- **KPF-18-S1.7g, step 7 with graphs ON:** graphs-sensitive in 4 of 21 cells (rule `79350337f034…`). HSF-4/5 must quote the graphs-ON numbers. The difference is attributed jointly to graphs ON, the HSA knob and the fresh-load / step-7-only history, NOT to graphs alone. HSF-4.G filed. Box ticked.
+- **kpf18 item-3 v2:** FORK_EFFECT, 3/3 valid loads (rule `417310869f16…`). The child is a fork-effect candidate at token 1. Item 3 and R3 stay open.
+- **GPU-ZOS-1a:** OPEN (rule `d38ce7dd9149…`). Spec-on share 4.15%, spec-off 1.48%; grade INDICATIVE. GPU-ZOS-2 (the one-step-lag design) filed.
+  - Validity check 2 was swapped in job.sh for own-pid KFD residency at 10-23 16:16Z, before the 19:03Z grant. The amendment was only written on 10-24 (`AMENDMENT-residency-check.md`). Verdict and grade stand.
+- **M4.2 m4-srpf-pbhol:** INCOMPLETE (rule `c97394d2…`); not ticked.
+  - C1 512/2048 PASS (B/A 0.997 / 0.994); C3 PASS.
+  - C2 NOT_MEASURED: all 3 off512 B reps are invalid because the long finished before the short was answered. M4.2a is being prepared.
+- **SPEC-RNG.1.2:** DO-NOT-CARRY (rule `0af228a0…`), ticked. The distribution is invariant and there is no reproducibility gain (probe net_gain 0/48). The drive was cut at the window deadline at N = 300 per cell, the V1 floor.
+- **PB-QCOST-1 confirm:** CONFIRMED, q axis PASS, grade INDICATIVE (rule `f45aef1a…`).
+  - Cause of the grade: a sibling-summary path bug (verdict_q reads `out/run/sibling_summary.json`, the sampler writes `out/sibling_summary.json`).
+  - Also a real disturbance on SMT siblings 92-95 from another session at about 19:30-20:00Z. It overlapped ub512 and ub256; ub1024 was clean.
+  - The run-level contention bar hid it. confirm-R filed with a per-phase grade; being prepared.
+- **nib2-gnx1-reindex:** PASSED at `fd1a894`, but origin/main was 2 commits ahead, so not ticked. A re-run launcher is being prepared.
+- **Belief kernel:** VB-KVU-PF.6, VB-M4-PBHOL-WIRE, VB-SPEC-RNG-1-2-WIRE and VB-GNX-REINDEX-1 filed; VB-PBQ-1 widened to the confirm run. A wiring agent is running.
+
+### GPU ops
+
+- `ufh14-lb7-1-probes` job.sh gained a bounded VRAM-drain wait (120 s, 2 s poll) before EVERY session launch. Reason: the calendar grants it right after kpf131b-specon, and on resume the own-server guard would not fire (s1-ON is skipped, so no own pid is recorded). Gates, thresholds and the refusal are unchanged. FIXED flag touched at 07:55Z; `AMENDMENT-vram-drain.md` plus its 08:05Z addendum.
+- `kpf131b-specon` armed at 07:49Z; booked after inf42-g1-gpu (grant ends by 08:28Z).
+
+### In preparation (not run)
+
+- M4.2a
+- PB-QCOST-1 confirm-R
+- NIB2-GNX-1 re-run
+- KPF-18-S1.R3 predeclaration and launcher
