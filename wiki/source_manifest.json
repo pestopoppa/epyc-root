@@ -3,16 +3,38 @@
     "docs": 204,
     "handoff-active": 183,
     "handoff-blocked": 2,
-    "handoff-completed": 213,
+    "handoff-completed": 215,
     "progress": 784,
     "research": 140
   },
   "kind": "project-wiki-source-manifest",
   "last_compile": "2026-10-24T14:00:15Z",
-  "mode": "touch",
-  "scan_time": "2026-10-24T14:00:15Z",
+  "last_touch": {
+    "advanced": {
+      "added": 2,
+      "changed": 4,
+      "removed": 0
+    },
+    "at": "2026-10-24T14:04:29Z",
+    "scope_paths": [
+      "docs/design/gpu-zos-2-one-step-lag-design-20261024.md",
+      "docs/design/hsf-4-results-20261023.md",
+      "docs/design/hsf-5-host-kv-mirror-costing-20261024.md",
+      "handoffs/active/gpu-serving-tie-in-program.md",
+      "handoffs/active/heterogeneous-slot-fabric-residency.md",
+      "handoffs/active/kv-prefix-fork-and-paged-attention.md",
+      "handoffs/active/kv-unified-stack-rollout.md",
+      "handoffs/active/model-artifact-integrity.md",
+      "handoffs/completed/kv-prefix-fork-and-paged-attention-completed-through-2026-10-24.md",
+      "handoffs/completed/kv-unified-stack-rollout-completed-through-2026-10-24.md",
+      "progress/2026-10/2026-10-24-workspace-f8.md"
+    ],
+    "scope_types": []
+  },
+  "mode": "touch:scoped",
+  "scan_time": "2026-10-24T14:04:29Z",
   "schema_version": 1,
-  "source_set_hash": "9b41fa73bd51e856b8d11e95fc6e090d7bf1274e9140f396b8b6b935c19a31b2",
+  "source_set_hash": "e1aaaea8dc3e329407ded8d628f5287fe939bc293555a249ec1f92da582b6767",
   "sources": [
     {
       "content_hash": "6c067235a74a3b9667dd4fad23684206476aeac1cdefe3b4e0a0824d3179c241",
@@ -647,10 +669,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "04106c6c5dc384e2888df591dbade45fa33af187d7743515742745c1c363d920",
-      "modified": "2026-10-24T13:57:48Z",
+      "content_hash": "13e2ff5b980516184d2ddb2142b1a1321fa7a09eb08e4d89b20add9fc3d86fbc",
+      "modified": "2026-10-24T14:04:29Z",
       "path": "handoffs/active/gpu-serving-tie-in-program.md",
-      "size": 154116,
+      "size": 154610,
       "title": "GPU Serving Tie-In Program \u2014 one fabric, two devices",
       "type": "handoff-active"
     },
@@ -680,7 +702,7 @@
     },
     {
       "content_hash": "64c88a5314f54e0c1e5cf89116df279405695b2351f6eb90f9d6c09bf3fcb7db",
-      "modified": "2026-10-24T13:57:48Z",
+      "modified": "2026-10-24T14:00:12Z",
       "path": "handoffs/active/heterogeneous-slot-fabric-residency.md",
       "size": 49768,
       "title": "Heterogeneous CPU\u00d7GPU Slot Fabric + Dynamic Residency",
@@ -735,18 +757,18 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "4dc8b20f84894d5a31989312476e50ddecff89d0b3001143ec89be1c2a3b0090",
-      "modified": "2026-10-24T13:57:48Z",
+      "content_hash": "ab658b2a562ab15ba7bdcfb7bdf0d33431ca2b281e3c31d7a12d3aa0662cbd45",
+      "modified": "2026-10-24T14:04:29Z",
       "path": "handoffs/active/kv-prefix-fork-and-paged-attention.md",
-      "size": 243799,
+      "size": 233150,
       "title": "KV prefix fork and paged attention: cross-slot prefix sharing, cache-aware dispatch, per-sequence KV views",
       "type": "handoff-active"
     },
     {
-      "content_hash": "aec0f279611d240efdaed2277a076e0709e752c0fc8e17def57f46986d361d81",
-      "modified": "2026-10-24T13:57:48Z",
+      "content_hash": "a030d5ba0e27b94e4ad5cce02627f7e7eb655e9197ce5b5212da59cb246c160b",
+      "modified": "2026-10-24T14:04:29Z",
       "path": "handoffs/active/kv-unified-stack-rollout.md",
-      "size": 195620,
+      "size": 188077,
       "title": "Unified KV (`--kv-unified`) stack rollout and shared-pool serving",
       "type": "handoff-active"
     },
@@ -864,7 +886,7 @@
     },
     {
       "content_hash": "2f66058f74b4443d9a9143425a1fc51e4c2cc55099383b666fc3b9d35e1f9c34",
-      "modified": "2026-10-24T13:57:48Z",
+      "modified": "2026-10-24T14:00:12Z",
       "path": "handoffs/active/model-artifact-integrity.md",
       "size": 30184,
       "title": "Model artifact integrity \u2014 pinned, verified and reviewed weights and templates",
@@ -2372,6 +2394,22 @@
       "path": "handoffs/completed/kv-cache-quantization.md",
       "size": 108040,
       "title": "KV Cache Quantization (TurboQuant / PolarQuant / QJL)",
+      "type": "handoff-completed"
+    },
+    {
+      "content_hash": "2776fe1fe62277a9aba561622807285604141ac7886f2dd0e8bff433608bca26",
+      "modified": "2026-10-24T14:04:29Z",
+      "path": "handoffs/completed/kv-prefix-fork-and-paged-attention-completed-through-2026-10-24.md",
+      "size": 11605,
+      "title": "KV prefix fork and paged attention: completed history through 2026-10-24",
+      "type": "handoff-completed"
+    },
+    {
+      "content_hash": "1e29dce6b3955305abe2760b91b7f9a67b8f083a370650397f27c689c14eab76",
+      "modified": "2026-10-24T14:04:29Z",
+      "path": "handoffs/completed/kv-unified-stack-rollout-completed-through-2026-10-24.md",
+      "size": 7314,
+      "title": "Unified KV stack rollout: completed history through 2026-10-24",
       "type": "handoff-completed"
     },
     {
@@ -10575,10 +10613,10 @@
       "type": "progress"
     },
     {
-      "content_hash": "81a2c82da521ff11451a3bebb53ce08400e64c4cad730a2e4d01a6965579f880",
-      "modified": "2026-10-24T13:57:48Z",
+      "content_hash": "6307b9683a50bb6e805ee06e8a258696eda08b85a8e50470ab5f9da5841253ca",
+      "modified": "2026-10-24T14:04:29Z",
       "path": "progress/2026-10/2026-10-24-workspace-f8.md",
-      "size": 28108,
+      "size": 29746,
       "title": "2026-10-24 \u2014 workspace-f8",
       "type": "progress"
     },
@@ -10720,7 +10758,7 @@
     },
     {
       "content_hash": "45fe64b79a3324b64bcf71f7fd8b9a76e3fbe322c26664d2a7481694d38876b4",
-      "modified": "2026-10-24T13:57:48Z",
+      "modified": "2026-10-24T14:00:12Z",
       "path": "docs/design/gpu-zos-2-one-step-lag-design-20261024.md",
       "size": 40875,
       "title": "GPU-ZOS-2: one-step-lag async scheduling on the np4 DFlash2 :8083 shape (experimental-branch design)",
@@ -10824,7 +10862,7 @@
     },
     {
       "content_hash": "ed4d563a9aec93707abe8e99b6ed8c23db6e75b4ab1d93bd06e2bec0b005c378",
-      "modified": "2026-10-24T13:57:48Z",
+      "modified": "2026-10-24T14:00:12Z",
       "path": "docs/design/hsf-4-results-20261023.md",
       "size": 17130,
       "title": "HSF-4 results, source-rate sub-term and log re-run (2026-10-23, workspace-f8; source rates re-quoted graphs ON 2026-10-24)",
@@ -10832,7 +10870,7 @@
     },
     {
       "content_hash": "ed4aa6d325692ace0965595eeac48d74ca07a2324ff2030553dee02db0d2fb11",
-      "modified": "2026-10-24T13:57:48Z",
+      "modified": "2026-10-24T14:00:12Z",
       "path": "docs/design/hsf-5-host-kv-mirror-costing-20261024.md",
       "size": 18221,
       "title": "HSF-5 host KV mirror costing, MI210 np4 slots (2026-10-24, workspace-f8)",
@@ -12223,7 +12261,7 @@
       "type": "docs"
     }
   ],
-  "total_new": 1526,
+  "total_new": 1528,
   "writer_evidence_policy": {
     "applies_to": "generated-wiki-article-writes",
     "minimum_confidence": "verified",
