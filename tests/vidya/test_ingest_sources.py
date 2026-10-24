@@ -196,10 +196,15 @@ def _ufh13_thesis(tmp: Path) -> Path:
     return _helpers("ufh13_thesis_fixtures").write_run(tmp)
 
 
+def _s4_omega_ab(tmp: Path) -> Path:
+    return _helpers("test_s4_omega_ab_adapter").write_fixture(tmp)
+
+
 BUILDERS = {
     "session-intercall-gap": lambda tmp: _helpers("test_session_gap_adapter").write_fixture(tmp),
     "orchestrator-serving-call": lambda tmp: _helpers("test_serving_call_adapter").write_fixture(tmp),
     "research-screen": _research_screen,
+    "s4-omega-ab": _s4_omega_ab,
     "kb-rag-qlen": _kb_rag,
     "inf70-arms": _inf70_arms,
     "contention-gate": _contention_gate,
