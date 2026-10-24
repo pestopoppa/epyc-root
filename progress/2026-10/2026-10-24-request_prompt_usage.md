@@ -34,7 +34,7 @@ Feature branch: `codex/ni-20261024-request-prompt-usage-integration`, published 
 
 Integration worktree: `/mnt/raid0/llm/worktrees/codex-ni-20261024-request-usage-integration`. No output-only changes, live inference, API reload, or service/config/registry changes were made.
 
-Root docs are prepared on `codex/ni-20261024-request-prompt-usage-root-final`, based on fresh root `origin/main` `5dfde4eb416dcdecf7d6ed7f49af37ecad422124`. The root progress/hand-off changes are not yet published.
+Root progress and hand-off documentation were published on root `main` in commit `d3adf499ea3660dfa7657bade2ecfa63052443b5`. The orchestrator source was already integrated on `main` by merge `8c7470470325bf832601da7f95ccae380779b203`.
 
 ## Handoff
 
