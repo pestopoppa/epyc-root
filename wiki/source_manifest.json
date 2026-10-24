@@ -9,10 +9,31 @@
   },
   "kind": "project-wiki-source-manifest",
   "last_compile": "2026-10-24T14:29:35Z",
-  "mode": "touch",
-  "scan_time": "2026-10-24T14:29:35Z",
+  "last_touch": {
+    "advanced": {
+      "added": 0,
+      "changed": 10,
+      "removed": 0
+    },
+    "at": "2026-10-24T14:53:12Z",
+    "scope_paths": [
+      "docs/reference/agent-config/INCIDENT_LOG.md",
+      "handoffs/active/agentic-serving-harness-fixes.md",
+      "handoffs/active/autokernel-all-devices-all-dimensions.md",
+      "handoffs/active/autokernel-champion-aggregate.md",
+      "handoffs/active/gpu-serving-tie-in-program.md",
+      "handoffs/active/heterogeneous-slot-fabric-residency.md",
+      "handoffs/active/kv-prefix-fork-and-paged-attention.md",
+      "handoffs/active/model-artifact-integrity.md",
+      "handoffs/active/non-inference-backlog.md",
+      "progress/2026-10/2026-10-24-workspace-58.md"
+    ],
+    "scope_types": []
+  },
+  "mode": "touch:scoped",
+  "scan_time": "2026-10-24T14:53:12Z",
   "schema_version": 1,
-  "source_set_hash": "b81e042421e4035fb6face45aa69c87243ff74e9aeea8d920238411c3349abab",
+  "source_set_hash": "f668e6e608759529e21913445328fb5103cf20a023fa9794862d94ab7544d638",
   "sources": [
     {
       "content_hash": "6c067235a74a3b9667dd4fad23684206476aeac1cdefe3b4e0a0824d3179c241",
@@ -55,10 +76,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "c013cd1a47546df2a3adaa492957ae7f5846053c6f7bc4de510487c262be009e",
-      "modified": "2026-10-24T14:27:49Z",
+      "content_hash": "c845d08ab48776cd67b50eae0f48365f296f55e4419e3ab4819d1c7db86cf242",
+      "modified": "2026-10-24T14:41:27Z",
       "path": "handoffs/active/agentic-serving-harness-fixes.md",
-      "size": 123846,
+      "size": 124242,
       "title": "Agentic serving harness fixes \u2014 demonstrate on the 27B, generalize, then audit",
       "type": "handoff-active"
     },
@@ -95,18 +116,18 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "c3eb260c52c4a4b1de61c7ce4674c83d25c69e7bf6353a29d213e27ae4117eb5",
-      "modified": "2026-10-24T14:27:49Z",
+      "content_hash": "6dd30f928bde5833ebefd0f4003ae4ce2801753ce3b1aa5ed2adea078d035f8e",
+      "modified": "2026-10-24T14:42:21Z",
       "path": "handoffs/active/autokernel-all-devices-all-dimensions.md",
-      "size": 173937,
+      "size": 175654,
       "title": "AutoKernel on every device and every dimension: long-context surfaces, attention routes, GPU serving, profilers as planner inputs",
       "type": "handoff-active"
     },
     {
-      "content_hash": "d27074996fbdd552a9555d31fa92f67aed0209aea452c78d655a5c00a013788e",
-      "modified": "2026-10-24T14:27:49Z",
+      "content_hash": "e149bd709816339b4d36e719ef599148306a4948b917e21b4ff23f10fae1a250",
+      "modified": "2026-10-24T14:41:27Z",
       "path": "handoffs/active/autokernel-champion-aggregate.md",
-      "size": 170332,
+      "size": 172487,
       "title": "AutoKernel \u2014 the standing aggregate candidate (champion)",
       "type": "handoff-active"
     },
@@ -647,10 +668,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "13e2ff5b980516184d2ddb2142b1a1321fa7a09eb08e4d89b20add9fc3d86fbc",
-      "modified": "2026-10-24T14:27:49Z",
+      "content_hash": "f077496ae8231b5b4a80fa39ac4b526e160999ecd2aa11d59f05cf03c129fbc9",
+      "modified": "2026-10-24T14:42:03Z",
       "path": "handoffs/active/gpu-serving-tie-in-program.md",
-      "size": 154610,
+      "size": 159382,
       "title": "GPU Serving Tie-In Program \u2014 one fabric, two devices",
       "type": "handoff-active"
     },
@@ -679,10 +700,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "64c88a5314f54e0c1e5cf89116df279405695b2351f6eb90f9d6c09bf3fcb7db",
-      "modified": "2026-10-24T14:27:49Z",
+      "content_hash": "a211811758cfe9f0fef0a822ef4848ea33a72f9d34814d5449f9bdf98eded5bf",
+      "modified": "2026-10-24T14:42:21Z",
       "path": "handoffs/active/heterogeneous-slot-fabric-residency.md",
-      "size": 49768,
+      "size": 51044,
       "title": "Heterogeneous CPU\u00d7GPU Slot Fabric + Dynamic Residency",
       "type": "handoff-active"
     },
@@ -735,10 +756,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "ab658b2a562ab15ba7bdcfb7bdf0d33431ca2b281e3c31d7a12d3aa0662cbd45",
-      "modified": "2026-10-24T14:27:49Z",
+      "content_hash": "caea0e4b7795ae147b7edbe4aef7757d17b3ef27db48c52190561cf9b4dabace",
+      "modified": "2026-10-24T14:44:59Z",
       "path": "handoffs/active/kv-prefix-fork-and-paged-attention.md",
-      "size": 233150,
+      "size": 242350,
       "title": "KV prefix fork and paged attention: cross-slot prefix sharing, cache-aware dispatch, per-sequence KV views",
       "type": "handoff-active"
     },
@@ -863,10 +884,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "2f66058f74b4443d9a9143425a1fc51e4c2cc55099383b666fc3b9d35e1f9c34",
-      "modified": "2026-10-24T14:27:49Z",
+      "content_hash": "d35520aaad1e236f450f0d8ace311864e26d3794f7aa66a8b2d431f5450fc3db",
+      "modified": "2026-10-24T14:41:27Z",
       "path": "handoffs/active/model-artifact-integrity.md",
-      "size": 30184,
+      "size": 30627,
       "title": "Model artifact integrity \u2014 pinned, verified and reviewed weights and templates",
       "type": "handoff-active"
     },
@@ -951,10 +972,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "b29a022c191e2c9d864d2145e248515f934c4a86a6f08f8ee1f1c3b9661055c7",
-      "modified": "2026-10-24T14:27:49Z",
+      "content_hash": "79a3f1cd46fbe074bfdc9cf36aa6bea9e90d6029bb9a65ae23367dcce4e3ac2d",
+      "modified": "2026-10-24T14:41:27Z",
       "path": "handoffs/active/non-inference-backlog.md",
-      "size": 198352,
+      "size": 198860,
       "title": "Non-Inference Backlog \u2014 Round 2 (2026-05-19 audit refresh)",
       "type": "handoff-active"
     },
@@ -10583,10 +10604,10 @@
       "type": "progress"
     },
     {
-      "content_hash": "bbc1298008492e2afb258e4c28bdac86e9a215901b5613a7125e65bcfacf16bc",
-      "modified": "2026-10-24T14:27:50Z",
+      "content_hash": "2bbb86083d4572b0e81a30d733c7d6a4fb0978843170f66d594f0ba985922c29",
+      "modified": "2026-10-24T14:46:52Z",
       "path": "progress/2026-10/2026-10-24-workspace-58.md",
-      "size": 8236,
+      "size": 12841,
       "title": "2026-10-24 \u2014 workspace-58 (compute calendar owner)",
       "type": "progress"
     },
@@ -11231,10 +11252,10 @@
       "type": "docs"
     },
     {
-      "content_hash": "d94142594546a3a9abc1ddc5f2c7127948bb08fc6ef06a6ee555c684620ceebd",
-      "modified": "2026-10-24T14:27:49Z",
+      "content_hash": "c0e6681cc44ebae3ab659d87526ede2627b458a4f94404d3c4949f3a291e3c83",
+      "modified": "2026-10-24T14:42:26Z",
       "path": "docs/reference/agent-config/INCIDENT_LOG.md",
-      "size": 47528,
+      "size": 48939,
       "title": "Incident Log \u2014 origin narratives behind agent-file rules",
       "type": "docs"
     },

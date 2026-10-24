@@ -92,7 +92,7 @@ missed (measured: G9-disk sat unnoticed for two weeks and governed 227 GB).
 | OP-25 | After C5-3 produces a live gfx90a correctness run, choose whether to leave SOL scoring disabled or port measured gfx90a constants for k215 only. Recommendation: k215-only if scoring is needed; never present the four >100×-headroom seeds as speed-of-light objectives | [agentic-rocm-kernel-authoring.md](agentic-rocm-kernel-authoring.md) C5 | 2026-08-16 |
 | OP-29 | Scope decision: is video generation a product need? Gates the 165 GB MiniMax-H3 Ref2VA + 10Eros-Max download (volume at 92%, 291 GB free) | [minimax-h3-video-generation-evaluation.md](minimax-h3-video-generation-evaluation.md) EVL-32 | 2026-08-30 |
 | OP-83 | DHM-4: label the 30-item pilot (the private pilot set), then run dhm4_pilot_check.py; the other 70 only if it prints PROCEED_TO_70. | [dev-harness-trace-mining.md](dev-harness-trace-mining.md) DHM-4 | 2026-10-22 |
-| OP-SEC-ART-POST-b | Run the prepared ratify command (signs all 4 template reviews; operator chose 'sign all 4 + strip the SYSTEM WARNING injection in a v2 template'); command in model-artifact-integrity.md SEC-ART-POST-b. | [model-artifact-integrity.md](model-artifact-integrity.md) SEC-ART-POST-b | 2026-10-23 |
+| OP-AK-HOLD | AutoKernel launch hold (operator, 2026-10-24: "DO NOT LAUNCH AUTOKERNEL"). Tell workspace-58 directly when AK may launch; until then CH-27 Q38FN floors and AK-Q38FN-64K-FLOOR are not armed, booked or dry-run. | [autokernel-champion-aggregate.md](autokernel-champion-aggregate.md) CH-27 | 2026-10-24 |
 
 Full text for OP-1..OP-6 (including the closed OP-2 and the superseded narration) is preserved in
 [`../archived/master-handoff-index-history-through-2026-08-10.md`](../archived/master-handoff-index-history-through-2026-08-10.md).
@@ -112,6 +112,7 @@ wire `check_cpu_fa_real_mask_identity` into `run.py`) were pruned from the queue
 OP-73 (APPLIED 2026-10-06, option 2A host activation) was pruned from the queue at the 2026-10-23 operator /wrap-up. Recorded in [non-inference-backlog.md](non-inference-backlog.md) → LR-6a.
 Recorded in [tool-output-compression.md](tool-output-compression.md) → TOC-RD-1a and
 [autokernel-all-devices-all-dimensions.md](autokernel-all-devices-all-dimensions.md) → AKX-ALL-11 (OP80 settled).
+OP-SEC-ART-POST-b (APPLIED 2026-10-24, operator ratify, root receipt `522f7fd33`) was pruned from the queue at the 2026-10-24 operator /wrap-up. Recorded in [model-artifact-integrity.md](model-artifact-integrity.md) → SEC-ART-POST-b.
 OP-KPF64-ARM was DECIDED by the operator on 2026-10-22: compute-filler jobs may export `WINDOW_CONFIRMED=1` inside a
 calendar-granted window. This unblocks s5-kpf64-replay, s5-akrsg-shakedown, s5-hsprof1-beam and s5-cme7-poker-smoke.
 Recorded in [kv-prefix-fork-and-paged-attention.md](kv-prefix-fork-and-paged-attention.md) → KPF-64 and `docs/guides/agent-workflows/compute-fillers.md`.
@@ -135,11 +136,11 @@ nobody is moving.
 <!-- BEGIN GENERATED index_state -->
 | Domain | Handoffs | Open | Blocked | Oldest advance |
 |--------|----------|------|---------|----------------|
-| inference-research | 61 | 1180 | 59 | 2026-07-29 |
+| inference-research | 61 | 1176 | 59 | 2026-07-29 |
 | pipeline-integration | 5 | 69 | 1 | 2026-08-25 |
 | research-evaluation | 44 | 525 | 16 | 2026-07-29 |
 | reviewer-control-plane | 6 | 28 | 12 | 2026-07-29 |
-| routing-and-optimization | 52 | 653 | 18 | 2026-07-29 |
+| routing-and-optimization | 52 | 651 | 18 | 2026-07-29 |
 | user-facing-harness | 14 | 144 | 17 | 2026-07-29 |
 <!-- END GENERATED index_state -->
 

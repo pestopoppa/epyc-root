@@ -18,7 +18,7 @@
 | INF-05 | attention matching kv compaction | [attention-matching-kv-compaction.md](attention-matching-kv-compaction.md) | P2 refresh validation against current-stack long-context/coding workload (Qwen3.6-era + Coder-32B), inference-window-gated | — |
 | INF-06 | autokernel research loop | [autokernel-research-loop.md](autokernel-research-loop.md) | GPU MMQ seeds parked (operator 2026-09-27): resume by running window_ab.sh in a GPU window (AK-MMQ-H10a/b), then AK-MMQ-H3 iglp_opt arm | INF-48, EVL-47, INF-64 |
 | INF-64 | autokernel restart-loop fix | [autokernel-restart-and-strip.md](autokernel-restart-and-strip.md) | Complete per-file reference/entrypoint/HOLD manifest before individually safe deletion and footprint changes | — |
-| INF-65 | autokernel aggregate candidate (champion) | [autokernel-champion-aggregate.md](autokernel-champion-aggregate.md) | Champion dcc853b55 (C3). C4: quiet c4-gate-e re-run, then CAS (operator). C5: b2-long2 re-check + c5-gate-b, then CAS | INF-06, INF-62, INF-64 |
+| INF-65 | autokernel aggregate candidate (champion) | [autokernel-champion-aggregate.md](autokernel-champion-aggregate.md) | C4: quiet c4-gate-e, then CAS (operator). C5: G2-CONC PASS (AMD 9); c5-gate-b, then CAS. CH-31-DEF1 localize; CH-LB1.1 CAS after C4 | INF-06, INF-62, INF-64 |
 | INF-66 | autokernel teardown and rebuild | [autokernel-rebuild-program.md](autokernel-rebuild-program.md) | R23-64 re-sweep on champion 141e4bcf5, then R23-62; LBH-2.1 re-run (low) | INF-06, INF-64, INF-65 |
 | INF-07 | batched decode measurement | [batched-decode-measurement.md](batched-decode-measurement.md) | E5 — the never-measured NUMA×batch 2D sweep; needs a post-promotion quiet window | — |
 | INF-09 | cpu prefill compute large models | [cpu-prefill-compute-large-models.md](cpu-prefill-compute-large-models.md) | PC-4 — experimental qwen35 prefill barrier/graph-fusion prototype: | — |
@@ -37,8 +37,8 @@
 | INF-18 | gpu acceleration path | [gpu-acceleration-path.md](gpu-acceleration-path.md) | Explain the bidirectional-only mechanism before this becomes a placement input | — |
 | INF-19 | gpu cot scaffold sidecar | [gpu-cot-scaffold-sidecar.md](gpu-cot-scaffold-sidecar.md) | G3-4 — future decision instrument (separate from G3-3). Select and run a decision-grade, | — |
 | INF-20 | gpu drafter control redesign | [gpu-drafter-control-redesign.md](gpu-drafter-control-redesign.md) | DR-3 — broader K2 admission runner/package: build the dry-run-first K2 | — |
-| INF-22 | gpu serving tie in program | [gpu-serving-tie-in-program.md](gpu-serving-tie-in-program.md) | Read out M4.2b (PASS) + PB-QCOST-1 confirm-R; GPU-ZOS-2.2 build launcher; GPU-LEAK-1c fold CH-30; GPS-PIN-1b/1c | — |
-| INF-23 | heterogeneous slot fabric residency | [heterogeneous-slot-fabric-residency.md](heterogeneous-slot-fabric-residency.md) | HSF-5.P build + microbench (armed); HSF-3 inter-call gap p50/p90/p99; HSF-1 receipts on GPU launches | — |
+| INF-22 | gpu serving tie in program | [gpu-serving-tie-in-program.md](gpu-serving-tie-in-program.md) | M4 production gate (M4.2 PASS); PB-QCOST-1 confirm-q: decide ub1024 re-run amendment; GPU-ZOS-2.2 build launcher; CH-30 fold | — |
+| INF-23 | heterogeneous slot fabric residency | [heterogeneous-slot-fabric-residency.md](heterogeneous-slot-fabric-residency.md) | HSF-5.P: build verified; read out hsf-5p-microbench (armed, GPU); HSF-3 inter-call gap p50/p90/p99 | — |
 | INF-24 | inference batch loop | [inference-batch-loop.md](inference-batch-loop.md) | P0 RCP prologue — RCP-W1 relaunch + preflight, RCP-W2 ledger materialize, RCP-W3 calibration smoke; gated OP-6a/6b + stack-restart approval | — |
 | INF-26 | iqk iquant enablement | [iqk-iquant-enablement.md](iqk-iquant-enablement.md) | C-L3-Q38FN: profile why GSQ IQ3_XXS decode is 28% slower than UD-IQ4_XS, then a low-bit kernel branch; NEW-8 steps 0-1 | — |
 | INF-28 | laguna s21 cpu port | [laguna-s21-cpu-port.md](laguna-s21-cpu-port.md) | L-9P — conditional CPU throughput/config discovery. The prepared | — |
@@ -71,7 +71,7 @@
 | INF-73 | autokernel unified surface | [autokernel-unified-surface-program.md](autokernel-unified-surface-program.md) | Recheck disk admission; run consolidated r4 lifecycle/focused/full gates, then complete DS41 full16 capture | INF-66, INF-65, INF-70 |
 | INF-74 | autokernel concurrent targets | [autokernel-concurrent-target-coordination.md](autokernel-concurrent-target-coordination.md) | grant_ok v2 is live (10-23): move remaining writers to --window-s/--regions; then review CTC-REVIEW stage coordination | INF-73 |
 | INF-75 | autokernel cross-workload keep gate | [autokernel-cross-workload-keep-gate.md](autokernel-cross-workload-keep-gate.md) | AKX-P0d — run the W1–W6 base census on the current champion-of-record under stage claims, then AKX-P1b replay 732389d6 | INF-73, INF-66, INF-65 |
-| INF-81 | autokernel all devices all dimensions | [autokernel-all-devices-all-dimensions.md](autokernel-all-devices-all-dimensions.md) | AKX-ALL-LB3.2: read out akx-lb3-2-attribution (armed, whole host); longctx-oracle bounded tests before AKX-ALL-21 | INF-73, INF-75, INF-77, INF-62, RTG-57, RTG-58 |
+| INF-81 | autokernel all devices all dimensions | [autokernel-all-devices-all-dimensions.md](autokernel-all-devices-all-dimensions.md) | AKX-ALL-LB3.2: read out akx-lb3-2-attribution (armed 10-25); longctx-oracle tests before AKX-ALL-21; CH-27 under AK hold | INF-73, INF-75, INF-77, INF-62, RTG-57, RTG-58 |
 | INF-76 | paw compiled specialists | [paw-compiled-specialists.md](paw-compiled-specialists.md) | PAW-2 — self-hosted compile spike (intake-1481 server + intake-1478 weights); then PAW-5 candidates list | EVL-08 |
 ## Cross-domain
 
