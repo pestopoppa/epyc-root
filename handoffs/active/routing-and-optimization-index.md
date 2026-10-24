@@ -60,7 +60,7 @@
 | RTG-55 | promptforge mutation safety | [promptforge-mutation-safety-contract.md](promptforge-mutation-safety-contract.md) | MHS-3d — operator runs the v10 episodic re-pin RATIFY (run_v10_episodic_repin_ratify_20260917.sh); then MHS-12 | RTG-02 |
 | RTG-56 | typed decision plane | [typed-decision-plane.md](typed-decision-plane.md) | Run fresh three-arm shadow at the inference owner’s boundary; retain inference gates | — |
 | RTG-57 | kv unified stack rollout | [kv-unified-stack-rollout.md](kv-unified-stack-rollout.md) | HPR-b 64k staging fix + re-run; KVU-LB1.d always-F32 VKQ; KVU-16g-1 row-5c A/B; KVU-19b-rework-c2-cal; V11-FA-4/-6 | RTG-19, RTG-36, INF-41 |
-| RTG-58 | kv prefix fork and paged attention | [kv-prefix-fork-and-paged-attention.md](kv-prefix-fork-and-paged-attention.md) | KPF-17.4c bisect (armed); KPF-18-S1.R3 read-out; item-3 g3 v3 split; KPF-19.1a CPU leg running; KPF-64.3 E/F | RTG-57, RTG-27, INF-65 |
+| RTG-58 | kv prefix fork and paged attention | [kv-prefix-fork-and-paged-attention.md](kv-prefix-fork-and-paged-attention.md) | KPF-17.4c bisect (armed); KPF-18-S1.R4 localise fork deviation; KPF-18.0b item2 g3 + item-3 g3 v3 (armed); KPF-64.3 E/F | RTG-57, RTG-27, INF-65 |
 | RTG-59 | model artifact integrity | [model-artifact-integrity.md](model-artifact-integrity.md) | SEC-ART-POST-f: recompile lean registry + stack_priors (next stack-change), then SEC-ART-2; POST-b ratify (operator) + v2 template; POST-d | — |
 
 ## Cross-domain
