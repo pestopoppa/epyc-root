@@ -343,11 +343,28 @@ SOURCES: dict[str, Source] = {s.name: s for s in (
            note="V11-086 FP32-oracle rerun pass fraction per arm (value = passed/total of the same row), scorer "
                 "clause verdicts verbatim, OBSERVATION only",
            task="VB-V11-ORACLE-WRITE"),
+    Source("repl-embedder-parity", "repl_embedder_parity",
+           _files("repl_embedder_parity.beliefs.jsonl", "*/repl_embedder_parity.beliefs.jsonl"),
+           note="EmbeddingGemma-2 vector-parity gate (REPL-EMB-2.5/2.6): per gated lane cos_min / cos_mean / "
+                "non-finite count re-derived from the recorded per-item cosines, gate verdict re-derived, "
+                "OBSERVATION only; vector parity, no recall or speed claim; 2026-10-20 results stay retrospective",
+           task="VB-UFH12-PARITY"),
     Source("ds41-w5d", "ds41_w5d",
            _files("ds41_w5d.beliefs.jsonl", "*/ds41_w5d.beliefs.jsonl"),
            note="DS41-W5d 1017 llama-bench baseline + MUL_MAT_ID pp512 ratio, re-derived from the recorded "
                 "values; VOID/INCOMPLETE halves project nothing",
            task="VB-DS41-W5D-WRITE"),
+    Source("q38-serving-gate", "q38_serving_gate",
+           _files("q38_serving_gate.beliefs.jsonl", "*/q38_serving_gate.beliefs.jsonl"),
+           note="Q38-T10.1 serving-gate phase run: net-paired R/G/exact p, token-identical fraction, concordance "
+                "re-derived from the recorded per-prompt payload; A/A 80/80 and guards are preconditions; "
+                "truncated prompts listed and excluded; OBSERVATION only",
+           task="VB-Q38-T10-1-GATE-WIRE"),
+    Source("clbench-cache-hit", "clbench_cache_hit",
+           _files("clbench_cache_hit.beliefs.jsonl", "*/clbench_cache_hit.beliefs.jsonl"),
+           note="CL-Bench prefix-cache hit report: prompt_prefix and cme5 hit ratios plus the three missed_split "
+                "buckets, re-derived from the recorded counts; pre-08ace05fd reports project nothing",
+           task="VB-CLBENCH-CACHE-WIRE"),
     Source("spec-rng-1-2", "spec_rng_1_2", _run_dirs("VERDICT.json"),
            note="SPEC-RNG.1.2 poskey depth-invariance launcher dirs (`VERDICT.json` + `out/records.jsonl` + "
                 "`out/verdict.json`); chi-square/acceptance re-derived from the request rows, INDICATIVE "
@@ -369,6 +386,12 @@ SOURCES: dict[str, Source] = {s.name: s for s in (
            _files("yarn_gate_agg.beliefs.jsonl", "*/yarn_gate_agg.beliefs.jsonl"),
            note="YaRN gate cells and noninferiority verdicts carrying judge pin, real prompt_n bin "
                 "and zone; fixture rows invisible", task="VB-YARN-AGG-1"),
+    Source("nemotron-bolt-fold", "nemotron_bolt_fold",
+           _files("nemotron_bolt_fold.beliefs.jsonl", "*/nemotron_bolt_fold.beliefs.jsonl"),
+           note="Nemotron 3.5 Bolt pending-fold records (build 59c1b915f on champion dd3d9721c): INDICATIVE MI210 speed "
+                "(no floor, never gating), coherence + VRAM/KFD residency, Qwen3.6 greedy byte identity, "
+                "test-backend-ops pass/total; every value re-derived from the row's recorded counts",
+           task="VB-NEMOTRON-BOLT-FOLD-WIRE"),
     Source("tulving", "tulving_episodic", _files("belief_measurements.jsonl",
                                                  "*/belief_measurements.jsonl"), task="SC67"),
     Source("chat-template-ab", "chat_template_ab",
@@ -398,6 +421,13 @@ SOURCES: dict[str, Source] = {s.name: s for s in (
                 "bias / variance-ratio / sigma_add re-derived from the rows; aborted, dry and "
                 "unanalysed sessions decline; bootstrap CIs and verdicts carried verbatim",
            task="VB-GPU-CPU-NOISE-WIRE"),
+    Source("moe-routing", "moe_routing",
+           _files("moe_routing.beliefs.jsonl", "*/moe_routing.beliefs.jsonl"),
+           note="INF-72 RT-1 routing-trace analyses (skew / residency h(k) / placement replay / locality), scope re-derived "
+                "from the row's recorded input_traces (model file, arch, corpus sha256, phase, chunk size, calibration, n); "
+                "unstamped analyses, unverified shards and guard-less traces project nothing; stride-hazard refused; "
+                "diagnostic OBSERVATION, no throughput claim",
+           task="VB-MOE-ROUTING-WIRE"),
     Source("launch-affinity", "launch_affinity",
            lambda p: importlib.import_module("adapters.launch_affinity").units(p),
            note="per-pid per-moment task-mask readings: epyc.launch_affinity.reading.v1 JSONL "
