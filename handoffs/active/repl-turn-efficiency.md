@@ -28,11 +28,7 @@ Do not add new REPL tools before S4. **Exception (operator D2, 2026-09-26):** em
     fixture response with `turns=3` lands as `RoleResult.turns == 3`; backfill is impossible
     (never captured) — note the era boundary in the record. Acceptance: one seeding run shows
     non-zero `turns` on `frontdoor:repl` rows. Zero inference to fix; one short run to prove.
-    - [x] **S4-T1.SRC — Preserve turns in seeding RoleResult output.** ✅ 2026-10-24. `seeding_eval.py`
-      now copies response `turns` into `RoleResult`; the REPL-mode fixture asserts `turns=3` survives
-      `asdict` serialization, and absent `turns` remains `0`. First-fix commit: orchestrator
-      `7c0f2929ebef839fdf87edf6c20adc47a564035c`. Pre-fix records did not capture turns, so historical zeros cannot be backfilled. The
-      S4-T1 live-run acceptance remains open; no live run is claimed.
+    - [ ] **S4-T1.SRC — Preserve turns in seeding RoleResult output.** Source repair is implemented and published: `seeding_eval.py` copies response `turns` into `RoleResult`; the REPL-mode fixture asserts `turns=3` survives `asdict` serialization, and absent `turns` remains `0`. Commit: orchestrator `7c0f2929ebef839fdf87edf6c20adc47a564035c`. Verification remains pending: the earlier reported 22-test and final focused-test passes ran from the canonical shared checkout because the region-lock launcher changed cwd; they are retracted as evidence for this private commit. Rerun the focused test from the accepted private snapshot under the calendar-managed correctness grant, with explicit `pwd` and HEAD verification. Pre-fix records did not capture turns, so historical zeros cannot be backfilled. The S4-T1 live-run acceptance remains open; no live run is claimed.
     **Comparability target (added 2026-09-24):** the AutoKernel opencode seat now records a per-call row,
     `epyc.autokernel.actor_call_metrics.v1` (research `lane/ak-turns-20260924` `0bf2d7c2`,
     `loop/actor_metrics.py`; INF-78 OAB-4m). It has steps, tool calls by name, compactions,
