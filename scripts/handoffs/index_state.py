@@ -76,6 +76,10 @@ BLOCKED = REPO_ROOT / "handoffs" / "blocked"
 SIDECAR = ACTIVE / ".index-state.json"
 GRAPH = ACTIVE / ".index-graph.json"
 MASTER = ACTIVE / "master-handoff-index.md"
+#: Generated priority data (tracked) and the operator's hand-edited overrides (tracked).
+#: Precedence for a node's graph priority: override > file > derived heuristic.
+PRIORITY_FILE = ACTIVE / "backlog-priority.json"
+PRIORITY_OVERRIDE = ACTIVE / "backlog-priority.override.json"
 
 #: Paths the SC12 citation-gate phase of `--check` scans. Mirrors citation_gate.DEFAULT_PATHS:
 #: `research/` holds the intake index itself and `progress/` is a historical record, so gating
@@ -533,12 +537,51 @@ def _campaign_tiers(nodes: list[dict], text: str) -> dict[str, int]:
     return out
 
 
-def derive_priority(nodes: list[dict], edges: list[dict], campaign_text: str = "") -> dict:
-    """Derive a priority ordering for the backlog graph. Adds to every node:
-    ``priority`` (0.0 lowest .. 1.0 highest, mid-rank percentile so ties share a value),
-    ``priority_rank`` (1 = highest) and ``priority_basis`` ({campaign, unblocks}).
+def load_priority_file(path: Path) -> tuple[dict, list[str]]:
+    """Read a ``backlog-priority`` style file. Returns ``(doc, problems)``.
 
-    WHY DERIVED. The thin-row contract deliberately carries NO priority column (see
+    ``doc`` is ``{}`` when the file is absent (not a problem: the heuristic still applies) or
+    unusable. Per-row entries with a non-numeric / out-of-range ``score`` are dropped and
+    reported rather than coerced, so a typo can never become a silent priority of 0."""
+    if not path.exists():
+        return {}, []
+    try:
+        doc = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, ValueError) as exc:
+        return {}, [f"PRIORITY FILE: {path.name} is not valid JSON ({exc})"]
+    if not isinstance(doc, dict) or not isinstance(doc.get("rows", {}), dict):
+        return {}, [f"PRIORITY FILE: {path.name} must be an object with a 'rows' object"]
+    problems, rows = [], {}
+    for rid, ent in doc.get("rows", {}).items():
+        sc = ent.get("score") if isinstance(ent, dict) else None
+        if isinstance(sc, bool) or not isinstance(sc, (int, float)) or not 0.0 <= float(sc) <= 1.0:
+            problems.append(f"PRIORITY FILE: {path.name} row {rid} has score {sc!r}, need a number in 0..1")
+            continue
+        rows[rid] = ent
+    return {**doc, "rows": rows}, problems
+
+
+def derive_priority(nodes: list[dict], edges: list[dict], campaign_text: str = "",
+                    file_doc: dict | None = None, override_doc: dict | None = None) -> dict:
+    """Derive a priority ordering for the backlog graph. Adds to every node:
+    ``priority`` (0.0 lowest .. 1.0 highest), ``priority_rank`` (1 = highest; ties share the
+    best rank) and ``priority_basis`` ({source, campaign, unblocks, tier, basis, blocker, ...}).
+
+    THREE SOURCES, in this precedence (recorded per node in ``priority_basis["source"]``):
+
+    1. ``override``: the operator's hand-edited ``backlog-priority.override.json``
+       (``rows.<ID>.score`` 0..1, optional ``note``/``tier``/``blocker``). Always wins.
+    2. ``file``: ``backlog-priority.json``, generated from the operator's ordering method
+       (inference rows packed by ROI/readiness/holds, non-inference blockers inheriting what
+       they gate, unblocked non-inference first). A file entry for a row with no open work is
+       ignored. Scores come from the file verbatim.
+    3. ``heuristic``: the original derived ordering below, kept as the fallback so a row the
+       file does not know (new since it was generated) still colours sensibly. Fallback rows are
+       scaled to sit BELOW every file-sourced row, ordered among themselves by the heuristic,
+       because a heuristic percentile and a file score are not on one scale. With no file at
+       all, the heuristic percentile is used unscaled (the 2026-10-24 behaviour, unchanged).
+
+    HEURISTIC (why derived). The thin-row contract deliberately carries NO priority column (see
     handoff-index-authoring.md: status/priority never go in a row), the index files are
     ordered alphabetically by track, and ``.index-state.json`` has no rank field. So the only
     honest signals are ones this repo already states:
@@ -577,13 +620,51 @@ def derive_priority(nodes: list[dict], edges: list[dict], campaign_text: str = "
     for i, k in enumerate(ordered):
         first.setdefault(k, i)
         last[k] = i
+    heur: dict[str, float] = {}
     for n in nodes:
         k = keys[n["id"]]
         mid = (first[k] + last[k]) / 2
-        n["priority"] = round(mid / (total - 1), 4) if total > 1 else 1.0
-        n["priority_rank"] = total - last[k]          # 1 = highest; ties share the best rank
+        heur[n["id"]] = round(mid / (total - 1), 4) if total > 1 else 1.0
+
+    file_rows = {rid: e for rid, e in (file_doc or {}).get("rows", {}).items()
+                 if open_by_id.get(rid, 0) > 0}                     # unknown ids / no-open rows: ignored
+    ovr_rows = {rid: e for rid, e in (override_doc or {}).get("rows", {}).items() if rid in open_by_id}
+    floor = min((float(e["score"]) for e in file_rows.values()), default=None)
+    scale = 1.0 if floor is None else floor                        # fallback rows live below the file's lowest
+    tier_names = (file_doc or {}).get("tiers", {}) or {}
+    counts = {"override": 0, "file": 0, "heuristic": 0}
+    for n in nodes:
+        rid = n["id"]
+        pb = n["priority_basis"]
+        if rid in ovr_rows:
+            e = ovr_rows[rid]
+            src, p = "override", round(float(e["score"]), 4)
+            pb.update(source=src, note=e.get("note", ""))
+            for k in ("tier", "blocker", "basis"):
+                if k in e:
+                    pb[k] = e[k]
+        elif rid in file_rows:
+            e = file_rows[rid]
+            src, p = "file", round(float(e["score"]), 4)
+            pb.update(source=src, tier=e.get("tier"), basis=e.get("basis", ""), blocker=e.get("blocker", ""),
+                      unblocks_rows=list(e.get("unblocks", []))[:12], file_rank=e.get("rank"))
+        else:
+            src = "heuristic"
+            p = round(heur[rid] * scale * (0.999 if floor is not None else 1.0), 4)
+            pb.update(source=src)
+        if pb.get("tier") is not None:
+            pb["tier_name"] = tier_names.get(str(pb["tier"]), "")
+        counts[src] += 1
+        n["priority"] = p
+    for n in nodes:
+        n["priority_rank"] = 1 + sum(1 for m in nodes if m["priority"] > n["priority"])
     return {"campaign_tiers": sum(1 for v in tiers.values() if v),
-            "campaign_newest": sum(1 for v in tiers.values() if v == 2)}
+            "campaign_newest": sum(1 for v in tiers.values() if v == 2),
+            "sources": counts,
+            "file_generated_at": (file_doc or {}).get("generated_at"),
+            "file_rows_unused": sorted(set((file_doc or {}).get("rows", {})) - set(file_rows)),
+            "open_rows_missing_from_file": sorted(r for r, o in open_by_id.items()
+                                                  if o > 0 and file_doc and r not in file_doc.get("rows", {}))}
 
 
 def build_graph(state: dict) -> dict:
@@ -678,7 +759,9 @@ def build_graph(state: dict) -> dict:
         campaign_text = (ACTIVE / "CURRENT-CAMPAIGN.md").read_text(encoding="utf-8", errors="replace")
     except OSError:
         campaign_text = ""
-    prio = derive_priority(nodes, edges, campaign_text)
+    file_doc, _ = load_priority_file(PRIORITY_FILE)
+    override_doc, _ = load_priority_file(PRIORITY_OVERRIDE)
+    prio = derive_priority(nodes, edges, campaign_text, file_doc, override_doc)
 
     return {
         "schema": "index_graph.v2",
@@ -700,9 +783,13 @@ def build_graph(state: dict) -> dict:
         },
         "readiness_counts": readiness,
         "priority_basis": {
-            "method": "derived (no authored priority field exists)",
-            "order": "has open work > CURRENT-CAMPAIGN.md membership (2 newest block, 1 older) "
-                     "> rows transitively gated via dep edges > ready before blocked",
+            "method": "override file > backlog-priority.json > derived heuristic (no authored priority "
+                      "field exists in the index rows)",
+            "order": "per node, priority_basis.source says which won. file/override: the operator's "
+                     "ordering method (tier + rank in backlog-priority.json). heuristic: has open work "
+                     "> CURRENT-CAMPAIGN.md membership (2 newest block, 1 older) > rows transitively "
+                     "gated via dep edges > ready before blocked; heuristic rows sit below file rows",
+            "tiers": (file_doc or {}).get("tiers", {}),
             "priority": "0.0 lowest .. 1.0 highest, mid-rank percentile; priority_rank 1 = highest",
             **prio,
         },
@@ -801,6 +888,13 @@ def check(state: dict) -> list[str]:
     # it had already landed as a hand-authored edge.
     errs.extend(dep_cycles(state))
 
+    # PRIORITY DATA FILES. A syntactically broken or out-of-range file would silently fall back
+    # to the heuristic (or, worse, to a score of 0), so a commit that breaks one fails here.
+    # Coverage gaps (open rows the file does not list) are advisory: new rows appear daily.
+    for pf in (PRIORITY_FILE, PRIORITY_OVERRIDE):
+        _doc, probs = load_priority_file(pf)
+        errs.extend(probs)
+
     # SAME FILENAME IN BOTH active/ AND completed/ (added 2026-08-16).
     #
     # Found by the operator, not by this checker: FOUR handoffs were sitting in
@@ -888,6 +982,35 @@ def _graph_display_path() -> str:
         return str(GRAPH.relative_to(REPO_ROOT))
     except ValueError:
         return str(GRAPH)
+
+
+def priority_file_warnings(state: dict) -> list[str]:
+    """Advisory only: the generated priority file has drifted from the indices. A drifted file
+    still works (override > file > heuristic, unknown rows are ignored and new rows fall back),
+    it just prioritises less well, so this never fails `--check`."""
+    doc, _ = load_priority_file(PRIORITY_FILE)
+    if not doc:
+        return []
+    out = []
+    rows = state["rows"]
+    unknown = sorted(r for r in doc.get("rows", {}) if r not in rows)
+    if unknown:
+        out.append(f"{PRIORITY_FILE.name} lists {len(unknown)} row(s) no longer in any index "
+                   f"({', '.join(unknown[:5])}); ignored")
+    open_missing = sorted(rid for rid, r in rows.items()
+                          if r.get("handoff") and state["handoffs"].get(r["handoff"], {}).get("open", 0) > 0
+                          and rid not in doc.get("rows", {}))
+    if open_missing:
+        out.append(f"{len(open_missing)} open row(s) are not in {PRIORITY_FILE.name} "
+                   f"({', '.join(open_missing[:5])}); they sort below file-ranked rows by the heuristic")
+    try:
+        age = (datetime.now(timezone.utc).date()
+               - date.fromisoformat(str(doc.get("generated_at", ""))[:10])).days
+        if age > 14:
+            out.append(f"{PRIORITY_FILE.name} was generated {age} days ago; regenerate it")
+    except ValueError:
+        out.append(f"{PRIORITY_FILE.name} has no parseable generated_at")
+    return out
 
 
 def scratch_warnings(state: dict) -> list[str]:
@@ -1026,6 +1149,8 @@ def main(argv: list[str] | None = None) -> int:
     if args.check:
         errs = check(state)
         for warning in graph_freshness_warnings(state):
+            print(f"ADVISORY WARNING: {warning}", file=sys.stderr)
+        for warning in priority_file_warnings(state):
             print(f"ADVISORY WARNING: {warning}", file=sys.stderr)
         errs += citation_check()
         for e in errs:

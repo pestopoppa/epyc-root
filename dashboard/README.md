@@ -1047,17 +1047,52 @@ and `handoffs_weekly` keys are unchanged in shape but now include zero weeks.
 The graph's node rings encode **priority**, not liveness (liveness is in the tooltip).
 The page reads `priority` (0 lowest .. 1 highest), `priority_rank` (1 = highest) and
 `priority_basis` from `/api/handoff_graph` (`handoffs/active/.index-graph.json`, no new
-endpoint, same freshness envelope) and never derives them. No authored priority exists:
-the thin-row contract has no priority column, the indices are ordered by track, and
-`.index-state.json` has no rank. So `scripts/handoffs/index_state.py::derive_priority`
-orders rows by: open work (rows with none sort last) > `CURRENT-CAMPAIGN.md` membership
-(row id or handoff stem named in the newest dated block = 2, an older block = 1) > number
-of open rows transitively gated through `dep` edges > ready before blocked. Ties share a
-mid-rank percentile, so a large no-signal group is one colour on purpose. Ramp: 5 stops
+endpoint, same freshness envelope) and never derives them. No priority column exists in the
+thin-row contract, so `scripts/handoffs/index_state.py::derive_priority` takes it from three
+sources, in this precedence, and records the winner per node in `priority_basis.source`
+(shown in the tooltip, with the tier, basis, blocker and the rows it gates):
+
+1. `override` - `handoffs/active/backlog-priority.override.json`, **hand-edited by the
+   operator**: `{"rows": {"INF-65": {"score": 1.0, "note": "why"}}}` (score 0..1, 1 = highest;
+   optional `note`, `tier`, `blocker`, `basis`). Delete the entry to return to the generated
+   value. `--check` validates the JSON and the score range.
+2. `file` - `handoffs/active/backlog-priority.json` (tracked, generated: `generated_by`,
+   `generated_at`, `method`, `tiers`, `rows.<ID> = {tier, rank, score, basis, unblocks,
+   blocker}`). It is the operator's ordering method: inference rows packed by the
+   `inference-backlog-scheduling` model (live > ready/decision-bearing > routine, operator
+   holds pushed down with the blocker named), non-inference tasks that gate an inference task
+   inheriting and ranking just above it, unblocked non-inference first (T1 gates compute, T2
+   does not), blocked work following its blockers (T3/T7). Row priority = its best open item.
+   An entry for a row with no open work, or an unknown id, is ignored; `--check` prints an
+   ADVISORY when the file is >14 days old or open rows are missing from it.
+3. `heuristic` - the original derivation, kept as the fallback for rows the file does not
+   know: open work (rows with none sort last) > `CURRENT-CAMPAIGN.md` membership (row id or
+   handoff stem named in the newest dated block = 2, an older block = 1) > number of open
+   rows transitively gated through `dep` edges > ready before blocked. Fallback rows are
+   scaled to sit below every file-ranked row. With no file at all the heuristic is used
+   unscaled.
+
+Ties share the best rank. Ramp: 5 stops
 `#5468d8 -> #5a8fc0 -> #8c9a95 -> #c0b055 -> #ffe14a` (blue to yellow, monotone
 luminance, safe for red-green colour blindness, each >= 3.9:1 against the dark page).
 The page has only a dark theme. Dashed ring = file sits in `handoffs/blocked/`.
-Test: `tests/test_index_state_priority.py`.
+Test: `tests/test_index_state_priority.py`. **Regenerating `backlog-priority.json`** (do not hand-edit it; hand edits belong in the override file):
+
+```bash
+/usr/bin/python3 -I scripts/handoffs/backlog_priority.py            # writes handoffs/active/backlog-priority.json (~30 s)
+/usr/bin/python3 -I scripts/handoffs/backlog_priority.py --check    # staleness / drift; exit 1 on problems, writes nothing
+/usr/bin/python3 -I scripts/handoffs/backlog_priority.py --md /tmp/x.md   # also the full ranked list (T1..T7, rows)
+python3 scripts/handoffs/index_state.py                             # then rebuild .index-graph.json
+```
+
+The generator reads every open box and index row from the repo plus the hand-kept table
+`scripts/handoffs/backlog_priority_curated.json`: ~120 scored entries (decision-bearing and
+live-compute items; `cls: live` is where the calendar state goes, because the generator does not
+read the host), row weights, holds (DS41-1017, HIL-6, parked, pending-operator), subagent briefs, and
+`done` entries for work finished but not yet ticked on main (excluded from the order, listed under
+`done_pending_tick`). Refresh that table when the calendar moves or something completes, then
+regenerate. `--check` fails when the file is missing, over 14 days old, lacks an open row, or its
+tiers differ from a fresh build on more than 15% of rows. Tests: `tests/test_backlog_priority.py`.
 
 ### Keeping it fresh
 

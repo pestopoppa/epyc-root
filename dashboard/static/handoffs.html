@@ -385,7 +385,7 @@
     </h2>
     <div class="glegend" id="graph-legend"></div>
     <div class="glegend">
-      <span class="muted">ring = priority:</span>
+      <span class="muted">ring = priority (tooltip: source, tier T1 unblocked non-inference &rarr; T7 held):</span>
       <span>high</span><i class="gsw prioramp" style="background:linear-gradient(90deg,#ffe14a,#c0b055,#8c9a95,#5a8fc0,#5468d8)"></i><span>low</span>
       <span><i class="gsw ring" style="border-color:#6e7681"></i>none</span>
       <span><i class="gsw ring" style="border-color:#8b949e;border-style:dashed"></i>dashed = in handoffs/blocked/</span>
@@ -1086,7 +1086,9 @@ async function loadTimeline(){
      ring   = PRIORITY, a sequential blue -> yellow ramp (5-stop, monotone luminance,
               blue/yellow axis so deuteranopia/protanopia keep the ordering; every stop
               >= 3.9:1 against the page background). Read verbatim from the producer
-              (`priority` 0..1 in index_graph.v2, index_state.derive_priority); the page
+              (`priority` 0..1 in index_graph.v2, index_state.derive_priority: operator
+              override file > backlog-priority.json > derived heuristic, named per node in
+              `priority_basis.source` and shown in the tooltip with its tier); the page
               never derives it. Liveness moved to the tooltip (last advanced, age).
    A third, TEXTURE channel carries `readiness` (index_graph.v2), so it cannot
    collide with either colour channel:
@@ -1321,6 +1323,21 @@ async function loadGraph(){
     t2.textContent=`${n}`; gIdx.appendChild(t2);
   });
 
+  // Tooltip line for the priority ring. priority_basis.source says who decided:
+  // "override" (operator file), "file" (backlog-priority.json: tier T1..T7) or "heuristic"
+  // (campaign membership + transitive unblocks). The page only displays what the producer sent.
+  function prioTip(n,total){
+    const pb=n.priority_basis||{};
+    const src=pb.source||"heuristic";
+    let t=`<br>priority: <b>#${n.priority_rank}</b> of ${total} &middot; ${esc(src)}`;
+    if(pb.tier!=null) t+=` &middot; <b>T${esc(pb.tier)}</b> ${esc(pb.tier_name||"")}`;
+    if(pb.basis) t+=`<br><span class="muted">${esc(pb.basis)}</span>`;
+    if(pb.blocker) t+=`<br>blocker: ${esc(pb.blocker)}`;
+    if(pb.note) t+=`<br>note: ${esc(pb.note)}`;
+    if(pb.unblocks_rows&&pb.unblocks_rows.length) t+=`<br>gates: ${pb.unblocks_rows.map(esc).join(", ")}`;
+    return t+` <span class="muted">(campaign ${pb.campaign||0}, unblocks ${pb.unblocks||0})</span>`;
+  }
+
   // ---- handoff nodes
   const circles={};
   for(const it of items){
@@ -1355,8 +1372,7 @@ async function loadGraph(){
         + (n.blocked?` · ${n.blocked} blocked`:"")
         + (n.readiness?`<br>readiness: <b>${n.readiness}</b>`
             + ((n.blocked_by&&n.blocked_by.length)?` on ${n.blocked_by.join(", ")}`:""):"")
-        + (typeof n.priority==="number"?`<br>priority: <b>#${n.priority_rank}</b> of ${g.nodes.length}`
-            + ` (campaign ${(n.priority_basis&&n.priority_basis.campaign)||0}, unblocks ${(n.priority_basis&&n.priority_basis.unblocks)||0})`:"")
+        + (typeof n.priority==="number"?prioTip(n,g.nodes.length):"")
         + `<br>liveness: last advanced ${n.last_advanced||"never"}`
         + (n.age_days!=null?` (${n.age_days}d ago)`:"")
         + `<br>${linked.length} linked handoff${linked.length===1?"":"s"}`

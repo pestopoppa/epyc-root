@@ -1,0 +1,4 @@
+{
+  "_doc": "Operator-editable priority overrides for the :8100 backlog graph. rows.<ROW-ID>.score (number 0..1, 1 = highest) wins over backlog-priority.json and the derived heuristic for that row; optional note (shown in the tooltip), tier (1..7, see backlog-priority.json tiers), blocker, basis. Delete a row's entry to return it to the generated value. Rows are index row ids (INF-65, RTG-58 ...). Run `python3 scripts/handoffs/index_state.py` (no flags) to regenerate .index-graph.json after editing; `--check` validates this file. Example: {\"rows\": {\"INF-65\": {\"score\": 1.0, \"note\": \"operator pin\"}}}",
+  "rows": {}
+}
