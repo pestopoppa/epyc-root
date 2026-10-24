@@ -603,12 +603,13 @@ Not measured:
   - The tool now runs `gitnexus --repo <absolute anchor path>`. The bare name `llama.cpp` is ambiguous with the
     frozen production tree.
   - Every actor role is denied the gitnexus index writers.
-- [ ] **OAB-28 — best-of member `ak-check` fence sits outside the lane fence set.** The fence is created beside
+- [x] **OAB-28 — best-of member `ak-check` fence sits outside the lane fence set.** ✅ 2026-10-24. The fence is created beside
   the member tree, not in the set the lane scheduler locks.
   - It is harmless under `--workers 1`, which best-of currently requires.
   - It is a real race once best-of runs with more than one worker.
   - Fix: register each member's fence in the owning lane's fence set.
   - Acceptance: a two-worker best-of test in which both lanes' members hold disjoint, scheduler-visible fences.
+  - 2026-10-24 reconciliation: the source race was already fixed by research `48ed3f77ab69d5ef223f857334ce2ef32f2f98c9` (2026-09-29). The implemented sibling-lane pool uses one scheduler-visible shared fence; member/winner checks inherit `AK_CHECK_FENCE`, and multi-worker best-of enables the pool's tail fence. This shared-fence safety property supersedes the earlier disjoint-directory wording. The new test-only commit `9b4ddb6f2e4419c0ff29c08085ed2d83aae762b2`, published via research main `413f5b7f545b67e69ba9082b9a6c73514eb3a3f2`, adds two logical workers/member checks under the pool environment: the tail remains blocked after A releases while B holds, enters after both release, and refuses both members while held. Official calendar validation passed the three focused tests in 1.03 s; JUnit records zero failures/errors/skips. This was a controlled temporary-fence test, with no live model/actor run or locking implementation change. Evidence: `/mnt/raid0/llm/tmp/codex-ni-20261024-scheduling/oab-fences/test.log` and the linked progress shard.
 
 ### Tasks filed 2026-09-26 (local-actor bring-up retrospective, `INC-20260926-local-actor-bringup`)
 
