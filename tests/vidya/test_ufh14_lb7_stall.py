@@ -61,7 +61,7 @@ def test_round_trip_projects_six_cited_tuples(run):
     assert by_metric["ufh14_lb7_delta_other_prompt_load"].value == 19.907
     assert by_metric["ufh14_lb7_delta_queue_and_loop_busy"].value == -0.649
     for t in tuples:
-        assert t.protocol_id == f"ufh14-lb7-predeclaration-sha256:{pre}"
+        assert t.protocol_id == "" and t.extra["predeclaration_sha256"] == pre
         assert t.attestation_sha256 == hashlib.sha256((run / "VERDICT.json").read_bytes()).hexdigest()
         assert t.extra["verdict"] == "UNATTRIBUTED" and "UNATTRIBUTED" in t.claim
         assert t.observation["retrofit"] is True
@@ -70,7 +70,7 @@ def test_round_trip_projects_six_cited_tuples(run):
         assert t.applicability["varied"] == ["cache_idle_slots"]
         # the shared ladder decides; this module only supplies the inputs
         assert ct.grade(t) == ct.grade(t)
-        assert ct.grade(t)[:2] == ("Witnessed", "Attested")
+        assert ct.grade(t)[:2] == ("Judged", "Located")
     assert all(t.reps == 3 for t in tuples[:5]) and tuples[5].reps == 60
 
 
@@ -79,10 +79,12 @@ def test_no_ladder_registered_here():
     assert "register_ladder" not in src and "def grade" not in src
 
 
-def test_missing_protocol_drops_to_observation(run):
+def test_harness_local_predeclaration_is_not_a_protocol(run):
+    """A ratified protocol id would lift the grade; the harness-local predeclaration must not."""
     t = _project(run)[0]
     from dataclasses import replace
-    assert ct.grade(replace(t, protocol_id=""))[:2] == ("Judged", "Located")
+    assert ct.grade(t)[:2] == ("Judged", "Located")
+    assert ct.grade(replace(t, protocol_id="x"))[:2] != ("Judged", "Located")
 
 
 @pytest.mark.skipif(not REAL.is_dir(), reason="real UFH14-LB7 run not present")

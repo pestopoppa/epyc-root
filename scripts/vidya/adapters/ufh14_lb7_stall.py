@@ -21,8 +21,9 @@ the producer's, named in ``extra``).
 PROJECTION ONLY. ``claim_tuple.grade()`` decides every grade; this module registers no ladder. Six tuples per run:
 the median ON-minus-OFF client gap delta, the four group deltas (``NEIGHBOUR_IDLE_SAVE``, ``OWN_PROMPT_LOAD``,
 ``OTHER_PROMPT_LOAD``, ``QUEUE_AND_LOOP_BUSY``; seconds, median over valid pairs) and the ON copy-throughput median
-(GiB/s, report-only in the rule). ``reps`` = valid ABBAAB pairs (copies for the throughput), ``protocol_id`` =
-``ufh14-lb7-predeclaration-sha256:<sha256 of PREDECLARATION.md>``, build sha from the launched binary's build dir and
+(GiB/s, report-only in the rule). ``reps`` = valid ABBAAB pairs (copies for the throughput), ``protocol_id`` EMPTY (the
+PREDECLARATION.md is harness-local, not a ratified protocol: same rule as spec_rng_1_2, pb_hol and gpu_cpu_noise, so
+every tuple grades Judged/Located; its sha256 rides in ``extra.predeclaration_sha256``), build sha from the launched binary's build dir and
 RUN_RECORD's ``llama_server_sha256``. The run's verdict word rides verbatim in the claim and ``observation.outcome_native``.
 
 Absence: ``INCOMPLETE`` (< 2 valid pairs) and ``INSTRUMENT_FAIL`` runs project NOTHING (declined; ``decline_reason``
@@ -457,7 +458,7 @@ def project(native: dict) -> ClaimTuple:
         measurement_id=f"ufh14lb7:v1:{native['run_name']}:{digest[:16]}:{key}",
         metric=metric, value=value, unit=unit, date=str(native.get("date") or ""), category="CANDIDATE",
         claim=_claim(native, metric, unit), metric_direction=direction,
-        protocol_id=f"ufh14-lb7-predeclaration-sha256:{pre}", reps=reps,
+        protocol_id="", reps=reps,   # harness-local predeclaration; sha in extra (precedent: OCC-1)
         reps_basis=("scored:ON copy intervals across the ON sessions" if key == "copy_throughput"
                     else "scored:valid ABBAAB ON/OFF pairs, 15 turns >= 2 per session"),
         attestation_locator=f"ufh14-lb7:{native['run_name']}:VERDICT.json#{key}", attestation_sha256=digest,
