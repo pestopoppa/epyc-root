@@ -1143,7 +1143,7 @@ at `3911ec91`. Objective: honor the requested training-data source and test rout
 without treating unobserved alternatives as failures. The source/filter repair is independent of the experimental
 scorer. Scorer implementation precedes its cached comparison. Existing LRC-1/2 freezes remain; TD-11 owns typed routing.
 
-- [ ] **LRC-RI-EXTRACT-SOURCE — Make routing-data extraction honor explicit source and update-count filtering.** Use the requested DB by default; select an NPZ only through the existing explicit embeddings-file argument. Reject a positive min_updates when the selected snapshot cannot enforce it, or enforce it from an actual captured update-count array. Add DB/NPZ branch tests proving the effective source/filter and included/excluded counts; retain action/feature ordering and weights. No live-store mutation, re-embedding, training or routing enablement.
+- [x] **LRC-RI-EXTRACT-SOURCE — Make routing-data extraction honor explicit source and update-count filtering.** Use the requested DB by default; select an NPZ only through the existing explicit embeddings-file argument. Reject a positive min_updates when the selected snapshot cannot enforce it, or enforce it from an actual captured update-count array. Add DB/NPZ branch tests proving the effective source/filter and included/excluded counts; retain action/feature ordering and weights. No live-store mutation, re-embedding, training or routing enablement. ✅ 2026-10-24
 
 **Extractor acceptance.** With a default cache present, a DB request still uses the test DB. Explicit snapshot
 selection works at zero threshold; a positive threshold without update counts refuses before output. Equivalent
