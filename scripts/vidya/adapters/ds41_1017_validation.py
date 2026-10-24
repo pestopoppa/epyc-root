@@ -70,6 +70,23 @@ def _check(row: Any, producer: ModuleType) -> None:
         raise ProjectionError("DS41-1017 row refused: " + "; ".join(problems))
     if row.get("source_kind") != SOURCE_KIND:
         raise ProjectionError("DS41-1017 row source_kind drifted")
+    artifact = row.get("artifact")
+    arm = row.get("arm")
+    if not isinstance(artifact, dict) or artifact.get("arm") != arm:
+        raise ProjectionError("DS41-1017 artifact arm does not match row arm")
+    if arm == "1017":
+        expected_name = producer.SHARDS_1017[0][0]
+        if (artifact.get("path") != str(Path(producer.MODEL_DIR) / expected_name)
+                or artifact.get("split_count") != len(producer.SHARDS_1017)):
+            raise ProjectionError("DS41-1017 artifact path/split does not match the verified 1017 set")
+    elif arm == "sept-q4":
+        expected = producer.SEPT_Q4
+        if (artifact.get("path") != str(Path(producer.MODEL_DIR) / expected["name"])
+                or artifact.get("split_count") != 1
+                or any(artifact.get(key) != value for key, value in expected.items())):
+            raise ProjectionError("DS41-1017 artifact path/identity does not match the Sept Q4 arm")
+    else:
+        raise ProjectionError(f"DS41-1017 row has unsupported arm {arm!r}")
 
 
 def _scored(row: dict, root: Path) -> Path:
@@ -110,8 +127,9 @@ def project(native: Any) -> ClaimTuple:
     artifact = _scored(row, root)
     present = artifact.is_file()
     verified = present and _sha256(artifact) == row["scored_sha256"]
+    # The producer records arm/artifact identity, not a whole-model census quant. Bind the
+    # exact file and CPU backend; omit `quant` rather than guessing from the artifact label.
     scope = {"model_file": row["artifact"]["path"],
-             "quant": "MXFP4-experts" if row["arm"] == "1017" else "Q4_K-experts",
              "backend": "cpu", "run_id": row["run_id"],
              "kernel": {"head": row["binary"]["head"], "binary_sha256": row["binary"]["binary_sha256"]}}
     return ClaimTuple(
