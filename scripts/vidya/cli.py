@@ -586,10 +586,11 @@ _FILE_SOURCES = (
     "conversation-stack-measurement", "speech-ggml-optest",
     "speech-cpu-measurement", "speech-listen-rating",
     "hil15a-auc", "repl-preview",
-    "rus2-probe", "gpu-leak-probe", "v11-oracle-rerun", "ds41-w5d", "spec-rng-1-2", "pb-qcost", "ev19-gold-selfcheck", "oolong", "yarn-gate-agg",
+    "rus2-probe", "gpu-leak-probe", "v11-oracle-rerun", "ds41-w5d", "repl-embedder-parity", "clbench-cache-hit", "spec-rng-1-2", "pb-qcost", "ev19-gold-selfcheck", "oolong", "yarn-gate-agg", "nemotron-bolt-fold",
     "hil17-attribution-ladder", "hil-lb1-loop-score",
     "ak-width-dimension", "ak-width-cells-cpu",
-    "gpu-cpu-noise", "launch-affinity",
+    "moe-routing",
+    "gpu-cpu-noise", "launch-affinity", "q38-serving-gate",
 )
 
 
