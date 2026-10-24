@@ -365,8 +365,14 @@ fi
 # ---------------------------------------------------------------- 3. stage
 say "== staging (scratch $STAGE) =="
 ORCH_BASE="$(g "$ORCH_REPO" rev-parse origin/main)"; RES_BASE="$(g "$RESEARCH_REPO" rev-parse origin/main)"
-add_wt "$RESEARCH_REPO" "$STAGE/research-base" "$RES_BASE"
-add_wt "$ORCH_REPO" "$STAGE/orch-base" "$ORCH_BASE"
+# Resume fix (2026-10-24, 3c4ca599): when a pin already landed, origin/main already carries the change, so the argv proof
+# must compare against the PRE-LANDING main recorded by the first --apply run (its push log: orchestrator 26affbf8..aeb077cd,
+# research d3db98e28..7e201b50e), not today's main. The staging trees below still build on current origin/main.
+PROOF_ORCH_BASE="$ORCH_BASE"; PROOF_RES_BASE="$RES_BASE"
+[ "$ORCH_LANDED" = yes ] && PROOF_ORCH_BASE="$(g "$ORCH_REPO" rev-parse 26affbf8)"
+[ "$RES_LANDED" = yes ] && PROOF_RES_BASE="$(g "$RESEARCH_REPO" rev-parse d3db98e28)"
+add_wt "$RESEARCH_REPO" "$STAGE/research-base" "$PROOF_RES_BASE"
+add_wt "$ORCH_REPO" "$STAGE/orch-base" "$PROOF_ORCH_BASE"
 add_wt "$RESEARCH_REPO" "$STAGE/research" "$RES_BASE"
 add_wt "$ORCH_REPO" "$STAGE/orch" "$ORCH_BASE"
 if [ "$RES_LANDED" = no ]; then
@@ -398,7 +404,7 @@ fi
 # ---------------------------------------------------------------- 4. argv proof
 say "== argv proof: pre-landing origin/main vs staged =="
 derive baseline "$STAGE/orch-base" "$STAGE/research-base/orchestration/model_registry.yaml"
-export_argv baseline "$STAGE/orch-base" "$STAGE/research-base/orchestration/model_registry.yaml" "$RES_BASE"
+export_argv baseline "$STAGE/orch-base" "$STAGE/research-base/orchestration/model_registry.yaml" "$PROOF_RES_BASE"
 export_argv staged "$STAGE/orch" "$RES_MASTER" "$(g "$STAGE/research" rev-parse HEAD)"
 if ! compare_argv "$STAGE/argv-baseline.json" "$STAGE/argv-staged.json" | tee "$STAGE/argv-landing-diff.txt"; then
   die "argv proof failed (table above)"
