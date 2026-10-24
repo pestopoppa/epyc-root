@@ -1,0 +1,152 @@
+{
+ "rule": "PREDECLARATION.md",
+ "k": 6,
+ "steps_1_2": {
+  "status": "OK",
+  "all_copies_verified": true,
+  "cases": {
+   "1:single_4096:d2h:ce": {
+    "median_us": 11.0,
+    "bytes": 4096,
+    "n_frags": 1,
+    "gbps": 0.372,
+    "reps": 3
+   },
+   "1b:tail_128frags:d2h:auto": {
+    "median_us": 61.0,
+    "bytes": 407552,
+    "n_frags": 128,
+    "gbps": 6.681,
+    "reps": 3,
+    "share_step_on_pct": 0.0437,
+    "share_step_off_pct": 0.1032
+   },
+   "2:gather_run16:h2d:kernel": {
+    "median_us": 4050.0,
+    "bytes": 71303168,
+    "n_frags": 2048,
+    "gbps": 17.606,
+    "reps": 3,
+    "fraction_of_h2d_plateau": 0.609
+   }
+  }
+ },
+ "decode_ms_per_token": {
+  "A1": {
+   "median": 10.02,
+   "waves": [
+    10.015,
+    10.017,
+    10.019,
+    10.021,
+    10.023,
+    10.025
+   ]
+  },
+  "B": {
+   "median": 10.17,
+   "waves": [
+    10.165,
+    10.167,
+    10.169,
+    10.171,
+    10.173,
+    10.175
+   ]
+  },
+  "A2": {
+   "median": 10.07,
+   "waves": [
+    10.065,
+    10.067,
+    10.069,
+    10.071,
+    10.073,
+    10.075
+   ]
+  },
+  "Bf": {
+   "median": 10.22,
+   "waves": [
+    10.215,
+    10.217,
+    10.219,
+    10.221,
+    10.223,
+    10.225
+   ]
+  }
+ },
+ "gates": {
+  "G1_decode": {
+   "status": "PASS",
+   "A_mean": 10.045,
+   "B": 10.17,
+   "delta": 0.01244,
+   "A_spread": 0.00498
+  },
+  "G2_graphs_reused": {
+   "status": "PASS",
+   "values": {
+    "A1": 1000,
+    "B": 995,
+    "A2": 1002,
+    "Bf": 995
+   },
+   "B_over_A": 0.994
+  },
+  "G3_restore": {
+   "status": "PASS",
+   "B_equal_A": true,
+   "Bf_equal_A": true
+  },
+  "G4_mirror_engaged": {
+   "status": "PASS",
+   "detail": {
+    "B": {
+     "enabled_line": true,
+     "save": [
+      [
+       4100,
+       4112,
+       0,
+       1234,
+       12,
+       4,
+       900
+      ]
+     ],
+     "restore": [
+      [
+       4567,
+       3,
+       0
+      ]
+     ]
+    },
+    "Bf": {
+     "enabled_line": true,
+     "save": [
+      [
+       4100,
+       4112,
+       0,
+       1234,
+       12,
+       4,
+       900
+      ]
+     ],
+     "restore": [
+      [
+       4567,
+       3,
+       0
+      ]
+     ]
+    }
+   }
+  }
+ },
+ "verdict": "PASS"
+}

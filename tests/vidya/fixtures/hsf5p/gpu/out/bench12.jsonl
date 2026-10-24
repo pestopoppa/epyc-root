@@ -1,0 +1,10 @@
+{"event": "host_tier", "bytes": 1}
+{"step": "1", "case": "single_4096", "dir": "d2h", "path": "ce", "rep": 0, "n_frags": 1, "bytes": 4096, "us": 11.0, "gbps": 0.372, "ok": true}
+{"step": "1", "case": "single_4096", "dir": "d2h", "path": "ce", "rep": 1, "n_frags": 1, "bytes": 4096, "us": 10.0, "gbps": 0.41, "ok": true}
+{"step": "1", "case": "single_4096", "dir": "d2h", "path": "ce", "rep": 2, "n_frags": 1, "bytes": 4096, "us": 12.0, "gbps": 0.341, "ok": true}
+{"step": "1b", "case": "tail_128frags", "dir": "d2h", "path": "auto", "rep": 0, "n_frags": 128, "bytes": 407552, "us": 61.0, "gbps": 6.681, "ok": true}
+{"step": "1b", "case": "tail_128frags", "dir": "d2h", "path": "auto", "rep": 1, "n_frags": 128, "bytes": 407552, "us": 60.0, "gbps": 6.793, "ok": true}
+{"step": "1b", "case": "tail_128frags", "dir": "d2h", "path": "auto", "rep": 2, "n_frags": 128, "bytes": 407552, "us": 63.0, "gbps": 6.469, "ok": true}
+{"step": "2", "case": "gather_run16", "dir": "h2d", "path": "kernel", "rep": 0, "n_frags": 2048, "bytes": 71303168, "us": 4100.0, "gbps": 17.391, "ok": true}
+{"step": "2", "case": "gather_run16", "dir": "h2d", "path": "kernel", "rep": 1, "n_frags": 2048, "bytes": 71303168, "us": 4000.0, "gbps": 17.826, "ok": true}
+{"step": "2", "case": "gather_run16", "dir": "h2d", "path": "kernel", "rep": 2, "n_frags": 2048, "bytes": 71303168, "us": 4050.0, "gbps": 17.606, "ok": true}

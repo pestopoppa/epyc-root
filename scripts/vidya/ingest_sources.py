@@ -507,6 +507,13 @@ SOURCES: dict[str, Source] = {s.name: s for s in (
                 "FD-DIV-1b epyc.fd_div_1b.result.v1 (one claim per fixture cell, class re-derived); "
                 "skipped smokes and void controls decline; decode ms/token is observation only",
            task="VB-FUSED-DECODE-DIV-WIRE"),
+    Source("hsf5p-microbench", "hsf5p_microbench",
+           lambda p: importlib.import_module("adapters.hsf5p_microbench").units(p),
+           default=Path("/mnt/raid0/llm/tmp/f8-launchers-20261024/hsf-5p"),
+           note="HSF-5.P host KV mirror acceptance microbench (hsf5p.beliefs.jsonl beside VERDICT.json, "
+                "epyc.hsf5p.microbench.row.v1): copy medians re-derived from bench12.jsonl, G1-G4 from arms.jsonl "
+                "and the server logs, every input re-hashed; an INCONCLUSIVE run writes no rows",
+           task="VB-HSF5P-WRITE"),
     Source("calendar-overrun", "calendar_overrun",
            lambda p: importlib.import_module("adapters.calendar_overrun").units(p),
            note="compute-calendar grants/<id>.ended with appended key=value lines (estimated_wall_s, actual_wall_s|started, job_id, owner, step, regions, co_residents, np, ctx); ratio actual/estimated re-derived, hard-end rc 124/125/143 marked censored; legacy .ended with no estimate declines",

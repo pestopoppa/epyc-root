@@ -294,6 +294,9 @@ def test_every_source_has_an_end_to_end_fixture_or_a_named_exemption():
         # real STACKCHG-GPUPIN evidence dispatch: test_launch_affinity_adapter.py.
         # FD-DIV-1a/1b strict re-derivation + real receipts: test_fused_decode_div_adapter.py.
         "gpu-cpu-noise", "launch-affinity", "fused-decode-div",
+        # HSF-5.P sidecar written by the real analyzer, re-derivation refusals and CLI dispatch:
+        # test_hsf5p_microbench_adapter.py.
+        "hsf5p-microbench",
         "calendar-overrun", "floor-registry", "weight-handoff",
         # Exact producer pin + 9-shard binding refusal: test_ds41_1017_validation_adapter.py.
         "ds41-1017-validation",

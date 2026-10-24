@@ -1,0 +1,4 @@
+create: HSF-5.P kv host mirror ON: k=6,node=3,mode=fresh,piece_mib=1024,path=auto
+slot print_timing: id  0 | task 9 |    graphs reused =        995
+slot operator(): id  0 | kv-host-mirror save: n_tokens=4100/4112 fallback_bytes=0 mirror_bytes=1234 replay_tokens=12 replay_steps=4 tail_copies=900 ckpts=150/150
+slot operator(): id  0 | kv-host-mirror restore: device_bytes=4567 device_frags=3 fallback_bytes=0

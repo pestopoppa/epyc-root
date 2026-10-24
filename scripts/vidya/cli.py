@@ -591,6 +591,7 @@ _FILE_SOURCES = (
     "ak-width-dimension", "ak-width-cells-cpu",
     "moe-routing",
     "gpu-cpu-noise", "launch-affinity", "q38-serving-gate", "fused-decode-div", "calendar-overrun", "floor-registry", "weight-handoff",
+    "hsf5p-microbench",
 )
 
 
