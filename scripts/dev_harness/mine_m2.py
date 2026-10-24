@@ -114,7 +114,9 @@ def run(a: argparse.Namespace) -> dict:
         "rules": [f"DHM-2 class {c}" for c in CLASSES] + its.meta_rules(),
         "notes": ("Would-fire = today's predicate over historical calls. Outcomes from the paired tool result. "
                   "DHM-4 labels come from the operator only. DHM-7.2 reports a cluster only with >=3 sessions "
-                  "and >=2 days; the embedding is hashed TF-IDF (no model)."),
+                  "and >=2 days; the embedding is "
+                  + (f"llama-embedding over {Path(a.embed_gguf).name}." if a.embed_gguf
+                     else "hashed TF-IDF (no model).")),
         "counts": {
             "units": n_units,
             "dhm2": audit.aggregate(),

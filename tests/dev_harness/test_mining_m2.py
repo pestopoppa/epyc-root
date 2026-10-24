@@ -177,6 +177,7 @@ def test_driver_end_to_end(synth_run):
     out = Path(s["out_dir"])
     agg = json.loads((out / "aggregate.json").read_text())
     assert dh_privacy.validate_aggregate(agg) == []
+    assert "hashed TF-IDF (no model)" in agg["notes"]                  # no --embed-gguf: the note says so
     assert agg["counts"]["dhm2"]["classes"]["pattern_kill"]["claude_code"]["epyc"]["blocked_hook"] == 6
     assert agg["counts"]["dhm4"]["interrupt_candidates"] == 6
     rows = list(csv.DictReader(io.StringIO((out / "dhm4_label_sheet.csv").read_text())))
@@ -281,3 +282,16 @@ def test_gguf_embedder_contract_and_cluster_hook(monkeypatch):
              "text": "exec boom"} for i in range(8)]
     agg, _ = m2_cluster.run(docs, k=7, embedder=lambda ds: np.tile(np.array([[1.0, 0.0]]), (len(ds), 1)))
     assert agg["n_docs"] == 8 and agg["clusters_total"] >= 1
+
+
+def test_driver_note_names_the_gguf_embedder(synth_run, monkeypatch):
+    """With --embed-gguf the aggregate note names the model, not 'hashed TF-IDF' (DHM-7.2a read-out, 2026-10-24)."""
+    import m2_embed_gguf
+    monkeypatch.setattr(m2_embed_gguf, "embed_texts", lambda texts, gguf=None: [[1.0, float(i % 2)] for i in range(len(texts))])
+    a = mine_m2.build_parser().parse_args(["--projection", str(synth_run / "projections" / "synth"),
+                                           "--private-root", str(synth_run), "--sheet-n", "4",
+                                           "--embed-gguf", "/nonexistent/granite-test-Q8_0.gguf"])
+    s = mine_m2.run(a)
+    assert s["aggregate_valid"], s["aggregate_errors"]
+    agg = json.loads((Path(s["out_dir"]) / "aggregate.json").read_text())
+    assert "granite-test-Q8_0.gguf" in agg["notes"] and "hashed TF-IDF" not in agg["notes"]

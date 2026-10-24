@@ -193,6 +193,27 @@ where it fails. Belief kernel: this is a DHM-5 report and is covered by the exis
 | pytest_workers | 0 | 0.375 |
 | wholesale_add | 1 | 0.255 |
 
+## DHM-7.2a granite 97m embedder vs the TF-IDF baseline (2026-10-24 read-out)
+
+Same corpus (13,989 docs, k=80, same projection run), `mine_m2.py --embed-gguf` with the granite 97m Q8_0 GGUF
+(`llama-embedding -t 1 -ngl 0`, nice 19), job `dhm72a-granite`, rc 0 at 2026-10-23T15:57Z, `aggregate_valid` true,
+cluster stage 4,634.9 s (TF-IDF 5.65 s). Committed aggregate (counts only, top terms dropped):
+`data/dev_harness/mining-full-20261022T1310Z-granite97m.dhm72.aggregate.json`.
+
+| planted class | TF-IDF recovered (purity) | granite recovered (purity) |
+|---|---|---|
+| fs_containment | 1 (0.141) | 1 (0.045) |
+| git_stash | 1 (0.128) | **0** (0.500) |
+| pattern_kill | 0 (0.375) | **1** (0.667) |
+| pytest_workers | 0 (0.375) | **1** (1.000) |
+| wholesale_add | 1 (0.255) | **0** (0.500) |
+| **total** | **3/5** | **3/5** |
+
+Reported clusters: TF-IDF 80 of 80, granite 78 of 80 (delta -2); both put 100% of docs in a reported cluster.
+Four classes flip (two gained, two lost), net 0. Predeclared rule (`PREDECLARATION.md` in the launcher dir): better
+= more planted classes recovered, a tie goes to TF-IDF. **Tie -> TF-IDF is the DHM-7.2 baseline.** The sample run's
+5/5 for granite (122 docs) did not carry to the full corpus.
+
 ## OAB-LB1
 
 15,144 threads, 15,115/15,144 turns completed, 60,718 tool calls, exec wall 9,651.1 s. Turn failures: `{"aborted_interrupted": {"ci95_hi": 0.0679, "ci95_lo": 0.0103, "k": 4, "n": 15144, "per_100": 0.0264}, "no_terminal_event": {"ci95_hi": 0.2436, "ci95_lo": 0.1118, "k": 25, "n": 15144, "per_100": 0.1651}, "not_completed": {"ci95_hi": 0.2749, "ci95_lo": 0.1334, "k": 29, "n": 15144, "per_100": 0.1915}}`.
@@ -208,4 +229,5 @@ where it fails. Belief kernel: this is a DHM-5 report and is covered by the exis
 - `wholesale_git_add` on Claude is 0.36 pre, 0.56 prose-only, 1.22 post-hook (k=224): a hook era with MORE hits.
   Unattributed: harness mix, campaign sessions, or a hook gap (task DHM-9).
 - Codex and opencode have no hook coverage (`harness_uncovered`): nearly every would-fire there slipped through.
-- DHM-7.2 TF-IDF baseline recovers 3/5 planted classes (`pattern_kill`, `pytest_workers` missed); 7.2a pending.
+- DHM-7.2 TF-IDF baseline recovers 3/5 planted classes (`pattern_kill`, `pytest_workers` missed); the granite
+  97m embedder (7.2a) also recovers 3/5 but a different 3 (gains those two, loses `git_stash`, `wholesale_add`); tie -> TF-IDF.

@@ -145,3 +145,17 @@ Other agents are preparing the read-outs. Nothing here is a verdict beyond the R
 - PB-QCOST-1 confirm-R
 - NIB2-GNX-1 re-run
 - KPF-18-S1.R3 predeclaration and launcher
+
+### Read-outs: KPF-18.0b CPU re-runs and DHM-7.2a (zero compute, predeclared rules)
+
+- **KPF-18.0b, CPU re-run of items 1, 2 and 5** (fixed runner `d4633648…`, 2026-10-20 22:07–23:39Z).
+  - Item 1, read as counts: on the four control metrics, top-1, max-abs and greedy prefix match the control. KLD is 0.1045 vs 0.0840. That is the reverse-direction KL of the control's own pair: the fork is bit-identical to fresh-B in 8 of 8. Ticked.
+  - Item 5 holds, 14/14 and 22/22 for both cache-idle settings. Ticked.
+  - Item 2 is bit-identical in 11 of 12 pairs, tokens 12 of 12, and the record is partial at 12 of 16. Not ticked; "item 2, rest" is filed (inference, one CPU quarter).
+  - KPF-18.0b.2 is answered NO from the 10-21 item-7 polls (0 of 73 fork_off polls carry `kv_cells_*`). The fork gates the gauges on fork-enabled. Ticked.
+  - Belief dry run: 5 rows, 15 frames, 0 refused.
+- **DHM-7.2a** (job `dhm72a-granite`, rc 0 at 10-23 15:57Z).
+  - The granite 97m embedder recovers 3/5 planted classes, the same count as TF-IDF but a different set, and reports 78 of 80 clusters against 80 of 80. A tie goes to TF-IDF. This agrees with the 10-24 sweep, which had already ticked DHM-7.2 and DHM-7.
+  - Counts-only aggregate committed.
+  - Fixed a `mine_m2.py` notes string that always claimed TF-IDF; a test is added.
+  - No adapter for `dev-harness-aggregate.v1` yet (VB-LB1.1 is open, and its source row exists).

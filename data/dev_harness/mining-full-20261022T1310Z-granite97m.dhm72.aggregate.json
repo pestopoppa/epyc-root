@@ -1,0 +1,1957 @@
+{
+  "counts": {
+    "dhm72": {
+      "clusters": {
+        "c00": {
+          "error_type": {
+            "denial:hook_block": 1,
+            "tool_error": 1768
+          },
+          "harness": {
+            "codex": 731
+          },
+          "n_days": 51,
+          "n_docs": 731,
+          "n_sessions": 535,
+          "planted_in_cluster": 0,
+          "source": {
+            "epyc": 731
+          },
+          "tool": {
+            "tool:exec": 62,
+            "tool:exec_command": 1688,
+            "tool:write_stdin": 19
+          }
+        },
+        "c01": {
+          "error_type": {
+            "tool_error": 320
+          },
+          "harness": {
+            "claude_code": 58
+          },
+          "n_days": 9,
+          "n_docs": 58,
+          "n_sessions": 25,
+          "planted_in_cluster": 0,
+          "source": {
+            "host": 57,
+            "twyne": 1
+          },
+          "tool": {
+            "tool:AskUserQuestion": 1,
+            "tool:Bash": 283,
+            "tool:Edit": 18,
+            "tool:Grep": 3,
+            "tool:Read": 9,
+            "tool:Write": 6
+          }
+        },
+        "c02": {
+          "error_type": {
+            "denial:hook_block": 9,
+            "tool_error": 221
+          },
+          "harness": {
+            "claude_code": 151
+          },
+          "n_days": 42,
+          "n_docs": 151,
+          "n_sessions": 139,
+          "planted_in_cluster": 0,
+          "source": {
+            "epyc": 124,
+            "twyne": 27
+          },
+          "tool": {
+            "tool:Agent": 6,
+            "tool:Bash": 218,
+            "tool:Edit": 2,
+            "tool:Write": 1,
+            "tool:bash": 3
+          }
+        },
+        "c03": {
+          "error_type": {
+            "denial:hook_block": 1016,
+            "tool_error": 383
+          },
+          "harness": {
+            "claude_code": 781
+          },
+          "n_days": 36,
+          "n_docs": 781,
+          "n_sessions": 590,
+          "planted_in_cluster": 0,
+          "source": {
+            "epyc": 781
+          },
+          "tool": {
+            "tool:Bash": 1299,
+            "tool:Edit": 65,
+            "tool:Monitor": 5,
+            "tool:Read": 9,
+            "tool:Write": 11,
+            "tool:bash": 6
+          }
+        },
+        "c04": {
+          "error_type": {
+            "tool_error": 206
+          },
+          "harness": {
+            "claude_code": 1,
+            "codex": 89
+          },
+          "n_days": 23,
+          "n_docs": 90,
+          "n_sessions": 68,
+          "planted_in_cluster": 0,
+          "source": {
+            "epyc": 89,
+            "twyne": 1
+          },
+          "tool": {
+            "tool:Bash": 1,
+            "tool:exec": 1,
+            "tool:exec_command": 201,
+            "tool:write_stdin": 3
+          }
+        },
+        "c05": {
+          "error_type": {
+            "tool_error": 435
+          },
+          "harness": {
+            "claude_code": 1,
+            "codex": 236
+          },
+          "n_days": 44,
+          "n_docs": 237,
+          "n_sessions": 140,
+          "planted_in_cluster": 0,
+          "source": {
+            "epyc": 223,
+            "host": 13,
+            "twyne": 1
+          },
+          "tool": {
+            "tool:Bash": 1,
+            "tool:exec": 7,
+            "tool:exec_command": 414,
+            "tool:write_stdin": 13
+          }
+        },
+        "c06": {
+          "error_type": {
+            "denial:user_reject": 1,
+            "tool_error": 455
+          },
+          "harness": {
+            "claude_code": 1,
+            "codex": 309
+          },
+          "n_days": 35,
+          "n_docs": 310,
+          "n_sessions": 95,
+          "planted_in_cluster": 0,
+          "source": {
+            "epyc": 309,
+            "host": 1
+          },
+          "tool": {
+            "tool:Bash": 1,
+            "tool:exec": 443,
+            "tool:exec_command": 2,
+            "tool:wait": 10
+          }
+        },
+        "c07": {
+          "error_type": {
+            "tool_error": 74
+          },
+          "harness": {
+            "claude_code": 1,
+            "codex": 53
+          },
+          "n_days": 29,
+          "n_docs": 54,
+          "n_sessions": 33,
+          "planted_in_cluster": 0,
+          "source": {
+            "epyc": 53,
+            "twyne": 1
+          },
+          "tool": {
+            "tool:Bash": 1,
+            "tool:exec": 71,
+            "tool:exec_command": 1,
+            "tool:wait": 1
+          }
+        },
+        "c08": {
+          "error_type": {
+            "tool_error": 135
+          },
+          "harness": {
+            "codex": 106
+          },
+          "n_days": 20,
+          "n_docs": 106,
+          "n_sessions": 106,
+          "planted_in_cluster": 0,
+          "source": {
+            "epyc": 106
+          },
+          "tool": {
+            "tool:exec": 76,
+            "tool:exec_command": 59
+          }
+        },
+        "c09": {
+          "error_type": {
+            "denial:user_reject": 28,
+            "tool_error": 199
+          },
+          "harness": {
+            "claude_code": 1,
+            "opencode": 157
+          },
+          "n_days": 27,
+          "n_docs": 158,
+          "n_sessions": 128,
+          "planted_in_cluster": 0,
+          "source": {
+            "epyc": 146,
+            "host": 12
+          },
+          "tool": {
+            "tool:Bash": 3,
+            "tool:bash": 218,
+            "tool:glob": 1,
+            "tool:read": 2,
+            "tool:write": 3
+          }
+        },
+        "c10": {
+          "error_type": {
+            "tool_error": 452
+          },
+          "harness": {
+            "codex": 198
+          },
+          "n_days": 44,
+          "n_docs": 198,
+          "n_sessions": 135,
+          "planted_in_cluster": 0,
+          "source": {
+            "epyc": 191,
+            "host": 6,
+            "twyne": 1
+          },
+          "tool": {
+            "tool:exec": 8,
+            "tool:exec_command": 436,
+            "tool:write_stdin": 8
+          }
+        },
+        "c11": {
+          "error_type": {
+            "denial:hook_block": 38,
+            "tool_error": 151
+          },
+          "harness": {
+            "claude_code": 91
+          },
+          "n_days": 19,
+          "n_docs": 91,
+          "n_sessions": 89,
+          "planted_in_cluster": 0,
+          "source": {
+            "epyc": 88,
+            "twyne": 3
+          },
+          "tool": {
+            "tool:Agent": 1,
+            "tool:Artifact": 1,
+            "tool:Bash": 182,
+            "tool:WebFetch": 2,
+            "tool:bash": 3
+          }
+        },
+        "c12": {
+          "error_type": {
+            "denial:user_reject": 4,
+            "tool_error": 54
+          },
+          "harness": {
+            "claude_code": 16,
+            "codex": 8,
+            "opencode": 10
+          },
+          "n_days": 22,
+          "n_docs": 34,
+          "n_sessions": 26,
+          "planted_in_cluster": 0,
+          "source": {
+            "epyc": 31,
+            "host": 2,
+            "twyne": 1
+          },
+          "tool": {
+            "tool:Agent": 6,
+            "tool:TaskOutput": 4,
+            "tool:TaskStop": 9,
+            "tool:task": 26,
+            "tool:wait": 3,
+            "tool:wait_agent": 5
+          }
+        },
+        "c13": {
+          "error_type": {
+            "denial:hook_block": 31,
+            "denial:user_reject": 2,
+            "tool_error": 219
+          },
+          "harness": {
+            "claude_code": 142,
+            "codex": 1,
+            "opencode": 1
+          },
+          "n_days": 33,
+          "n_docs": 144,
+          "n_sessions": 135,
+          "planted_in_cluster": 0,
+          "source": {
+            "epyc": 136,
+            "host": 8
+          },
+          "tool": {
+            "tool:AskUserQuestion": 9,
+            "tool:Bash": 236,
+            "tool:Edit": 2,
+            "tool:Read": 2,
+            "tool:bash": 1,
+            "tool:shell_command": 1
+          }
+        },
+        "c14": {
+          "error_type": {
+            "tool_error": 201
+          },
+          "harness": {
+            "codex": 122
+          },
+          "n_days": 36,
+          "n_docs": 122,
+          "n_sessions": 62,
+          "planted_in_cluster": 0,
+          "source": {
+            "epyc": 112,
+            "host": 1,
+            "twyne": 9
+          },
+          "tool": {
+            "tool:apply_patch": 5,
+            "tool:exec": 192,
+            "tool:exec_command": 4
+          }
+        },
+        "c15": {
+          "error_type": {
+            "tool_error": 202
+          },
+          "harness": {
+            "claude_code": 166
+          },
+          "n_days": 58,
+          "n_docs": 166,
+          "n_sessions": 152,
+          "planted_in_cluster": 0,
+          "source": {
+            "epyc": 152,
+            "host": 2,
+            "twyne": 12
+          },
+          "tool": {
+            "tool:Bash": 188,
+            "tool:Edit": 13,
+            "tool:Write": 1
+          }
+        },
+        "c16": {
+          "error_type": {
+            "denial:hook_block": 1,
+            "tool_error": 260
+          },
+          "harness": {
+            "codex": 159
+          },
+          "n_days": 36,
+          "n_docs": 159,
+          "n_sessions": 40,
+          "planted_in_cluster": 0,
+          "source": {
+            "epyc": 133,
+            "host": 21,
+            "twyne": 5
+          },
+          "tool": {
+            "tool:exec": 2,
+            "tool:exec_command": 58,
+            "tool:write_stdin": 201
+          }
+        },
+        "c17": {
+          "error_type": {
+            "tool_error": 457
+          },
+          "harness": {
+            "codex": 351
+          },
+          "n_days": 37,
+          "n_docs": 351,
+          "n_sessions": 184,
+          "planted_in_cluster": 0,
+          "source": {
+            "epyc": 346,
+            "host": 1,
+            "twyne": 4
+          },
+          "tool": {
+            "tool:apply_patch": 2,
+            "tool:exec": 455
+          }
+        },
+        "c18": {
+          "error_type": {
+            "denial:hook_block": 870,
+            "denial:user_reject": 1,
+            "tool_error": 260
+          },
+          "harness": {
+            "claude_code": 539
+          },
+          "n_days": 39,
+          "n_docs": 539,
+          "n_sessions": 385,
+          "planted_in_cluster": 0,
+          "source": {
+            "epyc": 531,
+            "twyne": 8
+          },
+          "tool": {
+            "tool:Bash": 1061,
+            "tool:Edit": 56,
+            "tool:Monitor": 1,
+            "tool:Read": 6,
+            "tool:Write": 5,
+            "tool:bash": 2
+          }
+        },
+        "c19": {
+          "error_type": {
+            "denial:hook_block": 5,
+            "tool_error": 167
+          },
+          "harness": {
+            "claude_code": 109,
+            "codex": 5
+          },
+          "n_days": 29,
+          "n_docs": 114,
+          "n_sessions": 107,
+          "planted_in_cluster": 0,
+          "source": {
+            "epyc": 114
+          },
+          "tool": {
+            "tool:Bash": 164,
+            "tool:Read": 2,
+            "tool:exec": 6
+          }
+        },
+        "c20": {
+          "error_type": {
+            "denial:hook_block": 4,
+            "tool_error": 109
+          },
+          "harness": {
+            "claude_code": 64
+          },
+          "n_days": 22,
+          "n_docs": 64,
+          "n_sessions": 48,
+          "planted_in_cluster": 0,
+          "source": {
+            "epyc": 58,
+            "twyne": 6
+          },
+          "tool": {
+            "tool:Bash": 110,
+            "tool:Write": 3
+          }
+        },
+        "c21": {
+          "error_type": {
+            "denial:hook_block": 9,
+            "denial:user_reject": 1,
+            "tool_error": 6
+          },
+          "harness": {
+            "claude_code": 9
+          },
+          "n_days": 5,
+          "n_docs": 9,
+          "n_sessions": 6,
+          "planted_in_cluster": 0,
+          "source": {
+            "twyne": 9
+          },
+          "tool": {
+            "tool:AskUserQuestion": 1,
+            "tool:Bash": 1,
+            "tool:Edit": 11,
+            "tool:Write": 3
+          }
+        },
+        "c22": {
+          "error_type": {
+            "tool_error": 12
+          },
+          "harness": {
+            "codex": 10
+          },
+          "n_days": 5,
+          "n_docs": 10,
+          "n_sessions": 10,
+          "planted_in_cluster": 0,
+          "source": {
+            "epyc": 10
+          },
+          "tool": {
+            "tool:exec": 12
+          }
+        },
+        "c23": {
+          "error_type": {
+            "tool_error": 440
+          },
+          "harness": {
+            "codex": 102
+          },
+          "n_days": 23,
+          "n_docs": 102,
+          "n_sessions": 37,
+          "planted_in_cluster": 0,
+          "source": {
+            "epyc": 102
+          },
+          "tool": {
+            "tool:exec": 439,
+            "tool:wait": 1
+          }
+        },
+        "c24": {
+          "error_type": {
+            "denial:hook_block": 5,
+            "tool_error": 331
+          },
+          "harness": {
+            "codex": 236
+          },
+          "n_days": 29,
+          "n_docs": 236,
+          "n_sessions": 83,
+          "planted_in_cluster": 0,
+          "source": {
+            "epyc": 235,
+            "twyne": 1
+          },
+          "tool": {
+            "tool:exec": 329,
+            "tool:exec_command": 6,
+            "tool:wait": 1
+          }
+        },
+        "c25": {
+          "error_type": {
+            "denial:hook_block": 29,
+            "denial:user_reject": 1,
+            "tool_error": 35
+          },
+          "harness": {
+            "claude_code": 34
+          },
+          "n_days": 19,
+          "n_docs": 34,
+          "n_sessions": 22,
+          "planted_in_cluster": 0,
+          "source": {
+            "twyne": 34
+          },
+          "tool": {
+            "tool:Bash": 45,
+            "tool:Edit": 3,
+            "tool:ExitPlanMode": 1,
+            "tool:Monitor": 1,
+            "tool:Read": 5,
+            "tool:Write": 9
+          }
+        },
+        "c27": {
+          "error_type": {
+            "denial:user_reject": 1,
+            "tool_error": 172
+          },
+          "harness": {
+            "claude_code": 56,
+            "opencode": 48
+          },
+          "n_days": 44,
+          "n_docs": 104,
+          "n_sessions": 90,
+          "planted_in_cluster": 0,
+          "source": {
+            "epyc": 59,
+            "host": 44,
+            "twyne": 1
+          },
+          "tool": {
+            "tool:Bash": 27,
+            "tool:Edit": 4,
+            "tool:Glob": 2,
+            "tool:Grep": 4,
+            "tool:Read": 76,
+            "tool:read": 54
+          }
+        },
+        "c28": {
+          "error_type": {
+            "tool_error": 5
+          },
+          "harness": {
+            "claude_code": 1,
+            "codex": 4
+          },
+          "n_days": 4,
+          "n_docs": 5,
+          "n_sessions": 3,
+          "planted_in_cluster": 0,
+          "source": {
+            "epyc": 5
+          },
+          "tool": {
+            "tool:Bash": 1,
+            "tool:exec": 3,
+            "tool:wait": 1
+          }
+        },
+        "c29": {
+          "error_type": {
+            "tool_error": 576
+          },
+          "harness": {
+            "codex": 331
+          },
+          "n_days": 27,
+          "n_docs": 331,
+          "n_sessions": 70,
+          "planted_in_cluster": 0,
+          "source": {
+            "epyc": 326,
+            "host": 1,
+            "twyne": 4
+          },
+          "tool": {
+            "tool:exec": 538,
+            "tool:exec_command": 3,
+            "tool:wait": 34,
+            "tool:wait_agent": 1
+          }
+        },
+        "c30": {
+          "error_type": {
+            "tool_error": 303
+          },
+          "harness": {
+            "codex": 250
+          },
+          "n_days": 46,
+          "n_docs": 250,
+          "n_sessions": 147,
+          "planted_in_cluster": 0,
+          "source": {
+            "epyc": 248,
+            "twyne": 2
+          },
+          "tool": {
+            "tool:exec": 298,
+            "tool:wait": 4,
+            "tool:write_stdin": 1
+          }
+        },
+        "c31": {
+          "error_type": {
+            "denial:hook_block": 7,
+            "tool_error": 258
+          },
+          "harness": {
+            "claude_code": 157
+          },
+          "n_days": 65,
+          "n_docs": 157,
+          "n_sessions": 145,
+          "planted_in_cluster": 0,
+          "source": {
+            "epyc": 139,
+            "twyne": 18
+          },
+          "tool": {
+            "tool:Bash": 239,
+            "tool:Edit": 12,
+            "tool:Read": 7,
+            "tool:TaskStop": 1,
+            "tool:Write": 5,
+            "tool:bash": 1
+          }
+        },
+        "c32": {
+          "error_type": {
+            "tool_error": 105
+          },
+          "harness": {
+            "claude_code": 2,
+            "opencode": 88
+          },
+          "n_days": 30,
+          "n_docs": 90,
+          "n_sessions": 81,
+          "planted_in_cluster": 0,
+          "source": {
+            "epyc": 37,
+            "host": 53
+          },
+          "tool": {
+            "tool:Edit": 4,
+            "tool:bash": 1,
+            "tool:edit": 99,
+            "tool:write": 1
+          }
+        },
+        "c33": {
+          "error_type": {
+            "denial:hook_block": 1,
+            "tool_error": 271
+          },
+          "harness": {
+            "claude_code": 2,
+            "codex": 153
+          },
+          "n_days": 32,
+          "n_docs": 155,
+          "n_sessions": 93,
+          "planted_in_cluster": 0,
+          "source": {
+            "epyc": 155
+          },
+          "tool": {
+            "tool:Bash": 2,
+            "tool:exec": 5,
+            "tool:exec_command": 257,
+            "tool:write_stdin": 8
+          }
+        },
+        "c34": {
+          "error_type": {
+            "tool_error": 293
+          },
+          "harness": {
+            "codex": 248
+          },
+          "n_days": 32,
+          "n_docs": 248,
+          "n_sessions": 91,
+          "planted_in_cluster": 0,
+          "source": {
+            "epyc": 246,
+            "twyne": 2
+          },
+          "tool": {
+            "tool:exec": 285,
+            "tool:wait": 8
+          }
+        },
+        "c35": {
+          "error_type": {
+            "denial:hook_block": 23,
+            "tool_error": 308
+          },
+          "harness": {
+            "claude_code": 206,
+            "codex": 2,
+            "opencode": 1
+          },
+          "n_days": 53,
+          "n_docs": 209,
+          "n_sessions": 185,
+          "planted_in_cluster": 0,
+          "source": {
+            "epyc": 207,
+            "host": 2
+          },
+          "tool": {
+            "tool:Bash": 313,
+            "tool:Edit": 4,
+            "tool:Read": 2,
+            "tool:Write": 5,
+            "tool:bash": 2,
+            "tool:exec_command": 2
+          }
+        },
+        "c36": {
+          "error_type": {
+            "tool_error": 253
+          },
+          "harness": {
+            "claude_code": 77
+          },
+          "n_days": 11,
+          "n_docs": 77,
+          "n_sessions": 29,
+          "planted_in_cluster": 0,
+          "source": {
+            "host": 76,
+            "twyne": 1
+          },
+          "tool": {
+            "tool:AskUserQuestion": 5,
+            "tool:Bash": 86,
+            "tool:Edit": 145,
+            "tool:Read": 3,
+            "tool:Write": 14
+          }
+        },
+        "c37": {
+          "error_type": {
+            "tool_error": 17
+          },
+          "harness": {
+            "claude_code": 4,
+            "codex": 7
+          },
+          "n_days": 7,
+          "n_docs": 11,
+          "n_sessions": 5,
+          "planted_in_cluster": 0,
+          "source": {
+            "epyc": 9,
+            "twyne": 2
+          },
+          "tool": {
+            "tool:ArtifactData": 2,
+            "tool:Bash": 3,
+            "tool:exec_command": 5,
+            "tool:write_stdin": 7
+          }
+        },
+        "c38": {
+          "error_type": {
+            "denial:hook_block": 1,
+            "tool_error": 647
+          },
+          "harness": {
+            "claude_code": 4,
+            "codex": 253
+          },
+          "n_days": 50,
+          "n_docs": 257,
+          "n_sessions": 140,
+          "planted_in_cluster": 0,
+          "source": {
+            "epyc": 215,
+            "host": 42
+          },
+          "tool": {
+            "tool:Bash": 9,
+            "tool:exec": 19,
+            "tool:exec_command": 574,
+            "tool:shell_command": 8,
+            "tool:wait": 3,
+            "tool:write_stdin": 35
+          }
+        },
+        "c39": {
+          "error_type": {
+            "denial:hook_block": 19,
+            "tool_error": 401
+          },
+          "harness": {
+            "claude_code": 169
+          },
+          "n_days": 60,
+          "n_docs": 169,
+          "n_sessions": 125,
+          "planted_in_cluster": 0,
+          "source": {
+            "epyc": 150,
+            "twyne": 19
+          },
+          "tool": {
+            "tool:AskUserQuestion": 3,
+            "tool:Bash": 326,
+            "tool:Edit": 49,
+            "tool:Monitor": 4,
+            "tool:Read": 22,
+            "tool:Write": 10
+          }
+        },
+        "c40": {
+          "error_type": {
+            "tool_error": 503
+          },
+          "harness": {
+            "codex": 329
+          },
+          "n_days": 26,
+          "n_docs": 329,
+          "n_sessions": 56,
+          "planted_in_cluster": 0,
+          "source": {
+            "epyc": 329
+          },
+          "tool": {
+            "tool:exec": 502,
+            "tool:wait": 1
+          }
+        },
+        "c41": {
+          "error_type": {
+            "denial:hook_block": 2,
+            "tool_error": 97
+          },
+          "harness": {
+            "claude_code": 30,
+            "opencode": 1
+          },
+          "n_days": 8,
+          "n_docs": 31,
+          "n_sessions": 30,
+          "planted_in_cluster": 0,
+          "source": {
+            "epyc": 30,
+            "host": 1
+          },
+          "tool": {
+            "tool:Agent": 92,
+            "tool:Bash": 4,
+            "tool:Write": 1,
+            "tool:bash": 1,
+            "tool:task": 1
+          }
+        },
+        "c42": {
+          "error_type": {
+            "denial:user_reject": 3,
+            "tool_error": 110
+          },
+          "harness": {
+            "codex": 88
+          },
+          "n_days": 26,
+          "n_docs": 88,
+          "n_sessions": 49,
+          "planted_in_cluster": 0,
+          "source": {
+            "epyc": 86,
+            "host": 2
+          },
+          "tool": {
+            "tool:exec": 110,
+            "tool:exec_command": 3
+          }
+        },
+        "c43": {
+          "error_type": {
+            "denial:hook_block": 3,
+            "tool_error": 119
+          },
+          "harness": {
+            "claude_code": 80
+          },
+          "n_days": 42,
+          "n_docs": 80,
+          "n_sessions": 62,
+          "planted_in_cluster": 0,
+          "source": {
+            "epyc": 67,
+            "host": 1,
+            "twyne": 12
+          },
+          "tool": {
+            "tool:Artifact": 1,
+            "tool:Bash": 13,
+            "tool:Edit": 102,
+            "tool:Result": 2,
+            "tool:Write": 1,
+            "tool:mcp__linear__save_project": 1
+          }
+        },
+        "c44": {
+          "error_type": {
+            "denial:hook_block": 6,
+            "tool_error": 128
+          },
+          "harness": {
+            "claude_code": 89,
+            "codex": 1
+          },
+          "n_days": 23,
+          "n_docs": 90,
+          "n_sessions": 90,
+          "planted_in_cluster": 0,
+          "source": {
+            "epyc": 89,
+            "twyne": 1
+          },
+          "tool": {
+            "tool:Bash": 124,
+            "tool:Monitor": 3,
+            "tool:WebFetch": 2,
+            "tool:Write": 2,
+            "tool:bash": 2,
+            "tool:exec_command": 1
+          }
+        },
+        "c45": {
+          "error_type": {
+            "tool_error": 180
+          },
+          "harness": {
+            "codex": 113
+          },
+          "n_days": 28,
+          "n_docs": 113,
+          "n_sessions": 48,
+          "planted_in_cluster": 0,
+          "source": {
+            "epyc": 102,
+            "host": 11
+          },
+          "tool": {
+            "tool:exec_command": 53,
+            "tool:write_stdin": 127
+          }
+        },
+        "c46": {
+          "error_type": {
+            "denial:hook_block": 17,
+            "tool_error": 160
+          },
+          "harness": {
+            "claude_code": 106,
+            "codex": 2
+          },
+          "n_days": 40,
+          "n_docs": 108,
+          "n_sessions": 102,
+          "planted_in_cluster": 0,
+          "source": {
+            "epyc": 106,
+            "host": 1,
+            "twyne": 1
+          },
+          "tool": {
+            "tool:Bash": 167,
+            "tool:Edit": 4,
+            "tool:Write": 2,
+            "tool:bash": 1,
+            "tool:bash_placeholder": 1,
+            "tool:exec": 1
+          }
+        },
+        "c47": {
+          "error_type": {
+            "denial:hook_block": 29,
+            "tool_error": 440
+          },
+          "harness": {
+            "codex": 304
+          },
+          "n_days": 28,
+          "n_docs": 304,
+          "n_sessions": 46,
+          "planted_in_cluster": 0,
+          "source": {
+            "epyc": 304
+          },
+          "tool": {
+            "tool:exec": 449,
+            "tool:wait": 19,
+            "tool:wait_agent": 1
+          }
+        },
+        "c48": {
+          "error_type": {
+            "denial:hook_block": 1,
+            "tool_error": 333
+          },
+          "harness": {
+            "claude_code": 238,
+            "codex": 1
+          },
+          "n_days": 65,
+          "n_docs": 239,
+          "n_sessions": 183,
+          "planted_in_cluster": 0,
+          "source": {
+            "epyc": 190,
+            "host": 9,
+            "twyne": 40
+          },
+          "tool": {
+            "tool:Bash": 323,
+            "tool:Read": 3,
+            "tool:TaskStop": 4,
+            "tool:Write": 1,
+            "tool:bash": 1,
+            "tool:shell_command": 2
+          }
+        },
+        "c49": {
+          "error_type": {
+            "tool_error": 428
+          },
+          "harness": {
+            "codex": 244
+          },
+          "n_days": 41,
+          "n_docs": 244,
+          "n_sessions": 198,
+          "planted_in_cluster": 0,
+          "source": {
+            "epyc": 222,
+            "host": 20,
+            "twyne": 2
+          },
+          "tool": {
+            "tool:exec_command": 425,
+            "tool:write_stdin": 3
+          }
+        },
+        "c50": {
+          "error_type": {
+            "denial:hook_block": 15,
+            "denial:user_reject": 1,
+            "tool_error": 549
+          },
+          "harness": {
+            "claude_code": 1,
+            "codex": 330
+          },
+          "n_days": 53,
+          "n_docs": 331,
+          "n_sessions": 235,
+          "planted_in_cluster": 0,
+          "source": {
+            "epyc": 312,
+            "host": 9,
+            "twyne": 10
+          },
+          "tool": {
+            "tool:Bash": 1,
+            "tool:exec": 10,
+            "tool:exec_command": 548,
+            "tool:write_stdin": 6
+          }
+        },
+        "c51": {
+          "error_type": {
+            "denial:hook_block": 17,
+            "denial:user_reject": 2,
+            "tool_error": 412
+          },
+          "harness": {
+            "claude_code": 271
+          },
+          "n_days": 67,
+          "n_docs": 271,
+          "n_sessions": 241,
+          "planted_in_cluster": 0,
+          "source": {
+            "epyc": 261,
+            "twyne": 10
+          },
+          "tool": {
+            "tool:Bash": 403,
+            "tool:Edit": 13,
+            "tool:Read": 2,
+            "tool:TaskUpdate": 3,
+            "tool:Write": 6,
+            "tool:bash": 1
+          }
+        },
+        "c52": {
+          "error_type": {
+            "denial:hook_block": 2,
+            "tool_error": 309
+          },
+          "harness": {
+            "codex": 169
+          },
+          "n_days": 50,
+          "n_docs": 169,
+          "n_sessions": 99,
+          "planted_in_cluster": 0,
+          "source": {
+            "epyc": 140,
+            "host": 23,
+            "twyne": 6
+          },
+          "tool": {
+            "tool:exec": 1,
+            "tool:exec_command": 308,
+            "tool:write_stdin": 2
+          }
+        },
+        "c53": {
+          "error_type": {
+            "denial:hook_block": 25,
+            "tool_error": 296
+          },
+          "harness": {
+            "claude_code": 204
+          },
+          "n_days": 39,
+          "n_docs": 204,
+          "n_sessions": 183,
+          "planted_in_cluster": 0,
+          "source": {
+            "epyc": 204
+          },
+          "tool": {
+            "tool:Bash": 319,
+            "tool:bash": 2
+          }
+        },
+        "c54": {
+          "error_type": {
+            "denial:user_reject": 41,
+            "tool_error": 21
+          },
+          "harness": {
+            "claude_code": 41
+          },
+          "n_days": 23,
+          "n_docs": 41,
+          "n_sessions": 24,
+          "planted_in_cluster": 0,
+          "source": {
+            "epyc": 23,
+            "twyne": 18
+          },
+          "tool": {
+            "tool:AskUserQuestion": 1,
+            "tool:Bash": 1,
+            "tool:Edit": 5,
+            "tool:ExitPlanMode": 53,
+            "tool:Read": 1,
+            "tool:TaskOutput": 1
+          }
+        },
+        "c55": {
+          "error_type": {
+            "denial:hook_block": 25,
+            "denial:user_reject": 1,
+            "tool_error": 384
+          },
+          "harness": {
+            "claude_code": 253,
+            "codex": 2,
+            "opencode": 2
+          },
+          "n_days": 79,
+          "n_docs": 257,
+          "n_sessions": 228,
+          "planted_in_cluster": 12,
+          "source": {
+            "epyc": 211,
+            "host": 9,
+            "twyne": 37
+          },
+          "tool": {
+            "tool:Bash": 339,
+            "tool:Edit": 32,
+            "tool:Grep": 2,
+            "tool:Read": 21,
+            "tool:Write": 6,
+            "tool:bash": 4
+          }
+        },
+        "c56": {
+          "error_type": {
+            "denial:hook_block": 36,
+            "tool_error": 51
+          },
+          "harness": {
+            "claude_code": 55
+          },
+          "n_days": 27,
+          "n_docs": 55,
+          "n_sessions": 53,
+          "planted_in_cluster": 0,
+          "source": {
+            "epyc": 55
+          },
+          "tool": {
+            "tool:Bash": 2,
+            "tool:Edit": 49,
+            "tool:Write": 36
+          }
+        },
+        "c57": {
+          "error_type": {
+            "denial:hook_block": 2,
+            "denial:user_reject": 2,
+            "tool_error": 634
+          },
+          "harness": {
+            "codex": 363
+          },
+          "n_days": 51,
+          "n_docs": 363,
+          "n_sessions": 243,
+          "planted_in_cluster": 0,
+          "source": {
+            "epyc": 315,
+            "host": 39,
+            "twyne": 9
+          },
+          "tool": {
+            "tool:apply_patch": 1,
+            "tool:exec": 3,
+            "tool:exec_command": 610,
+            "tool:write_stdin": 24
+          }
+        },
+        "c58": {
+          "error_type": {
+            "denial:hook_block": 1,
+            "denial:user_reject": 1,
+            "tool_error": 232
+          },
+          "harness": {
+            "claude_code": 155,
+            "opencode": 2
+          },
+          "n_days": 46,
+          "n_docs": 157,
+          "n_sessions": 140,
+          "planted_in_cluster": 0,
+          "source": {
+            "epyc": 136,
+            "host": 1,
+            "twyne": 20
+          },
+          "tool": {
+            "tool:Bash": 209,
+            "tool:Edit": 19,
+            "tool:ExitPlanMode": 1,
+            "tool:Read": 1,
+            "tool:Write": 2,
+            "tool:grep": 2
+          }
+        },
+        "c59": {
+          "error_type": {
+            "denial:hook_block": 29,
+            "denial:user_reject": 1,
+            "tool_error": 306
+          },
+          "harness": {
+            "claude_code": 194,
+            "codex": 1
+          },
+          "n_days": 50,
+          "n_docs": 195,
+          "n_sessions": 171,
+          "planted_in_cluster": 0,
+          "source": {
+            "epyc": 192,
+            "twyne": 3
+          },
+          "tool": {
+            "tool:Bash": 309,
+            "tool:Edit": 19,
+            "tool:Read": 2,
+            "tool:Write": 4,
+            "tool:bash": 1,
+            "tool:exec": 1
+          }
+        },
+        "c60": {
+          "error_type": {
+            "denial:hook_block": 1,
+            "denial:user_reject": 1,
+            "tool_error": 47
+          },
+          "harness": {
+            "claude_code": 28
+          },
+          "n_days": 15,
+          "n_docs": 28,
+          "n_sessions": 28,
+          "planted_in_cluster": 0,
+          "source": {
+            "epyc": 27,
+            "twyne": 1
+          },
+          "tool": {
+            "tool:Bash": 28,
+            "tool:Read": 18,
+            "tool:WebFetch": 3
+          }
+        },
+        "c61": {
+          "error_type": {
+            "denial:hook_block": 38,
+            "denial:user_reject": 1,
+            "tool_error": 320
+          },
+          "harness": {
+            "claude_code": 190,
+            "codex": 2
+          },
+          "n_days": 64,
+          "n_docs": 192,
+          "n_sessions": 161,
+          "planted_in_cluster": 0,
+          "source": {
+            "epyc": 143,
+            "host": 2,
+            "twyne": 47
+          },
+          "tool": {
+            "tool:Bash": 336,
+            "tool:Edit": 11,
+            "tool:Read": 4,
+            "tool:Write": 2,
+            "tool:exec_command": 2,
+            "tool:shell_command": 3
+          }
+        },
+        "c62": {
+          "error_type": {
+            "denial:user_reject": 60,
+            "tool_error": 84
+          },
+          "harness": {
+            "claude_code": 119,
+            "opencode": 4
+          },
+          "n_days": 40,
+          "n_docs": 123,
+          "n_sessions": 104,
+          "planted_in_cluster": 0,
+          "source": {
+            "epyc": 106,
+            "host": 7,
+            "twyne": 10
+          },
+          "tool": {
+            "tool:Agent": 4,
+            "tool:AskUserQuestion": 14,
+            "tool:Bash": 55,
+            "tool:SendMessage": 1,
+            "tool:Write": 11,
+            "tool:bash": 57
+          }
+        },
+        "c63": {
+          "error_type": {
+            "denial:hook_block": 3,
+            "denial:user_reject": 1,
+            "tool_error": 370
+          },
+          "harness": {
+            "claude_code": 1,
+            "codex": 254
+          },
+          "n_days": 33,
+          "n_docs": 255,
+          "n_sessions": 65,
+          "planted_in_cluster": 0,
+          "source": {
+            "epyc": 249,
+            "twyne": 6
+          },
+          "tool": {
+            "tool:Bash": 1,
+            "tool:exec": 362,
+            "tool:exec_command": 2,
+            "tool:wait": 9
+          }
+        },
+        "c64": {
+          "error_type": {
+            "denial:hook_block": 5,
+            "tool_error": 161
+          },
+          "harness": {
+            "claude_code": 22,
+            "codex": 77,
+            "opencode": 2
+          },
+          "n_days": 34,
+          "n_docs": 101,
+          "n_sessions": 82,
+          "planted_in_cluster": 0,
+          "source": {
+            "epyc": 98,
+            "twyne": 3
+          },
+          "tool": {
+            "tool:Bash": 31,
+            "tool:Edit": 1,
+            "tool:exec": 42,
+            "tool:exec_command": 80,
+            "tool:wait": 2,
+            "tool:write_stdin": 8
+          }
+        },
+        "c65": {
+          "error_type": {
+            "denial:hook_block": 2,
+            "tool_error": 526
+          },
+          "harness": {
+            "codex": 374
+          },
+          "n_days": 50,
+          "n_docs": 374,
+          "n_sessions": 214,
+          "planted_in_cluster": 0,
+          "source": {
+            "epyc": 374
+          },
+          "tool": {
+            "tool:exec": 412,
+            "tool:wait": 116
+          }
+        },
+        "c66": {
+          "error_type": {
+            "denial:hook_block": 10,
+            "tool_error": 265
+          },
+          "harness": {
+            "claude_code": 196
+          },
+          "n_days": 52,
+          "n_docs": 196,
+          "n_sessions": 170,
+          "planted_in_cluster": 0,
+          "source": {
+            "epyc": 182,
+            "twyne": 14
+          },
+          "tool": {
+            "tool:Bash": 256,
+            "tool:Edit": 1,
+            "tool:Monitor": 7,
+            "tool:Read": 4,
+            "tool:Write": 3,
+            "tool:bash": 3
+          }
+        },
+        "c67": {
+          "error_type": {
+            "denial:hook_block": 16,
+            "tool_error": 303
+          },
+          "harness": {
+            "claude_code": 1,
+            "codex": 174
+          },
+          "n_days": 49,
+          "n_docs": 175,
+          "n_sessions": 140,
+          "planted_in_cluster": 0,
+          "source": {
+            "epyc": 161,
+            "host": 12,
+            "twyne": 2
+          },
+          "tool": {
+            "tool:Edit": 1,
+            "tool:apply_patch": 1,
+            "tool:exec": 10,
+            "tool:exec_command": 303,
+            "tool:shell_command": 1,
+            "tool:write_stdin": 3
+          }
+        },
+        "c68": {
+          "error_type": {
+            "tool_error": 677
+          },
+          "harness": {
+            "claude_code": 489
+          },
+          "n_days": 78,
+          "n_docs": 489,
+          "n_sessions": 307,
+          "planted_in_cluster": 0,
+          "source": {
+            "epyc": 445,
+            "host": 5,
+            "twyne": 39
+          },
+          "tool": {
+            "tool:Artifact": 1,
+            "tool:Bash": 1,
+            "tool:Edit": 628,
+            "tool:Write": 47
+          }
+        },
+        "c69": {
+          "error_type": {
+            "denial:hook_block": 6,
+            "denial:user_reject": 1,
+            "tool_error": 112
+          },
+          "harness": {
+            "claude_code": 82,
+            "opencode": 1
+          },
+          "n_days": 32,
+          "n_docs": 83,
+          "n_sessions": 78,
+          "planted_in_cluster": 0,
+          "source": {
+            "epyc": 72,
+            "twyne": 11
+          },
+          "tool": {
+            "tool:AskUserQuestion": 7,
+            "tool:Bash": 25,
+            "tool:Edit": 9,
+            "tool:Monitor": 21,
+            "tool:Read": 51,
+            "tool:bash": 1
+          }
+        },
+        "c71": {
+          "error_type": {
+            "tool_error": 411
+          },
+          "harness": {
+            "claude_code": 1,
+            "codex": 227
+          },
+          "n_days": 38,
+          "n_docs": 228,
+          "n_sessions": 181,
+          "planted_in_cluster": 0,
+          "source": {
+            "epyc": 221,
+            "host": 1,
+            "twyne": 6
+          },
+          "tool": {
+            "tool:Bash": 1,
+            "tool:exec_command": 405,
+            "tool:write_stdin": 5
+          }
+        },
+        "c72": {
+          "error_type": {
+            "tool_error": 116
+          },
+          "harness": {
+            "claude_code": 56,
+            "opencode": 25
+          },
+          "n_days": 38,
+          "n_docs": 81,
+          "n_sessions": 78,
+          "planted_in_cluster": 0,
+          "source": {
+            "epyc": 69,
+            "host": 8,
+            "twyne": 4
+          },
+          "tool": {
+            "tool:Bash": 10,
+            "tool:Read": 79,
+            "tool:bash": 1,
+            "tool:grep": 8,
+            "tool:read": 18
+          }
+        },
+        "c73": {
+          "error_type": {
+            "tool_error": 34
+          },
+          "harness": {
+            "opencode": 27
+          },
+          "n_days": 17,
+          "n_docs": 27,
+          "n_sessions": 24,
+          "planted_in_cluster": 0,
+          "source": {
+            "epyc": 22,
+            "host": 5
+          },
+          "tool": {
+            "tool:edit": 34
+          }
+        },
+        "c74": {
+          "error_type": {
+            "tool_error": 271
+          },
+          "harness": {
+            "claude_code": 2,
+            "codex": 112
+          },
+          "n_days": 41,
+          "n_docs": 114,
+          "n_sessions": 74,
+          "planted_in_cluster": 0,
+          "source": {
+            "epyc": 111,
+            "host": 2,
+            "twyne": 1
+          },
+          "tool": {
+            "tool:Bash": 2,
+            "tool:Read": 1,
+            "tool:exec": 11,
+            "tool:exec_command": 242,
+            "tool:write_stdin": 15
+          }
+        },
+        "c75": {
+          "error_type": {
+            "denial:hook_block": 60,
+            "tool_error": 36
+          },
+          "harness": {
+            "claude_code": 55,
+            "opencode": 15
+          },
+          "n_days": 37,
+          "n_docs": 70,
+          "n_sessions": 70,
+          "planted_in_cluster": 0,
+          "source": {
+            "epyc": 67,
+            "host": 2,
+            "twyne": 1
+          },
+          "tool": {
+            "tool:Bash": 15,
+            "tool:Edit": 7,
+            "tool:Write": 56,
+            "tool:glob": 2,
+            "tool:read": 3,
+            "tool:write": 10
+          }
+        },
+        "c76": {
+          "error_type": {
+            "denial:hook_block": 24,
+            "denial:user_reject": 1,
+            "tool_error": 342
+          },
+          "harness": {
+            "codex": 242
+          },
+          "n_days": 32,
+          "n_docs": 242,
+          "n_sessions": 97,
+          "planted_in_cluster": 0,
+          "source": {
+            "epyc": 224,
+            "twyne": 18
+          },
+          "tool": {
+            "tool:exec": 352,
+            "tool:exec_command": 12,
+            "tool:wait": 3
+          }
+        },
+        "c77": {
+          "error_type": {
+            "denial:hook_block": 6,
+            "tool_error": 1
+          },
+          "harness": {
+            "claude_code": 6
+          },
+          "n_days": 5,
+          "n_docs": 6,
+          "n_sessions": 6,
+          "planted_in_cluster": 12,
+          "source": {
+            "epyc": 6
+          },
+          "tool": {
+            "tool:Bash": 7
+          }
+        },
+        "c78": {
+          "error_type": {
+            "tool_error": 436
+          },
+          "harness": {
+            "codex": 353
+          },
+          "n_days": 52,
+          "n_docs": 353,
+          "n_sessions": 265,
+          "planted_in_cluster": 0,
+          "source": {
+            "epyc": 310,
+            "host": 36,
+            "twyne": 7
+          },
+          "tool": {
+            "tool:exec_command": 434,
+            "tool:write_stdin": 2
+          }
+        },
+        "c79": {
+          "error_type": {
+            "denial:user_reject": 3,
+            "tool_error": 187
+          },
+          "harness": {
+            "claude_code": 26,
+            "opencode": 45
+          },
+          "n_days": 22,
+          "n_docs": 71,
+          "n_sessions": 47,
+          "planted_in_cluster": 0,
+          "source": {
+            "epyc": 49,
+            "host": 21,
+            "twyne": 1
+          },
+          "tool": {
+            "tool:Bash": 4,
+            "tool:WebFetch": 33,
+            "tool:WebSearch": 1,
+            "tool:bash": 2,
+            "tool:webfetch": 150
+          }
+        }
+      },
+      "clusters_reported": 78,
+      "clusters_total": 80,
+      "k": 80,
+      "n_docs": 13989,
+      "n_planted": 60,
+      "planted_recovered": 3,
+      "planted_recovery": {
+        "fs_containment": {
+          "best_cluster_purity": 0.045,
+          "recovered": 1,
+          "separation_from_other_planted": 1.0,
+          "share_in_best_cluster": 1.0
+        },
+        "git_stash": {
+          "best_cluster_purity": 0.5,
+          "recovered": 0,
+          "separation_from_other_planted": 0.5,
+          "share_in_best_cluster": 1.0
+        },
+        "pattern_kill": {
+          "best_cluster_purity": 0.667,
+          "recovered": 1,
+          "separation_from_other_planted": 1.0,
+          "share_in_best_cluster": 1.0
+        },
+        "pytest_workers": {
+          "best_cluster_purity": 1.0,
+          "recovered": 1,
+          "separation_from_other_planted": 1.0,
+          "share_in_best_cluster": 1.0
+        },
+        "wholesale_add": {
+          "best_cluster_purity": 0.5,
+          "recovered": 0,
+          "separation_from_other_planted": 0.5,
+          "share_in_best_cluster": 1.0
+        }
+      },
+      "reported_doc_share": 1.0
+    },
+    "dhm72a_vs_tfidf": {
+      "clusters_reported": {
+        "granite97m": 78,
+        "tfidf": 80
+      },
+      "clusters_total": {
+        "granite97m": 80,
+        "tfidf": 80
+      },
+      "k": {
+        "granite97m": 80,
+        "tfidf": 80
+      },
+      "n_docs": {
+        "granite97m": 13989,
+        "tfidf": 13989
+      },
+      "per_class": {
+        "fs_containment": {
+          "best_cluster_purity_granite97m": 0.045,
+          "best_cluster_purity_tfidf": 0.141,
+          "recovered_granite97m": 1,
+          "recovered_tfidf": 1
+        },
+        "git_stash": {
+          "best_cluster_purity_granite97m": 0.5,
+          "best_cluster_purity_tfidf": 0.128,
+          "recovered_granite97m": 0,
+          "recovered_tfidf": 1
+        },
+        "pattern_kill": {
+          "best_cluster_purity_granite97m": 0.667,
+          "best_cluster_purity_tfidf": 0.375,
+          "recovered_granite97m": 1,
+          "recovered_tfidf": 0
+        },
+        "pytest_workers": {
+          "best_cluster_purity_granite97m": 1.0,
+          "best_cluster_purity_tfidf": 0.375,
+          "recovered_granite97m": 1,
+          "recovered_tfidf": 0
+        },
+        "wholesale_add": {
+          "best_cluster_purity_granite97m": 0.5,
+          "best_cluster_purity_tfidf": 0.255,
+          "recovered_granite97m": 0,
+          "recovered_tfidf": 1
+        }
+      },
+      "planted_recovered": {
+        "granite97m": 3,
+        "tfidf": 3
+      }
+    },
+    "units": 42420
+  },
+  "generated_at": "2026-10-23T15:57:18+00:00",
+  "notes": "DHM-7.2 reports a cluster only with >=3 sessions and >=2 days; the embedding is llama-embedding over the granite 97m Q8_0 GGUF (the private aggregate's note text says hashed TF-IDF: a stale constant in mine_m2.py, fixed 2026-10-24; cluster wall time 4634.9 s vs 5.65 s for TF-IDF).",
+  "rules": [
+    "DHM-7.2a predeclared: better = more planted classes recovered; a tie goes to TF-IDF (no model dependency)"
+  ],
+  "schema": "dev-harness-aggregate.v1",
+  "source": "dev-harness mining M2 DHM-7.2a: granite 97m Q8_0 embedder (llama-embedding, 1 core) over projection run full-20261022T1310Z, reduced to counts.dhm72 (top_terms dropped) plus the comparison against the hashed TF-IDF run of the same corpus",
+  "spec": "scripts/dev_harness/mining_m2_aggregate.schema.json"
+}
