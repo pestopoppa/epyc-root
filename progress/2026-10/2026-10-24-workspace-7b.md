@@ -33,6 +33,7 @@ Tests: 417 passed + 13 subtests across the 10 AK loop test files (one timing-fla
   `ch27_window.sh --apply-dry` PASS. Nominal ~80 min, peak RAM ~95 GiB, grant `ch27-q38fn-floors` (5700 s, 200 GiB).
 - The 10-24 ~06:37Z slot was skipped (no FILLERS row, no pid): arming was waiting on operator approval.
 - Remaining: re-anchor on C3, fix the launcher's hard-coded deadline, register the row with a live pid — now workspace-58's.
+- **OPERATOR HOLD (2026-10-24): "DO NOT LAUNCH AUTOKERNEL".** CH-27 runs AK `run.py`; workspace-58 hears from the operator directly when AutoKernel is to be launched.
 
 ## Handoff updates
 
