@@ -1,0 +1,1159 @@
+{
+  "counts": {
+    "by_harness": {
+      "claude_code": {
+        "main": {
+          "claude_md_chars_p50": 5108.0,
+          "dhm5_file_size_estimate_tok": 17157.8,
+          "first_logging_version_num": 2001261,
+          "fit_by_model": {
+            "always_on_absent_rows": 2,
+            "always_on_absent_rows_in_shared_bucket": 2,
+            "always_on_chars_p50": 7862.0,
+            "always_on_chars_p90": 36491.3,
+            "always_on_present_rows": 168,
+            "always_on_tok_p50": {
+              "ci95_hi": 6693.6,
+              "ci95_lo": 3435.9,
+              "est": 4458.5
+            },
+            "always_on_tok_p90": {
+              "ci95_hi": 31068.4,
+              "ci95_lo": 15947.8,
+              "est": 20694.0
+            },
+            "baseline_system_tools_tok": {
+              "bucket_rows": 98,
+              "ci95_hi": 11595.2,
+              "ci95_lo": 5420.4,
+              "est": 8276.3
+            },
+            "beta_always_on_tok_per_char": {
+              "ci95_hi": 0.85139,
+              "ci95_lo": 0.43703,
+              "est": 0.5671
+            },
+            "beta_reminder_tok_per_char": {
+              "ci95_hi": 0.69414,
+              "ci95_lo": 0.32414,
+              "est": 0.56623
+            },
+            "beta_user_tok_per_char": {
+              "ci95_hi": 3.18392,
+              "ci95_lo": -0.48964,
+              "est": 0.43871
+            },
+            "buckets": 2,
+            "buckets_with_always_on_variation": 2,
+            "harness_reminders_tok_p50": {
+              "ci95_hi": 17129.7,
+              "ci95_lo": 7999.0,
+              "est": 13973.2
+            },
+            "identified": 1,
+            "n": 170,
+            "r2": 0.947,
+            "resid_mad_tok": 897.4,
+            "rows_dropped_small_bucket": 12
+          },
+          "fit_by_model_cwd": {
+            "always_on_absent_rows": 1,
+            "always_on_absent_rows_in_shared_bucket": 1,
+            "always_on_chars_p50": 34813.0,
+            "always_on_chars_p90": 56298.0,
+            "always_on_present_rows": 49,
+            "always_on_tok_p50": {
+              "ci95_hi": 19982.4,
+              "ci95_lo": 2161.2,
+              "est": 9447.0
+            },
+            "always_on_tok_p90": {
+              "ci95_hi": 32314.6,
+              "ci95_lo": 3495.0,
+              "est": 15277.2
+            },
+            "baseline_system_tools_tok": {
+              "bucket_rows": 17,
+              "ci95_hi": 42318.1,
+              "ci95_lo": 21072.5,
+              "est": 34117.5
+            },
+            "beta_always_on_tok_per_char": {
+              "ci95_hi": 0.57399,
+              "ci95_lo": 0.06208,
+              "est": 0.27136
+            },
+            "beta_reminder_tok_per_char": {
+              "ci95_hi": 0.4144,
+              "ci95_lo": 0.30504,
+              "est": 0.37351
+            },
+            "beta_user_tok_per_char": {
+              "ci95_hi": 2.40226,
+              "ci95_lo": 0.25245,
+              "est": 0.83373
+            },
+            "buckets": 3,
+            "buckets_with_always_on_variation": 2,
+            "harness_reminders_tok_p50": {
+              "ci95_hi": 13993.3,
+              "ci95_lo": 10300.6,
+              "est": 12612.4
+            },
+            "identified": 1,
+            "n": 50,
+            "r2": 0.9739,
+            "resid_mad_tok": 1237.6,
+            "rows_dropped_small_bucket": 132
+          },
+          "fit_by_model_version": {
+            "always_on_absent_rows": 0,
+            "always_on_absent_rows_in_shared_bucket": 0,
+            "always_on_chars_p50": 7862.0,
+            "always_on_chars_p90": 7870.0,
+            "always_on_present_rows": 125,
+            "always_on_tok_p50": {
+              "ci95_hi": 13557.2,
+              "ci95_lo": -897.8,
+              "est": 3264.7
+            },
+            "always_on_tok_p90": {
+              "ci95_hi": 13571.0,
+              "ci95_lo": -898.7,
+              "est": 3268.1
+            },
+            "baseline_system_tools_tok": {
+              "bucket_rows": 52,
+              "ci95_hi": 25017.0,
+              "ci95_lo": -1235.8,
+              "est": 6646.2
+            },
+            "beta_always_on_tok_per_char": {
+              "ci95_hi": 1.7244,
+              "ci95_lo": -0.1142,
+              "est": 0.41526
+            },
+            "beta_reminder_tok_per_char": {
+              "ci95_hi": 1.55976,
+              "ci95_lo": -0.67724,
+              "est": 0.82451
+            },
+            "beta_user_tok_per_char": {
+              "ci95_hi": 2.45003,
+              "ci95_lo": -8.42042,
+              "est": 0.77102
+            },
+            "buckets": 4,
+            "buckets_with_always_on_variation": 4,
+            "harness_reminders_tok_p50": {
+              "ci95_hi": 38239.1,
+              "ci95_lo": -16603.3,
+              "est": 20213.7
+            },
+            "identified": 0,
+            "n": 125,
+            "r2": 0.9719,
+            "resid_mad_tok": 234.2,
+            "rows_dropped_small_bucket": 57
+          },
+          "fit_cache_split": {
+            "always_on_chars_p50": 7862.0,
+            "always_on_tok_p50": {
+              "ci95_hi": 25939.9,
+              "ci95_lo": 3779.6,
+              "est": 3880.5
+            },
+            "beta_always_on_tok_per_char": {
+              "ci95_hi": 3.2994,
+              "ci95_lo": 0.48075,
+              "est": 0.49357
+            },
+            "candidates": 178,
+            "identified": 1,
+            "intercept_tok": {
+              "ci95_hi": -751.8,
+              "ci95_lo": -23104.3,
+              "est": -938.0
+            },
+            "n": 96,
+            "warm_prefix_cache_read_tok_p50": 13338.0
+          },
+          "memory_index_chars_p50": 2256.0,
+          "memory_index_present_share": 0.9779,
+          "primary": {
+            "always_on_chars_p50": 7862.0,
+            "always_on_tok_p50": {
+              "ci95_hi": 6693.6,
+              "ci95_lo": 3435.9,
+              "est": 4458.5
+            },
+            "baseline_system_tools_tok": {
+              "bucket_rows": 98,
+              "ci95_hi": 11595.2,
+              "ci95_lo": 5420.4,
+              "est": 8276.3
+            },
+            "beta_always_on_tok_per_char": {
+              "ci95_hi": 0.85139,
+              "ci95_lo": 0.43703,
+              "est": 0.5671
+            },
+            "identified": 1,
+            "measured": 1,
+            "n": 170,
+            "robust_to_cwd_buckets": 1,
+            "spec_model": 1,
+            "spec_model_version": 0
+          },
+          "turn1_cache_read_share_of_units": 0.9493,
+          "turn1_cache_read_tok_p50": 17183.0,
+          "turn1_prompt_tok": {
+            "p10": 25716.0,
+            "p50": 37909.5,
+            "p90": 58969.8
+          },
+          "units_excluded_history_before_turn1": 1,
+          "units_excluded_unlogged_or_unresolved": 1059,
+          "units_used_in_fit": 182,
+          "units_with_turn1_usage": 1242
+        },
+        "subagent": {
+          "claude_md_chars_p50": 20842.0,
+          "dhm5_file_size_estimate_tok": 8326.4,
+          "first_logging_version_num": 2001266,
+          "fit_by_model": {
+            "always_on_absent_rows": 248,
+            "always_on_absent_rows_in_shared_bucket": 2,
+            "always_on_chars_p50": 40756.0,
+            "always_on_chars_p90": 43986.0,
+            "always_on_present_rows": 2105,
+            "always_on_tok_p50": {
+              "ci95_hi": 22173.6,
+              "ci95_lo": 5236.1,
+              "est": 12467.9
+            },
+            "always_on_tok_p90": {
+              "ci95_hi": 23930.9,
+              "ci95_lo": 5651.1,
+              "est": 13456.0
+            },
+            "baseline_system_tools_tok": {
+              "bucket_rows": 775,
+              "ci95_hi": 36652.9,
+              "ci95_lo": 12302.4,
+              "est": 26269.5
+            },
+            "beta_always_on_tok_per_char": {
+              "ci95_hi": 0.54406,
+              "ci95_lo": 0.12847,
+              "est": 0.30592
+            },
+            "beta_reminder_tok_per_char": {
+              "ci95_hi": 0.44547,
+              "ci95_lo": 0.20083,
+              "est": 0.30935
+            },
+            "beta_user_tok_per_char": {
+              "ci95_hi": 0.49338,
+              "ci95_lo": 0.38883,
+              "est": 0.43499
+            },
+            "buckets": 12,
+            "buckets_with_always_on_variation": 8,
+            "harness_reminders_tok_p50": {
+              "ci95_hi": 13443.9,
+              "ci95_lo": 6060.9,
+              "est": 9335.8
+            },
+            "identified": 1,
+            "n": 2353,
+            "r2": 0.9656,
+            "resid_mad_tok": 370.1,
+            "rows_dropped_small_bucket": 55
+          },
+          "fit_by_model_cwd": {
+            "always_on_absent_rows": 243,
+            "always_on_absent_rows_in_shared_bucket": 2,
+            "always_on_chars_p50": 40756.0,
+            "always_on_chars_p90": 43986.0,
+            "always_on_present_rows": 2085,
+            "always_on_tok_p50": {
+              "ci95_hi": 23767.8,
+              "ci95_lo": 3985.1,
+              "est": 12605.1
+            },
+            "always_on_tok_p90": {
+              "ci95_hi": 25651.4,
+              "ci95_lo": 4301.0,
+              "est": 13604.1
+            },
+            "baseline_system_tools_tok": {
+              "bucket_rows": 771,
+              "ci95_hi": 38137.2,
+              "ci95_lo": 10927.0,
+              "est": 26243.1
+            },
+            "beta_always_on_tok_per_char": {
+              "ci95_hi": 0.58317,
+              "ci95_lo": 0.09778,
+              "est": 0.30928
+            },
+            "beta_reminder_tok_per_char": {
+              "ci95_hi": 0.43747,
+              "ci95_lo": 0.20999,
+              "est": 0.30574
+            },
+            "beta_user_tok_per_char": {
+              "ci95_hi": 0.48389,
+              "ci95_lo": 0.38739,
+              "est": 0.43409
+            },
+            "buckets": 12,
+            "buckets_with_always_on_variation": 8,
+            "harness_reminders_tok_p50": {
+              "ci95_hi": 13204.1,
+              "ci95_lo": 6338.0,
+              "est": 9228.2
+            },
+            "identified": 1,
+            "n": 2328,
+            "r2": 0.965,
+            "resid_mad_tok": 370.4,
+            "rows_dropped_small_bucket": 80
+          },
+          "fit_by_model_version": {
+            "always_on_absent_rows": 199,
+            "always_on_absent_rows_in_shared_bucket": 0,
+            "always_on_chars_p50": 40756.0,
+            "always_on_chars_p90": 43986.0,
+            "always_on_present_rows": 2023,
+            "always_on_tok_p50": {
+              "ci95_hi": 15706.6,
+              "ci95_lo": 12981.7,
+              "est": 14627.9
+            },
+            "always_on_tok_p90": {
+              "ci95_hi": 16951.4,
+              "ci95_lo": 14010.5,
+              "est": 15787.2
+            },
+            "baseline_system_tools_tok": {
+              "bucket_rows": 389,
+              "ci95_hi": 19507.3,
+              "ci95_lo": 16106.1,
+              "est": 17647.1
+            },
+            "beta_always_on_tok_per_char": {
+              "ci95_hi": 0.38538,
+              "ci95_lo": 0.31852,
+              "est": 0.35892
+            },
+            "beta_reminder_tok_per_char": {
+              "ci95_hi": 0.54168,
+              "ci95_lo": 0.48393,
+              "est": 0.51367
+            },
+            "beta_user_tok_per_char": {
+              "ci95_hi": 0.45132,
+              "ci95_lo": 0.42143,
+              "est": 0.43545
+            },
+            "buckets": 31,
+            "buckets_with_always_on_variation": 19,
+            "harness_reminders_tok_p50": {
+              "ci95_hi": 16552.1,
+              "ci95_lo": 14787.3,
+              "est": 15696.1
+            },
+            "identified": 1,
+            "n": 2222,
+            "r2": 0.9982,
+            "resid_mad_tok": 82.2,
+            "rows_dropped_small_bucket": 186
+          },
+          "fit_cache_split": {
+            "always_on_chars_p50": 41532.0,
+            "always_on_tok_p50": {
+              "ci95_hi": 18249.2,
+              "ci95_lo": 16044.2,
+              "est": 17192.5
+            },
+            "beta_always_on_tok_per_char": {
+              "ci95_hi": 0.4394,
+              "ci95_lo": 0.38631,
+              "est": 0.41396
+            },
+            "candidates": 1560,
+            "identified": 1,
+            "intercept_tok": {
+              "ci95_hi": -1269.8,
+              "ci95_lo": -1817.5,
+              "est": -1534.2
+            },
+            "n": 1527,
+            "warm_prefix_cache_read_tok_p50": 18566.0
+          },
+          "memory_index_chars_p50": 19473.0,
+          "memory_index_present_share": 1.0,
+          "primary": {
+            "always_on_chars_p50": 40756.0,
+            "always_on_tok_p50": {
+              "ci95_hi": 15706.6,
+              "ci95_lo": 12981.7,
+              "est": 14627.9
+            },
+            "baseline_system_tools_tok": {
+              "bucket_rows": 389,
+              "ci95_hi": 19507.3,
+              "ci95_lo": 16106.1,
+              "est": 17647.1
+            },
+            "beta_always_on_tok_per_char": {
+              "ci95_hi": 0.38538,
+              "ci95_lo": 0.31852,
+              "est": 0.35892
+            },
+            "identified": 1,
+            "measured": 1,
+            "n": 2222,
+            "robust_to_cwd_buckets": 1,
+            "spec_model": 0,
+            "spec_model_version": 1
+          },
+          "turn1_cache_read_share_of_units": 0.6703,
+          "turn1_cache_read_tok_p50": 15264.0,
+          "turn1_prompt_tok": {
+            "p10": 15160.0,
+            "p50": 34383.5,
+            "p90": 51683.5
+          },
+          "units_excluded_history_before_turn1": 0,
+          "units_excluded_unlogged_or_unresolved": 3788,
+          "units_used_in_fit": 2408,
+          "units_with_turn1_usage": 6196
+        }
+      },
+      "codex": {
+        "main": {
+          "dhm5_file_size_estimate_tok": 8326.4,
+          "fit_by_model": {
+            "always_on_absent_rows": 41,
+            "always_on_absent_rows_in_shared_bucket": 41,
+            "always_on_chars_p50": 8945.0,
+            "always_on_chars_p90": 9051.0,
+            "always_on_present_rows": 15172,
+            "always_on_tok_p50": {
+              "ci95_hi": 5119.3,
+              "ci95_lo": 3770.0,
+              "est": 4406.5
+            },
+            "always_on_tok_p90": {
+              "ci95_hi": 5179.9,
+              "ci95_lo": 3814.7,
+              "est": 4458.7
+            },
+            "baseline_system_tools_tok": {
+              "bucket_rows": 12993,
+              "ci95_hi": 7042.0,
+              "ci95_lo": 5129.5,
+              "est": 6184.1
+            },
+            "beta_always_on_tok_per_char": {
+              "ci95_hi": 0.5723,
+              "ci95_lo": 0.42146,
+              "est": 0.49262
+            },
+            "beta_reminder_tok_per_char": {
+              "ci95_hi": 0.45319,
+              "ci95_lo": 0.35032,
+              "est": 0.39508
+            },
+            "beta_system_tok_per_char": {
+              "ci95_hi": 1.30323,
+              "ci95_lo": -0.08794,
+              "est": 0.36199
+            },
+            "beta_user_tok_per_char": {
+              "ci95_hi": 0.31312,
+              "ci95_lo": 0.30792,
+              "est": 0.31089
+            },
+            "buckets": 7,
+            "buckets_with_always_on_variation": 7,
+            "harness_reminders_tok_p50": {
+              "ci95_hi": 5354.5,
+              "ci95_lo": 4139.0,
+              "est": 4667.8
+            },
+            "identified": 1,
+            "n": 15213,
+            "r2": 0.9747,
+            "resid_mad_tok": 456.5,
+            "rows_dropped_small_bucket": 26
+          },
+          "fit_by_model_cwd": {
+            "always_on_absent_rows": 20,
+            "always_on_absent_rows_in_shared_bucket": 1,
+            "always_on_chars_p50": 8945.0,
+            "always_on_chars_p90": 9050.0,
+            "always_on_present_rows": 14886,
+            "always_on_tok_p50": {
+              "ci95_hi": 2750.3,
+              "ci95_lo": 624.6,
+              "est": 1741.3
+            },
+            "always_on_tok_p90": {
+              "ci95_hi": 2782.6,
+              "ci95_lo": 631.9,
+              "est": 1761.7
+            },
+            "baseline_system_tools_tok": {
+              "bucket_rows": 1691,
+              "ci95_hi": 14188.3,
+              "ci95_lo": 11859.9,
+              "est": 12900.3
+            },
+            "beta_always_on_tok_per_char": {
+              "ci95_hi": 0.30747,
+              "ci95_lo": 0.06983,
+              "est": 0.19467
+            },
+            "beta_reminder_tok_per_char": {
+              "ci95_hi": 0.08959,
+              "ci95_lo": -0.01944,
+              "est": 0.03599
+            },
+            "beta_system_tok_per_char": {
+              "ci95_hi": 0.5679,
+              "ci95_lo": -0.06107,
+              "est": 0.18285
+            },
+            "beta_user_tok_per_char": {
+              "ci95_hi": 0.32173,
+              "ci95_lo": 0.31274,
+              "est": 0.31719
+            },
+            "buckets": 42,
+            "buckets_with_always_on_variation": 4,
+            "harness_reminders_tok_p50": {
+              "ci95_hi": 1058.5,
+              "ci95_lo": -229.7,
+              "est": 425.2
+            },
+            "identified": 1,
+            "n": 14906,
+            "r2": 0.9803,
+            "resid_mad_tok": 391.3,
+            "rows_dropped_small_bucket": 333
+          },
+          "fit_by_model_version": {
+            "always_on_absent_rows": 31,
+            "always_on_absent_rows_in_shared_bucket": 31,
+            "always_on_chars_p50": 8945.0,
+            "always_on_chars_p90": 9051.0,
+            "always_on_present_rows": 15078,
+            "always_on_tok_p50": {
+              "ci95_hi": 2795.6,
+              "ci95_lo": 2266.0,
+              "est": 2524.8
+            },
+            "always_on_tok_p90": {
+              "ci95_hi": 2828.7,
+              "ci95_lo": 2292.9,
+              "est": 2554.7
+            },
+            "baseline_system_tools_tok": {
+              "bucket_rows": 11778,
+              "ci95_hi": 9696.2,
+              "ci95_lo": 8984.8,
+              "est": 9355.4
+            },
+            "beta_always_on_tok_per_char": {
+              "ci95_hi": 0.31253,
+              "ci95_lo": 0.25333,
+              "est": 0.28226
+            },
+            "beta_reminder_tok_per_char": {
+              "ci95_hi": 0.3871,
+              "ci95_lo": 0.3399,
+              "est": 0.36245
+            },
+            "beta_system_tok_per_char": {
+              "ci95_hi": 0.67246,
+              "ci95_lo": 0.07106,
+              "est": 0.24134
+            },
+            "beta_user_tok_per_char": {
+              "ci95_hi": 0.29785,
+              "ci95_lo": 0.29413,
+              "est": 0.29597
+            },
+            "buckets": 18,
+            "buckets_with_always_on_variation": 16,
+            "harness_reminders_tok_p50": {
+              "ci95_hi": 4573.6,
+              "ci95_lo": 4015.9,
+              "est": 4282.3
+            },
+            "identified": 1,
+            "n": 15109,
+            "r2": 0.9938,
+            "resid_mad_tok": 372.5,
+            "rows_dropped_small_bucket": 130
+          },
+          "primary": {
+            "always_on_chars_p50": 8945.0,
+            "always_on_tok_p50": {
+              "ci95_hi": 2795.6,
+              "ci95_lo": 2266.0,
+              "est": 2524.8
+            },
+            "baseline_system_tools_tok": {
+              "bucket_rows": 11778,
+              "ci95_hi": 9696.2,
+              "ci95_lo": 8984.8,
+              "est": 9355.4
+            },
+            "beta_always_on_tok_per_char": {
+              "ci95_hi": 0.31253,
+              "ci95_lo": 0.25333,
+              "est": 0.28226
+            },
+            "identified": 1,
+            "measured": 1,
+            "n": 15109,
+            "robust_to_cwd_buckets": 1,
+            "spec_model": 0,
+            "spec_model_version": 1
+          },
+          "turn1_cache_read_share_of_units": 0.9993,
+          "turn1_cache_read_tok_p50": 13056.0,
+          "turn1_prompt_tok": {
+            "p10": 27034.0,
+            "p50": 34818.0,
+            "p90": 44261.0
+          },
+          "units_excluded_history_before_turn1": 1,
+          "units_excluded_unlogged_or_unresolved": 0,
+          "units_used_in_fit": 15239,
+          "units_with_turn1_usage": 15240
+        },
+        "subagent": {
+          "dhm5_file_size_estimate_tok": 8326.4,
+          "fit_by_model": {
+            "always_on_absent_rows": 343,
+            "always_on_absent_rows_in_shared_bucket": 0,
+            "always_on_chars_p50": 15571.0,
+            "always_on_chars_p90": 20889.0,
+            "always_on_present_rows": 2970,
+            "always_on_tok_p50": {
+              "ci95_hi": -9772.7,
+              "ci95_lo": -15401.8,
+              "est": -12615.0
+            },
+            "always_on_tok_p90": {
+              "ci95_hi": -13110.5,
+              "ci95_lo": -20662.1,
+              "est": -16923.5
+            },
+            "baseline_system_tools_tok": {
+              "bucket_rows": 1101,
+              "ci95_hi": 39674.1,
+              "ci95_lo": 34642.9,
+              "est": 37067.4
+            },
+            "beta_always_on_tok_per_char": {
+              "ci95_hi": -0.62762,
+              "ci95_lo": -0.98914,
+              "est": -0.81016
+            },
+            "beta_reminder_tok_per_char": {
+              "ci95_hi": -0.17574,
+              "ci95_lo": -0.43182,
+              "est": -0.28719
+            },
+            "beta_system_tok_per_char": {
+              "ci95_hi": 0.0271,
+              "ci95_lo": -0.23522,
+              "est": -0.10985
+            },
+            "beta_user_tok_per_char": {
+              "ci95_hi": -0.0091,
+              "ci95_lo": -2.14633,
+              "est": -1.06604
+            },
+            "buckets": 11,
+            "buckets_with_always_on_variation": 10,
+            "harness_reminders_tok_p50": {
+              "ci95_hi": -2227.9,
+              "ci95_lo": -5474.2,
+              "est": -3640.7
+            },
+            "identified": 0,
+            "n": 3313,
+            "r2": 0.8118,
+            "resid_mad_tok": 3080.7,
+            "rows_dropped_small_bucket": 42
+          },
+          "fit_by_model_cwd": {
+            "always_on_absent_rows": 343,
+            "always_on_absent_rows_in_shared_bucket": 0,
+            "always_on_chars_p50": 15571.0,
+            "always_on_chars_p90": 20889.0,
+            "always_on_present_rows": 2964,
+            "always_on_tok_p50": {
+              "ci95_hi": -9514.6,
+              "ci95_lo": -15155.4,
+              "est": -12406.0
+            },
+            "always_on_tok_p90": {
+              "ci95_hi": -12764.1,
+              "ci95_lo": -20331.4,
+              "est": -16643.1
+            },
+            "baseline_system_tools_tok": {
+              "bucket_rows": 1101,
+              "ci95_hi": 39457.8,
+              "ci95_lo": 34584.1,
+              "est": 36862.1
+            },
+            "beta_always_on_tok_per_char": {
+              "ci95_hi": -0.61105,
+              "ci95_lo": -0.97331,
+              "est": -0.79674
+            },
+            "beta_reminder_tok_per_char": {
+              "ci95_hi": -0.16329,
+              "ci95_lo": -0.42418,
+              "est": -0.27914
+            },
+            "beta_system_tok_per_char": {
+              "ci95_hi": 0.03405,
+              "ci95_lo": -0.21466,
+              "est": -0.09522
+            },
+            "beta_user_tok_per_char": {
+              "ci95_hi": 0.10926,
+              "ci95_lo": -2.27725,
+              "est": -1.14158
+            },
+            "buckets": 11,
+            "buckets_with_always_on_variation": 10,
+            "harness_reminders_tok_p50": {
+              "ci95_hi": -2070.0,
+              "ci95_lo": -5377.3,
+              "est": -3538.6
+            },
+            "identified": 0,
+            "n": 3307,
+            "r2": 0.8118,
+            "resid_mad_tok": 3045.1,
+            "rows_dropped_small_bucket": 48
+          },
+          "fit_by_model_version": {
+            "always_on_absent_rows": 343,
+            "always_on_absent_rows_in_shared_bucket": 0,
+            "always_on_chars_p50": 15571.0,
+            "always_on_chars_p90": 20889.0,
+            "always_on_present_rows": 2887,
+            "always_on_tok_p50": {
+              "ci95_hi": 5373.2,
+              "ci95_lo": -7698.5,
+              "est": -1098.1
+            },
+            "always_on_tok_p90": {
+              "ci95_hi": 7208.4,
+              "ci95_lo": -10327.8,
+              "est": -1473.2
+            },
+            "baseline_system_tools_tok": {
+              "bucket_rows": 619,
+              "ci95_hi": 19858.0,
+              "ci95_lo": 9893.7,
+              "est": 14768.4
+            },
+            "beta_always_on_tok_per_char": {
+              "ci95_hi": 0.34508,
+              "ci95_lo": -0.49441,
+              "est": -0.07053
+            },
+            "beta_reminder_tok_per_char": {
+              "ci95_hi": 0.53328,
+              "ci95_lo": 0.19518,
+              "est": 0.35616
+            },
+            "beta_system_tok_per_char": {
+              "ci95_hi": 0.29453,
+              "ci95_lo": -0.0381,
+              "est": 0.10893
+            },
+            "beta_user_tok_per_char": {
+              "ci95_hi": -0.22467,
+              "ci95_lo": -3.02628,
+              "est": -1.84647
+            },
+            "buckets": 24,
+            "buckets_with_always_on_variation": 15,
+            "harness_reminders_tok_p50": {
+              "ci95_hi": 6760.3,
+              "ci95_lo": 2474.3,
+              "est": 4515.0
+            },
+            "identified": 0,
+            "n": 3230,
+            "r2": 0.8215,
+            "resid_mad_tok": 707.0,
+            "rows_dropped_small_bucket": 125
+          },
+          "primary": {
+            "identified": 0,
+            "measured": 0
+          },
+          "turn1_cache_read_share_of_units": 0.988,
+          "turn1_cache_read_tok_p50": 15744.0,
+          "turn1_prompt_tok": {
+            "p10": 16403.0,
+            "p50": 20216.0,
+            "p90": 49488.0
+          },
+          "units_excluded_history_before_turn1": 227,
+          "units_excluded_unlogged_or_unresolved": 0,
+          "units_used_in_fit": 3355,
+          "units_with_turn1_usage": 3582
+        }
+      },
+      "opencode": {
+        "main": {
+          "dhm5_file_size_estimate_tok": 8326.4,
+          "fit_by_model": {
+            "always_on_absent_rows": 0,
+            "always_on_absent_rows_in_shared_bucket": 0,
+            "always_on_chars_p50": 8850.0,
+            "always_on_chars_p90": 8850.0,
+            "always_on_present_rows": 593,
+            "always_on_tok_p50": {
+              "ci95_hi": 6772.2,
+              "ci95_lo": 5727.4,
+              "est": 6229.9
+            },
+            "always_on_tok_p90": {
+              "ci95_hi": 6772.2,
+              "ci95_lo": 5727.4,
+              "est": 6229.9
+            },
+            "baseline_system_tools_tok": {
+              "bucket_rows": 394,
+              "ci95_hi": 2319.4,
+              "ci95_lo": 708.4,
+              "est": 1502.9
+            },
+            "beta_always_on_tok_per_char": {
+              "ci95_hi": 0.76522,
+              "ci95_lo": 0.64717,
+              "est": 0.70394
+            },
+            "beta_user_tok_per_char": {
+              "ci95_hi": 0.32475,
+              "ci95_lo": 0.31562,
+              "est": 0.32011
+            },
+            "buckets": 3,
+            "buckets_with_always_on_variation": 3,
+            "identified": 1,
+            "n": 593,
+            "r2": 0.9914,
+            "resid_mad_tok": 131.0,
+            "rows_dropped_small_bucket": 28
+          },
+          "fit_by_model_cwd": {
+            "always_on_absent_rows": 0,
+            "always_on_absent_rows_in_shared_bucket": 0,
+            "always_on_chars_p50": 8850.0,
+            "always_on_chars_p90": 8850.0,
+            "always_on_present_rows": 577,
+            "always_on_tok_p50": {
+              "ci95_hi": 6495.0,
+              "ci95_lo": -1943.0,
+              "est": -194.1
+            },
+            "always_on_tok_p90": {
+              "ci95_hi": 6495.0,
+              "ci95_lo": -1943.0,
+              "est": -194.1
+            },
+            "baseline_system_tools_tok": {
+              "bucket_rows": 103,
+              "ci95_hi": 9493.6,
+              "ci95_lo": 1092.3,
+              "est": 7806.7
+            },
+            "beta_always_on_tok_per_char": {
+              "ci95_hi": 0.73389,
+              "ci95_lo": -0.21955,
+              "est": -0.02194
+            },
+            "beta_user_tok_per_char": {
+              "ci95_hi": 0.32622,
+              "ci95_lo": 0.31779,
+              "est": 0.32202
+            },
+            "buckets": 9,
+            "buckets_with_always_on_variation": 1,
+            "identified": 0,
+            "n": 577,
+            "r2": 0.9962,
+            "resid_mad_tok": 132.5,
+            "rows_dropped_small_bucket": 44
+          },
+          "fit_by_model_version": {
+            "always_on_absent_rows": 0,
+            "always_on_absent_rows_in_shared_bucket": 0,
+            "always_on_chars_p50": 8850.0,
+            "always_on_chars_p90": 8850.0,
+            "always_on_present_rows": 593,
+            "always_on_tok_p50": {
+              "ci95_hi": 6772.2,
+              "ci95_lo": 5727.4,
+              "est": 6229.9
+            },
+            "always_on_tok_p90": {
+              "ci95_hi": 6772.2,
+              "ci95_lo": 5727.4,
+              "est": 6229.9
+            },
+            "baseline_system_tools_tok": {
+              "bucket_rows": 394,
+              "ci95_hi": 2319.4,
+              "ci95_lo": 708.4,
+              "est": 1502.9
+            },
+            "beta_always_on_tok_per_char": {
+              "ci95_hi": 0.76522,
+              "ci95_lo": 0.64717,
+              "est": 0.70394
+            },
+            "beta_user_tok_per_char": {
+              "ci95_hi": 0.32475,
+              "ci95_lo": 0.31562,
+              "est": 0.32011
+            },
+            "buckets": 3,
+            "buckets_with_always_on_variation": 3,
+            "identified": 1,
+            "n": 593,
+            "r2": 0.9914,
+            "resid_mad_tok": 131.0,
+            "rows_dropped_small_bucket": 28
+          },
+          "primary": {
+            "always_on_chars_p50": 8850.0,
+            "always_on_tok_p50": {
+              "ci95_hi": 6772.2,
+              "ci95_lo": 5727.4,
+              "est": 6229.9
+            },
+            "baseline_system_tools_tok": {
+              "bucket_rows": 394,
+              "ci95_hi": 2319.4,
+              "ci95_lo": 708.4,
+              "est": 1502.9
+            },
+            "beta_always_on_tok_per_char": {
+              "ci95_hi": 0.76522,
+              "ci95_lo": 0.64717,
+              "est": 0.70394
+            },
+            "identified": 1,
+            "measured": 0,
+            "n": 593,
+            "robust_to_cwd_buckets": 0,
+            "spec_model": 0,
+            "spec_model_version": 1
+          },
+          "rule_file_sizing": {
+            "absent": 18,
+            "git": 603,
+            "unresolved": 15634
+          },
+          "turn1_cache_read_share_of_units": 0.9892,
+          "turn1_cache_read_tok_p50": 2304.0,
+          "turn1_prompt_tok": {
+            "p10": 2444.0,
+            "p50": 2597.0,
+            "p90": 7702.0
+          },
+          "units_excluded_history_before_turn1": 0,
+          "units_excluded_unlogged_or_unresolved": 15634,
+          "units_used_in_fit": 621,
+          "units_with_turn1_usage": 16255
+        },
+        "subagent": {
+          "dhm5_file_size_estimate_tok": 8326.4,
+          "fit_by_model": {
+            "always_on_absent_rows": 0,
+            "always_on_absent_rows_in_shared_bucket": 0,
+            "always_on_chars_p50": 19396.0,
+            "always_on_chars_p90": 20290.0,
+            "always_on_present_rows": 209,
+            "always_on_tok_p50": {
+              "ci95_hi": 8913.7,
+              "ci95_lo": -4659.2,
+              "est": 8360.1
+            },
+            "always_on_tok_p90": {
+              "ci95_hi": 9324.5,
+              "ci95_lo": -4874.0,
+              "est": 8745.4
+            },
+            "baseline_system_tools_tok": {
+              "bucket_rows": 123,
+              "ci95_hi": 17613.1,
+              "ci95_lo": 3943.4,
+              "est": 4483.2
+            },
+            "beta_always_on_tok_per_char": {
+              "ci95_hi": 0.45956,
+              "ci95_lo": -0.24022,
+              "est": 0.43102
+            },
+            "beta_user_tok_per_char": {
+              "ci95_hi": 0.30882,
+              "ci95_lo": 0.26893,
+              "est": 0.29318
+            },
+            "buckets": 3,
+            "buckets_with_always_on_variation": 1,
+            "identified": 0,
+            "n": 209,
+            "r2": 0.9379,
+            "resid_mad_tok": 118.2,
+            "rows_dropped_small_bucket": 27
+          },
+          "fit_by_model_cwd": {
+            "always_on_absent_rows": 0,
+            "always_on_absent_rows_in_shared_bucket": 0,
+            "always_on_chars_p50": 19396.0,
+            "always_on_chars_p90": 20290.0,
+            "always_on_present_rows": 208,
+            "always_on_tok_p50": {
+              "ci95_hi": -359.0,
+              "ci95_lo": -4914.9,
+              "est": -2756.5
+            },
+            "always_on_tok_p90": {
+              "ci95_hi": -375.5,
+              "ci95_lo": -5141.5,
+              "est": -2883.5
+            },
+            "baseline_system_tools_tok": {
+              "bucket_rows": 122,
+              "ci95_hi": 17951.2,
+              "ci95_lo": 13263.6,
+              "est": 15701.2
+            },
+            "beta_always_on_tok_per_char": {
+              "ci95_hi": -0.01851,
+              "ci95_lo": -0.2534,
+              "est": -0.14212
+            },
+            "beta_user_tok_per_char": {
+              "ci95_hi": 0.29347,
+              "ci95_lo": 0.26639,
+              "est": 0.28054
+            },
+            "buckets": 3,
+            "buckets_with_always_on_variation": 1,
+            "identified": 0,
+            "n": 208,
+            "r2": 0.9449,
+            "resid_mad_tok": 107.1,
+            "rows_dropped_small_bucket": 28
+          },
+          "fit_by_model_version": {
+            "always_on_absent_rows": 0,
+            "always_on_absent_rows_in_shared_bucket": 0,
+            "always_on_chars_p50": 19396.0,
+            "always_on_chars_p90": 20290.0,
+            "always_on_present_rows": 209,
+            "always_on_tok_p50": {
+              "ci95_hi": 8913.7,
+              "ci95_lo": -4659.2,
+              "est": 8360.1
+            },
+            "always_on_tok_p90": {
+              "ci95_hi": 9324.5,
+              "ci95_lo": -4874.0,
+              "est": 8745.4
+            },
+            "baseline_system_tools_tok": {
+              "bucket_rows": 123,
+              "ci95_hi": 17613.1,
+              "ci95_lo": 3943.4,
+              "est": 4483.2
+            },
+            "beta_always_on_tok_per_char": {
+              "ci95_hi": 0.45956,
+              "ci95_lo": -0.24022,
+              "est": 0.43102
+            },
+            "beta_user_tok_per_char": {
+              "ci95_hi": 0.30882,
+              "ci95_lo": 0.26893,
+              "est": 0.29318
+            },
+            "buckets": 3,
+            "buckets_with_always_on_variation": 1,
+            "identified": 0,
+            "n": 209,
+            "r2": 0.9379,
+            "resid_mad_tok": 118.2,
+            "rows_dropped_small_bucket": 27
+          },
+          "primary": {
+            "identified": 0,
+            "measured": 0
+          },
+          "rule_file_sizing": {
+            "absent": 10,
+            "git": 226,
+            "unresolved": 3
+          },
+          "turn1_cache_read_share_of_units": 0.9247,
+          "turn1_cache_read_tok_p50": 12672.0,
+          "turn1_prompt_tok": {
+            "p10": 9190.2,
+            "p50": 13844.0,
+            "p90": 14567.6
+          },
+          "units_excluded_history_before_turn1": 0,
+          "units_excluded_unlogged_or_unresolved": 3,
+          "units_used_in_fit": 236,
+          "units_with_turn1_usage": 239
+        }
+      }
+    },
+    "elapsed_s": 100.5,
+    "excluded": {
+      "claude_code__zero_prompt": 2
+    }
+  },
+  "generated_at": "2026-10-24T09:06:50.319432+00:00",
+  "notes": "claude_code/main/model: baseline bucket = claude-opus-5-5; claude_code/main/model_version: baseline bucket = claude-opus-5|2.1.273; claude_code/subagent/model: baseline bucket = claude-sonnet-5-5|general-purpose; claude_code/subagent/model_version: baseline bucket = claude-sonnet-5-5|general-purpose|2.1.304; codex/main/model: baseline bucket = gpt-5.6-sol; codex/main/model_version: baseline bucket = gpt-5.6-sol|0.149.1; codex/subagent/model: baseline bucket = gpt-5.4-mini; codex/subagent/model_version: baseline bucket = gpt-5.4-mini|0.142.5; opencode/main/model: baseline bucket = deepseek-v4-flash|build; opencode/main/model_version: baseline bucket = deepseek-v4-flash|build|unknown; opencode/subagent/model: baseline bucket = deepseek-v4-flash|general; opencode/subagent/model_version: baseline bucket = deepseek-v4-flash|general|unknown",
+  "rules": [
+    "prompt_tok = the unit's FIRST model call: input INCLUSIVE of cache read and cache creation (claude input+cache_creation+cache_read; codex last_token_usage.input_tokens; opencode input+cache.read+cache.write)",
+    "chars before that call are split always_on / reminder / system / user / history from the transcript itself",
+    "claude always_on = the logged instructions attachment (CLAUDE.md files + MEMORY.md index, as rendered); units older than the first version that logs it are excluded, never zero-filled",
+    "codex always_on = the '# AGENTS.md instructions' user content item; system = logged base_instructions",
+    "opencode always_on = AGENTS.md|CLAUDE.md|CONTEXT.md found upward to the git root (opencode's order), sized at the session date from git history when tracked, else current size; unresolvable dirs excluded",
+    "units with any history before turn 1 (resumed, forked, compacted) are excluded from the fit",
+    "fit per harness x role: prompt_tok = intercept[bucket] + sum beta_class * chars_class (OLS); bucket = model (+ claude subagent type) [fit_by_model], + harness version [fit_by_model_version], or + working directory [fit_by_model_cwd]; buckets < 15 rows dropped; 400 row-bootstrap draws, seed 20261024, 95% percentile CI",
+    "always_on_tok_p50 = beta_always_on * the p50 always-on chars among units carrying the files; identified = its CI excludes 0 and at least one bucket has within-bucket always-on variation",
+    "baseline_system_tools_tok = intercept of the largest bucket (codex: + beta_system * its p50 system chars) = system prompt + tool schemas; turn1_cache_read_tok_p50 is the warm cross-session prefix, a direct check",
+    "claude fit_cache_split: prompt_tok - turn-1 cache_read regressed on chars (common intercept), rows whose cache read equals their model+version+subagent-type modal value (>= 3 hits): no baseline is estimated",
+    "primary = fit_by_model_version when identified, else fit_by_model; robust_to_cwd_buckets = the fit_by_model_cwd estimate is identified and its CI overlaps the primary's; measured = identified and robust_to_cwd_buckets (otherwise the slope may be per-directory configuration, not the files)",
+    "weakest assumption: always-on size is uncorrelated with unlogged prompt parts (tool schemas, MCP servers, per-directory config) within a bucket; the model_version spec removes harness-version drift but not cwd config"
+  ],
+  "schema": "dev-harness-aggregate.v1",
+  "source": "dev-harness DHM-5.1 turn-1 usage-field prefix measurement over cloud-llm-vault + opencode ro snapshots (run dhm51-20261024)",
+  "spec": "DHM-5.1 always-on prefix per harness x role from turn-1 usage fields"
+}

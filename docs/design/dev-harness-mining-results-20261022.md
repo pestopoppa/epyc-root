@@ -7,7 +7,7 @@ dev-harness private root. Source of every number: `data/dev_harness/mining-full-
 
 Caveats: would-fire is today's predicate over historical calls (not a claim that the call was wrong); DHM-5
 "always-on" is a file-size estimate (identical 8,326 for every non-Claude-main row), not a usage-field
-measurement; opencode `write_*_outside_allowlist` counts are inflated by that harness working outside the
+measurement (superseded by the DHM-5.1 section, 2026-10-24); opencode `write_*_outside_allowlist` counts are inflated by that harness working outside the
 Claude allowlist roots and are not violations by themselves; OAB-LB1 reads vault rollout copies, UFH14-LB8
 read-only snapshots.
 
@@ -107,6 +107,79 @@ Run `full-20261022T1310Z`: 42,420 units, 863 interrupt candidates, 13,989 cluste
 | codex | subagent | 8326.4 | 24105.5 | 0.3454 | 0.9762 | 80,572 |
 | opencode | main | 8326.4 | 2595.0 | 3.2086 | 0.9697 | 78,445 |
 | opencode | subagent | 8326.4 | 13844.0 | 0.6014 | 0.9843 | 11,018 |
+
+## DHM-5.1 always-on prefix from turn-1 usage fields (2026-10-24)
+
+This replaces the file-size estimate above. Source: `data/dev_harness/dhm51-20261024.aggregate.json`, produced by
+`scripts/dev_harness/mine_dhm51.py` (tests `tests/dev_harness/test_mine_dhm51.py`) and published through
+`dh_privacy.publish_aggregate`. It reads the cloud-llm-vault JSONL and the read-only opencode snapshots and runs no inference.
+
+**Method.** For each unit, the prompt total of its first model call comes from the usage fields (input
+including cache read and cache creation). The transcript itself gives the character count of everything sent
+before that call, split into classes:
+
+- always-on files. Claude Code logs them as an `instructions` attachment (CLAUDE.md plus the MEMORY.md index,
+  from v2.1.261 on; older units are excluded, not zero-filled). Codex logs the `# AGENTS.md instructions` item.
+  opencode does not log them, so the file is found from the session directory and sized at the session date
+  from git history.
+- harness reminders.
+- system: Codex `base_instructions`.
+- user text.
+- history: resumed, forked or compacted context. Units with any history are excluded.
+
+Per harness and role, OLS fits `prompt = intercept[bucket] + Σ β_class · chars_class`. The always-on slope is
+β_always_on in tokens per character, and the intercept is the system-prompt plus tool-schema baseline. Intervals
+are 95% from 400 row-bootstrap draws. Three bucket specs are fitted:
+
+- model (plus the Claude subagent type)
+- model plus harness version (the primary spec; it removes version drift)
+- model plus working directory (the slope then comes only from a directory's own files changing)
+
+A row is **measured** when the primary spec is identified and the per-directory spec is identified with an
+overlapping interval. For Claude there is a second estimator that needs no baseline, `cache_split`. It
+subtracts the turn-1 cache read, which is the warm system and tools prefix written by an earlier unit of the
+same model, version and type, and regresses the rest.
+
+| harness | role | units (fit) | turn-1 prompt p50 | always-on chars p50 | always-on tok (95% CI) | tok/char | system+tools baseline | DHM-5 file estimate | verdict |
+|---|---|---|---|---|---|---|---|---|---|
+| claude_code | main | 1,242 (170) | 37,910 | 7,862 (CLAUDE.md 5,108 + MEMORY.md 2,256) | 4,459 (3,436–6,694) [model spec] | 0.567 (0.437–0.851) | 8,276 (5,420–11,595) | 17,158 | measured, weak |
+| claude_code | subagent | 6,196 (2,222) | 34,384 | 40,756 (20,842 + 19,473) | **14,628 (12,982–15,707)** | 0.359 (0.319–0.385) | 17,647 (16,106–19,507) | 8,326 | measured |
+| codex | main | 15,240 (15,109) | 34,818 | 8,945 (AGENTS.md) | **2,525 (2,266–2,796)** | 0.282 (0.253–0.313) | 9,355 (8,985–9,696) | 8,326 | measured |
+| codex | subagent | 3,582 (3,355) | 20,216 | 15,571 | not identified (every spec negative or spans 0) | — | — | 8,326 | **no usage-field number** |
+| opencode | main | 16,255 (593) | 2,597 | 8,850 | 6,230 (5,727–6,772) across directories only; per-directory spec −194 (−1,943–6,495) | 0.704 | 1,503 | 8,326 | **not measured (confounded)** |
+| opencode | subagent | 239 (209) | 13,844 | 19,396 | not identified (one directory) | — | — | 8,326 | **no usage-field number** |
+
+Notes on each row:
+
+- **Claude subagent** is the clean row: R² 0.998, residual MAD 82 tokens, 31 buckets.
+  - `cache_split` corroborates it: 17,193 (16,044–18,249) at 0.414 tok/char.
+  - The baseline matches the warm turn-1 cache-read prefix: 17.6k against 18.6k.
+  - DHM-5 assumed subagents carry CLAUDE.md only. They also carry the MEMORY.md index (present in 100% of
+    logged units), so the measured prefix is 1.8× the old estimate.
+- **Claude main** has only 170 logged fresh units, most of them in orchestrator worktrees with a 5k CLAUDE.md.
+  - The version spec is not identified.
+  - The slope ranges from 0.27 to 0.57 tok/char across specs. `cache_split` gives 3,880 (3,780–25,940).
+  - For a `/workspace` main (about 34.8k chars): the per-directory fit gives 9,447 (2,161–19,982), and the
+    subagent slope gives 12.5k (derived, not fitted). Both are below DHM-5's 17,158.
+- **Codex main** shows the confound in the size of its slope:
+  - model-only spec: 0.49 tok/char
+  - model plus version (primary): 0.28 tok/char, about 3.5 chars/token
+  - per directory: 0.19 tok/char
+  - The harness-version drift is real, so only the version-bucketed figure is used.
+- **Codex subagent** gets negative slopes. The likeliest cause is spawn context that the child's rollout does
+  not log, an omitted variable that grows with the parent's files.
+- **opencode** never logs its instruction files. On this host the only file-size contrast is AK lanes
+  (llama.cpp AGENTS.md) against `/workspace`, and those directories also differ in agent config.
+  - 0.70 tok/char (1.4 chars/token) is implausible for that text.
+  - The per-directory fit is not identified.
+  - 15,634 host-tenant sessions run in directories that are not on this filesystem.
+  - A usage-field number for opencode, and for Codex subagents, needs a paired probe: one first call each
+    with the files present and hidden, same agent, model and directory. That is inference, not mining.
+
+Weakest assumption: within a bucket, always-on size is uncorrelated with prompt parts that are not logged
+(tool schemas, MCP servers, per-directory config). The spec sensitivity of Codex main and opencode shows
+where it fails. Belief kernel: this is a DHM-5 report and is covered by the existing dev-harness mining row in
+`scripts/vidya/adapters/README.md` (VB-LB1.1), so no new source row is needed.
 
 ## DHM-7.2 TF-IDF baseline
 
