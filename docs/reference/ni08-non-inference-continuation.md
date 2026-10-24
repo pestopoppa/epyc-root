@@ -603,3 +603,7 @@ The selected public CI source custody is a metadata subset. All 2,764 raw inputs
 ### Four additional source-capture tasks accepted — 2026-10-21
 
 The scoped total is **220 = 145 existing checkbox closures + 75 scoped children**. This update flips exactly four existing source-capture checkboxes after MAIN acceptance; NIB83 and PII metadata had already raised the prior working total to 216. Parent tasks remain open. [CJ10](../../artifacts/ci/cj10-prompt-source-20261021/README.md), [S05 observer](../../artifacts/ci/s05-observer-source-20261021/README.md), [CJ14](../../artifacts/ci/cj14-redundancy-source-20261021/README.md), [CJ5/6/7](../../artifacts/ci/cj567-fixture-source-20261021/README.md). Secondary grade source commit `fda2174b115d0eabcd9fa1abd88e2461a2685d2e` is an additional integration parent, not another source task closure.
+
+### 2026-10-24 campaign continuation checkpoint
+
+Current continuation state and exact job pins are recorded in [the Codex checkpoint](../../progress/2026-10/2026-10-24-codex-ni-checkpoint.md). Workspace58 confirms all five local poller rows registered and queued at the front, but owner reply explicitly says `not yet BOOKED` until actual grant files appear; expected first free quarter is q3 by 13:26Z, then q1/q2. Preserve scratch and source pins. DS41 canonical ingest and S4 private-snapshot validation remain unrun; live S4 proof awaits the serving-owner shared flag-on stack window. Source review and M26 wiring continue while the queue advances.
