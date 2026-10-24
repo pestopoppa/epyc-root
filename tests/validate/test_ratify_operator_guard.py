@@ -43,6 +43,12 @@ def test_refused_names(tool, name):
     assert tool.operator_problem(name) is not None
 
 
+@pytest.mark.parametrize("name", ["<your name>", "a<b", "b>", "Your Name", "YOUR FULL NAME",
+                                  "put name here", "Operator Name", "TODO", "todo", "XXX", "xxx-sign"])
+def test_placeholder_names_refused(tool, name):
+    assert tool.operator_problem(name) is not None
+
+
 def test_login_account_is_refused(tool, monkeypatch):
     monkeypatch.setenv("USER", "someloginname")
     assert tool.operator_problem("someloginname") is not None

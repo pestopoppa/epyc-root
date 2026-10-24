@@ -102,6 +102,8 @@ BULLET_RE = re.compile(r"^\s*(?:[-*+]\s|\d+[.)]\s)")
 # `operator: "node"` -- the container account an agent runs as. An unset name, a
 # system account, the invoking login, or an agent roster id is refused.
 # One source of truth: scripts/operator/lib/ratify_operator.sh calls `check-operator`.
+PLACEHOLDER_RE = re.compile(
+    r"your[\s_-]*(full[\s_-]*)?name|name[\s_-]*here|operator[\s_-]*name|\btodo\b|xxx", re.I)
 SYSTEM_ACCOUNTS = frozenset({
     "node", "root", "nobody", "unknown", "daemon", "admin", "administrator", "ubuntu",
     "user", "operator", "runner", "ci", "docker", "claude", "agent", "codex", "opencode",
@@ -131,6 +133,10 @@ def operator_problem(name: str | None) -> str | None:
         return ("RATIFY_OPERATOR is unset. Type your own name: "
                 "RATIFY_OPERATOR=<your-name> (no $USER fallback)")
     low = name.strip().lower()
+    if "<" in name or ">" in name:
+        return f"RATIFY_OPERATOR={name!r} contains < or >: that is a placeholder, not a name"
+    if PLACEHOLDER_RE.search(low):
+        return f"RATIFY_OPERATOR={name!r} looks like a placeholder, not a person's name"
     if low in SYSTEM_ACCOUNTS:
         return f"RATIFY_OPERATOR={name!r} is a system account, not a person"
     if low in _login_names():
