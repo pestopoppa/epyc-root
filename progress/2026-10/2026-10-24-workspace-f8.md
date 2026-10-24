@@ -223,3 +223,60 @@ KFD releases a dead server's VRAM late. A launcher must wait for the VRAM to dra
 - Notes: arming of confirm-R, KPF-18-S1.R3, KPF-19.1a CPU leg and HPR-B 64k holdout. KPF-19.1a: the job-28 `strings-*` false negatives are the pipefail plus `grep -q` class, already linted.
 - DHM-5.1 was ticked by a sweep (`4590b344f`), which also filed DHM-5.2, the paired probe. This wrap-up's duplicate (DHM-5.1a) was dropped during the rebase.
 - Not edited: every task line that sweeps A-D own.
+
+## Late morning 2026-10-24: backlog sweeps A-D landed, D9 hook, SEC-ART-1.1 merged (per-task wrap-up, subagent)
+
+The midday section was written while the four sweep subagents were still running. Their results follow.
+
+### Sweep A: serving harness (`17789cfab`)
+
+- Ticked: B4j.1 (idle-slots package amendment; code facts re-verified at `49550eda5` = `dcc853b55`, functions byte-identical in v10 `ffc1bac82`), LB7 (closed UNATTRIBUTED; LB7.1 NOT_REPRODUCED) and UTM-LB4.1 (OTel tool/sub-agent field inventory, identity stripped).
+- Prepared: the LB1.1 fold branch on the fork, the LB3.4 confirmation launcher, and LB6.2 (orch branch `f8/lb6-2-remaining-sites-20261024@b9788f04`).
+- The production model stack has been DOWN since at least 13:22Z 10-23 (no listener on :8070/:8080/:8083 at 08:46Z 10-24; the API has served only `/health` since its 16:19Z 10-23 restart). LB2.1, LB6.1, SEC-EXEC-POST-d/e1 and WP-15.3 therefore wait on production traffic.
+
+### Sweep B: kernel, KPF and GPU (`c9397c85d`, `8a94faa62`)
+
+- **M4.2a FAIL** (read-out, box ticked): C1 and C3 PASS; C2 FAIL with 6/6 reps valid and a median ratio of **25.227x** against the band 19.845-24.255 (PB-HOL-1 22.05x ±10%). The off path is code-equivalent, and the C-solo control drifted during the phase (282.1 -> 885.4 ms). Filed M4.2b: C2 against a same-window champion control.
+- **KPF-13.1b decision grade** (ticked): `kpf13_1b_locus = target_restore_defect`. The spec-off launch fails with no drafter loaded, so the drafter-on acceptance drop is confounded and does not fire the #30141 trigger.
+- **The 17.4b reading is confounded by KV cell layout.** Its control C was seeded while the 14336-cell source was resident, so C's cells sit at index 14336+ while X attends cells 0..c-1. `kpf17-4c-bisect` (prepared, rules v1) adds layout-matched arms (Xc~Cmask, Xe~C0, Ks~C0), each judged by exact bit identity. Item-3 group-3 v3 was filed separately; arm `kpf174c_bisect_spec_off` was declared and fixture-tested (VB-KPF174C-ARM).
+- **GPU-ZOS-2** design written (`docs/design/gpu-zos-2-one-step-lag-design-20261024.md`, ticked; .1-.3 filed).
+- **HSF-4.G** ticked: the HSF-4/5 source rates are re-quoted from the graphs-ON step-7 run.
+- **HSF-5** ticked (`docs/design/hsf-5-host-kv-mirror-costing-20261024.md`): **DI-140 fired**, and the prototype is filed as HSF-5.P.
+- **CH-LB1.1** fold prep: trial merge `experimental/ch-lb1-fold-20261024` @ `d95ce6267` = champion `dcc853b55` + `5f1eee195` + `452887155`, plus FOLD.md (`docs/design/ch-lb1-gdn-state-guard-fold-20261024.md`). Not built in the sweep.
+
+### Sweep C: belief kernel (`6453150ce`, `d4af4ed84`, `0b89b1df4`; batch ingests in `7834ca7bf`)
+
+- P1-PHASE2 built: AK experiment capture, focus_symbols, the kv-quant run-c retrofit, the autopilot-journal regime and served-shape. Two named sub-boxes are left.
+- Canonical ledger ingests: **1,341 frames** in total. `7834ca7bf` brought 867 and `d4af4ed84` 474 (kv-quant retrofit 30, served-shape 444).
+- tests/vidya: 3051 passed (from the sweep agent's report; the commits do not record the count).
+- AC8 sampler defect fixed in `0b89b1df4`; AC8 is now 10/10.
+- **AC9 FAILS.** The 10 kv-quant retrofit claims sit on the knob tier and take 10 of the 16 shared model-budget slots. The operator chose **option A: cap the knob tier at 8** (half the shared budget). Agent G is coding it.
+
+### Sweep D: security, lint and logs (`294ac50ac`, `2f573e0f0`, `ef7902e2c`; ticks in `823368fa8`, `3aaf313cb`, `4590b344f`, `044d17d84`)
+
+- Lint (`2f573e0f0`): the pipefail early-exit cleanup reaches zero findings, with a reviewed-exceptions file for the 7 signed operator ratify-script hits. 15 tests pass, including a repo-wide `--strict` gate. `294ac50ac` regenerated the index block.
+- DHM-5.1 (`ef7902e2c`): the always-on prefix is measured from turn-1 usage fields. Claude subagent 14,628 tok, Codex main 2,525, Claude main 4,459 (weak). DHM-5.1 ticked, DHM-5.2 (paired probe) filed (`4590b344f`).
+- **KVU-12.3 CLOSED NOT NEEDED**: generated-span re-prefill is 4.52%, under the predeclared 5% (KVU-12.3a). KVU-21 ticked, CONCUR AIMD trigger closed (`3aaf313cb`).
+- DHM-7, DHM-7.2, DHM-7.2a and RT-2.1 ticked (`823368fa8`). SEC-ART-1.1 backfill applied, with strict flipped on the branches (`044d17d84`).
+
+### Read-outs KPF-18.0b and DHM-7.2a (`c56dae201`)
+
+- KPF-18.0b: items 1 and 5 ticked. Item 2 is bit-identical 11/12, so its rest is filed. 0b.2 answered NO.
+- DHM-7.2a: granite 97m found 3/5 planted, a predeclared tie, so TF-IDF is kept. DHM-7.2 and DHM-7 ticked.
+
+### Main-thread actions after the midday wrap-up
+
+- **`dd8703b13`**: the operator-acked D9 change wires the pipefail early-exit lint into `scripts/hooks/pre-commit.extras`, warn-only, on staged .sh/.bash. Index next actions updated on 7 rows (INF-22, INF-23, RTG-58, RTG-57, INF-81, EVL-52, RTG-22).
+- **`af42f04f8`**: SEC-ART-1 and SEC-ART-1.1 ticked. Research `7b157602` merged; the shared research clone fast-forwarded to `99301fa14` (operator-approved); orchestrator `26d0d033` merged (main `1eff8145`).
+- **Armed 10:15Z, operator-approved** (pids from FILLERS.md):
+  - `kpf17-4c-bisect` (pid 1401711).
+  - `ufh14-lb1-1-fold` (pid 1401714): one build carrying both the LB1 fix and the CH-LB1.1 GDN guard, content checked identical.
+  - `ufh14-lb3-4-confirm` (pid 1401716): booked 10-25 from 04:30Z.
+- `hpr-b-64k-holdout` failed with rc 6 on a store-staging version-parse bug. A fix is in progress.
+- Operator rule relayed today: kernel bugs and learnings go into the champion fold, never into production patches. No shared-clone changes without the operator's approval.
+
+### Still running as of 10:35Z
+
+- Agent F: the hpr-b fix, the R3 read-out, the LB7.1 tick and 4 launchers.
+- Agent G: GPU-ZOS-2.1, HSF-5.P, AKX-ALL-LB3.2a and the AC9 cap.
+- Agent H: review of 6 pushed branches.
