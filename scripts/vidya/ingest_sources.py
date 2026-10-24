@@ -89,6 +89,19 @@ def _run_dirs_any(*markers: str) -> Units:
     return units
 
 
+def _np_ctx_kvu_units(path: Path) -> list[Path]:
+    """A directory holding ``summary.jsonl`` or ``requests.jsonl`` is one unit, else its children that do are; a
+    named ``requests.jsonl`` file is its own unit."""
+    if path.is_file():
+        return [path] if path.name == "requests.jsonl" else []
+    if not path.is_dir():
+        return []
+    held = lambda p: (p / "summary.jsonl").is_file() or (p / "requests.jsonl").is_file()  # noqa: E731
+    if held(path):
+        return [path]
+    return sorted(p for p in path.iterdir() if p.is_dir() and held(p))
+
+
 @dataclass(frozen=True)
 class Source:
     name: str
@@ -370,6 +383,12 @@ SOURCES: dict[str, Source] = {s.name: s for s in (
                 "`out/verdict.json`); chi-square/acceptance re-derived from the request rows, INDICATIVE "
                 "correctness only, no throughput value; retrofit",
            task="VB-SPEC-RNG-1-2-WIRE"),
+    Source("np-ctx-kvu-measurement", "np_ctx_kvu", _np_ctx_kvu_units,
+           note="np x ctx x KV-mode capture rows (`epyc.vidya.np_ctx_kvu_capture.v1`): CELL shape = launch dir with "
+                "`summary.jsonl` + `<launch>/<cell>/waves_capture.jsonl` (medians re-derived from the wave rows), "
+                "REQUEST shape = `requests.jsonl`; HTTP errors stay in the denominator; pre-hook rows refuse; "
+                "`cells.jsonl` decision rows are not read",
+           task="VB-KVU-CPU"),
     Source("pb-qcost", "pb_qcost", _run_dirs_any("pb_qcost_1.jsonl", "out/run/pb_qcost_1.jsonl"),
            note="PB-QCOST-1 prefill-cost run dirs (original `summary.json` layout and the confirm launcher "
                 "`VERDICT.json` layout); INDICATIVE, single-q caveat in applicability; OBSERVATION only; retrofit",

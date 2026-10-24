@@ -249,6 +249,7 @@ BUILDERS = {
     "spec-rng-1-2": lambda tmp: _helpers("test_spec_rng_1_2").write(tmp),
     "pb-qcost": lambda tmp: _helpers("test_pb_qcost").write(tmp),
     "nemotron-bolt-fold": lambda tmp: _helpers("test_nemotron_bolt_fold").write(tmp),
+    "np-ctx-kvu-measurement": lambda tmp: _helpers("test_np_ctx_kvu").write(tmp),
     "hil17-attribution-ladder": lambda tmp: _helpers("test_hil17_attribution").write(tmp),
     "hil-lb1-loop-score": lambda tmp: _helpers("test_hil_lb1_loop_score").write(tmp),
     "moe-routing": lambda tmp: _helpers("test_moe_routing").write(tmp),
