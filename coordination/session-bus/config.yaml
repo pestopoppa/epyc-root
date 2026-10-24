@@ -16,6 +16,8 @@ roster:
   - {id: codex-ak-main-01a11473, role: service, lanes: [none], endpoint: "monitor:file", drain: boundary, schedulable: false}
   # Operator-authorized non-inference campaign, 2026-10-05; no fleet dispatch or compute authority.
   - {id: codex-ni-main, role: service, lanes: [none], endpoint: "monitor:file", drain: boundary, schedulable: false}
+  # Operator-authorized non-inference coordinator session, 2026-10-24; no fleet dispatch or compute authority.
+  - {id: codex-ni-01a16d6b, role: service, lanes: [none], endpoint: "monitor:file", drain: boundary, schedulable: false}
   # Window renamed to `codex-inference` by the operator 2026-07-28 to disambiguate it from
   # codex-bus-tests. The bare `tmux:agent` endpoint then resolved to nothing — the adapter
   # correctly REFUSED to guess a pane rather than typing into the wrong one — so the window
