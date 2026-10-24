@@ -1056,15 +1056,24 @@ sources, in this precedence, and records the winner per node in `priority_basis.
    operator**: `{"rows": {"INF-65": {"score": 1.0, "note": "why"}}}` (score 0..1, 1 = highest;
    optional `note`, `tier`, `blocker`, `basis`). Delete the entry to return to the generated
    value. `--check` validates the JSON and the score range.
-2. `file` - `handoffs/active/backlog-priority.json` (tracked, generated: `generated_by`,
-   `generated_at`, `method`, `tiers`, `rows.<ID> = {tier, rank, score, basis, unblocks,
-   blocker}`). It is the operator's ordering method: inference rows packed by the
-   `inference-backlog-scheduling` model (live > ready/decision-bearing > routine, operator
-   holds pushed down with the blocker named), non-inference tasks that gate an inference task
-   inheriting and ranking just above it, unblocked non-inference first (T1 gates compute, T2
-   does not), blocked work following its blockers (T3/T7). Row priority = its best open item.
-   An entry for a row with no open work, or an unknown id, is ignored; `--check` prints an
-   ADVISORY when the file is >14 days old or open rows are missing from it.
+2. `file` - `handoffs/active/backlog-priority.json` (tracked, generated, schema `backlog_priority.v2`:
+   `generated_by`, `generated_at`, `queue_snapshot_at`, `source_sha`, `curated_unmatched`,
+   `classifier_error_rate`, `method`, `tiers`, then `rows.<ID> = {tier, rank, score, priority,
+   dispatch_score, compute_score, lane, basis, unblocks, blocker}`). It publishes TWO orders besides the
+   per-row colours: `dispatch_now` (<= 50 unblocked non-inference boxes ready to hand to a subagent, with
+   row id, task TEXT, file:line hint, size, what each gates, owner and a brief) and `compute_lane` (the
+   `inference-backlog-scheduling` packing order per lane gpu / whole-host / cpu, read from
+   `queue_status.py --json` + FILLERS.md: RUNNING, BOOKED, ARMED-UNBOOKED, STALE-ARMED, BACKLOG; inside a
+   status quiet -> atomic long -> builds -> resumable fillers; with ETA). A row's `priority` =
+   max(`dispatch_score`, `compute_score`); `score` is the same number (what this reader takes) and `lane`
+   (dispatch | compute | held) says which side won; the tooltip shows the lane and both scores. Blockers
+   come from explicit anchors only (curated `before=`, an in-box "depends on / after / precond / blocked
+   by / if <ID> passes" phrase naming a box or row, FILLERS precondition clauses); row Deps edges are NOT
+   inherited into boxes. Holds are box-scoped with a lifting condition (only PARKED/FROZEN rows hold at row
+   level); parents collapse into their open children; non-tasks are listed, not ranked. An entry for a row
+   with no open work, or an unknown id, is ignored. `index_state.py --check` prints an ADVISORY when the
+   file is more than 24 h older than the newest `handoffs/` commit or open rows are missing from it;
+   `backlog_priority.py --check` FAILS on that.
 3. `heuristic` - the original derivation, kept as the fallback for rows the file does not
    know: open work (rows with none sort last) > `CURRENT-CAMPAIGN.md` membership (row id or
    handoff stem named in the newest dated block = 2, an older block = 1) > number of open
@@ -1079,20 +1088,24 @@ The page has only a dark theme. Dashed ring = file sits in `handoffs/blocked/`.
 Test: `tests/test_index_state_priority.py`. **Regenerating `backlog-priority.json`** (do not hand-edit it; hand edits belong in the override file):
 
 ```bash
-/usr/bin/python3 -I scripts/handoffs/backlog_priority.py            # writes handoffs/active/backlog-priority.json (~30 s)
-/usr/bin/python3 -I scripts/handoffs/backlog_priority.py --check    # staleness / drift; exit 1 on problems, writes nothing
-/usr/bin/python3 -I scripts/handoffs/backlog_priority.py --md /tmp/x.md   # also the full ranked list (T1..T7, rows)
+/usr/bin/python3 -I scripts/handoffs/backlog_priority.py            # writes handoffs/active/backlog-priority.json (~35 s; refuses on a tree behind origin/main)
+/usr/bin/python3 -I scripts/handoffs/backlog_priority.py --check    # exit 1: file >24 h behind the newest handoffs/ commit, >5% curated entries unmatched, tree behind origin/main, bad JSON
+/usr/bin/python3 -I scripts/handoffs/backlog_priority.py --md /tmp/x.md       # also the readable tables (dispatch, compute lane, held, non-tasks)
+/usr/bin/python3 -I scripts/handoffs/backlog_priority.py --sample 20 --sheet /tmp/sheet.md   # stratified validation sheet (T1, T2-top, compute, random), empty verdict column
+/usr/bin/python3 -I scripts/handoffs/backlog_priority.py --emit-classifier-batch /tmp/b.jsonl   # boxes the LLM-classifier cache does not cover yet
 python3 scripts/handoffs/index_state.py                             # then rebuild .index-graph.json
 ```
 
-The generator reads every open box and index row from the repo plus the hand-kept table
-`scripts/handoffs/backlog_priority_curated.json`: ~120 scored entries (decision-bearing and
-live-compute items; `cls: live` is where the calendar state goes, because the generator does not
-read the host), row weights, holds (DS41-1017, HIL-6, parked, pending-operator), subagent briefs, and
-`done` entries for work finished but not yet ticked on main (excluded from the order, listed under
-`done_pending_tick`). Refresh that table when the calendar moves or something completes, then
-regenerate. `--check` fails when the file is missing, over 14 days old, lacks an open row, or its
-tiers differ from a fresh build on more than 15% of rows. Tests: `tests/test_backlog_priority.py`.
+Run the validation sheet before trusting a regeneration: read each sampled box at its file:line and fill
+the verdict column; more than 20% wrong means do not publish. The generator reads every box and index row
+from the repo, the live queue from `queue_status.py --json`, and the hand-kept JUDGEMENT table
+`scripts/handoffs/backlog_priority_curated.json` (`s`, `why`, `unblocks`, `before`, `kind` overrides,
+filler links, hold patterns with lifting conditions, PARKED/FROZEN rows, briefs). It holds no live
+compute state: refresh nothing there when the calendar moves. The one completion state it keeps is
+`done_pending_tick` (a finished box its owner has not ticked yet; excluded from dispatch, reported as
+`done_stale` once ticked, prune it). Kind / blocked are still keyword heuristics; the classifier hook is
+`scripts/handoffs/backlog_classifier_cache.json` (format in the generator's `CLASSIFIER_CACHE_FORMAT`)
+and `classifier_error_rate` stays null until it exists. Tests: `tests/test_backlog_priority.py`.
 
 ### Keeping it fresh
 

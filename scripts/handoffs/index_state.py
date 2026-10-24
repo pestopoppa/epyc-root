@@ -572,9 +572,11 @@ def derive_priority(nodes: list[dict], edges: list[dict], campaign_text: str = "
     1. ``override``: the operator's hand-edited ``backlog-priority.override.json``
        (``rows.<ID>.score`` 0..1, optional ``note``/``tier``/``blocker``). Always wins.
     2. ``file``: ``backlog-priority.json``, generated from the operator's ordering method
-       (inference rows packed by ROI/readiness/holds, non-inference blockers inheriting what
-       they gate, unblocked non-inference first). A file entry for a row with no open work is
-       ignored. Scores come from the file verbatim.
+       (v2: a dispatch order for unblocked non-inference work and a compute-lane order from the
+       FILLERS queue; ``score`` = ``priority`` = max(dispatch_score, compute_score), ``lane`` says
+       which side won). A file entry for a row with no open work is ignored. Scores come from the
+       file verbatim; ``lane`` / ``dispatch_score`` / ``compute_score`` ride along in
+       ``priority_basis`` when the file carries them.
     3. ``heuristic``: the original derived ordering below, kept as the fallback so a row the
        file does not know (new since it was generated) still colours sensibly. Fallback rows are
        scaled to sit BELOW every file-sourced row, ordered among themselves by the heuristic,
@@ -648,6 +650,9 @@ def derive_priority(nodes: list[dict], edges: list[dict], campaign_text: str = "
             src, p = "file", round(float(e["score"]), 4)
             pb.update(source=src, tier=e.get("tier"), basis=e.get("basis", ""), blocker=e.get("blocker", ""),
                       unblocks_rows=list(e.get("unblocks", []))[:12], file_rank=e.get("rank"))
+            for k in ("lane", "dispatch_score", "compute_score"):     # v2 file (backlog_priority.v2): which order won, and both scores
+                if k in e:
+                    pb[k] = e[k]
         else:
             src = "heuristic"
             p = round(heur[rid] * scale * (0.999 if floor is not None else 1.0), 4)
@@ -984,6 +989,16 @@ def _graph_display_path() -> str:
         return str(GRAPH)
 
 
+def _newest_handoffs_commit() -> "datetime | None":
+    """Commit time of the newest commit touching handoffs/ on HEAD, or None when git cannot answer."""
+    try:
+        r = subprocess.run(["git", "-C", str(REPO_ROOT), "log", "-1", "--format=%ct", "HEAD", "--", "handoffs"],
+                           capture_output=True, text=True, timeout=30)
+        return datetime.fromtimestamp(int(r.stdout.strip()), timezone.utc) if r.returncode == 0 and r.stdout.strip() else None
+    except (OSError, ValueError, subprocess.TimeoutExpired):
+        return None
+
+
 def priority_file_warnings(state: dict) -> list[str]:
     """Advisory only: the generated priority file has drifted from the indices. A drifted file
     still works (override > file > heuristic, unknown rows are ignored and new rows fall back),
@@ -1003,13 +1018,20 @@ def priority_file_warnings(state: dict) -> list[str]:
     if open_missing:
         out.append(f"{len(open_missing)} open row(s) are not in {PRIORITY_FILE.name} "
                    f"({', '.join(open_missing[:5])}); they sort below file-ranked rows by the heuristic")
+    gen = None
     try:
-        age = (datetime.now(timezone.utc).date()
-               - date.fromisoformat(str(doc.get("generated_at", ""))[:10])).days
-        if age > 14:
-            out.append(f"{PRIORITY_FILE.name} was generated {age} days ago; regenerate it")
+        gen = datetime.strptime(str(doc.get("generated_at", "")), "%Y-%m-%dT%H:%MZ").replace(tzinfo=timezone.utc)
     except ValueError:
         out.append(f"{PRIORITY_FILE.name} has no parseable generated_at")
+    if gen is not None:
+        newest = _newest_handoffs_commit()
+        if newest is not None:
+            lag_h = (newest - gen).total_seconds() / 3600
+            if lag_h > 24:
+                out.append(f"{PRIORITY_FILE.name} is {lag_h:.0f} h older than the newest handoffs/ commit (limit 24 h); "
+                           f"run scripts/handoffs/backlog_priority.py (its own --check fails on this)")
+        elif (datetime.now(timezone.utc) - gen).days > 14:
+            out.append(f"{PRIORITY_FILE.name} was generated {(datetime.now(timezone.utc) - gen).days} days ago; regenerate it")
     return out
 
 

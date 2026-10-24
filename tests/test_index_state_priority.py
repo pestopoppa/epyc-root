@@ -174,6 +174,40 @@ class PriorityFileTests(unittest.TestCase):
         state = index_state.collect()
         self.assertGreater(len(set(doc["rows"]) & set(state["rows"])), 100)
 
+    def test_v2_lane_and_both_scores_ride_into_priority_basis(self):
+        nodes = [N("A-1"), N("B-1"), N("C-1")]
+        doc = FDOC({"A-1": {"tier": 4, "score": 0.99, "priority": 0.99, "lane": "compute", "dispatch_score": 0.2, "compute_score": 0.99},
+                    "B-1": {"tier": 1, "score": 0.9, "lane": "dispatch", "dispatch_score": 0.9, "compute_score": 0.0},
+                    "C-1": {"tier": 2, "score": 0.4}})                      # a v1-shaped entry still works
+        index_state.derive_priority(nodes, [], "", doc, None)
+        r = {n["id"]: n["priority_basis"] for n in nodes}
+        self.assertEqual((r["A-1"]["lane"], r["A-1"]["dispatch_score"], r["A-1"]["compute_score"]), ("compute", 0.2, 0.99))
+        self.assertEqual(r["B-1"]["lane"], "dispatch")
+        self.assertNotIn("lane", r["C-1"])
+        self.assertEqual(r["A-1"]["source"], "file")
+        self.assertEqual([n["priority_rank"] for n in nodes], [1, 2, 3])
+
+    def test_warning_when_file_lags_the_newest_handoffs_commit_by_a_day(self):
+        from datetime import datetime, timezone, timedelta
+        gen = datetime(2026, 10, 24, 9, 0, tzinfo=timezone.utc)
+        with tempfile.TemporaryDirectory() as d:
+            p = Path(d) / "backlog-priority.json"
+            p.write_text(json.dumps({"generated_at": "2026-10-24T09:00Z", "rows": {"A-1": {"score": 0.5}}}))
+            old_file, old_newest = index_state.PRIORITY_FILE, index_state._newest_handoffs_commit
+            try:
+                index_state.PRIORITY_FILE = p
+                state = {"rows": {"A-1": {"handoff": "a.md"}}, "handoffs": {"a.md": {"open": 1}}}
+                index_state._newest_handoffs_commit = lambda: gen + timedelta(hours=23)
+                self.assertEqual(index_state.priority_file_warnings(state), [])
+                index_state._newest_handoffs_commit = lambda: gen + timedelta(hours=25)
+                w = index_state.priority_file_warnings(state)
+                self.assertTrue(any("older than the newest handoffs/ commit" in x for x in w), w)
+                index_state._newest_handoffs_commit = lambda: None            # no git: falls back to the 14-day rule
+                p.write_text(json.dumps({"generated_at": "2026-01-01T09:00Z", "rows": {"A-1": {"score": 0.5}}}))
+                self.assertTrue(any("days ago" in x for x in index_state.priority_file_warnings(state)))
+            finally:
+                index_state.PRIORITY_FILE, index_state._newest_handoffs_commit = old_file, old_newest
+
     def test_build_graph_reports_sources(self):
         g = index_state.build_graph(index_state.collect())
         src = g["priority_basis"]["sources"]

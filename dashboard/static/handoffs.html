@@ -385,7 +385,7 @@
     </h2>
     <div class="glegend" id="graph-legend"></div>
     <div class="glegend">
-      <span class="muted">ring = priority (tooltip: source, tier T1 unblocked non-inference &rarr; T7 held):</span>
+      <span class="muted">ring = priority = max(dispatch, compute) (tooltip: source, tier T1 unblocked non-inference &rarr; T7 held, lane dispatch | compute | held):</span>
       <span>high</span><i class="gsw prioramp" style="background:linear-gradient(90deg,#ffe14a,#c0b055,#8c9a95,#5a8fc0,#5468d8)"></i><span>low</span>
       <span><i class="gsw ring" style="border-color:#6e7681"></i>none</span>
       <span><i class="gsw ring" style="border-color:#8b949e;border-style:dashed"></i>dashed = in handoffs/blocked/</span>
@@ -1331,6 +1331,10 @@ async function loadGraph(){
     const src=pb.source||"heuristic";
     let t=`<br>priority: <b>#${n.priority_rank}</b> of ${total} &middot; ${esc(src)}`;
     if(pb.tier!=null) t+=` &middot; <b>T${esc(pb.tier)}</b> ${esc(pb.tier_name||"")}`;
+    if(pb.lane){                       // v2 file: which order won, with both scores (dispatch = hand to a subagent now, compute = queue order)
+      const f=v=>typeof v==="number"?v.toFixed(2):"-";
+      t+=`<br>lane: <b>${esc(pb.lane)}</b> <span class="muted">(dispatch ${f(pb.dispatch_score)} / compute ${f(pb.compute_score)})</span>`;
+    }
     if(pb.basis) t+=`<br><span class="muted">${esc(pb.basis)}</span>`;
     if(pb.blocker) t+=`<br>blocker: ${esc(pb.blocker)}`;
     if(pb.note) t+=`<br>note: ${esc(pb.note)}`;

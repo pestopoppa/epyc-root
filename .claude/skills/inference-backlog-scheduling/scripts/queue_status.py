@@ -7,6 +7,10 @@ the table itself, the grants dir (<id>.grant / .ended / .complete) and the live 
 
     queue_status.py [--flags DIR] [--validator PATH] [--owner SUBSTR] [--json]
 
+--json prints {schema, as_of, writers, buckets} (read-only, same buckets as the text report; every record also
+carries shape/duration/substrate/ready/ds41/decision/notes for machine consumers such as
+scripts/handoffs/backlog_priority.py, which builds the compute-lane order from it).
+
 Buckets (first match wins):
     COMPLETE        status COMPLETE/CANCELLED, or grants/<id>.complete exists
     RUNNING         grants/<id>.grant exists (the window as written; the launcher may still be polling)
@@ -118,6 +122,13 @@ def main(argv=None) -> int:
         rec = {"id": rid, "owner": owner.split("(")[0].strip()[:40], "status": status,
                "resources": g("resources")[:60], "min_window": g("min window"), "ram_gib": g("max private ram"),
                "class": g("class")}
+        if a.json:  # machine consumers (backlog_priority.py) get the full packing fields; the text report is unchanged
+            def gs(n):  # older rows can be short: a missing cell is "", never an IndexError
+                i = col.get(n)
+                return cells[i] if i is not None and i < len(cells) else ""
+            rec.update(shape=gs("resources")[:300], duration=gs("duration")[:120], substrate=gs("substrate"),
+                       ready=gs("ready y/n").strip(), ds41=gs("ds41-class y/n").strip(), decision=gs("decision")[:300],
+                       notes="" if status in vf.TERMINAL else gs("notes")[:1500])
         gpath, cpath = os.path.join(grants, rid + ".grant"), os.path.join(grants, rid + ".complete")
         if status in vf.TERMINAL or os.path.exists(cpath):
             epath = os.path.join(grants, rid + ".ended")
@@ -155,7 +166,7 @@ def main(argv=None) -> int:
         buckets["BACKLOG"].append(rec)
 
     if a.json:
-        json.dump({"as_of": now.strftime("%Y-%m-%dT%H:%MZ"), "writers": {k: sorted(v) for k, v in writers.items()},
+        json.dump({"schema": "queue_status.v2", "as_of": now.strftime("%Y-%m-%dT%H:%MZ"), "writers": {k: sorted(v) for k, v in writers.items()},
                    "buckets": buckets}, sys.stdout, indent=1)
         print()
         return 0
