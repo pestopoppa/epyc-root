@@ -1,5 +1,7 @@
 # REPL Turn Efficiency - Active Gates
 
+**Scratch**: `/mnt/raid0/llm/tmp/codex-ni-20261024-s4-turns/`, `/mnt/raid0/llm/tmp/codex-ni-20261024-s4-omega/` · worktrees: `/mnt/raid0/llm/worktrees/codex-ni-20261024-s4-*`
+
 **Status**: COMPACTED 2026-05-28 - core REPL efficiency changes landed; active gate is S4 Omega A/B.
 **Created**: 2026-04-09
 **Updated**: 2026-08-13
