@@ -62,6 +62,7 @@
 | RTG-57 | kv unified stack rollout | [kv-unified-stack-rollout.md](kv-unified-stack-rollout.md) | Read out HPR-b 64k (armed, resumable); KVU-LB1.d always-F32 VKQ; KVU-16g-1 row-5c A/B; KVU-19b-rework-c2-cal; V11-FA-4/-6 | RTG-19, RTG-36, INF-41 |
 | RTG-58 | kv prefix fork and paged attention | [kv-prefix-fork-and-paged-attention.md](kv-prefix-fork-and-paged-attention.md) | Predeclare KPF-17.4d (near-tie/layout re-judge; gates KPF-13.1); item-3 g3 layout-matched control; arm KPF-18-S1.R4; KPF-64.3 E/F | RTG-57, RTG-27, INF-65 |
 | RTG-59 | model artifact integrity | [model-artifact-integrity.md](model-artifact-integrity.md) | SEC-ART-POST-f: recompile lean registry + stack_priors at next stack-change, then SEC-ART-2; POST-b.1 v2 template roll-out; POST-d | — |
+| RTG-60 | multi-repo refactoring | [refactoring-multirepo-2026-10.md](refactoring-multirepo-2026-10.md) | Integrate reviewed isolation and O3; review O1/P2/P1/O6 before finishing remaining correctness packages | — |
 
 ## Cross-domain
 

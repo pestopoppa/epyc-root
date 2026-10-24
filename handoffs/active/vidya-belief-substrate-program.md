@@ -68,6 +68,8 @@ Nothing was deleted: the siblings are the evidence record for every gate this pr
 
 ### Open work — start here
 
+- [ ] **VB-REFACTOR-CONFORMANCE** — Prospectively capture controlled behavioral-regression verdicts for [multi-repo refactoring](refactoring-multirepo-2026-10.md) through the existing native CI verifier/shared grade. Preserve the decided proposition, source/test/base commits, command, environment, original output, JUnit and native custody. Manual branch/source reviews remain supporting dependency findings, not runtime proof. Keep past diagnostic runs as ordinary evidence; no invented attestations, historical tuples, retrofit or new ladder. Source-table row filed on the refactoring review branch; canonical publication follows owner review.
+
 For the current queue, use the open checkboxes below and the generated
 [`master-handoff-index.md`](master-handoff-index.md) rollup. KV-quant: `VB-KVQ-V10-DICT` first (root adapter
 must accept the producer's stats-dict medians; Codex coordination) — it blocks `VB-KVQ-V10-INGEST`, which also

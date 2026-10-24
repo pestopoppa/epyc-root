@@ -55,7 +55,13 @@
     "state": "implemented-unreviewed"
    }
   ],
-  "deferred": null
+  "deferred": null,
+  "resolution": {
+   "state": "tested-reviewed-unmerged",
+   "branch": "refactor/config-reviewed-01a16fc3",
+   "checkpoint_commit": "6558beb7",
+   "evidence": "548 O3 tests pass/4 skip; 524 alias targets pass; 7 changed source pins verified; mixed-alias cold-import cycle is separate RESUME-7"
+  }
  },
  "A1-04": {
   "severity": 4,
@@ -524,7 +530,13 @@
     "state": "implemented-unreviewed"
    }
   ],
-  "deferred": null
+  "deferred": null,
+  "resolution": {
+   "state": "tested-reviewed-unmerged",
+   "branch": "refactor/config-reviewed-01a16fc3",
+   "checkpoint_commit": "6558beb7",
+   "evidence": "548 O3 tests pass/4 skip; 524 alias targets pass; 7 changed source pins verified; mixed-alias cold-import cycle is separate RESUME-7"
+  }
  },
  "A3-02": {
   "severity": 4,
@@ -541,7 +553,13 @@
     "state": "implemented-unreviewed"
    }
   ],
-  "deferred": null
+  "deferred": null,
+  "resolution": {
+   "state": "tested-reviewed-unmerged",
+   "branch": "refactor/config-reviewed-01a16fc3",
+   "checkpoint_commit": "6558beb7",
+   "evidence": "548 O3 tests pass/4 skip; 524 alias targets pass; 7 changed source pins verified; mixed-alias cold-import cycle is separate RESUME-7"
+  }
  },
  "A3-03": {
   "severity": 4,
@@ -567,7 +585,13 @@
     "state": "implemented-unreviewed"
    }
   ],
-  "deferred": null
+  "deferred": null,
+  "resolution": {
+   "state": "tested-reviewed-unmerged",
+   "branch": "refactor/config-reviewed-01a16fc3",
+   "checkpoint_commit": "6558beb7",
+   "evidence": "548 O3 tests pass/4 skip; 524 alias targets pass; 7 changed source pins verified; mixed-alias cold-import cycle is separate RESUME-7"
+  }
  },
  "A3-05": {
   "severity": 1,
@@ -584,7 +608,13 @@
     "state": "implemented-unreviewed"
    }
   ],
-  "deferred": null
+  "deferred": null,
+  "resolution": {
+   "state": "tested-reviewed-unmerged",
+   "branch": "refactor/config-reviewed-01a16fc3",
+   "checkpoint_commit": "6558beb7",
+   "evidence": "548 O3 tests pass/4 skip; 524 alias targets pass; 7 changed source pins verified; mixed-alias cold-import cycle is separate RESUME-7"
+  }
  },
  "A3-06": {
   "severity": 2,
@@ -601,7 +631,13 @@
     "state": "implemented-unreviewed"
    }
   ],
-  "deferred": null
+  "deferred": null,
+  "resolution": {
+   "state": "tested-reviewed-unmerged",
+   "branch": "refactor/config-reviewed-01a16fc3",
+   "checkpoint_commit": "6558beb7",
+   "evidence": "548 O3 tests pass/4 skip; 524 alias targets pass; 7 changed source pins verified; mixed-alias cold-import cycle is separate RESUME-7"
+  }
  },
  "A3-07": {
   "severity": 3,
@@ -618,7 +654,13 @@
     "state": "implemented-unreviewed"
    }
   ],
-  "deferred": null
+  "deferred": null,
+  "resolution": {
+   "state": "tested-reviewed-unmerged",
+   "branch": "refactor/config-reviewed-01a16fc3",
+   "checkpoint_commit": "6558beb7",
+   "evidence": "548 O3 tests pass/4 skip; 524 alias targets pass; 7 changed source pins verified; mixed-alias cold-import cycle is separate RESUME-7"
+  }
  },
  "A3-08": {
   "severity": 3,
@@ -635,7 +677,13 @@
     "state": "implemented-unreviewed"
    }
   ],
-  "deferred": null
+  "deferred": null,
+  "resolution": {
+   "state": "tested-reviewed-unmerged",
+   "branch": "refactor/config-reviewed-01a16fc3",
+   "checkpoint_commit": "6558beb7",
+   "evidence": "548 O3 tests pass/4 skip; 524 alias targets pass; 7 changed source pins verified; mixed-alias cold-import cycle is separate RESUME-7"
+  }
  },
  "A3-09": {
   "severity": 3,
@@ -652,7 +700,13 @@
     "state": "implemented-unreviewed"
    }
   ],
-  "deferred": null
+  "deferred": null,
+  "resolution": {
+   "state": "tested-reviewed-unmerged",
+   "branch": "refactor/config-reviewed-01a16fc3",
+   "checkpoint_commit": "6558beb7",
+   "evidence": "548 O3 tests pass/4 skip; 524 alias targets pass; 7 changed source pins verified; mixed-alias cold-import cycle is separate RESUME-7"
+  }
  },
  "A3-10": {
   "severity": 3,
@@ -714,7 +768,13 @@
     "state": "implemented-unreviewed"
    }
   ],
-  "deferred": null
+  "deferred": null,
+  "resolution": {
+   "state": "tested-reviewed-unmerged",
+   "branch": "refactor/config-reviewed-01a16fc3",
+   "checkpoint_commit": "6558beb7",
+   "evidence": "548 O3 tests pass/4 skip; 524 alias targets pass; 7 changed source pins verified; mixed-alias cold-import cycle is separate RESUME-7"
+  }
  },
  "A3-16": {
   "severity": 2,
@@ -731,7 +791,13 @@
     "state": "implemented-unreviewed"
    }
   ],
-  "deferred": null
+  "deferred": null,
+  "resolution": {
+   "state": "tested-reviewed-unmerged",
+   "branch": "refactor/config-reviewed-01a16fc3",
+   "checkpoint_commit": "6558beb7",
+   "evidence": "548 O3 tests pass/4 skip; 524 alias targets pass; 7 changed source pins verified; mixed-alias cold-import cycle is separate RESUME-7"
+  }
  },
  "A3-17": {
   "severity": 2,
@@ -764,9 +830,22 @@
     "commit": "b32db841",
     "subject": "registry: back off and warn on a failed chat_template_kwargs registry load; stop pinning the tap-sentinel fallback (A3-19)",
     "state": "implemented-unreviewed"
+   },
+   {
+    "repo": "epyc-orchestrator",
+    "branch": "refactor/config-reviewed-01a16fc3",
+    "commit": "d843eb9c",
+    "subject": "registry: serialize failed chat-template registry first load",
+    "state": "tested-reviewed-unmerged"
    }
   ],
-  "deferred": null
+  "deferred": null,
+  "resolution": {
+   "state": "tested-reviewed-unmerged",
+   "branch": "refactor/config-reviewed-01a16fc3",
+   "checkpoint_commit": "6558beb7",
+   "evidence": "548 O3 tests pass/4 skip; 524 alias targets pass; 7 changed source pins verified; mixed-alias cold-import cycle is separate RESUME-7"
+  }
  },
  "A3-20": {
   "severity": 2,
@@ -837,7 +916,13 @@
     "state": "implemented-unreviewed"
    }
   ],
-  "deferred": null
+  "deferred": null,
+  "resolution": {
+   "state": "tested-reviewed-unmerged",
+   "branch": "refactor/config-reviewed-01a16fc3",
+   "checkpoint_commit": "6558beb7",
+   "evidence": "548 O3 tests pass/4 skip; 524 alias targets pass; 7 changed source pins verified; mixed-alias cold-import cycle is separate RESUME-7"
+  }
  },
  "A3-M2": {
   "severity": 2,
@@ -854,7 +939,13 @@
     "state": "implemented-unreviewed"
    }
   ],
-  "deferred": null
+  "deferred": null,
+  "resolution": {
+   "state": "tested-reviewed-unmerged",
+   "branch": "refactor/config-reviewed-01a16fc3",
+   "checkpoint_commit": "6558beb7",
+   "evidence": "548 O3 tests pass/4 skip; 524 alias targets pass; 7 changed source pins verified; mixed-alias cold-import cycle is separate RESUME-7"
+  }
  },
  "A4-01": {
   "severity": 4,
@@ -934,7 +1025,13 @@
     "state": "implemented-unreviewed"
    }
   ],
-  "deferred": null
+  "deferred": null,
+  "resolution": {
+   "state": "tested-reviewed-unmerged",
+   "branch": "refactor/config-reviewed-01a16fc3",
+   "checkpoint_commit": "6558beb7",
+   "evidence": "548 O3 tests pass/4 skip; 524 alias targets pass; 7 changed source pins verified; mixed-alias cold-import cycle is separate RESUME-7"
+  }
  },
  "A4-09": {
   "severity": 3,
@@ -1453,7 +1550,13 @@
     "state": "implemented-unreviewed"
    }
   ],
-  "deferred": null
+  "deferred": null,
+  "resolution": {
+   "state": "tested-reviewed-unmerged",
+   "branch": "refactor/test-isolation-reviewed-01a16fc3",
+   "checkpoint_commit": "5e392a3c",
+   "evidence": "189 runtime/trace tests pass, 1 intentional skip; 7 E8 cases pass; 3 new regressions fail safely on parent; NI07 integration fixed separately"
+  }
  },
  "A6-02": {
   "severity": 3,
@@ -1470,7 +1573,13 @@
     "state": "implemented-unreviewed"
    }
   ],
-  "deferred": null
+  "deferred": null,
+  "resolution": {
+   "state": "tested-reviewed-unmerged",
+   "branch": "refactor/test-isolation-reviewed-01a16fc3",
+   "checkpoint_commit": "5e392a3c",
+   "evidence": "189 runtime/trace tests pass, 1 intentional skip; 7 E8 cases pass; 3 new regressions fail safely on parent; NI07 integration fixed separately"
+  }
  },
  "A6-03": {
   "severity": 4,
@@ -1541,7 +1650,13 @@
     "state": "implemented-unreviewed"
    }
   ],
-  "deferred": null
+  "deferred": null,
+  "resolution": {
+   "state": "tested-reviewed-unmerged",
+   "branch": "refactor/test-isolation-reviewed-01a16fc3",
+   "checkpoint_commit": "5e392a3c",
+   "evidence": "189 runtime/trace tests pass, 1 intentional skip; 7 E8 cases pass; 3 new regressions fail safely on parent; NI07 integration fixed separately"
+  }
  },
  "A6-10": {
   "severity": 3,
@@ -1575,7 +1690,7 @@
   "kind": "refactor",
   "title": "pytest configuration hygiene: no strict markers, no timeout, dead hooks, 447 redundant asyncio marks, split dev deps",
   "verdict": "confirmed",
-  "package": "O7 (wave 1): Test-suite hazards and hygiene",
+  "package": "O8 (wave 2): Orchestrator CI, honest gates, and the ni63 pin design (operator decision 2026-10-24)",
   "commits": [],
   "deferred": null
  },
@@ -1647,8 +1762,22 @@
   "title": "Tests write fake rows into live runtime stores that no hermetic fixture covers (trace events.sqlite, eval instrument ledger); a later test then fails depending on run order",
   "verdict": "verifier-added",
   "package": "O7 (wave 1): Test-suite hazards and hygiene",
-  "commits": [],
-  "deferred": null
+  "commits": [
+   {
+    "repo": "epyc-orchestrator",
+    "branch": "refactor/test-isolation-reviewed-01a16fc3",
+    "commit": "87540dae",
+    "subject": "tests: isolate trace stores and eval ledgers in pytest (A6-M1)",
+    "state": "tested-reviewed-unmerged"
+   }
+  ],
+  "deferred": null,
+  "resolution": {
+   "state": "tested-reviewed-unmerged",
+   "branch": "refactor/test-isolation-reviewed-01a16fc3",
+   "checkpoint_commit": "5e392a3c",
+   "evidence": "189 runtime/trace tests pass, 1 intentional skip; 7 E8 cases pass; 3 new regressions fail safely on parent; NI07 integration fixed separately"
+  }
  },
  "B1-01": {
   "severity": 4,
@@ -2864,9 +2993,23 @@
     "commit": "5e0442b9",
     "subject": "WIP(unreviewed, untested): loop/run.py _git checks git's exit status (C1-05)",
     "state": "WIP-unreviewed"
+   },
+   {
+    "repo": "epyc-inference-research",
+    "branch": "refactor/autokernel-rollback-reviewed-01a16fc3",
+    "commit": "62c68ad99",
+    "subject": "fix(autokernel): abort on rollback execution faults",
+    "state": "tested-reviewed-unmerged"
    }
   ],
-  "deferred": null
+  "deferred": null,
+  "resolution": {
+   "state": "tested-reviewed-unmerged",
+   "branch": "refactor/autokernel-rollback-reviewed-01a16fc3",
+   "checkpoint_commit": "1b58b115c",
+   "tests": "13 regression tests pass; final regression on WIP: 5 fail/8 pass; targeted loop selection: 401 pass, 23 subtests pass",
+   "integration_hold": "AutoKernel launch hold and deliberate owner-controlled re-pin; no main merge or launch"
+  }
  },
  "C1-06": {
   "severity": 3,
@@ -3451,7 +3594,13 @@
   "verdict": "UNVERIFIED",
   "package": "K3 (wave 2): AutoKernel prune of the three unreachable planes (operator decision 2026-10-24)",
   "commits": [],
-  "deferred": null
+  "deferred": null,
+  "resolution": {
+   "state": "superseded-proposal-retain",
+   "as_of": "2026-10-24",
+   "evidence": "artifacts/ni08/inf64-source-reachability-review-20261007/completed-manifest.md",
+   "reason": "Current strip guidance retains all 19 candidates, including Apex/compiler; fresh per-file closure and contract review required before any removal."
+  }
  },
  "C4-02": {
   "severity": 4,
@@ -3899,9 +4048,9 @@
   "kind": "deletion",
   "title": "Arena plane tests (about 4.6k LOC) cover modules with no launcher in any repo and fail off-host",
   "verdict": "UNVERIFIED",
-  "package": "K3 (wave 2): AutoKernel prune of the three unreachable planes (operator decision 2026-10-24)",
+  "package": null,
   "commits": [],
-  "deferred": null
+  "deferred": "not_approved_plane"
  },
  "C6-18": {
   "severity": 2,

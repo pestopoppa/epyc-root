@@ -16,7 +16,7 @@
          "ids": ["A5-M1", "A5-06", "A5-07", "A5-04", "A5-12", "A5-22", "A5-M2", "A5-01", "A6-19", "A5-05", "A5-11", "A5-23", "A5-18", "A5-02", "A5-21"]},
   "O7": {"title": "Test-suite hazards and hygiene",
          "notes": "A6-01 is the priority: tests aim destructive payloads at the REAL governance wiki on the production host. Make every such test operate on a temp copy. Do not add a CI workflow in this package (pending operator decision); do make the run commands agree (A6-04 partial: Makefile/Justfile/CONTRIBUTING consistency) only if it needs no CI file.",
-         "ids": ["A6-01", "A6-02", "A6-09", "A6-M1", "A6-03", "A6-12", "A6-13", "A6-11", "A6-17"]},
+         "ids": ["A6-01", "A6-02", "A6-09", "A6-M1", "A6-03", "A6-12", "A6-11", "A6-17"]},
   "P1": {"title": "Autopilot main loop: behavioural safety net, then loop bugs",
          "notes": "Order: (1) the safety net B1-03/B5-02/B5-08/B1-15 so the loop is tested by behaviour, not source text; (2) the bugs. B1-01 MUST follow the safety reviewer's conditions (pause-lease interaction). Do NOT decompose _run_loop_inner in this package (that is wave 2) and keep edits to autopilot.py minimal and local.",
          "ids": ["B1-03", "B5-02", "B5-08", "B1-15", "B1-01", "B1-M1", "B1-M2", "B1-04", "B1-08", "B1-09", "B1-14", "B1-13"]},
