@@ -23,6 +23,13 @@ REAL = Path("/mnt/raid0/llm/tmp/intake-fixes-20261020/t3-ch19-screen/20261021T19
 AS_OF = "2026-10-24T12:00:00Z"
 
 
+def write(tmp_path):
+    """Builder for test_ingest_sources: a copy of the trimmed fixture screen dir."""
+    dst = Path(tmp_path) / "screen" / FIX.name
+    shutil.copytree(FIX, dst)
+    return dst
+
+
 @pytest.fixture(autouse=True)
 def _no_producer(monkeypatch, tmp_path):
     monkeypatch.setattr(m, "PRODUCER_PATH", tmp_path / "absent-producer.sh")

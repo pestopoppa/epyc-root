@@ -251,6 +251,7 @@ BUILDERS = {
     "nemotron-bolt-fold": lambda tmp: _helpers("test_nemotron_bolt_fold").write(tmp),
     "np-ctx-kvu-measurement": lambda tmp: _helpers("test_np_ctx_kvu").write(tmp),
     "ufh14-lb7-stall": lambda tmp: _helpers("test_ufh14_lb7_stall").write(tmp),
+    "ch19-t3-screen": lambda tmp: _helpers("test_ch19_t3_screen").write(tmp),
     "hil17-attribution-ladder": lambda tmp: _helpers("test_hil17_attribution").write(tmp),
     "hil-lb1-loop-score": lambda tmp: _helpers("test_hil_lb1_loop_score").write(tmp),
     "moe-routing": lambda tmp: _helpers("test_moe_routing").write(tmp),
