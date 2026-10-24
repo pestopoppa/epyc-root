@@ -1,7 +1,7 @@
 # Chat Templates — Per-Model Turn Markers and Routing Endpoints
 
 **Category**: `chat_templates`
-**Last compiled**: 2026-10-22 (wrap-up sweep 10: stock Qwen3.6-35B template breaks prefix property). Earlier: 2026-10-22 (wrap-up sweep 9: Qwen3.x thinking is turned off at the server source). Earlier: 2026-10-22 (wrap-up sweep 7: CT-18 closed, DP-G ruling, prefix-property render test filed). Earlier: 2026-10-21 (wrap-up sweep 3: the CT-12 injection surface is closed at the orchestrator an). Earlier: 2026-10-20 (wrap-up sweep 2: DeepInfer intake, DS41 1017 swap). Earlier: 2026-09-17 (incremental: CT-series mmlu_pro cells under-scored by the A–H scorer; re-score estimates); earlier: 2026-08-23
+**Last compiled**: 2026-10-24 (wrap-up sweep 9). Earlier: 2026-10-22 (wrap-up sweep 10: stock Qwen3.6-35B template breaks prefix property). Earlier: 2026-10-22 (wrap-up sweep 9: Qwen3.x thinking is turned off at the server source). Earlier: 2026-10-22 (wrap-up sweep 7: CT-18 closed, DP-G ruling, prefix-property render test filed). Earlier: 2026-10-21 (wrap-up sweep 3: the CT-12 injection surface is closed at the orchestrator an). Earlier: 2026-10-20 (wrap-up sweep 2: DeepInfer intake, DS41 1017 swap). Earlier: 2026-09-17 (incremental: CT-series mmlu_pro cells under-scored by the A–H scorer; re-score estimates); earlier: 2026-08-23
 
 > Quick reference for which chat template each production model uses, which
 > orchestrator code path applies the template (client-side vs server-side
@@ -660,3 +660,9 @@ The adoption decision was made on **production behavior, not new benchmarks**: t
 - [`qwen-chat-template-evaluation.md`](../handoffs/active/qwen-chat-template-evaluation.md) — CT-E7b propagation with the voided rows and superseding stamps, CT-9 decision lines and evidence record, CT-10/CT-11
 - [`reasoning-effort-levels.md`](../handoffs/active/reasoning-effort-levels.md) — the E-7 validator extension (`0e801e68`, template_sha enforced) and the `active_kernel_era` v8→v9 correction (cross-listed with [Reasoning Compression](reasoning-compression.md))
 - [`progress/2026-08/2026-08-23.md`](../progress/2026-08/2026-08-23.md) — the full CT-9 evidence bundle (read-only production sweep)
+
+## Compiled Update — 2026-10-24 (wrap-up sweep 9, delta over 2026-10-23)
+
+- **CT-THINK-CODER decided: keep thinking ON on the coder server.** The pre-registration is operator ruling C1 plus OP-69 option (a) / RI-23a (receipt `RATIFY-RI23A-20260929`). `coder_escalation` is an alias on the :8083 process (Qwen3.8-27B Q8 on the MI210); thinking-on is request-side via registry kwargs (`enable_thinking: true, reasoning_effort: medium`), so the 2026-10-22 filler `--reasoning off` fix does not touch it, and a per-request `enable_thinking:true` would override a server-side off anyway. Turning it off would reverse a ratified decision and needs its own `stack-change` package.
+
+Sources: [Qwen chat template evaluation](../handoffs/active/qwen-chat-template-evaluation.md)

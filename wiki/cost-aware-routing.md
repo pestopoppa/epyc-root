@@ -2,7 +2,7 @@
 
 **Category**: `cost_aware_routing`
 **Confidence**: verified
-**Last compiled**: 2026-08-16 (adds a harness/scaffold rung to the effort ladder from external HarnessOpt-Bench evidence — with the correction that its headline separation figure varies the optimizer's coding agent, not the target harness — and the cost-of-evidence lessons from the first role swap decided without a comparative quality gate; prior 2026-07-24 compile: the first real measurements of the reasoning-effort ladder — the +32pp prompt-CoT lever, the native-`<think>` non-termination-tail failure mode, and the `max_tokens` silent-quality-lever/admission-control third axis)
+**Last compiled**: 2026-10-24 (wrap-up sweep 9). Earlier: 2026-08-16 (adds a harness/scaffold rung to the effort ladder from external HarnessOpt-Bench evidence — with the correction that its headline separation figure varies the optimizer's coding agent, not the target harness — and the cost-of-evidence lessons from the first role swap decided without a comparative quality gate; prior 2026-07-24 compile: the first real measurements of the reasoning-effort ladder — the +32pp prompt-CoT lever, the native-`<think>` non-termination-tail failure mode, and the `max_tokens` silent-quality-lever/admission-control third axis)
 **Sources**: 47+ documents (added 2026-08-25: optical-context-compression.md OCC-2 record + qwen-chat-template-evaluation.md CT-2/CT-5/CT-E7 + progress 2026-08-23 + progress 2026-08-25-mainA-rtg53; prior additions unchanged) (added 2026-08-16 intake-1140 HarnessOpt-Bench + the Qwen3.8-27B swap/candidate-surface pair; added 2026-07-24 reasoning-effort-levels.md measured ladder + token-budget study; 2026-07-05 the GPU CoT-scaffold sidecar campaign: single-shot scaffold-injection falsified in both regimes, self-debug loop weak (4% rescue), verifier/selector best-of-N pivot, blended-wall-clock objective correction, reasoning-effort axis framing, plus the 2026-07-02 SPIRAL recursive-self-aggregation intake; prior 2026-06-22 F7 economic-ledger completion with its first standing-rule trigger and the X-MAS constrained-policy A/B hold; prior 2026-06-20 AVB offline quality-oracle reward stack, OpenRouter Fusion typed-judge method-selection ideas, and F7 economic-ledger digest wiring)
 
 ## Summary
@@ -532,3 +532,12 @@ such, not a new measurement.
 ## 2026-10-06 confidence arithmetic preparation
 
 The [supplied-score expectation helper](../docs/reference/confidence-expectation-preparation.md) preserves exact synthetic coverage, existing grading φ maps and explicit missing/unresolved dispositions. [Original off-host CI37446388954](../artifacts/ni07/run-37446388954/README.md) passes26/26 after MAIN source/API custody review. Candidate-normalized native probabilities and JSON-reported probabilities do not establish parity with the historical T1 score-token instrument. No reviewer threshold, route, native writer or calibration result changed; RC-10 and SC43 live work remain open.
+
+## Compiled Update — 2026-10-24 (wrap-up sweep 9, delta over 2026-10-23)
+
+- **PB-QCOST-1 re-derived offline and reproduced exactly.** Per-n intercepts: n = 1 A = 766.85 ms/iter, n = 4 A = 871.40; held-out P99 abs residual 72.29 and 210.69 ms/iter. The frozen cost model FAILS the 10% request-level MAPE bar (12.84% at n = 1, 26.32% at n = 4); the per-n refit passes (2.40%, 3.83%). The frozen model agrees with the n = 0 control within 7%, so the failure is specific to decode rows being present.
+- **Slope rises with decode rows:** B = 0.010794 (n = 1), 0.012137 (n = 3, offline), 0.013798 (n = 4) ms per cached token, the pattern a real decode-batch effect gives. Leave-one-length-out P99 is 73.8 / 122.4 ms/iter, so 210.7 is the conservative n = 4 margin for KVU-16g-2.
+- **The refit does not identify the q coefficient:** dn sat at 504 / 480, so the 0.9865 ms/token term is carried over. A second q point per n (`-ub 256` or `1024`) needs compute.
+- **Conditional replay of an 80k neighbour:** a constant-ms budget cuts the worst iteration 26.3% / 27.2% / 27.8% (n = 1 / 3 / 4) at iso neighbour-prefill time, decode proxy ratio 1.005 / 1.005 / 1.000 (no mean decode gain). The run is INDICATIVE (shared the host); the confirm row needs an uncontended re-run, so nothing ticked.
+
+Sources: [PB-QCOST-1 results](../docs/design/pb-qcost-1-results-20261023.md)
