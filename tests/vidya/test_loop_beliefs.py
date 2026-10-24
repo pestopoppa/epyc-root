@@ -992,8 +992,28 @@ def test_knob_and_target_share_the_target_budget(tmp_path, alarm):
     _, ev = _ev(tmp_path, alarm, _write(tmp_path, *knob, *plain), ARCHITECT_T)
     shown = ev["tiers_shown"]
     assert shown["knob"] + shown["target"] <= lb.TIER_CAPS["target"]
-    assert shown["knob"] == 16 and shown["target"] == 0         # knob outranks plain target
+    # knob outranks plain target but, while target claims exist, takes at most half (option A)
+    assert shown["knob"] == lb.KNOB_CAP_WITH_TARGET == 8 and shown["target"] == 8
     assert ev["section_bytes"] <= lb.DEFAULT_MAX_BYTES
+
+
+def test_knob_tier_keeps_the_whole_budget_without_target_claims(tmp_path, alarm):
+    knob = [_gpu27(f"k-{i:02d}", value=f"{i}", scope_keys={"knob_family": "spec_draft"})
+            for i in range(20)]
+    _, ev = _ev(tmp_path, alarm, _write(tmp_path, *knob), ARCHITECT_T)
+    assert ev["tiers_shown"]["knob"] == 16 and ev["tiers_shown"]["target"] == 0
+
+
+def test_knob_cap_leaves_room_for_target_claims_ac9(tmp_path, alarm):
+    """P1 AC9 regression: 10 kv_profile knob claims must not push a lone target-tier claim
+    (KPF-18 item 7 on architect_critic) out of the rendered section."""
+    knob = [_gpu27(f"kvq-{i:02d}", value=f"{i}", scope_keys={"knob_family": "kv_profile"})
+            for i in range(10)]
+    plain = [_gpu27(f"p-{i:02d}", value=f"{100 + i}") for i in range(8)]
+    _, ev = _ev(tmp_path, alarm, _write(tmp_path, *knob, *plain), ARCHITECT_T)
+    shown = ev["tiers_shown"]
+    assert shown["knob"] == 8 and shown["target"] == 8
+    assert all(_cid(p) in ev["claim_ids"] for p in plain)
 
 
 def _lineup_claim(ident, regime):

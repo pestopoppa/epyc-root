@@ -114,6 +114,11 @@ DEFAULT_MAX_BYTES = 14000
 #: target lines. `lineup` matches a lineup target by `stack_regime` (AutoPilot's own trials).
 TIERS = ("knob", "target", "lineup", "sibling", "host")
 TIER_CAPS = {"knob": 16, "target": 16, "lineup": 8, "sibling": 8, "host": 3}
+#: Knob share of the shared knob+target budget while any target-tier claim exists (operator
+#: option A, 2026-10-24, P1 AC9): a large knob family (e.g. the 10 kv_profile retrofit claims)
+#: may take at most half of the 16 model slots, so it can never displace the target's own
+#: claims from the rendered section. With no target-tier claim the knob tier keeps all 16.
+KNOB_CAP_WITH_TARGET = 8
 #: Tiers whose ids are planner evidence for the target (reliance-eligible); host is not.
 _MODEL_TIERS = ("knob", "target")
 #: AutoPilot knob families (belief redesign §12.1). A target may only name these; a claim's
@@ -1490,11 +1495,14 @@ def render(targets: list[Target], rows: list[dict[str, Any]],
     selected: dict[str, list[list[dict[str, Any]]]] = {}
     remaining = max_claims
     model_budget = TIER_CAPS["target"]          # knob + target share the target budget
+    has_target = any(row["tier"] == "target" for row in list(rows) + flagged_rows)
     for tier in TIERS:
         pool = [row for row in list(rows) + flagged_rows if row["tier"] == tier]
         ranked, folded = _fold_mechanisms(sorted(pool, key=_rank_key))
         info["folded"].extend(folded)
-        cap = max(0, min(TIER_CAPS[tier], remaining,
+        tier_cap = (KNOB_CAP_WITH_TARGET if tier == "knob" and has_target
+                    else TIER_CAPS[tier])
+        cap = max(0, min(tier_cap, remaining,
                          model_budget if tier in _MODEL_TIERS else TIER_CAPS[tier]))
         selected[tier] = _select(_units(ranked, whole), cap, force=(tier in _MODEL_TIERS))
         used = sum(len(unit) for unit in selected[tier])
