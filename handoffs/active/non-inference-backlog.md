@@ -955,3 +955,14 @@ The published 220-completion boundary remains historical. This acceptance adds t
     - Placement: CPU whole host (q0-q3). gitnexus-guard admits only an ancestor holding all eight build/GLOBAL quarter locks, which is why the first attempt was refused with rc 64. About 15-25 min.
     - Steps: probe the guard before any change (a refused admission touches nothing); back up `.gitnexus` and registry.json (about 1.7 GB, size-checked); `gitnexus clean --force` in the orchestrator repo only; the wrapper's full analyze; then `gitnexus status`.
     - PASSED = branch main, and the indexed commit equals HEAD (orchestrator main `f3ab78b2` at arming). A segfault is recorded in `out/analyze.out` + RESULT.json and stops the job. The restore recipe is in RESULT.json.
+  - *(2026-10-24, workspace-f8 read-out.)* **Job PASSED (RESULT.json state VERIFIED), but the task's own done text is not met, so not ticked.** Ran 2026-10-24 01:08-01:09Z under the q0-q3 grant, rc 0. Result: `/mnt/raid0/llm/tmp/f8-launchers-20261023/nib2-gnx1-reindex/RESULT.json`. Gate: job.sh sha256 `8b204799d3a54877663e3c38ed06174eb6b4b7853f173cea88b0bf52cf22e8cf` plus the FILLERS row (branch main, Indexed commit == HEAD, not stale).
+    - Every step ran: guard probe rc 0; backup 1.7 GB, size-checked; `gitnexus clean --force` on the orchestrator only; full analyze in 54.5 s with no segfault.
+    - New index: 85,231 nodes, 158,733 edges, 3,435 clusters, 300 flows. Status: Branch main, Indexed = Current = `fd1a894`, up-to-date. The flat slot now holds main; it was `spec-dec-mtp-refresh-2026-06-22` @ f72d1d5.
+    - **Why not ticked:** the done text here is "main at origin/main". The shared clone's local main is `fd1a894`, but origin/main has been `26affbf8` since 2026-10-23 16:20Z. That is 2 commits ahead: a `launch_affinity` script, its test and a merge. So the index matches HEAD, not origin/main.
+    - **Next:** fast-forward the shared clone's main, run one incremental analyze through the wrapper under a build grant, then `gitnexus status`.
+    - **Anomaly: the job's `WARN: other repos' registry entries CHANGED` is a false positive.**
+      - The filter matched on `/mnt/raid0/llm/epyc-orchestrator`, but the registry listed this index under `/workspace/repos/epyc-orchestrator`. So the block that disappeared was this repo's own.
+      - `out/list.before.txt` and `out/list.after-clean.txt` differ only by that block (14 -> 13 repos).
+      - The new entry is registered under the `/mnt/raid0` path, which is the same clone through the symlink.
+      - The old `main (cdbca26)` branch-index entry went with the clean.
+      - The backup and the restore recipe are in RESULT.json.
