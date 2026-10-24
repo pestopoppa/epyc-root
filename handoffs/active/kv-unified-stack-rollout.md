@@ -1301,6 +1301,7 @@ here: none of the RTG-57 ids remain undefined. The owner named in these texts (w
           - It uses the same driver pin `95550d294` and the KVU-12.1b fork binary as a byte-identical store copy `kernels/builds/cpu-20261021-80a09c6ad-p1r2-fork` (sha `1442c95d…`).
           - Phases: an 8k dense+coarse smoke, then the 64k holdout, dense vs coarse, 3 waves each, one fresh server per cell. The selection is `{q36_35b: null}` from the KVU-12.1b cells. 128k is not run.
           - Expected ~7.3 h, resumable per cell. Rule: decide_121 unchanged, over the 64k rows. `PREDECLARATION.md` sha256 `56649c03…`.
+        - *(2026-10-24, workspace-f8.)* ARMED 09:06Z under the operator's pre-approval of the batch-E one-quarter CPU correctness launchers (pid 373947). Queued on q1/q2 from about 10:10Z, capped at 16:30Z. The box stays open.
     (c) TIMING: TTFT and throughput A/B in a scheduled window.
     (d) stack-change package for :8070 (and :8083 if applicable).
 

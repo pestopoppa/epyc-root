@@ -159,3 +159,67 @@ Other agents are preparing the read-outs. Nothing here is a verdict beyond the R
   - Counts-only aggregate committed.
   - Fixed a `mine_m2.py` notes string that always claimed TF-IDF; a test is added.
   - No adapter for `dev-harness-aggregate.v1` yet (VB-LB1.1 is open, and its source row exists).
+## Midday 2026-10-24: approvals, batch E, belief wiring, sweep dispatch (operator-invoked /wrap-up, subagent, branch `f8/wrapup-20261024-midday`)
+
+### Root commits since `2b6921ec8`
+
+| SHA | Content |
+|---|---|
+| `1efcf20c9` | SPEC-RNG.1.2 note: the N=300 cut bounds only the primary invariance test; DO-NOT-CARRY rests on the N-independent probe (0/48) |
+| `c01b33527` | belief wiring: VB-KVU-PF.6 and VB-M4-PBHOL-WIRE ticked; new adapters `spec_rng_1_2` and `pb_qcost`; `scripts/gitnexus-index-receipt.py`; 2794 tests pass |
+| `3418c3adc` | batch E notes: KPF-19.1a CPU leg and HYBRID-PREFIX-REUSE (b) 64k holdout launchers prepared; KPF-18.0b re-runs and the DHM-7.2a run already exist, read-outs remain |
+| `ef7902e2c` | DHM-5.1 always-on prefix from turn-1 usage fields (`mine_dhm51.py`, aggregate, results section) |
+| `c56dae201` | read-outs: KPF-18.0b CPU re-runs and DHM-7.2a (section above) |
+| `294ac50ac` | master index block regenerated |
+| `2f573e0f0`, `823368fa8`, `3aaf313cb`, `4590b344f`, `044d17d84` | first commits from the running sweep agents (lint cleanup, DHM-7/7.2/7.2a and RT-2.1 ticks, KVU-12.3a, DHM-5.1 tick with DHM-5.2 filed, SEC-ART-1.1). The sweeps are still running, so their results are not summarised here. |
+| this wrap-up | progress, checklist sync (M4.2a and AKX-ALL-LB3.2a filed; arming notes), wiki compile, manifest |
+
+### Operator approvals (decision tool)
+
+- **Four launchers started**, all ARMED at 08:29Z (pids from FILLERS.md):
+  - `m4-srpf-pbhol-2a` (M4.2a, pid 3297256). M4.2's C2 validity predicate rejected the head-of-line blocking it measures, and it would have rejected the PB-HOL-1 reference too. The fix: a rep is valid if the long is still in flight when the short is sent. Thresholds are unchanged. The old rows re-scored under it give 22.13x, recorded as non-gating. The job ENDED at 08:53Z; read-out owed.
+  - `kpf18-s1-r3` (KPF-18-S1.R3, pid 3297259). ENDED 09:15Z, rc 0; read-out owed.
+  - `pb-qcost-1-confirm-r` (pid 3297261), all three phases. This was the operator's choice over a cheaper ub256-only option, which would have relied on a per-phase rule written after the disturbance was seen.
+  - `nib2-gnx1-reindex-2` (pid 3297264): a safe ff-only update of the shared orchestrator clone, then the re-index.
+- **Batch-E one-quarter CPU correctness launchers PRE-APPROVED.** Two were armed at 09:06Z: `kpf191a-cpu-27b-dflash2` (pid 373944) and `hpr-b-64k-holdout` (pid 373947).
+
+### SPEC-RNG.1.2 query (side agent)
+
+The question was whether a 600-sample re-run is owed. No. The N=300 cut bounds only the primary invariance test, which passed. DO-NOT-CARRY rests on the 48-seed probe (0/48), which does not depend on N, so a re-run cannot produce CARRY. Note landed in `1efcf20c9`.
+
+### Operator directive (relayed by workspace-58): dispatch every filed non-inference task now, fill idle CPU
+
+The operator called 34% CPU utilisation over 12 h unacceptable. f8 had 89 open boxes, 46 of them non-inference (triage: `/mnt/raid0/llm/tmp/ws58-followups-20261024/TRIAGE.md`, owner f8, NON-INFERENCE). Four sweep subagents are dispatched and **still running; no results are reported here**:
+
+- A: serving harness and orchestrator
+- B: kernel, KPF and GPU design, plus folds
+- C: belief kernel
+- D: security, lint and log analyses
+
+### Batch E (one-quarter CPU correctness work)
+
+- Fit: KPF-19.1a (CPU leg) and HYBRID-PREFIX-REUSE (b) (64k holdout). Both armed, see above. Root notes `3418c3adc`.
+- KPF-18.0b and DHM-7.2a had already run. Their read-outs landed in `c56dae201` (section above).
+- LBH-2.1 is timing work, so it waits for a window.
+- AKX-ALL-LB3.2 needs the whole host, and its instrument is not written. This wrap-up files AKX-ALL-LB3.2a: write the instrument now (code only).
+- DS41-T5.1.1 is held.
+
+### Belief wiring (`c01b33527`)
+
+VB-KVU-PF.6 and VB-M4-PBHOL-WIRE ticked. New adapters `scripts/vidya/adapters/spec_rng_1_2.py` and `scripts/vidya/adapters/pb_qcost.py` (read sides done; VB-SPEC-RNG-1-2-WIRE and VB-PBQ-1 stay open on their write sides). New write-side tool `scripts/gitnexus-index-receipt.py`. 2794 tests pass.
+
+### GPU queue and .trash pre-check
+
+- GPU order: kpf131b-specon, ufh14-lb7-1-probes, m4-srpf-pbhol-2a, kpf18-s1-r3, then pb-qcost-1-confirm-r after the C4 champion rows. The CPU jobs are queued on q1/q2 from about 10:10Z, capped at 16:30Z.
+- Ahead of the 15:40Z .trash sweep: all 49 paths of f8's armed jobs exist, and none resolve into `.trash`.
+
+### Lesson (already in the incident ledger)
+
+KFD releases a dead server's VRAM late. A launcher must wait for the VRAM to drain before EVERY launch, not only the first one.
+
+### Checklist sync in this wrap-up
+
+- Filed: M4.2a (box under M4.2) and AKX-ALL-LB3.2a (write the instrument now).
+- Notes: arming of confirm-R, KPF-18-S1.R3, KPF-19.1a CPU leg and HPR-B 64k holdout. KPF-19.1a: the job-28 `strings-*` false negatives are the pipefail plus `grep -q` class, already linted.
+- DHM-5.1 was ticked by a sweep (`4590b344f`), which also filed DHM-5.2, the paired probe. This wrap-up's duplicate (DHM-5.1a) was dropped during the rebase.
+- Not edited: every task line that sweeps A-D own.
