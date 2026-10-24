@@ -1,7 +1,7 @@
 # Chat Templates — Per-Model Turn Markers and Routing Endpoints
 
 **Category**: `chat_templates`
-**Last compiled**: 2026-10-24 (wrap-up sweep 9). Earlier: 2026-10-22 (wrap-up sweep 10: stock Qwen3.6-35B template breaks prefix property). Earlier: 2026-10-22 (wrap-up sweep 9: Qwen3.x thinking is turned off at the server source). Earlier: 2026-10-22 (wrap-up sweep 7: CT-18 closed, DP-G ruling, prefix-property render test filed). Earlier: 2026-10-21 (wrap-up sweep 3: the CT-12 injection surface is closed at the orchestrator an). Earlier: 2026-10-20 (wrap-up sweep 2: DeepInfer intake, DS41 1017 swap). Earlier: 2026-09-17 (incremental: CT-series mmlu_pro cells under-scored by the A–H scorer; re-score estimates); earlier: 2026-08-23
+**Last compiled**: 2026-10-24 (wrap-up sweep 21, 3c4ca599 delta): the control-token neutraliser is widened to the non-Qwen lineup (CT-12.1b). Earlier: 2026-10-24 (wrap-up sweep 9). Earlier: 2026-10-22 (wrap-up sweep 10: stock Qwen3.6-35B template breaks prefix property). Earlier: 2026-10-22 (wrap-up sweep 9: Qwen3.x thinking is turned off at the server source). Earlier: 2026-10-22 (wrap-up sweep 7: CT-18 closed, DP-G ruling, prefix-property render test filed). Earlier: 2026-10-21 (wrap-up sweep 3: the CT-12 injection surface is closed at the orchestrator an). Earlier: 2026-10-20 (wrap-up sweep 2: DeepInfer intake, DS41 1017 swap). Earlier: 2026-09-17 (incremental: CT-series mmlu_pro cells under-scored by the A–H scorer; re-score estimates); earlier: 2026-08-23
 
 > Quick reference for which chat template each production model uses, which
 > orchestrator code path applies the template (client-side vs server-side
@@ -17,6 +17,16 @@
 `handoffs/active/model-stack-single-source-update-pipeline.md`
 
 ---
+
+## Compiled Update — 2026-10-24 (wrap-up sweep 21, 3c4ca599 delta): the control-token neutraliser is widened to the non-Qwen lineup (CT-12.1b)
+
+**Confidence: verified** (vocab-only tokenizer probe, before/after artifacts).
+
+- **The shipped neutraliser was ASCII-only and the DeepSeek-V4.1 control spellings are not.** DS41 uses fullwidth U+FF5C bars and U+2581 (`<｜begin▁of▁sentence｜>`, `<｜User｜>`, `<｜tool▁calls▁begin｜>`, `<｜DSML｜`); 16 of 18 probed DS41 control spellings were OPEN under the old `DEFAULT_CONTROL_TOKEN_REGEX`.
+- **Fix: orchestrator `7f949c7c`.** Bars `[|｜]`, name class gains `/ ▁ "`, plus DSML forms, `<SPECIAL_n>`, `<tts_*>` and bracket specials (`[CLS] [SEP] [INST] [/INST] [TOOL_CALLS]`...); escape is ZWSP after `<` or `[`. Re-probe: every vocab control spelling of every loadable family is CLOSED (DS41 21/21, gemma4 18/18, llama3 10/10, nemotron 14/14).
+- **Residual is policy, not a defect.** Plain-text template tags (`<think>`, `</think>`, `<tool_call>`, `<tool_response>`, bare `｜DSML｜`) are text in llama.cpp, not control ids, and are deliberately untouched; escaping them would alter quoted code, so it is an operator call (recommended: leave unless a measured injection via these tags appears).
+
+Sources: [qwen-chat-template-evaluation](../handoffs/active/qwen-chat-template-evaluation.md).
 
 ## Compiled Update — 2026-10-22 (wrap-up sweep 10): the stock Qwen3.6-35B template breaks the prefix property, and CT-THINK-CODER is an open owner decision
 
