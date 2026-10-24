@@ -119,6 +119,20 @@ Run this loop at every task boundary and on every watcher event (`event-watch-ws
   re-grant a third failure blindly; ask for a dry-run outside a grant.
 - Watchers are `#!/bin/bash` files keyed on mtime (`find -newer stamp`), never zsh globs; a
   no-match glob killed the FREED watcher and cost a 70 min gap.
+- A watcher's stamp survives re-arms: advance it only to the moment of the find that fired. A
+  watcher that re-touched its stamp at every start missed an `.ended` written 4 s before the
+  re-arm, and the whole host idled 3.7 h (10-24).
+- `grant_ok` admits regardless of live claims, and region-lock prints a shared gpu-quiet as `SHRD`:
+  every held-check matches `HELD|EXCL|SHARED|SHRD`. When a quiet block is followed by GPU work in
+  another writer, the block writes an end flag (`QUIET_BLOCK_ENDED_<date>`) or a hold flag
+  (`HOLD_GPU_FOR_QUIET_<date>`) that the GPU writer waits on before granting anything.
+- A lane runner's filler runs whenever every remaining item is precond-blocked; across a booked
+  quiet slot, run the lane with no filler, or the filler takes the GPU for its whole slice.
+- A job whose fix has not landed is not granted. If a writer grants one anyway, revoke the grant
+  before the launcher's next poll: move the `.grant` aside and write `.ended reason=revoked` so the
+  writer's chain moves on. A repeated failure may use up a driver's retry budget for that arm.
+- Queue fields never contain `|`; edit queue files and `FILLERS.md` atomically (`.tmp` +
+  `os.replace`), with a dated backup.
 
 ## 5. Coordination protocol
 

@@ -32,6 +32,13 @@ duties list in `docs/guides/agent-workflows/compute-fillers.md`. Times are UTC.
 | 10-23 09:0x | ch28 writer v1 floor 1500 s raised to 1800 s in v2 before it fired | (near-miss) | same margin rule, caught by the writer audit |
 | 10-23 06:4x | `dhm-mining-full` done 20:02 the day before, poller still polling; `df2-ubatch-census` done offline, poller alive | would re-run done work | never grant an id whose work is complete; mark the row COMPLETE and STOP it |
 | 10-23 11:1x | side agent flagged q0-q2 idle 14:20-17:50 in the plan | (caught before it happened) | one afternoon writer with parallel lanes replaced eight single-purpose writers |
+| 10-23 23:5x | day chain v3 released the GPU to yarn right after CH-27 while inf66 (quiet, GPU idle) was next; `grant_ok` admits regardless of live claims | (caught before it fired) | quiet-block end flag that the GPU writer waits on |
+| 10-24 00:5x | lane-gpu: after c3-gate-bc every remaining item was precond-blocked, so the yarn filler (7800 s) would have taken the GPU over inf66's quiet slot | (caught) | lane runner restarted with no filler |
+| 10-24 01:11 | lane runner `held()` matched `SHARED`, region-lock prints `SHRD`; it granted c3-gate-g under c3-gate-bc's quiet run | region-lock blocked the acquire 189.8 s; bc undisturbed | match `HELD\|EXCL\|SHARED\|SHRD` in every writer |
+| 10-24 01:17 | inf66 rc=68: launch check read the main thread's `Cpus_allowed_list`; `OMP_PROC_BIND=spread` pins it to place 0 ("0" ≠ "0-95") | false FAIL | the union of all thread masks must lie within the grant's CPUs (owner fix, new pin) |
+| 10-24 01:17-05:00 | event watcher re-touched its stamp at re-arm, 4 s after `inf66.ended` | whole host + GPU idle 3.7 h | stamp persists across re-arms (watcher v2) |
+| 10-24 06:37 | day chain re-granted inf66 before its fix landed | (revoked 30 s later, before the launcher poll) | revoke = move `.grant` aside + `.ended reason=revoked` |
+| 10-24 06:37 | CH-27 had no FILLERS row or launcher at its slot | quiet slot went to the next items | a peer registers row + pid before its slot; the writer skips and releases |
 
 Operator rulings that fix the objective (not incidents):
 
