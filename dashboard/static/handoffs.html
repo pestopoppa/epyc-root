@@ -1221,14 +1221,20 @@ async function loadGraph(){
       fill:"none", stroke:it.fill, "stroke-width":0.7, "stroke-opacity":0.22}));
   }
 
+  const DEP_REST=0.35;
   // ---- reference edges: built once, hidden until hover (749 visible lines is a hairball)
   const lines=[];
   for(const e of edges){
     const a=pos[e.from], b=pos[e.to]; if(!a||!b) continue;
     const isDep=e.kind==="dep";
     const ln=svgEl("line",{x1:a.x,y1:a.y,x2:b.x,y2:b.y,
-      stroke:isDep?"#f0f6fc":"#8b949e", "stroke-width":isDep?2:1,
-      "stroke-opacity":isDep?0.85:0});      // deps always faintly visible
+      stroke:isDep?"#f0f6fc":"#8b949e", "stroke-width":1.2,
+      // Constant ON-SCREEN width: user-unit widths scale with the viewBox (1200u
+      // across a wide pane, and zoom shrinks the viewBox up to 12x), which is what
+      // turned 2u white dep edges into thick bands. Dep edges rest dim so 86 long
+      // white chords (up to 924u) and their collinear overlaps do not read as bands.
+      "vector-effect":"non-scaling-stroke",
+      "stroke-opacity":isDep?DEP_REST:0});      // deps always faintly visible
     gRef.appendChild(ln); lines.push({ln,from:e.from,to:e.to,isDep});
   }
 
@@ -1268,7 +1274,7 @@ async function loadGraph(){
       for(const k in circles) circles[k].classList.toggle("dimmed",!keep.has(k));
       lines.forEach(l=>{
         const on = l.from===n.id||l.to===n.id;
-        l.ln.setAttribute("stroke-opacity", on?(l.isDep?1:0.6):0);
+        l.ln.setAttribute("stroke-opacity", on?(l.isDep?1:0.6):0);   // hover focus: hide the rest
       });
       const linked=[...(nbr[n.id]||[])];
       tip.innerHTML =
@@ -1292,7 +1298,7 @@ async function loadGraph(){
     c.addEventListener("mouseleave",()=>{
       tip.hidden=true;
       for(const k in circles) circles[k].classList.remove("dimmed");
-      lines.forEach(l=>l.ln.setAttribute("stroke-opacity", l.isDep?0.85:0));
+      lines.forEach(l=>l.ln.setAttribute("stroke-opacity", l.isDep?DEP_REST:0));
     });
     c.addEventListener("click",()=>{ if(n.handoff) loadDetail(n.handoff.replace(/\.md$/,"")); });
     gNode.appendChild(c); circles[n.id]=c;
