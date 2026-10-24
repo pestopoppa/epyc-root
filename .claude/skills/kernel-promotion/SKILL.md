@@ -210,6 +210,8 @@ uv run python scripts/registry/stack_change_pipeline.py update --numa-mode <decl
 uv run python scripts/registry/stack_change_pipeline.py check --run-promotion-gate
 ```
 
+The master registry is read from research origin/main by default; never sync or edit the shared research clone to make a rebuild work; pass `--research-registry` only for a deliberate alternative checkout.
+
 The derived layer pins a resolved `binary_dir`/`binary_path`/`ld_library_path` PER ROLE, so it goes
 stale the instant the symlink moves — **in either direction**, which is why a rewind is three steps,
 not two (`anchor.sh` prints all of them). **Never** use `python -m src.registry.stack_priors` or the

@@ -329,6 +329,7 @@ See step 0 below. A promotion with no anchor is not a promotion, it is a one-way
    uv run uv run python scripts/registry/stack_change_pipeline.py update                  # regenerates orchestration/derived/stack_priors.yaml
    git diff --stat orchestration/derived/stack_priors.yaml    # expect paths-only, +N/-N balanced
    grep -c 'llama.cpp/build' orchestration/derived/stack_priors.yaml   # must be 0
+   # The master registry is read from research origin/main by default; never sync or edit the shared research clone to make a rebuild work; pass --research-registry only for a deliberate alternative checkout.
    ```
 
    8b. **Refresh the `source_artifacts` hash pins** in the regenerated priors

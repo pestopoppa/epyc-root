@@ -16,6 +16,8 @@ from hand-editing something that is generated.
 | `epyc-orchestrator/stack_templates/*.yaml` | what `start` actually launches |
 | `/mnt/raid0/llm/kernels/production/<backend>` | the serving binary symlink |
 
+The master registry is read from research origin/main by default; never sync or edit the shared research clone to make a rebuild work; pass `--research-registry` only for a deliberate alternative checkout.
+
 ## DERIVED — never edit by hand
 
 `epyc-orchestrator/orchestration/model_registry.yaml` (the LEAN copy) ·

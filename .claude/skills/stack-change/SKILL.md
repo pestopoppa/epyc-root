@@ -49,6 +49,8 @@ Apply the intent to **every** surface in DERIVATION.md's source list, by tool.
 Delegates to the sub-skills: `retire-model`, `change-role`, `change-topology`.
 A surface you did not touch is a surface you must be able to say why.
 
+The master registry is read from research origin/main by default; never sync or edit the shared research clone to make a rebuild work; pass `--research-registry` only for a deliberate alternative checkout.
+
 ### 3 — preflight
 `scripts/preflight.sh` on the scratch: `stack_change_pipeline.py check
 --numa-mode <declared>`, declaration parity, capacity (both legs), evidence

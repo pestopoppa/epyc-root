@@ -97,6 +97,8 @@ first, and a failure there stops everything**:
 cd /mnt/raid0/llm/epyc-orchestrator
 uv run python scripts/registry/stack_change_pipeline.py check --numa-mode <declared>
 ```
+
+The master registry is read from research origin/main by default; never sync or edit the shared research clone to make a rebuild work; pass `--research-registry` only for a deliberate alternative checkout.
 Alias semantics the guard enforces: alias `serving.ports`/endpoint **==** the
 host's launch row; alias launch entries port-contained in the host's; runtime
 validated on the host row only — an alias's stored runtime is historical residue,
