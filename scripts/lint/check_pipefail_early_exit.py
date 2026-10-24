@@ -12,8 +12,19 @@ pipefail` in the same file with no `set +o pipefail` in between (function scope
 is approximated by file order).  Suppress one line with a trailing
 `# lint-ok: pipefail-early-exit`.  Stdlib only.
 
-Usage: check_pipefail_early_exit.py [--strict] [--json] PATH [PATH ...]
-Exit 0 unless --strict and there is at least one finding (2 on usage error).
+Not flagged: `producer | head ... || true` (and `|| :`), because head's OUTPUT is
+correct whatever the pipeline status and the status is discarded on purpose.
+(`grep -q ... || true` stays flagged: there the status is the only output.)
+
+Reviewed exceptions: files that must not be edited (signed one-shot operator
+ratify scripts) are listed in `pipefail_early_exit_exceptions.txt` next to this
+script, one `path<TAB>pipeline-substring` per line, keyed on text so the entry
+survives line drift.  Excepted findings are counted, never silently dropped;
+`--no-exceptions` ignores the file, `--exceptions FILE` uses another one.
+
+Usage: check_pipefail_early_exit.py [--strict] [--json] [--no-exceptions]
+                                    [--exceptions FILE] PATH [PATH ...]
+Exit 0 unless --strict and there is at least one non-excepted finding (2 on usage error).
 """
 from __future__ import annotations
 
@@ -30,8 +41,8 @@ SKIP_DIRS = {".git", "node_modules", "__pycache__", ".venv", "venv"}
 
 
 def tokenize(text):
-    """Yield (op, segment_text, line) with op in {'|', ';'} marking what FOLLOWS
-    the segment (';' = any non-pipe terminator).  Quote-, comment- and
+    """Yield (op, segment_text, line) with op in {'|', '||', ';'} marking what
+    FOLLOWS the segment (';' = any other terminator).  Quote-, comment- and
     heredoc-aware; `line` is the 1-based line where the segment starts."""
     n, i, line = len(text), 0, 1
     quote = None
@@ -86,7 +97,7 @@ def tokenize(text):
                 buf.append(m.group(0)); i += len(m.group(0)); continue
         if c == "|":
             if text.startswith("||", i):
-                flush(";"); i += 2; continue
+                flush("||"); i += 2; continue
             i += 2 if text.startswith("|&", i) else 1
             flush("|"); continue
         if c == "&" and text.startswith("&&", i):
@@ -184,6 +195,9 @@ def scan_text(text):
         kind = early_exit_kind(last_ws)
         if not kind:
             continue
+        if (kind == "head" and group[-1][0] == "||" and i < len(segs)
+                and words_of(segs[i][1]) in (["true"], [":"])):
+            continue  # status discarded on purpose; head's output is still right
         line_no = group[-1][2]
         if any(PRAGMA in lines[x - 1] for x in range(group[0][2], min(line_no, len(lines)) + 1)):
             continue
@@ -225,14 +239,57 @@ def iter_files(paths):
             yield p
 
 
+DEFAULT_EXCEPTIONS = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                                  "pipefail_early_exit_exceptions.txt")
+
+
+def load_exceptions(path):
+    """Return [(path_suffix, pipeline_substring)] from a TAB-separated file."""
+    out = []
+    if not path or not os.path.isfile(path):
+        return out
+    with open(path, encoding="utf-8") as f:
+        for raw in f:
+            line = raw.rstrip("\n")
+            if not line.strip() or line.lstrip().startswith("#"):
+                continue
+            if "\t" not in line:
+                raise ValueError(f"{path}: entry without TAB: {line!r}")
+            fp, sub = line.split("\t", 1)
+            out.append((fp.strip(), sub.strip()))
+    return out
+
+
+def is_excepted(finding, exceptions, used=None):
+    fp = finding["file"].replace(os.sep, "/")
+    for k, (suffix, sub) in enumerate(exceptions):
+        if (fp == suffix or fp.endswith("/" + suffix)) and sub in finding["pipeline"]:
+            if used is not None:
+                used.add(k)
+            return True
+    return False
+
+
 def main(argv):
-    args = [a for a in argv if not a.startswith("--")]
-    flags = {a for a in argv if a.startswith("--")}
-    if not args or flags - {"--strict", "--json"}:
+    args, flags, exc_path = [], set(), DEFAULT_EXCEPTIONS
+    it = iter(argv)
+    for a in it:
+        if a == "--exceptions":
+            exc_path = next(it, None)
+            if exc_path is None:
+                print(__doc__, file=sys.stderr)
+                return 2
+        elif a.startswith("--"):
+            flags.add(a)
+        else:
+            args.append(a)
+    if not args or flags - {"--strict", "--json", "--no-exceptions"}:
         print(__doc__, file=sys.stderr)
         return 2
-    results = []
+    exceptions = [] if "--no-exceptions" in flags else load_exceptions(exc_path)
+    results, excepted, used, scanned = [], 0, set(), []
     for fp in iter_files(args):
+        scanned.append(fp.replace(os.sep, "/"))
         try:
             with open(fp, encoding="utf-8", errors="replace") as f:
                 text = f.read()
@@ -241,6 +298,9 @@ def main(argv):
             continue
         for f_ in scan_text(text):
             f_["file"] = fp
+            if exceptions and is_excepted(f_, exceptions, used):
+                excepted += 1
+                continue
             results.append(f_)
     if "--json" in flags:
         print(json.dumps(results, indent=1))
@@ -248,7 +308,13 @@ def main(argv):
         for r in results:
             print(f"{r['file']}:{r['line']}: [{r['severity']}] {r['kind']} under pipefail: "
                   f"{r['pipeline']}\n    fix: {r['fix']}")
-        print(f"{len(results)} finding(s)", file=sys.stderr)
+        print(f"{len(results)} finding(s), {excepted} reviewed exception(s)", file=sys.stderr)
+    # An exception that matched nothing is stale (fixed, moved or reworded): say so,
+    # so the list cannot silently outlive what it excuses.  Advisory only.
+    for k, (suffix, sub) in enumerate(exceptions):
+        if k not in used and any(f == suffix or f.endswith("/" + suffix) for f in scanned):
+            print(f"stale exception (matched nothing in the scanned paths): {suffix}\t{sub}",
+                  file=sys.stderr)
     return 1 if results and "--strict" in flags else 0
 
 

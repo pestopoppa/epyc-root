@@ -60,7 +60,7 @@ GRANT=$GRANTS/$ID.grant; ENDED=$GRANTS/$ID.ended; COMPLETE=$GRANTS/$ID.complete
 ts() { date -u +%FT%TZ; }
 log() { echo "$(ts) [$ID] $*"; }
 epoch() { date -u -d "$1" +%s 2>/dev/null; }
-listening() { ss -ltn "sport = :$1" 2>/dev/null | grep -q LISTEN; }
+listening() { ss -ltn "sport = :$1" 2>/dev/null | grep LISTEN >/dev/null; }
 any_listening() { local p; for p in ${1//,/ }; do listening "$p" && { echo "$p"; return 0; }; done; return 1; }
 
 expand() { local t a b; IFS=, read -ra T <<<"$1"; for t in "${T[@]}"; do case $t in *-*) a=${t%-*}; b=${t#*-}; seq "$a" "$b";; *) echo "$t";; esac; done; }
@@ -113,7 +113,7 @@ kill_pidfile() { # PIDs the job registered itself; only if cmdline still carries
     [ -n "$p" ] || continue
     kill -0 "$p" 2>/dev/null || continue
     if [ -n "$PORTS" ]; then
-      local hit=0 q; for q in ${PORTS//,/ }; do tr '\0' ' ' < /proc/$p/cmdline 2>/dev/null | grep -q -- "--port $q" && hit=1; done
+      local hit=0 q; for q in ${PORTS//,/ }; do tr '\0' ' ' < /proc/$p/cmdline 2>/dev/null | grep -- "--port $q" >/dev/null && hit=1; done
       [ $hit = 1 ] || { log "pid $p no longer ours; not touching"; continue; }
     fi
     kill "$p" 2>/dev/null; sleep 5; kill -0 "$p" 2>/dev/null && { kill -9 "$p" 2>/dev/null; sleep 2; }

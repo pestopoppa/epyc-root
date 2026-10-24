@@ -76,3 +76,59 @@ def test_cli(tmp_path, capsys):
     assert m.main(["--strict", str(tmp_path)]) == 1
     assert "a.sh:2" in capsys.readouterr().out
     assert m.main([]) == 2
+
+
+# --- 2026-10-24 (LINT-PIPEFAIL-EARLY-EXIT cleanup): `head ... || true`, reviewed exceptions ---
+
+def test_head_or_true_is_not_flagged_but_grep_q_or_true_is():
+    assert kinds('x=$(git cat-file blob :p 2>/dev/null | head -c 10 || true)\n') == []
+    assert kinds("diff -u a b | head -50 || :\n") == []
+    # grep -q's status IS its output, so discarding it is still the bug class
+    assert kinds("cmd | grep -q x || true\n") == ["grep -q"]
+    # `|| handler` (not true/:) still reads the status, so head stays flagged
+    assert kinds("cmd | head -1 || echo missing\n") == ["head"]
+
+
+def _run(tmp_path, body, exc_lines, *extra):
+    import contextlib, io
+    sh = tmp_path / "s.sh"
+    sh.write_text(PF + body)
+    exc = tmp_path / "exc.txt"
+    exc.write_text("".join(l + "\n" for l in exc_lines))
+    err, out = io.StringIO(), io.StringIO()
+    with contextlib.redirect_stderr(err), contextlib.redirect_stdout(out):
+        rc = m.main(["--strict", "--exceptions", str(exc), *extra, str(sh)])
+    return rc, out.getvalue(), err.getvalue()
+
+
+def test_exceptions_file_excepts_by_text_and_counts(tmp_path):
+    rc, out, err = _run(tmp_path, "G log | grep -qF \"$S\"\n", ["# c", "s.sh\tG log | grep -qF"])
+    assert rc == 0 and "0 finding(s), 1 reviewed exception(s)" in err and "stale" not in err
+    rc, out, err = _run(tmp_path, "G log | grep -qF \"$S\"\n", ["s.sh\tG log | grep -qF"], "--no-exceptions")
+    assert rc == 1 and "1 finding(s)" in err
+
+
+def test_stale_exception_is_reported(tmp_path):
+    rc, out, err = _run(tmp_path, "echo ok\n", ["s.sh\tnot there"])
+    assert rc == 0 and "stale exception" in err
+
+
+def test_exceptions_entry_without_tab_is_an_error(tmp_path):
+    import pytest
+    exc = tmp_path / "bad.txt"
+    exc.write_text("no tab here\n")
+    with pytest.raises(ValueError):
+        m.load_exceptions(str(exc))
+
+
+def test_repo_scripts_are_clean_in_strict_mode():
+    """The `--strict` step: scripts/ carries zero non-excepted findings.  A new hit
+    fails here; fix it (or, for a signed operator record only, add a reviewed
+    exception to scripts/lint/pipefail_early_exit_exceptions.txt)."""
+    import contextlib, io
+    root = pathlib.Path(__file__).resolve().parents[2]
+    err = io.StringIO()
+    with contextlib.redirect_stderr(err), contextlib.redirect_stdout(io.StringIO()):
+        rc = m.main(["--strict", str(root / "scripts")])
+    assert rc == 0, err.getvalue()
+    assert "stale exception" not in err.getvalue(), err.getvalue()

@@ -1,0 +1,15 @@
+# Reviewed exceptions for scripts/lint/check_pipefail_early_exit.py.
+# Format: <path or path suffix><TAB><substring of the reported pipeline>
+# Keyed on text, not line numbers, so an entry survives line drift.
+#
+# The dated scripts/operator/*ratify* scripts are signed one-shot operator records:
+# by operator choice (2026-10-23, LINT-PIPEFAIL-EARLY-EXIT cleanup, non-inference-backlog.md)
+# they are NOT rewritten and stay as known exceptions. Do not add a live launcher here;
+# fix it instead.
+scripts/operator/ratify_corpus_retrieval_off_20261021.sh	printf '%s\n' "$listening" | grep -qx "$p"
+scripts/operator/ratify_qwen38_registry_swap_20260821.sh	grep -E "error" "$WORKDIR/update.out" | grep -qE
+scripts/operator/ratify_qwen38_registry_swap_20260821.sh	grep -E "error" "$WORKDIR/postcheck.out" | grep -qE
+scripts/operator/run_ckpt_leak_ratify_20260916.sh	G log -1 --format=%s | grep -qF "$SUBJECT"
+scripts/operator/run_p_serve_sel_1_ratify_20260926.sh	G log -1 --format=%s | grep -qF "$SUBJECT"
+scripts/operator/run_pcal_ratify_20260916.sh	G log -1 --format=%s | grep -qF "$SUBJECT"
+scripts/operator/run_v10_episodic_repin_ratify_20260917.sh	G log -1 --format=%s | grep -qF "$SUBJECT"
