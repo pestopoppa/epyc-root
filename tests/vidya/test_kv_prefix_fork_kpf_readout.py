@@ -240,3 +240,69 @@ def test_kpf174c_counts_cannot_be_invented_or_overfull(tmp_path):
     assert any("cannot be invented" in p for p in kpf.validate_row(over))
     tampered = dict(rows[0], window_id="elsewhere")                      # the seal still binds every field
     assert any("does not re-derive" in p for p in kpf.validate_row(tampered))
+
+
+# ------------------------------------------------------------------ VB-KVU-PF.7
+# Fixture: the 2026-10-24 KPF-18-S1.R3 sidecar (item 186, steps long6 and item2q), TRIMMED (per-position logprob series,
+# Q detail, occupancy, cells and per-slot decode dropped) and RESEALED with the adapter's own digest; rows not shipped.
+
+
+def test_kpf18_s1_r3_projects_2_of_2_counts_from_its_own_r3_result(tmp_path):
+    sc = _copy(tmp_path, "kpf18_s1_r3")
+    rows = _lines(sc)
+    assert [r["arm"] for r in rows] == ["long6_teacher_forced", "item2q_g3s2"]
+    assert all(r["kpf18_item"] == 186 and r["kpf18_arm"] == r["arm"] for r in rows)
+    assert all(kpf.validate_row(r) == [] for r in rows)
+    natives = kpf.native_rows(sc)
+    assert len(natives) == 2
+    long6, item2q = (kpf.project(n) for n in natives)
+    assert long6.metric == "kpf18_r3_long6_worst_child_vs_cold_mean_abs_dlogprob"
+    assert long6.metric_direction == "lower_better" and long6.reps == 256
+    assert long6.value == pytest.approx(0.029879, abs=1e-6)
+    assert long6.observation["anchor_value"] == pytest.approx(0.027456, abs=1e-6)   # the six-pair cold floor
+    assert long6.observation["effect_rel"] == pytest.approx(0.0882, abs=1e-3)
+    assert long6.observation["n_pairs"] == 4 and len(long6.extra["floor_pairs"]) == 6
+    assert item2q.metric == "kpf18_r3_item2q_fork_vs_own_pairs_ok"
+    assert (item2q.value, item2q.reps, item2q.extra["n_q_valid"]) == (1, 1, 3)
+    # the predeclared verdict words ride verbatim (extra + outcome_native), never normalised or re-derived
+    assert long6.extra["verdict"] == long6.observation["outcome_native"] == "NOT_SATISFIED"
+    assert item2q.extra["verdict"] == item2q.observation["outcome_native"] == "G3S2_WITHIN_PLACEMENT_FLOOR"
+    assert "outcome" not in long6.observation and "outcome" not in item2q.observation
+    assert "NOT_SATISFIED" not in long6.claim and "WITHIN_PLACEMENT" not in item2q.claim
+    for t, r in ((long6, rows[0]), (item2q, rows[1])):
+        assert t.attestation_sha256 == r["rows_sha256"] and isinstance(t.attestation_present, bool)
+        assert t.protocol_id == "" and ct.grade(t)[0] == "Judged"     # the shared ladder decides: an OBSERVATION
+
+
+def test_kpf18_s1_r3_incomplete_step_is_an_attested_zero_attempt(tmp_path):
+    rows = _lines(_copy(tmp_path, "kpf18_s1_r3"))
+    for r in rows:
+        part = json.loads(json.dumps(r))
+        part["r3"]["step_complete"] = False
+        part["r3"].pop("result")
+        part["r3"].pop("finished_in_step")
+        part["record_sha256"] = kpf._digest({k: v for k, v in part.items() if k != "record_sha256"})
+        assert kpf.validate_row(part) == []
+        t = kpf.project({"row": part, "sidecar_path": str(tmp_path)})
+        assert (t.metric, t.value, t.reps) == ("kpf18_r3_steps_scored", 0, 1)
+        assert t.extra["verdict"] is None and "did not finish" in t.extra["incomplete_reason"]
+        assert ct.grade(t)[0]
+    bad = json.loads(json.dumps(rows[0]))
+    bad["r3"]["result"]["arm_valid"]["coldA"] = False                 # an invalid arm: no count is projected
+    bad["record_sha256"] = kpf._digest({k: v for k, v in bad.items() if k != "record_sha256"})
+    t = kpf.project({"row": bad, "sidecar_path": str(tmp_path)})
+    assert (t.metric, t.value) == ("kpf18_r3_steps_scored", 0) and t.extra["verdict"] == "NOT_SATISFIED"
+
+
+def test_kpf18_s1_r3_locator_and_step_must_agree(tmp_path):
+    rows = _lines(_copy(tmp_path, "kpf18_s1_r3"))
+    swapped = json.loads(json.dumps(rows[0]))
+    swapped["r3"]["step_id"] = "item2q"                                # long6 arm, item2q step
+    assert any("is not the step of arm" in p for p in kpf.validate_row(swapped))
+    no_block = {k: v for k, v in rows[1].items() if k != "r3"}
+    assert any("without its own r3 block" in p for p in kpf.validate_row(no_block))
+    claimed = json.loads(json.dumps(rows[1]))
+    claimed["r3"].pop("result")                                        # says complete, carries nothing
+    assert any("carries no result" in p for p in kpf.validate_row(claimed))
+    assert any("not in" in p for p in kpf.validate_row(dict(rows[0], kpf18_item=185)))
+    assert any("matching kpf18_arm" in p for p in kpf.validate_row(dict(rows[1], kpf18_arm="item2q_g9s9")))

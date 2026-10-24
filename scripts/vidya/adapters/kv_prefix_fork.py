@@ -85,6 +85,10 @@ KPF18_SUB_ARMS = {
     # separate graphs_proof.json), so a rate projected from the record alone could not say which it is.
     185: (r"A_tailonly_tail\d+", r"item2_pcache_g\d+s\d+", r"long_teacher_forced", r"kpf191a_flagoff_g\d+",
           r"hsf_L\d+"),
+    # 186 = KPF-18-S1.R3 (research ``kpf18_r3.py``, command kpf18r3): step ``long6`` (18.3 part 4, six-pair cold
+    # floor, teacher-forced) and step ``item2q`` (item-2 cell g<G>.s<S> with >= 3 Q repeats). Verdict inputs ride in
+    # the record's own top-level ``r3`` block (``r3.result``), not in ``equivalence``; see ``_project_r3`` (VB-KVU-PF.7).
+    186: (r"long6_teacher_forced", r"item2q_g\d+s\d+"),
 }
 _SUB_ARM_RE = {item: re.compile("^(?:" + "|".join(pats) + ")$") for item, pats in KPF18_SUB_ARMS.items()}
 #: sub-arms that validate but project nothing (see the 185 note above).
@@ -93,6 +97,10 @@ _DECLINED_SUB_ARM = re.compile(r"^hsf_L\d+$")
 #: ``record_sha256``, and a complete record's own ``item3v2.load`` must name the same load (a partial, budget-aborted
 #: record carries ``partial: true`` and no ``item3v2`` block).
 _ITEM3V2 = re.compile(r"^item3v2_load(?P<load>\d+)$")
+#: VB-KVU-PF.7: KPF-18-S1.R3 (item 186) arm -> the ``r3.step_id`` its record must name (``kpf18_r3.py`` ``_step_open``).
+#: The writer opens the record with ``step_complete: false`` and adds ``result`` only when the step finishes, so a
+#: record without ``step_complete: true`` is an incomplete attempt.
+_R3_STEP = {"long6": re.compile(r"^long6_teacher_forced$"), "item2q": re.compile(r"^item2q_g\d+s\d+$")}
 
 
 #: Conformance records (no fork-vs-fresh logits): ``kpf_task`` -> declared arms, exactly as the drivers emit them
@@ -211,6 +219,25 @@ def _validate_item3v2(row: dict) -> list[str]:
     return []
 
 
+def _validate_r3(row: dict) -> list[str]:
+    """The KPF-18-S1.R3 locator: the record's own ``r3`` block must name the step its arm belongs to."""
+    block = row.get("r3")
+    if not isinstance(block, dict):
+        return ["item-186 (KPF-18-S1.R3) record without its own r3 block: nothing locates or scores it"]
+    step = block.get("step_id")
+    rx = _R3_STEP.get(step) if isinstance(step, str) else None
+    if not (rx and rx.match(row["arm"])):
+        return [f"r3 block step_id {step!r} is not the step of arm {row['arm']!r}"]
+    if not (isinstance(block.get("predeclaration_sha256"), str)
+            and re.fullmatch(r"[0-9a-f]{64}", block["predeclaration_sha256"])):
+        return ["r3 block without its own predeclaration_sha256"]
+    if not isinstance(block.get("step_complete"), bool):
+        return ["r3 block without its own step_complete flag"]
+    if block["step_complete"] and not isinstance(block.get("result"), dict):
+        return ["r3 block says step_complete but carries no result of its own"]
+    return []
+
+
 def _intkeys(obj: Any) -> Any:
     """Diagnostic only: ``obj`` with digit-string dict keys turned back into ints (never used to ACCEPT a row)."""
     if isinstance(obj, dict):
@@ -258,6 +285,8 @@ def validate_row(row: Any) -> list[str]:
             problems.extend(_validate_item3v2(row))
         elif row.get("kpf18_arm") != arm:
             problems.append(f"sub-arm {arm!r} without the matching kpf18_arm locator ({row.get('kpf18_arm')!r})")
+        elif row.get("kpf18_item") == 186:
+            problems.extend(_validate_r3(row))
     rsha = row.get("rows_sha256")
     if rsha is not None and not (isinstance(rsha, str) and re.fullmatch(r"[0-9a-f]{64}", rsha)):
         problems.append("rows_sha256 is present but not a sha256 hex digest")
@@ -425,6 +454,8 @@ def project(native: Any) -> ClaimTuple:
         return _project_conformance(row, sidecar, present)
     if _ITEM3V2.match(row["arm"]) and row.get("kpf18_item") == 3:
         return _project_item3v2(row, sidecar, present)
+    if row.get("kpf18_item") == 186:
+        return _project_r3(row, sidecar, present)
     if _DECLINED_SUB_ARM.match(row["arm"]):
         raise ProjectionError(f"KPF sub-arm {row['arm']} projects nothing: its only number is a 0 hit count")
     if native.get("measure"):
@@ -587,6 +618,115 @@ def _project_item3v2(row: dict, sidecar: Path, present: bool) -> ClaimTuple:
                "arm_order": block.get("arm_order"), "block_order": block.get("block_order"),
                "group": block.get("group"), "predeclaration_sha256": block.get("predeclaration_sha256")},
         observation={"outcome_native": ",".join(f"{k}:{c}" for k, c in classes.items())[:120]})
+
+
+def _num(x: Any) -> bool:
+    return type(x) in (int, float) and x == x and abs(x) != float("inf")
+
+
+def _project_r3(row: dict, sidecar: Path, present: bool) -> ClaimTuple:
+    """VB-KVU-PF.7: one KPF-18-S1.R3 step, as COUNTS from the record's OWN ``r3.result``.
+
+    ``long6`` (18.3 part 4): value = the worst child-vs-cold mean |dlogprob| (``worst_child_vs_cold``), reps = the
+    teacher-forced positions valid in every arm (``n_common_valid``); the six-pair cold floor (``floor_used``) is the
+    ``observation.anchor_value``. ``item2q`` (item 2, one cell): value = fork-vs-own pairs OK against the >= 3-Q
+    placement floor (``judge.n_ok``), reps = pairs judged (``judge.n_pairs``); the valid-Q count rides in the claim and
+    ``extra``. The step's predeclared verdict word (``r3.result.verdict``) rides in ``extra`` and
+    ``observation.outcome_native`` VERBATIM -- it is never re-derived or normalised here. A record whose step did not
+    finish (``step_complete`` false), or whose result lacks the counts (an invalid arm, no judgeable floor), projects
+    ``kpf18_r3_steps_scored`` = 0 as an attested incomplete attempt: kept, never dropped, never given a count.
+    """
+    block = row["r3"]
+    step = block["step_id"]
+    result = block.get("result") if block.get("step_complete") is True else None
+    locator = (f"kpf:{row['run_id']}:{row['arm']}:item=186:step={step}:ps={row['prompt_set_sha256'][:16]}:"
+               f"bin={row['binary_sha256'][:16]}:win={row['window_id']}")
+    common = dict(
+        measurement_id="kpf-" + hashlib.sha256(row["record_sha256"].encode()).hexdigest()[:32],
+        date=row["end_utc"], category=row["category"], protocol_id="",
+        attestation_path=str(_rows_path(row, sidecar)), attestation_sha256=row.get("rows_sha256") or "",
+        attestation_locator=locator, attestation_present=present,
+        attestation_verified=True if present else None, source_kind=SOURCE_KIND,
+        applicability=_applicability(row))
+    verdict = (result or {}).get("verdict")
+    extra = {"schema": row["schema"], "run_id": row["run_id"], "arm": row["arm"], "kpf18_item": 186,
+             "kpf18_arm": row.get("kpf18_arm"), "kpf_task": row.get("kpf_task"), "step": step,
+             "step_complete": block.get("step_complete"), "fresh_load": block.get("fresh_load"),
+             "group": block.get("group"), "predeclaration_sha256": block.get("predeclaration_sha256"),
+             "verdict": verdict, "window_id": row["window_id"], "gpu_window_id": row.get("gpu_window_id"),
+             "binary_sha256": row["binary_sha256"], "prompt_set_sha256": row["prompt_set_sha256"],
+             "host": row["host"], "argv": row["argv"], "start_utc": row.get("start_utc"), "end_utc": row["end_utc"],
+             "record_sha256": row["record_sha256"], "sidecar_path": str(sidecar), "checks": row.get("checks")}
+    why, tup = None, None
+    if not isinstance(result, dict):
+        why = "step did not finish (step_complete false, no result)"
+    elif step == "long6":
+        worst, floor, n = result.get("worst_child_vs_cold"), result.get("floor_used"), result.get("n_common_valid")
+        valid = result.get("arm_valid")
+        if not (_num(worst) and _num(floor) and floor > 0 and type(n) is int and n > 0
+                and isinstance(valid, dict) and valid and all(v is True for v in valid.values())):
+            why = "long6 result without a valid worst/floor/common-position count"
+        else:
+            judged = result.get("judged_pairs") or []
+            obs = {"anchor_value": floor, "effect_rel": (worst - floor) / floor, "outcome_native": str(verdict)[:120]}
+            if judged:
+                obs["n_pairs"] = len(judged)
+            pc = result.get("pcache_reading") if isinstance(result.get("pcache_reading"), dict) else {}
+            tup = dict(
+                metric="kpf18_r3_long6_worst_child_vs_cold_mean_abs_dlogprob", value=worst,
+                unit="nats (mean |dlogprob| per position)",
+                claim=(f"KPF-18-S1.R3 long6 (18.3 part 4, T={result.get('T')}, P={result.get('n_task')}): worst "
+                       f"child-vs-cold mean |dlogprob| {worst:.6g} ({result.get('worst_pair')}) vs the "
+                       f"{len(result.get('floor_pairs') or [])}-pair cold-vs-cold floor {floor:.6g} "
+                       f"({result.get('floor_pair')}), ratio {worst / floor:.4g}, over {n} common teacher-forced "
+                       f"positions; counts from the record's own r3.result, one fresh load, no codified protocol"),
+                metric_direction="lower_better", reps=n,
+                reps_basis="teacher-forced positions valid in every arm (one fresh load; r3.result.n_common_valid)",
+                observation=obs,
+                extra={**extra, "floor_used": floor, "floor_raw": result.get("floor_raw"),
+                       "floor_pair": result.get("floor_pair"), "floor_pairs": result.get("floor_pairs"),
+                       "judged_pairs": judged, "worst_pair": result.get("worst_pair"),
+                       "ratio_worst_over_floor": result.get("ratio_worst_over_floor"),
+                       "within_floor": result.get("within_floor"),
+                       "predeclared_rule_satisfied": result.get("predeclared_rule_satisfied"),
+                       "d": {k: {f: (v or {}).get(f) for f in ("mean_abs_dlogprob", "max_abs_dlogprob", "n_positions",
+                                                               "n_exact_equal")}
+                             for k, v in (result.get("d") or {}).items()},
+                       "n_valid": result.get("n_valid"), "arm_valid": valid,
+                       "pcache_label": pc.get("label"), "pcache_weight": pc.get("weight")})
+    else:  # item2q
+        judge = result.get("judge") if isinstance(result.get("judge"), dict) else {}
+        n_pairs, n_ok, n_q = judge.get("n_pairs"), judge.get("n_ok"), result.get("n_q_valid")
+        if not (result.get("fo_valid") is True and judge.get("judgeable") is True and type(n_pairs) is int
+                and n_pairs > 0 and type(n_ok) is int and 0 <= n_ok <= n_pairs and type(n_q) is int):
+            why = "item2q result without a judgeable fork-vs-own pair count (F/O invalid or no placement floor)"
+        else:
+            fo = result.get("fork_vs_own") or {}
+            tup = dict(
+                metric="kpf18_r3_item2q_fork_vs_own_pairs_ok", value=n_ok, unit="fork-vs-own pairs",
+                claim=(f"KPF-18-S1.R3 item2q cell {result.get('cell')} (T={result.get('T')}, S={result.get('S')}): "
+                       f"{n_ok}/{n_pairs} fork-vs-own pairs OK against the placement floor of {n_q} valid Q "
+                       f"repeat(s) (Q-vs-own prefixes {result.get('q_vs_own_prefixes')}, fork-vs-own prefix "
+                       f"{fo.get('prefix')}); counts from the record's own r3.result, no codified protocol"),
+                metric_direction="higher_better", reps=n_pairs,
+                reps_basis="fork-vs-own pairs judged against the record's own Q-vs-own placement floor",
+                observation={"outcome_native": str(verdict)[:120]},
+                extra={**extra, "cell": result.get("cell"), "T": result.get("T"), "S": result.get("S"),
+                       "n_q": result.get("n_q"), "n_q_valid": n_q, "q_vs_own_prefixes": result.get("q_vs_own_prefixes"),
+                       "fork_vs_own": {f: fo.get(f) for f in ("top1", "prefix", "n_cmp", "maxabs_union", "kld",
+                                                              "tokens_identical", "identical")},
+                       "judge": {f: judge.get(f) for f in ("n_pairs", "n_aa", "n_ok", "n_not_ok", "n_top1",
+                                                           "n_within", "n_prefix_ok", "aa_floor", "floor_thin",
+                                                           "bit_identity_owed", "predeclared_rule_satisfied")}})
+    if tup is None:
+        return ClaimTuple(
+            metric="kpf18_r3_steps_scored", value=0, unit="R3 steps",
+            claim=(f"KPF-18-S1.R3 step {step} ({row['arm']}): incomplete attempt ({why}); 0 steps scored, does not "
+                   f"count toward the predeclared verdict inputs"),
+            metric_direction="higher_better", reps=1,
+            reps_basis="aborted/incomplete attempt: the step scored nothing", **common,
+            extra={**extra, "incomplete_reason": why}, observation={"outcome_native": why[:120]})
+    return ClaimTuple(**tup, **common)
 
 
 def _project_measure(native: dict, row: dict, sidecar: Path, present: bool) -> ClaimTuple:
