@@ -30,7 +30,9 @@ hide. Freshness/sync is deliberately not exercised (it would ingest into the cop
        arms likewise; the lineup target (--stack-regime) returns "No beliefs at this regime"
        until the first post-restart trial.
   AC8  10 random mechanism ids from the DS41 and Q38FN experiments.db stores each appear in the
-       answer (detailed line, section index or answer `tried_index`) with an outcome.
+       answer (detailed line, section index or answer `tried_index`) with an outcome. The pool is
+       the mechanisms with at least one row the experiments adapter projects (its own `classify`;
+       amended 2026-10-24: status alone admitted scope-gate refusals the adapter never projects).
 
 AC6 (planner-prompt render through both consumers, warm p95) is not in scope of this script.
 
@@ -47,7 +49,6 @@ import argparse
 import json
 import random
 import re
-import sqlite3
 import sys
 import time
 from datetime import datetime, timezone
@@ -370,19 +371,26 @@ def ac9(r: Reader, stack_regime: str) -> dict[str, Any]:
 
 
 def _store_mechanisms(store: Path) -> dict[str, list[str]]:
-    db = store / "experiments.db"
-    marks = ",".join("?" for _ in PROJECTED_STATUSES)
-    conn = sqlite3.connect(f"file:{db}?mode=ro", uri=True)
-    try:
-        rows = conn.execute(
-            f"SELECT mechanism_id, status FROM experiments WHERE status IN ({marks}) "
-            "AND mechanism_id IS NOT NULL AND mechanism_id != '' AND attempt_id IS NOT NULL "
-            "AND attempt_id != ''", PROJECTED_STATUSES).fetchall()
-    finally:
-        conn.close()
+    """mechanism_id -> statuses of the rows the experiments adapter actually PROJECTS.
+
+    The pool is decided by the adapter's own `classify`, not by status alone: a `gate_refused` row
+    whose refusing gate is a harness/scope verdict (e.g. `oracle_unavailable`) is never projected
+    (`scope_gate`), so a mechanism tried only that way has nothing to find and must not be sampled
+    (found 2026-10-24: Q38FN `akm-cpu-fa-sparse-mask-bitwalk`, three oracle_unavailable refusals).
+    """
+    from adapters import autokernel_experiments as exp  # noqa: PLC0415
+
     out: dict[str, list[str]] = {}
-    for mechanism, status in rows:
-        out.setdefault(str(mechanism), []).append(str(status))
+    for row in exp.native_rows(store):
+        if row.get("status") not in PROJECTED_STATUSES:
+            continue
+        mechanism = row.get("mechanism_id")
+        if not mechanism or row.get("payload") is None:
+            continue
+        disposition, _ = exp.classify(row)
+        if disposition is None:
+            continue
+        out.setdefault(str(mechanism), []).append(str(row["status"]))
     return out
 
 
