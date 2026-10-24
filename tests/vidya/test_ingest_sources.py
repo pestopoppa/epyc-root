@@ -196,6 +196,16 @@ def _ufh13_thesis(tmp: Path) -> Path:
     return _helpers("ufh13_thesis_fixtures").write_run(tmp)
 
 
+def _distillation_pool(tmp: Path) -> Path:
+    # Reader-valid native-shaped fixture: CLI writes only to the caller's
+    # tmp_path ledger; synthetic refusal remains covered separately.
+    receipt = tmp / "distillation-pool.json"
+    _helpers("test_distillation_pool_adapter")._write_fixture(
+        receipt, synthetic=False
+    )
+    return receipt
+
+
 def _s4_omega_ab(tmp: Path) -> Path:
     return _helpers("test_s4_omega_ab_adapter").write_fixture(tmp)
 
@@ -242,6 +252,7 @@ BUILDERS = {
     "conversation-stack-measurement":
         lambda tmp: _helpers("test_conversation_stack_measurement_adapter").write_fixture(tmp),
     "speech-ggml-optest": lambda tmp: _helpers("test_speech_ggml_optest_adapter").write_fixture(tmp),
+    "distillation-pool": _distillation_pool,
     "hil15a-auc": lambda tmp: _helpers("test_hil15a_auc").write(tmp),
     "repl-preview": lambda tmp: _helpers("test_repl_preview").write(tmp),
     "rus2-probe": lambda tmp: _helpers("test_rus2_probe").write(tmp),
@@ -417,6 +428,28 @@ def test_dry_run_appends_nothing(tmp_path, capsys):
     report = json.loads(capsys.readouterr().out)
     assert report["frames_emitted"] == 6 and report["dry_run"] is True
     assert not ledger.exists() or len(Ledger(ledger).read_all()) == 0
+
+
+def test_distillation_pool_cli_only_new_round_trip_is_idempotent(tmp_path, capsys):
+    fixture_root = tmp_path / "fx"
+    fixture_root.mkdir()
+    receipt = _distillation_pool(fixture_root)
+
+    rc, ledger = _cli(tmp_path, "distillation-pool", receipt, "--only-new")
+    assert rc == 0
+    first_report = json.loads(capsys.readouterr().out)
+    assert first_report["rows_projected"] == 1
+    assert first_report["frames_emitted"] == 3
+    first_bytes = ledger.read_bytes()
+
+    rc, same_ledger = _cli(tmp_path, "distillation-pool", receipt, "--only-new")
+    assert rc == 0
+    repeat_report = json.loads(capsys.readouterr().out)
+    assert same_ledger == ledger
+    assert repeat_report["frames_emitted"] == 0
+    assert repeat_report["frames_skipped"] == 3
+    assert ledger.read_bytes() == first_bytes
+    assert Ledger(ledger).verify() == []
 
 
 def test_pre_hook_arm_is_declined_not_filled(tmp_path, capsys):

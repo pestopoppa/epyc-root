@@ -559,6 +559,7 @@ _FILE_SOURCES = (
     "dtap-timeout-report",
     "pii-staged-gate",
     "ci-fixture-conformance",
+    "distillation-pool",
     "managed-tooling-check",
     "contextbench-discovery-score",
     "strategy-projection-report",
