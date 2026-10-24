@@ -106,6 +106,20 @@ def _np_ctx_kvu_units(path: Path) -> list[Path]:
     return sorted(p for p in path.iterdir() if p.is_dir() and held(p))
 
 
+def _glob_dirs(marker: str, *patterns: str) -> Units:
+    """A directory holding ``marker`` is one unit; otherwise every directory matched by ``patterns`` that holds it is."""
+    def units(path: Path) -> list[Path]:
+        if not path.is_dir():
+            return []
+        if (path / marker).is_file():
+            return [path]
+        found: set[Path] = set()
+        for pattern in patterns:
+            found.update(p.parent for p in path.glob(pattern) if p.is_file())
+        return sorted(found)
+    return units
+
+
 @dataclass(frozen=True)
 class Source:
     name: str
@@ -203,6 +217,21 @@ SOURCES: dict[str, Source] = {s.name: s for s in (
            default=Path("/workspace/repos/epyc-inference-research/data/gpu-mi210/kv-quant-27b-v10-sweep"),
            note="v10 MI210 KV-quant sweep sidecars; pre-hook/failed runs yield no claims",
            task="VB-KVQ-V10"),
+    Source("kv-quant-27b-v10-retrofit", "kv_quant_27b_v10",
+           _glob_dirs("identities.json", "*/identities.json", "*/*/identities.json"),
+           natives="retrofit_rows", project="project_retrofit",
+           default=Path("/workspace/repos/epyc-inference-research/data/gpu-mi210/kv-quant-27b-v10-sweep"),
+           note="2026-09-22 pre-hook v10 MI210 KV-quant sweep run dirs (`identities.json` + `runs/<cell>/result.json`); "
+                "ok cells only (runs a/b are all-error and decline), re-hashed identities, N=1, empty protocol, retrofit",
+           task="VB-KVQ-V10-RETRO"),
+    Source("autokernel-served-shape", "autokernel_served_shape",
+           _glob_dirs("manifest.json", "store/served_shape/manifest.json", "*/store/served_shape/manifest.json", "*/manifest.json"),
+           selector=lambda mod, native: (mod.project_verifier if native["kind"] == "verifier"
+                                         else mod.project_measurement),
+           default=Path("/mnt/raid0/llm/autokernel/campaigns/ak-ds41-1017-cpu-decode-20261021/store/served_shape"),
+           note="AutoKernel served-shape oracle calibration (anchor-build NMSE per shape x quant, widths 1-5) + "
+                "manifest caps re-derived; one measurement and one verifier tuple per (shape, type); retrofit",
+           task="VB-AK-SERVED-SHAPE"),
     Source("speech-cpu-measurement", "speech_cpu_measurement",
            _files("speech_cpu_capture.jsonl", "*/speech_cpu_capture.jsonl"),
            note="prospective CPU STT/TTS capture rows (speech_cpu_bench.py / live_llm_contention_capture.py "

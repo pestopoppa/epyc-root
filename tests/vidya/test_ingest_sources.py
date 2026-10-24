@@ -313,6 +313,10 @@ def test_every_source_has_an_end_to_end_fixture_or_a_named_exemption():
         # test_strategy_projection_report.py.
         "strategy-projection-report",
         "sealed-manifest", "kv-quant-27b-v10-measurement",
+        # Retrofit run dirs (re-hash refusals, error-run decline, loop_beliefs knob tier): test_kv_quant_27b_v10_retrofit.py.
+        "kv-quant-27b-v10-retrofit",
+        # Re-derived caps, rehash refusals, launch drift, scoped-store wiring: test_autokernel_served_shape.py.
+        "autokernel-served-shape",
         # Cross-repo producer pin, both class dispatches and grading: test_exl3_adapter.py.
         "exl3-measurement", "exl3-verifier",
         # Cross-repo capture-module pin, whole-file refusal and ledger ingest:

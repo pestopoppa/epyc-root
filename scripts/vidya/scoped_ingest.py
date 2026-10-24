@@ -277,12 +277,14 @@ def _ledger_source_ids(frames: Iterable[Mapping[str, Any]], prefix: str) -> set[
 def _store_dirs(store_root: Path) -> list[Path]:
     """Loop stores under `store_root`: itself when it is one, else its direct children that are.
 
-    A store is a directory holding `experiments.db`, `serving-beliefs/` or a serving floor. One
+    A store is a directory holding `experiments.db`, `serving-beliefs/`, a serving floor or the
+    served-shape oracle calibration (`served_shape/manifest.json`, Phase 2). One
     level, never a walk -- the same discipline as `_receipt_dirs`.
     """
     def is_store(path: Path) -> bool:
         return ((path / EXPERIMENTS_DB).is_file() or (path / RECEIPT_DIR).is_dir()
-                or any(path.glob("serving-floor.*.json")))
+                or any(path.glob("serving-floor.*.json"))
+                or (path / SERVED_SHAPE_DIR / "manifest.json").is_file())
 
     if is_store(store_root):
         return [store_root]
@@ -443,6 +445,52 @@ def _floor_frames(store: Path, *, as_of: str, known: set[str], refused_memo: dic
     return out
 
 
+# ------------------------------------------------------------------------------ served shape
+#
+# Phase 2 (belief redesign §9): `<store>/served_shape/` -- the AutoKernel served-shape oracle's
+# calibration of the ANCHOR build (NMSE per shape x quant) beside the manifest of per-case caps.
+# Same planning-time discipline as the floors: one directory, never a walk; a strict refusal is
+# memo'd by (size, mtime_ns) of the manifest so it is not re-derived every step; a source already
+# in the ledger is not re-emitted (and `append_scoped` makes a re-run idempotent anyway).
+
+SERVED_SHAPE_DIR = "served_shape"
+SERVED_SHAPE_PREFIXES = ("src_servedshape:v1:",)
+
+
+def _served_shape_frames(store: Path, *, as_of: str, known: set[str], refused_memo: dict,
+                         report: dict) -> list[dict]:
+    from adapters import autokernel_served_shape as shape  # noqa: PLC0415
+    from claim_tuple import ProjectionError, to_frames  # noqa: PLC0415
+
+    unit = store / SERVED_SHAPE_DIR
+    manifest = unit / "manifest.json"
+    if not manifest.is_file():
+        return []
+    report["served_shape_listed"] += 1
+    stat = manifest.stat()
+    memo_key = str(manifest)
+    if refused_memo.get(memo_key, {}).get("stat") == [stat.st_size, stat.st_mtime_ns]:
+        report["served_shape_memo_refused"] += 1
+        return []
+    out: list[dict] = []
+    try:
+        for native in shape.native_rows(unit):
+            tup = (shape.project_verifier if native["kind"] == "verifier"
+                   else shape.project_measurement)(native)
+            if f"src_{tup.measurement_id}" in known:
+                report["served_shape_known"] += 1
+                continue
+            out.extend(to_frames(tup, as_of=as_of, adapter_id=shape.ADAPTER_ID,
+                                 authority=shape.AUTHORITY))
+            report["served_shape_projected"] += 1
+    except (ProjectionError, OSError, ValueError, KeyError) as exc:
+        reason = f"{type(exc).__name__}: {exc}"[:300]
+        report["refusals"].append({"served_shape": str(unit), "reason": reason})
+        refused_memo[memo_key] = {"stat": [stat.st_size, stat.st_mtime_ns], "reason": reason}
+        return []
+    return out
+
+
 def ingest_scoped_store(ledger: Ledger | str | Path, store_root: str | Path, *, as_of: str,
                         dry_run: bool = False, memo_path: str | Path | None = None,
                         frames: list[Mapping[str, Any]] | None = None,
@@ -450,7 +498,7 @@ def ingest_scoped_store(ledger: Ledger | str | Path, store_root: str | Path, *, 
     """Ingest the loop beliefs of ONE loop store (or a campaign's stores).
 
     Per store: the serving A/B receipts (v1 arm claims AND, since P1-B, one v2 capture claim
-    each), the serving floors (P1-D), and -- when lane C's adapter is present -- the
+    each), the serving floors (P1-D), the served-shape oracle calibration (Phase 2), and -- when lane C's adapter is present -- the
     `experiments.db` rows above the memo watermark (P1-C; `experiments_full=True` is the
     backfill). Idempotent: a capture whose v1 and v2 sources are already in the ledger is not
     reopened, a known floor is not re-emitted, and a re-run appends nothing. `frames` (the
@@ -475,7 +523,9 @@ def ingest_scoped_store(ledger: Ledger | str | Path, store_root: str | Path, *, 
                               "receipts_memo_refused": 0, "receipts_read": 0,
                               "rows_projected": 0, "v2_projected": 0, "refusals": [],
                               "floors_listed": 0, "floors_known": 0, "floors_memo_refused": 0,
-                              "floors_projected": 0, "experiments_adapter": False,
+                              "floors_projected": 0, "served_shape_listed": 0, "served_shape_known": 0,
+                              "served_shape_memo_refused": 0, "served_shape_projected": 0,
+                              "experiments_adapter": False,
                               "experiments_rows_read": 0, "experiments_projected": 0,
                               "experiments_manifests_built": 0, "experiments_deferred": [],
                               "experiments_notes": [], "new_claims": 0,
@@ -495,7 +545,8 @@ def ingest_scoped_store(ledger: Ledger | str | Path, store_root: str | Path, *, 
     report["experiments_adapter"] = exp is not None
     has_floors = any(floor.floor_paths(store) for store in stores)
     has_experiments = exp is not None and any((s / EXPERIMENTS_DB).is_file() for s in stores)
-    if not listed and not has_floors and not has_experiments:
+    has_served_shape = any((store / SERVED_SHAPE_DIR / "manifest.json").is_file() for store in stores)
+    if not listed and not has_floors and not has_experiments and not has_served_shape:
         report["seconds"] = round(time.monotonic() - started, 3)
         return report
 
@@ -507,6 +558,9 @@ def ingest_scoped_store(ledger: Ledger | str | Path, store_root: str | Path, *, 
             store, as_of=as_of, refused_memo=refused_memo, report=report,
             known=_ledger_source_ids(ledger_frames, f"src_{floor.MEASUREMENT_PREFIX}"),
             manifest_for=lambda store=store: _store_manifest(exp, store, manifests, report)))
+        incoming.extend(_served_shape_frames(
+            store, as_of=as_of, refused_memo=refused_memo, report=report,
+            known=_ledger_source_ids(ledger_frames, SERVED_SHAPE_PREFIXES[0])))
         if exp is not None and (store / EXPERIMENTS_DB).is_file():
             try:
                 incoming.extend(_experiment_frames(
