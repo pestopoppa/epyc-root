@@ -296,6 +296,17 @@ the flag is never emitted, and the policy makes that a rule instead of an accide
 - `--ctx-checkpoints` 32 / `--checkpoint-min-step` 8192: keep. Checkpoints are what make partial reuse possible on hybrids;
   they cost ~150 MiB each on the 27B and roughly double the per-token cache cost (§1.6). Revisit only if the metric shows
   capacity misses, by lowering `ctx_checkpoints` before raising `cache_ram`.
+  - **Hybrid serving rule (KPF-64, 2026-10-24).** On a hybrid role (qwen35 / qwen35moe / qwen3next, any gated-delta-net or SSM
+    layer) context checkpoints are the only partial-restore point: without them any prefix divergence forces a full re-prefill.
+    Measured on frontdoor (Qwen3.6-35B-A3B-MTP Q8_0, np=4, CPU, v10, 19 paired sessions / 388 requests, two passes): checkpoints off
+    (`--ctx-checkpoints 0 --cache-ram 0`) lose **3.9 pp** of prefix-hit share (pooled gap diff -3.87 pp, 95% CI [-6.42, -1.99]) and
+    **~1,400 extra uncached tokens per request** (pooled; pass 1 alone: -3.4 pp, ~1,240 tok/req) versus 32 checkpoints.
+  - **Never set `--ctx-checkpoints 0` on a hybrid role** (registry, launch manifest, or an experiment run on a serving box).
+  - Checkpoints alone capture the whole effect at np=4: adding a `--cache-ram` tier (2 GiB or 32 GiB) changed nothing measurable
+    (pooled C-B, D-B, D-C all within 0.003 pp, CIs include 0). That says nothing above 4 lineages (arms E/F, KPF-64.3 pending).
+  - **Frontdoor needs no change**: it already runs 32 checkpoints + `cache_ram` 32768 (a superset of the best arm).
+  - Whether to shrink `cache_ram` waits for KPF-64.3 (tier effect untested with sessions > slots or bursts).
+  - Every served role gets the 32 from the llama-server DEFAULT; no registry or manifest declares `ctx_checkpoints` (orchestrator audit 2026-10-24), so a kernel default change would silently change production.
 - `--slot-prompt-similarity` 0.1: keep.
 - `--slot-save-path`: keep as is; do not build on it (delete-lens §5).
 
