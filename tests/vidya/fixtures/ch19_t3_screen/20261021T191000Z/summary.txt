@@ -1,0 +1,5 @@
+invalid arms: 0
+pp512 @ d0       OFF median   922.97 t/s  ON median   918.49 t/s  ON/OFF median 1.0125 (pairs=3, min 0.9850, max 1.0472)
+tg128 @ d0       OFF median    57.09 t/s  ON median    56.46 t/s  ON/OFF median 0.9941 (pairs=3, min 0.9737, max 1.0016)
+pp512 @ d8192    OFF median   500.81 t/s  ON median   495.47 t/s  ON/OFF median 0.9894 (pairs=3, min 0.9757, max 1.0251)
+tg128 @ d8192    OFF median    53.80 t/s  ON median    52.67 t/s  ON/OFF median 0.9755 (pairs=3, min 0.9554, max 1.0088)

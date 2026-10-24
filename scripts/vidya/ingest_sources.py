@@ -398,6 +398,12 @@ SOURCES: dict[str, Source] = {s.name: s for s in (
            note="PB-QCOST-1 prefill-cost run dirs (original `summary.json` layout and the confirm launcher "
                 "`VERDICT.json` layout); INDICATIVE, single-q caveat in applicability; OBSERVATION only; retrofit",
            task="VB-PBQ-1"),
+    Source("ch19-t3-screen", "ch19_t3_screen", _run_dirs("records.jsonl"),
+           note="CH-19.2 T3 fused MoE up+gate speed-screen dirs (`records.jsonl` + `provenance.json` + `summary.txt`); "
+                "per-test ON/OFF ratio and per-arm medians re-derived from the rows, same-window A/A-like noise floor "
+                "carried or absent; INVALID results stay valueless rows; llama-bench protocol assessed; OBSERVATION; "
+                "retrofit",
+           task="VB-CH19-T3-SCREEN-WIRE"),
     Source("ev19-gold-selfcheck", "ev19_gold_selfcheck",
            _files("ev19_gold_selfcheck.beliefs.jsonl", "*/ev19_gold_selfcheck.beliefs.jsonl"),
            note="EV-19 scorer/pool gold self-check per suite; scorer validity, never a model; "

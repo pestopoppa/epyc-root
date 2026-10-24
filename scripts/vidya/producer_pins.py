@@ -78,6 +78,8 @@ EXEMPT = {
     ("hg5_request_event", "PRODUCER_SHA256"): "producer bytes ship inside each sealed event",
     ("hg5_request_event", "PRODUCER_V2_SHA256"): "producer bytes ship inside each sealed event",
     ("hg5_request_event", "SCHEMA_V2_SHA256"): "schema bytes ship inside each sealed event",
+    ("ch19_t3_screen", "PRODUCER_SHA256"): "producer is a /mnt/raid0/llm/tmp script, not a file on a repo main; "
+                                           "the adapter re-hashes it live and refuses a different script",
     ("oolong", "VENDORED_SHA256"): "vendored upstream file, pinned on purpose",
     ("qwen4exp_quality", "READER_SHA256"): "in-tree reader (this repo), changes ride with the adapter commit",
     ("dtap_timeout_report", "REGISTRY_SHA"): "registry digest of a captured run, not a file on main",

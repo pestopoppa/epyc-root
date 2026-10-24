@@ -1,0 +1,7 @@
+=== NUMA placement check (pid:849137, canonical:Qwen3.6-35B-A3B-MTP-Q8_0.gguf) at 2026-10-21T19:12:10Z ===
+  node 0:    8846.13 MB   25.0%
+  node 1:    8849.22 MB   25.0%
+  node 2:    8838.32 MB   25.0%
+  node 3:    8843.81 MB   25.0%
+nodes=4 total=35377.48MB even_share=25.0% max=node1@25.0% threshold=40%
+PASS: placement within threshold.
