@@ -74,6 +74,22 @@ must accept the producer's stats-dict medians; Codex coordination) — it blocks
 waits on the first post-hook sweep sidecar. `VB-KVQ-V10-RECONSIDER` (AutoPilot correction review, synthetic
 correction first) is dispatchable now.
 
+- [x] **VB-S4-OMEGA-WIRE — wire the S4 Omega reader before a real A/B.** ✅ 2026-10-24. ROOT adapter,
+      LOW source enrollment, CLI choice and end-to-end fixture coverage are on main (`16c0fa1ba2b45466a9324df0333987386d71e38b`): implementation
+      `7ff9c7e49c725fdc4523f4f3683aec07c1436d0d`, replay-report fixture
+      `9389682e8020470cb1ad85c30a047b051466da5f`.
+      Producer published separately at orchestrator commit `be208213775a032aefde26a3c1df4ac4ca2d445e`.
+      Granted ROOT validation passed 10 tests with no skips; the carrier audit found 199 tuples
+      and 0 violations. Adapter output stays at Judged/Located; protocol and model/server identity
+      remain unknown. No real A/B, exact output-cost claim, pooled delta or promotion claim was made.
+- [ ] **VB-S4-OMEGA-FIRST-AB — ingest the first captured real S4 Omega A/B.** After the outer S4
+      experiment's serving owner produces native capture(s) under the required calendar grant, ingest
+      those artifacts only; do not launch a duplicate quality experiment or duplicate TD21 parser work.
+      Preserve raw request/response, question/gold, frozen suite/prompt snapshots, and original/recovery
+      custody. Project only native per-row observations with the existing shared grader; keep missing
+      prompt usage unknown, retain explicit zero/false and partial/refused status, and exclude synthetic
+      rows. No inferred pair result, exact cost from legacy token counts, protocol/model/server identity,
+      or promotion claim.
 
 ### Source coverage — opened 2026-08-10 (operator question: what about wiki/logs/progress?)
 
