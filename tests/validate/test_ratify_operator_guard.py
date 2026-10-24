@@ -43,7 +43,7 @@ def test_refused_names(tool, name):
     assert tool.operator_problem(name) is not None
 
 
-@pytest.mark.parametrize("name", ["<your name>", "a<b", "b>", "Your Name", "YOUR FULL NAME",
+@pytest.mark.parametrize("name", ["<your name>", "a<b", "b>", "Your Name", "YOUR FULL NAME", "Your Real Name", "your actual name", "your-real-name",
                                   "put name here", "Operator Name", "TODO", "todo", "XXX", "xxx-sign"])
 def test_placeholder_names_refused(tool, name):
     assert tool.operator_problem(name) is not None

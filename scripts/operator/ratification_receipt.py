@@ -103,7 +103,7 @@ BULLET_RE = re.compile(r"^\s*(?:[-*+]\s|\d+[.)]\s)")
 # system account, the invoking login, or an agent roster id is refused.
 # One source of truth: scripts/operator/lib/ratify_operator.sh calls `check-operator`.
 PLACEHOLDER_RE = re.compile(
-    r"your[\s_-]*(full[\s_-]*)?name|name[\s_-]*here|operator[\s_-]*name|\btodo\b|xxx", re.I)
+    r"\byour\b(?:[\s_-]+\w+){0,2}?[\s_-]*name\b|name[\s_-]*here|operator[\s_-]*name|\btodo\b|xxx|<|>", re.I)   # widened 2026-10-24: "Your Real Name" passed
 SYSTEM_ACCOUNTS = frozenset({
     "node", "root", "nobody", "unknown", "daemon", "admin", "administrator", "ubuntu",
     "user", "operator", "runner", "ci", "docker", "claude", "agent", "codex", "opencode",
