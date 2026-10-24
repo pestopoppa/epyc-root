@@ -7150,3 +7150,9 @@ Sources: [YaRN context extension research](../handoffs/active/yarn-context-exten
 - **Dirty trees are refused by the gate.** `yg_tree_clean` and a judge-job pin check refuse a dirty source tree; its self-test passes 10/10 (the old files failed 6).
 
 Sources: [Progress 3c4ca599 2026-10-24](../progress/2026-10/2026-10-24-3c4ca599.md), [Progress 3c4ca599 2026-10-23](../progress/2026-10/2026-10-23-3c4ca599.md), [C3 fold prep](../progress/2026-10/2026-10-23-c3-fold-prep.md), [Non-inference backlog](../handoffs/active/non-inference-backlog.md)
+
+
+## Compiled Update — 2026-10-24 (wrap-up sweep 23, workspace-f8): pair inside one window when the host drifts
+
+- **M4.2b: judge a candidate against its champion inside the same window, A-B-A-B.** M4.2a failed its C2 band at 25.23x while the candidate's off path was unchanged, because the whole window had slowed (C-solo went from 282 to 885 ms). The paired design takes the geometric mean of candidate/champion C2 over adjacent pairs against the unchanged ±10% band. That cancels drift common to both arms, and the drift check only flags a pair. Its first run read PASS (read-out by rule pending). (Sources: `/mnt/raid0/llm/tmp/f8-launchers-20261024/m4-2b-champion-control/AMENDMENT-M4.2b-paired.md`; M4.2a/M4.2b in `handoffs/active/gpu-serving-tie-in-program.md`; the 10-24 progress shard.)
+- **A job must never take compute outside the calendar.** A helper agent ran an acceptance runner under a self-taken region-lock with no grant and blocked another session's champion build. Rule: subagents take no claims of any kind and report their compute needs instead; the main thread registers the row. (Sources: the 10-24 progress shard (Incident); `progress/2026-10/2026-10-24-3c4ca599.md` C5 timeline; the f8 handover file.)
