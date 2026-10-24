@@ -1,0 +1,51 @@
+Qwen3.6-35B-A3B-MTP-Q8_0.gguf | arch = qwen35moe | n_tensors_this_shard = 753
+     qwen35moe.attention.layer_norm_rms_epsilon = 9.999999974752427e-07
+     qwen35moe.full_attention_interval = 4
+     qwen35moe.ssm.conv_kernel = 4
+     qwen35moe.ssm.group_count = 16
+     qwen35moe.ssm.inner_size = 4096
+     qwen35moe.ssm.state_size = 128
+     qwen35moe.ssm.time_step_rank = 32
+     recurrent-tensor suffixes: ['ssm_a', 'ssm_alpha.weight', 'ssm_beta.weight', 'ssm_conv1d.weight', 'ssm_dt.bias', 'ssm_norm.weight', 'ssm_out.weight']
+Qwen3.8-27B-Q8_0.gguf | arch = qwen35 | n_tensors_this_shard = 866
+     qwen35.attention.layer_norm_rms_epsilon = 9.999999974752427e-07
+     qwen35.full_attention_interval = 4
+     qwen35.ssm.conv_kernel = 4
+     qwen35.ssm.group_count = 16
+     qwen35.ssm.inner_size = 6144
+     qwen35.ssm.state_size = 128
+     qwen35.ssm.time_step_rank = 48
+     recurrent-tensor suffixes: ['ssm_a', 'ssm_alpha.weight', 'ssm_beta.weight', 'ssm_conv1d.weight', 'ssm_dt.bias', 'ssm_norm.weight', 'ssm_out.weight']
+Qwen3.8-Flash-Next-UD-IQ4_XS-00001-of-00003.gguf | arch = qwen4exp | n_tensors_this_shard = 0
+     qwen4exp.attention.layer_norm_rms_epsilon = 9.999999974752427e-07
+     qwen4exp.full_attention_interval = 4
+     qwen4exp.ssm.conv_kernel = 4
+     qwen4exp.ssm.group_count = 16
+     qwen4exp.ssm.inner_size = 6144
+     qwen4exp.ssm.state_size = 128
+     qwen4exp.ssm.time_step_rank = 48
+     recurrent-tensor suffixes: []
+Qwen3.8-Flash-Next-UD-IQ4_XS-00002-of-00003.gguf | arch = None | n_tensors_this_shard = 373
+     recurrent-tensor suffixes: ['ple_conv1d.weight', 'ssm_a', 'ssm_alpha.weight', 'ssm_beta.weight', 'ssm_conv1d.weight', 'ssm_dt.bias', 'ssm_norm.weight', 'ssm_out.weight']
+Qwen3-VL-30B-A3B-Instruct-Q4_K_M.gguf | arch = qwen3vlmoe | n_tensors_this_shard = 579
+     qwen3vlmoe.attention.layer_norm_rms_epsilon = 9.999999974752427e-07
+     recurrent-tensor suffixes: []
+Qwen2.5-Coder-1.5B.Q4_K_M.gguf | arch = qwen2 | n_tensors_this_shard = 338
+     qwen2.attention.layer_norm_rms_epsilon = 9.999999974752427e-07
+     recurrent-tensor suffixes: []
+bge-large-en-v1.5-f16.gguf | arch = bert | n_tensors_this_shard = 389
+     bert.attention.layer_norm_epsilon = 9.999999960041972e-13
+     recurrent-tensor suffixes: []
+bge-m3-Q8_0.gguf | arch = bert | n_tensors_this_shard = 389
+     bert.attention.layer_norm_epsilon = 9.999999747378752e-06
+     recurrent-tensor suffixes: []
+multilingual-e5-base-Q8_0.gguf | arch = bert | n_tensors_this_shard = 197
+     bert.attention.layer_norm_epsilon = 9.999999747378752e-06
+     recurrent-tensor suffixes: []
+granite-embedding-97m-multilingual-r2-Q8_0.gguf | arch = modern-bert | n_tensors_this_shard = 74
+     modern-bert.attention.layer_norm_epsilon = 9.999999747378752e-06
+     modern-bert.attention.layer_norm_rms_epsilon = 9.999999747378752e-06
+     modern-bert.attention.sliding_window = 128
+     modern-bert.attention.sliding_window_pattern = 3
+     modern-bert.rope.freq_base_swa = 160000.0
+     recurrent-tensor suffixes: []
