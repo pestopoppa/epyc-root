@@ -282,6 +282,34 @@ landing alone closes no box below whose done-test needs a live run; those carry 
   numerics: they carry the coherence gate at depth and the KV-quant evidence from VB-KVQ-V10, never a speed-only keep.
   Done when the runtime-arm schema accepts the three and one arm runs through the keep-grade A/B on the long surface.
 - [ ] **AKX-ALL-13a - decouple `-tb` from `-t` as a runtime-arm dimension and run `-t 48 -tb 96` on Q38FN.** Add a `threads_batch` kind: the 2026-10-20 depth sweep found `-tb` drives prefill and MTP verify and `-tb 96` lifts shallow-depth prefill +21-29% (flat from 8k, decode unchanged), but a `-tb` different from `-t` cannot be expressed today (`loop/unified_planner.py` rewrites `-tb` to the `threads` value; `loop/resolved_recipe.py` refuses a canonical `-tb` that differs from `-t`). One keep-grade A/B on the AKX-ALL-4 long surface (shallow, 32k, 128k), identity-gated; on a keep, hand the :8074 recipe change to the stack-change skill. (filed 2026-10-20)
+  - 2026-10-24 CODE (3c4ca599 subagent; `c759a57de`).
+    - New runtime-arm kind `threads_batch`.
+    - `serving.Recipe.threads_batch`:
+      - None means `-tb` follows `-t`.
+      - A value equal to `threads` normalises to None, so every existing recipe keeps its to_dict, recipe_hash and
+        floors.
+    - `resolved_recipe`: the canonical projection now carries a decoupled `-tb` instead of refusing it, and the
+      consistency check covers `-tb`.
+    - `unified_planner`: new dimension.
+      - A `threads` arm still moves a `-tb` that follows `-t`.
+      - It leaves a decoupled `-tb` alone.
+    - `runtime_arms` KINDS, the run.py runtime-treatment gate, the loop's prevalidated path, and the planner
+      runtime_treatment prompt plus `_runtime_pair` all admit the new kind.
+    - Tests: the runtime/recipe/planner/treatment suites pass (129). On the codified Q38FN launch, `-t 48 -tb 96`
+      enumerates as a launch-valid single-flag delta `{"argv": {"-tb": ["48", "96"]}}`.
+  - 2026-10-24 RUN DRAFT (not armed).
+    - Job: `/mnt/raid0/llm/tmp/batch-20261024/akx13a/akx13a_job.sh`.
+    - Declaration: `.../akx13a/runtime-arms.threads-batch-96.json`.
+    - FILLERS row: `/mnt/raid0/llm/tmp/batch-20261024/AKX13A_ROW.md`. It validated clean on a copy and derives class
+      block-timing-quiet.
+    - **WHOLE HOST quiet, not a quarter.** The codified recipe is taskset 0-95, `-t 48`, OMP_PLACES=cores, and `-tb 96`
+      needs all 96 CPUs. The floor and the identity gate bind to that recipe hash and execution digest.
+    - **BACKLOG blockers:**
+      1. Land the branch.
+      2. The code root also needs the CH-27 harness fixes.
+      3. The Q38FN floors must be calibrated on the current champion (CH-27 has run only dry). The job precond refuses
+         with rc 5 until all three are met.
+    - Only the 64k long surface exists, so the "32k, 128k" depths named in the task cannot be measured by this run.
 
 ### P2: GPU — window, profile, routes, surfaces, gate
 
@@ -391,6 +419,26 @@ landing alone closes no box below whose done-test needs a live run; those carry 
     - **Where they differ (backend-specific):** Q4_K passes on CPU and fails at k=2 on HIP; the IQ2/IQ3 types fail at k=2 on CPU (iqk single-column vs multi-column kernels) and at k=5 on the HIP dense shapes (MMVQ to MMQ hand-off); IQ4_XS passes on CPU and fails at k=5 on HIP; CPU Q8_0 recovers under `GGML_IQK_Q8_0=1` and every CPU type passes under `GGML_ROWEXACT_N=9`, while the HIP side has no runtime knob for the matmul route (DF2-18 inventory). Mixed K/V flash-attn is UNSUPPORTED on HIP.
     - **Use:** AKX-ALL-27 should take the per-backend tables as its ANCHOR comparison (new failing cells, lower first-fail k); the HIP harness is reusable as is for a keep's build.
   - [ ] **AKX-ALL-26b - CPU flash-attn knob-off column.** The CPU probe scrubs `GGML_FA_SPLIT_KV` (`SCRUB` in `loop/width_invariance.py`), so the F16-KV FLASH_ATTN_EXT F@2 at 24 threads (PASS at 1 thread) was measured on the default path only, and that knob exists for spec-decode row-exactness (INF-70 be2-fa). Re-run the F16-KV FLASH_ATTN_EXT cells with `GGML_FA_SPLIT_KV=0` and record whether F@2 clears and at what 24-thread cost. Correctness work (build-role claim, no quiet host). (filed 2026-10-20)
+    - 2026-10-24 CODE (3c4ca599 subagent; `32e9303a7`).
+      - New route `cpu[GGML_IQK=1,GGML_FA_SPLIT_KV=0]`. It is set after the scrub, so an ambient value never leaks into
+        either column.
+      - `width_invariance.py run --plan fa-split-kv-off` runs FA over F16/Q8_0/Q4_0 KV at every n_kv, with the default
+        and knob-off routes side by side at 24 and 1 threads, plus the controls. Everything comes from one probe binary
+        into one run dir.
+      - `table --plan fa-split-kv-off` adds `summary.fa_split_kv_off`: default vs knob-off label, `f2_clears`, and the
+        knob's indicative cost.
+      - The probe now records per-rep `compute_ns` (one graph compute, batched plus serial). The field is additive, and
+        the cost is labelled indicative because the class is correctness on a shared host.
+      - The full AKX-ALL-26 plan is unchanged.
+      - Tests: `test_width_invariance` (5, including the recorded 10-20 CPU cells: default column only, F16 F@2 at 24
+        threads on every n_kv) and `test_width_dimension` pass. The probe passes a syntax check against the q38fn-fa
+        worktree headers.
+    - 2026-10-24 RUN DRAFT (not armed).
+      - Job: `/mnt/raid0/llm/tmp/batch-20261024/akx26b/akx26b_job.sh`.
+      - FILLERS row: `/mnt/raid0/llm/tmp/batch-20261024/AKX26B_ROW.md`. It validated clean and derives block-correctness.
+      - One quarter, build role, about 5 min.
+      - The precond passes today from the branch worktree, on build `cpu-20261023-141e4bcf5-lbh`, where `strings` shows
+        GGML_FA_SPLIT_KV.
 - [x] **AKX-ALL-27 — Width invariance as an observe-only keep dimension, with the reporting recipe (intake-2039/2044/2046; filed 2026-10-20).** After AKX-ALL-26 and DF2-18 deliver their tables. Extends the AKX-ALL-17 `keep_dimensions` record (no second gate). A keep whose footprint touches mmvq, mmq, fattn or GDN sources records its AKX-ALL-26 table against the ANCHOR's own table (the champion keeps knowingly width-variant routes, so the comparison is relative, never absolute zero): new failing cells, lower first-fail k, or unchanged; a keep for which the probe did not run records `not_measured`, never a pass. The model-level companion is the DF2-18 `rowexact` runner on the keep's build at widths 2, 4, 5, 8, reporting per width the reference-arm near-tie counts (pre-softmax top1-top2 gap < 1.0 and < 0.25), top-1 flips, row-mean-centred max delta and max dP, over a near-tie-dense corpus of real code rather than repetitive text; a zero-flip result on a confident prompt is recorded as uninformative and fixed-width perplexity is not accepted as evidence. Refuses nothing (refuse mode is monitor M7). Done when one historical mmvq-touching keep is replayed against its parent through the dimension with a non-trivial verdict and the record schema carries the recipe fields. ✅ 2026-10-22 (done criterion met by the AKX-ALL-27b replay, filler `akx-all-27b-run`, 12:58Z: non-trivial verdict `improved`)
   - 2026-10-21 audit-ticks verification (NOT ticked): code `e46ba5fb2` and the 1bceceb05 -> 656c9a66b replay (evidence `artifacts/akx-all-27-20261021/`, recorded `ddbdd7d60`) landed, but the replay verdict is `unchanged` (trivial), and the done criterion requires a NON-trivial verdict. Remaining: AKX-ALL-27b (CDNA2 Q8 route pair `732389d6d` vs `b0eb4fab4`, needs the GPU builds first); tick this box when 27b yields a non-trivial verdict.
   - 2026-10-20 note (akx-all-27; record only, checkbox NOT ticked): **code done and tested, replay NOT yet run.** Research `main` `e46ba5fb2`. `scripts/kernel_rnd/autokernel/loop/width_dimension.py` (new, pure) + `surface_validation.keep_dimensions(..., width_invariance=None)` (additive keyword; the record is carried under its own `width_invariance` key, OUTSIDE `dimensions`, never in `passed`/`reason`; `KEEP_DIMENSIONS` unchanged, so no second gate and no keep/reject change). Record `epyc.autokernel.width_invariance_dimension.v1` (`observe_only: true`, `refuses: false`): `not_applicable` (footprint hits no mmvq/mmq/fattn/GDN source), `not_measured` (touched but the keep's or the anchor's table is absent; never a pass), or `measured` with a cell-by-cell RELATIVE comparison of the keep's AKX-ALL-26 table to the anchor's (`new_failing`, `lower_first_fail_k`, `higher_first_fail_k`, `fixed`, `unchanged_fail/pass`; UNSUPPORTED/ERR/void on either side go to `indeterminate`, absent cells to `missing_in_keep`, and `coverage_complete` says so; verdict `worse|improved|mixed|unchanged`). `load_table` reads both the CPU k-records (`akx-all-26.cell.v1`, folded with `width_invariance.summarize`) and the HIP `cell` records, and raises on an empty file. Model-level companion: `model_level_record` carries the DF2-18 recipe fields per width 2/4/5/8 (`near_tie_lt_1_0`, `near_tie_lt_0_25`, `top1_flips`, `row_mean_centred_max_delta`, `max_dP`) plus the corpus label; dispositions `not_measured|incomplete|corpus_not_admissible|flips_observed|uninformative|zero_flips_informative`; zero flips with no near-ties is `uninformative`, and perplexity keys raise. CLI: `python3 -m scripts.kernel_rnd.autokernel.loop.width_dimension --anchor-table A --keep-table K --footprint PATH... > out.json`. Not wired into `run.py` (the loop does not yet pass tables; a keep that supplies none records nothing, which is the absence of the key, not a pass).
@@ -517,6 +565,31 @@ landing alone closes no box below whose done-test needs a live run; those carry 
     - 2026-10-20 operator ruling (relayed by coordinator): launch-weighted estimates (launches-per-token x time-at-shape) are used ONLY to rank which kernels to attack and the order candidates are timed. A keep still requires a measured end-to-end win; the keep gate is unchanged, so the objective is not changed. The ranking input is the AKX-ALL-16 per-window kernel table (pointer added there). Cheapest recording rule: re-run the AKX-ALL-16 profile when a candidate first reaches timing.
     - 2026-10-20 evidence note (read-only; no run, no claim; checkbox not ticked; the objective change stays the operator's decision). **Falsifier: NOT DECIDABLE on disk.** Recorded GPU history is `campaigns/ak-27b-gpu-verify-20261004` (`store/experiments.db`: 13 rows, 5 `gate_refused`, none kept or timed: mechanisms `akm-gfx90a-q8-tiny-streamk-cap` x3 and `akm-q8-j16-single-tile-streamk-five-cta` x2, every one `MUL_MAT failed on ROCm0`, `effect_fraction` null) and the 2026-08-12 `hip-silu-decision-grade-r4..r6` / `hip-arm-silu-roundtrip-r2..r4` receipts (a standalone fp32 SiLU HIP file timed in isolation against Torch-ROCm, 20 paired blocks, ~1.077x in r6; no tg128, no per-shape table). The other stores (`ak-ds41-cpu-decode`, `ak-q38fn-cpu-decode`) are CPU. So no GPU candidate has a tg128 (`aggregate_tok_s`) result and none has candidate-side time at any shape: there are zero candidates to rank by either objective, and a one-candidate ordering is trivially identical. What IS on disk for the incumbent: the AKX-ALL-16 anchor profile `store/gpu-serving-profiles/4bca25e9.../run/trace/` with `serving_kernel_stats.csv` (58 rows: Calls, TotalDurationNs per kernel; e.g. `mul_mat_q<Q8_0,16>` 18407 calls, 55.61% of device time) and `serving_kernel_trace.csv` (171,588 timestamped dispatches with grid size) plus `profile.json` spans for `prefill` and `short_decode` (windows `concurrent_decode`, `long_decode`, `prefill_at_depth` skipped). Launches per token for the incumbent are derivable from trace x span x the decoded-token count in `run/server.log`; this note did not derive them, because the candidate half is missing and a one-sided table decides nothing. Missing, precisely: (a) any GPU candidate that passed the correctness gate and reached timing; (b) per-kernel dispatch counts and durations captured for the candidate build over the same windows. Cheapest way to record: when a GPU candidate reaches the timing stage, rerun the AKX-ALL-16 profile for it on the same windows and store `serving_kernel_stats.csv` next to its experiment row (the profile harness exists; the gap is that no candidate has reached it). Also note AKX-ALL-16's planner-prompt rendering of the table is still unverified.
   - [ ] **AKX-ALL-29.2a - implement the 29.2 ruling.** Candidate timing order and kernel choice use launches-per-token x time-at-shape from the AKX-ALL-16 table; the AKX-ALL-16 profile is re-run when a candidate first reaches timing and stored beside its experiment row (the 29.2 "cheapest recording rule"); the keep gate is unchanged (a measured end-to-end win is required). Depends on AKX-ALL-16. (filed 2026-10-20)
+    - 2026-10-24 CODE (3c4ca599 subagent; `134855011`). Ranking and ordering only; no verdict or keep-gate code path is
+      touched.
+      - **`gpu_serving_profile` token accounting:** each window records the tokens it processed, from the server's own
+        final-event counts:
+        - prefill: prompt tokens.
+        - decode: tokens after the first, apportioned to the window at each request's own rate.
+        - None unless every request reported a count.
+      - **Per-kernel figures:** rows carry `launches_per_token` and `ns_per_token` (launches per token x mean time at
+        the window's shape).
+      - **`launch_weighted()`:** sums `ns_per_token` over the observed windows; optional demand weights.
+      - **Kernel choice:** `hotspot_rows()` orders the planner's table by the launch-weighted score. When no window has
+        tokens (for example the 10-04 cached anchor profile), it falls back to the primary window's order, labelled so.
+        The planner prompt shows the launch-weighted table.
+      - **Candidate timing order:** `pipeline.SerializedTail(priority=)` admits waiting candidates highest
+        `kernel_weight(view, target_symbol)` first. Unscored candidates go after them, ties in arrival order, and
+        admission is logged.
+        - With no priority, the plain lock is used exactly as before.
+        - `iterate` passes the hypothesis to a priority-aware `tail_session`.
+        - `run.py` wires `pool.drive(tail_priority=)` for GPU serving runs.
+      - **Recording rule (`run.py record_candidate_serving_profile`):** after a GPU candidate's first A/B, the AKX-ALL-16
+        profile is re-run on its build. It is cached by candidate diff and stored as
+        `comparison.candidate_serving_profile` (record, key, target and anchor weights, top kernels). A failure is
+        recorded and never refuses the comparison.
+      - Tests: `test_gpu_serving_profile` (+7) and `test_pipeline` (+4) = 99 passed.
+      - Not run live: that needs the MI210 and gpu-quiet.
   - [x] **AKX-ALL-29.3 (S4): skip timing of a candidate whose gfx90a kernel bodies are byte-identical to the incumbent's, using `gfx90a_isa_audit.py diff`.** Falsifier: no recorded candidate has a kernel body identical to the incumbent's, so there is nothing to skip. ✅ 2026-10-20
     - 2026-10-20 note (akx-all-29-harness, research 870158f77): `loop/noop_build.py` hashes .text/.rodata/.data of every gfx90a code object (reuses `gfx90a_isa_audit` ELF/bundle reader; `gfx90a_isa_audit.py diff` itself is a register gate, not a byte compare, so it is not the comparator). `run.py` measure raises `loop.NoOpBuild` before `measured_bench_compare` for HIP recipes; `iterate` records status `no_op_build` with both body hashes, never a keep; `serial_scheduling` classes it invalid. Unreadable hash on either side returns None and falls through to normal timing. Real production lib hashes (135 code objects, 0.1 s). Falsifier (any recorded candidate identical to its incumbent) NOT evaluated: needs recorded candidate build dirs, which the harness change does not read. Note R23-40: -j64 HIP builds are not bit-reproducible, so hits are expected mainly for serial builds. Tests: `test_noop_build.py` (9, synthetic code objects), `test_loop.py` no-op case. Not ticked.
   - [ ] **AKX-ALL-29.4 (S5; gate change; verify against the MEASUREMENT trust boundary first): evaluate a type-relative rounding-step bound (`sqrt(error_power/step_power) <= alpha`) as an additional fp16/bf16 output check next to the existing `ulp_bounded` / NMSE modes.** Falsifier: the bound gives the same verdict as the current gate on every recorded candidate. The trust boundary is human-amendment-only, so this task may only prepare the comparison, not change the gate.
