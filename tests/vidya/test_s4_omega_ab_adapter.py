@@ -298,5 +298,9 @@ def test_cli_only_new_is_idempotent_for_replayed_producer_run(tmp_path, capsys):
     assert first["rows_projected"] == 30 and initial_count == 90
     assert cli.main([*args, "--only-new"]) == 0
     second = json.loads(capsys.readouterr().out)
-    assert second["rows_projected"] == 0 and second["frames_emitted"] == 0
+    # Native rows are revalidated/projected before --only-new filters duplicate
+    # frames.  The report therefore retains the projection count while showing
+    # that all generated frames were skipped at the append boundary.
+    assert second["rows_projected"] == 30
+    assert second["frames_emitted"] == 0 and second["frames_skipped"] == 90
     assert len(Ledger(ledger).read_all()) == initial_count
