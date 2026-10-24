@@ -75,12 +75,16 @@ def _run_dirs(marker: str) -> Units:
     return units
 
 
-def _run_dirs_any(*markers: str) -> Units:
-    """Like ``_run_dirs``, but a directory is a run when it holds ANY of ``markers`` (one source, two layouts)."""
+def _run_dirs_any(*markers: str, sidecar: str | None = None) -> Units:
+    """Like ``_run_dirs``, but a directory is a run when it holds ANY of ``markers`` (one source, two layouts).
+
+    ``sidecar`` names a producer-written file that is its own unit when passed as ``--path`` (it names its run dir)."""
     def held(p: Path) -> bool:
         return any((p / m).is_file() for m in markers)
 
     def units(path: Path) -> list[Path]:
+        if sidecar and path.is_file() and path.name.endswith(sidecar):
+            return [path]
         if not path.is_dir():
             return []
         if held(path):
@@ -394,9 +398,11 @@ SOURCES: dict[str, Source] = {s.name: s for s in (
                 "per-session turn-2+ summaries and the verdict re-derived from the attrib rows, harness-local "
                 "PREDECLARATION.md sha256 in extra (protocol_id empty); INCOMPLETE / INSTRUMENT_FAIL decline; retrofit",
            task="VB-LB7-STALL-WIRE"),
-    Source("pb-qcost", "pb_qcost", _run_dirs_any("pb_qcost_1.jsonl", "out/run/pb_qcost_1.jsonl"),
+    Source("pb-qcost", "pb_qcost", _run_dirs_any("pb_qcost_1.jsonl", "out/run/pb_qcost_1.jsonl",
+                                                 sidecar="belief_measurements.jsonl"),
            note="PB-QCOST-1 prefill-cost run dirs (original `summary.json` layout and the confirm launcher "
-                "`VERDICT.json` layout); INDICATIVE, single-q caveat in applicability; OBSERVATION only; retrofit",
+                "`VERDICT.json` layout) or their research-emitted `belief_measurements.jsonl` (cross-verified row for "
+                "row against the reader's own refit); grade and single-q caveat in applicability; OBSERVATION only",
            task="VB-PBQ-1"),
     Source("ch19-t3-screen", "ch19_t3_screen", _run_dirs("records.jsonl"),
            note="CH-19.2 T3 fused MoE up+gate speed-screen dirs (`records.jsonl` + `provenance.json` + `summary.txt`); "

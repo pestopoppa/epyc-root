@@ -207,3 +207,134 @@ def test_real_run_re_derives_and_projects():
     assert all("0af228a0ee1af4408877ca8221108fb37ffd9a14d24e9dd71becc34ef0f8254f" in t.decided_proposition
                and "DO-NOT-CARRY" in t.decided_proposition for t in tuples)
     assert all(ct.grade(t)[:2] == ("Judged", "Located") for t in tuples)
+
+
+# --- write side: rule sha + analyzed_at on the verdict files, out/belief_measurements.jsonl ------------------------
+import os  # noqa: E402
+import subprocess  # noqa: E402
+
+from adapters import _native_sidecar as NS  # noqa: E402
+
+ANALYZED = "2026-10-24T12:00:00Z"
+
+
+def _stamp_and_sidecar(run: Path, *, sidecar: bool = True) -> list[dict]:
+    """What the research runner's `analyze --summary` writes (test-local writer in the runner's vocabulary)."""
+    legacy = srng.native_rows(run)[0]["run"]
+    pre = legacy["predeclaration_sha256"]
+    ov = json.loads((run / srng.VERDICT_OUT).read_text())
+    ov.update(predeclaration_sha256=pre, analyzed_at=ANALYZED)
+    (run / srng.VERDICT_OUT).write_text(json.dumps(ov, indent=1))
+    ov_sha = hashlib.sha256((run / srng.VERDICT_OUT).read_bytes()).hexdigest()
+    top = json.loads((run / "VERDICT.json").read_text())
+    top.update(predeclaration_sha256=pre, analyzed_at=ANALYZED, records_sha256=legacy["records_sha256"],
+               verdict_sha256=ov_sha)
+    (run / "VERDICT.json").write_text(json.dumps(top))
+    if not sidecar:
+        return []
+    r = dict(legacy, verdict_sha256=ov_sha)
+    rows = []
+    for comp in [c[0] for c in srng.COMPARISONS] + ["acceptance_depth3", "acceptance_depth7", "probe"]:
+        core = srng._core(comp, r["derived"])
+        row = {"schema": srng.SIDECAR_SCHEMA, "run_name": run.name, "component": comp, **core,
+               "metric_direction": "higher_better", "decided_proposition": srng._proposition(comp, r),
+               "verdict": r["verdict"], "reason": r["reason"], "predeclaration_sha256": pre,
+               "records_sha256": r["records_sha256"], "verdict_sha256": ov_sha,
+               "inputs": {"out/records.jsonl": r["records_sha256"], "PREDECLARATION.md": pre},
+               "analyzed_at": ANALYZED, "emitted_at": ANALYZED, "runner": {"file": "spec_rng_1_2.py", "sha256": "0" * 64}}
+        row["content_sha256"] = NS.content_hash(row)
+        rows.append(row)
+    (run / srng.SIDECAR).write_text("".join(json.dumps(x) + "\n" for x in rows))
+    return rows
+
+
+def _rewrite_sidecar(run: Path, edit) -> None:
+    rows = [json.loads(x) for x in (run / srng.SIDECAR).read_text().splitlines()]
+    (run / srng.SIDECAR).write_text("".join(json.dumps(x) + "\n" for x in edit(rows)))
+
+
+def _reseal(row: dict) -> dict:
+    row["content_sha256"] = NS.content_hash({k: v for k, v in row.items() if k != "content_sha256"})
+    return row
+
+
+def test_stamped_verdicts_without_sidecar_still_read_as_retrofit(run):
+    _stamp_and_sidecar(run, sidecar=False)
+    tuples = _project(run)
+    assert len(tuples) == 8 and all(t.observation["retrofit"] is True for t in tuples)
+    assert tuples[0].extra["analyzed_at"] == ANALYZED and "write_side_gap" in tuples[0].extra
+
+
+def test_verified_sidecar_clears_retrofit_and_keeps_every_value(run):
+    before = _project(run)
+    _stamp_and_sidecar(run)
+    after = _project(run)
+    assert [(t.value, t.reps, t.decided_proposition) for t in after] == \
+        [(t.value, t.reps, t.decided_proposition) for t in before]
+    for t in after:
+        assert t.observation["retrofit"] is False and t.extra["write_side"]["path"].endswith(srng.SIDECAR)
+        assert ct.grade(t)[:2] == ("Judged", "Located")
+
+
+@pytest.mark.parametrize("field,value,match", [
+    ("predeclaration_sha256", "0" * 64, "predeclaration_sha256"),
+    ("analyzed_at", "2026-10-24 12:00", "analyzed_at"),
+])
+def test_wrong_stamp_on_out_verdict_is_refused(run, field, value, match):
+    _stamp_and_sidecar(run, sidecar=False)
+    ov = json.loads((run / srng.VERDICT_OUT).read_text())
+    ov[field] = value
+    (run / srng.VERDICT_OUT).write_text(json.dumps(ov))
+    with pytest.raises(ct.ProjectionError, match=match):
+        srng.native_rows(run)
+
+
+def test_wrong_stamp_on_top_level_verdict_is_refused(run):
+    _stamp_and_sidecar(run, sidecar=False)
+    top = json.loads((run / "VERDICT.json").read_text())
+    top["verdict_sha256"] = "1" * 64
+    (run / "VERDICT.json").write_text(json.dumps(top))
+    with pytest.raises(ct.ProjectionError, match="verdict_sha256"):
+        srng.native_rows(run)
+
+
+@pytest.mark.parametrize("edit,match", [
+    (lambda rows: rows[:-1], "eight"),
+    (lambda rows: [{**rows[0], "value": 0.5}] + rows[1:], "content_sha256"),
+    (lambda rows: [_reseal({**rows[0], "value": rows[0]["value"] * 1.01})] + rows[1:], "value"),
+    (lambda rows: [_reseal({**r, "verdict": "CARRY"}) for r in rows], "verdict"),
+    (lambda rows: [_reseal({**r, "unit": "tok/s"}) for r in rows], "unit"),
+    (lambda rows: [_reseal({**rows[0], "decided_proposition": rows[0]["decided_proposition"] + "!"})] + rows[1:],
+     "decided_proposition"),
+    (lambda rows: [_reseal({**r, "inputs": {**r["inputs"], "PREDECLARATION.md": "2" * 64}}) for r in rows],
+     "records and rule"),
+])
+def test_sidecar_tamper_is_refused(run, edit, match):
+    _stamp_and_sidecar(run)
+    _rewrite_sidecar(run, edit)
+    with pytest.raises(ct.ProjectionError, match=match):
+        srng.native_rows(run)
+
+
+def _runner() -> Path | None:
+    for cand in (os.environ.get("SPEC_RNG_RUNNER"),
+                 "/workspace/repos/epyc-inference-research/scripts/benchmark/spec_rng_1_2/spec_rng_1_2.py"):
+        if cand and Path(cand).is_file() and "def finish(" in Path(cand).read_text():
+            return Path(cand)
+    return None
+
+
+@pytest.mark.skipif(_runner() is None, reason="no SPEC-RNG.1.2 runner with the belief write side on this host")
+def test_the_research_runner_output_cross_verifies(run):
+    rec = run / "out" / "records.jsonl"
+    subprocess.run(["/usr/bin/python3", "-B", "-I", str(_runner()), "analyze", "--records", str(rec), "--out",
+                    str(run / srng.VERDICT_OUT), "--summary", str(run / "VERDICT.json")], check=True,
+                   capture_output=True)
+    ov = json.loads((run / srng.VERDICT_OUT).read_text())
+    # the fixture's verdict reason is the run's reason; the runner states its own (identical rule text)
+    assert ov["predeclaration_sha256"] == hashlib.sha256((run / "PREDECLARATION.md").read_bytes()).hexdigest()
+    rr = json.loads((run / "RUN_RECORD.json").read_text())
+    rr["reason"] = ov["reason"]
+    (run / "RUN_RECORD.json").write_text(json.dumps(rr))
+    tuples = _project(run)
+    assert len(tuples) == 8 and all(t.observation["retrofit"] is False for t in tuples)

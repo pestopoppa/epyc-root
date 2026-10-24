@@ -326,3 +326,121 @@ def test_real_confirm_run_reproduces_the_verdict_including_bootstrap_cis():
     t = by["ub512:n1:intercept"]
     assert t.extra["predeclaration_sha256"].startswith("f45aef1a") and t.extra["grade"] == "INDICATIVE"
     assert "sibling-summary path defect" in t.applicability["recipe"]
+
+
+# --- the research-emitted belief_measurements.jsonl (VB-PBQ-1 write side) ----------------------------------------
+from adapters import _native_sidecar as NS  # noqa: E402
+
+
+def _seal(row: dict) -> dict:
+    row["content_sha256"] = NS.content_hash({k: v for k, v in row.items() if k != "content_sha256"})
+    return row
+
+
+def _sidecar(unit: Path, *, emission: str = "readout", out: Path | None = None) -> Path:
+    """A sidecar in the emitter's vocabulary, built from the reader's own native rows (test-local writer)."""
+    natives = P._unit_rows(unit)
+    rows_rel = "out/run/pb_qcost_1.jsonl" if natives[0]["layout"] == "confirm" else P.ROWS
+    inputs = {rows_rel: natives[0]["rows_sha256"]}
+    rows = []
+    for n in natives:
+        metric, unit_s = P.METRICS[n["metric_key"]]
+        rows.append(_seal({
+            "schema": P.SIDECAR_SCHEMA, "run_dir": str(unit), "run_name": n["run_name"], "layout": n["layout"],
+            "phase": n["phase"], "n": n["n"], "metric_key": n["metric_key"], "metric": metric, "unit": unit_s,
+            "value": n["value"], "reps": n.get("reps"), "ci95": n.get("ci95"), "anchor": n.get("anchor"),
+            "q_tokens_per_iteration": n.get("q_tokens"), "np": n.get("np"), "argv": n["argv"],
+            "binary_sha256": n["binary_sha256"], "grade": n["grade"], "grade_cause": "producer words",
+            "predeclaration_sha256": n.get("predeclaration_sha256"), "amendment_sha256": n.get("amendment_sha256"),
+            "inputs": inputs, "emission": emission, "emitted_at": "2026-10-24T12:00:00Z",
+            "emitter": {"file": "emit_belief_measurements.py", "sha256": "0" * 64}}))
+    path = out or unit / P.SIDECAR
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text("".join(json.dumps(r) + "\n" for r in rows))
+    return path
+
+
+def _rewrite(path: Path, edit) -> None:
+    rows = [json.loads(x) for x in path.read_text().splitlines()]
+    rows = edit(rows)
+    path.write_text("".join(json.dumps(r) + "\n" for r in rows))
+
+
+def test_verified_readout_sidecar_clears_retrofit_and_rides_in_extra(tmp_path):
+    unit = write_confirm(tmp_path)
+    before = [P.project(n) for n in P.native_rows(unit)]
+    side = _sidecar(unit)
+    after = [P.project(n) for n in P.native_rows(unit)]
+    assert [t.value for t in after] == [t.value for t in before] and len(after) == 18
+    for t in after:
+        assert t.observation["retrofit"] is False and "write_side_gap" not in t.extra
+        assert t.extra["write_side"]["emission"] == "readout"
+        assert t.extra["write_side"]["sha256"] == hashlib.sha256(side.read_bytes()).hexdigest()
+        assert ct.grade(t)[:2] == ("Judged", "Located")
+
+
+def test_backfill_sidecar_keeps_retrofit_and_a_passed_sidecar_file_is_its_own_unit(tmp_path):
+    run = write_original(tmp_path)
+    side = _sidecar(run, emission="backfill", out=tmp_path / "elsewhere" / P.SIDECAR)
+    tuples = [P.project(n) for n in P.native_rows(side)]
+    assert len(tuples) == 8 and all(t.observation["retrofit"] is True for t in tuples)
+    assert all(t.extra["write_side"]["path"] == str(side) for t in tuples)
+    from ingest_sources import SOURCES  # noqa: E402
+    src = SOURCES["pb-qcost"]
+    assert src.units(side) == [side] and src.units(run) == [run]
+
+
+def test_sidecar_that_disagrees_with_the_refit_is_refused(tmp_path):
+    unit = write_confirm(tmp_path)
+    side = _sidecar(unit)
+
+    def bump(rows):
+        rows[2]["value"] += 0.001
+        return [_seal(r) for r in rows]
+    _rewrite(side, bump)
+    with pytest.raises(ct.ProjectionError, match="differs from the refit"):
+        P.native_rows(unit)
+
+
+@pytest.mark.parametrize("edit,match", [
+    (lambda rows: rows[:-1], "missing"),
+    (lambda rows: rows + [_seal({**rows[0], "metric_key": "q_a", "phase": "ub512"})], "extra"),
+    (lambda rows: [{**rows[0], "value": rows[0]["value"] + 1}] + rows[1:], "content_sha256"),
+    (lambda rows: [_seal({**r, "unit": "ms per token"}) for r in rows], "metric/unit"),
+    (lambda rows: [_seal({**r, "grade": "UNCONTENDED"}) for r in rows], "grade"),
+    (lambda rows: [_seal({**r, "inputs": {**r["inputs"], "out/run/pb_qcost_1.jsonl": "0" * 64}}) for r in rows],
+     "input"),
+    (lambda rows: [_seal({**r, "emitted_at": "yesterday"}) for r in rows], "emitted_at"),
+])
+def test_sidecar_tamper_is_refused(tmp_path, edit, match):
+    unit = write_confirm(tmp_path)
+    _rewrite(_sidecar(unit), edit)
+    with pytest.raises(ct.ProjectionError, match=match):
+        P.native_rows(unit)
+
+
+def test_amended_verdict_grade_cause_and_amendment_digest(tmp_path):
+    unit = write_confirm(tmp_path)
+    am = "# SYNTHETIC amendment\n"
+    (unit / "AMENDMENT-confirm-R.md").write_text(am)
+    am_sha = hashlib.sha256(am.encode()).hexdigest()
+    v = json.loads((unit / P.VERDICT).read_text())
+    rec = json.loads((unit / P.RUN_RECORD).read_text())
+    v.update({"amendment_sha256": am_sha, "grade": "UNCONTENDED", "grade_run_level": "UNCONTENDED",
+              "sibling_summary": {"median_busy_frac": 0.003, "frac_windows_gt_25pct": 0.0},
+              "sibling_per_phase": {"per_phase": {"ub512-syn": {"ub": 512, "grade": "UNCONTENDED"}},
+                                    "all_uncontended": True}})
+    rec["amendment_sha256"] = am_sha
+    (unit / P.VERDICT).write_text(json.dumps(v))
+    (unit / P.RUN_RECORD).write_text(json.dumps(rec))
+    t = P.project(P.native_rows(unit)[0])
+    assert "grade UNCONTENDED" in t.applicability["recipe"] and "AMENDMENT A2" in t.applicability["recipe"]
+    assert "not met" not in t.applicability["recipe"] and t.extra["amendment_sha256"] == am_sha
+    v.update({"grade": "INDICATIVE", "sibling_per_phase": {"per_phase": {"ub256-syn": {
+        "ub": 256, "grade": "INDICATIVE", "median_busy_frac": 0.12, "frac_windows_gt_25pct": 0.05, "windows": 43}}}})
+    (unit / P.VERDICT).write_text(json.dumps(v))
+    t = P.project(P.native_rows(unit)[0])
+    assert "ub 256 phase failed the A2 per-phase bars" in t.applicability["recipe"]
+    (unit / "AMENDMENT-confirm-R.md").write_text(am + "edited\n")
+    with pytest.raises(ct.ProjectionError, match="amendment"):
+        P.native_rows(unit)

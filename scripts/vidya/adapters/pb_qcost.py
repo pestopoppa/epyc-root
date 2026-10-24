@@ -31,7 +31,15 @@ grade and its cause ride in ``applicability.recipe`` (the only free-text scope k
 is VERDICT.json's own; its cause is read from the files (``sibling_summary`` null, the sampler's file present one
 directory up from where ``verdict_q`` reads it).
 
-Retrofit: neither producer wrote ``belief_measurements.jsonl``; every projection says ``observation.retrofit``.
+Write side (2026-10-24): research ``scripts/benchmark/pb_qcost/emit_belief_measurements.py`` writes a self-hashed
+``belief_measurements.jsonl`` (schema ``epyc.pbqcost1.belief_measurement.v1``) for a run unit after the run. When that
+file is present beside the unit's records (``<unit>/belief_measurements.jsonl``), or is passed as ``--path`` itself, the
+reader still does its own refit above and then CROSS-VERIFIES the sidecar row for row: the content hash of every row,
+the sha256 of every input file it names, and per (phase, n, metric) the value, unit, CI, reps, anchor, q, ``-np``,
+binary sha256, argv, grade and predeclaration digest. Any difference, a missing row or an extra row refuses the unit;
+the refit is never loosened and the sidecar never supplies a number the refit did not produce. A verified sidecar
+emitted at read-out (``emission: readout``) clears ``observation.retrofit``; a ``backfill`` sidecar (emitted for a run
+that finished before the emitter existed) keeps it. Without a sidecar every projection says ``observation.retrofit``.
 """
 from __future__ import annotations
 
@@ -45,6 +53,7 @@ from pathlib import Path
 from typing import Any
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from adapters import _native_sidecar as ns  # noqa: E402
 from adapters._argv_scope import flag, scope_from_argv  # noqa: E402
 from claim_tuple import ClaimTuple, ProjectionError, register  # noqa: E402
 
@@ -59,6 +68,9 @@ CONFIRM_DIR = Path("out") / "run"
 VERDICT = "VERDICT.json"
 RUN_RECORD = "RUN_RECORD.json"
 PREDECLARATION = "PREDECLARATION.md"
+SIDECAR = "belief_measurements.jsonl"
+SIDECAR_SCHEMA = "epyc.pbqcost1.belief_measurement.v1"
+EMISSIONS = ("readout", "backfill")
 _MAX_BYTES = 32 << 20
 
 # --- the producers' fixed constants (pb_qcost_1.py / pb_qcost_1_q.py) -------------------------------------------
@@ -384,20 +396,41 @@ def _masked(argv: list[str]) -> list[str]:
 
 
 def _confirm_grade(unit: Path, verdict: dict) -> tuple[str, str]:
+    """VERDICT.json's own grade and its cause in words. Handles the original verdict_q and the AMENDMENT-confirm-R one
+    (``grade_run_level`` + ``sibling_per_phase``); an UNCONTENDED grade is stated as such, never as a failed condition."""
     grade = verdict.get("grade")
     if not isinstance(grade, str) or not grade:
         raise ProjectionError("VERDICT.json states no grade")
+    per_phase = (verdict.get("sibling_per_phase") or {}).get("per_phase")
+    if grade == "UNCONTENDED":
+        if isinstance(per_phase, dict):
+            return grade, ("the run-wide sibling-load bars (PREDECLARATION section 2) passed, every "
+                           "completed ub phase passed them in its own window (AMENDMENT A2), and every graphs/HSA/VRAM "
+                           "proof is ok")
+        return grade, "the section-2 sibling-load bars passed and every graphs/HSA/VRAM proof is ok"
     if verdict.get("sibling_summary") is None:
         read_at, written_at = unit / CONFIRM_DIR / "sibling_summary.json", unit / "out" / "sibling_summary.json"
-        if not read_at.exists() and written_at.exists():
+        if not read_at.exists() and written_at.exists() and not isinstance(per_phase, dict):
             cause = ("sibling-summary path defect: verdict_q reads out/run/sibling_summary.json but the sampler wrote "
                      "out/sibling_summary.json, so VERDICT.sibling_summary is null and the predeclared section-2 rule "
                      "could only grade INDICATIVE (fail-closed); the measured sibling load never entered the grade")
         else:
             cause = "VERDICT.sibling_summary is null: no sibling-load summary entered the grade"
-    else:
-        cause = "the predeclared section-2 sibling-load / proof condition was not met"
-    return grade, cause
+        return grade, cause
+    why = []
+    if (verdict.get("proof") or {}).get("all_ok") is not True:
+        why.append("a graphs/HSA/VRAM proof failed")
+    if verdict.get("grade_run_level", "INDICATIVE") != "UNCONTENDED":
+        sib = verdict["sibling_summary"]
+        why.append(f"the run-wide sibling load failed the section-2 bars (median busy {sib.get('median_busy_frac')}, "
+                   f"{sib.get('frac_windows_gt_25pct')} of 30-s windows above 25 %)")
+    if isinstance(per_phase, dict):
+        for g in sorted(per_phase.values(), key=lambda g: str(g.get("span_utc"))):
+            if isinstance(g, dict) and g.get("grade") != "UNCONTENDED":
+                why.append(f"ub {g.get('ub')} phase {g.get('why') or 'failed the A2 per-phase bars'} (median busy "
+                           f"{g.get('median_busy_frac')}, {g.get('frac_windows_gt_25pct')} of {g.get('windows')} "
+                           f"windows above 25 %)")
+    return grade, ("; ".join(why) if why else "the predeclared section-2 sibling-load / proof condition was not met")
 
 
 def _confirm(unit: Path) -> list[dict]:
@@ -419,6 +452,10 @@ def _confirm(unit: Path) -> list[dict]:
     for name, key in (("verdict_q.py", "verdict_q_sha256"), ("pb_qcost_1_q.py", "driver_sha256")):
         if (unit / name).exists() and _read(unit / name)[1] != record.get(key):
             raise ProjectionError(f"{name} does not hash to RUN_RECORD.{key}")
+    am_sha, amendments = verdict.get("amendment_sha256"), sorted(unit.glob("AMENDMENT*.md"))
+    if am_sha or record.get("amendment_sha256") or amendments:
+        if not (len(amendments) == 1 and record.get("amendment_sha256") == am_sha and _read(amendments[0])[1] == am_sha):
+            raise ProjectionError("the AMENDMENT file, RUN_RECORD and VERDICT disagree on the amendment digest")
     if record.get("label") != verdict.get("label"):
         raise ProjectionError("RUN_RECORD and VERDICT disagree on the label")
     binary, binary_sha = record.get("binary"), record.get("binary_sha256")
@@ -450,7 +487,8 @@ def _confirm(unit: Path) -> list[dict]:
                  binary, binary_sha, grade, cause, "VERDICT.json grade; cause read from the run's files")
     sibling_file = unit / "out" / "sibling_summary.json"
     base.update({"summary_sha256": summary_sha, "verdict_sha256": verdict_sha, "run_record_sha256": record_sha,
-                 "predeclaration_sha256": pre_sha, "label": verdict.get("label"), "proofs": proofs,
+                 "predeclaration_sha256": pre_sha, "amendment_sha256": am_sha, "label": verdict.get("label"),
+                 "proofs": proofs, "grade_run_level": verdict.get("grade_run_level"),
                  "phases_done": done, "confirm_overall": verdict.get("confirm_overall"),
                  "q_overall": verdict.get("q_overall"), "np": summary.get("np"),
                  "sibling_summary_unread": _json(sibling_file)[0] if sibling_file.exists() else None,
@@ -511,16 +549,112 @@ def _confirm(unit: Path) -> list[dict]:
     return out
 
 
-def native_rows(unit_dir: str | Path) -> list[dict]:
-    """One native row per (layout phase, n, metric); ``[]`` for a directory that is not a PB-QCOST-1 unit."""
-    path = Path(unit_dir)
-    if path.is_file():
-        path = path.parent
+def _unit_rows(path: Path) -> list[dict]:
     if (path / CONFIRM_DIR / ROWS).is_file() and (path / VERDICT).is_file():
         return _confirm(path)
     if (path / ROWS).is_file() and (path / SUMMARY).is_file():
         return _original(path)
     return []
+
+
+# --- the producer-written sidecar (research emit_belief_measurements.py) ---------------------------------------------
+def _sidecar_rows(path: Path) -> tuple[list[dict], str]:
+    raw, digest = _read(path)
+    rows = []
+    for k, line in enumerate(raw.decode("utf-8", "replace").splitlines(), 1):
+        if not line.strip():
+            continue
+        try:
+            row = json.loads(line)
+        except json.JSONDecodeError as exc:
+            raise ProjectionError(f"{SIDECAR} line {k} is torn: {exc}") from exc
+        if not isinstance(row, dict) or row.get("schema") != SIDECAR_SCHEMA:
+            raise ProjectionError(f"{SIDECAR} line {k} is not a {SIDECAR_SCHEMA} row")
+        stated = row.get("content_sha256")
+        try:
+            ok = isinstance(stated, str) and ns.content_hash({x: v for x, v in row.items() if x != "content_sha256"}) == stated
+        except ns.CaptureError:
+            ok = False
+        if not ok:
+            raise ProjectionError(f"{SIDECAR} line {k}: content_sha256 does not bind the row")
+        if row.get("emission") not in EMISSIONS or not ns.utc_timestamp(row.get("emitted_at")):
+            raise ProjectionError(f"{SIDECAR} line {k}: emission / emitted_at missing or malformed")
+        rows.append(row)
+    if not rows:
+        raise ProjectionError(f"{SIDECAR} holds no rows")
+    return rows, digest
+
+
+#: native key -> sidecar key, compared exactly (the sidecar may not differ from the reader's own refit in any of them)
+_CROSS = (("run_name", "run_name"), ("layout", "layout"), ("value", "value"), ("reps", "reps"), ("ci95", "ci95"),
+          ("anchor", "anchor"), ("q_tokens", "q_tokens_per_iteration"), ("np", "np"), ("argv", "argv"),
+          ("binary_sha256", "binary_sha256"), ("grade", "grade"), ("predeclaration_sha256", "predeclaration_sha256"),
+          ("amendment_sha256", "amendment_sha256"))
+
+
+def _cross_verify(natives: list[dict], unit: Path, side_path: Path) -> list[dict]:
+    """Refuse unless the sidecar states exactly what the reader re-derived; attach its identity to each native row."""
+    rows, file_sha = _sidecar_rows(side_path)
+    if not natives:
+        raise ProjectionError(f"{SIDECAR} names {unit}, which projects nothing of its own")
+    inputs = rows[0].get("inputs")
+    if not isinstance(inputs, dict) or not inputs or any(r.get("inputs") != inputs for r in rows):
+        raise ProjectionError(f"{SIDECAR} rows do not share one input-file manifest")
+    for rel, digest in inputs.items():
+        target = (unit / rel).resolve()
+        if unit.resolve() not in target.parents or _read(unit / rel)[1] != digest:
+            raise ProjectionError(f"{SIDECAR} input {rel} does not hash to the stated sha256")
+    rows_rel = str(CONFIRM_DIR / ROWS) if natives[0]["layout"] == "confirm" else ROWS
+    if inputs.get(rows_rel) != natives[0]["rows_sha256"]:
+        raise ProjectionError(f"{SIDECAR} was not emitted from this {ROWS}")
+    for r in rows:
+        if Path(str(r.get("run_dir"))).resolve() != unit.resolve():
+            raise ProjectionError(f"{SIDECAR} row names another run dir: {r.get('run_dir')!r}")
+    by_key = {}
+    for r in rows:
+        key = (r.get("phase"), r.get("n"), r.get("metric_key"))
+        if key in by_key:
+            raise ProjectionError(f"{SIDECAR} states {key} twice")
+        by_key[key] = r
+    mine = {(n["phase"], n["n"], n["metric_key"]): n for n in natives}
+    if set(by_key) != set(mine):
+        missing, extra = sorted(map(str, set(mine) - set(by_key))), sorted(map(str, set(by_key) - set(mine)))
+        raise ProjectionError(f"{SIDECAR} rows do not match the refit: missing {missing}, extra {extra}")
+    out = []
+    for key, nat in mine.items():
+        row = by_key[key]
+        metric, unit_s = METRICS[nat["metric_key"]]
+        if (row.get("metric"), row.get("unit")) != (metric, unit_s):
+            raise ProjectionError(f"{SIDECAR} {key}: metric/unit {row.get('metric')!r}/{row.get('unit')!r} differ")
+        for nk, sk in _CROSS:
+            if nat.get(nk) != row.get(sk):
+                raise ProjectionError(f"{SIDECAR} {key}: {sk} {row.get(sk)!r} differs from the refit's {nat.get(nk)!r}")
+        out.append({**nat, "sidecar": {
+            "path": str(side_path), "sha256": file_sha, "emitted_at": row["emitted_at"], "emission": row["emission"],
+            "content_sha256": row["content_sha256"], "emitter": row.get("emitter"), "producer": row.get("producer"),
+            "grade_cause_producer": row.get("grade_cause"), "rule": row.get("rule")}})
+    return out
+
+
+def native_rows(unit_dir: str | Path) -> list[dict]:
+    """One native row per (layout phase, n, metric); ``[]`` for a directory that is not a PB-QCOST-1 unit.
+
+    ``unit_dir`` may also be a ``belief_measurements.jsonl`` sidecar: its rows name the run dir they were emitted from,
+    and that unit is read and cross-verified against them. A unit whose root holds the sidecar is cross-verified too."""
+    path = Path(unit_dir)
+    if path.is_file() and path.name.endswith(SIDECAR):
+        rows, _ = _sidecar_rows(path)
+        dirs = {str(r.get("run_dir")) for r in rows}
+        if len(dirs) != 1 or not Path(next(iter(dirs))).is_dir():
+            raise ProjectionError(f"{SIDECAR} rows must name one existing run dir (name {sorted(dirs)})")
+        unit = Path(next(iter(dirs)))
+        return _cross_verify(_unit_rows(unit), unit, path)
+    if path.is_file():
+        path = path.parent
+    natives = _unit_rows(path)
+    if natives and (path / SIDECAR).is_file():
+        return _cross_verify(natives, path, path / SIDECAR)
+    return natives
 
 
 # --- projection -----------------------------------------------------------------------------------------------------
@@ -599,7 +733,8 @@ def project(native: dict) -> ClaimTuple:
     if reread != digest:
         raise ProjectionError(f"{ROWS} changed between read and projection")
     metric, unit = METRICS[key]
-    obs: dict = {"retrofit": True}
+    side = native.get("sidecar") if isinstance(native.get("sidecar"), dict) else None
+    obs: dict = {"retrofit": not (side and side.get("emission") == "readout")}
     anchor = native.get("anchor")
     if type(anchor) in (int, float) and anchor:
         obs["anchor_value"] = float(anchor)
@@ -618,7 +753,8 @@ def project(native: dict) -> ClaimTuple:
     name = native["run_name"]
     extra = {k: native.get(k) for k in (
         "layout", "phase", "n", "rows_sha256", "summary_sha256", "verdict_sha256", "run_record_sha256",
-        "predeclaration_sha256", "label", "status", "overall", "confirm_overall", "q_overall", "phases_done",
+        "predeclaration_sha256", "amendment_sha256", "grade_run_level", "label", "status", "overall",
+        "confirm_overall", "q_overall", "phases_done",
         "proofs", "grade", "grade_cause", "grade_source", "unit_native", "model_native", "tolerance_def",
         "q_tokens", "q_levels", "ci95", "b_vs_assumed", "d_vs_old", "implied_intercept_ms_at_q512_c0",
         "q_identified", "sibling_summary_unread", "binary", "binary_sha256") if native.get(k) is not None}
@@ -628,7 +764,10 @@ def project(native: dict) -> ClaimTuple:
                                          "it does not change the grade")
     extra["single_q_caveat"] = ("q varied (q-axis tuple)" if phase == "q_axis" else
                                 "q held at one value per n; the q coefficient is not measured by this tuple")
-    extra["write_side_gap"] = "the producer wrote no belief_measurements.jsonl; retrofit projection"
+    if side:
+        extra["write_side"] = side
+    else:
+        extra["write_side_gap"] = "the producer wrote no belief_measurements.jsonl; retrofit projection"
     return ClaimTuple(
         measurement_id=f"pbqcost:v1:{name}:{digest[:16]}:{phase}:n{native['n']}:{key}",
         metric=metric, value=value, unit=unit, date=str(native.get("date") or ""), category="BASELINE",

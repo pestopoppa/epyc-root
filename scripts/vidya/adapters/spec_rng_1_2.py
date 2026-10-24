@@ -39,8 +39,15 @@ and none is a claim of this run.
 Absence: an ``INCONCLUSIVE`` run (validity failed) projects nothing -- a re-grant re-runs it. A directory that
 holds ``VERDICT.json`` but is not a SPEC-RNG.1.2 launcher is declined (``[]``).
 
-Retrofit (DP-1 (a)): the runner has no belief hook yet (its next use should emit ``belief_measurements.jsonl``),
-so every projection today says ``observation.retrofit``.
+Write side (research ``f8/spec-rng-1-2-write-20261024``): the runner's ``analyze`` now stamps ``out/verdict.json`` (and the
+top-level ``VERDICT.json`` it writes with ``--summary``) with the rule sha256 (``predeclaration_sha256``) and an ISO-8601
+UTC ``analyzed_at``, and writes ``out/belief_measurements.jsonl`` (schema ``epyc.spec_rng_1_2.belief_measurement.v1``,
+one self-hashed row per component). When those fields are present they must equal what this reader re-hashes (the rule
+digest, the records digest, the out/verdict.json digest) or the run is refused. When the sidecar is present it is
+CROSS-VERIFIED: row content hashes, input-file hashes, exactly the eight components, and per component the metric, unit,
+category, reps, value, anchor and the decided proposition this reader builds from its own re-derivation. A verified
+sidecar clears ``observation.retrofit``. A legacy run without these fields or file still reads exactly as before and
+says ``observation.retrofit``.
 """
 from __future__ import annotations
 
@@ -53,6 +60,7 @@ from pathlib import Path
 from typing import Any
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from adapters import _native_sidecar as ns  # noqa: E402
 from adapters._argv_scope import flag, scope_from_argv  # noqa: E402
 from claim_tuple import ClaimTuple, ProjectionError, register  # noqa: E402
 
@@ -64,6 +72,8 @@ KNOB_FAMILY = "speculative_decoding"
 HANDOFF_TAG = "SPEC-RNG.1.2"
 RECORDS = "out/records.jsonl"
 VERDICT_OUT = "out/verdict.json"
+SIDECAR = "out/belief_measurements.jsonl"
+SIDECAR_SCHEMA = "epyc.spec_rng_1_2.belief_measurement.v1"
 _MAX_BYTES = 64 << 20
 
 # --- the runner's predeclared constants (spec_rng_1_2.py @ 2f8af0e2d) ----------------------------------------
@@ -422,6 +432,101 @@ def _proposition(component: str, run: dict) -> str:
     return head + body
 
 
+def _core(comp: str, d: dict) -> dict:
+    """metric / value / unit / reps / category / anchor for one component, from the re-derived run (one definition for
+    the projection and the sidecar cross-check)."""
+    if comp in _VARIED:
+        c = d["comparisons"][comp]
+        cells = _cell_ns(d, c["A"], c["B"])
+        return {"metric": "spec_rng_chi2_min_p", "value": c["min_p"], "unit": "p", "reps": min(cells.values()),
+                "reps_basis": "scored:ok requests per (prompt, arm) cell, smallest of the compared cells",
+                "category": "CANDIDATE" if c["role"] == "primary" else "BASELINE",
+                "anchor_value": c["bonferroni_threshold"]}
+    if comp.startswith("acceptance_depth"):
+        a = d["acceptance"][comp.split("_", 1)[1]]
+        return {"metric": "spec_rng_acceptance_fraction_poskey", "value": a["poskey_mean"], "unit": "fraction",
+                "reps": min(a["n_poskey"], a["n_stateful"]),
+                "reps_basis": "scored:drafted requests per RNG arm at this depth, smaller arm", "category": "CANDIDATE",
+                "anchor_value": a["stateful_mean"]}
+    if comp == "probe":
+        p = d["probe"]
+        return {"metric": "spec_rng_probe_net_gain", "value": p["net_gain"], "unit": "seeds", "reps": p["paired_seeds"],
+                "reps_basis": "scored:paired probe seeds (alone vs batched, both RNG modes)", "category": "CANDIDATE",
+                "anchor_value": None}
+    raise ProjectionError(f"SPEC-RNG.1.2 component {comp!r} is unknown")
+
+
+def _stamp(doc: dict, where: str, *, pre_digest: str, rec_digest: str, ov_digest: str | None) -> None:
+    """The write-side fields, when a verdict file carries them, must be what this reader re-hashes."""
+    if "predeclaration_sha256" in doc and doc["predeclaration_sha256"] != pre_digest:
+        raise ProjectionError(f"{where} predeclaration_sha256 {doc['predeclaration_sha256']!r} is not the "
+                              f"PREDECLARATION.md digest {pre_digest}")
+    if "analyzed_at" in doc and not ns.utc_timestamp(doc["analyzed_at"]):
+        raise ProjectionError(f"{where} analyzed_at {doc['analyzed_at']!r} is not an ISO-8601 UTC timestamp")
+    if "records_sha256" in doc and doc["records_sha256"] != rec_digest:
+        raise ProjectionError(f"{where} records_sha256 does not match {RECORDS}")
+    if ov_digest is not None and "verdict_sha256" in doc and doc["verdict_sha256"] != ov_digest:
+        raise ProjectionError(f"{where} verdict_sha256 does not match {VERDICT_OUT}")
+
+
+def _cross_verify(unit: Path, run: dict, components: list[str]) -> dict:
+    """Refuse unless the runner's sidecar states exactly what this reader re-derived; return its identity."""
+    raw, file_sha = _read(unit / SIDECAR)
+    rows = []
+    for i, line in enumerate(raw.decode("utf-8", "replace").splitlines(), 1):
+        if not line.strip():
+            continue
+        try:
+            row = json.loads(line)
+        except json.JSONDecodeError as exc:
+            raise ProjectionError(f"{SIDECAR} line {i} is torn: {exc}") from exc
+        if not isinstance(row, dict) or row.get("schema") != SIDECAR_SCHEMA:
+            raise ProjectionError(f"{SIDECAR} line {i} is not a {SIDECAR_SCHEMA} row")
+        try:
+            sealed = ns.content_hash({k: v for k, v in row.items() if k != "content_sha256"}) == row.get("content_sha256")
+        except ns.CaptureError:
+            sealed = False
+        if not sealed:
+            raise ProjectionError(f"{SIDECAR} line {i}: content_sha256 does not bind the row")
+        if not (ns.utc_timestamp(row.get("emitted_at")) and ns.utc_timestamp(row.get("analyzed_at"))):
+            raise ProjectionError(f"{SIDECAR} line {i}: emitted_at / analyzed_at is not an ISO-8601 UTC timestamp")
+        rows.append(row)
+    by = {}
+    for row in rows:
+        if row.get("component") in by:
+            raise ProjectionError(f"{SIDECAR} states {row.get('component')!r} twice")
+        by[row.get("component")] = row
+    if set(by) != set(components):
+        raise ProjectionError(f"{SIDECAR} components {sorted(map(str, by))} are not the eight this run decides")
+    inputs = rows[0].get("inputs")
+    if not isinstance(inputs, dict) or any(r.get("inputs") != inputs for r in rows):
+        raise ProjectionError(f"{SIDECAR} rows do not share one input-file manifest")
+    if inputs.get(RECORDS) != run["records_sha256"] or inputs.get("PREDECLARATION.md") != run["predeclaration_sha256"]:
+        raise ProjectionError(f"{SIDECAR} was not emitted from this run's records and rule")
+    for rel, digest in inputs.items():
+        if unit.resolve() not in (unit / rel).resolve().parents or _read(unit / rel)[1] != digest:
+            raise ProjectionError(f"{SIDECAR} input {rel} does not hash to the stated sha256")
+    want = {"run_name": run["run_name"], "verdict": run["verdict"], "reason": run["reason"],
+            "predeclaration_sha256": run["predeclaration_sha256"], "records_sha256": run["records_sha256"],
+            "verdict_sha256": run["verdict_sha256"]}
+    if run.get("analyzed_at"):
+        want["analyzed_at"] = run["analyzed_at"]
+    for comp in components:
+        row, core = by[comp], _core(comp, run["derived"])
+        for key, val in want.items():
+            if row.get(key) != val:
+                raise ProjectionError(f"{SIDECAR} {comp}: {key} {row.get(key)!r} differs from the run's {val!r}")
+        for key in ("metric", "unit", "category", "reps", "reps_basis"):
+            if row.get(key) != core[key]:
+                raise ProjectionError(f"{SIDECAR} {comp}: {key} {row.get(key)!r} differs from the reader's {core[key]!r}")
+        for key in ("value", "anchor_value"):
+            _same(row.get(key), core[key], f"{SIDECAR} {comp}.{key}")
+        if row.get("decided_proposition") != _proposition(comp, run):
+            raise ProjectionError(f"{SIDECAR} {comp}: decided_proposition differs from the reader's re-derivation")
+    return {"path": str(unit / SIDECAR), "sha256": file_sha, "emitted_at": rows[0]["emitted_at"],
+            "analyzed_at": rows[0]["analyzed_at"], "runner": rows[0].get("runner")}
+
+
 def native_rows(unit_dir: str | Path) -> list[dict]:
     """Eight native rows for a valid SPEC-RNG.1.2 launcher dir; ``[]`` for a foreign dir or an INCONCLUSIVE run."""
     unit = Path(unit_dir)
@@ -438,6 +543,10 @@ def native_rows(unit_dir: str | Path) -> list[dict]:
     rec_raw, rec_digest = _read(unit / RECORDS)
     if out_verdict.get("records_sha256") != rec_digest:
         raise ProjectionError(f"{RECORDS} does not hash to {VERDICT_OUT} records_sha256")
+    _stamp(out_verdict, VERDICT_OUT, pre_digest=pre_digest, rec_digest=rec_digest, ov_digest=None)
+    _stamp(launcher_verdict, "VERDICT.json", pre_digest=pre_digest, rec_digest=rec_digest, ov_digest=ov_digest)
+    if "analyzed_at" in launcher_verdict and launcher_verdict["analyzed_at"] != out_verdict.get("analyzed_at"):
+        raise ProjectionError("VERDICT.json and out/verdict.json disagree on analyzed_at")
     pin = unit / "PINSHA"
     if pin.is_file() and pin.read_text().strip() != str(run_record.get("runner_pin") or ""):
         raise ProjectionError("PINSHA and RUN_RECORD.json runner_pin disagree")
@@ -470,8 +579,12 @@ def native_rows(unit_dir: str | Path) -> list[dict]:
            "run_record_sha256": rr_digest, "date": _iso(t1), "argv": argv, "binary": binary,
            "readback_ok": readback_ok, "binary_sha256": run_record.get("llama_server_sha256"),
            "runner_pin": run_record.get("runner_pin"), "branch": run_record.get("branch"),
-           "head": run_record.get("head"), "claim_class": claim_class}
+           "head": run_record.get("head"), "claim_class": claim_class,
+           "analyzed_at": out_verdict.get("analyzed_at") if isinstance(out_verdict.get("analyzed_at"), str) else "",
+           "verdict_carries_rule_sha": out_verdict.get("predeclaration_sha256") == pre_digest}
     components = [c[0] for c in COMPARISONS] + ["acceptance_depth3", "acceptance_depth7", "probe"]
+    if (unit / SIDECAR).is_file():
+        run["write_side"] = _cross_verify(unit, run, components)
     return [{"schema": SCHEMA, "component": c, "run": run, "decided_proposition": _proposition(c, run)}
             for c in components]
 
@@ -500,20 +613,24 @@ def project(native: dict) -> ClaimTuple:
     d, verdict = run["derived"], run["verdict"]
     if verdict not in ("CARRY", "DO-NOT-CARRY", "POSKEY-BIASED"):
         raise ProjectionError(f"SPEC-RNG.1.2 verdict {verdict!r} is not a projectable verdict")
-    obs: dict = {"retrofit": True, "outcome_reason": (run["reason"] or verdict)[:300]}
+    side = run.get("write_side") if isinstance(run.get("write_side"), dict) else None
+    obs: dict = {"retrofit": side is None, "outcome_reason": (run["reason"] or verdict)[:300]}
     extra: dict = {"schema": SCHEMA, "component": comp, "rule": "PREDECLARATION.md",
                    "predeclaration_sha256": run["predeclaration_sha256"], "verdict": verdict,
                    "reason": run["reason"], "gates": d["gates"], "records_sha256": run["records_sha256"],
                    "verdict_sha256": run["verdict_sha256"], "run_record_sha256": run["run_record_sha256"],
                    "runner_pin": run["runner_pin"], "branch": run["branch"], "head": run["head"],
                    "claim_class": run["claim_class"], "unit_dir": run["unit_dir"]}
+    if run.get("analyzed_at"):
+        extra["analyzed_at"] = run["analyzed_at"]
+    if side:
+        extra["write_side"] = side
+    else:
+        extra["write_side_gap"] = "the runner wrote no out/belief_measurements.jsonl; retrofit projection"
+    core = _core(comp, d)
     if comp in _VARIED:
         c = d["comparisons"][comp]
         cells = _cell_ns(d, c["A"], c["B"])
-        value, unit, metric = c["min_p"], "p", "spec_rng_chi2_min_p"
-        reps = min(cells.values())
-        reps_basis = "scored:ok requests per (prompt, arm) cell, smallest of the compared cells"
-        category = "CANDIDATE" if c["role"] == "primary" else "BASELINE"
         obs.update(anchor_value=c["bonferroni_threshold"], outcome_native=f"{comp} pass={str(c['pass']).lower()}; "
                    f"run verdict {verdict}"[:120])
         obs["outcome"] = "null" if c["pass"] else "refused_correctness"
@@ -530,10 +647,6 @@ def project(native: dict) -> ClaimTuple:
         a = d["acceptance"][depth]
         if a["poskey_mean"] is None or a["stateful_mean"] is None or not a["stateful_mean"]:
             raise ProjectionError(f"SPEC-RNG.1.2 {comp} has no acceptance samples")
-        value, unit, metric = a["poskey_mean"], "fraction", "spec_rng_acceptance_fraction_poskey"
-        reps = min(a["n_poskey"], a["n_stateful"])
-        reps_basis = "scored:drafted requests per RNG arm at this depth, smaller arm"
-        category = "CANDIDATE"
         obs.update(anchor_value=a["stateful_mean"], effect_rel=a["poskey_mean"] / a["stateful_mean"] - 1.0,
                    outcome_native=f"{depth} pass={str(a['pass']).lower()}; run verdict {verdict}"[:120],
                    outcome="null" if a["pass"] else "refused_correctness")
@@ -548,10 +661,6 @@ def project(native: dict) -> ClaimTuple:
         p = d["probe"]
         if p["paired_seeds"] < 1:
             raise ProjectionError("SPEC-RNG.1.2 probe has no paired seeds")
-        value, unit, metric = p["net_gain"], "seeds", "spec_rng_probe_net_gain"
-        reps = p["paired_seeds"]
-        reps_basis = "scored:paired probe seeds (alone vs batched, both RNG modes)"
-        category = "CANDIDATE"
         obs.update(n_pairs=p["paired_seeds"], outcome_native=f"probe net_gain={p['net_gain']}; run verdict "
                    f"{verdict}"[:120])
         if verdict in ("CARRY", "DO-NOT-CARRY"):
@@ -566,6 +675,8 @@ def project(native: dict) -> ClaimTuple:
                  f"{_g(p['sign_p_one_sided'])}; INDICATIVE; run verdict {verdict}")
     else:
         raise ProjectionError(f"SPEC-RNG.1.2 component {comp!r} is unknown")
+    value, unit, metric, reps = core["value"], core["unit"], core["metric"], core["reps"]
+    reps_basis, category = core["reps_basis"], core["category"]
     digest = run["records_sha256"]
     return ClaimTuple(
         measurement_id=f"specrng12:v1:{run['run_name']}:{digest[:16]}:{comp}",
