@@ -1,0 +1,899 @@
+{
+ "schema": "epyc.ufh14.lb7.attrib.v1",
+ "label": "s1-ON",
+ "arm": "ON",
+ "log": "/mnt/raid0/llm/tmp/f8-launchers-20261023/locals-ufh14-lb7-stall/out/s1-ON/server.log",
+ "turns_file": "/mnt/raid0/llm/tmp/f8-launchers-20261023/locals-ufh14-lb7-stall/out/s1-ON/turns.jsonl",
+ "events": {
+  "SEL": 18,
+  "LAUNCH": 18,
+  "IDLE": 36,
+  "CLEAR": 36,
+  "NEWP": 18,
+  "CU_B": 13,
+  "CU_E": 13,
+  "SAVE": 10,
+  "FOUND": 10,
+  "EVICT": 0,
+  "RESTFAIL": 0,
+  "LOADFAIL": 0
+ },
+ "n_turns": 18,
+ "n_matched": 18,
+ "unmatched": [],
+ "align": {
+  "offset_s": 1792765227.376752,
+  "lag_p50_s": 0.0001,
+  "lag_p95_s": 0.0008,
+  "lag_max_s": 0.0021,
+  "n_lag_below_0_2s": 18
+ },
+ "per_turn": [
+  {
+   "conv": 0,
+   "turn": 1,
+   "task": 1,
+   "slot": 3,
+   "sel_how": "LRU",
+   "n_tokens": 20220,
+   "gap_client_s": 0.0472,
+   "pre_hdr_client_s": 0.0494,
+   "W_server_s": 0.0473,
+   "lag_s": 0.0021,
+   "prompt_ms": 88481.823,
+   "components_s": {
+    "neighbour_save_own_trigger": 0.0,
+    "neighbour_save_other_trigger": 0.0,
+    "idle_noop": 0.0,
+    "own_load_victim_save": 0.0,
+    "own_load_lookup": 0.0,
+    "own_load_copy": 0.0,
+    "own_load_bookkeeping": 0.0,
+    "other_load": 0.0,
+    "dispatch_overhead": 0.0001,
+    "residual_pre_pickup": 0.0459,
+    "residual_post_launch": 0.0013
+   },
+   "groups_s": {
+    "NEIGHBOUR_IDLE_SAVE": 0.0,
+    "OWN_PROMPT_LOAD": 0.0,
+    "OTHER_PROMPT_LOAD": 0.0,
+    "QUEUE_AND_LOOP_BUSY": 0.0473
+   },
+   "draft_copy_est_s": 0.0
+  },
+  {
+   "conv": 1,
+   "turn": 1,
+   "task": 11,
+   "slot": 2,
+   "sel_how": "LRU",
+   "n_tokens": 20405,
+   "gap_client_s": 0.8963,
+   "pre_hdr_client_s": 0.8962,
+   "W_server_s": 0.896,
+   "lag_s": 0.0001,
+   "prompt_ms": 65748.68,
+   "components_s": {
+    "neighbour_save_own_trigger": 0.0,
+    "neighbour_save_other_trigger": 0.0,
+    "idle_noop": 0.0,
+    "own_load_victim_save": 0.0,
+    "own_load_lookup": 0.0,
+    "own_load_copy": 0.0,
+    "own_load_bookkeeping": 0.0,
+    "other_load": 0.0,
+    "dispatch_overhead": 0.0001,
+    "residual_pre_pickup": 0.8949,
+    "residual_post_launch": 0.0009
+   },
+   "groups_s": {
+    "NEIGHBOUR_IDLE_SAVE": 0.0,
+    "OWN_PROMPT_LOAD": 0.0,
+    "OTHER_PROMPT_LOAD": 0.0,
+    "QUEUE_AND_LOOP_BUSY": 0.896
+   },
+   "draft_copy_est_s": 0.0
+  },
+  {
+   "conv": 2,
+   "turn": 1,
+   "task": 22,
+   "slot": 1,
+   "sel_how": "LRU",
+   "n_tokens": 20340,
+   "gap_client_s": 1.6223,
+   "pre_hdr_client_s": 1.6224,
+   "W_server_s": 1.6222,
+   "lag_s": 0.0002,
+   "prompt_ms": 33298.706,
+   "components_s": {
+    "neighbour_save_own_trigger": 0.0,
+    "neighbour_save_other_trigger": 0.0,
+    "idle_noop": 0.0,
+    "own_load_victim_save": 0.0,
+    "own_load_lookup": 0.0,
+    "own_load_copy": 0.0,
+    "own_load_bookkeeping": 0.0,
+    "other_load": 0.0,
+    "dispatch_overhead": 0.0001,
+    "residual_pre_pickup": 1.6215,
+    "residual_post_launch": 0.0005
+   },
+   "groups_s": {
+    "NEIGHBOUR_IDLE_SAVE": 0.0,
+    "OWN_PROMPT_LOAD": 0.0,
+    "OTHER_PROMPT_LOAD": 0.0,
+    "QUEUE_AND_LOOP_BUSY": 1.6222
+   },
+   "draft_copy_est_s": 0.0
+  },
+  {
+   "conv": 0,
+   "turn": 2,
+   "task": 165,
+   "slot": 3,
+   "sel_how": "LCP similarity",
+   "n_tokens": 22267,
+   "gap_client_s": 0.592,
+   "pre_hdr_client_s": 0.5931,
+   "W_server_s": 0.5923,
+   "lag_s": 0.0008,
+   "prompt_ms": 3362.986,
+   "components_s": {
+    "neighbour_save_own_trigger": 0.5088,
+    "neighbour_save_other_trigger": 0.0,
+    "idle_noop": 0.0,
+    "own_load_victim_save": 0.0,
+    "own_load_lookup": 0.0,
+    "own_load_copy": 0.0,
+    "own_load_bookkeeping": 0.0,
+    "other_load": 0.0,
+    "dispatch_overhead": 0.0001,
+    "residual_pre_pickup": 0.0599,
+    "residual_post_launch": 0.0235
+   },
+   "groups_s": {
+    "NEIGHBOUR_IDLE_SAVE": 0.5088,
+    "OWN_PROMPT_LOAD": 0.0,
+    "OTHER_PROMPT_LOAD": 0.0,
+    "QUEUE_AND_LOOP_BUSY": 0.0836
+   },
+   "draft_copy_est_s": 0.0235
+  },
+  {
+   "conv": 1,
+   "turn": 2,
+   "task": 169,
+   "slot": 0,
+   "sel_how": "LRU",
+   "n_tokens": 22452,
+   "gap_client_s": 1.7812,
+   "pre_hdr_client_s": 1.7809,
+   "W_server_s": 1.7807,
+   "lag_s": 0.0001,
+   "prompt_ms": 18433.782,
+   "components_s": {
+    "neighbour_save_own_trigger": 0.0,
+    "neighbour_save_other_trigger": 0.0,
+    "idle_noop": 0.0,
+    "own_load_victim_save": 0.0,
+    "own_load_lookup": 0.0,
+    "own_load_copy": 0.052,
+    "own_load_bookkeeping": 0.0,
+    "other_load": 0.0,
+    "dispatch_overhead": 0.0002,
+    "residual_pre_pickup": 1.7274,
+    "residual_post_launch": 0.0011
+   },
+   "groups_s": {
+    "NEIGHBOUR_IDLE_SAVE": 0.0,
+    "OWN_PROMPT_LOAD": 0.052,
+    "OTHER_PROMPT_LOAD": 0.0,
+    "QUEUE_AND_LOOP_BUSY": 1.7287
+   },
+   "draft_copy_est_s": 0.0013
+  },
+  {
+   "conv": 2,
+   "turn": 2,
+   "task": 172,
+   "slot": 1,
+   "sel_how": "LRU",
+   "n_tokens": 22387,
+   "gap_client_s": 17.9844,
+   "pre_hdr_client_s": 17.9848,
+   "W_server_s": 17.9846,
+   "lag_s": 0.0003,
+   "prompt_ms": 3677.632,
+   "components_s": {
+    "neighbour_save_own_trigger": 0.0,
+    "neighbour_save_other_trigger": 0.0,
+    "idle_noop": 0.0,
+    "own_load_victim_save": 0.0,
+    "own_load_lookup": 0.0,
+    "own_load_copy": 15.0041,
+    "own_load_bookkeeping": 0.0,
+    "other_load": 0.0,
+    "dispatch_overhead": 0.0002,
+    "residual_pre_pickup": 2.9394,
+    "residual_post_launch": 0.0409
+   },
+   "groups_s": {
+    "NEIGHBOUR_IDLE_SAVE": 0.0,
+    "OWN_PROMPT_LOAD": 15.0042,
+    "OTHER_PROMPT_LOAD": 0.0,
+    "QUEUE_AND_LOOP_BUSY": 2.9805
+   },
+   "draft_copy_est_s": 0.43
+  },
+  {
+   "conv": 0,
+   "turn": 3,
+   "task": 240,
+   "slot": 3,
+   "sel_how": "LCP similarity",
+   "n_tokens": 24322,
+   "gap_client_s": 39.638,
+   "pre_hdr_client_s": 39.6382,
+   "W_server_s": 39.6381,
+   "lag_s": 0.0001,
+   "prompt_ms": 10797.996,
+   "components_s": {
+    "neighbour_save_own_trigger": 6.08,
+    "neighbour_save_other_trigger": 0.0,
+    "idle_noop": 0.0001,
+    "own_load_victim_save": 0.0,
+    "own_load_lookup": 0.0,
+    "own_load_copy": 0.0,
+    "own_load_bookkeeping": 0.0,
+    "other_load": 33.3892,
+    "dispatch_overhead": 0.0001,
+    "residual_pre_pickup": 0.0495,
+    "residual_post_launch": 0.1192
+   },
+   "groups_s": {
+    "NEIGHBOUR_IDLE_SAVE": 6.08,
+    "OWN_PROMPT_LOAD": 0.0,
+    "OTHER_PROMPT_LOAD": 33.3892,
+    "QUEUE_AND_LOOP_BUSY": 0.1689
+   },
+   "draft_copy_est_s": 0.2604
+  },
+  {
+   "conv": 1,
+   "turn": 3,
+   "task": 242,
+   "slot": 2,
+   "sel_how": "LRU",
+   "n_tokens": 24495,
+   "gap_client_s": 37.5965,
+   "pre_hdr_client_s": 37.5969,
+   "W_server_s": 37.5967,
+   "lag_s": 0.0002,
+   "prompt_ms": 10555.477,
+   "components_s": {
+    "neighbour_save_own_trigger": 0.0,
+    "neighbour_save_other_trigger": 4.1417,
+    "idle_noop": 0.0001,
+    "own_load_victim_save": 0.0,
+    "own_load_lookup": 0.0,
+    "own_load_copy": 16.8032,
+    "own_load_bookkeeping": 0.0001,
+    "other_load": 16.5858,
+    "dispatch_overhead": 0.0002,
+    "residual_pre_pickup": 0.0133,
+    "residual_post_launch": 0.0522
+   },
+   "groups_s": {
+    "NEIGHBOUR_IDLE_SAVE": 4.1417,
+    "OWN_PROMPT_LOAD": 16.8033,
+    "OTHER_PROMPT_LOAD": 16.5858,
+    "QUEUE_AND_LOOP_BUSY": 0.0658
+   },
+   "draft_copy_est_s": 0.5425
+  },
+  {
+   "conv": 2,
+   "turn": 3,
+   "task": 243,
+   "slot": 0,
+   "sel_how": "LRU",
+   "n_tokens": 24428,
+   "gap_client_s": 35.5484,
+   "pre_hdr_client_s": 35.5479,
+   "W_server_s": 35.5478,
+   "lag_s": 0.0001,
+   "prompt_ms": 7846.643,
+   "components_s": {
+    "neighbour_save_own_trigger": 0.0,
+    "neighbour_save_other_trigger": 2.142,
+    "idle_noop": 0.0001,
+    "own_load_victim_save": 0.0,
+    "own_load_lookup": 0.0,
+    "own_load_copy": 16.5858,
+    "own_load_bookkeeping": 0.0,
+    "other_load": 16.8033,
+    "dispatch_overhead": 0.0002,
+    "residual_pre_pickup": 0.0151,
+    "residual_post_launch": 0.0012
+   },
+   "groups_s": {
+    "NEIGHBOUR_IDLE_SAVE": 2.142,
+    "OWN_PROMPT_LOAD": 16.5858,
+    "OTHER_PROMPT_LOAD": 16.8033,
+    "QUEUE_AND_LOOP_BUSY": 0.0166
+   },
+   "draft_copy_est_s": 0.4525
+  },
+  {
+   "conv": 0,
+   "turn": 4,
+   "task": 308,
+   "slot": 3,
+   "sel_how": "LCP similarity",
+   "n_tokens": 26708,
+   "gap_client_s": 44.7401,
+   "pre_hdr_client_s": 44.7404,
+   "W_server_s": 44.7404,
+   "lag_s": 0.0,
+   "prompt_ms": 13399.92,
+   "components_s": {
+    "neighbour_save_own_trigger": 8.7486,
+    "neighbour_save_other_trigger": 0.0,
+    "idle_noop": 0.0001,
+    "own_load_victim_save": 0.0,
+    "own_load_lookup": 0.0,
+    "own_load_copy": 0.0,
+    "own_load_bookkeeping": 0.0,
+    "other_load": 35.8877,
+    "dispatch_overhead": 0.0001,
+    "residual_pre_pickup": 0.0545,
+    "residual_post_launch": 0.0494
+   },
+   "groups_s": {
+    "NEIGHBOUR_IDLE_SAVE": 8.7486,
+    "OWN_PROMPT_LOAD": 0.0,
+    "OTHER_PROMPT_LOAD": 35.8877,
+    "QUEUE_AND_LOOP_BUSY": 0.1041
+   },
+   "draft_copy_est_s": 0.3506
+  },
+  {
+   "conv": 1,
+   "turn": 4,
+   "task": 310,
+   "slot": 1,
+   "sel_how": "LRU",
+   "n_tokens": 26832,
+   "gap_client_s": 42.7384,
+   "pre_hdr_client_s": 42.7386,
+   "W_server_s": 42.7385,
+   "lag_s": 0.0002,
+   "prompt_ms": 9106.562,
+   "components_s": {
+    "neighbour_save_own_trigger": 0.0,
+    "neighbour_save_other_trigger": 6.8302,
+    "idle_noop": 0.0001,
+    "own_load_victim_save": 0.0,
+    "own_load_lookup": 0.0,
+    "own_load_copy": 18.3907,
+    "own_load_bookkeeping": 0.0001,
+    "other_load": 17.4968,
+    "dispatch_overhead": 0.0002,
+    "residual_pre_pickup": 0.017,
+    "residual_post_launch": 0.0033
+   },
+   "groups_s": {
+    "NEIGHBOUR_IDLE_SAVE": 6.8302,
+    "OWN_PROMPT_LOAD": 18.3908,
+    "OTHER_PROMPT_LOAD": 17.4968,
+    "QUEUE_AND_LOOP_BUSY": 0.0206
+   },
+   "draft_copy_est_s": 0.6255
+  },
+  {
+   "conv": 2,
+   "turn": 4,
+   "task": 311,
+   "slot": 2,
+   "sel_how": "LRU",
+   "n_tokens": 26828,
+   "gap_client_s": 40.7399,
+   "pre_hdr_client_s": 40.7397,
+   "W_server_s": 40.7396,
+   "lag_s": 0.0001,
+   "prompt_ms": 12847.137,
+   "components_s": {
+    "neighbour_save_own_trigger": 0.0,
+    "neighbour_save_other_trigger": 4.8306,
+    "idle_noop": 0.0001,
+    "own_load_victim_save": 0.0,
+    "own_load_lookup": 0.0,
+    "own_load_copy": 17.4968,
+    "own_load_bookkeeping": 0.0001,
+    "other_load": 18.3908,
+    "dispatch_overhead": 0.0002,
+    "residual_pre_pickup": 0.019,
+    "residual_post_launch": 0.002
+   },
+   "groups_s": {
+    "NEIGHBOUR_IDLE_SAVE": 4.8306,
+    "OWN_PROMPT_LOAD": 17.4968,
+    "OTHER_PROMPT_LOAD": 18.3908,
+    "QUEUE_AND_LOOP_BUSY": 0.0213
+   },
+   "draft_copy_est_s": 0.5614
+  },
+  {
+   "conv": 0,
+   "turn": 5,
+   "task": 374,
+   "slot": 3,
+   "sel_how": "LCP similarity",
+   "n_tokens": 28501,
+   "gap_client_s": 58.269,
+   "pre_hdr_client_s": 58.2694,
+   "W_server_s": 58.2692,
+   "lag_s": 0.0001,
+   "prompt_ms": 10337.953,
+   "components_s": {
+    "neighbour_save_own_trigger": 19.6126,
+    "neighbour_save_other_trigger": 0.0,
+    "idle_noop": 0.0,
+    "own_load_victim_save": 0.0,
+    "own_load_lookup": 0.0,
+    "own_load_copy": 0.0,
+    "own_load_bookkeeping": 0.0,
+    "other_load": 38.4243,
+    "dispatch_overhead": 0.0001,
+    "residual_pre_pickup": 0.0891,
+    "residual_post_launch": 0.143
+   },
+   "groups_s": {
+    "NEIGHBOUR_IDLE_SAVE": 19.6126,
+    "OWN_PROMPT_LOAD": 0.0,
+    "OTHER_PROMPT_LOAD": 38.4243,
+    "QUEUE_AND_LOOP_BUSY": 0.2323
+   },
+   "draft_copy_est_s": 0.7304
+  },
+  {
+   "conv": 1,
+   "turn": 5,
+   "task": 376,
+   "slot": 0,
+   "sel_how": "LRU",
+   "n_tokens": 28527,
+   "gap_client_s": 56.1761,
+   "pre_hdr_client_s": 56.1764,
+   "W_server_s": 56.1763,
+   "lag_s": 0.0001,
+   "prompt_ms": 8137.895,
+   "components_s": {
+    "neighbour_save_own_trigger": 0.0,
+    "neighbour_save_other_trigger": 17.7023,
+    "idle_noop": 0.0,
+    "own_load_victim_save": 0.0,
+    "own_load_lookup": 0.0,
+    "own_load_copy": 19.0597,
+    "own_load_bookkeeping": 0.0001,
+    "other_load": 19.3645,
+    "dispatch_overhead": 0.0002,
+    "residual_pre_pickup": 0.0467,
+    "residual_post_launch": 0.0028
+   },
+   "groups_s": {
+    "NEIGHBOUR_IDLE_SAVE": 17.7023,
+    "OWN_PROMPT_LOAD": 19.0598,
+    "OTHER_PROMPT_LOAD": 19.3645,
+    "QUEUE_AND_LOOP_BUSY": 0.0497
+   },
+   "draft_copy_est_s": 1.0447
+  },
+  {
+   "conv": 2,
+   "turn": 5,
+   "task": 377,
+   "slot": 1,
+   "sel_how": "LRU",
+   "n_tokens": 28572,
+   "gap_client_s": 54.2178,
+   "pre_hdr_client_s": 54.2178,
+   "W_server_s": 54.2177,
+   "lag_s": 0.0001,
+   "prompt_ms": 10097.179,
+   "components_s": {
+    "neighbour_save_own_trigger": 0.0,
+    "neighbour_save_other_trigger": 15.7025,
+    "idle_noop": 0.0,
+    "own_load_victim_save": 0.0,
+    "own_load_lookup": 0.0,
+    "own_load_copy": 19.3644,
+    "own_load_bookkeeping": 0.0,
+    "other_load": 19.0598,
+    "dispatch_overhead": 0.0002,
+    "residual_pre_pickup": 0.0484,
+    "residual_post_launch": 0.0423
+   },
+   "groups_s": {
+    "NEIGHBOUR_IDLE_SAVE": 15.7025,
+    "OWN_PROMPT_LOAD": 19.3645,
+    "OTHER_PROMPT_LOAD": 19.0598,
+    "QUEUE_AND_LOOP_BUSY": 0.0909
+   },
+   "draft_copy_est_s": 0.942
+  },
+  {
+   "conv": 0,
+   "turn": 6,
+   "task": 423,
+   "slot": 3,
+   "sel_how": "LCP similarity",
+   "n_tokens": 29709,
+   "gap_client_s": 58.8165,
+   "pre_hdr_client_s": 58.8167,
+   "W_server_s": 58.8167,
+   "lag_s": 0.0,
+   "prompt_ms": 7597.54,
+   "components_s": {
+    "neighbour_save_own_trigger": 16.9389,
+    "neighbour_save_other_trigger": 0.0,
+    "idle_noop": 0.0001,
+    "own_load_victim_save": 0.0,
+    "own_load_lookup": 0.0,
+    "own_load_copy": 0.0,
+    "own_load_bookkeeping": 0.0,
+    "other_load": 41.6021,
+    "dispatch_overhead": 0.0001,
+    "residual_pre_pickup": 0.071,
+    "residual_post_launch": 0.2044
+   },
+   "groups_s": {
+    "NEIGHBOUR_IDLE_SAVE": 16.9389,
+    "OWN_PROMPT_LOAD": 0.0,
+    "OTHER_PROMPT_LOAD": 41.6021,
+    "QUEUE_AND_LOOP_BUSY": 0.2756
+   },
+   "draft_copy_est_s": 0.5996
+  },
+  {
+   "conv": 1,
+   "turn": 6,
+   "task": 425,
+   "slot": 2,
+   "sel_how": "LRU",
+   "n_tokens": 29715,
+   "gap_client_s": 56.7733,
+   "pre_hdr_client_s": 56.7731,
+   "W_server_s": 56.7728,
+   "lag_s": 0.0003,
+   "prompt_ms": 7640.718,
+   "components_s": {
+    "neighbour_save_own_trigger": 0.0,
+    "neighbour_save_other_trigger": 15.0652,
+    "idle_noop": 0.0001,
+    "own_load_victim_save": 0.0,
+    "own_load_lookup": 0.0,
+    "own_load_copy": 20.7859,
+    "own_load_bookkeeping": 0.0001,
+    "other_load": 20.8161,
+    "dispatch_overhead": 0.0002,
+    "residual_pre_pickup": 0.0371,
+    "residual_post_launch": 0.0681
+   },
+   "groups_s": {
+    "NEIGHBOUR_IDLE_SAVE": 15.0652,
+    "OWN_PROMPT_LOAD": 20.786,
+    "OTHER_PROMPT_LOAD": 20.8161,
+    "QUEUE_AND_LOOP_BUSY": 0.1055
+   },
+   "draft_copy_est_s": 0.9077
+  },
+  {
+   "conv": 2,
+   "turn": 6,
+   "task": 426,
+   "slot": 0,
+   "sel_how": "LRU",
+   "n_tokens": 29762,
+   "gap_client_s": 54.7084,
+   "pre_hdr_client_s": 54.708,
+   "W_server_s": 54.708,
+   "lag_s": 0.0,
+   "prompt_ms": 7438.565,
+   "components_s": {
+    "neighbour_save_own_trigger": 0.0,
+    "neighbour_save_other_trigger": 13.0652,
+    "idle_noop": 0.0001,
+    "own_load_victim_save": 0.0,
+    "own_load_lookup": 0.0,
+    "own_load_copy": 20.816,
+    "own_load_bookkeeping": 0.0,
+    "other_load": 20.786,
+    "dispatch_overhead": 0.0002,
+    "residual_pre_pickup": 0.0391,
+    "residual_post_launch": 0.0013
+   },
+   "groups_s": {
+    "NEIGHBOUR_IDLE_SAVE": 13.0652,
+    "OWN_PROMPT_LOAD": 20.8161,
+    "OTHER_PROMPT_LOAD": 20.786,
+    "QUEUE_AND_LOOP_BUSY": 0.0407
+   },
+   "draft_copy_est_s": 0.8079
+  }
+ ],
+ "turn2plus": {
+  "n": 15,
+  "gap_client_mean_s": 40.0213,
+  "gap_client_median_s": 42.7384,
+  "pre_hdr_client_mean_s": 40.0215,
+  "W_mean_s": 40.0213,
+  "W_median_s": 42.7385,
+  "components_mean_s": {
+   "neighbour_save_own_trigger": 3.4593,
+   "neighbour_save_other_trigger": 5.2986,
+   "idle_noop": 0.0001,
+   "own_load_victim_save": 0.0,
+   "own_load_lookup": 0.0,
+   "own_load_copy": 10.9572,
+   "own_load_bookkeeping": 0.0,
+   "other_load": 19.9071,
+   "dispatch_overhead": 0.0002,
+   "residual_pre_pickup": 0.3484,
+   "residual_post_launch": 0.0503
+  },
+  "groups_mean_s": {
+   "NEIGHBOUR_IDLE_SAVE": 8.7579,
+   "OWN_PROMPT_LOAD": 10.9573,
+   "OTHER_PROMPT_LOAD": 19.9071,
+   "QUEUE_AND_LOOP_BUSY": 0.399
+  },
+  "groups_median_s": {
+   "NEIGHBOUR_IDLE_SAVE": 6.8302,
+   "OWN_PROMPT_LOAD": 16.5858,
+   "OTHER_PROMPT_LOAD": 19.0598,
+   "QUEUE_AND_LOOP_BUSY": 0.0909
+  },
+  "draft_copy_est_mean_s": 0.552,
+  "prompt_ms_mean": 9418.5323,
+  "slot_sequence": [
+   [
+    0,
+    2,
+    3,
+    "LCP similarity"
+   ],
+   [
+    1,
+    2,
+    0,
+    "LRU"
+   ],
+   [
+    2,
+    2,
+    1,
+    "LRU"
+   ],
+   [
+    0,
+    3,
+    3,
+    "LCP similarity"
+   ],
+   [
+    1,
+    3,
+    2,
+    "LRU"
+   ],
+   [
+    2,
+    3,
+    0,
+    "LRU"
+   ],
+   [
+    0,
+    4,
+    3,
+    "LCP similarity"
+   ],
+   [
+    1,
+    4,
+    1,
+    "LRU"
+   ],
+   [
+    2,
+    4,
+    2,
+    "LRU"
+   ],
+   [
+    0,
+    5,
+    3,
+    "LCP similarity"
+   ],
+   [
+    1,
+    5,
+    0,
+    "LRU"
+   ],
+   [
+    2,
+    5,
+    1,
+    "LRU"
+   ],
+   [
+    0,
+    6,
+    3,
+    "LCP similarity"
+   ],
+   [
+    1,
+    6,
+    2,
+    "LRU"
+   ],
+   [
+    2,
+    6,
+    0,
+    "LRU"
+   ]
+  ]
+ },
+ "copies": [
+  {
+   "kind": "idle_save",
+   "mib": 872.314,
+   "draft_mib": 40.259,
+   "s": 0.2438,
+   "gib_per_s": 3.494
+  },
+  {
+   "kind": "idle_save",
+   "mib": 874.475,
+   "draft_mib": 40.259,
+   "s": 0.2606,
+   "gib_per_s": 3.278
+  },
+  {
+   "kind": "idle_save",
+   "mib": 942.512,
+   "draft_mib": 40.283,
+   "s": 0.2569,
+   "gib_per_s": 3.583
+  },
+  {
+   "kind": "idle_save",
+   "mib": 940.318,
+   "draft_mib": 40.282,
+   "s": 5.8192,
+   "gib_per_s": 0.158
+  },
+  {
+   "kind": "idle_save",
+   "mib": 1005.596,
+   "draft_mib": 40.305,
+   "s": 0.3502,
+   "gib_per_s": 2.805
+  },
+  {
+   "kind": "idle_save",
+   "mib": 1005.729,
+   "draft_mib": 40.305,
+   "s": 8.3943,
+   "gib_per_s": 0.117
+  },
+  {
+   "kind": "idle_save",
+   "mib": 1082.275,
+   "draft_mib": 40.331,
+   "s": 9.8212,
+   "gib_per_s": 0.108
+  },
+  {
+   "kind": "idle_save",
+   "mib": 1083.771,
+   "draft_mib": 40.331,
+   "s": 9.7859,
+   "gib_per_s": 0.108
+  },
+  {
+   "kind": "idle_save",
+   "mib": 1138.447,
+   "draft_mib": 40.35,
+   "s": 1.6242,
+   "gib_per_s": 0.685
+  },
+  {
+   "kind": "idle_save",
+   "mib": 1140.009,
+   "draft_mib": 40.351,
+   "s": 15.3089,
+   "gib_per_s": 0.073
+  },
+  {
+   "kind": "restore",
+   "mib": 1596.665,
+   "draft_mib": 40.259,
+   "s": 0.052,
+   "gib_per_s": 30.012
+  },
+  {
+   "kind": "restore",
+   "mib": 1404.875,
+   "draft_mib": 40.259,
+   "s": 15.0041,
+   "gib_per_s": 0.091
+  },
+  {
+   "kind": "restore",
+   "mib": 1854.352,
+   "draft_mib": 40.283,
+   "s": 16.8032,
+   "gib_per_s": 0.108
+  },
+  {
+   "kind": "restore",
+   "mib": 1852.178,
+   "draft_mib": 40.282,
+   "s": 16.5858,
+   "gib_per_s": 0.109
+  },
+  {
+   "kind": "restore",
+   "mib": 2107.239,
+   "draft_mib": 40.305,
+   "s": 18.3907,
+   "gib_per_s": 0.112
+  },
+  {
+   "kind": "restore",
+   "mib": 1917.456,
+   "draft_mib": 40.305,
+   "s": 17.4968,
+   "gib_per_s": 0.107
+  },
+  {
+   "kind": "restore",
+   "mib": 1994.135,
+   "draft_mib": 40.331,
+   "s": 19.0597,
+   "gib_per_s": 0.102
+  },
+  {
+   "kind": "restore",
+   "mib": 2185.281,
+   "draft_mib": 40.331,
+   "s": 19.3644,
+   "gib_per_s": 0.11
+  },
+  {
+   "kind": "restore",
+   "mib": 2239.956,
+   "draft_mib": 40.35,
+   "s": 20.7859,
+   "gib_per_s": 0.105
+  },
+  {
+   "kind": "restore",
+   "mib": 2431.168,
+   "draft_mib": 40.351,
+   "s": 20.816,
+   "gib_per_s": 0.114
+  }
+ ],
+ "n_idle_saves_copied": 10,
+ "n_restores": 10,
+ "status": "OK"
+}

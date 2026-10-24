@@ -1,0 +1,176 @@
+{
+ "schema": "epyc.ufh14.lb7.verdict.v1",
+ "rule": "PREDECLARATION.md sections 4-5",
+ "min_effect_s": 10.0,
+ "sessions_present": [
+  "s1-ON",
+  "s2-OFF",
+  "s3-OFF",
+  "s4-ON",
+  "s5-ON",
+  "s6-OFF"
+ ],
+ "pairs": [
+  {
+   "pair": [
+    "s1-ON",
+    "s2-OFF"
+   ],
+   "valid": true,
+   "dGap_client_s": 38.973,
+   "dW_server_s": 38.974,
+   "gap_on_median_s": 42.7384,
+   "gap_off_median_s": 1.0538,
+   "coverage_on": 1.0,
+   "align_ok": true,
+   "match_ok": true,
+   "dGroups_s": {
+    "NEIGHBOUR_IDLE_SAVE": 8.758,
+    "OWN_PROMPT_LOAD": 10.957,
+    "OTHER_PROMPT_LOAD": 19.907,
+    "QUEUE_AND_LOOP_BUSY": -0.649
+   },
+   "fraction_of_dW": {
+    "NEIGHBOUR_IDLE_SAVE": 0.225,
+    "OWN_PROMPT_LOAD": 0.281,
+    "OTHER_PROMPT_LOAD": 0.511,
+    "QUEUE_AND_LOOP_BUSY": -0.017
+   },
+   "dComponents_s": {
+    "neighbour_save_own_trigger": 3.459,
+    "neighbour_save_other_trigger": 5.299,
+    "idle_noop": 0.0,
+    "own_load_victim_save": 0,
+    "own_load_lookup": 0,
+    "own_load_copy": 10.957,
+    "own_load_bookkeeping": 0,
+    "other_load": 19.907,
+    "dispatch_overhead": 0.0,
+    "residual_pre_pickup": -0.696,
+    "residual_post_launch": 0.047
+   },
+   "draft_copy_est_on_s": 0.552,
+   "pre_hdr_share_on": 1.0
+  },
+  {
+   "pair": [
+    "s4-ON",
+    "s3-OFF"
+   ],
+   "valid": true,
+   "dGap_client_s": 26.016,
+   "dW_server_s": 26.016,
+   "gap_on_median_s": 33.6315,
+   "gap_off_median_s": 1.0227,
+   "coverage_on": 1.0,
+   "align_ok": true,
+   "match_ok": true,
+   "dGroups_s": {
+    "NEIGHBOUR_IDLE_SAVE": 3.21,
+    "OWN_PROMPT_LOAD": 10.65,
+    "OTHER_PROMPT_LOAD": 12.346,
+    "QUEUE_AND_LOOP_BUSY": -0.189
+   },
+   "fraction_of_dW": {
+    "NEIGHBOUR_IDLE_SAVE": 0.123,
+    "OWN_PROMPT_LOAD": 0.409,
+    "OTHER_PROMPT_LOAD": 0.475,
+    "QUEUE_AND_LOOP_BUSY": -0.007
+   },
+   "dComponents_s": {
+    "neighbour_save_own_trigger": 1.302,
+    "neighbour_save_other_trigger": 1.908,
+    "idle_noop": 0,
+    "own_load_victim_save": 0,
+    "own_load_lookup": 0,
+    "own_load_copy": 10.65,
+    "own_load_bookkeeping": 0,
+    "other_load": 12.346,
+    "dispatch_overhead": 0.0,
+    "residual_pre_pickup": -0.214,
+    "residual_post_launch": 0.024
+   },
+   "draft_copy_est_on_s": 0.3287,
+   "pre_hdr_share_on": 1.0
+  },
+  {
+   "pair": [
+    "s5-ON",
+    "s6-OFF"
+   ],
+   "valid": true,
+   "dGap_client_s": 45.341,
+   "dW_server_s": 45.341,
+   "gap_on_median_s": 47.5787,
+   "gap_off_median_s": 0.2408,
+   "coverage_on": 1.0,
+   "align_ok": true,
+   "match_ok": true,
+   "dGroups_s": {
+    "NEIGHBOUR_IDLE_SAVE": 11.417,
+    "OWN_PROMPT_LOAD": 11.689,
+    "OTHER_PROMPT_LOAD": 23.378,
+    "QUEUE_AND_LOOP_BUSY": -1.143
+   },
+   "fraction_of_dW": {
+    "NEIGHBOUR_IDLE_SAVE": 0.252,
+    "OWN_PROMPT_LOAD": 0.258,
+    "OTHER_PROMPT_LOAD": 0.516,
+    "QUEUE_AND_LOOP_BUSY": -0.025
+   },
+   "dComponents_s": {
+    "neighbour_save_own_trigger": 4.46,
+    "neighbour_save_other_trigger": 6.957,
+    "idle_noop": 0.0,
+    "own_load_victim_save": 0,
+    "own_load_lookup": 0,
+    "own_load_copy": 11.689,
+    "own_load_bookkeeping": 0,
+    "other_load": 23.378,
+    "dispatch_overhead": 0.0,
+    "residual_pre_pickup": -1.148,
+    "residual_post_launch": 0.005
+   },
+   "draft_copy_est_on_s": 0.6884,
+   "pre_hdr_share_on": 1.0
+  }
+ ],
+ "gates": {
+  "reproduced": true,
+  "instrument_ok": true,
+  "stall_before_eval": true
+ },
+ "n_valid_pairs": 3,
+ "median_fraction_of_dW": {
+  "NEIGHBOUR_IDLE_SAVE": 0.225,
+  "OWN_PROMPT_LOAD": 0.281,
+  "OTHER_PROMPT_LOAD": 0.511,
+  "QUEUE_AND_LOOP_BUSY": -0.017
+ },
+ "median_dGroups_s": {
+  "NEIGHBOUR_IDLE_SAVE": 8.758,
+  "OWN_PROMPT_LOAD": 10.957,
+  "OTHER_PROMPT_LOAD": 19.907,
+  "QUEUE_AND_LOOP_BUSY": -0.649
+ },
+ "median_dComponents_s": {
+  "neighbour_save_own_trigger": 3.459,
+  "neighbour_save_other_trigger": 5.299,
+  "idle_noop": 0,
+  "own_load_victim_save": 0,
+  "own_load_lookup": 0,
+  "own_load_copy": 10.957,
+  "own_load_bookkeeping": 0,
+  "other_load": 19.907,
+  "dispatch_overhead": 0.0,
+  "residual_pre_pickup": -0.696,
+  "residual_post_launch": 0.024
+ },
+ "report_only": {
+  "PROMPT_LOAD_ALL_median_fraction_of_dW": 0.792,
+  "draft_copy_est_on_median_s": 0.552
+ },
+ "verdict": "UNATTRIBUTED",
+ "copy_throughput_median_gib_s": 0.117,
+ "copy_mechanism_tag": "transfer-count bound (fragmented ranges / per-cell scatter)"
+}

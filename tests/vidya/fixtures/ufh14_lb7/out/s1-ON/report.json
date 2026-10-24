@@ -1,0 +1,63 @@
+{
+ "preflight": {
+  "pid": 3411106,
+  "argv": [
+   "/mnt/raid0/llm/kernels/builds/gpu-20261021-49550eda5-c-nemotron/bin/llama-server",
+   "-m",
+   "/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf",
+   "--host",
+   "127.0.0.1",
+   "--port",
+   "18307",
+   "-np",
+   "4",
+   "-c",
+   "393216",
+   "-t",
+   "8",
+   "-ub",
+   "2048",
+   "--flash-attn",
+   "on",
+   "--jinja",
+   "-ctk",
+   "q8_0",
+   "-ctv",
+   "q8_0",
+   "--kv-unified",
+   "--no-mmap",
+   "-ngl",
+   "all",
+   "--cache-ram",
+   "65536",
+   "--chat-template-file",
+   "/mnt/raid0/llm/models/chat-templates/epyc-qwen3x-v1-terse.jinja",
+   "-md",
+   "/mnt/raid0/llm/models/Qwen3.8-27B-DFlash2-Q8_0.gguf",
+   "-ngld",
+   "99",
+   "--spec-type",
+   "draft-dflash",
+   "--spec-draft-n-max",
+   "7",
+   "--device",
+   "ROCm0",
+   "--slot-save-path",
+   "/mnt/raid0/llm/tmp/f8-launchers-20261023/locals-ufh14-lb7-stall/out/s1-ON/slots",
+   "--device-draft",
+   "ROCm0",
+   "-lv",
+   "4",
+   "--log-prefix",
+   "--log-timestamps"
+  ],
+  "props_build": "b10411-49550eda5",
+  "kfd": [
+   {
+    "pid": 3411106,
+    "vram_gib": 50.774,
+    "cmd": "/mnt/raid0/llm/kernels/builds/gpu-20261021-49550eda5-c-nemotron/bin/llama-server -m /mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf --host 127.0.0.1 --port 18307 -n"
+   }
+  ]
+ }
+}

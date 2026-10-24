@@ -389,6 +389,11 @@ SOURCES: dict[str, Source] = {s.name: s for s in (
                 "REQUEST shape = `requests.jsonl`; HTTP errors stay in the denominator; pre-hook rows refuse; "
                 "`cells.jsonl` decision rows are not read",
            task="VB-KVU-CPU"),
+    Source("ufh14-lb7-stall", "ufh14_lb7_stall", _run_dirs("VERDICT.json"),
+           note="UFH14-LB7 cache-idle-slots stall attribution launcher dirs (`VERDICT.json` + `out/*.attrib.json`); "
+                "per-session turn-2+ summaries and the verdict re-derived from the attrib rows, harness-local "
+                "PREDECLARATION.md sha256 in extra (protocol_id empty); INCOMPLETE / INSTRUMENT_FAIL decline; retrofit",
+           task="VB-LB7-STALL-WIRE"),
     Source("pb-qcost", "pb_qcost", _run_dirs_any("pb_qcost_1.jsonl", "out/run/pb_qcost_1.jsonl"),
            note="PB-QCOST-1 prefill-cost run dirs (original `summary.json` layout and the confirm launcher "
                 "`VERDICT.json` layout); INDICATIVE, single-q caveat in applicability; OBSERVATION only; retrofit",
