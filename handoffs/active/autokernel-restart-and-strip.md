@@ -75,7 +75,7 @@ within seconds — clean, no crash.
 - [ ] **Let the campaign run to its disposition budget** (`max_iterations: 100`, ~35 min/iteration
   ⇒ multi-day). Monitor wakes the owning session on a science increase, a crash, or a genuine
   stall. No action needed unless it wakes.
-- [ ] **Re-screen the 19 historically proposed deletion modules individually and strip only proven-safe files** (10,500 LOC + 19 test files ~4,870 LOC +
+- [x] **Re-screen the 19 historically proposed deletion modules individually and strip only proven-safe files** (10,500 LOC + 19 test files ~4,870 LOC +
   `c5_rocm_oracle.json`). Deletion MUST regenerate `FOOTPRINT.md` in the same commit
   (`python -m …controller.test_campaign_footprint --refresh`) — it is asserted by
   `test_campaign_footprint` / `test_readme`. Do NOT touch the HOLD sets (arena/hip/loop/
@@ -91,6 +91,8 @@ within seconds — clean, no crash.
   `heldout_bound_pipeline` · `least_commitment_archive_builder` · `least_commitment_receipts` ·
   `offline_least_commitment` · `placement_context` · `prepare_iqk_matched_pair` · `substrate` ·
   `turn_productivity`.
+  ✅ 2026-10-25 — current-pin individual re-screen complete: 19 retained, 12 positive-edge, 7 intentional off-path with runtime invocation unestablished, 0 proven obsolete, 0 deletions proposed. See [docs/reference/cme7t-inf64-accepted-findings-20261025.md](../../docs/reference/cme7t-inf64-accepted-findings-20261025.md). [no-belief: committed conclusion prepared; register capture not yet applied]
+  - 2026-10-25 (Codex NI T1; canonical ROOT 249855e78 / research e8d57acd / orchestrator 49c1f749): all 19 source blobs match the accepted matrix. 12 retained for positive source/CLI/consumer edges; 7 retained as intentional off-path contracts with current runtime invocation unestablished. Zero proven obsolete and zero deletion candidates. Detailed module matrix and source/test/data hashes: [docs/reference/cme7t-inf64-accepted-findings-20261025.md](../../docs/reference/cme7t-inf64-accepted-findings-20261025.md) and task-local INF-64-REPORT.md SHA-256 94ad54ced756508606eb508a48dec964e2b1e480154870a400973a6efee2073c. No inference, GNX deletion clearance, native-control pass, runtime absence, or deletion-safety claim.
 - [ ] **Add build/runtime disk expiry.** `deployments/*/builds/` (14 G) + `runtime/` (4.4 G) are
   pinned by `materialization.json` digests; `storage.expire_artifact` has zero callers. Also run
   `_recover_incomplete_attempt` at controller start for ALL incomplete attempts, not only on

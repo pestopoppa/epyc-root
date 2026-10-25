@@ -1,0 +1,7 @@
+100644 blob 5b26a20549d897c74484b4d7ae4022c88f5dd7c0	pyproject.toml
+100644 blob b29f5dd0a3bcec1f6f377a8a4fb6413ed9ab026a	scripts/kernel_rnd/autokernel/FOOTPRINT.md
+100644 blob 25ecf960455a04cdbd2bf473b08e9a8a0125cd45	scripts/kernel_rnd/autokernel/README.md
+100644 blob 9f56a7cbcd12af914ea04355c5a497ac48be5707	scripts/kernel_rnd/autokernel/c5_rocm_oracle.json
+100644 blob dc0b0d0c58bac937ddfa88e4c7cce5f66a7b3d10	scripts/kernel_rnd/autokernel/substrate_facts.json
+100644 blob afddbc1d58e195fc5b5696e251eed0a9dc69b0ad	scripts/kernel_rnd/autokernel/test_campaign_footprint.py
+100644 blob f263bfd71c8b48d1433ec0da3b3984dc65ea6be3	scripts/kernel_rnd/autokernel/test_readme.py

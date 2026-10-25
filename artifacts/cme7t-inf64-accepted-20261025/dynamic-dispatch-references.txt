@@ -1,0 +1,667 @@
+e8d57acd:scripts/benchmark/a7_generate_placement1_manifests.py:98:    for f in sorted(glob.glob(os.path.join(a.manifest_root, "*", "*.json"))):
+e8d57acd:scripts/benchmark/ab_probe.py:309:    for tdir in sorted(glob.glob(f"{base}/*"), key=lambda x: int(x.rsplit("/", 1)[1])):
+e8d57acd:scripts/benchmark/ab_probe.py:394:    for f in glob.glob(f"{d}/vram_*"):
+e8d57acd:scripts/benchmark/ab_probe.py:546:    for meta_p in sorted(run.glob("arm-*.meta.json")):
+e8d57acd:scripts/benchmark/agentic_swe_harness.py:192:    def _exec(self, cmd: str, timeout: float) -> tuple[int, str, str]:
+e8d57acd:scripts/benchmark/agentic_swe_harness.py:205:        code, out, err = self._exec(cmd, timeout)
+e8d57acd:scripts/benchmark/agentic_swe_harness.py:214:        code, out, _err = self._exec(cmd, timeout)
+e8d57acd:scripts/benchmark/analyze_usaco_failures.py:25:    candidates = sorted(base.rglob("3way_*.jsonl"), key=lambda p: p.stat().st_mtime)
+e8d57acd:scripts/benchmark/analyze_web_research_baseline.py:23:    files = sorted(checkpoint_dir.glob("*.jsonl"))
+e8d57acd:scripts/benchmark/answer_scoring.py:139:        val = eval(s, {"__builtins__": {}}, {"pi": math.pi})  # restricted, digits/ops only
+e8d57acd:scripts/benchmark/answer_scoring.py:528:    _spec = _ilu.spec_from_file_location("_answer_scoring_gate_verdict_vocab", _vocab_path)
+e8d57acd:scripts/benchmark/architect_bench_analyze.py:27:    for pq in sorted(runs_dir.glob("*/*/per_question.jsonl")):
+e8d57acd:scripts/benchmark/architect_bench_rescore.py:40:    for pq in sorted(args.runs_dir.glob("*/*/per_question.jsonl")):
+e8d57acd:scripts/benchmark/autokernel_progression.py:194:    for path in sorted(screens.glob("*/result.json")):
+e8d57acd:scripts/benchmark/autokernel_progression.py:201:    for path in sorted(root.glob("r*-execute.json")):
+e8d57acd:scripts/benchmark/autokernel_progression.py:221:    for path in sorted(screens.glob("*.preflight.json")):
+e8d57acd:scripts/benchmark/autokernel_rescore_estimator.py:118:    for result_path in sorted(args.deployments_root.rglob("result.json")):
+e8d57acd:scripts/benchmark/autokernel_storage_report.py:39:    for item in path.rglob("*"):
+e8d57acd:scripts/benchmark/belief_capture.py:60:    spec = importlib.util.spec_from_file_location(f"epyc_root_capture_{name}", path)
+e8d57acd:scripts/benchmark/bench_all_spec_sweeps.sh:524:    files = sorted(glob.glob("/mnt/raid0/llm/epyc-inference-research/data/all_spec_sweep/all_spec_sweep_*.csv"))
+e8d57acd:scripts/benchmark/bench_coder_192t.sh:403:    files = sorted(glob.glob("/mnt/raid0/llm/epyc-inference-research/data/coder_sweep/coder_sweep_*.csv"))
+e8d57acd:scripts/benchmark/bench_largek_speculation.sh:219:files = sorted(glob.glob(os.path.join(data_dir, 'phase3_*_k*.csv')))
+e8d57acd:scripts/benchmark/bench_orchestrator.py:137:    for prompt_file in sorted(suite_dir.glob("*.txt")):
+e8d57acd:scripts/benchmark/bench_sweep_spec_params.sh:390:    files = glob.glob(f"{data_dir}/{pattern}_{timestamp}.csv")
+e8d57acd:scripts/benchmark/boundary_20260901_helper.py:135:        traces = (sorted(trace_dir.rglob("*kernel_trace.csv"))
+e8d57acd:scripts/benchmark/boundary_20260901_helper.py:136:                  or sorted(trace_dir.rglob("*.csv")))
+e8d57acd:scripts/benchmark/calibrate_tide_router.py:200:        # For now, we use the eval() method which processes the full sequence
+e8d57acd:scripts/benchmark/calibrate_tide_router.py:205:        model.eval(tokens)
+e8d57acd:scripts/benchmark/calibrate_tide_router.py:219:            model.eval(tokens)
+e8d57acd:scripts/benchmark/calibrate_tide_router.py:345:        router.eval()
+e8d57acd:scripts/benchmark/capture_autokernel_c4_profile.py:346:    for path in sorted(output_dir.rglob("*")):
+e8d57acd:scripts/benchmark/clbench_epyc_local/cache_hit_report.py:120:    files = sorted(glob.glob(str(Path(a.traces_dir) / "run_*.json")))
+e8d57acd:scripts/benchmark/clbench_epyc_local/smoke_fake_server.py:19:spec = importlib.util.spec_from_file_location("epyc_local_system", HERE / "system.py")
+e8d57acd:scripts/benchmark/clbench_epyc_local/tests/test_cache_hit_report.py:6:_S = importlib.util.spec_from_file_location("cache_hit_report", Path(__file__).resolve().parents[1] / "cache_hit_report.py")
+e8d57acd:scripts/benchmark/clbench_epyc_local/tests/test_system.py:31:    spec = importlib.util.spec_from_file_location("epyc_local_system", HERE.parent / "system.py")
+e8d57acd:scripts/benchmark/concurrent_inference_sweep.py:54:    for path in directory.rglob("*"):
+e8d57acd:scripts/benchmark/concurrent_inference_sweep.py:67:        for path in self.directory.rglob("*"):
+e8d57acd:scripts/benchmark/cpu_bench_clean_preflight.py:144:    paths = sorted(glob.glob(pattern))
+e8d57acd:scripts/benchmark/cpu_prefill_v8_regression_runner.py:1032:    actual = sorted(entry_path.parent.glob(f"{match.group('prefix')}-?????-of-{count:05d}.gguf"))
+e8d57acd:scripts/benchmark/cpu_prefill_v8_regression_runner.py:1460:        for path in sorted(Path("/sys/devices/system/cpu").glob("cpu[0-9]*/cpufreq/scaling_governor"))
+e8d57acd:scripts/benchmark/dataset_adapters.py:1655:    spec = importlib.util.spec_from_file_location(
+e8d57acd:scripts/benchmark/dataset_adapters.py:1919:    spec = importlib.util.spec_from_file_location(
+e8d57acd:scripts/benchmark/dataset_adapters.py:3016:        matches = sorted(_glob.glob(self._DIAMOND_GLOB))
+e8d57acd:scripts/benchmark/debug_scorer.py:72:    spec = importlib.util.spec_from_file_location(_ORCH_SCORER_KEY, scorer_path)
+e8d57acd:scripts/benchmark/deprecated/orchestrator_eval.py:185:    for path in EVAL_DIR.glob("*.jsonl"):
+e8d57acd:scripts/benchmark/deprecated/orchestrator_eval.py:516:def run_eval(
+e8d57acd:scripts/benchmark/deprecated/orchestrator_eval.py:683:    for path in sorted(EVAL_DIR.glob("eval_*.jsonl")):
+e8d57acd:scripts/benchmark/deprecated/orchestrator_eval.py:887:            run_eval(
+e8d57acd:scripts/benchmark/deprecated/orchestrator_eval.py:903:        run_eval(
+e8d57acd:scripts/benchmark/df2_greedy_parity.py:87:    spec = importlib.util.spec_from_file_location("launch_affinity_gps", path)
+e8d57acd:scripts/benchmark/dflash2_beliefs.py:180:    for path in sorted(root.rglob("*")):
+e8d57acd:scripts/benchmark/dflash_compare_cpp_hf.py:35:    utils_spec = importlib.util.spec_from_file_location("dflash_pkg.utils", os.path.join(DFLASH_DIR, "utils.py"))
+e8d57acd:scripts/benchmark/dflash_compare_cpp_hf.py:44:    dflash_spec = importlib.util.spec_from_file_location("dflash_pkg.dflash", dflash_path)
+e8d57acd:scripts/benchmark/dflash_compare_cpp_hf.py:47:    exec(compile(source, dflash_path, "exec"), dflash_mod.__dict__)
+e8d57acd:scripts/benchmark/dflash_compare_cpp_hf.py:100:    for sf_path in sorted(glob.glob(os.path.join(DFLASH_DIR, "*.safetensors"))):
+e8d57acd:scripts/benchmark/dflash_compare_cpp_hf.py:103:    model.eval()
+e8d57acd:scripts/benchmark/dflash_reference_compare.py:43:    utils_spec = importlib.util.spec_from_file_location(
+e8d57acd:scripts/benchmark/dflash_reference_compare.py:56:    dflash_spec = importlib.util.spec_from_file_location(
+e8d57acd:scripts/benchmark/dflash_reference_compare.py:60:    exec(compile(source, dflash_path, "exec"), dflash_mod.__dict__)
+e8d57acd:scripts/benchmark/dflash_reference_compare.py:82:    for sf_path in sorted(glob.glob(os.path.join(DFLASH_DIR, "*.safetensors"))):
+e8d57acd:scripts/benchmark/dflash_reference_compare.py:93:    model.eval()
+e8d57acd:scripts/benchmark/document_extraction_adapter.py:91:        for gt_path in sorted(self.gt_dir.glob("*.md")):
+e8d57acd:scripts/benchmark/download_long_context_datasets.py:79:        jsonl_candidates = list(task_dir.glob("*.jsonl")) if task_dir.exists() else []
+e8d57acd:scripts/benchmark/download_long_context_datasets.py:101:            val_files = list(task_dir.rglob("*val*")) + list(task_dir.rglob("*validation*"))
+e8d57acd:scripts/benchmark/download_long_context_datasets.py:102:            jsonl_files = [f for f in task_dir.rglob("*.jsonl")]
+e8d57acd:scripts/benchmark/download_long_context_datasets.py:112:                extracted = list(task_dir.rglob("*"))
+e8d57acd:scripts/benchmark/download_long_context_datasets.py:126:def _download_leval(force: bool = False) -> dict:
+e8d57acd:scripts/benchmark/download_long_context_datasets.py:193:            total = sum(f.stat().st_size for f in subdir.rglob("*") if f.is_file())
+e8d57acd:scripts/benchmark/download_long_context_datasets.py:222:    metadata["datasets"]["leval"] = _download_leval(args.force)
+e8d57acd:scripts/benchmark/e5_w0_offline_score.py:49:    spec = importlib.util.spec_from_file_location(name, path)
+e8d57acd:scripts/benchmark/e6_budget_analyze.py:59:        budgets = sorted(e6.glob(f"{model}_budget*")) if e6.exists() else []
+e8d57acd:scripts/benchmark/eval_compaction_sweep.py:37:        traces.extend(sorted(traces_dir.glob(pat)))
+e8d57acd:scripts/benchmark/eval_expected_attention.py:186:    model.eval()
+e8d57acd:scripts/benchmark/eval_helpfulness_calibration.py:36:    return sorted(traces_dir.glob("session_*.md"))
+e8d57acd:scripts/benchmark/eval_summarizer.py:27:    traces = sorted(traces_dir.glob("session_*.md"))
+e8d57acd:scripts/benchmark/fg4b_a4_cpu_optimized_reanchor.py:829:    for path in sorted(staging.rglob("*")):
+e8d57acd:scripts/benchmark/fg4b_a4_cpu_optimized_reanchor.py:855:        for path in sorted(staging.rglob("*")):
+e8d57acd:scripts/benchmark/gguf_tensor_contract.py:143:            files.extend(sorted(path.rglob("*.gguf")))
+e8d57acd:scripts/benchmark/glm52_dsa_probe_runner.py:163:    for tree_path in sorted(tree_dir.glob("*.json")):
+e8d57acd:scripts/benchmark/glm52_dsa_probe_runner.py:218:        for entry in sorted(resolved_dir.rglob("*")):
+e8d57acd:scripts/benchmark/glm52_reviewer_capability_direct_runner.py:110:    spec = importlib.util.spec_from_file_location("glm_reviewer_capability_probe_direct", module_path)
+e8d57acd:scripts/benchmark/glm52_reviewer_capability_direct_runner.py:121:    spec = importlib.util.spec_from_file_location("review_grammar_direct", module_path)
+e8d57acd:scripts/benchmark/glm52_reviewer_capability_direct_runner.py:337:        for row in __import__("glm52_protocol_channel_matrix_runner").pgrep(pattern)
+e8d57acd:scripts/benchmark/glm52_reviewer_corpus_direct_runner.py:310:    spec = importlib.util.spec_from_file_location("review_ledger_direct_corpus", module_path)
+e8d57acd:scripts/benchmark/glm52_reviewer_corpus_direct_runner.py:818:        for path in sorted(resolved_dir.rglob("*.gguf"))
+e8d57acd:scripts/benchmark/gpu_cpu_noise/analyze_gpu_cpu_noise.py:279:    for f in sorted(glob.glob(os.path.join(sess, "gpu_client.*.jsonl"))):
+e8d57acd:scripts/benchmark/iqk_real_model_correctness_runner.py:441:        for path in sorted(Path("/sys/devices/system/cpu").glob("cpu[0-9]*/cpufreq/scaling_governor"))
+e8d57acd:scripts/benchmark/judge_beam_run.py:85:    spec = importlib.util.spec_from_file_location(_CLOUD_KEY, _CLOUD_JUDGES_PATH)
+e8d57acd:scripts/benchmark/kpf13/kpf13_restore_ab.py:91:_LA_SPEC = importlib.util.spec_from_file_location("kpf13_launch_affinity",
+e8d57acd:scripts/benchmark/kpf13/kpf13_restore_ab.py:383:    cands = [binary] + sorted({Path(os.path.realpath(x)) for x in binary.parent.glob("*.so")})
+e8d57acd:scripts/benchmark/kpf13/kpf13_restore_ab.py:399:                for f in d.glob("vram_*"):
+e8d57acd:scripts/benchmark/kpf13/kpf13_restore_ab.py:1655:    for cfg_dir in sorted((out / "cells").glob("*")):
+e8d57acd:scripts/benchmark/kpf13/kpf13_restore_ab.py:1656:        for f in sorted(cfg_dir.glob("*.json")):
+e8d57acd:scripts/benchmark/kpf13/kpf13_restore_ab.py:1722:        for cfg_dir in sorted((out / "cells").glob("*")) if (out / "cells").exists() else []:
+e8d57acd:scripts/benchmark/kpf13/kpf13_restore_ab.py:1723:            for f in sorted(cfg_dir.glob("*.json")):
+e8d57acd:scripts/benchmark/kpf13/kpf13_restore_ab.py:1810:            if pl.srv and not list((ctx.out / "records").glob(f"kpf13-{pl.cfg_name}-*")):
+e8d57acd:scripts/benchmark/kpf18/kpf18_arms.py:36:_la_spec = importlib.util.spec_from_file_location("kpf18_launch_affinity", _LA_PATH)
+e8d57acd:scripts/benchmark/kpf18/kpf18_gate.py:240:            for f in d.glob("vram_*"):
+e8d57acd:scripts/benchmark/kpf18/kpf18_gate.py:451:    files = sorted(glob.glob(pattern))
+e8d57acd:scripts/benchmark/kpf18/test_kpf18_arms.py:20:_SPEC = importlib.util.spec_from_file_location("kpf18_gate_test_target", HERE / "kpf18_gate.py")
+e8d57acd:scripts/benchmark/kpf64_replay/adapter.py:546:        fs = glob.glob(home + "/.claude/projects/*/*.jsonl")
+e8d57acd:scripts/benchmark/kpf64_replay/adapter.py:548:            fs += glob.glob(home + "/.claude/projects/*/*/subagents/*.jsonl")
+e8d57acd:scripts/benchmark/kpf64_replay/adapter.py:552:        live = [("codex", f, None) for f in sorted(glob.glob(home + "/.codex/sessions/*/*/*/*.jsonl"))]
+e8d57acd:scripts/benchmark/kpf64_replay/adapter.py:638:        for f in sorted(glob.glob(os.path.splitext(ref)[0] + "/subagents/agent-*.jsonl")):
+e8d57acd:scripts/benchmark/kpf64_replay/adapter.py:716:        return len(glob.glob(os.path.splitext(ref)[0] + "/subagents/agent-*.jsonl"))
+e8d57acd:scripts/benchmark/kpf64_replay/adapter.py:888:        live_p = sorted(glob.glob(home + "/.claude/projects/*/*.jsonl"))
+e8d57acd:scripts/benchmark/kpf64_replay/adapter.py:895:            for k in sorted(glob.glob(os.path.splitext(f)[0] + "/subagents/agent-*.jsonl")):
+e8d57acd:scripts/benchmark/kpf64_replay/tests/test_kpf64.py:69:    c = adapter.load_turns(("codex", str(next((h / ".codex").rglob("*.jsonl"))), None))
+e8d57acd:scripts/benchmark/kpf64_replay/tests/test_kpf64.py:234:    return importlib.import_module("replay_driver")
+e8d57acd:scripts/benchmark/kv_quant_27b_v10_ingest.py:180:        ledger = importlib.import_module("ledger")
+e8d57acd:scripts/benchmark/kv_quant_27b_v10_ingest.py:181:        ingest_sources = importlib.import_module("ingest_sources")
+e8d57acd:scripts/benchmark/laguna_q4_cpu_bench_runner.py:300:    for child in sorted(item for item in path.rglob("*.py") if item.is_file()):
+e8d57acd:scripts/benchmark/long_context_adapters.py:157:            candidates = list(task_dir.rglob("*val*.jsonl")) + list(task_dir.rglob("*validation*.jsonl"))
+e8d57acd:scripts/benchmark/long_context_adapters.py:159:                candidates = list(task_dir.rglob("*.jsonl"))
+e8d57acd:scripts/benchmark/long_context_adapters.py:249:            candidates = list(base.rglob(f"*{cfg}*.jsonl"))
+e8d57acd:scripts/benchmark/long_context_adapters.py:424:        for f in sorted(essays_dir.glob("*.txt")):
+e8d57acd:scripts/benchmark/long_context_adapters.py:597:            parsed = ast.literal_eval(raw)
+e8d57acd:scripts/benchmark/long_context_adapters.py:723:        return sorted(self._data_dir.rglob(f"{self._split}-*.parquet"))
+e8d57acd:scripts/benchmark/long_context_adapters.py:729:        for split_dir in sorted(self._data_dir.rglob(f"chats/{self._split}")):
+e8d57acd:scripts/benchmark/lookup_question.py:199:    for path in sorted(eval_dir.glob("3way_*.jsonl")):
+e8d57acd:scripts/benchmark/lookup_question.py:358:        files = list(eval_dir.glob("3way_*.jsonl"))
+e8d57acd:scripts/benchmark/memento_sft.py:164:    shards = sorted(data_dir.glob("train-*.parquet"))
+e8d57acd:scripts/benchmark/memento_sft.py:1296:            __import__(pkg)
+e8d57acd:scripts/benchmark/memento_sft.py:1304:            __import__(pkg)
+e8d57acd:scripts/benchmark/moe_routing/trace_io.py:107:    for man in sorted(root.glob("*/*/shard-*/routing_trace.json")):
+e8d57acd:scripts/benchmark/occ1/run_occ1.py:299:    spec = util.spec_from_file_location("launch_affinity_gps", path)
+e8d57acd:scripts/benchmark/odl_bench/backends.py:227:            module = importlib.import_module("liteparse")
+e8d57acd:scripts/benchmark/odl_bench/intrinsic.py:699:    for md_path in sorted(Path(prediction_dir).glob("*.md")):
+e8d57acd:scripts/benchmark/odl_bench/run_three_way_bench.py:95:        return __import__(module, fromlist=["*"])
+e8d57acd:scripts/benchmark/odl_bench/run_three_way_bench.py:153:        candidates = [p for p in out_dir.glob(f"{stem}*") if p.suffix in (".md", ".MD")]
+e8d57acd:scripts/benchmark/odl_bench/run_three_way_bench.py:182:    for stale in out_dir.glob(f"{stem}*"):
+e8d57acd:scripts/benchmark/odl_bench/run_three_way_bench.py:195:    pdfs = sorted(pdf_dir.glob("*.pdf"))
+e8d57acd:scripts/benchmark/odl_bench/run_three_way_bench.py:206:        for stale in out_dir.glob("*.md"):
+e8d57acd:scripts/benchmark/odl_bench/run_three_way_bench.py:350:    gt_stems = sorted(p.stem for p in gt_dir.glob("*.md"))
+e8d57acd:scripts/benchmark/odl_bench/tests/test_odl_bench.py:170:            md_files = sorted(out.glob("*.md"))
+e8d57acd:scripts/benchmark/odl_bench/tests/test_run_three_way_bench.py:209:            self.assertEqual(len(list(pred_md.glob("*.md"))), 4)
+e8d57acd:scripts/benchmark/odl_bench/vidya_provenance.py:51:    for path in sorted(directory.rglob("*")):
+e8d57acd:scripts/benchmark/oolong_adapter.py:95:            __import__(name)
+e8d57acd:scripts/benchmark/oolong_adapter.py:102:    spec = importlib.util.spec_from_file_location("oolong_eval_helpers", _VENDOR_PATH)
+e8d57acd:scripts/benchmark/optuna_orchestrator.py:223:        for prompt_file in prompt_dir.glob("*.txt"):
+e8d57acd:scripts/benchmark/optuna_orchestrator.py:284:            results["escalation_accuracy"] = escalation_correct / max(1, sum(1 for f in prompt_dir.glob("*.txt") if "complex" in f.name or "architecture" in f.name))
+e8d57acd:scripts/benchmark/parse_rubric_results.py:46:    for f in Path(results_dir).glob('*.txt'):
+e8d57acd:scripts/benchmark/parse_rubric_results.py:56:    for f in Path(results_dir).glob(f'{config}_t*.txt'):
+e8d57acd:scripts/benchmark/pb_qcost/emit_belief_measurements.py:139:    exec(compile(ast.Module(body=keep, type_ignores=[]), str(path), "exec"), ns)  # noqa: S102 - pinned producer code
+e8d57acd:scripts/benchmark/pb_qcost/emit_belief_measurements.py:345:    amendments = sorted(unit.glob("AMENDMENT*.md"))
+e8d57acd:scripts/benchmark/pb_qcost/pb_qcost_1_q.py:456:        for f in Path(f"/sys/class/kfd/kfd/proc/{pid}").glob("vram_*"):
+e8d57acd:scripts/benchmark/pgpu1_artifact_completeness_audit.py:320:    for file_path in sorted(path.rglob("*")):
+e8d57acd:scripts/benchmark/plot_verification_profile.py:48:    files = sorted(DATA_DIR.glob("phase1_*_distribute.csv"))
+e8d57acd:scripts/benchmark/plot_verification_profile.py:200:    files = sorted(DATA_DIR.glob("phase3_*_k*.csv"))
+e8d57acd:scripts/benchmark/prb_t4_tale_gpu.py:297:    for p in sorted(args.out.glob("prb_t4_gpu_*.jsonl")):
+e8d57acd:scripts/benchmark/prefix_property/harness.py:169:    return [json.loads(p.read_text()) for p in sorted(FIXTURES.glob("*.json"))]
+e8d57acd:scripts/benchmark/rebuild_summary.py:277:    result_files = sorted(glob.glob(pattern))
+e8d57acd:scripts/benchmark/replay_missing_rewards.py:199:        paths = sorted(EVAL_DIR.glob("3way_*.jsonl"))
+e8d57acd:scripts/benchmark/replay_tc_nothink_v4.py:228:    exec(compile(converter.read_text(), str(converter), "exec"), module.__dict__)
+e8d57acd:scripts/benchmark/replay_tc_nothink_v4.py:418:    for path in arm.rglob("*.json"):
+e8d57acd:scripts/benchmark/replay_tc_nothink_v4.py:462:    files = sorted(path for path in stage.rglob("*") if path.is_file() and path.name != "finalization.sha256")
+e8d57acd:scripts/benchmark/review_f1/assemble_golden_set.py:111:    files = sorted(root.rglob("*.json"))
+e8d57acd:scripts/benchmark/review_f1/ev13b_run.py:177:            if p.exists()) and len(list(reader_root.glob("*__pr-*.json"))) == 50
+e8d57acd:scripts/benchmark/review_f1/semantic_judge.py:323:        for path in sorted(jdir.glob(f"{case['case_id']}.run*.json")):
+e8d57acd:scripts/benchmark/review_f1/tests/test_harness.py:92:        pr_files = sorted(p.name for p in root.glob("*.json") if not p.name.startswith("_"))
+e8d57acd:scripts/benchmark/ri18_review_gate/score.py:777:    files = sorted(p for p in run_dir.glob("*.jsonl") if p.name != BELIEF_SIDECAR)
+e8d57acd:scripts/benchmark/ri18_review_gate/window.py:94:    for path in sorted(glob.glob("/mnt/raid0/llm/tmp/cpu_region.*.lock")):
+e8d57acd:scripts/benchmark/ri18_review_gate/window.py:172:    for pidfile in sorted(glob.glob(os.path.join(root, "state*", "launcher.pid"))):
+e8d57acd:scripts/benchmark/run_all_formalizers.sh:63:for csv_file in glob.glob(f"{log_dir}/*/results.csv"):
+e8d57acd:scripts/benchmark/run_autokernel_gpu_discovery.py:1420:        for path in sorted((build / "bin").glob("*.so*")) if path.is_file()
+e8d57acd:scripts/benchmark/run_autokernel_lds_solver.py:120:    for candidate in sorted(raw_dir.rglob("*.csv")):
+e8d57acd:scripts/benchmark/run_autokernel_lds_solver.py:158:    } for path in sorted(output_dir.rglob("*"))
+e8d57acd:scripts/benchmark/run_autokernel_q4k_unpack_attribution.py:359:    candidates = sorted(raw_dir.rglob("*.csv"))
+e8d57acd:scripts/benchmark/run_autokernel_wgm_sweep.py:183:            for path in sorted(directory.rglob("*"))
+e8d57acd:scripts/benchmark/run_autokernel_wgm_sweep.py:235:        profile_files = [path for path in profile_dir.rglob("*") if path.is_file()]
+e8d57acd:scripts/benchmark/run_batch_entry.py:602:    for path in sorted(attestation_dir.glob("*.json")):
+e8d57acd:scripts/benchmark/run_optuna_optimization.py:545:    for prompt_file in prompt_dir.glob("*.txt"):
+e8d57acd:scripts/benchmark/run_optuna_optimization.py:1038:        suites = list(prompt_dir.glob("t*"))
+e8d57acd:scripts/benchmark/run_perf_parallel_tools_validation.sh:450:for p in sorted(glob(os.path.join(out_dir, "*.cache_diag.json"))):
+e8d57acd:scripts/benchmark/run_perf_parallel_tools_validation.sh:454:for p in sorted(glob(os.path.join(out_dir, "ws3*.json"))):
+e8d57acd:scripts/benchmark/score_outputs.py:298:    files = sorted(input_dir.glob("*.txt"))
+e8d57acd:scripts/benchmark/score_with_operator_waiver.py:27:    spec = importlib.util.spec_from_file_location("csp", CONVERTER)
+e8d57acd:scripts/benchmark/scoring_verifiers_adapter.py:152:        jsonl_files = sorted(base.rglob("*.jsonl"))
+e8d57acd:scripts/benchmark/scoring_verifiers_adapter.py:178:        parquet_files = sorted(base.rglob("*.parquet"))
+e8d57acd:scripts/benchmark/server_np_sweep.py:272:            for path in Path("/sys/devices/system/cpu").glob("cpu*/cpufreq/scaling_governor")
+e8d57acd:scripts/benchmark/server_numa_np_sweep.py:593:    for cpu_dir in base.glob("cpu[0-9]*"):
+e8d57acd:scripts/benchmark/server_numa_np_sweep.py:751:    for path in base.glob("cpu[0-9]*/cpufreq/scaling_max_freq"):
+e8d57acd:scripts/benchmark/server_numa_np_sweep.py:2257:        paths.extend(sorted(args.manifest_dir.glob("*.json")))
+e8d57acd:scripts/benchmark/smoke_prefix_reuse.py:136:    for card in sorted(Path("/sys/class/drm").glob("card[0-9]*/device")):
+e8d57acd:scripts/benchmark/smoke_prefix_reuse.py:179:    files = adapter._select_target_qa_files(sorted(variant_dir.rglob("df_qa.parquet")))
+e8d57acd:scripts/benchmark/stage1_mi210_gpu_drafter_planner.py:469:    matches = sorted(root.glob(DEFAULT_N5_SUMMARY_GLOB), key=lambda path: path.stat().st_mtime, reverse=True)
+e8d57acd:scripts/benchmark/suites.py:228:        names.update(f.stem for f in path.glob("*.yaml"))
+e8d57acd:scripts/benchmark/swebench_cpuset_adapter.py:123:    docker_build = importlib.import_module("swebench.harness.docker_build")
+e8d57acd:scripts/benchmark/test_autokernel_funsafe_math_admission.py:14:_spec = importlib.util.spec_from_file_location("funsafe_admission_under_test", _PATH)
+e8d57acd:scripts/benchmark/test_beam_adapter.py:193:    real_import = builtins.__import__
+e8d57acd:scripts/benchmark/test_beam_adapter.py:200:    monkeypatch.setattr(builtins, "__import__", no_pyarrow)
+e8d57acd:scripts/benchmark/test_belief_capture.py:88:    spec = importlib.util.spec_from_file_location(f"driver_{path.stem}", path)
+e8d57acd:scripts/benchmark/test_compare_v9_promotion_arms.py:9:SPEC = importlib.util.spec_from_file_location("compare_v9_promotion_arms", MODULE_PATH)
+e8d57acd:scripts/benchmark/test_convert_sr_to_patch_diagnostics.py:64:    spec = importlib.util.spec_from_file_location("convert_sr_to_patch_diagnostics", CONVERTER)
+e8d57acd:scripts/benchmark/test_gate_verdict_vocab.py:24:_SPEC = importlib.util.spec_from_file_location("gate_verdict_vocab", _MODULE_PATH)
+e8d57acd:scripts/benchmark/test_gate_verdict_vocab.py:38:            spec = importlib.util.spec_from_file_location(
+e8d57acd:scripts/benchmark/test_glm52_ccrab_accept_control_filter.py:13:_SPEC = importlib.util.spec_from_file_location("glm52_ccrab_accept_control_filter", _MODULE_PATH)
+e8d57acd:scripts/benchmark/test_glm52_ccrab_accept_control_review_sheet.py:18:_SPEC = importlib.util.spec_from_file_location("glm52_ccrab_accept_control_review_sheet", _MODULE_PATH)
+e8d57acd:scripts/benchmark/test_glm52_ccrab_accept_control_signoff.py:13:_SPEC = importlib.util.spec_from_file_location("glm52_ccrab_accept_control_signoff", _MODULE_PATH)
+e8d57acd:scripts/benchmark/test_glm52_ccrab_hard_negative_filter.py:13:_SPEC = importlib.util.spec_from_file_location("glm52_ccrab_hard_negative_filter", _MODULE_PATH)
+e8d57acd:scripts/benchmark/test_glm52_dsa_probe_runner.py:32:    for shard in sorted(model_dir.glob("*.gguf")):
+e8d57acd:scripts/benchmark/test_glm52_external_ground_truth_adapter.py:12:_SPEC = importlib.util.spec_from_file_location("glm52_external_ground_truth_adapter", _MODULE_PATH)
+e8d57acd:scripts/benchmark/test_glm52_external_ground_truth_direct_runner.py:14:_SPEC = importlib.util.spec_from_file_location("glm52_external_ground_truth_direct_runner", _MODULE_PATH)
+e8d57acd:scripts/benchmark/test_glm52_reviewer_capability_direct_runner.py:17:_SPEC = importlib.util.spec_from_file_location("glm52_reviewer_capability_direct_runner", _MODULE_PATH)
+e8d57acd:scripts/benchmark/test_glm52_reviewer_corpus_direct_runner.py:12:_SPEC = importlib.util.spec_from_file_location("glm52_reviewer_corpus_direct_runner", _MODULE_PATH)
+e8d57acd:scripts/benchmark/test_glm52_swebench_verified_adapter.py:15:_SPEC = importlib.util.spec_from_file_location("glm52_swebench_verified_adapter", _MODULE_PATH)
+e8d57acd:scripts/benchmark/test_glm52_swebench_verified_adapter.py:112:    real_import = builtins.__import__
+e8d57acd:scripts/benchmark/test_glm52_swebench_verified_adapter.py:119:    monkeypatch.setattr(builtins, "__import__", blocked_import)
+e8d57acd:scripts/benchmark/test_gps_pin2_df2_greedy_parity.py:11:spec = importlib.util.spec_from_file_location("df2_gp", HERE / "df2_greedy_parity.py")
+e8d57acd:scripts/benchmark/test_gps_pin_2_bench_drivers.py:18:    spec = importlib.util.spec_from_file_location(f"gpspin2_{name}", HERE / f"{name}.py")
+e8d57acd:scripts/benchmark/test_hs_prof1_table.py:8:_S = importlib.util.spec_from_file_location("hs_prof1_profile_arms_t", Path(__file__).parent / "hs_prof1_profile_arms.py")
+e8d57acd:scripts/benchmark/test_kpf13_restore_ab.py:19:_SPEC = importlib.util.spec_from_file_location("kpf13_restore_ab", Path(__file__).parent / "kpf13" / "kpf13_restore_ab.py")
+e8d57acd:scripts/benchmark/test_kv_quant_27b_v10_ingest.py:102:        module = importlib.import_module("adapters.kv_quant_27b_v10")
+e8d57acd:scripts/benchmark/test_kv_quant_27b_v10_sweep.py:434:    assert not list(tmp_path.glob("*.tmp"))
+e8d57acd:scripts/benchmark/test_laguna_iq2_mi210_kv_sweep.py:191:    result = __import__("json").loads((tmp_path / "runs" / "A_q8_kv_fa_on_rep1" / "result.json").read_text(encoding="utf-8"))
+e8d57acd:scripts/benchmark/test_laguna_iq2_mi210_kv_sweep.py:221:    result = __import__("json").loads((tmp_path / "runs" / "A_q8_kv_fa_on_rep1" / "result.json").read_text(encoding="utf-8"))
+e8d57acd:scripts/benchmark/test_m12h_ast_isolated.py:15:    exec(compile(ast.fix_missing_locations(ast.Module(body=selected, type_ignores=[])), str(source), "exec"), ns)
+e8d57acd:scripts/benchmark/test_memento_sft.py:28:    spec = importlib.util.spec_from_file_location("memento_sft", MODULE_PATH)
+e8d57acd:scripts/benchmark/test_replay_tc_nothink_v4.py:14:SPEC = importlib.util.spec_from_file_location("tc_nothink_replay", HERE / "replay_tc_nothink_v4.py")
+e8d57acd:scripts/benchmark/test_replay_tc_nothink_v4.py:123:    assert not list(tmp_path.glob(".published.publish.lock"))
+e8d57acd:scripts/benchmark/test_reviewer_a0_objective_floor.py:12:_SPEC = importlib.util.spec_from_file_location("reviewer_a0_objective_floor", _MODULE_PATH)
+e8d57acd:scripts/benchmark/test_run_autokernel_gpu_discovery.py:657:        payload = __import__("json").dumps({
+e8d57acd:scripts/benchmark/test_score_with_claude.py:14:SPEC = importlib.util.spec_from_file_location("score_with_claude", MODULE_PATH)
+e8d57acd:scripts/benchmark/test_swebench_cpuset_adapter.py:13:SPEC = importlib.util.spec_from_file_location("swebench_cpuset_adapter", HERE / "swebench_cpuset_adapter.py")
+e8d57acd:scripts/benchmark/test_swebench_cpuset_adapter.py:71:        traceback=__import__("traceback"),
+e8d57acd:scripts/benchmark/test_tulving_context_mode.py:296:    real_import = builtins.__import__
+e8d57acd:scripts/benchmark/test_tulving_context_mode.py:303:    monkeypatch.setattr(builtins, "__import__", no_pandas)
+e8d57acd:scripts/benchmark/test_v7_quality_gate_compare.py:35:_SPEC = importlib.util.spec_from_file_location(
+e8d57acd:scripts/benchmark/test_v7_quality_gate_runner.py:421:    assert not list(tmp_path.glob(".pq.live-status.json.*.tmp"))
+e8d57acd:scripts/benchmark/tests/test_autokernel_iq2_model_beliefs.py:11:SPEC = importlib.util.spec_from_file_location("iq2_model_beliefs", PATH)
+e8d57acd:scripts/benchmark/tests/test_autokernel_mmq_wgm_receipt.py:117:            self.assertFalse(any(path.parent.glob(".receipt.json.tmp-*")))
+e8d57acd:scripts/benchmark/tests/test_debugbench_oracle_wiring.py:33:_scorer_spec = importlib.util.spec_from_file_location(
+e8d57acd:scripts/benchmark/tests/test_debugbench_oracle_wiring.py:39:_orch_spec = importlib.util.spec_from_file_location(
+e8d57acd:scripts/benchmark/tests/test_e5_cell_manifests.py:606:        files = list(root.glob("*/*.json"))
+e8d57acd:scripts/benchmark/tests/test_e5_w2_capture_smoke_check.py:25:_spec = importlib.util.spec_from_file_location("e5_w2_capture_smoke_check", MODULE_PATH)
+e8d57acd:scripts/benchmark/tests/test_livecodebench_oracle_wiring.py:37:_scorer_spec = importlib.util.spec_from_file_location(
+e8d57acd:scripts/benchmark/tests/test_livecodebench_oracle_wiring.py:43:_orch_spec = importlib.util.spec_from_file_location(
+e8d57acd:scripts/benchmark/tests/test_pin_staleness.py:237:    spec = importlib.util.spec_from_file_location("ni08_synthetic_checker", checker_copy)
+e8d57acd:scripts/benchmark/tests/test_run_autokernel_lds_solver.py:32:        spec = importlib.util.spec_from_file_location("lds_runner_test", RUNNER)
+e8d57acd:scripts/benchmark/tests/test_run_autokernel_wgm_sweep.py:10:SPEC = importlib.util.spec_from_file_location("run_autokernel_wgm_sweep", MODULE_PATH)
+e8d57acd:scripts/benchmark/tests/test_run_inf37_iq2_fancy_simd_ab.py:10:SPEC = importlib.util.spec_from_file_location("inf37_iq2_ab", PATH)
+e8d57acd:scripts/benchmark/thesis_ufh13/transports.py:174:    paths = [events_path] + sorted(events_path.parent.glob(events_path.name + ".[0-9]*"))
+e8d57acd:scripts/benchmark/throughput_report.py:18:    for rj in sorted(run_dir.glob("*/result.json")):
+e8d57acd:scripts/benchmark/train_tide_adapter.py:135:        model.eval()
+e8d57acd:scripts/benchmark/train_tide_adapter.py:167:    model.eval()
+e8d57acd:scripts/benchmark/tulving_episodic_adapter.py:708:        parquet_files = sorted(variant_dir.rglob("df_qa.parquet"))
+e8d57acd:scripts/benchmark/tulving_episodic_adapter.py:792:        json_files = sorted(variant_dir.rglob("df_qa*.json"))
+e8d57acd:scripts/benchmark/tulving_episodic_adapter.py:815:        book_files = sorted(variant_dir.rglob("book*.txt")) + sorted(
+e8d57acd:scripts/benchmark/tulving_episodic_adapter.py:816:            variant_dir.rglob("*.txt")
+e8d57acd:scripts/benchmark/tulving_episodic_adapter.py:859:                parsed = ast.literal_eval(raw)
+e8d57acd:scripts/benchmark/v7_quality_gate_compare.py:67:_GVV_SPEC = importlib.util.spec_from_file_location("gate_verdict_vocab", _GVV_PATH)
+e8d57acd:scripts/benchmark/validate_compaction_live.py:216:        ctx_files.extend(glob.glob(str(d / "session_*_ctx_*.md")))
+e8d57acd:scripts/benchmark/vendor/oolong/eval_helpers.py:58:        ast.literal_eval(datapoint["answer"])[0]
+e8d57acd:scripts/benchmark/yarn_gate/remeasure_oolong.py:49:    for p in sorted(Path(a.dir).glob("oolong_synth_*.jsonl")):
+e8d57acd:scripts/kernel_rnd/autokernel/FOOTPRINT.md:20:`import_module(…)` strings, absolute and relative. It is not a grep. A dynamic
+e8d57acd:scripts/kernel_rnd/autokernel/FOOTPRINT.md:503:   `import_module(f"{__package__}.…")` is a hole in that graph. It is REPORTED,
+e8d57acd:scripts/kernel_rnd/autokernel/campaign.py:3145:                for path in sorted(bundle_root.rglob("*"), reverse=True):
+e8d57acd:scripts/kernel_rnd/autokernel/check_regrowth_guards.py:156:    for path in sorted(root.rglob("*.py")):
+e8d57acd:scripts/kernel_rnd/autokernel/check_regrowth_guards.py:186:    for path in sorted(root.rglob("*.py")):
+e8d57acd:scripts/kernel_rnd/autokernel/check_regrowth_guards.py:202:    for path in sorted(package.rglob("test_*.py")):
+e8d57acd:scripts/kernel_rnd/autokernel/controller/anchor_integrity.py:146:    for o in sorted(root.rglob("*.o")):
+e8d57acd:scripts/kernel_rnd/autokernel/controller/anchor_integrity.py:162:            for o in sorted(root.rglob("*.o"))}
+e8d57acd:scripts/kernel_rnd/autokernel/controller/arena_cell_runner.py:340:    for path in sorted(cells_root.rglob("*")):
+e8d57acd:scripts/kernel_rnd/autokernel/controller/arena_cell_runner.py:365:    for path in resolved_root.rglob("*"):
+e8d57acd:scripts/kernel_rnd/autokernel/controller/arena_cell_runner.py:1438:    for path in source.rglob("*"):
+e8d57acd:scripts/kernel_rnd/autokernel/controller/arena_cell_runner.py:1543:        for path in sorted(workspace.glob("*.py")):
+e8d57acd:scripts/kernel_rnd/autokernel/controller/arena_cell_runner.py:1784:    for path in sorted(root.rglob("*")):
+e8d57acd:scripts/kernel_rnd/autokernel/controller/arena_cell_runner.py:2954:                cell_root / "controller-evaluation-windows").glob("*-result.json")):
+e8d57acd:scripts/kernel_rnd/autokernel/controller/arena_cell_runner.py:3224:        cell_root / "controller-evaluation-windows").glob("*-result.json"))
+e8d57acd:scripts/kernel_rnd/autokernel/controller/arena_cell_runner.py:3226:        cell_root / "controller-evaluation-windows").glob("*-measurement.json"))
+e8d57acd:scripts/kernel_rnd/autokernel/controller/arena_cell_runner.py:3381:        cell_root / "model-inference-windows").glob("*-result.json"))
+e8d57acd:scripts/kernel_rnd/autokernel/controller/arena_cell_runner.py:3408:    for receipt_path in sorted(cells_root.glob("*/checkpoint-receipt.json")):
+e8d57acd:scripts/kernel_rnd/autokernel/controller/arena_cell_runner.py:3498:    for path in sorted((root / "execution" / "cell-receipts").glob("*.json")):
+e8d57acd:scripts/kernel_rnd/autokernel/controller/arena_controller_sandbox.py:337:         "print(json.dumps([getattr(importlib.import_module(n),'__file__',None) "
+e8d57acd:scripts/kernel_rnd/autokernel/controller/arena_controller_sandbox.py:442:    for path in sorted(src.rglob("*")):
+e8d57acd:scripts/kernel_rnd/autokernel/controller/arena_controller_sandbox.py:456:        for path in sorted(dst.rglob("*")) if path.is_file()
+e8d57acd:scripts/kernel_rnd/autokernel/controller/claude_codex_actor_critic.py:299:    for path in sorted(workspace.rglob("*")):
+e8d57acd:scripts/kernel_rnd/autokernel/controller/discovery_controller.py:84:HASH = __import__("re").compile(r"^[0-9a-f]{64}$")
+e8d57acd:scripts/kernel_rnd/autokernel/controller/discovery_controller.py:805:    for path in sorted(workspace.rglob("*"), key=lambda item: item.as_posix()):
+e8d57acd:scripts/kernel_rnd/autokernel/controller/discovery_controller.py:3948:        factory = getattr(importlib.import_module(module), name)
+e8d57acd:scripts/kernel_rnd/autokernel/controller/discovery_static_registry.py:896:    intents = sorted(logs.glob("*-process-intent.json"))
+e8d57acd:scripts/kernel_rnd/autokernel/controller/discovery_static_registry.py:897:    starts = sorted(logs.glob("*-process-start.json"))
+e8d57acd:scripts/kernel_rnd/autokernel/controller/discovery_static_registry.py:898:    terminals = sorted(logs.glob("*-process-terminal.json"))
+e8d57acd:scripts/kernel_rnd/autokernel/controller/discovery_supervisor.py:295:        for path in closure.rglob("*"):
+e8d57acd:scripts/kernel_rnd/autokernel/controller/discovery_supervisor.py:345:    for path in autokernel.rglob("*"):
+e8d57acd:scripts/kernel_rnd/autokernel/controller/discovery_supervisor_secure.py:374:            (path for path in self.path.rglob("*")
+e8d57acd:scripts/kernel_rnd/autokernel/controller/geak_v1_arena.py:175:            return importlib.util.spec_from_file_location(fullname, module)
+e8d57acd:scripts/kernel_rnd/autokernel/controller/geak_v1_arena.py:180:            return importlib.util.spec_from_file_location(
+e8d57acd:scripts/kernel_rnd/autokernel/controller/gpu_source_adapter.py:488:                for entry in runner_root.rglob("*"):
+e8d57acd:scripts/kernel_rnd/autokernel/controller/gpu_source_evidence.py:1111:    for path in sorted(root.rglob("*"), key=lambda item: item.relative_to(root).as_posix()):
+e8d57acd:scripts/kernel_rnd/autokernel/controller/hip_authoring_arm.py:126:    for path in sorted(root.rglob("*")):
+e8d57acd:scripts/kernel_rnd/autokernel/controller/hip_decision_grade_worker.py:129:    for path in sorted(root.rglob("*")):
+e8d57acd:scripts/kernel_rnd/autokernel/controller/inbox.py:49:    for path in sorted(inbox_dir.glob("*.md")):
+e8d57acd:scripts/kernel_rnd/autokernel/controller/loop_experiment_runner.py:140:    for path in sorted(root.rglob("*")):
+e8d57acd:scripts/kernel_rnd/autokernel/controller/loop_scaffold_runner.py:150:    for path in sorted(root.rglob("*")):
+e8d57acd:scripts/kernel_rnd/autokernel/controller/sequencer.py:400:    value = getattr(importlib.import_module(module_name), attribute)
+e8d57acd:scripts/kernel_rnd/autokernel/controller/test_all_strategy_acceptance_red.py:123:            patch_sha256=__import__("hashlib").sha256(patch).hexdigest())
+e8d57acd:scripts/kernel_rnd/autokernel/controller/test_all_strategy_acceptance_red.py:861:                row = __import__("json").loads(fixture._row([100.0] * 3))
+e8d57acd:scripts/kernel_rnd/autokernel/controller/test_all_strategy_acceptance_red.py:870:                rendered = __import__("json").dumps(row).replace(
+e8d57acd:scripts/kernel_rnd/autokernel/controller/test_all_strategy_acceptance_red.py:897:            source_hash = __import__("hashlib").sha256(
+e8d57acd:scripts/kernel_rnd/autokernel/controller/test_all_strategy_acceptance_red.py:899:            dispatch_hash = __import__("hashlib").sha256(
+e8d57acd:scripts/kernel_rnd/autokernel/controller/test_all_strategy_acceptance_red.py:1035:                    __import__("json").dumps(body, sort_keys=True))
+e8d57acd:scripts/kernel_rnd/autokernel/controller/test_all_strategy_acceptance_red.py:1140:                    __import__("json").dumps(body, sort_keys=True))
+e8d57acd:scripts/kernel_rnd/autokernel/controller/test_all_strategy_acceptance_red.py:1142:                    __import__("json").dumps({
+e8d57acd:scripts/kernel_rnd/autokernel/controller/test_all_strategy_acceptance_red.py:1709:            self.assertFalse(any(proof.glob("attribution-*/refusal.json")))
+e8d57acd:scripts/kernel_rnd/autokernel/controller/test_all_strategy_acceptance_red.py:1723:            forged = __import__("json").loads(receipt.read_text())
+e8d57acd:scripts/kernel_rnd/autokernel/controller/test_all_strategy_acceptance_red.py:1727:            receipt.write_text(__import__("json").dumps(
+e8d57acd:scripts/kernel_rnd/autokernel/controller/test_all_strategy_acceptance_red.py:1760:            policy_path.write_text(__import__("json").dumps(
+e8d57acd:scripts/kernel_rnd/autokernel/controller/test_all_strategy_acceptance_red.py:1784:            forged = __import__("json").loads(receipt.read_text())
+e8d57acd:scripts/kernel_rnd/autokernel/controller/test_all_strategy_acceptance_red.py:1788:            receipt.write_text(__import__("json").dumps(
+e8d57acd:scripts/kernel_rnd/autokernel/controller/test_all_strategy_acceptance_red.py:2201:            policy_raw = __import__("json").dumps(
+e8d57acd:scripts/kernel_rnd/autokernel/controller/test_all_strategy_acceptance_red.py:2208:                    __import__("hashlib").sha256(policy_raw).hexdigest()))
+e8d57acd:scripts/kernel_rnd/autokernel/controller/test_arena_adapter.py:220:        self.assertEqual(list(output.parent.glob(".receipt.json.tmp-*")), [])
+e8d57acd:scripts/kernel_rnd/autokernel/controller/test_arena_campaign.py:671:        self.assertEqual(list(output.parent.glob(".audit.json.tmp-*")), [])
+e8d57acd:scripts/kernel_rnd/autokernel/controller/test_arena_cell_runner.py:518:        belief_files = sorted(self.output.glob("cells/*/belief-receipt.json"))
+e8d57acd:scripts/kernel_rnd/autokernel/controller/test_arena_cell_runner.py:630:        persisted = json.loads(next((cell / "measurement-windows").glob("*.json")).read_text())
+e8d57acd:scripts/kernel_rnd/autokernel/controller/test_arena_cell_runner.py:652:        persisted = json.loads(next((cell / "measurement-windows").glob("*.json")).read_text())
+e8d57acd:scripts/kernel_rnd/autokernel/controller/test_arena_cell_runner.py:673:        persisted = json.loads(next((cell / "measurement-windows").glob("*.json")).read_text())
+e8d57acd:scripts/kernel_rnd/autokernel/controller/test_arena_cell_runner.py:715:        self.assertTrue(next(self.output.glob("cells/*-escaped")).is_dir())
+e8d57acd:scripts/kernel_rnd/autokernel/controller/test_arena_cell_runner.py:717:            list(self.output.glob("cells/*/checkpoint-receipt.json")), [])
+e8d57acd:scripts/kernel_rnd/autokernel/controller/test_arena_cell_runner.py:778:        abandoned = list((self.output / "abandoned").glob("*8h.attempt-001"))
+e8d57acd:scripts/kernel_rnd/autokernel/controller/test_arena_cell_runner.py:792:        checkpoint = next(self.output.glob("cells/*/checkpoint-receipt.json"))
+e8d57acd:scripts/kernel_rnd/autokernel/controller/test_arena_cell_runner.py:815:        artifact = next(self.output.glob("cells/*/fixture.txt"))
+e8d57acd:scripts/kernel_rnd/autokernel/controller/test_arena_cell_runner.py:840:            list(self.output.glob("cells/*/checkpoint-receipt.json")), [])
+e8d57acd:scripts/kernel_rnd/autokernel/controller/test_arena_cell_runner.py:883:        before = {path: path.read_bytes() for path in campaign.rglob("*")
+e8d57acd:scripts/kernel_rnd/autokernel/controller/test_arena_cell_runner.py:889:                                 for path in campaign.rglob("*") if path.is_file()})
+e8d57acd:scripts/kernel_rnd/autokernel/controller/test_arena_cell_runner.py:891:        checkpoint_path = next(execution.glob("cells/*/checkpoint-receipt.json"))
+e8d57acd:scripts/kernel_rnd/autokernel/controller/test_arena_cell_runner.py:1139:            (cell / "controller-evaluation-windows").glob("*-result.json"))]
+e8d57acd:scripts/kernel_rnd/autokernel/controller/test_arena_roundtrip.py:80:            self.assertFalse(any(path.parent.glob(".receipt.json.tmp-*")))
+e8d57acd:scripts/kernel_rnd/autokernel/controller/test_claude_fable5_critic_actor.py:123:            self.assertEqual(list(workspace.glob(".autokernel-fable5-*")), [])
+e8d57acd:scripts/kernel_rnd/autokernel/controller/test_claude_fable5_critic_actor.py:189:            staged = list(workspace.glob(".autokernel-fable5-*"))
+e8d57acd:scripts/kernel_rnd/autokernel/controller/test_claude_fable5_critic_actor.py:321:            self.assertEqual(list(workspace.glob(".autokernel-fable5-*")), [])
+e8d57acd:scripts/kernel_rnd/autokernel/controller/test_claude_fable5_critic_actor.py:350:            def replace_before_exec(**kwargs: object) -> tuple[int, str, str]:
+e8d57acd:scripts/kernel_rnd/autokernel/controller/test_discovery_correctness_capability_acceptance.py:56:    terminals = tuple((V8_BUNDLE / "operations/build-cache/entries").glob(
+e8d57acd:scripts/kernel_rnd/autokernel/controller/test_discovery_static_registry.py:261:                    raise __import__(
+e8d57acd:scripts/kernel_rnd/autokernel/controller/test_discovery_static_registry.py:292:            split_module = __import__(
+e8d57acd:scripts/kernel_rnd/autokernel/controller/test_discovery_static_registry.py:326:            split_module = __import__(
+e8d57acd:scripts/kernel_rnd/autokernel/controller/test_discovery_supervisor.py:89:            self.assertFalse(any(path.suffix == ".pyc" for path in closure.rglob("*")))
+e8d57acd:scripts/kernel_rnd/autokernel/controller/test_discovery_supervisor.py:90:            self.assertFalse(any(path.name == "__pycache__" for path in closure.rglob("*")))
+e8d57acd:scripts/kernel_rnd/autokernel/controller/test_discovery_supervisor.py:91:            for directory in [closure, *(p for p in closure.rglob("*") if p.is_dir())]:
+e8d57acd:scripts/kernel_rnd/autokernel/controller/test_discovery_supervisor.py:94:            for path in (path for path in closure.rglob("*") if path.is_file()):
+e8d57acd:scripts/kernel_rnd/autokernel/controller/test_discovery_supervisor.py:132:importlib.import_module(
+e8d57acd:scripts/kernel_rnd/autokernel/controller/test_gpu_source_adapter.py:104:            __import__("hashlib").sha256((production / "README").read_bytes()).hexdigest())
+e8d57acd:scripts/kernel_rnd/autokernel/controller/test_gpu_source_evidence.py:699:                observed_monotonic_ns=__import__("time").monotonic_ns(),
+e8d57acd:scripts/kernel_rnd/autokernel/controller/test_gpu_source_evidence.py:733:                    observed_monotonic_ns=__import__("time").monotonic_ns(), device_id="mi210_0",
+e8d57acd:scripts/kernel_rnd/autokernel/controller/test_gpu_source_evidence.py:766:                    observed_monotonic_ns=__import__("time").monotonic_ns(), device_id="mi210_0",
+e8d57acd:scripts/kernel_rnd/autokernel/controller/test_gpu_source_evidence.py:791:                    observed_monotonic_ns=__import__("time").monotonic_ns(), device_id="mi210_0",
+e8d57acd:scripts/kernel_rnd/autokernel/controller/test_gpu_source_evidence.py:819:                    observed_monotonic_ns=__import__("time").monotonic_ns(), device_id="mi210_0",
+e8d57acd:scripts/kernel_rnd/autokernel/controller/test_gpu_source_evidence.py:845:                    observed_monotonic_ns=__import__("time").monotonic_ns(), device_id="mi210_0",
+e8d57acd:scripts/kernel_rnd/autokernel/controller/test_gpu_source_evidence.py:871:                        raise __import__("subprocess").TimeoutExpired("fake", timeout)
+e8d57acd:scripts/kernel_rnd/autokernel/controller/test_loop_experiment_prefilter.py:169:        sealed = next(self.panel_root.glob("0001-*/observation.json"))
+e8d57acd:scripts/kernel_rnd/autokernel/controller/test_loop_experiment_runner.py:293:            self.assertTrue((next(output.glob("0001-*")) / "event.json").is_file())
+e8d57acd:scripts/kernel_rnd/autokernel/controller/test_loop_scaffold_runner.py:261:            root = next((output / "cells").glob(f"*-{cell['cell_id']}"))
+e8d57acd:scripts/kernel_rnd/autokernel/evaluator/api.py:3180:_FORBIDDEN_CALL_NAMES = frozenset({"open", "exec", "eval", "compile", "__import__", "input"})
+e8d57acd:scripts/kernel_rnd/autokernel/evaluator/c3_apex_runner.py:811:                for path in model_path.rglob("*") if path.is_file()
+e8d57acd:scripts/kernel_rnd/autokernel/evaluator/c3_apex_runner.py:1127:    module = importlib.import_module("kernel_tracing.runner")
+e8d57acd:scripts/kernel_rnd/autokernel/evaluator/c3_epyc_capture_provider.py:95:    spec = importlib.util.spec_from_file_location("epyc_c3_real_model_hook", hook)
+e8d57acd:scripts/kernel_rnd/autokernel/evaluator/c3_epyc_capture_provider.py:125:            __import__("torch"), "uint8")).cpu().numpy().tobytes()
+e8d57acd:scripts/kernel_rnd/autokernel/evaluator/c3_epyc_tensor_capture.py:339:            for path in model_path.rglob("*") if path.is_file()
+e8d57acd:scripts/kernel_rnd/autokernel/evaluator/integrity.py:1489:        for path in sorted(base.rglob("*")):
+e8d57acd:scripts/kernel_rnd/autokernel/evaluator/integrity.py:1708:        walk = sorted(base.rglob("*"))
+e8d57acd:scripts/kernel_rnd/autokernel/evaluator/integrity.py:3537:_FORBIDDEN_CALL_NAMES = frozenset({"open", "exec", "eval", "compile", "__import__", "input"})
+e8d57acd:scripts/kernel_rnd/autokernel/evaluator/recipes.py:251:            module = importlib.import_module("scripts.lib.canonical_recipe")
+e8d57acd:scripts/kernel_rnd/autokernel/evaluator/recipes.py:253:            spec = importlib.util.spec_from_file_location(
+e8d57acd:scripts/kernel_rnd/autokernel/evaluator/recipes.py:2336:_FORBIDDEN_CALL_NAMES = frozenset({"open", "exec", "eval", "compile", "__import__", "input"})
+e8d57acd:scripts/kernel_rnd/autokernel/evaluator/surface.py:3100:_FORBIDDEN_CALL_NAMES = frozenset({"exec", "eval", "compile", "__import__", "input"})
+e8d57acd:scripts/kernel_rnd/autokernel/execution/cpu_region_claim.py:496:        entries = sorted(root.glob("cpu[0-9]*"))
+e8d57acd:scripts/kernel_rnd/autokernel/execution/cpu_region_claim.py:2358:    for path in root.glob("cpu_region.*.*.lock"):
+e8d57acd:scripts/kernel_rnd/autokernel/execution/device_sampler.py:184:            self._bindings = importlib.import_module("rsmiBindings")
+e8d57acd:scripts/kernel_rnd/autokernel/execution/device_sampler.py:248:        for card in sorted(Path(sysfs_root).glob("card[0-9]*")):
+e8d57acd:scripts/kernel_rnd/autokernel/execution/device_sampler.py:249:            for hwmon in sorted((card / "device" / "hwmon").glob("hwmon*")):
+e8d57acd:scripts/kernel_rnd/autokernel/execution/live_controls.py:451:    payloads.extend(sorted(binary.parent.glob("libllama-bench-impl.so*")))
+e8d57acd:scripts/kernel_rnd/autokernel/execution/live_controls.py:1802:    raw_files = sorted(path.name for path in (output_root / "raw").glob("*.json"))
+e8d57acd:scripts/kernel_rnd/autokernel/execution/live_controls.py:1822:        path.name for path in (output_root / "checkpoints").glob("*")
+e8d57acd:scripts/kernel_rnd/autokernel/execution/microbench.py:665:        name_files = tuple(powercap_root.rglob("name"))
+e8d57acd:scripts/kernel_rnd/autokernel/execution/screening_baseline.py:123:    for path in sorted(library_root.glob("*.so*")):
+e8d57acd:scripts/kernel_rnd/autokernel/execution/t0_provider.py:3901:        (build_root / "CMakeFiles").glob("*/CMakeCXXCompiler.cmake"))
+e8d57acd:scripts/kernel_rnd/autokernel/execution/test_cpu_region_claim.py:401:        spec = importlib.util.spec_from_file_location(
+e8d57acd:scripts/kernel_rnd/autokernel/execution/test_cpu_region_claim.py:414:        spec = importlib.util.spec_from_file_location(
+e8d57acd:scripts/kernel_rnd/autokernel/execution/test_cpu_region_claim.py:433:        spec = importlib.util.spec_from_file_location(
+e8d57acd:scripts/kernel_rnd/autokernel/execution/test_live_controls.py:759:            preserved = list((root / "interrupted").glob("raw-anchor_motion*.json"))
+e8d57acd:scripts/kernel_rnd/autokernel/execution/test_live_controls.py:784:                (root / "interrupted").glob("anchor-motion-transition.*.json"))
+e8d57acd:scripts/kernel_rnd/autokernel/execution/test_sandbox.py:243:                "render = {path: probe_open(path) for path in __import__('glob').glob('/dev/dri/renderD*')}",
+e8d57acd:scripts/kernel_rnd/autokernel/execution/test_sandbox.py:378:    def test_controller_broker_peer_mismatch_refuses_before_exec(self):
+e8d57acd:scripts/kernel_rnd/autokernel/execution/test_worktree.py:1643:            __import__("hashlib").sha256(Path(stream).read_bytes()).hexdigest())
+e8d57acd:scripts/kernel_rnd/autokernel/execution/test_worktree.py:1837:    def test_COMPLIANT_the_typed_entry_points_still_work(self):
+e8d57acd:scripts/kernel_rnd/autokernel/history_replay/export.py:55:    for d in sorted(glob.glob(str(root / "campaigns" / "*" / "store*"))):
+e8d57acd:scripts/kernel_rnd/autokernel/history_replay/export.py:473:    for f in sorted(glob.glob(str(root / "campaigns" / "*" / "**" / "actor-calls.jsonl"), recursive=True)):
+e8d57acd:scripts/kernel_rnd/autokernel/history_replay/test_export.py:59:            before = {str(f): f.stat().st_mtime_ns for f in root.rglob("*") if f.is_file()}
+e8d57acd:scripts/kernel_rnd/autokernel/history_replay/test_export.py:62:            after = {str(f): f.stat().st_mtime_ns for f in root.rglob("*") if f.is_file()}
+e8d57acd:scripts/kernel_rnd/autokernel/history_replay/test_export.py:108:            for f in camp.rglob("*"):       # the exporter refuses a store written in the last 30 min
+e8d57acd:scripts/kernel_rnd/autokernel/loop/ab_server_pair.py:166:        """taskset exec()s in place, so the spawned pid IS llama-server; kept as a seam for wrappers."""
+e8d57acd:scripts/kernel_rnd/autokernel/loop/actor_context.py:468:    for path in sorted(p for p in directory.rglob("*") if p.is_file() and p.name != MARKER):
+e8d57acd:scripts/kernel_rnd/autokernel/loop/actor_metrics.py:535:    for path in sorted(Path(state_dir).rglob("actor-calls.jsonl")):
+e8d57acd:scripts/kernel_rnd/autokernel/loop/actors.py:1405:        spec = importlib.util.spec_from_file_location("_ak_actor_seat_capture", path)
+e8d57acd:scripts/kernel_rnd/autokernel/loop/ak_check.py:443:            for lock_file in sorted(lock_dir.glob(f"cpu_region.*{suffix}")):
+e8d57acd:scripts/kernel_rnd/autokernel/loop/calibrate_served_shapes.py:433:    shards = sorted(model.parent.glob(model.name.replace("00001-of", "*-of"))) or [model]
+e8d57acd:scripts/kernel_rnd/autokernel/loop/champion_reanchor.py:182:    for build in sorted(Path(builds_root).glob("cpu-*"), key=lambda p: p.stat().st_mtime, reverse=True):
+e8d57acd:scripts/kernel_rnd/autokernel/loop/champion_reanchor.py:224:    for build in sorted(Path(builds_root).glob("cpu-*"), key=lambda p: p.stat().st_mtime, reverse=True):
+e8d57acd:scripts/kernel_rnd/autokernel/loop/champion_reanchor.py:240:    for path in Path(store).glob("runtime-source-floors/*/*/serving-floor.*.matched_process_v2.pairs-*.json"):
+e8d57acd:scripts/kernel_rnd/autokernel/loop/champion_reanchor.py:520:        plans = sorted(store.glob("runtime-source-floors/**/*.registry-plan.json"),
+e8d57acd:scripts/kernel_rnd/autokernel/loop/claim.py:382:        gpu_quiet_lock = importlib.import_module("src.runtime.gpu_quiet_lock")
+e8d57acd:scripts/kernel_rnd/autokernel/loop/cpu_fa_mask_capture.py:63:                    (binary, *sorted((build_dir / "bin").glob("*.so")))}}
+e8d57acd:scripts/kernel_rnd/autokernel/loop/cpu_route_gdb_probe.py:30:            if int(gdb.parse_and_eval("$rsi")) & 0xff == 1:
+e8d57acd:scripts/kernel_rnd/autokernel/loop/cross_target.py:402:    for stale in inbox.glob(f"{INBOX_PREFIX}{keep['patch_id'][:12]}-a*.md"):
+e8d57acd:scripts/kernel_rnd/autokernel/loop/cross_target.py:456:    for path in sorted(inbox.glob(f"{INBOX_PREFIX}*.md")) if inbox.is_dir() else ():
+e8d57acd:scripts/kernel_rnd/autokernel/loop/cross_target.py:481:            for path in inbox.glob(f"{INBOX_PREFIX}{pid[:12]}-a*.md"):
+e8d57acd:scripts/kernel_rnd/autokernel/loop/epoch_aliases.py:295:        loop_runs += sorted(root.glob("state*/batches/*/loop-run.json"))
+e8d57acd:scripts/kernel_rnd/autokernel/loop/epoch_aliases.py:296:        resolved += sorted(p for p in root.glob("inputs/**/campaign-resolved.json*")
+e8d57acd:scripts/kernel_rnd/autokernel/loop/evidence_feed.py:381:    adapter = importlib.import_module("adapters.autokernel_unified_arm")
+e8d57acd:scripts/kernel_rnd/autokernel/loop/evidence_feed.py:382:    profile_adapter = importlib.import_module("adapters.autokernel_profile")
+e8d57acd:scripts/kernel_rnd/autokernel/loop/evidence_feed.py:383:    claim_tuple = importlib.import_module("claim_tuple")
+e8d57acd:scripts/kernel_rnd/autokernel/loop/evidence_feed.py:384:    frames = importlib.import_module("frames")
+e8d57acd:scripts/kernel_rnd/autokernel/loop/evidence_feed.py:385:    ledger = importlib.import_module("ledger")
+e8d57acd:scripts/kernel_rnd/autokernel/loop/feed_runtime.py:182:            return builtins.__import__(name, globals, locals, fromlist, level)
+e8d57acd:scripts/kernel_rnd/autokernel/loop/feed_runtime.py:190:                module.__dict__["__builtins__"] = dict(vars(builtins), __import__=pinned_import)
+e8d57acd:scripts/kernel_rnd/autokernel/loop/feed_runtime.py:198:                exec(compile(sources[path], str(root / path), "exec", dont_inherit=True),
+e8d57acd:scripts/kernel_rnd/autokernel/loop/floor_registry.py:215:    for path in sorted(build_dir.glob("CMakeFiles/*/CMakeCXXCompiler.cmake")):
+e8d57acd:scripts/kernel_rnd/autokernel/loop/gates.py:3538:    libs = [lib for lib in sorted(bin_dir.glob("lib*.so*")) if lib.is_file()]
+e8d57acd:scripts/kernel_rnd/autokernel/loop/gpu_phases.py:72:            if any(self.child_dir.glob("*.pending")):
+e8d57acd:scripts/kernel_rnd/autokernel/loop/gpu_phases.py:74:            for path in sorted(self.child_dir.glob("*.json")):
+e8d57acd:scripts/kernel_rnd/autokernel/loop/gpu_serving_profile.py:15:  FIDUCIAL gap whose end must coincide with its mark. The wrapper exec()s the server,
+e8d57acd:scripts/kernel_rnd/autokernel/loop/gpu_serving_profile.py:749:    traces = sorted(trace_dir.rglob("*kernel_trace.csv"))
+e8d57acd:scripts/kernel_rnd/autokernel/loop/hotspots.py:173:        traces = sorted(out.rglob("*kernel_trace.csv")) or sorted(out.rglob("*.csv"))
+e8d57acd:scripts/kernel_rnd/autokernel/loop/iqk_gdb_probe.py:38:                if int(gdb.parse_and_eval("$rsi")) & 0xff == 1:
+e8d57acd:scripts/kernel_rnd/autokernel/loop/kernel_coverage.py:142:        names = list(LIBRARIES) + sorted(p.name for p in directory.glob("libggml-cpu-*.so"))
+e8d57acd:scripts/kernel_rnd/autokernel/loop/kernel_coverage.py:320:        for path in sorted(directory.glob("lib*.so*")) + [directory / "llama-server",
+e8d57acd:scripts/kernel_rnd/autokernel/loop/kernel_coverage.py:353:        if len(list(directory.glob("*.json"))) >= int(_CAPTURE["per_shape"]):
+e8d57acd:scripts/kernel_rnd/autokernel/loop/kernel_coverage.py:390:            for path in sorted(stale.rglob("*"), reverse=True):
+e8d57acd:scripts/kernel_rnd/autokernel/loop/kernel_coverage.py:407:            for path in sorted(shape_dir.glob("*.json")):
+e8d57acd:scripts/kernel_rnd/autokernel/loop/longctx.py:758:        stale = sorted((p for p in self.slot_dir.glob(pattern) if p.name != keep),
+e8d57acd:scripts/kernel_rnd/autokernel/loop/noop_build.py:28:    spec = importlib.util.spec_from_file_location("_akx_gfx90a_isa_audit", _AUDIT)
+e8d57acd:scripts/kernel_rnd/autokernel/loop/noop_build.py:66:    found = sorted(bin_dir.glob("libggml-hip.so.*")) if bin_dir.is_dir() else []
+e8d57acd:scripts/kernel_rnd/autokernel/loop/pool.py:462:    used = [int(path.name.rsplit("-", 1)[1]) for path in store.glob("anchor-gen-*")
+e8d57acd:scripts/kernel_rnd/autokernel/loop/production.py:621:        vbios = sorted({value for card in Path(drm_root).glob("card*")
+e8d57acd:scripts/kernel_rnd/autokernel/loop/residency.py:40:SCLK_HWMON = sorted(Path("/sys/class/drm/card2/device/hwmon").glob("hwmon*/freq1_input"))
+e8d57acd:scripts/kernel_rnd/autokernel/loop/residency.py:86:        return sum(int(path.read_text().strip()) for path in root.glob("vram_*"))
+e8d57acd:scripts/kernel_rnd/autokernel/loop/resume.py:2456:    for path in sorted((store_root / "patches").glob(f"{label}.{lane_label or '*'}.*.patch")):
+e8d57acd:scripts/kernel_rnd/autokernel/loop/run.py:403:    for path in Path(store).glob("anchor-gen-*"):
+e8d57acd:scripts/kernel_rnd/autokernel/loop/run.py:498:        for path in (args.store / "fold-receipts").glob("*.json"):
+e8d57acd:scripts/kernel_rnd/autokernel/loop/run.py:1464:    matches = sorted(directory.glob(_remeasure_claim_pattern()))
+e8d57acd:scripts/kernel_rnd/autokernel/loop/runtime_arms.py:342:    for path in sorted(root.glob("runtime-selection-*.json")):
+e8d57acd:scripts/kernel_rnd/autokernel/loop/seed.py:51:    for source in sorted((seeds / "hypotheses").glob("*.md")):
+e8d57acd:scripts/kernel_rnd/autokernel/loop/serial_run.py:593:            reader = importlib.import_module("adapters.autokernel_legacy_serving")
+e8d57acd:scripts/kernel_rnd/autokernel/loop/served_shape_cases.py:710:_EVAL_SIGNATURE = "static std::vector<std::unique_ptr<test_case>> make_test_cases_eval() {"
+e8d57acd:scripts/kernel_rnd/autokernel/loop/served_shape_cases.py:976:            raise ValueError("make_test_cases_eval() signature not found exactly once")
+e8d57acd:scripts/kernel_rnd/autokernel/loop/served_shape_cases.py:983:            raise ValueError("unexpected make_test_cases_eval() prologue")
+e8d57acd:scripts/kernel_rnd/autokernel/loop/serving_beliefs.py:172:        module = importlib.import_module("adapters.autokernel_legacy_serving")
+e8d57acd:scripts/kernel_rnd/autokernel/loop/test_actor_budgets.py:458:        replies = list((self.ws.parent / actors.ACTOR_REPLY_DIR).glob("*.stdout"))
+e8d57acd:scripts/kernel_rnd/autokernel/loop/test_actor_context.py:279:            seen["bundle_dirs"] = list((ws.parent / actor_context.BUNDLE_DIR).glob("*"))
+e8d57acd:scripts/kernel_rnd/autokernel/loop/test_actor_context.py:481:            seen["bundles"] = sorted((ws.parent / actor_context.BUNDLE_DIR).glob("*"))
+e8d57acd:scripts/kernel_rnd/autokernel/loop/test_actor_context.py:502:        self.assertEqual(sorted((ws.parent / actor_context.BUNDLE_DIR).glob("*")), [],
+e8d57acd:scripts/kernel_rnd/autokernel/loop/test_actor_context.py:553:    NAME = __import__("re").compile(r"^[A-Za-z_][A-Za-z0-9_-]{0,63}$")
+e8d57acd:scripts/kernel_rnd/autokernel/loop/test_actor_context.py:554:    FENCE = __import__("re").compile(r"```json\n(.*)\n```", __import__("re").S)
+e8d57acd:scripts/kernel_rnd/autokernel/loop/test_actor_context.py:618:            seen["bundle_dirs"] = list((ws.parent / actor_context.BUNDLE_DIR).glob("*"))
+e8d57acd:scripts/kernel_rnd/autokernel/loop/test_actor_context.py:669:            capped = __import__("dataclasses").replace(backend, context_print_cap_bytes=2048,
+e8d57acd:scripts/kernel_rnd/autokernel/loop/test_actor_preparation_state.py:369:        __import__("json").dumps(output)) + ")\n")
+e8d57acd:scripts/kernel_rnd/autokernel/loop/test_belief_context.py:726:    for source in VIDYA.glob("*.py"):
+e8d57acd:scripts/kernel_rnd/autokernel/loop/test_bestof.py:840:        self.assertEqual(len(list((self.store / "patches").glob("*.patch"))), 2)
+e8d57acd:scripts/kernel_rnd/autokernel/loop/test_bundle_recovery.py:39:            for path in sorted(root.rglob("*"))}
+e8d57acd:scripts/kernel_rnd/autokernel/loop/test_bundle_recovery.py:422:    shard = next((tmp_path / A.JOURNAL_DIRNAME).glob("*.jsonl"))
+e8d57acd:scripts/kernel_rnd/autokernel/loop/test_bundle_recovery.py:467:    shard = next((tmp_path / A.JOURNAL_DIRNAME).glob("*.jsonl"))
+e8d57acd:scripts/kernel_rnd/autokernel/loop/test_bundle_recovery.py:542:    shard = next((tmp_path / A.JOURNAL_DIRNAME).glob("*.jsonl"))
+e8d57acd:scripts/kernel_rnd/autokernel/loop/test_calibrate_served_shapes.py:129:        "static std::vector<std::unique_ptr<test_case>> make_test_cases_eval() {\n"
+e8d57acd:scripts/kernel_rnd/autokernel/loop/test_calibrate_served_shapes.py:182:    record = json.loads(next((store / "served_shape").glob("calibration-*.json")).read_text())
+e8d57acd:scripts/kernel_rnd/autokernel/loop/test_calibrate_served_shapes.py:214:    record = json.loads(next((store / "served_shape").glob("calibration-*.json")).read_text())
+e8d57acd:scripts/kernel_rnd/autokernel/loop/test_calibrate_served_shapes.py:231:    record = json.loads(next((store / "served_shape").glob("calibration-*.json")).read_text())
+e8d57acd:scripts/kernel_rnd/autokernel/loop/test_calibrate_served_shapes.py:249:        (store / "served_shape").glob("calibration-*.json"))
+e8d57acd:scripts/kernel_rnd/autokernel/loop/test_calibrate_served_shapes.py:284:        (store / "served_shape").glob("calibration-*.json"))
+e8d57acd:scripts/kernel_rnd/autokernel/loop/test_calibrate_served_shapes.py:336:    record = next((store / "served_shape").glob("calibration-*.json"))
+e8d57acd:scripts/kernel_rnd/autokernel/loop/test_calibrate_served_shapes.py:464:    record = json.loads(next((store / "served_shape").glob("calibration-*.json")).read_text())
+e8d57acd:scripts/kernel_rnd/autokernel/loop/test_calibrate_served_shapes.py:570:    builds = sorted(tree.glob("build-ak-calib-*"))
+e8d57acd:scripts/kernel_rnd/autokernel/loop/test_calibrate_served_shapes.py:588:    builds = sorted(tree.glob("build-ak-calib-*"))
+e8d57acd:scripts/kernel_rnd/autokernel/loop/test_calibrate_served_shapes.py:662:    record = next((store / "served_shape").glob("calibration-*.json"))
+e8d57acd:scripts/kernel_rnd/autokernel/loop/test_calibrate_served_shapes.py:699:    record = next((store / "served_shape").glob("calibration-*.json"))
+e8d57acd:scripts/kernel_rnd/autokernel/loop/test_calibrate_served_shapes.py:724:    record = next((store / "served_shape").glob("calibration-*.json"))
+e8d57acd:scripts/kernel_rnd/autokernel/loop/test_calibrate_served_shapes.py:741:    record = json.loads(next((store / "served_shape").glob("calibration-*.json")).read_text())
+e8d57acd:scripts/kernel_rnd/autokernel/loop/test_calibrate_served_shapes.py:774:    assert not list((store / "served_shape").glob("calibration-*.json")) \
+e8d57acd:scripts/kernel_rnd/autokernel/loop/test_calibrate_served_shapes.py:788:        (store / "served_shape").glob("calibration-*.json"))
+e8d57acd:scripts/kernel_rnd/autokernel/loop/test_calibrate_served_shapes.py:796:    record = next((store / "served_shape").glob("calibration-*.json"))
+e8d57acd:scripts/kernel_rnd/autokernel/loop/test_calibrate_served_shapes.py:818:    assert not list(tree.glob("build-ak-calib-*"))
+e8d57acd:scripts/kernel_rnd/autokernel/loop/test_calibration.py:27:    spec = importlib.util.spec_from_file_location("aa_campaign_under_test", path)
+e8d57acd:scripts/kernel_rnd/autokernel/loop/test_campaign_cli.py:76:    assert not list(output.parent.glob(".campaign-*"))
+e8d57acd:scripts/kernel_rnd/autokernel/loop/test_candidate_transactions.py:294:        assert not list((controller.store / transactions.OBJECT_DIR).glob("*.stage"))
+e8d57acd:scripts/kernel_rnd/autokernel/loop/test_confirm.py:73:        files = list((store / "confirm").glob("*.json"))
+e8d57acd:scripts/kernel_rnd/autokernel/loop/test_confirm.py:127:                (Path(tmp) / "confirm").glob("*.json")).read_text(encoding="utf-8"))
+e8d57acd:scripts/kernel_rnd/autokernel/loop/test_cpu_fa_verifier_record.py:24:    spec = importlib.util.spec_from_file_location("real_mask_reader_under_test",
+e8d57acd:scripts/kernel_rnd/autokernel/loop/test_cpu_quiet_region_backoff.py:19:    quiet = importlib.import_module('src.runtime.gpu_quiet_lock')
+e8d57acd:scripts/kernel_rnd/autokernel/loop/test_cpu_quiet_region_backoff.py:20:    regions = importlib.import_module('src.runtime.cpu_region_lock')
+e8d57acd:scripts/kernel_rnd/autokernel/loop/test_cpu_quiet_region_backoff.py:21:    cli = importlib.import_module('src.runtime.region_lock_cli')
+e8d57acd:scripts/kernel_rnd/autokernel/loop/test_cross_target.py:133:    return sorted(p.name for p in inbox.glob("*.md")) if inbox.is_dir() else []
+e8d57acd:scripts/kernel_rnd/autokernel/loop/test_direct_historical_control.py:73:        assert len(list(store.root.glob("historical-control-*"))) == 1
+e8d57acd:scripts/kernel_rnd/autokernel/loop/test_direct_historical_control.py:173:                    fixture = next(Path(tp.__file__).parents[1].rglob("recorded_t0_linkage_pass.txt"))
+e8d57acd:scripts/kernel_rnd/autokernel/loop/test_driver_execution.py:113:        for path in sorted(Path(self.prepared.artifact_root).glob("*.json"))[:128]:
+e8d57acd:scripts/kernel_rnd/autokernel/loop/test_driver_execution.py:502:    spec = importlib.util.spec_from_file_location("fixture_measure", measure_module_path)
+e8d57acd:scripts/kernel_rnd/autokernel/loop/test_driver_execution.py:1267:                       for thread in __import__("threading").enumerate())
+e8d57acd:scripts/kernel_rnd/autokernel/loop/test_evidence_cli.py:92:    assert not list(out.parent.glob(".scoped-evidence-*"))
+e8d57acd:scripts/kernel_rnd/autokernel/loop/test_evidence_feed.py:43:    spec = importlib.util.spec_from_file_location("root_unified_arm_fixture", path)
+e8d57acd:scripts/kernel_rnd/autokernel/loop/test_evidence_feed.py:189:    real_atomic = importlib.import_module(
+e8d57acd:scripts/kernel_rnd/autokernel/loop/test_evidence_feed.py:324:    module = importlib.import_module("autokernel.loop.evidence_feed")
+e8d57acd:scripts/kernel_rnd/autokernel/loop/test_evidence_feed.py:465:    module = importlib.import_module("autokernel.loop.evidence_feed")
+e8d57acd:scripts/kernel_rnd/autokernel/loop/test_evidence_feed.py:511:    state["checksum"] = importlib.import_module(
+e8d57acd:scripts/kernel_rnd/autokernel/loop/test_existing_cpu_run.py:321:                assert len(list((fixture.store / "serving-beliefs").glob("*.json"))) == 4
+e8d57acd:scripts/kernel_rnd/autokernel/loop/test_existing_cpu_run.py:326:                    assert list((fixture.store / "patches").glob("cpu-1.lane0.*.patch"))
+e8d57acd:scripts/kernel_rnd/autokernel/loop/test_existing_gpu_serving_run.py:239:                           (fixture.store / "accumulator-comparisons").glob("*.json")]
+e8d57acd:scripts/kernel_rnd/autokernel/loop/test_experiment_cli.py:91:    assert not list(out_path.parent.glob(".experiment-plan-*"))
+e8d57acd:scripts/kernel_rnd/autokernel/loop/test_experiment_plan.py:138:        exec(compile(old_source, "accepted-v1-experiment-plan.py", "exec"), old.__dict__)
+e8d57acd:scripts/kernel_rnd/autokernel/loop/test_feed_root_projection.py:37:    return caller.__dict__["__builtins__"]["__import__"](
+e8d57acd:scripts/kernel_rnd/autokernel/loop/test_floor_carry_forward.py:586:    assert len(list(done.parent.glob("REMEASURE_REQUEST.done-*.json"))) == 1
+e8d57acd:scripts/kernel_rnd/autokernel/loop/test_floor_carry_forward.py:731:    assert len(list(first.parent.glob("REMEASURE_REQUEST.claimed-*.json"))) == 1
+e8d57acd:scripts/kernel_rnd/autokernel/loop/test_floor_registry_hardening.py:244:            "spec = importlib.util.spec_from_file_location('lib_registry_probe', sys.argv[1])\n"
+e8d57acd:scripts/kernel_rnd/autokernel/loop/test_gates.py:2154:            self.assertEqual(list(Path(tmp).glob("session-*.bin")), [],
+e8d57acd:scripts/kernel_rnd/autokernel/loop/test_gates.py:2756:            for rec in (store / gates.BIT_EXACT_RECORD_DIR).glob("*.json"):
+e8d57acd:scripts/kernel_rnd/autokernel/loop/test_gates_stale_cmake_cache.py:20:            seen_exists.append((__import__("pathlib").Path(argv[argv.index("-B") + 1]) / "obj.o").exists())
+e8d57acd:scripts/kernel_rnd/autokernel/loop/test_gpu_phases.py:124:    assert list(tmp_path.glob("*.pending"))
+e8d57acd:scripts/kernel_rnd/autokernel/loop/test_gpu_phases.py:238:    assert list(tmp_path.glob("*.pending")) and not list(tmp_path.glob("*.json"))
+e8d57acd:scripts/kernel_rnd/autokernel/loop/test_gpu_phases.py:319:    assert list(tmp_path.glob("*.pending")) and not list(tmp_path.glob("*.json"))
+e8d57acd:scripts/kernel_rnd/autokernel/loop/test_gpu_phases.py:548:                exec(compile(ast.Module(body=[forwarder], type_ignores=[]), "actual-local-compile", "exec"), namespace)
+e8d57acd:scripts/kernel_rnd/autokernel/loop/test_gpu_phases.py:600:                    assert list(phase_dir.glob("*.pending")) and not list(phase_dir.glob("*.json"))
+e8d57acd:scripts/kernel_rnd/autokernel/loop/test_gpu_phases.py:602:                    assert not list(phase_dir.glob("*.pending")) and len(list(phase_dir.glob("*.json"))) == 1
+e8d57acd:scripts/kernel_rnd/autokernel/loop/test_heldout_serving.py:120:        assert len(list((Path(tmp) / "confirm").glob("candidate.*.json"))) == 1
+e8d57acd:scripts/kernel_rnd/autokernel/loop/test_instruments.py:123:                     sorted(Path(__file__).resolve().parent.glob("*.py"))
+e8d57acd:scripts/kernel_rnd/autokernel/loop/test_instruments.py:250:        self.assertEqual([p.name for p in self.store.glob(".sv-floor-*")], [])
+e8d57acd:scripts/kernel_rnd/autokernel/loop/test_instruments.py:256:        backups = list(self.store.glob("*.bak"))
+e8d57acd:scripts/kernel_rnd/autokernel/loop/test_instruments.py:392:        records = list((self.store / "serving").glob("bundle-*.json"))
+e8d57acd:scripts/kernel_rnd/autokernel/loop/test_kernel_coverage.py:243:        assert not list((tmp_path / "cov").rglob("*.stderr"))   # raw logs deleted
+e8d57acd:scripts/kernel_rnd/autokernel/loop/test_kernel_coverage.py:334:    builds = sorted(anchor.glob("anchor-gen-0[0-9][0-9]"))
+e8d57acd:scripts/kernel_rnd/autokernel/loop/test_launch_affinity.py:98:    paths = sorted(root.rglob("*.json"))
+e8d57acd:scripts/kernel_rnd/autokernel/loop/test_legacy_migration.py:66:              for p in request.source_root.rglob("*") if p.is_file()}
+e8d57acd:scripts/kernel_rnd/autokernel/loop/test_legacy_migration.py:70:             for p in request.source_root.rglob("*") if p.is_file()}
+e8d57acd:scripts/kernel_rnd/autokernel/loop/test_legacy_migration.py:97:              for path in request.source_root.rglob("*") if path.is_file()}
+e8d57acd:scripts/kernel_rnd/autokernel/loop/test_legacy_migration.py:101:             for path in request.source_root.rglob("*") if path.is_file()}
+e8d57acd:scripts/kernel_rnd/autokernel/loop/test_legacy_migration.py:185:                      for p in (request.source_root / "journal").rglob("*") if p.is_file()}
+e8d57acd:scripts/kernel_rnd/autokernel/loop/test_legacy_migration.py:188:                     for p in (request.source_root / "journal").rglob("*") if p.is_file()}
+e8d57acd:scripts/kernel_rnd/autokernel/loop/test_legacy_migration.py:287:              for path in request.source_root.rglob("*") if path.is_file()}
+e8d57acd:scripts/kernel_rnd/autokernel/loop/test_legacy_migration.py:290:             for path in request.source_root.rglob("*") if path.is_file()}
+e8d57acd:scripts/kernel_rnd/autokernel/loop/test_legacy_targets.py:183:    source_sha = __import__("hashlib").sha256(source_path.read_bytes()).hexdigest()
+e8d57acd:scripts/kernel_rnd/autokernel/loop/test_longctx.py:255:    assert list(surface.anchor_floor_store(anchor).glob("serving-floor.*.json"))
+e8d57acd:scripts/kernel_rnd/autokernel/loop/test_longctx.py:256:    assert not list(surface.floor_store.glob("serving-floor.*.json"))
+e8d57acd:scripts/kernel_rnd/autokernel/loop/test_longctx.py:408:    assert json.loads(next(surface.slot_dir.glob("identity-*.json")).read_text())["passed"]
+e8d57acd:scripts/kernel_rnd/autokernel/loop/test_matched_serving.py:339:        assert list(old_store.rglob("*.json"))
+e8d57acd:scripts/kernel_rnd/autokernel/loop/test_matched_serving.py:340:        assert not list(new_store.rglob("*.json"))
+e8d57acd:scripts/kernel_rnd/autokernel/loop/test_measurement_capture.py:321:    quarantines = list(store.root.glob(f".{name}.stage.quarantine-*"))
+e8d57acd:scripts/kernel_rnd/autokernel/loop/test_no_undefined_runtime_names.py:54:        for path in sorted(PACKAGE.rglob("*.py")):
+e8d57acd:scripts/kernel_rnd/autokernel/loop/test_observation_binding.py:90:        env["PYTHONPATH"] = str((__import__("pathlib").Path.cwd() / "scripts/kernel_rnd"))
+e8d57acd:scripts/kernel_rnd/autokernel/loop/test_op60_measurement_comparability.py:157:        digest = __import__("hashlib").sha256(json.dumps(
+e8d57acd:scripts/kernel_rnd/autokernel/loop/test_op60_measurement_comparability.py:314:        path = root / f"state-{len(list(root.glob('state-*')))}" / "batches" / "b" / "loop-run.json"
+e8d57acd:scripts/kernel_rnd/autokernel/loop/test_package_b_review_boundaries.py:21:def test_cancel_after_actual_owned_terminal_before_cost_retrieval(tmp_path, monkeypatch):
+e8d57acd:scripts/kernel_rnd/autokernel/loop/test_patch_retention.py:54:    assert len(list(path.parent.glob("same.lane0.*.patch"))) == 2
+e8d57acd:scripts/kernel_rnd/autokernel/loop/test_patch_retention.py:120:                paths = list((fixture.store / "patches").glob("interrupted.lane0.*.patch"))
+e8d57acd:scripts/kernel_rnd/autokernel/loop/test_pipeline.py:1089:            self.assertLessEqual(len(list(store.glob("anchor-gen-*"))), 4)
+e8d57acd:scripts/kernel_rnd/autokernel/loop/test_pipeline.py:1248:                private = next(store.glob(".anchor-prune-private-*"))
+e8d57acd:scripts/kernel_rnd/autokernel/loop/test_pipeline.py:1278:                private = next(store.glob(".anchor-prune-private-*"))
+e8d57acd:scripts/kernel_rnd/autokernel/loop/test_pipeline.py:1338:            self.assertEqual(len(list(store.glob("anchor-gen-*"))), 2)
+e8d57acd:scripts/kernel_rnd/autokernel/loop/test_production.py:591:        self.assertEqual([p.name for p in self.store.glob(".cvp-*")], [])
+e8d57acd:scripts/kernel_rnd/autokernel/loop/test_production.py:914:        self.assertEqual(list(self.store.glob("production-baseline.*")), [])
+e8d57acd:scripts/kernel_rnd/autokernel/loop/test_production.py:926:        superseded = list(self.store.glob(f"{first.name}.superseded-*"))
+e8d57acd:scripts/kernel_rnd/autokernel/loop/test_production.py:1133:        self.addCleanup(lambda: __import__("shutil").rmtree(store, ignore_errors=True))
+e8d57acd:scripts/kernel_rnd/autokernel/loop/test_production.py:1145:        self.addCleanup(lambda: __import__("shutil").rmtree(store, ignore_errors=True))
+e8d57acd:scripts/kernel_rnd/autokernel/loop/test_production.py:1306:        self.assertEqual(len(list(self.store.glob(
+e8d57acd:scripts/kernel_rnd/autokernel/loop/test_production.py:1316:        self.assertEqual(list(self.store.glob("*.superseded-*")), [])
+e8d57acd:scripts/kernel_rnd/autokernel/loop/test_production.py:1700:        self.assertEqual(len(list(self.store.glob("*.superseded-*"))), 2)
+e8d57acd:scripts/kernel_rnd/autokernel/loop/test_production.py:1812:        for path in self.store.glob("production-baseline.*"):
+e8d57acd:scripts/kernel_rnd/autokernel/loop/test_promotion_targets.py:406:        records = list((self.store / run_mod.kernel_coverage.VERDICT_DIR).glob("*.json"))
+e8d57acd:scripts/kernel_rnd/autokernel/loop/test_resolved_recipe.py:70:    for path in sorted((root / "artifacts/serving-recipes").glob("*.json")):
+e8d57acd:scripts/kernel_rnd/autokernel/loop/test_resume.py:776:        for path in here.glob("*"):
+e8d57acd:scripts/kernel_rnd/autokernel/loop/test_resume.py:792:        keywords = {kw.arg: ast.literal_eval(kw.value) for kw in flags[0].keywords
+e8d57acd:scripts/kernel_rnd/autokernel/loop/test_resume.py:954:        for sidecar in (self.store / "patches").glob("*.json"):
+e8d57acd:scripts/kernel_rnd/autokernel/loop/test_resume_critic2.py:532:            for path in sorted(root.rglob("*")) if path.is_file()}
+e8d57acd:scripts/kernel_rnd/autokernel/loop/test_resume_infra.py:153:        (lineage,) = sorted(self.store.glob("patches/*.retention.*.json"))
+e8d57acd:scripts/kernel_rnd/autokernel/loop/test_resume_infra.py:161:        self.assertEqual(len(list(self.store.glob("patches/*.retention.*.json"))), 1)
+e8d57acd:scripts/kernel_rnd/autokernel/loop/test_resume_infra.py:162:        self.assertEqual(len(list(self.store.glob("patches/*.patch"))), 1)
+e8d57acd:scripts/kernel_rnd/autokernel/loop/test_resume_infra.py:184:        self.assertEqual(list(self.store.glob("patches/*.retention.*.json")), [])
+e8d57acd:scripts/kernel_rnd/autokernel/loop/test_resume_infra.py:413:        (stored,) = sorted(self.store.glob("patches/*.lane0.*.json"))
+e8d57acd:scripts/kernel_rnd/autokernel/loop/test_resume_infra.py:472:        (lineage,) = sorted(self.store.glob("patches/*.retention.*.json"))
+e8d57acd:scripts/kernel_rnd/autokernel/loop/test_runtime_admission.py:134:    commit = __import__("subprocess").check_output(["git", "-C", str(worktree), "rev-parse", "HEAD"], text=True).strip()
+e8d57acd:scripts/kernel_rnd/autokernel/loop/test_runtime_admission.py:226:                      store.root.glob(f"{namespace}-*.json")]
+e8d57acd:scripts/kernel_rnd/autokernel/loop/test_runtime_arms.py:771:        receipts = sorted((fixture.store / ra.ADOPTION_DIR).glob("*.json"))
+e8d57acd:scripts/kernel_rnd/autokernel/loop/test_runtime_treatment.py:73:    receipts = list((tmp_path / "memory/serving-beliefs").glob("*.json"))
+e8d57acd:scripts/kernel_rnd/autokernel/loop/test_scratch.py:582:        offenders = [o for path in sorted(PKG.glob("*.py")) for o in self._offenders(path)]
+e8d57acd:scripts/kernel_rnd/autokernel/loop/test_scratch.py:894:        for path in sorted(PKG.glob("*.py")):
+e8d57acd:scripts/kernel_rnd/autokernel/loop/test_scratch.py:1090:        exec(compile(ast.Module(body=[forwarder], type_ignores=[]),
+e8d57acd:scripts/kernel_rnd/autokernel/loop/test_scratch.py:1129:        exec(compile(ast.Module(body=functions, type_ignores=[]), "real-run-ppl-helpers", "exec"), ns)
+e8d57acd:scripts/kernel_rnd/autokernel/loop/test_scratch.py:1315:    exec(compile(ast.Module(body=functions, type_ignores=[]), "original-ppl-owner-helper", "exec"), namespace)
+e8d57acd:scripts/kernel_rnd/autokernel/loop/test_seed.py:55:                      for p in sorted(inbox_dir.glob("*.md"))],
+e8d57acd:scripts/kernel_rnd/autokernel/loop/test_seed.py:74:        for path in sorted((seed.SEEDS / "hypotheses").glob("*.md")):
+e8d57acd:scripts/kernel_rnd/autokernel/loop/test_seed.py:136:            for path in sorted((seed.SEEDS / "hypotheses").glob("*.md")):
+e8d57acd:scripts/kernel_rnd/autokernel/loop/test_serial_build_retention.py:133:    assert not list(build.parent.glob(".builds.retention-*"))
+e8d57acd:scripts/kernel_rnd/autokernel/loop/test_serial_control.py:187:    monkeypatch.setattr(sr.run if hasattr(sr, "run") else __import__(
+e8d57acd:scripts/kernel_rnd/autokernel/loop/test_serial_roster.py:279:    child.write_text(CHILD.replace('"pid": __import__(\'os\').getpid()',
+e8d57acd:scripts/kernel_rnd/autokernel/loop/test_serial_roster.py:280:        '"pid": __import__(\'os\').getpid(), "affinity": sorted(__import__(\'os\').sched_getaffinity(0))')
+e8d57acd:scripts/kernel_rnd/autokernel/loop/test_serial_run.py:32:    f.write(json.dumps({"argv": argv, "pid": __import__('os').getpid()}) + "\n")
+e8d57acd:scripts/kernel_rnd/autokernel/loop/test_serial_run.py:104:        pid = __import__('os').getpid()
+e8d57acd:scripts/kernel_rnd/autokernel/loop/test_serial_run.py:580:    assert not list((state / "batches").glob("*/loop-held-claims.json"))
+e8d57acd:scripts/kernel_rnd/autokernel/loop/test_serial_run.py:602:    assert not list((state / "batches").glob("*/loop-preclaim-failure.json"))
+e8d57acd:scripts/kernel_rnd/autokernel/loop/test_served_shape_cases.py:56:    shards = sorted(model.parent.glob(model.name.replace("00001-of", "*-of"))) or [model]
+e8d57acd:scripts/kernel_rnd/autokernel/loop/test_served_shape_cases.py:526:        "static std::vector<std::unique_ptr<test_case>> make_test_cases_eval() {\n"
+e8d57acd:scripts/kernel_rnd/autokernel/loop/test_serving_beliefs.py:130:    assert not list(tmp_path.glob(".patch-*"))
+e8d57acd:scripts/kernel_rnd/autokernel/loop/test_serving_preparation_execution.py:114:    spec = importlib.util.spec_from_file_location('preparation_fixture', measure_path)
+e8d57acd:scripts/kernel_rnd/autokernel/loop/test_serving_preparation_execution.py:279:                              for path in (controller.store / 'unified-native-artifacts').glob('*.json')]
+e8d57acd:scripts/kernel_rnd/autokernel/loop/test_source_build_execution.py:209:        assert list((tmp_path / "artifacts").rglob("source-build-request")) == []
+e8d57acd:scripts/kernel_rnd/autokernel/loop/test_standalone_cli.py:72:    before = set(tmp_path.rglob("*"))
+e8d57acd:scripts/kernel_rnd/autokernel/loop/test_standalone_cli.py:86:    assert set(tmp_path.rglob("*")) == before
+e8d57acd:scripts/kernel_rnd/autokernel/loop/test_status.py:122:            self.assertEqual([p.name for p in root.glob(".status-*")], [])
+e8d57acd:scripts/kernel_rnd/autokernel/loop/test_status_durability.py:33:                    scratch, = root.glob(".durability-*")
+e8d57acd:scripts/kernel_rnd/autokernel/loop/test_status_durability.py:96:            self.assertEqual(list(root.glob(".durability-*")), [unrelated])
+e8d57acd:scripts/kernel_rnd/autokernel/loop/test_status_durability.py:129:            self.assertEqual(list(root.glob(".durability-*")), [])
+e8d57acd:scripts/kernel_rnd/autokernel/loop/test_status_durability.py:152:            self.assertEqual(list(root.glob(".durability-*")), [])
+e8d57acd:scripts/kernel_rnd/autokernel/loop/test_status_durability.py:166:                self.assertEqual(list(root.glob(".durability-*")), [])
+e8d57acd:scripts/kernel_rnd/autokernel/loop/test_worker_lifecycle.py:809:        logs = list((harness.path / "runtime").glob("worker-*.stdout.log"))
+e8d57acd:scripts/kernel_rnd/autokernel/loop/validation_semantic_adapter.py:110:    spec = importlib.util.spec_from_file_location(name, path)
+e8d57acd:scripts/kernel_rnd/autokernel/loop/validation_semantic_adapter.py:118:        exec(code, module.__dict__)
+e8d57acd:scripts/kernel_rnd/autokernel/loop/width_invariance.py:176:    for f in sorted(out_dir.glob("*.jsonl")):
+e8d57acd:scripts/kernel_rnd/autokernel/prepare_iqk_matched_pair.py:142:    for child in sorted(path.rglob("*")):
+e8d57acd:scripts/kernel_rnd/autokernel/release/packager.py:3843:_FORBIDDEN_CALL_NAMES = frozenset({"open", "exec", "eval", "compile", "__import__",
+e8d57acd:scripts/kernel_rnd/autokernel/release/packager.py:3857:    "import_module", "dump", "startfile", "execv", "execve", "execvp", "posix_spawn",
+e8d57acd:scripts/kernel_rnd/autokernel/release/t3.py:6099:_FORBIDDEN_CALL_NAMES = frozenset({"open", "exec", "eval", "compile", "__import__",
+e8d57acd:scripts/kernel_rnd/autokernel/release/t3.py:6300:    for module in sorted(root.rglob("*.py")):
+e8d57acd:scripts/kernel_rnd/autokernel/release/t3.py:6435:    for module in sorted(root.rglob("*.py")):
+e8d57acd:scripts/kernel_rnd/autokernel/release/test_t3.py:2183:    def test_the_cleanup_is_idempotent_so_both_entry_points_are_safe(self):
+e8d57acd:scripts/kernel_rnd/autokernel/resource/preflight.py:52:(`getattr`, `__import__`, `eval`, `exec`) through which one could be reached.
+e8d57acd:scripts/kernel_rnd/autokernel/resource/preflight.py:776:        lock_files = sorted(lock_dir.glob(_LOCK_GLOB))
+e8d57acd:scripts/kernel_rnd/autokernel/resource/preflight.py:1745:    # Indirection roots. `importlib.import_module("os")` and
+e8d57acd:scripts/kernel_rnd/autokernel/resource/preflight.py:1746:    # `operator.attrgetter("kill")` reach exactly what `__import__`/`getattr`
+e8d57acd:scripts/kernel_rnd/autokernel/resource/preflight.py:1759:    "getattr", "setattr", "delattr", "__import__", "eval", "exec", "compile",
+e8d57acd:scripts/kernel_rnd/autokernel/resource/preflight.py:1765:    "import_module", "attrgetter", "methodcaller",
+e8d57acd:scripts/kernel_rnd/autokernel/resource/test_preflight.py:968:    `vars(os)['kill']`, `os.__dict__['kill']`, `importlib.import_module(...)`,
+e8d57acd:scripts/kernel_rnd/autokernel/test_campaign.py:3611:        """`importlib.import_module('...controller.selection')` is an import that
+e8d57acd:scripts/kernel_rnd/autokernel/test_campaign.py:3617:        for forbidden in ("importlib", "import_module", "__import__", "exec", "eval"):
+e8d57acd:scripts/kernel_rnd/autokernel/test_campaign.py:4355:        sha = lambda value: __import__("hashlib").sha256(value.encode()).hexdigest()
+e8d57acd:scripts/kernel_rnd/autokernel/test_campaign.py:4447:        sha = lambda value: __import__("hashlib").sha256(value.encode()).hexdigest()
+e8d57acd:scripts/kernel_rnd/autokernel/test_campaign_footprint.py:17:`import_module("autokernel.…")` strings — and asserts the campaign path does not
+e8d57acd:scripts/kernel_rnd/autokernel/test_campaign_footprint.py:461:        "pinned_import() is the __import__ hook installed into the builtins of ROOT "
+e8d57acd:scripts/kernel_rnd/autokernel/test_campaign_footprint.py:465:        "remaining stdlib/ROOT names to builtins.__import__, so the computed name can "
+e8d57acd:scripts/kernel_rnd/autokernel/test_campaign_footprint.py:507:    4. **Dynamic imports by string** — `importlib.import_module("autokernel.…")`
+e8d57acd:scripts/kernel_rnd/autokernel/test_campaign_footprint.py:582:    _DYNAMIC_IMPORT_FUNCS = frozenset({"import_module", "__import__", "find_spec"})
+e8d57acd:scripts/kernel_rnd/autokernel/test_campaign_footprint.py:585:        """`import_module(".controller.guards", __package__)` — same arithmetic as
+e8d57acd:scripts/kernel_rnd/autokernel/test_campaign_footprint.py:621:                    # `import_module(name, package)` anchors on whatever string is
+e8d57acd:scripts/kernel_rnd/autokernel/test_campaign_footprint.py:929:    that silently skips `import_module(f"{__package__}.controller.guards")`
+e8d57acd:scripts/kernel_rnd/autokernel/test_campaign_footprint.py:1027:                return importlib.import_module("fakepkg.denied.thing")
+e8d57acd:scripts/kernel_rnd/autokernel/test_campaign_footprint.py:1148:                return importlib.import_module(".denied.thing", __package__)
+e8d57acd:scripts/kernel_rnd/autokernel/test_campaign_footprint.py:1158:                return importlib.import_module("..denied.thing", __name__)
+e8d57acd:scripts/kernel_rnd/autokernel/test_campaign_footprint.py:1168:                return importlib.import_module(f"{__package__}.denied.thing")
+e8d57acd:scripts/kernel_rnd/autokernel/test_campaign_footprint.py:1172:        self.assertTrue(any("import_module" in u for u in self.graph.unresolved),
+e8d57acd:scripts/kernel_rnd/autokernel/test_campaign_footprint.py:1176:        """CONTROL: a guard that flags every `import_module(…)` flags nothing."""
+e8d57acd:scripts/kernel_rnd/autokernel/test_campaign_footprint.py:1181:                return importlib.import_module("fakepkg.denied.thing")
+e8d57acd:scripts/kernel_rnd/autokernel/test_campaign_footprint.py:1192:                return importlib.import_module("scripts.lib.canonical_recipe")
+e8d57acd:scripts/kernel_rnd/autokernel/test_campaign_footprint.py:1282:            for path in sub.rglob("*.py"):
+e8d57acd:scripts/kernel_rnd/autokernel/test_campaign_footprint.py:1714:                return importlib.import_module("autokernel.controller.revenant")
+e8d57acd:scripts/kernel_rnd/autokernel/test_campaign_footprint.py:1829:                return importlib.import_module(".controller.revenant", __package__)
+e8d57acd:scripts/kernel_rnd/autokernel/test_campaign_footprint.py:1851:                    return importlib.import_module(f"{__package__}.controller.revenant")
+e8d57acd:scripts/kernel_rnd/autokernel/test_campaign_footprint.py:1859:                return importlib.import_module(f"{__package__}.controller.revenant")
+e8d57acd:scripts/kernel_rnd/autokernel/test_campaign_footprint.py:1860:        """, unresolved_import_findings, "import_module")
+e8d57acd:scripts/kernel_rnd/autokernel/test_campaign_footprint.py:2115:        on_disk = {str(p.relative_to(PKG_DIR)) for p in PKG_DIR.rglob("*.py")
+e8d57acd:scripts/kernel_rnd/autokernel/test_campaign_footprint.py:2170:        for path in PKG_DIR.rglob("*.py"):
+e8d57acd:scripts/kernel_rnd/autokernel/test_campaign_footprint.py:2206:    on_disk = sorted(str(p.relative_to(PKG_DIR)) for p in PKG_DIR.rglob("*.py")
+e8d57acd:scripts/kernel_rnd/autokernel/test_codegen_summary.py:339:            sidecars = list((root / "store" / "codegen").glob("*.json"))
+e8d57acd:scripts/kernel_rnd/autokernel/test_dashboard.py:106:            self.assertEqual(list(path.parent.glob("*.tmp.*")), [])
+e8d57acd:scripts/kernel_rnd/autokernel/test_journal.py:838:class TestRecordVersusRetrieval(_JournalTest):
+e8d57acd:scripts/kernel_rnd/autokernel/test_least_commitment_receipts.py:710:        self.assertEqual(list(self.root.glob(".refused.staging-*")), [])
+e8d57acd:scripts/kernel_rnd/autokernel/test_program_md.py:180:            module = importlib.import_module(ESSENTIAL_MODULES[leaf])
+e8d57acd:scripts/kernel_rnd/autokernel/test_readme.py:245:        for path in sorted(HERE.rglob("*.md")):
+e8d57acd:scripts/kernel_rnd/autokernel/test_shell_pipeline_status.py:9:        scripts = tuple(sorted(kernel_rnd.rglob("*.sh")))
+e8d57acd:scripts/kernel_rnd/autokernel/test_source_prerequisite_producer.py:133:        live_package = importlib.import_module(
+e8d57acd:scripts/kernel_rnd/autokernel/test_source_prerequisite_producer.py:135:        live_correctness = importlib.import_module("autokernel.evaluator.correctness")
+e8d57acd:scripts/kernel_rnd/autokernel/test_source_prerequisite_producer.py:136:        fixtures = importlib.import_module("autokernel.evaluator.test_correctness")
+e8d57acd:scripts/kernel_rnd/autokernel/test_storage.py:178:        spec = importlib.util.spec_from_file_location(
