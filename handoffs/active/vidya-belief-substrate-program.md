@@ -1953,6 +1953,8 @@ Owner: RTG-57 (`kv-unified-stack-rollout.md`).
     whose depth-4 figure is a truncation **projection**: if a script produces it, its rows must mark the
     projection as a model (`estimate_kind: projection`), never as a measured arm, and carry the log window and
     the organic/probe split.
+- [ ] **VB-KVU-HPR-PREFIX — prospective HPR prefix extension of the existing CPU KVU family.** Preserve producer c4c2a3638 hash-covered raw SSE and prompt/generated IDs, request binding and prior-state semantics; validate complete/incomplete prefix provenance with the existing reader. The first absent raw seed IDs remain producer-attested. Synthetic110 and cheap R2 six-case receipts accepted; owner-reviewed golden chat/native control and new predeclaration required before measurement admission. No new class/metric/ladder or historical regrade. Native contract stays UNVERIFIED; source enrollment must precede fresh live capture.
+
 - [x] **VB-KVU-CPU — write side + projection for the CPU np × ctx × KV-mode study (KVU-12, reopened 2026-10-20).**
   - Producer: research `artifacts/np_context_kvu_cpu_study_20261020/driver/kvu_cpu_matrix.py`. Its per-cell rows are being given
     the VB-KVU-1 schema (`epyc.vidya.np_ctx_kvu_capture.v1`, self-hashed) before the first timing cell runs; the source row is in

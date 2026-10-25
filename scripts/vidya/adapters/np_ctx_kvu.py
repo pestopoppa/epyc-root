@@ -38,6 +38,7 @@ from typing import Any
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from adapters._argv_scope import BUILD_SHA, QUANT  # noqa: E402
+from adapters._kvu_hpr_prefix import validate as validate_hpr_prefix  # noqa: E402
 from claim_tuple import ClaimTuple, ProjectionError, register  # noqa: E402
 
 SCHEMA = "epyc.vidya.np_ctx_kvu_capture.v1"
@@ -192,7 +193,7 @@ def _cell(unit: Path) -> list[dict]:
 
 def _request(path: Path) -> list[dict]:
     rows, sha = _read_rows(path)
-    out, seen = [], set()
+    out, seen, prior_hpr = [], set(), {}
     for r in rows:
         _strict(r, f"{REQUESTS} {r.get('cell_key')}/{r.get('probe')}")
         key = (r.get("cell_key"), r.get("probe"))
@@ -201,7 +202,15 @@ def _request(path: Path) -> list[dict]:
         seen.add(key)
         if r.get("status") not in (200, None) and type(r.get("status")) is not int:
             raise ProjectionError(f"{REQUESTS}: non-integer status on {key}")
-        out.append(_common(r, path, sha, "request"))
+        provenance = validate_hpr_prefix(r, prior_hpr.get(r.get("cell_key")))
+        native = _common(r, path, sha, "request")
+        if provenance is not None:
+            native["hpr_prefix_provenance"] = provenance
+            if provenance["state"] == "complete":
+                prior_hpr[r.get("cell_key")] = r
+            else:
+                prior_hpr.pop(r.get("cell_key"), None)
+        out.append(native)
     return out
 
 
@@ -301,6 +310,8 @@ def _tuple(native: dict, metric: str, unit: str, direction: str, value: Any, rep
         "draft_depth", "threads", "cpu_list", "loadavg_start", "binary_sha256", "binary_realpath", "kernel_store_path",
         "row_sha256", "stderr_hits", "n_reprefill_by_wave", "error", "ts") if row.get(k) is not None}
     extra["rows_sha256"] = digest
+    if "hpr_prefix_provenance" in native:
+        extra["hpr_prefix_provenance"] = native["hpr_prefix_provenance"]
     if native["shape"] == "cell":
         extra.update(waves_sha256=native["waves_sha256"], n_waves=native["n_waves"], n_requests=native["n_requests"],
                      n_ok=native["n_ok"], overlap_not_projected="decode_tps_overlap_med cannot be re-derived from the wave rows")
