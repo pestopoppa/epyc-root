@@ -1,0 +1,7 @@
+# Champion bundle verdict durability — 2026-10-25
+
+Published tracked C3/C4/C5 bundle templates and model-free regressions under `scripts/champion/fold_gates/`. The three templates retain their reviewed exact bytes; original C5 producer and parent fixtures are tracked with SHA-256 provenance so the regression runs without historical TMP source dependencies. Regression changes are limited to relative paths and its standalone Python CLI filename. Existing G1 files remain unchanged.
+
+C5 R2 passed its canonical CPU grant at 11:54Z: schema-accurate native identity DIVERGES and LENGTH records with synthetic child exit zero give old parent 0 and fixed parent 1; nested and top-level unsupported timing verdicts fail; strict JSON and smoke exit 5/7 cases pass. The first failed attempt remains preserved at `/mnt/raid0/llm/tmp/codex-ni-20261025-bundle-gate-audit/c5-validation/test.log`.
+
+The publication job verifies the exact-source manifest and reruns both regressions from their tracked location, with normal repository hooks and serialized publication on `codex/c5-bundle-gates-20261025`. Its result is a software correctness and durability check. No serving, inference gate, model performance threshold, kernel mutation, runtime adoption, or historical regrade is performed. No inference result is claimed. [no-belief: software regression and source-publication milestone; no model measurement or result checkbox]
