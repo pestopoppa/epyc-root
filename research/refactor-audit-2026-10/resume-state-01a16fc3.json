@@ -100,19 +100,19 @@
     "scripts_cleanup_finish": {
       "worktree": "/mnt/raid0/llm/worktrees/refactor-01a16fc3-scripts-cleanup",
       "head": "094cbc5b76c6cb674eae95946b47a3682093b1a0",
-      "state": "approved dirty candidate; 190 launcher tests pass; expanded coverage collection fails because copied test references nonexistent orch.httpx; repair in progress; unpublished",
+      "state": "approved dirty candidate; 190 launcher tests pass; expanded coverage ran 395 tests and reports three scorer failures at the configured 100% floor across four files; repair in progress; unpublished",
       "prior_tests": "598pass/3skip+2 stale preflight; fixed preflight21pass",
-      "next": "Repair the coverage collection failure, rerun the approved candidate validation, then owner review. Original seeding worktree remains unchanged; do not collect expired handle 56537.",
+      "next": "Repair the three coverage scorer failures, rerun the approved candidate validation, then owner review. Original seeding worktree remains unchanged; do not collect expired handle 56537.",
       "deletion": "8472source+2076testLOC in new cleanup commits",
       "validation_checkpoint": {
         "command": "/mnt/raid0/llm/tmp/refactor-01a16fc3/scripts-cleanup/validate-approved-candidate.sh",
         "outputs": "flags/logs under /mnt/raid0/llm/tmp/refactor-01a16fc3/scripts-cleanup/",
-        "state": "first validation attempt failed; 190 launcher tests passed, expanded coverage collection blocked by AttributeError: orch.httpx; worker repair is in progress",
+        "state": "first attempt completed; 190 launcher tests passed; expanded coverage ran 395 tests and has three scorer failures at 100% floor across four files; repair in progress",
         "launcher_pid_file": "/mnt/raid0/llm/tmp/refactor-01a16fc3/scripts-cleanup/launcher.pid",
         "captured_pid": 1273280,
         "log": "/mnt/raid0/llm/tmp/refactor-01a16fc3/scripts-cleanup/launcher.out",
         "owner": "O6 worker",
-        "result": "/mnt/raid0/llm/tmp/refactor-01a16fc3/scripts-cleanup/validation-failed.flag; timestamped status under validation-*/status.txt"
+        "result": "/mnt/raid0/llm/tmp/refactor-01a16fc3/scripts-cleanup/validation-failed.flag and timestamped status/log under validation-*/"
       },
       "candidate_scope": "Approved launcher patch plus copied tests/unit/test_seeding_coverage_contracts.py and Makefile changes in the O6 worktree; original seeding worktree unchanged."
     },
@@ -138,7 +138,8 @@
         "completion_flag": "/tmp/refactor-01a16fc3/repl/completion.flag",
         "state": "completed and accepted: 557 tests pass; 8 parent negative controls fail as expected; strict offline drift, ruff, compile, diff and frozen snapshot pass",
         "source_closeout_commit": "acfd5f8ca3837c568fc3c944ffb242b29823f3fa"
-      }
+      },
+      "reviewed_branch": "refactor/repl-correctness-01a16fc3"
     },
     "K2_readonly_audit": {
       "artifact": "research/refactor-audit-2026-10/K2-CURRENT-SOURCE-REVIEW.md",
@@ -180,14 +181,13 @@
     "O6 approved candidate is dirty: launcher patch, copied seeding regression test, and Makefile edits; original seeding worktree stays unchanged. Do not collect expired handle 56537.",
     "O4 approved candidate patches and caller audit are applied and frozen; validator PID 1278025 is worker-owned. No held patch decision remains.",
     "K2 source inspection review is recorded in K2-CURRENT-SOURCE-REVIEW.md; its separate GitNexus guard runner remains pending at PID 1286392. No completion checkbox is claimed.",
-    "Root-owned one-shot waits on the CPU claim only, runs the leased root gates, then commits/pushes the explicit review branch if green; it does not wait for or modify worker validators.",
-    "Root-owned one-shot waits on the CPU claim only, runs the leased root gates, then commits/pushes the explicit review branch if green; it does not wait for or modify worker validators.",
-    "P1 source accepted/pushed at 36e1bc55aa40f35965a941e81fdc593a22abd520; original FAIL status retained because the runner compared hashes in the wrong order; independent start/end/checkpoint proof covers the aggregate and all nine focused files.",
+    "P1 source accepted/pushed at 36e1bc55aa40f35965a941e81fdc593a22abd520 on refactor/autopilot-loop-reviewed-01a16fc3; original FAIL status retained because the runner compared hashes in the wrong order; independent start/end/checkpoint proof covers the aggregate and all nine focused files.",
     "O6 first candidate validation ran 190 launcher tests then failed expanded coverage collection with AttributeError: orch.httpx; repair is in progress. The approved candidate is dirty; original seeding worktree unchanged; never collect expired 56537.",
     "O4 validation accepted: 557 pass, eight parent negative controls fail as expected, strict offline drift/ruff/compile/diff/frozen-snapshot pass; source closeout acfd5f8ca3837c568fc3c944ffb242b29823f3fa pushed on its review branch.",
     "K2 current-source review and GitNexus guard PASS on unchanged 413f5b7 worktree; source-guard edits remain unapplied; no K2 completion checkbox.",
     "Old CPU attribution released. Root checkpoint runner PID 1315215 failed before gates because the lease token file was pre-created empty; retry once with nonexistent token paths so serialized_push creates the opaque tokens. Root checkpoint has no worker-result dependency.",
-    "P1 agent stray progress/log files were uniquely authored, hash-verified and moved from shared /workspace into this isolated root worktree; no peer files or shared index were changed."
+    "P1 agent stray progress/log files were uniquely authored, hash-verified and moved from shared /workspace into this isolated root worktree; no peer files or shared index were changed.",
+    "Root checkpoint commit 09d3c70b5ffeeeed37cde2c4233d965700b1106d passed index regeneration/check (RTG-60 backlog-priority advisory only), cite-check, README freshness and diff-check, then remote-verified on the explicit root review branch."
   ],
   "historical_queue_handles": {
     "root_metadata_commit_push": {
@@ -231,7 +231,8 @@
       "log": "/mnt/raid0/llm/tmp/refactor-01a16fc3/scripts-cleanup/launcher.out",
       "command": "/workspace/repos/epyc-orchestrator/scripts/region-lock run --cpu-list 0-95 --role build --tag refactor-01a16fc3-cleanup-approved -- /mnt/raid0/llm/tmp/refactor-01a16fc3/scripts-cleanup/validate-approved-candidate.sh",
       "result": "/mnt/raid0/llm/tmp/refactor-01a16fc3/scripts-cleanup/validation-*/status.txt and validation-complete.flag or validation-failed.flag",
-      "state": "first attempt completed failed; 190 launcher tests passed, expanded coverage collection failed (orch.httpx); repair in progress"
+      "state": "worker PID 1273280 ended; first validation: 190 launcher tests pass; 395 coverage tests with 3 scorer failures at 100% floor across 4 files; repair in progress",
+      "pid_state": "ended; do not supervise or relaunch; repair owner controls next validation"
     },
     "O4": {
       "pid": 1278025,
@@ -249,21 +250,24 @@
       "state": "completed PASS; source-guard edits not applied; K2 incomplete"
     },
     "root_checkpoint": {
-      "pid": 1799607,
+      "pid": 1818867,
       "pid_file": "/mnt/raid0/llm/tmp/refactor-01a16fc3/root-checkpoint/root-checkpoint.pid",
       "command": "/mnt/raid0/llm/tmp/refactor-01a16fc3/root-checkpoint/run-root-checkpoint.sh",
       "status": "/mnt/raid0/llm/tmp/refactor-01a16fc3/root-checkpoint/root-checkpoint.status",
       "log": "/mnt/raid0/llm/tmp/refactor-01a16fc3/root-checkpoint/root-checkpoint.log",
       "completion_flag": "/mnt/raid0/llm/tmp/refactor-01a16fc3/root-checkpoint/root-checkpoint.complete.flag",
       "failure_flag": "/mnt/raid0/llm/tmp/refactor-01a16fc3/root-checkpoint/root-checkpoint.failed.flag",
-      "state": "captured detached root-only runner queued for CPU claim; gates then commit/push explicit root review branch if green; no worker dependency",
+      "state": "captured detached follow-up root-only runner queued for CPU claim; repeat root gates, commit/push explicit review branch if green",
       "started_at": "2026-10-25T05:43:57Z",
       "queued_flag": "/mnt/raid0/llm/tmp/refactor-01a16fc3/root-checkpoint/root-checkpoint.queued.flag",
       "last_attempt_pid": 1315215,
       "last_attempt_status": "/mnt/raid0/llm/tmp/refactor-01a16fc3/root-checkpoint/attempt-1315215.status",
       "failure_reason": "serialized_push rejected pre-created empty token file; next runner must pass nonexistent token-file paths",
-      "started_at_utc": "2026-10-25T07:20:31.491852+00:00",
-      "last_attempt_failure": "precreated empty lease-token file; failed before gates; corrected by passing nonexistent private token paths"
+      "started_at_utc": "2026-10-25T07:23:15.317976+00:00",
+      "last_attempt_failure": "precreated empty lease-token file; failed before gates; corrected by passing nonexistent private token paths",
+      "commit": "09d3c70b5ffeeeed37cde2c4233d965700b1106d",
+      "last_completed_pid": 1799607,
+      "last_completed_commit": "09d3c70b5ffeeeed37cde2c4233d965700b1106d"
     }
   },
   "operator_decisions_recorded": [

@@ -28,7 +28,7 @@
       "blocked": 18,
       "handoffs": 53,
       "oldest_advance": "2026-07-29",
-      "open": 699
+      "open": 698
     },
     "user-facing-harness-index.md": {
       "blocked": 17,
@@ -2233,10 +2233,10 @@
     },
     "refactoring-multirepo-2026-10.md": {
       "blocked": 0,
-      "closed": 20,
+      "closed": 21,
       "guarded": 0,
-      "last_advanced": "2026-10-24",
-      "open": 50,
+      "last_advanced": "2026-10-25",
+      "open": 49,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
         "blocker": "open-tasks",
