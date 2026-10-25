@@ -1,0 +1,110 @@
+# HUMAN-ONLY diffs: ws58 calendar lessons into project agent files (2026-10-25)
+
+Prepared by a workspace-58 subagent on branch `agentfiles/ws58-calendar-lessons-20261025`. None of
+these were applied: every target matches `coordination/session-bus/human_only_paths.yaml`
+(`CLAUDE.md`, `agents/shared/*.md`). The non-human-only half of the same pass is already on main
+(see the commit that added this file).
+
+| # | File | Section | What it adds | Canonical rule it points at |
+|---|---|---|---|---|
+| 1 | `agents/shared/OPERATING_CONSTRAINTS.md` | Filesystem and Storage | "Scratch is scratch" one-bullet pointer | `docs/guides/agent-workflows/handoff-index-authoring.md` § Scratch roots, rule 4 |
+| 2 | `agents/shared/OPERATING_CONSTRAINTS.md` | Operator Decision Requests | a dismissed question pauses only that item (general form) | this diff is canonical once applied; the calendar application is `.claude/skills/inference-backlog-scheduling/SKILL.md` §5 |
+| 3 | `agents/shared/OPERATING_CONSTRAINTS.md` | Codex Delegation & Long-Horizon Throughput | Codex compute/git limits + pointer | `docs/guides/agent-workflows/compute-fillers.md` → *Codex NI client contract* |
+| 4 | `agents/shared/SESSION_LIFECYCLE.md` | Two axioms | "A result tick names its belief" (design §7.4.2) | `agents/commands/wrap-up.md` Step 2 → *Belief-capture gate* |
+| 5 | `CLAUDE.md` | Belief Kernel — wiring new sources | recording conclusions is not inventing warrant; tick markers; "wired" = canary (design §7.4.3, plus the canary pointer) | `docs/guides/agent-workflows/agent-loop-design.md` → *"Wired" is a canary result* |
+
+## Apply (operator, from a terminal)
+
+```bash
+cd <a fresh root worktree on origin/main>
+git apply --check artifacts/operator/ws58-calendar-lessons-20261025.human-only.patch
+git apply artifacts/operator/ws58-calendar-lessons-20261025.human-only.patch
+```
+
+`git apply --check` passed against `origin/main` at the time of preparation. If an anchor has
+drifted, the generator `/mnt/raid0/llm/tmp/ws58-agentfiles-1025-hod/make_diffs.py` rebuilds the
+patch from the current files (it reads the files and refuses on any anchor that does not occur
+exactly once).
+
+## The exact diff
+
+```diff
+diff --git a/agents/shared/OPERATING_CONSTRAINTS.md b/agents/shared/OPERATING_CONSTRAINTS.md
+--- a/agents/shared/OPERATING_CONSTRAINTS.md
++++ b/agents/shared/OPERATING_CONSTRAINTS.md
+@@ -22,6 +22,11 @@
+   disk audit — 265 worktrees in 10 days, 215 landed+clean+idle>7d, 233 GiB; and 2026-10-04, a
+   landed, clean worktree that a DS41 launcher exported as `EPYC_ROOT_REPO` was removed by a sweep
+   and the campaign crashed. The gate now checks process environments and live launch files.)
++- **Scratch is scratch: nothing durable lives only in `/mnt/raid0/llm/tmp`.** Land findings,
++  plans and reports in a committed record before the task boundary; KEEP-mark a live review dir
++  until its plan is applied; evidence follows MEASUREMENT.md §5. Canonical:
++  `docs/guides/agent-workflows/handoff-index-authoring.md` § Scratch roots, rule 4. (Origin:
++  2026-10-20 batch purge took the 10-04 TensorFold study; 244 real tmp losses on 10-25.)
+ - **Download through `scripts/utils/safe_download.py`**, never a bare `hf download`/`curl`/`wget`:
+   it refuses `/tmp` destinations and removes the `.part`/`.incomplete` stubs an aborted run leaves
+   (9.2 GB of them, plus a 35.9 GB joined-but-kept `.part2`, in the 2026-10-03 audit).
+@@ -419,6 +424,13 @@
+ 
+ Exception: pure factual gaps (a missing credential, an ambiguous file reference) may be asked directly — this contract governs choices among alternatives, not fact retrieval.
+ 
++**A dismissed or declined question pauses only the item it asked about**, even when the tool's
++result text says "STOP". Every independent duty continues; keep the item listed as pending and
++mention it once in the next report. Only an explicit operator "stop everything" halts a session.
++(Origin: 2026-10-24, a dismissed shared-clone-ff question froze workspace-58's calendar duties for
++~40 min; operator: "why did you stop in the first place?". Calendar application:
++`.claude/skills/inference-backlog-scheduling/SKILL.md` §5.)
++
+ Accumulation, and the one-script form a batch of pending signatures takes:
+ `agents/coordinator-agent.md` → Guardrails, *Ratifications ACCUMULATE*.
+ 
+@@ -573,6 +585,12 @@
+   presented only while compute is saturated* (MEASUREMENT_POLICY → Consolidated apply-time
+   ratification). (4) A failed operator-presented command is an agent defect; pre-validate
+   end-to-end.
++- **Codex and the compute calendar.** A Codex session has no compute authority: it executes
++  nothing (interpreters, tests, builds, `gitnexus analyze`) outside a calendar grant and nothing
++  at all while any `compute-flags/HOLD_*` exists; it pushes only to `codex/*` refs with explicit
++  refspecs and never modifies a shared clone. The calendar owner ASSIGNS it non-inference
++  blockers with window-tied deadlines and announces open windows. Canonical:
++  `docs/guides/agent-workflows/compute-fillers.md` → *Codex NI client contract*.
+ - **Zero-token waiting generalizes beyond compute saturation**: see *Token-Efficiency Operating
+   Rules* → *Zero-Token Liveness Watching* below, which also covers the case of a backgrounded
+   `region-lock run` blocked on acquire.
+diff --git a/agents/shared/SESSION_LIFECYCLE.md b/agents/shared/SESSION_LIFECYCLE.md
+--- a/agents/shared/SESSION_LIFECYCLE.md
++++ b/agents/shared/SESSION_LIFECYCLE.md
+@@ -33,6 +33,14 @@
+   boundary. **Nonterminal outcomes leave the source task open and add a checkpoint-keyed child
+   task** — they never flip the parent. Do not hand-reproduce that tool's mutation, commit, push,
+   receipt, or bus-publication phases.
++- **A result tick names its belief.** A box ticked on an experimental or measurement result
++  carries `[belief: clm_<id>]`, `[belief: cc]` or `[no-belief: <reason>]` on the same line, and
++  states its verdict or number on that line, not only in a prose block below. The dashboard counts
++  the tick; the planners read only the ledger, so a result that never reaches it did not happen
++  for them. A committed conclusion is recorded as an OBSERVATION (`Judged/Located`) with its
++  commit, path and line: recording what was concluded is legitimate, while inventing the lost
++  run's protocol, n or attestation is not. Enforced by the wrap-up belief-capture gate
++  (`agents/commands/wrap-up.md`, Step 2).
+ 
+ ## Reading another session's liveness — three states, not two
+ 
+diff --git a/CLAUDE.md b/CLAUDE.md
+--- a/CLAUDE.md
++++ b/CLAUDE.md
+@@ -154,6 +154,14 @@
+ tuple invented on read claims warrant the original run never captured. `benchmarks/results` is the
+ standing proof: 4,562 files, no write-side hook, 0 of 200 sampled carry a usable claim tuple, so
+ they can never gate a decision.
++
++That forbids inventing a run's **measurement** warrant. It does not forbid recording what was
++**concluded**: a conclusion committed to a handoff or progress report enters as an OBSERVATION
++(`Judged/Located`) with its commit, path and line, through the committed-conclusion register. A
++result tick carries `[belief: clm_<id>]`, `[belief: cc]` or `[no-belief: <reason>]` (wrap-up
++belief-capture gate; `agents/shared/SESSION_LIFECYCLE.md` → *Two axioms*). A loop is "wired"
++only when its planning-context canary passes
++(`docs/guides/agent-workflows/agent-loop-design.md` → *"Wired" is a canary result*).
+ 
+ **Do not write a new grading rule.** An adapter *projects* its native record into a `ClaimTuple`
+ and `claim_tuple.grade()` decides; the carrier is shared but each source class has exactly one
+```

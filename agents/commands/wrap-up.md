@@ -2,7 +2,7 @@
 
 Update all documentation artifacts to reflect work completed in this session, commit changes, **push each affected repo to its remote**, and report the pushed commits.
 
-> **⚠ CADENCE — PER COMPLETED TASK, AS YOU GO.** The operator's BINDING rule of 2026-08-11 governs: **one task done = one wrap-up.** Run this routine at every completed task — not manual-trigger-only, not deferred to session end — and dispatch it to a subagent mid-flight when the session is already in new work. Exactly two BROAD, DESTRUCTIVE steps stay on the **operator cadence** and run ONLY inside an operator-invoked `/wrap-up`: Step 3 index **pruning** (deleting or archiving rows) and the Step 5 **wiki compilation sweep** — the operator wants those reviewed on a controlled, manually-chosen cadence. Everything else — progress report, checkbox sync, handoff updates, `Next action` cell refresh, agent log, pathspec commit and lane promotion — runs at EVERY completed task, autonomous and nightshift sessions included. No hook may ever run the FULL routine. Nothing may auto-trigger it — there is no `Stop`/`SessionEnd`/`PreCompact` hook, cron, or nightshift task that calls it, and there must not be one. A per-task wrap-up is invoked by the session doing the work, never by a hook. Autonomous, scheduled, or nightshift sessions **may commit progress directly** (a focused `git commit` of progress/handoff edits is fine and encouraged for checkpointing) but must **NOT** run the two operator-cadence steps. Every wrap-up, and every checkpoint commit, is bound by the **checklist-sync gate** in Step 2: any handoff edit that records completed or newly-discovered work must flip/add the corresponding `- [ ]`/`- [x]` checkboxes, not just append prose — the dashboard's progress metric counts checkbox state only. Cadence contract: `agents/shared/SESSION_LIFECYCLE.md` → *Wrap-up cadence*. (ruling 2026-08-16, `handoffs/active/loop-owned-fleet-implementation.md` P1-3a)
+> **⚠ CADENCE — PER COMPLETED TASK, AS YOU GO.** The operator's BINDING rule of 2026-08-11 governs: **one task done = one wrap-up.** Run this routine at every completed task — not manual-trigger-only, not deferred to session end — and dispatch it to a subagent mid-flight when the session is already in new work. Exactly two BROAD, DESTRUCTIVE steps stay on the **operator cadence** and run ONLY inside an operator-invoked `/wrap-up`: Step 3 index **pruning** (deleting or archiving rows) and the Step 5 **wiki compilation sweep** — the operator wants those reviewed on a controlled, manually-chosen cadence. Everything else — progress report, checkbox sync, handoff updates, `Next action` cell refresh, agent log, pathspec commit and lane promotion — runs at EVERY completed task, autonomous and nightshift sessions included. No hook may ever run the FULL routine. Nothing may auto-trigger it — there is no `Stop`/`SessionEnd`/`PreCompact` hook, cron, or nightshift task that calls it, and there must not be one. A per-task wrap-up is invoked by the session doing the work, never by a hook. Autonomous, scheduled, or nightshift sessions **may commit progress directly** (a focused `git commit` of progress/handoff edits is fine and encouraged for checkpointing) but must **NOT** run the two operator-cadence steps. Every wrap-up, and every checkpoint commit, is bound by the **checklist-sync gate** and the **belief-capture gate** in Step 2: any handoff edit that records completed or newly-discovered work must flip/add the corresponding `- [ ]`/`- [x]` checkboxes, not just append prose — the dashboard's progress metric counts checkbox state only. Cadence contract: `agents/shared/SESSION_LIFECYCLE.md` → *Wrap-up cadence*. (ruling 2026-08-16, `handoffs/active/loop-owned-fleet-implementation.md` P1-3a)
 >
 > **Narrow standing exception (retained from the other merge side, written against the previous
 > MANUAL-TRIGGER-ONLY cadence).** `agents/auditor-main.md` authorizes the audit role to run this
@@ -19,7 +19,7 @@ Update all documentation artifacts to reflect work completed in this session, co
 | Step | Every completed task | Operator-invoked `/wrap-up` only |
 |---|---|---|
 | 1. Progress report | ✅ | |
-| 2. Handoff updates · checklist-sync gate · derived-actionables gate | ✅ | |
+| 2. Handoff updates · checklist-sync gate · belief-capture gate · derived-actionables gate | ✅ | |
 | 3. `Next action` cell refresh · a row for a handoff created this session · `index_state.py` + `--check` | ✅ | |
 | 3. Index **pruning**: deleting or archiving rows, and handoff compaction | | ✅ |
 | 4 / 4b. Repo docs · README staleness check and refresh | ✅ | |
@@ -346,6 +346,33 @@ worktree the working tree is private, so the uncommitted half is already yours; 
 half is what makes the committed half yours too. If
 `check_lane_worktree.py --strict` said you are in the shared clone, this gate is **not
 trustworthy** — move to your lane before believing its number.
+
+**Belief-capture gate (required — the flip-count gate counts ticks, not what they concluded).**
+A ticked box that records an experimental or measurement result is invisible to the AutoKernel and
+AutoPilot planners unless it reaches the belief ledger. Every result tick added on this lane carries
+exactly one of these on its checkbox line, and states its verdict or number on that line, not only
+in a prose block below:
+
+- `[belief: clm_<id>]`: a native adapter projected the run; cite its claim.
+- `[belief: cc]`: there is no native adapter, and this line is the committed conclusion. Its
+  register row is added in the same commit once the register exists (VB-CC-PILOT:
+  `cli.py conclusion add`, not landed yet). Until then the marker alone makes the tick findable.
+- `[no-belief: <reason>]`: for example `not-a-result`, `build/landing`, `tooling-repair`,
+  `native-pending:<VB-task>`.
+
+Design and the result-tick definition: `docs/design/committed-conclusions-belief-capture-2026-10-25.md` §7.
+The checker `scripts/handoffs/belief_capture_check.py` (VB-TICK-CONTRACT) runs advisory once it
+lands. Until then, list your added ticks that carry no marker and give each result tick one:
+
+```bash
+# From inside YOUR lane worktree; same scoping as the flip-count gate.
+git diff "$(git merge-base main HEAD)"..HEAD -- handoffs/ | grep -E '^\+\s*[-*] \[[xX]\]' | grep -vE '\[(no-)?belief: [^]]+\]'
+```
+
+Report the count of result ticks as cited / cc / declined in the wrap-up output. A
+`native-pending` tick that survives two consecutive wrap-ups has failed the Act, Don't Defer
+recurrence check: run the ingest, or switch the tick to `[belief: cc]`. This gate never ingests;
+ingest stays event-driven (Step 5b).
 
 **Derived-actionables gate (required — the flip-count gate cannot see this).** The flip-count gate catches un-flipped checkboxes; it has no counterpart for conclusions that never became checkboxes at all. Measured: the 2026-07-21 audit — appendix. Before committing, sweep the session's own output (deep-dive results, sub-agent reports, analysis sections appended to handoffs) for every "we could/should/worth X" sentence and give each one exactly one of:
 

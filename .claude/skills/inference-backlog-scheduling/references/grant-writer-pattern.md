@@ -3,8 +3,10 @@
 A grant writer is a versioned `#!/bin/bash` script, one per region set, that turns a plan into
 `grants/<id>.grant` files at the right moments. The reference implementations are workspace-58's
 `compute-flags/grant-afternoon-20261023.sh` (parallel lanes), `grant-gpu-long-20261023-v2.sh`
-(GPU chain with a quiet phase), `grant-block-20261023-v4.sh` (whole-CPU block with an END flag)
-and `grant-freedq-20261022.sh` (freed-quarter gap filler). All live under
+(GPU chain with a quiet phase), `grant-block-20261023-v4.sh` (whole-CPU block with an END flag),
+`grant-freedq-20261022.sh` (freed-quarter gap filler), `grant-gpu-1025-v12.sh` (GPU queue writer:
+stamp at grant time, `ps` liveness, cap, HOLD pause) and `hold-keeper-c4-v11-20261024.sh` (keeps a
+HOLD across two chained quiet blocks). All live under
 `/mnt/raid0/llm/tmp/compute-flags/`; the live tooling there is read-only for everyone except the
 calendar owner.
 
@@ -20,15 +22,15 @@ echo $$ > $F/grant-<name>.pid
 log() { echo "$(date -u +%FT%TZ) [$LANE] $*" >> $LOG; }
 ts()  { date -u -d @"$1" +%Y-%m-%dT%H:%MZ; }
 rowpid() { grep "^| $1 |" $F/FILLERS.md | grep -oE 'pid=[0-9]+' | head -1 | cut -d= -f2; }
-# wait (bounded) until no claim matching $1 is HELD/EXCL/SHARED -- ONLY the regions this grant needs
+# wait (bounded) until no claim matching $1 is HELD/EXCL/SHARED/SHRD -- ONLY the regions this grant needs
 free_of() { local u=$(( $(date -u +%s) + 900 ))
-  while $RL status 2>/dev/null | grep -E "$1" | grep -qE 'HELD|EXCL|SHARED'; do
+  while $RL status 2>/dev/null | grep -E "$1" | grep -qE 'HELD|EXCL|SHARED|SHRD'; do
     [ "$(date -u +%s)" -ge $u ] && return 1; sleep 10; done; }
 # step id pid seconds minsec GiB regions free-regex [cap-epoch] [ram-mode] [reserve]
 step() {
   local id=$1 pid=$2 sec=$3 min=$4 gib=$5 reg=$6 rx=$7 cap=${8:-0} mode=${9:-} res=${10:-} st en r rc g
   [ -e $G/$id.complete ] && { log "$id skipped: complete"; return 2; }
-  [ -n "$pid" ] && kill -0 $pid 2>/dev/null || { log "$id skipped: launcher '$pid' not running"; return 2; }
+  [ -n "$pid" ] && ps -o pid= -p "$pid" >/dev/null 2>&1 || { log "$id skipped: launcher '$pid' not running"; return 2; }  # never kill -0
   free_of "$rx" || { log "$id skipped: claims ($rx) held 15 min"; return 1; }
   st=$(date -u +%s); en=$(( st + sec )); [ $cap -gt 0 ] && [ $en -gt $cap ] && en=$cap
   [ $(( en - st )) -lt $(( min + 300 )) ] && { log "$id skipped: window $(( en - st )) s < min $min + 300"; return 1; }
@@ -36,6 +38,7 @@ step() {
   r=$($F/grant_ok.sh $id $gib $mode "${g[@]}"); rc=$?   # launcher pid = the row's pid= (wrappers followed)
   case $rc in 0) ;; 11|12) log "$id not placeable now (rc=$rc): $r"; return 1;; *) log "$id refused (rc=$rc): $r"; return 2;; esac
   printf 'regions=%s start=%s end=%s\n' "$reg" "$(ts $st)" "$(ts $en)" > $G/$id.grant
+  touch $F/.wsg-granted-$id        # stamp at GRANT time, so any later .ended is newer than it
   log "$r; granted $id: $(cat $G/$id.grant)"
   while :; do   # wait for an .ended NEWER than our start (old .ended files linger)
     if [ -e $G/$id.ended ] && [ "$(stat -c %Y $G/$id.ended)" -ge $st ]; then log "$id ended: $(head -1 $G/$id.ended)"; return 0; fi
@@ -86,13 +89,14 @@ Rules the skeleton encodes, and why:
 | Line | Why |
 |---|---|
 | `free_of` on a lane-specific regex | a whole-status wait stalled the 10-23 CPU block behind a co-running GPU-only claim; a folded GPU lane waits on `q3|gpu-quiet`, a no-fold GPU lane on `gpu-quiet` only |
-| `.complete` and `kill -0 pid` first | never grant a done id or a dead launcher; a stale poller would take a re-written grant |
+| `.complete` and `ps -o pid= -p` first | never grant a done id or a dead launcher; a stale poller would take a re-written grant. `kill -0` is blind in this sandbox (v11 stamped un-run items as granted) |
+| `.wsg-granted-<id>` touched right after the `.grant` | a re-offering writer re-grants an item only when its `.ended` is newer than the stamp; a stamp written after `.ended` hid every clean-ended item from GPU writers v10/v11 |
 | `min + 300` | poll lag (45 s) made three exactly-equal windows refuse `rc=3` |
 | `grant_ok.sh ... --window-s --regions` immediately before the write | row validity (`--for-grant`), the launcher's real min-window and class/claim against the exact grant line, and RAM admission, all at grant time, not at planning time |
 | `.ended` newer than `st` | `.ended` files from earlier windows stay on disk |
 | `trap ... EXIT` for the END flag | downstream writers wait on it; this is also why a superseded writer is stopped with **SIGKILL**, so the trap cannot fire early |
 | the `--precond-cmd` build step before the test step in the same lane | a GPU test that needs a build sits on q2's lane right after the build; the launcher re-checks the precondition at grant time |
-| a cap epoch on the last step | book to the end of the night, but never past the next fixed booking |
+| a cap epoch on the last step | book to the end of the night, but never past the next fixed booking; arm the successor writer BEFORE the cap (v10 exited 21:22Z on 10-24 and the GPU idled all night) |
 
 ## Swapping a writer (vN → vN+1)
 

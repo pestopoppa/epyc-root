@@ -122,6 +122,17 @@ The rules that make cleanup a listing instead of an act of memory:
    except KEEP-marked paths, anything a running process uses (cwd, argv or environment), anything a
    live launcher outside the roots names, anything a kept entry names (transitively), and anything
    holding an evidence file. Verifying it is `ls` of the root.
+4. **Scratch is scratch: nothing durable lives only in `/mnt/raid0/llm/tmp`.** Tmp is reclaimable
+   by design, and batch purges are approved by size and age, not by content. Land every finding,
+   plan or report in a committed record before the task boundary: handoff notes, the
+   intake-index entry fields, the wiki, AK inbox notes in the campaign store, or a tracked file
+   such as the calendar plan (`coordination/compute-calendar/`). Evidence follows MEASUREMENT.md §5 (*Evidence must be DURABLE*, checked by `scripts/validate/check_evidence_durability.py`).
+   A live review or intake dir carries a `KEEP` file, with the reason, until its plan is applied.
+   When asked "did we delete X", check `logs/safety_audit.log` and the actual stores before
+   answering. Origin: the 10-04 TensorFold study dir was trashed and purged in the 10-20 batch
+   purge, and only its distilled conclusions survived. The 10-25 reconcile counted 244 real
+   `/mnt/raid0/llm/tmp` losses cited from active handoffs
+   (`docs/reference/tmp-loss-reconcile-2026-10-25.md`).
 
 Declared paths must sit under `/mnt/raid0/llm/tmp/` or `/mnt/raid0/llm/worktrees/` with a name of at
 least three characters — a bare parent is refused as too broad. A declaration can never reach harness state: Claude/Codex
