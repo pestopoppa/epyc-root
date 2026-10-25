@@ -519,6 +519,12 @@ SOURCES: dict[str, Source] = {s.name: s for s in (
                 "FD-DIV-1b epyc.fd_div_1b.result.v1 (one claim per fixture cell, class re-derived); "
                 "skipped smokes and void controls decline; decode ms/token is observation only",
            task="VB-FUSED-DECODE-DIV-WIRE"),
+    Source("champion-fold-gate", "champion_fold_gate",
+           lambda p: importlib.import_module("adapters.champion_fold_gate").units(p),
+           note="fold_gate.v4 epyc.champion_fold_gate.v1 records: one strict verifier projection per library plus "
+                "each EXPLAINED-UI policy exception; gate verdict, code-identity flags, propositions and store "
+                "SHA256SUMS attestations are re-derived; text-only legacy output and pre-hook folds decline",
+           task="VB-FOLDGATE-WRITE"),
     Source("hsf5p-microbench", "hsf5p_microbench",
            lambda p: importlib.import_module("adapters.hsf5p_microbench").units(p),
            default=Path("/mnt/raid0/llm/tmp/f8-launchers-20261024/hsf-5p"),

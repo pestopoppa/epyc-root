@@ -311,6 +311,9 @@ def test_every_source_has_an_end_to_end_fixture_or_a_named_exemption():
         # real STACKCHG-GPUPIN evidence dispatch: test_launch_affinity_adapter.py.
         # FD-DIV-1a/1b strict re-derivation + real receipts: test_fused_decode_div_adapter.py.
         "gpu-cpu-noise", "launch-affinity", "fused-decode-div",
+        # Structured fold_gate v4 producer, strict per-library verifier projection and CLI dispatch:
+        # test_champion_fold_gate_adapter.py.
+        "champion-fold-gate",
         # HSF-5.P sidecar written by the real analyzer, re-derivation refusals and CLI dispatch:
         # test_hsf5p_microbench_adapter.py.
         "hsf5p-microbench",
