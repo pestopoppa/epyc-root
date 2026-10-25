@@ -246336,12 +246336,13 @@
   discovered_via: input
   verdict: worth_investigating
   ingested_date: '2026-10-06'
-  verification: stage1-unverified
+  verification: dive-verified
+  read_depth: PARTIAL
   techniques:
     - "Row-invariant multi-row dequant-GEMV for verify widths 2–16, reusing decoded weight tile across rows with fixed K-split by tensor shape"
     - "Exact speculative decoding with custom verify kernels: 2–16 rows cost close to 1-row decode (1.4–2.0× weight-streaming floor) vs llama.cpp HIP 4.5×"
     - "Drafting from DFlash2 block drafters, MTP heads, and prompt n-gram lookup (context copies)"
-    - "Row-invariant verify for both CUDA (sm_89+) and MLX/Metal backends; does NOT support RTX 30 (sm_86)"
+    - "Row-invariant verify for both CUDA (sm_80/86/120/121 in the v1.1.x release archive; corrected at the 1.1.4 dive, the 0.6.5-era 'does NOT support RTX 30 (sm_86)' was false) and MLX/Metal backends"
     - "EXL3 3 bpw, NVFP4, FP8 formats; read-only, no GGUF support"
     - "Per-model hand-written kernels: Qwen3.8-27B, Flash Next, Nemotron, GLM-5.3-Flash, Gemma 4, DeepSeek-V4-Flash, Qwen3.6-35B-A3B, Ternary Bonsai 2"
   reported_results:
@@ -246349,8 +246350,7 @@
     - "27B MLX 4-bit on GB10: 57.5 tok/s same fixture"
     - "27B MLX 4-bit on M5 Max: 189 tok/s code, 120–124 short chat (requires τ≥4.4 to stay within peak BW)"
     - "Nemotron 30B-A3B 4-bit on M5 Max: 550–1000 tok/s on copy-heavy tasks (widened copy window 16→64 rows)"
-    - "Projection if MI210 adopts multi-row GEMV: 77 → ~120 tok/s single-stream 27B Q8_0 (+55%); with 4-bit weights ~2× (~160 tok/s) if quality preserved"
-    - "Verify round time ÷ weight-streaming floor: TensorFold 1.4–2.7×, llama.cpp HIP MI210 4.5× (margin from matmul roofline degradation and row-count scaling)"
+    - "Verify round time ÷ weight-streaming floor: TensorFold 1.4–2.7× (0.6.x-era author figure, unverified at 1.1.4)"
   notes: |
     Sourced from TensorFold repo (github.com/ashhart/TensorFold, MIT/Apache-2.0, v0.2.0 shipped 2026-09-25, v0.6.5 shipped 2026-10-03).
     The web research was executed 2026-10-04 by the coordinating session (research-intake-depth subagent) and saved to /mnt/raid0/llm/tmp/tensorfold-research-20261004/REPORT.md.
@@ -246362,6 +246362,169 @@
     HARDWARE SCOPE: The REPORT covers Apple Silicon (M5 Max/Ultra, ROCm R9700, DGX Spark GB10). Our ONE MI210 + CPU system is distinct; Spark GB10 numbers from TensorFold are the closest hardware analog. The Spark nominal 273 GB/s vs MI210 1,638 GB/s makes Spark results not directly transferable. A DGX Spark system is outside our equipment set but the techniques apply.
 
     NEXT STEPS: (a) Verify the multi-row GEMV projection for MI210 by building a microbench in our HIP backend (AKX-ALL-15c is the first GPU lane task; multi-row is H1 in the inbox). (b) Cross-reference against the low-bit scope program (intake-1923, TensorFold's EXL3 vs our UD-IQ2/IQ4_XS + ppl_contract gate) to ensure consistent technique ranking. (c) A full dive would extract TensorFold's per-model kernel source to check whether the row-invariance pattern is achievable on MI210's MFMA geometry without conditional branches.
+
+    2026-10-24 re-encounter: resurfaced as "TensorFold 1.1.4" (release 2026-10-24T19:16:45Z, tag 585df8ba → commit
+    eab8582819688325e371907e4706e1c602b8a273), operator-relayed via the coordinator. It was dived at that commit against
+    v1.1.3 (36415df4f76e4458e82d0fa729ecb28e287ebf38): 214 commits, 564 files. Scratch:
+    /mnt/raid0/llm/tmp/tensorfold-114-review-20261024/ (dl/ holds the raw downloads with sha256 in SOURCES.md).
+    The 2026-10-04 scratch REPORT cited above (/mnt/raid0/llm/tmp/tensorfold-research-20261004/REPORT.md) no longer exists
+    on disk. This entry's 0.6.5-era claims are therefore not re-checkable against that file. The 1.1.4 dive below
+    supersedes it for current-version claims.
+
+    EPYC projection, not TensorFold (removed from reported_results at the 1.1.4 dive; Phase 5 §4 cross-contamination): MI210 multi-row GEMV 77 -> ~120 tok/s single-stream 27B Q8_0 (+55%), ~160 tok/s with 4-bit weights if quality preserved (27B inbox note 10 §0). The 'llama.cpp HIP MI210 4.5x' verify-round ratio is likewise our own measurement (SL-1, dflash2 handoff), not TensorFold's.
+  source_revision: "eab8582819688325e371907e4706e1c602b8a273 (v1.1.4), diffed against 36415df4f76e (v1.1.3); PR bodies via api.github.com 2026-10-24; commit .patch files; docs/kernel-contract.md and zig/kernels/cuda/ggml.cu raw at eab85828"
+  key_claims:
+    - "Swapping the attention-partials grid from (chunks, key heads, rows) to (rows, key heads, chunks) lets a verify window's rows share each K/V chunk in L2, with bit-identical output."
+    - "With the L2 flushed and 32k keys, the swapped grid cuts the partials kernel from 7.62 to 4.67 ms at 16 rows and from 72.1 to 29.3 ms at 128 rows (author-measured, GB10)."
+    - "Tensor-core decode attention makes a key head's query heads the lines of one m16 tile, and for long streams a round's rows share each key tile (read and widened once per round)."
+    - "The tensor-core attention changes outputs (weights rounded to bf16, ~0.16% RMS); it is row-invariant, not bit-equal to the old kernel."
+    - "One segmented split-K launch over the projections of one input cuts the 27B attention-in set from 98.6 to 76.7 us on an A10 (GB10 keeps per-projection launches)."
+    - "Verifying 17-32 rows on one weight pass costs 17.8 ms against 22.3 ms for two 16-row tiles (RTX 5090, 27B); a 64-row tile gave no gain."
+    - "On the RTX 5090 the int8 mma ran about four times the bf16 tensor rate (1,012 TOPS measured), which is the premise of --prompt-precision int8."
+    - "Fusing the Flash Next prompt GDN front, chain and gated norm into one kernel per value head cut the block by about 19% on a GB10, bit-exact."
+    - "A blocked DSA indexer scan (two keys a thread, query read once a block) took 16,384 keys x 16 rows from 1.59 to 0.14 ms on the author's Mac GPU, with the same scores."
+    - "Every TensorFold GPU kernel passes five gates, each with a planted control that must be reported failing."
+    - "The native HIP kernels are compiled wave32 for RDNA; the kernel contract's served HIP chips are gfx1030, gfx1100, gfx1151 and gfx1201 (no CDNA part is listed). Second anchor: the later claim_index 10 row."
+    - "Before #1069, Flash Next verified each drafting stream in its own pass, reading the weights N times per N-stream round."
+    - "Stage-1 technique (0.6.5-era): Row-invariant multi-row dequant-GEMV for verify widths 2–16, reusing decoded weight tile across rows with fixed K-split by tensor shape"
+    - "Stage-1 technique (0.6.5-era): Exact speculative decoding with custom verify kernels: 2–16 rows cost close to 1-row decode (1.4–2.0× weight-streaming floor) vs llama.cpp HIP 4.5×"
+    - "Stage-1 technique (0.6.5-era): Drafting from DFlash2 block drafters, MTP heads, and prompt n-gram lookup (context copies)"
+    - "Stage-1 technique (0.6.5-era): Row-invariant verify for both CUDA (sm_80/86/120/121 in the v1.1.x release archive; corrected at the 1.1.4 dive, the 0.6.5-era 'does NOT support RTX 30 (sm_86)' was false) and MLX/Metal backends"
+    - "Stage-1 technique (0.6.5-era): EXL3 3 bpw, NVFP4, FP8 formats; read-only, no GGUF support"
+    - "Stage-1 technique (0.6.5-era): Per-model hand-written kernels: Qwen3.8-27B, Flash Next, Nemotron, GLM-5.3-Flash, Gemma 4, DeepSeek-V4-Flash, Qwen3.6-35B-A3B, Ternary Bonsai 2"
+  claim_anchors:
+    - claim_index: 0
+      claim: "Swapping the attention-partials grid from (chunks, key heads, rows) to (rows, key heads, chunks) lets a verify window's rows share each K/V chunk in L2, with bit-identical output."
+      locator: "commit a56d0ce2fa .patch L10 (in v1.1.3...v1.1.4)"
+      quote: "The grid is now (rows, key heads, chunks); each block's work is unchanged, so the bits are too."
+      quote_sha256: 58c369af7b65e8c51178c43698cec2d288efc0f852b0e33e9d1f78558fd029f4
+      source_revision: a56d0ce2fa (in v1.1.3...v1.1.4)
+    - claim_index: 1
+      claim: "With the L2 flushed and 32k keys, the swapped grid cuts the partials kernel from 7.62 to 4.67 ms at 16 rows and from 72.1 to 29.3 ms at 128 rows (author-measured, GB10)."
+      locator: "PR #1219 body L7"
+      quote: "Synthetic kernel, L2 flushed before each launch (32k keys): 16 rows 7.62 -> 4.67 ms, 128 rows 72.1 -> 29.3 ms. ncu L2 hit rate 22.6 % -> ~100 % at 16 rows."
+      quote_sha256: 2c90f1b609dfda80abbab7ee8f33b4d6be4a2904fc2b93fb7f37f0dd0a85754e
+      source_revision: PR #1219, merge d189172aaa59f3716f12ad311cf32e5f2ead9fe3
+      setup_scope: "author's GB10, synthetic kernel; served A/B in the same PR is ABAB, fresh servers, two rounds"
+    - claim_index: 2
+      claim: "Tensor-core decode attention makes a key head's query heads the lines of one m16 tile, and for long streams a round's rows share each key tile (read and widened once per round)."
+      locator: "PR #1168 body L13, L20"
+      quote: "  - A stream's rows of one chunk width share each tile of committed keys, so the tile is read and widened once per round rather than once per row."
+      quote_sha256: db8a9d1a4231b7d662543c098e5e8d2c833f02ef4927b46dc2c6d7d2a4c5d73f
+      source_revision: PR #1168 (commits ffa87d9960, 595c135a74)
+    - claim_index: 3
+      claim: "The tensor-core attention changes outputs (weights rounded to bf16, ~0.16% RMS); it is row-invariant, not bit-equal to the old kernel."
+      locator: "PR #1168 body L25"
+      quote: "**Replies change.** Unlike #1079's kernel changes, this one does not keep the per-key arithmetic: rounding the weights to bf16 moves attention outputs by about 0.16% RMS from the old kernel's (measured on random caches of 300 to 109,000 keys)."
+      quote_sha256: 6bc2f313b01eeafa1965f5ea7a0ddb87b1a88ad2ef37a380b6a8597dbc648fe9
+      source_revision: PR #1168
+    - claim_index: 4
+      claim: "One segmented split-K launch over the projections of one input cuts the 27B attention-in set from 98.6 to 76.7 us on an A10 (GB10 keeps per-projection launches)."
+      locator: "PR #1138 body L72"
+      quote: "    | 27B attention in | 98.6 | 76.7 |"
+      quote_sha256: a24d0e2b4debe5e018970a3aab1c46853711c41db3e88064f532f721113758f2
+      source_revision: PR #1138 (commit 7c1f090391)
+      setup_scope: "A10 sm_86, local timing loop, captured graph, 1 row"
+    - claim_index: 5
+      claim: "Verifying 17-32 rows on one weight pass costs 17.8 ms against 22.3 ms for two 16-row tiles (RTX 5090, 27B); a 64-row tile gave no gain."
+      locator: "PR #1079 body L42"
+      quote: "- A window past 16 rows ran as 16-row tiles that each read the weights again (16 rows 13.4 ms, 32 rows 22.3 ms on the 27B). `Affine4Kernels.wide_verify` (set on GB10 as before, and now by the Qwen3.5 engine on sm_120) sends 17 to 32 rows to the existing 32-row verify kernel: 17.8 ms. On the 5090 its one-row results are bit-equal to the split-K decode's on all 18 contract shapes. A 64-row tile measured no gain; wide windows are compute-bound here."
+      quote_sha256: b53c2c0fd31cfe1835e6baf87260e65bf8b2cf05c75024017232d96ef2efc568
+      source_revision: PR #1079 (commit d9373fef16)
+    - claim_index: 6
+      claim: "On the RTX 5090 the int8 mma ran about four times the bf16 tensor rate (1,012 TOPS measured), which is the premise of --prompt-precision int8."
+      locator: "commit 69e491cbc5 .patch L9"
+      quote: "The int8 mma runs four times that rate here (1,012 TOPS measured, the e4m3 one 507), and an affine 4-bit code (0 to 15)"
+      quote_sha256: 7c9a1a5e15bba7bbf4457eb545ded0f0d638ebdcb8ff81abe87c7ec35862f042
+      source_revision: 69e491cbc5
+    - claim_index: 7
+      claim: "Fusing the Flash Next prompt GDN front, chain and gated norm into one kernel per value head cut the block by about 19% on a GB10, bit-exact."
+      locator: "commit d0d179497e .patch L25"
+      quote: "- GDN block alone, GB10: 1.907 -> 1.547 ms at 1536 rows, 5.008 -> 4.078 ms"
+      quote_sha256: 6e8460c59899fcc153de1eed33efcfe0dcd329b2535813ef76d6b44615201bfe
+      source_revision: d0d179497e (PR #1217)
+    - claim_index: 8
+      claim: "A blocked DSA indexer scan (two keys a thread, query read once a block) took 16,384 keys x 16 rows from 1.59 to 0.14 ms on the author's Mac GPU, with the same scores."
+      locator: "commit aa6fbd8903 .patch L17"
+      quote: "The scan over 16384 keys for 16 rows on this Mac's GPU: 1.59 ms before, 0.14 ms"
+      quote_sha256: 7b51000926999eb0b8c3e888b4af02b9d1d25361fa112df69edc6abc40f3cc2d
+      source_revision: aa6fbd8903 (PR #1054)
+    - claim_index: 9
+      claim: "Every TensorFold GPU kernel passes five gates, each with a planted control that must be reported failing."
+      locator: "docs/kernel-contract.md L4 @ eab85828"
+      quote: "(`zig/src/core/contract/`) runs five gates on Metal, CUDA and HIP, and each gate has a planted control: a kernel built"
+      quote_sha256: e61efb775e90b67210bed124cb54cbc5d14610f1e3d14b00081563f30236c55d
+      source_revision: eab85828 (file sha256 fef8bb1c1927)
+    - claim_index: 10
+      claim: "The native HIP kernels are compiled wave32 for RDNA; the kernel contract's served HIP chips are gfx1030, gfx1100, gfx1151 and gfx1201 (no CDNA part is listed). Second anchor: the later claim_index 10 row."
+      locator: "zig/build/hip.zig (v1.1.3..v1.1.4 diff context line)"
+      quote: " /// The flags of the kernels' first build: no contraction, wave32 on RDNA, C++20."
+      quote_sha256: a4d6a4a5418b67d72b8d656cf1bda4b91f48f8ba76ce7bc2cd2b113b7f0273bf
+      source_revision: eab85828
+    - claim_index: 11
+      claim: "Before #1069, Flash Next verified each drafting stream in its own pass, reading the weights N times per N-stream round."
+      locator: "PR #1069 body L5"
+      quote: "`verifyFn` ran one batched pass per drafting stream, so a round over N streams read the weights N times and the aggregate stayed flat (81.8, 70.3 and 64.0 tok/s at 1, 2 and 4 streams on a GB10, code prompt, `--parallel 4`). Now the drafted windows of a round share one pass, up to the round's 64 rows (`TF_FLASHNEXT_WINDOW_ROWS`, 0 keeps each window alone; never past `TF_FLASHNEXT_CHUNK`)."
+      quote_sha256: da87b9c1e0ce58630af353a0d97772aa62ea6c1b6ce5f668640d0e74543c99f3
+      source_revision: PR #1069
+    # Second anchors added after the per-claim second reader (2026-10-24) found claims 2, 3, 7 and 10 only partly covered.
+    - claim_index: 2
+      claim: "(second anchor for claim 2) One block per (row, chunk, key head), with the key head's query heads as the lines of one m16 tile."
+      locator: "PR #1168 body L13"
+      quote: "- **`tf_q35_attn_partial8`**: one block per (row, chunk, key head), the key head's query heads the lines of one m16 tile."
+      quote_sha256: c4d7783aefc10c8cb4067da6c786a1ba67affa84a4f63bacd9e2972eb411645f
+      source_revision: PR #1168
+    - claim_index: 3
+      claim: "(second anchor for claim 3) The tensor-core kernels are row-invariant: a row's partials are bit-identical alone, in any window or group, or in either kernel."
+      locator: "PR #1168 body L22"
+      quote: "- **Exactness:** both kernels give each line the same arithmetic, so a row's partials are bit-identical alone, in any window, in any group, or in either kernel. Drafted replies still equal undrafted ones, including when a row crosses the 8,192-key line between a window and a one-row step. `tf_q35_attn_merge` and the partial buffers are unchanged."
+      quote_sha256: 42ca7a059871e2d697f73063587cb7d87bf47426ebb4adc80550627accbfb63c
+      source_revision: PR #1168
+    - claim_index: 7
+      claim: "(second anchor for claim 7) The fused GDN kernel keeps the front's rows in shared memory, with chain threads beside producer threads."
+      locator: "commit d0d179497e .patch L15"
+      quote: "fn_gdn_fused keeps those rows in shared memory: 256 threads walk the chain"
+      quote_sha256: 786bc4186c6894dfff9e5f131aabac6efcf9ea92dd1a084885001bae69b3063b
+      source_revision: d0d179497e
+    - claim_index: 10
+      claim: "(second anchor for claim 10) The contract's HIP limits gate checks wave size against gfx1030 and the next lines name gfx1100, gfx1151 and gfx1201 as the served chips, one per generation."
+      locator: "docs/kernel-contract.md L61-62 @ eab85828"
+      quote: "   allocation step), static plus dynamic LDS bytes, the kernel's `__launch_bounds__` and its wave size against gfx1030,"
+      quote_sha256: 478fb8f57500c91a471b08e3e346c7c4146a0202dfc5c06e1f1209d16b9a387e
+      source_revision: eab85828
+  claim_corrections:
+    - {claim_index: 12, effect: unaffected, note: "Stage-1 technique 'row-invariant multi-row dequant-GEMV' still holds at 1.1.4; extended to 17-32 rows on one weight pass (anchor 5)."}
+    - {claim_index: 13, effect: narrowed, note: "Stage-1 'verify 2-16 rows ~1-row cost' now reads 2-32 rows on sm_120/GB10; a 64-row tile measured no gain (anchor 5)."}
+    - {claim_index: 14, effect: unaffected, note: "Drafting sources (DFlash2, MTP, n-gram copies) unchanged at 1.1.4."}
+    - {claim_index: 15, effect: overturned, note: "'does NOT support RTX 30 (sm_86)' is false at 1.1.4: the release archive carries sm_80/86/120/121 (CHANGELOG 1.1.x) and PR #1138 was measured on an RTX 3090 / A10 (sm_86)."}
+    - {claim_index: 16, effect: narrowed, note: "'read-only, no GGUF support' narrowed: zig/kernels/cuda/ggml.cu reads GGML IQ2_XXS and Q8_0 blocks for Nemotron Bolt (1.1.x); GGUF files are still not a served format."}
+    - {claim_index: 17, effect: unaffected, note: "Per-model hand-written kernels; 1.1.4 adds Gemma 4 CUDA and Nemotron-H native HIP."}
+  dive_corrections: >-
+    2026-10-24 Stage-2 dive at v1.1.4 (read_depth PARTIAL; eab85828; waves 1-2: the kernel diff v1.1.3..v1.1.4 plus
+    docs/kernel-contract.md and cuda/ggml.cu).
+
+    (1) Most 1.1.4 kernel-file churn (all exl3_block/*.cu) is __restrict__ re-declaration for the Windows nvcc build
+    (#1213), not kernel change.
+
+    (2) The 1.1.4 kernel physics that transfers to EPYC is attention at depth: K/V tiles shared across a verify window's
+    rows and a KV head's query heads, by grid order (#1219, bit-exact) and by tensor-core tiles (#1168, ~0.16% RMS
+    change). It maps to our 27B MI210 multi-row FA (fattn-common.cuh:1022-1041 whole-view q8_0→f16 convert;
+    :1176-1178 grid; fattn-wmma-f16.cu:100-103 no GQA packing @ ffc1bac82).
+
+    (3) The multi-stream shared verify (#1069/#1155) fixes a TensorFold-internal defect that llama-server never had
+    (server-context.cpp:500, 3143, 3193 @ ffc1bac82).
+
+    (4) The int8 prompt GEMM premise (4× rate) does not hold on gfx90a (int8 MFMA = f16 rate).
+
+    (5) Native HIP is RDNA wave32 only, so a gfx90a port is a wave64 rework (build cost, not a decline).
+
+    (6) Unverifiable from source: the release-notes GB10 27B prefill table (+54..+416%), "27 of 40 exact cases", and
+    Flash Next "+116% at 8 streams"; all speeds are author-measured with receipts in PR bodies only.
+
+    DECLINED surfaced sources (wave cap 2): the 1.0.0-1.1.3 CHANGELOG bodies and their PRs (recommend a separate
+    catch-up intake); the qwen27 engine baseline (internal comparison); vLLM MTP3 4-stream comparison (C7 already
+    integrated here).
+  depends_on: []
   cross_references:
     chapters: []
     handoffs:
@@ -246378,9 +246541,11 @@
     - "[unverified] Cross-reference TensorFold's EXL3 3 bpw techniques with the low-bit ppl_contract gate (intake-1923 notes): both target 4-bit-like compression with verify quality preserved; a unified technique hierarchy would avoid duplicating the research."
     - "[unverified] Extract the kernel source for Qwen3.8-27B from the TensorFold repo and analyze row-invariance patterns (branch-free?) on MFMA geometry to validate portability to MI210."
     - "[optional] Obtain or simulate a DGX Spark system to run TensorFold's own benchmarks; compare verifier timings and architecture differences to confirm GB10 numbers are consistent with Spark's published BW."
-  integration_disposition: awaiting_dive
+  integration_disposition: integrated
   disposition_evidence:
-    - "Stage 1 only: web research 2026-10-04 from github.com/ashhart/TensorFold README, INSTALL-MANUAL, PR history. Raw docs saved to /mnt/raid0/llm/tmp/tensorfold-research-20261004/src/. No source code analysis, no operator dive assignment, no claim anchors recorded. Per the unverified contract, no reported_results may be quoted in a plan or handoff until Stage-2 dive."
+    - "Stage-3 plan /mnt/raid0/llm/tmp/tensorfold-114-review-20261024/STAGE3-PLAN.md packets P1-P3: AKX-ALL-30, AKX-ALL-30a, AKX-ALL-31 in autokernel-all-devices-all-dimensions.md; seeds as AK inbox notes 60 (27B), 65 (Q38FN), 32 (DS41-1017), written by the campaign owners after the launch hold lifts."
+  handoffs_updated: [autokernel-all-devices-all-dimensions.md]
+  handoffs_created: []
 - id: intake-1925
   arxiv_id: null
   url: https://github.com/kozmic-labs/cafe-llama.cpp
