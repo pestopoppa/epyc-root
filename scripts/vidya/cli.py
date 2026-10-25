@@ -785,6 +785,16 @@ def _ingest_file_source(args) -> int:
 
 
 def cmd_ingest(args) -> int:
+    # Reject absent directory corpora before creating the ledger or writer lock.
+    # Keep the existing adapter-local validation for direct internal callers.
+    if args.adapter in ("autokernel", "inf70"):
+        default = (AUTOKERNEL_CORPUS_ROOT if args.adapter == "autokernel"
+                   else INF70_CORPUS_ROOT)
+        root = Path(args.root) if args.root else default
+        if not root.is_dir():
+            label = "AutoKernel" if args.adapter == "autokernel" else "INF-70"
+            print(f"no such {label} corpus root: {root}", file=sys.stderr)
+            return 2
     # one host-wide critical section per ingest: dedup-read and append must not interleave with
     # another session's ingest into the shared canonical ledger
     if args.dry_run:
