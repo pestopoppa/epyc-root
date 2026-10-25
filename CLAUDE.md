@@ -31,6 +31,7 @@ Defer*](agents/shared/OPERATING_CONSTRAINTS.md#act-dont-defer--the-admission-tes
 | epyc-root (this) | `/workspace` | Governance, handoffs, measurement constitution, agent files |
 | epyc-orchestrator | `/workspace/repos/epyc-orchestrator` | Orchestrator, API, autopilot, registries |
 | epyc-inference-research | `/workspace/repos/epyc-inference-research` | Benchmarks, canonical recipes, research |
+| epyc-web | `/workspace/repos/epyc-web` | AMD AI Lab website and GitHub Pages publication |
 | epyc-llama | `/workspace/repos/epyc-llama` → `/mnt/raid0/llm/llama.cpp` | Production llama.cpp kernel tree (FROZEN) |
 | epyc-whisper | `/mnt/raid0/llm/whisper.cpp` | Production STT kernel (FROZEN, `production-speech-v1`) |
 | epyc-qwentts | `/mnt/raid0/llm/qwentts.cpp` | Production TTS kernel (FROZEN, `production-speech-v1`) |
