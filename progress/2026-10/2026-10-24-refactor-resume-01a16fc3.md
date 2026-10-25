@@ -42,5 +42,21 @@ indexed commit, direct references reviewed, and focused executable checks passed
 metadata was deleted or tool failure hidden. All tests above are diagnostic verification;
 historical runs receive no invented native custody or claim tuples.
 
-In progress at this checkpoint: O1 request-path review (pre-first-chunk disconnect reproduced)
-and P2 gate/math/snapshot review. Remaining program work stays in the owning handoff.
+Further completed: O1 stage-1 request-path review plus initial-stream disconnect fix `a1c69593`,
+checkpoint `142bb5df`, pushed to `refactor/request-reviewed-01a16fc3`. Endpoint regression fails on
+parent while generation blocks and passes after cancellation fix; expanded targeted selection
+1,011 pass/3 skip. Isolation included; route is outside ni63 pin closure. Reviewed, unmerged.
+
+Further completed: P2 branch review and migration controls `4069b8ee`, checkpoint `db17808e`, pushed
+to `refactor/autopilot-gate-reviewed-01a16fc3`. 1,018 targeted checks pass/1 skip; 18 snapshot controls
+pass. Quality higher-is-better and signed MAD decision semantics verified; B2-02/B2-03 regressions
+fail on parent. Pre-P2 snapshot refusal and current-format recut/full-replay equality established.
+Existing reconstruction CRITICAL and verified-snapshot HIGH integration impacts are held for owner
+review; no new replay source edit or live snapshot write occurred.
+
+In progress: remaining P1 control-loop correctness and O6 cleanup. Remaining program work stays in
+the owning handoff. Root index/schema/citation gate passes with zero problems;
+README freshness check has no findings. No operator-cadence index pruning or wiki sweep ran.
+
+The boundary bus drain refused the session's unregistered identity; no peer identity was used and
+no peer inbox/outbox/cursor was modified. Work remains independent of fleet dispatch.

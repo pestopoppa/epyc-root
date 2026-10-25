@@ -2,7 +2,7 @@
 
 **Status**: ACTIVE — operator resumed implementation 2026-10-24 after an independent handoff audit; review and finish existing branches before integration
 **Created**: 2026-10-07
-**Updated**: 2026-10-24
+**Updated**: 2026-10-25
 **Priority**: High
 **Scope**: epyc-orchestrator (`src/`, `scripts/`, `tests/`, `scripts/autopilot/`, `src/autopilot_core/`);
 epyc-inference-research `scripts/kernel_rnd/autokernel/`; epyc-root `scripts/hooks/` (guard bugs found on the way)
@@ -37,8 +37,10 @@ subject establishes association only; WIP, skipped, tested, reviewed and merged 
 - [x] RESUME-1: audit pushed branches and current upstream state; identify unsafe pruning assumptions, rollback failure-path gap, test isolation prerequisite and integration conflicts. Evidence: [audit checkpoint](../../progress/2026-10/2026-10-24-refactor-audit-01a16fc3.md). ✅ 2026-10-24
 - [x] RESUME-2: review hermetic-tests + test-hazards and isolate A6-M1 trace/ledger writes in fixtures. Orchestrator `87540dae`, checkpoint `5e392a3c`, pushed to `refactor/test-isolation-reviewed-01a16fc3`: 189 runtime/trace tests pass + 1 intentional skip; 7 E8 wrapper cases pass; all 3 new regressions fail safely on parent. Original hazard modules reviewed; unmerged. ✅ 2026-10-24
 - [x] RESUME-3: finish and review C1-05 rollback error handling and behavioral regressions for nonzero exit, timeout, spawn error, wrong HEAD and successful rollback. Research `62c68ad99`, checkpoint `1b58b115c`, pushed to `refactor/autokernel-rollback-reviewed-01a16fc3`: 13 regressions pass (5 fail on WIP), targeted loop set 401 pass + 23 subtests. Reviewed, unmerged under launch/re-pin hold. ✅ 2026-10-24
-- [ ] RESUME-4: review/integrate existing orchestrator branches in a private worktree and validate the combined tree, resolving gate/loop logic, source-pin and modified/deleted-test conflicts deliberately.
+- [ ] RESUME-4: review/integrate existing orchestrator branches in a private worktree and validate the combined tree, resolving gate/loop logic, source-pin and modified/deleted-test conflicts deliberately. P1, O4 and O6 evidence is checkpointed independently; the combined-tree gate remains outstanding.
 - [x] RESUME-4a: independently review O3 and integrate the accepted isolation harness into its private branch. Orchestrator `d843eb9c` fixes concurrent registry-load backoff (12 attempts before, 1 after); `07829696` scopes alias stress to its actual guarantee; checkpoint `6558beb7` pushed to `refactor/config-reviewed-01a16fc3`. O3 selection 548 pass/4 skip, alias targets 524 pass, all 7 changed source pins verified. Reviewed, unmerged. ✅ 2026-10-24
+- [x] RESUME-4b: independently review O1 stage 1 and fix pre-first-chunk streaming disconnect handling. Orchestrator `a1c69593`, checkpoint `142bb5df`, pushed to `refactor/request-reviewed-01a16fc3`: 1,011 targeted tests pass/3 skip; blocked initial generation fails to observe cancellation on parent and passes after fix. Accepted isolation is included; no changed route lies in ni63's pin closure. Reviewed, unmerged. ✅ 2026-10-24
+- [x] RESUME-4c: independently review P2 decision semantics and snapshot migration. Orchestrator `4069b8ee`, checkpoint `db17808e`, pushed to `refactor/autopilot-gate-reviewed-01a16fc3`: 1,018 tests pass/1 skip; 18 snapshot controls pass; B2-02/B2-03 fail on parent. Pre-P2 snapshots refuse bounded authority; a current-format rebuild matches full replay. Review complete; integration held because existing reconstruction is CRITICAL and verified-snapshot replay HIGH. No evaluator-era files changed. ✅ 2026-10-24
 - [ ] RESUME-5: repair CI infrastructure early; keep K4's post-prune size ratchet after K3. Reconcile baseline collection/failure identities rather than accepting aggregate counts.
 - [ ] RESUME-6: reconcile current INF64 retained-module manifest and live belief-source contracts before each deletion stage; include retained `campaign.py` and dynamic/cross-repo consumers as closure roots.
 - [ ] RESUME-7: fix the separate mixed-alias cold-import cycle. Randomized 16 aliases fail when imported concurrently at orchestrator baseline `84f6f6f1` and O3; same-alias 24-thread races and canonical identity tests pass. Original mixed test is at orchestrator `5886e5ae:tests/unit/test_inference_lock_concurrent_import.py`; existing O3 tests do not establish cross-module cold-import safety.
@@ -49,6 +51,31 @@ At resumption, the independent audit found 55/382 findings with associated commi
 The explicit AutoKernel launch hold, deliberate owner-controlled re-pinning, operator-timed P5 merge,
 containment-scanner operator review and production-kernel freezes remain in force. Execution stays
 near two concurrent agents, using the cheapest capable available model/effort per dispatch.
+
+### Resumed execution checkpoint (2026-10-25)
+
+The operator approved isolated candidate work for the exact A5-18 protected-launcher cleanup and
+for O4 HIGH/CRITICAL REPL findings A4-03/A4-04/A4-06/A4-07. These approvals cover candidate
+patches only; they do not authorize a main push, merge, deployment, or production activation.
+
+P1 is accepted and pushed at source `36e1bc55aa40f35965a941e81fdc593a22abd520` on
+`refactor/autopilot-loop`. The aggregate and all nine focused file hashes match the run-start, run-end,
+and checkpoint snapshots; 19 focused and 561 broad tests passed (one skip), with ruff and diff checks
+passing. The worker's original `validation.status` says `FAIL` because its hash-comparison ordering
+was wrong; the independent unchanged-file proof is the acceptance evidence. No test was rerun for this
+root checkpoint. The P1(rest) item is complete; RESUME-4 combined-tree validation is still separate.
+
+O6 remains a dirty approved candidate (launcher patch, copied seeding regression test and Makefile
+changes; original seeding worktree unchanged). Its 190 launcher tests passed, but expanded coverage
+collection failed because the copied test references nonexistent `orch.httpx`; a repair is in progress.
+Do not collect expired handle `56537`. O4 candidate patches and caller audit are frozen and accepted:
+557 tests passed, eight parent regression negative controls failed as expected, and strict offline
+drift, ruff, compile, diff and frozen-snapshot checks passed. Its source-only closeout is pushed as
+`acfd5f8ca3837c568fc3c944ffb242b29823f3fa` on `refactor/repl-correctness-01a16fc3`; this does not
+authorize main integration or deployment. K2 source inspection is complete and its GitNexus guard
+passed at `413f5b7f545b67e69ba9082b9a6c73514eb3a3f2`; source-guard edits remain unapplied, so K2 is
+not complete. Detailed state and evidence paths are in
+`research/refactor-audit-2026-10/resume-state-01a16fc3.json`.
 
 ### Done
 
@@ -84,7 +111,7 @@ near two concurrent agents, using the cheapest capable available model/effort pe
 - [x] O7 (part): Test-suite hazards and hygiene on `refactor/test-hazards` [A6-01, A6-02, A6-09]; no test report for A6-01, A6-02, A6-09 ✅ 2026-10-24
 - [ ] O7 (rest): [A6-M1, A6-03, A6-12, A6-11, A6-17]; A6-13 belongs to O8 only.
 - [x] P1 (part): Autopilot main loop: behavioural safety net, then loop bugs on `refactor/autopilot-loop` [B1-03, B5-02, B5-08, B1-15] ✅ 2026-10-24
-- [ ] P1 (rest): [B1-01, B1-M1, B1-M2, B1-04, B1-08, B1-09, B1-14, B1-13]
+- [x] P1 (rest): [B1-01, B1-M1, B1-M2, B1-04, B1-08, B1-09, B1-14, B1-13]; accepted source `36e1bc55` on `refactor/autopilot-loop`, hashes unchanged across the full candidate and 19 focused/561 broad tests pass (1 skip). Worker status-file failure was an ordering defect; see resume-state proof. ✅ 2026-10-25
 - [x] P2: Autopilot safety gate and autopilot_core on `refactor/autopilot-gate` [B2-02, B2-03, B2-09, B2-11, B2-20, B2-17, B5-01, B5-M1, B5-M2, B5-16, B5-09, B5-13, B5-12] (B2-11 skipped: upstream already split SafetyGate.check; B2-17 no change, per the verifier) ✅ 2026-10-24
 - [ ] P3: Autopilot actions, config applicator, controller IO, planner, journal [B3-01, B3-02, B3-03, B3-05, B1-17, B3-06, B3-07, B3-08, B3-12, B3-M1, B3-04, B3-23, B4-01, B3-15, B3-16, B3-M2]
 - [ ] P4: Autopilot satellites: one-shot scripts, dead modules, small bugs [B4-03, B4-02, B4-19, B4-20, B4-13, B2-16, B4-16, B4-12, B4-06, B4-08, B4-09, B4-15, B4-M1, B4-M2, B4-04, B4-05]
@@ -181,10 +208,12 @@ defects go to the champion fold as CH-xx recommendations, never as production pa
 | epyc-orchestrator | `refactor/hermetic-tests` | 1 | conftest stub kernel store + host-RAM fallback (no-ops on the host), `ORCHESTRATOR_PATHS_KERNEL_ROOT`, ni63 pin refresh | **merge first**; every orchestrator branch below contains it |
 | epyc-orchestrator | `refactor/request-path` | 9 | O1 stage 1: per-request state on the shared LLMPrimitives (A1-02/A2-01/A1-M2), model/REPL calls off the event loop (A1-01), per-request cancellation (A1-M1), no_web context (A4-M1), shared backend build (A2-04), region-lock release (A2-13), skill ids (A1-17) | production request path: review carefully; stage 2 (A2-02…A2-16) not started |
 | epyc-orchestrator | `refactor/config-registry` | 14 | O3: stack-priors parse cache (A3-01/A1-03), fail-closed compile (A3-02), Settings factories (A3-07), topology-cache poison (A3-08), shadow thread (A3-09), env-override and crash fixes (A3-M1, A3-04, A3-06), OCR timeout (A3-15), registry-cache lock (A3-05), shim race (A3-16/A4-08), env.sh root (A3-M2), registry backoff (A3-19) | rebased with ni63 pin conflicts resolved (upstream fixture kept; pins of files this branch changes refreshed) |
-| epyc-orchestrator | `refactor/scripts-cleanup` | 11 | O6: name-pattern-kill scripts removed + guard (A5-M1), v9-binary reembed (A5-06), v8 pin (A5-07), seeding diagnostics (A5-04), banner (A5-12), preflight-gate (A5-22), mtmd (A5-M2); deletions of the retired E8 chain (A5-01/A6-19), seeding v2 fork (A5-05), and a **WIP** delete of `scripts/benchmark/deprecated/` (A5-11) | stage-2 commits have no test report; finish the WIP. Touches 30 files under `scripts/benchmark/` (workspace-58: no live launcher references them) |
+| epyc-orchestrator | `refactor/scripts-cleanup-reviewed-01a16fc3` | reviewed + dirty candidate | O6 reviewed branch with approved launcher patch, copied seeding regression test and Makefile edit pending validation; original seeding worktree unchanged | Detached validator PID `1273280`; do not reuse expired seeding handle `56537` |
 | epyc-orchestrator | `refactor/test-hazards` | 4 | O7: fence tests no longer aim destructive payloads at the REAL wiki (A6-01), checkout-write leak guard (A6-02), tmp_path not fixed /mnt/raid0 dirs (A6-09) | no test report (interrupted) |
 | epyc-orchestrator | `refactor/test-isolation-reviewed-01a16fc3` | reviewed | Includes hermetic/test-hazards plus fixture-only A6-M1 trace/ledger isolation | Pushed `5e392a3c`; 189 runtime/trace tests + 7 E8 wrappers pass, 1 intentional skip; reviewed, unmerged |
 | epyc-orchestrator | `refactor/config-reviewed-01a16fc3` | reviewed | Includes O3 + accepted isolation, concurrent registry-backoff fix and scoped alias-import stress | Pushed `6558beb7`; 548 O3 tests + 524 alias targets pass, 4 skips; mixed-alias cycle is RESUME-7 |
+| epyc-orchestrator | `refactor/request-reviewed-01a16fc3` | reviewed | Includes O1 stage 1 + accepted isolation and cancellation during initial streaming generation | Pushed `142bb5df`; 1,011 tests pass, 3 skips; reviewed, unmerged |
+| epyc-orchestrator | `refactor/autopilot-gate-reviewed-01a16fc3` | reviewed | Includes P2 + accepted isolation and real-fixture pre-P2 snapshot migration controls/runbook | Pushed `db17808e`; 1,018 tests pass/1 skip; HIGH/CRITICAL integration review and owner-boundary snapshot rebuild required |
 | epyc-orchestrator | `refactor/autopilot-loop` | 6 | P1 stage 1 (safety net): the real loop driven by a harness instead of source-text slicing (B1-03/B5-02), shared frontier-admission predicate (B5-08), hook containment (B1-15) | stage 2 (the loop bugs incl. B1-01 pause clobber) not started |
 | epyc-orchestrator | `refactor/autopilot-gate` | 15 | P2: safety-gate seq upgrade (B2-02), one-sided MAD (B2-03, **changes what is admitted to learning**), refusal codes (B2-09), validator/replay (B2-20), hypervolume memo + fold + off-loop dashboard (B5-01), bounded snapshot replay (B5-M1), cluster identity (B5-M2), era guard (B5-16), dead modules (B5-09), `__init__` (B5-13), drop counts (B5-12) | B2-03 is a decision-semantics change: review it as such |
 | epyc-inference-research | `refactor/autokernel-loop-bugs` | 1 | **WIP**: `run._git` checks git's exit status; failed rollback aborts the run (C1-05) | **do not merge to main**: AutoKernel launches are under an operator hold; workspace-58 merges it with a deliberate re-pin when the hold lifts |
@@ -230,7 +259,7 @@ merged to orchestrator main is served until the shared clone is synced (operator
 |---|---|---|
 | O1 | request path: concurrency, event loop, failure semantics | stage 1 done (9/9, on `refactor/request-path`); stage 2 (A2-02, A2-M1, A2-M2, A2-03, A2-05, A2-11, A2-16) not started |
 | O3 | config/registry/runtime correctness + stack-priors cache | done (`refactor/config-registry`) |
-| O4 | REPL/tools permission bypasses and structured-mode defects (A4-01 security) | not started |
+| O4 | REPL/tools permission bypasses and structured-mode defects (A4-01 security) | approved A4-03/A4-04/A4-06/A4-07 candidates and caller audit applied/frozen; validator pending |
 | O5 | dashboard request-path cost | not started |
 | O6 | scripts bugs + ruled deletions | stage 1 done; stage 2 partly done (A5-11 WIP; A5-23, A5-18, A5-02, A5-21 not started) |
 | O7 | test-suite hazards | A6-01, A6-02, A6-09 committed; A6-M1, A6-03, A6-12, A6-13, A6-11, A6-17 not started |

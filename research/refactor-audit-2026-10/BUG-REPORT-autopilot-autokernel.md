@@ -1,5 +1,9 @@
 # Autopilot and AutoKernel: bug finding and fixing report (2026-10-07 → 2026-10-24)
 
+Historical cloud checkpoint; consult the owning handoff and `data/finding-status.json` `resolution`
+fields for resumed-session review/fix/integration state. Original branch statuses below are retained
+as evidence of that checkpoint, not a claim that subsequent independent reviews did not happen.
+
 From the cloud refactor-audit session (claude.ai/code session_01C4SLLAQhop8AA9rJJusAYj). Companion to
 [`handoffs/active/refactoring-multirepo-2026-10.md`](../../handoffs/active/refactoring-multirepo-2026-10.md). Full evidence for every finding:
 [`findings-autopilot.md`](findings-autopilot.md), [`findings-autokernel.md`](findings-autokernel.md),

@@ -1,0 +1,1 @@
+{"ts": "2026-10-25T07:20:14.057237+00:00", "session": "ses_20261025_071755_1792332", "level": "INFO", "cat": "TASK_START", "msg": "Reconcile and publish authorized root refactor checkpoint", "details": "Update root docs to current P1/O4/O6/K2 evidence; run only root documentation gates and publish only the explicit review branch if gates pass."}

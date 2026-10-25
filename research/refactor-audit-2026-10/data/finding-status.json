@@ -21,7 +21,13 @@
     "state": "implemented-unreviewed"
    }
   ],
-  "deferred": null
+  "deferred": null,
+  "resolution": {
+   "state": "tested-reviewed-unmerged",
+   "branch": "refactor/request-reviewed-01a16fc3",
+   "checkpoint_commit": "142bb5df",
+   "evidence": "1011 targeted tests pass/3 skip; initial streaming-disconnect endpoint regression fails before fix and passes after; accepted isolation included"
+  }
  },
  "A1-02": {
   "severity": 5,
@@ -38,7 +44,13 @@
     "state": "implemented-unreviewed"
    }
   ],
-  "deferred": null
+  "deferred": null,
+  "resolution": {
+   "state": "tested-reviewed-unmerged",
+   "branch": "refactor/request-reviewed-01a16fc3",
+   "checkpoint_commit": "142bb5df",
+   "evidence": "1011 targeted tests pass/3 skip; initial streaming-disconnect endpoint regression fails before fix and passes after; accepted isolation included"
+  }
  },
  "A1-03": {
   "severity": 4,
@@ -138,7 +150,7 @@
  "A1-12": {
   "severity": 3,
   "kind": "refactor",
-  "title": "passthrough.py re-implements the admission \u2192 KV-pool \u2192 region-lock protocol, kept in parity by comments and private imports",
+  "title": "passthrough.py re-implements the admission → KV-pool → region-lock protocol, kept in parity by comments and private imports",
   "verdict": "confirmed",
   "package": "D2 (wave 2): API layer: openai_compat and /chat de-duplication",
   "commits": [],
@@ -195,7 +207,13 @@
     "state": "implemented-unreviewed"
    }
   ],
-  "deferred": null
+  "deferred": null,
+  "resolution": {
+   "state": "tested-reviewed-unmerged",
+   "branch": "refactor/request-reviewed-01a16fc3",
+   "checkpoint_commit": "142bb5df",
+   "evidence": "1011 targeted tests pass/3 skip; initial streaming-disconnect endpoint regression fails before fix and passes after; accepted isolation included"
+  }
  },
  "A1-18": {
   "severity": 2,
@@ -209,7 +227,7 @@
  "A1-19": {
   "severity": 2,
   "kind": "refactor",
-  "title": "Copy-pasted helpers: sync\u2192async chunk bridges, _drain_thread_task, and three diverging _shape_for_regions",
+  "title": "Copy-pasted helpers: sync→async chunk bridges, _drain_thread_task, and three diverging _shape_for_regions",
   "verdict": "partially",
   "package": "D2 (wave 2): API layer: openai_compat and /chat de-duplication",
   "commits": [],
@@ -246,9 +264,22 @@
     "commit": "cf80ad5b",
     "subject": "api/v1: bind per-request cancellation and task id for every /v1 mode (A1-M1)",
     "state": "implemented-unreviewed"
+   },
+   {
+    "repo": "epyc-orchestrator",
+    "branch": "refactor/request-reviewed-01a16fc3",
+    "commit": "a1c69593",
+    "subject": "fix(api): observe disconnect during initial v1 stream generation",
+    "state": "tested-reviewed-unmerged"
    }
   ],
-  "deferred": null
+  "deferred": null,
+  "resolution": {
+   "state": "tested-reviewed-unmerged",
+   "branch": "refactor/request-reviewed-01a16fc3",
+   "checkpoint_commit": "142bb5df",
+   "evidence": "1011 targeted tests pass/3 skip; initial streaming-disconnect endpoint regression fails before fix and passes after; accepted isolation included"
+  }
  },
  "A1-M2": {
   "severity": 3,
@@ -265,7 +296,13 @@
     "state": "implemented-unreviewed"
    }
   ],
-  "deferred": null
+  "deferred": null,
+  "resolution": {
+   "state": "tested-reviewed-unmerged",
+   "branch": "refactor/request-reviewed-01a16fc3",
+   "checkpoint_commit": "142bb5df",
+   "evidence": "1011 targeted tests pass/3 skip; initial streaming-disconnect endpoint regression fails before fix and passes after; accepted isolation included"
+  }
  },
  "A2-01": {
   "severity": 5,
@@ -282,7 +319,13 @@
     "state": "implemented-unreviewed"
    }
   ],
-  "deferred": null
+  "deferred": null,
+  "resolution": {
+   "state": "tested-reviewed-unmerged",
+   "branch": "refactor/request-reviewed-01a16fc3",
+   "checkpoint_commit": "142bb5df",
+   "evidence": "1011 targeted tests pass/3 skip; initial streaming-disconnect endpoint regression fails before fix and passes after; accepted isolation included"
+  }
  },
  "A2-02": {
   "severity": 4,
@@ -317,7 +360,13 @@
     "state": "implemented-unreviewed"
    }
   ],
-  "deferred": null
+  "deferred": null,
+  "resolution": {
+   "state": "tested-reviewed-unmerged",
+   "branch": "refactor/request-reviewed-01a16fc3",
+   "checkpoint_commit": "142bb5df",
+   "evidence": "1011 targeted tests pass/3 skip; initial streaming-disconnect endpoint regression fails before fix and passes after; accepted isolation included"
+  }
  },
  "A2-05": {
   "severity": 3,
@@ -397,7 +446,13 @@
     "state": "implemented-unreviewed"
    }
   ],
-  "deferred": null
+  "deferred": null,
+  "resolution": {
+   "state": "tested-reviewed-unmerged",
+   "branch": "refactor/request-reviewed-01a16fc3",
+   "checkpoint_commit": "142bb5df",
+   "evidence": "1011 targeted tests pass/3 skip; initial streaming-disconnect endpoint regression fails before fix and passes after; accepted isolation included"
+  }
  },
  "A2-13": {
   "severity": 2,
@@ -414,7 +469,13 @@
     "state": "implemented-unreviewed"
    }
   ],
-  "deferred": null
+  "deferred": null,
+  "resolution": {
+   "state": "tested-reviewed-unmerged",
+   "branch": "refactor/request-reviewed-01a16fc3",
+   "checkpoint_commit": "142bb5df",
+   "evidence": "1011 targeted tests pass/3 skip; initial streaming-disconnect endpoint regression fails before fix and passes after; accepted isolation included"
+  }
  },
  "A2-14": {
   "severity": 3,
@@ -428,7 +489,7 @@
  "A2-15": {
   "severity": 2,
   "kind": "perf",
-  "title": "Blocking I/O (K\u00f9zu query, corpus index search, file reads and writes) runs on the event loop inside async _execute_turn every turn",
+  "title": "Blocking I/O (Kùzu query, corpus index search, file reads and writes) runs on the event loop inside async _execute_turn every turn",
   "verdict": "partially",
   "package": "D3 (wave 2): Inference hot path: llama_server lanes, _execute_turn, escalation chain",
   "commits": [],
@@ -1183,7 +1244,13 @@
     "state": "implemented-unreviewed"
    }
   ],
-  "deferred": null
+  "deferred": null,
+  "resolution": {
+   "state": "tested-reviewed-unmerged",
+   "branch": "refactor/request-reviewed-01a16fc3",
+   "checkpoint_commit": "142bb5df",
+   "evidence": "1011 targeted tests pass/3 skip; initial streaming-disconnect endpoint regression fails before fix and passes after; accepted isolation included"
+  }
  },
  "A4-M2": {
   "severity": 3,
@@ -1785,8 +1852,22 @@
   "title": "In-loop plain save_state() calls clobber an operator pause issued during the planner turn or dispatch (H4 regression)",
   "verdict": "confirmed",
   "package": "P1 (wave 1): Autopilot main loop: behavioural safety net, then loop bugs",
-  "commits": [],
-  "deferred": null
+  "commits": [
+   {
+    "repo": "epyc-orchestrator",
+    "branch": "refactor/autopilot-loop-reviewed-01a16fc3",
+    "commit": "36e1bc55aa40f35965a941e81fdc593a22abd520",
+    "subject": "P1 accepted candidate source; see review checkpoint",
+    "state": "tested-reviewed-unmerged"
+   }
+  ],
+  "deferred": null,
+  "resolution": {
+   "state": "tested-reviewed-unmerged",
+   "branch": "refactor/autopilot-loop-reviewed-01a16fc3",
+   "source_commit": "36e1bc55aa40f35965a941e81fdc593a22abd520",
+   "evidence": "P1 accepted: 19 focused tests and 561 broad tests pass (1 skip); ruff/diff pass; aggregate and all nine focused-file hashes unchanged from run start through run end and checkpoint. Original validation.status FAIL is preserved; its hash-comparison ordering was defective."
+  }
  },
  "B1-02": {
   "severity": 4,
@@ -1827,8 +1908,22 @@
   "title": "Autonomous mode (--no-controller) discards pre-planner forced actions but keeps their contexts, misattributing multitier evidence",
   "verdict": "confirmed",
   "package": "P1 (wave 1): Autopilot main loop: behavioural safety net, then loop bugs",
-  "commits": [],
-  "deferred": null
+  "commits": [
+   {
+    "repo": "epyc-orchestrator",
+    "branch": "refactor/autopilot-loop-reviewed-01a16fc3",
+    "commit": "36e1bc55aa40f35965a941e81fdc593a22abd520",
+    "subject": "P1 accepted candidate source; see review checkpoint",
+    "state": "tested-reviewed-unmerged"
+   }
+  ],
+  "deferred": null,
+  "resolution": {
+   "state": "tested-reviewed-unmerged",
+   "branch": "refactor/autopilot-loop-reviewed-01a16fc3",
+   "source_commit": "36e1bc55aa40f35965a941e81fdc593a22abd520",
+   "evidence": "P1 accepted: 19 focused tests and 561 broad tests pass (1 skip); ruff/diff pass; aggregate and all nine focused-file hashes unchanged from run start through run end and checkpoint. Original validation.status FAIL is preserved; its hash-comparison ordering was defective."
+  }
  },
  "B1-05": {
   "severity": 3,
@@ -1863,8 +1958,22 @@
   "title": "Swallowed and DEBUG-level exceptions hide loop failures, including a lost skip-trial journal row",
   "verdict": "partially",
   "package": "P1 (wave 1): Autopilot main loop: behavioural safety net, then loop bugs",
-  "commits": [],
-  "deferred": null
+  "commits": [
+   {
+    "repo": "epyc-orchestrator",
+    "branch": "refactor/autopilot-loop-reviewed-01a16fc3",
+    "commit": "36e1bc55aa40f35965a941e81fdc593a22abd520",
+    "subject": "P1 accepted candidate source; see review checkpoint",
+    "state": "tested-reviewed-unmerged"
+   }
+  ],
+  "deferred": null,
+  "resolution": {
+   "state": "tested-reviewed-unmerged",
+   "branch": "refactor/autopilot-loop-reviewed-01a16fc3",
+   "source_commit": "36e1bc55aa40f35965a941e81fdc593a22abd520",
+   "evidence": "P1 accepted: 19 focused tests and 561 broad tests pass (1 skip); ruff/diff pass; aggregate and all nine focused-file hashes unchanged from run start through run end and checkpoint. Original validation.status FAIL is preserved; its hash-comparison ordering was defective."
+  }
  },
  "B1-09": {
   "severity": 2,
@@ -1872,8 +1981,22 @@
   "title": "Forcer and critic rationale annotations are built, tested, and then never persisted",
   "verdict": "partially",
   "package": "P1 (wave 1): Autopilot main loop: behavioural safety net, then loop bugs",
-  "commits": [],
-  "deferred": null
+  "commits": [
+   {
+    "repo": "epyc-orchestrator",
+    "branch": "refactor/autopilot-loop-reviewed-01a16fc3",
+    "commit": "36e1bc55aa40f35965a941e81fdc593a22abd520",
+    "subject": "P1 accepted candidate source; see review checkpoint",
+    "state": "tested-reviewed-unmerged"
+   }
+  ],
+  "deferred": null,
+  "resolution": {
+   "state": "tested-reviewed-unmerged",
+   "branch": "refactor/autopilot-loop-reviewed-01a16fc3",
+   "source_commit": "36e1bc55aa40f35965a941e81fdc593a22abd520",
+   "evidence": "P1 accepted: 19 focused tests and 561 broad tests pass (1 skip); ruff/diff pass; aggregate and all nine focused-file hashes unchanged from run start through run end and checkpoint. Original validation.status FAIL is preserved; its hash-comparison ordering was defective."
+  }
  },
  "B1-10": {
   "severity": 2,
@@ -1908,8 +2031,22 @@
   "title": "sys.path.insert runs on every planner turn (unbounded growth), duplicating an import-time insert",
   "verdict": "partially",
   "package": "P1 (wave 1): Autopilot main loop: behavioural safety net, then loop bugs",
-  "commits": [],
-  "deferred": null
+  "commits": [
+   {
+    "repo": "epyc-orchestrator",
+    "branch": "refactor/autopilot-loop-reviewed-01a16fc3",
+    "commit": "36e1bc55aa40f35965a941e81fdc593a22abd520",
+    "subject": "P1 accepted candidate source; see review checkpoint",
+    "state": "tested-reviewed-unmerged"
+   }
+  ],
+  "deferred": null,
+  "resolution": {
+   "state": "tested-reviewed-unmerged",
+   "branch": "refactor/autopilot-loop-reviewed-01a16fc3",
+   "source_commit": "36e1bc55aa40f35965a941e81fdc593a22abd520",
+   "evidence": "P1 accepted: 19 focused tests and 561 broad tests pass (1 skip); ruff/diff pass; aggregate and all nine focused-file hashes unchanged from run start through run end and checkpoint. Original validation.status FAIL is preserved; its hash-comparison ordering was defective."
+  }
  },
  "B1-14": {
   "severity": 2,
@@ -1917,8 +2054,22 @@
   "title": "The exit breadcrumb records a stale trial_id and cannot tell an operator halt from a normal exit",
   "verdict": "confirmed",
   "package": "P1 (wave 1): Autopilot main loop: behavioural safety net, then loop bugs",
-  "commits": [],
-  "deferred": null
+  "commits": [
+   {
+    "repo": "epyc-orchestrator",
+    "branch": "refactor/autopilot-loop-reviewed-01a16fc3",
+    "commit": "36e1bc55aa40f35965a941e81fdc593a22abd520",
+    "subject": "P1 accepted candidate source; see review checkpoint",
+    "state": "tested-reviewed-unmerged"
+   }
+  ],
+  "deferred": null,
+  "resolution": {
+   "state": "tested-reviewed-unmerged",
+   "branch": "refactor/autopilot-loop-reviewed-01a16fc3",
+   "source_commit": "36e1bc55aa40f35965a941e81fdc593a22abd520",
+   "evidence": "P1 accepted: 19 focused tests and 561 broad tests pass (1 skip); ruff/diff pass; aggregate and all nine focused-file hashes unchanged from run start through run end and checkpoint. Original validation.status FAIL is preserved; its hash-comparison ordering was defective."
+  }
  },
  "B1-15": {
   "severity": 2,
@@ -1979,8 +2130,22 @@
   "title": "SIGTERM during the planner turn is not honored before dispatch, and the supervisor's process-group SIGTERM turns into a model-free numeric_trial",
   "verdict": "verifier-added",
   "package": "P1 (wave 1): Autopilot main loop: behavioural safety net, then loop bugs",
-  "commits": [],
-  "deferred": null
+  "commits": [
+   {
+    "repo": "epyc-orchestrator",
+    "branch": "refactor/autopilot-loop-reviewed-01a16fc3",
+    "commit": "36e1bc55aa40f35965a941e81fdc593a22abd520",
+    "subject": "P1 accepted candidate source; see review checkpoint",
+    "state": "tested-reviewed-unmerged"
+   }
+  ],
+  "deferred": null,
+  "resolution": {
+   "state": "tested-reviewed-unmerged",
+   "branch": "refactor/autopilot-loop-reviewed-01a16fc3",
+   "source_commit": "36e1bc55aa40f35965a941e81fdc593a22abd520",
+   "evidence": "P1 accepted: 19 focused tests and 561 broad tests pass (1 skip); ruff/diff pass; aggregate and all nine focused-file hashes unchanged from run start through run end and checkpoint. Original validation.status FAIL is preserved; its hash-comparison ordering was defective."
+  }
  },
  "B1-M2": {
   "severity": 2,
@@ -1988,8 +2153,22 @@
   "title": "Operator halts exit the daemon, contradicting the 'idles this process' latch comment; `resume` then reports success with nothing running",
   "verdict": "verifier-added",
   "package": "P1 (wave 1): Autopilot main loop: behavioural safety net, then loop bugs",
-  "commits": [],
-  "deferred": null
+  "commits": [
+   {
+    "repo": "epyc-orchestrator",
+    "branch": "refactor/autopilot-loop-reviewed-01a16fc3",
+    "commit": "36e1bc55aa40f35965a941e81fdc593a22abd520",
+    "subject": "P1 accepted candidate source; see review checkpoint",
+    "state": "tested-reviewed-unmerged"
+   }
+  ],
+  "deferred": null,
+  "resolution": {
+   "state": "tested-reviewed-unmerged",
+   "branch": "refactor/autopilot-loop-reviewed-01a16fc3",
+   "source_commit": "36e1bc55aa40f35965a941e81fdc593a22abd520",
+   "evidence": "P1 accepted: 19 focused tests and 561 broad tests pass (1 skip); ruff/diff pass; aggregate and all nine focused-file hashes unchanged from run start through run end and checkpoint. Original validation.status FAIL is preserved; its hash-comparison ordering was defective."
+  }
  },
  "B1-M3": {
   "severity": 3,
@@ -2024,7 +2203,14 @@
     "state": "implemented-unreviewed"
    }
   ],
-  "deferred": null
+  "deferred": null,
+  "resolution": {
+   "state": "tested-reviewed-integration-held",
+   "branch": "refactor/autopilot-gate-reviewed-01a16fc3",
+   "checkpoint_commit": "db17808e",
+   "evidence": "1018 targeted tests pass/1 skip; 18 snapshot controls pass; B2-02/B2-03 fail on parent; pre-P2 snapshot refuses bounded authority and current-format rebuild matches full replay",
+   "integration_hold": "Existing reconstruction CRITICAL and verified-snapshot HIGH impacts; owner/operator integration review and stopped-autopilot snapshot rebuild boundary"
+  }
  },
  "B2-03": {
   "severity": 3,
@@ -2041,7 +2227,14 @@
     "state": "implemented-unreviewed"
    }
   ],
-  "deferred": null
+  "deferred": null,
+  "resolution": {
+   "state": "tested-reviewed-integration-held",
+   "branch": "refactor/autopilot-gate-reviewed-01a16fc3",
+   "checkpoint_commit": "db17808e",
+   "evidence": "1018 targeted tests pass/1 skip; 18 snapshot controls pass; B2-02/B2-03 fail on parent; pre-P2 snapshot refuses bounded authority and current-format rebuild matches full replay",
+   "integration_hold": "Existing reconstruction CRITICAL and verified-snapshot HIGH impacts; owner/operator integration review and stopped-autopilot snapshot rebuild boundary"
+  }
  },
  "B2-04": {
   "severity": 3,
@@ -2103,7 +2296,14 @@
     "state": "implemented-unreviewed"
    }
   ],
-  "deferred": null
+  "deferred": null,
+  "resolution": {
+   "state": "tested-reviewed-integration-held",
+   "branch": "refactor/autopilot-gate-reviewed-01a16fc3",
+   "checkpoint_commit": "db17808e",
+   "evidence": "1018 targeted tests pass/1 skip; 18 snapshot controls pass; B2-02/B2-03 fail on parent; pre-P2 snapshot refuses bounded authority and current-format rebuild matches full replay",
+   "integration_hold": "Existing reconstruction CRITICAL and verified-snapshot HIGH impacts; owner/operator integration review and stopped-autopilot snapshot rebuild boundary"
+  }
  },
  "B2-10": {
   "severity": 2,
@@ -2121,7 +2321,11 @@
   "verdict": "confirmed",
   "package": "P2 (wave 1): Autopilot safety gate and autopilot_core",
   "commits": [],
-  "deferred": null
+  "deferred": null,
+  "resolution": {
+   "state": "skipped-already-fixed",
+   "evidence": "Current origin/main84f6f6f1 SafetyGate.check spans307lines (2632-2938), already split from original521-line finding; no new decomposition inP2"
+  }
  },
  "B2-12": {
   "severity": 2,
@@ -2175,7 +2379,11 @@
   "verdict": "partially",
   "package": "P2 (wave 1): Autopilot safety gate and autopilot_core",
   "commits": [],
-  "deferred": null
+  "deferred": null,
+  "resolution": {
+   "state": "retained-verifier-correction",
+   "evidence": "Verified correction explicitly says do not delete report-only control-attestation scaffold; designated model_gate_report/operator-gated amendment evidence input. No new producer wiring claimed."
+  }
  },
  "B2-18": {
   "severity": 2,
@@ -2210,7 +2418,14 @@
     "state": "implemented-unreviewed"
    }
   ],
-  "deferred": null
+  "deferred": null,
+  "resolution": {
+   "state": "tested-reviewed-integration-held",
+   "branch": "refactor/autopilot-gate-reviewed-01a16fc3",
+   "checkpoint_commit": "db17808e",
+   "evidence": "1018 targeted tests pass/1 skip; 18 snapshot controls pass; B2-02/B2-03 fail on parent; pre-P2 snapshot refuses bounded authority and current-format rebuild matches full replay",
+   "integration_hold": "Existing reconstruction CRITICAL and verified-snapshot HIGH impacts; owner/operator integration review and stopped-autopilot snapshot rebuild boundary"
+  }
  },
  "B2-M1": {
   "severity": 3,
@@ -2233,7 +2448,7 @@
  "B3-01": {
   "severity": 3,
   "kind": "bug",
-  "title": "Live-API env probe and restart_api pick a process by pgrep name pattern (pids[0]) \u2014 wrong-process reads can silently skip a real config apply",
+  "title": "Live-API env probe and restart_api pick a process by pgrep name pattern (pids[0]) — wrong-process reads can silently skip a real config apply",
   "verdict": "confirmed",
   "package": "P3 (wave 1): Autopilot actions, config applicator, controller IO, planner, journal",
   "commits": [],
@@ -2314,7 +2529,7 @@
  "B3-10": {
   "severity": 3,
   "kind": "refactor",
-  "title": "Mutation acceptance ladder (safety\u2192simplicity\u2192skill-efficacy\u2192BSV2) copy-pasted 3x and already drifting",
+  "title": "Mutation acceptance ladder (safety→simplicity→skill-efficacy→BSV2) copy-pasted 3x and already drifting",
   "verdict": "confirmed",
   "package": "D9 (wave 2): Autopilot remaining structure (actions, planner, journal, reports)",
   "commits": [],
@@ -2323,7 +2538,7 @@
  "B3-11": {
   "severity": 2,
   "kind": "refactor",
-  "title": "Parameter-object refactors: restart_role (17 args), dispatch_action (14), journal append_* (11\u201314), _attach_restart_boundary_event (11)",
+  "title": "Parameter-object refactors: restart_role (17 args), dispatch_action (14), journal append_* (11–14), _attach_restart_boundary_event (11)",
   "verdict": "confirmed",
   "package": "D9 (wave 2): Autopilot remaining structure (actions, planner, journal, reports)",
   "commits": [],
@@ -2485,7 +2700,7 @@
  "B4-02": {
   "severity": 3,
   "kind": "deletion",
-  "title": "The era-pinned E9\u2013E15 operational-baseline family (collect_e9 + 4 collector shims, ratify_and_apply_e9 + 4 ratifier shims, run_operational_baseline_diagnostic, recode_multitier) cannot run against any real state and should be removed after extracting 5 shared helpers",
+  "title": "The era-pinned E9–E15 operational-baseline family (collect_e9 + 4 collector shims, ratify_and_apply_e9 + 4 ratifier shims, run_operational_baseline_diagnostic, recode_multitier) cannot run against any real state and should be removed after extracting 5 shared helpers",
   "verdict": "partially",
   "package": "P4 (wave 1): Autopilot satellites: one-shot scripts, dead modules, small bugs",
   "commits": [],
@@ -2700,7 +2915,14 @@
     "state": "implemented-unreviewed"
    }
   ],
-  "deferred": null
+  "deferred": null,
+  "resolution": {
+   "state": "tested-reviewed-integration-held",
+   "branch": "refactor/autopilot-gate-reviewed-01a16fc3",
+   "checkpoint_commit": "db17808e",
+   "evidence": "1018 targeted tests pass/1 skip; 18 snapshot controls pass; B2-02/B2-03 fail on parent; pre-P2 snapshot refuses bounded authority and current-format rebuild matches full replay",
+   "integration_hold": "Existing reconstruction CRITICAL and verified-snapshot HIGH impacts; owner/operator integration review and stopped-autopilot snapshot rebuild boundary"
+  }
  },
  "B5-02": {
   "severity": 4,
@@ -2803,7 +3025,14 @@
     "state": "implemented-unreviewed"
    }
   ],
-  "deferred": null
+  "deferred": null,
+  "resolution": {
+   "state": "tested-reviewed-integration-held",
+   "branch": "refactor/autopilot-gate-reviewed-01a16fc3",
+   "checkpoint_commit": "db17808e",
+   "evidence": "1018 targeted tests pass/1 skip; 18 snapshot controls pass; B2-02/B2-03 fail on parent; pre-P2 snapshot refuses bounded authority and current-format rebuild matches full replay",
+   "integration_hold": "Existing reconstruction CRITICAL and verified-snapshot HIGH impacts; owner/operator integration review and stopped-autopilot snapshot rebuild boundary"
+  }
  },
  "B5-10": {
   "severity": 2,
@@ -2838,7 +3067,14 @@
     "state": "implemented-unreviewed"
    }
   ],
-  "deferred": null
+  "deferred": null,
+  "resolution": {
+   "state": "tested-reviewed-integration-held",
+   "branch": "refactor/autopilot-gate-reviewed-01a16fc3",
+   "checkpoint_commit": "db17808e",
+   "evidence": "1018 targeted tests pass/1 skip; 18 snapshot controls pass; B2-02/B2-03 fail on parent; pre-P2 snapshot refuses bounded authority and current-format rebuild matches full replay",
+   "integration_hold": "Existing reconstruction CRITICAL and verified-snapshot HIGH impacts; owner/operator integration review and stopped-autopilot snapshot rebuild boundary"
+  }
  },
  "B5-13": {
   "severity": 1,
@@ -2855,7 +3091,14 @@
     "state": "implemented-unreviewed"
    }
   ],
-  "deferred": null
+  "deferred": null,
+  "resolution": {
+   "state": "tested-reviewed-integration-held",
+   "branch": "refactor/autopilot-gate-reviewed-01a16fc3",
+   "checkpoint_commit": "db17808e",
+   "evidence": "1018 targeted tests pass/1 skip; 18 snapshot controls pass; B2-02/B2-03 fail on parent; pre-P2 snapshot refuses bounded authority and current-format rebuild matches full replay",
+   "integration_hold": "Existing reconstruction CRITICAL and verified-snapshot HIGH impacts; owner/operator integration review and stopped-autopilot snapshot rebuild boundary"
+  }
  },
  "B5-14": {
   "severity": 2,
@@ -2890,7 +3133,14 @@
     "state": "implemented-unreviewed"
    }
   ],
-  "deferred": null
+  "deferred": null,
+  "resolution": {
+   "state": "tested-reviewed-integration-held",
+   "branch": "refactor/autopilot-gate-reviewed-01a16fc3",
+   "checkpoint_commit": "db17808e",
+   "evidence": "1018 targeted tests pass/1 skip; 18 snapshot controls pass; B2-02/B2-03 fail on parent; pre-P2 snapshot refuses bounded authority and current-format rebuild matches full replay",
+   "integration_hold": "Existing reconstruction CRITICAL and verified-snapshot HIGH impacts; owner/operator integration review and stopped-autopilot snapshot rebuild boundary"
+  }
  },
  "B5-17": {
   "severity": 2,
@@ -2925,7 +3175,14 @@
     "state": "implemented-unreviewed"
    }
   ],
-  "deferred": null
+  "deferred": null,
+  "resolution": {
+   "state": "tested-reviewed-integration-held",
+   "branch": "refactor/autopilot-gate-reviewed-01a16fc3",
+   "checkpoint_commit": "db17808e",
+   "evidence": "1018 targeted tests pass/1 skip; 18 snapshot controls pass; B2-02/B2-03 fail on parent; pre-P2 snapshot refuses bounded authority and current-format rebuild matches full replay",
+   "integration_hold": "Existing reconstruction CRITICAL and verified-snapshot HIGH impacts; owner/operator integration review and stopped-autopilot snapshot rebuild boundary"
+  }
  },
  "B5-M2": {
   "severity": 3,
@@ -2942,7 +3199,14 @@
     "state": "implemented-unreviewed"
    }
   ],
-  "deferred": null
+  "deferred": null,
+  "resolution": {
+   "state": "tested-reviewed-integration-held",
+   "branch": "refactor/autopilot-gate-reviewed-01a16fc3",
+   "checkpoint_commit": "db17808e",
+   "evidence": "1018 targeted tests pass/1 skip; 18 snapshot controls pass; B2-02/B2-03 fail on parent; pre-P2 snapshot refuses bounded authority and current-format rebuild matches full replay",
+   "integration_hold": "Existing reconstruction CRITICAL and verified-snapshot HIGH impacts; owner/operator integration review and stopped-autopilot snapshot rebuild boundary"
+  }
  },
  "C1-01": {
   "severity": 4,
@@ -3050,7 +3314,7 @@
  "C1-10": {
   "severity": 2,
   "kind": "refactor",
-  "title": "The same ~20 injected callbacks are re-declared and forwarded through four signatures (pool.drive \u2192 pipeline.run_pool \u2192 loop.iterate \u2192 loop._iterate)",
+  "title": "The same ~20 injected callbacks are re-declared and forwarded through four signatures (pool.drive → pipeline.run_pool → loop.iterate → loop._iterate)",
   "verdict": "partially",
   "package": "D4 (wave 2): AutoKernel run.main decomposition",
   "commits": [],
@@ -3410,7 +3674,7 @@
  "C3-05": {
   "severity": 3,
   "kind": "refactor",
-  "title": "The regrowth guard exempts controller/ as 'the uncounted library': 6.9k\u219249.8k LOC in 9 weeks with no budget",
+  "title": "The regrowth guard exempts controller/ as 'the uncounted library': 6.9k→49.8k LOC in 9 weeks with no budget",
   "verdict": "confirmed",
   "package": "K4 (wave 2): AutoKernel regrowth guard and CI repair (operator decision 2026-10-24)",
   "commits": [],
@@ -3455,7 +3719,7 @@
  "C3-10": {
   "severity": 3,
   "kind": "refactor",
-  "title": "Production identity is declared in \u22655 places; the v10 repin had to touch each by hand and missed one",
+  "title": "Production identity is declared in ≥5 places; the v10 repin had to touch each by hand and missed one",
   "verdict": "partially",
   "package": "D10 (wave 2): AutoKernel remaining structure (controller, evaluator, execution, schemas, tests)",
   "commits": [],
@@ -3473,7 +3737,7 @@
  "C3-12": {
   "severity": 2,
   "kind": "refactor",
-  "title": "controller \u2194 scripts/benchmark circular absolute imports load 19 modules twice under pytest's `autokernel.*` naming, so tests run a different topology than production",
+  "title": "controller ↔ scripts/benchmark circular absolute imports load 19 modules twice under pytest's `autokernel.*` naming, so tests run a different topology than production",
   "verdict": "partially",
   "package": "D10 (wave 2): AutoKernel remaining structure (controller, evaluator, execution, schemas, tests)",
   "commits": [],
@@ -3614,7 +3878,7 @@
  "C4-03": {
   "severity": 4,
   "kind": "deletion",
-  "title": "integrity.py \u00a78.5.1 gate derivation (~1,100 LOC) is self-documented as consuming 'evidence nothing produces'",
+  "title": "integrity.py §8.5.1 gate derivation (~1,100 LOC) is self-documented as consuming 'evidence nothing produces'",
   "verdict": "UNVERIFIED",
   "package": "K3 (wave 2): AutoKernel prune of the three unreachable planes (operator decision 2026-10-24)",
   "commits": [],

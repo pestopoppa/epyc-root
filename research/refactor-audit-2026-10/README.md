@@ -2,6 +2,10 @@
 
 Plan and branch status: [`handoffs/active/refactoring-multirepo-2026-10.md`](../../handoffs/active/refactoring-multirepo-2026-10.md).
 
+The original findings and implementer reports preserve the cloud checkpoint. Current resumed-session
+review, test and integration state is in the handoff and each finding's `resolution` field in
+`data/finding-status.json`; an original commit or historical "unreviewed" label is not its current state.
+
 | File | What it is |
 |---|---|
 | [`BUG-REPORT-autopilot-autokernel.md`](BUG-REPORT-autopilot-autokernel.md) | Every autopilot and AutoKernel bug the audit found, with severity, evidence, fix and current status (fixed on which `refactor/*` branch and commit, WIP, or planned in which package); orchestrator-core bug statuses in an appendix |
@@ -9,6 +13,7 @@ Plan and branch status: [`handoffs/active/refactoring-multirepo-2026-10.md`](../
 | [`findings-autopilot.md`](findings-autopilot.md) | Units B1-B5 (loop, eval + safety gate, actions/planner/journal, satellites, autopilot_core + tests): 113 findings |
 | [`findings-autokernel.md`](findings-autokernel.md) | Units C1-C6 (loop core, loop periphery, controller, evaluator/execution, release + top level, tests): 121 findings; C4-C6 UNVERIFIED |
 | [`OPERATOR-DECISIONS.md`](OPERATOR-DECISIONS.md) | The four operator decisions of 2026-10-24 and the standing inputs |
+| [`K2-CURRENT-SOURCE-REVIEW.md`](K2-CURRENT-SOURCE-REVIEW.md) | 2026-10-25 current-source review and successful GitNexus guard status; source-guard edits remain unapplied |
 | `metrics/` | AST metrics (largest files, longest and most complex functions, swallowed excepts, import-time calls, sys.path mutations, duplicate bodies) and git churn per area, as of 2026-10-07 |
 | `packages/wave1.json`, `packages/wave2.json`, `packages/deferred.json` | Work-package definitions: finding ids per package, order and notes |
 | `packages/mkpkg.py` | Regenerates the per-package briefs from `data/` |
