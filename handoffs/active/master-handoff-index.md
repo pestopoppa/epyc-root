@@ -36,7 +36,6 @@ missed (measured: G9-disk sat unnoticed for two weeks and governed 227 GB).
 
 | ID | Decision | Owner | Open since |
 |----|----------|-------|-----------|
-| OP-CTXCKPT-RERUN | Re-run `RATIFY-CTXCKPT-HYBRID-20261024` with your real `RATIFY_OPERATOR` name so the root receipt lands (research + orchestrator already on main; the root push was rejected because main moved). Command in the KPF-64.4 note. | [kv-prefix-fork-and-paged-attention.md](kv-prefix-fork-and-paged-attention.md) KPF-64.4 | 2026-10-24 |
 | OP-HOSTMEM | Apply RATIFY-HOST-MEMORY-RULES-20261021 (3 host-safety rules + INC entry) from a fresh origin/main worktree, then the printed host earlyoom drop-in (dry-run gate first). | [non-inference-backlog.md](non-inference-backlog.md) NIB2-98 | 2026-10-21 |
 | OP-OPCONST-3C4 | After OP-HOSTMEM lands: ratify two one-line OPERATING_CONSTRAINTS additions (compute-filler guide pointer; subagent close-out wires measurements into the belief kernel). Main prepares the bundle. | [CURRENT-CAMPAIGN.md](CURRENT-CAMPAIGN.md) operator items | 2026-10-21 |
 | OP-DSPARK-RM | Delete `/mnt/raid0/llm/models/deepseek-ai/DeepSeek-V4.1-Flash-DSpark.gguf` (10.0 GB, unmapped, no live refs; the agent's rm was blocked by the classifier), then the graveyard row. | [deepseek-v41-flash-evaluation.md](deepseek-v41-flash-evaluation.md) DS41-W7.2 | 2026-10-22 |
@@ -116,6 +115,7 @@ OP-73 (APPLIED 2026-10-06, option 2A host activation) was pruned from the queue 
 Recorded in [tool-output-compression.md](tool-output-compression.md) → TOC-RD-1a and
 [autokernel-all-devices-all-dimensions.md](autokernel-all-devices-all-dimensions.md) → AKX-ALL-11 (OP80 settled).
 OP-SEC-ART-POST-b (APPLIED 2026-10-24, operator ratify, root receipt `522f7fd33`) was pruned from the queue at the 2026-10-24 operator /wrap-up. Recorded in [model-artifact-integrity.md](model-artifact-integrity.md) → SEC-ART-POST-b.
+OP-CTXCKPT-RERUN (APPLIED, operator re-ran the ratify script, root receipt `b5934d982`) was pruned from the queue at the 2026-10-25 operator /wrap-up. Recorded in [kv-prefix-fork-and-paged-attention.md](kv-prefix-fork-and-paged-attention.md) → KPF-64.4.
 OP-KPF64-ARM was DECIDED by the operator on 2026-10-22: compute-filler jobs may export `WINDOW_CONFIRMED=1` inside a
 calendar-granted window. This unblocks s5-kpf64-replay, s5-akrsg-shakedown, s5-hsprof1-beam and s5-cme7-poker-smoke.
 Recorded in [kv-prefix-fork-and-paged-attention.md](kv-prefix-fork-and-paged-attention.md) → KPF-64 and `docs/guides/agent-workflows/compute-fillers.md`.
@@ -139,11 +139,11 @@ nobody is moving.
 <!-- BEGIN GENERATED index_state -->
 | Domain | Handoffs | Open | Blocked | Oldest advance |
 |--------|----------|------|---------|----------------|
-| inference-research | 61 | 1178 | 59 | 2026-07-29 |
+| inference-research | 61 | 1181 | 59 | 2026-07-29 |
 | pipeline-integration | 5 | 69 | 1 | 2026-08-25 |
 | research-evaluation | 44 | 528 | 16 | 2026-07-29 |
 | reviewer-control-plane | 6 | 28 | 12 | 2026-07-29 |
-| routing-and-optimization | 53 | 655 | 18 | 2026-07-29 |
+| routing-and-optimization | 53 | 654 | 18 | 2026-07-29 |
 | user-facing-harness | 14 | 144 | 17 | 2026-07-29 |
 <!-- END GENERATED index_state -->
 

@@ -123,6 +123,20 @@ Production `production-consolidated-v10` is frozen. Start kernel work from a fre
     - Still open for this box: the `epyc.exl3.measurement.v1` rows were not emitted. Emit them from the durable copy with
       `epyc-inference-research/scripts/kernel_rnd/exl3/evidence.py` `write()` (identities need model/binary digests;
       `identity.sha256` and the linkage files are in the copy), then tick.
+    2026-10-25 — **correctness half re-run** (calendar item `exl3-6c5-quality`, one CPU quarter, build role, 08:09Z COMPLETE;
+    predeclaration sha256 `216b4110…ecb4f7`, rule applied mechanically). Both arms on the SAME EXL3-tree binary
+    (`experimental/exl3-cpu-20261003` @ `20192b81d`, libggml-cpu sha `50343614…`), so the tree no longer confounds U.
+    - PPL (wiki.test.raw c512, 40 chunks): E 2.8909 ± 0.0591, U 2.9925 ± 0.0632 → **−3.40%, QUALITY_NOT_WORSE**
+      (not within stderr; REPRODUCES_10_04 on both values). Non-inferiority on PPL only, never "better" (10-04 caveat).
+    - Greedy smoke vs U: **SMOKE = FAIL** by the predeclared prefix rule. p1 shares 8 characters (minimum 100): both
+      answer " Paris." and then continue differently, E with a short explanation and a `<think>` turn, U with a list of
+      capitals. p2 shares 102 (minimum 40) and p3 148 (minimum 40), both pass. E loads and every output is ≥ 20 characters.
+      The 10-04 run had p1 identical over 48 tokens, but its U ran on the champion build, not the EXL3 tree.
+    - No speed figure (the 10-04 speed result stands). Evidence: research `data/exl3-6c5-quality/` (logs, texts, digests, RUN_RECORD,
+      VERDICT, SHA256SUMS; committed `84ae00217`, on main via `237a7a789`).
+    - Box stays open: the `epyc.exl3.measurement.v1` rows are still not emitted (EXL3-6c5a below).
+    - [ ] **EXL3-6c5a — emit the `epyc.exl3.measurement.v1` rows, then ingest (filed 2026-10-25, from the 10-24 prose "still open" line).** Run `epyc-inference-research/scripts/kernel_rnd/exl3/evidence.py` `write()` over the 10-04 durable copy (`artifacts/cpu-window2-20261004/step1_exl3_full/`) and research `data/exl3-6c5-quality/` (identities from their digests), then `cli.py ingest exl3-measurement --only-new`. No compute. Done when the rows exist and the ingest frame count is cited here; then tick EXL3-6c5.
+    - [ ] **EXL3-6c5b — decide what the p1 smoke FAIL means (filed 2026-10-25).** Both p1 texts are coherent and agree on the answer; they diverge right after it. Read the first-divergence token's top-2 margin from the staged texts (re-run p1 with `--n-probs 2` on the same binary and quarter, about 10 min, correctness class) and record whether it is a near-tie (benign greedy divergence between two 4-bit-class files) or a real defect. Done when the margin is recorded and the smoke result is classified.
   - [x] **EXL3-6c6 — EXL3 CPU microbench re-run.** ✅ 2026-10-04 The 2026-10-03 17:46Z attempt in the CPU window refused on host load (rc 3, `ds41-scope-20260926/pause_measure.log`). Re-run in the next window.
     2026-10-04: EXL3-6c5 (full model) and this microbench are both steps of CPU window 2 (`/mnt/raid0/llm/tmp/ds41-scope-20260926/pause_measure2.sh`, output `/mnt/raid0/llm/tmp/cpu-window2-20261004/`). The window is armed and waits for DS41's measurement boundary. It holds q0–q3 for about 60–90 min, and DS41 is not stopped.
     2026-10-04 04:59Z: **refused again** (rc 3, load preflight) — workspace-ec subagents ran unlocked CPU work inside the held window (INC-20261004-subagent-unlocked-cpu-in-held-window in `docs/reference/agent-config/INCIDENT_LOG.md`). Re-scheduled as backlog item c1 (`/mnt/raid0/llm/tmp/cpu-backlog-20261004/c1/run.sh`, ~10 min; `/mnt/raid0/llm/tmp/backlog-schedule-20261004.md` row 1).

@@ -1,7 +1,7 @@
 {
  "schema": "backlog_priority.v1",
  "generated_by": "scripts/handoffs/backlog_priority.py + scripts/handoffs/backlog_priority_curated.json",
- "generated_at": "2026-10-25T06:59Z",
+ "generated_at": "2026-10-25T09:49Z",
  "method": "Operator method 2026-10-24: inference items ranked by the inference-backlog-scheduling model (live > ready decision-bearing > routine; ROI = decision value per compute-hour; operator holds push down with the blocker named); non-inference tasks that gate an inference task inherit and rank just above it; non-inference tasks blocked by nothing are the top tier (T1 gates compute, T2 does not); everything else blocked follows its blockers. Row priority = its best open item. score = rank percentile among rows with open work (1.0 = highest). Approximate: ~120 curated items, the rest keyword heuristics; row Deps edges are coarse. Regenerate: python3 scripts/handoffs/backlog_priority.py (see dashboard/README.md).",
  "tiers": {
   "1": "T1 non-inference, unblocked, unblocks compute",
@@ -36,40 +36,34 @@
   }
  ],
  "rows": {
-  "EVL-47": {
+  "INF-26": {
    "tier": 1,
    "rank": 1,
    "score": 1.0,
-   "basis": "T1 best open item (N): VB-FOLDGATE-WRITE — write side for the champion fold gate (CH-28; filed 2026-10-23). Outpu",
-   "unblocks": [
-    "EVL-49",
-    "INF-03",
-    "INF-06",
-    "INF-33",
-    "INF-37",
-    "INF-48",
-    "INF-62",
-    "INF-65",
-    "INF-66",
-    "INF-73",
-    "INF-74",
-    "INF-75"
-   ],
+   "basis": "T1 best open item (N): (derived task) fix the broken q38fn-armP coherence harness so the speed half can run",
+   "unblocks": [],
    "blocker": ""
   },
-  "INF-26": {
+  "INF-67": {
    "tier": 1,
    "rank": 2,
    "score": 0.9944,
-   "basis": "T1 best open item (N): (derived task) fix the broken q38fn-armP coherence harness so the speed half can run",
-   "unblocks": [],
+   "basis": "T1 best open item (N): FD-OFF-PROD — declare `GGML_FUSED_DECODE_OFF=1` for production `architect_general` (:8074)",
+   "unblocks": [
+    "INF-70",
+    "INF-72",
+    "INF-73",
+    "INF-74",
+    "INF-75",
+    "INF-81"
+   ],
    "blocker": ""
   },
   "INF-65": {
    "tier": 1,
    "rank": 3,
    "score": 0.9887,
-   "basis": "T1 best open item (N): CH-LB1.1 — fold `5f1eee195` + `452887155` into the next champion through the fold ledger (",
+   "basis": "T1 best open item (N): CH-GATE-SUBSHELL - fix the fold gate scripts' `fail=1`-inside-`$(...)` bug. The assignment",
    "unblocks": [
     "INF-66",
     "INF-73",
@@ -82,39 +76,64 @@
    ],
    "blocker": ""
   },
-  "UFH-14": {
+  "RTG-58": {
    "tier": 1,
    "rank": 4,
    "score": 0.9831,
-   "basis": "T1 best open item (N): UFH14-LB1.1 — fold `0daa3ca8d` (with `452887155`) into the next champion through the fold ",
+   "basis": "T1 best open item (N): KPF-62.2 — Extend `chunk_kv.py` for KPF-62 G1/G3 records. Add `KPF-62` to `PROGRAMS` and t",
+   "unblocks": [
+    "INF-81"
+   ],
+   "blocker": ""
+  },
+  "INF-81": {
+   "tier": 1,
+   "rank": 5,
+   "score": 0.9774,
+   "basis": "T1 best open item (N): AKX-ALL-LB4.9 — Fold attention sinks into the nek2 == 1 iqk merges (correctness enabler). ",
+   "unblocks": [],
+   "blocker": ""
+  },
+  "INF-78": {
+   "tier": 1,
+   "rank": 6,
+   "score": 0.9718,
+   "basis": "T1 best open item (N): OAB-29 — a fake-model wire test as the standard gate for any new actor seat. Add a scripte",
+   "unblocks": [
+    "UFH-12"
+   ],
+   "blocker": ""
+  },
+  "UFH-01": {
+   "tier": 1,
+   "rank": 7,
+   "score": 0.9661,
+   "basis": "T1 best open item (N): HS-OD-4 — make the `max_tokens` contract explicit in default text REPL mode. APP79 (`src/a",
+   "unblocks": [
+    "INF-78",
+    "REV-05",
+    "RTG-30",
+    "UFH-08",
+    "UFH-12",
+    "UFH-14",
+    "UFH-15"
+   ],
+   "blocker": ""
+  },
+  "UFH-14": {
+   "tier": 1,
+   "rank": 8,
+   "score": 0.9605,
+   "basis": "T1 best open item (N): UFH14-LB6 — Restore per-call serving_calls recording (19 records since 2026-10-05 despite ",
    "unblocks": [
     "RTG-30"
    ],
    "blocker": ""
   },
-  "RTG-57": {
-   "tier": 1,
-   "rank": 5,
-   "score": 0.9774,
-   "basis": "T1 best open item (N): KVU-LB1.d — adopt always-F32 VKQ accumulation on the CPU FA path (`GGML_FA_VKQ_F32=1`, or ",
-   "unblocks": [
-    "INF-59",
-    "INF-77",
-    "INF-78",
-    "INF-81",
-    "REV-02",
-    "REV-07",
-    "RTG-30",
-    "RTG-58",
-    "UFH-12",
-    "UFH-14"
-   ],
-   "blocker": ""
-  },
   "INF-62": {
    "tier": 1,
-   "rank": 6,
-   "score": 0.9718,
+   "rank": 9,
+   "score": 0.9548,
    "basis": "T1 best open item (N): DF2-QWOPUS — scope + estimate training a DFlash2 head for Qwopus (before committing card-d",
    "unblocks": [
     "INF-65",
@@ -129,98 +148,10 @@
    ],
    "blocker": ""
   },
-  "INF-64": {
-   "tier": 1,
-   "rank": 7,
-   "score": 0.9661,
-   "basis": "T1 best open item (N): Re-screen the 19 historically proposed deletion modules individually and strip only proven",
-   "unblocks": [
-    "EVL-49",
-    "INF-06",
-    "INF-62",
-    "INF-65",
-    "INF-66",
-    "INF-73",
-    "INF-74",
-    "INF-75",
-    "INF-78",
-    "INF-81",
-    "RTG-58",
-    "UFH-12"
-   ],
-   "blocker": ""
-  },
-  "INF-67": {
-   "tier": 1,
-   "rank": 8,
-   "score": 0.9605,
-   "basis": "T1 best open item (N): FD-OFF-PROD — declare `GGML_FUSED_DECODE_OFF=1` for production `architect_general` (:8074)",
-   "unblocks": [
-    "INF-70",
-    "INF-72",
-    "INF-73",
-    "INF-74",
-    "INF-75",
-    "INF-81"
-   ],
-   "blocker": ""
-  },
-  "RTG-54": {
-   "tier": 1,
-   "rank": 9,
-   "score": 0.9548,
-   "basis": "T1 best open item (N): CT-12.5 — fold `6dfbc9e86` into the champion via the fold-ledger route (fold request sent ",
-   "unblocks": [],
-   "blocker": ""
-  },
-  "RTG-58": {
+  "INF-73": {
    "tier": 1,
    "rank": 10,
    "score": 0.9492,
-   "basis": "T1 best open item (N): KPF-62.2 — Extend `chunk_kv.py` for KPF-62 G1/G3 records. Add `KPF-62` to `PROGRAMS` and t",
-   "unblocks": [
-    "INF-81"
-   ],
-   "blocker": ""
-  },
-  "INF-81": {
-   "tier": 1,
-   "rank": 11,
-   "score": 0.9435,
-   "basis": "T1 best open item (N): AKX-ALL-LB4.9 — Fold attention sinks into the nek2 == 1 iqk merges (correctness enabler). ",
-   "unblocks": [],
-   "blocker": ""
-  },
-  "INF-78": {
-   "tier": 1,
-   "rank": 12,
-   "score": 0.9379,
-   "basis": "T1 best open item (N): OAB-29 — a fake-model wire test as the standard gate for any new actor seat. Add a scripte",
-   "unblocks": [
-    "UFH-12"
-   ],
-   "blocker": ""
-  },
-  "UFH-01": {
-   "tier": 1,
-   "rank": 13,
-   "score": 0.9322,
-   "basis": "T1 best open item (N): HS-OD-4 — make the `max_tokens` contract explicit in default text REPL mode. APP79 (`src/a",
-   "unblocks": [
-    "INF-78",
-    "REV-05",
-    "RTG-30",
-    "UFH-08",
-    "UFH-12",
-    "UFH-14",
-    "UFH-15"
-   ],
-   "blocker": ""
-  },
-  "INF-73": {
-   "tier": 1,
-   "rank": 14,
-   "score": 0.9266,
    "basis": "T1 best open item (N): Freeze the complete normally merged r6 source/reader/runner, obtain actual whole native ru",
    "unblocks": [
     "INF-74",
@@ -231,16 +162,16 @@
   },
   "UFH-12": {
    "tier": 1,
-   "rank": 15,
-   "score": 0.9209,
+   "rank": 11,
+   "score": 0.9435,
    "basis": "T1 best open item (N): REPL-EMB-2.10 - close migration-tool gaps B-1..B-5 and file the BGE-trained retrain list a",
    "unblocks": [],
    "blocker": ""
   },
   "INF-50": {
    "tier": 1,
-   "rank": 16,
-   "score": 0.9153,
+   "rank": 12,
+   "score": 0.9379,
    "basis": "T1 best open item (N): XGRAMMAR-A2 — port XGrammar's context-independent token-mask cache into llama-grammar.cpp ",
    "unblocks": [
     "INF-62",
@@ -258,26 +189,47 @@
   },
   "INF-75": {
    "tier": 1,
-   "rank": 17,
-   "score": 0.9096,
+   "rank": 13,
+   "score": 0.9322,
    "basis": "T1 best open item (N): AKX-P0d — base census for W1–W6 on the current champion-of-record.",
    "unblocks": [
     "INF-81"
    ],
    "blocker": ""
   },
+  "EVL-47": {
+   "tier": 1,
+   "rank": 14,
+   "score": 0.9266,
+   "basis": "T1 best open item (N): VB-CAL-OVERRUN-WRITE - write side for the compute-calendar overrun check (new open box, fi",
+   "unblocks": [
+    "EVL-49",
+    "INF-03",
+    "INF-06",
+    "INF-33",
+    "INF-37",
+    "INF-48",
+    "INF-62",
+    "INF-65",
+    "INF-66",
+    "INF-73",
+    "INF-74",
+    "INF-75"
+   ],
+   "blocker": ""
+  },
   "INF-74": {
    "tier": 1,
-   "rank": 18,
-   "score": 0.904,
+   "rank": 15,
+   "score": 0.9209,
    "basis": "T1 best open item (N): CTC-Q-D: sweep-merge pass at registration: list rows with the same (model, build, argv-has",
    "unblocks": [],
    "blocker": ""
   },
   "EVL-37": {
    "tier": 1,
-   "rank": 19,
-   "score": 0.8983,
+   "rank": 16,
+   "score": 0.9153,
    "basis": "T1 best open item (N): RTE-LOG-1 — Prompt-structure and chunk logging, and the B7 offline reader (privacy: hashes",
    "unblocks": [
     "INF-78",
@@ -285,18 +237,45 @@
    ],
    "blocker": ""
   },
+  "RTG-54": {
+   "tier": 1,
+   "rank": 17,
+   "score": 0.9096,
+   "basis": "T1 best open item (N): CT-21 - Architect-only boundary sentence trial (DP-G ruling 2026-10-22). Architect-only bo",
+   "unblocks": [],
+   "blocker": ""
+  },
+  "RTG-57": {
+   "tier": 1,
+   "rank": 18,
+   "score": 0.904,
+   "basis": "T1 best open item (N): KVU-16b-1 — fix the residency runner's decoding predicate, then re-run KVU-16b. (filed 202",
+   "unblocks": [
+    "INF-59",
+    "INF-77",
+    "INF-78",
+    "INF-81",
+    "REV-02",
+    "REV-07",
+    "RTG-30",
+    "RTG-58",
+    "UFH-12",
+    "UFH-14"
+   ],
+   "blocker": ""
+  },
   "UFH-08": {
    "tier": 1,
-   "rank": 20,
-   "score": 0.8927,
+   "rank": 19,
+   "score": 0.8983,
    "basis": "T1 best open item (N): HIL-15b: harder labelled task set (16-20 tool-requiring tasks in the 30-70% pass band, lcg",
    "unblocks": [],
    "blocker": ""
   },
   "EVL-50": {
    "tier": 1,
-   "rank": 21,
-   "score": 0.887,
+   "rank": 20,
+   "score": 0.8927,
    "basis": "T1 best open item (N): CME-7T — Find why the first call of a run generates the full 2048-token budget (runs 0 and",
    "unblocks": [
     "EVL-47",
@@ -316,16 +295,16 @@
   },
   "INF-22": {
    "tier": 2,
-   "rank": 22,
-   "score": 0.8814,
+   "rank": 21,
+   "score": 0.887,
    "basis": "T2 best open item (N): M4 — slot-order-independent (or shortest-remaining-prompt-first) batch fill in `update_slo",
    "unblocks": [],
    "blocker": ""
   },
   "INF-70": {
    "tier": 2,
-   "rank": 23,
-   "score": 0.8757,
+   "rank": 22,
+   "score": 0.8814,
    "basis": "T2 best open item (N): ABLATE-1 — `harness1/ablate.sh` is IMPLEMENTED AND UNIT-READY BUT NEVER DEMONSTRATED.",
    "unblocks": [
     "INF-72",
@@ -333,6 +312,27 @@
     "INF-74",
     "INF-75",
     "INF-81"
+   ],
+   "blocker": ""
+  },
+  "INF-64": {
+   "tier": 2,
+   "rank": 23,
+   "score": 0.8757,
+   "basis": "T2 best open item (N): Re-screen the 19 historically proposed deletion modules individually and strip only proven",
+   "unblocks": [
+    "EVL-49",
+    "INF-06",
+    "INF-62",
+    "INF-65",
+    "INF-66",
+    "INF-73",
+    "INF-74",
+    "INF-75",
+    "INF-78",
+    "INF-81",
+    "RTG-58",
+    "UFH-12"
    ],
    "blocker": ""
   },
@@ -458,10 +458,18 @@
    "unblocks": [],
    "blocker": ""
   },
-  "RTG-34": {
+  "INF-80": {
    "tier": 2,
    "rank": 34,
    "score": 0.8136,
+   "basis": "T2 best open item (N): EXL3-6c5a — emit the `epyc.exl3.measurement.v1` rows, then ingest (filed 2026-10-25, from ",
+   "unblocks": [],
+   "blocker": ""
+  },
+  "RTG-34": {
+   "tier": 2,
+   "rank": 35,
+   "score": 0.8079,
    "basis": "T2 best open item (N): AIR-6 — deploy and canary live audit plus CPU lease enforcement. `coordinator-agent`, as",
    "unblocks": [
     "RTG-48",
@@ -473,16 +481,16 @@
   },
   "RTG-59": {
    "tier": 2,
-   "rank": 35,
-   "score": 0.8079,
+   "rank": 36,
+   "score": 0.8023,
    "basis": "T2 best open item (N): SEC-ART-POST-f — Recompile the orchestrator lean registry + stack_priors from the master r",
    "unblocks": [],
    "blocker": ""
   },
   "EVL-10": {
    "tier": 2,
-   "rank": 36,
-   "score": 0.8023,
+   "rank": 37,
+   "score": 0.7966,
    "basis": "T2 best open item (N): CFI-2 — decide the memory-k widening needed to reach 256-token blocks on the episodic path",
    "unblocks": [
     "EVL-47",
@@ -502,8 +510,8 @@
   },
   "INF-34": {
    "tier": 2,
-   "rank": 37,
-   "score": 0.7966,
+   "rank": 38,
+   "score": 0.791,
    "basis": "T2 best open item (N): PF1 (G) — measure the CPU-vs-MI210 prefill crossover for the served over-HBM MoE. Artifact",
    "unblocks": [
     "INF-44",
@@ -513,24 +521,24 @@
   },
   "RTG-42": {
    "tier": 2,
-   "rank": 38,
-   "score": 0.791,
+   "rank": 39,
+   "score": 0.7853,
    "basis": "T2 best open item (N): WP-15.3 — capture two dispatch.v1 frontdoor windows (fit + holdout) after the next stack s",
    "unblocks": [],
    "blocker": ""
   },
   "EVL-52": {
    "tier": 2,
-   "rank": 39,
-   "score": 0.7853,
+   "rank": 40,
+   "score": 0.7797,
    "basis": "T2 best open item (O): DHM-4 — Prepare a 100-item operator labelling sheet of interrupts plus the next operator m",
    "unblocks": [],
    "blocker": ""
   },
   "RTG-41": {
    "tier": 2,
-   "rank": 40,
-   "score": 0.7797,
+   "rank": 41,
+   "score": 0.774,
    "basis": "T2 best open item (N): UTM-LB2.2 — Ingest projector events into the unified trace store (`src/trace/`, new EventS",
    "unblocks": [
     "EVL-52"
@@ -539,16 +547,16 @@
   },
   "UFH-16": {
    "tier": 2,
-   "rank": 41,
-   "score": 0.774,
+   "rank": 42,
+   "score": 0.7684,
    "basis": "T2 best open item (O): SEC-EXEC-POST-d — Live proofs after the operator's API reload (`orchestrator_stack.py relo",
    "unblocks": [],
    "blocker": ""
   },
   "EVL-08": {
    "tier": 2,
-   "rank": 42,
-   "score": 0.7684,
+   "rank": 43,
+   "score": 0.7627,
    "basis": "T2 best open item (N): CJ-17 — Repoint the judge before running anything (intake-1330#record; numbered CJ-11 unti",
    "unblocks": [
     "INF-76"
@@ -557,8 +565,8 @@
   },
   "INF-41": {
    "tier": 2,
-   "rank": 43,
-   "score": 0.7627,
+   "rank": 44,
+   "score": 0.7571,
    "basis": "T2 best open item (N): S-19 — re-bench `worker_vision`'s contention pairs before it is ever made HOT again (PACKA",
    "unblocks": [
     "INF-59",
@@ -573,14 +581,6 @@
     "UFH-12",
     "UFH-14"
    ],
-   "blocker": ""
-  },
-  "INF-80": {
-   "tier": 2,
-   "rank": 44,
-   "score": 0.7571,
-   "basis": "T2 best open item (N): EXL3-LB1d — fold the confirmed route into the AutoKernel GPU champion. (filed 2026-10-04) ",
-   "unblocks": [],
    "blocker": ""
   },
   "INF-43": {

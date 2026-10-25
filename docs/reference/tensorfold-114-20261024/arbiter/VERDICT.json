@@ -1,0 +1,529 @@
+{
+ "schema": "akx-all-30a.arbiter.verdict.v1",
+ "verdict": "COMPLETE",
+ "fa_branch": "PARTIAL_REREAD",
+ "g3_branch": "G3_STANDS",
+ "per_sample": {
+  "B1": {
+   "fa_ratio": 1.727334701976837,
+   "fa_branch": "PARTIAL_REREAD",
+   "kv_convert_ms_step": 7.872296296296296,
+   "g3_branch": "G3_STANDS"
+  },
+  "B2": {
+   "fa_ratio": 1.7287574256190097,
+   "fa_branch": "PARTIAL_REREAD",
+   "kv_convert_ms_step": 7.949429898648649,
+   "g3_branch": "G3_STANDS"
+  }
+ },
+ "seed_order": {
+  "decided": true,
+  "ordering": "RE-RANK G1 and G2 before authoring",
+  "g2": "not first by rule (1.5x < ratio < 3x); re-rank with the measured ratio",
+  "g1": "tile-fill / compute change only; re-rank",
+  "g3": "G3_STANDS"
+ },
+ "validity_problems": [],
+ "rule": {
+  "FA_REREAD_MIN": 3.0,
+  "FA_ABSORBED_MAX": 1.5,
+  "FA_RATIO_FLOOR": 0.8,
+  "CONV_STANDS_MS": 4.0,
+  "CONV_DEAD_MS": 2.0,
+  "OCC_RANGE": [
+   78000,
+   82500
+  ],
+  "DENOM_XCHECK": [
+   0.75,
+   1.25
+  ]
+ },
+ "predeclaration_sha256": "6972da7c22768e6af9b3cdd88b993765a3b30e5bc218c206ddd2aa79c9803c2a",
+ "trace_pass": {
+  "run": "/mnt/raid0/llm/tmp/akx-all-30a-arbiter-20261025/out/pass-trace",
+  "files": {
+   "kernel": [
+    "/mnt/raid0/llm/tmp/akx-all-30a-arbiter-20261025/out/pass-trace/trace/longctx_kernel_trace.csv"
+   ],
+   "memcpy": [
+    "/mnt/raid0/llm/tmp/akx-all-30a-arbiter-20261025/out/pass-trace/trace/longctx_memory_copy_trace.csv"
+   ],
+   "stats": [
+    "/mnt/raid0/llm/tmp/akx-all-30a-arbiter-20261025/out/pass-trace/trace/longctx_kernel_stats.csv"
+   ]
+  },
+  "meta": {
+   "pass": "trace",
+   "status": "ok",
+   "pass_complete": true,
+   "hip_graphs": "ON",
+   "hip_graphs_live": "ON",
+   "hsa_knob_live": "0",
+   "build_info": "b10413-dcc853b55",
+   "exe": "/mnt/raid0/llm/kernels/builds/gpu-20261023-dcc853b55-c3/bin/llama-server",
+   "server_pid": 1973469,
+   "prompt_tokens": 79866,
+   "coherence": {
+    "text_sha": "821d2f3d3a563435",
+    "finish": "stop",
+    "predicted_n": 79,
+    "decode_tps": 24.729,
+    "error": null,
+    "matches_precedent_sha": true
+   },
+   "teardown": {
+    "wrapper_pid": 1973469,
+    "server_pid": 1973469,
+    "sent": [
+     "TERM 1973469"
+    ],
+    "wrapper_rc": 0,
+    "verified_dead": true,
+    "graceful": true
+   },
+   "windows": {
+    "B1": {
+     "start": 1792915365.139655,
+     "end": 1792915395.1402924,
+     "s": 30.0,
+     "n_decoding": 1,
+     "occupied_start": 79934,
+     "occupied_end": 80531,
+     "residency": {
+      "n_samples": 30,
+      "own_pid_nonzero_samples": 30,
+      "own_pid_min_gib": 51.696,
+      "own_pid_max_gib": 51.696,
+      "kfd_vram_holders_max": 1,
+      "kfd_vram_holders_min": 1
+     }
+    },
+    "B2": {
+     "start": 1792915401.388683,
+     "end": 1792915431.3893015,
+     "s": 30.0,
+     "n_decoding": 1,
+     "occupied_start": 80620,
+     "occupied_end": 81278,
+     "residency": {
+      "n_samples": 30,
+      "own_pid_nonzero_samples": 30,
+      "own_pid_min_gib": 51.696,
+      "own_pid_max_gib": 51.7,
+      "kfd_vram_holders_max": 1,
+      "kfd_vram_holders_min": 1
+     }
+    }
+   },
+   "profiler_attached": true,
+   "hip_dlopen_proof": {
+    "ok": true,
+    "ggml_libs": [
+     "/mnt/raid0/llm/kernels/builds/gpu-20261023-dcc853b55-c3/bin/libggml-base.so.0.16.0",
+     "/mnt/raid0/llm/kernels/builds/gpu-20261023-dcc853b55-c3/bin/libggml-cpu.so.0.16.0",
+     "/mnt/raid0/llm/kernels/builds/gpu-20261023-dcc853b55-c3/bin/libggml-hip.so.0.16.0",
+     "/mnt/raid0/llm/kernels/builds/gpu-20261023-dcc853b55-c3/bin/libggml.so.0.16.0"
+    ],
+    "hip_mapped": [
+     "/mnt/raid0/llm/kernels/builds/gpu-20261023-dcc853b55-c3/bin/libggml-hip.so.0.16.0"
+    ]
+   },
+   "vram": {
+    "n_samples": 278,
+    "period_s": 1.0,
+    "peak_used_b": 55526334464,
+    "baseline_used_b": null,
+    "peak_minus_baseline_b": null,
+    "own_pid_peak_vram_b": 55512223744,
+    "nonzero_samples": 275,
+    "peak_used_gib": 51.713,
+    "peak_at": 1792915427.468,
+    "own_pid_peak_vram_gib": 51.7,
+    "own_pid_after_load_gib": 46.42
+   },
+   "cmdline": [
+    "/mnt/raid0/llm/kernels/builds/gpu-20261023-dcc853b55-c3/bin/llama-server",
+    "-m",
+    "/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf",
+    "--host",
+    "127.0.0.1",
+    "--port",
+    "18430",
+    "-np",
+    "4",
+    "-c",
+    "393216",
+    "-t",
+    "8",
+    "-b",
+    "2048",
+    "-ub",
+    "2048",
+    "--flash-attn",
+    "on",
+    "--jinja",
+    "-ctk",
+    "q8_0",
+    "-ctv",
+    "q8_0",
+    "--kv-unified",
+    "--no-mmap",
+    "-ngl",
+    "all",
+    "--cache-ram",
+    "65536",
+    "--chat-template-file",
+    "/mnt/raid0/llm/models/chat-templates/epyc-qwen3x-v1-terse.jinja",
+    "--no-cache-idle-slots",
+    "-md",
+    "/mnt/raid0/llm/models/Qwen3.8-27B-DFlash2-Q8_0.gguf",
+    "-ngld",
+    "99",
+    "--spec-type",
+    "draft-dflash",
+    "--spec-draft-n-max",
+    "7",
+    "--device",
+    "ROCm0",
+    "--slot-save-path",
+    "/mnt/raid0/llm/tmp/akx-all-30a-arbiter-20261025/out/pass-trace/slots",
+    "--device-draft",
+    "ROCm0",
+    "-lv",
+    "4",
+    ""
+   ],
+   "argv": [
+    "/mnt/raid0/llm/kernels/builds/gpu-20261023-dcc853b55-c3/bin/llama-server",
+    "-m",
+    "/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf",
+    "--host",
+    "127.0.0.1",
+    "--port",
+    "18430",
+    "-np",
+    "4",
+    "-c",
+    "393216",
+    "-t",
+    "8",
+    "-b",
+    "2048",
+    "-ub",
+    "2048",
+    "--flash-attn",
+    "on",
+    "--jinja",
+    "-ctk",
+    "q8_0",
+    "-ctv",
+    "q8_0",
+    "--kv-unified",
+    "--no-mmap",
+    "-ngl",
+    "all",
+    "--cache-ram",
+    "65536",
+    "--chat-template-file",
+    "/mnt/raid0/llm/models/chat-templates/epyc-qwen3x-v1-terse.jinja",
+    "--no-cache-idle-slots",
+    "-md",
+    "/mnt/raid0/llm/models/Qwen3.8-27B-DFlash2-Q8_0.gguf",
+    "-ngld",
+    "99",
+    "--spec-type",
+    "draft-dflash",
+    "--spec-draft-n-max",
+    "7",
+    "--device",
+    "ROCm0",
+    "--slot-save-path",
+    "/mnt/raid0/llm/tmp/akx-all-30a-arbiter-20261025/out/pass-trace/slots",
+    "--device-draft",
+    "ROCm0",
+    "-lv",
+    "4"
+   ]
+  },
+  "clock": {
+   "method": "clock:boot",
+   "offset_ns": -1.791877526766501e+18,
+   "candidates": {
+    "boot": {
+     "first_dispatch_after_launch_s": 0.769,
+     "last_dispatch_before_exit_s": 4.408,
+     "in_bounds": true,
+     "fiducial_gap_end_minus_mark_ms": [
+      76.19
+     ],
+     "fiducials_ok": true
+    },
+    "mono": {
+     "first_dispatch_after_launch_s": 0.769,
+     "last_dispatch_before_exit_s": 4.408,
+     "in_bounds": true,
+     "fiducial_gap_end_minus_mark_ms": [
+      76.19
+     ],
+     "fiducials_ok": true
+    }
+   }
+  },
+  "samples": {
+   "B1": {
+    "status": "ok",
+    "occupied_start": 79934,
+    "occupied_end": 80531,
+    "n_decoding": 1,
+    "target_forwards": 189.0,
+    "step_ms": 158.73333333333332,
+    "fa_target_ms_step": 28.71022222222222,
+    "kv_convert_target_ms_step": 7.872296296296296,
+    "fa256_kernel_symbols": [
+     "void flash_attn_ext_f16<256, 16, 4, 64, float, false>(char const*, char const*, char const*, char const*, char const*, int const*, unsigned char const*, float*,"
+    ],
+    "window_s": 30.0
+   },
+   "B2": {
+    "status": "ok",
+    "occupied_start": 80620,
+    "occupied_end": 81278,
+    "n_decoding": 1,
+    "target_forwards": 189.44,
+    "step_ms": 158.3646537162162,
+    "fa_target_ms_step": 28.843306587837837,
+    "kv_convert_target_ms_step": 7.949429898648649,
+    "fa256_kernel_symbols": [
+     "void flash_attn_ext_f16<256, 16, 4, 64, float, false>(char const*, char const*, char const*, char const*, char const*, int const*, unsigned char const*, float*,"
+    ],
+    "window_s": 30.0
+   }
+  }
+ },
+ "counters_pass": {
+  "run": "/mnt/raid0/llm/tmp/akx-all-30a-arbiter-20261025/out/pass-counters",
+  "meta": {
+   "pass": "counters",
+   "status": "ok",
+   "pass_complete": true,
+   "hip_graphs": "OFF",
+   "hip_graphs_live": "OFF",
+   "hsa_knob_live": "0",
+   "build_info": "b10413-dcc853b55",
+   "exe": "/mnt/raid0/llm/kernels/builds/gpu-20261023-dcc853b55-c3/bin/llama-server",
+   "server_pid": 1991099,
+   "prompt_tokens": 79866,
+   "coherence": {
+    "text_sha": "821d2f3d3a563435",
+    "finish": "stop",
+    "predicted_n": 79,
+    "decode_tps": 2.644,
+    "error": null,
+    "matches_precedent_sha": true
+   },
+   "teardown": {
+    "wrapper_pid": 1991096,
+    "server_pid": 1991099,
+    "sent": [
+     "TERM 1991099"
+    ],
+    "wrapper_rc": 0,
+    "verified_dead": true,
+    "graceful": true
+   },
+   "windows": {
+    "B1": {
+     "start": 1792915737.224951,
+     "end": 1792915767.2254488,
+     "s": 30.0,
+     "n_decoding": 1,
+     "occupied_start": 79875,
+     "occupied_end": 79937,
+     "residency": {
+      "n_samples": 30,
+      "own_pid_nonzero_samples": 30,
+      "own_pid_min_gib": 51.686,
+      "own_pid_max_gib": 51.686,
+      "kfd_vram_holders_max": 1,
+      "kfd_vram_holders_min": 1
+     }
+    },
+    "B2": {
+     "start": 1792915774.7442236,
+     "end": 1792915804.7446897,
+     "s": 30.0,
+     "n_decoding": 1,
+     "occupied_start": 79946,
+     "occupied_end": 80015,
+     "residency": {
+      "n_samples": 30,
+      "own_pid_nonzero_samples": 30,
+      "own_pid_min_gib": 51.686,
+      "own_pid_max_gib": 51.686,
+      "kfd_vram_holders_max": 1,
+      "kfd_vram_holders_min": 1
+     }
+    }
+   },
+   "profiler_attached": true,
+   "hip_dlopen_proof": {
+    "ok": true,
+    "ggml_libs": [
+     "/mnt/raid0/llm/kernels/builds/gpu-20261023-dcc853b55-c3/bin/libggml-base.so.0.16.0",
+     "/mnt/raid0/llm/kernels/builds/gpu-20261023-dcc853b55-c3/bin/libggml-cpu.so.0.16.0",
+     "/mnt/raid0/llm/kernels/builds/gpu-20261023-dcc853b55-c3/bin/libggml-hip.so.0.16.0",
+     "/mnt/raid0/llm/kernels/builds/gpu-20261023-dcc853b55-c3/bin/libggml.so.0.16.0"
+    ],
+    "hip_mapped": [
+     "/mnt/raid0/llm/kernels/builds/gpu-20261023-dcc853b55-c3/bin/libggml-hip.so.0.16.0"
+    ]
+   },
+   "vram": {
+    "n_samples": 375,
+    "period_s": 1.0,
+    "peak_used_b": 55511695360,
+    "baseline_used_b": null,
+    "peak_minus_baseline_b": null,
+    "own_pid_peak_vram_b": 55497543680,
+    "nonzero_samples": 372,
+    "peak_used_gib": 51.699,
+    "peak_at": 1792915731.963,
+    "own_pid_peak_vram_gib": 51.686,
+    "own_pid_after_load_gib": 46.42
+   },
+   "pmc_file": "/mnt/raid0/llm/tmp/akx-all-30a-arbiter-20261025/pmc.txt",
+   "cmdline": [
+    "/mnt/raid0/llm/kernels/builds/gpu-20261023-dcc853b55-c3/bin/llama-server",
+    "-m",
+    "/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf",
+    "--host",
+    "127.0.0.1",
+    "--port",
+    "18430",
+    "-np",
+    "4",
+    "-c",
+    "393216",
+    "-t",
+    "8",
+    "-b",
+    "2048",
+    "-ub",
+    "2048",
+    "--flash-attn",
+    "on",
+    "--jinja",
+    "-ctk",
+    "q8_0",
+    "-ctv",
+    "q8_0",
+    "--kv-unified",
+    "--no-mmap",
+    "-ngl",
+    "all",
+    "--cache-ram",
+    "65536",
+    "--chat-template-file",
+    "/mnt/raid0/llm/models/chat-templates/epyc-qwen3x-v1-terse.jinja",
+    "--no-cache-idle-slots",
+    "-md",
+    "/mnt/raid0/llm/models/Qwen3.8-27B-DFlash2-Q8_0.gguf",
+    "-ngld",
+    "99",
+    "--spec-type",
+    "draft-dflash",
+    "--spec-draft-n-max",
+    "7",
+    "--device",
+    "ROCm0",
+    "--slot-save-path",
+    "/mnt/raid0/llm/tmp/akx-all-30a-arbiter-20261025/out/pass-counters/slots",
+    "--device-draft",
+    "ROCm0",
+    "-lv",
+    "4",
+    ""
+   ]
+  },
+  "files": {
+   "counters": [
+    "/mnt/raid0/llm/tmp/akx-all-30a-arbiter-20261025/out/pass-counters/trace/pmc_1/arbiter_counter_collection.csv"
+   ],
+   "kernel": [
+    "/mnt/raid0/llm/tmp/akx-all-30a-arbiter-20261025/out/pass-counters/trace/pmc_1/arbiter_kernel_trace.csv"
+   ]
+  },
+  "join": {
+   "n_counter_dispatches": 468484,
+   "n_trace_rows": 468484,
+   "method": "correlation_id",
+   "name_agreement": 1.0
+  },
+  "clock": {
+   "method": "clock:boot",
+   "offset_ns": -1.791877526766501e+18
+  },
+  "samples": {
+   "B1": {
+    "status": "ok",
+    "occupied_start": 79875,
+    "occupied_end": 79937,
+    "n_decoding": 1,
+    "fa256_dispatches": 392,
+    "fa256_with_fetch": 392,
+    "fa_fetch_bytes_median": 566918656.0,
+    "fa_fetch_bytes_p10_p90": [
+     555661312.0,
+     585649152.0
+    ],
+    "occupied_cells": 79906.0,
+    "view_f16_kv_bytes_analytic": 328204288,
+    "ratio_fetch_over_view": 1.727334701976837,
+    "fa_l2_hit_rate": 0.8751531740334841,
+    "l2_counters_collected": true,
+    "conv_pairs": 392,
+    "conv_pair_fetch_bytes_median": 174366720.0,
+    "view_f16_kv_bytes_from_convert": 328219708.2352941,
+    "denominator_xcheck": 1.00004698364969,
+    "ratio_fetch_over_convert_view": 1.7272535493011512,
+    "fa256_kernel_symbols": [
+     "void flash_attn_ext_f16<256, 16, 4, 64, float, false>(char const*, char const*, char const*, char const*, char const*, int const*, unsigned char const*, float*, HIP_vector_type<float, 2u>*, float, float, float, float, unsigned int, float, int, HIP_vector_type<unsigned int, 3u>, int, int, int, int, int, int, int, int, int, int, int, long, int, int, long, int, int, int, int, int, long)"
+    ]
+   },
+   "B2": {
+    "status": "ok",
+    "occupied_start": 79946,
+    "occupied_end": 80015,
+    "n_decoding": 1,
+    "fa256_dispatches": 412,
+    "fa256_with_fetch": 412,
+    "fa_fetch_bytes_median": 567385600.0,
+    "fa_fetch_bytes_p10_p90": [
+     556446720.0,
+     584443904.0
+    ],
+    "occupied_cells": 79980.5,
+    "view_f16_kv_bytes_analytic": 328204288,
+    "ratio_fetch_over_view": 1.7287574256190097,
+    "fa_l2_hit_rate": 0.8750476877096621,
+    "l2_counters_collected": true,
+    "conv_pairs": 412,
+    "conv_pair_fetch_bytes_median": 174366720.0,
+    "view_f16_kv_bytes_from_convert": 328219708.2352941,
+    "denominator_xcheck": 1.00004698364969,
+    "ratio_fetch_over_convert_view": 1.728676206101715,
+    "fa256_kernel_symbols": [
+     "void flash_attn_ext_f16<256, 16, 4, 64, float, false>(char const*, char const*, char const*, char const*, char const*, int const*, unsigned char const*, float*, HIP_vector_type<float, 2u>*, float, float, float, float, unsigned int, float, int, HIP_vector_type<unsigned int, 3u>, int, int, int, int, int, int, int, int, int, int, int, long, int, int, long, int, int, int, int, int, long)"
+    ]
+   }
+  },
+  "structural": {
+   "decode_grid": "104448",
+   "n_fa256_decode": 1024,
+   "fa_fetch_bytes_median": 567366144.0
+  }
+ },
+ "claim_class": "counter bytes = measured; kernel durations = indicative (profiled, device timestamps); not a throughput or keep claim"
+}

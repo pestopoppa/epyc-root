@@ -60,8 +60,8 @@
 | RTG-54 | qwen chat template evaluation | [qwen-chat-template-evaluation.md](qwen-chat-template-evaluation.md) | **PRIORITY CT-12.5**: fold the injection server patch 6dfbc9e86 into the champion, then CT-12.3d; then CT-11 | — |
 | RTG-55 | promptforge mutation safety | [promptforge-mutation-safety-contract.md](promptforge-mutation-safety-contract.md) | MHS-3d — operator runs the v10 episodic re-pin RATIFY (run_v10_episodic_repin_ratify_20260917.sh); then MHS-12 | RTG-02 |
 | RTG-56 | typed decision plane | [typed-decision-plane.md](typed-decision-plane.md) | Run fresh three-arm shadow at the inference owner’s boundary; retain inference gates | — |
-| RTG-57 | kv unified stack rollout | [kv-unified-stack-rollout.md](kv-unified-stack-rollout.md) | HPR-b 64k holdout INVALID (sim omits retained generation): Codex HPR-B-SIM-FIX-2 by 10-25 08:00Z, then new predeclared re-run | RTG-19, RTG-36, INF-41 |
-| RTG-58 | kv prefix fork and paged attention | [kv-prefix-fork-and-paged-attention.md](kv-prefix-fork-and-paged-attention.md) | R4 done (FORK_PATH_SPECIFIC): Codex do_slot_fork code read vs KPF-17.4c; KPF-64.3 EB/F/FB needs whole-host window or fewer sessions | RTG-57, RTG-27, INF-65 |
+| RTG-57 | kv unified stack rollout | [kv-unified-stack-rollout.md](kv-unified-stack-rollout.md) | KVU-16f-1: re-derive :8083 KQ-mask term for -b 512; HPR-b 64k holdout re-run after Codex HPR-B-SIM-FIX-2 | RTG-19, RTG-36, INF-41 |
+| RTG-58 | kv prefix fork and paged attention | [kv-prefix-fork-and-paged-attention.md](kv-prefix-fork-and-paged-attention.md) | KPF-64.3: F/FB on q0, EB on q2+q3 from 10-26 03:30Z, then the contrasts; read Codex do_slot_fork code read vs KPF-17.4c | RTG-57, RTG-27, INF-65 |
 | RTG-59 | model artifact integrity | [model-artifact-integrity.md](model-artifact-integrity.md) | SEC-ART-POST-f: recompile lean registry + stack_priors at next stack-change, then SEC-ART-2; POST-b.1 v2 template roll-out; POST-d | — |
 
 ## Cross-domain
