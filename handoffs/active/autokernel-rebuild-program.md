@@ -2252,7 +2252,7 @@ production model at pairs=5, ~18% cadence overhead). Six operator decision items
         branch. `executor_paths.get_binary()` was migrated to the kernel store on 2026-09-22, but these two
         fallbacks were not, so a registry load failure still resolves the OLD kernel silently. Same defect
         class as the two the v10 promotion exposed.
-  - [ ] **★ R23-64 — RE-SWEEP THE CPU DECODE THREAD COUNT ON THE CHAMPION (t48 / t64 / t96).
+  - [x] **★ R23-64 — RE-SWEEP THE CPU DECODE THREAD COUNT ON THE CHAMPION (t48 / t64 / t96).
         ★ GATED: MUST NOT RUN UNTIL AFTER THE OPERATOR'S PLANNED HOST REBOOT + BIOS SESSION.**
         Filed 2026-09-08 out of the MEAS-4 correction in
         [`cpu-decode-roofline-program.md`](cpu-decode-roofline-program.md) (MEAS-4 at `:1078`, D4 at
@@ -2324,6 +2324,8 @@ production model at pairs=5, ~18% cadence overhead). Six operator decision items
         bandwidth-versus-barrier trade this sweep exists to measure moves with it — while the
         **dispatch floor (~70 ms) does not** (C8's own note), so the two terms move differently and
         the answer can flip. Run **C8's verification first** (`bench_readbw`, then C5), then this.
+
+        > **DONE 2026-10-25T22:29:05Z (ws58): R23-64 sweep on champion 141e4bcf5 (build 10412), Qwen3.8-Flash-Next UD-IQ4_XS + shared Q8_0 MTP, unit = launch, 6 launches/arm.** t48 44.297 t/s (CV 1.37%); t64 37.647 (-15.01% [-17.09,-13.34] RESOLVED); t96 43.464 (-1.88% [-3.04,-0.82], MDE(observed) 1.95%, UNRESOLVED). Floor sd 0.609% (launch unit). All 18 launches logged `live affinity OK` (rc 68 never fired). Evidence: research `data/inf66/r23-64-thread-sweep-20261025/` (254e1a03e, SHA256SUMS). `[no-belief: no native adapter for R23-64 sweep]`. Next: t48 remains the Flash-Next CPU decode thread count on 141e4bcf5; t96 unresolved at n=6.
 
       - [ ] **★ R23-65 — POST-REBOOT FLOOR RECALIBRATION: EVERY FLOOR MUST BE RE-MEASURED AFTER THE
         BIOS SESSION BEFORE IT GATES ANYTHING, BECAUSE A FLOOR IS *DISPERSION* AND DISPERSION IS WHAT
