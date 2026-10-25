@@ -107,10 +107,16 @@ SCAN_GLOBS = (
 # Consolidated receipts are written to receipts/ (the original convention) and,
 # since receipts/ became the keyed-index namespace, beside the decision receipt.
 RECEIPT_GLOBS = ("artifacts/operator/receipts/*.receipt.json", "artifacts/operator/*.receipt.json")
-# Operator decision-receipt schemas. A file of one of these schemas WITHOUT a `verdict`
-# key is a decision record, not a section-5 consolidated receipt, even at a
-# `.receipt.json` name. A file that carries `verdict` is always judged.
-DECISION_RECEIPT_SCHEMAS = frozenset({"epyc.operator_receipt.v1"})
+# Operator decision-receipt ALLOWLIST: exact repo-relative path -> sha256 of its bytes.
+# RATIFY-CTXCKPT-HYBRID-20261024 wrote an `epyc.operator_receipt.v1` decision record (no
+# `verdict`) at a `.receipt.json` name. It is not a section-5 consolidated receipt, so it
+# is listed, not judged. The exemption is this one file at this one content only: any other
+# verdict-less receipt, whatever its schema, still fails; a path match with different bytes
+# fails loudly. A file that carries `verdict` is always judged.
+DECISION_RECEIPT_ALLOWLIST = {
+    "artifacts/operator/ratify_ctx_checkpoints_hybrid_20261024.receipt.json":
+        "3b3bbae60ddfa52781279e1aee777533378b54327b860c884e16f59649a945c4",
+}
 SKIP_NAMES = ("ratify_receipt.sh", "ratification_receipt.py", "check_ratification_receipts.py")
 
 # Idioms that WRITE a file, matched on comment-stripped text. Deliberately broad:
@@ -466,12 +472,19 @@ def check_receipts(repo_root: Path, directory: Path | None = None) -> tuple[list
         except (OSError, ValueError) as exc:
             errors.append(f"{COULD_NOT_CHECK}: receipt {path.name} is unreadable ({exc})")
             continue
-        if isinstance(doc, dict) and doc.get("schema") in DECISION_RECEIPT_SCHEMAS and "verdict" not in doc:
+        rel = str(path.relative_to(repo_root)) if path.is_relative_to(repo_root) else path.name
+        if isinstance(doc, dict) and "verdict" not in doc and rel in DECISION_RECEIPT_ALLOWLIST:
+            actual = hashlib.sha256(path.read_bytes()).hexdigest()
+            if actual != DECISION_RECEIPT_ALLOWLIST[rel]:
+                errors.append(
+                    f"{COULD_NOT_CHECK}: allowlisted decision receipt {rel} has sha256 {actual}, "
+                    f"expected {DECISION_RECEIPT_ALLOWLIST[rel]}; the exemption is byte-exact"
+                )
+                continue
             # An operator DECISION receipt that happens to use the .receipt.json suffix
-            # (RATIFY-CTXCKPT-HYBRID-20261024 wrote one). It records a signature over a
-            # non-boundary change and has no section-5 verdict to check. Listed, not judged.
+            # (RATIFY-CTXCKPT-HYBRID-20261024 wrote one). Listed, not judged.
             receipts.append({
-                "receipt": str(path.relative_to(repo_root)) if path.is_relative_to(repo_root) else path.name,
+                "receipt": rel,
                 "ratification_id": doc.get("token") or doc.get("gate_id"),
                 "protocol_id": None,
                 "verdict": None,

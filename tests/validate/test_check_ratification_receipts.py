@@ -365,13 +365,40 @@ def test_refused_receipt_at_canonical_name_is_an_error(repo: Path) -> None:
     assert rc == 2
 
 
-def test_operator_decision_receipt_at_receipt_suffix_is_listed_not_judged(repo: Path) -> None:
+ALLOWED_REL = "artifacts/operator/ratify_ctx_checkpoints_hybrid_20261024.receipt.json"
+
+
+def _allowlist(monkeypatch, repo: Path, rel: str = ALLOWED_REL) -> None:
+    digest = hashlib.sha256((repo / rel).read_bytes()).hexdigest()
+    monkeypatch.setattr(mod, "DECISION_RECEIPT_ALLOWLIST", {rel: digest})
+
+
+def test_allowlisted_decision_receipt_is_listed_not_judged(repo: Path, monkeypatch) -> None:
+    (repo / ALLOWED_REL).write_text(json.dumps(
+        {"schema": "epyc.operator_receipt.v1", "token": "RATIFY-Y", "status": "ratified"}))
+    _allowlist(monkeypatch, repo)
+    rc, report = _run(repo)
+    y = [r for r in report["receipts"] if r["receipt"] == ALLOWED_REL][0]
+    assert y["status"].startswith("decision receipt")
+    assert report["errors"] == [] and rc == 0
+
+
+def test_other_verdictless_decision_schema_receipt_still_fails(repo: Path, monkeypatch) -> None:
+    (repo / ALLOWED_REL).write_text(json.dumps({"schema": "epyc.operator_receipt.v1", "token": "A"}))
+    _allowlist(monkeypatch, repo)
     (repo / "artifacts" / "operator" / "y.receipt.json").write_text(json.dumps(
         {"schema": "epyc.operator_receipt.v1", "token": "RATIFY-Y", "status": "ratified"}))
     rc, report = _run(repo)
-    y = [r for r in report["receipts"] if r["receipt"].endswith("y.receipt.json")][0]
-    assert y["status"].startswith("decision receipt")
-    assert report["errors"] == [] and rc == 0
+    assert rc == 2 and any("y.receipt.json" in e for e in report["errors"])
+
+
+def test_allowlisted_path_with_modified_bytes_fails(repo: Path, monkeypatch) -> None:
+    p = repo / ALLOWED_REL
+    p.write_text(json.dumps({"schema": "epyc.operator_receipt.v1", "token": "A"}))
+    _allowlist(monkeypatch, repo)
+    p.write_text(json.dumps({"schema": "epyc.operator_receipt.v1", "token": "TAMPERED"}))
+    rc, report = _run(repo)
+    assert rc == 2 and any("byte-exact" in e for e in report["errors"])
 
 
 def test_decision_schema_with_a_non_ratified_verdict_is_still_judged(repo: Path) -> None:
