@@ -1953,6 +1953,7 @@ Owner: RTG-57 (`kv-unified-stack-rollout.md`).
     whose depth-4 figure is a truncation **projection**: if a script produces it, its rows must mark the
     projection as a model (`estimate_kind: projection`), never as a measured arm, and carry the log window and
     the organic/probe split.
+- [ ] **VB-R2364-SWEEP-WIRE** - native adapter for INF-66 R23-64 thread-sweep ANALYSIS.json + runs/*.rows.jsonl (research data/inf66/r23-64-thread-sweep-20261025/); launch-unit floor sd 0.609%, verdicts RESOLVED/UNRESOLVED carried verbatim, no new grading rule; add the source-table row in scripts/vidya/adapters/README.md. (filed ws58 2026-10-25)
 - [x] **VB-KVU-CPU — write side + projection for the CPU np × ctx × KV-mode study (KVU-12, reopened 2026-10-20).**
   - Producer: research `artifacts/np_context_kvu_cpu_study_20261020/driver/kvu_cpu_matrix.py`. Its per-cell rows are being given
     the VB-KVU-1 schema (`epyc.vidya.np_ctx_kvu_capture.v1`, self-hashed) before the first timing cell runs; the source row is in
