@@ -1,0 +1,76 @@
+{
+  "schema": "epyc.operating_constraints_amendment.v1",
+  "gate_id": "RATIFY-WS58-RETENTION-LESSONS-20261025",
+  "status": "ratified",
+  "ratified_at": "2026-10-25T11:30:56Z",
+  "operator": "Daniele",
+  "signature_channel": "operator-run script (--attest typed confirmation)",
+  "operator_decisions": {
+    "A": "2026-10-25: encode the ws58 calendar lessons in project files (human-only half)",
+    "B": "2026-10-25 D2/D7: \"ratify the amended retention §5\"",
+    "C": "2026-10-25 D4: \"prepare the doctrine change plus the PreToolUse hook for signature\""
+  },
+  "change_sets": {
+    "A": "OPERATING_CONSTRAINTS.md (scratch is scratch; dismissed question pauses only its item; Codex compute limits), SESSION_LIFECYCLE.md (a result tick names its belief), CLAUDE.md (recording conclusions is not inventing warrant)",
+    "B": "MEASUREMENT.md §5 'Evidence retention and reclamation' (homes; reproducible data never carried; three durability classes aligned to the 2026-08-03 ruling; one reclamation predicate for every reclaimer; three-state verifier; no reclamation authority granted; the 2026-08-03 draft's autonomous-loop expiry grant NOT enacted) + CHANGELOG; RATIFICATION_LEDGER.md item-5 row",
+    "C": "OPERATING_CONSTRAINTS.md Destructive operations (citation check; trash purge only via trash-sweep.sh after >=7 days; item 5 sanctioned reclaim path + hook) and the .claude/settings.json PreToolUse Bash registration of scripts/hooks/check_destructive_scratch.sh",
+    "D": "the hook files themselves (scripts/hooks/check_destructive_scratch.sh, destructive_scratch_scan.py, tests/test_destructive_scratch_hook.sh, tests/destructive_scratch_cases.py); D9 loop plane, acked by this signature"
+  },
+  "drafted_from_outline": [
+    "B: the reconcile doc states D2/D7 as an outline (widen predicate to every reclaimer, name citation sources, forbid size thresholds, purge-time re-check, align to the 08-03 ruling); the clause text was drafted from it, see the package md"
+  ],
+  "origin": "docs/reference/tmp-loss-reconcile-2026-10-25.md (244 real losses of handoff-cited /mnt/raid0/llm/tmp paths; decisions D2, D4, D7)",
+  "base_origin_main": "eb61610eec0f6102bcd3f23d3a0f10add952bf40",
+  "patches": [
+    {
+      "path": "artifacts/operator/ws58-calendar-lessons-20261025.human-only.patch",
+      "sha256": "be6928de0d61857cdef8a49d07969d91cf9c2b6f30194d65927baa0fcffea655"
+    },
+    {
+      "path": "artifacts/operator/ws58-retention-s5-20261025.human-only.patch",
+      "sha256": "e94621633d23460723d72926c77ef3185fe1c35d70c52a68501e720f00e20877"
+    },
+    {
+      "path": "artifacts/operator/ws58-destructive-ops-hook-20261025.human-only.patch",
+      "sha256": "523005b5a4b7af5b9f5060797ddbc0ef96f88a88fa92d7ca37b721671d1f1db0"
+    },
+    {
+      "path": "artifacts/operator/ws58-destructive-scratch-hook-files-20261025.patch",
+      "sha256": "f393e7b50055556c5fb4d4e7629211c2e2579fb61a2ac82720ff43ae14f5f976"
+    }
+  ],
+  "state": {
+    "MEASUREMENT.md": {
+      "sha256_before": "8012422fa40a871e2d668904ee9c84fb449a1e25aff2d155a1249146e07d311a",
+      "sha256_after": "07e8e91fdac9472bb53a979f260bae26e70d89dc53612cd2d6fd0dafec243a2c"
+    },
+    "CLAUDE.md": {
+      "sha256_before": "7a7f20394c3999f011000df8bdba3da8ec464ebfaa468db66d2239d415c15220",
+      "sha256_after": "14b9fe89a48e966dd7d5504fa10d74247c45bedf43797ff9eafee6565f891e1e"
+    },
+    "agents/shared/OPERATING_CONSTRAINTS.md": {
+      "sha256_before": "d73ec5aa09994ae014c084800c8a26e0dcdeb1f0a2ff923e93c338e0459c9d6f",
+      "sha256_after": "7e453c7b115b6f3f6b50623f2b6a2b2144a7210face10e8076cc7a7cb93cc6a8"
+    },
+    "agents/shared/SESSION_LIFECYCLE.md": {
+      "sha256_before": "167a820f72bf5fddbded2f1b8dccbd430fc4dc1f04e1782b17023499e7548c59",
+      "sha256_after": "8ef39caf39e962878c3ff52afd3d325afbe0a4b2522ec87f25705b4342966b42"
+    },
+    ".claude/settings.json": {
+      "sha256_before": "f993ebfdb1f3bd1df8e50e7fcb236c033e483915db2a2245cc91eedee4aecbad",
+      "sha256_after": "862be6151e732094dea8b9732101bacac5a7361a2c99b1f9ef86e5a91681f151"
+    },
+    "artifacts/operator/autokernel-policy-draft/RATIFICATION_LEDGER.md": {
+      "sha256_before": "451a99431ad119e4862d5f806bb47341851cea181413c443049f99245c1697c5",
+      "sha256_after": "83e7deb2bf496c573a05c364b335b1bcab9d8846349b0d7261bdbe399ccf58bc"
+    }
+  },
+  "package": {
+    "path": "artifacts/operator/ratify-ws58-retention-lessons-20261025.md",
+    "sha256": "1ecce22a6f18e7c0ee6658f6ca7376baed003ca98883b9bf0feadfdb450d39bb"
+  },
+  "consolidated_receipt": "artifacts/operator/ratify_ws58_retention_lessons_20261025.receipt.json",
+  "applied_by": "scripts/operator/ratify_ws58_retention_lessons_20261025.sh",
+  "ratify_script_sha256": "2f9050e184f38f1f1b8732b4cb58c8b7dec8090aefc4e6d5ae0973691407d38a",
+  "processes_touched": []
+}

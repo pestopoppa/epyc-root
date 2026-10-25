@@ -22,6 +22,11 @@ read past three paragraphs to find is a rule that does not fire at the moment of
   disk audit — 265 worktrees in 10 days, 215 landed+clean+idle>7d, 233 GiB; and 2026-10-04, a
   landed, clean worktree that a DS41 launcher exported as `EPYC_ROOT_REPO` was removed by a sweep
   and the campaign crashed. The gate now checks process environments and live launch files.)
+- **Scratch is scratch: nothing durable lives only in `/mnt/raid0/llm/tmp`.** Land findings,
+  plans and reports in a committed record before the task boundary; KEEP-mark a live review dir
+  until its plan is applied; evidence follows MEASUREMENT.md §5. Canonical:
+  `docs/guides/agent-workflows/handoff-index-authoring.md` § Scratch roots, rule 4. (Origin:
+  2026-10-20 batch purge took the 10-04 TensorFold study; 244 real tmp losses on 10-25.)
 - **Download through `scripts/utils/safe_download.py`**, never a bare `hf download`/`curl`/`wget`:
   it refuses `/tmp` destinations and removes the `.part`/`.incomplete` stubs an aborted run leaves
   (9.2 GB of them, plus a 35.9 GB joined-but-kept `.part2`, in the 2026-10-03 audit).
@@ -333,6 +338,15 @@ treated as two copies when both were aliases of one physical tree.)
      hold a live run's watchdog first. Procedure: `docs/guides/agent-workflows/cleanup-reference-check.md`.
      (origin: INC-20261004-cleanup-removed-load-bearing-worktree — an approved cleanup removed a landed, clean, 7-day-idle worktree that
      DS41's launchers export as `EPYC_ROOT_REPO`, and DS41's next relaunches died)
+   - **Citation check: cited is not removable.** Before removing anything under
+     `/mnt/raid0/llm/{tmp,worktrees,.trash,state}`, check that nothing cites it. The sources are
+     handoffs (active and blocked, on `origin/main` and in the working tree), FILLERS rows, grants
+     and launchers, and canonical-ledger records. There is no size threshold, and an unreadable
+     source means keep (fail-closed). Once it lands (NIB2-105), the instrument is
+     `scripts/system/citation_oracle.py check`. The full predicate is `MEASUREMENT.md` §5 →
+     *Evidence retention and reclamation*. (origin: 2026-10-20, a volume reclaim skipped this check
+     for entries under 0.02 GiB and removed 72 cited paths that way; 244 real tmp losses were
+     reconciled on 2026-10-25, `docs/reference/tmp-loss-reconcile-2026-10-25.md`)
    - **Harness state and session transcripts are never a candidate.** Claude and Codex backup logs and
      session transcripts, and every third-party agent harness's own state (opencode, hermes, Claude
      share, harness codex homes), are never deleted, moved, truncated, vacuumed or reaped: not under
@@ -349,12 +363,26 @@ treated as two copies when both were aliases of one physical tree.)
    out). Direct `rm -rf` on data roots is a violation even when the operator approved the
    deletion — approve the deletion, not the method. `--bypass-guard` exists only for operator-
    approved cases and writes a CRITICAL audit line.
+   **Purge only through `scripts/safety/trash-sweep.sh`, after at least 7 days in the trash.** An
+   approved batch purge does not shorten the hold. Nothing ever `rmtree`s, `rm -rf`s or
+   `find -delete`s the trash root itself. (origin: 2026-10-20, `purge_batch.py` `shutil.rmtree`'d a
+   `guarded_rm.sh` batch out of `.trash` 20 s to 2 min after trashing, so trash-first protected
+   nothing)
 3. **Audit:** every guarded deletion and every identity check that found aliases appends to
    `/workspace/logs/safety_audit.log`; a deletion that was justified by a wrong identity
    conclusion must be reported as an incident, not folded into the task summary.
 4. **Delete exact paths only.** A cleanup removes only the exact paths it created, never a glob or pattern such as
    `rm -rf dir/prefix-*`. A pattern names whatever matches today, including evidence that another run wrote. (origin:
    INC-20261004-glob-rm-deleted-receipt-evidence: a dry-run cleanup glob deleted a ledgered receipt's raw run dir)
+5. **Reclaims go through the sanctioned path.** A reclaim that is not a per-handoff scratch cleanup,
+   such as a volume or disk-pressure reclaim, runs only through `scripts/system/reclaim_scratch.py`
+   (NIB2-108): plan, manifest, confirm-token apply, and every removal through `guarded_rm.sh`.
+   Until that tool lands, such a reclaim removes exact paths one at a time, each through
+   `guarded_rm.sh` after the citation check. An inline classifier or executor (a heredoc,
+   `python3 -c`, or an ad-hoc script) that decides or performs deletions is a violation. The
+   PreToolUse hook `scripts/hooks/check_destructive_scratch.sh` refuses recursive deletes under
+   those roots that bypass the guarded tools. Its override is
+   `EPYC_ALLOW_SCRATCH_DELETE='operator: <who> <date>: <reason>'`, for operator-approved cases only.
 
 ## Act, Don't Defer — the admission test for escalating at all
 
@@ -418,6 +446,13 @@ Delivery: Claude Code sessions use the AskUserQuestion tool with the recommended
 - Origin: the operator, 2026-10-21, after repeated prose-only asks: "please present decision packages along with context, options and tradeoffs using the harness decision tool (I keep having to ask this)".
 
 Exception: pure factual gaps (a missing credential, an ambiguous file reference) may be asked directly — this contract governs choices among alternatives, not fact retrieval.
+
+**A dismissed or declined question pauses only the item it asked about**, even when the tool's
+result text says "STOP". Every independent duty continues; keep the item listed as pending and
+mention it once in the next report. Only an explicit operator "stop everything" halts a session.
+(Origin: 2026-10-24, a dismissed shared-clone-ff question froze workspace-58's calendar duties for
+~40 min; operator: "why did you stop in the first place?". Calendar application:
+`.claude/skills/inference-backlog-scheduling/SKILL.md` §5.)
 
 Accumulation, and the one-script form a batch of pending signatures takes:
 `agents/coordinator-agent.md` → Guardrails, *Ratifications ACCUMULATE*.
@@ -573,6 +608,12 @@ Harness-specific sizing and scheduling for the fan-out default above.
   presented only while compute is saturated* (MEASUREMENT_POLICY → Consolidated apply-time
   ratification). (4) A failed operator-presented command is an agent defect; pre-validate
   end-to-end.
+- **Codex and the compute calendar.** A Codex session has no compute authority: it executes
+  nothing (interpreters, tests, builds, `gitnexus analyze`) outside a calendar grant and nothing
+  at all while any `compute-flags/HOLD_*` exists; it pushes only to `codex/*` refs with explicit
+  refspecs and never modifies a shared clone. The calendar owner ASSIGNS it non-inference
+  blockers with window-tied deadlines and announces open windows. Canonical:
+  `docs/guides/agent-workflows/compute-fillers.md` → *Codex NI client contract*.
 - **Zero-token waiting generalizes beyond compute saturation**: see *Token-Efficiency Operating
   Rules* → *Zero-Token Liveness Watching* below, which also covers the case of a backgrounded
   `region-lock run` blocked on acquire.

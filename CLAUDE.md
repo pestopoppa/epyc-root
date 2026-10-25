@@ -155,6 +155,14 @@ tuple invented on read claims warrant the original run never captured. `benchmar
 standing proof: 4,562 files, no write-side hook, 0 of 200 sampled carry a usable claim tuple, so
 they can never gate a decision.
 
+That forbids inventing a run's **measurement** warrant. It does not forbid recording what was
+**concluded**: a conclusion committed to a handoff or progress report enters as an OBSERVATION
+(`Judged/Located`) with its commit, path and line, through the committed-conclusion register. A
+result tick carries `[belief: clm_<id>]`, `[belief: cc]` or `[no-belief: <reason>]` (wrap-up
+belief-capture gate; `agents/shared/SESSION_LIFECYCLE.md` → *Two axioms*). A loop is "wired"
+only when its planning-context canary passes
+(`docs/guides/agent-workflows/agent-loop-design.md` → *"Wired" is a canary result*).
+
 **Do not write a new grading rule.** An adapter *projects* its native record into a `ClaimTuple`
 and `claim_tuple.grade()` decides; the carrier is shared but each source class has exactly one
 ladder, and the registry refuses a second. Contract: `docs/design/vidya-pilot-spec.md` §4.7.

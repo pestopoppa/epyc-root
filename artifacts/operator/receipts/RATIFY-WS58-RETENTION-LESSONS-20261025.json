@@ -1,0 +1,7 @@
+{
+  "gate_id": "RATIFY-WS58-RETENTION-LESSONS-20261025",
+  "indexed_by": "ratify",
+  "receipt": "artifacts/operator/ratify_ws58_retention_lessons_20261025.json",
+  "schema_version": "session_bus.receipt_index.v1",
+  "status": "ratified"
+}

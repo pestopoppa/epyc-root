@@ -399,6 +399,7 @@ benchmark result and needs no `SHA256SUMS` over a data directory. What it does c
 | 3 | Annex G cross-reference | *(pending)* | coupled to 2 |
 | 4 | §E exclusion preconditions (Annex B) + digest | *(pending)* | R3 sub-line: *(pending)* |
 | 5 | Evidence retention and reclamation | *(pending)* | |
+| 5 (2026-10-25) | Evidence retention and reclamation | **Applied in amended form** by `RATIFY-WS58-RETENTION-LESSONS-20261025` (operator decision D2/D7, 2026-10-25) | The predicate is widened to every reclaimer, the citation sources are named, size thresholds are forbidden, and a purge-time re-check is required. The durability classes are aligned to the 2026-08-03 ruling. The draft's §3.2-§3.7 autonomous-loop expiry grant is **NOT** enacted. Package: `artifacts/operator/ratify-ws58-retention-lessons-20261025.md`. The row above is left as written (append-only). |
 | 6 | §6 dump-list cross-reference | *(pending)* | |
 | 7 | §6b strategy-store narrowing | *(pending)* | |
 | 8 | `human_only_paths.yaml` conceptual entries + pin | *(pending)* | atomic pair |

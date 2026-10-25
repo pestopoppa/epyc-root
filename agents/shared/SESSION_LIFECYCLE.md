@@ -33,6 +33,14 @@ Four things the axiom does not say, and each one is load-bearing:
   boundary. **Nonterminal outcomes leave the source task open and add a checkpoint-keyed child
   task** — they never flip the parent. Do not hand-reproduce that tool's mutation, commit, push,
   receipt, or bus-publication phases.
+- **A result tick names its belief.** A box ticked on an experimental or measurement result
+  carries `[belief: clm_<id>]`, `[belief: cc]` or `[no-belief: <reason>]` on the same line, and
+  states its verdict or number on that line, not only in a prose block below. The dashboard counts
+  the tick; the planners read only the ledger, so a result that never reaches it did not happen
+  for them. A committed conclusion is recorded as an OBSERVATION (`Judged/Located`) with its
+  commit, path and line: recording what was concluded is legitimate, while inventing the lost
+  run's protocol, n or attestation is not. Enforced by the wrap-up belief-capture gate
+  (`agents/commands/wrap-up.md`, Step 2).
 
 ## Reading another session's liveness — three states, not two
 
