@@ -170,4 +170,4 @@ bullets below are the working detail.
   divergent token (check with `n_probs` at and before it).
 - Instances: KPF-13 fork ≡ prompt-cache hit (`/mnt/raid0/llm/tmp/kpf13-repro/run/verdict.json`; the v1 "fork defect"
   was a 1-token-ubatch reduction path) and SPEC-RNG.1.1 (np1 vs np4 and depth 0 vs 3 differed only by logit drift;
-  np4 serial == np1 8/8). Records: `kv-prefix-fork-and-paged-attention.md`, `speculative-decoding-mtp-refresh.md`.
+  np4 serial == np1 8/8). Records: `handoffs/active/kv-prefix-fork-and-paged-attention.md`, `handoffs/active/speculative-decoding-mtp-refresh.md`.

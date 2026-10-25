@@ -1,6 +1,6 @@
 ---
 name: inference-backlog-scheduling
-description: Pack an accumulated inference backlog onto the shared EPYC + MI210 host as a knapsack — bins (CPU quarters, whole host, the MI210 with its host threads, RAM, time windows), items (queue rows with a region shape, min-window, estimate, RAM need and a DERIVED booking class), the compatibility rules, the packing heuristics, the grant-writer invariants learned from the 10-21..10-23 incidents, the cross-session grant protocol and the operator status/ETA report. Use this whenever you own or share the compute calendar, write or review grant writers, triage FILLERS.md, place a run on a quarter or the GPU, see idle compute while rows are queued, or are asked "what is running / when will the backlog finish" — even if nobody says "knapsack" or "calendar".
+description: Pack an accumulated inference backlog onto the shared EPYC + MI210 host as a knapsack — bins (CPU quarters, whole host, the MI210 with its host threads, RAM, time windows), items (queue rows with a region shape, min-window, estimate, RAM need and a DERIVED booking class), the compatibility rules, the packing heuristics, the grant-writer invariants learned from the 10-21..10-25 incidents, the cross-session grant protocol and the operator status/ETA report. Use this whenever you own or share the compute calendar, write or review grant writers, triage FILLERS.md, place a run on a quarter or the GPU, see idle compute while rows are queued, or are asked "what is running / when will the backlog finish" — even if nobody says "knapsack" or "calendar".
 ---
 
 # Inference Backlog Scheduling
@@ -14,9 +14,11 @@ work is a reportable failure, not a resting state.
 Canonical protocol (read it once per session): `docs/guides/agent-workflows/compute-fillers.md`.
 Live state lives outside the repo: queue `/mnt/raid0/llm/tmp/compute-flags/FILLERS.md`, grants
 `compute-flags/grants/`, calendar `/mnt/raid0/llm/tmp/compute-calendar-<date>.md` (append-only
-REVISION lines). The backlog these items come from is the inference domain index
-`handoffs/active/inference-research-index.md` (one `INF-NN` row per handoff; the master index
-`handoffs/active/master-handoff-index.md` routes to it); non-compute work is
+REVISION lines). **The calendar's input is the prioritized backlog
+`handoffs/active/backlog-priority.json`** (tiers T1-T7 with `unblocks` and `blocker`, generated),
+and the derived plan is the tracked file `coordination/compute-calendar/CALENDAR-PLAN.md` (§3 step
+0). The rows themselves live in the domain indices, e.g. `handoffs/active/inference-research-index.md`
+(routed from `handoffs/active/master-handoff-index.md`); non-compute work is
 `handoffs/active/non-inference-backlog.md`. Posture: `handoffs/active/CURRENT-CAMPAIGN.md`.
 
 ## 1. The model: bins, items, classes
@@ -35,7 +37,7 @@ explicit lists such as `72-95`; whole host `0-95`; the MI210 (`mi210_0`) **with 
 | peak host RAM GiB | private/anon peak **plus** file-mapped weights (mmap counts); DS41-1017 = 739 |
 | resumable vs atomic | resumable rows take any slice ≥ min-window and skip done work; atomic rows (e.g. KPF-64 arms, 4.1-6.6 h, fixed order) need the whole slice in one bin |
 | class (DERIVED, CTC-Q-C) | `quiet` only when `decision` names a champion/candidate baseline or an AK keep gate with a cited floor file; `timing-pairable` when indicative; `correctness` otherwise. `--print-class ROW` prints it; a declared class stricter than derived is refused |
-| QUEUED vs BACKLOG | QUEUED = status ARMED, `ready=y`, a live launcher pid polling this id. Anything else is BACKLOG with `blocker=<missing launcher|harness fix|build|operator decision>` and an owner |
+| QUEUED vs BACKLOG | QUEUED = status ARMED, `ready=y`, a live launcher pid polling this id: **ready to run, waiting only for a window**. Anything blocked (code fix, decision, HOLD, missing launcher) is BACKLOG with `blocker=<missing launcher\|harness fix\|build\|operator decision>` and an owner. A failed or HELD end demotes the row in the read-out step itself (`docs/guides/agent-workflows/compute-fillers.md` → *Queue semantics*) |
 
 ## 2. Compatibility rules (what may share a bin)
 
@@ -54,6 +56,13 @@ explicit lists such as `72-95`; whole host `0-95`; the MI210 (`mi210_0`) **with 
   channel (88-95 vs 184-191) prefill -9.6 %. Whole-host CPU models eat it; partial-host models go
   off q3 when a GPU job is live. One ROCr thread escapes `taskset`; pin with
   `HSA_OVERRIDE_CPU_AFFINITY_DEBUG=0` (P1 PASS 10-23) or `taskset -a -p` after health.
+- **A correctness job that carries a cross-arm timing check** (an overhead gate, an M-vs-G ratio)
+  is timing-sensitive for that check. Book it with the GPU idle, and before booking it, check that
+  the harness compares **same-source arms in alternating order** (ABAB, not AAAA-BBBB). Quiet
+  hardware alone does not save it. akx-lb3-2 was INVALID with a GPU co-tenant on 10-24 (overhead
+  -5.79 % > 5 %) and INVALID again on a whole-host quiet run on 10-25 (-5.93/-6.30 %, M
+  consistently faster than G). The cause was the fixed arm order and the different-source arms,
+  not co-tenancy. The fix is AKX-LB32-OVERHEAD-1, a same-source control arm.
 - **RAM is a bin.** `ram_admit.sh <peak_gib> [ds41]` before every grant and every model load.
   At most ONE DS41-class (≥200 GiB; 1017 = 739 GiB) server host-wide: `ram_admit 739 ds41`
   refuses while any process maps a 1017 shard. Keep ≥20 min between DS41 handovers.
@@ -67,13 +76,24 @@ explicit lists such as `72-95`; whole host `0-95`; the MI210 (`mi210_0`) **with 
 Run this loop at every task boundary and on every watcher event (`event-watch-ws58.sh` fires on
 `*FAILED*`, `*.ended`, `*_ENDED`, `*_FREED` under `/mnt/raid0/llm/tmp`).
 
+0. **Derive the plan from the prioritized backlog** at every task boundary and every wrap-up, not
+   only from rows that happen to have a launcher. Regenerate
+   `coordination/compute-calendar/CALENDAR-PLAN.md` (tracked; overwrite it in place, and git
+   history is its record) from `handoffs/active/backlog-priority.json`. Map each item's next step
+   to a compute shape (§1). Prepare missing launchers via subagents. ASSIGN each code blocker to
+   the Codex session with a deadline tied to the window it gates
+   (`docs/guides/agent-workflows/compute-fillers.md` → *Codex NI client contract*). End with an
+   operator digest of the decisions that block compute (§5 format). Idle compute with a non-empty
+   prioritized backlog is a planning failure, not "nothing to run". Origin: 10-25, the CPU sat idle
+   for over an hour while the calendar looked only at launcher-backed FILLERS rows.
 1. **Read the bins.** `region-lock status` (claims), `rocm-smi --showuse --showmemuse` (a held
    gpu-quiet at 0 % use is idle, not busy), `MemAvailable`, open `grants/*.grant`, live writer pids.
    Real utilisation, never the lock table alone.
 2. **Read the items.** `scripts/queue_status.py` (this skill) prints COMPLETE / RUNNING / BOOKED /
    ARMED-UNBOOKED / BACKLOG per owner from FILLERS.md, the grants dir and the live writers. Only
-   ARMED-UNBOOKED rows are placeable. Every BACKLOG row blocked on code gets a subagent **this
-   turn**; unwritten code is never a recorded blocker, and a cleared blocker is armed and requested
+   ARMED-UNBOOKED rows are placeable. An ARMED-UNBOOKED row that cannot actually run (fix not
+   pinned, held by a writer, decision pending) is a defect: demote it to BACKLOG now. Every
+   BACKLOG row blocked on code gets a subagent (or a Codex assignment) **this turn**; unwritten code is never a recorded blocker, and a cleared blocker is armed and requested
    in the same turn as it clears.
 3. **Place, largest-and-stiffest first.** Order: quiet items into the windows they alone can use
    (night, early morning), then atomic long items wholly inside one bin (a 6.6 h arm on q0 for the
@@ -145,6 +165,29 @@ Run this loop at every task boundary and on every watcher event (`event-watch-ws
   status. Capture the rc to a file first (a wrapup-lease refusal was masked this way, 10-24).
 - Move a `.complete` marker aside BEFORE starting the replacement launcher; a launcher that sees the
   marker at start exits "for good".
+- **Stamp `.wsg-granted-<id>` at GRANT time**, right after writing the `.grant`, never after the
+  job ends. A stamp written after `.ended` is always newer than it, so the re-offer test
+  (`.ended` newer than the stamp) skips that item forever. GPU writers v10/v11 lost every
+  clean-ended queue item this way (hsf-5p-microbench, 10-24/25). Fixed in `grant-gpu-1025-v12.sh`.
+- **Liveness is `ps -o pid= -p <pid> >/dev/null`, never `kill -0`**, because `kill -0` is blind in
+  this sandbox. In v11, a failed `kill -0` made `step` return 2, and the item was then stamped
+  granted without running.
+- **Every writer has a cap; arm its successor before the cap.** At booking time, check the cap of
+  the writer that owns each slot. GPU writer v10 hit its 10-24 22:00Z cap and exited at 21:22Z. No
+  successor was armed, so the GPU sat idle all night.
+- **A HOLD written by one writer and removed by another needs a keeper** when quiet blocks chain.
+  The keeper is a small script that re-creates the HOLD until the last quiet job's `.ended`, then
+  removes it and writes the hand-off flag. Without one, the first writer's exit freed the GPU
+  writer into the next quiet window. Precedent: `hold-keeper-c4-v11-20261024.sh` (C4 re-run, then
+  v11-086-cpu).
+- **Validator formats that writers kept failing:** `min_effect` is a number with a unit or
+  `n/a (<reason>)` (a bare `n/a` is refused). The launcher cell carries a live `pid=NNN`, which
+  the validator checks against `/proc`. See compute-fillers.md → *Grant validator*.
+- **Verify every fast "complete" before relaying it, and read the individual gate lines, not the
+  summary verdict.** On 10-24, the C4 `GATE_gpu.txt` said `GATE gpu PASS` while its line
+  `(a0) test-llama-archs rc=134 FAIL`, because `fail=1` was set inside a `$(...)` subshell and
+  never reached the summary. A run that ends well under its estimate is a failure to explain until
+  its per-gate lines say otherwise.
 - A correctness harness runs the role's production serving env (the codified recipe), never the bare
   binary: on the C3 build, greedy decode without `GGML_FUSED_DECODE_OFF=1` was garbage while PPL looked
   fine, because only one-token decode takes the fused path (10-24).
@@ -156,7 +199,10 @@ Run this loop at every task boundary and on every watcher event (`event-watch-ws
   The calendar owner validates (`grant_ok`), places it in the next fitting slot, writes the grant
   (or the writer step), and answers with the window. Peers never write grant files; an owner
   re-issuing its *own identical unexpired* window is the one tolerated exception.
-- Cross-session relay is `SendMessage` plus a flag file touched on success and failure.
+- Cross-session relay is `SendMessage` plus a flag file touched on success and failure. The Codex
+  NI session is file-only: code blockers are ASSIGNED to it with window-tied deadlines, open
+  windows are announced in `OPEN-WINDOWS.json`, and it runs nothing outside a grant or while any
+  `HOLD_*` exists (`docs/guides/agent-workflows/compute-fillers.md` → *Codex NI client contract*).
 - Every launcher is paired with a zero-token watcher by its owner at arm time; before idling for
   the night, list every armed job with its end flag and the watcher that covers it.
 - A choice only the operator can make (which reference, lift a hold, accept a redesign cost) is
@@ -164,6 +210,11 @@ Run this loop at every task boundary and on every watcher event (`event-watch-ws
   → Recommendation (labelled) → Default if unanswered**, with the compute cost estimate first.
   "Recommendation stated in the package" is not a package; the operator reads the plan, not a
   promise of one. Everything not depending on the answer keeps running.
+- **A dismissed or declined operator question pauses only that item**, even when the tool's
+  result says "STOP". Watching jobs, granting pre-approved classes, verifying results and the
+  calendar all continue. Keep the item listed as pending and mention it once in the next report.
+  Only an explicit operator "stop everything" halts the session. Origin: 10-24, a dismissed
+  shared-clone-ff question froze every calendar duty for about 40 min.
 
 ## 6. Status / ETA report (the format the operator asked for)
 

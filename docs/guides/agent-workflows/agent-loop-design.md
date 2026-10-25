@@ -771,6 +771,29 @@ function, fails the test. That test is what stops the next feature from forgetti
 
 The persistent pool lanes are also outside the registry, because they are reused across runs by design.
 
+## "Wired" is a canary result, not a code read (operator, 2026-10-25)
+
+A loop (AutoKernel, AutoPilot) counts as wired to its knowledge only when a **planning-context
+canary** shows historical conclusions in the context the planner actually assembles. Code paths,
+tests and a `ready` read are not enough: they passed while the planners saw none of the past
+experiments, seeds or measurements.
+
+- The canary runs no inference and stops at context assembly. It passes only if a known historical
+  conclusion appears in the assembled context **and** the do-not-repeat history loads. One canary
+  per loop: VB-CANARY-GATE (which makes VB-REFOCUS-NONEMPTY-READ-PROOF executable) in
+  `handoffs/active/vidya-belief-substrate-program.md`. Precedent dry run:
+  `/mnt/raid0/llm/tmp/ws58-canary-20261025/CANARY.md`.
+- The belief reader the planners call runs current code from a views checkout of `origin/main`,
+  never the stale shared `/workspace` clone.
+- The write side is part of the proof. A result that never reaches the ledger cannot show up in
+  the canary. Every result tick is captured at wrap-up (`agents/commands/wrap-up.md` →
+  *Belief-capture gate*).
+
+Never report a loop as "wired" in a review, audit or handoff without that loop's passing canary.
+Origin: on 10-25 the operator called out the same "the loops are wired" conclusion recurring every
+two weeks. Only 1 of 10-24's result ticks had reached the ledger, although 10 had native adapters
+(`docs/reference/loop-planning-inputs-audit-2026-10-25.md`).
+
 ## Related
 
 - [`handoffs/active/autokernel-rebuild-program.md`](../../../handoffs/active/autokernel-rebuild-program.md) — the program this convention came out of, with the five verified causes.

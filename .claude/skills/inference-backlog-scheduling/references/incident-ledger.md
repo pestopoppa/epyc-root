@@ -1,4 +1,4 @@
-# Incident ledger, 2026-10-21 .. 2026-10-23
+# Incident ledger, 2026-10-21 .. 2026-10-25
 
 Every rule in SKILL.md section 4 was paid for by one of these. Source: the append-only REVISION
 log in `/mnt/raid0/llm/tmp/compute-calendar-20261021.md`, `compute-flags/*.log`, and the owner
@@ -45,6 +45,15 @@ duties list in `docs/guides/agent-workflows/compute-fillers.md`. Times are UTC.
 | 10-24 09:11 | G2-CONC A4 FAIL: degeneracy detector misread LaTeX-dense correct math as a loop | gate FAIL recorded (not regraded) | detector v2.1 on independent fixtures, AMENDMENT 5, fresh re-run |
 | 10-24 09:21 | arm-P coherence NO-GO: the harness ran without the serving env; fused decode default-ON made even UD garbage | verdict void; surfaced FD-DIV-2 (v10 production wrong on the fused path) | harnesses copy the role's serving env; control arm must pass |
 | 10-24 09:0x | `serialized_push --acquire \| tail -1 && ...` masked a wrapup-lease refusal | regen ran unleased in a private worktree (no tracked change) | capture rc before chaining |
+| 10-24 08:58 | C4 `GATE_gpu.txt` summary said PASS while `(a0) test-llama-archs rc=134 FAIL`: `fail=1` was set inside a `$(...)` subshell | false PASS nearly relayed | read every gate line, not the verdict; verify fast "complete"s |
+| 10-24 ~18:14 | Codex NI ran an ungranted test during a quiet-gate block; same day pushed onto a kernel experimental branch | quiet gate put at risk | Codex runs nothing outside a grant or under any `HOLD_*`; pushes `codex/*` only, explicit refspec |
+| 10-24 ~18:5x | operator dismissed an AskUserQuestion; the session froze every calendar duty | ~40 min of coordination | a dismissed question pauses only that item |
+| 10-24 19:40 / 10-25 05:59 | akx-lb3-2 INVALID (overhead -5.79 %) blamed on GPU co-tenancy; INVALID again on a whole-host quiet run (-5.93/-6.30 %, M faster than G) | two whole-host windows | cross-arm timing checks need same-source arms in alternating order; the first attribution was wrong |
+| 10-24 ~20:4x | C4 writer removes HOLD at its end, which would free the GPU writer into v11-086-cpu's quiet window | (caught) | a HOLD crossing writers needs a keeper (`hold-keeper-c4-v11-20261024.sh`) |
+| 10-24 21:22 | GPU writer v10 hit its cap; no successor armed | GPU idle all night | arm the successor before every writer's cap |
+| 10-24/25 | GPU writers v10/v11 stamped `.wsg-granted-<id>` after `.ended`, so the re-offer test skipped every clean-ended item; v11 liveness used `kill -0` | hsf-5p re-run never offered | stamp at grant time; `ps -o pid= -p` liveness (`grant-gpu-1025-v12.sh`) |
+| 10-25 ~06-07 | CPU idle >1 h: the calendar looked only at launcher-backed FILLERS rows, not the prioritized backlog | idle CPU | calendar plan derived from `backlog-priority.json` at every boundary, tracked in `coordination/compute-calendar/` |
+| 10-25 09:43 | inf66, akx-lb3-2, hpr-b, nib2-gnx1-reindex-2 stayed ARMED after failed/HELD ends | nearly starved the KPF-64.3 EB writer's whole-host gate | ARMED = runnable; the read-out step demotes the row to BACKLOG with its blocker |
 
 Operator rulings that fix the objective (not incidents):
 
@@ -55,3 +64,7 @@ Operator rulings that fix the objective (not incidents):
   until AK kernel work (short one-off checks allowed by cost); `WINDOW_CONFIRMED=1` only inside a
   grant; GPU + CPU inference may co-run in production once pinned.
 - 10-23: when a code blocker clears, the owner arms and requests a slot in the same turn.
+- 10-24: standalone coding tasks go to the Codex session; regularly coordinate idle windows with it.
+- 10-25: "only arm into the calendar inference tasks that are actually ready to go but need a
+  window"; the prioritized handoff backlog is the calendar's input "so that we always know what
+  needs to be done next".
