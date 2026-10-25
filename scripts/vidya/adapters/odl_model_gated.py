@@ -283,3 +283,14 @@ def project_unlimited_ocr_run(native: dict) -> ClaimTuple:
         if isinstance(exc, ProjectionError):
             raise
         raise ProjectionError(f"ODL run projection refused: {exc}") from exc
+
+
+# The CLI imports ``adapters`` from scripts/vidya; source consumers also use
+# ``scripts.vidya.adapters`` from the repository root. Publish the fully
+# initialized module under both spellings so the projection registers once.
+# Keep the registry's strict callable-identity check for different functions.
+if __name__ in {"adapters.odl_model_gated", "scripts.vidya.adapters.odl_model_gated"}:
+    _other_name = ("scripts.vidya.adapters.odl_model_gated"
+                   if __name__ == "adapters.odl_model_gated"
+                   else "adapters.odl_model_gated")
+    sys.modules[_other_name] = sys.modules[__name__]
