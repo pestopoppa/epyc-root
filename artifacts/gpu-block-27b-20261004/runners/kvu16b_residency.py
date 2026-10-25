@@ -15,7 +15,8 @@ DECODING until all four are resident at once:
     are a static overflow guarantee: sum(prompt) + sum(budget) + margin + residual cells
     <= pool (393216), split by weight so the earliest request (which waits longest) gets
     the most;
-  * once a /slots sample shows all 4 slots decoding (is_processing, n_decoded > 0) with
+  * once a /slots sample shows all 4 request-owned tasks past prompt end (processed plus
+    cached tokens cover the prompt, or that request's first token preceded the poll) with
     resident tokens >= 300k (sum of n_prompt_tokens = prompt.tokens.size(), which includes
     generated tokens — server-context.cpp:535), it keeps sampling for --hold-s and then
     closes the streams (the server cancels the tasks);
@@ -54,6 +55,9 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import lib_gpublock as L  # noqa: E402
+from kvu16b_predicate import (  # noqa: E402
+    CausalSlotsSampler, PREDICATE_VERSION, RequestLedger, admission_ok, residency_sample,
+)
 
 TAIL = "\n\n---\nContinue: write a long, detailed technical analysis of the material above, section by section.\n"
 
@@ -62,6 +66,28 @@ def budgets(pool: int, prompts: list[int], margin: int, residual: int, weights: 
     head = pool - sum(prompts) - margin - residual
     ws = [w / sum(weights) for w in weights]
     return head, [max(0, int(head * w)) for w in ws]
+
+
+def run_request(i, prompt, budget, base, max_wall_s, ledger, first_event, stop, results, sink):
+    """Record genuine first tokens separately from a stream's completion signal."""
+    def first_token():
+        ledger.first(i)
+        first_event.set()
+
+    try:
+        ledger.sent(i)
+        body = {"prompt": prompt[0], "n_predict": budget, "ignore_eos": True}
+        r = L.stream_request(f"{base}/completion", body, timeout=max_wall_s + 600,
+                             on_first_token=first_token, stop=stop)
+        r.pop("content", None)
+        r.pop("reasoning", None)
+        results[i] = {"i": i, "prompt_tokens": prompt[1], "budget": budget, **r,
+                      **L.timing_summary(r.get("timings"))}
+        sink.add(results[i])
+    except Exception as exc:
+        results[i] = {"i": i, "error": repr(exc), "worker_fault": True}
+    finally:
+        first_event.set()  # scheduling wake-up only; never first-token evidence
 
 
 def main() -> int:
@@ -133,7 +159,7 @@ def main() -> int:
     port = int(args.base.rsplit(":", 1)[1])
     pid = L.port_pid(port)
     argv = L.proc_cmdline(pid) if pid else []
-    rep: dict = {"schema": "epyc.gpublock.kvu16b.v1", "started_at": L.now_iso(), "args": vars(args),
+    rep: dict = {"schema": "epyc.gpublock.kvu16b.v2", "started_at": L.now_iso(), "args": vars(args),
                  "server_pid": pid, "server_started": L.proc_lstart(pid) if pid else None,
                  "argv_ok": "--kv-unified" in argv and "-c" in argv and argv[argv.index("-c") + 1] == str(args.pool),
                  "slots_debug_env": L.proc_environ(pid).get("LLAMA_SERVER_SLOTS_DEBUG") if pid else None,
@@ -195,39 +221,42 @@ def main() -> int:
         print(rep["abort_reason"], flush=True)
         return 2
 
+    # ---- request ownership: refresh after the purge/erase changed task identities.
+    rows = [L.slot_view(s) for s in L.get_json(f"{args.base}/slots", 10)]
+    if any(r["proc"] for r in rows):
+        raise SystemExit("slots became busy before the residency replay")
+    ledger = RequestLedger(rep["prompt_tokens"], {r["id_task"] for r in rows if r["id_task"] is not None})
+    rep["predicate_version"] = PREDICATE_VERSION
     # ---- samplers + staggered streams
     stop = threading.Event()
     state = {"pass_t": None, "pass_sample": None, "max_dec": 0, "max_res": 0, "max_res_dec_n": 0}
 
-    def on_sample(t: float, rows: list[dict]) -> None:
-        dec = [r for r in rows if r["proc"] and r["n_dec"] > 0]
+    def on_sample(t: float, t_resp: float, rows: list[dict]) -> None:
+        dec = ledger.observe(t, rows)
         res = sum(r["n_tok"] for r in rows)
         state["max_dec"] = max(state["max_dec"], len(dec))
         state["max_res"] = max(state["max_res"], res)
         if len(dec) == args.n:
             state["max_res_dec_n"] = max(state["max_res_dec_n"], res)
-            if res >= args.resident_threshold and state["pass_t"] is None:
+            if residency_sample(dec, res, args.n, args.resident_threshold) and state["pass_t"] is None:
                 state["pass_t"] = t
-                state["pass_sample"] = {"t": round(t, 3), "resident": res, "slots": rows}
+                state["pass_sample"] = {"t": round(t, 3), "t_resp": round(t_resp, 3),
+                                        "resident": res, "slots": rows, "decoding_requests": sorted(dec),
+                                        "request_slot_task_map": [{"i": i, "slot": r["id"], "task": r["id_task"]}
+                                                                  for i, r in dec.items()]}
                 print(f"PASS SAMPLE: {args.n} decoding, resident {res}", flush=True)
 
     vs = L.VramSampler(pid, args.vram_interval)
-    ss = L.SlotsSampler(args.base, args.slots_interval, sink=slots_sink, on_sample=on_sample)
+    ss = CausalSlotsSampler(lambda: [L.slot_view(s) for s in L.get_json(f"{args.base}/slots", 5.0)],
+                            args.slots_interval, slots_sink, on_sample)
     vs.start()
     ss.start()
     results: list[dict] = [{} for _ in prompts]
     firsts = [threading.Event() for _ in prompts]
 
     def worker(i: int) -> None:
-        body = {"prompt": prompts[i][0], "n_predict": bud[i], "ignore_eos": True}
-        r = L.stream_request(f"{args.base}/completion", body, timeout=args.max_wall_s + 600,
-                             on_first_token=firsts[i].set, stop=stop)
-        firsts[i].set()
-        r.pop("content", None)
-        r.pop("reasoning", None)
-        results[i] = {"i": i, "prompt_tokens": prompts[i][1], "budget": bud[i], **r,
-                      **L.timing_summary(r.get("timings"))}
-        req_sink.add(results[i])
+        run_request(i, prompts[i], bud[i], args.base, args.max_wall_s,
+                    ledger, firsts[i], stop, results, req_sink)
 
     t0 = time.time()
     threads = []
@@ -238,10 +267,21 @@ def main() -> int:
         print(f"sent request {i} at +{time.time() - t0:.0f}s", flush=True)
         if i < args.n - 1:
             while not firsts[i].wait(5):
-                if time.time() - t0 > args.max_wall_s:
+                if time.time() - t0 > args.max_wall_s or ledger.faults or ss.fault:
                     break
+            # Prompt-end staggering alone does not ensure the previous request was
+            # sampled. Wait for its task binding before sending another request.
+            while not ledger.mapped[i].wait(1):
+                if (time.time() - t0 > args.max_wall_s or ledger.faults or ss.fault
+                        or not th.is_alive()):
+                    break
+            if (ledger.first_at[i] is None or not ledger.mapped[i].is_set()
+                    or ledger.faults or ss.fault):
+                break
             print(f"request {i} first token at +{time.time() - t0:.0f}s", flush=True)
     while time.time() - t0 < args.max_wall_s:
+        if ledger.faults or ss.fault:
+            break
         if state["pass_t"] and time.time() - state["pass_t"] >= args.hold_s:
             break
         if all(not th.is_alive() for th in threads):
@@ -257,25 +297,28 @@ def main() -> int:
     vs.join(timeout=5)
 
     # ---- decode rates during the all-decoding phase (decode tax with resident neighbours)
-    all_dec = [(t, rows) for t, rows in ss.samples if sum(1 for r in rows if r["proc"] and r["n_dec"] > 0) == args.n]
-    rates = {}
-    if len(all_dec) >= 2:
-        (ta, ra), (tb, rb) = all_dec[0], all_dec[-1]
-        da = {r["id"]: r["n_dec"] for r in ra}
-        for r in rb:
-            rates[r["id"]] = round((r["n_dec"] - da.get(r["id"], 0)) / max(1e-6, tb - ta), 2)
+    rates, rate_faults = ledger.rates()
     vram = vs.summary()
     bad = log.counts()
-    failed = [r["i"] for r in results if r.get("http_status") not in (200, None) or (r.get("error") and not r.get("aborted"))]
-    ok = (state["pass_t"] is not None and all(v == 0 for v in bad.values())
-          and vram["kfd_peak_gib"] is not None and vram["kfd_peak_gib"] <= args.kfd_budget_gib and not failed)
+    failed = [i for i, r in enumerate(results) if not r or r.get("worker_fault")
+              or r.get("http_status") not in (200, None) or (r.get("error") and not r.get("aborted"))]
+    if ss.is_alive():
+        ss.fault = ss.fault or "sampler did not stop before report"
+    ok = admission_ok(state["pass_t"], bad, vram["kfd_peak_gib"], args.kfd_budget_gib,
+                      failed, ledger.faults, ss.fault)
     rep.update({
         "finished_at": L.now_iso(), "wall_s": round(time.time() - t0, 1), "requests": results,
         "first_token_s": [round(r["t_send"] + r["ttft_s"] - t0, 1) if r.get("ttft_s") else None for r in results],
-        "max_slots_decoding": state["max_dec"], "max_resident_tokens": state["max_res"],
+        "max_slots_decoding": state["max_dec"], "max_requests_decoding": state["max_dec"],
+        "max_resident_tokens": state["max_res"],
         "max_resident_with_all_decoding": state["max_res_dec_n"], "pass_sample": state["pass_sample"],
-        "decode_tps_per_slot_all_decoding": rates, "decode_tps_sum_all_decoding": round(sum(rates.values()), 2) if rates else None,
-        "slots_samples": len(ss.samples), "slots_errors": ss.errors, "vram": vram, "bad_line_counts": bad,
+        "decode_tps_per_request_all_decoding": rates, "decode_rate_faults": rate_faults,
+        "decode_tps_sum_all_decoding": round(sum(rates.values()), 2) if rates else None,
+        "request_task_map": ledger.tasks, "request_sent_at": ledger.sent_at,
+        "request_first_token_at": ledger.first_at, "mapping_faults": ledger.faults,
+        "decoding_request_history": ledger.history,
+        "slots_samples": len(ss.samples), "slots_errors": ss.errors, "slots_missed_samples": ss.missed_samples,
+        "slots_sampler_fault": ss.fault, "vram": vram, "bad_line_counts": bad,
         "prompt_cache_events": L.prompt_cache_events(log.lines()), "failed_requests": failed,
         "log_offset_end": L.LOG_8083.stat().st_size, "window_at_end": L.window_status(),
         "verdict": "PASS" if ok else "FAIL",
@@ -287,7 +330,7 @@ def main() -> int:
           f"- max slots decoding at once {state['max_dec']}; max resident {state['max_res']}; "
           f"max resident while all {args.n} decoding {state['max_res_dec_n']} (threshold {args.resident_threshold})",
           f"- bad lines {bad}; KFD peak {vram['kfd_peak_gib']} GiB (budget {args.kfd_budget_gib}); failed requests {failed}",
-          f"- decode tok/s per slot with all {args.n} decoding: {rates} (sum {rep['decode_tps_sum_all_decoding']})",
+          f"- decode tok/s per request with all {args.n} decoding: {rates} (sum {rep['decode_tps_sum_all_decoding']})",
           f"- idle-purge evidence (production flags): {json.dumps(purge)}",
           f"- server log bytes {rep['log_offset_start']}-{rep['log_offset_end']} of {L.LOG_8083}"]
     (od / "report.md").write_text("\n".join(md) + "\n")
