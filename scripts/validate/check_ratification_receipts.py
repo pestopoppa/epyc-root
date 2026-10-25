@@ -107,6 +107,10 @@ SCAN_GLOBS = (
 # Consolidated receipts are written to receipts/ (the original convention) and,
 # since receipts/ became the keyed-index namespace, beside the decision receipt.
 RECEIPT_GLOBS = ("artifacts/operator/receipts/*.receipt.json", "artifacts/operator/*.receipt.json")
+# Operator decision-receipt schemas. A file of one of these schemas WITHOUT a `verdict`
+# key is a decision record, not a section-5 consolidated receipt, even at a
+# `.receipt.json` name. A file that carries `verdict` is always judged.
+DECISION_RECEIPT_SCHEMAS = frozenset({"epyc.operator_receipt.v1"})
 SKIP_NAMES = ("ratify_receipt.sh", "ratification_receipt.py", "check_ratification_receipts.py")
 
 # Idioms that WRITE a file, matched on comment-stripped text. Deliberately broad:
@@ -462,6 +466,20 @@ def check_receipts(repo_root: Path, directory: Path | None = None) -> tuple[list
         except (OSError, ValueError) as exc:
             errors.append(f"{COULD_NOT_CHECK}: receipt {path.name} is unreadable ({exc})")
             continue
+        if isinstance(doc, dict) and doc.get("schema") in DECISION_RECEIPT_SCHEMAS and "verdict" not in doc:
+            # An operator DECISION receipt that happens to use the .receipt.json suffix
+            # (RATIFY-CTXCKPT-HYBRID-20261024 wrote one). It records a signature over a
+            # non-boundary change and has no section-5 verdict to check. Listed, not judged.
+            receipts.append({
+                "receipt": str(path.relative_to(repo_root)) if path.is_relative_to(repo_root) else path.name,
+                "ratification_id": doc.get("token") or doc.get("gate_id"),
+                "protocol_id": None,
+                "verdict": None,
+                "emitted_at_utc": doc.get("signed_at") or doc.get("ratified_at"),
+                "preserved_refusal": False,
+                "status": f"decision receipt ({doc.get('schema')}), not a section-5 consolidated receipt",
+            })
+            continue
         receipts.append(
             {
                 "receipt": str(path.relative_to(repo_root)) if path.is_relative_to(repo_root) else path.name,
@@ -477,7 +495,7 @@ def check_receipts(repo_root: Path, directory: Path | None = None) -> tuple[list
         if r["verdict"] == "RATIFIED":
             ratified_at.setdefault(r["ratification_id"], []).append(r["emitted_at_utc"] or "")
     for r in receipts:
-        if r["verdict"] == "RATIFIED":
+        if r["verdict"] == "RATIFIED" or r.get("status", "").startswith("decision receipt"):
             continue
         if r["preserved_refusal"]:
             later = [t for t in ratified_at.get(r["ratification_id"], []) if t > (r["emitted_at_utc"] or "")]

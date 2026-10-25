@@ -1,0 +1,63 @@
+diff --git a/.claude/settings.json b/.claude/settings.json
+index 1ae3b55..0579579 100644
+--- a/.claude/settings.json
++++ b/.claude/settings.json
+@@ -55,6 +55,11 @@
+             "command": "bash \"$CLAUDE_PROJECT_DIR/scripts/hooks/check_operator_apply_copy.sh\"",
+             "timeout": 10
+           },
++          {
++            "type": "command",
++            "command": "bash \"$CLAUDE_PROJECT_DIR/scripts/hooks/check_destructive_scratch.sh\"",
++            "timeout": 5
++          },
+           {
+             "type": "command",
+             "command": "bash \"$CLAUDE_PROJECT_DIR/scripts/hooks/check_filesystem_containment.sh\"",
+diff --git a/agents/shared/OPERATING_CONSTRAINTS.md b/agents/shared/OPERATING_CONSTRAINTS.md
+index a7237cb..0795ffa 100644
+--- a/agents/shared/OPERATING_CONSTRAINTS.md
++++ b/agents/shared/OPERATING_CONSTRAINTS.md
+@@ -338,6 +338,15 @@ treated as two copies when both were aliases of one physical tree.)
+      hold a live run's watchdog first. Procedure: `docs/guides/agent-workflows/cleanup-reference-check.md`.
+      (origin: INC-20261004-cleanup-removed-load-bearing-worktree — an approved cleanup removed a landed, clean, 7-day-idle worktree that
+      DS41's launchers export as `EPYC_ROOT_REPO`, and DS41's next relaunches died)
++   - **Citation check: cited is not removable.** Before removing anything under
++     `/mnt/raid0/llm/{tmp,worktrees,.trash,state}`, check that nothing cites it. The sources are
++     handoffs (active and blocked, on `origin/main` and in the working tree), FILLERS rows, grants
++     and launchers, and canonical-ledger records. There is no size threshold, and an unreadable
++     source means keep (fail-closed). Once it lands (NIB2-105), the instrument is
++     `scripts/system/citation_oracle.py check`. The full predicate is `MEASUREMENT.md` §5 →
++     *Evidence retention and reclamation*. (origin: 2026-10-20, a volume reclaim skipped this check
++     for entries under 0.02 GiB and removed 72 cited paths that way; 244 real tmp losses were
++     reconciled on 2026-10-25, `docs/reference/tmp-loss-reconcile-2026-10-25.md`)
+    - **Harness state and session transcripts are never a candidate.** Claude and Codex backup logs and
+      session transcripts, and every third-party agent harness's own state (opencode, hermes, Claude
+      share, harness codex homes), are never deleted, moved, truncated, vacuumed or reaped: not under
+@@ -354,12 +363,26 @@ treated as two copies when both were aliases of one physical tree.)
+    out). Direct `rm -rf` on data roots is a violation even when the operator approved the
+    deletion — approve the deletion, not the method. `--bypass-guard` exists only for operator-
+    approved cases and writes a CRITICAL audit line.
++   **Purge only through `scripts/safety/trash-sweep.sh`, after at least 7 days in the trash.** An
++   approved batch purge does not shorten the hold. Nothing ever `rmtree`s, `rm -rf`s or
++   `find -delete`s the trash root itself. (origin: 2026-10-20, `purge_batch.py` `shutil.rmtree`'d a
++   `guarded_rm.sh` batch out of `.trash` 20 s to 2 min after trashing, so trash-first protected
++   nothing)
+ 3. **Audit:** every guarded deletion and every identity check that found aliases appends to
+    `/workspace/logs/safety_audit.log`; a deletion that was justified by a wrong identity
+    conclusion must be reported as an incident, not folded into the task summary.
+ 4. **Delete exact paths only.** A cleanup removes only the exact paths it created, never a glob or pattern such as
+    `rm -rf dir/prefix-*`. A pattern names whatever matches today, including evidence that another run wrote. (origin:
+    INC-20261004-glob-rm-deleted-receipt-evidence: a dry-run cleanup glob deleted a ledgered receipt's raw run dir)
++5. **Reclaims go through the sanctioned path.** A reclaim that is not a per-handoff scratch cleanup,
++   such as a volume or disk-pressure reclaim, runs only through `scripts/system/reclaim_scratch.py`
++   (NIB2-108): plan, manifest, confirm-token apply, and every removal through `guarded_rm.sh`.
++   Until that tool lands, such a reclaim removes exact paths one at a time, each through
++   `guarded_rm.sh` after the citation check. An inline classifier or executor (a heredoc,
++   `python3 -c`, or an ad-hoc script) that decides or performs deletions is a violation. The
++   PreToolUse hook `scripts/hooks/check_destructive_scratch.sh` refuses recursive deletes under
++   those roots that bypass the guarded tools. Its override is
++   `EPYC_ALLOW_SCRATCH_DELETE='operator: <who> <date>: <reason>'`, for operator-approved cases only.
+ 
+ ## Act, Don't Defer — the admission test for escalating at all
+ 

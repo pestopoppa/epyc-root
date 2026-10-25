@@ -1,0 +1,465 @@
+diff --git a/scripts/hooks/check_destructive_scratch.sh b/scripts/hooks/check_destructive_scratch.sh
+new file mode 100755
+index 0000000000000000000000000000000000000000..c36480e2b82d57d0cde407524798bbca3b0efc40
+--- /dev/null
++++ b/scripts/hooks/check_destructive_scratch.sh
+@@ -0,0 +1,32 @@
++#!/bin/bash
++set -euo pipefail
++# Hook: PreToolUse -> Bash
++# Refuses recursive / inline-script deletes under /mnt/raid0/llm/{tmp,worktrees,.trash,state}
++# unless routed through the sanctioned tools (scripts/safety/guarded_rm.sh etc.).
++#
++# Origin: 2026-10-20 E2 purge (purge_batch.py shutil.rmtree'd the trash batch 20 s-2 min after
++# guarded_rm); 244 real tmp losses reconciled 2026-10-25,
++# docs/reference/tmp-loss-reconcile-2026-10-25.md section 2 and section 6 guard 5, NIB2-108.
++# Limits: cannot see deletes in already-running processes or files it cannot read; fail-open on
++# unparseable input (the hygiene-tick backstop covers those). Rules live in the scanner.
++# Override: EPYC_ALLOW_SCRATCH_DELETE="operator: <who> <date>: <reason>" in the hook env.
++# Tests: scripts/hooks/tests/test_destructive_scratch_hook.sh
++
++INPUT=$(cat)
++command -v jq >/dev/null 2>&1 || exit 0
++TOOL=$(printf '%s' "$INPUT" | jq -r '.tool_name // empty' 2>/dev/null) || exit 0
++case "$TOOL" in Bash|"") ;; *) exit 0 ;; esac
++CMD=$(printf '%s' "$INPUT" | jq -r '.tool_input.command // empty' 2>/dev/null) || exit 0
++[[ -z "$CMD" ]] && exit 0
++
++SCAN="$(dirname "${BASH_SOURCE[0]}")/destructive_scratch_scan.py"
++if ! command -v python3 >/dev/null 2>&1 || [[ ! -f "$SCAN" ]]; then
++  exit 0
++fi
++
++set +e
++printf '%s' "$CMD" | python3 "$SCAN"
++RC=$?
++set -e
++[[ "$RC" == "2" ]] && exit 2
++exit 0
+diff --git a/scripts/hooks/destructive_scratch_scan.py b/scripts/hooks/destructive_scratch_scan.py
+new file mode 100755
+index 0000000000000000000000000000000000000000..44c2d49667f67322a882eb60503015b79f18e913
+--- /dev/null
++++ b/scripts/hooks/destructive_scratch_scan.py
+@@ -0,0 +1,310 @@
++#!/usr/bin/env python3
++"""Destructive-scratch scanner for the PreToolUse Bash hook check_destructive_scratch.sh.
++
++PURPOSE
++  Refuse a Bash command that RECURSIVELY or INLINE-SCRIPT deletes under the protected
++  scratch roots (/mnt/raid0/llm/tmp, /worktrees, /.trash, /state) without going through the
++  sanctioned, trash-first tools (scripts/safety/guarded_rm.sh and friends).
++
++ORIGIN
++  2026-10-20 E2 purge: purge_batch.py shutil.rmtree'd the trash batch 20 s-2 min after
++  guarded_rm moved it there, so "trash first" protected nothing. 244 real tmp losses were
++  reconciled 2026-10-25 (docs/reference/tmp-loss-reconcile-2026-10-25.md section 2 and
++  section 6 guard 5, NIB2-108).
++
++REFUSES (only when a target / string literal resolves under a protected root)
++  rm with a recursive flag; find ... -delete / -exec rm; rmdir of an existing NON-EMPTY dir;
++  shutil.rmtree / os.unlink / os.remove / os.rmdir / .unlink( / .rmdir( inside python -c or a
++  heredoc fed to python/bash/sh; and for `python3 FILE` / `bash FILE`, the same primitives
++  found in FILE's contents (<= 2 MiB) together with a protected-root string literal.
++ALLOWS
++  sanctioned tools (guarded_rm.sh, trash-sweep.sh, reclaim_scratch.py, scratch_cleanup.py,
++  worktree_gate.py, autokernel_disk_sweep.py) by basename, contents NOT scanned; bare /tmp/**
++  and the session scratchpad; rm of a mktemp-derived target (the guard's own test idiom);
++  plain non-recursive `rm file`; mentions of the words (grep -r rmtree ...).
++  FAIL-OPEN on what cannot be parsed or resolved (unknown $VAR, unreadable file): the
++  hygiene-tick backstop (guards-design section 2.8) covers those. A literal protected
++  prefix followed by a variable (/mnt/raid0/llm/tmp/$X) IS refused.
++OVERRIDE
++  env EPYC_ALLOW_SCRATCH_DELETE="operator: <who> <date>: <reason>" (read from the HOOK's
++  environment, so a command cannot self-authorize by embedding the text).
++TEST-ONLY KNOB
++  EPYC_DESTRUCTIVE_SCRATCH_ROOTS=colon:separated:roots replaces the protected-root list so
++  tests can use mktemp dirs. Never set it in production.
++LIMITS
++  Cannot see deletes inside processes already running, files it cannot read, code fetched
++  or built at run time, or dataflow (a script that deletes a path computed elsewhere).
++
++CLI: command text on stdin; exit 0 = allow, exit 2 = refuse (reason on stderr).
++"""
++from __future__ import annotations
++
++import os
++import re
++import shlex
++import sys
++
++DEFAULT_ROOTS = ("/mnt/raid0/llm/tmp", "/mnt/raid0/llm/worktrees",
++                 "/mnt/raid0/llm/.trash", "/mnt/raid0/llm/state")
++SANCTIONED = {"guarded_rm.sh", "trash-sweep.sh", "reclaim_scratch.py", "scratch_cleanup.py",
++              "worktree_gate.py", "autokernel_disk_sweep.py"}
++ACK_ENV = "EPYC_ALLOW_SCRATCH_DELETE"
++ACK_RE = re.compile(r"^operator: \S+ \S+: \S.*$")
++MAX_FILE = 2 * 1024 * 1024
++FIX = ("trash via scripts/safety/guarded_rm.sh <exact path> (OPERATING_CONSTRAINTS.md -> "
++       "Destructive operations), or set EPYC_ALLOW_SCRATCH_DELETE='operator: <who> <date>: <reason>'")
++
++PRIMITIVE = re.compile(
++    r"\bshutil\.rmtree\b|\brmtree\s*\(|\bos\.(?:unlink|remove|rmdir|removedirs)\s*\("
++    r"|\.(?:unlink|rmdir)\s*\("
++    r"|(?<![\w./-])rm\s+(?:-[A-Za-z]*[rR][A-Za-z]*|--recursive)\b"
++    r"|\bfind\b[^\n]*\s-delete\b|\bfind\b[^\n]*-exec\s+rm\b")
++INTERP = re.compile(r"^(python[0-9.]*|bash|sh|dash|zsh)$")
++
++
++def roots() -> list[str]:
++    env = os.environ.get("EPYC_DESTRUCTIVE_SCRATCH_ROOTS")
++    raw = [r for r in env.split(":") if r] if env else list(DEFAULT_ROOTS)
++    out: list[str] = []
++    for r in raw:
++        for v in (r.rstrip("/"), os.path.realpath(r)):
++            if v not in out:
++                out.append(v)
++    return out
++
++
++def under(path: str, rs: list[str]) -> str | None:
++    for r in rs:
++        if path == r or path.startswith(r + "/"):
++            return r
++    return None
++
++
++def root_literals(text: str, rs: list[str]) -> list[str]:
++    hits = []
++    for r in rs:
++        if re.search(re.escape(r) + r"(?![\w.-])", text):
++            hits.append(r)
++    return hits
++
++
++def split_commands(cmd: str):
++    """Quote-aware split on ; && || | newline. Returns (segments, heredocs).
++
++    heredocs: list of (segment_text_with_marker, body).
++    """
++    segs: list[str] = []
++    heredocs: list[tuple[str, str]] = []
++    lines = cmd.split("\n")
++    i = 0
++    pending: list[tuple[str, str, int]] = []
++    cur_lines: list[str] = []
++    while i < len(lines):
++        line = lines[i]
++        cur_lines.append(line)
++        marks = re.findall(r"<<-?\s*(['\"]?)([A-Za-z_][A-Za-z0-9_]*)\1", line)
++        i += 1
++        for _, term in marks:
++            body = []
++            while i < len(lines) and lines[i].strip() != term:
++                body.append(lines[i])
++                i += 1
++            i += 1
++            heredocs.append((line, "\n".join(body)))
++    text = "\n".join(cur_lines)
++    buf, q, k, n = [], None, 0, len(text)
++    while k < n:
++        c = text[k]
++        if q:
++            buf.append(c)
++            if c == "\\" and q == '"' and k + 1 < n:
++                buf.append(text[k + 1]); k += 1
++            elif c == q:
++                q = None
++        elif c in "'\"":
++            q = c; buf.append(c)
++        elif c == "\\" and k + 1 < n:
++            buf.append(c); buf.append(text[k + 1]); k += 1
++        elif c in ";|&\n" and not (c == "&" and (text[k + 1:k + 2] not in ("&",) and text[k - 1:k] in (">", "<"))):
++            if c == "&" and text[k + 1:k + 2] != "&":
++                pass  # background '&' also separates
++            segs.append("".join(buf)); buf = []
++            while k + 1 < n and text[k + 1] in ";|&":
++                k += 1
++        else:
++            buf.append(c)
++        k += 1
++    segs.append("".join(buf))
++    return [s.strip() for s in segs if s.strip()], heredocs
++
++
++def tokens_of(seg: str) -> list[str]:
++    try:
++        return shlex.split(seg, comments=False, posix=True)
++    except ValueError:
++        return seg.split()
++
++
++def resolve(tok: str, cwd: str, env: dict[str, str]):
++    """Return ('path', abs) | ('opaque', None). Expands known literal assignments."""
++    def sub(m):
++        name = m.group(1) or m.group(2)
++        return env.get(name, m.group(0))
++    t = re.sub(r"\$\{(\w+)\}|\$(\w+)", sub, tok)
++    if t.startswith("~"):
++        t = os.path.expanduser(t)
++    if t.startswith("$") or t.startswith("`"):
++        return "opaque", None  # starts with unknown var / substitution: fail-open
++    lit = re.split(r"[$`]", t, maxsplit=1)
++    has_var = len(lit) > 1
++    base = lit[0]
++    if not base.startswith("/"):
++        base = os.path.join(cwd, base)
++    if has_var and not base.endswith("/"):
++        base = base  # partial component; normalise what we have
++    p = os.path.normpath(base) if base else cwd
++    return "path", os.path.realpath(p)
++
++
++def check_targets(targets, cwd, env, rs, what):
++    for tok in targets:
++        kind, p = resolve(tok, cwd, env)
++        if kind != "path":
++            continue
++        r = under(p, rs)
++        if r:
++            return f"{what} target '{tok}' resolves under protected root {r}"
++    return None
++
++
++def scan_text(text: str, rs: list[str], origin: str):
++    if PRIMITIVE.search(text):
++        hits = root_literals(text, rs)
++        if hits:
++            return f"{origin} contains a delete primitive and names protected root {hits[0]}"
++    return None
++
++
++def scan_segment(seg, cwd, env, rs, state):
++    toks = tokens_of(seg)
++    # leading assignments
++    while toks and re.match(r"^[A-Za-z_]\w*=", toks[0]):
++        name, _, val = toks[0].partition("=")
++        if "$(" in val or "`" in val or val.startswith("$"):
++            env.pop(name, None)
++        else:
++            env[name] = val
++        toks.pop(0)
++    while toks and toks[0] in ("sudo", "nohup", "time", "exec", "command", "builtin", "nice", "ionice", "xargs", "timeout", "env"):
++        toks.pop(0)
++        while toks and (toks[0].startswith("-") or re.match(r"^\d+[smh]?$", toks[0]) or re.match(r"^[A-Za-z_]\w*=", toks[0])):
++            toks.pop(0)
++    if not toks:
++        return None
++    if toks[0] == "cd" and len(toks) > 1 and toks[1].startswith("/"):
++        state["cwd"] = toks[1]
++        return None
++    cmd = os.path.basename(toks[0])
++    args = toks[1:]
++    if cmd in SANCTIONED:
++        return None
++    if INTERP.match(cmd):
++        # sanctioned script as first non-flag arg
++        nonflag = [a for a in args if not a.startswith("-")]
++        if "-c" in args:
++            i = args.index("-c")
++            if i + 1 < len(args):
++                return scan_text(args[i + 1], rs, "inline -c script")
++            return None
++        if nonflag:
++            script = nonflag[0]
++            if os.path.basename(script) in SANCTIONED:
++                return None
++            path = script if os.path.isabs(script) else os.path.join(state["cwd"], script)
++            try:
++                if os.path.isfile(path) and os.path.getsize(path) <= MAX_FILE:
++                    with open(path, "r", errors="replace") as f:
++                        return scan_text(f.read(), rs, f"script file {script}")
++            except OSError:
++                return None
++        return None
++    if cmd == "rm":
++        recursive = any(
++            a == "--recursive" or (a.startswith("-") and not a.startswith("--") and re.search(r"[rR]", a))
++            for a in args if a != "--")
++        if not recursive:
++            return None
++        tg = [a for a in args if not a.startswith("-") or a == "-"]
++        return check_targets(tg, state["cwd"], env, rs, "recursive rm")
++    if cmd == "find":
++        if "-delete" in args or any(a == "-exec" and i + 1 < len(args) and os.path.basename(args[i + 1]) == "rm"
++                                    for i, a in enumerate(args)):
++            tg = []
++            for a in args:
++                if a.startswith("-") or a in ("(", "!"):
++                    break
++                tg.append(a)
++            return check_targets(tg or ["."], state["cwd"], env, rs, "find -delete/-exec rm")
++        return None
++    if cmd == "rmdir":
++        for a in args:
++            if a.startswith("-"):
++                continue
++            kind, p = resolve(a, state["cwd"], env)
++            if kind == "path" and under(p, rs) and os.path.isdir(p) and os.listdir(p):
++                return f"rmdir target '{a}' is a NON-EMPTY dir under a protected root"
++        return None
++    return None
++
++
++def scan(cmd: str):
++    rs = roots()
++    segs, heredocs = split_commands(cmd)
++    env: dict[str, str] = {}
++    state = {"cwd": os.getcwd()}
++    for line, body in heredocs:
++        # heredoc fed to an interpreter (python3 - <<EOF, bash <<EOF) is an inline script
++        for part in re.split(r"&&|\|\||[;|]", line):
++            t = tokens_of(part.split("<<")[0])
++            while t and re.match(r"^[A-Za-z_]\w*=", t[0]):
++                t.pop(0)
++            if t and INTERP.match(os.path.basename(t[0])):
++                if len(t) > 1 and os.path.basename(t[1]) in SANCTIONED:
++                    continue
++                r = scan_text(body, rs, "heredoc script")
++                if r:
++                    return r
++    for seg in segs:
++        seg = re.sub(r"<<-?\s*(['\"]?)[A-Za-z_]\w*\1", "", seg)
++        r = scan_segment(seg, state["cwd"], env, rs, state)
++        if r:
++            return r
++    return None
++
++
++def main() -> int:
++    ack = os.environ.get(ACK_ENV, "").strip()
++    cmd = sys.stdin.read()
++    if not cmd.strip():
++        return 0
++    if ack:
++        if ACK_RE.match(ack):
++            print(f"note: {ACK_ENV} override recorded: {ack}", file=sys.stderr)
++            return 0
++        print(f"note: {ACK_ENV} set but not of the form 'operator: <who> <date>: <reason>'; ignored",
++              file=sys.stderr)
++    reason = scan(cmd)
++    if reason is None:
++        return 0
++    print(f"BLOCKED: destructive scratch delete (2026-10-20 E2 purge; NIB2-108). {reason}.\n"
++          f"Rule: recursive/inline deletes under /mnt/raid0/llm/{{tmp,worktrees,.trash,state}} are refused.\n"
++          f"Sanctioned route: {FIX}", file=sys.stderr)
++    return 2
++
++
++if __name__ == "__main__":
++    try:
++        sys.exit(main())
++    except Exception as e:  # fail open: the hygiene-tick backstop covers what we cannot parse
++        print(f"destructive_scratch_scan: internal error {e!r}; allowing", file=sys.stderr)
++        sys.exit(0)
+diff --git a/scripts/hooks/tests/destructive_scratch_cases.py b/scripts/hooks/tests/destructive_scratch_cases.py
+new file mode 100644
+index 0000000000000000000000000000000000000000..40cdb266b0dc9a849eaad7213a8a803827a0df1d
+--- /dev/null
++++ b/scripts/hooks/tests/destructive_scratch_cases.py
+@@ -0,0 +1,56 @@
++"""Fixture cases for test_destructive_scratch_hook.sh. Emits JSON to stdout.
++
++Dangerous strings are assembled from pieces so this file itself never contains a runnable
++delete line. Args: FIXTURE_DIR (mktemp dir holding purge_batch.py) FAKE_ROOT.
++"""
++import json
++import sys
++
++fx, fake = sys.argv[1], sys.argv[2]
++R = "rm"; RF = R + " -" + "rf"; T = "/mnt/raid0/llm/tm" + "p"
++W = "/mnt/raid0/llm/work" + "trees"; TR = "/mnt/raid0/llm/." + "trash"; ST = "/mnt/raid0/llm/sta" + "te"
++RT = "shutil" + ".rmtree"
++cases = [
++ # (name, expected, command, env)
++ ("rf tmp", "block", f"{RF} {T}/x", {}),
++ ("r worktrees", "block", f"{R} -r {W}/foo", {}),
++ ("long recursive", "block", f"{R} --recursive {T}/x", {}),
++ ("find delete", "block", f"find {T}/a -" + "delete", {}),
++ ("find exec rm", "block", f"find {T}/a -exec {R} {{}} ;", {}),
++ ("py -c rmtree trash", "block", f"python3 -c \"import shutil; {RT}('{TR}/abc')\"", {}),
++ ("py -c os.remove", "block", f"python3 -c \"import os; os.re" + f"move('{T}/f')\"", {}),
++ ("purge_batch file", "block", f"python3 {fx}/purge_batch.py", {}),
++ ("var after root", "block", f"{RF} {T}/$X", {}),
++ ("braced var after root", "block", f"{RF} \"{T}/${{X}}\"", {}),
++ ("heredoc python", "block", f"python3 - <<'EOF'\nimport shutil\n{RT}('{ST}/x')\nEOF", {}),
++ ("chain cd", "block", f"cd /x && {RF} {T}/y", {}),
++ ("dotdot", "block", f"{RF} {T}/a/../b", {}),
++ ("rmdir nonempty", "block", f"rmdir {fake}/full", {"EPYC_DESTRUCTIVE_SCRATCH_ROOTS": fake}),
++ ("fake root rf", "block", f"{RF} {fake}/full", {"EPYC_DESTRUCTIVE_SCRATCH_ROOTS": fake}),
++ ("assigned literal var", "block", f"X={T}/q; {RF} $X", {}),
++ ("guarded_rm", "allow", f"bash scripts/safety/guarded_rm.sh {T}/x", {}),
++ ("trash-sweep", "allow", "bash scripts/safety/trash-sweep.sh --older-than 7", {}),
++ ("reclaim_scratch", "allow", "python3 scripts/system/reclaim_scratch.py plan", {}),
++ ("mktemp subst", "allow", f"{RF} \"$(mktemp -d)\"", {}),
++ ("mktemp trap idiom", "allow", f"TMP=$(mktemp -d); trap '{RF} \"$TMP\"' EXIT; echo hi", {}),
++ ("mktemp var rm", "allow", f"TMP=$(mktemp -d); {RF} \"$TMP\"", {}),
++ ("bare tmp", "allow", f"{RF} /tmp/foo", {}),
++ ("scratchpad", "allow", f"{RF} /tmp/claude-1000/x/scratchpad/y", {}),
++ ("plain rm", "allow", f"{R} {T}/single.txt", {}),
++ ("ls", "allow", f"ls -la {T}", {}),
++ ("grep -r word", "allow", f"grep -r rmtree {T}", {}),
++ ("echo mention", "allow", f"echo \"{RF} {T}/x\"", {}),
++ ("unknown var", "allow", f"{RF} $UNKNOWN", {}),
++ ("rmdir empty", "allow", f"rmdir {fake}/empty", {"EPYC_DESTRUCTIVE_SCRATCH_ROOTS": fake}),
++ ("override", "allow", f"{RF} {T}/x", {"EPYC_ALLOW_SCRATCH_DELETE": "operator: dp 2026-10-25: test"}),
++ ("bad override", "block", f"{RF} {T}/x", {"EPYC_ALLOW_SCRATCH_DELETE": "yes please"}),
++ ("script sans root", "allow", f"python3 {fx}/harmless.py", {}),
++ ("tmp-prefix lookalike", "allow", f"{RF} /mnt/raid0/llm/tmp-other/x", {}),
++]
++out = [{"name": n, "expect": e, "input": {"tool_name": "Bash", "tool_input": {"command": c}}, "env": v}
++       for n, e, c, v in cases]
++out.append({"name": "non-Bash tool", "expect": "allow",
++            "input": {"tool_name": "Write", "tool_input": {"command": f"{RF} {T}/x"}}, "env": {}})
++out.append({"name": "no command", "expect": "allow", "input": {"tool_name": "Bash", "tool_input": {}}, "env": {}})
++out.append({"name": "malformed json", "expect": "allow", "raw": "{not json", "env": {}})
++json.dump(out, sys.stdout)
+diff --git a/scripts/hooks/tests/test_destructive_scratch_hook.sh b/scripts/hooks/tests/test_destructive_scratch_hook.sh
+new file mode 100755
+index 0000000000000000000000000000000000000000..6e83688e09eb94f15efcff8ee6fd4b18b8fdaafd
+--- /dev/null
++++ b/scripts/hooks/tests/test_destructive_scratch_hook.sh
+@@ -0,0 +1,43 @@
++#!/bin/bash
++set -euo pipefail
++# Test for scripts/hooks/check_destructive_scratch.sh (origin: 2026-10-20 E2 purge, NIB2-108).
++# Cases are generated by destructive_scratch_cases.py with the dangerous strings assembled
++# from pieces, so running this under Claude Code is not blocked by the hook it tests.
++# Fixtures live under a mktemp dir that is removed on exit.
++HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
++HOOK="$HERE/../check_destructive_scratch.sh"
++TMP=$(mktemp -d)
++trap 'rm -rf "$TMP"' EXIT
++FAKE="$TMP/fakeroot"
++mkdir -p "$FAKE/full/sub" "$FAKE/empty"
++RT="shutil"".rmtree"
++printf 'import %s\nRT=%s\n%s("/mnt/raid0/llm/.trash/b1")\n' shutil "x" "$RT" > "$TMP/purge_batch.py"
++printf 'print("hello")\n' > "$TMP/harmless.py"
++
++python3 "$HERE/destructive_scratch_cases.py" "$TMP" "$FAKE" > "$TMP/cases.json"
++N=$(python3 -c 'import json,sys; print(len(json.load(open(sys.argv[1]))))' "$TMP/cases.json")
++PASS=0; FAIL=0
++for ((i=0; i<N; i++)); do
++  python3 - "$TMP/cases.json" "$i" "$TMP" <<'PY'
++import json, sys
++c = json.load(open(sys.argv[1]))[int(sys.argv[2])]
++d = sys.argv[3]
++open(f"{d}/in", "w").write(c["raw"] if "raw" in c else json.dumps(c["input"]))
++open(f"{d}/meta", "w").write(c["name"] + "\n" + c["expect"] + "\n" + "\n".join(f"{k}={v}" for k, v in c["env"].items()) + "\n")
++PY
++  NAME=$(sed -n 1p "$TMP/meta"); EXPECT=$(sed -n 2p "$TMP/meta")
++  ENVARGS=(); while IFS= read -r l; do [[ -n "$l" ]] && ENVARGS+=("$l"); done < <(sed -n '3,$p' "$TMP/meta")
++  set +e
++  env -u EPYC_ALLOW_SCRATCH_DELETE -u EPYC_DESTRUCTIVE_SCRATCH_ROOTS "${ENVARGS[@]}" bash "$HOOK" < "$TMP/in" > /dev/null 2> "$TMP/err"
++  RC=$?
++  set -e
++  GOT=allow; [[ $RC -eq 2 ]] && GOT=block
++  if [[ "$GOT" == "$EXPECT" ]]; then PASS=$((PASS+1)); else FAIL=$((FAIL+1)); echo "FAIL: $NAME (expected $EXPECT, rc=$RC)"; head -3 "$TMP/err"; fi
++  if [[ "$EXPECT" == block && "$GOT" == block ]] && ! grep -q "guarded_rm.sh" "$TMP/err"; then
++    FAIL=$((FAIL+1)); echo "FAIL: $NAME refusal lacks sanctioned route"
++  fi
++done
++# fixtures must be intact (hook must never delete anything)
++[[ -d "$FAKE/full/sub" && -d "$FAKE/empty" ]] || { FAIL=$((FAIL+1)); echo "FAIL: fixtures disturbed"; }
++echo "destructive-scratch hook: $PASS pass, $FAIL fail"
++[[ $FAIL -eq 0 ]]
