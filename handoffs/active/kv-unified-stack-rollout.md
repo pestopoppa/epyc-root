@@ -273,7 +273,7 @@ Completed history through 2026-10-24 (moved verbatim, no open tasks): [kv-unifie
         KVU-16f below.
       - *(2026-10-21 triage)* open (no evidence found).
     - *(2026-10-21 triage)* open (no evidence found); corrected probe still referenced as pending in agentic-serving-harness-fixes.md:200.
-  - [ ] **KVU-16f — A/B `-b 512 -ub 512` on :8083, then one stack change.** (filed 2026-10-04, workspace-ec, from the
+  - [x] **KVU-16f — A/B `-b 512 -ub 512` on :8083, then one stack change.** ✅ 2026-10-25 (A/B 2026-10-04, signed STACKCHG-8083BATCH, serving since 10-07; `cal-1025/kvu16f-b512/REDUNDANT.md`) [no-belief: duplicate-of: 10-04 A/B (artifacts/gpu-slot-ak-20261004); cc-register pending (VB-CC-PILOT)] (filed 2026-10-04, workspace-ec, from the
     KVU-16b root cause, fix 1) `-ub` alone does nothing: the server packs `n_batch` prompt tokens per iteration. At 512,
     the root cause predicts an iteration of ~4.7 s at 300k (~4× faster decode while a prefill runs) and a KQ mask
     1536 → 384 MiB (−1.1 GiB). The registry's mask term must then be re-derived. The cost is a possible 10–20% lower
@@ -304,6 +304,8 @@ Completed history through 2026-10-24 (moved verbatim, no open tasks): [kv-unifie
       attributed, `-b 512` also lowers the replay's growth (+0.79 vs +1.42 GiB) but does not bound the `n_max: 0`
       mechanism; that is KVU-16h-fold.
     - *(2026-10-21 triage)* open (no evidence found); no stack change with -b 512 -ub 512 in git after 10-07; KVU-16g (decode-aware budget) is the preferred form.
+    - *(2026-10-25, workspace-58 wrap-up; ticked.)* Both halves of the done-when hold; the 10-21 triage looked in git, not at the live launch record. Citations (`/mnt/raid0/llm/tmp/cal-1025/kvu16f-b512/REDUNDANT.md`): (1) the A/B is recorded above (10-04, `artifacts/gpu-slot-ak-20261004/`); (2) the package is signed: `/mnt/raid0/llm/tmp/stack-change-8083-batch-20261004/receipts/RATIFY-STACKCHG-8083BATCH-20261004.json` (part B `-b 512 -ub 512`, part A `--no-cache-idle-slots`) with `evidence/apply-proof.txt`; (3) it is serving: `epyc-orchestrator/logs/server_launches/8083.json` (launched 2026-10-07T02:52Z) carries `-b 512 -ub 512 … --no-cache-idle-slots`, and GPU-LEAK-1b/1d (10-23) probed that exact argv. No launcher was written for a re-A/B: the incumbent IS the 512 arm. A re-A/B on the current champion would be a new question, owned by KVU-16g-1 (off/b512 arms).
+    - [ ] **KVU-16f-1 — re-derive the registry's KQ-mask term for `-b 512` (filed 2026-10-25, from the KVU-16f residue).** The box predicted the mask falls 1536 → 384 MiB at `-b 512`; the 10-04 A/B measured KFD peak −3.1 GiB. Update the :8083 memory term in the master registry (research `orchestration/model_registry.yaml`) from the measured value, citing the A/B. Docs/registry only, no compute, no reload. Done when the term matches `-b 512` and cites the A/B.
   - [ ] **KVU-16g — decode-aware prefill budget on llama-server (Sarathi-style), experimental tree.** (filed 2026-10-04,
     workspace-ec; KVU-16b root cause fix 1e, KV-serving survey Rec 1) In `update_slots()`, cap the prompt tokens added
     per iteration while any slot generates (`--prefill-budget-decoding N`, or sized from a per-step time target), and
@@ -1060,8 +1062,8 @@ here: none of the RTG-57 ids remain undefined. The owner named in these texts (w
     - *(2026-10-24, batch-a.)* Package component drafted (not a deploy): `docs/design/prefill-budget-8083-stack-change-package.md` adds `--prefill-budget-decoding N` + `--prefill-budget-target-ms MS` to the :8083 argv inside the one v11 signature, with the flag semantics read from `7052e26df`, the SW-A2/A3 target-ms rule (`target_ms = TPOT_target_ms - margin`, margin = PB-QCOST-1 held-out one-sided P99 residual, currently 211.2 ms/iter at n = 4, INDICATIVE until confirm-R), the DI-126/PB-HOL-1 scope caveat, gates, and rollback (remove flags). N and TPOT_target_ms are NOT set (no source for either): they need the KVU-16g-1 score sheet / decode-only step time. Box stays open: the gate (decode-under-prefill >= x2.92, solo prefill within -4..-14%, off == byte-identical) needs numbers not yet produced. Job specs owed (not run): (a) KVU-16g-1 read-out of `/mnt/raid0/llm/tmp/prefill-budget-20261004/gpuab-*/` score sheets; (b) decode-only step time at np4 for TPOT_target_ms; (c) OFF byte-identity greedy run on the v11 candidate.
   - *(2026-10-21 research intake, intake-2221#07, intake-2218#02, intake-2219#06.)* The budget is decode-gated: `prefill_budget_get()` returns 0 when `pb_iter.n_generating == 0` (98c0ce12a), so enabling it covers decode-vs-prefill interference only, never prefill-vs-prefill head-of-line (DI-126); PB-HOL-1 (gpu-serving-tie-in-program.md) measures that residual, and this enable must not be counted as covering DI-126.
   - *(2026-10-22, PB-HOL-1 budget-on arms.)* The budget is not a HOL fix: with pb512 armed (and `-b`/`-ub` 2048) the short prompt above the long slot waited 83,352 ms vs 70,932 ms budget-off; below the long slot 3,593 vs 3,217.5 ms. Enabling it still covers decode-vs-prefill interference only. Also: take target-ms from the PB-QCOST-1 REFIT (the frozen model failed, MAPE 12.84% / 26.32%), and only after its uncontended confirmation run. Dormant fragmentation guard: if the KVU-16g A/B log shows the budget split across >= 4 prefilling slots with < 64 tokens each per iteration, file a minimum-effective-chunk rule on the experimental tree (the literature's APC gain is against a degenerate 0.78-token-chunk baseline, so no task before the trigger).
-  - [ ] **KVU-19b-fold-c1-p3 — P3 B on the 27B against the folded champion: `-kvu` batched decode within ~5% of
-    `-no-kvu`.** (filed 2026-10-04, workspace-ec, split from fold-c1's done-when) workspace-89's P3 harness
+  - [x] **KVU-19b-fold-c1-p3 — P3 B on the 27B against the folded champion: `-kvu` batched decode within ~5% of
+    `-no-kvu`.** ✅ 2026-10-25 (WITHIN_5PCT: −0.94% vs the v1 reference −15.23%, INDICATIVE) [no-belief: cc-register pending (VB-CC-PILOT)] (filed 2026-10-04, workspace-ec, split from fold-c1's done-when) workspace-89's P3 harness
     (`p3_kvu_probe.sh` with a `BIN` override) on `gpu-20261004-1bceceb05`, arms skip on vs the same binary with
     `GGML_CUDA_FA_SEQ_ROWS=0` and `-no-kvu`; no-draft arms on their own server launch (KVU-16h-runner). Run it
     in the coordinated GPU block that also serves KVU-19 (workspace-89). Done when the per-arm table is recorded
@@ -1069,6 +1071,17 @@ here: none of the RTG-57 ids remain undefined. The owner named in these texts (w
     - *(2026-10-20 restore.)* Define-or-delete: the folded champion has since advanced (`dd3d9721c`); either re-aim this
       P3 B run at the current champion in the next coordinated GPU block, or record 'superseded by the v11 gate' and
       delete the id (the RTG-57 row cites it as `fold-c1-p3`).
+    - *(2026-10-25 read-out, workspace-58 wrap-up; ticked by the predeclared rule.)* Re-aimed at the current champion, as the 10-20 note asked: calendar item `kvu19b-p3` (`/mnt/raid0/llm/tmp/cal-1025/kvu19b-p3/`), champion store image `gpu-20261023-dcc853b55-c3` resolved from `ak/champion`, Qwen3.8-27B-Q8_0, `llama-batched-bench` npl 4, npp 16384, ntg 64, HIP graphs ON, a fresh process per arm, ABAB. Predeclaration sha256 `6b72d2e3…c4476`. Rule: kvu vs no-kvu S_TG delta, edge −5.0% of the no-kvu mean; both pairs and the mean on the same side; within-arm spread ≤ 3.0%.
+
+      | arm | S_TG (t/s) | S_PP (t/s) |
+      |---|---|---|
+      | K1 `-kvu` | 56.67 | 833.8 |
+      | N1 `-no-kvu` | 56.45 | 831.5 |
+      | K2 `-kvu` | 55.20 | 823.1 |
+      | N2 `-no-kvu` | 56.48 | 824.3 |
+      | S1 `-kvu`, `GGML_CUDA_FA_SEQ_ROWS=0` (diagnostic, one run) | 47.02 | — |
+
+      Mean S_TG kvu 55.93 vs no-kvu 56.47 = **−0.94%** (pairs +0.39%, −2.27%; within-arm spread K 2.62%, N 0.07%; S_PP +0.07%). Box result **WITHIN_5PCT**. The v1 P3 on production v10 was −15.23% at the same npp. The SEQ_ROWS=0 control is −15.9% vs kvu, so the per-row skip carries the gain. Timing class: indicative (block-timing-pairable, host co-tenants allowed). Evidence: research `data/kvu19b-p3/` (VERDICT, RUN_RECORD, per-arm JSON, SHA256SUMS; committed `84ae00217`, on main via `237a7a789`). This unblocks the kvu part of the v11 stack-change signature.
   - [x] **KVU-19b-rework-c2-cal — triage the two slot-3 calibration FAILs, then hand commit 2 v2 to workspace-89.**
     (filed 2026-10-04, workspace-ec)
     - (a) The hs=128 bound: decide whether the bound is mis-set, or the layouts-off path still differs from KVU-19a.

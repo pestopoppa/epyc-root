@@ -33,7 +33,7 @@
 | INF-77 | deepseek v41 flash evaluation | [deepseek-v41-flash-evaluation.md](deepseek-v41-flash-evaluation.md) | W5 closed INVALID; W5d baseline+MMID 10-24 ~10:00Z, C46 j64 repro 10-23 q2; rest held for AK kernel work; W8d ram_admit | INF-31, RTG-57 |
 | INF-78 | autokernel orchestrator actor backend | [autokernel-orchestrator-actor-backend.md](autokernel-orchestrator-actor-backend.md) | OAB-29/30 wire-test gate + stub e2e; OAB-34 16384 output-cap hit rate per role (OAB-4/9b/12/15-19/33 parked 09-27) | INF-77, INF-66, EVL-37, RTG-56, UFH-01 |
 | INF-79 | conversation stack (speech) | [conversation-stack.md](conversation-stack.md) | CS-8.L4a/b done (year fix fd1a8941); CS-5 D1 Omni+Step PASS; run CS-8.STT0..STT3, CS-22.V0, CS-43.1 | — |
-| INF-80 | exl3 cpu mi210 implementation | [exl3-cpu-mi210-implementation.md](exl3-cpu-mi210-implementation.md) | EXL3-6c5 emit measurement rows, then tick; EXL3-LB1b seed #1 confirm | — |
+| INF-80 | exl3 cpu mi210 implementation | [exl3-cpu-mi210-implementation.md](exl3-cpu-mi210-implementation.md) | EXL3-6c5a: emit epyc.exl3.measurement.v1 rows (10-04 copy + research data/exl3-6c5-quality), ingest, tick; 6c5b p1 margin | — |
 | INF-18 | gpu acceleration path | [gpu-acceleration-path.md](gpu-acceleration-path.md) | Explain the bidirectional-only mechanism before this becomes a placement input | — |
 | INF-19 | gpu cot scaffold sidecar | [gpu-cot-scaffold-sidecar.md](gpu-cot-scaffold-sidecar.md) | G3-4 — future decision instrument (separate from G3-3). Select and run a decision-grade, | — |
 | INF-20 | gpu drafter control redesign | [gpu-drafter-control-redesign.md](gpu-drafter-control-redesign.md) | DR-3 — broader K2 admission runner/package: build the dry-run-first K2 | — |
@@ -71,7 +71,7 @@
 | INF-73 | autokernel unified surface | [autokernel-unified-surface-program.md](autokernel-unified-surface-program.md) | Recheck disk admission; run consolidated r4 lifecycle/focused/full gates, then complete DS41 full16 capture | INF-66, INF-65, INF-70 |
 | INF-74 | autokernel concurrent targets | [autokernel-concurrent-target-coordination.md](autokernel-concurrent-target-coordination.md) | grant_ok v2 is live (10-23): move remaining writers to --window-s/--regions; then review CTC-REVIEW stage coordination | INF-73 |
 | INF-75 | autokernel cross-workload keep gate | [autokernel-cross-workload-keep-gate.md](autokernel-cross-workload-keep-gate.md) | AKX-P0d — run the W1–W6 base census on the current champion-of-record under stage claims, then AKX-P1b replay 732389d6 | INF-73, INF-66, INF-65 |
-| INF-81 | autokernel all devices all dimensions | [autokernel-all-devices-all-dimensions.md](autokernel-all-devices-all-dimensions.md) | AKX-ALL-LB3.2: re-run via akxlb32 v2 (10-25 >=05:00Z, GPU held, whole-host quiet); prior run INVALID | INF-73, INF-75, INF-77, INF-62, RTG-57, RTG-58 |
+| INF-81 | autokernel all devices all dimensions | [autokernel-all-devices-all-dimensions.md](autokernel-all-devices-all-dimensions.md) | AKX-ALL-30b: write G3-first order + G1/G2 re-rank (R=1.73) into the seed draft; AKX-ALL-LB3.2 re-run via akxlb32 v2 | INF-73, INF-75, INF-77, INF-62, RTG-57, RTG-58 |
 | INF-76 | paw compiled specialists | [paw-compiled-specialists.md](paw-compiled-specialists.md) | PAW-2 — self-hosted compile spike (intake-1481 server + intake-1478 weights); then PAW-5 candidates list | EVL-08 |
 ## Cross-domain
 
