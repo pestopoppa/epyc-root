@@ -4019,7 +4019,7 @@
       "weight": 2
     }
   ],
-  "generated_at": "2026-10-25T07:23:25Z",
+  "generated_at": "2026-10-25T07:37:57Z",
   "nodes": [
     {
       "age_days": 87,
@@ -9077,13 +9077,13 @@
       "age_days": 0,
       "blocked": 0,
       "blocked_by": [],
-      "closed": 21,
+      "closed": 25,
       "domain": "routing-and-optimization",
       "handoff": "refactoring-multirepo-2026-10.md",
       "id": "RTG-60",
       "last_advanced": "2026-10-25",
-      "next_action": "Finish P1/O6; assemble reviewed orchestrator branches and validate their combined tree before owner integration",
-      "open": 49,
+      "next_action": "Finish combined validation, then CI and remaining package work",
+      "open": 48,
       "priority": 0.0,
       "priority_basis": {
         "campaign": 0,

@@ -8,14 +8,17 @@
   "integration": {
     "worktree": "/mnt/raid0/llm/worktrees/refactor-01a16fc3-orchestrator-integration",
     "branch": "refactor/orchestrator-integration-01a16fc3",
-    "head": "c67b6930",
+    "head": "3ee8eea2",
     "contains": [
       "test-isolation-reviewed",
       "config-reviewed",
       "request-reviewed",
-      "autopilot-gate-reviewed"
+      "autopilot-gate-reviewed",
+      "autopilot-loop-reviewed",
+      "repl-correctness-reviewed",
+      "scripts-cleanup-reviewed"
     ],
-    "combined_validation": "not yet run; P1 accepted and O4 accepted independently; O6 coverage collection is under repair; then run combined targeted tests and source-pin checks",
+    "combined_validation": "ongoing; combined 93-file/2606-test gate has failures; not accepted/pushed/deployed; 32 source pins match and four P5 evaluator files are unchanged",
     "pushed": false
   },
   "accepted_pushed": {
@@ -71,12 +74,24 @@
         "B1-13"
       ],
       "tests": "19 focused and 561 broad pass/1 skip; ruff/diff pass; independent unchanged-hash proof accepted; original runner FAIL annotation preserved"
+    },
+    "orchestrator_O6_rest": {
+      "source": "6efa56265b68f402af736a1c1a2ee3df447849c1",
+      "findings": [
+        "A5-11",
+        "A5-23",
+        "A5-18",
+        "A5-02",
+        "A5-21"
+      ],
+      "branch": "refactor/scripts-cleanup-reviewed-01a16fc3",
+      "remote_verified": true,
+      "tests": "190 launcher PASS; 395 coverage PASS; floors 331/331, 151/151, 508/508, 579/579",
+      "ni63": "5 controls PASS; 32/32 blob+SHA proof",
+      "pins": "4 exact approved launcher-byte changes; baseline 5 PASS; HEAD 094cbc5b and main 84; remaining 28 unchanged",
+      "scorer_failures": "test-fixture sys.modules patch/restore leak fixed; no production defect",
+      "state": "accepted candidate source; no merge/deployment/activation authorized"
     }
-  },
-  "resource_blocker": {
-    "event": "The former CPU attribution filler-akx-lb3-2-attribution is released.",
-    "effect": "No current CPU claim is recorded here; root checkpoint runner takes one serialized build claim for root gates only. Worker candidate validation is independent.",
-    "handling": "Do not infer that any unrecorded validation ran; preserve each worker result and repair state as reported."
   },
   "active_or_pending": {
     "autopilot_loop_finish": {
@@ -99,22 +114,20 @@
     },
     "scripts_cleanup_finish": {
       "worktree": "/mnt/raid0/llm/worktrees/refactor-01a16fc3-scripts-cleanup",
-      "head": "094cbc5b76c6cb674eae95946b47a3682093b1a0",
-      "state": "approved dirty candidate; 190 launcher tests pass; expanded coverage ran 395 tests and reports three scorer failures at the configured 100% floor across four files; repair in progress; unpublished",
-      "prior_tests": "598pass/3skip+2 stale preflight; fixed preflight21pass",
-      "next": "Repair the three coverage scorer failures, rerun the approved candidate validation, then owner review. Original seeding worktree remains unchanged; do not collect expired handle 56537.",
-      "deletion": "8472source+2076testLOC in new cleanup commits",
-      "validation_checkpoint": {
-        "command": "/mnt/raid0/llm/tmp/refactor-01a16fc3/scripts-cleanup/validate-approved-candidate.sh",
-        "outputs": "flags/logs under /mnt/raid0/llm/tmp/refactor-01a16fc3/scripts-cleanup/",
-        "state": "first attempt completed; 190 launcher tests passed; expanded coverage ran 395 tests and has three scorer failures at 100% floor across four files; repair in progress",
-        "launcher_pid_file": "/mnt/raid0/llm/tmp/refactor-01a16fc3/scripts-cleanup/launcher.pid",
-        "captured_pid": 1273280,
-        "log": "/mnt/raid0/llm/tmp/refactor-01a16fc3/scripts-cleanup/launcher.out",
-        "owner": "O6 worker",
-        "result": "/mnt/raid0/llm/tmp/refactor-01a16fc3/scripts-cleanup/validation-failed.flag and timestamped status/log under validation-*/"
-      },
-      "candidate_scope": "Approved launcher patch plus copied tests/unit/test_seeding_coverage_contracts.py and Makefile changes in the O6 worktree; original seeding worktree unchanged."
+      "branch": "refactor/scripts-cleanup-reviewed-01a16fc3",
+      "head": "6efa56265b68f402af736a1c1a2ee3df447849c1",
+      "state": "O6 rest accepted and pushed; candidate validations pass; integration remains a separate ongoing failing gate",
+      "findings": [
+        "A5-11",
+        "A5-23",
+        "A5-18",
+        "A5-02",
+        "A5-21"
+      ],
+      "tests": "190 launcher PASS; 395 coverage PASS; floors 331/331, 151/151, 508/508, 579/579",
+      "ni63": "5 controls PASS; 32/32 blob+SHA proof",
+      "pins": "4 approved exact launcher-byte changes; baseline 5 PASS; HEAD 094cbc5b and main 84; remaining 28 unchanged",
+      "limitation": "No merge, deployment, or production activation authorized"
     },
     "seeding_coverage": {
       "worktree": "/mnt/raid0/llm/worktrees/refactor-01a16fc3-seeding-coverage",
@@ -143,7 +156,7 @@
     },
     "K2_readonly_audit": {
       "artifact": "research/refactor-audit-2026-10/K2-CURRENT-SOURCE-REVIEW.md",
-      "state": "source inspection review and GitNexus guard completed; source-guard edits remain unapplied; K2 remains incomplete",
+      "state": "Source audit and GitNexus guard preceded three accepted finding fixes; C4-05, C4-06, and C4-10 remain incomplete, so K2 package remains open.",
       "source_review": "All six examined premises materially supported by source inspection, not executable reproduction. C3-02 is test-only. C4-16 has a quantile-rounding defect; do not simplify variance logic unless the \u00b11 invariant is enforced.",
       "guard_worktree_head": "413f5b7",
       "guard_runner_pid": 1286392,
@@ -151,6 +164,24 @@
       "guard_status": "/mnt/raid0/llm/tmp/refactor-01a16fc3/k2-guards/index.status",
       "guard_log": "/mnt/raid0/llm/tmp/refactor-01a16fc3/k2-guards/index.log",
       "guard_result": "PASS 413f5b7f545b67e69ba9082b9a6c73514eb3a3f2"
+    },
+    "K2_source_guard_fixes": {
+      "branch": "refactor/autokernel-k2-guards-01a16fc3",
+      "head": "68724da5ba093cf3cec3909a81491932002dd4ce",
+      "remote_verified": true,
+      "findings": {
+        "C4-08": "208a053e29daf5bd11019e733f768b4173887021",
+        "C4-16": "091abbbe7dc9b346bab888569434eb68445ae8e5",
+        "C3-02": "68724da5ba093cf3cec3909a81491932002dd4ce"
+      },
+      "validation": "749 statistics/core PASS; 627 correctness/preflight/frozen guards PASS with 1 expected failure; direct CLI import 1 PASS; Ruff/compile/diff PASS",
+      "remaining": [
+        "C4-05",
+        "C4-06",
+        "C4-10"
+      ],
+      "package_complete": false,
+      "holds": "No AutoKernel launch, research main merge, re-pin, or production action"
     }
   },
   "restrictions": [
@@ -163,9 +194,9 @@
     "Only the exact A5-18 and O4 A4-03/A4-04/A4-06/A4-07 candidate scopes are approved; approval does not extend to any future HIGH/CRITICAL edit, main push, merge, deployment, or production activation."
   ],
   "important_remaining": [
-    "Repair O6 coverage collection failure (missing orch.httpx), rerun candidate validation and review; then validate combined orchestrator tree and pins before owner integration.",
+    "Finish combined orchestrator validation and pin checks before owner integration; combined gate currently has failures.",
     "Review/integrate accepted O4 and P1 branches only through their owner boundaries; no main/deployment approval is implied.",
-    "O8 CI/ni63 root-cause design; O1 remaining/O5/P3/P4; research K1 rest, K2 source guards and remaining C4-C6 verification, K3 fresh closure, K4 CI/ratchet.",
+    "O8 CI/ni63 root-cause design; O1 remaining/O5/P3/P4; research K1 rest, K2 remaining C4-05/C4-06/C4-10 and other C4-C6 verification, K3 fresh closure, K4 CI/ratchet.",
     "D1-D10 behind behavioral dependencies; RESUME-7 mixed-alias cold-import cycle.",
     "Prospective VB-REFACTOR-CONFORMANCE capture through existing native carrier; no historical backfill."
   ],
@@ -182,12 +213,12 @@
     "O4 approved candidate patches and caller audit are applied and frozen; validator PID 1278025 is worker-owned. No held patch decision remains.",
     "K2 source inspection review is recorded in K2-CURRENT-SOURCE-REVIEW.md; its separate GitNexus guard runner remains pending at PID 1286392. No completion checkbox is claimed.",
     "P1 source accepted/pushed at 36e1bc55aa40f35965a941e81fdc593a22abd520 on refactor/autopilot-loop-reviewed-01a16fc3; original FAIL status retained because the runner compared hashes in the wrong order; independent start/end/checkpoint proof covers the aggregate and all nine focused files.",
-    "O6 first candidate validation ran 190 launcher tests then failed expanded coverage collection with AttributeError: orch.httpx; repair is in progress. The approved candidate is dirty; original seeding worktree unchanged; never collect expired 56537.",
     "O4 validation accepted: 557 pass, eight parent negative controls fail as expected, strict offline drift/ruff/compile/diff/frozen-snapshot pass; source closeout acfd5f8ca3837c568fc3c944ffb242b29823f3fa pushed on its review branch.",
-    "K2 current-source review and GitNexus guard PASS on unchanged 413f5b7 worktree; source-guard edits remain unapplied; no K2 completion checkbox.",
-    "Old CPU attribution released. Root checkpoint runner PID 1315215 failed before gates because the lease token file was pre-created empty; retry once with nonexistent token paths so serialized_push creates the opaque tokens. Root checkpoint has no worker-result dependency.",
     "P1 agent stray progress/log files were uniquely authored, hash-verified and moved from shared /workspace into this isolated root worktree; no peer files or shared index were changed.",
-    "Root checkpoint commit 09d3c70b5ffeeeed37cde2c4233d965700b1106d passed index regeneration/check (RTG-60 backlog-priority advisory only), cite-check, README freshness and diff-check, then remote-verified on the explicit root review branch."
+    "Root checkpoint commit 09d3c70b5ffeeeed37cde2c4233d965700b1106d passed index regeneration/check (RTG-60 backlog-priority advisory only), cite-check, README freshness and diff-check, then remote-verified on the explicit root review branch.",
+    "O6 rest accepted/pushed at 6efa56265b68f402af736a1c1a2ee3df447849c1; 190 launcher and 395 coverage pass, four floors and five NI63 controls pass; 32/32 blob+SHA proof; exact approved four launcher-byte pins and remaining 28 unchanged.",
+    "K2 C4-08/C4-16/C3-02 accepted/pushed at 68724da5ba093cf3cec3909a81491932002dd4ce; C4-05/C4-06/C4-10 remain open; no launch, research main merge, re-pin, or production action.",
+    "Private integration candidate 3ee8eea2 combined 93-file/2606-test gate is ongoing with failures; not accepted/pushed/deployed; 32 source pins match; P5 four evaluator files unchanged."
   ],
   "historical_queue_handles": {
     "root_metadata_commit_push": {
@@ -291,5 +322,6 @@
       "decision": "Approved isolated O4 candidate patches for A4-03/A4-04/A4-06/A4-07 despite the GitNexus stop gate. No main push, merge, deployment, or production activation authorization.",
       "scope": "A4-03/A4-04/A4-06/A4-07 candidate work under the recorded isolated review package and patch root."
     }
-  ]
+  ],
+  "resource_state": "No active CPU attribution blocker is recorded; root documentation gates still run under the prescribed CPU region lock."
 }

@@ -28,7 +28,7 @@
       "blocked": 18,
       "handoffs": 53,
       "oldest_advance": "2026-07-29",
-      "open": 698
+      "open": 697
     },
     "user-facing-harness-index.md": {
       "blocked": 17,
@@ -2233,10 +2233,10 @@
     },
     "refactoring-multirepo-2026-10.md": {
       "blocked": 0,
-      "closed": 21,
+      "closed": 25,
       "guarded": 0,
       "last_advanced": "2026-10-25",
-      "open": 49,
+      "open": 48,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -2245,7 +2245,7 @@
       },
       "row_id": "RTG-60",
       "state": "active",
-      "total": 70
+      "total": 73
     },
     "repl-embedding-retrieval.md": {
       "blocked": 2,
@@ -4603,7 +4603,7 @@
       "id": "RTG-60",
       "index": "routing-and-optimization-index.md",
       "line": 65,
-      "next_action": "Finish P1/O6; assemble reviewed orchestrator branches and validate their combined tree before owner integration",
+      "next_action": "Finish combined validation, then CI and remaining package work",
       "track": "multi-repo refactoring"
     },
     "UFH-01": {
