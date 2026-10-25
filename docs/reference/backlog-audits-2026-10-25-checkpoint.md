@@ -1,102 +1,38 @@
-# 2026-10-25 Codex NI major-boundary checkpoint
+# Codex NI backlog audit checkpoint — 2026-10-25 11:49Z
 
-**Evidence cutoff:** 2026-10-25 10:04:55Z. **Root base:** refreshed `origin/main` at
-`2d934313eff5390973afe5beb445c1583d40d942`. The prior published tally remains 17 tracked
-closures (9 original, 6 scoped, 2 wiring). NIB2-103 is on research main; the latest owner reply
-only says the parent tick is in progress. This checkpoint does not claim an 18th closure or
-revise the 2026-10-24 cutoff.
+**Evidence cutoff:** 2026-10-25 11:49:22Z, latest actual workspace-58 `OWNER-REPLY.json` entry. This is a bounded update after the root checkpoint `eb0aa0cc2bab0348d15ed1b385bab447af4951c2`, merged at 10:20:57Z. The prior 2026-10-24 audit cutoff is historical and unchanged. The previously reported tracked-closure tally was **17 (9 original + 6 scoped + 2 wiring)**; this checkpoint does not recalculate the aggregate. Do not count synthetic acceptance or source publication as parent-task closure. In particular, EG2 parent REPL-EMB-2.10 remains open after B-5; VB-FOLDGATE-WRITE remains open pending actual fold ingestion; no root aggregate tick is inferred.
 
-## Evidence and current state
+## New verified outcomes
 
-- **AK startup diagnostic:** the official off/on diagnostic completed at 09:39:52Z. JUnit
-  records 2 cases, 0 failures/errors/skips, 4.710 s. Workspace-58 marked `NO_REPRO` at
-  09:44:48Z. This closes only the diagnostic; the original startup-flake root-cause task stays
-  open. Evidence:
-  `/mnt/raid0/llm/tmp/codex-ni-20261024-ak-startup/packet-v2/runs/20261025T093946Z-2209481-nMACp2KN/{junit.xml,classification.txt}`.
-- **EG2 job 14:** the granted r3 runner ended rc=1 at 09:50:07Z because its expected count was
-  wrong. Independent reconciliation established 37 explicit roots -> 42 exact JUnit identities
-  (35 singletons + 3 role values + 4 Q combinations); identity diff is empty, the roots have no
-  defects, and all 53 source hashes verified. The 44-case assertion double-counted parameterized
-  roots. Workspace-58 reconciled the canonical job COMPLETE at 09:58:52Z, retaining the original
-  rc=1, `FAILED`, `status.json` and logs. This is not a fresh passing run. Kuzu remains explicitly
-  unvalidated; do not alter r3 or rerun job 14. The approved v4 identity gate is for the next EG
-  run only. Evidence: `/mnt/raid0/llm/tmp/codex-ni-20261025-eg2-reconcile/REPORT.md` and
-  `/mnt/raid0/llm/tmp/codex-ni-20261025-eg2-recovery/eg2-side-calls-r3/`.
-- **NIB2-103:** commit `9eee9121d215f911363f0cee29808bf49cea3d1a` was pushed to
-  `codex/nib103-template-durability-20261025`; publication log confirms all six pinned diffs and
-  the two-file commit. At 10:01:27Z workspace-58 confirmed review and said it was merging to
-  research main and ticking the parent. Fresh research `origin/main` contains this SHA; the
-  latest owner reply does not confirm the parent tick, so the root parent checkbox and aggregate
-  tally are not claimed here. Evidence:
-  `/mnt/raid0/llm/tmp/codex-ni-20261024-scheduling/nib2-103-publish/{publication.txt,job.log}`.
-- **INF66-AFF-1:** granted q2 regression completed 09:48:27Z (CPUs 48–71, 24 threads), with
-  64 passed in 1.88 s and both edited-file hashes rechecked. Normal hooks passed; commit
-  `cb86b6cfd9687c4e3b16008b7643c447b65bed68` was pushed to `codex/inf66-aff-1-20261024`.
-  Workspace-58 confirmed re-pin to that SHA and re-armed inf66 for its 19:30Z whole-host window.
-  No inference outcome is claimed. Evidence:
-  `/mnt/raid0/llm/tmp/codex-ni-20261025-inf66-aff/{COMPLETE,run.log,poller.log}`.
-- **G1:** the first poller PID 2249672 exited before its grant and ran no test. The corrected
-  runner then completed rc=0 at 10:04:50Z. Synthetic cases verified that rc=134 and 7 propagate,
-  a later PASS does not clear the prior failure, and ANSI/plain/empty OK counts work; proposal
-  `bash -n` checks passed and all four pinned inputs were unchanged. Main accepted the result and
-  notified the owner. This validates only the proposed synthetic regression; no real gate/fold
-  call occurred. Evidence: `/mnt/raid0/llm/tmp/codex-ni-20261025-g1-verdict/{validation.log,status.txt}`
-  and `PROPOSED.md`.
-- **HPR-B-SIM-FIX-2:** the owner verified 98 functional tests passed. The recorded CPU affinity
-  was 192 CPUs rather than the granted q3 CPUs 72–95 plus SMT 168–191; Filler8's region lock
-  does not pin the job. Grant CPU pinning therefore failed, so make no execution-isolation or
-  performance claim. The native contract remains **UNVERIFIED**, and the historical INVALID
-  result is unchanged. The proposal was pushed at `c4c2a3638` to
-  `codex/hpr-b-sim-fix-2-20261025`, but no parent closure is claimed. At 10:01:27Z the owner
-  registered a new row; next is a predeclaration, source-enrollment draft and golden-parity row
-  with a pre-run affinity readback assertion, due 10-26 12:00Z. Owner will merge the proposal
-  only with golden-parity PASS.
-- **V11-086-SLOW-1:** diagnosis remains that candidate B's `tg32@d32768` was terminated by the
-  driver's 3,000 s timeout, leaving the declared A/B result incomplete/hold. Workspace-58 chose
-  a bounded one-quarter B-vs-C probe with thread/`wchan` observation and no 8 h booking. The
-  owner is handling that probe on q1; it is owner-scheduled, and no result is included in this
-  cutoff. Report:
-  `/mnt/raid0/llm/tmp/codex-ni-20261024-scheduling/tasks-from-ws58/V11-086-SLOW-1-REPORT.md`.
-- **AKX-LB32-OVERHEAD-1:** updated control-v2 proposal specifies same-source fresh profiler
-  OFF/ON builds, GM/MG order at both thread counts, run identity/resume guards, build/compiler
-  attestations, and prospective same-family writer/adapter schema-v2 capture. The owner asked
-  for a FILEPATH-filter correction and stale-B0 resume guard; those are represented in the new
-  patch set. It remains untested and awaits main/owner review before integration or any grant.
-  Target is before 10-26 12:00Z; existing ±5% gate and historical INVALIDs stay unchanged.
-  Packet: `/mnt/raid0/llm/tmp/codex-ni-20261025-akx-lb32-control-finish/REVIEW-AND-GRANT-PLAN.md`.
-- **VB-FOLDGATE-WRITE:** assigned parent task remains open. Optional AKX writer/adapter fixes
-  and their test-row preparation are not parent completion. No second source family or grading
-  ladder is proposed.
-
-## Delivery, misses, and remaining queue
-
-The boundary receipts `BOUNDARY-2-RECEIPT.json` and `BOUNDARY-3.receipt.json` record
-`socket_sent` with recipient confirmation pending; they do not prove delivery. Actual owner
-acknowledgments are the later 09:58:52Z EG2 reconciliation and 10:04:55Z G1/HPR update, plus the
-earlier AK diagnostic and EG2-r2 replies.
-
-EG2 and AK startup missed original 03:00Z deadlines; AK diagnostic is now complete and EG2 has
-been reconciled with its failed-run provenance intact. INF66 missed 05:30Z but its corrected
-source/test publication is complete and re-armed for the owner window. HPR-B-SIM-FIX-2 and
-KPF18-R4-FORK-CODEREAD-1 missed 08:00Z; HPR has a new queued task, while the latest owner reply
-does not acknowledge KPF18 completion.
-
-| Task | Deadline / state | Next action and dependency |
+| Work | Evidence and owner result | Limit / next action |
 |---|---|---|
-| G1 | 10-25 14:00Z; synthetic regression complete | Main accepted rc=0 regression result; no real gate/fold call. |
-| V11-086-SLOW-1 | 10-25 12:00Z; owner probe on q1 | Owner completes bounded B-vs-C probe; no 8 h booking. |
-| AKX-LB32-OVERHEAD-1 | target before 10-26 12:00Z | Main/owner review of v2 patch and amendment before integration/grant. |
-| HPR-B-SIM-FIX-2 | 10-26 12:00Z; new row queued | Prepare predeclaration, source-enrollment draft, golden-parity row, and granted-affinity readback. |
-| AKX-ALL-31 | 10-26 12:00Z | Proposed non-finite/fp32 accumulator gates, planted controls and test. |
-| LOOP-SAFETY C1 / C2 | 10-26 12:00Z / 18:00Z | Reader pin, then fail-closed changes, in assigned order. |
-| VB-FOLDGATE-WRITE | 10-26 18:00Z | Structured records, strict adapter, CLI ingest; highest-priority T1 item. |
-| T1 blockers | 10-26 18:00Z: RTG-57, EVL-50, UFH-01, INF-67, RTG-58, INF-26; 10-27 18:00Z: INF-50, INF-64, INF-62, INF-73, EVL-37, INF-78, INF-81; 10-28 18:00Z: INF-74, UFH-12, UFH-08 | Continue from `tasks-from-ws58/T1-BLOCKERS-BATCH-20261025.md`; INF-67 remains model-scoped to qwen4exp/v10. |
-| BATCH-2 canary defects / calendar briefs | 10-26 18:00Z | Continue from `tasks-from-ws58/BATCH-2-20261025.md`. |
-| META-ASSERT-1 | 10-27 18:00Z | Read-only diagnosis and proposed champion-line fix; GPU test requires owner grant. |
-| KPF18-R4-FORK-CODEREAD-1 | 10-25 08:00Z missed; no completion acknowledgment | Main checks current report state; do not infer completion. |
-| NIB2-103 publication | pushed; owner says merge/tick in progress | Await owner confirmation before root checkbox/closure tally changes. |
-| INF66-AFF-1 | passed/pushed; owner re-pinned/re-armed | Owner's 19:30Z whole-host window owns the next inference result. |
+| G1-DURABLE | Root main merged `ce47e5640ba269653f670625e286cb85359fc61e`; owner marked closed at 11:16Z. Tracked regression passes from the tracked directory. C3/C4 synthetic verdict fixes adopted 10:53Z. | Synthetic durable plumbing only. No real gate call or historical verdict regrade. |
+| C5 bundle verdict | Synthetic job failed at 11:42Z; owner acknowledged 11:46Z. Old body false-success was reproduced, and patch still accepted nested `comparison.verdict=FAIL`. | Correct nested schema rejection and rerun the exact bounded synthetic suite under a new grant. Keep C5 open; do not publish/adopt. |
+| EG2 publication | Owner merged orchestrator branch `codex/repl-emb-2-13-20261025` @ `49c1f749014d5290367413f2898d4e37e2bd1016` at 10:41Z; 53 hashes verified, flag-off, no API reload. | B-5 only delivered; parent REPL-EMB-2.10 remains open for B-1..B-4 and trained retrain-list task IDs (due 10-27 12:00Z). Original r3 rc=1/FAILED stays immutable; Kuzu remains unvalidated. |
+| VB-FOLDGATE-WRITE source | MAIN accepted the source publication at 11:40Z; at the 11:49:22Z cutoff, owner review/merge was pending: root `fefe7df6e41cb76cc61bb18159449f198b5d73c5`, research `c8ae35ea57c1bcdc82e3aaa23a04109267824244`. Exactly 6 ROOT + 2 ROOT milestone docs + 3 research paths; source blobs and evidence/hook pins verified; whole-body CPUs 48–71 matched grant. | Synthetic suites: ROOT 107/107; research 18/18 reused. No actual fold/claim ingestion; parent remains open. The adapter/source is registered; no new grading class or ladder is claimed. |
+| AKX-LB32 control-v2 | Owner accepted mock suite 63/63, zero failures/errors/skips, 1.82s; actual CPU 24–47 equals grant. A new 10-26 pair package passed review and operator-approved booking. | Pair is not run. New one-row GM/MG pair, fixed identities, 7,200s whole host 0–95, 110 GiB, GPU quiet, after EB ~22:00Z. Launcher must be ready before 10-26 18:00Z. No pair/measurement result. |
+| HPR-B-SIM-FIX-2 | Preserve 98/98 functional tests. Prior job affinity was 192 CPUs, so do not claim grant pinning, isolation, or performance. Revised R2 six source/launcher preflight cases passed 6/6 (0 failures/errors/skips, 0.004s), with actual 24–47 matching grant; unchanged 110-case receipt reused. Owner accepted R2 and approved golden row at 11:48Z. | Golden remains unarmed until root source enrollment/reader seals are applied. Row: 21,900s, q1 24–47, 54 GiB; start by 13:20Z 10-25 or fallback 03:30Z 10-26. Native contract UNVERIFIED; historical INVALID unchanged. |
+| Row generator | Owner/main report 39 fixtures passed at 11:41Z. | Still unpublished pending review. |
+| HSF-5P-G4-LOG-2 | Owner accepted stale-resume cause at 11:46Z. The 07:58Z artifact set predated the amendment; owner archived stale output, verdict/beliefs/ENDED and consumed stamp, and re-offered M1/M3. | Root source/amendment digest invalidation proposal remains wanted; fresh execution required; G4 remains INCONCLUSIVE/unvalidated. Deadline 10-26 12:00Z. |
+| V11-086-SLOW-2 | Owner confirmed B=`cpu-20261022-8110933ba-fa-vkq`, C=`cpu-20261020-f0c96dc1f`, and requested `141e4bcf5` `llama-bench`-only rebuild to isolated candidate dirs. | Plan/pins only; no builds or benches. Due 10-26 18:00Z; it feeds the next booked whole-host window. |
 
-No handoff checkbox, canonical index row, index-state artifact, source table, queue/grant/writer,
-shared checkout, kernel tree or kernel store was edited by this checkpoint. These are evidence
-and coordination updates only; no new ClaimTuple class or grading rule is proposed.
+## Deadlines, missed work, and operating incidents
+
+- The 10-25 08:00Z KPF18-R4-FORK-CODEREAD-1 request has no completion acknowledgment. Owner’s 11:49:22Z T1 reprioritization requests a ranked plan with ETAs within one hour and puts T1 blockers above calendar-daemon and T2+ prep, while preserving HPR, V11-SLOW-2 and booked AKX windows.
+- T1 list in owner-requested order: INF-26; RTG-58; INF-81; INF-78; UFH-01; UFH-14; UFH-12; INF-50; EVL-47; INF-74; EVL-37; RTG-54; RTG-57; UFH-08; EVL-50; INF-73. Exact T1 item expansions are in `/mnt/raid0/llm/tmp/codex-ni-20261024-scheduling/OWNER-REPLY.json`, entry 11:49:22Z; separate task records/handoffs carry the deadlines. Do not replace that owner priority order with the earlier rollup.
+- HSF fresh-output invalidation remains open; C1 reader-pin is parked after main caught the wrapper’s false-success path, without validation; C5 remains failed; VB actual-fold ingestion and EG2 B-1..B-4 are still live.
+- Owner acknowledged the ungranted EG2 Python row-edit attempt as 0.1s with write failed/no further impact. Owner also acknowledged eight C1 GitNexus/Node calls; elapsed time was not retained. Report only these bounded facts, not generalized “no impact.” All interpreter/toolchain/GitNexus/hooks execution requires a live canonical grant and official filler; any HOLD prevents execution.
+- Socket SENT receipts are not recipient acknowledgments. Use explicit owner replies at 10:41, 10:53, 11:16, 11:42, 11:46, 11:48 and 11:49Z for the claims above.
+
+No owner-owned handoff boxes, canonical index rows, index-state, source enrollment, grants, fillers, shared clones, production kernels or stores were changed in this checkpoint draft. The 2026-10-24 historical checkpoint remains untouched. Operator-cadence index pruning/handoff compaction and wiki compilation were not authorized here and remain for a manually invoked `/wrap-up`.
+
+## Post-cutoff delta (owner/main updates through 12:21Z)
+
+This short addendum supplements, and does not move, the 11:49:22Z evidence cutoff above.
+
+- **HPR source enrollment:** workspace-58 applied `ENROLLMENT-FOR-MAIN.patch` (SHA `82627f6b`) in the owner worktree and attested `MAIN-ENROLLMENT-APPLIED.flag` at 11:57Z. The approved golden attempt failed at 12:03Z during `FITSETUP`: 2M-token refusal against an 8K target. No parity result was produced. A corrected four-case fitter-fixture row was queued (poller 2939929).
+- **C5:** corrected R2 synthetic regression passed; adoption is pending tracked publication. Keep the former failed run and its nested-verdict defect in the record until the fix is published; no real gate was run.
+- **V11-086-SLOW-2:** 10 synthetic cases passed; integration, `/proc` child discovery, and full-fix structural review were accepted. The bench-only build row is armed (PID 2932381); build and benchmark results are still absent.
+- **AKX pair:** canonical pair row is armed (PID 2874150) for the operator-approved whole-host booking after EB; no pair execution or measurement result.
+- **T1 progress:** INF-26 coherence/report accepted without new code; RTG-58 still requires parent-native capture; INF-81 scratch patch awaits owner candidate pin; INF-78 patch is active; UFH-01 B-contract choice awaits owner. Record as task progress only, not parent closures.
+- **Additional 12:21Z owner update:** owner rejected 422 and assigned USAGE-PROV-1, then true-budget A; source work is active. UFH14’s incident is one ungranted GitNexus status command; timestamp and duration were not retained, with no source or test changes. No impact claim is supported.
