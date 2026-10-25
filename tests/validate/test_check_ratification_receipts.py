@@ -365,6 +365,22 @@ def test_refused_receipt_at_canonical_name_is_an_error(repo: Path) -> None:
     assert rc == 2
 
 
+def test_operator_decision_receipt_at_receipt_suffix_is_listed_not_judged(repo: Path) -> None:
+    (repo / "artifacts" / "operator" / "y.receipt.json").write_text(json.dumps(
+        {"schema": "epyc.operator_receipt.v1", "token": "RATIFY-Y", "status": "ratified"}))
+    rc, report = _run(repo)
+    y = [r for r in report["receipts"] if r["receipt"].endswith("y.receipt.json")][0]
+    assert y["status"].startswith("decision receipt")
+    assert report["errors"] == [] and rc == 0
+
+
+def test_decision_schema_with_a_non_ratified_verdict_is_still_judged(repo: Path) -> None:
+    (repo / "artifacts" / "operator" / "z.receipt.json").write_text(json.dumps(
+        {"schema": "epyc.operator_receipt.v1", "ratification_id": "z", "verdict": "REFUSED"}))
+    rc, report = _run(repo)
+    assert rc == 2 and any("canonical name" in e for e in report["errors"])
+
+
 def test_receipts_beside_the_decision_receipt_are_read(repo: Path) -> None:
     (repo / "artifacts" / "operator" / "x.receipt.json").write_text(json.dumps(
         {"ratification_id": "x", "verdict": "REFUSED"}))

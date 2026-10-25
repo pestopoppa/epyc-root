@@ -1,0 +1,99 @@
+diff --git a/MEASUREMENT.md b/MEASUREMENT.md
+index 19cede3..6f12566 100644
+--- a/MEASUREMENT.md
++++ b/MEASUREMENT.md
+@@ -202,6 +202,66 @@ measurement debt, not a licence to guess which unit was meant.
+   including the MMMU-250 result that gated a live vision model cutover. 152 still existed and
+   4.0 MiB carried nearly all of them — full exposure, no loss yet. The gap was constitutional
+   rather than clerical: §5 mandated the hash and was silent on where the artifact must live.*
++- **Evidence retention and reclamation** *(operator-ratified 2026-10-25, `RATIFY-WS58-RETENTION-LESSONS-20261025`)*: the
++  durability clause above says where evidence must live; this clause says what may not be removed
++  while it is still the only copy. It grants no reclamation authority to anyone. It bounds the
++  removals that other approvals authorise.
++  - **Homes.** Evidence behind a ratified or production-affecting claim lives under
++    `epyc-inference-research/data/<campaign>/` with a `SHA256SUMS` and a README. Design, decision
++    and review documents live in root `docs/` (`docs/design/`, `docs/reviews/`,
++    `docs/coordination/`) or in the owning handoff. Evidence for work in progress or a provisional
++    result may stay in scratch until the result is ratified, and is carried to its home then.
++    **Reproducible data is never carried**: worktrees, build trees, raw logs and downloads stay in
++    scratch, and a claim that cites one records it hash-and-provenance-only.
++  - **Durability classes.** This aligns the durability clause above with the operator ruling of
++    2026-08-03 that raw campaign data stays on local disk, gitignored. There are three classes:
++    - *carried-in-git*: tracked and reachable from a pushed ref;
++    - *durable-untracked*: the bytes sit under `epyc-inference-research/data/<campaign>/` on this
++      host, gitignored, and are covered by a `SHA256SUMS` that is itself carried in git;
++    - *hash-and-provenance-only*: the bytes are not kept; the SHA-256, size, collection recipe and
++      provenance are.
++
++    The first two satisfy "inside a repository" above. A durable-untracked artifact has no
++    off-host copy.
++  - **The reclamation predicate binds every reclaimer**: an interactive session, a wrap-up
++    cleanup, a trash sweep, an approved volume reclaim and an autonomous loop alike. A path under
++    `/mnt/raid0/llm/tmp`, `/mnt/raid0/llm/worktrees`, `/mnt/raid0/llm/.trash` or
++    `/mnt/raid0/llm/state` may be removed only when ALL of these hold:
++    1. **Not cited.** No record cites it. The citation sources are: root handoffs (active and
++       blocked, on `origin/main` and in the working tree); the compute queue (FILLERS, grants and
++       launchers); the canonical belief ledger; the research registry; AutoKernel campaign
++       inputs; the scratch manifest; the session bus; the observer registry; and crontab. A cited
++       path becomes removable only after it is promoted to its home and every citing record is
++       re-pointed (`REPOINTED from`), or after it is de-cited. **No removal may take the sole copy
++       of a cited artifact.**
++    2. **Not KEEP-marked.**
++    3. **No size threshold.** Size is a reported column only. No keep-or-remove verdict reads it.
++    4. **Fail-closed.** A citation source that cannot be read makes the verdict UNVERIFIABLE, and
++       an unverifiable path is kept.
++    5. **Re-checked at every step.** The citation check runs at plan time, again at execute time,
++       and again on the original path at purge time.
++    6. **Trash first, then held.** Removal moves the path to the trash. A trashed entry is purged
++       no sooner than 7 days after trashing. A batch approval does not shorten the hold. Only an
++       exact-path, per-entry approval with a clean re-check does.
++    7. **Explicit target.** Exact paths only: no glob, pattern, `find -delete` or listing-driven
++       sweep.
++    8. **Tombstone before unlink.** The purge record is written and fsynced before anything is
++       unlinked. It carries the original path, a SHA-256 computed immediately before removal, the
++       size, and the approval it acts under.
++  - **Three states, not two.** A verifier distinguishes three cases for a cited artifact:
++    present and hashing correctly is *conforming*; absent with a tombstone is *expected
++    absence*; absent without a tombstone is a *defect*. A defect is reported as an incident,
++    never left as a silent gap.
++  - **Scope and enforcement.** The autonomous-loop expiry grant drafted on 2026-08-03
++    (`artifacts/operator/autokernel-policy-draft/evidence-retention.draft.md` §3.2-§3.7) is not
++    enacted by this clause. Until it is, loop reclamation is governed by this predicate like any
++    other. The enforcers are the guards named in `agents/shared/OPERATING_CONSTRAINTS.md` →
++    *Destructive operations* and `epyc-inference-research/scripts/validate/check_evidence_durability.py`.
++  *Origin: the 2026-10-25 reconciliation (`docs/reference/tmp-loss-reconcile-2026-10-25.md`) found
++  244 real losses among 497 handoff-cited `/mnt/raid0/llm/tmp` paths. The 2026-10-20 volume reclaim
++  skipped its citation check for every entry under 0.02 GiB, which covered 72 of the 73 cited paths
++  it removed. A follow-on script then purged that batch out of the trash within two minutes. §6
++  already pointed here, but the clause had never been written.*
+ - **Validators**: `scripts/validate/check_claims_grammar.sh` (warn-mode; scans new handoff/index
+   diffs for uncited decision-flavored numbers — built 2026-07-30 per ledger L5); journal rows
+   carry `protocol_id`; the ATTESTATION artifact (findings-04 §B) is the `attest <id>` referent.
+@@ -285,6 +345,15 @@ confers no authority beyond its own enumeration.
+ 
+ ## CHANGELOG
+ 
++- **2026-10-25 (v2.x)** — AMENDMENT (§5, `RATIFY-WS58-RETENTION-LESSONS-20261025`): adds *Evidence retention and reclamation*,
++  the clause §6 already pointed to. It names the evidence homes, and reproducible data is never
++  carried. It aligns the durability clause with the 2026-08-03 durable-untracked ruling (three
++  durability classes). It binds every reclaimer to one predicate: not cited (enumerated sources),
++  not KEEP-marked, no size threshold, fail-closed, re-checked at plan, execute and purge time,
++  trash-first with a 7-day hold, exact paths only, tombstone before unlink. It adds a three-state
++  verifier. It grants no reclamation authority, and does not enact the 2026-08-03 draft's
++  autonomous-loop expiry grant. Origin: 244 real tmp losses reconciled 2026-10-25. Operator
++  decision D2/D7, 2026-10-25.
+ - **2026-09-27 (v2.x)** — AMENDMENT (Annex K, `P-AK-SEARCH-1-A4`): the AutoKernel controller may
+   adopt a runtime configuration of its own full selected serving launch (one declared field:
+   threads, CPU list, NUMA policy, or a policy-listed env key such as OpenMP placement or a
+diff --git a/artifacts/operator/autokernel-policy-draft/RATIFICATION_LEDGER.md b/artifacts/operator/autokernel-policy-draft/RATIFICATION_LEDGER.md
+index b07d371..9599705 100644
+--- a/artifacts/operator/autokernel-policy-draft/RATIFICATION_LEDGER.md
++++ b/artifacts/operator/autokernel-policy-draft/RATIFICATION_LEDGER.md
+@@ -399,6 +399,7 @@ benchmark result and needs no `SHA256SUMS` over a data directory. What it does c
+ | 3 | Annex G cross-reference | *(pending)* | coupled to 2 |
+ | 4 | §E exclusion preconditions (Annex B) + digest | *(pending)* | R3 sub-line: *(pending)* |
+ | 5 | Evidence retention and reclamation | *(pending)* | |
++| 5 (2026-10-25) | Evidence retention and reclamation | **Applied in amended form** by `RATIFY-WS58-RETENTION-LESSONS-20261025` (operator decision D2/D7, 2026-10-25) | The predicate is widened to every reclaimer, the citation sources are named, size thresholds are forbidden, and a purge-time re-check is required. The durability classes are aligned to the 2026-08-03 ruling. The draft's §3.2-§3.7 autonomous-loop expiry grant is **NOT** enacted. Package: `artifacts/operator/ratify-ws58-retention-lessons-20261025.md`. The row above is left as written (append-only). |
+ | 6 | §6 dump-list cross-reference | *(pending)* | |
+ | 7 | §6b strategy-store narrowing | *(pending)* | |
+ | 8 | `human_only_paths.yaml` conceptual entries + pin | *(pending)* | atomic pair |
