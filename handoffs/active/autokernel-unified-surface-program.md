@@ -194,6 +194,7 @@ ROOT accepted the prospective GPU generator reader rebind at `ROOT_GPU_GENERATIO
 - [x] **2026-10-07 bounded checkpoint: authenticate the new NI08 capacity acknowledgment through the genuine owner outbox.** ✅ 2026-10-07 Exact correlation proves receipt only, not an applied recovery or serving/compute grant.
 - [x] **2026-10-07 bounded checkpoint: complete the disjoint four-plus-six targeted evidence and commit the exact seven-file GPU repair.** ✅ 2026-10-07 ROOT accepted both original source/cleanup scopes; clean commit `b1d49999` is ready for normal r6 integration. Failed V1/V2 runs retain their original results.
 - [ ] Freeze the complete normally merged r6 source/reader/runner, obtain actual whole native runtime wait 0, and then review GPU clearance and fresh generation telemetry.
+  - source a3bdc4860 merged; native/materialization still unapproved
 - [x] **2026-10-07 bounded checkpoint: reverify the sixteen original G3 masks under the corrected producer/reader.** ✅ 2026-10-07 New original native/inner waits 0, 98 native terminal observations, original35 unchanged and shared Judged/Located grade; scope is same-build self-conformance.
 - [ ] Publish the ROOT-reviewed exact original35 corpus and new native verification record at the owned paused boundary, retaining original failures and grade qualifications.
 
