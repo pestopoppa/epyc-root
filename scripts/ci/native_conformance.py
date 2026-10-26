@@ -9,6 +9,7 @@ import math
 import os
 from pathlib import Path, PurePosixPath
 import platform
+import re
 import stat
 import subprocess
 import sys
@@ -17,6 +18,9 @@ import xml.etree.ElementTree as ET
 SCHEMA = "epyc.ci.fixture_execution.v1"
 EXCLUSIONS = ["inference", "performance", "promotion", "live_host_corpus",
               "unselected_cases", "undeclared_dependency_completeness"]
+SUBTEST_POLICY = "pytest-9.0.3-passed-subtest-reports-v1"
+SUBTEST_PROPERTY = "epyc.junit.excluded_passed_subtest_reports"
+SUBTEST_POLICY_PROPERTY = "epyc.junit.accounting_policy"
 
 
 def canonical(value):
@@ -59,26 +63,63 @@ def junit_summary(data):
     root = ET.fromstring(data)
     if root.tag not in {"testsuite", "testsuites"}:
         raise ValueError("not JUnit")
-    cases = []
+    parents = {child: parent for parent in root.iter() for child in parent}
+    if any(parents[node].tag != "testcase" for node in parents
+           if node.tag in {"failure", "error", "skipped"}):
+        raise ValueError("ambiguous case status")
+    cases, collection_skips = [], []
     for item in root.iter("testcase"):
+        if parents.get(item) is None or parents[item].tag != "testsuite":
+            raise ValueError("testcase outside JUnit suite")
         name, classname = item.get("name", ""), item.get("classname", "")
-        if not name or not classname:
-            raise ValueError("unnamed JUnit case")
         duration = float(item.get("time", "0"))
         if not math.isfinite(duration) or duration < 0:
             raise ValueError("invalid case duration")
-        statuses = [tag for tag in ("failure", "error", "skipped") if item.find(tag) is not None]
-        if len(statuses) > 1:
+        status_nodes = [node for node in item.iter()
+                        if node.tag in {"failure", "error", "skipped"}]
+        if (len(status_nodes) > 1 or any(node not in list(item) for node in status_nodes)
+                or any(node is not item for node in item.iter("testcase"))):
             raise ValueError("ambiguous case status")
+        statuses = [node.tag for node in status_nodes]
+        if not classname:
+            if (not re.fullmatch(r"[A-Za-z_]\w*(?:\.[A-Za-z_]\w*)*", name)
+                    or statuses != ["skipped"]
+                    or status_nodes[0].get("message") != "collection skipped"):
+                raise ValueError("unnamed JUnit case")
+            collection_skips.append({"name": name, "status": "skipped"})
+            continue
+        if not name.strip() or not classname.strip():
+            raise ValueError("unnamed JUnit case")
         cases.append({"classname": classname, "name": name,
                       "status": statuses[0] if statuses else "passed"})
     if not cases:
         raise ValueError("no collected cases")
     identities = [(c["classname"], c["name"]) for c in cases]
-    if len(set(identities)) != len(identities):
+    if (len(set(identities)) != len(identities)
+            or len({c["name"] for c in collection_skips}) != len(collection_skips)):
         raise ValueError("duplicate JUnit case identity")
+    if any(classname == skipped["name"] or classname.startswith(skipped["name"] + ".")
+           for classname, _ in identities for skipped in collection_skips):
+        raise ValueError("collection skip conflicts with named JUnit case")
+    subtest_reports = 0
+    has_subtest_metadata = False
     # Validate every suite, including nested suites, against its descendant cases.
     for suite in root.iter("testsuite"):
+        properties = list(suite.findall("./properties/property"))
+        reserved = [p for p in suite.iter("property")
+                    if p.get("name", "").startswith("epyc.junit.")]
+        if reserved:
+            if (len(reserved) != 2 or any(p not in properties for p in reserved)
+                    or {p.get("name") for p in reserved}
+                    != {SUBTEST_PROPERTY, SUBTEST_POLICY_PROPERTY}):
+                raise ValueError("invalid JUnit subtest accounting metadata")
+            values = {p.get("name"): p.get("value", "") for p in reserved}
+            value = values[SUBTEST_PROPERTY]
+            if (values[SUBTEST_POLICY_PROPERTY] != SUBTEST_POLICY
+                    or not re.fullmatch(r"[1-9][0-9]*", value)):
+                raise ValueError("invalid JUnit subtest accounting metadata")
+            has_subtest_metadata = True
+            subtest_reports += int(value)
         items = list(suite.iter("testcase"))
         expected = {"tests": len(items), "failures": sum(i.find("failure") is not None for i in items),
                     "errors": sum(i.find("error") is not None for i in items),
@@ -90,7 +131,13 @@ def junit_summary(data):
               for key in ("passed", "failure", "error", "skipped")}
     counts["collected"] = len(cases)
     counts["executed"] = len(cases) - counts["skipped"]
-    return {"cases": cases, "counts": counts}
+    summary = {"cases": cases, "counts": counts}
+    if collection_skips:
+        summary["collection_skips"] = collection_skips
+    if has_subtest_metadata:
+        summary["subtest_accounting"] = {"policy": SUBTEST_POLICY,
+            "excluded_passed_subtest_reports": subtest_reports}
+    return summary
 
 
 def decide(summary, exit_code):
@@ -115,7 +162,14 @@ def proposition(record):
             + json.dumps(record["summary"]["cases"], sort_keys=True)
             + "; executed cases passed and command exited zero: "
             + str(record["fixture_execution_conformant"]).lower()
-            + ". Skipped cases and " + ", ".join(EXCLUSIONS) + " are excluded.")
+            + ". Skipped cases and " + ", ".join(EXCLUSIONS) + " are excluded."
+            + (" Collection-level skips are excluded: "
+               + json.dumps(record["summary"]["collection_skips"], sort_keys=True) + "."
+               if "collection_skips" in record["summary"] else "")
+            + (" Passed subtest report counters have no distinct named-case attribution "
+               "and are excluded: "
+               + json.dumps(record["summary"]["subtest_accounting"], sort_keys=True) + "."
+               if "subtest_accounting" in record["summary"] else ""))
 
 
 def artifact(directory, name, data):

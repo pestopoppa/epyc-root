@@ -347,3 +347,120 @@ def test_missing_junit_is_diagnostic(tmp_path):
         read_paths=[source], selections=["fixture"])
     assert record["fixture_execution_conformant"] is None
     assert adapter.native_rows(tmp_path / "capture" / "receipt.json") == ()
+
+
+def test_collection_skip_is_separate_from_named_case_warrant(capture):
+    xml = ('<testsuite tests="2" failures="0" errors="0" skipped="1">'
+           '<testcase classname="f" name="executed"/>'
+           '<testcase classname="" name="tests.optional">'
+           '<skipped message="collection skipped">optional dependency</skipped>'
+           '</testcase></testsuite>')
+    output, record = capture(xml=xml)
+    assert record["fixture_execution_conformant"] is True
+    assert record["summary"]["cases"] == [dict(classname="f", name="executed", status="passed")]
+    assert record["summary"]["collection_skips"] == [dict(name="tests.optional", status="skipped")]
+    assert record["summary"]["counts"]["collected"] == 1
+    assert "Collection-level skips are excluded" in record["decided_proposition"]
+    assert adapter.native_rows(output / "receipt.json")
+
+
+@pytest.mark.parametrize("node", [
+    '<testcase classname="" name="tests.optional"/>',
+    '<testcase classname="" name=" "><skipped message="collection skipped"/></testcase>',
+    '<testcase classname="" name="tests.optional::test_x"><skipped message="collection skipped"/></testcase>',
+    '<testcase classname="" name="tests.optional"><failure/></testcase>',
+    '<testcase classname="f" name="x"><failure/><failure/></testcase>',
+    '<testcase classname="f" name="x"><skipped/><error/></testcase>',
+    '<testcase classname="f" name="x"><system-out><failure/></system-out></testcase>',
+    '<testcase classname="f" name="x"/><failure/>',
+])
+def test_ambiguous_or_unnamed_nodes_stay_diagnostic(capture, node):
+    xml = '<testsuite tests="1" failures="0" errors="0" skipped="0">' + node + '</testsuite>'
+    output, record = capture(xml=xml)
+    assert record["fixture_execution_conformant"] is None
+    assert adapter.native_rows(output / "receipt.json") == ()
+
+
+@pytest.mark.parametrize("properties", [
+    '<property name="epyc.junit.excluded_passed_subtest_reports" value="6"/>',
+    '<property name="epyc.junit.accounting_policy" value="unknown"/>',
+    '<property name="epyc.junit.accounting_policy" value="pytest-9.0.3-passed-subtest-reports-v1"/>'
+    '<property name="epyc.junit.excluded_passed_subtest_reports" value="-1"/>',
+    '<property name="epyc.junit.accounting_policy" value="pytest-9.0.3-passed-subtest-reports-v1"/>'
+    '<property name="epyc.junit.excluded_passed_subtest_reports" value="1.0"/>',
+])
+def test_malformed_subtest_metadata_refused(capture, properties):
+    xml = ('<testsuite tests="1" failures="0" errors="0" skipped="0"><properties>'
+           + properties + '</properties><testcase classname="f" name="x"/></testsuite>')
+    output, record = capture(xml=xml)
+    assert record["fixture_execution_conformant"] is None
+    assert adapter.native_rows(output / "receipt.json") == ()
+
+
+def test_metadata_never_excuses_missing_testcase(capture):
+    xml = ('<testsuite tests="7" failures="0" errors="0" skipped="0"><properties>'
+           '<property name="epyc.junit.accounting_policy" value="pytest-9.0.3-passed-subtest-reports-v1"/>'
+           '<property name="epyc.junit.excluded_passed_subtest_reports" value="6"/>'
+           '</properties><testcase classname="f" name="x"/></testsuite>')
+    output, record = capture(xml=xml)
+    assert record["fixture_execution_conformant"] is None
+    assert record["diagnostic"] == "inconsistent JUnit suite counts"
+    assert adapter.native_rows(output / "receipt.json") == ()
+
+
+def test_collection_only_skip_emits_no_named_execution_tuple(capture):
+    xml = ('<testsuite tests="1" failures="0" errors="0" skipped="1">'
+           '<testcase classname="" name="tests.optional">'
+           '<skipped message="collection skipped"/></testcase></testsuite>')
+    output, record = capture(xml=xml)
+    assert record["fixture_execution_conformant"] is None
+    assert adapter.native_rows(output / "receipt.json") == ()
+
+
+@pytest.mark.parametrize("attribute,value", [("tests", 3), ("skipped", 0), ("failures", 1), ("errors", 1)])
+def test_collection_exclusion_preserves_all_suite_count_checks(capture, attribute, value):
+    counts = dict(tests=2, skipped=1, failures=0, errors=0)
+    counts[attribute] = value
+    attrs = " ".join(f'{key}="{count}"' for key, count in counts.items())
+    xml = (f'<testsuite {attrs}><testcase classname="f" name="executed"/>'
+           '<testcase classname="" name="tests.optional">'
+           '<skipped message="collection skipped"/></testcase></testsuite>')
+    output, record = capture(xml=xml)
+    assert record["fixture_execution_conformant"] is None
+    assert record["diagnostic"] == "inconsistent JUnit suite counts"
+    assert adapter.native_rows(output / "receipt.json") == ()
+
+
+@pytest.mark.parametrize("classname", ["tests.foo", "tests.foo.TestClass"])
+def test_collection_skip_cannot_also_have_executed_module_cases(capture, classname):
+    xml = ('<testsuite tests="2" failures="0" errors="0" skipped="1">'
+           f'<testcase classname="{classname}" name="executed"/>'
+           '<testcase classname="" name="tests.foo">'
+           '<skipped message="collection skipped"/></testcase></testsuite>')
+    output, record = capture(xml=xml)
+    assert record["fixture_execution_conformant"] is None
+    assert record["diagnostic"] == "collection skip conflicts with named JUnit case"
+    assert adapter.native_rows(output / "receipt.json") == ()
+
+
+def test_duplicate_collection_skip_modules_refused(capture):
+    node = ('<testcase classname="" name="tests.foo">'
+            '<skipped message="collection skipped"/></testcase>')
+    xml = ('<testsuite tests="3" failures="0" errors="0" skipped="2">'
+           '<testcase classname="other" name="executed"/>' + node + node + '</testsuite>')
+    output, record = capture(xml=xml)
+    assert record["fixture_execution_conformant"] is None
+    assert record["diagnostic"] == "duplicate JUnit case identity"
+    assert adapter.native_rows(output / "receipt.json") == ()
+
+
+def test_duplicate_reserved_subtest_properties_refused(capture):
+    policy = '<property name="epyc.junit.accounting_policy" value="pytest-9.0.3-passed-subtest-reports-v1"/>'
+    count = '<property name="epyc.junit.excluded_passed_subtest_reports" value="1"/>'
+    xml = ('<testsuite tests="1" failures="0" errors="0" skipped="0"><properties>'
+           + policy + count + count + '</properties>'
+           '<testcase classname="f" name="x"/></testsuite>')
+    output, record = capture(xml=xml)
+    assert record["fixture_execution_conformant"] is None
+    assert record["diagnostic"] == "invalid JUnit subtest accounting metadata"
+    assert adapter.native_rows(output / "receipt.json") == ()
