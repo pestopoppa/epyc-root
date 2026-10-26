@@ -89,6 +89,9 @@ KPF18_SUB_ARMS = {
     # floor, teacher-forced) and step ``item2q`` (item-2 cell g<G>.s<S> with >= 3 Q repeats). Verdict inputs ride in
     # the record's own top-level ``r3`` block (``r3.result``), not in ``equivalence``; see ``_project_r3`` (VB-KVU-PF.7).
     186: (r"long6_teacher_forced", r"item2q_g\d+s\d+"),
+    # 187 = KPF-18-S1.R4, occupancy-matched teacher-forced fork localisation.
+    # Its own r4.result scores the deviation; the generic hit-token metric does not.
+    187: (r"r4_teacher_forced",),
 }
 _SUB_ARM_RE = {item: re.compile("^(?:" + "|".join(pats) + ")$") for item, pats in KPF18_SUB_ARMS.items()}
 #: sub-arms that validate but project nothing (see the 185 note above).
@@ -238,6 +241,23 @@ def _validate_r3(row: dict) -> list[str]:
     return []
 
 
+def _validate_r4(row: dict) -> list[str]:
+    """R4's declared locator and native result envelope; never weaken the record seal."""
+    block = row.get("r4")
+    if not isinstance(block, dict):
+        return ["item-187 record without its own r4 block"]
+    if block.get("step_id") != "r4" or block.get("step") != "r4":
+        return ["r4 block does not name step r4"]
+    if not isinstance(block.get("predeclaration_sha256"), str) or not re.fullmatch(
+            r"[0-9a-f]{64}", block["predeclaration_sha256"]):
+        return ["r4 block without its own predeclaration_sha256"]
+    if not isinstance(block.get("step_complete"), bool):
+        return ["r4 block without its own step_complete flag"]
+    if block["step_complete"] and not isinstance(block.get("result"), dict):
+        return ["r4 block says step_complete but carries no result of its own"]
+    return []
+
+
 def _intkeys(obj: Any) -> Any:
     """Diagnostic only: ``obj`` with digit-string dict keys turned back into ints (never used to ACCEPT a row)."""
     if isinstance(obj, dict):
@@ -287,6 +307,8 @@ def validate_row(row: Any) -> list[str]:
             problems.append(f"sub-arm {arm!r} without the matching kpf18_arm locator ({row.get('kpf18_arm')!r})")
         elif row.get("kpf18_item") == 186:
             problems.extend(_validate_r3(row))
+        elif row.get("kpf18_item") == 187:
+            problems.extend(_validate_r4(row))
     rsha = row.get("rows_sha256")
     if rsha is not None and not (isinstance(rsha, str) and re.fullmatch(r"[0-9a-f]{64}", rsha)):
         problems.append("rows_sha256 is present but not a sha256 hex digest")
@@ -456,6 +478,8 @@ def project(native: Any) -> ClaimTuple:
         return _project_item3v2(row, sidecar, present)
     if row.get("kpf18_item") == 186:
         return _project_r3(row, sidecar, present)
+    if row.get("kpf18_item") == 187:
+        return _project_r4(row, sidecar, present)
     if _DECLINED_SUB_ARM.match(row["arm"]):
         raise ProjectionError(f"KPF sub-arm {row['arm']} projects nothing: its only number is a 0 hit count")
     if native.get("measure"):
@@ -727,6 +751,58 @@ def _project_r3(row: dict, sidecar: Path, present: bool) -> ClaimTuple:
             reps_basis="aborted/incomplete attempt: the step scored nothing", **common,
             extra={**extra, "incomplete_reason": why}, observation={"outcome_native": why[:120]})
     return ClaimTuple(**tup, **common)
+
+
+def _project_r4(row: dict, sidecar: Path, present: bool) -> ClaimTuple:
+    """Project native R4 localisation, not hit tokens or a performance verdict.
+
+    The 256 positions are paired positions within ONE load, never independent runs.
+    ChildX/factorial and cross-load readings retain the producer's zero weight.
+    Invalid/incomplete attempts use a separate scored-step count, never a zero distance.
+    """
+    block = row["r4"]
+    result = block.get("result") if block["step_complete"] else None
+    result = result if isinstance(result, dict) else {}
+    common = dict(
+        measurement_id="kpf-" + hashlib.sha256(row["record_sha256"].encode()).hexdigest()[:32],
+        date=row["end_utc"], category=row["category"], protocol_id="",
+        attestation_path=str(_rows_path(row, sidecar)), attestation_sha256=row.get("rows_sha256") or "",
+        attestation_locator=(f"kpf:{row['run_id']}:{row['arm']}:item=187:step=r4:"
+                             f"ps={row['prompt_set_sha256'][:16]}:bin={row['binary_sha256'][:16]}:win={row['window_id']}"),
+        attestation_present=present, attestation_verified=True if present else None,
+        source_kind=SOURCE_KIND, applicability=_applicability(row))
+    extra = {key: row.get(key) for key in (
+        "schema", "run_id", "arm", "kpf_task", "kpf18_item", "kpf18_arm", "record_sha256",
+        "binary_sha256", "prompt_set_sha256", "window_id", "gpu_window_id", "argv", "host",
+        "start_utc", "end_utc", "checks")}
+    # Preserve native provenance and verdict inputs, including explicitly zero-weight readings.
+    extra.update(r4=block, sidecar_path=str(sidecar), verdict=result.get("verdict"))
+    value, floor, n = (result.get(k) for k in ("d_child_vs_coldE", "floor_used", "n_common_valid"))
+    valid = result.get("arm_valid")
+    judged = ("child", "child2", "coldA", "coldB", "coldE")
+    verdict = result.get("verdict")
+    scored = (block["step_complete"] and block.get("fresh_load") is True
+              and _num(value) and value >= 0 and _num(floor) and floor > 0
+              and type(n) is int and n >= 16 and result.get("prompt_ge_50k") is True
+              and isinstance(valid, dict) and all(valid.get(arm) is True for arm in judged)
+              and verdict in {"FORK_PATH_NOT_REPRODUCIBLE", "OCCUPANCY_NUMERICS", "FORK_PATH_SPECIFIC",
+                              "BETWEEN_FLOOR_AND_COLD_SPREAD"})
+    if not scored:
+        why = "R4 incomplete, invalid or abstaining native localisation; no judged distance scored"
+        return ClaimTuple(
+            metric="kpf18_r4_steps_scored", value=0, unit="R4 steps", metric_direction="higher_better",
+            claim=f"KPF-18-S1.R4 ({row['arm']}): {why}; 0 steps scored",
+            reps=1, reps_basis="aborted/incomplete attempt: the step scored nothing",
+            observation={"outcome_native": str(verdict or why)[:120]},
+            extra={**extra, "incomplete_reason": why}, **common)
+    return ClaimTuple(
+        metric="kpf18_r4_child_vs_coldE_mean_abs_dlogprob", value=value,
+        unit="mean absolute log-probability difference", metric_direction="lower_better",
+        claim=(f"KPF-18-S1.R4: occupancy-matched child-vs-coldE mean |dlogprob| {value:.6g}, "
+               f"native cold floor {floor:.6g}, over {n} common teacher-forced positions; "
+               "one fresh load, an observation at the recorded build and argv"),
+        reps=n, reps_basis="teacher-forced positions valid in five judged arms; one fresh load, NOT independent runs",
+        observation={"anchor_value": floor, "outcome_native": str(verdict)[:120]}, extra=extra, **common)
 
 
 def _project_measure(native: dict, row: dict, sidecar: Path, present: bool) -> ClaimTuple:
