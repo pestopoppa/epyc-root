@@ -97,7 +97,9 @@ def main() -> int:
                    "-p", "no:cacheprovider", "-q", SELECTION, f"--junitxml={junit}"]
         status["state"] = "running"
         status_path.write_text(json.dumps(status, sort_keys=True) + "\n", encoding="utf-8")
-        code = subprocess.call([*argv, "--", *command], cwd=app)
+        child_env = os.environ.copy()
+        child_env["NI07_UTM_READOUT"] = str(generated)
+        code = subprocess.call([*argv, "--", *command], cwd=app, env=child_env)
         status.update(state="passed" if code == 0 else "failed", exit_code=code)
         return code
     except Exception as exc:

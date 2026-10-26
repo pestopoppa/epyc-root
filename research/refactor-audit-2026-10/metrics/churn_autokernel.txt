@@ -1,0 +1,78 @@
+# Churn: autokernel (commits touching file, since 2026-08-01)
+    217 scripts/kernel_rnd/autokernel/loop/run.py
+     88 scripts/kernel_rnd/autokernel/campaign.py
+     82 scripts/kernel_rnd/autokernel/loop/actors.py
+     73 scripts/kernel_rnd/autokernel/controller/discovery_deployment_factory.py
+     68 scripts/kernel_rnd/autokernel/test_campaign.py
+     67 scripts/kernel_rnd/autokernel/controller/discovery_controller.py
+     61 scripts/kernel_rnd/autokernel/loop/loop.py
+     60 scripts/kernel_rnd/autokernel/loop/test_gates.py
+     55 scripts/kernel_rnd/autokernel/loop/serial_run.py
+     47 scripts/kernel_rnd/autokernel/controller/test_discovery_deployment_factory.py
+     44 scripts/kernel_rnd/autokernel/loop/gates.py
+     38 scripts/kernel_rnd/autokernel/execution/live_controls.py
+     36 scripts/kernel_rnd/autokernel/loop/test_actors.py
+     36 scripts/kernel_rnd/autokernel/controller/test_discovery_controller.py
+     33 scripts/kernel_rnd/autokernel/loop/pool.py
+     32 scripts/kernel_rnd/autokernel/loop/test_serial_run.py
+     32 scripts/kernel_rnd/autokernel/loop/serving.py
+     32 scripts/kernel_rnd/autokernel/loop/pipeline.py
+     32 scripts/kernel_rnd/autokernel/controller/arena_cell_runner.py
+     31 scripts/kernel_rnd/autokernel/controller/test_arena_cell_runner.py
+     29 scripts/kernel_rnd/autokernel/execution/test_live_controls.py
+     28 scripts/kernel_rnd/autokernel/journal.py
+     27 scripts/kernel_rnd/autokernel/controller/discovery_static_registry.py
+     25 scripts/kernel_rnd/autokernel/controller/test_all_strategy_acceptance_red.py
+     24 scripts/kernel_rnd/autokernel/loop/test_loop.py
+     24 scripts/kernel_rnd/autokernel/loop/status.py
+     24 scripts/kernel_rnd/autokernel/execution/t0_provider.py
+     23 scripts/kernel_rnd/autokernel/controller/gpu_source_evidence.py
+     23 scripts/kernel_rnd/autokernel/controller/gpu_source_adapter.py
+     22 scripts/kernel_rnd/autokernel/controller/discovery_deployment.py
+     20 scripts/kernel_rnd/autokernel/loop/serial_roster.py
+     20 scripts/kernel_rnd/autokernel/execution/test_t0_provider.py
+     20 scripts/kernel_rnd/autokernel/controller/test_discovery_static_registry.py
+     19 scripts/kernel_rnd/autokernel/loop/test_existing_cpu_run.py
+     19 scripts/kernel_rnd/autokernel/loop/campaign_control.py
+     18 scripts/kernel_rnd/autokernel/execution/microbench.py
+     17 scripts/kernel_rnd/autokernel/loop/cpu_profile.py
+     17 scripts/kernel_rnd/autokernel/controller/test_discovery_controller_blackbox.py
+     16 scripts/kernel_rnd/autokernel/loop/bench.py
+     16 scripts/kernel_rnd/autokernel/controller/test_gpu_source_adapter.py
+     16 scripts/kernel_rnd/autokernel/controller/test_discovery_deployment.py
+     16 scripts/kernel_rnd/autokernel/controller/experiments.py
+     15 scripts/kernel_rnd/autokernel/loop/archive.py
+     15 scripts/kernel_rnd/autokernel/loop/actor_opencode_config.py
+     15 scripts/kernel_rnd/autokernel/evaluator/correctness.py
+     14 scripts/kernel_rnd/autokernel/loop/serial_scheduling.py
+     14 scripts/kernel_rnd/autokernel/loop/resume.py
+     14 scripts/kernel_rnd/autokernel/evaluator/test_correctness.py
+     14 scripts/kernel_rnd/autokernel/controller/test_arena_campaign.py
+     13 scripts/kernel_rnd/autokernel/test_campaign_footprint.py
+     13 scripts/kernel_rnd/autokernel/schemas.py
+     13 scripts/kernel_rnd/autokernel/loop/test_scratch.py
+     13 scripts/kernel_rnd/autokernel/loop/test_calibrate_served_shapes.py
+     13 scripts/kernel_rnd/autokernel/loop/calibrate_served_shapes.py
+     13 scripts/kernel_rnd/autokernel/execution/sandbox.py
+     12 scripts/kernel_rnd/autokernel/loop/test_served_shape_cases.py
+     12 scripts/kernel_rnd/autokernel/loop/test_bench.py
+     12 scripts/kernel_rnd/autokernel/loop/served_shape_cases.py
+     12 scripts/kernel_rnd/autokernel/loop/accumulate.py
+     12 scripts/kernel_rnd/autokernel/controller/claude_codex_actor_critic.py
+
+# Monthly insertions/deletions (python only) for: scripts/kernel_rnd/autokernel
+2026-01 +0 -0 net=0
+2026-02 +0 -0 net=0
+2026-03 +0 -0 net=0
+2026-04 +0 -0 net=0
+2026-05 +0 -0 net=0
+2026-06 +0 -0 net=0
+2026-07 +0 -0 net=0
+2026-08 +368874 -90770 net=278104
+2026-09 +191369 -6643 net=184726
+2026-10 +32191 -3716 net=28475
+
+# Commits per month
+    598 2026-08
+    394 2026-09
+     73 2026-10

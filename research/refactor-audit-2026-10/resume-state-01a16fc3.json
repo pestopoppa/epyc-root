@@ -1,0 +1,533 @@
+{
+  "session": "01a16fc3-6403-7dd3-a586-8f319cb47dde",
+  "objective": "Continue entire refactoring-multirepo-2026-10 program; task not complete",
+  "model_policy": "User latest: cheapest capable available model/effort, explicit every dispatch; ~2 executing contexts, no recurring LLM polling",
+  "root_worktree": "/mnt/raid0/llm/worktrees/refactor-audit-01a16fc3-root",
+  "root_branch": "refactor/handoff-audit-20261024-01a16fc3",
+  "root_publish_destination": "codex/refactor-handoff-audit-01a16fc3",
+  "root_pushed_checkpoint": "d3cba7b64b9e9136d41d3bd916c5fffd5d4a4155",
+  "root_owner_acceptance": "NOT merged by workspace-58. Owner16:40 verified prior21cited/6reopened/generated2drop/masterrestore/RTG61 fixes in private d3cba7b6, but requested3remaining corrections: drop only own wiki manifest/page delta, retain findings under research for operator sweep, keep executor77/90 runbook offender until unmerged cleanup6efa lands. New metadata draft pending main review; no fresh gate result or owner acceptance claimed.",
+  "handoff_index_ownership": "RTG-61 in own routing-and-optimization-index.md, applied by owning main. Fetched canonical main a876d3c9 reserves RTG-60 for loop-state-offraid-backup.md; preserve that canonical row at merge. All6 canonical indices had no refactor owner/RTG61; own candidate has exactly1refactor row. Old privateRTG60 was a collision.",
+  "integration": {
+    "worktree": "/mnt/raid0/llm/worktrees/refactor-01a16fc3-orchestrator-integration",
+    "branch": "refactor/orchestrator-integration-01a16fc3",
+    "head": "851955112b8ba8c2911a7684469551afa1541623",
+    "contains": [
+      "test-isolation-reviewed",
+      "config-reviewed",
+      "request-reviewed",
+      "autopilot-gate-reviewed",
+      "autopilot-loop-reviewed",
+      "repl-correctness-reviewed",
+      "scripts-cleanup-reviewed"
+    ],
+    "combined_validation": "Reviewed private candidate 851955112b8ba8c2911a7684469551afa1541623 published on refactor/orchestrator-integration-01a16fc3, validated against immutable base 84f6f6f15f713d21098dbad2b153d32f8cc13624. Expanded 111-file union: 2897 passed, 8 skipped, 0 failed of 2905; all four coverage floors 100%; no checkout-write warnings. AST, focused suite, Ruff/accepted-scope formatter, compile/diff, 32 NI63 pins, and four P5 preservation proofs passed. Historical formatter runner FAIL is preserved; independent scope correction establishes zero introduced formatter paths. Main approved private-candidate validation only; no main promotion/deployment.",
+    "pushed": true,
+    "latest_union": {
+      "files": 111,
+      "collected": 2905,
+      "passed": 2897,
+      "skipped": 8,
+      "failed": 0,
+      "coverage_floors": "all four 100%",
+      "checkout_write_warnings": 0,
+      "initial_rerun": "18 passed",
+      "regressions": "two fixture-preservation/overwrite tests passed",
+      "known_baseline_style_debt": {
+        "ruff_findings": 18,
+        "formatter_paths": 133
+      },
+      "final_proof": "terminal FAIL preserved: mutable origin/main formatter comparison; owner-reviewed immutable-base scope correction proves zero introduced formatter paths. Final candidate proof accepted relative to immutable 84f6f6f1; see integration-validation-review-2026-10-26.md"
+    }
+  },
+  "current_checkpoint_2026-10-26": {
+    "root_worktree": "/mnt/raid0/llm/worktrees/refactor-audit-01a16fc3-root",
+    "root_branch": "refactor/handoff-audit-20261024-01a16fc3",
+    "source_candidates": {
+      "integration": {
+        "branch": "refactor/orchestrator-integration-01a16fc3",
+        "sha": "851955112b8ba8c2911a7684469551afa1541623",
+        "state": "published and reviewed private candidate; validated relative immutable 84f6f6f15f713d21098dbad2b153d32f8cc13624; no main promotion or deployment"
+      },
+      "O8_CI": {
+        "branch": "refactor/orchestrator-ci-01a16fc3",
+        "sha": "753e0287a1ae6b06f2a5c91269899ff8cc8452b5",
+        "base": "3ee8eea2ab514e8fac4c15c839d4ad1644e0ba38",
+        "merge_parents": ["713edf671614e69f67028100c08cc8f08b02d52f", "851955112b8ba8c2911a7684469551afa1541623"],
+        "publication": "local-only clean merge; no new remote source publication claimed",
+        "post_B1_fixture": "As of12:18:31UTC753e0287 is the B1-tested pre-fixture identity. Reviewed owned-dashboard test fixture applied after B1(+26/-10); validation pending and new local candidate identity being committed. Production application logic unchanged.",
+        "B2_terminal": "Baseline13:13:11UTC:31failed20517passed85skipped19xfailed6passed-subtest-events in2146.45s. Parentcases20643 plus9module-skip case nodes=20652JUnit testcase nodes; header20658 includes6subtest events. Native conformance NULL for unnamed collection-skip case; shared grade failed/no JSON. Baseline16ignored runtime paths leaked; tracked3repo/source-harness custody MATCH. No candidate full run and no accepted known-failure set. Original b2-baseline-first-native receipts preserved; next repair report compatibility/runtime isolation and rerun baseline after reviewed dry run.",
+        "state": "Integration merged locally; focused13PASS. Historical B1 custody no_tests/strict-marker failure retained; corrected B1 collection parity PASS20658/20645selected versus20666/20653selected, removed0/added8/identical13exclusions. Later B2 full baseline failed31 at13:13:11; nativeNULL/sharedgradefailed/noJSON and16ignored runtime leaks. See B2_terminal for exact denominators. No candidate full run or accepted known-fail set; O8 unchecked.",
+        "current_manifest": "/mnt/raid0/llm/tmp/refactor-01a16fc3/ci/current-run.json"
+      },
+      "P3_autopilot_actions": {
+        "branch": "codex/refactor-autopilot-actions-01a16fc3",
+        "sha": "fb5db1a0a24b92172643bb670c77a4343a508c96",
+        "base": "3ee8eea2ab514e8fac4c15c839d4ad1644e0ba38",
+        "integration_merge": "Reviewed two-parent merge of bbccaaefed8f0f482b0b712f5d7ed06e14ef719b + 851955112b8ba8c2911a7684469551afa1541623",
+        "remote_verified": true,
+        "worktree_clean": true,
+        "state": "Owning main accepted private-branch P3 package; source fb5db1a0 published and remote-exact verified, clean WT. Final12 functional402PASS/1SKIP39.49s; first34 817pass1skip3fail and expanded90 1917pass2skip11fail600s retained as earlier-source history. Official q1 closure12:04:57-12:05:05rc0: all3ASTequal/format3PASS/non-targetbytesunchanged/no-newRuff[]/protected/diff/sourcecustodyPASS. Raw Ruff1 retains16 inherited E701. All16 findings have committed behavioral warrants; no all1930-pass, main or deployment claim.",
+        "source_record": "fb5db1a0:docs/refactoring/2026-10-26-p3-reviewed-checkpoint.md",
+        "final_receipts": "/mnt/raid0/llm/tmp/refactor-01a16fc3/autopilot-actions/format-closure-20261026/{commit.sha,ls-remote.txt,publish.exit,AST-custody.json,postpush-status.txt}",
+        "current_manifest": "/mnt/raid0/llm/tmp/refactor-01a16fc3/autopilot-actions/current-run.json"
+      }
+    },
+    "checkboxes": {
+      "RESUME-4": "checked for private candidate validation only; no main acceptance implied",
+      "O8": "unchecked",
+      "P3": "checked2026-10-26 with belief:cc for reviewed private published fb5db1a0 only",
+      "per_finding_completion": "P3 package16 behavioral warrants in committed source record; no main/deployment completion"
+    },
+    "next_action": "Repair CI report compatibility and runtime isolation, then rerun baseline. P3fb5 remains accepted private source. Rootbb6410b1 private/not owner-accepted; correct all27 new-handoff checked lines/generated artifacts/ownership before reviewed metadata repush.",
+    "evidence": "research/refactor-audit-2026-10/integration-validation-review-2026-10-26.md",
+    "root_wrapup_gate": {
+      "historical_outer_pid": 881101,
+      "historical_child_pid": 881104,
+      "state": "Prior bare881101/881104 canceled before admission;143 preserved. Later officialq1 job local gates PASS12:32:15, privately publishedbb6410b1, remote verified. Workspace-58 did NOT accept/merge it; owner12:45/13:25 corrections now in review. Old receipts remain immutable; no new generated artifacts or validators for metadata correction.",
+      "status_file": "/mnt/raid0/llm/tmp/refactor-01a16fc3/wrapup-20261026/calendar-publish-run/root-gates.status",
+      "failed_pre_admission_attempt": "/mnt/raid0/llm/tmp/refactor-01a16fc3/wrapup-20261026/attempt1.status",
+      "calendar_requirement": "Separate official q1 literal CPUs24-47, 8GiB correctness grant; 600s maximum/min300s; official filler9 launcher, exact live envelope/HOLD/FILLER_DEADLINE checks and taskset affinity proof; no nested claim or timeout process-group manipulation.",
+      "expected_checkbox_count": "Historical own-parent comparison2 was insufficient: new handoff introduces27 checked lines relative canonical main. Owner correction retains21 with per-line evidence, reopens6, narrows O4 to reviewed4 with other associations unchecked. No current two-flip completion claim."
+    }
+  },
+  "accepted_pushed": {
+    "research_C1-05": {
+      "source": "62c68ad99",
+      "checkpoint": "1b58b115c",
+      "branch": "refactor/autokernel-rollback-reviewed-01a16fc3",
+      "tests": "13 pass;5 fail on WIP;401 loop pass+23subtests"
+    },
+    "orchestrator_isolation": {
+      "source": "87540dae",
+      "checkpoint": "5e392a3c",
+      "branch": "refactor/test-isolation-reviewed-01a16fc3",
+      "tests": "189pass/1skip;7E8pass;3regressions fail safely on parent"
+    },
+    "root_integration": {
+      "source": "a976770b8",
+      "checkpoint": "8e66dd96b",
+      "integrated_source": "152a2991b",
+      "branch": "refactor/root-integration-01a16fc3",
+      "tests": "node syntax/smoke and capture regression pass;capture regression fails on parent"
+    },
+    "orchestrator_O3": {
+      "source": "d843eb9c+07829696",
+      "checkpoint": "6558beb7",
+      "branch": "refactor/config-reviewed-01a16fc3",
+      "tests": "548pass/4skip+524alias targets;7pins exact"
+    },
+    "orchestrator_O1": {
+      "source": "a1c69593",
+      "checkpoint": "142bb5df",
+      "branch": "refactor/request-reviewed-01a16fc3",
+      "tests": "1011pass/3skip;initial-stream disconnect fails on parent"
+    },
+    "orchestrator_P2": {
+      "source": "4069b8ee",
+      "checkpoint": "db17808e",
+      "branch": "refactor/autopilot-gate-reviewed-01a16fc3",
+      "tests": "1018pass/1skip+18snapshotcontrols",
+      "hold": "existing reconstruction CRITICAL and verified-snapshot HIGH; owner-boundary snapshot rebuild"
+    },
+    "orchestrator_P1_rest": {
+      "source": "36e1bc55aa40f35965a941e81fdc593a22abd520",
+      "branch": "refactor/autopilot-loop-reviewed-01a16fc3",
+      "findings": [
+        "B1-01",
+        "B1-M1",
+        "B1-M2",
+        "B1-04",
+        "B1-08",
+        "B1-09",
+        "B1-14",
+        "B1-13"
+      ],
+      "tests": "19 focused and 561 broad pass/1 skip; ruff/diff pass; independent unchanged-hash proof accepted; original runner FAIL annotation preserved"
+    },
+    "orchestrator_O6_rest": {
+      "source": "6efa56265b68f402af736a1c1a2ee3df447849c1",
+      "findings": [
+        "A5-11",
+        "A5-23",
+        "A5-18",
+        "A5-02",
+        "A5-21"
+      ],
+      "branch": "refactor/scripts-cleanup-reviewed-01a16fc3",
+      "remote_verified": true,
+      "tests": "190 launcher PASS; 395 coverage PASS; floors 331/331, 151/151, 508/508, 579/579",
+      "ni63": "5 controls PASS; 32/32 blob+SHA proof",
+      "pins": "4 exact approved launcher-byte changes; baseline 5 PASS; HEAD 094cbc5b and main 84; remaining 28 unchanged",
+      "scorer_failures": "test-fixture sys.modules patch/restore leak fixed; no production defect",
+      "state": "accepted candidate source; no merge/deployment/activation authorized"
+    }
+  },
+  "active_or_pending": {
+    "autopilot_loop_finish": {
+      "worktree": "/mnt/raid0/llm/worktrees/refactor-01a16fc3-autopilot-loop",
+      "head": "bdd3f4c4",
+      "state": "accepted and pushed; source commit 36e1bc55aa40f35965a941e81fdc593a22abd520 on refactor/autopilot-loop-reviewed-01a16fc3; all aggregate and nine focused-file hashes unchanged across run start/end/checkpoint",
+      "checkpoint": "/mnt/raid0/llm/tmp/refactor-01a16fc3/autopilot-loop/checkpoint.txt",
+      "prior_tests": "19 focused and 561 broad tests pass (1 skip); ruff and diff checks pass",
+      "next": "P1 (rest) accepted. Keep broader RESUME-4 combined-tree validation separate; no main integration is authorized by this checkpoint.",
+      "validation_checkpoint": {
+        "command": "/mnt/raid0/llm/tmp/refactor-01a16fc3/autopilot-loop/run-validation.sh",
+        "result_file": "/mnt/raid0/llm/tmp/refactor-01a16fc3/autopilot-loop/validation.status (preserved original FAIL annotation)",
+        "state": "completed; worker status FAIL is a runner hash-comparison ordering defect; independent hash proof and test evidence accepted",
+        "launcher_pid_file": "/mnt/raid0/llm/tmp/refactor-01a16fc3/autopilot-loop/launcher.pid",
+        "captured_pid": 1271582,
+        "log": "/mnt/raid0/llm/tmp/refactor-01a16fc3/autopilot-loop/launcher.log",
+        "owner": "P1 worker"
+      },
+      "branch": "refactor/autopilot-loop-reviewed-01a16fc3"
+    },
+    "scripts_cleanup_finish": {
+      "worktree": "/mnt/raid0/llm/worktrees/refactor-01a16fc3-scripts-cleanup",
+      "branch": "refactor/scripts-cleanup-reviewed-01a16fc3",
+      "head": "6efa56265b68f402af736a1c1a2ee3df447849c1",
+      "state": "O6 rest accepted and pushed; candidate validations pass; integration remains a separate ongoing failing gate",
+      "findings": [
+        "A5-11",
+        "A5-23",
+        "A5-18",
+        "A5-02",
+        "A5-21"
+      ],
+      "tests": "190 launcher PASS; 395 coverage PASS; floors 331/331, 151/151, 508/508, 579/579",
+      "ni63": "5 controls PASS; 32/32 blob+SHA proof",
+      "pins": "4 approved exact launcher-byte changes; baseline 5 PASS; HEAD 094cbc5b and main 84; remaining 28 unchanged",
+      "limitation": "No merge, deployment, or production activation authorized"
+    },
+    "seeding_coverage": {
+      "worktree": "/mnt/raid0/llm/worktrees/refactor-01a16fc3-seeding-coverage",
+      "head": "094cbc5b",
+      "state": "original worktree unchanged; seeding test copied into dirty O6 candidate; O6 expanded coverage currently fails on missing orch.httpx and is under repair",
+      "next": "Do not collect expired handle 56537. Finish O6 candidate repair and validation."
+    },
+    "repl_correctness": {
+      "worktree": "/mnt/raid0/llm/worktrees/refactor-01a16fc3-repl",
+      "head": "c67b6930",
+      "state": "accepted and frozen; source-only closeout commit acfd5f8ca3837c568fc3c944ffb242b29823f3fa pushed on refactor/repl-correctness-01a16fc3; no main integration/deployment authorization",
+      "scope": "A4-03/A4-04/A4-06/A4-07 HIGH/CRITICAL REPL candidates only; preserve the review package and exact candidate scope",
+      "next": "Candidate review is accepted; keep combined-tree validation and any integration at the owner boundary.",
+      "authorization": "Candidate work only; no main push, merge, deployment, or production activation authorized.",
+      "validation_checkpoint": {
+        "command": "bash /tmp/refactor-01a16fc3/repl/validate.sh",
+        "launcher_pid_file": "/tmp/refactor-01a16fc3/repl/runner2.pid",
+        "captured_pid": 1278025,
+        "log": "/tmp/refactor-01a16fc3/repl/region-lock2.out",
+        "results": "/tmp/refactor-01a16fc3/repl/results.txt",
+        "completion_flag": "/tmp/refactor-01a16fc3/repl/completion.flag",
+        "state": "completed and accepted: 557 tests pass; 8 parent negative controls fail as expected; strict offline drift, ruff, compile, diff and frozen snapshot pass",
+        "source_closeout_commit": "acfd5f8ca3837c568fc3c944ffb242b29823f3fa"
+      },
+      "reviewed_branch": "refactor/repl-correctness-01a16fc3"
+    },
+    "K2_readonly_audit": {
+      "artifact": "research/refactor-audit-2026-10/K2-CURRENT-SOURCE-REVIEW.md",
+      "state": "Source audit and GitNexus guard preceded three accepted finding fixes; C4-05, C4-06, and C4-10 remain incomplete, so K2 package remains open.",
+      "source_review": "All six examined premises materially supported by source inspection, not executable reproduction. C3-02 is test-only. C4-16 has a quantile-rounding defect; do not simplify variance logic unless the ±1 invariant is enforced.",
+      "guard_worktree_head": "413f5b7",
+      "guard_runner_pid": 1286392,
+      "guard_runner": "/mnt/raid0/llm/tmp/refactor-01a16fc3/k2-guards/run-index.sh",
+      "guard_status": "/mnt/raid0/llm/tmp/refactor-01a16fc3/k2-guards/index.status",
+      "guard_log": "/mnt/raid0/llm/tmp/refactor-01a16fc3/k2-guards/index.log",
+      "guard_result": "PASS 413f5b7f545b67e69ba9082b9a6c73514eb3a3f2"
+    },
+    "K2_source_guard_fixes": {
+      "branch": "refactor/autokernel-k2-guards-01a16fc3",
+      "head": "68724da5ba093cf3cec3909a81491932002dd4ce",
+      "remote_verified": true,
+      "findings": {
+        "C4-08": "208a053e29daf5bd11019e733f768b4173887021",
+        "C4-16": "091abbbe7dc9b346bab888569434eb68445ae8e5",
+        "C3-02": "68724da5ba093cf3cec3909a81491932002dd4ce"
+      },
+      "validation": "749 statistics/core PASS; 627 correctness/preflight/frozen guards PASS with 1 expected failure; direct CLI import 1 PASS; Ruff/compile/diff PASS",
+      "remaining": [
+        "C4-05",
+        "C4-06",
+        "C4-10"
+      ],
+      "package_complete": false,
+      "holds": "No AutoKernel launch, research main merge, re-pin, or production action"
+    },
+    "integration_final_proof_history": {
+      "pid": 2010953,
+      "pid_file": "/mnt/raid0/llm/tmp/refactor-01a16fc3/orchestrator-integration/final-proof.pid",
+      "launcher_log": "/mnt/raid0/llm/tmp/refactor-01a16fc3/orchestrator-integration/final-proof-launch.log",
+      "runner_log": "/mnt/raid0/llm/tmp/refactor-01a16fc3/orchestrator-integration/final-proof-runner.log",
+      "script": "/mnt/raid0/llm/tmp/refactor-01a16fc3/orchestrator-integration/final-proof.sh",
+      "state": "historical run2 terminated FAIL on mutable-origin formatter scope comparison; terminal artifacts and status are preserved. Corrected immutable-base evidence and owner review accepted candidate validation relative to 84f6f6f1; candidate 851955112 was published.",
+      "scope": "AST parse, focused suite, Ruff baseline delta, formatter baseline delta, compile, diff, 32 NI63 pins, four P5 byte identities",
+      "acceptance": "historical runner FAIL is retained; corrected accepted-scope proof reviewed; private candidate published, no main promotion/deployment"
+    },
+    "O8_CI_draft": {
+      "worktree": "/mnt/raid0/llm/worktrees/refactor-01a16fc3-ci",
+      "branch": "refactor/orchestrator-ci-01a16fc3",
+      "base": "3ee8eea2ab514e8fac4c15c839d4ad1644e0ba38",
+      "state": "Historical WIP713edf671 and B1-tested local753e0287/focused13PASS/collection parity PASS are superseded by B2 baseline31failed20517pass85skip19xfail6subtests2146.45s, nativeNULL/sharedgradefailed/noJSON and16ignored runtime leaks despite tracked custody MATCH. No candidate full run or known-failure acceptance; O8 open. Current source/control details in current_checkpoint_2026-10-26.",
+      "scope": "PR/manual CI; shared native carrier/context/output/JUnit custody and grade; one test entrypoint; baseline comparators; strict pytest and central requires_server hook; NI63 32-source current provenance; pip/UV parity",
+      "changed_paths": 207,
+      "removed_noop_async_marks": 470,
+      "scratch_manifest": "/mnt/raid0/llm/tmp/refactor-01a16fc3/ci/checkpoint/manifest.md",
+      "historical_runner_pid": 822684,
+      "runner_pid_file": "/mnt/raid0/llm/tmp/refactor-01a16fc3/ci/current-run.json",
+      "runner_log": "/mnt/raid0/llm/tmp/refactor-01a16fc3/ci/run5/region-lock.log",
+      "runner_scripts": [
+        "/mnt/raid0/llm/tmp/refactor-01a16fc3/ci/run5/focused-inner.sh"
+      ],
+      "state_detail": "Earlier run3 Ruff failure, run4 cancellation and run5 pointers below are historical. Current Oct26 source/validation state is current_checkpoint_2026-10-26.source_candidates.O8_CI; do not treat copied run5 PID as current liveness. Historical commit-hook review records unclaimed PII-hygiene invocation; no eligible pytest/Ruff/make hook ran.",
+      "historical_runner_process_check": "/mnt/raid0/llm/tmp/refactor-01a16fc3/ci/precheck-run2.process-check.txt",
+      "prior_runner": {
+        "pid": 2085542,
+        "pid_file": "/mnt/raid0/llm/tmp/refactor-01a16fc3/ci/precheck.pid",
+        "state": "cancelled by owner before comparator fix; verified dead; retained as history"
+      },
+      "manifest_observation": "ci/run5 pointers are historical preparation. Read current_checkpoint_2026-10-26 plus owning source/calendar receipts for the independent B1 correction; no new current runner PID is copied here."
+    },
+    "P3_autopilot_actions_draft": {
+      "worktree": "/mnt/raid0/llm/worktrees/refactor-01a16fc3-autopilot-actions",
+      "branch": "refactor/autopilot-actions-01a16fc3",
+      "base": "3ee8eea2ab514e8fac4c15c839d4ad1644e0ba38",
+      "findings_prepared": 16,
+      "state": "Historical WIP backupbbccaaef plus851955112 is published in reviewed private sourcefb5db1a0a24b92172643bb670c77a4343a508c96 oncodex/refactor-autopilot-actions-01a16fc3, remote-exact verified and clean. Final12 functional402PASS/1SKIP39.49s plus official three-file AST/format/non-target/protected/no-new-Ruff/diff/custody closure PASS. P3 checked with belief:cc on owning-main acceptance; earlier failures retained, no all1930-pass claim.",
+      "scope": "managed stack PID/environment getter without pgrep; finite validators; refusal before side effects; journal context/events/supersession/caching; provider IO/lifecycle; dead-resume/API cleanup; shard reader; neutral core baseline-pin helper",
+      "fixture_boundary": "W3e fixture byte-identical to base; P5 source untouched; diff-check passes",
+      "graph_coverage": "unknown after corrupt index",
+      "state_detail": "Old runner-missing PID2110721 is historical. Official final closure12:04:57-12:05:05rc0 and sourcefb5db1a0 publication supersede style-pending state; current task moves to CI collection/baseline/native and separate root checks.",
+      "state_observed_at": "2026-10-26",
+      "stable_package_scratch": "/mnt/raid0/llm/tmp/refactor-01a16fc3/autopilot-actions/",
+      "prior_runner": {
+        "wrapper_pid": 2077838,
+        "child_pid": 2077840,
+        "state": "cancelled by owner before region admission; verified dead; pytest not started",
+        "receipt": "/mnt/raid0/llm/tmp/refactor-01a16fc3/autopilot-actions/focused-p3-20261025/cancelled-before-admission.txt",
+        "observed_at": "2026-10-25T08:52:45Z"
+      },
+      "current_run_manifest": "/mnt/raid0/llm/tmp/refactor-01a16fc3/autopilot-actions/current-run.json",
+      "source_test_snapshot": "/mnt/raid0/llm/tmp/refactor-01a16fc3/autopilot-actions/focused-p3-review-20261025/source-test-snapshot.json",
+      "current_run_phase": "reviewed-private-source-published-remote-verified",
+      "current_runner_status_source": "Use owning source/calendar receipts; old current-run.json runner-missing observation is retained as history only",
+      "validation": "Final12 402PASS/1SKIP39.49s and three-file style closure PASS; private sourcefb5db1a0 published/verified/accepted. First34 817pass1skip3fail and expanded90 1917pass2skip11fail600s retained; package ticked, no full aggregate claim"
+    },
+    "next_packages_root_gates": {
+      "pid_file": "/mnt/raid0/llm/tmp/refactor-01a16fc3/next-packages-checkpoint/root-gates.pid",
+      "status_file": "/mnt/raid0/llm/tmp/refactor-01a16fc3/next-packages-checkpoint/root-gates.status",
+      "state": "Oct25 PASS09:46 covered prior inputs only. Later bare queued881101/881104 canceled before admission for calendar integration, both verified dead, terminal143 preserved. No root row armed; native docs preparation only until actual source closure and separate official q1 root grant.",
+      "runner": "/mnt/raid0/llm/tmp/refactor-01a16fc3/next-packages-checkpoint/root-gates.sh",
+      "state_pointer": "These Oct 25 PID/status paths are historical only. Current Oct 26 wrap-up uses watcher_commands.root_wrapup; no current successful gates are claimed.",
+      "child_pid": 2096526,
+      "state_observed_at": "2026-10-25T08:52:45Z",
+      "historical_wrapper_pid": 2096522,
+      "historical_child_pid": 2096526
+    }
+  },
+  "restrictions": [
+    "Never main push from this refactor session under handoff coordination; no serving clone sync/reload",
+    "No AutoKernel launch or research main merge under hold; deliberate owner re-pin",
+    "P5 only may touch4fingerprinted evaluator files; one operator-timed merge/era",
+    "Containment scanner requires operator review",
+    "No frozenkernelchanges, GPU/inference, name-patternprocesskills, new gradingrule/historicaltuples",
+    "Do not tick peer boxes; index row/sourcefiling are on isolated reviewbranch only",
+    "Only the exact A5-18 and O4 A4-03/A4-04/A4-06/A4-07 candidate scopes are approved; approval does not extend to any future HIGH/CRITICAL edit, main push, merge, deployment, or production activation."
+  ],
+  "important_remaining": [
+    "Repair CI report compatibility and runtime isolation, then rerun baseline: actualB2 baseline31failed/20517passed/85skipped/19xfailed/6subtests2146.45s; nativeNULL unnamed case, sharedgradefailed/noJSON;16ignored runtime leaks despite tracked custody MATCH. No candidate full run or accepted known-failure set. O8 unchecked; P3fb5 private source accepted.",
+    "Review/integrate accepted O4 and P1 branches only through their owner boundaries; no main/deployment approval is implied.",
+    "O8 CI/ni63 root-cause design; O1 remaining/O5/P3/P4; research K1 rest, K2 remaining C4-05/C4-06/C4-10 and other C4-C6 verification, K3 fresh closure, K4 CI/ratchet.",
+    "D1-D10 behind behavioral dependencies; RESUME-7 mixed-alias cold-import cycle.",
+    "Prospective VB-REFACTOR-CONFORMANCE capture through existing native carrier; no historical backfill."
+  ],
+  "coordination_notes": [
+    "Physical queue status is authoritative presence; do not infer idle",
+    "No roster identity forcodex-refactor-01a16fc3; drainrefused; no peer identity used",
+    "Use region-lock canonical then explicit innercd because launcher changescwd",
+    "RootGitNexus wrapper exited139; no repeatedretry/deletion; NI07source unchanged fromindexedcommitverified",
+    "Rootindex/schema/citationcheck0before latestmetadata; readonlyREADMEfreshnessno findings; nooperatorcadencepruning/wikisweep",
+    "Operator approvals dated 2026-10-25 recorded for exact A5-18 candidate and isolated O4 A4-03/A4-04/A4-06/A4-07 candidates; neither approval authorizes main/deployment.",
+    "Worker-owned detached P1/O6 validators are captured by PID and durable launcher/log/result paths in queued_checks; do not duplicate or supervise them.",
+    "An initial root-owned detached supervisor attempt (PIDs 1274085/1274086) was stopped before region-lock admission and confirmed dead; no duplicate validation ran. Do not resume those cancelled scratch workers.",
+    "O6 approved candidate is dirty: launcher patch, copied seeding regression test, and Makefile edits; original seeding worktree stays unchanged. Do not collect expired handle 56537.",
+    "O4 approved candidate patches and caller audit are applied and frozen; validator PID 1278025 is worker-owned. No held patch decision remains.",
+    "K2 source inspection review is recorded in K2-CURRENT-SOURCE-REVIEW.md; its separate GitNexus guard runner remains pending at PID 1286392. No completion checkbox is claimed.",
+    "P1 source accepted/pushed at 36e1bc55aa40f35965a941e81fdc593a22abd520 on refactor/autopilot-loop-reviewed-01a16fc3; original FAIL status retained because the runner compared hashes in the wrong order; independent start/end/checkpoint proof covers the aggregate and all nine focused files.",
+    "O4 validation accepted: 557 pass, eight parent negative controls fail as expected, strict offline drift/ruff/compile/diff/frozen-snapshot pass; source closeout acfd5f8ca3837c568fc3c944ffb242b29823f3fa pushed on its review branch.",
+    "P1 agent stray progress/log files were uniquely authored, hash-verified and moved from shared /workspace into this isolated root worktree; no peer files or shared index were changed.",
+    "Root checkpoint commit 09d3c70b5ffeeeed37cde2c4233d965700b1106d passed index regeneration/check (RTG-60 backlog-priority advisory only), cite-check, README freshness and diff-check, then remote-verified on the explicit root review branch.",
+    "O6 rest accepted/pushed at 6efa56265b68f402af736a1c1a2ee3df447849c1; 190 launcher and 395 coverage pass, four floors and five NI63 controls pass; 32/32 blob+SHA proof; exact approved four launcher-byte pins and remaining 28 unchanged.",
+    "K2 C4-08/C4-16/C3-02 accepted/pushed at 68724da5ba093cf3cec3909a81491932002dd4ce; C4-05/C4-06/C4-10 remain open; no launch, research main merge, re-pin, or production action.",
+    "Private integration candidate 3ee8eea2 combined 93-file/2606-test gate is ongoing with failures; not accepted/pushed/deployed; 32 source pins match; P5 four evaluator files unchanged.",
+    "Historical snapshot: 2026-10-25 next-package checkpoint: expanded integration union is 111 files, 2897 passed/8 skipped/0 failed of 2905; all four coverage floors 100%, no checkout-write warnings. Final proof PID 2010953 remains queued; O8 PID 2085542 and P3 PID 2077838 remain queued; all acceptance/completion boxes stay open.",
+    "O8 runner replacement observed 2026-10-25: owner cancelled PID 2085542 before comparator fix and verified it dead; replacement PID 2093707 is authoritative via ci/precheck-run2.pid and precheck-run2.process-check.txt, waiting in region-lock-run2.log. The checkpoint manifest text still names the old PID; do not use it for live state.",
+    "Historical snapshot: Root gates first waited in attached request PID 2090854; that own captured waiter was SIGTERM-cancelled and verified dead before one detached replacement was launched. Current root-gates PID 2095789 writes durable root-gates.pid/status and waits for CPUs 0-95; no gates have completed yet.",
+    "Historical snapshot: Root-gates launch recovery: first detached PID 2095789 exited before acquiring the CPU claim and produced no gate outputs or lease token; recorded in root-gates-attempt1.status. Corrected detached session PID 2096522 is now the single live root gate request with root-gates.pid/status pointers, waiting for CPUs 0-95.",
+    "P3 handover observed 2026-10-25T08:52:45Z: owner cancellation receipt confirms wrapper PID 2077838 and child PID 2077840 were terminated before region admission, verified dead, with pytest not started. Successor /root/autopilot_actions_finish is completing B3-04 journal injection and invariance tests before queuing a replacement. P3 remains unvalidated and uncommitted; no approval is missing. Use stable package scratch /mnt/raid0/llm/tmp/refactor-01a16fc3/autopilot-actions/ for future runner/manifest pointers, not a captured PID as current liveness.",
+    "Root-gates cancellation observed 2026-10-25T08:52:45Z: own wrapper PID 2096522 and region-lock child PID 2096526 were TERM-cancelled before admission and verified dead. No wrapup token was acquired. Requeue one durable root-gates/checkpoint runner after this documentation update.",
+    "P3 successor handover observed 2026-10-25T08:53:07Z from stable current-run.json (phase queued-source-frozen): authorized B3-04 optional loaded-journal injection now has separate all-era ceiling semantics and invariance/reset/teardown tests are added; W3e fixture matches base and diff check passes. A refreshed 34-file wrapper is queued; no tests run, no acceptance/commit, P3 remains open, no approval missing. For current PID/log/status/flags use /mnt/raid0/llm/tmp/refactor-01a16fc3/autopilot-actions/current-run.json, not hand-copied PIDs.",
+    "P3 queued-source-frozen observation 2026-10-25T08:53:07Z: owner manifest /mnt/raid0/llm/tmp/refactor-01a16fc3/autopilot-actions/current-run.json points to refreshed 34-file wrapper and source/test snapshot. B3-04 optional loaded-journal injection with distinct all-era ceiling semantics and invariance/reset/teardown tests are prepared; W3e fixture matches base and diff-check passes; no tests have run; no source acceptance/commit; no approval missing. Consult manifest for current PID, log/status and flags.",
+    "Root-gates last observation 2026-10-25T08:52:45Z: prior wrapper 2096522 and child 2096526 were cancelled before admission and verified dead; no token acquired. Root-gates remain pending; stable root-gates.pid/status files are authoritative for a later queued runner."
+  ],
+  "historical_queue_handles": {
+    "root_metadata_commit_push": {
+      "handle": 98426,
+      "state": "historical; do not resume by handle",
+      "evidence": "expired; no matching process found"
+    },
+    "P1_lint_only": {
+      "handle": 51846,
+      "state": "historical; do not resume by handle",
+      "evidence": "superseded by the one-shot validation checkpoint recorded below"
+    },
+    "O6_expanded_coverage": {
+      "handle": 48199,
+      "state": "historical; do not resume by handle",
+      "evidence": "superseded by the one-shot validation checkpoint recorded below"
+    },
+    "seeding_new_tests": {
+      "handle": 56537,
+      "state": "historical; do not resume by handle",
+      "evidence": "old queued handle retained for audit; this checkpoint does not resume it"
+    },
+    "O4_immutable_parent_baseline": {
+      "handle": 16585,
+      "state": "historical; do not resume by handle",
+      "evidence": "superseded by the one-shot validation checkpoint recorded below"
+    }
+  },
+  "queued_checks": {
+    "P1": {
+      "pid": 1271582,
+      "pid_file": "/mnt/raid0/llm/tmp/refactor-01a16fc3/autopilot-loop/launcher.pid",
+      "log": "/mnt/raid0/llm/tmp/refactor-01a16fc3/autopilot-loop/launcher.log",
+      "command": "/workspace/repos/epyc-orchestrator/scripts/region-lock run --cpu-list 0-95 --role build --tag refactor-01a16fc3-loop-finish -- bash -c \"cd /mnt/raid0/llm/worktrees/refactor-01a16fc3-autopilot-loop && /bin/bash /mnt/raid0/llm/tmp/refactor-01a16fc3/autopilot-loop/run-validation.sh\"",
+      "result": "/mnt/raid0/llm/tmp/refactor-01a16fc3/autopilot-loop/validation.status",
+      "state": "completed and accepted; source pushed; retain original validation.status and independent unchanged-hash proof as history"
+    },
+    "O6": {
+      "pid": 1273280,
+      "pid_file": "/mnt/raid0/llm/tmp/refactor-01a16fc3/scripts-cleanup/launcher.pid",
+      "log": "/mnt/raid0/llm/tmp/refactor-01a16fc3/scripts-cleanup/launcher.out",
+      "command": "/workspace/repos/epyc-orchestrator/scripts/region-lock run --cpu-list 0-95 --role build --tag refactor-01a16fc3-cleanup-approved -- /mnt/raid0/llm/tmp/refactor-01a16fc3/scripts-cleanup/validate-approved-candidate.sh",
+      "result": "/mnt/raid0/llm/tmp/refactor-01a16fc3/scripts-cleanup/validation-*/status.txt and validation-complete.flag or validation-failed.flag",
+      "state": "completed and accepted; source pushed; retain the initial scorer-failure status and repaired final validation artifacts as history",
+      "pid_state": "ended; do not supervise or relaunch; repair owner controls next validation"
+    },
+    "O4": {
+      "pid": 1278025,
+      "pid_file": "/tmp/refactor-01a16fc3/repl/runner2.pid",
+      "log": "/tmp/refactor-01a16fc3/repl/region-lock2.out",
+      "command": "/workspace/repos/epyc-orchestrator/scripts/region-lock run --cpu-list 0-95 --role build --timeout-s 7200 --tag refactor-01a16fc3-repl-approved -- bash /tmp/refactor-01a16fc3/repl/validate.sh",
+      "result": "/tmp/refactor-01a16fc3/repl/results.txt and completion.flag",
+      "state": "completed and accepted; source-only closeout pushed; retain results.txt and completion.flag as proof"
+    },
+    "K2_guards": {
+      "worktree_head": "413f5b7",
+      "command": "/mnt/raid0/llm/tmp/refactor-01a16fc3/k2-guards/run-index.sh",
+      "status": "/mnt/raid0/llm/tmp/refactor-01a16fc3/k2-guards/index.status",
+      "log": "/mnt/raid0/llm/tmp/refactor-01a16fc3/k2-guards/index.log",
+      "state": "completed PASS; three source fixes accepted/pushed; K2 remains incomplete because C4-05/C4-06/C4-10 are open"
+    },
+    "root_checkpoint": {
+      "pid": 1818867,
+      "pid_file": "/mnt/raid0/llm/tmp/refactor-01a16fc3/root-checkpoint/root-checkpoint.pid",
+      "command": "/mnt/raid0/llm/tmp/refactor-01a16fc3/root-checkpoint/run-root-checkpoint.sh",
+      "status": "/mnt/raid0/llm/tmp/refactor-01a16fc3/root-checkpoint/root-checkpoint.status",
+      "log": "/mnt/raid0/llm/tmp/refactor-01a16fc3/root-checkpoint/root-checkpoint.log",
+      "completion_flag": "/mnt/raid0/llm/tmp/refactor-01a16fc3/root-checkpoint/root-checkpoint.complete.flag",
+      "failure_flag": "/mnt/raid0/llm/tmp/refactor-01a16fc3/root-checkpoint/root-checkpoint.failed.flag",
+      "state": "completed; prior root checkpoint committed/pushed and superseded by clean HEAD e8748d8ecb1b0917ef1ad003f114581d8f648785; preserve prior runner/status/commit history",
+      "started_at": "2026-10-25T05:43:57Z",
+      "queued_flag": "/mnt/raid0/llm/tmp/refactor-01a16fc3/root-checkpoint/root-checkpoint.queued.flag",
+      "last_attempt_pid": 1315215,
+      "last_attempt_status": "/mnt/raid0/llm/tmp/refactor-01a16fc3/root-checkpoint/attempt-1315215.status",
+      "failure_reason": "serialized_push rejected pre-created empty token file; next runner must pass nonexistent token-file paths",
+      "started_at_utc": "2026-10-25T07:23:15.317976+00:00",
+      "last_attempt_failure": "precreated empty lease-token file; failed before gates; corrected by passing nonexistent private token paths",
+      "commit": "09d3c70b5ffeeeed37cde2c4233d965700b1106d",
+      "last_completed_pid": 1799607,
+      "last_completed_commit": "09d3c70b5ffeeeed37cde2c4233d965700b1106d"
+    },
+    "integration_final_proof_history": {
+      "pid": 2010953,
+      "pid_file": "/mnt/raid0/llm/tmp/refactor-01a16fc3/orchestrator-integration/final-proof.pid",
+      "log": "/mnt/raid0/llm/tmp/refactor-01a16fc3/orchestrator-integration/final-proof-runner.log",
+      "command": "/workspace/repos/epyc-orchestrator/scripts/region-lock run --cpu-list 0-95 --role build --timeout-s 7200 --tag refactor-01a16fc3-final-proof -- bash -c \"cd /mnt/raid0/llm/worktrees/refactor-01a16fc3-orchestrator-integration && /mnt/raid0/llm/tmp/refactor-01a16fc3/orchestrator-integration/final-proof.sh\"",
+      "state": "historical run2 terminal FAIL; mutable-origin formatter scope error corrected by immutable-base evidence. Candidate 851955112 published and reviewed relative to base 84f6f6f1.",
+      "result_dir": "/mnt/raid0/llm/tmp/refactor-01a16fc3/orchestrator-integration/"
+    },
+    "O8_CI_prep_history": {
+      "pid": 2093707,
+      "pid_file": "/mnt/raid0/llm/tmp/refactor-01a16fc3/ci/precheck-run2.pid",
+      "log": "/mnt/raid0/llm/tmp/refactor-01a16fc3/ci/region-lock-run2.log",
+      "command": "/workspace/repos/epyc-orchestrator/scripts/region-lock run --cpu-list 0-95 --role build --timeout-s 7200 --tag refactor-01a16fc3-ci-prep -- bash -c \"cd /mnt/raid0/llm/worktrees/refactor-01a16fc3-ci && /bin/bash /mnt/raid0/llm/tmp/refactor-01a16fc3/ci/precheck-inner.sh\"",
+      "result": "/mnt/raid0/llm/tmp/refactor-01a16fc3/ci/",
+      "state": "historical replacement PID 2093707 superseded; run 3 terminal FAIL and run 4 owner-cancelled before admission. Current run5 state is under current_checkpoint_2026-10-26.source_candidates.O8_CI.",
+      "process_check": "/mnt/raid0/llm/tmp/refactor-01a16fc3/ci/precheck-run2.process-check.txt",
+      "historical_pid": 2085542
+    },
+    "P3_focused_history": {
+      "command": "see /mnt/raid0/llm/tmp/refactor-01a16fc3/autopilot-actions/focused-p3-20261025/run.sh; captured detached region-lock request",
+      "state": "historical captured runner PID 2110721 absent with no result; current stable manifest remains runner-missing-no-result-source-frozen; no tests have run and no active queue claim",
+      "historical_wrapper_pid": 2077838,
+      "historical_child_pid": 2077840,
+      "state_observed_at": "2026-10-25T08:53:07Z",
+      "stable_package_scratch": "/mnt/raid0/llm/tmp/refactor-01a16fc3/autopilot-actions/",
+      "stable_manifest": "/mnt/raid0/llm/tmp/refactor-01a16fc3/autopilot-actions/current-run.json",
+      "current_runner_pid_is_manifest_owned": true,
+      "prior_cancelled_receipt": "/mnt/raid0/llm/tmp/refactor-01a16fc3/autopilot-actions/focused-p3-20261025/cancelled-before-admission.txt"
+    },
+    "next_packages_root_gates_history": {
+      "pid_file": "/mnt/raid0/llm/tmp/refactor-01a16fc3/next-packages-checkpoint/root-gates.pid",
+      "status": "/mnt/raid0/llm/tmp/refactor-01a16fc3/next-packages-checkpoint/root-gates.status",
+      "launcher_log": "/mnt/raid0/llm/tmp/refactor-01a16fc3/next-packages-checkpoint/launcher.log",
+      "region_lock_log": "/mnt/raid0/llm/tmp/refactor-01a16fc3/next-packages-checkpoint/region-lock.log",
+      "runner_script": "/mnt/raid0/llm/tmp/refactor-01a16fc3/next-packages-checkpoint/root-gates.sh",
+      "result_artifacts": "/mnt/raid0/llm/tmp/refactor-01a16fc3/next-packages-checkpoint/",
+      "state": "last observed 2026-10-25T08:52:45Z: prior attempt cancelled before region admission; wrapper/child verified dead and no token acquired. Root gates remain pending; use stable PID/status files for the next durable request.",
+      "child_pid": 2096526,
+      "state_observed_at": "2026-10-25T08:52:45Z",
+      "cancellation_artifact": "/mnt/raid0/llm/tmp/refactor-01a16fc3/next-packages-checkpoint/root-gates-attempt2-cancelled.status",
+      "historical_wrapper_pid": 2096522,
+      "historical_child_pid": 2096526,
+      "state_pointer": "current runner PID/status are recorded in root-gates.pid and root-gates.status; copied PIDs are historical observations only"
+    }
+  },
+  "operator_decisions_recorded": [
+    {
+      "kind": "A5-18",
+      "question": "Allow isolated candidate dead-v2 cleanup despite explicit protected orchestrator_stack.py restriction?",
+      "patch": "/mnt/raid0/llm/tmp/refactor-01a16fc3/scripts-cleanup/a5-18-candidate/removal.patch",
+      "review": "/mnt/raid0/llm/tmp/refactor-01a16fc3/scripts-cleanup/a5-18-candidate/REVIEW.md",
+      "answered": true,
+      "answered_on": "2026-10-25",
+      "decision": "Approved isolated A5-18 protected-launcher cleanup against the exact candidate represented by the recorded patch and review. No main push, merge, or deployment authorization.",
+      "scope": "Exact candidate only: /mnt/raid0/llm/tmp/refactor-01a16fc3/scripts-cleanup/a5-18-candidate/removal.patch"
+    },
+    {
+      "kind": "O4 HIGH/CRITICAL",
+      "question": "Allow scoped isolated A4-03/04/06/07 candidate patches despite GitNexus stop gate; no main/deploy?",
+      "review": "/mnt/raid0/llm/tmp/refactor-01a16fc3/repl/high-impact-review-package.md",
+      "patch_root": "/mnt/raid0/llm/tmp/refactor-01a16fc3/repl/",
+      "answered": true,
+      "answered_on": "2026-10-25",
+      "decision": "Approved isolated O4 candidate patches for A4-03/A4-04/A4-06/A4-07 despite the GitNexus stop gate. No main push, merge, deployment, or production activation authorization.",
+      "scope": "A4-03/A4-04/A4-06/A4-07 candidate work under the recorded isolated review package and patch root."
+    }
+  ],
+  "watcher_commands": {
+    "integration": "Published/reviewed private candidate 851955112; terminal runner FAIL is preserved. Read research/refactor-audit-2026-10/integration-validation-review-2026-10-26.md for immutable-base adjudication; do not resume the old runner.",
+    "O8_CI": "B1 collection parity historicalPASS; B2 actual baseline13:13:11 failed31 with20517pass85skip19xfail6subtestevents2146.45s, nativeNULL unnamed collection skip/sharedgradefailed/noJSON,16ignored runtime leaks and tracked custody MATCH. Read ci/b2-baseline-first-native originals and baseline-terminal-review failure matrix. No candidate full run/accepted known-fail set; repair report/runtime isolation then rerun baseline. O8unchecked.",
+    "P3_autopilot_actions": "Publishedfb5db1a0a24b92172643bb670c77a4343a508c96 oncodex/refactor-autopilot-actions-01a16fc3, exact remote and clean WT verified; official formatting closure rc0 and final12 functional402PASS1SKIP. Read format-closure-20261026 receipts plus committed source checkpoint; package accepted/ticked belief:cc, no main/deploy.",
+    "root_wrapup": "calendar-publish-run records localPASS/privatebb6410b1 publication12:32:15, not owner acceptance/merge. Owner12:45/13:25 corrections prepared under wrapup-20261026/owner-correction-20261026; old proof immutable. Owner permits metadata-only repush without compute row after main review; no Python/toolchain validation without fresh coordination admission. Generated index files/counts removed from own contribution; owner regenerates at merge."
+  },
+  "calendar_coordination": {
+    "owner": "workspace-58 via authenticated native IPC; active coordination successor compute_coordination_finish",
+    "resources": "q1 literal CPUs24-47;8GiB;correctness only; official filler9/live grant/taskset-affinity proof required",
+    "latest_observations": "B2 baseline completed13:13:11 with31failed; owner13:25demoted row BACKLOG/harnessfix, no candidate phase/known-fail acceptance. Owner16:20 ACK says rootbb6410b1 private/not merged; metadata correction under review. P3fb5 remains owner-accepted private source. No new row armed by this correction worker; any interpreter/toolchain work needs fresh coordination admission.",
+    "historical_failed_observations": "B1 first custody-hash attempt ended11:31FAIL before collection; second strict-marker attempt baseline20646 plus ERROR, no candidate collection. P3 targeted grant11:28-11:43 ended11:30PASS; later final formatting closure12:04:57-12:05:05rc0. Preserve earlier receipts.",
+    "disclosure": "Prior coordinator ungranted Python metadata row edit disclosed owner; exact timestamp unknown bracket11:27-11:28. No application/test/build/timing-impact claim; no blind retry or bare claim."
+  },
+  "resource_state": "Rootd3cba7b6 private/not merged; owner16:40 verified prior evidence/index fixes and requested own wiki delta withdrawal plus standing executor offender restoration until cleanup6efa merges. Native docs-only draft prepared for main review before normal metadata FFpush; no compute row per owner, no fresh validator/wiki sweep/generation/grade/ledger execution. Prior run/manifest proof retained as history. B2 baseline BACKLOG/harnessfix, no candidate phase. No canonical/main/runtime/kernel writes or generated re-add."
+}

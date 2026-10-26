@@ -1,0 +1,4328 @@
+{
+ "A1-01": {
+  "severity": 5,
+  "kind": "bug",
+  "title": "Blocking LLM/REPL calls run directly on the uvicorn event loop in production request paths",
+  "verdict": "confirmed",
+  "package": "O1 (wave 1): Inference request path: concurrency, event loop, failure semantics",
+  "commits": [
+   {
+    "repo": "epyc-orchestrator",
+    "branch": "refactor/request-path",
+    "commit": "d686d2dd",
+    "subject": "security: CT-12.3c sweep sees model sinks handed to asyncio.to_thread (A1-01)",
+    "state": "implemented-unreviewed"
+   },
+   {
+    "repo": "epyc-orchestrator",
+    "branch": "refactor/request-path",
+    "commit": "b9187793",
+    "subject": "api: run /chat routing, cheap-first and /v1 model/REPL calls off the event loop (A1-01)",
+    "state": "implemented-unreviewed"
+   }
+  ],
+  "deferred": null,
+  "resolution": {
+   "state": "tested-reviewed-unmerged",
+   "branch": "refactor/request-reviewed-01a16fc3",
+   "checkpoint_commit": "142bb5df",
+   "evidence": "1011 targeted tests pass/3 skip; initial streaming-disconnect endpoint regression fails before fix and passes after; accepted isolation included"
+  }
+ },
+ "A1-02": {
+  "severity": 5,
+  "kind": "bug",
+  "title": "Shared LLMPrimitives reused across concurrent /chat requests: reset_counters() and cache_prompt writes corrupt in-flight requests",
+  "verdict": "confirmed",
+  "package": "O1 (wave 1): Inference request path: concurrency, event loop, failure semantics",
+  "commits": [
+   {
+    "repo": "epyc-orchestrator",
+    "branch": "refactor/request-path",
+    "commit": "7fbe9504",
+    "subject": "llm_primitives: per-request RequestScope and call-stack recursion depth on the shared instance (A1-02, A2-01, A1-M2)",
+    "state": "implemented-unreviewed"
+   }
+  ],
+  "deferred": null,
+  "resolution": {
+   "state": "tested-reviewed-unmerged",
+   "branch": "refactor/request-reviewed-01a16fc3",
+   "checkpoint_commit": "142bb5df",
+   "evidence": "1011 targeted tests pass/3 skip; initial streaming-disconnect endpoint regression fails before fix and passes after; accepted isolation included"
+  }
+ },
+ "A1-03": {
+  "severity": 4,
+  "kind": "perf",
+  "title": "stack_priors.yaml (107 KB) re-parsed with pure-Python yaml on every call: 2-4 parses per /chat request, on the event loop",
+  "verdict": "confirmed",
+  "package": "O3 (wave 1): Config / registry / runtime correctness and the stack-priors parse cost",
+  "commits": [
+   {
+    "repo": "epyc-orchestrator",
+    "branch": "refactor/config-registry",
+    "commit": "e1512800",
+    "subject": "stack_priors: cache the runtime artifact parse on (inode, mtime_ns, size) (A3-01, A1-03)",
+    "state": "implemented-unreviewed"
+   }
+  ],
+  "deferred": null,
+  "resolution": {
+   "state": "tested-reviewed-unmerged",
+   "branch": "refactor/config-reviewed-01a16fc3",
+   "checkpoint_commit": "6558beb7",
+   "evidence": "548 O3 tests pass/4 skip; 524 alias targets pass; 7 changed source pins verified; mixed-alias cold-import cycle is separate RESUME-7"
+  }
+ },
+ "A1-04": {
+  "severity": 4,
+  "kind": "perf",
+  "title": "Dashboard snapshot tick parses the day's progress JSONL 4x (one result discarded), runs ps 3x and re-parses contention YAML up to 8x, per client, on the event loop",
+  "verdict": "confirmed",
+  "package": "O5 (wave 1): Dashboard request-path cost and silent-empty panels",
+  "commits": [],
+  "deferred": null
+ },
+ "A1-05": {
+  "severity": 4,
+  "kind": "refactor",
+  "title": "openai_chat_completions: 1006-line god function with modes implemented twice and SSE error mapping pasted 4x, already diverging",
+  "verdict": "confirmed",
+  "package": "D2 (wave 2): API layer: openai_compat and /chat de-duplication",
+  "commits": [],
+  "deferred": null
+ },
+ "A1-06": {
+  "severity": 3,
+  "kind": "deletion",
+  "title": "Two complete /chat/stream implementations (87% identical REPL loop); production runs the 'legacy' one, so the 'unified' path is dead in prod",
+  "verdict": "partially",
+  "package": "D2 (wave 2): API layer: openai_compat and /chat de-duplication",
+  "commits": [],
+  "deferred": null
+ },
+ "A1-07": {
+  "severity": 4,
+  "kind": "refactor",
+  "title": "dashboard.py: 8,173 lines with 300-750-line payload builders and module-global test seams",
+  "verdict": "confirmed",
+  "package": "D2 (wave 2): API layer: openai_compat and /chat de-duplication",
+  "commits": [],
+  "deferred": null
+ },
+ "A1-08": {
+  "severity": 3,
+  "kind": "perf",
+  "title": "Autopilot dashboard panels each re-parse every journal shard on the event loop on every poll",
+  "verdict": "confirmed",
+  "package": "O5 (wave 1): Dashboard request-path cost and silent-empty panels",
+  "commits": [],
+  "deferred": null
+ },
+ "A1-09": {
+  "severity": 3,
+  "kind": "refactor",
+  "title": "API imports 13 scripts.* modules, including private functions of an analysis CLI, and double-imports stack_manifest via sys.path",
+  "verdict": "confirmed",
+  "package": "D2 (wave 2): API layer: openai_compat and /chat de-duplication",
+  "commits": [],
+  "deferred": null
+ },
+ "A1-10": {
+  "severity": 3,
+  "kind": "test",
+  "title": "Production code branches on PYTEST_CURRENT_TEST, and the tested DI providers are unused by any route",
+  "verdict": "confirmed",
+  "package": "D2 (wave 2): API layer: openai_compat and /chat de-duplication",
+  "commits": [],
+  "deferred": null
+ },
+ "A1-11": {
+  "severity": 2,
+  "kind": "bug",
+  "title": "Repo-readiness panel hardcoded to progress/2026-06; tmp paths hardcoded 8x and can diverge from the tap writer",
+  "verdict": "confirmed",
+  "package": "O5 (wave 1): Dashboard request-path cost and silent-empty panels",
+  "commits": [],
+  "deferred": null
+ },
+ "A1-12": {
+  "severity": 3,
+  "kind": "refactor",
+  "title": "passthrough.py re-implements the admission → KV-pool → region-lock protocol, kept in parity by comments and private imports",
+  "verdict": "confirmed",
+  "package": "D2 (wave 2): API layer: openai_compat and /chat de-duplication",
+  "commits": [],
+  "deferred": null
+ },
+ "A1-13": {
+  "severity": 3,
+  "kind": "refactor",
+  "title": "Swallowed broad exceptions turn dashboard and routing data failures into silent empty panels",
+  "verdict": "confirmed",
+  "package": "O5 (wave 1): Dashboard request-path cost and silent-empty panels",
+  "commits": [],
+  "deferred": null
+ },
+ "A1-14": {
+  "severity": 3,
+  "kind": "refactor",
+  "title": "API modules do config, YAML and host work at import (beyond fact a), with dead module constants",
+  "verdict": "confirmed",
+  "package": "D2 (wave 2): API layer: openai_compat and /chat de-duplication",
+  "commits": [],
+  "deferred": null
+ },
+ "A1-15": {
+  "severity": 3,
+  "kind": "refactor",
+  "title": "_handle_chat (502 lines) and _execute_repl_body (725 lines) keep stages inline despite the pipeline design",
+  "verdict": "confirmed",
+  "package": "D2 (wave 2): API layer: openai_compat and /chat de-duplication",
+  "commits": [],
+  "deferred": null
+ },
+ "A1-16": {
+  "severity": 2,
+  "kind": "deletion",
+  "title": "Dead code with zero production references in the API layer",
+  "verdict": "confirmed",
+  "package": "D2 (wave 2): API layer: openai_compat and /chat de-duplication",
+  "commits": [],
+  "deferred": null
+ },
+ "A1-17": {
+  "severity": 1,
+  "kind": "bug",
+  "title": "extract_skill_ids reads an attribute that no code has ever written, so skill_ids is always empty",
+  "verdict": "partially",
+  "package": "O1 (wave 1): Inference request path: concurrency, event loop, failure semantics",
+  "commits": [
+   {
+    "repo": "epyc-orchestrator",
+    "branch": "refactor/request-path",
+    "commit": "bbbed6b5",
+    "subject": "routing: carry retrieved skill IDs from route_with_skills to RoutingResult (A1-17)",
+    "state": "implemented-unreviewed"
+   }
+  ],
+  "deferred": null,
+  "resolution": {
+   "state": "tested-reviewed-unmerged",
+   "branch": "refactor/request-reviewed-01a16fc3",
+   "checkpoint_commit": "142bb5df",
+   "evidence": "1011 targeted tests pass/3 skip; initial streaming-disconnect endpoint regression fails before fix and passes after; accepted isolation included"
+  }
+ },
+ "A1-18": {
+  "severity": 2,
+  "kind": "doc",
+  "title": "Stale or contradicted docstrings and comments on hot paths",
+  "verdict": "confirmed",
+  "package": "D2 (wave 2): API layer: openai_compat and /chat de-duplication",
+  "commits": [],
+  "deferred": null
+ },
+ "A1-19": {
+  "severity": 2,
+  "kind": "refactor",
+  "title": "Copy-pasted helpers: sync→async chunk bridges, _drain_thread_task, and three diverging _shape_for_regions",
+  "verdict": "partially",
+  "package": "D2 (wave 2): API layer: openai_compat and /chat de-duplication",
+  "commits": [],
+  "deferred": null
+ },
+ "A1-20": {
+  "severity": 2,
+  "kind": "refactor",
+  "title": "Delegation loop passes 16 positional params, including an int accumulator whose updates never return",
+  "verdict": "confirmed",
+  "package": "D2 (wave 2): API layer: openai_compat and /chat de-duplication",
+  "commits": [],
+  "deferred": null
+ },
+ "A1-21": {
+  "severity": 2,
+  "kind": "bug",
+  "title": "process_status counts 'GEPA workers' with a host-wide pgrep name match",
+  "verdict": "confirmed",
+  "package": "O5 (wave 1): Dashboard request-path cost and silent-empty panels",
+  "commits": [],
+  "deferred": null
+ },
+ "A1-M1": {
+  "severity": 3,
+  "kind": "bug",
+  "title": "/v1/chat/completions never binds primitives.request_context outside the streamed client/direct chunk path: no cancellation, no deadline, no task_id on locks or tap",
+  "verdict": "verifier-added",
+  "package": "O1 (wave 1): Inference request path: concurrency, event loop, failure semantics",
+  "commits": [
+   {
+    "repo": "epyc-orchestrator",
+    "branch": "refactor/request-path",
+    "commit": "cf80ad5b",
+    "subject": "api/v1: bind per-request cancellation and task id for every /v1 mode (A1-M1)",
+    "state": "implemented-unreviewed"
+   },
+   {
+    "repo": "epyc-orchestrator",
+    "branch": "refactor/request-reviewed-01a16fc3",
+    "commit": "a1c69593",
+    "subject": "fix(api): observe disconnect during initial v1 stream generation",
+    "state": "tested-reviewed-unmerged"
+   }
+  ],
+  "deferred": null,
+  "resolution": {
+   "state": "tested-reviewed-unmerged",
+   "branch": "refactor/request-reviewed-01a16fc3",
+   "checkpoint_commit": "142bb5df",
+   "evidence": "1011 targeted tests pass/3 skip; initial streaming-disconnect endpoint regression fails before fix and passes after; accepted isolation included"
+  }
+ },
+ "A1-M2": {
+  "severity": 3,
+  "kind": "bug",
+  "title": "Shared _recursion_depth on the per-worker LLMPrimitives raises spurious RecursionError under concurrency and is zeroed mid-flight by reset_counters",
+  "verdict": "verifier-added",
+  "package": "O1 (wave 1): Inference request path: concurrency, event loop, failure semantics",
+  "commits": [
+   {
+    "repo": "epyc-orchestrator",
+    "branch": "refactor/request-path",
+    "commit": "7fbe9504",
+    "subject": "llm_primitives: per-request RequestScope and call-stack recursion depth on the shared instance (A1-02, A2-01, A1-M2)",
+    "state": "implemented-unreviewed"
+   }
+  ],
+  "deferred": null,
+  "resolution": {
+   "state": "tested-reviewed-unmerged",
+   "branch": "refactor/request-reviewed-01a16fc3",
+   "checkpoint_commit": "142bb5df",
+   "evidence": "1011 targeted tests pass/3 skip; initial streaming-disconnect endpoint regression fails before fix and passes after; accepted isolation included"
+  }
+ },
+ "A2-01": {
+  "severity": 5,
+  "kind": "bug",
+  "title": "Shared LLMPrimitives keeps per-request state in plain attributes: concurrent requests get rerouted to other roles, hit spurious RecursionError, cross-wire early-stop hooks and corrupt token accounting",
+  "verdict": "confirmed",
+  "package": "O1 (wave 1): Inference request path: concurrency, event loop, failure semantics",
+  "commits": [
+   {
+    "repo": "epyc-orchestrator",
+    "branch": "refactor/request-path",
+    "commit": "7fbe9504",
+    "subject": "llm_primitives: per-request RequestScope and call-stack recursion depth on the shared instance (A1-02, A2-01, A1-M2)",
+    "state": "implemented-unreviewed"
+   }
+  ],
+  "deferred": null,
+  "resolution": {
+   "state": "tested-reviewed-unmerged",
+   "branch": "refactor/request-reviewed-01a16fc3",
+   "checkpoint_commit": "142bb5df",
+   "evidence": "1011 targeted tests pass/3 skip; initial streaming-disconnect endpoint regression fails before fix and passes after; accepted isolation included"
+  }
+ },
+ "A2-02": {
+  "severity": 4,
+  "kind": "bug",
+  "title": "The default streaming /v1/chat/completions lane reports a read-timeout truncation as success, an empty timeout as an untyped failure, and never detects context-limit truncation",
+  "verdict": "confirmed",
+  "package": "O1 (wave 1): Inference request path: concurrency, event loop, failure semantics",
+  "commits": [],
+  "deferred": null
+ },
+ "A2-03": {
+  "severity": 3,
+  "kind": "perf",
+  "title": "Per-chunk early-stop check is quadratic in output length (full join plus full-text regex on every streamed chunk)",
+  "verdict": "partially",
+  "package": "O1 (wave 1): Inference request path: concurrency, event loop, failure semantics",
+  "commits": [],
+  "deferred": null
+ },
+ "A2-04": {
+  "severity": 4,
+  "kind": "perf",
+  "title": "/v1, voice and legacy /chat rebuild the whole backend graph per request: ~20-40 httpx connection pools, PrefixRouters and a tokenizer client, never closed",
+  "verdict": "confirmed",
+  "package": "O1 (wave 1): Inference request path: concurrency, event loop, failure semantics",
+  "commits": [
+   {
+    "repo": "epyc-orchestrator",
+    "branch": "refactor/request-path",
+    "commit": "908c0878",
+    "subject": "llm_primitives: share one backend build per worker across per-request primitives (A2-04, A2-12)",
+    "state": "implemented-unreviewed"
+   }
+  ],
+  "deferred": null,
+  "resolution": {
+   "state": "tested-reviewed-unmerged",
+   "branch": "refactor/request-reviewed-01a16fc3",
+   "checkpoint_commit": "142bb5df",
+   "evidence": "1011 targeted tests pass/3 skip; initial streaming-disconnect endpoint regression fails before fix and passes after; accepted isolation included"
+  }
+ },
+ "A2-05": {
+  "severity": 3,
+  "kind": "bug",
+  "title": "Backend failures lose their type twice (RuntimeError text, then the '[ERROR: ...]' string); _execute_turn's ContextOverflowError/InferenceError handlers can never run",
+  "verdict": "partially",
+  "package": "O1 (wave 1): Inference request path: concurrency, event loop, failure semantics",
+  "commits": [],
+  "deferred": null
+ },
+ "A2-06": {
+  "severity": 4,
+  "kind": "refactor",
+  "title": "llama_server.py keeps four near-duplicate request lanes (1,186 lines across 4 methods) that have already drifted",
+  "verdict": "confirmed",
+  "package": "D3 (wave 2): Inference hot path: llama_server lanes, _execute_turn, escalation chain",
+  "commits": [],
+  "deferred": null
+ },
+ "A2-07": {
+  "severity": 4,
+  "kind": "refactor",
+  "title": "_execute_turn is a 767-line, cc172 async god function that mixes prompt assembly, the LLM call, ~12 heuristic guards and REPL execution",
+  "verdict": "confirmed",
+  "package": "D3 (wave 2): Inference hot path: llama_server lanes, _execute_turn, escalation chain",
+  "commits": [],
+  "deferred": null
+ },
+ "A2-08": {
+  "severity": 3,
+  "kind": "refactor",
+  "title": "_call_caching_backend (710 lines, 15 args) sits at the bottom of a 6-hop chain that re-declares 13-17 parameters; admission release is manual, with a leak window",
+  "verdict": "confirmed",
+  "package": "D3 (wave 2): Inference hot path: llama_server lanes, _execute_turn, escalation chain",
+  "commits": [],
+  "deferred": null
+ },
+ "A2-09": {
+  "severity": 3,
+  "kind": "deletion",
+  "title": "Dead or broken legacy paths: ModelServer branch with a wrong infer() signature, _real_call_monitored calling non-existent methods, worker-pool batch needing an uninstalled nest_asyncio, unused slot APIs and infer_streaming",
+  "verdict": "confirmed",
+  "package": "D3 (wave 2): Inference hot path: llama_server lanes, _execute_turn, escalation chain",
+  "commits": [],
+  "deferred": null
+ },
+ "A2-10": {
+  "severity": 3,
+  "kind": "refactor",
+  "title": "The node failure->escalation chain is copied 12 times (6 pydantic_graph nodes plus 6 LangGraph nodes); the copies share a log bug that always reports 'after 0 failures'",
+  "verdict": "partially",
+  "package": "D3 (wave 2): Inference hot path: llama_server lanes, _execute_turn, escalation chain",
+  "commits": [],
+  "deferred": null
+ },
+ "A2-11": {
+  "severity": 2,
+  "kind": "bug",
+  "title": "Two divergent classify_error implementations: the API's escalation policy never sees INFRASTRUCTURE",
+  "verdict": "partially",
+  "package": "O1 (wave 1): Inference request path: concurrency, event loop, failure semantics",
+  "commits": [],
+  "deferred": null
+ },
+ "A2-12": {
+  "severity": 3,
+  "kind": "perf",
+  "title": "ConcurrencyAwareBackend session maps grow without bound and are deep-copied under the dispatch lock into every ChatResponse",
+  "verdict": "partially",
+  "package": "D3 (wave 2): Inference hot path: llama_server lanes, _execute_turn, escalation chain",
+  "commits": [
+   {
+    "repo": "epyc-orchestrator",
+    "branch": "refactor/request-path",
+    "commit": "908c0878",
+    "subject": "llm_primitives: share one backend build per worker across per-request primitives (A2-04, A2-12)",
+    "state": "implemented-unreviewed"
+   }
+  ],
+  "deferred": null,
+  "resolution": {
+   "state": "tested-reviewed-unmerged",
+   "branch": "refactor/request-reviewed-01a16fc3",
+   "checkpoint_commit": "142bb5df",
+   "evidence": "1011 targeted tests pass/3 skip; initial streaming-disconnect endpoint regression fails before fix and passes after; accepted isolation included"
+  }
+ },
+ "A2-13": {
+  "severity": 2,
+  "kind": "bug",
+  "title": "_dispatch enters cross-process region locks by hand; an exception before the try/yield leaks a flock held by the API process",
+  "verdict": "partially",
+  "package": "O1 (wave 1): Inference request path: concurrency, event loop, failure semantics",
+  "commits": [
+   {
+    "repo": "epyc-orchestrator",
+    "branch": "refactor/request-path",
+    "commit": "3d3318b2",
+    "subject": "backends: release _dispatch region locks when post-acquisition setup raises (A2-13)",
+    "state": "implemented-unreviewed"
+   }
+  ],
+  "deferred": null,
+  "resolution": {
+   "state": "tested-reviewed-unmerged",
+   "branch": "refactor/request-reviewed-01a16fc3",
+   "checkpoint_commit": "142bb5df",
+   "evidence": "1011 targeted tests pass/3 skip; initial streaming-disconnect endpoint regression fails before fix and passes after; accepted isolation included"
+  }
+ },
+ "A2-14": {
+  "severity": 3,
+  "kind": "test",
+  "title": "Production code changes its concurrency path under pytest, and the import-time _IN_PYTEST guards do not work during normal collection",
+  "verdict": "confirmed",
+  "package": "D3 (wave 2): Inference hot path: llama_server lanes, _execute_turn, escalation chain",
+  "commits": [],
+  "deferred": null
+ },
+ "A2-15": {
+  "severity": 2,
+  "kind": "perf",
+  "title": "Blocking I/O (Kùzu query, corpus index search, file reads and writes) runs on the event loop inside async _execute_turn every turn",
+  "verdict": "partially",
+  "package": "D3 (wave 2): Inference hot path: llama_server lanes, _execute_turn, escalation chain",
+  "commits": [],
+  "deferred": null
+ },
+ "A2-16": {
+  "severity": 2,
+  "kind": "bug",
+  "title": "Chat lanes catch bare Exception and record client-side bugs as backend transport failures, which can trip the circuit on a healthy server",
+  "verdict": "confirmed",
+  "package": "O1 (wave 1): Inference request path: concurrency, event loop, failure semantics",
+  "commits": [],
+  "deferred": null
+ },
+ "A2-17": {
+  "severity": 2,
+  "kind": "perf",
+  "title": "The placement poll loop re-reads all of /proc/locks once per (role, region), twice per iteration, from two inconsistent snapshots",
+  "verdict": "confirmed",
+  "package": "D3 (wave 2): Inference hot path: llama_server lanes, _execute_turn, escalation chain",
+  "commits": [],
+  "deferred": null
+ },
+ "A2-18": {
+  "severity": 2,
+  "kind": "refactor",
+  "title": "Hot path imports a script from another repo through a hardcoded /mnt/raid0 sys.path entry, and src imports from scripts/",
+  "verdict": "partially",
+  "package": "D3 (wave 2): Inference hot path: llama_server lanes, _execute_turn, escalation chain",
+  "commits": [],
+  "deferred": null
+ },
+ "A2-19": {
+  "severity": 2,
+  "kind": "refactor",
+  "title": "22 ad-hoc ORCHESTRATOR_* env flags bypass the features registry and are parsed by copy-pasted truthy sets; code says 'default off' while the launcher turns them on",
+  "verdict": "partially",
+  "package": "D3 (wave 2): Inference hot path: llama_server lanes, _execute_turn, escalation chain",
+  "commits": [],
+  "deferred": null
+ },
+ "A2-20": {
+  "severity": 2,
+  "kind": "doc",
+  "title": "Hot-path comments that are stale or contradicted by the code",
+  "verdict": "confirmed",
+  "package": "D3 (wave 2): Inference hot path: llama_server lanes, _execute_turn, escalation chain",
+  "commits": [],
+  "deferred": null
+ },
+ "A2-21": {
+  "severity": 2,
+  "kind": "refactor",
+  "title": "Small helpers duplicated across modules, some same-named with different semantics; slot save/restore implemented twice",
+  "verdict": "confirmed",
+  "package": "D3 (wave 2): Inference hot path: llama_server lanes, _execute_turn, escalation chain",
+  "commits": [],
+  "deferred": null
+ },
+ "A2-22": {
+  "severity": 2,
+  "kind": "test",
+  "title": "No cross-lane contract tests; mocks are loose enough to encode real bugs",
+  "verdict": "confirmed",
+  "package": "D3 (wave 2): Inference hot path: llama_server lanes, _execute_turn, escalation chain",
+  "commits": [],
+  "deferred": null
+ },
+ "A2-M1": {
+  "severity": 4,
+  "kind": "bug",
+  "title": "Streaming FINAL early-stop matches inside an unclosed triple-quoted FINAL('''...''') and cuts code answers off mid-body",
+  "verdict": "verifier-added",
+  "package": "O1 (wave 1): Inference request path: concurrency, event loop, failure semantics",
+  "commits": [],
+  "deferred": null
+ },
+ "A2-M2": {
+  "severity": 3,
+  "kind": "bug",
+  "title": "FINAL/CALL/TOON early stop and the degenerate-loop repetition guard run only on the inference-tap branch, so generation behavior depends on whether a TUI sentinel file exists, and unit tests force it off",
+  "verdict": "verifier-added",
+  "package": "O1 (wave 1): Inference request path: concurrency, event loop, failure semantics",
+  "commits": [],
+  "deferred": null
+ },
+ "A3-01": {
+  "severity": 4,
+  "kind": "perf",
+  "title": "Stack-priors artifact (107 KB YAML) is re-parsed on every chat request; consumers reinvent ad-hoc caches",
+  "verdict": "confirmed",
+  "package": "O3 (wave 1): Config / registry / runtime correctness and the stack-priors parse cost",
+  "commits": [
+   {
+    "repo": "epyc-orchestrator",
+    "branch": "refactor/config-registry",
+    "commit": "e1512800",
+    "subject": "stack_priors: cache the runtime artifact parse on (inode, mtime_ns, size) (A3-01, A1-03)",
+    "state": "implemented-unreviewed"
+   }
+  ],
+  "deferred": null,
+  "resolution": {
+   "state": "tested-reviewed-unmerged",
+   "branch": "refactor/config-reviewed-01a16fc3",
+   "checkpoint_commit": "6558beb7",
+   "evidence": "548 O3 tests pass/4 skip; 524 alias targets pass; 7 changed source pins verified; mixed-alias cold-import cycle is separate RESUME-7"
+  }
+ },
+ "A3-02": {
+  "severity": 4,
+  "kind": "bug",
+  "title": "compile_stack_priors fails open: an import error in scripts.server compiles 'status: compiled', 0 gaps, 0 live roles",
+  "verdict": "confirmed",
+  "package": "O3 (wave 1): Config / registry / runtime correctness and the stack-priors parse cost",
+  "commits": [
+   {
+    "repo": "epyc-orchestrator",
+    "branch": "refactor/config-registry",
+    "commit": "c2c97fa3",
+    "subject": "stack_priors: compile fails closed when scripts.server does not import (A3-02)",
+    "state": "implemented-unreviewed"
+   }
+  ],
+  "deferred": null,
+  "resolution": {
+   "state": "tested-reviewed-unmerged",
+   "branch": "refactor/config-reviewed-01a16fc3",
+   "checkpoint_commit": "6558beb7",
+   "evidence": "548 O3 tests pass/4 skip; 524 alias targets pass; 7 changed source pins verified; mixed-alias cold-import cycle is separate RESUME-7"
+  }
+ },
+ "A3-03": {
+  "severity": 4,
+  "kind": "refactor",
+  "title": "Configuration is declared four times (dataclass + pydantic Settings + dead _load_from_env + get_config mapping): about 830 lines of plumbing",
+  "verdict": "partially",
+  "package": "D5 (wave 2): Config / registry / runtime consolidation",
+  "commits": [],
+  "deferred": null
+ },
+ "A3-04": {
+  "severity": 2,
+  "kind": "bug",
+  "title": "Config drift silently drops env overrides: TIMEOUTS_WORKER_CODER ignored, ARCHITECT_CRITIC unsupported, default_request 600 vs 120",
+  "verdict": "confirmed",
+  "package": "O3 (wave 1): Config / registry / runtime correctness and the stack-priors parse cost",
+  "commits": [
+   {
+    "repo": "epyc-orchestrator",
+    "branch": "refactor/config-registry",
+    "commit": "0a963910",
+    "subject": "config: every TimeoutsConfig field honours its ORCHESTRATOR_TIMEOUTS_* override on both loaders (A3-04)",
+    "state": "implemented-unreviewed"
+   }
+  ],
+  "deferred": null,
+  "resolution": {
+   "state": "tested-reviewed-unmerged",
+   "branch": "refactor/config-reviewed-01a16fc3",
+   "checkpoint_commit": "6558beb7",
+   "evidence": "548 O3 tests pass/4 skip; 524 alias targets pass; 7 changed source pins verified; mixed-alias cold-import cycle is separate RESUME-7"
+  }
+ },
+ "A3-05": {
+  "severity": 1,
+  "kind": "bug",
+  "title": "Registry-defaults caches are poisoned by concurrent first access (vestigial recursion guard)",
+  "verdict": "partially",
+  "package": "O3 (wave 1): Config / registry / runtime correctness and the stack-priors parse cost",
+  "commits": [
+   {
+    "repo": "epyc-orchestrator",
+    "branch": "refactor/config-registry",
+    "commit": "3bc09a03",
+    "subject": "config: registry-defaults first load is serialized by one RLock, not boolean guards (A3-05)",
+    "state": "implemented-unreviewed"
+   }
+  ],
+  "deferred": null,
+  "resolution": {
+   "state": "tested-reviewed-unmerged",
+   "branch": "refactor/config-reviewed-01a16fc3",
+   "checkpoint_commit": "6558beb7",
+   "evidence": "548 O3 tests pass/4 skip; 524 alias targets pass; 7 changed source pins verified; mixed-alias cold-import cycle is separate RESUME-7"
+  }
+ },
+ "A3-06": {
+  "severity": 2,
+  "kind": "bug",
+  "title": "Registry runtime defaults are read from a CWD-relative path; run from any other directory, every registry timeout silently falls back",
+  "verdict": "confirmed",
+  "package": "O3 (wave 1): Config / registry / runtime correctness and the stack-priors parse cost",
+  "commits": [
+   {
+    "repo": "epyc-orchestrator",
+    "branch": "refactor/config-registry",
+    "commit": "7a32ca80",
+    "subject": "config: registry runtime defaults resolve from the checkout, not the cwd (A3-06)",
+    "state": "implemented-unreviewed"
+   }
+  ],
+  "deferred": null,
+  "resolution": {
+   "state": "tested-reviewed-unmerged",
+   "branch": "refactor/config-reviewed-01a16fc3",
+   "checkpoint_commit": "6558beb7",
+   "evidence": "548 O3 tests pass/4 skip; 524 alias targets pass; 7 changed source pins verified; mixed-alias cold-import cycle is separate RESUME-7"
+  }
+ },
+ "A3-07": {
+  "severity": 3,
+  "kind": "bug",
+  "title": "Pydantic Settings class bodies freeze registry values at import, so reset_config() cannot refresh them (hermeticity)",
+  "verdict": "confirmed",
+  "package": "O3 (wave 1): Config / registry / runtime correctness and the stack-priors parse cost",
+  "commits": [
+   {
+    "repo": "epyc-orchestrator",
+    "branch": "refactor/config-registry",
+    "commit": "e1b9904a",
+    "subject": "config: registry-derived Settings defaults become factories; reset_config resets the registry caches (A3-07)",
+    "state": "implemented-unreviewed"
+   }
+  ],
+  "deferred": null,
+  "resolution": {
+   "state": "tested-reviewed-unmerged",
+   "branch": "refactor/config-reviewed-01a16fc3",
+   "checkpoint_commit": "6558beb7",
+   "evidence": "548 O3 tests pass/4 skip; 524 alias targets pass; 7 changed source pins verified; mixed-alias cold-import cycle is separate RESUME-7"
+  }
+ },
+ "A3-08": {
+  "severity": 3,
+  "kind": "bug",
+  "title": "get_instance_regions() caches {} forever on any topology import error, so all CPU-region locks become no-ops",
+  "verdict": "confirmed",
+  "package": "O3 (wave 1): Config / registry / runtime correctness and the stack-priors parse cost",
+  "commits": [
+   {
+    "repo": "epyc-orchestrator",
+    "branch": "refactor/config-registry",
+    "commit": "d6a7e007",
+    "subject": "runtime: get_instance_regions logs and retries a topology import failure instead of caching {} (A3-08)",
+    "state": "implemented-unreviewed"
+   }
+  ],
+  "deferred": null,
+  "resolution": {
+   "state": "tested-reviewed-unmerged",
+   "branch": "refactor/config-reviewed-01a16fc3",
+   "checkpoint_commit": "6558beb7",
+   "evidence": "548 O3 tests pass/4 skip; 524 alias targets pass; 7 changed source pins verified; mixed-alias cold-import cycle is separate RESUME-7"
+  }
+ },
+ "A3-09": {
+  "severity": 3,
+  "kind": "bug",
+  "title": "typed-decision shadow 'daemon' executor still blocks interpreter exit; it mirrors private CPython internals",
+  "verdict": "confirmed",
+  "package": "O3 (wave 1): Config / registry / runtime correctness and the stack-priors parse cost",
+  "commits": [
+   {
+    "repo": "epyc-orchestrator",
+    "branch": "refactor/config-registry",
+    "commit": "1507f52f",
+    "subject": "typed_decisions: shadow worker is a plain daemon thread, not a patched ThreadPoolExecutor (A3-09)",
+    "state": "implemented-unreviewed"
+   }
+  ],
+  "deferred": null,
+  "resolution": {
+   "state": "tested-reviewed-unmerged",
+   "branch": "refactor/config-reviewed-01a16fc3",
+   "checkpoint_commit": "6558beb7",
+   "evidence": "548 O3 tests pass/4 skip; 524 alias targets pass; 7 changed source pins verified; mixed-alias cold-import cycle is separate RESUME-7"
+  }
+ },
+ "A3-10": {
+  "severity": 3,
+  "kind": "deletion",
+  "title": "Dead services: worker_pool.py (953), draft_cache.py (237), comfyui_client.py (208) have zero production callers",
+  "verdict": "partially",
+  "package": "D5 (wave 2): Config / registry / runtime consolidation",
+  "commits": [],
+  "deferred": null
+ },
+ "A3-11": {
+  "severity": 3,
+  "kind": "refactor",
+  "title": "_launch_runtime_record is a 548-line, CC-86 god function with duplicated spec branches",
+  "verdict": "partially",
+  "package": "D5 (wave 2): Config / registry / runtime consolidation",
+  "commits": [],
+  "deferred": null
+ },
+ "A3-12": {
+  "severity": 2,
+  "kind": "refactor",
+  "title": "stack_priors.py mixes a 400-line runtime reader with a 2,450-line compiler; importing config loads the compiler",
+  "verdict": "confirmed",
+  "package": "D5 (wave 2): Config / registry / runtime consolidation",
+  "commits": [],
+  "deferred": null
+ },
+ "A3-13": {
+  "severity": 2,
+  "kind": "refactor",
+  "title": "typed_decisions: 60% of the package (about 9.1k LOC) is an offline study harness with duplicated helpers; production native.py depends on a study module",
+  "verdict": "partially",
+  "package": "D5 (wave 2): Config / registry / runtime consolidation",
+  "commits": [],
+  "deferred": null
+ },
+ "A3-14": {
+  "severity": 3,
+  "kind": "refactor",
+  "title": "Tmp-dir and registry-path resolution is reimplemented in 7+ places with four different precedence orders",
+  "verdict": "confirmed",
+  "package": "D5 (wave 2): Config / registry / runtime consolidation",
+  "commits": [],
+  "deferred": null
+ },
+ "A3-15": {
+  "severity": 3,
+  "kind": "bug",
+  "title": "document_client.ocr_pdf_with_partial_success ignores its page_timeout, renders every page up front and leaks the PdfDocument",
+  "verdict": "confirmed",
+  "package": "O3 (wave 1): Config / registry / runtime correctness and the stack-priors parse cost",
+  "commits": [
+   {
+    "repo": "epyc-orchestrator",
+    "branch": "refactor/config-registry",
+    "commit": "092c060c",
+    "subject": "document_client: partial-success OCR honours page_timeout, renders per page, closes the PDF (A3-15)",
+    "state": "implemented-unreviewed"
+   }
+  ],
+  "deferred": null,
+  "resolution": {
+   "state": "tested-reviewed-unmerged",
+   "branch": "refactor/config-reviewed-01a16fc3",
+   "checkpoint_commit": "6558beb7",
+   "evidence": "548 O3 tests pass/4 skip; 524 alias targets pass; 7 changed source pins verified; mixed-alias cold-import cycle is separate RESUME-7"
+  }
+ },
+ "A3-16": {
+  "severity": 2,
+  "kind": "bug",
+  "title": "Four compat shims still use the racy sys.modules swap that TD-21 fixed for inference_lock, and they rename the real module",
+  "verdict": "confirmed",
+  "package": "O3 (wave 1): Config / registry / runtime correctness and the stack-priors parse cost",
+  "commits": [
+   {
+    "repo": "epyc-orchestrator",
+    "branch": "refactor/config-registry",
+    "commit": "794b7a04",
+    "subject": "src: one alias finder resolves all 16 compat shim names (A3-16, A4-08)",
+    "state": "implemented-unreviewed"
+   }
+  ],
+  "deferred": null,
+  "resolution": {
+   "state": "tested-reviewed-unmerged",
+   "branch": "refactor/config-reviewed-01a16fc3",
+   "checkpoint_commit": "6558beb7",
+   "evidence": "548 O3 tests pass/4 skip; 524 alias targets pass; 7 changed source pins verified; mixed-alias cold-import cycle is separate RESUME-7"
+  }
+ },
+ "A3-17": {
+  "severity": 2,
+  "kind": "refactor",
+  "title": "Three diverging implementations of 'active roles from ROLE_LAUNCH_META'; one creates a duplicate module instance",
+  "verdict": "partially",
+  "package": "D5 (wave 2): Config / registry / runtime consolidation",
+  "commits": [],
+  "deferred": null
+ },
+ "A3-18": {
+  "severity": 2,
+  "kind": "refactor",
+  "title": "Hand-copied alias and host-role tables disagree with the registry they restate",
+  "verdict": "partially",
+  "package": "D5 (wave 2): Config / registry / runtime consolidation",
+  "commits": [],
+  "deferred": null
+ },
+ "A3-19": {
+  "severity": 2,
+  "kind": "perf",
+  "title": "chat_template_kwargs_for_role retries a 0.38 s registry parse on every request after a failure, silently",
+  "verdict": "confirmed",
+  "package": "O3 (wave 1): Config / registry / runtime correctness and the stack-priors parse cost",
+  "commits": [
+   {
+    "repo": "epyc-orchestrator",
+    "branch": "refactor/config-registry",
+    "commit": "b32db841",
+    "subject": "registry: back off and warn on a failed chat_template_kwargs registry load; stop pinning the tap-sentinel fallback (A3-19)",
+    "state": "implemented-unreviewed"
+   },
+   {
+    "repo": "epyc-orchestrator",
+    "branch": "refactor/config-reviewed-01a16fc3",
+    "commit": "d843eb9c",
+    "subject": "registry: serialize failed chat-template registry first load",
+    "state": "tested-reviewed-unmerged"
+   }
+  ],
+  "deferred": null,
+  "resolution": {
+   "state": "tested-reviewed-unmerged",
+   "branch": "refactor/config-reviewed-01a16fc3",
+   "checkpoint_commit": "6558beb7",
+   "evidence": "548 O3 tests pass/4 skip; 524 alias targets pass; 7 changed source pins verified; mixed-alias cold-import cycle is separate RESUME-7"
+  }
+ },
+ "A3-20": {
+  "severity": 2,
+  "kind": "refactor",
+  "title": "services modules resolve config, spawn subprocesses and call logging.basicConfig at import; the mtmd probe is duplicated with a stale fallback",
+  "verdict": "confirmed",
+  "package": "D5 (wave 2): Config / registry / runtime consolidation",
+  "commits": [],
+  "deferred": null
+ },
+ "A3-21": {
+  "severity": 2,
+  "kind": "refactor",
+  "title": "cpu_region_lock (350 lines, CC 56): a closure reads the loop variable, eight cleanup flags share one finally, telemetry failures are swallowed",
+  "verdict": "confirmed",
+  "package": "D5 (wave 2): Config / registry / runtime consolidation",
+  "commits": [],
+  "deferred": null
+ },
+ "A3-22": {
+  "severity": 2,
+  "kind": "deletion",
+  "title": "Dead or decoy config surface: FeaturesConfig (deprecated, unread) and REPL forbidden lists that differ from the real sandbox",
+  "verdict": "confirmed",
+  "package": "D5 (wave 2): Config / registry / runtime consolidation",
+  "commits": [],
+  "deferred": null
+ },
+ "A3-23": {
+  "severity": 2,
+  "kind": "doc",
+  "title": "Stale documentation for config defaults, region-lock topology and typed_decisions wiring",
+  "verdict": "confirmed",
+  "package": "D5 (wave 2): Config / registry / runtime consolidation",
+  "commits": [],
+  "deferred": null
+ },
+ "A3-24": {
+  "severity": 2,
+  "kind": "test",
+  "title": "Config path tests assert production host paths and are skip-gated off-host, so the derivation logic is never tested in CI",
+  "verdict": "partially",
+  "package": "D5 (wave 2): Config / registry / runtime consolidation",
+  "commits": [],
+  "deferred": null
+ },
+ "A3-25": {
+  "severity": 1,
+  "kind": "refactor",
+  "title": "Underscore-private helpers serve as public API across modules",
+  "verdict": "confirmed",
+  "package": "D5 (wave 2): Config / registry / runtime consolidation",
+  "commits": [],
+  "deferred": null
+ },
+ "A3-M1": {
+  "severity": 3,
+  "kind": "bug",
+  "title": "Documented ORCHESTRATOR_REPL=1 (and ORCHESTRATOR_CHAT/SERVER/LLM/...=1) crashes get_config() via nested-Settings env collision",
+  "verdict": "verifier-added",
+  "package": "O3 (wave 1): Config / registry / runtime correctness and the stack-priors parse cost",
+  "commits": [
+   {
+    "repo": "epyc-orchestrator",
+    "branch": "refactor/config-registry",
+    "commit": "fe289671",
+    "subject": "config: ORCHESTRATOR_<SECTION>=<scalar> no longer crashes get_config() (A3-M1)",
+    "state": "implemented-unreviewed"
+   }
+  ],
+  "deferred": null,
+  "resolution": {
+   "state": "tested-reviewed-unmerged",
+   "branch": "refactor/config-reviewed-01a16fc3",
+   "checkpoint_commit": "6558beb7",
+   "evidence": "548 O3 tests pass/4 skip; 524 alias targets pass; 7 changed source pins verified; mixed-alias cold-import cycle is separate RESUME-7"
+  }
+ },
+ "A3-M2": {
+  "severity": 2,
+  "kind": "bug",
+  "title": "Orchestrator env.sh defaults PROJECT_ROOT to the archived monorepo and conflicts with epyc-root's env.sh; config gives that env var precedence over its __file__ anchor",
+  "verdict": "verifier-added",
+  "package": "O3 (wave 1): Config / registry / runtime correctness and the stack-priors parse cost",
+  "commits": [
+   {
+    "repo": "epyc-orchestrator",
+    "branch": "refactor/config-registry",
+    "commit": "c9ef39de",
+    "subject": "env/config: PROJECT_ROOT self-locates instead of defaulting to the archived monorepo (A3-M2)",
+    "state": "implemented-unreviewed"
+   }
+  ],
+  "deferred": null,
+  "resolution": {
+   "state": "tested-reviewed-unmerged",
+   "branch": "refactor/config-reviewed-01a16fc3",
+   "checkpoint_commit": "6558beb7",
+   "evidence": "548 O3 tests pass/4 skip; 524 alias targets pass; 7 changed source pins verified; mixed-alias cold-import cycle is separate RESUME-7"
+  }
+ },
+ "A4-01": {
+  "severity": 4,
+  "kind": "bug",
+  "title": "Production read_file/lint_python silently replaced by builtin versions with no path allowlist or size cap",
+  "verdict": "confirmed",
+  "package": "O4 (wave 1): REPL / tools: permission bypasses and structured-mode defects",
+  "commits": [],
+  "deferred": null
+ },
+ "A4-02": {
+  "severity": 3,
+  "kind": "bug",
+  "title": "REPL web_search()/web_fetch() bypass role permissions, the no_web task policy and per-request tool telemetry",
+  "verdict": "partially",
+  "package": "O4 (wave 1): REPL / tools: permission bypasses and structured-mode defects",
+  "commits": [],
+  "deferred": null
+ },
+ "A4-03": {
+  "severity": 3,
+  "kind": "bug",
+  "title": "Structured (ReAct) mode treats FINAL(\"...\") in comments/strings as completion and skips preceding tool calls",
+  "verdict": "partially",
+  "package": "O4 (wave 1): REPL / tools: permission bypasses and structured-mode defects",
+  "commits": [],
+  "deferred": null
+ },
+ "A4-04": {
+  "severity": 3,
+  "kind": "bug",
+  "title": "REPL tool inventory hand-maintained in 5 places; structured mode misses 10 globals (web_search, code_search, doc_search, combined ops)",
+  "verdict": "confirmed",
+  "package": "O4 (wave 1): REPL / tools: permission bypasses and structured-mode defects",
+  "commits": [],
+  "deferred": null
+ },
+ "A4-05": {
+  "severity": 3,
+  "kind": "doc",
+  "title": "REPL security model overstated: run_python_code is an unsandboxed escape hatch in production; fence residual-gap docs are stale",
+  "verdict": "confirmed",
+  "package": "D6 (wave 2): REPL / tools consolidation",
+  "commits": [],
+  "deferred": null
+ },
+ "A4-06": {
+  "severity": 3,
+  "kind": "deletion",
+  "title": "Seven feature flags have zero readers; claude_code_mcp_chat is read behind features() via raw env",
+  "verdict": "partially",
+  "package": "O4 (wave 1): REPL / tools: permission bypasses and structured-mode defects",
+  "commits": [],
+  "deferred": null
+ },
+ "A4-07": {
+  "severity": 3,
+  "kind": "bug",
+  "title": "Features dataclass defaults contradict the registry for 5 flags; validate() re-implements FeatureSpec.dependencies and misses one",
+  "verdict": "confirmed",
+  "package": "O4 (wave 1): REPL / tools: permission bypasses and structured-mode defects",
+  "commits": [],
+  "deferred": null
+ },
+ "A4-08": {
+  "severity": 2,
+  "kind": "bug",
+  "title": "TD-21 shim import race fixed for 1 of 15 sys.modules-swapping compat shims",
+  "verdict": "partially",
+  "package": "O3 (wave 1): Config / registry / runtime correctness and the stack-priors parse cost",
+  "commits": [
+   {
+    "repo": "epyc-orchestrator",
+    "branch": "refactor/config-registry",
+    "commit": "794b7a04",
+    "subject": "src: one alias finder resolves all 16 compat shim names (A3-16, A4-08)",
+    "state": "implemented-unreviewed"
+   }
+  ],
+  "deferred": null,
+  "resolution": {
+   "state": "tested-reviewed-unmerged",
+   "branch": "refactor/config-reviewed-01a16fc3",
+   "checkpoint_commit": "6558beb7",
+   "evidence": "548 O3 tests pass/4 skip; 524 alias targets pass; 7 changed source pins verified; mixed-alias cold-import cycle is separate RESUME-7"
+  }
+ },
+ "A4-09": {
+  "severity": 3,
+  "kind": "deletion",
+  "title": "Four duplicate tool stacks; src/tools/{file,code} are production-dead and their manifests name nonexistent handlers",
+  "verdict": "confirmed",
+  "package": "D6 (wave 2): REPL / tools consolidation",
+  "commits": [],
+  "deferred": null
+ },
+ "A4-10": {
+  "severity": 2,
+  "kind": "refactor",
+  "title": "Offline / test-only code lives in src: pipeline_monitor, model_grader, skill_hub_interop, tool_output_compressor_mcp, reviewer-lab modules",
+  "verdict": "partially",
+  "package": "D6 (wave 2): REPL / tools consolidation",
+  "commits": [],
+  "deferred": null
+ },
+ "A4-11": {
+  "severity": 2,
+  "kind": "refactor",
+  "title": "src depends on scripts/ by file path at import; gate-verdict vocabulary exists in 3 copies",
+  "verdict": "partially",
+  "package": "D6 (wave 2): REPL / tools consolidation",
+  "commits": [],
+  "deferred": null
+ },
+ "A4-12": {
+  "severity": 2,
+  "kind": "deletion",
+  "title": "Proven-dead symbols, stale Protocol contracts, a tautological runtime assert loop and a deprecated UI module",
+  "verdict": "confirmed",
+  "package": "D6 (wave 2): REPL / tools consolidation",
+  "commits": [],
+  "deferred": null
+ },
+ "A4-13": {
+  "severity": 2,
+  "kind": "refactor",
+  "title": "REPL imports the graph orchestrator for a pure JSON-schema helper; schema prompt helpers duplicated byte-for-byte",
+  "verdict": "confirmed",
+  "package": "D6 (wave 2): REPL / tools consolidation",
+  "commits": [],
+  "deferred": null
+ },
+ "A4-14": {
+  "severity": 2,
+  "kind": "bug",
+  "title": "Data race on ResearchContext ids under default-on parallel read-only dispatch; state_lock parameter never used",
+  "verdict": "partially",
+  "package": "O4 (wave 1): REPL / tools: permission bypasses and structured-mode defects",
+  "commits": [],
+  "deferred": null
+ },
+ "A4-15": {
+  "severity": 2,
+  "kind": "refactor",
+  "title": "execute() and _execute_structured() duplicate the exec pipeline and apply the context-bundle cap in a different order",
+  "verdict": "confirmed",
+  "package": "D6 (wave 2): REPL / tools consolidation",
+  "commits": [],
+  "deferred": null
+ },
+ "A4-16": {
+  "severity": 2,
+  "kind": "refactor",
+  "title": "Shadow feature flags and inconsistent ad-hoc env parsing outside the feature registry",
+  "verdict": "confirmed",
+  "package": "D6 (wave 2): REPL / tools consolidation",
+  "commits": [],
+  "deferred": null
+ },
+ "A4-17": {
+  "severity": 2,
+  "kind": "deletion",
+  "title": "SessionStore Protocol (416 LOC) duplicates BaseSessionStore ABC method-for-method for a single implementation",
+  "verdict": "confirmed",
+  "package": "D6 (wave 2): REPL / tools consolidation",
+  "commits": [],
+  "deferred": null
+ },
+ "A4-18": {
+  "severity": 2,
+  "kind": "refactor",
+  "title": "kv_pool_admission.acquire (220 lines, cc 68, 13 params) on the per-inference path spreads ticket state across 8 dicts",
+  "verdict": "confirmed",
+  "package": "D6 (wave 2): REPL / tools consolidation",
+  "commits": [],
+  "deferred": null
+ },
+ "A4-19": {
+  "severity": 2,
+  "kind": "refactor",
+  "title": "_fence_install (cc 157, 307 lines) inlines data tables and a 3rd argv parser that already diverges from run_shell's",
+  "verdict": "confirmed",
+  "package": "D6 (wave 2): REPL / tools consolidation",
+  "commits": [],
+  "deferred": null
+ },
+ "A4-20": {
+  "severity": 2,
+  "kind": "refactor",
+  "title": "Seven copies of project-root/allowlist helpers silently fall back to cwd and freeze at import; sibling-prefix match",
+  "verdict": "confirmed",
+  "package": "D6 (wave 2): REPL / tools consolidation",
+  "commits": [],
+  "deferred": null
+ },
+ "A4-21": {
+  "severity": 2,
+  "kind": "refactor",
+  "title": "Import-time config reads in unit modules extend fact (a): importing src.vision raises off-host",
+  "verdict": "partially",
+  "package": "D6 (wave 2): REPL / tools consolidation",
+  "commits": [],
+  "deferred": null
+ },
+ "A4-22": {
+  "severity": 2,
+  "kind": "test",
+  "title": "Tests certify production-dead tool code; nothing pins which handler actually serves a tool",
+  "verdict": "partially",
+  "package": "D6 (wave 2): REPL / tools consolidation",
+  "commits": [],
+  "deferred": null
+ },
+ "A4-23": {
+  "severity": 1,
+  "kind": "refactor",
+  "title": "Silent except-pass on the REPL turn path hides worker-summary and suggestion failures",
+  "verdict": "partially",
+  "package": "D6 (wave 2): REPL / tools consolidation",
+  "commits": [],
+  "deferred": null
+ },
+ "A4-M1": {
+  "severity": 3,
+  "kind": "bug",
+  "title": "WS-3 no_web task policy is passed at only 4 of 9 REPLEnvironment construction sites; delegated specialists, architect, OpenAI-compat and streaming REPLs never get it",
+  "verdict": "verifier-added",
+  "package": "O1 (wave 1): Inference request path: concurrency, event loop, failure semantics",
+  "commits": [
+   {
+    "repo": "epyc-orchestrator",
+    "branch": "refactor/request-path",
+    "commit": "d4799c26",
+    "subject": "api: pass the WS-3 no_web tool context to every request REPL (A4-M1)",
+    "state": "implemented-unreviewed"
+   }
+  ],
+  "deferred": null,
+  "resolution": {
+   "state": "tested-reviewed-unmerged",
+   "branch": "refactor/request-reviewed-01a16fc3",
+   "checkpoint_commit": "142bb5df",
+   "evidence": "1011 targeted tests pass/3 skip; initial streaming-disconnect endpoint regression fails before fix and passes after; accepted isolation included"
+  }
+ },
+ "A4-M2": {
+  "severity": 3,
+  "kind": "doc",
+  "title": "Inference-batch P0 preflight attests review_decision_shadow, a flag no orchestrator code reads; its stated TM-8 hazard is false",
+  "verdict": "verifier-added",
+  "package": "D6 (wave 2): REPL / tools consolidation",
+  "commits": [],
+  "deferred": null
+ },
+ "A4-M3": {
+  "severity": 2,
+  "kind": "bug",
+  "title": "YAML read_file's max_bytes 'cap' reads the entire file into memory before truncating",
+  "verdict": "verifier-added",
+  "package": "O4 (wave 1): REPL / tools: permission bypasses and structured-mode defects",
+  "commits": [],
+  "deferred": null
+ },
+ "A5-01": {
+  "severity": 4,
+  "kind": "deletion",
+  "title": "Retire the E8 quality-baseline script chain (21k script LOC + 11.6k test LOC) that an operator ruling already retired and that cannot run on the current kernel",
+  "verdict": "confirmed",
+  "package": "O6 (wave 1): Orchestrator scripts: live bugs and operator-ruled deletions",
+  "commits": [
+   {
+    "repo": "epyc-orchestrator",
+    "branch": "refactor/scripts-cleanup",
+    "commit": "adedd305",
+    "subject": "benchmark: delete the retired E8 quality-baseline chain (A5-01, A6-19)",
+    "state": "implemented-unreviewed"
+   }
+  ],
+  "deferred": null
+ },
+ "A5-02": {
+  "severity": 3,
+  "kind": "deletion",
+  "title": "Delete O:scripts/lib/*.py: a 3,974-LOC fork of R:scripts/lib that only tests and a coverage gate use, but that is still maintained and blamed for a past defect",
+  "verdict": "confirmed",
+  "package": "O6 (wave 1): Orchestrator scripts: live bugs and operator-ruled deletions",
+  "commits": [],
+  "deferred": null
+ },
+ "A5-03": {
+  "severity": 3,
+  "kind": "refactor",
+  "title": "src imports scripts.server.* 71 times, and the src.config <-> scripts.server cycle has already produced duplicated readers; move the stack library into a src package",
+  "verdict": "partially",
+  "package": "D7 (wave 2): Orchestrator scripts structure (src<->scripts layering, sys.path, duplicated helpers)",
+  "commits": [],
+  "deferred": null
+ },
+ "A5-04": {
+  "severity": 2,
+  "kind": "bug",
+  "title": "Bug: the canonical seeding runner drops tool_chains from infra-retry diagnostics (3-way fork drift)",
+  "verdict": "partially",
+  "package": "O6 (wave 1): Orchestrator scripts: live bugs and operator-ruled deletions",
+  "commits": [
+   {
+    "repo": "epyc-orchestrator",
+    "branch": "refactor/scripts-cleanup",
+    "commit": "179befed",
+    "subject": "seeding: one _diagnostic_kwargs for first-pass and retry diagnostics (A5-04)",
+    "state": "implemented-unreviewed"
+   }
+  ],
+  "deferred": null
+ },
+ "A5-05": {
+  "severity": 3,
+  "kind": "deletion",
+  "title": "Delete seed_specialist_routing_v2.py, an older strict subset of the canonical runner that every commit edits in lockstep",
+  "verdict": "confirmed",
+  "package": "O6 (wave 1): Orchestrator scripts: live bugs and operator-ruled deletions",
+  "commits": [
+   {
+    "repo": "epyc-orchestrator",
+    "branch": "refactor/scripts-cleanup",
+    "commit": "4ae03332",
+    "subject": "benchmark: delete seed_specialist_routing_v2.py, the stale seeding fork (A5-05)",
+    "state": "implemented-unreviewed"
+   }
+  ],
+  "deferred": null
+ },
+ "A5-06": {
+  "severity": 3,
+  "kind": "bug",
+  "title": "Bug: reembed_episodic_store launches the v9 in-tree llama-server binary on the live `start --repair-embeddings` path",
+  "verdict": "confirmed",
+  "package": "O6 (wave 1): Orchestrator scripts: live bugs and operator-ruled deletions",
+  "commits": [
+   {
+    "repo": "epyc-orchestrator",
+    "branch": "refactor/scripts-cleanup",
+    "commit": "485a6947",
+    "subject": "reembed: launch the kernel-store llama-server with its LD path and a log (A5-06)",
+    "state": "implemented-unreviewed"
+   }
+  ],
+  "deferred": null
+ },
+ "A5-07": {
+  "severity": 3,
+  "kind": "bug",
+  "title": "Bug: the GPU shadow-lane preflight and stage0 pin binary version 10107/67a433bf4 (v8), so the v10 store binary always fails the version check",
+  "verdict": "confirmed",
+  "package": "O6 (wave 1): Orchestrator scripts: live bugs and operator-ruled deletions",
+  "commits": [
+   {
+    "repo": "epyc-orchestrator",
+    "branch": "refactor/scripts-cleanup",
+    "commit": "34b0721f",
+    "subject": "gpu-shadow-lane: drop the v8 binary pin; record the store binary's identity (A5-07)",
+    "state": "implemented-unreviewed"
+   }
+  ],
+  "deferred": null
+ },
+ "A5-08": {
+  "severity": 3,
+  "kind": "refactor",
+  "title": "196 sys.path mutations and bare-name imports load the same file under two module names; this is already the root cause of two incidents",
+  "verdict": "partially",
+  "package": "D7 (wave 2): Orchestrator scripts structure (src<->scripts layering, sys.path, duplicated helpers)",
+  "commits": [],
+  "deferred": null
+ },
+ "A5-09": {
+  "severity": 3,
+  "kind": "refactor",
+  "title": "API process and stack tools mutate sys.path and import bare `stack_manifest`/`stack_numa`, producing second module copies alongside scripts.server.*",
+  "verdict": "confirmed",
+  "package": "D7 (wave 2): Orchestrator scripts structure (src<->scripts layering, sys.path, duplicated helpers)",
+  "commits": [],
+  "deferred": null
+ },
+ "A5-10": {
+  "severity": 3,
+  "kind": "refactor",
+  "title": "Two-way import cycle between orchestrator_stack and stack_commands, held together by 17 `(*a, **kw)` proxies, a module __getattr__ and about 13 one-line wrappers",
+  "verdict": "partially",
+  "package": null,
+  "commits": [],
+  "deferred": "deferred_for_live_path"
+ },
+ "A5-11": {
+  "severity": 3,
+  "kind": "deletion",
+  "title": "Delete scripts/benchmark/deprecated/ (3,550 LOC) and the orchestrator question_pool.py shadow copy (378 LOC) that only it imports",
+  "verdict": "confirmed",
+  "package": "O6 (wave 1): Orchestrator scripts: live bugs and operator-ruled deletions",
+  "commits": [
+   {
+    "repo": "epyc-orchestrator",
+    "branch": "refactor/scripts-cleanup",
+    "commit": "592047f0",
+    "subject": "WIP(unreviewed): delete scripts/benchmark/deprecated/ and the question_pool.py shadow copy (A5-11)",
+    "state": "WIP-unreviewed"
+   }
+  ],
+  "deferred": null
+ },
+ "A5-12": {
+  "severity": 2,
+  "kind": "bug",
+  "title": "Launch-sidecar write failures are swallowed silently, so serving_calls attributes requests to the previous launch",
+  "verdict": "confirmed",
+  "package": "O6 (wave 1): Orchestrator scripts: live bugs and operator-ruled deletions",
+  "commits": [
+   {
+    "repo": "epyc-orchestrator",
+    "branch": "refactor/scripts-cleanup",
+    "commit": "ade6e5fd",
+    "subject": "stack-log-banner: warn on every swallowed failure; drop a stale sidecar (A5-12)",
+    "state": "implemented-unreviewed"
+   }
+  ],
+  "deferred": null
+ },
+ "A5-13": {
+  "severity": 1,
+  "kind": "refactor",
+  "title": "47 hand-rolled JSONL readers in scripts/ with diverging semantics (missing file -> [] vs raise; non-object rows accepted vs rejected)",
+  "verdict": "partially",
+  "package": "D7 (wave 2): Orchestrator scripts structure (src<->scripts layering, sys.path, duplicated helpers)",
+  "commits": [],
+  "deferred": null
+ },
+ "A5-14": {
+  "severity": 1,
+  "kind": "refactor",
+  "title": "Atomic-write helpers are reimplemented with different durability guarantees (fixed vs pid-unique tmp names, fsync vs none)",
+  "verdict": "partially",
+  "package": "D7 (wave 2): Orchestrator scripts structure (src<->scripts layering, sys.path, duplicated helpers)",
+  "commits": [],
+  "deferred": null
+ },
+ "A5-15": {
+  "severity": 2,
+  "kind": "refactor",
+  "title": "'Is autopilot/a bench running?' is reimplemented 6 ways despite a declared single source of truth; the pgrep copies match quoted prompts",
+  "verdict": "confirmed",
+  "package": "D7 (wave 2): Orchestrator scripts structure (src<->scripts layering, sys.path, duplicated helpers)",
+  "commits": [],
+  "deferred": null
+ },
+ "A5-16": {
+  "severity": 2,
+  "kind": "refactor",
+  "title": "PRODUCTION_FEATURE_WAVE_OVERRIDES (feature policy data) lives inside the 3,499-line launcher, so src and attestation import the launcher",
+  "verdict": "confirmed",
+  "package": null,
+  "commits": [],
+  "deferred": "deferred_for_live_path"
+ },
+ "A5-17": {
+  "severity": 2,
+  "kind": "doc",
+  "title": "Stale launcher docs justify an obsolete import contract and describe a retired topology",
+  "verdict": "confirmed",
+  "package": null,
+  "commits": [],
+  "deferred": "deferred_for_live_path"
+ },
+ "A5-18": {
+  "severity": 2,
+  "kind": "deletion",
+  "title": "Dead v2-binary / --kv-hadamard branch has been evaluated in 6 places since _V2_ROLES became empty on 2026-05-06",
+  "verdict": "confirmed",
+  "package": "O6 (wave 1): Orchestrator scripts: live bugs and operator-ruled deletions",
+  "commits": [],
+  "deferred": null
+ },
+ "A5-19": {
+  "severity": 2,
+  "kind": "refactor",
+  "title": "cmd_start is a 641-line, cc=115 linear pipeline of about 15 phases; start_server takes 15 parameters",
+  "verdict": "partially",
+  "package": null,
+  "commits": [],
+  "deferred": "deferred_for_live_path"
+ },
+ "A5-20": {
+  "severity": 1,
+  "kind": "refactor",
+  "title": "Four divergent 'active roles from ROLE_LAUNCH_META' derivations (launcher_only / alias / tenant handling differ)",
+  "verdict": "partially",
+  "package": "D7 (wave 2): Orchestrator scripts structure (src<->scripts layering, sys.path, duplicated helpers)",
+  "commits": [],
+  "deferred": null
+ },
+ "A5-21": {
+  "severity": 1,
+  "kind": "test",
+  "title": "Makefile slice coverage gate requires 100% coverage of dead code (scripts/lib fork, v2 seeding fork)",
+  "verdict": "partially",
+  "package": "O6 (wave 1): Orchestrator scripts: live bugs and operator-ruled deletions",
+  "commits": [],
+  "deferred": null
+ },
+ "A5-22": {
+  "severity": 2,
+  "kind": "bug",
+  "title": "preflight_gate swallows a corrupt contention matrix and then reports it as 'topology hash drift'",
+  "verdict": "confirmed",
+  "package": "O6 (wave 1): Orchestrator scripts: live bugs and operator-ruled deletions",
+  "commits": [
+   {
+    "repo": "epyc-orchestrator",
+    "branch": "refactor/scripts-cleanup",
+    "commit": "bd3afab1",
+    "subject": "preflight-gate: report a corrupt contention matrix as unreadable, not drift (A5-22)",
+    "state": "implemented-unreviewed"
+   }
+  ],
+  "deferred": null
+ },
+ "A5-23": {
+  "severity": 2,
+  "kind": "deletion",
+  "title": "Obsolete one-off scripts with zero references still get swept by stack changes (gemma4 verifier, TOON harness)",
+  "verdict": "confirmed",
+  "package": "O6 (wave 1): Orchestrator scripts: live bugs and operator-ruled deletions",
+  "commits": [],
+  "deferred": null
+ },
+ "A5-24": {
+  "severity": 1,
+  "kind": "refactor",
+  "title": "stack_change_pipeline re-defines _hardcoded_surface_warning_bucket even though it already imports from stack_change_guard",
+  "verdict": "confirmed",
+  "package": "D7 (wave 2): Orchestrator scripts structure (src<->scripts layering, sys.path, duplicated helpers)",
+  "commits": [],
+  "deferred": null
+ },
+ "A5-25": {
+  "severity": 1,
+  "kind": "doc",
+  "title": "memory/ seeding scripts still advertise pre-move paths, a sign they have not run since the 2026-02-27 repo split",
+  "verdict": "confirmed",
+  "package": "D7 (wave 2): Orchestrator scripts structure (src<->scripts layering, sys.path, duplicated helpers)",
+  "commits": [],
+  "deferred": null
+ },
+ "A5-M1": {
+  "severity": 4,
+  "kind": "bug",
+  "title": "Process-killing by name pattern survives in O scripts and violates the INC-20260731 rule; the O copy of start_orchestrator_test.sh is a stale fork of the hardened ROOT copy",
+  "verdict": "verifier-added",
+  "package": "O6 (wave 1): Orchestrator scripts: live bugs and operator-ruled deletions",
+  "commits": [
+   {
+    "repo": "epyc-orchestrator",
+    "branch": "refactor/scripts-cleanup",
+    "commit": "e008bea2",
+    "subject": "scripts: delete name-pattern-kill scripts, add a no-pkill guard (A5-M1)",
+    "state": "implemented-unreviewed"
+   }
+  ],
+  "deferred": null
+ },
+ "A5-M2": {
+  "severity": 2,
+  "kind": "bug",
+  "title": "llama-mtmd-cli resolution is implemented three times, and every copy silently falls back to legacy in-tree builds that bypass the kernel store",
+  "verdict": "verifier-added",
+  "package": "O6 (wave 1): Orchestrator scripts: live bugs and operator-ruled deletions",
+  "commits": [
+   {
+    "repo": "epyc-orchestrator",
+    "branch": "refactor/scripts-cleanup",
+    "commit": "5ff881c6",
+    "subject": "mtmd: resolve llama-mtmd-cli from the kernel store only; one launch env (A5-M2)",
+    "state": "implemented-unreviewed"
+   }
+  ],
+  "deferred": null
+ },
+ "A5-M3": {
+  "severity": 2,
+  "kind": "refactor",
+  "title": "O:scripts/session holds diverged forks of ROOT session scripts; the two reset_episodic_memory.sh copies wipe different state",
+  "verdict": "verifier-added",
+  "package": "D7 (wave 2): Orchestrator scripts structure (src<->scripts layering, sys.path, duplicated helpers)",
+  "commits": [],
+  "deferred": null
+ },
+ "A6-01": {
+  "severity": 3,
+  "kind": "bug",
+  "title": "Kernel-fence tests aim destructive payloads at the REAL governance wiki and production tmp",
+  "verdict": "confirmed",
+  "package": "O7 (wave 1): Test-suite hazards and hygiene",
+  "commits": [
+   {
+    "repo": "epyc-orchestrator",
+    "branch": "refactor/test-hazards",
+    "commit": "5884910d",
+    "subject": "tests: kernel-fence payloads target a hermetic tree, not the real wiki (A6-01)",
+    "state": "implemented-unreviewed"
+   }
+  ],
+  "deferred": null,
+  "resolution": {
+   "state": "tested-reviewed-unmerged",
+   "branch": "refactor/test-isolation-reviewed-01a16fc3",
+   "checkpoint_commit": "5e392a3c",
+   "evidence": "189 runtime/trace tests pass, 1 intentional skip; 7 E8 cases pass; 3 new regressions fail safely on parent; NI07 integration fixed separately"
+  }
+ },
+ "A6-02": {
+  "severity": 3,
+  "kind": "bug",
+  "title": "Tests write into the checkout; one is non-idempotent and fails on every run after the first; the leak was gitignored instead of fixed",
+  "verdict": "partially",
+  "package": "O7 (wave 1): Test-suite hazards and hygiene",
+  "commits": [
+   {
+    "repo": "epyc-orchestrator",
+    "branch": "refactor/test-hazards",
+    "commit": "2ca891c0",
+    "subject": "tests: fail the run on files written into the checkout; fix the CWD leaks (A6-02)",
+    "state": "implemented-unreviewed"
+   }
+  ],
+  "deferred": null,
+  "resolution": {
+   "state": "tested-reviewed-unmerged",
+   "branch": "refactor/test-isolation-reviewed-01a16fc3",
+   "checkpoint_commit": "5e392a3c",
+   "evidence": "189 runtime/trace tests pass, 1 intentional skip; 7 E8 cases pass; 3 new regressions fail safely on parent; NI07 integration fixed separately"
+  }
+ },
+ "A6-03": {
+  "severity": 4,
+  "kind": "bug",
+  "title": "`CI` env var overloaded: it disables the host memory guard AND silently skips 108+ tests; without it, any non-production machine is refused",
+  "verdict": "partially",
+  "package": "O7 (wave 1): Test-suite hazards and hygiene",
+  "commits": [],
+  "deferred": null
+ },
+ "A6-04": {
+  "severity": 4,
+  "kind": "test",
+  "title": "No CI, and the four documented ways to run the tests disagree; `make test` skips 57 test files",
+  "verdict": "confirmed",
+  "package": "O8 (wave 2): Orchestrator CI, honest gates, and the ni63 pin design (operator decision 2026-10-24)",
+  "commits": [],
+  "deferred": null
+ },
+ "A6-05": {
+  "severity": 2,
+  "kind": "refactor",
+  "title": "357 sys.path inserts and 98 path-loaders load the same script under several module names (two distinct EvalResult classes proven in one process)",
+  "verdict": "partially",
+  "package": "D8 (wave 2): Orchestrator test-suite consolidation",
+  "commits": [],
+  "deferred": null
+ },
+ "A6-06": {
+  "severity": 3,
+  "kind": "deletion",
+  "title": "Tests (and 'tripwire' tests) keep about 3.0k LOC of production code alive that nothing in production imports",
+  "verdict": "partially",
+  "package": "D8 (wave 2): Orchestrator test-suite consolidation",
+  "commits": [],
+  "deferred": null
+ },
+ "A6-07": {
+  "severity": 2,
+  "kind": "refactor",
+  "title": "About 50 source-text tests (9 slice the 2,901-line `_run_loop_inner`) will break on this program's own behavior-preserving refactors",
+  "verdict": "partially",
+  "package": "D8 (wave 2): Orchestrator test-suite consolidation",
+  "commits": [],
+  "deferred": null
+ },
+ "A6-08": {
+  "severity": 2,
+  "kind": "test",
+  "title": "100%-line-coverage floors produce mock-heavy, assertion-free 'branching' tests; 89 tests assert nothing and 183 only weakly",
+  "verdict": "confirmed",
+  "package": "D8 (wave 2): Orchestrator test-suite consolidation",
+  "commits": [],
+  "deferred": null
+ },
+ "A6-09": {
+  "severity": 3,
+  "kind": "bug",
+  "title": "Tests use live production state as fixtures and fixed-name directories in production tmp (cross-session collisions, off-host ERRORs)",
+  "verdict": "partially",
+  "package": "O7 (wave 1): Test-suite hazards and hygiene",
+  "commits": [
+   {
+    "repo": "epyc-orchestrator",
+    "branch": "refactor/test-hazards",
+    "commit": "5e1922c1",
+    "subject": "tests: frozen E8 pre-state fixture; REPL/spill tests on tmp_path, not fixed /mnt/raid0 dirs (A6-09)",
+    "state": "implemented-unreviewed"
+   }
+  ],
+  "deferred": null,
+  "resolution": {
+   "state": "tested-reviewed-unmerged",
+   "branch": "refactor/test-isolation-reviewed-01a16fc3",
+   "checkpoint_commit": "5e392a3c",
+   "evidence": "189 runtime/trace tests pass, 1 intentional skip; 7 E8 cases pass; 3 new regressions fail safely on parent; NI07 integration fixed separately"
+  }
+ },
+ "A6-10": {
+  "severity": 3,
+  "kind": "refactor",
+  "title": "Hermeticity is a patchwork of per-incident fixtures; replace it with one hermetic-by-default harness",
+  "verdict": "partially",
+  "package": "D8 (wave 2): Orchestrator test-suite consolidation",
+  "commits": [],
+  "deferred": null
+ },
+ "A6-11": {
+  "severity": 2,
+  "kind": "refactor",
+  "title": "Unspecced MagicMock patches of features()/get_config() make every unset flag truthy and every path a MagicMock",
+  "verdict": "confirmed",
+  "package": "O7 (wave 1): Test-suite hazards and hygiene",
+  "commits": [],
+  "deferred": null
+ },
+ "A6-12": {
+  "severity": 2,
+  "kind": "deletion",
+  "title": "Obsolete 'pending-CP' landing guards turn import regressions into silent skips",
+  "verdict": "confirmed",
+  "package": "O7 (wave 1): Test-suite hazards and hygiene",
+  "commits": [],
+  "deferred": null
+ },
+ "A6-13": {
+  "severity": 2,
+  "kind": "refactor",
+  "title": "pytest configuration hygiene: no strict markers, no timeout, dead hooks, 447 redundant asyncio marks, split dev deps",
+  "verdict": "confirmed",
+  "package": "O8 (wave 2): Orchestrator CI, honest gates, and the ni63 pin design (operator decision 2026-10-24)",
+  "commits": [],
+  "deferred": null
+ },
+ "A6-14": {
+  "severity": 2,
+  "kind": "refactor",
+  "title": "Duplicated fixtures and test doubles that belong in conftest or a tests/support package",
+  "verdict": "confirmed",
+  "package": "D8 (wave 2): Orchestrator test-suite consolidation",
+  "commits": [],
+  "deferred": null
+ },
+ "A6-15": {
+  "severity": 2,
+  "kind": "refactor",
+  "title": "Monolithic tests with poor failure localization: a 454-line test with 101 asserts, 13-level patch pyramids, near-duplicate swap tests",
+  "verdict": "confirmed",
+  "package": "D8 (wave 2): Orchestrator test-suite consolidation",
+  "commits": [],
+  "deferred": null
+ },
+ "A6-16": {
+  "severity": 2,
+  "kind": "refactor",
+  "title": "191 test files import 766 private names, pinning internals the decomposition must move",
+  "verdict": "confirmed",
+  "package": "D8 (wave 2): Orchestrator test-suite consolidation",
+  "commits": [],
+  "deferred": null
+ },
+ "A6-17": {
+  "severity": 1,
+  "kind": "deletion",
+  "title": "test_api_imports.py: 465 LOC of import-smoke tests already covered by every other test",
+  "verdict": "partially",
+  "package": "O7 (wave 1): Test-suite hazards and hygiene",
+  "commits": [],
+  "deferred": null
+ },
+ "A6-19": {
+  "severity": 2,
+  "kind": "refactor",
+  "title": "11.6k LOC of tests for a closed one-off E8 baseline campaign run on every test invocation",
+  "verdict": "partially",
+  "package": "O6 (wave 1): Orchestrator scripts: live bugs and operator-ruled deletions",
+  "commits": [
+   {
+    "repo": "epyc-orchestrator",
+    "branch": "refactor/scripts-cleanup",
+    "commit": "adedd305",
+    "subject": "benchmark: delete the retired E8 quality-baseline chain (A5-01, A6-19)",
+    "state": "implemented-unreviewed"
+   }
+  ],
+  "deferred": null
+ },
+ "A6-20": {
+  "severity": 1,
+  "kind": "doc",
+  "title": "Stale and contradictory test documentation; no guide to the hermetic seams and opt-out markers",
+  "verdict": "partially",
+  "package": "D8 (wave 2): Orchestrator test-suite consolidation",
+  "commits": [],
+  "deferred": null
+ },
+ "A6-M1": {
+  "severity": 3,
+  "kind": "bug",
+  "title": "Tests write fake rows into live runtime stores that no hermetic fixture covers (trace events.sqlite, eval instrument ledger); a later test then fails depending on run order",
+  "verdict": "verifier-added",
+  "package": "O7 (wave 1): Test-suite hazards and hygiene",
+  "commits": [
+   {
+    "repo": "epyc-orchestrator",
+    "branch": "refactor/test-isolation-reviewed-01a16fc3",
+    "commit": "87540dae",
+    "subject": "tests: isolate trace stores and eval ledgers in pytest (A6-M1)",
+    "state": "tested-reviewed-unmerged"
+   }
+  ],
+  "deferred": null,
+  "resolution": {
+   "state": "tested-reviewed-unmerged",
+   "branch": "refactor/test-isolation-reviewed-01a16fc3",
+   "checkpoint_commit": "5e392a3c",
+   "evidence": "189 runtime/trace tests pass, 1 intentional skip; 7 E8 cases pass; 3 new regressions fail safely on parent; NI07 integration fixed separately"
+  }
+ },
+ "B1-01": {
+  "severity": 4,
+  "kind": "bug",
+  "title": "In-loop plain save_state() calls clobber an operator pause issued during the planner turn or dispatch (H4 regression)",
+  "verdict": "confirmed",
+  "package": "P1 (wave 1): Autopilot main loop: behavioural safety net, then loop bugs",
+  "commits": [
+   {
+    "repo": "epyc-orchestrator",
+    "branch": "refactor/autopilot-loop-reviewed-01a16fc3",
+    "commit": "36e1bc55aa40f35965a941e81fdc593a22abd520",
+    "subject": "P1 accepted candidate source; see review checkpoint",
+    "state": "tested-reviewed-unmerged"
+   }
+  ],
+  "deferred": null,
+  "resolution": {
+   "state": "tested-reviewed-unmerged",
+   "branch": "refactor/autopilot-loop-reviewed-01a16fc3",
+   "source_commit": "36e1bc55aa40f35965a941e81fdc593a22abd520",
+   "evidence": "P1 accepted: 19 focused tests and 561 broad tests pass (1 skip); ruff/diff pass; aggregate and all nine focused-file hashes unchanged from run start through run end and checkpoint. Original validation.status FAIL is preserved; its hash-comparison ordering was defective."
+  }
+ },
+ "B1-02": {
+  "severity": 4,
+  "kind": "refactor",
+  "title": "Staged decomposition of _run_loop_inner and autopilot.py, with exact seams",
+  "verdict": "partially",
+  "package": "D1 (wave 2): Decompose the autopilot loop (_run_loop_inner) behind the P1 safety net",
+  "commits": [],
+  "deferred": null
+ },
+ "B1-03": {
+  "severity": 4,
+  "kind": "test",
+  "title": "Loop tests pin code text instead of behavior; only 9 tests execute the loop, and 3 halt paths are untested",
+  "verdict": "confirmed",
+  "package": "P1 (wave 1): Autopilot main loop: behavioural safety net, then loop bugs",
+  "commits": [
+   {
+    "repo": "epyc-orchestrator",
+    "branch": "refactor/autopilot-loop",
+    "commit": "1cea8e45",
+    "subject": "tests/autopilot: port the loop-beliefs source-text checks to the loop harness (B1-03)",
+    "state": "implemented-unreviewed"
+   },
+   {
+    "repo": "epyc-orchestrator",
+    "branch": "refactor/autopilot-loop",
+    "commit": "05008a32",
+    "subject": "tests/autopilot: drive the real loop instead of slicing its source text (B1-03, B5-02)",
+    "state": "implemented-unreviewed"
+   }
+  ],
+  "deferred": null
+ },
+ "B1-04": {
+  "severity": 3,
+  "kind": "bug",
+  "title": "Autonomous mode (--no-controller) discards pre-planner forced actions but keeps their contexts, misattributing multitier evidence",
+  "verdict": "confirmed",
+  "package": "P1 (wave 1): Autopilot main loop: behavioural safety net, then loop bugs",
+  "commits": [
+   {
+    "repo": "epyc-orchestrator",
+    "branch": "refactor/autopilot-loop-reviewed-01a16fc3",
+    "commit": "36e1bc55aa40f35965a941e81fdc593a22abd520",
+    "subject": "P1 accepted candidate source; see review checkpoint",
+    "state": "tested-reviewed-unmerged"
+   }
+  ],
+  "deferred": null,
+  "resolution": {
+   "state": "tested-reviewed-unmerged",
+   "branch": "refactor/autopilot-loop-reviewed-01a16fc3",
+   "source_commit": "36e1bc55aa40f35965a941e81fdc593a22abd520",
+   "evidence": "P1 accepted: 19 focused tests and 561 broad tests pass (1 skip); ruff/diff pass; aggregate and all nine focused-file hashes unchanged from run start through run end and checkpoint. Original validation.status FAIL is preserved; its hash-comparison ordering was defective."
+  }
+ },
+ "B1-05": {
+  "severity": 3,
+  "kind": "refactor",
+  "title": "The operator-halt latch is copy-pasted 8 times inside the loop",
+  "verdict": "confirmed",
+  "package": "D1 (wave 2): Decompose the autopilot loop (_run_loop_inner) behind the P1 safety net",
+  "commits": [],
+  "deferred": null
+ },
+ "B1-06": {
+  "severity": 3,
+  "kind": "refactor",
+  "title": "The 396-line planner prompt assembly is inlined in the loop with 12 broad excepts and static prose rebuilt every turn",
+  "verdict": "confirmed",
+  "package": "D1 (wave 2): Decompose the autopilot loop (_run_loop_inner) behind the P1 safety net",
+  "commits": [],
+  "deferred": null
+ },
+ "B1-07": {
+  "severity": 2,
+  "kind": "perf",
+  "title": "Each trial re-materializes the whole journal 2-3+ times; the second fold before the in-flight clear changes nothing",
+  "verdict": "partially",
+  "package": "D1 (wave 2): Decompose the autopilot loop (_run_loop_inner) behind the P1 safety net",
+  "commits": [],
+  "deferred": null
+ },
+ "B1-08": {
+  "severity": 3,
+  "kind": "bug",
+  "title": "Swallowed and DEBUG-level exceptions hide loop failures, including a lost skip-trial journal row",
+  "verdict": "partially",
+  "package": "P1 (wave 1): Autopilot main loop: behavioural safety net, then loop bugs",
+  "commits": [
+   {
+    "repo": "epyc-orchestrator",
+    "branch": "refactor/autopilot-loop-reviewed-01a16fc3",
+    "commit": "36e1bc55aa40f35965a941e81fdc593a22abd520",
+    "subject": "P1 accepted candidate source; see review checkpoint",
+    "state": "tested-reviewed-unmerged"
+   }
+  ],
+  "deferred": null,
+  "resolution": {
+   "state": "tested-reviewed-unmerged",
+   "branch": "refactor/autopilot-loop-reviewed-01a16fc3",
+   "source_commit": "36e1bc55aa40f35965a941e81fdc593a22abd520",
+   "evidence": "P1 accepted: 19 focused tests and 561 broad tests pass (1 skip); ruff/diff pass; aggregate and all nine focused-file hashes unchanged from run start through run end and checkpoint. Original validation.status FAIL is preserved; its hash-comparison ordering was defective."
+  }
+ },
+ "B1-09": {
+  "severity": 2,
+  "kind": "bug",
+  "title": "Forcer and critic rationale annotations are built, tested, and then never persisted",
+  "verdict": "partially",
+  "package": "P1 (wave 1): Autopilot main loop: behavioural safety net, then loop bugs",
+  "commits": [
+   {
+    "repo": "epyc-orchestrator",
+    "branch": "refactor/autopilot-loop-reviewed-01a16fc3",
+    "commit": "36e1bc55aa40f35965a941e81fdc593a22abd520",
+    "subject": "P1 accepted candidate source; see review checkpoint",
+    "state": "tested-reviewed-unmerged"
+   }
+  ],
+  "deferred": null,
+  "resolution": {
+   "state": "tested-reviewed-unmerged",
+   "branch": "refactor/autopilot-loop-reviewed-01a16fc3",
+   "source_commit": "36e1bc55aa40f35965a941e81fdc593a22abd520",
+   "evidence": "P1 accepted: 19 focused tests and 561 broad tests pass (1 skip); ruff/diff pass; aggregate and all nine focused-file hashes unchanged from run start through run end and checkpoint. Original validation.status FAIL is preserved; its hash-comparison ordering was defective."
+  }
+ },
+ "B1-10": {
+  "severity": 2,
+  "kind": "deletion",
+  "title": "The post-planner seq-forcer pass repeats the pre-planner pass with the same inputs; its guard cascade is always true",
+  "verdict": "partially",
+  "package": "D1 (wave 2): Decompose the autopilot loop (_run_loop_inner) behind the P1 safety net",
+  "commits": [],
+  "deferred": null
+ },
+ "B1-11": {
+  "severity": 3,
+  "kind": "refactor",
+  "title": "43 import-time env constants frozen in module globals, patched 65 times in tests; the multitier flag is read two different ways",
+  "verdict": "confirmed",
+  "package": "D1 (wave 2): Decompose the autopilot loop (_run_loop_inner) behind the P1 safety net",
+  "commits": [],
+  "deferred": null
+ },
+ "B1-12": {
+  "severity": 2,
+  "kind": "refactor",
+  "title": "Promotion-decision block duplicates: 3 update_baseline sequences, 2 eligibility+start pairs, 2 upsert calls with different timestamps",
+  "verdict": "confirmed",
+  "package": "D1 (wave 2): Decompose the autopilot loop (_run_loop_inner) behind the P1 safety net",
+  "commits": [],
+  "deferred": null
+ },
+ "B1-13": {
+  "severity": 1,
+  "kind": "bug",
+  "title": "sys.path.insert runs on every planner turn (unbounded growth), duplicating an import-time insert",
+  "verdict": "partially",
+  "package": "P1 (wave 1): Autopilot main loop: behavioural safety net, then loop bugs",
+  "commits": [
+   {
+    "repo": "epyc-orchestrator",
+    "branch": "refactor/autopilot-loop-reviewed-01a16fc3",
+    "commit": "36e1bc55aa40f35965a941e81fdc593a22abd520",
+    "subject": "P1 accepted candidate source; see review checkpoint",
+    "state": "tested-reviewed-unmerged"
+   }
+  ],
+  "deferred": null,
+  "resolution": {
+   "state": "tested-reviewed-unmerged",
+   "branch": "refactor/autopilot-loop-reviewed-01a16fc3",
+   "source_commit": "36e1bc55aa40f35965a941e81fdc593a22abd520",
+   "evidence": "P1 accepted: 19 focused tests and 561 broad tests pass (1 skip); ruff/diff pass; aggregate and all nine focused-file hashes unchanged from run start through run end and checkpoint. Original validation.status FAIL is preserved; its hash-comparison ordering was defective."
+  }
+ },
+ "B1-14": {
+  "severity": 2,
+  "kind": "bug",
+  "title": "The exit breadcrumb records a stale trial_id and cannot tell an operator halt from a normal exit",
+  "verdict": "confirmed",
+  "package": "P1 (wave 1): Autopilot main loop: behavioural safety net, then loop bugs",
+  "commits": [
+   {
+    "repo": "epyc-orchestrator",
+    "branch": "refactor/autopilot-loop-reviewed-01a16fc3",
+    "commit": "36e1bc55aa40f35965a941e81fdc593a22abd520",
+    "subject": "P1 accepted candidate source; see review checkpoint",
+    "state": "tested-reviewed-unmerged"
+   }
+  ],
+  "deferred": null,
+  "resolution": {
+   "state": "tested-reviewed-unmerged",
+   "branch": "refactor/autopilot-loop-reviewed-01a16fc3",
+   "source_commit": "36e1bc55aa40f35965a941e81fdc593a22abd520",
+   "evidence": "P1 accepted: 19 focused tests and 561 broad tests pass (1 skip); ruff/diff pass; aggregate and all nine focused-file hashes unchanged from run start through run end and checkpoint. Original validation.status FAIL is preserved; its hash-comparison ordering was defective."
+  }
+ },
+ "B1-15": {
+  "severity": 2,
+  "kind": "test",
+  "title": "_run_loop_inner installs process-global hooks it never removes, which leak into the pytest process",
+  "verdict": "confirmed",
+  "package": "P1 (wave 1): Autopilot main loop: behavioural safety net, then loop bugs",
+  "commits": [
+   {
+    "repo": "epyc-orchestrator",
+    "branch": "refactor/autopilot-loop",
+    "commit": "cf6c4fab",
+    "subject": "tests/autopilot: prove the loop harness contains the loop's process-global hooks (B1-15)",
+    "state": "implemented-unreviewed"
+   }
+  ],
+  "deferred": null
+ },
+ "B1-16": {
+  "severity": 2,
+  "kind": "doc",
+  "title": "Stale or contradicted documentation in and around the loop",
+  "verdict": "partially",
+  "package": "D1 (wave 2): Decompose the autopilot loop (_run_loop_inner) behind the P1 safety net",
+  "commits": [],
+  "deferred": null
+ },
+ "B1-17": {
+  "severity": 2,
+  "kind": "refactor",
+  "title": "The action-type list is hand-copied: a loop literal duplicates planner_coordinator.KNOWN_ACTION_TYPES, which diverges from actions._ACTION_HANDLERS",
+  "verdict": "confirmed",
+  "package": "P3 (wave 1): Autopilot actions, config applicator, controller IO, planner, journal",
+  "commits": [],
+  "deferred": null
+ },
+ "B1-18": {
+  "severity": 2,
+  "kind": "test",
+  "title": "No size guard on autopilot.py; the loop regrew 2.6x after the 2026-05-22 extraction",
+  "verdict": "partially",
+  "package": "D1 (wave 2): Decompose the autopilot loop (_run_loop_inner) behind the P1 safety net",
+  "commits": [],
+  "deferred": null
+ },
+ "B1-19": {
+  "severity": 1,
+  "kind": "deletion",
+  "title": "Dead definitions in autopilot.py",
+  "verdict": "confirmed",
+  "package": "D1 (wave 2): Decompose the autopilot loop (_run_loop_inner) behind the P1 safety net",
+  "commits": [],
+  "deferred": null
+ },
+ "B1-M1": {
+  "severity": 3,
+  "kind": "bug",
+  "title": "SIGTERM during the planner turn is not honored before dispatch, and the supervisor's process-group SIGTERM turns into a model-free numeric_trial",
+  "verdict": "verifier-added",
+  "package": "P1 (wave 1): Autopilot main loop: behavioural safety net, then loop bugs",
+  "commits": [
+   {
+    "repo": "epyc-orchestrator",
+    "branch": "refactor/autopilot-loop-reviewed-01a16fc3",
+    "commit": "36e1bc55aa40f35965a941e81fdc593a22abd520",
+    "subject": "P1 accepted candidate source; see review checkpoint",
+    "state": "tested-reviewed-unmerged"
+   }
+  ],
+  "deferred": null,
+  "resolution": {
+   "state": "tested-reviewed-unmerged",
+   "branch": "refactor/autopilot-loop-reviewed-01a16fc3",
+   "source_commit": "36e1bc55aa40f35965a941e81fdc593a22abd520",
+   "evidence": "P1 accepted: 19 focused tests and 561 broad tests pass (1 skip); ruff/diff pass; aggregate and all nine focused-file hashes unchanged from run start through run end and checkpoint. Original validation.status FAIL is preserved; its hash-comparison ordering was defective."
+  }
+ },
+ "B1-M2": {
+  "severity": 2,
+  "kind": "bug",
+  "title": "Operator halts exit the daemon, contradicting the 'idles this process' latch comment; `resume` then reports success with nothing running",
+  "verdict": "verifier-added",
+  "package": "P1 (wave 1): Autopilot main loop: behavioural safety net, then loop bugs",
+  "commits": [
+   {
+    "repo": "epyc-orchestrator",
+    "branch": "refactor/autopilot-loop-reviewed-01a16fc3",
+    "commit": "36e1bc55aa40f35965a941e81fdc593a22abd520",
+    "subject": "P1 accepted candidate source; see review checkpoint",
+    "state": "tested-reviewed-unmerged"
+   }
+  ],
+  "deferred": null,
+  "resolution": {
+   "state": "tested-reviewed-unmerged",
+   "branch": "refactor/autopilot-loop-reviewed-01a16fc3",
+   "source_commit": "36e1bc55aa40f35965a941e81fdc593a22abd520",
+   "evidence": "P1 accepted: 19 focused tests and 561 broad tests pass (1 skip); ruff/diff pass; aggregate and all nine focused-file hashes unchanged from run start through run end and checkpoint. Original validation.status FAIL is preserved; its hash-comparison ordering was defective."
+  }
+ },
+ "B1-M3": {
+  "severity": 3,
+  "kind": "refactor",
+  "title": "No gate lints, format-checks or tests scripts/autopilot: `make gates`/`just gates` run no Python, and `make pylint` excludes scripts/",
+  "verdict": "verifier-added",
+  "package": "O8 (wave 2): Orchestrator CI, honest gates, and the ni63 pin design (operator decision 2026-10-24)",
+  "commits": [],
+  "deferred": null
+ },
+ "B2-01": {
+  "severity": 4,
+  "kind": "bug",
+  "title": "Decision-partition aggregation zeroes parse-failure and judge-parse telemetry on every production T1/T2 trial",
+  "verdict": "confirmed",
+  "package": "P5 (wave 2): Autopilot evaluator: ONE batched era event (operator decision 2026-10-24)",
+  "commits": [],
+  "deferred": null
+ },
+ "B2-02": {
+  "severity": 3,
+  "kind": "bug",
+  "title": "Stale 'throughput_host_' prefix guard lets a cached throttle-demoted PASS be upgraded to FAIL without touching the rollback counter",
+  "verdict": "partially",
+  "package": "P2 (wave 1): Autopilot safety gate and autopilot_core",
+  "commits": [
+   {
+    "repo": "epyc-orchestrator",
+    "branch": "refactor/autopilot-gate",
+    "commit": "579ec0a8",
+    "subject": "safety_gate: seq upgrade of a cached PASS attaches the seq leg only (B2-02)",
+    "state": "implemented-unreviewed"
+   }
+  ],
+  "deferred": null,
+  "resolution": {
+   "state": "tested-reviewed-integration-held",
+   "branch": "refactor/autopilot-gate-reviewed-01a16fc3",
+   "checkpoint_commit": "db17808e",
+   "evidence": "1018 targeted tests pass/1 skip; 18 snapshot controls pass; B2-02/B2-03 fail on parent; pre-P2 snapshot refuses bounded authority and current-format rebuild matches full replay",
+   "integration_hold": "Existing reconstruction CRITICAL and verified-snapshot HIGH impacts; owner/operator integration review and stopped-autopilot snapshot rebuild boundary"
+  }
+ },
+ "B2-03": {
+  "severity": 3,
+  "kind": "bug",
+  "title": "MAD noise filter is two-sided: a result far BELOW the established level is admitted to learning as a significant improvement",
+  "verdict": "confirmed",
+  "package": "P2 (wave 1): Autopilot safety gate and autopilot_core",
+  "commits": [
+   {
+    "repo": "epyc-orchestrator",
+    "branch": "refactor/autopilot-gate",
+    "commit": "bbfc27f2",
+    "subject": "safety_gate: one-sided MAD significance; tag below_recent_level (B2-03)",
+    "state": "implemented-unreviewed"
+   }
+  ],
+  "deferred": null,
+  "resolution": {
+   "state": "tested-reviewed-integration-held",
+   "branch": "refactor/autopilot-gate-reviewed-01a16fc3",
+   "checkpoint_commit": "db17808e",
+   "evidence": "1018 targeted tests pass/1 skip; 18 snapshot controls pass; B2-02/B2-03 fail on parent; pre-P2 snapshot refuses bounded authority and current-format rebuild matches full replay",
+   "integration_hold": "Existing reconstruction CRITICAL and verified-snapshot HIGH impacts; owner/operator integration review and stopped-autopilot snapshot rebuild boundary"
+  }
+ },
+ "B2-04": {
+  "severity": 3,
+  "kind": "perf",
+  "title": "model_registry.yaml (149 KB) is fully re-parsed per question, twice, plus once per judged question and per drain",
+  "verdict": "partially",
+  "package": "P5 (wave 2): Autopilot evaluator: ONE batched era event (operator decision 2026-10-24)",
+  "commits": [],
+  "deferred": null
+ },
+ "B2-05": {
+  "severity": 2,
+  "kind": "perf",
+  "title": "_eval_resource_lane runs an expensive _eval_concurrency probe per question and then discards it",
+  "verdict": "partially",
+  "package": "P5 (wave 2): Autopilot evaluator: ONE batched era event (operator decision 2026-10-24)",
+  "commits": [],
+  "deferred": null
+ },
+ "B2-06": {
+  "severity": 2,
+  "kind": "perf",
+  "title": "Serial eval path pays a full ~4-5 s quiescence certificate per model-judged question; drain polling opens a new connection per URL per poll",
+  "verdict": "partially",
+  "package": "P5 (wave 2): Autopilot evaluator: ONE batched era event (operator decision 2026-10-24)",
+  "commits": [],
+  "deferred": null
+ },
+ "B2-07": {
+  "severity": 3,
+  "kind": "refactor",
+  "title": "_eval_batch (697 lines, cc 119) holds two hand-copied schedulers with dead stores, a double progress emit and a non-finally writer close",
+  "verdict": "partially",
+  "package": "P5 (wave 2): Autopilot evaluator: ONE batched era event (operator decision 2026-10-24)",
+  "commits": [],
+  "deferred": null
+ },
+ "B2-08": {
+  "severity": 3,
+  "kind": "refactor",
+  "title": "_aggregate (641 lines, cc 140) mixes ~10 independent rollups, a global side effect and ~19 field/details mirrors; EvalResult lives in the consumer module",
+  "verdict": "confirmed",
+  "package": "P5 (wave 2): Autopilot evaluator: ONE batched era event (operator decision 2026-10-24)",
+  "commits": [],
+  "deferred": null
+ },
+ "B2-09": {
+  "severity": 3,
+  "kind": "refactor",
+  "title": "Baseline-promotion refusals are prose-only; the replay tool reverse-engineers 12 codes by substring match",
+  "verdict": "confirmed",
+  "package": "P2 (wave 1): Autopilot safety gate and autopilot_core",
+  "commits": [
+   {
+    "repo": "epyc-orchestrator",
+    "branch": "refactor/autopilot-gate",
+    "commit": "d42e3943",
+    "subject": "safety_gate: machine-readable refusal_code on every baseline refusal (B2-09)",
+    "state": "implemented-unreviewed"
+   }
+  ],
+  "deferred": null,
+  "resolution": {
+   "state": "tested-reviewed-integration-held",
+   "branch": "refactor/autopilot-gate-reviewed-01a16fc3",
+   "checkpoint_commit": "db17808e",
+   "evidence": "1018 targeted tests pass/1 skip; 18 snapshot controls pass; B2-02/B2-03 fail on parent; pre-P2 snapshot refuses bounded authority and current-format rebuild matches full replay",
+   "integration_hold": "Existing reconstruction CRITICAL and verified-snapshot HIGH impacts; owner/operator integration review and stopped-autopilot snapshot rebuild boundary"
+  }
+ },
+ "B2-10": {
+  "severity": 2,
+  "kind": "bug",
+  "title": "All harness failures collapse to infra_reason='eval_batch_failure'; the orphan-contamination reason can never be recorded",
+  "verdict": "partially",
+  "package": "P5 (wave 2): Autopilot evaluator: ONE batched era event (operator decision 2026-10-24)",
+  "commits": [],
+  "deferred": null
+ },
+ "B2-11": {
+  "severity": 3,
+  "kind": "refactor",
+  "title": "SafetyGate.check is a 521-line, depth-8 function with 10 parameters and stringly-typed categories consumed in 13 files",
+  "verdict": "confirmed",
+  "package": "P2 (wave 1): Autopilot safety gate and autopilot_core",
+  "commits": [],
+  "deferred": null,
+  "resolution": {
+   "state": "skipped-already-fixed",
+   "evidence": "Current origin/main84f6f6f1 SafetyGate.check spans307lines (2632-2938), already split from original521-line finding; no new decomposition inP2"
+  }
+ },
+ "B2-12": {
+  "severity": 2,
+  "kind": "doc",
+  "title": "Stale prose contradicts the code it documents (journal labels, CJ-8 comment, tool-sentinel docstring, McNemar overflow claim, progressive_eval contract)",
+  "verdict": "confirmed",
+  "package": "P5 (wave 2): Autopilot evaluator: ONE batched era event (operator decision 2026-10-24)",
+  "commits": [],
+  "deferred": null
+ },
+ "B2-13": {
+  "severity": 2,
+  "kind": "test",
+  "title": "Eval tests patch process-global time/httpx with finite iterators and re-exec the 8k-line module with leaked os.environ because config is import-time",
+  "verdict": "confirmed",
+  "package": "P5 (wave 2): Autopilot evaluator: ONE batched era event (operator decision 2026-10-24)",
+  "commits": [],
+  "deferred": null
+ },
+ "B2-14": {
+  "severity": 2,
+  "kind": "refactor",
+  "title": "Four copy-pasted per-role arm loops, 14 inline placeholder EvalResults and duplicate qid-identity closures",
+  "verdict": "partially",
+  "package": "P5 (wave 2): Autopilot evaluator: ONE batched era event (operator decision 2026-10-24)",
+  "commits": [],
+  "deferred": null
+ },
+ "B2-15": {
+  "severity": 2,
+  "kind": "deletion",
+  "title": "Dead code and pass-through facades in EvalTower",
+  "verdict": "partially",
+  "package": "P5 (wave 2): Autopilot evaluator: ONE batched era event (operator decision 2026-10-24)",
+  "commits": [],
+  "deferred": null
+ },
+ "B2-16": {
+  "severity": 2,
+  "kind": "deletion",
+  "title": "eval_tower_seagym_views.py (205 LOC) has had no production consumer since it landed on 2026-07-11",
+  "verdict": "confirmed",
+  "package": "P4 (wave 1): Autopilot satellites: one-shot scripts, dead modules, small bugs",
+  "commits": [],
+  "deferred": null
+ },
+ "B2-17": {
+  "severity": 1,
+  "kind": "deletion",
+  "title": "HLE control-pair attestation path is never fed by any producer",
+  "verdict": "partially",
+  "package": "P2 (wave 1): Autopilot safety gate and autopilot_core",
+  "commits": [],
+  "deferred": null,
+  "resolution": {
+   "state": "retained-verifier-correction",
+   "evidence": "Verified correction explicitly says do not delete report-only control-attestation scaffold; designated model_gate_report/operator-gated amendment evidence input. No new producer wiring claimed."
+  }
+ },
+ "B2-18": {
+  "severity": 2,
+  "kind": "refactor",
+  "title": "Load-bearing helpers duplicated across modules: qid hash x3, journal shard ordering x3 (diverging from journal_shards), env parsers x8",
+  "verdict": "confirmed",
+  "package": "P5 (wave 2): Autopilot evaluator: ONE batched era event (operator decision 2026-10-24)",
+  "commits": [],
+  "deferred": null
+ },
+ "B2-19": {
+  "severity": 2,
+  "kind": "bug",
+  "title": "Instrument-ledger write races across processes on a fixed tmp filename and can wipe drift history",
+  "verdict": "partially",
+  "package": "P5 (wave 2): Autopilot evaluator: ONE batched era event (operator decision 2026-10-24)",
+  "commits": [],
+  "deferred": null
+ },
+ "B2-20": {
+  "severity": 2,
+  "kind": "refactor",
+  "title": "Baseline.load and apply_state duplicate field validation and replay the whole journal up to 8 times per load",
+  "verdict": "confirmed",
+  "package": "P2 (wave 1): Autopilot safety gate and autopilot_core",
+  "commits": [
+   {
+    "repo": "epyc-orchestrator",
+    "branch": "refactor/autopilot-gate",
+    "commit": "a4c6582c",
+    "subject": "safety_gate: one field validator for Baseline.load/apply_state, one journal replay (B2-20)",
+    "state": "implemented-unreviewed"
+   }
+  ],
+  "deferred": null,
+  "resolution": {
+   "state": "tested-reviewed-integration-held",
+   "branch": "refactor/autopilot-gate-reviewed-01a16fc3",
+   "checkpoint_commit": "db17808e",
+   "evidence": "1018 targeted tests pass/1 skip; 18 snapshot controls pass; B2-02/B2-03 fail on parent; pre-P2 snapshot refuses bounded authority and current-format rebuild matches full replay",
+   "integration_hold": "Existing reconstruction CRITICAL and verified-snapshot HIGH impacts; owner/operator integration review and stopped-autopilot snapshot rebuild boundary"
+  }
+ },
+ "B2-M1": {
+  "severity": 3,
+  "kind": "bug",
+  "title": "Per-question consumers ignore the decision-partition filter (and paired_stats also ignores disposition); tool_sentinel and W6 audit rows leak into paired McNemar and seq evidence",
+  "verdict": "verifier-added",
+  "package": "P5 (wave 2): Autopilot evaluator: ONE batched era event (operator decision 2026-10-24)",
+  "commits": [],
+  "deferred": null
+ },
+ "B2-M2": {
+  "severity": 2,
+  "kind": "bug",
+  "title": "screen_paired_arms reports 'significant' from the exact p while its gating 'verdict' uses the normal approximation; they disagree near alpha",
+  "verdict": "verifier-added",
+  "package": "P5 (wave 2): Autopilot evaluator: ONE batched era event (operator decision 2026-10-24)",
+  "commits": [],
+  "deferred": null
+ },
+ "B3-01": {
+  "severity": 3,
+  "kind": "bug",
+  "title": "Live-API env probe and restart_api pick a process by pgrep name pattern (pids[0]) — wrong-process reads can silently skip a real config apply",
+  "verdict": "confirmed",
+  "package": "P3 (wave 1): Autopilot actions, config applicator, controller IO, planner, journal",
+  "commits": [],
+  "deferred": null
+ },
+ "B3-02": {
+  "severity": 2,
+  "kind": "bug",
+  "title": "Planner/MetaOptimizer journal queries read raw _entries and ignore supersession events (bug_corrupted trials still steer budgets and prompt)",
+  "verdict": "partially",
+  "package": "P3 (wave 1): Autopilot actions, config applicator, controller IO, planner, journal",
+  "commits": [],
+  "deferred": null
+ },
+ "B3-03": {
+  "severity": 2,
+  "kind": "bug",
+  "title": "NaN passes every numeric bounds check (controller_io, planner_coordinator, config_applicator knobs)",
+  "verdict": "partially",
+  "package": "P3 (wave 1): Autopilot actions, config applicator, controller IO, planner, journal",
+  "commits": [],
+  "deferred": null
+ },
+ "B3-04": {
+  "severity": 3,
+  "kind": "perf",
+  "title": "Journal has no cheap read view: autopilot deep-copies the entire journal via asdict >=2x per trial and refolds supersessions ~20x per planner turn",
+  "verdict": "confirmed",
+  "package": "P3 (wave 1): Autopilot actions, config applicator, controller IO, planner, journal",
+  "commits": [],
+  "deferred": null
+ },
+ "B3-05": {
+  "severity": 3,
+  "kind": "bug",
+  "title": "Four hand-maintained action-type registries; review_policy_trial and screening_tier_driver handlers are unreachable from the live loop",
+  "verdict": "confirmed",
+  "package": "P3 (wave 1): Autopilot actions, config applicator, controller IO, planner, journal",
+  "commits": [],
+  "deferred": null
+ },
+ "B3-06": {
+  "severity": 2,
+  "kind": "bug",
+  "title": "Planner-archive rows have inconsistent schema: codex/local provider rows lack \"type\", so their failures never reach the prior-decision digest",
+  "verdict": "partially",
+  "package": "P3 (wave 1): Autopilot actions, config applicator, controller IO, planner, journal",
+  "commits": [],
+  "deferred": null
+ },
+ "B3-07": {
+  "severity": 2,
+  "kind": "refactor",
+  "title": "Error paths that feed control decisions fail silently (DEBUG-only planner archive writes, bare-pass trace emit, utilization probe returns 0.0 on error)",
+  "verdict": "confirmed",
+  "package": "P3 (wave 1): Autopilot actions, config applicator, controller IO, planner, journal",
+  "commits": [],
+  "deferred": null
+ },
+ "B3-08": {
+  "severity": 1,
+  "kind": "bug",
+  "title": "invoke_controller never drains stderr while the Claude CLI runs (pipe-buffer deadlock until timeout); timeout path leaves child unreaped",
+  "verdict": "confirmed",
+  "package": "P3 (wave 1): Autopilot actions, config applicator, controller IO, planner, journal",
+  "commits": [],
+  "deferred": null
+ },
+ "B3-09": {
+  "severity": 2,
+  "kind": "refactor",
+  "title": "actions.py reaches back into autopilot.py via sys.modules; the sequential gate silently degrades when the lookup misses",
+  "verdict": "confirmed",
+  "package": "P5 (wave 2): Autopilot evaluator: ONE batched era event (operator decision 2026-10-24)",
+  "commits": [],
+  "deferred": null
+ },
+ "B3-10": {
+  "severity": 3,
+  "kind": "refactor",
+  "title": "Mutation acceptance ladder (safety→simplicity→skill-efficacy→BSV2) copy-pasted 3x and already drifting",
+  "verdict": "confirmed",
+  "package": "D9 (wave 2): Autopilot remaining structure (actions, planner, journal, reports)",
+  "commits": [],
+  "deferred": null
+ },
+ "B3-11": {
+  "severity": 2,
+  "kind": "refactor",
+  "title": "Parameter-object refactors: restart_role (17 args), dispatch_action (14), journal append_* (11–14), _attach_restart_boundary_event (11)",
+  "verdict": "confirmed",
+  "package": "D9 (wave 2): Autopilot remaining structure (actions, planner, journal, reports)",
+  "commits": [],
+  "deferred": null
+ },
+ "B3-12": {
+  "severity": 2,
+  "kind": "bug",
+  "title": "AP-3 role restart mutates host state (prewarm, 11s dispatch pause, registry rewrite) before checking the MI210-window/gpu-quiet refusal gate",
+  "verdict": "partially",
+  "package": "P3 (wave 1): Autopilot actions, config applicator, controller IO, planner, journal",
+  "commits": [],
+  "deferred": null
+ },
+ "B3-13": {
+  "severity": 3,
+  "kind": "refactor",
+  "title": "plan_with_providers (444 lines, cc 58, 12 args) duplicates the draft attempt and the critic-failure recovery block",
+  "verdict": "confirmed",
+  "package": "D9 (wave 2): Autopilot remaining structure (actions, planner, journal, reports)",
+  "commits": [],
+  "deferred": null
+ },
+ "B3-14": {
+  "severity": 2,
+  "kind": "refactor",
+  "title": "invoke_controller (329 lines, cc 54) re-implements tap/status/archive boilerplate 20 times; controller_io mixes four responsibilities",
+  "verdict": "confirmed",
+  "package": "D9 (wave 2): Autopilot remaining structure (actions, planner, journal, reports)",
+  "commits": [],
+  "deferred": null
+ },
+ "B3-15": {
+  "severity": 2,
+  "kind": "deletion",
+  "title": "Session-resume plumbing is dead: every planner provider has supports_resume=False",
+  "verdict": "confirmed",
+  "package": "P3 (wave 1): Autopilot actions, config applicator, controller IO, planner, journal",
+  "commits": [],
+  "deferred": null
+ },
+ "B3-16": {
+  "severity": 2,
+  "kind": "deletion",
+  "title": "Dead production code with zero non-test references (BT tiebreak, baseline_pin_for, check_gap_ratio, extract_rationale, misc)",
+  "verdict": "partially",
+  "package": "P3 (wave 1): Autopilot actions, config applicator, controller IO, planner, journal",
+  "commits": [],
+  "deferred": null
+ },
+ "B3-17": {
+  "severity": 2,
+  "kind": "doc",
+  "title": "AP-30 context budget and MetaOptimizer token budgets are documented as enforced but were never wired",
+  "verdict": "confirmed",
+  "package": "D9 (wave 2): Autopilot remaining structure (actions, planner, journal, reports)",
+  "commits": [],
+  "deferred": null
+ },
+ "B3-18": {
+  "severity": 2,
+  "kind": "refactor",
+  "title": "Three knob families each hand-roll loader/normalizer/validator; manifest loaders are test-only so the 'authoritative' YAML bounds are never enforced",
+  "verdict": "confirmed",
+  "package": "D9 (wave 2): Autopilot remaining structure (actions, planner, journal, reports)",
+  "commits": [],
+  "deferred": null
+ },
+ "B3-19": {
+  "severity": 2,
+  "kind": "refactor",
+  "title": "Durable-IO primitives duplicated: journal flock+fsync append x2, json_sanitize copied, autopilot_state pause-lease RMW hand-rolled 3x outside the save_state funnel",
+  "verdict": "confirmed",
+  "package": "D9 (wave 2): Autopilot remaining structure (actions, planner, journal, reports)",
+  "commits": [],
+  "deferred": null
+ },
+ "B3-20": {
+  "severity": 2,
+  "kind": "refactor",
+  "title": "src/autopilot_core boundary: canonical journal_shards lives in scripts/, so shard discovery is re-implemented 6x (one copy has the JRN-6 lexicographic bug); pure schema/registry code should move",
+  "verdict": "partially",
+  "package": "D9 (wave 2): Autopilot remaining structure (actions, planner, journal, reports)",
+  "commits": [],
+  "deferred": null
+ },
+ "B3-21": {
+  "severity": 2,
+  "kind": "refactor",
+  "title": "experiment_journal.py (2,117 LOC) mixes schema, pure helpers, durable store and ~30 prompt renderers; loader hand-maps all 49 fields",
+  "verdict": "partially",
+  "package": "D9 (wave 2): Autopilot remaining structure (actions, planner, journal, reports)",
+  "commits": [],
+  "deferred": null
+ },
+ "B3-22": {
+  "severity": 2,
+  "kind": "test",
+  "title": "Tests pin seams and dead code instead of behavior; key behaviors in this unit are untested",
+  "verdict": "confirmed",
+  "package": "D9 (wave 2): Autopilot remaining structure (actions, planner, journal, reports)",
+  "commits": [],
+  "deferred": null
+ },
+ "B3-23": {
+  "severity": 2,
+  "kind": "perf",
+  "title": "Planner archive is unbounded and fully scanned every planner turn (digest + spend breaker)",
+  "verdict": "partially",
+  "package": "P3 (wave 1): Autopilot actions, config applicator, controller IO, planner, journal",
+  "commits": [],
+  "deferred": null
+ },
+ "B3-24": {
+  "severity": 1,
+  "kind": "doc",
+  "title": "Stale or contradictory documentation in the unit (hypervolume exactness, 'one release' fallback, journal rotation, triple-restated parse_status rule)",
+  "verdict": "confirmed",
+  "package": "D9 (wave 2): Autopilot remaining structure (actions, planner, journal, reports)",
+  "commits": [],
+  "deferred": null
+ },
+ "B3-25": {
+  "severity": 2,
+  "kind": "refactor",
+  "title": "Multitier rollback state machine is ~20 bare string keys mutated inline across actions.py and autopilot.py",
+  "verdict": "confirmed",
+  "package": "D9 (wave 2): Autopilot remaining structure (actions, planner, journal, reports)",
+  "commits": [],
+  "deferred": null
+ },
+ "B3-M1": {
+  "severity": 3,
+  "kind": "bug",
+  "title": "AP-3 role-restart boundary events are never journaled on the live path: apply_params drops the journal",
+  "verdict": "verifier-added",
+  "package": "P3 (wave 1): Autopilot actions, config applicator, controller IO, planner, journal",
+  "commits": [],
+  "deferred": null
+ },
+ "B3-M2": {
+  "severity": 2,
+  "kind": "deletion",
+  "title": "Unused journal query API: pareto_entries has zero references; action_diversity_by_gate, the telemetry AP-38/39 was closed on, has no consumer",
+  "verdict": "verifier-added",
+  "package": "P3 (wave 1): Autopilot actions, config applicator, controller IO, planner, journal",
+  "commits": [],
+  "deferred": null
+ },
+ "B4-01": {
+  "severity": 3,
+  "kind": "bug",
+  "title": "Journal shard readers: the JRN-7 gap bug flagged as H3 on 2026-07-22 is still live in preflight_audit and feeds six satellite CLIs (including archive repair and baseline seed); three more ad hoc shard orderings duplicate journal_shards",
+  "verdict": "confirmed",
+  "package": "P3 (wave 1): Autopilot actions, config applicator, controller IO, planner, journal",
+  "commits": [],
+  "deferred": null
+ },
+ "B4-02": {
+  "severity": 3,
+  "kind": "deletion",
+  "title": "The era-pinned E9–E15 operational-baseline family (collect_e9 + 4 collector shims, ratify_and_apply_e9 + 4 ratifier shims, run_operational_baseline_diagnostic, recode_multitier) cannot run against any real state and should be removed after extracting 5 shared helpers",
+  "verdict": "partially",
+  "package": "P4 (wave 1): Autopilot satellites: one-shot scripts, dead modules, small bugs",
+  "commits": [],
+  "deferred": null
+ },
+ "B4-03": {
+  "severity": 3,
+  "kind": "deletion",
+  "title": "operator_candidates/ holds 8 applied one-shot ratifiers (v2..v10, 2,893 LOC) whose HEAD bytes have already drifted from their signed receipts; later ratifiers live in epyc-root/scripts/operator with a shared library",
+  "verdict": "partially",
+  "package": "P4 (wave 1): Autopilot satellites: one-shot scripts, dead modules, small bugs",
+  "commits": [],
+  "deferred": null
+ },
+ "B4-04": {
+  "severity": 3,
+  "kind": "refactor",
+  "title": "Vendored DTAP judges must stay byte-identical to upstream, but nothing protects them from `ruff format` or a dedupe refactor; the duplicate-body metrics on them are false positives",
+  "verdict": "confirmed",
+  "package": "P4 (wave 1): Autopilot satellites: one-shot scripts, dead modules, small bugs",
+  "commits": [],
+  "deferred": null
+ },
+ "B4-05": {
+  "severity": 3,
+  "kind": "test",
+  "title": "1,925 LOC of DTAP harness tests (including the judge-attestation check) are outside pytest testpaths and are only run by a branch-pinned one-shot CI capture",
+  "verdict": "confirmed",
+  "package": "P4 (wave 1): Autopilot satellites: one-shot scripts, dead modules, small bugs",
+  "commits": [],
+  "deferred": null
+ },
+ "B4-06": {
+  "severity": 3,
+  "kind": "bug",
+  "title": "Species `_invoke_claude` (x2 copies) passes the whole prompt as one command-line argument (fails with an uncaught E2BIG at 128 KiB) and kills the child on timeout without reaping it",
+  "verdict": "partially",
+  "package": "P4 (wave 1): Autopilot satellites: one-shot scripts, dead modules, small bugs",
+  "commits": [],
+  "deferred": null
+ },
+ "B4-07": {
+  "severity": 2,
+  "kind": "refactor",
+  "title": "Read-only report CLIs import a private JSONL reader from preflight_audit, which pulls in stack_manifest/kernel_paths at import; even `--help` crashes off-host",
+  "verdict": "partially",
+  "package": "D9 (wave 2): Autopilot remaining structure (actions, planner, journal, reports)",
+  "commits": [],
+  "deferred": null
+ },
+ "B4-08": {
+  "severity": 3,
+  "kind": "refactor",
+  "title": "The species package loads twice under two module names (env_synth's absolute imports) and eagerly imports Seeder, so `import species` costs about 1.9 s",
+  "verdict": "confirmed",
+  "package": "P4 (wave 1): Autopilot satellites: one-shot scripts, dead modules, small bugs",
+  "commits": [],
+  "deferred": null
+ },
+ "B4-09": {
+  "severity": 2,
+  "kind": "bug",
+  "title": "The planner's model-gate advisory picks and ages the gate report by file mtime; in a fresh checkout a July artifact is labelled 'fresh'",
+  "verdict": "confirmed",
+  "package": "P4 (wave 1): Autopilot satellites: one-shot scripts, dead modules, small bugs",
+  "commits": [],
+  "deferred": null
+ },
+ "B4-10": {
+  "severity": 2,
+  "kind": "refactor",
+  "title": "prompt_forge.py (3,585 LOC) mixes a static safety sandbox, a ~1,350-LOC eval-leakage detector and the PromptForge class; the seams are clean enough to split mechanically",
+  "verdict": "partially",
+  "package": "D9 (wave 2): Autopilot remaining structure (actions, planner, journal, reports)",
+  "commits": [],
+  "deferred": null
+ },
+ "B4-11": {
+  "severity": 2,
+  "kind": "refactor",
+  "title": "The five placement-queue probe runners copy-paste one skeleton (PLACEMENT_* constants, transport_summary, env gate, append_jsonl, default_tower); a double-gate bug already slipped in once",
+  "verdict": "confirmed",
+  "package": "D9 (wave 2): Autopilot remaining structure (actions, planner, journal, reports)",
+  "commits": [],
+  "deferred": null
+ },
+ "B4-12": {
+  "severity": 2,
+  "kind": "test",
+  "title": "test_model_judge_tail_v3_ratifier is vacuous: `_append_eras` returns its input unchanged because the E11 eras already exist, so the test asserts on pre-existing registry rows",
+  "verdict": "confirmed",
+  "package": "P4 (wave 1): Autopilot satellites: one-shot scripts, dead modules, small bugs",
+  "commits": [],
+  "deferred": null
+ },
+ "B4-13": {
+  "severity": 3,
+  "kind": "deletion",
+  "title": "~2,600 LOC of research-derived modules are advertised as live but have zero runtime importers (env_synth, MutationGraph, SEAGym views, the diversity_metrics fallback); safety_gate documents a call that never happens",
+  "verdict": "confirmed",
+  "package": "P4 (wave 1): Autopilot satellites: one-shot scripts, dead modules, small bugs",
+  "commits": [],
+  "deferred": null
+ },
+ "B4-14": {
+  "severity": 2,
+  "kind": "doc",
+  "title": "program.md claims 'The controller reads this file every trial' but the code treats it as historical, while a production-blocker lint still forces edits to it; the generated system_card.md is checked in, stale and explicitly distrusted",
+  "verdict": "partially",
+  "package": "D9 (wave 2): Autopilot remaining structure (actions, planner, journal, reports)",
+  "commits": [],
+  "deferred": null
+ },
+ "B4-15": {
+  "severity": 2,
+  "kind": "refactor",
+  "title": "Swallowed exceptions in structural_lab and the DTAP runner turn infrastructure faults into plausible-looking domain answers (0 memories, an empty flag schema, a missing trace)",
+  "verdict": "confirmed",
+  "package": "P4 (wave 1): Autopilot satellites: one-shot scripts, dead modules, small bugs",
+  "commits": [],
+  "deferred": null
+ },
+ "B4-16": {
+  "severity": 2,
+  "kind": "deletion",
+  "title": "Small dead or speculative code in species and review_policy_trials (~150 LOC with zero non-test callers)",
+  "verdict": "confirmed",
+  "package": "P4 (wave 1): Autopilot satellites: one-shot scripts, dead modules, small bugs",
+  "commits": [],
+  "deferred": null
+ },
+ "B4-17": {
+  "severity": 1,
+  "kind": "refactor",
+  "title": "model_gate_report.py: build_next_actions is an 838-line if-chain of literal dicts (cc=113), with 11 hard-coded `cd /mnt/raid0/...` operator commands",
+  "verdict": "partially",
+  "package": "D9 (wave 2): Autopilot remaining structure (actions, planner, journal, reports)",
+  "commits": [],
+  "deferred": null
+ },
+ "B4-18": {
+  "severity": 1,
+  "kind": "refactor",
+  "title": "Atomic-write and canonical-hash helpers are hand-rolled 21 and 18+ times; consolidate the survivors after B4-02/B4-03",
+  "verdict": "partially",
+  "package": "D9 (wave 2): Autopilot remaining structure (actions, planner, journal, reports)",
+  "commits": [],
+  "deferred": null
+ },
+ "B4-19": {
+  "severity": 1,
+  "kind": "deletion",
+  "title": "Two committed .bak files under scripts/autopilot with zero references",
+  "verdict": "confirmed",
+  "package": "P4 (wave 1): Autopilot satellites: one-shot scripts, dead modules, small bugs",
+  "commits": [],
+  "deferred": null
+ },
+ "B4-20": {
+  "severity": 1,
+  "kind": "deletion",
+  "title": "scripts/benchmark/migration_probe.py (146 LOC, May) is the superseded predecessor of scripts/autopilot/migration_probe.py (989 LOC) and has no path references",
+  "verdict": "confirmed",
+  "package": "P4 (wave 1): Autopilot satellites: one-shot scripts, dead modules, small bugs",
+  "commits": [],
+  "deferred": null
+ },
+ "B4-M1": {
+  "severity": 3,
+  "kind": "refactor",
+  "title": "Live, decision-gating runtime state failure_blacklist.yaml is tracked in git under scripts/autopilot and written by the loop, and three modules define its path independently",
+  "verdict": "verifier-added",
+  "package": "P4 (wave 1): Autopilot satellites: one-shot scripts, dead modules, small bugs",
+  "commits": [],
+  "deferred": null
+ },
+ "B4-M2": {
+  "severity": 2,
+  "kind": "bug",
+  "title": "Degraded-mode planner guidance waits for `gen_system_card.py --check`, a check that diffs against the stale tracked system_card.md (which embeds trial_counter) and so cannot report generator health",
+  "verdict": "verifier-added",
+  "package": "P4 (wave 1): Autopilot satellites: one-shot scripts, dead modules, small bugs",
+  "commits": [],
+  "deferred": null
+ },
+ "B5-01": {
+  "severity": 4,
+  "kind": "perf",
+  "title": "Exponential exact hypervolume recomputed once per replayed trial; real journal replay 3.6-5.7 s, run twice per autopilot trial and on every dashboard pareto request",
+  "verdict": "confirmed",
+  "package": "P2 (wave 1): Autopilot safety gate and autopilot_core",
+  "commits": [
+   {
+    "repo": "epyc-orchestrator",
+    "branch": "refactor/autopilot-gate",
+    "commit": "4cf1db83",
+    "subject": "dashboard: run the pareto journal read and replays off the event loop (B5-01)",
+    "state": "implemented-unreviewed"
+   },
+   {
+    "repo": "epyc-orchestrator",
+    "branch": "refactor/autopilot-gate",
+    "commit": "f391ee95",
+    "subject": "autopilot_core: one fold_frontier_entry for replay, snapshot rebuild and tail fold (B5-01)",
+    "state": "implemented-unreviewed"
+   },
+   {
+    "repo": "epyc-orchestrator",
+    "branch": "refactor/autopilot-gate",
+    "commit": "9f2fa533",
+    "subject": "pareto_math: memoize the exact hypervolume kernel on the ordered frontier (B5-01)",
+    "state": "implemented-unreviewed"
+   }
+  ],
+  "deferred": null,
+  "resolution": {
+   "state": "tested-reviewed-integration-held",
+   "branch": "refactor/autopilot-gate-reviewed-01a16fc3",
+   "checkpoint_commit": "db17808e",
+   "evidence": "1018 targeted tests pass/1 skip; 18 snapshot controls pass; B2-02/B2-03 fail on parent; pre-P2 snapshot refuses bounded authority and current-format rebuild matches full replay",
+   "integration_hold": "Existing reconstruction CRITICAL and verified-snapshot HIGH impacts; owner/operator integration review and stopped-autopilot snapshot rebuild boundary"
+  }
+ },
+ "B5-02": {
+  "severity": 4,
+  "kind": "test",
+  "title": "No real behavioural safety net for decomposing _run_loop_inner: 1 harness at max_trials=1 plus 14 source-text tests that break on any extraction",
+  "verdict": "partially",
+  "package": "P1 (wave 1): Autopilot main loop: behavioural safety net, then loop bugs",
+  "commits": [
+   {
+    "repo": "epyc-orchestrator",
+    "branch": "refactor/autopilot-loop",
+    "commit": "fa398352",
+    "subject": "tests/autopilot: multi-trial and loop-top characterization tests (B5-02)",
+    "state": "implemented-unreviewed"
+   },
+   {
+    "repo": "epyc-orchestrator",
+    "branch": "refactor/autopilot-loop",
+    "commit": "05008a32",
+    "subject": "tests/autopilot: drive the real loop instead of slicing its source text (B1-03, B5-02)",
+    "state": "implemented-unreviewed"
+   }
+  ],
+  "deferred": null
+ },
+ "B5-03": {
+  "severity": 3,
+  "kind": "refactor",
+  "title": "Evaluator fingerprint hashes raw source bytes, so any refactor or ruff-format of tier_specs.py or eval_tower.py breaks the AP-55 regime and splits reproduction clusters",
+  "verdict": "partially",
+  "package": "P5 (wave 2): Autopilot evaluator: ONE batched era event (operator decision 2026-10-24)",
+  "commits": [],
+  "deferred": null
+ },
+ "B5-04": {
+  "severity": 2,
+  "kind": "bug",
+  "title": "Autopilot modules load under two names (bare and scripts.autopilot.*); actions.py compensates with sys.modules lookups searched in opposite orders",
+  "verdict": "partially",
+  "package": "D9 (wave 2): Autopilot remaining structure (actions, planner, journal, reports)",
+  "commits": [],
+  "deferred": null
+ },
+ "B5-05": {
+  "severity": 3,
+  "kind": "refactor",
+  "title": "Layering inversion: src/api imports scripts/autopilot (including private names and a sys.path-mutating module); pure journal folds the action gate needs sit in autopilot.py",
+  "verdict": "partially",
+  "package": "D9 (wave 2): Autopilot remaining structure (actions, planner, journal, reports)",
+  "commits": [],
+  "deferred": null
+ },
+ "B5-06": {
+  "severity": 3,
+  "kind": "bug",
+  "title": "Planner evidence reports infra-failed answers as lost correct answers (missing the CJ-8 admissibility filter)",
+  "verdict": "confirmed",
+  "package": "P5 (wave 2): Autopilot evaluator: ONE batched era event (operator decision 2026-10-24)",
+  "commits": [],
+  "deferred": null
+ },
+ "B5-07": {
+  "severity": 3,
+  "kind": "bug",
+  "title": "task_rate_qph_from_row crashes on non-integer per_suite_counts, so one malformed row aborts the whole archive replay; its validating twin returns None",
+  "verdict": "confirmed",
+  "package": "P5 (wave 2): Autopilot evaluator: ONE batched era event (operator decision 2026-10-24)",
+  "commits": [],
+  "deferred": null
+ },
+ "B5-08": {
+  "severity": 3,
+  "kind": "test",
+  "title": "Mirror test: test_gate_frontier_c_and_b.Loop re-implements the loop's frontier-admission and journaling decisions instead of calling production code",
+  "verdict": "confirmed",
+  "package": "P1 (wave 1): Autopilot main loop: behavioural safety net, then loop bugs",
+  "commits": [
+   {
+    "repo": "epyc-orchestrator",
+    "branch": "refactor/autopilot-loop",
+    "commit": "205060ee",
+    "subject": "autopilot: one frontier-admission predicate shared by the loop and its test mirror (B5-08)",
+    "state": "implemented-unreviewed"
+   }
+  ],
+  "deferred": null
+ },
+ "B5-09": {
+  "severity": 3,
+  "kind": "deletion",
+  "title": "Dead, never-wired modules described as live: attestation_trust.py (171 LOC + 70 test LOC) and scripts/autopilot/telemetry.py (195 LOC)",
+  "verdict": "confirmed",
+  "package": "P2 (wave 1): Autopilot safety gate and autopilot_core",
+  "commits": [
+   {
+    "repo": "epyc-orchestrator",
+    "branch": "refactor/autopilot-gate",
+    "commit": "7f8aa75b",
+    "subject": "autopilot: delete never-wired attestation_trust and TelemetryCollector modules (B5-09)",
+    "state": "implemented-unreviewed"
+   }
+  ],
+  "deferred": null,
+  "resolution": {
+   "state": "tested-reviewed-integration-held",
+   "branch": "refactor/autopilot-gate-reviewed-01a16fc3",
+   "checkpoint_commit": "db17808e",
+   "evidence": "1018 targeted tests pass/1 skip; 18 snapshot controls pass; B2-02/B2-03 fail on parent; pre-P2 snapshot refuses bounded authority and current-format rebuild matches full replay",
+   "integration_hold": "Existing reconstruction CRITICAL and verified-snapshot HIGH impacts; owner/operator integration review and stopped-autopilot snapshot rebuild boundary"
+  }
+ },
+ "B5-10": {
+  "severity": 2,
+  "kind": "test",
+  "title": "Coverage config excludes scripts/autopilot entirely, so the B1 safety net cannot be measured",
+  "verdict": "partially",
+  "package": "O8 (wave 2): Orchestrator CI, honest gates, and the ni63 pin design (operator decision 2026-10-24)",
+  "commits": [],
+  "deferred": null
+ },
+ "B5-11": {
+  "severity": 2,
+  "kind": "refactor",
+  "title": "reconstruct_archive_from_journal_rows (cc=45, 200 lines) mixes eight concerns; the frontier/HV fold is copy-pasted three times",
+  "verdict": "confirmed",
+  "package": "D9 (wave 2): Autopilot remaining structure (actions, planner, journal, reports)",
+  "commits": [],
+  "deferred": null
+ },
+ "B5-12": {
+  "severity": 2,
+  "kind": "refactor",
+  "title": "Replay exclusion telemetry silently omits 85-88 unmeasured rows despite its stated purpose",
+  "verdict": "partially",
+  "package": "P2 (wave 1): Autopilot safety gate and autopilot_core",
+  "commits": [
+   {
+    "repo": "epyc-orchestrator",
+    "branch": "refactor/autopilot-gate",
+    "commit": "bd97d0d8",
+    "subject": "journal_reconstruction: count rows dropped for an unmeasured objective axis (B5-12)",
+    "state": "implemented-unreviewed"
+   }
+  ],
+  "deferred": null,
+  "resolution": {
+   "state": "tested-reviewed-integration-held",
+   "branch": "refactor/autopilot-gate-reviewed-01a16fc3",
+   "checkpoint_commit": "db17808e",
+   "evidence": "1018 targeted tests pass/1 skip; 18 snapshot controls pass; B2-02/B2-03 fail on parent; pre-P2 snapshot refuses bounded authority and current-format rebuild matches full replay",
+   "integration_hold": "Existing reconstruction CRITICAL and verified-snapshot HIGH impacts; owner/operator integration review and stopped-autopilot snapshot rebuild boundary"
+  }
+ },
+ "B5-13": {
+  "severity": 1,
+  "kind": "deletion",
+  "title": "autopilot_core/__init__.py re-exports 63 names that only one test uses, and forces every leaf import to load 8 modules",
+  "verdict": "confirmed",
+  "package": "P2 (wave 1): Autopilot safety gate and autopilot_core",
+  "commits": [
+   {
+    "repo": "epyc-orchestrator",
+    "branch": "refactor/autopilot-gate",
+    "commit": "d51e492e",
+    "subject": "autopilot_core: package __init__ re-exports nothing (B5-13)",
+    "state": "implemented-unreviewed"
+   }
+  ],
+  "deferred": null,
+  "resolution": {
+   "state": "tested-reviewed-integration-held",
+   "branch": "refactor/autopilot-gate-reviewed-01a16fc3",
+   "checkpoint_commit": "db17808e",
+   "evidence": "1018 targeted tests pass/1 skip; 18 snapshot controls pass; B2-02/B2-03 fail on parent; pre-P2 snapshot refuses bounded authority and current-format rebuild matches full replay",
+   "integration_hold": "Existing reconstruction CRITICAL and verified-snapshot HIGH impacts; owner/operator integration review and stopped-autopilot snapshot rebuild boundary"
+  }
+ },
+ "B5-14": {
+  "severity": 2,
+  "kind": "refactor",
+  "title": "Duplicated row helpers, and five ISO-timestamp parsers with divergent naive-timezone semantics",
+  "verdict": "confirmed",
+  "package": "P5 (wave 2): Autopilot evaluator: ONE batched era event (operator decision 2026-10-24)",
+  "commits": [],
+  "deferred": null
+ },
+ "B5-15": {
+  "severity": 2,
+  "kind": "refactor",
+  "title": "instrument_era_guard: two functions repeat the same ~45-line registry loader; the dashboard is a third reader with weaker error semantics",
+  "verdict": "partially",
+  "package": "D9 (wave 2): Autopilot remaining structure (actions, planner, journal, reports)",
+  "commits": [],
+  "deferred": null
+ },
+ "B5-16": {
+  "severity": 2,
+  "kind": "bug",
+  "title": "Comment says the E7 boundary is never treated as current, but autopilot still falls back to it when an active era row lacks 'from'",
+  "verdict": "confirmed",
+  "package": "P2 (wave 1): Autopilot safety gate and autopilot_core",
+  "commits": [
+   {
+    "repo": "epyc-orchestrator",
+    "branch": "refactor/autopilot-gate",
+    "commit": "9b9ba471",
+    "subject": "instrument_era_guard: an active era row without id/from is invalid, never an E7 fence (B5-16)",
+    "state": "implemented-unreviewed"
+   }
+  ],
+  "deferred": null,
+  "resolution": {
+   "state": "tested-reviewed-integration-held",
+   "branch": "refactor/autopilot-gate-reviewed-01a16fc3",
+   "checkpoint_commit": "db17808e",
+   "evidence": "1018 targeted tests pass/1 skip; 18 snapshot controls pass; B2-02/B2-03 fail on parent; pre-P2 snapshot refuses bounded authority and current-format rebuild matches full replay",
+   "integration_hold": "Existing reconstruction CRITICAL and verified-snapshot HIGH impacts; owner/operator integration review and stopped-autopilot snapshot rebuild boundary"
+  }
+ },
+ "B5-17": {
+  "severity": 2,
+  "kind": "refactor",
+  "title": "sys.path boilerplate in 122 autopilot test files (339 lines) instead of one pytest pythonpath setting",
+  "verdict": "confirmed",
+  "package": "O8 (wave 2): Orchestrator CI, honest gates, and the ni63 pin design (operator decision 2026-10-24)",
+  "commits": [],
+  "deferred": null
+ },
+ "B5-18": {
+  "severity": 2,
+  "kind": "refactor",
+  "title": "Test fixtures duplicated: 41 files define their own journal row/entry builders, FakeTower appears 24 times, and the loop harness is private to one file",
+  "verdict": "confirmed",
+  "package": "D8 (wave 2): Orchestrator test-suite consolidation",
+  "commits": [],
+  "deferred": null
+ },
+ "B5-M1": {
+  "severity": 4,
+  "kind": "perf",
+  "title": "'Bounded' snapshot replay is unbounded: every authority call re-verifies the snapshot with a FULL prefix replay twice, then usually falls back to a third full replay",
+  "verdict": "verifier-added",
+  "package": "P2 (wave 1): Autopilot safety gate and autopilot_core",
+  "commits": [
+   {
+    "repo": "epyc-orchestrator",
+    "branch": "refactor/autopilot-gate",
+    "commit": "9e6483aa",
+    "subject": "journal_snapshot_replay: one prefix verification per authority call, cached per journal (B5-M1)",
+    "state": "implemented-unreviewed"
+   }
+  ],
+  "deferred": null,
+  "resolution": {
+   "state": "tested-reviewed-integration-held",
+   "branch": "refactor/autopilot-gate-reviewed-01a16fc3",
+   "checkpoint_commit": "db17808e",
+   "evidence": "1018 targeted tests pass/1 skip; 18 snapshot controls pass; B2-02/B2-03 fail on parent; pre-P2 snapshot refuses bounded authority and current-format rebuild matches full replay",
+   "integration_hold": "Existing reconstruction CRITICAL and verified-snapshot HIGH impacts; owner/operator integration review and stopped-autopilot snapshot rebuild boundary"
+  }
+ },
+ "B5-M2": {
+  "severity": 3,
+  "kind": "bug",
+  "title": "Archive replay clusters representatives by action fingerprint while the promotion gate counts reproductions by served-config identity, so distinct prompt contents and AP-55 regimes are pooled into one median",
+  "verdict": "verifier-added",
+  "package": "P2 (wave 1): Autopilot safety gate and autopilot_core",
+  "commits": [
+   {
+    "repo": "epyc-orchestrator",
+    "branch": "refactor/autopilot-gate",
+    "commit": "af0f9d0f",
+    "subject": "autopilot_core: cluster archive representatives by served-config identity (B5-M2)",
+    "state": "implemented-unreviewed"
+   }
+  ],
+  "deferred": null,
+  "resolution": {
+   "state": "tested-reviewed-integration-held",
+   "branch": "refactor/autopilot-gate-reviewed-01a16fc3",
+   "checkpoint_commit": "db17808e",
+   "evidence": "1018 targeted tests pass/1 skip; 18 snapshot controls pass; B2-02/B2-03 fail on parent; pre-P2 snapshot refuses bounded authority and current-format rebuild matches full replay",
+   "integration_hold": "Existing reconstruction CRITICAL and verified-snapshot HIGH impacts; owner/operator integration review and stopped-autopilot snapshot rebuild boundary"
+  }
+ },
+ "C1-01": {
+  "severity": 4,
+  "kind": "refactor",
+  "title": "run.main is a 5,518-line god function: argparse + override soup + 92 closures + three target modes as 124 conditionals",
+  "verdict": "confirmed",
+  "package": "D4 (wave 2): AutoKernel run.main decomposition",
+  "commits": [],
+  "deferred": null
+ },
+ "C1-02": {
+  "severity": 4,
+  "kind": "test",
+  "title": "AutoKernel CI is off: guards workflow disabled_manually, 0 passes since 2026-09-01, and the loop-package step was always skipped",
+  "verdict": "partially",
+  "package": "K4 (wave 2): AutoKernel regrowth guard and CI repair (operator decision 2026-10-24)",
+  "commits": [],
+  "deferred": null
+ },
+ "C1-03": {
+  "severity": 4,
+  "kind": "test",
+  "title": "28 test files assert on run.py source text, including error-message prose, because main's closures cannot be called; 2 fail now",
+  "verdict": "confirmed",
+  "package": "D4 (wave 2): AutoKernel run.main decomposition",
+  "commits": [],
+  "deferred": null
+ },
+ "C1-04": {
+  "severity": 4,
+  "kind": "deletion",
+  "title": "Undeployed parallel control plane (standalone/unified stack, ~15.7k src + 9.5k test LOC) lives inside loop/ and is never executed by the production loop",
+  "verdict": "partially",
+  "package": "K3 (wave 2): AutoKernel prune of the three unreachable planes (operator decision 2026-10-24)",
+  "commits": [],
+  "deferred": null
+ },
+ "C1-05": {
+  "severity": 3,
+  "kind": "bug",
+  "title": "BUG: run._git ignores git's exit status, including on `reset --hard` that restores the accumulator tip after an interaction regression",
+  "verdict": "confirmed",
+  "package": "K1 (wave 1): AutoKernel live-loop bugs and red tests",
+  "commits": [
+   {
+    "repo": "epyc-inference-research",
+    "branch": "refactor/autokernel-loop-bugs",
+    "commit": "5e0442b9",
+    "subject": "WIP(unreviewed, untested): loop/run.py _git checks git's exit status (C1-05)",
+    "state": "WIP-unreviewed"
+   },
+   {
+    "repo": "epyc-inference-research",
+    "branch": "refactor/autokernel-rollback-reviewed-01a16fc3",
+    "commit": "62c68ad99",
+    "subject": "fix(autokernel): abort on rollback execution faults",
+    "state": "tested-reviewed-unmerged"
+   }
+  ],
+  "deferred": null,
+  "resolution": {
+   "state": "tested-reviewed-unmerged",
+   "branch": "refactor/autokernel-rollback-reviewed-01a16fc3",
+   "checkpoint_commit": "1b58b115c",
+   "tests": "13 regression tests pass; final regression on WIP: 5 fail/8 pass; targeted loop selection: 401 pass, 23 subtests pass",
+   "integration_hold": "AutoKernel launch hold and deliberate owner-controlled re-pin; no main merge or launch"
+  }
+ },
+ "C1-06": {
+  "severity": 3,
+  "kind": "bug",
+  "title": "BUG: scope-gap stagnation hook runs on every 30 s heartbeat; non-atomically rewrites scope_gap.json and floods stdout, contradicting its contract",
+  "verdict": "confirmed",
+  "package": "K1 (wave 1): AutoKernel live-loop bugs and red tests",
+  "commits": [],
+  "deferred": null
+ },
+ "C1-07": {
+  "severity": 2,
+  "kind": "perf",
+  "title": "Each 30 s heartbeat materialises every outcome's full Comparison (documented as up to 100 MB) up to three times and forks git under the publisher lock, but uses only 4 scalars",
+  "verdict": "confirmed",
+  "package": "D4 (wave 2): AutoKernel run.main decomposition",
+  "commits": [],
+  "deferred": null
+ },
+ "C1-08": {
+  "severity": 3,
+  "kind": "refactor",
+  "title": "Import cycles hidden by ~160 function-local imports; modules run.py imports reach back into run.py's private helpers",
+  "verdict": "partially",
+  "package": "D4 (wave 2): AutoKernel run.main decomposition",
+  "commits": [],
+  "deferred": null
+ },
+ "C1-09": {
+  "severity": 3,
+  "kind": "refactor",
+  "title": "Legacy serial owner and CPU profiler import the 4.7k-line CampaignController / 2.5k-line WorkerLifecycle modules for ~40 lines of helpers",
+  "verdict": "partially",
+  "package": "D4 (wave 2): AutoKernel run.main decomposition",
+  "commits": [],
+  "deferred": null
+ },
+ "C1-10": {
+  "severity": 2,
+  "kind": "refactor",
+  "title": "The same ~20 injected callbacks are re-declared and forwarded through four signatures (pool.drive → pipeline.run_pool → loop.iterate → loop._iterate)",
+  "verdict": "partially",
+  "package": "D4 (wave 2): AutoKernel run.main decomposition",
+  "commits": [],
+  "deferred": null
+ },
+ "C1-11": {
+  "severity": 2,
+  "kind": "refactor",
+  "title": "~1,260 LOC of copy-pasted micro-validators across loop/; 18 divergent `_canonical` JSON forms are a latent digest-mismatch hazard",
+  "verdict": "partially",
+  "package": "D4 (wave 2): AutoKernel run.main decomposition",
+  "commits": [],
+  "deferred": null
+ },
+ "C1-12": {
+  "severity": 2,
+  "kind": "refactor",
+  "title": "13 divergent git wrappers: inconsistent return-code checks, timeouts (60/300/600/none) and GIT_DIR scrubbing",
+  "verdict": "partially",
+  "package": "D4 (wave 2): AutoKernel run.main decomposition",
+  "commits": [],
+  "deferred": null
+ },
+ "C1-13": {
+  "severity": 3,
+  "kind": "refactor",
+  "title": "gates.py mixes a 584-line route registry, scope parsing, op correctness and the ppl_contract family; split must respect the byte-hash fingerprints",
+  "verdict": "confirmed",
+  "package": "D4 (wave 2): AutoKernel run.main decomposition",
+  "commits": [],
+  "deferred": null
+ },
+ "C1-14": {
+  "severity": 2,
+  "kind": "bug",
+  "title": "actors._parse_complete turns any exception (incl. programming errors) into 'incomplete answer', silently triggering more multi-minute actor turns",
+  "verdict": "confirmed",
+  "package": "K1 (wave 1): AutoKernel live-loop bugs and red tests",
+  "commits": [],
+  "deferred": null
+ },
+ "C1-15": {
+  "severity": 2,
+  "kind": "bug",
+  "title": "ORACLE_MODULES drifted: served_shape_cases.py (gate oracle since 2026-10-06) is not in the gate-rules fingerprint",
+  "verdict": "confirmed",
+  "package": "K1 (wave 1): AutoKernel live-loop bugs and red tests",
+  "commits": [],
+  "deferred": null
+ },
+ "C1-16": {
+  "severity": 2,
+  "kind": "deletion",
+  "title": "Dead and test-only code in C1 modules (grep-proven), plus a verbatim duplicated block in status.py",
+  "verdict": "confirmed",
+  "package": "D4 (wave 2): AutoKernel run.main decomposition",
+  "commits": [],
+  "deferred": null
+ },
+ "C1-17": {
+  "severity": 2,
+  "kind": "refactor",
+  "title": "resume.py bundles the runtime resume API with a 7-subcommand operator repair CLI (~1,570 LOC only reachable from its own main)",
+  "verdict": "confirmed",
+  "package": "D4 (wave 2): AutoKernel run.main decomposition",
+  "commits": [],
+  "deferred": null
+ },
+ "C1-18": {
+  "severity": 2,
+  "kind": "refactor",
+  "title": "Degradations are print-only: ~20 warn-and-continue paths in run.py never reach loop-status.json or loop-run.json",
+  "verdict": "confirmed",
+  "package": "D4 (wave 2): AutoKernel run.main decomposition",
+  "commits": [],
+  "deferred": null
+ },
+ "C1-19": {
+  "severity": 2,
+  "kind": "refactor",
+  "title": "actors.render_context is a 458-line linear prompt renderer (cc 135) with drifted section comments",
+  "verdict": "confirmed",
+  "package": "D4 (wave 2): AutoKernel run.main decomposition",
+  "commits": [],
+  "deferred": null
+ },
+ "C1-20": {
+  "severity": 1,
+  "kind": "doc",
+  "title": "Entry-point docs are stale or missing: run.py docstring describes the old GPU-only loop; no loop/ README; prompt policy hardcoded in a closure",
+  "verdict": "partially",
+  "package": "D4 (wave 2): AutoKernel run.main decomposition",
+  "commits": [],
+  "deferred": null
+ },
+ "C1-21": {
+  "severity": 1,
+  "kind": "doc",
+  "title": "Scheduler and control-plane decision code is near-undocumented (1-2% prose; select_stage cc 91 has no docstring)",
+  "verdict": "partially",
+  "package": "D4 (wave 2): AutoKernel run.main decomposition",
+  "commits": [],
+  "deferred": null
+ },
+ "C1-22": {
+  "severity": 1,
+  "kind": "refactor",
+  "title": "CampaignController._replay is a 619-line, cc 225 if-chain over journal kinds with the owner-binding check spelled 18 times",
+  "verdict": "partially",
+  "package": null,
+  "commits": [],
+  "deferred": "deleted_with_plane"
+ },
+ "C1-23": {
+  "severity": 2,
+  "kind": "refactor",
+  "title": "Host-absolute tool paths and import-time host probing in actors/serial_run/pool make the loop and its tests host-coupled",
+  "verdict": "confirmed",
+  "package": "D4 (wave 2): AutoKernel run.main decomposition",
+  "commits": [],
+  "deferred": null
+ },
+ "C1-24": {
+  "severity": 1,
+  "kind": "bug",
+  "title": "Lint not enforced: F821 undefined `Any` in run.py annotations; no ruff in CI (E702 is NOT present in C1 files)",
+  "verdict": "confirmed",
+  "package": "K1 (wave 1): AutoKernel live-loop bugs and red tests",
+  "commits": [],
+  "deferred": null
+ },
+ "C1-M1": {
+  "severity": 3,
+  "kind": "refactor",
+  "title": "Evidence identities hash whole multi-purpose source files and callable __module__, so the proposed refactors (and comment edits) silently invalidate retained runtime admissions and CPU-profile configs",
+  "verdict": "verifier-added",
+  "package": "D4 (wave 2): AutoKernel run.main decomposition",
+  "commits": [],
+  "deferred": null
+ },
+ "C1-M2": {
+  "severity": 3,
+  "kind": "test",
+  "title": "run.main probes /opt/rocm/.info/version during argument validation, so test_existing_gpu_serving_run.py fails 5 of 19 tests off the production host",
+  "verdict": "verifier-added",
+  "package": "K1 (wave 1): AutoKernel live-loop bugs and red tests",
+  "commits": [],
+  "deferred": null
+ },
+ "C1-M3": {
+  "severity": 4,
+  "kind": "test",
+  "title": "Guards workflow installs only pytest, but 95 of 231 loop test modules need PyYAML: re-enabled CI would abort at collection and run zero loop tests",
+  "verdict": "verifier-added",
+  "package": "K4 (wave 2): AutoKernel regrowth guard and CI repair (operator decision 2026-10-24)",
+  "commits": [],
+  "deferred": null
+ },
+ "C2-01": {
+  "severity": 5,
+  "kind": "deletion",
+  "title": "Delete the rejected unified/standalone replacement architecture (54 modules + campaign_control + worker_lifecycle, ~36.5k LOC)",
+  "verdict": "partially",
+  "package": "K3 (wave 2): AutoKernel prune of the three unreachable planes (operator decision 2026-10-24)",
+  "commits": [],
+  "deferred": null
+ },
+ "C2-02": {
+  "severity": 5,
+  "kind": "test",
+  "title": "autokernel CI has been disabled_manually since 2026-09-09; the loop suite has not run in CI for four weeks",
+  "verdict": "partially",
+  "package": "K4 (wave 2): AutoKernel regrowth guard and CI repair (operator decision 2026-10-24)",
+  "commits": [],
+  "deferred": null
+ },
+ "C2-03": {
+  "severity": 3,
+  "kind": "refactor",
+  "title": "Five thin bridges keep the dead cluster imported on the live path; re-home them",
+  "verdict": "partially",
+  "package": "K3 (wave 2): AutoKernel prune of the three unreachable planes (operator decision 2026-10-24)",
+  "commits": [],
+  "deferred": null
+ },
+ "C2-04": {
+  "severity": 3,
+  "kind": "refactor",
+  "title": "The 2,560-line regrowth budget is unsatisfiable; replace it with a ratchet at the post-prune size (~56k)",
+  "verdict": "partially",
+  "package": "K4 (wave 2): AutoKernel regrowth guard and CI repair (operator decision 2026-10-24)",
+  "commits": [],
+  "deferred": null
+ },
+ "C2-05": {
+  "severity": 3,
+  "kind": "refactor",
+  "title": "journal.py validates native kinds through dead-cluster modules; retire those kinds before deleting the modules",
+  "verdict": "confirmed",
+  "package": "K3 (wave 2): AutoKernel prune of the three unreachable planes (operator decision 2026-10-24)",
+  "commits": [],
+  "deferred": null
+ },
+ "C2-06": {
+  "severity": 1,
+  "kind": "bug",
+  "title": "validation_semantic_adapter pins a stale observation_binding.py hash and never re-checks it",
+  "verdict": "partially",
+  "package": "K1 (wave 1): AutoKernel live-loop bugs and red tests",
+  "commits": [],
+  "deferred": null
+ },
+ "C2-07": {
+  "severity": 2,
+  "kind": "refactor",
+  "title": "36 local _digest and 31 local _canonical helpers with divergent encodings bypass schemas.content_hash",
+  "verdict": "partially",
+  "package": "D10 (wave 2): AutoKernel remaining structure (controller, evaluator, execution, schemas, tests)",
+  "commits": [],
+  "deferred": null
+ },
+ "C2-08": {
+  "severity": 2,
+  "kind": "test",
+  "title": "~26k LOC of tests guard dead modules, caused 79% of the 2026-10-07 failures, and pin a live file's hash",
+  "verdict": "partially",
+  "package": "K3 (wave 2): AutoKernel prune of the three unreachable planes (operator decision 2026-10-24)",
+  "commits": [],
+  "deferred": null
+ },
+ "C2-09": {
+  "severity": 3,
+  "kind": "doc",
+  "title": "Package README and FOOTPRINT.md do not describe loop/, and FOOTPRINT's own coverage test is red",
+  "verdict": "confirmed",
+  "package": "K3 (wave 2): AutoKernel prune of the three unreachable planes (operator decision 2026-10-24)",
+  "commits": [],
+  "deferred": null
+ },
+ "C2-10": {
+  "severity": 2,
+  "kind": "refactor",
+  "title": "AutoKernel imports an orchestrator private function via sys.path injection, and the resolver is duplicated",
+  "verdict": "partially",
+  "package": "D10 (wave 2): AutoKernel remaining structure (controller, evaluator, execution, schemas, tests)",
+  "commits": [],
+  "deferred": null
+ },
+ "C2-11": {
+  "severity": 2,
+  "kind": "refactor",
+  "title": "Five CPU reference oracles repeat the same compile-probe-and-run block",
+  "verdict": "partially",
+  "package": "D10 (wave 2): AutoKernel remaining structure (controller, evaluator, execution, schemas, tests)",
+  "commits": [],
+  "deferred": null
+ },
+ "C2-12": {
+  "severity": 2,
+  "kind": "refactor",
+  "title": "Hand-maintained source_identity registries keep dead entry points referenced and turn refactors into evidence invalidation",
+  "verdict": "partially",
+  "package": "K3 (wave 2): AutoKernel prune of the three unreachable planes (operator decision 2026-10-24)",
+  "commits": [],
+  "deferred": null
+ },
+ "C2-13": {
+  "severity": 2,
+  "kind": "deletion",
+  "title": "About 38 of 47 research docs/autokernel-*.md describe the rejected unified stack",
+  "verdict": "confirmed",
+  "package": "K3 (wave 2): AutoKernel prune of the three unreachable planes (operator decision 2026-10-24)",
+  "commits": [],
+  "deferred": null
+ },
+ "C2-14": {
+  "severity": 2,
+  "kind": "deletion",
+  "title": "Stub, default-off and test-only features inside the live area",
+  "verdict": "partially",
+  "package": "D4 (wave 2): AutoKernel run.main decomposition",
+  "commits": [],
+  "deferred": null
+ },
+ "C2-15": {
+  "severity": 1,
+  "kind": "refactor",
+  "title": "Inverted naming and misleading type annotations hide which code is live",
+  "verdict": "partially",
+  "package": "D4 (wave 2): AutoKernel run.main decomposition",
+  "commits": [],
+  "deferred": null
+ },
+ "C2-16": {
+  "severity": 2,
+  "kind": "refactor",
+  "title": "Periphery modules import run.py's private arm builders (_cpu_arm, _rebind_build_dso)",
+  "verdict": "partially",
+  "package": "D4 (wave 2): AutoKernel run.main decomposition",
+  "commits": [],
+  "deferred": null
+ },
+ "C2-M1": {
+  "severity": 3,
+  "kind": "deletion",
+  "title": "ROOT still carries ~5.3k LOC of consumers for the dead unified-campaign producer, and its tests import R test helpers that C2-01 deletes",
+  "verdict": "verifier-added",
+  "package": "K3 (wave 2): AutoKernel prune of the three unreachable planes (operator decision 2026-10-24)",
+  "commits": [],
+  "deferred": null
+ },
+ "C2-M2": {
+  "severity": 3,
+  "kind": "bug",
+  "title": "Moving the cpu_profile entry point would silently disable live CPU profiling: source_identity hashes files from the dead cluster",
+  "verdict": "verifier-added",
+  "package": "K3 (wave 2): AutoKernel prune of the three unreachable planes (operator decision 2026-10-24)",
+  "commits": [],
+  "deferred": null
+ },
+ "C3-01": {
+  "severity": 3,
+  "kind": "bug",
+  "title": "Champion seed and production snapshot pin v9 server digests and read the in-tree build dirs, so they would silently seal v9 binaries as v10",
+  "verdict": "confirmed",
+  "package": "K3 (wave 2): AutoKernel prune of the three unreachable planes (operator decision 2026-10-24)",
+  "commits": [],
+  "deferred": null
+ },
+ "C3-02": {
+  "severity": 3,
+  "kind": "bug",
+  "title": "preflight.py sys.path fallback shadows stdlib `resource` (the hazard the package forbids); test_preflight triggers it, and sandbox rlimits break in the same session",
+  "verdict": "confirmed",
+  "package": "K2 (wave 1): AutoKernel evaluator/execution integrity bugs (unit C4 was NOT adversarially verified)",
+  "commits": [],
+  "deferred": null
+ },
+ "C3-03": {
+  "severity": 4,
+  "kind": "deletion",
+  "title": "The discovery_*/gpu_source_* stack (~20k src + ~13.6k test LOC) is unreachable from the live loop: move its one live dependency out, then retire it",
+  "verdict": "partially",
+  "package": "K3 (wave 2): AutoKernel prune of the three unreachable planes (operator decision 2026-10-24)",
+  "commits": [],
+  "deferred": null
+ },
+ "C3-04": {
+  "severity": 2,
+  "kind": "deletion",
+  "title": "hypotheses.py: adoption write path, trace, and self-audits (~1,080 of 4,493 lines) have zero non-test callers",
+  "verdict": "partially",
+  "package": "D10 (wave 2): AutoKernel remaining structure (controller, evaluator, execution, schemas, tests)",
+  "commits": [],
+  "deferred": null
+ },
+ "C3-05": {
+  "severity": 3,
+  "kind": "refactor",
+  "title": "The regrowth guard exempts controller/ as 'the uncounted library': 6.9k→49.8k LOC in 9 weeks with no budget",
+  "verdict": "confirmed",
+  "package": "K4 (wave 2): AutoKernel regrowth guard and CI repair (operator decision 2026-10-24)",
+  "commits": [],
+  "deferred": null
+ },
+ "C3-06": {
+  "severity": 2,
+  "kind": "refactor",
+  "title": "controller/ is a grab-bag of ~7 unrelated subsystems; split into subpackages along real dependency lines",
+  "verdict": "partially",
+  "package": "D10 (wave 2): AutoKernel remaining structure (controller, evaluator, execution, schemas, tests)",
+  "commits": [],
+  "deferred": null
+ },
+ "C3-07": {
+  "severity": 3,
+  "kind": "doc",
+  "title": "Package docstring and README describe the 4-file August package and deleted modules, and omit the 6 largest modules",
+  "verdict": "partially",
+  "package": "D10 (wave 2): AutoKernel remaining structure (controller, evaluator, execution, schemas, tests)",
+  "commits": [],
+  "deferred": null
+ },
+ "C3-08": {
+  "severity": 2,
+  "kind": "refactor",
+  "title": "Inflight recovery drops its reason: 52 bare `return False` and an exception-to-'ambiguous' fold leave the controller recording a fixed string",
+  "verdict": "partially",
+  "package": "D10 (wave 2): AutoKernel remaining structure (controller, evaluator, execution, schemas, tests)",
+  "commits": [],
+  "deferred": null
+ },
+ "C3-09": {
+  "severity": 2,
+  "kind": "refactor",
+  "title": "Hypothesis/portfolio selection is opaque: 15-20-clause boolean ORs raise one generic message, and exhaustion records no per-hypothesis outcome",
+  "verdict": "partially",
+  "package": "D10 (wave 2): AutoKernel remaining structure (controller, evaluator, execution, schemas, tests)",
+  "commits": [],
+  "deferred": null
+ },
+ "C3-10": {
+  "severity": 3,
+  "kind": "refactor",
+  "title": "Production identity is declared in ≥5 places; the v10 repin had to touch each by hand and missed one",
+  "verdict": "partially",
+  "package": "D10 (wave 2): AutoKernel remaining structure (controller, evaluator, execution, schemas, tests)",
+  "commits": [],
+  "deferred": null
+ },
+ "C3-11": {
+  "severity": 3,
+  "kind": "test",
+  "title": "CI runs 141 of 1,675 unit tests; resource/ (188 hardware-free tests, used by ~20 benchmark runners) is not in CI, and host-bound tests are unmarked",
+  "verdict": "confirmed",
+  "package": "K4 (wave 2): AutoKernel regrowth guard and CI repair (operator decision 2026-10-24)",
+  "commits": [],
+  "deferred": null
+ },
+ "C3-12": {
+  "severity": 2,
+  "kind": "refactor",
+  "title": "controller ↔ scripts/benchmark circular absolute imports load 19 modules twice under pytest's `autokernel.*` naming, so tests run a different topology than production",
+  "verdict": "partially",
+  "package": "D10 (wave 2): AutoKernel remaining structure (controller, evaluator, execution, schemas, tests)",
+  "commits": [],
+  "deferred": null
+ },
+ "C3-13": {
+  "severity": 3,
+  "kind": "deletion",
+  "title": "Speech adapters (3.8k src + 2.5k tests) are reachable only through the uncalled release plane and duplicate ~600 lines of each other",
+  "verdict": "confirmed",
+  "package": "K3 (wave 2): AutoKernel prune of the three unreachable planes (operator decision 2026-10-24)",
+  "commits": [],
+  "deferred": null
+ },
+ "C3-14": {
+  "severity": 2,
+  "kind": "deletion",
+  "title": "'Verified-dead' modules from the 2026-08-27 strip list are still present 6 weeks later, plus test-only branches in production",
+  "verdict": "partially",
+  "package": "K3 (wave 2): AutoKernel prune of the three unreachable planes (operator decision 2026-10-24)",
+  "commits": [],
+  "deferred": null
+ },
+ "C3-15": {
+  "severity": 2,
+  "kind": "refactor",
+  "title": "~336 lines of duplicated I/O and hash helpers across controller, with diverging durability semantics",
+  "verdict": "partially",
+  "package": "D10 (wave 2): AutoKernel remaining structure (controller, evaluator, execution, schemas, tests)",
+  "commits": [],
+  "deferred": null
+ },
+ "C3-16": {
+  "severity": 2,
+  "kind": "refactor",
+  "title": "Flock and lock-payload primitives duplicated between resource/device_claim.py and execution/cpu_region_claim.py (16 functions, ~219 lines, already diverging)",
+  "verdict": "partially",
+  "package": "D10 (wave 2): AutoKernel remaining structure (controller, evaluator, execution, schemas, tests)",
+  "commits": [],
+  "deferred": null
+ },
+ "C3-17": {
+  "severity": 1,
+  "kind": "refactor",
+  "title": "Site data (~40 SHA/path pins, a 295-line dispatch census) hardcoded in discovery_deployment_factory; the census encodes the superseded Qwen-0.5B workload",
+  "verdict": "partially",
+  "package": "D10 (wave 2): AutoKernel remaining structure (controller, evaluator, execution, schemas, tests)",
+  "commits": [],
+  "deferred": null
+ },
+ "C3-18": {
+  "severity": 2,
+  "kind": "deletion",
+  "title": "gpu_source_proofs.py: about half the module is uncalled and its only test covers that half; written code-golf style",
+  "verdict": "confirmed",
+  "package": "K3 (wave 2): AutoKernel prune of the three unreachable planes (operator decision 2026-10-24)",
+  "commits": [],
+  "deferred": null
+ },
+ "C3-19": {
+  "severity": 2,
+  "kind": "refactor",
+  "title": "670 multi-statement lines (95% of the package's E701/E702) live in this unit, defeating tracebacks, coverage and blame; the repo's own ruff config selects E",
+  "verdict": "partially",
+  "package": "D10 (wave 2): AutoKernel remaining structure (controller, evaluator, execution, schemas, tests)",
+  "commits": [],
+  "deferred": null
+ },
+ "C3-20": {
+  "severity": 1,
+  "kind": "refactor",
+  "title": "_run_controller_locked is a 567-line, cc=143 state machine with copy-pasted transitions (only if the discovery stack is kept)",
+  "verdict": "partially",
+  "package": "D10 (wave 2): AutoKernel remaining structure (controller, evaluator, execution, schemas, tests)",
+  "commits": [],
+  "deferred": null
+ },
+ "C3-21": {
+  "severity": 1,
+  "kind": "doc",
+  "title": "claim_for_hypothesis says it is 'the ONLY route from a hypothesis to a resource claim', but 5 controller modules acquire device claims directly with fixed purposes",
+  "verdict": "partially",
+  "package": "D10 (wave 2): AutoKernel remaining structure (controller, evaluator, execution, schemas, tests)",
+  "commits": [],
+  "deferred": null
+ },
+ "C3-22": {
+  "severity": 2,
+  "kind": "refactor",
+  "title": "arena_campaign_v1.json self-pins in-tree adapter files by (git commit, sha256), forcing 2-commit edits and a git-history-dependent test",
+  "verdict": "confirmed",
+  "package": "D10 (wave 2): AutoKernel remaining structure (controller, evaluator, execution, schemas, tests)",
+  "commits": [],
+  "deferred": null
+ },
+ "C3-M1": {
+  "severity": 3,
+  "kind": "deletion",
+  "title": "controller/champion.py and controller/sequencer.py (2,020 LOC) are the dormant AK4 champion plane, superseded by loop/champion.py, and are missing from the bloat estimate",
+  "verdict": "verifier-added",
+  "package": "K3 (wave 2): AutoKernel prune of the three unreachable planes (operator decision 2026-10-24)",
+  "commits": [],
+  "deferred": null
+ },
+ "C3-M2": {
+  "severity": 2,
+  "kind": "bug",
+  "title": "The live entry point's documented launch command fails: loop modules import `autokernel.*` absolutely, so `python3 -m scripts.kernel_rnd.autokernel.loop.run` raises ModuleNotFoundError",
+  "verdict": "verifier-added",
+  "package": "D10 (wave 2): AutoKernel remaining structure (controller, evaluator, execution, schemas, tests)",
+  "commits": [],
+  "deferred": null
+ },
+ "C4-01": {
+  "severity": 4,
+  "kind": "bug",
+  "title": "epyc-root strip plan marks three LIVE evaluator modules as 'verified-dead'",
+  "verdict": "UNVERIFIED",
+  "package": "K3 (wave 2): AutoKernel prune of the three unreachable planes (operator decision 2026-10-24)",
+  "commits": [],
+  "deferred": null,
+  "resolution": {
+   "state": "superseded-proposal-retain",
+   "as_of": "2026-10-24",
+   "evidence": "artifacts/ni08/inf64-source-reachability-review-20261007/completed-manifest.md",
+   "reason": "Current strip guidance retains all 19 candidates, including Apex/compiler; fresh per-file closure and contract review required before any removal."
+  }
+ },
+ "C4-02": {
+  "severity": 4,
+  "kind": "deletion",
+  "title": "surface.py's runtime derivation (~2,000 LOC), orphan evaluator/footprint.py and chain.change_surface_from have no production caller",
+  "verdict": "UNVERIFIED",
+  "package": "K3 (wave 2): AutoKernel prune of the three unreachable planes (operator decision 2026-10-24)",
+  "commits": [],
+  "deferred": null
+ },
+ "C4-03": {
+  "severity": 4,
+  "kind": "deletion",
+  "title": "integrity.py §8.5.1 gate derivation (~1,100 LOC) is self-documented as consuming 'evidence nothing produces'",
+  "verdict": "UNVERIFIED",
+  "package": "K3 (wave 2): AutoKernel prune of the three unreachable planes (operator decision 2026-10-24)",
+  "commits": [],
+  "deferred": null
+ },
+ "C4-04": {
+  "severity": 3,
+  "kind": "deletion",
+  "title": "microbench's extension-round producer is dead; base/extension labelling is implemented three times",
+  "verdict": "UNVERIFIED",
+  "package": "D10 (wave 2): AutoKernel remaining structure (controller, evaluator, execution, schemas, tests)",
+  "commits": [],
+  "deferred": null
+ },
+ "C4-05": {
+  "severity": 3,
+  "kind": "bug",
+  "title": "api._resolve_effect ignores which hypothesis the e-value tested: a non-inferiority e-value is labelled IMPROVEMENT, and REGRESSION is effectively unreachable",
+  "verdict": "UNVERIFIED",
+  "package": "K2 (wave 1): AutoKernel evaluator/execution integrity bugs (unit C4 was NOT adversarially verified)",
+  "commits": [],
+  "deferred": null
+ },
+ "C4-06": {
+  "severity": 3,
+  "kind": "bug",
+  "title": "Per-spawn binary attestation re-hashes only the llama-bench executable, never the libggml DSOs that contain the kernel",
+  "verdict": "UNVERIFIED",
+  "package": "K2 (wave 1): AutoKernel evaluator/execution integrity bugs (unit C4 was NOT adversarially verified)",
+  "commits": [],
+  "deferred": null
+ },
+ "C4-07": {
+  "severity": 3,
+  "kind": "refactor",
+  "title": "control_runner.reduce_live_blocks is a second EffectEstimate reducer that skips PairedBlockReducer's admissibility checks",
+  "verdict": "UNVERIFIED",
+  "package": "D10 (wave 2): AutoKernel remaining structure (controller, evaluator, execution, schemas, tests)",
+  "commits": [],
+  "deferred": null
+ },
+ "C4-08": {
+  "severity": 3,
+  "kind": "bug",
+  "title": "Four divergent 'inside a frozen production tree' predicates; the correctness.py one is prefix-only and is fooled by '..' or a symlink",
+  "verdict": "UNVERIFIED",
+  "package": "K2 (wave 1): AutoKernel evaluator/execution integrity bugs (unit C4 was NOT adversarially verified)",
+  "commits": [],
+  "deferred": null
+ },
+ "C4-09": {
+  "severity": 3,
+  "kind": "refactor",
+  "title": "Three owned-process launchers with three kill policies and three AST self-audits; escalation stops once the leader is reaped",
+  "verdict": "UNVERIFIED",
+  "package": "D10 (wave 2): AutoKernel remaining structure (controller, evaluator, execution, schemas, tests)",
+  "commits": [],
+  "deferred": null
+ },
+ "C4-10": {
+  "severity": 2,
+  "kind": "bug",
+  "title": "live_controls verifies its own campaign declaration three ways, and the copies check different fields",
+  "verdict": "UNVERIFIED",
+  "package": "K2 (wave 1): AutoKernel evaluator/execution integrity bugs (unit C4 was NOT adversarially verified)",
+  "commits": [],
+  "deferred": null
+ },
+ "C4-11": {
+  "severity": 2,
+  "kind": "deletion",
+  "title": "Test-only API in production modules (~420 LOC): unwired guards and helpers with zero production references",
+  "verdict": "UNVERIFIED",
+  "package": "K3 (wave 2): AutoKernel prune of the three unreachable planes (operator decision 2026-10-24)",
+  "commits": [],
+  "deferred": null
+ },
+ "C4-12": {
+  "severity": 2,
+  "kind": "refactor",
+  "title": "Test doubles and 13 AST self-audits (764 LOC) live in production modules",
+  "verdict": "UNVERIFIED",
+  "package": "D10 (wave 2): AutoKernel remaining structure (controller, evaluator, execution, schemas, tests)",
+  "commits": [],
+  "deferred": null
+ },
+ "C4-13": {
+  "severity": 2,
+  "kind": "doc",
+  "title": "Prose buries logic and contradicts itself: 23% docstrings/comments, stale FOOTPRINT counts, a cited function that does not exist, and the '5.5687 unpassable' story told four ways",
+  "verdict": "UNVERIFIED",
+  "package": "D10 (wave 2): AutoKernel remaining structure (controller, evaluator, execution, schemas, tests)",
+  "commits": [],
+  "deferred": null
+ },
+ "C4-14": {
+  "severity": 2,
+  "kind": "test",
+  "title": "Content-hashed identity objects serialise through hand-written to_dict with no field-coverage test",
+  "verdict": "UNVERIFIED",
+  "package": "D10 (wave 2): AutoKernel remaining structure (controller, evaluator, execution, schemas, tests)",
+  "commits": [],
+  "deferred": null
+ },
+ "C4-15": {
+  "severity": 2,
+  "kind": "refactor",
+  "title": "Duplicated primitives inside the unit: sha256_file x5, hand-rolled worst-of lattices, duplicate manifest loop, ad-hoc type checks",
+  "verdict": "UNVERIFIED",
+  "package": "D10 (wave 2): AutoKernel remaining structure (controller, evaluator, execution, schemas, tests)",
+  "commits": [],
+  "deferred": null
+ },
+ "C4-16": {
+  "severity": 1,
+  "kind": "bug",
+  "title": "Small statistics defects: min_samples_for_quantile float rounding, and a dead variance branch obscuring the betting rule",
+  "verdict": "UNVERIFIED",
+  "package": "K2 (wave 1): AutoKernel evaluator/execution integrity bugs (unit C4 was NOT adversarially verified)",
+  "commits": [],
+  "deferred": null
+ },
+ "C4-17": {
+  "severity": 1,
+  "kind": "perf",
+  "title": "Per-candidate MDE recomputation and calibration replays on structurally unreachable thresholds",
+  "verdict": "UNVERIFIED",
+  "package": "D10 (wave 2): AutoKernel remaining structure (controller, evaluator, execution, schemas, tests)",
+  "commits": [],
+  "deferred": null
+ },
+ "C4-18": {
+  "severity": 2,
+  "kind": "refactor",
+  "title": "live_controls resume and evaluate paths are 200+-line functions with hand-enumerated state tables (cc 63/48) in the unit's highest-churn file",
+  "verdict": "UNVERIFIED",
+  "package": "D10 (wave 2): AutoKernel remaining structure (controller, evaluator, execution, schemas, tests)",
+  "commits": [],
+  "deferred": null
+ },
+ "C5-01": {
+  "severity": 5,
+  "kind": "bug",
+  "title": "autokernel-guards CI is DISABLED, not just red; sequential steps meant guards and tests were skipped on every run",
+  "verdict": "UNVERIFIED",
+  "package": "K4 (wave 2): AutoKernel regrowth guard and CI repair (operator decision 2026-10-24)",
+  "commits": [],
+  "deferred": null
+ },
+ "C5-02": {
+  "severity": 5,
+  "kind": "refactor",
+  "title": "Regrowth guard cannot bound growth: it counts only loop/, exempts controller/ on purpose, its tripwire test is red, and the budget is 37x below reality",
+  "verdict": "UNVERIFIED",
+  "package": "K4 (wave 2): AutoKernel regrowth guard and CI repair (operator decision 2026-10-24)",
+  "commits": [],
+  "deferred": null
+ },
+ "C5-03": {
+  "severity": 4,
+  "kind": "deletion",
+  "title": "Delete the release plane (release/ + adapters/ + its orphan feeders); it duplicates the epyc-root kernel-promotion skill and has never run",
+  "verdict": "UNVERIFIED",
+  "package": "K3 (wave 2): AutoKernel prune of the three unreachable planes (operator decision 2026-10-24)",
+  "commits": [],
+  "deferred": null
+ },
+ "C5-04": {
+  "severity": 4,
+  "kind": "refactor",
+  "title": "Live loop imports all of campaign.py (5,968 LOC) to call three private HostOps static methods with fake 'self' objects",
+  "verdict": "UNVERIFIED",
+  "package": "D10 (wave 2): AutoKernel remaining structure (controller, evaluator, execution, schemas, tests)",
+  "commits": [],
+  "deferred": null
+ },
+ "C5-05": {
+  "severity": 4,
+  "kind": "deletion",
+  "title": "campaign.py CLI and its exclusive cluster (dashboard, least-commitment family, source-prerequisite, candidate_record) are dormant; strip after C5-04",
+  "verdict": "UNVERIFIED",
+  "package": null,
+  "commits": [],
+  "deferred": "not_approved_plane"
+ },
+ "C5-06": {
+  "severity": 4,
+  "kind": "deletion",
+  "title": "FOOTPRINT.md + test_campaign_footprint.py (2,198 lines) is already red, covers none of loop/, and is the documented reason deletion is expensive",
+  "verdict": "UNVERIFIED",
+  "package": "K3 (wave 2): AutoKernel prune of the three unreachable planes (operator decision 2026-10-24)",
+  "commits": [],
+  "deferred": null
+ },
+ "C5-07": {
+  "severity": 3,
+  "kind": "doc",
+  "title": "README.md / program.md are stale on state, entry point, production version and safety proofs, and tests pin the false text",
+  "verdict": "UNVERIFIED",
+  "package": "K3 (wave 2): AutoKernel prune of the three unreachable planes (operator decision 2026-10-24)",
+  "commits": [],
+  "deferred": null
+ },
+ "C5-08": {
+  "severity": 4,
+  "kind": "bug",
+  "title": "journal._validate_native_payload turns ImportError (and any validator bug) into 'payload invalid', so a missing dependency reads as journal corruption",
+  "verdict": "UNVERIFIED",
+  "package": "K1 (wave 1): AutoKernel live-loop bugs and red tests",
+  "commits": [],
+  "deferred": null
+ },
+ "C5-09": {
+  "severity": 3,
+  "kind": "refactor",
+  "title": "journal._validate_native_payload: 1,043-line, CC-542 elif chain with inline loop-owned validators and 12 dual-path lazy imports back into loop/",
+  "verdict": "UNVERIFIED",
+  "package": "D10 (wave 2): AutoKernel remaining structure (controller, evaluator, execution, schemas, tests)",
+  "commits": [],
+  "deferred": null
+ },
+ "C5-10": {
+  "severity": 3,
+  "kind": "refactor",
+  "title": "Flat test imports recreate the duplicate-module and shadowed-stdlib 'resource' hazard storage.py says was fixed; 440 test-to-test imports cascade failures",
+  "verdict": "UNVERIFIED",
+  "package": "D10 (wave 2): AutoKernel remaining structure (controller, evaluator, execution, schemas, tests)",
+  "commits": [],
+  "deferred": null
+ },
+ "C5-11": {
+  "severity": 3,
+  "kind": "refactor",
+  "title": "schemas.py is a 3,825-line hub imported by 97 modules, though most callers need only an ~150-line core",
+  "verdict": "UNVERIFIED",
+  "package": "D10 (wave 2): AutoKernel remaining structure (controller, evaluator, execution, schemas, tests)",
+  "commits": [],
+  "deferred": null
+ },
+ "C5-12": {
+  "severity": 2,
+  "kind": "deletion",
+  "title": "Dead public API in journal.Journal (~343 LOC) and storage.py (~221 LOC) with zero non-test callers across all three repos",
+  "verdict": "UNVERIFIED",
+  "package": "K3 (wave 2): AutoKernel prune of the three unreachable planes (operator decision 2026-10-24)",
+  "commits": [],
+  "deferred": null
+ },
+ "C5-13": {
+  "severity": 2,
+  "kind": "deletion",
+  "title": "Three orphan top-level modules (substrate, turn_productivity, placement_context): no importer, no entry point, no runner",
+  "verdict": "UNVERIFIED",
+  "package": "K3 (wave 2): AutoKernel prune of the three unreachable planes (operator decision 2026-10-24)",
+  "commits": [],
+  "deferred": null
+ },
+ "C5-14": {
+  "severity": 3,
+  "kind": "refactor",
+  "title": "check_suite_floors: loop floor is 385 against 5,048 tests, its path list is duplicated in the workflow (and has drifted), and it truncates the root cause",
+  "verdict": "UNVERIFIED",
+  "package": "K4 (wave 2): AutoKernel regrowth guard and CI repair (operator decision 2026-10-24)",
+  "commits": [],
+  "deferred": null
+ },
+ "C5-15": {
+  "severity": 2,
+  "kind": "refactor",
+  "title": "Six hand-rolled AST 'no write/spawn' self-audits (~1,036 LOC) duplicate each other; a lint rule does this at commit time",
+  "verdict": "UNVERIFIED",
+  "package": "K3 (wave 2): AutoKernel prune of the three unreachable planes (operator decision 2026-10-24)",
+  "commits": [],
+  "deferred": null
+ },
+ "C5-16": {
+  "severity": 2,
+  "kind": "bug",
+  "title": "campaign.py hardcodes build jobs=64; two test_campaign tests fail on any host with fewer than 64 CPUs",
+  "verdict": "UNVERIFIED",
+  "package": "K1 (wave 1): AutoKernel live-loop bugs and red tests",
+  "commits": [],
+  "deferred": null
+ },
+ "C6-01": {
+  "severity": 5,
+  "kind": "bug",
+  "title": "AutoKernel CI is disabled and, even when enabled, structurally cannot reach its test steps",
+  "verdict": "UNVERIFIED",
+  "package": "K4 (wave 2): AutoKernel regrowth guard and CI repair (operator decision 2026-10-24)",
+  "commits": [],
+  "deferred": null
+ },
+ "C6-02": {
+  "severity": 4,
+  "kind": "test",
+  "title": "Suite is red at HEAD (476 failed + 87 errors) with host-dependent and real failures mixed together",
+  "verdict": "UNVERIFIED",
+  "package": "D10 (wave 2): AutoKernel remaining structure (controller, evaluator, execution, schemas, tests)",
+  "commits": [],
+  "deferred": null
+ },
+ "C6-03": {
+  "severity": 4,
+  "kind": "bug",
+  "title": "Helper signature change via cross-test import broke 38 tests in a file nobody re-ran",
+  "verdict": "UNVERIFIED",
+  "package": "K1 (wave 1): AutoKernel live-loop bugs and red tests",
+  "commits": [],
+  "deferred": null
+ },
+ "C6-04": {
+  "severity": 3,
+  "kind": "bug",
+  "title": "test_existing_main_cpu_five_iterations harness asserts a retired status ('kept') and fails at HEAD",
+  "verdict": "UNVERIFIED",
+  "package": "K1 (wave 1): AutoKernel live-loop bugs and red tests",
+  "commits": [],
+  "deferred": null
+ },
+ "C6-05": {
+  "severity": 3,
+  "kind": "bug",
+  "title": "Test fixture hard-codes 32 build jobs while production refuses jobs > os.cpu_count(): 97 failures on any host under 32 CPUs (GitHub runners have 4)",
+  "verdict": "UNVERIFIED",
+  "package": "K1 (wave 1): AutoKernel live-loop bugs and red tests",
+  "commits": [],
+  "deferred": null
+ },
+ "C6-06": {
+  "severity": 4,
+  "kind": "refactor",
+  "title": "Tests silently read sibling repos and live host artifacts; conftest isolates GPU/CPU locks but not EPYC_ROOT_REPO or /mnt/raid0",
+  "verdict": "UNVERIFIED",
+  "package": "D10 (wave 2): AutoKernel remaining structure (controller, evaluator, execution, schemas, tests)",
+  "commits": [],
+  "deferred": null
+ },
+ "C6-07": {
+  "severity": 3,
+  "kind": "bug",
+  "title": "release/test_t3*.py (383 tests) cannot be collected at ANY standard checkout path, and they write into the repo's artifacts/operator",
+  "verdict": "UNVERIFIED",
+  "package": "K3 (wave 2): AutoKernel prune of the three unreachable planes (operator decision 2026-10-24)",
+  "commits": [],
+  "deferred": null
+ },
+ "C6-08": {
+  "severity": 4,
+  "kind": "deletion",
+  "title": "Obsolete 'campaign #1' footprint and README prose suites: red, slowest file in the tree, and pinning false prose",
+  "verdict": "UNVERIFIED",
+  "package": "K3 (wave 2): AutoKernel prune of the three unreachable planes (operator decision 2026-10-24)",
+  "commits": [],
+  "deferred": null
+ },
+ "C6-09": {
+  "severity": 3,
+  "kind": "deletion",
+  "title": "Tests are the only importers of a ~3.5k-LOC source cluster, keeping dead code alive (and red)",
+  "verdict": "UNVERIFIED",
+  "package": "K3 (wave 2): AutoKernel prune of the three unreachable planes (operator decision 2026-10-24)",
+  "commits": [],
+  "deferred": null
+ },
+ "C6-10": {
+  "severity": 3,
+  "kind": "refactor",
+  "title": "Shared fixtures live in test modules (448 test-to-test imports) and a test function is reused as a 12-knob harness",
+  "verdict": "UNVERIFIED",
+  "package": "D10 (wave 2): AutoKernel remaining structure (controller, evaluator, execution, schemas, tests)",
+  "commits": [],
+  "deferred": null
+ },
+ "C6-11": {
+  "severity": 3,
+  "kind": "refactor",
+  "title": "Three import roots: 72 modules loaded twice and 4 loaded three times in one pytest session",
+  "verdict": "UNVERIFIED",
+  "package": "D10 (wave 2): AutoKernel remaining structure (controller, evaluator, execution, schemas, tests)",
+  "commits": [],
+  "deferred": null
+ },
+ "C6-12": {
+  "severity": 3,
+  "kind": "perf",
+  "title": "Slow tests dominate wall time; source-scanning tests reimplement ruff at 40x the cost; leaked server threads",
+  "verdict": "UNVERIFIED",
+  "package": "D10 (wave 2): AutoKernel remaining structure (controller, evaluator, execution, schemas, tests)",
+  "commits": [],
+  "deferred": null
+ },
+ "C6-13": {
+  "severity": 3,
+  "kind": "refactor",
+  "title": "Suite floors are 13x stale and drift from the workflow they guard",
+  "verdict": "UNVERIFIED",
+  "package": "K4 (wave 2): AutoKernel regrowth guard and CI repair (operator decision 2026-10-24)",
+  "commits": [],
+  "deferred": null
+ },
+ "C6-14": {
+  "severity": 2,
+  "kind": "refactor",
+  "title": "Change-detector tests pin constants and exact source spelling, so they break on edits that change no behavior",
+  "verdict": "UNVERIFIED",
+  "package": "D10 (wave 2): AutoKernel remaining structure (controller, evaluator, execution, schemas, tests)",
+  "commits": [],
+  "deferred": null
+ },
+ "C6-15": {
+  "severity": 2,
+  "kind": "refactor",
+  "title": "Code-golfed tests: semicolon-packed lines up to 555 chars and duplicate method definitions",
+  "verdict": "UNVERIFIED",
+  "package": "D10 (wave 2): AutoKernel remaining structure (controller, evaluator, execution, schemas, tests)",
+  "commits": [],
+  "deferred": null
+ },
+ "C6-16": {
+  "severity": 2,
+  "kind": "refactor",
+  "title": "Doc-coupling guard counts filename mentions, not doc reads (24 flagged vs about 9 real), and never enforces",
+  "verdict": "UNVERIFIED",
+  "package": "K4 (wave 2): AutoKernel regrowth guard and CI repair (operator decision 2026-10-24)",
+  "commits": [],
+  "deferred": null
+ },
+ "C6-17": {
+  "severity": 2,
+  "kind": "deletion",
+  "title": "Arena plane tests (about 4.6k LOC) cover modules with no launcher in any repo and fail off-host",
+  "verdict": "UNVERIFIED",
+  "package": null,
+  "commits": [],
+  "deferred": "not_approved_plane"
+ },
+ "C6-18": {
+  "severity": 2,
+  "kind": "refactor",
+  "title": "215 unittest.main footers and 16 'run standalone' docstrings advertise a mode that bypasses conftest host isolation",
+  "verdict": "UNVERIFIED",
+  "package": "D10 (wave 2): AutoKernel remaining structure (controller, evaluator, execution, schemas, tests)",
+  "commits": [],
+  "deferred": null
+ }
+}

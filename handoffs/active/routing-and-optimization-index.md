@@ -62,6 +62,7 @@
 | RTG-57 | kv unified stack rollout | [kv-unified-stack-rollout.md](kv-unified-stack-rollout.md) | KVU-16f-1: re-derive :8083 KQ-mask term for -b 512; HPR-b 64k holdout re-run after Codex HPR-B-SIM-FIX-2 | RTG-19, RTG-36, INF-41 |
 | RTG-58 | kv prefix fork and paged attention | [kv-prefix-fork-and-paged-attention.md](kv-prefix-fork-and-paged-attention.md) | KPF-64.3: F/FB on q0, EB on q2+q3 from 10-26 03:30Z, then the contrasts; read Codex do_slot_fork code read vs KPF-17.4c | RTG-57, RTG-27, INF-65 |
 | RTG-59 | model artifact integrity | [model-artifact-integrity.md](model-artifact-integrity.md) | SEC-ART-POST-f: recompile lean registry + stack_priors at next stack-change, then SEC-ART-2; POST-b.1 v2 template roll-out; POST-d | — |
+| RTG-61 | multi-repo refactoring | [refactoring-multirepo-2026-10.md](refactoring-multirepo-2026-10.md) | Repair CI report compatibility and runtime isolation, then rerun baseline | — |
 
 ## Cross-domain
 

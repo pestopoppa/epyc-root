@@ -1,0 +1,536 @@
+# Metrics: orch_tests (/workspace/repos/epyc-orchestrator/tests)
+
+files=1003 loc=357818 code=282683 funcs=22265 broad_except=34 swallowed=7 prints=12 module_level_calls=757 global_stmts=2 hardcoded_/mnt/raid0=262 public_undoc_funcs=14154 no_module_doc=149 sys.path_mutations=357 shell=True=0
+
+## Largest files (loc)
+- tests/unit/test_dashboard_helpers.py: 4346 loc, 191 funcs, max_func=115, max_cc=29
+- tests/unit/test_autopilot_actions.py: 4054 loc, 295 funcs, max_func=90, max_cc=20
+- tests/unit/test_stack_change_guard.py: 3512 loc, 168 funcs, max_func=106, max_cc=13
+- tests/unit/test_autopilot_sequential_wiring.py: 2825 loc, 129 funcs, max_func=452, max_cc=16
+- tests/unit/test_autopilot_planner_coordinator.py: 2716 loc, 94 funcs, max_func=104, max_cc=18
+- tests/unit/test_eval_tower_concurrency_metrics.py: 2599 loc, 123 funcs, max_func=69, max_cc=25
+- tests/unit/test_typed_decisions_native.py: 2540 loc, 131 funcs, max_func=63, max_cc=27
+- tests/unit/test_e8_quality_baseline_v5.py: 2531 loc, 75 funcs, max_func=407, max_cc=23
+- tests/unit/test_model_gate_report.py: 2341 loc, 37 funcs, max_func=454, max_cc=106
+- tests/unit/test_orchestrator_stack_reload.py: 2311 loc, 104 funcs, max_func=87, max_cc=9
+- tests/unit/test_stack_priors_compiler.py: 1854 loc, 54 funcs, max_func=186, max_cc=31
+- tests/unit/test_e8_quality_baseline_reseed.py: 1848 loc, 106 funcs, max_func=122, max_cc=19
+- tests/unit/test_build_server_command_helpers.py: 1799 loc, 83 funcs, max_func=72, max_cc=19
+- tests/unit/test_chat_pipeline_stages.py: 1776 loc, 74 funcs, max_func=47, max_cc=14
+- tests/unit/test_prompt_builders.py: 1742 loc, 150 funcs, max_func=31, max_cc=12
+- tests/unit/test_stack_change_pipeline_simulated_fixtures.py: 1719 loc, 40 funcs, max_func=166, max_cc=64
+- tests/unit/test_repl_executor.py: 1707 loc, 47 funcs, max_func=90, max_cc=20
+- tests/unit/test_pipeline_routing.py: 1694 loc, 89 funcs, max_func=43, max_cc=10
+- tests/unit/test_q_scorer.py: 1684 loc, 98 funcs, max_func=85, max_cc=20
+- tests/unit/test_seed_specialist_routing_main_and_retry.py: 1618 loc, 83 funcs, max_func=90, max_cc=11
+- tests/unit/test_autopilot_creativity.py: 1599 loc, 91 funcs, max_func=94, max_cc=21
+- tests/unit/test_strategy_store.py: 1566 loc, 90 funcs, max_func=60, max_cc=11
+- tests/unit/test_dashboard_region_locks.py: 1538 loc, 48 funcs, max_func=96, max_cc=24
+- tests/unit/test_typed_decisions_measure.py: 1443 loc, 58 funcs, max_func=86, max_cc=34
+- tests/unit/test_e8_quality_baseline_v5_recovery_finalizer.py: 1435 loc, 43 funcs, max_func=358, max_cc=35
+- tests/integration/test_document_pipeline.py: 1427 loc, 63 funcs, max_func=77, max_cc=13
+- tests/unit/test_inference_mixin.py: 1419 loc, 84 funcs, max_func=76, max_cc=13
+- tests/unit/test_config_applicator.py: 1403 loc, 88 funcs, max_func=60, max_cc=14
+- tests/unit/test_repl_environment.py: 1368 loc, 149 funcs, max_func=33, max_cc=24
+- tests/unit/test_chat_routes.py: 1339 loc, 61 funcs, max_func=93, max_cc=15
+- tests/unit/test_eval_tower_instrument_repair.py: 1318 loc, 48 funcs, max_func=121, max_cc=24
+- tests/test_autopilot_review_integration.py: 1313 loc, 93 funcs, max_func=58, max_cc=17
+- tests/unit/test_openai_client_tool_mode.py: 1300 loc, 82 funcs, max_func=51, max_cc=13
+- tests/unit/test_autopilot_recovery.py: 1278 loc, 72 funcs, max_func=53, max_cc=13
+- tests/unit/test_ap54_eval_knowledge_fence.py: 1260 loc, 87 funcs, max_func=49, max_cc=19
+- tests/unit/test_executor.py: 1228 loc, 62 funcs, max_func=50, max_cc=7
+- tests/unit/test_restart_readiness_report.py: 1224 loc, 33 funcs, max_func=79, max_cc=24
+- tests/unit/test_eval_verifier_mode.py: 1202 loc, 68 funcs, max_func=75, max_cc=15
+- tests/unit/test_llama_server.py: 1202 loc, 108 funcs, max_func=55, max_cc=12
+- tests/unit/test_stack_change_pipeline.py: 1169 loc, 51 funcs, max_func=105, max_cc=19
+
+## Longest functions
+- tests/unit/test_model_gate_report.py:13 test_build_report_blocks_on_underlying_fable5_gates len=454 cc=106 depth=0 nargs=2
+- tests/unit/test_autopilot_sequential_wiring.py:2035 _run_loop_inner_seq_harness len=452 cc=16 depth=1 nargs=11
+- tests/unit/test_e8_quality_baseline_v5.py:1138 _synthetic_candidate len=407 cc=17 depth=3 nargs=1
+- tests/unit/test_e8_quality_baseline_v5_recovery_finalizer.py:719 test_completed_successor_context_reaches_external_validator len=358 cc=35 depth=2 nargs=1
+- tests/unit/test_e8_quality_baseline_v5_recovery_finalizer.py:360 _context len=230 cc=8 depth=0 nargs=1
+- tests/unit/test_stack_priors_compiler.py:747 test_compile_maps_model_role_server_binding len=186 cc=31 depth=0 nargs=2
+- tests/unit/test_e8_quality_baseline_v5_partial_r2_race_retry.py:464 _mixed_chain_fixture len=176 cc=7 depth=1 nargs=1
+- tests/unit/test_offline_reward_pairwise_holdout_expansion_plan.py:304 test_pairwise_holdout_plan_filters_to_audit_collection_targets len=173 cc=14 depth=0 nargs=1
+- tests/unit/test_stack_change_pipeline_simulated_fixtures.py:1554 test_simulated_context_kv_and_acceleration_drift_are_rejected len=166 cc=19 depth=0 nargs=1
+- tests/unit/test_e8_quality_baseline_v5_partial_r2_recovery.py:593 _patch_execute_environment len=164 cc=13 depth=0 nargs=2
+- tests/unit/test_e8_quality_baseline_v5.py:166 test_execute_marks_real_ineligible_staging_return len=157 cc=9 depth=0 nargs=2
+- tests/unit/test_stack_priors_compiler.py:592 test_compile_prefers_server_mode_for_shared_role_memory_and_serving len=152 cc=26 depth=1 nargs=1
+- tests/unit/test_e8_quality_baseline_v5.py:2355 test_final_wrapper_fake_pytest_flags_cannot_bypass_tty_on_canonical_paths len=143 cc=14 depth=0 nargs=1
+- tests/unit/test_e8_quality_baseline_v5_final_c1_completion.py:484 test_execute_and_validate_complete_reduced_typed_lineage len=136 cc=11 depth=1 nargs=2
+- tests/unit/test_stack_change_pipeline_simulated_fixtures.py:1177 test_simulated_vision_swap_updates_generated_consumers_with_approval len=133 cc=64 depth=1 nargs=2
+- tests/unit/test_model_gate_report.py:1768 test_a9_audit_target_holdout_gap_surfaces_after_source_target_preregistered len=130 cc=11 depth=0 nargs=2
+- tests/unit/test_offline_reward_oracle_eval.py:23 test_evaluate_oracle_scores_against_binary_rewards_and_stress_rows len=130 cc=26 depth=0 nargs=1
+- tests/integration/test_chat_pipeline.py:839 test_chat_repl_response_surfaces_tool_chain_wave_diagnostics len=129 cc=8 depth=1 nargs=2
+- tests/unit/test_core_v2_select.py:226 test_ledger_source_uses_rollover_supersession_trust_and_era_fence len=128 cc=14 depth=0 nargs=2
+- tests/unit/test_e8_quality_baseline_v5_final_c1_completion.py:88 _typed_lineage len=128 cc=4 depth=0 nargs=2
+- tests/unit/test_stack_change_pipeline_simulated_fixtures.py:1312 test_simulated_ingest_swap_updates_generated_consumers_with_approval len=124 cc=57 depth=0 nargs=2
+- tests/unit/test_e8_quality_baseline_reseed.py:251 test_candidate_execute_uses_one_focused_t1r1_repair_and_never_full_reruns len=122 cc=8 depth=0 nargs=2
+- tests/unit/test_eval_tower_instrument_repair.py:1046 test_eval_t2_promotion_eval_uses_trial_seed_and_excludes_recent_qids len=121 cc=8 depth=0 nargs=2
+- tests/unit/test_model_gate_report.py:1557 test_a9_next_action_preregisters_source_reward_target_when_ranker_ready len=119 cc=13 depth=0 nargs=2
+- tests/unit/test_planner_evidence.py:362 test_unavailable_task_rate_renders_na_and_keeps_valid_values len=119 cc=4 depth=2 nargs=0
+- tests/integration/test_chat_pipeline.py:566 test_session_restore_protocol_compat_diagnostics len=117 cc=7 depth=1 nargs=2
+- tests/unit/test_stack_change_pipeline_simulated_fixtures.py:943 test_simulated_frontdoor_swap_updates_generated_consumers_with_approval len=117 cc=60 depth=1 nargs=2
+- tests/unit/test_e8_quality_baseline_v5_partial_r2_successor.py:170 test_successor_reaches_post_generation_shared_harvest len=116 cc=5 depth=0 nargs=2
+- tests/unit/test_dashboard_helpers.py:3291 test_pareto_endpoint_prefers_current_journal_run_over_old_rows_and_state len=115 cc=14 depth=0 nargs=2
+- tests/unit/test_economic_ledger.py:39 test_economic_ledger_summarizes_real_sources len=113 cc=22 depth=1 nargs=1
+- tests/unit/test_stack_change_pipeline_simulated_fixtures.py:1062 test_simulated_worker_swap_updates_generated_consumers_with_approval len=113 cc=53 depth=1 nargs=2
+- tests/unit/test_xmas_live_ab.py:303 test_summarize_results_mode_does_not_reload_or_chat len=111 cc=12 depth=0 nargs=3
+- tests/unit/test_autopilot_system_card.py:63 _write_minimal_root len=110 cc=1 depth=0 nargs=1
+- tests/unit/test_autokernel_enrollment_cross_repo.py:47 test_actual_cpu_gpu_export_resolves_reaches_campaign_cli_and_fake_measurement len=109 cc=30 depth=2 nargs=3
+- tests/unit/test_model_gate_report.py:1900 test_a9_audit_target_action_surfaces_guarded_collection_manifest len=109 cc=9 depth=0 nargs=2
+- tests/unit/test_mine_repl_patterns.py:29 test_multi_tool_telemetry_and_chain_ranking len=107 cc=17 depth=0 nargs=2
+- tests/unit/test_model_descriptor_compiler.py:40 test_compile_merges_same_model_roles len=107 cc=13 depth=0 nargs=1
+- tests/unit/test_offline_reward_pairwise_holdout_expansion_plan.py:948 test_pairwise_holdout_writes_guarded_collection_manifest_and_script len=107 cc=28 depth=0 nargs=1
+- tests/unit/test_stack_change_guard.py:128 _priors len=106 cc=1 depth=0 nargs=3
+- tests/integration/test_chat_pipeline.py:459 test_session_restore_roundtrip_repl_globals len=105 cc=10 depth=1 nargs=2
+- tests/unit/test_stack_change_pipeline.py:189 test_update_merges_shared_alias_mismatch_into_runtime_descriptor len=105 cc=15 depth=0 nargs=1
+- tests/unit/test_autopilot_planner_coordinator.py:2048 test_uncritiqued_unavailable_dispatch_rule len=104 cc=9 depth=0 nargs=0
+- tests/unit/test_dashboard_helpers.py:2818 test_autopilot_progress_surfaces_outcome_kpis_and_current_code_health len=103 cc=10 depth=0 nargs=2
+- tests/unit/test_dynamic_stack_evidence_packet.py:345 test_ri10_section_surfaces_current_canary_role_sample_count_blocker len=103 cc=11 depth=0 nargs=2
+- tests/test_reviewer_pool_gen.py:29 _synthetic_registry len=102 cc=1 depth=0 nargs=0
+- tests/unit/test_contention_matrix_live_recert.py:347 test_cmd_run_scoped_roles_preserves_unmeasured_pairs len=102 cc=16 depth=0 nargs=2
+- tests/unit/test_stack_manifest_imports.py:522 test_resolve_slots_is_per_instance_for_a_split_role len=102 cc=26 depth=3 nargs=0
+- tests/unit/test_stack_priors_compiler.py:997 test_compile_shared_aliases_use_runtime_descriptor len=101 cc=18 depth=1 nargs=1
+- tests/unit/test_dispatcher.py:19 minimal_registry len=100 cc=2 depth=1 nargs=1
+- tests/unit/test_offline_reward_oracle_eval.py:228 test_decision_gate_passes_only_with_required_slice_and_stress_rows len=100 cc=6 depth=1 nargs=1
+- tests/unit/test_e8_quality_baseline_reseed.py:1079 test_runtime_binding_pins_full_cmdline_model_flags_and_state_path len=99 cc=12 depth=1 nargs=2
+- tests/unit/test_stack_change_pipeline_simulated_fixtures.py:314 _worker_lane_registry len=99 cc=3 depth=1 nargs=11
+- tests/unit/test_model_gate_report.py:734 test_eval_task_coverage_does_not_block_fable_readiness len=97 cc=8 depth=0 nargs=2
+- tests/integration/test_chat_pipeline.py:290 test_delegation_report_handle_roundtrip len=96 cc=11 depth=0 nargs=4
+- tests/unit/test_dashboard_region_locks.py:1153 test_frontdoor_full_locks_all_cpu_models_and_shows_serving_capacity len=96 cc=19 depth=1 nargs=3
+- tests/unit/test_e8_quality_baseline_v5_partial_resume.py:645 test_historical_jitter_amendment_is_exact_source_bound len=96 cc=6 depth=1 nargs=2
+- tests/unit/test_ri10_canary_sample_report.py:238 test_build_report_separates_historical_missing_modes_from_current_scope_starvation len=96 cc=17 depth=0 nargs=1
+- tests/unit/test_seeding_eval.py:176 test_compute_3way_metadata_includes_cost_web_and_scratchpad_sections len=96 cc=14 depth=1 nargs=0
+- tests/unit/test_autopilot_creativity.py:1397 test_controller_prompt_uses_fresh_strategy_hints_section len=94 cc=14 depth=0 nargs=1
+- tests/unit/test_offline_reward_pairwise_holdout_expansion_plan.py:660 test_pairwise_holdout_plan_uses_reference_backed_instruction_source len=94 cc=17 depth=0 nargs=2
+
+## Highest cyclomatic complexity
+- tests/unit/test_model_gate_report.py:13 test_build_report_blocks_on_underlying_fable5_gates cc=106 len=454
+- tests/unit/test_dashboard_route_html.py:698 test_dashboard_topology_activity_stats_refresh_with_live_age_tick cc=64 len=87
+- tests/unit/test_stack_change_pipeline_simulated_fixtures.py:1177 test_simulated_vision_swap_updates_generated_consumers_with_approval cc=64 len=133
+- tests/unit/test_stack_change_pipeline_simulated_fixtures.py:943 test_simulated_frontdoor_swap_updates_generated_consumers_with_approval cc=60 len=117
+- tests/unit/test_typed_decisions_judge_redundancy.py:229 test_perfect_readers_and_receipt_shape cc=60 len=90
+- tests/unit/test_stack_change_pipeline_simulated_fixtures.py:1312 test_simulated_ingest_swap_updates_generated_consumers_with_approval cc=57 len=124
+- tests/unit/test_stack_change_pipeline_simulated_fixtures.py:1062 test_simulated_worker_swap_updates_generated_consumers_with_approval cc=53 len=113
+- tests/unit/test_typed_decisions_tool_args_pilot.py:168 test_both_arms_score_perfectly_and_receipt_shape cc=45 len=68
+- tests/unit/test_features.py:32 test_dataclass_defaults cc=37 len=42
+- tests/unit/test_utm_v3_conformance.py:41 test_eight_synthetic_classes_have_only_source_supported_store_expectations cc=37 len=86
+- tests/unit/test_inf78_oab7_oab8_composition.py:103 test_bundle_and_scouts_compose_in_one_chat_request cc=36 len=93
+- tests/unit/test_typed_decisions_routing_replay.py:519 test_run_replay_receipt_shape_and_json_fallback cc=36 len=62
+- tests/unit/test_v1_escalation.py:229 test_a2_quality_escalation_to_architect_general_with_exact_telemetry cc=36 len=54
+- tests/unit/test_e8_quality_baseline_v5_recovery_finalizer.py:719 test_completed_successor_context_reaches_external_validator cc=35 len=358
+- tests/unit/test_api_models_responses.py:107 test_defaults cc=34 len=35
+- tests/unit/test_typed_decisions_measure.py:944 test_concurrent_arm_is_faster_than_sequential_and_agrees cc=34 len=86
+- tests/unit/test_ev_conf2_confidence_probe.py:245 test_arm_a_writes_scored_sidecar_with_token_trace cc=32 len=40
+- tests/unit/test_offline_reward_verifier_npz.py:94 test_build_verifier_npz_emits_compatible_contract_and_aliases cc=31 len=83
+- tests/unit/test_stack_priors_compiler.py:747 test_compile_maps_model_role_server_binding cc=31 len=186
+- tests/unit/test_typed_decisions.py:126 test_twenty_question_batch_produces_schema_valid_decisions cc=31 len=43
+- tests/unit/test_typed_decisions_measure.py:207 test_flip_rate_matches_recomputed_expectation cc=31 len=71
+- tests/unit/test_typed_decisions_measure.py:416 test_exact_ece_brier_and_reliability_bins cc=31 len=59
+- tests/unit/test_admission.py:18 _expected_priors_limits cc=30 len=60
+- tests/unit/test_autokernel_enrollment_cross_repo.py:47 test_actual_cpu_gpu_export_resolves_reaches_campaign_cli_and_fake_measurement cc=30 len=109
+- tests/unit/test_typed_decisions_measure.py:782 test_provided_catalogue_reaches_primitives_verbatim cc=30 len=51
+- tests/unit/test_dashboard_helpers.py:599 test_topology_parity_smoke_for_expected_listener_ports cc=29 len=86
+- tests/unit/test_dashboard_route_html.py:803 test_dashboard_live_panel_refreshes_ignore_stale_responses_where_possible cc=29 len=41
+- tests/unit/test_llm_primitives.py:240 test_request_context_scoped_and_reset cc=29 len=43
+- tests/unit/test_quarter_stack_smoke.py:56 test_derived_chat_ports_drop_retired_ports_and_pick_up_live_ones cc=29 len=53
+- tests/test_reviewer_policy_arm_ab.py:354 test_compute_policy_comparison_exact_values cc=28 len=53
+- tests/unit/test_offline_reward_pairwise_holdout_expansion_plan.py:948 test_pairwise_holdout_writes_guarded_collection_manifest_and_script cc=28 len=107
+- tests/unit/test_typed_decisions_native.py:1517 test_primitives_snapshot_reports_per_question_raw_capture cc=27 len=38
+- tests/unit/test_autopilot_numeric_apply.py:84 test_spec_decode_role_restart_surface_exposes_numeric_only cc=26 len=28
+- tests/unit/test_autopilot_phase_status.py:408 test_phase_health_report_exposes_allowlisted_autopilot_env_flags cc=26 len=78
+- tests/unit/test_full_slot_demotion.py:524 test_frontdoor_shared_backends_build_four_quarters_under_frontdoor_topology cc=26 len=61
+- tests/unit/test_model_descriptors_schema.py:126 test_shared_runtime_aliases_do_not_emit_role_server_conflicts cc=26 len=76
+- tests/unit/test_offline_reward_oracle_eval.py:23 test_evaluate_oracle_scores_against_binary_rewards_and_stress_rows cc=26 len=130
+- tests/unit/test_stack_manifest_imports.py:522 test_resolve_slots_is_per_instance_for_a_split_role cc=26 len=102
+- tests/unit/test_stack_priors_compiler.py:592 test_compile_prefers_server_mode_for_shared_role_memory_and_serving cc=26 len=152
+- tests/unit/test_code_search.py:540 test_flag_on_uses_colgrep cc=25 len=46
+
+## Big classes (>=400 lines)
+- tests/integration/test_chat_pipeline.py:166 TestChatEndpoint len=802
+- tests/unit/test_architect_delegation.py:489 TestDelegationTokenCaps len=550
+- tests/unit/test_chat_pipeline_stages.py:1302 TestExecuteDirect len=475
+- tests/unit/test_chat_summarization.py:219 TestTwoStagePipelineExecution len=659
+- tests/unit/test_dashboard_region_locks.py:424 TestRegionLocksSnapshot len=825
+- tests/unit/test_inference_mixin.py:272 TestCallCachingBackend len=536
+- tests/unit/test_llama_server.py:116 TestLlamaServerBackend len=671
+- tests/unit/test_pipeline_routing.py:35 TestRouteRequest len=754
+- tests/unit/test_strategy_store.py:40 TestStrategyStore len=1047
+
+## Most swallowed broad excepts (except Exception: pass/continue/return const)
+- tests/test_evidence_semantics.py: 1 swallowed / 1 broad; lines [27]
+- tests/test_reviewer_contract.py: 1 swallowed / 1 broad; lines [39]
+- tests/unit/test_concept_integration.py: 1 swallowed / 1 broad; lines [32]
+- tests/unit/test_debug_scorer_hard_fail.py: 1 swallowed / 1 broad; lines [397]
+- tests/unit/test_roles.py: 1 swallowed / 1 broad; lines [33]
+- tests/unit/test_seed_specialist_routing_main_and_retry.py: 1 swallowed / 1 broad; lines [110]
+- tests/unit/test_voice_route_contract.py: 1 swallowed / 1 broad; lines [368]
+
+## Import-time module-level calls (potential side effects)
+- tests/unit/test_debugbench_diff_oracle.py: 12 — spec_from_file_location@28, module_from_spec@30, exec_module@32, spec_from_file_location@34, module_from_spec@36, exec_module@38, spec_from_file_location@40, module_from_spec@42
+- tests/unit/test_livecodebench_oracle.py: 10 — spec_from_file_location@29, module_from_spec@31, exec_module@33, spec_from_file_location@35, module_from_spec@37, exec_module@39, exists@441, spec_from_file_location@458
+- tests/test_autopilot_review_integration.py: 7 — insert@23, import_module@25, import_module@26, import_module@27, import_module@28, import_module@29, import_module@30
+- tests/unit/test_e8_quality_baseline_v5_recovery_finalizer.py: 6 — spec_from_file_location@20, module_from_spec@22, exec_module@24, spec_from_file_location@25, module_from_spec@27, exec_module@29
+- tests/unit/test_instrument_era_guard_eval_quality.py: 6 — timestamp@20, datetime@20, timestamp@21, datetime@21, timestamp@22, datetime@22
+- tests/integration/test_chat_pipeline.py: 5 — filterwarnings@31, filterwarnings@34, filterwarnings@37, filterwarnings@40, filterwarnings@43
+- tests/test_evidence_loop.py: 5 — skipif@37, hasattr@38, hasattr@38, skipif@41, hasattr@42
+- tests/test_reviewer_contract.py: 5 — skipif@46, hasattr@47, skipif@50, skipif@60, skipif@64
+- tests/unit/test_autokernel_enrollment_cross_repo.py: 5 — importorskip@17, importorskip@18, importorskip@19, importorskip@20, importorskip@21
+- tests/unit/test_autopilot_actions.py: 5 — insert@17, insert@18, import_module@20, import_module@21, import_module@22
+- tests/unit/test_autopilot_creativity.py: 5 — insert@26, insert@27, import_module@29, import_module@37, import_module@38
+- tests/unit/test_autopilot_numeric_apply.py: 5 — insert@14, insert@15, import_module@17, import_module@18, import_module@19
+- tests/unit/test_autopilot_system_card.py: 5 — insert@15, insert@16, import_module@18, import_module@19, import_module@20
+- tests/unit/test_dispatch_cross_role_placement.py: 5 — insert@26, insert@27, import_module@29, import_module@30, isdisjoint@131
+- tests/unit/test_full_slot_demotion.py: 5 — insert@33, insert@34, import_module@36, topology_idx_for_port@116, topology_idx_for_port@117
+- tests/unit/test_seeding_orchestrator.py: 5 — insert@19, insert@22, spec_from_file_location@23, module_from_spec@24, exec_module@26
+- tests/unit/test_vb_ap53_reproposal_rate.py: 5 — insert@21, insert@22, import_module@24, import_module@25, import_module@26
+- tests/test_reviewer_policy_arm_ab.py: 4 — spec_from_file_location@35, module_from_spec@36, exec_module@38, _load_paired_stats@41
+- tests/test_run_paired_ab.py: 4 — spec_from_file_location@25, module_from_spec@26, exec_module@28, _load_paired_stats@31
+- tests/test_screening_tier_runner.py: 4 — spec_from_file_location@26, module_from_spec@27, exec_module@29, _load_review_policy_trials@33
+- tests/unit/test_ap53_rejected_mutation_ledger.py: 4 — insert@19, insert@20, import_module@22, import_module@23
+- tests/unit/test_autopilot_eval_quality_era_fence.py: 4 — insert@17, insert@18, timestamp@28, datetime@28
+- tests/unit/test_autopilot_oom_protection.py: 4 — insert@20, insert@21, import_module@23, import_module@24
+- tests/unit/test_autopilot_planner_coordinator.py: 4 — insert@17, insert@18, import_module@20, import_module@21
+- tests/unit/test_b7_golden_corpus_pin.py: 4 — insert@43, insert@44, _load_jsonl@133, _load_jsonl@134
+- tests/unit/test_concurrency_aware_quarter_preference.py: 4 — insert@16, insert@17, import_module@19, import_module@20
+- tests/unit/test_debug_scorer_td21_parse_exclusion.py: 4 — insert@36, spec_from_file_location@60, module_from_spec@63, exec_module@65
+- tests/unit/test_e8_quality_baseline_v5_partial_r2_recovery.py: 4 — spec_from_file_location@17, module_from_spec@19, exec_module@21, getattr@22
+- tests/unit/test_eval_log_format.py: 4 — insert@11, spec_from_file_location@12, module_from_spec@13, exec_module@15
+- tests/unit/test_eval_resume_incomplete.py: 4 — insert@23, spec_from_file_location@29, module_from_spec@31, exec_module@33
+- tests/unit/test_eval_tower_ece_binning_pin.py: 4 — insert@65, insert@66, insert@67, skipif@96
+- tests/unit/test_eval_verifier_mode.py: 4 — insert@32, spec_from_file_location@45, module_from_spec@47, exec_module@49
+- tests/unit/test_gate_verdict_vocab.py: 4 — spec_from_file_location@24, module_from_spec@26, setdefault@27, exec_module@28
+- tests/unit/test_gpqa_missing_gold_is_out_of_coverage.py: 4 — insert@32, spec_from_file_location@37, module_from_spec@38, exec_module@39
+- tests/unit/test_host_health_pause_around_flush.py: 4 — insert@22, insert@23, import_module@26, import_module@27
+- tests/unit/test_journal_segment_snapshots.py: 4 — insert@16, insert@17, datetime@30, timestamp@245
+- tests/unit/test_load_transition_migration.py: 4 — insert@31, insert@32, import_module@34, import_module@35
+- tests/unit/test_meta_optimizer.py: 4 — insert@14, insert@15, import_module@17, import_module@18
+- tests/unit/test_orchestrator_stack_threads.py: 4 — insert@21, insert@22, import_module@25, import_module@26
+- tests/unit/test_scheduling_contention_gate.py: 4 — insert@24, import_module@26, import_module@27, import_module@28
+
+## sys.path mutations
+- tests/retrieval/test_federation.py: lines [23]
+- tests/test_analysis_report_snapshot_sealing.py: lines [11]
+- tests/test_autopilot_review_integration.py: lines [23]
+- tests/test_calibration_report.py: lines [19]
+- tests/test_corpus_v1_build.py: lines [21]
+- tests/test_eval_suite_discriminability.py: lines [29]
+- tests/test_gepa_integration.py: lines [17]
+- tests/test_review_ledger_v2.py: lines [39]
+- tests/test_reviewer_events_to_ledger.py: lines [31]
+- tests/test_tm8_coverage.py: lines [30]
+- tests/test_tool_sentinels.py: lines [25]
+- tests/unit/test_affinity_preflight_cell_manifest.py: lines [378]
+- tests/unit/test_answer_scoring_drift.py: lines [38]
+- tests/unit/test_answer_without_generation.py: lines [28]
+- tests/unit/test_ap53_rejected_mutation_ledger.py: lines [19, 20]
+- tests/unit/test_ap54_eval_knowledge_fence.py: lines [30]
+- tests/unit/test_ap55_arm_review.py: lines [19, 20]
+- tests/unit/test_ap55_infra_fingerprint.py: lines [22, 23]
+- tests/unit/test_ap55_promotion_gate.py: lines [47, 48]
+- tests/unit/test_ap57_speed_axis_reseed_journal.py: lines [18, 19]
+- tests/unit/test_ap63_run_manifest_lineage.py: lines [20, 21]
+- tests/unit/test_architect_delegation.py: lines [15]
+- tests/unit/test_archive_authority_repair.py: lines [13, 14]
+- tests/unit/test_archive_authority_report.py: lines [11, 12]
+- tests/unit/test_archive_source_surface_audit.py: lines [10, 11]
+- tests/unit/test_atomic_state_persistence.py: lines [24, 25]
+- tests/unit/test_autopilot_actions.py: lines [17, 18]
+- tests/unit/test_autopilot_actions_dirty_fence.py: lines [21, 22]
+- tests/unit/test_autopilot_baseline_calibration.py: lines [11]
+- tests/unit/test_autopilot_bradley_terry.py: lines [21]
+- tests/unit/test_autopilot_bt_tiebreak.py: lines [18, 19]
+- tests/unit/test_autopilot_controller_io.py: lines [15, 16]
+- tests/unit/test_autopilot_creativity.py: lines [26, 27]
+- tests/unit/test_autopilot_eval_quality_era_fence.py: lines [17, 18]
+- tests/unit/test_autopilot_exit_breadcrumb.py: lines [11, 12]
+- tests/unit/test_autopilot_hle_fields.py: lines [10, 11]
+- tests/unit/test_autopilot_hle_metrics.py: lines [10, 11]
+- tests/unit/test_autopilot_multitier_wiring.py: lines [11, 12]
+- tests/unit/test_autopilot_numeric_apply.py: lines [14, 15]
+- tests/unit/test_autopilot_oom_protection.py: lines [20, 21]
+- tests/unit/test_autopilot_operator_hypotheses.py: lines [23, 24]
+- tests/unit/test_autopilot_parent_utility.py: lines [21, 22]
+- tests/unit/test_autopilot_pause_apply_interlock.py: lines [37, 38]
+- tests/unit/test_autopilot_phase_status.py: lines [9]
+- tests/unit/test_autopilot_planner_coordinator.py: lines [17, 18]
+- tests/unit/test_autopilot_planner_providers.py: lines [16, 17]
+- tests/unit/test_autopilot_recovery.py: lines [38, 39]
+- tests/unit/test_autopilot_resume_halt_latch.py: lines [48, 49]
+- tests/unit/test_autopilot_seeder_state.py: lines [9]
+- tests/unit/test_autopilot_sequential_wiring.py: lines [14, 15]
+- tests/unit/test_autopilot_startup_attestation.py: lines [12, 13]
+- tests/unit/test_autopilot_state_single_writer_h4.py: lines [31, 32]
+- tests/unit/test_autopilot_state_store.py: lines [17, 18]
+- tests/unit/test_autopilot_system_card.py: lines [15, 16]
+- tests/unit/test_b7_golden_corpus_pin.py: lines [43, 44]
+- tests/unit/test_baseline_authority_report.py: lines [11, 12]
+- tests/unit/test_baseline_authority_seed.py: lines [13, 14]
+- tests/unit/test_baseline_durability.py: lines [29]
+- tests/unit/test_baseline_scale_guard.py: lines [15]
+- tests/unit/test_bsv_observe.py: lines [14]
+- tests/unit/test_check_shared_with_derivations.py: lines [19]
+- tests/unit/test_classify_learning_exclusion.py: lines [17]
+- tests/unit/test_concurrency_aware_quarter_preference.py: lines [16, 17]
+- tests/unit/test_config_applicator.py: lines [15]
+- tests/unit/test_config_fingerprint.py: lines [11]
+- tests/unit/test_contention_denied_503.py: lines [13]
+- tests/unit/test_context_budget.py: lines [9]
+- tests/unit/test_core_v2_promotion_report.py: lines [9]
+- tests/unit/test_core_v2_real_file.py: lines [26, 27]
+- tests/unit/test_core_v2_select.py: lines [10, 11]
+- tests/unit/test_cross_role_region_mutex.py: lines [47]
+- tests/unit/test_daemon_owned_state_ownership.py: lines [39, 40]
+- tests/unit/test_debug_scorer_code_execution.py: lines [14]
+- tests/unit/test_debug_scorer_hard_fail.py: lines [22, 394, 400]
+- tests/unit/test_debug_scorer_multiple_choice.py: lines [9]
+- tests/unit/test_debug_scorer_nugget_judge_transport.py: lines [26]
+- tests/unit/test_debug_scorer_prbt4_guards.py: lines [19]
+- tests/unit/test_debug_scorer_score25_26.py: lines [26]
+- tests/unit/test_debug_scorer_semantics.py: lines [11]
+- tests/unit/test_debug_scorer_td21_parse_exclusion.py: lines [36]
+- tests/unit/test_design_archive.py: lines [11]
+- tests/unit/test_dispatch_cross_role_placement.py: lines [26, 27]
+- tests/unit/test_dispatch_placement_state_machine.py: lines [26, 27]
+- tests/unit/test_disposition_survives_to_paired_stats.py: lines [29]
+- tests/unit/test_diversity_metrics.py: lines [24, 25]
+- tests/unit/test_economic_ledger.py: lines [12]
+- tests/unit/test_env_synth_species.py: lines [13]
+- tests/unit/test_epd3_r5_r6_r8.py: lines [19]
+- tests/unit/test_episodic_integrity_check.py: lines [277, 308, 331]
+- tests/unit/test_era_stamp_reachability.py: lines [34, 35]
+- tests/unit/test_etr1_task_failed_scores_zero.py: lines [16]
+- tests/unit/test_etr4_rubric_threshold_source_guard.py: lines [23]
+- tests/unit/test_ev14d_short_draw_completeness.py: lines [16, 17]
+- tests/unit/test_ev14e_baseline_pin_record.py: lines [18]
+- tests/unit/test_ev6b_cross_family_fail_closed.py: lines [55]
+- tests/unit/test_ev_conf2_confidence_probe.py: lines [24]
+- tests/unit/test_ev_conf2_token_confidence.py: lines [24]
+- tests/unit/test_eval_batch_timeout_extension.py: lines [53]
+- tests/unit/test_eval_details_field_parity.py: lines [19, 20]
+- tests/unit/test_eval_instrument_ledger.py: lines [30]
+- tests/unit/test_eval_leakage_operability.py: lines [21]
+- tests/unit/test_eval_log_format.py: lines [11]
+- tests/unit/test_eval_pipeline_scoring.py: lines [26]
+- tests/unit/test_eval_question_sidecar_timing.py: lines [20]
+- tests/unit/test_eval_resume_incomplete.py: lines [23]
+- tests/unit/test_eval_task_coverage_report.py: lines [9, 10]
+- tests/unit/test_eval_tier_mix_equal_thirds.py: lines [26]
+- tests/unit/test_eval_tower_concurrency_metrics.py: lines [19]
+- tests/unit/test_eval_tower_decision_partitions.py: lines [9]
+- tests/unit/test_eval_tower_ece_binning_pin.py: lines [65, 66, 67]
+- tests/unit/test_eval_tower_ev11_stats.py: lines [19, 20, 21]
+- tests/unit/test_eval_tower_fanout_numa_mode.py: lines [27]
+- tests/unit/test_eval_tower_hybrid_eval.py: lines [9]
+- tests/unit/test_eval_tower_instrument_repair.py: lines [11]
+- tests/unit/test_eval_tower_loaders.py: lines [12]
+- tests/unit/test_eval_tower_paired_significance.py: lines [23, 24, 25]
+- tests/unit/test_eval_tower_question_persistence.py: lines [14]
+- tests/unit/test_eval_tower_rel1_honesty_guards.py: lines [30]
+- tests/unit/test_eval_tower_seagym_views.py: lines [11]
+- tests/unit/test_eval_tower_t3.py: lines [8]
+- tests/unit/test_eval_tower_targeted_recovery.py: lines [8]
+- tests/unit/test_eval_verifier_mode.py: lines [32]
+- tests/unit/test_evolution_manager_scrub.py: lines [10, 11]
+- tests/unit/test_experiment_journal_durability.py: lines [24, 25]
+- tests/unit/test_experiment_journal_measurement.py: lines [16]
+- tests/unit/test_external_drafter_launch.py: lines [18, 19]
+- tests/unit/test_failure_analysis.py: lines [9]
+- tests/unit/test_full_slot_demotion.py: lines [33, 34]
+- tests/unit/test_gate3_tool_telemetry.py: lines [14]
+- tests/unit/test_gate_frontier_c_and_b.py: lines [26]
+- tests/unit/test_gate_frontier_live_scope.py: lines [25]
+- tests/unit/test_gate_runner_out_of_coverage.py: lines [30]
+- tests/unit/test_gate_seam_wiring.py: lines [33]
+- tests/unit/test_gpqa_missing_gold_is_out_of_coverage.py: lines [32]
+- tests/unit/test_handoff_closure_candidate_report.py: lines [9, 10]
+- tests/unit/test_heldout_effect_corpus.py: lines [14]
+- tests/unit/test_host_health_pause_around_flush.py: lines [22, 23]
+- tests/unit/test_infra_failed_disposition.py: lines [43]
+- tests/unit/test_infra_reward_emission_guard.py: lines [37]
+- tests/unit/test_journal_prompt_sanitization.py: lines [8]
+- tests/unit/test_journal_segment_snapshots.py: lines [16, 17]
+- tests/unit/test_journal_snapshot_create.py: lines [12, 13]
+- tests/unit/test_journal_snapshot_live_guard.py: lines [15, 16]
+- tests/unit/test_journal_supersession_events.py: lines [12]
+- tests/unit/test_knowledge_distiller.py: lines [14]
+- tests/unit/test_kv_migration_status.py: lines [11, 76]
+- tests/unit/test_kv_per_token_declaration.py: lines [30, 31]
+- tests/unit/test_kv_quant_block_widths.py: lines [31, 32]
+- tests/unit/test_legacy_scale_scrub.py: lines [13]
+- tests/unit/test_live_serving_infra_reward_guard.py: lines [40]
+- tests/unit/test_load_transition_migration.py: lines [31, 32]
+- tests/unit/test_meta_halt_classification.py: lines [15]
+- tests/unit/test_meta_optimizer.py: lines [14, 15]
+- tests/unit/test_metric_lines.py: lines [14]
+- tests/unit/test_migration_counters.py: lines [19]
+- tests/unit/test_minddr_graph.py: lines [26]
+- tests/unit/test_minddr_sentinel_and_rubric.py: lines [13]
+- tests/unit/test_model_gate_report.py: lines [7, 8]
+- tests/unit/test_model_judge_tail_v3_ratifier.py: lines [11]
+- tests/unit/test_multitier_mutation_candidates.py: lines [281, 22]
+- tests/unit/test_mutation_diagnostics.py: lines [18]
+- tests/unit/test_mutation_graph.py: lines [10]
+- tests/unit/test_one_embedding_convention_writers.py: lines [41, 43]
+- tests/unit/test_orchestrator_stack_threads.py: lines [21, 22]
+- tests/unit/test_orchestrator_stack_validate_only.py: lines [38]
+- tests/unit/test_orchestrator_watcher.py: lines [23, 24]
+- tests/unit/test_output_spill.py: lines [16]
+- tests/unit/test_pareto_archive_tiers.py: lines [16]
+- tests/unit/test_pareto_dimensionality_guard.py: lines [37]
+- tests/unit/test_patch_verifier.py: lines [14]
+- tests/unit/test_peaf_quality_scale.py: lines [10]
+- tests/unit/test_per_region_locks_migration.py: lines [20]
+- tests/unit/test_per_suite_regression_float_boundary.py: lines [19]
+- tests/unit/test_per_suite_regression_resolution.py: lines [25]
+- tests/unit/test_planner_deterministic_block_breaker.py: lines [20]
+- tests/unit/test_progress_plots_filters.py: lines [9]
+- tests/unit/test_prompt_forge_content_leakage.py: lines [23]
+- tests/unit/test_prompt_forge_leakage_and_risk.py: lines [21]
+- tests/unit/test_prompt_forge_mutation_safety.py: lines [18]
+- tests/unit/test_prompt_forge_safety.py: lines [14]
+- tests/unit/test_q_scorer.py: lines [39]
+- tests/unit/test_quality_measured_producers.py: lines [22, 23]
+- tests/unit/test_question_pool_yaml_only.py: lines [11]
+- tests/unit/test_reasoning_length_alarm.py: lines [12]
+- tests/unit/test_replay_engine.py: lines [14]
+- tests/unit/test_replay_meta_agent_objective.py: lines [10]
+- tests/unit/test_replay_metrics.py: lines [11]
+- tests/unit/test_research_like_classifier.py: lines [19]
+- tests/unit/test_research_module_identity.py: lines [38, 39]
+- tests/unit/test_resilient_http.py: lines [24, 25]
+- tests/unit/test_restart_readiness_report.py: lines [12, 13]
+- tests/unit/test_retriever_risk_gate.py: lines [13]
+- tests/unit/test_reverse_migration.py: lines [31, 32]
+- tests/unit/test_rubric_scoring.py: lines [11, 12]
+- tests/unit/test_safety_gate_b9_gate.py: lines [20, 21]
+- tests/unit/test_safety_gate_baseline_eligibility.py: lines [13, 14]
+- tests/unit/test_safety_gate_baseline_integrity.py: lines [23]
+- tests/unit/test_safety_gate_diversity.py: lines [21]
+- tests/unit/test_safety_gate_ev14c_reference_pin.py: lines [28]
+- tests/unit/test_safety_gate_eval_quality_era.py: lines [14]
+- tests/unit/test_safety_gate_mad.py: lines [15]
+- tests/unit/test_safety_gate_metric_contract.py: lines [13]
+- tests/unit/test_safety_gate_quality_measured.py: lines [27, 28]
+- tests/unit/test_safety_gate_ratchet_freeze.py: lines [22]
+- tests/unit/test_safety_gate_reliability_floor.py: lines [19, 20]
+- tests/unit/test_safety_gate_sequential_verdict.py: lines [19]
+- tests/unit/test_safety_gate_speed_era_and_suite_absence.py: lines [26, 27]
+- tests/unit/test_scheduling_contention.py: lines [13, 103, 631, 755]
+- tests/unit/test_scheduling_contention_gate.py: lines [24]
+- tests/unit/test_seed_operator_strategies.py: lines [10]
+- tests/unit/test_seed_specialist_routing_helpers.py: lines [17, 18]
+- tests/unit/test_seed_specialist_routing_main_and_retry.py: lines [20, 21]
+- tests/unit/test_seed_specialist_routing_v2_helpers.py: lines [17, 18]
+- tests/unit/test_seeding_checkpoint.py: lines [12]
+- tests/unit/test_seeding_consumers.py: lines [16, 17]
+- tests/unit/test_seeding_eval.py: lines [15]
+- tests/unit/test_seeding_infra.py: lines [13]
+- tests/unit/test_seeding_infra_additional.py: lines [14]
+- tests/unit/test_seeding_infra_branching.py: lines [16]
+- tests/unit/test_seeding_injection.py: lines [12]
+- tests/unit/test_seeding_injection_additional.py: lines [13]
+- tests/unit/test_seeding_legacy.py: lines [15]
+- tests/unit/test_seeding_orchestrator.py: lines [19, 22]
+- tests/unit/test_seeding_rewards.py: lines [13]
+- tests/unit/test_seeding_scoring.py: lines [12]
+- tests/unit/test_seeding_tui.py: lines [18]
+- tests/unit/test_seeding_types_state.py: lines [13]
+- tests/unit/test_self_criticism_resolution.py: lines [8]
+- tests/unit/test_seq_rate_axis_paired_measurement.py: lines [38, 39]
+- tests/unit/test_seq_refutation_capture.py: lines [29]
+- tests/unit/test_seq_refuted_learning_exclusion_parity.py: lines [40]
+- tests/unit/test_stack_change_pipeline_simulated_fixtures.py: lines [22, 23, 24]
+- tests/unit/test_stack_manifest_imports.py: lines [23, 24]
+- tests/unit/test_start_authority_daemon.py: lines [11]
+- tests/unit/test_stat_tests.py: lines [21]
+- tests/unit/test_stm_generated_view.py: lines [11]
+- tests/unit/test_strategy_projection_report.py: lines [14, 15]
+- tests/unit/test_strategy_store.py: lines [15]
+- tests/unit/test_structural_lab_mutations.py: lines [21]
+- tests/unit/test_task_ir.py: lines [10]
+- tests/unit/test_td21_25_evolution_manager_repair.py: lines [35, 36]
+- tests/unit/test_td21_26_env_synth_repair.py: lines [28]
+- tests/unit/test_td21_27_prompt_forge_extraction.py: lines [31]
+- tests/unit/test_td21_judge_output_shape.py: lines [34, 35, 36]
+- tests/unit/test_td21_parse_failure_rate_reporting.py: lines [21, 22]
+- tests/unit/test_token_accounting_invariant.py: lines [22, 23]
+- tests/unit/test_trajectory_extractor.py: lines [14]
+- tests/unit/test_vb_ap53_reproposal_rate.py: lines [21, 22]
+- tests/unit/test_w3e_axis_name_reads.py: lines [23]
+- tests/unit/test_warm_start.py: lines [12]
+
+## Private cross-module imports (from x import _y)
+- tests/unit/test_api_imports.py: src.api.routes.chat_utils._estimate_tokens, src.api.routes.chat_utils._is_stub_final, src.api.routes.chat_utils._strip_tool_outputs, src.api.routes.chat_utils._resolve_answer, src.api.routes.chat_utils._truncate_looped_answer, src.api.routes.chat_utils._should_formalize, src.api.routes.chat_utils._formalize_output, src.api.routes.chat_routing._select_mode
+- tests/unit/test_architect_delegation.py: src.api.routes.chat_delegation._parse_architect_decision, src.api.routes.chat_delegation._parse_architect_decision, src.api.routes.chat_delegation._parse_architect_decision, src.api.routes.chat_delegation._parse_architect_decision, src.api.routes.chat_delegation._parse_architect_decision, src.api.routes.chat_delegation._parse_architect_decision, src.api.routes.chat_delegation._parse_architect_decision, src.api.routes.chat_delegation._parse_architect_decision
+- tests/unit/test_graph_compaction_budgets.py: src.graph.compaction._estimate_context_tokens, src.graph.compaction._estimate_context_tokens, src.graph.compaction._get_model_max_context, src.graph.compaction._get_model_max_context, src.graph.compaction._get_model_max_context, src.graph.compaction._context_externalization_path, src.graph.compaction._context_externalization_path, src.graph.compaction._resolve_compaction_prompt
+- tests/unit/test_graph_extracted_modules.py: src.graph.task_ir_helpers._extract_candidate_files_from_task_ir, src.graph.task_ir_helpers._extract_candidate_files_from_task_ir, src.graph.task_ir_helpers._extract_candidate_files_from_task_ir, src.graph.task_ir_helpers._extract_candidate_files_from_task_ir, src.graph.task_ir_helpers._extract_candidate_files_from_task_ir, src.graph.task_ir_helpers._extract_candidate_files_from_task_ir, src.graph.task_ir_helpers._auto_seed_tasks_from_task_ir, src.graph.task_ir_helpers._auto_seed_tasks_from_task_ir
+- tests/unit/test_plan_review.py: src.api.routes.chat_review._needs_plan_review, src.api.routes.chat_review._needs_plan_review, src.api.routes.chat_review._needs_plan_review, src.api.routes.chat_review._needs_plan_review, src.api.routes.chat_review._needs_plan_review, src.api.routes.chat_review._needs_plan_review, src.api.routes.chat_review._needs_plan_review, src.api.routes.chat_review._needs_plan_review
+- tests/unit/test_vision_routing.py: src.api.routes.chat_vision._execute_vision_tool, src.api.routes.chat_vision._execute_vision_tool, src.api.routes.chat_vision._execute_vision_tool, src.api.routes.chat_vision._execute_vision_tool, src.api.routes.chat_vision._execute_vision_tool, src.api.routes.chat_vision._execute_vision_tool, src.api.routes.chat_vision._execute_vision_tool, src.api.routes.chat_vision._safe_eval_math
+- tests/unit/test_chat_delegation.py: src.api.routes.chat_delegation._strip_think, src.api.routes.chat_delegation._extract_toon_decision, src.api.routes.chat_delegation._parse_architect_decision, src.api.routes.chat_delegation._get_delegation_depth, src.api.routes.chat_delegation._delegation_local, src.api.routes.chat_delegation_decision._ARCHITECT_TOKEN_BUDGET, src.api.routes.chat_delegation_decision._ARCHITECT_DECISION_BUDGET, src.api.routes.chat_delegation_decision._architect_budget_roles
+- tests/unit/test_graph_helpers.py: src.graph.helpers._add_evidence, src.graph.helpers._classify_error, src.graph.helpers._detect_role_cycle, src.graph.helpers._execute_turn, src.graph.helpers._execute_repl_with_timeout, src.graph.helpers._looks_like_prompt_echo, src.graph.helpers._loop_guard_classification_view, src.graph.helpers._record_mitigation
+- tests/unit/test_graph_nodes.py: src.graph.helpers._build_think_harder_config, src.graph.helpers._classify_error, src.graph.helpers._detect_role_cycle, src.graph.helpers._extract_final_from_raw, src.graph.helpers._extract_prose_answer, src.graph.helpers._frontdoor_repl_non_tool_token_cap, src.graph.helpers._frontdoor_turn_token_cap, src.graph.helpers._is_comment_only
+- tests/unit/test_stack_change_pipeline_simulated_fixtures.py: scripts.autopilot.preflight_audit._model_server_target_groups, src.api.routes.openai_compat._ordered_live_role_ids, src.cli_orch._stack_status_targets, src.classifiers.factual_risk._role_adjustment, src.classifiers.factual_risk._role_tier_for_role, src.api.routes.dashboard_topology._stack_prior_port_hints, src.api.routes.health._stack_prior_backend_urls, src.api.routes.chat_pipeline.vision_stage._vl_port_for_role
+- tests/integration/test_real_pipeline.py: src.api.routes.chat_pipeline.stages._annotate_error, src.api.routes.chat_pipeline.proactive_stage._parse_plan_steps, src.api.routes.chat_review._detect_output_quality_issue, src.api.routes.chat_review._needs_plan_review, src.api.routes.chat_review._needs_plan_review, src.api.routes.chat_review._needs_plan_review, src.api.routes.chat_review._compute_plan_review_phase, src.api.routes.chat_review._compute_plan_review_phase
+- tests/unit/test_task_ir_helpers.py: src.graph.task_ir_helpers._extract_candidate_files_from_task_ir, src.graph.task_ir_helpers._extract_candidate_files_from_task_ir, src.graph.task_ir_helpers._auto_seed_tasks_from_task_ir, src.graph.task_ir_helpers._auto_seed_tasks_from_task_ir, src.graph.task_ir_helpers._auto_seed_tasks_from_task_ir, src.graph.task_ir_helpers._auto_seed_tasks_from_task_ir, src.graph.task_ir_helpers._auto_gather_context, src.graph.task_ir_helpers._check_anti_pattern
+- tests/classifiers/test_difficulty_signal.py: src.classifiers.difficulty_signal._band, src.classifiers.difficulty_signal._compute_score, src.classifiers.difficulty_signal._extract_features, src.graph.helpers._repl_turn_token_cap, src.graph.helpers._repl_turn_token_cap, src.graph.helpers._repl_turn_token_cap, src.graph.helpers._repl_turn_token_cap, src.graph.helpers._repl_turn_token_cap
+- tests/unit/test_chat_vision.py: src.api.routes.chat_vision._execute_vision_tool, src.api.routes.chat_vision._fallback_vl_port_for_role, src.api.routes.chat_vision._handle_multi_file_vision, src.api.routes.chat_vision._handle_vision_request, src.api.routes.chat_vision._needs_structured_analysis, src.api.routes.chat_vision._safe_eval_math, src.api.routes.chat_vision._stack_prior_vl_urls, src.api.routes.chat_vision._vl_url_for_port
+- tests/unit/test_stack_priors_compiler.py: src.registry.stack_priors._realized_compile_numa_mode, src.registry.stack_priors._launch_runtime_record, src.registry.stack_priors._policy_hints, src.registry.stack_priors._launch_record, src.registry.stack_priors._serving_record, src.registry.stack_priors._stack_manifest_info, src.registry.stack_priors._server_mode_launch_requirement_overrides, src.config.models._LEGACY_SERVER_URL_FALLBACKS
+- tests/unit/test_typed_decisions_native.py: src.typed_decisions.native._cue_text, src.typed_decisions.native._DECODE_SEED, src.typed_decisions.native._NativeCandidate, src.typed_decisions.native._NativeQuestion, src.typed_decisions.native._native_from_layout, src.typed_decisions.native._native_layout, src.typed_decisions.routing_replay._CODE_ALPHABET, src.typed_decisions.native._tokenize_catalogue
+- tests/unit/test_chat_pipeline_stages.py: src.api.routes.chat_pipeline.stages._annotate_error, src.api.routes.chat_pipeline.stages._execute_mock, src.api.routes.chat_pipeline.stages._execute_react, src.api.routes.chat_pipeline.vision_stage._execute_vision, src.api.routes.chat_pipeline.delegation_stage._execute_delegated, src.api.routes.chat_pipeline.proactive_stage._execute_proactive, src.api.routes.chat_pipeline.proactive_stage._parse_plan_steps, src.api.routes.chat_pipeline.direct_stage._execute_direct
+- tests/unit/test_factual_risk.py: src.classifiers.factual_risk._DEFAULT_ROLE_TIERS, src.classifiers.factual_risk._degraded_role_tier, src.classifiers.factual_risk._extract_features, src.classifiers.factual_risk._canary_roll, src.classifiers.factual_risk._compute_score, src.classifiers.factual_risk._role_tier_for_role, src.classifiers.factual_risk._role_adjustment, src.classifiers.factual_risk._tier_from_model_mem
+- tests/unit/test_dashboard_region_locks.py: src.api.routes.dashboard._port_role_shape, src.api.routes.dashboard._region_locks_payload, src.api.routes.dashboard._filter_instance_regions_for_mode, src.api.routes.dashboard._shape_for_regions, src.api.routes.dashboard._resolve_pid_to_instance_idx, src.api.routes.dashboard._panel_shapes_from_matrix, src.api.routes.dashboard._lock_root_provenance, src.api.routes.dashboard._placement_telemetry_status
+- tests/unit/test_features.py: src.features._feature_flag_bool, src.features._FEATURE_REGISTRY, src.features._FEATURE_REGISTRY, src.features._FEATURE_REGISTRY, src.features._FEATURE_REGISTRY, src.features._FEATURE_REGISTRY, src.features._FEATURE_REGISTRY, src.features._FEATURE_REGISTRY
+- tests/unit/test_langgraph_migration.py: src.graph.langgraph.state._SKIP_TO_LG, src.graph.langgraph.state._CONFIG_FIELDS, src.config.models._CANONICAL_SERVER_URL_ALIASES, src.graph.langgraph.state._merge_artifacts, src.graph.langgraph.state._merge_think_harder_roi, src.graph.langgraph.state._merge_workspace_state, src.graph.langgraph.state._merge_workspace_state, src.graph.langgraph.state._merge_workspace_state
+- tests/unit/test_chat_review_coverage.py: src.api.routes.chat_review._apply_plan_review, src.api.routes.chat_review._architect_plan_review, src.api.routes.chat_review._compute_plan_review_phase, src.api.routes.chat_review._detect_output_quality_issue, src.api.routes.chat_review._needs_plan_review, src.api.routes.chat_review._store_plan_review_episode, src.api.routes.chat_review._synthesized_plan_action
+- tests/unit/test_chat_utils_coverage.py: src.api.routes.chat_utils._estimate_tokens, src.api.routes.chat_utils._formalize_output, src.api.routes.chat_utils._is_stub_final, src.api.routes.chat_utils._resolve_answer, src.api.routes.chat_utils._should_formalize, src.api.routes.chat_utils._strip_tool_outputs, src.api.routes.chat_utils._truncate_looped_answer
+- tests/unit/test_inference_mixin.py: src.llm_primitives.backend._certified_native_batch_width, src.llm_primitives.inference._extract_port, src.llm_primitives.inference._primary_url, src.llm_primitives.inference._sampling_cache_key, src.llm_primitives.inference._request_is_grammar_constrained, src.llm_primitives.inference._request_is_grammar_constrained, src.llm_primitives.inference._request_is_grammar_constrained
+- tests/unit/test_inference_tap.py: src.inference_tap._NullWriter, src.inference_tap._read_sentinel, src.api.routes.dashboard_tap._grep_lines_reverse, src.api.routes.dashboard_tap._read_tail, src.api.routes.dashboard_tap._grep_lines_reverse, src.api.routes.dashboard_tap._grep_lines_reverse, src.inference_tap._tap_path
+- tests/unit/test_langgraph_phase3.py: src.graph.nodes._run_via_langgraph, src.graph.nodes._run_via_langgraph, src.graph.nodes._run_via_langgraph, src.graph.nodes._run_via_langgraph, src.graph.nodes._run_via_langgraph, src.graph.nodes._NEXT_NODE_TO_PG, src.graph.nodes._NEXT_NODE_TO_PG
+- tests/unit/test_answer_resolution.py: src.graph.answer_resolution._looks_like_prompt_echo, src.graph.answer_resolution._should_attempt_prose_rescue, src.graph.answer_resolution._extract_final_from_raw, src.graph.answer_resolution._extract_prose_answer, src.graph.answer_resolution._rescue_from_last_output, src.graph.answer_resolution._resolve_answer
+- tests/unit/test_chat_lane_cache_prompt.py: src.backends.llama_server._cache_prompt, tests.unit.test_thinking_roles_chat_lane._backend, tests.unit.test_thinking_roles_chat_lane._chat_response, tests.unit.test_thinking_roles_chat_lane._clean_features, tests.unit.test_thinking_roles_chat_lane._FakeStream, tests.unit.test_thinking_roles_chat_lane._sse
+- tests/unit/test_chat_review.py: src.api.routes.chat_review._apply_plan_review, src.api.routes.chat_review._compute_plan_review_phase, src.api.routes.chat_review._detect_output_quality_issue, src.api.routes.chat_review._needs_plan_review, src.api.routes.chat_review._plan_review_abort_message, src.api.routes.chat_review._plan_review_should_abort
+- tests/unit/test_chat_routing.py: src.api.routes.chat_routing._classify_and_route, src.api.routes.chat_routing._heuristic_role_priors, src.api.routes.chat_routing._live_heuristic_prior_roles, src.api.routes.chat_routing._role_to_task_type, src.api.routes.chat_routing._select_mode, src.api.routes.chat_routing._should_use_direct
+
+## Duplicate function bodies across files (top 60 by duplicated lines)
+- len=77 x2: tests/integration/test_document_formalizer.py:64 sample_image_base64; tests/integration/test_document_pipeline.py:73 sample_image_base64
+- len=8 x7: tests/unit/test_distillation.py:185 bank; tests/unit/test_failure_bridge.py:65 skill_bank; tests/unit/test_skill_bank.py:103 bank; tests/unit/test_skill_bank.py:420 bank; tests/unit/test_skill_evolution.py:20 skill_bank; tests/unit/test_skill_integration.py:27 skill_bank
+- len=28 x2: tests/unit/test_build_server_command_helpers.py:25 _write_launch_prior; tests/unit/test_k4_ubatch_not_inert.py:44 _write_launch_prior
+- len=25 x2: tests/unit/test_external_drafter_launch.py:130 _declared_backend_metadata; tests/unit/test_stack_numa_reader_agreement.py:224 _declared_backend_metadata
+- len=8 x4: tests/unit/test_concurrency_aware_quarter_preference.py:41 _host_fleet_of; tests/unit/test_dashboard_helpers.py:48 _host_fleet_of; tests/unit/test_dashboard_region_locks.py:56 _host_fleet_of; tests/unit/test_dispatch_placement_state_machine.py:378 _host_fleet_of
+- len=22 x2: tests/unit/test_autopilot_planner_coordinator.py:71 invoke; tests/unit/test_autopilot_planner_providers.py:30 invoke
+- len=11 x3: tests/unit/test_debug_scorer_nugget_judge_transport.py:54 recorder; tests/unit/test_ev6b_cross_family_fail_closed.py:248 judge_recorder; tests/unit/test_td21_judge_output_shape.py:145 orchestrator_judge
+- len=11 x3: tests/unit/test_openai_client_tool_mode.py:80 client; tests/unit/test_openai_compat_backend_failure_status.py:47 client; tests/unit/test_openai_compat_bare_name_final.py:45 client
+- len=10 x3: tests/unit/test_config.py:48 _topology_fleet_ports; tests/unit/test_config_consolidation.py:123 _topology_fleet_ports; tests/unit/test_fleet_layer_dispatch.py:77 _topology_ports
+- len=10 x3: tests/unit/test_seeding_eval.py:34 _rr; tests/unit/test_seeding_legacy.py:30 _rr; tests/unit/test_seeding_rewards.py:23 _rr
+- len=19 x2: tests/unit/test_graph_router_action_space.py:73 _write_stack_priors; tests/unit/test_train_graph_router.py:64 _write_stack_priors
+- len=9 x3: tests/test_review_artifacts.py:24 run_validator; tests/test_reviewer_contract.py:70 run_validator; tests/test_semantics_schemas.py:29 run_validator
+- len=16 x2: tests/unit/test_escalation.py:19 _terminal_role; tests/unit/test_roles.py:47 _terminal_role
+- len=8 x3: tests/unit/test_eval_batch_serving_activation_window.py:18 _healthy_preflight; tests/unit/test_eval_batch_serving_evaltower_window.py:81 _healthy_preflight; tests/unit/test_eval_resume_incomplete.py:124 _healthy_preflight
+- len=14 x2: tests/unit/test_autopilot_resume_halt_latch.py:113 __enter__; tests/unit/test_daemon_owned_state_ownership.py:105 __enter__
+- len=14 x2: tests/unit/test_gpu_shadow_lane_p2.py:615 _cpus; tests/unit/test_gpu_shadow_lane_preflight.py:32 _expand
+- len=14 x2: tests/unit/test_openai_compat_default_golden.py:166 _normalise_obj; tests/unit/test_v1_escalation_off_golden.py:129 _normalise_obj
+- len=13 x2: tests/test_review_artifacts.py:39 valid_review_decision; tests/test_semantics_schemas.py:43 v1_review_decision
+- len=13 x2: tests/unit/test_archive_authority_repair.py:27 _row; tests/unit/test_archive_authority_report.py:24 _row
+- len=13 x2: tests/unit/test_eval_batch_serving_activation_window.py:65 test_apply_refuses_active_autopilot_by_default; tests/unit/test_routing_classifier_rollout_window.py:88 test_apply_refuses_active_autopilot_by_default
+- len=13 x2: tests/unit/test_experiment_journal_durability.py:34 _entry; tests/unit/test_journal_snapshot_create.py:25 _entry
+- len=13 x2: tests/unit/test_fleet_layer_build.py:163 _write_priors; tests/unit/test_fleet_layer_dispatch.py:113 _write_priors
+- len=13 x2: tests/unit/test_prefix_index_admission.py:60 flag_on; tests/unit/test_review_p2b_defects.py:44 flag_on
+- len=12 x2: tests/test_review_artifacts.py:55 valid_candidate_package; tests/test_semantics_schemas.py:59 v1_candidate_package
+- len=11 x2: tests/unit/test_safety_gate_b9_gate.py:32 _result; tests/unit/test_safety_gate_speed_era_and_suite_absence.py:41 _result
+- len=10 x2: tests/unit/test_bench_core_claim.py:59 _fake_proc_tree; tests/unit/test_bench_core_claim_api_layer.py:52 _fake_proc_tree
+- len=10 x2: tests/unit/test_lab_promote_job.py:43 _write_gold_tuple_files; tests/unit/test_lab_readiness_report.py:76 _write_gold_tuple_files
+- len=10 x2: tests/unit/test_stack_change_pipeline.py:34 _clean_runtime_attestation; tests/unit/test_stack_change_pipeline_simulated_fixtures.py:52 _clean_runtime_attestation
+- len=9 x2: tests/unit/test_eval_batch_serving_activation_window.py:54 test_apply_requires_clean_window; tests/unit/test_routing_classifier_rollout_window.py:77 test_apply_requires_clean_window
+- len=9 x2: tests/unit/test_eval_verifier_mode.py:55 test_calibration_metric_keys_are_the_six_ev4_metrics; tests/unit/test_stat_tests.py:175 test_calibration_metric_bundle_keys_are_stable
+- len=9 x2: tests/unit/test_openai_direct_prompt_contract.py:148 _body; tests/unit/test_thinking_roles_chat_lane.py:451 _body
+- len=8 x2: tests/unit/test_langgraph_phase2.py:349 _make_deps; tests/unit/test_langgraph_phase3.py:26 _make_deps
+- len=8 x2: tests/unit/test_openai_compat_compression_fallback.py:76 _install_fake_backend; tests/unit/test_openai_compat_default_golden.py:155 _install
+- len=8 x2: tests/unit/test_serving_calls.py:36 log_file; tests/unit/test_serving_calls_prefix_fp.py:27 log_file
+- len=7 x2: tests/integration/test_documents_route.py:26 _module_client; tests/integration/test_sessions_route.py:25 _module_client
+- len=7 x2: tests/integration/test_frontend_integration.py:341 test_health_endpoint; tests/unit/test_api.py:81 test_health_returns_ok
+- len=7 x2: tests/unit/test_build_server_command_helpers.py:72 _flag_value; tests/unit/test_k4_ubatch_not_inert.py:35 _flag_value
+- len=7 x2: tests/unit/test_kv_pool_cross_process_lease.py:51 _wait_until; tests/unit/test_kv_pool_long_prefill.py:52 _wait_until
+- len=7 x2: tests/unit/test_patch_verifier.py:241 _git_available; tests/unit/test_stack_change_guard.py:2872 _git_available

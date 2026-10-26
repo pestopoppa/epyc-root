@@ -323,6 +323,7 @@ routing classifier's own training labels, and skill-bank effectiveness.
         `question_pool` shadow-copy cleanup still reference the file). The site (`:1500-1507`) now carries an
         `EPD-3-R5` do-not-copy block pointing at `embedding_text_for`; `tests/unit/test_epd3_r5_r6_r8.py`
         fails if any `objective:{` f-string under a `deprecated/` tree lacks the marker.
+        **2026-10-24 candidate update:** `refactor/scripts-cleanup-reviewed-01a16fc3` removes the deprecated orchestrator v1 tree and its dependent marker checks after consumer review. The annotation above remains the historical 2026-09-17 remedy; no canonical-tree deletion or deployment is claimed here.
   - [x] **EPD-3-R6 — make the seed write loop fail closed**: it catches every `Exception` and only prints, so a
         total embed failure reports `loaded: 0, failed: N` and still exits 0 even though the tests now assert
         `failed == 0` (`orchestration/repl_memory/seed_loader.py:~495`) (found 2026-09-14, noninf sweep).

@@ -1,0 +1,322 @@
+# Metrics: orch_src (/workspace/repos/epyc-orchestrator/src)
+
+files=500 loc=201276 code=161504 funcs=6093 broad_except=977 swallowed=209 prints=282 module_level_calls=86 global_stmts=129 hardcoded_/mnt/raid0=104 public_undoc_funcs=733 no_module_doc=16 sys.path_mutations=11 shell=True=0
+
+## Largest files (loc)
+- src/api/routes/dashboard.py: 8173 loc, 176 funcs, max_func=747, max_cc=181
+- src/registry/stack_priors.py: 3122 loc, 96 funcs, max_func=548, max_cc=86
+- src/api/routes/openai_compat.py: 2254 loc, 67 funcs, max_func=1006, max_cc=141
+- src/typed_decisions/native.py: 2237 loc, 61 funcs, max_func=272, max_cc=39
+- src/backends/concurrency_aware.py: 2067 loc, 60 funcs, max_func=527, max_cc=87
+- src/llm_primitives/inference.py: 2028 loc, 41 funcs, max_func=710, max_cc=138
+- src/backends/llama_server.py: 1966 loc, 33 funcs, max_func=371, max_cc=85
+- src/proactive_delegation/review_service.py: 1921 loc, 38 funcs, max_func=188, max_cc=20
+- src/typed_decisions/routing_counterfactual.py: 1814 loc, 45 funcs, max_func=220, max_cc=55
+- src/config/models.py: 1736 loc, 23 funcs, max_func=99, max_cc=38
+- src/typed_decisions/measure.py: 1717 loc, 40 funcs, max_func=254, max_cc=25
+- src/repl_environment/environment.py: 1699 loc, 46 funcs, max_func=348, max_cc=60
+- src/api/routes/chat.py: 1695 loc, 18 funcs, max_func=502, max_cc=91
+- src/graph/helpers.py: 1669 loc, 36 funcs, max_func=767, max_cc=172
+- src/session/sqlite_store.py: 1548 loc, 43 funcs, max_func=163, max_cc=19
+- src/typed_decisions/judge_redundancy.py: 1510 loc, 32 funcs, max_func=114, max_cc=22
+- src/registry/model_descriptors.py: 1455 loc, 50 funcs, max_func=169, max_cc=44
+- src/trace/review_ledger.py: 1417 loc, 59 funcs, max_func=66, max_cc=11
+- src/typed_decisions/routing_replay.py: 1405 loc, 41 funcs, max_func=140, max_cc=24
+- src/inference/prefix_index.py: 1361 loc, 75 funcs, max_func=70, max_cc=31
+- src/llm_primitives/primitives.py: 1354 loc, 39 funcs, max_func=210, max_cc=30
+- src/scheduling/kv_pool_admission.py: 1295 loc, 49 funcs, max_func=220, max_cc=68
+- src/api/routes/chat_pipeline/scout_stage.py: 1274 loc, 47 funcs, max_func=213, max_cc=51
+- src/runtime/cpu_region_lock.py: 1255 loc, 36 funcs, max_func=350, max_cc=56
+- src/api/routes/chat_delegation.py: 1213 loc, 7 funcs, max_func=404, max_cc=73
+- src/prompt_builders/builder.py: 1203 loc, 27 funcs, max_func=159, max_cc=19
+- src/tools/web/research.py: 1190 loc, 32 funcs, max_func=250, max_cc=37
+- src/runtime/gpu_window_executor.py: 1155 loc, 62 funcs, max_func=86, max_cc=26
+- src/graph/session_log.py: 1140 loc, 50 funcs, max_func=65, max_cc=13
+- src/pipeline_monitor/claude_debugger.py: 1116 loc, 31 funcs, max_func=238, max_cc=71
+- src/api/routes/passthrough.py: 1105 loc, 39 funcs, max_func=125, max_cc=32
+- src/api/routes/chat_pipeline/repl_executor.py: 1077 loc, 8 funcs, max_func=725, max_cc=123
+- src/scheduling/contention.py: 1076 loc, 26 funcs, max_func=154, max_cc=36
+- src/features.py: 1068 loc, 20 funcs, max_func=59, max_cc=33
+- src/repl_environment/context_bundle.py: 1061 loc, 59 funcs, max_func=91, max_cc=26
+- src/retrieval/kb_rag.py: 1056 loc, 31 funcs, max_func=176, max_cc=26
+- src/structured_output/repair.py: 1049 loc, 28 funcs, max_func=144, max_cc=27
+- src/registry/registry_loader.py: 1044 loc, 38 funcs, max_func=110, max_cc=17
+- src/autopilot_core/journal_snapshot_replay.py: 1009 loc, 30 funcs, max_func=146, max_cc=30
+- src/api/routes/dashboard_topology.py: 996 loc, 34 funcs, max_func=81, max_cc=21
+
+## Longest functions
+- src/api/routes/openai_compat.py:1240 openai_chat_completions len=1006 cc=141 depth=9 nargs=3
+- src/graph/helpers.py:830 _execute_turn len=767 cc=172 depth=4 nargs=2
+- src/api/routes/dashboard.py:1543 _region_locks_payload len=747 cc=169 depth=6 nargs=3
+- src/api/routes/chat_pipeline/repl_executor.py:353 _execute_repl_body len=725 cc=123 depth=4 nargs=7
+- src/llm_primitives/inference.py:1030 _call_caching_backend len=710 cc=138 depth=7 nargs=15
+- src/api/routes/dashboard.py:4305 _insight_graph_payload len=666 cc=181 depth=4 nargs=3
+- src/registry/stack_priors.py:2017 _launch_runtime_record len=548 cc=86 depth=4 nargs=5
+- src/api/routes/openai_compat.py:1425 generate_stream len=543 cc=78 depth=11 nargs=0
+- src/backends/concurrency_aware.py:1371 _dispatch len=527 cc=87 depth=7 nargs=4
+- src/api/routes/chat.py:762 _handle_chat len=502 cc=91 depth=5 nargs=3
+- src/api/routes/dashboard.py:5540 pareto len=445 cc=87 depth=4 nargs=2
+- src/api/routes/chat.py:1267 chat_stream len=429 cc=64 depth=1 nargs=2
+- src/api/routes/chat_delegation.py:810 _architect_delegated_answer_inner len=404 cc=49 depth=3 nargs=16
+- src/api/routes/chat_delegation.py:306 _run_specialist_loop len=388 cc=73 depth=7 nargs=8
+- src/api/routes/dashboard.py:1123 _annotate_live_observability_frame len=375 cc=133 depth=9 nargs=8
+- src/backends/llama_server.py:1063 infer_stream_text len=371 cc=56 depth=5 nargs=4
+- src/api/routes/chat.py:1323 generate len=370 cc=56 depth=5 nargs=0
+- src/api/routes/dashboard.py:6151 _topology_activity_payload len=356 cc=77 depth=5 nargs=4
+- src/runtime/cpu_region_lock.py:866 cpu_region_lock len=350 cc=56 depth=5 nargs=10
+- src/repl_environment/environment.py:876 _execute_structured len=348 cc=57 depth=5 nargs=3
+- src/repl_environment/_fence_audit_hook.py:55 _fence_install len=307 cc=157 depth=3 nargs=2
+- src/api/routes/chat_pipeline/stream_adapter.py:140 _stream_repl len=280 cc=41 depth=5 nargs=5
+- src/backends/llama_server.py:708 _infer_chat_completions len=277 cc=59 depth=4 nargs=4
+- src/backends/llama_server.py:1684 _infer_stream_text_chat_completions len=276 cc=85 depth=11 nargs=5
+- src/typed_decisions/native.py:1292 run_typed_decisions_native_parallel len=272 cc=39 depth=2 nargs=10
+- src/api/routes/dashboard.py:5266 autopilot_progress len=271 cc=54 depth=5 nargs=0
+- src/api/routes/chat.py:401 _try_cheap_first len=263 cc=25 depth=5 nargs=7
+- src/backends/llama_server.py:445 infer len=262 cc=36 depth=3 nargs=3
+- src/typed_decisions/measure.py:1024 run_parallel_fanout_study len=254 cc=25 depth=2 nargs=9
+- src/config/__init__.py:451 _load_from_env len=251 cc=1 depth=0 nargs=0
+- src/tools/web/research.py:851 _web_research_impl len=250 cc=37 depth=4 nargs=4
+- src/api/__init__.py:42 lifespan len=248 cc=39 depth=3 nargs=1
+- src/pipeline_monitor/claude_debugger.py:858 _build_prompt len=238 cc=71 depth=6 nargs=2
+- src/api/routes/chat_pipeline/delegation_stage.py:87 _execute_delegated len=236 cc=34 depth=2 nargs=7
+- src/api/routes/chat_vision.py:138 _handle_vision_request len=228 cc=36 depth=5 nargs=5
+- src/prompt_builders/code_utils.py:394 extract_code_from_response len=226 cc=47 depth=4 nargs=1
+- src/llm_primitives/backend.py:133 _init_caching_backends len=220 cc=28 depth=5 nargs=3
+- src/scheduling/kv_pool_admission.py:654 acquire len=220 cc=68 depth=6 nargs=13
+- src/typed_decisions/routing_counterfactual.py:1009 estimate_policy_value len=220 cc=55 depth=3 nargs=9
+- src/api/routes/chat_pipeline/direct_stage.py:65 _execute_direct len=217 cc=26 depth=2 nargs=6
+- src/config/__init__.py:723 get_config len=216 cc=3 depth=1 nargs=0
+- src/api/routes/chat_pipeline/scout_stage.py:1039 run_scouts len=213 cc=51 depth=4 nargs=11
+- src/llm_primitives/primitives.py:65 __init__ len=210 cc=16 depth=3 nargs=15
+- src/api/routes/chat_pipeline/stages.py:137 _execute_react len=209 cc=28 depth=6 nargs=6
+- src/repl_environment/environment.py:1225 _execute_dependency_aware_chain len=207 cc=60 depth=4 nargs=5
+- src/builtin_tools.py:352 _register_compatibility_tools len=203 cc=16 depth=1 nargs=1
+- src/typed_decisions/measure.py:709 run_fanout_study len=203 cc=23 depth=3 nargs=9
+- src/api/routes/chat_vision.py:473 _vision_react_mode_answer len=200 cc=19 depth=4 nargs=6
+- src/autopilot_core/journal_reconstruction.py:185 reconstruct_archive_from_journal_rows len=200 cc=45 depth=3 nargs=8
+- src/api/routes/chat_pipeline/proactive_stage.py:195 _execute_proactive len=199 cc=24 depth=3 nargs=5
+- src/api/routes/chat_pipeline/routing.py:274 _route_request len=199 cc=23 depth=2 nargs=3
+- src/api/routes/voice.py:136 voice_turn len=199 cc=46 depth=3 nargs=5
+- src/registry/stack_priors.py:1105 _stack_manifest_info len=199 cc=45 depth=5 nargs=1
+- src/api/routes/dashboard.py:7939 gepa_status len=195 cc=51 depth=5 nargs=0
+- src/api/routes/dashboard_tap.py:231 _parse_structured_tap_requests len=195 cc=60 depth=6 nargs=4
+- src/graph/session_summary.py:136 _refresh_two_level_summary len=194 cc=40 depth=5 nargs=2
+- src/runtime/live_telemetry.py:560 _merge_worker_frames len=193 cc=56 depth=3 nargs=6
+- src/api/routes/chat_delegation_decision.py:111 _parse_architect_decision len=190 cc=31 depth=5 nargs=2
+- src/gradio_ui.py:173 create_ui len=189 cc=20 depth=6 nargs=1
+- src/api/routes/chat_delegation_decision.py:590 _apply_decision_guards len=188 cc=25 depth=6 nargs=5
+
+## Highest cyclomatic complexity
+- src/api/routes/dashboard.py:4305 _insight_graph_payload cc=181 len=666
+- src/graph/helpers.py:830 _execute_turn cc=172 len=767
+- src/api/routes/dashboard.py:1543 _region_locks_payload cc=169 len=747
+- src/repl_environment/_fence_audit_hook.py:55 _fence_install cc=157 len=307
+- src/api/routes/openai_compat.py:1240 openai_chat_completions cc=141 len=1006
+- src/llm_primitives/inference.py:1030 _call_caching_backend cc=138 len=710
+- src/api/routes/dashboard.py:1123 _annotate_live_observability_frame cc=133 len=375
+- src/api/routes/chat_pipeline/repl_executor.py:353 _execute_repl_body cc=123 len=725
+- src/api/routes/chat.py:762 _handle_chat cc=91 len=502
+- src/api/routes/dashboard.py:5540 pareto cc=87 len=445
+- src/backends/concurrency_aware.py:1371 _dispatch cc=87 len=527
+- src/registry/stack_priors.py:2017 _launch_runtime_record cc=86 len=548
+- src/backends/llama_server.py:1684 _infer_stream_text_chat_completions cc=85 len=276
+- src/api/routes/openai_compat.py:1425 generate_stream cc=78 len=543
+- src/api/routes/dashboard.py:6151 _topology_activity_payload cc=77 len=356
+- src/api/routes/chat_delegation.py:306 _run_specialist_loop cc=73 len=388
+- src/repl_environment/task_root.py:285 check_shell_scope cc=73 len=114
+- src/pipeline_monitor/claude_debugger.py:858 _build_prompt cc=71 len=238
+- src/scheduling/kv_pool_admission.py:654 acquire cc=68 len=220
+- src/api/routes/chat.py:1267 chat_stream cc=64 len=429
+- src/repl_environment/_fence_audit_hook.py:287 hook cc=62 len=73
+- src/api/routes/dashboard_tap.py:231 _parse_structured_tap_requests cc=60 len=195
+- src/repl_environment/environment.py:1225 _execute_dependency_aware_chain cc=60 len=207
+- src/backends/llama_server.py:708 _infer_chat_completions cc=59 len=277
+- src/repl_environment/environment.py:876 _execute_structured cc=57 len=348
+- src/api/routes/chat.py:1323 generate cc=56 len=370
+- src/backends/llama_server.py:1063 infer_stream_text cc=56 len=371
+- src/runtime/cpu_region_lock.py:866 cpu_region_lock cc=56 len=350
+- src/runtime/live_telemetry.py:560 _merge_worker_frames cc=56 len=193
+- src/typed_decisions/routing_counterfactual.py:1009 estimate_policy_value cc=55 len=220
+- src/api/routes/dashboard.py:5266 autopilot_progress cc=54 len=271
+- src/api/routes/chat_pipeline/scout_stage.py:1039 run_scouts cc=51 len=213
+- src/api/routes/dashboard.py:7939 gepa_status cc=51 len=195
+- src/scheduling/kv_pool_admission.py:920 _prefix_index_view cc=51 len=123
+- src/repl_environment/_fence_audit_hook.py:229 check_command cc=50 len=57
+- src/api/routes/chat_delegation.py:810 _architect_delegated_answer_inner cc=49 len=404
+- src/api/routes/dashboard.py:960 _placement_telemetry_status cc=48 len=93
+- src/prompt_builders/code_utils.py:394 extract_code_from_response cc=47 len=226
+- src/registry/stack_priors.py:2657 _serving_record cc=47 len=119
+- src/api/routes/voice.py:136 voice_turn cc=46 len=199
+
+## Big classes (>=400 lines)
+- src/backends/concurrency_aware.py:242 ConcurrencyAwareBackend len=1826
+- src/backends/llama_server.py:304 LlamaServerBackend len=1663
+- src/gate_runner.py:198 GateRunner len=449
+- src/generation_monitor.py:168 GenerationMonitor len=467
+- src/inference/prefix_index.py:577 PrefixIndex len=673
+- src/llm_primitives/inference.py:487 InferenceMixin len=1542
+- src/llm_primitives/primitives.py:30 LLMPrimitives len=1325
+- src/pipeline_monitor/claude_debugger.py:283 ClaudeDebugger len=834
+- src/proactive_delegation/delegator.py:182 ProactiveDelegator len=621
+- src/proactive_delegation/review_service.py:397 ArchitectReviewService len=1525
+- src/prompt_builders/builder.py:126 PromptBuilder len=527
+- src/registry/registry_loader.py:268 RegistryLoader len=655
+- src/registry/tool_registry.py:258 ToolRegistry len=566
+- src/repl_environment/code_search.py:67 _CodeSearchMixin len=497
+- src/repl_environment/combined_ops.py:86 _CombinedOpsMixin len=525
+- src/repl_environment/context.py:20 _ContextMixin len=897
+- src/repl_environment/context_bundle.py:216 ContextBundle len=756
+- src/repl_environment/environment.py:120 REPLEnvironment len=1443
+- src/repl_environment/file_exploration.py:50 _FileExplorationMixin len=429
+- src/repl_environment/routing.py:66 _RoutingMixin len=808
+- src/repl_environment/state.py:36 _StateMixin len=667
+- src/research_context.py:65 ResearchContext len=402
+- src/runtime/executor.py:213 Executor len=579
+- src/runtime/gpu_window_executor.py:669 Executor len=400
+- src/scheduling/kv_pool_admission.py:228 SharedKVPoolAdmission len=1061
+- src/services/archive_extractor.py:177 ArchiveExtractor len=789
+- src/services/corpus_retrieval.py:117 CorpusRetriever len=679
+- src/services/document_preprocessor.py:160 DocumentPreprocessor len=766
+- src/services/pdf_router.py:115 PDFRouter len=862
+- src/services/worker_pool.py:161 WorkerPoolManager len=770
+- src/session/persister.py:40 SessionPersister len=557
+- src/session/protocol.py:137 SessionStore len=416
+- src/session/sqlite_store.py:91 SQLiteSessionStore len=1458
+
+## Most swallowed broad excepts (except Exception: pass/continue/return const)
+- src/api/routes/dashboard.py: 36 swallowed / 88 broad; lines [2146, 3155, 3196, 3310, 4147, 4225, 4242, 4247, 5174, 5222, 5260, 5362]
+- src/backends/serving_calls.py: 13 swallowed / 14 broad; lines [227, 250, 268, 352, 397, 496, 508, 713, 727, 743, 780, 327]
+- src/api/routes/chat_pipeline/routing_decision.py: 7 swallowed / 15 broad; lines [500, 591, 620, 724, 546, 559, 574]
+- src/backends/concurrency_aware.py: 7 swallowed / 14 broad; lines [80, 102, 207, 1182, 1220, 1345, 1367]
+- src/llm_primitives/inference.py: 6 swallowed / 18 broad; lines [110, 203, 232, 350, 260, 532]
+- src/repl_environment/context.py: 6 swallowed / 12 broad; lines [815, 298, 310, 705, 769, 784]
+- src/runtime/inference_lock.py: 6 swallowed / 13 broad; lines [223, 264, 198, 462, 468, 316]
+- src/api/routes/dashboard_topology.py: 5 swallowed / 20 broad; lines [576, 624, 671, 686, 620]
+- src/backends/llama_server.py: 5 swallowed / 9 broad; lines [58, 147, 175, 188, 194]
+- src/graph/compaction.py: 5 swallowed / 12 broad; lines [32, 73, 83, 129, 221]
+- src/graph/helpers.py: 5 swallowed / 16 broad; lines [205, 811, 1422, 536, 1106]
+- src/prompt_builders/builder.py: 4 swallowed / 6 broad; lines [827, 915, 816, 649]
+- src/runtime/cpu_region_lock.py: 4 swallowed / 13 broad; lines [632, 1139, 1162, 1214]
+- src/api/routes/chat.py: 3 swallowed / 8 broad; lines [262, 533, 859]
+- src/api/routes/chat_pipeline/routing.py: 3 swallowed / 6 broad; lines [92, 111, 135]
+- src/api/routes/dashboard_tap.py: 3 swallowed / 3 broad; lines [41, 155, 451]
+- src/api/routes/passthrough.py: 3 swallowed / 10 broad; lines [635, 767, 837]
+- src/graph/approval_gate.py: 3 swallowed / 5 broad; lines [110, 212, 282]
+- src/repl_environment/environment.py: 3 swallowed / 9 broad; lines [869, 613, 821]
+- src/graph/repl_tap.py: 2 swallowed / 3 broad; lines [48, 80]
+- src/inference/prefix_cache.py: 2 swallowed / 3 broad; lines [446, 477]
+- src/llm_primitives/context_recovery.py: 2 swallowed / 4 broad; lines [206, 115]
+- src/pipeline_monitor/claude_debugger.py: 2 swallowed / 8 broad; lines [237, 827]
+- src/registry/registry_loader.py: 2 swallowed / 7 broad; lines [966, 962]
+- src/registry/stack_priors.py: 2 swallowed / 6 broad; lines [1321, 2574]
+- src/repl_environment/external_access.py: 2 swallowed / 6 broad; lines [31, 364]
+- src/retrieval/kb_rag.py: 2 swallowed / 4 broad; lines [230, 987]
+- src/runtime/inference_tap.py: 2 swallowed / 5 broad; lines [188, 314]
+- src/runtime/live_telemetry.py: 2 swallowed / 2 broad; lines [784, 525]
+- src/scheduling/device_model.py: 2 swallowed / 4 broad; lines [187, 191]
+
+## Import-time module-level calls (potential side effects)
+- src/backends/serving_calls.py: 6 — getpid@119, gethostname@120, isoformat@121, resolve_git_head@117, uuid4@118, now@121
+- src/api/routes/chat_pipeline/script_interceptor.py: 5 — register_interceptor@194, register_interceptor@203, register_interceptor@211, register_interceptor@219, register_interceptor@226
+- src/config/__init__.py: 5 — from_string@147, getattr@151, _registry_runtime_value@101, _registry_runtime_value@104, import_module@146
+- src/api/routes/chat_utils.py: 4 — _get_config@34, role_timeouts_dict@35, _get_config@102, _get_config@121
+- src/gate_runner.py: 4 — spec_from_file_location@38, module_from_spec@41, setdefault@42, exec_module@43
+- src/services/document_client.py: 4 — _get_config@38, _get_config@41, _get_config@42, _get_config@43
+- src/services/lightonocr_llama_server.py: 4 — basicConfig@36, _get_config@42, _get_config@43, _resolve_mtmd_cli@145
+- src/__init__.py: 3 — any@81, insert@84, isinstance@82
+- src/services/figure_analyzer.py: 3 — _get_config@37, _get_config@38, _get_config@39
+- src/api/rate_limit.py: 2 — encode@50, dumps@50
+- src/vision/config.py: 2 — get_config@19, get_config@20
+- src/api/__init__.py: 1 — create_app@480
+- src/api/admission.py: 1 — _load_default_limits@115
+- src/api/health_tracker.py: 1 — get_config@41
+- src/api/models/openai.py: 1 — isinstance@62
+- src/api/routes/chat_pipeline/scout_stage.py: 1 — uname@141
+- src/api/routes/dashboard_topology.py: 1 — _build_port_hints@153
+- src/cli_sessions.py: 1 — insert@42
+- src/concurrency.py: 1 — import_module@4
+- src/delegation_cache.py: 1 — import_module@4
+- src/delegation_reports.py: 1 — import_module@4
+- src/dispatcher.py: 1 — import_module@4
+- src/escalation.py: 1 — import_module@4
+- src/executor.py: 1 — import_module@4
+- src/gradio_ui.py: 1 — _get_config@31
+- src/graph/nodes.py: 1 — update@835
+- src/inference_lock.py: 1 — import_module@32
+- src/llm_cache.py: 1 — import_module@4
+- src/mcp_server.py: 1 — insert@40
+- src/model_server.py: 1 — import_module@4
+- src/prefix_cache.py: 1 — import_module@4
+- src/proactive_delegation/review_envelope.py: 1 — endswith@157
+- src/registry_loader.py: 1 — import_module@4
+- src/retrieval/colbert_encoder.py: 1 — resolve_model_dir@137
+- src/retrieval/federation.py: 1 — insert@82
+- src/runtime/instance_topology.py: 1 — max@59
+- src/runtime/region_lock_cli.py: 1 — setdefault@64
+- src/runtime/trailing_work_witness.py: 1 — sysconf@46
+- src/script_registry.py: 1 — import_module@4
+- src/services/lightonocr_server.py: 1 — basicConfig@18
+
+## sys.path mutations
+- src/api/routes/dashboard_topology.py: lines [463]
+- src/cli_sessions.py: lines [42]
+- src/mcp_server.py: lines [40]
+- src/pipeline_monitor/model_grader.py: lines [210]
+- src/registry/model_descriptors.py: lines [1390]
+- src/registry/registry_compiler.py: lines [480]
+- src/registry/registry_validator.py: lines [214]
+- src/retrieval/federation.py: lines [82, 151]
+- src/tool_output_compressor_mcp.py: lines [275, 290]
+
+## Private cross-module imports (from x import _y)
+- src/api/routes/chat.py: src.api.routes.chat_utils._resolve_answer, src.api.routes.chat_review._plan_review_abort_message, src.api.routes.chat_review._plan_review_should_abort, src.api.routes.chat_routing._select_mode, src.api.routes.chat_pipeline._route_request, src.api.routes.chat_pipeline._preprocess, src.api.routes.chat_pipeline._init_primitives, src.api.routes.chat_pipeline._execute_mock
+- src/api/routes/chat_delegation.py: chat_delegation_config._delegation_config, chat_delegation_config._delegation_local, chat_delegation_config._delegation_specialist_turn_token_cap, chat_delegation_config._get_delegation_depth, chat_delegation_config._normalize_delegate_role, chat_delegation_config._valid_delegate_roles, chat_delegation_decision._apply_decision_guards, chat_delegation_decision._architect_compute_token_budget
+- src/api/routes/dashboard.py: src.api.routes.dashboard_panels._latest_tap_events_mtime, src.api.routes.dashboard_tap._INFERENCE_TAP_EVENTS_PATH, src.api.routes.dashboard_tap._INFERENCE_TAP_PATH, src.api.routes.dashboard_tap._REPL_TAP_PATH, src.api.routes.dashboard_tap._TAP_SENTINEL_PATH, src.api.routes.dashboard_tap._parse_inference_sections, src.api.routes.dashboard_tap._parse_structured_tap_requests, src.api.routes.dashboard_tap._parse_trial_state
+- src/graph/helpers.py: src.graph.answer_resolution._FINAL_RE, src.graph.answer_resolution._extract_final_from_raw, src.graph.answer_resolution._extract_prose_answer, src.graph.answer_resolution._looks_like_prompt_echo, src.graph.answer_resolution._rescue_from_last_output, src.graph.answer_resolution._resolve_answer, src.graph.answer_resolution._should_attempt_prose_rescue, src.graph.file_artifacts._persist_solution_file
+- src/graph/nodes.py: src.graph.decision_gates._admit_early_abort_escalation, src.graph.helpers._add_evidence, src.graph.helpers._check_approval_gate, src.graph.helpers._check_budget_exceeded, src.graph.helpers._classify_error, src.graph.helpers._build_think_harder_config, src.graph.helpers._detect_role_cycle, src.graph.helpers._execute_turn
+- src/api/routes/chat_pipeline/__init__.py: src.api.routes.chat_pipeline.routing._route_request, src.api.routes.chat_pipeline.routing._preprocess, src.api.routes.chat_pipeline.routing._init_primitives, src.api.routes.chat_pipeline.routing._plan_review_gate, src.api.routes.chat_pipeline.stages._execute_mock, src.api.routes.chat_pipeline.stages._execute_react, src.api.routes.chat_pipeline.stages._annotate_error, src.api.routes.chat_pipeline.stages._attach_budget_diagnostics
+- src/graph/langgraph/nodes.py: src.graph.decision_gates._admit_early_abort_escalation, src.graph.helpers._add_evidence, src.graph.helpers._build_think_harder_config, src.graph.helpers._check_budget_exceeded, src.graph.helpers._classify_error, src.graph.helpers._execute_turn, src.graph.helpers._is_infra_failure, src.graph.helpers._log_escalation
+- src/repl_environment/environment.py: src.repl_environment.parallel_dispatch._ParallelCall, src.repl_environment.parallel_dispatch._eval_ast_arg, src.repl_environment.parallel_dispatch._extract_parallel_calls, src.repl_environment.combined_ops._CombinedOpsMixin, src.repl_environment.suggestions._SuggestionsMixin, src.repl_environment.file_tools._FileToolsMixin, src.repl_environment.document_tools._DocumentToolsMixin, src.repl_environment.routing._RoutingMixin
+- src/api/routes/chat_pipeline/routing.py: src.api.routes.chat_pipeline.routing_decision._TIER_COST_WEIGHTS, src.api.routes.chat_review._apply_plan_review, src.api.routes.chat_review._architect_plan_review, src.api.routes.chat_review._needs_plan_review, src.api.routes.chat_review._plan_review_should_abort, src.api.routes.chat_review._store_plan_review_episode, src.api.routes.chat_routing._classify_and_route, src.api.routes.chat_routing._heuristic_role_priors
+- src/api/routes/chat_pipeline/repl_executor.py: src.api.routes.chat_summarization._run_two_stage_summarization, src.api.routes.chat_summarization._should_use_two_stage, src.api.routes.chat_utils._strip_tool_outputs, src.graph.helpers._render_schema_preamble, src.graph.helpers._validate_final_answer, src.graph.helpers._format_validation_failure_message, src.graph.helpers._rescue_from_last_output
+- src/api/routes/chat_pipeline/stream_adapter.py: src.api.routes.chat_pipeline.routing._init_primitives, src.api.routes.chat_pipeline.routing._plan_review_gate, src.api.routes.chat_pipeline.routing._preprocess, src.api.routes.chat_pipeline.routing._route_request, src.api.routes.chat_review._plan_review_abort_message, src.api.routes.chat_review._plan_review_should_abort, src.api.routes.chat_utils._resolve_answer
+- src/typed_decisions/tool_args_pilot.py: src.typed_decisions.measure._last_inference_meta, src.typed_decisions.measure._live_primitives, src.typed_decisions.measure._load_provenance, src.typed_decisions.measure._now_iso, src.typed_decisions.measure._require_primitives, src.typed_decisions.measure._write_receipt, src.typed_decisions.runner._extract_json_object
+- src/api/routes/dashboard_tasks.py: src.api.routes.dashboard_tap._INFERENCE_TAP_EVENTS_PATH, src.api.routes.dashboard_tap._INFERENCE_TAP_PATH, src.api.routes.dashboard_tap._grep_lines_reverse, src.api.routes.dashboard_tap._parse_inference_sections, src.api.routes.dashboard_tap._parse_structured_tap_requests, src.api.routes.dashboard_tap._read_tail
+- src/typed_decisions/judge_redundancy.py: src.typed_decisions.measure._last_inference_meta, src.typed_decisions.measure._live_primitives, src.typed_decisions.measure._now_iso, src.typed_decisions.measure._require_primitives, src.typed_decisions.measure._write_receipt, src.typed_decisions.runner._extract_json_object
+- src/api/routes/chat_pipeline/direct_stage.py: src.api.routes.chat_utils._formalize_output, src.api.routes.chat_utils._should_formalize, src.api.routes.chat_utils._truncate_looped_answer, src.api.routes.chat_pipeline.stages._quality_escalate
+- src/api/routes/voice.py: src.api.routes.openai_compat._direct_call_prompt, src.api.routes.openai_compat._LeadingReasoningChunkFilter, src.api.routes.openai_compat._raise_admission_denied_text, src.api.routes.openai_compat._split_leading_reasoning
+- src/config/__init__.py: validation._env_optional_float, validation._env_str, validation._registry_runtime_value, validation._registry_timeout
+- src/llm_primitives/inference.py: src.llm_primitives.backend._certified_native_batch_width, src.runtime.cpu_region_lock._cross_role_mutex_enabled, src.scheduling.contention_gate._DEFAULT_BACKGROUND_WAIT_MS, src.scheduling.contention_gate._DEFAULT_FOREGROUND_WAIT_MS
+- src/registry/stack_priors.py: scripts.server.stack_manifest._filter_by_numa_mode, scripts.server.stack_paths._PATHS, scripts.server.stack_paths._V2_ROLES, scripts.server.stack_paths._PATHS
+- src/repl_environment/file_tools.py: src.repl_environment.file_exploration._FileExplorationMixin, src.repl_environment.archive_tools._ArchiveToolsMixin, src.repl_environment.external_access._ExternalAccessMixin, src.repl_environment.file_mutation._FileMutationMixin
+- src/repl_environment/task_root.py: src.repl_environment._fence_rules, src.repl_environment.knowledge_fence._AWK_IO_RE, src.repl_environment.knowledge_fence._script_program, src.repl_environment.knowledge_fence._sed_does_io
+- src/api/routes/chat_delegation_decision.py: chat_delegation_config._delegation_config, chat_delegation_config._normalize_delegate_role, chat_delegation_config._valid_delegate_roles
+- src/api/routes/dashboard_panels.py: src.api.routes.dashboard_tap._INFERENCE_TAP_EVENTS_PATH, src.api.routes.dashboard_tap._INFERENCE_TAP_PATH, src.api.routes.dashboard_tap._REPL_TAP_PATH
+- src/api/routes/passthrough.py: src.llm_primitives.inference._extract_port, src.llm_primitives.inference._per_region_locks_enabled, src.llm_primitives.inference._role_config_for_backend
+- src/config/models.py: validation._registry_runtime_value, validation._registry_timeout, scripts.server.stack_manifest._filter_by_numa_mode
+- src/fleet.py: src.config.models._get_default_stack_priors_path, src.roles._FALLBACK_MAP, src.config.models._canonical_server_url_name
+- src/runtime/gpu_quiet_lock.py: src.runtime.cpu_region_lock._acquire_one_with_timeout, src.runtime.cpu_region_lock._tmp_dir, src.runtime.cpu_region_lock._try_flock
+- src/tools/web/research.py: src.tools.web.fetch._extract_content, src.tools.web.fetch._fetch_cache, src.tools.web.fetch._CACHE_TTL_SECONDS
+- src/api/routes/chat_delegation_reports.py: chat_delegation_config._delegation_config, chat_delegation_config._normalize_delegate_role
+- src/api/routes/chat_pipeline/delegation_stage.py: src.api.routes.chat_delegation._architect_delegated_answer, src.api.routes.chat_utils._truncate_looped_answer
+
+## Duplicate function bodies across files (top 60 by duplicated lines)
+- len=8 x45: src/api/protocols.py:90 record_failure; src/backends/protocol.py:165 infer; src/backends/protocol.py:176 health_check; src/backends/protocol.py:201 infer_stream; src/backends/protocol.py:229 get_cache_stats; src/backends/server_lifecycle.py:122 build_launch_command
+- len=16 x3: src/repl_environment/external_access.py:20 _get_project_root; src/tools/code/lint.py:28 _get_project_root; src/tools/code/run_tests.py:27 _get_project_root
+- len=15 x3: src/repl_environment/file_mutation.py:14 _get_project_root; src/repl_environment/procedure_tools.py:12 _get_project_root; src/tools/web/fetch.py:35 _get_project_root
+- len=10 x4: src/tools/code/lint.py:52 _validate_path; src/tools/code/run_tests.py:51 _validate_path; src/tools/file/list.py:43 _validate_path; src/tools/file/read.py:44 _validate_path
+- len=22 x2: src/runtime/cpu_region_lock.py:571 _current_lock_owner_pids; src/runtime/inference_lock.py:118 _current_lock_owner_pids
+- len=8 x3: src/backends/context_limits.py:183 _positive_int; src/backends/context_overflow.py:84 _as_int; src/backends/serving_params.py:108 _pos_int
+- len=16 x2: src/tools/file/list.py:21 _get_allowed_paths; src/tools/file/read.py:22 _get_allowed_paths
+- len=16 x2: src/typed_decisions/bench.py:244 _meta_snapshot; src/typed_decisions/measure.py:977 _last_inference_meta
+- len=14 x2: src/graph/escalation_helpers.py:6 detect_role_cycle; src/pipeline_monitor/anomaly.py:385 detect_escalation_cycle
+- len=7 x3: src/inference/model_server.py:238 infer; src/runtime/inference_tap.py:535 write_timings; src/vision/analyzers/base.py:123 analyze
+- len=12 x2: src/api/routes/openai_compat.py:132 _drain_thread_task; src/api/routes/voice.py:116 _drain_thread_task
+- len=12 x2: src/canvas_export.py:30 _get_canvas_dir; src/tools/canvas_tools/__init__.py:23 _get_canvas_dir
+- len=11 x2: src/backends/concurrency_aware.py:106 _shape_for_regions; src/llm_primitives/inference.py:355 _shape_for_regions
+- len=9 x2: src/graph/repl_tap.py:13 _get_repl_tap_path; src/pipeline_monitor/claude_debugger.py:108 _get_repl_tap_path
+- len=8 x2: src/backends/serving_calls.py:415 _json_safe; src/runtime/inference_tap.py:231 _json_safe
+- len=8 x2: src/repl_environment/combined_ops.py:34 _render_child_schema_preamble; src/repl_environment/routing.py:38 _render_delegate_schema_preamble
+- len=7 x2: src/api/routes/passthrough.py:630 _derived_prefill_timeout_enabled; src/llm_primitives/inference.py:198 _derived_prefill_timeout_enabled
+- len=7 x2: src/backends/anthropic.py:223 get_stats; src/backends/openai.py:215 get_stats
+- len=7 x2: src/services/comfyui_client.py:69 _get_client; src/services/sd_server_client.py:54 _get_client

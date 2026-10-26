@@ -1,0 +1,18 @@
+# Refactoring root checkpoint — 2026-10-25
+
+The operator approved two isolated candidate scopes: the exact A5-18 protected-launcher cleanup candidate and O4 HIGH/CRITICAL REPL candidates A4-03/A4-04/A4-06/A4-07. Neither approval authorizes main integration, merge, deployment, or production activation.
+
+P1 (rest), findings B1-01/B1-M1/B1-M2/B1-04/B1-08/B1-09/B1-14/B1-13, is accepted and pushed at `36e1bc55aa40f35965a941e81fdc593a22abd520` on the P1 review branch. Evidence records 19 focused and 561 broad tests passing (one skip), ruff and diff checks passing, and unchanged aggregate plus all nine focused-file hashes from run start through run end and checkpoint. The worker's `validation.status` remains `FAIL` because its hash comparison ran before the after-hash write; the independent byte proof was reviewed and accepted. No tests were rerun for this root checkpoint.
+
+O4 candidate source and caller audit are accepted and frozen. Its validation passed 557 tests; eight parent negative controls failed as expected; strict offline drift, ruff, compile, diff and frozen-snapshot checks passed. Source-only closeout `acfd5f8ca3837c568fc3c944ffb242b29823f3fa` is pushed on `refactor/repl-correctness-01a16fc3`. This is not main or deployment authorization.
+
+O6 remains an approved dirty candidate containing the launcher patch, copied seeding regression test and Makefile edits; the original seeding worktree is unchanged. Its 190 launcher tests passed; the expanded coverage run executed 395 tests and reported three scorer failures at the configured 100% floor across four files. Repair is in progress. Do not collect expired handle `56537`.
+
+K2 source inspection found all six examined premises materially supported; this is source inspection, not executable reproduction. C3-02 is test-only. C4-16 has a quantile-rounding defect; variance simplification requires enforcing the ±1 invariant. GitNexus guard reanalysis passed on unchanged worktree `413f5b7f545b67e69ba9082b9a6c73514eb3a3f2`; K2 source guards remain unapplied and its completion checkbox stays open.
+
+P1 closeout files accidentally written under shared `/workspace` were uniquely authored, inode/link and SHA-256 checked, moved into this isolated root worktree, then removed from their original paths. The two moved files are `progress/2026-10/2026-10-25-loop-acceptance-closeout.md` (SHA-256 `03c12d2161edc6debb0dadfd7dc826ab1bc49a915d72c9104dfcddcff0863ccf`) and `logs/agent_audit-loop_acceptance_closeout.log` (SHA-256 `986193911cfad22955038200ac27847a503c77545ee43a0ae0826a23754b1e3d`). No peer files or shared index entries were changed. The separately authorized O4 closeout progress and log shards are also included unstaged for root-owner integration.
+
+A prior root-only runner PID `1315215` failed rc=2 before gates because an empty token file was pre-created. A corrected single retry uses nonexistent token paths so `serialized_push.py` creates its own opaque lease tokens. It runs root index regeneration/check, citation check, README freshness and diff checks under one CPU region claim, then commits and pushes only this explicit review branch if all gates pass. It has no worker-result dependency. RESUME-4 combined-tree validation remains pending independently; no main promotion, wiki compilation or pruning ran.
+
+
+The root-only documentation checkpoint passed index regeneration/check, citation validation, README freshness and diff checks, then pushed root commit `09d3c70b5ffeeeed37cde2c4233d965700b1106d` to the explicit review branch. The RTG-60 priority advisory is retained as a non-fatal heuristic warning.

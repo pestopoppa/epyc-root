@@ -95,7 +95,7 @@ would have made `production/gpu` load ggml out of `tmp`.)
 **P2. The target set must be complete.** `cmake --build <build>` with no `--target`, or
 an explicit target list that covers every binary the incumbent ships. **`--target
 llama-server llama-bench` is not a kernel** — it is two executables where production has
-~90 (the incumbent's count, read from the archive — do not hardcode), and `scripts/lib/executor.py` resolves `llama-completion`,
+~90 (the incumbent's count, read from the archive — do not hardcode), and `epyc-inference-research/scripts/lib/executor.py` resolves `llama-completion`,
 `llama-speculative`, `llama-lookup` and `llama-mtmd-cli` through the store. Those roles
 fail at *launch*, long after the gate has passed.
 
@@ -303,7 +303,7 @@ See step 0 below. A promotion with no anchor is not a promotion, it is a one-way
    therefore bakes `kernels/builds/<B>-<date>-<sha>/bin` and must be regenerated on every
    promotion *and every rollback*. Any consumer that keeps its own literal instead — and
    (see the progress log) still name `llama.cpp/build{-hip}/bin` — is a split-brain waiting to happen:
-   after the v10 repoint, `scripts/lib/executor.py` was still launching v9 through the
+   in the historical 2026-09-22 v10 cutover incident, the orchestrator's `scripts/lib/executor.py` still launched v9 through the
    master registry's `runtime_defaults.binaries.base_dir` literal while `stack_priors`,
    `orchestrator_stack` and `env.sh` had all followed v10. The stale path still existed,
    so it resolved, served, and was detectable only by reading a running server's argv.
@@ -357,7 +357,9 @@ See step 0 below. A promotion with no anchor is not a promotion, it is a one-way
    Known standing offenders as of 2026-09-22 — each is a live split-brain surface:
    `epyc-orchestrator/scripts/lib/executor.py:77` and `:90` (v9 literals on the
    registry-load-failure path, which reopens exactly what `executor_paths.py` was written
-   to close); `scripts/server/gpu_shadow_lane.py:49-50` and
+   to close; fix pending in `refactor/scripts-cleanup-reviewed-01a16fc3@6efa56265b68f402af736a1c1a2ee3df447849c1`;
+   remove this line when it merges);
+   `scripts/server/gpu_shadow_lane.py:49-50` and
    `orchestration/gpu_shadow_lane_tenancy.yaml:47`; and the two silent CPU fallbacks at
    `scripts/server/orchestrator_stack.py:156-167` and
    `src/registry/stack_priors.py:1930-1954`, which swallow `KernelPathError` and hand back
