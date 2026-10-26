@@ -51,3 +51,10 @@ non-target bytes, format/protected/no-new-Ruff/diff/custody. Final private sourc
 The source checkpoint document maps all 16 findings to behavioral warrants. See the
 [Oct 26 chronology](../../progress/2026-10/2026-10-26-refactor-next-packages-checkpoint-01a16fc3.md)
 for failed runs and limits; this does not expand the integration candidate's validation claim.
+
+The later B2 baseline completed at 13:13:11 UTC with 31 failed, 20,517 passed, 85 skipped,
+19 xfailed and six passed subtest events in 2,146.45 s. Native conformance remained NULL for
+an unnamed collection-skip case and shared grading emitted no JSON. Sixteen ignored runtime
+paths leaked while tracked repository/harness custody matched. No candidate full run or accepted
+known-failure set is established. Root `bb6410b1` is a private publication and was not accepted
+or merged by workspace-58; the owner requested a separate evidence/index correction.

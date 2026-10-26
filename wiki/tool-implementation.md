@@ -1907,6 +1907,13 @@ literal q1 grant and launcher with affinity proof; a waiting region-lock request
 authority. Local merges, functional checks, private-candidate validation and published source are
 recorded as distinct states.
 
+The root checkpoint `bb6410b1` was privately published after its local gates passed; workspace-58
+did not accept or merge it. Owner review requires evidence on every checked line of the new
+handoff and owner-side regeneration of index artifacts. CI's later B2 baseline failed 31 cases
+(20,517 passed, 85 skipped, 19 xfailed; six subtest events); native conformance remained NULL and
+shared grading emitted no JSON. Tracked custody matched while ignored runtime paths leaked.
+No candidate full run or accepted known-failure set follows from that baseline.
+
 Sources: [integration validation review](../research/refactor-audit-2026-10/integration-validation-review-2026-10-26.md),
 [current refactoring handoff](../handoffs/active/refactoring-multirepo-2026-10.md),
 [Oct 26 checkpoint](../progress/2026-10/2026-10-26-refactor-next-packages-checkpoint-01a16fc3.md),

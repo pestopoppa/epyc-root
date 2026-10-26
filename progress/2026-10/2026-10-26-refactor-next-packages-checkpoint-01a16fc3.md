@@ -6,6 +6,11 @@ Root documentation in `/mnt/raid0/llm/worktrees/refactor-audit-01a16fc3-root` on
 `codex/refactor-handoff-audit-01a16fc3`; the old review remote stays unchanged. No canonical
 checkout, application code, serving runtime or kernel was changed by this documentation work.
 
+Root `bb6410b1fa76553ab8d2d26dad5ee9816fb1ee5d` was privately published on the named codex
+branch after local gate PASS. Workspace-58's 12:45/13:25 review did **not** accept or merge it.
+The owner requested the checkbox/generated-index/ownership corrections documented below; the
+local publication receipt remains historical evidence, not owner acceptance.
+
 ## Integration candidate
 
 Owning main reviewed and published `851955112b8ba8c2911a7684469551afa1541623` on the historical
@@ -29,6 +34,21 @@ strict collection result passed: baseline 20,658 total/20,645 selected and candi
 total/20,653 selected; 0 removed, 8 intended additions, and 13 identical exclusions. This proves
 collection parity only, not a full-suite result.
 Full baseline comparison, native capture and coverage are incomplete; O8 is unchecked.
+
+B2 baseline completed at 13:13:11 UTC: **31 failed, 20,517 passed, 85 skipped, 19 xfailed,
+6 passed subtest events in 2,146.45 s**. The parent-case denominator is 20,643. Nine module-skip
+case nodes give 20,652 JUnit testcase nodes; the 20,658 header additionally counts six subtest
+events. Native conformance was NULL because of an unnamed collection-skip case; shared grading
+failed without emitting JSON. Sixteen ignored runtime paths leaked in the baseline checkout.
+Tracked source custody for three repositories and source-harness custody matched. There was no
+candidate full run, and this result does not establish an accepted known-failure set.
+
+Original receipts are immutable under
+`/mnt/raid0/llm/tmp/refactor-01a16fc3/ci/b2-baseline-first-native/` (`junit.xml`, `native/`,
+`producer.status`, `shared-grade.status`, `shared-grade.log`, custody/status files).
+The owner's next steps are to repair native report compatibility, classify all 31 failures by
+reason and name the unnamed JUnit case, close runtime isolation gaps, then review a dry run and
+rerun the baseline. Do not start a candidate phase or silently accept baseline failures.
 
 **P3 autopilot actions** has prepared the merge of checkpoint
 `bbccaaefed8f0f482b0b712f5d7ed06e14ef719b` with integration `851955112`.
@@ -91,15 +111,37 @@ process-group manipulation. Root generation, citation, wiki, README and belief-f
 will be recorded only from that actual future run. There has been no ingestion or cleanup apply;
 unmerged worktrees and evidence remain retained.
 
-## Completion accounting
+## Historical checkpoint accounting and owner correction
 
-Two result checkboxes are changed, both with `[belief: cc]`: `RESUME-4` for private integration
+The private `bb6410b1` checkpoint changed two result lines relative to its own parent, both with `[belief: cc]`: `RESUME-4` for private integration
 validation and `P3` for reviewed private source `fb5db1a0`, actually published and verified.
 O8 remains unchecked. The owning main applied RTG-60 next action: `Complete CI collection,
 baseline and native validation`; this documentation worker did not edit that row. Existing
 AutoKernel holds, P5 one-era boundary and production-serving protections remain.
 
-## Current wrap-up gate receipt
+That two-line comparison did not answer the owner's merge review: this is a new handoff relative
+to canonical main, introducing 27 checked lines. The correction audits all 27. Twenty-one retain
+explicit per-line commit/path evidence with narrow historical/private scope; six are reopened
+because their cited material does not establish closure (historical hermetic collection,
+containment fixes, O6(part), O7(part), P1(part), D3(part)). O4 is narrowed to the reviewed four
+findings; its other historical associations are a separate unchecked item. None of this equates
+commit association or WIP with completed work.
+
+The correction removes only this branch's newly tracked `.index-state.json`/`.index-graph.json`
+and restores its two generated master rollup/count changes. Workspace-58 regenerates them under
+the wrap-up lease at merge. Review against fetched current main `a876d3c9` found canonical RTG-60
+already reserved for `loop-state-offraid-backup.md`; the old private row collided with that identity.
+All six current-main domain indices had no refactoring owner or RTG-61. Owning main applied
+RTG-61 in this candidate's routing index as its sole owner, with next action `Repair CI report
+compatibility and runtime isolation, then rerun baseline`. The canonical RTG-60 backup row is
+preserved at merge. This worker did not edit the index row.
+
+Main reviewed and approved this metadata correction for a normal codex-branch fast-forward push,
+as permitted without a compute row by the owner's 12:45 instruction. Only native text/git review
+and whitespace checks apply to this correction; no fresh validator, generation, grading or ledger
+execution is claimed. Owner acceptance and main merge remain pending after private publication.
+
+## Historical private wrap-up gate receipt (bb6410b1; not owner acceptance)
 
 The admitted branch-only wrap-up passed index regeneration/check, citation checking, and diff
 checking against this documentation. README freshness returned 0 and belief-ledger

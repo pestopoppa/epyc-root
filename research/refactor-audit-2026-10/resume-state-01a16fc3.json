@@ -5,7 +5,9 @@
   "root_worktree": "/mnt/raid0/llm/worktrees/refactor-audit-01a16fc3-root",
   "root_branch": "refactor/handoff-audit-20261024-01a16fc3",
   "root_publish_destination": "codex/refactor-handoff-audit-01a16fc3",
-  "root_pushed_checkpoint": "e8748d8ecb1b0917ef1ad003f114581d8f648785",
+  "root_pushed_checkpoint": "bb6410b1fa76553ab8d2d26dad5ee9816fb1ee5d",
+  "root_owner_acceptance": "NOT accepted or merged by workspace-58; bb6410b1 private publication/local gates only. Owner12:45/13:25 requested every checked line evidence, generated-index removal and unique index ownership. Main reviewed/approved metadata correction and normal codex FFpush; no fresh gate result is claimed and owner acceptance/main merge remain pending.",
+  "handoff_index_ownership": "RTG-61 in own routing-and-optimization-index.md, applied by owning main. Fetched canonical main a876d3c9 reserves RTG-60 for loop-state-offraid-backup.md; preserve that canonical row at merge. All6 canonical indices had no refactor owner/RTG61; own candidate has exactly1refactor row. Old privateRTG60 was a collision.",
   "integration": {
     "worktree": "/mnt/raid0/llm/worktrees/refactor-01a16fc3-orchestrator-integration",
     "branch": "refactor/orchestrator-integration-01a16fc3",
@@ -54,7 +56,8 @@
         "merge_parents": ["713edf671614e69f67028100c08cc8f08b02d52f", "851955112b8ba8c2911a7684469551afa1541623"],
         "publication": "local-only clean merge; no new remote source publication claimed",
         "post_B1_fixture": "As of12:18:31UTC753e0287 is the B1-tested pre-fixture identity. Reviewed owned-dashboard test fixture applied after B1(+26/-10); validation pending and new local candidate identity being committed. Production application logic unchanged.",
-        "state": "Integration merged locally; focused13PASS. Historical B1 attempt1 custody symlink failure before collection (no_tests), repaired helper metadata PASS; attempt2 baseline20646 plus unregistered slow marker ERROR, no candidate collection. External harness correction retained strict markers; terminal strict collection PASS: baseline20658 total/20645 selected, candidate20666 total/20653 selected, removed0/added8 intended, identical13 exclusions. Collection parity only, no full-suite result; baseline/native capture/coverage incomplete, O8 unchecked.",
+        "B2_terminal": "Baseline13:13:11UTC:31failed20517passed85skipped19xfailed6passed-subtest-events in2146.45s. Parentcases20643 plus9module-skip case nodes=20652JUnit testcase nodes; header20658 includes6subtest events. Native conformance NULL for unnamed collection-skip case; shared grade failed/no JSON. Baseline16ignored runtime paths leaked; tracked3repo/source-harness custody MATCH. No candidate full run and no accepted known-failure set. Original b2-baseline-first-native receipts preserved; next repair report compatibility/runtime isolation and rerun baseline after reviewed dry run.",
+        "state": "Integration merged locally; focused13PASS. Historical B1 custody no_tests/strict-marker failure retained; corrected B1 collection parity PASS20658/20645selected versus20666/20653selected, removed0/added8/identical13exclusions. Later B2 full baseline failed31 at13:13:11; nativeNULL/sharedgradefailed/noJSON and16ignored runtime leaks. See B2_terminal for exact denominators. No candidate full run or accepted known-fail set; O8 unchecked.",
         "current_manifest": "/mnt/raid0/llm/tmp/refactor-01a16fc3/ci/current-run.json"
       },
       "P3_autopilot_actions": {
@@ -76,16 +79,16 @@
       "P3": "checked2026-10-26 with belief:cc for reviewed private published fb5db1a0 only",
       "per_finding_completion": "P3 package16 behavioral warrants in committed source record; no main/deployment completion"
     },
-    "next_action": "Complete CI collection, baseline and native validation. P3 published/accepted; run separate official q1 root-check row independently of corrective CI row.",
+    "next_action": "Repair CI report compatibility and runtime isolation, then rerun baseline. P3fb5 remains accepted private source. Rootbb6410b1 private/not owner-accepted; correct all27 new-handoff checked lines/generated artifacts/ownership before reviewed metadata repush.",
     "evidence": "research/refactor-audit-2026-10/integration-validation-review-2026-10-26.md",
     "root_wrapup_gate": {
       "historical_outer_pid": 881101,
       "historical_child_pid": 881104,
-      "state": "Bare queued root request canceled before admission for official calendar integration; both captured PIDs verified dead; actual terminal143 preserved. No root row armed, no current checks/commit/push. Root docs thawed only for authorized current-state preparation; regenerate review hashes after actual source publication and owning-main approval.",
-      "status_file": "/mnt/raid0/llm/tmp/refactor-01a16fc3/wrapup-20261026/publish-run/root-gates.status",
+      "state": "Prior bare881101/881104 canceled before admission;143 preserved. Later officialq1 job local gates PASS12:32:15, privately publishedbb6410b1, remote verified. Workspace-58 did NOT accept/merge it; owner12:45/13:25 corrections now in review. Old receipts remain immutable; no new generated artifacts or validators for metadata correction.",
+      "status_file": "/mnt/raid0/llm/tmp/refactor-01a16fc3/wrapup-20261026/calendar-publish-run/root-gates.status",
       "failed_pre_admission_attempt": "/mnt/raid0/llm/tmp/refactor-01a16fc3/wrapup-20261026/attempt1.status",
       "calendar_requirement": "Separate official q1 literal CPUs24-47, 8GiB correctness grant; 600s maximum/min300s; official filler9 launcher, exact live envelope/HOLD/FILLER_DEADLINE checks and taskset affinity proof; no nested claim or timeout process-group manipulation.",
-      "expected_checkbox_count": "2: RESUME-4 and P3, both belief:cc; actual P3 fb5db1a0 source publication/remote verification approved by owning main"
+      "expected_checkbox_count": "Historical own-parent comparison2 was insufficient: new handoff introduces27 checked lines relative canonical main. Owner correction retains21 with per-line evidence, reopens6, narrows O4 to reviewed4 with other associations unchecked. No current two-flip completion claim."
     }
   },
   "accepted_pushed": {
@@ -264,7 +267,7 @@
       "worktree": "/mnt/raid0/llm/worktrees/refactor-01a16fc3-ci",
       "branch": "refactor/orchestrator-ci-01a16fc3",
       "base": "3ee8eea2ab514e8fac4c15c839d4ad1644e0ba38",
-      "state": "WIP backup713edf671 historical; local-only clean merge753e0287a1ae6b06f2a5c91269899ff8cc8452b5 contains851955112. Focused13PASS; historical custody no_tests and strict-marker attempt2 failure retained. Corrected strict collection PASS: baseline20658 total/20645 selected, candidate20666 total/20653 selected, removed0/added8 intended, identical13 exclusions. Collection parity only; no full-suite baseline/native/coverage acceptance.",
+      "state": "Historical WIP713edf671 and B1-tested local753e0287/focused13PASS/collection parity PASS are superseded by B2 baseline31failed20517pass85skip19xfail6subtests2146.45s, nativeNULL/sharedgradefailed/noJSON and16ignored runtime leaks despite tracked custody MATCH. No candidate full run or known-failure acceptance; O8 open. Current source/control details in current_checkpoint_2026-10-26.",
       "scope": "PR/manual CI; shared native carrier/context/output/JUnit custody and grade; one test entrypoint; baseline comparators; strict pytest and central requires_server hook; NI63 32-source current provenance; pip/UV parity",
       "changed_paths": 207,
       "removed_noop_async_marks": 470,
@@ -331,7 +334,7 @@
     "Only the exact A5-18 and O4 A4-03/A4-04/A4-06/A4-07 candidate scopes are approved; approval does not extend to any future HIGH/CRITICAL edit, main push, merge, deployment, or production activation."
   ],
   "important_remaining": [
-    "Complete CI baseline and native validation after terminal strict collection PASS: baseline20658 total/20645 selected, candidate20666 total/20653 selected, removed0/added8 intended, identical13 exclusions. Local753e0287/focused13PASS; no full-suite/native/coverage proof, O8 unchecked. P3 fb5db1a0 published/verified/accepted. Separate official root-check row independent.",
+    "Repair CI report compatibility and runtime isolation, then rerun baseline: actualB2 baseline31failed/20517passed/85skipped/19xfailed/6subtests2146.45s; nativeNULL unnamed case, sharedgradefailed/noJSON;16ignored runtime leaks despite tracked custody MATCH. No candidate full run or accepted known-failure set. O8 unchecked; P3fb5 private source accepted.",
     "Review/integrate accepted O4 and P1 branches only through their owner boundaries; no main/deployment approval is implied.",
     "O8 CI/ni63 root-cause design; O1 remaining/O5/P3/P4; research K1 rest, K2 remaining C4-05/C4-06/C4-10 and other C4-C6 verification, K3 fresh closure, K4 CI/ratchet.",
     "D1-D10 behind behavioral dependencies; RESUME-7 mixed-alias cold-import cycle.",
@@ -515,16 +518,16 @@
   ],
   "watcher_commands": {
     "integration": "Published/reviewed private candidate 851955112; terminal runner FAIL is preserved. Read research/refactor-audit-2026-10/integration-validation-review-2026-10-26.md for immutable-base adjudication; do not resume the old runner.",
-    "O8_CI": "Local753e0287/focused13PASS; terminal strict collection PASS: baseline20658 total/20645 selected, candidate20666 total/20653 selected; removed0/added8 intended, identical13 exclusions. Historical custody no_tests and attempt2 strict-marker failure preserved; collection parity only, no full-suite/native/coverage proof, O8 unchecked. Old run5 PID history not live state.",
+    "O8_CI": "B1 collection parity historicalPASS; B2 actual baseline13:13:11 failed31 with20517pass85skip19xfail6subtestevents2146.45s, nativeNULL unnamed collection skip/sharedgradefailed/noJSON,16ignored runtime leaks and tracked custody MATCH. Read ci/b2-baseline-first-native originals and baseline-terminal-review failure matrix. No candidate full run/accepted known-fail set; repair report/runtime isolation then rerun baseline. O8unchecked.",
     "P3_autopilot_actions": "Publishedfb5db1a0a24b92172643bb670c77a4343a508c96 oncodex/refactor-autopilot-actions-01a16fc3, exact remote and clean WT verified; official formatting closure rc0 and final12 functional402PASS1SKIP. Read format-closure-20261026 receipts plus committed source checkpoint; package accepted/ticked belief:cc, no main/deploy.",
-    "root_wrapup": "publish-run records canceled881101/881104 terminal143, no gates. No root row armed. Next official q1 row will use reviewed calendar-publish-entry.sh with literal24-47,8GiB,600s/max,min300, exact grant/HOLD/FILLER_DEADLINE and affinity proofs, no nested claim. Await source closure and parent review before refreshing hashes/arming. Oct25 PASS covered prior inputs only."
+    "root_wrapup": "calendar-publish-run records localPASS/privatebb6410b1 publication12:32:15, not owner acceptance/merge. Owner12:45/13:25 corrections prepared under wrapup-20261026/owner-correction-20261026; old proof immutable. Owner permits metadata-only repush without compute row after main review; no Python/toolchain validation without fresh coordination admission. Generated index files/counts removed from own contribution; owner regenerates at merge."
   },
   "calendar_coordination": {
     "owner": "workspace-58 via authenticated native IPC; active coordination successor compute_coordination_finish",
     "resources": "q1 literal CPUs24-47;8GiB;correctness only; official filler9/live grant/taskset-affinity proof required",
-    "latest_observations": "As of12:18:31UTC B1 terminal strict collection PASS: baseline20658 total/20645 selected, candidate20666 total/20653 selected; removed0/added8 intended, identical13 exclusions. Reviewed owned-dashboard test fixture applied after B1(+26/-10), validation pending, production application logic unchanged;753e0287 is B1-tested pre-fixture identity while new candidate is committed. P3 privatefb5db1a0 published/verified. No root row armed by this worker.",
+    "latest_observations": "B2 baseline completed13:13:11 with31failed; owner13:25demoted row BACKLOG/harnessfix, no candidate phase/known-fail acceptance. Owner16:20 ACK says rootbb6410b1 private/not merged; metadata correction under review. P3fb5 remains owner-accepted private source. No new row armed by this correction worker; any interpreter/toolchain work needs fresh coordination admission.",
     "historical_failed_observations": "B1 first custody-hash attempt ended11:31FAIL before collection; second strict-marker attempt baseline20646 plus ERROR, no candidate collection. P3 targeted grant11:28-11:43 ended11:30PASS; later final formatting closure12:04:57-12:05:05rc0. Preserve earlier receipts.",
     "disclosure": "Prior coordinator ungranted Python metadata row edit disclosed owner; exact timestamp unknown bracket11:27-11:28. No application/test/build/timing-impact claim; no blind retry or bare claim."
   },
-  "resource_state": "No root compute job is armed by this worker;881101/881104 canceled/dead before admission. P3 finalfb5db1a0 published/verified and owning-main accepted. Docs updated for two result flips and main-applied RTG next action; final exact review/hash snapshot and separate official q1 root grant follow. CI corrective row is independent. No canonical writes, ingestion, cleanup apply, main promotion or kernel/runtime action."
+  "resource_state": "Rootbb6410b1 privately published/localPASS but NOT owner-accepted/merged. Main reviewed21evidence/6reopened, generated2drop/mastercountrestore and applied uniqueRTG61 preserving canonicalRTG60backup; normal metadata-only codex FFpush authorized, no compute row perowner12:45. No fresh validator/generation/grade PASS claimed. B2 baseline BACKLOG/harnessfix, no candidate phase. Any Python/toolchain validator requires fresh coordinated admission. No canonical/main/ledger/runtime/kernel writes or generated re-add."
 }
