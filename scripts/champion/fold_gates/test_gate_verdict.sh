@@ -2,9 +2,8 @@
 # Proposed regression harness. Run only under an owner-approved compute grant.
 set -uo pipefail
 SCRIPT_DIR=$(cd -- "$(dirname -- "$0")" && pwd)
-TMP=${TMPDIR:-/mnt/raid0/llm/tmp}/g1-gate-verdict.$$
-mkdir -p "$TMP"
-trap 'rm -rf "$TMP"' EXIT
+TMP=$(mktemp -d "${TMPDIR:-/mnt/raid0/llm/tmp}/g1-gate-verdict.XXXXXX")
+trap 'bash "$SCRIPT_DIR/../../safety/guarded_rm.sh" "$TMP"' EXIT
 sed -n '/^# BEGIN GATE VERDICT HELPERS$/,/^# END GATE VERDICT HELPERS$/p' \
   "$SCRIPT_DIR/gate_verdict_helpers.sh" | sed '1d;$d' > "$TMP/helpers.sh"
 source "$TMP/helpers.sh"

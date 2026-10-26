@@ -3,9 +3,8 @@
 set -uo pipefail
 SCRIPT_PATH=$(cd -- "$(dirname -- "$0")" && pwd)/$(basename -- "$0")
 SCRIPT_DIR=$(cd -- "$(dirname -- "$0")/.." && pwd)
-TMP=${TMPDIR:-/mnt/raid0/llm/tmp}/bundle-gate-verdict.$$
-mkdir -p "$TMP"
-trap 'rm -rf "$TMP"' EXIT
+TMP=$(mktemp -d "${TMPDIR:-/mnt/raid0/llm/tmp}/bundle-gate-verdict.XXXXXX")
+trap 'bash "$SCRIPT_DIR/../../safety/guarded_rm.sh" "$TMP"' EXIT
 
 sed -n '/^# BEGIN BUNDLE GATE VERDICT$/,/^# END BUNDLE GATE VERDICT$/p' \
   "$SCRIPT_DIR/bundle_gate_c3.sh" | sed '1d;$d' > "$TMP/helpers.sh"
