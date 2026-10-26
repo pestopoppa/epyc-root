@@ -68,6 +68,16 @@ Nothing was deleted: the siblings are the evidence record for every gate this pr
 
 ### Open work — start here
 
+- [ ] **USAGE-PROV-1 write-side enrollment** — project prospective `epyc.request_call_usage.v1`
+      begin/settled records from the configured `usage_provenance.jsonl` stream through the existing
+      ClaimTuple contract. Verify self-hashes, request/call/parent and backend-record joins, process
+      revision plus honestly labeled first-event disk hashes/dirty state, and finalization/censoring.
+      Preserve error category/hash without raw prompt/output/server payloads. Cache replay retains its
+      original observation dependency and logical charge without new physical decoding or independent
+      corroboration; estimates and incomplete usage cannot establish measured cost. Keep missing
+      model/server/protocol warrant unknown. Verify bounded-log retention/custody and the planning-context
+      canary before marking wired. Producer: orchestrator `src/llm_primitives/usage_log.py`; no new grader.
+
 For the current queue, use the open checkboxes below and the generated
 [`master-handoff-index.md`](master-handoff-index.md) rollup. KV-quant: `VB-KVQ-V10-DICT` first (root adapter
 must accept the producer's stats-dict medians; Codex coordination) — it blocks `VB-KVQ-V10-INGEST`, which also
