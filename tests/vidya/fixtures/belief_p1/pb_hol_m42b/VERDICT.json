@@ -1,0 +1,260 @@
+{
+ "verdict": "PASS",
+ "outcome": "PASS",
+ "conditions": {
+  "C1_srpf_B_over_A_lt_2": "PASS",
+  "C1_srpf512": "PASS",
+  "C1_srpf2048": "PASS",
+  "C3_off_completions_byte_identical": "PASS",
+  "C2_off_identity_paired": "PASS"
+ },
+ "c2": {
+  "valid_champion_loads": [
+   1,
+   3
+  ],
+  "valid_candidate_loads": [
+   2,
+   4
+  ],
+  "band": [
+   19.845,
+   24.255
+  ],
+  "pairs": [
+   {
+    "loads": [
+     1,
+     2
+    ],
+    "order": "champion->candidate",
+    "candidate_c2": 21.829,
+    "champion_c2": 21.989,
+    "p": 0.9927,
+    "drift_flag": null
+   },
+   {
+    "loads": [
+     2,
+     3
+    ],
+    "order": "candidate->champion",
+    "candidate_c2": 21.829,
+    "champion_c2": 21.791,
+    "p": 1.0017,
+    "drift_flag": null
+   },
+   {
+    "loads": [
+     3,
+     4
+    ],
+    "order": "champion->candidate",
+    "candidate_c2": 21.805,
+    "champion_c2": 21.791,
+    "p": 1.0007,
+    "drift_flag": null
+   }
+  ],
+  "cond": "PASS",
+  "pooled_paired_ratio": 0.9984,
+  "C2_paired": 22.014,
+  "n_pairs": 3,
+  "flagged_pairs": [],
+  "window_drift": null,
+  "champion_pooled_c2": 21.87,
+  "champion_pooled_c2_in_band": true,
+  "candidate_pooled_c2_raw": 21.825,
+  "candidate_pooled_c2_raw_in_band": true
+ },
+ "window": {
+  "window_id": "m4-2b-champion-control-20261024T1240Z",
+  "started": "2026-10-24T12:40:48Z",
+  "deadline": "2026-10-24T14:23:30Z",
+  "plan": "champion candidate champion candidate",
+  "grant_cpus": "184-191"
+ },
+ "loads": [
+  {
+   "load": 1,
+   "role": "champion",
+   "kind": "planned",
+   "valid": true,
+   "why_invalid": [],
+   "drift_flag": null,
+   "invalid_reps": []
+  },
+  {
+   "load": 2,
+   "role": "candidate",
+   "kind": "planned",
+   "valid": true,
+   "why_invalid": [],
+   "drift_flag": null,
+   "invalid_reps": []
+  },
+  {
+   "load": 3,
+   "role": "champion",
+   "kind": "planned",
+   "valid": true,
+   "why_invalid": [],
+   "drift_flag": null,
+   "invalid_reps": []
+  },
+  {
+   "load": 4,
+   "role": "candidate",
+   "kind": "planned",
+   "valid": true,
+   "why_invalid": [],
+   "drift_flag": null,
+   "invalid_reps": []
+  }
+ ],
+ "NON_GATING": {
+  "C2_paired_disjoint_pairs_only": 21.977,
+  "per_load": [
+   {
+    "load": 1,
+    "role": "champion",
+    "kind": "planned",
+    "ratio": 21.989,
+    "rep_ratios": [
+     21.895,
+     21.989,
+     22.013
+    ],
+    "c_drift_ms": 2.4,
+    "drift_flag": null,
+    "C_start": [
+     280.7,
+     281.9,
+     283.9
+    ],
+    "C_end": [
+     283.8,
+     284.3,
+     284.6
+    ],
+    "solo_64k_s": 152.19889999999998,
+    "vram_peak_mib": 48489,
+    "own_vram_gib_at_ready": [
+     46.602
+    ]
+   },
+   {
+    "load": 2,
+    "role": "candidate",
+    "kind": "planned",
+    "ratio": 21.829,
+    "rep_ratios": [
+     21.905,
+     21.829,
+     21.77
+    ],
+    "c_drift_ms": -0.8,
+    "drift_flag": null,
+    "C_start": [
+     290.7,
+     283.1,
+     284.2
+    ],
+    "C_end": [
+     283.4,
+     290.7,
+     281.2
+    ],
+    "solo_64k_s": 124.3042,
+    "vram_peak_mib": 48495,
+    "own_vram_gib_at_ready": [
+     46.608
+    ]
+   },
+   {
+    "load": 3,
+    "role": "champion",
+    "kind": "planned",
+    "ratio": 21.791,
+    "rep_ratios": [
+     21.768,
+     21.791,
+     21.827
+    ],
+    "c_drift_ms": -2.2,
+    "drift_flag": null,
+    "C_start": [
+     292.6,
+     285.8,
+     287.0
+    ],
+    "C_end": [
+     284.8,
+     338.7,
+     284.2
+    ],
+    "solo_64k_s": 123.55669999999999,
+    "vram_peak_mib": 48495,
+    "own_vram_gib_at_ready": [
+     46.608
+    ]
+   },
+   {
+    "load": 4,
+    "role": "candidate",
+    "kind": "planned",
+    "ratio": 21.805,
+    "rep_ratios": [
+     21.802,
+     21.805,
+     21.906
+    ],
+    "c_drift_ms": -0.7,
+    "drift_flag": null,
+    "C_start": [
+     284.8,
+     283.9,
+     283.8
+    ],
+    "C_end": [
+     280.7,
+     284.1,
+     283.2
+    ],
+    "solo_64k_s": 123.1127,
+    "vram_peak_mib": 48495,
+    "own_vram_gib_at_ready": [
+     46.608
+    ]
+   }
+  ],
+  "sensitivity": {
+   "drift_bar_2.8ms": {
+    "flagged_pairs": 0,
+    "unflagged_pairs": 3,
+    "C2_paired_unflagged_only": 22.014
+   },
+   "drift_bar_5pct": {
+    "flagged_pairs": 0,
+    "unflagged_pairs": 3,
+    "C2_paired_unflagged_only": 22.014
+   },
+   "drift_bar_10pct": {
+    "flagged_pairs": 0,
+    "unflagged_pairs": 3,
+    "C2_paired_unflagged_only": 22.014
+   }
+  }
+ },
+ "drift_bar_ms": 2.8,
+ "drift_bar_role": "per-pair FLAG (operator 2026-10-24), never voiding",
+ "min_valid_loads_per_binary": 2,
+ "min_adjacent_pairs": 2,
+ "decided_from": {
+  "path": "/mnt/raid0/llm/tmp/f8-launchers-20261023/m4-srpf-pbhol/VERDICT.json",
+  "sha256": "4b47d4b766fbb194a7ca69d04b72c8668a9a20b5982305f52c8bd79f580c2078",
+  "note": "C1, C3 decided in M4.2; copied verbatim"
+ },
+ "rule": "AMENDMENT-M4.2b-paired.md (supersedes PREDECLARATION.md section 3 clause 5, sections 4-5 for C2)",
+ "gating": "C1 AND C2 AND C3; C2 = 22.05 x geometric-mean(candidate C2 / champion C2 over adjacent pairs) within 22.05 x (1 +- 0.10); production gate is a separate step"
+}

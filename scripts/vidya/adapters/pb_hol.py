@@ -127,6 +127,10 @@ def native_rows(run_dir: str | Path) -> list[dict]:
     path = Path(run_dir)
     if path.is_file():
         path = path.parent
+    from adapters import _pb_hol_m42b
+    paired = _pb_hol_m42b.native_rows(path)
+    if paired is not None:
+        return paired
     summary_path = path / SUMMARY
     if not summary_path.is_file():
         return []
@@ -181,6 +185,9 @@ def _fmt(x: float) -> str:
 
 @register(SOURCE_KIND)
 def project(native: dict) -> ClaimTuple:
+    from adapters import _pb_hol_m42b
+    if native.get("kind") == _pb_hol_m42b.KIND:
+        return _pb_hol_m42b.project(native)
     if native.get("kind") == M4_KIND:
         return _m4_project(native)
     cid = native.get("comparison")
@@ -666,3 +673,16 @@ def _m4_project(native: dict) -> ClaimTuple:
 
 __all__ = ["ADAPTER_ID", "AUTHORITY", "COMPARISONS", "KNOB_FAMILY", "M4_KIND", "SOURCE_KIND", "native_rows",
            "project"]
+
+
+def units(path: Path) -> list[Path]:
+    """A paired launcher/window is one unit; preserve historical flat summary units."""
+    from adapters import _pb_hol_m42b
+    paired = _pb_hol_m42b.units(path)
+    if paired is not None:
+        return paired
+    if not path.is_dir():
+        return []
+    if (path / SUMMARY).is_file():
+        return [path]
+    return sorted(p for p in path.iterdir() if p.is_dir() and (p / SUMMARY).is_file())

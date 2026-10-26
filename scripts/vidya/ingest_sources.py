@@ -64,6 +64,10 @@ def _files_except(exclude_suffix: str, *patterns: str) -> Units:
     return units
 
 
+def _pb_hol_units(path: Path) -> list[Path]:
+    return importlib.import_module("adapters.pb_hol").units(path)
+
+
 def _run_dirs(marker: str) -> Units:
     """A directory holding ``marker`` is one run; otherwise its children that hold it are."""
     def units(path: Path) -> list[Path]:
@@ -319,7 +323,7 @@ SOURCES: dict[str, Source] = {s.name: s for s in (
                   "*/*/belief_measurements.jsonl"),
            note="KPF-18 runner `epyc.kpf.run.v1` records (kpf18_gate.py Run.finish); pre-hook runs yield no claims",
            task="VB-KVU-PF"),
-    Source("pb-hol", "pb_hol", _run_dirs("summary.json"),
+    Source("pb-hol", "pb_hol", _pb_hol_units,
            note="PB-HOL-1 slot-order head-of-line run dirs (`summary.json` + `pb_hol_1.jsonl`, research "
                 "`scripts/benchmark/pb_hol_1`); one claim per arm comparison with samples; retrofit",
            task="P1-L"),
