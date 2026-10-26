@@ -582,6 +582,7 @@ the only projection on disk was a 2026-08-09 demo. The engine was complete and h
       been committed (RVP-C2-2 still open) and no real event exists to prove the write path.
       SHARPENED TRIGGER: commit the RVP-C2-2 property layer to `llama.cpp-experimental`, then the
       first real event closes this row — both events, not just the adapter**
+  - [ ] extend write-side wiring to the prospective GPU pool v1 records (epyc.model_free_backend_correctness.v1, ni-gpu-pool-*-20261026-v1): strict future projection preserves native candidate-local reference provenance and the exact artifact/source UNKNOWN limits; no historical backfill; no new grading rule (filed ws58 2026-10-26)
 - [x] SC27 **Wire AutoKernel live-control and governed replay receipts on the write side before the
       next run.** ✅ 2026-08-12 — research `730adb1d` adds prospective producer-written belief rows
       to live controls and the async-prefetch replay; root `2a4e170a` adds the
