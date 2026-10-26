@@ -1,0 +1,15 @@
+2026-10-26T02:18:56Z
+test_atomic_rename_never_exposes_partial_appended_record (__main__.Producer.test_atomic_rename_never_exposes_partial_appended_record) ... ok
+test_complete_end_to_end_and_start_snapshot_survives_row_change (__main__.Producer.test_complete_end_to_end_and_start_snapshot_survives_row_change) ... ok
+test_duration_conversion_and_finite_overflow_refusal (__main__.Producer.test_duration_conversion_and_finite_overflow_refusal) ... ok
+test_hard_end_and_launcher_term_are_censored (__main__.Producer.test_hard_end_and_launcher_term_are_censored) ... ok
+test_prestart_complete_and_expired_are_legacy (__main__.Producer.test_prestart_complete_and_expired_are_legacy) ... ok
+test_repeat_then_unstarted_expired_attempt_does_not_reuse_snapshot (__main__.Producer.test_repeat_then_unstarted_expired_attempt_does_not_reuse_snapshot) ... ok
+test_write_consumes_metadata_before_later_trap_unstarted_grant (__main__.Producer.test_write_consumes_metadata_before_later_trap_unstarted_grant) ... ok
+
+----------------------------------------------------------------------
+Ran 7 tests in 15.558s
+
+OK
+PF cpus=48,49 exit=0
+2026-10-26T02:19:12Z

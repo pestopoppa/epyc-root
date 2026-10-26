@@ -1,0 +1,16 @@
+2026-10-26T02:22:28Z
+test_real_engine_callbacks_not_executed_under_refusal (test_gap_combined.Integration.test_real_engine_callbacks_not_executed_under_refusal) ... ok
+test_real_engine_no_hold_and_added_legacy_kills_owned_child (test_gap_combined.Integration.test_real_engine_no_hold_and_added_legacy_kills_owned_child) ... ok
+test_actual_inner_expired_canonical_refuses_body (test_gap_combined.Integration.test_actual_inner_expired_canonical_refuses_body) ... ok
+test_actual_inner_lock_delay_refuses_body (test_gap_combined.Integration.test_actual_inner_lock_delay_refuses_body) ... ok
+test_four_exact_night_ids_and_negatives (test_gap_combined.Integration.test_four_exact_night_ids_and_negatives) ... ok
+test_valid_repeat_reoffer_binds_fresh_grant (test_gap_combined.Integration.test_valid_repeat_reoffer_binds_fresh_grant) ... ok
+test_cmdline_port_producer_drains (test_draining_grep.Draining.test_cmdline_port_producer_drains) ... ok
+test_listen_producer_drains (test_draining_grep.Draining.test_listen_producer_drains) ... ok
+
+----------------------------------------------------------------------
+Ran 8 tests in 17.581s
+
+OK
+PF cpus=48,49 exit=0
+2026-10-26T02:22:46Z

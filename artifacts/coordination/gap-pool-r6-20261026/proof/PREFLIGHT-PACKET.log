@@ -1,0 +1,18 @@
+2026-10-26T02:24:47Z
+test_exact_row_native_schema_and_class (test_positive_metadata.ExactMetadata.test_exact_row_native_schema_and_class) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 0.001s
+
+OK
+EXACT_ROW q0: | fixture-positive-full-quarter | fixture-owner | /private/fixture/filler_run11.sh pid=12345 | q0 | 300 | 1 | /private/fixture/STOP | ARMED | block-correctness | 600 s | 300 | n | y | none found (fixture, 2026-10-26) | synthetic exact correctness | n/a (correctness fixture) | cpu | pool:gap-filler |
+check_row errors=[]; PID liveness ONLY stubbed; derived=block-correctness
+EXACT_ROW q1: | fixture-positive-full-quarter | fixture-owner | /private/fixture/filler_run11.sh pid=12345 | q1 | 300 | 1 | /private/fixture/STOP | ARMED | block-correctness | 600 s | 300 | n | y | none found (fixture, 2026-10-26) | synthetic exact correctness | n/a (correctness fixture) | cpu | pool:gap-filler |
+check_row errors=[]; PID liveness ONLY stubbed; derived=block-correctness
+EXACT_ROW q2: | fixture-positive-full-quarter | fixture-owner | /private/fixture/filler_run11.sh pid=12345 | q2 | 300 | 1 | /private/fixture/STOP | ARMED | block-correctness | 600 s | 300 | n | y | none found (fixture, 2026-10-26) | synthetic exact correctness | n/a (correctness fixture) | cpu | pool:gap-filler |
+check_row errors=[]; PID liveness ONLY stubbed; derived=block-correctness
+EXACT_ROW q3: | fixture-positive-full-quarter | fixture-owner | /private/fixture/filler_run11.sh pid=12345 | q3 | 300 | 1 | /private/fixture/STOP | ARMED | block-correctness | 600 s | 300 | n | y | none found (fixture, 2026-10-26) | synthetic exact correctness | n/a (correctness fixture) | cpu | pool:gap-filler |
+check_row errors=[]; PID liveness ONLY stubbed; derived=block-correctness
+row_factory_sha256=843b07c1d430ab8cbfa26ce49925eca05e203db7e50fb54752fe03e1d25fcbe1
+PF cpus=48,49 exit=0
+2026-10-26T02:24:47Z
