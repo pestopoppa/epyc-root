@@ -1875,6 +1875,43 @@ A fused MoE up+gate path initially appeared numerically exact because its graph 
 
 Sources: [CH-19 implementation and test record](../progress/2026-10/2026-10-21-ch19-fix.md); [CH-19 owner handoff and remaining speed gate](../handoffs/active/autokernel-champion-aggregate.md); [workspace-f8 progress and work boundary](../progress/2026-10/2026-10-21-workspace-f8.md).
 
+## Private integration candidates need immutable baselines — 2026-10-26
+
+**Confidence: verified engineering review of one private candidate; no main-promotion claim.**
+
+The orchestrator integration candidate `851955112b8ba8c2911a7684469551afa1541623` passed its
+expanded 111-file union (2,897 passed, 8 skipped, 0 failed of 2,905), all four coverage floors,
+focused tests, 32 source pins and four protected-file checks against immutable base `84f6f6f1`.
+The formatter runner's terminal failure remains in the record: it compared against a moving
+`origin/main`, adding 50 files to the accepted scope. Reconstructing the immutable 182-file scope
+showed the same 133 failing paths as baseline and zero introduced formatter failures. The correction
+is an evidence-scope adjudication, not a new formatter run.
+
+Dependent-package validation now has a separate chronology: CI contains the candidate in local-only
+merge `753e0287`, and its focused 13 tests pass. Its official collection attempt failed before
+tests because custody hashing traversed public-carrier directory symlinks; baseline/native/coverage
+gates remain open; its second attempt collected 20,646 baseline tests plus an unregistered-marker
+error, with no candidate collection. Corrected strict collection then passed: baseline 20,658 total/
+20,645 selected, candidate 20,666 total/20,653 selected, no removals and 8 intended additions,
+with 13 identical exclusions. This establishes collection parity only. P3's combined source passed a corrected 12-file functional
+selection (402 passed, 1 skipped), then official three-file style closure proved AST equality,
+unchanged non-target bytes and protected/source custody. Reviewed private source `fb5db1a0` is
+published and remote-exact verified on `codex/refactor-autopilot-actions-01a16fc3`. Earlier
+34-file and 90-file failures stay in the record; the final selection does not establish a current
+all-1,930-pass aggregate. Package completion requires the final source's own reviewed proof and
+remote publication receipt.
+
+Compute admission is part of that evidence: the bare queued root request was canceled before
+admission, with terminal 143 preserved. The next checks require the calendar owner's official
+literal q1 grant and launcher with affinity proof; a waiting region-lock request carries no grant
+authority. Local merges, functional checks, private-candidate validation and published source are
+recorded as distinct states.
+
+Sources: [integration validation review](../research/refactor-audit-2026-10/integration-validation-review-2026-10-26.md),
+[current refactoring handoff](../handoffs/active/refactoring-multirepo-2026-10.md),
+[Oct 26 checkpoint](../progress/2026-10/2026-10-26-refactor-next-packages-checkpoint-01a16fc3.md),
+[resume state](../research/refactor-audit-2026-10/resume-state-01a16fc3.json).
+
 ### Advisory staged-shell SIGPIPE check
 
 The versioned pre-commit extras call a staged-blob checker for producer pipelines using `grep -q` while pipefail is active. Early consumer exit can give the producer SIGPIPE and turn a successful match into a failed pipeline. The checker recommends a consuming safe form and stays warn-only, including scan errors. Original hosted run39617059382 at source56b782ebf20a88b356057983bf73594b5e22a907 passed all11 named checker controls. Source inspection covers installer wiring; the controls do not establish live installed-hook activation. [Native evidence](../artifacts/ci/lint-sigpipe-source-20261021/README.md).

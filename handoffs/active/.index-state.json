@@ -28,7 +28,7 @@
       "blocked": 18,
       "handoffs": 53,
       "oldest_advance": "2026-07-29",
-      "open": 697
+      "open": 695
     },
     "user-facing-harness-index.md": {
       "blocked": 17,
@@ -2233,10 +2233,10 @@
     },
     "refactoring-multirepo-2026-10.md": {
       "blocked": 0,
-      "closed": 25,
+      "closed": 27,
       "guarded": 0,
       "last_advanced": "2026-10-25",
-      "open": 48,
+      "open": 46,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -4603,7 +4603,7 @@
       "id": "RTG-60",
       "index": "routing-and-optimization-index.md",
       "line": 65,
-      "next_action": "Finish combined validation, then CI and remaining package work",
+      "next_action": "Complete CI collection, baseline and native validation",
       "track": "multi-repo refactoring"
     },
     "UFH-01": {

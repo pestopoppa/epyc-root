@@ -1,39 +1,31 @@
 {
   "by_type": {
     "docs": 204,
-    "handoff-active": 183,
+    "handoff-active": 184,
     "handoff-blocked": 2,
     "handoff-completed": 215,
-    "progress": 785,
+    "progress": 786,
     "research": 140
   },
   "kind": "project-wiki-source-manifest",
   "last_compile": "2026-10-24T14:29:35Z",
   "last_touch": {
     "advanced": {
-      "added": 0,
-      "changed": 10,
+      "added": 2,
+      "changed": 0,
       "removed": 0
     },
-    "at": "2026-10-24T14:53:12Z",
+    "at": "2026-10-26T12:31:01Z",
     "scope_paths": [
-      "docs/reference/agent-config/INCIDENT_LOG.md",
-      "handoffs/active/agentic-serving-harness-fixes.md",
-      "handoffs/active/autokernel-all-devices-all-dimensions.md",
-      "handoffs/active/autokernel-champion-aggregate.md",
-      "handoffs/active/gpu-serving-tie-in-program.md",
-      "handoffs/active/heterogeneous-slot-fabric-residency.md",
-      "handoffs/active/kv-prefix-fork-and-paged-attention.md",
-      "handoffs/active/model-artifact-integrity.md",
-      "handoffs/active/non-inference-backlog.md",
-      "progress/2026-10/2026-10-24-workspace-58.md"
+      "handoffs/active/refactoring-multirepo-2026-10.md",
+      "progress/2026-10/2026-10-26-refactor-next-packages-checkpoint-01a16fc3.md"
     ],
     "scope_types": []
   },
   "mode": "touch:scoped",
-  "scan_time": "2026-10-24T14:53:12Z",
+  "scan_time": "2026-10-26T12:31:01Z",
   "schema_version": 1,
-  "source_set_hash": "f668e6e608759529e21913445328fb5103cf20a023fa9794862d94ab7544d638",
+  "source_set_hash": "bebb99e552e87d14ad2e1089c3b6a1315392ee0cc9c0dc3119d9c9dd722f4dcd",
   "sources": [
     {
       "content_hash": "6c067235a74a3b9667dd4fad23684206476aeac1cdefe3b4e0a0824d3179c241",
@@ -1137,6 +1129,14 @@
       "path": "handoffs/active/reboot-gated-inventory-and-staging.md",
       "size": 62386,
       "title": "Reboot-Gated Inventory & Pre-Reboot Staging",
+      "type": "handoff-active"
+    },
+    {
+      "content_hash": "75959e7f39f0b900b1906071a047964957f539df95803ae8f126f476ef13ac36",
+      "modified": "2026-10-26T12:25:00Z",
+      "path": "handoffs/active/refactoring-multirepo-2026-10.md",
+      "size": 54028,
+      "title": "Handoff: Refactoring \u2014 orchestrator, autopilot and AutoKernel (multi-repo debt program)",
       "type": "handoff-active"
     },
     {
@@ -10636,6 +10636,14 @@
       "type": "progress"
     },
     {
+      "content_hash": "76c280de4ef9cc2e29e0593f7823291a32c6e965179cbd7912a38f2f71fb3190",
+      "modified": "2026-10-26T12:31:01Z",
+      "path": "progress/2026-10/2026-10-26-refactor-next-packages-checkpoint-01a16fc3.md",
+      "size": 7929,
+      "title": "Refactoring next-package checkpoint \u2014 2026-10-26",
+      "type": "progress"
+    },
+    {
       "content_hash": "7a9806a387f05ad8a986636ec2e112ac8baa5d4f42c199f388b2ebc5389bf94b",
       "modified": "2026-10-24T14:27:49Z",
       "path": "docs/coordination/session-bus-task-flow-STATUS.md",
@@ -12268,7 +12276,7 @@
       "type": "docs"
     }
   ],
-  "total_new": 1529,
+  "total_new": 1531,
   "writer_evidence_policy": {
     "applies_to": "generated-wiki-article-writes",
     "minimum_confidence": "verified",

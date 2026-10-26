@@ -2,7 +2,7 @@
 
 **Status**: ACTIVE — operator resumed implementation 2026-10-24 after an independent handoff audit; review and finish existing branches before integration
 **Created**: 2026-10-07
-**Updated**: 2026-10-25
+**Updated**: 2026-10-26
 **Priority**: High
 **Scope**: epyc-orchestrator (`src/`, `scripts/`, `tests/`, `scripts/autopilot/`, `src/autopilot_core/`);
 epyc-inference-research `scripts/kernel_rnd/autokernel/`; epyc-root `scripts/hooks/` (guard bugs found on the way)
@@ -16,6 +16,11 @@ require `/tmp` use the manually cleaned exception `/tmp/refactor-01a16fc3/`. The
 **Start here:** the [Pending work](#pending-work) checklist is the queue; §Branches says what each pushed
 branch holds and how to merge it; per-finding evidence is in `research/refactor-audit-2026-10/findings-*.md`.
 
+**Current next action (2026-10-26):** complete CI collection, baseline and native validation.
+CI already contains integration in local merge `753e0287a1ae6b06f2a5c91269899ff8cc8452b5`.
+P3 is accepted and published at `fb5db1a0a24b92172643bb670c77a4343a508c96` on its private
+`codex/*` branch. Run the separate root wrap-up checks in an official q1 grant.
+
 Origin: cloud refactor-audit session (claude.ai/code session_01C4SLLAQhop8AA9rJJusAYj), run in an ephemeral
 4-CPU container on fresh clones, never on the host. Evidence, data and tooling:
 [`research/refactor-audit-2026-10/`](../../research/refactor-audit-2026-10/README.md). Bug report:
@@ -25,6 +30,54 @@ Origin: cloud refactor-audit session (claude.ai/code session_01C4SLLAQhop8AA9rJJ
 > `routing-and-optimization-index.md` on this isolated review branch. Shared/canonical index files remain
 > untouched; workspace-58's publication boundary still applies. Source wiring is filed prospectively on
 > this branch as VB-REFACTOR-CONFORMANCE, not as an optional applicability decision.
+
+### Current package state (2026-10-26)
+
+- **Integration:** reviewed and published private candidate `851955112b8ba8c2911a7684469551afa1541623`
+  on `refactor/orchestrator-integration-01a16fc3`, validated relative to immutable base `84f6f6f1`.
+  The expanded union passed 2,897/2,905 (8 skipped), four coverage floors are 100%, 32 NI63 pins
+  and four P5 preservation proofs pass. The formatter correction establishes zero introduced
+  failures within accepted scope. RESUME-4 records this private candidate only; no main promotion.
+- **O8 CI:** B1-tested pre-fixture local-only merge `753e0287a1ae6b06f2a5c91269899ff8cc8452b5` has parents
+  `713edf671614e69f67028100c08cc8f08b02d52f` and integration `851955112b8ba8c2911a7684469551afa1541623`.
+  The focused check passed 13 tests. Official q1 B1 attempt 1 failed before collection because
+  custody hashing followed public-carrier directory symlinks; no tests ran in that attempt.
+  The helper's corrected symlink metadata proof passed. B1 attempt 2 actually collected 20,646
+  baseline tests plus an error for an unregistered `slow` marker; candidate collection did not run.
+  After the external harness correction, strict collection passed: baseline 20,658 total/20,645
+  selected, candidate 20,666 total/20,653 selected; 0 removed and 8 intended additions, with the
+  same 13 exclusions on both sides. This is collection parity, not a full-suite result.
+  Full baseline comparison, native capture and coverage remain incomplete; O8 stays unchecked.
+- **P3:** reviewed private source `fb5db1a0a24b92172643bb670c77a4343a508c96` is published on
+  `codex/refactor-autopilot-actions-01a16fc3`, remote-exact verified with a clean worktree. It combines
+  checkpoint `bbccaaef` and integration `851955112`. The original 34-file run was 817 passed, 1 skipped,
+  3 failed; the expanded 90-file run was 1,917 passed, 2 skipped, 11 failed (600 s).
+  Targeted legacy-adapter/double repairs then passed the final 12-file selection: 402 passed,
+  1 skipped in 39.49 s, with compile, P5/W3e preservation, diff/hash and no-new-Ruff proofs.
+  Raw Ruff exit 1 is preserved: 16 inherited E701 findings in `tests/unit/test_mutation_diagnostics.py`.
+  The official q1 closure at 12:04:57–12:05:05 UTC returned 0: all three formatter targets have equal
+  ASTs before/after, format-check 3 passed, non-target bytes are unchanged, and no-new-Ruff,
+  protected-file, diff and source-custody proofs pass. The owning main accepted P3 for this private
+  branch only. These successive selections do not establish a current all-1,930-pass aggregate.
+- **Next:** complete CI collection, baseline and native validation, and obtain the separate root-check
+  grant. No main acceptance or deployment is implied.
+
+The native read observed the 1.35 GB `question_pool.jsonl`; its exact consumer is unproven. No fixture patch was
+applied, and an EvalTower-constructor causal claim is not supported. The CI host audit established
+that a dashboard restart test polls live slots and creates host logs. A reviewed owned-dashboard
+test fixture was applied after B1 (+26/−10); its validation is pending, with production application
+logic unchanged. The source evidence chronology is in
+the [Oct 26 checkpoint](../../progress/2026-10/2026-10-26-refactor-next-packages-checkpoint-01a16fc3.md).
+
+Evidence and the formatter-scope adjudication are recorded in
+[`integration-validation-review-2026-10-26.md`](../../research/refactor-audit-2026-10/integration-validation-review-2026-10-26.md).
+Root attempts `829152` and `831298` ended before admission. The later bare queued wrapper `881101`
+and its exact region child `881104` were cancelled for calendar integration and both verified dead;
+its actual terminal exit 143 is preserved, with no gates run. The root row is not armed. All new
+checks require the calendar owner's live grant and official filler launcher on literal q1 CPUs
+24–47, 8 GiB, with affinity proof; a bare region claim is insufficient. The separate root request
+is 600 s, minimum useful 300 s. Future pushes target `codex/*` only; this root's publication
+destination is `codex/refactor-handoff-audit-01a16fc3`, leaving its old review remote unchanged.
 
 ## Pending work
 
@@ -37,7 +90,7 @@ subject establishes association only; WIP, skipped, tested, reviewed and merged 
 - [x] RESUME-1: audit pushed branches and current upstream state; identify unsafe pruning assumptions, rollback failure-path gap, test isolation prerequisite and integration conflicts. Evidence: [audit checkpoint](../../progress/2026-10/2026-10-24-refactor-audit-01a16fc3.md). ✅ 2026-10-24
 - [x] RESUME-2: review hermetic-tests + test-hazards and isolate A6-M1 trace/ledger writes in fixtures. Orchestrator `87540dae`, checkpoint `5e392a3c`, pushed to `refactor/test-isolation-reviewed-01a16fc3`: 189 runtime/trace tests pass + 1 intentional skip; 7 E8 wrapper cases pass; all 3 new regressions fail safely on parent. Original hazard modules reviewed; unmerged. ✅ 2026-10-24
 - [x] RESUME-3: finish and review C1-05 rollback error handling and behavioral regressions for nonzero exit, timeout, spawn error, wrong HEAD and successful rollback. Research `62c68ad99`, checkpoint `1b58b115c`, pushed to `refactor/autokernel-rollback-reviewed-01a16fc3`: 13 regressions pass (5 fail on WIP), targeted loop set 401 pass + 23 subtests. Reviewed, unmerged under launch/re-pin hold. ✅ 2026-10-24
-- [ ] RESUME-4: review/integrate existing orchestrator branches in a private worktree and validate the combined tree, resolving gate/loop logic, source-pin and modified/deleted-test conflicts deliberately. P1, O4, O6, and three K2 finding fixes are accepted independently; the combined-tree gate remains outstanding.
+- [x] RESUME-4: review and validate the combined orchestrator candidate in a private worktree against immutable base `84f6f6f15f713d21098dbad2b153d32f8cc13624`. Candidate `851955112b8ba8c2911a7684469551afa1541623` on `refactor/orchestrator-integration-01a16fc3` passed reviewed AST, focused tests, Ruff/format scope, compile/diff, 32 NI63 pin, and four-file P5 preservation proofs; expanded union: 2,897 passed, 8 skipped, 0 failed/2,905, all four coverage floors 100%. Formatter correction proves zero introduced failures within accepted scope. Private candidate only; no main promotion/deployment. [belief: cc] Evidence: [`integration-validation-review-2026-10-26.md`](../../research/refactor-audit-2026-10/integration-validation-review-2026-10-26.md). ✅ 2026-10-26
 - [x] RESUME-4a: independently review O3 and integrate the accepted isolation harness into its private branch. Orchestrator `d843eb9c` fixes concurrent registry-load backoff (12 attempts before, 1 after); `07829696` scopes alias stress to its actual guarantee; checkpoint `6558beb7` pushed to `refactor/config-reviewed-01a16fc3`. O3 selection 548 pass/4 skip, alias targets 524 pass, all 7 changed source pins verified. Reviewed, unmerged. ✅ 2026-10-24
 - [x] RESUME-4b: independently review O1 stage 1 and fix pre-first-chunk streaming disconnect handling. Orchestrator `a1c69593`, checkpoint `142bb5df`, pushed to `refactor/request-reviewed-01a16fc3`: 1,011 targeted tests pass/3 skip; blocked initial generation fails to observe cancellation on parent and passes after fix. Accepted isolation is included; no changed route lies in ni63's pin closure. Reviewed, unmerged. ✅ 2026-10-24
 - [x] RESUME-4c: independently review P2 decision semantics and snapshot migration. Orchestrator `4069b8ee`, checkpoint `db17808e`, pushed to `refactor/autopilot-gate-reviewed-01a16fc3`: 1,018 tests pass/1 skip; 18 snapshot controls pass; B2-02/B2-03 fail on parent. Pre-P2 snapshots refuse bounded authority; a current-format rebuild matches full replay. Review complete; integration held because existing reconstruction is CRITICAL and verified-snapshot replay HIGH. No evaluator-era files changed. ✅ 2026-10-24
@@ -71,6 +124,22 @@ drift, ruff, compile, diff and frozen-snapshot checks passed. Its source-only cl
 `acfd5f8ca3837c568fc3c944ffb242b29823f3fa` on reviewed branch `refactor/repl-correctness-01a16fc3`; this does not
 authorize main integration or deployment. K2 fixes C4-08, C4-16, and C3-02 are accepted and pushed on `refactor/autokernel-k2-guards-01a16fc3` at `68724da5ba093cf3cec3909a81491932002dd4ce`; C4-05, C4-06, and C4-10 remain incomplete, so K2 stays open. Detailed state and evidence paths are in
 `research/refactor-audit-2026-10/resume-state-01a16fc3.json`.
+
+### Superseded package checkpoint (2026-10-25)
+
+This entire section is an as-of-2026-10-25 snapshot. Its integration and runner statuses were
+superseded by the Oct 26 state above; do not use its captured PIDs as current.
+
+Everything in this dated snapshot is historical; for current integration, O8, P3 and runner states,
+use the Oct 26 package state above.
+
+The private integration candidate at `3ee8eea2ab514e8fac4c15c839d4ad1644e0ba38` completed an expanded 111-file union: 2,897 passed, 8 skipped, 0 failed of 2,905 collected; all four source coverage floors are 100%, with no checkout-write warnings. The initial 93-file failure was traced to fixture bytes changing during `_run_loop_inner`; two regression tests now preserve the historical W3e fixture while also detecting future overwrites. The 18-case initial rerun and both added regression tests pass. New-file/changed-hunk style fixes are applied, but final AST, style, focused-suite, 32-pin and P5 frozen-file proof is still running as captured PID 2010953. Its durable evidence is under `/mnt/raid0/llm/tmp/refactor-01a16fc3/orchestrator-integration/` (`final-proof.pid`, `final-proof-runner.log`, `final-proof.sh`; terminal status/done artifacts are not present yet). Until that proof completes and is reviewed, integration is not accepted or pushed. Known baseline debt is 18 Ruff findings and 133 formatter paths; the first integration attempt's checkout-write warnings were eliminated by private pre-import environments for the tool-audit/seen-host file and Ruff cache.
+
+O8 is a frozen, uncommitted draft in `/mnt/raid0/llm/worktrees/refactor-01a16fc3-ci`, branch `refactor/orchestrator-ci-01a16fc3`, based on `3ee8eea2`. It prepares PR/manual CI, the shared native carrier and grade, exact nonsecret context/output/JUnit custody, a single test entrypoint, baseline comparators, strict pytest/server-marker handling, NI63's 32-source current-provenance closure, and pip/UV dev-dependency parity. Original preparation PID 2085542 was cancelled by its owner before the comparator fix and verified dead. Replacement PID 2093707 is the current single detached preparation request, waiting behind the q0–q3 build claim; authoritative pointers are `precheck-run2.pid`, `precheck-run2.process-check.txt`, and `region-lock-run2.log` under `/mnt/raid0/llm/tmp/refactor-01a16fc3/ci/`. No tests, lint, lock/sync, native receipt or CI validation are accepted, and no source commit or push exists. The checkpoint snapshot is `/mnt/raid0/llm/tmp/refactor-01a16fc3/ci/checkpoint/`; its manifest prose still describes the original PID, so use the run2 PID/status pointers for live state.
+
+P3 is a frozen, uncommitted draft in `/mnt/raid0/llm/worktrees/refactor-01a16fc3-autopilot-actions`, branch `refactor/autopilot-actions-01a16fc3`, based on `3ee8eea2`. The prepared changes cover managed-stack PID/environment access without `pgrep`, finite validators, refusal-before-side-effects, journal context/events and supersession/caching, provider IO/lifecycle, dead-resume/API cleanup, shard reading, and a neutral core baseline-pin helper. Successor `/root/autopilot_actions_finish` completed the authorized B3-04 optional loaded-journal injection with separate all-era ceiling semantics and added invariance/reset/teardown tests, then froze the draft. W3e fixture bytes match base and `git diff --check` passes. No tests have run; P3 remains unvalidated and uncommitted, with no approval missing. The refreshed 34-file suite is queued in phase `queued-source-frozen`; its stable authoritative manifest is `/mnt/raid0/llm/tmp/refactor-01a16fc3/autopilot-actions/current-run.json`, which points to the source/test snapshot, runner, PID file, log, status and completion flag. Use that manifest for current liveness and runner details; prior wrapper PID 2077838 and child PID 2077840 remain cancelled-before-admission history in `focused-p3-20261025/cancelled-before-admission.txt`. Observed 2026-10-25 08:53:07 UTC. Graph coverage is unknown after the index error. No source acceptance, commit or push exists.
+
+The current next action is to finish and review the integration proof, then validate O8 CI and P3 against the accepted integration SHA. The O8, P3, and RESUME-4 completion boxes remain unchecked; no per-finding completion is claimed. Existing AutoKernel launch/main-merge holds, the P5 single-era boundary and protected serving/kernel rules remain in force. P3 is frozen with a 34-file suite queued; its stable current-run manifest is `/mnt/raid0/llm/tmp/refactor-01a16fc3/autopilot-actions/current-run.json`, observed 2026-10-25 08:53:07 UTC. No tests have run and no source is accepted. The earlier P3 wrapper PID 2077838 and child PID 2077840 are cancelled history, as recorded in `focused-p3-20261025/cancelled-before-admission.txt`. My root-gates wrapper PID 2096522 and child PID 2096526 were cancelled before region admission and verified dead at 2026-10-25 08:52:45 UTC; no token was acquired. Root documentation gates remain pending; use `/mnt/raid0/llm/tmp/refactor-01a16fc3/next-packages-checkpoint/root-gates.pid` and `root-gates.status` as the stable runner-state pointers. The captured state is recorded in `research/refactor-audit-2026-10/resume-state-01a16fc3.json`.
 
 ### Done
 
@@ -108,7 +177,7 @@ authorize main integration or deployment. K2 fixes C4-08, C4-16, and C3-02 are a
 - [x] P1 (part): Autopilot main loop: behavioural safety net, then loop bugs on `refactor/autopilot-loop` [B1-03, B5-02, B5-08, B1-15] ✅ 2026-10-24
 - [x] P1 (rest): [B1-01, B1-M1, B1-M2, B1-04, B1-08, B1-09, B1-14, B1-13]; accepted source `36e1bc55` on `refactor/autopilot-loop-reviewed-01a16fc3`, hashes unchanged across the full candidate and 19 focused/561 broad tests pass (1 skip). Worker status-file failure was an ordering defect; see resume-state proof. ✅ 2026-10-25
 - [x] P2: Autopilot safety gate and autopilot_core on `refactor/autopilot-gate` [B2-02, B2-03, B2-09, B2-11, B2-20, B2-17, B5-01, B5-M1, B5-M2, B5-16, B5-09, B5-13, B5-12] (B2-11 skipped: upstream already split SafetyGate.check; B2-17 no change, per the verifier) ✅ 2026-10-24
-- [ ] P3: Autopilot actions, config applicator, controller IO, planner, journal [B3-01, B3-02, B3-03, B3-05, B1-17, B3-06, B3-07, B3-08, B3-12, B3-M1, B3-04, B3-23, B4-01, B3-15, B3-16, B3-M2]
+- [x] P3: Autopilot actions, config applicator, controller IO, planner, journal [B3-01, B3-02, B3-03, B3-05, B1-17, B3-06, B3-07, B3-08, B3-12, B3-M1, B3-04, B3-23, B4-01, B3-15, B3-16, B3-M2]; reviewed private source `fb5db1a0a24b92172643bb670c77a4343a508c96` published and remote-verified on `codex/refactor-autopilot-actions-01a16fc3`, clean worktree. Final 12-file functional selection 402 passed/1 skipped in 39.49 s; official three-file formatter closure passed AST equality, format/compile, non-target bytes, no-new-Ruff, P5/W3e, diff and source custody. Earlier 34/90-file failures retained; no current all-1,930-pass claim or main/deployment acceptance. [belief: cc] Evidence: [Oct 26 source/proof record](../../progress/2026-10/2026-10-26-refactor-next-packages-checkpoint-01a16fc3.md). ✅ 2026-10-26
 - [ ] P4: Autopilot satellites: one-shot scripts, dead modules, small bugs [B4-03, B4-02, B4-19, B4-20, B4-13, B2-16, B4-16, B4-12, B4-06, B4-08, B4-09, B4-15, B4-M1, B4-M2, B4-04, B4-05]
 - [ ] K1: AutoKernel live-loop bugs and red tests [C1-06, C1-14, C1-15, C1-M2, C1-24, C2-06, C5-08, C5-16, C6-05, C6-03, C6-04]; C1-05 tested/reviewed on `refactor/autokernel-rollback-reviewed-01a16fc3`, held unmerged (RESUME-3).
 - [ ] K2: AutoKernel evaluator/execution integrity package remains open; C4-05, C4-06, C4-10 remain incomplete.
@@ -217,6 +286,9 @@ defects go to the champion fold as CH-xx recommendations, never as production pa
 | epyc-orchestrator | `refactor/autopilot-gate` | 15 | P2: safety-gate seq upgrade (B2-02), one-sided MAD (B2-03, **changes what is admitted to learning**), refusal codes (B2-09), validator/replay (B2-20), hypervolume memo + fold + off-loop dashboard (B5-01), bounded snapshot replay (B5-M1), cluster identity (B5-M2), era guard (B5-16), dead modules (B5-09), `__init__` (B5-13), drop counts (B5-12) | B2-03 is a decision-semantics change: review it as such |
 | epyc-inference-research | `refactor/autokernel-loop-bugs` | 1 | **WIP**: `run._git` checks git's exit status; failed rollback aborts the run (C1-05) | **do not merge to main**: AutoKernel launches are under an operator hold; workspace-58 merges it with a deliberate re-pin when the hold lifts |
 | epyc-inference-research | `refactor/autokernel-rollback-reviewed-01a16fc3` | 3 | Completes C1-05: includes WIP, catches rollback timeout/spawn errors, behavioral regressions and checkpoint | Reviewed; 401 targeted loop tests + 23 subtests pass. Pushed at `1b58b115c`; hold/re-pin applies, no launch or merge |
+| epyc-orchestrator | `refactor/orchestrator-integration-01a16fc3` | reviewed private candidate | Combined orchestrator candidate | `851955112b8ba8c2911a7684469551afa1541623`; validated relative to immutable base `84f6f6f1`; no main promotion/deployment |
+| epyc-orchestrator | `refactor/orchestrator-ci-01a16fc3` | B1-tested pre-fixture local merge | O8 CI, central pytest gates and NI63 provenance closure | `753e0287` contains `713edf671` + `851955112`; focused 13 pass; strict collection baseline 20,658/20,645 selected vs candidate 20,666/20,653, 0 removed/8 added/13 identical exclusions; post-B1 owned fixture validation pending; full suite/native/coverage open; future `codex/*` only |
+| epyc-orchestrator | `codex/refactor-autopilot-actions-01a16fc3` | reviewed private candidate, published | P3: actions, config applicator, controller IO, planner, journal and baseline-pin helper | `fb5db1a0a24b92172643bb670c77a4343a508c96`, remote-exact verified, clean worktree; final 12-file 402 pass/1 skip and three-file formatting/protected/source-custody closure pass; prior failures retained, no main/deploy |
 | all three | `claude/vigilant-thompson-shpyh0` | — | superseded by the `refactor/*` branches above | ignore / delete |
 
 Merge order (orchestrator): reviewed hermetic harness + test-hazards/A6-M1 isolation →
@@ -276,7 +348,7 @@ merged to orchestrator main is served until the shared clone is synced (operator
 | P5 | **evaluator: ONE batched era event**: B5-03 fingerprint normalization FIRST, then B2-01, B2-M1, B2-M2, B2-10, B5-06, B5-07, B2-19, perf B2-04/05/06, refactors B2-07/08/14/15/18/12/13, B5-14, B3-09; commit subjects prefixed `evaluator-era:` | P2 merged |
 | K3 | **AutoKernel three-plane prune**, staged by approved plane; rebase on origin/main and re-prove closure before EVERY stage, including retained campaign CLI and dynamic/cross-repo roots; honor INF64's per-file retention manifest and live belief-source contracts; Arena is excluded | K1; operator hold lifted for merge |
 | K4 | Repair CI infrastructure early (independent steps, yaml dependency, honest collection floors); set the all-package size ratchet only after the approved prune | ratchet depends on K3; infrastructure does not |
-| O8 | orchestrator CI (PR + manual only; hermetic suite minus a reviewed host-only list with reasons), honest `make gates` (format-check only changed files; 1,471 files fail a whole-tree check), ni63 pin design (record hashes for provenance instead of asserting a past commit's bytes; the pin is already red on main for `orchestrator_stack.py`) | hermetic-tests merged |
+| O8 | orchestrator CI (PR + manual only; hermetic suite minus a reviewed host-only list with reasons), honest `make gates` (format-check only changed files; 1,471 files fail a whole-tree check), ni63 pin design (record hashes for provenance instead of asserting a past commit's bytes; the pin is already red on main for `orchestrator_stack.py`) | merge reviewed integration candidate `851955112` into `refactor/orchestrator-ci-01a16fc3`, then validate package |
 | D1 | autopilot `_run_loop_inner` decomposition (B1-02 staged seams) | P1 merged |
 | D2 | API: openai_compat and /chat de-duplication | O1 merged |
 | D3 | inference hot path: llama_server lanes, `_execute_turn`, escalation chain | O1 merged |

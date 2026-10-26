@@ -4019,10 +4019,10 @@
       "weight": 2
     }
   ],
-  "generated_at": "2026-10-25T07:37:57Z",
+  "generated_at": "2026-10-26T12:29:08Z",
   "nodes": [
     {
-      "age_days": 87,
+      "age_days": 88,
       "blocked": 0,
       "blocked_by": [],
       "closed": 0,
@@ -4050,7 +4050,7 @@
       "track": "agent file prose compression"
     },
     {
-      "age_days": 4,
+      "age_days": 5,
       "blocked": 0,
       "blocked_by": [],
       "closed": 73,
@@ -4078,7 +4078,7 @@
       "track": "architect model selection bench"
     },
     {
-      "age_days": 29,
+      "age_days": 30,
       "blocked": 0,
       "blocked_by": [],
       "closed": 46,
@@ -4106,7 +4106,7 @@
       "track": "autopilot decision plane audit 2026 07 22"
     },
     {
-      "age_days": 4,
+      "age_days": 5,
       "blocked": 0,
       "blocked_by": [
         "RTG-02"
@@ -4136,7 +4136,7 @@
       "track": "autopilot sequential allocation"
     },
     {
-      "age_days": 87,
+      "age_days": 88,
       "blocked": 0,
       "blocked_by": [],
       "closed": 1,
@@ -4164,7 +4164,7 @@
       "track": "backlog roi audit 2026 07 14"
     },
     {
-      "age_days": 19,
+      "age_days": 20,
       "blocked": 1,
       "blocked_by": [],
       "closed": 7,
@@ -4192,7 +4192,7 @@
       "track": "bulk inference campaign"
     },
     {
-      "age_days": 4,
+      "age_days": 5,
       "blocked": 0,
       "blocked_by": [],
       "closed": 14,
@@ -4244,7 +4244,7 @@
       "track": "design backlog triage 2026 07 23"
     },
     {
-      "age_days": 1,
+      "age_days": 2,
       "blocked": 0,
       "blocked_by": [],
       "closed": 52,
@@ -4285,7 +4285,7 @@
       "track": "episodic memory integrity"
     },
     {
-      "age_days": 4,
+      "age_days": 5,
       "blocked": 0,
       "blocked_by": [],
       "closed": 6,
@@ -4313,7 +4313,7 @@
       "track": "eval benchmark cost reduction"
     },
     {
-      "age_days": 18,
+      "age_days": 19,
       "blocked": 0,
       "blocked_by": [],
       "closed": 44,
@@ -4341,7 +4341,7 @@
       "track": "eval tower architecture audit 2026 07 20"
     },
     {
-      "age_days": 32,
+      "age_days": 33,
       "blocked": 0,
       "blocked_by": [],
       "closed": 29,
@@ -4369,7 +4369,7 @@
       "track": "eval tower loop robustness audit 2026 07 20"
     },
     {
-      "age_days": 3,
+      "age_days": 4,
       "blocked": 7,
       "blocked_by": [],
       "closed": 64,
@@ -4397,7 +4397,7 @@
       "track": "eval tower verification"
     },
     {
-      "age_days": 88,
+      "age_days": 89,
       "blocked": 0,
       "blocked_by": [],
       "closed": 6,
@@ -4425,7 +4425,7 @@
       "track": "evidence plane instrument repair"
     },
     {
-      "age_days": 88,
+      "age_days": 89,
       "blocked": 0,
       "blocked_by": [],
       "closed": 13,
@@ -4453,7 +4453,7 @@
       "track": "evidence plane ledger and sequential verdict"
     },
     {
-      "age_days": 88,
+      "age_days": 89,
       "blocked": 0,
       "blocked_by": [],
       "closed": 1,
@@ -4481,7 +4481,7 @@
       "track": "fable5 window2 findings 01 optimizer integri"
     },
     {
-      "age_days": 29,
+      "age_days": 30,
       "blocked": 2,
       "blocked_by": [],
       "closed": 8,
@@ -4509,7 +4509,7 @@
       "track": "fable5 window2 findings 02 heterogeneous gpu"
     },
     {
-      "age_days": 88,
+      "age_days": 89,
       "blocked": 0,
       "blocked_by": [],
       "closed": 5,
@@ -4537,7 +4537,7 @@
       "track": "fable5 window2 findings 03 portfolio and mas"
     },
     {
-      "age_days": 18,
+      "age_days": 19,
       "blocked": 0,
       "blocked_by": [],
       "closed": 12,
@@ -4565,7 +4565,7 @@
       "track": "frontier f2 self running lab"
     },
     {
-      "age_days": 3,
+      "age_days": 4,
       "blocked": 0,
       "blocked_by": [],
       "closed": 12,
@@ -4593,7 +4593,7 @@
       "track": "frontier f3 data flywheel"
     },
     {
-      "age_days": 88,
+      "age_days": 89,
       "blocked": 0,
       "blocked_by": [],
       "closed": 2,
@@ -4621,7 +4621,7 @@
       "track": "frontier f4 continuity backup"
     },
     {
-      "age_days": 40,
+      "age_days": 41,
       "blocked": 0,
       "blocked_by": [],
       "closed": 1,
@@ -4649,7 +4649,7 @@
       "track": "frontier f6 upstream publication"
     },
     {
-      "age_days": 21,
+      "age_days": 22,
       "blocked": 0,
       "blocked_by": [],
       "closed": 31,
@@ -4677,7 +4677,7 @@
       "track": "intake derived work 2026 07 25"
     },
     {
-      "age_days": 18,
+      "age_days": 19,
       "blocked": 0,
       "blocked_by": [],
       "closed": 1,
@@ -4705,7 +4705,7 @@
       "track": "integration test coverage"
     },
     {
-      "age_days": 88,
+      "age_days": 89,
       "blocked": 0,
       "blocked_by": [],
       "closed": 6,
@@ -4733,7 +4733,7 @@
       "track": "mathsmith hc formalizer eval"
     },
     {
-      "age_days": 56,
+      "age_days": 57,
       "blocked": 0,
       "blocked_by": [],
       "closed": 0,
@@ -4761,7 +4761,7 @@
       "track": "minimax h3 video generation eval"
     },
     {
-      "age_days": 65,
+      "age_days": 66,
       "blocked": 0,
       "blocked_by": [],
       "closed": 6,
@@ -4789,7 +4789,7 @@
       "track": "per request reasoning budget"
     },
     {
-      "age_days": 4,
+      "age_days": 5,
       "blocked": 1,
       "blocked_by": [],
       "closed": 7,
@@ -4817,7 +4817,7 @@
       "track": "rao redel substrate spike"
     },
     {
-      "age_days": 88,
+      "age_days": 89,
       "blocked": 0,
       "blocked_by": [],
       "closed": 3,
@@ -4845,7 +4845,7 @@
       "track": "re4 protocol redesign"
     },
     {
-      "age_days": 4,
+      "age_days": 5,
       "blocked": 0,
       "blocked_by": [],
       "closed": 14,
@@ -4873,7 +4873,7 @@
       "track": "repl session memory maturity"
     },
     {
-      "age_days": 1,
+      "age_days": 2,
       "blocked": 0,
       "blocked_by": [],
       "closed": 24,
@@ -4904,7 +4904,7 @@
       "track": "repl turn efficiency"
     },
     {
-      "age_days": 18,
+      "age_days": 19,
       "blocked": 0,
       "blocked_by": [],
       "closed": 9,
@@ -4932,7 +4932,7 @@
       "track": "repo readiness scorer"
     },
     {
-      "age_days": 39,
+      "age_days": 40,
       "blocked": 0,
       "blocked_by": [],
       "closed": 3,
@@ -4960,7 +4960,7 @@
       "track": "rlm contested claims self evaluation"
     },
     {
-      "age_days": 63,
+      "age_days": 64,
       "blocked": 0,
       "blocked_by": [],
       "closed": 7,
@@ -4988,7 +4988,7 @@
       "track": "scorer fork drift audit 2026 07 22"
     },
     {
-      "age_days": 18,
+      "age_days": 19,
       "blocked": 0,
       "blocked_by": [],
       "closed": 27,
@@ -5016,7 +5016,7 @@
       "track": "scoring infra standardization"
     },
     {
-      "age_days": 88,
+      "age_days": 89,
       "blocked": 1,
       "blocked_by": [],
       "closed": 0,
@@ -5044,7 +5044,7 @@
       "track": "sliders local validation"
     },
     {
-      "age_days": 74,
+      "age_days": 75,
       "blocked": 0,
       "blocked_by": [],
       "closed": 13,
@@ -5072,7 +5072,7 @@
       "track": "stale open audit 2026 07 18"
     },
     {
-      "age_days": 88,
+      "age_days": 89,
       "blocked": 0,
       "blocked_by": [],
       "closed": 2,
@@ -5102,7 +5102,7 @@
       "track": "strand rust coder rustevo2 verification"
     },
     {
-      "age_days": 4,
+      "age_days": 5,
       "blocked": 0,
       "blocked_by": [],
       "closed": 19,
@@ -5130,7 +5130,7 @@
       "track": "tool use eval contract"
     },
     {
-      "age_days": 1,
+      "age_days": 2,
       "blocked": 4,
       "blocked_by": [
         "EVL-50"
@@ -5173,7 +5173,7 @@
       "track": "vidya belief substrate program"
     },
     {
-      "age_days": 70,
+      "age_days": 71,
       "blocked": 0,
       "blocked_by": [],
       "closed": 12,
@@ -5201,7 +5201,7 @@
       "track": "fable5 window2 findings 05c mi210 lever cate"
     },
     {
-      "age_days": 74,
+      "age_days": 75,
       "blocked": 0,
       "blocked_by": [
         "INF-06",
@@ -5233,7 +5233,7 @@
       "track": "reboot gated inventory and staging"
     },
     {
-      "age_days": 2,
+      "age_days": 3,
       "blocked": 0,
       "blocked_by": [
         "EVL-10"
@@ -5276,7 +5276,7 @@
       "track": "conversational memory eval instruments"
     },
     {
-      "age_days": 1,
+      "age_days": 2,
       "blocked": 0,
       "blocked_by": [
         "RTG-41"
@@ -5306,7 +5306,7 @@
       "track": "dev harness trace mining"
     },
     {
-      "age_days": 19,
+      "age_days": 20,
       "blocked": 0,
       "blocked_by": [],
       "closed": 4,
@@ -5334,7 +5334,7 @@
       "track": "agent collab rnd harness"
     },
     {
-      "age_days": 4,
+      "age_days": 5,
       "blocked": 0,
       "blocked_by": [
         "EVL-47",
@@ -5365,7 +5365,7 @@
       "track": "agentic rocm kernel authoring"
     },
     {
-      "age_days": 74,
+      "age_days": 75,
       "blocked": 1,
       "blocked_by": [],
       "closed": 2,
@@ -5393,7 +5393,7 @@
       "track": "angelslim techniques evaluation"
     },
     {
-      "age_days": 66,
+      "age_days": 67,
       "blocked": 0,
       "blocked_by": [],
       "closed": 5,
@@ -5421,7 +5421,7 @@
       "track": "attention matching kv compaction"
     },
     {
-      "age_days": 1,
+      "age_days": 2,
       "blocked": 1,
       "blocked_by": [
         "EVL-47",
@@ -5465,7 +5465,7 @@
       "track": "autokernel research loop"
     },
     {
-      "age_days": 74,
+      "age_days": 75,
       "blocked": 1,
       "blocked_by": [],
       "closed": 43,
@@ -5496,7 +5496,7 @@
       "track": "batched decode measurement"
     },
     {
-      "age_days": 88,
+      "age_days": 89,
       "blocked": 0,
       "blocked_by": [],
       "closed": 27,
@@ -5524,7 +5524,7 @@
       "track": "cpu prefill compute large models"
     },
     {
-      "age_days": 38,
+      "age_days": 39,
       "blocked": 0,
       "blocked_by": [],
       "closed": 2,
@@ -5546,7 +5546,7 @@
       "track": "cpu shape specialized gemv decode"
     },
     {
-      "age_days": 88,
+      "age_days": 89,
       "blocked": 0,
       "blocked_by": [],
       "closed": 2,
@@ -5574,7 +5574,7 @@
       "track": "delta mem reproduction"
     },
     {
-      "age_days": 83,
+      "age_days": 84,
       "blocked": 1,
       "blocked_by": [],
       "closed": 5,
@@ -5602,7 +5602,7 @@
       "track": "engram conditional memory"
     },
     {
-      "age_days": 18,
+      "age_days": 19,
       "blocked": 0,
       "blocked_by": [],
       "closed": 111,
@@ -5630,7 +5630,7 @@
       "track": "gemma challenge kernel techniques v7"
     },
     {
-      "age_days": 18,
+      "age_days": 19,
       "blocked": 0,
       "blocked_by": [],
       "closed": 13,
@@ -5658,7 +5658,7 @@
       "track": "gpu acceleration path"
     },
     {
-      "age_days": 88,
+      "age_days": 89,
       "blocked": 0,
       "blocked_by": [],
       "closed": 7,
@@ -5686,7 +5686,7 @@
       "track": "gpu cot scaffold sidecar"
     },
     {
-      "age_days": 41,
+      "age_days": 42,
       "blocked": 0,
       "blocked_by": [],
       "closed": 18,
@@ -5714,7 +5714,7 @@
       "track": "gpu drafter control redesign"
     },
     {
-      "age_days": 1,
+      "age_days": 2,
       "blocked": 0,
       "blocked_by": [],
       "closed": 59,
@@ -5742,7 +5742,7 @@
       "track": "gpu serving tie in program"
     },
     {
-      "age_days": 1,
+      "age_days": 2,
       "blocked": 0,
       "blocked_by": [],
       "closed": 6,
@@ -5770,7 +5770,7 @@
       "track": "heterogeneous slot fabric residency"
     },
     {
-      "age_days": 88,
+      "age_days": 89,
       "blocked": 1,
       "blocked_by": [],
       "closed": 15,
@@ -5798,7 +5798,7 @@
       "track": "inference batch loop"
     },
     {
-      "age_days": 2,
+      "age_days": 3,
       "blocked": 0,
       "blocked_by": [],
       "closed": 23,
@@ -5826,7 +5826,7 @@
       "track": "iqk iquant enablement"
     },
     {
-      "age_days": 87,
+      "age_days": 88,
       "blocked": 0,
       "blocked_by": [],
       "closed": 11,
@@ -5854,7 +5854,7 @@
       "track": "laguna s21 cpu port"
     },
     {
-      "age_days": 88,
+      "age_days": 89,
       "blocked": 1,
       "blocked_by": [],
       "closed": 2,
@@ -5882,7 +5882,7 @@
       "track": "large moe expert parallelism"
     },
     {
-      "age_days": 88,
+      "age_days": 89,
       "blocked": 1,
       "blocked_by": [],
       "closed": 1,
@@ -5910,7 +5910,7 @@
       "track": "lightning attention port"
     },
     {
-      "age_days": 4,
+      "age_days": 5,
       "blocked": 1,
       "blocked_by": [],
       "closed": 8,
@@ -5947,7 +5947,7 @@
       "track": "llama cpp dsa contribution"
     },
     {
-      "age_days": 59,
+      "age_days": 60,
       "blocked": 1,
       "blocked_by": [
         "INF-48"
@@ -5977,7 +5977,7 @@
       "track": "log linear gated deltanet readiness"
     },
     {
-      "age_days": 19,
+      "age_days": 20,
       "blocked": 1,
       "blocked_by": [],
       "closed": 14,
@@ -6008,7 +6008,7 @@
       "track": "mi210 big model and acceleration roadmap"
     },
     {
-      "age_days": 3,
+      "age_days": 4,
       "blocked": 0,
       "blocked_by": [
         "EVL-47",
@@ -6039,7 +6039,7 @@
       "track": "mi210 q8 dequant gemv roofline"
     },
     {
-      "age_days": 38,
+      "age_days": 39,
       "blocked": 0,
       "blocked_by": [],
       "closed": 4,
@@ -6067,7 +6067,7 @@
       "track": "moe spec cpu spec dec integration"
     },
     {
-      "age_days": 1,
+      "age_days": 2,
       "blocked": 0,
       "blocked_by": [],
       "closed": 42,
@@ -6107,7 +6107,7 @@
       "track": "multimodal pipeline"
     },
     {
-      "age_days": 1,
+      "age_days": 2,
       "blocked": 0,
       "blocked_by": [],
       "closed": 5,
@@ -6135,7 +6135,7 @@
       "track": "multiscreen attention evaluation"
     },
     {
-      "age_days": 74,
+      "age_days": 75,
       "blocked": 1,
       "blocked_by": [],
       "closed": 36,
@@ -6163,7 +6163,7 @@
       "track": "numa placement defect"
     },
     {
-      "age_days": 88,
+      "age_days": 89,
       "blocked": 0,
       "blocked_by": [
         "INF-34"
@@ -6193,7 +6193,7 @@
       "track": "numa prefill decode disaggregation"
     },
     {
-      "age_days": 39,
+      "age_days": 40,
       "blocked": 2,
       "blocked_by": [],
       "closed": 62,
@@ -6221,7 +6221,7 @@
       "track": "numa topology cutover resume"
     },
     {
-      "age_days": 88,
+      "age_days": 89,
       "blocked": 0,
       "blocked_by": [],
       "closed": 6,
@@ -6249,7 +6249,7 @@
       "track": "qwen mtp llamacpp port"
     },
     {
-      "age_days": 1,
+      "age_days": 2,
       "blocked": 0,
       "blocked_by": [
         "EVL-47"
@@ -6292,7 +6292,7 @@
       "track": "rocm verify profile backend"
     },
     {
-      "age_days": 88,
+      "age_days": 89,
       "blocked": 0,
       "blocked_by": [],
       "closed": 0,
@@ -6320,7 +6320,7 @@
       "track": "sarathi serve cpu evaluation"
     },
     {
-      "age_days": 1,
+      "age_days": 2,
       "blocked": 1,
       "blocked_by": [],
       "closed": 43,
@@ -6359,7 +6359,7 @@
       "track": "speculative decoding mtp refresh"
     },
     {
-      "age_days": 59,
+      "age_days": 60,
       "blocked": 0,
       "blocked_by": [],
       "closed": 5,
@@ -6387,7 +6387,7 @@
       "track": "streaming llm baseline"
     },
     {
-      "age_days": 88,
+      "age_days": 89,
       "blocked": 0,
       "blocked_by": [],
       "closed": 0,
@@ -6415,7 +6415,7 @@
       "track": "summary token attention readiness"
     },
     {
-      "age_days": 88,
+      "age_days": 89,
       "blocked": 0,
       "blocked_by": [],
       "closed": 1,
@@ -6443,7 +6443,7 @@
       "track": "tidar one pass variant b"
     },
     {
-      "age_days": 3,
+      "age_days": 4,
       "blocked": 1,
       "blocked_by": [],
       "closed": 18,
@@ -6471,7 +6471,7 @@
       "track": "tq3 quantization evaluation"
     },
     {
-      "age_days": 48,
+      "age_days": 49,
       "blocked": 0,
       "blocked_by": [],
       "closed": 0,
@@ -6499,7 +6499,7 @@
       "track": "triattention kv selection"
     },
     {
-      "age_days": 75,
+      "age_days": 76,
       "blocked": 0,
       "blocked_by": [],
       "closed": 7,
@@ -6527,7 +6527,7 @@
       "track": "v9 kernel per request speculative params"
     },
     {
-      "age_days": 2,
+      "age_days": 3,
       "blocked": 0,
       "blocked_by": [
         "RTG-57"
@@ -6557,7 +6557,7 @@
       "track": "yarn context extension research"
     },
     {
-      "age_days": 1,
+      "age_days": 2,
       "blocked": 0,
       "blocked_by": [],
       "closed": 26,
@@ -6587,7 +6587,7 @@
       "track": "model refresh"
     },
     {
-      "age_days": 39,
+      "age_days": 40,
       "blocked": 0,
       "blocked_by": [
         "INF-60"
@@ -6617,7 +6617,7 @@
       "track": "model refresh"
     },
     {
-      "age_days": 2,
+      "age_days": 3,
       "blocked": 0,
       "blocked_by": [
         "INF-06",
@@ -6658,7 +6658,7 @@
       "track": "dflash2 block drafter experimental build"
     },
     {
-      "age_days": 59,
+      "age_days": 60,
       "blocked": 0,
       "blocked_by": [],
       "closed": 1,
@@ -6693,7 +6693,7 @@
       "track": "qwen38 flash next fp8 evaluation"
     },
     {
-      "age_days": 18,
+      "age_days": 19,
       "blocked": 0,
       "blocked_by": [],
       "closed": 18,
@@ -6734,7 +6734,7 @@
       "track": "autokernel restart-loop fix"
     },
     {
-      "age_days": 1,
+      "age_days": 2,
       "blocked": 0,
       "blocked_by": [
         "INF-06",
@@ -6775,7 +6775,7 @@
       "track": "autokernel aggregate candidate (champion)"
     },
     {
-      "age_days": 2,
+      "age_days": 3,
       "blocked": 1,
       "blocked_by": [
         "INF-06",
@@ -6814,7 +6814,7 @@
       "track": "autokernel teardown and rebuild"
     },
     {
-      "age_days": 1,
+      "age_days": 2,
       "blocked": 0,
       "blocked_by": [],
       "closed": 8,
@@ -6849,7 +6849,7 @@
       "track": "cpu fused decoder blocks"
     },
     {
-      "age_days": 1,
+      "age_days": 2,
       "blocked": 0,
       "blocked_by": [
         "INF-63",
@@ -6886,7 +6886,7 @@
       "track": "cpu decode roofline program"
     },
     {
-      "age_days": 1,
+      "age_days": 2,
       "blocked": 0,
       "blocked_by": [
         "INF-34",
@@ -6917,7 +6917,7 @@
       "track": "moe routing locality tap"
     },
     {
-      "age_days": 2,
+      "age_days": 3,
       "blocked": 1,
       "blocked_by": [
         "INF-65",
@@ -6953,7 +6953,7 @@
       "track": "autokernel unified surface"
     },
     {
-      "age_days": 3,
+      "age_days": 4,
       "blocked": 1,
       "blocked_by": [
         "INF-73"
@@ -6983,7 +6983,7 @@
       "track": "autokernel concurrent targets"
     },
     {
-      "age_days": 4,
+      "age_days": 5,
       "blocked": 0,
       "blocked_by": [
         "INF-65",
@@ -7017,7 +7017,7 @@
       "track": "autokernel cross-workload keep gate"
     },
     {
-      "age_days": 32,
+      "age_days": 33,
       "blocked": 0,
       "blocked_by": [
         "EVL-08"
@@ -7047,7 +7047,7 @@
       "track": "paw compiled specialists"
     },
     {
-      "age_days": 2,
+      "age_days": 3,
       "blocked": 1,
       "blocked_by": [
         "INF-31",
@@ -7086,7 +7086,7 @@
       "track": "deepseek v41 flash evaluation"
     },
     {
-      "age_days": 1,
+      "age_days": 2,
       "blocked": 0,
       "blocked_by": [
         "EVL-37",
@@ -7122,7 +7122,7 @@
       "track": "autokernel orchestrator actor backend"
     },
     {
-      "age_days": 2,
+      "age_days": 3,
       "blocked": 40,
       "blocked_by": [],
       "closed": 26,
@@ -7150,7 +7150,7 @@
       "track": "conversation stack (speech)"
     },
     {
-      "age_days": 3,
+      "age_days": 4,
       "blocked": 0,
       "blocked_by": [],
       "closed": 21,
@@ -7178,7 +7178,7 @@
       "track": "exl3 cpu mi210 implementation"
     },
     {
-      "age_days": 1,
+      "age_days": 2,
       "blocked": 0,
       "blocked_by": [
         "INF-62",
@@ -7213,7 +7213,7 @@
       "track": "autokernel all devices all dimensions"
     },
     {
-      "age_days": 19,
+      "age_days": 20,
       "blocked": 1,
       "blocked_by": [],
       "closed": 16,
@@ -7241,7 +7241,7 @@
       "track": "colbert reranker web research"
     },
     {
-      "age_days": 18,
+      "age_days": 19,
       "blocked": 0,
       "blocked_by": [],
       "closed": 3,
@@ -7269,7 +7269,7 @@
       "track": "document parser table bench"
     },
     {
-      "age_days": 31,
+      "age_days": 32,
       "blocked": 0,
       "blocked_by": [],
       "closed": 5,
@@ -7297,7 +7297,7 @@
       "track": "ernie image turbo evaluation"
     },
     {
-      "age_days": 19,
+      "age_days": 20,
       "blocked": 0,
       "blocked_by": [],
       "closed": 39,
@@ -7325,7 +7325,7 @@
       "track": "internal kb rag"
     },
     {
-      "age_days": 61,
+      "age_days": 62,
       "blocked": 0,
       "blocked_by": [],
       "closed": 8,
@@ -7353,7 +7353,7 @@
       "track": "opendataloader pipeline integration"
     },
     {
-      "age_days": 33,
+      "age_days": 34,
       "blocked": 0,
       "blocked_by": [
         "INF-77"
@@ -7385,7 +7385,7 @@
       "track": "glm52 reviewer capability gates"
     },
     {
-      "age_days": 19,
+      "age_days": 20,
       "blocked": 2,
       "blocked_by": [],
       "closed": 11,
@@ -7413,7 +7413,7 @@
       "track": "reviewer calibration accounting"
     },
     {
-      "age_days": 19,
+      "age_days": 20,
       "blocked": 5,
       "blocked_by": [
         "UFH-01"
@@ -7443,7 +7443,7 @@
       "track": "reviewer escalation and human gate policy"
     },
     {
-      "age_days": 88,
+      "age_days": 89,
       "blocked": 3,
       "blocked_by": [],
       "closed": 3,
@@ -7471,7 +7471,7 @@
       "track": "reviewer latency and sampling budget"
     },
     {
-      "age_days": 88,
+      "age_days": 89,
       "blocked": 2,
       "blocked_by": [
         "REV-02"
@@ -7501,7 +7501,7 @@
       "track": "reviewer model ablations"
     },
     {
-      "age_days": 39,
+      "age_days": 40,
       "blocked": 0,
       "blocked_by": [],
       "closed": 17,
@@ -7529,7 +7529,7 @@
       "track": "reviewer typed artifacts"
     },
     {
-      "age_days": 81,
+      "age_days": 82,
       "blocked": 0,
       "blocked_by": [],
       "closed": 4,
@@ -7557,7 +7557,7 @@
       "track": "agent world env synthesis"
     },
     {
-      "age_days": 18,
+      "age_days": 19,
       "blocked": 3,
       "blocked_by": [],
       "closed": 11,
@@ -7588,7 +7588,7 @@
       "track": "autopilot continuous optimization"
     },
     {
-      "age_days": 74,
+      "age_days": 75,
       "blocked": 0,
       "blocked_by": [],
       "closed": 11,
@@ -7616,7 +7616,7 @@
       "track": "autopilot dashboard fidelity audit 2026 07 2"
     },
     {
-      "age_days": 68,
+      "age_days": 69,
       "blocked": 0,
       "blocked_by": [],
       "closed": 4,
@@ -7644,7 +7644,7 @@
       "track": "batched edit parallel apply"
     },
     {
-      "age_days": 87,
+      "age_days": 88,
       "blocked": 0,
       "blocked_by": [],
       "closed": 4,
@@ -7672,7 +7672,7 @@
       "track": "bep dcp falsification harness"
     },
     {
-      "age_days": 74,
+      "age_days": 75,
       "blocked": 1,
       "blocked_by": [],
       "closed": 5,
@@ -7700,7 +7700,7 @@
       "track": "capability registry and promotion"
     },
     {
-      "age_days": 83,
+      "age_days": 84,
       "blocked": 0,
       "blocked_by": [
         "INF-07"
@@ -7730,7 +7730,7 @@
       "track": "contention model device and load axes rider"
     },
     {
-      "age_days": 4,
+      "age_days": 5,
       "blocked": 0,
       "blocked_by": [],
       "closed": 14,
@@ -7758,7 +7758,7 @@
       "track": "context folding progressive"
     },
     {
-      "age_days": 18,
+      "age_days": 19,
       "blocked": 2,
       "blocked_by": [],
       "closed": 29,
@@ -7795,7 +7795,7 @@
       "track": "decision aware routing"
     },
     {
-      "age_days": 4,
+      "age_days": 5,
       "blocked": 0,
       "blocked_by": [],
       "closed": 17,
@@ -7823,7 +7823,7 @@
       "track": "delegation context preassembly"
     },
     {
-      "age_days": 3,
+      "age_days": 4,
       "blocked": 0,
       "blocked_by": [],
       "closed": 10,
@@ -7851,7 +7851,7 @@
       "track": "dynamic stack concurrency"
     },
     {
-      "age_days": 88,
+      "age_days": 89,
       "blocked": 0,
       "blocked_by": [],
       "closed": 6,
@@ -7879,7 +7879,7 @@
       "track": "evidence plane event sourcing and narrative"
     },
     {
-      "age_days": 88,
+      "age_days": 89,
       "blocked": 0,
       "blocked_by": [],
       "closed": 27,
@@ -7907,7 +7907,7 @@
       "track": "internal interaction lifecycle"
     },
     {
-      "age_days": 1,
+      "age_days": 2,
       "blocked": 2,
       "blocked_by": [],
       "closed": 42,
@@ -7935,7 +7935,7 @@
       "track": "learned routing controller"
     },
     {
-      "age_days": 31,
+      "age_days": 32,
       "blocked": 0,
       "blocked_by": [],
       "closed": 45,
@@ -7963,7 +7963,7 @@
       "track": "loops and dashboards audit 2026 07 05"
     },
     {
-      "age_days": 88,
+      "age_days": 89,
       "blocked": 0,
       "blocked_by": [],
       "closed": 4,
@@ -7991,7 +7991,7 @@
       "track": "model capability descriptors"
     },
     {
-      "age_days": 75,
+      "age_days": 76,
       "blocked": 0,
       "blocked_by": [],
       "closed": 0,
@@ -8013,7 +8013,7 @@
       "track": "model stack change standardization audit"
     },
     {
-      "age_days": 18,
+      "age_days": 19,
       "blocked": 0,
       "blocked_by": [],
       "closed": 44,
@@ -8053,7 +8053,7 @@
       "track": "model stack single source update pipeline"
     },
     {
-      "age_days": 88,
+      "age_days": 89,
       "blocked": 1,
       "blocked_by": [],
       "closed": 5,
@@ -8081,7 +8081,7 @@
       "track": "model stack update pipeline audit"
     },
     {
-      "age_days": 17,
+      "age_days": 18,
       "blocked": 0,
       "blocked_by": [],
       "closed": 7,
@@ -8109,7 +8109,7 @@
       "track": "multi file coding completion capability"
     },
     {
-      "age_days": 1,
+      "age_days": 2,
       "blocked": 0,
       "blocked_by": [],
       "closed": 88,
@@ -8137,7 +8137,7 @@
       "track": "non inference backlog"
     },
     {
-      "age_days": 18,
+      "age_days": 19,
       "blocked": 0,
       "blocked_by": [],
       "closed": 17,
@@ -8165,7 +8165,7 @@
       "track": "objective task rate goodput"
     },
     {
-      "age_days": 88,
+      "age_days": 89,
       "blocked": 0,
       "blocked_by": [],
       "closed": 46,
@@ -8193,7 +8193,7 @@
       "track": "orchestration robustness audit 2026 07 11"
     },
     {
-      "age_days": 65,
+      "age_days": 66,
       "blocked": 0,
       "blocked_by": [],
       "closed": 3,
@@ -8224,7 +8224,7 @@
       "track": "prompt construction determinism"
     },
     {
-      "age_days": 87,
+      "age_days": 88,
       "blocked": 3,
       "blocked_by": [],
       "closed": 8,
@@ -8252,7 +8252,7 @@
       "track": "reasoning effort levels"
     },
     {
-      "age_days": 88,
+      "age_days": 89,
       "blocked": 1,
       "blocked_by": [],
       "closed": 4,
@@ -8280,7 +8280,7 @@
       "track": "retrain routing models"
     },
     {
-      "age_days": 4,
+      "age_days": 5,
       "blocked": 0,
       "blocked_by": [
         "UFH-14"
@@ -8310,7 +8310,7 @@
       "track": "routing intelligence"
     },
     {
-      "age_days": 88,
+      "age_days": 89,
       "blocked": 0,
       "blocked_by": [],
       "closed": 4,
@@ -8338,7 +8338,7 @@
       "track": "scaffold autopilot cost lever deployment"
     },
     {
-      "age_days": 88,
+      "age_days": 89,
       "blocked": 1,
       "blocked_by": [],
       "closed": 19,
@@ -8366,7 +8366,7 @@
       "track": "searxng search backend"
     },
     {
-      "age_days": 47,
+      "age_days": 48,
       "blocked": 0,
       "blocked_by": [],
       "closed": 157,
@@ -8400,7 +8400,7 @@
       "track": "session bus thin dispatcher"
     },
     {
-      "age_days": 39,
+      "age_days": 40,
       "blocked": 0,
       "blocked_by": [],
       "closed": 21,
@@ -8428,7 +8428,7 @@
       "track": "shape keyed contention gating"
     },
     {
-      "age_days": 18,
+      "age_days": 19,
       "blocked": 0,
       "blocked_by": [],
       "closed": 14,
@@ -8468,7 +8468,7 @@
       "track": "stack change governance pipeline"
     },
     {
-      "age_days": 18,
+      "age_days": 19,
       "blocked": 0,
       "blocked_by": [],
       "closed": 8,
@@ -8496,7 +8496,7 @@
       "track": "standardized stack update pipeline finalizat"
     },
     {
-      "age_days": 18,
+      "age_days": 19,
       "blocked": 0,
       "blocked_by": [
         "EVL-45"
@@ -8526,7 +8526,7 @@
       "track": "swarm dataset distillation"
     },
     {
-      "age_days": 87,
+      "age_days": 88,
       "blocked": 0,
       "blocked_by": [],
       "closed": 21,
@@ -8554,7 +8554,7 @@
       "track": "tri role coordinator architecture"
     },
     {
-      "age_days": 1,
+      "age_days": 2,
       "blocked": 2,
       "blocked_by": [],
       "closed": 37,
@@ -8584,7 +8584,7 @@
       "track": "unified trace memory service"
     },
     {
-      "age_days": 4,
+      "age_days": 5,
       "blocked": 1,
       "blocked_by": [],
       "closed": 17,
@@ -8612,7 +8612,7 @@
       "track": "within role placement state machine"
     },
     {
-      "age_days": 88,
+      "age_days": 89,
       "blocked": 0,
       "blocked_by": [],
       "closed": 14,
@@ -8640,7 +8640,7 @@
       "track": "wp12 fleet layer design"
     },
     {
-      "age_days": 88,
+      "age_days": 89,
       "blocked": 0,
       "blocked_by": [],
       "closed": 2,
@@ -8668,7 +8668,7 @@
       "track": "x mas text routing"
     },
     {
-      "age_days": 1,
+      "age_days": 2,
       "blocked": 0,
       "blocked_by": [],
       "closed": 24,
@@ -8698,7 +8698,7 @@
       "track": "handoff index and backlog graph"
     },
     {
-      "age_days": 38,
+      "age_days": 39,
       "blocked": 0,
       "blocked_by": [],
       "closed": 18,
@@ -8726,7 +8726,7 @@
       "track": "dashboard architecture restructure"
     },
     {
-      "age_days": 17,
+      "age_days": 18,
       "blocked": 0,
       "blocked_by": [
         "RTG-34"
@@ -8761,7 +8761,7 @@
       "track": "coordinator role failure modes"
     },
     {
-      "age_days": 48,
+      "age_days": 49,
       "blocked": 0,
       "blocked_by": [
         "RTG-34",
@@ -8794,7 +8794,7 @@
       "track": "fleet fanout measurement"
     },
     {
-      "age_days": 1,
+      "age_days": 2,
       "blocked": 0,
       "blocked_by": [
         "RTG-49"
@@ -8818,7 +8818,7 @@
       "track": "decomposition to batch mapping"
     },
     {
-      "age_days": 18,
+      "age_days": 19,
       "blocked": 0,
       "blocked_by": [
         "RTG-34",
@@ -8849,7 +8849,7 @@
       "track": "wrap up division of labor policy"
     },
     {
-      "age_days": 18,
+      "age_days": 19,
       "blocked": 0,
       "blocked_by": [
         "RTG-34",
@@ -8880,7 +8880,7 @@
       "track": "loop owned fleet implementation"
     },
     {
-      "age_days": 1,
+      "age_days": 2,
       "blocked": 0,
       "blocked_by": [],
       "closed": 30,
@@ -8908,7 +8908,7 @@
       "track": "qwen chat template evaluation"
     },
     {
-      "age_days": 4,
+      "age_days": 5,
       "blocked": 0,
       "blocked_by": [
         "RTG-02"
@@ -8938,7 +8938,7 @@
       "track": "promptforge mutation safety"
     },
     {
-      "age_days": 17,
+      "age_days": 18,
       "blocked": 0,
       "blocked_by": [],
       "closed": 24,
@@ -8969,7 +8969,7 @@
       "track": "typed decision plane"
     },
     {
-      "age_days": 1,
+      "age_days": 2,
       "blocked": 0,
       "blocked_by": [
         "INF-41",
@@ -9012,7 +9012,7 @@
       "track": "kv unified stack rollout"
     },
     {
-      "age_days": 1,
+      "age_days": 2,
       "blocked": 1,
       "blocked_by": [
         "INF-65",
@@ -9046,7 +9046,7 @@
       "track": "kv prefix fork and paged attention"
     },
     {
-      "age_days": 1,
+      "age_days": 2,
       "blocked": 0,
       "blocked_by": [],
       "closed": 11,
@@ -9074,16 +9074,16 @@
       "track": "model artifact integrity"
     },
     {
-      "age_days": 0,
+      "age_days": 1,
       "blocked": 0,
       "blocked_by": [],
-      "closed": 25,
+      "closed": 27,
       "domain": "routing-and-optimization",
       "handoff": "refactoring-multirepo-2026-10.md",
       "id": "RTG-60",
       "last_advanced": "2026-10-25",
-      "next_action": "Finish combined validation, then CI and remaining package work",
-      "open": 48,
+      "next_action": "Complete CI collection, baseline and native validation",
+      "open": 46,
       "priority": 0.0,
       "priority_basis": {
         "campaign": 0,
@@ -9096,7 +9096,7 @@
       "track": "multi-repo refactoring"
     },
     {
-      "age_days": 2,
+      "age_days": 3,
       "blocked": 12,
       "blocked_by": [
         "RTG-09"
@@ -9134,7 +9134,7 @@
       "track": "harness selection and integration"
     },
     {
-      "age_days": 74,
+      "age_days": 75,
       "blocked": 0,
       "blocked_by": [],
       "closed": 3,
@@ -9162,7 +9162,7 @@
       "track": "memento block reasoning compression"
     },
     {
-      "age_days": 88,
+      "age_days": 89,
       "blocked": 2,
       "blocked_by": [],
       "closed": 3,
@@ -9190,7 +9190,7 @@
       "track": "minddr deep research mode"
     },
     {
-      "age_days": 18,
+      "age_days": 19,
       "blocked": 0,
       "blocked_by": [],
       "closed": 27,
@@ -9218,7 +9218,7 @@
       "track": "reasoning compression"
     },
     {
-      "age_days": 3,
+      "age_days": 4,
       "blocked": 0,
       "blocked_by": [],
       "closed": 40,
@@ -9248,7 +9248,7 @@
       "track": "tool output compression"
     },
     {
-      "age_days": 1,
+      "age_days": 2,
       "blocked": 1,
       "blocked_by": [
         "UFH-01"
@@ -9278,7 +9278,7 @@
       "track": "harness improvement loop"
     },
     {
-      "age_days": 18,
+      "age_days": 19,
       "blocked": 0,
       "blocked_by": [],
       "closed": 4,
@@ -9325,7 +9325,7 @@
       "track": "browser agent surface"
     },
     {
-      "age_days": 30,
+      "age_days": 31,
       "blocked": 0,
       "blocked_by": [],
       "closed": 5,
@@ -9353,7 +9353,7 @@
       "track": "AMD AI Lab website publication"
     },
     {
-      "age_days": 1,
+      "age_days": 2,
       "blocked": 2,
       "blocked_by": [
         "EVL-37",
@@ -9386,7 +9386,7 @@
       "track": "repl embedding retrieval"
     },
     {
-      "age_days": 22,
+      "age_days": 23,
       "blocked": 0,
       "blocked_by": [],
       "closed": 2,
@@ -9414,7 +9414,7 @@
       "track": "thesis experiment (PARKED)"
     },
     {
-      "age_days": 1,
+      "age_days": 2,
       "blocked": 0,
       "blocked_by": [
         "INF-77",
@@ -9447,7 +9447,7 @@
       "track": "agentic serving harness fixes"
     },
     {
-      "age_days": 19,
+      "age_days": 20,
       "blocked": 0,
       "blocked_by": [
         "UFH-01"
@@ -9477,7 +9477,7 @@
       "track": "OpenCode shell integration"
     },
     {
-      "age_days": 3,
+      "age_days": 4,
       "blocked": 0,
       "blocked_by": [],
       "closed": 11,
