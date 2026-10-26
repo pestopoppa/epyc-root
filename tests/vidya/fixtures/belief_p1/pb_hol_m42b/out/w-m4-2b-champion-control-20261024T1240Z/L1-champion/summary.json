@@ -1,0 +1,190 @@
+{
+ "schema": "epyc.pbhol1.run.v1",
+ "status": "complete",
+ "verdict": "see verdict.py (PREDECLARATION.md)",
+ "arms": {
+  "A-off512ch": {
+   "ttft_ms": [
+    3284.4,
+    3297.6,
+    3321.3
+   ],
+   "median_ms": 3297.6
+  },
+  "B-off512ch": {
+   "ttft_ms": [
+    72200.8,
+    72511.5,
+    72589.3
+   ],
+   "median_ms": 72511.5
+  },
+  "C-off512ch": {
+   "ttft_ms": [
+    280.7,
+    281.9,
+    283.9,
+    283.8,
+    284.3,
+    284.6
+   ],
+   "median_ms": 283.85
+  }
+ },
+ "n_rows": 17,
+ "n_runs_attempted": 12,
+ "calibrations": [
+  {
+   "phase": "off512ch",
+   "long_ttft_s": 152.19889999999998
+  }
+ ],
+ "graphs_proofs": [
+  {
+   "kind": "graphs_proof",
+   "phase": "off512ch",
+   "pid": 744025,
+   "graphs": "ON",
+   "GGML_CUDA_DISABLE_GRAPHS": null,
+   "HSA_OVERRIDE_CPU_AFFINITY_DEBUG": "0",
+   "source": "/proc/<pid>/environ"
+  }
+ ],
+ "residency": [
+  {
+   "kind": "residency",
+   "phase": "off512ch",
+   "pid": 744025,
+   "own_vram_gib": 46.602,
+   "min_gib": 40.0,
+   "ok": true,
+   "n_own_nonzero": 50
+  }
+ ],
+ "prompts": {
+  "path": "/mnt/raid0/llm/tmp/overnight-20261020/kpf18-run/prompt_set.jsonl",
+  "sha256": "dc37cdf1c407956d83d7b7354f4e48964306228793fc9095add945a17f2994de",
+  "long_group": 6,
+  "long_tokens": 64000,
+  "short_group": 3,
+  "short_suffix_index": 0,
+  "short_tokens": 128,
+  "first_tokens_distinct": true
+ },
+ "binaries": [
+  "/mnt/raid0/llm/kernels/builds/gpu-20261023-141e4bcf5-lbh/bin/llama-server"
+ ],
+ "servers": [
+  {
+   "label": "pbhol-off512ch-20261024T124048Z",
+   "binary": "/mnt/raid0/llm/kernels/builds/gpu-20261023-141e4bcf5-lbh/bin/llama-server",
+   "binary_sha256": "f0fe65c83f397dae0f40cb2bbf15223bef9be3df455f338409d5037699093882",
+   "readback": {
+    "pid": 744025,
+    "exe": "/mnt/raid0/llm/kernels/builds/gpu-20261023-141e4bcf5-lbh/bin/llama-server",
+    "exe_matches_binary": true,
+    "proc_cmdline": [
+     "/mnt/raid0/llm/kernels/builds/gpu-20261023-141e4bcf5-lbh/bin/llama-server",
+     "-m",
+     "/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf",
+     "--host",
+     "127.0.0.1",
+     "-np",
+     "3",
+     "-c",
+     "393216",
+     "-t",
+     "8",
+     "-b",
+     "512",
+     "-ub",
+     "512",
+     "--flash-attn",
+     "on",
+     "--jinja",
+     "-ctk",
+     "q8_0",
+     "-ctv",
+     "q8_0",
+     "--kv-unified",
+     "--no-mmap",
+     "-ngl",
+     "all",
+     "--cache-ram",
+     "65536",
+     "--chat-template-file",
+     "/mnt/raid0/llm/models/chat-templates/epyc-qwen3x-v1-terse.jinja",
+     "-md",
+     "/mnt/raid0/llm/models/Qwen3.8-27B-DFlash2-Q8_0.gguf",
+     "-ngld",
+     "99",
+     "--spec-type",
+     "draft-dflash",
+     "--spec-draft-n-max",
+     "7",
+     "--device",
+     "ROCm0",
+     "--slot-save-path",
+     "/mnt/raid0/llm/tmp/f8-launchers-20261024/m4-2b-champion-control/out/w-m4-2b-champion-control-20261024T1240Z/L1-champion/slot-save/pbhol-off512ch-20261024T124048Z",
+     "--device-draft",
+     "ROCm0",
+     "--no-cache-idle-slots",
+     "--port",
+     "18392",
+     "--metrics"
+    ],
+    "proc_cmdline_matches_argv": true,
+    "kv_mode_from_launch_log": "kv_unified = 'true'",
+    "n_slots_n_ctx_slot": [
+     3,
+     262144
+    ],
+    "slot_fork_from_launch_log": null,
+    "slot_fork_disabled_line": null,
+    "build_from_launch_log": null,
+    "hip_mapped": [
+     "/mnt/raid0/llm/kernels/builds/gpu-20261023-141e4bcf5-lbh/bin/libggml-hip.so.0.16.0"
+    ],
+    "ggml_libs": [
+     "/mnt/raid0/llm/kernels/builds/gpu-20261023-141e4bcf5-lbh/bin/libggml-base.so.0.16.0",
+     "/mnt/raid0/llm/kernels/builds/gpu-20261023-141e4bcf5-lbh/bin/libggml-cpu.so.0.16.0",
+     "/mnt/raid0/llm/kernels/builds/gpu-20261023-141e4bcf5-lbh/bin/libggml-hip.so.0.16.0",
+     "/mnt/raid0/llm/kernels/builds/gpu-20261023-141e4bcf5-lbh/bin/libggml.so.0.16.0",
+     "/mnt/raid0/llm/kernels/builds/gpu-20261023-141e4bcf5-lbh/bin/libllama-common.so.0.0.10412",
+     "/mnt/raid0/llm/kernels/builds/gpu-20261023-141e4bcf5-lbh/bin/libllama-server-impl.so",
+     "/mnt/raid0/llm/kernels/builds/gpu-20261023-141e4bcf5-lbh/bin/libllama.so.0.0.10412"
+    ],
+    "ggml_all_from_bin_dir": true,
+    "problems": []
+   },
+   "linkage": {
+    "rc": 0,
+    "pass": true,
+    "report": "/mnt/raid0/llm/tmp/f8-launchers-20261024/m4-2b-champion-control/out/w-m4-2b-champion-control-20261024T1240Z/L1-champion/logs/pbhol-off512ch-20261024T124048Z.linkage.txt",
+    "s": 0.04,
+    "cmd": "LD_LIBRARY_PATH=/mnt/raid0/llm/kernels/builds/gpu-20261023-141e4bcf5-lbh/bin:/opt/rocm/lib:/usr/lib/llvm-20/lib:/opt/AMD/aocc-compiler-5.0.0/lib bash /mnt/raid0/llm/epyc-inference-research/scripts/utils/verify_ggml_linkage.sh /mnt/raid0/llm/kernels/builds/gpu-20261023-141e4bcf5-lbh/bin/llama-server /mnt/raid0/llm/kernels/builds/gpu-20261023-141e4bcf5-lbh/bin"
+   },
+   "vram": {
+    "samples": 675,
+    "own_vram_nonzero_samples": 671,
+    "own_vram_peak_gib": 47.353,
+    "card_used_peak_gib": 48.618,
+    "kfd_process_count_max": 1,
+    "first_sample_utc": "2026-10-24T12:40:48Z",
+    "last_sample_utc": "2026-10-24T12:53:49Z",
+    "abort": null,
+    "samples_file": "/mnt/raid0/llm/tmp/f8-launchers-20261024/m4-2b-champion-control/out/w-m4-2b-champion-control-20261024T1240Z/L1-champion/vram/pbhol-off512ch-20261024T124048Z.jsonl"
+   },
+   "stop": {
+    "pid": 744025,
+    "sent": [
+     "TERM"
+    ],
+    "at": "2026-10-24T12:53:47Z",
+    "returncode": 0,
+    "verified_dead": true
+   }
+  }
+ ],
+ "finished": "2026-10-24T12:53:49Z"
+}
