@@ -1054,6 +1054,9 @@ here: none of the RTG-57 ids remain undefined. The owner named in these texts (w
       The original done-when (decode under a neighbour's prefill >= 4x at <= 30% TTFT cost, KVU-16b re-run) is NOT met
       by x2.92 as quoted (unverified: score sheet not read). Closing this task = copy the per-arm table from the run
       dir here and record the score against the done-when; the enable decision is KVU-16g-2.
+    - *(2026-10-26, workspace-58 wrap-up; parent KVU-16g and this box stay open.)* Read-out of the existing 2026-10-04 A/B (`/mnt/raid0/llm/tmp/prefill-budget-20261004/gpuab-20261004T172118Z/`; `gpuab-20261004T145622Z/` is empty). One sample per arm, fixed order, OFF = b/ub2048 (not the served optimum). Decode-during-neighbour x vs OFF / TTFT cost / solo prefill: b512 x3.22 / +21.5% / -13.7%; pb512 x2.92 / +26.7% / -3.6%; t1000 x3.87 / +44.8% / -3.8%. No arm meets the done-when (>=4x at <=30% TTFT cost): pb512 passes cost but misses gain, t1000 misses both. No paired correctness / test-backend-ops green artifact found. Historical descriptive read-out, not decision-grade; no flag is enabled. Source: `/mnt/raid0/llm/tmp/cal-1026/kvu16g1-fa4-audit/OWNER-READOUT.md` (sha `93faf270…`).
+      - [x] **KVU-16g-1 read-out of the existing 10-04 A/B scored against the done-when (read-out only; done-when NOT met).** Per-arm table above. ✅ 2026-10-26 [belief: cc]
+      - [ ] **KVU-16g-1 done-when unmet (checkpoint wrap-ws58-20261026-2320).** Needs prospective g-2 measurements on the current candidate: OFF byte identity, decode-only np4 TPOT target, package gates. Do not enable flags or tick KVU-16g.
   - [ ] **KVU-16g-2 — enable `--prefill-budget-decoding` (+ `--prefill-budget-target-ms`) on :8083 in the v11 stack-change package.**
     (filed 2026-10-20 from the derived-actionables gate; manifest V11-016 and the champion aggregate say 'the :8083
     switch lands with v11' but no task enabled it.) Choose the target-ms from the PB-QCOST-1 fit
