@@ -1,0 +1,68 @@
+--- a/scripts/coordination/filler_run10.sh
++++ b/scripts/coordination/filler_run10.sh
+@@ -108,9 +108,40 @@
+   if [ $CLASS = gpu ]; then THREADS=$(expand "$CPUS" | sort -un | wc -l); else THREADS=$(phys_count "$CPUS"); fi
+ }
+ 
++# VB-CAL-OVERRUN-WRITE: snapshot native duration at launch; never substitute
++# min-window/grant length. Composite/ranged/missing estimates stay unchecked.
++snapshot_overrun() {
++  OV_OWNER=""; OV_EST=""; OV_REGIONS=$1
++  IFS='|' read -r OV_OWNER OV_EST < <(LC_ALL=C awk -F'|' -v id="$ID" '
++    function trim(s) { sub(/^[[:space:]]+/, "", s); sub(/[[:space:]]+$/, "", s); return s }
++    trim($2) == id { n++; owner=trim($3); duration=trim($11) }
++    END {
++      if (n != 1 || owner == "") exit
++      sub(/[[:space:]]*\(.*$/, "", duration)
++      sub(/^~/, "", duration); duration=trim(duration)
++      if (duration !~ /^[0-9]+([.][0-9]+)?[[:space:]]*(s|sec|secs|second|seconds|m|min|mins|minute|minutes|h|hr|hrs|hour|hours)$/) exit
++      value=duration+0; unit=duration; sub(/^[0-9]+([.][0-9]+)?[[:space:]]*/, "", unit)
++      if (unit ~ /^(m|min|mins|minute|minutes)$/) value*=60
++      if (unit ~ /^(h|hr|hrs|hour|hours)$/) value*=3600
++      formatted=sprintf("%.17g", value)
++      # Overflow prints inf/nan on awk implementations: never publish it.
++      if (value > 0 && formatted ~ /^[0-9]+([.][0-9]+)?([eE][+-]?[0-9]+)?$/)
++        printf "%s|%s\n", owner, formatted
++    }' "$FILLERS_MD" 2>/dev/null) || :
++}
++
+ write_ended() { # rc reason
++  local ov_started=${OV_STARTED:-} ov_owner=${OV_OWNER:-} ov_est=${OV_EST:-} ov_regions=${OV_REGIONS:-}
++  # Consume before any I/O: a later TERM/unstarted repeat cannot reuse it.
++  OV_STARTED=""; OV_OWNER=""; OV_EST=""; OV_REGIONS=""
+   mkdir -p "$GRANTS"
+-  printf 'rc=%s time=%s reason=%s\n' "$1" "$(ts)" "$2" > "$ENDED.tmp" && mv -f "$ENDED.tmp" "$ENDED"
++  {
++    printf 'rc=%s time=%s reason=%s\n' "$1" "$(ts)" "$2"
++    if [ -n "$ov_started" ] && [ -n "$ov_est" ]; then
++      printf 'job_id=%s\nowner=%s\nstep=job-run\nestimated_wall_s=%s\nstarted=%s\nregions=%s\n' \
++        "$ID" "$ov_owner" "$ov_est" "$ov_started" "$ov_regions"
++    fi
++  } > "$ENDED.tmp" && mv -f "$ENDED.tmp" "$ENDED"
+   rm -f "$GRANT"
+   log "ended rc=$1 reason=$2 (grant deleted)"
+ }
+@@ -182,6 +213,7 @@
+ 
+ run_one() {
+   local regions start end s e now rc reason p
++  OV_STARTED=""; OV_OWNER=""; OV_EST=""; OV_REGIONS=""
+   regions=$(sed -n 's/.*regions=\([^ ]*\).*/\1/p' "$GRANT" | tr -d '\n')
+   start=$(sed -n 's/.*start=\([^ ]*\).*/\1/p' "$GRANT" | tr -d '\n')
+   end=$(sed -n 's/.*end=\([^ ]*\).*/\1/p' "$GRANT" | tr -d '\n')
+@@ -235,6 +267,7 @@
+       rlargs=("${_n[@]}"); [[ " ${rlargs[*]} " == *" --gpu-quiet "* ]] || rlargs+=(--gpu-quiet shared)
+     elif [[ " ${rlargs[*]} " == *" --cpu-list "* ]]; then rlargs+=(--no-fold-siblings); fi
+   fi
++  snapshot_overrun "$regions"
+   if [ -n "${FILLER_STUB_CMD:-}" ]; then
+     setsid bash -c "$FILLER_STUB_CMD" 7>&- &
+   elif [ $SELFCLAIM = 1 ]; then
+@@ -246,6 +279,7 @@
+         --port "$PORTS" --workdir "$WORKDIR" --gpu-threads "$GPUTHR" 7>&- &
+   fi
+   CUR=$!
++  OV_STARTED=$(ts)
+   [ "$(ps -o pgid= -p $CUR | tr -d ' ')" = "$CUR" ] || log "WARN: $CUR is not a group leader"
+   reason=exited
+   while kill -0 "$CUR" 2>/dev/null; do
