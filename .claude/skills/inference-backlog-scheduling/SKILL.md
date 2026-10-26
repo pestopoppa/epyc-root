@@ -195,6 +195,14 @@ Run this loop at every task boundary and on every watcher event (`event-watch-ws
   must show the resolved paths, knob strings, ggml linkage, ports, window, RAM figure and guard
   paths. A launcher never dry-run is a guess. Origin 10-26: the sampler TID-exit race, the HPR port
   race, and guards that were swallowed silently, each of which a dry-run would have exposed.
+- **A dry run must exercise dependency resolution when the job resolves deps.** The scoped CI repair's
+  dry run skipped resolution, so attempt 1 died rc1 on an offline `uv` lock missing a git dependency (10-26).
+- **Admission is checked against the guard the job actually runs, not the first guard you find.** R6 phase1
+  was moved q0 to q1 after checking only `admission_guard.sh`; `guard.sh` pinned CPUs 0-23, returned rc70,
+  nothing ran, and q1 idled ~40 min (10-26).
+- **Never append text after a FILLERS row's final pipe**: it breaks the table (broken ~13:25-16:30Z on 10-26).
+  Edit the row's cells in place.
+- **Blocker text goes in the notes column, never the status column**; status stays one of the fixed tokens.
 
 ## 5. Coordination protocol
 
