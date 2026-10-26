@@ -2252,7 +2252,7 @@ production model at pairs=5, ~18% cadence overhead). Six operator decision items
         branch. `executor_paths.get_binary()` was migrated to the kernel store on 2026-09-22, but these two
         fallbacks were not, so a registry load failure still resolves the OLD kernel silently. Same defect
         class as the two the v10 promotion exposed.
-  - [x] **★ R23-64 — RE-SWEEP THE CPU DECODE THREAD COUNT ON THE CHAMPION (t48 / t64 / t96).
+  - [x] **★ R23-64 — RE-SWEEP THE CPU DECODE THREAD COUNT ON THE CHAMPION (t48 / t64 / t96). Verdict: t48 best, t64 −15%, t96 unresolved [belief: cc]
         ★ GATED: MUST NOT RUN UNTIL AFTER THE OPERATOR'S PLANNED HOST REBOOT + BIOS SESSION.**
         Filed 2026-09-08 out of the MEAS-4 correction in
         [`cpu-decode-roofline-program.md`](cpu-decode-roofline-program.md) (MEAS-4 at `:1078`, D4 at

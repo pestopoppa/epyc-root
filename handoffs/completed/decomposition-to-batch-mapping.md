@@ -1,8 +1,10 @@
 # Decomposition-to-Batch Mapping — orchestrator decisions onto np/instance slots
 
+> **Completed / archived 2026-10-26** (operator-invoked wrap-up, workspace-58): feasibility work finished; row RTG-50 deleted from the routing index.
+
 **Status**: stub — operator hypothesis, no external source backing, no code landed.
 **Created**: 2026-08-13 (via `/research-intake` Stage 3, operator-approved plan; source round intake-1105…intake-1127, PARL/Kimi-agent-swarm sweep)
-**Parent index**: [routing-and-optimization-index.md](routing-and-optimization-index.md)
+**Parent index**: [routing-and-optimization-index.md](../active/routing-and-optimization-index.md)
 **Categories**: hardware_optimization, agent_architecture, inference_serving
 
 ## Objective

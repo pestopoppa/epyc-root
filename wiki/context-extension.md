@@ -255,3 +255,7 @@ Sources: [YaRN context-extension research](../handoffs/active/yarn-context-exten
 - **V11-100, the YaRN K-shift pure-rotation fix** (`experimental/yarn-kshift-fix-20261021` @ `b67a5b9bc`), folds into the consolidation after the C2 CAS (CH-23). Its test travels with the commit. The native-window non-regression gate (YaRN must not regress inside the native window) remains a hard gate on the champion.
 
 Sources: [YaRN context extension research](../handoffs/active/yarn-context-extension-research.md), [RAO/ReDel substrate spike](../handoffs/active/rao-redel-substrate-spike.md), [Progress dpf-sample-yarn](../progress/2026-10/2026-10-21-dpf-sample-yarn.md), [AutoKernel champion aggregate](../handoffs/active/autokernel-champion-aggregate.md), [Vidya belief-substrate program](../handoffs/active/vidya-belief-substrate-program.md)
+
+## Compiled Update — 2026-10-26 (wrap-up, workspace-58)
+
+- **YaRN scope is Qwen3.8-27B factor 2 (524,288) as an np 1 MI210 mode.** E1 quality PASS to 500K but FAIL on C4 memory (A1 63.9 GiB vs 55 limit); next is YARN-E1-MEM. v10 traps: the server clamps every slot to `n_ctx_train`, so `--override-kv qwen35.context_length` plus a mandatory `--yarn-orig-ctx 262144` are required. The native-window gate remains NOT-FAIL-underpowered, and the K-shift fix shipped in champion C3. ([yarn-context-extension-research](../handoffs/active/yarn-context-extension-research.md), [week outcomes](../docs/reference/inference-outcomes-week-2026-10-18-to-25.md))

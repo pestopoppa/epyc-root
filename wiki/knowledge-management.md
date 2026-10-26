@@ -4167,3 +4167,9 @@ Sources: [Vidya belief-substrate program](../handoffs/active/vidya-belief-substr
 - **No real data means no claim.** For KPF-26.1g there were 0 real planner step actions in any log; the proxy of 254 reviewer-patch steps had TERSE 0/254 (Wilson 95% CI 0.0-1.5%), so the verdict is provisional and a write-side capture (KPF-26.1h) comes first.
 
 Sources: [Vidya belief-substrate program](../handoffs/active/vidya-belief-substrate-program.md), [Non-inference backlog](../handoffs/active/non-inference-backlog.md), [Progress 3c4ca599 2026-10-23](../progress/2026-10/2026-10-23-3c4ca599.md), [Progress 3c4ca599 2026-10-24](../progress/2026-10/2026-10-24-3c4ca599.md)
+
+## Compiled Update — 2026-10-26 (wrap-up, workspace-58)
+
+- **Belief-substrate write-side wiring continues**: fold-gate records, HPR prefix capture and AK native records each project into the existing claim ladders rather than adding grading rules; filed wiring tasks include VB-R2364-SWEEP-WIRE and VB-AK-NATIVE-WIRE-WRITE. ([vidya-belief-substrate-program](../handoffs/active/vidya-belief-substrate-program.md), [workspace-58 log](../progress/2026-10/2026-10-26-workspace-58.md))
+- **Conversational/episodic memory eval** instruments (BEAM + Tulving adapters) and REPL embedding retrieval are tracked as active handoffs. ([conversational-memory-eval-instrument](../handoffs/active/conversational-memory-eval-instrument.md), [repl-embedding-retrieval](../handoffs/active/repl-embedding-retrieval.md))
+- **Governance**: RATIFY-WS58-RETENTION-LESSONS-20261025 signed (calendar lessons, MEASUREMENT.md section 5 evidence retention, destructive-ops hook). Handoff-index authoring contract and agent-loop design guides were refreshed. ([workspace-58 log](../progress/2026-10/2026-10-26-workspace-58.md), [handoff-index-authoring](../docs/guides/agent-workflows/handoff-index-authoring.md), [agent-loop-design](../docs/guides/agent-workflows/agent-loop-design.md))

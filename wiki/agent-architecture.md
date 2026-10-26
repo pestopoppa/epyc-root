@@ -4236,7 +4236,7 @@ sight-unseen — the round's own overturn rate is the argument for filing them a
 - [Session Bus + Thin Coordinator](../handoffs/active/session-bus-thin-dispatcher.md) — the pre-existing, independently-discovered "working serially" open item this round's findings attach to
 - [Coordinator role — failure modes and refactor](../handoffs/active/coordinator-role-failure-modes-and-refactor.md) — F-15 fan-out doctrine entry, R-17/R-23 thread-attribution premise
 - [Fleet Fan-Out Measurement](../handoffs/active/fleet-fanout-measurement.md) — new stub filed this round to own the collector and grading work
-- [Decomposition-to-Batch Mapping](../handoffs/active/decomposition-to-batch-mapping.md) — new stub, operator-originated hypothesis with no external source backing
+- [Decomposition-to-Batch Mapping](../handoffs/completed/decomposition-to-batch-mapping.md) — new stub, operator-originated hypothesis with no external source backing
 - [REPL Turn Efficiency](../handoffs/active/repl-turn-efficiency.md) — context-knee and width-taper findings folded into the S4 gate
 - `research/intake_index.yaml` intake-1105 through intake-1127 — full dive records, claim anchors, and per-claim corrections for every figure cited above
 - [`progress/2026-08/2026-08-13-research-intake.md`](../progress/2026-08/2026-08-13-research-intake.md) — session record, including the mid-round retraction and its resolution

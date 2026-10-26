@@ -124,3 +124,14 @@ hard end, 4 refused (port/lock busy), 2 unusable grant, 3 window below min, 5 pr
 missing, 75 inner claim timeout, 143 launcher signalled. A job's inner `region-lock` claim must
 not exceed what its row books, or it times out (`rc=75`) behind other holders while its grant
 burns.
+
+## Two writer failures from 2026-10-25/26 (workspace-58)
+
+- **A whole-host gate must not wait on rows booked AFTER it.** The EB writer's whole-host gate
+  deadlocked: it waited for "no claim" while the night-chain rows booked after it held claims, and
+  its free-regex matched the night chain's "whole-body taskset" argv. EB was granted only at
+  05:32Z, after two gate fixes. Rule: a writer's gate waits only on claims that predate its own
+  booking, and its match key is a claim id or region, never a free-text argv pattern.
+- **A quiet-HOLD gap idles the host.** Holding the host quiet between two booked timing rows
+  left every region empty for the whole gap. Book correctness fillers into any HOLD gap longer
+  than the shortest filler min-window; that work is tracked as GAP-POOL-1.
