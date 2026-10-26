@@ -152,3 +152,25 @@ The wiki manifest advances only recognized sources summarized in the reviewed se
 whole-repository compilation watermark stays unchanged. Commit/publication is performed only
 if the final repeated checks and exact-path private-index review pass. Durable gate and publication
 receipts are under `/mnt/raid0/llm/tmp/refactor-01a16fc3/wrapup-20261026/calendar-publish-run`. No main promotion or runtime change is authorized.
+
+## Owner 16:40 follow-up: wiki ownership and live runbook warning
+
+The owner verified the prior evidence/index corrections in privately published `d3cba7b6`, including
+21 cited checks/6 reopened, generated index removal, restored counts and unique RTG-61. The branch
+is still **not merged**. Three further metadata corrections are prepared for main review:
+
+- Withdraw only our `wiki/source_manifest.json` contribution, leaving the owner's newer
+  `f6ba6877c` sweep (41 sources) untouched at merge. Reverse the exact branch-merge-base delta;
+  do not copy current main wholesale or rewrite the owner watermark.
+- Withdraw only our 44-line `wiki/tool-implementation.md` section. Its factual evidence already
+  exists in the integration review/chronology; the synthesis is retained under that research
+  record's “Findings retained for the next operator wiki sweep” section. The owner compiles it
+  at the next operator sweep. Existing peer wiki content remains unchanged.
+- Keep `epyc-orchestrator/scripts/lib/executor.py:77`/`:90` in the runbook's standing-offender
+  list: fix pending in `refactor/scripts-cleanup-reviewed-01a16fc3@6efa56265b68f402af736a1c1a2ee3df447849c1`;
+  remove the line when it merges. That cleanup is unmerged, so source-candidate acceptance cannot
+  retire a live main warning. The two approved path-prefix clarifications remain.
+
+Original gate/manifest receipts and the withdrawn synthesis are preserved as historical scratch
+artifacts. No source/test edits, toolchain checks, wiki sweep, ingestion, commit or push have run
+for this draft. Prior checkbox/index fixes remain intact; main reviews before metadata publication.

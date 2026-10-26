@@ -5,8 +5,8 @@
   "root_worktree": "/mnt/raid0/llm/worktrees/refactor-audit-01a16fc3-root",
   "root_branch": "refactor/handoff-audit-20261024-01a16fc3",
   "root_publish_destination": "codex/refactor-handoff-audit-01a16fc3",
-  "root_pushed_checkpoint": "bb6410b1fa76553ab8d2d26dad5ee9816fb1ee5d",
-  "root_owner_acceptance": "NOT accepted or merged by workspace-58; bb6410b1 private publication/local gates only. Owner12:45/13:25 requested every checked line evidence, generated-index removal and unique index ownership. Main reviewed/approved metadata correction and normal codex FFpush; no fresh gate result is claimed and owner acceptance/main merge remain pending.",
+  "root_pushed_checkpoint": "d3cba7b64b9e9136d41d3bd916c5fffd5d4a4155",
+  "root_owner_acceptance": "NOT merged by workspace-58. Owner16:40 verified prior21cited/6reopened/generated2drop/masterrestore/RTG61 fixes in private d3cba7b6, but requested3remaining corrections: drop only own wiki manifest/page delta, retain findings under research for operator sweep, keep executor77/90 runbook offender until unmerged cleanup6efa lands. New metadata draft pending main review; no fresh gate result or owner acceptance claimed.",
   "handoff_index_ownership": "RTG-61 in own routing-and-optimization-index.md, applied by owning main. Fetched canonical main a876d3c9 reserves RTG-60 for loop-state-offraid-backup.md; preserve that canonical row at merge. All6 canonical indices had no refactor owner/RTG61; own candidate has exactly1refactor row. Old privateRTG60 was a collision.",
   "integration": {
     "worktree": "/mnt/raid0/llm/worktrees/refactor-01a16fc3-orchestrator-integration",
@@ -529,5 +529,5 @@
     "historical_failed_observations": "B1 first custody-hash attempt ended11:31FAIL before collection; second strict-marker attempt baseline20646 plus ERROR, no candidate collection. P3 targeted grant11:28-11:43 ended11:30PASS; later final formatting closure12:04:57-12:05:05rc0. Preserve earlier receipts.",
     "disclosure": "Prior coordinator ungranted Python metadata row edit disclosed owner; exact timestamp unknown bracket11:27-11:28. No application/test/build/timing-impact claim; no blind retry or bare claim."
   },
-  "resource_state": "Rootbb6410b1 privately published/localPASS but NOT owner-accepted/merged. Main reviewed21evidence/6reopened, generated2drop/mastercountrestore and applied uniqueRTG61 preserving canonicalRTG60backup; normal metadata-only codex FFpush authorized, no compute row perowner12:45. No fresh validator/generation/grade PASS claimed. B2 baseline BACKLOG/harnessfix, no candidate phase. Any Python/toolchain validator requires fresh coordinated admission. No canonical/main/ledger/runtime/kernel writes or generated re-add."
+  "resource_state": "Rootd3cba7b6 private/not merged; owner16:40 verified prior evidence/index fixes and requested own wiki delta withdrawal plus standing executor offender restoration until cleanup6efa merges. Native docs-only draft prepared for main review before normal metadata FFpush; no compute row per owner, no fresh validator/wiki sweep/generation/grade/ledger execution. Prior run/manifest proof retained as history. B2 baseline BACKLOG/harnessfix, no candidate phase. No canonical/main/runtime/kernel writes or generated re-add."
 }

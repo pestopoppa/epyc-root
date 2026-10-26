@@ -354,18 +354,17 @@ See step 0 below. A promotion with no anchor is not a promotion, it is a one-way
      --include=*.py --include=*.yaml --include=*.sh
    ```
 
-   Historical offender inventory from 2026-09-22 — recheck current source before acting:
+   Known standing offenders as of 2026-09-22 — each is a live split-brain surface:
+   `epyc-orchestrator/scripts/lib/executor.py:77` and `:90` (v9 literals on the
+   registry-load-failure path, which reopens exactly what `executor_paths.py` was written
+   to close; fix pending in `refactor/scripts-cleanup-reviewed-01a16fc3@6efa56265b68f402af736a1c1a2ee3df447849c1`;
+   remove this line when it merges);
    `scripts/server/gpu_shadow_lane.py:49-50` and
    `orchestration/gpu_shadow_lane_tenancy.yaml:47`; and the two silent CPU fallbacks at
    `scripts/server/orchestrator_stack.py:156-167` and
    `src/registry/stack_priors.py:1930-1954`, which swallow `KernelPathError` and hand back
    a CPU-only literal — a dangling `production/gpu` then compiles a CPU path instead of
    failing.
-
-   The source audit for `refactor/scripts-cleanup-reviewed-01a16fc3` found no serving
-   callers of the orchestrator's Python `scripts/lib` fork; that candidate removes it.
-   The research executor remains a binary-store consumer. This source disposition does
-   not claim that the candidate is merged or deployed.
 
    8d. **Expect test fallout, and treat it as signal.** Any test that encodes the old
    build path fails by design. Fix it by asserting **store resolution**, never by

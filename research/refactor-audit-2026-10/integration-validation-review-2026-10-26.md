@@ -58,3 +58,22 @@ an unnamed collection-skip case and shared grading emitted no JSON. Sixteen igno
 paths leaked while tracked repository/harness custody matched. No candidate full run or accepted
 known-failure set is established. Root `bb6410b1` is a private publication and was not accepted
 or merged by workspace-58; the owner requested a separate evidence/index correction.
+
+## Findings retained for the next operator wiki sweep
+
+The private branch's wiki synthesis is withdrawn following the owner's 16:40 review. Its findings
+remain in this research record and the linked Oct 26 chronology for operator compilation:
+
+- Immutable comparison scope matters: the moving-base formatter failure remains an original failed
+  receipt; only the separately reviewed 182-file immutable scope establishes zero introduced paths.
+- Package states require separate evidence: local integration, a focused functional selection,
+  private source publication and main acceptance are distinct. The P3 402/1 selection and final
+  three-file closure do not establish a current all-1,930-pass aggregate.
+- A region-lock waiter is not calendar authority. The canceled root waiter and later official q1
+  run retain separate receipts; the official launcher owns admission, affinity and deadlines.
+- Passing local root gates did not supply owner acceptance. B2's failed baseline, native NULL,
+  missing grade JSON and ignored runtime leaks remain unresolved evidence, not an accepted baseline.
+
+No new run, wiki compilation, manifest advance or grading is asserted by this extraction. The owner
+compiles these existing findings at the next operator-cadence sweep; the newer canonical manifest
+from `f6ba6877c` (41 sources) is preserved by dropping this branch's entire manifest contribution.

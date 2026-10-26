@@ -20,6 +20,9 @@ branch holds and how to merge it; per-finding evidence is in `research/refactor-
 privately published, but was not accepted or merged by workspace-58. Owner review at 12:45/13:25
 requires per-line checkbox evidence, removal of this branch's generated index artifacts/counts,
 and confirmation of one index owner. The correction below does not claim owner acceptance.
+The owner verified those fixes in private `d3cba7b6` at 16:40, but still withheld merge: this
+branch must withdraw its wiki page/manifest contribution and retain the runbook's live executor
+offender until the cleanup source merges. Findings stay in the research record for the next sweep.
 
 **Current next action (2026-10-26):** repair CI report compatibility and runtime isolation, then rerun baseline.
 CI already contains integration in local merge `753e0287a1ae6b06f2a5c91269899ff8cc8452b5`.
