@@ -2611,6 +2611,10 @@ extensions, not amendments to the completed decision-tools checkpoint or applica
 
 - [ ] **VB-CH26A-M12-WRITE — project prospective M12 long-context recipe records through the existing measurement source class.** Preserve the writer's identity-before, original HTTP request/response JSONL, native checker receipt and overlapping per-request PID/startticks/KFD/VRAM/maps/affinity readings. Re-derive cache share and processed-token reuse predicates from original responses and bind source/recipe/model/server/library/grant/predeclaration digests. Missing or failed legs stay missing/failed; no generated performance/quality/protocol warrant. Existing ClaimTuple + claim_tuple.grade only; no second source-class ladder. Complete only after the native reader and planning-context canary pass. Producer scoped to CH-26a current-C5 recipe remeasurement, no AK search or promotion.
 
+## KPF174D-C1-LAYOUT-SOURCE — KPF-17.4d c1 layout producer enrollment (filed 2026-10-26, workspace-58; drafted by codex-ni)
+
+- [ ] **KPF174D-C1-LAYOUT-SOURCE** — register native honest/flag_on KPF-17.4d producer IDs in the existing kv-prefix-fork adapter, run server-free real-writer/projection fixtures before either GPU load, ingest each sealed run after completion, and prove planning-context retrieval canary before calling the loop wired. Evidence producer: /mnt/raid0/llm/tmp/cal-1026/kpf174d-c1-layout-source/; run data sibling honest/flag-on dirs.
+
 ## VB-AK-LONGCTX — AutoKernel long-context surfaces and the production context-bucket analysis (filed 2026-10-04, ak-ds41-main)
 
 - [ ] **VB-AK-LONGCTX — write side + projection for INF-81's long-context measurement sources** (CLAUDE.md *Belief

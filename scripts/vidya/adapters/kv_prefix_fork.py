@@ -122,6 +122,8 @@ CONFORMANCE_ARMS = {
     # VB-KPF174C-ARM: the KPF-17.4c target-restore bisect (rules epyc.kpf174c.rules.v1, speculation OFF). Its
     # launch_verdict counts layout-matched PAIRS (Xc~Cmask, Xe~C0, Ks~C0 of each attempted cell), not cells.
     "KPF-17.4c": (r"kpf174c_bisect_spec_off",),
+    # KPF-17.4d: native c1 layout-matched cell counts from the producer, one setting per load.
+    "KPF-17.4d": (r"kpf174d_c1_layout_honest", r"kpf174d_c1_layout_flag_on"),
 }
 #: tasks whose launch_verdict counts something other than cells: task -> (metric, reps basis, unit noun)
 CONF_PAIR_TASKS = {"KPF-17.4c": ("kpf174c_matched_pair_identical_fraction",
@@ -174,7 +176,8 @@ OUTCOME_KEYS = ("kpf_item", "seed", "manifest_digest", "manifest_sha256", "n_tas
                 "spread", "drop", "regress", "improve", "ctrl_regress", "ctrl_improve", "sign_test_p_regress",
                 "verdict", "reorder_decision", "gates", "rule", "treatment_applied", "finished_utc")
 CONF_VARIED = {"KPF-13.1": ["restore_path"], "KPF-17.4+17.4a+19.1a": ["swa_drafter_launch_arm"],
-               "KPF-17.4c": ["restore_path", "kv_layout"]}
+               "KPF-17.4c": ["restore_path", "kv_layout"],
+               "KPF-17.4d": ["restore_path", "kv_layout", "swa_drafter_launch_arm"]}
 _WINDOW = re.compile(r"^(?P<stem>.+)-(?P<arm>[AB])(?P<k>\d+)$")
 REQUIRED = ("run_id", "arm", "binary_sha256", "prompt_set_sha256", "window_id", "end_utc", "host", "argv",
             "equivalence", "rows", "record_sha256", "category")  # rows_sha256 absent = attested-absent (VB-KVU-PF.2)
