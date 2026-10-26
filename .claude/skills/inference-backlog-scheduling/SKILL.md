@@ -203,6 +203,11 @@ Run this loop at every task boundary and on every watcher event (`event-watch-ws
 - **Never append text after a FILLERS row's final pipe**: it breaks the table (broken ~13:25-16:30Z on 10-26).
   Edit the row's cells in place.
 - **Blocker text goes in the notes column, never the status column**; status stays one of the fixed tokens.
+- **A model-free correctness row needs an exec tripwire plus a positive-control dry run.** An unreachable-server
+  fallback (the REPL-memory embedder spawning `llama-embedding`) can silently load a real model under the
+  test run; the tripwire must fail on `llama-*`/`.gguf` execs and be proven to fire on a deliberate control (10-26).
+- **A phase that fits the preflight envelope (under ~240 s, single-thread) is iterated in the standing CPU 24,25
+  preflight, never booked as a row.** Booking it burns a grant window on an iteration loop (10-26).
 
 ## 5. Coordination protocol
 
