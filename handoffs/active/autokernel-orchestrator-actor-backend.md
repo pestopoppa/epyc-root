@@ -639,7 +639,7 @@ Each one turns a practice that was missing on 2026-09-23 into a standing gate.
     16,384 → 32,000 (research `9a64aec8`, opencode's own ceiling). This changes OAB-34's premise for the
     planner role — its default output cap is no longer 16,384 — but the cap-hit-rate measurement and the
     cross-role disposition called for above are still open.
-- [ ] **OAB-29 — a fake-model wire test as the standard gate for any new actor seat.** Add a scripted
+- [x] **OAB-29 — a fake-model wire test as the standard gate for any new actor seat.** (research 93c01b3c7; 106 units + 15/15 native PASS on current main a5310d94; code-budget guard pre-existing FAIL carried, see INF78-CODE-BUDGET-RATCHET) [no-belief: verifier/correctness, native-wire belief wiring tracked as VB-AK-NATIVE-WIRE-WRITE] Add a scripted
   OpenAI-compatible stub server, with a test harness that drives the EXACT actor invocation: CLI, flags, per-call
   config, env and stdin prompt. Build on the fake server used to root-cause `b8d6a046`.
   - Assertions:
