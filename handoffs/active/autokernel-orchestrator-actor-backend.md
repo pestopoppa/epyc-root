@@ -4,7 +4,7 @@
 and inline beats context-as-files (OAB-9, 2026-09-25). OAB-1/2/3/10/11/13 done; OAB-7 and OAB-8 built and
 deployed (orchestrator `b9e004e3`); OAB-22..27 merged to research main `d643d794`. 2026-10-01: OAB-35 fixed the
 `context.get(name, '')` HTTP 500 (orchestrator `2d97ade2`, live); OAB-36 filed.
-**Next (start here)**: OAB-29 fake-model wire-test gate and OAB-30 stub e2e (incl. keep→continuation, the
+**Next (start here)**: OAB-30 stub e2e (OAB-29 wire-test gate DONE 2026-10-26, research 93c01b3c7) (incl. keep→continuation, the
 DS41-C45 path); then the live OAB-4 A/B (pin :8083's KV mode per OAB-4a) and the OAB-5 promotion rule;
 OAB-28 before best-of runs with more than one worker.
 **Created**: 2026-09-24
