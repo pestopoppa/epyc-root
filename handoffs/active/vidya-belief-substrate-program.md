@@ -2607,6 +2607,10 @@ extensions, not amendments to the completed decision-tools checkpoint or applica
   and exercise the planning-context canary with the existing source class and `grade()`. This write hook alone
   does not close read-side wiring or validate old PASSes.
 
+## VB-CH26A-M12-WRITE — M12 long-context reader recipe records (filed 2026-10-26, workspace-58; drafted by codex-ni)
+
+- [ ] **VB-CH26A-M12-WRITE — project prospective M12 long-context recipe records through the existing measurement source class.** Preserve the writer's identity-before, original HTTP request/response JSONL, native checker receipt and overlapping per-request PID/startticks/KFD/VRAM/maps/affinity readings. Re-derive cache share and processed-token reuse predicates from original responses and bind source/recipe/model/server/library/grant/predeclaration digests. Missing or failed legs stay missing/failed; no generated performance/quality/protocol warrant. Existing ClaimTuple + claim_tuple.grade only; no second source-class ladder. Complete only after the native reader and planning-context canary pass. Producer scoped to CH-26a current-C5 recipe remeasurement, no AK search or promotion.
+
 ## VB-AK-LONGCTX — AutoKernel long-context surfaces and the production context-bucket analysis (filed 2026-10-04, ak-ds41-main)
 
 - [ ] **VB-AK-LONGCTX — write side + projection for INF-81's long-context measurement sources** (CLAUDE.md *Belief
