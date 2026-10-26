@@ -191,6 +191,10 @@ Run this loop at every task boundary and on every watcher event (`event-watch-ws
 - A correctness harness runs the role's production serving env (the codified recipe), never the bare
   binary: on the C3 build, greedy decode without `GGML_FUSED_DECODE_OFF=1` was garbage while PPL looked
   fine, because only one-token decode takes the fused path (10-24).
+- **A row carries a dry-run log of the REAL launcher under `DRY_RUN=1` before it is armed.** The log
+  must show the resolved paths, knob strings, ggml linkage, ports, window, RAM figure and guard
+  paths. A launcher never dry-run is a guess. Origin 10-26: the sampler TID-exit race, the HPR port
+  race, and guards that were swallowed silently, each of which a dry-run would have exposed.
 
 ## 5. Coordination protocol
 
