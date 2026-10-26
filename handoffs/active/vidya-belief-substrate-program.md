@@ -2601,6 +2601,11 @@ extensions, not amendments to the completed decision-tools checkpoint or applica
   skip-ON arms are the 19a+19b build INCLUDING commit 2, never the fold. One replay per arm, no protocol →
   `Judged/Located` via `claim_tuple.grade()`; no new ladder. Done when the runner (after KVU-16b-1) emits the record and
   the adapter projects the two durable runs above.
+  2026-10-26 (workspace-58, drafted by codex-ni): the prospective current-champion replay at
+  `/mnt/raid0/llm/tmp/cal-1026/kvu-16b/` writes `belief_measurements.jsonl` BEFORE its completion marker, using
+  native admission metrics, report/predeclaration hashes, predicate version, argv and grant. Project these records
+  and exercise the planning-context canary with the existing source class and `grade()`. This write hook alone
+  does not close read-side wiring or validate old PASSes.
 
 ## VB-AK-LONGCTX — AutoKernel long-context surfaces and the production context-bucket analysis (filed 2026-10-04, ak-ds41-main)
 
