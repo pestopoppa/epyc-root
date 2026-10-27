@@ -1,0 +1,16 @@
+[region-lock] acquiring regions ['q2'] as role='build' (timeout_s=15.0) …
+[region-lock] held ['q2'] after 0.0s wait; running: taskset -c 48,49 bash /mnt/raid0/llm/tmp/codex-ni-20261027-kpf62-c5-api-port/q2-child.sh /mnt/raid0/llm/tmp/codex-ni-20261027-ufh12-shipped-parity/successor/final-q2 bash /mnt/raid0/llm/tmp/codex-ni-20261027-ufh12-shipped-parity/successor/all-tests.sh q2
+q2 physical 48,49; inherited native address-space limit: unlimited
+PASS actual failed startup refused, preserved real server enabled parsed; source-derived synthetic off, auto, conflict and unrelated controls
+prefix mismatch refused before HTTP
+PASS: 64 exact lists of four, all prefixes, native compare and belief write
+missing refused ValueError response indices
+duplicate refused ValueError response indices
+dims refused ValueError setting an array element with a sequence. The requested array has an inhomogeneous shape after 1 dimensions. The detected shape was (4,) + inhomogeneo
+nonfinite refused ValueError G-P1 FAIL
+PASS real lifecycle fake HTTP: startup, health, provenance seam, 64x4, native writer, cleanup/reap, completion
+DRYRUN_ENTRY {"NODE_OPTIONS": "--max-old-space-size=4096", "argv": ["/bin/bash", "/mnt/raid0/llm/tmp/codex-ni-20261027-ufh12-shipped-parity/successor/poller.sh"], "box": "/mnt/raid0/llm/tmp/codex-ni-20261027-ufh12-shipped-parity/successor/dryrun/3a90e418a839b41628f3b952af6745c0399cbac4ff589288", "grant": "regions=48-49 start=2026-10-27T22:28Z end=2026-10-27T22:53Z", "job_sha256": "68da22d6b6b534f27b1680ff1eaa08b8d3559c422f0c4d9358c8e6031fff01fb", "launcher_sha256": "77536f0ac0dd8acd6601ed0ccbe2d43331e600a341b9abe0795b6f318e1425a2"}
+DRYRUN_PASS entry_rc=0 boundary=server-start pid=1718795 birth=126259019 reaped=yes box=/mnt/raid0/llm/tmp/codex-ni-20261027-ufh12-shipped-parity/successor/dryrun/3a90e418a839b41628f3b952af6745c0399cbac4ff589288
+OK: 1 row(s) checked, 0 refusal(s), 0 warning(s)
+admit: validator OK; admit: MemAvailable 990 GiB, need 8 GiB; class=block-correctness launcher=filler_run12.sh:1719055 lclass=cpu minwin=1200(argv) window=1500 claim=72-95 gpuq=- claim_regions=q3 regions=72-95
+RSS_SAMPLED_PEAK_KIB=617192 LIMIT_KIB=4194304 drained=True

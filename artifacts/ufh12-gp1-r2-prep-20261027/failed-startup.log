@@ -1,0 +1,15 @@
+0.00.001.454 I cmn  common_param: common_params_print_info: verbosity = 3 (adjust with the `-lv N` CLI arg)
+0.00.001.776 W srv  llama_server: -----------------
+0.00.001.778 W srv  llama_server: CORS is set to allow all origins ('*') and no API key is set
+0.00.001.778 W srv  llama_server: this can be a security risk (cross-origin attacks)
+0.00.001.778 W srv  llama_server: more info: https://github.com/ggml-org/llama.cpp/pull/25655
+0.00.001.778 W srv  llama_server: -----------------
+0.00.002.956 I srv    load_model: loading model '/mnt/raid0/llm/tmp/repl-emb-211-20261024/gguf/embeddinggemma-2-BF16.gguf'
+0.00.722.589 W load: control-looking token:    212 '</s>' was not control-type; this is probably a bug in the model. its type will be overridden
+0.00.722.789 W load: control-looking token:     50 '<|tool_response>' was not control-type; this is probably a bug in the model. its type will be overridden
+0.00.733.322 W load: special_eog_ids contains '<|tool_response>', removing '</s>' token from EOG list
+0.00.819.092 W srv    load_model: speculative decoding not supported by this context
+0.00.819.098 I srv    load_model: initializing, n_slots = 4, n_ctx_slot = 2048, kv_unified = 'false'
+0.00.821.187 I srv  llama_server: model loaded
+0.00.821.194 I srv  llama_server: listening on http://127.0.0.1:18993
+0.01.004.017 I srv    operator(): operator(): cleaning up before exit...
