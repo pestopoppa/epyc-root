@@ -1,0 +1,38 @@
+{
+  "case": {
+    "head_dim": 256,
+    "kv": 8192,
+    "mask": "causal",
+    "split_kv": 0,
+    "threads": 1,
+    "type": "f16",
+    "vkq_f32": 1
+  },
+  "completed_utc": "2026-10-27T19:37:23.587093+00:00",
+  "content_sha256": "9ab8c8696a75c6852d1569f39081005a13dfbe4c16abe81fa688d69385fe49ef",
+  "evidence_sha256": {
+    "c5-elf-check.txt": "c9edf4f0b47538882c3405b28b5a81e44c5949ec2e49c9f7198eff89a1a26d4c",
+    "compiled-knob.txt": "e9b7536e438b5ca5b1a6e3cc03b45251c4292616883e3e3f562719675ca6196e",
+    "environ.txt": "b93214dae35a60f07806b33f075a72f158fb1d6e167b7947b4e295cacf740731",
+    "instrument-check.txt": "4851f727b55a631a3cab96a49f11d3cddd00829191b5b15af2742ceafb0b2c5a",
+    "linkage.txt": "ae21dfdbeacba8997d7abdf505044c24c2648cbce1987ef95c132455fc5264ed",
+    "loaded-map.txt": "bc3309ba6d1a4eac6fd1c2504f1888df56e48d23c35398c1889e0962cebbf6ff",
+    "mtimes.txt": "1e01bd462dd958bb998078b28731b4df4dbb2677e3a03effb30a37b188b8be58",
+    "mutation.log": "d60e85e3e20ac2031a4939074798c3c4394a9707c928c47d829efc501962a967",
+    "mutation.rc": "4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865",
+    "positive.log": "bb83e19cc2495e916e58806275f26ed6b02c90fab7790ccf94ab954a2f130be9",
+    "positive.rc": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+  },
+  "existing_nmse_threshold": 0.0005,
+  "instrument_binary_sha256": "54697737b99c93fab58e6c83120019880143728177098a5aa3ade998b54574eb",
+  "instrument_source_sha256": "26de85248b08dcbd01effa7cdb20879f5874992b32a1023a75e362661c0022b0",
+  "libggml_cpu_sha256": "58dcfc833f12a4e051850044e7782f42e4b49b4158eafb6c399eed88e33c44fd",
+  "mutation_n1_nmse": 3.47959096,
+  "n_negative": 1,
+  "n_positive": 1,
+  "positive_n1_nmse": 3.78851027e-09,
+  "protocol_id": null,
+  "rule_sha256": "271f0235d9279f5fa1c5f2c0a15aafbe1a7eed7df696fe75ff3c44248b8ac25b",
+  "schema": "epyc.rtg57.vkq_oracle.native.v1",
+  "source_commit": "c72ec82f5417bb2937310326120f149b665e8400"
+}

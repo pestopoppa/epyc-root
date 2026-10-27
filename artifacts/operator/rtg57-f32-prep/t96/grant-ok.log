@@ -1,0 +1,1 @@
+admit: validator OK; admit: MemAvailable 1072 GiB, need 110 GiB; class=block-timing-pairable launcher=filler_run12.sh:916958 lclass=cpu minwin=5100(argv) window=5700 claim=0-95 gpuq=- claim_regions=q0+q1+q2+q3 regions=0-95

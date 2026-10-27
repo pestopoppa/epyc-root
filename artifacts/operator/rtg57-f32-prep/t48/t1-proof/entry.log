@@ -1,0 +1,31 @@
+2026-10-27T19:46:31Z [rtg57-c5-vkq-t48] launcher up pid=911552 class=cpu poll=1s grants=/mnt/raid0/llm/tmp/codex-ni-20261027-rtg57-f32-completion/packet/dryrun/c6bea77be10b6673e19c3a89adf1a42aff79bb6c5551ecde/grants stop=/mnt/raid0/llm/tmp/codex-ni-20261027-rtg57-f32-completion/packet/preflight-STOP minwin=5100s ports=none
+2026-10-27T19:46:31Z [rtg57-c5-vkq-t48] ADMIT_PASS window=5700 free_gib=185.37 floor_gib=150
+2026-10-27T19:46:31Z [rtg57-c5-vkq-t48] START regions=72-73 cpus=72-73 threads=2 gpu=0 end=2026-10-27T21:21Z
+DRYRUN_RESOURCES {"affinity": [72, 73], "cgroup": "0::/", "cgroup_memory_max": "max", "process_limit_gib": 110.0, "reserved_ram_gib": 110.0, "rlimits": {"AS": [-1, -1], "DATA": [-1, -1], "NOFILE": [524288, 524288], "RSS": [-1, -1]}}
+RESOURCE_PASS id=rtg57-c5-vkq-t48 scope=two-core-PF
+/mnt/raid0/llm/tmp/codex-ni-20261027-rtg57-f32-completion/packet/../PROTOCOL.md: OK
+/mnt/raid0/llm/tmp/codex-ni-20261027-rtg57-f32-completion/packet/launch.sh: OK
+/mnt/raid0/llm/tmp/codex-ni-20261027-rtg57-f32-completion/packet/job.sh: OK
+/mnt/raid0/llm/tmp/codex-ni-20261027-rtg57-f32-completion/packet/driver.py: OK
+/mnt/raid0/llm/tmp/codex-ni-20261027-rtg57-f32-completion/packet/projector.py: OK
+/mnt/raid0/llm/tmp/codex-ni-20261027-rtg57-f32-completion/packet/claim_tuple.py: OK
+/mnt/raid0/llm/tmp/codex-ni-20261027-rtg57-f32-completion/packet/approval-check.py: OK
+/mnt/raid0/llm/tmp/codex-ni-20261027-rtg57-f32-completion/packet/resource-watch.py: OK
+/mnt/raid0/llm/tmp/codex-ni-20261027-rtg57-f32-completion/packet/pf-shim.sh: OK
+/mnt/raid0/llm/tmp/codex-ni-20261027-rtg57-f32-completion/packet/arch_recipe.py: OK
+/mnt/raid0/llm/tmp/codex-ni-20261027-rtg57-f32-completion/packet/deps/filler_run12.sh: OK
+/mnt/raid0/llm/tmp/codex-ni-20261027-rtg57-f32-completion/packet/deps/filler_lib.sh: OK
+/mnt/raid0/llm/tmp/codex-ni-20261027-rtg57-f32-completion/packet/deps/dryrun_check.py: OK
+/mnt/raid0/llm/tmp/codex-ni-20261027-rtg57-f32-completion/packet/deps/dryrun_disk_policy.json: OK
+/mnt/raid0/llm/worktrees/f8-kvu121b-research-95550d294/scripts/lib/qwen38_flash_next_recipe.py: OK
+/mnt/raid0/llm/worktrees/f8-kvu121b-research-95550d294/scripts/lib/canonical_recipe.py: OK
+/mnt/raid0/llm/worktrees/f8-kvu121b-research-95550d294/scripts/utils/verify_ggml_linkage.sh: OK
+/mnt/raid0/llm/worktrees/f8-kvu121b-research-95550d294/scripts/utils/numa_evict.py: OK
+/mnt/raid0/llm/worktrees/f8-kvu121b-research-95550d294/scripts/utils/numa_placement_check.sh: OK
+/mnt/raid0/llm/tmp/refactor-01a16fc3/c5-candidate/jobs/cpu/BUILD_COMPLETE: OK
+/mnt/raid0/llm/tmp/refactor-01a16fc3/c5-candidate/jobs/cpu/ELF.sha256: OK
+DRYRUN_RESOURCES {"affinity": [72, 73], "cgroup": "0::/", "cgroup_memory_max": "max", "process_limit_gib": 110.0, "reserved_ram_gib": 110.0, "rlimits": {"AS": [-1, -1], "DATA": [-1, -1], "NOFILE": [524288, 524288], "RSS": [-1, -1]}}
+DRYRUN_BOUNDARY effect=first-model-load job_sha256=302e52ddfadba5682dd2431af8f15605a4e5ab8c232576d30c979560542dbb01 stop-before-effect
+job rc=0
+2026-10-27T19:46:35Z [rtg57-c5-vkq-t48] ended rc=0 reason=exited (grant deleted)
+2026-10-27T19:46:35Z [rtg57-c5-vkq-t48] one window done; exiting (no --repeat)
