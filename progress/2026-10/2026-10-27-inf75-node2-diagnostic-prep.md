@@ -1,0 +1,7 @@
+# INF75 node-2 operational diagnostic preparation — 2026-10-27
+
+V2 pre-eviction failed before model load at 16:58:56Z: two node-2 42 GiB touch children timed out after 121.836 and 121.027 s; node 3 succeeded in 76.396 s. The receipt `/mnt/raid0/llm/tmp/codex-ni-20261027-inf75-host-excluding/v2/out-pre-eviction.json` records final free 24,175/42,834 MB on nodes 2/3; the cause of slow node-2 reclaim remains unknown. No census or shape result was produced.
+
+MAIN approved a separate owner-granted diagnostic attempt: q2 `48-71`, 600s/min300, 64 GiB RAM/process limit, one 42 GiB node-2 touch, no model, global cache operation, HPR node access or threshold change. The observer samples PID/start ticks, RSS, faults, wait state, host PSI and node2/3 free while the child runs. Fast exit and insufficient samples are inconclusive. Fixed `/usr/bin/python3 -B` and q2 placement differ from v2; NumPy spec availability is only a candidate, actual allocation backend UNKNOWN.
+
+Packet `/mnt/raid0/llm/tmp/codex-ni-20261027-inf75-host-excluding/diagnostic-q2-v1/`, manifest `e57ebd5828d68e79a85b8f050319397742a72d997b7a0d333b1878cec2b6376e`; rebound same-entry scoped T1, normal admission, validator 0/0, temporary live poller grant check and observer fixtures passed. Temporary poller retired; no 42 GiB allocation occurred in preflight. Owner priority-next message `b5924b03-fe3d-431b-8dba-f552f5a4f52a` socket-sent, confirmation pending. Native P0d stays open and no grading is invented. [no-belief: operational preparation, no census measurement]
