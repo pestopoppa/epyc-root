@@ -1,0 +1,11 @@
+2026-10-27T19:20:48Z [codex-ni-meta-fix-build-20261027] launcher up pid=786939 class=cpu poll=45s grants=/mnt/raid0/llm/tmp/compute-flags/grants stop=/mnt/raid0/llm/tmp/codex-ni-20261027-meta-fix-prep/STOP minwin=3300s ports=none
+2026-10-27T19:21:33Z [codex-ni-meta-fix-build-20261027] ADMIT_PASS window=3600 free_gib=187.82 floor_gib=150
+2026-10-27T19:21:33Z [codex-ni-meta-fix-build-20261027] START regions=48-71 cpus=48-71 threads=24 gpu=0 end=2026-10-27T20:21Z
+[region-lock] acquiring regions ['q2'] as role='build' (timeout_s=3567.0) …
+[region-lock] held ['q2'] after 0.0s wait; running: /bin/bash /mnt/raid0/llm/tmp/codex-ni-20261027-meta-fix-prep/deps/filler_run12.sh --inner --id codex-ni-meta-fix-build-20261027 --class cpu --cmd exec taskset -c "$FILLER_CPUS" /bin/bash /mnt/raid0/llm/tmp/codex-ni-20261027-meta-fix-prep/build-body.sh --min-window 3300 --stop /mnt/raid0/llm/tmp/codex-ni-20261027-meta-fix-prep/STOP --port  --workdir /mnt/raid0/llm/tmp/codex-ni-20261027-meta-fix-prep --gpu-threads 184-191
+DRYRUN_RESOURCES {"affinity": [48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71], "cgroup": "0::/", "cgroup_memory_max": "max", "process_limit_gib": 24.0, "reserved_ram_gib": 24.0, "rlimits": {"AS": [-1, -1], "DATA": [-1, -1], "NOFILE": [524288, 524288], "RSS": [-1, -1]}}
+RESOURCE_PASS id=codex-ni-meta-fix-build-20261027 scope=normal-grant
+RSS_SAMPLED_PEAK_KIB=9890480 LIMIT_KIB=25165824 drained=True
+job rc=70
+2026-10-27T19:24:30Z [codex-ni-meta-fix-build-20261027] ended rc=70 reason=job-rc-70:exited (grant deleted)
+2026-10-27T19:24:30Z [codex-ni-meta-fix-build-20261027] one window done; exiting (no --repeat)

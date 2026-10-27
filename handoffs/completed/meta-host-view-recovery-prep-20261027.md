@@ -1,0 +1,5 @@
+# Meta host-view build finalization recovery preparation
+
+Completed 2026-10-27: identified and tested the private helper correction; sealed and verified the original source, CPU/HIP build artifacts and model-free fixture records; passed scoped T1, normal synthetic validator and admission; reaped the temporary poller; published the proof and sent the approved single Q1 owner row. The original owner run ended rc 70; its outer drain is unproven, and the precise historical foreign process was not recorded. Current mixed-UID reproduction establishes the defect. No kernel source rebuild, production change, model execution or GPU correctness claim is made.
+
+Recovery execution is open: the owner must grant and run the row; RECOVERY-ACCEPTED is produced only after actual artifact checks, watcher and captured-group drain succeed. MAIN must review that result before authorizing the GPU architecture fixture. The row and receipts are under `/mnt/raid0/llm/tmp/codex-ni-20261027-meta-build-recovery/`; prior proof branch `codex/meta-host-view-recovery-proof-20261027` @ `4d46509b2ab36bf4de3ba9c21bd8934f07470e3a`.

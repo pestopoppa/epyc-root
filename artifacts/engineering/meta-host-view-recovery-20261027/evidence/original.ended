@@ -1,0 +1,7 @@
+rc=70 time=2026-10-27T19:24:30Z reason=job-rc-70:exited
+job_id=codex-ni-meta-fix-build-20261027
+owner=Codex NI / MAIN
+step=job-run
+estimated_wall_s=3600
+started=2026-10-27T19:21:33Z
+regions=48-71
