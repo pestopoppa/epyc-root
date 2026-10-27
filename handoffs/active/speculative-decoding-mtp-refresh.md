@@ -503,3 +503,4 @@ Trigger-gated (no checkbox until the trigger fires):
 ### C5 caller-graph audit checkpoint — 2026-10-27
 
 - [x] Preserve MAIN-accepted C5 GitNexus caller-repair r11 and its scoped graph result. ✅ 2026-10-27 — Six sampler sites/five caller functions proved; r10 LOW/fold conclusion withdrawn. The tool repair patch is not the llama C5 patch. No full C5/global clearance, source application, INF-50 completion or fold approval. [Evidence](../../artifacts/ni08/inf50-c5-gitnexus-r11-20261027/README.md). [belief: cc]
+- [ ] **INF-50-GNX-SPLIT-EXEC — execute the approved split:** run parse-only stage 1 and produce a genuine capsule; then qualify a one-worker stage-2 replay against the C72 six-site/five-caller and native overload sentinels. Owner fold authorization and separate native gates remain distinct; neither is implied by replay qualification. No normal-run arm/grant or capsule was recorded at the 2026-10-27 16:26:29Z cutoff.

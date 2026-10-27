@@ -4,7 +4,7 @@
     "handoff-active": 184,
     "handoff-blocked": 2,
     "handoff-completed": 216,
-    "progress": 827,
+    "progress": 829,
     "research": 140
   },
   "kind": "project-wiki-source-manifest",
@@ -15,16 +15,16 @@
       "changed": 1,
       "removed": 0
     },
-    "at": "2026-10-27T15:39:03Z",
+    "at": "2026-10-27T16:34:42Z",
     "scope_paths": [
-      "progress/2026-10/2026-10-27-refactor-campaign-wrap.md"
+      "progress/2026-10/2026-10-27-codex-ni-full-wrap-1625.md"
     ],
     "scope_types": []
   },
   "mode": "touch:scoped",
-  "scan_time": "2026-10-27T15:39:03Z",
+  "scan_time": "2026-10-27T16:34:42Z",
   "schema_version": 1,
-  "source_set_hash": "1d3da1f0422efd30edbb0599d8111423d2401b17480618029ad48ab94e06c242",
+  "source_set_hash": "4f853367b1138ee1397c821554395d840fb3415886a71b4193fc35bc8f6e669b",
   "sources": [
     {
       "content_hash": "6c067235a74a3b9667dd4fad23684206476aeac1cdefe3b4e0a0824d3179c241",
@@ -115,10 +115,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "33d011637ac18a349767e260275899695adf180c9945fc53e0b933cb715f1843",
-      "modified": "2026-10-27T10:02:27Z",
+      "content_hash": "1315b9d630bc16c2fe2932640f745454b7c1edda4ec9b6020c3d24100d638d72",
+      "modified": "2026-10-27T16:21:06Z",
       "path": "handoffs/active/autokernel-champion-aggregate.md",
-      "size": 193614,
+      "size": 194729,
       "title": "AutoKernel \u2014 the standing aggregate candidate (champion)",
       "type": "handoff-active"
     },
@@ -651,10 +651,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "14d95d5ecc0a764b325b8e7f3d4cd328f0ee3316d775b1efc975a0b9ddbdcdfb",
-      "modified": "2026-10-27T14:58:29Z",
+      "content_hash": "253c84aba0daf760d60e2d7fb3ec4f0e1ce63d199f73db7958fcf6d5750c0020",
+      "modified": "2026-10-27T16:21:06Z",
       "path": "handoffs/active/gpu-serving-tie-in-program.md",
-      "size": 164661,
+      "size": 165685,
       "title": "GPU Serving Tie-In Program \u2014 one fabric, two devices",
       "type": "handoff-active"
     },
@@ -667,10 +667,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "966bc37b862f5b37074b97748bb8e24ea4df9b6632b7c139d0df55330f957aa8",
-      "modified": "2026-10-27T14:58:29Z",
+      "content_hash": "3eabddd1f0061b104b422c7bcb20394a125833c78546e83d7f446aa535363156",
+      "modified": "2026-10-27T16:21:06Z",
       "path": "handoffs/active/harness-improvement-loop.md",
-      "size": 158461,
+      "size": 160191,
       "title": "Harness Improvement Loop \u2014 self-improvement for orchestrator-side harness features",
       "type": "handoff-active"
     },
@@ -963,10 +963,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "39a7c1c7974a0a9102938941764ed83ef693899b999f202561b2e1e5dd2d9a5c",
-      "modified": "2026-10-27T10:02:27Z",
+      "content_hash": "8a37642b535f3a2184e26021ceb29b658ebe4faff8b27e4354158970f8c40302",
+      "modified": "2026-10-27T16:21:06Z",
       "path": "handoffs/active/non-inference-backlog.md",
-      "size": 206052,
+      "size": 207109,
       "title": "Non-Inference Backlog \u2014 Round 2 (2026-05-19 audit refresh)",
       "type": "handoff-active"
     },
@@ -1059,10 +1059,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "9fdcbc7b4042d6617294c501e473aa387a4b82d43cb866680e12ba79781c8b2d",
-      "modified": "2026-10-27T10:02:27Z",
+      "content_hash": "2fb341afed3cd6a8c196534028a67b6b4ba03606f0102b7f1f756026982d8a63",
+      "modified": "2026-10-27T16:21:06Z",
       "path": "handoffs/active/qwen-chat-template-evaluation.md",
-      "size": 120468,
+      "size": 121207,
       "title": "Qwen Chat-Template Evaluation",
       "type": "handoff-active"
     },
@@ -1131,10 +1131,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "e17c120281bbfc7559c689ed5183694c77480afe20d4816e32871ed5a3b7e081",
-      "modified": "2026-10-27T10:02:27Z",
+      "content_hash": "c9d4826e897ef598c9aaeedfa8b691db96e4bf760a7c6d9d3ea8d925b0af9844",
+      "modified": "2026-10-27T16:21:06Z",
       "path": "handoffs/active/refactoring-multirepo-2026-10.md",
-      "size": 58804,
+      "size": 59434,
       "title": "Handoff: Refactoring \u2014 orchestrator, autopilot and AutoKernel (multi-repo debt program)",
       "type": "handoff-active"
     },
@@ -1307,10 +1307,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "95e04bada3929fa4844c9b3c845e84699cf2698958aa821691dd4dd1573766a8",
-      "modified": "2026-10-27T14:58:29Z",
+      "content_hash": "7398e864abfec597d167bfc09ae49ff48e01d123fdd5881da5ea532a44ff2344",
+      "modified": "2026-10-27T16:33:10Z",
       "path": "handoffs/active/speculative-decoding-mtp-refresh.md",
-      "size": 114163,
+      "size": 116179,
       "title": "Speculative-Decoding / MTP Refresh",
       "type": "handoff-active"
     },
@@ -1451,10 +1451,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "b253814eef22b9a6fdf6efbf072da5d0e04ed42b131fe37ab911c98963db7c62",
-      "modified": "2026-10-27T15:08:16Z",
+      "content_hash": "cc672bbcdde2adcce0163bc2071cc1efa77afb4d151e30b6d10320cdb38fbad3",
+      "modified": "2026-10-27T16:21:06Z",
       "path": "handoffs/active/vidya-belief-substrate-program.md",
-      "size": 625023,
+      "size": 627038,
       "title": "Vidya Belief-Substrate Program",
       "type": "handoff-active"
     },
@@ -10931,6 +10931,14 @@
       "type": "progress"
     },
     {
+      "content_hash": "1b2b2b879397cbcf1abf092f282f1600261ff6be7f14c6fac21b22d111e099e2",
+      "modified": "2026-10-27T16:21:06Z",
+      "path": "progress/2026-10/2026-10-27-backlog-prep-01a16fc3.md",
+      "size": 3273,
+      "title": "Backlog preparation \u2014 2026-10-27",
+      "type": "progress"
+    },
+    {
       "content_hash": "70df718cbc42c4aa9a9b9de7c958383c53433876bb98eaafe482bbec36ae6e84",
       "modified": "2026-10-27T10:02:27Z",
       "path": "progress/2026-10/2026-10-27-codex-ni-01a16d6b.md",
@@ -10963,6 +10971,14 @@
       "type": "progress"
     },
     {
+      "content_hash": "1461e763cae9dc30a44a29e7cf2c287e89a5a45832e6e80969fb260c7ff71193",
+      "modified": "2026-10-27T16:34:42Z",
+      "path": "progress/2026-10/2026-10-27-codex-ni-full-wrap-1625.md",
+      "size": 8048,
+      "title": "Full wrap-up \u2014 Codex NI \u2014 2026-10-27 16:26:29Z cutoff",
+      "type": "progress"
+    },
+    {
       "content_hash": "8cae7c33f7eb08adeda736e6e46e69504ff757c1c59a4d42dd9a904cb80d0248",
       "modified": "2026-10-27T15:37:07Z",
       "path": "progress/2026-10/2026-10-27-refactor-campaign-wrap.md",
@@ -10971,10 +10987,10 @@
       "type": "progress"
     },
     {
-      "content_hash": "3239f52b7ee65f5a4b930bf2c89101186cca76972c4cb5d8fd92b7fe15af53b1",
-      "modified": "2026-10-27T14:58:29Z",
+      "content_hash": "9da7c08ad5f0d64aec4a8ca422367e72fc366050cb87d44981624236e44bb496",
+      "modified": "2026-10-27T16:21:06Z",
       "path": "progress/2026-10/2026-10-27-workspace-58.md",
-      "size": 30767,
+      "size": 34190,
       "title": "2026-10-27 \u2014 workspace-58 (Codex NI wrap packages, 00:00Z to 05:26Z)",
       "type": "progress"
     },
@@ -12851,7 +12867,7 @@
       "type": "docs"
     }
   ],
-  "total_new": 1603,
+  "total_new": 1605,
   "writer_evidence_policy": {
     "applies_to": "generated-wiki-article-writes",
     "minimum_confidence": "verified",
