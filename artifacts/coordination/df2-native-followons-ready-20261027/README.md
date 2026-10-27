@@ -1,0 +1,15 @@
+# DF2 native follow-on preparation — 2026-10-27
+
+The private diagnostic HIP build row was accepted by MAIN and sent to the scheduling owner. It is unarmed and performs no GPU or model work. Its source seal is 4f9d87ab62f5c6c7bc1361131cae7bb6d7e5db7a58040ea2789f85f54d695419; its model-free T1 nonce is 1c5f985b7d6cfedfe51b3c5710b899339fce61d28500a571. The exact row, admission, poller, acceptance and coordination receipt remain under /mnt/raid0/llm/tmp/codex-ni-20261027-df2-followons-ready/diag/ and the enclosing directory. Socket sent is not recipient acknowledgment. [no-belief: operational preparation and notification]
+
+Two proposed conditional GPU packets use independently sealed private launchers with pre-existing result refusal and completion requiring successful outer exit plus marker. The output packet seal is 6bd227bf51afc77d03924e38475e9bb0cd8bed3188e41976eba32bbd41c15dc4 and T1 nonce 23c959103c0ad0d87ea02583d4da04c4418a2e5f4a334df5; the byte packet seal is 4bdfa048894be0f530371924660f7ca49b651b5d0b5934b5437b0e02721f6286 and T1 nonce e36c767bfe3d261dab386a554c7bca27194afb55c19f6b07. T1 used a fake GPU lock and model-free preflight; synthetic normal admission passed and pollers were reaped. No actual GPU capture is asserted. The byte packet requires the actual diagnostic build. Both require owner review and an installed-root-bound producer/projector planning canary receipt. [no-belief: operational preparation and synthetic fixtures]
+
+Original candidate source and artifacts retain the artifact-only recovery: source seal 4a6749cdbafd15a9d73c9d210775a0864b81c31ffeeaeabed965c3b0bf5fc566, recovery marker 8e94fd7f8cb579438c8a7cbe20866e692e8d2378985fc58c702c4ee888df6322. This is no native GPU correctness, parity, performance, flash-attention, or promotion decision. [no-belief: artifact identity only]
+
+The included prospective DF2 adapter reuses the existing measurement ClaimTuple grading ladder. Its synthetic producer → registered ingestion → planning-context canary passed in the private root worktree; canonical installation and a separately bound runtime receipt are still required. Source table and substrate task changes are prepared for the owning session, not applied here.
+
+After installing the reviewed root code and owner-applying the source table and task draft, run the owner canary under the authorized bounded CPU claim for each packet:
+
+    python3 artifacts/coordination/df2-native-followons-ready-20261027/owner-canary.py --installed-root /mnt/raid0/llm/views/epyc-root-main --packet /mnt/raid0/llm/tmp/codex-ni-20261027-df2-followons-ready/gpu-capture --evidence-dir /absolute/private/new-output-canary-dir --pytest-python /absolute/path/to/python-with-pytest
+
+Repeat with --packet /mnt/raid0/llm/tmp/codex-ni-20261027-df2-followons-ready/diag/byte-capture and a distinct new evidence directory. The helper writes the canary receipt and log; the owner must inspect them and write the enrollment receipt using the keys in the private ENROLLMENT-OWNER-INSTRUCTIONS.md. It never writes an owner acceptance or a canonical ledger.
