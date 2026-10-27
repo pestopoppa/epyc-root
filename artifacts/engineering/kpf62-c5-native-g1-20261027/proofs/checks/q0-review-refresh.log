@@ -1,0 +1,7 @@
+[region-lock] acquiring regions ['q0'] as role='build' (timeout_s=15.0) …
+[region-lock] held ['q0'] after 0.0s wait; running: taskset -c 0,1 bash /mnt/raid0/llm/tmp/codex-ni-20261027-kpf62-c5-api-port/q0-child.sh /mnt/raid0/llm/tmp/codex-ni-20261027-kpf62-c5-api-port/q0-review-refresh bash /mnt/raid0/llm/tmp/codex-ni-20261027-kpf62-c5-api-port/review-refresh.sh
+q0 physical 0,1; inherited native address-space limit: unlimited
+2cdced2746f19d6074ac2270f8f5b1d0981a6ed322da7540f7ca980ba83ddde9  /mnt/raid0/llm/tmp/codex-ni-20261027-kpf62-c5-api-port/PROPOSED-C5-API.patch
+SOURCE_SYNTAX_AND_SCOPE_PASS; no C++ compile, model, or inference
+20439d9bc031ae6cbbdadf712c460b420d709d461a9f045eaef3a6f53813a6eb  SOURCE.SHA256SUMS
+RSS_SAMPLED_PEAK_KIB=42416 LIMIT_KIB=4194304 drained=True

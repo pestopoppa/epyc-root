@@ -1,0 +1,12 @@
+[region-lock] acquiring regions ['q0'] as role='build' (timeout_s=15.0) …
+[region-lock] held ['q0'] after 0.0s wait; running: taskset -c 0,1 bash /mnt/raid0/llm/tmp/codex-ni-20261027-kpf62-c5-api-port/q0-child.sh /mnt/raid0/llm/tmp/codex-ni-20261027-kpf62-c5-api-port/q0-assembly2 bash /mnt/raid0/llm/tmp/codex-ni-20261027-kpf62-c5-api-port/check-assembly2.sh
+q0 physical 0,1; inherited native address-space limit: unlimited
+Cloning into '/mnt/raid0/llm/tmp/codex-ni-20261027-kpf62-c5-api-port/assembly-fixture2/candidate'...
+done.
+HEAD is now at c72ec82f5 qwen4exp fused decode: refuse repacked / non-F32 weights, widen ple_conv1d, guard the NaN top-k write (NEW-10, FD-DIV-1)
+Cloning into '/mnt/raid0/llm/tmp/codex-ni-20261027-kpf62-c5-api-port/assembly-fixture2/root-reader'...
+done.
+HEAD is now at 297b166dbd Record KPF-62 unknown protocol reader fix
+SOURCE_ASSEMBLED_NOT_BUILT
+ASSEMBLER_SEVEN_FILES_BYTE_IDENTICAL fixture-shared-clones; NO_BUILD_NO_MODEL
+RSS_SAMPLED_PEAK_KIB=297328 LIMIT_KIB=4194304 drained=True
