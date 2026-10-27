@@ -6669,6 +6669,14 @@ Sources: [autokernel champion aggregate](../handoffs/active/autokernel-champion-
 
 Sources: [autokernel-champion-aggregate](../handoffs/active/autokernel-champion-aggregate.md), [autokernel-all-devices-all-dimensions](../handoffs/active/autokernel-all-devices-all-dimensions.md), [kv-unified-stack-rollout](../handoffs/active/kv-unified-stack-rollout.md), [vidya-belief-substrate-program](../handoffs/active/vidya-belief-substrate-program.md), [2026-10-27 harvest](../progress/2026-10/2026-10-27-workspace-58.md), [2026-10-26 log](../progress/2026-10/2026-10-26-workspace-58.md)
 
+## Compiled Update — 2026-10-27 (RTG-57 C5 F32, one model-free CPU oracle case)
+
+**Confidence: verified for this exact numerical case; it does not establish serving quality, role performance, or adoption.**
+
+- The C5 model-free CPU probe used F16 KV, D=256, KV=8192, causal attention, F32 accumulation, one thread and split-KV off. Against the independent FP64 oracle, maximum NMSE was `3.78851027e-9` at N=1 and `3.682e-9` at N=5, below the existing `5e-4` bound; a finite +1 output mutation failed at `3.47959096`. This is one correctness unit case, not a model-quality or speed result. The original native receipt does not bind the probe or receipt-writer script hashes; those remain unknown and were not retrofitted. No fastpath, GPU, role benchmark, quality or adoption claim follows.
+
+Sources: [accepted RTG-57 source snapshot](https://github.com/pestopoppa/epyc-root/blob/617c29ff5045c58246b2f05998085bc2ab86077/artifacts/operator/rtg57-f32-prep/README.md), [original native receipt](https://github.com/pestopoppa/epyc-root/blob/617c29ff5045c58246b2f05998085bc2ab86077/artifacts/operator/rtg57-f32-prep/oracle/out/native-receipt.json), [RTG-57 source progress](https://github.com/pestopoppa/epyc-root/blob/617c29ff5045c58246b2f05998085bc2ab86077/progress/2026-10/2026-10-27-rtg57-f32-prep.md), [this wrap's evidence record](../progress/2026-10/2026-10-27-codex-ni-wrap-2000-luna.md). The first three links point to immutable sources on accepted branch commit `617c29ff`.
+
 ## Compiled Update — 2026-10-27 (operator full wrap-up, Codex NI, cutoff 14:56:35Z)
 
 **Confidence: verified** (accepted task receipts and source records listed below).

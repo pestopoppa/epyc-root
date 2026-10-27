@@ -4,32 +4,27 @@
     "handoff-active": 184,
     "handoff-blocked": 2,
     "handoff-completed": 216,
-    "progress": 832,
+    "progress": 833,
     "research": 140
   },
   "kind": "project-wiki-source-manifest",
   "last_compile": "2026-10-27T15:23:54Z",
   "last_touch": {
     "advanced": {
-      "added": 2,
-      "changed": 3,
+      "added": 0,
+      "changed": 1,
       "removed": 0
     },
-    "at": "2026-10-27T19:06:48Z",
+    "at": "2026-10-27T20:33:53Z",
     "scope_paths": [
-      "handoffs/active/autokernel-champion-aggregate.md",
-      "handoffs/active/speculative-decoding-mtp-refresh.md",
-      "handoffs/active/yarn-context-extension-research.md",
-      "progress/2026-10/2026-10-27-full-wrap-1850.md",
-      "progress/2026-10/2026-10-27-gnx-split-prep.md",
-      "progress/2026-10/2026-10-27-workspace-58.md"
+      "progress/2026-10/2026-10-27-codex-ni-wrap-2000-luna.md"
     ],
     "scope_types": []
   },
   "mode": "touch:scoped",
-  "scan_time": "2026-10-27T19:06:48Z",
+  "scan_time": "2026-10-27T20:33:53Z",
   "schema_version": 1,
-  "source_set_hash": "631d9f8dbc2ba3aba90bfcb3bddbaaa98d1c1c6b0b299767be60cd7b1a60f559",
+  "source_set_hash": "478d51d0f56a7f95505b5ad95db7134da09e16e68a7e8b13b8d8282f8b8ae3c5",
   "sources": [
     {
       "content_hash": "6c067235a74a3b9667dd4fad23684206476aeac1cdefe3b4e0a0824d3179c241",
@@ -10984,6 +10979,14 @@
       "type": "progress"
     },
     {
+      "content_hash": "778ae9d383ec59ecf173c985f7eefdd542358b86a983286079c02e2646904270",
+      "modified": "2026-10-27T20:33:53Z",
+      "path": "progress/2026-10/2026-10-27-codex-ni-wrap-2000-luna.md",
+      "size": 12349,
+      "title": "Periodic full-wrap checkpoint \u2014 2026-10-27 20:00Z (final evidence cutoff 2026-10-27 20:33:53 UTC)",
+      "type": "progress"
+    },
+    {
       "content_hash": "0cdc68a6996ea7583adea755688a00135d1945a71182748847b69e880ff3bcbb",
       "modified": "2026-10-27T19:06:47Z",
       "path": "progress/2026-10/2026-10-27-full-wrap-1850.md",
@@ -12896,7 +12899,7 @@
       "type": "docs"
     }
   ],
-  "total_new": 1608,
+  "total_new": 1609,
   "writer_evidence_policy": {
     "applies_to": "generated-wiki-article-writes",
     "minimum_confidence": "verified",
