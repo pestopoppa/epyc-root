@@ -116,6 +116,14 @@ def abstained(answer: str) -> bool:
                           r"won't provide|will not provide", answer, re.I))
 
 
+def needles(target: int) -> tuple[str, str, list[str]]:
+    code = f"{target // 1000}-4-1-9-ORCHID"
+    name = "Mbeki Larsen"
+    n1 = f"\n\nNOTE (archive): the vault code for project KESTREL is {code}.\n\n"
+    n2 = f"\n\nNOTE (rota): the on-call engineer for Thursday is {name}.\n\n"
+    return n1, n2, [code, name]
+
+
 def insert_needles(cut: str, n1: str, n2: str) -> str:
     a = cut.find("\n", len(cut) // 3)
     a = a if a > 0 else len(cut) // 3
@@ -230,6 +238,8 @@ def phase_b(base: str, sink: L.JsonlSink, targets: list[int], gen: int, gen_nd: 
     rows = []
     for target in targets:
         cut = text[: int(min(len(text), target * cpt))]
+        n1, n2, facts = needles(target)
+        cut = insert_needles(cut, n1, n2)
         nominal = L.tokenize_count(base, cut)
         last_prefix = None
         for rep in range(1, reps + 1):
@@ -284,21 +294,34 @@ def neutral_inputs() -> tuple[str, list[dict], str]:
     return source, selected, digest
 
 
-def neutral_needle_prompt(source: str, facts: list[dict], target: int) -> str:
-    # E0 segment is 127k HF content tokens; final prompt length is measured by /tokenize.
-    cpt = len(source) / 127000
-    cut = source[:min(len(source), int(target * cpt))]
-    return insert_needles(cut, *(n["statement"] + "\n\n" for n in facts))
+def neutral_needle_prompt(base: str, source: str, facts: list[dict], target: int) -> tuple[str, int]:
+    # Fit with the served tokenizer, including both facts, not E0's HF token ratio.
+    lo, hi = 1, len(source)
+    best: tuple[str, int] | None = None
+    while lo <= hi:
+        mid = (lo + hi) // 2
+        document = insert_needles(source[:mid], *(n["statement"] + "\n\n" for n in facts))
+        count = L.tokenize_count(base, document)
+        if best is None or abs(count - target) < abs(best[1] - target):
+            best = (document, count)
+        if count < target:
+            lo = mid + 1
+        else:
+            hi = mid - 1
+    if best is None or abs(best[1] - target) > target * 0.10:
+        raise ValueError(f"cannot fit neutral needle target {target}: {best}")
+    if any(best[0].count(n["statement"]) != 1 for n in facts):
+        raise ValueError("neutral needle fact missing or duplicated after fit")
+    return best
 
 
 def phase_n(base: str, sink: L.JsonlSink, targets: list[int]) -> dict:
     source, facts, manifest_sha = neutral_inputs()
     rows = []
     for target in targets:
-        document = neutral_needle_prompt(source, facts, target)
-        nominal = L.tokenize_count(base, document)
-        if nominal > 262144 or abs(nominal - target) > target * 0.10:
-            raise ValueError(f"neutral needle target {target} measured {nominal} document tokens; outside 10% band or slot")
+        document, nominal = neutral_needle_prompt(base, source, facts, target)
+        if nominal > 262144:
+            raise ValueError(f"neutral needle target {target} exceeds slot: {nominal}")
         # E0's separate document/question turns retain the GDN checkpoint for both questions.
         document_messages = [
             {"role": "user", "content": "The following is part 1 of a collection of public reports, provided as background reading. Read it; questions about the collection will follow.\n\n" + document},
