@@ -49,7 +49,7 @@ build at **identical raw speed** (30.3 t/s, coherent) but its serving spec-decod
 shift), so **each model we want to serve at champion speed needs its own DFlash2-class drafter.** Qwopus's
 shipped MTP (1.5×) is a floor, not the ceiling.
 
-- [ ] **DF2-QWOPUS — scope + estimate training a DFlash2 head for Qwopus** (before committing card-days).
+- [x] **DF2-QWOPUS — scope + estimate training a DFlash2 head for Qwopus** (before committing card-days). ✅ 2026-10-27 — scope analysis + estimate complete (09-15 memo + 10-27 addendum: pilot 0.5-1 MI210 card-day, 20-50M warm-start ~3-8 card-days, 8-15 engineer-days planning range); **training and the K1 measurement are NOT done and are tracked by the open child below** [no-belief: scope/estimate analysis, no measurement produced; cc register row follows this commit]
   - *2026-09-23 (intake-1505):* Table 4 there is weak support that serving-quant features train fine (direct INT4 4.97 ≈
     BF16 4.92). Nota's Stage-2 hyperparameters (taps [1,8,15,22,29], CE with exp(-(k-1)/7) decay, lr 1e-3, 2 epochs) are a
     reference point; their SpecForge trainer is online-HF and does not replace offline llama.cpp feature capture.
@@ -59,7 +59,7 @@ shipped MTP (1.5×) is a floor, not the ceiling.
       feature gen + light head training), pending the exact DFlash2 recipe/data volume — which this scoping
       pass must nail. Weigh against: (a) the native MTP already gives 1.5× for free; (b) GPU contention — the
       one MI210 also runs AutoKernel/serving, so training days compete with everything else on the card.
-      **Scoping evidence 2026-09-15 (scoping done; decision NOT made — box stays open)** →
+      **Scoping evidence 2026-09-15 (scoping done; training decision NOT made — K1 child below stays open)** →
       [`docs/design/df2-qwopus-scoping-20260915.md`](../../docs/design/df2-qwopus-scoping-20260915.md).
       No training card-days until K1 passes.
       **Premise correction:** Qwopus3.8 holds **no registry role** (0 matches in `model_registry.yaml`).
@@ -73,6 +73,8 @@ shipped MTP (1.5×) is a floor, not the ceiling.
       Qwopus-generated tokens (one rolling ~77 GB shard). GO at weighted acceptance ≥0.50; KILL below 0.45.
       **From scratch is REJECTED:** ~93 card-days of response generation, and the 41+ TB feature cache
       cannot fit in the 157 GB free.
+  - **INF-62 scope audit addendum (2026-10-27, workspace-58; report `/mnt/raid0/llm/tmp/codex-ni-20261027-inf62-scope-audit/INF-62-REPORT.md`, sha256 7f0b2fbc43104ca96f4acb6ffa4a99ef02bd31473947af4ca9ee26ec625c7cf9, MAIN-accepted).** The 09-15 memo remains the decision analysis; the audit adds the record-level data/checkpoint contract (target Q8_0 GGUF + tokenizer/template; per-position taps at layers [6,20,34,48,62], width 5120, bf16 = 51,200 B/token; hard next-token labels; resumable ~30 GB training state is a planning estimate; deliverables = checkpoint, inference-only weights, converted DFlash2 GGUF, manifest, held-out DF2-4 acceptance) and an engineering estimate of **8-15 engineer-days** (+/-50%, conditional on K1; unmeasured). Findings that gate K1: (1) the exact Qwopus GGUF path `/mnt/raid0/llm/models/Qwopus3.8-27B-Flash.Q8_0.gguf` is ABSENT now (`test -e`/`stat`; reclaimed per the 10-25 inventory; no broad search, so another copy may exist) - reacquire and hash GGUF/tokenizer/template or identify a retained copy; (2) the 157 GB free-space figure is historical and must be remeasured; (3) a llama.cpp feature dumper and a new ROCm/NeMo training environment do not exist; (4) conversion registration for `DFlash2DraftModel` was read at `experimental/champion-c5-20261024` `c72ec82f`, but 81-tensor/key parity for the intended checkpoint is NOT validated. No training, inference, GPU booking or K1 run was performed.
+  - [ ] **DF2-QWOPUS-K1 — run the K1 gate (≤4 GPU-h) once its prerequisites are confirmed** (checkpoint-keyed child of DF2-QWOPUS, filed 2026-10-27 from the INF-62 scope audit; protocol is the K1 paragraph above, unchanged: DF2-4 12-prompt protocol, none / MTP n-max {2,4,6,8} / base DFlash2 n8, plus no-think role A/B vs Qwen3.8-27B; KILL rules unchanged). Prerequisites before booking: current target/drafter files and hashes (Qwopus GGUF reacquired or located), champion/instrument commit and binary identity, exact role-suite and DF2-4 prompts, disk headroom, and a granted MI210 window. No K2/training card-days until K1 passes.
 - [x] **SL-1 (rtx6kpro intake 2026-09-07) — `--spec-draft-n-max` sweep {4,6,7,8} × `--spec-draft-p-min` {0,0.5}**
       under the canonical np4 recipe, 1/2/4/8 in-flight, >=5 alternating pairs, temp 0.6/seed 42; report
       `aggregate_tok_s` AND verifier steps/s. External per-position acceptance decay says positions 6–8
