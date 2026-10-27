@@ -1949,6 +1949,8 @@ touching one TU recompiles one object and **arm cost becomes proportional to tou
       thing that catches a lever gone sign-negative (measured: a lever at +1.0% in a 26-arm study read −1.39%
       in the stack it shipped in). Ask autokernel's owner for the mechanism rather than reinventing it.
 
+  - [x] **HARNESS-2-CALLER-PREP-01a16fc3:** prepared and sent native caller-binding validation at NEXT priority. Research candidate `9d431a06c78533c8ed032d81a18abb5cc6ece434` is published on `codex/harness2-caller-binding-01a16fc3-20261027`, not main. Two model-free transaction/restoration/quarantine/STOP fixture tests passed; preflight `6b47cb49008dea694d11093038e3a5583b27985486a41223` stops before configure. The native build has not run: receipt `4f84e5b3-1cc1-40da-92fe-e004ccacaefb` proves transport only, with consumption, arming and execution unconfirmed. Exact q0 self-claim 0–23, 7200 s requested / 3600 s minimum, 24 GiB RAM, 12 GiB output and 150 GiB post-output floor. Parent remains open; ABLATE-1 build-only remains complete. Packet `/mnt/raid0/llm/tmp/refactor-01a16fc3/ablate-caller-binding-ready/CLOSEOUT.md`. ✅ 2026-10-27 [no-belief: tooling preparation]
+
 **DISPATCH NOTE 2026-09-07 — the bench lock is the campaign's bottleneck, so the zero-compute queue was
 opened in parallel.** CHAMPION-3 holds it and HARNESS-1 queues behind it; every remaining read-only item was
 dispatched instead of waiting, since none can contend:
