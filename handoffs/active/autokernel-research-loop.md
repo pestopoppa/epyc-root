@@ -5651,7 +5651,7 @@ _Via /research-intake Stage 4 (operator-approved plan 2026-10-20). All sources d
       for those calls.
     - The AK-HR-1(d) build/measure split and AKX-ALL-28's TileLang hipcc s/config can be compared once a post-change
       campaign writes rows.
-- [ ] **AK test flakes - root-cause `test_gates.TheToolRunnerNeverTreatsAFailureAsOutput` (`ScratchRefused: child cleanup uncertain`, 1 of 6 runs on a detached origin/main baseline under CPU co-run) and the 2 pre-existing `test_serial_roster.py::test_shared_author_sandbox_reaches_real_authenticated_control_startup[off|on]` failures (also red on clean origin/main).** Done when each is either fixed or explained with a reproducer. (filed 2026-10-20)
+- [x] **AK test flakes - root-cause `test_gates.TheToolRunnerNeverTreatsAFailureAsOutput` (`ScratchRefused: child cleanup uncertain`, 1 of 6 runs on a detached origin/main baseline under CPU co-run) and the 2 pre-existing `test_serial_roster.py::test_shared_author_sandbox_reaches_real_authenticated_control_startup[off|on]` failures (also red on clean origin/main).** Done when each is either fixed or explained with a reproducer. (filed 2026-10-20) ✅ 2026-10-27
   - 2026-10-24 RESULT (3c4ca599 subagent; code `21ef67e69`).
     - **Root cause of `TheToolRunnerNeverTreatsAFailureAsOutput` -> `ScratchRefused: child cleanup uncertain`:**
       `procguard.Guard.scope_state` reads the provenance of every same-uid process born after the owner.
@@ -5673,8 +5673,7 @@ _Via /research-intake Stage 4 (operator-approved plan 2026-10-20). All sources d
     - **Tests:** `test_procguard` + `test_scratch` + `test_gates::TheToolRunner...` = 78 passed. The 1 failure is
       `ScratchInventory::test_every_creating_call...`, which flags `run_paired_serving_ab.py`, `ab_server_pair.py`,
       `floor_registry.py` and others. That failure was already on origin/main; none of those files are touched here.
-    - **Still open:** the 2 `test_serial_roster.py::test_shared_author_sandbox_reaches_real_authenticated_control_startup[off|on]`
-      failures (not in this dispatch).
+    - **2026-10-27 RESOLVED:** `test_serial_roster.py::test_shared_author_sandbox_reaches_real_authenticated_control_startup[off]` and `[on]` use the fixture subprocess `PYTHONPATH` fix in research `1ff090cc`, merged as `dc77ce388`. On research `08fe38e7ec99`, focused `test_procguard`, the ToolRunner class and both authenticated-control variants passed 29 tests; Q3 log `/mnt/raid0/llm/tmp/codex-ni-20261027-ak-flake-blocker/run-absolute/admitted-command.log`. ToolRunner fix `21ef67e69` is also an ancestor of that baseline; its documented synthetic reproducers remain above.
 - [x] **Decide whether `abstained` / `refused_at_formation` should count as terminal failures in `render_context`'s diminishing-returns triggers (`loop/actors.py`, the `terminal` and `stagnating_statuses` sets)** given AK-HR-2 shows these are harness events (0.858 of the 12 verbose `Already tried` rows), not measured answers; change only with the INF-73 loop owner's review. (filed 2026-10-20)
 
   - [ ] **VB-AK-HISTORY producer call (owed, filed 2026-10-21; INF-73 loop owner):** at the archive boundary of the next DS41/Q38FN campaign call `scripts/vidya/adapters/ak_history.write_belief_measurements(out_dir, campaign_id=..., store_id=..., epoch=..., producer=..., trials=[exactly the AK-HR-3 `history_fields` keys])` so each trial gets a self-hashed receipt; carrier and reader landed in root `7335da327`.
