@@ -2010,6 +2010,8 @@ Owner: RTG-57 (`kv-unified-stack-rollout.md`).
 
 ## VB-SPEECH-CONV-1 — conversation-stack voice measurements (filed 2026-09-24, speech vision session)
 
+- [ ] **VB-SPEECH-CONV-STT2-NATIVE — wire converted-asset CPU smoke native records before belief-gated use.** Extend the existing conversation-stack source and writer for prospective CS-8.STT2 separately converted Parakeet-v3 F16 and Whisper-large-v3-turbo F16 per-clip records. Bind original PCM/manifest, immutable model acquisition/provenance, runner source/binary/ggml linkage, CPU backend/mapping/KFD observation, grant/argv/decode options, per-clip status/transcript/raw digests, partial/failure and unknown denominator. Comparison to exact sealed reference is descriptive; no production-weight equivalence, STT3, WER or timing qualification. Preserve empty protocol/unknown co-tenancy when applicable. Existing ClaimTuple.grade decides; no second ladder or historical warrant. Require native record/tamper/incomplete fixtures and planning-context canary before claiming wired. Packets /mnt/raid0/llm/tmp/refactor-01a16fc3/speech-next-runners-ready/.
+
 The operator ratified the speech vision on 2026-09-24. It lives in
 [`conversation-stack.md`](conversation-stack.md) (INF-79), and it will produce a new measurement family:
 
