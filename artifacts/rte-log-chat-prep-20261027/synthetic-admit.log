@@ -1,0 +1,19 @@
+[region-lock] acquiring regions ['q3'] as role='build' (timeout_s=15.0) …
+[region-lock] held ['q3'] after 0.0s wait; running: taskset -c 72,73 bash /mnt/raid0/llm/tmp/refactor-01a16fc3/sc81-census-unblock/q3-preflight/q3-child.sh /mnt/raid0/llm/tmp/codex-ni-20261027-next-ranked-launcher/chat/admit bash -c set -euo pipefail; D=/mnt/raid0/llm/tmp/codex-ni-20261027-next-ranked-launcher/chat; s=$(date -u +%Y-%m-%dT%H:%MZ); e=$(date -u -d "$s +20 minutes" +%Y-%m-%dT%H:%MZ); printf "regions=0-95 start=%s end=%s\n" "$s" "$e" > "$D/synthetic.grant"; python3 -B "$D/deps/dryrun_check.py" admit --id rte-log-chat-live --row-file "$D/ROW-PF-FIXTURE.md" --grant "$D/synthetic.grant" --min-window-s 900 --require-proof --engine "$D/deps/filler_run12.sh"; python3 -B /mnt/raid0/llm/tmp/compute-flags/validate_fillers.py --file "$D/ROW-PF-FIXTURE.md" --row rte-log-chat-live
+GATE_FIXTURE_DIR=/mnt/raid0/llm/tmp/codex-ni-20261027-next-ranked-launcher/chat/admit/tmp/q3-gate.LHcuBb
+Q3 grant gate fixtures PASS
+RSS_FIXTURE_DIR=/mnt/raid0/llm/tmp/codex-ni-20261027-next-ranked-launcher/chat/admit/tmp/q3-rss.tVgdQm
+...
+----------------------------------------------------------------------
+Ran 3 tests in 0.001s
+
+OK
+Q3 RSS watcher fixtures PASS
+ADMITTED 2026-10-27T18:55:44Z CPU72,73 OMP1 rolebuild <=260s monitored RSS budget 4GiB; sampled peak
+Pid:	661522
+PPid:	661316
+Cpus_allowed_list:	72-73
+command=bash -c set\ -euo\ pipefail\;\ D=/mnt/raid0/llm/tmp/codex-ni-20261027-next-ranked-launcher/chat\;\ s=\$\(date\ -u\ +%Y-%m-%dT%H:%MZ\)\;\ e=\$\(date\ -u\ -d\ \"\$s\ +20\ minutes\"\ +%Y-%m-%dT%H:%MZ\)\;\ printf\ \"regions=0-95\ start=%s\ end=%s\\n\"\ \"\$s\"\ \"\$e\"\ \>\ \"\$D/synthetic.grant\"\;\ python3\ -B\ \"\$D/deps/dryrun_check.py\"\ admit\ --id\ rte-log-chat-live\ --row-file\ \"\$D/ROW-PF-FIXTURE.md\"\ --grant\ \"\$D/synthetic.grant\"\ --min-window-s\ 900\ --require-proof\ --engine\ \"\$D/deps/filler_run12.sh\"\;\ python3\ -B\ /mnt/raid0/llm/tmp/compute-flags/validate_fillers.py\ --file\ \"\$D/ROW-PF-FIXTURE.md\"\ --row\ rte-log-chat-live 
+ADMIT_PASS window=1200 free_gib=192.58 floor_gib=150
+OK: 1 row(s) checked, 0 refusal(s), 0 warning(s)
+RSS_SAMPLED_PEAK_KIB=48796 LIMIT_KIB=4194304 drained=True

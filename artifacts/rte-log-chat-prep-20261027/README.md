@@ -1,0 +1,3 @@
+# RTE-LOG chat preparation snapshot
+
+This is a durable snapshot of the MAIN-reviewed conditional packet under `/mnt/raid0/llm/tmp/codex-ni-20261027-next-ranked-launcher/chat/`. The scripts and `SOURCES.sha256` intentionally retain their original absolute scratch paths: this directory is evidence, not a relocated runnable launcher. The `t1-pass.json` is the scoped source-bound pre-request receipt; the synthetic 256 GiB row and admit are fixtures, not an owner-approved live reservation. Read `OWNER-PACKET.md` for the remaining owner binding, source application, API-only reload and booking steps. No live proof or cache-reuse conclusion is claimed.
