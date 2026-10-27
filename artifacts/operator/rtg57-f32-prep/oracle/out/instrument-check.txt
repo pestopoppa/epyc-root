@@ -1,0 +1,2 @@
+/mnt/raid0/llm/tmp/codex-ni-20261027-rtg57-f32-completion/oracle/source/test-fa-rowexact.cpp: OK
+/mnt/raid0/llm/tmp/codex-ni-20261027-rtg57-f32-completion/oracle/test-fa-rowexact-c5: OK

@@ -1,0 +1,7 @@
+rc=0 time=2026-10-27T19:46:41Z reason=exited
+job_id=rtg57-c5-vkq-t96
+owner=Codex NI preparation; ROOT review; WS58 calendar
+step=job-run
+estimated_wall_s=5700
+started=2026-10-27T19:46:37Z
+regions=72-73

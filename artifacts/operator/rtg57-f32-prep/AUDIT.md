@@ -1,0 +1,13 @@
+# KVU-LB1.d / RTG-57 current scope, 2026-10-27
+
+Root remote main abe7bf89223c6d6e74d896f94301a1ca1b32f0eb retains the exact KVU-LB1.d checkbox open. The prior RTG57 source-publication record (53a029764) pertains to the KVU-16b capture implementation, not this F32 adoption; it cannot close this task.
+
+C5 c72ec82f5417bb2937310326120f149b665e8400 `ggml/src/ggml-cpu/ops.cpp` sha256 f0d83af52edf9d41bd76a95dd9c07d7769c8f00369c4b09474f67f2114752e3d selects FA_VKQ_HYBRID by default; GGML_FA_VKQ_F16 overrides GGML_FA_VKQ_F32. Existing C5 champion fold gates and CAS were completed Oct 25 (autokernel-champion-aggregate.md CH-31); GPU a0 assertion is an operator-accepted pre-existing issue. Those gates test default C5, not the proposed F32 environment.
+
+The newer C5 experimental CPU build reports BUILD_COMPLETE source c72ec82f at 2026-10-27 10:18:48Z; its libggml-cpu.so.0.16.0 mtime 10:17:53Z, sha256 58dcfc833f12a4e051850044e7782f42e4b49b4158eafb6c399eed88e33c44fd, contains both GGML_FA_VKQ_F16 and GGML_FA_VKQ_F32. Its build receipt reports candidate linkage. No F32 run follows from this proof. Earlier measured architect result 49550eda5 is NO_COST at n=3 with its guarded protocol; do not mislabel as full-C5 F32 validation.
+
+F32-specific earlier audit and concrete role-env proposal: /mnt/raid0/llm/tmp/codex-ni-20261027-rtg57-publication-audit/{AUDIT.md,C5-STACK-CHANGE-PROPOSAL.md,C5-ROLE-ENV.proposed.patch}. It recommends architect_general env carrier, rather than compiled global default; frontdoor and worker use q8_0 V and worker is a frontdoor alias. It also identifies T48 research recipe versus T96 topology mismatch. Validate actual desired role shape; use existing stack-change gates, and retain the literal frontdoor/worker checks if deciding a global default. Production v10 lacks the knob and remains frozen.
+
+Existing /mnt/raid0/llm/tmp/f8-launchers-20261022/locals-kvu-lb1-arch-decode-ab/{job.sh,launch.sh,PREDECLARATION.md} is not ready to book: it pins the 49550eda5 store and architect model, sources arch_common.sh, uses obsolete filler_run7, and lacks T1 dryrun boundary/receipts. Adapt into a private new entry path with C5 artifact identity, actual selected model/shape, same guarded protocol and current filler_run12 and dryrun_check; do not arm until same-entry PASS. Its historical completion is not an F32 C5 pass. Do not duplicate completed generic C5 gates. A new measurement producer must be wired into existing belief adapter/source tracking.
+
+No production, shared clone, queue, source, promotion, or checkout mutation; no inference or benchmark run. No checkbox may be ticked from this audit. Scratch root /mnt/raid0/llm/tmp/codex-ni-20261027-rtg57-f32-completion; raw_globs none; keep_globs AUDIT.md.

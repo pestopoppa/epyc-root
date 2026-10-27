@@ -1,0 +1,8 @@
+test-fa-rowexact: threads=1 iqk=not_compiled kv_heads=2 gqa=12 GGML_FA_VKQ_F32=1 GGML_FA_SPLIT_KV=0 tol=5.0e-04 masks=causal
+  type=f16 n_kv=8192 mask=causal row=0 bitexact_n1_n5=1 max_abs_n1_n5=0.000e+00 nmse_n1_ref=0.000e+00
+  type=f16 n_kv=8192 mask=causal row=1 bitexact_n1_n5=1 max_abs_n1_n5=0.000e+00 nmse_n1_ref=0.000e+00
+  type=f16 n_kv=8192 mask=causal row=2 bitexact_n1_n5=1 max_abs_n1_n5=0.000e+00 nmse_n1_ref=0.000e+00
+  type=f16 n_kv=8192 mask=causal row=3 bitexact_n1_n5=1 max_abs_n1_n5=0.000e+00 nmse_n1_ref=0.000e+00
+  type=f16 n_kv=8192 mask=causal row=4 bitexact_n1_n5=1 max_abs_n1_n5=0.000e+00 nmse_n1_ref=0.000e+00
+ORACLE_1ROW max_nmse=3.78851027e-09 tol=0.0005 finite=1 mutation=0
+RESULT type=f16 n_kv=8192 mask=causal D=256 kv_heads=2 gqa=12 N=5 iqk=off iqk_calls=0 iqk_count_ok=1 ref_used_iqk=0 nmse_cand_ref=0.000e+00 max_abs_cand_ref=0.000e+00 nmse_cand1_ref_max=0.000e+00 nmse_cand_oracle=3.682e-09 nmse_ref_oracle=3.682e-09 rows_differing=0 max_abs_n1_n5=0.000e+00 rowexact=ROW_EXACT finite=1 tol=5.0e-04 verdict=PASS
