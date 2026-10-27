@@ -442,3 +442,9 @@ C1-22 disappears with the unified plane.
   says nothing about this work.
 - **Usage pacing**: 6 concurrent agents exhausted a 5-hour window in about 55 minutes on 2026-10-24 (extra usage
   rejected: `out_of_credits`); 2 concurrent agents is the sustainable rate.
+
+### Native packet preparation checkpoint — 2026-10-27 22:55 UTC
+
+- [x] **HIL-CHECKPOINT-NATIVE-PREP** — source-bound one-unit/three-slot canary and separate20-unit pilot prepared with immutable slot evidence, runtime-receipt resume refusal and captured detached-child cleanup. Full fake-server entries and all six quarter alternatives passed scoped26–27 PF, normal admission and validator0/0. Old pilot excluded; no model execution, band or quality claim. See [packet record](../../progress/2026-10/2026-10-27-native-repair-packets-2255.md). ✅ 2026-10-27 [no-belief: preparation and synthetic fixtures only]
+- [x] **M4-HOL-V2-NATIVE-PREP** — fix harness prematurely stopping its own long-prefill server; full fakeHTTP phaseA/B fixture, STOP/failure/deadline/cleanup, source-bound PF and normal admission passed0/0. Claude armed GPUv2 PID1707428; native rerun outcome pending, parentM4 open. ✅ 2026-10-27 [no-belief: preparation and synthetic fixtures only]
+- [x] **M4-OFF-NATIVE-READOUT** — reviewed all7 prompt hashes and21 native responses, exact content+reasoning identity against both C5 controls,0mismatch/0nondeterminism/0incomplete. Native run complete in~146s; correctness observation only. Preserve original protocol/co-tenant limits; no wholeM4, speed or promotion claim. ✅ 2026-10-27 [belief: cc]
