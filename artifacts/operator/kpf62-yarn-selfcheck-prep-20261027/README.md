@@ -1,0 +1,3 @@
+# KPF62.1 YaRN selfcheck preparation
+
+MAIN approved the source seal in MAIN-APPROVAL.txt. ROW.md and the source files here document the operative packet; the live owner launcher and bound dependencies reside in /mnt/raid0/llm/tmp/codex-ni-20261027-kpf62-yarn-selfcheck. Earlier scratch PROPOSAL.md and ROW-DRAFT.md are superseded and are not instructions. The native row remains unarmed; no model has been loaded or measured in this preparation. The source-table and substrate task are proposed in BELIEF-WIRING-DRAFT.md for the owning session to apply before booking. Preserve original raw data and record a reviewed conclusion via [belief: cc]; do not fabricate per-position measurements or a grading ladder.
