@@ -1,0 +1,7 @@
+#!/bin/bash
+R=/mnt/raid0/llm/tmp/repl-emb-25-26-20261020
+H=/mnt/raid0/llm/worktrees/repl-emb-25-orch-20261020
+cd $R
+venv/bin/python -I $H/scripts/benchmark/repl_emb_parity_gate.py prepare --out out25/gate-probe45 $(sed "s/^/--corpus-file /" q/files.txt | tr "\n" " ") --queries $H/data/repl_retrieval_eval/arm-manifest-20261020/probe45-intake1357.jsonl
+taskset -c 0-7 venv/bin/python -I $H/scripts/benchmark/repl_emb_parity_gate.py all --out out25/gate-probe45 \
+  --reuse-items --model-path /mnt/raid0/llm/tmp/emb-speed-20261020/hf/hub/models--google--embeddinggemma-2/snapshots/914f7f89142e33e77833254d9c9b90c3cef7303b --threads 8 --st-lanes st-fp32-full,st-fp32-textonly,st-bf16
