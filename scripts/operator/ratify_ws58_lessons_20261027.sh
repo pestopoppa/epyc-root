@@ -16,6 +16,7 @@
 #
 # ratify-targets: agents/shared/OPERATING_CONSTRAINTS.md
 #
+# Also emits the MEASUREMENT.md section-5 consolidated receipt (the checker treats agents/shared/*.md as trust boundary).
 # SAFETY: stages a detached scratch worktree of origin/main; nothing touches your checkout. Refuses unless the target's
 # sha256 on the base equals the PRE pin (or already equals the POST pin = ALREADY RATIFIED, exit 0). Prints the exact
 # unified diff before anything is committed. Touches no process.
@@ -36,6 +37,8 @@ POST_SHA="1cfcbdc9234cecded69e9439ed562e4c5d86504d99b6fe33589087beda9df8ce"
 CHECKER_REL="scripts/validate/check_ratification_receipts.py"
 RECEIPT_REL="artifacts/operator/ratify_ws58_lessons_20261027.json"
 INDEX_REL="artifacts/operator/receipts/$GATE_ID.json"
+CONSOLIDATED_REL="artifacts/operator/ratify_ws58_lessons_20261027.receipt.json"
+PROTOCOL_ID="OPERATING-CONSTRAINTS-UNANSWERED-AND-POST-MEASUREMENT"
 ANCHOR1="A missing answer is *unanswered*, not *declined*"
 ANCHOR2="An exit code is not a result."
 
@@ -79,7 +82,7 @@ if [ "$MODE" = "verify" ]; then
   have="$(g "$ROOT" show "origin/main:$TARGET" | sha256sum | awk '{print $1}')"
   [ "$have" = "$POST_SHA" ] || { say "  FAIL  $TARGET is ${have:0:12}, post-state is ${POST_SHA:0:12}"; exit 1; }
   ok "$TARGET at post-state ${POST_SHA:0:12}"
-  for f in "$RECEIPT_REL" "$INDEX_REL"; do
+  for f in "$RECEIPT_REL" "$CONSOLIDATED_REL" "$INDEX_REL"; do
     if g "$ROOT" cat-file -e "origin/main:$f" 2>/dev/null; then ok "$f on origin/main"; else say "  FAIL  $f not on origin/main"; exit 1; fi
   done
   say "VERIFIED: $GATE_ID is on origin/main, pinned and receipted."; exit 0
@@ -93,7 +96,7 @@ cleanup() {
   if [ "$WT_ADDED" -eq 1 ] && [ "$KEEP_STAGE" -eq 0 ]; then
     g "$ROOT" worktree remove --force "$WT" >/dev/null 2>&1 || say "WARN: could not remove stage worktree $WT"
   fi
-  if [ "$KEEP_STAGE" -eq 0 ]; then rm -f "$STAGE"/xform.py "$STAGE"/before.md "$STAGE"/after.md; rmdir "$STAGE" 2>/dev/null || true; fi
+  if [ "$KEEP_STAGE" -eq 0 ]; then rm -f "$STAGE"/pre.json "$STAGE"/xform.py "$STAGE"/before.md "$STAGE"/after.md; rmdir "$STAGE" 2>/dev/null || true; fi
   exit "$rc"
 }
 trap cleanup EXIT
@@ -137,6 +140,8 @@ t=add(t,"## Inference and Benchmarks",B)
 sys.stdout.write(t)
 PYEOF
 cp "$WT/$TARGET" "$STAGE/before.md"
+"$SYS_PY" "$WT/scripts/operator/ratification_receipt.py" capture --repo-root "$WT" --state "$TARGET" --out "$STAGE/pre.json" \
+  || die "could not snapshot the pre-amendment state"
 "$SYS_PY" "$XFORM" "$STAGE/before.md" >"$STAGE/after.md" || die "transform failed"
 cp "$STAGE/after.md" "$WT/$TARGET"
 say "== exact change to $TARGET =="
@@ -148,9 +153,30 @@ removed="$(diff "$STAGE/before.md" "$WT/$TARGET" | grep -c '^<' || true)"
 ok "additions only (0 lines removed); each lesson once; post-state ${POST_SHA:0:12}"
 
 # ---- receipts
+say "== MEASUREMENT.md section-5 consolidated receipt =="
+receipt_rc=0
+"$SYS_PY" "$WT/scripts/operator/ratification_receipt.py" emit \
+  --repo-root "$WT" \
+  --pre "$STAGE/pre.json" \
+  --protocol-id "$PROTOCOL_ID" \
+  --anchor "$ANCHOR1" \
+  --anchor "$ANCHOR2" \
+  --ratification-id "$GATE_ID" \
+  --script "$SCRIPT_PATH" \
+  --operator "${RATIFY_OPERATOR:-DRY-RUN-PREVIEW}" \
+  --no-evidence-reason "workflow doctrine, not a measured claim; origin is the 2026-10-26/27 workspace-58 calendar freezes and the operator's 2026-10-27 decision-tool approvals" \
+  --validation "python3 $CHECKER_REL --repo-root ." \
+  --validation "test \"\$(sha256sum $TARGET | cut -d' ' -f1)\" = $POST_SHA" \
+  --out "$WT/$CONSOLIDATED_REL" || receipt_rc=$?
+if [ "$receipt_rc" -ne 0 ]; then
+  [ ! -f "$WT/$CONSOLIDATED_REL" ] || { cp "$WT/$CONSOLIDATED_REL" "$STAGE/refused.receipt.json"; KEEP_STAGE=1; say "  refused receipt kept: $STAGE/refused.receipt.json"; }
+  die "consolidated receipt returned $receipt_rc (1 REFUSED, 2 COULD-NOT-CHECK). Nothing committed or pushed."
+fi
+ok "consolidated receipt: $CONSOLIDATED_REL"
+
 RATIFIED_AT="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
 OPERATOR_NAME="${RATIFY_OPERATOR:-DRY-RUN-PREVIEW}"
-WT="$WT" RECEIPT_REL="$RECEIPT_REL" INDEX_REL="$INDEX_REL" GATE_ID="$GATE_ID" TARGET="$TARGET" PRE="$PRE_SHA" POST="$POST_SHA" \
+WT="$WT" RECEIPT_REL="$RECEIPT_REL" INDEX_REL="$INDEX_REL" CONSOLIDATED_REL="$CONSOLIDATED_REL" GATE_ID="$GATE_ID" TARGET="$TARGET" PRE="$PRE_SHA" POST="$POST_SHA" \
 OPERATOR="$OPERATOR_NAME" TS="$RATIFIED_AT" BASE_SHA="$BASE_SHA" SCRIPT_SHA="$(sha "$SCRIPT_PATH")" SCRIPT_REL="$SCRIPT_REL" \
 "$SYS_PY" - <<'PYEOF' || die "could not write the receipts. Nothing committed or pushed."
 import json, os
@@ -168,6 +194,7 @@ doc = {
     },
     "origin": "2026-10-26/27 workspace-58 calendar freezes (1); 2026-10-27 (2)",
     "base_origin_main": e["BASE_SHA"],
+    "consolidated_receipt": e["CONSOLIDATED_REL"],
     "state": {e["TARGET"]: {"sha256_before": e["PRE"], "sha256_after": e["POST"]}},
     "applied_by": e["SCRIPT_REL"],
     "ratify_script_sha256": e["SCRIPT_SHA"],
@@ -187,7 +214,7 @@ PYEOF
 if "$SYS_PY" "$WT/$CHECKER_REL" --repo-root "$WT" >/dev/null 2>&1; then ok "receipt checker exits 0 after the amendment"
 else die "receipt checker fails after the amendment. Nothing committed or pushed."; fi
 
-COMMIT_PATHS=("$TARGET" "$RECEIPT_REL" "$INDEX_REL")
+COMMIT_PATHS=("$TARGET" "$RECEIPT_REL" "$CONSOLIDATED_REL" "$INDEX_REL")
 if [ "$MODE" = "review" ]; then
   say ""
   say "DRY RUN COMPLETE: all checks passed in a throwaway stage. Nothing committed or pushed. --apply would commit:"
@@ -205,7 +232,7 @@ want="$(printf '%s\n' "${COMMIT_PATHS[@]}" | sort)"
 [ "$staged" = "$want" ] || die "stage index holds an unexpected path set; NOT committed. Staged: $(echo $staged)"
 g "$WT" commit -q \
   -m "RATIFIED $GATE_ID: unanswered-is-not-declined + exit-code-is-not-a-result (signed by $RATIFY_OPERATOR)" \
-  -m "OPERATING_CONSTRAINTS.md: Operator Decision Requests (a missing answer is unanswered, not declined) and Inference and Benchmarks (post-measurement analysis before reporting). Receipts: $RECEIPT_REL, $INDEX_REL. No process touched." \
+  -m "OPERATING_CONSTRAINTS.md: Operator Decision Requests (a missing answer is unanswered, not declined) and Inference and Benchmarks (post-measurement analysis before reporting). Receipts: $RECEIPT_REL, $CONSOLIDATED_REL, $INDEX_REL. No process touched." \
   || die "commit failed (a hook refused it?). Nothing pushed; re-run to retry."
 COMMIT_SHA="$(g "$WT" rev-parse HEAD)"
 ok "committed ${COMMIT_SHA:0:12}"
@@ -233,7 +260,7 @@ cat <<REPORT
 
 RATIFIED $GATE_ID by $RATIFY_OPERATOR.
   root main: $COMMIT_SHA (pushed under the push lock)
-  receipts:  $RECEIPT_REL, $INDEX_REL
+  receipts:  $RECEIPT_REL, $CONSOLIDATED_REL, $INDEX_REL
 NO PROCESS WAS TOUCHED.  VERIFY (read-only): bash $SCRIPT_REL --verify
 ROLLBACK (operator): git revert $COMMIT_SHA on a fresh origin/main worktree, then push through serialized_push.py.
 REPORT
