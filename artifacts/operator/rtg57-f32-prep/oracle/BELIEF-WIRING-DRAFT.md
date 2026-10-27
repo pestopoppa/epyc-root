@@ -1,0 +1,2 @@
+Source table proposed row: `rtg57-c5-vkq-f32-oracle` (native receipt epyc.rtg57.vkq_oracle.native.v1) — measurement candidate; native output and error metric, rule/source/binary/build/knob/env/live-map identity and mutation control hashed at write time, one sample each, no codified protocol.
+Program task `VB-RTG57-VKQ-WIRE` also includes independent-oracle receipt projection with shared claim_tuple.grade(), preserving one-sample/model-free/unverified serving limitations and a planning-context canary. Owner applies rows; no new grading ladder or post hoc measurement warrant.

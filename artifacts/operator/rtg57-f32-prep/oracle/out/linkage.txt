@@ -1,0 +1,15 @@
+binary : /mnt/raid0/llm/tmp/codex-ni-20261027-rtg57-f32-completion/oracle/test-fa-rowexact-c5
+expect : libraries under /mnt/raid0/llm/tmp/refactor-01a16fc3/c5-candidate/buildcpu/bin
+
+  OK   libggml-base.so.0            -> /mnt/raid0/llm/tmp/refactor-01a16fc3/c5-candidate/buildcpu/bin/libggml-base.so.0
+  OK   libggml-cpu.so.0             -> /mnt/raid0/llm/tmp/refactor-01a16fc3/c5-candidate/buildcpu/bin/libggml-cpu.so.0
+
+LD_LIBRARY_PATH order as the loader sees it:
+         1	/mnt/raid0/llm/tmp/refactor-01a16fc3/c5-candidate/buildcpu/bin
+
+PASS: all linked ggml libraries resolve inside /mnt/raid0/llm/tmp/refactor-01a16fc3/c5-candidate/buildcpu/bin
+NOTE: ggml backends (ggml-hip, ggml-cpu-<arch>) are dlopened at RUNTIME and
+      are not covered by ldd. Confirm the intended device appears in the
+      program's own startup log (e.g. 'Device 0: AMD Instinct MI210') and
+      do not trust a 'use gpu = 1' flag alone — that flag reports what was
+      REQUESTED, not what was loaded.
