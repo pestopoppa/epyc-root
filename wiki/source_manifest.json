@@ -4,27 +4,27 @@
     "handoff-active": 184,
     "handoff-blocked": 2,
     "handoff-completed": 216,
-    "progress": 829,
+    "progress": 830,
     "research": 140
   },
   "kind": "project-wiki-source-manifest",
   "last_compile": "2026-10-27T15:23:54Z",
   "last_touch": {
     "advanced": {
-      "added": 0,
-      "changed": 1,
+      "added": 1,
+      "changed": 0,
       "removed": 0
     },
-    "at": "2026-10-27T16:34:42Z",
+    "at": "2026-10-27T16:59:57Z",
     "scope_paths": [
-      "progress/2026-10/2026-10-27-codex-ni-full-wrap-1625.md"
+      "progress/2026-10/2026-10-27-periodic-wrap-1620.md"
     ],
     "scope_types": []
   },
   "mode": "touch:scoped",
-  "scan_time": "2026-10-27T16:34:42Z",
+  "scan_time": "2026-10-27T16:59:57Z",
   "schema_version": 1,
-  "source_set_hash": "4f853367b1138ee1397c821554395d840fb3415886a71b4193fc35bc8f6e669b",
+  "source_set_hash": "1de1238823d2ac8b7d206fd987fafd08a14d0f88ba2098abc2c92601016e0846",
   "sources": [
     {
       "content_hash": "6c067235a74a3b9667dd4fad23684206476aeac1cdefe3b4e0a0824d3179c241",
@@ -10979,6 +10979,14 @@
       "type": "progress"
     },
     {
+      "content_hash": "7985886a10d961137fb6e3936c2f259a07cdbea6a12bf637b996699c32c9ec6b",
+      "modified": "2026-10-27T16:54:59Z",
+      "path": "progress/2026-10/2026-10-27-periodic-wrap-1620.md",
+      "size": 5931,
+      "title": "Periodic wrap-up \u2014 2026-10-27 16:20Z",
+      "type": "progress"
+    },
+    {
       "content_hash": "8cae7c33f7eb08adeda736e6e46e69504ff757c1c59a4d42dd9a904cb80d0248",
       "modified": "2026-10-27T15:37:07Z",
       "path": "progress/2026-10/2026-10-27-refactor-campaign-wrap.md",
@@ -12867,7 +12875,7 @@
       "type": "docs"
     }
   ],
-  "total_new": 1605,
+  "total_new": 1606,
   "writer_evidence_policy": {
     "applies_to": "generated-wiki-article-writes",
     "minimum_confidence": "verified",
