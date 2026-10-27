@@ -673,6 +673,7 @@ Each one turns a practice that was missing on 2026-09-23 into a standing gate.
   - Family this closes: `c7215eb5`, `7b076f8d`, `1848ba08`, `2a66c211`, `71c46655`.
   - Acceptance: a new drop site added without a disposition record fails the test, in the style of the
     `ScratchInventory` AST scan.
+  - [x] **OAB-31-NEXT-01a16fc3:** prepared and delivered the q0 validation packet; source-bound two-core preflight passed, NEXT receipt `298f90d5-6ffe-45aa-a1c1-79b968ddc54b`. The assertion fix remains unvalidated and growth guard red; OAB-31 remains open. ✅ 2026-10-27 [no-belief: packet preparation]
 - [ ] **OAB-32 — default per-call budgets on every backend and every role.** OAB-23 bounded the opencode
   planner only. Give critic, author and planner calls on every backend kind a default per-call decoded-token cap
   and a wall budget. On exhaustion, record a `budget_exhausted` abstention, never a transient retry. A local
