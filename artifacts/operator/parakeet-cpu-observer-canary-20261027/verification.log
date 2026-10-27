@@ -1,0 +1,24 @@
+[region-lock] acquiring regions ['q2'] as role='build' (timeout_s=15.0) …
+[region-lock] held ['q2'] after 0.0s wait; running: taskset -c 48,49 bash /mnt/raid0/llm/tmp/codex-ni-20261027-parakeet-cpu-v2/q2-child.sh /mnt/raid0/llm/tmp/codex-ni-20261027-parakeet-cpu-v2/revised-all bash -c cd /mnt/raid0/llm/tmp/codex-ni-20261027-parakeet-cpu-v2 && python3 -B test_proof.py && python3 -B test_runner.py && python3 -B test_reader.py && python3 -B test_compare_v2.py && bash -n job.sh launch-canary.sh launch-full.sh && bash final-check.sh
+q2 physical 48,49; inherited native address-space limit: unlimited
+CPU KFD zero accepted; GPU/ACCEL/missing hook/foreign pins/birth/window/VRAM refused: PASS
+fake CLI lifecycle/CPU KFD, GPU, ACCEL, missing hook, foreign library, STOP, signal/reap PASS
+CPU KFD zero accepted; GPU/ACCEL/missing hook/foreign pins/birth/window/VRAM refused: PASS
+full v2 reader 40 fake clips and retained raw tamper refusal PASS
+draft prospective comparison/capture: true, false and forged verdict fixtures PASS
+DRYRUN_ENTRY {"NODE_OPTIONS": "--max-old-space-size=4096", "argv": ["bash", "/mnt/raid0/llm/tmp/codex-ni-20261027-parakeet-cpu-v2/launch-canary.sh"], "box": "/mnt/raid0/llm/tmp/codex-ni-20261027-parakeet-cpu-v2/dryrun/809d9f26c60ea2e4bf054f4026cfd1672367cffc85075d6c", "grant": "regions=48-49 start=2026-10-27T23:35Z end=2026-10-27T23:50Z", "job_sha256": "7494247acecd18971d8bfa15ab06a32405155c5f11d3c10d603d09c4cf718721", "launcher_sha256": "1d05ce3b96edaaa323946dd5e972e099fc36d4958ca31d3a3e4157b70c1c2055"}
+DRYRUN_PASS entry_rc=0 boundary=validated-parakeet-observed-before-inference pid=2086539 birth=126657867 reaped=yes box=/mnt/raid0/llm/tmp/codex-ni-20261027-parakeet-cpu-v2/dryrun/809d9f26c60ea2e4bf054f4026cfd1672367cffc85075d6c
+DRYRUN_ENTRY {"NODE_OPTIONS": "--max-old-space-size=4096", "argv": ["bash", "/mnt/raid0/llm/tmp/codex-ni-20261027-parakeet-cpu-v2/launch-full.sh"], "box": "/mnt/raid0/llm/tmp/codex-ni-20261027-parakeet-cpu-v2/dryrun/0899d99d54a17ee742a9c09ed4dfadddfbc02985cb2edf06", "grant": "regions=48-49 start=2026-10-27T23:35Z end=2026-10-28T00:45Z", "job_sha256": "7494247acecd18971d8bfa15ab06a32405155c5f11d3c10d603d09c4cf718721", "launcher_sha256": "09b28068e65037ff39b41c67bc2ac8059ba44886f7df1d3f9dedd26dcc8d6a7b"}
+DRYRUN_PASS entry_rc=0 boundary=validated-parakeet-observed-before-inference pid=2086722 birth=126658196 reaped=yes box=/mnt/raid0/llm/tmp/codex-ni-20261027-parakeet-cpu-v2/dryrun/0899d99d54a17ee742a9c09ed4dfadddfbc02985cb2edf06
+OK: 1 row(s) checked, 0 refusal(s), 0 warning(s)
+ADMIT_PASS window=900 free_gib=184.46 floor_gib=50
+OK: 1 row(s) checked, 0 refusal(s), 0 warning(s)
+ADMIT_PASS window=4200 free_gib=184.46 floor_gib=50
+8c6316c2944918ec39c420cdb05433c670c66782191b2c6f2ebfddfec54a75ec  /mnt/raid0/llm/tmp/codex-ni-20261027-parakeet-cpu-v2/source-files.sha256
+92235fe4c00b9cdc6c19b18e061e64e24bd8ff294672fa7633813994e6b84cee  /mnt/raid0/llm/tmp/codex-ni-20261027-parakeet-cpu-v2/observer.so
+7494247acecd18971d8bfa15ab06a32405155c5f11d3c10d603d09c4cf718721  /mnt/raid0/llm/tmp/codex-ni-20261027-parakeet-cpu-v2/job.sh
+78eb3ca2ddf4c482e51f70d40f946cc1b40e79437b2768147bd0ed0d73dfa4d4  /mnt/raid0/llm/tmp/codex-ni-20261027-parakeet-cpu-v2/cpu_runner.py
+200851235497d676024a1f3b5b08f480f6f484a89492d171761fe8275569e39a  /mnt/raid0/llm/tmp/codex-ni-20261027-parakeet-cpu-v2/proof.py
+a2e737e24d0544460fca63ae99d8ffeae056c234b2b07fb88723c11a9ac7e8cc  /mnt/raid0/llm/tmp/codex-ni-20261027-parakeet-cpu-v2/ROW-canary.md
+6f01ca616d42705d050dc2bbcb334b821f881f41a3182efd5d4855f676ae8a61  /mnt/raid0/llm/tmp/codex-ni-20261027-parakeet-cpu-v2/ROW-full.md
+RSS_SAMPLED_PEAK_KIB=104184 LIMIT_KIB=4194304 drained=True

@@ -1,0 +1,22 @@
+[region-lock] acquiring regions ['q3'] as role='build' (timeout_s=15.0) …
+[region-lock] held ['q3'] after 0.0s wait; running: taskset -c 72,73 bash /mnt/raid0/llm/tmp/refactor-01a16fc3/sc81-census-unblock/q3-preflight/q3-child.sh /mnt/raid0/llm/tmp/codex-ni-20261027-parakeet-cpu-v2/elf-coverage bash -c for name in ggml_backend_sched_new ggml_backend_alloc_ctx_tensors_from_buft ggml_backend_buffer_set_usage ggml_backend_sched_graph_compute ggml_backend_graph_compute; do printf "%s " "$name"; readelf -Ws /mnt/raid0/llm/whisper.cpp/build/bin/libggml-base.so.0.18.0 | rg -m1 "GLOBAL.* $name$" || exit 1; done; readelf -d /mnt/raid0/llm/whisper.cpp/build/bin/libparakeet.so.1.9.1 | rg "SYMBOLIC|BIND_NOW" || true
+GATE_FIXTURE_DIR=/mnt/raid0/llm/tmp/codex-ni-20261027-parakeet-cpu-v2/elf-coverage/tmp/q3-gate.N5CXLS
+Q3 grant gate fixtures PASS
+RSS_FIXTURE_DIR=/mnt/raid0/llm/tmp/codex-ni-20261027-parakeet-cpu-v2/elf-coverage/tmp/q3-rss.zjiZCf
+...
+----------------------------------------------------------------------
+Ran 3 tests in 0.001s
+
+OK
+Q3 RSS watcher fixtures PASS
+ADMITTED 2026-10-27T23:25:23Z CPU72,73 OMP1 rolebuild <=260s monitored RSS budget 4GiB; sampled peak
+Pid:	2039458
+PPid:	2039372
+Cpus_allowed_list:	72-73
+command=bash -c for\ name\ in\ ggml_backend_sched_new\ ggml_backend_alloc_ctx_tensors_from_buft\ ggml_backend_buffer_set_usage\ ggml_backend_sched_graph_compute\ ggml_backend_graph_compute\;\ do\ printf\ \"%s\ \"\ \"\$name\"\;\ readelf\ -Ws\ /mnt/raid0/llm/whisper.cpp/build/bin/libggml-base.so.0.18.0\ \|\ rg\ -m1\ \"GLOBAL.\*\ \$name\$\"\ \|\|\ exit\ 1\;\ done\;\ readelf\ -d\ /mnt/raid0/llm/whisper.cpp/build/bin/libparakeet.so.1.9.1\ \|\ rg\ \"SYMBOLIC\|BIND_NOW\"\ \|\|\ true
+ggml_backend_sched_new    284: 000000000005aff0  1375 FUNC    GLOBAL DEFAULT   12 ggml_backend_sched_new
+ggml_backend_alloc_ctx_tensors_from_buft    371: 00000000000548f0    72 FUNC    GLOBAL DEFAULT   12 ggml_backend_alloc_ctx_tensors_from_buft
+ggml_backend_buffer_set_usage    885: 0000000000055ff0   110 FUNC    GLOBAL DEFAULT   12 ggml_backend_buffer_set_usage
+ggml_backend_sched_graph_compute    753: 000000000005bdc0   158 FUNC    GLOBAL DEFAULT   12 ggml_backend_sched_graph_compute
+ggml_backend_graph_compute    672: 00000000000574d0    65 FUNC    GLOBAL DEFAULT   12 ggml_backend_graph_compute
+RSS_SAMPLED_PEAK_KIB=22060 LIMIT_KIB=4194304 drained=True

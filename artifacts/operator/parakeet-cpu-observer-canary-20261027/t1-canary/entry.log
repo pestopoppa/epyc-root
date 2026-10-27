@@ -1,0 +1,31 @@
+2026-10-27T23:35:05Z [codex-ni-parakeet-observed-canary-20261027] launcher up pid=2086539 class=cpu poll=1s grants=/mnt/raid0/llm/tmp/codex-ni-20261027-parakeet-cpu-v2/dryrun/809d9f26c60ea2e4bf054f4026cfd1672367cffc85075d6c/grants stop=/mnt/raid0/llm/tmp/codex-ni-20261027-parakeet-cpu-v2/STOP-canary minwin=600s ports=none
+2026-10-27T23:35:05Z [codex-ni-parakeet-observed-canary-20261027] ADMIT_PASS window=900 free_gib=184.46 floor_gib=50
+2026-10-27T23:35:05Z [codex-ni-parakeet-observed-canary-20261027] START regions=48-49 cpus=48-49 threads=2 gpu=0 end=2026-10-27T23:50Z
+DRYRUN_RESOURCES {"affinity": [48, 49], "cgroup": "0::/", "cgroup_memory_max": "max", "process_limit_gib": 12.0, "reserved_ram_gib": 12.0, "rlimits": {"AS": [-1, -1], "DATA": [-1, -1], "NOFILE": [524288, 524288], "RSS": [-1, -1]}}
+RESOURCE_PASS id=codex-ni-parakeet-observed-canary-20261027 scope=two-core-PF
+/mnt/raid0/llm/tmp/codex-ni-20261027-parakeet-cpu-v2/observer.c: OK
+/mnt/raid0/llm/tmp/codex-ni-20261027-parakeet-cpu-v2/observer.so: OK
+/mnt/raid0/llm/tmp/codex-ni-20261027-parakeet-cpu-v2/cpu_runner.py: OK
+/mnt/raid0/llm/tmp/codex-ni-20261027-parakeet-cpu-v2/proof.py: OK
+/mnt/raid0/llm/tmp/codex-ni-20261027-parakeet-cpu-v2/verify_canary.py: OK
+/mnt/raid0/llm/tmp/codex-ni-20261027-parakeet-cpu-v2/library-pins.json: OK
+/mnt/raid0/llm/tmp/codex-ni-20261027-parakeet-cpu-v2/job.sh: OK
+/mnt/raid0/llm/tmp/codex-ni-20261027-parakeet-cpu-v2/shim.sh: OK
+/mnt/raid0/llm/tmp/codex-ni-20261027-parakeet-cpu-v2/launch-canary.sh: OK
+/mnt/raid0/llm/tmp/codex-ni-20261027-parakeet-cpu-v2/launch-full.sh: OK
+/mnt/raid0/llm/tmp/codex-ni-20261027-parakeet-cpu-v2/test_proof.py: OK
+/mnt/raid0/llm/tmp/codex-ni-20261027-parakeet-cpu-v2/test_runner.py: OK
+/mnt/raid0/llm/tmp/codex-ni-20261027-parakeet-cpu-v2/mock.c: OK
+/mnt/raid0/llm/tmp/codex-ni-20261027-parakeet-cpu-v2/mock_cli.c: OK
+/mnt/raid0/llm/tmp/codex-ni-20261027-parakeet-cpu-v2/build-mock.sh: OK
+/mnt/raid0/llm/tmp/refactor-01a16fc3/compute-coordination-20261026/launch-contract-85c442b3d/filler_run12.sh: OK
+/mnt/raid0/llm/tmp/refactor-01a16fc3/compute-coordination-20261026/launch-contract-85c442b3d/dryrun_check.py: OK
+/mnt/raid0/llm/tmp/refactor-01a16fc3/parakeet-reference-ready/reference.py: OK
+/mnt/raid0/llm/whisper.cpp/build/bin/parakeet-cli: OK
+/mnt/raid0/llm/tmp/refactor-01a16fc3/inf79-speech-inference-ready/fleurs-select-q2/evidence/manifest.json: OK
+/mnt/raid0/llm/epyc-inference-research/scripts/utils/verify_ggml_linkage.sh: OK
+DRYRUN_RESOURCES {"affinity": [48, 49], "cgroup": "0::/", "cgroup_memory_max": "max", "process_limit_gib": 12.0, "reserved_ram_gib": 12.0, "rlimits": {"AS": [-1, -1], "DATA": [-1, -1], "NOFILE": [524288, 524288], "RSS": [-1, -1]}}
+DRYRUN_BOUNDARY effect=validated-parakeet-observed-before-inference job_sha256=7494247acecd18971d8bfa15ab06a32405155c5f11d3c10d603d09c4cf718721 stop-before-effect
+job rc=0
+2026-10-27T23:35:08Z [codex-ni-parakeet-observed-canary-20261027] ended rc=0 reason=exited (grant deleted)
+2026-10-27T23:35:08Z [codex-ni-parakeet-observed-canary-20261027] one window done; exiting (no --repeat)
