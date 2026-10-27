@@ -8,11 +8,11 @@
     "research": 140
   },
   "kind": "project-wiki-source-manifest",
-  "last_compile": "2026-10-27T15:17:18Z",
+  "last_compile": "2026-10-27T15:23:54Z",
   "mode": "touch",
-  "scan_time": "2026-10-27T15:17:18Z",
+  "scan_time": "2026-10-27T15:23:54Z",
   "schema_version": 1,
-  "source_set_hash": "bf887acf6665bb7ed1373bcd59c530dd7c79a68ffe1640d1bae820a0d3f6a6b5",
+  "source_set_hash": "fed8674af7385c4ae2db59423d90628f06f7b03a02e41a70807361d69b202e6f",
   "sources": [
     {
       "content_hash": "6c067235a74a3b9667dd4fad23684206476aeac1cdefe3b4e0a0824d3179c241",
@@ -10943,10 +10943,10 @@
       "type": "progress"
     },
     {
-      "content_hash": "4be0ba288373bf9b6694c13685fb185c9e91f9a6c90783661996112e46f38384",
-      "modified": "2026-10-27T15:10:16Z",
+      "content_hash": "3f209d5e95ae594f7dd085a0c9c2408629f3aa32b29c5f5e029ce6f3153511f5",
+      "modified": "2026-10-27T15:23:53Z",
       "path": "progress/2026-10/2026-10-27-codex-ni-full-wrap-1456.md",
-      "size": 7217,
+      "size": 7244,
       "title": "Full wrap-up \u2014 Codex NI \u2014 2026-10-27 14:56:35Z cutoff",
       "type": "progress"
     },

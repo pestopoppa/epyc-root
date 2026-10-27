@@ -7210,4 +7210,4 @@ Sources: [2026-10-27 harvest](../progress/2026-10/2026-10-27-workspace-58.md), [
 
 Across the 2026-10-27 cut, correctness and preparation evidence must remain distinct from performance verdicts. INF-75’s ABI canary completed 22 graphs / 21,080 nodes, but verbosity suppressed full-shape counters, so full-shape coverage is unknown. C5 r10 was withdrawn after caller-edge omissions; r11 is still pending. KPF R15 returned rc 0 but its verdict is invalid because the seed gate did not prove port ownership. No performance or geometry conclusion follows.
 
-Sources: [INF-75](../handoffs/active/autokernel-all-devices-all-dimensions.md) · [C5 graph](../handoffs/active/speculative-decoding-mtp-refresh.md) · [KPF](../handoffs/active/kv-prefix-fork-and-paged-attention.md) · [2026-10-27 Codex full wrap](../progress/2026-10/2026-10-27-codex-ni-full-wrap-1456.md)
+Sources: [INF-75](../handoffs/active/autokernel-cross-workload-keep-gate.md) · [C5 graph](../handoffs/active/speculative-decoding-mtp-refresh.md) · [KPF](../handoffs/active/kv-prefix-fork-and-paged-attention.md) · [2026-10-27 Codex full wrap](../progress/2026-10/2026-10-27-codex-ni-full-wrap-1456.md)

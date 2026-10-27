@@ -2895,4 +2895,4 @@ Sources: [dflash2-block-drafter-experimental-build](../handoffs/active/dflash2-b
 
 The Q38 correctness result remains separate from speed: 16/16 correctness passed, while timing was confounded. C5’s r10 graph clearance was withdrawn because C++ caller edges were missing; r11 cold reparse is pending full-index output. A canceled Qwopus attempt supplies no measurement. These records do not support a comparative performance claim.
 
-Sources: [Qwen speculative](../handoffs/active/speculative-decoding-mtp-refresh.md) · [C5 graph](../handoffs/active/speculative-decoding-mtp-refresh.md) · [MTP](../handoffs/active/kv-unified-stack-rollout.md) · [2026-10-27 Codex full wrap](../progress/2026-10/2026-10-27-codex-ni-full-wrap-1456.md)
+Sources: [Qwen speculative](../handoffs/active/speculative-decoding-mtp-refresh.md) · [C5 graph](../handoffs/active/speculative-decoding-mtp-refresh.md) · [2026-10-27 Codex full wrap](../progress/2026-10/2026-10-27-codex-ni-full-wrap-1456.md)

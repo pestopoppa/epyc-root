@@ -5390,7 +5390,7 @@ Sources: [actor-backend handoff](../handoffs/active/autokernel-orchestrator-acto
 
 A focused process-limit proof distinguishes the process address-space ceiling from the row RAM reservation: the same-entry fixture passed with a 176 GiB process limit against a 192 GiB reservation, refused an 8 GiB ceiling for the declared 176 GiB process limit, and refused 193 GiB above the 192 GiB reservation. These are separate checks; a focused preflight pass establishes readiness only for its scoped entry and does not book or replay a workload. The KPF R14 attempt also exposed ordering: the grant must exist before creating the writer/arm, otherwise the writer can wait on a grant that the same transaction has not yet created; at the 08:32Z cutoff the first armed attempt was unplaceable and recovery was still required. The later scoped C5 checks establish row validation and grant admission only; no graph query or full CPU replay is claimed.
 
-Sources: [T1 same-entry review packet](../handoffs/active/vidya-belief-substrate-program.md) (operational evidence); [KPF R14 report](../handoffs/active/kv-prefix-fork-and-paged-attention.md); [C5 graph rebind handoff](../handoffs/active/kv-prefix-fork-and-paged-attention.md).
+Sources: [2026-10-27 wrap progress](../progress/2026-10/2026-10-27-codex-ni-01a16d6b.md); [KPF R14 handoff](../handoffs/active/kv-prefix-fork-and-paged-attention.md); [C5 graph handoff](../handoffs/active/speculative-decoding-mtp-refresh.md).
 
 ## Compiled Update — 2026-10-27 (operator wiki sweep, workspace-58)
 
@@ -5408,6 +5408,6 @@ Sources: [refactoring-multirepo-2026-10](../handoffs/active/refactoring-multirep
 
 **Confidence: verified** (accepted task receipts and source records listed below).
 
-HIL-15b remains partial: the architecture selected path B and has an extraction skeleton, but the runtime loop has not started. Policy decisions remain human-applied. UFH-12 R3 validated a private copy with 65,942 vectors and 32 TaskEmbedder queries (minimum cosine 1.0 against strict 0.99999), but no production adoption occurred.
+HIL-15b’s native pilot had started by 14:07Z and remained partial at the cutoff, with no aggregate verdict. UFH-12 R3 validated a private copy with 65,942 vectors and 32 TaskEmbedder queries (minimum cosine 1.0 against strict 0.99999), but no production adoption occurred.
 
-Sources: [HIL-15](../handoffs/active/user-facing-harness-index.md) · [Vidya belief substrate](../handoffs/active/vidya-belief-substrate-program.md) · [UFH-12](../handoffs/active/vidya-belief-substrate-program.md) · [Codex full wrap](../progress/2026-10/2026-10-27-codex-ni-full-wrap-1456.md)
+Sources: [HIL-15](../handoffs/active/harness-improvement-loop.md) · [UFH-12](../handoffs/active/repl-embedding-retrieval.md) · [Codex full wrap](../progress/2026-10/2026-10-27-codex-ni-full-wrap-1456.md)

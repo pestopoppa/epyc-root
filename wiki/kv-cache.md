@@ -1385,6 +1385,6 @@ Sources: [kv-unified-stack-rollout](../handoffs/active/kv-unified-stack-rollout.
 
 **Confidence: verified** (accepted task receipts and source records listed below).
 
-KPF R15’s native attempt is scientifically invalid: the required `gate.pid_owns_port` check was absent before seeding HTTP, so rc 0 is not a geometry result. The listener-repair successor passed entry-path controls and enrolled, but PF refused the run because the output disk had only 64 GiB free against a 144.28 GiB requirement. No threshold was lowered and no normal-run claim is made.
+KPF R15’s native attempt is scientifically invalid: the required `gate.pid_owns_port` check was absent before seeding HTTP, so rc 0 is not a geometry result. The listener-repair successor passed entry-path controls and enrolled, but PF refused the run because the declared 64 GiB output would leave 144.28 GiB free, below the 150 GiB floor. No threshold was lowered and no normal-run claim is made.
 
 Sources: [KPF handoff](../handoffs/active/kv-prefix-fork-and-paged-attention.md) · [GPU serving](../handoffs/active/gpu-serving-tie-in-program.md) · [2026-10-27 Codex full wrap](../progress/2026-10/2026-10-27-codex-ni-full-wrap-1456.md)

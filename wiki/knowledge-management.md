@@ -4192,4 +4192,4 @@ Sources: [vidya-belief-substrate-program](../handoffs/active/vidya-belief-substr
 
 The calendar overrun closeout was canonically ingested as one record with three frames and zero refusals; its evidence supports the captured wall-time/estimate observation only. The Vidya ledger is synchronized through intake-2510 with zero lag. The committed-conclusion register and CLI capture path are absent in this snapshot, so newly accepted conclusions remain an open wiring task; no tuple or measurement warrant was invented.
 
-Sources: [Vidya belief substrate](../handoffs/active/vidya-belief-substrate-program.md) · [UFH-12](../handoffs/active/vidya-belief-substrate-program.md) · [Workspace-58 progress](../progress/2026-10/2026-10-27-workspace-58.md) · [Codex full wrap](../progress/2026-10/2026-10-27-codex-ni-full-wrap-1456.md)
+Sources: [Vidya belief substrate](../handoffs/active/vidya-belief-substrate-program.md) · [Workspace-58 progress](../progress/2026-10/2026-10-27-workspace-58.md) · [Codex full wrap](../progress/2026-10/2026-10-27-codex-ni-full-wrap-1456.md)

@@ -16,9 +16,9 @@ This pass reconciles eligible receipts through 2026-10-27 14:56:35Z against the 
 | KPF-18 R15 | Original native control ended rc0 but is scientifically INVALID (0/3 accepted controls; gate lacked `pid_owns_port` before seed HTTP). The listener-repair successor passed entry-path controls and enrollment, then private PF refused at 64 GiB output because 144.28 GiB remained. No geometry conclusion or normal-run claim; external disk reclaim is the named dependency. |
 | META-ASSERT-1 | Diagnostic-only patch and separate CPU build/GPU launcher packet passed preparation controls and was relayed. No actual build/GPU run or correctness fix is evidenced; the existing task stays open. |
 | ABLATE-1 | Historical native build-only leave-one-out demonstration is already checked in `cpu-decode-roofline-program.md`; exact lever/restore markers and clean-worktree gate passed. Timing is descriptive; source-hardening commit `ebacfdd` is published but unmerged. No performance claim was added. |
-| C5 bundle gates | At cutoff, root review/closure acceptance was still pending. Current C3/C4/C5 templates and planted-failure receipts were identified, but this pass leaves the checkbox open. The later MAIN acceptance is explicitly post-cut and goes to the next per-task pass. |
+| C5 bundle gates | At cutoff, root review/closure acceptance was still pending. Current C3/C4/C5 templates and planted-failure receipts were identified, but this pass leaves the checkbox open. The later CH-GATE-SUBSHELL acceptance is explicitly post-cut and goes to the next per-task pass. |
 | INF-73 | Historical full suite and R10/R12 reference audit are already recorded; current r4/DS41 parent remains open. No duplicate closure. |
-| Peer test-only roster | `1ff090cc` roster test-only work is accepted on main with 39 checks passing; source integration request is pending, and no runtime change/main merge is claimed. |
+| Peer test-only roster | WS58 owner reply at 14:50Z confirms research `1ff090cc` was merged as `dc77ce388` and its push verified; root checkbox closure awaits exact IDs. The 39 checks passed. |
 | Other partials in the accepted 14:40Z harvest | INF-22 M4 GPU load is recorded as FAIL and HIL-15b as PARTIAL. V11-FA-4b M2 has only its first of eight cells; 13,528 positive residency proofs and 288/2,400 item files are progress, not a quality verdict. |
 
 Production llama.cpp, whisper.cpp and qwentts.cpp freeze state and the production kernel store were not touched. No HIL/M4/CT21 owner checkbox was rewritten.
@@ -35,4 +35,4 @@ Production llama.cpp, whisper.cpp and qwentts.cpp freeze state and the productio
 
 ## Publication boundary
 
-This artifact is prepared on private branch `codex/ni-full-wrap-1456` from the fixed snapshot above. The branch is pushed by explicit ref for WS58 review/integration; it is not promoted or written into the shared clone. Any receipt after the cutoff, including the later C5 gate acceptance, belongs to the next per-task pass.
+This artifact is prepared on private branch `codex/ni-full-wrap-1456` from the fixed snapshot above. The branch is pushed by explicit ref for WS58 review/integration; it is not promoted or written into the shared clone. Any receipt after the cutoff, including the later CH-GATE-SUBSHELL acceptance, belongs to the next per-task pass.

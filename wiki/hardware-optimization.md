@@ -6669,4 +6669,4 @@ Sources: [autokernel-champion-aggregate](../handoffs/active/autokernel-champion-
 
 The 2026-10-27 source cut records preparation and structural checks separately from measured speed. ABLATE-1 verified a historical CPU build/restore recipe but makes no new performance claim. INF-75 canary and V11 M2 are partial readiness evidence; M4 GPU load failed on an obsolete `--draft-max` argument. The production kernel set remains frozen.
 
-Sources: [ABLATE-1](../handoffs/active/cpu-decode-roofline-program.md) · [INF-75](../handoffs/active/autokernel-all-devices-all-dimensions.md) · [V11](../handoffs/active/kv-unified-stack-rollout.md) · [M4](../handoffs/active/kv-unified-stack-rollout.md) · [2026-10-27 Codex full wrap](../progress/2026-10/2026-10-27-codex-ni-full-wrap-1456.md)
+Sources: [ABLATE-1](../handoffs/active/cpu-decode-roofline-program.md) · [INF-75](../handoffs/active/autokernel-cross-workload-keep-gate.md) · [V11](../handoffs/active/kv-unified-stack-rollout.md) · [M4](../handoffs/active/gpu-serving-tie-in-program.md) · [2026-10-27 Codex full wrap](../progress/2026-10/2026-10-27-codex-ni-full-wrap-1456.md)

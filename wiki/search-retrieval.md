@@ -1550,4 +1550,4 @@ Sources: [REPL-EMB-2.10 Request B](../handoffs/active/repl-embedding-retrieval.m
 
 UFH-12 R3 validated a private migration copy: 65,942 vectors, 32 TaskEmbedder queries, minimum cosine 1.0 against the strict 0.99999 threshold. This is a successful snapshot-gate result, not production adoption; the production decision remains open and the parent 2.10c store was left untouched.
 
-Sources: [UFH-12](../handoffs/active/vidya-belief-substrate-program.md) · [Vidya belief substrate](../handoffs/active/vidya-belief-substrate-program.md) · [HIL-15](../handoffs/active/user-facing-harness-index.md) · [Codex full wrap](../progress/2026-10/2026-10-27-codex-ni-full-wrap-1456.md)
+Sources: [UFH-12](../handoffs/active/repl-embedding-retrieval.md) · [Codex full wrap](../progress/2026-10/2026-10-27-codex-ni-full-wrap-1456.md)
