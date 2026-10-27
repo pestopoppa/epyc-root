@@ -2617,6 +2617,10 @@ extensions, not amendments to the completed decision-tools checkpoint or applica
 
 - [ ] **KPF174D-C1-LAYOUT-SOURCE** — register native honest/flag_on KPF-17.4d producer IDs in the existing kv-prefix-fork adapter, run server-free real-writer/projection fixtures before either GPU load, ingest each sealed run after completion, and prove planning-context retrieval canary before calling the loop wired. Evidence producer: /mnt/raid0/llm/tmp/cal-1026/kpf174d-c1-layout-source/; run data sibling honest/flag-on dirs.
 
+## VB-KPF18-G3-PHYSICAL-LAYOUT — KPF18 group-3 native layout control (filed 2026-10-27, workspace-58; drafted by codex-ni)
+
+- [ ] **VB-KPF18-G3-PHYSICAL-LAYOUT** — the model-free gate is ACCEPTED: data-r4 57/57 + 6/6 controls, rc0 (source seal `be726b7a`, receipts `/mnt/raid0/llm/tmp/codex-ni-20261027-kpf18-q0-r4/results/{data,controls}/UNITTEST.json`). Adapter IDs are registered. Still owed: validate the sealed r5 integration/phase bridge and canonical writer through an admitted PF (r5 must first rebind to the r4 packet/seal); capture ONE bounded original-a1 group-3 diagnostic only under an owner grant; keep every INVALID construction and the historical verdicts; inspect native target partitions and final-draft geometry before any scoped finding. No parent closure. The planning-context canary is still needed before calling the loop wired.
+
 ## VB-AK-LONGCTX — AutoKernel long-context surfaces and the production context-bucket analysis (filed 2026-10-04, ak-ds41-main)
 
 - [ ] **VB-AK-LONGCTX — write side + projection for INF-81's long-context measurement sources** (CLAUDE.md *Belief
