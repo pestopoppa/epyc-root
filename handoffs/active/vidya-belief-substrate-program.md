@@ -3616,3 +3616,42 @@ Source: research intake session intake-ist-slq-20261022, Stage-3 plan `/mnt/raid
     - [ ] **VB-CANARY-GATE-1 — re-run both canaries after the Codex C1-C3 fixes land, and script them as the gate (filed 2026-10-25).** Promote `harness/canary_a.py` and `harness/canary_b.py` from the tmp run into a committed `scripts/vidya/canary/`, each with its known-conclusion assertion (A: row 337 in the belief section and a guard refusal; B: the 1472 keep with its numbers, and a non-zero Pareto count). Done when both exit 0 on the fixed code; then tick VB-CANARY-GATE.
 
 - [ ] **VB-AK-NATIVE-WIRE-WRITE** (filed 2026-10-26) — first step: audit existing actor-call adapter coverage against native `epyc.autokernel.actor_wire.v1`; reuse its existing ladder if reusable, no new grader (`claim_tuple.grade()` decides). Wire prospective native matrix finalization to capture the exact decided proposition, original status/checks, seat/client/config/suite identity, request/capture attestations, cleanup and completeness state, separating native protocol proof from mocked controls. Preserve PASS/FAIL/aborted/unvisited. Native wire outputs are verifier findings, not model-quality measurements; no timing or merge-validity claim; no retroactive warrant (historic R11 only as a located committed conclusion). Add strict reader mutation/refusal tests and the planning-context canary. Source-table row: `scripts/vidya/adapters/README.md`.
+
+## Projectability notes — results harvest 10-22..10-25 (workspace-58, 2026-10-27)
+
+These are notes only. The adapters README is not edited here; the owner applies any source rows.
+
+**Already projectable**
+
+| Rows | Adapter / source |
+|---|---|
+| KPF-64 replay A-D and arm E | chunk_kv (`--belief-out`) |
+| KPF-17/18/62 fork rows | kv_prefix_fork (VB-KVU-PF family) |
+| inf72 RT-1/RT-9 | moe-routing |
+| ds41-w5d | `ds41_w5d.py` |
+| spec-rng-1-2 | VB-SPEC-RNG-1-2-WIRE |
+| yarn native and extension arms | VB-YARN-AGG |
+| pb-qcost confirms | `clm_pbqcost:v1` |
+| new10-q38fn | VB-QUANTCMP-NEW10 |
+| CME-7S | clbench-cache-hit |
+| GPU-LEAK-1 probes | `gpu_leak_probe.beliefs.jsonl` |
+| s5-rtepfx2 | its emitted `chunk_kv.beliefs.jsonl` |
+
+- kpf18 `item3v2_load<N>` and the `hsf_*` sub-arms remain read-side gaps (VB-KVU-PF.2 / .6a).
+
+**Needs a write side**
+- [ ] VB-HARVEST-1022.a: the llama-bench ABA timing source should project the v11-050/051/052 GPU HOLDs, q38fn armP/armP2 speed, hsf-5p-microbench, c5-gate-b (sign-only, indicative) and kvu19b-p3.
+- [ ] VB-HARVEST-1022.b: fold-gate verdict records should project c3/c4/c5 gates, g2conc-c3/c5 and the correctness slices. This depends on VB-FOLDGATE-WRITE.
+- [ ] VB-HARVEST-1022.c: a stage1.verdicts parser for kpf62-g0 (bit-identical gates).
+- [ ] VB-HARVEST-1022.d: a cluster-bootstrap capability row for ufh14-lb3-4-confirm (+21.51 pp, CI [+11.83, +32.26]).
+- [ ] VB-HARVEST-1022.e: no adapter yet for the following, so each needs a source row:
+  - inf48-g10 (ORACLE_CULPRIT)
+  - inf42-g1 (frontdoor recall)
+  - fd-div-1b (ANOTHER_CAUSE)
+  - speech-d1 probes
+  - kpf60-p0-gpu
+  - m27-live-recall
+
+**Must project nothing**
+- s5-dripreview1, an all-`bad_final` vacuous run.
+- akx-lb3-2-attribution, hpr-b-64k-holdout and ufh14-lb7-1 (INVALID or report-only).
