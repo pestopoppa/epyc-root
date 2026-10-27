@@ -49,7 +49,7 @@ def kv_write(tmp_path, extra=None):
                                               results_path=res, measurements=ms, emitted_at=WHEN)
 
 
-def kpf62_write(tmp_path, measurements=None):
+def kpf62_write(tmp_path, measurements=None, protocol_id=chunk_kv.CAPTURE_SCHEMA):
     """Explicit synthetic payloads; these are reader fixtures, never model-run evidence."""
     res = tmp_path / "kpf62_synthetic_results.json"
     res.write_text('{"fixture_scope":"synthetic adapter unit data; not a model run"}')
@@ -93,7 +93,8 @@ def kpf62_write(tmp_path, measurements=None):
          "request_rows": requests, "position_rows": positions},
     ]
     return chunk_kv.write_belief_measurements(tmp_path, run_id="kpf62-synthetic", producer="synthetic-unit-fixture",
-                                              results_path=res, measurements=measurements or ms, emitted_at=WHEN)
+                                              results_path=res, measurements=measurements or ms, protocol_id=protocol_id,
+                                              emitted_at=WHEN)
 
 
 CARRIERS = {"inj": (injection_fixture, inj_write, 2), "kv": (chunk_kv, kv_write, 4)}
@@ -111,6 +112,15 @@ def test_round_trip_is_graded_by_the_shared_ladder(carrier, tmp_path):
     for nat in natives:
         q, t, reasons = ct.grade(mod.project(nat))
         assert (q, t, reasons) == ("Witnessed", "Attested", [])
+
+
+def test_unknown_protocol_remains_an_observation(tmp_path):
+    sidecar = kpf62_write(tmp_path, protocol_id="unknown")
+    native = chunk_kv.native_rows(sidecar)[0]
+    tup = chunk_kv.project(native)
+    assert native["row"]["protocol_id"] == "unknown"
+    assert tup.protocol_id == ""
+    assert ct.grade(tup)[:2] == ("Judged", "Located")
 
 
 def test_no_sidecar_zero_rows_and_tamper_voids(carrier, tmp_path):
