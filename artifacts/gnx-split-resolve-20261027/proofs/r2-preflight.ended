@@ -1,0 +1,7 @@
+rc=0 time=2026-10-27T17:15:49Z reason=exited
+job_id=codex-ni-gnx-split-resolve-r2-20261027
+owner=Codex NI / MAIN
+step=job-run
+estimated_wall_s=3000
+started=2026-10-27T17:15:46Z
+regions=72-73

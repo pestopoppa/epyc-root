@@ -1,0 +1,1 @@
+PASS official exact T1, live isolated PF poller validator/grant_ok, normal-shaped admit --require-proof

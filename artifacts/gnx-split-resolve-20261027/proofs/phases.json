@@ -1,0 +1,21 @@
+[
+  {
+    "phase": "prepare",
+    "argv": [
+      "/usr/bin/python3",
+      "-I",
+      "/mnt/raid0/llm/tmp/codex-ni-20261027-gnx-split-phase/split.py",
+      "prepare19",
+      "/mnt/raid0/llm/tmp/codex-ni-20261027-gnx-split-phase/source-view",
+      "/mnt/raid0/llm/tmp/codex-ni-20261027-gnx-split-phase/stage1-state"
+    ],
+    "cwd": "None",
+    "start": 1793117803.9716985,
+    "end": 1793117823.2926764,
+    "rc": 0,
+    "peak_rss": 5242101760,
+    "stdout": "/mnt/raid0/llm/tmp/codex-ni-20261027-gnx-split-phase/stage1-results/prepare.stdout",
+    "stderr": "/mnt/raid0/llm/tmp/codex-ni-20261027-gnx-split-phase/stage1-results/prepare.stderr",
+    "failure": null
+  }
+]

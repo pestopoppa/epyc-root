@@ -1,0 +1,34 @@
+{
+  "boundary_receipt_sha256": "8273ef22284676b6c4f590556e45105bd94b9a075ddc0b0c355d062e7463a471",
+  "checker_sha256": "aa9ed900be5fb7f3efca043bfddb2ac8963964710db0b702c7491729a74f8542",
+  "effect": "private-graph-write",
+  "ended_sha256": "426c32e2f01cac2b5ecad5c2aac85fd0347a6ed85f32cf84d409b7515a0b0cba",
+  "engine_path": "/mnt/raid0/llm/tmp/codex-ni-20261027-c5-graph-call-edge-repair/deps/filler_run12.sh",
+  "engine_sha256": "5602e0de1c49ccdb4b5ea82adb8d45b16dc32ebb4111bed9ccdf2c55ec7d8306",
+  "id": "codex-ni-gnx-split-resolve-r2-20261027",
+  "job_path": "/mnt/raid0/llm/tmp/codex-ni-20261027-gnx-split-phase/stage2-packet-r2/body.sh",
+  "job_sha256": "18ed6cda1ad2b0b967e8aff2c48e323b12bfe1e583daca7ded61dd8bf2a977b8",
+  "kind": "epyc.dryrun.pass.v1",
+  "launcher_path": "/mnt/raid0/llm/tmp/codex-ni-20261027-gnx-split-phase/stage2-packet-r2/launch.sh",
+  "launcher_sha256": "f227c34a38f1c7c665553c9b910370ff0f8c586a4b5c7f82b633ab2629c5aed0",
+  "nonce": "c720de79afef9a8ac39be99a6d8daad55601f2807b24f639",
+  "pf_cpus": [
+    72,
+    73
+  ],
+  "pf_regions": "72-73",
+  "policy_sha256": "754bf8b1e40423f1fde3662683b3c28aff594158a8adf0403a1e421f761d6db9",
+  "row": {
+    "claimed_cpus": [
+      72,
+      73
+    ],
+    "est_output_GiB": 12.0,
+    "process_limit_GiB": 20.0,
+    "ram_gib": 24.0,
+    "requested_window_s": 3000,
+    "scratch_root": "/mnt/raid0/llm/tmp/codex-ni-20261027-gnx-split-phase"
+  },
+  "scope": "full-row-affinity",
+  "source_manifest_sha256": "c93fc76adc4227e8d67f26d16da59167a81c95c960a3a5f8aa9284c838143ab3"
+}
