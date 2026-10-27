@@ -357,7 +357,7 @@ def phase_c(base: str, sink: L.JsonlSink, tokens: int, gen: int) -> dict:
 
     def fire(i: int, arm: str, extra: dict, dest: list[dict]) -> None:
         dest[i] = L.stream_request(f"{base}/v1/chat/completions",
-                                   chat_body(prompts[i][0], max_tokens=gen, **extra))
+                                   chat_body(prompts[i][0], max_tokens=gen, cache_prompt=False, **extra))
 
     b = busy(base)
     th = [threading.Thread(target=fire, args=(i, "dflash2", {}, res)) for i in range(4)]
@@ -397,7 +397,8 @@ def phase_c(base: str, sink: L.JsonlSink, tokens: int, gen: int) -> dict:
     span = (max(ends) - min(starts)) if starts and ends else None
     dn = sum(r.get("draft_n") or 0 for r in rows if r["arm"] == "dflash2")
     da = sum(r.get("draft_n_accepted") or 0 for r in rows if r["arm"] == "dflash2")
-    return {"rows": rows, "aggregate_decode_tps_span": round(tot / span, 2) if span else None,
+    return {"rows": rows, "cache_clean": all(r.get("cache_n") == 0 for r in rows),
+            "aggregate_decode_tps_span": round(tot / span, 2) if span else None,
             "sum_per_stream_decode_tps": round(sum(r.get("decode_tps") or 0 for r in rows if r["arm"] == "dflash2"), 2),
             "draft_acceptance": round(da / dn, 4) if dn else None}
 
@@ -576,6 +577,7 @@ def main() -> int:
     ap.add_argument("--c4-tokens", type=int, default=16000)
     ap.add_argument("--c4-gen", type=int, default=1000)
     ap.add_argument("--wait-idle-s", type=float, default=600)
+    ap.add_argument("--output-dir", type=Path, help="new unique result directory; default remains the shared results tree")
     args = ap.parse_args()
     phases = {p.strip().upper() for p in args.phases.split(",") if p.strip()}
     targets = [int(t) for t in args.targets.split(",")]
@@ -631,7 +633,9 @@ def main() -> int:
         ], problems)
 
     L.require_owner(args, "this sends inference to :8083")
-    od = L.out_dir("q38_t7")
+    od = args.output_dir if args.output_dir is not None else L.out_dir("q38_t7")
+    if args.output_dir is not None:
+        od.mkdir(parents=True, exist_ok=False)
     sink = L.JsonlSink(od / "calls.jsonl")
     pf = preflight(args.base)
     print("preflight:", json.dumps({k: pf[k] for k in ("build", "spec_types", "n_ctx_slot", "argv_nmax7", "slots_debug_env", "busy")}
