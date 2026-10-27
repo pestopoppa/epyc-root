@@ -1,0 +1,25 @@
+[region-lock] acquiring regions ['q3'] as role='build' (timeout_s=15.0) …
+[region-lock] held ['q3'] after 0.0s wait; running: taskset -c 72,73 bash /mnt/raid0/llm/tmp/refactor-01a16fc3/sc81-census-unblock/q3-preflight/q3-child.sh /mnt/raid0/llm/tmp/codex-ni-20261027-kpf18-disk-unblock/forecast-actual-once-q3 /bin/bash /mnt/raid0/llm/tmp/codex-ni-20261027-kpf18-disk-unblock/q3-forecast-once.sh
+GATE_FIXTURE_DIR=/mnt/raid0/llm/tmp/codex-ni-20261027-kpf18-disk-unblock/forecast-actual-once-q3/tmp/q3-gate.wnCBtc
+Q3 grant gate fixtures PASS
+RSS_FIXTURE_DIR=/mnt/raid0/llm/tmp/codex-ni-20261027-kpf18-disk-unblock/forecast-actual-once-q3/tmp/q3-rss.RJk2sk
+...
+----------------------------------------------------------------------
+Ran 3 tests in 0.000s
+
+OK
+Q3 RSS watcher fixtures PASS
+ADMITTED 2026-10-27T19:27:07Z CPU72,73 OMP1 rolebuild <=260s monitored RSS budget 4GiB; sampled peak
+Pid:	846409
+PPid:	846319
+Cpus_allowed_list:	72-73
+command=/bin/bash /mnt/raid0/llm/tmp/codex-ni-20261027-kpf18-disk-unblock/q3-forecast-once.sh
+BEFORE free bytes
+       Avail
+200368914432
+SAME_ENTRY_RC=70
+DRYRUN_REFUSED: disk free-after-output 130.61 GiB < floor 150 GiB
+AFTER free bytes
+       Avail
+200368889856
+RSS_SAMPLED_PEAK_KIB=31868 LIMIT_KIB=4194304 drained=True

@@ -1,0 +1,2 @@
+MAIN-approved forecast56 source-only; no inference, grant or reclaim authorization
+source-seal-sha256=2045e0f67b16e8ce7bebd8623879659c6494c7a3aa235750d878a3a67c8a8e22

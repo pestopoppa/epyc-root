@@ -1,0 +1,23 @@
+[region-lock] acquiring regions ['q3'] as role='build' (timeout_s=15.0) …
+[region-lock] held ['q3'] after 0.0s wait; running: taskset -c 72,73 bash /mnt/raid0/llm/tmp/refactor-01a16fc3/sc81-census-unblock/q3-preflight/q3-child.sh /mnt/raid0/llm/tmp/codex-ni-20261027-kpf18-disk-unblock/forecast-test2-q3 /bin/bash /mnt/raid0/llm/tmp/codex-ni-20261027-kpf18-forecast56/q3-test.sh
+GATE_FIXTURE_DIR=/mnt/raid0/llm/tmp/codex-ni-20261027-kpf18-disk-unblock/forecast-test2-q3/tmp/q3-gate.zxNR3r
+Q3 grant gate fixtures PASS
+RSS_FIXTURE_DIR=/mnt/raid0/llm/tmp/codex-ni-20261027-kpf18-disk-unblock/forecast-test2-q3/tmp/q3-rss.Hj68fq
+...
+----------------------------------------------------------------------
+Ran 3 tests in 0.000s
+
+OK
+Q3 RSS watcher fixtures PASS
+ADMITTED 2026-10-27T19:18:56Z CPU72,73 OMP1 rolebuild <=260s monitored RSS budget 4GiB; sampled peak
+Pid:	776115
+PPid:	775948
+Cpus_allowed_list:	72-73
+command=/bin/bash /mnt/raid0/llm/tmp/codex-ni-20261027-kpf18-forecast56/q3-test.sh
+...
+----------------------------------------------------------------------
+Ran 3 tests in 0.000s
+
+OK
+WATCH_FIXTURES_PASS
+RSS_SAMPLED_PEAK_KIB=48836 LIMIT_KIB=4194304 drained=True
