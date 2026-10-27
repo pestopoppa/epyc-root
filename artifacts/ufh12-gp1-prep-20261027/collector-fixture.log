@@ -1,0 +1,23 @@
+[region-lock] acquiring regions ['q3'] as role='build' (timeout_s=15.0) …
+[region-lock] held ['q3'] after 0.0s wait; running: taskset -c 72,73 bash /mnt/raid0/llm/tmp/refactor-01a16fc3/sc81-census-unblock/q3-preflight/q3-child.sh /mnt/raid0/llm/tmp/codex-ni-20261027-ufh12-shipped-parity/test4 /mnt/raid0/llm/tmp/repl-emb-25-26-20261020/venv/bin/python /mnt/raid0/llm/tmp/codex-ni-20261027-ufh12-shipped-parity/test_collect.py
+GATE_FIXTURE_DIR=/mnt/raid0/llm/tmp/codex-ni-20261027-ufh12-shipped-parity/test4/tmp/q3-gate.y6Bco0
+Q3 grant gate fixtures PASS
+RSS_FIXTURE_DIR=/mnt/raid0/llm/tmp/codex-ni-20261027-ufh12-shipped-parity/test4/tmp/q3-rss.2edehI
+...
+----------------------------------------------------------------------
+Ran 3 tests in 0.000s
+
+OK
+Q3 RSS watcher fixtures PASS
+ADMITTED 2026-10-27T22:20:51Z CPU72,73 OMP1 rolebuild <=260s monitored RSS budget 4GiB; sampled peak
+Pid:	1674092
+PPid:	1673998
+Cpus_allowed_list:	72-73
+command=/mnt/raid0/llm/tmp/repl-emb-25-26-20261020/venv/bin/python /mnt/raid0/llm/tmp/codex-ni-20261027-ufh12-shipped-parity/test_collect.py 
+prefix mismatch refused before HTTP
+PASS: 64 exact lists of four, all prefixes, native compare and belief write
+missing refused ValueError response indices
+duplicate refused ValueError response indices
+dims refused ValueError setting an array element with a sequence. The requested array has an inhomogeneous shape after 1 dimensions. The detected shape was (4,) + inhomogeneo
+nonfinite refused ValueError G-P1 FAIL
+RSS_SAMPLED_PEAK_KIB=84440 LIMIT_KIB=4194304 drained=True
