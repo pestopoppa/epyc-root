@@ -37,8 +37,12 @@ def main():
     for e in entries:
         if set(e) != {'source', 'trash', 'device', 'inode'}: raise ValueError('entry fields')
         p = Path(e['trash'])
-        if p.parent != TRASH or p.is_symlink() or p.name in seen: raise ValueError('trash identity or duplicate')
-        seen.add(p.name); st = p.lstat()
+        if not p.is_absolute() or not p.is_relative_to(TRASH) or p == TRASH or '..' in p.parts or str(p) in seen: raise ValueError('trash identity or duplicate')
+        cur = TRASH
+        for component in p.relative_to(TRASH).parts:
+            cur = cur / component
+            if cur.is_symlink(): raise ValueError('symlink in trash path')
+        seen.add(str(p)); st = p.lstat()
         if (st.st_dev, st.st_ino) != (e['device'], e['inode']): raise ValueError('trash inode changed')
         wanted = 'trashed ' + e['source'] + ' -> ' + e['trash'] + ' size='
         matches = []
@@ -50,17 +54,17 @@ def main():
     print(json.dumps(record, indent=2))
     print('Human must independently verify the real operator decision and custody/KEEP constraints.')
     if input('Type EXACT-SAME-DAY-APPROVAL to proceed: ') != 'EXACT-SAME-DAY-APPROVAL': raise ValueError('human confirmation missing')
-    fd = os.open(TRASH, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW)
-    try:
-        for e in entries:
-            p = Path(e['trash']); st = p.lstat()
-            if p.is_symlink() or (st.st_dev, st.st_ino) != (e['device'], e['inode']): raise ValueError('changed; stop partial batch')
+    for e in entries:
+        p = Path(e['trash']); st = p.lstat()
+        if p.is_symlink() or p.resolve(strict=True) != p or (st.st_dev, st.st_ino) != (e['device'], e['inode']): raise ValueError('changed; stop partial batch')
+        fd = os.open(p.parent, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW)
+        try:
             info = {'cat':'TRASH_SWEEP_SAME_DAY_DRAFT', 'source':e['source'], 'trash':e['trash'], 'approval_reference':record['approval_reference']}
             event({**info, 'event':'purge-intent'})
             if p.is_dir(): shutil.rmtree(p.name, dir_fd=fd)
             else: os.unlink(p.name, dir_fd=fd)
             event({**info, 'event':'purge-complete'})
-    finally: os.close(fd)
+        finally: os.close(fd)
 
 if __name__ == '__main__':
     try: main()

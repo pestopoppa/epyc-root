@@ -76,7 +76,7 @@ class RetentionTests(unittest.TestCase):
 
     def test_ratification_draft_scoped_fixture(self):
         with tempfile.TemporaryDirectory() as t:
-            root = Path(t); trash = root / 'trash'; trash.mkdir(); target = trash / 'item'; target.write_text('data')
+            root = Path(t); trash = root / 'trash'; trash.mkdir(); (trash / 'batch').mkdir(); target = trash / 'batch' / 'item'; target.write_text('data')
             policy = root / 'policy'; policy.write_text(ratify.SENTINEL); audit = root / 'audit'
             day = datetime.datetime.now(datetime.timezone.utc).date().isoformat(); st = target.stat()
             audit.write_text(json.dumps({'cat':'GUARDED_RM', 'ts':day+'T00:00:00+0000', 'msg':f'trashed /tmp/source -> {target} size=4'}) + '\n')
