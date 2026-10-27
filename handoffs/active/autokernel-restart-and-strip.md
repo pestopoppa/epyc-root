@@ -240,8 +240,8 @@ refused, asserted rather than assumed.
 
 ## 2026-08-28 — dashboard deployment gap (the reason four fixes were invisible)
 
-Landed dashboard code never reached the served tree: the hub serves `${EPYC_ROOT}` directly and
-that tree sat **35 commits behind** origin/main. Separately, `cmd_loop` called neither the sync nor
+At the time, landed dashboard code never reached the served tree: the hub served `${EPYC_ROOT}` directly and
+that tree sat **35 commits behind** origin/main. The current hub instead serves the read-only full-tree view described under AK-DEPLOY-2. Separately, `cmd_loop` called neither the sync nor
 the pre-existing `check_hub_stale_source` — both ran only in `cmd_once`, the cron-style one-shot
 nobody invokes. The staleness watchdog was correct and simply unreachable on the path in use.
 
@@ -254,10 +254,11 @@ nobody invokes. The staleness watchdog was correct and simply unreachable on the
       comparing to local HEAD calls every correctly-deployed file a hand edit, because the served
       tree deliberately lags. It now judges by PROVENANCE — a blob this project has published for
       that path is a deployment; one that never existed on origin/main is someone's work.
-- [ ] **AK-DEPLOY-2 — the served tree still drifts outside `dashboard/`.** The sync is deliberately
-      scoped, so handoffs, scripts and progress on the served tree keep lagging origin/main with no
-      reconciler. Decide whether anything beyond `dashboard/` should auto-advance, or whether the
-      served tree should simply be pinned and read-only.
+- [x] **AK-DEPLOY-2 — reconcile served-tree drift outside `dashboard/`.** ✅ 2026-10-27 — The operator-approved dedicated read-only view advances the entire served tree to origin/main, including handoffs, scripts and progress. `refresh_hub_view.sh` requires a marked standalone view and refreshes generated handoff artifacts; the shared working tree is not its deployment target. The former dashboard-only scope remains the fallback for a non-view tree.
+
+      Live verification at 19:31 UTC: hub PID 1899355 served `/mnt/raid0/llm/views/epyc-root-main`; its detached HEAD and origin/main were `b3ef3eb2a011e0edd9cc06a3a5690d63d0b88a73`, with clean porcelain. The historical stale champion handoff matched published blob `07c828776d18566814a3ada697371d7e0af50f98`. The supervisor log recorded a successful refresh to that commit at 19:22:24 UTC with regeneration, and an unchanged successful refresh at 19:30:02. `/api/handoff_board` returned 200 and included this handoff; `/api/health` reported the board fresh, observed and populated. The hub started 2026-10-24 08:50:27 UTC after the served `dashboard/server.py` mtime 08:50:03; its source derives handoff paths from the served module tree. This closes the full-tree drift issue, not unrelated producer health findings. [no-belief: operational liveness and deployment observation]
+
+      **Historical evidence (2026-08-28):**
 
       **Measured 2026-08-28, and it is worse than "lagging".** The served tree's local `main` stood
       **45 behind / 1 ahead** of origin/main, and carried
