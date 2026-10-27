@@ -1,0 +1,7 @@
+# INF-75 W3 host-excluding v2 — 2026-10-27
+
+V1 failed rc1 at 16:34:30Z before model load: `/mnt/raid0/llm/tmp/codex-ni-20261027-inf75-host-excluding/v1/out-pre-eviction.json` records final free 28,822 MB on node 2 and 42,283 MB on node 3 (~69.4 GiB combined). Node 2 remained below the 40 GiB target; its 42 GiB touch child failed twice. The helper discarded rc/stderr and used a 60 s timeout, so the failure cause is unknown. Inactive file cache is not free and no 128 GiB owned-node free capacity was demonstrated.
+
+MAIN approved v2 as an owner-granted structural observation attempt, not a proven fix. `/mnt/raid0/llm/tmp/codex-ni-20261027-inf75-host-excluding/v2/` retains 40 GiB/node scoped pre-eviction, 128 GiB reservation, nodes 2/3 only and original workload; touch timeout is 120 s and child rc/stderr/elapsed are captured. No global cache flush or HPR node 0/1 access. Manifest `bceecd45416d7ead796425a4149f3ae5b2c6bbc675e633df30afb166bcd51233`; official same-entry scoped preflight, normal admission, validator 0/0, temporary-poller grant check and diagnostic fixtures passed. The poller was retired. No v2 inference or proof of eviction success yet. Full P0d and native shapes stay open.
+
+Owner priority-next message `be4e12ed-cc72-4f9d-a15a-d425504e78c5` socket-sent; recipient confirmation pending. Raw v1 and v2 receipts remain in place. [no-belief: preparation and admission checks, no census measurement]
