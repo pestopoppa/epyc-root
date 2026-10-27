@@ -1,0 +1,35 @@
+{
+ "ppl_P": 2.979,
+ "ppl_P_se": 0.06187,
+ "ppl_UD_rerun": 2.9868,
+ "ppl_UD_se": 0.06308,
+ "ppl_UD_step1": 2.9925,
+ "ppl_uniform_step1": 3.5244,
+ "delta_P_vs_UD_rerun": -0.007800000000000029,
+ "delta_pct": -0.2611490558457219,
+ "gap_recovered_frac": 1.0253807106598987,
+ "coherence": {
+  "p1": {
+   "common_prefix_chars": 31,
+   "len_P": 31,
+   "len_UD": 31,
+   "distinct_P": 1.0,
+   "distinct_UD": 1.0,
+   "P_head": "The capital of France is Paris.",
+   "UD_head": "The capital of France is Paris."
+  },
+  "p2": {
+   "common_prefix_chars": 236,
+   "len_P": 448,
+   "len_UD": 463,
+   "distinct_P": 0.91,
+   "distinct_UD": 0.881,
+   "P_head": "The L3 cache acts as a large, shared memory pool that stores frequently accessed data and instructions closer to the CPU cores than main RAM. By keeping this cr",
+   "UD_head": "The L3 cache acts as a large, shared memory pool that stores frequently accessed data and instructions closer to the CPU cores than main RAM. By keeping this cr"
+  }
+ },
+ "coherence_ok": true,
+ "control_UD_ok": true,
+ "ppl_go": true,
+ "verdict": "GO"
+}

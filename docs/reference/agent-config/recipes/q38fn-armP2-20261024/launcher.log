@@ -1,0 +1,66 @@
+2026-10-24T10:21:25Z [q38fn-armP2-ppl] launcher up pid=1528996 class=cpu poll=45s grants=/mnt/raid0/llm/tmp/compute-flags/grants stop=/mnt/raid0/llm/tmp/compute-flags/STOP.ws58-q38fn-armP2-ppl minwin=1800s ports=none
+2026-10-24T11:29:40Z [q38fn-armP2-ppl] START regions=72-95 cpus=72-95 threads=24 gpu=0 end=2026-10-24T12:29Z
+[region-lock] acquiring regions ['q3'] as role='build' (timeout_s=3560.0) …
+[region-lock] held ['q3'] after 0.0s wait; running: /bin/bash /mnt/raid0/llm/tmp/fillers-3c4ca599/filler_run9.sh --inner --id q38fn-armP2-ppl --class cpu --cmd bash /mnt/raid0/llm/tmp/ws58-q38fn-armP2-20261024/job.sh --min-window 1800 --stop /mnt/raid0/llm/tmp/compute-flags/STOP.ws58-q38fn-armP2-ppl --port  --workdir /mnt/raid0/llm/tmp --gpu-threads 184-191
+[2026-10-24T11:29:40Z] START s1_dryrun (est 120s)
+[2026-10-24T11:29:45Z] END s1_dryrun rc=0
+[2026-10-24T11:29:45Z] START s2_requant (est 1500s)
+[2026-10-24T12:25:32Z] s2_requant: stop/deadline, terminating own pid 1564470
+job rc=75
+2026-10-24T12:25:50Z [q38fn-armP2-ppl] group 1465022 dead (verified)
+2026-10-24T12:25:50Z [q38fn-armP2-ppl] ended rc=75 reason=exited (grant deleted)
+2026-10-24T12:26:35Z [q38fn-armP2-ppl] START regions=72-95 cpus=72-95 threads=24 gpu=0 end=2026-10-24T13:26Z
+[region-lock] acquiring regions ['q3'] as role='build' (timeout_s=3565.0) …
+[region-lock] held ['q3'] after 0.0s wait; running: /bin/bash /mnt/raid0/llm/tmp/fillers-3c4ca599/filler_run9.sh --inner --id q38fn-armP2-ppl --class cpu --cmd bash /mnt/raid0/llm/tmp/ws58-q38fn-armP2-20261024/job.sh --min-window 1800 --stop /mnt/raid0/llm/tmp/compute-flags/STOP.ws58-q38fn-armP2-ppl --port  --workdir /mnt/raid0/llm/tmp --gpu-threads 184-191
+[2026-10-24T12:26:35Z] s1_dryrun already done
+[2026-10-24T12:26:35Z] START s2_requant (est 1500s)
+[2026-10-24T13:22:31Z] s2_requant: stop/deadline, terminating own pid 668651
+job rc=75
+2026-10-24T13:22:50Z [q38fn-armP2-ppl] group 668535 dead (verified)
+2026-10-24T13:22:50Z [q38fn-armP2-ppl] ended rc=75 reason=exited (grant deleted)
+2026-10-24T13:23:35Z [q38fn-armP2-ppl] START regions=72-95 cpus=72-95 threads=24 gpu=0 end=2026-10-24T14:23Z
+[region-lock] acquiring regions ['q3'] as role='build' (timeout_s=3565.0) …
+[region-lock] held ['q3'] after 0.0s wait; running: /bin/bash /mnt/raid0/llm/tmp/fillers-3c4ca599/filler_run9.sh --inner --id q38fn-armP2-ppl --class cpu --cmd bash /mnt/raid0/llm/tmp/ws58-q38fn-armP2-20261024/job.sh --min-window 1800 --stop /mnt/raid0/llm/tmp/compute-flags/STOP.ws58-q38fn-armP2-ppl --port  --workdir /mnt/raid0/llm/tmp --gpu-threads 184-191
+[2026-10-24T13:23:36Z] s1_dryrun already done
+[2026-10-24T13:23:36Z] START s2_requant (est 1500s)
+[2026-10-24T14:19:31Z] s2_requant: stop/deadline, terminating own pid 1066875
+job rc=75
+2026-10-24T14:19:51Z [q38fn-armP2-ppl] group 1066746 dead (verified)
+2026-10-24T14:19:51Z [q38fn-armP2-ppl] ended rc=75 reason=exited (grant deleted)
+2026-10-24T14:20:36Z [q38fn-armP2-ppl] START regions=72-95 cpus=72-95 threads=24 gpu=0 end=2026-10-24T15:20Z
+[region-lock] acquiring regions ['q3'] as role='build' (timeout_s=3564.0) …
+[region-lock] held ['q3'] after 0.0s wait; running: /bin/bash /mnt/raid0/llm/tmp/fillers-3c4ca599/filler_run9.sh --inner --id q38fn-armP2-ppl --class cpu --cmd bash /mnt/raid0/llm/tmp/ws58-q38fn-armP2-20261024/job.sh --min-window 1800 --stop /mnt/raid0/llm/tmp/compute-flags/STOP.ws58-q38fn-armP2-ppl --port  --workdir /mnt/raid0/llm/tmp --gpu-threads 184-191
+[2026-10-24T14:20:36Z] s1_dryrun already done
+[2026-10-24T14:20:36Z] START s2_requant (est 1500s)
+[2026-10-24T15:16:31Z] s2_requant: stop/deadline, terminating own pid 2296073
+job rc=75
+2026-10-24T15:16:49Z [q38fn-armP2-ppl] group 2295784 dead (verified)
+2026-10-24T15:16:49Z [q38fn-armP2-ppl] ended rc=75 reason=exited (grant deleted)
+2026-10-24T15:17:34Z [q38fn-armP2-ppl] START regions=48-71 cpus=48-71 threads=24 gpu=0 end=2026-10-24T16:16Z
+[region-lock] acquiring regions ['q2'] as role='build' (timeout_s=3506.0) …
+[region-lock] held ['q2'] after 0.0s wait; running: /bin/bash /mnt/raid0/llm/tmp/fillers-3c4ca599/filler_run9.sh --inner --id q38fn-armP2-ppl --class cpu --cmd bash /mnt/raid0/llm/tmp/ws58-q38fn-armP2-20261024/job.sh --min-window 1800 --stop /mnt/raid0/llm/tmp/compute-flags/STOP.ws58-q38fn-armP2-ppl --port  --workdir /mnt/raid0/llm/tmp --gpu-threads 184-191
+[2026-10-24T15:17:35Z] s1_dryrun already done
+[2026-10-24T15:17:35Z] START s2_requant (est 1500s)
+[2026-10-24T16:12:34Z] s2_requant: stop/deadline, terminating own pid 3405358
+job rc=75
+2026-10-24T16:12:52Z [q38fn-armP2-ppl] group 3405241 dead (verified)
+2026-10-24T16:12:52Z [q38fn-armP2-ppl] ended rc=75 reason=exited (grant deleted)
+2026-10-25T00:00:55Z [q38fn-armP2-ppl] START regions=0-71 cpus=0-71 threads=72 gpu=0 end=2026-10-25T04:10Z
+[region-lock] acquiring regions ['q0', 'q1', 'q2'] as role='build' (timeout_s=14945.0) …
+[region-lock] held ['q0', 'q1', 'q2'] after 0.0s wait; running: /bin/bash /mnt/raid0/llm/tmp/fillers-3c4ca599/filler_run9.sh --inner --id q38fn-armP2-ppl --class cpu --cmd bash /mnt/raid0/llm/tmp/ws58-q38fn-armP2-20261024/job.sh --min-window 1800 --stop /mnt/raid0/llm/tmp/compute-flags/STOP.ws58-q38fn-armP2-ppl --port  --workdir /mnt/raid0/llm/tmp --gpu-threads 184-191
+[2026-10-25T00:00:55Z] s1_dryrun already done
+[2026-10-25T00:00:55Z] START s2_requant (est 1500s)
+[2026-10-25T03:38:47Z] END s2_requant rc=0
+[2026-10-25T03:38:47Z] START s3_ppl_P (est 900s)
+[2026-10-25T03:40:47Z] END s3_ppl_P rc=0
+[2026-10-25T03:40:47Z] START s3_ppl_UD (est 900s)
+[2026-10-25T03:43:17Z] END s3_ppl_UD rc=0
+[2026-10-25T03:43:17Z] START s4_coh_P (est 420s)
+[2026-10-25T03:43:33Z] END s4_coh_P rc=0
+[2026-10-25T03:43:33Z] START s4_coh_UD (est 420s)
+[2026-10-25T03:43:48Z] END s4_coh_UD rc=0
+GO
+[2026-10-25T03:43:48Z] done
+job rc=0
+2026-10-25T03:43:49Z [q38fn-armP2-ppl] ended rc=0 reason=complete (grant deleted)
+2026-10-25T03:43:49Z [q38fn-armP2-ppl] ALL DONE: wrote /mnt/raid0/llm/tmp/compute-flags/grants/q38fn-armP2-ppl.complete, row marked COMPLETE; exiting for good
