@@ -33,6 +33,7 @@ OBSERVATION and the producer's citation is kept verbatim in ``extra.protocol_id_
 from __future__ import annotations
 
 import re
+import json
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
@@ -54,12 +55,14 @@ SOURCE_KIND = "speech-ggml-optest-measurement"
 LITERATURE_KIND = "upstream_statement"
 #: kind -> (program, substring the tree's repo must contain)
 MEASURED_KINDS = {
+    "meta_qwen4exp_native": ("META-qwen4exp", "llama"),
     "cs43_1_speech_ggml_optest": ("CS-43.1", "qwentts"),
     "ch18d_v11_gfx90a_optest": ("CH-18.d", "llama"),
 }
 RECORD_KINDS = frozenset(MEASURED_KINDS) | {LITERATURE_KIND}
 #: metric -> direction. Both count failing cases out of ``suite_case_count``.
 METRICS = {
+    "meta_qwen4exp_failed_cases": "lower_better",
     "test_backend_ops_failed_cases": "lower_better",
     "graphs_fusion_identity_mismatch_cases": "lower_better",
 }
@@ -83,6 +86,18 @@ def _pos_int(v: Any) -> bool:
 
 
 def _fields_problems(kind: str, f: Mapping[str, Any], row: Mapping[str, Any]) -> list[str]:
+    if kind == "meta_qwen4exp_native":
+        p = []
+        for key in ("backend", "device_arch", "op", "binary_sha256", "residency_proof", "source_seal_sha256", "binding_sha256"):
+            if not ns.text(f.get(key)):
+                p.append(f"fields.{key} is required")
+        for key in ("binary_sha256", "source_seal_sha256", "binding_sha256"):
+            if not _hex64(f.get(key)): p.append(f"fields.{key} must be sha256")
+        if f.get("op") != "qwen4exp-meta-moe-nmse" or f.get("backend") != "ROCm0": p.append("wrong native scope")
+        if f.get("suite_case_count") != 1 or f.get("n_failed") not in (0, 1) or row.get("value") != f.get("n_failed") or row.get("reps") != 1: p.append("invalid case count")
+        if not ns.nonneg_int(f.get("positive_device_samples")) or f["positive_device_samples"] < 2: p.append("missing during-run residency")
+        if not isinstance(f.get("tree"), dict) or f["tree"].get("commit") != "520ad4f55d805a544862be88d652ec68fcd194ab": p.append("wrong candidate")
+        return p
     p = [f"fields.{k} must be a non-empty string"
          for k in ("backend", "device_arch", "rocm_version", "ggml_version", "op")
          if not ns.text(f.get(k))]
@@ -209,7 +224,7 @@ def build_row(rec: Mapping[str, Any], *, run_id: str, producer: str, emitted_at:
         row["claim"] = (f"LITERATURE (upstream {f.get('pr_ref')}, {f.get('author')}, "
                         f"{f.get('published_date')}): {f.get('statement')} -- not our measurement")
     else:
-        metric = rec.get("metric", "test_backend_ops_failed_cases")
+        metric = rec.get("metric", "meta_qwen4exp_failed_cases" if kind == "meta_qwen4exp_native" else "test_backend_ops_failed_cases")
         program = MEASURED_KINDS[kind][0]
         row.update(program=program, metric=metric, value=f.get("n_failed"), unit="cases",
                    metric_direction=METRICS.get(metric), date=emitted_at[:10],
@@ -226,6 +241,8 @@ def build_row(rec: Mapping[str, Any], *, run_id: str, producer: str, emitted_at:
             f"{f.get('hip_graphs')} fusion={f.get('fusion')}, first divergence step "
             f"{f.get('first_divergence_step')}/{f.get('divergence_steps_checked')} "
             f"[{tree.get('repo')}@{tree.get('branch')} {tree.get('commit')}]")
+    if kind == "meta_qwen4exp_native":
+        row["claim"] = f"Synthetic qwen4exp Meta MoE NMSE fixture: {f.get('n_failed')} failed of one; not a full C5 gate or model-quality claim"
     try:
         row["measurement_id"] = _identity(row)
     except CaptureError as exc:
@@ -293,6 +310,21 @@ def project(native: Any) -> ClaimTuple:
         raise ProjectionError("speech op-test row is not a producer-authored capture: "
                               + "; ".join(problems))
     f = row["fields"]
+    if row["record_kind"] == "meta_qwen4exp_native":
+        try:
+            result_path = Path(row["results_path"])
+            if not ns.results_present(row): raise ValueError("result digest")
+            result = json.loads(result_path.read_text())
+            if result.get("schema") != "epyc.model_free_backend_correctness.v1" or result.get("source_commit") != f["tree"]["commit"] or result.get("source_seal_sha256") != f["source_seal_sha256"] or result.get("binding_sha256") != f["binding_sha256"]: raise ValueError("result identity")
+            if result.get("gates", {}).get("fixture_process_rc") != 0 or result["gates"].get("meta_moe_nmse") != "OK" or not result.get("reaped"): raise ValueError("fixture status")
+            for filename, digest in result["raw_sha256"].items():
+                if filename not in ("stdout", "stderr", "residency.jsonl", "linkage.log") or ns.file_sha256(result_path.parent / filename) != digest: raise ValueError("raw digest")
+            if set(result["raw_sha256"]) != {"stdout", "stderr", "residency.jsonl", "linkage.log"}: raise ValueError("raw set")
+            samples = [json.loads(line) for line in (result_path.parent / "residency.jsonl").read_text().splitlines()]
+            positive = sum(x.get("pid") == result["pid"] and x.get("start_ticks") == result["start_ticks"] and type(x.get("time_ns")) is int and result["start_ns"] <= x["time_ns"] <= result["end_ns"] and x.get("kfd_gpu_id") == result["kfd_gpu_id"] and x.get("pid_in_kfd") is True and isinstance(x.get("vram_bytes"), int) and x["vram_bytes"] > 0 for x in samples)
+            if positive < 2 or positive != f["positive_device_samples"] or positive != result["gates"]["positive_device_samples"]: raise ValueError("during-run residency")
+        except (OSError, KeyError, TypeError, ValueError) as exc:
+            raise ProjectionError("META native proof invalid: " + str(exc)) from exc
     native_pid = row.get("protocol_id")
     protocol_id = native_pid if native_pid in ADMISSIBLE_PROTOCOLS else ""
     present = ns.results_present(row)
@@ -305,7 +337,7 @@ def project(native: Any) -> ClaimTuple:
         attestation_sha256=row["results_sha256"], attestation_locator=locator,
         attestation_present=present, attestation_verified=True if present else None,
         source_kind=SOURCE_KIND,
-        applicability={"backend": f["backend"], "device": f["device_arch"], "op": f["op"],
+        applicability={"backend": ("gpu" if row["record_kind"] == "meta_qwen4exp_native" else f["backend"]), "device": f["device_arch"], "op": f["op"],
                        "build_sha": f["tree"]["commit"], "scope_basis": "native"},
         extra={"schema": row["schema"], "record_kind": row["record_kind"],
                "program": row["program"], "producer": row["producer"],

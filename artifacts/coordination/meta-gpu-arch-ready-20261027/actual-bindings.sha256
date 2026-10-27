@@ -1,0 +1,5 @@
+92eb7a0cc2b9c56ca2a910ec870961604fdc7d305d236a9b80e3af4aa3147968  /mnt/raid0/llm/tmp/codex-ni-20261027-meta-fix-prep/candidate.patch
+06b35586d98858a2b24d377e75c0295a0feb84694b6c777f6fd6c41bc5edbf9b  /mnt/raid0/llm/tmp/codex-ni-20261027-meta-fix-prep/SOURCE.SHA256SUMS
+e25a5cd01c42899811357bfc57104862320d2f226d1939f7dae0f753a436fb16  /mnt/raid0/llm/tmp/codex-ni-20261027-meta-fix-prep/buildhip/bin/libggml-hip.so
+8863b9bb93a7746752d16592ebc06f4112b57ac4183013d667653ee2deff608a  /mnt/raid0/llm/tmp/codex-ni-20261027-meta-fix-prep/buildhip/bin/test-llama-archs
+42d29cdae3c0ffebc51c9de8fcd48235cb528bf1cf60866e7298f5e80b52b8fe  /mnt/raid0/llm/tmp/codex-ni-20261027-meta-build-recovery/RECOVERY-ACCEPTED
