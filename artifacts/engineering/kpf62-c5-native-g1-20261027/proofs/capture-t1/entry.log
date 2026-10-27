@@ -1,0 +1,10 @@
+2026-10-27T18:16:48Z [kpf62-native-g1-capture-20261027] launcher up pid=429567 class=cpu poll=1s grants=/mnt/raid0/llm/tmp/codex-ni-20261027-kpf62-c5-api-port/dryrun/277f495a87e496881eaf729ddbcb969a0ec64fb4cfce0948/grants stop=/mnt/raid0/llm/tmp/codex-ni-20261027-kpf62-c5-api-port/CAPTURE-T1-STOP minwin=900s ports=none
+2026-10-27T18:16:48Z [kpf62-native-g1-capture-20261027] ADMIT_PASS window=1200 free_gib=198.50 floor_gib=150
+2026-10-27T18:16:48Z [kpf62-native-g1-capture-20261027] START regions=0,1 cpus=0,1 threads=2 gpu=0 end=2026-10-27T18:36Z
+DRYRUN_RESOURCES {"affinity": [0, 1], "cgroup": "0::/", "cgroup_memory_max": "max", "process_limit_gib": 24.0, "reserved_ram_gib": 24.0, "rlimits": {"AS": [-1, -1], "DATA": [-1, -1], "NOFILE": [524288, 524288], "RSS": [-1, -1]}}
+RESOURCE_PASS id=kpf62-native-g1-capture-20261027 scope=two-core-PF
+DRYRUN_RESOURCES {"affinity": [0, 1], "cgroup": "0::/", "cgroup_memory_max": "max", "process_limit_gib": 24.0, "reserved_ram_gib": 24.0, "rlimits": {"AS": [-1, -1], "DATA": [-1, -1], "NOFILE": [524288, 524288], "RSS": [-1, -1]}}
+DRYRUN_BOUNDARY effect=generated-tiny-capture job_sha256=4a1ecd76b91c4e8b6635b3c5e05f565ff4c18d98d26d51f763fda0f3ff5b69db stop-before-effect
+job rc=0
+2026-10-27T18:16:51Z [kpf62-native-g1-capture-20261027] ended rc=0 reason=exited (grant deleted)
+2026-10-27T18:16:51Z [kpf62-native-g1-capture-20261027] one window done; exiting (no --repeat)
