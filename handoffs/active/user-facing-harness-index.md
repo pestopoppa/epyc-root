@@ -26,7 +26,7 @@ inference-bearing steps only; their design and documentation work may proceed (`
 | UFH-09 | fuzzy workflow authoring gui | [fuzzy-workflow-authoring-gui.md](fuzzy-workflow-authoring-gui.md) | Complete FW-4 executor refuse-without-hook integration with VB-FW-1 before GUI-authored measurement runs | — |
 | UFH-10 | browser agent surface | [browser-agent-surface.md](browser-agent-surface.md) | Dormant — revisit when a workflow needs interactive browsing; mechanism advances via RTG-56 TD-12..15 | RTG-56, RTG-33 |
 | UFH-11 | AMD AI Lab website publication | [amd-ai-lab-website-publication.md](amd-ai-lab-website-publication.md) | WEB-1 — obtain the contact destination and reviewed-page launch choice for GitHub Pages | — |
-| UFH-12 | repl embedding retrieval | [repl-embedding-retrieval.md](repl-embedding-retrieval.md) | REPL-EMB-2.5/2.6 candidate-arm preflight, then 2.2+2.7 offline eval (2.4 write side first); 2.10 B-1..B-4 + COPY apply | UFH-07, INF-78, EVL-37, UFH-01 |
+| UFH-12 | repl embedding retrieval | [repl-embedding-retrieval.md](repl-embedding-retrieval.md) | Continue remaining REPL-EMB-2.8b trace write side and 2.9–2.12 package gates; separately obtain UFH-12-PROD-ADOPT decision for validated R3 store | UFH-07, INF-78, EVL-37, UFH-01 |
 | UFH-16 | model exec containment | [model-exec-containment.md](model-exec-containment.md) | SEC-EXEC-POST-e1: read first post-reload write_outside_root audit record + POST-d proofs; then e2 web_fetch_guard, e3 containment | — |
 
 ## Cross-domain
