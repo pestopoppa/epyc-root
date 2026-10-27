@@ -182,12 +182,22 @@ Full ledger: [`qwen36-27b-cpu-feasibility.md`](../archived/qwen36-27b-cpu-feasib
     `architect_general` / `coder_escalation` on :8083 since the 2026-10-04 restore. This is a passive read with no
     inference. Done when acceptance over ≥ 200 organic drafted calls is recorded here with its window, and is compared
     against the codified-mix 0.53.
-  - [ ] **Q38-T7b — the needle test must use a neutral haystack and be asked in both arms.** (filed 2026-10-04,
+  - [x] **Q38-T7b — the needle test must use a neutral haystack and be asked in both arms.** (filed 2026-10-04,
     workspace-ec.) The 80k miss in run #1 was a refusal to repeat an "injected" fact planted in an AutoKernel
     planner context. Before the next production-shape correctness gate, use a neutral filler (RULER noise, or essays
     with sentence ids). Ask every needle in the no-draft arm too, and give phase C a no-draft pair. The INF-59 E0
     runner (`yarn-context-extension-research.md`) builds this harness, so reuse it rather than writing a second one.
     Done when `q38_t7.py` (or its `coherence_gate` successor, TD-30d) uses the neutral haystack with paired needles.
+  - **2026-10-27 (Q38-T7b run, workspace-58, 12:04Z): needle correctness PASS 16/16; phase C speed comparison CONFOUNDED, no speed verdict.** [belief: cc]
+    Report `/mnt/raid0/llm/tmp/gpu-block-27b-20261003/results/q38_t7/20261027T120457Z/report.md` (+ `report.json`, `calls.jsonl`); b10303-ffc1bac82, :8083 production shape, roles parked (`parked_8083` true), inf70-degeneracy.v2 OK on all 8 C streams.
+    N: both neutral E0 needles (manifest sha256 `2eb07287...`) found, drafted and no-draft, at ~2k/16k/50k/80k = 16/16 (no drafting regression; the 2026-10-04 80k miss was the planner-context confound, as hypothesised).
+    C (4 concurrent ~16k streams), dflash2: aggregate decode 14.13 tok/s over the overlap span (sum of per-stream 33.94); per-stream decode 3.85-16.4 tok/s; TTFT 86-308 s; draft acceptance 0.32-0.40 (mean 0.3575). Nodraft: 9.12 tok/s per stream with an identical TTFT of 3.566 s on all 4 streams.
+    **Confound:** the identical TTFT strongly suggests prefix-cache reuse, because nodraft ran after dflash2 on the same four prompts. The speed comparison is therefore invalid; no speed claim is made either way. Acceptance 0.3575 is descriptive only.
+    Reporting oddity: preflight/report shows speculative `['None']` from `/props` although argv had n-max 7 and draft acceptance was measured.
+    VRAM: own-PID KFD peak 50.795 GiB (min 47.813), card peak 50.821 GiB, 809 samples taken during the run.
+    Calendar wrapper ended rc1 ("expected one actual N+C report, found 0"): FALSE FAIL; runner rc was 0 and wrote the report to the default results dir, not the wrapper `out/`.
+    - [ ] **Q38-T7b-C2 — rerun phase C with a valid speed comparison:** clear the prefix cache between arms (or alternate ABAB with distinct/cache-busted prompts) and assert nodraft TTFT is not identical across streams. Done when a paired C table with non-degenerate nodraft TTFT is filed here.
+    - [ ] **Q38-T7b-W — wrapper report-path fix:** bind the wrapper's "actual N+C report" check to the runner's results dir (or pass the runner an output dir) so rc0 runs are not marked failed. Also investigate why `/props` reports spec_types `['None']` under a dflash n-max-7 argv.
   - **2026-10-20 (Q38-T9, per-class replay, no inference): no class loses; the 24-prompt mix cannot refute a prose/chat sign flip.**
     Frozen input `artifacts/gpu-block-27b-20261004/results/q38_t7/20261004T025247Z/calls.jsonl`, sha256
     `56315a4b7adf11f759efab5f9a9616eb600b382e0a81f8b9c5d1c41326855bf2` (68 lines; phase A = 48 records = 24 prompts x 2 arms;
