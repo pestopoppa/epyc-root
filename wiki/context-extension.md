@@ -2,8 +2,14 @@
 
 **Category**: `context_extension`
 **Confidence**: inferred
-**Last compiled**: 2026-10-27 (operator wiki sweep, workspace-58): YaRN extension arms are NOT-FAIL-underpowered, Oolong-synth@400k reads 0.093, and the YaRN K-shift fix passes its test. Earlier: 2026-10-22 (wrap-up sweep 10: native-window answer change is not regression, agent-made judge labels). Earlier: 2026-10-22 (wrap-up sweep 9: the native-window gate reads NOT-FAIL on 2 discordant pairs). Earlier: 2026-10-21 (wrap-up sweep 5: YARN-AGG-1/JUDGE-1 spec, Oolong adapter, K-shift fix queued). Earlier: 2026-10-06 (incremental root-wrap synthesis; prior compilation history: 2026-04-18 (+ 2026-05-20 incremental: intake-569 RoPE bounds + deep-dive))
+**Last compiled**: 2026-10-27 19:06Z (YaRN extension arms remain NOT-FAIL-underpowered; HELMET restoration is preparation only). Earlier: 2026-10-27 (operator wiki sweep, workspace-58): YaRN extension arms are NOT-FAIL-underpowered, Oolong-synth@400k reads 0.093, and the YaRN K-shift fix passes its test. Earlier: 2026-10-22 (wrap-up sweep 10: native-window answer change is not regression, agent-made judge labels). Earlier: 2026-10-22 (wrap-up sweep 9: the native-window gate reads NOT-FAIL on 2 discordant pairs). Earlier: 2026-10-21 (wrap-up sweep 5: YARN-AGG-1/JUDGE-1 spec, Oolong adapter, K-shift fix queued). Earlier: 2026-10-06 (incremental root-wrap synthesis; prior compilation history: 2026-04-18 (+ 2026-05-20 incremental: intake-569 RoPE bounds + deep-dive))
 **Sources**: 23 documents (0 dedicated deep-dives, 5 cross-referenced deep-dives, 3 active handoffs, 15 intake entries)
+
+## Compiled Update — 2026-10-27 19:06Z: extension-arm verdict remains underpowered
+
+**Confidence: verified for the predeclared native-zone sample; no equivalence claim.** The final YaRN extension-arm comparison contains 74 native-window pairs (`b=2`, `c=1`, one-sided exact McNemar `p=0.5`, mean paired A1−A0 score difference `−0.022`). The result is `NOT-FAIL-underpowered`, not a pass of equivalence or safety. Beyond-native A1-only rows are descriptive; Oolong-synth at 400K has 54 observations and mean score 0.093. HELMET KILT `nq`/`hotpotqa` cells were absent, so they provide no result. The 120-pair Oolong GPU packet and HELMET restoration are prospective preparation only; the historical 1f/1g power tasks remain open and runs must not be pooled across the prior plans.
+
+Sources: [YaRN context-extension handoff](../handoffs/active/yarn-context-extension-research.md), [2026-10-27 workspace-58 evidence](../progress/2026-10/2026-10-27-workspace-58.md), [accepted-scope record](../progress/2026-10/2026-10-27-full-wrap-1850.md).
 
 ## Compiled Update — 2026-10-23 (wrap-up sweep 15, 3c4ca599): the YaRN native-window gate is FINAL: NOT-FAIL-underpowered
 
