@@ -144,7 +144,7 @@ nobody is moving.
 | research-evaluation | 44 | 566 | 16 | 2026-07-29 |
 | reviewer-control-plane | 6 | 28 | 12 | 2026-07-29 |
 | routing-and-optimization | 53 | 715 | 19 | 2026-07-29 |
-| user-facing-harness | 14 | 148 | 17 | 2026-07-29 |
+| user-facing-harness | 14 | 146 | 17 | 2026-07-29 |
 <!-- END GENERATED index_state -->
 
 ## Reporting
