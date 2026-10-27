@@ -2,12 +2,14 @@
 
 **Status**: ACTIVE — operator resumed implementation 2026-10-24 after an independent handoff audit; review and finish existing branches before integration
 **Created**: 2026-10-07
-**Updated**: 2026-10-26
+**Updated**: 2026-10-27
 **Priority**: High
 **Scope**: epyc-orchestrator (`src/`, `scripts/`, `tests/`, `scripts/autopilot/`, `src/autopilot_core/`);
 epyc-inference-research `scripts/kernel_rnd/autokernel/`; epyc-root `scripts/hooks/` (guard bugs found on the way)
 **Estimated effort**: 382 findings → 26 packages (12 in wave 1, 14 in wave 2); deletion size is a planning estimate, subject to current per-file reachability and retention contracts
-**Scratch**: `/mnt/raid0/llm/tmp/refactor-01a16fc3/` · worktrees: `/mnt/raid0/llm/worktrees/refactor-01a16fc3-*` · root integration: `/mnt/raid0/llm/worktrees/refactor-audit-01a16fc3-root`
+**Scratch**: `/mnt/raid0/llm/tmp/refactor-01a16fc3/` · worktrees: `/mnt/raid0/llm/worktrees/refactor-01a16fc3-*` · root integration: `/mnt/raid0/llm/worktrees/refactor-audit-01a16fc3-root` · wrap checkpoints: `/mnt/raid0/llm/worktrees/wrap-root-20261027`, `/mnt/raid0/llm/worktrees/wrap-root-fresh-20261027`, `/mnt/raid0/llm/worktrees/prep-progress-publish-20261027`
+
+**Current working priority (operator, 2026-10-27)**: support the Claude inference owner by resolving prioritized non-inference blockers, validating source-bound launchers, and handing them over unarmed. Coordinate with the parallel NI Codex session. CI/O8 remains parked; this checkpoint does not claim the full refactor complete. Current evidence and next actions: [campaign checkpoint](../../progress/2026-10/2026-10-27-refactor-campaign-wrap.md).
 
 Each package uses its own branch/worktree and scratch subdirectory. Tests whose safety contracts
 require `/tmp` use the manually cleaned exception `/tmp/refactor-01a16fc3/`. The earlier cloud run's
