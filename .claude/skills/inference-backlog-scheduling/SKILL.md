@@ -229,6 +229,7 @@ records the operator's interim 50 GiB floor until 2026-10-28 08:10Z, then
   are declared with the disk floor checked after the output. Enforcing tool: `dryrun_check.py` /
   `filler_run12.sh` (Codex, in progress). Details and the six failures behind each check:
   `references/launch-admission-gate.md`. Origin: six early-launch failures on 10-27.
+  Owner watcher / quarter-lock lessons: `references/owner-watchers.md` (2026-10-27).
 - **A HOLD written by one writer and removed by another needs a keeper** when quiet blocks chain.
   The keeper is a small script that re-creates the HOLD until the last quiet job's `.ended`, then
   removes it and writes the hand-off flag. Without one, the first writer's exit freed the GPU
