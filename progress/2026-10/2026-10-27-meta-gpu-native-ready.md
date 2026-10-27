@@ -1,0 +1,3 @@
+# 2026-10-27 — META qwen4exp native diagnostic preparation
+
+Prepared and MAIN-approved the narrow synthetic qwen4exp Meta MoE GPU diagnostic packet, bound to the recovered C5 + host-view patch artifacts. No GPU, model, or inference ran. The fake-lock first-effect T1, normal-shaped synthetic admission, failed-outer/stale-marker controls, native adapter regression suite, and synthetic writer-to-ingest-to-context history canary passed. See `artifacts/coordination/meta-gpu-arch-ready-20261027/README.md` for owner execution prerequisites and evidence. Full C5 architecture a0 and the remaining gates remain open; original build rc70 and unproven drain remain recorded.

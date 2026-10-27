@@ -62,7 +62,7 @@ def write_fixture(tmp: Path, recs=None) -> Path:
 
 def test_one_fixture_per_measured_kind_graded_by_the_shared_ladder(tmp_path):
     natives = kopt.native_rows(write_fixture(tmp_path))
-    assert {n["row"]["record_kind"] for n in natives} == set(kopt.MEASURED_KINDS)
+    assert {n["row"]["record_kind"] for n in natives} == set(kopt.MEASURED_KINDS) - {"meta_qwen4exp_native"}
     for nat in natives:
         tup = kopt.project(nat)
         assert tup.source_class == "measurement" and tup.metric_direction == "lower_better"
@@ -140,3 +140,45 @@ def test_tamper_voids_and_foreign_is_refused(tmp_path):
 def test_frames_emit(tmp_path):
     sc = write_fixture(tmp_path)
     assert len(kopt.frames_for_sidecar(sc, as_of="2026-10-22T11:00:00Z")) == 9
+
+
+def test_meta_synthetic_host_observation_refuses_bad_residency(tmp_path):
+    import hashlib
+    import json
+    for name in ("stdout", "stderr", "linkage.log"):
+        (tmp_path / name).write_text("synthetic control")
+    sample = {"pid": 123, "start_ticks": "456", "time_ns": 2, "kfd_gpu_id": 7,
+              "pid_in_kfd": True, "vram_bytes": 8}
+    samples = tmp_path / "residency.jsonl"
+    samples.write_text((json.dumps(sample) + "\n") * 2)
+    names = ("stdout", "stderr", "linkage.log", "residency.jsonl")
+    raw = {name: hashlib.sha256((tmp_path / name).read_bytes()).hexdigest() for name in names}
+    commit = "520ad4f55d805a544862be88d652ec68fcd194ab"
+    result = {"schema": "epyc.model_free_backend_correctness.v1", "source_commit": commit,
+              "source_seal_sha256": "b" * 64, "binding_sha256": "c" * 64,
+              "pid": 123, "start_ticks": "456", "start_ns": 1, "end_ns": 3,
+              "kfd_gpu_id": 7, "reaped": True,
+              "gates": {"fixture_process_rc": 0, "meta_moe_nmse": "OK",
+                        "positive_device_samples": 2}, "raw_sha256": raw}
+    result_path = tmp_path / "results.json"
+    result_path.write_text(json.dumps(result))
+    f = {"backend": "ROCm0", "device_arch": "gfx90a", "op": "qwen4exp-meta-moe-nmse",
+         "binary_sha256": "a" * 64, "source_seal_sha256": "b" * 64,
+         "binding_sha256": "c" * 64, "residency_proof": str(samples),
+         "positive_device_samples": 2, "suite_case_count": 1, "n_failed": 0,
+         "tree": {"commit": commit}}
+    def emit():
+        return kopt.write_belief_measurements(tmp_path, run_id="synthetic-only", producer="test",
+            results_path=result_path, records=[{"record_kind": "meta_qwen4exp_native", "fields": f}],
+            emitted_at=WHEN)
+    native = kopt.native_rows(emit())[0]
+    projected = kopt.project(native)
+    assert projected.applicability["backend"] == "gpu"
+    assert ct.grade(projected)[:2] == ("Judged", "Located")
+    for field, wrong in (("time_ns", 4), ("start_ticks", "other"), ("kfd_gpu_id", 99)):
+        bad = dict(sample, **{field: wrong})
+        samples.write_text((json.dumps(bad) + "\n") * 2)
+        result["raw_sha256"]["residency.jsonl"] = hashlib.sha256(samples.read_bytes()).hexdigest()
+        result_path.write_text(json.dumps(result))
+        with pytest.raises(ct.ProjectionError):
+            kopt.project(kopt.native_rows(emit())[0])

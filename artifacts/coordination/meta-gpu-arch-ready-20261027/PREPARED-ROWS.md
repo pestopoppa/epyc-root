@@ -1,0 +1,5 @@
+# Prepared owner-only rows; not applied
+
+Source-table addition to the existing speech-ggml/v11 gfx90a native gate family: META qwen4exp synthetic tensor-split MoE NMSE observation, producer `packet/monitor.py` `run/results.json` plus `run/speech_ggml_optest.beliefs.jsonl`, mapped by the existing `speech_ggml_optest.py` measurement adapter; one case, source and binary hashes, scoped GPU PID/PCI/KFD and during-run evidence. Host-only applicability; no full C5, serving, model-quality, parity or speed claim. Native GPU fixture has not run. Planning-context end-to-end proof remains pending until a valid do-not-repeat history is demonstrated; synthetic writer/ingest/prepare presents one synthetic host-tier row, not loop wiring.
+
+Task proposal for vidya belief-substrate program: VB-META-QWEN4EXP-NATIVE: integrate the reviewed adapter/writer into owner-approved root view, install source table row, execute writer→ingest→planning-context canary with a known historical conclusion and do-not-repeat history; retain host-only scope and the shared measurement ladder. Do not tick until canary passes.
