@@ -1,0 +1,9 @@
+# Private GitNexus split-phase preparation — 2026-10-27
+
+This is a review archive of a private tool experiment, not a production GitNexus deployment. `SPLIT-DRAFT.patch` applies to the approved C5 private engine described in `PUBLICATION-RECIPE.md`. The wrapper, exact stage-one admission and supervisor, native constructor shim source, provenance manifests and preflight evidence are preserved beside it. Paths and hashes in the sealed host packet name the original private scratch files; copying these files to this repository does not make a new approved runtime packet.
+
+MAIN accepted stage-one parse-only packet `7d02237bc2c66150a05896db1ccf614264cdf475a7abb7a2216dd53fb61531f4`. Scoped q3 first-effect preflight, temporary live-poller validator, grant check and normal-shaped proof passed; captured poller and descendants were verified dead. The stage-one READY notice was sent to WS58 for owner-controlled booking; at handoff there is no session-owned normal grant or launch. `ROW-BACKLOG.md` is the prepared row, not a canonical index mutation.
+
+Stage two is a separate conditional proposal, not a ready or authorized launcher. It requires the real stage-one capsule, its own q3 72,73 profile and exact admission, and original native C72 caller/overload sentinels. The proposed 2,700-second work cap is based on the reported 2,413-second *whole* v8 run as an upper bound on that run's tail, not an observed runtime for this split. The q3 claim occupies its CPU region; the GPU no-fold host CPUs can coexist under owner scheduling.
+
+The prepare-only capsule is tool-state dependency evidence under the existing GitNexus receipt classification. Prospective stage-two graph findings belong to the existing `VB-GNX-C5-CALLER-AUDIT-1` source family; do not invent a second source ladder or a retrospective measurement warrant. No graph finding or runtime result from the future stage-one or stage-two normal jobs is asserted here.

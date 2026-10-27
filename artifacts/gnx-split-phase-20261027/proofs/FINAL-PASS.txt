@@ -1,0 +1,1 @@
+PASS official same-entry T1 + live-PID row validator/grant_ok + normal-shaped admit --require-proof

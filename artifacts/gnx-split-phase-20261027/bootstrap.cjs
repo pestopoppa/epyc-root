@@ -1,0 +1,10 @@
+'use strict';
+const {createRequire} = require('node:module');
+const {pathToFileURL} = require('node:url');
+const path = require('node:path');
+const cli = path.join(__dirname, 'dist/cli/index.js');
+const req = createRequire(cli);
+require('./gitnexus-quarter-runtime.cjs')(req('@ladybugdb/core'));
+delete process.env.LD_PRELOAD;
+process.argv = [process.execPath, cli, ...process.argv.slice(2)];
+import(pathToFileURL(cli).href).catch(e => { console.error(e); process.exitCode = 1; });

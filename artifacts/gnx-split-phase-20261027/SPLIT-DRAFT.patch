@@ -1,0 +1,52 @@
+--- a/dist/core/ingestion/pipeline-phases/parse-impl.js
++++ b/dist/core/ingestion/pipeline-phases/parse-impl.js
+@@ -16,8 +16,8 @@
+  */
+ import { BindingAccumulator, enrichExportedTypeMap, } from '../binding-accumulator.js';
+ import { mergeChunkResults, dispatchChunkParse } from '../parsing-processor.js';
+-import { fileContentHash, computeChunkHash, loadParseCacheChunk, persistParseCacheChunk, PARSE_CACHE_VERSION, } from '../../../storage/parse-cache.js';
+-import { clearParsedFileStore, persistParsedFileChunk, getDurableParsedFileDir, loadDurableParsedFileIndex, restoreDurableParsedFileShard, } from '../../../storage/parsedfile-store.js';
++import { fileContentHash, computeChunkHash, loadParseCacheChunk, persistParseCacheChunk, saveParseCache, PARSE_CACHE_VERSION, } from '../../../storage/parse-cache.js';
++import { clearParsedFileStore, persistParsedFileChunk, getDurableParsedFileDir, loadDurableParsedFileIndex, restoreDurableParsedFileShard, pruneAndSaveDurableParsedFileStore, } from '../../../storage/parsedfile-store.js';
+ import { DEFAULT_PDG_MAX_FUNCTION_LINES } from '../cfg/collect.js';
+ import { processRoutesFromExtracted, buildExportedTypeMapFromGraph, } from '../call-processor.js';
+ import { createSemanticModel } from '../model/index.js';
+@@ -708,6 +708,25 @@
+             await finalizeWorkerChunk(pendingWorkerChunk);
+             pendingWorkerChunk = null;
+         }
++        if (process.env.GNX_SPLIT_PREPARE_RECEIPT) {
++            if (!parseCache?.storagePath || !durableParsedFileDir)
++                throw new Error('split prepare requires private disk-backed parse cache');
++            const quarantined = workerPool?.getQuarantinedPaths?.() ?? [];
++            if (quarantined.length) throw new Error(`split prepare quarantined ${quarantined.length} files`);
++            await workerPool?.terminate();
++            workerPool = undefined;
++            const saved = await saveParseCache(parseCache.storagePath, parseCache);
++            if (saved.length !== parseCache.usedKeys.size)
++                throw new Error('split prepare could not persist every raw chunk');
++            await pruneAndSaveDurableParsedFileStore(durableParsedFileDir, PARSE_CACHE_VERSION, new Set(saved));
++            const receipt = {schema: 1, kind: 'parse-prepared-only', chunks: numChunks, hits: chunkCacheHits, misses: chunkCacheMisses, rawKeys: saved, parseCacheVersion: PARSE_CACHE_VERSION};
++            const target = process.env.GNX_SPLIT_PREPARE_RECEIPT;
++            fs.writeFileSync(`${target}.tmp`, JSON.stringify(receipt));
++            fs.renameSync(`${target}.tmp`, target);
++            throw new Error('GNX_SPLIT_PREPARE_COMPLETE');
++        }
++        if (process.env.GNX_SPLIT_REPORT_CACHE === '1')
++            console.error(`GNX_SPLIT_CACHE hits=${chunkCacheHits} misses=${chunkCacheMisses} chunks=${numChunks}`);
+         if (isDev && parseCache && (chunkCacheHits > 0 || chunkCacheMisses > 0)) {
+             logger.info(`📦 parse-cache summary: ${chunkCacheHits} chunk hit(s), ${chunkCacheMisses} miss(es) across ${numChunks} chunk(s)`);
+         }
+--- a/dist/core/ingestion/scope-resolution/pipeline/phase.js
++++ b/dist/core/ingestion/scope-resolution/pipeline/phase.js
+@@ -316,6 +316,10 @@
+                     // else: uncovered AND unreadable → skip (unchanged from prior behavior).
+                 }
+                 const langFileCount = files.length;
++                if (process.env.GNX_SPLIT_REPORT_CACHE === '1') {
++                    const fallbackPaths = files.filter((f) => !preExtractedByPath.has(f.path)).map((f) => f.path);
++                    console.error(`GNX_SPLIT_SCOPE_FALLBACK lang=${lang} count=${fallbackPaths.length} paths=${JSON.stringify(fallbackPaths)}`);
++                }
+                 logHeapProbe('scope-lang-start', `lang=${lang} files=${langFileCount} contentsLoaded=${contents.size}`);
+                 const langLabel = lang.charAt(0).toUpperCase() + lang.slice(1);
+                 currentLangIdx++;
