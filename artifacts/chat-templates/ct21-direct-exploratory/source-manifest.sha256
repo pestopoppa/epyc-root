@@ -1,0 +1,13 @@
+8bdae875596308b405dd84a082a84d0a459baebd0c36e192c2504d2c59decd5f  /mnt/raid0/llm/tmp/codex-ni-20261027-ct21-cause-audit/decision_envelope.py
+5f026a1581d56d6566404b5c218c5a0c5b75aaa7063ac41182f319166d4e1761  /mnt/raid0/llm/tmp/codex-ni-20261027-ct21-cause-audit/direct_diagnostic.py
+8bee47d38fcf15e977ccf34270eaef0234e524c65943f344d158a5f9440edd57  /mnt/raid0/llm/tmp/codex-ni-20261027-ct21-cause-audit/fixtures.json
+49fc10537725f1d9e5a3c4c7d51f8a23b4b6846086f7f479eb98ed6ef24701d7  /mnt/raid0/llm/tmp/codex-ni-20261027-ct21-cause-audit/DIAGNOSTIC-PROFILE.md
+59a3d65779ebddada51450ce59077f0275f0fb63ecce6af939f5ce0ed52e6ad8  /mnt/raid0/llm/tmp/codex-ni-20261027-ct21-cause-audit/prelaunch_check.py
+1930c2fa625599733d2425f96e1ed745b5b9536d1c9bf6a4c048536a0ef32e83  /mnt/raid0/llm/tmp/codex-ni-20261027-ct21-cause-audit/job.sh
+e7f5c9390ba4f5d3a7799a57aa020902cdbec2ed82e2ab791ff7078e9e29d1e1  /mnt/raid0/llm/tmp/codex-ni-20261027-ct21-cause-audit/launch.sh
+e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855  /mnt/raid0/llm/tmp/codex-ni-20261027-ct21-cause-audit/private/vidya/adapters/__init__.py
+231fc95f00c3f2ca11c2770c32b4c9de34abc780d91d14464f378cf8cec3ab3a  /mnt/raid0/llm/tmp/codex-ni-20261027-ct21-cause-audit/private/vidya/adapters/chat_template_ab_capture.py
+d56695fc8f6cfe24b65f2a9154146042652ab2091ec5ced68718b968f61f0dd3  /mnt/raid0/llm/tmp/codex-ni-20261027-ct21-cause-audit/private/vidya/adapters/chat_template_ab.py
+6ae969f7029c1a6356593fd2432eca2320931f22aa4a8c4e3a388a72b81944e7  /mnt/raid0/llm/tmp/codex-ni-20261027-ct21-cause-audit/private/vidya/claim_tuple.py
+297659ca1a10342c7d97c7113a0bc6de75991175fa053016dad3e8ced838e32f  /mnt/raid0/llm/tmp/refactor-01a16fc3/ct21-parse-outcome-unblock-20261027/source-manifest.sha256
+69817664a1e79f7c4616e5837a1e4c65b534e693ce64975c65b846f3dec301f7  /mnt/raid0/llm/kernels/builds/gpu-20261020-dd3d9721c/PROVENANCE.md

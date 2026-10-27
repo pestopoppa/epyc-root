@@ -140,6 +140,9 @@ def project(native: Any) -> ClaimTuple:
         # file and recomputes the digest. Carried here so the ladder stays a pure function.
         attestation_verified=True if present else None,
         source_kind=SOURCE_KIND,
+        applicability=({"model_file": Path(extra["model_path"]).name,
+                        "quant": extra["quant"], "scope_basis": "native"}
+                       if extra.get("exploratory") else {}),
         extra={
             "schema": row["schema"],
             "producer": row["producer"],

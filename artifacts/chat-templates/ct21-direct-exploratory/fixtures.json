@@ -1,0 +1,262 @@
+[
+  {
+    "id": "direct-arith-01",
+    "a": 9,
+    "b": 4,
+    "choices": [
+      "13",
+      "14",
+      "15",
+      "16"
+    ],
+    "expected": "A",
+    "prompt": "What is 9 + 4? Choose one letter: A) 13 B) 14 C) 15 D) 16"
+  },
+  {
+    "id": "direct-arith-02",
+    "a": 10,
+    "b": 5,
+    "choices": [
+      "16",
+      "15",
+      "17",
+      "18"
+    ],
+    "expected": "B",
+    "prompt": "What is 10 + 5? Choose one letter: A) 16 B) 15 C) 17 D) 18"
+  },
+  {
+    "id": "direct-arith-03",
+    "a": 11,
+    "b": 6,
+    "choices": [
+      "18",
+      "19",
+      "17",
+      "20"
+    ],
+    "expected": "C",
+    "prompt": "What is 11 + 6? Choose one letter: A) 18 B) 19 C) 17 D) 20"
+  },
+  {
+    "id": "direct-arith-04",
+    "a": 12,
+    "b": 7,
+    "choices": [
+      "20",
+      "21",
+      "22",
+      "19"
+    ],
+    "expected": "D",
+    "prompt": "What is 12 + 7? Choose one letter: A) 20 B) 21 C) 22 D) 19"
+  },
+  {
+    "id": "direct-arith-05",
+    "a": 13,
+    "b": 8,
+    "choices": [
+      "21",
+      "22",
+      "23",
+      "24"
+    ],
+    "expected": "A",
+    "prompt": "What is 13 + 8? Choose one letter: A) 21 B) 22 C) 23 D) 24"
+  },
+  {
+    "id": "direct-arith-06",
+    "a": 14,
+    "b": 9,
+    "choices": [
+      "24",
+      "23",
+      "25",
+      "26"
+    ],
+    "expected": "B",
+    "prompt": "What is 14 + 9? Choose one letter: A) 24 B) 23 C) 25 D) 26"
+  },
+  {
+    "id": "direct-arith-07",
+    "a": 15,
+    "b": 10,
+    "choices": [
+      "26",
+      "27",
+      "25",
+      "28"
+    ],
+    "expected": "C",
+    "prompt": "What is 15 + 10? Choose one letter: A) 26 B) 27 C) 25 D) 28"
+  },
+  {
+    "id": "direct-arith-08",
+    "a": 16,
+    "b": 11,
+    "choices": [
+      "28",
+      "29",
+      "30",
+      "27"
+    ],
+    "expected": "D",
+    "prompt": "What is 16 + 11? Choose one letter: A) 28 B) 29 C) 30 D) 27"
+  },
+  {
+    "id": "direct-arith-09",
+    "a": 17,
+    "b": 12,
+    "choices": [
+      "29",
+      "30",
+      "31",
+      "32"
+    ],
+    "expected": "A",
+    "prompt": "What is 17 + 12? Choose one letter: A) 29 B) 30 C) 31 D) 32"
+  },
+  {
+    "id": "direct-arith-10",
+    "a": 18,
+    "b": 13,
+    "choices": [
+      "32",
+      "31",
+      "33",
+      "34"
+    ],
+    "expected": "B",
+    "prompt": "What is 18 + 13? Choose one letter: A) 32 B) 31 C) 33 D) 34"
+  },
+  {
+    "id": "direct-arith-11",
+    "a": 19,
+    "b": 14,
+    "choices": [
+      "34",
+      "35",
+      "33",
+      "36"
+    ],
+    "expected": "C",
+    "prompt": "What is 19 + 14? Choose one letter: A) 34 B) 35 C) 33 D) 36"
+  },
+  {
+    "id": "direct-arith-12",
+    "a": 20,
+    "b": 15,
+    "choices": [
+      "36",
+      "37",
+      "38",
+      "35"
+    ],
+    "expected": "D",
+    "prompt": "What is 20 + 15? Choose one letter: A) 36 B) 37 C) 38 D) 35"
+  },
+  {
+    "id": "direct-arith-13",
+    "a": 21,
+    "b": 16,
+    "choices": [
+      "37",
+      "38",
+      "39",
+      "40"
+    ],
+    "expected": "A",
+    "prompt": "What is 21 + 16? Choose one letter: A) 37 B) 38 C) 39 D) 40"
+  },
+  {
+    "id": "direct-arith-14",
+    "a": 22,
+    "b": 17,
+    "choices": [
+      "40",
+      "39",
+      "41",
+      "42"
+    ],
+    "expected": "B",
+    "prompt": "What is 22 + 17? Choose one letter: A) 40 B) 39 C) 41 D) 42"
+  },
+  {
+    "id": "direct-arith-15",
+    "a": 23,
+    "b": 18,
+    "choices": [
+      "42",
+      "43",
+      "41",
+      "44"
+    ],
+    "expected": "C",
+    "prompt": "What is 23 + 18? Choose one letter: A) 42 B) 43 C) 41 D) 44"
+  },
+  {
+    "id": "direct-arith-16",
+    "a": 24,
+    "b": 19,
+    "choices": [
+      "44",
+      "45",
+      "46",
+      "43"
+    ],
+    "expected": "D",
+    "prompt": "What is 24 + 19? Choose one letter: A) 44 B) 45 C) 46 D) 43"
+  },
+  {
+    "id": "direct-arith-17",
+    "a": 25,
+    "b": 20,
+    "choices": [
+      "45",
+      "46",
+      "47",
+      "48"
+    ],
+    "expected": "A",
+    "prompt": "What is 25 + 20? Choose one letter: A) 45 B) 46 C) 47 D) 48"
+  },
+  {
+    "id": "direct-arith-18",
+    "a": 26,
+    "b": 21,
+    "choices": [
+      "48",
+      "47",
+      "49",
+      "50"
+    ],
+    "expected": "B",
+    "prompt": "What is 26 + 21? Choose one letter: A) 48 B) 47 C) 49 D) 50"
+  },
+  {
+    "id": "direct-arith-19",
+    "a": 27,
+    "b": 22,
+    "choices": [
+      "50",
+      "51",
+      "49",
+      "52"
+    ],
+    "expected": "C",
+    "prompt": "What is 27 + 22? Choose one letter: A) 50 B) 51 C) 49 D) 52"
+  },
+  {
+    "id": "direct-arith-20",
+    "a": 28,
+    "b": 23,
+    "choices": [
+      "52",
+      "53",
+      "54",
+      "51"
+    ],
+    "expected": "D",
+    "prompt": "What is 28 + 23? Choose one letter: A) 52 B) 53 C) 54 D) 51"
+  }
+]

@@ -132,7 +132,7 @@ def validate_row(row: Any) -> list[str]:
     if row.get("schema") != CAPTURE_SCHEMA:
         p.append(f"schema must be {CAPTURE_SCHEMA!r}")
     for key in ("run_id", "producer", "measurement_id", "metric", "unit", "claim",
-                "protocol_id", "reps_basis", "results_path", "date"):
+                "reps_basis", "results_path", "date"):
         if not _text(row.get(key)):
             p.append(f"{key} must be a non-empty string")
     if not _utc_timestamp(row.get("emitted_at")):
@@ -147,6 +147,17 @@ def validate_row(row: Any) -> list[str]:
     extra = row.get("extra")
     if not isinstance(extra, dict):
         return p + ["extra must be an object carrying the run identity"]
+
+    exploratory = extra.get("exploratory")
+    if exploratory is None:
+        if not _text(row.get("protocol_id")):
+            p.append("legacy row requires a protocol_id")
+    elif (not isinstance(exploratory, dict) or exploratory.get("profile") != "ct21-direct-exploratory-v1"
+          or not _SHA256.match(str(exploratory.get("profile_sha256", "")))
+          or not _SHA256.match(str(exploratory.get("source_sha256", "")))
+          or not _text(exploratory.get("profile_path")) or not _text(exploratory.get("source_path"))
+          or row.get("protocol_id") != ""):
+        p.append("exploratory row requires the known profile, source/profile digests and empty protocol_id")
 
     if not _text(extra.get("suite")):
         p.append("extra.suite must be a non-empty string")
@@ -272,6 +283,8 @@ def write_belief_measurements(
     baseline_arm: int = 0,
     summary: Mapping[str, Any] | None = None,
     emitted_at: str | None = None,
+    exploratory: Mapping[str, str] | None = None,
+    protocol_id: str | None = None,
 ) -> Path:
     """Emit ``belief_measurements.jsonl`` next to ``summary.json`` — the CT-8 write-side hook.
 
@@ -295,6 +308,15 @@ def write_belief_measurements(
         raise CaptureError("summary must be a non-empty per-suite mapping")
     if not arms:
         raise CaptureError("at least one arm is required")
+    if exploratory is not None and protocol_id not in (None, ""):
+        raise CaptureError("exploratory source cannot claim a protocol")
+    if exploratory is not None:
+        for key in ("profile", "source"):
+            path = Path(exploratory.get(key + "_path", ""))
+            if not path.is_file() or _file_sha256(path) != exploratory.get(key + "_sha256"):
+                raise CaptureError(f"exploratory {key} missing or digest mismatch")
+    if exploratory is None and protocol_id == "":
+        raise CaptureError("legacy source requires a protocol")
     if baseline_arm not in arms:
         raise CaptureError("baseline_arm must be one of the declared arms")
     when = emitted_at or datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
@@ -346,6 +368,8 @@ def write_belief_measurements(
                 "truncated": cell["truncated"],
                 "mean_tokens": cell.get("mean_tokens"),
             }
+            if exploratory is not None:
+                extra["exploratory"] = dict(exploratory)
             if arm != baseline_arm and len(per_arm) == 2 \
                     and _nonneg_int(cells.get("flips_01")) and _nonneg_int(cells.get("flips_10")):
                 extra["flips_01"] = cells["flips_01"]
@@ -368,7 +392,7 @@ def write_belief_measurements(
                 "category": "BASELINE" if arm == baseline_arm else "CANDIDATE",
                 "claim": (f"Chat-template A/B {run_id}: arm{arm} ({info['label']}, template "
                           f"{info['template_sha256'][:12]}…) scored {correct}/{n} on {suite}"),
-                "protocol_id": CAPTURE_SCHEMA,
+                "protocol_id": "" if exploratory is not None else (protocol_id or CAPTURE_SCHEMA),
                 "reps": n,
                 "reps_basis": ("scored:questions" if errors == 0 else
                                f"attempted:questions ({errors} errored, counted incorrect)"),
