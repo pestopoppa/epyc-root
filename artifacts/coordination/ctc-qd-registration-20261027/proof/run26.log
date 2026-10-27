@@ -1,0 +1,16 @@
+2026-10-27T16:53:54Z
+Fresh q0 has no overlapping canonical CPU grant; no HOLD.
+[region-lock] acquiring regions ['q0'] as role='build' (timeout_s=15.0) …
+[region-lock] held ['q0'] after 0.0s wait; running: taskset -c 0,1 bash /mnt/raid0/llm/tmp/codex-ni-20261027-c5-graph-call-edge-repair/q0-child.sh bash -c python3 /mnt/raid0/llm/tmp/codex-ni-20261027-ctc-qd-activation-prep/test_publication.py && bash -n /mnt/raid0/llm/tmp/codex-ni-20261027-ctc-qd-activation-prep/packet/grant-ws58-quarters-20261027.sh /mnt/raid0/llm/tmp/codex-ni-20261027-ctc-qd-activation-prep/packet/grant-gpu-1026-v13.sh
+2026-10-27T16:53:54Z
+Fresh q0 has no overlapping canonical CPU grant; no HOLD.
+test_quarter (__main__.Publication.test_quarter) ... ok
+test_gpu (__main__.Publication.test_gpu) ... ok
+test_quarter_failed_rename (__main__.Publication.test_quarter_failed_rename) ... ok
+test_gpu_failed_rename (__main__.Publication.test_gpu_failed_rename) ... ok
+
+----------------------------------------------------------------------
+Ran 4 tests in 1.943s
+
+OK
+RSS_SAMPLED_PEAK_KIB=77904 LIMIT_KIB=4194304 drained=True
