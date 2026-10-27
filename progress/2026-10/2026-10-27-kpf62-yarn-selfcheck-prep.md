@@ -1,0 +1,3 @@
+# KPF62.1 YaRN selfcheck preparation
+
+Prepared and MAIN-approved the CPU-only native owner packet in artifacts/operator/kpf62-yarn-selfcheck-prep-20261027. The probe reads actual loaded-context YaRN parameters and calls the existing chunk-KV selfcheck for four deltas with a 1e-6 NMSE threshold and invalid-delta control. The source seal, accepted build identity, T1, temporary live-PID validator, grant admission, reaping evidence and proposed belief wiring are preserved in the artifact. Model-free preflight passed; the generated GGUF omits two original empty arrays, so successful loading remains to be established by the owner. No model run occurred and KPF62.1 remains open. The owner notice is socket-sent; recipient confirmation remains pending.
