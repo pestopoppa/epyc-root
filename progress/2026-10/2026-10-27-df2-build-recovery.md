@@ -1,0 +1,3 @@
+# 2026-10-27 — DF2 build recovery preparation
+
+The 19:24–19:27 owner CPU/HIP build produced both builds, fixture binaries, linkage checks and BUILD-WORK-DONE, then ended rc70 at outer cleanup; inner resource monitor logged drained=True. Reproduced shared cleanup defect: unrelated mixed-UID processes can poison the original scan; the specific offender was not recorded. Read-only source/profile/binary/linkage/mtime audit passed. Prepared and MAIN accepted the q1 artifact-only recovery packet under `proposed/df2-build-recovery-20261027/`; scoped T1 and synthetic admission passed, with no actual recovery or GPU run at filing. Original rc70 is retained. [no-belief: source and artifact audit only; no new native measurement]

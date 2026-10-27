@@ -1,0 +1,1 @@
+GGML_CUDA_DF2_ROW_EXACT active: dense Q8_0/Q4_K row decomposition
