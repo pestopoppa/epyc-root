@@ -1,7 +1,7 @@
 # Stage-3 plan: TensorFold 1.1.4 intake (prepared 2026-10-24; awaiting operator approval)
 
 This plan is **prepared, not applied**. The owning sessions apply it at Stage 4, after operator approval:
-- the research-intake session applies the intake-1924 edit;
+- the research-intake session applies the intake-1924#record edit;
 - ak-ds41-main applies the AKX handoff lines;
 - each campaign owner writes its AK store inbox note.
 
@@ -15,7 +15,7 @@ filing the text.
 - `SOURCES.md`.
 
 **Stage-2 gate.** Closed. Wave 1 dived the v1.1.4 diff and wave 2 the kernel contract plus `ggml.cu`. The surfaced
-sources not dived were declined under the 2-wave cap and are recorded in intake-1924 `dive_corrections`. A per-claim
+sources not dived were declined under the 2-wave cap and are recorded in intake-1924#record `dive_corrections`. A per-claim
 second reader found two locator/scope defects; both were fixed, and four claims gained second anchors.
 
 **Not run** (the hard rules allow no python): `validate_intake.sh --plan-file … --session-file …` and
@@ -43,7 +43,7 @@ second reader found two locator/scope defects; both were fixed, and four claims 
 | S16 | #1080 4096-row chunks | KVU-16f/g, AKX-ALL-13 (`-b/-ub`) | covered | TF114-D7 |
 | S17 | Gemma 4 / Drama / speech / serving | not in the DS41/Q38FN/27B lanes | declined for AK | TF114-D8 |
 | S18 | `ggml.cu` L1 (bf16 exact-integer, weights as A) | note 10 §3.2 | declined | TF114-D9 |
-| S19 | intake-1924 record vs v1.1.4 | `research/intake_index.yaml` L246326-246390 | actionable | TF114-10 |
+| S19 | intake-1924#record record vs v1.1.4 | `research/intake_index.yaml` L246326-246390 | actionable | TF114-10 |
 
 ## Work packets
 
@@ -52,8 +52,8 @@ second reader found two locator/scope defects; both were fixed, and four claims 
 | P1 | 27B MI210 long-context FA seeds G2, G3, G1 and G4, plus evidence for H3/H4/H7/H8, as one inbox note. Then an arbiter rocprof probe (no build) that orders them | `handoffs/active/autokernel-all-devices-all-dimensions.md` (AKX-ALL-30, AKX-ALL-30a) | Filing: after approval. Inbox write: by the campaign owner, after the hold lifts. Arbiter: MI210 window grant (GPU arming still asks). Authoring: after AKX-ALL-19 (G3) is admitted and the FA owner confirms (note 10 §4) |
 | P2 | CPU seeds Q1 and Q2 (Q38FN) and D1 (DS41-1017, record-only), as two inbox notes | same owner (AKX-ALL-30) | After approval and the hold lift. D1 is actionable only on the AKX-ALL-12 depth surface |
 | P3 | AK numerics gate: non-finite-class gate and integer-accumulator (fp32-sum) gate, each with a planted control that must go red, in the default CPU and HIP gate chain | same owner (AKX-ALL-31); INF-73 loop owner reviews the merge | No inference compute; a research branch under a build-role claim. Not blocked by the launch hold (harness code, not a run) |
-| P4 | intake-1924 re-encounter, Stage-2 dive fields and corrections (`INTAKE-ENTRIES-PROPOSED.yaml`) | research-intake session | After approval; text edit, `validate_intake.sh` exit 0, then `vidya sync` |
-| K1 | Knowledge-only: C10 min-of-reps applies to cost-table estimators only; C3 chunking is owned by KVU-16f/g and AKX-ALL-13 | none (recorded in intake-1924 `dive_corrections`) | — |
+| P4 | intake-1924#record re-encounter, Stage-2 dive fields and corrections (`INTAKE-ENTRIES-PROPOSED.yaml`) | research-intake session | After approval; text edit, `validate_intake.sh` exit 0, then `vidya sync` |
+| K1 | Knowledge-only: C10 min-of-reps applies to cost-table estimators only; C3 chunking is owned by KVU-16f/g and AKX-ALL-13 | none (recorded in intake-1924#record `dive_corrections`) | — |
 
 Concurrency:
 - P3 and P4 are independent of everything.
@@ -99,7 +99,7 @@ No domain-index row changes. INF-81 already owns this handoff; its next action s
 | TF114-7 | `d0d179497e`, `eb0d391600` | Seed Q2 (conditional) | P2 / AKX-ALL-30 |
 | TF114-8 | `aa6fbd8903` | Seed D1 (record-only) | P2 / AKX-ALL-30 |
 | TF114-9 | `kernel-contract.md` L4-5 | Planted-control numerics gates | P3 / AKX-ALL-31 |
-| TF114-10 | intake-1924 vs v1.1.4 | Entry dive fields and corrections | P4 / entry_updates |
+| TF114-10 | intake-1924#record vs v1.1.4 | Entry dive fields and corrections | P4 / entry_updates |
 | TF114-D1 | #1069, #1155 | Shared verify / batched drafting | decline: already integrated in llama-server |
 | TF114-D2 | `69e491cbc5` | int8 prompt GEMM | decline: already integrated; CDNA2 int8 = f16 rate |
 | TF114-D3 | #1195 | PLE worker pool | decline: no thread-spawn defect in ggml |
@@ -126,7 +126,7 @@ The coordinator relayed both of these rows as operator-directed. Neither is the 
 {
   "format_version": 2,
   "entry_updates": [
-    {"id": "intake-1924", "integration_disposition": "adopt_patterns",
+    {"id": "intake-1924#record", "integration_disposition": "adopt_patterns",
      "handoffs_updated": ["autokernel-all-devices-all-dimensions.md"], "handoffs_created": [],
      "disposition_evidence": ["Stage-3 plan STAGE3-PLAN.md P1-P3: AKX-ALL-30, AKX-ALL-30a, AKX-ALL-31; inbox notes 60 (27B), 65 (Q38FN), 32 (DS41-1017)."]}
   ],
@@ -156,7 +156,7 @@ The coordinator relayed both of these rows as operator-directed. Neither is the 
            "execution_conditions": "Research branch, build role, no inference compute; INF-73 owner review",
            "closure_basis": "Immediate"},
     "P4": {"project_objective": "Keep the intake record true at the current source version",
-           "implementation_ref": "research/intake_index.yaml L246326-246390 (intake-1924)",
+           "implementation_ref": "research/intake_index.yaml L246326-246390 (intake-1924#record)",
            "gap": "Entry is stage1-unverified at v0.6.5, carries two cross-contaminated EPYC figures and two now-false claims",
            "operational_change": "Apply INTAKE-ENTRIES-PROPOSED.yaml as targeted text edits",
            "benefit_direction": "Citable dive-verified anchors; contamination removed",
@@ -191,7 +191,7 @@ The coordinator relayed both of these rows as operator-directed. Neither is the 
     {"scan_id": "S16", "source_ref": "PR #1080", "implementation_ref": "KVU-16f/g; AKX-ALL-13", "mechanism": "Larger prompt chunks", "consumer": "27B prefill", "application": "knowledge", "disposition": "covered", "ledger_ids": ["TF114-D7"], "basis": "Owned"},
     {"scan_id": "S17", "source_ref": "CHANGELOG L11-55", "implementation_ref": "operator lane rule 2026-10-06", "mechanism": "Gemma 4 / speech", "consumer": "none in AK lanes", "application": "none", "disposition": "declined", "ledger_ids": ["TF114-D8"], "basis": "Lane scope"},
     {"scan_id": "S18", "source_ref": "ggml.cu L1", "implementation_ref": "note 10 §3.2", "mechanism": "bf16 exact-integer MMA", "consumer": "27B GEMV", "application": "none", "disposition": "declined", "ledger_ids": ["TF114-D9"], "basis": "Settled"},
-    {"scan_id": "S19", "source_ref": "v1.1.4 dive", "implementation_ref": "intake_index.yaml L246326-246390", "mechanism": "Record correction", "consumer": "intake-1924", "application": "entry_updates", "disposition": "actionable", "ledger_ids": ["TF114-10"], "basis": "Stage-1-unverified at 0.6.5"}
+    {"scan_id": "S19", "source_ref": "v1.1.4 dive", "implementation_ref": "intake_index.yaml L246326-246390", "mechanism": "Record correction", "consumer": "intake-1924#record", "application": "entry_updates", "disposition": "actionable", "ledger_ids": ["TF114-10"], "basis": "Stage-1-unverified at 0.6.5"}
   ],
   "actionable_additions": [
     {"ledger_id": "TF114-1", "source": "a56d0ce2fa.patch L10", "action": "Seed G2 + arbiter", "terminal_mapping": "P1 / AKX-ALL-30, AKX-ALL-30a"},
@@ -203,7 +203,7 @@ The coordinator relayed both of these rows as operator-directed. Neither is the 
     {"ledger_id": "TF114-7", "source": "d0d179497e; eb0d391600", "action": "Seed Q2", "terminal_mapping": "P2 / AKX-ALL-30"},
     {"ledger_id": "TF114-8", "source": "aa6fbd8903", "action": "Seed D1", "terminal_mapping": "P2 / AKX-ALL-30"},
     {"ledger_id": "TF114-9", "source": "docs/kernel-contract.md", "action": "Planted-control numerics gates", "terminal_mapping": "P3 / AKX-ALL-31"},
-    {"ledger_id": "TF114-10", "source": "intake-1924 vs v1.1.4", "action": "Entry dive fields and corrections", "terminal_mapping": "P4 / entry_updates"},
+    {"ledger_id": "TF114-10", "source": "intake-1924#record vs v1.1.4", "action": "Entry dive fields and corrections", "terminal_mapping": "P4 / entry_updates"},
     {"ledger_id": "TF114-D1", "source": "PR #1069, #1155", "action": "Shared verify / batched drafting", "terminal_mapping": "decline: already integrated in llama-server"},
     {"ledger_id": "TF114-D2", "source": "69e491cbc5", "action": "int8 prompt GEMM", "terminal_mapping": "decline: already integrated; no CDNA2 rate gain"},
     {"ledger_id": "TF114-D3", "source": "PR #1195", "action": "PLE worker pool", "terminal_mapping": "decline: no thread-spawn defect"},
@@ -232,7 +232,7 @@ The coordinator relayed both of these rows as operator-directed. Neither is the 
     "TF114-7": {"required_outcome": "Q2 seeded with its overlap falsifier", "review_status": "preserved", "review_basis": "In note 65", "task_refs": [{"owner": "handoffs/active/autokernel-all-devices-all-dimensions.md", "task_id": "AKX-ALL-30", "task_text": "- [ ] **AKX-ALL-30 — inject the TensorFold 1.1.4 seeds as three inbox notes (intake-1924#record).**", "acceptance": "note 65 present"}]},
     "TF114-8": {"required_outcome": "D1 recorded for the depth surface", "review_status": "preserved", "review_basis": "In note 32", "task_refs": [{"owner": "handoffs/active/autokernel-all-devices-all-dimensions.md", "task_id": "AKX-ALL-30", "task_text": "- [ ] **AKX-ALL-30 — inject the TensorFold 1.1.4 seeds as three inbox notes (intake-1924#record).**", "acceptance": "note 32 present"}]},
     "TF114-9": {"required_outcome": "Two planted-control gates run by default", "review_status": "preserved", "review_basis": "Task acceptance requires red controls and a passing incumbent", "task_refs": [{"owner": "handoffs/active/autokernel-all-devices-all-dimensions.md", "task_id": "AKX-ALL-31", "task_text": "- [ ] **AKX-ALL-31 — planted-control numerics gates for AK candidates (intake-1924#record; TensorFold `docs/kernel-contract.md` gates 1 and 4).**", "acceptance": "both controls red; incumbent passes"}]},
-    "TF114-10": {"required_outcome": "intake-1924 is dive-verified at v1.1.4 with contamination removed", "review_status": "closed-with-basis", "review_basis": "Delivered by entry_updates and INTAKE-ENTRIES-PROPOSED.yaml, not a handoff task", "task_refs": []},
+    "TF114-10": {"required_outcome": "intake-1924#record is dive-verified at v1.1.4 with contamination removed", "review_status": "closed-with-basis", "review_basis": "Delivered by entry_updates and INTAKE-ENTRIES-PROPOSED.yaml, not a handoff task", "task_refs": []},
     "TF114-D1": {"required_outcome": "none", "review_status": "closed-with-basis", "review_basis": "server-context.cpp:500,3143,3193 batch every slot's drafts", "task_refs": []},
     "TF114-D2": {"required_outcome": "none", "review_status": "closed-with-basis", "review_basis": "q8_1 integer-dot path in use; CDNA2 int8 = f16 rate", "task_refs": []},
     "TF114-D3": {"required_outcome": "none", "review_status": "closed-with-basis", "review_basis": "ggml threadpool is persistent", "task_refs": []},

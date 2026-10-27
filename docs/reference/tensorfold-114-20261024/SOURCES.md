@@ -12,7 +12,7 @@ executed. No clone, build or benchmark was run, and no git write was made.
 | v1.1.4 tag object | `585df8ba3e307d9e4bcea1d6c28a58c8dc1b5682` → commit **`eab8582819688325e371907e4706e1c602b8a273`** (published 2026-10-24T19:16:45Z) |
 | v1.1.3 tag object | `9c3b5ecacf005b70f726e1d3e036e884e53a69df` → commit **`36415df4f76e4458e82d0fa729ecb28e287ebf38`** (published 2026-10-23T21:26:56Z) |
 | Range v1.1.3...v1.1.4 | 214 commits, 564 files (compare API with 3 pages; the `.diff` has 564 `diff --git` headers) |
-| Prior coverage | intake-1924 (stage1-unverified) covered v0.2.0 to v0.6.5 (2026-10-03). Its scratch REPORT `/mnt/raid0/llm/tmp/tensorfold-research-20261004/REPORT.md` is **no longer on disk**: the directory is gone. The 0.6.5 coverage was therefore reconstructed from the intake-1924 record (`research/intake_index.yaml` L246326-246390) and from the 27B inbox note 10, which cites that REPORT's §3/§4. |
+| Prior coverage | intake-1924#record (stage1-unverified) covered v0.2.0 to v0.6.5 (2026-10-03). Its scratch REPORT `/mnt/raid0/llm/tmp/tensorfold-research-20261004/REPORT.md` is **no longer on disk**: the directory is gone. The 0.6.5 coverage was therefore reconstructed from the intake-1924#record record (`research/intake_index.yaml` L246326-246390) and from the 27B inbox note 10, which cites that REPORT's §3/§4. |
 
 ## Release-level documents (sha256 of the downloaded bytes)
 
@@ -73,4 +73,4 @@ All of these are inside the v1.1.3...v1.1.4 range (checked against `dl/compare_s
 | `/workspace/handoffs/active/autokernel-all-devices-all-dimensions.md` | AKX-ALL-19, -24, -25, -29.x, -LB1..LB4; on origin/main `6f2011142` the highest ID is AKX-ALL-29, so AKX-ALL-30 and up are free |
 | `/workspace/handoffs/active/deepseek-v41-flash-evaluation.md` | L1211-1224 (DS41-C123: the indexer and top-k grow with context), L1748 (DS41-C123.1) |
 | `/workspace/handoffs/active/kv-unified-stack-rollout.md` | KVU-19b (L717-851), KVU-16f/g |
-| `/workspace/research/intake_index.yaml` | unbounded dedup sweep: the URL `https://github.com/ashhart/TensorFold` matches exactly at L246328 (intake-1924); TensorFold is also mentioned in intake-1923, -1937, -1951, -1956 and -1959; the last ID on origin/main is intake-2510 |
+| `/workspace/research/intake_index.yaml` | unbounded dedup sweep: the URL `https://github.com/ashhart/TensorFold` matches exactly at L246328 (intake-1924#record); TensorFold is also mentioned in intake-1923, -1937, -1951, -1956 and -1959; the last ID on origin/main is intake-2510 |
