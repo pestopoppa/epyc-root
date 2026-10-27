@@ -1,0 +1,14 @@
+92eb7a0cc2b9c56ca2a910ec870961604fdc7d305d236a9b80e3af4aa3147968  /mnt/raid0/llm/tmp/codex-ni-20261027-meta-fix-prep/candidate.patch
+06b35586d98858a2b24d377e75c0295a0feb84694b6c777f6fd6c41bc5edbf9b  /mnt/raid0/llm/tmp/codex-ni-20261027-meta-fix-prep/SOURCE.SHA256SUMS
+e25a5cd01c42899811357bfc57104862320d2f226d1939f7dae0f753a436fb16  /mnt/raid0/llm/tmp/codex-ni-20261027-meta-fix-prep/buildhip/bin/libggml-hip.so
+8863b9bb93a7746752d16592ebc06f4112b57ac4183013d667653ee2deff608a  /mnt/raid0/llm/tmp/codex-ni-20261027-meta-fix-prep/buildhip/bin/test-llama-archs
+42d29cdae3c0ffebc51c9de8fcd48235cb528bf1cf60866e7298f5e80b52b8fe  /mnt/raid0/llm/tmp/codex-ni-20261027-meta-build-recovery/RECOVERY-ACCEPTED
+873bda9d5d0d5d70686b03056f7c7bd5836853201957f79234efb500c56683da  /mnt/raid0/llm/tmp/codex-ni-20261027-df2-row-exact-prep/candidate.patch
+4a6749cdbafd15a9d73c9d210775a0864b81c31ffeeaeabed965c3b0bf5fc566  /mnt/raid0/llm/tmp/codex-ni-20261027-df2-row-exact-prep/SOURCE.SHA256SUMS
+6771e1fd33a5de8818478a4c95574e651acce3703c9ad2da6cdc6b2afb852c1d  /mnt/raid0/llm/tmp/codex-ni-20261027-df2-row-exact-prep/buildhip/bin/libggml-hip.so
+8863b9bb93a7746752d16592ebc06f4112b57ac4183013d667653ee2deff608a  /mnt/raid0/llm/tmp/codex-ni-20261027-df2-row-exact-prep/buildhip/bin/test-llama-archs
+8934f4a9693921e12fdffb3a9fc92b570504708ddccf06fdf80259fce09d3ccc  /mnt/raid0/llm/tmp/codex-ni-20261027-df2-row-exact-prep/owner-width-probe
+96ceac70446aaeee91e2f4f13d74db341e4b553613f3ebf903d52b8137d84d10  /mnt/raid0/llm/tmp/codex-ni-20261027-df2-row-exact-prep/width_probe.cpp
+8e94fd7f8cb579438c8a7cbe20866e692e8d2378985fc58c702c4ee888df6322  /mnt/raid0/llm/tmp/codex-ni-20261027-df2-row-exact-prep/recovery/RECOVERY-COMPLETE
+3a53e8ef89c0ff338507f2d60f2afc844444824b03f6a0463d63c2c3bcdd63e3  /mnt/raid0/llm/tmp/codex-ni-20261027-quarter-recovery-variants/meta/RECOVERY.SHA256SUMS
+d935e75a87684fc61585e8c6b2c96acd4c93768f316fff822cb6272e9cd4f79d  /mnt/raid0/llm/tmp/codex-ni-20261027-quarter-recovery-variants/df2/RECOVERY-SOURCE.sha256

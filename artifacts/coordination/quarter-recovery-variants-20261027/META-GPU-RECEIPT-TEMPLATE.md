@@ -1,0 +1,5 @@
+# META GPU build-acceptance receipt — TEMPLATE, NOT ACCEPTED
+
+Candidate base `c72ec82f5417bb2937310326120f149b665e8400`; source patch SHA-256 `92eb7a0cc2b9c56ca2a910ec870961604fdc7d305d236a9b80e3af4aa3147968`; source manifest SHA-256 `06b35586d98858a2b24d377e75c0295a0feb84694b6c777f6fd6c41bc5edbf9b`; HIP `libggml-hip.so` SHA-256 `e25a5cd01c42899811357bfc57104862320d2f226d1939f7dae0f753a436fb16`; `test-llama-archs` SHA-256 `8863b9bb93a7746752d16592ebc06f4112b57ac4183013d667653ee2deff608a`; artifact recovery marker SHA-256 `42d29cdae3c0ffebc51c9de8fcd48235cb528bf1cf60866e7298f5e80b52b8fe`. Paths are in ACTUAL-BINDINGS.sha256. No width probe is asserted for META.
+
+GPU owner must fill: run ID and grant; source and ELF re-verification; runtime ggml linkage and during-run GPU residency evidence; exact test/gate commands and individual results; output locations and digests; acceptance decision, reviewer and time. Leave acceptance pending until the required gates actually pass. Original compile rc70 and unproven outer drain remain recorded.
