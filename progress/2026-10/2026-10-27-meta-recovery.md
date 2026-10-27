@@ -1,0 +1,5 @@
+# Private Meta build finalization recovery — 2026-10-27
+
+The original CPU/HIP build reached BUILD-WORK-DONE and its resource watcher reported drained=True; the owner grant ended rc 70 in outer finalization. The bootstrap globally rejected a process with mixed UIDs before checking group membership. A current foreign fusermount3 reproduces that defect; the historical offender was not recorded. The original failed stamp remains authoritative.
+
+The private correction permits mixed UIDs only for foreign groups and retains owner UID, birth, SID and PGID checks. A claimed Q0 test passed with the foreign process, rejected a changed birth and drained its captured process. Artifact seals, CPU/HIP build hashes, cache diffs and model-free fixture records were checked under Q0; no model or GPU correctness conclusion follows. T1 passed on Q3; validator, synthetic grant check and synthetic admission passed on Q0; temporary poller was reaped. A fixed Q1 normal owner row is ready but has not executed. Its distinct RECOVERY-ACCEPTED marker is contingent on actual owner execution and clean drain.

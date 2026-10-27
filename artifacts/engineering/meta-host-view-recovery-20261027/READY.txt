@@ -1,0 +1,3 @@
+T1_PASS=/mnt/raid0/llm/tmp/codex-ni-20261027-meta-build-recovery/dryrun/30b6a6d3cd13388b05622fe9fda3cb719c5aa057db812ac9/pass.json
+normal_admission=PASS
+temporary_poller=reaped

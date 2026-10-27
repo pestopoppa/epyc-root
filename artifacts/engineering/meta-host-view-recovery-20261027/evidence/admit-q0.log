@@ -1,0 +1,6 @@
+[region-lock] acquiring regions ['q0'] as role='build' (timeout_s=15.0) …
+[region-lock] held ['q0'] after 0.0s wait; running: taskset -c 0,1 bash /mnt/raid0/llm/tmp/codex-ni-20261027-meta-fix-prep/q0-child.sh /mnt/raid0/llm/tmp/codex-ni-20261027-meta-fix-prep/recovery-admit-q0 /usr/bin/python3 -I -B /mnt/raid0/llm/tmp/codex-ni-20261027-meta-build-recovery/final-validation.py
+q0 physical 0,1; inherited native address-space limit: unlimited
+NORMAL_ADMISSION_VALIDATION_PASS
+temporary poller reaped rc=143
+RSS_SAMPLED_PEAK_KIB=70436 LIMIT_KIB=4194304 drained=True

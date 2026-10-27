@@ -1,0 +1,2 @@
+2026-10-27T20:07:45Z [codex-ni-meta-recovery-20261027] launcher up pid=1020492 class=cpu poll=45s grants=/mnt/raid0/llm/tmp/codex-ni-20261027-meta-build-recovery/final-admit/grants stop=/mnt/raid0/llm/tmp/codex-ni-20261027-meta-build-recovery/T1-STOP minwin=300s ports=none
+2026-10-27T20:07:46Z [codex-ni-meta-recovery-20261027] launcher signalled

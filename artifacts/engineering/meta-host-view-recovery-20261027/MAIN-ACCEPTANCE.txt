@@ -1,0 +1,2 @@
+source-only-main-approval=private-artifact-recovery
+recovery-manifest-sha256=2e2ab66473c96e9b061fb9c0064a96bc767b120bdfdba8094d1f2d8d39fc338c
