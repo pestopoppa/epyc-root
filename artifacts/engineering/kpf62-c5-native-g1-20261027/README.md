@@ -1,0 +1,3 @@
+# KPF-62 C5 private G1 packet — recovery archive
+
+This is a historical source snapshot, not a runnable relocated packet. Live review/build uses `/mnt/raid0/llm/tmp/codex-ni-20261027-kpf62-c5-api-port/`, protected with KEEP. Paths in these files intentionally identify that live directory and pinned local dependencies; do not treat this archive as a grant or evidence that a build or measurement ran. See `progress/2026-10/2026-10-27-kpf62-c5-api-preparation.md` and the linked fork commit for scope and status. Owner must preserve alternate object stores and packet evidence until the task completes.
