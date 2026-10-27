@@ -1,0 +1,24 @@
+{
+  "schema": "epyc.operating_constraints_amendment.v1",
+  "gate_id": "RATIFY-WS58-LESSONS-20261027",
+  "status": "ratified",
+  "ratified_at": "2026-10-27T10:11:58Z",
+  "operator": "Daniele",
+  "signature_channel": "operator-run script (--attest typed confirmation)",
+  "operator_decisions": {
+    "1": "2026-10-27 (decision tool): Operator Decision Requests: a missing answer is unanswered, not declined; re-ask with the decision tool, never as prose; only that item pauses",
+    "2": "2026-10-27 (decision tool): Inference and Benchmarks: an exit code is not a result; post-measurement analysis before reporting"
+  },
+  "origin": "2026-10-26/27 workspace-58 calendar freezes (1); 2026-10-27 (2)",
+  "base_origin_main": "a48ff59e938fd06eed59a313acce4ae76082c79b",
+  "consolidated_receipt": "artifacts/operator/ratify_ws58_lessons_20261027.receipt.json",
+  "state": {
+    "agents/shared/OPERATING_CONSTRAINTS.md": {
+      "sha256_before": "7e453c7b115b6f3f6b50623f2b6a2b2144a7210face10e8076cc7a7cb93cc6a8",
+      "sha256_after": "1cfcbdc9234cecded69e9439ed562e4c5d86504d99b6fe33589087beda9df8ce"
+    }
+  },
+  "applied_by": "scripts/operator/ratify_ws58_lessons_20261027.sh",
+  "ratify_script_sha256": "d30841487a104ed5a360e709696e0d8f35d61eadcd8cf55337277e8e0239f756",
+  "processes_touched": []
+}

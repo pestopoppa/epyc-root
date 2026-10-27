@@ -220,6 +220,8 @@ investigation; Appendix)
   through the same bus path. Nothing above about physical claims, residency evidence or
   drain-at-boundary changes.
 
+An exit code is not a result. Every measurement row that ends gets a post-measurement analysis (verdict vs predeclared rule and direction, classification, owning-handoff result bullet, belief/wiki candidates) before it is reported, and reports state what each result means. Checklist: `.claude/skills/inference-backlog-scheduling/references/post-measurement-analysis.md`. (origin: 2026-10-27)
+
 
 ## The Single Champion — one aggregate per production kernel tree, between promotions
 
@@ -467,6 +469,8 @@ The operator signs from a terminal.
 - TTY-gated operator scripts (the countersign and the typed ratify scripts) refuse to run under a `!` command. Hand
   them over as a command to run in a separate terminal, never chained with `&&` to other steps.
   (origin: INC-20260929-tty-gated-operator-scripts)
+
+A missing answer is *unanswered*, not *declined*: on the remote app the AskUserQuestion UI can vanish without operator action. Re-ask the same question with the decision tool, never as prose; only that item pauses. (origin: 2026-10-26/27, ws58 calendar freezes)
 
 ## Parallel Subagent Fan-Out — the default working mode of every main
 
