@@ -1146,6 +1146,8 @@ between plan and apply, so this wave takes the next free block, SC65–SC68.*
       adapter into ClaimTuple (no new grading rule). Non-regression rows reuse the existing serving A/B
       archive/belief export.
 
+  - [x] **SC81-NEXT-01a16fc3:** prepared and delivered the q2 validation packet; two-core q0 preflight passed, NEXT receipt `3dd7a1cb-1e01-47cb-a387-20b909f35906`. Nine compatibility tests and producer adoption remain; SC81 stays open. ✅ 2026-10-27 [no-belief: packet preparation]
+
 ## SC69–SC73 — kernel audit survivors, 2026-09-07 (filed 2026-09-07)
 
 *Source: the Q.1 mutation audit of `tests/vidya/` run at the end of the Prove2Me wave — 62 mutations
