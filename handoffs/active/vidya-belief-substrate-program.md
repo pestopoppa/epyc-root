@@ -2344,6 +2344,7 @@ RI-16's routing `stage_ms` is covered by VB-ROUTE-LAT above, not by a new task.
     PASS is 0/10 on the named prompts only.
   - Grade via `claim_tuple.grade()`; no new ladder. The source-table rows are applied in `scripts/vidya/adapters/README.md`.
   - Done when an adapter projects both slots' perf tables and the per-arm probe verdicts.
+  - [ ] VB-V11FA prospective matched-current-C5 producer (2026-10-27, owner-applied from codex-ni BK-OWNER-DRAFT; source seal `4e309975`): write side ACCEPTED at enrollment. The read side `adapter-v11_fa_native.py` (source kind v11-fa-native, existing measurement ladder) is prepared, NOT applied. Still owed: raw case-membership re-derivation, tamper/refusal controls, CLI ingest registration and the planning-context canary. Not wired until the canary passes.
 - [ ] **VB-LONGCTX-KERNEL — write side for the DCA perplexity and FA-INT64-OFFSET slots** (filed 2026-10-04,
   workspace-ec).
   - Producers: `gpu_slot_dca.sh` and `real_model_ppl_cpu.sh` (PPL ± per arm), and `gpu_slot_fa_int64.sh`
