@@ -1,5 +1,7 @@
 # MI210 big-model residency + acceleration roadmap
 
+**Scratch**: `/mnt/raid0/llm/tmp/refactor-01a16fc3/inf34-prefill-crossover-ready/`, `/mnt/raid0/llm/tmp/refactor-01a16fc3/pf1-six-hour-row/` · worktrees: none for these launcher packets
+
 **Status**: STRATEGIC THREAD (operator-developed 2026-07-04/05). All numbers OBSERVATION; every step is **experimental-HOLD** — operator-only authorizes any production push, CPU-correctness-gated first. Distilled from the MI210 speed campaign ([summary](../completed/mi210-speed-campaign-summary.md), findings-05b/05c) as the "what do we do with this card next" thread.
 
 ## The framing: one 64 GB MI210, two ways to use it
@@ -234,6 +236,7 @@ op-offload arm at -ub 512 exceeds ~158 tok/s on this file. `intake-1810#01`.
       reproduced in a later-window reversed-order replicate. Results feed the fabric prefill rule and the
       numa-prefill-decode-disaggregation.md reopen trigger. Bench-class: this authorizes no serving change.
   Full rigor controls (frozen manifest, per-cell raw outputs, holdout, denominator, region claim, freeze constraints, VB-PREFILL-XOVER first): `docs/research-intake/orch-prior-art-stage3-plan-20260926.md` P3-3.
+  - [x] **PF1 native launcher preparation** — source-frozen initial and conditional holdout packets; model-free native driver, STOP/reap, failure denominator, resume/no-redraw and holdout fixtures passed. Evidence: `/mnt/raid0/llm/tmp/refactor-01a16fc3/compute-coordination-20261026/PF1-NATIVE-READY.md` (NEXT `0c94cb0f-fda7-43c1-9759-ff71b043e574`); source manifest `e5b51ff0cf4a90383c4afeb052f32b077e78f7259aed9314aa4627d8d0d9364d`. Initial whole-host request max 24 h/min 4 h; holdout conditional on complete initial receipt and >=4 h elapsed. No P3 closure or serving decision. ✅ 2026-10-27 [no-belief: preparation and fixture only]
   - [x] **PF1-pre — the v8 CPU prefill runner is retired, so the A0 arm cannot silently reuse it.** ✅ 2026-09-26 —
         research `3d3581e6` (operator decision): `scripts/benchmark/cpu_prefill_v8_regression_runner.py` is retired IN
         PLACE (`scripts/benchmark/deprecated/RETIRED_IN_PLACE.md`). It could not be moved, because an executed
