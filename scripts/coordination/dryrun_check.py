@@ -220,6 +220,18 @@ def admission(args: argparse.Namespace) -> dict[str, object]:
     if args.min_window_s != seconds(row["cells"][10]):
         refuse("launcher min-window differs from row")
     expected_cpus = cpus(args.pf_cpus) if getattr(args, "scoped_pf", False) else row["cpus"]
+    # filler_run12 invokes admit again inside the actual entry. Its admit argv
+    # has no scoped-PF switch, so use only the checker's nonce-bound isolated
+    # grant context to carry the two-core scope into that second admission.
+    if getattr(args, "require_proof", False) and os.environ.get("FILLER_PREFLIGHT") == "1":
+        nonce = os.environ.get("DRYRUN_NONCE", "")
+        grants = Path(os.environ.get("FILLER_GRANTS_DIR", ""))
+        pf = os.environ.get("DRYRUN_REQUIRED_CPUS", "")
+        if len(nonce) < 32 or grants.name != "grants" or grants.parent.name != nonce or not pf:
+            refuse("preflight inner admission lacks isolated nonce-bound CPU scope")
+        expected_cpus = cpus(pf)
+        if len(expected_cpus) != 2 or len({cpu % 96 for cpu in expected_cpus}) != 2:
+            refuse("preflight inner admission requires two distinct physical cores")
     if not expected_cpus.issubset(grant_cpus(regions)):
         refuse("grant CPUs do not cover declared run/PF CPUs")
     disk_root = row["scratch"]
@@ -429,7 +441,9 @@ def run(args: argparse.Namespace) -> None:
     pf_cpus = cpus(args.required_cpus)
     if pf_cpus != row["cpus"] and not args.scoped_pf:
         refuse("PF CPUs differ from row claimed_cpus without --scoped-pf")
-    if args.scoped_pf and (len(pf_cpus) != 2 or pf_cpus == row["cpus"]):
+    if args.scoped_pf and (len(pf_cpus) != 2 or
+                           len({cpu % 96 for cpu in pf_cpus}) != 2 or
+                           pf_cpus == row["cpus"]):
         refuse("--scoped-pf requires exactly two physical CPUs distinct from normal row")
     if not pf_cpus.issubset(grant_cpus(args.regions)):
         refuse("synthetic grant regions do not cover PF CPUs")
