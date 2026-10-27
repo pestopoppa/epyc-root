@@ -1,0 +1,68 @@
+#!/usr/bin/env python3
+"""HUMAN-ONLY DRAFT. Requires a human-ratified policy marker; never auto-run.
+
+Proposed interface: python3 ratify_same_day_sweep.py.DRAFT RECORD.json
+RECORD is a human-produced record of an actual operator decision, not proof by
+itself. Its exact schema is date_utc, approval_reference, and entries, each
+entry containing source, trash, device and inode. The human must independently
+verify the decision reference and exact listed paths before confirming.
+"""
+import datetime
+import json
+import os
+from pathlib import Path
+import shutil
+import sys
+
+POLICY = Path('/workspace/agents/shared/OPERATING_CONSTRAINTS.md')
+TRASH = Path('/mnt/raid0/llm/.trash')
+AUDIT = Path('/workspace/logs/safety_audit.log')
+SENTINEL = 'RATIFIED-SAME-DAY-GUARDED-RM-EXACT-LIST-V1'
+
+def event(obj):
+    fd = os.open(AUDIT, os.O_WRONLY | os.O_APPEND | os.O_NOFOLLOW)
+    with os.fdopen(fd, 'a') as f:
+        f.write(json.dumps(obj) + '\n'); f.flush(); os.fsync(f.fileno())
+
+def main():
+    if len(sys.argv) != 2 or not sys.stdin.isatty(): raise ValueError('human terminal and one record required')
+    if SENTINEL not in POLICY.read_text(): raise ValueError('human policy ratification is absent')
+    record = json.loads(Path(sys.argv[1]).read_text())
+    if set(record) != {'date_utc', 'approval_reference', 'entries'} or record['date_utc'] != datetime.datetime.now(datetime.timezone.utc).date().isoformat() or not isinstance(record['approval_reference'], str) or not record['approval_reference']:
+        raise ValueError('invalid same-day approval record')
+    entries = record['entries']
+    if not isinstance(entries, list) or not entries: raise ValueError('empty exact entry list')
+    if TRASH.is_symlink() or TRASH.resolve(strict=True) != TRASH: raise ValueError('trash root alias')
+    audit_lines = AUDIT.read_text().splitlines(); seen = set()
+    for e in entries:
+        if set(e) != {'source', 'trash', 'device', 'inode'}: raise ValueError('entry fields')
+        p = Path(e['trash'])
+        if p.parent != TRASH or p.is_symlink() or p.name in seen: raise ValueError('trash identity or duplicate')
+        seen.add(p.name); st = p.lstat()
+        if (st.st_dev, st.st_ino) != (e['device'], e['inode']): raise ValueError('trash inode changed')
+        wanted = 'trashed ' + e['source'] + ' -> ' + e['trash'] + ' size='
+        matches = []
+        for line in audit_lines:
+            try: item = json.loads(line)
+            except json.JSONDecodeError: continue
+            if item.get('cat') == 'GUARDED_RM' and item.get('ts', '').startswith(record['date_utc']) and item.get('msg', '').startswith(wanted): matches.append(item)
+        if len(matches) != 1: raise ValueError('no unique same-day guarded_rm audit record')
+    print(json.dumps(record, indent=2))
+    print('Human must independently verify the real operator decision and custody/KEEP constraints.')
+    if input('Type EXACT-SAME-DAY-APPROVAL to proceed: ') != 'EXACT-SAME-DAY-APPROVAL': raise ValueError('human confirmation missing')
+    fd = os.open(TRASH, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW)
+    try:
+        for e in entries:
+            p = Path(e['trash']); st = p.lstat()
+            if p.is_symlink() or (st.st_dev, st.st_ino) != (e['device'], e['inode']): raise ValueError('changed; stop partial batch')
+            info = {'cat':'TRASH_SWEEP_SAME_DAY_DRAFT', 'source':e['source'], 'trash':e['trash'], 'approval_reference':record['approval_reference']}
+            event({**info, 'event':'purge-intent'})
+            if p.is_dir(): shutil.rmtree(p.name, dir_fd=fd)
+            else: os.unlink(p.name, dir_fd=fd)
+            event({**info, 'event':'purge-complete'})
+    finally: os.close(fd)
+
+if __name__ == '__main__':
+    try: main()
+    except (OSError, ValueError, KeyError, json.JSONDecodeError) as e:
+        print('REFUSED:', e, file=sys.stderr); sys.exit(1)

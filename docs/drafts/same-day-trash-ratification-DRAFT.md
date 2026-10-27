@@ -18,3 +18,8 @@ Proposed operator text to adopt, reject, or edit:
 
 Implementation and tests must be reviewed separately after a human ratifies
 the wording. This draft does not modify trash-sweep or issue an approval.
+`ratify_same_day_sweep.py.DRAFT` is a proposed runnable human-only exact-list
+implementation. It is disabled until a human amends the policy with its explicit
+marker, requires a terminal and an independently verified approval reference,
+and must be audited before use; the human is responsible for custody/KEEP and
+approval verification. Merely creating a record is not operator authorization.

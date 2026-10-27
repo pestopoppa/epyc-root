@@ -291,6 +291,11 @@ def scratch_retention_violations(notes: str) -> list[str]:
     return out
 
 
+def strict_scratch_retention(notes: str) -> bool:
+    """Explicit opt-in for newly migrated rows; old rows warn until migrated."""
+    return bool(re.search(r'(?:^|;)\s*retention_v2\s*=\s*1\s*(?:;|$)', notes))
+
+
 def derive_booking_class(cells: list[str], col: dict[str, int]) -> str:
     """CTC-Q-C: derive the booking class of a row from its decision / prior / notes (and min_effect unit).
 
@@ -335,7 +340,8 @@ def check_row(cells: list[str], col: dict[str, int], seen: set[str], pid_alive=N
         out.append(f"status {status!r}: carries text after the token {tok!r} (put it in notes)")
     if tok in TERMINAL:
         return out  # terminal rows: id, uniqueness and status token only
-    out += scratch_retention_violations(g('notes'))
+    if strict_scratch_retention(g('notes')):
+        out += scratch_retention_violations(g('notes'))
     ram = g("max private ram")
     if not RAM_RE.match(ram):
         out.append(f"peak host RAM (col 6) {ram[:40]!r}: must be a number in GiB, e.g. '48' or "
@@ -439,6 +445,10 @@ def run(argv: list[str] | None = None) -> int:
             continue
         found = found or rid == a.row
         checked += 1
+        if cells[col['status']] not in TERMINAL and not strict_scratch_retention(cells[col['notes']]):
+            for p in scratch_retention_violations(cells[col['notes']]):
+                print(f"WARN line {line_no} {rid}: legacy scratch retention: {p}")
+                warned += 1
         for p in probs:
             if a.for_grant:
                 print(f"REFUSE line {line_no} {rid}: {p}")

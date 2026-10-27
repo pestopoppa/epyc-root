@@ -2,9 +2,9 @@
 
 Candidate only: integrate after review and deployment of the validator together
 with the reclaim script. `validate_fillers.py` is in the grant-admission path;
-this stricter rule rejects active rows declaring directory-wide KEEP, and all
-scratch rows without nonempty raw patterns. Inventory and update affected rows
-before installing it; terminal rows remain exempt. A declaration cannot prove a
+this stricter rule rejects opted-in rows declaring directory-wide KEEP, and
+scratch rows without nonempty raw patterns. Set `retention_v2=1` on newly
+migrated rows; legacy rows receive warnings. Terminal rows remain exempt. A declaration cannot prove a
 mutable script writes no cache, so the candidate requires explicit raw patterns
 for every scratch row. Native evidence should use individual file names or
 file patterns, not a directory blanket.
