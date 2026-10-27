@@ -497,3 +497,7 @@ Trigger-gated (no checkbox until the trigger fires):
 - [ ] **SPEC-GRAM.7 — HIP mask overlap and draft-side grammar masking.** Overlap the GPU-side mask computation with the decode step on the MI210 lanes, and apply the grammar mask on the draft side so drafts are grammar-valid before verify (fewer verify rejections at B5). Measure on the SPEC-GRAM.2 cells; depends on SPEC-GRAM.3.
   - *(2026-10-23, f8 wrap-up.)* The MTP-lane case is closed by SPEC-GRAM.1(2): json_schema costs draft-mtp -1.95 pp of acceptance (CI -7.86 to +3.52), inside the 10 pp threshold, on Qwen3.6-35B-A3B CPU. Draft-side masking buys nothing measurable there. The MI210 HIP mask-overlap half and the DSpark lane are untouched by that result, so this item stays open for them.
 - Re-dive Gram2Token when its full text or code is reachable (intake-2390#record).
+
+### C5 caller-graph audit checkpoint — 2026-10-27
+
+- [x] Preserve MAIN-accepted C5 GitNexus caller-repair r11 and its scoped graph result. ✅ 2026-10-27 — Six sampler sites/five caller functions proved; r10 LOW/fold conclusion withdrawn. The tool repair patch is not the llama C5 patch. No full C5/global clearance, source application, INF-50 completion or fold approval. [Evidence](../../artifacts/ni08/inf50-c5-gitnexus-r11-20261027/README.md). [belief: cc]

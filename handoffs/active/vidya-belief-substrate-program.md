@@ -3658,3 +3658,5 @@ These are notes only. The adapters README is not edited here; the owner applies 
 **Must project nothing**
 - s5-dripreview1, an all-`bad_final` vacuous run.
 - akx-lb3-2-attribution, hpr-b-64k-holdout and ufh14-lb7-1 (INVALID or report-only).
+
+- [ ] **VB-GNX-C5-CALLER-AUDIT-1 — wire original INF-50 C5 GitNexus caller-graph audit dependency evidence.** Preserve the actual r11 baseline, tool repair identity, original sealed results, audited caller scope and withdrawn r10 finding; do not invent a measurement warrant or new grading ladder. Define the dependency evidence write-side and demonstrate the planning-context canary before calling it wired. [Source and limits](../../artifacts/ni08/inf50-c5-gitnexus-r11-20261027/README.md).
