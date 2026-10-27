@@ -1,0 +1,30 @@
+{
+  "dist/core/ingestion/languages/cpp/scope-resolver.js": {
+    "before": "da145fc0d4989fb820e4caa73c6bbe979b9bb82bbeaa5581f035b915c399df17",
+    "after": "1a1dd33fa901f5aed627f1e73b5a815c07d4d21e1643b4980e8b4922adb17b3a"
+  },
+  "dist/core/ingestion/scope-resolution/passes/free-call-fallback.js": {
+    "before": "1496438adccbf7ce103d703d9fd675195608d058c4437aaaab2de03f467ac0ad",
+    "after": "7c3dfb05fa0ad5406dfe068c50f669b2e38e204902f6a5b3a5dfda9945da1f91"
+  },
+  "dist/core/ingestion/workers/parse-worker.js": {
+    "before": "2ffd8a935e7d563ec819c497f4fdc23be049fee3785727a56e4fd2fa0d112e87",
+    "after": "5b0b535fc9bbdf780d3740f88a65fe413e0d4d9d88a60dfaa2fa2e43c0abe059"
+  },
+  "dist/storage/parse-cache.js": {
+    "before": "d0e58eaaecd48289ea0a248c7d53481bfb2e70ed787dd287fcc30131158d9d75",
+    "after": "ae83b47745b5b19365c3e9b4320838c48f1b557b8f6f10861c88d9857a959ef6"
+  },
+  "dist/_shared/scope-resolution/finalize-algorithm.js": {
+    "before": "d2521cedde7c502c3947f3d61693f7c599a3b598b2c9b539f0511d2a6b32140f",
+    "after": "c4ae1ef7fe9c7acb51979dc1d9f17467b7e8d485c2e635081fdd8941ee865956"
+  },
+  "dist/core/ingestion/finalize-orchestrator.js": {
+    "before": "103223f7767d1b8e8889899b8f6b7f682a7cab96d3d1800aade03afb31e3c5ba",
+    "after": "417c164d2dc5abe2251ff1dffd4dbb51581f5f13de86063cc07f8ca6cc8d8587"
+  },
+  "dist/core/ingestion/scope-resolution/pipeline/run.js": {
+    "before": "8e430a355a7cb4ec37d0091b5123d1286f3c8a4e5e3f04920fa561d662d0f228",
+    "after": "d0dea6057a4662d54cee308ee4284de3f78c19ab7f61eeaff3463c59cbbd983e"
+  }
+}

@@ -1,0 +1,242 @@
+--- a/dist/core/ingestion/languages/cpp/scope-resolver.js
++++ b/dist/core/ingestion/languages/cpp/scope-resolver.js
+@@ -16,6 +16,30 @@
+ import { cppConstraintCompatibility } from './constraint-filter.js';
+ import { clearCppUserDefinedConversions, populateCppUserDefinedConversions, } from './user-defined-conversions.js';
+ import { buildCppMemberLookupMro, clearCppMemberLookupState, resolveCppReceiverMember, } from './member-lookup.js';
++
++// Cached C++ captures can contain a Class scope for a bare `struct T *`
++// return type. It is not a class body. Normalize only the exact singleton
++// function-at-scope-start shape before ownership and wildcard resolution.
++export function normalizeCppReturnTypeScopes(parsed) {
++    const scopes = new Map(parsed.scopes.map(s => [s.id, s]));
++    for (const scope of parsed.scopes) {
++        if (scope.kind !== 'Class' || scope.ownedDefs?.length !== 1 ||
++            scope.range.startLine !== scope.range.endLine || scope.imports?.length ||
++            scope.typeBindings?.size || !(scope.bindings instanceof Map) || scope.bindings.size !== 1) continue;
++        const def = scope.ownedDefs[0];
++        if (def.type !== 'Function' || !def.nodeId.startsWith(`def:${parsed.filePath}#${scope.range.startLine}:${scope.range.startCol}:Function:`)) continue;
++        const parent = scopes.get(scope.parent);
++        if (!parent || !['Module', 'Function'].includes(parent.kind) || !(parent.bindings instanceof Map)) continue;
++        if (parent.kind === 'Function' && parent.parent !== parsed.moduleScope) continue;
++        const [name, bindings] = [...scope.bindings][0];
++        if (bindings.length !== 1 || bindings[0].def.nodeId !== def.nodeId || bindings[0].origin !== 'local') continue;
++        parent.bindings.set(name, [...(parent.bindings.get(name) ?? []), ...bindings]);
++        parent.ownedDefs.push(def);
++        scope.ownedDefs = [];
++        scope.bindings.delete(name);
++        scope.kind = 'Block';
++    }
++}
+ /**
+  * Per-pass memo of the augmented `#include`-resolution file set
+  * (`allFilePaths` ∪ header paths), keyed on the two stable source sets.
+@@ -27,6 +51,27 @@
+  * (Twin of the C resolver's `augmentedFilePaths`.)
+  */
+ const augmentedPathsByPass = new WeakMap();
++const wildcardOverloadIndexes = new WeakMap();
++function cppWildcardOverloads(targetFile, name, parsedFiles) {
++    let index = wildcardOverloadIndexes.get(parsedFiles);
++    if (index === undefined) {
++        index = new Map();
++        for (const parsed of parsedFiles) {
++            const module = parsed.scopes.find(s => s.id === parsed.moduleScope);
++            const byName = new Map();
++            for (const def of module?.ownedDefs ?? []) {
++                if (def.type !== 'Function' || !def.qualifiedName || def.qualifiedName.includes('.') ||
++                    isFileLocal(parsed.filePath, def.qualifiedName)) continue;
++                const bucket = byName.get(def.qualifiedName) ?? [];
++                bucket.push(def);
++                byName.set(def.qualifiedName, bucket);
++            }
++            index.set(parsed.filePath, byName);
++        }
++        wildcardOverloadIndexes.set(parsedFiles, index);
++    }
++    return index.get(targetFile)?.get(name) ?? [];
++}
+ function augmentedFilePaths(allFilePaths, headerPaths) {
+     let byHeaders = augmentedPathsByPass.get(allFilePaths);
+     if (byHeaders === undefined) {
+@@ -83,6 +128,7 @@
+         return resolveCppImportTarget(targetRaw, fromFile, allFilePaths);
+     },
+     expandsWildcardTo: (targetModuleScope, parsedFiles) => expandCppWildcardNames(targetModuleScope, parsedFiles),
++    wildcardOverloads: cppWildcardOverloads,
+     mergeBindings: (existing, incoming, scopeId) => cppMergeBindings(existing, incoming, scopeId),
+     // Adapter: cppArityCompatibility predates ScopeResolver and uses
+     // (def, callsite). ScopeResolver contract is (callsite, def).
+@@ -111,6 +157,7 @@
+     // calls this — its marks were just populated in this process.
+     applyCaptureSideChannel: applyCppCaptureSideChannel,
+     populateOwners: (parsed) => {
++        normalizeCppReturnTypeScopes(parsed);
+         populateClassOwnedMembers(parsed);
+         // #1982: tag namespace-nested defs with their enclosing-namespace prefix so
+         // resolveDefGraphId can map them to the namespace-qualified structure-phase
+--- a/dist/core/ingestion/scope-resolution/passes/free-call-fallback.js
++++ b/dist/core/ingestion/scope-resolution/passes/free-call-fallback.js
+@@ -19,6 +19,68 @@
+ import { resolveCallerGraphId, resolveDefGraphId } from '../graph-bridge/ids.js';
+ import { findAllCallableBindingsInScope, findCallableBindingInScope, findCallableBindingsAndAdlBlocker, resolveInheritanceBaseInScope, } from '../scope/walkers.js';
+ import { isOverloadAmbiguousAfterNormalization, narrowOverloadCandidates, } from './overload-narrowing.js';
++import path from 'node:path';
++
++// A C/C++ #include resolves a call to the header declaration. Reconcile
++// that declaration with a unique real definition during graph construction,
++// never at query time. Refuse namespaces, incomplete signatures, static
++// implementations, indirect includes, and ambiguous definitions.
++export function cppHeaderDefinitionIndex(parsedFiles, isFileLocalDef) {
++    const headers = new Map();
++    const implementations = new Map();
++    const signature = (d) => {
++        if (d.type !== 'Function' || !d.qualifiedName || d.qualifiedName.includes('.') ||
++            !Number.isInteger(d.parameterCount) || !Array.isArray(d.parameterTypes) ||
++            d.parameterTypes.length !== d.parameterCount || !Array.isArray(d.parameterTypeClasses) ||
++            d.parameterTypeClasses.length !== d.parameterCount || typeof d.returnType !== 'string' ||
++            d.templateConstraints !== undefined) return undefined;
++        return JSON.stringify([d.qualifiedName, d.parameterCount, d.parameterTypes, d.parameterTypeClasses, d.returnType]);
++    };
++    for (const parsed of parsedFiles) {
++        const scopesById = new Map(parsed.scopes.map(s => [s.id, s]));
++        // A bare `struct T *` return type can create a tiny synthetic Class
++        // scope at the function declaration's start, without a class def.
++        // The cached capture is usable only when this exact shape is proven.
++        const phantom = (scope) => scope.kind === 'Class' && scope.ownedDefs?.length === 1 &&
++            scope.ownedDefs[0].type === 'Function' && scope.range.startLine === scope.range.endLine &&
++            scope.ownedDefs[0].nodeId.startsWith(`def:${parsed.filePath}#${scope.range.startLine}:${scope.range.startCol}:Function:`);
++        if (/\.(h|hh|hpp|hxx)$/.test(parsed.filePath)) {
++            const module = scopesById.get(parsed.moduleScope);
++            const declScopes = [module, ...parsed.scopes.filter(s => phantom(s) && s.parent === parsed.moduleScope)];
++            for (const def of declScopes.flatMap(s => s?.ownedDefs ?? [])) {
++                const sig = signature(def);
++                if (sig !== undefined && !(isFileLocalDef?.(def))) headers.set(def.nodeId, {def, sig});
++            }
++        }
++        if (!/\.(c|cc|cpp|cxx)$/.test(parsed.filePath)) continue;
++        const includes = new Set((parsed.parsedImports ?? [])
++            .filter(i => i.kind === 'wildcard' && typeof i.targetRaw === 'string' && !path.posix.isAbsolute(i.targetRaw))
++            .map(i => path.posix.normalize(path.posix.join(path.posix.dirname(parsed.filePath), i.targetRaw))));
++        for (const scope of parsed.scopes) {
++            const parent = scopesById.get(scope.parent);
++            const realFunction = scope.kind === 'Function' && scope.parent === parsed.moduleScope;
++            const phantomReturn = phantom(scope) && parent?.kind === 'Function' && parent.parent === parsed.moduleScope;
++            if (!realFunction && !phantomReturn) continue;
++            for (const def of scope.ownedDefs ?? []) {
++                const sig = signature(def);
++                if (sig !== undefined && !(isFileLocalDef?.(def))) {
++                    for (const header of includes) {
++                        const key = JSON.stringify([header, sig]);
++                        const bucket = implementations.get(key) ?? [];
++                        bucket.push(def);
++                        implementations.set(key, bucket);
++                    }
++                }
++            }
++        }
++    }
++    const byDeclaration = new Map();
++    for (const {def, sig} of headers.values()) {
++        const matches = implementations.get(JSON.stringify([def.filePath, sig])) ?? [];
++        if (matches.length === 1) byDeclaration.set(def.nodeId, matches[0]);
++    }
++    return byDeclaration;
++}
+ export function emitFreeCallFallback(graph, scopes, parsedFiles, nodeLookup, _referenceIndex, handledSites, model, workspaceIndex, options = {}) {
+     let emitted = 0;
+     const seen = new Set();
+@@ -27,6 +89,7 @@
+     // per call site. Same name + callable-kind filter that the previous scan
+     // applied (see pickUniqueGlobalCallable JSDoc). Cost: O(|defs|) once.
+     const globalCallablesBySimpleName = buildGlobalCallableIndex(scopes);
++    const headerDefinitions = cppHeaderDefinitionIndex(parsedFiles, options.isFileLocalDef);
+     // Sibling index for constructor-form class fallback. Built once here so
+     // pickUniqueGlobalClass is O(1)-per-site rather than re-scanning
+     // defs.byId.values() at every constructor call. Same simple-name keying
+@@ -293,6 +356,7 @@
+             }
+             if (fnDef === undefined)
+                 continue;
++            fnDef = headerDefinitions.get(fnDef.nodeId) ?? fnDef;
+             if (fnDef.isDeleted === true) {
+                 recordSuppressedOutcome(options.recordResolutionOutcome, {
+                     phase: 'free-call-fallback',
+--- a/dist/core/ingestion/workers/parse-worker.js
++++ b/dist/core/ingestion/workers/parse-worker.js
+@@ -1523,8 +1523,14 @@
+             // When same-arity collisions exist, append ~type1,type2 for further disambiguation.
+             const needsAritySuffix = nodeLabel === 'Method' ||
+                 nodeLabel === 'Constructor' ||
+-                (nodeLabel === 'Function' && enclosingClassId !== null);
++                (nodeLabel === 'Function' && (enclosingClassId !== null || language === 'cpp'));
+             let arityTag = needsAritySuffix && arityForId !== undefined ? `#${arityForId}` : '';
++            // C++ free functions overload at file scope. Include parameter
++            // types as well as arity so same-arity overloads do not collapse.
++            if (nodeLabel === 'Function' && language === 'cpp' && enclosingClassId === null && arityTag &&
++                Array.isArray(methodProps.parameterTypes) && methodProps.parameterTypes.length === arityForId) {
++                arityTag += `~${methodProps.parameterTypes.join(',')}`;
++            }
+             if (arityTag && defMethodMap && defMethodInfo) {
+                 const groups = buildCollisionGroups(defMethodMap);
+                 arityTag += typeTagForId(defMethodMap, nodeName, arityForId, defMethodInfo, language, groups);
+--- a/dist/storage/parse-cache.js
++++ b/dist/storage/parse-cache.js
+@@ -52,7 +52,7 @@
+ // the main thread (the #1983 OOM). Because the two stores share this version,
+ // any future change to the `ParsedFile` serialization shape MUST bump
+ // SCHEMA_BUMP so both invalidate in lockstep.
+-const SCHEMA_BUMP = 6; // #2082 M2: cfgSideChannel gained bindings + per-block statement facts
++const SCHEMA_BUMP = 7; // C++ free-function graph IDs now distinguish overloads.
+ const GITNEXUS_PKG_VERSION = (() => {
+     try {
+         // package.json sits at gitnexus/package.json — two levels up from
+--- a/dist/_shared/scope-resolution/finalize-algorithm.js
++++ b/dist/_shared/scope-resolution/finalize-algorithm.js
+@@ -642,14 +642,20 @@
+         const def = findExportByName(target.localDefs, name);
+         if (def === undefined)
+             continue;
++        const candidates = [def, ...(hooks.wildcardOverloads?.(edge.targetFile, name) ?? [])];
++        const seenDefs = new Set();
++        for (const candidate of candidates) {
++        if (seenDefs.has(candidate.nodeId)) continue;
++        seenDefs.add(candidate.nodeId);
+         expanded.push({
+             localName: name,
+             targetFile: edge.targetFile,
+             targetExportedName: name,
+             kind: 'wildcard-expanded',
+             targetModuleScope: edge.targetModuleScope,
+-            targetDefId: def.nodeId,
++            targetDefId: candidate.nodeId,
+         });
++        }
+     }
+     return expanded;
+ }
+@@ -800,4 +806,4 @@
+     }
+     return value;
+ }
+-//# sourceMappingURL=finalize-algorithm.js.map+//# sourceMappingURL=finalize-algorithm.js.map
+--- a/dist/core/ingestion/finalize-orchestrator.js
++++ b/dist/core/ingestion/finalize-orchestrator.js
+@@ -149,6 +149,7 @@
+     return {
+         resolveImportTarget: partial.resolveImportTarget ?? (() => null),
+         expandsWildcardTo: partial.expandsWildcardTo ?? (() => []),
++        wildcardOverloads: partial.wildcardOverloads,
+         mergeBindings: partial.mergeBindings ??
+             ((existing, incoming) => [...existing, ...incoming]),
+     };
+--- a/dist/core/ingestion/scope-resolution/pipeline/run.js
++++ b/dist/core/ingestion/scope-resolution/pipeline/run.js
+@@ -310,6 +310,7 @@
+         hooks: {
+             resolveImportTarget: (targetRaw, fromFile) => provider.resolveImportTarget(targetRaw, fromFile, allFilePaths, resolutionConfig),
+             expandsWildcardTo: (targetModuleScope) => provider.expandsWildcardTo?.(targetModuleScope, parsedFiles) ?? [],
++            wildcardOverloads: (targetFile, name) => provider.wildcardOverloads?.(targetFile, name, parsedFiles) ?? [],
+             mergeBindings: (existing, incoming, scopeId) => provider.mergeBindings(existing, incoming, scopeId),
+         },
+     });
