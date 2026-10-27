@@ -1,0 +1,187 @@
+{
+  "kernel_commit": "c72ec82f5417bb2937310326120f149b665e8400",
+  "workloads": [
+    {
+      "argv": [
+        "numactl",
+        "--interleave=all",
+        "--",
+        "taskset",
+        "-c",
+        "0-95",
+        "/mnt/raid0/llm/tmp/refactor-01a16fc3/c5-candidate/buildcpu/bin/llama-server",
+        "-m",
+        "/mnt/raid0/llm/models/unsloth/Qwen3.8-Flash-Next-GGUF/UD-IQ4_XS/Qwen3.8-Flash-Next-UD-IQ4_XS-00001-of-00003.gguf",
+        "--host",
+        "127.0.0.1",
+        "--port",
+        "18678",
+        "-np",
+        "1",
+        "-c",
+        "262144",
+        "-t",
+        "96",
+        "-ub",
+        "2048",
+        "--flash-attn",
+        "on",
+        "--jinja",
+        "-ctk",
+        "f16",
+        "-ctv",
+        "f16",
+        "--mlock",
+        "--no-mmap",
+        "--cache-ram",
+        "32768",
+        "--ctx-checkpoints",
+        "32",
+        "-md",
+        "/mnt/raid0/llm/models/unsloth/Qwen3.8-Flash-Next-GGUF/MTP/mtp-Qwen3.8-Flash-Next-shared-Q8_0.gguf",
+        "--spec-type",
+        "draft-mtp",
+        "--spec-draft-n-max",
+        "4",
+        "--draft-p-min",
+        "0.5",
+        "--reasoning",
+        "off",
+        "--slot-save-path",
+        "/mnt/raid0/llm/tmp/codex-ni-20261027-inf75-w4-census-prep/w5s/runtime-slots",
+        "--device",
+        "none",
+        "--device-draft",
+        "none",
+        "--log-verbosity",
+        "4"
+      ],
+      "binary": "/mnt/raid0/llm/tmp/refactor-01a16fc3/c5-candidate/buildcpu/bin/llama-server",
+      "build_dir": "/mnt/raid0/llm/tmp/refactor-01a16fc3/c5-candidate/buildcpu",
+      "capture_inputs": {
+        "affinity_scope": "/mnt/raid0/llm/tmp/codex-ni-20261027-inf75-census-prep/affinity_scope.py",
+        "binary": "/mnt/raid0/llm/tmp/refactor-01a16fc3/c5-candidate/buildcpu/bin/llama-server",
+        "binding": "/mnt/raid0/llm/tmp/codex-ni-20261027-inf75-w4-census-prep/w5s/OWNER-RECIPE-BOUND.json",
+        "build_complete": "/mnt/raid0/llm/tmp/refactor-01a16fc3/c5-candidate/jobs/cpu/BUILD_COMPLETE",
+        "build_job": "/mnt/raid0/llm/tmp/refactor-01a16fc3/c5-candidate/jobs/cpu/job.sh",
+        "build_log": "/mnt/raid0/llm/tmp/refactor-01a16fc3/c5-candidate/jobs/cpu/BUILD.log",
+        "build_receipt_binding": "/mnt/raid0/llm/tmp/codex-ni-20261027-inf75-w4-census-prep/w5s/BUILD-RECEIPT-PATH",
+        "build_sources": "/mnt/raid0/llm/tmp/refactor-01a16fc3/c5-candidate/jobs/cpu/source-files.sha256",
+        "capture_module": "/mnt/raid0/llm/tmp/codex-ni-20261027-inf75-w4-census-prep/w5s/runtime/autokernel/loop/census_capture.py",
+        "driver": "/mnt/raid0/llm/tmp/codex-ni-20261027-inf75-w4-census-prep/w5s/driver.py",
+        "elf_manifest": "/mnt/raid0/llm/tmp/refactor-01a16fc3/c5-candidate/jobs/cpu/ELF.sha256",
+        "eviction_receipt": "/mnt/raid0/llm/tmp/codex-ni-20261027-inf75-v3-runtime-unblock/v5/out-pre-eviction.json",
+        "eviction_source": "/mnt/raid0/llm/tmp/codex-ni-20261027-inf75-census-prep/orchestrator-native-export/scripts/server/stack_numa_evict.py",
+        "foreign_load": "/mnt/raid0/llm/tmp/codex-ni-20261027-inf75-w4-census-prep/w5s/foreign_load.py",
+        "instrument_library": "/mnt/raid0/llm/tmp/codex-ni-20261027-inf75-census-prep/source-turn-2/libcensus-native.so",
+        "instrument_receipt": "/mnt/raid0/llm/tmp/codex-ni-20261027-inf75-census-prep/source-turn-2/instrument-identity.sha256",
+        "instrument_source": "/mnt/raid0/llm/tmp/codex-ni-20261027-inf75-census-prep/native_trace.c",
+        "model": "/mnt/raid0/llm/models/unsloth/Qwen3.8-Flash-Next-GGUF/UD-IQ4_XS/Qwen3.8-Flash-Next-UD-IQ4_XS-00001-of-00003.gguf",
+        "native_touch": "/mnt/raid0/llm/tmp/codex-ni-20261027-inf75-w4-census-prep/w5s/native-full-touch.py",
+        "owner_start": "/mnt/raid0/llm/tmp/codex-ni-20261027-inf75-w4-census-prep/w5s/owner-start.json",
+        "producer": "/mnt/raid0/llm/tmp/codex-ni-20261027-inf75-w4-census-prep/private_census.py",
+        "recipe": "/mnt/raid0/llm/tmp/codex-ni-20261027-inf75-w4-census-prep/w5s/recipes.json",
+        "residency": "/mnt/raid0/llm/tmp/codex-ni-20261027-inf75-w4-census-prep/w5s/runtime/autokernel/loop/residency.py",
+        "server_evidence": "/mnt/raid0/llm/tmp/codex-ni-20261027-inf75-w4-census-prep/server_evidence_full.py",
+        "server_probe": "/mnt/raid0/llm/tmp/codex-ni-20261027-inf75-w4-census-prep/w5s/server_probe_full.py",
+        "source_manifest": "/mnt/raid0/llm/tmp/codex-ni-20261027-inf75-w4-census-prep/w5s/SOURCES.sha256",
+        "workload_contract": "/mnt/raid0/llm/tmp/codex-ni-20261027-inf75-w4-census-prep/w5s/runtime/autokernel/controller/workload_contract.py",
+        "model_shard_2": "/mnt/raid0/llm/models/unsloth/Qwen3.8-Flash-Next-GGUF/UD-IQ4_XS/Qwen3.8-Flash-Next-UD-IQ4_XS-00002-of-00003.gguf",
+        "model_shard_3": "/mnt/raid0/llm/models/unsloth/Qwen3.8-Flash-Next-GGUF/UD-IQ4_XS/Qwen3.8-Flash-Next-UD-IQ4_XS-00003-of-00003.gguf",
+        "drafter": "/mnt/raid0/llm/models/unsloth/Qwen3.8-Flash-Next-GGUF/MTP/mtp-Qwen3.8-Flash-Next-shared-Q8_0.gguf",
+        "python_identity": "/mnt/raid0/llm/tmp/codex-ni-20261027-inf75-w4-census-prep/w5s/PYTHON.sha256",
+        "split_reader": "/mnt/raid0/llm/tmp/codex-ni-20261027-inf75-w4-census-prep/flash_next_census.py",
+        "split_inspector": "/mnt/raid0/llm/tmp/codex-ni-20261027-inf75-w4-census-prep/split_inspect.py",
+        "belief_writer": "/mnt/raid0/llm/tmp/codex-ni-20261027-inf75-w4-census-prep/census_belief.py",
+        "registry": "/mnt/raid0/llm/tmp/codex-ni-20261027-inf75-w4-census-prep/research-main/orchestration/model_registry.yaml",
+        "topology": "/mnt/raid0/llm/tmp/codex-ni-20261027-inf75-w4-census-prep/orch-main/orchestration/stack_topology.yaml",
+        "builder_snapshot": "/mnt/raid0/llm/tmp/codex-ni-20261027-inf75-w4-census-prep/w5s/native-builder.json",
+        "builder_source": "/mnt/raid0/llm/tmp/codex-ni-20261027-inf75-w4-census-prep/orch-main/scripts/server/orchestrator_stack.py",
+        "model_digests": "/mnt/raid0/llm/tmp/codex-ni-20261027-inf75-w4-census-prep/model.sha256",
+        "builder_input_0": "/mnt/raid0/llm/tmp/codex-ni-20261027-inf75-w4-census-prep/orch-main/orchestration/model_registry.yaml",
+        "builder_input_1": "/mnt/raid0/llm/tmp/codex-ni-20261027-inf75-w4-census-prep/orch-main/orchestration/stack_topology.yaml",
+        "builder_input_2": "/mnt/raid0/llm/tmp/codex-ni-20261027-inf75-w4-census-prep/orch-main/orchestration/launch_manifest.yaml",
+        "builder_input_3": "/mnt/raid0/llm/tmp/codex-ni-20261027-inf75-w4-census-prep/orch-main/orchestration/derived/stack_priors.yaml",
+        "builder_input_4": "/mnt/raid0/llm/tmp/codex-ni-20261027-inf75-w4-census-prep/orch-main/scripts/server/orchestrator_stack.py"
+      },
+      "diagnostic_deltas": {
+        "kernel": "private C5 candidate and callback-free host tracer",
+        "port": "private 18678",
+        "startup_eviction": "40 GiB target per owned node 0-3; bounded full-byte touches",
+        "scope": "structural observations only"
+      },
+      "env": {
+        "PATH": "/usr/bin:/bin",
+        "LANG": "C.UTF-8",
+        "LD_LIBRARY_PATH": "/mnt/raid0/llm/tmp/refactor-01a16fc3/c5-candidate/buildcpu/bin:/usr/lib/llvm-20/lib",
+        "OMP_PROC_BIND": "spread",
+        "OMP_PLACES": "cores",
+        "OMP_WAIT_POLICY": "active",
+        "OMP_DYNAMIC": "false",
+        "KMP_BLOCKTIME": "10",
+        "GGML_IQK": "1",
+        "LD_PRELOAD": "/mnt/raid0/llm/tmp/codex-ni-20261027-inf75-census-prep/source-turn-2/libcensus-native.so",
+        "GGML_SCHED_DEBUG": "2",
+        "LLAMA_TRACE": "1",
+        "EPYC_ROOT_REPO": "/mnt/raid0/llm/tmp/codex-ni-20261027-inf75-w4-census-prep/root-main"
+      },
+      "expected_ops": [
+        "MUL_MAT",
+        "MUL_MAT_ID"
+      ],
+      "foreign_load": "/mnt/raid0/llm/tmp/codex-ni-20261027-inf75-w4-census-prep/w5s/foreign_load.py",
+      "id": "inf75-c5-w5s-full-census",
+      "instrument_library": "/mnt/raid0/llm/tmp/codex-ni-20261027-inf75-census-prep/source-turn-2/libcensus-native.so",
+      "kernel_commit": "c72ec82f5417bb2937310326120f149b665e8400",
+      "model": "/mnt/raid0/llm/models/unsloth/Qwen3.8-Flash-Next-GGUF/UD-IQ4_XS/Qwen3.8-Flash-Next-UD-IQ4_XS-00001-of-00003.gguf",
+      "physical_cpus": "0-95",
+      "port": 18678,
+      "request_files": {
+        "prefill": "/mnt/raid0/llm/tmp/codex-ni-20261027-inf75-w4-census-prep/w5s/requests-prefill.json",
+        "decode": "/mnt/raid0/llm/tmp/codex-ni-20261027-inf75-w4-census-prep/w5s/requests-decode.json",
+        "verify": "/mnt/raid0/llm/tmp/codex-ni-20261027-inf75-w4-census-prep/w5s/requests-verify.json"
+      },
+      "scope": "current registered architect_general full host t96 np1 ub2048 ctx262144 MTP4; primary-target tensors and graphs only; separate draft head bound by identity but its tensor inventory and draft graphs excluded; P0d remains open",
+      "timeout_s": 1200,
+      "ordered_shards": [
+        "/mnt/raid0/llm/models/unsloth/Qwen3.8-Flash-Next-GGUF/UD-IQ4_XS/Qwen3.8-Flash-Next-UD-IQ4_XS-00001-of-00003.gguf",
+        "/mnt/raid0/llm/models/unsloth/Qwen3.8-Flash-Next-GGUF/UD-IQ4_XS/Qwen3.8-Flash-Next-UD-IQ4_XS-00002-of-00003.gguf",
+        "/mnt/raid0/llm/models/unsloth/Qwen3.8-Flash-Next-GGUF/UD-IQ4_XS/Qwen3.8-Flash-Next-UD-IQ4_XS-00003-of-00003.gguf"
+      ],
+      "head": "/mnt/raid0/llm/models/unsloth/Qwen3.8-Flash-Next-GGUF/MTP/mtp-Qwen3.8-Flash-Next-shared-Q8_0.gguf",
+      "builder_source_pins": [
+        {
+          "path": "/mnt/raid0/llm/tmp/codex-ni-20261027-inf75-w4-census-prep/orch-main/orchestration/model_registry.yaml",
+          "sha256": "9714750da5e17a538d5ce6ff3bb9dd1fa3735584a88aae8b1144e9b0b7f41781"
+        },
+        {
+          "path": "/mnt/raid0/llm/tmp/codex-ni-20261027-inf75-w4-census-prep/orch-main/orchestration/stack_topology.yaml",
+          "sha256": "15d7cfa5a2ca4abc373f44d41313b1abb9468b35f1d85c87ac244d9dad1b8de1"
+        },
+        {
+          "path": "/mnt/raid0/llm/tmp/codex-ni-20261027-inf75-w4-census-prep/orch-main/orchestration/launch_manifest.yaml",
+          "sha256": "a5119ee34560a91e547e3dd2a60ecc51166ead2654cc1a72f2f45424e212d6c3"
+        },
+        {
+          "path": "/mnt/raid0/llm/tmp/codex-ni-20261027-inf75-w4-census-prep/orch-main/orchestration/derived/stack_priors.yaml",
+          "sha256": "3ce86beaafa88f581d8ffd30ebf78fc19af3caede66dd0671bc8322ac49967d5"
+        },
+        {
+          "path": "/mnt/raid0/llm/tmp/codex-ni-20261027-inf75-w4-census-prep/orch-main/scripts/server/orchestrator_stack.py",
+          "sha256": "ef909424ded22601cf87f2b712ad020c274e80e74e414e26fb3a92e2c0b8628e"
+        }
+      ],
+      "large_refs": [
+        "model_shard_2",
+        "model_shard_3",
+        "drafter"
+      ],
+      "prefill_fixture": {
+        "token_id": 1,
+        "tokens": 4096,
+        "gguf_vocabulary_count": 248320,
+        "note": "request only; exact 2048 same-call native tensor remains required"
+      }
+    }
+  ]
+}

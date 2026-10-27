@@ -1,0 +1,37 @@
+[region-lock] acquiring regions ['q3'] as role='build' (timeout_s=15.0) …
+[region-lock] held ['q3'] after 0.0s wait; running: taskset -c 72,73 bash /mnt/raid0/llm/tmp/refactor-01a16fc3/sc81-census-unblock/q3-preflight/q3-child.sh /mnt/raid0/llm/tmp/codex-ni-20261027-inf75-w4-census-prep/complete-fixture-q3-run6 bash /mnt/raid0/llm/tmp/codex-ni-20261027-inf75-w4-census-prep/complete-fixture.sh
+GATE_FIXTURE_DIR=/mnt/raid0/llm/tmp/codex-ni-20261027-inf75-w4-census-prep/complete-fixture-q3-run6/tmp/q3-gate.itvfJ6
+Q3 grant gate fixtures PASS
+RSS_FIXTURE_DIR=/mnt/raid0/llm/tmp/codex-ni-20261027-inf75-w4-census-prep/complete-fixture-q3-run6/tmp/q3-rss.BVRQns
+...
+----------------------------------------------------------------------
+Ran 3 tests in 0.001s
+
+OK
+Q3 RSS watcher fixtures PASS
+ADMITTED 2026-10-27T21:50:52Z CPU72,73 OMP1 rolebuild <=260s monitored RSS budget 4GiB; sampled peak
+Pid:	1503214
+PPid:	1503050
+Cpus_allowed_list:	72-73
+command=bash /mnt/raid0/llm/tmp/codex-ni-20261027-inf75-w4-census-prep/complete-fixture.sh 
+/mnt/raid0/llm/models/unsloth/Qwen3.8-Flash-Next-GGUF/UD-IQ4_XS/Qwen3.8-Flash-Next-UD-IQ4_XS-00001-of-00003.gguf {"count": 0, "metadata": {"general.architecture": "qwen4exp", "qwen4exp.embedding_length": 2560, "split.count": 3, "split.no": 0, "split.tensors.count": 1224, "tokenizer.ggml.tokens": {"array_length": 248320}}, "names_count": 0, "types": {}, "version": 3}
+/mnt/raid0/llm/models/unsloth/Qwen3.8-Flash-Next-GGUF/UD-IQ4_XS/Qwen3.8-Flash-Next-UD-IQ4_XS-00002-of-00003.gguf {"count": 373, "metadata": {"split.count": 3, "split.no": 1, "split.tensors.count": 1224}, "names_count": 373, "types": {"0": 169, "8": 154, "14": 1, "20": 14, "21": 27, "23": 2, "30": 6}, "version": 3}
+/mnt/raid0/llm/models/unsloth/Qwen3.8-Flash-Next-GGUF/UD-IQ4_XS/Qwen3.8-Flash-Next-UD-IQ4_XS-00003-of-00003.gguf {"count": 851, "metadata": {"split.count": 3, "split.no": 2, "split.tensors.count": 1224}, "names_count": 851, "types": {"0": 388, "8": 348, "20": 30, "21": 67, "30": 18}, "version": 3}
+PASS: prospective shape rows, shared Judged/Located grade, reuse/tamper refusals
+PASS: partial phases, wrong artifact, missing op and wrong verify width refuse
+PASS: exact ordered set, metadata, architecture, totals, duplicate names, type aggregation
+WorkloadCensus(path='/mnt/raid0/llm/models/unsloth/Qwen3.8-Flash-Next-GGUF/UD-IQ4_XS/Qwen3.8-Flash-Next-UD-IQ4_XS-00001-of-00003.gguf', architecture='qwen4exp', n_embd=2560, tensor_types={'Q6_K': 1, 'Q8_0': 502, 'F32': 557, 'IQ1_S': 44, 'IQ4_NL': 94, 'IQ3_S': 2, 'BF16': 24})
+PASS: private producer preserves all identities and aggregated weights, refuses partial shapes and wrong first shard
+PASS: width 5 same-call only, four drafted tokens; split/wrong budget refused
+PASS: graph, model, context and decode identity coupled; duplicate rejected
+PASS: two full foreign sampling intervals inside actual request; pre/post, crossing, malformed, reversed refuse
+PASS: slot timeout retained as metadata; malformed HTTP fatal
+PASS: own GGML and instrument must map in the same request sample
+OK: 1 row(s) checked, 0 refusal(s), 0 warning(s)
+DRYRUN_ENTRY {"NODE_OPTIONS": "--max-old-space-size=4096", "argv": ["/bin/bash", "/mnt/raid0/llm/tmp/codex-ni-20261027-inf75-w4-census-prep/w5s/launch.sh"], "box": "/mnt/raid0/llm/tmp/codex-ni-20261027-inf75-w4-census-prep/w5s/dryrun/bbd73cbbe4b770d99ca19061cb319740c123934055cb984b", "grant": "regions=72-73 start=2026-10-27T21:50Z end=2026-10-27T23:25Z", "job_sha256": "f39cdf3a1e9b560b875c6697ad461dadbe0758f4a8dc12b4c7104d2f4a7b1290", "launcher_sha256": "b8a08693f013063a44929a4c0a3fa74a6a26bfef169a8aa683dc44ca79b4987e"}
+DRYRUN_PASS entry_rc=0 boundary=first-native-canary-output-model-load-or-socket pid=1504576 birth=126033182 reaped=yes box=/mnt/raid0/llm/tmp/codex-ni-20261027-inf75-w4-census-prep/w5s/dryrun/bbd73cbbe4b770d99ca19061cb319740c123934055cb984b
+OK: 1 row(s) checked, 0 refusal(s), 0 warning(s)
+ADMIT_PASS window=5700 free_gib=158.31 floor_gib=150
+admit: validator OK; admit: MemAvailable 1077 GiB, need 192 GiB; class=block-correctness launcher=filler_run12.sh:1504855 lclass=cpu minwin=5400(argv) window=5700 claim=0-95 gpuq=- claim_regions=q0+q1+q2+q3 regions=0-95
+PASS: normal-minute admission, validator, official grant_ok, captured poller reaped
+RSS_SAMPLED_PEAK_KIB=91296 LIMIT_KIB=4194304 drained=True
