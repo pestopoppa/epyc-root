@@ -4,7 +4,7 @@
     "handoff-active": 184,
     "handoff-blocked": 2,
     "handoff-completed": 216,
-    "progress": 833,
+    "progress": 834,
     "research": 140
   },
   "kind": "project-wiki-source-manifest",
@@ -15,16 +15,16 @@
       "changed": 1,
       "removed": 0
     },
-    "at": "2026-10-27T20:33:53Z",
+    "at": "2026-10-27T23:02:39Z",
     "scope_paths": [
-      "progress/2026-10/2026-10-27-codex-ni-wrap-2000-luna.md"
+      "progress/2026-10/2026-10-27-codex-ni-full-wrap-2245-luna.md"
     ],
     "scope_types": []
   },
   "mode": "touch:scoped",
-  "scan_time": "2026-10-27T20:33:53Z",
+  "scan_time": "2026-10-27T23:02:39Z",
   "schema_version": 1,
-  "source_set_hash": "478d51d0f56a7f95505b5ad95db7134da09e16e68a7e8b13b8d8282f8b8ae3c5",
+  "source_set_hash": "ac0185f58c370d64684bc637a679c86aa807658d86c1b24e59a72c63f994db9a",
   "sources": [
     {
       "content_hash": "6c067235a74a3b9667dd4fad23684206476aeac1cdefe3b4e0a0824d3179c241",
@@ -411,10 +411,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "9cfd50e8a0ae5403bf2298d1cf94c94aee29ee9813222daf23adcb31e5c5d771",
-      "modified": "2026-10-27T14:58:29Z",
+      "content_hash": "5272d0b6392d6e12e388862ef04b15e04302660da0ccc48ebae9eb525c6a77c4",
+      "modified": "2026-10-27T22:40:36Z",
       "path": "handoffs/active/dflash2-block-drafter-experimental-build.md",
-      "size": 89309,
+      "size": 91545,
       "title": "dFlash2 block drafter \u2014 experimental build + measured comparison vs MTP",
       "type": "handoff-active"
     },
@@ -10979,6 +10979,14 @@
       "type": "progress"
     },
     {
+      "content_hash": "6f85c3e9cf86cddc7dbb88a6e6292446db9c7d10ae6b97d17b0a6661641a0a14",
+      "modified": "2026-10-27T23:02:23Z",
+      "path": "progress/2026-10/2026-10-27-codex-ni-full-wrap-2245-luna.md",
+      "size": 16372,
+      "title": "Periodic full-wrap checkpoint \u2014 2026-10-27 22:56Z",
+      "type": "progress"
+    },
+    {
       "content_hash": "778ae9d383ec59ecf173c985f7eefdd542358b86a983286079c02e2646904270",
       "modified": "2026-10-27T20:33:53Z",
       "path": "progress/2026-10/2026-10-27-codex-ni-wrap-2000-luna.md",
@@ -12899,7 +12907,7 @@
       "type": "docs"
     }
   ],
-  "total_new": 1609,
+  "total_new": 1610,
   "writer_evidence_policy": {
     "applies_to": "generated-wiki-article-writes",
     "minimum_confidence": "verified",
