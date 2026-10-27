@@ -1,0 +1,7 @@
+rc=0 time=2026-10-27T20:58:31Z reason=complete
+job_id=kpf62-native-g1-fixed-capture-20261027
+owner=Codex NI / MAIN
+step=job-run
+estimated_wall_s=1200
+started=2026-10-27T20:58:28Z
+regions=0-23

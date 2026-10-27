@@ -1,0 +1,27 @@
+{
+  "argv": [
+    "/home/node/.local/bin/python3.12",
+    "-B",
+    "-s",
+    "/mnt/raid0/llm/tmp/codex-ni-20261027-kpf62-fixed-build/native_refusal_controls.py",
+    "--raw",
+    "/mnt/raid0/llm/tmp/codex-ni-20261027-kpf62-fixed-build/native-20261027T205829Z/g1-position.jsonl",
+    "--invocation",
+    "/mnt/raid0/llm/tmp/codex-ni-20261027-kpf62-fixed-build/native-20261027T205829Z/invocation.json",
+    "--finalized",
+    "/mnt/raid0/llm/tmp/codex-ni-20261027-kpf62-fixed-build/native-20261027T205829Z/finalized"
+  ],
+  "child_drained": true,
+  "exit_code": 0,
+  "finished_at_utc": "2026-10-27T20:58:30.259157Z",
+  "pid": 1240791,
+  "started_at_utc": "2026-10-27T20:58:30.094064Z",
+  "stderr": {
+    "path": "/mnt/raid0/llm/tmp/codex-ni-20261027-kpf62-fixed-build/native-20261027T205829Z/reader-controls.stderr",
+    "sha256": "9ff280897cc6fdf8f6c466b57ec9722beacf5c6a3dd98361f3be0269b7344275"
+  },
+  "stdout": {
+    "path": "/mnt/raid0/llm/tmp/codex-ni-20261027-kpf62-fixed-build/native-20261027T205829Z/reader-controls.log",
+    "sha256": "21d0151d29348757f3a4f5e26fe993c60a78d483d92cc3f8b7d993a838d4511f"
+  }
+}

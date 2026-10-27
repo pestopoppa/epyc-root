@@ -1,0 +1,19 @@
+{
+  "api_origin": "b40f8c60f36ad25a418ccc836d1ac0ab0a05a0c9",
+  "candidate": "/mnt/raid0/llm/tmp/codex-ni-20261027-kpf62-fixed-build/candidate",
+  "champion": "c72ec82f5417bb2937310326120f149b665e8400",
+  "files": {
+    "src/llama-context.cpp": "357f5d398039de3085e0f5ea4bed1c22d23696a5286876c2ec21a910e9a8ad2b",
+    "src/llama-ext.h": "cad21dc533582e2e1bfeb8f35b5ec106df3190285e185de8155b9c21ea3b9e75",
+    "src/llama-kv-cache.cpp": "02b4e5433b526d8ef90deaed8cb55e4c9991244ce9dddefa9d9864c16e4ca6cd",
+    "src/llama-kv-cache.h": "c96f6dd74d2702b841956200b0edd32195070ce429c8eb2cb10156bf30add9b2",
+    "src/llama-kv-cells.h": "540a662d3b1ba12149e0a9a4835854f62eebe64e32225989cea5765f2188d1a1",
+    "tests/CMakeLists.txt": "6f4c5a81dfe289d8c156f4014e876706ca16e335de295f7e28731f216f49dcf3",
+    "tests/test-chunk-kv.cpp": "7c7c099e1d007e33a8d5d347626891a3786df0360ef7dbbdf6088b53393b9bef"
+  },
+  "root_adapter": "cec0d61c5127787648ef7bd913fcacf246241f5f",
+  "root_candidate": "/mnt/raid0/llm/tmp/codex-ni-20261027-kpf62-fixed-build/root-reader",
+  "schema": "epyc.kpf62.source_assembly.v1",
+  "scope": "approved seven-file source, no promotion",
+  "source_digest": "99c457ba391e55d7f23114b01808b28c4cb7f16192908714ef3cc04a5e7eebc9"
+}

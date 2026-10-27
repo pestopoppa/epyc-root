@@ -1,0 +1,3 @@
+capture=MAIN-approved
+reviewed-build-sha256=6cddb24429ce2a590f83a0303d88719ee2183b5c036ee4ac861d42f1a883fdca
+capture-source-sha256=026dca6d0085ecfc075fc9f5b2d3666e25432f93b37c75f7a1d770c82882f96e

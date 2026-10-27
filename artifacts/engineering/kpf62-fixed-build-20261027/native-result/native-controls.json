@@ -1,0 +1,57 @@
+{
+  "native_attention_controls": "overlap, negative delta, corrupt magic, truncated blob, source hole and OFF-identical are CHECK-gated in native.log",
+  "unsupported_capture": {
+    "argv": [
+      "/mnt/raid0/llm/tmp/codex-ni-20261027-kpf62-fixed-build/build/bin/test-chunk-kv",
+      "-m",
+      "/mnt/raid0/llm/tmp/codex-ni-20261027-kpf62-fixed-build/native-20261027T205829Z/qwen35-dense.gguf",
+      "-ctk",
+      "f32",
+      "-ctv",
+      "f32",
+      "-t",
+      "24",
+      "--g1-capture-jsonl",
+      "/mnt/raid0/llm/tmp/codex-ni-20261027-kpf62-fixed-build/native-20261027T205829Z/unsupported-position.jsonl"
+    ],
+    "child_drained": true,
+    "exit_code": 2,
+    "finished_at_utc": "2026-10-27T20:58:29.993632Z",
+    "pid": 1240712,
+    "started_at_utc": "2026-10-27T20:58:29.966692Z",
+    "stderr": {
+      "path": "/mnt/raid0/llm/tmp/codex-ni-20261027-kpf62-fixed-build/native-20261027T205829Z/hybrid-capture-refusal.stderr",
+      "sha256": "7af3d07e11538a61fd21ac025b94c1a0bab84f1990e807079e31855999dc50e8"
+    },
+    "stdout": {
+      "path": "/mnt/raid0/llm/tmp/codex-ni-20261027-kpf62-fixed-build/native-20261027T205829Z/hybrid-capture-refusal.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "unsupported_memory_api_and_decode": {
+    "argv": [
+      "/mnt/raid0/llm/tmp/codex-ni-20261027-kpf62-fixed-build/build/bin/test-chunk-kv",
+      "-m",
+      "/mnt/raid0/llm/tmp/codex-ni-20261027-kpf62-fixed-build/native-20261027T205829Z/qwen35-dense.gguf",
+      "-ctk",
+      "f32",
+      "-ctv",
+      "f32",
+      "-t",
+      "24"
+    ],
+    "child_drained": true,
+    "exit_code": 0,
+    "finished_at_utc": "2026-10-27T20:58:29.964018Z",
+    "pid": 1240661,
+    "started_at_utc": "2026-10-27T20:58:29.891494Z",
+    "stderr": {
+      "path": "/mnt/raid0/llm/tmp/codex-ni-20261027-kpf62-fixed-build/native-20261027T205829Z/hybrid-refusal.stderr",
+      "sha256": "e7e09d51c65d45951b4e840a039d153fecf738b3e5c581eb035a5d78f98902a3"
+    },
+    "stdout": {
+      "path": "/mnt/raid0/llm/tmp/codex-ni-20261027-kpf62-fixed-build/native-20261027T205829Z/hybrid-refusal.log",
+      "sha256": "3b5b3337f93a821dcab3f4b0f263ca997afc7494fb25bc142898f11983255707"
+    }
+  }
+}

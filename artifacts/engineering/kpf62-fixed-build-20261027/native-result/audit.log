@@ -1,0 +1,24 @@
+[region-lock] acquiring regions ['q0'] as role='build' (timeout_s=15.0) …
+[region-lock] held ['q0'] after 0.0s wait; running: taskset -c 0,1 bash /mnt/raid0/llm/tmp/codex-ni-20261027-kpf62-fixed-build/q0-child.sh /mnt/raid0/llm/tmp/codex-ni-20261027-kpf62-fixed-build/q0-native-audit3 /usr/bin/python3 -I -B /mnt/raid0/llm/tmp/codex-ni-20261027-kpf62-fixed-build/audit-native.py
+q0 physical 0,1; inherited native address-space limit: unlimited
+1 k inject_vs_in_place_ref n 24 sse 8.820360199359179e-14 refnorm 0.9826854899316853 nmse 8.975771281585074e-14 mismatch 7234
+1 k inject_vs_seq_add n 24 sse 0 refnorm 0.9826854809118388 nmse 0.0 mismatch 0
+1 logits inject_vs_in_place_ref n 6 sse 0 refnorm 0.0014432804724442956 nmse 0.0 mismatch 0
+1 logits inject_vs_seq_add n 6 sse 0 refnorm 0.0014432804724442956 nmse 0.0 mismatch 0
+1 v inject_vs_in_place_ref n 24 sse 0 refnorm 1.3398816289090338 nmse 0.0 mismatch 0
+1 v inject_vs_seq_add n 24 sse 0 refnorm 1.3398816289090338 nmse 0.0 mismatch 0
+17 k inject_vs_in_place_ref n 24 sse 1.7441279402261751e-13 refnorm 0.9826854907192821 nmse 1.774858748499025e-13 mismatch 7629
+17 k inject_vs_seq_add n 24 sse 0 refnorm 0.9826854744607117 nmse 0.0 mismatch 0
+17 logits inject_vs_in_place_ref n 6 sse 0 refnorm 0.001443280474454587 nmse 0.0 mismatch 0
+17 logits inject_vs_seq_add n 6 sse 0 refnorm 0.001443280474454587 nmse 0.0 mismatch 0
+17 v inject_vs_in_place_ref n 24 sse 0 refnorm 1.3398816289090338 nmse 0.0 mismatch 0
+17 v inject_vs_seq_add n 24 sse 0 refnorm 1.3398816289090338 nmse 0.0 mismatch 0
+300 k inject_vs_in_place_ref n 24 sse 2.3157989431993113e-11 refnorm 0.982685488015797 nmse 2.3566023630564535e-11 mismatch 9716
+300 k inject_vs_seq_add n 24 sse 0 refnorm 0.9826854787082094 nmse 0.0 mismatch 0
+300 logits inject_vs_in_place_ref n 6 sse 1.2620790914089075e-19 refnorm 0.0014432804734600942 nmse 8.744517192720153e-17 mismatch 14
+300 logits inject_vs_seq_add n 6 sse 0 refnorm 0.001443280473626089 nmse 0.0 mismatch 0
+300 v inject_vs_in_place_ref n 24 sse 0 refnorm 1.3398816289090338 nmse 0.0 mismatch 0
+300 v inject_vs_seq_add n 24 sse 0 refnorm 1.3398816289090338 nmse 0.0 mismatch 0
+AUDIT PASS rows=324 groups=18 buildfiles= 36 assemblyfiles= 7 invocation_artifacts= 24 grades=27 Judged/Located
+MANIFEST PASS evidence= 10 capture exit0 drained timeout_false
+RSS_SAMPLED_PEAK_KIB=110772 LIMIT_KIB=4194304 drained=True
