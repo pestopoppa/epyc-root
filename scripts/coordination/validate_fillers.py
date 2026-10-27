@@ -76,6 +76,7 @@ The liveness probe is injectable: check_row(..., pid_alive=f) / module attribute
 from __future__ import annotations
 
 import argparse
+import os
 import re
 import sys
 
@@ -256,6 +257,40 @@ def declared_class(cells: list[str], col: dict[str, int]) -> str:
     return t[0] if t else ""
 
 
+def scratch_retention_violations(notes: str) -> list[str]:
+    """Require an explicit, narrow per-file custody plan for scratch writers.
+
+    Empty raw declarations cannot demonstrate that launchers do not write temp,
+    server, or cache files, so fail closed instead of inspecting mutable scripts.
+    """
+    fields = {}
+    for part in notes.split(';'):
+        if '=' in part:
+            k, v = part.strip().split('=', 1)
+            if k.strip() in {'scratch_root', 'keep_globs', 'raw_globs'}:
+                if k.strip() in fields:
+                    return [f'duplicate {k.strip()} in notes']
+                fields[k.strip()] = v.strip()
+    if 'scratch_root' not in fields:
+        return []
+    root = fields['scratch_root'].rstrip('/')
+    if not root.startswith('/') or root in ('', '/') or os.path.normpath(root) != root:
+        return ['scratch_root must be a normalized absolute path']
+    raw = [x.strip() for x in fields.get('raw_globs', '').split(',') if x.strip() and x.strip() not in ('-', 'none', '[]')]
+    keep = [x.strip() for x in fields.get('keep_globs', '').split(',') if x.strip() and x.strip() not in ('-', 'none', '[]')]
+    out = []
+    if not raw:
+        out.append('scratch_root requires nonempty raw_globs; declare cache/server/tmp outputs explicitly')
+    for pattern in keep:
+        if '..' in pattern.split('/') or (pattern.startswith('/') and not pattern.startswith(root + '/') and pattern != root):
+            out.append('keep_globs must stay inside scratch_root')
+            continue
+        rel = pattern[len(root) + 1:] if pattern.startswith(root + '/') else pattern
+        if pattern == root or rel in ('.', '*', '**', '**/*') or rel.endswith('/**'):
+            out.append('keep_globs must name evidence files, not the scratch root or a whole directory')
+    return out
+
+
 def derive_booking_class(cells: list[str], col: dict[str, int]) -> str:
     """CTC-Q-C: derive the booking class of a row from its decision / prior / notes (and min_effect unit).
 
@@ -300,6 +335,7 @@ def check_row(cells: list[str], col: dict[str, int], seen: set[str], pid_alive=N
         out.append(f"status {status!r}: carries text after the token {tok!r} (put it in notes)")
     if tok in TERMINAL:
         return out  # terminal rows: id, uniqueness and status token only
+    out += scratch_retention_violations(g('notes'))
     ram = g("max private ram")
     if not RAM_RE.match(ram):
         out.append(f"peak host RAM (col 6) {ram[:40]!r}: must be a number in GiB, e.g. '48' or "
