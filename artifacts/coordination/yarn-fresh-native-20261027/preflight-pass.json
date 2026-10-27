@@ -1,0 +1,40 @@
+{
+  "boundary_receipt_sha256": "b1dd5e1fc70c10153928d287afae407af88abc5c5ae1e16604af6e24f09d2979",
+  "checker_sha256": "aa9ed900be5fb7f3efca043bfddb2ac8963964710db0b702c7491729a74f8542",
+  "effect": "first-output-directory-write",
+  "ended_sha256": "3c49c2b3b9bf92a94ac286f446bd8cb5fc141e8a8abf4e0bb39e77764753b852",
+  "engine_path": "/mnt/raid0/llm/tmp/codex-ni-20261027-ready-cpu-batch/deps/filler_run12.sh",
+  "engine_sha256": "e7b9faaaddd34e92c9837f1677deaba9a48a91dc17ce2fccd5402090b94efd5b",
+  "id": "ni-yarn-fresh-native-cohort",
+  "job_path": "/mnt/raid0/llm/tmp/codex-ni-20261027-ready-cpu-batch/fresh/job.sh",
+  "job_sha256": "74e15f26c2b40fba7e3b39c64e41cb867ec277518c49680633edbe45de87ffe2",
+  "kind": "epyc.dryrun.pass.v1",
+  "launcher_path": "/mnt/raid0/llm/tmp/codex-ni-20261027-ready-cpu-batch/fresh/launch.sh",
+  "launcher_sha256": "5c492bb0d1284994a179ed6157725121e9ec2973f3e4495853a636762e411db4",
+  "nonce": "4cb20d76c13ea253de5b7cba421fade8aa5103111b9455f4",
+  "pf_cpus": [
+    0,
+    1
+  ],
+  "pf_regions": "mi210_0,0,1",
+  "policy_sha256": "c88986bea0ed3be510237020e27a67432e2a835ab15b7e7d9e8471008ab09661",
+  "row": {
+    "claimed_cpus": [
+      184,
+      185,
+      186,
+      187,
+      188,
+      189,
+      190,
+      191
+    ],
+    "est_output_GiB": 4.0,
+    "process_limit_GiB": 12.0,
+    "ram_gib": 12.0,
+    "requested_window_s": 7200,
+    "scratch_root": "/mnt/raid0/llm/tmp/codex-ni-20261027-ready-cpu-batch"
+  },
+  "scope": "two-core-PF; normal-affinity-unproved",
+  "source_manifest_sha256": "6520edf35053510dfbc143c8ad8c244a99ec52d0b3da4d5b353a536ef335256b"
+}

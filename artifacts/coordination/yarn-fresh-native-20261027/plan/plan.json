@@ -1,0 +1,50 @@
+{
+ "schema": "epyc.yarn_gate.plan.v1",
+ "plan": "native-gate-power",
+ "frozen_at": "2026-10-27T17:31:42Z",
+ "plan_sha256": "022ba34ca80ac0d8fa734d7fdf3d9b5e484f4ad2265fba81f31021d87619ff04",
+ "spec_sha256": "576d500c5698c5ee073c95e51a9342f4df64848520646a3e4af916b93f2fe861",
+ "n_items": 120,
+ "segments": [
+  {
+   "segment": "oolong_unused_native_contexts",
+   "builder": "oolong",
+   "args": {
+    "nominal": 131072,
+    "max_contexts": 16
+   },
+   "arms": [
+    "A0",
+    "A1"
+   ],
+   "gate": "native_mcnemar",
+   "n_items": 120,
+   "n_contexts": 8,
+   "build_s": 0.55,
+   "pins": {
+    "dataset": "oolongbench/oolong-synth@81d2f8d9349f6ff329d695f9be494051e9f05cb9",
+    "data_file": "/mnt/raid0/llm/tmp/yarn-agg-oolong-subset/oolong_synth_test_131072.jsonl",
+    "upstream_sha": "0bb7eabe8",
+    "vendored_sha256": "247583a3b653b91c39fb88a102460802f1493175b23d05a7217aead0d685c64c",
+    "task_groups": [
+     "counting",
+     "user"
+    ],
+    "max_tokens_policy": "fixed cap 1024 (thinking_off)"
+   }
+  }
+ ],
+ "dropped": [],
+ "margins": {
+  "in_native_rule": "Net, paired: inside the native window A1 FAILS iff a one-sided exact McNemar test on the paired discordant items (A0 right / A1 wrong = b, versus A0 wrong / A1 right = c) is significant at alpha = 0.05, i.e. P(X >= b | n = b + c, p = 0.5) <= 0.05; otherwise NOT-FAIL. The point estimate (mean paired score difference, b, c) is always reported beside the verdict.",
+  "alpha": 0.05,
+  "right_threshold": "an item is RIGHT iff its score >= 1.0 (fully correct); partial-credit scores count as wrong",
+  "needle_cells_keep": "A1 >= A0 - 1 correct of 10 (E1 rule, unchanged)",
+  "bins": "REAL prompt_n, step 32768; zone from retokenize.label_zone only"
+ },
+ "arm_ctx": {
+  "A0": 262144,
+  "A1": 524288
+ },
+ "protocol_id": "YARN-AGG-1/native-gate/net-paired-mcnemar/v1"
+}
