@@ -1,0 +1,9 @@
+# Prepared packet miniwrap — 2026-10-27
+
+Four preparation-only children were recorded: CS-8.STT0 first-ten selection, CS-22.V0 native parity launcher, PF1 native launcher, and corrected HIL-16b v2 replay isolation. Each is ticked only as preparation/fixture work; the CS-22.V0 parent and VB-SPEECH-CS22V0-VERIFIER wiring task remain open. No inference, runtime parity result, P3 closure, or claim tuple/grade is asserted. PF1 initial whole-host request is max 24 h/min 4 h; its holdout is conditional on a complete initial receipt and at least 4 h elapsed. HIL-16b v2 was validated against a fake HTTP backend only; no model was loaded.
+
+Evidence: CS-8 selection packet `/mnt/raid0/llm/tmp/refactor-01a16fc3/inf79-speech-inference-ready/fleurs-select-q1/ROW-READY.md`, NEXT `eca07eb8-949d-429e-8883-cc492bce30c2`; CS-22 packet `/mnt/raid0/llm/tmp/refactor-01a16fc3/inf79-speech-inference-ready/native-parity-q1/source-files.sha256` and `check-native-pf-final/admitted-command.log`, NEXT `fc20a260`; PF1 `/mnt/raid0/llm/tmp/refactor-01a16fc3/compute-coordination-20261026/PF1-NATIVE-READY.md`, NEXT `0c94cb0f-fda7-43c1-9759-ff71b043e574`, manifest `e5b51ff0cf4a90383c4afeb052f32b077e78f7259aed9314aa4627d8d0d9364d`; HIL-16b `/mnt/raid0/llm/tmp/refactor-01a16fc3/compute-coordination-20261026/HIL16B-V2-READY.md`, NEXT `5b8fd803-b675-4167-b6ea-cddca7f0bbbe`, manifest `f3c6700feb60daac10c7c45ae3254cd4d8ea24bdc0207fec9a2624a50a294529`.
+
+Publication timing disclosure: Claude reported that the q1 CS-22.V0 parity run started at 21:27 UTC before canonical source enrollment was published. The prospective native warrant already existed in the reviewed packet before inference; enrollment timing is not backdated. Record the run only as native diagnostic evidence pending the existing verifier and grading requirements.
+
+[no-belief: preparation and fixture only]
