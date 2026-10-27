@@ -4,7 +4,7 @@
     "handoff-active": 183,
     "handoff-blocked": 2,
     "handoff-completed": 216,
-    "progress": 809,
+    "progress": 810,
     "research": 140
   },
   "kind": "project-wiki-source-manifest",
@@ -127,10 +127,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "736b79d82e81fff750368cb00f997bed6a12c1367f98e779a4c375fd200a1413",
-      "modified": "2026-10-26T07:57:37Z",
+      "content_hash": "27751a8222c3820e6ef9f86f8dac4e10747a393bc37ce2c7e290eb7a66f10367",
+      "modified": "2026-10-27T09:30:00Z",
       "path": "handoffs/active/autokernel-orchestrator-actor-backend.md",
-      "size": 66809,
+      "size": 67261,
       "title": "AutoKernel \u2014 the orchestrator as planner/author backend",
       "type": "handoff-active"
     },
@@ -671,10 +671,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "a0d46c53280369749a9439ad73940a50766f006895320f1fa9c8891b64152e44",
-      "modified": "2026-10-26T07:57:37Z",
+      "content_hash": "3babe6eca970b3054c4f35c2b3a64bbdcefd8e97a10637274a17aa15e87509fb",
+      "modified": "2026-10-27T09:30:00Z",
       "path": "handoffs/active/heterogeneous-slot-fabric-residency.md",
-      "size": 52854,
+      "size": 56927,
       "title": "Heterogeneous CPU\u00d7GPU Slot Fabric + Dynamic Residency",
       "type": "handoff-active"
     },
@@ -727,10 +727,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "80ac317e383d44cca5b2fcf1484122bc3329ca35fd3117649aee982e1d28c2a1",
-      "modified": "2026-10-26T07:57:37Z",
+      "content_hash": "51fb17af74e15fd80ddbbca2ccfae627484e1f8d6513e22f85e767f24da2c802",
+      "modified": "2026-10-27T09:30:00Z",
       "path": "handoffs/active/kv-prefix-fork-and-paged-attention.md",
-      "size": 248268,
+      "size": 255161,
       "title": "KV prefix fork and paged attention: cross-slot prefix sharing, cache-aware dispatch, per-sequence KV views",
       "type": "handoff-active"
     },
@@ -951,10 +951,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "bed3f2561543d4dbb8ea54bfc2d021571f2910d10dec16de7dcbc844598b04bf",
-      "modified": "2026-10-26T07:57:37Z",
+      "content_hash": "39a7c1c7974a0a9102938941764ed83ef693899b999f202561b2e1e5dd2d9a5c",
+      "modified": "2026-10-27T09:30:00Z",
       "path": "handoffs/active/non-inference-backlog.md",
-      "size": 204323,
+      "size": 206052,
       "title": "Non-Inference Backlog \u2014 Round 2 (2026-05-19 audit refresh)",
       "type": "handoff-active"
     },
@@ -1119,10 +1119,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "c1bd4ef6f86b228491f05fe3d3e8b30e074c8c706bc9969ff7537f1519c4713f",
-      "modified": "2026-10-26T07:57:37Z",
+      "content_hash": "0fcd855f58d61fdf6b50d02394772580017b97cb3f0898632469ca04a62ea1e9",
+      "modified": "2026-10-27T09:30:00Z",
       "path": "handoffs/active/repl-embedding-retrieval.md",
-      "size": 85670,
+      "size": 87320,
       "title": "REPL Embedding Retrieval \u2014 hybrid search that returns pointers",
       "type": "handoff-active"
     },
@@ -3221,6 +3221,14 @@
       "size": 19141,
       "title": "Swarm-as-Dataset-Generator \u2014 Narrow-Domain SFT Distillation",
       "type": "handoff-blocked"
+    },
+    {
+      "content_hash": "70df718cbc42c4aa9a9b9de7c958383c53433876bb98eaafe482bbec36ae6e84",
+      "modified": "2026-10-27T09:30:00Z",
+      "path": "progress/2026-10/2026-10-27-codex-ni-01a16d6b.md",
+      "size": 3198,
+      "title": "Progress \u2014 2026-10-27 (codex-ni-01a16d6b)",
+      "type": "progress"
     },
     {
       "content_hash": "50a23b5e89063c464c564e63748ac5a983d3aa49118c88a3fa0404d36b68dad2",
@@ -12663,7 +12671,7 @@
       "type": "docs"
     }
   ],
-  "total_new": 1581,
+  "total_new": 1582,
   "writer_evidence_policy": {
     "applies_to": "generated-wiki-article-writes",
     "minimum_confidence": "verified",

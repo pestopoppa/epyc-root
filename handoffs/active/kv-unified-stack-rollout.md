@@ -5,6 +5,7 @@ orch `0a564a1f`, research `75ee1b8e`): :8083 runs `-np 4 -c 196608 --kv-unified 
 --cache-ram 65536`, STT/TTS run on CPU cores 0-23 / 24-39. The overflow branch and the gate fix are merged. What is
 left: the depth-4 production confirmation (KVU-1b / M-3b),
 the opencode limit (KVU-1a, operator), and the follow-ups below.
+**Scratch**: `/mnt/raid0/llm/tmp/codex-ni-20261027-fa4-sixkey-diagnostic/`, `/mnt/raid0/llm/tmp/codex-ni-20261027-fa4-attempt2-fix/`, `/mnt/raid0/llm/tmp/codex-ni-20261027-fa4-original-nan-audit/` · worktrees: none
 **Created**: 2026-09-24 (main-ak-seat, stack-configuration window)
 **Priority**: HIGH. :8083 caps every request at 98,304 tokens today, and that ceiling emptied DS41 run 8's planner reply.
 **Categories**: inference_serving, kv_cache, orchestration, stack_lifecycle

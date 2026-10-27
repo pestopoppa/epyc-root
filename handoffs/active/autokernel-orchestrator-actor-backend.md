@@ -8,6 +8,7 @@ deployed (orchestrator `b9e004e3`); OAB-22..27 merged to research main `d643d794
 DS41-C45 path); then the live OAB-4 A/B (pin :8083's KV mode per OAB-4a) and the OAB-5 promotion rule;
 OAB-28 before best-of runs with more than one worker.
 **Created**: 2026-09-24
+**Scratch**: `/mnt/raid0/llm/tmp/oab-actor-backend/`, `/mnt/raid0/llm/tmp/codex-ni-20261027-oab30-gpu-fixture/`, `/mnt/raid0/llm/tmp/codex-ni-20261027-oab30-stub-iteration/`, `/mnt/raid0/llm/tmp/codex-ni-20261027-inf78-budget-ratchet/` · worktrees: `/mnt/raid0/llm/worktrees/oab-actor-backend-*`
 **Priority**: MEDIUM (long-term direction; the campaign keeps opencode + 27B meanwhile)
 **Categories**: agent_architecture, autonomous_research, hardware_optimization
 **Parent index**: [inference-research-index.md](inference-research-index.md) (row INF-78)
