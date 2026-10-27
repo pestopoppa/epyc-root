@@ -103,16 +103,20 @@ def row_record(path: Path, row_id: str) -> dict[str, object]:
         requested = int(notes["requested_window_s"])
         estimate = float(notes["est_output_GiB"])
         ram = float(row[5].removesuffix("GiB").strip())
+        process_limit = float(notes.get("process_limit_GiB", ram))
     except ValueError:
-        refuse(f"row {row_id}: nonnumeric window, output or RAM")
+        refuse(f"row {row_id}: nonnumeric window, output, RAM or process limit")
     if requested <= 0 or requested % 60 or estimate < 0 or ram <= 0:
         refuse(f"row {row_id}: invalid window, output or RAM")
-    if not math.isfinite(estimate) or not math.isfinite(ram):
-        refuse(f"row {row_id}: nonfinite output or RAM")
+    if not all(map(math.isfinite, (estimate, ram, process_limit))):
+        refuse(f"row {row_id}: nonfinite output, RAM or process limit")
+    if process_limit <= 0 or process_limit > ram:
+        refuse(f"row {row_id}: process_limit_GiB must be positive and <= reserved RAM {ram:g}")
     scratch = Path(notes["scratch_root"].strip())
     if not scratch.is_absolute() or not scratch.resolve().is_relative_to(Path("/mnt/raid0/llm").resolve()):
         refuse(f"row {row_id}: scratch_root must be under raid0")
     return {"requested": requested, "estimate": estimate, "ram": ram,
+            "process_limit": process_limit,
             "cpus": cpus(notes["claimed_cpus"].strip()), "scratch": scratch,
             "notes": notes, "cells": row}
 
@@ -149,7 +153,8 @@ def checked_manifest(path: Path) -> str:
 
 def semantic_record(row: dict[str, object]) -> dict[str, object]:
     return {"requested_window_s": row["requested"], "est_output_GiB": row["estimate"],
-            "ram_gib": row["ram"], "scratch_root": str(row["scratch"]),
+            "ram_gib": row["ram"], "process_limit_GiB": row["process_limit"],
+            "scratch_root": str(row["scratch"]),
             "claimed_cpus": sorted(row["cpus"])}
 
 
@@ -183,7 +188,9 @@ def verify_pass(row: dict[str, object], row_id: str, engine: Path) -> None:
         refuse("dryrun_pass successful ended record changed or missing")
     boundary_record = json.loads(pass_path.with_name("boundary.json").read_text())
     if (proof.get("nonce") != boundary_record.get("nonce") or
-            proof.get("effect") != boundary_record.get("effect")):
+            proof.get("effect") != boundary_record.get("effect") or
+            boundary_record.get("reserved_ram_gib") != row["ram"] or
+            boundary_record.get("process_limit_gib") != row["process_limit"]):
         refuse("dryrun_pass nonce/effect differs from boundary")
     pf = proof.get("pf_cpus")
     if not isinstance(pf, list) or not all(isinstance(x, int) for x in pf):
@@ -233,7 +240,8 @@ def admission(args: argparse.Namespace) -> dict[str, object]:
     return {"row": row, "regions": regions, "window": window, "free_gib": free, "floor_gib": floor}
 
 
-def limits_record(ram_gib: float, required_cpus: set[int], allowed_cpus: set[int]) -> dict[str, object]:
+def limits_record(ram_gib: float, process_limit_gib: float,
+                  required_cpus: set[int], allowed_cpus: set[int]) -> dict[str, object]:
     limits = {}
     for name in ("AS", "DATA", "RSS", "NOFILE"):
         limits[name] = list(resource.getrlimit(getattr(resource, "RLIMIT_" + name)))
@@ -242,20 +250,22 @@ def limits_record(ram_gib: float, required_cpus: set[int], allowed_cpus: set[int
     memory_max = Path("/sys/fs/cgroup/memory.max")
     cgroup_limit = memory_max.read_text().strip() if memory_max.exists() else "unavailable"
     print("DRYRUN_RESOURCES " + json.dumps({"rlimits": limits, "affinity": sorted(affinity),
-          "cgroup": cgroup, "cgroup_memory_max": cgroup_limit}, sort_keys=True), flush=True)
-    need = int(ram_gib * GIB)
+          "cgroup": cgroup, "cgroup_memory_max": cgroup_limit,
+          "reserved_ram_gib": ram_gib, "process_limit_gib": process_limit_gib}, sort_keys=True), flush=True)
+    need = int(process_limit_gib * GIB)
     for name in ("AS", "DATA"):
         soft, hard = limits[name]
         if any(value != resource.RLIM_INFINITY and value < need for value in (soft, hard)):
-            refuse(f"RLIMIT_{name} below declared {ram_gib:g} GiB")
-    if cgroup_limit.isdecimal() and int(cgroup_limit) < need:
-        refuse(f"cgroup memory.max below declared {ram_gib:g} GiB")
+            refuse(f"RLIMIT_{name} below declared process limit {process_limit_gib:g} GiB")
+    if cgroup_limit.isdecimal() and int(cgroup_limit) < int(ram_gib * GIB):
+        refuse(f"cgroup memory.max below reserved RAM {ram_gib:g} GiB")
     if not required_cpus.issubset(affinity):
         refuse(f"affinity missing declared CPUs {sorted(required_cpus-affinity)}")
     if not affinity.issubset(allowed_cpus):
         refuse(f"affinity escapes grant/approved PF CPUs {sorted(affinity-allowed_cpus)}")
     return {"rlimits": limits, "affinity": sorted(affinity), "cgroup": cgroup,
-            "cgroup_memory_max": cgroup_limit}
+            "cgroup_memory_max": cgroup_limit, "reserved_ram_gib": ram_gib,
+            "process_limit_gib": process_limit_gib}
 
 
 def boundary(args: argparse.Namespace) -> None:
@@ -270,9 +280,12 @@ def boundary(args: argparse.Namespace) -> None:
     if actual != os.environ.get("DRYRUN_JOB_SHA256"):
         refuse("job source hash changed before boundary")
     ram = float(os.environ["DRYRUN_RAM_GIB"])
+    process_limit = float(os.environ.get("DRYRUN_PROCESS_LIMIT_GIB", ram))
+    if not all(map(math.isfinite, (ram, process_limit))) or process_limit <= 0 or process_limit > ram:
+        refuse("invalid preflight RAM reservation/process limit")
     required = cpus(os.environ["DRYRUN_REQUIRED_CPUS"])
     allowed = cpus(os.environ["DRYRUN_ALLOWED_CPUS"])
-    record = limits_record(ram, required, allowed)
+    record = limits_record(ram, process_limit, required, allowed)
     record.update({"nonce": nonce, "effect": args.effect, "job": str(job),
                    "job_sha256": actual, "launcher_sha256": os.environ.get("DRYRUN_LAUNCHER_SHA256"),
                    "pid": os.getpid(), "time": datetime.now(timezone.utc).isoformat()})
@@ -286,7 +299,7 @@ def resources(args: argparse.Namespace) -> None:
     row = row_record(Path(args.row_file), args.id)
     required = cpus(os.environ["DRYRUN_REQUIRED_CPUS"]) if args.scoped_pf else row["cpus"]
     allowed = cpus(args.allowed_cpus)
-    limits_record(row["ram"], required, allowed)
+    limits_record(row["ram"], row["process_limit"], required, allowed)
     print(f"RESOURCE_PASS id={args.id} scope={'two-core-PF' if args.scoped_pf else 'normal-grant'}", flush=True)
 
 
@@ -439,6 +452,7 @@ def run(args: argparse.Namespace) -> None:
                 "DRYRUN_RECEIPT": str(box / "boundary.json"),
                 "DRYRUN_JOB_SHA256": sha(job), "DRYRUN_LAUNCHER_SHA256": sha(launcher),
                 "DRYRUN_RAM_GIB": str(row["ram"]),
+                "DRYRUN_PROCESS_LIMIT_GIB": str(row["process_limit"]),
                 "DRYRUN_REQUIRED_CPUS": args.required_cpus,
                 "DRYRUN_ALLOWED_CPUS": args.allowed_cpus or args.required_cpus,
                 "FILLER_GRANTS_DIR": str(grants), "FILLER_FLAGS_DIR": str(box),
@@ -490,7 +504,9 @@ def run(args: argparse.Namespace) -> None:
         refuse(f"no job boundary receipt; see {box/'entry.log'}")
     result = json.loads(receipt.read_text())
     if (result.get("nonce") != nonce or result.get("job_sha256") != sha(job) or
-            result.get("launcher_sha256") != sha(launcher) or result.get("effect") != args.effect):
+            result.get("launcher_sha256") != sha(launcher) or result.get("effect") != args.effect or
+            result.get("reserved_ram_gib") != row["ram"] or
+            result.get("process_limit_gib") != row["process_limit"]):
         refuse("boundary receipt does not bind exact nonce, sources and effect")
     proof = {"kind": "epyc.dryrun.pass.v1", "id": args.id, "nonce": nonce,
              "effect": args.effect, "row": semantic_record(row),

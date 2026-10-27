@@ -125,6 +125,9 @@ confirm the hook precedes the first effect. The row notes declare
 `requested_window_s`, `est_output_GiB`, `scratch_root`, `claimed_cpus`,
 `launcher_path`, `job_path`, `source_manifest` (sha256sum format) and, after
 preflight, `dryrun_pass=<scratch_root>/dryrun/<nonce>/pass.json`.
+When the process address-space ceiling is lower than reserved peak host RAM,
+declare `process_limit_GiB` explicitly (for example, KPF18 R14 reserves 192 GiB
+and requires a 176 GiB process ceiling); it must be positive and ≤ reservation.
 `filler_run12.sh` enforces those fields against the real grant at run time,
 including `min_window + 300`, exact booked window and free space after output.
 It refuses normal launch without a matching same-entry PASS artifact and checks
