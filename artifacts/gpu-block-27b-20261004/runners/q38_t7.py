@@ -22,10 +22,13 @@ Phases (all temperature/greedy settings as stated; every call persisted to calls
      50k/80k, 1500 generated tokens, thinking on, 2 reps, plus a no-draft row reusing rep 2's
      cached prompt) so rows compare 1:1 with the MTP table in probe-decode-vs-context.mtp.json.
      Two needle facts are inserted at 1/3 and 2/3 depth; after the speed rows the greedy
-     needle question is asked on rep 2's cached prefix TWICE, drafted and no-draft (paired).
+     needle correctness is now a separate neutral-source N cell; B speed retains C2+C4.
      The drafted outputs (reasoning + content, stored in full) get the v2 degeneracy check.
+  N  INF-59 E0 frozen neutral GovReport haystack, two declarative facts at 1/3 and 2/3
+     depth at each B target; each question asked drafted and no-draft. E0 manifest is pinned.
   C  concurrency at the production shape: 4 distinct ~16k prompts streamed at once
-     (1000 tokens each): per-stream decode tok/s, draft acceptance, aggregate.
+     (1000 tokens each) in both arms on identical prompts: per-stream decode tok/s, draft
+     acceptance, aggregate for the drafted arm plus paired correctness.
 Draft acceptance (timings draft_n / draft_n_accepted) is recorded per call.
 
 Verdict (schema v2, 2026-10-04 — v1 failed on a uniq-only, length-biased SALAD rule and judged
@@ -34,7 +37,8 @@ phase A absolutely): correctness PASS iff
     arm on the same prompt (v2 severity, or a ground-truth answer correct -> wrong/unanswered),
     and no HTTP error in either arm;
   * no phase B/C drafted output fails inf70-degeneracy.v2 (an ascii-only trigger is `review`);
-  * no needle REGRESSION (no-draft correct, drafted wrong).
+  * phase C is paired on the same four prompts, with no drafted severity regression;
+  * no neutral needle REGRESSION (no-draft correct, drafted wrong).
 A needle the model declines (abstains, e.g. calls the planted fact an injection) or misses in
 BOTH arms is a MODEL-BEHAVIOUR note, not a drafting failure. Outputs both arms share as
 non-OK are listed (`shared_nonok`), never failed. A speed number whose paired correctness
@@ -49,6 +53,7 @@ from __future__ import annotations
 
 import argparse
 import collections
+import hashlib
 import json
 import re
 import statistics
@@ -64,10 +69,10 @@ import lib_gpublock as L  # noqa: E402
 POOL = Path("/mnt/raid0/llm/epyc-inference-research/benchmarks/prompts/question_pool.jsonl")  # ground truth
 PROBE_DIR = Path("/mnt/raid0/llm/tmp/ds41-c95")
 MTP_JSON = PROBE_DIR / "probe-decode-vs-context.mtp.json"
+E0_INPUTS = Path("/mnt/raid0/llm/tmp/yarn-e1-20261004/inputs")
+E0_MANIFEST_SHA256 = "2eb07287faba49ed5e368700b273aa8345e927cf53d0aeb34371aca2888b1b04"
 TASK = ("\n\n---\nTask: using the material above, reason about which single change to the tinyBLAS "
         "gemm4xN<3> kernel would most improve CPU decode throughput, then state it in one paragraph.")
-QUESTION = ("\n\n---\nQuestion: the material above states a vault code for project KESTREL and names the "
-            "on-call engineer for Thursday. Reply with exactly one line in the form CODE; NAME and nothing else.")
 def ground_truth(ids: list[str]) -> dict[str, dict]:
     out: dict[str, dict] = {}
     try:
@@ -109,14 +114,6 @@ def grade(text: str, gt: dict | None) -> str | None:
 def abstained(answer: str) -> bool:
     return bool(re.search(r"\babstain|prompt injection|injected instruction|cannot (?:comply|provide)|"
                           r"won't provide|will not provide", answer, re.I))
-
-
-def needles(target: int) -> tuple[str, str, list[str]]:
-    code = f"{target // 1000}-4-1-9-ORCHID"
-    name = "Mbeki Larsen"
-    n1 = f"\n\nNOTE (archive): the vault code for project KESTREL is {code}.\n\n"
-    n2 = f"\n\nNOTE (rota): the on-call engineer for Thursday is {name}.\n\n"
-    return n1, n2, [code, name]
 
 
 def insert_needles(cut: str, n1: str, n2: str) -> str:
@@ -233,8 +230,6 @@ def phase_b(base: str, sink: L.JsonlSink, targets: list[int], gen: int, gen_nd: 
     rows = []
     for target in targets:
         cut = text[: int(min(len(text), target * cpt))]
-        n1, n2, facts = needles(target)
-        cut = insert_needles(cut, n1, n2)
         nominal = L.tokenize_count(base, cut)
         last_prefix = None
         for rep in range(1, reps + 1):
@@ -262,23 +257,72 @@ def phase_b(base: str, sink: L.JsonlSink, targets: list[int], gen: int, gen_nd: 
                "content": r["content"]}
         rows.append(row)
         sink.add(row)
-        # paired correctness: the greedy needle question on the same cached prefix, drafted AND no-draft
-        norm = lambda x: "".join(x.lower().split())  # noqa: E731 - whitespace-insensitive match
-        for variant, extra in (("needle", {}), ("needle (no-draft)", {"speculative.n_max": 0})):
-            b = busy(base)
-            st, resp = L.http_json(f"{base}/v1/chat/completions",
-                                   chat_body(last_prefix + QUESTION, max_tokens=64, temperature=0.0,
-                                             chat_template_kwargs={"enable_thinking": False}, **extra), timeout=1800)
-            ans = (((resp or {}).get("choices") or [{}])[0].get("message") or {}).get("content") or "" if st == 200 else ""
-            hit = [f for f in facts if norm(f) in norm(ans)]
-            row = {"phase": "B", "target": target, "variant": variant, "busy_before": b, "http": st,
-                   "answer": ans, "expected": facts, "correct": len(hit) == len(facts), "abstained": abstained(ans),
-                   **L.timing_summary((resp or {}).get("timings"))}
-            rows.append(row)
-            sink.add(row)
-            print(json.dumps({"target": target, "variant": variant, "needle_correct": row["correct"],
-                              "answer": ans[:80]}), flush=True)
     return {"rows": rows, "chars_per_token": round(cpt, 4), "full_tokens": full_tok}
+
+def neutral_inputs() -> tuple[str, list[dict], str]:
+    """Reuse INF-59 E0's frozen GovReport corpus and two declarative facts."""
+    manifest_bytes = (E0_INPUTS / "manifest.json").read_bytes()
+    digest = hashlib.sha256(manifest_bytes).hexdigest()
+    if digest != E0_MANIFEST_SHA256:
+        raise ValueError(f"INF-59 E0 manifest changed: {digest}")
+    manifest = json.loads(manifest_bytes)
+    for name in ("segment_128k.txt", "needles.jsonl", "haystack_meta.json"):
+        got = hashlib.sha256((E0_INPUTS / name).read_bytes()).hexdigest()
+        if got != manifest["files"][name]:
+            raise ValueError(f"INF-59 E0 input changed: {name}")
+    needles = [json.loads(line) for line in (E0_INPUTS / "needles.jsonl").read_text().splitlines() if line]
+    source = (E0_INPUTS / "segment_128k.txt").read_text()
+    for needle in needles:
+        if needle["stage"] == "128k":
+            statement = needle["statement"] + "\n\n"
+            if source.count(statement) != 1:
+                raise ValueError(f"INF-59 E0 statement missing or repeated: {needle['needle']}")
+            source = source.replace(statement, "", 1)
+    selected = [n for n in needles if n["stage"] == "128k"][:2]
+    if len(selected) != 2:
+        raise ValueError("INF-59 E0 has fewer than two 128k needles")
+    return source, selected, digest
+
+
+def neutral_needle_prompt(source: str, facts: list[dict], target: int) -> str:
+    # E0 segment is 127k HF content tokens; final prompt length is measured by /tokenize.
+    cpt = len(source) / 127000
+    cut = source[:min(len(source), int(target * cpt))]
+    return insert_needles(cut, *(n["statement"] + "\n\n" for n in facts))
+
+
+def phase_n(base: str, sink: L.JsonlSink, targets: list[int]) -> dict:
+    source, facts, manifest_sha = neutral_inputs()
+    rows = []
+    for target in targets:
+        document = neutral_needle_prompt(source, facts, target)
+        nominal = L.tokenize_count(base, document)
+        if nominal > 262144 or abs(nominal - target) > target * 0.10:
+            raise ValueError(f"neutral needle target {target} measured {nominal} document tokens; outside 10% band or slot")
+        # E0's separate document/question turns retain the GDN checkpoint for both questions.
+        document_messages = [
+            {"role": "user", "content": "The following is part 1 of a collection of public reports, provided as background reading. Read it; questions about the collection will follow.\n\n" + document},
+            {"role": "assistant", "content": "Noted. I have read this part of the collection."},
+        ]
+        for fact in facts:
+            for arm, extra in (("dflash2", {}), ("nodraft", {"speculative.n_max": 0})):
+                messages = document_messages + [{"role": "user", "content":
+                    "Using only the reports provided above, answer the question. Reply with the answer only, no explanation.\n\nQuestion: " + fact["question"]}]
+                st, resp = L.http_json(f"{base}/v1/chat/completions",
+                    {"messages": messages, "max_tokens": 64, "temperature": 0.0,
+                     "chat_template_kwargs": {"enable_thinking": False}, **extra}, timeout=1800)
+                answer = (((resp or {}).get("choices") or [{}])[0].get("message") or {}).get("content") or "" if st == 200 else ""
+                expected = fact["expected"]
+                correct = st == 200 and all("".join(x.lower().split()) in "".join(answer.lower().split()) for x in expected)
+                row = {"phase": "N", "target": target, "needle": fact["needle"], "arm": arm,
+                       "http": st, "answer": answer, "expected": expected, "correct": correct,
+                       "abstained": abstained(answer), "document_tokens": nominal,
+                       "e0_manifest_sha256": manifest_sha,
+                       **L.timing_summary((resp or {}).get("timings"))}
+                rows.append(row)
+                sink.add(row)
+    return {"rows": rows, "e0_manifest_sha256": manifest_sha}
+
 
 
 def phase_c(base: str, sink: L.JsonlSink, tokens: int, gen: int) -> dict:
@@ -288,11 +332,18 @@ def phase_c(base: str, sink: L.JsonlSink, tokens: int, gen: int) -> dict:
         prompts.append((txt, n))
     res: list[dict] = [{} for _ in prompts]
 
-    def fire(i: int) -> None:
-        res[i] = L.stream_request(f"{base}/v1/chat/completions", chat_body(prompts[i][0], max_tokens=gen))
+    def fire(i: int, arm: str, extra: dict, dest: list[dict]) -> None:
+        dest[i] = L.stream_request(f"{base}/v1/chat/completions",
+                                   chat_body(prompts[i][0], max_tokens=gen, **extra))
 
     b = busy(base)
-    th = [threading.Thread(target=fire, args=(i,)) for i in range(4)]
+    th = [threading.Thread(target=fire, args=(i, "dflash2", {}, res)) for i in range(4)]
+    for t in th:
+        t.start()
+    for t in th:
+        t.join()
+    no_draft: list[dict] = [{} for _ in prompts]
+    th = [threading.Thread(target=fire, args=(i, "nodraft", {"speculative.n_max": 0}, no_draft)) for i in range(4)]
     for t in th:
         t.start()
     for t in th:
@@ -301,20 +352,30 @@ def phase_c(base: str, sink: L.JsonlSink, tokens: int, gen: int) -> dict:
     for i, r in enumerate(res):
         ok = r.get("http_status") == 200 and not r.get("error")
         cls, toks = classify_text(base, r.get("reasoning", "") + "\n" + r.get("content", ""), r.get("finish"), ok)
-        row = {"phase": "C", "stream": i, "prompt_tokens": prompts[i][1], "busy_before": b, "http": r.get("http_status"),
+        row = {"phase": "C", "arm": "dflash2", "stream": i, "prompt_tokens": prompts[i][1], "busy_before": b, "http": r.get("http_status"),
                "error": r.get("error"), "ttft_s": r.get("ttft_s"), "wall_s": r.get("wall_s"),
                **L.timing_summary(r.get("timings")), "degeneracy": cls, "finish": r.get("finish"),
                "reasoning": r.get("reasoning", ""), "content": r.get("content", ""), "token_ids": toks}
         rows.append(row)
         sink.add(row)
+    for i, r in enumerate(no_draft):
+        ok = r.get("http_status") == 200 and not r.get("error")
+        cls, toks = classify_text(base, r.get("reasoning", "") + "\n" + r.get("content", ""), r.get("finish"), ok)
+        row = {"phase": "C", "arm": "nodraft", "stream": i, "prompt_tokens": prompts[i][1],
+               "http": r.get("http_status"), "error": r.get("error"), "ttft_s": r.get("ttft_s"),
+               "wall_s": r.get("wall_s"), **L.timing_summary(r.get("timings")),
+               "degeneracy": cls, "finish": r.get("finish"), "reasoning": r.get("reasoning", ""),
+               "content": r.get("content", ""), "token_ids": toks}
+        rows.append(row)
+        sink.add(row)
     starts = [r["t_send"] + (r["ttft_s"] or 0) for r in res if r.get("ttft_s")]
     ends = [r["t_send"] + r["wall_s"] for r in res if r.get("wall_s")]
-    tot = sum(r.get("predicted_n") or 0 for r in rows)
+    tot = sum(r.get("predicted_n") or 0 for r in rows if r["arm"] == "dflash2")
     span = (max(ends) - min(starts)) if starts and ends else None
-    dn = sum(r.get("draft_n") or 0 for r in rows)
-    da = sum(r.get("draft_n_accepted") or 0 for r in rows)
+    dn = sum(r.get("draft_n") or 0 for r in rows if r["arm"] == "dflash2")
+    da = sum(r.get("draft_n_accepted") or 0 for r in rows if r["arm"] == "dflash2")
     return {"rows": rows, "aggregate_decode_tps_span": round(tot / span, 2) if span else None,
-            "sum_per_stream_decode_tps": round(sum(r.get("decode_tps") or 0 for r in rows), 2),
+            "sum_per_stream_decode_tps": round(sum(r.get("decode_tps") or 0 for r in rows if r["arm"] == "dflash2"), 2),
             "draft_acceptance": round(da / dn, 4) if dn else None}
 
 
@@ -354,23 +415,32 @@ def verdict(rep: dict) -> dict:
         notes += [f"phase A shared (not a drafting failure): {s}" for s in p["shared_nonok"]]
     b = rep.get("B")
     if b:
-        need = {(r["target"], r["variant"]): r for r in b["rows"] if r["variant"].startswith("needle")}
-        for t in sorted({t for t, _ in need}):
-            d, n = need.get((t, "needle")), need.get((t, "needle (no-draft)"))
-            if d and n and n["correct"] and not d["correct"]:
-                reasons.append(f"needle regression at ~{t}: no-draft correct, drafted {d['answer'][:120]!r}")
-            for r in (x for x in (d, n) if x and not x["correct"]):
-                kind = "abstained" if r.get("abstained") else "missed"
-                if not (r is d and n and n["correct"]):
-                    notes.append(f"MODEL BEHAVIOUR ~{t} {r['variant']}: {kind} — {r['answer'][:160]!r}")
         for r in b["rows"]:
             if r["variant"] == "drafted" and D.fails(r["degeneracy"]):
                 reasons.append(f"phase B ~{r['target']} rep{r['rep']} {r['degeneracy']['cls']} {r['degeneracy'].get('reasons')}")
+    n = rep.get("N")
+    if n:
+        by = {(r["target"], r["needle"], r["arm"]): r for r in n["rows"]}
+        for target in sorted({r["target"] for r in n["rows"]}):
+            for needle in sorted({r["needle"] for r in n["rows"]}):
+                d, nd = by.get((target, needle, "dflash2")), by.get((target, needle, "nodraft"))
+                if not d or not nd or d["http"] != 200 or nd["http"] != 200:
+                    reasons.append(f"neutral needle incomplete or HTTP error ~{target} {needle}")
+                elif nd["correct"] and not d["correct"]:
+                    reasons.append(f"neutral needle regression ~{target} {needle}: no-draft correct, drafted wrong")
+                elif not d["correct"] and not nd["correct"]:
+                    notes.append(f"MODEL BEHAVIOUR neutral needle ~{target} {needle}: both arms missed")
     c = rep.get("C")
     if c:
-        for r in c["rows"]:
-            if D.fails(r["degeneracy"]):
-                reasons.append(f"phase C stream {r['stream']} {r['degeneracy']['cls']} {r['degeneracy'].get('reasons')}")
+        by = {(r["stream"], r["arm"]): r for r in c["rows"]}
+        for i in range(4):
+            d, nd = by.get((i, "dflash2")), by.get((i, "nodraft"))
+            if not d or not nd or d["http"] != 200 or nd["http"] != 200:
+                reasons.append(f"phase C stream {i} pair missing or HTTP error")
+            elif D.severity(d["degeneracy"]) > D.severity(nd["degeneracy"]):
+                reasons.append(f"phase C stream {i} drafting regression: {nd['degeneracy']['cls']} -> {d['degeneracy']['cls']}")
+            if d and D.fails(d["degeneracy"]):
+                reasons.append(f"phase C stream {i} drafted {d['degeneracy']['cls']} {d['degeneracy'].get('reasons')}")
     review = [r.get("id") or f"{r['phase']}:{r.get('target', r.get('stream'))}"
               for ph in ("A", "B", "C") for r in (rep.get(ph) or {}).get("rows", [])
               if (r.get("degeneracy") or {}).get("review")]
@@ -410,13 +480,11 @@ def markdown(rep: dict) -> str:
     b = rep.get("B")
     if b:
         mtp = mtp_rows()
-        md += ["", "## B — decode vs context (probe_decode method; MTP comparator = 2026-10-01 probe at the pre-KVU-16 shape)", "",
-               "| target | prompt tok | variant | rep | prefill tok/s | TTFT s | decode tok/s | gen | draft acc | degeneracy / needle | busy before |",
+        md += ["", "## B — decode vs context (C2+C4 source; MTP comparator = 2026-10-01 probe at the pre-KVU-16 shape)", "",
+               "| target | prompt tok | variant | rep | prefill tok/s | TTFT s | decode tok/s | gen | draft acc | degeneracy | busy before |",
                "|---|---|---|---|---|---|---|---|---|---|---|"]
         for r in b["rows"]:
-            tag = r["degeneracy"]["cls"] if "degeneracy" in r else (
-                ("correct" if r.get("correct") else ("ABSTAINED" if r.get("abstained") else "WRONG"))
-                if r["variant"].startswith("needle") else "-")
+            tag = r["degeneracy"]["cls"] if "degeneracy" in r else "-"
             md.append(f"| ~{r['target'] // 1000}k | {r.get('prompt_n')} (cache {r.get('cache_n')}) | {r['variant']} | {r.get('rep', '-')} | "
                       f"{r.get('prefill_tps')} | {r.get('ttft_s')} | {r.get('decode_tps')} | {r.get('predicted_n')} | "
                       f"{r.get('draft_acc')} | {tag} | {r.get('busy_before') or '-'} |")
@@ -430,14 +498,23 @@ def markdown(rep: dict) -> str:
             md_ = mean(m.get("drafted", []))
             md.append(f"| ~{t // 1000}k | {d} | {md_} | {round(d / md_, 2) if d and md_ else '-'} | {acc} | "
                       f"{mean(m.get('acc', []))} | {nd} |")
+    n = rep.get("N")
+    if n:
+        md += ["", "## N — INF-59 E0 neutral GovReport needles, paired", "",
+               f"E0 manifest sha256: {n['e0_manifest_sha256']}", "",
+               "| target | needle | drafted | no-draft |", "|---|---|---|---|"]
+        for target in sorted({r["target"] for r in n["rows"]}):
+            for needle in sorted({r["needle"] for r in n["rows"]}):
+                pair = {r["arm"]: r for r in n["rows"] if r["target"] == target and r["needle"] == needle}
+                md.append(f"| ~{target // 1000}k | {needle} | {pair['dflash2']['correct']} | {pair['nodraft']['correct']} |")
     c = rep.get("C")
     if c:
         md += ["", "## C — 4 concurrent ~16k streams", "",
                f"Aggregate decode (tokens / overlap span): {c['aggregate_decode_tps_span']} tok/s; sum of per-stream "
                f"decode: {c['sum_per_stream_decode_tps']} tok/s; draft acceptance {c['draft_acceptance']}.", "",
-               "| stream | prompt tok | TTFT s | decode tok/s | gen | draft acc | degeneracy |", "|---|---|---|---|---|---|---|"]
+               "| arm | stream | prompt tok | TTFT s | decode tok/s | gen | draft acc | degeneracy |", "|---|---|---|---|---|---|---|---|"]
         for r in c["rows"]:
-            md.append(f"| {r['stream']} | {r['prompt_tokens']} | {r['ttft_s']} | {r['decode_tps']} | {r['predicted_n']} | "
+            md.append(f"| {r['arm']} | {r['stream']} | {r['prompt_tokens']} | {r['ttft_s']} | {r['decode_tps']} | {r['predicted_n']} | "
                       f"{r['draft_acc']} | {r['degeneracy']['cls']} |")
     md += ["", f"VRAM: {rep.get('vram')}", f"Server log window: bytes {rep['log_offset_start']}–{rep['log_offset_end']} "
            f"of {L.LOG_8083} (B4g reuses this window); bad lines {rep.get('bad_lines')}."]
@@ -468,7 +545,7 @@ def main() -> int:
     ap.add_argument("--dry-run", action="store_true")
     ap.add_argument("--i-own-the-window", action="store_true")
     ap.add_argument("--base", default="http://127.0.0.1:8083")
-    ap.add_argument("--phases", default="A,B,C")
+    ap.add_argument("--phases", default="A,B,N,C")
     ap.add_argument("--targets", default="2000,16000,50000,80000")
     ap.add_argument("--gen", type=int, default=1500)
     ap.add_argument("--gen-nodraft", type=int, default=500)
@@ -502,8 +579,10 @@ def main() -> int:
         mtp = mtp_rows()
         if mtp and not set(targets) <= set(mtp):
             problems.append(f"targets {targets} not all in MTP comparator {sorted(mtp)}")
-        n1, n2, facts = needles(80000)
+        neutral_source, neutral_facts, neutral_sha = neutral_inputs()
+        facts = [n["expected"][0] for n in neutral_facts]
         est = {"A": 24 * 2 * 5, "B": sum({2000: 80, 16000: 120, 50000: 270, 80000: 520}.get(t, t / 150) for t in targets),
+               "N": sum({2000: 20, 16000: 55, 50000: 170, 80000: 320}.get(t, t / 150) for t in targets),
                "C": 4 * args.c4_tokens / 600 + args.c4_gen / 15}
         total = sum(v for k, v in est.items() if k in phases)
         return L.print_plan("q38_t7.py (Q38-T7)", [
@@ -516,11 +595,12 @@ def main() -> int:
                 "enable_thinking false = recipe WORKLOAD", f"48 calls; degeneracy detector = {D.V2_ID} (degeneracy.py; v1 class kept alongside); "
                 "paired verdict: drafted vs no-draft per prompt + ground truth from question_pool.jsonl",
                 f"question_pool rows (expected + scorer) found for {len(ground_truth([p['id'] for p in mix]) if mix_rows else {})} of 24 prompts"]),
-            ("phase B — decode vs context + needle", [
+            ("phase B — decode vs context", [
                 f"targets {targets} tokens of C2+C4 ({c24} chars); reps {args.reps} drafted (gen {args.gen}, thinking on) "
-                f"+ 1 no-draft on cached prompt (gen {args.gen_nodraft}) + 2 greedy needle questions per target (drafted, no-draft)",
-                f"needles at 1/3, 2/3 depth, e.g. expected {facts}", f"calls: {len(targets) * (args.reps + 3)} (needle asked drafted AND no-draft)"]),
-            ("phase C — 4 concurrent", [f"4 x ~{args.c4_tokens} tok distinct prompts (rotated C1..C7 + TASK), gen {args.c4_gen}"]),
+                f"+ 1 no-draft on cached prompt (gen {args.gen_nodraft}); calls {len(targets) * (args.reps + 1)}"]),
+            ("phase N — neutral E0 needle", [f"E0 manifest sha256 {neutral_sha}; neutral source {len(neutral_source)} chars",
+                f"targets {targets}; facts {facts}; each fact asked drafted and no-draft"]),
+            ("phase C — 4 concurrent paired", [f"4 x ~{args.c4_tokens} tok distinct prompts (rotated C1..C7 + TASK), gen {args.c4_gen}; same four prompts no-draft in second concurrent wave"]),
             ("phases selected", [", ".join(sorted(phases))]),
             ("estimate", [f"~{round(total / 60)} min ({', '.join(f'{k} ~{round(v / 60)} min' for k, v in est.items() if k in phases)})"]),
             ("outputs", [f"{L.RESULTS}/q38_t7/<ts>/calls.jsonl (per call, flushed), report.json, report.md",
@@ -549,6 +629,9 @@ def main() -> int:
             L.write_json(od / "report.partial.json", rep)
         if "B" in phases:
             rep["B"] = phase_b(args.base, sink, targets, args.gen, args.gen_nodraft, args.reps)
+            L.write_json(od / "report.partial.json", rep)
+        if "N" in phases:
+            rep["N"] = phase_n(args.base, sink, targets)
             L.write_json(od / "report.partial.json", rep)
         if "C" in phases:
             rep["C"] = phase_c(args.base, sink, args.c4_tokens, args.c4_gen)
