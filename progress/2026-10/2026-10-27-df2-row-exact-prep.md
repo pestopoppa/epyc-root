@@ -1,0 +1,3 @@
+# 2026-10-27 — DF2-20 build preparation
+
+MAIN accepted the default-off private C5 row-decomposition prototype and the owner CPU/HIP build packet. Fork branch `codex/df2-row-exact-c5-20261027` @ `2513f0ec4d4f31c6844b46a4ffbae1847cbc51d5`; patch and T1/admission evidence are archived under `proposed/df2-20-row-exact-build-prep-20261027/`. Exact source-build T1 and synthetic temporary-poller validation passed; no full build, GPU run, or model inference occurred. The standalone quantizer fixture was compiled only. Native in-path byte capture, probe flip, FA semantic proof, DF2-17 parity and cost remain open. [no-belief: preparation and source review only; no new measured finding]

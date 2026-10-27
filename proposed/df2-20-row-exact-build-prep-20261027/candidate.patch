@@ -1,0 +1,99 @@
+diff --git a/ggml/src/ggml-cuda/ggml-cuda.cu b/ggml/src/ggml-cuda/ggml-cuda.cu
+index 962f4fc4f..accae5c84 100644
+--- a/ggml/src/ggml-cuda/ggml-cuda.cu
++++ b/ggml/src/ggml-cuda/ggml-cuda.cu
+@@ -1914,7 +1914,7 @@ static void ggml_cuda_mul_mat(ggml_backend_cuda_context & ctx, const ggml_tensor
+         ggml_cuda_mul_mat_f(ctx, src0, src1, nullptr, dst);
+         return;
+     }
+-    if (ggml_cuda_should_use_mmvq(src0->type, cc, ne11)) {
++    if (ggml_cuda_df2_row_exact(src0, src1, dst, cc) || ggml_cuda_should_use_mmvq(src0->type, cc, ne11)) {
+         ggml_cuda_log_mul_mat_route("MMVQ", src0, src1, dst, cc, ne11);
+         ggml_cuda_mul_mat_vec_q(ctx, src0, src1, nullptr, dst);
+         return;
+diff --git a/ggml/src/ggml-cuda/mmvq.cu b/ggml/src/ggml-cuda/mmvq.cu
+index 343471e16..f31c05874 100644
+--- a/ggml/src/ggml-cuda/mmvq.cu
++++ b/ggml/src/ggml-cuda/mmvq.cu
+@@ -2361,6 +2361,17 @@ static bool mmvq_q8_1_graph_cache_matches(
+ }
+ #endif
+ 
++bool ggml_cuda_df2_row_exact(const ggml_tensor * src0, const ggml_tensor * src1, const ggml_tensor * dst, int cc) {
++    const char * enabled = getenv("GGML_CUDA_DF2_ROW_EXACT");
++    return enabled && enabled[0] == '1' && enabled[1] == '\0' && cc == GGML_CUDA_CC_CDNA2 &&
++        (src0->type == GGML_TYPE_Q8_0 || src0->type == GGML_TYPE_Q4_K) &&
++        src1->type == GGML_TYPE_F32 && dst->type == GGML_TYPE_F32 &&
++        src1->ne[1] > 1 && src1->ne[1] <= MMVQ_MAX_BATCH_SIZE &&
++        src0->ne[2] == 1 && src0->ne[3] == 1 && src1->ne[2] == 1 && src1->ne[3] == 1 &&
++        dst->ne[2] == 1 && dst->ne[3] == 1 &&
++        ggml_is_contiguous(src0) && ggml_is_contiguous(src1) && ggml_is_contiguous(dst);
++}
++
+ void ggml_cuda_mul_mat_vec_q(
+         ggml_backend_cuda_context & ctx, const ggml_tensor * src0, const ggml_tensor * src1, const ggml_tensor * ids, ggml_tensor * dst,
+         const ggml_cuda_mm_fusion_args_host * fusion) {
+@@ -2371,6 +2382,15 @@ void ggml_cuda_mul_mat_vec_q(
+     GGML_TENSOR_BINARY_OP_LOCALS;
+ 
+     cudaStream_t stream = ctx.stream();
++    const bool df2_row_exact = !ids && !fusion && ggml_cuda_df2_row_exact(
++        src0, src1, dst, ggml_cuda_info().devices[ctx.device].cc);
++    if (df2_row_exact) {
++        static const bool logged = []() {
++            GGML_LOG_INFO("GGML_CUDA_DF2_ROW_EXACT active: dense Q8_0/Q4_K row decomposition\n");
++            return true;
++        }();
++        GGML_UNUSED(logged);
++    }
+ 
+     const size_t ts_src0 = ggml_type_size(src0->type);
+     const size_t ts_src1 = ggml_type_size(src1->type);
+@@ -2502,7 +2522,15 @@ void ggml_cuda_mul_mat_vec_q(
+         const int64_t s11 = src1->nb[1] / ts_src1;
+         const int64_t s12 = src1->nb[2] / ts_src1;
+         const int64_t s13 = src1->nb[3] / ts_src1;
+-        quantize_row_q8_1_cuda(src1_d, nullptr, src1_q8_1, src0->type, ne10, s11, s12, s13, ne10_padded, ne11, ne12, ne13, stream);
++        if (df2_row_exact) {
++            for (int64_t row = 0; row < ne11; ++row) {
++                void * qrow = (char *) src1_q8_1 + row * ne10_padded / QK8_1 * sizeof(block_q8_1);
++                quantize_row_q8_1_cuda(src1_d + row * s11, nullptr, qrow, src0->type,
++                    ne10, s11, s12, s13, ne10_padded, 1, 1, 1, stream);
++            }
++        } else {
++            quantize_row_q8_1_cuda(src1_d, nullptr, src1_q8_1, src0->type, ne10, s11, s12, s13, ne10_padded, ne11, ne12, ne13, stream);
++        }
+     }
+ 
+     const int64_t s01 = src0->nb[1] / ts_src0;
+@@ -2527,6 +2555,18 @@ void ggml_cuda_mul_mat_vec_q(
+ 
+     const int64_t ids_stride = ids ? ids->nb[1] / ggml_type_size(ids->type) : 0;
+ 
++    if (df2_row_exact) {
++        for (int64_t row = 0; row < ncols_dst; ++row) {
++            const void * qrow = (const char *) src1_q8_1 + row * s11 * sizeof(block_q8_1);
++            mul_mat_vec_q_switch_type(
++                src0->data, src0->type, qrow, nullptr, fusion_local, dst_d + row * s1, ne00,
++                ne01, 1, s01, stride_col_y, stride_col_dst,
++                ne02, nchannels_y, nchannels_dst, s02, stride_channel_y, stride_channel_dst,
++                ne03, ne3, s03, s13, s3, 0, stream);
++        }
++        return;
++    }
++
+     mul_mat_vec_q_switch_type(
+         src0->data, src0->type, src1_q8_1, ids_d, fusion_local, dst_d, ne00,
+         ne01,              ncols_dst,     s01, stride_col_y,     stride_col_dst,
+diff --git a/ggml/src/ggml-cuda/mmvq.cuh b/ggml/src/ggml-cuda/mmvq.cuh
+index 5605bf7a4..4c4f877f9 100644
+--- a/ggml/src/ggml-cuda/mmvq.cuh
++++ b/ggml/src/ggml-cuda/mmvq.cuh
+@@ -3,6 +3,7 @@
+ #define MMVQ_MAX_BATCH_SIZE 8 // Max. batch size for which to use MMVQ kernels.
+ 
+ bool ggml_cuda_should_use_mmvq(enum ggml_type type, int cc, int64_t ne11);
++bool ggml_cuda_df2_row_exact(const ggml_tensor * src0, const ggml_tensor * src1, const ggml_tensor * dst, int cc);
+ 
+ // Returns the maximum batch size for which MMVQ should be used for MUL_MAT_ID,
+ // based on the quantization type and GPU architecture (compute capability).
