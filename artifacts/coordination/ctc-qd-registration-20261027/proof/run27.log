@@ -1,0 +1,45 @@
+2026-10-27T17:00:21Z
+Fresh q0 has no overlapping canonical CPU grant; no HOLD.
+[region-lock] acquiring regions ['q0'] as role='build' (timeout_s=15.0) …
+[region-lock] held ['q0'] after 0.0s wait; running: taskset -c 0,1 bash /mnt/raid0/llm/tmp/codex-ni-20261027-c5-graph-call-edge-repair/q0-child.sh bash -c python3 /mnt/raid0/llm/tmp/codex-ni-20261027-ctc-qd-activation-prep/test_packet.py && python3 /mnt/raid0/llm/tmp/codex-ni-20261027-ctc-qd-activation-prep/test_adoption.py && python3 /mnt/raid0/llm/tmp/codex-ni-20261027-ctc-qd-activation-prep/test_publication.py && bash -n /mnt/raid0/llm/tmp/codex-ni-20261027-ctc-qd-activation-prep/packet/grant-ws58-quarters-20261027.sh /mnt/raid0/llm/tmp/codex-ni-20261027-ctc-qd-activation-prep/packet/grant-gpu-1026-v13.sh
+2026-10-27T17:00:21Z
+Fresh q0 has no overlapping canonical CPU grant; no HOLD.
+test_register_known_match_resolution_and_revalidation (__main__.Packet.test_register_known_match_resolution_and_revalidation) ... ok
+test_unknown_and_missing_receipt_do_not_bypass (__main__.Packet.test_unknown_and_missing_receipt_do_not_bypass) ... ok
+test_pending_refuses_grant_and_register (__main__.Packet.test_pending_refuses_grant_and_register) ... ok
+test_registrar_waits_for_competing_lease (__main__.Packet.test_registrar_waits_for_competing_lease) ... ok
+test_native_catalog_producer (__main__.Packet.test_native_catalog_producer) ... ok
+test_interrupted_publication_blocks_grants (__main__.Packet.test_interrupted_publication_blocks_grants) ... ok
+test_gpu_registration_queue_shape (__main__.Packet.test_gpu_registration_queue_shape) ... ok
+test_recovery_refuses_unexpected_generation (__main__.Packet.test_recovery_refuses_unexpected_generation) ... ok
+test_ds41_shared_native_join (__main__.Packet.test_ds41_shared_native_join) ... ok
+test_candidate_snapshot_cannot_change_after_read (__main__.Packet.test_candidate_snapshot_cannot_change_after_read) ... ok
+test_invalid_queue_arguments_do_not_publish (__main__.Packet.test_invalid_queue_arguments_do_not_publish) ... ok
+test_abort_restores_before_images_and_invalidates_old_generation (__main__.Packet.test_abort_restores_before_images_and_invalidates_old_generation) ... ok
+test_missing_native_evidence_candidate_refused_peer_unknown (__main__.Packet.test_missing_native_evidence_candidate_refused_peer_unknown) ... ok
+test_active_and_dangling_grant_refuse_registration (__main__.Packet.test_active_and_dangling_grant_refuse_registration) ... ok
+
+----------------------------------------------------------------------
+Ran 14 tests in 2.231s
+
+OK
+test_adopt (__main__.Adoption.test_adopt) ... ok
+test_row_race (__main__.Adoption.test_row_race) ... ok
+test_queue_race (__main__.Adoption.test_queue_race) ... ok
+test_grant_race (__main__.Adoption.test_grant_race) ... ok
+test_pending (__main__.Adoption.test_pending) ... ok
+
+----------------------------------------------------------------------
+Ran 5 tests in 4.298s
+
+OK
+test_quarter (__main__.Publication.test_quarter) ... ok
+test_gpu (__main__.Publication.test_gpu) ... ok
+test_quarter_failed_rename (__main__.Publication.test_quarter_failed_rename) ... ok
+test_gpu_failed_rename (__main__.Publication.test_gpu_failed_rename) ... ok
+
+----------------------------------------------------------------------
+Ran 4 tests in 2.406s
+
+OK
+RSS_SAMPLED_PEAK_KIB=78440 LIMIT_KIB=4194304 drained=True

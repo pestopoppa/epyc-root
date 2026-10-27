@@ -1,0 +1,35 @@
+# CTC-Q-D owner packet — PROPOSED, not deployed
+
+Source copies: owner quarter and GPU writer scripts, owner row registrar, and the merged checker/validator unchanged. `catalog_entry.py` constructs the existing checker schema only from explicitly supplied native recipe, anchor and (when applicable) server launch records. It never starts or joins a server. It checks the checker's native projection, not the full producer's independent native validation.
+
+The replacement registrar accepts ID SRC PID WINDOW GIB REGIONS METADATA [cpu|gpu MINIMUM REGEX]. Inputs must already be normalized and metadata must bind the exact parsed row; GPU takes all three lane arguments. Under `.publication.lock`, it checks the actual queue and explicit metadata, then writes a durable bounded transaction journal, registry, catalog, receipt, FILLERS and the matching queue/done or queue/held file. Atomic replacement applies to each file only. The journal retains before/after hashes and bytes; a crash leaves the pending marker, which refuses new registrations and both writers' grants. The owner runs `recover_registration.py FLAGS` under the same lease; it refuses a generation mismatch or invalid/stale native provenance and leaves pending in place. Cutover interruption is a distinct v1 marker requiring owner inspection and repair, not automatic replay.
+
+`initialize_legacy.py FLAGS` snapshots the exact existing queue rows and queue generation once at owner cutover. A registry binds the snapshot's digest and records subsequently enrolled IDs. A missing receipt is grandfathered only for an un-enrolled row whose exact row digest still matches the sealed cutover snapshot. A changed or enrolled row needs a new registration. UNKNOWN peers remain reported, never rejected solely for being UNKNOWN. Grant revalidation reruns the merged checker on the actual current rows and catalog and checks exact row/metadata receipt bindings. Native source digests are checked by the checker; source owners must keep referenced records immutable for the check-to-grant interval and fully validate them in their native producer, since external writers are not controlled by this lease.
+
+Both copied writers take the same lock for final gate, native `grant_ok` and grant publication, without nested acquisition in the Python gate. They refresh the grant time after lease acquisition, recheck their selected queue entry, HOLD and appropriate claims, pass final window and regions to `grant_ok`, and log sweep output. Each publishes a complete same-directory temporary grant by rename and stamps only after that rename. Legacy fallback and UNKNOWN output explicitly do not claim full producer binding. Existing constraints still apply: region claims and grant_ok are separate; these proposed changes do not grant compute authority.
+
+Owner cutover prerequisites: source review, all row/grant/HOLD producers and source custody bound to the agreed lock, a reliable owner recovery procedure and audit, native catalog creation/backfill as appropriate, a deliberate grandfather snapshot, deploy pinned copies and then restart both writers at their owned boundary. Ad-hoc writes bypass the lease until migrated. R6 remains undeployed. No frozen kernel, live scripts, flags, calendar, grant, or normal ARM was changed by this packet.
+
+Control results and remaining defects are in the accompanying AUDIT; this is not an adoption or full-coverage claim. Copies are based on live 2026-10-27 writer/registrar bytes; re-diff against the exact owner version at cutover.
+
+## Owner native export and cutover procedure
+
+For each model row, choose an owner-pinned clean Research checkout and keep recipe, plan, server record and validation receipt under owner-controlled immutable custody through grant. Check the full checkout's HEAD and tracked/untracked state before using its Python modules. Run the following with the actual absolute paths, in an authorized non-inference compute window:
+
+```
+python3 packet/native_export_check.py --research-root /absolute/pinned/research \
+  --recipe /absolute/native-recipe.json --anchor /absolute/native-plan.json \
+  > /absolute/owner-custody/native-validation.json
+python3 packet/catalog_entry.py --candidate /absolute/normalized-one-row.md --id ROW \
+  --recipe /absolute/native-recipe.json --anchor /absolute/native-plan.json \
+  --session OWNER_SESSION --native-validation /absolute/owner-custody/native-validation.json \
+  > /absolute/owner-custody/metadata.json
+```
+
+Repeat `--anchor` for each native plan. For a server-backed row, append the same `--server /absolute/orch-launch.json` to both commands. Optional existing evidence can be bound with `--server-custody /absolute/server-custody.txt` on the first; absent evidence means current server custody is UNKNOWN. Include `--resolutions /absolute/per-peer-resolution.json` on `catalog_entry.py` for join/separate decisions. The export checker calls the Research `CanonicalResolvedRecipe.from_dict` and `validate_launch` plus `ExperimentPlan.from_dict`; its report binds record hashes and records the checkout commit and validator file digests. The checker validates only its projection of the ORCH server record; independently confirming current listener ownership and residency remains the owner's responsibility. These local reports are not authentication, owner approval or measurement warrant. The registrar and grant gate refuse absent or changed validation bindings for newly enrolled model rows. Synthetic tests use explicitly fake validation reports and do not prove native records.
+
+The normalized row must pass the existing static filler checks and dry-run row parser, declare `requested_window_s`, `est_output_GiB`, `scratch_root` and `claimed_cpus`, and match the queue window, RAM and claimed CPUs. The writer still runs the existing live `grant_ok` and launch admission checks. A pure non-model row uses `catalog_entry.py --non-model REASON` and no native proof.
+
+Registration refuses while the same ID has a live or dangling `.grant` path; the owner resolves that boundary separately. The GPU writer's startup stamp adoption takes the same lease briefly and rechecks the queue line, row/registration generation and grant contents before touching the stamp. It releases the lease before waiting for a running job.
+
+For an interrupted registration, while writers remain paused the owner can run `python3 packet/recover_registration.py FLAGS` to finish only when all recorded generations and native bindings still validate; or `python3 packet/recover_registration.py FLAGS --abort` to restore recorded before-images if every on-disk file is either its before or proposed after generation. Abort rotates the registry generation so a waiting old completion mark cannot apply, verifies restored bytes before clearing pending, and does not use the now-invalid native source. An unexpected generation or damaged journal refuses both operations and leaves pending; inspect the owner backups rather than removing it blindly. The journal is bounded to 2 MiB, and an oversize transaction refuses before publication.

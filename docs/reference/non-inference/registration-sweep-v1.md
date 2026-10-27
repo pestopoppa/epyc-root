@@ -83,14 +83,17 @@ legacy coverage is exhaustive. Strict success with UNKNOWN peers is not evidence
 that the whole queue is free of duplicate loads. Queue metadata capture remains
 a separate integration cost.
 
-WS58 owns integration: normalize candidate first; under the existing publication
-lease capture queue/catalog/candidate and source-record generations; run the
-checker; then publish row/catalog/receipt atomically. Recheck every referenced
-record plus receipt input hashes under that same existing lease before grant.
-Any normalization, re-arm/replacement, catalog update, anchor change or server
-relaunch invalidates the receipt. No unlocked invocation closes TOCTOU races.
+WS58 owns integration. As confirmed 2026-10-27, the previously assumed live
+publication lease did not exist; R6's lease is proposed source, not deployed.
+The [reviewed source packet](../../../artifacts/coordination/ctc-qd-registration-20261027/README.md)
+proposes a shared lease and a crash-recoverable, multi-file journal: it does not
+claim filesystem-atomic publication of several files. Normalize the candidate,
+bind native records, run the checker and revalidate before grant under the lease.
+Row or candidate metadata changes invalidate its receipt; grant-time resweep
+checks the current peer catalog and native references. Re-arm and server
+relaunch require fresh bindings. No unlocked invocation closes TOCTOU races.
 All row producers and grant paths must be bound before adoption can be asserted.
-The proposed GAP R6 engine and its existing common lease are untouched.
+The proposed GAP R6 engine and its undeployed lease are untouched.
 
 Source pins audited: ROOT 26f28d3397009c97a497bce20d6c39fb9eadb5f0,
 ORCH 43c63034432b6159fc503dc46c4671968514e7c5,
