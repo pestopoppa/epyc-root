@@ -323,6 +323,16 @@ unsuffixed name in range.
 - If a handoff is fully complete, extract key findings to docs and move to `handoffs/completed/`
 - If a handoff is only partially complete but completed history is obscuring live work, do not force an all-or-nothing move; use the partial-compaction rules in Step 3.
 
+**Post-measurement analysis (required sub-step for every measurement row that ended this task).**
+An exit code is not a result. Before ticking anything, run the checklist in
+`.claude/skills/inference-backlog-scheduling/references/post-measurement-analysis.md`: read the
+verdict, judge the metric against its predeclared rule and direction, classify the row
+(capability / performance / reject / correctness-only / invalid), add a dated result sub-bullet to
+the owning box (tick it only when fully met), file follow-up child boxes, add a progress line, note
+belief projection readiness in the `VB-*` task, and list committed-conclusion and wiki candidates.
+The Output Format states what each result means, never only "passed". Origin: 10-27, KVU-16b,
+CH-26a and the night chain were reported "passed" with no verdict read.
+
 **Checklist-sync gate (required — do not skip to Step 3 until it passes).** The handoff dashboard's progress metric counts *checkbox state only*; narrative prose is invisible to it. For every handoff this session advanced:
 
 1. **Flip completed tasks**: change `- [ ]` to `- [x]` and append the completion date inline (`✅ YYYY-MM-DD`) — the timeline generator prefers these in-file dates over commit dates.
@@ -609,7 +619,7 @@ python3 scripts/system/scratch_cleanup.py apply --root /mnt/raid0/llm/tmp/<id> \
     --worktree-glob '/mnt/raid0/llm/worktrees/<id>-*'
 # a single throwaway tree you created outside the roots:
 python3 scripts/system/worktree_gate.py remove <worktree-path>
-bash scripts/safety/trash-sweep.sh --older-than 7          # trash older than 7 days only
+bash scripts/safety/trash-sweep.sh --older-than 1          # trash older than 1 day (same FS: unswept trash frees nothing)
 ```
 
 Run it **after** Step 7's promotion, so the landed check sees your merge. What it removes and what
@@ -631,6 +641,13 @@ it keeps:
   was restored. The gate now refuses that shape.)
 - A handoff with no `**Scratch**:` field is refused (exit 2): add the field — it is the record of
   what this work may create.
+- **Undeclared scratch is never reclaimed, so declare it at creation.** Every new compute row
+  declares a `scratch_root`, and the owning handoff lists that root in its `**Scratch**:` header in
+  the same commit. This step then cleans those roots and runs the trash sweep at a **1-day** age
+  (`scripts/safety/trash-sweep.sh --older-than 1`), because the trash lives on the same filesystem
+  and frees nothing until it is swept. Origin: 10-27, raid0 reached 100 % with 98 GB of unswept trash,
+  and 137 handoffs declared no scratch root at all
+  (`.claude/skills/inference-backlog-scheduling/references/disk-bin.md`).
 
 Your own lane worktree (`worktrees/mains/<agent>`, `worktrees/pool/*`) is protected and never a
 target. A tree whose branch has not landed (a worker lane awaiting Auditor promotion) is kept and

@@ -569,6 +569,20 @@ decision package written to the template cannot silently omit the recommendation
 because their absence is visible in the shape. Canonical text: `OPERATING_CONSTRAINTS.md` →
 *Operator Decision Requests*.
 
+**A dismissed or vanished question pauses only that item.** On the remote app the
+`AskUserQuestion` UI can disappear with no operator action, so a missing answer means
+*unanswered*, not *declined*. Re-ask the same question with the decision tool, never as prose.
+Everything else (watching jobs, granting pre-approved classes, verifying results, the calendar)
+keeps running. Origin: 10-26/27, ws58 froze the calendar several times; the operator: "I didn't
+dismiss anything! Give me a decision tool".
+
+**Compute duties that ride along with coordination.** When you hold the calendar, two rules from
+`.claude/skills/inference-backlog-scheduling/` apply at every task boundary. First, analyse every
+row that ended before you report it, stating what the result means and never only "passed"
+(`references/post-measurement-analysis.md`). Second, keep every bin stocked with at least one
+armed row from independent work, commissioning launcher prep before the bin drains (SKILL §3
+step 0).
+
 ## Standing rule: DRAIN BEFORE YOU SPEAK, for the life of the session
 
 Phases 1–3 above cover the cold start, but draining is not a one-time startup step — that reading

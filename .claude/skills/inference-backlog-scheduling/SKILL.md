@@ -26,7 +26,10 @@ and the derived plan is the tracked file `coordination/compute-calendar/CALENDAR
 **Bins.** `q0`=0-23, `q1`=24-47, `q2`=48-71, `q3`=72-95 (claim physical cores; siblings follow);
 explicit lists such as `72-95`; whole host `0-95`; the MI210 (`mi210_0`) **with its host threads
 184-191, which are q3's SMT siblings**; host RAM (bookable ≈ 1069 GiB: 1133 total minus the 64 GiB
-`ram_admit` margin above earlyoom's 40 GiB trigger); and time windows with a hard end.
+`ram_admit` margin above earlyoom's 40 GiB trigger); time windows with a hard end; and **disk**
+(`/mnt/raid0`, floor 150 GiB free *after* the row's declared `est_output_GiB`; the trash on the
+same filesystem frees nothing until it is swept; see `references/disk-bin.md`, bought by raid0
+reaching 100 % and an ORCH ENOSPC on 10-27).
 
 **Items** are FILLERS.md rows (18 columns; `validate_fillers.py` is the schema). What the packer reads:
 
@@ -86,6 +89,13 @@ Run this loop at every task boundary and on every watcher event (`event-watch-ws
    operator digest of the decisions that block compute (§5 format). Idle compute with a non-empty
    prioritized backlog is a planning failure, not "nothing to run". Origin: 10-25, the CPU sat idle
    for over an hour while the calendar looked only at launcher-backed FILLERS rows.
+   **Stock every bin.** Keep at least one armed row ahead for each CPU quarter and for the GPU,
+   drawn from INDEPENDENT backlog work, not only from retries of failed rows. Commission launcher
+   prep from the Codex sessions (or from subagents when Codex is at its agent limit) BEFORE a bin
+   drains. Measure the idle time of each bin at every task boundary and report it. Why: a bin
+   stocked only from fix-and-retry chains empties whenever the chain stalls. Origin: on 10-26 the
+   GPU sat idle 10.5 h; on 10-27 q1/q3 sat idle ~4 h because every row came from a
+   fix-and-retry chain.
 1. **Read the bins.** `region-lock status` (claims), `rocm-smi --showuse --showmemuse` (a held
    gpu-quiet at 0 % use is idle, not busy), `MemAvailable`, open `grants/*.grant`, live writer pids.
    Real utilisation, never the lock table alone.
@@ -111,6 +121,11 @@ Run this loop at every task boundary and on every watcher event (`event-watch-ws
    4-5 h idle after the last queued job).
 6. **Record** one calendar `REVISION <HH:MM>Z <date>:` line per placement, failure and fix; it is
    the audit record. Then refresh the heartbeat and wrap up the task boundary.
+7. **Analyse every row that ended**, before the next operator report. An exit code is not a result:
+   read the verdict, judge the metric against its predeclared rule and direction, classify the row,
+   then write the result into the owning handoff, the progress log, the belief task and the wiki
+   candidates (`references/post-measurement-analysis.md`). Origin: 10-27, KVU-16b, CH-26a and the
+   night chain were reported "passed" with no verdict read.
 
 ## 4. Invariants, each bought by an incident (`references/incident-ledger.md` has dates and ids)
 
@@ -172,9 +187,24 @@ Run this loop at every task boundary and on every watcher event (`event-watch-ws
 - **Liveness is `ps -o pid= -p <pid> >/dev/null`, never `kill -0`**, because `kill -0` is blind in
   this sandbox. In v11, a failed `kill -0` made `step` return 2, and the item was then stamped
   granted without running.
-- **Every writer has a cap; arm its successor before the cap.** At booking time, check the cap of
-  the writer that owns each slot. GPU writer v10 hit its 10-24 22:00Z cap and exited at 21:22Z. No
-  successor was armed, so the GPU sat idle all night.
+- **Every writer has a cap; start its successor before the cap.** At booking time, check the cap of
+  the writer that owns each slot. The successor starts early and waits for the predecessor's pid to
+  exit (`ps -o pid= -p`) before it grants anything, so there is one live writer and grants never
+  lapse. GPU writer v10 hit its 10-24 22:00Z cap and exited at 21:22Z. No successor was armed, so
+  the GPU sat idle all night. The same thing happened again on 10-27: the 10-26 quarter writer
+  expired at 05:50Z, and CPU grants stopped until ws58 noticed.
+- **Check for an imminent whole-host HOLD before granting.** If another grant's end (or a booked
+  quiet block) will raise a whole-host HOLD inside the new row's window, do not grant that row
+  now; place it after the HOLD. Origin: 10-26 23:29Z, HSF-2 and FA4 were granted 1 min before the
+  night HOLD, and both were killed.
+- **T1 launch gate: arm a row only after a same-entry-path preflight.** The PF runs the real
+  launcher → filler engine → job up to the first side effect, with a writer-format
+  (minute-precision) synthetic grant, from a non-ancestor process tree, under the normal inherited
+  env (`NODE_OPTIONS`). Every refusal is logged. The effective RLIMIT, affinity and cgroup are
+  printed and checked, `min_window + 300 ≤ window` holds, and `est_output_GiB` and `scratch_root`
+  are declared with the disk floor checked after the output. Enforcing tool: `dryrun_check.py` /
+  `filler_run12.sh` (Codex, in progress). Details and the six failures behind each check:
+  `references/launch-admission-gate.md`. Origin: six early-launch failures on 10-27.
 - **A HOLD written by one writer and removed by another needs a keeper** when quiet blocks chain.
   The keeper is a small script that re-creates the HOLD until the last quiet job's `.ended`, then
   removes it and writes the hand-off flag. Without one, the first writer's exit freed the GPU
@@ -232,6 +262,10 @@ Run this loop at every task boundary and on every watcher event (`event-watch-ws
   calendar all continue. Keep the item listed as pending and mention it once in the next report.
   Only an explicit operator "stop everything" halts the session. Origin: 10-24, a dismissed
   shared-clone-ff question froze every calendar duty for about 40 min.
+  On the remote app the question UI can also **vanish with no operator action**. Treat a missing
+  answer as unanswered, not as declined: re-ask the same question with `AskUserQuestion`, never
+  as prose, and keep the calendar running. Origin: 10-26/27, ws58 froze the calendar several
+  times; the operator: "I didn't dismiss anything! Give me a decision tool".
 
 ## 6. Status / ETA report (the format the operator asked for)
 
