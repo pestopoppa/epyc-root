@@ -1,0 +1,5 @@
+[region-lock] acquiring regions ['q0'] as role='build' (timeout_s=15.0) …
+[region-lock] held ['q0'] after 0.0s wait; running: taskset -c 0,1 bash /mnt/raid0/llm/tmp/codex-ni-20261027-kpf62-c5-api-port/q0-child.sh /mnt/raid0/llm/tmp/codex-ni-20261027-kpf62-c5-api-port/q0-capture-row2 bash /mnt/raid0/llm/tmp/codex-ni-20261027-kpf62-c5-api-port/check-capture-row.sh
+q0 physical 0,1; inherited native address-space limit: unlimited
+OK: 1 row(s) checked, 0 refusal(s), 0 warning(s)
+RSS_SAMPLED_PEAK_KIB=22152 LIMIT_KIB=4194304 drained=True
