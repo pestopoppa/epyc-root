@@ -523,6 +523,9 @@ SOURCES: dict[str, Source] = {s.name: s for s in (
                 "FD-DIV-1b epyc.fd_div_1b.result.v1 (one claim per fixture cell, class re-derived); "
                 "skipped smokes and void controls decline; decode ms/token is observation only",
            task="VB-FUSED-DECODE-DIV-WIRE"),
+    Source("m4-cpu-recipe-speed", "m4_cpu_speed", _files("**/process-captures/*.json"),
+           note="prospective M4 process captures only, source-sealed and partial-safe",
+           task="VB-M4-FOLD-SPEED-WRITE"),
     Source("champion-fold-gate", "champion_fold_gate",
            lambda p: importlib.import_module("adapters.champion_fold_gate").units(p),
            note="fold_gate.v4 epyc.champion_fold_gate.v1 records: one strict verifier projection per library plus "
