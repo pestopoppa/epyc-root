@@ -1,0 +1,182 @@
+{
+  "compiled": {
+    "argv": [
+      "cmake",
+      "--build",
+      "/mnt/raid0/llm/tmp/codex-ni-20261027-kpf62-fixed-build/build",
+      "-j",
+      "24",
+      "--target",
+      "test-llama-archs",
+      "test-chunk-kv"
+    ],
+    "child_drained": true,
+    "exit_code": 0,
+    "finished_at_utc": "2026-10-27T20:48:27.218200Z",
+    "pid": 1179354,
+    "started_at_utc": "2026-10-27T20:47:45.774668Z",
+    "stderr": {
+      "path": "/mnt/raid0/llm/tmp/codex-ni-20261027-kpf62-fixed-build/build.stderr",
+      "sha256": "d90e8034c4fa899d9da124f5557f6be4be031c5a77949ab98a0e7e2ecca164e4"
+    },
+    "stdout": {
+      "path": "/mnt/raid0/llm/tmp/codex-ni-20261027-kpf62-fixed-build/build.log",
+      "sha256": "8149beaffcc4e586f3c73ba32ee753bf9a8b708b360897c66c859e79bc39138e"
+    }
+  },
+  "completed_at_utc": "2026-10-27T20:49:55.889147Z",
+  "configure": {
+    "argv": [
+      "cmake",
+      "-S",
+      "/mnt/raid0/llm/tmp/codex-ni-20261027-kpf62-fixed-build/candidate",
+      "-B",
+      "/mnt/raid0/llm/tmp/codex-ni-20261027-kpf62-fixed-build/build",
+      "-DCMAKE_BUILD_TYPE=Release",
+      "-DGGML_NATIVE=ON",
+      "-DGGML_HIP=OFF",
+      "-DGGML_OPENMP=ON",
+      "-DLLAMA_CURL=OFF",
+      "-DCMAKE_C_COMPILER=/usr/bin/gcc-15",
+      "-DCMAKE_CXX_COMPILER=/usr/bin/g++-15",
+      "-DCMAKE_C_FLAGS=-ffile-prefix-map=/mnt/raid0/llm/tmp/codex-ni-20261027-kpf62-fixed-build/candidate=. -fmacro-prefix-map=/mnt/raid0/llm/tmp/codex-ni-20261027-kpf62-fixed-build/candidate=. -ffile-prefix-map=/mnt/raid0/llm/tmp/codex-ni-20261027-kpf62-fixed-build/build=.build -fmacro-prefix-map=/mnt/raid0/llm/tmp/codex-ni-20261027-kpf62-fixed-build/build=.build",
+      "-DCMAKE_CXX_FLAGS=-ffile-prefix-map=/mnt/raid0/llm/tmp/codex-ni-20261027-kpf62-fixed-build/candidate=. -fmacro-prefix-map=/mnt/raid0/llm/tmp/codex-ni-20261027-kpf62-fixed-build/candidate=. -ffile-prefix-map=/mnt/raid0/llm/tmp/codex-ni-20261027-kpf62-fixed-build/build=.build -fmacro-prefix-map=/mnt/raid0/llm/tmp/codex-ni-20261027-kpf62-fixed-build/build=.build",
+      "-DCMAKE_BUILD_RPATH_USE_ORIGIN=ON",
+      "-DCMAKE_BUILD_WITH_INSTALL_RPATH=ON",
+      "-DCMAKE_INSTALL_RPATH=$ORIGIN"
+    ],
+    "child_drained": true,
+    "exit_code": 0,
+    "finished_at_utc": "2026-10-27T20:47:45.770843Z",
+    "pid": 1179047,
+    "started_at_utc": "2026-10-27T20:47:44.741788Z",
+    "stderr": {
+      "path": "/mnt/raid0/llm/tmp/codex-ni-20261027-kpf62-fixed-build/configure.stderr",
+      "sha256": "68b4c8c557fb9715c8915e960d4be4363f6f0249d11f490d3fd158e6db7af4e3"
+    },
+    "stdout": {
+      "path": "/mnt/raid0/llm/tmp/codex-ni-20261027-kpf62-fixed-build/configure.log",
+      "sha256": "e8c598df17bd3bd8f8924da43fa8741bebb741a5a89db11a5a8be5778eecc0c3"
+    }
+  },
+  "cpus": "0-23",
+  "files": {
+    "/mnt/raid0/llm/tmp/codex-ni-20261027-kpf62-fixed-build/build-hip/bin/libggml-base.so": "1c21cf133f35877a9d59c9d82bca08932bff8f29a77b30a8bb109a573eaf8a8c",
+    "/mnt/raid0/llm/tmp/codex-ni-20261027-kpf62-fixed-build/build-hip/bin/libggml-base.so.0": "1c21cf133f35877a9d59c9d82bca08932bff8f29a77b30a8bb109a573eaf8a8c",
+    "/mnt/raid0/llm/tmp/codex-ni-20261027-kpf62-fixed-build/build-hip/bin/libggml-base.so.0.16.0": "1c21cf133f35877a9d59c9d82bca08932bff8f29a77b30a8bb109a573eaf8a8c",
+    "/mnt/raid0/llm/tmp/codex-ni-20261027-kpf62-fixed-build/build-hip/bin/libggml-cpu.so": "e2fb59ee4d34fd5cb726f89f4039cdc7c28dd01d7b9e9c217b01db086d6d605e",
+    "/mnt/raid0/llm/tmp/codex-ni-20261027-kpf62-fixed-build/build-hip/bin/libggml-cpu.so.0": "e2fb59ee4d34fd5cb726f89f4039cdc7c28dd01d7b9e9c217b01db086d6d605e",
+    "/mnt/raid0/llm/tmp/codex-ni-20261027-kpf62-fixed-build/build-hip/bin/libggml-cpu.so.0.16.0": "e2fb59ee4d34fd5cb726f89f4039cdc7c28dd01d7b9e9c217b01db086d6d605e",
+    "/mnt/raid0/llm/tmp/codex-ni-20261027-kpf62-fixed-build/build-hip/bin/libggml-hip.so": "b865e854a64e2ad5412b4b7c4f43dd7dac421454eee2930a96809bfd015a6d9f",
+    "/mnt/raid0/llm/tmp/codex-ni-20261027-kpf62-fixed-build/build-hip/bin/libggml-hip.so.0": "b865e854a64e2ad5412b4b7c4f43dd7dac421454eee2930a96809bfd015a6d9f",
+    "/mnt/raid0/llm/tmp/codex-ni-20261027-kpf62-fixed-build/build-hip/bin/libggml-hip.so.0.16.0": "b865e854a64e2ad5412b4b7c4f43dd7dac421454eee2930a96809bfd015a6d9f",
+    "/mnt/raid0/llm/tmp/codex-ni-20261027-kpf62-fixed-build/build-hip/bin/libggml.so": "bb7e5a7a33787ddce1133d414d0f7d86f06dfb512d7f38a5e2e43b4aabe98b3a",
+    "/mnt/raid0/llm/tmp/codex-ni-20261027-kpf62-fixed-build/build-hip/bin/libggml.so.0": "bb7e5a7a33787ddce1133d414d0f7d86f06dfb512d7f38a5e2e43b4aabe98b3a",
+    "/mnt/raid0/llm/tmp/codex-ni-20261027-kpf62-fixed-build/build-hip/bin/libggml.so.0.16.0": "bb7e5a7a33787ddce1133d414d0f7d86f06dfb512d7f38a5e2e43b4aabe98b3a",
+    "/mnt/raid0/llm/tmp/codex-ni-20261027-kpf62-fixed-build/build-hip/bin/libllama-common.so": "82f0dcde53ed851b150b6e3405aaeba862cadd4711de657637d51225c64dd5fe",
+    "/mnt/raid0/llm/tmp/codex-ni-20261027-kpf62-fixed-build/build-hip/bin/libllama-common.so.0": "82f0dcde53ed851b150b6e3405aaeba862cadd4711de657637d51225c64dd5fe",
+    "/mnt/raid0/llm/tmp/codex-ni-20261027-kpf62-fixed-build/build-hip/bin/libllama-common.so.0.0.10419": "82f0dcde53ed851b150b6e3405aaeba862cadd4711de657637d51225c64dd5fe",
+    "/mnt/raid0/llm/tmp/codex-ni-20261027-kpf62-fixed-build/build-hip/bin/libllama.so": "d90d1af26e991c47139a3f68e2574708802eb375be27ae1796212fd6cb75f9b0",
+    "/mnt/raid0/llm/tmp/codex-ni-20261027-kpf62-fixed-build/build-hip/bin/libllama.so.0": "d90d1af26e991c47139a3f68e2574708802eb375be27ae1796212fd6cb75f9b0",
+    "/mnt/raid0/llm/tmp/codex-ni-20261027-kpf62-fixed-build/build-hip/bin/libllama.so.0.0.10419": "d90d1af26e991c47139a3f68e2574708802eb375be27ae1796212fd6cb75f9b0",
+    "/mnt/raid0/llm/tmp/codex-ni-20261027-kpf62-fixed-build/build-hip/bin/test-chunk-kv": "34dfdfc3d5d811a2e80a7185df183f08570b468c20f4415c02460d66290d94a9",
+    "/mnt/raid0/llm/tmp/codex-ni-20261027-kpf62-fixed-build/build/bin/libggml-base.so": "7d99abc4a3fe58112c324aa0b5ebd3b2293f24b1e923d5f72bd626fe58528b84",
+    "/mnt/raid0/llm/tmp/codex-ni-20261027-kpf62-fixed-build/build/bin/libggml-base.so.0": "7d99abc4a3fe58112c324aa0b5ebd3b2293f24b1e923d5f72bd626fe58528b84",
+    "/mnt/raid0/llm/tmp/codex-ni-20261027-kpf62-fixed-build/build/bin/libggml-base.so.0.16.0": "7d99abc4a3fe58112c324aa0b5ebd3b2293f24b1e923d5f72bd626fe58528b84",
+    "/mnt/raid0/llm/tmp/codex-ni-20261027-kpf62-fixed-build/build/bin/libggml-cpu.so": "27c7e27656fb413028c8c9ba16da44267ecaf20dc7dfdcc177c0e90bced25c3f",
+    "/mnt/raid0/llm/tmp/codex-ni-20261027-kpf62-fixed-build/build/bin/libggml-cpu.so.0": "27c7e27656fb413028c8c9ba16da44267ecaf20dc7dfdcc177c0e90bced25c3f",
+    "/mnt/raid0/llm/tmp/codex-ni-20261027-kpf62-fixed-build/build/bin/libggml-cpu.so.0.16.0": "27c7e27656fb413028c8c9ba16da44267ecaf20dc7dfdcc177c0e90bced25c3f",
+    "/mnt/raid0/llm/tmp/codex-ni-20261027-kpf62-fixed-build/build/bin/libggml.so": "838262cb0bbd3f192ac7a4d036e567fce2b7bcbacbc7c322cfa9cd46ae8d951a",
+    "/mnt/raid0/llm/tmp/codex-ni-20261027-kpf62-fixed-build/build/bin/libggml.so.0": "838262cb0bbd3f192ac7a4d036e567fce2b7bcbacbc7c322cfa9cd46ae8d951a",
+    "/mnt/raid0/llm/tmp/codex-ni-20261027-kpf62-fixed-build/build/bin/libggml.so.0.16.0": "838262cb0bbd3f192ac7a4d036e567fce2b7bcbacbc7c322cfa9cd46ae8d951a",
+    "/mnt/raid0/llm/tmp/codex-ni-20261027-kpf62-fixed-build/build/bin/libllama-common.so": "e0ed8e7ee7641977ce60f8dc03ee1abc026159c647badae7495cf5b6253e68fe",
+    "/mnt/raid0/llm/tmp/codex-ni-20261027-kpf62-fixed-build/build/bin/libllama-common.so.0": "e0ed8e7ee7641977ce60f8dc03ee1abc026159c647badae7495cf5b6253e68fe",
+    "/mnt/raid0/llm/tmp/codex-ni-20261027-kpf62-fixed-build/build/bin/libllama-common.so.0.0.10419": "e0ed8e7ee7641977ce60f8dc03ee1abc026159c647badae7495cf5b6253e68fe",
+    "/mnt/raid0/llm/tmp/codex-ni-20261027-kpf62-fixed-build/build/bin/libllama.so": "ff97dd8a45fe9447eeb0601cdcfffcec42cb50f78fd4b390034c58dca2d1e2ab",
+    "/mnt/raid0/llm/tmp/codex-ni-20261027-kpf62-fixed-build/build/bin/libllama.so.0": "ff97dd8a45fe9447eeb0601cdcfffcec42cb50f78fd4b390034c58dca2d1e2ab",
+    "/mnt/raid0/llm/tmp/codex-ni-20261027-kpf62-fixed-build/build/bin/libllama.so.0.0.10419": "ff97dd8a45fe9447eeb0601cdcfffcec42cb50f78fd4b390034c58dca2d1e2ab",
+    "/mnt/raid0/llm/tmp/codex-ni-20261027-kpf62-fixed-build/build/bin/test-chunk-kv": "0ba031122324c530c688f44e0019fcbb4b03872538e44b10d80cd546a921abe9",
+    "/mnt/raid0/llm/tmp/codex-ni-20261027-kpf62-fixed-build/build/bin/test-llama-archs": "5a346ef4908515d9e14a02d2935c7ec1e5d8cfc17d25857658c63dbe8ee9b982"
+  },
+  "grant": {
+    "end_utc": "2026-10-27T21:46Z",
+    "grant_id": "kpf62-native-g1-fixed-build-20261027",
+    "path": "/mnt/raid0/llm/tmp/compute-flags/grants/kpf62-native-g1-fixed-build-20261027.grant",
+    "regions": "0-23",
+    "sha256": "c8d5b40341ff63cc59ddb2cbe9fd551a013ecf7c4ed15a349d4afa97f223d8a1",
+    "start_utc": "2026-10-27T20:46Z"
+  },
+  "hip_compiled": {
+    "argv": [
+      "cmake",
+      "--build",
+      "/mnt/raid0/llm/tmp/codex-ni-20261027-kpf62-fixed-build/build-hip",
+      "-j",
+      "24",
+      "--target",
+      "test-chunk-kv"
+    ],
+    "child_drained": true,
+    "exit_code": 0,
+    "finished_at_utc": "2026-10-27T20:49:55.583599Z",
+    "pid": 1183030,
+    "started_at_utc": "2026-10-27T20:48:29.499217Z",
+    "stderr": {
+      "path": "/mnt/raid0/llm/tmp/codex-ni-20261027-kpf62-fixed-build/hip-build.stderr",
+      "sha256": "cd83ff45795451e1a1488266614522c923ccc86717aaa39f51bd98efc17ce3c1"
+    },
+    "stdout": {
+      "path": "/mnt/raid0/llm/tmp/codex-ni-20261027-kpf62-fixed-build/hip-build.log",
+      "sha256": "a5da3adef2a61be4801b767bb602949bd5aca7154979ae4aa878b6c988c9bd50"
+    }
+  },
+  "hip_configure": {
+    "argv": [
+      "cmake",
+      "-S",
+      "/mnt/raid0/llm/tmp/codex-ni-20261027-kpf62-fixed-build/candidate",
+      "-B",
+      "/mnt/raid0/llm/tmp/codex-ni-20261027-kpf62-fixed-build/build-hip",
+      "-DCMAKE_BUILD_TYPE=Release",
+      "-DGGML_NATIVE=ON",
+      "-DGGML_HIP=ON",
+      "-DGGML_HIP_ROCWMMA_FATTN=ON",
+      "-DGGML_HIP_MMQ_MFMA=ON",
+      "-DAMDGPU_TARGETS=gfx90a",
+      "-DCMAKE_C_FLAGS=-ffile-prefix-map=/mnt/raid0/llm/tmp/codex-ni-20261027-kpf62-fixed-build/candidate=. -fmacro-prefix-map=/mnt/raid0/llm/tmp/codex-ni-20261027-kpf62-fixed-build/candidate=. -ffile-prefix-map=/mnt/raid0/llm/tmp/codex-ni-20261027-kpf62-fixed-build/build-hip=.build -fmacro-prefix-map=/mnt/raid0/llm/tmp/codex-ni-20261027-kpf62-fixed-build/build-hip=.build",
+      "-DCMAKE_CXX_FLAGS=-ffile-prefix-map=/mnt/raid0/llm/tmp/codex-ni-20261027-kpf62-fixed-build/candidate=. -fmacro-prefix-map=/mnt/raid0/llm/tmp/codex-ni-20261027-kpf62-fixed-build/candidate=. -ffile-prefix-map=/mnt/raid0/llm/tmp/codex-ni-20261027-kpf62-fixed-build/build-hip=.build -fmacro-prefix-map=/mnt/raid0/llm/tmp/codex-ni-20261027-kpf62-fixed-build/build-hip=.build",
+      "-DCMAKE_HIP_FLAGS=-ffile-prefix-map=/mnt/raid0/llm/tmp/codex-ni-20261027-kpf62-fixed-build/candidate=. -fmacro-prefix-map=/mnt/raid0/llm/tmp/codex-ni-20261027-kpf62-fixed-build/candidate=. -ffile-prefix-map=/mnt/raid0/llm/tmp/codex-ni-20261027-kpf62-fixed-build/build-hip=.build -fmacro-prefix-map=/mnt/raid0/llm/tmp/codex-ni-20261027-kpf62-fixed-build/build-hip=.build",
+      "-DCMAKE_BUILD_RPATH_USE_ORIGIN=ON",
+      "-DCMAKE_BUILD_WITH_INSTALL_RPATH=ON",
+      "-DCMAKE_INSTALL_RPATH=$ORIGIN;/opt/rocm/lib"
+    ],
+    "child_drained": true,
+    "exit_code": 0,
+    "finished_at_utc": "2026-10-27T20:48:29.495035Z",
+    "pid": 1182731,
+    "started_at_utc": "2026-10-27T20:48:27.222302Z",
+    "stderr": {
+      "path": "/mnt/raid0/llm/tmp/codex-ni-20261027-kpf62-fixed-build/hip-configure.stderr",
+      "sha256": "68b4c8c557fb9715c8915e960d4be4363f6f0249d11f490d3fd158e6db7af4e3"
+    },
+    "stdout": {
+      "path": "/mnt/raid0/llm/tmp/codex-ni-20261027-kpf62-fixed-build/hip-configure.log",
+      "sha256": "eaaac5788796c2919ec09c649dee81daf112cdc11f98eeab20d0dda154d6421c"
+    }
+  },
+  "manifest_evidence": {
+    "NATIVE-SOURCES.sha256": "1fd8d6c29cb2842881aecccddbe3493419fddfc9d731c5e6d7ef1b6a7540cbcc",
+    "SOURCE.SHA256SUMS": "5a043e80063a824998b7132b6a3acf5ebf340b4cfa76d8ac90976d2faf4febd0",
+    "cpu-elf.log": "ea3f62c2708306db0bc64d0bf8a4139a597fe1a5d9882ef6e1eec3bed331bfc7",
+    "cpu-linkage.log": "04c5d470ca52726c98771f6ddac5947dc9c9ca4108bd1e64d2e600f93805fe1e",
+    "hip-elf.log": "8a333a2e3841117178034d766788a416b6e690fc021eecf7869c2a44daa55644",
+    "hip-linkage.log": "50aa7b4b79821676e0108d31b84fd4b43aa854a1dbebeb878b5dc0488322ddec",
+    "toolchain-cmake.log": "f6e81c2559f3ce00c5fdad01d7b226c301f5d6b07ee04f65db6dbfdc1cc5970b",
+    "toolchain-gcc.log": "2aee92bf5ce572542fddcb6ca6f85efbfae5e699ea4f203dc16a0e950ace4be2",
+    "toolchain-gxx.log": "d05500f6ca1eacb04a468da14892c2c4e837a6b31778d89a8eae6375d06fbb3f",
+    "toolchain-hip-clang.log": "a987d87acf3e5458f03bc6e966b8b362187f59ab0451f3a3f2fc0e740a9ff9e0"
+  },
+  "schema": "epyc.kpf62.build.v1",
+  "source_assembly_sha256": "d46fe46c1cdff973f641df81d1d8e384db5e43371f7edfbb2890c6eb5f0abcc6",
+  "threads": 24
+}

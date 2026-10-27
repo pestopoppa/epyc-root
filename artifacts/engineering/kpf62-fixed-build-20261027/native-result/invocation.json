@@ -1,0 +1,214 @@
+{
+  "argv": [
+    "/mnt/raid0/llm/tmp/codex-ni-20261027-kpf62-fixed-build/build/bin/test-chunk-kv",
+    "-m",
+    "/mnt/raid0/llm/tmp/codex-ni-20261027-kpf62-fixed-build/native-20261027T205829Z/qwen3-dense.gguf",
+    "-ctk",
+    "f32",
+    "-ctv",
+    "f32",
+    "-t",
+    "24",
+    "--g1-capture-jsonl",
+    "/mnt/raid0/llm/tmp/codex-ni-20261027-kpf62-fixed-build/native-20261027T205829Z/g1-position.jsonl"
+  ],
+  "artifacts": [
+    {
+      "kind": "authority",
+      "path": "/mnt/raid0/llm/tmp/codex-ni-20261027-kpf62-fixed-build/native-20261027T205829Z/authority.json",
+      "sha256": "edad516aefcd7239f17ce818dd2b8180b23497ced8916c72a2e02e32f7467b1f"
+    },
+    {
+      "kind": "build_receipt",
+      "path": "/mnt/raid0/llm/tmp/codex-ni-20261027-kpf62-fixed-build/build-receipt.json",
+      "sha256": "6cddb24429ce2a590f83a0303d88719ee2183b5c036ee4ac861d42f1a883fdca"
+    },
+    {
+      "kind": "binary_elf",
+      "path": "/mnt/raid0/llm/tmp/codex-ni-20261027-kpf62-fixed-build/native-20261027T205829Z/binary_elf.txt",
+      "sha256": "ea3f62c2708306db0bc64d0bf8a4139a597fe1a5d9882ef6e1eec3bed331bfc7"
+    },
+    {
+      "kind": "generator_elf",
+      "path": "/mnt/raid0/llm/tmp/codex-ni-20261027-kpf62-fixed-build/native-20261027T205829Z/generator_elf.txt",
+      "sha256": "a1fe1c4df7d8f0192e54217bc99276457ce70fcb09a207c44292f702dbd5e7e9"
+    },
+    {
+      "kind": "libraries",
+      "path": "/mnt/raid0/llm/tmp/codex-ni-20261027-kpf62-fixed-build/native-20261027T205829Z/libraries.json",
+      "sha256": "15efc2a3f1771e12f97f6555b46afbc7d00881d8efe37acfc1761a8e145b4bb5"
+    },
+    {
+      "kind": "generator_provenance",
+      "path": "/mnt/raid0/llm/tmp/codex-ni-20261027-kpf62-fixed-build/native-20261027T205829Z/generate-qwen3.log",
+      "sha256": "67fc5885680288ef0bad22516c82e18f0493a710dd6480439f35d26f2fc2957c"
+    },
+    {
+      "kind": "generator_provenance",
+      "path": "/mnt/raid0/llm/tmp/codex-ni-20261027-kpf62-fixed-build/native-20261027T205829Z/generate-qwen3.stderr",
+      "sha256": "8bbd3e5937a652ba5b0942d0f3a00bdabf5a70e311440f3b94a39bba57a6ccc3"
+    },
+    {
+      "kind": "generator_provenance",
+      "path": "/mnt/raid0/llm/tmp/codex-ni-20261027-kpf62-fixed-build/native-20261027T205829Z/generate-qwen3.receipt.json",
+      "sha256": "e7a219ffe02ea3e154555410a6d7962a0197af01ea65ad59b22f9960c25506cb"
+    },
+    {
+      "kind": "generated_model",
+      "path": "/mnt/raid0/llm/tmp/codex-ni-20261027-kpf62-fixed-build/native-20261027T205829Z/qwen3-dense.gguf",
+      "sha256": "e67e74673db6a0339f0dbdaf39299bbc0efc006fb7a333707ac339b5ec3f9aac"
+    },
+    {
+      "kind": "generator_provenance",
+      "path": "/mnt/raid0/llm/tmp/codex-ni-20261027-kpf62-fixed-build/native-20261027T205829Z/generate-qwen35.log",
+      "sha256": "67fc5885680288ef0bad22516c82e18f0493a710dd6480439f35d26f2fc2957c"
+    },
+    {
+      "kind": "generator_provenance",
+      "path": "/mnt/raid0/llm/tmp/codex-ni-20261027-kpf62-fixed-build/native-20261027T205829Z/generate-qwen35.stderr",
+      "sha256": "4b949929f2d6640d097c3b33f59f0f96ec0ddefbdd1e913ade4e7ce40df03c98"
+    },
+    {
+      "kind": "generator_provenance",
+      "path": "/mnt/raid0/llm/tmp/codex-ni-20261027-kpf62-fixed-build/native-20261027T205829Z/generate-qwen35.receipt.json",
+      "sha256": "b787bc2aba2a7bf3aea5bfe563c2075855b7e2b35ad9149c18fedbfe45ab1857"
+    },
+    {
+      "kind": "generated_model",
+      "path": "/mnt/raid0/llm/tmp/codex-ni-20261027-kpf62-fixed-build/native-20261027T205829Z/qwen35-dense.gguf",
+      "sha256": "397b0d2058061bf4b24d6514913f2e6278a396a49113ab5ef52adade88e40fe7"
+    },
+    {
+      "kind": "cpu_before",
+      "path": "/mnt/raid0/llm/tmp/codex-ni-20261027-kpf62-fixed-build/native-20261027T205829Z/cpu-before.txt",
+      "sha256": "040ea3dee02b638bb31d6b6310de6afd38c8741a2c1c1b96ea2dc3ed0f5779a7"
+    },
+    {
+      "kind": "cpu_after",
+      "path": "/mnt/raid0/llm/tmp/codex-ni-20261027-kpf62-fixed-build/native-20261027T205829Z/cpu-after.txt",
+      "sha256": "974276c4db029f3c6a196b9d4a704bbaef42f490a9e4f0e20f224b93b8cbdb09"
+    },
+    {
+      "kind": "native_stdout",
+      "path": "/mnt/raid0/llm/tmp/codex-ni-20261027-kpf62-fixed-build/native-20261027T205829Z/native.log",
+      "sha256": "174c7cfa1ac16305505fe1185bd805505723297d1d7faea1257bcd6f32c44e9a"
+    },
+    {
+      "kind": "native_stderr",
+      "path": "/mnt/raid0/llm/tmp/codex-ni-20261027-kpf62-fixed-build/native-20261027T205829Z/native.stderr",
+      "sha256": "ad45c26cb096755a352bb62c2458a168aa357d0b52fdeb92d94ef76334403321"
+    },
+    {
+      "kind": "native_controls",
+      "path": "/mnt/raid0/llm/tmp/codex-ni-20261027-kpf62-fixed-build/native-20261027T205829Z/native-controls.json",
+      "sha256": "61a65c6851a5b2ae6d6730ffaf83b4850d909b45de4558074e0db1af3acad0a3"
+    },
+    {
+      "kind": "control_provenance",
+      "path": "/mnt/raid0/llm/tmp/codex-ni-20261027-kpf62-fixed-build/native-20261027T205829Z/hybrid-refusal.log",
+      "sha256": "3b5b3337f93a821dcab3f4b0f263ca997afc7494fb25bc142898f11983255707"
+    },
+    {
+      "kind": "control_provenance",
+      "path": "/mnt/raid0/llm/tmp/codex-ni-20261027-kpf62-fixed-build/native-20261027T205829Z/hybrid-refusal.stderr",
+      "sha256": "e7e09d51c65d45951b4e840a039d153fecf738b3e5c581eb035a5d78f98902a3"
+    },
+    {
+      "kind": "control_provenance",
+      "path": "/mnt/raid0/llm/tmp/codex-ni-20261027-kpf62-fixed-build/native-20261027T205829Z/hybrid-refusal.receipt.json",
+      "sha256": "4f00f2663b3b873fd935e0309e39df93aeb1429d2af00a97fae334584d7f2763"
+    },
+    {
+      "kind": "control_provenance",
+      "path": "/mnt/raid0/llm/tmp/codex-ni-20261027-kpf62-fixed-build/native-20261027T205829Z/hybrid-capture-refusal.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "control_provenance",
+      "path": "/mnt/raid0/llm/tmp/codex-ni-20261027-kpf62-fixed-build/native-20261027T205829Z/hybrid-capture-refusal.stderr",
+      "sha256": "7af3d07e11538a61fd21ac025b94c1a0bab84f1990e807079e31855999dc50e8"
+    },
+    {
+      "kind": "control_provenance",
+      "path": "/mnt/raid0/llm/tmp/codex-ni-20261027-kpf62-fixed-build/native-20261027T205829Z/hybrid-capture-refusal.receipt.json",
+      "sha256": "f4c5fa42e0f102bb8e93d38d2363c181a866826d09d8af1053ff857bc0de14de"
+    }
+  ],
+  "binary": {
+    "path": "/mnt/raid0/llm/tmp/codex-ni-20261027-kpf62-fixed-build/build/bin/test-chunk-kv",
+    "sha256": "0ba031122324c530c688f44e0019fcbb4b03872538e44b10d80cd546a921abe9"
+  },
+  "capture": {
+    "deltas": [
+      1,
+      17,
+      300
+    ],
+    "environment": {
+      "CKV_G1_REF_INFORMATIONAL": "1",
+      "CKV_N_CHUNK": "24",
+      "GGML_IQK": "1",
+      "HOME": "/home/node",
+      "LANG": "C.UTF-8",
+      "LD_DEBUG": "libs",
+      "LD_LIBRARY_PATH": "/mnt/raid0/llm/tmp/codex-ni-20261027-kpf62-fixed-build/build/bin",
+      "MKL_NUM_THREADS": "1",
+      "OMP_NUM_THREADS": "24",
+      "OPENBLAS_NUM_THREADS": "1",
+      "PATH": "/opt/rocm/bin:/home/node/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/local/share/npm-global/bin:/usr/local/games:/usr/games",
+      "TZ": "UTC"
+    },
+    "exit_code": 0,
+    "finished_at_utc": "2026-10-27T20:58:29.888771Z",
+    "n_chunk": 24,
+    "n_suffix": 6,
+    "path": "/mnt/raid0/llm/tmp/codex-ni-20261027-kpf62-fixed-build/native-20261027T205829Z/g1-position.jsonl",
+    "sha256": "6d0640fb37805a9be99d6eebdb0a88bc22cb5d75b707e55d9f4fb4fc107f1328",
+    "started_at_utc": "2026-10-27T20:58:29.835929Z"
+  },
+  "context": {
+    "deltas": [
+      1,
+      17,
+      300
+    ],
+    "n_batch": 512,
+    "n_ctx": 8192,
+    "n_ctx_seq": 1024,
+    "n_seq_max": 8,
+    "n_suffix": 6,
+    "n_ubatch": 512,
+    "seed": 1234
+  },
+  "finalized_at_utc": "2026-10-27T20:58:29.997378Z",
+  "grant": {
+    "end_utc": "2026-10-27T21:17Z",
+    "grant_id": "kpf62-native-g1-fixed-capture-20261027",
+    "path": "/mnt/raid0/llm/tmp/compute-flags/grants/kpf62-native-g1-fixed-capture-20261027.grant",
+    "regions": "0-23",
+    "sha256": "08701b18495ed598bd87580d097e3971ac795128d278c63ada1ff85adba56921",
+    "start_utc": "2026-10-27T20:57Z"
+  },
+  "lifecycle": {
+    "child_drained": true,
+    "timed_out": false
+  },
+  "model": {
+    "name": "qwen3-dense-generated-seed1234",
+    "path": "/mnt/raid0/llm/tmp/codex-ni-20261027-kpf62-fixed-build/native-20261027T205829Z/qwen3-dense.gguf",
+    "sha256": "e67e74673db6a0339f0dbdaf39299bbc0efc006fb7a333707ac339b5ec3f9aac"
+  },
+  "producer_commit": "c72ec82f5417bb2937310326120f149b665e8400",
+  "role": "generated-tiny-cpu-correctness",
+  "root_adapter_commit": "cec0d61c5127787648ef7bd913fcacf246241f5f",
+  "run_id": "native-20261027T205829Z",
+  "schema": "epyc.chunk_kv.g1_invocation.v1",
+  "source_assembly_sha256": "d46fe46c1cdff973f641df81d1d8e384db5e43371f7edfbb2890c6eb5f0abcc6",
+  "source_digest": "99c457ba391e55d7f23114b01808b28c4cb7f16192908714ef3cc04a5e7eebc9",
+  "window": {
+    "end_utc": "2026-10-27T21:17Z",
+    "region_lock_claim": "official ancestor --role build; cpus=0-23",
+    "start_utc": "2026-10-27T20:57Z",
+    "window_id": "kpf62-native-g1-fixed-capture-20261027"
+  }
+}

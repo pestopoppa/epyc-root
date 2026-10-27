@@ -1,0 +1,2 @@
+refusal reason: memory is not a plain attention KV cache (hybrid/recurrent/iswa or none)
+OK (refusal)

@@ -1,0 +1,28 @@
+{
+  "argv": [
+    "/mnt/raid0/llm/tmp/codex-ni-20261027-kpf62-fixed-build/build/bin/test-chunk-kv",
+    "-m",
+    "/mnt/raid0/llm/tmp/codex-ni-20261027-kpf62-fixed-build/native-20261027T205829Z/qwen3-dense.gguf",
+    "-ctk",
+    "f32",
+    "-ctv",
+    "f32",
+    "-t",
+    "24",
+    "--g1-capture-jsonl",
+    "/mnt/raid0/llm/tmp/codex-ni-20261027-kpf62-fixed-build/native-20261027T205829Z/g1-position.jsonl"
+  ],
+  "child_drained": true,
+  "exit_code": 0,
+  "finished_at_utc": "2026-10-27T20:58:29.888771Z",
+  "pid": 1240634,
+  "started_at_utc": "2026-10-27T20:58:29.835929Z",
+  "stderr": {
+    "path": "/mnt/raid0/llm/tmp/codex-ni-20261027-kpf62-fixed-build/native-20261027T205829Z/native.stderr",
+    "sha256": "ad45c26cb096755a352bb62c2458a168aa357d0b52fdeb92d94ef76334403321"
+  },
+  "stdout": {
+    "path": "/mnt/raid0/llm/tmp/codex-ni-20261027-kpf62-fixed-build/native-20261027T205829Z/native.log",
+    "sha256": "174c7cfa1ac16305505fe1185bd805505723297d1d7faea1257bcd6f32c44e9a"
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "carrier_rows": 27,
+  "finalizer_sha256": "8c3aeec6c140fa2216f069b7d7509b0d46442f0b1d38ad33f51c9b9495398c5b",
+  "invocation_sha256": "b6682ecb3c29e3956e7149e58dca7edfe3554cc92b8cc20224d2e75736f1b40c",
+  "position_rows": 324,
+  "protocol_id": "",
+  "raw_sha256": "6d0640fb37805a9be99d6eebdb0a88bc22cb5d75b707e55d9f4fb4fc107f1328",
+  "schema": "epyc.kpf62.g1_finalized.v3",
+  "scope": "generated tiny native G1 only; no G3 corpus/production claim",
+  "sidecar_sha256": "1753e734dafec9dd1e3593b347224b3b0cca72bbd02f3ba2629240c80d6cbef3"
+}

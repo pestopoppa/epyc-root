@@ -1,0 +1,1 @@
+PASS T1 + temporary live-PID row validator/grant_ok + normal-shaped admit --require-proof; no canonical grant or booking

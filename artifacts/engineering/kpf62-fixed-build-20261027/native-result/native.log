@@ -1,0 +1,14 @@
+rope round-trip delta=    1  NMSE=2.877e-15
+rope round-trip delta=   17  NMSE=2.740e-15
+rope round-trip delta=  300  NMSE=2.910e-15
+rope round-trip delta= 4096  NMSE=2.802e-15
+G1a delta=   1  inject vs seq_add: K bit-identical  V bit-identical  logits bit-identical  (K NMSE=0.000e+00 logits NMSE=0.000e+00)
+G1 delta=   1  K NMSE=8.976e-14  V NMSE=0.000e+00  logits NMSE=0.000e+00   (in-tree seq_add vs ref: K 8.976e-14 V 0.000e+00 logits 0.000e+00)
+G1a delta=  17  inject vs seq_add: K bit-identical  V bit-identical  logits bit-identical  (K NMSE=0.000e+00 logits NMSE=0.000e+00)
+G1 delta=  17  K NMSE=1.775e-13  V NMSE=0.000e+00  logits NMSE=0.000e+00   (in-tree seq_add vs ref: K 1.775e-13 V 0.000e+00 logits 0.000e+00)
+G1a delta= 300  inject vs seq_add: K bit-identical  V bit-identical  logits bit-identical  (K NMSE=0.000e+00 logits NMSE=0.000e+00)
+G1 delta= 300  K NMSE=2.357e-11  V NMSE=0.000e+00  logits NMSE=8.745e-17   (in-tree seq_add vs ref: K 2.357e-11 V 0.000e+00 logits 8.745e-17)
+floor: same positions, ubatch split 12+12 vs one ubatch: K NMSE=0.000e+00  V NMSE=0.000e+00
+VERDICT G1a (inject == in-tree seq_add, bit-for-bit): PASS
+VERDICT G1-ref (pre-registered, ref = encode in place at delta; K/V <= 1e-6, logits <= 1e-5): PASS (informational: CKV_G1_REF_INFORMATIONAL=1)
+OK (attention-only)
