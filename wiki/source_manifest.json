@@ -4,27 +4,32 @@
     "handoff-active": 184,
     "handoff-blocked": 2,
     "handoff-completed": 216,
-    "progress": 830,
+    "progress": 832,
     "research": 140
   },
   "kind": "project-wiki-source-manifest",
   "last_compile": "2026-10-27T15:23:54Z",
   "last_touch": {
     "advanced": {
-      "added": 0,
-      "changed": 0,
+      "added": 2,
+      "changed": 3,
       "removed": 0
     },
-    "at": "2026-10-27T17:06:05Z",
+    "at": "2026-10-27T19:06:48Z",
     "scope_paths": [
-      "progress/2026-10/2026-10-27-periodic-wrap-1620.md"
+      "handoffs/active/autokernel-champion-aggregate.md",
+      "handoffs/active/speculative-decoding-mtp-refresh.md",
+      "handoffs/active/yarn-context-extension-research.md",
+      "progress/2026-10/2026-10-27-full-wrap-1850.md",
+      "progress/2026-10/2026-10-27-gnx-split-prep.md",
+      "progress/2026-10/2026-10-27-workspace-58.md"
     ],
     "scope_types": []
   },
   "mode": "touch:scoped",
-  "scan_time": "2026-10-27T17:06:05Z",
+  "scan_time": "2026-10-27T19:06:48Z",
   "schema_version": 1,
-  "source_set_hash": "1de1238823d2ac8b7d206fd987fafd08a14d0f88ba2098abc2c92601016e0846",
+  "source_set_hash": "631d9f8dbc2ba3aba90bfcb3bddbaaa98d1c1c6b0b299767be60cd7b1a60f559",
   "sources": [
     {
       "content_hash": "6c067235a74a3b9667dd4fad23684206476aeac1cdefe3b4e0a0824d3179c241",
@@ -115,10 +120,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "1315b9d630bc16c2fe2932640f745454b7c1edda4ec9b6020c3d24100d638d72",
-      "modified": "2026-10-27T16:21:06Z",
+      "content_hash": "82096921685856b19c620a08caf61c3d5755882589758db21d4c410c42e124ad",
+      "modified": "2026-10-27T18:58:54Z",
       "path": "handoffs/active/autokernel-champion-aggregate.md",
-      "size": 194729,
+      "size": 195240,
       "title": "AutoKernel \u2014 the standing aggregate candidate (champion)",
       "type": "handoff-active"
     },
@@ -1307,10 +1312,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "7398e864abfec597d167bfc09ae49ff48e01d123fdd5881da5ea532a44ff2344",
-      "modified": "2026-10-27T16:33:10Z",
+      "content_hash": "ea3bfda507454547d65593df94542e1ca6a6f9d1d662b318b984e347426052df",
+      "modified": "2026-10-27T18:58:54Z",
       "path": "handoffs/active/speculative-decoding-mtp-refresh.md",
-      "size": 116179,
+      "size": 119777,
       "title": "Speculative-Decoding / MTP Refresh",
       "type": "handoff-active"
     },
@@ -1492,7 +1497,7 @@
     },
     {
       "content_hash": "b17692f5710d8c66ed1a690e847990c69d703d5f7fa2a18dc3d435cf8e3d0a41",
-      "modified": "2026-10-27T10:02:27Z",
+      "modified": "2026-10-27T18:49:33Z",
       "path": "handoffs/active/yarn-context-extension-research.md",
       "size": 66537,
       "title": "YaRN Context Extension Research",
@@ -10979,6 +10984,22 @@
       "type": "progress"
     },
     {
+      "content_hash": "0cdc68a6996ea7583adea755688a00135d1945a71182748847b69e880ff3bcbb",
+      "modified": "2026-10-27T19:06:47Z",
+      "path": "progress/2026-10/2026-10-27-full-wrap-1850.md",
+      "size": 9073,
+      "title": "Full periodic wrap-up \u2014 2026-10-27 18:50Z start, 19:06Z evidence cutoff",
+      "type": "progress"
+    },
+    {
+      "content_hash": "2f37486b489cbbe16f6cbcde32ba71ce1671768928c4227e0cb6c154467a93e2",
+      "modified": "2026-10-27T18:49:33Z",
+      "path": "progress/2026-10/2026-10-27-gnx-split-prep.md",
+      "size": 1013,
+      "title": "2026-10-27 \u2014 GitNexus split-phase preparation",
+      "type": "progress"
+    },
+    {
       "content_hash": "7985886a10d961137fb6e3936c2f259a07cdbea6a12bf637b996699c32c9ec6b",
       "modified": "2026-10-27T16:54:59Z",
       "path": "progress/2026-10/2026-10-27-periodic-wrap-1620.md",
@@ -10995,10 +11016,10 @@
       "type": "progress"
     },
     {
-      "content_hash": "9da7c08ad5f0d64aec4a8ca422367e72fc366050cb87d44981624236e44bb496",
-      "modified": "2026-10-27T16:21:06Z",
+      "content_hash": "a986a4d897499de5d350734bd01ea7b8d8e0467c84754eb4e94f1380be01a931",
+      "modified": "2026-10-27T18:58:54Z",
       "path": "progress/2026-10/2026-10-27-workspace-58.md",
-      "size": 34190,
+      "size": 36651,
       "title": "2026-10-27 \u2014 workspace-58 (Codex NI wrap packages, 00:00Z to 05:26Z)",
       "type": "progress"
     },
@@ -12875,7 +12896,7 @@
       "type": "docs"
     }
   ],
-  "total_new": 1606,
+  "total_new": 1608,
   "writer_evidence_policy": {
     "applies_to": "generated-wiki-article-writes",
     "minimum_confidence": "verified",
