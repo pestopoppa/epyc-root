@@ -1,0 +1,10 @@
+2026-10-27T22:28:36Z [codex-ni-ufh12-gp1-r2-20261027] launcher up pid=1718795 class=cpu poll=1s grants=/mnt/raid0/llm/tmp/codex-ni-20261027-ufh12-shipped-parity/successor/dryrun/3a90e418a839b41628f3b952af6745c0399cbac4ff589288/grants stop=/mnt/raid0/llm/tmp/codex-ni-20261027-ufh12-shipped-parity/successor/STOP minwin=1200s ports=18994
+2026-10-27T22:28:37Z [codex-ni-ufh12-gp1-r2-20261027] ADMIT_PASS window=1500 free_gib=163.42 floor_gib=150
+2026-10-27T22:28:37Z [codex-ni-ufh12-gp1-r2-20261027] START regions=48-49 cpus=48-49 threads=2 gpu=0 end=2026-10-27T22:53Z
+DRYRUN_RESOURCES {"affinity": [48, 49], "cgroup": "0::/", "cgroup_memory_max": "max", "process_limit_gib": 8.0, "reserved_ram_gib": 8.0, "rlimits": {"AS": [-1, -1], "DATA": [-1, -1], "NOFILE": [524288, 524288], "RSS": [-1, -1]}}
+RESOURCE_PASS id=codex-ni-ufh12-gp1-r2-20261027 scope=two-core-PF
+DRYRUN_RESOURCES {"affinity": [48, 49], "cgroup": "0::/", "cgroup_memory_max": "max", "process_limit_gib": 8.0, "reserved_ram_gib": 8.0, "rlimits": {"AS": [-1, -1], "DATA": [-1, -1], "NOFILE": [524288, 524288], "RSS": [-1, -1]}}
+DRYRUN_BOUNDARY effect=server-start job_sha256=68da22d6b6b534f27b1680ff1eaa08b8d3559c422f0c4d9358c8e6031fff01fb stop-before-effect
+job rc=0
+2026-10-27T22:28:40Z [codex-ni-ufh12-gp1-r2-20261027] ended rc=0 reason=exited (grant deleted)
+2026-10-27T22:28:40Z [codex-ni-ufh12-gp1-r2-20261027] one window done; exiting (no --repeat)

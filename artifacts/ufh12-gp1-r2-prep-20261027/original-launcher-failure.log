@@ -1,0 +1,20 @@
+2026-10-27T22:23:22Z [codex-ni-ufh12-gp1-20261027] launcher up pid=1699465 class=cpu poll=45s grants=/mnt/raid0/llm/tmp/compute-flags/grants stop=/mnt/raid0/llm/tmp/codex-ni-20261027-ufh12-shipped-parity/STOP minwin=1200s ports=18993
+2026-10-27T22:24:08Z [codex-ni-ufh12-gp1-20261027] ADMIT_PASS window=1500 free_gib=163.48 floor_gib=150
+2026-10-27T22:24:08Z [codex-ni-ufh12-gp1-20261027] START regions=72-95 cpus=72-95 threads=24 gpu=0 end=2026-10-27T22:48Z
+[region-lock] acquiring regions ['q3'] as role='build' (timeout_s=1432.0) …
+[region-lock] held ['q3'] after 0.0s wait; running: /bin/bash /mnt/raid0/llm/tmp/codex-ni-20261027-ufh12-shipped-parity/deps/filler_run12.sh --inner --id codex-ni-ufh12-gp1-20261027 --class cpu --cmd exec /bin/bash /mnt/raid0/llm/tmp/codex-ni-20261027-ufh12-shipped-parity/job.sh --min-window 1200 --stop /mnt/raid0/llm/tmp/codex-ni-20261027-ufh12-shipped-parity/STOP --port 18993 --workdir /mnt/raid0/llm/tmp/codex-ni-20261027-ufh12-shipped-parity --gpu-threads 184-191
+DRYRUN_RESOURCES {"affinity": [72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95], "cgroup": "0::/", "cgroup_memory_max": "max", "process_limit_gib": 8.0, "reserved_ram_gib": 8.0, "rlimits": {"AS": [-1, -1], "DATA": [-1, -1], "NOFILE": [524288, 524288], "RSS": [-1, -1]}}
+RESOURCE_PASS id=codex-ni-ufh12-gp1-20261027 scope=normal-grant
+Traceback (most recent call last):
+  File "/mnt/raid0/llm/tmp/codex-ni-20261027-ufh12-shipped-parity/run_real.py", line 67, in <module>
+    main()
+  File "/mnt/raid0/llm/tmp/codex-ni-20261027-ufh12-shipped-parity/run_real.py", line 62, in main
+    if failure: raise failure
+                ^^^^^^^^^^^^^
+  File "/mnt/raid0/llm/tmp/codex-ni-20261027-ufh12-shipped-parity/run_real.py", line 51, in main
+    if on==off: raise RuntimeError('flash attention resolution absent or ambiguous')
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+RuntimeError: flash attention resolution absent or ambiguous
+job rc=1
+2026-10-27T22:24:11Z [codex-ni-ufh12-gp1-20261027] ended rc=1 reason=job-rc-1:exited (grant deleted)
+2026-10-27T22:24:11Z [codex-ni-ufh12-gp1-20261027] one window done; exiting (no --repeat)
