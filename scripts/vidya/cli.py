@@ -554,6 +554,7 @@ INF70_CORPUS_ROOT = Path("/mnt/raid0/llm/tmp/inf70")
 # equal to ingest_sources.SOURCES.
 _FILE_SOURCES = (
     "rtg57-vkq-comparison", "rtg57-vkq-oracle",
+    "df2-row-exact-akx",
     "hg5-request-event",
     "graph-profiler-measurement",
     "odl-unlimited-ocr-run",

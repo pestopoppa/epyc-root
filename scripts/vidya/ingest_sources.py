@@ -159,6 +159,7 @@ ORCHESTRATOR = Path("/mnt/raid0/llm/epyc-orchestrator")
 SOURCES: dict[str, Source] = {s.name: s for s in (
     Source("rtg57-vkq-comparison", "rtg57_vkq_comparison", _files("native-receipt.json"), task="VB-RTG57-VKQ-WIRE", note="prospective scoped T48/T96 timing; no adoption"),
     Source("rtg57-vkq-oracle", "rtg57_vkq_oracle", _files("native-receipt.json"), task="VB-RTG57-VKQ-WIRE", note="one model-free C5 numerical shape; no serving or adoption warrant"),
+    Source("df2-row-exact-akx", "df2_row_exact", _files("belief-native.json", "*/belief-native.json"), task="VB-DF2-ROW-EXACT-WRITE", note="producer-time DF2 output and diagnostic observations; explicit --path only"),
     Source("hg5-request-event", "hg5_request_event", _files("*.json"),
            task="VB-HG5-TAP-READ",
            note="owned sealed completed post-answer request events only; nullable metrics decline; no default/runtime/correctness"),
