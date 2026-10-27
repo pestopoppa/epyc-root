@@ -1,0 +1,7 @@
+rc=0 time=2026-10-27T18:03:00Z reason=exited
+job_id=kpf62-native-g1-build-20261027
+owner=Codex NI / MAIN
+step=job-run
+estimated_wall_s=3600
+started=2026-10-27T18:02:57Z
+regions=0,1
