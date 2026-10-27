@@ -1,0 +1,4 @@
+ref=refs/heads/codex/meta-host-view-fix-20261027
+commit=520ad4f55d805a544862be88d652ec68fcd194ab
+parent=c72ec82f5417bb2937310326120f149b665e8400
+worktree-head=unchanged

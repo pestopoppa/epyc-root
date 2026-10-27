@@ -1,0 +1,3 @@
+Keep /mnt/raid0/llm/worktrees/meta-fix-c5 and all its tracked source until owner CPU/HIP build and review complete.
+Keep this packet, candidate.patch, source and dependency manifests, baseline source, fixture sources, T1 receipt and owner outputs.
+Do not clear the private worktree as packet cleanup.
