@@ -98,6 +98,7 @@ def main():
     root = Path(f['scratch_root'])
     if root == SCRATCH or not root.is_relative_to(SCRATCH) or root.is_symlink() or root.resolve(strict=True) != root: raise ValueError('invalid scratch root')
     raw, keep = patterns(root, f.get('raw_globs', '')), patterns(root, f.get('keep_globs', ''))
+    if not GRANTS.is_dir() or not HANDOFFS.is_dir(): raise ValueError('grant or active handoff directory missing')
     for grant in GRANTS.glob('*.grant'):
         if grant.stem == a.row_id or str(root) in grant.read_text(errors='replace'):
             raise ValueError('open grant references row or scratch: ' + str(grant))

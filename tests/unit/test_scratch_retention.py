@@ -41,7 +41,7 @@ class RetentionTests(unittest.TestCase):
             root = Path(t); scratch = root / 'scratch'; scratch.mkdir(); job = scratch / 'job'; job.mkdir()
             (job / 'cache').mkdir(); (job / 'cache' / 'delete.bin').write_text('cache')
             (job / 'cache' / 'keep.json').write_text('evidence')
-            trash = root / 'trash'; trash.mkdir(); handoffs = root / 'handoffs'; handoffs.mkdir()
+            trash = root / 'trash'; trash.mkdir(); handoffs = root / 'handoffs'; handoffs.mkdir(); (root / 'grants').mkdir()
             notes = f'scratch_root={job}; raw_globs=cache/*; keep_globs=cache/keep.json'
             row = ['row1', 'owner', 'launcher', 'cpu', '1s', '1', '-', 'COMPLETE', 'block-correctness', '1s', '1s', 'n', 'n', '/tmp/prior', 'decision', 'exact', 'cpu', notes]
             header = '| ' + ' | '.join(vf.COLUMNS) + ' |\n'; queue = root / 'FILLERS.md'
