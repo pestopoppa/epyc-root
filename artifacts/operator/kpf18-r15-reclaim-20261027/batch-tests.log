@@ -1,0 +1,42 @@
+[region-lock] acquiring regions ['q3'] as role='build' (timeout_s=15.0) …
+[region-lock] held ['q3'] after 0.0s wait; running: taskset -c 72,73 bash /mnt/raid0/llm/tmp/refactor-01a16fc3/sc81-census-unblock/q3-preflight/q3-child.sh /mnt/raid0/llm/tmp/codex-ni-20261027-kpf18-disk-unblock/batch-tests9-q3 /bin/bash /mnt/raid0/llm/tmp/codex-ni-20261027-kpf18-disk-unblock/q3-batch-tests.sh
+GATE_FIXTURE_DIR=/mnt/raid0/llm/tmp/codex-ni-20261027-kpf18-disk-unblock/batch-tests9-q3/tmp/q3-gate.R50Xvs
+Q3 grant gate fixtures PASS
+RSS_FIXTURE_DIR=/mnt/raid0/llm/tmp/codex-ni-20261027-kpf18-disk-unblock/batch-tests9-q3/tmp/q3-rss.4ffd0f
+...
+----------------------------------------------------------------------
+Ran 3 tests in 0.001s
+
+OK
+Q3 RSS watcher fixtures PASS
+ADMITTED 2026-10-27T19:05:47Z CPU72,73 OMP1 rolebuild <=260s monitored RSS budget 4GiB; sampled peak
+Pid:	705844
+PPid:	705754
+Cpus_allowed_list:	72-73
+command=/bin/bash /mnt/raid0/llm/tmp/codex-ni-20261027-kpf18-disk-unblock/q3-batch-tests.sh
+test_duplicate_payload_names_in_distinct_containers (test_approved_batch_sweep.BatchSweepTest.test_duplicate_payload_names_in_distinct_containers) ... ok
+test_exact_batch (test_approved_batch_sweep.BatchSweepTest.test_exact_batch) ... ok
+test_extra_entry_refused (test_approved_batch_sweep.BatchSweepTest.test_extra_entry_refused) ... ok
+test_missing_action_checks_refused (test_approved_batch_sweep.BatchSweepTest.test_missing_action_checks_refused) ... ok
+test_outside_batch_refused (test_approved_batch_sweep.BatchSweepTest.test_outside_batch_refused) ... ok
+test_registered_worktree_is_removed_and_branch_preserved (test_approved_batch_sweep.BatchSweepTest.test_registered_worktree_is_removed_and_branch_preserved) ... Preparing worktree (detached HEAD e6db1bb)
+Preparing worktree (checking out 'candidate')
+ok
+test_symlink_refused (test_approved_batch_sweep.BatchSweepTest.test_symlink_refused) ... ok
+test_unexpected_branch_metadata_refused (test_approved_batch_sweep.BatchSweepTest.test_unexpected_branch_metadata_refused) ... ok
+test_unknown_metadata_refused (test_approved_batch_sweep.BatchSweepTest.test_unknown_metadata_refused) ... ok
+test_without_approval (test_approved_batch_sweep.BatchSweepTest.test_without_approval) ... ok
+test_wrong_manifest (test_approved_batch_sweep.BatchSweepTest.test_wrong_manifest) ... ok
+test_two_same_basename_and_worktree (test_kpf18_batch_move.BatchLifecycleTest.test_two_same_basename_and_worktree) ... Preparing worktree (checking out 'candidate')
+Preparing worktree (detached HEAD e6db1bb)
+trashed: /mnt/raid0/llm/tmp/codex-ni-20261027-kpf18-disk-unblock/batch-tests9-q3/tmp/tmpapxzru9a/a/same -> /mnt/raid0/llm/tmp/codex-ni-20261027-kpf18-disk-unblock/batch-tests9-q3/tmp/tmpapxzru9a/trash/kpf18-approved-test/item-00/20261027-190548-same (1 bytes)
+trashed: /mnt/raid0/llm/tmp/codex-ni-20261027-kpf18-disk-unblock/batch-tests9-q3/tmp/tmpapxzru9a/b/same -> /mnt/raid0/llm/tmp/codex-ni-20261027-kpf18-disk-unblock/batch-tests9-q3/tmp/tmpapxzru9a/trash/kpf18-approved-test/item-01/20261027-190548-same (1 bytes)
+ok
+
+----------------------------------------------------------------------
+Ran 12 tests in 0.094s
+
+OK
+ scripts/safety/trash-sweep.sh | 4 ++++
+ 1 file changed, 4 insertions(+)
+RSS_SAMPLED_PEAK_KIB=60712 LIMIT_KIB=4194304 drained=True

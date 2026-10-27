@@ -1,0 +1,100 @@
+{
+  "source_manifest_sha256": "f4c7f90d69661011026c52adf5c3bb0c61ecbf42f56d967770487b6e34783291",
+  "entries": [
+    {
+      "source": "/mnt/raid0/llm/tmp/codex-ni-20261025-pool-ni08-odl/grant/private/epyc-root",
+      "device": 2431,
+      "inode": 213817149
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex-ni-20261025-gap-pool/ni08-grant/private/epyc-root",
+      "device": 2431,
+      "inode": 213649589
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex-ni-20261026-c5-remaining-audit/private/epyc-root",
+      "device": 2431,
+      "inode": 215137403
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex-ni-20261026-pb-hol-m42b/private/epyc-root",
+      "device": 2431,
+      "inode": 214611798
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex-ni-20261025-checkpoint/root-private",
+      "device": 2431,
+      "inode": 196359633
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex-ni-20261026-gap-r6-full-publication/root-publication/private/epyc-root",
+      "device": 2431,
+      "inode": 214444328
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/batch-20261024/wt-research-d",
+      "device": 2431,
+      "inode": 203602853
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/batch-20261024/wt-epyc-inference-research-c",
+      "device": 2431,
+      "inode": 202815517
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex-ni-20261027-c5-graph-v5/gitnexus/node_modules/@huggingface",
+      "device": 2431,
+      "inode": 193079306
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex-ni-20261027-c5-graph-v5/gitnexus/node_modules/onnxruntime-node",
+      "device": 2431,
+      "inode": 193084130
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex-ni-20261027-c5-graph-v5/gitnexus/node_modules/onnxruntime-web",
+      "device": 2431,
+      "inode": 193081926
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex-ni-20261027-c5-graph-v6/gitnexus/node_modules/@huggingface",
+      "device": 2431,
+      "inode": 191928223
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex-ni-20261027-c5-graph-v6/gitnexus/node_modules/onnxruntime-node",
+      "device": 2431,
+      "inode": 193504605
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex-ni-20261027-c5-graph-v6/gitnexus/node_modules/onnxruntime-web",
+      "device": 2431,
+      "inode": 193502421
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex-ni-20261027-c5-graph-v7/gitnexus/node_modules/@huggingface",
+      "device": 2431,
+      "inode": 193599942
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex-ni-20261027-c5-graph-v7/gitnexus/node_modules/onnxruntime-node",
+      "device": 2431,
+      "inode": 193736684
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex-ni-20261027-c5-graph-v7/gitnexus/node_modules/onnxruntime-web",
+      "device": 2431,
+      "inode": 193734500
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex-ni-20261027-checkpoint-publication-finish/root",
+      "device": 2431,
+      "inode": 193991344
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/batch-20261024/wt-research/benchmarks",
+      "device": 2431,
+      "inode": 202666494
+    }
+  ]
+}

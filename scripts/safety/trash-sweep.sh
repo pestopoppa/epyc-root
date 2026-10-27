@@ -4,6 +4,10 @@
 # Usage: trash-sweep.sh --older-than DAYS [--dry-run]
 # Only ever deletes inside $TRASH_ROOT. Never run on a live path.
 set -euo pipefail
+if [[ ${1:-} == --approved-batch ]]; then
+    shift
+    exec python3 "$(dirname "$0")/approved_batch_sweep.py" "$@"
+fi
 
 TRASH_ROOT="${TRASH_ROOT:-/mnt/raid0/llm/.trash}"
 AUDIT_LOG="${SAFETY_AUDIT_LOG:-/workspace/logs/safety_audit.log}"

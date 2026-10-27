@@ -1,0 +1,31 @@
+[region-lock] acquiring regions ['q3'] as role='build' (timeout_s=15.0) …
+[region-lock] held ['q3'] after 0.0s wait; running: taskset -c 72,73 bash /mnt/raid0/llm/tmp/refactor-01a16fc3/sc81-census-unblock/q3-preflight/q3-child.sh /mnt/raid0/llm/tmp/codex-ni-20261027-kpf18-disk-unblock/driver-check3-q3 /bin/bash /mnt/raid0/llm/tmp/codex-ni-20261027-kpf18-disk-unblock/q3-driver-check.sh
+GATE_FIXTURE_DIR=/mnt/raid0/llm/tmp/codex-ni-20261027-kpf18-disk-unblock/driver-check3-q3/tmp/q3-gate.bfqj6i
+Q3 grant gate fixtures PASS
+RSS_FIXTURE_DIR=/mnt/raid0/llm/tmp/codex-ni-20261027-kpf18-disk-unblock/driver-check3-q3/tmp/q3-rss.SRiB4m
+...
+----------------------------------------------------------------------
+Ran 3 tests in 0.001s
+
+OK
+Q3 RSS watcher fixtures PASS
+ADMITTED 2026-10-27T19:03:28Z CPU72,73 OMP1 rolebuild <=260s monitored RSS budget 4GiB; sampled peak
+Pid:	698378
+PPid:	698294
+Cpus_allowed_list:	72-73
+command=/bin/bash /mnt/raid0/llm/tmp/codex-ni-20261027-kpf18-disk-unblock/q3-driver-check.sh
+warning: safe.directory 'github/sangha-root/' not absolute
+warning: safe.directory 'github/sangha-root/repos/sangha-knowledge' not absolute
+warning: safe.directory 'github/sangha-root/repos/sangha-model' not absolute
+warning: safe.directory 'github/sangha-root/' not absolute
+warning: safe.directory 'github/sangha-root/repos/sangha-knowledge' not absolute
+warning: safe.directory 'github/sangha-root/repos/sangha-model' not absolute
+DRY RUN: validated 19 sources; no moves performed
+no_approval=REFUSED no_batch_created=PASS
+5f1fee4c21b73bb9dbe32b0b4b7116b876bced40caa2cc979a1c5be0883bdd38  /mnt/raid0/llm/tmp/codex-ni-20261027-kpf18-disk-unblock/source-snapshot.json
+36a0f12de1ecc4477ad13542d9f6200862c2d89ba96c70e25a286a4e9253328e  /mnt/raid0/llm/worktrees/kpf18-disk-unblock/scripts/safety/approved_batch_sweep.py
+83b4d4b5a93a982ef003347d403d337f3ca725ce904900006fdfe8a1914a4e64  /mnt/raid0/llm/worktrees/kpf18-disk-unblock/scripts/safety/kpf18_batch_move.py
+8c77b815774a3b489afdb5913a0b0aca3eca0a16ac9cd89f82c9699d4399ddce  /mnt/raid0/llm/worktrees/kpf18-disk-unblock/scripts/safety/kpf18_batch_prepare.py
+e07b31ab6180c7cf4cfc8d7f98b825c61d3a86950f8de8bb193cb13ab8c307a2  /mnt/raid0/llm/worktrees/kpf18-disk-unblock/scripts/safety/trash-sweep.sh
+4874ea469f8e2da845bef1db64f81e39b71b1a844c6f2e48ac53a647d336d64b  /mnt/raid0/llm/worktrees/kpf18-disk-unblock/tests/safety/test_approved_batch_sweep.py
+RSS_SAMPLED_PEAK_KIB=61668 LIMIT_KIB=4194304 drained=True
