@@ -114,6 +114,27 @@ Run this loop at every task boundary and on every watcher event (`event-watch-ws
 
 ## 4. Invariants, each bought by an incident (`references/incident-ledger.md` has dates and ids)
 
+**New-row launch gate (T1, 2026-10-27).** Before arming any new row, run
+`scripts/coordination/dryrun_check.py run` against that row's real launcher
+argv and real `job.sh`. The launcher must consume a private grant with the
+writer's exact minute format; the job calls `dryrun_check.py boundary` and exits
+immediately before its first model load, server start, network write or catalog
+write. The boundary prints RLIMITs, effective affinity and cgroup. Its receipt
+binds the preflight nonce and launcher/job source hashes; source review must
+confirm the hook precedes the first effect. The row notes declare
+`requested_window_s`, `est_output_GiB`, `scratch_root`, `claimed_cpus`,
+`launcher_path`, `job_path`, `source_manifest` (sha256sum format) and, after
+preflight, `dryrun_pass=<scratch_root>/dryrun/<nonce>/pass.json`.
+`filler_run12.sh` enforces those fields against the real grant at run time,
+including `min_window + 300`, exact booked window and free space after output.
+It refuses normal launch without a matching same-entry PASS artifact and checks
+RAM limits, affinity and cgroup inside the actual claim before invoking the job.
+A two-core preflight for a larger row uses `--scoped-pf`; its PASS artifact says
+normal affinity was not proved, and the normal launch checks that separately.
+The [dated disk policy](../../../scripts/coordination/dryrun_disk_policy.json)
+records the operator's interim 50 GiB floor until 2026-10-28 08:10Z, then
+150 GiB. Existing launchers remain on their pinned versions until rearmed.
+
 - Window ≥ min-window + 300 s. Exactly-equal windows were refused three times in two days
   (kpf60 10-22, rtepfx2 10-23, ch28 v1 near-miss) despite the lesson being written after the first.
 - Grant only when the previous holder's claims and flocks are *released*, not when its `.ended`
