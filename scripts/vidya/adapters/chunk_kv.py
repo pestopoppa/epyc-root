@@ -402,7 +402,7 @@ def project(native: Any):
     e = row["extra"]
     locator = f"chunk-kv:{row['run_id']}:{e['kind']}:{e['window']['window_id']}:{row['results_path']}"
     return ns.to_claim_tuple(row, source_kind=SOURCE_KIND, locator=locator,
-                             sidecar_path=native.get("sidecar_path", ""))
+                             sidecar_path=native.get("sidecar_path", ""), no_protocol_ids=("unknown",))
 
 
 def frames_for_sidecar(sidecar_path: str | Path, *, as_of: str) -> list[dict]:
