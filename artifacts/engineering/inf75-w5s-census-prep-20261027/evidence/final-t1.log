@@ -1,0 +1,24 @@
+[region-lock] acquiring regions ['q3'] as role='build' (timeout_s=15.0) …
+[region-lock] held ['q3'] after 0.0s wait; running: taskset -c 72,73 bash /mnt/raid0/llm/tmp/refactor-01a16fc3/sc81-census-unblock/q3-preflight/q3-child.sh /mnt/raid0/llm/tmp/codex-ni-20261027-inf75-w4-census-prep/t1-final-q3-run bash /mnt/raid0/llm/tmp/codex-ni-20261027-inf75-w4-census-prep/t1-only.sh
+GATE_FIXTURE_DIR=/mnt/raid0/llm/tmp/codex-ni-20261027-inf75-w4-census-prep/t1-final-q3-run/tmp/q3-gate.WBGx6v
+Q3 grant gate fixtures PASS
+RSS_FIXTURE_DIR=/mnt/raid0/llm/tmp/codex-ni-20261027-inf75-w4-census-prep/t1-final-q3-run/tmp/q3-rss.HyYsvf
+...
+----------------------------------------------------------------------
+Ran 3 tests in 0.001s
+
+OK
+Q3 RSS watcher fixtures PASS
+ADMITTED 2026-10-27T21:53:15Z CPU72,73 OMP1 rolebuild <=260s monitored RSS budget 4GiB; sampled peak
+Pid:	1512276
+PPid:	1511035
+Cpus_allowed_list:	72-73
+command=bash /mnt/raid0/llm/tmp/codex-ni-20261027-inf75-w4-census-prep/t1-only.sh 
+OK: 1 row(s) checked, 0 refusal(s), 0 warning(s)
+DRYRUN_ENTRY {"NODE_OPTIONS": "--max-old-space-size=4096", "argv": ["/bin/bash", "/mnt/raid0/llm/tmp/codex-ni-20261027-inf75-w4-census-prep/w5s/launch.sh"], "box": "/mnt/raid0/llm/tmp/codex-ni-20261027-inf75-w4-census-prep/w5s/dryrun/8b1b3d4d6a946563ba14be0e2d7bb3164f53bda594eb92aa", "grant": "regions=72-73 start=2026-10-27T21:53Z end=2026-10-27T23:28Z", "job_sha256": "b3c34378e7b6a9bd1963155736a6bb9745e399405970b20d801b8b748a6d7605", "launcher_sha256": "b8a08693f013063a44929a4c0a3fa74a6a26bfef169a8aa683dc44ca79b4987e"}
+DRYRUN_PASS entry_rc=0 boundary=first-native-canary-output-model-load-or-socket pid=1515087 birth=126047009 reaped=yes box=/mnt/raid0/llm/tmp/codex-ni-20261027-inf75-w4-census-prep/w5s/dryrun/8b1b3d4d6a946563ba14be0e2d7bb3164f53bda594eb92aa
+OK: 1 row(s) checked, 0 refusal(s), 0 warning(s)
+ADMIT_PASS window=5700 free_gib=158.31 floor_gib=150
+admit: validator OK; admit: MemAvailable 1078 GiB, need 192 GiB; class=block-correctness launcher=filler_run12.sh:1516255 lclass=cpu minwin=5400(argv) window=5700 claim=0-95 gpuq=- claim_regions=q0+q1+q2+q3 regions=0-95
+PASS: normal-minute admission, validator, official grant_ok, captured poller reaped
+RSS_SAMPLED_PEAK_KIB=90944 LIMIT_KIB=4194304 drained=True

@@ -1,0 +1,5 @@
+MAIN FINAL APPROVAL 2026-10-27
+source manifest sha256 ddb15b7d8fa741baf54cf9563710df2ab9dade4ef3471eaed0a62aec2fe90d78
+T1 proof /mnt/raid0/llm/tmp/codex-ni-20261027-inf75-w4-census-prep/w5s/dryrun/8b1b3d4d6a946563ba14be0e2d7bb3164f53bda594eb92aa/pass.json
+job sha256 b3c34378e7b6a9bd1963155736a6bb9745e399405970b20d801b8b748a6d7605
+Approved: unarmed primary-target-only owner-ready preparation; head tensor inventory and draft graphs excluded; retained-author obligation and P0d remain open. Owner alone registers, arms and grants. No inference authorization to preparer.

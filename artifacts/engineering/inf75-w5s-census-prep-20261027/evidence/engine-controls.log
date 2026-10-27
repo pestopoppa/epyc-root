@@ -1,0 +1,23 @@
+[region-lock] acquiring regions ['q3'] as role='build' (timeout_s=15.0) …
+[region-lock] held ['q3'] after 0.0s wait; running: taskset -c 72,73 bash /mnt/raid0/llm/tmp/refactor-01a16fc3/sc81-census-unblock/q3-preflight/q3-child.sh /mnt/raid0/llm/tmp/codex-ni-20261027-inf75-w4-census-prep/postproof-q3-run bash /mnt/raid0/llm/tmp/codex-ni-20261027-inf75-w4-census-prep/w5s-postproof-tests.sh
+GATE_FIXTURE_DIR=/mnt/raid0/llm/tmp/codex-ni-20261027-inf75-w4-census-prep/postproof-q3-run/tmp/q3-gate.TqMq8P
+Q3 grant gate fixtures PASS
+RSS_FIXTURE_DIR=/mnt/raid0/llm/tmp/codex-ni-20261027-inf75-w4-census-prep/postproof-q3-run/tmp/q3-rss.Wxlzj4
+...
+----------------------------------------------------------------------
+Ran 3 tests in 0.000s
+
+OK
+Q3 RSS watcher fixtures PASS
+ADMITTED 2026-10-27T21:47:48Z CPU72,73 OMP1 rolebuild <=260s monitored RSS budget 4GiB; sampled peak
+Pid:	1491520
+PPid:	1491435
+Cpus_allowed_list:	72-73
+command=bash /mnt/raid0/llm/tmp/codex-ni-20261027-inf75-w4-census-prep/w5s-postproof-tests.sh 
+PASS engine stale
+PASS engine bad
+PASS engine good
+PASS engine cleanup
+admit: validator OK; admit: MemAvailable 1065 GiB, need 192 GiB; class=block-correctness launcher=filler_run12.sh:1491768 lclass=cpu minwin=5400(argv) window=5700 claim=0-95 gpuq=- claim_regions=q0+q1+q2+q3 regions=0-95
+PASS: own temporary poller ended and short poll-sleep drained
+RSS_SAMPLED_PEAK_KIB=50172 LIMIT_KIB=4194304 drained=True

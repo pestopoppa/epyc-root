@@ -1,0 +1,9 @@
+09e5427a704a8b0b018eb7f2771f5fd76532affc58bc0e2d25f2a6b8d31a31b2  /mnt/raid0/llm/tmp/refactor-01a16fc3/c5-candidate/jobs/cpu/job.sh
+05947fb95248d9efd6b1320bb8e520213bf91831f0ceb4248720a877f14c6d40  /mnt/raid0/llm/tmp/refactor-01a16fc3/c5-candidate/jobs/cpu/launch.sh
+57585b405f2d7c6062db2db7786c594d4c428f6952bd27db5a86c0d999cffe33  /mnt/raid0/llm/tmp/refactor-01a16fc3/c5-candidate/controlproofs/verify_ggml_linkage.sh
+b0003b81191049deff147b17cecd031d934665f989269a539b4478ada5d5484d  /mnt/raid0/llm/tmp/refactor-01a16fc3/c5-candidate/predeclaration/cpu-champion-CMakeCache.txt
+75bc9a476d7f7ee4e3f51b5c3b0705df75e8f7ea0b9ccfb46fd2428b50b27980  /mnt/raid0/llm/tmp/refactor-01a16fc3/c5-candidate/predeclaration/PREDECLARATION.md
+272b66f1e71b0be5bb8a59b2b92dc5f97f1292aba2a72f86c9cb3673362374cc  /mnt/raid0/llm/worktrees/prep-01a16fc3-c5-candidate/CMakeLists.txt
+a2159960f58d128f95801c33c78c6dbe025f9eb3fd7fbf15a0bd691b04932a46  /mnt/raid0/llm/worktrees/prep-01a16fc3-c5-candidate/ggml/CMakeLists.txt
+65177e997fc3b296b9088f684de1e811ba7807a619e68e877caf6ebd459474e3  /mnt/raid0/llm/worktrees/prep-01a16fc3-c5-candidate/ggml/src/ggml-hip/CMakeLists.txt
+f0d83af52edf9d41bd76a95dd9c07d7769c8f00369c4b09474f67f2114752e3d  /mnt/raid0/llm/worktrees/prep-01a16fc3-c5-candidate/ggml/src/ggml-cpu/ops.cpp
