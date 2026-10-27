@@ -767,6 +767,11 @@ whoever owns the swap, not with this handoff.
 All vendor speedup figures above are **CLAIMS**, unverified on gfx90a. Every number in the n-max table is a
 **measured OBSERVATION** (MEASUREMENT.md) — none gates a keep/deploy decision on its own.
 
+### Native row-exact readout, 2026-10-27
+
+- [x] Audit native output and repair byte evidence reader ✅ 2026-10-27. Q8_0 and Q4_K each reproduced a width-2 difference in all three D27 shapes with the candidate off and had none through width 8 with it on; all three repeats and width-1 identity passed. This supports the native output FIXED verdict only, not a performance or promotion decision. The byte job remains HELD: its parser rejected lowercase native type names and stopped before its producer-time record. A corrected retrospective parse finds 210 row tuples and the deliberately injected byte failure; it does not create a historical producer record. The reader and successor validator now enforce exact three-repeat coverage, Q8_1 ABI byte lengths, and the declared mutation row. [belief: cc]
+- [ ] Owner install the reviewed reader, rerun a synthetic installed-root planning canary, enroll the byte successor bound to that reader and seal, then schedule the fresh byte-only job under a normal grant. Successor and evidence: `/mnt/raid0/llm/tmp/codex-ni-20261027-df2-native-readout/OWNER-APPLICATION.md`; source seal `536858d62bffaaa0f80265d920f7d797bbc56855f8a668d6031a418ef3d97917`. No prior byte completion is claimed.
+
 ### Research intake 2026-10-22 — Locals + Beacon (intake-2386..2460)
 
 - [ ] **DF2-LB1 — At the next GPU correctness window on an own scratch server with the production 27B shape (np 4, draft n-max 7): census ubatches per target decode with per-slot token counts on a replayed trace (hybrid split_equal turns ragged slots into extra full weight sweeps), and A/B the target backend-sampling flag with the greedy-identity and acceptance checks (intake-2386).**
