@@ -4,15 +4,15 @@
     "handoff-active": 184,
     "handoff-blocked": 2,
     "handoff-completed": 216,
-    "progress": 823,
+    "progress": 826,
     "research": 140
   },
   "kind": "project-wiki-source-manifest",
-  "last_compile": "2026-10-27T10:08:50Z",
+  "last_compile": "2026-10-27T15:23:54Z",
   "mode": "touch",
-  "scan_time": "2026-10-27T10:08:50Z",
+  "scan_time": "2026-10-27T15:23:54Z",
   "schema_version": 1,
-  "source_set_hash": "4630b6a75e98f84945f1adbdcebd4b3b751d251a40fc31152a664a940cd781cc",
+  "source_set_hash": "fed8674af7385c4ae2db59423d90628f06f7b03a02e41a70807361d69b202e6f",
   "sources": [
     {
       "content_hash": "6c067235a74a3b9667dd4fad23684206476aeac1cdefe3b4e0a0824d3179c241",
@@ -79,10 +79,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "be03edce6ac124b66b81876db65c83b11761ccc779864ae9750a87da85c339c6",
-      "modified": "2026-10-27T10:02:27Z",
+      "content_hash": "cdab02239b808590694211aa3b04454ce2ca71a4513f8c228bd02329144200e9",
+      "modified": "2026-10-27T14:58:28Z",
       "path": "handoffs/active/architect-model-selection-bench.md",
-      "size": 119824,
+      "size": 119895,
       "title": "Architect Model Comparison Benchmark",
       "type": "handoff-active"
     },
@@ -119,10 +119,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "1566cf4a377e964273888f95c7661a903d437ad69ca3aabcdc7963792baddbde",
-      "modified": "2026-10-27T10:02:27Z",
+      "content_hash": "5c161f8299aa7d53f43aabee1be419fe8bf2c15d1e6fd9993c5e1e32b8dbf26b",
+      "modified": "2026-10-27T14:58:28Z",
       "path": "handoffs/active/autokernel-cross-workload-keep-gate.md",
-      "size": 80661,
+      "size": 81252,
       "title": "AutoKernel Cross-Workload Keep Gate \u2014 census, blast-radius screen, multi-workload non-regression",
       "type": "handoff-active"
     },
@@ -311,10 +311,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "b9dcb7661caf38337e98d5aaf5eecb7225639881e4ed56f4c8daff42223b405e",
-      "modified": "2026-10-27T10:02:27Z",
+      "content_hash": "47891f9b0ab74e9b7778f10683605c44d7de5d58ad59c6d1b09cc66375da745f",
+      "modified": "2026-10-27T14:58:29Z",
       "path": "handoffs/active/cpu-decode-roofline-program.md",
-      "size": 485363,
+      "size": 485328,
       "title": "CPU Decode Roofline Program \u2014 Qwen3.8-Flash-Next (qwen4exp) at the machine ceiling",
       "type": "handoff-active"
     },
@@ -399,10 +399,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "8ca784c40024cd4e6475dec4607fad35362198990adc64ef6dfdc9f1e4381233",
-      "modified": "2026-10-27T10:02:27Z",
+      "content_hash": "9cfd50e8a0ae5403bf2298d1cf94c94aee29ee9813222daf23adcb31e5c5d771",
+      "modified": "2026-10-27T14:58:29Z",
       "path": "handoffs/active/dflash2-block-drafter-experimental-build.md",
-      "size": 88629,
+      "size": 89309,
       "title": "dFlash2 block drafter \u2014 experimental build + measured comparison vs MTP",
       "type": "handoff-active"
     },
@@ -639,10 +639,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "9d807dd59225f3d3761fb08f4fb9a6a12bd071dcc68e8f3479a54af41d65f6d4",
-      "modified": "2026-10-27T10:02:27Z",
+      "content_hash": "14d95d5ecc0a764b325b8e7f3d4cd328f0ee3316d775b1efc975a0b9ddbdcdfb",
+      "modified": "2026-10-27T14:58:29Z",
       "path": "handoffs/active/gpu-serving-tie-in-program.md",
-      "size": 161136,
+      "size": 164661,
       "title": "GPU Serving Tie-In Program \u2014 one fabric, two devices",
       "type": "handoff-active"
     },
@@ -655,10 +655,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "ea88772b84c2d81da05f6246e9ddf96095e62636a2429ba507b4805d294e45b3",
-      "modified": "2026-10-27T10:02:27Z",
+      "content_hash": "966bc37b862f5b37074b97748bb8e24ea4df9b6632b7c139d0df55330f957aa8",
+      "modified": "2026-10-27T14:58:29Z",
       "path": "handoffs/active/harness-improvement-loop.md",
-      "size": 158152,
+      "size": 158461,
       "title": "Harness Improvement Loop \u2014 self-improvement for orchestrator-side harness features",
       "type": "handoff-active"
     },
@@ -727,18 +727,18 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "51fb17af74e15fd80ddbbca2ccfae627484e1f8d6513e22f85e767f24da2c802",
-      "modified": "2026-10-27T10:02:27Z",
+      "content_hash": "9b8af79b551bc362487b7634ee23324791a256ebf7f86d4c4a8c5d39758250e2",
+      "modified": "2026-10-27T14:58:29Z",
       "path": "handoffs/active/kv-prefix-fork-and-paged-attention.md",
-      "size": 255161,
+      "size": 257044,
       "title": "KV prefix fork and paged attention: cross-slot prefix sharing, cache-aware dispatch, per-sequence KV views",
       "type": "handoff-active"
     },
     {
-      "content_hash": "b286d173cfccca8305d023e1c922692e27d6cdda52d7527ddd27d80d86c2b165",
-      "modified": "2026-10-27T10:02:27Z",
+      "content_hash": "48d691c5e01ccbbd93f33251b7f4ab500fbe8ff396cabb8dc9f2736e6da7675e",
+      "modified": "2026-10-27T14:58:29Z",
       "path": "handoffs/active/kv-unified-stack-rollout.md",
-      "size": 198159,
+      "size": 203605,
       "title": "Unified KV (`--kv-unified`) stack rollout and shared-pool serving",
       "type": "handoff-active"
     },
@@ -1063,10 +1063,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "87acb6e82a5d61894e71f5b3b014b984b6884a2032fdd97a96d595aac952f3e5",
-      "modified": "2026-10-27T10:02:27Z",
+      "content_hash": "a61e614cb7c537c527a8d8673996b140d4f9caf1302607e80fea4a84321bff67",
+      "modified": "2026-10-27T14:58:29Z",
       "path": "handoffs/active/qwen38-27b-replace-qwen36.md",
-      "size": 91681,
+      "size": 94781,
       "title": "Qwen3.8-27B \u2014 replace Qwen3.6-27B in production",
       "type": "handoff-active"
     },
@@ -1127,10 +1127,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "0fcd855f58d61fdf6b50d02394772580017b97cb3f0898632469ca04a62ea1e9",
-      "modified": "2026-10-27T10:02:27Z",
+      "content_hash": "a05f573fc5a3653a4e161f4d3c8eead0f39e017396521a844b4e10c416987685",
+      "modified": "2026-10-27T14:58:29Z",
       "path": "handoffs/active/repl-embedding-retrieval.md",
-      "size": 87320,
+      "size": 90819,
       "title": "REPL Embedding Retrieval \u2014 hybrid search that returns pointers",
       "type": "handoff-active"
     },
@@ -1295,10 +1295,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "84784dd0b284294df255603c40b2176cc4a6a1de03e0c7da310323b78318fe27",
-      "modified": "2026-10-27T10:02:27Z",
+      "content_hash": "95e04bada3929fa4844c9b3c845e84699cf2698958aa821691dd4dd1573766a8",
+      "modified": "2026-10-27T14:58:29Z",
       "path": "handoffs/active/speculative-decoding-mtp-refresh.md",
-      "size": 109653,
+      "size": 114163,
       "title": "Speculative-Decoding / MTP Refresh",
       "type": "handoff-active"
     },
@@ -1439,10 +1439,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "05dd73850baf64ab9b254c6a05c1a61ae0548cae296c445b11b9d8dd2a9c1486",
-      "modified": "2026-10-27T10:02:27Z",
+      "content_hash": "b253814eef22b9a6fdf6efbf072da5d0e04ed42b131fe37ab911c98963db7c62",
+      "modified": "2026-10-27T15:08:16Z",
       "path": "handoffs/active/vidya-belief-substrate-program.md",
-      "size": 622668,
+      "size": 625023,
       "title": "Vidya Belief-Substrate Program",
       "type": "handoff-active"
     },
@@ -10927,10 +10927,34 @@
       "type": "progress"
     },
     {
-      "content_hash": "8ee2f6da97ca88aec2078f0248a15af9bf20b859f6d232f6f77589ec04986da7",
-      "modified": "2026-10-27T10:02:27Z",
+      "content_hash": "d269f59af8ddbab9bf2450774eebd8d479dd52bca93527a2025e663ed02b2a39",
+      "modified": "2026-10-27T14:58:29Z",
+      "path": "progress/2026-10/2026-10-27-codex-ni-checkpoint-0945.md",
+      "size": 5650,
+      "title": "Bounded checkpoint \u2014 Codex NI \u2014 2026-10-27 09:45 UTC cut",
+      "type": "progress"
+    },
+    {
+      "content_hash": "956a74857f928ae35b166afc5c1ffe895bb1837d0f1e095883f400602d798e65",
+      "modified": "2026-10-27T14:58:29Z",
+      "path": "progress/2026-10/2026-10-27-codex-ni-checkpoint-publication.md",
+      "size": 1172,
+      "title": "Accepted preparation checkpoint publication \u2014 2026-10-27",
+      "type": "progress"
+    },
+    {
+      "content_hash": "3f209d5e95ae594f7dd085a0c9c2408629f3aa32b29c5f5e029ce6f3153511f5",
+      "modified": "2026-10-27T15:23:53Z",
+      "path": "progress/2026-10/2026-10-27-codex-ni-full-wrap-1456.md",
+      "size": 7244,
+      "title": "Full wrap-up \u2014 Codex NI \u2014 2026-10-27 14:56:35Z cutoff",
+      "type": "progress"
+    },
+    {
+      "content_hash": "3239f52b7ee65f5a4b930bf2c89101186cca76972c4cb5d8fd92b7fe15af53b1",
+      "modified": "2026-10-27T14:58:29Z",
       "path": "progress/2026-10/2026-10-27-workspace-58.md",
-      "size": 20583,
+      "size": 30767,
       "title": "2026-10-27 \u2014 workspace-58 (Codex NI wrap packages, 00:00Z to 05:26Z)",
       "type": "progress"
     },
@@ -12807,7 +12831,7 @@
       "type": "docs"
     }
   ],
-  "total_new": 1599,
+  "total_new": 1602,
   "writer_evidence_policy": {
     "applies_to": "generated-wiki-article-writes",
     "minimum_confidence": "verified",
