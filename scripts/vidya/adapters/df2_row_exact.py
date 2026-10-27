@@ -1,12 +1,13 @@
 """Project producer-time DF2 AKX observations via the existing measurement ladder."""
 from __future__ import annotations
 import hashlib,importlib.util,json,re
+from collections import Counter
 from pathlib import Path
 from claim_tuple import ClaimTuple,ProjectionError,register,to_frames
 SOURCE_KIND='df2-row-exact-akx'; ADAPTER_ID='vidya.adapters.df2_row_exact/v1'; AUTHORITY='measurement'; SCHEMA='epyc.df2.row_exact.native.v1'
 SHAPES={(5120,17408),(6144,5120),(17408,5120)}
 _spec=importlib.util.spec_from_file_location('df2_native',Path(__file__).with_name('df2_native.py')); _native=importlib.util.module_from_spec(_spec); _spec.loader.exec_module(_native)
-P=re.compile(r'GGML_CUDA_DF2_CHECK_BYTES (PASS|FAIL) node=(\S+) type=(Q8_0|Q4_K) k=(\d+) m=(\d+) width=(\d+) row=(\d+) bytes=(\d+)(?: fnv64=([0-9a-f]{16})| injected=(\d+))')
+P=re.compile(r'GGML_CUDA_DF2_CHECK_BYTES (PASS|FAIL) node=(\S+) type=(q8_0|q4_K|Q8_0|Q4_K) k=(\d+) m=(\d+) width=(\d+) row=(\d+) bytes=(\d+)(?: fnv64=([0-9a-f]{16})| injected=(\d+))')
 def _sha(p): return hashlib.sha256(Path(p).read_bytes()).hexdigest()
 def _fail(msg): raise ProjectionError(msg)
 def _json(p):
@@ -55,18 +56,26 @@ def _output(files,gpu):
   result[cell]=('NO_REPRODUCTION_ON_REGRESSION' if on_fail else 'NO_REPRODUCTION') if not off_fail else ('NOT_FIXED' if on_fail else 'FIXED')
  return result
 def _byte(files,gpu):
- _residency(files,('q8','q4','mutation'),gpu); seen=set()
+ _residency(files,('q8','q4','mutation'),gpu); seen=Counter()
  for kind,stem in (('Q8_0','q8'),('Q4_K','q4')):
   receipt=_json(files[stem+'.receipt.json']); flags=receipt.get('flags',{})
   if receipt.get('rc')!=0 or flags!={'GGML_CUDA_DF2_ROW_EXACT':'1','GGML_CUDA_DF2_CHECK_BYTES':'1','GGML_CUDA_DISABLE_GRAPHS':'1','GGML_CUDA_DF2_INJECT_BYTE_MISMATCH':None}: _fail('positive failed or wrong flags')
-  for m in P.finditer(files[stem+'.log'].read_text()):
-   status,node,typ,k,n,w,r,size,h,inj=m.groups(); k=int(k); n=int(n); w=int(w); r=int(r)
-   if status!='PASS' or typ!=kind or (k,n) not in SHAPES or not node or int(size)<=0 or w not in range(2,9) or not 0<=r<w or h is None: _fail('invalid byte capture')
-   seen.add((typ,k,n,w,r))
+  for line in files[stem+'.log'].read_text().splitlines():
+   if not line.startswith('GGML_CUDA_DF2_CHECK_BYTES '): continue
+   m=P.fullmatch(line)
+   if m is None: _fail('malformed byte assertion')
+   status,node,typ,k,n,w,r,size,h,inj=m.groups(); typ=typ.upper(); k=int(k); n=int(n); w=int(w); r=int(r)
+   if status!='PASS' or typ!=kind or (k,n) not in SHAPES or not node or int(size)!=k//32*36 or w not in range(2,9) or not 0<=r<w or h is None: _fail('invalid byte capture')
+   seen[(typ,k,n,w,r)]+=1
  expected={(typ,k,n,w,r) for typ in ('Q8_0','Q4_K') for k,n in SHAPES for w in range(2,9) for r in range(w)}
- if seen!=expected: _fail('byte coverage incomplete')
- mutation=_json(files['mutation.receipt.json'])
- if mutation.get('rc')==0 or mutation.get('flags',{}).get('GGML_CUDA_DF2_INJECT_BYTE_MISMATCH')!='1' or not any(x.group(1)=='FAIL' and x.group(10)=='1' for x in P.finditer(files['mutation.log'].read_text())): _fail('mutation not proven')
+ if set(seen)!=expected or any(count!=3 for count in seen.values()): _fail('byte coverage incomplete or repeated unexpectedly')
+ mutation=_json(files['mutation.receipt.json']); flags=mutation.get('flags',{})
+ if mutation.get('rc')==0 or flags!={'GGML_CUDA_DF2_ROW_EXACT':'1','GGML_CUDA_DF2_CHECK_BYTES':'1','GGML_CUDA_DISABLE_GRAPHS':'1','GGML_CUDA_DF2_INJECT_BYTE_MISMATCH':'1'}: _fail('mutation flags or exit invalid')
+ lines=[x for x in files['mutation.log'].read_text().splitlines() if x.startswith('GGML_CUDA_DF2_CHECK_BYTES ')]
+ matches=[P.fullmatch(x) for x in lines]
+ if len(matches)!=1 or matches[0] is None: _fail('malformed mutation assertion')
+ x=matches[0].groups()
+ if x[0]!='FAIL' or x[2].upper()!='Q8_0' or tuple(map(int,x[3:8]))!=(5120,17408,2,0,5760) or x[9]!='1': _fail('mutation not proven at declared row')
  return {'coverage':len(seen),'mutation':'FAILED_AS_INJECTED'}
 def native_rows(path):
  path=Path(path).resolve(); rec=_json(path)
