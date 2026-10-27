@@ -1,0 +1,71 @@
+{
+  "status": "SCOPED_C72_SENTINELS_PASS_REVIEW_ONLY",
+  "sites": {
+    "2444": "llama_grammar_accept_impl(",
+    "2451": "llama_grammar_apply_impl(",
+    "2480": "llama_grammar_init_impl(",
+    "2502": "llama_grammar_clone_impl(",
+    "2562": "llama_grammar_init_impl(",
+    "2564": "llama_grammar_init_impl("
+  },
+  "callers": {
+    "llama_grammar_accept_impl": [
+      "llama_sampler_grammar_accept_impl"
+    ],
+    "llama_grammar_apply_impl": [
+      "llama_sampler_grammar_apply"
+    ],
+    "llama_grammar_clone_impl": [
+      "llama_sampler_grammar_clone"
+    ],
+    "llama_grammar_init_impl": [
+      "llama_sampler_grammar_reset",
+      "llama_sampler_init_grammar_impl"
+    ]
+  },
+  "targets": [
+    {
+      "symbol": "llama_grammar_apply_impl",
+      "uid": "Function:src/llama-grammar.cpp:llama_grammar_apply_impl#2~struct llama_grammar,llama_token_data_array",
+      "risk": "LOW",
+      "epistemic": "exact"
+    },
+    {
+      "symbol": "llama_grammar_accept_impl",
+      "uid": "Function:src/llama-grammar.cpp:llama_grammar_accept_impl#2~struct llama_grammar,llama_token",
+      "risk": "LOW",
+      "epistemic": "exact"
+    },
+    {
+      "symbol": "llama_grammar_clone_impl",
+      "uid": "Function:src/llama-grammar.cpp:llama_grammar_clone_impl#1~struct llama_grammar",
+      "risk": "LOW",
+      "epistemic": "exact"
+    },
+    {
+      "symbol": "llama_grammar_init_impl",
+      "uid": "Function:src/llama-grammar.cpp:llama_grammar_init_impl#4~struct llama_vocab,llama_grammar_element,size_t,size_t",
+      "risk": "LOW",
+      "epistemic": "exact"
+    },
+    {
+      "symbol": "llama_grammar_init_impl",
+      "uid": "Function:src/llama-grammar.cpp:llama_grammar_init_impl#8~struct llama_vocab,char,char,bool,char,size_t,llama_token,size_t",
+      "risk": "LOW",
+      "epistemic": "exact"
+    },
+    {
+      "symbol": "llama_grammar",
+      "uid": "Struct:src/llama-grammar.h:llama_grammar",
+      "risk": "LOW",
+      "epistemic": "exact"
+    }
+  ],
+  "graph_hashes": {
+    "/mnt/raid0/llm/tmp/codex-ni-20261027-c5-graph-call-edge-repair/c72-mini/.gitnexus/lbug": "3ea3b9c05d7cfb8a864edf5b443f3fd3f3fd65b52b4d2a324cad30dce06af59c",
+    "/mnt/raid0/llm/tmp/codex-ni-20261027-c5-graph-call-edge-repair/c72-mini/.gitnexus/meta.json": "77b7bb0f3185c327a2ba2ecff9e85023dd4b7517de3b9dc8167d5539c4ccd2fb",
+    "/mnt/raid0/llm/tmp/codex-ni-20261027-gnx-split-phase/stage2-fixture-v2/registry/registry.json": "c7b1da02e13a98e12e3caa906ed14c99f03f0382a2a579647c08c4a9234750a7"
+  },
+  "scope": "audited C72 grammar targets and callers only",
+  "fold_authority": false
+}

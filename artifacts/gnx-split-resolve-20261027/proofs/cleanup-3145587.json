@@ -1,0 +1,19 @@
+{
+  "identity": {
+    "pid": 3145587,
+    "pgid": 3145587,
+    "sid": 3145587,
+    "start": 124027720,
+    "uid": 1000,
+    "rss": 0,
+    "state": "R"
+  },
+  "steps": [
+    {
+      "signal": 15,
+      "before": []
+    }
+  ],
+  "after": [],
+  "leader_after": null
+}

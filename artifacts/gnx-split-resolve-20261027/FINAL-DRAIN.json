@@ -1,0 +1,28 @@
+{
+  "captured": [
+    {
+      "pid": 45094,
+      "startticks": 124389082,
+      "uid": 1000,
+      "uids": [
+        1000
+      ],
+      "pgid": 45094,
+      "sid": 45094
+    },
+    {
+      "pid": 45104,
+      "startticks": 124389083,
+      "uid": 1000,
+      "uids": [
+        1000
+      ],
+      "pgid": 45094,
+      "sid": 45094
+    }
+  ],
+  "reaped": [
+    45094
+  ],
+  "all_dead": true
+}
