@@ -592,6 +592,7 @@ Global constraints:
 - [ ] **AKX-P0d — base census for W1–W6 on the current champion-of-record.**
   - Compute: correctness-surface, six workloads, under stage claims.
   - **Acceptance:** six observed censuses with witnesses. W3–W6 CPU runs are inside region-lock windows, and foreign load is sampled (`foreign_load.py`).
+  - *(2026-10-27 14:45Z, ws58 results harvest, INF-75 native ABI canary.)* `inf75-c5-native-abi-canary-q0-r1` PASS rc0 at 14:19:58Z. SUMMARY `/mnt/raid0/llm/tmp/codex-ni-20261027-inf75-census-prep/canary-q0-r1/out/<run-id>/SUMMARY.json`: abi_canary_observed true, full_shape_state UNKNOWN. Diagnostic q0/t24/np1 run, not a canonical t48 P0d witness. Earlier: q2 r1 failed 13:49:51Z ("server task escaped claimed affinity", literal-equality guard defect); q2 r2 parked unrun, superseded by q0. The full census is not done, so P0d stays open. [no-belief: diagnostic canary, no census witness]
 
 ### P1 — footprint and screen, observe-only, historical replay (acceptance test)
 

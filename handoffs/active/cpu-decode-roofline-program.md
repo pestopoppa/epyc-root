@@ -2340,11 +2340,7 @@ most, so its weaker provenance should be stated wherever it is relied on.
       `feedback_stale_build_artifact_masquerades_as_kernel_bug` surface: without it, a stale artifact
       reads as a live kernel result. HARNESS-1 does carry a 291-object build identity digest
       (`a097dd3a9669adec…`), which is the raw material — the missing piece is the *check*.
-- [ ] **ABLATE-1 — `harness1/ablate.sh` is IMPLEMENTED AND UNIT-READY BUT NEVER DEMONSTRATED.**
-      Self-verifying TU-proportional leave-one-out. It was not run because it needed a build-lock
-      slot and HARNESS-1 declined to delay the champion fold for it. It currently has **no home at
-      all** — `PREPARED-EDITS.md` §4 explicitly declines to file a HARNESS-1 handoff — so it is
-      filed here rather than lost. Pairs with HARNESS-2 (object-digest incremental builds).
+- [x] **ABLATE-1 — native build-only leave-one-out demonstration passed 2026-10-27.** Predeclared receipt `/mnt/raid0/llm/tmp/cal-1027/inf70-ablate-1/VERDICT.json`: exactly the lever TU changed and compiled; the restore build returned to the original object manifest, both binary markers matched, and the worktree was clean. Times are descriptive only. Exact-set enforcement and the restore rebuild were performed by the surrounding job. [belief: cc]
 - [ ] **REGIONLOCK-1 — BUILDS THAT SKIP `region-lock` RUN STRAIGHT THROUGH A HELD BENCH LOCK. This
       affects EVERY agent on this host, not just this campaign.** Evidence:
       `harness1/CONTENTION-FINDING.md` — `A_OLD1` held all four regions, and a bench role blocks
