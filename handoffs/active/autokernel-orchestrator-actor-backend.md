@@ -674,6 +674,7 @@ Each one turns a practice that was missing on 2026-09-23 into a standing gate.
   - Acceptance: a new drop site added without a disposition record fails the test, in the style of the
     `ScratchInventory` AST scan.
   - [x] **OAB-31-NEXT-01a16fc3:** prepared and delivered the q0 validation packet; source-bound two-core preflight passed, NEXT receipt `298f90d5-6ffe-45aa-a1c1-79b968ddc54b`. The assertion fix remains unvalidated and growth guard red; OAB-31 remains open. ✅ 2026-10-27 [no-belief: packet preparation]
+  - *(2026-10-27 21:35Z, ws58 results filing, OAB-31 validation.)* `refactor-oab31-discard-cpu-q0-20261027` rc0 at 19:06:37Z (q0, model-free focused tests): `suite_rc=0 seal_rc=0`, pytest `418 passed, 48 subtests passed in 32.85s` (`/mnt/raid0/llm/tmp/refactor-01a16fc3/oab31-cpu-ready-1728/results/run-20261027T190601874516470/{pytest.log,status.txt}`). This validates the assertion fix candidate on the focused suite only; the growth-guard status and merge are not shown by this run, and OAB-31 stays open (not ticked). [no-belief: model-free test pass, no measurement]
 - [ ] **OAB-32 — default per-call budgets on every backend and every role.** OAB-23 bounded the opencode
   planner only. Give critic, author and planner calls on every backend kind a default per-call decoded-token cap
   and a wall budget. On exhaustion, record a `budget_exhausted` abstention, never a transient retry. A local

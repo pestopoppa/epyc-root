@@ -1147,6 +1147,7 @@ between plan and apply, so this wave takes the next free block, SC65–SC68.*
       archive/belief export.
 
   - [x] **SC81-NEXT-01a16fc3:** prepared and delivered the q2 validation packet; two-core q0 preflight passed, NEXT receipt `3dd7a1cb-1e01-47cb-a387-20b909f35906`. Nine compatibility tests and producer adoption remain; SC81 stays open. ✅ 2026-10-27 [no-belief: packet preparation]
+  - *(2026-10-27 21:35Z, ws58 results filing, SC81 CPU source integration.)* `sc81-cpu-source-integration-20261027` rc0 at 19:05:19Z (CPUs 48-71, model-free): `test_rc=0`, unittest `Ran 22 tests ... OK` (`/mnt/raid0/llm/tmp/refactor-01a16fc3/sc81-cpu-ready-1728/results/sc81-cpu-source-integration-20261027-20261027T190516714552241/{receipt.txt,unittest.log}`). Compatibility/source-integration controls only; producer adoption and the nine compatibility tests remain, SC81 stays open. [no-belief: model-free unit tests, no measurement]
 
 ## SC69–SC73 — kernel audit survivors, 2026-09-07 (filed 2026-09-07)
 
