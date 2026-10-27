@@ -1,0 +1,1 @@
+admit: validator OK; admit: MemAvailable 1033 GiB, need 24 GiB; class=block-correctness launcher=filler_run12.sh:1161186 lclass=cpu minwin=3300(argv) window=3600 claim=0-23 gpuq=- claim_regions=q0 regions=0-23
