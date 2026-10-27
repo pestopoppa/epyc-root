@@ -1,0 +1,16 @@
+{
+  "adapter_sha256": "5f8e33960eb23fd82ac9a21d4a1c80df6849ba48ff277dd9f94394540b886a1b",
+  "canary_sha256": "79e73351e104c9c1b287123a2985748f8380307caeb0f28983db28b6d5b76514",
+  "carrier_sha256": "405e9fe8fa536029886580070eb6c8c6838e1eab8309cc33c94956ee260a23d2",
+  "evidence_path": "/mnt/raid0/llm/tmp/codex-ni-20261027-ufh12-gs-rehearsal/wiring/canary-private-6/canary-evidence.json",
+  "evidence_sha256": "e6b1b468b9fe0cabc2cb6acf31de53218de37cdd4cb92549b54388a58c6c7cfa",
+  "helper_sha256": "96449344de985296deb73b05fec2f476cc28d1f41eaa025d8e08b3e9220fa96e",
+  "installed_root": "/mnt/raid0/llm/worktrees/ni-ufh12-gs-rehearsal-wiring-root",
+  "planning_context": "visible",
+  "producer_sha256": "de2c315743e827367493a2810ec54fe54dfe1420026b43197b2d634d3dd5933d",
+  "registry_sha256": "fd5157037a1a014bea5e1281eb71c138747e00b758bd64ce9590fda804350a61",
+  "runtime_source_seal_sha256": "f1a80b520ec739d5b05177f2a6a27aaa37a3a2a4fb1ac4b7d8b035b7b560869d",
+  "source_family": "VB-UFH12-GS",
+  "status": "passed",
+  "synthetic": true
+}
