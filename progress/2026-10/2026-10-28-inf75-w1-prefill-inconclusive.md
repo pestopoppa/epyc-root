@@ -1,0 +1,5 @@
+# INF-75 W1 constructed prefill diagnostic — INCONCLUSIVE
+
+The owner run ended rc1 at 02:13:02Z with the predeclared INCONCLUSIVE result; MAIN accepted that narrow classification. Four constructed 132-token prompts and four-slot occupancy were observed, but target API id4 had 128 tokens from sequence 0 alone and id6 had 388 tokens with counts 4/128/128/128. No 512-token 128-each API or qualifying single target graph occurred. This single schedule does not prove impossibility or production representativeness, and R3's prefill remains UNKNOWN. [no-belief: diagnostic lacks prospective measurement carrier]
+
+Independent replay verified the source seal, job/grant and chained native log hashes, 52 complete target graphs / 252460 nodes and 29172 ROCm0 MUL_MAT, four distinct same-request foreign interval counts 51/52/52/52, same-PID/birth GPU samples 27/28/28/28, and process cleanup. Evidence `/mnt/raid0/llm/tmp/codex-ni-20261028-w1-smoke-audit/prefill-audit.log`; owner-apply draft `/mnt/raid0/llm/tmp/codex-ni-20261028-w1-smoke-audit/PREFILL-OWNER-DRAFT.md`. No W1/P0d, rate or quality claim. Claude NEXT was socket_sent, recipient confirmation pending.
