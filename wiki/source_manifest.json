@@ -4,7 +4,7 @@
     "handoff-active": 184,
     "handoff-blocked": 2,
     "handoff-completed": 216,
-    "progress": 833,
+    "progress": 839,
     "research": 140
   },
   "kind": "project-wiki-source-manifest",
@@ -12,19 +12,20 @@
   "last_touch": {
     "advanced": {
       "added": 0,
-      "changed": 1,
+      "changed": 2,
       "removed": 0
     },
-    "at": "2026-10-27T20:33:53Z",
+    "at": "2026-10-28T01:51:00Z",
     "scope_paths": [
-      "progress/2026-10/2026-10-27-codex-ni-wrap-2000-luna.md"
+      "handoffs/active/refactoring-multirepo-2026-10.md",
+      "progress/2026-10/2026-10-28-launcher-repair-and-enrollment.md"
     ],
     "scope_types": []
   },
   "mode": "touch:scoped",
-  "scan_time": "2026-10-27T20:33:53Z",
+  "scan_time": "2026-10-28T01:51:00Z",
   "schema_version": 1,
-  "source_set_hash": "478d51d0f56a7f95505b5ad95db7134da09e16e68a7e8b13b8d8282f8b8ae3c5",
+  "source_set_hash": "3f11be922b3b1f91f08d4213dcbb8245d3f678e0174d811beaa93f893ff25fb6",
   "sources": [
     {
       "content_hash": "6c067235a74a3b9667dd4fad23684206476aeac1cdefe3b4e0a0824d3179c241",
@@ -299,18 +300,18 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "8b98bcefbfbdec496824fc42a87aedca527c5084beba93b1fdd67ac43a9ee2c2",
-      "modified": "2026-10-27T10:02:27Z",
+      "content_hash": "4717b8f29c5c9734595624137bd387e32f0053c3f901a87bf985979408e3ffde",
+      "modified": "2026-10-28T01:18:34Z",
       "path": "handoffs/active/conversation-stack.md",
-      "size": 219217,
+      "size": 226887,
       "title": "Conversation stack: speech-native interlocutor, orchestrator voice-turn contract, cascade fallback",
       "type": "handoff-active"
     },
     {
-      "content_hash": "d2601d91599305c044d12577eedcd7b6745b5e8b9c0202752519cb7ebb0797bb",
-      "modified": "2026-10-27T10:02:27Z",
+      "content_hash": "495476236d6fcd2027cb488a1b4e136facfa46371fac0766c648bb4ac3b10575",
+      "modified": "2026-10-28T01:18:34Z",
       "path": "handoffs/active/conversational-memory-eval-instrument.md",
-      "size": 29284,
+      "size": 31512,
       "title": "Conversational / Episodic Memory Eval Instruments \u2014 BEAM + Tulving adapters",
       "type": "handoff-active"
     },
@@ -1131,10 +1132,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "c9d4826e897ef598c9aaeedfa8b691db96e4bf760a7c6d9d3ea8d925b0af9844",
-      "modified": "2026-10-27T16:21:06Z",
+      "content_hash": "495272bdb929962dda34b73f238a6f2b657baa4832beae0609033f599ed4f3bb",
+      "modified": "2026-10-28T01:48:33Z",
       "path": "handoffs/active/refactoring-multirepo-2026-10.md",
-      "size": 59434,
+      "size": 68178,
       "title": "Handoff: Refactoring \u2014 orchestrator, autopilot and AutoKernel (multi-repo debt program)",
       "type": "handoff-active"
     },
@@ -1451,10 +1452,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "cc672bbcdde2adcce0163bc2071cc1efa77afb4d151e30b6d10320cdb38fbad3",
-      "modified": "2026-10-27T16:21:06Z",
+      "content_hash": "09e3624b35e7909e65b9e58477b3ba2d38db9e58cee840499c861111dfab48b3",
+      "modified": "2026-10-28T01:18:34Z",
       "path": "handoffs/active/vidya-belief-substrate-program.md",
-      "size": 627038,
+      "size": 645770,
       "title": "Vidya Belief-Substrate Program",
       "type": "handoff-active"
     },
@@ -10987,6 +10988,30 @@
       "type": "progress"
     },
     {
+      "content_hash": "45e538725bc9b60cddea5533cef5150e13dab8487dbeda1ccb2e59aaae72c374",
+      "modified": "2026-10-28T01:18:35Z",
+      "path": "progress/2026-10/2026-10-27-codex-refactor-01a16fc3-hil16b.md",
+      "size": 2542,
+      "title": "2026-10-27 \u2014 HIL-16b later-pilot diagnostic preparation",
+      "type": "progress"
+    },
+    {
+      "content_hash": "52f82cd321973758c1d53ca84f4e207a061343de7d4c601943f0a8db9a0e124c",
+      "modified": "2026-10-28T01:18:35Z",
+      "path": "progress/2026-10/2026-10-27-codex-ufh14-lb51-prep.md",
+      "size": 497,
+      "title": "UFH14-LB5.1 live template preparation \u2014 2026-10-27",
+      "type": "progress"
+    },
+    {
+      "content_hash": "9670fc4349e6947ebe59d81da39708121c4da09d4c4115370fcc34044f062e15",
+      "modified": "2026-10-28T01:18:35Z",
+      "path": "progress/2026-10/2026-10-27-cs22-native-negative-and-diagnostic.md",
+      "size": 3308,
+      "title": "CS22 original negative and prospective diagnostic",
+      "type": "progress"
+    },
+    {
       "content_hash": "0cdc68a6996ea7583adea755688a00135d1945a71182748847b69e880ff3bcbb",
       "modified": "2026-10-27T19:06:47Z",
       "path": "progress/2026-10/2026-10-27-full-wrap-1850.md",
@@ -11000,6 +11025,14 @@
       "path": "progress/2026-10/2026-10-27-gnx-split-prep.md",
       "size": 1013,
       "title": "2026-10-27 \u2014 GitNexus split-phase preparation",
+      "type": "progress"
+    },
+    {
+      "content_hash": "fd53956bd8c8c2aa8efbdc230b1905379e94d3ae023cdf1171aab2a6d3313ef9",
+      "modified": "2026-10-28T01:18:35Z",
+      "path": "progress/2026-10/2026-10-27-native-repair-packets-2255.md",
+      "size": 4941,
+      "title": "Native repair and checkpoint packets \u2014 2026-10-27",
       "type": "progress"
     },
     {
@@ -11019,11 +11052,27 @@
       "type": "progress"
     },
     {
+      "content_hash": "33564a586657ce13755c5b752b97a63a7203bfb1a56ac4b67b0d2433890babe3",
+      "modified": "2026-10-28T01:18:35Z",
+      "path": "progress/2026-10/2026-10-27-stt2-native-source-ready.md",
+      "size": 2852,
+      "title": "Converted STT2 native source preparation \u2014 2026-10-27",
+      "type": "progress"
+    },
+    {
       "content_hash": "a986a4d897499de5d350734bd01ea7b8d8e0467c84754eb4e94f1380be01a931",
       "modified": "2026-10-27T18:58:54Z",
       "path": "progress/2026-10/2026-10-27-workspace-58.md",
       "size": 36651,
       "title": "2026-10-27 \u2014 workspace-58 (Codex NI wrap packages, 00:00Z to 05:26Z)",
+      "type": "progress"
+    },
+    {
+      "content_hash": "fc85e6050f1e513bd5db5b87b5a3710bc7ace245dc38eab8483cc36d5c921f7d",
+      "modified": "2026-10-28T01:48:33Z",
+      "path": "progress/2026-10/2026-10-28-launcher-repair-and-enrollment.md",
+      "size": 12150,
+      "title": "Launcher repair and prospective CPU enrollment",
       "type": "progress"
     },
     {
@@ -12899,7 +12948,7 @@
       "type": "docs"
     }
   ],
-  "total_new": 1609,
+  "total_new": 1615,
   "writer_evidence_policy": {
     "applies_to": "generated-wiki-article-writes",
     "minimum_confidence": "verified",
