@@ -396,6 +396,8 @@ Completed history through 2026-10-24 (moved verbatim, no open tasks): [kv-unifie
     a measured `vram_runtime_growth_gib` term (or a runtime-peak field with an evidence path) per GPU server, and have
     `check_lean` / the capacity gate sum it. Done when the master carries the term for :8083 with KVU-16h's evidence,
     and the gate's arithmetic for :8083 reproduces the measured ~59.8 GiB peak.
+      - [x] **P3 private dedicated-lifecycle native diagnostic replay** ✅ 2026-10-28 —20 decode-only rows (10 drafted/10 no-draft), full native rc0 at17:26:00Z, wall4776.752s, writer and captured-server cleanup verified. Evidence `/mnt/raid0/llm/tmp/codex-kvu16h-runner-20261028/run-20261028T160623Z-105416/{result.json,native/a1.json,native/p3_result.json,native/report.md}`; details `progress/2026-10/2026-10-28-rtg57-native-diagnostic.md`. Native report meets its two trigger thresholds, but this is indicative diagnostic evidence with disclosed CPU sibling co-tenancy and parked-neighbor flags, no deployment or decision-grade warrant. No retrospective measurement tuple. The parent task remains open for all named shared runners. [belief: cc]
+
     - *(2026-10-04, workspace-ec.)* KVU-16h is attributed to an unbounded mechanism on v10 and the current champion
       (legacy-pool growth per `n_max: 0` event), so the term does not shrink to the replay's +1.42 GiB plateau. Keep the
       +8.08 GiB runtime term until KVU-16h-confirm (row 4c) shows the fix bounds the growth; re-derive it from the
