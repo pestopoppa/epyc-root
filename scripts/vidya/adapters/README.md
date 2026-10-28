@@ -878,3 +878,7 @@ The prospective producer `/mnt/raid0/llm/tmp/refactor-01a16fc3/m4-full-fold-read
 ## M4 vision CPU memory calibration — prospective
 
 The prospective producer `/mnt/raid0/llm/tmp/refactor-01a16fc3/m4-full-fold-ready-20261028/cpu-vision-calibration/supervisor.py` hashes the actual vision target and multimodal projector under the admitted grant before loading, then records sampled RSS/PSS during C5 and M4 load and bounded warmup on the native 48-thread half topology. Records carry target/projector hashes, recipe, source, image, grant, timestamps and owned-process cleanup. Values are sampled, not true peaks; no speed, quality or fold verdict is implied. Existing measurement ladder applies; strict projection and planner-context canary remain open under VB-M4-CPU-VISION-CAL-WRITE.
+
+## M4 topology-aware CPU fold source — prospective
+
+The existing M4 CPU speed source additionally admits the separately sealed producer `/mnt/raid0/llm/tmp/refactor-01a16fc3/m4-full-fold-ready-20261028/cpu-fold/dispatch.py`, which records production NUMA and CPU placement. The original source root and seals remain separately trusted. Existing measurement grading applies; VB-M4-FOLD-SPEED-WRITE remains open and no actual-entry, measurement, gate verdict or planner wiring follows from enrollment.

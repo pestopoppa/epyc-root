@@ -3716,3 +3716,5 @@ These are notes only. The adapters README is not edited here; the owner applies 
 - [ ] **VB-M4-CPU-WORKER-CAL-WRITE** — project source-authored worker/frontdoor full-topology calibration records through the existing measurement ladder, preserving sampled-not-peak limitations, identity, grant, cleanup warrant and incomplete outcomes; prove the actual planner-context canary before claiming the loop wired.
 
 - [ ] **VB-M4-CPU-VISION-CAL-WRITE** — project prospective native vision calibration records through the existing measurement ladder, preserving pre-load target/projector hashes, sampled-not-peak limitations, source, recipe, image, grant and cleanup warrant and incomplete outcomes; prove the actual planner-context canary before claiming the loop wired.
+
+- [ ] **VB-M4-FOLD-TOPOLOGY-CANARY** — extend VB-M4-FOLD-SPEED-WRITE validation to the separately sealed topology-aware producer, including actual native entries, role-bound topology and planner-context canary; retain original-source compatibility. No new grading rule or historical warrant.
