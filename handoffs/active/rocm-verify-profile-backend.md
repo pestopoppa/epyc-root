@@ -1676,6 +1676,15 @@ our **465 gfx90a SQ/TA/TCC counters** validated 2026-08-03.
   rocm-6.2.0). Metric definition: total MFMA cycles over the average hot-loop iteration, per SIMD (intake-1823). Its
   only consumer is a future MMQ candidate.
 
+- [ ] **RVP-ATT-CANARY-R4 — validate the repaired trace launcher on the real GPU.** Private
+  `/mnt/raid0/llm/tmp/codex-att-r4-20261028` now checks the correct GPU device path, requires the full
+  `mi210_0,72-95,184-191` grant, and uses a private engine retaining live admission while omitting
+  the synthetic-proof requirement prohibited by the current diagnostic workflow. Source checks and
+  in-memory admission tests pass; no post-fix real smoke or trace result exists. Once the GPU is free,
+  run the same launcher under the R7 smoke slot, verify the real trace writer, residency, rc75 partial
+  and cleanup, then publish the row only after full-q3 scheduler admission is verified. This is a
+  plumbing canary, not an MFMA-efficiency result. [no-belief: no measurement yet]
+
 
 - [x] **RVP-ROLLBACK-SEED-SOURCE — repair only rollback-case integer initialization on a fresh experimental child of frozen production.** Exact private candidate`8e09a5e003f61b7ce7d58088f2f34595118068b4` parent`ffc1bac82eeca6f9099e1ccd9ba49703c460a115` consumes the existing per-tensor suite RNG and preserves unseeded fallback/float initialization. MAIN LOW source review is complete; finish prospective actual native CPU initializer/reference controls before source publication. Full GPU/production regressions, promotion and accepted live seeded event remain parent requirements; no production-tree change.
 
