@@ -243,6 +243,9 @@ Raise **single-stream** GPU decode throughput for the qwen35/Q8 family toward th
   - [ ] **Commit only after explicit experimental-tree approval, then clean-replay the branchless
     decoder through the governed paired runner.** The clean candidate must reproduce correctness and
     timing before any promotion or model-level claim; the dirty diagnostic cannot satisfy this gate.
+- *(Retarget 2026-10-28 (operator): Qwen3.5-122B deprecated. It no longer serves, so Item C is not a production-serving
+  rung. The IQ2_XXS kernel work is format-level. Re-measure it on a current IQ-format target: the
+  DS41 or Q38FN low-bit lanes, or the TRIPWIRE's GPU-resident IQ role. Do not use the 122B.)*
 - [ ] **Item C — architect MoE-IQ2 at 10.3%**, our worst rung by 2× and a production-serving model. Attach the kill-criterion first (below) — this is a probe, not yet a funded kernel
 - [ ] Kill-criterion probe for item C: on gfx906 an optimised community fork **and** vLLM independently converge on ~10% bandwidth for MoE batch-1 — the same rung as ours. Two stacks hitting one wall means this may be an **architectural floor**; establish cheaply whether it is before funding a kernel
   - **2026-08-11 tool-boundary result:** the exact main tensor type in the 122B UD-IQ2_M file is

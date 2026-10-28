@@ -212,6 +212,8 @@ meant to fix). This makes budget-selection and admission-control **one problem**
 - [ ] **TB-6-exec (c) — A2/CPU (122B-Q4) np×context surface — HANDED TO CPU LINEAGE 2026-07-23.** Does the
       Q4 arm on CPU show the same batching-collapse shape? Owned by the CPU session per the GPU/CPU split
       ([[project_session_split_2026_07_23]]); tracked here for the surface's completeness only.
+      *(Retarget 2026-10-28 (operator): Qwen3.5-122B deprecated. The CPU arm of this question is now Qwen3.8-Flash-Next
+      UD-IQ4_XS on `architect_general`. Do not run it on the 122B.)*
 - [ ] **TB-6 — Concurrency-aware admission control (VRAM *and BANDWIDTH* guard).** The router/orchestrator
       must track live `Σ(budget_i × kv_per_token_model)` against the card and **admit/queue/downgrade**
       requests so the sum never forces `n_ctx_slot` below a request's budget. Per-model `kv_per_token`

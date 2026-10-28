@@ -1,5 +1,8 @@
 # Architect Model Comparison Benchmark
 
+*(Retarget 2026-10-28 (operator): Qwen3.5-122B deprecated. The A1/A2 122B arms are historical only. Every open item
+here runs on current arms: Qwen3.8-27B, Qwen3.8-Flash-Next, and the finetunes.)*
+
 **Status (2026-07-28): sealed comparable authority is A3 `23/40` (`57.5%`), ThinkingCap no-think `21/40` (`52.5%`), A3-ff `19/40` (`47.5%`), Laguna `17/40` (`42.5%`), A1 `15/40` (`37.5%`), and A4 `13/40` (`32.5%`).** FG-3's clean no-think ThinkingCap validation is terminal at SWE `21/40` and LCB `24/53`; it replaces the legacy thinking-enabled `18/40` row for comparison. That legacy row remains diagnostic only because `--enable-thinking` produced `15/16` reasoning-channel cap truncations. FG-2V recovered only one new Laguna LCB solve (`14/53 -> 15/53` projected), so the coder-role case remains closed. ThinkingCap's license gate is operator-WAIVED; Fable remains framed as a scaffold/pre-processing candidate, not a direct role substitute. No lineup action is authorized. Historical six-arm artifact: `epyc-inference-research/artifacts/architect-27b-finetunes-v8-20260726/expanded-six-arm-v4-report-path-correction-20260727/path_correction_successor.json` (SHA-256 `e12dcda1223a77f7864b33c93dd009295d25d0b24527af4891f1f121fb4f748d`) is retained as the evidence that exposed the config confound, not current comparative authority.
 
 _(prior)_ **Status (2026-07-24): quality NULL CONFIRMED at higher power + a SCORER ARTIFACT corrected + throughput surface added. Keep/drop = quality-tied, A4 throughput-best, tool-use eval outstanding.**

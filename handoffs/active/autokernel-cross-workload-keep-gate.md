@@ -202,7 +202,7 @@ Snapshot of the production LLM fleet on the llama.cpp kernel tree, from lean `/m
 | W2 | Qwen3-VL-30B-A3B + mmproj F16 | Q4_K_M | MoE | ROCm0, 1 slot | none | `:1654-1683` |
 | W3 | Qwen3.6-35B-A3B-MTP | Q8_0 | MoE | CPU, 2 NUMA instances | MTP k=4 | `:1542-1587` |
 | W4 | gemma-4-26B-A4B-it-ORIG + assistant-v6 Q8_0 | Q4_K_M | MoE | CPU, 2 NUMA instances, ubatch 512 | MTP k=2 | `:1616-1653` |
-| W5 | Qwen3.5-122B-A10B | UD-Q4_K_M | MoE hybrid | CPU 0-95 single instance | MTP k=4 | `:1730-1766` |
+| W5 | Qwen3.5-122B-A10B (retargeted 2026-10-28 (operator): Qwen3.5-122B deprecated; W5 is now `architect_general` = Qwen3.8-Flash-Next UD-IQ4_XS, the W5s census) | UD-Q4_K_M | MoE hybrid | CPU 0-95 single instance | MTP k=4 | `:1730-1766` |
 | W6 | Qwen3-Next-80B-A3B | Q4_K_M | hybrid SSM+MoE | CPU, 2 instances | none (OPTIMUM) | `:1767-1803` |
 
 Out of scope:

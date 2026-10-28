@@ -75,12 +75,15 @@ P0 was fixed on experimental v7 `96986f5e9`); its gate is a strict-IF/rubric GBN
 > **Completed Scope:** closed Progress-checklist detail (gating experiments, DR-0..DR-3d, K28 and sub-items) is in [../completed/mi210-big-model-and-acceleration-roadmap-completed-through-2026-10-06.md](../completed/mi210-big-model-and-acceleration-roadmap-completed-through-2026-10-06.md). Every open box stays here.
 
 - [ ] Replay production routing traces at capacity-matched points — global LRU vs prefill-updated vs static — in the GLM-5.2 UD-IQ2 large-model regime only (~239 GB → 64/239 = 27% capacity, near the 37% Qwen3.6 point). EXCLUDE qwen4exp: routed pool ~66 GB (1.296 GB/token × 512/10, derived) ≈ the whole card, so the comparison degenerates. Offline analysis, no inference. Gated on the INF-72 tap producing traces. intake-1318#01
-  - [ ] DR-3 broader K2 admission runner/package: implement the dry-run-first K2
-    admission package before any serving/routing integration or NumericSwarm surface.
-    - (DR-3a..3d closed; detail in the Completed Scope ledger above.)
-    - [ ] DR-3e production-named `P-GPU-1` certification: after the 2026-07-20
-      v7 cutover, rerun the required GPU claims under `production-consolidated-v7`
-      before any serving route or NumericSwarm surface.
+  - **✖ DR-3 / DR-3e RETIRED 2026-10-28 (operator): Qwen3.5-122B deprecated.** The K2 quant-asymmetric admission
+    lane belonged to the 122B: a 122B UD-Q4_K_M CPU verifier with a 122B UD-IQ2_M MI210 drafter.
+    Its only consumer was a serving route for the 122B architect, and that model left the lineup on
+    2026-09-22, when `architect_general` became Qwen3.8-Flash-Next UD-IQ4_XS. DR-3a..3d remain closed
+    in the Completed Scope ledger. The DR-3e P-GPU-1 rerun will not be run. Its boxes are deleted, not
+    struck through, per the handoff/index contract. The private preparation is kept unarmed at
+    `/mnt/raid0/llm/tmp/codex-ni-inf34-dr3e-pgpu1-20261028/`. The technique carries forward only as a
+    NEW item with new artifacts: a Qwen3.8-Flash-Next CPU verifier and a low-bit, HBM-resident
+    Flash-Next drafter. None of DR-3e's 122B evidence transfers.
 - [ ] GLM-5.2 endgame: expert-offload / REAP+IQ2 path (operator-gated)
 
 ## Research Intake Update — 2026-07-16 (AirLLM / GPU-active-weight offload)
