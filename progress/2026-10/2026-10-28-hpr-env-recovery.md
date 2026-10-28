@@ -1,0 +1,9 @@
+# HPR fixture environment setup recovery — 2026-10-28
+
+Owner: codex-ni-01a16d6b. Source-only repair; no inference or historical regrade.
+
+The October 26 source-publication packet refused rc79 before apply because its broad readset included an unrelated change to the KPF adapter. The intended HPR test setup fix remained absent from origin/main. The recovered patch changes only `tests/vidya/test_np_ctx_kvu_hpr.py`: an absent `EPYC_HPR_RESEARCH_WT` produces a descriptive class-level SkipTest, while an explicitly empty, nonexistent or incomplete configured producer fails with RuntimeError. Valid pinned helpers continue to run the original five tests.
+
+Fresh CPython 3.12 process-isolated controls passed on correctness sibling CPUs130-131 under the 34-35 prep lock: absent variable skipped the class with zero methods run; valid pinned helpers ran 5/5; empty and nonexistent paths raised the expected setup errors. Eight adjacent pure adapter units passed; the optional live historical-data reader was deselected. The complete candidate file SHA-256 is `cc0878a68dd979baf9793e995f16cbbe91edade6e2cc09da5fe1c193321d4bfb`, identical to the previously reviewed patch result. GitNexus status was stale and impact lookup found no indexed HprWriterReader target (UNKNOWN, no HIGH/CRITICAL verdict). `git diff --check` passed.
+
+The owning session freshly accepted the narrow source on October 28; the old packet approval was not reused. Review and exact import/hash bindings are preserved in `/mnt/raid0/llm/tmp/codex-hpr-env-recovery-20261028/REVIEW.json` (SHA-256 `7199d235ee481126207a96be9a8bb03cf92e2fe402eea5ad3d715b6b8015828d`). This fixes test setup usability. HPR native contract remains UNVERIFIED and the holdout/parent gates remain open. [no-belief: source/test-setup repair; no measurement or native parity finding]
