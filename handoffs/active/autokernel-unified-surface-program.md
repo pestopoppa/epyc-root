@@ -195,6 +195,8 @@ ROOT accepted the prospective GPU generator reader rebind at `ROOT_GPU_GENERATIO
 - [x] **2026-10-07 bounded checkpoint: complete the disjoint four-plus-six targeted evidence and commit the exact seven-file GPU repair.** ✅ 2026-10-07 ROOT accepted both original source/cleanup scopes; clean commit `b1d49999` is ready for normal r6 integration. Failed V1/V2 runs retain their original results.
 - [ ] Freeze the complete normally merged r6 source/reader/runner, obtain actual whole native runtime wait 0, and then review GPU clearance and fresh generation telemetry.
   - source a3bdc4860 merged; native/materialization still unapproved
+  - [x] 2026-10-28 satisfied part (CPU source+runtime): superseded by r10 `bdb52d951`; SOURCE_AND_RUNTIME_PASS, full/native waits 0, receipt fd9043db (26 refs) and CPU activation/monitor 36bdfe14 (9 refs) re-hashed by ws58 from `/mnt/raid0/llm/tmp/ak-codex-handover-20261007/`. DRY 52fa5afb is receipt-supported but only 17 of 23 refs reproducible (6 original /tmp/ak-27b assets missing). [belief: cc]
+  - [ ] LIVE GPU leg: GPU clearance review and fresh generation telemetry from a real serving-owner run; needs serving-owner grant (no park of :8083 by this session). Parent box stays open.
 - [x] **2026-10-07 bounded checkpoint: reverify the sixteen original G3 masks under the corrected producer/reader.** ✅ 2026-10-07 New original native/inner waits 0, 98 native terminal observations, original35 unchanged and shared Judged/Located grade; scope is same-build self-conformance.
 - [ ] Publish the ROOT-reviewed exact original35 corpus and new native verification record at the owned paused boundary, retaining original failures and grade qualifications.
 
