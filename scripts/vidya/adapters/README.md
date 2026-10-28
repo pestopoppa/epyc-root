@@ -870,3 +870,7 @@ The prospective producer `/mnt/raid0/llm/tmp/refactor-01a16fc3/m4-full-fold-read
 ## M4 architect full-topology CPU memory calibration — prospective
 
 The prospective producer `/mnt/raid0/llm/tmp/refactor-01a16fc3/m4-full-fold-ready-20261028/cpu-calibration/supervisor.py` captures RSS and PSS samples during load and bounded warmup of the current architect production-shaped CPU recipe, separately for C5 and M4. It binds original model shards, draft, recipe, source, image and grant, and retains raw samples and process cleanup. Sampled maxima are not true peaks or speed/quality gate results. Use the existing measurement carrier and ClaimTuple.grade; no new ladder or historical warrant. Strict projection and the planning-context canary remain OPEN under VB-M4-CPU-CAL-WRITE.
+
+## M4 worker full-topology CPU memory calibration — prospective
+
+The prospective producer `/mnt/raid0/llm/tmp/refactor-01a16fc3/m4-full-fold-ready-20261028/cpu-worker-calibration/supervisor.py` records sampled RSS/PSS during load and bounded warmup for C5 and M4 on the shared worker/frontdoor full 96-thread MTP server recipe. Native records bind model, template, source and image identities, timestamps, grant and owned-process cleanup. Values are sampled, not true peaks; no speed, quality or fold verdict is implied. Use the existing measurement ladder; strict projection and the planner-context canary remain open under VB-M4-CPU-WORKER-CAL-WRITE.
