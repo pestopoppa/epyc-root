@@ -2132,6 +2132,8 @@ VB-NPD-1) are activation records in the durable-triggers list above.
 - [ ] **VB-SWAP-C — wire the write side of the launch-phase receipts (heterogeneous-slot-fabric-residency.md HSF-1).**
   - One launch = one locator, with GGUF/binary digests, argv hash, page-cache fraction, phase timings and outcome class.
   - Cold/partial-cache launches project with their label and never merge into hot C.
+- [ ] **VB-META-ASSERT1-WIRE — preserve native candidate architecture findings at source.** Bind the exact source/patch, built libraries, native command and seed, device witness, raw outputs and failure/partial state to the existing carrier before any decision-class use. Small-model lifecycle smokes are unsealed diagnostics; synthetic architecture tests do not establish model-level or promotion outcomes.
+
 - [ ] **VB-PIP02-PIPELINE-WIRE — capture the native three-stage document table pipeline at write time.** Bind source page, canonical layout and recognition models, runtime, server, stage outputs and table artifacts; preserve partial and failed stages. Implement the producer and strict projection through the existing claim carrier before decision-class capture. Exclude void whole-page single-shot outputs and diagnostic smoke tuples.
 
 - [ ] **VB-PIP03-IMAGE-WIRE — capture matched image outputs at write time.** Bind original prompt/seed, per-model runtime and settings, unaltered image artifacts and validity, and separately attributed human admissibility/quality observations. Project only evidence actually captured through the existing claim grammar and source registry; no new grading rule, retrospective tuples or diagnostic smoke seals.
