@@ -1944,5 +1944,621 @@
    "unblocks": "",
    "why": "latent defect; closure is a fold/promotion event, not compute"
   }
- ]
+ ],
+ "inference_prep": [
+  {
+   "filler": "HSF-5P-NEXT-PROFILE-2",
+   "row": "INF-23",
+   "map": "filler-id alias /^HSF-/",
+   "owner": "codex-ni-01a16d6b",
+   "blocker": "missing launcher: stopped 23:29:54Z rc1 by the ws58 night whole-host HOLD (owner scheduling error, not a job fault)",
+   "cls": "block-timing-pairable",
+   "decision": "Indicative timing diagnostic A1/B/A2 all6waves same14d0f7fa2 ELF/model; attribute original lower-better +4.17pct mirrorcost without regrading3pct gate"
+  },
+  {
+   "filler": "HSF-5P-NEXT-PROFILE-3",
+   "row": "INF-23",
+   "map": "filler-id alias /^HSF-/",
+   "owner": "codex-ni-01a16d6b",
+   "blocker": "harness fix: rc1 03:51:05Z, A2 stop_profiled owns_port raised PermissionError reading /proc/<pid>/fd during export, masked by cleanup",
+   "cls": "block-timing-pairable",
+   "decision": "Indicative timing diagnostic: Diagnostic full six-wave A1/B/A2 profile with corrected export lifecycle (same image/model as HSF-2; ws58 normalized decision word"
+  },
+  {
+   "filler": "HSF-5P-NEXT-PROFILE-4",
+   "row": "INF-23",
+   "map": "filler-id alias /^HSF-/",
+   "owner": "codex-ni-01a16d6b",
+   "blocker": "harness fix: rc1 04:21:04Z, REAL control failure: the warmup stream-0 request diverges at token 45, A1 (4619) vs B/A2 (20572)",
+   "cls": "block-timing-pairable",
+   "decision": "Indicative timing diagnostic for original lower-better mirror cost with full six-wave A1/B/A2"
+  },
+  {
+   "filler": "HSF-5P-NEXT-PROFILE-5",
+   "row": "INF-23",
+   "map": "filler-id alias /^HSF-/",
+   "owner": "codex-ni-01a16d6b",
+   "blocker": "harness fix: rc1 06:53:23Z, INVALID for attribution: B restore state invalid, draft count parity false, capture INCOMPLETE. All outputs matc",
+   "cls": "block-timing-pairable",
+   "decision": "fresh original-image traced A1/B/A2 attribution; all-output equality retained"
+  },
+  {
+   "filler": "UFH12-REQUESTB-FULL-PRIVATE-APPLY-1",
+   "row": "UFH-12",
+   "map": "handoff repl-embedding-retrieval.md",
+   "owner": "Codex NI UFH12",
+   "blocker": "harness fix (ws58)",
+   "cls": "block-correctness",
+   "decision": "private COPY apply and production TaskEmbedder document parity after accepted calibration"
+  },
+  {
+   "filler": "codex-ni-db1-telemetry-20261026",
+   "row": "",
+   "map": "unmapped",
+   "owner": "codex-ni-01a16d6b",
+   "blocker": "harness fix: original grant run failed rc=128 on malformed patch (fragment without header at line 10)",
+   "cls": "block-correctness",
+   "decision": "MAIN approved; owner registration requested; actual PF first inside grant"
+  },
+  {
+   "filler": "codex-ni-db1-telemetry-context-recovery-20261026",
+   "row": "",
+   "map": "unmapped",
+   "owner": "codex-ni-01a16d6b",
+   "blocker": "harness fix: granted 12:18:58Z, ended 12:19:21Z rc2 (reason exited)",
+   "cls": "block-correctness",
+   "decision": "MAIN source and actual PF accepted; owner registration requested"
+  },
+  {
+   "filler": "codex-ni-db1-telemetry-lint-scope-recovery-20261026",
+   "row": "",
+   "map": "unmapped",
+   "owner": "codex-ni-01a16d6b",
+   "blocker": "missing launcher (ws58 12:25Z sweep: ARMED with dead/absent pid)",
+   "cls": "block-correctness",
+   "decision": "MAIN source and actual PF accepted; owner registration requested"
+  },
+  {
+   "filler": "codex-ni-db1-telemetry-recovery-20261026",
+   "row": "",
+   "map": "unmapped",
+   "owner": "codex-ni-01a16d6b",
+   "blocker": "missing launcher (ws58 12:25Z sweep: ARMED with dead/absent pid)",
+   "cls": "block-correctness",
+   "decision": "prove telemetry isolation and publish one-file review ref after patch-header correction"
+  },
+  {
+   "filler": "codex-ni-df2-byte-capture-ready-20261027",
+   "row": "INF-62",
+   "map": "handoff dflash2-block-drafter-experimental-build.md",
+   "owner": "Codex NI / MAIN",
+   "blocker": "harness fix",
+   "cls": "block-correctness",
+   "decision": "owner correctness-only in-path Q8_1 bytes and injected-mismatch diagnostic after reviewed diagnostic build and belief enrollment"
+  },
+  {
+   "filler": "codex-ni-df2-row-exact-build-20261027",
+   "row": "INF-62",
+   "map": "handoff dflash2-block-drafter-experimental-build.md",
+   "owner": "Codex NI / MAIN",
+   "blocker": "harness fix",
+   "cls": "block-correctness",
+   "decision": "build private C5 row-exact matmul candidate with full CPU and HIP house profiles and compile-only quantizer fixture"
+  },
+  {
+   "filler": "codex-ni-embedder-guarded-regression-20261026",
+   "row": "",
+   "map": "unmapped",
+   "owner": "codex-ni",
+   "blocker": "harness fix: rc1 at 23:17:14Z, 374 pass / 6 fail of 380, no publication",
+   "cls": "block-correctness",
+   "decision": "Verify default-off store-only embedder source under model-free tripwires before source publication"
+  },
+  {
+   "filler": "codex-ni-gnx-esrch-20261026",
+   "row": "INF-50",
+   "map": "filler-id alias /(^|-)gnx-/",
+   "owner": "codex-ni-01a16d6b",
+   "blocker": "missing launcher (ws58 12:25Z sweep: ARMED with dead/absent pid)",
+   "cls": "block-correctness",
+   "decision": "prove exact reviewed ESRCH+absent-task guard patch with complete34 fake fixtures and normal source publication"
+  },
+  {
+   "filler": "codex-ni-gnx-r2-nativeproof-20261026",
+   "row": "INF-50",
+   "map": "filler-id alias /(^|-)gnx-/",
+   "owner": "codex-ni-01a16d6b",
+   "blocker": "harness fix: original native read-only proof failed status rc=64 (source clone has a symlink)",
+   "cls": "block-correctness",
+   "decision": "prove actual accepted ptrace-event native read-only query boundary and controls"
+  },
+  {
+   "filler": "codex-ni-gnx-r2-nativeproof-recovery1-20261026",
+   "row": "INF-50",
+   "map": "filler-id alias /(^|-)gnx-/",
+   "owner": "codex-ni-01a16d6b",
+   "blocker": "missing launcher (ws58 12:25Z sweep: ARMED with dead/absent pid)",
+   "cls": "block-correctness",
+   "decision": "accepted source b4c1414e + envelope 6370551a; new grant proves recovery + unchanged native controls"
+  },
+  {
+   "filler": "codex-ni-gnx-split-resolve-20261027",
+   "row": "INF-50",
+   "map": "handoff speculative-decoding-mtp-refresh.md",
+   "owner": "Codex NI / MAIN",
+   "blocker": "harness fix",
+   "cls": "block-correctness",
+   "decision": "resolve genuine stage1 capsule in private graph and verify C72 source sites, callers and overloads"
+  },
+  {
+   "filler": "codex-ni-inf50-existing-graph-r9-20261027",
+   "row": "INF-50",
+   "map": "handoff speculative-decoding-mtp-refresh.md",
+   "owner": "Codex NI / MAIN",
+   "blocker": "harness fix",
+   "cls": "block-correctness",
+   "decision": "qualify existing C5 baseline index and five native symbol impacts before candidate fold"
+  },
+  {
+   "filler": "codex-ni-inf50-native-20261026",
+   "row": "INF-50",
+   "map": "filler-id alias /(^|-)inf50-/",
+   "owner": "codex-ni-01a16d6b",
+   "blocker": "missing launcher (ws58 12:25Z sweep: ARMED with dead/absent pid)",
+   "cls": "block-correctness",
+   "decision": "Native correctness proof only; MAIN reviews native and sanitizer results before WS58"
+  },
+  {
+   "filler": "codex-ni-inf50-native-window-recovery-20261026",
+   "row": "INF-50",
+   "map": "filler-id alias /(^|-)inf50-/",
+   "owner": "codex-ni-01a16d6b",
+   "blocker": "harness fix: min-window 3690 + 300 margin = 3990 > the exact 3900 window its guard requires",
+   "cls": "block-correctness",
+   "decision": "Native correctness proof only; MAIN reviews native and sanitizer results before WS58"
+  },
+  {
+   "filler": "codex-ni-inf50-real-graph-r4-20261026",
+   "row": "INF-50",
+   "map": "handoff speculative-decoding-mtp-refresh.md",
+   "owner": "Codex NI / MAIN",
+   "blocker": "harness fix: v4 rc1 10:11:22Z, ~8 min in",
+   "cls": "block-correctness",
+   "decision": "genuine fresh current C5 grammar caller/impact audit before owner full-candidate fold review"
+  },
+  {
+   "filler": "codex-ni-inf50-real-graph-r8-20261027",
+   "row": "INF-50",
+   "map": "handoff speculative-decoding-mtp-refresh.md",
+   "owner": "Codex NI / MAIN",
+   "blocker": "harness fix",
+   "cls": "block-correctness",
+   "decision": "genuine fresh current C5 grammar caller/impact audit before owner full-candidate fold review"
+  },
+  {
+   "filler": "codex-ni-meta-fix-build-20261027",
+   "row": "INF-65",
+   "map": "handoff autokernel-champion-aggregate.md",
+   "owner": "Codex NI / MAIN",
+   "blocker": "harness fix",
+   "cls": "block-correctness",
+   "decision": "build private C5 Meta host-view candidate with full CPU and HIP house profiles and model-free native fixtures"
+  },
+  {
+   "filler": "codex-ni-parakeet-observed-canary-20261027",
+   "row": "INF-79",
+   "map": "handoff conversation-stack.md",
+   "owner": "codex-ni",
+   "blocker": "harness fix",
+   "cls": "block-correctness",
+   "decision": "Run CPU observer canary"
+  },
+  {
+   "filler": "codex-ni-ufh08-hil15b-v2-publish-20261025",
+   "row": "UFH-08",
+   "map": "filler-id alias /(^|-)(hil15|hil16|hil15b|hil16b|ufh08)-/",
+   "owner": "codex-ni-01a16d6b",
+   "blocker": "missing launcher: no accepted source-publication receipt or completion marker for the exact UFH08 HIL15b task",
+   "cls": "block-correctness",
+   "decision": "preserve immutable receipt bytes in trackable txt fixture names and publish reviewed source"
+  },
+  {
+   "filler": "codex-ni-ufh12-gp1-20261027",
+   "row": "UFH-12",
+   "map": "handoff repl-embedding-retrieval.md",
+   "owner": "Codex NI / MAIN",
+   "blocker": "harness fix",
+   "cls": "block-correctness",
+   "decision": "REPL-EMB-2.11 G-P1 shipped argv short input parity"
+  },
+  {
+   "filler": "codex-ni-usage-prov1-r4-20261025",
+   "row": "UFH-01",
+   "map": "row id UFH-01 named",
+   "owner": "codex-ni-01a16d6b",
+   "blocker": "harness fix: validation result is FAIL (gitnexus-readonly-queries rc=69), not the authorized 12-suite isolated R4 pass",
+   "cls": "block-correctness",
+   "decision": "validate per-call usage/provenance before UFH-01 true budget"
+  },
+  {
+   "filler": "fa4-c5-matched-bands",
+   "row": "RTG-57",
+   "map": "handoff kv-unified-stack-rollout.md",
+   "owner": "codex-ni MAIN; calendar WS58",
+   "blocker": "harness fix: attempt3 rc1 06:16:50Z at the driver.py:441 gate: OFF nonfinite case set (6) differs from ON (4), all bias1024/diffuse tail. A ",
+   "cls": "block-timing-pairable",
+   "decision": "New same-C5 compilearm comparison native22bands2KV3ABpairs with full native correctness controls; INDICATIVE only, no futurev11/fullprogramclosure or promotion"
+  },
+  {
+   "filler": "fa4-c5-rwoff-build",
+   "row": "RTG-57",
+   "map": "handoff kv-unified-stack-rollout.md",
+   "owner": "codex-ni MAIN; calendar WS58",
+   "blocker": "missing launcher: refused rc70 at 23:30:13Z by the night HOLD before clone/build (owner scheduling error)",
+   "cls": "block-correctness",
+   "decision": "Feature-scoped C5 c72ec82f5 full scratch build; sole feature delta GGML_HIP_ROCWMMA_FATTN=OFF, prerequisite matched FA4 band A/B; no promotion"
+  },
+  {
+   "filler": "hpr-fixture-env-source-proof-publish-20261026",
+   "row": "RTG-57",
+   "map": "filler-id alias /^hpr-/",
+   "owner": "codex-ni-01a16d6b",
+   "blocker": "missing launcher (ws58 12:25Z sweep: ARMED with dead/absent pid)",
+   "cls": "block-correctness",
+   "decision": "prove HPR fixture setup env semantics and publish one-file review ref"
+  },
+  {
+   "filler": "hpr-golden-large-originals-20261026",
+   "row": "RTG-57",
+   "map": "filler-id alias /^hpr-/",
+   "owner": "codex-ni-01a16d6b",
+   "blocker": "missing launcher (ws58 12:25Z sweep: ARMED with dead/absent pid)",
+   "cls": "block-correctness",
+   "decision": "preserve and publish the four HPR golden v3 original byte streams missing from research"
+  },
+  {
+   "filler": "inf75-c5-native-abi-canary-q2",
+   "row": "INF-75",
+   "map": "filler-id alias /(^|-)inf75-/",
+   "owner": "codex-ni source; ROOT review; WS58 calendar",
+   "blocker": "harness fix",
+   "cls": "block-correctness",
+   "decision": "Native private-C5 LD_PRELOAD ABI/pointer canary on W3 MTP4 np1; explicit q2/t24 diagnostic override, not a canonical t48 or full P0d witness"
+  },
+  {
+   "filler": "inf75-c5-w1-gpu-primary-census-r2",
+   "row": "INF-75",
+   "map": "filler-id alias /(^|-)inf75-/",
+   "owner": "codex-ni source; ROOT review; WS58 calendar",
+   "blocker": "harness fix",
+   "cls": "block-correctness",
+   "decision": "current architect_critic np4 primary-target only; separate DFlash2 draft bound by hash; full W1 and P0d remain open"
+  },
+  {
+   "filler": "inf75-c5-w1-gpu-primary-census-r3",
+   "row": "INF-75",
+   "map": "filler-id alias /(^|-)inf75-/",
+   "owner": "codex-ni source; ROOT review; WS58 calendar",
+   "blocker": "harness fix",
+   "cls": "block-correctness",
+   "decision": "current architect_critic np4 primary-target only; separate DFlash2 draft bound by hash; full W1 and P0d remain open"
+  },
+  {
+   "filler": "inf75-c5-w3-host-excluding-census-v1",
+   "row": "INF-75",
+   "map": "filler-id alias /(^|-)inf75-/",
+   "owner": "codex-ni source; ROOT review; WS58 calendar",
+   "blocker": "harness fix",
+   "cls": "block-correctness",
+   "decision": "W3 host-excluding placement variant t48 np1 MTP4 instrumented structural census, prefill2048/decode1/verify4; owned-node startup eviction delta, no rate claim o"
+  },
+  {
+   "filler": "inf75-c5-w3-host-excluding-census-v2",
+   "row": "INF-75",
+   "map": "filler-id alias /(^|-)inf75-/",
+   "owner": "codex-ni source; ROOT review; WS58 calendar",
+   "blocker": "harness fix (node2 not reclaimable within 120 s while HPR-B/page cache resident)",
+   "cls": "block-correctness",
+   "decision": "W3 host-excluding placement variant t48 np1 MTP4 instrumented structural census, prefill2048/decode1/verify4; owned-node bounded startup eviction with captured "
+  },
+  {
+   "filler": "inf75-c5-w3-host-excluding-census-v3",
+   "row": "INF-75",
+   "map": "filler-id alias /(^|-)inf75-/",
+   "owner": "codex-ni source; ROOT review; WS58 calendar",
+   "blocker": "harness fix",
+   "cls": "block-correctness",
+   "decision": "W3 host-excluding placement variant t48 np1 MTP4 instrumented structural census, prefill2048/decode1/verify4; owned-node native full-touch eviction with bounded"
+  },
+  {
+   "filler": "kpf18-g3-r10-integration-cpu",
+   "row": "RTG-58",
+   "map": "filler-id alias /(^|-)kpf(18|64)-/",
+   "owner": "Codex NI / KPF18 group3",
+   "blocker": "harness fix: rc1 06:03:31Z, framing_pass=false, DataError native fork has no task binding (R6 raw/ledger SHA matched",
+   "cls": "block-correctness",
+   "decision": "exercise exact R10 bridge against immutable R6 X1 raw and captured event ledger"
+  },
+  {
+   "filler": "kpf18-g3-r11-integration-cpu",
+   "row": "RTG-58",
+   "map": "filler-id alias /(^|-)kpf(18|64)-/",
+   "owner": "Codex NI / KPF18 group3",
+   "blocker": "harness fix: rc70 06:31:34Z, deadline hit before the full 1.78 GB replay produced RESULT.json (last own RSS ~33 GiB, not a peak)",
+   "cls": "block-correctness",
+   "decision": "exercise exact R11 bridge against immutable R6 X1 raw and captured event ledger"
+  },
+  {
+   "filler": "kpf18-g3-r12-integration-cpu",
+   "row": "RTG-58",
+   "map": "filler-id alias /(^|-)kpf(18|64)-/",
+   "owner": "Codex NI / KPF18 group3",
+   "blocker": "missing launcher (ws58 12:25Z sweep: ARMED with dead/absent pid)",
+   "cls": "block-correctness",
+   "decision": "exercise exact R12 bridge against immutable R6 X1 raw and captured event ledger"
+  },
+  {
+   "filler": "kpf64-f-fb",
+   "row": "RTG-58",
+   "map": "filler-id alias /(^|-)kpf(18|64)-/",
+   "owner": "workspace-58 (KPF-64.3 owner; prepared 2026-10-25 by a subag",
+   "blocker": "harness fix: FB never DONE across 10 consecutive 4 h grants (each hard-ended",
+   "cls": "filler",
+   "decision": "KPF-64.3 / KPF-LB2.2 (F half): does the realised prefix-hit share drop below the within-session ideal bound once sub-agent bursts oversubscribe the 4 slots (F),"
+  },
+  {
+   "filler": "lb49-c5-graph-readonly-20261027",
+   "row": "INF-81",
+   "map": "handoff autokernel-all-devices-all-dimensions.md",
+   "owner": "codex-refactor-01a16fc3",
+   "blocker": "harness fix",
+   "cls": "block-correctness",
+   "decision": "qualify LB4.9 C5 existing graph context and upstream impacts"
+  },
+  {
+   "filler": "r6-cutover-repairs-phase1-20261026",
+   "row": "",
+   "map": "unmapped",
+   "owner": "codex-ni-01a16d6b",
+   "blocker": "missing launcher: ws58 moved it to q1, but guard.sh pins 0-23",
+   "cls": "block-correctness",
+   "decision": "Fresh R6 repair correctness proof only; no source publication or promotion"
+  },
+  {
+   "filler": "r6-cutover-repairs-q1-successor-20261026",
+   "row": "",
+   "map": "unmapped",
+   "owner": "codex-ni",
+   "blocker": "harness fix: rc1 21:11Z focused stage 7 pass / 3 errors (D1 test missing fixture grant",
+   "cls": "block-correctness",
+   "decision": "Verify R6 source correctness before owner cutover"
+  },
+  {
+   "filler": "refactor-01a16fc3-b2-baseline-20261026",
+   "row": "",
+   "map": "unmapped",
+   "owner": "codex-refactor-01a16fc3",
+   "blocker": "harness fix: V12 attempt rc143 ~09:41Z, ~2 min in (likely guard halt)",
+   "cls": "block-correctness",
+   "decision": "Complete immutable851 baseline native capture, inherited failures retained for main review"
+  },
+  {
+   "filler": "refactor-01a16fc3-df2-k1-download-q2-v2-20261027",
+   "row": "INF-62",
+   "map": "handoff dflash2-block-drafter-experimental-build.md",
+   "owner": "codex-refactor-01a16fc3",
+   "blocker": "harness fix (ws58 13:20Z)",
+   "cls": "block-correctness",
+   "decision": "Restore pinned K1 Q8 target with SHA verification"
+  },
+  {
+   "filler": "refactor-01a16fc3-inf34-pf1-initial-20261027",
+   "row": "INF-44",
+   "map": "filler-id alias /(^|-)(inf34|pf1)-|-inf34-pf1-/",
+   "owner": "codex-refactor-01a16fc3",
+   "blocker": "harness fix",
+   "cls": "block-timing-pairable",
+   "decision": "CPU vs GPU prefill timing initial"
+  },
+  {
+   "filler": "refactor-01a16fc3-m4-c2-off-ratio-20261027",
+   "row": "INF-22",
+   "map": "filler-id alias /(^|-)m4-/",
+   "owner": "codex-refactor-01a16fc3",
+   "blocker": "harness fix",
+   "cls": "block-timing-pairable",
+   "decision": "Compare OFF candidate and C5 short-request latency B/A across four alternating fresh loads"
+  },
+  {
+   "filler": "refactor-01a16fc3-m4-gpu-hol-20261027",
+   "row": "INF-22",
+   "map": "filler-id alias /(^|-)m4-/",
+   "owner": "codex-refactor-01a16fc3",
+   "blocker": "harness fix",
+   "cls": "block-timing-pairable",
+   "decision": "Test candidate B/A short-request latency ratio within each paired same-server collision phase"
+  },
+  {
+   "filler": "refactor-01a16fc3-m4-load-gpu-v1-20261027",
+   "row": "INF-22",
+   "map": "filler-id alias /(^|-)m4-/",
+   "owner": "codex-refactor-01a16fc3",
+   "blocker": "harness fix",
+   "cls": "block-correctness",
+   "decision": "M4 candidate GPU distinct target and drafter pairs load-only"
+  },
+  {
+   "filler": "refactor-01a16fc3-m4-load-q2-20261027",
+   "row": "INF-22",
+   "map": "filler-id alias /(^|-)m4-/",
+   "owner": "codex-refactor-01a16fc3",
+   "blocker": "harness fix (grant_ok refuse: launcher claims gpu-quiet shared + q2",
+   "cls": "block-correctness",
+   "decision": "M4 candidate CPU distinct target and drafter pairs load-only"
+  },
+  {
+   "filler": "refactor-01a16fc3-m4-load-q3-v3-20261027",
+   "row": "INF-22",
+   "map": "filler-id alias /(^|-)m4-/",
+   "owner": "codex-refactor-01a16fc3",
+   "blocker": "harness fix",
+   "cls": "block-correctness",
+   "decision": "M4 candidate CPU distinct target and drafter pairs load-only"
+  },
+  {
+   "filler": "refactor-01a16fc3-m4-recut-cpu-build-20261027",
+   "row": "INF-22",
+   "map": "filler-id alias /(^|-)m4-/",
+   "owner": "codex-refactor-01a16fc3",
+   "blocker": "missing launcher (ws58 12:25Z sweep: ARMED with dead/absent pid)",
+   "cls": "block-correctness",
+   "decision": "Compile full fresh-tip M4 candidate bc441f1a2 and pass nonempty M4 unit/presence/linkage gates before champion fold timing"
+  },
+  {
+   "filler": "refactor-01a16fc3-model-free-repair-20261026",
+   "row": "",
+   "map": "unmapped",
+   "owner": "codex-refactor-01a16fc3",
+   "blocker": "harness fix: attempt1 rc1 19:52:56Z, 455 pass / 112 fail (429 from cross-test rate-limiter state)",
+   "cls": "block-correctness",
+   "decision": "V4 model-free repair: guard controls + 15 route-fixture modules + regression/workflow/evidence under autouse fake embedder + exec tripwire; no full suite"
+  },
+  {
+   "filler": "refactor-01a16fc3-parakeet-reference-cpu-q1-20261027",
+   "row": "INF-79",
+   "map": "handoff conversation-stack.md",
+   "owner": "codex-refactor-01a16fc3",
+   "blocker": "harness fix",
+   "cls": "block-correctness",
+   "decision": "Run frozen Parakeet CPU reference on 40 FLEURS clips"
+  },
+  {
+   "filler": "refactor-01a16fc3-rvp-att-canary",
+   "row": "",
+   "map": "unmapped",
+   "owner": "codex-refactor-01a16fc3",
+   "blocker": "harness fix",
+   "cls": "block-correctness",
+   "decision": "Test native ATT known MFMA instruction trace and decode"
+  },
+  {
+   "filler": "refactor-01a16fc3-rvp-att-canary-v2",
+   "row": "",
+   "map": "unmapped",
+   "owner": "codex-refactor-01a16fc3",
+   "blocker": "harness fix",
+   "cls": "block-correctness",
+   "decision": "Test native ATT known MFMA instruction trace and decode"
+  },
+  {
+   "filler": "refactor-b2-producer-e-q2-20261027",
+   "row": "RTG-61",
+   "map": "handoff refactoring-multirepo-2026-10.md",
+   "owner": "codex-refactor-01a16fc3",
+   "blocker": "harness fix",
+   "cls": "block-correctness",
+   "decision": "model-free producer E candidate and baseline"
+  },
+  {
+   "filler": "refactor-cme7t-20261027",
+   "row": "EVL-50",
+   "map": "filler-id alias /(^|-)cme/",
+   "owner": "codex-refactor-01a16fc3",
+   "blocker": "harness fix",
+   "cls": "block-correctness",
+   "decision": "Count unique schema failures and length responses separately by cohort for bounded rationale candidate"
+  },
+  {
+   "filler": "refactor-hil15b-checkpoint-canary-20261027",
+   "row": "UFH-08",
+   "map": "handoff harness-improvement-loop.md",
+   "owner": "codex-refactor-01a16fc3",
+   "blocker": "harness fix",
+   "cls": "block-correctness",
+   "decision": "native checkpoint canary and resume verification"
+  },
+  {
+   "filler": "refactor-hil15b-heavy-pilot-20261027",
+   "row": "UFH-08",
+   "map": "handoff harness-improvement-loop.md",
+   "owner": "codex-refactor-01a16fc3",
+   "blocker": "harness fix",
+   "cls": "block-correctness",
+   "decision": "new-cohort replay pilot and checkpoint resume verification"
+  },
+  {
+   "filler": "refactor-hil15b-q2-v2-pilot-20261027",
+   "row": "UFH-08",
+   "map": "handoff harness-improvement-loop.md",
+   "owner": "codex-refactor-01a16fc3",
+   "blocker": "harness fix",
+   "cls": "block-correctness",
+   "decision": "20 tasks three replays per task for variance pilot"
+  },
+  {
+   "filler": "refactor-hil15b-short-window-pilot-20261027",
+   "row": "UFH-08",
+   "map": "handoff harness-improvement-loop.md",
+   "owner": "codex-refactor-01a16fc3",
+   "blocker": "harness fix",
+   "cls": "block-correctness",
+   "decision": "new-cohort replay pilot and checkpoint resume verification"
+  },
+  {
+   "filler": "refactor-hil16b-replay-q2-20261027",
+   "row": "UFH-08",
+   "map": "handoff harness-improvement-loop.md",
+   "owner": "codex-refactor-01a16fc3",
+   "blocker": "harness fix",
+   "cls": "block-correctness",
+   "decision": "named-error-recovery diagnostic; numeric scorer only"
+  },
+  {
+   "filler": "refactor-hil16b-replay-v2-20261027",
+   "row": "UFH-08",
+   "map": "handoff harness-improvement-loop.md",
+   "owner": "codex-refactor-01a16fc3",
+   "blocker": "harness fix",
+   "cls": "block-correctness",
+   "decision": "named-error-recovery diagnostic; numeric scorer only"
+  },
+  {
+   "filler": "refactor-xgrammar-a2-cpu-parity-v1-20261027",
+   "row": "INF-50",
+   "map": "handoff speculative-decoding-mtp-refresh.md",
+   "owner": "codex-refactor-01a16fc3",
+   "blocker": "harness fix",
+   "cls": "block-correctness",
+   "decision": "XGrammar A2 16-prompt schema output byte parity"
+  },
+  {
+   "filler": "rte-log1-source-recovery-20261026",
+   "row": "",
+   "map": "unmapped",
+   "owner": "codex-ni-01a16d6b",
+   "blocker": "missing launcher (ws58 12:25Z sweep: ARMED with dead/absent pid)",
+   "cls": "block-correctness",
+   "decision": "source proof + applicable make schema + exact-paths ruff + normal hooks publication"
+  }
+ ],
+ "inference_prep_source": {
+  "file": "/mnt/raid0/llm/tmp/compute-flags/FILLERS.md",
+  "seeded_at": "2026-10-28T10:38Z",
+  "rule": "FILLERS BACKLOG, first blocker= is 'harness fix' or 'missing launcher', no grants/<id>.complete, not superseded"
+ },
+ "prep_aliases": {
+  "_doc": "inference-prep mapping fallback (ws58 2026-10-28): regex on the FILLERS filler-id -> index row, used only when the row text names no handoff file or row id. Only prefixes whose row is unambiguous are listed; the rest stay unmapped.",
+  "(^|-)inf75-": "INF-75",
+  "(^|-)inf50-": "INF-50",
+  "(^|-)(inf34|pf1)-|-inf34-pf1-": "INF-44",
+  "(^|-)kpf(18|64)-": "RTG-58",
+  "(^|-)(hil15|hil16|hil15b|hil16b|ufh08)-": "UFH-08",
+  "(^|-)m4-": "INF-22",
+  "^HSF-": "INF-23",
+  "(^|-)cme": "EVL-50",
+  "^hpr-": "RTG-57",
+  "(^|-)gnx-": "INF-50",
+  "(^|-)df2-": "INF-62",
+  "(^|-)parakeet-": "INF-79"
+ }
 }

@@ -5,7 +5,12 @@
     python3 scripts/handoffs/backlog_priority.py --check    # drift / staleness; non-zero on failure, writes nothing
     python3 scripts/handoffs/backlog_priority.py --out X    # write elsewhere (also --md FILE for the full ranked list)
 
-Ordering method (operator, 2026-10-24), applied to every open `- [ ]` box under handoffs/active + blocked:
+Bands first (LOOP-CONTRACT, operator-adopted 2026-10-28): every row carries `kind` = inference-prep |
+inference-ready | non-inference and ranks in that order. inference-prep (T0) = the curated `inference_prep`
+snapshot of FILLERS.md BACKLOG rows blocked on a harness fix or a missing launcher (`--seed-prep` refreshes it);
+inference-ready = unheld inference items (T4-T6); everything else is non-inference.
+
+Ordering method within the bands (operator, 2026-10-24), applied to every open `- [ ]` box under handoffs/active + blocked:
 
 1. INFERENCE items are classed with the inference-backlog-scheduling model: live (running / booked /
    armed) > ready and decision-bearing > routine; ROI = decision value per compute-hour; operator holds
@@ -45,11 +50,18 @@ CURATED_PATH = HERE / "backlog_priority_curated.json"
 STALE_DAYS = 14
 DRIFT_FRACTION = 0.15
 
-TIER_NAME = {1: "T1 non-inference, unblocked, unblocks compute", 2: "T2 non-inference, unblocked, other",
+FILLERS_DEFAULT = Path("/mnt/raid0/llm/tmp/compute-flags/FILLERS.md")
+GRANTS_DIR = Path("/mnt/raid0/llm/tmp/compute-flags/grants")
+PREP_BLOCKER_RX = re.compile(r'(harness fix|missing launcher)', re.I)
+# Row/item lane (LOOP-CONTRACT 2026-10-28): emitted as `kind` on every row; prep > ready > non-inference.
+LANES = ("inference-prep", "inference-ready", "non-inference")
+
+TIER_NAME = {0: "T0 inference-prep (claimable: repair harness / write launcher, smoke, READY manifest)",
+             1: "T1 non-inference, unblocked, unblocks compute", 2: "T2 non-inference, unblocked, other",
              3: "T3 non-inference, blocked, inherits (just above what it gates)",
              4: "T4 inference LIVE (running / booked / armed)", 5: "T5 inference ready, decision-bearing",
              6: "T6 inference routine / re-measurement", 7: "T7 held or blocked (named blocker)"}
-TIER_SHORT = {"1": "T1 non-inference, unblocked, unblocks compute", "2": "T2 non-inference, unblocked",
+TIER_SHORT = {"0": "T0 inference-prep", "1": "T1 non-inference, unblocked, unblocks compute", "2": "T2 non-inference, unblocked",
               "3": "T3 non-inference, blocked (inherits)", "4": "T4 inference live", "5": "T5 inference ready",
               "6": "T6 inference routine", "7": "T7 held / blocked"}
 
@@ -148,6 +160,46 @@ def collect_boxes(index_state) -> tuple[dict, list[dict]]:
                                   reasons=reasons, rows=h2r.get(h, []), touched=dates.get(ln),
                                   full=' '.join(x.strip() for x in full)[:1500]))
     return state, boxes
+
+
+# ---------------------------------------------------------------- inference-prep seed
+def seed_prep(fillers: Path, nodes: dict, grants: Path = GRANTS_DIR, aliases: dict | None = None) -> list[dict]:
+    """inference-prep seeds from FILLERS.md: BACKLOG rows whose FIRST `blocker=` is a harness fix or a missing
+    launcher, minus rows already `.complete` in grants/ or marked superseded. Each maps to the index row whose
+    handoff file (or row id) the FILLERS row names; unmapped rows keep row=''. Host state, so it is snapshotted
+    into the curated table (`--seed-prep`), never read at build time."""
+    by_handoff: dict = {}
+    for nid, n in nodes.items():
+        by_handoff.setdefault(Path(n.get('handoff') or '').name, []).append(nid)
+    id_rx = re.compile(r'\b(' + '|'.join(sorted(map(re.escape, nodes), key=len, reverse=True)) + r')\b') if nodes else None
+    out = []
+    for l in fillers.read_text(encoding='utf-8', errors='replace').splitlines():
+        c = l.split('|')
+        if len(c) <= 18 or not c[8].strip().startswith('BACKLOG'):
+            continue
+        fid = c[1].strip()
+        b = re.findall(r'blocker=\s*([^;|]*)', c[18])
+        if not fid or not b or not PREP_BLOCKER_RX.match(b[0].strip()):
+            continue
+        if (grants / f'{fid}.complete').exists() or re.search(r'superseded|RETIRED|duplicate', c[18], re.I):
+            continue
+        row, how = '', ''
+        for h in re.findall(r'([A-Za-z0-9_.\-]+\.md)\b', l):
+            if by_handoff.get(h):
+                row, how = sorted(by_handoff[h])[0], f'handoff {h}'
+                break
+        if not row and id_rx is not None:
+            m = id_rx.search(l)
+            if m:
+                row, how = m.group(1), f'row id {m.group(1)} named'
+        if not row:
+            for rx, rid in (aliases or {}).items():
+                if not rx.startswith('_') and rid in nodes and re.search(rx, fid, re.I):
+                    row, how = rid, f'filler-id alias /{rx}/'
+                    break
+        out.append(dict(filler=fid, row=row, map=how or 'unmapped', owner=c[2].strip()[:60],
+                        blocker=b[0].strip()[:140], cls=c[9].strip()[:40], decision=c[15].strip()[:160]))
+    return sorted(out, key=lambda e: e['filler'])
 
 
 # ---------------------------------------------------------------- the build
@@ -250,6 +302,24 @@ def build(curated: dict | None = None, index_state=None, state=None, boxes=None)
         items[it['key']] = it
         byloc[(b['file'], b['line'])] = it['key']
 
+    # inference-prep items (curated snapshot of FILLERS.md, see seed_prep): kind 'P', ranked above everything
+    prep_list = []
+    for e in curated.get('inference_prep', []):
+        rowid = e.get('row') or ''
+        h = NODES.get(rowid, {}).get('handoff', '') if rowid else ''
+        b = dict(rows=[rowid] if rowid in NODES else [], handoff=f"FILLERS:{e['filler']}",
+                 file=('handoffs/active/' + Path(h).name) if h else str(FILLERS_DEFAULT), line=0,
+                 text=f"inference-prep {e['filler']}: {e['blocker']}", full=e.get('decision', ''), code=0, reasons=[],
+                 touched=None, head='')
+        w = W.get(rowid, .2)
+        s = round(min(.99, .5 + .4 * w + (.05 if re.match(r'decision|block-timing', e.get('cls', '')) or e.get('decision') else 0)), 3)
+        it = mk(b, kind='P', cls='prep', s=s, source='curated-prep', filler=e['filler'], owner=e.get('owner', ''),
+                why=f"FILLERS BACKLOG blocker={e['blocker'][:80]}; mapped by {e.get('map', 'unmapped')}")
+        it['key'] = f"{it['row']}@prep:{e['filler']}"
+        it['synthetic'] = True
+        items[it['key']] = it
+        prep_list.append(it)
+
     # row-dep inheritance (coarse): one best-matching auto box per dependency row
     rowbest = collections.defaultdict(list)
     for it in items.values():
@@ -308,25 +378,39 @@ def build(curated: dict | None = None, index_state=None, state=None, boxes=None)
             elif it['source'] == 'curated' and it['unblocks'] and N1_RX.search(it['unblocks'] + ' ' + it['why']) and not it['before']:
                 it['inf_unblock'] = True
 
+    def lane_of(it):
+        if it['kind'] == 'P':
+            return 'inference-prep'
+        if it['kind'] == 'I' and it['cls'] not in ('hold', 'H', 'U'):
+            return 'inference-ready'
+        return 'non-inference'
+
+    # Bands (2026-10-28 loop redesign): inference-prep 5+s > inference-ready 4+s > non-inference (<= 3.x),
+    # except that a non-inference blocker of an inference item still sits just above what it gates.
     def eff_of(it):
+        if it['kind'] == 'P':
+            return 5.0 + it['s']
         if it['kind'] == 'I':
             if it['cls'] in ('hold', 'H'):
                 return 0.5 * it['s']
             if it['cls'] == 'U':
                 return 0.3 * it['s']
-            return 1.0 + it['s'] + (0.02 if it['cls'] == 'live' else 0)
+            return 4.0 + it['s'] + (0.02 if it['cls'] == 'live' else 0)
         if it['cls'] == 'U':
             return 0.3 * it['s']
         if it['cls'] == 'H':
             return 0.5 * it['s']
         tgt = resolve(it['before'])
         if it['cls'] == 'NB':
-            return eff_of(tgt) + 0.0005 if tgt is not None else 0.55 + 0.3 * it['s']
+            # inherits what it gates, capped below the inference bands (non-inference never outranks them)
+            return min(eff_of(tgt) + 0.0005, 3.9 + 0.09 * it['s']) if tgt is not None else 0.55 + 0.3 * it['s']
         if it['inf_unblock']:
             return 3.0 + it['s'] * 0.5 + tgt['s'] * 0.5 + 0.001 if tgt is not None else 3.0 + it['s']
         return 2.0 + it['s']
 
     def tier_of(it):
+        if it['kind'] == 'P':
+            return 0
         if it['kind'] == 'I':
             if it['cls'] in ('hold', 'H', 'U'): return 7
             if it['cls'] == 'live': return 4
@@ -339,6 +423,7 @@ def build(curated: dict | None = None, index_state=None, state=None, boxes=None)
     for it in items.values():
         it['eff'] = round(eff_of(it), 5)
         it['tier'] = tier_of(it)
+        it['lane'] = lane_of(it)
         if not it['why']:
             w_ = W.get(it['row'], .2)
             it['why'] = f"auto: row weight {w_:g}" + (f", touched {it['touched']}" if it['touched'] else '') + (f"; {it['blocker']}" if it['blocker'] else '')
@@ -356,7 +441,7 @@ def build(curated: dict | None = None, index_state=None, state=None, boxes=None)
             continue
         best = min(its, key=lambda i: i['rank'])
         rows.append(dict(id=nid, domain=n['domain'], handoff=n['handoff'], open=n['open'], readiness=n['readiness'],
-                         best_key=best['key'], best_text=best['text'][:150], best_kind=best['kind'], tier=best['tier'],
+                         best_key=best['key'], best_text=best['text'][:150], best_kind=best['kind'], kind=best['lane'], tier=best['tier'],
                          eff=best['eff'], hold=HOLD.get(nid, ''), blocker=best['blocker'] if best['tier'] == 7 else '',
                          next_action=n['next_action'], n_by_tier=dict(collections.Counter(str(i['tier']) for i in its))))
     rows.sort(key=lambda r: (-r['eff'], r['id']))
@@ -379,7 +464,10 @@ def build(curated: dict | None = None, index_state=None, state=None, boxes=None)
         "schema": "backlog_priority.v1",
         "generated_by": "scripts/handoffs/backlog_priority.py + scripts/handoffs/backlog_priority_curated.json",
         "generated_at": now,
-        "method": ("Operator method 2026-10-24: inference items ranked by the inference-backlog-scheduling model (live > ready decision-bearing > "
+        "method": ("LOOP-CONTRACT 2026-10-28 (operator-adopted loop redesign): every row and prep item carries kind = inference-prep | "
+                   "inference-ready | non-inference, and the bands rank inference-prep (T0: FILLERS BACKLOG rows blocked on a harness fix or a "
+                   "missing launcher, seeded via --seed-prep) above inference-ready (T4-T6) above all non-inference (T1-T3, T7; held inference "
+                   "counts as non-inference until its hold clears). Within the bands, operator method 2026-10-24: inference items ranked by the inference-backlog-scheduling model (live > ready decision-bearing > "
                    "routine; ROI = decision value per compute-hour; operator holds push down with the blocker named); non-inference tasks that gate "
                    "an inference task inherit and rank just above it; non-inference tasks blocked by nothing are the top tier (T1 gates compute, "
                    "T2 does not); everything else blocked follows its blockers. Row priority = its best open item. score = rank percentile among "
@@ -388,8 +476,12 @@ def build(curated: dict | None = None, index_state=None, state=None, boxes=None)
         "tiers": TIER_SHORT,
         "overrides_file": "handoffs/active/backlog-priority.override.json",
         "done_pending_tick": [{"row": i['row'], "task": i['text'][:90], "done": i['done']} for i in done_list],
-        "rows": {r['id']: {"tier": r['tier'], "rank": r['rank'], "score": r['score'],
-                           "basis": f"T{r['tier']} best open item ({r['best_kind']}): {r['best_text'][:90]}",
+        "kinds": list(LANES),
+        "inference_prep": [{"rank": i['rank'], "filler": i['filler'], "row": i['row'], "kind": "inference-prep", "s": i['s'],
+                            "blocker": i['text'].split(': ', 1)[-1][:140], "owner": i['owner'][:60], "why": i['why'][:160]}
+                           for i in sorted(prep_list, key=lambda x: x['rank'])],
+        "rows": {r['id']: {"kind": r['kind'], "tier": r['tier'], "rank": r['rank'], "score": r['score'],
+                           "basis": f"T{r['tier']} {r['kind']} best open item ({r['best_kind']}): {r['best_text'][:90]}",
                            "unblocks": r['unblocks_rows'][:12],
                            "blocker": (r['hold'] or r['blocker'] or '')[:120]} for r in rows},
     }
@@ -417,6 +509,9 @@ def check(res: dict, path: Path = OUT_DEFAULT) -> tuple[list[str], list[str]]:
     except ValueError:
         problems.append(f"{path.name} has no parseable generated_at")
     crow, frow = cur.get('rows', {}), fresh['rows']
+    nokind = sorted(r for r, e in crow.items() if e.get('kind') not in LANES)
+    if nokind:
+        problems.append(f"{len(nokind)} row(s) without a valid kind ({'|'.join(LANES)}): {', '.join(nokind[:6])}")
     missing = sorted(set(frow) - set(crow))
     if missing:
         problems.append(f"{len(missing)} open row(s) missing from the file: {', '.join(missing[:6])}")
@@ -440,7 +535,20 @@ def main(argv=None) -> int:
     ap.add_argument("--check", action="store_true", help="drift / staleness vs a fresh in-memory build; writes nothing")
     ap.add_argument("--out", type=Path, default=OUT_DEFAULT)
     ap.add_argument("--md", type=Path, help="also write the full ranked list as markdown")
+    ap.add_argument("--seed-prep", nargs="?", const=FILLERS_DEFAULT, type=Path, metavar="FILLERS_MD",
+                    help="refresh the curated `inference_prep` snapshot from FILLERS.md (BACKLOG rows whose blocker is a "
+                         "harness fix or a missing launcher), then regenerate")
     args = ap.parse_args(argv)
+    if args.seed_prep and not args.check:
+        cur = json.loads(CURATED_PATH.read_text(encoding='utf-8'))
+        ist = _load('index_state', 'scripts/handoffs/index_state.py')
+        nodes = {n['id']: n for n in ist.build_graph(ist.collect())['nodes']}
+        seeds = seed_prep(args.seed_prep, nodes, aliases=cur.get('prep_aliases', {}))
+        cur['inference_prep'] = seeds
+        cur['inference_prep_source'] = {"file": str(args.seed_prep), "seeded_at": datetime.datetime.now(datetime.timezone.utc).strftime('%Y-%m-%dT%H:%MZ'),
+                                        "rule": "FILLERS BACKLOG, first blocker= is 'harness fix' or 'missing launcher', no grants/<id>.complete, not superseded"}
+        CURATED_PATH.write_text(json.dumps(cur, indent=1, ensure_ascii=False) + "\n", encoding='utf-8')
+        print(f"seeded {len(seeds)} inference-prep item(s) ({sum(1 for e in seeds if e['row'])} mapped to an index row) into {CURATED_PATH.name}")
     res = build()
     if args.check:
         problems, notes = check(res, args.out)
@@ -466,7 +574,7 @@ def render_md(res: dict) -> str:
     ln = lambda i: (f"| {i['rank']} | {i['row']} | {esc(i['text'][:90])} | `{Path(i['file']).name}:{i['line']}` | {i['kind']}/{i['cls']} | "
                     f"{esc(i['owner'])} | {esc(i['size'])} | {esc(i['unblocks'][:80])} | {esc(i['blocker'][:60])} | {esc(i['why'][:120])} |")
     out = [f"# Backlog priority (generated {res['now']})\n"]
-    for t in range(1, 8):
+    for t in range(0, 8):
         sel = [i for i in ordered if i['tier'] == t][:60]
         out.append(f"## {TIER_NAME[t]} ({sum(1 for i in ordered if i['tier'] == t)} boxes)\n\n" + hdr + "\n".join(ln(i) for i in sel) + "\n")
     out.append("## Done, not yet ticked on main\n\n" + "\n".join(f"- {i['row']} {esc(i['text'][:80])}: {i['done']}" for i in res['done']) + "\n")
