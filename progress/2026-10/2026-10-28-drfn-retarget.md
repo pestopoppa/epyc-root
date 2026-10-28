@@ -7,9 +7,7 @@ GPU drafter with new artifacts. Removed the obsolete open boxes, preserved the
 historical closed results, added the distinct DR-FN1 task and updated its index
 and generated priority basis. No old 122B result is transferred to the new task.
 
-The public experimental IQ2 trunk linked in the handoff is a potential source,
-not an established MI210 fit: its external PLE sidecar, runtime footprint,
-compatibility and quality remain to be measured. No model was downloaded,
+The pinned public DS4 IQ2 release reports a 44.81 GB main file and required 32.00 GB PLE sidecar, with DS4-specific padded-down support. It is a potential source, not an established MI210 fit or llama.cpp-compatible artifact. At the current free-space level the two files exceed the 150 GiB reserve; version-pinned range-backed input or additional canonical storage is an engineering path to assess. Runtime footprint and quality remain to be measured. No model was downloaded,
 quantized or run for DR-FN1 in this checkpoint.
 
 During this checkpoint the `index_state --check` and `backlog_priority --out`

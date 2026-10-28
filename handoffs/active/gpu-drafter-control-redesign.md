@@ -137,9 +137,14 @@ The current directive and rationale are in the
   source-pinned launcher with real normal/cutoff smokes, cleanup and matched target-only
   controls. Measure acceptance, output quality and opportunity cost under the current
   protocol before any serving decision. No 122B result is inherited. A public
-  [experimental IQ2 trunk](https://github.com/Anemll/ds4-qwen/blob/qwen3.8-flash-next/speed-bench/qwen38-iq2-quality.md)
-  reports 50.34 GB plus an external PLE sidecar; its compatibility and total MI210
-  footprint are unverified and are engineering questions, not a fit or quality claim.
+  [DS4-targeted IQ2 release](https://huggingface.co/ivanfioravanti/Qwen3.8-Flash-Next-DS4-IQ2/blob/b8b20398acfcc9d9a05defb408ab857cfa02a56a/README.md)
+  reports a 44.81 GB main file plus a required 32.00 GB PLE sidecar, padded-down
+  tensors and a DS4-specific runtime. Reconcile or port that layout and sidecar on an
+  experimental branch, measure full host/MI210 residency and run the quality gates;
+  the release does not establish compatibility or fit on this host. As of this check,
+  both files exceed the current free space after the 150 GiB reserve; evaluate a
+  version-pinned range-backed canonical source or additional canonical storage rather
+  than putting weights in scratch. No download or model run has been performed.
   - [x] **DR-3a — dry-run package scaffold ✅ 2026-07-20**:
     inference-research `scripts/benchmark/dr3_quant_asym_k2_admission_prep.py`
     emits `manifest.json`, `task_packet.jsonl`, `commands.sh`, `operator_run.sh`,
