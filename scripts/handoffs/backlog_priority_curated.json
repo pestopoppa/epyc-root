@@ -1167,17 +1167,18 @@
   },
   {
    "row": "UFH-12",
-   "tok": "REPL-EMB-2.10",
+   "tok": "REPL-EMB-2.10c",
    "kind": "N",
    "cls": "N",
    "s": 0.55,
    "size": "M",
    "unblocks": "migration tool gaps B-1..B-5",
    "blocker": "",
-   "why": "",
+   "why": "calibration CALIBRATION_COMPLETE + full private apply R3 done 2026-10-27 (repl-embedding-retrieval.md:246-249); prod swap is the separate operator item UFH-12-PROD-ADOPT",
    "owner": "fresh agent",
    "filler": "",
-   "before": "UFH-12:REPL-EMB-2.12"
+   "before": "UFH-12:REPL-EMB-2.12",
+   "done": "calibration + COPY apply/parity done 2026-10-27 (repl-embedding-retrieval.md:246-249); box awaiting tick"
   },
   {
    "row": "UFH-12",
@@ -1915,21 +1916,33 @@
    "done": "closed superseded (coordinator 2026-10-24)"
   },
   {
-   "unblocks": "calendar estimate-vs-actual claims become gateable",
    "blocker": "",
-   "why": "new open box from the VB-CAL-OVERRUN-WIRE landing",
-   "owner": "fresh agent",
+   "owner": "",
    "filler": "",
    "before": "",
    "size": "S",
-   "row": "EVL-47",
-   "tok": "VB-CAL-OVERRUN-WRITE",
+   "row": "INF-70",
+   "tok": "CLOSE-7",
    "kind": "N",
    "cls": "N",
-   "s": 0.5,
-   "new": true,
-   "file": "vidya-belief-substrate-program.md",
-   "title": "VB-CAL-OVERRUN-WRITE - write side for the compute-calendar overrun check (new open box, filed 2026-10-24; not on main yet)"
+   "s": 0.1,
+   "unblocks": "",
+   "why": "duplicate pointer row; WRAP-8 owns GGML_STATIC_CHUNKS (cpu-decode-roofline-program.md:2426-2429)",
+   "done": "duplicate of WRAP-8 by its own text (cpu-decode-roofline-program.md:2427); delete when WRAP-8 is actioned"
+  },
+  {
+   "blocker": "no run needed: v10 NO-DEFECT AS LAUNCHED (tmp/ws58-v10-fused-coh-20261024/VERDICT.md); closes via C5 fold (fused default-OFF) / promotion (cpu-fused-decoder-blocks.md:116)",
+   "owner": "",
+   "filler": "",
+   "before": "",
+   "size": "no run",
+   "row": "INF-67",
+   "tok": "FD-DIV-2",
+   "kind": "I",
+   "cls": "hold",
+   "s": 0.2,
+   "unblocks": "",
+   "why": "latent defect; closure is a fold/promotion event, not compute"
   }
  ]
 }
