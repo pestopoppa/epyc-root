@@ -337,6 +337,7 @@ SOURCES: dict[str, Source] = {s.name: s for s in (
            note="UFH-12 placement gate sidecars (`<record>.belief_measurements.jsonl`); the "
                 "2026-09-26 Phase-0 records have none and yield no claims",
            task="VB-UFH12-PLACEMENT"),
+    Source("ufh12-irt-paired", "ufh12_irt_paired", _files("*.belief_measurements.jsonl"), task="VB-UFH12-IRT-PAIRED-WRITE", note="prospective paired held-out IRT correlations; explicit --path only"),
     Source("repl-retrieval-eval", "repl_retrieval_eval",
            _files_except(".speed.belief_measurements.jsonl", "*.belief_measurements.jsonl",
                          "*/*.belief_measurements.jsonl"),
