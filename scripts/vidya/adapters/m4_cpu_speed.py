@@ -7,6 +7,7 @@ from __future__ import annotations
 import hashlib
 import json
 import math
+import os
 from pathlib import Path
 from typing import Any
 from dataclasses import dataclass
@@ -107,6 +108,21 @@ def _project(native: Any, config: SourceConfig) -> ClaimTuple:
         raise ProjectionError('planned model does not match captured scope')
     def arg(flag):
         return argv[argv.index(flag)+1] if flag in argv and argv.index(flag)+1<len(argv) else None
+    if config.producer_root == TOPOLOGY_ROOT:
+        recipe = native['recipe']
+        scenario = recipe.get('scenario_config') if isinstance(recipe,dict) else None
+        if not isinstance(scenario,dict): raise ProjectionError('topology scenario missing')
+        nodes, affinity, threads = scenario.get('numa_nodes'), scenario.get('cpu_affinity'), scenario.get('threads')
+        vision_roles={'vision_escalation','worker_vision'}
+        full_roles={'architect_general','frontdoor','toolrunner','worker','worker_explore','worker_general','worker_math','worker_summarize'}
+        role=native['role']
+        expected=('0,1','0-47,96-143',48) if role in vision_roles else ('all','0-95',96) if role in full_roles else None
+        if (nodes,affinity,threads) != expected:
+            raise ProjectionError('invalid production topology')
+        try: pos=argv.index('numactl')
+        except ValueError as exc: raise ProjectionError('topology command missing') from exc
+        if argv[pos:pos+6] != ['numactl',f'--interleave={nodes}','--','taskset','-c',affinity] or arg('-t')!=str(threads):
+            raise ProjectionError('native topology does not match captured recipe')
     expected_commit='c72ec82f5417bb2937310326120f149b665e8400' if row['category']=='BASELINE' else 'bc441f1a261766d11bfeff21668a1031c4dbf8cd'
     if extra.get('source_commit')!=expected_commit: raise ProjectionError('source commit mismatch')
     if row['category']=='CANDIDATE':
@@ -139,21 +155,46 @@ SOURCE_SEALS = {
     'native/compare_v9_promotion_arms.py': '83e1ea40499cbca531849af454209d45011b55bc2684c841a09068a15c3fd94e',
 }
 
-def _trusted_config():
-    for name, digest in SOURCE_SEALS.items():
+TOPOLOGY_ROOT = Path('/mnt/raid0/llm/tmp/refactor-01a16fc3/m4-full-fold-ready-20261028/cpu-fold')
+TOPOLOGY_CAPTURE_ROOT = TOPOLOGY_ROOT / 'output'
+TOPOLOGY_SEALS = {'dispatch.py': '29431e53b973be9a9392a450a66394aea7075cd57137a8f442ff522a2c21155f', 'capture.py': '701168d58ef67bdc1e130cff9a0fa0f8576516df9fe743bcdaf0794501965479', 'native/k35_stack_context_matrix_runner.py': '056bb6a0743dc52ccc063db2ecdb8bc1be554306fa6d37e664eaba00878fee89', 'native/compare_v9_promotion_arms.py': '83e1ea40499cbca531849af454209d45011b55bc2684c841a09068a15c3fd94e'}
+
+def _verify_trusted(root, capture_root, seals):
+    for name, digest in seals.items():
         try:
-            if _sha((PRODUCER_ROOT / name).read_bytes()) != digest:
+            if _sha((root / name).read_bytes()) != digest:
                 raise ProjectionError(f'producer seal changed: {name}')
         except OSError as exc:
             raise ProjectionError(f'producer unavailable: {name}') from exc
-    return SourceConfig(CAPTURE_ROOT, PRODUCER_ROOT)
+    return SourceConfig(capture_root, root)
+
+def _trusted_config():
+    # Existing root and seals remain unchanged for all old captures.
+    return _verify_trusted(PRODUCER_ROOT, CAPTURE_ROOT, SOURCE_SEALS)
+
+def _trusted_config_for(path):
+    if '..' in Path(path).parts:
+        raise ProjectionError('parent traversal in capture path')
+    requested = Path(os.path.abspath(path))
+    resolved = Path(path).resolve()
+    old_match = CAPTURE_ROOT in resolved.parents
+    new_match = TOPOLOGY_CAPTURE_ROOT in resolved.parents
+    if (CAPTURE_ROOT in requested.parents, TOPOLOGY_CAPTURE_ROOT in requested.parents) != (old_match,new_match):
+        raise ProjectionError('capture path crosses trusted root boundary')
+    if old_match == new_match:
+        raise ProjectionError('capture root unknown or ambiguous')
+    if new_match:
+        return _verify_trusted(TOPOLOGY_ROOT, TOPOLOGY_CAPTURE_ROOT, TOPOLOGY_SEALS)
+    return _trusted_config()
 
 def native_rows(path: str | Path) -> tuple[dict, ...]:
-    return _native_rows(path, _trusted_config())
+    return _native_rows(path, _trusted_config_for(path))
 
 @register(SOURCE_KIND)
 def project(native: Any) -> ClaimTuple:
-    return _project(native, _trusted_config())
+    if not isinstance(native, dict) or not isinstance(native.get('receipt'),str) or not Path(native['receipt']).is_absolute():
+        raise ProjectionError('absolute receipt required')
+    return _project(native, _trusted_config_for(native['receipt']))
 
 def frames_for_record(path: str | Path, *, as_of: str) -> list[dict]:
     return [frame for native in native_rows(path) for frame in to_frames(
