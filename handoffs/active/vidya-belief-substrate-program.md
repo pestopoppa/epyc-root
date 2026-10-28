@@ -2132,6 +2132,8 @@ VB-NPD-1) are activation records in the durable-triggers list above.
 - [ ] **VB-SWAP-C — wire the write side of the launch-phase receipts (heterogeneous-slot-fabric-residency.md HSF-1).**
   - One launch = one locator, with GGUF/binary digests, argv hash, page-cache fraction, phase timings and outcome class.
   - Cold/partial-cache launches project with their label and never merge into hot C.
+- [ ] **VB-INF34-A2-DIAG-WIRE — preserve the raw A2 single-cell observation.** Capture native output, canonical model and binary identities, exact recipe, GPU residency, window context and partial/cleanup state at write time; project only eligible observations through the existing prefill carrier and `ClaimTuple.grade()`. No diagnostic seal, receipt, retrospective warrant, crossover claim or new ladder; run the planning-context canary before calling wired. The full PF1 grid remains separate.
+
 - [ ] **VB-PREFILL-XOVER — wire PF1 on the WRITE side before its first cell runs.** Emit one self-hashed ClaimTuple-shaped record per cell (artifact + binary digests, build line, protocol id or observation, n, date, VRAM-during-run witness, failure reason when failed) into the PF1 run dir; no read-side reconstruction.
 - [x] **VB-GAP-DIST — wire the write side of the session inter-call gap measurement** (`heterogeneous-slot-fabric-residency.md` HSF-3) before its first extraction: one row per gap (session hash, role, client class, t_done, t_next, gap_s, source), with the log-manifest digest, extractor revision and window. Locator = window × class; W1 and W2 never pool. Observation-grade.
   2026-10-05 checkpoint: native extractor/reader and CLI source are on root main `d61ae218`;
