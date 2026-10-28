@@ -105,6 +105,12 @@ ls -t /mnt/raid0/llm/tmp/compute-calendar-*.md | head -1
 /usr/bin/python3 -I .claude/skills/inference-backlog-scheduling/scripts/queue_status.py | head -40
 ```
 
+**Compute-owner takeover — do this before triage, every cold start or resume.** Prove the calendar keeper, both grant
+writers and the **results-filing watcher** are alive (pid from their log, `ps -p`), clear crash residue, and file every
+`filing-due.jsonl` id that has no `filing-done/<id>.FILED` **immediately** — then arm the wake-up for new run ends.
+The whole procedure, paths and the filer brief: [`references/compute-owner-takeover.md`](references/compute-owner-takeover.md).
+Operator 2026-10-28: results are filed the moment a run ends, never on request, and any session can take this over.
+
 ### 0b-bis. THE SINGLE CONTROL SURFACE — `fleet_control.sh`
 
 This skill is the operator's handle on the loop, and these are the verbs. Anything
