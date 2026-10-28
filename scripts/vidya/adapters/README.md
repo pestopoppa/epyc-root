@@ -846,6 +846,12 @@ M4 current-C5 paired OFF C2 extends the existing PB-HOL family: `/mnt/raid0/llm/
 
 The existing RVP-ATT native model-free canary source also covers `/mnt/raid0/llm/tmp/refactor-01a16fc3/att-canary-v2-ready/job.sh`: same native carrier, corrected bundled-loader path and live grant monitoring, with original rc127 retained as unavailable. Existing frozen source/task lines remain unchanged for the enrollment proof. No counter or performance inference follows before a successful native canary.
 
+The prospective ATT R4 launcher `/mnt/raid0/llm/tmp/codex-att-r4-20261028/job.sh` uses the same native profile source class and existing `VB-RVP-ATT-CANARY-WIRE` task. Its full-q3 grant and post-fix real smoke remain pending; no trace or efficiency finding is asserted.
+
+The prospective UFH14 A3a descriptive diagnostic `/mnt/raid0/llm/tmp/codex-ufh14-repair-20261028/entry.py` retains the native per-request cache, prompt/decode timing and SSE records for the cold and one-warm sequences. Its small-model smoke is non-measurement plumbing evidence. A future projection must preserve the recorded model, grant, source and window, use the existing carrier and grade, and never infer an A3a performance verdict from the smoke. Task `VB-UFH14-A3A-DIAGNOSTIC-WIRE` remains open.
+
+The prospective Parakeet CPU reference successor `/mnt/raid0/llm/tmp/codex-parakeet-cpu-repair-20261028/reference.py` uses the canonical model path under `/mnt/raid0/llm/models/` with its content digest pinned. It remains under `VB-PARAKEET-STT0-VERIFIER`; its post-change real smoke has not run and no transcript identity finding is asserted.
+
 ## Prospective quarter variants prepared 2026-10-28
 
 The existing `yarn-gate-agg` source also covers the prospective CPU-only fixed120-pair cohort at `/mnt/raid0/llm/tmp/refactor-01a16fc3/heavy-yarn-quarter-ready/v2/`. Four outcome-independent context-disjoint30-pair shards preserve both arms and the exact120-item denominator. The old GPU filler was never queued or granted and is withdrawn, per scheduler confirmation recorded in `GPU-COHORT-COORDINATED`. Native capture binds CPU/model/binary/allDSO/template/source/recipe/prompt/grant identities and partial outcomes before scoring. The existing fixed-sample decision and producer are reused only after a complete exact-union merge; CPU andGPU records are never mixed. Few discordances do not establish equivalence. No new grader or historical warrant. Strict projection/planning canary for this CPU layout remains OPEN below.
