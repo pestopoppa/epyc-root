@@ -309,6 +309,8 @@ RAM ledger next 24 h: peak concurrent GiB per block (never two DS41-class items 
 `scripts/queue_status.py [--owner X] [--json]` produces the first five sections read-only; the
 critical path and the RAM ledger come from the writers' chains and the row RAM figures.
 
+Add a `DECISIONS` line to the report: `python3 scripts/handoffs/verdict_count.py` (read-only) prints the DECIDED / RAN-NO-VERDICT / RAN-FAILED-ONLY / NEVER-RUN class counts and decisions per day, so the operator sees decisions/week (last 7 d vs prior 7 d), not only runs; `--json OUT` writes the full per-row table.
+
 ## When not to apply this skill
 
 A single run on an otherwise empty host still needs a FILLERS row, a grant and `ram_admit`, but
