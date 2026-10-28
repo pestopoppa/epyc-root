@@ -1,0 +1,5 @@
+# 2026-10-28 — HIL-16b replay resume preparation
+
+- Prepared an isolated prospective successor at `/mnt/raid0/llm/tmp/codex-hil16b-resume-20261028` for UFH-08. It checkpoints completed samples with their own original warrants, revalidates identity and seed before skipping them, and retains per-sample provenance in assembly. It fails closed on missing or corrupted indexed successes and permits retries after failed attempts.
+- The packet prepares shorter resumable windows, rc75 on lost boundaries, and captured-child cleanup. The revised smoke enters the production job loop using isolated smoke output and no fabricated grant. Eleven model-free tests passed with aggregate RSS sampled on the authorized R6 pair; shell syntax passed. These checks do not establish real inference behavior.
+- No READY manifest exists: the required real CPU smoke has not run because all CPU quarters are occupied by correctness grants. Independently recheck the final changes, then run the production-path smoke on a free quarter before publishing a source-bound READY packet. The UFH-08 claim was released.
