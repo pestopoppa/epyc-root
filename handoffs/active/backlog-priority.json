@@ -1,7 +1,7 @@
 {
  "schema": "backlog_priority.v1",
  "generated_by": "scripts/handoffs/backlog_priority.py + scripts/handoffs/backlog_priority_curated.json",
- "generated_at": "2026-10-28T10:38Z",
+ "generated_at": "2026-10-28T23:02Z",
  "method": "LOOP-CONTRACT 2026-10-28 (operator-adopted loop redesign): every row and prep item carries kind = inference-prep | inference-ready | non-inference, and the bands rank inference-prep (T0: FILLERS BACKLOG rows blocked on a harness fix or a missing launcher, seeded via --seed-prep) above inference-ready (T4-T6) above all non-inference (T1-T3, T7; held inference counts as non-inference until its hold clears). Within the bands, operator method 2026-10-24: inference items ranked by the inference-backlog-scheduling model (live > ready decision-bearing > routine; ROI = decision value per compute-hour; operator holds push down with the blocker named); non-inference tasks that gate an inference task inherit and rank just above it; non-inference tasks blocked by nothing are the top tier (T1 gates compute, T2 does not); everything else blocked follows its blockers. Row priority = its best open item. score = rank percentile among rows with open work (1.0 = highest). Approximate: ~120 curated items, the rest keyword heuristics; row Deps edges are coarse. Regenerate: python3 scripts/handoffs/backlog_priority.py (see dashboard/README.md).",
  "tiers": {
   "0": "T0 inference-prep",
@@ -947,10 +947,10 @@
   },
   "INF-66": {
    "kind": "inference-ready",
-   "tier": 5,
+   "tier": 4,
    "rank": 19,
    "score": 0.8989,
-   "basis": "T5 inference-ready best open item (I): LBH-2.1 — re-run the INF-70 llama-bench units whose protocol could not be resolved or was ",
+   "basis": "T4 inference-ready best open item (I): R23-64a — reconcile the t96 call. The FILLERS rule names the floor MDE 1.09% plus CI-exclu",
    "unblocks": [
     "INF-73",
     "INF-74",
@@ -1240,7 +1240,7 @@
    "tier": 6,
    "rank": 42,
    "score": 0.7697,
-   "basis": "T6 inference-ready best open item (I): First-party A/B: verbatim-append trajectory log + grep/Python read, vs current summarize-a",
+   "basis": "T6 inference-ready best open item (I): VB-TOC-AB-WRITE producer call (owed, filed 2026-10-21): the trajectory-artifact writer cal",
    "unblocks": [
     "UFH-12"
    ],
@@ -1841,7 +1841,7 @@
    "tier": 2,
    "rank": 102,
    "score": 0.4326,
-   "basis": "T2 non-inference best open item (N): SSU-F18 — commit the moved-lineup plugin to the orchestrator tests before a disk reclaim r",
+   "basis": "T2 non-inference best open item (N): SSU-F16 — build the architect_critic CRITIC-SUITE instrument and run it on Qwen3.8-Flash-N",
    "unblocks": [
     "INF-59",
     "INF-77",
@@ -1916,7 +1916,7 @@
    "tier": 2,
    "rank": 109,
    "score": 0.3933,
-   "basis": "T2 non-inference best open item (N): DR-3 — broader K2 admission runner/package: build the dry-run-first K2",
+   "basis": "T2 non-inference best open item (N): DR-FN1 — prepare a new Flash-Next quant-asymmetric drafter experiment. Bind the",
    "unblocks": [],
    "blocker": ""
   },

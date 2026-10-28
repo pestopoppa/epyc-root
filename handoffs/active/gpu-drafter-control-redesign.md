@@ -125,11 +125,21 @@ does not depend on an archived parent:
   The design keeps the lane research-only until broader task-class admission and
   production-named `P-GPU-1` certification pass, and explicitly avoids IQ1_M download
   solely for DR-0 because IQ2_M already passed the strict drafter gate.
-- [ ] **DR-3 — broader K2 admission runner/package**: build the dry-run-first K2
-  admission runner and package from the DR-2 design: wider task slice, CPU-target
-  equivalence/equality checks, long-output/context bands, MI210 lease/cleanup proof,
-  frontdoor opportunity-cost measurement, and post-promotion `P-GPU-1` certification
-  hook. No live serving route or NumericSwarm surface until this passes.
+**DR-3 historical scope — retired 2026-10-28 by the operator.** The K2 lane below used
+Qwen3.5-122B, which left the lineup. Its completed observations remain historical;
+its P-GPU-1 rerun will not run, and none of its evidence transfers to Flash-Next.
+The current directive and rationale are in the
+[MI210 roadmap](mi210-big-model-and-acceleration-roadmap.md#axis-b--gpu-drafter-farm-accelerate-the-cpu-targets).
+
+- [ ] **DR-FN1 — prepare a new Flash-Next quant-asymmetric drafter experiment.** Bind the
+  current Flash-Next CPU verifier and identify or build a compatible lower-bit drafter.
+  Establish total GPU residency including sidecars and runtime headroom, then prepare a
+  source-pinned launcher with real normal/cutoff smokes, cleanup and matched target-only
+  controls. Measure acceptance, output quality and opportunity cost under the current
+  protocol before any serving decision. No 122B result is inherited. A public
+  [experimental IQ2 trunk](https://github.com/Anemll/ds4-qwen/blob/qwen3.8-flash-next/speed-bench/qwen38-iq2-quality.md)
+  reports 50.34 GB plus an external PLE sidecar; its compatibility and total MI210
+  footprint are unverified and are engineering questions, not a fit or quality claim.
   - [x] **DR-3a — dry-run package scaffold ✅ 2026-07-20**:
     inference-research `scripts/benchmark/dr3_quant_asym_k2_admission_prep.py`
     emits `manifest.json`, `task_packet.jsonl`, `commands.sh`, `operator_run.sh`,
@@ -163,9 +173,6 @@ does not depend on an archived parent:
     passed as observation-grade: frontdoor `93.690 -> 94.157 t/s`
     after reload (`1.005x`), DR-3 K2 active `11.701 t/s`, alpha `1.000`,
     cleanup pass, `decision_grade=false`, serving/NumericSwarm still disabled.
-  - [ ] **DR-3e — production-named P-GPU-1 certification**: after the 2026-07-20
-    v7 cutover, rerun the required GPU claims under `production-consolidated-v7`
-    before any serving route or NumericSwarm K surface.
 - [x] **DR-1 — economics model ✅ 2026-07-18**: break-even model recorded at
   [docs/reference/gpu-drafter-break-even-model-2026-07-18.md](../../docs/reference/gpu-drafter-break-even-model-2026-07-18.md).
   Key result: external Stage-1/2 failed despite `α=1.0`, so their blocker is
