@@ -1037,3 +1037,11 @@ Queue ownership: INF-26 arm-P2 is complete and its stale rank entry was removed 
 ## 2026-10-28 supplement — idle-compute incident (workspace-58 wrap-up)
 
 - [ ] **NI-IDLE-REFILL-WATCHER — zero-token auto idle-refill watcher for the compute calendar.** (filed 2026-10-28, workspace-58) 04:30–07:50Z the host sat idle after the overnight failure wave (YaRN s0–s3, HIL15 private s0–s3, M4 GPU quality refused) because the calendar owner (ws58) was not active and nothing re-armed queued READY rows. Build a watcher (run under `run_in_background`, no LLM polling) that detects an idle bin with READY rows past a grace period and either arms the next row through the existing grant writer or pushes a bus nudge + flag file to the calendar owner; document it in `.claude/skills/inference-backlog-scheduling/`. Must obey the grant-writer invariants there; never touch FILLERS by hand. [no-belief: not-a-result]
+
+## 2026-10-28 loop redesign follow-ons (workspace-58)
+
+- [ ] **LOOP-1**: keeper v2 READY auto-arming (zero-token daemon arms `ready/*.json`; subagent in progress). Contract: `/mnt/raid0/llm/tmp/compute-flags/LOOP-CONTRACT.md`. [no-belief: tooling-repair]
+- [ ] **LOOP-2**: `backlog_priority` `kind` field plus inference-prep ranking (in progress). [no-belief: tooling-repair]
+- [ ] **LOOP-3**: retire OWNER-REPLY/owner-reply relays once `ready/` flows. [no-belief: tooling-repair]
+- [ ] **LOOP-4**: HIL15 v5 window-end must exit rc75, not rc1. [no-belief: tooling-repair]
+- [ ] **LOOP-5**: daily loop metrics (decision results/day, idle-h, failed-at-entry rate, operator msgs). [no-belief: tooling-repair]
