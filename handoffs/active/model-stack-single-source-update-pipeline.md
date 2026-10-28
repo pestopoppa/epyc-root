@@ -19,11 +19,11 @@ preserve completed chronology compacted out of this active handoff.
 
 ## Start here
 
-- **Next:** SSU-F18 moved-lineup plugin publication; SSU-F8 remains with its owning session for confirmation.
+- **Next:** SSU-F8 remains with its owning session for confirmation.
 - **Waiting:** SSU-F17 on UFH-13's verdict; the SSU-F1 weight deletion on the operator (its deprecation half can be
   done now); SSU-F16 on an inference window.
 - SSU-F4 and SSU-F11 overlap SSU-F17.
-- Also open: SSU-F8 (mostly landed in orch `b14ed228`; the owner confirms and ticks), SSU-F10, and SSU-F18 under
+- Also open: SSU-F8 (mostly landed in orch `b14ed228`; the owner confirms and ticks), and SSU-F10 under
   § Validation.
 - The seven open boxes in § Outstanding Work are standing rules. Never dispatch or tick them.
 
@@ -175,10 +175,11 @@ relocates the worker lane a second time, onto `architect_critic`. Against `tests
 it gives 34 of 35 passing; the one failure is the deliberate pin. It lives only in tmp, beside its fixtures
 (`launch_manifest.yaml`, `model_registry.yaml`, `moved/`).
 
-- [ ] **SSU-F18 — commit the moved-lineup plugin to the orchestrator tests** before a disk reclaim removes
+- [x] **SSU-F18 — commit the moved-lineup plugin to the orchestrator tests** before a disk reclaim removes
   `/mnt/raid0/llm/tmp/ssuf5/`. Bring its fixtures with it, run it against `tests/unit/test_stack_priors_compiler.py`,
   and keep the 34/35 result, with the deliberate pin failing, as a standing regression against the next lineup change.
   Zero inference. **Blocker: none.**
+  - ✅ 2026-10-28 — reviewed source `833a2f4e870b9c12ffabe7ac1bbc3efa4b594baf` integrated as orchestrator main `bc1cf9780905d65e5088aedcf240d20a9643caa3`, no deployment. Original tmp bytes were lost; committed overlays preserve the documented move. Current 44-case suite: baseline 44 pass, moved 43 pass plus the exact deliberate `startswith("full:")` assertion failure; automatic identity/counter/isolation regression makes combined 45 pass. Historical 34/35 is not asserted for current source. Details and grant-timing disclosure: [periodic checkpoint](../../progress/2026-10/2026-10-28-codex-ni-periodic-wrap.md). [belief: cc]
 
 ---
 
