@@ -121,14 +121,13 @@ writing any new arch handler.
 
 ### Tasks
 
-- [ ] **Z9 (Z, prerequisite for G18) — write the ~30-line pure-PyTorch constant-decay simple-GLA
-      recurrence** to stand in for the `fla` Triton call, **so that an HF CPU numerical oracle exists
-      at all**. Today there is none: `fla.ops.simple_gla` is Triton, Triton needs a GPU stack this host
-      does not have for gfx90a (see `G6` in
-      [rocm-verify-profile-backend.md](rocm-verify-profile-backend.md)), and without an oracle G18 has
-      nothing to compare a GGUF against. Constant decay makes this small — the decay is a
-      parameter-free ALiBi slope from head count, not a learned tensor. **No inference, no GPU, no
-      process management: this is code to write, and it is executable now.**
+- [x] **Z9 (Z, prerequisite for G18) — implement the restricted pure-PyTorch constant-decay
+      Simple-GLA CPU recurrence.** ✅ 2026-10-28 — isolated forward CPU-f32 oracle passed 10/10
+      synthetic conformance tests; see `/mnt/raid0/llm/tmp/codex-z9-private-20261028/PROVENANCE.txt`
+      and `test-run-20261028T1822Z.log` for exact source/test/log pins and bounded scope. This verifies
+      only the restricted synthetic recurrence, not HF SALA integration or model/GGUF parity.
+      **G18 remains open** for pinned source/config integration and the token-identical CPU parity
+      run. [belief: cc]
 - [ ] **G18 (G, prerequisite `Z9`) — SALA correctness-first port + CPU parity smoke.** On
       `llama.cpp-experimental` branched from the current production tip (**never v9**). Greedy
       (`temp 0`, fixed seed), **3 prompts × 32 tokens, every prompt under `sparse_config.dense_len` =
