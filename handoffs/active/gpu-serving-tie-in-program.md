@@ -1,6 +1,6 @@
 # GPU Serving Tie-In Program — one fabric, two devices
 
-**Scratch**: `/mnt/raid0/llm/tmp/refactor-01a16fc3/m4-cpu-q2-prep/` (queued/running owner packets and evidence; keep).
+**Scratch**: `/mnt/raid0/llm/tmp/refactor-01a16fc3/m4-cpu-q2-prep/` (queued and active owner packets and evidence; keep).
 
 **Status**: ACTIVE — operator-ratified strategy (consensus session 2026-07-28); Phase 0 in progress
 **Created**: 2026-07-28
@@ -503,6 +503,7 @@ Operator-approved 2026-10-21 via research intake (plan sha256 recorded in the se
           - [x] **M4-GPU-PB-HOL-PREP-01a16fc3:** reviewed PB-HOL packet, manifest SHA-256 `e1e2ea48e0c48172b2813c9cf97b98e9672292de1183ad759ce57dc78ee02e07`; existing native reader. M4 remains incomplete and OFF unmeasured. ✅ 2026-10-27 [no-belief: preparation only, no measurement]
           - [x] **M4-NATIVE-CAPTURE-READER-PREP-01a16fc3:** durable per-process native capture plus additive root reader/CLI/map keys and fixtures; synthetic checker PASS. Not published and not bound to actual resources; no full M4 gate or performance claim. ✅ 2026-10-27 [no-belief: tooling/fixture validation only]
           - [x] **M4-GPU-CLI-PREP-01a16fc3:** replace the removed `--draft-max` with `--spec-draft-n-max 7` in the private load precursor, verify actual native parser positive/removed-flag negative controls before loading, and prepare a source-bound GPU row. PF `1b26718ef259e182b47fdb8a5da781a22acb24bc5fa03359` passed; owner armed v2 PID 1925028. No GPU load or fold result is asserted. Packet `/mnt/raid0/llm/tmp/refactor-01a16fc3/m4-cpu-q2-prep/load-gpu-v2/ROW-DRAFT.md`. ✅ 2026-10-27 [no-belief: tooling-repair]
+          - [x] **M4-GPU-QUALITY-PREP-01a16fc3:** prepare the supplemental paired `architect_critic` GPU quality row from enrolled source `f5cf785322aff1fc86297dc76d788fc31beea0ec`. The source-bound no-model pass is `/mnt/raid0/llm/tmp/refactor-01a16fc3/m4-full-fold-ready-20261028/gpu-quality/dryrun/8813efe06181239bd1dc02407fee28ab8e8e7bbd93fb42e9/pass.json`; normal admission and row validation both returned 0/0, and the four fake-server collector loads exercised 790 synthetic HTTP requests plus paired scoring, audit, STOP/grant/deadline and teardown. The Q1 owner helper syntax check passed on CPUs 28-29 under its OMP1/4-GiB/260-s cap (sampled peak RSS 19,692 KiB). The launcher row was relayed over transport `91ae5900-d549-4db2-8dcf-d2fab5f9eda1`; owner acknowledgement is pending and the row remains BACKLOG (`ready=n`), so it is not armed. No model/GPU run or full-fold result is claimed. ✅ 2026-10-28 [no-belief: launcher preparation and synthetic validation only; no measurement]
 
 **Dormant triggers (no checkbox, no index next action):**
 
