@@ -1,0 +1,7 @@
+# NIB2-77 current lane ownership delta — 2026-10-28
+
+The frozen canonical llama.cpp clone remains `production-consolidated-v10` at `ffc1bac82eeca6f9099e1ccd9ba49703c460a115`. Comparing the accepted 2026-10-06 33-path lane snapshot with a fresh `git worktree list --porcelain` capture shows 36 registered lane paths: the 33 baseline paths remain, three DS41/Q38 paths were added, and none was removed. Two added detached worktrees are clean; the Q38 `targets-fa-20261022` lane is detached at `dd3d9721` with a tracked dirty `ggml/src/ggml-cpu/ops.cpp`. No accountable owner metadata was found for the additions. This is a registration/metadata observation, not a process-activity census. [belief: cc]
+
+No source tree, worktree, ref, process, kernel, grant or scheduler state was changed. No lane was deleted or migrated. The NIB2-77 parent remains open: the current owner identity is unavailable, the historical 187-path roster remains unresolved, and no new completed acceptance-cleanup run was established. The prospective `VB-AK-LANE-OWNERSHIP` source task already exists; `pool.provision()` currently has no accountable owner-session input, and no owner was inferred from campaign path or commit metadata.
+
+Exact raw worktree registry: `/mnt/raid0/llm/tmp/codex-hgdn-private-20261028/nib77-worktree-list-20261028.porcelain`, SHA-256 `799f712fdfecf932ba1dca2e2ebeb640a063361dc659f025b666a94d0b8c260c`. Detailed three-path delta and limitations: `/mnt/raid0/llm/tmp/codex-hgdn-private-20261028/NIB2-77-20261028-DELTA.md`.
