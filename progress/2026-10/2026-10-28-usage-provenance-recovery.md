@@ -1,6 +1,6 @@
 # Usage provenance source recovery — 2026-10-28
 
-Orchestrator branch `codex/usage-prov1-recovery-20261028`, commit `c2650210ca1fe766c6ab62945ec9475ed6535c00`, is pushed for owner integration review. No service deployment, API reload or native inference was performed. This implements the usage-accounting prerequisite; HS-OD-4 request completion-budget enforcement remains open.
+Orchestrator branch `codex/usage-prov1-recovery-20261028`, commit `c2650210ca1fe766c6ab62945ec9475ed6535c00`, was integrated to orchestrator main `4c1fbd2bfc1341e6861802bd10a6524b5fc433ff` after owner review. No service deployment, API reload or native inference was performed. This implements the usage-accounting prerequisite; HS-OD-4 request completion-budget enforcement remains open.
 
 Missing or censored real usage is nullable/unknown, exact native zero remains zero, and estimates are confined to labeled mock usage. The request ledger aggregates native calls and authenticated logical replay rather than character/chunk estimates. Only five exact backend terminal source tags authorize reported counts. The mutable disk cache cannot authenticate itself: metered replay requires a matching native key/response/usage observation in the same cache instance/current process and original monotonic TTL. Forged/modified/reopened/forked/cleared entries dispatch the backend. This can reduce cross-worker/restart cache hits; it creates no new physical decode or measurement warrant.
 
