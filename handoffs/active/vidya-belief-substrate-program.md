@@ -68,6 +68,7 @@ Nothing was deleted: the siblings are the evidence record for every gate this pr
 
 ### Open work — start here
 
+- [ ] **VB-LB49-DS41-DIAGNOSTIC-WIRE — prospectively wire the LB4.9 DS41 paired CPU diagnostic.** Add a write-side capture at the producer event and a strict projection through the existing `ClaimTuple` and shared grader; preserve the original source/build/library/model and grant identities, arm argv, native result and raw-log custody, partial/refusal and cleanup evidence as actually captured. Producer `/mnt/raid0/llm/tmp/lb49-ds41-admit-successor-20261028/job.py` SHA-256 `061415380e6aedb26f09a3bdfa2364124fb34ee3f012456f9b7f6c59857d2943` is a prospective diagnostic source, not a completed result. Gemma smoke is plumbing only; do not infer LB4.9 gate, performance, quality, route coverage or promotion warrant. Leave missing fields unknown; no retrospective measurement warrant or new grading ladder. Validate the writer, strict reader and planning-context canary before calling it wired.
 - [ ] **USAGE-PROV-1 write-side enrollment** — project prospective `epyc.request_call_usage.v1`
       begin/settled records from the configured `usage_provenance.jsonl` stream through the existing
       ClaimTuple contract. Verify self-hashes, request/call/parent and backend-record joins, process
