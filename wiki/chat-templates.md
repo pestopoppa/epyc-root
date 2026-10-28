@@ -1,7 +1,7 @@
 # Chat Templates — Per-Model Turn Markers and Routing Endpoints
 
 **Category**: `chat_templates`
-**Last compiled**: 2026-10-24 (wrap-up sweep 21, 3c4ca599 delta): the control-token neutraliser is widened to the non-Qwen lineup (CT-12.1b). Earlier: 2026-10-24 (wrap-up sweep 9). Earlier: 2026-10-22 (wrap-up sweep 10: stock Qwen3.6-35B template breaks prefix property). Earlier: 2026-10-22 (wrap-up sweep 9: Qwen3.x thinking is turned off at the server source). Earlier: 2026-10-22 (wrap-up sweep 7: CT-18 closed, DP-G ruling, prefix-property render test filed). Earlier: 2026-10-21 (wrap-up sweep 3: the CT-12 injection surface is closed at the orchestrator an). Earlier: 2026-10-20 (wrap-up sweep 2: DeepInfer intake, DS41 1017 swap). Earlier: 2026-09-17 (incremental: CT-series mmlu_pro cells under-scored by the A–H scorer; re-score estimates); earlier: 2026-08-23
+**Last compiled**: 2026-10-28 (workspace-58 wrap): CT-21 HOLD and the failed v2 exploratory run. Earlier: 2026-10-24 (wrap-up sweep 21, 3c4ca599 delta): the control-token neutraliser is widened to the non-Qwen lineup (CT-12.1b). Earlier: 2026-10-24 (wrap-up sweep 9). Earlier: 2026-10-22 (wrap-up sweep 10: stock Qwen3.6-35B template breaks prefix property). Earlier: 2026-10-22 (wrap-up sweep 9: Qwen3.x thinking is turned off at the server source). Earlier: 2026-10-22 (wrap-up sweep 7: CT-18 closed, DP-G ruling, prefix-property render test filed). Earlier: 2026-10-21 (wrap-up sweep 3: the CT-12 injection surface is closed at the orchestrator an). Earlier: 2026-10-20 (wrap-up sweep 2: DeepInfer intake, DS41 1017 swap). Earlier: 2026-09-17 (incremental: CT-series mmlu_pro cells under-scored by the A–H scorer; re-score estimates); earlier: 2026-08-23
 
 > Quick reference for which chat template each production model uses, which
 > orchestrator code path applies the template (client-side vs server-side
@@ -17,6 +17,19 @@
 `handoffs/active/model-stack-single-source-update-pipeline.md`
 
 ---
+
+## Compiled Update — 2026-10-28 (workspace-58 wrap): CT-21 decision is HOLD; v2 exploratory rerun failed and changes nothing
+
+- **CT-21 predeclared decision applied: HOLD, flag stays default OFF.** 2352 unique records, recomputed analysis matches. Investigate surface fails the competence gate: OFF 13/200 vs ON 11/200, ON-OFF -1.0 pp, Tango one-sided 95% lower bound -4.18 pp (must exceed -3.0), aligned-twin net loss 6 (limit 1). An earlier slice failed on an unparseable multiple-choice answer; the fix scores that as an incorrect outcome and preserves all completed rows.
+- **v2 exploratory run (`ct21-direct-exploratory-v2`, 2026-10-28)** ended rc=1: 80/80 raw request/response files retained but no producer sidecar and no COMPLETE marker. Observation only: no score, no correction to the original CT-21 result; the parent box stays open.
+- **Repair is preparation only**: successor source sealed (validator fix, per-request-marker sampler with interval containment); a new owner receipt and rerun are required and CT-21 is not armed.
+- **Scope incident**: a stale shim used revoked CPUs 76,77 for about 42 s; owner ruled no invalidation since co-tenancy cannot change a correctness verdict.
+
+### Source References (2026-10-28 workspace-58 wrap)
+
+- [handoffs/active/qwen-chat-template-evaluation.md](../handoffs/active/qwen-chat-template-evaluation.md) — CT-21 HOLD, v2 run, repair and incident
+- [handoffs/active/agentic-serving-harness-fixes.md](../handoffs/active/agentic-serving-harness-fixes.md) — terse-template (27B, thinking=false) prep, no model loaded
+- [progress/2026-10/2026-10-28-workspace-58.md](../progress/2026-10/2026-10-28-workspace-58.md) — session record
 
 ## Compiled Update — 2026-10-24 (wrap-up sweep 21, 3c4ca599 delta): the control-token neutraliser is widened to the non-Qwen lineup (CT-12.1b)
 

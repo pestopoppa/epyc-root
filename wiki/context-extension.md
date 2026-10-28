@@ -2,7 +2,7 @@
 
 **Category**: `context_extension`
 **Confidence**: inferred
-**Last compiled**: 2026-10-27 19:06Z (YaRN extension arms remain NOT-FAIL-underpowered; HELMET restoration is preparation only). Earlier: 2026-10-27 (operator wiki sweep, workspace-58): YaRN extension arms are NOT-FAIL-underpowered, Oolong-synth@400k reads 0.093, and the YaRN K-shift fix passes its test. Earlier: 2026-10-22 (wrap-up sweep 10: native-window answer change is not regression, agent-made judge labels). Earlier: 2026-10-22 (wrap-up sweep 9: the native-window gate reads NOT-FAIL on 2 discordant pairs). Earlier: 2026-10-21 (wrap-up sweep 5: YARN-AGG-1/JUDGE-1 spec, Oolong adapter, K-shift fix queued). Earlier: 2026-10-06 (incremental root-wrap synthesis; prior compilation history: 2026-04-18 (+ 2026-05-20 incremental: intake-569 RoPE bounds + deep-dive))
+**Last compiled**: 2026-10-28 (HELMET restoration and fresh Oolong cohort approved, not run). Earlier: 2026-10-27 19:06Z (YaRN extension arms remain NOT-FAIL-underpowered; HELMET restoration is preparation only). Earlier: 2026-10-27 (operator wiki sweep, workspace-58): YaRN extension arms are NOT-FAIL-underpowered, Oolong-synth@400k reads 0.093, and the YaRN K-shift fix passes its test. Earlier: 2026-10-22 (wrap-up sweep 10: native-window answer change is not regression, agent-made judge labels). Earlier: 2026-10-22 (wrap-up sweep 9: the native-window gate reads NOT-FAIL on 2 discordant pairs). Earlier: 2026-10-21 (wrap-up sweep 5: YARN-AGG-1/JUDGE-1 spec, Oolong adapter, K-shift fix queued). Earlier: 2026-10-06 (incremental root-wrap synthesis; prior compilation history: 2026-04-18 (+ 2026-05-20 incremental: intake-569 RoPE bounds + deep-dive))
 **Sources**: 23 documents (0 dedicated deep-dives, 5 cross-referenced deep-dives, 3 active handoffs, 15 intake entries)
 
 ## Compiled Update — 2026-10-27 19:06Z: extension-arm verdict remains underpowered
@@ -276,3 +276,13 @@ Sources: [YaRN context extension research](../handoffs/active/yarn-context-exten
 - **M12 long-context reader recipe re-measured on C5 (CH-26a): PASS 9/9** with warm cache share >= 0.98 on 35B-MTP and 27B-DFlash2; cold legs reprocess 100% (104,698 to 191,447 tokens). See [kv-cache](kv-cache.md). ([autokernel-champion-aggregate](../handoffs/active/autokernel-champion-aggregate.md); [2026-10-26 log](../progress/2026-10/2026-10-26-workspace-58.md))
 
 Sources: [yarn-context-extension-research](../handoffs/active/yarn-context-extension-research.md), [autokernel-champion-aggregate](../handoffs/active/autokernel-champion-aggregate.md), [2026-10-27 harvest](../progress/2026-10/2026-10-27-workspace-58.md), [2026-10-26 log](../progress/2026-10/2026-10-26-workspace-58.md)
+
+## Compiled Update — 2026-10-28 (operator wiki sweep, workspace-58)
+
+**Confidence: verified** (preparation records; no new YaRN measurement).
+
+- **HELMET data restoration (YARN-AGG-1g) is approved but not run.** A bounded CPU launcher reserves 32 GiB total, keeps the 150 GiB free floor, pins the archive digest, inventories and hashes the four KILT files, and resumes per-file extraction; five model-free fixture tests passed. No dataset was downloaded and no model ran. ([yarn-context-extension-research](../handoffs/active/yarn-context-extension-research.md); [YaRN restore](../progress/2026-10/2026-10-27-ni-yarn-restore.md))
+- **A fresh 120-pair native Oolong cohort is approved as a GPU observation.** It records model, store-library, template, source and arm-recipe digests before each window's first load and uses the existing native McNemar rule; it does not pool or regrade historical windows. Historical windows lack some content digests, so the pooling task stays open, and the finite cohort may be underpowered. ([yarn-context-extension-research](../handoffs/active/yarn-context-extension-research.md))
+- **YaRN CPU fixed120 s0-s3 all ended rc1** ("captured process did not exit"); a YaRN s3 correctness run was co-tenant with a 42 s preflight on revoked CPUs, ruled no invalidation by the owner because co-tenancy cannot change a correctness verdict. ([2026-10-28 workspace-58](../progress/2026-10/2026-10-28-workspace-58.md))
+
+Sources: [yarn-context-extension-research](../handoffs/active/yarn-context-extension-research.md) · [YaRN restore](../progress/2026-10/2026-10-27-ni-yarn-restore.md) · [2026-10-28 workspace-58](../progress/2026-10/2026-10-28-workspace-58.md)
