@@ -1,0 +1,9 @@
+# FA6a native OFF gate launcher: diagnostic READY — 2026-10-28
+
+The exact corrected launcher completed a bounded real native smoke on 2026-10-28 at17:31:09UTC:75.113584s, rc75, partial=true,643 printed successful FLASH_ATTN_EXT operations and732 during-run samples proving the captured native PID had KFD residency, positive VRAM and libraries from this OFF build. The result writer and cleanup passed; native PID2709222 was ps-confirmed absent and GPU quiet was free after exit. W1 released before acquisition, and the next GPU worker was notified after release.
+
+Evidence `/mnt/raid0/llm/tmp/codex-fa6a-native-20261028/smoke-20261028T173109Z-2709183/{result.json,native-000.log,residency-000.json}` and `compute-flags/ready/v11-fa6a-off-native-20261028.smoke2.log`. Launcher SHA-256 `266051da2efc2b12314cd1d947b1f7b12ad51e7d71e59355916d030ea3e9b606`; launcher/job/source-pin hashes matched before and after the smoke. No terminal summary was reached:gate_pass=null.643 successful printed operations is partial progress, not a640-case or2978-case terminal result.
+
+The private packet's `suite-equivalence.json` establishes that this source/version uses the2978-case terminal gate also recorded by its C3/control counterparts; it does not claim the OFF build has passed it. Five parser controls passed. Full native gate remains open, with no quality, timing, adoption or deployment verdict. [no-belief: bounded diagnostic smoke and source/parser preparation; no native gate completion or measurement warrant]
+
+Owner accepted diagnostic READY. Exact live keeper-v5 ready_scan returned ok for the published manifest:rank19,mi210_0 plus184-191,1800s requested/1500s minimum,32GiB, explicit scratch_root/narrow keep/log consumer. The row validator had zero refusals and the expected unarmed BACKLOG warning. No grant, queue, FILLERS, HOLD or production-kernel write was made.
