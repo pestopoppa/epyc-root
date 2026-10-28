@@ -2134,6 +2134,8 @@ VB-NPD-1) are activation records in the durable-triggers list above.
 - [ ] **VB-SWAP-C — wire the write side of the launch-phase receipts (heterogeneous-slot-fabric-residency.md HSF-1).**
   - One launch = one locator, with GGUF/binary digests, argv hash, page-cache fraction, phase timings and outcome class.
   - Cold/partial-cache launches project with their label and never merge into hot C.
+- [ ] **VB-DRFN1-FEASIBILITY-WIRE — capture the Flash-Next drafter feasibility run at write time.** Bind actual source, binary, model and placement identities, load/request windows, GPU and host residency, paired target-only inputs, quality and cleanup; preserve null/partial states. The header-only calculation is a committed conclusion, not a runtime measurement or model hash. Project eligible native records through the existing carrier and `ClaimTuple.grade()` with no new ladder or historical warrant, and run the planner-context canary before calling the loop wired.
+
 - [ ] **VB-PREFILL-XOVER — wire PF1 on the WRITE side before its first cell runs.** Emit one self-hashed ClaimTuple-shaped record per cell (artifact + binary digests, build line, protocol id or observation, n, date, VRAM-during-run witness, failure reason when failed) into the PF1 run dir; no read-side reconstruction.
 - [x] **VB-GAP-DIST — wire the write side of the session inter-call gap measurement** (`heterogeneous-slot-fabric-residency.md` HSF-3) before its first extraction: one row per gap (session hash, role, client class, t_done, t_next, gap_s, source), with the log-manifest digest, extractor revision and window. Locator = window × class; W1 and W2 never pool. Observation-grade.
   2026-10-05 checkpoint: native extractor/reader and CLI source are on root main `d61ae218`;

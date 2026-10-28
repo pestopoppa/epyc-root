@@ -1,0 +1,25 @@
+Qwen3.8-Flash-Next-UD-IQ4_XS-00001-of-00003.gguf tensors 0 header_bytes 10946618
+Qwen3.8-Flash-Next-UD-IQ4_XS-00002-of-00003.gguf tensors 373 header_bytes 23584
+Qwen3.8-Flash-Next-UD-IQ4_XS-00003-of-00003.gguf tensors 851 header_bytes 54317
+type_counts {0: 557, 8: 502, 14: 1, 20: 44, 21: 94, 23: 2, 30: 24}
+selected output.weight (2560, 248320) 14 Qwen3.8-Flash-Next-UD-IQ4_XS-00002-of-00003.gguf
+selected per_layer_token_embd.weight (160, 320001536) 20 Qwen3.8-Flash-Next-UD-IQ4_XS-00002-of-00003.gguf
+selected token_embd.weight (2560, 248320) 8 Qwen3.8-Flash-Next-UD-IQ4_XS-00002-of-00003.gguf
+selected blk.1.ple_conv1d.weight (4, 10240) 0 Qwen3.8-Flash-Next-UD-IQ4_XS-00002-of-00003.gguf
+selected blk.1.ple_key.weight (2560, 10240) 8 Qwen3.8-Flash-Next-UD-IQ4_XS-00002-of-00003.gguf
+selected blk.1.ple_norm_conv.weight (10240,) 0 Qwen3.8-Flash-Next-UD-IQ4_XS-00002-of-00003.gguf
+selected blk.1.ple_norm_key.weight (10240,) 0 Qwen3.8-Flash-Next-UD-IQ4_XS-00002-of-00003.gguf
+selected blk.1.ple_norm_query.weight (10240,) 0 Qwen3.8-Flash-Next-UD-IQ4_XS-00002-of-00003.gguf
+selected blk.1.ple_value.weight (2560, 2560) 8 Qwen3.8-Flash-Next-UD-IQ4_XS-00002-of-00003.gguf
+selected blk.3.attn_output.weight (6144, 2560) 8 Qwen3.8-Flash-Next-UD-IQ4_XS-00002-of-00003.gguf
+selected blk.7.attn_output.weight (6144, 2560) 8 Qwen3.8-Flash-Next-UD-IQ4_XS-00002-of-00003.gguf
+selected blk.11.attn_output.weight (6144, 2560) 8 Qwen3.8-Flash-Next-UD-IQ4_XS-00002-of-00003.gguf
+selected blk.15.attn_output.weight (6144, 2560) 8 Qwen3.8-Flash-Next-UD-IQ4_XS-00003-of-00003.gguf
+selected blk.19.attn_output.weight (6144, 2560) 8 Qwen3.8-Flash-Next-UD-IQ4_XS-00003-of-00003.gguf
+selected blk.23.attn_output.weight (6144, 2560) 8 Qwen3.8-Flash-Next-UD-IQ4_XS-00003-of-00003.gguf
+selected blk.27.attn_output.weight (6144, 2560) 8 Qwen3.8-Flash-Next-UD-IQ4_XS-00003-of-00003.gguf
+selected blk.31.attn_output.weight (6144, 2560) 8 Qwen3.8-Flash-Next-UD-IQ4_XS-00003-of-00003.gguf
+selected blk.35.attn_output.weight (6144, 2560) 8 Qwen3.8-Flash-Next-UD-IQ4_XS-00003-of-00003.gguf
+selected blk.39.attn_output.weight (6144, 2560) 8 Qwen3.8-Flash-Next-UD-IQ4_XS-00003-of-00003.gguf
+selected blk.43.attn_output.weight (6144, 2560) 8 Qwen3.8-Flash-Next-UD-IQ4_XS-00003-of-00003.gguf
+selected blk.47.attn_output.weight (6144, 2560) 8 Qwen3.8-Flash-Next-UD-IQ4_XS-00003-of-00003.gguf

@@ -145,6 +145,20 @@ The current directive and rationale are in the
   both files exceed the current free space after the 150 GiB reserve; evaluate a
   version-pinned range-backed canonical source or additional canonical storage rather
   than putting weights in scratch. No download or model run has been performed.
+  - [x] **DR-FN1a — inspect the existing verifier's PLE footprint** ✅ 2026-10-28:
+    a header-only scan of the three canonical UD-IQ4_XS shards found
+    `per_layer_token_embd.weight` with shape `(160, 320001536)` and type IQ4_NL.
+    At 18 bytes per 32 values its tensor payload is 28,800,138,240 bytes; the three
+    files total 93,682,584,224 bytes, leaving 64,882,445,984 file bytes after that
+    payload is excluded. This arithmetic is not a VRAM measurement. The frozen v10
+    source marks this tensor for lazy reading and the as-built server advertises
+    both `--tensor-read-lazy` and `--spec-draft-override-tensor`; their actual draft
+    behavior and runtime memory remain untested. The scan read headers only; shard
+    contents were not freshly rehashed. Evidence: [native header-scan output](../../artifacts/drfn1-metadata-20261028/headers.log).
+    The same existing model with PLE handled on CPU is a feasibility control for the
+    new low-bit lane, not a substitute for the low-bit or quality experiment. [belief: cc]
+**Historical DR-3 completed substeps:**
+
   - [x] **DR-3a — dry-run package scaffold ✅ 2026-07-20**:
     inference-research `scripts/benchmark/dr3_quant_asym_k2_admission_prep.py`
     emits `manifest.json`, `task_packet.jsonl`, `commands.sh`, `operator_run.sh`,
