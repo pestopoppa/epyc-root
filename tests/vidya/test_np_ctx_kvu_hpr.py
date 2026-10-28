@@ -22,8 +22,20 @@ from claim_tuple import ProjectionError
 class HprWriterReader(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        research = Path(os.environ["EPYC_HPR_RESEARCH_WT"])
-        sys.path.insert(0, str(research / "artifacts/np_context_kvu_cpu_study_20261020/driver"))
+        configured = os.environ.get("EPYC_HPR_RESEARCH_WT")
+        if configured is None:
+            raise unittest.SkipTest(
+                "set EPYC_HPR_RESEARCH_WT to the pinned research checkout; expected producer helper "
+                "at artifacts/np_context_kvu_cpu_study_20261020/driver/test_kvu_ckpt_arms.py"
+            )
+        research = Path(configured)
+        driver = research / "artifacts/np_context_kvu_cpu_study_20261020/driver"
+        missing = [name for name in ("kvu_ckpt_arms.py", "test_kvu_ckpt_arms.py") if not (driver / name).is_file()]
+        if missing:
+            raise RuntimeError(
+                f"EPYC_HPR_RESEARCH_WT={research} lacks required producer file(s) in {driver}: {', '.join(missing)}"
+            )
+        sys.path.insert(0, str(driver))
         import kvu_ckpt_arms
         from test_kvu_ckpt_arms import native_fixture
         cls.K, cls.native_fixture = kvu_ckpt_arms, staticmethod(native_fixture)
