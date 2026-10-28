@@ -874,6 +874,8 @@ The prospective R9 successor `/mnt/raid0/llm/tmp/codex-m4-gpu-quality-r9-2026102
 
 The prospective R10 successor `/mnt/raid0/llm/tmp/codex-m4-gpu-quality-r10-factored/collect.py` retains the R9 paired protocol and native v7 carrier while sharing its post-admission collector and watcher between the production and standing-smoke paths. Its producer SHA-256 is `81ef2ccb28ddc9b168fce59ff9d53f9fec64f1708cabf1a0ada8c6919ef3992d`; smoke-only records are non-ingestable. Its full quality run has not been performed; VB-M4-GPU-QUALITY-WRITE and its projection and canary remain open.
 
+The prospective R11 successor `/mnt/raid0/llm/tmp/codex-m4-gpu-quality-r11-native/collect.py` retains the paired R8 quality protocol and native v7 carrier. Its producer SHA-256 is `2ef214004b1f364aa417209d80502746c8af47922a356cad4cc6aa48373f505a`; smoke invokes the same native runner without belief-category output and is not quality evidence. No full quality run is claimed; VB-M4-GPU-QUALITY-WRITE and its projection and canary remain open.
+
 ## M4 architect full-topology CPU memory calibration — prospective
 
 The prospective producer `/mnt/raid0/llm/tmp/refactor-01a16fc3/m4-full-fold-ready-20261028/cpu-calibration/supervisor.py` captures RSS and PSS samples during load and bounded warmup of the current architect production-shaped CPU recipe, separately for C5 and M4. It binds original model shards, draft, recipe, source, image and grant, and retains raw samples and process cleanup. Sampled maxima are not true peaks or speed/quality gate results. Use the existing measurement carrier and ClaimTuple.grade; no new ladder or historical warrant. Strict projection and the planning-context canary remain OPEN under VB-M4-CPU-CAL-WRITE.
