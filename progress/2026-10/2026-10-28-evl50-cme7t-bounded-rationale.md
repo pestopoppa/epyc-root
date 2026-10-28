@@ -1,0 +1,7 @@
+# EVL-50 CME-7T bounded-rationale candidate — 2026-10-28
+
+- Prepared the private candidate under `/mnt/raid0/llm/tmp/codex-ni-evl50-cme7t-bounded-20261028/` and published READY manifest/row `evl50-cme7t-bounded-rationale-r1` under `/mnt/raid0/llm/tmp/compute-flags/ready/`.
+- Final same-launcher R7 smoke completed rc 0 in 160.709 s. Launcher SHA-256: `b1daecbf10307eb455c74d570ce481abf014958910b318fbef4148902eebf687`. Log: `/mnt/raid0/llm/tmp/compute-flags/ready/evl50-cme7t-bounded-rationale-r1-smoke-r7-attempt4.smoke.log` (SHA-256 `4535cd5ff28d34ceb8c63467c8cf724c010ffa31651373fb805c6aa456b451cd`). First request, result writer, clean exit, and cleanup passed. Diagnostic scope: 3 × 5 quick-test interactions; no efficacy verdict.
+- READY schema and row delimiter checks passed (18 fields, terminal delimiters valid). The keeper scanned the manifest at 15:52:30Z and reported `READY-WAIT` because `mi210_0,184-191` was not then fittable. No armed/accepted event was observed; the row remains unaccepted.
+- The preparation claim was released. No shared handoff/index, FILLERS, or production-kernel files were changed. Measurement-warrant status: `[no-belief: smoke is operational readiness evidence only; no efficacy claim or ClaimTuple captured]`.
+- Next-row screen: INF-60 Q38-T7b is already complete on `origin/main` (`cf1cbc5b9`, closeout); the handoff records neutral-needle N 16/16 and cache-free C pair PASS. I briefly created then removed my prep claim after verifying the exact task was complete. No duplicate run was started.
