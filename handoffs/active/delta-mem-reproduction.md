@@ -155,6 +155,28 @@ Dataset infrastructure is staged for a future GPU-backed attempt:
 
 **Gate 2 verdict**: DEFERRED until GPU available OR a separate custom small-context eval is designed.
 
+### 2026-10-28 Triton 3.6 readiness diagnostic — Gate 2 remains open
+
+The earlier Triton 3.1 full-context failure remains an OOM/AMD-lowering failure and is not
+evidence about the later runtime. A private package overlay selected installed Triton 3.6.0
+without modifying the shared venv. The exact evaluator entry passed 11 targeted resume-identity
+and ROCm SDPA/GQA tests, plus a bounded MI210 compile/runtime probe. A same-launcher R7 smoke then
+completed from 2026-10-28T19:32:52Z to 19:35:37Z (165 s, rc 0): two real `eventqa_65536`
+questions per base and Delta arm, four result rows, both JSON and JSONL writers complete, and
+134.046 s total real generation. Same-PID/start-tick KFD and HIP 6.2 observations bracketed
+generation. Evidence: `/mnt/raid0/llm/tmp/codex-ni-inf12-g2-20261028/outputs/20261028T193252Z-1510374/`
+(`STATE.json`, `SMOKE.json`, `GPU-SAMPLES.tsv`, `job.log`) and
+`/mnt/raid0/llm/tmp/compute-flags/ready/inf12-gate2-triton36-r4.smoke.log`.
+
+This is readiness evidence only. It does not cover the full four-split, 22-source, 3,671-row-per-arm
+population and establishes no Gate 2 result. The initial `class=decision` READY draft citing
+`a48ff59e938fd06eed59a313acce4ae76082c79b` was withdrawn because that commit did not predeclare the
+exact population and Triton 3.6 / ROCm Flash-SDPA protocol. The replacement READY row is explicitly
+diagnostic (`enrollment=n/a`) and pins model, data, source and runtime manifests. Keeper-v5 dry-run
+validated its schema and returned READY-WAIT while the GPU lock was occupied; live keeper recognition
+remains pending. The runner records cleanup as direct-child-only and does not claim a descendant
+census. The full Gate 2 checkbox below remains open.
+
 ### Phase 1 overall verdict
 
 - **Gate 1** (adapter loads cleanly on Qwen3-4B-Instruct-2507): ✅ PASS
@@ -213,6 +235,7 @@ Cross-refs: `research/deep-dives/2026-05-27-agent-memory-cluster.md`, intake-610
 - [x] Phase 1 Gate 1 (adapter loads) + Gate 4 (CPU tractable, 5% overhead) PASS ✅
 - [x] Gate 3 LoCoMo N=5 smoke (1.65x, directional); magnitude inconclusive ✅
 - [ ] Gate 2 MemoryAgentBench accuracy reproduction - GPU-only (CPU-infeasible)
+- [x] Gate 2 runtime/readiness preparation: pinned Triton 3.6 actual-entry smoke, 2 real questions per arm, rc 0 and writers complete; diagnostic only, full population and verdict remain open. [no-belief: smoke-only readiness evidence; no full Gate 2 measurement tuple]
 - [ ] Gate 3 magnitude: wider LoCoMo eval (25-50 samples) - GPU-realistic
 - [ ] Phase 2: M.3 KV-Extension prototype on gemma4 worker_general, A/B vs SQLite B1
 - [ ] Phase 3: full delta-mem GGML op + cross-session persistent bank (gated on Phase 2)
