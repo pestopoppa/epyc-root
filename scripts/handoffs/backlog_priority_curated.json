@@ -409,14 +409,14 @@
    "row": "INF-26",
    "tok": "C-L3-Q38FN",
    "kind": "I",
-   "cls": "live",
-   "s": 0.9,
-   "size": "~1 h PPL (running) then ~25-40 min speed A/B",
+   "cls": "routine",
+   "s": 0.4,
+   "size": "next arm not yet designed",
    "unblocks": "Q38FN low-bit decode faster than served UD-IQ4_XS (operator 2026-10-23 goal)",
-   "blocker": "coherence harness fix (workspace-58, in progress)",
-   "why": "arm P: PPL half PASSED; coherence harness broken (being fixed), speed half queued behind it; go/no-go licenses a paired task eval",
+   "blocker": "no runnable next arm: arm P/P2 probe COMPLETED 2026-10-25 (harness repaired, speed half ran) = no-ship (pp5 -6.12%, tg128 -8.85%)",
+   "why": "arm P2: PPL 2.979 pass, coherence PASS, speed INDICATIVE FAIL; parent goal (faster low-bit decode at comparable quality) still open; do not rerun P/P2",
    "owner": "workspace-58",
-   "filler": "q38fn-armP-ppl,q38fn-armP-speed",
+   "filler": "",
    "before": ""
   },
   {
@@ -1930,24 +1930,6 @@
    "new": true,
    "file": "vidya-belief-substrate-program.md",
    "title": "VB-CAL-OVERRUN-WRITE - write side for the compute-calendar overrun check (new open box, filed 2026-10-24; not on main yet)"
-  },
-  {
-   "unblocks": "q38fn-armP-speed (speed half of arm P, queued)",
-   "blocker": "",
-   "why": "PPL passed; coherence harness broken; being fixed by workspace-58",
-   "owner": "workspace-58 (in progress)",
-   "filler": "",
-   "before": "INF-26:C-L3-Q38FN",
-   "size": "S",
-   "row": "INF-26",
-   "tok": "C-L3-Q38FN~coherence-fix",
-   "kind": "N",
-   "cls": "N",
-   "s": 0.9,
-   "new": true,
-   "file": "iqk-iquant-enablement.md",
-   "in_progress": true,
-   "title": "(derived task) fix the broken q38fn-armP coherence harness so the speed half can run"
   }
  ]
 }

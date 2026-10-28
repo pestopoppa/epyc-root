@@ -1,7 +1,7 @@
 {
  "schema": "backlog_priority.v1",
  "generated_by": "scripts/handoffs/backlog_priority.py + scripts/handoffs/backlog_priority_curated.json",
- "generated_at": "2026-10-27T14:00Z",
+ "generated_at": "2026-10-28T00:06Z",
  "method": "Operator method 2026-10-24: inference items ranked by the inference-backlog-scheduling model (live > ready decision-bearing > routine; ROI = decision value per compute-hour; operator holds push down with the blocker named); non-inference tasks that gate an inference task inherit and rank just above it; non-inference tasks blocked by nothing are the top tier (T1 gates compute, T2 does not); everything else blocked follows its blockers. Row priority = its best open item. score = rank percentile among rows with open work (1.0 = highest). Approximate: ~120 curated items, the rest keyword heuristics; row Deps edges are coarse. Regenerate: python3 scripts/handoffs/backlog_priority.py (see dashboard/README.md).",
  "tiers": {
   "1": "T1 non-inference, unblocked, unblocks compute",
@@ -25,45 +25,17 @@
    "done": "landed in orchestrator fc0c0be5"
   },
   {
-   "row": "RTG-58",
-   "task": "KPF-62.1 — Fix the K-shift for YaRN models (re-applied `attn_factor` on every rotation). `",
-   "done": "already fixed in champion dcc853b55; test-yarn-kshift passes"
-  },
-  {
    "row": "INF-65",
    "task": "CH-20.2 - `test-llama-archs` fixture generation aborts at `deepseek41` (\"Dense\": `key not ",
    "done": "patches done, handed to 3c4ca599 for C4 (/mnt/raid0/llm/tmp/ws58-ch24-20261024/patches/)"
   }
  ],
  "rows": {
-  "INF-26": {
+  "INF-65": {
    "tier": 1,
    "rank": 1,
    "score": 1.0,
-   "basis": "T1 best open item (N): (derived task) fix the broken q38fn-armP coherence harness so the speed half can run",
-   "unblocks": [],
-   "blocker": ""
-  },
-  "INF-67": {
-   "tier": 1,
-   "rank": 2,
-   "score": 0.9944,
-   "basis": "T1 best open item (N): FD-OFF-PROD — declare `GGML_FUSED_DECODE_OFF=1` for production `architect_general` (:8074)",
-   "unblocks": [
-    "INF-70",
-    "INF-72",
-    "INF-73",
-    "INF-74",
-    "INF-75",
-    "INF-81"
-   ],
-   "blocker": ""
-  },
-  "INF-65": {
-   "tier": 1,
-   "rank": 3,
-   "score": 0.9888,
-   "basis": "T1 best open item (N): CH-GATE-SUBSHELL - fix the fold gate scripts' `fail=1`-inside-`$(...)` bug. The assignment",
+   "basis": "T1 best open item (N): CH-30b - after CH-30 folds, remove leak-only workarounds: the VRAM-recycle guard `YG_RECYC",
    "unblocks": [
     "INF-66",
     "INF-73",
@@ -78,9 +50,9 @@
   },
   "RTG-58": {
    "tier": 1,
-   "rank": 4,
-   "score": 0.9831,
-   "basis": "T1 best open item (N): KPF-62.2 — Extend `chunk_kv.py` for KPF-62 G1/G3 records. Add `KPF-62` to `PROGRAMS` and t",
+   "rank": 2,
+   "score": 0.9944,
+   "basis": "T1 best open item (N): KPF-62.3 - selector (head window W=64 + check-layer K deviation + group-contiguous runs; t",
    "unblocks": [
     "INF-81"
    ],
@@ -88,16 +60,16 @@
   },
   "INF-81": {
    "tier": 1,
-   "rank": 5,
-   "score": 0.9775,
+   "rank": 3,
+   "score": 0.9888,
    "basis": "T1 best open item (N): AKX-ALL-LB4.9 — Fold attention sinks into the nek2 == 1 iqk merges (correctness enabler). ",
    "unblocks": [],
    "blocker": ""
   },
   "UFH-01": {
    "tier": 1,
-   "rank": 6,
-   "score": 0.9719,
+   "rank": 4,
+   "score": 0.9831,
    "basis": "T1 best open item (N): HS-OD-4 — make the `max_tokens` contract explicit in default text REPL mode. APP79 (`src/a",
    "unblocks": [
     "INF-78",
@@ -112,38 +84,26 @@
   },
   "UFH-14": {
    "tier": 1,
-   "rank": 7,
-   "score": 0.9663,
+   "rank": 5,
+   "score": 0.9775,
    "basis": "T1 best open item (N): UFH14-LB6 — Restore per-call serving_calls recording (19 records since 2026-10-05 despite ",
    "unblocks": [
     "RTG-30"
    ],
    "blocker": ""
   },
-  "INF-73": {
-   "tier": 1,
-   "rank": 8,
-   "score": 0.9607,
-   "basis": "T1 best open item (N): Freeze the complete normally merged r6 source/reader/runner, obtain actual whole native ru",
-   "unblocks": [
-    "INF-74",
-    "INF-75",
-    "INF-81"
-   ],
-   "blocker": ""
-  },
   "UFH-12": {
    "tier": 1,
-   "rank": 9,
-   "score": 0.9551,
-   "basis": "T1 best open item (N): REPL-EMB-2.10 - close migration-tool gaps B-1..B-5 and file the BGE-trained retrain list a",
+   "rank": 6,
+   "score": 0.9719,
+   "basis": "T1 best open item (N): REPL-EMB-2.10c — book the CPU-quarter calibration requested after COPY-1, then one contigu",
    "unblocks": [],
    "blocker": ""
   },
   "INF-50": {
    "tier": 1,
-   "rank": 10,
-   "score": 0.9494,
+   "rank": 7,
+   "score": 0.9663,
    "basis": "T1 best open item (N): XGRAMMAR-A2 — port XGrammar's context-independent token-mask cache into llama-grammar.cpp ",
    "unblocks": [
     "INF-62",
@@ -161,8 +121,8 @@
   },
   "INF-75": {
    "tier": 1,
-   "rank": 11,
-   "score": 0.9438,
+   "rank": 8,
+   "score": 0.9607,
    "basis": "T1 best open item (N): AKX-P0d — base census for W1–W6 on the current champion-of-record.",
    "unblocks": [
     "INF-81"
@@ -171,8 +131,8 @@
   },
   "EVL-47": {
    "tier": 1,
-   "rank": 12,
-   "score": 0.9382,
+   "rank": 9,
+   "score": 0.9551,
    "basis": "T1 best open item (N): VB-CAL-OVERRUN-WRITE - write side for the compute-calendar overrun check (new open box, fi",
    "unblocks": [
     "EVL-49",
@@ -192,16 +152,16 @@
   },
   "INF-74": {
    "tier": 1,
-   "rank": 13,
-   "score": 0.9326,
+   "rank": 10,
+   "score": 0.9494,
    "basis": "T1 best open item (N): CTC-Q-D: sweep-merge pass at registration: list rows with the same (model, build, argv-has",
    "unblocks": [],
    "blocker": ""
   },
   "EVL-37": {
    "tier": 1,
-   "rank": 14,
-   "score": 0.927,
+   "rank": 11,
+   "score": 0.9438,
    "basis": "T1 best open item (N): RTE-LOG-1 — Prompt-structure and chunk logging, and the B7 offline reader (privacy: hashes",
    "unblocks": [
     "INF-78",
@@ -211,32 +171,32 @@
   },
   "RTG-54": {
    "tier": 1,
-   "rank": 15,
-   "score": 0.9213,
+   "rank": 12,
+   "score": 0.9382,
    "basis": "T1 best open item (N): CT-21 - Architect-only boundary sentence trial (DP-G ruling 2026-10-22). Architect-only bo",
    "unblocks": [],
    "blocker": ""
   },
   "UFH-08": {
    "tier": 1,
-   "rank": 16,
-   "score": 0.9157,
+   "rank": 13,
+   "score": 0.9326,
    "basis": "T1 best open item (N): HIL-15b: harder labelled task set (16-20 tool-requiring tasks in the 30-70% pass band, lcg",
    "unblocks": [],
    "blocker": ""
   },
   "INF-22": {
    "tier": 2,
-   "rank": 17,
-   "score": 0.9101,
+   "rank": 14,
+   "score": 0.927,
    "basis": "T2 best open item (N): M4 — slot-order-independent (or shortest-remaining-prompt-first) batch fill in `update_slo",
    "unblocks": [],
    "blocker": ""
   },
   "RTG-57": {
    "tier": 2,
-   "rank": 18,
-   "score": 0.9045,
+   "rank": 15,
+   "score": 0.9213,
    "basis": "T2 best open item (N): KVU-LB1.d — adopt always-F32 VKQ accumulation on the CPU FA path (`GGML_FA_VKQ_F32=1`, or ",
    "unblocks": [
     "INF-59",
@@ -254,8 +214,8 @@
   },
   "INF-60": {
    "tier": 2,
-   "rank": 19,
-   "score": 0.8989,
+   "rank": 16,
+   "score": 0.9157,
    "basis": "T2 best open item (N): Q38-T7b-W — wrapper report-path fix: bind the wrapper's \"actual N+C report\" check to the r",
    "unblocks": [
     "INF-61"
@@ -264,9 +224,9 @@
   },
   "INF-70": {
    "tier": 2,
-   "rank": 20,
-   "score": 0.8933,
-   "basis": "T2 best open item (N): ABLATE-1 — `harness1/ablate.sh` is IMPLEMENTED AND UNIT-READY BUT NEVER DEMONSTRATED.",
+   "rank": 17,
+   "score": 0.9101,
+   "basis": "T2 best open item (N): CLOSE-7 — SYNC-13's `GGML_STATIC_CHUNKS` WAS NOT REACHED EITHER, AND IS ALREADY FILED TWIC",
    "unblocks": [
     "INF-72",
     "INF-73",
@@ -278,8 +238,8 @@
   },
   "INF-66": {
    "tier": 2,
-   "rank": 21,
-   "score": 0.8876,
+   "rank": 18,
+   "score": 0.9045,
    "basis": "T2 best open item (O): R21-5 — Standing community-intake → hypothesis-inbox pipeline. Operator 2026-08-31:",
    "unblocks": [
     "INF-73",
@@ -293,9 +253,9 @@
   },
   "INF-06": {
    "tier": 2,
-   "rank": 22,
-   "score": 0.882,
-   "basis": "T2 best open item (N): AK test flakes - root-cause `test_gates.TheToolRunnerNeverTreatsAFailureAsOutput` (`Scratc",
+   "rank": 19,
+   "score": 0.8989,
+   "basis": "T2 best open item (N): VB-AK-HISTORY producer call (owed, filed 2026-10-21; INF-73 loop owner): at the archive bo",
    "unblocks": [
     "EVL-49",
     "INF-62",
@@ -311,27 +271,62 @@
    ],
    "blocker": ""
   },
+  "INF-67": {
+   "tier": 2,
+   "rank": 20,
+   "score": 0.8933,
+   "basis": "T2 best open item (N): FD-DIV-2 — the fused qwen4exp decode is WRONG on the real served model (v10 production and",
+   "unblocks": [
+    "INF-70",
+    "INF-72",
+    "INF-73",
+    "INF-74",
+    "INF-75",
+    "INF-81"
+   ],
+   "blocker": ""
+  },
+  "INF-73": {
+   "tier": 2,
+   "rank": 21,
+   "score": 0.8876,
+   "basis": "T2 best open item (N): Freeze the complete normally merged r6 source/reader/runner, obtain actual whole native ru",
+   "unblocks": [
+    "INF-74",
+    "INF-75",
+    "INF-81"
+   ],
+   "blocker": ""
+  },
   "RTG-22": {
    "tier": 2,
-   "rank": 23,
-   "score": 0.8764,
+   "rank": 22,
+   "score": 0.882,
    "basis": "T2 best open item (O): pool reaches 6-10 armed rows (CPU and GPU); GPU pool rows await operator approval of the G",
    "unblocks": [],
    "blocker": ""
   },
   "INF-23": {
    "tier": 2,
-   "rank": 24,
-   "score": 0.8708,
+   "rank": 23,
+   "score": 0.8764,
    "basis": "T2 best open item (N): HSF-5.P-NEXT-RESTORE — explain the B-arm 37-token save shortfall (4079 vs 4116) under mirr",
    "unblocks": [],
    "blocker": ""
   },
   "INF-59": {
    "tier": 2,
+   "rank": 24,
+   "score": 0.8708,
+   "basis": "T2 best open item (N): YARN-AGG-1g — restore HELMET KILT nq/hotpotqa 128k data and fold the extension-arm discord",
+   "unblocks": [],
+   "blocker": ""
+  },
+  "INF-26": {
+   "tier": 2,
    "rank": 25,
    "score": 0.8652,
-   "basis": "T2 best open item (N): YARN-AGG-1g — restore HELMET KILT nq/hotpotqa 128k data and fold the extension-arm discord",
+   "basis": "T2 best open item (N): NEW-8 — Q38FN IQ\\*_K/KS self-quant, measured in ik_llama.cpp before any port. (filed 2026-",
    "unblocks": [],
    "blocker": ""
   },
@@ -378,7 +373,7 @@
    "tier": 2,
    "rank": 28,
    "score": 0.8483,
-   "basis": "T2 best open item (N): AK-DEPLOY-2 — the served tree still drifts outside `dashboard/`. The sync is deliberately",
+   "basis": "T2 best open item (N): AK-INST-3 (new, 2026-08-28) — AK-INST-1 is fixed in code but UNPROVEN end-to-end. The",
    "unblocks": [
     "EVL-49",
     "INF-06",
