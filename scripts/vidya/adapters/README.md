@@ -870,6 +870,8 @@ The prospective producer `/mnt/raid0/llm/tmp/refactor-01a16fc3/m4-full-fold-read
 
 The prospective R8 successor `/mnt/raid0/llm/tmp/refactor-01a16fc3/m4-gpu-quality-r8-20261028/collect.py` retains the paired request mode and sets runner concurrency to `quality_np` (four) for both arms, at temperature zero. This is a protocol amendment; collect fresh baseline and candidate results and do not pool them with historical baselines. The same carrier and open VB-M4-GPU-QUALITY-WRITE task apply.
 
+The prospective R9 successor `/mnt/raid0/llm/tmp/codex-m4-gpu-quality-r9-20261028/collect.py` retains the R8 paired protocol and native carrier while repairing the launch identity. It produces fresh baseline and candidate records; it does not backfill or pool earlier measurements. VB-M4-GPU-QUALITY-WRITE and its projection and canary remain open.
+
 ## M4 architect full-topology CPU memory calibration — prospective
 
 The prospective producer `/mnt/raid0/llm/tmp/refactor-01a16fc3/m4-full-fold-ready-20261028/cpu-calibration/supervisor.py` captures RSS and PSS samples during load and bounded warmup of the current architect production-shaped CPU recipe, separately for C5 and M4. It binds original model shards, draft, recipe, source, image and grant, and retains raw samples and process cleanup. Sampled maxima are not true peaks or speed/quality gate results. Use the existing measurement carrier and ClaimTuple.grade; no new ladder or historical warrant. Strict projection and the planning-context canary remain OPEN under VB-M4-CPU-CAL-WRITE.
