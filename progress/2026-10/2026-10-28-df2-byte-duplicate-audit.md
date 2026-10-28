@@ -1,0 +1,5 @@
+# DF2 byte-capture duplicate audit — 2026-10-28
+
+The original `codex-ni-df2-byte-capture-ready-20261027` failed at 22:05 because its validator expected uppercase type names while native ggml logged `q8_0` and `q4_K`. A private parser-repair packet and synthetic checks were prepared before recognizing that the owner had already run the separate parser successor. [no-belief: source audit and synthetic fixtures]
+
+The existing `codex-ni-df2-byte-parser-successor-20261027` completed rc0 at 23:09:16Z; its producer-time `belief-native.json` records byte coverage 210 and the intentionally injected failure, with target PCI/KFD identity and source/build/receipt hashes under `/mnt/raid0/llm/tmp/codex-ni-20261027-df2-native-readout/byte-capture/out/`. It addresses the same requested Q8_1 diagnostic, so the new private repair is duplicate and withdrawn: no enrollment request, owner row, GPU run or new result. Its stricter live map/birth sampler was an instrumentation distinction, not a separate requested finding. The failed original evidence was not regraded. [no-belief: duplicate assessment; existing result retains its own native record]
