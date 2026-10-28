@@ -13,7 +13,7 @@ This is a scoped coordination checkpoint, not a queue/index update. It records t
 
 A first actual-entry smoke at 18:29:52Z failed `rc=1` after 23s with HIP OOM while requesting 539.66 GiB with 29.13 GiB free. That trace predates the current ROCm fused-SDPA wrapper: `official_eval_utils.py` was changed at 18:39:40Z and `common.py` at 18:42:06Z. The owner refreshed the source pins after that change. The current hook disables native GQA dispatch on ROCm so Transformers expands KV heads, forces the FLASH_ATTENTION backend, and refuses non-all-one masks. The enrolled evaluation batch size is one, so `padding=True` creates no padded positions; its prefill and single-token cached decode cases match the hook's tested mask assumptions. This is source review, not a full-evaluator result.
 
-A corrected exact-entry smoke began at 18:45:26Z under `gpu-quiet`; at checkpoint time the READY log only shows the first base request start, so the retry is still live and has no outcome yet. No READY manifest has been prepared for this corrected source.
+A corrected exact-entry smoke began at 18:45:26Z under `gpu-quiet`; it was intentionally stopped at 18:47:08Z with `rc=75` after its child was reaped. It did not pass or produce an eligibility result. The owner then began a fresh two-question/two-arm smoke; at this checkpoint that retry is active and has no outcome yet. No READY manifest has been prepared for the corrected source.
 
 ## INF-34 DR-3e P-GPU-1 preparation
 
