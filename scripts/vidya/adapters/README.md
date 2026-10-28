@@ -872,7 +872,7 @@ The prospective R8 successor `/mnt/raid0/llm/tmp/refactor-01a16fc3/m4-gpu-qualit
 
 The prospective R9 successor `/mnt/raid0/llm/tmp/codex-m4-gpu-quality-r9-20261028/collect.py` retains the R8 paired protocol and native carrier while repairing the launch identity. It produces fresh baseline and candidate records; it does not backfill or pool earlier measurements. VB-M4-GPU-QUALITY-WRITE and its projection and canary remain open.
 
-The prospective R10 successor `/mnt/raid0/llm/tmp/codex-m4-gpu-quality-r10-factored/collect.py` retains the R9 paired protocol and native v7 carrier while sharing its post-admission collector and watcher between the production and standing-smoke paths. Its producer SHA-256 is `9f60f492056de360525341c3b08b7d6a3355d085a934dcbec59327745e22235b`; smoke-only records are non-ingestable. Its full quality run has not been performed; VB-M4-GPU-QUALITY-WRITE and its projection and canary remain open.
+The prospective R10 successor `/mnt/raid0/llm/tmp/codex-m4-gpu-quality-r10-factored/collect.py` retains the R9 paired protocol and native v7 carrier while sharing its post-admission collector and watcher between the production and standing-smoke paths. Its producer SHA-256 is `81ef2ccb28ddc9b168fce59ff9d53f9fec64f1708cabf1a0ada8c6919ef3992d`; smoke-only records are non-ingestable. Its full quality run has not been performed; VB-M4-GPU-QUALITY-WRITE and its projection and canary remain open.
 
 ## M4 architect full-topology CPU memory calibration — prospective
 
