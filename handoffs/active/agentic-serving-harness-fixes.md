@@ -85,6 +85,13 @@
     - *Warm + 3 s stagger (16:05Z):* the warm requests each prefilled 56,794 tokens (104.2 s, 106.6 s) while the arms were held 246.5 s / 240.4 s; the arms' first requests then hit the cache — `cache_n` 54,751 / 56,794, prefill 8.4 s / 0.2 s, TTFT after release 9.0 s / 0.3 s. 115,641 cold-prefill tokens in 219.4 s (**−48% cold-prefill seconds**); decode with a neighbour prefilling 17.15 vs clean 20.7, estimated stall 137.9 s.
     - *Verdict:* warming moves the cold prefill off the arms' critical path (TTFT 140–282 s → 0.3–9 s) and halves cold-prefill seconds. The decode-stall comparison is NOT resolved: the warm leg overlapped workspace-ec's subagent GPU tests 16:17–16:50Z (INC-20261003-subagent-gpu-tests-in-peer-window), and the two warm requests prefilled concurrently instead of once. → UFH14-A3a.
   - [ ] **UFH14-A3a — re-measure the warm leg unperturbed, with ONE warm request.** (filed 2026-10-04) The 10-03 warm leg issued two warm requests (one per arm; 2 × 56.8k tokens) and overlapped foreign GPU work. Issue a single warm request for the shared prefix, then stagger; re-measure decode stall vs the cold leg in a coordinated GPU slot.
+    - [ ] **UFH14-A3A-DIAGNOSTIC-R2 — run the prepared descriptive capture.** The private
+      `/mnt/raid0/llm/tmp/codex-ufh14-repair-20261028` successor passed a 78-second canonical tiny-model
+      launcher smoke and a forced rc75 partial/cleanup smoke; its validated
+      `/mnt/raid0/llm/tmp/compute-flags/ready/ufh14-a3a-single-warm-r2-20261028.json` remains held until
+      the scheduler's full q3 admission is verified. Run the actual cold and one-warm Qwen/DFlash
+      capture after admission; the tiny-model smoke is plumbing evidence, not the A3a measurement or
+      a performance verdict. [no-belief: no measurement yet]
 - [x] **UFH14-A4.** ✅ 2026-10-04 (GPU run 2026-10-03) Compaction that keeps the prefix. Make compaction requests carry the same tools and system prefix, or compact through a separate summarization call that leaves the live prefix intact. Measure re-prefill tokens per compaction. Covers D2. Also cover opencode's task-prompt drop (D3).
   - 2026-10-03: implemented in `run3.py` + `proxy3.py`, offline-tested only. Close after a GPU run measures re-prefill tokens per compaction.
   - *Baseline from F12, 2026-10-03, wire logs.* 5 codex compactions across the 8 calls, each a cold pair at `cache_n` = 0:
