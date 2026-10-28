@@ -1,0 +1,6 @@
+# 2026-10-28 — C3 inference preparation
+
+- The original M4 C3 coverage requires long prompts and concurrent slots; the existing seven-short-chat recut identity result does not cover that protocol. A separate diagnostic packet is being prepared in `/mnt/raid0/llm/tmp/codex-m4-c3-original-20261028/`.
+- Preliminary same-entry GPU smoke exercised five lengths through 16,000 tokens and cleaned up the captured server. Subsequent source changes address exact case coverage, verdict consistency and cleanup; final pinned-source normal and forced-cutoff smokes remain required before READY. No production result or belief receipt is claimed.
+- HIL16b continuation preparation preserves eleven validated historical samples and the original epoch in an isolated snapshot. Its real CPU smoke awaits a free quarter; no READY exists. B2 baseline preparation identified a source-bound deterministic replay fixture; full native capture and cutoff remain unvalidated. The private B2 smoke watcher does not publish READY.
+- Registered the C3 diagnostic source and future eligible-producer wiring task. The existing PB-HOL adapter is read-side; compatibility with this packet and its exact case scope remains to be checked.
