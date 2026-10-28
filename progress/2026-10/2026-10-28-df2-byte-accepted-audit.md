@@ -1,0 +1,5 @@
+# DF2 native byte successor independent audit — 2026-10-28
+
+MAIN accepted the bounded audit of owner-run `codex-ni-df2-byte-parser-successor-20261027`, rc0 at 2026-10-27 23:09:16Z. Installed `df2-row-exact-akx` adapter replay verified producer-time record, source and artifact hashes, three repeats for all 210 Q8_1 row tuples and the declared injected mismatch; shared grade was Judged/Located with no protocol. q8/q4/mutation had rc0/0/-6, reaped and 65/67/4 in-window same-PID KFD/own-VRAM observations on PCI 0000:43:00.0, KFD 57300. Audit `/mnt/raid0/llm/tmp/codex-ni-20261028-df2-byte-existing-audit/audit.log`.
+
+This is a model-free in-path byte diagnostic, not model parity, timing or promotion. The original samples do not carry per-process loaded-library maps or per-thread masks, so linkage does not prove those. Existing registered source/adapter handles the producer-time record; no new ladder or retrospective warrant is needed. The earlier failed attempt remains unchanged; the redundant privately prepared R2 was withdrawn. Owner-apply handoff and source-capture drafts are in `/mnt/raid0/llm/tmp/codex-ni-20261028-df2-byte-existing-audit/`. [belief: cc]
