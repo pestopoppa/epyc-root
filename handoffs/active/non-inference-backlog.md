@@ -1040,8 +1040,15 @@ Queue ownership: INF-26 arm-P2 is complete and its stale rank entry was removed 
 
 ## 2026-10-28 loop redesign follow-ons (workspace-58)
 
-- [ ] **LOOP-1**: keeper v2 READY auto-arming (zero-token daemon arms `ready/*.json`; subagent in progress). Contract: `/mnt/raid0/llm/tmp/compute-flags/LOOP-CONTRACT.md`. [no-belief: tooling-repair]
+- [x] **LOOP-1**: keeper v2 READY auto-arming (zero-token daemon arms `ready/*.json`). ✅ 2026-10-28 — keeper v2 live, superseded same day by v3 (queues into the ACTIVE day) and v4 (GPU rows check every named CPU quarter). Contract: `/mnt/raid0/llm/tmp/compute-flags/LOOP-CONTRACT.md`. [no-belief: tooling-repair]
 - [ ] **LOOP-2**: `backlog_priority` `kind` field plus inference-prep ranking (in progress). [no-belief: tooling-repair]
 - [ ] **LOOP-3**: retire OWNER-REPLY/owner-reply relays once `ready/` flows. [no-belief: tooling-repair]
 - [ ] **LOOP-4**: HIL15 v5 window-end must exit rc75, not rc1. [no-belief: tooling-repair]
 - [ ] **LOOP-5**: daily loop metrics (decision results/day, idle-h, failed-at-entry rate, operator msgs). [no-belief: tooling-repair]
+- [ ] **LOOP-6**: swap in keeper v5 (reap-after-filing gate + 7-day rule) and enable the gate, with the operator-approved hook exception. Design: `/mnt/raid0/llm/tmp/disk-audit-20261028/LOGS-AND-REAP-DESIGN.md`. [no-belief: tooling-repair]
+- [ ] **LOOP-7**: get owner confirmations for the 58 UNCLEAR KEEP dirs (8.1 GiB) in `/mnt/raid0/llm/tmp/disk-audit-20261028/KEEP-AUDIT-20261028.md`; reclaim the unconfirmed ones after the 7-day rule. [no-belief: tooling-repair]
+- [ ] **LOOP-8**: drop `-lv 4` from the q38fn-armP / armP2 / g2conc / yarn-e1 launchers (server-log growth; 2 logs = 4.23 GiB deleted 10-28). [no-belief: tooling-repair]
+- [ ] **LOOP-9**: apply the skill-review patch `/mnt/raid0/llm/tmp/ws58-skill-review/DRAFT.patch` once the operator OKs it. [no-belief: tooling-repair]
+- [ ] **LOOP-10**: grant-gpu v16 — the GPU writer (v15) must check every CPU quarter a GPU row names itself, not rely on keeper v4. [no-belief: tooling-repair]
+- [ ] **LOOP-11**: keeper must run the arm checks BEFORE starting the launcher; today a refusal leaves orphan pollers. [no-belief: tooling-repair]
+- [ ] **LOOP-12**: process supervision for grant writers and keeper so a session crash does not kill them (10-28 ~11:25Z). systemd-run is unavailable; investigate why the setsid children died, then pick a supervisor. [no-belief: tooling-repair]
