@@ -127,6 +127,9 @@ why every prior reachability audit was wrong.
   loop "drained" ~50 min of idle-GPU through external codex calls. Fixed: **drain tiers**
   (research `95eeb0ae`) — STOP abandons at actor boundaries recording `stopped_mid_formation`,
   never mid-tail.
+- *(STALE, amended 2026-10-28 for the operator-approved disk reclaim: `ps -p 2767457` shows no
+  process and `worktrees/champ2` is gone, so the off-limits list below no longer applies;
+  `tmp/ak-lane-builds` and `tmp/build-champ-a2728701` were reclaimed via `scratch_cleanup.py apply`.)*
 - **RUN 21 IS LIVE — OPERATOR-APPROVED — DO NOT TOUCH IT.** pid `2767457`, started ~11:5xZ
   2026-08-31. Worktree `champ2` attached to THE champion branch @ `a2728701` (startup refusal
   verified — first log line); anchor = the measured reconciliation build with provenance. 7

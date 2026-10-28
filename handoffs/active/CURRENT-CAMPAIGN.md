@@ -153,6 +153,11 @@
 > - Owner: [autokernel-champion-aggregate.md](autokernel-champion-aggregate.md) ·
 >   [autokernel-rebuild-program.md](autokernel-rebuild-program.md) (INF-66).
 
+> **STALE (amended 2026-10-28, operator-approved disk reclaim):** the notice below is historical.
+> `ps -p 2767457` returns no process and `worktrees/champ2` no longer exists, so its OFF-LIMITS list
+> no longer applies; `tmp/ak-lane-builds` and `tmp/build-champ-a2728701` were reclaimed via
+> `scratch_cleanup.py apply` (ledger: `/mnt/raid0/llm/tmp/disk-audit-20261028/RECLAIM-EXECUTED-20261028.md`).
+>
 > **🟢 2026-08-31 — AUTOKERNEL RUN 21 IS LIVE ON THE ONE CHAMPION — DO NOT TOUCH IT.** pid
 > `2767457`, worktree `champ2` attached to `ak/champion/llama-cpp-0db32c06e3e5` @ `a2728701` (the
 > 2026-08-31 reconciliation merge: manual `270b48ed` + loop `4925b208`, measured **+12.618% tg128
