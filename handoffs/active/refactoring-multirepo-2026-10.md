@@ -479,3 +479,5 @@ C1-22 disappears with the unified plane.
 - [x] **M4-GPU-QUALITY-SOURCE-ENROLLMENT** — enroll the prospective role-paired GPU quality source and open its strict-reader/planning task. Native GPU quality and the parent fold gate remain unmeasured; source enrollment does not make the launcher ready. ✅ 2026-10-28 [no-belief: prospective source enrollment only]
 
 - [x] **M4-CPU-CALIBRATION-SOURCE-ENROLLMENT** — enroll prospective architect CPU load and warmup memory samples and open their strict-reader/planning task. This is preparation only; no model execution or resource peak claim. ✅ 2026-10-28 [no-belief: prospective source enrollment only]
+
+- [x] **M4-WORKER-CALIBRATION-SOURCE-ENROLLMENT** — enroll prospective worker/frontdoor CPU load and warmup samples and open their strict-reader/planning task. Preparation only; no model execution or peak claim. ✅ 2026-10-28 [no-belief: prospective source enrollment only]
