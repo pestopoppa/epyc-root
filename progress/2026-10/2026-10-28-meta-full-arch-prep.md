@@ -1,0 +1,9 @@
+# META C5 full architecture-suite preparation — 2026-10-28
+
+The earlier accepted model-free GPU qwen4exp Meta diagnostic on the recovered experimental C5 Meta-fix candidate covered one architecture and left the full gate open. Prepared a distinct prospective full `test-llama-archs` run, without an architecture filter or model files, in `/mnt/raid0/llm/tmp/codex-ni-20261028-meta-full-arch-prep/`; source manifest SHA-256 `75ed417f795cefb6959c879158bebd870a0b87b5b7e9f235181712a293c01e51`. It retains native random seed and SKIPs and requires rc0, finite native NMSE statuses, the qwen4exp Meta MoE row, and same-PID HIP/KFD/VRAM observations. This is experimental-candidate evidence, not promotion or a production claim.
+
+The packet binds the previously accepted recovery receipt/evidence and exact accepted candidate executable, HIP and patch hashes. The sourcehip worktree's Git metadata target has disappeared, so the prior accepted source commit `520ad4f55d805a544862be88d652ec68fcd194ab` is a recorded identity rather than a newly verified live HEAD. No rebuild, model or GPU execution occurred in this preparation.
+
+Four model-free controls cover source-shaped row/status parsing, fake child and raw-digest receipt, STOP/drain and PID reuse. Synthetic-grant/synthetic-enrollment exact-entry T1 passed at `dryrun/7e61169e3cd350aee54f1075eae2b0c266522e5d9c51b1b4/pass.json`; missing enrollment refused at `dryrun/8febcf706b58401a920ef06cf828f9e139ddccb2b56848e7/entry.log`. Normal synthetic admission passed one row, zero refusals/warnings, 3600/3300 seconds and 24 GiB; pair batch rc0, 90,900 KiB sampled peak and drained.
+
+The packet is frozen and **UNREADY**. Owner must commit the existing-family source/task lines in `source-entry.txt` and `task-entry.txt`, then the actual entry must pass with real committed enrollment and a synthetic compute grant. MAIN review/approval and owner arm remain. No result checkbox or parent-owned index row was changed.
