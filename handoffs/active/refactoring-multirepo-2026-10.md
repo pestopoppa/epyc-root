@@ -477,3 +477,5 @@ C1-22 disappears with the unified plane.
 - [x] **M4-C1-NATIVE-READOUT** — file the reviewed HOL-v2 mechanism PASS (512 B/A0.9990076596;2048 B/A0.9975592176;12 valid collision rows) with original source/rule hash checks and the full unobserved NI co-tenancy disclosure. The earlier harness-truncated attempt is superseded; current-C5 OFF paired C2 and the parent M4 gate remain separate. See [checkpoint](../../progress/2026-10/2026-10-28-launcher-repair-and-enrollment.md). ✅ 2026-10-28 [belief: cc]
 
 - [x] **M4-GPU-QUALITY-SOURCE-ENROLLMENT** — enroll the prospective role-paired GPU quality source and open its strict-reader/planning task. Native GPU quality and the parent fold gate remain unmeasured; source enrollment does not make the launcher ready. ✅ 2026-10-28 [no-belief: prospective source enrollment only]
+
+- [x] **M4-CPU-CALIBRATION-SOURCE-ENROLLMENT** — enroll prospective architect CPU load and warmup memory samples and open their strict-reader/planning task. This is preparation only; no model execution or resource peak claim. ✅ 2026-10-28 [no-belief: prospective source enrollment only]

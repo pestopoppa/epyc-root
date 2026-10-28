@@ -866,3 +866,7 @@ Projection reopens the recorded input, split, fit, predictions and native report
 ## Prospective M4 C5 GPU quality role pairs — 2026-10-28
 
 The prospective producer `/mnt/raid0/llm/tmp/refactor-01a16fc3/m4-full-fold-ready-20261028/gpu-quality/collect.py` preserves pinned paired questions, per-role model/recipe/image/source identities, responses, errors, truncation and GPU residency before the existing v7 accuracy runner emits native results. Each role needs both arms and both suites; incomplete or truncated pooled accuracy is refused. This supplemental GPU quality evidence does not replace mandatory CPU quality, full-role speed or a fold verdict. The existing measurement carrier and grade apply; no new ladder or historical warrant. Strict projection and planning-context canary remain open under VB-M4-GPU-QUALITY-WRITE.
+
+## M4 architect full-topology CPU memory calibration — prospective
+
+The prospective producer `/mnt/raid0/llm/tmp/refactor-01a16fc3/m4-full-fold-ready-20261028/cpu-calibration/supervisor.py` captures RSS and PSS samples during load and bounded warmup of the current architect production-shaped CPU recipe, separately for C5 and M4. It binds original model shards, draft, recipe, source, image and grant, and retains raw samples and process cleanup. Sampled maxima are not true peaks or speed/quality gate results. Use the existing measurement carrier and ClaimTuple.grade; no new ladder or historical warrant. Strict projection and the planning-context canary remain OPEN under VB-M4-CPU-CAL-WRITE.
