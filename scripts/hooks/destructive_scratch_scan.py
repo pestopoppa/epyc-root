@@ -48,6 +48,19 @@ DEFAULT_ROOTS = ("/mnt/raid0/llm/tmp", "/mnt/raid0/llm/worktrees",
                  "/mnt/raid0/llm/.trash", "/mnt/raid0/llm/state")
 SANCTIONED = {"guarded_rm.sh", "trash-sweep.sh", "reclaim_scratch.py", "scratch_cleanup.py",
               "worktree_gate.py", "autokernel_disk_sweep.py"}
+# Standing operator exceptions: ONE exact script realpath, pinned to its sha256, run as `bash|python3 <path>`.
+# Narrowest form: no basename match, no directory match; any edit to the script voids it (re-pin = new operator approval).
+# The table lives in destructive_scratch_pins.json next to this file (human-edited, operator approval per entry):
+#   {"<realpath>": {"sha256": "<hex>", "approval": "operator <date>: <reason>"}}
+def _load_pins():
+    import json
+    try:
+        with open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "destructive_scratch_pins.json")) as f:
+            d = json.load(f)
+        return {k: (v["sha256"], v["approval"]) for k, v in d.items() if isinstance(v, dict)}
+    except (OSError, ValueError, KeyError, TypeError):
+        return {}
+PINNED_SCRIPTS = _load_pins()
 ACK_ENV = "EPYC_ALLOW_SCRATCH_DELETE"
 ACK_RE = re.compile(r"^operator: \S+ \S+: \S.*$")
 MAX_FILE = 2 * 1024 * 1024
@@ -221,6 +234,16 @@ def scan_segment(seg, cwd, env, rs, state):
             if os.path.basename(script) in SANCTIONED:
                 return None
             path = script if os.path.isabs(script) else os.path.join(state["cwd"], script)
+            pin = PINNED_SCRIPTS.get(os.path.realpath(path))
+            if pin:
+                try:
+                    import hashlib
+                    with open(path, "rb") as f:
+                        if hashlib.sha256(f.read()).hexdigest() == pin[0]:
+                            print(f"note: pinned exception: {pin[1]}", file=sys.stderr)
+                            return None
+                except OSError:
+                    pass  # unreadable: fall through to the normal scan
             try:
                 if os.path.isfile(path) and os.path.getsize(path) <= MAX_FILE:
                     with open(path, "r", errors="replace") as f:
