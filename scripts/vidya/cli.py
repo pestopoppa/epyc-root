@@ -44,8 +44,11 @@ CHECKPOINT_DIR = VIDYA_DIR / "checkpoints"
 
 
 def _ledger_path(args) -> Path:
-    if args.ledger:
-        return Path(args.ledger)
+    # The ingest-local spelling already takes precedence for autokernel-experiments.
+    # Apply the same explicit target to every adapter before any ledger or lock opens.
+    explicit = getattr(args, "ingest_ledger", None) or args.ledger
+    if explicit:
+        return Path(explicit)
     if getattr(args, "scratch", False):
         return scratch_ledger_path(REPO_ROOT)
     return default_ledger_path(REPO_ROOT)
@@ -1044,8 +1047,8 @@ def build_parser() -> argparse.ArgumentParser:
     i.add_argument("--since-rowid", type=int,
                    help="autokernel-experiments: only rows with rowid above this (one store)")
     i.add_argument("--ledger", dest="ingest_ledger",
-                   help="autokernel-experiments: ledger to WRITE (explicit; without it the run is "
-                        "a dry run). Same as the global --ledger")
+                   help="ledger to WRITE (same as global --ledger; this spelling wins if both "
+                        "are given). autokernel-experiments stays a dry run without an explicit ledger")
     i.add_argument("--i-own-the-canonical-ledger", action="store_true",
                    help="autokernel-experiments: allow --ledger to be the canonical ledger "
                         "(owning session only)")
