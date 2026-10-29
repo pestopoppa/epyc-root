@@ -1611,9 +1611,11 @@ was in flight and several items touch the shared clone.
   `scripts/autopilot/seed_operator_strategies.py --apply` runs (dry run: 1 insert, 47 skipped) a
   restarted AutoPilot still reads the stale quarter-granularity prior. Needs a live BGE embedder, so it
   belongs to whoever owns that service. **Time-sensitive for the same reason P1-3 was.**
-- [ ] **`retrieve_conventions` orders `created_at ASC`, so a superseding row is always reached LAST.**
-  Today `limit=3` reaches neither dual-half row, but if that limit is raised the superseded row is read
-  BEFORE its supersession. Rank conventions newest-first, or honour a `supersedes` key.
+- [x] **`retrieve_conventions` ranks conventions newest-first before applying the limit.** ✅ 2026-10-29
+  Orchestrator main `4b200ec109eda67d92b31e66dbc828dac8da376e` changes the query to
+  `created_at DESC`; deterministic timestamp controls cover unlimited, one-row and three-row
+  retrieval. All 68 strategy-store tests passed after integration; no live database was changed.
+  [no-belief: retrieval-order repair and unit validation]
 - [x] **Regenerate `orchestration/derived/stack_priors.yaml`** — 3 of 9 `REQUIRED_SOURCE_ARTIFACTS` pins ✅ 2026-10-29 (audit: orch 7483d7fb / 0d145f4f (2026-08-21 "regen under production fleet mode (both)") regenerated derived/stack_priors.yaml; later regens 92bbeb06 etc.) [no-belief: audit-reconciliation]
   (`orchestrator_stack`, `stack_numa`, `stack_topology`) are stale at HEAD, which is why
   `orchestrator_stack.py start` refuses to launch. Deliberately out of scope for the P1-10 fix (separate
