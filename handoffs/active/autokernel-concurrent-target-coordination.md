@@ -13,7 +13,7 @@ This is a documentation checkpoint. Do not interpret open implementation tasks b
 ### Review checklist
 
 - [x] CTC-DOC: capture generic requirements, current code seams, evidence limitations, and proposed acceptance criteria. ✅ 2026-09-14
-- [ ] CTC-REVIEW: operator review the proposal and authorize a subsequent implementation session.
+- [ ] CTC-REVIEW: operator review the proposal and authorize a subsequent implementation session. (parked 2026-10-29 (operator): deferred with the AutoKernel hold; not blocked on the operator until the AK hold lifts)
 
 ### Proposed implementation sequence (gated by CTC-REVIEW)
 

@@ -14,7 +14,7 @@ inference-bearing steps only; their design and documentation work may proceed (`
 
 | ID | Track | Handoff | Next action | Deps |
 |----|-------|---------|-------------|------|
-| UFH-13 | thesis experiment (PARKED) | [thesis-experiment-orchestrator-vs-strongest-model.md](thesis-experiment-orchestrator-vs-strongest-model.md) | ARCHSWAP-3b A-3 frontdoor scout-stage claim sample; else PARKED until autopilot trains on the swapped stack, then TE-reopen | — |
+| UFH-13 | thesis experiment (ACTIVE 2026-10-29) | [thesis-experiment-orchestrator-vs-strongest-model.md](thesis-experiment-orchestrator-vs-strongest-model.md) | ARCHSWAP-3b A-3 frontdoor scout-stage claim sample; else PARKED until autopilot trains on the swapped stack, then TE-reopen | — |
 | UFH-14 | agentic serving harness fixes | [agentic-serving-harness-fixes.md](agentic-serving-harness-fixes.md) | LB1.1 fold (CAS after C4); LB7.1 probe build + Amd 1; post-reload LB6.1/LB11.1; LB3.4 confirm (armed 10-25); DEPLOY-EC-2; A6a/A3a/A4a | INF-77, UFH-01 |
 | UFH-01 | harness selection and integration | [harness-selection-and-integration.md](harness-selection-and-integration.md) | Resolve HS-OD-4 token contract; prepare P6 shared tools and HS-19d.P0 source audits | RTG-09 |
 | UFH-15 | OpenCode shell integration | [opencode-shell-integration.md](opencode-shell-integration.md) | Validate remaining P0 override carry at the inference owner boundary; screen independent shell source follow-ons | UFH-01 |

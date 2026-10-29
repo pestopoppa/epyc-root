@@ -1,6 +1,6 @@
 # Thesis Experiment — does the orchestrator beat the strongest model alone?
 
-**Status:** **PARKED 2026-09-28** (operator, in chat, session
+**Status:** **ACTIVE 2026-10-29** (operator 2026-10-29: run the UFH-13 thesis experiment now (unparked); previously PARKED 2026-09-28, in chat, session
 https://claude.ai/code/session_01FKXdQsgLuwnFVWQ3npGfrJ).
 - **Why.** A2's escalation is driven by episodic-memory Q-values. The store holds 64,396 memories, the newest written
   2026-09-24, all learned while `architect_general` was the 27B, before the ARCHSWAP was applied on 2026-09-28. A2
@@ -21,7 +21,7 @@ https://claude.ai/code/session_01FKXdQsgLuwnFVWQ3npGfrJ).
   frontdoor scout-stage claim sample, taken at the next frontdoor scout stage. ARCHSWAP-4 is done (2026-10-01:
   `:8074` relaunched under `architect_general`, 0 drift). ARCHSWAP-5 is done (2026-09-29).
 
-**Priority:** parked. The 2026-09-27 narrowed plan ("point all work at the thesis experiment") no longer ranks work
+**Priority:** active (operator 2026-10-29: run the UFH-13 thesis experiment now (unparked)). The 2026-09-27 narrowed plan ("point all work at the thesis experiment") no longer ranks work
 (operator, 2026-09-28): until the second GPU is in, the working direction is infrastructure and design work with the
 operator (see `CURRENT-CAMPAIGN.md`, 2026-09-28). The freeze list at the end still binds INFERENCE-bearing steps; the
 design and documentation work of a frozen item may proceed.
@@ -310,7 +310,7 @@ code for a rider), and only if the window has its estimated time left.
   main risk is that `/chat`'s triggers are conservative: the quality detector is gated by `generation_monitor`, and
   the review gate fires only at Q < 0.6. If A2 barely escalates, A2 ≈ A1 and the full window buys little; decide
   before spending it.
-  - **PARKED 2026-09-28** with the experiment: it runs only after TE-reopen's design review.
+  - ~~PARKED 2026-09-28~~ ACTIVE: operator 2026-10-29: run the UFH-13 thesis experiment now (unparked).
 - [ ] **TE-reopen — reopen the experiment once escalation is trained on the swapped stack** (operator, 2026-09-28).
   - Trigger: an autopilot run has trained escalation on the swapped stack (`architect_general` = Flash-Next). That run
     waits for the second MI210.

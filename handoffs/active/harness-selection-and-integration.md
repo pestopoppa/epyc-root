@@ -247,6 +247,7 @@ The typed-decision plane measured 11.98x (native id-only) at 15/16 agreement on 
     is default-OFF; with it off, live behaviour is byte-identical. Spec:
     [`hs19a-linked-subagents-20260927.md`](../../docs/design/hs19a-linked-subagents-20260927.md).
     - HS-19a.1–.6 all ✅ 2026-09-27: spec, orch link f58db8be (flag v1_subagent_link), opt-in subagents profile, lint, runner, and a live PASS 18/18 (artifacts/harness/hs19a-20260927/). Detail: [completed sibling](../completed/harness-selection-completed-through-2026-09-27.md).
+  > operator 2026-10-29: run the UFH-13 thesis experiment now (unparked). The UFH-13 thesis box is now active; the dependent FROZEN boxes below stay frozen and unfreeze on a SUPPORTED verdict.
   - [ ] ❄ FROZEN 2026-09-27 — resume only once the UFH-13 thesis experiment shows A2 pays — **HS-19b — a hierarchy of shared REPLs (Q2).** Today each request gets one isolated REPL. Decide whether a
     child sees a live parent view or a snapshot, who merges what is published upward, and how OAB-12 pull budgets add
     up across levels. Draft: read-only parent views, explicit publish, one accounting tree. The design must rest on

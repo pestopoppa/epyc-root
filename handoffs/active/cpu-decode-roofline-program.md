@@ -84,7 +84,7 @@ bandwidth that is a 10–20 ms token (50–100 t/s) before speculation, and we m
   the calibrated DRAM-traffic counters on this host (`ls_dmnd_fills_from_sys.dram_io_all` +
   `ls_hw_pf_dc_fills.dram_io_all`, ×64 B) that B1/C1 use
 - Axis E riders: `unsloth/Qwen3.8-Flash-Next-GGUF` `MTP/` (the published heads, revision `5d16c055`),
-  [`qwen38-flash-next-fp8-evaluation.md`](qwen38-flash-next-fp8-evaluation.md) (INF-63 — its FP8
+  [`qwen38-flash-next-fp8-evaluation.md`](../completed/qwen38-flash-next-fp8-evaluation.md) (INF-63 — its FP8
   re-acquisition is no longer needed for MTP), [`qwen-mtp-llamacpp-port.md`](qwen-mtp-llamacpp-port.md) (INF-46),
   [`speculative-decoding-mtp-refresh.md`](speculative-decoding-mtp-refresh.md) (INF-50),
   [`dflash2-block-drafter-experimental-build.md`](dflash2-block-drafter-experimental-build.md) (INF-62, the

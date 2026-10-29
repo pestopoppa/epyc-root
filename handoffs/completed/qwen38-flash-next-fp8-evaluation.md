@@ -1,8 +1,10 @@
 # Qwen3.8-Flash-Next-FP8 — Future Inference Evaluation
 
+> **Archived 2026-10-29 (operator): FP8 evaluation deprecated; Flash-Next serves IQ4_XS.**
+
 **Status**: BLOCKED — **the FP8 artifact no longer exists on disk** (correction 2026-08-31): the 08-28 `rm -rf` incident (progress 08-28, 4th entry) deleted `models/Qwen3.8-Flash-Next-FP8/` AFTER this handoff's 08-27 verification; the path verifies absent 2026-08-31. Re-acquisition (~185 GB) is blocked on disk (98% full) + the reclaim decision.
 
-- [ ] Re-acquisition decision: re-download the pinned FP8 checkpoint (revision `f88480ebce48…`, ~185 GB) once disk allows, or park this evaluation — fold into the disk-reclaim operator decision (2026-08-31)
+- [x] ~~Re-acquisition decision: re-download the pinned FP8 checkpoint (revision `f88480ebce48…`, ~185 GB) once disk allows, or park this evaluation — fold into the disk-reclaim operator decision (2026-08-31)~~ (closed 2026-10-29: operator deprecated the FP8 lane; no re-acquisition)
 **Created**: 2026-08-27
 **Owner**: inference research (`INF-63`)
 **Priority**: P2 — preserve and qualify a promising large-model research candidate without changing production
@@ -53,23 +55,23 @@ native FP8 compute without direct proof.
 
 - [x] Verify artifact acquisition and integrity ✅ 2026-08-26 — exact payload and both upstream pins
   recorded above; all advertised ModelScope hashes passed.
-- [ ] Select a compatible research backend and run a bounded load/coherence smoke on the downloaded FP8 artifact
+- [x] ~~Select a compatible research backend and run a bounded load/coherence smoke on the downloaded FP8 artifact~~ (closed 2026-10-29: operator deprecated the FP8 lane; no re-acquisition)
   - Audit the installed and readily reproducible Transformers, vLLM, SGLang, TokenSpeed, and optional
     experimental-llama paths before selecting one.
   - Record the exact environment, dependency pins, compute/dequantization dtype, CPU RAM, VRAM, and
     offload/placement policy. A software FP8-to-BF16 path is acceptable when named accurately.
-- [ ] Prove residency during the load/generation window — sample RAM and VRAM while the phenomenon is
+- [x] ~~Prove residency during the load/generation window — sample RAM and VRAM while the phenomenon is~~ (closed 2026-10-29: operator deprecated the FP8 lane; no re-acquisition)
   active; for ROCm record non-zero VRAM and KFD process evidence and verify the selected runtime's
   actual libraries/backend.
-- [ ] Run bounded coherence smokes — five text prompts (greeting, code, reasoning, structured output,
+- [x] ~~Run bounded coherence smokes — five text prompts (greeting, code, reasoning, structured output,~~ (closed 2026-10-29: operator deprecated the FP8 lane; no re-acquisition)
   tool call) plus one vision prompt; pin chat template, `enable_thinking`, `preserve_thinking`,
   `reasoning_effort`, and tool settings.
-- [ ] Measure prefill, decode, context-depth behavior, and MTP on/off when the selected backend exposes
+- [x] ~~Measure prefill, decode, context-depth behavior, and MTP on/off when the selected backend exposes~~ (closed 2026-10-29: operator deprecated the FP8 lane; no re-acquisition)
   it. Declare whether higher or lower is better for every metric and use only protocol-matched
   baselines; compare with Qwen3.8-27B only where recipes and workload roles match.
-- [ ] Run a focused capability ladder for coding, reasoning, and tool use; include vision only if its
+- [x] ~~Run a focused capability ladder for coding, reasoning, and tool use; include vision only if its~~ (closed 2026-10-29: operator deprecated the FP8 lane; no re-acquisition)
   smoke passed. Preserve prompts, outputs, configuration, timing windows, and failure evidence.
-- [ ] Publish the `GO` / `WAIT` / `KILL` and disk-retention verdict. Any new measurement or verified
+- [x] ~~Publish the `GO` / `WAIT` / `KILL` and disk-retention verdict. Any new measurement or verified~~ (closed 2026-10-29: operator deprecated the FP8 lane; no re-acquisition)
   finding must also add its source-class adapter row to `scripts/vidya/adapters/README.md` and the
   corresponding task to `handoffs/active/vidya-belief-substrate-program.md` in the same session.
 
