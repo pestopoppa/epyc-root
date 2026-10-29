@@ -2,5 +2,9 @@
   "/mnt/raid0/llm/tmp/compute-flags/ws58-calendar-keeper-v5.sh": {
     "sha256": "248e73266e5edba36b5f89fcb05dfca0899a029eb87bd06e8f1905a7e717d6df",
     "approval": "operator 2026-10-28: keeper v5 reap-after-filing (deletes only under /mnt/raid0/llm/tmp/ and /mnt/raid0/llm/.trash-reap, via guarded_rm.sh then its own reap trash)"
+  },
+  "/mnt/raid0/llm/tmp/compute-flags/ws58-calendar-keeper-v6.sh": {
+	"sha256": "76429edc0635ee4235ea48b6578b745cc77a0282b433708f3769b38a6d5c6c0b",
+	"approval": "operator 2026-10-29: keeper v6 = v5 + relocatable CPU rows + code files vaulted before idle reap (same delete scope as v5)"
   }
 }
