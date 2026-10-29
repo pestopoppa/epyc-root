@@ -1,0 +1,66 @@
+{
+  "events": [
+    {
+      "id": "codex3-pip02-odl-285-resolved-r2-20261029",
+      "ended_file": "/mnt/raid0/llm/tmp/compute-flags/grants/codex3-pip02-odl-285-resolved-r2-20261029.ended",
+      "end_line": "rc=0 time=2026-10-29T21:36:07Z reason=complete",
+      "seen_at": "2026-10-29T21:36:36Z",
+      "result_path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/ODL-285-RESOLVED-DONE",
+      "scratch_root": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/packets-odl-285r2",
+      "decision_rule": "First actual ODL client exposure for fresh English ordinal285, originalsource668, on same image-only losslessPDF and native ODL+Docling full recipe. Original prior attempt stopped before client creation; retain original directory and hash-bound unexposed resolution, write only distinct resolved-attempt path. No redraw of a real unknown model request; no standalone quality verdict.",
+      "class": "diagnostic",
+      "owner": "codex3"
+    },
+    {
+      "id": "codex3-pip02-paddle-generic-s103-20261029",
+      "ended_file": "/mnt/raid0/llm/tmp/compute-flags/grants/codex3-pip02-paddle-generic-s103-20261029.ended",
+      "end_line": "rc=75 time=2026-10-29T21:41:34Z reason=job-rc-75:exited",
+      "seen_at": "2026-10-29T21:41:46Z",
+      "result_path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/DONE-fresh-103",
+      "scratch_root": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/packets-paddle-generic/paddle-s103",
+      "decision_rule": "Collect native Paddle 1.6 checkpoints for fresh English cohort shard 103, five disjoint pages [1375, 1376, 1377, 1378, 1379]; retain native layout, request, response, originating grant and source receipts; never redraw unknown or completed model requests. No parser quality verdict until matched common scorer and coverage.",
+      "class": "diagnostic",
+      "owner": "codex3"
+    },
+    {
+      "id": "kpf18-g3-r11-integration-cpu-r2",
+      "ended_file": "/mnt/raid0/llm/tmp/compute-flags/grants/kpf18-g3-r11-integration-cpu-r2.ended",
+      "end_line": "rc=75 time=2026-10-29T21:43:34Z reason=exited",
+      "seen_at": "2026-10-29T21:43:50Z",
+      "result_path": "/mnt/raid0/llm/tmp/codex-ni-20261027-kpf18-native-successor-r10/revision-r11-r2/cpu-replay/runs/kpf18-g3-r11-integration-cpu-r2/RESULT.json",
+      "scratch_root": "/mnt/raid0/llm/tmp/codex-ni-20261027-kpf18-native-successor-r10/revision-r11-r2",
+      "decision_rule": "Replay the immutable R6 X1 raw capture and its captured event ledger through the exact R11 bridge. Pass only when a target event has unique native task-binding and observed-stage geometry; otherwise retain an explicit refusal. This diagnostic does not establish model equivalence or a native-control verdict.",
+      "class": "diagnostic",
+      "owner": "codex-ni"
+    },
+    {
+      "id": "kpf18-g3-r12-integration-cpu-r1",
+      "ended_file": "/mnt/raid0/llm/tmp/compute-flags/grants/kpf18-g3-r12-integration-cpu-r1.ended",
+      "end_line": "rc=70 time=2026-10-29T21:46:41Z reason=exited",
+      "seen_at": "2026-10-29T21:46:56Z",
+      "result_path": "/mnt/raid0/llm/tmp/codex-ni-20261027-kpf18-native-successor-r10/revision-r12-r1/cpu-replay/attempts/<grant-start>-<grant-end>/RESULT.json",
+      "scratch_root": "/mnt/raid0/llm/tmp/codex-ni-20261027-kpf18-native-successor-r10/revision-r12-r1/cpu-replay",
+      "decision_rule": "Replay the exact R12 bridge against immutable R6 X1 raw capture and event ledger. Require exact raw task binding and observed-stage geometry or preserve an explicit native refusal; no model, GPU, or native-equivalence claim.",
+      "class": "diagnostic",
+      "owner": "codex-ni"
+    },
+    {
+      "id": "codex-hil15-s0-resume-v2-20261029",
+      "ended_file": "/mnt/raid0/llm/tmp/compute-flags/grants/codex-hil15-s0-resume-v2-20261029.ended",
+      "end_line": "rc=1 time=2026-10-29T21:47:48Z reason=job-rc-1:exited",
+      "seen_at": "2026-10-29T21:47:57Z",
+      "result_path": "/mnt/raid0/llm/tmp/hil15-s0-safe-prep-20261029/s0-official-results",
+      "scratch_root": "/mnt/raid0/llm/tmp/hil15-s0-safe-prep-20261029",
+      "decision_rule": "Diagnostic discovery calibration: preserve fixed cohort and seeds; all18 remaining slots and6 native assessments; unit band exactly1or2 of3 correct, no redraw.",
+      "class": "diagnostic",
+      "owner": "codex-refactor-01a16fc3"
+    }
+  ],
+  "dispositions": {
+    "ODL285": "first-client nativecomplete anddrain, no qualityclaim",
+    "Paddle103": "original21:40:46capture: worker1 Connectionerror, rc75partial, oneunknown/fourmissing page states; completedprefixresponses retained, no redraw",
+    "KPF11": "officialgrantdeadline, nativeframingfalse, no nativeresult, partialcleanupverified; no model-equivalence claim",
+    "KPF12": "REFUSED captured worker identity unavailable; no native framing verdict",
+    "HILs0v2": "exact3600-second grant assumption refused an actual19800-second grant before officialresults; no cohortscore"
+  }
+}

@@ -1310,8 +1310,8 @@ now trustworthy, where before they were not. Verified against the live registry 
       path list (frontdoor GGUF, architect/ingest dirs) no longer matches the declared models, and
       both stale files still exist on disk so it returns clean. Derive from
       `stack_priors.roles.*.serving.launch.requirements`.
-- [ ] **`autopilot.py:5589` `_MODEL_SIGNATURES_PATH` names a deleted file.** Harmless today (the
-      arg is ignored) but should be removed with its call-site arg.
+- [x] **`autopilot.py:5589` `_MODEL_SIGNATURES_PATH` names a deleted file.** Harmless today (the
+      arg is ignored) but should be removed with its call-site arg. ✅ 2026-10-29 — orchestrator main `5e1e9bcd2530` removes the retired constant and passes only `descriptors_path` to the existing loader. Descriptor-only fail-closed behavior is unchanged; 38 state-store regression tests and Ruff pass. No autopilot process was reloaded. [no-belief: source cleanup and regression tests]
 - [ ] **`NON_QUARTERABLE` still names `architect_general`** in `contention_matrix.py` — now inert
       (one instance either way); comment corrected, set not changed.
 
