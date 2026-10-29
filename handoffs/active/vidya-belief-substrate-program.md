@@ -3755,3 +3755,8 @@ These are notes only. The adapters README is not edited here; the owner applies 
 
 - [ ] **VB-PAW3-PARAPHRASE-WIRE — capture the FuzzyBench paraphrase own-slice paired abstention record at write time.** Bind predeclaration, frozen cases, compiler and binary/semantic bundles, runtime model and libraries, grant/CPU identity, raw outputs and native first-token logits, all failure/invalid/unknown outcomes, and terminal disposition; project the verified native record through existing PAW shared `ClaimTuple`/`grade()`. Verify tamper/refusal controls and the planning-context canary before calling the loop wired; do not invent a grading ladder or retrofit a measurement warrant.
   - 2026-10-29 producer completed 16 cells and projected one `Judged/Located` OBSERVATION without protocol citation; candidate committed conclusion: paraphrase slice TRANSFER_SUPPORTED, 7/7 decided vs ≥90%. No planning loop has been adopted; no loop-wiring or canary claim. [belief: cc]
+
+
+## PAW-3 standard-arm capability source — 2026-10-29
+
+- [ ] **VB-PAW3-STANDARD-WIRE — capture standard-arm FuzzyBench capability diagnostics.** Bind both prospective shards' declaration, fixed task/case identities, standard programs, native decoded outputs, source/model/library/grant identities and every disposition at write time; project verified native records through shared ClaimTuple/grade and exercise tamper/no-redraw/resume controls. The standalone evaluator has no planning loop; a planning-context canary is required only upon loop adoption before a wired-loop claim. No new grading ladder. Scratch `/mnt/raid0/llm/tmp/codex3-paw-standard-20261029/{A,B}`.
