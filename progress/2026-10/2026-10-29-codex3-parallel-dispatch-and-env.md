@@ -47,3 +47,9 @@ Ten new smoke-qualified `any-cpu-quarter` packets are published: five Paddle r8 
 ## Original23:14–23:17 partials filed
 
 Preserved the independent HILs2 RSS cap, the HIL15b-heavy first partial, four assembled Paddle pages with original hashes, the canceled waiting group107 and KPF18's explicit disk-floor SIGTERM. Later same-ID refusals/resumes are distinguished. No unknown exposure is redrawn and no parent quality gate is ticked. [Native observations](../../artifacts/compute/results-filing-20261029-2328.json). [belief: cc]
+
+## 23:40 UTC — completed collection and judged-cell integration
+
+Verified125 newly completed ODL English pages across five original25-page shards, including exact source/input/output/result/DONE hashes. Waiting PIP packets are split two on q2 and two on q3 per the latest direct placement order; g107 was already armed. Closed YARN-JUDGE-1: the real HELMET cell completed generation, schema validation and pinned cloud judgment with request-window owned-PID GPU residency and cleanup. Its judge pin exactly matches the existing50-item agreement kit. Accuracy0/1 is descriptive for one truncated8192-context item; parser and long-context quality gates remain open. Filed three original HIL normal-admission failures and the YaRN CPU normal-context RSS cutoff without substituting smoke outcomes. [Evidence](../../artifacts/compute/results-filing-20261029-2340.json). [belief: cc]
+
+Wiki candidates for the next operator compilation sweep: parser Phase C collection coverage and YaRN judged-cell integration. Existing source projection/canary and continuation boxes carry remaining work; no retry-only backlog boxes were added.
