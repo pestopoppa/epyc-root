@@ -1,0 +1,7 @@
+# 2026-10-29 — PAW-3 own-slice preparation
+
+- Published READY `codex3-paw3-ownslice-20261029` for CPU 24-47; parent owner applied the FILLERS row and manifest. The keeper reported QUEUED with no refusals and the official q1 grant started at 15:29:43 UTC (end 17:29 UTC); it has not produced an outcome. The predeclared eight-case rule and case hashes were enrolled on main at `5c03cd00835b`, with no dataset contents redistributed. [belief: cc]
+- Final real launcher smoke: native compiler POST accepted; 187 generated tokens, 0.8791 tokens/s, rc75 partial after 274.7 s, 3.13 GB sampled process-tree peak and verified cleanup. No selected case was exposed and no completed program or outcome was claimed. [belief: cc]
+- Separate CPU Q6K calibration: 2048-token prefill plus 64 generated tokens in 30.787 s, including prefill. Planning estimate 5788.6 s including conservative compile retries, two prefill bounds per case and 1200 s overhead, within the requested 7200 s. This is an extrapolation, not a completed-run timing claim. [belief: cc]
+- Scratch capture uses per-case grant snapshots, refuses redraw for unknown in-flight cases, and resumes projection after an interrupted finalization; synthetic tamper and resume tests passed. Native evaluation and verdict remain open. [belief: cc]
+- Retain `/mnt/raid0/llm/worktrees/codex3-cpu-ready` and `/mnt/raid0/llm/tmp/codex3-cpu-ready-20261029/.venv`; the queued launcher imports from those paths. Source registration was pushed at `89ac79b28ca9`. [belief: cc]
