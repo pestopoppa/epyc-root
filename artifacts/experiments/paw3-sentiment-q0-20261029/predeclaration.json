@@ -1,0 +1,53 @@
+{
+  "source_plan_sha256": "2ef8ac0b0c7ee0414c85c8086022fcabaead65892b0c7d4b2b91014aef8d2aae",
+  "selection": "pre-existing deterministic task index 6 sentiment, eight selected cases; identical cases in both arms; no redraw",
+  "task_spec_sha256": "0041fc7efcd1c932bd1ba43f0f51c40e4984acbb904e9dadfc42e39b46de880f",
+  "case_pins": [
+    {
+      "source_row": 13774,
+      "case_sha256": "4306517f5a415b98b668f2225fbf88cf04126fbbbc25519607c4e72f5ee64de7"
+    },
+    {
+      "source_row": 13773,
+      "case_sha256": "529501800f8e19981b443d015f6d1206a12e24f7eff3267a44e9272a632a6ea1"
+    },
+    {
+      "source_row": 13775,
+      "case_sha256": "5cdb9de99d9a8e1c35d498586bf3f445d58252249f1f645f9a68750ca06a7fa1"
+    },
+    {
+      "source_row": 13772,
+      "case_sha256": "7518959051a8b18dae277f6f48f1d4db0b5efabe88f60d8a580fe6db5bf13e44"
+    },
+    {
+      "source_row": 13771,
+      "case_sha256": "a4cf15d9e850d992cd69879b16f473c30e440d7b8e93cae4a29324ed054616fa"
+    },
+    {
+      "source_row": 13777,
+      "case_sha256": "a84d05f2702f687274d8f574cfe508cc781eced2c5e31a87216cbd8c6f8ad0b4"
+    },
+    {
+      "source_row": 13770,
+      "case_sha256": "d1dd3f4a508576655f127ba44729008c58c4da47f4b66e77078831bc7e8fb4f6"
+    },
+    {
+      "source_row": 13776,
+      "case_sha256": "e0af6aecd4cf2950f5f8dab9ca5950658697a73da473a133afbccd049323bc9d"
+    }
+  ],
+  "labels": [
+    "negative",
+    "neutral",
+    "positive"
+  ],
+  "semantic_labels": [
+    "negative",
+    "neutral",
+    "positive",
+    "UNSURE"
+  ],
+  "protocol": "Prospective multiclass extension of own-slice transfer test, not a literal binary replication or same-protocol claim. Compile separate native-label and semantic-unsure programs before case evaluation. Native arm labels negative, neutral, positive; semantic arm labels negative, neutral, positive, UNSURE. Normalize first-token confidence across three native labels via softmax of maximum logits of each label space/no-space token variants, requiring disjoint token sets. Capture token IDs and raw logits and outputs. Each case once per arm; no redraw. Thresholds 0.60, 0.70, 0.80, 0.90, 0.95, 0.99.",
+  "rule": "TRANSFER_SUPPORTED iff all 16 arm/case observations complete, semantic invalid count zero, semantic decided count >= 6 of 8 and semantic decided exact-match accuracy >= 0.90; semantic unsure rate <= 0.25. Otherwise TRANSFER_NOT_SHOWN if observations complete, INCOMPLETE if any missing. Separately report native-label threshold coverage and accuracy; no asserted threshold superiority on n=8. Higher decided accuracy is better; lower unsure rate is better.",
+  "declaration_sha256": "e0a651150638aead62ab17c90f18e8ee076196f7d86624be68a262ba162447c6"
+}
