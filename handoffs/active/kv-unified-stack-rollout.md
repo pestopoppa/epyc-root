@@ -523,11 +523,11 @@ Completed history through 2026-10-24 (moved verbatim, no open tasks): [kv-unifie
   - Add a bounded longest-prefix-match bypass to the admission queue (at most one skip per waiter).
   - Coordinate with INF-05 KV-3, which is the same lever (native LCP slot pick). Move this task there if INF-05
     takes it.
-- [ ] **KVU-13a — ambient `LLAMA_ARG_*` env is invisible to the cmdline attestation.** `-kvu` on argv wins, but an
+- [x] **KVU-13a — ambient `LLAMA_ARG_*` env is invisible to the cmdline attestation.** `-kvu` on argv wins, but an
   ambient `LLAMA_ARG_N_PARALLEL` would not be seen. Extend `_live_kv_unified()` (patch 3) to read
   `/proc/<pid>/environ`, or scrub `LLAMA_ARG_*` from the launch env. Same class (package revision 3 §9): an
   ambient `LD_PRELOAD` / `SHIM_NPROCS` in the launcher's parent env would reach every aux service, because
-  `build_service_env` starts from `os.environ`; scrub both unless the service entry declares them.
+  `build_service_env` starts from `os.environ`; scrub both unless the service entry declares them. ✅ 2026-10-29 — orchestrator main `61c4763b3655` scrubs inherited `LLAMA_ARG_*` in llama and aux environment builders and drops undeclared aux `LD_PRELOAD` / `SHIM_NPROCS`; declared service shims remain explicit. Ninety-nine focused/regression tests pass, including seven hostile-parent controls; Ruff and diff checks pass. `make gates` reached shellcheck and stopped because shellcheck is absent. This closes the source repair; no running service was reloaded. [no-belief: source implementation and regression tests]
 - [ ] **KVU-13b — the stack-change skill's DERIVATION source list omits the files a new launch flag needs**
   (`src/registry/stack_priors.py`, `scripts/server/stack_commands.py`, `scripts/server/orchestrator_stack.py`, and
   per package revision 3 §9 also `scripts/server/stack_manifest.py` and `scripts/voice/`).
