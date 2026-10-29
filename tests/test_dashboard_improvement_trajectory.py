@@ -478,6 +478,59 @@ def _history(root: Path, *, active: dict | None = None,
     }))
 
 
+@pytest.mark.parametrize("authority,expected", [
+    ("omitted", "unknown"), (None, "none"), ("invalid", "unknown"),
+    ({"id": "missing-store"}, "unknown"),
+    ({"id": "current", "store": "/selected/store"}, "selected"),
+])
+def test_campaign_selection_distinguishes_explicit_none_from_unknown(
+        tmp_path: Path, authority, expected: str) -> None:
+    _store(tmp_path)
+    point = {"commit": "a" * 40, "recorded_at": "2026-09-01T00:00:00Z",
+             "model": "historical-model", "surface": "tg128", "recipe": "retained",
+             "era": "historical", "gain_pct": 3.0,
+             "baseline": {"commit": "d" * 40, "label": "production-consolidated-v9"},
+             "evidence_state": "whole_candidate_direct",
+             "evidence": {"path": "/retained/evidence.json", "sha256": "e" * 64}}
+    _history(tmp_path, points=[point])
+    path = tmp_path / loop_status.HISTORICAL_TRAJECTORY_FILENAME
+    body = json.loads(path.read_text())
+    if authority != "omitted":
+        body["active_campaign"] = authority
+    path.write_text(json.dumps(body))
+    result = loop_status.improvement_trajectory(tmp_path, [], PRODUCTION)
+    assert result["campaign_selection"]["state"] == expected
+    assert result["production_headline"]["curves"][0]["points"][0]["gain_pct"] == 3.0
+    assert "curve" not in result["campaign_drilldown"]
+    if expected == "none":
+        assert result["campaign_selection"]["detail"] == "No active campaign selected"
+    elif expected == "unknown":
+        assert result["campaign_selection"]["detail"] == "Active campaign selection unknown"
+
+
+@pytest.mark.skipif(shutil.which("node") is None, reason="node unavailable")
+@pytest.mark.parametrize("explicit_none", [True, False])
+def test_browser_renders_no_selection_separately_from_unknown(
+        tmp_path: Path, explicit_none: bool) -> None:
+    _store(tmp_path)
+    _history(tmp_path)
+    if explicit_none:
+        path = tmp_path / loop_status.HISTORICAL_TRAJECTORY_FILENAME
+        body = json.loads(path.read_text()); body["active_campaign"] = None
+        path.write_text(json.dumps(body))
+    trajectory = loop_status.improvement_trajectory(tmp_path, [], PRODUCTION)
+    payload = {"knowledge": {"improvement_trajectory": trajectory}}
+    blocks = re.findall(r"<script(?![^>]*\bsrc=)[^>]*>(.*?)</script>", PAGE.read_text(), re.DOTALL)
+    page_js, data = tmp_path / "page.js", tmp_path / "payload.json"
+    page_js.write_text("\n".join(blocks)); data.write_text(json.dumps(payload))
+    proc = subprocess.run(["node", str(HARNESS), str(page_js), str(data), "render"],
+                          capture_output=True, text=True, timeout=30, check=True)
+    result = json.loads(proc.stdout)
+    html = result["by_id"]["trajectory"]
+    assert ("No active campaign selected" in html) is explicit_none
+    assert ("Active campaign selection unknown" in html) is not explicit_none
+
+
 def test_new_retained_promotion_stays_on_campaign_cor_curve(tmp_path: Path) -> None:
     _store(tmp_path)
     cor, tip1, tip2 = "c" * 40, "1" * 40, "2" * 40

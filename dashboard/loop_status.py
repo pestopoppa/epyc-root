@@ -2746,7 +2746,8 @@ def _production_history(root: Path, rows: list[Mapping[str, Any]],
                 "detail": ("one headline trajectory per model; its canonical primary surface is "
                            "the longest measured series (plain preferred on ties). Other surfaces "
                            "are selectable; recipes, harnesses and baselines are instrument epochs"),
-                "active_campaign": history.get("active_campaign")}
+                **({"active_campaign": history["active_campaign"]}
+                   if "active_campaign" in history else {})}
     except FileNotFoundError:
         return live
     except (OSError, TypeError, ValueError, json.JSONDecodeError) as exc:
@@ -2755,12 +2756,29 @@ def _production_history(root: Path, rows: list[Mapping[str, Any]],
         return live
 
 
+def _campaign_selection(headline: Mapping[str, Any]) -> dict:
+    """Explicit null means no selection; missing or invalid metadata is unknown."""
+    if "active_campaign" not in headline:
+        return {"state": "unknown", "detail": "Active campaign selection unknown"}
+    active = headline["active_campaign"]
+    if active is None:
+        return {"state": "none", "detail": "No active campaign selected"}
+    if (not isinstance(active, Mapping)
+            or not isinstance(active.get("id"), str) or not active["id"].strip()
+            or not isinstance(active.get("store"), str)
+            or not Path(active["store"]).is_absolute()):
+        return {"state": "unknown", "detail": "Active campaign selection unknown"}
+    return {"state": "selected", "id": active["id"],
+            "detail": f"Active campaign: {active['id']}"}
+
+
 def improvement_trajectory(root: Path, rows: list[Mapping[str, Any]],
                            production: Optional[Mapping[str, Any]] = None) -> dict:
     """Headline production history plus secondary campaign-local drill-down."""
     root = Path(root)
     headline = _production_history(root, rows, production)
-    active = headline.get("active_campaign")
+    selection = _campaign_selection(headline)
+    active = headline.get("active_campaign") if selection["state"] == "selected" else None
     campaign_root = root
     if isinstance(active, Mapping) and isinstance(active.get("store"), str):
         campaign_root = Path(active["store"])
@@ -2932,6 +2950,7 @@ def improvement_trajectory(root: Path, rows: list[Mapping[str, Any]],
         disposition_counts[disposition] = disposition_counts.get(disposition, 0) + 1
     events.sort(key=lambda event: str(event.get("recorded_at") or ""))
     return {"schema": TRAJECTORY_SCHEMA, "production_headline": headline,
+            "campaign_selection": selection,
             "campaign_drilldown": local,
             "keep_history": _retained_keep_history(root, headline, active),
             "experiment_events": {"events": events, "counts": disposition_counts,
