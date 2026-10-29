@@ -2,7 +2,7 @@
 
 ## Result
 
-Closed the narrowly scoped idle-synchronize race check. The source premise in the original task was inaccurate for the serving overlap path: the worker synchronizes the speculative context, not the target context concurrently. A comment-only correction is committed in the private experimental server fork as `de708780b` (`docs(server): correct ZOS-2 sync race comment`). No core/kernel behavior was changed.
+Closed the narrowly scoped idle-synchronize race check. The source premise in the original task was inaccurate for the serving overlap path: the worker synchronizes the speculative context, not the target context concurrently. A comment-only correction is committed as `de708780b` (`docs(server): correct ZOS-2 sync race comment`) in the task-specific worktree `/mnt/raid0/llm/tmp/codex-ni-gpu-zos-23a-comment-20261029/source`, branch `codex-ni/gpu-zos-23a-comment-20261029`. Its patch is retained at `/mnt/raid0/llm/tmp/codex-ni-gpu-zos-23a-comment-20261029/comment-correction.patch` (SHA-256 `f9454a7dc3d83c412429ce2f5b32d50685436515a7d0466f45123c1501618a3f`). The pre-existing experimental source worktree was restored by compare-and-swap to its original clean tip `6af3192c7`; neither the task branch nor any production branch was pushed. No core/kernel behavior was changed.
 
 The native CPU ThreadSanitizer harness distinguishes the API-level race from the server path:
 
