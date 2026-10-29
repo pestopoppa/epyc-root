@@ -1,0 +1,5 @@
+# 2026-10-29 — codex3 compute backlog scan
+
+- The 2026-10-29 owner order assigned codex3 a merge scan and CPU/GPU preparation alongside results filing. The owner accepted the scan and applied `/mnt/raid0/llm/tmp/compute-flags/merge-scan/MERGE-PLAN.md`. The scan classified 206 FILLERS BACKLOG rows. A HIL15 consolidation has matching model and CPU server paths but lacks verified remaining token inventory, predictive throughput and measured load savings; it is not READY. YaRN's CPU 128K items were redirected to GPU by the owner. Historical retries, armed successors and existing bundles are not independent savings. No row was superseded or task ticked. [belief: cc]
+- Presence check: all 114 unique IDs in `filing-due.jsonl` had corresponding `filing-done/<id>.FILED` files at this boundary. This checks receipt presence only; it does not audit the verdicts or the underlying filings. [belief: cc]
+- CPU and GPU packets remain in preparation pending real smokes. The scan launched no compute and published no READY manifest. The production kernel and compiler were untouched. [belief: cc]
