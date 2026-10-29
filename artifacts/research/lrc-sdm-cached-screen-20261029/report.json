@@ -1,0 +1,56 @@
+{
+  "arms": {
+    "hgb": {
+      "abstentions": 5,
+      "mean_selected_observed": 0.7048022598870057,
+      "policy_unsupported_selections": 101,
+      "selected_observed": 59,
+      "unobserved_selected": 42,
+      "unsupported_selections": 0
+    },
+    "mlp": {
+      "abstentions": 3,
+      "mean_selected_observed": 0.7442129629629629,
+      "policy_unsupported_selections": 103,
+      "selected_observed": 72,
+      "unobserved_selected": 31,
+      "unsupported_selections": 0
+    },
+    "role_mean": {
+      "abstentions": 3,
+      "mean_selected_observed": 0.7442129629629629,
+      "policy_unsupported_selections": 103,
+      "selected_observed": 72,
+      "unobserved_selected": 31,
+      "unsupported_selections": 0
+    },
+    "shuffled": {
+      "abstentions": 3,
+      "mean_selected_observed": 0.7279874213836478,
+      "policy_unsupported_selections": 103,
+      "selected_observed": 53,
+      "unobserved_selected": 50,
+      "unsupported_selections": 0
+    }
+  },
+  "disposition": "descriptive_only_no_serving_quality_floor",
+  "invalid_embeddings": 3,
+  "mlp_rate_error": null,
+  "paired_coverage": 0.5377358490566038,
+  "paired_group_bootstrap_95_lower": 0.0,
+  "paired_group_mean_gain": 0.0,
+  "paired_groups": 57,
+  "paired_questions": 57,
+  "policy": "all challenger routes abstain; no configured rate floor",
+  "raw_observed_cell_counts": {
+    "hgb": 136,
+    "role_mean": 136,
+    "shuffled": 136
+  },
+  "raw_observed_cell_rmse": {
+    "hgb": 0.4164677312735765,
+    "role_mean": 0.4439046697892302,
+    "shuffled": 0.4832610748856408
+  },
+  "test_questions": 106
+}

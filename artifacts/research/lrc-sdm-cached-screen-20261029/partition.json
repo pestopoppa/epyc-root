@@ -1,0 +1,2702 @@
+{
+  "008bc05262ecdf24": {
+    "group": "008bc05262ecdf24",
+    "split": "test",
+    "suite": "long_context"
+  },
+  "01102fa71c66501e": {
+    "group": "01102fa71c66501e",
+    "split": "test",
+    "suite": "mode_advantage_hard"
+  },
+  "01177ae06707a539": {
+    "group": "01177ae06707a539",
+    "split": "train",
+    "suite": "hotpotqa"
+  },
+  "01b038fcde2b5741": {
+    "group": "01b038fcde2b5741",
+    "split": "train",
+    "suite": "long_context"
+  },
+  "0256c0f129360170": {
+    "group": "0256c0f129360170",
+    "split": "calibration",
+    "suite": "thinking"
+  },
+  "02b38946c4a7f342": {
+    "group": "02b38946c4a7f342",
+    "split": "train",
+    "suite": "thinking"
+  },
+  "02b90179149fdb8f": {
+    "group": "02b90179149fdb8f",
+    "split": "train",
+    "suite": "vl"
+  },
+  "0304dc3176c0c3fb": {
+    "group": "0304dc3176c0c3fb",
+    "split": "train",
+    "suite": "agentic"
+  },
+  "03054b5348247eb8": {
+    "group": "03054b5348247eb8",
+    "split": "test",
+    "suite": "thinking"
+  },
+  "034ffa949d8babdc": {
+    "group": "034ffa949d8babdc",
+    "split": "train",
+    "suite": "mode_advantage"
+  },
+  "040a731dc4075b32": {
+    "group": "040a731dc4075b32",
+    "split": "calibration",
+    "suite": "long_context"
+  },
+  "044147f316d210cc": {
+    "group": "044147f316d210cc",
+    "split": "test",
+    "suite": "agentic"
+  },
+  "04983ba4dc775b83": {
+    "group": "04983ba4dc775b83",
+    "split": "test",
+    "suite": "gpqa"
+  },
+  "04b3a919102dd31e": {
+    "group": "04b3a919102dd31e",
+    "split": "train",
+    "suite": "general"
+  },
+  "04ccd0f531565513": {
+    "group": "04ccd0f531565513",
+    "split": "train",
+    "suite": "debugbench"
+  },
+  "06326a4dd8634940": {
+    "group": "06326a4dd8634940",
+    "split": "train",
+    "suite": "bigcodebench"
+  },
+  "06712793f803df2c": {
+    "group": "06712793f803df2c",
+    "split": "train",
+    "suite": "thinking"
+  },
+  "06d015b99547dd98": {
+    "group": "06d015b99547dd98",
+    "split": "train",
+    "suite": "thinking"
+  },
+  "06d0a8aca893f09d": {
+    "group": "06d0a8aca893f09d",
+    "split": "calibration",
+    "suite": "debugbench"
+  },
+  "071a1d4be0b0a678": {
+    "group": "071a1d4be0b0a678",
+    "split": "train",
+    "suite": "cruxeval"
+  },
+  "071fac5f52d31718": {
+    "group": "071fac5f52d31718",
+    "split": "calibration",
+    "suite": "mode_advantage_hard"
+  },
+  "0752858be97cf116": {
+    "group": "0752858be97cf116",
+    "split": "calibration",
+    "suite": "mode_advantage_hard"
+  },
+  "088611b2a69d9afa": {
+    "group": "088611b2a69d9afa",
+    "split": "calibration",
+    "suite": "agentic"
+  },
+  "08e93e0998afd5a6": {
+    "group": "08e93e0998afd5a6",
+    "split": "calibration",
+    "suite": "cruxeval"
+  },
+  "0976788838967ab6": {
+    "group": "0976788838967ab6",
+    "split": "train",
+    "suite": "instruction_precision"
+  },
+  "09809fa018780a3d": {
+    "group": "09809fa018780a3d",
+    "split": "train",
+    "suite": "bigcodebench"
+  },
+  "0b8747b7ad372072": {
+    "group": "0b8747b7ad372072",
+    "split": "train",
+    "suite": "mode_advantage_hard"
+  },
+  "0bfd64dcdec118c8": {
+    "group": "0bfd64dcdec118c8",
+    "split": "train",
+    "suite": "hotpotqa"
+  },
+  "0c20ea66532f0e87": {
+    "group": "0c20ea66532f0e87",
+    "split": "train",
+    "suite": "coder"
+  },
+  "0e6180ef2cd3a27b": {
+    "group": "0e6180ef2cd3a27b",
+    "split": "train",
+    "suite": "agentic"
+  },
+  "0ef0df256fd40447": {
+    "group": "0ef0df256fd40447",
+    "split": "train",
+    "suite": "hotpotqa"
+  },
+  "0ef60c46a7b0115c": {
+    "group": "0ef60c46a7b0115c",
+    "split": "train",
+    "suite": "debugbench"
+  },
+  "0f3a524ddd8cda11": {
+    "group": "0f3a524ddd8cda11",
+    "split": "train",
+    "suite": "mode_advantage"
+  },
+  "0fb66572ff63873c": {
+    "group": "0fb66572ff63873c",
+    "split": "calibration",
+    "suite": "long_context"
+  },
+  "0fc0ee72a2c3c82a": {
+    "group": "0fc0ee72a2c3c82a",
+    "split": "train",
+    "suite": "general"
+  },
+  "103d879f0210b836": {
+    "group": "103d879f0210b836",
+    "split": "calibration",
+    "suite": "debugbench"
+  },
+  "106922fb9af32ecd": {
+    "group": "106922fb9af32ecd",
+    "split": "test",
+    "suite": "gpqa"
+  },
+  "11adc5c1a4a715a0": {
+    "group": "11adc5c1a4a715a0",
+    "split": "train",
+    "suite": "mode_advantage"
+  },
+  "11ec8c9deccb1cbc": {
+    "group": "11ec8c9deccb1cbc",
+    "split": "train",
+    "suite": "instruction_precision"
+  },
+  "11ed6fc1d5a7b4e0": {
+    "group": "11ed6fc1d5a7b4e0",
+    "split": "test",
+    "suite": "bigcodebench"
+  },
+  "1201c9e0887cf572": {
+    "group": "1201c9e0887cf572",
+    "split": "test",
+    "suite": "mode_advantage"
+  },
+  "12d7bf7a1d438af6": {
+    "group": "12d7bf7a1d438af6",
+    "split": "train",
+    "suite": "livecodebench"
+  },
+  "12f923b2ada2b2bf": {
+    "group": "12f923b2ada2b2bf",
+    "split": "train",
+    "suite": "instruction_precision"
+  },
+  "1367c37c130ba38f": {
+    "group": "1367c37c130ba38f",
+    "split": "train",
+    "suite": "hotpotqa"
+  },
+  "137532ab16225295": {
+    "group": "137532ab16225295",
+    "split": "train",
+    "suite": "livecodebench"
+  },
+  "142bb2e1fb994a1f": {
+    "group": "142bb2e1fb994a1f",
+    "split": "train",
+    "suite": "debugbench"
+  },
+  "14b2236cfa319766": {
+    "group": "14b2236cfa319766",
+    "split": "calibration",
+    "suite": "general"
+  },
+  "14cb1030c7077898": {
+    "group": "14cb1030c7077898",
+    "split": "train",
+    "suite": "simpleqa"
+  },
+  "1522ec077bd1c9bc": {
+    "group": "1522ec077bd1c9bc",
+    "split": "calibration",
+    "suite": "livecodebench"
+  },
+  "169246a2dbd2f37c": {
+    "group": "169246a2dbd2f37c",
+    "split": "train",
+    "suite": "instruction_precision"
+  },
+  "1700c326e6fb8608": {
+    "group": "1700c326e6fb8608",
+    "split": "train",
+    "suite": "livecodebench"
+  },
+  "178c97a56749c564": {
+    "group": "178c97a56749c564",
+    "split": "calibration",
+    "suite": "long_context"
+  },
+  "17af3298090423e4": {
+    "group": "17af3298090423e4",
+    "split": "calibration",
+    "suite": "vl"
+  },
+  "18f296e33755c5e1": {
+    "group": "18f296e33755c5e1",
+    "split": "train",
+    "suite": "mode_advantage"
+  },
+  "191e7e1a35895240": {
+    "group": "191e7e1a35895240",
+    "split": "train",
+    "suite": "skill_transfer"
+  },
+  "192357c9753f8bfd": {
+    "group": "192357c9753f8bfd",
+    "split": "train",
+    "suite": "long_context"
+  },
+  "19b076110bd19a6b": {
+    "group": "19b076110bd19a6b",
+    "split": "train",
+    "suite": "hotpotqa"
+  },
+  "19de29569f825201": {
+    "group": "19de29569f825201",
+    "split": "train",
+    "suite": "general"
+  },
+  "19fec23e79e3ede6": {
+    "group": "19fec23e79e3ede6",
+    "split": "train",
+    "suite": "vl"
+  },
+  "1a65893db52e68ba": {
+    "group": "1a65893db52e68ba",
+    "split": "train",
+    "suite": "skill_transfer"
+  },
+  "1ab094eb2edb356d": {
+    "group": "1ab094eb2edb356d",
+    "split": "calibration",
+    "suite": "thinking"
+  },
+  "1b0b2494bd9db6d3": {
+    "group": "1b0b2494bd9db6d3",
+    "split": "calibration",
+    "suite": "mode_advantage"
+  },
+  "1b12301338d9a2b5": {
+    "group": "1b12301338d9a2b5",
+    "split": "train",
+    "suite": "livecodebench"
+  },
+  "1bc137b5c78ccfc9": {
+    "group": "1bc137b5c78ccfc9",
+    "split": "test",
+    "suite": "bigcodebench"
+  },
+  "1c0e64d6987af6bc": {
+    "group": "1c0e64d6987af6bc",
+    "split": "train",
+    "suite": "general"
+  },
+  "1c57ba9a67b0f7ed": {
+    "group": "1c57ba9a67b0f7ed",
+    "split": "train",
+    "suite": "mode_advantage_hard"
+  },
+  "1c580c61e54e0b3d": {
+    "group": "1c580c61e54e0b3d",
+    "split": "test",
+    "suite": "agentic"
+  },
+  "1c5d803957760427": {
+    "group": "1c5d803957760427",
+    "split": "calibration",
+    "suite": "debugbench"
+  },
+  "1c5f4d2ef55a0299": {
+    "group": "1c5f4d2ef55a0299",
+    "split": "calibration",
+    "suite": "coder"
+  },
+  "1cb5aefddae4756f": {
+    "group": "1cb5aefddae4756f",
+    "split": "train",
+    "suite": "bigcodebench"
+  },
+  "1e65b7e5496c9aed": {
+    "group": "1e65b7e5496c9aed",
+    "split": "train",
+    "suite": "simpleqa"
+  },
+  "1e678511f23b3278": {
+    "group": "1e678511f23b3278",
+    "split": "train",
+    "suite": "math"
+  },
+  "1ea1927eaf7c8f5b": {
+    "group": "1ea1927eaf7c8f5b",
+    "split": "train",
+    "suite": "thinking"
+  },
+  "1f4a9d4c446309da": {
+    "group": "1f4a9d4c446309da",
+    "split": "train",
+    "suite": "thinking"
+  },
+  "1f7f3aba6a879b31": {
+    "group": "1f7f3aba6a879b31",
+    "split": "train",
+    "suite": "general"
+  },
+  "20d37b42cd559a9c": {
+    "group": "20d37b42cd559a9c",
+    "split": "train",
+    "suite": "vl"
+  },
+  "21b6ae2432503a42": {
+    "group": "21b6ae2432503a42",
+    "split": "train",
+    "suite": "agentic"
+  },
+  "21cb6165463c4992": {
+    "group": "21cb6165463c4992",
+    "split": "train",
+    "suite": "agentic"
+  },
+  "221cd964316ffbfb": {
+    "group": "221cd964316ffbfb",
+    "split": "calibration",
+    "suite": "livecodebench"
+  },
+  "222854b157775320": {
+    "group": "222854b157775320",
+    "split": "train",
+    "suite": "skill_transfer"
+  },
+  "2235ad7695e036ee": {
+    "group": "2235ad7695e036ee",
+    "split": "test",
+    "suite": "vl"
+  },
+  "22b91263c93e94a1": {
+    "group": "1c5d803957760427",
+    "split": "calibration",
+    "suite": "debugbench"
+  },
+  "22e954e2782acad9": {
+    "group": "22e954e2782acad9",
+    "split": "train",
+    "suite": "debugbench"
+  },
+  "231ef6a3eb35b355": {
+    "group": "231ef6a3eb35b355",
+    "split": "test",
+    "suite": "long_context"
+  },
+  "23a1dfae713a2552": {
+    "group": "23a1dfae713a2552",
+    "split": "train",
+    "suite": "general"
+  },
+  "244c6c8fdebe3225": {
+    "group": "244c6c8fdebe3225",
+    "split": "train",
+    "suite": "long_context"
+  },
+  "25200bd2747c3a07": {
+    "group": "25200bd2747c3a07",
+    "split": "test",
+    "suite": "skill_transfer"
+  },
+  "25461cae5e5fdbee": {
+    "group": "25461cae5e5fdbee",
+    "split": "train",
+    "suite": "simpleqa"
+  },
+  "2609b51625096521": {
+    "group": "2609b51625096521",
+    "split": "train",
+    "suite": "agentic"
+  },
+  "267e3a995425c68b": {
+    "group": "267e3a995425c68b",
+    "split": "train",
+    "suite": "gpqa"
+  },
+  "26a1187f4d8889a7": {
+    "group": "26a1187f4d8889a7",
+    "split": "train",
+    "suite": "skill_transfer"
+  },
+  "26cff537586ab24c": {
+    "group": "26cff537586ab24c",
+    "split": "train",
+    "suite": "general"
+  },
+  "27bc535c4ea01e91": {
+    "group": "27bc535c4ea01e91",
+    "split": "train",
+    "suite": "cruxeval"
+  },
+  "27c629ed63d9b8bf": {
+    "group": "27c629ed63d9b8bf",
+    "split": "test",
+    "suite": "gpqa"
+  },
+  "283aae5d5e68d50c": {
+    "group": "283aae5d5e68d50c",
+    "split": "test",
+    "suite": "livecodebench"
+  },
+  "28be4a3f88248aeb": {
+    "group": "28be4a3f88248aeb",
+    "split": "test",
+    "suite": "agentic"
+  },
+  "29cc6d95862c11d8": {
+    "group": "29cc6d95862c11d8",
+    "split": "calibration",
+    "suite": "gpqa"
+  },
+  "2a51d597d6c5e9bb": {
+    "group": "2a51d597d6c5e9bb",
+    "split": "train",
+    "suite": "bigcodebench"
+  },
+  "2ac3169ddf7c11a5": {
+    "group": "2ac3169ddf7c11a5",
+    "split": "test",
+    "suite": "coder"
+  },
+  "2ade6b68bab9a26a": {
+    "group": "2ade6b68bab9a26a",
+    "split": "train",
+    "suite": "bigcodebench"
+  },
+  "2b2273ebff772a65": {
+    "group": "2b2273ebff772a65",
+    "split": "train",
+    "suite": "instruction_precision"
+  },
+  "2b8a09fee6888e9d": {
+    "group": "2b8a09fee6888e9d",
+    "split": "train",
+    "suite": "long_context"
+  },
+  "2c95a138ea72afa0": {
+    "group": "2c95a138ea72afa0",
+    "split": "train",
+    "suite": "hotpotqa"
+  },
+  "2dbc5f4cae95965c": {
+    "group": "2dbc5f4cae95965c",
+    "split": "test",
+    "suite": "instruction_precision"
+  },
+  "2edeb5ae8892d155": {
+    "group": "2edeb5ae8892d155",
+    "split": "train",
+    "suite": "thinking"
+  },
+  "2f8d526fe3e78cf0": {
+    "group": "2f8d526fe3e78cf0",
+    "split": "train",
+    "suite": "skill_transfer"
+  },
+  "2fd023b94d1f9111": {
+    "group": "2fd023b94d1f9111",
+    "split": "train",
+    "suite": "bigcodebench"
+  },
+  "3013c10d14c9a728": {
+    "group": "3013c10d14c9a728",
+    "split": "train",
+    "suite": "simpleqa"
+  },
+  "303d06346fce8349": {
+    "group": "303d06346fce8349",
+    "split": "test",
+    "suite": "coder"
+  },
+  "3072967c31d99759": {
+    "group": "3072967c31d99759",
+    "split": "train",
+    "suite": "simpleqa"
+  },
+  "30a133f3833caead": {
+    "group": "30a133f3833caead",
+    "split": "train",
+    "suite": "thinking"
+  },
+  "32549b0021ab3ab6": {
+    "group": "32549b0021ab3ab6",
+    "split": "calibration",
+    "suite": "thinking"
+  },
+  "330a18f5bc58fa25": {
+    "group": "330a18f5bc58fa25",
+    "split": "calibration",
+    "suite": "cruxeval"
+  },
+  "3398d2c071aa35c1": {
+    "group": "3398d2c071aa35c1",
+    "split": "test",
+    "suite": "mode_advantage_hard"
+  },
+  "341f95f3f5819f5e": {
+    "group": "341f95f3f5819f5e",
+    "split": "train",
+    "suite": "skill_transfer"
+  },
+  "3423d72facc9c497": {
+    "group": "3423d72facc9c497",
+    "split": "train",
+    "suite": "hotpotqa"
+  },
+  "3493dac8f0f98426": {
+    "group": "3493dac8f0f98426",
+    "split": "train",
+    "suite": "vl"
+  },
+  "3504e468849e1f5c": {
+    "group": "3504e468849e1f5c",
+    "split": "train",
+    "suite": "general"
+  },
+  "351b7064f23a980e": {
+    "group": "351b7064f23a980e",
+    "split": "test",
+    "suite": "debugbench"
+  },
+  "358cc0c9e0284641": {
+    "group": "358cc0c9e0284641",
+    "split": "test",
+    "suite": "math"
+  },
+  "363e9cd3e2e924db": {
+    "group": "363e9cd3e2e924db",
+    "split": "train",
+    "suite": "hotpotqa"
+  },
+  "3679a2e837a2ac4f": {
+    "group": "3679a2e837a2ac4f",
+    "split": "test",
+    "suite": "math"
+  },
+  "379d5935dfdb0637": {
+    "group": "379d5935dfdb0637",
+    "split": "train",
+    "suite": "mode_advantage"
+  },
+  "37d5b1c15db638a4": {
+    "group": "37d5b1c15db638a4",
+    "split": "calibration",
+    "suite": "cruxeval"
+  },
+  "38205bc340e92945": {
+    "group": "38205bc340e92945",
+    "split": "train",
+    "suite": "simpleqa"
+  },
+  "388f8e9f1d8624f2": {
+    "group": "388f8e9f1d8624f2",
+    "split": "calibration",
+    "suite": "general"
+  },
+  "39039707ce7534b0": {
+    "group": "39039707ce7534b0",
+    "split": "train",
+    "suite": "agentic"
+  },
+  "392642e51a256600": {
+    "group": "392642e51a256600",
+    "split": "calibration",
+    "suite": "math"
+  },
+  "396d87c3473cc4fb": {
+    "group": "396d87c3473cc4fb",
+    "split": "train",
+    "suite": "coder"
+  },
+  "39c1a870d0098ff5": {
+    "group": "39c1a870d0098ff5",
+    "split": "calibration",
+    "suite": "livecodebench"
+  },
+  "3a3e9c10711d1482": {
+    "group": "3a3e9c10711d1482",
+    "split": "calibration",
+    "suite": "general"
+  },
+  "3b13e3c4f33d85e9": {
+    "group": "3b13e3c4f33d85e9",
+    "split": "test",
+    "suite": "skill_transfer"
+  },
+  "3b2791f2fb959172": {
+    "group": "3b2791f2fb959172",
+    "split": "train",
+    "suite": "vl"
+  },
+  "3bb80e0930eb52e2": {
+    "group": "3bb80e0930eb52e2",
+    "split": "test",
+    "suite": "instruction_precision"
+  },
+  "3d6bdf10ac6352a4": {
+    "group": "3d6bdf10ac6352a4",
+    "split": "train",
+    "suite": "livecodebench"
+  },
+  "3d7ce525a8d229b5": {
+    "group": "3d7ce525a8d229b5",
+    "split": "train",
+    "suite": "math"
+  },
+  "3de7c31ce7bd3d93": {
+    "group": "3de7c31ce7bd3d93",
+    "split": "test",
+    "suite": "livecodebench"
+  },
+  "3e93478c5b33555b": {
+    "group": "3e93478c5b33555b",
+    "split": "train",
+    "suite": "instruction_precision"
+  },
+  "3f438a5a0b9d408f": {
+    "group": "3f438a5a0b9d408f",
+    "split": "train",
+    "suite": "instruction_precision"
+  },
+  "3f83c3c7bc489c3a": {
+    "group": "3f83c3c7bc489c3a",
+    "split": "train",
+    "suite": "hotpotqa"
+  },
+  "3f978dd3e5984a08": {
+    "group": "3f978dd3e5984a08",
+    "split": "calibration",
+    "suite": "simpleqa"
+  },
+  "3fcbbacf8b05ccaf": {
+    "group": "3fcbbacf8b05ccaf",
+    "split": "train",
+    "suite": "simpleqa"
+  },
+  "3ff65530981276a2": {
+    "group": "3ff65530981276a2",
+    "split": "train",
+    "suite": "math"
+  },
+  "4028343600a191fd": {
+    "group": "4028343600a191fd",
+    "split": "train",
+    "suite": "vl"
+  },
+  "407b4da0c6035a1b": {
+    "group": "407b4da0c6035a1b",
+    "split": "calibration",
+    "suite": "coder"
+  },
+  "40a17c181df22083": {
+    "group": "40a17c181df22083",
+    "split": "train",
+    "suite": "agentic"
+  },
+  "40a92d01dce81914": {
+    "group": "40a92d01dce81914",
+    "split": "calibration",
+    "suite": "instruction_precision"
+  },
+  "4147bc69e0e86b03": {
+    "group": "4147bc69e0e86b03",
+    "split": "calibration",
+    "suite": "vl"
+  },
+  "418ff90445b43731": {
+    "group": "418ff90445b43731",
+    "split": "test",
+    "suite": "thinking"
+  },
+  "41cb10d5bce90a7b": {
+    "group": "41cb10d5bce90a7b",
+    "split": "train",
+    "suite": "coder"
+  },
+  "423298538d9cba39": {
+    "group": "423298538d9cba39",
+    "split": "test",
+    "suite": "skill_transfer"
+  },
+  "424fd1e5bb1324a9": {
+    "group": "424fd1e5bb1324a9",
+    "split": "train",
+    "suite": "livecodebench"
+  },
+  "42e43dd093745a5d": {
+    "group": "42e43dd093745a5d",
+    "split": "train",
+    "suite": "hotpotqa"
+  },
+  "439056cd6e6f42db": {
+    "group": "439056cd6e6f42db",
+    "split": "train",
+    "suite": "coder"
+  },
+  "442f4426fe8acd68": {
+    "group": "442f4426fe8acd68",
+    "split": "calibration",
+    "suite": "coder"
+  },
+  "4523c19576453345": {
+    "group": "4523c19576453345",
+    "split": "train",
+    "suite": "instruction_precision"
+  },
+  "460fead0f3b439b1": {
+    "group": "460fead0f3b439b1",
+    "split": "test",
+    "suite": "cruxeval"
+  },
+  "461fc3e0040d4e96": {
+    "group": "461fc3e0040d4e96",
+    "split": "train",
+    "suite": "long_context"
+  },
+  "46391467f71cc1e8": {
+    "group": "46391467f71cc1e8",
+    "split": "train",
+    "suite": "cruxeval"
+  },
+  "46d2e5f7fd8afe5d": {
+    "group": "46d2e5f7fd8afe5d",
+    "split": "train",
+    "suite": "math"
+  },
+  "482648e3d1a6323e": {
+    "group": "482648e3d1a6323e",
+    "split": "test",
+    "suite": "mode_advantage_hard"
+  },
+  "4976fc47eb4ecb8b": {
+    "group": "4976fc47eb4ecb8b",
+    "split": "test",
+    "suite": "general"
+  },
+  "49bda2d00d2b3e32": {
+    "group": "49bda2d00d2b3e32",
+    "split": "train",
+    "suite": "simpleqa"
+  },
+  "4a22a9af3b077851": {
+    "group": "4a22a9af3b077851",
+    "split": "train",
+    "suite": "mode_advantage_hard"
+  },
+  "4b2cc368c526ded1": {
+    "group": "4b2cc368c526ded1",
+    "split": "train",
+    "suite": "hotpotqa"
+  },
+  "4b70bae654c24253": {
+    "group": "4b70bae654c24253",
+    "split": "test",
+    "suite": "general"
+  },
+  "4b7d69b60d6d7412": {
+    "group": "4b7d69b60d6d7412",
+    "split": "train",
+    "suite": "debugbench"
+  },
+  "4bb8b50518f9f922": {
+    "group": "4bb8b50518f9f922",
+    "split": "test",
+    "suite": "long_context"
+  },
+  "4c556714d757f82e": {
+    "group": "4c556714d757f82e",
+    "split": "train",
+    "suite": "general"
+  },
+  "4c6ae9a20091e19b": {
+    "group": "4c6ae9a20091e19b",
+    "split": "train",
+    "suite": "bigcodebench"
+  },
+  "4cc7e88162290816": {
+    "group": "4cc7e88162290816",
+    "split": "train",
+    "suite": "skill_transfer"
+  },
+  "4cdb970484943b17": {
+    "group": "4cdb970484943b17",
+    "split": "train",
+    "suite": "thinking"
+  },
+  "4ddf114a476c4084": {
+    "group": "4ddf114a476c4084",
+    "split": "test",
+    "suite": "general"
+  },
+  "4e0eaa42481481f9": {
+    "group": "4e0eaa42481481f9",
+    "split": "test",
+    "suite": "skill_transfer"
+  },
+  "4e2d4980a090c8aa": {
+    "group": "4e2d4980a090c8aa",
+    "split": "train",
+    "suite": "mode_advantage"
+  },
+  "4e638aae9b076686": {
+    "group": "4e638aae9b076686",
+    "split": "test",
+    "suite": "coder"
+  },
+  "4ee16f026c095f51": {
+    "group": "4ee16f026c095f51",
+    "split": "train",
+    "suite": "thinking"
+  },
+  "4ef6878d17ab3fdd": {
+    "group": "4ef6878d17ab3fdd",
+    "split": "train",
+    "suite": "hotpotqa"
+  },
+  "50c2271b9edc2df7": {
+    "group": "50c2271b9edc2df7",
+    "split": "train",
+    "suite": "math"
+  },
+  "52394294fdeb357a": {
+    "group": "52394294fdeb357a",
+    "split": "calibration",
+    "suite": "agentic"
+  },
+  "52573e4811c1a9ab": {
+    "group": "52573e4811c1a9ab",
+    "split": "train",
+    "suite": "simpleqa"
+  },
+  "525f39be59452628": {
+    "group": "525f39be59452628",
+    "split": "calibration",
+    "suite": "hotpotqa"
+  },
+  "5398c263b1626c48": {
+    "group": "5398c263b1626c48",
+    "split": "test",
+    "suite": "hotpotqa"
+  },
+  "54dbc84dd0cfb95a": {
+    "group": "54dbc84dd0cfb95a",
+    "split": "test",
+    "suite": "hotpotqa"
+  },
+  "550fc40f401b0743": {
+    "group": "550fc40f401b0743",
+    "split": "train",
+    "suite": "hotpotqa"
+  },
+  "55aff63092c310f8": {
+    "group": "55aff63092c310f8",
+    "split": "train",
+    "suite": "simpleqa"
+  },
+  "5614c5b4ef3c3a6b": {
+    "group": "5614c5b4ef3c3a6b",
+    "split": "calibration",
+    "suite": "coder"
+  },
+  "56333f51609c3f1e": {
+    "group": "56333f51609c3f1e",
+    "split": "test",
+    "suite": "simpleqa"
+  },
+  "56f43e666fa575be": {
+    "group": "56f43e666fa575be",
+    "split": "calibration",
+    "suite": "mode_advantage_hard"
+  },
+  "57564f638a70af27": {
+    "group": "57564f638a70af27",
+    "split": "train",
+    "suite": "mode_advantage"
+  },
+  "581b34748e47f4e9": {
+    "group": "581b34748e47f4e9",
+    "split": "test",
+    "suite": "mode_advantage"
+  },
+  "5820aaeb3b903f4e": {
+    "group": "5820aaeb3b903f4e",
+    "split": "train",
+    "suite": "math"
+  },
+  "5828a51520d4d32a": {
+    "group": "5828a51520d4d32a",
+    "split": "train",
+    "suite": "general"
+  },
+  "585ffdb029b15d09": {
+    "group": "585ffdb029b15d09",
+    "split": "train",
+    "suite": "math"
+  },
+  "588dc518910e7bea": {
+    "group": "588dc518910e7bea",
+    "split": "train",
+    "suite": "math"
+  },
+  "594fe43c0d40099e": {
+    "group": "594fe43c0d40099e",
+    "split": "calibration",
+    "suite": "thinking"
+  },
+  "59e21c4089829bea": {
+    "group": "59e21c4089829bea",
+    "split": "calibration",
+    "suite": "agentic"
+  },
+  "59f452a2d9c3b368": {
+    "group": "59f452a2d9c3b368",
+    "split": "train",
+    "suite": "livecodebench"
+  },
+  "59f8266fa9bbf41e": {
+    "group": "59f8266fa9bbf41e",
+    "split": "calibration",
+    "suite": "debugbench"
+  },
+  "5a43b1bc9018293c": {
+    "group": "5a43b1bc9018293c",
+    "split": "train",
+    "suite": "gpqa"
+  },
+  "5b25f1c0751ebe55": {
+    "group": "5b25f1c0751ebe55",
+    "split": "test",
+    "suite": "cruxeval"
+  },
+  "5b2a3323be79d85f": {
+    "group": "5b2a3323be79d85f",
+    "split": "train",
+    "suite": "cruxeval"
+  },
+  "5d67f3bf8e310229": {
+    "group": "5d67f3bf8e310229",
+    "split": "train",
+    "suite": "simpleqa"
+  },
+  "5dade968e0e8ec16": {
+    "group": "5dade968e0e8ec16",
+    "split": "train",
+    "suite": "instruction_precision"
+  },
+  "5df1c1c19530725f": {
+    "group": "5df1c1c19530725f",
+    "split": "train",
+    "suite": "gpqa"
+  },
+  "5e34cafc5775a2ca": {
+    "group": "5e34cafc5775a2ca",
+    "split": "test",
+    "suite": "instruction_precision"
+  },
+  "5f057517110c14b3": {
+    "group": "5f057517110c14b3",
+    "split": "calibration",
+    "suite": "cruxeval"
+  },
+  "5f0787980c3a4954": {
+    "group": "5f0787980c3a4954",
+    "split": "test",
+    "suite": "coder"
+  },
+  "5f277e6204ab6806": {
+    "group": "5f277e6204ab6806",
+    "split": "train",
+    "suite": "debugbench"
+  },
+  "5ffa55a7c4e600af": {
+    "group": "5ffa55a7c4e600af",
+    "split": "calibration",
+    "suite": "general"
+  },
+  "6050c13876017a02": {
+    "group": "6050c13876017a02",
+    "split": "train",
+    "suite": "mode_advantage_hard"
+  },
+  "61559d902d15aa98": {
+    "group": "61559d902d15aa98",
+    "split": "train",
+    "suite": "gpqa"
+  },
+  "61c73d1101f76f24": {
+    "group": "61c73d1101f76f24",
+    "split": "train",
+    "suite": "debugbench"
+  },
+  "621675a2f2235605": {
+    "group": "621675a2f2235605",
+    "split": "calibration",
+    "suite": "bigcodebench"
+  },
+  "639ef2da08d4eb8f": {
+    "group": "639ef2da08d4eb8f",
+    "split": "train",
+    "suite": "mode_advantage_hard"
+  },
+  "6437246782c93f64": {
+    "group": "6437246782c93f64",
+    "split": "test",
+    "suite": "general"
+  },
+  "6458194f0f44f56a": {
+    "group": "6458194f0f44f56a",
+    "split": "test",
+    "suite": "debugbench"
+  },
+  "647207dd7ec7fb5b": {
+    "group": "647207dd7ec7fb5b",
+    "split": "test",
+    "suite": "simpleqa"
+  },
+  "653f62119bdcd852": {
+    "group": "653f62119bdcd852",
+    "split": "train",
+    "suite": "bigcodebench"
+  },
+  "65439b10a3304967": {
+    "group": "65439b10a3304967",
+    "split": "calibration",
+    "suite": "simpleqa"
+  },
+  "661c42ba834e2487": {
+    "group": "661c42ba834e2487",
+    "split": "train",
+    "suite": "thinking"
+  },
+  "6624de58155e574f": {
+    "group": "6624de58155e574f",
+    "split": "train",
+    "suite": "gpqa"
+  },
+  "662e5f4eea2f70eb": {
+    "group": "662e5f4eea2f70eb",
+    "split": "train",
+    "suite": "thinking"
+  },
+  "6704c2f42f156d50": {
+    "group": "6704c2f42f156d50",
+    "split": "train",
+    "suite": "math"
+  },
+  "686e646f09904c19": {
+    "group": "686e646f09904c19",
+    "split": "train",
+    "suite": "vl"
+  },
+  "68781663a4e5cf86": {
+    "group": "68781663a4e5cf86",
+    "split": "calibration",
+    "suite": "instruction_precision"
+  },
+  "689ca20064c069bd": {
+    "group": "689ca20064c069bd",
+    "split": "calibration",
+    "suite": "hotpotqa"
+  },
+  "68ed8384a64b9955": {
+    "group": "68ed8384a64b9955",
+    "split": "train",
+    "suite": "simpleqa"
+  },
+  "6921431d713f70a9": {
+    "group": "6921431d713f70a9",
+    "split": "train",
+    "suite": "livecodebench"
+  },
+  "692362c06774d952": {
+    "group": "692362c06774d952",
+    "split": "test",
+    "suite": "agentic"
+  },
+  "698f738ab6b8b1c3": {
+    "group": "698f738ab6b8b1c3",
+    "split": "test",
+    "suite": "thinking"
+  },
+  "69947742bf177510": {
+    "group": "69947742bf177510",
+    "split": "calibration",
+    "suite": "coder"
+  },
+  "69ad3b158aa37044": {
+    "group": "69ad3b158aa37044",
+    "split": "train",
+    "suite": "debugbench"
+  },
+  "69c48baf74a2bc15": {
+    "group": "69c48baf74a2bc15",
+    "split": "train",
+    "suite": "livecodebench"
+  },
+  "6a54062622a87c99": {
+    "group": "6a54062622a87c99",
+    "split": "train",
+    "suite": "simpleqa"
+  },
+  "6c258f4829aa28e4": {
+    "group": "6c258f4829aa28e4",
+    "split": "train",
+    "suite": "vl"
+  },
+  "6d552af24ef32619": {
+    "group": "6d552af24ef32619",
+    "split": "train",
+    "suite": "mode_advantage_hard"
+  },
+  "6d9367c25f6fd2bc": {
+    "group": "6d9367c25f6fd2bc",
+    "split": "train",
+    "suite": "mode_advantage_hard"
+  },
+  "6df9a7d27b7b4513": {
+    "group": "6df9a7d27b7b4513",
+    "split": "train",
+    "suite": "mode_advantage_hard"
+  },
+  "6e24e74cb258bd4b": {
+    "group": "6e24e74cb258bd4b",
+    "split": "test",
+    "suite": "hotpotqa"
+  },
+  "6eb441e820ac2f1a": {
+    "group": "6eb441e820ac2f1a",
+    "split": "calibration",
+    "suite": "gpqa"
+  },
+  "6f3e09da83342fb1": {
+    "group": "6f3e09da83342fb1",
+    "split": "train",
+    "suite": "vl"
+  },
+  "6f6a82100bf7d454": {
+    "group": "6f6a82100bf7d454",
+    "split": "train",
+    "suite": "hotpotqa"
+  },
+  "6f7e50fdbd12601b": {
+    "group": "6f7e50fdbd12601b",
+    "split": "train",
+    "suite": "hotpotqa"
+  },
+  "70a18c87ef2d57eb": {
+    "group": "70a18c87ef2d57eb",
+    "split": "train",
+    "suite": "skill_transfer"
+  },
+  "70f7cc777aa8b59c": {
+    "group": "70f7cc777aa8b59c",
+    "split": "train",
+    "suite": "math"
+  },
+  "713893689039284c": {
+    "group": "713893689039284c",
+    "split": "train",
+    "suite": "bigcodebench"
+  },
+  "71befadfcae8972b": {
+    "group": "71befadfcae8972b",
+    "split": "test",
+    "suite": "debugbench"
+  },
+  "7201813e97f11bae": {
+    "group": "7201813e97f11bae",
+    "split": "test",
+    "suite": "thinking"
+  },
+  "7207afb49d5f0537": {
+    "group": "7207afb49d5f0537",
+    "split": "train",
+    "suite": "thinking"
+  },
+  "730d436814d661fd": {
+    "group": "730d436814d661fd",
+    "split": "calibration",
+    "suite": "mode_advantage_hard"
+  },
+  "73fc04b0278ba585": {
+    "group": "73fc04b0278ba585",
+    "split": "train",
+    "suite": "thinking"
+  },
+  "740baf26292841ed": {
+    "group": "740baf26292841ed",
+    "split": "calibration",
+    "suite": "bigcodebench"
+  },
+  "7516304dd66fcbc6": {
+    "group": "7516304dd66fcbc6",
+    "split": "train",
+    "suite": "long_context"
+  },
+  "755650194fe39173": {
+    "group": "755650194fe39173",
+    "split": "train",
+    "suite": "debugbench"
+  },
+  "755d1bd905c5b0f9": {
+    "group": "755d1bd905c5b0f9",
+    "split": "calibration",
+    "suite": "skill_transfer"
+  },
+  "7768e9499566a7d5": {
+    "group": "7768e9499566a7d5",
+    "split": "calibration",
+    "suite": "agentic"
+  },
+  "77865f6c9064187e": {
+    "group": "77865f6c9064187e",
+    "split": "calibration",
+    "suite": "mode_advantage"
+  },
+  "77b9f6875f796dbb": {
+    "group": "77b9f6875f796dbb",
+    "split": "calibration",
+    "suite": "hotpotqa"
+  },
+  "77fb8bd3a048f852": {
+    "group": "77fb8bd3a048f852",
+    "split": "train",
+    "suite": "cruxeval"
+  },
+  "7844eacbd29259b6": {
+    "group": "7844eacbd29259b6",
+    "split": "train",
+    "suite": "mode_advantage_hard"
+  },
+  "79aee761496903cc": {
+    "group": "79aee761496903cc",
+    "split": "train",
+    "suite": "math"
+  },
+  "7a2b5b70c7ffe4dd": {
+    "group": "7a2b5b70c7ffe4dd",
+    "split": "train",
+    "suite": "livecodebench"
+  },
+  "7ae08519ebb61727": {
+    "group": "7ae08519ebb61727",
+    "split": "train",
+    "suite": "cruxeval"
+  },
+  "7b875e5b2db73339": {
+    "group": "7b875e5b2db73339",
+    "split": "calibration",
+    "suite": "simpleqa"
+  },
+  "7b90dd200322e6cd": {
+    "group": "7b90dd200322e6cd",
+    "split": "train",
+    "suite": "cruxeval"
+  },
+  "7bdabe10fd3e1c04": {
+    "group": "7bdabe10fd3e1c04",
+    "split": "calibration",
+    "suite": "skill_transfer"
+  },
+  "7c0ccc39f7e11392": {
+    "group": "7c0ccc39f7e11392",
+    "split": "train",
+    "suite": "skill_transfer"
+  },
+  "7c742ff71fef01c4": {
+    "group": "7c742ff71fef01c4",
+    "split": "calibration",
+    "suite": "general"
+  },
+  "7c7bb9ed2fb3ee5b": {
+    "group": "7c7bb9ed2fb3ee5b",
+    "split": "train",
+    "suite": "bigcodebench"
+  },
+  "7cfe7d5d6f524cf4": {
+    "group": "7cfe7d5d6f524cf4",
+    "split": "train",
+    "suite": "mode_advantage"
+  },
+  "7d16a20175bb50d1": {
+    "group": "7d16a20175bb50d1",
+    "split": "train",
+    "suite": "agentic"
+  },
+  "7d25023ccf371b7e": {
+    "group": "7d25023ccf371b7e",
+    "split": "test",
+    "suite": "vl"
+  },
+  "7d731dd35ecaa26b": {
+    "group": "7d731dd35ecaa26b",
+    "split": "calibration",
+    "suite": "long_context"
+  },
+  "7d8a259a9a3e0197": {
+    "group": "7d8a259a9a3e0197",
+    "split": "train",
+    "suite": "agentic"
+  },
+  "7e1d1e3154ae2f30": {
+    "group": "7e1d1e3154ae2f30",
+    "split": "test",
+    "suite": "instruction_precision"
+  },
+  "7e3e28ebc52e47a9": {
+    "group": "7e3e28ebc52e47a9",
+    "split": "train",
+    "suite": "hotpotqa"
+  },
+  "7e615d7ebe097fd9": {
+    "group": "7e615d7ebe097fd9",
+    "split": "calibration",
+    "suite": "gpqa"
+  },
+  "7f587e8e4cd03ff8": {
+    "group": "7f587e8e4cd03ff8",
+    "split": "train",
+    "suite": "math"
+  },
+  "80887986650858f0": {
+    "group": "80887986650858f0",
+    "split": "train",
+    "suite": "livecodebench"
+  },
+  "80a4a49751d7e89b": {
+    "group": "80a4a49751d7e89b",
+    "split": "train",
+    "suite": "general"
+  },
+  "80c513071b092483": {
+    "group": "80c513071b092483",
+    "split": "test",
+    "suite": "thinking"
+  },
+  "816b6156b5260777": {
+    "group": "816b6156b5260777",
+    "split": "calibration",
+    "suite": "cruxeval"
+  },
+  "81714573fb2eb800": {
+    "group": "81714573fb2eb800",
+    "split": "train",
+    "suite": "agentic"
+  },
+  "8215098632b010c5": {
+    "group": "8215098632b010c5",
+    "split": "train",
+    "suite": "thinking"
+  },
+  "823d4e4e200c974c": {
+    "group": "823d4e4e200c974c",
+    "split": "train",
+    "suite": "cruxeval"
+  },
+  "826e02771f8afd00": {
+    "group": "826e02771f8afd00",
+    "split": "train",
+    "suite": "cruxeval"
+  },
+  "8295e854a0f6846d": {
+    "group": "8295e854a0f6846d",
+    "split": "train",
+    "suite": "long_context"
+  },
+  "84666501fa26dcf2": {
+    "group": "84666501fa26dcf2",
+    "split": "calibration",
+    "suite": "debugbench"
+  },
+  "8512aec62322d4d1": {
+    "group": "8512aec62322d4d1",
+    "split": "test",
+    "suite": "livecodebench"
+  },
+  "8573ccb42377415d": {
+    "group": "8573ccb42377415d",
+    "split": "test",
+    "suite": "hotpotqa"
+  },
+  "85b5f1eb059ee1aa": {
+    "group": "85b5f1eb059ee1aa",
+    "split": "test",
+    "suite": "math"
+  },
+  "85c7c3b1778f2a87": {
+    "group": "85c7c3b1778f2a87",
+    "split": "train",
+    "suite": "vl"
+  },
+  "86333d883b09601e": {
+    "group": "86333d883b09601e",
+    "split": "train",
+    "suite": "long_context"
+  },
+  "86916fe315cde7d2": {
+    "group": "86916fe315cde7d2",
+    "split": "calibration",
+    "suite": "debugbench"
+  },
+  "86f932f075e15de9": {
+    "group": "86f932f075e15de9",
+    "split": "test",
+    "suite": "skill_transfer"
+  },
+  "88558050f3e8176b": {
+    "group": "88558050f3e8176b",
+    "split": "train",
+    "suite": "coder"
+  },
+  "889bb42874b4135c": {
+    "group": "889bb42874b4135c",
+    "split": "train",
+    "suite": "mode_advantage"
+  },
+  "88d9774b3e2c93c2": {
+    "group": "88d9774b3e2c93c2",
+    "split": "train",
+    "suite": "debugbench"
+  },
+  "8951448ce81d1152": {
+    "group": "8951448ce81d1152",
+    "split": "train",
+    "suite": "thinking"
+  },
+  "89d6b600be57673a": {
+    "group": "89d6b600be57673a",
+    "split": "train",
+    "suite": "instruction_precision"
+  },
+  "8a49fb98a4a71da0": {
+    "group": "8a49fb98a4a71da0",
+    "split": "train",
+    "suite": "agentic"
+  },
+  "8a8f239270a8c74a": {
+    "group": "8a8f239270a8c74a",
+    "split": "train",
+    "suite": "instruction_precision"
+  },
+  "8ab89f27c6641932": {
+    "group": "8ab89f27c6641932",
+    "split": "train",
+    "suite": "mode_advantage"
+  },
+  "8bcf5c6dc4a3fc27": {
+    "group": "8bcf5c6dc4a3fc27",
+    "split": "test",
+    "suite": "simpleqa"
+  },
+  "8c0367339ce13484": {
+    "group": "8c0367339ce13484",
+    "split": "train",
+    "suite": "cruxeval"
+  },
+  "8c2177c8fe437dfd": {
+    "group": "8c2177c8fe437dfd",
+    "split": "train",
+    "suite": "gpqa"
+  },
+  "8c3e8aba1fdd9d47": {
+    "group": "8c3e8aba1fdd9d47",
+    "split": "test",
+    "suite": "long_context"
+  },
+  "8c9040a68f5ff6e4": {
+    "group": "8c9040a68f5ff6e4",
+    "split": "train",
+    "suite": "gpqa"
+  },
+  "8cfb0949540b482f": {
+    "group": "8cfb0949540b482f",
+    "split": "test",
+    "suite": "cruxeval"
+  },
+  "8e1580cc53150bc2": {
+    "group": "8e1580cc53150bc2",
+    "split": "train",
+    "suite": "debugbench"
+  },
+  "8e66594b47ba9dd6": {
+    "group": "8e66594b47ba9dd6",
+    "split": "train",
+    "suite": "vl"
+  },
+  "8eaaa8664075f6fc": {
+    "group": "8eaaa8664075f6fc",
+    "split": "test",
+    "suite": "skill_transfer"
+  },
+  "8f2c7d2b7827abf3": {
+    "group": "8f2c7d2b7827abf3",
+    "split": "train",
+    "suite": "vl"
+  },
+  "9053513be66f85da": {
+    "group": "9053513be66f85da",
+    "split": "train",
+    "suite": "hotpotqa"
+  },
+  "90c8a8f5c08d1e1c": {
+    "group": "90c8a8f5c08d1e1c",
+    "split": "train",
+    "suite": "debugbench"
+  },
+  "91157d275b810cad": {
+    "group": "91157d275b810cad",
+    "split": "train",
+    "suite": "debugbench"
+  },
+  "91425b493f95f0b2": {
+    "group": "91425b493f95f0b2",
+    "split": "calibration",
+    "suite": "general"
+  },
+  "920393a7f8b644b7": {
+    "group": "920393a7f8b644b7",
+    "split": "train",
+    "suite": "mode_advantage"
+  },
+  "92f193d57cfdbbd1": {
+    "group": "92f193d57cfdbbd1",
+    "split": "test",
+    "suite": "bigcodebench"
+  },
+  "9445118fd7d95716": {
+    "group": "9445118fd7d95716",
+    "split": "test",
+    "suite": "hotpotqa"
+  },
+  "953fe63663f5a35c": {
+    "group": "953fe63663f5a35c",
+    "split": "train",
+    "suite": "gpqa"
+  },
+  "954c36d0a3e5a9b0": {
+    "group": "954c36d0a3e5a9b0",
+    "split": "train",
+    "suite": "long_context"
+  },
+  "96bd0d781683c1b2": {
+    "group": "96bd0d781683c1b2",
+    "split": "train",
+    "suite": "mode_advantage_hard"
+  },
+  "971ce7f89f2f06e8": {
+    "group": "971ce7f89f2f06e8",
+    "split": "train",
+    "suite": "vl"
+  },
+  "97f28d2164e0040c": {
+    "group": "97f28d2164e0040c",
+    "split": "calibration",
+    "suite": "long_context"
+  },
+  "9835de64ecfa889a": {
+    "group": "9835de64ecfa889a",
+    "split": "test",
+    "suite": "bigcodebench"
+  },
+  "98636f4b5aeddca0": {
+    "group": "98636f4b5aeddca0",
+    "split": "calibration",
+    "suite": "math"
+  },
+  "9873d3032c621807": {
+    "group": "9873d3032c621807",
+    "split": "train",
+    "suite": "coder"
+  },
+  "98a01ce3ff24ec55": {
+    "group": "98a01ce3ff24ec55",
+    "split": "test",
+    "suite": "debugbench"
+  },
+  "99326fb6be013414": {
+    "group": "99326fb6be013414",
+    "split": "train",
+    "suite": "mode_advantage"
+  },
+  "994e43d98e6953b9": {
+    "group": "994e43d98e6953b9",
+    "split": "test",
+    "suite": "general"
+  },
+  "99edbbb249b9620d": {
+    "group": "99edbbb249b9620d",
+    "split": "calibration",
+    "suite": "hotpotqa"
+  },
+  "9aab16889a070249": {
+    "group": "9aab16889a070249",
+    "split": "train",
+    "suite": "long_context"
+  },
+  "9abcbe5f824aeb9b": {
+    "group": "9abcbe5f824aeb9b",
+    "split": "train",
+    "suite": "mode_advantage"
+  },
+  "9b70f4d1f08237c7": {
+    "group": "9b70f4d1f08237c7",
+    "split": "train",
+    "suite": "simpleqa"
+  },
+  "9bc437d78cb51eba": {
+    "group": "9bc437d78cb51eba",
+    "split": "train",
+    "suite": "simpleqa"
+  },
+  "9c0911b87c71c353": {
+    "group": "9c0911b87c71c353",
+    "split": "calibration",
+    "suite": "livecodebench"
+  },
+  "9c9a99e78789fd35": {
+    "group": "9c9a99e78789fd35",
+    "split": "calibration",
+    "suite": "skill_transfer"
+  },
+  "9d793c207b5e245b": {
+    "group": "9d793c207b5e245b",
+    "split": "train",
+    "suite": "hotpotqa"
+  },
+  "9d9b6f76c7231b9c": {
+    "group": "9d9b6f76c7231b9c",
+    "split": "train",
+    "suite": "long_context"
+  },
+  "9e9011c5f017481b": {
+    "group": "9e9011c5f017481b",
+    "split": "test",
+    "suite": "general"
+  },
+  "9f3e99e615d7bbaa": {
+    "group": "9f3e99e615d7bbaa",
+    "split": "train",
+    "suite": "simpleqa"
+  },
+  "9f53b99790658c4c": {
+    "group": "9f53b99790658c4c",
+    "split": "train",
+    "suite": "livecodebench"
+  },
+  "a02d32d82be3a8ff": {
+    "group": "a02d32d82be3a8ff",
+    "split": "train",
+    "suite": "debugbench"
+  },
+  "a1a80f9016185257": {
+    "group": "a1a80f9016185257",
+    "split": "train",
+    "suite": "mode_advantage_hard"
+  },
+  "a24cfa94a8863bd8": {
+    "group": "a24cfa94a8863bd8",
+    "split": "test",
+    "suite": "mode_advantage_hard"
+  },
+  "a2cafede27c0264b": {
+    "group": "a2cafede27c0264b",
+    "split": "train",
+    "suite": "long_context"
+  },
+  "a2e2ecc9b3129580": {
+    "group": "a2e2ecc9b3129580",
+    "split": "train",
+    "suite": "livecodebench"
+  },
+  "a2f3796ff16570d1": {
+    "group": "a2f3796ff16570d1",
+    "split": "test",
+    "suite": "mode_advantage"
+  },
+  "a3546682833f2a43": {
+    "group": "a3546682833f2a43",
+    "split": "test",
+    "suite": "thinking"
+  },
+  "a3625b7b2a995927": {
+    "group": "a3625b7b2a995927",
+    "split": "calibration",
+    "suite": "vl"
+  },
+  "a3a4c549ef2279bd": {
+    "group": "a3a4c549ef2279bd",
+    "split": "calibration",
+    "suite": "instruction_precision"
+  },
+  "a408c344bc9399e0": {
+    "group": "a408c344bc9399e0",
+    "split": "test",
+    "suite": "simpleqa"
+  },
+  "a425fc23896921a2": {
+    "group": "a425fc23896921a2",
+    "split": "train",
+    "suite": "gpqa"
+  },
+  "a4a2a96529b0f01b": {
+    "group": "a4a2a96529b0f01b",
+    "split": "calibration",
+    "suite": "general"
+  },
+  "a642da9962237fe7": {
+    "group": "a642da9962237fe7",
+    "split": "train",
+    "suite": "instruction_precision"
+  },
+  "a787f4cd764a5884": {
+    "group": "a787f4cd764a5884",
+    "split": "train",
+    "suite": "coder"
+  },
+  "a78c48b8e4cbe06c": {
+    "group": "a78c48b8e4cbe06c",
+    "split": "calibration",
+    "suite": "bigcodebench"
+  },
+  "a84b07fcd97a521c": {
+    "group": "a84b07fcd97a521c",
+    "split": "calibration",
+    "suite": "math"
+  },
+  "a8e53388548e2044": {
+    "group": "a8e53388548e2044",
+    "split": "train",
+    "suite": "cruxeval"
+  },
+  "a8fb3f832d61767e": {
+    "group": "a8fb3f832d61767e",
+    "split": "train",
+    "suite": "simpleqa"
+  },
+  "a97b1a2f1b0d482b": {
+    "group": "a97b1a2f1b0d482b",
+    "split": "train",
+    "suite": "hotpotqa"
+  },
+  "aa2494b3c016a6d2": {
+    "group": "aa2494b3c016a6d2",
+    "split": "train",
+    "suite": "general"
+  },
+  "ab22f48eec64da93": {
+    "group": "ab22f48eec64da93",
+    "split": "calibration",
+    "suite": "mode_advantage"
+  },
+  "ab7fc88283b6a7bb": {
+    "group": "ab7fc88283b6a7bb",
+    "split": "train",
+    "suite": "general"
+  },
+  "ac22a72e34b314b6": {
+    "group": "ac22a72e34b314b6",
+    "split": "train",
+    "suite": "gpqa"
+  },
+  "ac3c1c8a8f0f6c14": {
+    "group": "ac3c1c8a8f0f6c14",
+    "split": "test",
+    "suite": "debugbench"
+  },
+  "ad2092b64458409d": {
+    "group": "ad2092b64458409d",
+    "split": "train",
+    "suite": "math"
+  },
+  "ad5ac7b348a8f314": {
+    "group": "ad5ac7b348a8f314",
+    "split": "train",
+    "suite": "mode_advantage_hard"
+  },
+  "adc135c66e0a2732": {
+    "group": "adc135c66e0a2732",
+    "split": "train",
+    "suite": "simpleqa"
+  },
+  "adc924be9d5ebd7b": {
+    "group": "adc924be9d5ebd7b",
+    "split": "calibration",
+    "suite": "coder"
+  },
+  "ae3a0aeea9d5a2b0": {
+    "group": "ae3a0aeea9d5a2b0",
+    "split": "train",
+    "suite": "livecodebench"
+  },
+  "ae3fd23cea340585": {
+    "group": "ae3fd23cea340585",
+    "split": "test",
+    "suite": "vl"
+  },
+  "aea5b0f0651ce4b2": {
+    "group": "aea5b0f0651ce4b2",
+    "split": "train",
+    "suite": "hotpotqa"
+  },
+  "aedd8e75d886baae": {
+    "group": "aedd8e75d886baae",
+    "split": "train",
+    "suite": "vl"
+  },
+  "aeeb5e4e08ef8545": {
+    "group": "aeeb5e4e08ef8545",
+    "split": "train",
+    "suite": "coder"
+  },
+  "af0b281bd84a3002": {
+    "group": "af0b281bd84a3002",
+    "split": "train",
+    "suite": "coder"
+  },
+  "af91f3cec298e9ef": {
+    "group": "af91f3cec298e9ef",
+    "split": "test",
+    "suite": "vl"
+  },
+  "b0b83854de59edfb": {
+    "group": "b0b83854de59edfb",
+    "split": "calibration",
+    "suite": "mode_advantage_hard"
+  },
+  "b19b0bd35b96932a": {
+    "group": "b19b0bd35b96932a",
+    "split": "train",
+    "suite": "math"
+  },
+  "b21d7e3248cbc3f0": {
+    "group": "b21d7e3248cbc3f0",
+    "split": "calibration",
+    "suite": "math"
+  },
+  "b2cea4a0850a47dd": {
+    "group": "b2cea4a0850a47dd",
+    "split": "train",
+    "suite": "vl"
+  },
+  "b32f5dec14bb79d9": {
+    "group": "b32f5dec14bb79d9",
+    "split": "train",
+    "suite": "bigcodebench"
+  },
+  "b3f1f46b1c01d13f": {
+    "group": "b3f1f46b1c01d13f",
+    "split": "train",
+    "suite": "skill_transfer"
+  },
+  "b3fb59f0bf312453": {
+    "group": "b3fb59f0bf312453",
+    "split": "test",
+    "suite": "general"
+  },
+  "b3fcb2963f72184a": {
+    "group": "b3fcb2963f72184a",
+    "split": "calibration",
+    "suite": "mode_advantage"
+  },
+  "b498e77bb685385c": {
+    "group": "b498e77bb685385c",
+    "split": "calibration",
+    "suite": "hotpotqa"
+  },
+  "b4a458c22ef0d22f": {
+    "group": "b4a458c22ef0d22f",
+    "split": "train",
+    "suite": "debugbench"
+  },
+  "b4c32465870d9fbc": {
+    "group": "b4c32465870d9fbc",
+    "split": "test",
+    "suite": "gpqa"
+  },
+  "b4d51de4494490e2": {
+    "group": "b4d51de4494490e2",
+    "split": "train",
+    "suite": "livecodebench"
+  },
+  "b4fb09889da61a5b": {
+    "group": "b4fb09889da61a5b",
+    "split": "train",
+    "suite": "thinking"
+  },
+  "b6337bd2ff9f7010": {
+    "group": "b6337bd2ff9f7010",
+    "split": "train",
+    "suite": "agentic"
+  },
+  "b6a60ad2f3528a51": {
+    "group": "b6a60ad2f3528a51",
+    "split": "train",
+    "suite": "math"
+  },
+  "b88ce2d7dcc2f496": {
+    "group": "b88ce2d7dcc2f496",
+    "split": "test",
+    "suite": "math"
+  },
+  "b8c968ac40d890fa": {
+    "group": "b8c968ac40d890fa",
+    "split": "train",
+    "suite": "bigcodebench"
+  },
+  "b9c800c832b2b325": {
+    "group": "b9c800c832b2b325",
+    "split": "train",
+    "suite": "thinking"
+  },
+  "b9f6c9feece8a114": {
+    "group": "b9f6c9feece8a114",
+    "split": "calibration",
+    "suite": "instruction_precision"
+  },
+  "bafa142cfdf4f7df": {
+    "group": "bafa142cfdf4f7df",
+    "split": "train",
+    "suite": "long_context"
+  },
+  "bb2f2309950a5a6c": {
+    "group": "bb2f2309950a5a6c",
+    "split": "test",
+    "suite": "thinking"
+  },
+  "bbbee7984d9533e9": {
+    "group": "bbbee7984d9533e9",
+    "split": "train",
+    "suite": "general"
+  },
+  "bbf51b4904223fe9": {
+    "group": "bbf51b4904223fe9",
+    "split": "calibration",
+    "suite": "gpqa"
+  },
+  "bd16a929e4ce5939": {
+    "group": "bd16a929e4ce5939",
+    "split": "train",
+    "suite": "agentic"
+  },
+  "bd78b3f42b26587e": {
+    "group": "bd78b3f42b26587e",
+    "split": "train",
+    "suite": "livecodebench"
+  },
+  "bdc8f69d3d0cd8c3": {
+    "group": "bdc8f69d3d0cd8c3",
+    "split": "test",
+    "suite": "simpleqa"
+  },
+  "bf968bda1ad69011": {
+    "group": "bf968bda1ad69011",
+    "split": "train",
+    "suite": "gpqa"
+  },
+  "c0667aa0ffd943e2": {
+    "group": "c0667aa0ffd943e2",
+    "split": "calibration",
+    "suite": "vl"
+  },
+  "c1168b8178a55802": {
+    "group": "c1168b8178a55802",
+    "split": "test",
+    "suite": "mode_advantage_hard"
+  },
+  "c1e8967df4aff161": {
+    "group": "c1e8967df4aff161",
+    "split": "train",
+    "suite": "mode_advantage_hard"
+  },
+  "c2064288ee4e8b1e": {
+    "group": "c2064288ee4e8b1e",
+    "split": "train",
+    "suite": "instruction_precision"
+  },
+  "c2cf32da0f908794": {
+    "group": "c2cf32da0f908794",
+    "split": "train",
+    "suite": "coder"
+  },
+  "c43695ce2d204614": {
+    "group": "c43695ce2d204614",
+    "split": "test",
+    "suite": "long_context"
+  },
+  "c45eba9cde8dd6af": {
+    "group": "c45eba9cde8dd6af",
+    "split": "calibration",
+    "suite": "livecodebench"
+  },
+  "c5e03d1817884f19": {
+    "group": "c5e03d1817884f19",
+    "split": "train",
+    "suite": "skill_transfer"
+  },
+  "c676b0648527b5e5": {
+    "group": "c676b0648527b5e5",
+    "split": "train",
+    "suite": "cruxeval"
+  },
+  "c7cb8b19e5c9cad4": {
+    "group": "c7cb8b19e5c9cad4",
+    "split": "calibration",
+    "suite": "thinking"
+  },
+  "c895647b2755c7d8": {
+    "group": "c895647b2755c7d8",
+    "split": "test",
+    "suite": "math"
+  },
+  "c8c1a9a0e26a67d2": {
+    "group": "c8c1a9a0e26a67d2",
+    "split": "train",
+    "suite": "vl"
+  },
+  "c9291d2630ef0708": {
+    "group": "c9291d2630ef0708",
+    "split": "calibration",
+    "suite": "mode_advantage"
+  },
+  "c935f5d6e9b872e3": {
+    "group": "c935f5d6e9b872e3",
+    "split": "calibration",
+    "suite": "livecodebench"
+  },
+  "c9ee35a7d964281b": {
+    "group": "c9ee35a7d964281b",
+    "split": "train",
+    "suite": "skill_transfer"
+  },
+  "cac053030babe9cb": {
+    "group": "cac053030babe9cb",
+    "split": "calibration",
+    "suite": "simpleqa"
+  },
+  "cadfd90e4d7503fc": {
+    "group": "cadfd90e4d7503fc",
+    "split": "test",
+    "suite": "gpqa"
+  },
+  "cbd7439b42207517": {
+    "group": "cbd7439b42207517",
+    "split": "train",
+    "suite": "debugbench"
+  },
+  "cc2f1e51244f361a": {
+    "group": "cc2f1e51244f361a",
+    "split": "train",
+    "suite": "cruxeval"
+  },
+  "cc54583685c3da42": {
+    "group": "cc54583685c3da42",
+    "split": "train",
+    "suite": "gpqa"
+  },
+  "ccc299c324439201": {
+    "group": "ccc299c324439201",
+    "split": "train",
+    "suite": "hotpotqa"
+  },
+  "ccc68ceb06d7007f": {
+    "group": "ccc68ceb06d7007f",
+    "split": "calibration",
+    "suite": "vl"
+  },
+  "ccf20433a9f2a4fa": {
+    "group": "ccf20433a9f2a4fa",
+    "split": "test",
+    "suite": "general"
+  },
+  "cd62f9984c12c674": {
+    "group": "cd62f9984c12c674",
+    "split": "calibration",
+    "suite": "simpleqa"
+  },
+  "cde52aa850088f98": {
+    "group": "cde52aa850088f98",
+    "split": "calibration",
+    "suite": "gpqa"
+  },
+  "ce1be7e1ca4d866a": {
+    "group": "ce1be7e1ca4d866a",
+    "split": "test",
+    "suite": "math"
+  },
+  "ce4797a676bd62aa": {
+    "group": "ce4797a676bd62aa",
+    "split": "train",
+    "suite": "cruxeval"
+  },
+  "cea70815017afd43": {
+    "group": "cea70815017afd43",
+    "split": "train",
+    "suite": "bigcodebench"
+  },
+  "d08327781efeaa0a": {
+    "group": "d08327781efeaa0a",
+    "split": "train",
+    "suite": "math"
+  },
+  "d148c21dc12a0474": {
+    "group": "d148c21dc12a0474",
+    "split": "train",
+    "suite": "cruxeval"
+  },
+  "d1ccbb20857ebdd2": {
+    "group": "d1ccbb20857ebdd2",
+    "split": "train",
+    "suite": "coder"
+  },
+  "d2074bd384447447": {
+    "group": "d2074bd384447447",
+    "split": "test",
+    "suite": "cruxeval"
+  },
+  "d219ea658b376e13": {
+    "group": "d219ea658b376e13",
+    "split": "train",
+    "suite": "skill_transfer"
+  },
+  "d2d91b6f34ae6e8a": {
+    "group": "d2d91b6f34ae6e8a",
+    "split": "calibration",
+    "suite": "bigcodebench"
+  },
+  "d2e27c8cda5ba302": {
+    "group": "d2e27c8cda5ba302",
+    "split": "calibration",
+    "suite": "instruction_precision"
+  },
+  "d337f15cebf1b14e": {
+    "group": "d337f15cebf1b14e",
+    "split": "train",
+    "suite": "general"
+  },
+  "d4e7c7b24ce8eb34": {
+    "group": "d4e7c7b24ce8eb34",
+    "split": "test",
+    "suite": "simpleqa"
+  },
+  "d57dcea301d12228": {
+    "group": "d57dcea301d12228",
+    "split": "calibration",
+    "suite": "skill_transfer"
+  },
+  "d602a211056789dc": {
+    "group": "d602a211056789dc",
+    "split": "train",
+    "suite": "mode_advantage"
+  },
+  "d617875aabd04819": {
+    "group": "d617875aabd04819",
+    "split": "train",
+    "suite": "math"
+  },
+  "d7521e156137f2d7": {
+    "group": "d7521e156137f2d7",
+    "split": "train",
+    "suite": "math"
+  },
+  "d786c347fcba11c7": {
+    "group": "d786c347fcba11c7",
+    "split": "train",
+    "suite": "agentic"
+  },
+  "d799da5da287e3cd": {
+    "group": "d799da5da287e3cd",
+    "split": "calibration",
+    "suite": "hotpotqa"
+  },
+  "d7b37a1f4d564374": {
+    "group": "d7b37a1f4d564374",
+    "split": "calibration",
+    "suite": "thinking"
+  },
+  "d89c4a7e8e476005": {
+    "group": "d89c4a7e8e476005",
+    "split": "calibration",
+    "suite": "vl"
+  },
+  "d8bedb5ecc1dccfe": {
+    "group": "d8bedb5ecc1dccfe",
+    "split": "calibration",
+    "suite": "general"
+  },
+  "d8d112248983da81": {
+    "group": "d8d112248983da81",
+    "split": "train",
+    "suite": "general"
+  },
+  "d930e48de7399921": {
+    "group": "d930e48de7399921",
+    "split": "train",
+    "suite": "gpqa"
+  },
+  "d9413e19e46cb035": {
+    "group": "d9413e19e46cb035",
+    "split": "test",
+    "suite": "instruction_precision"
+  },
+  "d9b24b0ec6eaff2a": {
+    "group": "d9b24b0ec6eaff2a",
+    "split": "train",
+    "suite": "simpleqa"
+  },
+  "d9cde23e982d11f1": {
+    "group": "d9cde23e982d11f1",
+    "split": "calibration",
+    "suite": "simpleqa"
+  },
+  "da2bd48bea8b06bf": {
+    "group": "da2bd48bea8b06bf",
+    "split": "calibration",
+    "suite": "instruction_precision"
+  },
+  "daf9cda5f5faa274": {
+    "group": "daf9cda5f5faa274",
+    "split": "train",
+    "suite": "long_context"
+  },
+  "db105ec7048ca1c1": {
+    "group": "db105ec7048ca1c1",
+    "split": "train",
+    "suite": "instruction_precision"
+  },
+  "db22f52ffc325d7c": {
+    "group": "db22f52ffc325d7c",
+    "split": "calibration",
+    "suite": "skill_transfer"
+  },
+  "db55151abdfd3901": {
+    "group": "db55151abdfd3901",
+    "split": "test",
+    "suite": "mode_advantage"
+  },
+  "db5f5c88749d18d6": {
+    "group": "db5f5c88749d18d6",
+    "split": "train",
+    "suite": "coder"
+  },
+  "db658ee61f3e7d94": {
+    "group": "db658ee61f3e7d94",
+    "split": "train",
+    "suite": "thinking"
+  },
+  "db796992a8927142": {
+    "group": "db796992a8927142",
+    "split": "train",
+    "suite": "gpqa"
+  },
+  "dcaa0400dc8ff492": {
+    "group": "dcaa0400dc8ff492",
+    "split": "train",
+    "suite": "general"
+  },
+  "dd269f70d7f6875e": {
+    "group": "dd269f70d7f6875e",
+    "split": "train",
+    "suite": "agentic"
+  },
+  "ddaee225400595ba": {
+    "group": "ddaee225400595ba",
+    "split": "train",
+    "suite": "bigcodebench"
+  },
+  "ddc438ea13bdf72f": {
+    "group": "ddc438ea13bdf72f",
+    "split": "train",
+    "suite": "long_context"
+  },
+  "ddd38e2545e0dcea": {
+    "group": "ddd38e2545e0dcea",
+    "split": "train",
+    "suite": "coder"
+  },
+  "ddf574717c43e841": {
+    "group": "ddf574717c43e841",
+    "split": "train",
+    "suite": "livecodebench"
+  },
+  "de02a3a60ec87139": {
+    "group": "de02a3a60ec87139",
+    "split": "train",
+    "suite": "gpqa"
+  },
+  "de8dccba37b4b9dc": {
+    "group": "de8dccba37b4b9dc",
+    "split": "train",
+    "suite": "coder"
+  },
+  "debf5829c0737826": {
+    "group": "debf5829c0737826",
+    "split": "calibration",
+    "suite": "hotpotqa"
+  },
+  "df32ebc4afabf070": {
+    "group": "df32ebc4afabf070",
+    "split": "train",
+    "suite": "skill_transfer"
+  },
+  "df3dacff16aea4db": {
+    "group": "df3dacff16aea4db",
+    "split": "test",
+    "suite": "simpleqa"
+  },
+  "df99f0d49d96dbce": {
+    "group": "df99f0d49d96dbce",
+    "split": "calibration",
+    "suite": "simpleqa"
+  },
+  "dfc1b02ddb31dd80": {
+    "group": "dfc1b02ddb31dd80",
+    "split": "train",
+    "suite": "mode_advantage"
+  },
+  "e0140632b2d8bcd2": {
+    "group": "e0140632b2d8bcd2",
+    "split": "calibration",
+    "suite": "gpqa"
+  },
+  "e1343cb46445d125": {
+    "group": "e1343cb46445d125",
+    "split": "train",
+    "suite": "skill_transfer"
+  },
+  "e1720bfeca17f718": {
+    "group": "e1720bfeca17f718",
+    "split": "train",
+    "suite": "hotpotqa"
+  },
+  "e1a429e0c32fdb45": {
+    "group": "e1a429e0c32fdb45",
+    "split": "test",
+    "suite": "mode_advantage"
+  },
+  "e3386ed0d1c6dbd5": {
+    "group": "e3386ed0d1c6dbd5",
+    "split": "train",
+    "suite": "thinking"
+  },
+  "e35c8cdf07ae4c79": {
+    "group": "e35c8cdf07ae4c79",
+    "split": "test",
+    "suite": "agentic"
+  },
+  "e3ea3250d66b5346": {
+    "group": "e3ea3250d66b5346",
+    "split": "train",
+    "suite": "coder"
+  },
+  "e442d6860adfff30": {
+    "group": "e442d6860adfff30",
+    "split": "calibration",
+    "suite": "bigcodebench"
+  },
+  "e45d6e7deb84c050": {
+    "group": "e45d6e7deb84c050",
+    "split": "train",
+    "suite": "mode_advantage_hard"
+  },
+  "e547f4a779a5fb75": {
+    "group": "e547f4a779a5fb75",
+    "split": "test",
+    "suite": "coder"
+  },
+  "e5effd54a3abd93f": {
+    "group": "e5effd54a3abd93f",
+    "split": "train",
+    "suite": "livecodebench"
+  },
+  "e606ea1eabf676f0": {
+    "group": "e606ea1eabf676f0",
+    "split": "train",
+    "suite": "math"
+  },
+  "e660adc20b928236": {
+    "group": "e660adc20b928236",
+    "split": "calibration",
+    "suite": "math"
+  },
+  "e6a02681c29d2b71": {
+    "group": "e6a02681c29d2b71",
+    "split": "test",
+    "suite": "vl"
+  },
+  "e6a3d58ff30671f0": {
+    "group": "e6a3d58ff30671f0",
+    "split": "calibration",
+    "suite": "math"
+  },
+  "e6ad215cbf94699f": {
+    "group": "e6ad215cbf94699f",
+    "split": "train",
+    "suite": "bigcodebench"
+  },
+  "e71eec75c0359f90": {
+    "group": "e71eec75c0359f90",
+    "split": "train",
+    "suite": "gpqa"
+  },
+  "e7688f8b8ef4fca0": {
+    "group": "e7688f8b8ef4fca0",
+    "split": "calibration",
+    "suite": "agentic"
+  },
+  "e7c50078e63a3dbf": {
+    "group": "e7c50078e63a3dbf",
+    "split": "train",
+    "suite": "general"
+  },
+  "e8e90973b15b759f": {
+    "group": "e8e90973b15b759f",
+    "split": "train",
+    "suite": "cruxeval"
+  },
+  "e9410d45481b6554": {
+    "group": "e9410d45481b6554",
+    "split": "test",
+    "suite": "livecodebench"
+  },
+  "e96d623a67adeba2": {
+    "group": "e96d623a67adeba2",
+    "split": "train",
+    "suite": "mode_advantage"
+  },
+  "e9a3ebc20246d5c8": {
+    "group": "e9a3ebc20246d5c8",
+    "split": "train",
+    "suite": "mode_advantage_hard"
+  },
+  "ebc29fc4fd42756f": {
+    "group": "ebc29fc4fd42756f",
+    "split": "train",
+    "suite": "long_context"
+  },
+  "ec8561682bb16e02": {
+    "group": "ec8561682bb16e02",
+    "split": "train",
+    "suite": "coder"
+  },
+  "eca530ad5826ec80": {
+    "group": "eca530ad5826ec80",
+    "split": "train",
+    "suite": "debugbench"
+  },
+  "ed3efd4b1045cd71": {
+    "group": "ed3efd4b1045cd71",
+    "split": "train",
+    "suite": "general"
+  },
+  "ef58c20f9fa9cdc9": {
+    "group": "ef58c20f9fa9cdc9",
+    "split": "train",
+    "suite": "thinking"
+  },
+  "ef931ea2c0adbf03": {
+    "group": "ef931ea2c0adbf03",
+    "split": "train",
+    "suite": "instruction_precision"
+  },
+  "ef93baa5a2c4f5b9": {
+    "group": "ef93baa5a2c4f5b9",
+    "split": "calibration",
+    "suite": "thinking"
+  },
+  "efed38cd2cb352a4": {
+    "group": "efed38cd2cb352a4",
+    "split": "train",
+    "suite": "cruxeval"
+  },
+  "f0aca0ea43039750": {
+    "group": "f0aca0ea43039750",
+    "split": "train",
+    "suite": "skill_transfer"
+  },
+  "f0c648a598b94f70": {
+    "group": "f0c648a598b94f70",
+    "split": "test",
+    "suite": "cruxeval"
+  },
+  "f1bde49c78242ee8": {
+    "group": "f1bde49c78242ee8",
+    "split": "test",
+    "suite": "hotpotqa"
+  },
+  "f1dbd64f5ea2a052": {
+    "group": "f1dbd64f5ea2a052",
+    "split": "test",
+    "suite": "instruction_precision"
+  },
+  "f1fb2c8fe1eaec4d": {
+    "group": "f1fb2c8fe1eaec4d",
+    "split": "train",
+    "suite": "agentic"
+  },
+  "f250065e1d2e9765": {
+    "group": "f250065e1d2e9765",
+    "split": "train",
+    "suite": "general"
+  },
+  "f26f1812913e9b08": {
+    "group": "f26f1812913e9b08",
+    "split": "test",
+    "suite": "hotpotqa"
+  },
+  "f3d3cb7f80507b9a": {
+    "group": "f3d3cb7f80507b9a",
+    "split": "train",
+    "suite": "general"
+  },
+  "f47ca204a841a814": {
+    "group": "f47ca204a841a814",
+    "split": "test",
+    "suite": "livecodebench"
+  },
+  "f4fb5f96660d833f": {
+    "group": "f4fb5f96660d833f",
+    "split": "test",
+    "suite": "bigcodebench"
+  },
+  "f5d3abebed24e1b9": {
+    "group": "f5d3abebed24e1b9",
+    "split": "train",
+    "suite": "general"
+  },
+  "f61c5ee2b3edd7d8": {
+    "group": "f61c5ee2b3edd7d8",
+    "split": "train",
+    "suite": "instruction_precision"
+  },
+  "f77b231398a4b227": {
+    "group": "88d9774b3e2c93c2",
+    "split": "train",
+    "suite": "debugbench"
+  },
+  "f7c2ec12073a8b87": {
+    "group": "f7c2ec12073a8b87",
+    "split": "train",
+    "suite": "bigcodebench"
+  },
+  "f888d44ee00d396c": {
+    "group": "f888d44ee00d396c",
+    "split": "test",
+    "suite": "mode_advantage"
+  },
+  "f8fc0d3383888ec8": {
+    "group": "f8fc0d3383888ec8",
+    "split": "calibration",
+    "suite": "hotpotqa"
+  },
+  "f9323a3211959d91": {
+    "group": "f9323a3211959d91",
+    "split": "train",
+    "suite": "mode_advantage_hard"
+  },
+  "f9644afe981a99d4": {
+    "group": "f9644afe981a99d4",
+    "split": "train",
+    "suite": "gpqa"
+  },
+  "fa1a185ce3ca6ff2": {
+    "group": "fa1a185ce3ca6ff2",
+    "split": "test",
+    "suite": "debugbench"
+  },
+  "fa2cc6fba1758212": {
+    "group": "fa2cc6fba1758212",
+    "split": "calibration",
+    "suite": "cruxeval"
+  },
+  "fad0c13253dd3367": {
+    "group": "fad0c13253dd3367",
+    "split": "train",
+    "suite": "general"
+  },
+  "fb8bee2e727f1568": {
+    "group": "fb8bee2e727f1568",
+    "split": "calibration",
+    "suite": "mode_advantage_hard"
+  },
+  "fc24608260adca5a": {
+    "group": "fc24608260adca5a",
+    "split": "test",
+    "suite": "cruxeval"
+  },
+  "fc4ec46a830c3408": {
+    "group": "fc4ec46a830c3408",
+    "split": "train",
+    "suite": "simpleqa"
+  },
+  "fc91910d7e63a383": {
+    "group": "fc91910d7e63a383",
+    "split": "train",
+    "suite": "vl"
+  },
+  "fcee17826388621e": {
+    "group": "fcee17826388621e",
+    "split": "train",
+    "suite": "coder"
+  },
+  "fd243d2ad2d5d62c": {
+    "group": "fd243d2ad2d5d62c",
+    "split": "train",
+    "suite": "general"
+  },
+  "fd46fa68e1755ae9": {
+    "group": "fd46fa68e1755ae9",
+    "split": "test",
+    "suite": "livecodebench"
+  },
+  "fd5c416bc29b29cf": {
+    "group": "fd5c416bc29b29cf",
+    "split": "train",
+    "suite": "hotpotqa"
+  },
+  "ff3f7f1e4a037d67": {
+    "group": "ff3f7f1e4a037d67",
+    "split": "train",
+    "suite": "mode_advantage_hard"
+  },
+  "ffd202fbda836e2a": {
+    "group": "ffd202fbda836e2a",
+    "split": "train",
+    "suite": "instruction_precision"
+  }
+}

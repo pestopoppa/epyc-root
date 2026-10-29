@@ -1,0 +1,40 @@
+{
+  "calibration_hgb_observed_rmse": 0.42089853709244784,
+  "mlp_epochs": 300,
+  "quality_floor": null,
+  "reason": "no configured serving quality-rate floor found; unconstrained argmax is descriptive only; policy abstains",
+  "support": {
+    "architect_general": {
+      "calibration_groups": 10,
+      "minimum_evidence_met": false,
+      "train_groups": 17
+    },
+    "coder_escalation": {
+      "calibration_groups": 14,
+      "minimum_evidence_met": true,
+      "train_groups": 44
+    },
+    "frontdoor": {
+      "calibration_groups": 74,
+      "minimum_evidence_met": true,
+      "train_groups": 225
+    },
+    "ingest_long_context": {
+      "calibration_groups": 1,
+      "minimum_evidence_met": false,
+      "train_groups": 8
+    },
+    "worker_general": {
+      "calibration_groups": 31,
+      "minimum_evidence_met": true,
+      "train_groups": 82
+    },
+    "worker_vision": {
+      "calibration_groups": 16,
+      "minimum_evidence_met": true,
+      "train_groups": 43
+    }
+  },
+  "threshold": null,
+  "training_seconds": 3.200656638946384
+}

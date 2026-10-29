@@ -1,0 +1,8 @@
+[
+  "frontdoor",
+  "coder_escalation",
+  "worker_general",
+  "architect_general",
+  "ingest_long_context",
+  "worker_vision"
+]
