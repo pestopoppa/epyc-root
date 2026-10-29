@@ -3745,3 +3745,7 @@ These are notes only. The adapters README is not edited here; the owner applies 
 ## PAW-3 prospective own-slice capture — 2026-10-29
 
 - [ ] **VB-PAW3-OWNSLICE-WIRE — capture the FuzzyBench own-slice paired abstention record at write time.** Bind the predeclaration, frozen cases, actual compiler and binary/semantic bundles, runtime model and libraries, grant/CPU identity, raw outputs and native first-token logits, all failure/invalid/unknown outcomes, and terminal disposition; project the verified native record through the existing PAW shared `ClaimTuple`/`grade()` carrier. Verify tamper/refusal controls and the planning-context canary before calling the loop wired; do not invent a grading ladder or retrofit a measurement warrant.
+
+## PAW-3 paraphrase own-slice capture — 2026-10-29
+
+- [ ] **VB-PAW3-PARAPHRASE-WIRE — capture the FuzzyBench paraphrase own-slice paired abstention record at write time.** Bind predeclaration, frozen cases, compiler and binary/semantic bundles, runtime model and libraries, grant/CPU identity, raw outputs and native first-token logits, all failure/invalid/unknown outcomes, and terminal disposition; project the verified native record through existing PAW shared `ClaimTuple`/`grade()`. Verify tamper/refusal controls and the planning-context canary before calling the loop wired; do not invent a grading ladder or retrofit a measurement warrant.

@@ -1,0 +1,42 @@
+{
+  "source_plan_sha256": "2ef8ac0b0c7ee0414c85c8086022fcabaead65892b0c7d4b2b91014aef8d2aae",
+  "selection": "pre-existing deterministic task index 4 (paraphrase), eight preselected cases; same cases in both arms; no redraw",
+  "task_spec_sha256": "002f8c340ecad97cdf31f37318d9c222f37d7ea4a8336bb6512de28a26aa64a6",
+  "case_pins": [
+    {
+      "source_row": 10399,
+      "case_sha256": "03b92f572f46c0ede0dfc4adf2ec7f1686a9ac93c8a7159835fa89f53be966a9"
+    },
+    {
+      "source_row": 10400,
+      "case_sha256": "051aa7a387f9c2bbf9234d54a46f784c88df9baf371ed4477ecfe2d7e82c69dc"
+    },
+    {
+      "source_row": 10398,
+      "case_sha256": "7b0944b6caced65e91deef60c9c7ecff4906e4bebf4d6cf269f8e16a170c574b"
+    },
+    {
+      "source_row": 10397,
+      "case_sha256": "9a7164fb264d7f7feb58af5f6f8713394b45e16992fe6ed07945a2b06ecdade7"
+    },
+    {
+      "source_row": 10396,
+      "case_sha256": "af455ce25a36814aa4046e4b0384ff26c2e425ebf0f8d9e2fc54a5a34ea25a1c"
+    },
+    {
+      "source_row": 10401,
+      "case_sha256": "b0215c3345f9ce1d1454bdca18c4d7612db79e7704cd60a5a625a8c629159e2b"
+    },
+    {
+      "source_row": 10395,
+      "case_sha256": "b0827b90868fa45f8ff0a43b3f5601f63311df9177c3707f4f44df47f13f3839"
+    },
+    {
+      "source_row": 10394,
+      "case_sha256": "b6842762a57f4e36a294eed74582dac29a06267ab709379eb0776259d40a98f7"
+    }
+  ],
+  "protocol": "Compile separate binary and semantic-unsure programs for the same task before evaluating. Binary labels PARAPHRASE and NOT_PARAPHRASE; semantic labels PARAPHRASE, NOT_PARAPHRASE, UNSURE. Record native two-label-normalized first-token confidence: take the maximum logit within each label space/no-space token variants, then apply a two-label softmax; retain token IDs, logits, and raw outputs, all invalid, unfinished, missing and model identities. Each case once per arm; no forced abstention. Threshold probability on binary output at 0.60,0.70,0.80,0.90,0.95,0.99.",
+  "rule": "TRANSFER_SUPPORTED iff all 16 arm/case observations complete, semantic invalid count zero, semantic decided count >= 6 of 8 and semantic decided exact-match accuracy >= 0.90; semantic unsure rate <= 0.25. Otherwise TRANSFER_NOT_SHOWN if observations complete, INCOMPLETE if any missing. Separately report binary threshold coverage and accuracy; no asserted threshold superiority on n=8. Higher decided accuracy is better; lower unsure rate is better.",
+  "declaration_sha256": "ccf406a618813e6491544995cfb0e87a0b2c4b9868be53411fab9ed3242d496d"
+}
