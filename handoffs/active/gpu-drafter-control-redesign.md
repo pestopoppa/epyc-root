@@ -125,11 +125,7 @@ does not depend on an archived parent:
   The design keeps the lane research-only until broader task-class admission and
   production-named `P-GPU-1` certification pass, and explicitly avoids IQ1_M download
   solely for DR-0 because IQ2_M already passed the strict drafter gate.
-- [ ] **DR-3 — broader K2 admission runner/package**: build the dry-run-first K2
-  admission runner and package from the DR-2 design: wider task slice, CPU-target
-  equivalence/equality checks, long-output/context bands, MI210 lease/cleanup proof,
-  frontdoor opportunity-cost measurement, and post-promotion `P-GPU-1` certification
-  hook. No live serving route or NumericSwarm surface until this passes.
+- **DR-3 — RETIRED 2026-10-28 (operator):** the 122B quant-asymmetric K2 admission lane and its unfinished certification were retired in `84dff9d39`, reaffirmed by the 2026-10-29 09:41 owner directive. This is retirement, not completion. See [INF-34 retirement record](mi210-big-model-and-acceleration-roadmap.md). Completed DR-3a–DR-3d evidence remains below.
   - [x] **DR-3a — dry-run package scaffold ✅ 2026-07-20**:
     inference-research `scripts/benchmark/dr3_quant_asym_k2_admission_prep.py`
     emits `manifest.json`, `task_packet.jsonl`, `commands.sh`, `operator_run.sh`,
@@ -163,9 +159,7 @@ does not depend on an archived parent:
     passed as observation-grade: frontdoor `93.690 -> 94.157 t/s`
     after reload (`1.005x`), DR-3 K2 active `11.701 t/s`, alpha `1.000`,
     cleanup pass, `decision_grade=false`, serving/NumericSwarm still disabled.
-  - [ ] **DR-3e — production-named P-GPU-1 certification**: after the 2026-07-20
-    v7 cutover, rerun the required GPU claims under `production-consolidated-v7`
-    before any serving route or NumericSwarm K surface.
+  - **DR-3e — RETIRED 2026-10-28 (operator):** certification for the retired 122B K2 lane is no longer an open deliverable (`84dff9d39`; owner reaffirmation 2026-10-29 09:41). No certification or serving approval is claimed; a Flash-Next successor is separate work.
 - [x] **DR-1 — economics model ✅ 2026-07-18**: break-even model recorded at
   [docs/reference/gpu-drafter-break-even-model-2026-07-18.md](../../docs/reference/gpu-drafter-break-even-model-2026-07-18.md).
   Key result: external Stage-1/2 failed despite `α=1.0`, so their blocker is
