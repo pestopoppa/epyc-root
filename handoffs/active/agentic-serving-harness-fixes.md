@@ -85,13 +85,23 @@
     - *Warm + 3 s stagger (16:05Z):* the warm requests each prefilled 56,794 tokens (104.2 s, 106.6 s) while the arms were held 246.5 s / 240.4 s; the arms' first requests then hit the cache — `cache_n` 54,751 / 56,794, prefill 8.4 s / 0.2 s, TTFT after release 9.0 s / 0.3 s. 115,641 cold-prefill tokens in 219.4 s (**−48% cold-prefill seconds**); decode with a neighbour prefilling 17.15 vs clean 20.7, estimated stall 137.9 s.
     - *Verdict:* warming moves the cold prefill off the arms' critical path (TTFT 140–282 s → 0.3–9 s) and halves cold-prefill seconds. The decode-stall comparison is NOT resolved: the warm leg overlapped workspace-ec's subagent GPU tests 16:17–16:50Z (INC-20261003-subagent-gpu-tests-in-peer-window), and the two warm requests prefilled concurrently instead of once. → UFH14-A3a.
   - [ ] **UFH14-A3a — re-measure the warm leg unperturbed, with ONE warm request.** (filed 2026-10-04) The 10-03 warm leg issued two warm requests (one per arm; 2 × 56.8k tokens) and overlapped foreign GPU work. Issue a single warm request for the shared prefix, then stagger; re-measure decode stall vs the cold leg in a coordinated GPU slot.
-    - [ ] **UFH14-A3A-DIAGNOSTIC-R2 — run the prepared descriptive capture.** The private
+    - [x] **UFH14-A3A-DIAGNOSTIC-R2 — run the prepared descriptive capture.** ✅ 2026-10-29 (run `ufh14-a3a-single-warm-r11-20261028`, successor of the r2 plan) The private
       `/mnt/raid0/llm/tmp/codex-ufh14-repair-20261028` successor passed a 78-second canonical tiny-model
       launcher smoke and a forced rc75 partial/cleanup smoke; its validated
       `/mnt/raid0/llm/tmp/compute-flags/ready/ufh14-a3a-single-warm-r2-20261028.json` remains held until
       the scheduler's full q3 admission is verified. Run the actual cold and one-warm Qwen/DFlash
       capture after admission; the tiny-model smoke is plumbing evidence, not the A3a measurement or
-      a performance verdict. [no-belief: no measurement yet]
+      a performance verdict. [belief: cc]
+      - 2026-10-29 result (diagnostic observation, rc0 `complete`, 23:41Z to 00:00Z; no predeclared threshold,
+        so no keep/reject verdict and no tick of UFH14-A3a). Frozen v10 GPU kernel, 4 slots, `kv_unified=true`,
+        fixed historical member0/member1 (56,799 prompt tokens each), one cold leg then one warm leg (n = 1 each,
+        NOT alternated, so no timing claim). Raw: `/mnt/raid0/llm/tmp/codex-ufh14-r11-successor-20261028/attempts/run-17932308737*/{cold,warm}/group/{native-group,timing-bindings}.json`.
+        - Cold, unstaggered: member0 `cache_n` 0, prefill 108.8 s, 15.3 tok/s decode; member1 `cache_n` 0, prefill 256.3 s, 23.6 tok/s. Cold prefill 365.1 s total.
+        - Warm, ONE warm request (56,794 tokens, `cache_n` 0, 94.0 s) then member0 at once and member1 at +3 s: member0 `cache_n` 56,794, 5 prompt tokens, prefill 0.17 s, first event 0.3 s, 12.7 tok/s decode. member1 got **`cache_n` 0, prefill 170.3 s, first event 170.5 s** (slot 3 "by LRU", because slot 0 holding the warmed cache was busy decoding member0). Cold prefill 264.5 s vs 365.1 s (-28%, vs -48% in the two-warm 10-03 leg).
+        - Meaning: a single warm request in a 4-slot `kv_unified` server warms only the slot it ran on. Only the arm that lands on that slot benefits; a concurrent second arm re-prefills cold. This is the opposite of the 10-03 two-warm result (both arms hit cache), so the 10-03 "-48%" does not transfer to a one-warm design. Decode tok/s differs between legs but overlaps neighbour prefill windows differently, so no decode-stall conclusion is drawn.
+        - Not verified here: q3 quiet during the legs (row claim only; no foreign-GPU sampling read by this filer).
+    - [ ] **UFH14-A3A-F1 — warm all slots or share the prefix across slots.** (filed 2026-10-29) member1's miss is slot-local. Probe (a) one warm request per distinct slot, (b) `--cache-reuse`/slot-save restore of the warmed prefix onto the second slot, or (c) delaying the second arm until member0 releases slot 0 (LCP reuse). Re-measure first-request TTFT and cold-prefill seconds for both arms. Descriptive probe first; predeclare the threshold before any keep claim. [no-belief: unrun]
+    - [ ] **UFH14-A3A-F2 — decode-stall comparison, alternated.** (filed 2026-10-29) The original A3a question (decode stall warm vs cold) is still open: r11 is n = 1 per leg, cold then warm, not ABA. Run it only after F1 picks a warmup that warms both arms, with q3 and the GPU quiet verified by sampling during the legs. [no-belief: unrun]
 - [x] **UFH14-A4.** ✅ 2026-10-04 (GPU run 2026-10-03) Compaction that keeps the prefix. Make compaction requests carry the same tools and system prefix, or compact through a separate summarization call that leaves the live prefix intact. Measure re-prefill tokens per compaction. Covers D2. Also cover opencode's task-prompt drop (D3).
   - 2026-10-03: implemented in `run3.py` + `proxy3.py`, offline-tested only. Close after a GPU run measures re-prefill tokens per compaction.
   - *Baseline from F12, 2026-10-03, wire logs.* 5 codex compactions across the 8 calls, each a cold pair at `cache_n` = 0:
