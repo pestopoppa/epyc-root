@@ -65,7 +65,7 @@
 | INF-54 | tq3 quantization evaluation | [tq3-quantization-evaluation.md](tq3-quantization-evaluation.md) | Prototype faithful ChunkKV on a fresh llama.cpp-experimental tree | — |
 | INF-56 | triattention kv selection | [triattention-kv-selection.md](triattention-kv-selection.md) | S8 — Sweep keep_ratio and layer_weights per production role; persist quality/speed/cost/reliability Pareto profiles | — |
 | INF-58 | v9 kernel per request speculative params | [v9-kernel-per-request-speculative-params.md](v9-kernel-per-request-speculative-params.md) | Implement and prospectively ratify the sealed resident promotion fast path with fresh-server fallback | — |
-| INF-59 | yarn context extension research | [yarn-context-extension-research.md](yarn-context-extension-research.md) | Native gate FINAL NOT-FAIL-underpowered (YARN-AGG-1e); extension arms (booked ~21:30Z); optional YARN-AGG-1f power | RTG-57 |
+| INF-59 | yarn context extension research | [yarn-context-extension-research.md](yarn-context-extension-research.md) | Re-plan YARN-128K-MI210 (128K items off CPU quarters); extension arms; optional YARN-AGG-1f power | RTG-57 |
 | INF-60 | model refresh | [qwen38-27b-replace-qwen36.md](qwen38-27b-replace-qwen36.md) | Q38-T7b closed; run Q38-T7a passive log read, then VB-SERVING-DF2; Q38-T10.1 gate after | — |
 | INF-61 | model refresh | [gpu-candidates-surface-qwen38-update.md](gpu-candidates-surface-qwen38-update.md) | Run a same-window n-max 4 vs 8 ABA at np≥2 before shipping the re-collected grid; then depth-sweep A4, A3, A1, FF and Laguna | INF-60 |
 | INF-73 | autokernel unified surface | [autokernel-unified-surface-program.md](autokernel-unified-surface-program.md) | LIVE GPU leg (serving-owner grant, ws58) | INF-66, INF-65, INF-70 |
