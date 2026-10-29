@@ -1,0 +1,5 @@
+# PROFILE-6 preparation checkpoint
+
+The transferred three-arm C5 profiler launcher and native binary source seals verify. Whole-host admission uses CPU 0–95 with exclusive gpu-quiet and a same-owner witness for all quarter and GPU locks. Model-free controls passed; no real model smoke or campaign ran. The full job keeps a 16 GiB output estimate, requiring 166 GiB free above the 150 GiB floor. Free space fell below the floor on 2026-10-29; no data was deleted and no reservation reduced. The native profiler has no verified aggregate write cap, so individual-file limits and two-second sampling cannot qualify a smaller smoke reservation. Existing GPU ownership was also respected. [no-belief: incomplete preparation]
+
+The native output source and existing VB-HSF5P-NEXT-TRACE-WRITE task now prospectively name PROFILE-6. Reader extension and planning-context canary remain open; no new grading ladder, old measurement warrant, attribution or production acceptance is claimed. [no-belief: prospective registration]
