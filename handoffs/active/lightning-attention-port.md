@@ -121,14 +121,18 @@ writing any new arch handler.
 
 ### Tasks
 
-- [ ] **Z9 (Z, prerequisite for G18) — write the ~30-line pure-PyTorch constant-decay simple-GLA
+- [x] **Z9 (Z, prerequisite for G18) — write the ~30-line pure-PyTorch constant-decay simple-GLA
       recurrence** to stand in for the `fla` Triton call, **so that an HF CPU numerical oracle exists
-      at all**. Today there is none: `fla.ops.simple_gla` is Triton, Triton needs a GPU stack this host
-      does not have for gfx90a (see `G6` in
-      [rocm-verify-profile-backend.md](rocm-verify-profile-backend.md)), and without an oracle G18 has
-      nothing to compare a GGUF against. Constant decay makes this small — the decay is a
-      parameter-free ALiBi slope from head count, not a learned tensor. **No inference, no GPU, no
-      process management: this is code to write, and it is executable now.**
+      at all**. ✅ 2026-10-29 — Research `d2d485598807` ships `scripts/benchmark/sala_cpu_oracle.py`:
+      float32 CPU recurrence, original ALiBi slopes, initial/final state, native chunk/fused interfaces,
+      packed independent sequences and hash-pinned local HF import with `GenerationMixin` compatibility.
+      All11 controls pass, including an independently expanded causal sum at0/1/7/63/64/65/129 tokens,
+      split continuation, packed state isolation, native original SALA short/chunk masked attention,
+      original1/3/7/32-head slopes, source mismatch and import cleanup. No weights or pretrained model
+      inference ran; no GPU Triton numerical equivalence or GGUF parity is claimed. [Usage/source pins](https://github.com/pestopoppa/epyc-inference-research/blob/d2d485598807/docs/reference/sala-cpu-oracle.md),
+      [native control evidence](../../artifacts/compute/codex3-relocatable-and-sala-z9-20261029.json).
+      G18 retains its original3-prompt ×32-token, under8192-token, token-identical gate and remains open.
+      [no-belief: CPU reference implementation and native-interface code tests; no inference result]
 - [ ] **G18 (G, prerequisite `Z9`) — SALA correctness-first port + CPU parity smoke.** On
       `llama.cpp-experimental` branched from the current production tip (**never v9**). Greedy
       (`temp 0`, fixed seed), **3 prompts × 32 tokens, every prompt under `sparse_config.dense_len` =

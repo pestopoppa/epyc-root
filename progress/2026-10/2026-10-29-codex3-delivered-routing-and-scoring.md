@@ -11,3 +11,7 @@ Completed existing LRC-SDM-CACHED-SCREEN once on the frozen historical cache, pr
 ## First common native table-score snapshot
 
 ODL435/755 completed pages,131/243 tables: available-output TEDS0.656652, structure-only0.799800. Paddle1 completed page and0 scored tables: paired comparison undefined. The frozen scorer verifies native completion/input/output hashes, records incomplete producer lineage separately, and persists null decision cells. This is a useful partial observation, not completion of Phase C. [Report and original artifacts](../../artifacts/compute/pip02-partial-teds-20261029/README.md). [belief: cc]
+
+## SALA Z9 CPU oracle delivered
+
+Research `d2d485598807` is on main: constant-decay Simple GLA float32 CPU reference plus native chunk/fused/packed interfaces, checked local HF source loading and GenerationMixin compatibility. Eleven independent algebra/state/shape/source/import and original-vendor attention controls pass; Z9 is ticked. No pretrained9B, GPU Triton or GGUF parity run is claimed; G18 stays open with its exact gate. [Source/control evidence](../../artifacts/compute/codex3-relocatable-and-sala-z9-20261029.json). [no-belief: code implementation and controls]
