@@ -569,6 +569,15 @@ Not measured:
   export carries `reasoning` parts. Count them (tokens from the server's usage when present, else chars with the
   estimator flagged), and keep "decoded includes reasoning" explicit. Acceptance: the step-6 call re-exported shows
   a non-zero reasoning count consistent with its 82k chars. Also feeds VB-AK-METRICS-1.
+  - [x] **OAB-21 source implementation.** ✅ 2026-10-29 Research `3e9c00e534ae29f138d13ec8962fe0d44fd86b41`
+    counts captured reasoning characters and informative server usage, otherwise explicitly flagged
+    `ceil(reasoning_chars/4)` estimates; missing evidence stays unknown. Per-step/session/call provenance
+    remains explicit, and decoded totals remain inclusive. 52 focused tests passed; the native 22-part fixture
+    has137524 reasoning characters and unchanged57702 decoded tokens. Ruff/diff checks passed.
+    [no-belief: parser implementation and fixture correctness]
+  - [ ] **OAB-21 retained-source acceptance:** locate and parse the exact original OAB-10/11 six-step
+    export with roughly82k reasoning characters at step6; record path/digest, message identity, count and
+    usage/estimate source. Parent remains open; a substitute fixture or inference rerun cannot prove it.
 - [x] **OAB-22 — planner concision rule plus an 8k per-turn cap, together.** ✅ 2026-09-26 — first run-10h planner call: 15 steps, max turn 9,801 decoded (cap 16384, 0 capped steps), schema-valid, 31.4 min vs 32.8. Note: step 1 at 9.8k exceeds the rule's ~4k analysis aim (below the cap that replaced 8k). Add to `actors.py`
   `_HYPOTHESIS_TASK` (~L1961-1965): derive a formula once, keep analysis under ~4k tokens, then emit JSON only; set
   `max_tokens` 8000 per turn as a circuit breaker. The cap alone would have truncated 5 of the 6 giant turns, so it

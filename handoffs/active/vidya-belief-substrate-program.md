@@ -1913,6 +1913,10 @@ row: `scripts/vidya/adapters/README.md`. Project, do not grade.
   `loop/actor_metrics.py`, which writes a sibling line to `actor-calls.jsonl` just BEFORE each `actor_call.v1`
   line. Source-table row: `scripts/vidya/adapters/README.md`.
   - Today the row has no self-hash, no root contract module and no `call_id` join.
+  - [ ] Preserve OAB-21 reasoning provenance in the existing contract/projection: per-step chars, tokens
+    and usage/estimate/unavailable source; aggregate usage/estimated/unknown-step counts; explicit estimator
+    label when used; decoded includes reasoning, so never add reasoning to decoded twice. Preserve unknown
+    evidence as unknown. This extends this source contract; it creates no new ladder or historical warrant.
   - Add a closed schema plus a reference writer and validator in root, beside `autokernel_actor_seat_capture.py`,
     so writer and reader share one definition (the VB-AK-SEAT-a pattern).
   - Carry an explicit join to the v1 record: return the v1 `call_id` from `build_call_record`'s caller path, or
