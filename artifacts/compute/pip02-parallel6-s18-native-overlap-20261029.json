@@ -1,0 +1,109 @@
+{
+  "kind": "operational native concurrency evidence",
+  "shard": 18,
+  "workers": 12,
+  "native_conversion_common_overlap_seconds": 96.612,
+  "common_interval": [
+    "2026-10-29T21:07:23.374000",
+    "2026-10-29T21:08:59.986000"
+  ],
+  "intervals": [
+    {
+      "page": 450,
+      "processing_started": "2026-10-29 21:07:23,115",
+      "conversion_finished": "2026-10-29 21:09:10,665",
+      "start": "2026-10-29T21:07:23.115000",
+      "end": "2026-10-29T21:09:10.665000",
+      "sidecar_log_sha256": "6954adf1f2af6aa4e26115dbf3d630716475d791578827fbbffdd46275de8a06"
+    },
+    {
+      "page": 451,
+      "processing_started": "2026-10-29 21:07:23,004",
+      "conversion_finished": "2026-10-29 21:09:13,514",
+      "start": "2026-10-29T21:07:23.004000",
+      "end": "2026-10-29T21:09:13.514000",
+      "sidecar_log_sha256": "eedca73cb15595c5556666076c74a5a2ffe57ae05f499100d282c0de2a42d511"
+    },
+    {
+      "page": 452,
+      "processing_started": "2026-10-29 21:07:23,079",
+      "conversion_finished": "2026-10-29 21:09:10,591",
+      "start": "2026-10-29T21:07:23.079000",
+      "end": "2026-10-29T21:09:10.591000",
+      "sidecar_log_sha256": "cbe1ccc4e1b3dc7f5dab40f695dc8b1e77842f838b2da44d03c1a4915c7aa2d3"
+    },
+    {
+      "page": 453,
+      "processing_started": "2026-10-29 21:07:23,220",
+      "conversion_finished": "2026-10-29 21:09:14,029",
+      "start": "2026-10-29T21:07:23.220000",
+      "end": "2026-10-29T21:09:14.029000",
+      "sidecar_log_sha256": "ac0f8ef8cedb6e5830545e961bdd3e0fa980f68d300f052a62442dcb412f4853"
+    },
+    {
+      "page": 454,
+      "processing_started": "2026-10-29 21:07:23,374",
+      "conversion_finished": "2026-10-29 21:09:10,518",
+      "start": "2026-10-29T21:07:23.374000",
+      "end": "2026-10-29T21:09:10.518000",
+      "sidecar_log_sha256": "96dd0d8f5fcfb738120fb2b1632494972a7ba5d12a7d478cdce7b21501c2fe28"
+    },
+    {
+      "page": 455,
+      "processing_started": "2026-10-29 21:07:23,204",
+      "conversion_finished": "2026-10-29 21:09:10,534",
+      "start": "2026-10-29T21:07:23.204000",
+      "end": "2026-10-29T21:09:10.534000",
+      "sidecar_log_sha256": "155673c6ede3368a38816106d498688c9827a9ded0aba659a0625a125abc6de3"
+    },
+    {
+      "page": 456,
+      "processing_started": "2026-10-29 21:07:23,204",
+      "conversion_finished": "2026-10-29 21:09:09,957",
+      "start": "2026-10-29T21:07:23.204000",
+      "end": "2026-10-29T21:09:09.957000",
+      "sidecar_log_sha256": "df1340af5ad9eef742e148ee5461aa33a2f7a902faf3636bc0ea3a1099c49fb2"
+    },
+    {
+      "page": 457,
+      "processing_started": "2026-10-29 21:07:23,211",
+      "conversion_finished": "2026-10-29 21:09:10,390",
+      "start": "2026-10-29T21:07:23.211000",
+      "end": "2026-10-29T21:09:10.390000",
+      "sidecar_log_sha256": "c50f269bfaf5c9388fa5a74866a782bc5b67360d704277e9eb1db774da725b2a"
+    },
+    {
+      "page": 458,
+      "processing_started": "2026-10-29 21:07:22,714",
+      "conversion_finished": "2026-10-29 21:09:09,595",
+      "start": "2026-10-29T21:07:22.714000",
+      "end": "2026-10-29T21:09:09.595000",
+      "sidecar_log_sha256": "ef01f0b09141af6f479515b3001250e7f7a07a354100db1b3b8aa00d17acff10"
+    },
+    {
+      "page": 459,
+      "processing_started": "2026-10-29 21:07:22,976",
+      "conversion_finished": "2026-10-29 21:08:59,986",
+      "start": "2026-10-29T21:07:22.976000",
+      "end": "2026-10-29T21:08:59.986000",
+      "sidecar_log_sha256": "f31e7e02fd50a8285387e5ba9e2c3ddd48c8163d07c89268c3a190e41895b0b7"
+    },
+    {
+      "page": 460,
+      "processing_started": "2026-10-29 21:07:22,919",
+      "conversion_finished": "2026-10-29 21:09:09,290",
+      "start": "2026-10-29T21:07:22.919000",
+      "end": "2026-10-29T21:09:09.290000",
+      "sidecar_log_sha256": "fcd73a3de1b0476709ae5b378ab796178f6c40d956de97a2453ac397d1d06242"
+    },
+    {
+      "page": 461,
+      "processing_started": "2026-10-29 21:07:22,931",
+      "conversion_finished": "2026-10-29 21:09:09,312",
+      "start": "2026-10-29T21:07:22.931000",
+      "end": "2026-10-29T21:09:09.312000",
+      "sidecar_log_sha256": "457654df5fe014008a6ac2ad0322d767e9f6119359484f036cc852d80c90c2bc"
+    }
+  ],
+  "scope": "native sidecar processing intervals in original append-only logs, not matched speedup evidence"
+}
