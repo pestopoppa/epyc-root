@@ -1,0 +1,20 @@
+# GPU-ZOS-2.3a idle-synchronize race check — 2026-10-29
+
+## Result
+
+Closed the narrowly scoped idle-synchronize race check. The source premise in the original task was inaccurate for the serving overlap path: the worker synchronizes the speculative context, not the target context concurrently. A comment-only correction is committed in the private experimental server fork as `de708780b` (`docs(server): correct ZOS-2 sync race comment`). No core/kernel behavior was changed.
+
+The native CPU ThreadSanitizer harness distinguishes the API-level race from the server path:
+
+- One shared native context, no decode, two threads each calling `llama_synchronize` 10,000 times: TSan reports races in `ggml_backend_sched_synchronize` (`ggml/src/ggml-backend.cpp:1922`) and `llama_context::synchronize` (`src/llama-context.cpp:744`, `:762-763`). Full report: `/mnt/raid0/llm/tmp/codex-ni-gpu-zos-23a-tsan-20261029/native-idle-sync-runs/20261029T214954Z-all-3909596/concurrent-all.log`, SHA-256 `397d6d7d21d3f41bf07dc321ae2b19b4988f9f762607333f140261429a57f870`. Harness source SHA-256 `9bd999fdafb54ae516f518ba4d158d46bb6a343c7e8e239feb5434090e858800`; supervised run log SHA-256 `adde1800822e2835a9def864f7ea5ea1ae4afe5cb244d3fb43d62a026d3dcdfe`, `PREP_EXIT rc=0`, wall 8.107 s, max RSS 242,307,072 B.
+- Two independent native contexts, 10,000 idle sync calls per context concurrently: no TSan warnings. Run `/mnt/raid0/llm/tmp/codex-ni-gpu-zos-23a-tsan-20261029/native-idle-sync-runs/20261029T215311Z-twoctx-3953164/two-context.log`, SHA-256 `58d45b48693a5fb8122e5bdceecc94b12b7f7bcc41bc7fb86c505c4bbe1ddc56`; test source SHA-256 `685c174c3095f4e78a4ffc956f2c1877bc0061dece8f4dfb1ca17756d6d6c421`; supervised log SHA-256 `62994975281ae2cd4704a372364cda75a41c6a6272f135441b98e03cb088e4a3`, `PREP_EXIT rc=0`, wall 7.085 s, max RSS 240,128,000 B.
+
+Static server path in the experimental fork (`tools/server/server-context.cpp`): `zos2_overlap_eligible` admits DFlash only (`:4480-4498`); target context is made at `:1464-1467`, speculative context separately at `:1492-1507`; the overlap branch synchronizes target before worker submit at `:4630-4639`. The worker path synchronizes its `ctx_dft`. This supports the conclusion that the old same-context concurrency comment was wrong for this serving path. It does not prove general server concurrency safety or close all of GPU-ZOS-2.3.
+
+The full Qwen3.8-27B+DFlash2 server attempt did not reach readiness or a request within 300 s. It is a failed pre-health attempt, not a qualifying server/inference smoke: log `/mnt/raid0/llm/tmp/codex-ni-gpu-zos-23a-tsan-20261029/run-20261029T214138Z/server-and-request.log`, SHA-256 `2fae61c90955c8b0837d425b2f1c0a91b687ae56362e8dc5e3ba8cb155f51767`, driver rc=1, partial=false. The captured server process was cleaned and reaped. The TSAN server build used source base `6af3192c73c1f903eeebef0d1178b49ca0e10276`; build log SHA-256 `07ee850e165b39406bc4deeef9e3acff72854f460fb4f9e78dc91089db3ec550`, `PREP_EXIT rc=0`. The original build-source snapshot manifest is SHA-256 `c3c7cba984abf3da9f262b389fd8914c9c0ab5c5b64b06002065e459d0d429bb` and predates the later harness/comment changes; do not treat it as a current source manifest.
+
+## Scope and handoff
+
+Only the stale race-premise comment was corrected; no global mutex or `llama_synchronize` behavior change was warranted by this check. Champion owner should carry the comment correction from experimental commit `de708780b` when reconciling the candidate. Keep this result scoped to GPU-ZOS-2.3a; the ≥75-minute GPU-ZOS-2.3 gate and general server-concurrency claims remain outside this completed check.
+
+The result is a diagnostic correctness finding, not an inference measurement or a new quality claim; no ClaimTuple/score is asserted. The handoff checklist uses `[no-belief: TSAN diagnostic, not an inference measurement]` for that reason.
