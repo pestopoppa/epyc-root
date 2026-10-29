@@ -761,7 +761,7 @@ non-reasoning by design. Incumbent is unchanged: `worker_general` = `gemma-4-26B
       path is exercised — `llama-bench` cannot, and every number on record so far understates the
       incumbent for that reason. Blocked on **OP-16** (host reboot) for decision-grade.
 
-- [ ] **WG-LFMI-4 — Speculative decoding, only after WG-LFMI-1 passes.** Spec-dec raises tokens/second;
+- [x] **WG-LFMI-4 — Speculative decoding, only after WG-LFMI-1 passes.** ✅ 2026-10-29 Spec-dec raises tokens/second;
       it cannot fix tokens/task, which is what killed the last candidate. For a 1.2B target the drafter
       ratio problem is worse, not better — a same-family drafter would have to be tiny. **Measure
       acceptance rate α before investing**, per standing policy, and prove vocabulary identity rather
