@@ -1,0 +1,3 @@
+# Codex3 results filing, 2026-10-29
+
+- [belief: cc] Filed 11 original queued events by matching their original end timestamps to launcher segments and recording source SHA-256 identities. Three ODL early segments hit the disk reserve with 0/6/3 native pages complete and their remaining states preserved; three Paddle rc75 events lacked the original terminal result and remain unknown. Two HIL15 admissions refused below the 150 GiB disk floor. INF50 r11 failed its catalog target-alias contract. Two later ODL rc78 events each reported 24 complete and one unknown. These are partial or failed runs, not completion or parser-quality verdicts. Details and exact owner actions: `artifacts/research/codex3-filing-20261029/README.md`. No handoff boxes or index rows were changed.

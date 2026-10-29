@@ -1,0 +1,286 @@
+[
+  {
+    "due": {
+      "class": "diagnostic",
+      "decision_rule": "Collect native ODL 2.5.0 + Docling 2.91.0 docling-fast full-mode predictions on fresh English cohort shard 2, 25 disjoint pages; retain per-page source, input, grant and partial/unknown states. Never redraw an exposed unknown. No parser-quality or TEDS verdict until common scoring.",
+      "end_line": "rc=75 time=2026-10-29T19:38:50Z reason=job-rc-75:exited",
+      "ended_file": "/mnt/raid0/llm/tmp/compute-flags/grants/codex3-pip02-fresh-odl-quad-s2-20261029.ended",
+      "id": "codex3-pip02-fresh-odl-quad-s2-20261029",
+      "owner": "codex3",
+      "result_path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/ODL-BATCH-DONE-2",
+      "scratch_root": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/packets-quad/odl-s2",
+      "seen_at": "2026-10-29T19:38:57Z"
+    },
+    "launcher": {
+      "exact_timestamp_matches": 1,
+      "important_lines": [
+        "RuntimeError: disk floor plus output reserve unavailable",
+        "{\"cohort\": \"pip02-english-fresh-20261029\", \"error\": null, \"finished_epoch\": 1793302729.184553, \"partial\": true, \"rc\": 75, \"schema\": \"pip02-odl-batch/v1\", \"shard\": 2, \"signal\": null, \"started_at_rule\": \"page start records own grant/protocol/source identities\", \"statuses\": {\"50\": \"invalid\", \"51\": \"missing\", \"52\": \"missing\", \"53\": \"missing\", \"54\": \"missing\", \"55\": \"missing\", \"56\": \"missing\", \"57\": \"missing\", \"58\": \"missing\", \"59\": \"missing\", \"60\": \"missing\", \"61\": \"missing\", \"62\": \"missing\", \"63\": \"missing\", \"64\": \"missing\", \"65\": \"missing\", \"66\": \"missing\", \"67\": \"missing\", \"68\": \"missing\", \"69\": \"missing\", \"70\": \"missing\", \"71\": \"missing\", \"72\": \"missing\", \"73\": \"missing\", \"74\": \"missing\"}}",
+        "2026-10-29T19:38:50Z [codex3-pip02-fresh-odl-quad-s2-20261029] ended rc=75 reason=job-rc-75:exited (grant deleted)"
+      ],
+      "path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/packets-quad/odl-s2/ws58-launcher.out",
+      "segment_sha256": "99e5c21e0a590727cbe28135ee6bead65fa5d72ebae3e74ad279031aa07cf471",
+      "sha256": "35ddf70c98c54c6325658740481165a826cad0e36fe62e80dc7dae544840079e"
+    },
+    "result_path_exists_at_filing": false
+  },
+  {
+    "due": {
+      "class": "diagnostic",
+      "decision_rule": "Collect native ODL 2.5.0 + Docling 2.91.0 docling-fast full-mode predictions on fresh English cohort shard 3, 25 disjoint pages; retain per-page source, input, grant and partial/unknown states. Never redraw an exposed unknown. No parser-quality or TEDS verdict until common scoring.",
+      "end_line": "rc=75 time=2026-10-29T19:38:51Z reason=job-rc-75:exited",
+      "ended_file": "/mnt/raid0/llm/tmp/compute-flags/grants/codex3-pip02-fresh-odl-quad-s3-20261029.ended",
+      "id": "codex3-pip02-fresh-odl-quad-s3-20261029",
+      "owner": "codex3",
+      "result_path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/ODL-BATCH-DONE-3",
+      "scratch_root": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/packets-quad/odl-s3",
+      "seen_at": "2026-10-29T19:38:57Z"
+    },
+    "launcher": {
+      "exact_timestamp_matches": 1,
+      "important_lines": [
+        "{\"output\": \"/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-03/page-0075\", \"rc\": 0, \"reason\": \"native page produced\"}",
+        "{\"output\": \"/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-03/page-0076\", \"rc\": 0, \"reason\": \"native page produced\"}",
+        "{\"output\": \"/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-03/page-0077\", \"rc\": 0, \"reason\": \"native page produced\"}",
+        "{\"output\": \"/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-03/page-0078\", \"rc\": 0, \"reason\": \"native page produced\"}",
+        "{\"output\": \"/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-03/page-0079\", \"rc\": 0, \"reason\": \"native page produced\"}",
+        "{\"output\": \"/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-03/page-0080\", \"rc\": 0, \"reason\": \"native page produced\"}",
+        "RuntimeError: disk floor plus output reserve unavailable",
+        "{\"cohort\": \"pip02-english-fresh-20261029\", \"error\": null, \"finished_epoch\": 1793302731.6927402, \"partial\": true, \"rc\": 75, \"schema\": \"pip02-odl-batch/v1\", \"shard\": 3, \"signal\": null, \"started_at_rule\": \"page start records own grant/protocol/source identities\", \"statuses\": {\"75\": \"complete\", \"76\": \"complete\", \"77\": \"complete\", \"78\": \"complete\", \"79\": \"complete\", \"80\": \"complete\", \"81\": \"invalid\", \"82\": \"missing\", \"83\": \"missing\", \"84\": \"missing\", \"85\": \"missing\", \"86\": \"missing\", \"87\": \"missing\", \"88\": \"missing\", \"89\": \"missing\", \"90\": \"missing\", \"91\": \"missing\", \"92\": \"missing\", \"93\": \"missing\", \"94\": \"missing\", \"95\": \"missing\", \"96\": \"missing\", \"97\": \"missing\", \"98\": \"missing\", \"99\": \"missing\"}}",
+        "2026-10-29T19:38:51Z [codex3-pip02-fresh-odl-quad-s3-20261029] ended rc=75 reason=job-rc-75:exited (grant deleted)"
+      ],
+      "path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/packets-quad/odl-s3/ws58-launcher.out",
+      "segment_sha256": "0f41d44a93822d3621cbd89b9b840e4e9adb541ee68ae771c819785d3da08e74",
+      "sha256": "9b341fb5194ccfaf558847cf0b24cfd8aa9ee7aad0780bcb00c45cb4bcfbeeb0"
+    },
+    "result_at_filing_sha256": "73b364d189341bfaeea0307dafb83a2e3c0a24a87d98002fbef601c8195ef4c2",
+    "result_path_exists_at_filing": true
+  },
+  {
+    "due": {
+      "class": "diagnostic",
+      "decision_rule": "Collect native ODL 2.5.0 + Docling 2.91.0 docling-fast full-mode predictions on fresh English cohort shard 4, 25 disjoint pages; retain per-page source, input, grant and partial/unknown states. Never redraw an exposed unknown. No parser-quality or TEDS verdict until common scoring.",
+      "end_line": "rc=75 time=2026-10-29T19:38:53Z reason=job-rc-75:exited",
+      "ended_file": "/mnt/raid0/llm/tmp/compute-flags/grants/codex3-pip02-fresh-odl-quad-s4-20261029.ended",
+      "id": "codex3-pip02-fresh-odl-quad-s4-20261029",
+      "owner": "codex3",
+      "result_path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/ODL-BATCH-DONE-4",
+      "scratch_root": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/packets-quad/odl-s4",
+      "seen_at": "2026-10-29T19:38:57Z"
+    },
+    "launcher": {
+      "exact_timestamp_matches": 1,
+      "important_lines": [
+        "{\"output\": \"/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-04/page-0100\", \"rc\": 0, \"reason\": \"native page produced\"}",
+        "{\"output\": \"/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-04/page-0101\", \"rc\": 0, \"reason\": \"native page produced\"}",
+        "{\"output\": \"/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-04/page-0102\", \"rc\": 0, \"reason\": \"native page produced\"}",
+        "RuntimeError: disk floor plus output reserve unavailable",
+        "{\"cohort\": \"pip02-english-fresh-20261029\", \"error\": null, \"finished_epoch\": 1793302732.6884964, \"partial\": true, \"rc\": 75, \"schema\": \"pip02-odl-batch/v1\", \"shard\": 4, \"signal\": null, \"started_at_rule\": \"page start records own grant/protocol/source identities\", \"statuses\": {\"100\": \"complete\", \"101\": \"complete\", \"102\": \"complete\", \"103\": \"invalid\", \"104\": \"missing\", \"105\": \"missing\", \"106\": \"missing\", \"107\": \"missing\", \"108\": \"missing\", \"109\": \"missing\", \"110\": \"missing\", \"111\": \"missing\", \"112\": \"missing\", \"113\": \"missing\", \"114\": \"missing\", \"115\": \"missing\", \"116\": \"missing\", \"117\": \"missing\", \"118\": \"missing\", \"119\": \"missing\", \"120\": \"missing\", \"121\": \"missing\", \"122\": \"missing\", \"123\": \"missing\", \"124\": \"missing\"}}",
+        "2026-10-29T19:38:53Z [codex3-pip02-fresh-odl-quad-s4-20261029] ended rc=75 reason=job-rc-75:exited (grant deleted)"
+      ],
+      "path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/packets-quad/odl-s4/ws58-launcher.out",
+      "segment_sha256": "3bebba79a4f0246ca95c42058dcf9610657a3ac97cb3e8cd1b3c254fd58e8165",
+      "sha256": "66172f5bafb5efc2e1022e6989453f20bd19678c8a77838f7e914db192afebd3"
+    },
+    "result_path_exists_at_filing": false
+  },
+  {
+    "due": {
+      "class": "diagnostic",
+      "decision_rule": "Collect native Paddle 1.6 region checkpoints for fresh English cohort shard 0, five disjoint pages [0, 1, 8, 10, 11]; retain native layout, request, response, originating grant and source receipts; stop at request boundary, never redraw unknown or completed model requests. No parser quality verdict until the matched common scorer and coverage are available.",
+      "end_line": "rc=75 time=2026-10-29T19:37:54Z reason=job-rc-75:exited",
+      "ended_file": "/mnt/raid0/llm/tmp/compute-flags/grants/codex3-pip02-fresh-s0-20261029.ended",
+      "id": "codex3-pip02-fresh-s0-20261029",
+      "owner": "codex3",
+      "result_path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/DONE-fresh-0",
+      "scratch_root": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/packets-samequarter/paddle-s0",
+      "seen_at": "2026-10-29T19:38:57Z"
+    },
+    "launcher": {
+      "exact_timestamp_matches": 1,
+      "important_lines": [
+        "2026-10-29T19:37:54Z [codex3-pip02-fresh-s0-20261029] ended rc=75 reason=job-rc-75:exited (grant deleted)"
+      ],
+      "path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/packets-samequarter/paddle-s0/ws58-launcher.out",
+      "segment_sha256": "c26da880afb82100132dbc9f5f4ed4b685bea72c8a02034cf15e120f36bc6b65",
+      "sha256": "c999cb42c0eccca4b3a5eadb561b8bab41f0baef52432874cf93dc22c86ae08a"
+    },
+    "result_path_exists_at_filing": false
+  },
+  {
+    "due": {
+      "class": "diagnostic",
+      "decision_rule": "Collect native Paddle 1.6 region checkpoints for fresh English cohort shard 2, five disjoint pages [34, 35, 36, 37, 38]; retain native layout, request, response, originating grant and source receipts; stop at request boundary, never redraw unknown or completed model requests. No parser quality verdict until the matched common scorer and coverage are available.",
+      "end_line": "rc=75 time=2026-10-29T19:42:00Z reason=job-rc-75:exited",
+      "ended_file": "/mnt/raid0/llm/tmp/compute-flags/grants/codex3-pip02-fresh-s2-20261029.ended",
+      "id": "codex3-pip02-fresh-s2-20261029",
+      "owner": "codex3",
+      "result_path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/DONE-fresh-2",
+      "scratch_root": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/packets-quad-review/paddle-s2",
+      "seen_at": "2026-10-29T19:42:02Z"
+    },
+    "launcher": {
+      "exact_timestamp_matches": 1,
+      "important_lines": [
+        "2026-10-29T19:42:00Z [codex3-pip02-fresh-s2-20261029] ended rc=75 reason=job-rc-75:exited (grant deleted)"
+      ],
+      "path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/packets-quad-review/paddle-s2/ws58-launcher.out",
+      "segment_sha256": "a6f6ab757497c6b2d2fa8a1da00eac974c43628bfdd8a084845b439571d9ea23",
+      "sha256": "e938c1b93c3d72bf6195118eab03ef57579abded364d611ef7ee81689dd20487"
+    },
+    "result_path_exists_at_filing": false
+  },
+  {
+    "due": {
+      "class": "diagnostic",
+      "decision_rule": "Collect native Paddle 1.6 region checkpoints for fresh English cohort shard 1, five disjoint pages [19, 20, 21, 22, 32]; retain native layout, request, response, originating grant and source receipts; stop at request boundary, never redraw unknown or completed model requests. No parser quality verdict until the matched common scorer and coverage are available.",
+      "end_line": "rc=75 time=2026-10-29T19:42:43Z reason=job-rc-75:exited",
+      "ended_file": "/mnt/raid0/llm/tmp/compute-flags/grants/codex3-pip02-fresh-s1-20261029.ended",
+      "id": "codex3-pip02-fresh-s1-20261029",
+      "owner": "codex3",
+      "result_path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/DONE-fresh-1",
+      "scratch_root": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/packets-samequarter/paddle-s1",
+      "seen_at": "2026-10-29T19:43:03Z"
+    },
+    "launcher": {
+      "exact_timestamp_matches": 1,
+      "important_lines": [
+        "2026-10-29T19:42:43Z [codex3-pip02-fresh-s1-20261029] ended rc=75 reason=job-rc-75:exited (grant deleted)"
+      ],
+      "path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/packets-samequarter/paddle-s1/ws58-launcher.out",
+      "segment_sha256": "d87041fdc519c8e572859b0c89445fdac183cfb94b7e2b9d6b24b4b87240d57f",
+      "sha256": "efc283cf3efc65586bdb554d730180df1dab84ea756f016be0d6aa1182d6e5de"
+    },
+    "result_path_exists_at_filing": false
+  },
+  {
+    "due": {
+      "class": "diagnostic",
+      "decision_rule": "Discovery diagnostic: retain per-task three-replay pass counts, native L2 and AUC outputs; no confirmation or performance verdict.",
+      "end_line": "rc=6 time=2026-10-29T19:48:57Z reason=t1-admission:DRYRUN_REFUSED: disk free-after-output 146.27 GiB < floor 150 GiB",
+      "ended_file": "/mnt/raid0/llm/tmp/compute-flags/grants/hil15-s1-safe-successor-20261029.ended",
+      "id": "hil15-s1-safe-successor-20261029",
+      "owner": "codex-refactor-01a16fc3",
+      "result_path": "/mnt/raid0/llm/tmp/hil15-s1-bounded-v13-20261029/results-pilot/DONE",
+      "scratch_root": "/mnt/raid0/llm/tmp/hil15-s1-bounded-v13-20261029",
+      "seen_at": "2026-10-29T19:49:14Z"
+    },
+    "result_path_exists_at_filing": false
+  },
+  {
+    "due": {
+      "class": "diagnostic",
+      "decision_rule": "Diagnostic only: exact C5 baseline cache-resume behavior and the complete 3,072 parser-eligible path inventory plus all five pinned native grammar targets with resolved UID coverage. Preserve the native graph result; do not apply a source patch, claim a speed/quality effect, authorize a fold, or mark INF-50 complete. R7 scheduled normal entry failed its q0 quarter-flock ownership check; R8/R11 capture reason-specific evidence but this R11 pair smoke does not establish that scheduled guard is fixed. The scheduler-controlled normal run must establish whether the q0 pathname identity or kernel owner assertion is the failure.",
+      "end_line": "rc=1 time=2026-10-29T19:59:08Z reason=job-rc-1:exited",
+      "ended_file": "/mnt/raid0/llm/tmp/compute-flags/grants/codex-ni-inf50-writerrace-resume-r11-20261029.ended",
+      "id": "codex-ni-inf50-writerrace-resume-r11-20261029",
+      "owner": "codex-ni",
+      "result_path": "/mnt/raid0/llm/tmp/codex-ni-inf50-writerrace-resume-r11-20261029/results/RESULT.json",
+      "scratch_root": "/mnt/raid0/llm/tmp/codex-ni-inf50-writerrace-resume-r11-20261029",
+      "seen_at": "2026-10-29T19:59:33Z"
+    },
+    "launcher": {
+      "exact_timestamp_matches": 1,
+      "important_lines": [
+        "2026-10-29T19:59:08Z [codex-ni-inf50-writerrace-resume-r11-20261029] ended rc=1 reason=job-rc-1:exited (grant deleted)"
+      ],
+      "path": "/mnt/raid0/llm/tmp/codex-ni-inf50-writerrace-resume-r11-20261029/ws58-launcher.out",
+      "segment_sha256": "cc59f76333932a39009acf73aa719e9616364494aefc1b24631079638d47f8ea",
+      "sha256": "cc59f76333932a39009acf73aa719e9616364494aefc1b24631079638d47f8ea"
+    },
+    "native_failure": {
+      "error": "ValueError: ValueError('expected exactly one target alias in both catalog snapshots'); filename=None",
+      "status": "FAILED"
+    },
+    "result_at_filing_sha256": "d7483bc6db32f32f1dbb7fbe92c2efb9d0d61c8ea83586b32a9ab94aa8d6310f",
+    "result_path_exists_at_filing": true
+  },
+  {
+    "due": {
+      "class": "diagnostic",
+      "decision_rule": "Collect native ODL 2.5.0 + Docling 2.91.0 docling-fast full-mode predictions on fresh English cohort shard 1, 25 disjoint pages; retain per-page source, input, grant and partial/unknown states. Never redraw an exposed unknown. No parser-quality or TEDS verdict until common scoring.",
+      "end_line": "rc=78 time=2026-10-29T20:20:57Z reason=job-rc-78:exited",
+      "ended_file": "/mnt/raid0/llm/tmp/compute-flags/grants/codex3-pip02-fresh-odl-quad-s1-20261029.ended",
+      "id": "codex3-pip02-fresh-odl-quad-s1-20261029",
+      "owner": "codex3",
+      "result_path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/ODL-BATCH-DONE-1",
+      "scratch_root": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/packets-quad/odl-s1",
+      "seen_at": "2026-10-29T20:21:13Z"
+    },
+    "launcher": {
+      "exact_timestamp_matches": 1,
+      "important_lines": [
+        "{\"output\": \"/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-01/page-0047\", \"rc\": 0, \"reason\": \"native page produced\"}",
+        "{\"output\": \"/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-01/page-0048\", \"rc\": 0, \"reason\": \"native page produced\"}",
+        "{\"output\": \"/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-01/page-0049\", \"rc\": 0, \"reason\": \"native page produced\"}",
+        "{\"cohort\": \"pip02-english-fresh-20261029\", \"error\": null, \"finished_epoch\": 1793305257.1832564, \"partial\": true, \"rc\": 78, \"schema\": \"pip02-odl-batch/v1\", \"shard\": 1, \"signal\": null, \"started_at_rule\": \"page start records own grant/protocol/source identities\", \"statuses\": {\"25\": \"complete\", \"26\": \"complete\", \"27\": \"complete\", \"28\": \"complete\", \"29\": \"complete\", \"30\": \"complete\", \"31\": \"complete\", \"32\": \"complete\", \"33\": \"complete\", \"34\": \"complete\", \"35\": \"complete\", \"36\": \"complete\", \"37\": \"complete\", \"38\": \"complete\", \"39\": \"complete\", \"40\": \"complete\", \"41\": \"complete\", \"42\": \"complete\", \"43\": \"complete\", \"44\": \"complete\", \"45\": \"complete\", \"46\": \"unknown\", \"47\": \"complete\", \"48\": \"complete\", \"49\": \"complete\"}}",
+        "2026-10-29T20:20:57Z [codex3-pip02-fresh-odl-quad-s1-20261029] ended rc=78 reason=job-rc-78:exited (grant deleted)"
+      ],
+      "path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/packets-quad/odl-s1/ws58-launcher.out",
+      "segment_sha256": "818ea0bf6ed913ccb8f315be5dbd338daffe56c690e7c6dd64143b2d3ab8698b",
+      "sha256": "ee61f8b3b484d5a16344656b650b54b2626c7d4d06dab8dae3eb6195c0b70388"
+    },
+    "result_path_exists_at_filing": false
+  },
+  {
+    "due": {
+      "class": "diagnostic",
+      "decision_rule": "Diagnostic discovery calibration: preserve fixed cohort and seeds; all18 remaining slots and6 native assessments; unit band exactly1or2 of3 correct, no redraw.",
+      "end_line": "rc=6 time=2026-10-29T20:21:56Z reason=t1-admission:DRYRUN_REFUSED: disk free-after-output 149.23 GiB < floor 150 GiB",
+      "ended_file": "/mnt/raid0/llm/tmp/compute-flags/grants/codex-hil15-s0-resume-v1-20261029.ended",
+      "id": "codex-hil15-s0-resume-v1-20261029",
+      "owner": "codex-refactor-01a16fc3",
+      "result_path": "/mnt/raid0/llm/tmp/hil15-s0-safe-prep-20261029/s0-official-results",
+      "scratch_root": "/mnt/raid0/llm/tmp/hil15-s0-safe-prep-20261029",
+      "seen_at": "2026-10-29T20:22:14Z"
+    },
+    "launcher": {
+      "exact_timestamp_matches": 1,
+      "important_lines": [
+        "2026-10-29T20:21:56Z [codex-hil15-s0-resume-v1-20261029] ended rc=6 reason=t1-admission:DRYRUN_REFUSED: disk free-after-output 149.23 GiB < floor 150 GiB  (grant deleted)"
+      ],
+      "path": "/mnt/raid0/llm/tmp/hil15-s0-safe-prep-20261029/ws58-launcher.out",
+      "segment_sha256": "631b51be0ccccfb5d275d26b70fd5214ff51749310ebad172df4fa1a25eda8f7",
+      "sha256": "631b51be0ccccfb5d275d26b70fd5214ff51749310ebad172df4fa1a25eda8f7"
+    },
+    "result_path_exists_at_filing": false
+  },
+  {
+    "due": {
+      "class": "diagnostic",
+      "decision_rule": "Collect native ODL 2.5.0 + Docling 2.91.0 docling-fast full-mode predictions on fresh English cohort shard 11, 25 disjoint pages; retain per-page source, input, grant and partial/unknown states. Never redraw an exposed unknown. No parser-quality or TEDS verdict until common scoring.",
+      "end_line": "rc=78 time=2026-10-29T20:33:45Z reason=job-rc-78:exited",
+      "ended_file": "/mnt/raid0/llm/tmp/compute-flags/grants/codex3-pip02-fresh-odl-generic-s11-20261029.ended",
+      "id": "codex3-pip02-fresh-odl-generic-s11-20261029",
+      "owner": "codex3",
+      "result_path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/ODL-BATCH-DONE-11",
+      "scratch_root": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/packets-generic/odl-s11",
+      "seen_at": "2026-10-29T20:34:38Z"
+    },
+    "launcher": {
+      "exact_timestamp_matches": 1,
+      "important_lines": [
+        "{\"output\": \"/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-11/page-0286\", \"rc\": 0, \"reason\": \"native page produced\"}",
+        "{\"output\": \"/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-11/page-0287\", \"rc\": 0, \"reason\": \"native page produced\"}",
+        "{\"output\": \"/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-11/page-0288\", \"rc\": 0, \"reason\": \"native page produced\"}",
+        "{\"output\": \"/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-11/page-0289\", \"rc\": 0, \"reason\": \"native page produced\"}",
+        "{\"output\": \"/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-11/page-0290\", \"rc\": 0, \"reason\": \"native page produced\"}",
+        "{\"output\": \"/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-11/page-0291\", \"rc\": 0, \"reason\": \"native page produced\"}",
+        "{\"output\": \"/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-11/page-0292\", \"rc\": 0, \"reason\": \"native page produced\"}",
+        "{\"output\": \"/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-11/page-0293\", \"rc\": 0, \"reason\": \"native page produced\"}",
+        "{\"output\": \"/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-11/page-0294\", \"rc\": 0, \"reason\": \"native page produced\"}",
+        "{\"output\": \"/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-11/page-0295\", \"rc\": 0, \"reason\": \"native page produced\"}",
+        "{\"output\": \"/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-11/page-0296\", \"rc\": 0, \"reason\": \"native page produced\"}",
+        "{\"output\": \"/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-11/page-0297\", \"rc\": 0, \"reason\": \"native page produced\"}",
+        "{\"output\": \"/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-11/page-0298\", \"rc\": 0, \"reason\": \"native page produced\"}",
+        "{\"output\": \"/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-11/page-0299\", \"rc\": 0, \"reason\": \"native page produced\"}",
+        "{\"cohort\": \"pip02-english-fresh-20261029\", \"error\": null, \"finished_epoch\": 1793306023.0785983, \"partial\": true, \"rc\": 78, \"schema\": \"pip02-odl-batch/v1\", \"shard\": 11, \"signal\": null, \"started_at_rule\": \"page start records own grant/protocol/source identities\", \"statuses\": {\"275\": \"complete\", \"276\": \"complete\", \"277\": \"complete\", \"278\": \"complete\", \"279\": \"complete\", \"280\": \"complete\", \"281\": \"complete\", \"282\": \"complete\", \"283\": \"complete\", \"284\": \"complete\", \"285\": \"unknown\", \"286\": \"complete\", \"287\": \"complete\", \"288\": \"complete\", \"289\": \"complete\", \"290\": \"complete\", \"291\": \"complete\", \"292\": \"complete\", \"293\": \"complete\", \"294\": \"complete\", \"295\": \"complete\", \"296\": \"complete\", \"297\": \"complete\", \"298\": \"complete\", \"299\": \"complete\"}}",
+        "2026-10-29T20:33:45Z [codex3-pip02-fresh-odl-generic-s11-20261029] ended rc=78 reason=job-rc-78:exited (grant deleted)"
+      ],
+      "path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/packets-generic/odl-s11/ws58-launcher.out",
+      "segment_sha256": "2180b77a780c9c46335e1de7f2362866d2c47684ced4b2871ae589fa8e83a353",
+      "sha256": "d11f940ece243ff5bd815d176eccc74a2195b6085e7766900e0eeeed7275d705"
+    },
+    "result_path_exists_at_filing": false
+  }
+]
