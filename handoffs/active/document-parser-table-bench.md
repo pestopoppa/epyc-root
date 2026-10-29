@@ -60,6 +60,7 @@ Accepted PIP02 selected-binary library source correction: **VB-PIP02-SELECTED-LI
 - [ ] Confirm the CPU-only path works on EPYC (no GPU assumptions in the layout stage).
 
 ### Phase B — correct invocation smoke (bounded inference — **requires operator approval**)
+- [x] **PIP02-PHASEB-CPU-DIAGNOSTIC — bounded three-stage CPU pipeline on the two scheduled English table pages.** ✅ 2026-10-29 — The scheduler accepted `pip02-phaseb-20261028` at 00:03:03 UTC; the real grant run ended rc0 at 00:04:58. Native output reports two completed pages, partial=false, 67.84 s and drained children; both original page artifacts contain HTML `<table>` markup. Retained result `/mnt/raid0/llm/tmp/pip02-phaseb-20261028/results/real-*/`, completion marker `/mnt/raid0/llm/tmp/pip02-phaseb-20261028/DONE`, launcher log `/mnt/raid0/llm/tmp/compute-flags/ready/pip02-phaseb-20261028.launcher.out`. This run used the private experimental-v9 CPU server, not the v7 server specified below. It establishes this bounded pipeline execution and cleanup, not table quality or a decision-grade benchmark. Phase C and the prospective `VB-PIP02-PIPELINE-WIRE` remain open. [no-belief: unsealed diagnostic, no decision warrant]
 - [ ] Start experimental-v7 `llama-server` with the PaddleOCR-VL GGUF + mmproj on a high port, `--temp 0`.
 - [ ] Run the documented pipeline on a handful of **table-bearing** pages from the full set:
       `paddleocr doc_parser -i <page>.png --pipeline_version v1.6 --vl_rec_backend llama-cpp-server --vl_rec_server_url http://127.0.0.1:<port>/v1`
