@@ -1,0 +1,5 @@
+# 2026-10-29 — PAW-3 paraphrase reserve preparation
+
+Prepared `codex3-paw3-reserve-20261029` as a separate eight-case binary paraphrase own-slice. Prospective digest-only enrollment and decision rule: `99d7cc22a5e01eaa906788ceaf4b8ed6b512a018`. Owning session reviewed and published the READY manifest; the prep claim was released. [belief: cc]
+
+The actual R11 launcher smoke issued the native compiler request (HTTP 200); 184 generated tokens were observed, with 183 intervals in 210.322 s (0.8701 tokens/s). It exited rc75 partial at cutoff after 274.446 s, with sampled tree RSS peak 3,137,134,592 bytes and drained children. Synthetic capture controls passed positive projection, incomplete and duplicate refusals, and grant/logit tamper refusals. No full compile or selected-case paired evaluation has occurred; these are preparation findings, not a quality verdict. Evidence: `/mnt/raid0/llm/tmp/codex3-paw3-reserve-20261029/launcher-smoke.log` and `capture-controls.log`. The private runtime worktree, environment, and source pins are required by the queued run. [belief: cc]
