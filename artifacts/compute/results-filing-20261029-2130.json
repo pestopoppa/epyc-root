@@ -1,0 +1,488 @@
+[
+  {
+    "event": {
+      "id": "codex3-pip02-fresh-odl-generic-s12-20261029",
+      "ended_file": "/mnt/raid0/llm/tmp/compute-flags/grants/codex3-pip02-fresh-odl-generic-s12-20261029.ended",
+      "end_line": "rc=78 time=2026-10-29T21:12:32Z reason=job-rc-78:exited",
+      "seen_at": "2026-10-29T21:12:50Z",
+      "result_path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/ODL-BATCH-DONE-12",
+      "scratch_root": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/packets-generic/odl-s12",
+      "decision_rule": "Collect native ODL 2.5.0 + Docling 2.91.0 docling-fast full-mode predictions on fresh English cohort shard 12, 25 disjoint pages; retain per-page source, input, grant and partial/unknown states. Never redraw an exposed unknown. No parser-quality or TEDS verdict until common scoring.",
+      "class": "diagnostic",
+      "owner": "codex3"
+    },
+    "original_batch": {
+      "cohort": "pip02-english-fresh-20261029",
+      "error": null,
+      "finished_epoch": 1793308350.3353376,
+      "partial": true,
+      "rc": 78,
+      "schema": "pip02-odl-batch/v1",
+      "shard": 12,
+      "signal": null,
+      "started_at_rule": "page start records own grant/protocol/source identities",
+      "statuses": {
+        "300": "complete",
+        "301": "complete",
+        "302": "complete",
+        "303": "complete",
+        "304": "complete",
+        "305": "complete",
+        "306": "complete",
+        "307": "complete",
+        "308": "complete",
+        "309": "complete",
+        "310": "invalid",
+        "311": "complete",
+        "312": "complete",
+        "313": "complete",
+        "314": "complete",
+        "315": "complete",
+        "316": "complete",
+        "317": "complete",
+        "318": "complete",
+        "319": "complete",
+        "320": "complete",
+        "321": "complete",
+        "322": "complete",
+        "323": "complete",
+        "324": "complete"
+      }
+    },
+    "counts": {
+      "complete": 24,
+      "invalid": 1
+    }
+  },
+  {
+    "event": {
+      "id": "hil15-s3-safe-successor-20261029",
+      "ended_file": "/mnt/raid0/llm/tmp/compute-flags/grants/hil15-s3-safe-successor-20261029.ended",
+      "end_line": "rc=6 time=2026-10-29T21:13:46Z reason=t1-admission:DRYRUN_REFUSED: row hil15-s3-safe-successor-20261029: missing normal launch proof fields ('dryrun_pass', 'launcher_path', 'job_path', 'source_manifest')",
+      "seen_at": "2026-10-29T21:13:53Z",
+      "result_path": "/mnt/raid0/llm/tmp/hil15-s3-confined-v17-20261029/results-pilot/DONE",
+      "scratch_root": "/mnt/raid0/llm/tmp/hil15-s3-confined-v17-20261029",
+      "decision_rule": "Discovery diagnostic: retain native per-task three-replay pass counts and L2/AUC; no confirmation or performance verdict.",
+      "class": "diagnostic",
+      "owner": "codex-refactor-01a16fc3"
+    },
+    "classification": "harness admission; missing normal launch proof, no native cohort inference in this attempt"
+  },
+  {
+    "event": {
+      "id": "codex3-pip02-fresh-odl-generic-s14-20261029",
+      "ended_file": "/mnt/raid0/llm/tmp/compute-flags/grants/codex3-pip02-fresh-odl-generic-s14-20261029.ended",
+      "end_line": "rc=75 time=2026-10-29T21:17:25Z reason=job-rc-75:exited",
+      "seen_at": "2026-10-29T21:18:00Z",
+      "result_path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/ODL-BATCH-DONE-14",
+      "scratch_root": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/packets-generic/odl-s14",
+      "decision_rule": "Collect native ODL 2.5.0 + Docling 2.91.0 docling-fast full-mode predictions on fresh English cohort shard 14, 25 disjoint pages; retain per-page source, input, grant and partial/unknown states. Never redraw an exposed unknown. No parser-quality or TEDS verdict until common scoring.",
+      "class": "diagnostic",
+      "owner": "codex3"
+    },
+    "original_batch": {
+      "cohort": "pip02-english-fresh-20261029",
+      "error": null,
+      "finished_epoch": 1793308642.504816,
+      "partial": true,
+      "rc": 75,
+      "schema": "pip02-odl-batch/v1",
+      "shard": 14,
+      "signal": null,
+      "started_at_rule": "page start records own grant/protocol/source identities",
+      "statuses": {
+        "350": "complete",
+        "351": "complete",
+        "352": "complete",
+        "353": "complete",
+        "354": "complete",
+        "355": "complete",
+        "356": "complete",
+        "357": "complete",
+        "358": "complete",
+        "359": "complete",
+        "360": "complete",
+        "361": "unknown",
+        "362": "missing",
+        "363": "missing",
+        "364": "missing",
+        "365": "missing",
+        "366": "missing",
+        "367": "missing",
+        "368": "missing",
+        "369": "missing",
+        "370": "missing",
+        "371": "missing",
+        "372": "missing",
+        "373": "missing",
+        "374": "missing"
+      }
+    },
+    "counts": {
+      "complete": 11,
+      "unknown": 1,
+      "missing": 13
+    }
+  },
+  {
+    "event": {
+      "id": "codex3-pip02-odl-parallel6-s15-20261029",
+      "ended_file": "/mnt/raid0/llm/tmp/compute-flags/grants/codex3-pip02-odl-parallel6-s15-20261029.ended",
+      "end_line": "rc=75 time=2026-10-29T21:17:22Z reason=job-rc-75:exited",
+      "seen_at": "2026-10-29T21:18:00Z",
+      "result_path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/ODL-BATCH-DONE-15",
+      "scratch_root": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/packets-odl-parallel6/odl-s15",
+      "decision_rule": "Collect native ODL 2.5.0 + Docling 2.91.0 docling-fast full-mode predictions on fresh English cohort shard 15, 25 disjoint pages; retain per-page source, input, grant and partial/unknown states. Never redraw an exposed unknown. No parser-quality or TEDS verdict until common scoring. Run up to twelve independent native page workers with per-page receipts; never redraw exposed unknown.",
+      "class": "diagnostic",
+      "owner": "codex3"
+    },
+    "original_batch": {
+      "cohort": "pip02-english-fresh-20261029",
+      "error": null,
+      "finished_epoch": 1793308640.9533262,
+      "partial": true,
+      "rc": 75,
+      "sampled_peak_tree_rss_bytes": 64703807488,
+      "schema": "pip02-odl-parallel/v1",
+      "shard": 15,
+      "statuses": {
+        "375": "complete",
+        "376": "complete",
+        "377": "complete",
+        "378": "complete",
+        "379": "complete",
+        "380": "complete",
+        "381": "complete",
+        "382": "complete",
+        "383": "complete",
+        "384": "complete",
+        "385": "complete",
+        "386": "complete",
+        "387": "unknown",
+        "388": "unknown",
+        "389": "unknown",
+        "390": "unknown",
+        "391": "unknown",
+        "392": "unknown",
+        "393": "unknown",
+        "394": "unknown",
+        "395": "unknown",
+        "396": "unknown",
+        "397": "unknown",
+        "398": "unknown",
+        "399": "missing"
+      },
+      "workers": 12
+    },
+    "counts": {
+      "complete": 12,
+      "unknown": 12,
+      "missing": 1
+    }
+  },
+  {
+    "event": {
+      "id": "codex3-pip02-odl-parallel6-s22-20261029",
+      "ended_file": "/mnt/raid0/llm/tmp/compute-flags/grants/codex3-pip02-odl-parallel6-s22-20261029.ended",
+      "end_line": "rc=75 time=2026-10-29T21:17:21Z reason=job-rc-75:exited",
+      "seen_at": "2026-10-29T21:18:00Z",
+      "result_path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/ODL-BATCH-DONE-22",
+      "scratch_root": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/packets-odl-parallel6/odl-s22",
+      "decision_rule": "Collect native ODL 2.5.0 + Docling 2.91.0 docling-fast full-mode predictions on fresh English cohort shard 22, 25 disjoint pages; retain per-page source, input, grant and partial/unknown states. Never redraw an exposed unknown. No parser-quality or TEDS verdict until common scoring. Run up to twelve independent native page workers with per-page receipts; never redraw exposed unknown.",
+      "class": "diagnostic",
+      "owner": "codex3"
+    },
+    "original_batch": {
+      "cohort": "pip02-english-fresh-20261029",
+      "error": null,
+      "finished_epoch": 1793308640.8424642,
+      "partial": true,
+      "rc": 75,
+      "sampled_peak_tree_rss_bytes": 58339139584,
+      "schema": "pip02-odl-parallel/v1",
+      "shard": 22,
+      "statuses": {
+        "550": "complete",
+        "551": "complete",
+        "552": "complete",
+        "553": "complete",
+        "554": "complete",
+        "555": "complete",
+        "556": "complete",
+        "557": "complete",
+        "558": "complete",
+        "559": "complete",
+        "560": "complete",
+        "561": "complete",
+        "562": "complete",
+        "563": "complete",
+        "564": "complete",
+        "565": "complete",
+        "566": "complete",
+        "567": "complete",
+        "568": "complete",
+        "569": "complete",
+        "570": "complete",
+        "571": "complete",
+        "572": "complete",
+        "573": "complete",
+        "574": "unknown"
+      },
+      "workers": 12
+    },
+    "counts": {
+      "complete": 24,
+      "unknown": 1
+    }
+  },
+  {
+    "event": {
+      "id": "codex3-pip02-odl-parallel6-s26-20261029",
+      "ended_file": "/mnt/raid0/llm/tmp/compute-flags/grants/codex3-pip02-odl-parallel6-s26-20261029.ended",
+      "end_line": "rc=0 time=2026-10-29T21:24:10Z reason=complete",
+      "seen_at": "2026-10-29T21:24:12Z",
+      "result_path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/ODL-BATCH-DONE-26",
+      "scratch_root": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/packets-odl-parallel6/odl-s26",
+      "decision_rule": "Collect native ODL 2.5.0 + Docling 2.91.0 docling-fast full-mode predictions on fresh English cohort shard 26, 25 disjoint pages; retain per-page source, input, grant and partial/unknown states. Never redraw an exposed unknown. No parser-quality or TEDS verdict until common scoring. Run up to twelve independent native page workers with per-page receipts; never redraw exposed unknown.",
+      "class": "diagnostic",
+      "owner": "codex3"
+    },
+    "original_batch": {
+      "cohort": "pip02-english-fresh-20261029",
+      "error": null,
+      "finished_epoch": 1793309048.830772,
+      "partial": false,
+      "rc": 0,
+      "sampled_peak_tree_rss_bytes": 63756705792,
+      "schema": "pip02-odl-parallel/v1",
+      "shard": 26,
+      "statuses": {
+        "650": "complete",
+        "651": "complete",
+        "652": "complete",
+        "653": "complete",
+        "654": "complete",
+        "655": "complete",
+        "656": "complete",
+        "657": "complete",
+        "658": "complete",
+        "659": "complete",
+        "660": "complete",
+        "661": "complete",
+        "662": "complete",
+        "663": "complete",
+        "664": "complete",
+        "665": "complete",
+        "666": "complete",
+        "667": "complete",
+        "668": "complete",
+        "669": "complete",
+        "670": "complete",
+        "671": "complete",
+        "672": "complete",
+        "673": "complete",
+        "674": "complete"
+      },
+      "workers": 12
+    },
+    "counts": {
+      "complete": 25
+    }
+  },
+  {
+    "event": {
+      "id": "codex3-pip02-odl-parallel6-s23-20261029",
+      "ended_file": "/mnt/raid0/llm/tmp/compute-flags/grants/codex3-pip02-odl-parallel6-s23-20261029.ended",
+      "end_line": "rc=0 time=2026-10-29T21:25:13Z reason=complete",
+      "seen_at": "2026-10-29T21:25:14Z",
+      "result_path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/ODL-BATCH-DONE-23",
+      "scratch_root": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/packets-odl-parallel6/odl-s23",
+      "decision_rule": "Collect native ODL 2.5.0 + Docling 2.91.0 docling-fast full-mode predictions on fresh English cohort shard 23, 25 disjoint pages; retain per-page source, input, grant and partial/unknown states. Never redraw an exposed unknown. No parser-quality or TEDS verdict until common scoring. Run up to twelve independent native page workers with per-page receipts; never redraw exposed unknown.",
+      "class": "diagnostic",
+      "owner": "codex3"
+    },
+    "original_batch": {
+      "cohort": "pip02-english-fresh-20261029",
+      "error": null,
+      "finished_epoch": 1793309111.9221778,
+      "partial": false,
+      "rc": 0,
+      "sampled_peak_tree_rss_bytes": 62163394560,
+      "schema": "pip02-odl-parallel/v1",
+      "shard": 23,
+      "statuses": {
+        "575": "complete",
+        "576": "complete",
+        "577": "complete",
+        "578": "complete",
+        "579": "complete",
+        "580": "complete",
+        "581": "complete",
+        "582": "complete",
+        "583": "complete",
+        "584": "complete",
+        "585": "complete",
+        "586": "complete",
+        "587": "complete",
+        "588": "complete",
+        "589": "complete",
+        "590": "complete",
+        "591": "complete",
+        "592": "complete",
+        "593": "complete",
+        "594": "complete",
+        "595": "complete",
+        "596": "complete",
+        "597": "complete",
+        "598": "complete",
+        "599": "complete"
+      },
+      "workers": 12
+    },
+    "counts": {
+      "complete": 25
+    }
+  },
+  {
+    "event": {
+      "id": "codex3-pip02-odl-parallel6-s30-20261029",
+      "ended_file": "/mnt/raid0/llm/tmp/compute-flags/grants/codex3-pip02-odl-parallel6-s30-20261029.ended",
+      "end_line": "rc=0 time=2026-10-29T21:26:56Z reason=complete",
+      "seen_at": "2026-10-29T21:27:18Z",
+      "result_path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/ODL-BATCH-DONE-30",
+      "scratch_root": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/packets-odl-parallel6/odl-s30",
+      "decision_rule": "Collect native ODL 2.5.0 + Docling 2.91.0 docling-fast full-mode predictions on fresh English cohort shard 30, 5 disjoint pages; retain per-page source, input, grant and partial/unknown states. Never redraw an exposed unknown. No parser-quality or TEDS verdict until common scoring. Run up to twelve independent native page workers with per-page receipts; never redraw exposed unknown.",
+      "class": "diagnostic",
+      "owner": "codex3"
+    },
+    "original_batch": {
+      "cohort": "pip02-english-fresh-20261029",
+      "error": null,
+      "finished_epoch": 1793309214.2286172,
+      "partial": false,
+      "rc": 0,
+      "sampled_peak_tree_rss_bytes": 20187340800,
+      "schema": "pip02-odl-parallel/v1",
+      "shard": 30,
+      "statuses": {
+        "750": "complete",
+        "751": "complete",
+        "752": "complete",
+        "753": "complete",
+        "754": "complete"
+      },
+      "workers": 12
+    },
+    "counts": {
+      "complete": 5
+    }
+  },
+  {
+    "event": {
+      "id": "codex3-pip02-odl-parallel6-s27-20261029",
+      "ended_file": "/mnt/raid0/llm/tmp/compute-flags/grants/codex3-pip02-odl-parallel6-s27-20261029.ended",
+      "end_line": "rc=0 time=2026-10-29T21:33:07Z reason=complete",
+      "seen_at": "2026-10-29T21:33:31Z",
+      "result_path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/ODL-BATCH-DONE-27",
+      "scratch_root": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/packets-odl-parallel6/odl-s27",
+      "decision_rule": "Collect native ODL 2.5.0 + Docling 2.91.0 docling-fast full-mode predictions on fresh English cohort shard 27, 25 disjoint pages; retain per-page source, input, grant and partial/unknown states. Never redraw an exposed unknown. No parser-quality or TEDS verdict until common scoring. Run up to twelve independent native page workers with per-page receipts; never redraw exposed unknown.",
+      "class": "diagnostic",
+      "owner": "codex3"
+    },
+    "original_batch": {
+      "cohort": "pip02-english-fresh-20261029",
+      "error": null,
+      "finished_epoch": 1793309587.0297987,
+      "partial": false,
+      "rc": 0,
+      "sampled_peak_tree_rss_bytes": 100146536448,
+      "schema": "pip02-odl-parallel/v1",
+      "shard": 27,
+      "statuses": {
+        "675": "complete",
+        "676": "complete",
+        "677": "complete",
+        "678": "complete",
+        "679": "complete",
+        "680": "complete",
+        "681": "complete",
+        "682": "complete",
+        "683": "complete",
+        "684": "complete",
+        "685": "complete",
+        "686": "complete",
+        "687": "complete",
+        "688": "complete",
+        "689": "complete",
+        "690": "complete",
+        "691": "complete",
+        "692": "complete",
+        "693": "complete",
+        "694": "complete",
+        "695": "complete",
+        "696": "complete",
+        "697": "complete",
+        "698": "complete",
+        "699": "complete"
+      },
+      "workers": 12
+    },
+    "counts": {
+      "complete": 25
+    }
+  },
+  {
+    "event": {
+      "id": "codex3-pip02-odl-parallel6-s6-20261029",
+      "ended_file": "/mnt/raid0/llm/tmp/compute-flags/grants/codex3-pip02-odl-parallel6-s6-20261029.ended",
+      "end_line": "rc=0 time=2026-10-29T21:32:38Z reason=complete",
+      "seen_at": "2026-10-29T21:33:31Z",
+      "result_path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/ODL-BATCH-DONE-6",
+      "scratch_root": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/packets-odl-parallel6/odl-s6",
+      "decision_rule": "Collect native ODL 2.5.0 + Docling 2.91.0 docling-fast full-mode predictions on fresh English cohort shard 6, 25 disjoint pages; retain per-page source, input, grant and partial/unknown states. Never redraw an exposed unknown. No parser-quality or TEDS verdict until common scoring. Run up to twelve independent native page workers with per-page receipts; never redraw exposed unknown.",
+      "class": "diagnostic",
+      "owner": "codex3"
+    },
+    "original_batch": {
+      "cohort": "pip02-english-fresh-20261029",
+      "error": null,
+      "finished_epoch": 1793309557.059682,
+      "partial": false,
+      "rc": 0,
+      "sampled_peak_tree_rss_bytes": 59690590208,
+      "schema": "pip02-odl-parallel/v1",
+      "shard": 6,
+      "statuses": {
+        "150": "complete",
+        "151": "complete",
+        "152": "complete",
+        "153": "complete",
+        "154": "complete",
+        "155": "complete",
+        "156": "complete",
+        "157": "complete",
+        "158": "complete",
+        "159": "complete",
+        "160": "complete",
+        "161": "complete",
+        "162": "complete",
+        "163": "complete",
+        "164": "complete",
+        "165": "complete",
+        "166": "complete",
+        "167": "complete",
+        "168": "complete",
+        "169": "complete",
+        "170": "complete",
+        "171": "complete",
+        "172": "complete",
+        "173": "complete",
+        "174": "complete"
+      },
+      "workers": 12
+    },
+    "counts": {
+      "complete": 25
+    }
+  }
+]
