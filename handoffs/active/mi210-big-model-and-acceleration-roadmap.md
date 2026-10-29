@@ -84,6 +84,9 @@ P0 was fixed on experimental v7 `96986f5e9`); its gate is a strict-IF/rubric GBN
     `/mnt/raid0/llm/tmp/codex-ni-inf34-dr3e-pgpu1-20261028/`. The technique carries forward only as a
     NEW item with new artifacts: a Qwen3.8-Flash-Next CPU verifier and a low-bit, HBM-resident
     Flash-Next drafter. None of DR-3e's 122B evidence transfers.
+    The 2026-10-28 122B re-download (UD-Q4_K_M 3-shard set plus UD-IQ2_M, 110.50 GiB) was deleted
+    2026-10-29 at about 07:20Z with operator approval. The graveyard row is in epyc-inference-research
+    `orchestration/model_registry.yaml` (f202fd004), so the unarmed preparation now has no weights.
 - [ ] GLM-5.2 endgame: expert-offload / REAP+IQ2 path (operator-gated)
 
 ## Research Intake Update — 2026-07-16 (AirLLM / GPU-active-weight offload)

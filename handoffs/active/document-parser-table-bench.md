@@ -70,6 +70,8 @@ Accepted PIP02 selected-binary library source correction: **VB-PIP02-SELECTED-LI
 - [ ] Capture cleanup proof (no stray `llama-server`, 0% VRAM / no KFD PIDs) per existing K35 discipline.
 
 ### Phase C — full benchmark (**requires operator approval**; long-running)
+- [x] **Operator approval: Phase C APPROVED, English-only.** ✅ 2026-10-29 — The operator approved Phase C on 2026-10-29 after Phase B passed (5947aef8c). The scope is the 755 English pages (`language: english`) only, with both arms: the ODL end-to-end re-baseline and the PaddleOCR-VL-1.6 full pipeline. The Phase D decision is gated on English-only table TEDS. The full 1651-page set and the all-language split below are out of this approval, so their boxes stay open and unrun. [no-belief: not-a-result]
+- [ ] **PIP02-PHASEC-ENGLISH-RUN** — stage and arm the approved English-only run: 755 pages, ODL plus PaddleOCR-VL-1.6, with the same scorer and GT for both arms. Report table TEDS with structure-only TEDS alongside, and persist via `odl_bench compare-existing`. The row needs `est_output` and a `scratch_root` + `keep` (R10), and it points at weights in `/mnt/raid0/llm/models/` (R9). Done when the English-only TEDS for both arms is filed against the Phase D gate.
 - [ ] Re-baseline **ODL end-to-end** on the full 1651-page set. This supersedes `table.TEDS = 0.783813` everywhere it is quoted.
 - [ ] Score **PaddleOCR-VL-1.6 full pipeline** on the same set.
 - [ ] Report **both** an all-language and an **English-only** (`language: english`, 755 pages) split for every metric. The demo set's 64%-Chinese skew is why prior numbers were misleading.
