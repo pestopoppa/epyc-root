@@ -1,0 +1,2042 @@
+{
+  "schema": "codex3.results-filing.v1",
+  "filed_utc": "2026-10-29T22:38:43.586873+00:00",
+  "events": {
+    "codex3-pip02-paddle-parallel-owner-r4-g11-20261029": {
+      "id": "codex3-pip02-paddle-parallel-owner-r4-g11-20261029",
+      "ended_file": "/mnt/raid0/llm/tmp/compute-flags/grants/codex3-pip02-paddle-parallel-owner-r4-g11-20261029.ended",
+      "end_line": "rc=78 time=2026-10-29T22:17:24Z reason=job-rc-78:exited",
+      "seen_at": "2026-10-29T22:17:57Z",
+      "result_path": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-parallel-owner-r4-20261029/DONE-11",
+      "scratch_root": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-parallel-owner-r4-20261029",
+      "decision_rule": "Collect original fresh English Paddle shards11\u201313 (15 disjoint pages), native layout/crop/region/assembly, temperature0,4096outputtokens and8192context per slot; np12 shared server and up12 page workers. Preserve original journals and all missing/unknown states, never replay unmatched RPCs. No TEDS/quality/adoption verdict until the matched common scorer.",
+      "class": "diagnostic",
+      "owner": "codex3"
+    },
+    "hil15-s1-safe-retry-20261029": {
+      "id": "hil15-s1-safe-retry-20261029",
+      "ended_file": "/mnt/raid0/llm/tmp/compute-flags/grants/hil15-s1-safe-retry-20261029.ended",
+      "end_line": "rc=75 time=2026-10-29T22:17:08Z reason=job-rc-75:exited",
+      "seen_at": "2026-10-29T22:17:57Z",
+      "result_path": "/mnt/raid0/llm/tmp/hil15-s1-bounded-v18-20261029/results-pilot/DONE",
+      "scratch_root": "/mnt/raid0/llm/tmp/hil15-s1-bounded-v18-20261029",
+      "decision_rule": "Discovery diagnostic: retain per-task three-replay pass counts, native L2 and AUC outputs; no confirmation or performance verdict.",
+      "class": "diagnostic",
+      "owner": "codex-refactor-01a16fc3"
+    },
+    "codex3-pip02-odl-parallel6-s7-20261029": {
+      "id": "codex3-pip02-odl-parallel6-s7-20261029",
+      "ended_file": "/mnt/raid0/llm/tmp/compute-flags/grants/codex3-pip02-odl-parallel6-s7-20261029.ended",
+      "end_line": "rc=0 time=2026-10-29T22:23:52Z reason=complete",
+      "seen_at": "2026-10-29T22:24:09Z",
+      "result_path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/ODL-BATCH-DONE-7",
+      "scratch_root": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/packets-odl-parallel6/odl-s7",
+      "decision_rule": "Collect native ODL 2.5.0 + Docling 2.91.0 docling-fast full-mode predictions on fresh English cohort shard 7, 25 disjoint pages; retain per-page source, input, grant and partial/unknown states. Never redraw an exposed unknown. No parser-quality or TEDS verdict until common scoring. Run up to twelve independent native page workers with per-page receipts; never redraw exposed unknown.",
+      "class": "diagnostic",
+      "owner": "codex3"
+    },
+    "codex-ni-inf50-writerrace-resume-r13-20261029": {
+      "id": "codex-ni-inf50-writerrace-resume-r13-20261029",
+      "ended_file": "/mnt/raid0/llm/tmp/compute-flags/grants/codex-ni-inf50-writerrace-resume-r13-20261029.ended",
+      "end_line": "rc=1 time=2026-10-29T22:30:49Z reason=job-rc-1:exited",
+      "seen_at": "2026-10-29T22:31:23Z",
+      "result_path": "/mnt/raid0/llm/tmp/codex-ni-inf50-writerrace-resume-r13-20261029/results/RESULT.json",
+      "scratch_root": "/mnt/raid0/llm/tmp/codex-ni-inf50-writerrace-resume-r13-20261029",
+      "decision_rule": "Pass the scheduled R13 run only when it proves the full 3,072-path inventory, cache resume and all five exact native grammar targets with resolved UID coverage; the smoke is a bounded analyzer/cache-writer qualification, not a full-scope verdict.",
+      "class": "block-correctness",
+      "owner": "codex-ni"
+    },
+    "codex3-pip02-fresh-s3-20261029": {
+      "id": "codex3-pip02-fresh-s3-20261029",
+      "ended_file": "/mnt/raid0/llm/tmp/compute-flags/grants/codex3-pip02-fresh-s3-20261029.ended",
+      "end_line": "rc=1 time=2026-10-29T22:34:08Z reason=stop-file-before-start",
+      "seen_at": "2026-10-29T22:34:29Z",
+      "result_path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/DONE-fresh-3",
+      "scratch_root": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/packets-quad-review/paddle-s3",
+      "decision_rule": "Collect native Paddle 1.6 region checkpoints for fresh English cohort shard 3, five disjoint pages [39, 40, 41, 42, 43]; retain native layout, request, response, originating grant and source receipts; stop at request boundary, never redraw unknown or completed model requests. No parser quality verdict until the matched common scorer and coverage are available.",
+      "class": "diagnostic",
+      "owner": "codex3"
+    },
+    "codex3-pip02-odl-310r2-resolved-r1-20261029": {
+      "id": "codex3-pip02-odl-310r2-resolved-r1-20261029",
+      "ended_file": "/mnt/raid0/llm/tmp/compute-flags/grants/codex3-pip02-odl-310r2-resolved-r1-20261029.ended",
+      "end_line": "rc=1 time=2026-10-29T22:33:29Z reason=stop-file-before-start",
+      "seen_at": "2026-10-29T22:34:29Z",
+      "result_path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/ODL-310-RESOLVED-DONE",
+      "scratch_root": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/packets-odl-310r2",
+      "decision_rule": "First actual ODL client exposure for fresh English ordinal310, original pre-exposure input-only failure. Preserve original directory and hash-bound resolution including absent start/client/sidecar. Use distinct first-client attempt; no redraw of any realunknown request; no standalone quality verdict.",
+      "class": "diagnostic",
+      "owner": "codex3"
+    }
+  },
+  "outcomes": {
+    "codex3-pip02-paddle-parallel-owner-r4-g11-20261029": {
+      "classification": "FAILED-RUN disk-floor plus earlier saved-layout refusal",
+      "last_native_result": {
+        "result": {
+          "path": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-parallel-owner-r4-20261029/attempts/codex3-pip02-paddle-parallel-owner-r4-g11-20261029-c56f5cd1794342f7b3b04ff1d48f1ada/result.json",
+          "sha256": "6e54d1e6b9e8de2cb34507873989ea2b7c835e75f09ffe22547ff5814282227a"
+        },
+        "native": {
+          "error": "TimeoutError: admission",
+          "factory": null,
+          "partial": true,
+          "rc": 75,
+          "reason": "disk floor",
+          "sampled_peak_tree_rss_bytes": 110161920,
+          "samples": 1,
+          "schema": "pip02-paddle-parallel-owner/v1",
+          "shards": [
+            11,
+            12,
+            13
+          ],
+          "smoke": false
+        },
+        "capture": {
+          "path": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-parallel-owner-r4-20261029/attempts/codex3-pip02-paddle-parallel-owner-r4-g11-20261029-c56f5cd1794342f7b3b04ff1d48f1ada/capture.json",
+          "sha256": "3423732cb0c1a4647b5590df77cf67c7759702af1cbecc23a28c395817cbf491"
+        }
+      },
+      "attempts": [
+        {
+          "result": {
+            "path": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-parallel-owner-r4-20261029/attempts/codex3-pip02-paddle-parallel-owner-r4-g11-20261029-6f21c75ddefd4f648dd736a357247ef0/result.json",
+            "sha256": "8c2a11f6950d7f8f942a665288bc1e16081857824f6de23b8290f25bb8c19bb5"
+          },
+          "native": {
+            "error": null,
+            "factory": {
+              "captured_server": [
+                19775,
+                143457123
+              ],
+              "cpu_sampling": {
+                "first_ns": 1434572330650089,
+                "last_ns": 1434692695631474,
+                "peak_vram": 0,
+                "samples": 1067
+              },
+              "server_identity": {
+                "birth": 143457123,
+                "ppid": 4126643,
+                "state": "R"
+              },
+              "worker_identity": {
+                "birth": 143457231,
+                "ppid": 4126643,
+                "state": "R"
+              },
+              "worker_rc": 75
+            },
+            "partial": true,
+            "rc": 75,
+            "reason": null,
+            "sampled_peak_tree_rss_bytes": 10025553920,
+            "samples": 115,
+            "schema": "pip02-paddle-parallel-owner/v1",
+            "shards": [
+              11,
+              12,
+              13
+            ],
+            "smoke": false
+          },
+          "capture": {
+            "path": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-parallel-owner-r4-20261029/attempts/codex3-pip02-paddle-parallel-owner-r4-g11-20261029-6f21c75ddefd4f648dd736a357247ef0/capture.json",
+            "sha256": "7c743aa94e46177140c28169f9d3a4fafeec88b356833707f8b23004f34b0494"
+          }
+        },
+        {
+          "result": {
+            "path": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-parallel-owner-r4-20261029/attempts/codex3-pip02-paddle-parallel-owner-r4-g11-20261029-0d522ee367db4c5195694a7d6d9fe5fb/result.json",
+            "sha256": "d8f61d1c124727a18f8b0a29c1b7118d0d7beded10ce27943337665b46d989cd"
+          },
+          "native": {
+            "error": null,
+            "factory": {
+              "captured_server": [
+                4131941,
+                143418034
+              ],
+              "cpu_sampling": {
+                "first_ns": 1434181887747210,
+                "last_ns": 1434261203377700,
+                "peak_vram": 0,
+                "samples": 702
+              },
+              "server_identity": {
+                "birth": 143418034,
+                "ppid": 4126643,
+                "state": "R"
+              },
+              "worker_identity": {
+                "birth": 143418188,
+                "ppid": 4126643,
+                "state": "R"
+              },
+              "worker_rc": 75
+            },
+            "partial": true,
+            "rc": 75,
+            "reason": null,
+            "sampled_peak_tree_rss_bytes": 9457377280,
+            "samples": 77,
+            "schema": "pip02-paddle-parallel-owner/v1",
+            "shards": [
+              11,
+              12,
+              13
+            ],
+            "smoke": false
+          },
+          "capture": {
+            "path": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-parallel-owner-r4-20261029/attempts/codex3-pip02-paddle-parallel-owner-r4-g11-20261029-0d522ee367db4c5195694a7d6d9fe5fb/capture.json",
+            "sha256": "6e231cf6eb80cb1c71c02f20e1fe6e9fb9980e07259af4de7aa82ba93ba9e46f"
+          }
+        },
+        {
+          "result": {
+            "path": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-parallel-owner-r4-20261029/attempts/codex3-pip02-paddle-parallel-owner-r4-g11-20261029-f1a92ad3780b491ea6ed7b53a002a937/result.json",
+            "sha256": "f6fbaa19e30b027f41d174c504d5378d52ae285eb76b6ad5699ffaab5d8216b8"
+          },
+          "native": {
+            "error": null,
+            "factory": {
+              "captured_server": [
+                4180067,
+                143443108
+              ],
+              "cpu_sampling": {
+                "first_ns": 1434433089229635,
+                "last_ns": 1434546987648024,
+                "peak_vram": 0,
+                "samples": 1008
+              },
+              "server_identity": {
+                "birth": 143443108,
+                "ppid": 4126643,
+                "state": "R"
+              },
+              "worker_identity": {
+                "birth": 143443294,
+                "ppid": 4126643,
+                "state": "R"
+              },
+              "worker_rc": 75
+            },
+            "partial": true,
+            "rc": 75,
+            "reason": null,
+            "sampled_peak_tree_rss_bytes": 10353848320,
+            "samples": 110,
+            "schema": "pip02-paddle-parallel-owner/v1",
+            "shards": [
+              11,
+              12,
+              13
+            ],
+            "smoke": false
+          },
+          "capture": {
+            "path": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-parallel-owner-r4-20261029/attempts/codex3-pip02-paddle-parallel-owner-r4-g11-20261029-f1a92ad3780b491ea6ed7b53a002a937/capture.json",
+            "sha256": "a8f5c68d7f8cd3c0b00352c0f32d349ddc4055b3f0e374ab7a5cc56df600815b"
+          }
+        },
+        {
+          "result": {
+            "path": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-parallel-owner-r4-20261029/attempts/codex3-pip02-paddle-parallel-owner-r4-g11-20261029-c56f5cd1794342f7b3b04ff1d48f1ada/result.json",
+            "sha256": "6e54d1e6b9e8de2cb34507873989ea2b7c835e75f09ffe22547ff5814282227a"
+          },
+          "native": {
+            "error": "TimeoutError: admission",
+            "factory": null,
+            "partial": true,
+            "rc": 75,
+            "reason": "disk floor",
+            "sampled_peak_tree_rss_bytes": 110161920,
+            "samples": 1,
+            "schema": "pip02-paddle-parallel-owner/v1",
+            "shards": [
+              11,
+              12,
+              13
+            ],
+            "smoke": false
+          },
+          "capture": {
+            "path": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-parallel-owner-r4-20261029/attempts/codex3-pip02-paddle-parallel-owner-r4-g11-20261029-c56f5cd1794342f7b3b04ff1d48f1ada/capture.json",
+            "sha256": "3423732cb0c1a4647b5590df77cf67c7759702af1cbecc23a28c395817cbf491"
+          }
+        },
+        {
+          "result": {
+            "path": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-parallel-owner-r4-20261029/attempts/codex3-pip02-paddle-parallel-owner-r4-g11-20261029-17e4f480b059428ab3f6567ae4e8559c/result.json",
+            "sha256": "4927e07a92b4ad51dfa972f487dffe0ede15bd64094b9b145521e0f9c3aea541"
+          },
+          "native": {
+            "error": null,
+            "factory": {
+              "captured_server": [
+                4152124,
+                143428762
+              ],
+              "cpu_sampling": {
+                "first_ns": 1434289164273089,
+                "last_ns": 1434404233853631,
+                "peak_vram": 0,
+                "samples": 1014
+              },
+              "server_identity": {
+                "birth": 143428762,
+                "ppid": 4126643,
+                "state": "R"
+              },
+              "worker_identity": {
+                "birth": 143428916,
+                "ppid": 4126643,
+                "state": "R"
+              },
+              "worker_rc": 75
+            },
+            "partial": true,
+            "rc": 75,
+            "reason": null,
+            "sampled_peak_tree_rss_bytes": 10082070528,
+            "samples": 111,
+            "schema": "pip02-paddle-parallel-owner/v1",
+            "shards": [
+              11,
+              12,
+              13
+            ],
+            "smoke": false
+          },
+          "capture": {
+            "path": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-parallel-owner-r4-20261029/attempts/codex3-pip02-paddle-parallel-owner-r4-g11-20261029-17e4f480b059428ab3f6567ae4e8559c/capture.json",
+            "sha256": "89bdc9c0c41224cb79cf4f8712a6c3fe4864905ec65c5c014ee0c98cdc4fe4d2"
+          }
+        }
+      ],
+      "owner_action": "immutable r7 preserves original score and exact crop/body/response provenance; native real smoke passed five HTTP200s, published q2/q3 under operator max-two queue cap",
+      "quality_verdict": null
+    },
+    "hil15-s1-safe-retry-20261029": {
+      "classification": "PARTIAL original22:17:08 rc75, cleanup verified; later sameID22:22:30 rc1 is separate retained-incomplete refusal",
+      "original_launcher_log": {
+        "path": "/mnt/raid0/llm/tmp/hil15-s1-bounded-v18-20261029/ws58-launcher.out",
+        "sha256": "8aae7dd96b8c11c704569ac0e3db8f30bc9e6eea9160fd6274c3b35aee4d5bbb"
+      },
+      "new_units": [
+        {
+          "unit": 13,
+          "slots": [
+            {
+              "slot": 0,
+              "pass": false,
+              "manifest": {
+                "path": "/mnt/raid0/llm/tmp/hil15-s1-bounded-v18-20261029/results-pilot/unit-13/slot-0/786778b0fb194ed983c08c7960cba4c2/driver-0/manifest.json",
+                "sha256": "fa06f8a99aa151e9c4e7fc65ed01802d5a8989bd4bfdd7da657cc716d2056b35"
+              }
+            },
+            {
+              "slot": 1,
+              "pass": true,
+              "manifest": {
+                "path": "/mnt/raid0/llm/tmp/hil15-s1-bounded-v18-20261029/results-pilot/unit-13/slot-1/cc1fe1335ab5479aa8f94930a1655fd6/driver-1/manifest.json",
+                "sha256": "80bf461803815805bd98c522e79b0a2a75639a5a4ea0c04a8ca13ef6261b0d21"
+              }
+            },
+            {
+              "slot": 2,
+              "pass": true,
+              "manifest": {
+                "path": "/mnt/raid0/llm/tmp/hil15-s1-bounded-v18-20261029/results-pilot/unit-13/slot-2/09d11ca4c06f46f3af196040a6f217ab/driver-2/manifest.json",
+                "sha256": "8b3a6b27b10ade1cb895f5cf56e4379e669f68b391af6ac41ae1f6a634c4e30d"
+              }
+            }
+          ]
+        },
+        {
+          "unit": 14,
+          "slots": [
+            {
+              "slot": 0,
+              "pass": true,
+              "manifest": {
+                "path": "/mnt/raid0/llm/tmp/hil15-s1-bounded-v18-20261029/results-pilot/unit-14/slot-0/3a8410e43dfb46c69be0d37114fbb509/driver-0/manifest.json",
+                "sha256": "c9828aeea6b8a0ac5fb44bffd534109badce24f64d21e692d516981646ba498c"
+              }
+            },
+            {
+              "slot": 1,
+              "pass": true,
+              "manifest": {
+                "path": "/mnt/raid0/llm/tmp/hil15-s1-bounded-v18-20261029/results-pilot/unit-14/slot-1/6cb6c868c54041c79d61137749b6c6b6/driver-1/manifest.json",
+                "sha256": "3e2d30899ab2878193f20e133d0258bad4065a59bd2d1e01158eb044d09dbcf7"
+              }
+            },
+            {
+              "slot": 2,
+              "pass": false,
+              "manifest": {
+                "path": "/mnt/raid0/llm/tmp/hil15-s1-bounded-v18-20261029/results-pilot/unit-14/slot-2/eb901fe5e0b54f6cb6bed2365de61ba5/driver-2/manifest.json",
+                "sha256": "ea5c1cdf0f12c6e75f1fdc8efc66d2d8f42cdf466b4547f4f967c8c305d7f1df"
+              }
+            }
+          ]
+        }
+      ],
+      "original_unit15_slot0": "incomplete original attempt retained; do not rerun without exposure reconciliation",
+      "whole_shard_at_first_partial": {
+        "complete_units": 14,
+        "accepted_replays": 42,
+        "passes": 27,
+        "band_1_or_2_of_3": 7
+      },
+      "quality_or_auc_verdict": null
+    },
+    "codex3-pip02-odl-parallel6-s7-20261029": {
+      "classification": "COMPLETE native collection",
+      "pages": [
+        {
+          "ordinal": 175,
+          "result": {
+            "path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-07/page-0175/result.json",
+            "sha256": "e4e7ac7a60364bd419ebd371bd0798d19c8424187f057089a0a58c2fd13ae74e"
+          },
+          "start": {
+            "path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-07/page-0175/start.json",
+            "sha256": "5b7633f539d7229535940cd112cef898848a09316203ae0c6a48bd685550d0bf"
+          },
+          "prediction_sha256": "7717674c906b8ee62491823e6fe561b007997658bf001a02998f01d4a47692ae"
+        },
+        {
+          "ordinal": 176,
+          "result": {
+            "path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-07/page-0176/result.json",
+            "sha256": "645db5d48504c3a430bb695d276499a4d09d9035c8de8cdd5b6f4ac34fb2ab2e"
+          },
+          "start": {
+            "path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-07/page-0176/start.json",
+            "sha256": "edf0ff1b912bb1c391271846ec2e109476114bb0d17d2a66bc0218b09495a21f"
+          },
+          "prediction_sha256": "fbe3633bcdace71b53abd0e03792029c8c2a1e0387f29d59873cecd9f51a0500"
+        },
+        {
+          "ordinal": 177,
+          "result": {
+            "path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-07/page-0177/result.json",
+            "sha256": "22739725c5cfd78091137ae6fc7f285f8dfed773426e1992aec64d353dffd663"
+          },
+          "start": {
+            "path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-07/page-0177/start.json",
+            "sha256": "60b774b05e2d249893e644977c8506ad1ed8dad4e08ea07c7157c6815682d083"
+          },
+          "prediction_sha256": "aabe7b5f2fac3ff819771941bc5ccdd8063abc30f570b398930b21ad6d4f52c0"
+        },
+        {
+          "ordinal": 178,
+          "result": {
+            "path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-07/page-0178/result.json",
+            "sha256": "52f6bf5edcdaabb7b8798e3d27e165a2a3c90c9cac4684dc62f8a9a4534d7662"
+          },
+          "start": {
+            "path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-07/page-0178/start.json",
+            "sha256": "4639abb22f253729f2ff6ce9c7c19028740eec0a88ec02d866d7f1bb3fa198ee"
+          },
+          "prediction_sha256": "66aa807130853848be97cf611a791d4f9b126a60aecb20752c587dc1ed275cef"
+        },
+        {
+          "ordinal": 179,
+          "result": {
+            "path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-07/page-0179/result.json",
+            "sha256": "eed1bfbad41c7c86f8d62ff29d6c8cb22ca8cf825d4875ffbca4521b67f11a2c"
+          },
+          "start": {
+            "path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-07/page-0179/start.json",
+            "sha256": "6a22d0d89ba1b40d3f7d991a957b313be132d20259d00d510e60a9567ccde2f0"
+          },
+          "prediction_sha256": "78b3761a042574561e51aa56bb4c42a15e5f6c67c70f29a466330ef8e779d319"
+        },
+        {
+          "ordinal": 180,
+          "result": {
+            "path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-07/page-0180/result.json",
+            "sha256": "4f70b3415b7e9495e5cd18cecb9afcb60cef6e89b1b41a6c89bb38d4ff812500"
+          },
+          "start": {
+            "path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-07/page-0180/start.json",
+            "sha256": "4c66d34b6a8049e78ba3621cc15e79ac049da2978c0c51ace47ed57598c7ac84"
+          },
+          "prediction_sha256": "d1b237db555a044d137f52b6712addf76de61dfea2d2b0b3debd7cb932387f91"
+        },
+        {
+          "ordinal": 181,
+          "result": {
+            "path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-07/page-0181/result.json",
+            "sha256": "ab7d4a5073ccacf492c5b5b58aa5e3c6aa0c3bf13a87cc25ebf595184fe17062"
+          },
+          "start": {
+            "path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-07/page-0181/start.json",
+            "sha256": "3288c1a3c32a76ccd7e030c2cb78fe28a1e011bb8b76abfef40f0c31df259500"
+          },
+          "prediction_sha256": "22aec89b04fdc72b3a6e3d6b110a34750ab9d7fdb6aa986a2f135ab9e9847e5a"
+        },
+        {
+          "ordinal": 182,
+          "result": {
+            "path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-07/page-0182/result.json",
+            "sha256": "62b4f34fa2e900cf6fb10a32e54b86ab699cae7ef80f8888f3cadb80777a9ef8"
+          },
+          "start": {
+            "path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-07/page-0182/start.json",
+            "sha256": "e4596b41519a682f26990b3b329467e92477be0f05de49e399e16a47d3214168"
+          },
+          "prediction_sha256": "0fab9b440d6f272d1b76613c2ca0ddfe1eb3c1fcfd0a00226d70aeb1e8380b4e"
+        },
+        {
+          "ordinal": 183,
+          "result": {
+            "path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-07/page-0183/result.json",
+            "sha256": "d16fd31f1b8006fdd4ba46f2a7024b56971f080c7b2a515e4d90ee567a90fefb"
+          },
+          "start": {
+            "path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-07/page-0183/start.json",
+            "sha256": "ba11c7c0438047caca3b9df62b21cb7b06313d6a6a2a464d0c1900c6fdf03cf7"
+          },
+          "prediction_sha256": "12dbb8d12ed522197606cca218f2a62912aa0dd6fe9d58e795769b315a7318cb"
+        },
+        {
+          "ordinal": 184,
+          "result": {
+            "path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-07/page-0184/result.json",
+            "sha256": "012cf9b3cc58e8e32540caff4e47e6c56cbdcdbe410440db62960b5af748410e"
+          },
+          "start": {
+            "path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-07/page-0184/start.json",
+            "sha256": "7c2009cd7fb3e49e0dd25174322c5989cf0c8bd34af45c3145b915545ccac2d2"
+          },
+          "prediction_sha256": "68e68a5aaa77a3050bcc929255a350cee644f2aad4593eb6b6f8d78c9aaecb45"
+        },
+        {
+          "ordinal": 185,
+          "result": {
+            "path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-07/page-0185/result.json",
+            "sha256": "e3aa1da15fa1c2db86a7b4d944026e9647d981e147e66d8d543bdfdbbffc2666"
+          },
+          "start": {
+            "path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-07/page-0185/start.json",
+            "sha256": "d6863ecb13601decf0f1aac49409da10483c3929ed4114c110f906fe27bbf3dd"
+          },
+          "prediction_sha256": "a379c1a59fd2705c595cddbebcd58552ab8b980199e101d949935f94e2210958"
+        },
+        {
+          "ordinal": 186,
+          "result": {
+            "path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-07/page-0186/result.json",
+            "sha256": "efa76b8b63fcaca8af468523c8d63a159af879c5ad69875dd8d12780f4260477"
+          },
+          "start": {
+            "path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-07/page-0186/start.json",
+            "sha256": "afe7ba91c1517c9433fcd94dc732fea71667d5cc2afbc3e0728ef744ac49c04b"
+          },
+          "prediction_sha256": "62873655664b873dce1f7d09a21c10202dff65694d22ebc81ae594f4fe398348"
+        },
+        {
+          "ordinal": 187,
+          "result": {
+            "path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-07/page-0187/result.json",
+            "sha256": "7ca7772edd9112fa631fb924d3b58e99e7906020b1f7a740b75baad87e68ad92"
+          },
+          "start": {
+            "path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-07/page-0187/start.json",
+            "sha256": "a62f9841645d6f9e6c89749a73dfeb4b1402f06f2687125070083c8f64b7455b"
+          },
+          "prediction_sha256": "2368e78b1036ab6d02bed75e100ac985c893c284a1eb750c3374c1d4d02b03cc"
+        },
+        {
+          "ordinal": 188,
+          "result": {
+            "path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-07/page-0188/result.json",
+            "sha256": "7f8a2deb3a01bfa08e8155dfda9259f30f244390f70f59912b6780e922e3a808"
+          },
+          "start": {
+            "path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-07/page-0188/start.json",
+            "sha256": "f6d6ac8ffdff7be5605917883fc7897476274a2cdf6516a7f63c173147211220"
+          },
+          "prediction_sha256": "386177f3f85bdb0ba25a9f48408ea2f85f9991fc25143700bcc349edf2044207"
+        },
+        {
+          "ordinal": 189,
+          "result": {
+            "path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-07/page-0189/result.json",
+            "sha256": "8b1c29168af90e5c79b49390d7407e080983a1b55653767af2c9dcd09aab3e95"
+          },
+          "start": {
+            "path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-07/page-0189/start.json",
+            "sha256": "c6e1d8dd6159745b04dfae2a45011cac2da483d335ad368518b9a5b4e6fcf2cf"
+          },
+          "prediction_sha256": "085c0401dc34676963cc3b51ab5b1cf3de733bb8ecde644fd56fc991039b6a21"
+        },
+        {
+          "ordinal": 190,
+          "result": {
+            "path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-07/page-0190/result.json",
+            "sha256": "9e2f9663f073eed8969acec2b58e8f9326cf9c50812d765fa4bba7d07f56f20e"
+          },
+          "start": {
+            "path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-07/page-0190/start.json",
+            "sha256": "06ccadeea47a351e0882985b0ba0a112eb3b858283cb4e3123f4112ed69a9a28"
+          },
+          "prediction_sha256": "e1815fddd7bfd8bb5cbfd17d94d6e8d3d31fe00ccb239f8ca5f15749ff297cdb"
+        },
+        {
+          "ordinal": 191,
+          "result": {
+            "path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-07/page-0191/result.json",
+            "sha256": "27b0f675b0ebe5cb08d1b298631337e243295b2f7a0bba3fa3303fb949e5808c"
+          },
+          "start": {
+            "path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-07/page-0191/start.json",
+            "sha256": "c8a72cc28a804aba79a82566a15bcb0d942b7367148fe760c41b6dd75935b200"
+          },
+          "prediction_sha256": "fb3ea055e42343e5f730cee997a13b7453bd34e4a0815c340c72128366968ab9"
+        },
+        {
+          "ordinal": 192,
+          "result": {
+            "path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-07/page-0192/result.json",
+            "sha256": "cc009fbea6b6761571326b19da79c8f728c174f9a346bcb94196b9d5df031ab0"
+          },
+          "start": {
+            "path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-07/page-0192/start.json",
+            "sha256": "984f6a0a3a2292cc97aa42c275c8bae1408dc53e708079d05d7667d991f8c3e6"
+          },
+          "prediction_sha256": "6717bdd3d1a1be419bbb674ede6cf674c9e18b7df9145fa43cad97911e74239c"
+        },
+        {
+          "ordinal": 193,
+          "result": {
+            "path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-07/page-0193/result.json",
+            "sha256": "cfa117566220cc6f3c6800b0edb2e90eb5ad3aabeec50304e811059ebcd4d26a"
+          },
+          "start": {
+            "path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-07/page-0193/start.json",
+            "sha256": "4492231fdcdc7a16cfd3dc428202afeeb72581021ac5d4c9c9118b8629470cc5"
+          },
+          "prediction_sha256": "f55e63bffb76ecbe9fd4351d8e5b36443f96d197bb5993838648ce5bfbe3b641"
+        },
+        {
+          "ordinal": 194,
+          "result": {
+            "path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-07/page-0194/result.json",
+            "sha256": "ee5a9e60296c6dee0269a376a2c8170f099ef2b56360ab8fa19ed51b8e6174f7"
+          },
+          "start": {
+            "path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-07/page-0194/start.json",
+            "sha256": "7f449136417cec9cb16e275bd0af54f90f1dc80e409d28d9380845f542af333d"
+          },
+          "prediction_sha256": "ef024ca6ce4ff26cf74ac69dc3688b5d613d4176e90f5bc0b9d64c2969da56ab"
+        },
+        {
+          "ordinal": 195,
+          "result": {
+            "path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-07/page-0195/result.json",
+            "sha256": "c6763b7b266ce0fa13f7b8ab218154bb6336974de0acc8254b00cbdbb9edc2be"
+          },
+          "start": {
+            "path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-07/page-0195/start.json",
+            "sha256": "f169911cee22992303703899c557f7bede17da87304d8aa2b93be8a800bc634d"
+          },
+          "prediction_sha256": "6df6dcaa5540663050d7833a1c5b2fbde74de542fab8e2e0611c5b9fb5828b56"
+        },
+        {
+          "ordinal": 196,
+          "result": {
+            "path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-07/page-0196/result.json",
+            "sha256": "fa59581bca7b71d987d69216aa84c1ab7a1dce9c8d348db4dae924736a4adc66"
+          },
+          "start": {
+            "path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-07/page-0196/start.json",
+            "sha256": "d9eb3f4bca0f37d82f1ce64dec0f77bbff587425101c7660e530415cd67c2aec"
+          },
+          "prediction_sha256": "68b38da72e61d50b08abffa586af1b5bfdfedaf6af8129f3cfab1c4186577c94"
+        },
+        {
+          "ordinal": 197,
+          "result": {
+            "path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-07/page-0197/result.json",
+            "sha256": "162d34e1f42ea99fab4fb57a7c7dcedf173357042c77bfa6663bc0544e7d3915"
+          },
+          "start": {
+            "path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-07/page-0197/start.json",
+            "sha256": "46ca1a700719df5a17c7603f0646967af54e7e091beebced701f23e30457bdc3"
+          },
+          "prediction_sha256": "d3b0368e9ae9b120ce9f7e37fb38a0b418cbc12151f153581e4ae07c5f9c2208"
+        },
+        {
+          "ordinal": 198,
+          "result": {
+            "path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-07/page-0198/result.json",
+            "sha256": "d8e6cff5d00ef6014ec2b485b34783c204f9bedd84de7ede42b59452c5fd0cb0"
+          },
+          "start": {
+            "path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-07/page-0198/start.json",
+            "sha256": "cd90e3701bc842a121bb77d47c7ca2cd92f25ff501a8841ca45057996b4097df"
+          },
+          "prediction_sha256": "86cbb0a8b8dad805917d40c180dfc88ba5418f84f42456098a76540c3abf85b9"
+        },
+        {
+          "ordinal": 199,
+          "result": {
+            "path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-07/page-0199/result.json",
+            "sha256": "229dece482975bef5e522106a2374abd6168fef21418fe8e044b289ccd26ec43"
+          },
+          "start": {
+            "path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-07/page-0199/start.json",
+            "sha256": "edc315f72b05fbc042578067d2351e63865558d2a894ff0edbda2ceb4e052c3e"
+          },
+          "prediction_sha256": "42206610e485d80e4e97f8192f59fb90cb149d1fdd0f80158e0244b97ae62f8b"
+        }
+      ],
+      "done": {
+        "path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/ODL-BATCH-DONE-7",
+        "sha256": "29ea27416fb1c1ae9bc96da5514171fd2a6764b5aa51e39cbdbb22969b4a22e5"
+      },
+      "quality_verdict": null
+    },
+    "codex-ni-inf50-writerrace-resume-r13-20261029": {
+      "classification": "FAILED-RUN harness query native-cap record cardinality",
+      "result": {
+        "path": "/mnt/raid0/llm/tmp/codex-ni-inf50-writerrace-resume-r13-20261029/results/RESULT.json",
+        "sha256": "a7cceb2df4d517541100acca42b7113cc55a13dfe679ded0bd65a6bf6bac2ab6"
+      },
+      "error": "RuntimeError: RuntimeError('query native cap record count is not exactly one'); filename=None",
+      "INF50_complete": false,
+      "full_grammar_verdict": null
+    },
+    "codex3-pip02-fresh-s3-20261029": {
+      "classification": "owner-retired queued dispatch before start under explicit operator relocation/cap; prior raw records retained",
+      "measurement_verdict": null
+    },
+    "codex3-pip02-odl-310r2-resolved-r1-20261029": {
+      "classification": "owner-retired queued dispatch before first client under explicit operator relocation/cap; remains prepared, original input-only resolution retained",
+      "measurement_verdict": null
+    }
+  },
+  "quarter_cap": {
+    "withdrawal": {
+      "path": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-parallel-owner-r7-20261029/QUARTER-CAP-WITHDRAWAL.json",
+      "sha256": "06b73fb27a3bfb9ad96bc8b2f69c88f326c6f29bd61b0a51e08b5225d2b54950"
+    },
+    "published": {
+      "path": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-parallel-owner-r7-20261029/PUBLISHED-Q2-Q3.json",
+      "sha256": "b821f52ca8957a5cd08b074dcb47528213d660b9f6dce3adc6e36d7ef2c601cf"
+    },
+    "count": 4,
+    "regions": {
+      "48-71": 2,
+      "72-95": 2
+    },
+    "no_running_grant_was_stopped": true,
+    "rearm_adjustment": {
+      "path": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-parallel-owner-r7-20261029/QUARTER-CAP-REARM-ADJUSTMENT.json",
+      "sha256": "aa5b0d1ce7744e42fee647abca18ae72d61549f207eecc2b5fb3033803135d6e",
+      "native": {
+        "at": "2026-10-29T22:40:07.673386+00:00",
+        "retained_q2": [
+          "codex3-pip02-paddle-generic-s103-20261029",
+          "codex3-pip02-paddle-parallel-owner-r7-g107-20261029"
+        ],
+        "retained_q3": [
+          "codex3-pip02-paddle-parallel-owner-r7-g14-20261029",
+          "codex3-pip02-paddle-parallel-owner-r7-g26-20261029"
+        ],
+        "parked_unarmed": "codex3-pip02-paddle-parallel-owner-r7-g11-20261029",
+        "reason": "existing103 rearm/wait boundary must count toward operator two-per-quarter cap; no active worker interrupted"
+      }
+    }
+  },
+  "live_disk_evidence": {
+    "full_trace": {
+      "path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/disk-snapshot-window-trace.jsonl",
+      "sha256": "afdc1a38b66af4f052763b7b495a8db33dafa3d60fc21e5d21450eb5ee663f7a"
+    },
+    "slice_2217_2218": [
+      {
+        "epoch": 1793312220.2732263,
+        "available_bytes": 169494437888,
+        "snapshot_files": [
+          {
+            "name": "host-daniele.db",
+            "size": 3763863552,
+            "mtime_ns": 1793308626127833950,
+            "inode": 126667308
+          },
+          {
+            "name": "README.md",
+            "size": 2126,
+            "mtime_ns": 1792673220348039123,
+            "inode": 126649088
+          },
+          {
+            "name": "epyc.db",
+            "size": 10979930112,
+            "mtime_ns": 1793308657467128403,
+            "inode": 126649105
+          }
+        ]
+      },
+      {
+        "epoch": 1793312221.2735345,
+        "available_bytes": 169494437888,
+        "snapshot_files": [
+          {
+            "name": "host-daniele.db",
+            "size": 3763863552,
+            "mtime_ns": 1793308626127833950,
+            "inode": 126667308
+          },
+          {
+            "name": "README.md",
+            "size": 2126,
+            "mtime_ns": 1792673220348039123,
+            "inode": 126649088
+          },
+          {
+            "name": "epyc.db",
+            "size": 10979930112,
+            "mtime_ns": 1793308657467128403,
+            "inode": 126649105
+          }
+        ]
+      },
+      {
+        "epoch": 1793312222.2737727,
+        "available_bytes": 168657301504,
+        "snapshot_files": [
+          {
+            "name": "host-daniele.db",
+            "size": 3763863552,
+            "mtime_ns": 1793308626127833950,
+            "inode": 126667308
+          },
+          {
+            "name": "README.md",
+            "size": 2126,
+            "mtime_ns": 1792673220348039123,
+            "inode": 126649088
+          },
+          {
+            "name": "epyc.db",
+            "size": 10979930112,
+            "mtime_ns": 1793308657467128403,
+            "inode": 126649105
+          }
+        ]
+      },
+      {
+        "epoch": 1793312223.2740746,
+        "available_bytes": 166360408064,
+        "snapshot_files": [
+          {
+            "name": "host-daniele.db",
+            "size": 3763863552,
+            "mtime_ns": 1793308626127833950,
+            "inode": 126667308
+          },
+          {
+            "name": "README.md",
+            "size": 2126,
+            "mtime_ns": 1792673220348039123,
+            "inode": 126649088
+          },
+          {
+            "name": "epyc.db",
+            "size": 10979930112,
+            "mtime_ns": 1793308657467128403,
+            "inode": 126649105
+          }
+        ]
+      },
+      {
+        "epoch": 1793312224.274368,
+        "available_bytes": 164876423168,
+        "snapshot_files": [
+          {
+            "name": "host-daniele.db",
+            "size": 3763863552,
+            "mtime_ns": 1793308626127833950,
+            "inode": 126667308
+          },
+          {
+            "name": ".host-daniele.db.tmp",
+            "size": 854630400,
+            "mtime_ns": 1793312224272766087,
+            "inode": 126667526
+          },
+          {
+            "name": "README.md",
+            "size": 2126,
+            "mtime_ns": 1792673220348039123,
+            "inode": 126649088
+          },
+          {
+            "name": "epyc.db",
+            "size": 10979930112,
+            "mtime_ns": 1793308657467128403,
+            "inode": 126649105
+          }
+        ]
+      },
+      {
+        "epoch": 1793312225.8186638,
+        "available_bytes": 161965924352,
+        "snapshot_files": [
+          {
+            "name": "host-daniele.db",
+            "size": 3764445184,
+            "mtime_ns": 1793312225021772927,
+            "inode": 126667526
+          },
+          {
+            "name": "README.md",
+            "size": 2126,
+            "mtime_ns": 1792673220348039123,
+            "inode": 126649088
+          },
+          {
+            "name": "epyc.db",
+            "size": 10979930112,
+            "mtime_ns": 1793308657467128403,
+            "inode": 126649105
+          }
+        ]
+      },
+      {
+        "epoch": 1793312226.818906,
+        "available_bytes": 165729759232,
+        "snapshot_files": [
+          {
+            "name": "host-daniele.db",
+            "size": 3764445184,
+            "mtime_ns": 1793312225021772927,
+            "inode": 126667526
+          },
+          {
+            "name": "README.md",
+            "size": 2126,
+            "mtime_ns": 1792673220348039123,
+            "inode": 126649088
+          },
+          {
+            "name": "epyc.db",
+            "size": 10979930112,
+            "mtime_ns": 1793308657467128403,
+            "inode": 126649105
+          }
+        ]
+      },
+      {
+        "epoch": 1793312227.819167,
+        "available_bytes": 168111579136,
+        "snapshot_files": [
+          {
+            "name": "host-daniele.db",
+            "size": 3764445184,
+            "mtime_ns": 1793312225021772927,
+            "inode": 126667526
+          },
+          {
+            "name": "README.md",
+            "size": 2126,
+            "mtime_ns": 1792673220348039123,
+            "inode": 126649088
+          },
+          {
+            "name": "epyc.db",
+            "size": 10979930112,
+            "mtime_ns": 1793308657467128403,
+            "inode": 126649105
+          }
+        ]
+      },
+      {
+        "epoch": 1793312228.8194134,
+        "available_bytes": 166061236224,
+        "snapshot_files": [
+          {
+            "name": "host-daniele.db",
+            "size": 3764445184,
+            "mtime_ns": 1793312225021772927,
+            "inode": 126667526
+          },
+          {
+            "name": "README.md",
+            "size": 2126,
+            "mtime_ns": 1792673220348039123,
+            "inode": 126649088
+          },
+          {
+            "name": "epyc.db",
+            "size": 10979930112,
+            "mtime_ns": 1793308657467128403,
+            "inode": 126649105
+          }
+        ]
+      },
+      {
+        "epoch": 1793312229.8196542,
+        "available_bytes": 164080771072,
+        "snapshot_files": [
+          {
+            "name": "host-daniele.db",
+            "size": 3764445184,
+            "mtime_ns": 1793312225021772927,
+            "inode": 126667526
+          },
+          {
+            "name": "README.md",
+            "size": 2126,
+            "mtime_ns": 1792673220348039123,
+            "inode": 126649088
+          },
+          {
+            "name": "epyc.db",
+            "size": 10979930112,
+            "mtime_ns": 1793308657467128403,
+            "inode": 126649105
+          }
+        ]
+      },
+      {
+        "epoch": 1793312230.8198853,
+        "available_bytes": 162066931712,
+        "snapshot_files": [
+          {
+            "name": "host-daniele.db",
+            "size": 3764445184,
+            "mtime_ns": 1793312225021772927,
+            "inode": 126667526
+          },
+          {
+            "name": "README.md",
+            "size": 2126,
+            "mtime_ns": 1792673220348039123,
+            "inode": 126649088
+          },
+          {
+            "name": "epyc.db",
+            "size": 10979930112,
+            "mtime_ns": 1793308657467128403,
+            "inode": 126649105
+          }
+        ]
+      },
+      {
+        "epoch": 1793312231.8201156,
+        "available_bytes": 160000815104,
+        "snapshot_files": [
+          {
+            "name": "host-daniele.db",
+            "size": 3764445184,
+            "mtime_ns": 1793312225021772927,
+            "inode": 126667526
+          },
+          {
+            "name": "README.md",
+            "size": 2126,
+            "mtime_ns": 1792673220348039123,
+            "inode": 126649088
+          },
+          {
+            "name": "epyc.db",
+            "size": 10979930112,
+            "mtime_ns": 1793308657467128403,
+            "inode": 126649105
+          }
+        ]
+      },
+      {
+        "epoch": 1793312232.8203466,
+        "available_bytes": 158514069504,
+        "snapshot_files": [
+          {
+            "name": "host-daniele.db",
+            "size": 3764445184,
+            "mtime_ns": 1793312225021772927,
+            "inode": 126667526
+          },
+          {
+            "name": "README.md",
+            "size": 2126,
+            "mtime_ns": 1792673220348039123,
+            "inode": 126649088
+          },
+          {
+            "name": "epyc.db",
+            "size": 10979930112,
+            "mtime_ns": 1793308657467128403,
+            "inode": 126649105
+          }
+        ]
+      },
+      {
+        "epoch": 1793312233.8206196,
+        "available_bytes": 158514077696,
+        "snapshot_files": [
+          {
+            "name": "host-daniele.db",
+            "size": 3764445184,
+            "mtime_ns": 1793312225021772927,
+            "inode": 126667526
+          },
+          {
+            "name": "README.md",
+            "size": 2126,
+            "mtime_ns": 1792673220348039123,
+            "inode": 126649088
+          },
+          {
+            "name": "epyc.db",
+            "size": 10979930112,
+            "mtime_ns": 1793308657467128403,
+            "inode": 126649105
+          }
+        ]
+      },
+      {
+        "epoch": 1793312234.820854,
+        "available_bytes": 155733983232,
+        "snapshot_files": [
+          {
+            "name": "host-daniele.db",
+            "size": 3764445184,
+            "mtime_ns": 1793312225021772927,
+            "inode": 126667526
+          },
+          {
+            "name": "README.md",
+            "size": 2126,
+            "mtime_ns": 1792673220348039123,
+            "inode": 126649088
+          },
+          {
+            "name": "epyc.db",
+            "size": 10979930112,
+            "mtime_ns": 1793308657467128403,
+            "inode": 126649105
+          }
+        ]
+      },
+      {
+        "epoch": 1793312235.821133,
+        "available_bytes": 152814923776,
+        "snapshot_files": [
+          {
+            "name": "host-daniele.db",
+            "size": 3764445184,
+            "mtime_ns": 1793312225021772927,
+            "inode": 126667526
+          },
+          {
+            "name": "README.md",
+            "size": 2126,
+            "mtime_ns": 1792673220348039123,
+            "inode": 126649088
+          },
+          {
+            "name": "epyc.db",
+            "size": 10979930112,
+            "mtime_ns": 1793308657467128403,
+            "inode": 126649105
+          }
+        ]
+      },
+      {
+        "epoch": 1793312236.8213704,
+        "available_bytes": 149913235456,
+        "snapshot_files": [
+          {
+            "name": "host-daniele.db",
+            "size": 3764445184,
+            "mtime_ns": 1793312225021772927,
+            "inode": 126667526
+          },
+          {
+            "name": "README.md",
+            "size": 2126,
+            "mtime_ns": 1792673220348039123,
+            "inode": 126649088
+          },
+          {
+            "name": "epyc.db",
+            "size": 10979930112,
+            "mtime_ns": 1793308657467128403,
+            "inode": 126649105
+          }
+        ]
+      },
+      {
+        "epoch": 1793312237.8216233,
+        "available_bytes": 147534049280,
+        "snapshot_files": [
+          {
+            "name": "host-daniele.db",
+            "size": 3764445184,
+            "mtime_ns": 1793312225021772927,
+            "inode": 126667526
+          },
+          {
+            "name": "README.md",
+            "size": 2126,
+            "mtime_ns": 1792673220348039123,
+            "inode": 126649088
+          },
+          {
+            "name": "epyc.db",
+            "size": 10979930112,
+            "mtime_ns": 1793308657467128403,
+            "inode": 126649105
+          }
+        ]
+      },
+      {
+        "epoch": 1793312238.821855,
+        "available_bytes": 158148431872,
+        "snapshot_files": [
+          {
+            "name": "host-daniele.db",
+            "size": 3764445184,
+            "mtime_ns": 1793312225021772927,
+            "inode": 126667526
+          },
+          {
+            "name": "README.md",
+            "size": 2126,
+            "mtime_ns": 1792673220348039123,
+            "inode": 126649088
+          },
+          {
+            "name": "epyc.db",
+            "size": 10979930112,
+            "mtime_ns": 1793308657467128403,
+            "inode": 126649105
+          }
+        ]
+      },
+      {
+        "epoch": 1793312239.8220956,
+        "available_bytes": 154633445376,
+        "snapshot_files": [
+          {
+            "name": "host-daniele.db",
+            "size": 3764445184,
+            "mtime_ns": 1793312225021772927,
+            "inode": 126667526
+          },
+          {
+            "name": "README.md",
+            "size": 2126,
+            "mtime_ns": 1792673220348039123,
+            "inode": 126649088
+          },
+          {
+            "name": "epyc.db",
+            "size": 10979930112,
+            "mtime_ns": 1793308657467128403,
+            "inode": 126649105
+          }
+        ]
+      },
+      {
+        "epoch": 1793312240.8223584,
+        "available_bytes": 150734786560,
+        "snapshot_files": [
+          {
+            "name": "host-daniele.db",
+            "size": 3764445184,
+            "mtime_ns": 1793312225021772927,
+            "inode": 126667526
+          },
+          {
+            "name": "README.md",
+            "size": 2126,
+            "mtime_ns": 1792673220348039123,
+            "inode": 126649088
+          },
+          {
+            "name": "epyc.db",
+            "size": 10979930112,
+            "mtime_ns": 1793308657467128403,
+            "inode": 126649105
+          }
+        ]
+      },
+      {
+        "epoch": 1793312241.8226447,
+        "available_bytes": 147494293504,
+        "snapshot_files": [
+          {
+            "name": "host-daniele.db",
+            "size": 3764445184,
+            "mtime_ns": 1793312225021772927,
+            "inode": 126667526
+          },
+          {
+            "name": "README.md",
+            "size": 2126,
+            "mtime_ns": 1792673220348039123,
+            "inode": 126649088
+          },
+          {
+            "name": "epyc.db",
+            "size": 10979930112,
+            "mtime_ns": 1793308657467128403,
+            "inode": 126649105
+          }
+        ]
+      },
+      {
+        "epoch": 1793312242.8228772,
+        "available_bytes": 147492900864,
+        "snapshot_files": [
+          {
+            "name": "host-daniele.db",
+            "size": 3764445184,
+            "mtime_ns": 1793312225021772927,
+            "inode": 126667526
+          },
+          {
+            "name": "README.md",
+            "size": 2126,
+            "mtime_ns": 1792673220348039123,
+            "inode": 126649088
+          },
+          {
+            "name": "epyc.db",
+            "size": 10979930112,
+            "mtime_ns": 1793308657467128403,
+            "inode": 126649105
+          }
+        ]
+      },
+      {
+        "epoch": 1793312243.8231022,
+        "available_bytes": 147492864000,
+        "snapshot_files": [
+          {
+            "name": "host-daniele.db",
+            "size": 3764445184,
+            "mtime_ns": 1793312225021772927,
+            "inode": 126667526
+          },
+          {
+            "name": "README.md",
+            "size": 2126,
+            "mtime_ns": 1792673220348039123,
+            "inode": 126649088
+          },
+          {
+            "name": "epyc.db",
+            "size": 10979930112,
+            "mtime_ns": 1793308657467128403,
+            "inode": 126649105
+          }
+        ]
+      },
+      {
+        "epoch": 1793312244.823327,
+        "available_bytes": 158472790016,
+        "snapshot_files": [
+          {
+            "name": "host-daniele.db",
+            "size": 3764445184,
+            "mtime_ns": 1793312225021772927,
+            "inode": 126667526
+          },
+          {
+            "name": "README.md",
+            "size": 2126,
+            "mtime_ns": 1792673220348039123,
+            "inode": 126649088
+          },
+          {
+            "name": "epyc.db",
+            "size": 10979930112,
+            "mtime_ns": 1793308657467128403,
+            "inode": 126649105
+          }
+        ]
+      },
+      {
+        "epoch": 1793312245.8235645,
+        "available_bytes": 158472769536,
+        "snapshot_files": [
+          {
+            "name": "host-daniele.db",
+            "size": 3764445184,
+            "mtime_ns": 1793312225021772927,
+            "inode": 126667526
+          },
+          {
+            "name": "README.md",
+            "size": 2126,
+            "mtime_ns": 1792673220348039123,
+            "inode": 126649088
+          },
+          {
+            "name": "epyc.db",
+            "size": 10979930112,
+            "mtime_ns": 1793308657467128403,
+            "inode": 126649105
+          }
+        ]
+      },
+      {
+        "epoch": 1793312246.82382,
+        "available_bytes": 158472753152,
+        "snapshot_files": [
+          {
+            "name": "host-daniele.db",
+            "size": 3764445184,
+            "mtime_ns": 1793312225021772927,
+            "inode": 126667526
+          },
+          {
+            "name": "README.md",
+            "size": 2126,
+            "mtime_ns": 1792673220348039123,
+            "inode": 126649088
+          },
+          {
+            "name": "epyc.db",
+            "size": 10979930112,
+            "mtime_ns": 1793308657467128403,
+            "inode": 126649105
+          }
+        ]
+      },
+      {
+        "epoch": 1793312247.8240366,
+        "available_bytes": 158472749056,
+        "snapshot_files": [
+          {
+            "name": "host-daniele.db",
+            "size": 3764445184,
+            "mtime_ns": 1793312225021772927,
+            "inode": 126667526
+          },
+          {
+            "name": "README.md",
+            "size": 2126,
+            "mtime_ns": 1792673220348039123,
+            "inode": 126649088
+          },
+          {
+            "name": "epyc.db",
+            "size": 10979930112,
+            "mtime_ns": 1793308657467128403,
+            "inode": 126649105
+          }
+        ]
+      },
+      {
+        "epoch": 1793312248.8242493,
+        "available_bytes": 158472749056,
+        "snapshot_files": [
+          {
+            "name": "host-daniele.db",
+            "size": 3764445184,
+            "mtime_ns": 1793312225021772927,
+            "inode": 126667526
+          },
+          {
+            "name": "README.md",
+            "size": 2126,
+            "mtime_ns": 1792673220348039123,
+            "inode": 126649088
+          },
+          {
+            "name": "epyc.db",
+            "size": 10979930112,
+            "mtime_ns": 1793308657467128403,
+            "inode": 126649105
+          }
+        ]
+      },
+      {
+        "epoch": 1793312249.8244753,
+        "available_bytes": 158293942272,
+        "snapshot_files": [
+          {
+            "name": ".epyc.db.tmp",
+            "size": 179052544,
+            "mtime_ns": 1793312249822999357,
+            "inode": 126664261
+          },
+          {
+            "name": "host-daniele.db",
+            "size": 3764445184,
+            "mtime_ns": 1793312225021772927,
+            "inode": 126667526
+          },
+          {
+            "name": "README.md",
+            "size": 2126,
+            "mtime_ns": 1792673220348039123,
+            "inode": 126649088
+          },
+          {
+            "name": "epyc.db",
+            "size": 10979930112,
+            "mtime_ns": 1793308657467128403,
+            "inode": 126649105
+          }
+        ]
+      },
+      {
+        "epoch": 1793312250.8247192,
+        "available_bytes": 154633900032,
+        "snapshot_files": [
+          {
+            "name": ".epyc.db.tmp",
+            "size": 3839041536,
+            "mtime_ns": 1793312250824008494,
+            "inode": 126664261
+          },
+          {
+            "name": "host-daniele.db",
+            "size": 3764445184,
+            "mtime_ns": 1793312225021772927,
+            "inode": 126667526
+          },
+          {
+            "name": "README.md",
+            "size": 2126,
+            "mtime_ns": 1792673220348039123,
+            "inode": 126649088
+          },
+          {
+            "name": "epyc.db",
+            "size": 10979930112,
+            "mtime_ns": 1793308657467128403,
+            "inode": 126649105
+          }
+        ]
+      },
+      {
+        "epoch": 1793312251.824966,
+        "available_bytes": 150900666368,
+        "snapshot_files": [
+          {
+            "name": ".epyc.db.tmp",
+            "size": 7572205568,
+            "mtime_ns": 1793312251824017621,
+            "inode": 126664261
+          },
+          {
+            "name": "host-daniele.db",
+            "size": 3764445184,
+            "mtime_ns": 1793312225021772927,
+            "inode": 126667526
+          },
+          {
+            "name": "README.md",
+            "size": 2126,
+            "mtime_ns": 1792673220348039123,
+            "inode": 126649088
+          },
+          {
+            "name": "epyc.db",
+            "size": 10979930112,
+            "mtime_ns": 1793308657467128403,
+            "inode": 126649105
+          }
+        ]
+      },
+      {
+        "epoch": 1793312261.6730742,
+        "available_bytes": 147492741120,
+        "snapshot_files": [
+          {
+            "name": "host-daniele.db",
+            "size": 3764445184,
+            "mtime_ns": 1793312225021772927,
+            "inode": 126667526
+          },
+          {
+            "name": "README.md",
+            "size": 2126,
+            "mtime_ns": 1792673220348039123,
+            "inode": 126649088
+          },
+          {
+            "name": "epyc.db",
+            "size": 10979930112,
+            "mtime_ns": 1793312252689025516,
+            "inode": 126664261
+          }
+        ]
+      },
+      {
+        "epoch": 1793312262.6733212,
+        "available_bytes": 158472249344,
+        "snapshot_files": [
+          {
+            "name": "host-daniele.db",
+            "size": 3764445184,
+            "mtime_ns": 1793312225021772927,
+            "inode": 126667526
+          },
+          {
+            "name": "README.md",
+            "size": 2126,
+            "mtime_ns": 1792673220348039123,
+            "inode": 126649088
+          },
+          {
+            "name": "epyc.db",
+            "size": 10979930112,
+            "mtime_ns": 1793312252689025516,
+            "inode": 126664261
+          }
+        ]
+      },
+      {
+        "epoch": 1793312263.6735504,
+        "available_bytes": 158472241152,
+        "snapshot_files": [
+          {
+            "name": "host-daniele.db",
+            "size": 3764445184,
+            "mtime_ns": 1793312225021772927,
+            "inode": 126667526
+          },
+          {
+            "name": "README.md",
+            "size": 2126,
+            "mtime_ns": 1792673220348039123,
+            "inode": 126649088
+          },
+          {
+            "name": "epyc.db",
+            "size": 10979930112,
+            "mtime_ns": 1793312252689025516,
+            "inode": 126664261
+          }
+        ]
+      },
+      {
+        "epoch": 1793312264.6737611,
+        "available_bytes": 169452183552,
+        "snapshot_files": [
+          {
+            "name": "host-daniele.db",
+            "size": 3764445184,
+            "mtime_ns": 1793312225021772927,
+            "inode": 126667526
+          },
+          {
+            "name": "README.md",
+            "size": 2126,
+            "mtime_ns": 1792673220348039123,
+            "inode": 126649088
+          },
+          {
+            "name": "epyc.db",
+            "size": 10979930112,
+            "mtime_ns": 1793312252689025516,
+            "inode": 126664261
+          }
+        ]
+      },
+      {
+        "epoch": 1793312265.674013,
+        "available_bytes": 169452154880,
+        "snapshot_files": [
+          {
+            "name": "host-daniele.db",
+            "size": 3764445184,
+            "mtime_ns": 1793312225021772927,
+            "inode": 126667526
+          },
+          {
+            "name": "README.md",
+            "size": 2126,
+            "mtime_ns": 1792673220348039123,
+            "inode": 126649088
+          },
+          {
+            "name": "epyc.db",
+            "size": 10979930112,
+            "mtime_ns": 1793312252689025516,
+            "inode": 126664261
+          }
+        ]
+      },
+      {
+        "epoch": 1793312266.6742563,
+        "available_bytes": 169452150784,
+        "snapshot_files": [
+          {
+            "name": "host-daniele.db",
+            "size": 3764445184,
+            "mtime_ns": 1793312225021772927,
+            "inode": 126667526
+          },
+          {
+            "name": "README.md",
+            "size": 2126,
+            "mtime_ns": 1792673220348039123,
+            "inode": 126649088
+          },
+          {
+            "name": "epyc.db",
+            "size": 10979930112,
+            "mtime_ns": 1793312252689025516,
+            "inode": 126664261
+          }
+        ]
+      },
+      {
+        "epoch": 1793312267.6745389,
+        "available_bytes": 169452138496,
+        "snapshot_files": [
+          {
+            "name": "host-daniele.db",
+            "size": 3764445184,
+            "mtime_ns": 1793312225021772927,
+            "inode": 126667526
+          },
+          {
+            "name": "README.md",
+            "size": 2126,
+            "mtime_ns": 1792673220348039123,
+            "inode": 126649088
+          },
+          {
+            "name": "epyc.db",
+            "size": 10979930112,
+            "mtime_ns": 1793312252689025516,
+            "inode": 126664261
+          }
+        ]
+      },
+      {
+        "epoch": 1793312268.6748314,
+        "available_bytes": 169452126208,
+        "snapshot_files": [
+          {
+            "name": "host-daniele.db",
+            "size": 3764445184,
+            "mtime_ns": 1793312225021772927,
+            "inode": 126667526
+          },
+          {
+            "name": "README.md",
+            "size": 2126,
+            "mtime_ns": 1792673220348039123,
+            "inode": 126649088
+          },
+          {
+            "name": "epyc.db",
+            "size": 10979930112,
+            "mtime_ns": 1793312252689025516,
+            "inode": 126664261
+          }
+        ]
+      },
+      {
+        "epoch": 1793312269.6751435,
+        "available_bytes": 169452118016,
+        "snapshot_files": [
+          {
+            "name": "host-daniele.db",
+            "size": 3764445184,
+            "mtime_ns": 1793312225021772927,
+            "inode": 126667526
+          },
+          {
+            "name": "README.md",
+            "size": 2126,
+            "mtime_ns": 1792673220348039123,
+            "inode": 126649088
+          },
+          {
+            "name": "epyc.db",
+            "size": 10979930112,
+            "mtime_ns": 1793312252689025516,
+            "inode": 126664261
+          }
+        ]
+      },
+      {
+        "epoch": 1793312270.6753917,
+        "available_bytes": 169452101632,
+        "snapshot_files": [
+          {
+            "name": "host-daniele.db",
+            "size": 3764445184,
+            "mtime_ns": 1793312225021772927,
+            "inode": 126667526
+          },
+          {
+            "name": "README.md",
+            "size": 2126,
+            "mtime_ns": 1792673220348039123,
+            "inode": 126649088
+          },
+          {
+            "name": "epyc.db",
+            "size": 10979930112,
+            "mtime_ns": 1793312252689025516,
+            "inode": 126664261
+          }
+        ]
+      },
+      {
+        "epoch": 1793312271.6756234,
+        "available_bytes": 169452077056,
+        "snapshot_files": [
+          {
+            "name": "host-daniele.db",
+            "size": 3764445184,
+            "mtime_ns": 1793312225021772927,
+            "inode": 126667526
+          },
+          {
+            "name": "README.md",
+            "size": 2126,
+            "mtime_ns": 1792673220348039123,
+            "inode": 126649088
+          },
+          {
+            "name": "epyc.db",
+            "size": 10979930112,
+            "mtime_ns": 1793312252689025516,
+            "inode": 126664261
+          }
+        ]
+      },
+      {
+        "epoch": 1793312272.6758366,
+        "available_bytes": 169451782144,
+        "snapshot_files": [
+          {
+            "name": "host-daniele.db",
+            "size": 3764445184,
+            "mtime_ns": 1793312225021772927,
+            "inode": 126667526
+          },
+          {
+            "name": "README.md",
+            "size": 2126,
+            "mtime_ns": 1792673220348039123,
+            "inode": 126649088
+          },
+          {
+            "name": "epyc.db",
+            "size": 10979930112,
+            "mtime_ns": 1793312252689025516,
+            "inode": 126664261
+          }
+        ]
+      },
+      {
+        "epoch": 1793312273.6760683,
+        "available_bytes": 169451769856,
+        "snapshot_files": [
+          {
+            "name": "host-daniele.db",
+            "size": 3764445184,
+            "mtime_ns": 1793312225021772927,
+            "inode": 126667526
+          },
+          {
+            "name": "README.md",
+            "size": 2126,
+            "mtime_ns": 1792673220348039123,
+            "inode": 126649088
+          },
+          {
+            "name": "epyc.db",
+            "size": 10979930112,
+            "mtime_ns": 1793312252689025516,
+            "inode": 126664261
+          }
+        ]
+      },
+      {
+        "epoch": 1793312274.6762898,
+        "available_bytes": 169451761664,
+        "snapshot_files": [
+          {
+            "name": "host-daniele.db",
+            "size": 3764445184,
+            "mtime_ns": 1793312225021772927,
+            "inode": 126667526
+          },
+          {
+            "name": "README.md",
+            "size": 2126,
+            "mtime_ns": 1792673220348039123,
+            "inode": 126649088
+          },
+          {
+            "name": "epyc.db",
+            "size": 10979930112,
+            "mtime_ns": 1793312252689025516,
+            "inode": 126664261
+          }
+        ]
+      },
+      {
+        "epoch": 1793312275.676527,
+        "available_bytes": 169451732992,
+        "snapshot_files": [
+          {
+            "name": "host-daniele.db",
+            "size": 3764445184,
+            "mtime_ns": 1793312225021772927,
+            "inode": 126667526
+          },
+          {
+            "name": "README.md",
+            "size": 2126,
+            "mtime_ns": 1792673220348039123,
+            "inode": 126649088
+          },
+          {
+            "name": "epyc.db",
+            "size": 10979930112,
+            "mtime_ns": 1793312252689025516,
+            "inode": 126664261
+          }
+        ]
+      },
+      {
+        "epoch": 1793312276.676736,
+        "available_bytes": 169451724800,
+        "snapshot_files": [
+          {
+            "name": "host-daniele.db",
+            "size": 3764445184,
+            "mtime_ns": 1793312225021772927,
+            "inode": 126667526
+          },
+          {
+            "name": "README.md",
+            "size": 2126,
+            "mtime_ns": 1792673220348039123,
+            "inode": 126649088
+          },
+          {
+            "name": "epyc.db",
+            "size": 10979930112,
+            "mtime_ns": 1793312252689025516,
+            "inode": 126664261
+          }
+        ]
+      },
+      {
+        "epoch": 1793312277.6769717,
+        "available_bytes": 169451700224,
+        "snapshot_files": [
+          {
+            "name": "host-daniele.db",
+            "size": 3764445184,
+            "mtime_ns": 1793312225021772927,
+            "inode": 126667526
+          },
+          {
+            "name": "README.md",
+            "size": 2126,
+            "mtime_ns": 1792673220348039123,
+            "inode": 126649088
+          },
+          {
+            "name": "epyc.db",
+            "size": 10979930112,
+            "mtime_ns": 1793312252689025516,
+            "inode": 126664261
+          }
+        ]
+      },
+      {
+        "epoch": 1793312278.677206,
+        "available_bytes": 169451700224,
+        "snapshot_files": [
+          {
+            "name": "host-daniele.db",
+            "size": 3764445184,
+            "mtime_ns": 1793312225021772927,
+            "inode": 126667526
+          },
+          {
+            "name": "README.md",
+            "size": 2126,
+            "mtime_ns": 1792673220348039123,
+            "inode": 126649088
+          },
+          {
+            "name": "epyc.db",
+            "size": 10979930112,
+            "mtime_ns": 1793312252689025516,
+            "inode": 126664261
+          }
+        ]
+      },
+      {
+        "epoch": 1793312279.6774242,
+        "available_bytes": 169451696128,
+        "snapshot_files": [
+          {
+            "name": "host-daniele.db",
+            "size": 3764445184,
+            "mtime_ns": 1793312225021772927,
+            "inode": 126667526
+          },
+          {
+            "name": "README.md",
+            "size": 2126,
+            "mtime_ns": 1792673220348039123,
+            "inode": 126649088
+          },
+          {
+            "name": "epyc.db",
+            "size": 10979930112,
+            "mtime_ns": 1793312252689025516,
+            "inode": 126664261
+          }
+        ]
+      }
+    ],
+    "minimum": {
+      "epoch": 1793312261.6730742,
+      "available_bytes": 147492741120,
+      "snapshot_files": [
+        {
+          "name": "host-daniele.db",
+          "size": 3764445184,
+          "mtime_ns": 1793312225021772927,
+          "inode": 126667526
+        },
+        {
+          "name": "README.md",
+          "size": 2126,
+          "mtime_ns": 1792673220348039123,
+          "inode": 126649088
+        },
+        {
+          "name": "epyc.db",
+          "size": 10979930112,
+          "mtime_ns": 1793312252689025516,
+          "inode": 126664261
+        }
+      ]
+    },
+    "note": "contemporaneous free-space dip observed; raw native g11 explicitly names disk floor. No absent/inaccessible hostproducer was changed."
+  }
+}

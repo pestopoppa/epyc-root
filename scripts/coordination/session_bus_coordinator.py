@@ -6484,6 +6484,84 @@ def route_persistent_compute_idle(bus_root: Path, config: dict, epoch: int,
     return emitted
 
 
+def notify_expired_diagnostic_overrides(bus_root: Path, config: dict, epoch: int) -> list[dict]:
+    """Route each expired diagnostic window once, including across daemon restarts."""
+    if config.get("diagnostic_overrides") is None:
+        return []
+    # The inbox directory is daemon-owned and already lives off-tree. These
+    # private non-JSONL files survive checkout cleanup without becoming mail.
+    # `once` may overlap the daemon. Never block either poller or double-deliver.
+    with (bus_root / "inbox" / ".diagnostic_override_expiry_state.lock").open("a") as lock:
+        try:
+            fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        except BlockingIOError:
+            return []
+        rows = _notify_expired_diagnostic_overrides(bus_root, config, epoch)
+    return [{"schema_version": ADVISORY_SCHEMA, "ts": _utcnow_iso(), "epoch": epoch,
+             **row} for row in rows]
+
+
+def _notify_expired_diagnostic_overrides(bus_root: Path, config: dict, epoch: int) -> list[dict]:
+    from scripts.coordination.diagnostic_override_expiry import snapshot
+
+    settings = config.get("diagnostic_overrides")
+    if settings is None:
+        return []
+    record_dir = settings.get("record_dir") if isinstance(settings, dict) else None
+    if not isinstance(record_dir, str) or not record_dir.strip():
+        return [{"kind": "defect", "detail": "diagnostic override monitor record directory is invalid"}]
+    report = snapshot(Path(record_dir))
+    state_path = bus_root / "inbox" / ".diagnostic_override_expiry_state.json"
+    try:
+        state = json.loads(state_path.read_text()) if state_path.exists() else {"seen": {}, "issues": {}}
+        if (not isinstance(state, dict) or not isinstance(state.get("seen"), dict)
+                or not isinstance(state.setdefault("issues", {}), dict)):
+            raise ValueError("invalid expiry notification state")
+    except (OSError, ValueError) as exc:
+        return [{"kind": "defect", "detail": f"diagnostic override notification state unreadable: {exc}"}]
+    roster = {r.get("id") for r in config.get("roster", []) if isinstance(r, dict)}
+    advice = []
+    changed = False
+    error_key = hashlib.sha256(json.dumps(report["errors"]).encode()).hexdigest()
+    if report["errors"] and state["issues"].get("records") != error_key:
+        advice.extend({"kind": "defect", "detail": error} for error in report["errors"])
+        state["issues"]["records"] = error_key
+        changed = True
+    elif not report["errors"] and state["issues"].pop("records", None) is not None:
+        changed = True
+    for expired in report["expired"]:
+        component, owner, corr_id = (expired[key] for key in ("component", "owner", "corr_id"))
+        if state["seen"].get(component) == corr_id:
+            continue
+        if not isinstance(owner, str) or owner not in roster:
+            if state["issues"].get(component) != corr_id:
+                advice.append({"kind": "defect", "detail":
+                               f"expired diagnostic override {component} has no routable owner; "
+                               f"restore with `{expired['restore_command']}`"})
+                state["issues"][component] = corr_id
+                changed = True
+            continue
+        if state["issues"].pop(component, None) is not None:
+            changed = True
+        inbox, _ = _read_jsonl(bus_root / "inbox" / f"{owner}.jsonl")
+        # Recover a crash after delivery but before the durable dedupe checkpoint.
+        if not any(isinstance(row, dict) and row.get("corr_id") == corr_id and row.get("kind") == "nudge"
+                   and isinstance(row.get("payload"), dict)
+                   and row["payload"].get("reason") == "diagnostic-override-expired"
+                   for row in inbox):
+            _append_inbox(bus_root, [{"to": owner, "kind": "nudge", "corr_id": corr_id,
+                                     "payload": {**expired, "reason": "diagnostic-override-expired",
+                                                 "instruction": "Restore at your own inference boundary; "
+                                                 "no automatic reload was performed."}}], epoch)
+            advice.append({"kind": "diagnostic-override-expired", "agent": owner,
+                           "component": component, "corr_id": corr_id})
+        state["seen"][component] = corr_id
+        changed = True
+    if changed:
+        _write_atomic(state_path, state)
+    return advice
+
+
 def tick(bus_root: Path, epoch: int, *, dry_run: bool = False) -> list[dict]:
     _reset_tick_cache()   # one consistent host view per tick, probed once
     config = _load_config(bus_root)
@@ -6509,6 +6587,7 @@ def tick(bus_root: Path, epoch: int, *, dry_run: bool = False) -> list[dict]:
     if not dry_run:
         roster = [r for r in (config.get("roster") or []) if isinstance(r, dict)]
         advice += relay_outbox_messages(bus_root, roster, epoch, config)
+        advice += notify_expired_diagnostic_overrides(bus_root, config, epoch)
         # C8: boundary surfacing must outlive any single coordinator session, so
         # it runs here (the always-on tier) rather than in a session-local poller.
         advice += detect_task_boundaries(bus_root, roster, epoch)
