@@ -564,12 +564,18 @@ Orchestrator and stack side (workspace-ec; items are linked here as they land):
       restored it, because the A3/A4-done notice was missed, so `declared_env_attestation` sat in its post-expiry ERROR
       state for ~6 h (19:44Z → 01:58Z). The same missed notices delayed the GPU block from 18:15Z to 01:59Z.
       Follow-up: UFH14-DIAG-EC-b.
-  - [ ] **UFH14-DIAG-EC-b — an expired diagnostic override must reach its owner, not only the attestation.**
+  - [x] **UFH14-DIAG-EC-b — an expired diagnostic override must reach its owner, not only the attestation.** ✅ 2026-10-29 [belief: cc]
     (filed 2026-10-04, workspace-ec, from DIAG-EC-a's ~6 h expired ERROR) The expiry is already an ERROR in
     `declared_env_attestation`, but nothing routed it to a session. At expiry, post a bus nudge to the session that
     applied the override (recorded in `logs/env_overrides/<component>.json`) and raise it on the hub's health fold.
     Do not auto-restore: a reload is the window owner's call. Done when a test with an expired record emits exactly
     one nudge naming the component and the restore command.
+    Implemented in root `1ce4056f2` and orchestrator `7b7f6217`: diagnostic reloads record the restoring
+    session; existing coordinator polling routes expiry with durable dedupe and crash recovery; a registered
+    hub health probe exposes expired/malformed records without falsifying freshness. No automatic restore.
+    Validation: 15 root and 64 orchestrator focused tests passed, including malformed inbox payload,
+    missing/unregistered owner retry, concurrent polling, restart/rotation and health recovery; Ruff passed.
+    Full make gates stopped at missing shellcheck. No live reload or notification was performed.
 
 ## Phase C — holistic audit (starts only after A5)
 
