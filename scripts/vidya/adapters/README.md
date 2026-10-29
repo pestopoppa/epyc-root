@@ -911,3 +911,5 @@ The prospective producer `/mnt/raid0/llm/tmp/refactor-01a16fc3/m4-full-fold-read
 ## M4 topology-aware CPU fold source — prospective
 
 The existing M4 CPU speed source additionally admits the separately sealed producer `/mnt/raid0/llm/tmp/refactor-01a16fc3/m4-full-fold-ready-20261028/cpu-fold/dispatch.py`, which records production NUMA and CPU placement. The original source root and seals remain separately trusted. Existing measurement grading applies; VB-M4-FOLD-SPEED-WRITE remains open and no actual-entry, measurement, gate verdict or planner wiring follows from enrollment.
+
+| EVL34 prospective real-REPL / ReDel paired pilot | paired native evaluation producer (prospective; not yet wired or run) | Project original predeclared case/arm records, source/model/route pins, exposure and completion status, native usage, wall time, accuracy, actual delegation and depth, plus containment and custody evidence. Preserve missing/unknown/failed and never retrofit warrants or condition away no-delegation pairs. Do not claim substrate overhead without the relevant observed delegation. | VB-EVL34-NATIVE-PAIR-WRITE |
