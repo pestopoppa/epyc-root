@@ -401,6 +401,69 @@ def _profile(
             _billing(billing["evidence"], base)
         elif billing["evidence"] is not None:
             _billing(billing["evidence"], base)
+    elif kind == "observed_outcome_routing":
+        required = {
+            "cache",
+            "labels",
+            "partition",
+            "recipe",
+            "role_mapping",
+            "raw_decisions",
+            "producer_source",
+            "pool",
+            "fit",
+            "report",
+        }
+        _obj(profile, "observed_outcome_routing", required)
+        for key in required - {"raw_decisions"}:
+            _artifact(profile[key], f"profile.{key}", base)
+        rows = _artifact(
+            profile["raw_decisions"], "profile.raw_decisions", base, jsonl=True
+        )
+        if rows != counts["eligible"]:
+            raise ProjectionError(
+                "routing decisions must account for every test question"
+            )
+        path = Path(profile["raw_decisions"]["path"])
+        if not path.is_absolute():
+            path = base / path
+        seen = set()
+        for line in path.read_bytes().splitlines():
+            row = json.loads(line)
+            qid = _text(row.get("qid"), "routing.qid")
+            if row.get("item_id") != qid or qid not in {
+                key.split(":", 1)[1] for key in raw_keys
+            }:
+                raise ProjectionError(
+                    "routing decisions do not match raw question identities"
+                )
+            _text(row.get("group_id"), "routing.group_id")
+            if qid in seen:
+                raise ProjectionError("duplicate routing question")
+            seen.add(qid)
+            decisions = _obj(
+                row.get("decisions"),
+                "routing.decisions",
+                {"mlp", "hgb", "role_mean", "shuffled"},
+            )
+            for choice in decisions.values():
+                _obj(choice, "routing.choice", {"role", "observed", "outcome"})
+                if type(choice["observed"]) is not bool:
+                    raise ProjectionError("routing observation must be boolean")
+                outcome = choice["outcome"]
+                if choice["observed"]:
+                    if (
+                        not isinstance(choice["role"], str)
+                        or not choice["role"]
+                        or type(outcome) not in (int, float)
+                        or not math.isfinite(outcome)
+                        or not 0 <= outcome <= 1
+                    ):
+                        raise ProjectionError(
+                            "observed routing outcome must be a finite rate"
+                        )
+                elif outcome is not None:
+                    raise ProjectionError("unobserved routing outcome must be absent")
     elif kind == "deterministic_primitive":
         required = {"primitive_id", "conformance_artifact", "provenance_artifact"}
         _obj(profile, "deterministic_primitive", required)
@@ -494,6 +557,26 @@ def validate(receipt: Mapping[str, Any], base: Path) -> None:
         raise ProjectionError("claim.protocol_id must be producer text or empty")
     _text(claim["reps_basis"], "claim.reps_basis")
     _profile(receipt["profile"], base, counts, raw_keys, scored_keys)
+    if receipt["profile"]["kind"] == "observed_outcome_routing":
+        decisions = Path(receipt["profile"]["raw_decisions"]["path"])
+        if not decisions.is_absolute():
+            decisions = base / decisions
+        rows = [json.loads(line) for line in decisions.read_bytes().splitlines()]
+        paired = sum(
+            row["decisions"]["mlp"]["observed"] and row["decisions"]["hgb"]["observed"]
+            for row in rows
+        )
+        if claim["metric"] != "paired_observed_questions" or claim["value"] != paired:
+            raise ProjectionError(
+                "routing paired-observed claim differs from captured decisions"
+            )
+        if (
+            receipt["producer"]["revision"]
+            != receipt["profile"]["producer_source"]["sha256"]
+        ):
+            raise ProjectionError(
+                "routing producer identity differs from captured source"
+            )
     if receipt["profile"]["kind"] == "selector_replay" and window["kind"] != "holdout":
         raise ProjectionError("selector replay requires a frozen holdout")
     if (

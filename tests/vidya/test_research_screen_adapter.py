@@ -331,3 +331,70 @@ def test_receipt_path_is_immutable(tmp_path: Path) -> None:
     changed["disposition"] = {"decision": "promote", "reason": "different decision"}
     with pytest.raises(ct.ProjectionError, match="already holds different bytes"):
         screen.write_receipt(path, changed)
+
+
+def test_routing_native_capture_projection_and_refusals(tmp_path):
+    item = {"role": "frontdoor", "observed": True, "outcome": 0.0}
+    unseen = {"role": "other", "observed": False, "outcome": None}
+    rows = [
+        {
+            "item_id": "q1",
+            "qid": "q1",
+            "group_id": "g1",
+            "status": "scored",
+            "decisions": {
+                "mlp": item,
+                "hgb": unseen,
+                "role_mean": item,
+                "shuffled": item,
+            },
+        }
+    ]
+    payload = body(tmp_path, "typed_decision_shadow")
+    payload["raw_outputs"] = evidence(tmp_path, "items.jsonl", jsonl(rows), rows=1)
+    payload["counts"] = {
+        "eligible": 1,
+        "scored": 1,
+        "failure": 0,
+        "invalid": 0,
+        "abstention": 0,
+    }
+    payload["profile"] = {
+        "kind": "observed_outcome_routing",
+        "raw_decisions": payload["raw_outputs"],
+    }
+    for key in (
+        "cache",
+        "labels",
+        "partition",
+        "recipe",
+        "role_mapping",
+        "producer_source",
+        "pool",
+        "fit",
+        "report",
+    ):
+        payload["profile"][key] = evidence(tmp_path, f"{key}.json", b"{}\n")
+    payload["claim"]["metric"] = "paired_observed_questions"
+    payload["claim"]["value"] = 0
+    payload["producer"]["revision"] = payload["profile"]["producer_source"]["sha256"]
+    path = seal(tmp_path, payload)
+    native = screen.native_rows(path)
+    assert len(native) == 1
+    assert screen.project(native[0]).measurement_id == payload["receipt_id"]
+    assert ct.grade(screen.project(native[0])) is not None
+    (tmp_path / "cache.json").write_bytes(b"changed")
+    with pytest.raises(ct.ProjectionError, match="digest"):
+        screen.native_rows(path)
+    payload["profile"]["cache"] = evidence(tmp_path, "cache.json", b"{}\n")
+    payload["profile"].pop("role_mapping")
+    with pytest.raises(ct.ProjectionError):
+        seal(tmp_path, payload)
+    payload["profile"]["role_mapping"] = evidence(
+        tmp_path, "role_mapping.json", b"{}\n"
+    )
+    unseen["outcome"] = 0.0
+    payload["raw_outputs"] = evidence(tmp_path, "bad.jsonl", jsonl(rows), rows=1)
+    payload["profile"]["raw_decisions"] = payload["raw_outputs"]
+    with pytest.raises(ct.ProjectionError, match="unobserved"):
+        seal(tmp_path, payload)
