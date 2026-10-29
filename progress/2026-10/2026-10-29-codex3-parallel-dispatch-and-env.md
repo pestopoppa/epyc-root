@@ -43,3 +43,7 @@ At the next103 rearm boundary, its queued registration counted toward q2. Parked
 ## Relocatable PIP production of READY packets
 
 Ten new smoke-qualified `any-cpu-quarter` packets are published: five Paddle r8 groups and five wholly unstarted ODL r2 shards. Exact native smokes pass at76.60s and71.89s; keeperv6 accepts all ten. No running source was modified. ODL now writes producer identity before its client request. GPU EVL34 remains unqualified while its faster KFD observer and copied-import preflight are checked. [Evidence](../../artifacts/compute/codex3-relocatable-and-sala-z9-20261029.json). [belief: cc]
+
+## Original23:14–23:17 partials filed
+
+Preserved the independent HILs2 RSS cap, the HIL15b-heavy first partial, four assembled Paddle pages with original hashes, the canceled waiting group107 and KPF18's explicit disk-floor SIGTERM. Later same-ID refusals/resumes are distinguished. No unknown exposure is redrawn and no parent quality gate is ticked. [Native observations](../../artifacts/compute/results-filing-20261029-2328.json). [belief: cc]

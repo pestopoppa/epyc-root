@@ -1,0 +1,473 @@
+{
+  "schema": "codex3.results-filing.v1",
+  "filed_at": "2026-10-29T23:27:36.293074+00:00",
+  "first_events": {
+    "codex-hil15-s2-resume-v2-20261029": {
+      "id": "codex-hil15-s2-resume-v2-20261029",
+      "ended_file": "/mnt/raid0/llm/tmp/compute-flags/grants/codex-hil15-s2-resume-v2-20261029.ended",
+      "end_line": "rc=75 time=2026-10-29T23:14:47Z reason=job-rc-75:exited",
+      "seen_at": "2026-10-29T23:14:49Z",
+      "result_path": "/mnt/raid0/llm/tmp/hil15-s2-unarmed-executor-v1-20261029/s2-official-results",
+      "scratch_root": "/mnt/raid0/llm/tmp/hil15-s2-unarmed-executor-v1-20261029",
+      "decision_rule": "Original15 units and45 slots;13 historical +32 prospective, no redraw. Discovery band is1 or2 of3 correct; epochs remain distinct and this is not independent confirmation or promotion.",
+      "class": "diagnostic",
+      "owner": "codex-refactor-01a16fc3"
+    },
+    "codex3-pip02-paddle-parallel-owner-r7-g107-20261029": {
+      "id": "codex3-pip02-paddle-parallel-owner-r7-g107-20261029",
+      "ended_file": "/mnt/raid0/llm/tmp/compute-flags/grants/codex3-pip02-paddle-parallel-owner-r7-g107-20261029.ended",
+      "end_line": "rc=1 time=2026-10-29T23:16:22Z reason=stop-file-before-start",
+      "seen_at": "2026-10-29T23:16:54Z",
+      "result_path": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-parallel-owner-r7-20261029/DONE-107",
+      "scratch_root": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-parallel-owner-r7-20261029/packets/group-107",
+      "decision_rule": "Collect original fresh English Paddle shards[107, 108, 109], native layout/crop/region/assembly, temperature0,4096output tokens,8192context per slot; np12 and up12 page workers. Preserve original journals; reuse complete RPCs only with identical original bytes/campaign/model/source and response hashes; unmatched RPCs never redrawn. No quality/adoption gate before common scoring.",
+      "class": "diagnostic",
+      "owner": "codex3"
+    },
+    "codex3-hil15b-heavy-r2-20261029": {
+      "id": "codex3-hil15b-heavy-r2-20261029",
+      "ended_file": "/mnt/raid0/llm/tmp/compute-flags/grants/codex3-hil15b-heavy-r2-20261029.ended",
+      "end_line": "rc=75 time=2026-10-29T23:17:08Z reason=job-rc-75:exited",
+      "seen_at": "2026-10-29T23:17:56Z",
+      "result_path": "/mnt/raid0/llm/tmp/codex3-hil15b-heavy-20261029/r2/results-remaining",
+      "scratch_root": "/mnt/raid0/llm/tmp/codex3-hil15b-heavy-20261029/r2",
+      "decision_rule": "Diagnostic continuation of original heavy units 05\u201320; retain each of three original replay slots; no redraw or full-cohort verdict.",
+      "class": "diagnostic",
+      "owner": "codex3"
+    },
+    "codex3-pip02-paddle-parallel-owner-r7-g14-20261029": {
+      "id": "codex3-pip02-paddle-parallel-owner-r7-g14-20261029",
+      "ended_file": "/mnt/raid0/llm/tmp/compute-flags/grants/codex3-pip02-paddle-parallel-owner-r7-g14-20261029.ended",
+      "end_line": "rc=75 time=2026-10-29T23:17:28Z reason=job-rc-75:exited",
+      "seen_at": "2026-10-29T23:17:56Z",
+      "result_path": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-parallel-owner-r7-20261029/DONE-14",
+      "scratch_root": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-parallel-owner-r7-20261029/packets/group-14",
+      "decision_rule": "Collect original fresh English Paddle shards[14, 15, 16], native layout/crop/region/assembly, temperature0,4096output tokens,8192context per slot; np12 and up12 page workers. Preserve original journals; reuse complete RPCs only with identical original bytes/campaign/model/source and response hashes; unmatched RPCs never redrawn. No quality/adoption gate before common scoring.",
+      "class": "diagnostic",
+      "owner": "codex3"
+    },
+    "kpf18-g3-r12-integration-cpu-r2": {
+      "id": "kpf18-g3-r12-integration-cpu-r2",
+      "ended_file": "/mnt/raid0/llm/tmp/compute-flags/grants/kpf18-g3-r12-integration-cpu-r2.ended",
+      "end_line": "rc=143 time=2026-10-29T23:17:05Z reason=exited",
+      "seen_at": "2026-10-29T23:17:56Z",
+      "result_path": "/mnt/raid0/llm/tmp/codex-ni-20261027-kpf18-native-successor-r10/revision-r12-r2/cpu-replay/runs/kpf18-g3-r12-integration-cpu-r2/RESULT.json",
+      "scratch_root": "/mnt/raid0/llm/tmp/codex-ni-20261027-kpf18-native-successor-r10/revision-r12-r2",
+      "decision_rule": "Replay the immutable R6 X1 raw capture and event ledger through the exact R12 bridge. Pass only when the exact target event has unique native task-binding and observed-stage geometry; otherwise retain an explicit refusal. This diagnostic makes no performance, model, GPU, native-control, or model-equivalence claim.",
+      "class": "diagnostic",
+      "owner": "codex-ni"
+    }
+  },
+  "hil15_s2": {
+    "outcome": "PARTIAL rc75 RSS cap",
+    "native_partial": {
+      "sha256": "88d43ac4312601b5951a91e1068bcb9e755b70394baac15652f7cef8c5dce5a8",
+      "path_pattern": "/mnt/raid0/llm/tmp/hil15-s2-unarmed-executor-v1-20261029/s2-official-results/slice-*/partial.json",
+      "locator_kind": "unique glob match with exact native SHA-256"
+    },
+    "native": {
+      "partial": true,
+      "reason": "refused: RSS cap",
+      "completed_scope": "source-bound native slot files only",
+      "unknown_exposures": "existing incomplete slots are never redrawn",
+      "sampled_peak_rss_bytes": 42966319104,
+      "samples": 16756
+    },
+    "new_complete_replays": [
+      {
+        "manifest": {
+          "path": "/mnt/raid0/llm/tmp/hil15-s2-unarmed-executor-v1-20261029/s2-official-results/unit-05/slot-1/driver-1/manifest.json",
+          "sha256": "4d4b5a10c6018612798a943e68eda175fd766795801dee42d5d8f8186ea45045"
+        },
+        "pass": false
+      },
+      {
+        "manifest": {
+          "path": "/mnt/raid0/llm/tmp/hil15-s2-unarmed-executor-v1-20261029/s2-official-results/unit-05/slot-2/driver-2/manifest.json",
+          "sha256": "d6b7478f3acd12faea10a5b774230bf895e3b1aeb4b676a4a4dea80458e4a960"
+        },
+        "pass": false
+      },
+      {
+        "manifest": {
+          "path": "/mnt/raid0/llm/tmp/hil15-s2-unarmed-executor-v1-20261029/s2-official-results/unit-06/slot-1/driver-1/manifest.json",
+          "sha256": "0b1e31b1ad5e53bae39e4b8c86e28b7a148069ecce7e9baba4246b8b9b0e4800"
+        },
+        "pass": true
+      },
+      {
+        "manifest": {
+          "path": "/mnt/raid0/llm/tmp/hil15-s2-unarmed-executor-v1-20261029/s2-official-results/unit-06/slot-0/driver-0/manifest.json",
+          "sha256": "5962f800763e7507adf8416b4dc7840fa0a1bd94a74bd325141a55558dfc7217"
+        },
+        "pass": false
+      }
+    ],
+    "predeclared_historical_replays": 13,
+    "unmatched": "unit06slot2 exposed incomplete, never redraw",
+    "no_band_or_AUC_verdict": true
+  },
+  "paddle_g107": {
+    "outcome": "owner-retired waiting dispatch before start for relocatable successor; no new measurement",
+    "successor": "codex3-pip02-paddle-relocatable-r8-g107-20261029"
+  },
+  "hil15b_heavy": {
+    "outcome": "PARTIAL original23:17:08 rc75; later sameID23:22:14 rc1 is separate retained-incomplete refusal",
+    "complete_units_05_10": [
+      {
+        "unit": 5,
+        "passes": 1,
+        "slots": [
+          {
+            "slot": 0,
+            "pass": false,
+            "manifest": {
+              "path": "/mnt/raid0/llm/tmp/codex3-hil15b-heavy-20261029/r2/results-remaining/unit-05/driver-0/manifest.json",
+              "sha256": "92c07208835290deae757db06ddb794049b83da84e79837baa851acdce671f5c"
+            }
+          },
+          {
+            "slot": 1,
+            "pass": false,
+            "manifest": {
+              "path": "/mnt/raid0/llm/tmp/codex3-hil15b-heavy-20261029/r2/results-remaining/unit-05/driver-1/manifest.json",
+              "sha256": "e7d777e4634f00c0b1fc2afd93e3b0e114f680ab9264b1195f1f7ca6ae591d6b"
+            }
+          },
+          {
+            "slot": 2,
+            "pass": true,
+            "manifest": {
+              "path": "/mnt/raid0/llm/tmp/codex3-hil15b-heavy-20261029/r2/results-remaining/unit-05/driver-2/manifest.json",
+              "sha256": "2a03ea1775f40d1ea72e83a5eb1c279032e9de2cad38a32b1850969191781115"
+            }
+          }
+        ]
+      },
+      {
+        "unit": 6,
+        "passes": 2,
+        "slots": [
+          {
+            "slot": 0,
+            "pass": true,
+            "manifest": {
+              "path": "/mnt/raid0/llm/tmp/codex3-hil15b-heavy-20261029/r2/results-remaining/unit-06/driver-0/manifest.json",
+              "sha256": "242b7a5448b28d84239d6f0ffa14c7cc91b85449e95c4e972d2e30a17f136a33"
+            }
+          },
+          {
+            "slot": 1,
+            "pass": false,
+            "manifest": {
+              "path": "/mnt/raid0/llm/tmp/codex3-hil15b-heavy-20261029/r2/results-remaining/unit-06/driver-1/manifest.json",
+              "sha256": "089de1ffa93c5237e47f892d9b742fe3c08160e7d25d2c956c00f1b2accd8a6a"
+            }
+          },
+          {
+            "slot": 2,
+            "pass": true,
+            "manifest": {
+              "path": "/mnt/raid0/llm/tmp/codex3-hil15b-heavy-20261029/r2/results-remaining/unit-06/driver-2/manifest.json",
+              "sha256": "61f311d34420e7f1de630f7a1367c0e8c0679c833286c39e48ff8cda6a4d27b0"
+            }
+          }
+        ]
+      },
+      {
+        "unit": 7,
+        "passes": 3,
+        "slots": [
+          {
+            "slot": 0,
+            "pass": true,
+            "manifest": {
+              "path": "/mnt/raid0/llm/tmp/codex3-hil15b-heavy-20261029/r2/results-remaining/unit-07/driver-0/manifest.json",
+              "sha256": "e25e8fc90449cb547d97d55b24c7386328bdf80438425c7d5d00615c39a956cb"
+            }
+          },
+          {
+            "slot": 1,
+            "pass": true,
+            "manifest": {
+              "path": "/mnt/raid0/llm/tmp/codex3-hil15b-heavy-20261029/r2/results-remaining/unit-07/driver-1/manifest.json",
+              "sha256": "9810fbaf8fb18c280edf79eb369b65c7a5df20d8ff6f4f37ca3610ade170db68"
+            }
+          },
+          {
+            "slot": 2,
+            "pass": true,
+            "manifest": {
+              "path": "/mnt/raid0/llm/tmp/codex3-hil15b-heavy-20261029/r2/results-remaining/unit-07/driver-2/manifest.json",
+              "sha256": "6a8f3fce2a3bef5030961213e52961bd8ce664031f0a847fb8c8e4ae704e6918"
+            }
+          }
+        ]
+      },
+      {
+        "unit": 8,
+        "passes": 1,
+        "slots": [
+          {
+            "slot": 0,
+            "pass": false,
+            "manifest": {
+              "path": "/mnt/raid0/llm/tmp/codex3-hil15b-heavy-20261029/r2/results-remaining/unit-08/driver-0/manifest.json",
+              "sha256": "d06117455fd4a567c8e7128cc6c24eaad1743ae23c868db27d1a4ebd4aa7d018"
+            }
+          },
+          {
+            "slot": 1,
+            "pass": true,
+            "manifest": {
+              "path": "/mnt/raid0/llm/tmp/codex3-hil15b-heavy-20261029/r2/results-remaining/unit-08/driver-1/manifest.json",
+              "sha256": "10714dcae98fe28f9d088042b21738ebeff3ba85bea110a9a7cc3d3fa7193b92"
+            }
+          },
+          {
+            "slot": 2,
+            "pass": false,
+            "manifest": {
+              "path": "/mnt/raid0/llm/tmp/codex3-hil15b-heavy-20261029/r2/results-remaining/unit-08/driver-2/manifest.json",
+              "sha256": "5fd5b83ebb9494c2aa98a9de73f2eb4bf730407ac0f98fee5f5bf26dbe873800"
+            }
+          }
+        ]
+      },
+      {
+        "unit": 9,
+        "passes": 3,
+        "slots": [
+          {
+            "slot": 0,
+            "pass": true,
+            "manifest": {
+              "path": "/mnt/raid0/llm/tmp/codex3-hil15b-heavy-20261029/r2/results-remaining/unit-09/driver-0/manifest.json",
+              "sha256": "b3b9bcd4e375d2e0e75e266c08793bed1fef54624d7faaafb71106fecb943035"
+            }
+          },
+          {
+            "slot": 1,
+            "pass": true,
+            "manifest": {
+              "path": "/mnt/raid0/llm/tmp/codex3-hil15b-heavy-20261029/r2/results-remaining/unit-09/driver-1/manifest.json",
+              "sha256": "fa887d4edfc8bb1bb60d5ef3336564edc9c941fc357f200fe964158d7bcc15b8"
+            }
+          },
+          {
+            "slot": 2,
+            "pass": true,
+            "manifest": {
+              "path": "/mnt/raid0/llm/tmp/codex3-hil15b-heavy-20261029/r2/results-remaining/unit-09/driver-2/manifest.json",
+              "sha256": "bd7ee8b69cd178fb3b28b7bab6770ac48a0064fd5c791d9b0c57acf0cee776bd"
+            }
+          }
+        ]
+      },
+      {
+        "unit": 10,
+        "passes": 2,
+        "slots": [
+          {
+            "slot": 0,
+            "pass": true,
+            "manifest": {
+              "path": "/mnt/raid0/llm/tmp/codex3-hil15b-heavy-20261029/r2/results-remaining/unit-10/driver-0/manifest.json",
+              "sha256": "9377e092d7b5ea73bd13c5969f8b149defd3cd921b7a6058984eded3c9315d15"
+            }
+          },
+          {
+            "slot": 1,
+            "pass": true,
+            "manifest": {
+              "path": "/mnt/raid0/llm/tmp/codex3-hil15b-heavy-20261029/r2/results-remaining/unit-10/driver-1/manifest.json",
+              "sha256": "d33b75e543b7adc4ce2834f71396f7281406cee793dc588d3376a3a1d0a585f7"
+            }
+          },
+          {
+            "slot": 2,
+            "pass": false,
+            "manifest": {
+              "path": "/mnt/raid0/llm/tmp/codex3-hil15b-heavy-20261029/r2/results-remaining/unit-10/driver-2/manifest.json",
+              "sha256": "d6197af65d83689afb84a8221566ee396814fd95ddbcbca23aeb86a4e222e66c"
+            }
+          }
+        ]
+      }
+    ],
+    "accepted_replays_in_those_units": 18,
+    "passes": 12,
+    "band_tasks": 4,
+    "historical_slot": "unit05slot0 retained original,17 newly completed replays",
+    "unknown": "unit11slot0 exposed/incomplete; original attempt retained; do not redraw",
+    "remaining_original_unexposed_slots": 29,
+    "cohort_verdict": null,
+    "native_launcher_log": {
+      "path": "/mnt/raid0/llm/tmp/codex3-hil15b-heavy-20261029/r2/ws58-launcher.out",
+      "sha256": "33fdccf61bf4ee922a5f98a702736bc2b822c0aa8ffd7e46f8a2f1a48990482f"
+    }
+  },
+  "paddle_g14": {
+    "outcome": "PARTIAL original23:17:28 rc75 on native disk-floor admission; no quality verdict",
+    "last_original_result": {
+      "path": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-parallel-owner-r7-20261029/attempts/codex3-pip02-paddle-parallel-owner-r7-g14-20261029-fc3c0d8ff6774377831c317e52960896/result.json",
+      "sha256": "217b795edf4a187ed8f9b55da5b51861f707d3c7dfcf34c41bae1f4d3fbf903a"
+    },
+    "native": {
+      "error": "TimeoutError: admission",
+      "factory": null,
+      "partial": true,
+      "rc": 75,
+      "reason": "disk floor",
+      "sampled_peak_tree_rss_bytes": 135979008,
+      "samples": 1,
+      "schema": "pip02-paddle-parallel-owner/v1",
+      "shards": [
+        14,
+        15,
+        16
+      ],
+      "smoke": false
+    },
+    "completed_pages_as_of_first_end": [
+      {
+        "page": {
+          "bytes": 258407,
+          "image": "page-e13fef95-c179-4a0f-94f9-1cc970aab788.png",
+          "index": 96,
+          "language": "english",
+          "sha256": "a1f63360628eb6703288ab59fb5a6a6dcc77caf6613bdc92c3f9db44ddb01922",
+          "table_count": 0
+        },
+        "start": {
+          "path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-14/shard-14/ecf15f15680a79e141d1fda58182b551d67010ee430d861de305d64dfc9bc730.start",
+          "sha256": "631fdacc34a873e8e84bd92a45fdedd7b1d273fbe4ba5bcc0ff50997dd688882"
+        },
+        "result": {
+          "path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-14/shard-14/ecf15f15680a79e141d1fda58182b551d67010ee430d861de305d64dfc9bc730.result",
+          "sha256": "d8daef79c82dcb5437fc51dd7955cafa914d546968050d1c4f4c58afad24535f"
+        }
+      },
+      {
+        "page": {
+          "bytes": 1622899,
+          "image": "page-24b49b01-6c1f-46d2-a389-6e537f9902e1.png",
+          "index": 107,
+          "language": "english",
+          "sha256": "ebc4fea86ccb73deec25b59af00677da45032db3fc7d4c59fe8910890954b1c6",
+          "table_count": 0
+        },
+        "start": {
+          "path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-15/shard-15/bb6832fbdc1a8d00b20f7508c9060eb1d1b74750d8ac409262ecefd345c24bb6.start",
+          "sha256": "2ed0b94d3b98743d592c2ba04456b8947aa6808f92ef0502b1e7fab4873644dd"
+        },
+        "result": {
+          "path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-15/shard-15/bb6832fbdc1a8d00b20f7508c9060eb1d1b74750d8ac409262ecefd345c24bb6.result",
+          "sha256": "ac93ec171449f6e3eaa9859c0312377f91e6c4f41409559635199b4707071155"
+        }
+      },
+      {
+        "page": {
+          "bytes": 475105,
+          "image": "page-0c28f48b-33da-489c-bfc1-1fe82e5be68f.png",
+          "index": 119,
+          "language": "english",
+          "sha256": "b8bf5d09e21c41ccd4e78b0862bb1b88748dec43c5fa9273d8853c1caaef38e4",
+          "table_count": 0
+        },
+        "start": {
+          "path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-15/shard-15/d46823537ee9be2cebe6fcaeb2a11f4b5f5fa5a1f09188c02e6519fbc082a8d6.start",
+          "sha256": "eb01b84149861ad5ba2471cff786efb7c0d545d354fc9f8ddbdd813165add077"
+        },
+        "result": {
+          "path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-15/shard-15/d46823537ee9be2cebe6fcaeb2a11f4b5f5fa5a1f09188c02e6519fbc082a8d6.result",
+          "sha256": "ba73921d07b495d8c37ced3b3bdf37862a1ef4d78f5d0234383aef604e188409"
+        }
+      },
+      {
+        "page": {
+          "bytes": 986610,
+          "image": "page-1f9a7efa-1d99-46c5-a2aa-48402d699f06.png",
+          "index": 133,
+          "language": "english",
+          "sha256": "8473a0c5cd857b4412978b8cd48dfa5ca1e61d93ad86549bef4eeccad34fec39",
+          "table_count": 0
+        },
+        "start": {
+          "path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-15/shard-15/5d8ab441d7a22dd12a6e89fa6d0a85eedd10747efb8c350d78ffe94b0b04947b.start",
+          "sha256": "c0ad16b2843a3b8597b28e0db6dd7edccdc19281e6a736f3252e401f22834a0c"
+        },
+        "result": {
+          "path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-15/shard-15/5d8ab441d7a22dd12a6e89fa6d0a85eedd10747efb8c350d78ffe94b0b04947b.result",
+          "sha256": "83fa834d60e34aebc97968e5b1c80e20aefe25497b8ded4e00583e31b85c4104"
+        }
+      }
+    ],
+    "region_exposures_as_of_first_end": [
+      {
+        "shard": 14,
+        "original_starts_as_of_first_end": 32,
+        "original_responses_as_of_first_end": 32,
+        "unmatched_as_of_first_end": []
+      },
+      {
+        "shard": 15,
+        "original_starts_as_of_first_end": 36,
+        "original_responses_as_of_first_end": 36,
+        "unmatched_as_of_first_end": []
+      },
+      {
+        "shard": 16,
+        "original_starts_as_of_first_end": 37,
+        "original_responses_as_of_first_end": 37,
+        "unmatched_as_of_first_end": []
+      }
+    ],
+    "later_resumes": "separate captures; never overwrite original partial or unmatched RPCs"
+  },
+  "kpf18_r12_r2": {
+    "outcome": "FAILED-RUN rc143 native disk_floor, controlled_deadline=false, cleanup verified",
+    "native_result": {
+      "path": "/mnt/raid0/llm/tmp/codex-ni-20261027-kpf18-native-successor-r10/revision-r12-r2/cpu-replay/attempts/1793313120-1793316720/RESULT.json",
+      "sha256": "efff48932a3d0c01f618c7a2f073c670f5e1b562301045318234a43199ef7e26"
+    },
+    "native": {
+      "bridge_result": null,
+      "bridge_result_sha256": null,
+      "child_rc": -15,
+      "cleanup_verified": true,
+      "controlled_deadline": false,
+      "elapsed_s": 2688.752,
+      "ledger_sha256": "a6b18b1b96bc773fa74559c9bfc28248287c1dfcf08deb7ef07278d95d9f304a",
+      "partial": false,
+      "peak_sampled_rss_bytes": 35463716864,
+      "pidfd_only_signal": true,
+      "raw_sha256": "7cbf105def05e9f874080f6def041754b19c109c7c9ddab5b2d64bf4666a33ee",
+      "rc": 143,
+      "reason": "disk_floor",
+      "samples": 2536,
+      "schema": "kpf18.r12.scheduled-result.v1",
+      "scope": "Exact full R12 bridge replay of recorded R6 X1 only; R6 verdict INVALID unchanged; no native control/model/GPU equivalence.",
+      "status": "FAILED",
+      "worker_identity": {
+        "pgid": 209653,
+        "pid": 209653,
+        "sid": 209653,
+        "start_ticks": 143561115,
+        "uid": 1000
+      },
+      "worker_stdout_log": "worker.stdout.log",
+      "worker_stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "R6_X1_verdict": "INVALID unchanged; no bridge/model equivalence"
+  },
+  "host_resource_boundary": {
+    "readonly_manager": "/home/daniele/filesystem-agent/scripts/opencode-durable-sync.sh (host path unavailable from this container)",
+    "native_sync_log": {
+      "path": "/mnt/raid0/llm/claude-backups/opencode-sync.log",
+      "sha256": "e2eeaf87747a395d9ea2550daffe70c529fa4597f5be1fb01a93cd07d9f741bf"
+    },
+    "existing_1Hz_trace": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/disk-snapshot-window-trace.jsonl",
+    "limits": "do not infer the independent S2 RSS cap was disk-related; no root-owned snapshot/backup was changed"
+  }
+}
