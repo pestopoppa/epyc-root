@@ -2110,7 +2110,7 @@ Filed at design time, before any producer exists, per the CLAUDE.md belief-kerne
   `embedder-placement-gate`. Schema and refusals: the source-table row in `scripts/vidya/adapters/README.md`. The
   2026-09-26 Phase-0 files stay retrospective. A G3 re-run must write an `epyc.embedder_placement_g3.v1` record through
   the same `CaptureWindow` (the Phase-0 G3 driver is an out-of-repo tmp script).
-- [ ] **VB-UFH12-PLACEMENT-DISC — make `embedder-placement-gate` discovery recurse into `arms/`** (filed
+- [x] **VB-UFH12-PLACEMENT-DISC — make `embedder-placement-gate` discovery recurse into `arms/`** (filed
   2026-09-27). The A0 and A3 arm sidecars live at
   `epyc-orchestrator/data/embedder_placement/arms/<run>/<N>-{base,cand}.belief_measurements.jsonl`, nine files. But
   `scripts/vidya/ingest_sources.py`'s `Source("embedder-placement-gate", ...)` globs only `*.belief_measurements.jsonl`
@@ -2118,6 +2118,7 @@ Filed at design time, before any producer exists, per the CLAUDE.md belief-kerne
   - Add `arms/*/*.belief_measurements.jsonl` (or `*/*/…`, following the `kv-quant-27b-v10-measurement` pattern).
   - Add a discovery test over a two-level fixture.
   - Confirm the nine arm sidecars project, and that any refusal names its reason.
+  ✅ 2026-10-29 source `6ffee0ec72e1be2b1a04c9f4e9c48945908ae565`, integrated root `faf388a58af2cafaa482c6d036284661612a89df`: bounded two-level discovery preserves root/explicit-file layouts. Thirteen adapter controls pass; 41 carrier fixtures have zero grade/byte-identity changes. Read-only audit discovers and projects all nine original sidecars (99 rows, 297 frames), zero refusals; native hashes and producer pin unchanged. No ledger writes. [no-belief: discovery repair and read-only compatibility controls]
 - [ ] ❄ FROZEN 2026-09-27 — resume only once TD-28 unfreezes (v11 promoted AND autopilot has trained on the swapped stack AND UFH-13 re-opened; operator ruling 2026-09-29) — **VB-TD-ADVICE — wire the write side of the typed-routing advice A/B** (`typed-decision-plane.md` TD-28):
   arm, typed mode, workload digest, override rate and per-item outcome split. Project, do not grade.
   ❄ FROZEN 2026-09-27 (operator, narrowed plan): its only producer, TD-28, is frozen; wiring a source with no producer is dead code; unfreeze trigger: TD-28 unfreezes. The box stays open: frozen is not done.
