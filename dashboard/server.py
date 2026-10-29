@@ -13954,6 +13954,33 @@ def queue_payload() -> dict:
     }
 
 
+def diagnostic_overrides_payload() -> dict:
+    """Current diagnostic expiry problems; reading this endpoint never sends mail."""
+    from scripts.coordination.diagnostic_override_expiry import snapshot
+
+    settings = _read_bus_config().get("diagnostic_overrides")
+    record_dir = settings.get("record_dir") if isinstance(settings, dict) else None
+    if not isinstance(record_dir, str) or not record_dir.strip():
+        data = {"status": "degraded", "expired": [],
+                "errors": ["diagnostic override monitor has no configured record directory"]}
+    else:
+        data = snapshot(Path(record_dir))
+    env = _panel_envelope("diagnostic_overrides", panels.live(
+        populated=bool(data["expired"] or data["errors"]), source=record_dir or "unconfigured"))
+    # The records can be freshly read AND expired. Never falsify their age to
+    # carry a semantic error through the global freshness fold.
+    env["data_health"] = data["status"]
+    env["data_errors"] = [*data["errors"], *[
+        f"{row['component']} override expired; owner={row.get('owner')!r}; "
+        f"restore with `{row['restore_command']}`" for row in data["expired"]]]
+    return {**data, "_freshness": env}
+
+
+def diagnostic_overrides_health() -> tuple[int, dict]:
+    data = diagnostic_overrides_payload()
+    return (200 if data["status"] == "ok" else 503), data
+
+
 def bus_payload() -> dict:
     """Roster, per-agent liveness, inbox depth, operator-token state."""
     config = _read_bus_config()
@@ -14532,6 +14559,7 @@ def panel_envelopes() -> dict:
         "gpu_window": lambda: gpu_window_payload()["_freshness"],
         "queue": lambda: queue_payload()["_freshness"],
         "bus": lambda: bus_payload()["_freshness"],
+        "diagnostic_overrides": lambda: diagnostic_overrides_payload()["_freshness"],
         # Same rule as board/queue/bus: the payload already built its envelope
         # (and holds the TTL cache the probes live in), so reuse it rather than
         # letting the fold compute a second answer for one panel.
@@ -14561,6 +14589,13 @@ def health_payload() -> dict:
     envs = panel_envelopes()
     verdict = _supplement_kernel_verdict(
         panels.fold(envs), _read_kernel_progression())
+    override_env = envs["diagnostic_overrides"]
+    if override_env.get("data_health") == "degraded":
+        entry = {"panel": "diagnostic_overrides", "verdict": panels.STATUS_DEGRADED,
+                 "why": "; ".join(override_env.get("data_errors") or []), "gates_health": True}
+        verdict["attention"].append(entry)
+        if verdict["status"] != panels.STATUS_DEGRADED:
+            verdict.update(status=panels.STATUS_DEGRADED, status_set_by=entry, worst=entry)
     return {
         "status": verdict["status"],
         # WHICH panel produced ``status``. ``worst`` is the worst by severity
@@ -14937,6 +14972,7 @@ API_ROUTES = {
     "/api/kernel/live": discovery_live_payload,
     "/api/loop": loop_payload,
     "/api/bus": bus_payload,
+    "/api/diagnostic-overrides": diagnostic_overrides_payload,
     "/api/queue": queue_payload,
     "/api/outcome": outcome_payload,
     "/api/gpu_window": gpu_window_payload,
@@ -14959,6 +14995,7 @@ API_ROUTES_WITH_STATUS = {
 #: ``PanelSource`` via ``health_route``/``health_func`` and is checked by
 #: ``panels.registry_gaps`` without creating a duplicate panel in the global fold.
 PANEL_HEALTH_ROUTES = {
+    "/api/diagnostic-overrides/health": diagnostic_overrides_health,
     "/api/kernel/health": kernel_data_health,
     "/api/loop/health": loop_data_health,
 }

@@ -431,6 +431,22 @@ PANELS: Mapping[str, PanelSource] = _index((
               "cards retain their own envelopes and cannot certify this producer.",
     ),
     PanelSource(
+        panel="diagnostic_overrides",
+        kind=KIND_LIVE,
+        payload_func="diagnostic_overrides_payload",
+        route="/api/diagnostic-overrides",
+        health_route="/api/diagnostic-overrides/health",
+        health_func="diagnostic_overrides_health",
+        producer="orchestrator env_override.write_active; live TTL-record scan",
+        producer_repo="epyc-orchestrator",
+        evidence="diagnostic_overrides.record_dir in coordination/session-bus/config.yaml",
+        timestamp_field="live scan compares expires_at with current UTC",
+        absence_means="An absent record directory means no diagnostic override has been recorded. "
+                      "Unreadable records or an unconfigured monitor are errors, not an empty scan.",
+        gates_health=True,
+        notes="Expiry is data health, independent of record-file freshness; no reload is automatic.",
+    ),
+    PanelSource(
         panel="bus",
         kind=KIND_FILETREE,
         payload_func="bus_payload",

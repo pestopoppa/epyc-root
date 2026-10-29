@@ -182,6 +182,13 @@ for `:8100`. Neither layer touches the orchestrator API (`:8000`).
   `ok`, HTTP 503 with `absent`/`degraded` otherwise. It does not fold
   `operator_gates`; see *Known open items on this surface*
 - `GET /api/bus`, `GET /api/queue`, `GET /api/outcome`, `GET /api/benchmark_artifacts`
+- `GET /api/diagnostic-overrides` and `/api/diagnostic-overrides/health` — live expiry
+  checks over the configured orchestrator diagnostic records. Expired or malformed
+  records degrade the global fold even when their freshness envelope is fresh.
+  The coordinator sends the recorded `--override-owner` one nudge per override
+  window, including the component and restore command. It never reloads a component;
+  restoration remains the inference window owner's decision. Legacy records without
+  an owner remain unhealthy and are never routed to a guessed session.
 - `GET /api/health` — **the fold**: every registered panel's envelope + one verdict
 
 Routes are **tables** (`HTML_ROUTES`, `REDIRECT_ROUTES`, `API_ROUTES`,
