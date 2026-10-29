@@ -1,0 +1,31 @@
+{
+  "schema": "epyc.paw3-ownslice-enrollment.v1",
+  "scope": "internal research; no dataset contents or programs are redistributed",
+  "declaration_path": "/mnt/raid0/llm/tmp/codex3-cpu-ready-20261029/PAW3-PREDECLARATION.json",
+  "declaration_sha256": "fe904fe2bbff55eef39261d6e4122a9f05ab0a6cddaed62241073a876293cca7",
+  "source_plan_sha256": "2ef8ac0b0c7ee0414c85c8086022fcabaead65892b0c7d4b2b91014aef8d2aae",
+  "source_task_spec_sha256": "0033eadbd0657406c95ab4287503d94f721a37953b8c45328b932783fb759bae",
+  "source_row_indices": [
+    27588,
+    27587,
+    27584,
+    27585,
+    27581,
+    27582,
+    27583,
+    27586
+  ],
+  "case_sha256": [
+    "03deb81f671681e8a872b95a4688e19a518c3351d1b739f5ac110c1c8511497e",
+    "1c819023b676fc27e34d3e929bc5a58afe76875876e27dc99af46d3ac5a8957d",
+    "47d43d7c77950f4f52cc419b31a7dafa785d356c960bffa802a3cd2671b4fc26",
+    "4b5d136e7e256a048d4abc9652910838c877ac15cddc441f343c80779c087e27",
+    "7def278f05c6b34f7f7b23bfac0462da2d927f53b6bafae5fe350bd324578e44",
+    "8ca9d47ff1b25883b063339ba4e73177bf2f7a9888ebff7a6348809d8412ba14",
+    "c5a31f5991eee26745e12b8c405fc02fc21f0be5626dfdf7b5e9650f4af935a5",
+    "c73fb824372c52177d455aecfb0c5c8ebdee3de001e4ed7b47d28f04c851ee8b"
+  ],
+  "protocol": "Compile separate binary and semantic-unsure programs for the same task before evaluating. Binary labels CONTRADICTION and NO_CONTRADICTION; semantic labels CONTRADICTION, NO_CONTRADICTION, UNSURE. Record native two-label-normalized first-token confidence: take the maximum logit within each label's space/no-space token variants, then apply a two-label softmax; retain token IDs, logits, and raw outputs, all invalid, unfinished, missing and model identities. Each case once per arm; no forced abstention. Threshold probability on binary output at 0.60,0.70,0.80,0.90,0.95,0.99.",
+  "rule": "TRANSFER_SUPPORTED iff all 16 arm/case observations complete, semantic invalid count zero, semantic decided count >= 6 of 8 and semantic decided exact-match accuracy >= 0.90; semantic unsure rate <= 0.25. Otherwise TRANSFER_NOT_SHOWN if observations complete, INCOMPLETE if any missing. Separately report binary threshold coverage and accuracy; no asserted threshold superiority on n=8. Higher decided accuracy is better; lower unsure rate is better.",
+  "qualification": "internal research, exploratory small-sample transfer probe, not a general efficacy claim"
+}
