@@ -11,10 +11,10 @@ README fails one or more checks; prints nothing when all pass. Designed
 to be inlined into the /wrap-up flow — the operator sees the warning
 verbatim in the wrap-up output and decides whether to act.
 
-Owned repos checked:
-  - /mnt/raid0/llm/epyc-root            (this repo)
-  - /mnt/raid0/llm/epyc-orchestrator
-  - /mnt/raid0/llm/epyc-inference-research
+The umbrella checkout defaults to this script's repository; --root selects
+another umbrella checkout. Its own README and epyc-orchestrator and
+epyc-inference-research under repos/ are checked. A sibling clone is used when
+the umbrella has no repos/<name> entry. No host-specific fallback is used.
 
 External clones (llama.cpp fork, hermes-agent upstream, etc.) are NOT
 checked — their READMEs are upstream artifacts.
@@ -22,6 +22,7 @@ checked — their READMEs are upstream artifacts.
 
 from __future__ import annotations
 
+import argparse
 import subprocess
 import sys
 from datetime import datetime, timezone
@@ -29,13 +30,20 @@ from pathlib import Path
 
 THRESHOLD_DAYS = 60
 
-OWNED_REPOS = [
-    Path("/mnt/raid0/llm/epyc-root"),
-    Path("/mnt/raid0/llm/epyc-orchestrator"),
-    Path("/mnt/raid0/llm/epyc-inference-research"),
-]
+DEFAULT_ROOT = Path(__file__).resolve().parents[4]
+CHILD_REPOS = ("epyc-orchestrator", "epyc-inference-research")
 
 REQUIRED_LINKS = ("wiki/", "research/")
+
+
+def owned_repos(root: Path) -> list[Path]:
+    """Prefer umbrella entries, including broken symlinks, over sibling clones."""
+    root = root.expanduser().resolve()
+    repos = [root]
+    for name in CHILD_REPOS:
+        entry = root / "repos" / name
+        repos.append(entry if entry.exists() or entry.is_symlink() else root.parent / name)
+    return repos
 
 
 def last_commit_age_days(repo: Path, file_rel: str = "README.md") -> int | None:
@@ -62,9 +70,14 @@ def missing_required_links(readme: Path) -> list[str]:
     return [link for link in REQUIRED_LINKS if link not in body]
 
 
-def main() -> int:
+def main(argv: list[str] | None = None) -> int:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--root", type=Path, default=DEFAULT_ROOT,
+                        help="umbrella checkout (default: this script's checkout)")
+    args = parser.parse_args(argv)
+    repos = owned_repos(args.root)
     findings: list[tuple[Path, list[str]]] = []
-    for repo in OWNED_REPOS:
+    for repo in repos:
         readme = repo / "README.md"
         if not readme.exists():
             findings.append((repo, [f"README.md missing entirely at {readme}"]))
@@ -91,7 +104,7 @@ def main() -> int:
     print()
     print(
         f"`check_readme_freshness.py` flagged {len(findings)} of "
-        f"{len(OWNED_REPOS)} owned READMEs. Refreshing them is part of the "
+        f"{len(repos)} owned READMEs. Refreshing them is part of the "
         "/wrap-up routine itself (step 4b) — there is no owning handoff, and "
         "there should not be: this is a recurring obligation with no terminal "
         "state, so it cannot be 'completed'."
