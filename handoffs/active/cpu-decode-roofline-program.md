@@ -2586,12 +2586,21 @@ They are filed here rather than described in prose so the dashboard can see them
       stated rather than inherited**, since every downstream quotation of 43.281 t/s / 2.1857× / ≥117% / ≥81%
       currently rests on a record whose arm is `bin-r1 (10303)` while its header says baseline `ef81196d5`
       (`/mnt/raid0/llm/tmp/inf70/agents/retest1/CHAMPION-FINAL.md:45`) (found 2026-09-14, noninf sweep).
-- [ ] **WRAP-14 — get `scripts/lib/test_canonical_recipe.py` into `PYTEST_SMOKE` and make its collection
+- [x] **WRAP-14 — get `scripts/lib/test_canonical_recipe.py` into `PYTEST_SMOKE` and make its collection
       work**, which needs the `requests` import in `scripts/lib/__init__.py` dealt with first
       (`epyc-inference-research` `Makefile:19-102`) (found 2026-09-14, noninf sweep).
-- [ ] **WRAP-15 — guard `assert_artifact_digests()` against being called from `preflight()`**, because it
+      ✅ 2026-10-29 research `0b1d0b4f76f8cd160582c48bd3c2fafe8fdbce83`: the module appears
+      exactly once in default test/lint expansion; actual declared-environment run passes 34 tests with
+      one skip, Ruff/diff checks clean. Requests is already a core dependency; no install or import
+      workaround needed. This validates the module and expansion, not the whole smoke suite.
+      [no-belief: tooling-repair]
+- [x] **WRAP-15 — guard `assert_artifact_digests()` against being called from `preflight()`**, because it
       reads ~95 GB and is one edit away from being wired into the preflight path
       (`scripts/lib/qwen38_flash_next_recipe.py`) (found 2026-09-14, noninf sweep).
+      ✅ 2026-10-29 research `7202df8420cffeedb37c0b627800fa7166334df1`: default-gated test
+      executes real preflight with full-hash/weight-read denial, all metadata and existing pin/knob/binary/flag
+      checks, and missing/truncated negatives. 96 tests passed, one skipped; three wiring mutations caught.
+      Runtime and standalone full-digest API unchanged. [no-belief: tooling-repair]
 
 *Declined 2026-09-14: preserve-or-push the scratch-only binary behind the campaign headline
 (`/mnt/raid0/llm/tmp/inf70/agents/retest1/bin-r1` + `/mnt/raid0/llm/tmp/inf70/retest1wt`) — not filed because

@@ -3960,7 +3960,7 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
     candidate and passes original-owner preflight. Final closure awaits the persisted final-code
     dry-run artifact and repair of the full-suite speculation-identity regression it exposed.
 
-  - [ ] **AKU-12j — retire the GLM-5.3 `active_campaign` pin** (found 2026-09-22): the research
+  - [x] **AKU-12j — retire the GLM-5.3 `active_campaign` pin** (found 2026-09-22): the research
     repo's `scripts/kernel_rnd/autokernel/loop/historical_trajectory.py:168` still hard-codes
     `active_campaign` = `aku12a-glm53-five-loop` (GLM-5.3-Flash, store
     `/mnt/raid0/llm/tmp/aku12a-glm53-five-loop-store`, 23 expected keeps), and
@@ -3971,6 +3971,11 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
     rendered "no active campaign" state. Update the test, and confirm the hub's `autokernel_loop`
     panel. It reads `degraded / stopped_reporting` since the pin was removed 2026-09-22: the
     default loop-memory status is 14 days old, which is truthful while no loop runs.
+    ✅ 2026-10-29 research `f130149922` / root `600c64cf48`: producer emits explicit null; hub
+    distinguishes selected/none/unknown and renders escaped no-selection/unknown banners for empty and
+    populated plots. All 21 historical points and other evidence fields unchanged; stale health remains
+    truthful. 30 producer/hub tests and JS syntax check passed after integration. Source/panel behavior
+    verified in tests; no live reload or history regeneration performed. [no-belief: metadata and UI repair]
 
 ### Research-intake 2026-09-15 (noninf-20260914) — judge/critic hardening
 

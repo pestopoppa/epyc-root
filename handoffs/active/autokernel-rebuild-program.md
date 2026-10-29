@@ -2182,10 +2182,16 @@ production model at pairs=5, ~18% cadence overhead). Six operator decision items
           carries recipe_hash + n + CI, a floor produced by the loop's own harness is not an external
           constraint. (Residency half closed by R23-60 ✅ 2026-09-08.)
 
-      - [ ] **R23-66 — give the unit vocabulary a leaf module so `FLOOR_UNIT` stops repeating the `"process"`
+      - [x] **R23-66 — give the unit vocabulary a leaf module so `FLOOR_UNIT` stops repeating the `"process"`
         literal**, which it does only because `serving` → `loop` → `bench` is a real import cycle (hence
         `bench.py`'s lazy in-function `serving` imports); a test pins the two together for now
         (`scripts/kernel_rnd/autokernel/loop/bench.py:44`) (found 2026-09-14, noninf sweep).
+        ✅ 2026-10-29 research `8cb1cfcc3d36ccf4bb5dd06a726e8af0d9f90f3c`: dependency-free
+        `floor_units.py` owns unchanged constants; serving reexports remain compatible; bench imports the
+        leaf directly. Both cold import orders and absence of serving import on bench-only lookup verified.
+        Integrated validation: 78 tests plus 13 subtests passed; no new lint defects. Graph indexing reached
+        its unchanged 7 GiB stop twice; exact current caller/source audit supplemented the index.
+        [no-belief: dependency and API compatibility repair]
           - [ ] **R23-67 — state the `unit` in the D8 instrument-characterisation artifact behind
         `MEASURED_FLOOR_PCT`**, which carries none: the built-in table is now labelled in code
         (`bench.FLOOR_UNIT`, `MEASURED_FLOOR_N = 20`) but the artifact's field is only derivable from its

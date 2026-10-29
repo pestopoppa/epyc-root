@@ -1620,7 +1620,14 @@ was in flight and several items touch the shared clone.
   (`orchestrator_stack`, `stack_numa`, `stack_topology`) are stale at HEAD, which is why
   `orchestrator_stack.py start` refuses to launch. Deliberately out of scope for the P1-10 fix (separate
   act, separate file set).
-- [ ] **The `backend:` → `verify_ggml_linkage` invariant is enforced by ONE TEST, not the loader.**
+- [x] **The `backend:` → `verify_ggml_linkage` invariant is enforced by ONE TEST, not the loader.** ✅ 2026-10-29
   `stack_manifest.py:318` forces only `ld_library_path_mode`; `:338` defaults the flag to `False`. Delete
   a flag line from `launch_manifest.yaml` and the loader says nothing —
   `tests/unit/test_aux_service_env.py:128` is the only thing that would notice.
+
+  Fixed in orchestrator `e91305c14da8c218ef3e8b57f45c18b580bca9ca`: backend declarations now
+  require literal `verify_ggml_linkage: true`; omitted/false/null/numeric/string values reject. Both
+  current speech declarations already comply, while non-backend defaults remain false. 118 focused
+  environment/import tests passed; YAML comments corrected with parsed values identical. No live
+  reload, model call or frozen-kernel change. Full make gates stopped at missing shellcheck.
+  [no-belief: loader invariant and regression validation]
