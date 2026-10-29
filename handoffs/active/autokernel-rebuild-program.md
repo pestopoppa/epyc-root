@@ -2251,10 +2251,15 @@ production model at pairs=5, ~18% cadence overhead). Six operator decision items
         `accepted_gaps.yaml:3-10` records the 2026-08 precedent: "A bypass used four times running is not an
         escape hatch, it is the new default." Either justify it as a declared accepted gap with an expiry, or
         remove it.
-  - [ ] **R23-72 — `executor.py:77` and `:90` still hardcode the v9 build path** on the registry-load-failure
-        branch. `executor_paths.get_binary()` was migrated to the kernel store on 2026-09-22, but these two
-        fallbacks were not, so a registry load failure still resolves the OLD kernel silently. Same defect
-        class as the two the v10 promotion exposed.
+  - [x] **R23-72 — `executor.py` registry-failure fallbacks resolve through the serving kernel store.**
+        ✅ 2026-10-29 for the separate research copy in `scripts/lib/executor.py`, research
+        `38c93a3785c1cfad717b2e6d9c641f7a76093e20` on `origin/main`: both the unavailable-registry
+        fallback and the missing-`base_dir` fallback now share `/mnt/raid0/llm/kernels/production/cpu`.
+        Explicit registry paths and `LLAMA_BIN_DIR` precedence are unchanged. The orchestrator copy was
+        already repaired by `fa1eb43a2c4431d695e5c4339373ecbf3b96aed6` (2026-10-06); this closes the
+        remaining research-copy gap. Focused executor/canonical-recipe validation: 39 passed, 1 skipped;
+        new tests pass lint/format, and the executor's 11 pre-existing Ruff findings are unchanged.
+        No inference, production-tree edit, process restart, or deployment. [no-belief: tooling-repair]
   - [x] **★ R23-64 — RE-SWEEP THE CPU DECODE THREAD COUNT ON THE CHAMPION (t48 / t64 / t96). Verdict: t48 best, t64 −15%, t96 unresolved [belief: cc]
         ★ GATED: MUST NOT RUN UNTIL AFTER THE OPERATOR'S PLANNED HOST REBOOT + BIOS SESSION.**
         Filed 2026-09-08 out of the MEAS-4 correction in
