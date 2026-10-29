@@ -268,9 +268,11 @@ outcome.
       distinguished from "the comparator lags a host that got faster". Main residual anti-conservative
       risk.
 
-- [ ] SEQ-B3 — Delete `_axis_refuted_factory` together with whichever test binds it, now that it has no caller
-      in `main()` and is kept only in case the existing test module binds it
-      (`scripts/analysis/readjudicate_sequential_candidates.py:85-89`) (found 2026-09-14, noninf sweep).
+- [x] SEQ-B3 — Delete the unused `_axis_refuted_factory`. ✅ 2026-10-29
+      Orchestrator main `7678711d5b4aa4431abcd089a429b0561180aa29` removes the factory;
+      source and test searches found no callers or tests binding it. The existing attribution
+      and refutation suites passed all 23 tests after integration. Canonical `axis_refuted`
+      and report logic remain unchanged. [no-belief: unused-code removal; no measurement claim]
 - [ ] SEQ-B4 — Decide explicitly whether the refutation record should carry `k_rate` alongside the QUALITY
       axis's `k`, which it currently reuses for both axes (matching the journal's single `k` and the reader)
       even though the two can differ when the rate axis was skipped on earlier trials

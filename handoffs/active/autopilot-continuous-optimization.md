@@ -329,9 +329,11 @@ First full smoke run of the trial loop. Four defects, three silent.
 
 ### Operational hazards found this session
 
-- [ ] **Cosmetic follow-on, not acted on:** `dashboard.html:6305-6307` has no explicit case for
-  `health_escalated`, so it renders via the generic `bad` fallback — correct and red today, but an
-  explicit label would read better than the raw status string.
+- [x] **Cosmetic follow-on — explicit escalation label.** ✅ 2026-10-29
+  Orchestrator main `cdd828cd71969f94fc9d130ce464c9344f59c086` renders
+  `health_escalated` as `phase health escalated`; the red `bad` class is preserved.
+  Both inline script blocks parsed with Node; helper checks cover escalated, active and
+  unknown labels. [no-belief: display-only correction; no measurement claim]
 
 - [ ] **Flaky under load, flagged to its owner:** `test_daemon_owned_state_ownership.py` (landed today)
   fails intermittently under full-suite `-n 16` while passing 19/19 in isolation and under `-n 8` on
@@ -647,7 +649,12 @@ its comparator on 2 of 4 tasks there, so no frontier API is required. Cite `inta
       is the known-null corpus filed as EV-14f in
       [`eval-tower-verification.md`](eval-tower-verification.md).
 
-- [ ] **SG-W3 — Dispose of `src/diversity_gate.py`: wire it or delete it.** Zero production importers,
+- [x] **SG-W3 — Dispose of `src/diversity_gate.py`: wire it or delete it.** ✅ 2026-10-29
+      Removed in orchestrator main `da31e38b6bafc1dbcd91739330d6ef0c4756c923`, together with
+      tests that exercised only this unused surface. The live autopilot safety gate remains;
+      the module-identity guard now requires both retired source gate paths to stay absent.
+      Four relevant suites passed all 46 tests after integration.
+      [no-belief: retirement of unused code; no measurement claim] Original rationale: zero production importers,
       warn-only by default (`SAFETY_GATE_WARN_ONLY` defaults to `"1"`), renamed 2026-07-20 out of a
       bare-name collision with `scripts/autopilot/safety_gate.py` (the module the autopilot actually
       imports). Its `evaluate()` accepts on a raw `quality_delta > 0` with no resolution band, so it
