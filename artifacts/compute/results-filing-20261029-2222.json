@@ -1,0 +1,580 @@
+{
+  "schema": "codex3.results-filing.v1",
+  "filed_at": "2026-10-29T22:21:00.581098+00:00",
+  "events": {
+    "codex3-pip02-paddle-parallel-owner-r4-g107-20261029": {
+      "id": "codex3-pip02-paddle-parallel-owner-r4-g107-20261029",
+      "ended_file": "/mnt/raid0/llm/tmp/compute-flags/grants/codex3-pip02-paddle-parallel-owner-r4-g107-20261029.ended",
+      "end_line": "rc=78 time=2026-10-29T22:04:05Z reason=job-rc-78:exited",
+      "seen_at": "2026-10-29T22:04:31Z",
+      "result_path": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-parallel-owner-r4-20261029/DONE-107",
+      "scratch_root": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-parallel-owner-r4-20261029/packets/group-107",
+      "decision_rule": "Collect original fresh English Paddle shards[107, 108, 109] (15 disjoint pages), native layout/crop/region/assembly, temperature0,4096 outputtokens,8192 context per slot; np12 sharedserver and up12page workers. Preserve originaljournals and never replay unmatchedRPCs. No TEDS/adoption verdict until common scoring.",
+      "class": "diagnostic",
+      "owner": "codex3"
+    },
+    "codex-ni-yarn-dca-xdev-cpu-r2-20261029": {
+      "id": "codex-ni-yarn-dca-xdev-cpu-r2-20261029",
+      "ended_file": "/mnt/raid0/llm/tmp/compute-flags/grants/codex-ni-yarn-dca-xdev-cpu-r2-20261029.ended",
+      "end_line": "rc=1 time=2026-10-29T22:09:01Z reason=job-rc-1:exited",
+      "seen_at": "2026-10-29T22:09:41Z",
+      "result_path": "/mnt/raid0/llm/tmp/codex-ni-yarn-dca-xdev-20261029/runs",
+      "scratch_root": "/mnt/raid0/llm/tmp/codex-ni-yarn-dca-xdev-20261029",
+      "decision_rule": "Perplexity is lower-is-better. Compare only after the matching GPU arm completes on identical source/model/text/context/batch/ubatch/attention/KV settings. The reported +/- is within-run token spread, not a between-run confidence interval; one pair does not establish statistical significance.",
+      "class": "block-correctness",
+      "owner": "codex-ni-01a16d6b"
+    },
+    "hil15-s3-safe-retry-20261029": {
+      "id": "hil15-s3-safe-retry-20261029",
+      "ended_file": "/mnt/raid0/llm/tmp/compute-flags/grants/hil15-s3-safe-retry-20261029.ended",
+      "end_line": "rc=0 time=2026-10-29T22:14:44Z reason=complete",
+      "seen_at": "2026-10-29T22:14:51Z",
+      "result_path": "/mnt/raid0/llm/tmp/hil15-s3-confined-v18-20261029/results-pilot/DONE",
+      "scratch_root": "/mnt/raid0/llm/tmp/hil15-s3-confined-v18-20261029",
+      "decision_rule": "Discovery diagnostic: retain native per-task three-replay pass counts and L2/AUC; no confirmation or performance verdict.",
+      "class": "diagnostic",
+      "owner": "codex-refactor-01a16fc3"
+    }
+  },
+  "paddle_g107": {
+    "outcome": "FAILED-RUN harness; no page-level quality verdict",
+    "attempts": [
+      {
+        "capture": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-parallel-owner-r4-20261029/attempts/codex3-pip02-paddle-parallel-owner-r4-g107-20261029-5d311dc37bc345978b3b1edcf4a9ea63/capture.json",
+        "capture_sha256": "8f41e826d6e447a553f3f08a010b3bf2bf8e87a3cd9296215f3fd598fc7d9a5b",
+        "result": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-parallel-owner-r4-20261029/attempts/codex3-pip02-paddle-parallel-owner-r4-g107-20261029-5d311dc37bc345978b3b1edcf4a9ea63/result.json",
+        "result_sha256": "41ce8773f593c4d6f6a076acdfc329cdc8c1f267d7cd126b373dd5ec35376fdd",
+        "native": {
+          "error": null,
+          "factory": {
+            "captured_server": [
+              3989895,
+              143344525
+            ],
+            "cpu_sampling": {
+              "first_ns": 1433446508661155,
+              "last_ns": 1433593172028430,
+              "peak_vram": 0,
+              "samples": 1293
+            },
+            "server_identity": {
+              "birth": 143344525,
+              "ppid": 3893063,
+              "state": "R"
+            },
+            "worker_identity": {
+              "birth": 143344649,
+              "ppid": 3893063,
+              "state": "R"
+            },
+            "worker_rc": 75
+          },
+          "partial": true,
+          "rc": 75,
+          "reason": null,
+          "sampled_peak_tree_rss_bytes": 10618191872,
+          "samples": 139,
+          "schema": "pip02-paddle-parallel-owner/v1",
+          "shards": [
+            107,
+            108,
+            109
+          ],
+          "smoke": false
+        },
+        "worker_log_sha256": "34eb9c260d73c3087187e0afd9dfcd3557f632f911ac731d79634b40838b8bf8"
+      },
+      {
+        "capture": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-parallel-owner-r4-20261029/attempts/codex3-pip02-paddle-parallel-owner-r4-g107-20261029-7f2eaba6ee3f4c3bbf8521fbdc4c4e65/capture.json",
+        "capture_sha256": "663e524d9d9a5a5547dcde9ed6adcb7ab658af85b06b2b1ad6824f193798e114",
+        "result": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-parallel-owner-r4-20261029/attempts/codex3-pip02-paddle-parallel-owner-r4-g107-20261029-7f2eaba6ee3f4c3bbf8521fbdc4c4e65/result.json",
+        "result_sha256": "477eca808be3a1b8044cc085a3f37addbe2d818ed1ef25a9dfae1bd04fd76b57",
+        "native": {
+          "error": null,
+          "factory": {
+            "captured_server": [
+              4060955,
+              143377002
+            ],
+            "cpu_sampling": {
+              "first_ns": 1433771159475113,
+              "last_ns": 1433916253929928,
+              "peak_vram": 0,
+              "samples": 1285
+            },
+            "server_identity": {
+              "birth": 143377002,
+              "ppid": 3893063,
+              "state": "R"
+            },
+            "worker_identity": {
+              "birth": 143377114,
+              "ppid": 3893063,
+              "state": "R"
+            },
+            "worker_rc": 75
+          },
+          "partial": true,
+          "rc": 75,
+          "reason": null,
+          "sampled_peak_tree_rss_bytes": 10416599040,
+          "samples": 139,
+          "schema": "pip02-paddle-parallel-owner/v1",
+          "shards": [
+            107,
+            108,
+            109
+          ],
+          "smoke": false
+        },
+        "worker_log_sha256": "17a412365e9b67b23620050300dbdb89b8ec3857e7355c2dfbd57167d8a9e72f"
+      },
+      {
+        "capture": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-parallel-owner-r4-20261029/attempts/codex3-pip02-paddle-parallel-owner-r4-g107-20261029-8714a17071454d5788d5b4e3046419ee/capture.json",
+        "capture_sha256": "0c1b5de7523b266b51671f8e3a17461353beca03ce7ef8e60a0e0255c936aa64",
+        "result": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-parallel-owner-r4-20261029/attempts/codex3-pip02-paddle-parallel-owner-r4-g107-20261029-8714a17071454d5788d5b4e3046419ee/result.json",
+        "result_sha256": "8e34233d55a686b0053ce38a7ea98f2e2d174f06bd663894bf9ec47635d9650d",
+        "native": {
+          "error": null,
+          "factory": {
+            "captured_server": [
+              3895774,
+              143301680
+            ],
+            "cpu_sampling": {
+              "first_ns": 1433017958063427,
+              "last_ns": 1433106228531064,
+              "peak_vram": 0,
+              "samples": 782
+            },
+            "server_identity": {
+              "birth": 143301680,
+              "ppid": 3893063,
+              "state": "R"
+            },
+            "worker_identity": {
+              "birth": 143301794,
+              "ppid": 3893063,
+              "state": "R"
+            },
+            "worker_rc": 75
+          },
+          "partial": true,
+          "rc": 75,
+          "reason": null,
+          "sampled_peak_tree_rss_bytes": 10205495296,
+          "samples": 85,
+          "schema": "pip02-paddle-parallel-owner/v1",
+          "shards": [
+            107,
+            108,
+            109
+          ],
+          "smoke": false
+        },
+        "worker_log_sha256": "32ab36ed4994a718f23c465f35ece53fc91953a62319a09086f0119eb0eca87d"
+      },
+      {
+        "capture": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-parallel-owner-r4-20261029/attempts/codex3-pip02-paddle-parallel-owner-r4-g107-20261029-aacf5f71a50f4f70974a1c77c945e45a/capture.json",
+        "capture_sha256": "f6864f1e71de2c714d67f0f6159af5f7f48f29a8388e2c1fb58b08abd30762ad",
+        "result": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-parallel-owner-r4-20261029/attempts/codex3-pip02-paddle-parallel-owner-r4-g107-20261029-aacf5f71a50f4f70974a1c77c945e45a/result.json",
+        "result_sha256": "0e00c2ad3885835b66dedd2038ccd57aa909bfb4d7c40364ab7e46f7e807b806",
+        "native": {
+          "error": null,
+          "factory": {
+            "captured_server": [
+              3954247,
+              143327812
+            ],
+            "cpu_sampling": {
+              "first_ns": 1433279382597441,
+              "last_ns": 1433418524763863,
+              "peak_vram": 0,
+              "samples": 1228
+            },
+            "server_identity": {
+              "birth": 143327812,
+              "ppid": 3893063,
+              "state": "R"
+            },
+            "worker_identity": {
+              "birth": 143327936,
+              "ppid": 3893063,
+              "state": "R"
+            },
+            "worker_rc": 75
+          },
+          "partial": true,
+          "rc": 75,
+          "reason": null,
+          "sampled_peak_tree_rss_bytes": 10380627968,
+          "samples": 132,
+          "schema": "pip02-paddle-parallel-owner/v1",
+          "shards": [
+            107,
+            108,
+            109
+          ],
+          "smoke": false
+        },
+        "worker_log_sha256": "a1e45db5e3b93088254b9ba5b6d368c82477214e467eeea184f260d22e0c7f05"
+      },
+      {
+        "capture": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-parallel-owner-r4-20261029/attempts/codex3-pip02-paddle-parallel-owner-r4-g107-20261029-b0bbcaeb76724af393c526dd117d1b60/capture.json",
+        "capture_sha256": "3c6142fdfa4d6a00d354623483ecfc496f3bdf2e44b2fcdea0fba860f4e42a53",
+        "result": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-parallel-owner-r4-20261029/attempts/codex3-pip02-paddle-parallel-owner-r4-g107-20261029-b0bbcaeb76724af393c526dd117d1b60/result.json",
+        "result_sha256": "e805b6cfb6b3ae26bf06f44ee0d0a018b08a8c7a6c95db2cb8fe9807b6ff986c",
+        "native": {
+          "error": null,
+          "factory": {
+            "captured_server": [
+              3916774,
+              143313181
+            ],
+            "cpu_sampling": {
+              "first_ns": 1433132960439564,
+              "last_ns": 1433249135724640,
+              "peak_vram": 0,
+              "samples": 1029
+            },
+            "server_identity": {
+              "birth": 143313181,
+              "ppid": 3893063,
+              "state": "R"
+            },
+            "worker_identity": {
+              "birth": 143313294,
+              "ppid": 3893063,
+              "state": "R"
+            },
+            "worker_rc": 75
+          },
+          "partial": true,
+          "rc": 75,
+          "reason": null,
+          "sampled_peak_tree_rss_bytes": 10592944128,
+          "samples": 111,
+          "schema": "pip02-paddle-parallel-owner/v1",
+          "shards": [
+            107,
+            108,
+            109
+          ],
+          "smoke": false
+        },
+        "worker_log_sha256": "a1e45db5e3b93088254b9ba5b6d368c82477214e467eeea184f260d22e0c7f05"
+      },
+      {
+        "capture": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-parallel-owner-r4-20261029/attempts/codex3-pip02-paddle-parallel-owner-r4-g107-20261029-dc80ee99a0844b2caacb4cad436d4f50/capture.json",
+        "capture_sha256": "bebae3eeb228df55a51a024500e70167309e104af4cd2fb539c633b2ffec8f98",
+        "result": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-parallel-owner-r4-20261029/attempts/codex3-pip02-paddle-parallel-owner-r4-g107-20261029-dc80ee99a0844b2caacb4cad436d4f50/result.json",
+        "result_sha256": "04b77feb658980b24be0c17256f136d49acd5899a1618c1bb5a11ae2f884cf22",
+        "native": {
+          "error": null,
+          "factory": {
+            "captured_server": [
+              4025222,
+              143361924
+            ],
+            "cpu_sampling": {
+              "first_ns": 1433620576203443,
+              "last_ns": 1433742789311534,
+              "peak_vram": 0,
+              "samples": 1076
+            },
+            "server_identity": {
+              "birth": 143361924,
+              "ppid": 3893063,
+              "state": "R"
+            },
+            "worker_identity": {
+              "birth": 143362055,
+              "ppid": 3893063,
+              "state": "R"
+            },
+            "worker_rc": 75
+          },
+          "partial": true,
+          "rc": 75,
+          "reason": null,
+          "sampled_peak_tree_rss_bytes": 10640879616,
+          "samples": 117,
+          "schema": "pip02-paddle-parallel-owner/v1",
+          "shards": [
+            107,
+            108,
+            109
+          ],
+          "smoke": false
+        },
+        "worker_log_sha256": "66e1b83efb523320467489c179f273aef8f81b400baad85bd7afd0fcec399c57"
+      }
+    ],
+    "original_request_inventory": [
+      {
+        "shard": 107,
+        "starts": 17,
+        "responses": 17,
+        "unmatched": [],
+        "completed_pages": 0
+      },
+      {
+        "shard": 108,
+        "starts": 0,
+        "responses": 0,
+        "unmatched": [],
+        "completed_pages": 0
+      },
+      {
+        "shard": 109,
+        "starts": 8,
+        "responses": 8,
+        "unmatched": [],
+        "completed_pages": 0
+      }
+    ],
+    "layout_diagnostic": {
+      "current_path": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-parallel-owner-r5-20261029/native-layout-current.json",
+      "current_sha256": "f12a63099b50487c8d7ef4eb9c4b6f49d9ec7b598fe69679bd8290583ba7b9b6",
+      "same_pixels": true,
+      "same_54_regions_except_confidence": true,
+      "changed_scores": 36,
+      "new_model_requests": 0
+    },
+    "withdrawal": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-parallel-owner-r4-20261029/R4-QUEUED-WITHDRAWAL-LAYOUT.json",
+    "withdrawal_sha256": "1aeb048183a70c930f4dbf8d30a4b660a4ce21ee0a05617a536fac3cda939354"
+  },
+  "yarn_cpu_r2": {
+    "outcome": "FAILED-RUN harness before model request",
+    "native_log": "/mnt/raid0/llm/tmp/codex-ni-yarn-dca-xdev-20261029/ws58-launcher.out",
+    "exact_refusal": "[region-lock] --cpu-list '96-119' maps to no regions",
+    "normal_model_result": null
+  },
+  "hil15_s3": {
+    "outcome": "COMPLETE diagnostic collection, no confirmation or speed claim",
+    "done_path": "/mnt/raid0/llm/tmp/hil15-s3-confined-v18-20261029/results-pilot/DONE",
+    "done_sha256": "2656c227bd031a28226b92fc407c9ddeca736598a1055d735cd7d330f1ecd34f",
+    "new_replays": 14,
+    "retained_unit11_slot0": 1,
+    "new_finished_units": [
+      {
+        "unit": 11,
+        "passes": 3,
+        "rows": [
+          {
+            "slot": 0,
+            "directory": "/mnt/raid0/llm/tmp/hil15-r11-s3-repair-20261028/results-pilot/unit-11/slot-0/bc4268c6c8cb4c7988776aa850de865b/driver-0",
+            "manifest_sha256": "dd6877e416f86019b3539d25074cf538a6b07205e780313e423c5b182f9d3abc",
+            "pass": true,
+            "error": null,
+            "l2_sha256": "197d0299bc939881feee669d296f641567c3e802aec55cea5cbe23475ef03c79",
+            "auc_sha256": "1376b0cc2a18d5956d0e16a0d5b2d6dfdec3d64ffc2924a6668cbc5bd5d207c2",
+            "auc_status": "insufficient"
+          },
+          {
+            "slot": 1,
+            "directory": "/mnt/raid0/llm/tmp/hil15-s3-confined-v18-20261029/results-pilot/unit-11/slot-1/3e5ede4111964f3386a6cdde475810e1/driver-1",
+            "manifest_sha256": "ed32616baada7da4f9aae6ef0cba87e3ea75151d327e2613fb80c74335e64512",
+            "pass": true,
+            "error": null,
+            "l2_sha256": "197d0299bc939881feee669d296f641567c3e802aec55cea5cbe23475ef03c79",
+            "auc_sha256": "1376b0cc2a18d5956d0e16a0d5b2d6dfdec3d64ffc2924a6668cbc5bd5d207c2",
+            "auc_status": "insufficient"
+          },
+          {
+            "slot": 2,
+            "directory": "/mnt/raid0/llm/tmp/hil15-s3-confined-v18-20261029/results-pilot/unit-11/slot-2/860b6987c00346429522be128046593d/driver-2",
+            "manifest_sha256": "992d54d67258dcaa5cb8b04cfe5ba24371a45d82e9f81b275d1164c85a0d37f0",
+            "pass": true,
+            "error": null,
+            "l2_sha256": "197d0299bc939881feee669d296f641567c3e802aec55cea5cbe23475ef03c79",
+            "auc_sha256": "1376b0cc2a18d5956d0e16a0d5b2d6dfdec3d64ffc2924a6668cbc5bd5d207c2",
+            "auc_status": "insufficient"
+          }
+        ]
+      },
+      {
+        "unit": 12,
+        "passes": 3,
+        "rows": [
+          {
+            "slot": 0,
+            "directory": "/mnt/raid0/llm/tmp/hil15-s3-confined-v18-20261029/results-pilot/unit-12/slot-0/71481070c1e74b1fbe5bc0b1179b7c53/driver-0",
+            "manifest_sha256": "3a5e9ae9b6872e24dad817c341c5f5e463e5ac1c8f171dcf640c454a94e45ee0",
+            "pass": true,
+            "error": null,
+            "l2_sha256": "096f7520a15bddad155edb033632caea72474cbd1b1aa2e6ed14a9c6e8846c53",
+            "auc_sha256": "1376b0cc2a18d5956d0e16a0d5b2d6dfdec3d64ffc2924a6668cbc5bd5d207c2",
+            "auc_status": "insufficient"
+          },
+          {
+            "slot": 1,
+            "directory": "/mnt/raid0/llm/tmp/hil15-s3-confined-v18-20261029/results-pilot/unit-12/slot-1/e6277e0b3cc744498d86834e12f3e6fd/driver-1",
+            "manifest_sha256": "32579c89001131731b1dead1586a71aad5d35cc3c1a347604b9b540f7944e57b",
+            "pass": true,
+            "error": null,
+            "l2_sha256": "5856775063ce6233212f213c58f4eef43c587dd536e5c5dfeb182aca58db6e03",
+            "auc_sha256": "1376b0cc2a18d5956d0e16a0d5b2d6dfdec3d64ffc2924a6668cbc5bd5d207c2",
+            "auc_status": "insufficient"
+          },
+          {
+            "slot": 2,
+            "directory": "/mnt/raid0/llm/tmp/hil15-s3-confined-v18-20261029/results-pilot/unit-12/slot-2/29ca60907f104b5bbfdd63b59747b444/driver-2",
+            "manifest_sha256": "466a1b5ba87c11244275b61c43f20d3606305f035f18195baf9e09926a66f4bc",
+            "pass": true,
+            "error": null,
+            "l2_sha256": "5856775063ce6233212f213c58f4eef43c587dd536e5c5dfeb182aca58db6e03",
+            "auc_sha256": "1376b0cc2a18d5956d0e16a0d5b2d6dfdec3d64ffc2924a6668cbc5bd5d207c2",
+            "auc_status": "insufficient"
+          }
+        ]
+      },
+      {
+        "unit": 13,
+        "passes": 1,
+        "rows": [
+          {
+            "slot": 0,
+            "directory": "/mnt/raid0/llm/tmp/hil15-s3-confined-v18-20261029/results-pilot/unit-13/slot-0/72629fc3acdc4c998890f7b8fd6a4ce9/driver-0",
+            "manifest_sha256": "05dd19a7298536b6969566ee2b44a5ce2cbf9757b76c62958ea480e4b7c01878",
+            "pass": true,
+            "error": null,
+            "l2_sha256": "197d0299bc939881feee669d296f641567c3e802aec55cea5cbe23475ef03c79",
+            "auc_sha256": "1376b0cc2a18d5956d0e16a0d5b2d6dfdec3d64ffc2924a6668cbc5bd5d207c2",
+            "auc_status": "insufficient"
+          },
+          {
+            "slot": 1,
+            "directory": "/mnt/raid0/llm/tmp/hil15-s3-confined-v18-20261029/results-pilot/unit-13/slot-1/605206930c554b6e83c2769a9dc33eaa/driver-1",
+            "manifest_sha256": "f5e1a9c13b6278947bc588ffc4dff67e04ee287e9c7d2e77b2f4f0d6cc5579be",
+            "pass": false,
+            "error": null,
+            "l2_sha256": "1f73ed62b886af850500286a17828836878ea128076b1b9ab06efa205704c5cb",
+            "auc_sha256": "1376b0cc2a18d5956d0e16a0d5b2d6dfdec3d64ffc2924a6668cbc5bd5d207c2",
+            "auc_status": "insufficient"
+          },
+          {
+            "slot": 2,
+            "directory": "/mnt/raid0/llm/tmp/hil15-s3-confined-v18-20261029/results-pilot/unit-13/slot-2/a7c923b063ec44b886f2755c8d1dbca4/driver-2",
+            "manifest_sha256": "e69d07bbb9984616f5bfb443faccde93c97ec985994dd539e2512c9bcdbd2279",
+            "pass": false,
+            "error": null,
+            "l2_sha256": "f0e500319c1f307cf02d7a2a9f0748d252918934d4d849ad0186db0eacb7d377",
+            "auc_sha256": "1376b0cc2a18d5956d0e16a0d5b2d6dfdec3d64ffc2924a6668cbc5bd5d207c2",
+            "auc_status": "insufficient"
+          }
+        ]
+      },
+      {
+        "unit": 14,
+        "passes": 0,
+        "rows": [
+          {
+            "slot": 0,
+            "directory": "/mnt/raid0/llm/tmp/hil15-s3-confined-v18-20261029/results-pilot/unit-14/slot-0/6792cfbd96074ac788789bb97def896e/driver-0",
+            "manifest_sha256": "d8834248f66a765422d026982a93795cad25fc807b0b010b456dae668dd60709",
+            "pass": false,
+            "error": null,
+            "l2_sha256": "e60f0c7aa41d5a3504ecc020297dd06c352771529a09efe071cb5a49eea60b64",
+            "auc_sha256": "1376b0cc2a18d5956d0e16a0d5b2d6dfdec3d64ffc2924a6668cbc5bd5d207c2",
+            "auc_status": "insufficient"
+          },
+          {
+            "slot": 1,
+            "directory": "/mnt/raid0/llm/tmp/hil15-s3-confined-v18-20261029/results-pilot/unit-14/slot-1/1b53291f7044444d9f2f0f80d72e749a/driver-1",
+            "manifest_sha256": "351e175cc3e95ffaa73e9644ec2dde32bbebe23cd049223777c1ab87da1def37",
+            "pass": false,
+            "error": null,
+            "l2_sha256": "61094a5a35a942a0b692bf3accd9b6aa4de699709852e14ab0a2e4c8e73eff01",
+            "auc_sha256": "1376b0cc2a18d5956d0e16a0d5b2d6dfdec3d64ffc2924a6668cbc5bd5d207c2",
+            "auc_status": "insufficient"
+          },
+          {
+            "slot": 2,
+            "directory": "/mnt/raid0/llm/tmp/hil15-s3-confined-v18-20261029/results-pilot/unit-14/slot-2/ee573846f1624648a16d908a3b151583/driver-2",
+            "manifest_sha256": "d4f3f9a3df5d6b996800bc14b1703989333d0ebfbe4c210e124c249821dcf411",
+            "pass": false,
+            "error": null,
+            "l2_sha256": "cc5c76c05f5b5379cb036246290acf6e741bb4708f0d1a8e213ff45d715a6a49",
+            "auc_sha256": "1376b0cc2a18d5956d0e16a0d5b2d6dfdec3d64ffc2924a6668cbc5bd5d207c2",
+            "auc_status": "insufficient"
+          }
+        ]
+      },
+      {
+        "unit": 15,
+        "passes": 3,
+        "rows": [
+          {
+            "slot": 0,
+            "directory": "/mnt/raid0/llm/tmp/hil15-s3-confined-v18-20261029/results-pilot/unit-15/slot-0/81918948da5a4fff9b33ea49e3f59ac9/driver-0",
+            "manifest_sha256": "efeb205d432934c85c0d70fbc9e287e362f41cb1ad261f150f39f222a7199673",
+            "pass": true,
+            "error": null,
+            "l2_sha256": "197d0299bc939881feee669d296f641567c3e802aec55cea5cbe23475ef03c79",
+            "auc_sha256": "1376b0cc2a18d5956d0e16a0d5b2d6dfdec3d64ffc2924a6668cbc5bd5d207c2",
+            "auc_status": "insufficient"
+          },
+          {
+            "slot": 1,
+            "directory": "/mnt/raid0/llm/tmp/hil15-s3-confined-v18-20261029/results-pilot/unit-15/slot-1/f64b2b4c403c4bda85097d0081de1360/driver-1",
+            "manifest_sha256": "75b48cb005fc844b95aa8364c22b677f7becc21e3a54cb41d3a2d91b8229434d",
+            "pass": true,
+            "error": null,
+            "l2_sha256": "197d0299bc939881feee669d296f641567c3e802aec55cea5cbe23475ef03c79",
+            "auc_sha256": "1376b0cc2a18d5956d0e16a0d5b2d6dfdec3d64ffc2924a6668cbc5bd5d207c2",
+            "auc_status": "insufficient"
+          },
+          {
+            "slot": 2,
+            "directory": "/mnt/raid0/llm/tmp/hil15-s3-confined-v18-20261029/results-pilot/unit-15/slot-2/7bce671c3a714f068b71a2ef3790d818/driver-2",
+            "manifest_sha256": "8a5fc5fafd8b2344dd1c22ad1a0924ab74d95281c400447f543bbf9748595a7b",
+            "pass": true,
+            "error": null,
+            "l2_sha256": "197d0299bc939881feee669d296f641567c3e802aec55cea5cbe23475ef03c79",
+            "auc_sha256": "1376b0cc2a18d5956d0e16a0d5b2d6dfdec3d64ffc2924a6668cbc5bd5d207c2",
+            "auc_status": "insufficient"
+          }
+        ]
+      }
+    ],
+    "whole_shard": {
+      "complete_units": 15,
+      "replays": 45,
+      "passes": 26,
+      "band_1_or_2_of_3": 8,
+      "all_pass_units": 6,
+      "all_fail_units": 1
+    },
+    "earlier_units_basis": "prior filed 01-10 native results, preserving epochs; new 11-15 outcomes re-read from native manifests",
+    "auc_note": "all 15 inspected per-replay AUC documents explicitly insufficient (one task/run each); no pooled AUC invented"
+  },
+  "disk_window": {
+    "trace": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/disk-snapshot-window-trace.jsonl",
+    "minimum": {
+      "epoch": 1793312261.6730742,
+      "available_bytes": 147492741120,
+      "snapshot_files": [
+        {
+          "name": "host-daniele.db",
+          "size": 3764445184,
+          "mtime_ns": 1793312225021772927,
+          "inode": 126667526
+        },
+        {
+          "name": "README.md",
+          "size": 2126,
+          "mtime_ns": 1792673220348039123,
+          "inode": 126649088
+        },
+        {
+          "name": "epyc.db",
+          "size": 10979930112,
+          "mtime_ns": 1793312252689025516,
+          "inode": 126664261
+        }
+      ]
+    },
+    "note": "live contemporaneous sample crossed floor during 22:17 snapshot publication; this does not prove cause of older21:17 jobs"
+  }
+}
