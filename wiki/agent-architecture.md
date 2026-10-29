@@ -5430,3 +5430,13 @@ Sources: [HIL-15](../handoffs/active/harness-improvement-loop.md) · [UFH-12](..
 The 16:20Z owner close recorded four queue/placement misses: a DF2 resume watcher left the FILLERS PID stale; a Q38 admission used a global checker with a local engine; a CT21-after-R15 watcher exited before updating FILLERS and the queue; and the quarter writer placed the INF-75 canary on 48–71 while a DF2 download held q2. These are observed incident details, not a ratified process change. Separately, native inspection of the running Claude Code 2.1.306 binary verified that routine approved notices sent with priority `now` can interrupt an active tool, while `next` queues. The tested v2 helper sent one notice with `next`; its local receipt is socket-sent, while consumption remains pending. This does not establish the cause of every prior cancellation or authorize altering operator STOP instructions.
 
 Sources: [WS58 16:20Z close](../progress/2026-10/2026-10-27-workspace-58.md); [Codex full wrap](../progress/2026-10/2026-10-27-codex-ni-full-wrap-1625.md); [owner watcher notes](../.claude/skills/inference-backlog-scheduling/references/owner-watchers.md); [non-inference backlog](../handoffs/active/non-inference-backlog.md)
+
+## Compiled Update — 2026-10-29 (wrap-up sweep, delta over 2026-10-27)
+
+**Confidence: verified (source + tests); throughput of the parallel launcher is not measured.**
+
+- **KVU-13a landed** (orchestrator main `61c4763b`): inherited `LLAMA_ARG_*` defaults no longer silently change managed argv recipes, and auxiliary services receive `LD_PRELOAD` / `SHIM_NPROCS` only when their service declaration provides them. Hostile-parent controls cover canonical and alias llama roles, future-prefixed knobs and parent-dict immutability; 99 tests pass (two environment-dependent deselected).
+- **Parallel parser dispatch:** twenty PIP-02 ODL replacement shards request up to twelve workers (two distinct CPUs and a sidecar port each) with a 96 GiB RSS guard and owned-subtree cleanup; a control drained in 29.92 s. This proves launcher entry and cleanup, not twelve-worker throughput.
+- **PROFILE-6 stayed unrun:** free space fell below the 150 GiB floor and the native profiler has no verified aggregate write cap, so no smoke reservation was qualified.
+
+Sources: [parallel dispatch and env repair](../progress/2026-10/2026-10-29-codex3-parallel-dispatch-and-env.md); [PROFILE-6 capacity checkpoint](../progress/2026-10/2026-10-29-codex3-hsf-profile6-capacity.md); [session-bus-thin-dispatcher](../handoffs/active/session-bus-thin-dispatcher.md).

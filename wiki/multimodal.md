@@ -1524,3 +1524,10 @@ Sources: [Conversation stack](../handoffs/active/conversation-stack.md)
 - **Converted STT2 assets and CPU smoke launchers were prepared, not acquired or run by this preparation session.** The Parakeet and Whisper F16 artifacts have separate immutable pins and provenance. The dependent 40-clip CPU jobs capture model, source, binary, linkage, grant and per-clip outcomes; they remain dependent on acquisition receipts and source publication. No production-weight equivalence, WER/quality, or timing qualification follows from the packet.
 
 Sources: [conversation-stack handoff](../handoffs/active/conversation-stack.md); [CS22 native negative and diagnostic](../progress/2026-10/2026-10-27-cs22-native-negative-and-diagnostic.md); [STT2 native source preparation](../progress/2026-10/2026-10-27-stt2-native-source-ready.md); [native repair packet checkpoint](../progress/2026-10/2026-10-27-native-repair-packets-2255.md); [Vidya belief substrate program](../handoffs/active/vidya-belief-substrate-program.md).
+
+## Compiled Update — 2026-10-29: vision-role promotion reconciled; PaddleOCR-VL CPU table smoke
+
+- **S-16 closed by audit:** Qwen3-VL-30B-A3B Q4_K_M is registered as `worker_vision`/`vision_escalation` (deployed 2026-07-31), replacing Qwen2.5-VL-7B in the research registry. This is a reconciliation of an already-deployed state, not a new measurement.
+- **PaddleOCR-VL-1.6 on CPU (PIP02 Phase B):** the llama-server vision path (GGUF + mmproj, `-ngl 0 -np 1`) completed two English table pages in 67.8 s and emitted HTML `<table>` markup; the bounded n=2 smoke says the harness works, not that the tables are faithful (dropped operators seen in page-2 equations). Scoring belongs to Phase C (see Document Processing).
+
+Sources: [multimodal-pipeline handoff](../handoffs/active/multimodal-pipeline.md); [document-parser-table-bench handoff](../handoffs/active/document-parser-table-bench.md); [PIP02 partial TEDS report](../artifacts/compute/pip02-partial-teds-20261029/README.md)

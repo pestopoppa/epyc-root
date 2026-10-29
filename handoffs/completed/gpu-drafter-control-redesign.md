@@ -1,9 +1,11 @@
 # GPU-Drafter Control Redesign
 
+> **COMPLETE / ARCHIVED 2026-10-29 (operator wrap-up).** All lanes measured dead or retired; DR-3 and DR-3e retired 2026-10-28 (`84dff9d39`). Historical ledger only; no open work.
+
 **Status**: NEW / SCOPING (opened 2026-07-18 from the v7 lever audit). Design + α-measurement
 only — **no serving bench without operator approval** (`feedback_no_concurrent_inference`).
 **Owner handoff**: this file. **Parents**: [gpu-drafter-mi200-investigation.md](../archived/gpu-drafter-mi200-investigation.md),
-[mi210-big-model-and-acceleration-roadmap.md](mi210-big-model-and-acceleration-roadmap.md) (Axis-B).
+[mi210-big-model-and-acceleration-roadmap.md](../active/mi210-big-model-and-acceleration-roadmap.md) (Axis-B).
 
 ## Thesis
 
@@ -125,7 +127,7 @@ does not depend on an archived parent:
   The design keeps the lane research-only until broader task-class admission and
   production-named `P-GPU-1` certification pass, and explicitly avoids IQ1_M download
   solely for DR-0 because IQ2_M already passed the strict drafter gate.
-- **DR-3 — RETIRED 2026-10-28 (operator):** the 122B quant-asymmetric K2 admission lane and its unfinished certification were retired in `84dff9d39`, reaffirmed by the 2026-10-29 09:41 owner directive. This is retirement, not completion. See [INF-34 retirement record](mi210-big-model-and-acceleration-roadmap.md). Completed DR-3a–DR-3d evidence remains below.
+- **DR-3 — RETIRED 2026-10-28 (operator):** the 122B quant-asymmetric K2 admission lane and its unfinished certification were retired in `84dff9d39`, reaffirmed by the 2026-10-29 09:41 owner directive. This is retirement, not completion. See [INF-34 retirement record](../active/mi210-big-model-and-acceleration-roadmap.md). Completed DR-3a–DR-3d evidence remains below.
   - [x] **DR-3a — dry-run package scaffold ✅ 2026-07-20**:
     inference-research `scripts/benchmark/dr3_quant_asym_k2_admission_prep.py`
     emits `manifest.json`, `task_packet.jsonl`, `commands.sh`, `operator_run.sh`,
@@ -169,7 +171,7 @@ does not depend on an archived parent:
 ## Cross-links
 
 - α-alignment baseline (N5) + Stage-1/2 negatives: [gpu-drafter-mi200-investigation.md](../archived/gpu-drafter-mi200-investigation.md),
-  [mi210-big-model-and-acceleration-roadmap.md](mi210-big-model-and-acceleration-roadmap.md) Axis-B.
+  [mi210-big-model-and-acceleration-roadmap.md](../active/mi210-big-model-and-acceleration-roadmap.md) Axis-B.
 - Teleport transport: AXA-2 in the mi210 roadmap.
 - Dead lanes (do not revive as-is): tree-draft/DySpec, external-drafter Stage-1/2
   ([tree-draft-forward-port-plan.md](../completed/tree-draft-forward-port-plan.md)).

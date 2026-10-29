@@ -696,3 +696,12 @@ The adoption decision was made on **production behavior, not new benchmarks**: t
 - **CT-THINK-CODER decided: keep thinking ON on the coder server.** The pre-registration is operator ruling C1 plus OP-69 option (a) / RI-23a (receipt `RATIFY-RI23A-20260929`). `coder_escalation` is an alias on the :8083 process (Qwen3.8-27B Q8 on the MI210); thinking-on is request-side via registry kwargs (`enable_thinking: true, reasoning_effort: medium`), so the 2026-10-22 filler `--reasoning off` fix does not touch it, and a per-request `enable_thinking:true` would override a server-side off anyway. Turning it off would reverse a ratified decision and needs its own `stack-change` package.
 
 Sources: [Qwen chat template evaluation](../handoffs/active/qwen-chat-template-evaluation.md)
+
+## Compiled Update — 2026-10-29: CT-21 HOLD stands; CT-12.5 fold confirmed
+
+- **CT-21 (architect Skill-Inject/IB2 flag) verdict: HOLD, default OFF.** The predeclared rule (sha256 `4040098b...`) over 2352 unique records fails the investigate competence gate: OFF 13/200 vs ON 11/200, ON-OFF -1.0 pp, Tango one-sided 95% lower bound -4.18 pp (must exceed -3.0), aligned-twin net loss 6 (limit 1). Synthesis competence was 0/200 in both arms, an implausible floor flagged for scorer audit, so it is not evidence. Skill-Inject ASR improved on neither surface (synthesis 6/316 vs 3/316, p=0.254; investigate 0/316 vs 2/316); fixture-set static attacks only, no robustness claim.
+- **Parse-outcome repair:** a native unparseable multiple-choice answer is now scored as an incorrect outcome (malformed fixture gold still refuses), after slice 3 failed rc1 on `AnswerParseError`; all 1956 completed rows were preserved and no historical response reconstructed.
+- **v2 exploratory rerun (2026-10-28) ended rc1 at the belief writer** (`CaptureError`), with 80/80 raw files retained. It is an observation only: no score, no change to the HOLD, and CT-21 is not re-armed.
+- **CT-12.5 closed by audit:** the `6dfbc9e86` fix is folded into the champion (patch-id equal commit `9a44414c4`, ancestor of champion `c72ec82f5`), with test-chat-input-spans and `test_chat_special_tokens.py` recorded as PASS.
+
+Sources: [qwen-chat-template-evaluation handoff](../handoffs/active/qwen-chat-template-evaluation.md); [CT-21 aggregate verdict](../artifacts/chat-templates/ct21-verdict-20261027/AGGREGATE.md); [ct21-direct-ready progress](../progress/2026-10/2026-10-28-ct21-direct-ready.md); [codex-ni-01a16d6b progress](../progress/2026-10/2026-10-28-codex-ni-01a16d6b.md)

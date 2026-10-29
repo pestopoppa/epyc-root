@@ -128,3 +128,11 @@ The per-request budget path's root cause was traced 2026-04-17: on **hybrid SSM+
 ### 2026-10-06 runtime repetition-guard successor
 
 A [source-bound public Markdown replay](../artifacts/ni08/td30f-public-replay-20261006/README.md) preserves the current quality and pipeline trigram preconditions and the stream body's exact three-line substring rule. Among218 pinned authored documents, the two trigram guards each triggered0/218; the stream body triggered0/217, excluding one tail with fewer than six lines. The corpus has no adjudicated coherence labels or short-text comparison. These descriptive counts do not establish false-positive rates, length interaction, streamed integration or a threshold change. TD-30f remains open; the accepted four-control native receipt warrants bounded runner conformance only.
+
+## Compiled Update — 2026-10-29: audit closures and architect retarget
+
+- **Retarget (operator, 2026-10-28):** Qwen3.5-122B is deprecated; the CPU arm of the open effort/compression questions now runs on Qwen3.8-Flash-Next UD-IQ4_XS (`architect_general`), not the 122B. The tool-output-compression first-party A/B likewise targets frontdoor Qwen3.6-35B-A3B and that architect, and must report wall-clock plus a log-growth/grep-latency curve.
+- **Closed as OBSOLETE by audit:** RP-4 (per-model penalty policy) and RP-5 (clean Q4-vs-IQ2 parity with fence) were 122B-specific, and that lane was retired 2026-09-22/23. The SEAL control-vector experiment for Qwen3-32B closed because the GGUF was deleted 2026-10-20. These are lane closures, not negative results; the repetition-penalty fence findings above remain as recorded.
+- **Summarizer quality closed by reference:** context-folding Phase 2a found 30B-A3B the minimum viable summarizer (3.0/3.0).
+
+Sources: [reasoning-compression handoff](../handoffs/active/reasoning-compression.md); [reasoning-effort-levels handoff](../handoffs/active/reasoning-effort-levels.md); [tool-output-compression handoff](../handoffs/active/tool-output-compression.md)

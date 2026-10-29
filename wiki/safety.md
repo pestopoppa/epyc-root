@@ -485,3 +485,11 @@ Sources: [Qwen chat template evaluation](../handoffs/active/qwen-chat-template-e
 - **Memory telemetry for the next OOM.** A 30 s sampler (`mem_sampler.py`, 4 tests) was written because the earlyoom incident left no memory sample on disk; it is not running until the host cron starts it.
 
 Sources: [Model artifact integrity](../handoffs/active/model-artifact-integrity.md), [Model exec containment](../handoffs/active/model-exec-containment.md), [Non-inference backlog](../handoffs/active/non-inference-backlog.md), [Progress 3c4ca599](../progress/2026-10/2026-10-23-3c4ca599.md)
+
+## Compiled Update — 2026-10-29: PromptForge mutation-safety items reconciled
+
+- **MHS-9 closed by audit:** `revert_code_mutation`'s new-file revert now commits an explicit pathspec (`git add -A -- <path>` plus `commit --only`) rather than a sweep (orchestrator `25c8e913`, 2026-09-16).
+- **MHS-3d closed by audit:** the v10 episodic re-pin was operator-ratified (receipt emitted 2026-09-17, commit `810a6a829`) after the HumanEval/55 eval-leak memory purge.
+- **CT-21 safety read:** Skill-Inject ASR showed no improvement from the flag on fixture sets (see Chat Templates); no robustness claim is made.
+
+Sources: [promptforge-mutation-safety-contract handoff](../handoffs/active/promptforge-mutation-safety-contract.md); [qwen-chat-template-evaluation handoff](../handoffs/active/qwen-chat-template-evaluation.md); [CT-21 aggregate verdict](../artifacts/chat-templates/ct21-verdict-20261027/AGGREGATE.md)

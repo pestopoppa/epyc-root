@@ -4223,3 +4223,13 @@ The source tables now extend existing CME7T, CS22 and speech-conversation famili
 - **STT2:** the converted Parakeet/Whisper assets and per-clip CPU smoke source are bound before acquisition/execution. The source family still needs strict native-record reading and a planning-context canary before it can be called wired.
 
 Sources: [Vidya belief substrate program](../handoffs/active/vidya-belief-substrate-program.md); [CME7T instrument handoff](../handoffs/active/conversational-memory-eval-instrument.md); [conversation-stack handoff](../handoffs/active/conversation-stack.md); [native repair packet checkpoint](../progress/2026-10/2026-10-27-native-repair-packets-2255.md); [STT2 source preparation](../progress/2026-10/2026-10-27-stt2-native-source-ready.md); [CS22 source record](../progress/2026-10/2026-10-27-cs22-native-negative-and-diagnostic.md).
+
+## Compiled Update — 2026-10-29 (wrap-up sweep)
+
+**Confidence: verified (ledger/audit records).**
+
+- **Belief wiring:** REPL-EMB-2.4 (offline retrieval write side, `VB-UFH12-RETR`) and VB-TOC-AB-WRITE are confirmed landed by audit and ticked with `[no-belief: audit-reconciliation]`; shipped scoring/scorer work is tagged `[no-belief: source implementation]` while committed conclusions (the cached screen) use `[belief: cc]` and project as Judged/Located.
+- **Backlog hygiene:** the 2026-10-29 audit closed duplicate/superseded boxes (colbert A/B duplicate, DAR-3, UTM-P1b) with the target line cited; two duplicate 122B obligations (DR-3, DR-3e) were retired under the standing operator directive and counted as administrative retirements, not delivered tasks.
+- **Open:** planning-context canaries for new native record families (PROFILE-6 trace, TOC A/B) remain unproved; none is called wired.
+
+Sources: [repl-embedding-retrieval](../handoffs/active/repl-embedding-retrieval.md); [tool-output-compression](../handoffs/active/tool-output-compression.md); [delivered routing and scoring progress](../progress/2026-10/2026-10-29-codex3-delivered-routing-and-scoring.md); [colbert-reranker-web-research](../handoffs/active/colbert-reranker-web-research.md).

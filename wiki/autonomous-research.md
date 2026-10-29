@@ -4369,3 +4369,13 @@ The 2026-10-20 AutoKernel-methodology intake (records `intake-1980#record`, `int
 - [Vidya belief substrate program](../handoffs/active/vidya-belief-substrate-program.md) — VB-AK-HISTORY write-side capture.
 - [AutoKernel cross-workload keep gate](../handoffs/active/autokernel-cross-workload-keep-gate.md) — deployment-gap fixture trigger record.
 - [2026-10-20 progress note](../progress/2026-10/2026-10-20.md) — batch scope and dispositions.
+
+## Compiled Update — 2026-10-29 (wrap-up sweep)
+
+**Confidence: verified for the smoke; no quality result.**
+
+- **INF-12 Gate2 under Triton 3.6:** the installed Triton 3.1 stack OOM'd in AMD lowering (539.66 GiB request vs 29.13 GiB free), a failure that predates and does not evaluate Triton 3.6. A private overlay selected 3.6.0; the exact `launch.sh --smoke` ran rc 0 in 165 s (two real `eventqa_65536` questions per arm, four output rows, same-PID KFD/HIP sampling bracketed generation). The first decision-class READY draft was withdrawn for not predeclaring the 4-split/22-source/3,671-row population.
+- **Autonomous-loop hygiene:** closed-box audits on 2026-10-29 marked superseded/duplicate boxes (DAR-3, UTM-P1b) instead of leaving them open.
+- **Gate/belief wiring:** ended-attempt and PROFILE-6 prep notes register prospective trace writes without claiming a ladder or production acceptance.
+
+Sources: [INF-12 Gate2 diagnostic](../progress/2026-10-28-inf12-gate2-triton36-diagnostic.md); [PROFILE-6 capacity checkpoint](../progress/2026-10/2026-10-29-codex3-hsf-profile6-capacity.md); [decision-aware-routing](../handoffs/active/decision-aware-routing.md); [unified-trace-memory-service](../handoffs/active/unified-trace-memory-service.md).

@@ -1570,3 +1570,13 @@ Sources: [UFH-12](../handoffs/active/repl-embedding-retrieval.md) · [Codex full
 **Confidence: verified** (native `result.json`).
 
 - **UFH-12 REPL-EMB-R1 did not pass.** The full paired collection finished rc0, but `passed: false`. The criterion was that both EG2 held-out Spearman correlations reach the paired BGE refit. Difficulty: EG2 0.145 vs BGE 0.175 (fails). Discrimination: EG2 0.091 vs BGE -0.194. There were 102 held out and 408 train; higher is better. ([refactor inference checkpoint](../progress/2026-10/2026-10-28-codex-refactor-inference-checkpoint.md); [repl-embedding-retrieval](../handoffs/active/repl-embedding-retrieval.md))
+
+## Compiled Update — 2026-10-29 (wrap-up sweep)
+
+**Confidence: verified (migration tool gates); retrieval quality gain not shown.**
+
+- **EG2 re-embed migration tooling closed (REPL-EMB-2.10):** B-1..B-4 (archive-only sessions mode, strategy store as a second unit, model/GGUF-sha identity marker, consumers refuse dim mismatch) landed on orchestrator `249ff242`/`5c987533`; B-5 side-aware embedding is code-complete on `49c1f749` (42/42 tests), flag-off, Kuzu routing-graph coverage unvalidated.
+- **Real run:** plan on live dirs rc0 and apply on a COPY rc0 with rows-in = rows-out and cosine >= 0.99999; R3 postcheck covers 64,514 episodic + 1,428 strategy rows with minimum consumer-path cosine 1.0. Plan-observed-stable on 65,942 rows (quiescence not proven). Production adoption remains separate.
+- **Reranker A/B:** LateOn vs GTE on web_research sentinel queries stays gated on AR-3 Package D data; a duplicate box was closed.
+
+Sources: [repl-embedding-retrieval](../handoffs/active/repl-embedding-retrieval.md); [colbert-reranker-web-research](../handoffs/active/colbert-reranker-web-research.md); [episodic-memory-integrity](../handoffs/active/episodic-memory-integrity.md).
