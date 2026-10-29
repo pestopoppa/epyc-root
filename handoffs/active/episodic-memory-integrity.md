@@ -511,7 +511,7 @@ failure caught in amber.
         abstention prompts in the 100K split use one-item refusal rubrics, so this is not a
         question-conditioned responsiveness or multi-criterion abstention measure ([judge source](https://github.com/mohammadtavakoli78/BEAM/blob/b2da22eac88bb0874c64665f13457eb99835774a/src/evaluation/compute_metrics.py),
         [100K prompt files](https://github.com/mohammadtavakoli78/BEAM/tree/b2da22eac88bb0874c64665f13457eb99835774a/chats/100K)).
-  - [ ] **M-12e-a — make the Tulving adapter's dataframe load FAIL LOUDLY.** `tulving_episodic_adapter._load_qa_from_variant`
+  - [x] **M-12e-a — make the Tulving adapter's dataframe load FAIL LOUDLY.** `tulving_episodic_adapter._load_qa_from_variant` ✅ 2026-10-29 (audit: raise half: research ccc41d4b "CME-4 + M-12e-a ... loud dataframe load"; remaining half: pyarrow-25.0.1 + pandas now in research .venv (dist-info mtime 2026-09-16 10:18)) [no-belief: audit-reconciliation]
     swallows a missing pandas/pyarrow and then scores every question as missing, so an M-12a run in the research venv
     (which has no pyarrow) would emit an all-zero summary that looks like a result. Raise instead, and add pyarrow to
     the research venv. Found 2026-09-15 while verifying the M-12e rescore, which had to run under the delta-Mem venv.

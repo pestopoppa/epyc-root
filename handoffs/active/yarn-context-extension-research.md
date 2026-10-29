@@ -216,7 +216,7 @@ KVU-16b / KVU-19 tax). YaRN is a separate long-context *mode*.
     - Existing cases: 119/119 bit-identical to the champion (worst nmse 0).
   - The v11 carry is `fork/experimental/fa-int64-offset-master-20261004`: the revert of #26046 plus the picks. It is
     not compile-verified on master.
-- [ ] **YARN-FA-INT64-fold — fold the three FA-INT64-OFFSET commits into the champion before any run past 512K
+- [x] **YARN-FA-INT64-fold — fold the three FA-INT64-OFFSET commits into the champion before any run past 512K ✅ 2026-10-29 (audit: kernel-manifests/llama-v11-manifest.md V11-017 FA-INT64-OFFSET commits 2152c39b1, 3c9b0bb4f IN champion @ dd3d9721c (G-ANC)) [no-belief: audit-reconciliation]
   cells.** (filed 2026-10-04, workspace-ec) Use the guarded CAS fold route with workspace-89: G0, `test-backend-ops`
   on ROCm0, and the `mask_ne0` cases. Done when the champion tip carries them.
 - [ ] **YARN-FA-INT64-up — draft (never post) the upstream report for master's int32 FA offsets.** (filed 2026-10-04,

@@ -239,13 +239,13 @@ agentic traffic. Two v10 facts constrain every probe. Both were read from the fr
         0.68; 3.04→4.06 as coverage rises). Cross-context control keeps 57% of coverage (generic boilerplate).
         Temp-1.0 sampled text is a direct acceptance sample (no logprobs needed). Report:
         `/mnt/raid0/llm/tmp/p1-lookup-replay-20261003/` (`out/position_table_k8.txt`, `out/gated_sims_table.txt`).
-- [ ] **DF2-15 (intake P2) — DFlash2 vs DFlash2+ngram serving A/B. NOT RUN: DF2-14 gate failed 2026-10-03 (≤+1% expected).** Gated on DF2-14 showing a copy rate
+- [x] ~~**DF2-15 (intake P2) — DFlash2 vs DFlash2+ngram serving A/B. NOT RUN: DF2-14 gate failed 2026-10-03 (≤+1% expected).** Gated on DF2-14 showing a copy rate~~ (closed 2026-10-29 audit: OBSOLETE → handoff:242 NOT RUN: DF2-14 gate failed 2026-10-03 (<=+1% expected copy-rate gain); box gated on that gate)
       worth testing. Arms: `draft-dflash` vs `draft-dflash,ngram-mod`, plus `draft-dflash,ngram-map-k4v` per
       `intake-1833#02`. Run at production shape, temperature 1.0, on replayed multi-turn agentic prompts.
       Apply the hygiene above: fresh server per arm and rep, distinct prompts, `draft_n` per implementation.
       Read it knowing the composition is whole-draft fallback with n-gram first. A loss can mean "lookup
       displaced better DFlash2 blocks", not "lookup has no signal". Only DF2-16 can separate those two.
-- [ ] **DF2-16 (intake P4) — per-position merge plus an entropy gate on `llama.cpp-experimental`. Gated on
+- [x] ~~**DF2-16 (intake P4) — per-position merge plus an entropy gate on `llama.cpp-experimental`. Gated on~~ (closed 2026-10-29 audit: OBSOLETE → gated on DF2-15 (line 242) which is not run after DF2-14 gate failure)
       DF2-15.** Keep the DFlash2 block and replace position i with the lookup token only where a suffix match
       exists. Gate retrieval on the target's low entropy over the key suffix (`intake-1838#00`; the relaxed
       verification in that paper is declined). A point-mass proposal keeps rejection sampling lossless

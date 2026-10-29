@@ -62,14 +62,14 @@ Plus portfolio-discovered revivals: **EAGLE-3→MI210** (mtp-refresh's own trigg
 ### A. NOW — this week
 
 - [x] **G0 · α from live logs (zero inference, today)** — parse per-role MTP acceptance from production llama-server logs; publish per-role α_MTP with a loud zero-lines failure. *Owner: gpu-drafter-mi200-investigation.md (retitle its Gating Measurement).* [findings-02 M0] ✅ 2026-07-17 (`scripts/benchmark/mtp_alpha_from_logs.py` `aa3b35a7`; live: worker_general draft-mtp α=0.994, frontdoor 0.603, architect 0.629; loud-fails on zero evidence)
-- [ ] **G1 · Ratify P-GPU-1** (operator; measurement trust boundary — human-amendment-only). [findings-02 §5]
+- [x] **G1 · Ratify P-GPU-1** (operator; measurement trust boundary — human-amendment-only). [findings-02 §5] ✅ 2026-10-29 (audit: MEASUREMENT.md:67 P-GPU-1 MI210 GPU canonical throughput "ratified 2026-07-19"; commit d0689d251 duty_cycle amendment RATIFY-PGPU1-DUTY-CYCLE-20260814) [no-belief: audit-reconciliation]
 - [ ] **G2 · Canonical-tree HIP build + `qwen35moe`/`qwen3next` op-coverage smoke** (no window needed; LD_LIBRARY_PATH hazard documented). [findings-02 M1-prereq]
-- [ ] **G3 · Frontdoor residency bench under P-GPU-1 → Gate R decision** (≥1.8× → R12 plumbing; 1.3–1.8× → HIP-kernel track critical; <1.3× → residency demotes to eval-only hosting). [findings-02 M1]
+- [x] **G3 · Frontdoor residency bench under P-GPU-1 → Gate R decision** (≥1.8× → R12 plumbing; 1.3–1.8× → HIP-kernel track critical; <1.3× → residency demotes to eval-only hosting). [findings-02 M1] ✅ 2026-10-29 (audit: commit b34a1203c 2026-08-14 "frontdoor Gate R verdict ... GPU is 2.5x, clears gate"; wrap-up 2f13b3e8d) [no-belief: audit-reconciliation]
 - [x] **I1 · `seq_refuted` learning exclusion + strategy-store quarantine parity** (code + tests, zero inference). [findings-01 R1] ✅ 2026-07-17 (code was already wired in aa20d029; parity locked by test_seq_refuted_learning_exclusion_parity.py `0492c07a`)
 - [ ] **I2 · Ledger-derived core_v2 selection** (read-only rebuild; demote 2026-06-15 calibration lineage to prior; compare item sets). [findings-01 R2]
   - [x] Post-E8 read-only rebuild + comparison ✅ 2026-07-29 — `core_v2_select.py --source ledger --min-attempts 5` wrote the non-promoted artifact `/mnt/raid0/llm/tmp/mainc-core-v2-20260729/{core.jsonl,report.json}`. The active era fence (`1785004723.0`) retained 16 trusted rows / 50 observed items and excluded 1,317 pre-era rows, yielding only 2 eligible / selected items (shortfall 38); neither overlaps the prior 40-item `core_v2_ledger_20260703_min5` selection. `tests/unit/test_core_v2_select.py` passed 6/6. No era amendment or activation was attempted.
   - [ ] Accrue a current-era, trusted ledger that yields at least 40 eligible core items before preparing any new `autopilot_quality` era row or activating a replacement core; the present 2-item artifact is evidence of insufficiency, not a candidate for promotion.
-- [ ] **I3 · DAR-1 regret replay over live ledger** (offline; the routing-unfreeze gate IS this replay). [R16]
+- [x] **I3 · DAR-1 regret replay over live ledger** (offline; the routing-unfreeze gate IS this replay). [R16] ✅ 2026-10-29 (audit: DAR-1 current-traffic replay done 2026-06-12 (completed/decision-aware-routing-completed-through-2026-09-27.md:23); commits 6712dceea, 0bf5b520e "Close stale DAR-1 replay queue item" (2026-07-03)) [no-belief: audit-reconciliation]
 - [ ] **N2-tail · W8 promotion-eval evidence** (unchanged owner: evidence-plane-ledger-and-sequential-verdicts.md).
 
 ### B. NEXT — gated on NOW outputs

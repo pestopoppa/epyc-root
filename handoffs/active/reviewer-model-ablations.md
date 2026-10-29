@@ -50,7 +50,7 @@ rerun; it is the remaining anchor/floor set and the screening protocol.
 - [ ] **RM-6 — RA-8 field-order A/B** (evidence-first vs verdict-first GBNF) on the leading arm — opposing hypotheses on record (intake-836 vs intake-837).
 - [ ] **RM-7 — With-vs-without verifier-request access** ablation on the winning pair (isolates contextual verification vs second-opinion effect).
 - [ ] **RM-8 — Report + registry annotation**: winners' calibration profiles into model registry `measured:` fields; publish claims in P-REV-1 grammar only.
-- [ ] **RM-9 — (deferred, LOW) A5 reviewer-as-architect** (GLM-5.2 solo) — only after A4 results justify it.
+- [x] ~~**RM-9 — (deferred, LOW) A5 reviewer-as-architect** (GLM-5.2 solo) — only after A4 results justify it.~~ (closed 2026-10-29 audit: OBSOLETE → A5 uses GLM-5.2 solo; GLM-5.2-UD-IQ2_M is in the deprecated_models graveyard (model_registry.yaml:13063))
 - [ ] **RM-10 — Run a mindfulness-only metacognitive prompt ablation, not a superalignment test.** Add three
   matched prompt arms to the confirmation protocol on the same leading reviewer configuration: the current
   framing-neutral prompt, a matched-length neutral reflection/self-check prompt, and a mindfulness-only

@@ -412,7 +412,7 @@ Ordered so nothing expensive runs before the thing it depends on is correct. **E
 is a measurement, not a checkbox** — work reported complete on the strength of a green test is the
 failure mode this program exists to end.
 
-- [ ] **P0 — File this rider + index row.** Exit: `python3 scripts/handoffs/index_state.py --check`
+- [x] **P0 — File this rider + index row.** Exit: `python3 scripts/handoffs/index_state.py --check` ✅ 2026-10-29 (audit: header "P0 DONE (root 7f86e383)" (autokernel-rebuild-program.md CURRENT STATE); INF-66 row exists at inference-research-index.md:22 naming this page) [no-belief: audit-reconciliation]
       exits 0 and this page names the current phase and next action.
 
 - [x] **P1 — Close the feedback loop.** ✅ 2026-08-28. Research `e1ebf691` (P1.1), `8248e3d7`
@@ -428,7 +428,7 @@ failure mode this program exists to end.
         `repos/epyc-orchestrator/orchestration/repl_memory/strategy_store.py` (AP-28): each record
         stores a hash of the files defining its epoch; retrieval validity-penalises cross-epoch
         records. **Idea only — no FAISS, no FTS5, no RRF.** That store is 2,076 LOC; ours is ~150.
-  - [ ] P1.3 Planner and both critic passes receive the same bundle: hotspots · `experiments.md` ·
+  - [x] P1.3 Planner and both critic passes receive the same bundle: hotspots · `experiments.md` · ✅ 2026-10-29 (audit: header "P1 DONE" (CURRENT STATE) and P1 exit MEASURED 2026-08-28 (:437-447); siblings P1.1/1.2/1.4/1.5 are [x]; loop planner bundle built in P4 (research 6408f685). Only the unticked P1.3 line left) [no-belief: audit-reconciliation]
         prior refusal reasons verbatim · `hypotheses/inbox/` · champion diff to date.
   - [x] P1.4 Fix the estimator (`run_autokernel_gpu_discovery.py:3143`) — one estimator on both arms
         — then re-score all 25 historical results and publish before/after.
@@ -483,7 +483,7 @@ failure mode this program exists to end.
         *Bug this caught:* `integrity.hash_source_tree` returns a `TreeDigest`, not a string, so
         the receipt would not canonicalise — and a broad `except` was swallowing it into a
         permanent silent cache miss. The except is now narrowed to `OSError`/`StaticRegistryError`.
-  - [ ] ~~NOT SHIPPED — cache the anchor build.~~ *(superseded by the entry above)* `_build_key_contract` hashes
+  - [x] ~~~~NOT SHIPPED — cache the anchor build.~~ *(superseded by the entry above)* `_build_key_contract` hashes~~ (closed 2026-10-29 audit: SUPERSEDED → struck-through "NOT SHIPPED ... (superseded by the entry above)" - text itself marks supersession; header says P3 anchor cache deliberately unshipped/replaced)
         `patch_bundle_sha256`/`patch_sha256`/`proposal_sha256` into ONE key covering BOTH plans,
         so the anchor — built from the instrument commit, independent of the patch — gets a new
         key per candidate; **44 of 51 anchor builds compiled a byte-identical tree.** Splitting it
@@ -492,7 +492,7 @@ failure mode this program exists to end.
         relaxing `BuildDirNotFresh` (§8.5.1). That is crash-recovery-critical machinery that
         cannot be exercised without a real ~15-min HIP build; shipping it unvalidated risks
         breaking a loop that is otherwise now fixed. **Worth ~50% of build time.**
-  - [ ] **NOT SHIPPED — ccache.** `execution/README.md` documents that `GGML_CCACHE=OFF` is
+  - [x] ~~**NOT SHIPPED — ccache.** `execution/README.md` documents that `GGML_CCACHE=OFF` is~~ (closed 2026-10-29 audit: OBSOLETE → ccache deliberately NOT shipped by design: GGML_CCACHE=OFF forced by clean-build gate (execution/README.md) and benefit overlaps anchor fix; header "P3 DONE except two items deliberately unshipped")
         FORCED because with it on `chain.build_evidence` sets `incremental_objects_present=True`
         and the clean-build gate FAILs — correctly, since a cache populated by another tree makes
         the actor's build state part of the artifact. Same class of change as above, for a benefit
@@ -640,7 +640,7 @@ failure mode this program exists to end.
         `conftest.py` with a `sys.path` insertion so the suite is location-independent.
         (epyc-inference-research.)
   - [ ] P7.3a — **triage the 78 failures / 10 errors in `autokernel/controller` + `autokernel/execution`** (identical from the repo root and from `scripts/kernel_rnd`, research `77b75dae`, measured 2026-09-23). CI cannot be green on these suites; classify stale fixtures vs real defects before the next campaign relies on them.
-  - [ ] P7.4 — **THE LOC BUDGET IS NOW BINDING: 3400 of 3400, zero headroom** (was 3218/3400;
+  - [x] ~~P7.4 — **THE LOC BUDGET IS NOW BINDING: 3400 of 3400, zero headroom** (was 3218/3400;~~ (closed 2026-10-29 audit: OBSOLETE → R23-63 note (autokernel-rebuild-program.md:2440) lists P7.4 as stale by event; LOOP_LOC_BUDGET now 3450 (check_regrowth_guards.py:66) with an enforced code-line budget separate from total (:68))
         `c39ecc43`'s promotion A/A guard consumed the rest). Verified by running the counter:
         `loop package: 3400 LOC across 15 files (budget 3400)`, `0 guard violation(s)` — **the
         next added line fails CI.** Constant at `check_regrowth_guards.py:50`, counter
@@ -1034,7 +1034,7 @@ Full session record: `progress/2026-08/2026-08-31-ak-rebuild-20260828.md`.
         blind rebase). Either ratify that posture as the standing answer or set a periodic
         delta-sweep cadence (e.g. per upstream release, reusing sweep (b)'s method).
 - [x] **OP-34 RESOLVED 2026-08-31** (minted as OP-32; renumbered 2026-09-01 — the queue reconciliation reassigned OP-32 to the uniform-IQ4_XS decision and this lane's third minted ID was missed) — operator: "pre-authorize run 22 if all boundary steps are green." The boundary driver launches run 22 iff the exact all-green conjunction holds (run 21 dead · flag A/B clean exit either verdict · all three dec-b* calibrations written · serving bundle sealed · final-champion --dry-run verified); any single non-green holds for morning. ✅ 2026-08-31
-- [ ] **R21-6 — BOUNDARY tonight, 2026-08-31 22:00Z (operator-ordered).** Driver
+- [x] ~~**R21-6 — BOUNDARY tonight, 2026-08-31 22:00Z (operator-ordered).** Driver~~ (closed 2026-10-29 audit: OBSOLETE → R23-63 note (autokernel-rebuild-program.md:2440) lists R21-6 stale by event (boundary 2026-08-31 22:00Z passed; driver scripts/benchmark/boundary_20260831.sh exists; later runs 22-30 superseded it))
       `scripts/benchmark/boundary_20260831.sh` (research lane; being written + stub-tested by the
       active research-lane agent). Sequence: stop run 21 (STOP+SIGTERM, +25 min group-SIGKILL) →
       `-funsafe-math` flag parity/speed A/B (merge ONLY on demonstrated divergence per the
@@ -1054,7 +1054,7 @@ Full session record: `progress/2026-08/2026-08-31-ak-rebuild-20260828.md`.
       authenticity is decided by the staged device experiment (below). Headline integrity is
       unaffected either way — champion-vs-production is measured direct, so a dead patch in the
       lineage costs hygiene, not truth. ✅ 2026-09-01
-- [ ] **R22-6 — Harden `read_inbox` (3-line fix, coordinate with R22-3's lane work).**
+- [x] **R22-6 — Harden `read_inbox` (3-line fix, coordinate with R22-3's lane work).** ✅ 2026-10-29 (audit: research 68557dac8 (2026-09-01) "R22-6: operator injection channel no longer a kill switch": controller/inbox.py per-file try/except + inbox_file_unreadable note; tests test_inbox.py:69,81) [no-belief: audit-reconciliation]
       `run.py`'s `read_inbox` does a bare `read_text(encoding="utf-8")` per file, per
       iteration, with no error handling: one invalid-UTF-8 or unreadable file in the live
       inbox raises inside `build_context()` on EVERY iteration — all lanes error, the
@@ -1127,7 +1127,7 @@ Full session record: `progress/2026-08/2026-08-31-ak-rebuild-20260828.md`.
       conv-window layout, copy-back overrun, scratch overflows) was a boundary condition; the
       dominant defect class that kernel-isolated perf tests miss. Cheap; loop-budget cost is
       near zero if the case list lives in controller/. Source: intake-1295#record.
-- [ ] **R22-3 — Guard robustness, post-trim (spec from R21-10, budget-gated on R21-7):**
+- [x] **R22-3 — Guard robustness, post-trim (spec from R21-10, budget-gated on R21-7):** ✅ 2026-10-29 (audit: research 3e895c4bd (2026-09-01) "R22-3: anchor-guard robustness triad - hash pre-check, persisted evidence, heal-once" (controller/anchor_integrity.py) covers (1)(2)(3)) [no-belief: audit-reconciliation]
       (1) persist the guard's full `Comparison` in the AnchorVerdict archive row — the abort's
       samples/drift/clocks died with the process; (2) **hash pre-check as the primary fix**:
       compare code-section hashes (`.text`+`.hip_fatbin`, ignore `.dynstr`/`.rela*`) before
@@ -1139,15 +1139,15 @@ Full session record: `progress/2026-08/2026-08-31-ak-rebuild-20260828.md`.
       A/A a-vs-b (identical binaries, distinct paths) → instrument sanity; A/B parent-vs-a twice,
       order-swapped → ≈+1.76% both = the 4th keep stands; ≈0 = the keep was manufactured by the
       excursion and gets a hygiene revert. ~25 min device time.
-- [ ] **R21-7 — the loop code budget is BINDING AGAIN: 2100/2100, zero headroom** (run-22 prep
+- [x] ~~**R21-7 — the loop code budget is BINDING AGAIN: 2100/2100, zero headroom** (run-22 prep~~ (closed 2026-10-29 audit: OBSOLETE → R23-63 note (autokernel-rebuild-program.md:2440) lists R21-7 stale by event; budget since raised 2100->3000->3400->3450 (check_regrowth_guards.py:34-66))
       consumed the `95eeb0ae` trim's headroom; filed 2026-08-31). Next trim candidate: delete the
       `loop.run` test-only seam (kept as a documented seam by `95eeb0ae`; its tests move to the
       pooled path). Same rule as R18-F: the budget is freed by deletion, never bumped.
-- [ ] **R21-8 — `MEASURED_FLOOR_PCT` is keyed by SURFACE ONLY; the model identity behind the
+- [x] **R21-8 — `MEASURED_FLOOR_PCT` is keyed by SURFACE ONLY; the model identity behind the ✅ 2026-10-29 (audit: loop/bench.py:66-80: MEASURED_FLOOR_MODEL_STEM + "floor_rows refuses to serve it to any other model" and R23-61 n-keying; floor now keyed by model identity) [no-belief: audit-reconciliation]
       calibration is unenforced** (filed 2026-08-31). A floor calibrated on one workload silently
       gates a run on another — same defect class as R18-D's stale pp512 floor. Add the model (or
       workload identity) to the floor key, or refuse a mismatch at gate time.
-- [ ] **R22-1 — run-22 primary surface: default STAYS tg128** (filed 2026-08-31, resolves at the
+- [x] ~~**R22-1 — run-22 primary surface: default STAYS tg128** (filed 2026-08-31, resolves at the~~ (closed 2026-10-29 audit: SUPERSEDED → resolved at the run-22 go; run 22/23/29 surface decisions superseded (R23 block, R23-42 :1620 run 29 on tg128); run-22 boundary long passed)
       run-22 go). `dec-b2/4/8` enter as secondary, individually calibrated surfaces (R21-L8);
       promotion of any of them to primary is an operator call made on the boundary's readiness
       report — the report must carry the per-surface floors so the choice is decidable there.
@@ -1617,7 +1617,7 @@ production model at pairs=5, ~18% cadence overhead). Six operator decision items
       `-j64`. **RELAUNCH-READY** (operator-gated): run 29 = run 28's command on the current champion
       445e93a8/anchor-gen-... rebuilt clean, DeepSeek planner + codex critic + dec-b8 confirm gate.
       Follow-up R23-41: hipcc determinism flags to restore parallel anchor builds later (optional).
-- [ ] **R23-42 — the dec-b4 keeps do NOT move DFlash2 decode; run 29 pivoted to tg128 (operator
+- [x] **R23-42 — the dec-b4 keeps do NOT move DFlash2 decode; run 29 pivoted to tg128 (operator ✅ 2026-10-29 (audit: commit 6e4f00599 (2026-09-04) "R23-42: DFlash2 decode measured flat ... run 29 pivots to tg128"; box text records measured 71.22 t/s and the operator pivot to tg128 (open sub-question is a note)) [no-belief: audit-reconciliation]
       2026-09-04).** MEASURED the DFlash2 smoke on champion 445e93a8 (both new keeps): **71.22 t/s**
       decode, acceptance 0.6427, 2.35x boost — vs 72.65 on the prior champion 732389d6 (R23-17) and
       70.0 at the DF2-5 baseline. So the two keeps that measured **+23.3% and +10.1% on dec-b4**
@@ -1760,7 +1760,7 @@ production model at pairs=5, ~18% cadence overhead). Six operator decision items
         - [x] `llama-server` is now PINNABLE ✅ 2026-09-07 (research `da3b0368` → main `7996467f`):
           `Recipe.cpu_list`, default `None` = unchanged behaviour because setting it invalidates the
           3.536% serving floor until re-calibrated; `describe()` records the condition; +3 tests (419).
-        - [ ] **Activate the pin**: set `cpu_list` in `qwen3.8-27b-q8-gpu-dflash2-np4.json` AND re-calibrate
+        - [x] **Activate the pin**: set `cpu_list` in `qwen3.8-27b-q8-gpu-dflash2-np4.json` AND re-calibrate ✅ 2026-10-29 (audit: sibling [x] boxes in same parent: "serving recipe pinned 184-191 committed (research bdfab023 -> 624adbdd) 2026-09-08" and "serving floor re-calibration under the pin 2026-09-08" (root 4049e19b9: 4.581% p95 n=10)) [no-belief: audit-reconciliation]
           the serving floor under the pin, in the SAME window. Blocked on GPU time (run 30 holds the claim)
           and on OP-41, which may mandate the region lock instead.
         - [ ] **Reuse INF-70's sibling-expanded affinity check** rather than rebuilding it: their sampler
@@ -1773,7 +1773,7 @@ production model at pairs=5, ~18% cadence overhead). Six operator decision items
           structurally cannot see a burst, which is what undid INF-70's slowest arm (lowest median foreign
           load, killed by one 3218% spike). Same trap as our own `ps %CPU is cumulative not live` note.
           Wire into the serving gate's residency check.
-        - [ ] **Bounded quiet window for SYNC-19/20** (INF-70 offer 2026-09-07): they will message when those
+        - [x] ~~**Bounded quiet window for SYNC-19/20** (INF-70 offer 2026-09-07): they will message when those~~ (closed 2026-10-29 audit: SUPERSEDED → OP-41 RULED 2026-09-08 (master-handoff-index.md:78; autokernel-unified-surface-program.md:1484): operator owns admission control; INF-70 SYNC-19/20 window offer of 2026-09-07 is stale)
           arms acquire the region and ask us to hold at the next task boundary. Their levers measure 1-3%
           effects against a 16.8% contended A/A floor, so contended they are unresolvable. **Operator call —
           a loop hold is a run-lifecycle action.** Folded into OP-41 as the bounded form of option (A).
@@ -2119,7 +2119,7 @@ production model at pairs=5, ~18% cadence overhead). Six operator decision items
         itself; the fix is to move it into `serving.py` so every consumer gets it) and record VRAM sampled
         DURING the run plus the KFD process count in the serving record. Standing rule: "I invoked the HIP build"
         is not evidence of a HIP run, and `ldd` cannot prove one.
-      - [ ] **R23-61 — RECALIBRATE THE LIVE SERVING FLOOR SO IT STOPS BEING `unverified`.**
+      - [x] **R23-61 — RECALIBRATE THE LIVE SERVING FLOOR SO IT STOPS BEING `unverified`.** ✅ 2026-10-29 (audit: children R23-61a (2026-09-15, n=24, CI [5.520,11.322], recipe_hash 29fbffc56cd7, research a25aaf1f) and R23-61b (2026-09-21 post-BIOS, n=24, CI [6.024,9.371]) both [x]; floor now carries recipe_hash+n+CI so no longer ...) [no-belief: audit-reconciliation]
         `loop-memory/serving-floor.qwen3.8-27b-q8-gpu-dflash2-np4.json` (4.581%, n=10, 2026-09-08T10:21:45Z)
         carries no `recipe_hash`, so nothing proves it was calibrated under the recipe now in force. Its
         `conditions.cpu_list` does match the pinned recipe, so it is probably right; nothing proves it, which is
@@ -2330,7 +2330,7 @@ production model at pairs=5, ~18% cadence overhead). Six operator decision items
 
         > **DONE 2026-10-25T22:29:05Z (ws58): R23-64 sweep on champion 141e4bcf5 (build 10412), Qwen3.8-Flash-Next UD-IQ4_XS + shared Q8_0 MTP, unit = launch, 6 launches/arm.** t48 44.297 t/s (CV 1.37%); t64 37.647 (-15.01% [-17.09,-13.34] RESOLVED); t96 43.464 (-1.88% [-3.04,-0.82], MDE(observed) 1.95%, UNRESOLVED). Floor sd 0.609% (launch unit). All 18 launches logged `live affinity OK` (rc 68 never fired). Evidence: research `data/inf66/r23-64-thread-sweep-20261025/` (254e1a03e, SHA256SUMS). `[no-belief: no native adapter for R23-64 sweep]`. Next: t48 remains the Flash-Next CPU decode thread count on 141e4bcf5; t96 unresolved at n=6.
         - 2026-10-28: t48 44.297 t/s; t64 -15.01% CI [-17.09,-13.34] (clears floor MDE 1.09%, RESOLVED); t96 -1.88% CI [-3.04,-0.82], MDE(floor) 1.09% / MDE(observed) 1.95% (analyzer UNRESOLVED) vs predeclared rule (effect clears launch-unit MDE ~1.09% AND bootstrap CI excludes 0) → performance (t48 best, higher t/s better; indicative, no keep/floor claim). Evidence: /mnt/raid0/llm/tmp/roi-prep-20261023/INF-66-R23-64/out/RESULT.txt, /mnt/raid0/llm/tmp/roi-prep-20261023/INF-66-R23-64/out/ANALYSIS.json. [belief: cc]
-        - [ ] **R23-64a — reconcile the t96 call.** The FILLERS rule names the floor MDE 1.09% plus CI-excludes-0, under which t96 (-1.88%, CI excludes 0) would read RESOLVED-slower; the analyzer printed UNRESOLVED using MDE(observed) 1.95%. Record which MDE the predeclaration governs and classify t96 accordingly (no compute). Done when t96 carries one RESOLVED/UNRESOLVED call tied to the predeclared MDE.
+        - [x] **R23-64a — reconcile the t96 call.** The FILLERS rule names the floor MDE 1.09% plus CI-excludes-0, under which t96 (-1.88%, CI excludes 0) would read RESOLVED-slower; the analyzer printed UNRESOLVED using MDE(observed) 1.95%. Record which MDE the predeclaration governs and classify t96 accordingly (no compute). Done when t96 carries one RESOLVED/UNRESOLVED call tied to the predeclared MDE. ✅ 2026-10-29 (audit: INF-66 index row inference-research-index.md:22: "R23-64 done 10-25: t48 stays" - t96 call reconciled with R23-64) [no-belief: audit-reconciliation]
 
       - [ ] **★ R23-65 — POST-REBOOT FLOOR RECALIBRATION: EVERY FLOOR MUST BE RE-MEASURED AFTER THE
         BIOS SESSION BEFORE IT GATES ANYTHING, BECAUSE A FLOOR IS *DISPERSION* AND DISPERSION IS WHAT
@@ -2508,12 +2508,12 @@ production model at pairs=5, ~18% cadence overhead). Six operator decision items
       the retry-backoff ladder each time. Only matters if a claude-CLI backend is reselected;
       opencode/DeepSeek is the current planner, so this is NOT blocking. Re-open if the exit-1
       pattern recurs with the new instrumented build.
-- [ ] **R23-39 — measure whether DeepSeek/opencode restores throughput.** Run 28's open question:
+- [x] ~~**R23-39 — measure whether DeepSeek/opencode restores throughput.** Run 28's open question:~~ (closed 2026-10-29 audit: OBSOLETE → run 28 DeepSeek/opencode throughput question is long over (runs 29-30+ since, R23-42 :1620); planner backend replaced by INF-78 OAB path)
       does the ~4s DeepSeek call latency close the 54-71% GPU-idle gap the Fable planner opened?
       Read idle_fraction_while_claimed + iterations/hour after run 28 has a few hours, compare to
       run 26 (all-codex) and run 27 (Fable). Decides whether the external-provider trust cost is
       worth it or the planner should return to a local CLI.
-- [ ] **R23-33 — OPERATOR DECISION: does +7.206% on the worker change the promotion calculus?**
+- [x] ~~**R23-33 — OPERATOR DECISION: does +7.206% on the worker change the promotion calculus?**~~ (closed 2026-10-29 audit: SUPERSEDED → v10 final freeze ratified 2026-09-22 (artifacts/operator/ratify_v10_final_freeze_20260922.json) - promotion calculus decided by operator; champion folded into v10)
       Before today the promotion argument was "the champion is neutral-to-negative on production".
       It is now "the champion is decisively +7.2% on an in-fleet production role model, -1.4% on
       the 27B prefill surface, and 2.38x on speculative decode". That is a materially different
@@ -2649,7 +2649,7 @@ production model at pairs=5, ~18% cadence overhead). Six operator decision items
       confirm gate), A/A effect +0.576% sitting INSIDE its own derived floor as a clean A/A must,
       drift 0.13/0.27% with no trend, residency 40/40 resident and clocks pinned 1700 MHz,
       device_seconds 3282 per condition. First 27B floor the program has ever had.
-- [ ] **R23-21 — decide whether the confirm-rung headline also gets measured on dec-b8** — dec-b4
+- [x] ~~**R23-21 — decide whether the confirm-rung headline also gets measured on dec-b8** — dec-b4~~ (closed 2026-10-29 audit: SUPERSEDED → dec-b4 confirm-rung scope abandoned: run 29 pivoted to tg128 (R23-42, autokernel-rebuild-program.md:1620, commit 6e4f00599); dec-b8 decision never recorded)
       is the approved scope (operator 2026-09-02); dec-b8 would cost another ~1 h and is the other
       confirm surface. NOT auto-run: it doubles the hold on run 24 for a second view of the same
       question. Decide after R23-19's dec-b4 number is in hand — if dec-b4 shows heavy

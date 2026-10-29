@@ -316,7 +316,7 @@ Dispatchable now. None requires a reboot; none runs a benchmark or starts `llama
 - [ ] **S-07 — Acquire the OmniDocBench source PDFs and mint an immutable manifest.** Unblocks
       `opendataloader-pipeline-integration.md` and `document-parser-table-bench.md` (same work filed
       twice). Record that the real local ceiling is 51 eligible PDFs, not 200.
-- [ ] **S-08 — Regenerate the E8 context coverage scan.** `e8_quality_context_coverage_v4_20260727.json`
+- [x] ~~**S-08 — Regenerate the E8 context coverage scan.** `e8_quality_context_coverage_v4_20260727.json`~~ (closed 2026-10-29 audit: SUPERSEDED → ruling_op19_e8_chain_20260827.json / 1ee8bd7cc: E8 chain and A11 reseed retired; the E8 coverage scan only fed that decision)
       reports `required_tokens` in **BYTES** and was taken against the pre-07-30 fleet. Both the A–D
       options package and the two 19 MB replacement-map candidates inherit both errors — nobody should
       act on them as they stand. Re-tokenize today; this directly unblocks A11's operator decision.

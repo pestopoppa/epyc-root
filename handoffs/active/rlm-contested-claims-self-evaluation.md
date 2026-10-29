@@ -88,7 +88,7 @@ this repo, and settle two that nobody owns at all.
         (2026-07-30), the same false cohort as UTM-M7/M8 and RC-9. Evidence:
         `progress/2026-09/2026-09-16-sub-closure-audit.md` (top-10 #3) and `scripts/handoffs/closure_audit.py`.
         E1 still needs this scorer before any strict-plus-lenient report.
-- [ ] E2 — **RESCOPED 2026-07-27 (operator): do not replicate this synthetically.** The original plan
+- [x] ~~E2 — **RESCOPED 2026-07-27 (operator): do not replicate this synthetically.** The original plan~~ (closed 2026-10-29 audit: SUPERSEDED → box text: RESCOPED 2026-07-27 (operator), measurement moved to repl-session-memory-maturity.md D-c1; "no arm runs here")
       was a ≥3-rep ON/OFF arm against the source's n=1 table. The source's own caveat — the code dump
       stays cheap only when follow-ups add a line or two, and *"a session where every query does heavy
       multi-step work is the case to watch"* — says the synthetic regime is not ours, so replicating

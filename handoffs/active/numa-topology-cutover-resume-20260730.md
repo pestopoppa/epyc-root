@@ -291,7 +291,7 @@ One of those two is worth understanding before you "fix" it:
       ✅ **Already done before 2026-08-11** — verified by `mainB`: the marker is gone, the test is
       bare with an explanatory comment above it, and it passes. Nothing to remove. Ticked so the
       next session does not spend a cycle rediscovering that.
-- [ ] **P0-3. Cold-start the stack, re-bench the contention matrix, commit + push
+- [x] **P0-3. Cold-start the stack, re-bench the contention matrix, commit + push ✅ 2026-10-29 (audit: stack cold-started live W3 ed891211 (2026-07-31, numa:1329+); matrix re-benched (numa W1 sect [x] 2026-08-01; orch 0a564a1f6 2026-09-24 topology 4893e37e); all repos long committed) [no-belief: audit-reconciliation]
       all three repos.** Strictly ordered; each step has a resume check so a crash
       mid-sequence is recoverable:
       1. **Cold-start** — `orchestrator_stack.py` (never a bespoke launcher).
@@ -336,7 +336,7 @@ the machine.
       caller substitutes `DEFAULT_PLACEMENT_POLICY` — so a typo silently degrades
       to a **different policy** rather than erroring. Fix that too, or the alias
       map hides its own failures.
-- [ ] **P1-2. `affinity_preflight` self-disarms.**
+- [x] ~~**P1-2. `affinity_preflight` self-disarms.**~~ (closed 2026-10-29 audit: DUPLICATE → same defect as numa-placement-defect-20260730.md:900 (T5, INF-43 owner); keep that box; affinity_preflight.py:277 still `required = no_mmap and len(expected_nodes)==1`; blocked on INTERLEAVE_TOLERANCE ratification (no...)
       `scripts/server/affinity_preflight.py:195` reads
       `required = no_mmap and len(expected_nodes) == 1`, so **every full and every
       half is exempt** — the gate that would *prove this cutover landed* passes
@@ -363,10 +363,10 @@ the machine.
       `numa_ports` against `NUMA_CONFIG`.** This is **the missing guard that
       allowed months of drift**. Add it; it is the cheapest permanent fix in this
       list.
-- [ ] **P1-6. `scripts/autopilot/eval_tower.py:1155` tests
+- [x] **P1-6. `scripts/autopilot/eval_tower.py:1155` tests ✅ 2026-10-29 (audit: orch 2f9bd733 (2026-08-12) "eval fan-out: replace the one-mode equality test with a total mode resolution"; eval_tower.py:2044 now guarded by _resolve_stack_numa_mode_for_fanout + _full_first_live_concurrency) [no-belief: audit-reconciliation]
       `stack_numa_mode == "quarter"`.** A half fleet never matches, so eval
       fan-out **silently collapses to 1**. Silent, not loud — no error is emitted.
-- [ ] **P1-7. `vision_escalation` has a PHANTOM 5-port fleet.** Ports
+- [x] **P1-7. `vision_escalation` has a PHANTOM 5-port fleet.** Ports ✅ 2026-10-29 (audit: models.py:278-283 comment: vision_escalation 8187/8287/8387/8487 dropped, role single-instance; stack_templates/default.yaml:13 lists them RETIRED, only alias entry remains; orch 982adb0c (2026-07-31 retire quarters)) [no-belief: audit-reconciliation]
       `8187/8287/8387/8487` **never existed** and are declared in
       `src/config/models.py` (see the comment at `:273`) and
       `stack_templates/default.yaml:145-148`.
@@ -398,7 +398,7 @@ the machine.
 
 ### P2 — measurement debt (5 tasks)
 
-- [ ] **P2-1. Re-run 27 of 31 E5 Stage-B cells under `P-BENCH-PLACEMENT-1`.**
+- [x] ~~**P2-1. Re-run 27 of 31 E5 Stage-B cells under `P-BENCH-PLACEMENT-1`.**~~ (closed 2026-10-29 audit: DUPLICATE → same work as numa-placement-defect-20260730.md:854 (T3 "Re-run the 27 confounded E5 cells", INF-43 index row); keep that box)
       4 are salvageable. Owning suspension banner:
       [`batched-decode-measurement.md`](batched-decode-measurement.md).
 - [ ] **P2-2. Establish production anchors for the three roles that have none.**
@@ -614,7 +614,7 @@ relying on it long-term):
 
 ### P1-11 — the contention matrix cannot see the GPU lane (filed 2026-07-30)
 
-- [ ] **Make the GPU shadow lane a participant in `contention_matrix.yaml`.** Its
+- [x] ~~**Make the GPU shadow lane a participant in `contention_matrix.yaml`.** Its~~ (closed 2026-10-29 audit: SUPERSEDED → "OPERATOR DESIGN DIRECTIVE 2026-07-31" (numa:639) states it supersedes the framing of the three tasks above; lane-as-row subsumed by surface redesign box numa:658)
   current participants are six CPU roles only; the lane is not a row. Measured
   footprint: the lane pins host threads to logical `184-191`, which fold to
   PHYSICAL cores 88-95 = region **q3**. So `full` (`0-95`) and `half B`
@@ -623,11 +623,11 @@ relying on it long-term):
   instance lost **34%** while half A lost nothing. Half B has NEVER been measured
   against the lane — which is why every half measurement in this campaign was
   deliberately taken on half A.
-- [ ] **Do not mechanically exclude `full` / `half B` pairs.** Their CPU-vs-CPU
+- [x] ~~**Do not mechanically exclude `full` / `half B` pairs.** Their CPU-vs-CPU~~ (closed 2026-10-29 audit: SUPERSEDED → superseded by numa:639 directive and "P1-11 CORRECTED 2026-07-31" (numa:993-1005): full/half pairs are derived structural exclusions, lane contention becomes a surface value)
   verdict is structural (cpuset intersection), but their lane contention is not,
   and a BLOCK verdict reached for CPU reasons would leave the lane channel
   permanently unmeasured. This is the dangerous direction of the error.
-- [ ] **The tool simultaneously over- and under-measures.** 5 of the 15 pairs in
+- [x] ~~**The tool simultaneously over- and under-measures.** 5 of the 15 pairs in~~ (closed 2026-10-29 audit: SUPERSEDED → superseded by numa:639 directive + ratified three-artifact design (numa:1024): derive structural pairs (numa:1030), measure sparse interference (numa:1040))
   the committed matrix are structurally overlapping and tagged
   `overlap_measured` — live inference spent re-deriving set intersection. Under
   the new topology 58 of 78 pairs are structurally blocked. Both halves of this
@@ -660,7 +660,7 @@ Consequences for the tasks above:
   orchestration router can be trained on — not a BLOCK/ALLOW verdict table. The
   GPU lane enters as a dimension of that surface, which subsumes the first task
   above.
-- [ ] **Derive, do not measure, the structurally-determined pairs.** 58 of 78
+- [x] ~~**Derive, do not measure, the structurally-determined pairs.** 58 of 78~~ (closed 2026-10-29 audit: DUPLICATE → same as numa:1030 "(1) Placement feasibility - DERIVED, never measured" (ratified design); keep numa:1030)
   pairs under the new topology are structurally derivable and must not consume
   inference time. Reserve measurement for the pairs whose interaction is *not*
   set-intersection — chiefly the lane channel under concurrent GPU prompting.
@@ -669,7 +669,7 @@ Consequences for the tasks above:
   stands in for model load/unload; with GPU models held resident that regime is
   not the operating point. Measure the resident-and-prompted regime separately
   before any coefficient is written into the surface.
-- [ ] **Do not refresh the stale contention matrix merely to unblock the
+- [x] ~~**Do not refresh the stale contention matrix merely to unblock the~~ (closed 2026-10-29 audit: OBSOLETE → premise (stale matrix blocking orchestrator pre-commit gate) gone: matrix re-benched 2026-08-01 (171f86f9 per numa W1 section) and orch 0a564a1f6 2026-09-24; commits proceed)
   `epyc-orchestrator` pre-commit gate.** Regenerating it under the old
   cpuset-intersection model would spend live inference producing an artifact this
   directive obsoletes. Commits bypass the gate with `--no-verify` and a
@@ -704,9 +704,9 @@ than MTP everywhere (122B CPU: 9.38 vs 15.76).
 - [x] Retraction committed to research `84067a6e` (raw logs left unedited) ✅ 2026-07-30
 - [x] Memory `feedback_ngram_fills_weak_drafter_headroom` rewritten as a retraction ✅ 2026-07-30
 - [x] Artifact rebuilt on corrected numbers ✅ 2026-07-30
-- [ ] **Cancel the queued `acceleration.spec_type` per-role field.** It was queued
+- [x] **Cancel the queued `acceleration.spec_type` per-role field.** It was queued ✅ 2026-10-29 (audit: P2-5 [x] CANCELLED 2026-07-31 (numa:~397) + numa:907-912 ticks; model_registry.yaml:1666-1669 retires ngram_candidate_spec_type, default_spec_type draft-mtp) [no-belief: audit-reconciliation]
   off the retracted finding. Nothing justifies enabling ngram on any role.
-- [ ] Re-scope NG1–NG5 in `speculative-decoding-mtp-refresh.md` — they were filed
+- [x] Re-scope NG1–NG5 in `speculative-decoding-mtp-refresh.md` — they were filed ✅ 2026-10-29 (audit: numa:910 [x]: speculative-decoding-mtp-refresh.md banner added, NG1-NG4 cancelled, NG5 re-scoped (2026-07-31)) [no-belief: audit-reconciliation]
   against the retracted result.
 - [ ] Fold the four P-BENCH-PLACEMENT-1 amendments (no repeated-prompt replication
   for context-reading drafters; mandatory non-context control arm; report n/min/max
@@ -731,7 +731,7 @@ Qwen2.5-VL-7B-Instruct Q4_K_M, node1, 24t, `membind=1`. Same GGUF serves
 | 14.1k | 5.36 (min 5.32 max 5.41) | 6.29 — **artifact**, min 5.29 |
 | 27.6k | 4.03 (n=3, consistent) | not run |
 
-- [ ] **NEW FINDING — VL-7B cannot serve deep context on a quarter.** Prefill on 24
+- [x] ~~**NEW FINDING — VL-7B cannot serve deep context on a quarter.** Prefill on 24~~ (closed 2026-10-29 audit: OBSOLETE → premise gone: quarters retired and worker_vision no longer Qwen2.5-VL-7B (registry model_registry.yaml:2684 Qwen3-VL-30B-A3B); the capacity finding was about 7B on a 24-thread quarter)
   threads runs at ~27.5 tok/s, so a 27.6k prompt needs ~14 min and the first rep
   blew a 900 s client timeout. `g32k` was abandoned as guaranteed-void rather than
   burn an hour. If either vision role is expected to take long-context work, it
@@ -753,7 +753,7 @@ contention matrix is refreshed.
 - [x] `test_stack_numa` — frontdoor[0] asserts `NUMA_FULL` + `interleave=all`, not
   the NPS2-era `NUMA_NODE0`; policy-less-prefix test rebuilt on a fixture; added
   `test_every_live_role_declares_a_memory_policy` ✅ 2026-07-30
-- [ ] Remaining 29: `test_gate_seam_wiring` (9), `test_scheduling_contention_gate`
+- [x] ~~Remaining 29: `test_gate_seam_wiring` (9), `test_scheduling_contention_gate`~~ (closed 2026-10-29 audit: SUPERSEDED → topology test failures resolved: P0-1 CLOSED 2026-08-24 (numa:279; PROMOTION_GATE_TARGETS 196 passed/0 failed) and P0-0 fulls restored 7483d7fb)
   (5), `test_stack_priors_compiler` (4), `test_scheduling_contention` (3),
   `test_stack_templates_v2` (3), `test_quarter_stack_smoke` (3),
   `test_gpu_shadow_lane_p2` (1), `test_model_descriptors_schema` (1).
@@ -861,12 +861,12 @@ Raw: `/mnt/raid0/llm/tmp/vlquality_results.json`; harness `/mnt/raid0/llm/tmp/vl
   `faster-whisper large-v3` 2.9 GB + `large-v3-turbo` 1.6 GB at `/mnt/raid0/llm/cache/huggingface/hub/`,
   launched by `orchestrator_stack.py:2123 start_whisper()` → `scripts/voice/start_whisper_server.sh`, port 9000.
   (Missed initially because they are CTranslate2 in `cache/`, not GGML in `models/`.)
-- [ ] **P0 — wire `start_tts()` into `orchestrator_stack.py`.** There is `start_whisper` (:2123), `start_sd_server`
+- [x] **P0 — wire `start_tts()` into `orchestrator_stack.py`.** There is `start_whisper` (:2123), `start_sd_server` ✅ 2026-10-29 (audit: orch cba55d49 (2026-08-02 "W5+W4: aux services are declared data"): orchestrator_stack.py:3201 start_tts, stack_commands.py:147, launch_manifest.yaml:111 tts: 9002) [no-belief: audit-reconciliation]
   (:2067), `start_document_formalizer` (:2015), `start_handoff_dashboard` (:2176) — and **no TTS**. Operator
   stated 2026-07-31 that this gets fixed today. **The only prior trace is an ARCHIVED box**
   (`handoffs/archived/qwen3-tts-voice-synthesis.md:433`); `multimodal-pipeline.md:20` shows the gap only as
   ASCII art (`→ ❌ NO TTS OUTPUT`), which the dashboard cannot see.
-- [ ] ~~**Install the 5 missing deps for the PyTorch TTS path**~~ — **DOWNGRADED to optional 2026-07-31.**
+- [x] ~~~~**Install the 5 missing deps for the PyTorch TTS path**~~ — **DOWNGRADED to optional 2026-07-31.**~~ (closed 2026-10-29 audit: OBSOLETE → box is struck through and DOWNGRADED to optional 2026-07-31; measured TTS path is qwentts.cpp (no Python deps), numa:841-847)
   `soundfile`, `fastapi`, `uvicorn`, `librosa`, `scipy` are needed only by the **PyTorch fallback** (Path C).
   The measured path is `qwentts.cpp`, a C++ binary with no Python runtime deps. Do this only if Path C is
   actually chosen. If it is: present already are `torch 2.6.0+cpu` and `transformers 5.5.1` in
@@ -879,7 +879,7 @@ Raw: `/mnt/raid0/llm/tmp/vlquality_results.json`; harness `/mnt/raid0/llm/tmp/vl
   *(ADJUDICATED 2026-08-12 by `mainC` — deliberately left CLOSED. Reads as a prohibition to the
   standing-constraint sweep, but the box itself declares the constraint MOOT: upstream `qwentts.cpp`
   supersedes the accelerator outright, so there is no live action left to forbid. Do not re-open.)*
-- [ ] **The existing voice stack is invisible to the active handoffs.** `scripts/voice/` already contains
+- [x] **The existing voice stack is invisible to the active handoffs.** `scripts/voice/` already contains ✅ 2026-10-29 (audit: multimodal-pipeline.md:93 now notes scripts/voice/ already contains tts_server.py; :614 "Prototype: FastAPI wrapper" ticked SUPERSEDED 2026-09-24 pointing to conversation-stack.md) [no-belief: audit-reconciliation]
   `tts_server.py`, `create_tts_sidecar.py`, `validate_tts_e2e.py`, `whisper_server.py`, `transcribe_batch.py`,
   `test_latency.py`, `start_whisper_server.sh` — named **only** in archived docs. Meanwhile
   `multimodal-pipeline.md:324` still tells a reader to *"Prototype: FastAPI wrapper around
@@ -910,7 +910,7 @@ Raw: `/mnt/raid0/llm/tmp/vlquality_results.json`; harness `/mnt/raid0/llm/tmp/vl
 - [x] `speculative-decoding-mtp-refresh.md` — ⛔ banner added; **NG1–NG4 cancelled**, NG5 re-scoped ✅
 - [x] `inference-research-index.md` — retraction banner above the stale row ✅
 - [x] `numa-topology-cutover-resume-20260730.md` **P2-5 cancelled**; §1.4 in-flight banner corrected ✅
-- [ ] `numa-placement-defect-20260730.md:25-27` and its ngram section still carry the 2.80×. That file is
+- [x] `numa-placement-defect-20260730.md:25-27` and its ngram section still carry the 2.80×. That file is ✅ 2026-10-29 (audit: numa-placement-defect-20260730.md:1441 "SUPERSEDING NOTE - 2026-07-31" append-only correction names :25-27 and :915 as retracted) [no-belief: audit-reconciliation]
   **append-only by its own rule** — add a dated superseding note at the end, do **not** edit in place.
 - [ ] **The confirmatory re-run's own caveat**: 5 of 12 cells carry the harness's `MONOTONE CLIMB` flag — **but so
   does a `draft-mtp` CONTROL cell** (27B GPU d16k: 33.08→36.71→37.55), which cannot be contaminated by a drafter
@@ -919,7 +919,7 @@ Raw: `/mnt/raid0/llm/tmp/vlquality_results.json`; harness `/mnt/raid0/llm/tmp/vl
 
 ### Test/commit state unchanged
 
-- [ ] 6 of 35 topology test failures fixed and **still uncommitted** — the pre-commit gate blocks *all* commits to
+- [x] ~~6 of 35 topology test failures fixed and **still uncommitted** — the pre-commit gate blocks *all* commits to~~ (closed 2026-10-29 audit: SUPERSEDED → P0-1 CLOSED 2026-08-24 (numa:279): 196 passed/0 failed on PROMOTION_GATE_TARGETS; commits no longer blocked (matrix re-benched))
   `epyc-orchestrator`, test-only included, until the contention matrix is refreshed. **97 failures total** across
   the suite (the 35 are the topology subset); the denominator was never recorded until now.
 
@@ -942,7 +942,7 @@ context x spec x ngram at non-zero temperature is disproportionate. Instead:
   `/mnt/raid0/llm/tmp/halfa_optimal_results.json`, full-instance headlines (all
   four regions, queued) → `/mnt/raid0/llm/tmp/full_headline_results.txt`.
   **No numbers yet — quote none.**
-- [ ] **KV-quantization quality test — IN FLIGHT** →
+- [x] **KV-quantization quality test — IN FLIGHT** → ✅ 2026-10-29 (audit: docs/reviews/kvquant-27b-decision-package-20260812.md exists; progress/2026-08/2026-08-12.md:221-227 "kvquant verdict gap CLOSED, decision package committed") [no-belief: audit-reconciliation]
   `/mnt/raid0/llm/tmp/kvquant_results.json`. Question: does `q4_0` KV buy the 27B
   ~180k tokens (vs ~90k on `q8_0`) without a quality cost, given the GPU resident
   set now sits at ≈51.8 of 64 GB leaving only ~12 GB for KV. **No numbers yet.**
@@ -995,23 +995,23 @@ Harness for the TTS leg: `/mnt/raid0/llm/tmp/tts_bench.sh`.
 An earlier note recorded the operator's directive too broadly. The correction:
 
 **STILL HARD-EXCLUSIVE — do not model these as tunable:**
-- [ ] **Co-resident half instances**: half A (q0+q1) and half B (q2+q3) of the SAME
+- [x] ~~**Co-resident half instances**: half A (q0+q1) and half B (q2+q3) of the SAME~~ (closed 2026-10-29 audit: DUPLICATE → same as numa:1030 (placement feasibility derived from cpuset intersection, ratified three-artifact design); keep numa:1030)
   role are mutually exclusive with each other where their cpusets intersect.
-- [ ] **Half vs full**: a full instance (0-95) overlaps BOTH halves by construction.
+- [x] ~~**Half vs full**: a full instance (0-95) overlaps BOTH halves by construction.~~ (closed 2026-10-29 audit: DUPLICATE → same as numa:1030 (full intersects both halves = derived exclusion); keep numa:1030)
   Full and either half are mutually exclusive. This is set intersection, not
   contention measurement — it is derivable and must never consume inference.
 
 **TUNABLE SURFACE — this is the part that changes:**
-- [ ] **The GPU lane vs half B / full is NOT mutual exclusion.** Its contention is
+- [x] ~~**The GPU lane vs half B / full is NOT mutual exclusion.** Its contention is~~ (closed 2026-10-29 audit: DUPLICATE → same as numa:1040 "(3) Cross-role interference coefficients" (GPU lane vs q3 tenants as a value, not a veto); keep numa:1040)
   bandwidth-driven, and the case that actually hurts is models being **loaded and
   unloaded** from the GPU. The resident-set design keeps GPU models loaded, so that
   case does not arise. Heavy concurrent prompting of GPU models may still cost
   something — that cost is a **value to expose, not a boolean to block on**.
-- [ ] Emit a **cost surface autopilot can optimize and the orchestration router can
+- [x] ~~Emit a **cost surface autopilot can optimize and the orchestration router can~~ (closed 2026-10-29 audit: DUPLICATE → same as numa:658 "Redesign the matrix as a continuous contention surface"; keep numa:658)
   be trained on**, not a BLOCK/ALLOW verdict.
 
 **EXTENSION (operator, same conversation): bake in the other axes.**
-- [ ] Concurrency at depth is a measured **regression**, not merely a slowdown: at
+- [x] ~~Concurrency at depth is a measured **regression**, not merely a slowdown: at~~ (closed 2026-10-29 audit: DUPLICATE → same requirement as numa:1036 "(2) Per-role capacity curve tok/s=f(np,context_depth)"; keep numa:1036)
   ~15k with np=2 on a half instance, one stream runs 4.7-9.7x the other and the
   **aggregate falls BELOW the np=1 single stream** (gemma 18.59 vs 20.75; Qwen3.6
   15.44 vs 22.18; 122B 7.97 vs 10.76; Qwen3-Next 13.77 vs 15.81). Headline numbers
@@ -1042,7 +1042,7 @@ rediscover set intersection.
   tenants, cross-node memory bandwidth. A handful of scalars, not 78 cells.
 - [ ] Layer online learning (option C) on top later: (2) supplies the cold-start
   prior, (3)'s coefficients are what production telemetry refines.
-- [ ] **Open design question for the operator**: store (2) as a raw table (exact at
+- [x] ~~**Open design question for the operator**: store (2) as a raw table (exact at~~ (closed 2026-10-29 audit: SUPERSEDED → answered by operator ruling "Capacity curve storage - FITTED PARAMETRIC (operator ruling 2026-07-31)" numa:1073)
   measured points, needs interpolation) or a fitted parametric form (differentiable,
   trainable, but imposes a shape)? Leaning parametric with the raw table retained as
   attestation — depends on how the router consumes priors.
@@ -1065,7 +1065,7 @@ rediscover set intersection.
 
 ### Queue reordered 2026-07-31 (operator)
 
-- [ ] Full-instance headlines were running the **composed** recipe on 24 cells while
+- [x] ~~Full-instance headlines were running the **composed** recipe on 24 cells while~~ (closed 2026-10-29 audit: OBSOLETE → queue-order note: coding test adjudicating composed ngram recipe is moot; ngram retracted/retired (model_registry.yaml:1666 default_spec_type draft-mtp, ngram sidecar RETIRED))
   the coding test that ADJUDICATES that recipe had not run. Killed and re-ordered:
   coding test (~30 min, q0+q1) settles the recipe -> then ONE full-machine window on
   the decided recipe, hot instances.
@@ -1122,16 +1122,16 @@ Curiosity measurement, **no gate attached** (operator explicit). Artifact:
   recovery control returning to 30.76 proves it is contention, fully reversible, not
   drift. **This is the cost coefficient artifact (3) of the contention design wants —
   a number to expose, not a veto.**
-- [ ] **Qwen3-TTS has NO server mode** — made resident via a long-lived
+- [x] **Qwen3-TTS has NO server mode** — made resident via a long-lived ✅ 2026-10-29 (audit: TTS service wired: launch_manifest.yaml:111 tts 9002, start_tts() orchestrator_stack.py:3201 (cba55d49 2026-08-02); the no-server-mode blocker is resolved) [no-belief: audit-reconciliation]
   `--stream-by-line -o -` process blocked on a FIFO. `--stream-by-line` streams ONLY
   with `-o -`; with `-o <file>` it waits for stdin EOF and never synthesizes. A
   production TTS service needs that pattern or a server wrapper. **Blocks TTS being
   wired into `orchestrator_stack.py`.**
 - Side latencies: vision 1.66 s alone → ~4.0 s contended; whisper 0.21 s on an 11 s
   clip; TTS RTF 0.191.
-- [ ] **The frozen production `llama.cpp/build/bin` is CPU-ONLY** — no `libggml-hip.so`.
+- [x] ~~**The frozen production `llama.cpp/build/bin` is CPU-ONLY** — no `libggml-hip.so`.~~ (closed 2026-10-29 audit: OBSOLETE → premise gone: v10 kernel store (CLAUDE.md 2026-09-22) serves from kernels/production/{cpu,gpu}; the v8/9-era build/bin vs build-hip/bin split no longer the serving path)
   GPU work must use `llama.cpp/build-hip/bin` (same commit `67a433bf4`, version 10107).
-- [ ] **Linkage trap is version-mismatched, not just wrong-tree**: bare `ldd` on
+- [x] ~~**Linkage trap is version-mismatched, not just wrong-tree**: bare `ldd` on~~ (closed 2026-10-29 audit: SUPERSEDED → three-ggml linkage hazard now codified in CLAUDE.md (verify_ggml_linkage.sh, per-launcher LD_LIBRARY_PATH) and W4 per-service ld paths cba55d49)
   `qwen-tts` pulls `libggml-base`/`cpu` from production at **0.16.0** while its own
   `libggml-hip` is **0.17.0**. The three trees are 0.16.0 / 0.18.0 / 0.17.0 — each needs
   its own dir prepended. `verify_ggml_linkage.sh` passes all three once done.
@@ -1220,11 +1220,11 @@ now trustworthy, where before they were not. Verified against the live registry 
       registry and never recompiles lean from master, so `registry_compiler --force` must run FIRST
       or the pipeline reports success over stale input. Stack restarted and verified live on
       `--spec-type draft-mtp`, ngram in zero processes. See SESSION APPEND (20:00–21:00Z).
-- [ ] **W4. Build `AUX_SERVICES` + per-service `LD_LIBRARY_PATH`, then register whisper.cpp and
+- [x] **W4. Build `AUX_SERVICES` + per-service `LD_LIBRARY_PATH`, then register whisper.cpp and ✅ 2026-10-29 (audit: orch cba55d49 (2026-08-02) "W5+W4: aux services are declared data, and their ggml is isolated"; AUX_SERVICES in stack_manifest.py, launch_manifest.yaml tts/whisper entries) [no-belief: audit-reconciliation]
       `tts-server`.** Not skippable: both env composers are prepend-only and every `start_*` begins
       at `os.environ.copy()`, so neither service can currently be told to ignore the global path.
       Ports: STT keeps 9000 (implementation swap); TTS on 9002 (verified free and smoke-tested).
-- [ ] **W5. Fix the `reload` defect first** — `reload whisper` / `reload sd_server` kill the service
+- [x] **W5. Fix the `reload` defect first** — `reload whisper` / `reload sd_server` kill the service ✅ 2026-10-29 (audit: orch cba55d49 (2026-08-02) "W5+W4"; stack_manifest.py:291-295 registry makes start and reload agree) [no-belief: audit-reconciliation]
       and fail to restart it (`stack_manifest.py:60-61` → `stack_commands.py:1669` →
       `orchestrator_stack.py:1651`). Any new service added the same way inherits it.
 - [ ] **W6. Fix the seven fail-open guards.** Runnable proofs in `/mnt/raid0/llm/tmp/guard-audit/`.
@@ -1232,7 +1232,7 @@ now trustworthy, where before they were not. Verified against the live registry 
       while still reporting 22 targets — invisible. Also `:829` (errors 12→0), `:962` (model-path
       coverage 10/10→8/10), `:1184`, `:1669`. **The correct pattern already exists in the same file**
       at `:1188` and `:1724` — inconsistently applied, so the fix is small.
-- [ ] **W7. Make the ratify scripts emit a receipt.** `MEASUREMENT.md:138-145` requires a
+- [x] **W7. Make the ratify scripts emit a receipt.** `MEASUREMENT.md:138-145` requires a ✅ 2026-10-29 (audit: root cb6ea5093 (2026-08-02) "W7: ratification receipts"; scripts/operator/ratification_receipt.py + check_ratifier_receipt_contract.sh exist; 25e399bf3/c97a8b552 (2026-10-27) emit the section-5 receipt) [no-belief: audit-reconciliation]
       consolidated bundle with evidence hashes and an exact state diff; none of the three 2026-07
       ratifications emitted one. These scripts amend the file defining what a valid verification is,
       using a verification weaker than that definition. Fixing this closes the class permanently.
@@ -1596,7 +1596,7 @@ ADDENDUM 2 and converts the loose conclusions in those appends into task lines.
   *(SPLIT 2026-08-12 by `mainC`. W1's specific repoint completed on 2026-08-01 and that record
   stays checked above. The general rule outlives it and applies to ANY future repoint, which a
   closed box retires — the same loss-mode as the `seeding_rewards` box split on 2026-08-11.)*
-- [ ] **Fold `kernel_freeze_scope.py` into the promotion checklist** for the next kernel freeze, so
+- [x] **Fold `kernel_freeze_scope.py` into the promotion checklist** for the next kernel freeze, so ✅ 2026-10-29 (audit: .claude/skills/kernel-promotion/promotion_gates.yaml:33 derived_by scripts/validate/kernel_freeze_scope.py; docs/reference/kernel-freeze-runbook.md:19,40 run it per backend) [no-belief: audit-reconciliation]
       the regression scope is derived at freeze time rather than restated. Runbook:
       [`docs/reference/kernel-freeze-runbook.md`](../../docs/reference/kernel-freeze-runbook.md).
 
@@ -1614,7 +1614,7 @@ was in flight and several items touch the shared clone.
 - [ ] **`retrieve_conventions` orders `created_at ASC`, so a superseding row is always reached LAST.**
   Today `limit=3` reaches neither dual-half row, but if that limit is raised the superseded row is read
   BEFORE its supersession. Rank conventions newest-first, or honour a `supersedes` key.
-- [ ] **Regenerate `orchestration/derived/stack_priors.yaml`** — 3 of 9 `REQUIRED_SOURCE_ARTIFACTS` pins
+- [x] **Regenerate `orchestration/derived/stack_priors.yaml`** — 3 of 9 `REQUIRED_SOURCE_ARTIFACTS` pins ✅ 2026-10-29 (audit: orch 7483d7fb / 0d145f4f (2026-08-21 "regen under production fleet mode (both)") regenerated derived/stack_priors.yaml; later regens 92bbeb06 etc.) [no-belief: audit-reconciliation]
   (`orchestrator_stack`, `stack_numa`, `stack_topology`) are stale at HEAD, which is why
   `orchestrator_stack.py start` refuses to launch. Deliberately out of scope for the P1-10 fix (separate
   act, separate file set).

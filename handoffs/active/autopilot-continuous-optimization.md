@@ -132,14 +132,14 @@ This packet is for rollout evidence only. It does not enable `AUTOPILOT_BSV2_ACC
 
 First full smoke run of the trial loop. Four defects, three silent.
 
-- [ ] **Reload the escaped live API at the inference owner's next safe boundary.** Named external
+- [x] ~~**Reload the escaped live API at the inference owner's next safe boundary.** Named external~~ (closed 2026-10-29 audit: OBSOLETE → Premise gone: stale escaped API PID 3903691 no longer exists (/proc absent 2026-10-29, no uvicorn running as that pid); stale-process premise cleared by later stack restarts/reloads (reboot-gated-inventory A7 still li...)
       event: the session owning live inference must run the API-only
       `orchestrator_stack.py reload orchestrator` after its in-flight requests drain. Current PID
       3903691 is healthy but stale and carries `PYTEST_CURRENT_TEST` plus pytest `TMPDIR` /
       `ORCHESTRATOR_TMP_DIR`; this session did not kill or reload it across another session's live
       requests (reload-ownership rule, INC-20260728-reload-preemption).
 
-- [ ] **E8 quality-baseline reseed — blocked on an operator source amendment pending since 2026-07-27.**
+- [x] ~~**E8 quality-baseline reseed — blocked on an operator source amendment pending since 2026-07-27.**~~ (closed 2026-10-29 audit: SUPERSEDED → handoff:143 own note 2026-09-16 + artifacts/operator/ruling_op19_e8_chain_20260827.json (exists) retires the E8 chain; note says closing is the owner call)
       *Note 2026-09-16: superseded by operator ruling [`ruling_op19_e8_chain_20260827.json`](../../artifacts/operator/ruling_op19_e8_chain_20260827.json) (root `1ee8bd7c`). The ruling retires the E8 chain and re-anchors the reseed gate to the current eras; the gate binds only at promotion. The text below is historical, and closing this box is the owner's call.*
       The reseed preflight (`--prepare --t2-n 500`) returns `decision_grade: false` with five blockers,
       three of which are stack-shape (`24 unique selected ports`, `exactly five live frontdoors`,
@@ -153,7 +153,7 @@ First full smoke run of the trial loop. Four defects, three silent.
       it defaulted, and five `--execute` attempts across 2026-07-26→29 all left `.staging-` bundles the
       runner forbids reusing. **This is the true critical path to quality promotion.**
 
-- [ ] **Run the canonical 79-question judge suite on Qwen3.6-27B-MTP-Q8_0.** Inherited from the three
+- [x] ~~**Run the canonical 79-question judge suite on Qwen3.6-27B-MTP-Q8_0.** Inherited from the three~~ (closed 2026-10-29 audit: OBSOLETE → Qwen3.6-27B-MTP-Q8_0.gguf is in model_registry.yaml deprecated_models graveyard (line ~750 of graveyard section); weights gone, instrument target no longer exists)
       `accepted_gaps.yaml` waivers removed 2026-08-03: the gap they waived (missing overall quality prior)
       is closed because quality now compiles per-axis with recorded basis, but their stated closing action
       was never done. The 27B's prior currently resolves 0.8597 via public `mmlu_pro`, not the canonical
@@ -173,7 +173,7 @@ First full smoke run of the trial loop. Four defects, three silent.
       open if quality never improves again after a speed-era boundary — a design decision, not a defect fix
       (`scripts/autopilot/safety_gate.py`) (found 2026-09-14, noninf sweep).
 
-- [ ] **AP-59 — decide whether the E8 quality-baseline reseed row closes as SUPERSEDED rather than done**, as
+- [x] **AP-59 — decide whether the E8 quality-baseline reseed row closes as SUPERSEDED rather than done**, as ✅ 2026-10-29 (audit: Decision already answered: handoff:143 note records the E8 reseed row is superseded by ruling_op19_e8_chain_20260827.json (not RTG-02); owner only needs to close row 142 as SUPERSEDED) [no-belief: audit-reconciliation]
       it is superseded by `ruling_op19_e8_chain_20260827.json` and not by RTG-02's work
       (`handoffs/active/autopilot-continuous-optimization.md:1714`) (found 2026-09-14, noninf sweep).
 
@@ -346,7 +346,7 @@ First full smoke run of the trial loop. Four defects, three silent.
 
 ### New tasks from this work
 
-- [ ] **Regenerate the E8 context coverage scan.** `artifacts/operator/e8_quality_context_coverage_v4_20260727.json`
+- [x] ~~**Regenerate the E8 context coverage scan.** `artifacts/operator/e8_quality_context_coverage_v4_20260727.json`~~ (closed 2026-10-29 audit: OBSOLETE → E8 context-coverage scan belongs to the E8 chain retired by ruling_op19_e8_chain_20260827.json (handoff:143); fleet shape it measured also replaced (v10, 2026-09-22 cutover))
       reports `required_tokens` in BYTES and was taken against the pre-2026-07-30 fleet. Every
       downstream artifact built on it — including the Options A-D decision package and the two 19 MB
       replacement-map candidates — inherits both errors. Rerun with real tokenization against the
@@ -364,7 +364,7 @@ First full smoke run of the trial loop. Four defects, three silent.
       (`:8070` 16,384/req vs `:8080`/`:8180` 65,536/req before this change), so the same request
       succeeds or fails depending on which instance takes it.
 
-- [ ] **Settle Qwen3.6-27B's architecture — it gates a 2x context win on the MI210.** `:8083` runs
+- [x] ~~**Settle Qwen3.6-27B's architecture — it gates a 2x context win on the MI210.** `:8083` runs~~ (closed 2026-10-29 audit: OBSOLETE → Premise gone: :8083 no longer serves Qwen3.6-27B (epyc-orchestrator src/config/models.py:297-299 comment: architect_critic/Qwen3.8 since 2026-09-27 swap); Qwen3.6-27B Q8_0/MTP weights are in the deprecated_models grav...)
       `q8_0/q8_0` KV = 130 KiB/token, already the memory-optimal SAFE point (the "safe pure-attention"
       config `q4_0/f16` is 162.5 KiB/token, WORSE than what runs today). The only further saving is
       `q4_0/q4_0` at 65 KiB/token, which the completed KV-quantization handoff says produces garbage
@@ -827,7 +827,7 @@ its comparator on 2 of 4 tasks there, so no frontier API is required. Cite `inta
 
 ## Nested open decisions retained during compaction
 
-- [ ] **OPERATOR: install the two declared deps into the live orchestrator `.venv`.** The
+- [x] **OPERATOR: install the two declared deps into the live orchestrator `.venv`.** The ✅ 2026-10-29 (audit: epyc-orchestrator/.venv site-packages has onnxruntime-1.26.0 and tokenizers-0.22.2 installed (checked 2026-10-29); handoff:836 notes fa3daeac declared at pyproject.toml:43 + tests/unit/test_retrieval_deps.py) [no-belief: audit-reconciliation]
       declaration half is done; the install half was deliberately not run — `uv lock` / `uv sync`
       against a live shared environment is the environment owner's call, not a subagent's.
       `uv.lock` already resolves `onnxruntime 1.26.0` and `tokenizers 0.22.2` via the
@@ -841,7 +841,7 @@ its comparator on 2 of 4 tasks there, so no frontier API is required. Cite `inta
     Guard test `tests/unit/test_retrieval_deps.py`, 6 tests; mutation (remove the declaration)
     2 failed / 4 passed, restored 6 passed. *(`mainC` re-confirmed the declaration and the tests.)*
 
-- [ ] **PRE-EXISTING: `eval_tower` and the seeding path DISAGREE about a `task_failure`, so the same
+- [x] ~~**PRE-EXISTING: `eval_tower` and the seeding path DISAGREE about a `task_failure`, so the same~~ (closed 2026-10-29 audit: SUPERSEDED → AP-64 (handoff:726) explicitly "Closes the PRE-EXISTING eval_tower vs seeding disagree row" and carries the OP-20 ruling; AP-64 itself still open (no commit found))
   failure yields different quality depending on which subsystem measured it.** `eval_tower:1339`
   excludes every row whose disposition is not `SCORED` — including `task_failed`; the seeding path
   scores a non-infra `task_failure` as WRONG. Both are defensible in isolation and that is exactly

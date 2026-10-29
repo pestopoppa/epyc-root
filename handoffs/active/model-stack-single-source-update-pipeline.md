@@ -190,7 +190,7 @@ blocker rather than sitting in prose.
 
 Closed and moved to the [completed sibling](../completed/model-stack-single-source-update-pipeline-completed-through-2026-09-27.md): SSU-F2, F3, F5, F9a, F9b, F9d, F9e, F12, F14, F15, and the F2/F5/F9 outcome sections. SSU-F9 is ticked below.
 
-- [ ] **SSU-F1 — deprecate the seven `*_local` catalogue rows for the retired models, THEN delete ~544 GiB of weights.**
+- [x] **SSU-F1 — deprecate the seven `*_local` catalogue rows for the retired models, THEN delete ~544 GiB of weights.** ✅ 2026-10-29 (audit: epyc-inference-research 41fd9c498 (2026-09-23): seven *_local rows deprecated:true (verified in model_registry.yaml) AND deletion recorded in deprecated_models graveyard (deleted: 2026-09-23); 122B/gemma4/Next-80B GGU...) [no-belief: audit-reconciliation]
   The lineup change deprecated the role-holding rows and never touched the
   exact-artifact rows beneath them, so `qwen35_122b_iq2m`,
   `qwen3_next_80b_a3b_instruct_iq2m_local`, `gemma4_26b_a4b_orig_q8_local`,
@@ -210,7 +210,7 @@ Closed and moved to the [completed sibling](../completed/model-stack-single-sour
   The `stack-change` skill now enforces the discipline by hand; the durable fix
   is to derive them. **Blocker: none — design work, sizeable.**
 
-- [ ] **SSU-F8 — `src/config/models.py::_LEGACY_SERVER_URL_FALLBACKS` still names the retired `:8072`
+- [x] **SSU-F8 — `src/config/models.py::_LEGACY_SERVER_URL_FALLBACKS` still names the retired `:8072` ✅ 2026-10-29 (audit: epyc-orchestrator src/config/models.py:303-312 comment "row corrected 2026-09-23, SSU-F8": worker_general/math/toolrunner now point at :8070 not :8072 (checked 2026-10-29)) [no-belief: audit-reconciliation]
   worker fleet, and eleven neighbouring tests assert the same dead ports.** Found by SSU-F5 while
   reading, reported rather than fixed because it is outside one test file.
   Three rows — `worker_general`, `worker_math`, `toolrunner` — carry

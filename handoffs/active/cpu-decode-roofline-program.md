@@ -375,7 +375,7 @@ Axis A's structural answer — fewer, fatter nodes — which this measurement no
       invisible in the token, so the barrier-count levers D2/D3 are re-priced to ~zero — the 22.5 ms of
       wait the profiler sees is straggler/imbalance, not the primitive. Report:
       `/mnt/raid0/llm/tmp/inf70/agents/d1/REPORT.md`.
-- [ ] **D2 — barrier elision between nodes that do not need one (re-priced to ~zero: D0 counts 579 eligible
+- [x] ~~**D2 — barrier elision between nodes that do not need one (re-priced to ~zero: D0 counts 579 eligible~~ (closed 2026-10-29 audit: SUPERSEDED → own text: re-priced to ~zero by D0 (579 pairs ~1.1 ms) and D1 (940 removed syncs invisible); "do not run unless a later measurement reopens it" (cpu-decode:378-381))
       pairs ≈ 1.1 ms and D1 showed 940 removed sync events are invisible in the token; do not run unless a
       later measurement reopens it).** Two safe classes, both decided at
       plan time (the standing TODO at `ggml-cpu.c:3244` to move fusion detection into `ggml_graph_plan`
@@ -414,7 +414,7 @@ Axis A's structural answer — fewer, fatter nodes — which this measurement no
       of every FLOOR (dispersion, which gates A/B decisions — not the absolute headline numbers, which
       stay directly comparable) is **R23-65** there. **This entry is also the disproof of MEAS-4's
       "why 48" framing** below — see the correction block under the MEAS-4 heading.
-- [ ] **D5 — huge pages (demoted to verify-only).** Measured 2026-09-02: with free memory on the nodes the
+- [x] **D5 — huge pages (demoted to verify-only).** Measured 2026-09-02: with free memory on the nodes the ✅ 2026-10-29 (audit: measured 2026-09-02: weight buffers 100% AnonHugePages (96.3/96.4 GB) with no code change; row demoted to verify-only (cpu-decode:417-420)) [no-belief: audit-reconciliation]
       weight buffers are **100% `AnonHugePages`** (96.3 of 96.4 GB) with no code change — THP `always` does
       it at fault time; only the as-is/cache-full regime showed 68%. Nothing to gain once C7 is in place;
       keep the in-window `AnonHugePages` line as a check. Original: measure `AnonHugePages` in
@@ -620,7 +620,7 @@ Axis A's structural answer — fewer, fatter nodes — which this measurement no
       `IQ4_XS-uniform-b4` and `IQ4_XS-uniform-b4r` (router-only, 98,267,083,136 B); `-b4b` deleted.
 > *(2026-10-23, workspace-f8, LBH-2: llama-bench protocol defect, V11-103; INF-70 bench logs record no `autokernel_hardened` column, protocol inferred from wall clock, see LBH-1.)* B4. The full-override arm vs the uniform control is ordinary on both sides: unaffected. The `b4b` and `b4r` separation arms mix ordinary and hardened readings against the control (for example the router-F16 arm: one hardened 8.92 t/s reading, one ordinary 10.39): INVALID (provisional) for the separation verdicts, not for the artifact byte counts.
 
-- [ ] **B5 — a quality-representative uniform artifact without the FP8 conversion.** The OP-32 uniform
+- [x] ~~**B5 — a quality-representative uniform artifact without the FP8 conversion.** The OP-32 uniform~~ (closed 2026-10-29 audit: OBSOLETE → IQ4_XS-uniform artifact retired by operator 2026-10-20 ("focus on UD-IQ4 XS"), cpu-decode:771 and model_registry.yaml:3402 (retired 2026-10-20; keeper UD-IQ4_XS))
       file is a quant-from-quant of the unsloth UD shards ("speed control only — not quality-representative",
       INF-68). Operator direction 2026-09-02: skip the FP8 download and converter run. The route is the
       unsloth `Q8_0/` GGUF (6 shards, ~175 GB) → `llama-quantize` to uniform IQ4_XS — the same Q8_0→IQ4_XS
@@ -693,7 +693,7 @@ argument, and it costs about a second.
          `GGML_FA_SPLIT_KV=0`; the live readback shows **neither**.
       2. **`23.16 t/s` / `1.876×` is a build-10221 number, NOT a champion-3 number.** Do not quote it as the champion.
       3. **B12's dependency on PROD-1 is DISCHARGED** — any row still reading as blocked on PROD-1 is stale.
-- [ ] **PROD-2 — ⚠ THE 09-06 DEFERRAL WAS REVERSED BY THE OPERATOR ON 2026-09-07. Read the FOLD block
+- [x] **PROD-2 — ⚠ THE 09-06 DEFERRAL WAS REVERSED BY THE OPERATOR ON 2026-09-07. Read the FOLD block ✅ 2026-10-29 (audit: ef81196d5 fold exists on llama.cpp (git merge-base --is-ancestor ef81196d5 ffc1bac82 rc=0, i.e. contained in v10) and header says consolidated 2026-09-08 (cpu-decode:5-12); v10 final freeze ratified artifacts/operator...) [no-belief: audit-reconciliation]
       below before acting on the deferral text that follows.**
 
       **⏳ 2026-09-08 — THE FOLD CANDIDATE IS BUILT AND VERIFIED CLEAN ON CONTENT, BUT DISJOINTNESS
@@ -2373,7 +2373,7 @@ Each was stated as a conclusion in this session's own output. **Ids allocated fr
 **A retired id is burnt permanently** — `INF-71` and `DRIFT-2`/`DRIFT-3` are burnt and must never be
 re-issued, and `B7` was already re-pointed once.
 
-- [ ] **★★ CLOSE-1 — GIVE "A FLOOR CARRIES ITS UNIT" A DURABLE HOME OUTSIDE THIS HANDOFF.**
+- [x] **★★ CLOSE-1 — GIVE "A FLOOR CARRIES ITS UNIT" A DURABLE HOME OUTSIDE THIS HANDOFF.** ✅ 2026-10-29 (audit: rule landed: agents/shared/MEASUREMENT_POLICY.md:104 "A floor carries its unit ... FLOOR-UNIT-1", ratified in commit b05c4433a (2026-09-08)) [no-belief: audit-reconciliation]
       Measured 2026-09-08: **within-session (arm) sd 0.501% vs between-session (launch) sd 2.793%** — a
       process-scoped knob faces a floor **~13× coarser**. Applying the arm floor to the session-unit THP
       question said **4 sessions/side**; the correct answer is **4,780** — a **1200-fold error**.
@@ -2423,7 +2423,7 @@ re-issued, and `B7` was already re-pointed once.
       Re-filed here rather than left inside a closed row. **Gated by the operator's stop on lever
       research**, and by RETEST-1's own four preconditions (post-fold baseline, hot-vs-hot only, the
       floor re-measured if the GPU loop relaunches, and the two-ping start protocol).
-- [ ] **CLOSE-7 — SYNC-13's `GGML_STATIC_CHUNKS` WAS NOT REACHED EITHER, AND IS ALREADY FILED TWICE.**
+- [x] ~~**CLOSE-7 — SYNC-13's `GGML_STATIC_CHUNKS` WAS NOT REACHED EITHER, AND IS ALREADY FILED TWICE.**~~ (closed 2026-10-29 audit: DUPLICATE → canonical: cpu-decode-roofline-program.md:2535 (WRAP-8); text says "WRAP-8 owns it ... delete this row rather than ticking both"; commit 36fa26ae9 records "done-pending-tick; duplicate pointer")
       It is WRAP-8's whole content and was also inside RETEST-1's scope. **Do not file it a third
       time** — WRAP-8 owns it; this row exists only so the RETEST-1 close-out is complete. **When WRAP-8
       is actioned, delete this row rather than ticking both.**
@@ -2708,7 +2708,7 @@ the headline.**
 GIVEN KERNEL, not of the lever.** `ROWCOL_SPLIT` measured +3.05% served alone and **+5.3% served here.**
 A lever's value is not portable across kernels; re-measure, never re-scale.
 
-- [ ] **CHAMP-1 — decide promotion.** `inf70/champion` is forked from `exp/cpu-fusion-qwen4exp-20260829`, **not
+- [x] ~~**CHAMP-1 — decide promotion.** `inf70/champion` is forked from `exp/cpu-fusion-qwen4exp-20260829`, **not~~ (closed 2026-10-29 audit: SUPERSEDED → promotion decided by production-consolidated-v10 final freeze: artifacts/operator/ratify_v10_final_freeze_20260922.json (v10 contains ef81196d5))
       the production tip**, so the four-step kernel workflow **starts over from fresh production**: pull fresh
       production → build → validate no regressions (GPU + CPU) → deploy as a NEW production version, full
       candidate benched as a whole. **Operator-gated** (PROD-2 is deferred).
@@ -3985,7 +3985,7 @@ named. MTP is not a serving option until that gate passes.
       `inf70/mtp-exact`; evidence `/mnt/raid0/llm/tmp/inf70/agents/mtp-exact/`. **Operator decision 2026-09-03: option (b) FUNDED (task GDN-ROWEXACT below, in flight).** Until it
       lands, MTP stays approximate and the merged non-MTP kernel (`0d2af8194`, 12.55 / 13.06 t/s) is the
       lossless serving path.
-- [ ] **E2b — recurrent-state checkpoints per draft round (measured).** Every verification round writes a
+- [x] **E2b — recurrent-state checkpoints per draft round (measured).** Every verification round writes a ✅ 2026-10-29 (audit: E2b-1 done 2026-09-02 and E2b-2 ported+validated 2026-09-03: speculative checkpoints 407/113 -> 0/0 (cpu-decode:3992-4004)) [no-belief: audit-reconciliation]
       **112.571 MiB** speculative checkpoint and restores it on rejection: 66 created / 18 restored per
       three 64-token requests (0 / 0 without a head) ≈ **9.4 GiB of serialized memcpy per 192 tokens,
       ~49 MiB/token**, on top of the weight stream; no re-prefill observed. Rollback itself works (p2/p3
@@ -4031,7 +4031,7 @@ named. MTP is not a serving option until that gate passes.
       **Pre-promotion check owed:** upstream `9d817213a` reads those arrays the same way, so either upstream fixed it
       later or its MTP path never allocates that layer's K/V — one upstream-diff check before any promotion.
       Evidence `/mnt/raid0/llm/tmp/inf70/agents/mtp-tip/{REPORT.md,runs/,compare_all.py}`.
-- [ ] **LONG-PROMPT-GARBAGE — P0, blocks every serving claim: the fusion tree's qwen4exp path degenerates to
+- [x] **LONG-PROMPT-GARBAGE — P0, blocks every serving claim: the fusion tree's qwen4exp path degenerates to ✅ 2026-10-29 (audit: cpu-decode:4124 "Task closed; the P0 no longer blocks serving" (merge 42332502c; gates G3 byte-identity, MUL_MAT 1139/1139); root cause e2f2bdadd) [no-belief: audit-reconciliation]
       garbage on SINGLE-sequence prompts above ~23–42 tokens.** Found 2026-09-03 by the coordinator's long-prompt
       check on the deployable tip `0d2af8194` (42/81/233-token prompts all degenerate, placement + linkage proven)
       and independently by E3 on the old base — so it predates every merged lever and the MTP port. Same defect
@@ -4390,7 +4390,7 @@ named. MTP is not a serving option until that gate passes.
       in the DSA lightning-indexer path differ on 1–4 of 512 elements. They did **not** propagate — logits and the
       full 128 MB recurrent state are identical on all three rows. It could in principle flip an indexer top-k at
       some other prefix. Evidence `/mnt/raid0/llm/tmp/inf70/agents/be2-fa/{MECHANISM.md,REPORT.md,runs/}`.
-- [ ] **GDN-ROWEXACT — make `build_delta_net_chunking` row-exact vs `build_delta_net_autoregressive` for small n
+- [x] ~~**GDN-ROWEXACT — make `build_delta_net_chunking` row-exact vs `build_delta_net_autoregressive` for small n~~ (closed 2026-10-29 audit: SUPERSEDED → premise wrong, re-scoped 2026-09-03 (GDN kernel is exact; defect was iqk repack, fixed under LONG-PROMPT-GARBAGE); operator ruling "exactness is NOT a gate for MTP" (cpu-decode:4819+, commit 1e51bac2e))
       (the one fix that closes E2a-successor, E2c AND X-CONC).** **RE-SCOPED 2026-09-03 — the premise was wrong: the GDN kernel is
       exact.** `build_delta_net()` checks `cparams.fused_gdn_ar/ch` first, so n=1 AND n>1 both run the fused
       token-sequential op `ggml_compute_forward_gated_delta_net_one_chunk` (`ops.cpp:11045`); the chunked graph kernel

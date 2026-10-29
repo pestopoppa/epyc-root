@@ -186,7 +186,7 @@ Completed detail: [through 2026-09-24](../completed/deepseek-v41-flash-evaluatio
   `deepseek4` ops; confirm V4.1 parity including the MTP blocks' `hc_*`.
 - [ ] DS41-B5 — Attention deltas: sliding window 128, cross-layer KV sharing, indexer sharing,
   and candidate-block selection. Correctness first; sparse-gather value is INF-31's gate.
-- [ ] DS41-B6 — Native 3-layer MTP through `--spec-type draft-mtp`: load `nextn` blocks and
+- [x] ~~DS41-B6 — Native 3-layer MTP through `--spec-type draft-mtp`: load `nextn` blocks and~~ (closed 2026-10-29 audit: SUPERSEDED → Premise corrected by DS41-B0 (:74): nextn x3 blocks are the DSpark drafter, wired as draft-dspark in DS41-B13/B13b (Completed table :155-156; 1.56x); draft-mtp path not applicable)
   dispatch `DECODER_MTP` for depths 1-3. Validate target/draft hidden-state semantics and index
   or KV sharing into draft iterations.
 
@@ -206,7 +206,7 @@ indexer run on these paths. Every gain was measured **only** on
   bisected. Survivors become a **v11 champion candidate** through the standard four-step workflow
   (full-candidate bench, no cherry-picks at promotion). The row-exact keeps must also pass the
   MTP exact-trajectory gates on an MTP role.
-- [ ] DS41-K2 — Re-measure the surviving keeps on deepseek41 once DS41-T1 passes, and evaluate the
+- [x] ~~DS41-K2 — Re-measure the surviving keeps on deepseek41 once DS41-T1 passes, and evaluate the~~ (closed 2026-10-29 audit: SUPERSEDED → Replaced by the DS41 AutoKernel campaign (section C, run 10+; keeps re-measured on deepseek41, e.g. C39/C68, :20-37) and C107 seed ledger (:950))
   11 in-flight candidates as AutoKernel seeds on the V4.1 surface.
 
 ### B0 follow-on — the work items the audit actually produced
@@ -304,7 +304,7 @@ Closed §C items (C10a, C20 with C20a-c/e/h, C21-C25, C28-C32, C35-C40, C44, C45
 - [ ] DS41-C15 — `node_profile` semantics under speculation: `llama-host-prof` counts one batched
   verify call as `n_eval=1`, so `decode_us_per_token` is per graph eval, not per token, when DSpark
   is on (carried as a limitation string; needs a no-drafter cross-check to state the ratio).
-- [ ] DS41-C18 — **27B planner overflows its slot context** (found 09:42, run 7): `:8083` runs `-c 196608 -np 2`
+- [x] ~~DS41-C18 — **27B planner overflows its slot context** (found 09:42, run 7): `:8083` runs `-c 196608 -np 2`~~ (closed 2026-10-29 audit: SUPERSEDED → Text :317-319: structural fix is a REPL context (INF-78 OAB-7/OAB-8), not levers (a)-(c); C20c showed every arm compacts once)
   → 98,304 tokens per slot; the planner session passed it at ~45 agentic steps (103,679 and 98,441-token
   requests refused), and opencode recovered by `agent=compaction` (self-summary), which costs a call and
   drops detail each time. Levers, in order of cheapness: (a) `-np 1` on `:8083` while it serves the
@@ -318,7 +318,7 @@ Closed §C items (C10a, C20 with C20a-c/e/h, C21-C25, C28-C32, C35-C40, C44, C45
   A/B read (C20c): every arm still compacted once (plain within 23 steps, bounded v2 at step 32) — opencode's
   conversation is append-only, so capping tool output only delays the overflow; the structural fix is a REPL
   context (INF-78 OAB-7/OAB-8), not lever (a)/(b)/(c).
-- [ ] DS41-C10 — Watch run 7 (27B planner, schema repair active, started 09:10) into its first measured
+- [x] ~~DS41-C10 — Watch run 7 (27B planner, schema repair active, started 09:10) into its first measured~~ (closed 2026-10-29 audit: OBSOLETE → Run 7 watch box; runs 7-9 history moved to completed sibling (:326); campaign is at run 10s and later 1017 swap)
   iteration; report planner→critic→author→build→A/B timings against the CPU planner's 41–97 min. Original:
   `state/loop-status.json` + `store/` (the 48 A/A launches each reload 519 GB, ~2 h); confirm the
   serving floor lands with a unit, the planner's first proposal cites the inbox, and the critic
@@ -349,7 +349,7 @@ Closed §C items (C10a, C20 with C20a-c/e/h, C21-C25, C28-C32, C35-C40, C44, C45
   - They are listed in `/mnt/raid0/llm/tmp/worktree-inventory-20260926.md` (REVIEW class).
   - Per worktree: keep, commit and push, or remove.
   - Never `--force`, and never `git worktree prune`.
-- [ ] DS41-C42 — **Retention trigger default vs actual disk.**
+- [x] DS41-C42 — **Retention trigger default vs actual disk.** ✅ 2026-10-29 (audit: research 0a82880e0 (2026-09-27) 'serial build retention never refuses above a hard floor (DS41-C42)' on origin/main, option (b) 'no refusal when reclaimable=0') [no-belief: audit-reconciliation]
   - The default `--retention-trigger-free-gb 400` can no longer be satisfied: 398 GiB was free with nothing
     reclaimable, so run 10h needed a manual 350 override.
   - Options:
@@ -942,7 +942,7 @@ Closed §C items (C10a, C20 with C20a-c/e/h, C21-C25, C28-C32, C35-C40, C44, C45
     source row and task drafted in the C95 wrap-up, applied by the owning session. Copy the dir durably first (`tmp` is scratch).
 - [ ] DS41-C102 — orv/orsv arms (27B via orchestrator REPL; + UFH-12 context.search) orchestrator 500 int('') bug FIXED 2026-10-01 (orch 2d97ade2: context.get dict-style default; root cause model wrote context.get('inbox','')); operator chose a DS41 pause to run them 2026-10-01; needs frontdoor quiet (REPL delegates to worker roles on :8070) and repl_embedding_pool re-enabled after any API reload.
 - [ ] DS41-C103 — if the 27B is reconsidered as a planner: use codex with INLINE context (best arm, P(keep) 0.5 partial) and a longer budget; the 4500 s budget is the main failure (≥50% no-reply).
-- [ ] DS41-C104 — belief-kernel defect: `keep_claims()` in research `scripts/kernel_rnd/autokernel/loop/claims.py:27-48` stamps `effect.status = verified` (basis `oracle`+`paired_ab`) on every kept row with an oracle pass and any pairs, decisive or not, so all 14 non-decisive keeps read as verified effects. Mark `verified` only when the comparison is decisive; non-decisive keeps get `unverified` (or a `within_floor` status), plus a test and a re-projection of existing kept rows. A defect, not a choice — independent of the C98 ruling.
+- [x] DS41-C104 — belief-kernel defect: `keep_claims()` in research `scripts/kernel_rnd/autokernel/loop/claims.py:27-48` stamps `effect.status = verified` (basis `oracle`+`paired_ab`) on every kept row with an oracle pass and any pairs, decisive or not, so all 14 non-decisive keeps read as verified effects. Mark `verified` only when the comparison is decisive; non-decisive keeps get `unverified` (or a `within_floor` status), plus a test and a re-projection of existing kept rows. A defect, not a choice — independent of the C98 ruling. ✅ 2026-10-29 (audit: research 9299b0a6f (2026-10-07, on origin/main) 'Require decisive comparisons for verified keep effects': claims.py + test_claims.py +33; re-projection of existing rows not evidenced) [no-belief: audit-reconciliation]
 - [x] DS41-C105 — ✅ 2026-10-04 — the DS41 loop takes the `mi210_0` GPU device claim although the campaign is CPU-only, which blocks GPU windows (X0, UFH-14) for no reason. Drop the GPU claim for CPU-only targets. A fix is in progress on a research branch (another session's subagent); close when it lands and a live run shows no `mi210_0` claim.
   - 2026-10-03: **fixed, pending deploy.** Research main `4a815f00` adds `--cpu-measurement-gpu-quiet {off,q3}`, default `off`. Root cause: `loop/run.py:124-153` `_q3_cpu_gpu_quiet_window` took the claim on purpose — measurement hygiene from INF-70 (2026-09-08) to keep GPU work off the CPU floor — and it never excluded production :8083 anyway. It deploys through the DS41 boundary swap already armed (`/mnt/raid0/llm/tmp/ds41-scope-20260926/swap_noclaim_10aa.log`; at 15:23Z it showed only the run 10z pause request). Flip when that log shows run 10aa alive and a live run holds no `mi210_0` claim.
   - 2026-10-04: **deployed and verified.** Runs 10aa/10ab and the current watchdog run (`state-wd3-20261004T023130`) run research main with the default `--cpu-measurement-gpu-quiet off`; their argv carries no `q3`. The GPU windows that followed ran on `mi210_0` while the loop was live — the CPU window's neighbours and the EXL3-LB1 seed #1 A/B (02:11–02:24Z) — with no claim refusal.
@@ -1347,7 +1347,7 @@ The other routes were checked and rejected:
 Working notes (scratch, KEEP until W7): `/mnt/raid0/llm/tmp/ds41-1017-swap/` (`alt-quants.md`,
 `requant-feasibility.md`, `requant-types.txt`, `download_1017.sh` and its log).
 
-- [ ] DS41-W1 — **Download** `antirez/deepseek-v4.1-flash-gguf`
+- [x] DS41-W1 — **Download** `antirez/deepseek-v4.1-flash-gguf` ✅ 2026-10-29 (audit: download_1017.done present; log 'ALL DONE' 2026-10-21T08:22:38Z, 9 shards sha256 OK, 501,602,535,360 B (text :1363; 'main reviews the close')) [no-belief: audit-reconciliation]
   `DeepSeek-V4.1-Flash-1017-MXFP4-experts-0000{1..9}-of-00009.gguf` (501,602,535,360 B) into the
   served model dir.
   - Script: `tmp/ds41-1017-swap/download_1017.sh`. One file at a time, resumable; each file must match
@@ -1611,7 +1611,7 @@ Working notes (scratch, KEEP until W7): `/mnt/raid0/llm/tmp/ds41-1017-swap/` (`a
 - [ ] DS41-D1 — AutoKernel source handoff (`docs/reference/models/deepseek41-autokernel-handoff.md`)
   on the GLM-5.3 template: exact branch/commit, build and launch recipe, mandatory MTP gates, and
   the objective (MTP-on output tok/s under exact trajectories).
-- [ ] DS41-D2 — Wire the belief kernel: add the `deepseek41` validation/serving producer row to
+- [x] ~~DS41-D2 — Wire the belief kernel: add the `deepseek41` validation/serving producer row to~~ (closed 2026-10-29 audit: DUPLICATE → Same work tracked as VB-DSV41 in vidya-belief-substrate-program.md:1213 (canonical); adapters README row already filed (scripts/vidya/adapters/README.md:337))
   `scripts/vidya/adapters/README.md` and complete VB-DSV41 **before the first measured run**
   (DS41-T1). Project through `claim_tuple.grade()`; categorical parity verdicts stay categorical.
 

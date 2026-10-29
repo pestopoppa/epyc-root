@@ -1334,7 +1334,7 @@ nobody re-reads:
     what stops a stray spawn from inventing its own session), or that flag is flipped with an
     explicit decision recorded. Do NOT "fix" this by making an unreadable tmux count as zero mains:
     that is the C14 polarity error and it hands out occupied slots.
-  - [ ] **C15 — `caps.max_concurrent_mains: 4` is saturated at 4/4. STILL 4, not 6** — checked
+  - [x] **C15 — `caps.max_concurrent_mains: 4` is saturated at 4/4. STILL 4, not 6** — checked ✅ 2026-10-29 (audit: coordination/session-bus/config.yaml:341 max_concurrent_mains now 7 (box was waiting on operator to name a number; was 4)) [no-belief: audit-reconciliation]
     2026-07-29, and the "already raised to 6" recollection is a **key conflation**, which is worth
     recording because it is the exact hazard C9 was about. The 3 → 6 bump (`9b6c4f13`) raised
     `max_spawns_per_day`, the DAILY-ACTION key, and C9 (`8cbe50c0`) **superseded** that key with
@@ -1907,7 +1907,7 @@ slate, it produces a fleet of stale artifacts that every liveness predicate read
     idempotent, self-exiting when a daemon is already running, no new daemon to supervise.
     Host-level change → operator's call. **Note this is the same unwatched-supervisor defect as the
     open `hub_supervisor.sh` item in that handoff; one decision should cover both.**
-- [ ] **C38 (NEW) — `advisory.jsonl` is 1,028 MiB / 2,986,358 rows and the daemon re-parses it in
+- [x] **C38 (NEW) — `advisory.jsonl` is 1,028 MiB / 2,986,358 rows and the daemon re-parses it in ✅ 2026-10-29 (audit: both halves fixed: cmd_status 9s->0.4s, tick-path read from relay_state.json (commit 2e01d5dd), rotation shards; children [x] at L1919-1930; daemon measured 1.3% CPU after restart) [no-belief: audit-reconciliation]
   full every tick.** Filed 2026-08-11 by `mainD`, half fixed. C34's dedupe stopped the *growth*
   (~20k rows/hour) but nothing addressed the ledger already on disk, and `already_flagged` in
   `relay_outbox_messages` reads it **entirely, every 45s, on the delivery hot path**. Measured:
@@ -2021,7 +2021,7 @@ slate, it produces a fleet of stale artifacts that every liveness predicate read
   - [ ] **Same shape, same fix:** the C33 pre-validation notice re-fires every tick against
     `mainA`'s 12-day-old `E5-THROTTLE-SCOPE-ERA-ROW-20260729`. Deduped per `gate_id` against durable
     evidence, but "the gate is stale/spent" is not among the states it can represent.
-- [ ] **C40 (NEW) — a relayed backlog carries no age, so a fresh session cannot tell 12-day-old mail
+- [x] **C40 (NEW) — a relayed backlog carries no age, so a fresh session cannot tell 12-day-old mail ✅ 2026-10-29 (audit: fix present: session_bus.py:1928 _print_staleness with --stale-after-h (text: FIXED, 5 tests)) [no-belief: audit-reconciliation]
   from this minute's.** Observed 2026-08-11 by `coordinator-agent`, filed by `mainD`. When the daemon
   came back after the 243h outage it relayed **703 messages** in one burst. `mainA` and `mainB`,
   spawned minutes earlier, drained that backlog and **both self-assigned `p2-5l-stack-numa-doc-debt`
@@ -2636,7 +2636,7 @@ one-live-instance assumption. If that task gets its own handoff, move these five
   mutation.
 - [ ] **Worktree isolation phase 2 — the cutover.**
 
-  - [ ] **Re-register the 3 worktrees still holding RELATIVE gitdir pointers.** Measured
+  - [x] **Re-register the 3 worktrees still holding RELATIVE gitdir pointers.** Measured ✅ 2026-10-29 (audit: verified 2026-10-29: all 351 /workspace/.git/worktrees/*/gitdir files hold absolute paths (zero relative); config useRelativePaths=false per text) [no-belief: audit-reconciliation]
         2026-08-12 (`mainA`): `/workspace/.git` and `/mnt/raid0/llm/epyc-root/.git` are ONE repo
         (inode `96604699`) at two depths — a **bind mount**, so `realpath` does not collapse them.
         With `worktree.useRelativePaths=true` git writes pointers that resolve only at the depth
@@ -2653,7 +2653,7 @@ one-live-instance assumption. If that task gets its own handoff, move these five
         operator decision, not an engineering one: the guard is advisory (a plain `git push`
         bypasses it, `--no-verify` defeats it), and **only a server-side `pre-receive` on origin
         makes serialization structural**. Decide: install as-is, pursue server-side, or neither.
-  - [ ] **Compile 4 pending wiki sources.** `compile_sources.py` reports `total_new: 4` —
+  - [x] **Compile 4 pending wiki sources.** `compile_sources.py` reports `total_new: 4` — ✅ 2026-10-29 (audit: wiki/source_manifest.json lists session-bus-thin-dispatcher; wiki compile commit a48ff59e9 (2026-10-27 operator wiki sweep, watermark advanced whole delta)) [no-belief: audit-reconciliation]
         `architect-model-selection-bench.md`, `rocm-verify-profile-backend.md`,
         `session-bus-thin-dispatcher.md`, `progress/2026-08/2026-08-12.md`. NOT compiled in the
         2026-08-12 `mainA` wrap-up, deliberately and with a reason rather than skipped: three of the
@@ -2928,7 +2928,7 @@ from that seat.
     and does not wait on `claude agents --json`. It must carry the same six-event set, and it must
     keep `unknown` unpromoted: a channel that reads *compacting* as *idle* would make `IDLE-CANDIDATE`
     confidently wrong rather than honestly heuristic. `intake-1325#record`.
-- [ ] **FW-3** (LOW): **nothing supervises the watcher.** If `fleet_watch.sh` dies, nothing restarts
+- [x] **FW-3** (LOW): **nothing supervises the watcher.** If `fleet_watch.sh` dies, nothing restarts ✅ 2026-10-29 (audit: text: operator ruling in joint OP-9+FW-3 package closes it; observer_registry.json notes fleet_watch relaunched every 5 min by host cron (pid 12499 started 2026-09-21)) [no-belief: audit-reconciliation]
   it and — worse — nothing notices: the coordinator's Monitor on the log simply goes quiet, and a
   quiet log is what a healthy fleet also looks like. The `flock` single-instance guard is in place,
   so a supervisor can safely relaunch it unconditionally. `bus_supervisor.sh` is the pattern; it was

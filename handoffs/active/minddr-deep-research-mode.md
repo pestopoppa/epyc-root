@@ -181,7 +181,7 @@ Before committing to Phase 2 training recipe, run WebSearch for "MindDeepResearc
 - [x] MD-1..MD-8 Phase 1 scaffold (flag, classifier, prompts, pydantic_graph, rubric, sentinel suite - DONE 2026-04-22) ✅
 - [ ] MD-9 A/B test sentinel suite with deep_research_mode 0/1 (>=+5pp gate, INFERENCE-GATED)
 - [ ] Request-dispatcher 1-line wiring (feature_flag && is_research_like -> run_minddr) once MD-9 passes
-- [ ] EV-9 multi-dimensional rubric scoring (handed to eval-tower; needed for non-structural MD-9)
+- [x] EV-9 multi-dimensional rubric scoring (handed to eval-tower; needed for non-structural MD-9) ✅ 2026-10-29 (audit: eval-tower-verification.md:295-310 EV-9 all 4 tasks [x] (orchestrator 9db36fcb, rubric_scoring.py exists); exit criterion "MD-9 A/B can produce multi-dimensional scores" met) [no-belief: audit-reconciliation]
 - [ ] Phase 2 MD-10..MD-13 four-stage RL (GPU-gated, deferred)
 - [ ] Phase 3 MD-14 architect role refactor (conditional on durable >=5pp uplift)
 

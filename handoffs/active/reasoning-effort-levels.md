@@ -320,10 +320,10 @@ has NONE at either quant**, and our bench matched that, so the loop would occur 
       `\boxed{}` prompts? The `\boxed{}` instruction may itself be the trigger — **now the leading hypothesis
       for the root cause** (both quants loop; models differ). Test on real architect tasks + a no-`\boxed`
       prompt variant.
-- [ ] **RP-4 — MODEL-specific penalty policy in the registry:** add a per-**model** repetition-penalty
+- [x] ~~**RP-4 — MODEL-specific penalty policy in the registry:** add a per-**model** repetition-penalty~~ (closed 2026-10-29 audit: OBSOLETE → RP-4 is explicitly for the Qwen3.5-122B-A10B (both quants): 122B deprecated 2026-09-22, GGUF deleted 2026-09-23, lane closed (graveyard row model_registry.yaml ~12737; 84dff9d39 retired 122B work))
       default for the 122B-A10B (both quants) — RP-1 says **mild `repeat_penalty ~1.1`** (breaks the loop,
       accuracy held ~55%; `1.3` over-penalizes to ~15%). Operator-gated. Do NOT key on quant; do NOT blanket.
-- [ ] **RP-5 — Clean H1 (Q4 vs IQ2 reasoning parity) WITH the fence.** Both quants loop unfenced, so the
+- [x] ~~**RP-5 — Clean H1 (Q4 vs IQ2 reasoning parity) WITH the fence.** Both quants loop unfenced, so the~~ (closed 2026-10-29 audit: OBSOLETE → RP-5 compares A1(IQ2) vs A2(Q4) of the 122B (cf. handoff:212 "A2/CPU (122B-Q4)"); 122B lane retired 2026-09-22/23 and closed 2026-10-29 (graveyard row ~12737))
       H1 accuracy comparison must run A1(IQ2) and A2(Q4) both at `repeat_penalty 1.1` on the same hard items.
       CPU-window-gated (A2 is CPU). This is the remaining architect-bench accuracy unknown.
 

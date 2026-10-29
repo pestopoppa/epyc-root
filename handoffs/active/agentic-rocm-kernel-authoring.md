@@ -1027,7 +1027,7 @@ wherever it appears._
       traceback-only reflection arm will UNDERPERFORM independent resampling at equal token budget —
       `intake-1227#record` measured 88% cross-turn code similarity for reflection versus 36% for independent
       sampling, and reflection lost outright on its vLLM subset.
-- [ ] **C5-13 — Record the DECLINE of a gfx90a taxonomy column, with its cost census as the
+- [x] **C5-13 — Record the DECLINE of a gfx90a taxonomy column, with its cost census as the ✅ 2026-10-29 (audit: handoffs/active/agentic-rocm-kernel-authoring.md:1030-1043 the decline is recorded in the box body with the a226e955 cost census (108 files, ~17,012 lines) and revisit condition; box is a record-only task) [no-belief: audit-reconciliation]
       justification.** A dive proposed authoring one; a later, better-evidenced dive of the same project's
       source measured what it actually costs and the decline wins. Census at `a226e955`: the cdna4 column is
       40 unit-test files (4,241 lines) PLUS a 68-file / 12,771-line abstractions library = **108 files,

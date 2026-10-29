@@ -437,7 +437,7 @@ Not measured:
 
   Relaunch run 9 with the winner: same anchor, floors reused, new state dir. Acceptance: the predictions above are confirmed or refuted in
   writing. Inference: campaign-idle GPU window.
-- [ ] **OAB-9b — re-open the context-placement question only when a precondition changes.** The trigger is any
+- [x] ~~**OAB-9b — re-open the context-placement question only when a precondition changes.** The trigger is any~~ (closed 2026-10-29 audit: SUPERSEDED → PARKED 2026-09-27 (operator): revisit folded into OAB-4 first orch run (actor-backend:445))
   of:
   - OAB-12 pull caps exist in the seat or the orchestrator;
   - the planner model changes;

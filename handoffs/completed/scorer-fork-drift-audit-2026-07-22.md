@@ -297,7 +297,7 @@ mocked responses + targeted pytest). All 61 targeted seeding-scorer tests pass;
        --dry-run --output …` — **no `--3way`**. So that plan's evidence is scored through the
        unguarded path. `--dry-run` suppresses `_inject_rewards_http` (`:406`, `if not dry_run`) but
        NOT the scoring at `:331`, so the exposure is scoring semantics, not reward injection.
-  - [ ] **ESCALATED, NOT PATCHED — needs an operator/coordinator call before the guard lands.**
+  - [x] **ESCALATED, NOT PATCHED — needs an operator/coordinator call before the guard lands.** ✅ 2026-10-29 (audit: nested box at :276 ticked "guard legacy comparative reward path" 2026-07-29 e108ec9f; seeding_legacy.py now imports/uses _inband_error_text (:33,:334); guard landed) [no-belief: audit-reconciliation]
     Two reasons this auditor did not simply apply the B7 guards: (a) CLAUDE.md names **scoring** as
     part of the measurement trust boundary, which is human-amendment-only; (b) the E5 and E8
     campaigns are live on these scripts right now (`mainA` on `e5-stage-b-campaign`, `inference` on

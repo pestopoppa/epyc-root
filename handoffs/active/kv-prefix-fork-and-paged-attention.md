@@ -191,7 +191,7 @@ These exist only on the KPF branches. A promotion carries them inside the FULL c
   `llama_memory_recurrent::state_read`, `llama_state_seq_set_data_ext`, `common_speculative_set_state`, and
   `prompt_clear`. Add grep for the interface paths. Append the table to this handoff and flag every HIGH/CRITICAL
   before KPF-12.
-- [ ] **KPF-03: belief-kernel wiring, VB-KVU-PF.** Prepare (a) a source row in `scripts/vidya/adapters/README.md`:
+- [x] **KPF-03: belief-kernel wiring, VB-KVU-PF.** Prepare (a) a source row in `scripts/vidya/adapters/README.md`: ✅ 2026-10-29 (audit: scripts/vidya/adapters/README.md:300 source row and vidya-belief-substrate-program.md:2496 VB-KVU-PF task on origin/main; KPF-18 runner emits belief_measurements.jsonl (README:474-476, VB-KVU-PF.1 [x])) [no-belief: audit-reconciliation]
   *KV prefix-fork / cache-aware dispatch / affine-allocation / kv_rows / cascade measurements (KPF-18, -26, -33,
   -42, -53 native records: per-run JSON with binary sha, argv, arm, prompt-set hash, equivalence verdicts, TTFT,
   prefill tokens, unique cells, decode tok/s)*, status "not yet produced; wire before KPF-18"; and (b) a task

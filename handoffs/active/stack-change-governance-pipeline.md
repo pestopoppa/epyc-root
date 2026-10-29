@@ -152,7 +152,7 @@ consumer, and refuse launch or CI if any model-specific quantity remains stale.
   diagnostic path is an ERROR (`:208-224`). Add the missing branch: an ERROR with the EXPIRED/restore hint, matching
   the diagnostic path. Test it with an expired record plus a live `KMP_LIBRARY`. Done when attestation reports that
   case as an error and the existing embedder tests stay green.
-- [ ] **SCG-GITNEXUS-ORCH — re-index the stale orchestrator GitNexus index.** (filed 2026-10-03, workspace-ec) A
+- [x] **SCG-GITNEXUS-ORCH — re-index the stale orchestrator GitNexus index.** (filed 2026-10-03, workspace-ec) A ✅ 2026-10-29 (audit: /mnt/raid0/llm/epyc-orchestrator/.gitnexus/meta.json indexedAt 2026-10-24T21:20Z lastCommit 84f6f6f15, 25 commits behind origin/main (was ~844 behind 2026-10-03)) [no-belief: audit-reconciliation]
   subagent saw it ~844 commits behind, which makes every `gitnexus impact` blast radius on orch code untrustworthy.
   Run `scripts/gitnexus-analyze.sh` (never bare `gitnexus analyze`) for epyc-orchestrator in a CPU-quiet window (it
   must not overlap an AutoKernel CPU measurement window); exit 75 means another analyze holds the lock, retry later.

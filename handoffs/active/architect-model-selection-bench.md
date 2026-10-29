@@ -363,7 +363,7 @@ So when thinking terminates it is roughly **quality-neutral** on this suite (bot
   3. **The two surviving copies of `gpu_lib.sh` disagreed on the core pinning** — scratchpad `CORES=88-95` vs `artifacts/np_context_study_20260723/driver/` `184-191` (2026-07-24). 88-95 is the **superseded** value; taking the obvious source would have enshrined a known-wrong host-thread pinning as the repo's canonical driver. Promoted copy takes 184-191 and records why.
   *No GPU work was run: the guard was tested in isolation and all three are `bash -n` clean.*
 - [x] **Declined: AIME'25 hard-tier avg@16 top-up.** Considered; explicitly *not* pursued — it sharpens ~7 problems where A1=A3 already tie (likely a tighter confirmation of parity), whereas OlympiadBench adds harder *items* with real n. Higher expected information → chose OlympiadBench. ✅ 2026-07-21
-- [ ] Resolve the decision tree from Phase 1; **(conditional) build + run A5** if branch 2 fires.
+- [x] ~~Resolve the decision tree from Phase 1; **(conditional) build + run A5** if branch 2 fires.~~ (closed 2026-10-29 audit: SUPERSEDED → decision recorded and deployed 2026-07-31 (box L377-380 [x] "Record the architect decision"); A5 conditional never fired (A3 leads, status header L5))
 - [x] **Phase 2 — tool-use eval RUN across the whole fleet** ✅ 2026-08-02. `tool_compliance`
       (9 questions, 0-3 rubric) scored by architect_critic under one judge, one 8192 budget, all six
       models, zero ineligible: architect_critic 85.2%, frontdoor 77.8%, worker_general 77.8%,
@@ -685,7 +685,7 @@ non-reasoning by design. Incumbent is unchanged: `worker_general` = `gemma-4-26B
 
 ### Tasks
 
-- [ ] **WG-LFMI-1 — Prove it does not reason, BEFORE benching anything.** This is the whole premise of
+- [x] **WG-LFMI-1 — Prove it does not reason, BEFORE benching anything.** This is the whole premise of ✅ 2026-10-29 (audit: L695 [x] "WG-LFMI-1 gate PASSES: -Instruct variant does not reason" 2026-08-12; commit 57a251c6d) [no-belief: audit-reconciliation]
       the reset, so establish it first and cheaply: extract the GGUF-embedded chat template, check for an
       unconditional `<think>` prefill and for an `enable_thinking` kwarg, then measure **generated token
       count** on the same five prompts the 2.6B was measured on. If it emits a reasoning block anyway,

@@ -381,7 +381,7 @@ step, nothing is measured beyond its 4096 training length, and it was withdrawn 
       30-GDN + 10-attention production hybrid?" from argument into measurement. A pure-GDN gain is an
       **upper bound** on what our stack would see, because our 10 full-attention layers already supply
       the exact recall HOLA's cache exists to restore.
-- [ ] **(Z) Record the m-a-p ratio-convention correction before anyone cites their band.** Their
+- [x] **(Z) Record the m-a-p ratio-convention correction before anyone cites their band.** Their ✅ 2026-10-29 (audit: correction already recorded in wiki/ssm-hybrid.md:422 (ratio-convention trap, "4:1" for our 10-of-40), compiled 3b2437034 2026-10-21) [no-belief: audit-reconciliation]
       "N:1" means *one attention layer every N layers* (attention fraction 1/N), **not** the literal
       linear:full count — `hybrid-3-1` is 8 attention layers of 24. Our production 10-of-40 is
       therefore **"4:1" in their convention**, which is *not* one of their five trained arms; it sits

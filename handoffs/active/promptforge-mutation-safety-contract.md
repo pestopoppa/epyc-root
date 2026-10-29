@@ -125,7 +125,7 @@ so this is a **new active stub, not a reopen**.
     - [x] Pinned production_best (multitier_v10) store ✅ 2026-09-17: purged with operator approval, 4 rows + FAISS, health OK, verify PASS incl. live+pinned.
           The new hashes are in `pinned_repin_proposal.json`. The v10 pins still name the pre-purge
           bytes until MHS-3d is ratified.
-  - [ ] **MHS-3d — operator RATIFY of the v10 episodic re-pin** (`RATIFY-V10-EPISODIC-REPIN-20260917`). From a host terminal:
+  - [x] **MHS-3d — operator RATIFY of the v10 episodic re-pin** (`RATIFY-V10-EPISODIC-REPIN-20260917`). From a host terminal: ✅ 2026-10-29 (audit: ratified: artifacts/operator/ratify_v10_episodic_repin_20260917.json + .receipt.json (emitted 2026-09-17), commit 810a6a829 'RATIFIED: v10 production checkpoint re-pinned after the HumanEval/55 eval-leak memory purge') [no-belief: audit-reconciliation]
         `docker exec -it -u node epyc-root bash -c 'bash <(git -C /mnt/raid0/llm/epyc-root show origin/main:scripts/operator/run_v10_episodic_repin_ratify_20260917.sh) --operator pestopoppa'`
         and type RATIFY. It re-pins `checkpoint_meta.json` (the three episodic file hashes and
         memory_count 63925 -> 63921; checkpoint_sha256 `a604276f` -> `3b457d98`) and the v10 receipt
@@ -191,7 +191,7 @@ so this is a **new active stub, not a reopen**.
       is refused today so `UNKNOWN` — the default on a hand-constructed `CodeMutation` — still applies; needs
       an audit of every construction site (`scripts/autopilot/species/prompt_forge.py`, apply gate)
       (found 2026-09-14, noninf sweep).
-- [ ] **MHS-9 — narrow `revert_code_mutation`'s new-file revert from `git add -A <path>` to an explicit
+- [x] **MHS-9 — narrow `revert_code_mutation`'s new-file revert from `git add -A <path>` to an explicit ✅ 2026-10-29 (audit: orch 25c8e913 (2026-09-16, 'no commit sweep'): revert_code_mutation new-file path now calls _git_commit_paths([abs_path]) = git add -A -- <explicit pathspec> + commit --only (prompt_forge.py:1152,1466)) [no-belief: audit-reconciliation]
       pathspec**, the idiom the project's hygiene rules warn about
       (`scripts/autopilot/species/prompt_forge.py:~1478`) (found 2026-09-14, noninf sweep).
 - [ ] **MHS-10 — land a standalone formatting commit for `prompt_forge.py`**, which is format-dirty on

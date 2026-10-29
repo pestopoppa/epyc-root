@@ -198,7 +198,7 @@ descriptor -> stack-prior -> guard -> consumer-migration path.
 
 ## Outstanding Work
 
-- [ ] **SS-BENCH-GATE — a stack reload must check for a running CPU bench, not just autopilot.**
+- [x] **SS-BENCH-GATE — a stack reload must check for a running CPU bench, not just autopilot.** ✅ 2026-10-29 (audit: all children [x]: -a orchestrator 237f16f0 (guard_against_running_bench live at orchestrator_stack.py:3298), -b bench_core_claim.py 2026-08-23, -c worker_pool _start_worker 2026-08-23, residuals + test fix) [no-belief: audit-reconciliation]
       **Incident 2026-07-27**: an operator-authorized `orchestrator_stack.py reload orchestrator`
       killed the Laguna Q4 CPU bench **1h09m into a decision-gating run**. The reload spawned an
       accelerated sidecar (PID `1202069`, 15:51:42) on cores the bench had pinned, and the bench's

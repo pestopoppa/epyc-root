@@ -204,7 +204,7 @@ outcome.
     Folding E8-instrument z's into a `core_v1` e-process would mix non-comparable evidence, which is
     the exact defect the era registry exists to prevent. So there are two honest paths:
 
-  - [ ] SEQ-3a — **Bridge (cheap, needs an operator ruling).** If an operator judges the E8
+  - [x] ~~SEQ-3a — **Bridge (cheap, needs an operator ruling).** If an operator judges the E8~~ (closed 2026-10-29 audit: SUPERSEDED → ruling_op19_e8_chain_20260827.json / 1ee8bd7cc: E8 chain retired, eval_quality left E8 on 2026-08-05 (now E16) so an E8-vs-core_v1 comparability era row is moot)
         instrument comparable to `core_v1` for this candidate's axis and records an era row saying
         so, then ~9-10 further trials (≈2.6 eval-hours at the historical ~935 s/trial) settle it.
         **This is a measurement-trust-boundary decision and is human-amendment-only** per
@@ -283,8 +283,8 @@ outcome.
 default-off (`AUTOPILOT_SEQ_VERDICT=0`)" — not filed because re-arming is the open **Decide whether to re-arm the
 sequential gate** box at `:249`, an operator decision, and the observation adds no separate action.*
 
-- [ ] SEQ-A — Sticky `refuted` label (above).
-- [ ] SEQ-B — Frozen baseline-promotion gate (above).
+- [x] SEQ-A — Sticky `refuted` label (above). ✅ 2026-10-29 (audit: handoffs/active/autopilot-sequential-allocation.md SEQ-A0 [x] (43108014, 2026-08-11) and SEQ-A1 [x] VOID 2026-08-11: question dissolved, routed to SEQ-B1; all children closed) [no-belief: audit-reconciliation]
+- [x] ~~SEQ-B — Frozen baseline-promotion gate (above).~~ (closed 2026-10-29 audit: DUPLICATE → handoffs/active/autopilot-sequential-allocation.md:169 (canonical SEQ-B box); :287 is a pointer copy)
 - [x] SEQ-4 — Re-examine the 9 candidates whose refutation does not survive the relaxed budget. ✅ 2026-07-29 — deterministic re-adjudication in [`readjudicate_sequential_20260728.json`](../../epyc-orchestrator/orchestration/reports/readjudicate_sequential_20260728.json) confirms all nine under the same era-fenced `core_v1` evidence; none reaches `confirm_e=20.0`.
 
       **Disposition:** `70902e4b665474e7` (E=11.5507, ~9 trials estimated) and

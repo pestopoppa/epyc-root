@@ -11,7 +11,7 @@ P7 stdin transport is accepted; validate the remaining `/v1` override carry only
 
 ## Phase 0 tasks
 
-    - [ ] **HS-4 P0 — shell integration, zero features** (doc §4). Per-step state (boxes are ticked by the owning session at the P0.4 live gate; evidence recorded in text):
+    - [x] **HS-4 P0 — shell integration, zero features** (doc §4). Per-step state (boxes are ticked by the owning session at the P0.4 live gate; evidence recorded in text): ✅ 2026-10-29 (audit: parent HS-4 P0: its Closed list names P0.1-P0.5, P0-MCP-a/b, preflight, P0-pre fixes (completed/harness-selection-completed-through-2026-09-27.md), P0.4 live PASS 2026-09-26; children L16-19 [x]; only watch item remai...) [no-belief: audit-reconciliation]
       - Closed (evidence in [completed sibling](../completed/harness-selection-completed-through-2026-09-27.md)): P0.1, P0.2, P0.3 (audit at 350c726a), P0.4 (live PASS 2026-09-26, r3), P0.5, P0-MCP-a/b, the P0.4 preflight install, and both P0-pre fixes.
       - Watch item (P0.3 audit): the v2 session runner /api/session/:id/prompt has no plugin hook, so x_* stamping does not reach it.
       - [x] **P0.4b — republish the Harness Card for this configuration (HS-7)** ([`harness-card.md`](../../docs/reference/harness-candidates/harness-card.md)): OpenCode `v1.18.31`, the plugin/config hash from the r3 `opencode.jsonc`, `x_tool_mode="client"`, the served role and build. Zero inference. Filed 2026-09-26.

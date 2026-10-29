@@ -185,7 +185,7 @@ The current next action is to finish and review the integration proof, then vali
 - [ ] Adversarial review, then merge, of `refactor/scripts-cleanup` (O6; finish the A5-11 WIP commit and run the suites for the A5-01/A6-19/A5-05 deletions first)
 - [ ] Merge `refactor/autokernel-loop-bugs` only after the AutoKernel launch hold lifts, with a deliberate re-pin (workspace-58); finish the C1-05 WIP first (regression test + loop suite)
 - [ ] Delete the superseded `claude/vigilant-thompson-shpyh0` branches in epyc-root and epyc-orchestrator (operator)
-- [ ] Publish this review branch's RTG-60 registration and VB-REFACTOR-CONFORMANCE filing through the root owner boundary; no shared index file was edited during package work.
+- [x] Publish this review branch's RTG-60 registration and VB-REFACTOR-CONFORMANCE filing through the root owner boundary; no shared index file was edited during package work. ✅ 2026-10-29 (audit: RTG-61 row exists in routing-and-optimization-index.md:65 (owning main corrected RTG-60->RTG-61, d3cba7b64) and VB-REFACTOR-CONFORMANCE row filed at vidya-belief-substrate-program.md:82) [no-belief: audit-reconciliation]
 
 ### Wave 1: bugs, hazards, ruled deletions
 

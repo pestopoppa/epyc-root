@@ -145,7 +145,7 @@ existing writers (unchanged):
         would be cross-harness but not turn-aligned until replay drives a looped review.
         Running the replay itself needs inference, so this is gated on a window.
 
-  - [ ] **UTM-P1b — T7 (Hermes ingest) must stamp `harness="hermes"` plus `task_key`/`seed`/`turn_ordinal`** when it lands, or Hermes rows cannot be one side of a pair.
+  - [x] ~~**UTM-P1b — T7 (Hermes ingest) must stamp `harness="hermes"` plus `task_key`/`seed`/`turn_ordinal`** when it lands, or Hermes rows cannot be one side of a pair.~~ (closed 2026-10-29 audit: OBSOLETE → unified-trace-memory-service.md ~line 131: "UTM-P1b dropped from scope (Hermes was not selected)" (orchestrator 7887e7ae, 2026-09-17))
 
 ### Research intake 2026-10-22 — Locals + Beacon (intake-2386..2460)
 

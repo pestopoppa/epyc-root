@@ -487,7 +487,7 @@ import.
       byte-identity attestation was unfalsifiable on this host — it could not have caught an edited
       judge. `python3 -m harness attest` now can, verified by mutation. 88 tests.
 
-- [ ] **CJ-10 — Transcribe the question-anchored BEAM judge prompt; do not author one**
+- [x] **CJ-10 — Transcribe the question-anchored BEAM judge prompt; do not author one** ✅ 2026-10-29 (audit: research c43ce72f2 (2026-10-21, on main) adds scripts/benchmark/fixtures/beam_judge/{mempalace-475d3fbd24.txt,beam-b2da22ea.prompt.json,provenance.json}; provenance.json lists exactly 3 semantic_delta_groups (QUESTION...) [no-belief: audit-reconciliation]
       (intake-1337#record, supersedes the "patch the judge prompt" framing intake-1330 filed). It is
       already written and diffable: transcribe from `beam_100k_bench.py:204-274` at `475d3fbd24`
       and the substitution at `:329-333`, then diff against BEAM `src/prompts.py:11547` at

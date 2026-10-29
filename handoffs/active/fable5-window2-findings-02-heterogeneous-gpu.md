@@ -335,7 +335,7 @@ hardware there must be an easy way to get it working on the mi210". What that me
 - [ ] **OPERATOR DECISION — instrument-era / gate amendment.** If F1 justifies proceeding, `:26`
       ("static-at-load") and `mi210-big-model-and-acceleration-roadmap.md:254` (skew gate) need
       amending to record that the skew verdict tested caching, not overlap.
-- [ ] Registry defects found mid-flight (unrelated to OD-A, filed here so they are not lost):
+- [x] ~~Registry defects found mid-flight (unrelated to OD-A, filed here so they are not lost):~~ (closed 2026-10-29 audit: OBSOLETE → both defects concern retired models: Qwen3-Next-80B (deprecated 2026-09-22 graveyard, model_registry.yaml ~12713+) and the Qwen3.5-122B lane (deprecated 2026-09-22, GGUF deleted 09-23, lane closed 10-29))
       `epyc-inference-research/orchestration/model_registry.yaml:1520` records
       `baseline_experts: 8` for `qwen3next`, but the GGUF says `expert_used_count = 10`
       (`expert_count = 512`); the 122B row records `size_gb: 69` against 72.88 GiB actually on disk.

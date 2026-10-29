@@ -1298,14 +1298,14 @@ sequencing: measurement first, authoring later).
       CPU holds only 12 GET_ROWS); tg128 vs anchor-gen-021 **+0.052%** (20 pairs, floor 0.638%, not decisive, no drift).
       **UD-4 closed on observation.** Result file `/mnt/raid0/llm/tmp/fold-window-20260908/fold2-result.json`
 - [x] Champion branch + orphan tag pushed to the GitHub fork ✅ 2026-09-08 (`ak-loop-tree` was swept from scratch mid-fold; `champ2` was one sweep from the same)
-- [ ] INF-70 **RETEST-1 turn in progress** (A/A first, then RETEST-1 in priority order); **next fold = their keeps off `ef81196d5`** — they stage
+- [x] ~~INF-70 **RETEST-1 turn in progress** (A/A first, then RETEST-1 in priority order); **next fold = their keeps off `ef81196d5`** — they stage~~ (closed 2026-10-29 audit: SUPERSEDED → RETEST-1 close-out 1fc2e2d45 (2026-09-08): no CPU keeps, sync17-fix2 DO-NOT-FOLD, consolidation complete at ef81196d5; INF-70 CLOSE-OUT f53fa4908)
       levers on a lane branch off that tip, prove merge-tree disjointness, and fold the same way
-- [ ] FOLD-0 (`inf70-audit`): fold-ready commit with both blockers opt-in; bit-identity + `test-backend-ops -b CPU`.
+- [x] ~~FOLD-0 (`inf70-audit`): fold-ready commit with both blockers opt-in; bit-identity + `test-backend-ops -b CPU`.~~ (closed 2026-10-29 audit: SUPERSEDED → fold executed instead via FOLD-1..3 (ticked box below, e5d1846d2): champion3 9c4f73e29 ancestor of ef81196d5; also in v10 base (kernel-manifests V11-025 CPU champion3 / INF-70 fold))
       **FOLD-0 as written targets `6f032c48d`, two CPU champions old — re-base onto the CPU champion at the
       boundary (today `inf70/champion3` @ `9c4f73e29`, build 10241, `experimental-inf70-champion3` on the `fork`
       remote: +4.50% vs champion-1 on 117/120 per-prompt wins, 1.5149× vs pristine, bit-identical over 16
       arm-pairs, α 0.8209 unchanged) or the fold ships a superseded kernel and discards the +4.50%**
-- [ ] Do not schedule the boundary under INF-70's live chains (SYNC-19/20 window 1 ~21:30Z + a second window,
+- [x] ~~Do not schedule the boundary under INF-70's live chains (SYNC-19/20 window 1 ~21:30Z + a second window,~~ (closed 2026-10-29 audit: SUPERSEDED → boundary scheduling moot: fold completed 2026-09-08 (e5d1846d2) and INF-70 campaign closed (f53fa4908))
       HARNESS-1 Phase B behind it) — rebasing under in-flight pre-registered arms invalidates them; clears in hours
 - [x] FOLD-1..3 (champion owner) per `autokernel-champion-aggregate.md` ✅ 2026-09-08: fold executed, all FOLD-2 gates
       PASSED (G1 7/7, G2 1140/1140, G3 39/39, G4 dispatch observed, G5 +0.052% inside the 0.638% floor), then
@@ -1331,7 +1331,7 @@ sequencing: measurement first, authoring later).
       computed the old way is inflated — the corrected statistic is an arm-level permutation test; any magnitude the
       bundle ingests must carry which statistic produced it; (iii) linear within-block drift is ruled out (slope
       +0.03%/slot, R² 0.004), so CPU-surface scatter is contention (OP-40), not drift.
-- [ ] NO relaunch by default (operator 2026-09-08). **Consolidation exit ACHIEVED for the GPU side ✅ 2026-09-08**: one tip
+- [x] ~~NO relaunch by default (operator 2026-09-08). **Consolidation exit ACHIEVED for the GPU side ✅ 2026-09-08**: one tip~~ (closed 2026-10-29 audit: SUPERSEDED → consolidation exit achieved 2026-09-08 per the box; unified status header (line 250) says live campaign is DS41 (INF-77) and relaunch GLM moot; v10 freeze 2026-09-22)
       carrying both lineages (**`ef81196d5`** = GPU tip + CPU champion3 `9c4f73e29`); **FOLD-2 passed**; the durable bundle
       **seeded MEASURED** (+5.958% tip-vs-cor) **and the serving gate run on it → UNCONFIRMED** (−2.18%, n=10, not decisive;
       cor holds `445e93a8`); **tip on the fork**. Consolidation is **complete for the GPU side pending INF-70's keeps**, which
@@ -1366,7 +1366,7 @@ Source of truth for the classification of all 31 `fork/rescued-*` refs:
 - [ ] **Quantize reciprocal — `rescued-ak-discovery-7e8da8ea-attempt1` @ `9f85ba2fb`** (`ggml/src/ggml-cuda/quantize.cu`
       +4/−1: reciprocal-multiply + `__shfl_sync` broadcast replacing per-lane `roundf(xi/d)`; the champion still does
       `roundf(xi / d)`). Gate: tg128, 20 pairs vs anchor.
-- [ ] **Q5_0 `vecdotq.cuh` variants — `f9d74a2a3`, `d4b0a04e4`, `580e8d090`, `5d22a5463`: DECLINE.** Q5_0 is not a
+- [x] ~~**Q5_0 `vecdotq.cuh` variants — `f9d74a2a3`, `d4b0a04e4`, `580e8d090`, `5d22a5463`: DECLINE.** Q5_0 is not a~~ (closed 2026-10-29 audit: SUPERSEDED → box itself records DECLINE; consolidation audit d33bd5548 / docs/design/champion-consolidation-audit-20260908.md classified Q5_0 variants as declined)
       production quant and the work is re-derivable. Revisit only if a Q5_0 target appears on the fleet.
 - [x] Single-copy refs pushed to the fork ✅ 2026-09-08 (`ak/orphan-keeps-quantize-20260829`,
       `ak/pre-anchor-fix-full-history` `b04fad244`, `ak/run14-01893a36-cumulative` `01893a36c`,
@@ -3055,7 +3055,7 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
     Main110 affected integration tests passed in118.63s, no skips; all four applied file hashes
     match the tested tree, Ruff clean. The preceding full run had5 failures and15 setup errors
     (2583 passed,2 strict xfails,83 subtests); a fresh full-suite result is still required.
-  - [ ] **AKU-06j — install the concrete owned CPU profiling producer for GLM discovery**:
+  - [x] ~~**AKU-06j — install the concrete owned CPU profiling producer for GLM discovery**:~~ (closed 2026-10-29 audit: OBSOLETE → GLM-5.3-Flash subject deleted 2026-09-22 (box text "[Subject deleted 2026-09-22]"; AK-SERIAL-26); GLM profiling conformance cannot run)
     **[Subject deleted 2026-09-22]** GLM-5.3-Flash (model, DFlash2 drafters, `llama.cpp-experimental-glm53-*` worktrees) was removed from disk by operator direction; branches and stores remain as history. The GLM prompt/configuration conformance half is unrunnable as written. The producer itself is model-agnostic. The next CPU discovery subject is DeepSeek-V4.1-Flash ([`deepseek-v41-flash-evaluation.md`](deepseek-v41-flash-evaluation.md)), once its experimental port loads.
     Concrete full-request producer is implemented and tested under AKU-06o below; this task
     remains open for exact GLM prompt/configuration and
@@ -3937,12 +3937,12 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
     discontinuities/unjoinable receipts, and keeps unresolved accumulator estimates separate from
     verified champion movement. The dashboard is bound to production-v9 as its serving era; no
     production-kernel mutation, registry change or live-loop control was performed.
-  - [ ] **AKU-12i — monitor the relaunched GLM AutoKernel through 20 healthy completed iterations**:
+  - [x] ~~**AKU-12i — monitor the relaunched GLM AutoKernel through 20 healthy completed iterations**:~~ (closed 2026-10-29 audit: OBSOLETE → GLM-5.3-Flash deleted 2026-09-22; box says "No GLM campaign can relaunch. Do not tick this row.")
     **[Subject deleted 2026-09-22]** GLM-5.3-Flash (model, DFlash2 drafters, `llama.cpp-experimental-glm53-*` worktrees) was removed from disk by operator direction; branches and stores remain as history. No GLM campaign can relaunch. Do not tick this row. Any retarget to DeepSeek-V4.1-Flash is a new task under that handoff, after the port exists.
     batch 5 is live after three clean completed iterations. Stop safely, repair and relaunch on any
     unexpected behavior; after 20 clean iterations leave the continuous campaign running. This is
     operational health monitoring, not candidate validation, champion promotion or production mutation.
-  - [ ] **AKU-12e — validate the accumulated GLM tip across required targets**: **[Subject deleted 2026-09-22]** GLM-5.3-Flash (model, DFlash2 drafters, `llama.cpp-experimental-glm53-*` worktrees) was removed from disk by operator direction; branches and stores remain as history. The GLM correctness gates cannot run without the model. Tip `dc3798db10a6` stays pushed as history. Its generic (non-GLM-specific) keeps could only be revalidated on other targets through a new task.
+  - [x] ~~**AKU-12e — validate the accumulated GLM tip across required targets**: **[Subject deleted 2026-09-22]** GLM-5.3-Flash (model, DFlash2 drafters, `llama.cpp-experimental-glm53-*` worktrees) was removed from disk by operator direction; branches and stores remain as history. The GLM correctness gates cannot run without the model. Tip `dc3798db10a6` stays pushed as history. Its generic (non-GLM-specific) keeps could only be revalidated on other targets through a new task.~~ (closed 2026-10-29 audit: OBSOLETE → GLM-5.3-Flash deleted 2026-09-22; GLM correctness gates cannot run (box text))
     Original text: run the
     existing required-target validation and exact GLM correctness gates against experimental
     tip `dc3798db10a6`; publish the aggregate disposition before any champion admission proposal.

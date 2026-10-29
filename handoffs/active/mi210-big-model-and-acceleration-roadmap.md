@@ -74,7 +74,7 @@ P0 was fixed on experimental v7 `96986f5e9`); its gate is a strict-IF/rubric GBN
 
 > **Completed Scope:** closed Progress-checklist detail (gating experiments, DR-0..DR-3d, K28 and sub-items) is in [../completed/mi210-big-model-and-acceleration-roadmap-completed-through-2026-10-06.md](../completed/mi210-big-model-and-acceleration-roadmap-completed-through-2026-10-06.md). Every open box stays here.
 
-- [ ] Replay production routing traces at capacity-matched points — global LRU vs prefill-updated vs static — in the GLM-5.2 UD-IQ2 large-model regime only (~239 GB → 64/239 = 27% capacity, near the 37% Qwen3.6 point). EXCLUDE qwen4exp: routed pool ~66 GB (1.296 GB/token × 512/10, derived) ≈ the whole card, so the comparison degenerates. Offline analysis, no inference. Gated on the INF-72 tap producing traces. intake-1318#01
+- [x] ~~Replay production routing traces at capacity-matched points — global LRU vs prefill-updated vs static — in the GLM-5.2 UD-IQ2 large-model regime only (~239 GB → 64/239 = 27% capacity, near the 37% Qwen3.6 point). EXCLUDE qwen4exp: routed pool ~66 GB (1.296 GB/token × 512/10, derived) ≈ the whole card, so the comparison degenerates. Offline analysis, no inference. Gated on the INF-72 tap producing traces. intake-1318#01~~ (closed 2026-10-29 audit: OBSOLETE → premise gone: GLM-5.2-UD-IQ2_M deleted 2026-08-31 by operator ruling (model_registry.yaml deprecated_models row ~13063); the 122B sub-bullet retired 2026-10-28)
   - **✖ DR-3 / DR-3e RETIRED 2026-10-28 (operator): Qwen3.5-122B deprecated.** The K2 quant-asymmetric admission
     lane belonged to the 122B: a 122B UD-Q4_K_M CPU verifier with a 122B UD-IQ2_M MI210 drafter.
     Its only consumer was a serving route for the 122B architect, and that model left the lineup on
@@ -87,7 +87,7 @@ P0 was fixed on experimental v7 `96986f5e9`); its gate is a strict-IF/rubric GBN
     The 2026-10-28 122B re-download (UD-Q4_K_M 3-shard set plus UD-IQ2_M, 110.50 GiB) was deleted
     2026-10-29 at about 07:20Z with operator approval. The graveyard row is in epyc-inference-research
     `orchestration/model_registry.yaml` (f202fd004), so the unarmed preparation now has no weights.
-- [ ] GLM-5.2 endgame: expert-offload / REAP+IQ2 path (operator-gated)
+- [x] ~~GLM-5.2 endgame: expert-offload / REAP+IQ2 path (operator-gated)~~ (closed 2026-10-29 audit: OBSOLETE → GLM-5.2 endgame (expert-offload / REAP+IQ2) moot: GLM-5.2-UD-IQ2_M deleted 2026-08-31 ("never have any reasons to run this model", deprecated_models ~13063))
 
 ## Research Intake Update — 2026-07-16 (AirLLM / GPU-active-weight offload)
 

@@ -263,12 +263,12 @@ untrustworthy on gfx90a until root-caused.
 - [x] Re-run D3.1 "is the CPU indexer compute-bound?" profiling check on landed code before any contribution work — CLOSED NO-GO; `ggml_compute_forward_lightning_indexer` was only `1.08%` of cycle samples in the OP-2/B4 GLM-5.2 profile. ✅ 2026-07-19
 - [ ] D2 sparse-attention contribution — only if runtime profiling shows dense-mask attention still scales with full KV despite top-k
 - [ ] D3 AVX-512BW Lightning Indexer CPU kernel — deferred because D3.1 did not show material indexer share; reopen only after D2 real-sparse or a different shape changes the profile.
-- [ ] GLM-5.2 (754B GLM-MoE-DSA) activation — DSA forward-pass blocker now cleared in code; pending the GLM-5.2 UD-IQ2_M download + smoke-test in `glm51-reap-cpu-evaluation.md`
+- [x] ~~GLM-5.2 (754B GLM-MoE-DSA) activation — DSA forward-pass blocker now cleared in code; pending the GLM-5.2 UD-IQ2_M download + smoke-test in `glm51-reap-cpu-evaluation.md`~~ (closed 2026-10-29 audit: OBSOLETE → GLM-5.2 UD-IQ2_M deleted; graveyard row model_registry.yaml (GLM-5.2-UD-IQ2_M unsloth, 6 shards); GLM-5.2 target dropped)
 
 ## Research intake 2026-10-20 — DeepInfer (research intake entries 2116–2142, see research/intake_index.yaml)
 
 Operator-approved 2026-10-20 via research intake (plan sha256 recorded in the session's stage3_filing).
 
-- [ ] **DSA-IDX.1 — Fix the indexed sparse-attention op interface before D2.4 code (intake-2122#record).** Adopt the FlashMLA sparse-decode contract: int32 indices (page*page_size + offset, -1 = invalid), per-query topk_length, attn_sink, optional extra index set; write the CPU oracle test first (dense masked FA over the same gathered rows must match bit-for-bit). Consumer: DS41-C123.1.
+- [x] **DSA-IDX.1 — Fix the indexed sparse-attention op interface before D2.4 code (intake-2122#record).** Adopt the FlashMLA sparse-decode contract: int32 indices (page*page_size + offset, -1 = invalid), per-query topk_length, attn_sink, optional extra index set; write the CPU oracle test first (dense masked FA over the same gathered rows must match bit-for-bit). Consumer: DS41-C123.1. ✅ 2026-10-29 (audit: child DSA-IDX.1 oracle ticked 2026-10-21 (test-dsa-sparse-attn-oracle pass=11 fail=0 @ 6b8291de5); contract+scalar reference done 2026-10-20; interface fixed before D2.4 as required) [no-belief: audit-reconciliation]
   - *(2026-10-20.)* Contract + scalar reference + two dense-masked oracles on `experimental/intake-fixes-20261020` @ 6b8291de5; oracle test queued.
   - [x] **DSA-IDX.1 oracle** ✅ 2026-10-21: `test-dsa-sparse-attn-oracle` pass=11 fail=0 (sparse reference == dense-masked oracle bit-for-bit; invalid indices rejected) on `experimental/intake-fixes-20261020` @ 6b8291de5.
