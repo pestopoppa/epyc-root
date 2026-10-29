@@ -1,0 +1,102 @@
+{
+  "comparison_rows": [
+    {
+      "engine": "odl",
+      "metrics": {
+        "intrinsic_chunk_quality": null,
+        "reading_order": null,
+        "speed": null,
+        "structural_fidelity": null,
+        "table_fidelity": {
+          "detail": "higher better; table-weighted; full population defined=False; coverage={'pages_complete': 435, 'pages_total': 755, 'gt_tables_scored': 131, 'gt_tables_total': 243}; teds_structure_only=None",
+          "engine": "odl",
+          "metric_family": "table_fidelity",
+          "metric_name": "teds (+1 more)",
+          "n": 131,
+          "value": null
+        }
+      },
+      "source_refs": [
+        1
+      ]
+    },
+    {
+      "engine": "paddle",
+      "metrics": {
+        "intrinsic_chunk_quality": null,
+        "reading_order": null,
+        "speed": null,
+        "structural_fidelity": null,
+        "table_fidelity": {
+          "detail": "higher better; table-weighted; full population defined=False; coverage={'pages_complete': 1, 'pages_total': 755, 'gt_tables_scored': 0, 'gt_tables_total': 243}; teds_structure_only=None",
+          "engine": "paddle",
+          "metric_family": "table_fidelity",
+          "metric_name": "teds (+1 more)",
+          "n": 0,
+          "value": null
+        }
+      },
+      "source_refs": [
+        1
+      ]
+    }
+  ],
+  "gt_json": "/mnt/raid0/llm/datasets/omnidocbench/OmniDocBench.json",
+  "metric_directions": {
+    "intrinsic_chunk_quality": "higher_better",
+    "reading_order": "lower_better",
+    "speed": "lower_better",
+    "structural_fidelity": "lower_better",
+    "table_fidelity": "higher_better"
+  },
+  "metric_rows": [
+    {
+      "detail": "higher better; table-weighted; full population defined=False; coverage={'pages_complete': 435, 'pages_total': 755, 'gt_tables_scored': 131, 'gt_tables_total': 243}",
+      "engine": "odl",
+      "metric_family": "table_fidelity",
+      "metric_name": "teds",
+      "n": 131,
+      "value": null
+    },
+    {
+      "detail": "higher better; table-weighted; full population defined=False; coverage={'pages_complete': 435, 'pages_total': 755, 'gt_tables_scored': 131, 'gt_tables_total': 243}",
+      "engine": "odl",
+      "metric_family": "table_fidelity",
+      "metric_name": "teds_structure_only",
+      "n": 131,
+      "value": null
+    },
+    {
+      "detail": "higher better; table-weighted; full population defined=False; coverage={'pages_complete': 1, 'pages_total': 755, 'gt_tables_scored': 0, 'gt_tables_total': 243}",
+      "engine": "paddle",
+      "metric_family": "table_fidelity",
+      "metric_name": "teds",
+      "n": 0,
+      "value": null
+    },
+    {
+      "detail": "higher better; table-weighted; full population defined=False; coverage={'pages_complete': 1, 'pages_total': 755, 'gt_tables_scored': 0, 'gt_tables_total': 243}",
+      "engine": "paddle",
+      "metric_family": "table_fidelity",
+      "metric_name": "teds_structure_only",
+      "n": 0,
+      "value": null
+    }
+  ],
+  "notes": [
+    "duplicate metric row for engine=odl family=table_fidelity; later rows win in the comparison table",
+    "duplicate metric row for engine=paddle family=table_fidelity; later rows win in the comparison table"
+  ],
+  "schema": "odl_bench.existing_comparison.v1",
+  "sources": [
+    {
+      "engines": [
+        "odl",
+        "paddle"
+      ],
+      "gt_json": "/mnt/raid0/llm/datasets/omnidocbench/OmniDocBench.json",
+      "kind": "row_set",
+      "path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-prep/native-partial-2221/row_set.json"
+    }
+  ]
+}

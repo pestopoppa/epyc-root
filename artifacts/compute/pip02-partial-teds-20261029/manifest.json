@@ -1,0 +1,32 @@
+{
+  "schema": "pip02.partial-score-observation.v1",
+  "preserved_utc": "2026-10-29T22:28:51.425811+00:00",
+  "source_directory": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-prep/native-partial-2221",
+  "scorer_commit": "14f163cf5c2bb55dd466f65b87da867b79d89c20",
+  "source_pins": {
+    "path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-prep/pins-14f163cf5.json",
+    "sha256": "15aeb2ae7222053efa7232c7bdc1d19c7537211cffadddb7955bbe67bef3215e"
+  },
+  "native_log": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-prep/native-partial-2221.log",
+  "native_log_sha256": "db2cbf0ebe84ef1ac8b37c92592fd805444732e66d989e009ff68d7344634c63",
+  "files": {
+    "row_set.json": "50b4949d1193bad8144dad9deaccdd2260bb39e4003d8fa1a8b7b37173844de7",
+    "existing_comparison.json": "88366bcc1d1dd2d26ad7df6b033e00bd81ff5d9083fe3dd6127d7934b43d0c0a",
+    "existing_comparison.md": "c20e70c95ac3f489f29c846a107b08954fd80a70fba8d1e74f5a82ec31cbf436",
+    "coverage-and-scores.json": "667089f1f3ef57608ea605aabfc5d8506cdec70b02f91304f80bba60d6e88276"
+  },
+  "decision_cells_are_null": true,
+  "supported_lineage_subset": {
+    "pages": 97,
+    "tables": 35,
+    "teds": 0.5667062203473413,
+    "teds_structure_only": 0.7551933630021744
+  },
+  "limits": [
+    "output available snapshot, not random sample",
+    "ODL generic/parallel producer registration not supported by this frozen scorer version",
+    "recovered pages285/310 have separate output roots not included",
+    "Paddle has no scored table in this snapshot",
+    "not a complete population or adoption warrant"
+  ]
+}

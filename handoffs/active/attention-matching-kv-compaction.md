@@ -314,11 +314,15 @@ Evidence: intake-1196#record (KVFlow, dive-overturned), intake-1207 (SGLang Rust
   there is no eviction order to improve**, and at 2 it is a coin flip. This gate has now been named
   in two consecutive passes (intake-1182's dive, then intake-1196#record) with an unchanged blocker — by
   the CLAUDE.md recurrence check that is proof it was never blocked. Do it before anything else here.
-- [ ] **KV-2 — Pass `role` and `session_id` into `PrefixRouter.get_slot_for_prompt`.** Both are
+- [x] **KV-2 — Pass `role` and `session_id` into `PrefixRouter.get_slot_for_prompt`.** ✅ 2026-10-29 [belief: cc] Both are
   already present at the call site (`model_server.py:91` requires `role`;
   `inference.py:755-767` attaches the session id) and the router receives **only prompt text**; role
   is consulted at exactly one hardcoded frontdoor-REPL bypass. We are discarding for free the
   identity signal KVFlow had to invent a client-ID scheme to recover.
+  Landed on orchestrator main as `9c507dfff650aa1999b9e5816fc4c8216fb5bd45`: both inference paths
+  pass identity; slot metadata records the latest caller on hits/misses and clears on reuse/clear.
+  Shared-prefix matching, LRU and default-off pinning are unchanged. 63 tests passed; five live-server
+  cases skipped. Full make gates stopped at missing shellcheck; no runtime reload or model call.
 - [ ] **KV-3 — Evaluate switching to llama.cpp's NATIVE token-level LCP slot selection.** It is
   strictly better than a 256-char SHA-256 exact match, already shipped, and currently **overridden**
   rather than off: `slot_prompt_similarity` defaults to `0.1f`, but our explicit `id_slot` takes

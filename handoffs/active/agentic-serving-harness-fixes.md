@@ -203,10 +203,16 @@ Client and harness side (ak-ds41-main):
     off; rescue rate and accuracy per suite. `derived_prefill_timeout`'s enable rides B1d (Option A). Declined, not
     filed: enabling `session_compaction_llm_index` — OFF is the intended posture, because the compacted field is
     never rendered into a turn prompt.
-  - [ ] **UFH14-B1h — retire `DEFAULT_PREFILL_FLOOR_TPS = 250` (`kv_pool_admission.py:169`) for the measured rate.**
+  - [x] **UFH14-B1h — retire `DEFAULT_PREFILL_FLOOR_TPS = 250` (`kv_pool_admission.py:169`) for the measured rate.** ✅ 2026-10-29 [belief: cc]
     (filed 2026-10-04, workspace-ec, from the B1 design note's "other constant to retire next") The long-prefill lease
     expiry should read `serving_params.rate_at(samples, prompt)`, keeping 250 as the floor. Done when the lease
     expiry uses the measured rate with a test, and the env override still wins.
+    Landed on orchestrator main as `a446ae62c4ff718acab7eb6070f6818db63908e8`: current-launch
+    per-port samples select the rate at whole-context depth; lease duration uses the uncached suffix,
+    retains the 250 tok/s fallback/floor, and honors valid explicit environment overrides (including zero).
+    Sample resolution runs outside the admission condition lock; expiry starts at actual acquisition.
+    Validation: 117 relevant tests passed, Ruff and diff checks passed. Source closure only; no API reload
+    or deployed throughput claim.
 
 Orchestrator and stack side (workspace-ec; items are linked here as they land):
 
