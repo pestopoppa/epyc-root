@@ -1140,6 +1140,8 @@ between plan and apply, so this wave takes the next free block, SC65–SC68.*
       3), distinct from unknown (claims not yet ingested). Today both return unknown, non-blocking
       (citation_gate.py). Fixtures: in range and ingested → graded; in range, not ingested → unknown;
       out of range → dangling. intake-1386#record.
+- [ ] **VB-INF75-W1-PRIMARY-WIRE — capture a future eligible W1 primary-target census.** Preserve the exact original cold request set, observed fanout and per-phase native graph/shape, model/head/binary/tracer, real device and grant evidence, partials and failures at write time. The current preconnected successor is unsealed diagnostic only: never retrofit a tuple, conflate the shorter constructed prefill with the original workload, or claim the full six-workload P0d. Use the existing census carrier and grading policy, and prove the planning-context canary before decision-class use.
+
 - [ ] **SC81 (S3-VID-07) — write-side wiring for AutoKernel workload census + blast-radius rows
       (INF-75).** Census rows (epyc.autokernel.workload_census.v1) and patch-footprint/classification
       rows (epyc.autokernel.patch_footprint.v1) are verified structural findings: project them via an
