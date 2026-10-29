@@ -7264,3 +7264,14 @@ Sources: [periodic progress](../progress/2026-10/2026-10-27-periodic-wrap-1620.m
 - **A stop-before-effect dryrun on a reserved pair is still a scheduling overlap.** The M4 worker/vision calibration preflights ran 4 short entries on CPUs 26-27 inside the HIL s1 grant. ([M4 calibration wrap-up](../progress/2026-10/2026-10-28-m4-worker-vision-calibration-launcher-wrapup.md))
 - **Disk:** an operator-approved top-20 reclaim took free space from 154 to 368 GiB. The KEEP audit found 232 of 290 dirs JUSTIFIED and 58 UNCLEAR. `-lv 4` server logs are a growth source (LOOP-8), and the reap-after-filing gate (keeper v5) is pending (LOOP-6, LOOP-7).
 - **Keeper v5 reaps after filing.** It replaced v4 at 16:14Z with `REAP_IDLE=1`, and its first pass vaulted and reaped idle scratch dirs. The destructive-scratch hook gained a pin file for this one operator-approved exception. R10 requires every ready manifest to declare `scratch_root` + `keep` (LOOP-13).
+
+## Compiled Update — 2026-10-29 (wrap-up sweep, delta over 2026-10-28)
+
+**Confidence: verified for harness facts; the table scores are partial observations.**
+
+- **Common OmniDocBench table scorer shipped** (research main `14f163cf`): both arms use the same GT and native TEDS implementation, with completion/hash/lineage converters; observations and coverage are kept separate from full-population decision eligibility, and unknown is distinct from empty. Six controls cover HTML/Markdown, matching, content vs structure, source tampering and rearm ambiguity.
+- **First native snapshot (PIP-02, not a verdict):** ODL completed 435/755 pages and 131/243 tables, available-output TEDS 0.6567, structure-only 0.7998. Paddle had 1 completed page and 0 scored tables, so the paired comparison is undefined. Shard s13 completed 25/25 pages (collection only, no TEDS verdict).
+- **Question-anchored BEAM judge prompt is transcribed, not authored** (CJ-10): fixtures carry provenance with three semantic-delta groups, so judge-prompt drift is auditable.
+- **Evidence-handling rule:** a null/diagnostic run is labelled by its predeclared rule; INF-12 Gate2's first READY draft was withdrawn because its class and enrollment commit did not predeclare the exact population and runtime protocol.
+
+Sources: [delivered routing and scoring progress](../progress/2026-10/2026-10-29-codex3-delivered-routing-and-scoring.md); [PIP-02 s13 filing](../progress/2026-10/2026-10-29-codex3-pip02-s13-filing.md); [canonical-judge-suite-revamp](../handoffs/active/canonical-judge-suite-revamp.md); [INF-12 Gate2 diagnostic](../progress/2026-10-28-inf12-gate2-triton36-diagnostic.md).

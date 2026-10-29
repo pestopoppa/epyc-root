@@ -1076,3 +1076,13 @@ Sources: [iqk iquant enablement](../handoffs/active/iqk-iquant-enablement.md), [
 - **A v1 harness lesson:** v1 ran without the serving env, so the default-ON fused decode made even the UD control incoherent (VOID). PPL and coherence must use the codified recipe env (AMENDMENT 1). ([iqk-iquant-enablement](../handoffs/active/iqk-iquant-enablement.md); [arm-P2 PREDECLARED](../docs/reference/agent-config/recipes/q38fn-armP2-20261024/PREDECLARED.md))
 
 Sources: [iqk-iquant-enablement](../handoffs/active/iqk-iquant-enablement.md), [arm-P2 PREDECLARED](../docs/reference/agent-config/recipes/q38fn-armP2-20261024/PREDECLARED.md), [arm-P2 VERDICT](../docs/reference/agent-config/recipes/q38fn-armP2-20261024/VERDICT.md), [2026-10-27 harvest](../progress/2026-10/2026-10-27-workspace-58.md)
+
+## Compiled Update — 2026-10-29 (operator wiki sweep, workspace-58)
+
+**Confidence: verified** for the artifact-derived path-participation facts; the throughput cause is explicitly **unmeasured**.
+
+- **C-L3-Q38FN existing-artifact profile: IQK path participation confirmed, cause not.** NEW-13's one-token teacher-forced log shows IQK MoE engaged for IQ3_XXS weights with Q8_K activation. Frozen v10 dispatch allows that path for one token and routes wider calls to the NMSE-guarded native fallback. NEW-10's type census records 38 Q2_0 and 58 IQ4_NL native tensors beside 12 decode-only IQ3_XXS IQK tensors. No per-kernel timings were captured, so neither the cause nor the share of the ~27% lower throughput is established. The causal profile stays open; arm-P/P2 probes were not rerun.
+- **Arm P2 closed as no-ship, artifact reclaimed.** The 101 GB `q38fn-armP2.gguf` was reclaimed 2026-10-27; the recipe (job.sh, pins, VERDICT.md) is preserved in the repo and the file can be rebuilt from it. Verdict unchanged: PPL 2.979 vs UD 2.9868 but speed gate FAIL (pp5 -6.12%, tg128 -8.85%).
+- **MI210 Q8 dequant-GEMV Item C retargeted (operator, 2026-10-28):** Qwen3.5-122B is deprecated and no longer serves; the IQ2_XXS kernel work is format-level and is to be re-measured on a current IQ-format target (DS41 or Q38FN low-bit lanes, or the GPU-resident IQ role), not the 122B.
+
+Sources: [iqk-iquant-enablement](../handoffs/active/iqk-iquant-enablement.md) · [mi210-q8-dequant-gemv-roofline](../handoffs/active/mi210-q8-dequant-gemv-roofline.md) · [2026-10-29 codex refactor](../progress/2026-10/2026-10-29-codex-refactor-01a16fc3.md) · [2026-10-28 workspace-58](../progress/2026-10/2026-10-28-workspace-58.md)

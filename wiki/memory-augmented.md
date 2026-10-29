@@ -1414,3 +1414,14 @@ Sources: [episodic-memory-integrity](../handoffs/active/episodic-memory-integrit
 - This cohort is diagnostic under its own predeclaration and a different experimental build from historical CME-7S. It does not establish bounded-rationale efficacy or justify a comparison with the historical kernel. The strict closed-run SHA-256 verifier has not been rerun; the readout explicitly does not claim digest verification. Existing response-source reader and planning canary remain open; no new grading ladder was introduced.
 
 Sources: [conversational-memory instrument handoff](../handoffs/active/conversational-memory-eval-instrument.md); [native repair packet checkpoint](../progress/2026-10/2026-10-27-native-repair-packets-2255.md); [launcher repair and enrollment progress](../progress/2026-10/2026-10-28-launcher-repair-and-enrollment.md); [Vidya belief substrate program](../handoffs/active/vidya-belief-substrate-program.md). Native read-only audit: `/mnt/raid0/llm/tmp/refactor-01a16fc3/cme7t-native-readout/READOUT.md`.
+
+## Compiled Update — 2026-10-29 (wrap-up sweep)
+
+**Confidence: verified descriptive composition; no predeclared threshold.**
+
+- **M-27(d) live recall ran** (8 fixed queries, k=10, real 1024-d embedder with `use_fallback=False`). Pooled top-80: seed 53 (66%), eval_or_external 13 (16%), pre_label_legacy 8 (10%), autopilot 6 (7.5%). Pollution is concentrated: 5 of 8 queries return 10/10 seed rows; "extract fields from a csv file" is 8/10 eval_or_external. Box M-27 stays unticked.
+- **M-27d.1 filed:** the store cannot separate interactive from autopilot writes; adding a `context.source` label and any recall-side filter needs a flagged A/B, not a silent filter.
+- **M-12e-a:** the Tulving adapter's dataframe load now fails loudly (research `ccc41d4b`), with pyarrow/pandas present in the research venv.
+- **UTM-P1b** (Hermes ingest stamping) dropped from scope since Hermes was not selected.
+
+Sources: [episodic-memory-integrity](../handoffs/active/episodic-memory-integrity.md); [unified-trace-memory-service](../handoffs/active/unified-trace-memory-service.md); [conversational-memory-eval-instrument](../handoffs/completed/conversational-memory-eval-instrument.md).

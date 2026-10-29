@@ -1878,3 +1878,13 @@ Sources: [CH-19 implementation and test record](../progress/2026-10/2026-10-21-c
 ### Advisory staged-shell SIGPIPE check
 
 The versioned pre-commit extras call a staged-blob checker for producer pipelines using `grep -q` while pipefail is active. Early consumer exit can give the producer SIGPIPE and turn a successful match into a failed pipeline. The checker recommends a consuming safe form and stays warn-only, including scan errors. Original hosted run39617059382 at source56b782ebf20a88b356057983bf73594b5e22a907 passed all11 named checker controls. Source inspection covers installer wiring; the controls do not establish live installed-hook activation. [Native evidence](../artifacts/ci/lint-sigpipe-source-20261021/README.md).
+
+## Compiled Update — 2026-10-29 (wrap-up sweep)
+
+**Confidence: verified, single-case diagnostic.**
+
+- **TU-DTAP-2 benign CRM diagnostic (`dtap-crm-benign-q2-r2`) passed its one case**: real upstream Salesforce CRM service, native judge, local Qwen3-0.6B-Q8_0 on the v10 kernel (seed 42); `task_success: True`, `attack_success: None` (benign case), 3-event trace (one `create_lead` call, 55 completion tokens). The 0.6B model only shows plumbing; TU-DTAP-2 stays open. Follow-ups: TU-DTAP-2a (matched attack arm) and TU-DTAP-2b (imported subset and a judgeable model; stop naming real runs `smoke`).
+- **Trajectory-artifact writer** now calls `toc_ab.write_belief_measurements` at finalize (orchestrator `e9cf0949`), so tool-output-compression A/B runs will leave claim tuples; the first-party verbatim-log vs summarize A/B (frontdoor Qwen3.6-35B-A3B, architect Qwen3.8-Flash-Next) must report wall-clock and a log-growth/grep-latency curve.
+- **Launch env:** KVU-13a stops inherited `LLAMA_ARG_*` altering managed recipes.
+
+Sources: [tool-use-eval-contract](../handoffs/active/tool-use-eval-contract.md); [tool-output-compression](../handoffs/active/tool-output-compression.md); [parallel dispatch and env repair](../progress/2026-10/2026-10-29-codex3-parallel-dispatch-and-env.md).

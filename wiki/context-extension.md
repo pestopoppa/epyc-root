@@ -286,3 +286,14 @@ Sources: [yarn-context-extension-research](../handoffs/active/yarn-context-exten
 - **YaRN CPU fixed120 s0-s3 all ended rc1** ("captured process did not exit"); a YaRN s3 correctness run was co-tenant with a 42 s preflight on revoked CPUs, ruled no invalidation by the owner because co-tenancy cannot change a correctness verdict. ([2026-10-28 workspace-58](../progress/2026-10/2026-10-28-workspace-58.md))
 
 Sources: [yarn-context-extension-research](../handoffs/active/yarn-context-extension-research.md) · [YaRN restore](../progress/2026-10/2026-10-27-ni-yarn-restore.md) · [2026-10-28 workspace-58](../progress/2026-10/2026-10-28-workspace-58.md)
+
+## Compiled Update — 2026-10-29 (operator wiki sweep, workspace-58)
+
+**Confidence: verified** for the recorded failed-run facts; the harness causes are as stated in the filing, the fixes are not yet measured.
+
+- **The CPU fixed-120 v3 native Oolong run produced zero scored pairs: FAILED-RUN, harness class, no verdict.** Shards s0/s1/s3 spent the whole ~8 h window on their first A0 item (`oolong_synth@131072`) and hit `TimeoutError` at window end; s2 never scored because the worker died on `ModuleNotFoundError: No module named 'dateutil'`. Coverage is 0/120, so the predeclared one-sided exact McNemar rule is not evaluable. Nothing here is evidence for or against the extension arms.
+- **Follow-on harness work is filed, not done (YARN-CPU-V3-HARNESS):** an import preflight so a missing module fails at dry-run, bounding per-item wall (a single 128k A0 item does not fit an ~8 h CPU-quarter window; moving 128k items to GPU is the alternative), and resumable (rc75) window-end exits.
+- **The standing extension-arms read is unchanged:** NOT-FAIL-underpowered (74 native pairs, McNemar p=0.5), explicitly not an equivalence claim; HELMET nq/hotpotqa 128k remain dropped (KILT data missing).
+- **FA-INT64-OFFSET fold is reconciled:** the three commits are recorded as present in the champion, a precondition for any run past 512K (audit-reconciliation, not a new measurement).
+
+Sources: [yarn-context-extension-research](../handoffs/active/yarn-context-extension-research.md) · [2026-10-28 workspace-58 progress](../progress/2026-10/2026-10-28-workspace-58.md) · [2026-10-29 workspace-58 progress](../progress/2026-10/2026-10-29-workspace-58.md) · [2026-10-28 codex C3 prep](../progress/2026-10/2026-10-28-codex-c3-prep.md)

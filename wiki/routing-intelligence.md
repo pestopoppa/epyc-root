@@ -1494,3 +1494,13 @@ Sources: [within-role-placement-state-machine](../handoffs/active/within-role-pl
 - **WP-15.3 capture spec written** (the old pointer held only the precondition output): two windows >= 6 h each, >= 12 h apart, same topology; per window >= 2,000 fleet dispatches, >= 50 returning sessions, >= 3 arrival-rate buckets of >= 200. Predeclared: keep an arm only if its W2 gain beats W1-to-W2 baseline variation, stratified by load.
 
 Sources: [Within-role placement state machine](../handoffs/active/within-role-placement-state-machine.md), [WP-15 results](../docs/design/wp-15-results-20261023.md)
+
+## Compiled Update — 2026-10-29 (wrap-up sweep, delta over 2026-10-24)
+
+**Confidence: verified (code landed, tests pass); the screen result is descriptive and data-limited.**
+
+- **Availability-aware observed-outcome scorer shipped, flag OFF.** LRC-SDM-ACTION-SCORER landed on orchestrator main `517e6083` as an optional injected `score_candidates` at the HybridRouter seam, preserving observed-zero vs missing, fixed feature ordering, support minima, conservative calibration bounds, verifier enforcement and incumbent fallback; 57 focused/routing tests pass. Production stays unchanged.
+- **Cached screen did not clear its criteria.** LRC-SDM-CACHED-SCREEN on the frozen P4.5 cache: 57 of 106 test questions have paired observed outcomes (53.8%); paired gain and group-bootstrap lower bound are both 0. The predeclared 90% coverage and +2 pp gain criteria fail. This is a data-limited descriptive result, not evidence against the technique and not permission for a pilot; no serving quality floor exists, so the experimental policy falls back.
+- **DAR-3 (SPO+ with exploration) is superseded** by the RESCOPE triage gate; its boxes were closed as SUPERSEDED in the 2026-10-29 audit and must not be dispatched.
+
+Sources: [learned-routing-controller](../handoffs/active/learned-routing-controller.md); [delivered routing and scoring progress](../progress/2026-10/2026-10-29-codex3-delivered-routing-and-scoring.md); [decision-aware-routing](../handoffs/active/decision-aware-routing.md).

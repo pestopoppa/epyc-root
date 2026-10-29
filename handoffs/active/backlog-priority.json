@@ -1,7 +1,7 @@
 {
  "schema": "backlog_priority.v1",
  "generated_by": "scripts/handoffs/backlog_priority.py + scripts/handoffs/backlog_priority_curated.json",
- "generated_at": "2026-10-28T10:38Z",
+ "generated_at": "2026-10-29T23:15Z",
  "method": "LOOP-CONTRACT 2026-10-28 (operator-adopted loop redesign): every row and prep item carries kind = inference-prep | inference-ready | non-inference, and the bands rank inference-prep (T0: FILLERS BACKLOG rows blocked on a harness fix or a missing launcher, seeded via --seed-prep) above inference-ready (T4-T6) above all non-inference (T1-T3, T7; held inference counts as non-inference until its hold clears). Within the bands, operator method 2026-10-24: inference items ranked by the inference-backlog-scheduling model (live > ready decision-bearing > routine; ROI = decision value per compute-hour; operator holds push down with the blocker named); non-inference tasks that gate an inference task inherit and rank just above it; non-inference tasks blocked by nothing are the top tier (T1 gates compute, T2 does not); everything else blocked follows its blockers. Row priority = its best open item. score = rank percentile among rows with open work (1.0 = highest). Approximate: ~120 curated items, the rest keyword heuristics; row Deps edges are coarse. Regenerate: python3 scripts/handoffs/backlog_priority.py (see dashboard/README.md).",
  "tiers": {
   "0": "T0 inference-prep",
@@ -21,24 +21,9 @@
    "done": "patches done, handed to 3c4ca599 for C4 (/mnt/raid0/llm/tmp/ws58-ch24-20261024/patches/)"
   },
   {
-   "row": "INF-60",
-   "task": "Q38-T10.1a — make `serving_gate.py` emit the predeclared verdict inputs (filed 2026-10-21)",
-   "done": "landed in orchestrator fc0c0be5"
-  },
-  {
-   "row": "UFH-12",
-   "task": "REPL-EMB-2.10c — book the CPU-quarter calibration requested after COPY-1, then one contigu",
-   "done": "calibration + COPY apply/parity done 2026-10-27 (repl-embedding-retrieval.md:246-249); box awaiting tick"
-  },
-  {
    "row": "INF-65",
    "task": "CH-20.2 - `test-llama-archs` fixture generation aborts at `deepseek41` (\"Dense\": `key not ",
    "done": "patches done, handed to 3c4ca599 for C4 (/mnt/raid0/llm/tmp/ws58-ch24-20261024/patches/)"
-  },
-  {
-   "row": "INF-70",
-   "task": "CLOSE-7 — SYNC-13's `GGML_STATIC_CHUNKS` WAS NOT REACHED EITHER, AND IS ALREADY FILED TWIC",
-   "done": "duplicate of WRAP-8 by its own text (cpu-decode-roofline-program.md:2427); delete when WRAP-8 is actioned"
   }
  ],
  "kinds": [
@@ -550,7 +535,7 @@
   {
    "rank": 51,
    "filler": "refactor-cme7t-20261027",
-   "row": "EVL-50",
+   "row": "FILLERS:refactor-cme7t-20261027",
    "kind": "inference-prep",
    "s": 0.69,
    "blocker": "harness fix",
@@ -731,7 +716,7 @@
    "kind": "inference-prep",
    "tier": 0,
    "rank": 2,
-   "score": 0.9944,
+   "score": 0.9942,
    "basis": "T0 inference-prep best open item (P): inference-prep kpf18-g3-r10-integration-cpu: harness fix: rc1 06:03:31Z, framing_pass=fals",
    "unblocks": [
     "INF-81"
@@ -742,7 +727,7 @@
    "kind": "inference-prep",
    "tier": 0,
    "rank": 3,
-   "score": 0.9888,
+   "score": 0.9884,
    "basis": "T0 inference-prep best open item (P): inference-prep fa4-c5-matched-bands: harness fix: attempt3 rc1 06:16:50Z at the driver.py:",
    "unblocks": [
     "INF-59",
@@ -762,7 +747,7 @@
    "kind": "inference-prep",
    "tier": 0,
    "rank": 4,
-   "score": 0.9831,
+   "score": 0.9827,
    "basis": "T0 inference-prep best open item (P): inference-prep refactor-01a16fc3-m4-c2-off-ratio-20261027: harness fix",
    "unblocks": [],
    "blocker": ""
@@ -771,7 +756,7 @@
    "kind": "inference-prep",
    "tier": 0,
    "rank": 5,
-   "score": 0.9775,
+   "score": 0.9769,
    "basis": "T0 inference-prep best open item (P): inference-prep lb49-c5-graph-readonly-20261027: harness fix",
    "unblocks": [],
    "blocker": ""
@@ -780,7 +765,7 @@
    "kind": "inference-prep",
    "tier": 0,
    "rank": 6,
-   "score": 0.9719,
+   "score": 0.9711,
    "basis": "T0 inference-prep best open item (P): inference-prep codex-ni-gnx-esrch-20261026: missing launcher (ws58 12:25Z sweep: ARMED wit",
    "unblocks": [
     "INF-62",
@@ -800,7 +785,7 @@
    "kind": "inference-prep",
    "tier": 0,
    "rank": 7,
-   "score": 0.9663,
+   "score": 0.9653,
    "basis": "T0 inference-prep best open item (P): inference-prep inf75-c5-native-abi-canary-q2: harness fix",
    "unblocks": [
     "INF-81"
@@ -811,7 +796,7 @@
    "kind": "inference-prep",
    "tier": 0,
    "rank": 8,
-   "score": 0.9607,
+   "score": 0.9595,
    "basis": "T0 inference-prep best open item (P): inference-prep UFH12-REQUESTB-FULL-PRIVATE-APPLY-1: harness fix (ws58)",
    "unblocks": [],
    "blocker": ""
@@ -820,7 +805,7 @@
    "kind": "inference-prep",
    "tier": 0,
    "rank": 9,
-   "score": 0.9551,
+   "score": 0.9538,
    "basis": "T0 inference-prep best open item (P): inference-prep HSF-5P-NEXT-PROFILE-2: missing launcher: stopped 23:29:54Z rc1 by the ws58 ",
    "unblocks": [],
    "blocker": ""
@@ -829,7 +814,7 @@
    "kind": "inference-prep",
    "tier": 0,
    "rank": 10,
-   "score": 0.9494,
+   "score": 0.948,
    "basis": "T0 inference-prep best open item (P): inference-prep codex-ni-df2-byte-capture-ready-20261027: harness fix",
    "unblocks": [
     "INF-65",
@@ -848,7 +833,7 @@
    "kind": "inference-prep",
    "tier": 0,
    "rank": 11,
-   "score": 0.9438,
+   "score": 0.9422,
    "basis": "T0 inference-prep best open item (P): inference-prep codex-ni-parakeet-observed-canary-20261027: harness fix",
    "unblocks": [],
    "blocker": ""
@@ -857,38 +842,16 @@
    "kind": "inference-prep",
    "tier": 0,
    "rank": 12,
-   "score": 0.9382,
+   "score": 0.9364,
    "basis": "T0 inference-prep best open item (P): inference-prep codex-ni-ufh08-hil15b-v2-publish-20261025: missing launcher: no accepted so",
    "unblocks": [],
-   "blocker": ""
-  },
-  "EVL-50": {
-   "kind": "inference-prep",
-   "tier": 0,
-   "rank": 13,
-   "score": 0.9326,
-   "basis": "T0 inference-prep best open item (P): inference-prep refactor-cme7t-20261027: harness fix",
-   "unblocks": [
-    "EVL-47",
-    "EVL-49",
-    "INF-03",
-    "INF-06",
-    "INF-33",
-    "INF-37",
-    "INF-48",
-    "INF-62",
-    "INF-65",
-    "INF-66",
-    "INF-73",
-    "INF-74"
-   ],
    "blocker": ""
   },
   "UFH-01": {
    "kind": "inference-prep",
    "tier": 0,
-   "rank": 14,
-   "score": 0.927,
+   "rank": 13,
+   "score": 0.9306,
    "basis": "T0 inference-prep best open item (P): inference-prep codex-ni-usage-prov1-r4-20261025: harness fix: validation result is FAIL (g",
    "unblocks": [
     "INF-78",
@@ -904,8 +867,8 @@
   "RTG-61": {
    "kind": "inference-prep",
    "tier": 0,
-   "rank": 15,
-   "score": 0.9213,
+   "rank": 14,
+   "score": 0.9249,
    "basis": "T0 inference-prep best open item (P): inference-prep refactor-b2-producer-e-q2-20261027: harness fix",
    "unblocks": [],
    "blocker": ""
@@ -913,8 +876,8 @@
   "INF-44": {
    "kind": "inference-prep",
    "tier": 0,
-   "rank": 16,
-   "score": 0.9157,
+   "rank": 15,
+   "score": 0.9191,
    "basis": "T0 inference-prep best open item (P): inference-prep refactor-01a16fc3-inf34-pf1-initial-20261027: harness fix",
    "unblocks": [],
    "blocker": ""
@@ -922,8 +885,8 @@
   "INF-70": {
    "kind": "inference-ready",
    "tier": 4,
-   "rank": 17,
-   "score": 0.9101,
+   "rank": 16,
+   "score": 0.9133,
    "basis": "T4 inference-ready best open item (I): G2-CONC — BLOCKING PROMOTION GATE. Must run on the PROMOTION CANDIDATE BINARY, not on an a",
    "unblocks": [
     "INF-72",
@@ -937,8 +900,8 @@
   "INF-60": {
    "kind": "inference-ready",
    "tier": 5,
-   "rank": 18,
-   "score": 0.9045,
+   "rank": 17,
+   "score": 0.9075,
    "basis": "T5 inference-ready best open item (I): Q38-T10.1r - reload the orchestrator API so `spec_off_bitwise_roles` (default_prod ON, orc",
    "unblocks": [
     "INF-61"
@@ -948,8 +911,8 @@
   "INF-66": {
    "kind": "inference-ready",
    "tier": 5,
-   "rank": 19,
-   "score": 0.8989,
+   "rank": 18,
+   "score": 0.9017,
    "basis": "T5 inference-ready best open item (I): LBH-2.1 — re-run the INF-70 llama-bench units whose protocol could not be resolved or was ",
    "unblocks": [
     "INF-73",
@@ -964,8 +927,8 @@
   "INF-06": {
    "kind": "inference-ready",
    "tier": 5,
-   "rank": 20,
-   "score": 0.8933,
+   "rank": 19,
+   "score": 0.896,
    "basis": "T5 inference-ready best open item (I): AK-HR-2.2 — compare the next DS41/Q38FN campaign's keep yield, repeat-null and abstain rat",
    "unblocks": [
     "EVL-49",
@@ -985,8 +948,8 @@
   "EVL-47": {
    "kind": "inference-ready",
    "tier": 5,
-   "rank": 21,
-   "score": 0.8876,
+   "rank": 20,
+   "score": 0.8902,
    "basis": "T5 inference-ready best open item (I): VB-HSF5P-NEXT-TRACE-WRITE — HSF-5.P native profiler trace write side (filed 2026-10-26, wo",
    "unblocks": [
     "EVL-49",
@@ -1004,11 +967,20 @@
    ],
    "blocker": ""
   },
+  "RTG-22": {
+   "kind": "inference-ready",
+   "tier": 5,
+   "rank": 21,
+   "score": 0.8844,
+   "basis": "T5 inference-ready best open item (I): LOOP-25 — disk forecast in the depth alarm. Project free space from the ARMED and READY `e",
+   "unblocks": [],
+   "blocker": ""
+  },
   "INF-59": {
    "kind": "inference-ready",
    "tier": 4,
    "rank": 22,
-   "score": 0.882,
+   "score": 0.8786,
    "basis": "T4 inference-ready best open item (I): YARN-AGG-1 — Aggregation and recall arms for the YaRN gate: Oolong, HELMET recall and RAG,",
    "unblocks": [],
    "blocker": ""
@@ -1017,8 +989,8 @@
    "kind": "inference-ready",
    "tier": 5,
    "rank": 23,
-   "score": 0.8764,
-   "basis": "T5 inference-ready best open item (I): UFH14-LB3 — Replay logged turn-1 grammar_enforced REPL outputs, classify them tool-call / ",
+   "score": 0.8728,
+   "basis": "T5 inference-ready best open item (I): UFH14-A3A-F2 — decode-stall comparison, alternated. (filed 2026-10-29) The original A3a qu",
    "unblocks": [
     "RTG-30"
    ],
@@ -1028,7 +1000,7 @@
    "kind": "inference-ready",
    "tier": 6,
    "rank": 24,
-   "score": 0.8708,
+   "score": 0.8671,
    "basis": "T6 inference-ready best open item (I): CT-12.3d — escaped-cost check: re-run `06-ct12-served-path` through the orchestrator path ",
    "unblocks": [],
    "blocker": ""
@@ -1037,7 +1009,7 @@
    "kind": "inference-ready",
    "tier": 6,
    "rank": 25,
-   "score": 0.8652,
+   "score": 0.8613,
    "basis": "T6 inference-ready best open item (I): U3-EXPRESS — run a DELIBERATE expressiveness pass over the recipe schema instead of waitin",
    "unblocks": [
     "INF-74",
@@ -1050,7 +1022,7 @@
    "kind": "inference-ready",
    "tier": 6,
    "rank": 26,
-   "score": 0.8596,
+   "score": 0.8555,
    "basis": "T6 inference-ready best open item (I): RUS-3 — Repeated-sample run to measure within-question trace-length agreement (needs an in",
    "unblocks": [
     "INF-78",
@@ -1062,25 +1034,16 @@
    "kind": "inference-ready",
    "tier": 6,
    "rank": 27,
-   "score": 0.8539,
+   "score": 0.8497,
    "basis": "T6 inference-ready best open item (I): INF-74-CGROUP-ROOT — land the root-owned cgroup delegation script. (filed 2026-10-28, work",
-   "unblocks": [],
-   "blocker": ""
-  },
-  "RTG-22": {
-   "kind": "inference-ready",
-   "tier": 6,
-   "rank": 28,
-   "score": 0.8483,
-   "basis": "T6 inference-ready best open item (I): NI-IDLE-REFILL-WATCHER — zero-token auto idle-refill watcher for the compute calendar. (fi",
    "unblocks": [],
    "blocker": ""
   },
   "INF-80": {
    "kind": "inference-ready",
    "tier": 6,
-   "rank": 29,
-   "score": 0.8427,
+   "rank": 28,
+   "score": 0.8439,
    "basis": "T6 inference-ready best open item (I): EXL3-6c5 — full-model window (main session, memory/CPU heavy). Load + greedy smoke, then s",
    "unblocks": [],
    "blocker": ""
@@ -1088,8 +1051,8 @@
   "INF-26": {
    "kind": "inference-ready",
    "tier": 6,
-   "rank": 30,
-   "score": 0.8371,
+   "rank": 29,
+   "score": 0.8382,
    "basis": "T6 inference-ready best open item (I): T3 — Port only if T2 wins. Gate: IQ4_KT must reach ≥95% of Q4_K_M tg128 under the canonica",
    "unblocks": [],
    "blocker": ""
@@ -1097,8 +1060,8 @@
   "INF-72": {
    "kind": "inference-ready",
    "tier": 6,
-   "rank": 31,
-   "score": 0.8315,
+   "rank": 30,
+   "score": 0.8324,
    "basis": "T6 inference-ready best open item (I): RT-6.2 — Replay fidelity items. Diff the DeepInfer re-implementation against `policy.py` (",
    "unblocks": [],
    "blocker": ""
@@ -1106,8 +1069,8 @@
   "INF-78": {
    "kind": "inference-ready",
    "tier": 6,
-   "rank": 32,
-   "score": 0.8258,
+   "rank": 31,
+   "score": 0.8266,
    "basis": "T6 inference-ready best open item (I): OAB-4 — A/B against the bounded seat on the same driver. Extend",
    "unblocks": [
     "UFH-12"
@@ -1117,8 +1080,8 @@
   "INF-48": {
    "kind": "inference-ready",
    "tier": 6,
-   "rank": 33,
-   "score": 0.8202,
+   "rank": 32,
+   "score": 0.8208,
    "basis": "T6 inference-ready best open item (I): RVP-C4-7 — Confirm the nine Hawkeye cdna4 counters collect on gfx90a. `SQ_WAVES`,",
    "unblocks": [
     "EVL-49",
@@ -1139,30 +1102,17 @@
   "EVL-10": {
    "kind": "inference-ready",
    "tier": 6,
-   "rank": 34,
-   "score": 0.8146,
+   "rank": 33,
+   "score": 0.815,
    "basis": "T6 inference-ready best open item (I): VB-SKILLBANK-AB-WRITE producer call (owed, filed 2026-10-21): the M-23 A/B runner calls `s",
-   "unblocks": [
-    "EVL-47",
-    "EVL-49",
-    "EVL-50",
-    "INF-03",
-    "INF-06",
-    "INF-33",
-    "INF-37",
-    "INF-48",
-    "INF-62",
-    "INF-65",
-    "INF-66",
-    "INF-73"
-   ],
+   "unblocks": [],
    "blocker": ""
   },
   "EVL-52": {
    "kind": "inference-ready",
    "tier": 6,
-   "rank": 35,
-   "score": 0.809,
+   "rank": 34,
+   "score": 0.8092,
    "basis": "T6 inference-ready best open item (I): DHM-5 — Measure the always-on prefix (CLAUDE.md plus the MEMORY.md index) in tokens per tu",
    "unblocks": [],
    "blocker": ""
@@ -1170,8 +1120,8 @@
   "RTG-41": {
    "kind": "inference-ready",
    "tier": 6,
-   "rank": 36,
-   "score": 0.8034,
+   "rank": 35,
+   "score": 0.8035,
    "basis": "T6 inference-ready best open item (I): UTM-V7 — Profile-write precision audit checklist from the Honcho deriver rubric. Define th",
    "unblocks": [
     "EVL-52"
@@ -1181,8 +1131,8 @@
   "INF-41": {
    "kind": "inference-ready",
    "tier": 6,
-   "rank": 37,
-   "score": 0.7978,
+   "rank": 36,
+   "score": 0.7977,
    "basis": "T6 inference-ready best open item (I): S-18 — measure Qwen3-VL-30B on CPU the first time it is started (STACKCHG-DFLASH2 PACKAGE ",
    "unblocks": [
     "INF-59",
@@ -1202,8 +1152,8 @@
   "INF-43": {
    "kind": "inference-ready",
    "tier": 6,
-   "rank": 38,
-   "score": 0.7921,
+   "rank": 37,
+   "score": 0.7919,
    "basis": "T6 inference-ready best open item (I): T3 — Re-run the 27 confounded E5 cells on declared placement. Per model the grid must",
    "unblocks": [],
    "blocker": ""
@@ -1211,9 +1161,18 @@
   "INF-54": {
    "kind": "inference-ready",
    "tier": 6,
-   "rank": 39,
-   "score": 0.7865,
+   "rank": 38,
+   "score": 0.7861,
    "basis": "T6 inference-ready best open item (I): STEP 3 (only if Step 2 wins): the 3-6 day port. Decision-flipper: IQ4_KT must reach >=95% ",
+   "unblocks": [],
+   "blocker": ""
+  },
+  "EVL-34": {
+   "kind": "inference-ready",
+   "tier": 6,
+   "rank": 39,
+   "score": 0.7803,
+   "basis": "T6 inference-ready best open item (I): EVL-34 natural-delegation rerun (filed 2026-10-29, ws58 filer B): rerun with a model that ",
    "unblocks": [],
    "blocker": ""
   },
@@ -1221,16 +1180,34 @@
    "kind": "inference-ready",
    "tier": 6,
    "rank": 40,
-   "score": 0.7809,
+   "score": 0.7746,
    "basis": "T6 inference-ready best open item (I): D-RI-PREVIEW-1.1 — fix the scorer/driver defect behind 90/90 `bad_final`, then re-run `s5-",
+   "unblocks": [],
+   "blocker": ""
+  },
+  "EVL-46": {
+   "kind": "inference-ready",
+   "tier": 6,
+   "rank": 41,
+   "score": 0.7688,
+   "basis": "T6 inference-ready best open item (I): TU-DTAP-2a — run the matched attack arm of the CRM case through the same scheduled runner.",
+   "unblocks": [],
+   "blocker": ""
+  },
+  "INF-12": {
+   "kind": "inference-ready",
+   "tier": 6,
+   "rank": 42,
+   "score": 0.763,
+   "basis": "T6 inference-ready best open item (I): INF-12 Gate 2 r8 feasibility re-estimate (filed 2026-10-29, ws58 filer B): at the measured",
    "unblocks": [],
    "blocker": ""
   },
   "RTG-10": {
    "kind": "inference-ready",
    "tier": 6,
-   "rank": 41,
-   "score": 0.7753,
+   "rank": 43,
+   "score": 0.7572,
    "basis": "T6 inference-ready best open item (I): DCP-15 — Measure and propagate format and schema constraints in architect-written delegate",
    "unblocks": [],
    "blocker": ""
@@ -1238,28 +1215,19 @@
   "UFH-07": {
    "kind": "inference-ready",
    "tier": 6,
-   "rank": 42,
-   "score": 0.7697,
-   "basis": "T6 inference-ready best open item (I): First-party A/B: verbatim-append trajectory log + grep/Python read, vs current summarize-a",
+   "rank": 44,
+   "score": 0.7514,
+   "basis": "T6 inference-ready best open item (I): Instrument TOTAL tokens per episode (not peak) in any compression A/B. REOPENED 2026-09-16",
    "unblocks": [
     "UFH-12"
    ],
    "blocker": ""
   },
-  "RTG-15": {
-   "kind": "inference-ready",
-   "tier": 6,
-   "rank": 43,
-   "score": 0.764,
-   "basis": "T6 inference-ready best open item (I): LRC-SDM-CACHED-SCREEN — Run one grouped observed-outcome challenger comparison on the exis",
-   "unblocks": [],
-   "blocker": ""
-  },
   "RTG-56": {
    "kind": "inference-ready",
    "tier": 6,
-   "rank": 44,
-   "score": 0.7584,
+   "rank": 45,
+   "score": 0.7457,
    "basis": "T6 inference-ready best open item (I): TD-29.M4 — Confirm prompt-prefix cache reuse between the tool call and the typed call. Che",
    "unblocks": [
     "INF-78",
@@ -1270,8 +1238,8 @@
   "EVL-08": {
    "kind": "inference-ready",
    "tier": 6,
-   "rank": 45,
-   "score": 0.7528,
+   "rank": 46,
+   "score": 0.7399,
    "basis": "T6 inference-ready best open item (I): CJ-2d. Wire a representative sample — reuse the existing hard-slice construction (n=53",
    "unblocks": [
     "INF-76"
@@ -1281,8 +1249,8 @@
   "EVL-48": {
    "kind": "inference-ready",
    "tier": 6,
-   "rank": 46,
-   "score": 0.7472,
+   "rank": 47,
+   "score": 0.7341,
    "basis": "T6 inference-ready best open item (I): VL vision-encoder prefill baseline — the unrun half of A3. 2026-08-12 ran the BGE encode h",
    "unblocks": [],
    "blocker": ""
@@ -1290,8 +1258,8 @@
   "INF-24": {
    "kind": "inference-ready",
    "tier": 6,
-   "rank": 47,
-   "score": 0.7416,
+   "rank": 48,
+   "score": 0.7283,
    "basis": "T6 inference-ready best open item (I): RE-4 protocol repair — redesign LongCoT-Mini execution so models may do bounded reasoning ",
    "unblocks": [],
    "blocker": ""
@@ -1299,8 +1267,8 @@
   "RTG-34": {
    "kind": "inference-ready",
    "tier": 6,
-   "rank": 48,
-   "score": 0.736,
+   "rank": 49,
+   "score": 0.7225,
    "basis": "T6 inference-ready best open item (I): R9 — replay-eligibility screen at queue admission (M1/M3). *Enforcement DONE",
    "unblocks": [
     "RTG-48",
@@ -1310,11 +1278,20 @@
    ],
    "blocker": ""
   },
+  "PIP-02": {
+   "kind": "inference-ready",
+   "tier": 6,
+   "rank": 50,
+   "score": 0.7168,
+   "basis": "T6 inference-ready best open item (I): Follow-up: record the cleanup proof box from retained evidence (`server-vm.jsonl`, `server",
+   "unblocks": [],
+   "blocker": ""
+  },
   "UFH-05": {
    "kind": "inference-ready",
    "tier": 6,
-   "rank": 49,
-   "score": 0.7303,
+   "rank": 51,
+   "score": 0.711,
    "basis": "T6 inference-ready best open item (I): RC-CVEC-SAFETY — Behavioural safety gate for every candidate steering vector. Add refusal ",
    "unblocks": [],
    "blocker": ""
@@ -1322,8 +1299,8 @@
   "EVL-02": {
    "kind": "inference-ready",
    "tier": 6,
-   "rank": 50,
-   "score": 0.7247,
+   "rank": 52,
+   "score": 0.7052,
    "basis": "T6 inference-ready best open item (I): GPU arms A1/A3/A4 × `gpqa_diamond_cot` full n=198 — *primary* CoT measure (deferred behind",
    "unblocks": [],
    "blocker": ""
@@ -1331,8 +1308,8 @@
   "EVL-33": {
    "kind": "inference-ready",
    "tier": 6,
-   "rank": 51,
-   "score": 0.7191,
+   "rank": 53,
+   "score": 0.6994,
    "basis": "T6 inference-ready best open item (I): PRB-T4-RERUN — GPU re-run of livecodebench + mmlu_pro (and math/olympiadbench at n=400) af",
    "unblocks": [],
    "blocker": ""
@@ -1340,8 +1317,8 @@
   "INF-07": {
    "kind": "inference-ready",
    "tier": 6,
-   "rank": 52,
-   "score": 0.7135,
+   "rank": 54,
+   "score": 0.6936,
    "basis": "T6 inference-ready best open item (I): E5 — NUMA×batch interaction sweep (post-v7-promotion quiet window; the never-measured 2D c",
    "unblocks": [
     "EVL-49",
@@ -1352,8 +1329,8 @@
   "INF-61": {
    "kind": "inference-ready",
    "tier": 6,
-   "rank": 53,
-   "score": 0.7079,
+   "rank": 55,
+   "score": 0.6879,
    "basis": "T6 inference-ready best open item (I): INF-61-ABA — same-window MTP n-max 4 vs 8 ABA at np>=2 on Qwen3.8-27B before any grid cell",
    "unblocks": [],
    "blocker": ""
@@ -1361,8 +1338,8 @@
   "RTG-02": {
    "kind": "inference-ready",
    "tier": 6,
-   "rank": 54,
-   "score": 0.7022,
+   "rank": 56,
+   "score": 0.6821,
    "basis": "T6 inference-ready best open item (I): AP-29b — Compare correctness-first LEXICOGRAPHIC selection against the scalarized cost-awa",
    "unblocks": [
     "EVL-04",
@@ -1370,11 +1347,20 @@
    ],
    "blocker": ""
   },
+  "RTG-15": {
+   "kind": "inference-ready",
+   "tier": 6,
+   "rank": 57,
+   "score": 0.6763,
+   "basis": "T6 inference-ready best open item (I): P4.4 sep-CMA-ES cold-start spike (large cost; no longer justified for the current trained-",
+   "unblocks": [],
+   "blocker": ""
+  },
   "RTG-27": {
    "kind": "inference-ready",
    "tier": 6,
-   "rank": 55,
-   "score": 0.6966,
+   "rank": 58,
+   "score": 0.6705,
    "basis": "T6 inference-ready best open item (I): D3 — manual canonical bench (sampling quality cert) *(clean window; certifies #1–3)*. Gree",
    "unblocks": [
     "INF-81",
@@ -1385,8 +1371,8 @@
   "RTG-21": {
    "kind": "inference-ready",
    "tier": 6,
-   "rank": 56,
-   "score": 0.691,
+   "rank": 59,
+   "score": 0.6647,
    "basis": "T6 inference-ready best open item (I): MF-VBS-2 — Verify-before-FINAL gate. Add an explicit \"run the acceptance check with `run_p",
    "unblocks": [],
    "blocker": ""
@@ -1394,8 +1380,8 @@
   "EVL-12": {
    "kind": "inference-ready",
    "tier": 6,
-   "rank": 57,
-   "score": 0.6854,
+   "rank": 60,
+   "score": 0.659,
    "basis": "T6 inference-ready best open item (I): E5 [agent] remaining LOWs sweep — ET-8 watchdog=0 fail-fast; ET-15 suite-health freshness ",
    "unblocks": [],
    "blocker": ""
@@ -1403,17 +1389,17 @@
   "EVL-29": {
    "kind": "inference-ready",
    "tier": 6,
-   "rank": 58,
-   "score": 0.6798,
-   "basis": "T6 inference-ready best open item (I): ID-16 — ThinkingCap: the MTP head is STOCK, confirmed at byte level. Rewrite the A/B accor",
+   "rank": 61,
+   "score": 0.6532,
+   "basis": "T6 inference-ready best open item (I): ID-20 — TRL + OpenEnv: DECLINE the bridge; keep only the GPU-free half. The blocker is not",
    "unblocks": [],
    "blocker": ""
   },
   "EVL-35": {
    "kind": "inference-ready",
    "tier": 6,
-   "rank": 59,
-   "score": 0.6742,
+   "rank": 62,
+   "score": 0.6474,
    "basis": "T6 inference-ready best open item (I): RE-4.4 — reasoning-budget ladder (follow-on curve; the reasoning-compression signal): re-r",
    "unblocks": [],
    "blocker": ""
@@ -1421,8 +1407,8 @@
   "INF-02": {
    "kind": "inference-ready",
    "tier": 6,
-   "rank": 60,
-   "score": 0.6685,
+   "rank": 63,
+   "score": 0.6416,
    "basis": "T6 inference-ready best open item (I): Hard design constraints on any first-party fan-out A/B, fixed before one is built. (a) Mat",
    "unblocks": [],
    "blocker": ""
@@ -1430,8 +1416,8 @@
   "INF-05": {
    "kind": "inference-ready",
    "tier": 6,
-   "rank": 61,
-   "score": 0.6629,
+   "rank": 64,
+   "score": 0.6358,
    "basis": "T6 inference-ready best open item (I): KV-6 — Measure `canonicalize_prompt` before optimising anything downstream of it. It makes",
    "unblocks": [],
    "blocker": ""
@@ -1439,8 +1425,8 @@
   "INF-16": {
    "kind": "inference-ready",
    "tier": 6,
-   "rank": 62,
-   "score": 0.6573,
+   "rank": 65,
+   "score": 0.6301,
    "basis": "T6 inference-ready best open item (I): K27 (P1, CPU) — x86 repack gaps: no Q5_0/Q6_0 repack; Q8_0 still lacks a promotable optimi",
    "unblocks": [],
    "blocker": ""
@@ -1448,8 +1434,8 @@
   "INF-18": {
    "kind": "inference-ready",
    "tier": 6,
-   "rank": 63,
-   "score": 0.6517,
+   "rank": 66,
+   "score": 0.6243,
    "basis": "T6 inference-ready best open item (I): Gate R frontdoor residency bench under P-GPU-1: `P-GPU-1` was ratified in `/workspace/MEAS",
    "unblocks": [],
    "blocker": ""
@@ -1457,8 +1443,8 @@
   "PIP-04": {
    "kind": "inference-ready",
    "tier": 6,
-   "rank": 64,
-   "score": 0.6461,
+   "rank": 67,
+   "score": 0.6185,
    "basis": "T6 inference-ready best open item (I): KB-GS-1 — Run a four-arm retrieval A/B on our own corpus. Deliberately NOT a replication.",
    "unblocks": [],
    "blocker": ""
@@ -1466,8 +1452,8 @@
   "RTG-01": {
    "kind": "inference-ready",
    "tier": 6,
-   "rank": 65,
-   "score": 0.6404,
+   "rank": 68,
+   "score": 0.6127,
    "basis": "T6 inference-ready best open item (I): AW-7: pull obiwan96/endless-terminals dataset + PPL checkpoints; re-eval TB-2.0 transfer g",
    "unblocks": [],
    "blocker": ""
@@ -1475,8 +1461,8 @@
   "INF-77": {
    "kind": "inference-ready",
    "tier": 6,
-   "rank": 66,
-   "score": 0.6348,
+   "rank": 69,
+   "score": 0.6069,
    "basis": "T6 inference-ready best open item (I): DS41-W5d — 1017 baseline + MUL_MAT_ID premise microbench (operator choice \"1017-only + mic",
    "unblocks": [
     "INF-78",
@@ -1489,39 +1475,12 @@
    ],
    "blocker": "DS41-1017 hold (operator 2026-10-22: only the noise floor until AK kernel work)"
   },
-  "EVL-34": {
-   "kind": "inference-ready",
-   "tier": 6,
-   "rank": 67,
-   "score": 0.6292,
-   "basis": "T6 inference-ready best open item (I): Run a naturally-delegating workload A/B (HotpotQA/DeepDive or small base model) before Ste",
-   "unblocks": [],
-   "blocker": ""
-  },
   "EVL-39": {
    "kind": "inference-ready",
    "tier": 6,
-   "rank": 68,
-   "score": 0.6236,
-   "basis": "T6 inference-ready best open item (I): E3b — Run a clean same-model direct-context versus REPL/data-by-reference comparison. The",
-   "unblocks": [],
-   "blocker": ""
-  },
-  "EVL-46": {
-   "kind": "inference-ready",
-   "tier": 6,
-   "rank": 69,
-   "score": 0.618,
-   "basis": "T6 inference-ready best open item (I): TU-DTAP-2 — Run the imported DTAP subset against a live local model under an inference gra",
-   "unblocks": [],
-   "blocker": ""
-  },
-  "INF-12": {
-   "kind": "inference-ready",
-   "tier": 6,
    "rank": 70,
-   "score": 0.6124,
-   "basis": "T6 inference-ready best open item (I): Phase 2: M.3 KV-Extension prototype on gemma4 worker_general, A/B vs SQLite B1",
+   "score": 0.6012,
+   "basis": "T6 inference-ready best open item (I): E3b — Run a clean same-model direct-context versus REPL/data-by-reference comparison. The",
    "unblocks": [],
    "blocker": ""
   },
@@ -1529,7 +1488,7 @@
    "kind": "inference-ready",
    "tier": 6,
    "rank": 71,
-   "score": 0.6067,
+   "score": 0.5954,
    "basis": "T6 inference-ready best open item (I): Rider on the k-parameter above: k must be BUDGET-CONDITIONAL, not fixed. intake-936 (indep",
    "unblocks": [],
    "blocker": ""
@@ -1538,7 +1497,7 @@
    "kind": "inference-ready",
    "tier": 6,
    "rank": 72,
-   "score": 0.6011,
+   "score": 0.5896,
    "basis": "T6 inference-ready best open item (I): G16b — diagnostic arm if a dispatch-proven G16 fails 1e-7. Rerun the failing shapes on a t",
    "unblocks": [],
    "blocker": ""
@@ -1547,7 +1506,7 @@
    "kind": "inference-ready",
    "tier": 6,
    "rank": 73,
-   "score": 0.5955,
+   "score": 0.5838,
    "basis": "T6 inference-ready best open item (I): S8 autopilot exploration: sweep `keep_ratio` and `layer_weights` per production role; pers",
    "unblocks": [],
    "blocker": ""
@@ -1556,7 +1515,7 @@
    "kind": "inference-ready",
    "tier": 6,
    "rank": 74,
-   "score": 0.5899,
+   "score": 0.578,
    "basis": "T6 inference-ready best open item (I): S6: A/B test — Compare reranked (10 results → top 3 by ColBERT) vs current (5 results → to",
    "unblocks": [],
    "blocker": ""
@@ -1565,7 +1524,7 @@
    "kind": "inference-ready",
    "tier": 6,
    "rank": 75,
-   "score": 0.5843,
+   "score": 0.5723,
    "basis": "T6 inference-ready best open item (I): Measure LightOnOCR latency only inside the parser-quality comparison above, after structur",
    "unblocks": [],
    "blocker": ""
@@ -1574,7 +1533,7 @@
    "kind": "inference-ready",
    "tier": 6,
    "rank": 76,
-   "score": 0.5787,
+   "score": 0.5665,
    "basis": "T6 inference-ready best open item (I): RM-6 — RA-8 field-order A/B (evidence-first vs verdict-first GBNF) on the leading arm — op",
    "unblocks": [],
    "blocker": ""
@@ -1583,7 +1542,7 @@
    "kind": "inference-ready",
    "tier": 6,
    "rank": 77,
-   "score": 0.573,
+   "score": 0.5607,
    "basis": "T6 inference-ready best open item (I): P3-3. Shadow/optimization calibration: use `consult_gate_probe` on T2/T3 hard workflow sli",
    "unblocks": [],
    "blocker": ""
@@ -1592,7 +1551,7 @@
    "kind": "inference-ready",
    "tier": 6,
    "rank": 78,
-   "score": 0.5674,
+   "score": 0.5549,
    "basis": "T6 inference-ready best open item (I): E-2 — Measure the curve, once per model. Sweep the levels on the already-pinned",
    "unblocks": [],
    "blocker": ""
@@ -1601,7 +1560,7 @@
    "kind": "inference-ready",
    "tier": 6,
    "rank": 79,
-   "score": 0.5618,
+   "score": 0.5491,
    "basis": "T6 inference-ready best open item (I): Run a matched-prompt Qwen-Image-2.1 vs ERNIE generation comparison and record prompt, sett",
    "unblocks": [],
    "blocker": ""
@@ -1610,7 +1569,7 @@
    "kind": "inference-ready",
    "tier": 6,
    "rank": 80,
-   "score": 0.5562,
+   "score": 0.5434,
    "basis": "T6 inference-ready best open item (I): HS-4 P0.4 carry — live `/v1` override validation, shell-agnostic (moved 2026-09-16 from th",
    "unblocks": [],
    "blocker": ""
@@ -1619,7 +1578,7 @@
    "kind": "inference-ready",
    "tier": 6,
    "rank": 81,
-   "score": 0.5506,
+   "score": 0.5376,
    "basis": "T6 inference-ready best open item (I): SEQ-3b — Re-run clean under E8 (expensive, no ruling needed). Restart the candidate at",
    "unblocks": [],
    "blocker": ""
@@ -1628,25 +1587,16 @@
    "kind": "inference-ready",
    "tier": 6,
    "rank": 82,
-   "score": 0.5449,
+   "score": 0.5318,
    "basis": "T6 inference-ready best open item (I): EV-4 — Complete the decision-grade HE-R+ calibration baseline through the inference-batch ",
-   "unblocks": [],
-   "blocker": ""
-  },
-  "PIP-02": {
-   "kind": "inference-ready",
-   "tier": 6,
-   "rank": 83,
-   "score": 0.5393,
-   "basis": "T6 inference-ready best open item (I): Run the documented pipeline on a handful of table-bearing pages from the full set:",
    "unblocks": [],
    "blocker": ""
   },
   "INF-42": {
    "kind": "inference-ready",
    "tier": 6,
-   "rank": 84,
-   "score": 0.5337,
+   "rank": 83,
+   "score": 0.526,
    "basis": "T6 inference-ready best open item (I): LFM2-1 (revised): No bench, no port, no deployment. `lfm2moe` arch support is present in o",
    "unblocks": [],
    "blocker": ""
@@ -1654,8 +1604,8 @@
   "INF-76": {
    "kind": "inference-ready",
    "tier": 6,
-   "rank": 85,
-   "score": 0.5281,
+   "rank": 84,
+   "score": 0.5202,
    "basis": "T6 inference-ready best open item (I): PAW-3 — Evaluate compiled programs on FuzzyBench (internal, unlicensed). Build the eval ma",
    "unblocks": [],
    "blocker": ""
@@ -1663,8 +1613,8 @@
   "RTG-04": {
    "kind": "inference-ready",
    "tier": 6,
-   "rank": 86,
-   "score": 0.5225,
+   "rank": 85,
+   "score": 0.5145,
    "basis": "T6 inference-ready best open item (I): BEP-2 / J8 — CPU latency A/B for the legacy structured patchset path. Head-to-head bench: ",
    "unblocks": [],
    "blocker": ""
@@ -1672,8 +1622,8 @@
   "RTG-05": {
    "kind": "inference-ready",
    "tier": 6,
-   "rank": 87,
-   "score": 0.5169,
+   "rank": 86,
+   "score": 0.5087,
    "basis": "T6 inference-ready best open item (I): J8 optional provenance: run the legacy batch-edit vs interleaved-REPL A/B only if the batc",
    "unblocks": [],
    "blocker": ""
@@ -1681,8 +1631,8 @@
   "RTG-08": {
    "kind": "inference-ready",
    "tier": 6,
-   "rank": 88,
-   "score": 0.5112,
+   "rank": 87,
+   "score": 0.5029,
    "basis": "T6 inference-ready best open item (I): Run ACM's own UNREPORTED ablation (`runtime.py disable_query_memory`, the `re_mem_noquery`",
    "unblocks": [],
    "blocker": ""
@@ -1690,8 +1640,8 @@
   "RTG-16": {
    "kind": "inference-ready",
    "tier": 6,
-   "rank": 89,
-   "score": 0.5056,
+   "rank": 88,
+   "score": 0.4971,
    "basis": "T6 inference-ready best open item (I): Fix `real_suite_v1` discriminability BEFORE certifying OP-1 (forward work from the audit a",
    "unblocks": [],
    "blocker": ""
@@ -1699,8 +1649,8 @@
   "UFH-04": {
    "kind": "inference-ready",
    "tier": 6,
-   "rank": 90,
-   "score": 0.5,
+   "rank": 89,
+   "score": 0.4913,
    "basis": "T6 inference-ready best open item (I): MD-PB-2 — consider integrating PaperBench-style evaluation into MD-9 A/B test rubric",
    "unblocks": [],
    "blocker": ""
@@ -1708,8 +1658,8 @@
   "INF-51": {
    "kind": "inference-ready",
    "tier": 6,
-   "rank": 91,
-   "score": 0.4944,
+   "rank": 90,
+   "score": 0.4855,
    "basis": "T6 inference-ready best open item (I): Run 4-axis inference sweep: 3 workloads (retrieval/reasoning/dialogue) x 3 budgets (25/50/",
    "unblocks": [],
    "blocker": ""
@@ -1717,8 +1667,8 @@
   "RTG-43": {
    "kind": "inference-ready",
    "tier": 6,
-   "rank": 92,
-   "score": 0.4888,
+   "rank": 91,
+   "score": 0.4798,
    "basis": "T6 inference-ready best open item (I): Post-soak §5 cleanup (code + tests as ONE change): retire the legacy per-role build path —",
    "unblocks": [],
    "blocker": ""
@@ -1726,8 +1676,8 @@
   "INF-67": {
    "kind": "non-inference",
    "tier": 2,
-   "rank": 93,
-   "score": 0.4831,
+   "rank": 92,
+   "score": 0.474,
    "basis": "T2 non-inference best open item (N): FD-OFF-PROD — declare `GGML_FUSED_DECODE_OFF=1` for production `architect_general` (:8074)",
    "unblocks": [
     "INF-70",
@@ -1742,8 +1692,8 @@
   "INF-64": {
    "kind": "non-inference",
    "tier": 2,
-   "rank": 94,
-   "score": 0.4775,
+   "rank": 93,
+   "score": 0.4682,
    "basis": "T2 non-inference best open item (N): AK-INST-3 (new, 2026-08-28) — AK-INST-1 is fixed in code but UNPROVEN end-to-end. The",
    "unblocks": [
     "EVL-49",
@@ -1764,8 +1714,8 @@
   "RTG-59": {
    "kind": "non-inference",
    "tier": 2,
-   "rank": 95,
-   "score": 0.4719,
+   "rank": 94,
+   "score": 0.4624,
    "basis": "T2 non-inference best open item (N): SEC-ART-POST-f — Recompile the orchestrator lean registry + stack_priors from the master r",
    "unblocks": [],
    "blocker": ""
@@ -1773,8 +1723,8 @@
   "INF-34": {
    "kind": "non-inference",
    "tier": 2,
-   "rank": 96,
-   "score": 0.4663,
+   "rank": 95,
+   "score": 0.4566,
    "basis": "T2 non-inference best open item (N): PF1 (G) — measure the CPU-vs-MI210 prefill crossover for the served over-HBM MoE. Artifact",
    "unblocks": [
     "INF-44",
@@ -1785,8 +1735,8 @@
   "RTG-42": {
    "kind": "non-inference",
    "tier": 2,
-   "rank": 97,
-   "score": 0.4607,
+   "rank": 96,
+   "score": 0.4509,
    "basis": "T2 non-inference best open item (N): WP-15.3 — capture two dispatch.v1 frontdoor windows (fit + holdout) after the next stack s",
    "unblocks": [],
    "blocker": ""
@@ -1794,35 +1744,17 @@
   "UFH-16": {
    "kind": "non-inference",
    "tier": 2,
-   "rank": 98,
-   "score": 0.4551,
+   "rank": 97,
+   "score": 0.4451,
    "basis": "T2 non-inference best open item (O): SEC-EXEC-POST-d — Live proofs after the operator's API reload (`orchestrator_stack.py relo",
    "unblocks": [],
-   "blocker": ""
-  },
-  "INF-31": {
-   "kind": "non-inference",
-   "tier": 2,
-   "rank": 99,
-   "score": 0.4494,
-   "basis": "T2 non-inference best open item (N): DSA-IDX.1 — Fix the indexed sparse-attention op interface before D2.4 code (intake-2122#re",
-   "unblocks": [
-    "INF-77",
-    "INF-78",
-    "INF-81",
-    "REV-02",
-    "REV-07",
-    "RTG-30",
-    "UFH-12",
-    "UFH-14"
-   ],
    "blocker": ""
   },
   "RTG-11": {
    "kind": "non-inference",
    "tier": 2,
-   "rank": 100,
-   "score": 0.4438,
+   "rank": 98,
+   "score": 0.4393,
    "basis": "T2 non-inference best open item (N): G5 (G) — extend this replay to N concurrent sessions with tool gaps, before any program-le",
    "unblocks": [],
    "blocker": ""
@@ -1830,8 +1762,8 @@
   "RTG-60": {
    "kind": "non-inference",
    "tier": 2,
-   "rank": 101,
-   "score": 0.4382,
+   "rank": 99,
+   "score": 0.4335,
    "basis": "T2 non-inference best open item (N): BK-1 Write the job script in the filesystem agent's script dir, next to `backup-claude-ses",
    "unblocks": [],
    "blocker": ""
@@ -1839,9 +1771,9 @@
   "RTG-19": {
    "kind": "non-inference",
    "tier": 2,
-   "rank": 102,
-   "score": 0.4326,
-   "basis": "T2 non-inference best open item (N): SSU-F18 — commit the moved-lineup plugin to the orchestrator tests before a disk reclaim r",
+   "rank": 100,
+   "score": 0.4277,
+   "basis": "T2 non-inference best open item (N): SSU-F16 — build the architect_critic CRITIC-SUITE instrument and run it on Qwen3.8-Flash-N",
    "unblocks": [
     "INF-59",
     "INF-77",
@@ -1860,35 +1792,44 @@
   "EVL-44": {
    "kind": "non-inference",
    "tier": 2,
-   "rank": 103,
-   "score": 0.427,
+   "rank": 101,
+   "score": 0.422,
    "basis": "T2 non-inference best open item (N): Close/relocate the LANDED/SUPERSEDED handoffs (v6-consolidation → completed; kb-rag K1–K7 ",
    "unblocks": [],
+   "blocker": ""
+  },
+  "INF-31": {
+   "kind": "non-inference",
+   "tier": 2,
+   "rank": 102,
+   "score": 0.4162,
+   "basis": "T2 non-inference best open item (N): D3 AVX-512BW Lightning Indexer CPU kernel — deferred because D3.1 did not show material in",
+   "unblocks": [
+    "INF-77",
+    "INF-78",
+    "INF-81",
+    "REV-02",
+    "REV-07",
+    "RTG-30",
+    "UFH-12",
+    "UFH-14"
+   ],
    "blocker": ""
   },
   "EVL-03": {
    "kind": "non-inference",
    "tier": 2,
-   "rank": 104,
-   "score": 0.4213,
+   "rank": 103,
+   "score": 0.4104,
    "basis": "T2 non-inference best open item (N): Non-owned audit findings untouched (other owners / other agents' flux files): H2",
-   "unblocks": [],
-   "blocker": ""
-  },
-  "EVL-05": {
-   "kind": "non-inference",
-   "tier": 2,
-   "rank": 105,
-   "score": 0.4157,
-   "basis": "T2 non-inference best open item (N): RE-1 · Math-Verify scoring flip + re-baseline (S, med-ROI; intake-377/379) — the `math_ver",
    "unblocks": [],
    "blocker": ""
   },
   "EVL-20": {
    "kind": "non-inference",
    "tier": 2,
-   "rank": 106,
-   "score": 0.4101,
+   "rank": 104,
+   "score": 0.4046,
    "basis": "T2 non-inference best open item (N): F1 — per-split GPU/CPU timing under static `-cmoe` on one MoE model; report",
    "unblocks": [],
    "blocker": ""
@@ -1896,8 +1837,8 @@
   "EVL-27": {
    "kind": "non-inference",
    "tier": 2,
-   "rank": 107,
-   "score": 0.4045,
+   "rank": 105,
+   "score": 0.3988,
    "basis": "T2 non-inference best open item (N): W1 — D2 PR spearhead (1–2 weeks; specced in llama-cpp-dsa-contribution.md): the prompt-pro",
    "unblocks": [],
    "blocker": ""
@@ -1905,26 +1846,17 @@
   "EVL-42": {
    "kind": "non-inference",
    "tier": 2,
-   "rank": 108,
-   "score": 0.3989,
+   "rank": 106,
+   "score": 0.3931,
    "basis": "T2 non-inference best open item (N): 2a-iii-followon. Bound process/thread COUNT via cgroup v2 `pids.max` — the correct mechani",
-   "unblocks": [],
-   "blocker": ""
-  },
-  "INF-20": {
-   "kind": "non-inference",
-   "tier": 2,
-   "rank": 109,
-   "score": 0.3933,
-   "basis": "T2 non-inference best open item (N): DR-3 — broader K2 admission runner/package: build the dry-run-first K2",
    "unblocks": [],
    "blocker": ""
   },
   "INF-40": {
    "kind": "non-inference",
    "tier": 2,
-   "rank": 110,
-   "score": 0.3876,
+   "rank": 107,
+   "score": 0.3873,
    "basis": "T2 non-inference best open item (N): Registry integration — now UNBLOCKED, and NOT yet done. The prior gate was \"registry",
    "unblocks": [],
    "blocker": ""
@@ -1932,8 +1864,8 @@
   "INF-58": {
    "kind": "non-inference",
    "tier": 2,
-   "rank": 111,
-   "score": 0.382,
+   "rank": 108,
+   "score": 0.3815,
    "basis": "T2 non-inference best open item (O): V9-8. Implement and prospectively ratify the resident promotion fast path described in",
    "unblocks": [],
    "blocker": ""
@@ -1941,8 +1873,8 @@
   "REV-03": {
    "kind": "non-inference",
    "tier": 2,
-   "rank": 112,
-   "score": 0.3764,
+   "rank": 109,
+   "score": 0.3757,
    "basis": "T2 non-inference best open item (O): RC-6a — operator PR + sign-off (human-amendment-only): land the drafted P-REV-1 blocks int",
    "unblocks": [],
    "blocker": ""
@@ -1950,8 +1882,8 @@
   "REV-06": {
    "kind": "non-inference",
    "tier": 2,
-   "rank": 113,
-   "score": 0.3708,
+   "rank": 110,
+   "score": 0.3699,
    "basis": "T2 non-inference best open item (N): LB-1 — Reproduce + attribute the regression: which calls dominate (plan-review prompt coun",
    "unblocks": [],
    "blocker": ""
@@ -1959,8 +1891,8 @@
   "RTG-23": {
    "kind": "non-inference",
    "tier": 2,
-   "rank": 114,
-   "score": 0.3652,
+   "rank": 111,
+   "score": 0.3642,
    "basis": "T2 non-inference best open item (N): W5 — regime-profiled offered load (NEXT INSTRUMENT ERA, pairs with batching",
    "unblocks": [],
    "blocker": ""
@@ -1968,8 +1900,8 @@
   "RTG-48": {
    "kind": "non-inference",
    "tier": 2,
-   "rank": 115,
-   "score": 0.3596,
+   "rank": 112,
+   "score": 0.3584,
    "basis": "T2 non-inference best open item (O): RTG48-C49-COMMENTS-D9 — publish the exact two-file cadence comment correction after D9 ack",
    "unblocks": [
     "RTG-49",
@@ -1981,8 +1913,8 @@
   "RTG-52": {
    "kind": "non-inference",
    "tier": 2,
-   "rank": 116,
-   "score": 0.3539,
+   "rank": 113,
+   "score": 0.3526,
    "basis": "T2 non-inference best open item (N): RTG52-D9-SOURCE — integrate reviewed target-selection and exact assignment-stdin source co",
    "unblocks": [],
    "blocker": ""
@@ -1990,8 +1922,8 @@
   "EVL-13": {
    "kind": "non-inference",
    "tier": 2,
-   "rank": 117,
-   "score": 0.3483,
+   "rank": 114,
+   "score": 0.3468,
    "basis": "T2 non-inference best open item (N): Cluster E — scoring → tracked as EV-CONF in [eval-tower-verification.md](eval-tower-verifi",
    "unblocks": [],
    "blocker": ""
@@ -1999,8 +1931,8 @@
   "EVL-16": {
    "kind": "non-inference",
    "tier": 2,
-   "rank": 118,
-   "score": 0.3427,
+   "rank": 115,
+   "score": 0.341,
    "basis": "T2 non-inference best open item (N): W8b — live candidate evidence after guard deploy: continue W8 candidate attempts under the",
    "unblocks": [],
    "blocker": ""
@@ -2008,8 +1940,8 @@
   "EVL-19": {
    "kind": "non-inference",
    "tier": 2,
-   "rank": 119,
-   "score": 0.3371,
+   "rank": 116,
+   "score": 0.3353,
    "basis": "T2 non-inference best open item (N): R2-current — accrue a current-era, trusted per-question ledger sufficient for a reproducib",
    "unblocks": [],
    "blocker": ""
@@ -2017,8 +1949,8 @@
   "EVL-25": {
    "kind": "non-inference",
    "tier": 2,
-   "rank": 120,
-   "score": 0.3315,
+   "rank": 117,
+   "score": 0.3295,
    "basis": "T2 non-inference best open item (N): W3 — GPU fine-tunes (MI210 present since 2026-07-02; the HW gate is CLEARED. The DATA gate",
    "unblocks": [],
    "blocker": ""
@@ -2026,8 +1958,8 @@
   "INF-19": {
    "kind": "non-inference",
    "tier": 2,
-   "rank": 121,
-   "score": 0.3258,
+   "rank": 118,
+   "score": 0.3237,
    "basis": "T2 non-inference best open item (N): G3-4 — future decision instrument (separate from G3-3). Select and run a decision-grade,",
    "unblocks": [],
    "blocker": ""
@@ -2035,8 +1967,8 @@
   "INF-30": {
    "kind": "non-inference",
    "tier": 2,
-   "rank": 122,
-   "score": 0.3202,
+   "rank": 119,
+   "score": 0.3179,
    "basis": "T2 non-inference best open item (N): Z9 (Z, prerequisite for G18) — write the ~30-line pure-PyTorch constant-decay simple-GLA",
    "unblocks": [],
    "blocker": ""
@@ -2044,8 +1976,8 @@
   "UFH-03": {
    "kind": "non-inference",
    "tier": 2,
-   "rank": 123,
-   "score": 0.3146,
+   "rank": 120,
+   "score": 0.3121,
    "basis": "T2 non-inference best open item (N): S2-CGE-1 — Feed complete, independently verified targets into Memento's existing SFT path ",
    "unblocks": [],
    "blocker": ""
@@ -2053,8 +1985,8 @@
   "EVL-07": {
    "kind": "non-inference",
    "tier": 2,
-   "rank": 124,
-   "score": 0.309,
+   "rank": 121,
+   "score": 0.3064,
    "basis": "T2 non-inference best open item (N): RCP-W1 — Reference-lineup relaunch + preflight: `orchestrator_stack.py` relaunch under thr",
    "unblocks": [],
    "blocker": ""
@@ -2062,8 +1994,8 @@
   "EVL-24": {
    "kind": "non-inference",
    "tier": 2,
-   "rank": 125,
-   "score": 0.3034,
+   "rank": 122,
+   "score": 0.3006,
    "basis": "T2 non-inference best open item (N): W3 — reliability ladder (ongoing): `scripts/lab/promote_job.py` enforcing shadow → reviewe",
    "unblocks": [],
    "blocker": ""
@@ -2071,8 +2003,8 @@
   "EVL-30": {
    "kind": "non-inference",
    "tier": 2,
-   "rank": 126,
-   "score": 0.2978,
+   "rank": 123,
+   "score": 0.2948,
    "basis": "T2 non-inference best open item (N): Record the `epyc-orchestrator` `origin/main` red-test baseline so sessions stop reading it",
    "unblocks": [],
    "blocker": ""
@@ -2080,8 +2012,8 @@
   "INF-09": {
    "kind": "non-inference",
    "tier": 2,
-   "rank": 127,
-   "score": 0.2921,
+   "rank": 124,
+   "score": 0.289,
    "basis": "T2 non-inference best open item (N): PC-4 — experimental qwen35 prefill barrier/graph-fusion prototype:",
    "unblocks": [],
    "blocker": ""
@@ -2089,8 +2021,8 @@
   "REV-05": {
    "kind": "non-inference",
    "tier": 2,
-   "rank": 128,
-   "score": 0.2865,
+   "rank": 125,
+   "score": 0.2832,
    "basis": "T2 non-inference best open item (N): HG-1 — Threshold policy from H4/H5 reliability-by-confidence-bucket curves (per-domain).",
    "unblocks": [],
    "blocker": ""
@@ -2098,8 +2030,8 @@
   "RTG-03": {
    "kind": "non-inference",
    "tier": 2,
-   "rank": 129,
-   "score": 0.2809,
+   "rank": 126,
+   "score": 0.2775,
    "basis": "T2 non-inference best open item (N): [C1 fix #2] Manifest writer intent-not-realized gap — writer lives in",
    "unblocks": [],
    "blocker": ""
@@ -2107,8 +2039,8 @@
   "RTG-06": {
    "kind": "non-inference",
    "tier": 2,
-   "rank": 130,
-   "score": 0.2753,
+   "rank": 127,
+   "score": 0.2717,
    "basis": "T2 non-inference best open item (O): W4 — promotion workflow + first cohort (recurring, ~half day/month): monthly pass per §C.3",
    "unblocks": [],
    "blocker": ""
@@ -2116,8 +2048,8 @@
   "RTG-07": {
    "kind": "non-inference",
    "tier": 2,
-   "rank": 131,
-   "score": 0.2697,
+   "rank": 128,
+   "score": 0.2659,
    "basis": "T2 non-inference best open item (N): Q4 — does the interference model need E5 (NUMA×batch) first? STILL OPEN, but the premise",
    "unblocks": [],
    "blocker": ""
@@ -2125,17 +2057,17 @@
   "RTG-38": {
    "kind": "non-inference",
    "tier": 2,
-   "rank": 132,
-   "score": 0.264,
-   "basis": "T2 non-inference best open item (N): SS-BENCH-GATE — a stack reload must check for a running CPU bench, not just autopilot.",
+   "rank": 129,
+   "score": 0.2601,
+   "basis": "T2 non-inference best open item (N): Finish W4 swap-CI so representative stack changes prove generated",
    "unblocks": [],
    "blocker": ""
   },
   "RTG-47": {
    "kind": "non-inference",
    "tier": 2,
-   "rank": 133,
-   "score": 0.2584,
+   "rank": 130,
+   "score": 0.2543,
    "basis": "T2 non-inference best open item (N): Re-eyeball the tap's ACTIVE/streaming card path + live ↑/↓ counters once inference actuall",
    "unblocks": [],
    "blocker": ""
@@ -2143,8 +2075,8 @@
   "RTG-51": {
    "kind": "non-inference",
    "tier": 2,
-   "rank": 134,
-   "score": 0.2528,
+   "rank": 131,
+   "score": 0.2486,
    "basis": "T2 non-inference best open item (N): Encode the authority split in Coordinator and Inference role files.",
    "unblocks": [],
    "blocker": ""
@@ -2152,8 +2084,8 @@
   "EVL-38": {
    "kind": "non-inference",
    "tier": 2,
-   "rank": 135,
-   "score": 0.2472,
+   "rank": 132,
+   "score": 0.2428,
    "basis": "T2 non-inference best open item (N): Bring epyc-llama Standardized/L3 -> L4 (incremental_validation, generated_docs, health_aut",
    "unblocks": [],
    "blocker": ""
@@ -2161,8 +2093,8 @@
   "RTG-13": {
    "kind": "non-inference",
    "tier": 2,
-   "rank": 136,
-   "score": 0.2416,
+   "rank": 133,
+   "score": 0.237,
    "basis": "T2 non-inference best open item (N): W6 — strategy provenance (impl 4.2, ~2 days, needs W1): `strategies.db` rows gain `evidenc",
    "unblocks": [],
    "blocker": ""
@@ -2170,26 +2102,17 @@
   "RTG-49": {
    "kind": "non-inference",
    "tier": 2,
-   "rank": 137,
-   "score": 0.236,
+   "rank": 134,
+   "score": 0.2312,
    "basis": "T2 non-inference best open item (N): FM-2 — AdaMAST fixed-catalog grading pilot. Stage 1 (now): `adamast judge --taxonomy",
-   "unblocks": [],
-   "blocker": ""
-  },
-  "EVL-41": {
-   "kind": "non-inference",
-   "tier": 2,
-   "rank": 138,
-   "score": 0.2303,
-   "basis": "T2 non-inference best open item (O): ESCALATED, NOT PATCHED — needs an operator/coordinator call before the guard lands.",
    "unblocks": [],
    "blocker": ""
   },
   "INF-28": {
    "kind": "non-inference",
    "tier": 2,
-   "rank": 139,
-   "score": 0.2247,
+   "rank": 135,
+   "score": 0.2254,
    "basis": "T2 non-inference best open item (N): L-9P — conditional CPU throughput/config discovery. The prepared",
    "unblocks": [],
    "blocker": ""
@@ -2197,8 +2120,8 @@
   "INF-29": {
    "kind": "non-inference",
    "tier": 2,
-   "rank": 140,
-   "score": 0.2191,
+   "rank": 136,
+   "score": 0.2197,
    "basis": "T2 non-inference best open item (N): CPU15-REVAL — Fresh canonical matrix if reopening: before enabling EP anywhere, run:",
    "unblocks": [],
    "blocker": ""
@@ -2206,8 +2129,8 @@
   "INF-49": {
    "kind": "non-inference",
    "tier": 2,
-   "rank": 141,
-   "score": 0.2135,
+   "rank": 137,
+   "score": 0.2139,
    "basis": "T2 non-inference best open item (N): Re-evaluate Sarathi-Serve chunked-prefill for the eval-batch serving class (batched-decode",
    "unblocks": [],
    "blocker": ""
@@ -2215,8 +2138,8 @@
   "RTG-20": {
    "kind": "non-inference",
    "tier": 2,
-   "rank": 142,
-   "score": 0.2079,
+   "rank": 138,
+   "score": 0.2081,
    "basis": "T2 non-inference best open item (O): (620 follow-up — deferred, operator-gated) Wire a compile-blocking strict known-gap for nu",
    "unblocks": [],
    "blocker": ""
@@ -2224,8 +2147,8 @@
   "RTG-45": {
    "kind": "non-inference",
    "tier": 2,
-   "rank": 143,
-   "score": 0.2022,
+   "rank": 139,
+   "score": 0.2023,
    "basis": "T2 non-inference best open item (N): Monitor post-enable live telemetry for unexpected domain regressions, latency regressions,",
    "unblocks": [],
    "blocker": ""
@@ -2233,8 +2156,8 @@
   "RTG-39": {
    "kind": "non-inference",
    "tier": 7,
-   "rank": 144,
-   "score": 0.1966,
+   "rank": 140,
+   "score": 0.1965,
    "basis": "T7 non-inference best open item (N): BLOCKED: gated on strand-rust-coder-rustevo2-verification Phase B Pass@1",
    "unblocks": [],
    "blocker": "text names a blocker: BLOCKED"
@@ -2242,9 +2165,9 @@
   "RTG-46": {
    "kind": "non-inference",
    "tier": 7,
-   "rank": 145,
-   "score": 0.191,
-   "basis": "T7 non-inference best open item (O): BACKLOG-PRIORITY — land the operator-method total order (filed 2026-10-24, workspace-58). ",
+   "rank": 141,
+   "score": 0.1908,
+   "basis": "T7 non-inference best open item (O): BACKLOG-PRIORITY-SKILL — operator idea (2026-10-24): if the ranking proves good, turn it i",
    "unblocks": [
     "EVL-49"
    ],
@@ -2253,8 +2176,8 @@
   "EVL-01": {
    "kind": "non-inference",
    "tier": 7,
-   "rank": 146,
-   "score": 0.1854,
+   "rank": 142,
+   "score": 0.185,
    "basis": "T7 non-inference best open item (O): AFC-P5.E3 — run the n=30 compliance campaign. READY but HELD (operator: \"I will tell",
    "unblocks": [],
    "blocker": "operator decision or approval pending"
@@ -2262,8 +2185,8 @@
   "EVL-49": {
    "kind": "non-inference",
    "tier": 7,
-   "rank": 147,
-   "score": 0.1798,
+   "rank": 143,
+   "score": 0.1792,
    "basis": "T7 non-inference best open item (N): S-04 — Capture contemporaneous E5 Stage-B readiness before future execution. The July stag",
    "unblocks": [],
    "blocker": "operator decision or approval pending"
@@ -2271,8 +2194,8 @@
   "INF-03": {
    "kind": "non-inference",
    "tier": 7,
-   "rank": 148,
-   "score": 0.1742,
+   "rank": 144,
+   "score": 0.1734,
    "basis": "T7 non-inference best open item (I): INF03-REGAUDIT-RUNNER — PROPOSED: bind the MMQ timing runner to the exact passing static I",
    "unblocks": [],
    "blocker": "operator ruling: parked 2026-09-27"
@@ -2280,8 +2203,8 @@
   "INF-37": {
    "kind": "non-inference",
    "tier": 7,
-   "rank": 149,
-   "score": 0.1685,
+   "rank": 145,
+   "score": 0.1676,
    "basis": "T7 non-inference best open item (N): INF37-MOE-Q8-FUSION — Qualify and implement a correctness-gated multi-token MoE GLU fusion",
    "unblocks": [],
    "blocker": "operator decision or approval pending"
@@ -2289,8 +2212,8 @@
   "RTG-09": {
    "kind": "non-inference",
    "tier": 7,
-   "rank": 150,
-   "score": 0.1629,
+   "rank": 146,
+   "score": 0.1618,
    "basis": "T7 non-inference best open item (N): URE-2a — Non-authoritative live cascade shadow. After CJ-16 — now a LOCAL judge cascade (o",
    "unblocks": [
     "INF-78",
@@ -2307,8 +2230,8 @@
   "RTG-30": {
    "kind": "non-inference",
    "tier": 7,
-   "rank": 151,
-   "score": 0.1573,
+   "rank": 147,
+   "score": 0.1561,
    "basis": "T7 non-inference best open item (N): RI-18c — apply the DROP (clause 1's pre-registered action). (filed 2026-10-03, from the RI",
    "unblocks": [],
    "blocker": "DS41-1017 hold (operator 2026-10-22: only the noise floor until AK kernel work)"
@@ -2316,8 +2239,8 @@
   "RTG-35": {
    "kind": "non-inference",
    "tier": 7,
-   "rank": 152,
-   "score": 0.1517,
+   "rank": 148,
+   "score": 0.1503,
    "basis": "T7 non-inference best open item (N): REGION-SIBLING-1 — `region-lock` must map SMT-sibling CPUs to their physical core's region",
    "unblocks": [],
    "blocker": "operator decision or approval pending"
@@ -2325,8 +2248,8 @@
   "RTG-36": {
    "kind": "non-inference",
    "tier": 7,
-   "rank": 153,
-   "score": 0.1461,
+   "rank": 149,
+   "score": 0.1445,
    "basis": "T7 non-inference best open item (N): SCG-PRIORS-WARM — `stack_priors` must not classify WARM-tier roles as `live_stack`. (filed",
    "unblocks": [
     "INF-59",
@@ -2346,8 +2269,8 @@
   "UFH-11": {
    "kind": "non-inference",
    "tier": 7,
-   "rank": 154,
-   "score": 0.1404,
+   "rank": 150,
+   "score": 0.1387,
    "basis": "T7 non-inference best open item (O): WEB-1 — operator publication choice: provide the contact destination (email, booking link,",
    "unblocks": [],
    "blocker": "operator decision or approval pending"
@@ -2355,8 +2278,8 @@
   "UFH-13": {
    "kind": "non-inference",
    "tier": 7,
-   "rank": 155,
-   "score": 0.1348,
+   "rank": 151,
+   "score": 0.1329,
    "basis": "T7 non-inference best open item (N): TE-3 — build and freeze the manifest (zero inference).",
    "unblocks": [],
    "blocker": "PARKED/FROZEN by operator (UFH-13 parked until 2nd MI210 + swapped-stack autopilot)"
@@ -2364,8 +2287,8 @@
   "EVL-11": {
    "kind": "non-inference",
    "tier": 7,
-   "rank": 156,
-   "score": 0.1292,
+   "rank": 152,
+   "score": 0.1272,
    "basis": "T7 non-inference best open item (N): BLOCKED: needs Harbor adapter + TB Core baseline (agent-world-env-synthesis) before MR/TB ",
    "unblocks": [],
    "blocker": "external: upstream PR / artifact / disk reclaim"
@@ -2373,8 +2296,8 @@
   "EVL-15": {
    "kind": "non-inference",
    "tier": 7,
-   "rank": 157,
-   "score": 0.1236,
+   "rank": 153,
+   "score": 0.1214,
    "basis": "T7 non-inference best open item (N): (Z) Fix the llama-server log retention hole. A correctness question about production",
    "unblocks": [],
    "blocker": "operator decision or approval pending"
@@ -2382,17 +2305,17 @@
   "EVL-21": {
    "kind": "non-inference",
    "tier": 7,
-   "rank": 158,
-   "score": 0.118,
-   "basis": "T7 non-inference best open item (O): G1 · Ratify P-GPU-1 (operator; measurement trust boundary — human-amendment-only). [findin",
+   "rank": 154,
+   "score": 0.1156,
+   "basis": "T7 non-inference best open item (N): G2 · Canonical-tree HIP build + `qwen35moe`/`qwen3next` op-coverage smoke (no window neede",
    "unblocks": [],
    "blocker": "operator decision or approval pending"
   },
   "EVL-26": {
    "kind": "non-inference",
    "tier": 7,
-   "rank": 159,
-   "score": 0.1124,
+   "rank": 155,
+   "score": 0.1098,
    "basis": "T7 non-inference best open item (O): W2 — the job (half day): `scripts/backup/backup_critical.sh` — restic preferred (dedupe+en",
    "unblocks": [],
    "blocker": "operator decision or approval pending"
@@ -2400,8 +2323,8 @@
   "EVL-31": {
    "kind": "non-inference",
    "tier": 7,
-   "rank": 160,
-   "score": 0.1067,
+   "rank": 156,
+   "score": 0.104,
    "basis": "T7 non-inference best open item (N): If the repo exists but no GGUF is available, convert from HF weights: `convert_hf_to_gguf.",
    "unblocks": [],
    "blocker": "operator decision or approval pending"
@@ -2409,8 +2332,8 @@
   "EVL-32": {
    "kind": "non-inference",
    "tier": 7,
-   "rank": 161,
-   "score": 0.1011,
+   "rank": 157,
+   "score": 0.0983,
    "basis": "T7 non-inference best open item (O): Scope decision (operator): is video generation a product need at all? If not, close this",
    "unblocks": [],
    "blocker": "operator decision or approval pending"
@@ -2418,8 +2341,8 @@
   "EVL-43": {
    "kind": "non-inference",
    "tier": 7,
-   "rank": 162,
-   "score": 0.0955,
+   "rank": 158,
+   "score": 0.0925,
    "basis": "T7 non-inference best open item (N): 0.1 Catalogue GPT-4.1 call sites: clone `github.com/stanford-oval/sliders` (MIT) into a sc",
    "unblocks": [],
    "blocker": "operator decision or approval pending"
@@ -2427,8 +2350,8 @@
   "EVL-45": {
    "kind": "non-inference",
    "tier": 7,
-   "rank": 163,
-   "score": 0.0899,
+   "rank": 159,
+   "score": 0.0867,
    "basis": "T7 non-inference best open item (O): Phase B single-instance RustEvo2 bench (USER APPROVAL REQUIRED) - Strand, Qwen2.5-Coder-14",
    "unblocks": [
     "RTG-39"
@@ -2438,8 +2361,8 @@
   "INF-04": {
    "kind": "non-inference",
    "tier": 7,
-   "rank": 164,
-   "score": 0.0843,
+   "rank": 160,
+   "score": 0.0809,
    "basis": "T7 non-inference best open item (O): When evaluating AngelSlim compression, include the Hy3-FP8 flagship-MoE case as a test vec",
    "unblocks": [],
    "blocker": "external: upstream PR / artifact / disk reclaim"
@@ -2447,42 +2370,26 @@
   "INF-45": {
    "kind": "non-inference",
    "tier": 7,
-   "rank": 165,
-   "score": 0.0787,
-   "basis": "T7 non-inference best open item (N): Half vs full: a full instance (0-95) overlaps BOTH halves by construction.",
+   "rank": 161,
+   "score": 0.0751,
+   "basis": "T7 non-inference best open item (N): Note this regression is independent of ngram — it reproduces on `draft-mtp`",
    "unblocks": [],
    "blocker": "operator stack bring-up event (stack is DOWN)"
   },
   "INF-46": {
    "kind": "non-inference",
    "tier": 7,
-   "rank": 166,
-   "score": 0.073,
+   "rank": 162,
+   "score": 0.0694,
    "basis": "T7 non-inference best open item (O): P6b Operator-gated fresh-v8-experimental model-load + gate bench on `unsloth/Qwen3.6-35B-A",
    "unblocks": [],
    "blocker": "operator decision or approval pending"
   },
-  "INF-63": {
-   "kind": "non-inference",
-   "tier": 7,
-   "rank": 167,
-   "score": 0.0674,
-   "basis": "T7 non-inference best open item (O): Re-acquisition decision: re-download the pinned FP8 checkpoint (revision `f88480ebce48…`, ",
-   "unblocks": [
-    "INF-70",
-    "INF-72",
-    "INF-73",
-    "INF-74",
-    "INF-75",
-    "INF-81"
-   ],
-   "blocker": "external: upstream PR / artifact / disk reclaim"
-  },
   "REV-02": {
    "kind": "non-inference",
    "tier": 7,
-   "rank": 168,
-   "score": 0.0618,
+   "rank": 163,
+   "score": 0.0636,
    "basis": "T7 non-inference best open item (I): GC-1a — Strict-IF / typed-emission claim-grade gate (P-REV-1): rerun on the approved claim",
    "unblocks": [
     "REV-07"
@@ -2492,8 +2399,8 @@
   "REV-09": {
    "kind": "non-inference",
    "tier": 7,
-   "rank": 169,
-   "score": 0.0562,
+   "rank": 164,
+   "score": 0.0578,
    "basis": "T7 non-inference best open item (O): RA-13a — blind read-back pilot. HARNESS BUILT 2026-09-07 (`scripts/reviewer/blind_readback",
    "unblocks": [],
    "blocker": "operator decision or approval pending"
@@ -2501,8 +2408,8 @@
   "RTG-24": {
    "kind": "non-inference",
    "tier": 7,
-   "rank": 170,
-   "score": 0.0506,
+   "rank": 165,
+   "score": 0.052,
    "basis": "T7 non-inference best open item (O): P0.1 operator run/pause decision on autopilot candidate species",
    "unblocks": [],
    "blocker": "operator decision or approval pending"
@@ -2510,8 +2417,8 @@
   "RTG-29": {
    "kind": "non-inference",
    "tier": 7,
-   "rank": 171,
-   "score": 0.0449,
+   "rank": 166,
+   "score": 0.0462,
    "basis": "T7 non-inference best open item (N): Step 4/5 GAT + SkillBank retrains - only if Fable 5 freeze gate (DAR-1 regret >=5%) justif",
    "unblocks": [],
    "blocker": "operator decision or approval pending"
@@ -2519,8 +2426,8 @@
   "RTG-32": {
    "kind": "non-inference",
    "tier": 7,
-   "rank": 172,
-   "score": 0.0393,
+   "rank": 167,
+   "score": 0.0405,
    "basis": "T7 non-inference best open item (I): T0.1 — Confirm AutoPilot is stopped before touching `scripts/autopilot/*` or the registry.",
    "unblocks": [],
    "blocker": "operator decision or approval pending"
@@ -2528,8 +2435,8 @@
   "RTG-33": {
    "kind": "non-inference",
    "tier": 7,
-   "rank": 173,
-   "score": 0.0337,
+   "rank": 168,
+   "score": 0.0347,
    "basis": "T7 non-inference best open item (N): SX-5: Load test — Folded into AR-3 Package D. Web_research sentinel suite (50q) provides r",
    "unblocks": [],
    "blocker": "external: upstream PR / artifact / disk reclaim"
@@ -2537,8 +2444,8 @@
   "RTG-40": {
    "kind": "non-inference",
    "tier": 7,
-   "rank": 174,
-   "score": 0.0281,
+   "rank": 169,
+   "score": 0.0289,
    "basis": "T7 non-inference best open item (N): TR-4.3 Multi-turn composition: if our orchestrator runs multi-turn sessions, ensure subseq",
    "unblocks": [],
    "blocker": "PARKED/FROZEN by operator (UFH-13 parked until 2nd MI210 + swapped-stack autopilot)"
@@ -2546,17 +2453,17 @@
   "RTG-55": {
    "kind": "non-inference",
    "tier": 7,
-   "rank": 175,
-   "score": 0.0225,
-   "basis": "T7 non-inference best open item (O): MHS-3d — operator RATIFY of the v10 episodic re-pin (`RATIFY-V10-EPISODIC-REPIN-20260917`)",
+   "rank": 170,
+   "score": 0.0231,
+   "basis": "T7 non-inference best open item (N): MHS-6 (record, no work) — Optimizer budget shape. Record it as \"constant in training-set",
    "unblocks": [],
    "blocker": "operator decision or approval pending"
   },
   "RTG-18": {
    "kind": "non-inference",
    "tier": 7,
-   "rank": 176,
-   "score": 0.0169,
+   "rank": 171,
+   "score": 0.0173,
    "basis": "T7 non-inference best open item (N): Identify the change type: role model swap, shared-server consolidation, role retirement, t",
    "unblocks": [],
    "blocker": "an explicit DO-NOT-DISPATCH guard covers THIS box (§ Update Checklist For Any Model-Stack Change) — this is a reusable c"
@@ -2564,8 +2471,8 @@
   "INF-52": {
    "kind": "non-inference",
    "tier": 7,
-   "rank": 177,
-   "score": 0.0112,
+   "rank": 172,
+   "score": 0.0116,
    "basis": "T7 non-inference best open item (N): Gate A — Pretrained checkpoint of a model we serve (Qwen2.5/3.5/3.6 family, or any base we",
    "unblocks": [],
    "blocker": "external: upstream PR / artifact / disk reclaim"
@@ -2573,8 +2480,8 @@
   "INF-53": {
    "kind": "non-inference",
    "tier": 7,
-   "rank": 178,
-   "score": 0.0056,
+   "rank": 173,
+   "score": 0.0058,
    "basis": "T7 non-inference best open item (N): W2 — checkpoint gate + Q4 quality validation (bench-only when gate fires): watch for a Q4_",
    "unblocks": [],
    "blocker": "external: upstream PR / artifact / disk reclaim"
@@ -2582,7 +2489,7 @@
   "RTG-17": {
    "kind": "non-inference",
    "tier": 7,
-   "rank": 179,
+   "rank": 174,
    "score": 0.0,
    "basis": "T7 non-inference best open item (N): W5 — GATED tail: unified cascade (Phase 3) (2–3 weeks IF ever opened): one calibrated bili",
    "unblocks": [],

@@ -36,7 +36,7 @@ missed (measured: G9-disk sat unnoticed for two weeks and governed 227 GB).
 
 | ID | Decision | Owner | Open since |
 |----|----------|-------|-----------|
-| OP-KEEPER-V6-PIN | Approve pinning `compute-flags/ws58-calendar-keeper-v6.sh` (sha256 702a3931…d6737b99) in `scripts/hooks/destructive_scratch_pins.json`, so the idle reap vaults code before it deletes (REAP_IDLE back to 1). | [non-inference-backlog.md](non-inference-backlog.md) LOOP-24 | 2026-10-28 |
+| OP-OPENCODE-RECLAIM | Reclaim ~26 GB of opencode DB: a live copy plus hourly root snapshots (not growing; last use 10-20). Options: keep newest snapshot only, or drop the live copy. | [non-inference-backlog.md](non-inference-backlog.md) LOOP-34 | 2026-10-29 |
 | OP-HOSTMEM | Apply RATIFY-HOST-MEMORY-RULES-20261021 (3 host-safety rules + INC entry) from a fresh origin/main worktree, then the printed host earlyoom drop-in (dry-run gate first). | [non-inference-backlog.md](non-inference-backlog.md) NIB2-98 | 2026-10-21 |
 | OP-OPCONST-3C4 | After OP-HOSTMEM lands: ratify two one-line OPERATING_CONSTRAINTS additions (compute-filler guide pointer; subagent close-out wires measurements into the belief kernel). Main prepares the bundle. | [CURRENT-CAMPAIGN.md](CURRENT-CAMPAIGN.md) operator items | 2026-10-21 |
 | OP-DSPARK-RM | Delete `/mnt/raid0/llm/models/deepseek-ai/DeepSeek-V4.1-Flash-DSpark.gguf` (10.0 GB, unmapped, no live refs; the agent's rm was blocked by the classifier), then the graveyard row. | [deepseek-v41-flash-evaluation.md](deepseek-v41-flash-evaluation.md) DS41-W7.2 | 2026-10-22 |
@@ -140,11 +140,11 @@ nobody is moving.
 <!-- BEGIN GENERATED index_state -->
 | Domain | Handoffs | Open | Blocked | Oldest advance |
 |--------|----------|------|---------|----------------|
-| inference-research | 60 | 1074 | 58 | 2026-07-29 |
+| inference-research | 59 | 1074 | 58 | 2026-07-29 |
 | pipeline-integration | 5 | 69 | 1 | 2026-08-25 |
 | research-evaluation | 41 | 630 | 16 | 2026-07-29 |
 | reviewer-control-plane | 6 | 26 | 12 | 2026-07-29 |
-| routing-and-optimization | 53 | 693 | 17 | 2026-07-29 |
+| routing-and-optimization | 53 | 695 | 17 | 2026-07-29 |
 | user-facing-harness | 14 | 135 | 17 | 2026-08-12 |
 <!-- END GENERATED index_state -->
 
