@@ -172,6 +172,45 @@ def test_ingest_wires_the_source(tmp_path, producer):
     assert report["rows_projected"] == len(rows)
 
 
+def test_discovery_includes_fixed_arm_layout_without_unbounded_recursion(tmp_path):
+    root_sidecar = tmp_path / "root.belief_measurements.jsonl"
+    root_sidecar.touch()
+    arms = []
+    for run in ("a0", "a3-low-duty", "a3-saturated"):
+        directory = tmp_path / "arms" / run
+        directory.mkdir(parents=True)
+        for name in ("1-base", "2-cand", "3-base"):
+            path = directory / f"{name}.belief_measurements.jsonl"
+            path.touch()
+            arms.append(path)
+    ignored = tmp_path / "arms" / "a0" / "deeper"
+    ignored.mkdir()
+    (ignored / "not-an-arm.belief_measurements.jsonl").touch()
+    (tmp_path / "arms" / "a0" / "directory.belief_measurements.jsonl").mkdir()
+    source = SOURCES["embedder-placement-gate"]
+    assert source.units(tmp_path) == sorted([root_sidecar, *arms])
+    assert source.units(arms[0]) == [arms[0]]
+
+
+def test_nested_arm_projection_and_named_refusal_remain_read_only(tmp_path, producer):
+    arm = tmp_path / "arms" / "run"
+    arm.mkdir(parents=True)
+    sidecar, rows, _ = write_capture(arm, producer, name="1-base.json")
+    bad = arm / "2-cand.belief_measurements.jsonl"
+    bad.write_text("not-json\n")
+    ledger_path = tmp_path / "unwritten-ledger.jsonl"
+    report = ingest(Ledger(ledger_path), "embedder-placement-gate", [tmp_path],
+                    as_of=AS_OF, dry_run=True)
+    assert report["units_matched"] == 2
+    assert report["units_projected"] == 1
+    assert report["rows_projected"] == len(rows)
+    assert len(report["refused"]) == 1
+    assert report["refused"][0]["unit"] == str(bad)
+    assert "unreadable" in report["refused"][0]["reason"]
+    assert not ledger_path.exists()
+    assert sidecar.exists()
+
+
 def test_phase0_records_without_sidecars_yield_nothing(tmp_path, producer):
     """The 2026-09-26 Phase-0 JSON files carry no sidecar: zero claims, never backfilled."""
     (tmp_path / "post-20260926.json").write_text('{"schema": "epyc.embedder_placement_gate.v1"}')

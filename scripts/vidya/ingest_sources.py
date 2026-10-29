@@ -332,7 +332,7 @@ SOURCES: dict[str, Source] = {s.name: s for s in (
                 "`scripts/benchmark/pb_hol_1`); one claim per arm comparison with samples; retrofit",
            task="P1-L"),
     Source("embedder-placement-gate", "embedder_placement_gate",
-           _files("*.belief_measurements.jsonl"),
+           _files("*.belief_measurements.jsonl", "arms/*/*.belief_measurements.jsonl"),
            default=ORCHESTRATOR / "data/embedder_placement",
            note="UFH-12 placement gate sidecars (`<record>.belief_measurements.jsonl`); the "
                 "2026-09-26 Phase-0 records have none and yield no claims",
