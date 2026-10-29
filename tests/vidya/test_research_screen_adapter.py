@@ -398,3 +398,53 @@ def test_routing_native_capture_projection_and_refusals(tmp_path):
     payload["profile"]["raw_decisions"] = payload["raw_outputs"]
     with pytest.raises(ct.ProjectionError, match="unobserved"):
         seal(tmp_path, payload)
+
+
+def test_routing_distinct_question_identity_and_duplicate_refusal(tmp_path):
+    choice = {"role": "frontdoor", "observed": True, "outcome": 1.0}
+    decisions = {name: choice for name in ("mlp", "hgb", "role_mean", "shuffled")}
+    rows = [
+        {
+            "item_id": name,
+            "qid": name,
+            "group_id": f"group-{name}",
+            "status": "scored",
+            "decisions": decisions,
+        }
+        for name in ("q1", "q2")
+    ]
+    payload = body(tmp_path, "typed_decision_shadow")
+    payload["raw_outputs"] = evidence(tmp_path, "items.jsonl", jsonl(rows), rows=2)
+    payload["counts"] = {
+        "eligible": 2,
+        "scored": 2,
+        "failure": 0,
+        "invalid": 0,
+        "abstention": 0,
+    }
+    payload["profile"] = {
+        "kind": "observed_outcome_routing",
+        "raw_decisions": payload["raw_outputs"],
+    }
+    for key in (
+        "cache",
+        "labels",
+        "partition",
+        "recipe",
+        "role_mapping",
+        "producer_source",
+        "pool",
+        "fit",
+        "report",
+    ):
+        payload["profile"][key] = evidence(tmp_path, f"routing-{key}.json", b"{}\n")
+    payload["claim"]["metric"] = "paired_observed_questions"
+    payload["claim"]["value"] = 2
+    payload["producer"]["revision"] = payload["profile"]["producer_source"]["sha256"]
+    path = seal(tmp_path, payload)
+    assert len(screen.native_rows(path)) == 1
+    rows[1] = dict(rows[0])
+    payload["raw_outputs"] = evidence(tmp_path, "duplicates.jsonl", jsonl(rows), rows=2)
+    payload["profile"]["raw_decisions"] = payload["raw_outputs"]
+    with pytest.raises(ct.ProjectionError, match="duplicate"):
+        seal(tmp_path, payload)
