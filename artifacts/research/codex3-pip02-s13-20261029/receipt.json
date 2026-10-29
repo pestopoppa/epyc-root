@@ -1,0 +1,848 @@
+{
+  "ended": "rc=0 time=2026-10-29T20:44:13Z reason=complete",
+  "ended_sha256": "8dae940a82c14b62e03e83b8ef780ffbf3605ce6c1a436dec99a145fe72b3274",
+  "id": "codex3-pip02-fresh-odl-generic-s13-20261029",
+  "records": [
+    {
+      "claim_tuple_sha256": "4e457126b56e8921485d192f227f07e0866c6eec0aca19dac7d17755c78bd330",
+      "done_sha256": "878bc45027ba98c6784900129e8836fbe7060ceb63abbc45979f672675857c48",
+      "result": {
+        "children_drained": true,
+        "partial": false,
+        "prediction_sha256": "956e71a0aa971fbc1d51fc57617cd1846c9cb2c43d9dc640d1d65bececb5fb8f",
+        "rc": 0,
+        "reason": "native page produced"
+      },
+      "result_sha256": "3d0c27e351ce4ed0e163ca39198a453bfc9679619dd5c903c2e89f828751fae2",
+      "shard_position": 325,
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=0-23 start=2026-10-29T20:22Z end=2026-10-29T21:22Z\n",
+        "input_sha256": "09ce921670b920a9bd3006d19c649ed5664467da94518691ca4605f88ea57ae2",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 369297,
+          "image": "yanbaor2_930d8c81854d7450cd35af7b050fed88e4e461b4f0ac0dab07e3232a4e703a06.pdf_14.jpg",
+          "index": 879,
+          "language": "english",
+          "sha256": "27698e90614d7058fdb31798e694d5d16ddb9c9b6a535e435f498b268a3fa26b",
+          "table_count": 0
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793305402.8023295
+      },
+      "start_sha256": "96d65c0b84c9d910e5a42120d6731a8f9d6b08166b11084cf5bfccdd39539096"
+    },
+    {
+      "claim_tuple_sha256": "55d7adb50d233b70852c05b53ce626f74c7782bbb06e205cb2823852b7cacb24",
+      "done_sha256": "8ea1fc1b48a803dc6004018b7e29ac760f190c16e98a5564cc4856843f9df371",
+      "result": {
+        "children_drained": true,
+        "partial": false,
+        "prediction_sha256": "c85192ba3494ff66d1a692eb8c76a7d7276d8a0705c385a4cd4082f998f262d3",
+        "rc": 0,
+        "reason": "native page produced"
+      },
+      "result_sha256": "f4d3d547d13e63bc09c683879f8f49d7b35dcb60bb1563c0a71cf5a1058db47c",
+      "shard_position": 326,
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=0-23 start=2026-10-29T20:22Z end=2026-10-29T21:22Z\n",
+        "input_sha256": "8245cc0d5e2d81ed7de9d5b284e764a9f6206f21c86b21e68d661d48eb4e98ca",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 281152,
+          "image": "yanbaor2_b997efc056ce194205f46dbd1c669eb32da025c4a3055c88d5f19ce434040b7b.pdf_46.jpg",
+          "index": 880,
+          "language": "english",
+          "sha256": "6fd8a4562c41e558375db269c302eaa0ca42cd3726c0b143a1c78d3f712498bf",
+          "table_count": 0
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793305446.5653324
+      },
+      "start_sha256": "0dbce25bc592ba3f87d3d60e5c7f0ce862b3da41f32e7fde412161d92b483787"
+    },
+    {
+      "claim_tuple_sha256": "814f2dea870abef578f9283b5e516aa5c3c3fd7d28ec159caefa1e4f4e2d71a4",
+      "done_sha256": "9f7ba38b9928dea3ae014851f79cda5fdfe7b50e6ad42520774250fbd93952fd",
+      "result": {
+        "children_drained": true,
+        "partial": false,
+        "prediction_sha256": "a9931a23b829c8d0c12f413f7066a6e6f1fb67ef3429031ed1ca3390c7f27170",
+        "rc": 0,
+        "reason": "native page produced"
+      },
+      "result_sha256": "0f53a03b4984028562bc7939f72f10d7e168d28b591dc08da5af3d69fdfc6b7b",
+      "shard_position": 327,
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=0-23 start=2026-10-29T20:22Z end=2026-10-29T21:22Z\n",
+        "input_sha256": "2541e092841821de47b11e4b5e2ca63e56d6dc1144edbd9749f66d0c10d55ee6",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 505529,
+          "image": "yanbaor2_ey-digital-state-tax-article.pdf_0.jpg",
+          "index": 888,
+          "language": "english",
+          "sha256": "e5075e9524c1e959c5b3ad81df753cb46fd3b99f94d0b5853b0d2e99ad542924",
+          "table_count": 0
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793305486.6922843
+      },
+      "start_sha256": "faa628cb039c97ad254252adb8256b9064193b1712820b1e5a498775f7529e7b"
+    },
+    {
+      "claim_tuple_sha256": "6736a152093a749f68739ce8792eb256b06f6891e8318d77c2df8634dbd4b136",
+      "done_sha256": "bb77aef1c637b8e8bcdb2ede24706b6ff17c5a168efa659afd1c2c20c721e9cd",
+      "result": {
+        "children_drained": true,
+        "partial": false,
+        "prediction_sha256": "e0f9172029167311207e676b75b2156e382c799d244768a5a7d4fe245e6d55dc",
+        "rc": 0,
+        "reason": "native page produced"
+      },
+      "result_sha256": "a9e29de2d25ff08427df9bbd2e8ab02a7c714b9bb6860338972d03a0da893d10",
+      "shard_position": 328,
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=0-23 start=2026-10-29T20:22Z end=2026-10-29T21:22Z\n",
+        "input_sha256": "518c906a1737d2ef8be8d87790f31475fe48ff259e1d228dfdc58d0f338d41b7",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 180613,
+          "image": "yanbaor2_yanbaoPPT_1517.jpg",
+          "index": 890,
+          "language": "english",
+          "sha256": "b31a63fb72ee2b5165cbbdd743c7e2a2ed6c2a1fb106d07cc90eed66b60e0046",
+          "table_count": 0
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793305528.6920843
+      },
+      "start_sha256": "e33897becb68432729690e301252019324d1fa1071685533834c296f04ff6804"
+    },
+    {
+      "claim_tuple_sha256": "a315f43740c47d0e65438c7cfea97b5f05cd82b94feaa3636da80102a757c247",
+      "done_sha256": "761cb6f111558d9beab5c73646731d72e2248ff25a6fecf80302e9d580333fca",
+      "result": {
+        "children_drained": true,
+        "partial": false,
+        "prediction_sha256": "6fb465ede44abe6287522c4bf819b254db58d48e1ac547aea1803b1f8969e674",
+        "rc": 0,
+        "reason": "native page produced"
+      },
+      "result_sha256": "a62f093b2d88cd6978b218f07c9d8d90ead1b3a79b5d0328ea35c9896bd5cb45",
+      "shard_position": 329,
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=0-23 start=2026-10-29T20:22Z end=2026-10-29T21:22Z\n",
+        "input_sha256": "55f5e21401fd5743d9e0900428c3599614b1bc2748e6e20a112434203b70d09b",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 266239,
+          "image": "yanbaor2_yanbaoPPT_5627.jpg",
+          "index": 893,
+          "language": "english",
+          "sha256": "28b7489faa828a68e3fa5fb13509cf83b2125c8bf64f7d07634ae93011589ea9",
+          "table_count": 0
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793305569.518589
+      },
+      "start_sha256": "bb9f6e1de738c3ef1d6a098c7b06a9d20a336ce4cf9be0a0d94840ace53d8f7a"
+    },
+    {
+      "claim_tuple_sha256": "5824aa1f3a767813898b27759ca7a99ab8af3b077bf30c962aae4e33c2150694",
+      "done_sha256": "03fc6a6ad7d70783647ed67c3779f8ed05d81b769b1005c7327edd92e36a8263",
+      "result": {
+        "children_drained": true,
+        "partial": false,
+        "prediction_sha256": "701264bb51aa18fc912944d786e2486d88096d72a990122a1254622e555c2db6",
+        "rc": 0,
+        "reason": "native page produced"
+      },
+      "result_sha256": "a233b047ca6cdd13c9418e5318b8f60c178ef1ba6a0519bcac914bb1354f3505",
+      "shard_position": 330,
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=0-23 start=2026-10-29T20:22Z end=2026-10-29T21:22Z\n",
+        "input_sha256": "779d3bef65cbb77caa7f2eb5ff67e93c100f4327f67036b214388dccf0bfb2e1",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 140480,
+          "image": "notes_f7f010b78016aeebd76e56d9283eb67f_5.jpg",
+          "index": 983,
+          "language": "english",
+          "sha256": "b37e9159dcdce003d40f16374260448fb3d9f3ce5e4f66b2b487eb1528d61ad6",
+          "table_count": 0
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793305609.3888671
+      },
+      "start_sha256": "57fc0bcfb102b839c87cdd928288fa272094c9f76d89f73cbde82eb2a94bfdc7"
+    },
+    {
+      "claim_tuple_sha256": "b8f88a0f68a3a1ffd52d39cb602656baab1f72807c7c5b29af32a44c3edfe9ee",
+      "done_sha256": "229aa8f430ac560d62d4285a3711fd6897000cdf8a2e917210de31bbb733e509",
+      "result": {
+        "children_drained": true,
+        "partial": false,
+        "prediction_sha256": "70d93d49723e4d31ee1e662ddd07ef7acfbea3ebbca19bfe0dd053a57f1335bc",
+        "rc": 0,
+        "reason": "native page produced"
+      },
+      "result_sha256": "320009ae750de41e6e643eeba9456c2ea223a1fb4f2db2f67ead31a5674492d2",
+      "shard_position": 331,
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=0-23 start=2026-10-29T20:22Z end=2026-10-29T21:22Z\n",
+        "input_sha256": "f3f63ff5bf4d9ee2b2640e554af68c4e312f9484e0698eebda073674af95e6c7",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 781825,
+          "image": "newspaper_0edcd83c195557b43279fa73edaa59aa_1.jpg",
+          "index": 1019,
+          "language": "english",
+          "sha256": "71c10c15401bd6f3758bc4ba9b6bfff39880a64830d73387ef9cf47588dd0512",
+          "table_count": 0
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793305648.4462335
+      },
+      "start_sha256": "b02e746b842b5547d8c6e164d80f60df01f82b17aa569509c32a4dd64e2ade05"
+    },
+    {
+      "claim_tuple_sha256": "0dfb4f341e1adf271b4574ba27fcc96491ddf83e08612eb52233e41127c3166c",
+      "done_sha256": "c54f8d68fb3af92f3ffaa5d84598b26e358cafc3be00f9cf95a9a6813b2d0efb",
+      "result": {
+        "children_drained": true,
+        "partial": false,
+        "prediction_sha256": "7f7e7171315b848e3dd22d248430d31b77ac2e8022fbdc1b62d8d3652152c3e0",
+        "rc": 0,
+        "reason": "native page produced"
+      },
+      "result_sha256": "6784b91ac2c2e951ef5d635c9b0f9b7f4231731f42d7f3d74802bf2a89866e3d",
+      "shard_position": 332,
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=0-23 start=2026-10-29T20:22Z end=2026-10-29T21:22Z\n",
+        "input_sha256": "e9da3d42a90527db8f9810c7461c5fd8cd81d71a5974f8ae5b65f9ea696c4c24",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 573193,
+          "image": "newspaper_2a6b4fa088699701a6fa9ccecfb5c25d_1.jpg",
+          "index": 1026,
+          "language": "english",
+          "sha256": "f2f5c28a99d2ee6ffcea9aa92e7f578e408d2310647d4228a3ee2e8ce8381a78",
+          "table_count": 2
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793305699.9020963
+      },
+      "start_sha256": "7339f70c30f79d029328df21a30390e058c7ad99b9a374694e7e8ddb1771b0bb"
+    },
+    {
+      "claim_tuple_sha256": "c33a71152df2d8bde92b693a2341616681f13399d20b2687d848b7ee3edae568",
+      "done_sha256": "20170ad07d51c167c1d6e8daed04cce6cff045ec65604fc12f844b8211fa956c",
+      "result": {
+        "children_drained": true,
+        "partial": false,
+        "prediction_sha256": "08265fe538a43aefc3e1cdfcde69e23921eeb4e2e4ec73d5238548c6459ce779",
+        "rc": 0,
+        "reason": "native page produced"
+      },
+      "result_sha256": "52008e3981bcc9082516cd8eed50361f66220f330984c3cd6320b505d41d7858",
+      "shard_position": 333,
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=0-23 start=2026-10-29T20:22Z end=2026-10-29T21:22Z\n",
+        "input_sha256": "2c5af2340193e366acfd48e0186395b83a3ff26990613e70e4b5a2542ec18326",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 887292,
+          "image": "newspaper_2a6b4fa088699701a6fa9ccecfb5c25d_10.jpg",
+          "index": 1027,
+          "language": "english",
+          "sha256": "55ac57e573ff05d630cba3c47402bf65ff671f87e3fb74dd278ffa3b373ee470",
+          "table_count": 0
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793305750.9219153
+      },
+      "start_sha256": "17d8d83f5c66128a1b6309c9b9fb1c23b01383aa29accedc10acacc13cedb419"
+    },
+    {
+      "claim_tuple_sha256": "19320e18ada65e3ecb6a598c5bf1921146bc9344f5718309a99b55ae7ccac678",
+      "done_sha256": "0fee5ab02b88f4c612e57761cc09139e12183ab9cf4fbd459b907e405c4510ec",
+      "result": {
+        "children_drained": true,
+        "partial": false,
+        "prediction_sha256": "27d9ba7c23b1ef1ff027047e0cf202e17ff6cc77fcd183007316f089fc661f57",
+        "rc": 0,
+        "reason": "native page produced"
+      },
+      "result_sha256": "14dd3bb6812d550ce14d6e6baa722ac15086b49c0f73828ee3fab790d4f7d6fe",
+      "shard_position": 334,
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=0-23 start=2026-10-29T20:22Z end=2026-10-29T21:22Z\n",
+        "input_sha256": "cba2c83ab78131ec8fae8e971e4cd556e925536504f7c2cab266db32e3cd56d7",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 881960,
+          "image": "newspaper_2a6b4fa088699701a6fa9ccecfb5c25d_11.jpg",
+          "index": 1028,
+          "language": "english",
+          "sha256": "37c433fe858c3c48eb4f5ce8be6f1307367767af2b0fd0042cbf9594016b9a16",
+          "table_count": 0
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793305804.4772174
+      },
+      "start_sha256": "ccb4a1f78ae33e200915c0a5215c48e31a27bdff5826848d957d3f6b8d6a62cb"
+    },
+    {
+      "claim_tuple_sha256": "4985aada11531a99c6c9174a68702beb9f1cf80fe66cc9b803bd168677f95353",
+      "done_sha256": "1ac7392748ae1e69647f9833b706c8a94250a0ac1c16c01a1efe8d5c89bba8af",
+      "result": {
+        "children_drained": true,
+        "partial": false,
+        "prediction_sha256": "ad8966ce6343c7d75794d0b49e00ac4320d12f86afc9312672428b6c88d04522",
+        "rc": 0,
+        "reason": "native page produced"
+      },
+      "result_sha256": "6cb4c50d750c6dd1c6b8d643e1797e5093e87a230ced3cde294ab410ce3f3d30",
+      "shard_position": 335,
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=0-23 start=2026-10-29T20:22Z end=2026-10-29T21:22Z\n",
+        "input_sha256": "a652c6aba4912bcaa2bcd3d39fdefc4f6da42e4fda1d928eafa3c5bd8ee077b0",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 907407,
+          "image": "newspaper_2a6b4fa088699701a6fa9ccecfb5c25d_12.jpg",
+          "index": 1029,
+          "language": "english",
+          "sha256": "559a38e39f9110bf201c0aa0a2d2940fc555aebeccdc2d3fb67308a19f325ea9",
+          "table_count": 0
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793305857.8037407
+      },
+      "start_sha256": "2aaea1a9edb7a00be876fa6bb4e90a90283dab7b4f55b56d27fa072eb4468bc8"
+    },
+    {
+      "claim_tuple_sha256": "64edf6778bc9b118ab74ff56d073d2416563bb2f345bf583be34d012ba4babc0",
+      "done_sha256": "95075b4ff39c0813552ea75113b246350523af3158aff012def82446542e8987",
+      "result": {
+        "children_drained": true,
+        "partial": false,
+        "prediction_sha256": "638e3e9916e45e5446438568d74e209e09c9a119567651425de75c9af34c6fcd",
+        "rc": 0,
+        "reason": "native page produced"
+      },
+      "result_sha256": "0614cd17a31969f6f0e9b4ec61358b9085bb7548a11f0fc41634dd0e11ec23fa",
+      "shard_position": 336,
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=0-23 start=2026-10-29T20:22Z end=2026-10-29T21:22Z\n",
+        "input_sha256": "3abd5594e8064743070b3f349c8ee31f92e3e5b5037054c34f666a61396be64b",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 887984,
+          "image": "newspaper_2a6b4fa088699701a6fa9ccecfb5c25d_13.jpg",
+          "index": 1030,
+          "language": "english",
+          "sha256": "3b4ec71e9c58a5a082534793b804af0650124e3617d66c55399e547dee9fd86f",
+          "table_count": 0
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793305911.0568292
+      },
+      "start_sha256": "1c0de9657dbabada61cbc00063ebb538477439a64fd7e10c21124322c559738d"
+    },
+    {
+      "claim_tuple_sha256": "00c8b48ee33e8b879e8b5bcdc0036561af9854941c73dcdd9934c02edafc012a",
+      "done_sha256": "829c7e05ef9dc942ca34220dafc4d219079920422e609ccea1c90d30d5158d6e",
+      "result": {
+        "children_drained": true,
+        "partial": false,
+        "prediction_sha256": "9d7f7d450cff863f969643aa32014a329d284c43a930139398ac9648161ae855",
+        "rc": 0,
+        "reason": "native page produced"
+      },
+      "result_sha256": "87785a19dd286d9605395464c26672046ad70b8c72dfb80f3d669a17809e8627",
+      "shard_position": 337,
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=0-23 start=2026-10-29T20:22Z end=2026-10-29T21:22Z\n",
+        "input_sha256": "4faae8046732d479861aeab1ed337be04245b41edb064d8e9731ab0c415a4d10",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 884636,
+          "image": "newspaper_2a6b4fa088699701a6fa9ccecfb5c25d_14.jpg",
+          "index": 1031,
+          "language": "english",
+          "sha256": "4b79f5631d5352908bce6b4a92dd1898d130d2deea483f94f2be5a6dd027e10d",
+          "table_count": 0
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793305964.171852
+      },
+      "start_sha256": "e58e006b5d364a7ff7b7e3988fee1be21fcc214380111f11f7b84e9b57806a75"
+    },
+    {
+      "claim_tuple_sha256": "f79d81b4baff6a4493eb3159140db9a326e9da552ae01b3015383dd46959271e",
+      "done_sha256": "80c580cf9dd9da831d999a1261e97c5d2fecc2c3ac784d23b9295f095e9f72cd",
+      "result": {
+        "children_drained": true,
+        "partial": false,
+        "prediction_sha256": "6c9b9bea2a22a36679b4d3b219233add138215cef0c769c2d5a3936a89e545b5",
+        "rc": 0,
+        "reason": "native page produced"
+      },
+      "result_sha256": "0844e8a1008da202548cf4030a754476fc29b12115ca20305f9e40c6f8432ecb",
+      "shard_position": 338,
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=0-23 start=2026-10-29T20:22Z end=2026-10-29T21:22Z\n",
+        "input_sha256": "7431df20570988129b1bcb2ce92582acc16cce5b98818e9b34f434194b3bfe2a",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 911571,
+          "image": "newspaper_2a6b4fa088699701a6fa9ccecfb5c25d_15.jpg",
+          "index": 1032,
+          "language": "english",
+          "sha256": "7da5ed976b27d3c24f6b269e7aaa46b9ab35bc1f3c7997e25119d8180366e860",
+          "table_count": 0
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793306017.1905675
+      },
+      "start_sha256": "07ec4e8839f6b505ffa36f2fa1c278efa61095bf2d1d93a00124d080daef2c89"
+    },
+    {
+      "claim_tuple_sha256": "208fbafe0b226ed6737910dfae67d0f75775784b57978451b3c34730ac12ce2b",
+      "done_sha256": "7e8968c63a68a5428b128e3754f55b4f18e74589939a8803ce83409ea5974dce",
+      "result": {
+        "children_drained": true,
+        "partial": false,
+        "prediction_sha256": "36b80dd7f0eeea408cfbd0aacf645cd81b1fe78c6b191e56787a05e91e666f7c",
+        "rc": 0,
+        "reason": "native page produced"
+      },
+      "result_sha256": "e52f9a13a003b7b9a79aaeb25e6a51b1e26cc2fa52a77786147ca17e7bcabd9d",
+      "shard_position": 339,
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=0-23 start=2026-10-29T20:22Z end=2026-10-29T21:22Z\n",
+        "input_sha256": "fe6eee02397c5dff82a6f3ec76c0c9611b83e9399706910efe413693871fd78c",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 890161,
+          "image": "newspaper_2a6b4fa088699701a6fa9ccecfb5c25d_16.jpg",
+          "index": 1033,
+          "language": "english",
+          "sha256": "0a20956ff01c1f9292d730cfccf3798f2ca4097c488f2418f1542217a4ad469e",
+          "table_count": 0
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793306070.5916753
+      },
+      "start_sha256": "a5eb633f9d6d9ed451562632a82b419646b4e7f172186901c625b70888bac05e"
+    },
+    {
+      "claim_tuple_sha256": "b5526b68ab83415a79c63143a6a60659f01c88b86f8a0502f7e1dea746dd4e02",
+      "done_sha256": "b8c8991bc9098d0d1efc750d3691e22b4e070c97773eabb0a94f02bd081f0dcf",
+      "result": {
+        "children_drained": true,
+        "partial": false,
+        "prediction_sha256": "83422eefe8ab2c716718610e9bdbf69ce23e5768dc0c8b1a2edec0bc5482a35c",
+        "rc": 0,
+        "reason": "native page produced"
+      },
+      "result_sha256": "b04663db9b9ea1409732af8901db232df66d28377974de50cc48b0f37c5f7aa0",
+      "shard_position": 340,
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=0-23 start=2026-10-29T20:22Z end=2026-10-29T21:22Z\n",
+        "input_sha256": "f64fd94b8c95b91dbdcab25bbeac6f90408dc2efdd4d0702f35a5848395d8eb7",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 885213,
+          "image": "newspaper_2a6b4fa088699701a6fa9ccecfb5c25d_17.jpg",
+          "index": 1034,
+          "language": "english",
+          "sha256": "b8f4073f8285f8898b0a4d77bdbe17a40ba0130445faeed4da2516d1de4a572c",
+          "table_count": 0
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793306122.7404656
+      },
+      "start_sha256": "1c6472b593e5cd0f29b35fc58b618f9d7a288f0463a23b35dfd03fea93bd3051"
+    },
+    {
+      "claim_tuple_sha256": "cf4bdba4150561ab9b11cb140e1d7f6cb19c8f9e436633a3f276aef22597a1c5",
+      "done_sha256": "2a6b072a73e0e0449a371df84f2e1ff6876df7f1e6dfbb7dadbe72164ae1bd75",
+      "result": {
+        "children_drained": true,
+        "partial": false,
+        "prediction_sha256": "c60162423edad2e02c9785b7e2f1aeb6ee04c0beac6abe36228f9f6de94ac073",
+        "rc": 0,
+        "reason": "native page produced"
+      },
+      "result_sha256": "259fa0d024f408aad050371b13a78084ff9485462c3e85aba80834c186a31cec",
+      "shard_position": 341,
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=0-23 start=2026-10-29T20:22Z end=2026-10-29T21:22Z\n",
+        "input_sha256": "454830ae54307e5cf1c01a5153691c38f3fc7665868cfc691e1a783761c1f8cf",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 636270,
+          "image": "newspaper_2a6b4fa088699701a6fa9ccecfb5c25d_18.jpg",
+          "index": 1035,
+          "language": "english",
+          "sha256": "37b5322bc57c91fb31fda702c95555522cd70b92498181d607eedc0dc246b502",
+          "table_count": 2
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793306174.801344
+      },
+      "start_sha256": "899da5e99d2c3f6e015b5436caa2e753412fa76975af07e1271f49a985758d66"
+    },
+    {
+      "claim_tuple_sha256": "ed121beae6f81be3a3dc97e9b6362a2d216855b354d0e376eb90a8b6bf73ef73",
+      "done_sha256": "de07d67778eef48fda44544cfcb6632cb585f62367d9dbbcb5f8c906ee085878",
+      "result": {
+        "children_drained": true,
+        "partial": false,
+        "prediction_sha256": "e4f5257345777cced989365a5ddd211ec1754fd9e3c9cc3892f0c108e5022cd0",
+        "rc": 0,
+        "reason": "native page produced"
+      },
+      "result_sha256": "6c73b454d49ee7407146075b5b2f14fcf935468fc33f0fb606e589cd9f7cb031",
+      "shard_position": 342,
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=0-23 start=2026-10-29T20:22Z end=2026-10-29T21:22Z\n",
+        "input_sha256": "3e341317ce05579e4ad7a5a84d5750f342bb473f2f53a4e441cbf7ee37b9ca59",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 782475,
+          "image": "newspaper_2a6b4fa088699701a6fa9ccecfb5c25d_2.jpg",
+          "index": 1036,
+          "language": "english",
+          "sha256": "72e7f242ceb1e84aa6f762095875d6fa8c302cc9998324eee9285b64b6b01c5a",
+          "table_count": 1
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793306232.7219472
+      },
+      "start_sha256": "6ddaca85e24d791d198a6dc6ec3e46c5276a89e5d7451072554facf1b03a4636"
+    },
+    {
+      "claim_tuple_sha256": "1ed761687b11c2d7b3c0ada6c5f100e53c0b6fec94a7752264a6e0b40715da8c",
+      "done_sha256": "c3e8c6db93ea19d5dbdc08660c6ff41fc24d7606f3232153bfe0b742da4742e1",
+      "result": {
+        "children_drained": true,
+        "partial": false,
+        "prediction_sha256": "674fe418bce4c299aa5eb29f0d5bcdf8ddd73a848355769471e03bfb59c6d030",
+        "rc": 0,
+        "reason": "native page produced"
+      },
+      "result_sha256": "08cd8af08adde84778a98c7f2773cc8181defb026dcf74e13de1a21e39bacf9b",
+      "shard_position": 343,
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=0-23 start=2026-10-29T20:22Z end=2026-10-29T21:22Z\n",
+        "input_sha256": "516bceb74c1e5dbd9b1a407bc5a3091f15b27b8245cff18547f8e9fec11ce793",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 871814,
+          "image": "newspaper_2a6b4fa088699701a6fa9ccecfb5c25d_3.jpg",
+          "index": 1037,
+          "language": "english",
+          "sha256": "51bd747312c7a9009b5c02bf49218616e4a0b75c7f85481501313689ac408a6c",
+          "table_count": 0
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793306286.306688
+      },
+      "start_sha256": "ef97962b824796227fc47feff1f558e2823b58e225cf251362a3019263f55e66"
+    },
+    {
+      "claim_tuple_sha256": "71725f1f8dd241ec21c11ab69d3de50bbaf4d6bc886061fc6d1cf76d01d8147e",
+      "done_sha256": "4193479bc2ff400f6866770593659df9f433a6bac8bb7bc3324dd46245368988",
+      "result": {
+        "children_drained": true,
+        "partial": false,
+        "prediction_sha256": "ef2622db78d357d40fe8aac6dcf8dd6c9f0a7f1e2a717818a9201327a276f984",
+        "rc": 0,
+        "reason": "native page produced"
+      },
+      "result_sha256": "1e6c1f1c1de4d289c1250fa36599ffdb740de98bc2b52ee34952f94fd089d3d8",
+      "shard_position": 344,
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=0-23 start=2026-10-29T20:22Z end=2026-10-29T21:22Z\n",
+        "input_sha256": "e1354fdf7dfc470bdc5e26eaafcd442fe187fdc62d7a8404b2879e7e03cec90e",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 869086,
+          "image": "newspaper_2a6b4fa088699701a6fa9ccecfb5c25d_4.jpg",
+          "index": 1038,
+          "language": "english",
+          "sha256": "00627d236c89d48af0beec70b9dc1b3a116d7e49b5073cc80e1871558086add8",
+          "table_count": 0
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793306339.1644127
+      },
+      "start_sha256": "24b84988f2c20e694a63aff327801617aef76d78bb6e4bc2b52856095527c4ba"
+    },
+    {
+      "claim_tuple_sha256": "1f113b330ddbeb6ef7ec61738d8e9de0cec4b933317affb36e1b95261fbdd55a",
+      "done_sha256": "144a1a59040ff0e556025d1dc0af3b9f0665e293f555ad443f11946ba6fe05d9",
+      "result": {
+        "children_drained": true,
+        "partial": false,
+        "prediction_sha256": "79471bb9dbca8866bc9966dd1b46e7ecb1617d5814652ba7d5c53ec5d7d4925f",
+        "rc": 0,
+        "reason": "native page produced"
+      },
+      "result_sha256": "817a87732dfec1a29174260352e57629b2dea1cbc09cb85bba76866e0b42d336",
+      "shard_position": 345,
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=0-23 start=2026-10-29T20:22Z end=2026-10-29T21:22Z\n",
+        "input_sha256": "d3a06a48a679a36547aa76c902710fd1f13acdec25c0cf252a674d513b8655f7",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 879719,
+          "image": "newspaper_2a6b4fa088699701a6fa9ccecfb5c25d_5.jpg",
+          "index": 1039,
+          "language": "english",
+          "sha256": "919399f17a04668823ef2e1623bb373184b9b88b67eab88424d951a0ad1ab8db",
+          "table_count": 0
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793306392.1750293
+      },
+      "start_sha256": "41f955d8d8049b31ad2559f1bedfe0628078465fdb6da982fafb603afe21cbb2"
+    },
+    {
+      "claim_tuple_sha256": "1718d48e48c615e16744a7f69119b3b32664220eba14adc8b80dcb9827c23fde",
+      "done_sha256": "cef483e6447ec5036de5514d2eb46d687d9b941d0c7838c19834d575ac7fafcf",
+      "result": {
+        "children_drained": true,
+        "partial": false,
+        "prediction_sha256": "ced544be8bb8cf0942f791475cacacaf3987a488a9f87b105e04cc41621c979c",
+        "rc": 0,
+        "reason": "native page produced"
+      },
+      "result_sha256": "59eea4e80014ba89a383e9b0414c27db819cd14993dbd2933162019dbee77bf5",
+      "shard_position": 346,
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=0-23 start=2026-10-29T20:22Z end=2026-10-29T21:22Z\n",
+        "input_sha256": "ce137c64896c7c621686f598a0e0550ef8f891fd576466c1359f0ffb947d2466",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 875926,
+          "image": "newspaper_2a6b4fa088699701a6fa9ccecfb5c25d_6.jpg",
+          "index": 1040,
+          "language": "english",
+          "sha256": "617e0a09bb1553eddc206c2820ec8a54a13d6e7c7c047c0c69bf35aff43fd9c0",
+          "table_count": 0
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793306446.2423928
+      },
+      "start_sha256": "823e87a2b4cfbc18e451f81a11d8c8f169325da6689e39d15d7d11a708b5266e"
+    },
+    {
+      "claim_tuple_sha256": "2ef07c5300355cec3d034c0310a4b0d62a972d47835f89c96523a809292e92e8",
+      "done_sha256": "8c7f46304db324819dbadb050a6d4fc0782308ba63b0e8ea205aa73da5c110b3",
+      "result": {
+        "children_drained": true,
+        "partial": false,
+        "prediction_sha256": "9faf4db8ae9b709cbad4eaeb53baa5db68716751c135e6c6db587320a0ffd5f9",
+        "rc": 0,
+        "reason": "native page produced"
+      },
+      "result_sha256": "1e064c3842cca1d382334c0b5b0ff3126f99b1e5787adca1e5c17b789e8b6a90",
+      "shard_position": 347,
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=0-23 start=2026-10-29T20:22Z end=2026-10-29T21:22Z\n",
+        "input_sha256": "7bea5dd26bff8efb5666960dee57b06b0606929dd01746d899a72cae26fc6417",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 893195,
+          "image": "newspaper_2a6b4fa088699701a6fa9ccecfb5c25d_7.jpg",
+          "index": 1041,
+          "language": "english",
+          "sha256": "a5513ad4fcaaf915d08a8bd523eb9dba111a1cb2f29cd7ad8933afb9a1faf855",
+          "table_count": 0
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793306500.5545998
+      },
+      "start_sha256": "a94efc68be66ccf78f87c1dd4c181d5992c6e72b82f5912aa827a2f79de984a7"
+    },
+    {
+      "claim_tuple_sha256": "97a9af5717cb29314c75e6aca6fed4a8427cb10faf806389b9ae8ac2a94d7031",
+      "done_sha256": "dc802d06ac9d0cc082ef89bf893a56548b7ead51882ba9353304b5e6d01160ed",
+      "result": {
+        "children_drained": true,
+        "partial": false,
+        "prediction_sha256": "4f9ff1856014335e595fd61a59cd7e1e2ac30bb7d45a020cc959e32dd03349ab",
+        "rc": 0,
+        "reason": "native page produced"
+      },
+      "result_sha256": "abc425f5db93bed14b8bdfa2d37b4496109013267a4a3fcdc7b1b4c4f7322b63",
+      "shard_position": 348,
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=0-23 start=2026-10-29T20:22Z end=2026-10-29T21:22Z\n",
+        "input_sha256": "636e4e126a5c43cde5feaaba4cd3a9fcf66b0b72f26670d4df0d4d08ed281a18",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 887565,
+          "image": "newspaper_2a6b4fa088699701a6fa9ccecfb5c25d_8.jpg",
+          "index": 1042,
+          "language": "english",
+          "sha256": "5976a4c32c6ff898ff80702fdb42280b6c8b3bc281bea0e5b01d53eae94f435e",
+          "table_count": 0
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793306554.6451266
+      },
+      "start_sha256": "70b7fc308d9e7868e1046aecb6fa2b905f861c7e13cece9099d0b6fbcffadc5c"
+    },
+    {
+      "claim_tuple_sha256": "b12303ec6b76e3ba0480b2f9e51409983d7cee9ec24cc58a7e898cc294bd1997",
+      "done_sha256": "d37061a7668c89e0856edcb32dd018a0c2aa073c38339478ce975c40ebe531da",
+      "result": {
+        "children_drained": true,
+        "partial": false,
+        "prediction_sha256": "42f6d90dd2c2b6a82f6280649d959f22995f38343bcc19d2c8f5e80efc6a214e",
+        "rc": 0,
+        "reason": "native page produced"
+      },
+      "result_sha256": "9b287c9a712c8f45d398ae600ffb07c0f8737bcb10f3e6f552dd647646afa8eb",
+      "shard_position": 349,
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=0-23 start=2026-10-29T20:22Z end=2026-10-29T21:22Z\n",
+        "input_sha256": "8aba627d7414529c75bc46569989a3f7d02afbe799a8b6605684f7d2514a1964",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 881525,
+          "image": "newspaper_2a6b4fa088699701a6fa9ccecfb5c25d_9.jpg",
+          "index": 1043,
+          "language": "english",
+          "sha256": "b5aff94116d8b095319b9c549483160cf6c069f55fe1b76c0a13c8f34319cc3b",
+          "table_count": 0
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793306607.766957
+      },
+      "start_sha256": "b235df04db6bf7f9bdfd57be60512b00e85c2acc1ac1c46f64c3f32fa436e067"
+    }
+  ],
+  "summary": {
+    "summary": {
+      "cohort": "pip02-english-fresh-20261029",
+      "error": null,
+      "finished_epoch": 1793306652.2211995,
+      "partial": false,
+      "rc": 0,
+      "schema": "pip02-odl-batch/v1",
+      "shard": 13,
+      "signal": null,
+      "started_at_rule": "page start records own grant/protocol/source identities",
+      "statuses": {
+        "325": "complete",
+        "326": "complete",
+        "327": "complete",
+        "328": "complete",
+        "329": "complete",
+        "330": "complete",
+        "331": "complete",
+        "332": "complete",
+        "333": "complete",
+        "334": "complete",
+        "335": "complete",
+        "336": "complete",
+        "337": "complete",
+        "338": "complete",
+        "339": "complete",
+        "340": "complete",
+        "341": "complete",
+        "342": "complete",
+        "343": "complete",
+        "344": "complete",
+        "345": "complete",
+        "346": "complete",
+        "347": "complete",
+        "348": "complete",
+        "349": "complete"
+      }
+    }
+  },
+  "summary_sha256": "870325b6b5bd92222a3156fa496d044b78d40e1690cdf74d472c1ef6de82c514"
+}
