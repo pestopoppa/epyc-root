@@ -1717,6 +1717,976 @@ def _validate_gpu_discovery_measurements(receipt: dict,
         raise ProjectionError("GPU discovery belief rows do not exactly rederive")
 
 
+
+_NEMO_NATIVE_AUTHORITY = {
+    "protocol": "914fd9b116a7d9c84fb10842165069db428d7ab26992c2e281bb9be89cd692ca",
+    "original_l": "e746d105ccfa01e7542d918a9aaf6ed3073b0171775f341979895b988a278a4d",
+    "libggml": "b89dcc64a3687f0c8e918200046d302d2a1c8cd38e44ece7e86c04db176ee33e",
+    "libggml_base": "7b5376ef2a3c9cd4c9aa74b4abb92ca2d979e123999601db6ed98dd639c0c155",
+    "libggml_cpu": "74be93aa3e1443217c1e1e18dfff930a8ebbcba13b53455cb4a3f0c25e1b0d8b",
+    "profiler_sdk": "44d8548b9e31c7ab4ecad3023878d9b9d8bcf62b69350ba3837c01270d45639c",
+    "source_manifest": "e7859f018098bedb9c8951c76a8264ec350f80764f0b4b3fa36022eee9d6b986",
+    "server": "83805b23f09b35abb04b53aefdd15fb3e71f5eb55861c2d3945b28a846753e65",
+    "libllama": "7d317ac83a4fede24714e044295156e94ed86ffd70ef154acbf88d700bac9453",
+    "libggml_hip": "1f3c92e30db1f9c4c675a1627698f46aa3834a8e2e2cf12b7deabfc292070357",
+    "profiler": "c753449eb635ecb4d8be794e8b66439b200b252c157555920d260df5cbac767a",
+    "roctx": "93db9899dfccfcdac33f5721f81ed1df39251c2b98f795bac36ca563d3e8e7d8",
+}
+_NEMO_CODE_PROMPT = "Write a Python function that parses a CSV file into a list of dictionaries, with type inference for integer and float columns, and add a docstring and two usage examples."
+_NEMO_PROSE_PROMPT = "Explain in a short paragraph why the sky is blue."
+_NEMO_BOLT_MODEL = "/mnt/raid0/llm/models/nvidia/NVIDIA-Nemotron-3.5-Bolt-74B-A9B-24GB-GGUF/NVIDIA-Nemotron-3.5-Bolt-74B-A9B-24GB.gguf"
+
+
+def _nemo_artifact_identity(path):
+    """Stream bytes with a before/after identity check, never trust supplied hashes."""
+    p = Path(path)
+    before = p.stat()
+    digest = hashlib.sha256()
+    with p.open("rb") as stream:
+        for chunk in iter(lambda: stream.read(8 * 2**20), b""):
+            digest.update(chunk)
+    after = p.stat()
+
+    def key(s):
+        return (s.st_dev, s.st_ino, s.st_size, s.st_mtime_ns, s.st_ctime_ns)
+
+    if key(before) != key(after) or not p.is_absolute() or not p.is_file():
+        raise ProjectionError("artifact identity changed while reading")
+    return {"path": str(p), "size": after.st_size, "sha256": digest.hexdigest()}
+
+
+def _nemo_phase_payloads(pass_name):
+    def chat(prompt, count, extra=None):
+        return {
+            "endpoint": "/v1/chat/completions",
+            "payload": {
+                "messages": [{"role": "user", "content": prompt}],
+                "max_tokens": count,
+                "temperature": 0.0,
+                "top_k": 1,
+                "stream": False,
+                "chat_template_kwargs": {"enable_thinking": False},
+                **(extra or {}),
+            },
+        }
+
+    if pass_name == "L":
+        return {
+            "warm": chat(_NEMO_CODE_PROMPT, 160),
+            "S": chat(_NEMO_CODE_PROMPT, 160),
+            "P": chat(_NEMO_CODE_PROMPT, 160, {"speculative.n_max": 0}),
+        }
+    if pass_name == "B":
+        return {"warm": chat(_NEMO_PROSE_PROMPT, 48), "M": chat(_NEMO_CODE_PROMPT, 96)}
+    raise ProjectionError("unknown original pass")
+
+
+def _nemo_validate_capture_contract(capture, run):
+    """Prospective artifact/workload/owner evidence; independent of grade policy."""
+    from datetime import datetime
+
+    def require(ok, why):
+        if not ok:
+            raise ProjectionError("capture contract: " + why)
+
+    def instant(value):
+        parsed = datetime.fromisoformat(value.replace("Z", "+00:00"))
+        require(parsed.tzinfo is not None, "timezone missing")
+        return parsed
+
+    contract = capture.get("capture_contract", {})
+    require(
+        contract.get("schema") == "epyc.autokernel.nemo_native_contract.v1",
+        "missing identity contract",
+    )
+    require(
+        contract.get("purpose")
+        == capture.get("purpose")
+        == "prospective_scored_profile",
+        "canary or relabelled purpose",
+    )
+    digest = _canonical_sha256(contract)
+    require(
+        run.get("capture_contract_sha256") == digest,
+        "source-time contract hash differs",
+    )
+    require(
+        contract.get("native_commit") == "b1e820a0ad8bc2192fc38c3c1beda7abf3a28ecf"
+        and contract.get("native_base") == "ffc1bac82eeca6f9099e1ccd9ba49703c460a115",
+        "native source era differs",
+    )
+    require(
+        contract.get("analysis_sources") == capture.get("analysis_sources"),
+        "analysis not frozen at source time",
+    )
+    require(
+        instant(contract["declared_at"]) <= instant(run["started_at"]), "late contract"
+    )
+    analysis_artifacts = contract.get("analysis_artifacts", {})
+    require(
+        set(analysis_artifacts) == set(contract["analysis_sources"]),
+        "missing analysis artifact map",
+    )
+    for name, item in analysis_artifacts.items():
+        require(
+            _nemo_artifact_identity(item["path"]) == item
+            and item["sha256"] == contract["analysis_sources"][name],
+            "analysis module bytes differ",
+        )
+    artifacts = contract.get("artifacts", {})
+    required = set(_NEMO_NATIVE_AUTHORITY) | {
+        "producer",
+        "claim_module",
+        "claim_schemas",
+        "worktree_module",
+        "contract_module",
+        "interpreter",
+        "launcher",
+        "capture_source_manifest",
+        "module_closure",
+        "model",
+        "template",
+    }
+    if contract.get("pass") == "L":
+        required.add("draft_model")
+    require(set(artifacts) == required, "missing or extra artifact identities")
+    require(
+        run.get("source_time_artifacts") == artifacts,
+        "source-time artifact map differs",
+    )
+    for role, item in artifacts.items():
+        require(
+            _nemo_artifact_identity(item["path"]) == item,
+            "artifact bytes differ: " + role,
+        )
+        if role in _NEMO_NATIVE_AUTHORITY:
+            require(
+                item["sha256"] == _NEMO_NATIVE_AUTHORITY[role],
+                "unapproved source/build/protocol: " + role,
+            )
+    closure = json.loads(Path(artifacts["module_closure"]["path"]).read_bytes())
+    require(
+        isinstance(closure, dict) and len(closure) >= 12,
+        "missing imported module closure",
+    )
+    for path, expected_sha in closure.items():
+        require(
+            _nemo_artifact_identity(path)["sha256"] == expected_sha,
+            "imported module bytes differ",
+        )
+    for role in ("claim_module", "claim_schemas", "worktree_module"):
+        require(
+            closure.get(artifacts[role]["path"]) == artifacts[role]["sha256"],
+            "module outside pinned closure",
+        )
+    server = contract["server_argv"]
+    require(
+        isinstance(server, list) and server[0] == artifacts["server"]["path"],
+        "server identity differs",
+    )
+    port = server[server.index("--port") + 1]
+    if contract["pass"] == "L":
+        original = json.loads(Path(artifacts["original_l"]["path"]).read_bytes())[
+            "argv"
+        ]
+        index = next(i for i, x in enumerate(original) if x.endswith("/llama-server"))
+        expected = [server[0]] + original[index + 1 :]
+        for flag, value in (("--port", port), ("-np", "1"), ("-c", "16384")):
+            expected[expected.index(flag) + 1] = value
+        if "--slot-save-path" in expected:
+            index = expected.index("--slot-save-path")
+            del expected[index : index + 2]
+        require(expected == server, "original L argv differs")
+        for role, flag in (
+            ("model", "-m"),
+            ("draft_model", "-md"),
+            ("template", "--chat-template-file"),
+        ):
+            require(
+                server[server.index(flag) + 1] == artifacts[role]["path"],
+                "L model/template binding differs",
+            )
+    else:
+        expected = [
+            server[0],
+            "-m",
+            _NEMO_BOLT_MODEL,
+            "--host",
+            "127.0.0.1",
+            "--port",
+            port,
+            "--batch-size",
+            "2048",
+            "--ubatch-size",
+            "512",
+            "--ctx-size",
+            "16384",
+            "--parallel",
+            "1",
+            "-ngl",
+            "999",
+            "--cache-type-k",
+            "q8_0",
+            "--cache-type-v",
+            "q8_0",
+            "--flash-attn",
+            "on",
+            "--jinja",
+            "-t",
+            "8",
+        ]
+        require(
+            expected == server and artifacts["model"]["path"] == _NEMO_BOLT_MODEL,
+            "original B model/argv differs",
+        )
+        require(
+            artifacts["template"] == artifacts["model"]
+            and contract.get("template_mode") == "embedded_gguf",
+            "B embedded template not bound to actual model",
+        )
+    require(
+        all(m.get("runtime_server_argv") == server for m in run["marks"]),
+        "actual running server argv differs",
+    )
+    require(
+        run.get("server_argv") == server
+        and run.get("argv") == contract.get("argv")
+        and run.get("env") == contract.get("env"),
+        "actual argv/env differs",
+    )
+    require(
+        contract["argv"][-len(server) :] == server,
+        "wrapper does not launch bound server",
+    )
+    for flag in (
+        "--kernel-trace",
+        "--memory-copy-trace",
+        "--hip-trace",
+        "--marker-trace",
+        "--stats",
+    ):
+        require(flag in contract["argv"][: -len(server)], "capture API missing " + flag)
+    require(
+        contract["env"]["set"].get("LLAMA_NATIVE_ROCTX_LIBRARY")
+        == artifacts["roctx"]["path"]
+        and "GGML_CUDA_DISABLE_GRAPHS" in contract["env"]["unset"]
+        and "GGML_CUDA_DISABLE_GRAPHS" not in contract["env"]["set"],
+        "ROCTX/graph env differs",
+    )
+    for mark in run["marks"]:
+        expected_runtime = {
+            role: _nemo_artifact_identity(str(Path(artifacts[role]["path"]).resolve()))
+            for role in (
+                "server",
+                "libllama",
+                "libggml_hip",
+                "libggml",
+                "libggml_base",
+                "libggml_cpu",
+                "roctx",
+                "profiler_sdk",
+            )
+        }
+        require(
+            mark.get("runtime_artifacts") == expected_runtime,
+            "actual loaded image/DSO identities differ",
+        )
+    require(
+        artifacts["contract_module"]["sha256"]
+        == contract["analysis_sources"]["nemo_native_join.py"],
+        "producer contract module differs from frozen analysis",
+    )
+    wrapper = contract["argv"][: -len(server)]
+    require(wrapper and wrapper[0] == "env", "unexpected launch wrapper")
+    index, actual_unset, actual_sets = 1, [], {}
+    while index < len(wrapper):
+        if wrapper[index] == "-u":
+            actual_unset.append(wrapper[index + 1])
+            index += 2
+        elif "=" in wrapper[index] and not wrapper[index].startswith("--"):
+            key, value = wrapper[index].split("=", 1)
+            require(key not in actual_sets, "duplicate environment binding")
+            actual_sets[key] = value
+            index += 1
+        else:
+            break
+    require(
+        actual_unset == contract["env"]["unset"]
+        and actual_sets == contract["env"]["set"],
+        "environment launch prefix differs",
+    )
+    cpus = contract.get("cpu_list")
+    require(cpus == "184-191", "original GPU CPU placement differs")
+    expected_wrapper = [
+        "numactl",
+        "--membind=3",
+        "--",
+        "taskset",
+        "-c",
+        cpus,
+        artifacts["interpreter"]["path"],
+        artifacts["profiler"]["path"],
+        "--kernel-trace",
+        "--memory-copy-trace",
+        "--hip-trace",
+        "--marker-trace",
+        "--stats",
+        "--output-format",
+        "csv",
+        "-d",
+        contract["trace_dir"],
+        "-o",
+        "prof",
+        "--",
+    ]
+    require(wrapper[index:] == expected_wrapper, "profiler/placement wrapper differs")
+    expected_phases = _nemo_phase_payloads(contract["pass"])
+    require(
+        contract.get("phases") == expected_phases, "original workload/payload differs"
+    )
+    require(
+        [m["label"] for m in run["marks"]] == list(expected_phases),
+        "phase order/coverage differs",
+    )
+    opened, released = capture["device_claim_open"], capture["device_claim_released"]
+    for field in (
+        "schema",
+        "claim_id",
+        "device_id",
+        "lock_path",
+        "holder_pid",
+        "holder_start_ticks",
+        "holder_boot_id",
+        "campaign_id",
+        "purpose",
+        "acquired_at",
+        "expires_at",
+    ):
+        require(
+            opened.get(field) is not None and opened.get(field) == released.get(field),
+            "claim identity differs: " + field,
+        )
+    require(
+        all(
+            type(opened[key]) is int and opened[key] > 0
+            for key in ("holder_pid", "holder_start_ticks")
+        ),
+        "invalid claim PID/birth",
+    )
+    require(
+        opened["lock_path"] == "/mnt/raid0/llm/tmp/gpu_device.mi210_0.lock",
+        "foreign device lock identity",
+    )
+    require(
+        opened["schema"] == "epyc.autokernel.device_claim_receipt.v1"
+        and opened.get("state") == released.get("state") == "held",
+        "claim was not held",
+    )
+    require(
+        opened["device_id"]
+        == capture["agent_binding"]["device_id"]
+        == contract.get("device_id")
+        == "mi210_0",
+        "physical device differs",
+    )
+    require(
+        opened["campaign_id"] == capture["campaign_id"] == contract["campaign_id"],
+        "claim campaign differs",
+    )
+    require(
+        run.get("capture_owner")
+        == {
+            key: opened[key]
+            for key in (
+                "holder_pid",
+                "holder_start_ticks",
+                "holder_boot_id",
+                "claim_id",
+                "device_id",
+            )
+        },
+        "source-time owner differs",
+    )
+    require(opened["holder_boot_id"] == run["host_boot_id"], "claim boot differs")
+    acquired, expires, release = map(
+        instant, (opened["acquired_at"], opened["expires_at"], released["released_at"])
+    )
+    start, end = map(instant, (run["started_at"], run["finished_at"]))
+    require(
+        acquired <= start < end <= release <= expires
+        and instant(run["drained_at"]) <= release,
+        "run/drain outside held claim window",
+    )
+    for mark in run["marks"]:
+        phase = expected_phases[mark["label"]]
+        require(
+            {"endpoint": mark.get("endpoint"), "payload": mark.get("payload")} == phase
+            and mark.get("capture_contract_sha256") == digest,
+            "actual HTTP/template payload differs",
+        )
+        require(
+            start <= instant(mark["started_at"]) < instant(mark["ended_at"]) <= end,
+            "request outside captured/claimed window",
+        )
+
+
+_NEMO_CAPTURE_SCHEMA = "epyc.autokernel.nemo_native_capture.v1"
+_PROFILE_SCHEMA = "epyc.autokernel.profile_beliefs.v1"
+
+
+def _is_nemo_profile(receipt: dict) -> bool:
+    return (
+        receipt.get("schema") == _PROFILE_SCHEMA
+        and receipt.get("source_receipt", {}).get("schema") == _NEMO_CAPTURE_SCHEMA
+    )
+
+
+def _nemo_union(intervals: list[tuple[int, int]]) -> int:
+    total = 0
+    end = None
+    for a, b in sorted(intervals):
+        if b < a:
+            raise ProjectionError("reversed native device interval")
+        total += max(0, b - max(a, end if end is not None else a))
+        end = max(b, end if end is not None else b)
+    return total
+
+
+def _validate_nemo_profile(receipt: dict, measurements: list) -> None:
+    """Independent raw-data rederivation, without importing producer code."""
+    import csv
+    import io
+    from collections import defaultdict
+
+    def require(ok, reason):
+        if not ok:
+            raise ProjectionError("NEMO native profile: " + reason)
+
+    require(
+        receipt.get("receipt_sha256")
+        == _canonical_sha256(
+            {k: v for k, v in receipt.items() if k != "receipt_sha256"}
+        ),
+        "final receipt digest differs",
+    )
+    ref = receipt["source_receipt"]
+    path = Path(ref["locator"])
+    require(path.is_absolute(), "capture locator must be absolute")
+    raw = path.read_bytes()
+    require(hashlib.sha256(raw).hexdigest() == ref["sha256"], "capture bytes differ")
+    source = json.loads(raw)
+    require(
+        source.get("schema") == _NEMO_CAPTURE_SCHEMA
+        and source.get("status") == "complete"
+        and source.get("purpose") == "prospective_scored_profile",
+        "unqualified capture purpose/state",
+    )
+    roles = {"run", "native", "markers", "hip", "kernels", "agents"}
+    require(set(source.get("files", {})) == roles, "raw readset roles differ")
+    root = path.parent.resolve()
+    values = {}
+    for role, item in source["files"].items():
+        p = root / item["path"]
+        require(
+            not Path(item["path"]).is_absolute()
+            and p.resolve().is_relative_to(root)
+            and not p.is_symlink(),
+            "raw readset path escapes",
+        )
+
+        def stable(st):
+            return (st.st_dev, st.st_ino, st.st_size, st.st_mtime_ns, st.st_ctime_ns)
+
+        before = stable(p.stat())
+        body = p.read_bytes()
+        require(
+            stable(p.stat()) == before
+            and hashlib.sha256(body).hexdigest() == item["sha256"],
+            "raw readset bytes differ",
+        )
+        values[role] = (
+            json.loads(body)
+            if role == "run"
+            else [json.loads(x) for x in body.splitlines() if x]
+            if role == "native"
+            else list(csv.DictReader(io.StringIO(body.decode())))
+        )
+    require(
+        set(source.get("analysis_sources", {}))
+        == {"nemo_native_join.py", "autokernel_profile_beliefs.py"},
+        "analysis source set differs",
+    )
+    for name, digest in source["analysis_sources"].items():
+        _sha(digest, "analysis source " + name)
+    require(
+        receipt.get("producer")
+        == {
+            "producer_id": "scripts.benchmark.autokernel_profile_beliefs/v1",
+            "path": "scripts/benchmark/autokernel_profile_beliefs.py",
+            "sha256": source["analysis_sources"]["autokernel_profile_beliefs.py"],
+        },
+        "producer does not bind prospective source",
+    )
+    run, native = values["run"], values["native"]
+    _nemo_validate_capture_contract(source, run)
+    report = receipt.get("native_join", {})
+    require(
+        report.get("status") == "complete"
+        and report.get("schema") == "epyc.autokernel.nemo_native_join.v1",
+        "native join is not complete",
+    )
+    require(
+        report.get("raw_readset")
+        == {k: v["sha256"] for k, v in source["files"].items()}
+        and report.get("source_run_hash") == _canonical_sha256(run),
+        "report readset/run binding differs",
+    )
+    require(
+        run.get("status") == "capture-complete-unvalidated"
+        and not run.get("trip")
+        and run.get("server_core_limit") == [0, 0]
+        and run.get("teardown", {}).get("verified_dead") is True
+        and run["teardown"].get("returncode") == 0
+        and not run.get("cpu_only_instrumentation_smoke")
+        and not run.get("tiny_gpu_instrumentation_smoke"),
+        "canary/partial/undrained capture",
+    )
+
+    def parse_time(x):
+        return datetime.fromisoformat(x.replace("Z", "+00:00"))
+
+    require(
+        parse_time(source["declared_at"]).tzinfo is not None
+        and parse_time(source["declared_at"]) <= parse_time(run["started_at"])
+        and source["started_at"] == run["started_at"]
+        and source["ended_at"] == run["finished_at"],
+        "prospective time/frame differs",
+    )
+    claim = receipt.get("device_claim", {})
+    require(
+        claim
+        == {
+            "opened": source["device_claim_open"],
+            "released": source["device_claim_released"],
+        },
+        "device claim bytes differ",
+    )
+    for phase in ("opened", "released"):
+        require(
+            claim[phase].get("schema") == "epyc.autokernel.device_claim_receipt.v1"
+            and claim[phase].get("campaign_id")
+            == source["campaign_id"]
+            == receipt["campaign_id"],
+            "device claim identity differs",
+        )
+    require(
+        claim["opened"]["claim_id"] == claim["released"]["claim_id"]
+        and claim["opened"]["device_id"] == claim["released"]["device_id"]
+        and claim["released"].get("released_at"),
+        "claim release binding differs",
+    )
+    binding = source["agent_binding"]
+    agents = [
+        a
+        for a in values["agents"]
+        if a.get("Agent_Type") == "GPU" and int(a["Node_Id"]) == binding["agent_id"]
+    ]
+    require(
+        len(agents) == 1
+        and binding["device_id"] == claim["opened"]["device_id"]
+        and all(
+            int(agents[0][column]) == binding[key]
+            for key, column in (
+                ("drm_render_minor", "Drm_Render_Minor"),
+                ("location_id", "Location_Id"),
+                ("gpu_id", "Gpu_Id"),
+            )
+        ),
+        "physical GPU binding differs",
+    )
+    process = (run["pid"], run["pid_birth_ticks"])
+    require(
+        (report.get("pid"), report.get("birth")) == process
+        and report.get("host_boot_id") == run["host_boot_id"],
+        "process incarnation differs",
+    )
+
+    def key(e):
+        return (e["pid"], e["process_start_ticks"], e["tid"], e["api"], e["call_id"])
+
+    begins, ends = {}, {}
+    for event in native:
+        require(
+            event.get("schema") == "epyc.native_profile.v1"
+            and (event.get("pid"), event.get("process_start_ticks")) == process,
+            "foreign native event",
+        )
+        if event["event"] in (
+            "encode_begin",
+            "decode_begin",
+            "encode_end",
+            "decode_end",
+        ):
+            require(
+                event["api"] in ("encode", "decode")
+                and event["event"].startswith(event["api"]),
+                "native API kind differs",
+            )
+            target = begins if event["event"].endswith("begin") else ends
+            require(key(event) not in target, "duplicate native API event")
+            target[key(event)] = event
+    calls = report.get("calls", [])
+    require(
+        set(begins) == set(ends) == {tuple(c["key"]) for c in calls}
+        and len(calls) == len(begins),
+        "native call coverage differs",
+    )
+    for call in calls:
+        k = tuple(call["key"])
+        require(
+            call.get("begin") == begins[k] and call.get("end") == ends[k],
+            "native API payload differs",
+        )
+        markers = [
+            r
+            for r in values["markers"]
+            if r["Function"] == f"epyc.{k[3]}.{k[4]}"
+            and int(r["Process_Id"]) == k[0]
+            and int(r["Thread_Id"]) == k[2]
+        ]
+        require(
+            len(markers) == 1 and call.get("marker") == markers[0],
+            "ROCTX marker differs",
+        )
+        require(
+            int(markers[0]["Start_Timestamp"])
+            <= begins[k]["monotonic_ns"]
+            <= ends[k]["monotonic_ns"]
+            <= int(markers[0]["End_Timestamp"]),
+            "native marker clock differs",
+        )
+    owners, hip_by_corr = {}, defaultdict(list)
+    for index, row in enumerate(values["hip"]):
+        matches = [
+            i
+            for i, c in enumerate(calls)
+            if int(row["Process_Id"]) == c["key"][0]
+            and int(row["Thread_Id"]) == c["key"][2]
+            and int(c["marker"]["Start_Timestamp"])
+            <= int(row["Start_Timestamp"])
+            <= int(row["End_Timestamp"])
+            <= int(c["marker"]["End_Timestamp"])
+        ]
+        owners[index] = matches
+        hip_by_corr[row["Correlation_Id"]].append(index)
+    dispatches = defaultdict(list)
+    unbound = []
+    seen = set()
+    for row in values["kernels"]:
+        require(int(row["Agent_Id"]) == binding["agent_id"], "foreign dispatch agent")
+        identity = tuple(
+            row[k]
+            for k in (
+                "Agent_Id",
+                "Queue_Id",
+                "Kernel_Id",
+                "Correlation_Id",
+                "Start_Timestamp",
+                "End_Timestamp",
+            )
+        )
+        matches = hip_by_corr[row["Correlation_Id"]]
+        target = owners[matches[0]] if len(matches) == 1 else []
+        if len(target) == 1 and identity not in seen:
+            dispatches[target[0]].append(row)
+        else:
+            unbound.append(row)
+        seen.add(identity)
+    require(
+        report.get("unbound_dispatches") == unbound,
+        "unbound dispatch inventory differs",
+    )
+    for index, call in enumerate(calls):
+        require(
+            call.get("dispatches") == dispatches[index]
+            and call.get("hip_rows") == [i for i in owners if index in owners[i]],
+            "HIP/dispatch ownership differs",
+        )
+        spans = [
+            (int(d["Start_Timestamp"]), int(d["End_Timestamp"]))
+            for d in dispatches[index]
+        ]
+        require(
+            call.get("busy_ns") == (_nemo_union(spans) if spans else None)
+            and call.get("kernel_sum_ns")
+            == (sum(b - a for a, b in spans) if spans else None),
+            "native device durations do not rederive",
+        )
+    metrics = []
+    require(
+        len(report.get("requests", [])) == len(run["marks"]), "request coverage differs"
+    )
+    for req, mark in zip(report["requests"], run["marks"]):
+        rid = mark["response_request_id"]
+        require(
+            mark.get("clock") == "clock_gettime(CLOCK_MONOTONIC)"
+            and not mark.get("err")
+            and req["request_id"] == rid
+            and req["label"] == mark["label"]
+            and req["predicted_n"] == mark["predicted_n"]
+            and req["start_ns"] == mark["start_monotonic_ns"]
+            and req["end_ns"] == mark["end_monotonic_ns"]
+            and req["status"] == "complete"
+            and not req["unknown"],
+            "request identity/coverage is unknown",
+        )
+        tokens = [
+            e
+            for e in native
+            if e["event"] == "sampled_token" and e["request_id"] == rid
+        ]
+        require(
+            req["tokens"] == tokens
+            and [e["ordinal"] for e in tokens] == list(range(1, len(tokens) + 1))
+            and len(tokens) == mark["predicted_n"],
+            "emitted token identity differs",
+        )
+        indices = [
+            i
+            for i, c in enumerate(calls)
+            if len(c["begin"]["slots"]) == 1
+            and c["begin"]["slots"][0]["request_id"] == rid
+        ]
+        require(req["calls"] == indices, "native request call inventory differs")
+        for i in indices:
+            c, event = calls[i], calls[i]["begin"]
+            slot = event["slots"][0]
+            role = (
+                "target"
+                if event["ctx"] == slot["target_ctx"]
+                else "drafter"
+                if event["ctx"] == slot["drafter_ctx"]
+                else "unknown"
+            )
+            require(
+                not c["unknown"]
+                and event["scope_id"] > 0
+                and c["slot"] == slot
+                and c["context_role"] == role != "unknown"
+                and c["request_id"] == rid
+                and len(event["rows"]) == event["n_tokens"]
+                and [r["index"] for r in event["rows"]]
+                == list(range(event["n_tokens"]))
+                and c["end"]["rc"] == 0
+                and req["start_ns"]
+                <= event["monotonic_ns"]
+                <= c["end"]["monotonic_ns"]
+                <= req["end_ns"],
+                "native request association differs",
+            )
+        ordered = sorted(
+            (calls[i] for i in indices), key=lambda c: c["begin"]["monotonic_ns"]
+        )
+        for c in ordered:
+            if c["key"][3] != "encode":
+                continue
+            following = [
+                other
+                for other in ordered
+                if other["key"][2] == c["key"][2]
+                and other["begin"]["ctx"] == c["begin"]["ctx"]
+                and other["begin"]["scope_id"] == c["begin"]["scope_id"]
+                and other["begin"]["monotonic_ns"] > c["begin"]["monotonic_ns"]
+            ]
+            inject = following[0] if following else None
+            require(
+                inject is not None
+                and inject["key"][3] == "decode"
+                and c["context_role"] == "drafter"
+                and c.get("injection_call_key") == inject["key"]
+                and c["begin"]["n_tokens"] == inject["begin"]["n_tokens"]
+                and all(
+                    r["pos"] is not None and r["seq_ids"] == [c["slot"]["slot"]]
+                    for r in inject["begin"]["rows"]
+                ),
+                "encode/injection association differs",
+            )
+        for d in unbound:
+            require(
+                not (
+                    int(d["Start_Timestamp"]) < req["end_ns"]
+                    and int(d["End_Timestamp"]) > req["start_ns"]
+                ),
+                "unbound device work intersects request",
+            )
+        label = req["label"]
+        if label not in ("S", "P", "M"):
+            continue
+        valid_samples = [
+            s
+            for s in run.get("during_request_gpu_proofs", [])
+            if s.get("pid") == process[0]
+            and s.get("kfd_present") is True
+            and s.get("vram_bytes", 0) > 0
+            and s.get("hip_library_maps")
+            and req["start_ns"]
+            <= s["sample_begin_monotonic_ns"]
+            <= s["sample_end_monotonic_ns"]
+            <= req["end_ns"]
+        ]
+        require(len(valid_samples) >= 5, "during-request residency is missing")
+        if label in ("P", "M"):
+            selected = [
+                calls[i]
+                for i in indices
+                if calls[i]["context_role"] == "target"
+                and calls[i]["slot"]["server_phase"] == "generation"
+                and calls[i]["key"][3] == "decode"
+            ]
+            require(
+                len(selected) >= (20 if label == "P" else 30) and not req["rounds"],
+                "plain metric source differs",
+            )
+            for c in selected:
+                expected = [
+                    t
+                    for t in tokens
+                    if t["ordinal"] == c["slot"]["generated_before"] + 1
+                    and t["target_ctx"] == c["begin"]["ctx"]
+                    and t["slot"] == c["slot"]["slot"]
+                    and t["task"] == c["slot"]["task"]
+                    and t["tid"] == c["key"][2]
+                ]
+                previous = [
+                    t
+                    for t in tokens
+                    if expected and t["ordinal"] == expected[0]["ordinal"] - 1
+                ]
+                input_rows = c["begin"]["rows"]
+                require(
+                    len(expected) == 1
+                    and c["emitted"] == expected
+                    and c["begin"]["n_tokens"] == 1
+                    and len(previous) == 1
+                    and len(input_rows) == 1
+                    and input_rows[0]["token"] == previous[0]["token"]
+                    and input_rows[0]["pos"] is not None
+                    and input_rows[0]["seq_ids"] == [c["slot"]["slot"]],
+                    "plain token identity differs",
+                )
+            numbers = [c["busy_ns"] / 1e6 for c in selected]
+            metric = (
+                "plain_token_busy_ms" if label == "P" else "bolt_decode_step_busy_ms"
+            )
+        else:
+            accepts = [
+                e
+                for e in native
+                if e["event"] == "spec_accept" and e["request_id"] == rid
+            ]
+            require(
+                len(accepts) >= 10 and [g["event"] for g in req["rounds"]] == accepts,
+                "native speculative vector coverage differs",
+            )
+            numbers, used = [], set()
+            for group in req["rounds"]:
+                event = group["event"]
+                expected = [
+                    i
+                    for i in indices
+                    if calls[i]["slot"]["generated_before"] == event["generated_before"]
+                    and calls[i]["slot"]["server_phase"] == "generation"
+                ]
+                emitted = [
+                    t
+                    for t in tokens
+                    if event["generated_before"]
+                    < t["ordinal"]
+                    <= event["generated_before"]
+                    + len(event["accepted_tokens_including_bonus"])
+                ]
+                require(
+                    expected == group["call_indices"]
+                    and not used.intersection(expected)
+                    and emitted == group["emitted"]
+                    and emitted
+                    and [t["token"] for t in emitted]
+                    == event["accepted_tokens_including_bonus"][: len(emitted)]
+                    and group["per_token_busy_ns"] is None,
+                    "speculative round/token binding differs",
+                )
+                used.update(expected)
+                spans = [
+                    (int(d["Start_Timestamp"]), int(d["End_Timestamp"]))
+                    for i in expected
+                    for d in calls[i]["dispatches"]
+                ]
+                require(bool(spans), "speculative round device work missing")
+                numbers.append(_nemo_union(spans) / 1e6)
+            metric = "dflash_round_busy_ms"
+        metrics.append(
+            {
+                "metric": metric,
+                "label": label,
+                "value_ms": sum(numbers) / len(numbers),
+                "raw_values_ms": numbers,
+                "observed_dependent_units": len(numbers),
+                "request_id": rid,
+                "reps": 1,
+                "reps_basis": "one traced request; dependent native calls/rounds, no repeats or noise floor",
+            }
+        )
+    require(
+        metrics == receipt.get("native_metric_vectors")
+        and len(metrics) == len(measurements),
+        "native metric vectors differ",
+    )
+    for vector, row in zip(metrics, measurements):
+        require(
+            row["metric"] == vector["metric"]
+            and row["value"] == vector["value_ms"]
+            and row["unit"] == "ms"
+            and row["metric_direction"] == "lower_better"
+            and row["category"] == "BASELINE"
+            and row["reps"] == 1
+            and row["reps_basis"] == vector["reps_basis"],
+            "measurement does not rederive",
+        )
+        expected = {
+            "measurement_id": source["campaign_id"]
+            + ":"
+            + vector["label"]
+            + ":"
+            + vector["metric"],
+            "metric": vector["metric"],
+            "value": vector["value_ms"],
+            "unit": "ms",
+            "metric_direction": "lower_better",
+            "category": "BASELINE",
+            "reps": 1,
+            "reps_basis": vector["reps_basis"],
+            "claim": (
+                "One traced native request observed "
+                + vector["metric"]
+                + "; attribution only, no keep/ship or optimization conclusion"
+            ),
+            "extra": {
+                "native_request_id": vector["request_id"],
+                "phase": vector["label"],
+                "raw_values_ms": vector["raw_values_ms"],
+                "observed_dependent_units": vector["observed_dependent_units"],
+                "protocol_scope": "original NEMO L/B attribution, unratified single-request observation",
+                "native_join_sha256": _canonical_sha256(report),
+                "raw_readset": report["raw_readset"],
+                "analysis_sources": source["analysis_sources"],
+            },
+        }
+        expected["measurement_sha256"] = _canonical_sha256(expected)
+        require(
+            row == expected, "full producer-written measurement row does not rederive"
+        )
+
+
 def native_rows(receipt: dict, *, receipt_locator: str = "",
                 receipt_sha256: str = "",
                 attestation_present: bool | None = None) -> tuple[dict, ...]:
@@ -1757,6 +2727,8 @@ def native_rows(receipt: dict, *, receipt_locator: str = "",
             raise ProjectionError(
                 "GPU discovery v2 requires prospective producer-written belief rows")
         _validate_gpu_discovery_measurements(receipt, measurements)
+    if _is_nemo_profile(receipt):
+        _validate_nemo_profile(receipt, measurements)
     protocol = None
     if receipt.get("schema") in {_GPU_BANK_SCHEMA, _GPU_RESULT_SCHEMA}:
         runs_key = "anchor_runs" if receipt["schema"] == _GPU_BANK_SCHEMA else "candidate_runs"
@@ -1791,6 +2763,12 @@ def project(native: Any) -> ClaimTuple:
     schema = _text(receipt, "schema", "receipt")
     if schema not in SOURCE_SCHEMAS:
         raise ProjectionError("unsupported AutoKernel auxiliary receipt schema")
+    if _is_nemo_profile(receipt):
+        _validate_nemo_profile(receipt, receipt["belief_measurements"])
+        index = native.get("measurement_index")
+        if (type(index) is not int or not 0 <= index < len(receipt["belief_measurements"])
+                or measurement != receipt["belief_measurements"][index]):
+            raise ProjectionError("NEMO projection row differs from finalized measurement vector")
     campaign_id = _text(receipt, "campaign_id", "receipt")
     local_id = _text(measurement, "measurement_id", "measurement")
     metric = _text(measurement, "metric", "measurement")
@@ -1826,7 +2804,7 @@ def project(native: Any) -> ClaimTuple:
         category=_text(measurement, "category", "measurement"),
         claim=claim,
         metric_direction=_text(measurement, "metric_direction", "measurement"),
-        protocol_id=schema,
+        protocol_id="" if _is_nemo_profile(receipt) else schema,
         reps=reps,
         reps_basis=reps_basis,
         unit=_text(measurement, "unit", "measurement"),

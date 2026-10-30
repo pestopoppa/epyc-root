@@ -1,0 +1,347 @@
+{
+  "agent_binding": {
+    "agent_id": 4,
+    "device_id": "mi210_0",
+    "drm_render_minor": 128,
+    "gpu_id": 57300,
+    "location_id": 17152
+  },
+  "analysis_sources": {
+    "autokernel_profile_beliefs.py": "d881c9b639622ba41e96237244764db210f77c2b1aae0dbd06c73927e8bc431b",
+    "nemo_native_join.py": "e1e82a5e1caf799a535ec2475a7905ede42930c494f9b4518a85aa31b44f765b"
+  },
+  "campaign_id": "MOCK_ONLY_CAMPAIGN",
+  "capture_contract": {
+    "analysis_artifacts": {
+      "autokernel_profile_beliefs.py": {
+        "path": "/dev/shm/refactor-repack-oracle-fingerprint-20261030/scripts/benchmark/autokernel_profile_beliefs.py",
+        "sha256": "d881c9b639622ba41e96237244764db210f77c2b1aae0dbd06c73927e8bc431b",
+        "size": 21135
+      },
+      "nemo_native_join.py": {
+        "path": "/dev/shm/refactor-repack-oracle-fingerprint-20261030/scripts/benchmark/nemo_native_join.py",
+        "sha256": "e1e82a5e1caf799a535ec2475a7905ede42930c494f9b4518a85aa31b44f765b",
+        "size": 41518
+      }
+    },
+    "analysis_sources": {
+      "autokernel_profile_beliefs.py": "d881c9b639622ba41e96237244764db210f77c2b1aae0dbd06c73927e8bc431b",
+      "nemo_native_join.py": "e1e82a5e1caf799a535ec2475a7905ede42930c494f9b4518a85aa31b44f765b"
+    },
+    "argv": [
+      "env",
+      "-u",
+      "GGML_CUDA_DISABLE_GRAPHS",
+      "LLAMA_NATIVE_ROCTX_LIBRARY=/dev/shm/nemo-native-end-to-end-MOCK_ONLY-cfqa2tr6/MOCK_ONLY_roctx",
+      "numactl",
+      "--membind=3",
+      "--",
+      "taskset",
+      "-c",
+      "184-191",
+      "/dev/shm/nemo-native-end-to-end-MOCK_ONLY-cfqa2tr6/MOCK_ONLY_interpreter",
+      "/dev/shm/nemo-native-end-to-end-MOCK_ONLY-cfqa2tr6/MOCK_ONLY_profiler",
+      "--kernel-trace",
+      "--memory-copy-trace",
+      "--hip-trace",
+      "--marker-trace",
+      "--stats",
+      "--output-format",
+      "csv",
+      "-d",
+      "/dev/shm/nemo-native-end-to-end-MOCK_ONLY-cfqa2tr6/trace",
+      "-o",
+      "prof",
+      "--",
+      "/dev/shm/nemo-native-end-to-end-MOCK_ONLY-cfqa2tr6/MOCK_ONLY_server",
+      "-m",
+      "/dev/shm/nemo-native-end-to-end-MOCK_ONLY-cfqa2tr6/MOCK_ONLY_model",
+      "--host",
+      "127.0.0.1",
+      "--port",
+      "19111",
+      "--batch-size",
+      "2048",
+      "--ubatch-size",
+      "512",
+      "--ctx-size",
+      "16384",
+      "--parallel",
+      "1",
+      "-ngl",
+      "999",
+      "--cache-type-k",
+      "q8_0",
+      "--cache-type-v",
+      "q8_0",
+      "--flash-attn",
+      "on",
+      "--jinja",
+      "-t",
+      "8"
+    ],
+    "artifacts": {
+      "capture_source_manifest": {
+        "path": "/dev/shm/nemo-native-end-to-end-MOCK_ONLY-cfqa2tr6/MOCK_ONLY_capture_source_manifest",
+        "sha256": "fe683e76ffee1117f733ecef65c2aa84de1d0e414713d14d1e69b86134a3ea69",
+        "size": 43
+      },
+      "claim_module": {
+        "path": "/dev/shm/nemo-native-end-to-end-MOCK_ONLY-cfqa2tr6/MOCK_ONLY_claim_module",
+        "sha256": "daae79711497072210897294c3b02b6c4fd799207ea6aef8a01aa86faa9e68a8",
+        "size": 32
+      },
+      "claim_schemas": {
+        "path": "/dev/shm/nemo-native-end-to-end-MOCK_ONLY-cfqa2tr6/MOCK_ONLY_claim_schemas",
+        "sha256": "04d5a140a20f4286d90d2def801012a8734a527a9ac3c8b2dfd2cfa23c647f23",
+        "size": 33
+      },
+      "contract_module": {
+        "path": "/dev/shm/refactor-repack-oracle-fingerprint-20261030/scripts/benchmark/nemo_native_join.py",
+        "sha256": "e1e82a5e1caf799a535ec2475a7905ede42930c494f9b4518a85aa31b44f765b",
+        "size": 41518
+      },
+      "interpreter": {
+        "path": "/dev/shm/nemo-native-end-to-end-MOCK_ONLY-cfqa2tr6/MOCK_ONLY_interpreter",
+        "sha256": "0e2d24660f8df931265cb1bd587a82c55efa2291fe36fafc2526f515af60491d",
+        "size": 31
+      },
+      "launcher": {
+        "path": "/dev/shm/nemo-native-end-to-end-MOCK_ONLY-cfqa2tr6/MOCK_ONLY_launcher",
+        "sha256": "fdfd340629af451c11bd5444f39fdbf2e402af382bf8f3344640ef46732c784d",
+        "size": 28
+      },
+      "libggml": {
+        "path": "/dev/shm/nemo-native-end-to-end-MOCK_ONLY-cfqa2tr6/MOCK_ONLY_libggml",
+        "sha256": "ea47065efb75426617cc920d40af5282007f00ce2acf1e3cd0d17f9bb7242b0a",
+        "size": 27
+      },
+      "libggml_base": {
+        "path": "/dev/shm/nemo-native-end-to-end-MOCK_ONLY-cfqa2tr6/MOCK_ONLY_libggml_base",
+        "sha256": "e0338e39b83878fd476586900ae26fdac229dca098dd47cc69d3e016474ed4d3",
+        "size": 32
+      },
+      "libggml_cpu": {
+        "path": "/dev/shm/nemo-native-end-to-end-MOCK_ONLY-cfqa2tr6/MOCK_ONLY_libggml_cpu",
+        "sha256": "c93052c739e8b3e79872be23ce67dfd42957c623ede32c38dca8289f6e86f9a9",
+        "size": 31
+      },
+      "libggml_hip": {
+        "path": "/dev/shm/nemo-native-end-to-end-MOCK_ONLY-cfqa2tr6/MOCK_ONLY_libggml_hip",
+        "sha256": "64a80a3fc7dc9e6d9972624d4b119afb7f0e153e9defd818ba90eb2636883804",
+        "size": 31
+      },
+      "libllama": {
+        "path": "/dev/shm/nemo-native-end-to-end-MOCK_ONLY-cfqa2tr6/MOCK_ONLY_libllama",
+        "sha256": "a1259a2e3facfe03d347b4f3fc81e935192020e828e3cd36a0aaf5d96b2f011e",
+        "size": 28
+      },
+      "model": {
+        "path": "/dev/shm/nemo-native-end-to-end-MOCK_ONLY-cfqa2tr6/MOCK_ONLY_model",
+        "sha256": "ef6d582b9391f18a89d5ec31a277cec2849a3b468c49596a4ebe362c88de4e9b",
+        "size": 25
+      },
+      "module_closure": {
+        "path": "/dev/shm/nemo-native-end-to-end-MOCK_ONLY-cfqa2tr6/MOCK_ONLY_module_closure",
+        "sha256": "05cd591dcac7eeabca645734764a46e565e1bd800a25f572f9efeb99c488394a",
+        "size": 1708
+      },
+      "original_l": {
+        "path": "/dev/shm/nemo-native-end-to-end-MOCK_ONLY-cfqa2tr6/MOCK_ONLY_original_l",
+        "sha256": "e0be53624bb3e0b565920530fdaa4f5510a1339ad24dd906a596c2db4895aa92",
+        "size": 30
+      },
+      "producer": {
+        "path": "/dev/shm/nemo-native-end-to-end-MOCK_ONLY-cfqa2tr6/MOCK_ONLY_producer",
+        "sha256": "dca530b5d997281224b1796413ff471d71e4b7e2b74929673d51056b80c1a758",
+        "size": 28
+      },
+      "profiler": {
+        "path": "/dev/shm/nemo-native-end-to-end-MOCK_ONLY-cfqa2tr6/MOCK_ONLY_profiler",
+        "sha256": "d0f614058b58d84775b9506c5988a450eab546d370fca7459e71133d8ebd6f4e",
+        "size": 28
+      },
+      "profiler_sdk": {
+        "path": "/dev/shm/nemo-native-end-to-end-MOCK_ONLY-cfqa2tr6/MOCK_ONLY_profiler_sdk",
+        "sha256": "e477da97b7cb14be04b957e07662c5fa6ebabc1129ada5633764fc4cf617172e",
+        "size": 32
+      },
+      "protocol": {
+        "path": "/dev/shm/nemo-native-end-to-end-MOCK_ONLY-cfqa2tr6/MOCK_ONLY_protocol",
+        "sha256": "2186a1d6bf4e44e8d5e39a9873728244df922a1b9ef19df7ef5a1dbea4e44138",
+        "size": 28
+      },
+      "roctx": {
+        "path": "/dev/shm/nemo-native-end-to-end-MOCK_ONLY-cfqa2tr6/MOCK_ONLY_roctx",
+        "sha256": "86f6160149cde05f65acbaccf0b61d535b6d76d739fc648489e59e8144b11dbf",
+        "size": 25
+      },
+      "server": {
+        "path": "/dev/shm/nemo-native-end-to-end-MOCK_ONLY-cfqa2tr6/MOCK_ONLY_server",
+        "sha256": "d9e0b59f621cfda7102e428a1451fc0db5c44b475b7f039aec0f548640bb1792",
+        "size": 26
+      },
+      "source_manifest": {
+        "path": "/dev/shm/nemo-native-end-to-end-MOCK_ONLY-cfqa2tr6/MOCK_ONLY_source_manifest",
+        "sha256": "983b4a4cb9b90e1e83091623419de0a5c8dd567beaea52220cbbd1cbeba81614",
+        "size": 35
+      },
+      "template": {
+        "path": "/dev/shm/nemo-native-end-to-end-MOCK_ONLY-cfqa2tr6/MOCK_ONLY_model",
+        "sha256": "ef6d582b9391f18a89d5ec31a277cec2849a3b468c49596a4ebe362c88de4e9b",
+        "size": 25
+      },
+      "worktree_module": {
+        "path": "/dev/shm/nemo-native-end-to-end-MOCK_ONLY-cfqa2tr6/MOCK_ONLY_worktree_module",
+        "sha256": "77d9ae0f0914f5ee7129d2b2f666196fc884ec757bbe7f543a59cecf87f94954",
+        "size": 35
+      }
+    },
+    "campaign_id": "MOCK_ONLY_CAMPAIGN",
+    "cpu_list": "184-191",
+    "declared_at": "2026-10-30T00:59:00Z",
+    "device_id": "mi210_0",
+    "env": {
+      "set": {
+        "LLAMA_NATIVE_ROCTX_LIBRARY": "/dev/shm/nemo-native-end-to-end-MOCK_ONLY-cfqa2tr6/MOCK_ONLY_roctx"
+      },
+      "unset": [
+        "GGML_CUDA_DISABLE_GRAPHS"
+      ]
+    },
+    "native_base": "ffc1bac82eeca6f9099e1ccd9ba49703c460a115",
+    "native_commit": "b1e820a0ad8bc2192fc38c3c1beda7abf3a28ecf",
+    "pass": "B",
+    "phases": {
+      "M": {
+        "endpoint": "/v1/chat/completions",
+        "payload": {
+          "chat_template_kwargs": {
+            "enable_thinking": false
+          },
+          "max_tokens": 96,
+          "messages": [
+            {
+              "content": "Write a Python function that parses a CSV file into a list of dictionaries, with type inference for integer and float columns, and add a docstring and two usage examples.",
+              "role": "user"
+            }
+          ],
+          "stream": false,
+          "temperature": 0.0,
+          "top_k": 1
+        }
+      },
+      "warm": {
+        "endpoint": "/v1/chat/completions",
+        "payload": {
+          "chat_template_kwargs": {
+            "enable_thinking": false
+          },
+          "max_tokens": 48,
+          "messages": [
+            {
+              "content": "Explain in a short paragraph why the sky is blue.",
+              "role": "user"
+            }
+          ],
+          "stream": false,
+          "temperature": 0.0,
+          "top_k": 1
+        }
+      }
+    },
+    "purpose": "prospective_scored_profile",
+    "schema": "epyc.autokernel.nemo_native_contract.v1",
+    "server_argv": [
+      "/dev/shm/nemo-native-end-to-end-MOCK_ONLY-cfqa2tr6/MOCK_ONLY_server",
+      "-m",
+      "/dev/shm/nemo-native-end-to-end-MOCK_ONLY-cfqa2tr6/MOCK_ONLY_model",
+      "--host",
+      "127.0.0.1",
+      "--port",
+      "19111",
+      "--batch-size",
+      "2048",
+      "--ubatch-size",
+      "512",
+      "--ctx-size",
+      "16384",
+      "--parallel",
+      "1",
+      "-ngl",
+      "999",
+      "--cache-type-k",
+      "q8_0",
+      "--cache-type-v",
+      "q8_0",
+      "--flash-attn",
+      "on",
+      "--jinja",
+      "-t",
+      "8"
+    ],
+    "template_mode": "embedded_gguf",
+    "trace_dir": "/dev/shm/nemo-native-end-to-end-MOCK_ONLY-cfqa2tr6/trace"
+  },
+  "declared_at": "2026-10-30T00:59:00Z",
+  "device_claim_open": {
+    "acquired_at": "2026-10-30T00:58:00Z",
+    "campaign_id": "MOCK_ONLY_CAMPAIGN",
+    "claim_id": "MOCK_ONLY_CLAIM",
+    "device_id": "mi210_0",
+    "expires_at": "2026-10-30T02:00:00Z",
+    "holder_boot_id": "MOCK_ONLY_BOOT",
+    "holder_pid": 303,
+    "holder_start_ticks": 404,
+    "lock_path": "/mnt/raid0/llm/tmp/gpu_device.mi210_0.lock",
+    "purpose": "MOCK_ONLY control",
+    "schema": "epyc.autokernel.device_claim_receipt.v1",
+    "state": "held"
+  },
+  "device_claim_released": {
+    "acquired_at": "2026-10-30T00:58:00Z",
+    "campaign_id": "MOCK_ONLY_CAMPAIGN",
+    "claim_id": "MOCK_ONLY_CLAIM",
+    "device_id": "mi210_0",
+    "expires_at": "2026-10-30T02:00:00Z",
+    "holder_boot_id": "MOCK_ONLY_BOOT",
+    "holder_pid": 303,
+    "holder_start_ticks": 404,
+    "lock_path": "/mnt/raid0/llm/tmp/gpu_device.mi210_0.lock",
+    "purpose": "MOCK_ONLY control",
+    "released_at": "2026-10-30T01:02:00Z",
+    "schema": "epyc.autokernel.device_claim_receipt.v1",
+    "state": "held"
+  },
+  "ended_at": "2026-10-30T01:01:00Z",
+  "files": {
+    "agents": {
+      "path": "agents.csv",
+      "sha256": "8b8ecb18c838a34ddf6ccd9a9ec3cf3019e7d0179bf06c331d5be0af62764928"
+    },
+    "hip": {
+      "path": "hip.csv",
+      "sha256": "f3d3be2e916f498376c7df51e62d4d4f5e7df56a7b3da260f1dfb6d21308cc33"
+    },
+    "kernels": {
+      "path": "kernels.csv",
+      "sha256": "77e0f5d3153be0814867cba33b234a32a5a177bdc95e4b3fc10061b46fb3a057"
+    },
+    "markers": {
+      "path": "markers.csv",
+      "sha256": "9e14f021a9ebcaca4825114b2b164379802ed7ec4eccbfdbdaaa83929dcf3756"
+    },
+    "native": {
+      "path": "native.jsonl",
+      "sha256": "d02762a2b479f00e5b64fa6e5e610330e1c6bcb6c1bc3822d7b9bc3f3380e36b"
+    },
+    "run": {
+      "path": "run.json",
+      "sha256": "fb2d3ea3244c6555a5cdd6f606cb61cdea385dbea2772dfd6c09109b634bc700"
+    }
+  },
+  "purpose": "prospective_scored_profile",
+  "schema": "epyc.autokernel.nemo_native_capture.v1",
+  "started_at": "2026-10-30T01:00:00Z",
+  "status": "complete"
+}

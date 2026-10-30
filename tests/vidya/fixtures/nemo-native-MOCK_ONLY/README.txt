@@ -1,0 +1,1 @@
+SYNTHETIC UNIT FIXTURE ONLY. Generated through the actual proposed native finalizer. No model/native run, device claim, performance measurement, original NEMO acceptance or ingestion warrant. Tests relocate the source locator and rehash metadata in their own temporary copy.
