@@ -28,3 +28,6 @@ Seven original Paddle rc75 windows filed separately from later rearms: last pre-
 
 
 Matched YaRN CPU/GPU pair completed: CPU13.6293/GPU14.3940, GPU−CPU+.7647 atmatched64Ksettings. Offsetremainsunattributed; no quality/equivalence/speedtick. S0v5 now30accepted/2unknown/13unexposed, fixed45; no redraw. Bothoriginaleventsauditedwithnativehashes. [belief: cc]
+
+
+FA4r5originalA/ON228(224OK/4NF), model10/10withoutNF, server13HTTP200thenprocess-samplingfailure, Babsent; noFA4tick. EightoriginalPaddlepartialsretain20matchedRPCsg38, noRPCsother7; explicitcaptureassociationinference, noqualityclaim. HILR3fournewacceptednativefailedanswers, source22/2/24, no redraw. Originalauditscommitted; future-rearmregionenvironmentfixpassedactualisolatedhelper5-regionfixturesandinstalledatomically, oldsourcebackupretained. EVL10actualarmeracceptedandODL3-case recoveryactualsmokepassed/READY. [belief: cc]

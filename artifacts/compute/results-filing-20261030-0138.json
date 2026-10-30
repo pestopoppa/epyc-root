@@ -1,0 +1,1180 @@
+{
+  "at": "2026-10-30T01:39:38.667338+00:00",
+  "original_events": {
+    "fa4-c5-exact-set-r5-20261030": {
+      "id": "fa4-c5-exact-set-r5-20261030",
+      "ended_file": "/mnt/raid0/llm/tmp/compute-flags/grants/fa4-c5-exact-set-r5-20261030.ended",
+      "end_line": "rc=1 time=2026-10-30T01:09:24Z reason=job-rc-1:exited",
+      "seen_at": "2026-10-30T01:09:45Z",
+      "result_path": "/mnt/raid0/llm/tmp/codex-ni-fa4-exact-set-successor-r5-20261030/NORMAL-COMPLETE.json",
+      "scratch_root": "/mnt/raid0/llm/tmp/codex-ni-fa4-exact-set-successor-r5-20261030",
+      "decision_rule": "Diagnostic only: retain exact 228-case native outcomes and preserve differences. No correctness-equivalence, mechanism, timing/performance, or promotion claim.",
+      "class": "diagnostic",
+      "owner": "codex-ni"
+    },
+    "codex3-pip02-paddle-relocatable-r11-g38-20261029": {
+      "id": "codex3-pip02-paddle-relocatable-r11-g38-20261029",
+      "ended_file": "/mnt/raid0/llm/tmp/compute-flags/grants/codex3-pip02-paddle-relocatable-r11-g38-20261029.ended",
+      "end_line": "rc=75 time=2026-10-30T01:12:11Z reason=job-rc-75:exited",
+      "seen_at": "2026-10-30T01:12:50Z",
+      "result_path": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-relocatable-r11-20261030/DONE-38",
+      "scratch_root": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-r11-next4-20261030/group-38",
+      "decision_rule": "Collect original fresh English Paddle shards[38, 39, 40], native full layout/crop/recognition/assembly, temperature0,4096outputtokens,8192contextslot,np12. Preserve original requests and unknowns; exact cached replay only; native prospective source-bound page finish receipt. Collection diagnostic; no TEDS/adoption verdict.",
+      "class": "diagnostic",
+      "owner": "codex3"
+    },
+    "codex3-pip02-paddle-relocatable-r11-g41-20261029": {
+      "id": "codex3-pip02-paddle-relocatable-r11-g41-20261029",
+      "ended_file": "/mnt/raid0/llm/tmp/compute-flags/grants/codex3-pip02-paddle-relocatable-r11-g41-20261029.ended",
+      "end_line": "rc=75 time=2026-10-30T01:12:00Z reason=job-rc-75:exited",
+      "seen_at": "2026-10-30T01:12:50Z",
+      "result_path": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-relocatable-r11-20261030/DONE-41",
+      "scratch_root": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-r11-next4-20261030/group-41",
+      "decision_rule": "Collect original fresh English Paddle shards[41, 42, 43], native full layout/crop/recognition/assembly, temperature0,4096outputtokens,8192contextslot,np12. Preserve original requests and unknowns; exact cached replay only; native prospective source-bound page finish receipt. Collection diagnostic; no TEDS/adoption verdict.",
+      "class": "diagnostic",
+      "owner": "codex3"
+    },
+    "codex3-pip02-paddle-relocatable-r11-g44-20261029": {
+      "id": "codex3-pip02-paddle-relocatable-r11-g44-20261029",
+      "ended_file": "/mnt/raid0/llm/tmp/compute-flags/grants/codex3-pip02-paddle-relocatable-r11-g44-20261029.ended",
+      "end_line": "rc=75 time=2026-10-30T01:15:04Z reason=job-rc-75:exited",
+      "seen_at": "2026-10-30T01:15:56Z",
+      "result_path": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-relocatable-r11-20261030/DONE-44",
+      "scratch_root": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-r11-next4-20261030/group-44",
+      "decision_rule": "Collect original fresh English Paddle shards[44, 45, 46], native full layout/crop/recognition/assembly, temperature0,4096outputtokens,8192contextslot,np12. Preserve original requests and unknowns; exact cached replay only; native prospective source-bound page finish receipt. Collection diagnostic; no TEDS/adoption verdict.",
+      "class": "diagnostic",
+      "owner": "codex3"
+    },
+    "codex3-pip02-paddle-relocatable-r11-g47-20261029": {
+      "id": "codex3-pip02-paddle-relocatable-r11-g47-20261029",
+      "ended_file": "/mnt/raid0/llm/tmp/compute-flags/grants/codex3-pip02-paddle-relocatable-r11-g47-20261029.ended",
+      "end_line": "rc=75 time=2026-10-30T01:15:06Z reason=job-rc-75:exited",
+      "seen_at": "2026-10-30T01:15:56Z",
+      "result_path": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-relocatable-r11-20261030/DONE-47",
+      "scratch_root": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-r11-next4-20261030/group-47",
+      "decision_rule": "Collect original fresh English Paddle shards[47, 48, 49], native full layout/crop/recognition/assembly, temperature0,4096outputtokens,8192contextslot,np12. Preserve original requests and unknowns; exact cached replay only; native prospective source-bound page finish receipt. Collection diagnostic; no TEDS/adoption verdict.",
+      "class": "diagnostic",
+      "owner": "codex3"
+    },
+    "codex3-pip02-paddle-relocatable-r11-g50-20261029": {
+      "id": "codex3-pip02-paddle-relocatable-r11-g50-20261029",
+      "ended_file": "/mnt/raid0/llm/tmp/compute-flags/grants/codex3-pip02-paddle-relocatable-r11-g50-20261029.ended",
+      "end_line": "rc=75 time=2026-10-30T01:15:07Z reason=job-rc-75:exited",
+      "seen_at": "2026-10-30T01:15:56Z",
+      "result_path": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-relocatable-r11-20261030/DONE-50",
+      "scratch_root": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-r11-next8-20261030/group-50",
+      "decision_rule": "Collect original fresh English Paddle shards[50, 51, 52], native full layout/crop/recognition/assembly, temperature0,4096outputtokens,8192contextslot,np12. Preserve original requests and unknowns; exact cached replay only; native prospective source-bound page finish receipt. Collection diagnostic; no TEDS/adoption verdict.",
+      "class": "diagnostic",
+      "owner": "codex3"
+    },
+    "codex3-pip02-paddle-relocatable-r11-g53-20261029": {
+      "id": "codex3-pip02-paddle-relocatable-r11-g53-20261029",
+      "ended_file": "/mnt/raid0/llm/tmp/compute-flags/grants/codex3-pip02-paddle-relocatable-r11-g53-20261029.ended",
+      "end_line": "rc=75 time=2026-10-30T01:15:09Z reason=job-rc-75:exited",
+      "seen_at": "2026-10-30T01:15:56Z",
+      "result_path": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-relocatable-r11-20261030/DONE-53",
+      "scratch_root": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-r11-next8-20261030/group-53",
+      "decision_rule": "Collect original fresh English Paddle shards[53, 54, 55], native full layout/crop/recognition/assembly, temperature0,4096outputtokens,8192contextslot,np12. Preserve original requests and unknowns; exact cached replay only; native prospective source-bound page finish receipt. Collection diagnostic; no TEDS/adoption verdict.",
+      "class": "diagnostic",
+      "owner": "codex3"
+    },
+    "codex3-pip02-paddle-relocatable-r11-g56-20261029": {
+      "id": "codex3-pip02-paddle-relocatable-r11-g56-20261029",
+      "ended_file": "/mnt/raid0/llm/tmp/compute-flags/grants/codex3-pip02-paddle-relocatable-r11-g56-20261029.ended",
+      "end_line": "rc=75 time=2026-10-30T01:20:16Z reason=job-rc-75:exited",
+      "seen_at": "2026-10-30T01:21:06Z",
+      "result_path": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-relocatable-r11-20261030/DONE-56",
+      "scratch_root": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-r11-next8-20261030/group-56",
+      "decision_rule": "Collect original fresh English Paddle shards[56, 57, 58], native full layout/crop/recognition/assembly, temperature0,4096outputtokens,8192contextslot,np12. Preserve original requests and unknowns; exact cached replay only; native prospective source-bound page finish receipt. Collection diagnostic; no TEDS/adoption verdict.",
+      "class": "diagnostic",
+      "owner": "codex3"
+    },
+    "codex3-pip02-paddle-relocatable-r11-g59-20261029": {
+      "id": "codex3-pip02-paddle-relocatable-r11-g59-20261029",
+      "ended_file": "/mnt/raid0/llm/tmp/compute-flags/grants/codex3-pip02-paddle-relocatable-r11-g59-20261029.ended",
+      "end_line": "rc=75 time=2026-10-30T01:20:17Z reason=job-rc-75:exited",
+      "seen_at": "2026-10-30T01:21:06Z",
+      "result_path": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-relocatable-r11-20261030/DONE-59",
+      "scratch_root": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-r11-next8-20261030/group-59",
+      "decision_rule": "Collect original fresh English Paddle shards[59, 60, 61], native full layout/crop/recognition/assembly, temperature0,4096outputtokens,8192contextslot,np12. Preserve original requests and unknowns; exact cached replay only; native prospective source-bound page finish receipt. Collection diagnostic; no TEDS/adoption verdict.",
+      "class": "diagnostic",
+      "owner": "codex3"
+    }
+  },
+  "fa4": {
+    "native_sha256": {
+      "/mnt/raid0/llm/tmp/codex-ni-fa4-exact-set-successor-r5-20261030/PREDECLARATION.md": "d4b636ddf5655db71ee4e6a797d524711b0e89423175daf6b140624fa433ebe6",
+      "/mnt/raid0/llm/tmp/codex-ni-fa4-exact-set-successor-r5-20261030/driver.py": "a58a59210bd1e53b915b61e754644ca7c75724ad63a50c4af89a2932165c4d34",
+      "/mnt/raid0/llm/tmp/codex-ni-fa4-exact-set-successor-r5-20261030/runs/20261030T010721Z-2629178/RUN_RECORD.json": "226ba6da8f5f36b42316f115f09c19cebb78d0be9be889b16107aa64b1ce01e2",
+      "/mnt/raid0/llm/tmp/codex-ni-fa4-exact-set-successor-r5-20261030/runs/20261030T010721Z-2629178/FAILED.json": "d2bd8e4bc9abb9d70a49aa90c76aa1ea534b001afc7147aa1ad2b3cb83741498",
+      "/mnt/raid0/llm/tmp/codex-ni-fa4-exact-set-successor-r5-20261030/runs/20261030T010721Z-2629178/nan_A.native": "fa6b311a0640dcf0b68b0688adcd79b2b37b02f6e13e0dc1fafe33e984c12fba",
+      "/mnt/raid0/llm/tmp/codex-ni-fa4-exact-set-successor-r5-20261030/runs/20261030T010721Z-2629178/model_A/verdict.txt": "ebf524f0bfe99197faff77e75cf3c57fef4ffbda52ca3e3297c772e0b2c5c539",
+      "/mnt/raid0/llm/tmp/codex-ni-fa4-exact-set-successor-r5-20261030/runs/20261030T010721Z-2629178/server_A/orig/requests.jsonl": "2c9acd3dc13a854d12ce4954b9a7de6e5807bd3788b855685abf3bd619148d23",
+      "/mnt/raid0/llm/tmp/codex-ni-fa4-exact-set-successor-r5-20261030/runs/20261030T010721Z-2629178/native_records/nan_A.json": "6dc9790226368a25812efc539d581a147f4d0bbfaed1c6443028780c9b7bbaa8",
+      "/mnt/raid0/llm/tmp/codex-ni-fa4-exact-set-successor-r5-20261030/runs/20261030T010721Z-2629178/native_records/model_A.json": "471c4230a6d8e93ad51866f897f974f38e613c9e2a2b8171a2c4350836a6923e",
+      "/mnt/raid0/llm/tmp/codex-ni-fa4-exact-set-successor-r5-20261030/runs/20261030T010721Z-2629178/native_records/server_A.json": "c223b6b6384f99fa3d3d19f46c35721c9d0464fdc82b2d0a9ce575546192d6a7"
+    },
+    "source": "c72ec82f5417bb2937310326120f149b665e8400",
+    "input_keys": 228,
+    "flagged": [
+      [
+        "512",
+        "4096",
+        "bias1024",
+        "diffuse",
+        "f16",
+        "tail"
+      ],
+      [
+        "512",
+        "4096",
+        "bias1024",
+        "diffuse",
+        "q8_0",
+        "tail"
+      ],
+      [
+        "64",
+        "2048",
+        "bias1024",
+        "diffuse",
+        "f16",
+        "tail"
+      ],
+      [
+        "64",
+        "2048",
+        "bias1024",
+        "diffuse",
+        "q8_0",
+        "tail"
+      ]
+    ],
+    "model_A": "native rc0, 10 runs, 0 nonfinite",
+    "server_A_request_rows": 13,
+    "server_A_http200": 13,
+    "stages": {
+      "nan_A": {
+        "partial": false,
+        "error": null,
+        "cleanup_verified": true
+      },
+      "model_A": {
+        "partial": false,
+        "error": null,
+        "cleanup_verified": true
+      },
+      "server_A": {
+        "partial": true,
+        "error": "ProcessLookupError(3, 'No such process')",
+        "cleanup_verified": true
+      }
+    },
+    "failed": {
+      "cleanup_error": null,
+      "cleanup_retry_errors": [],
+      "cleanup_verified": true,
+      "error": "ProcessLookupError(3, 'No such process')",
+      "error_traceback": "Traceback (most recent call last):\n  File \"/mnt/raid0/llm/tmp/codex-ni-fa4-exact-set-successor-r5-20261030/driver.py\", line 1353, in <module>\n    main()\n    ~~~~^^\n  File \"/mnt/raid0/llm/tmp/codex-ni-fa4-exact-set-successor-r5-20261030/driver.py\", line 1127, in main\n    run('server_' + label, ['bash', str(D / 'df29/df29_server.sh'), str(image), str(OUT / ('server_' + label)),\n    ~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n         '--arm', label, '--port', str(port), '--cap', '300'], image, 350, native_path=OUT / ('server_' + label) / 'verdicts.txt')\n         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/mnt/raid0/llm/tmp/codex-ni-fa4-exact-set-successor-r5-20261030/driver.py\", line 882, in run\n    proofs += sample(stage, identity, image / 'bin')\n              ~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/mnt/raid0/llm/tmp/codex-ni-fa4-exact-set-successor-r5-20261030/driver.py\", line 620, in sample\n    allowed = next(x.split(':', 1)[1].strip() for x in (task / 'status').read_text().splitlines() if x.startswith('Cpus_allowed_list:'))\n                                                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~^^\n  File \"/usr/lib/python3.13/pathlib/_local.py\", line 548, in read_text\n    return PathBase.read_text(self, encoding, errors, newline)\n           ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/lib/python3.13/pathlib/_abc.py\", line 633, in read_text\n    return f.read()\n           ~~~~~~^^\nProcessLookupError: [Errno 3] No such process\n",
+      "exit_code": 1,
+      "partial": false,
+      "status": "INCOMPLETE"
+    },
+    "off_arm": "not run in this window",
+    "full_protocol_complete": false
+  },
+  "paddle": {
+    "38": {
+      "outer_event": {
+        "id": "codex3-pip02-paddle-relocatable-r11-g38-20261029",
+        "ended_file": "/mnt/raid0/llm/tmp/compute-flags/grants/codex3-pip02-paddle-relocatable-r11-g38-20261029.ended",
+        "end_line": "rc=75 time=2026-10-30T01:12:11Z reason=job-rc-75:exited",
+        "seen_at": "2026-10-30T01:12:50Z",
+        "result_path": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-relocatable-r11-20261030/DONE-38",
+        "scratch_root": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-r11-next4-20261030/group-38",
+        "decision_rule": "Collect original fresh English Paddle shards[38, 39, 40], native full layout/crop/recognition/assembly, temperature0,4096outputtokens,8192contextslot,np12. Preserve original requests and unknowns; exact cached replay only; native prospective source-bound page finish receipt. Collection diagnostic; no TEDS/adoption verdict.",
+        "class": "diagnostic",
+        "owner": "codex3"
+      },
+      "outer_finished_utc": "2026-10-30T01:12:11Z",
+      "original_window_attempts": [
+        {
+          "capture": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-relocatable-r11-20261030/attempts/codex3-pip02-paddle-relocatable-r11-g38-20261029-9c6b79e9e6e141b6b318a9f692d5dc5c/capture.json",
+          "capture_sha256": "3d7d742981a97cb5f1288260dbf7b2cc68265d21e28d33124c57bf1777e800a6",
+          "started_utc": "2026-10-30T01:03:04Z",
+          "grant": "regions=72-95 start=2026-10-30T01:03Z end=2026-10-30T06:00Z\n",
+          "grant_sha256": "fd158b60fa9c6ce25f3e81b17666d35f3ef2c32ad5cbb68d8e8f65d5713280d3",
+          "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+          "result": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-relocatable-r11-20261030/attempts/codex3-pip02-paddle-relocatable-r11-g38-20261029-9c6b79e9e6e141b6b318a9f692d5dc5c/result.json",
+          "result_sha256": "d3e37790e78ff646e3ba3fb2e2a2c0848415cd2f3195345695f66cbec577ebe0",
+          "rc": 75,
+          "reason": null,
+          "error": null,
+          "factory_present": true,
+          "source_registry_sha256": "20b60b7ac3fb6fcd4db6d49163eea7d3158a4be0c6b4a94e04a2fab850226ebb",
+          "within_original_window": true,
+          "native_finished_at": null
+        },
+        {
+          "capture": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-relocatable-r11-20261030/attempts/codex3-pip02-paddle-relocatable-r11-g38-20261029-774edb0c3bce49c9ac5409ea66d57134/capture.json",
+          "capture_sha256": "34de32e5382899b6f13fd42d497a52c44ed167fcf92701f372d6c04adcaf34f8",
+          "started_utc": "2026-10-30T01:05:33Z",
+          "grant": "regions=72-95 start=2026-10-30T01:03Z end=2026-10-30T06:00Z\n",
+          "grant_sha256": "fd158b60fa9c6ce25f3e81b17666d35f3ef2c32ad5cbb68d8e8f65d5713280d3",
+          "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+          "result": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-relocatable-r11-20261030/attempts/codex3-pip02-paddle-relocatable-r11-g38-20261029-774edb0c3bce49c9ac5409ea66d57134/result.json",
+          "result_sha256": "a2231d104ce30fa77b89fc6b666a19504a1c66a967b4342cffc0a63fe4e9980a",
+          "rc": 75,
+          "reason": null,
+          "error": null,
+          "factory_present": true,
+          "source_registry_sha256": "20b60b7ac3fb6fcd4db6d49163eea7d3158a4be0c6b4a94e04a2fab850226ebb",
+          "within_original_window": true,
+          "native_finished_at": null
+        },
+        {
+          "capture": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-relocatable-r11-20261030/attempts/codex3-pip02-paddle-relocatable-r11-g38-20261029-59f6bf6a9cbb4ef7b8f3768651b1c851/capture.json",
+          "capture_sha256": "c12c2a299a02b5cb35aa921cd890ea036107bc37e34dd912c9bed6f98f502342",
+          "started_utc": "2026-10-30T01:07:42Z",
+          "grant": "regions=72-95 start=2026-10-30T01:03Z end=2026-10-30T06:00Z\n",
+          "grant_sha256": "fd158b60fa9c6ce25f3e81b17666d35f3ef2c32ad5cbb68d8e8f65d5713280d3",
+          "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+          "result": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-relocatable-r11-20261030/attempts/codex3-pip02-paddle-relocatable-r11-g38-20261029-59f6bf6a9cbb4ef7b8f3768651b1c851/result.json",
+          "result_sha256": "bf7da0bb53f4de6948653a3b30144728edff1448c3d93068421b22006dd359f1",
+          "rc": 75,
+          "reason": null,
+          "error": null,
+          "factory_present": true,
+          "source_registry_sha256": "20b60b7ac3fb6fcd4db6d49163eea7d3158a4be0c6b4a94e04a2fab850226ebb",
+          "within_original_window": true,
+          "native_finished_at": null
+        },
+        {
+          "capture": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-relocatable-r11-20261030/attempts/codex3-pip02-paddle-relocatable-r11-g38-20261029-b0dc255877e248a2b7f3abb5563a221f/capture.json",
+          "capture_sha256": "c14b6641f77b27a5df664e28d028f1d7205198efb6dbe4023f8d4c802d376041",
+          "started_utc": "2026-10-30T01:09:35Z",
+          "grant": "regions=72-95 start=2026-10-30T01:03Z end=2026-10-30T06:00Z\n",
+          "grant_sha256": "fd158b60fa9c6ce25f3e81b17666d35f3ef2c32ad5cbb68d8e8f65d5713280d3",
+          "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+          "result": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-relocatable-r11-20261030/attempts/codex3-pip02-paddle-relocatable-r11-g38-20261029-b0dc255877e248a2b7f3abb5563a221f/result.json",
+          "result_sha256": "ba0685fe3c20c5eb41422e36bc03d0d10bfb25ead151d27033c2c22b3ff6ce39",
+          "rc": 75,
+          "reason": null,
+          "error": null,
+          "factory_present": true,
+          "source_registry_sha256": "20b60b7ac3fb6fcd4db6d49163eea7d3158a4be0c6b4a94e04a2fab850226ebb",
+          "within_original_window": true,
+          "native_finished_at": null
+        },
+        {
+          "capture": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-relocatable-r11-20261030/attempts/codex3-pip02-paddle-relocatable-r11-g38-20261029-ad620b66fcb34ce69b7fe49ab0027527/capture.json",
+          "capture_sha256": "002e2e9f4f9d134c36b61fbb68de56b6e913304d9079615f2bc191a097645c4f",
+          "started_utc": "2026-10-30T01:11:44Z",
+          "grant": "regions=72-95 start=2026-10-30T01:03Z end=2026-10-30T06:00Z\n",
+          "grant_sha256": "fd158b60fa9c6ce25f3e81b17666d35f3ef2c32ad5cbb68d8e8f65d5713280d3",
+          "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+          "result": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-relocatable-r11-20261030/attempts/codex3-pip02-paddle-relocatable-r11-g38-20261029-ad620b66fcb34ce69b7fe49ab0027527/result.json",
+          "result_sha256": "bcf50dbfc8d8bde3369100c26891d3993b8c5c43a0eac1b009215516389b83aa",
+          "rc": 75,
+          "reason": "disk floor",
+          "error": "TimeoutError: admission",
+          "factory_present": false,
+          "source_registry_sha256": "20b60b7ac3fb6fcd4db6d49163eea7d3158a4be0c6b4a94e04a2fab850226ebb",
+          "within_original_window": true,
+          "native_finished_at": null
+        }
+      ],
+      "later_distinct_attempts": [],
+      "rpc_by_capture": {
+        "3d7d742981a97cb5f1288260dbf7b2cc68265d21e28d33124c57bf1777e800a6": {
+          "starts": 5,
+          "matched_at_event": 5,
+          "unmatched_at_event": 0,
+          "invalid": 0,
+          "files": [
+            {
+              "start": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-38/shard-38/region-c6e982eb7cd9aca323376232-000000.start.json",
+              "origin_capture_sha256": "3d7d742981a97cb5f1288260dbf7b2cc68265d21e28d33124c57bf1777e800a6",
+              "originated_at": "2026-10-30T01:05:12.278741+00:00",
+              "matched_at_event": true
+            },
+            {
+              "start": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-38/shard-38/region-93a08d9f61238eddcf240420-000000.start.json",
+              "origin_capture_sha256": "3d7d742981a97cb5f1288260dbf7b2cc68265d21e28d33124c57bf1777e800a6",
+              "originated_at": "2026-10-30T01:05:14.562192+00:00",
+              "matched_at_event": true
+            },
+            {
+              "start": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-39/shard-39/region-c52ac2ab571f47983971cbb0-000000.start.json",
+              "origin_capture_sha256": "3d7d742981a97cb5f1288260dbf7b2cc68265d21e28d33124c57bf1777e800a6",
+              "originated_at": "2026-10-30T01:05:11.867338+00:00",
+              "matched_at_event": true
+            },
+            {
+              "start": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-39/shard-39/region-4ce21cd26daa7e0fbd530b1b-000000.start.json",
+              "origin_capture_sha256": "3d7d742981a97cb5f1288260dbf7b2cc68265d21e28d33124c57bf1777e800a6",
+              "originated_at": "2026-10-30T01:05:12.263143+00:00",
+              "matched_at_event": true
+            },
+            {
+              "start": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-39/shard-39/region-b36acff6bf7b480c03112dc6-000000.start.json",
+              "origin_capture_sha256": "3d7d742981a97cb5f1288260dbf7b2cc68265d21e28d33124c57bf1777e800a6",
+              "originated_at": "2026-10-30T01:05:12.021098+00:00",
+              "matched_at_event": true
+            }
+          ]
+        },
+        "34de32e5382899b6f13fd42d497a52c44ed167fcf92701f372d6c04adcaf34f8": {
+          "starts": 5,
+          "matched_at_event": 5,
+          "unmatched_at_event": 0,
+          "invalid": 0,
+          "files": [
+            {
+              "start": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-38/shard-38/region-500123d582661ed9ff08c790-000000.start.json",
+              "origin_capture_sha256": "34de32e5382899b6f13fd42d497a52c44ed167fcf92701f372d6c04adcaf34f8",
+              "originated_at": "2026-10-30T01:07:33.992461+00:00",
+              "matched_at_event": true
+            },
+            {
+              "start": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-38/shard-38/region-93a08d9f61238eddcf240420-000001.start.json",
+              "origin_capture_sha256": "34de32e5382899b6f13fd42d497a52c44ed167fcf92701f372d6c04adcaf34f8",
+              "originated_at": "2026-10-30T01:07:33.993804+00:00",
+              "matched_at_event": true
+            },
+            {
+              "start": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-39/shard-39/region-b36acff6bf7b480c03112dc6-000001.start.json",
+              "origin_capture_sha256": "34de32e5382899b6f13fd42d497a52c44ed167fcf92701f372d6c04adcaf34f8",
+              "originated_at": "2026-10-30T01:07:33.973149+00:00",
+              "matched_at_event": true
+            },
+            {
+              "start": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-39/shard-39/region-1bfb33cdc598565b4fcee453-000000.start.json",
+              "origin_capture_sha256": "34de32e5382899b6f13fd42d497a52c44ed167fcf92701f372d6c04adcaf34f8",
+              "originated_at": "2026-10-30T01:07:34.313662+00:00",
+              "matched_at_event": true
+            },
+            {
+              "start": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-40/shard-40/region-a8d721d6163959fada843e0c-000000.start.json",
+              "origin_capture_sha256": "34de32e5382899b6f13fd42d497a52c44ed167fcf92701f372d6c04adcaf34f8",
+              "originated_at": "2026-10-30T01:07:34.003140+00:00",
+              "matched_at_event": true
+            }
+          ]
+        },
+        "c12c2a299a02b5cb35aa921cd890ea036107bc37e34dd912c9bed6f98f502342": {
+          "starts": 5,
+          "matched_at_event": 5,
+          "unmatched_at_event": 0,
+          "invalid": 0,
+          "files": [
+            {
+              "start": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-38/shard-38/region-c6e982eb7cd9aca323376232-000001.start.json",
+              "origin_capture_sha256": "c12c2a299a02b5cb35aa921cd890ea036107bc37e34dd912c9bed6f98f502342",
+              "originated_at": "2026-10-30T01:09:22.221985+00:00",
+              "matched_at_event": true
+            },
+            {
+              "start": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-38/shard-38/region-66fefd3be200d117489c565a-000000.start.json",
+              "origin_capture_sha256": "c12c2a299a02b5cb35aa921cd890ea036107bc37e34dd912c9bed6f98f502342",
+              "originated_at": "2026-10-30T01:09:22.123884+00:00",
+              "matched_at_event": true
+            },
+            {
+              "start": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-39/shard-39/region-1bfb33cdc598565b4fcee453-000001.start.json",
+              "origin_capture_sha256": "c12c2a299a02b5cb35aa921cd890ea036107bc37e34dd912c9bed6f98f502342",
+              "originated_at": "2026-10-30T01:09:21.467087+00:00",
+              "matched_at_event": true
+            },
+            {
+              "start": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-39/shard-39/region-4ce21cd26daa7e0fbd530b1b-000001.start.json",
+              "origin_capture_sha256": "c12c2a299a02b5cb35aa921cd890ea036107bc37e34dd912c9bed6f98f502342",
+              "originated_at": "2026-10-30T01:09:21.437772+00:00",
+              "matched_at_event": true
+            },
+            {
+              "start": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-39/shard-39/region-b36acff6bf7b480c03112dc6-000002.start.json",
+              "origin_capture_sha256": "c12c2a299a02b5cb35aa921cd890ea036107bc37e34dd912c9bed6f98f502342",
+              "originated_at": "2026-10-30T01:09:21.476292+00:00",
+              "matched_at_event": true
+            }
+          ]
+        },
+        "c14b6641f77b27a5df664e28d028f1d7205198efb6dbe4023f8d4c802d376041": {
+          "starts": 5,
+          "matched_at_event": 5,
+          "unmatched_at_event": 0,
+          "invalid": 0,
+          "files": [
+            {
+              "start": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-38/shard-38/region-268056785298e0eb50e365f6-000000.start.json",
+              "origin_capture_sha256": "c14b6641f77b27a5df664e28d028f1d7205198efb6dbe4023f8d4c802d376041",
+              "originated_at": "2026-10-30T01:11:10.790230+00:00",
+              "matched_at_event": true
+            },
+            {
+              "start": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-38/shard-38/region-500123d582661ed9ff08c790-000001.start.json",
+              "origin_capture_sha256": "c14b6641f77b27a5df664e28d028f1d7205198efb6dbe4023f8d4c802d376041",
+              "originated_at": "2026-10-30T01:11:10.757112+00:00",
+              "matched_at_event": true
+            },
+            {
+              "start": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-39/shard-39/region-4ce21cd26daa7e0fbd530b1b-000002.start.json",
+              "origin_capture_sha256": "c14b6641f77b27a5df664e28d028f1d7205198efb6dbe4023f8d4c802d376041",
+              "originated_at": "2026-10-30T01:11:10.567241+00:00",
+              "matched_at_event": true
+            },
+            {
+              "start": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-39/shard-39/region-b36acff6bf7b480c03112dc6-000003.start.json",
+              "origin_capture_sha256": "c14b6641f77b27a5df664e28d028f1d7205198efb6dbe4023f8d4c802d376041",
+              "originated_at": "2026-10-30T01:11:10.583315+00:00",
+              "matched_at_event": true
+            },
+            {
+              "start": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-40/shard-40/region-ec8f77152857aeeb475c4400-000000.start.json",
+              "origin_capture_sha256": "c14b6641f77b27a5df664e28d028f1d7205198efb6dbe4023f8d4c802d376041",
+              "originated_at": "2026-10-30T01:11:10.534213+00:00",
+              "matched_at_event": true
+            }
+          ]
+        },
+        "002e2e9f4f9d134c36b61fbb68de56b6e913304d9079615f2bc191a097645c4f": {
+          "starts": 0,
+          "matched_at_event": 0,
+          "unmatched_at_event": 0,
+          "invalid": 0,
+          "files": []
+        }
+      },
+      "rpc_other_origin_before_end": {
+        "starts": 0,
+        "matched_at_event": 0,
+        "unmatched_at_event": 0,
+        "invalid": 0,
+        "files": []
+      },
+      "mapping_limit": "Capture has started_utc, result has no finished_at. Sequential attempt ordering and outer launcher end associate the last pre-end result with the outer event; this is an inference, not an individually timestamped completion."
+    },
+    "41": {
+      "outer_event": {
+        "id": "codex3-pip02-paddle-relocatable-r11-g41-20261029",
+        "ended_file": "/mnt/raid0/llm/tmp/compute-flags/grants/codex3-pip02-paddle-relocatable-r11-g41-20261029.ended",
+        "end_line": "rc=75 time=2026-10-30T01:12:00Z reason=job-rc-75:exited",
+        "seen_at": "2026-10-30T01:12:50Z",
+        "result_path": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-relocatable-r11-20261030/DONE-41",
+        "scratch_root": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-r11-next4-20261030/group-41",
+        "decision_rule": "Collect original fresh English Paddle shards[41, 42, 43], native full layout/crop/recognition/assembly, temperature0,4096outputtokens,8192contextslot,np12. Preserve original requests and unknowns; exact cached replay only; native prospective source-bound page finish receipt. Collection diagnostic; no TEDS/adoption verdict.",
+        "class": "diagnostic",
+        "owner": "codex3"
+      },
+      "outer_finished_utc": "2026-10-30T01:12:00Z",
+      "original_window_attempts": [
+        {
+          "capture": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-relocatable-r11-20261030/attempts/codex3-pip02-paddle-relocatable-r11-g41-20261029-aacac2a39abc4a8ca074ea50befd753e/capture.json",
+          "capture_sha256": "ddd2b4c539ef596777bdf98f538d4786f3fa9cd93ed8cdfae97a930ca3585bc6",
+          "started_utc": "2026-10-30T01:11:36Z",
+          "grant": "regions=48-71 start=2026-10-30T01:11Z end=2026-10-30T06:00Z\n",
+          "grant_sha256": "f0345f64123f85e3f7c31d719bd26be4ddd9b66e941bff28dc931a2d76014c66",
+          "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+          "result": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-relocatable-r11-20261030/attempts/codex3-pip02-paddle-relocatable-r11-g41-20261029-aacac2a39abc4a8ca074ea50befd753e/result.json",
+          "result_sha256": "b6b6720907778b35b95f9ba013286e9f78c09e9554605d81534de39b9b205316",
+          "rc": 75,
+          "reason": "disk floor",
+          "error": "TimeoutError: admission",
+          "factory_present": false,
+          "source_registry_sha256": "20b60b7ac3fb6fcd4db6d49163eea7d3158a4be0c6b4a94e04a2fab850226ebb",
+          "within_original_window": true,
+          "native_finished_at": null
+        }
+      ],
+      "later_distinct_attempts": [],
+      "rpc_by_capture": {
+        "ddd2b4c539ef596777bdf98f538d4786f3fa9cd93ed8cdfae97a930ca3585bc6": {
+          "starts": 0,
+          "matched_at_event": 0,
+          "unmatched_at_event": 0,
+          "invalid": 0,
+          "files": []
+        }
+      },
+      "rpc_other_origin_before_end": {
+        "starts": 0,
+        "matched_at_event": 0,
+        "unmatched_at_event": 0,
+        "invalid": 0,
+        "files": []
+      },
+      "mapping_limit": "Capture has started_utc, result has no finished_at. Sequential attempt ordering and outer launcher end associate the last pre-end result with the outer event; this is an inference, not an individually timestamped completion."
+    },
+    "44": {
+      "outer_event": {
+        "id": "codex3-pip02-paddle-relocatable-r11-g44-20261029",
+        "ended_file": "/mnt/raid0/llm/tmp/compute-flags/grants/codex3-pip02-paddle-relocatable-r11-g44-20261029.ended",
+        "end_line": "rc=75 time=2026-10-30T01:15:04Z reason=job-rc-75:exited",
+        "seen_at": "2026-10-30T01:15:56Z",
+        "result_path": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-relocatable-r11-20261030/DONE-44",
+        "scratch_root": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-r11-next4-20261030/group-44",
+        "decision_rule": "Collect original fresh English Paddle shards[44, 45, 46], native full layout/crop/recognition/assembly, temperature0,4096outputtokens,8192contextslot,np12. Preserve original requests and unknowns; exact cached replay only; native prospective source-bound page finish receipt. Collection diagnostic; no TEDS/adoption verdict.",
+        "class": "diagnostic",
+        "owner": "codex3"
+      },
+      "outer_finished_utc": "2026-10-30T01:15:04Z",
+      "original_window_attempts": [
+        {
+          "capture": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-relocatable-r11-20261030/attempts/codex3-pip02-paddle-relocatable-r11-g44-20261029-76757ef11721497e99df55dddf1e912e/capture.json",
+          "capture_sha256": "9c34678ca04757108bab128a0734c3ef788c0f9e406cf96e650f25f9f419d778",
+          "started_utc": "2026-10-30T01:14:40Z",
+          "grant": "regions=0-23 start=2026-10-30T01:14Z end=2026-10-30T06:00Z\n",
+          "grant_sha256": "30f68679c8ae323376e06d064e85ada3ae59d23c4b535da22c13d011840c0069",
+          "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+          "result": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-relocatable-r11-20261030/attempts/codex3-pip02-paddle-relocatable-r11-g44-20261029-76757ef11721497e99df55dddf1e912e/result.json",
+          "result_sha256": "ac7f3dee9269038959a882960739bdf540b2f9605ed0d3424c8d6e5cef3b16fa",
+          "rc": 75,
+          "reason": "disk floor",
+          "error": "TimeoutError: admission",
+          "factory_present": false,
+          "source_registry_sha256": "20b60b7ac3fb6fcd4db6d49163eea7d3158a4be0c6b4a94e04a2fab850226ebb",
+          "within_original_window": true,
+          "native_finished_at": null
+        }
+      ],
+      "later_distinct_attempts": [],
+      "rpc_by_capture": {
+        "9c34678ca04757108bab128a0734c3ef788c0f9e406cf96e650f25f9f419d778": {
+          "starts": 0,
+          "matched_at_event": 0,
+          "unmatched_at_event": 0,
+          "invalid": 0,
+          "files": []
+        }
+      },
+      "rpc_other_origin_before_end": {
+        "starts": 0,
+        "matched_at_event": 0,
+        "unmatched_at_event": 0,
+        "invalid": 0,
+        "files": []
+      },
+      "mapping_limit": "Capture has started_utc, result has no finished_at. Sequential attempt ordering and outer launcher end associate the last pre-end result with the outer event; this is an inference, not an individually timestamped completion."
+    },
+    "47": {
+      "outer_event": {
+        "id": "codex3-pip02-paddle-relocatable-r11-g47-20261029",
+        "ended_file": "/mnt/raid0/llm/tmp/compute-flags/grants/codex3-pip02-paddle-relocatable-r11-g47-20261029.ended",
+        "end_line": "rc=75 time=2026-10-30T01:15:06Z reason=job-rc-75:exited",
+        "seen_at": "2026-10-30T01:15:56Z",
+        "result_path": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-relocatable-r11-20261030/DONE-47",
+        "scratch_root": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-r11-next4-20261030/group-47",
+        "decision_rule": "Collect original fresh English Paddle shards[47, 48, 49], native full layout/crop/recognition/assembly, temperature0,4096outputtokens,8192contextslot,np12. Preserve original requests and unknowns; exact cached replay only; native prospective source-bound page finish receipt. Collection diagnostic; no TEDS/adoption verdict.",
+        "class": "diagnostic",
+        "owner": "codex3"
+      },
+      "outer_finished_utc": "2026-10-30T01:15:06Z",
+      "original_window_attempts": [
+        {
+          "capture": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-relocatable-r11-20261030/attempts/codex3-pip02-paddle-relocatable-r11-g47-20261029-efbfc07a49714b4faabd3809b6f2f083/capture.json",
+          "capture_sha256": "8b967f328b8c6fea17fd7b310ed43b6cb72479ce5998057b116eb2fd92a9f484",
+          "started_utc": "2026-10-30T01:14:42Z",
+          "grant": "regions=24-47 start=2026-10-30T01:14Z end=2026-10-30T06:00Z\n",
+          "grant_sha256": "f5b40c8cf830ab10da0898d8c8b4d37a449beaefd60cf90e26e14bece6bbd83c",
+          "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+          "result": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-relocatable-r11-20261030/attempts/codex3-pip02-paddle-relocatable-r11-g47-20261029-efbfc07a49714b4faabd3809b6f2f083/result.json",
+          "result_sha256": "ccd0b132022f27db012961ff958d2ee0aa42ef805f4607cc9b60a0f4f66a0dde",
+          "rc": 75,
+          "reason": "disk floor",
+          "error": "TimeoutError: admission",
+          "factory_present": false,
+          "source_registry_sha256": "20b60b7ac3fb6fcd4db6d49163eea7d3158a4be0c6b4a94e04a2fab850226ebb",
+          "within_original_window": true,
+          "native_finished_at": null
+        }
+      ],
+      "later_distinct_attempts": [],
+      "rpc_by_capture": {
+        "8b967f328b8c6fea17fd7b310ed43b6cb72479ce5998057b116eb2fd92a9f484": {
+          "starts": 0,
+          "matched_at_event": 0,
+          "unmatched_at_event": 0,
+          "invalid": 0,
+          "files": []
+        }
+      },
+      "rpc_other_origin_before_end": {
+        "starts": 0,
+        "matched_at_event": 0,
+        "unmatched_at_event": 0,
+        "invalid": 0,
+        "files": []
+      },
+      "mapping_limit": "Capture has started_utc, result has no finished_at. Sequential attempt ordering and outer launcher end associate the last pre-end result with the outer event; this is an inference, not an individually timestamped completion."
+    },
+    "50": {
+      "outer_event": {
+        "id": "codex3-pip02-paddle-relocatable-r11-g50-20261029",
+        "ended_file": "/mnt/raid0/llm/tmp/compute-flags/grants/codex3-pip02-paddle-relocatable-r11-g50-20261029.ended",
+        "end_line": "rc=75 time=2026-10-30T01:15:07Z reason=job-rc-75:exited",
+        "seen_at": "2026-10-30T01:15:56Z",
+        "result_path": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-relocatable-r11-20261030/DONE-50",
+        "scratch_root": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-r11-next8-20261030/group-50",
+        "decision_rule": "Collect original fresh English Paddle shards[50, 51, 52], native full layout/crop/recognition/assembly, temperature0,4096outputtokens,8192contextslot,np12. Preserve original requests and unknowns; exact cached replay only; native prospective source-bound page finish receipt. Collection diagnostic; no TEDS/adoption verdict.",
+        "class": "diagnostic",
+        "owner": "codex3"
+      },
+      "outer_finished_utc": "2026-10-30T01:15:07Z",
+      "original_window_attempts": [
+        {
+          "capture": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-relocatable-r11-20261030/attempts/codex3-pip02-paddle-relocatable-r11-g50-20261029-8a8f6af4829c4ed8a434132e67331a39/capture.json",
+          "capture_sha256": "627169f6342ef5ec7694723aec1dad637a152f7a2101d94ce5da13b509a0c9f3",
+          "started_utc": "2026-10-30T01:14:43Z",
+          "grant": "regions=48-71 start=2026-10-30T01:14Z end=2026-10-30T06:00Z\n",
+          "grant_sha256": "2d1b08984b012bcd650047e9dcc9552ebcbd90d36959487aa1edcb2e9a345fd3",
+          "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+          "result": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-relocatable-r11-20261030/attempts/codex3-pip02-paddle-relocatable-r11-g50-20261029-8a8f6af4829c4ed8a434132e67331a39/result.json",
+          "result_sha256": "8379d2d768c14470a1ac49ce2322a43385310c3431d5c5ccaa514cf43fb22279",
+          "rc": 75,
+          "reason": "disk floor",
+          "error": "TimeoutError: admission",
+          "factory_present": false,
+          "source_registry_sha256": "20b60b7ac3fb6fcd4db6d49163eea7d3158a4be0c6b4a94e04a2fab850226ebb",
+          "within_original_window": true,
+          "native_finished_at": null
+        }
+      ],
+      "later_distinct_attempts": [],
+      "rpc_by_capture": {
+        "627169f6342ef5ec7694723aec1dad637a152f7a2101d94ce5da13b509a0c9f3": {
+          "starts": 0,
+          "matched_at_event": 0,
+          "unmatched_at_event": 0,
+          "invalid": 0,
+          "files": []
+        }
+      },
+      "rpc_other_origin_before_end": {
+        "starts": 0,
+        "matched_at_event": 0,
+        "unmatched_at_event": 0,
+        "invalid": 0,
+        "files": []
+      },
+      "mapping_limit": "Capture has started_utc, result has no finished_at. Sequential attempt ordering and outer launcher end associate the last pre-end result with the outer event; this is an inference, not an individually timestamped completion."
+    },
+    "53": {
+      "outer_event": {
+        "id": "codex3-pip02-paddle-relocatable-r11-g53-20261029",
+        "ended_file": "/mnt/raid0/llm/tmp/compute-flags/grants/codex3-pip02-paddle-relocatable-r11-g53-20261029.ended",
+        "end_line": "rc=75 time=2026-10-30T01:15:09Z reason=job-rc-75:exited",
+        "seen_at": "2026-10-30T01:15:56Z",
+        "result_path": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-relocatable-r11-20261030/DONE-53",
+        "scratch_root": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-r11-next8-20261030/group-53",
+        "decision_rule": "Collect original fresh English Paddle shards[53, 54, 55], native full layout/crop/recognition/assembly, temperature0,4096outputtokens,8192contextslot,np12. Preserve original requests and unknowns; exact cached replay only; native prospective source-bound page finish receipt. Collection diagnostic; no TEDS/adoption verdict.",
+        "class": "diagnostic",
+        "owner": "codex3"
+      },
+      "outer_finished_utc": "2026-10-30T01:15:09Z",
+      "original_window_attempts": [
+        {
+          "capture": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-relocatable-r11-20261030/attempts/codex3-pip02-paddle-relocatable-r11-g53-20261029-ceb3a24780a84902a8ade7c46b99056c/capture.json",
+          "capture_sha256": "dd8b4bc612b146fc489ceab51f84cdb8fba8d360335a8a604dbae343a8c2fbbf",
+          "started_utc": "2026-10-30T01:14:45Z",
+          "grant": "regions=72-95 start=2026-10-30T01:14Z end=2026-10-30T06:00Z\n",
+          "grant_sha256": "a1f11115175d44fbc5aed32cc4cc1b1fa9f87786897fc6251f299c219fe9b49b",
+          "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+          "result": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-relocatable-r11-20261030/attempts/codex3-pip02-paddle-relocatable-r11-g53-20261029-ceb3a24780a84902a8ade7c46b99056c/result.json",
+          "result_sha256": "87de7abb1ef069e7b4e0d983759e5b8bb5462e75bec535655f3dba1423fd3e8d",
+          "rc": 75,
+          "reason": "disk floor",
+          "error": "TimeoutError: admission",
+          "factory_present": false,
+          "source_registry_sha256": "20b60b7ac3fb6fcd4db6d49163eea7d3158a4be0c6b4a94e04a2fab850226ebb",
+          "within_original_window": true,
+          "native_finished_at": null
+        }
+      ],
+      "later_distinct_attempts": [],
+      "rpc_by_capture": {
+        "dd8b4bc612b146fc489ceab51f84cdb8fba8d360335a8a604dbae343a8c2fbbf": {
+          "starts": 0,
+          "matched_at_event": 0,
+          "unmatched_at_event": 0,
+          "invalid": 0,
+          "files": []
+        }
+      },
+      "rpc_other_origin_before_end": {
+        "starts": 0,
+        "matched_at_event": 0,
+        "unmatched_at_event": 0,
+        "invalid": 0,
+        "files": []
+      },
+      "mapping_limit": "Capture has started_utc, result has no finished_at. Sequential attempt ordering and outer launcher end associate the last pre-end result with the outer event; this is an inference, not an individually timestamped completion."
+    },
+    "56": {
+      "outer_event": {
+        "id": "codex3-pip02-paddle-relocatable-r11-g56-20261029",
+        "ended_file": "/mnt/raid0/llm/tmp/compute-flags/grants/codex3-pip02-paddle-relocatable-r11-g56-20261029.ended",
+        "end_line": "rc=75 time=2026-10-30T01:20:16Z reason=job-rc-75:exited",
+        "seen_at": "2026-10-30T01:21:06Z",
+        "result_path": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-relocatable-r11-20261030/DONE-56",
+        "scratch_root": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-r11-next8-20261030/group-56",
+        "decision_rule": "Collect original fresh English Paddle shards[56, 57, 58], native full layout/crop/recognition/assembly, temperature0,4096outputtokens,8192contextslot,np12. Preserve original requests and unknowns; exact cached replay only; native prospective source-bound page finish receipt. Collection diagnostic; no TEDS/adoption verdict.",
+        "class": "diagnostic",
+        "owner": "codex3"
+      },
+      "outer_finished_utc": "2026-10-30T01:20:16Z",
+      "original_window_attempts": [
+        {
+          "capture": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-relocatable-r11-20261030/attempts/codex3-pip02-paddle-relocatable-r11-g56-20261029-4c03f9abcf6f42938ab3fd997b6749b4/capture.json",
+          "capture_sha256": "7775f47a9461af42ffd8c08032d6ae375fc982af94ab36635db678975ea9e71a",
+          "started_utc": "2026-10-30T01:19:52Z",
+          "grant": "regions=0-23 start=2026-10-30T01:19Z end=2026-10-30T06:00Z\n",
+          "grant_sha256": "707bc8e63bb4e08726c93d5db9f0932d16812ce076083c451c375be28c76431a",
+          "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+          "result": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-relocatable-r11-20261030/attempts/codex3-pip02-paddle-relocatable-r11-g56-20261029-4c03f9abcf6f42938ab3fd997b6749b4/result.json",
+          "result_sha256": "02cc7d71893cc4d0b02095a040280596c897d2ac9c4220729bcb8377f7d0d767",
+          "rc": 75,
+          "reason": "disk floor",
+          "error": "TimeoutError: admission",
+          "factory_present": false,
+          "source_registry_sha256": "20b60b7ac3fb6fcd4db6d49163eea7d3158a4be0c6b4a94e04a2fab850226ebb",
+          "within_original_window": true,
+          "native_finished_at": null
+        }
+      ],
+      "later_distinct_attempts": [],
+      "rpc_by_capture": {
+        "7775f47a9461af42ffd8c08032d6ae375fc982af94ab36635db678975ea9e71a": {
+          "starts": 0,
+          "matched_at_event": 0,
+          "unmatched_at_event": 0,
+          "invalid": 0,
+          "files": []
+        }
+      },
+      "rpc_other_origin_before_end": {
+        "starts": 0,
+        "matched_at_event": 0,
+        "unmatched_at_event": 0,
+        "invalid": 0,
+        "files": []
+      },
+      "mapping_limit": "Capture has started_utc, result has no finished_at. Sequential attempt ordering and outer launcher end associate the last pre-end result with the outer event; this is an inference, not an individually timestamped completion."
+    },
+    "59": {
+      "outer_event": {
+        "id": "codex3-pip02-paddle-relocatable-r11-g59-20261029",
+        "ended_file": "/mnt/raid0/llm/tmp/compute-flags/grants/codex3-pip02-paddle-relocatable-r11-g59-20261029.ended",
+        "end_line": "rc=75 time=2026-10-30T01:20:17Z reason=job-rc-75:exited",
+        "seen_at": "2026-10-30T01:21:06Z",
+        "result_path": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-relocatable-r11-20261030/DONE-59",
+        "scratch_root": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-r11-next8-20261030/group-59",
+        "decision_rule": "Collect original fresh English Paddle shards[59, 60, 61], native full layout/crop/recognition/assembly, temperature0,4096outputtokens,8192contextslot,np12. Preserve original requests and unknowns; exact cached replay only; native prospective source-bound page finish receipt. Collection diagnostic; no TEDS/adoption verdict.",
+        "class": "diagnostic",
+        "owner": "codex3"
+      },
+      "outer_finished_utc": "2026-10-30T01:20:17Z",
+      "original_window_attempts": [
+        {
+          "capture": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-relocatable-r11-20261030/attempts/codex3-pip02-paddle-relocatable-r11-g59-20261029-18bba626da7940a09707462cb077cfbc/capture.json",
+          "capture_sha256": "7c6e6512af18267d44fbf8768229319d315d9458ac2e239c317efc9c0e829acd",
+          "started_utc": "2026-10-30T01:19:53Z",
+          "grant": "regions=24-47 start=2026-10-30T01:19Z end=2026-10-30T06:00Z\n",
+          "grant_sha256": "a3ca3f96f6c48f04b92e63c44947d18d1eb96c31499f5c0c410b80741fb9e851",
+          "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+          "result": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-relocatable-r11-20261030/attempts/codex3-pip02-paddle-relocatable-r11-g59-20261029-18bba626da7940a09707462cb077cfbc/result.json",
+          "result_sha256": "26a59f5f9809e4c26249c089d24c111b3858ef272da4b0e19596cb13f2a28166",
+          "rc": 75,
+          "reason": "disk floor",
+          "error": "TimeoutError: admission",
+          "factory_present": false,
+          "source_registry_sha256": "20b60b7ac3fb6fcd4db6d49163eea7d3158a4be0c6b4a94e04a2fab850226ebb",
+          "within_original_window": true,
+          "native_finished_at": null
+        }
+      ],
+      "later_distinct_attempts": [],
+      "rpc_by_capture": {
+        "7c6e6512af18267d44fbf8768229319d315d9458ac2e239c317efc9c0e829acd": {
+          "starts": 0,
+          "matched_at_event": 0,
+          "unmatched_at_event": 0,
+          "invalid": 0,
+          "files": []
+        }
+      },
+      "rpc_other_origin_before_end": {
+        "starts": 0,
+        "matched_at_event": 0,
+        "unmatched_at_event": 0,
+        "invalid": 0,
+        "files": []
+      },
+      "mapping_limit": "Capture has started_utc, result has no finished_at. Sequential attempt ordering and outer launcher end associate the last pre-end result with the outer event; this is an inference, not an individually timestamped completion."
+    }
+  },
+  "hil_r3": {
+    "capsule_sha256": "c849f0a3c6473686f2dff66106f8456d566d8cc75a950ab04841167d8c60c54b",
+    "cleanup_records": [
+      {
+        "birth": 144433752,
+        "event": "driver_cleanup",
+        "owned_descendants_drained": true,
+        "pid": 2551809,
+        "rc": 0,
+        "reason": null,
+        "uid": 1000
+      },
+      {
+        "birth": 144445075,
+        "event": "driver_cleanup",
+        "owned_descendants_drained": true,
+        "pid": 2562365,
+        "rc": 0,
+        "reason": null,
+        "uid": 1000
+      },
+      {
+        "birth": 144480314,
+        "event": "driver_cleanup",
+        "owned_descendants_drained": true,
+        "pid": 2606728,
+        "rc": 0,
+        "reason": null,
+        "uid": 1000
+      },
+      {
+        "birth": 144493130,
+        "event": "driver_cleanup",
+        "owned_descendants_drained": true,
+        "pid": 2630531,
+        "rc": 0,
+        "reason": null,
+        "uid": 1000
+      },
+      {
+        "birth": 144505021,
+        "event": "driver_cleanup",
+        "owned_descendants_drained": true,
+        "pid": 2659110,
+        "rc": -15,
+        "reason": "signal",
+        "uid": 1000
+      }
+    ],
+    "counts_05_20": {
+      "accepted": 22,
+      "unexposed": 24,
+      "unknown": 2
+    },
+    "disk_samples": {
+      "count": 1427,
+      "final": {
+        "bytes": 2103861,
+        "time": 1793322618.9290798
+      },
+      "sampled_max_output_bytes": 2103861,
+      "sampled_min_free_bytes": 162243063808
+    },
+    "entry_status_sha256": {
+      "/mnt/raid0/llm/tmp/codex3-hil15b-heavy-20261029/r3/results-remaining/bootstrap-<native-attempt>/entry-status-1.json": "347351827e5941bc177e479844b3260fc1306df7023444e76bd4950176d58490",
+      "/mnt/raid0/llm/tmp/codex3-hil15b-heavy-20261029/r3/results-remaining/bootstrap-<native-attempt>/entry-status-2.json": "b931bb88de5d981b45f0758afb4d49ef6d30811b806f0985c93af4de2a925b60"
+    },
+    "new_accepted": [
+      {
+        "attempt": "/mnt/raid0/llm/tmp/codex3-hil15b-heavy-20261029/r3/results-remaining/unit-11/slot-1/f6bb981f20d44f73ad8a29127df245d9",
+        "auc_sha256": "1376b0cc2a18d5956d0e16a0d5b2d6dfdec3d64ffc2924a6668cbc5bd5d207c2",
+        "l2_report_sha256": "c624e9a61cb23173ae531ead59c3600b2a8040ae40d3a5484f232f608ef8be85",
+        "l2_sidecar": "/mnt/raid0/llm/tmp/codex3-hil15b-heavy-20261029/r3/results-remaining/unit-11/slot-1/f6bb981f20d44f73ad8a29127df245d9/driver-1/l2_report.beliefs.jsonl",
+        "l2_sidecar_bytes": 9544,
+        "l2_sidecar_sha256": "081ec1cbfca3246bb10c4380096489c6a6a0b9e111086e1f18722841c442498d",
+        "native_pass": false,
+        "native_result": {
+          "attempt": "/mnt/raid0/llm/tmp/codex3-hil15b-heavy-20261029/r3/results-remaining/unit-11/slot-1/f6bb981f20d44f73ad8a29127df245d9",
+          "db_sha256": "8fabe9540e164830a94672279d8a82fd602ec2cc02ec33904992a152315afef5",
+          "id": "filter-11-p1-r0",
+          "manifest_sha256": "cebe13f3cf1b7f2b21d59daed00031ed9fc7d0da07b14b89a06a40e41f762a6a"
+        },
+        "slot": "11/1"
+      },
+      {
+        "attempt": "/mnt/raid0/llm/tmp/codex3-hil15b-heavy-20261029/r3/results-remaining/unit-11/slot-2/912689672f6846cba8c35c29399888b7",
+        "auc_sha256": "1376b0cc2a18d5956d0e16a0d5b2d6dfdec3d64ffc2924a6668cbc5bd5d207c2",
+        "l2_report_sha256": "d0555034dba7fec2e091b7608c041935a3efa0031f2675deb148c51fe689d534",
+        "l2_sidecar": "/mnt/raid0/llm/tmp/codex3-hil15b-heavy-20261029/r3/results-remaining/unit-11/slot-2/912689672f6846cba8c35c29399888b7/driver-2/l2_report.beliefs.jsonl",
+        "l2_sidecar_bytes": 9544,
+        "l2_sidecar_sha256": "b0f9be147a43f1c536799a075f438360ccb4de7daf4748fbf987e96d0a4b6026",
+        "native_pass": false,
+        "native_result": {
+          "attempt": "/mnt/raid0/llm/tmp/codex3-hil15b-heavy-20261029/r3/results-remaining/unit-11/slot-2/912689672f6846cba8c35c29399888b7",
+          "db_sha256": "c2bda3b05320de6a98b87d2d0ad56c1c16da0737fcb75fd10e9dfb217dcf5f09",
+          "id": "filter-11-p2-r0",
+          "manifest_sha256": "4e83a023bbcf806adfa6333e8f34dfe8e901e5f20e53a8caf938f2c1d65e1163"
+        },
+        "slot": "11/2"
+      },
+      {
+        "attempt": "/mnt/raid0/llm/tmp/codex3-hil15b-heavy-20261029/r3/results-remaining/unit-12/slot-0/6ba4967b3c374e1482f93c73d09fbd52",
+        "auc_sha256": "1376b0cc2a18d5956d0e16a0d5b2d6dfdec3d64ffc2924a6668cbc5bd5d207c2",
+        "l2_report_sha256": "1f73ed62b886af850500286a17828836878ea128076b1b9ab06efa205704c5cb",
+        "l2_sidecar": "/mnt/raid0/llm/tmp/codex3-hil15b-heavy-20261029/r3/results-remaining/unit-12/slot-0/6ba4967b3c374e1482f93c73d09fbd52/driver-0/l2_report.beliefs.jsonl",
+        "l2_sidecar_bytes": 9544,
+        "l2_sidecar_sha256": "36448604d42c0921117c2697a686b3f899f43b0d3bcc73b371ae92f79ddff91a",
+        "native_pass": false,
+        "native_result": {
+          "attempt": "/mnt/raid0/llm/tmp/codex3-hil15b-heavy-20261029/r3/results-remaining/unit-12/slot-0/6ba4967b3c374e1482f93c73d09fbd52",
+          "db_sha256": "eedb9f797dc3a276d39214ee80fd8197e496e4289ddf0bf3e10b89f460daeac9",
+          "id": "filter-12-p0-r0",
+          "manifest_sha256": "cd819f1a7e7765c93590f32054abd259b19a1ad7ac85093c5e06769da592b500"
+        },
+        "slot": "12/0"
+      },
+      {
+        "attempt": "/mnt/raid0/llm/tmp/codex3-hil15b-heavy-20261029/r3/results-remaining/unit-12/slot-1/5e9d021f243b428eb6f2103c78c6d0b0",
+        "auc_sha256": "1376b0cc2a18d5956d0e16a0d5b2d6dfdec3d64ffc2924a6668cbc5bd5d207c2",
+        "l2_report_sha256": "c624e9a61cb23173ae531ead59c3600b2a8040ae40d3a5484f232f608ef8be85",
+        "l2_sidecar": "/mnt/raid0/llm/tmp/codex3-hil15b-heavy-20261029/r3/results-remaining/unit-12/slot-1/5e9d021f243b428eb6f2103c78c6d0b0/driver-1/l2_report.beliefs.jsonl",
+        "l2_sidecar_bytes": 9544,
+        "l2_sidecar_sha256": "6ae40f4a6ddb2ae9b5a55a0e0667b1be7075b272e1e2ecc00e43200d2633cc86",
+        "native_pass": false,
+        "native_result": {
+          "attempt": "/mnt/raid0/llm/tmp/codex3-hil15b-heavy-20261029/r3/results-remaining/unit-12/slot-1/5e9d021f243b428eb6f2103c78c6d0b0",
+          "db_sha256": "f863a0a6857848264cb3c6c629230436ba503fd5a9d93b547f0ef4e5ec38e834",
+          "id": "filter-12-p1-r0",
+          "manifest_sha256": "914396397cd5c6ec0e854ab357f0a6336cec219fa6d6af737780c56a794e0adb"
+        },
+        "slot": "12/1"
+      }
+    ],
+    "original_ended": "/mnt/raid0/llm/tmp/compute-flags/grants-archive-ws58/codex3-hil15b-heavy-r3-20261029.ended.keeper-1793322621",
+    "rearm": "separate later helper inherited stale 0-95 and refused assignment 24-47; no additional R3 cohort exposure implied",
+    "reason": "Bootstrap recorded interruption; exact control condition is not identified in native record. Unit12/2 driver rc -15, captured descendants drained. No cause inferred from last sample.",
+    "schema": "hil15b-r3-partial-audit/v1",
+    "source_sha256": "84732af8a07ee7f90fdbca79a14a6561ba447f1042030793ec5f952c327cc54d",
+    "unknown": [
+      {
+        "attempt": "/mnt/raid0/llm/tmp/codex3-hil15b-heavy-20261029/r2/results-remaining/unit-11/slot-0/50c43ee3246745d59173cf97db8be576",
+        "files": [
+          {
+            "bytes": 3886,
+            "path": "/mnt/raid0/llm/tmp/codex3-hil15b-heavy-20261029/r2/results-remaining/unit-11/slot-0/50c43ee3246745d59173cf97db8be576/driver-0/cas/07/07e383a1fc14dcfb9b049b91dbe46b944c7391f1a7686f384dcf9fe3f85177b3",
+            "sha256": "07e383a1fc14dcfb9b049b91dbe46b944c7391f1a7686f384dcf9fe3f85177b3"
+          },
+          {
+            "bytes": 590,
+            "path": "/mnt/raid0/llm/tmp/codex3-hil15b-heavy-20261029/r2/results-remaining/unit-11/slot-0/50c43ee3246745d59173cf97db8be576/driver-0/cas/0c/0c1e7e4bb6a26e68c5c5000b53c89aedbcfe16deff07afbd21c35b6b0fb86784",
+            "sha256": "0c1e7e4bb6a26e68c5c5000b53c89aedbcfe16deff07afbd21c35b6b0fb86784"
+          },
+          {
+            "bytes": 1606,
+            "path": "/mnt/raid0/llm/tmp/codex3-hil15b-heavy-20261029/r2/results-remaining/unit-11/slot-0/50c43ee3246745d59173cf97db8be576/driver-0/cas/15/154d08ec34c2a7620076388c5c4cceb20c47c63b29826e7baf66aea28b02a1dd",
+            "sha256": "154d08ec34c2a7620076388c5c4cceb20c47c63b29826e7baf66aea28b02a1dd"
+          },
+          {
+            "bytes": 416,
+            "path": "/mnt/raid0/llm/tmp/codex3-hil15b-heavy-20261029/r2/results-remaining/unit-11/slot-0/50c43ee3246745d59173cf97db8be576/driver-0/cas/38/3843ee8b9cb0dcd989ca9a050417bfa18b9603c28b2b449235b46d73dab2f78a",
+            "sha256": "3843ee8b9cb0dcd989ca9a050417bfa18b9603c28b2b449235b46d73dab2f78a"
+          },
+          {
+            "bytes": 384,
+            "path": "/mnt/raid0/llm/tmp/codex3-hil15b-heavy-20261029/r2/results-remaining/unit-11/slot-0/50c43ee3246745d59173cf97db8be576/driver-0/cas/3b/3bad99243404be3d86dda4ea9ef9f134626cdb7aec7aa777e85afd7cab14988e",
+            "sha256": "3bad99243404be3d86dda4ea9ef9f134626cdb7aec7aa777e85afd7cab14988e"
+          },
+          {
+            "bytes": 416,
+            "path": "/mnt/raid0/llm/tmp/codex3-hil15b-heavy-20261029/r2/results-remaining/unit-11/slot-0/50c43ee3246745d59173cf97db8be576/driver-0/cas/4c/4c7b81f451563c0968236abbcad58c8d727070b51a24164ce1485a08edab039f",
+            "sha256": "4c7b81f451563c0968236abbcad58c8d727070b51a24164ce1485a08edab039f"
+          },
+          {
+            "bytes": 1800,
+            "path": "/mnt/raid0/llm/tmp/codex3-hil15b-heavy-20261029/r2/results-remaining/unit-11/slot-0/50c43ee3246745d59173cf97db8be576/driver-0/cas/57/57abe994b41cb5313b95a917b38815e563990942339ceabc748c1c28fd51b6d3",
+            "sha256": "57abe994b41cb5313b95a917b38815e563990942339ceabc748c1c28fd51b6d3"
+          },
+          {
+            "bytes": 352,
+            "path": "/mnt/raid0/llm/tmp/codex3-hil15b-heavy-20261029/r2/results-remaining/unit-11/slot-0/50c43ee3246745d59173cf97db8be576/driver-0/cas/6f/6f664782295cbce6ecd34bddee2d597395df50376a8ba445431588b18dba8d0e",
+            "sha256": "6f664782295cbce6ecd34bddee2d597395df50376a8ba445431588b18dba8d0e"
+          },
+          {
+            "bytes": 1978,
+            "path": "/mnt/raid0/llm/tmp/codex3-hil15b-heavy-20261029/r2/results-remaining/unit-11/slot-0/50c43ee3246745d59173cf97db8be576/driver-0/cas/75/756acdc6dbdba30798ba0077e783b7e7055a656b046f7a06babfd4455ca19c5f",
+            "sha256": "756acdc6dbdba30798ba0077e783b7e7055a656b046f7a06babfd4455ca19c5f"
+          },
+          {
+            "bytes": 2521,
+            "path": "/mnt/raid0/llm/tmp/codex3-hil15b-heavy-20261029/r2/results-remaining/unit-11/slot-0/50c43ee3246745d59173cf97db8be576/driver-0/cas/76/7619be36d2cdfba5220b3ba91117e740a7e758e2f12fd97244fea09877fadd36",
+            "sha256": "7619be36d2cdfba5220b3ba91117e740a7e758e2f12fd97244fea09877fadd36"
+          },
+          {
+            "bytes": 378,
+            "path": "/mnt/raid0/llm/tmp/codex3-hil15b-heavy-20261029/r2/results-remaining/unit-11/slot-0/50c43ee3246745d59173cf97db8be576/driver-0/cas/7b/7bb33bf727ab577d15b8e78e8d8b10bd0a00328f92e2364cb9dc685445e8055d",
+            "sha256": "7bb33bf727ab577d15b8e78e8d8b10bd0a00328f92e2364cb9dc685445e8055d"
+          },
+          {
+            "bytes": 881,
+            "path": "/mnt/raid0/llm/tmp/codex3-hil15b-heavy-20261029/r2/results-remaining/unit-11/slot-0/50c43ee3246745d59173cf97db8be576/driver-0/cas/8d/8d0a41d63893d7ec83579f48b0b03860241bedc839494af44b1e8b6a298e10f2",
+            "sha256": "8d0a41d63893d7ec83579f48b0b03860241bedc839494af44b1e8b6a298e10f2"
+          },
+          {
+            "bytes": 3333,
+            "path": "/mnt/raid0/llm/tmp/codex3-hil15b-heavy-20261029/r2/results-remaining/unit-11/slot-0/50c43ee3246745d59173cf97db8be576/driver-0/cas/9d/9ddb6b612c741bb9cb392242b4e8300a3bb03b960d110e055f246b39372b4665",
+            "sha256": "9ddb6b612c741bb9cb392242b4e8300a3bb03b960d110e055f246b39372b4665"
+          },
+          {
+            "bytes": 722,
+            "path": "/mnt/raid0/llm/tmp/codex3-hil15b-heavy-20261029/r2/results-remaining/unit-11/slot-0/50c43ee3246745d59173cf97db8be576/driver-0/cas/a1/a1e2dda5f80cb854720e44fe01d2b620a898a6b02204e5168e3780a1ee7cfe77",
+            "sha256": "a1e2dda5f80cb854720e44fe01d2b620a898a6b02204e5168e3780a1ee7cfe77"
+          },
+          {
+            "bytes": 7,
+            "path": "/mnt/raid0/llm/tmp/codex3-hil15b-heavy-20261029/r2/results-remaining/unit-11/slot-0/50c43ee3246745d59173cf97db8be576/driver-0/cas/ae/aee408847d35e44e99430f0979c3357b85fe8dbb4535a494301198adbee85f27",
+            "sha256": "aee408847d35e44e99430f0979c3357b85fe8dbb4535a494301198adbee85f27"
+          },
+          {
+            "bytes": 166,
+            "path": "/mnt/raid0/llm/tmp/codex3-hil15b-heavy-20261029/r2/results-remaining/unit-11/slot-0/50c43ee3246745d59173cf97db8be576/driver-0/cas/cf/cf0fe21ec3d0843dff6674737b8c7433cc5aa8af85a9a1d79e920f9408c95ca4",
+            "sha256": "cf0fe21ec3d0843dff6674737b8c7433cc5aa8af85a9a1d79e920f9408c95ca4"
+          },
+          {
+            "bytes": 163,
+            "path": "/mnt/raid0/llm/tmp/codex3-hil15b-heavy-20261029/r2/results-remaining/unit-11/slot-0/50c43ee3246745d59173cf97db8be576/driver-0/cas/e8/e81a5e0a488eb7c83badca7efdb1ae8a2d30ed20c677b8b545d4b78929380e5d",
+            "sha256": "e81a5e0a488eb7c83badca7efdb1ae8a2d30ed20c677b8b545d4b78929380e5d"
+          },
+          {
+            "bytes": 274432,
+            "path": "/mnt/raid0/llm/tmp/codex3-hil15b-heavy-20261029/r2/results-remaining/unit-11/slot-0/50c43ee3246745d59173cf97db8be576/driver-0/events.sqlite",
+            "sha256": "a6b39eddfe28237680422198c8aa808e260e9ceb110003cb43b861e78393018e"
+          },
+          {
+            "bytes": 53864,
+            "path": "/mnt/raid0/llm/tmp/codex3-hil15b-heavy-20261029/r2/results-remaining/unit-11/slot-0/50c43ee3246745d59173cf97db8be576/driver-0/events.sqlite-journal",
+            "sha256": "277236c60b6983f0e4cce23041216b90cd28008507691176e3945c047052d819"
+          },
+          {
+            "bytes": 0,
+            "path": "/mnt/raid0/llm/tmp/codex3-hil15b-heavy-20261029/r2/results-remaining/unit-11/slot-0/50c43ee3246745d59173cf97db8be576/driver-0/tmp/heavy_model.lock",
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          {
+            "bytes": 658,
+            "path": "/mnt/raid0/llm/tmp/codex3-hil15b-heavy-20261029/r2/results-remaining/unit-11/slot-0/50c43ee3246745d59173cf97db8be576/driver-0/tmp/kv_prefix_history.local_19958.json",
+            "sha256": "505688eb9225a391c688869121e709a838948794402ab94e6ed73ab7e1fe372b"
+          },
+          {
+            "bytes": 0,
+            "path": "/mnt/raid0/llm/tmp/codex3-hil15b-heavy-20261029/r2/results-remaining/unit-11/slot-0/50c43ee3246745d59173cf97db8be576/driver-0/tmp/kv_prefix_history.local_19958.json.lock",
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          {
+            "bytes": 2665,
+            "path": "/mnt/raid0/llm/tmp/codex3-hil15b-heavy-20261029/r2/results-remaining/unit-11/slot-0/50c43ee3246745d59173cf97db8be576/driver-0/tmp/repl_tap.log",
+            "sha256": "b5705d82d720498621bcbcb039a1eb8798c0d3a3571b7d5aac4e54c3be5a1ee4"
+          },
+          {
+            "bytes": 951,
+            "path": "/mnt/raid0/llm/tmp/codex3-hil15b-heavy-20261029/r2/results-remaining/unit-11/slot-0/50c43ee3246745d59173cf97db8be576/driver-0/tmp/session_filter-11-p0-r0.md",
+            "sha256": "c49b85c630e3f4d2044e7b5611344a9e9d1ca3e1082e814c7e0d15c88fb20397"
+          },
+          {
+            "bytes": 108,
+            "path": "/mnt/raid0/llm/tmp/codex3-hil15b-heavy-20261029/r2/results-remaining/unit-11/slot-0/50c43ee3246745d59173cf97db8be576/driver.out",
+            "sha256": "838defba706bb84029574302b49634c83b63bad2dddfb2ead003661fd16f5792"
+          },
+          {
+            "bytes": 352,
+            "path": "/mnt/raid0/llm/tmp/codex3-hil15b-heavy-20261029/r2/results-remaining/unit-11/slot-0/50c43ee3246745d59173cf97db8be576/scratch/filter-11-p0.csv",
+            "sha256": "6f664782295cbce6ecd34bddee2d597395df50376a8ba445431588b18dba8d0e"
+          },
+          {
+            "bytes": 1146,
+            "path": "/mnt/raid0/llm/tmp/codex3-hil15b-heavy-20261029/r2/results-remaining/unit-11/slot-0/50c43ee3246745d59173cf97db8be576/tasks-0.json",
+            "sha256": "baa31c4986e2413514604bcb51792e63725d3159cc786bbc68804235833643bc"
+          }
+        ],
+        "slot": "11/0"
+      },
+      {
+        "attempt": "/mnt/raid0/llm/tmp/codex3-hil15b-heavy-20261029/r3/results-remaining/unit-12/slot-2/f13997f2a6b34d2aa3dc5e2aac7e2250",
+        "files": [
+          {
+            "bytes": 384,
+            "path": "/mnt/raid0/llm/tmp/codex3-hil15b-heavy-20261029/r3/results-remaining/unit-12/slot-2/f13997f2a6b34d2aa3dc5e2aac7e2250/driver-2/cas/3b/3bad99243404be3d86dda4ea9ef9f134626cdb7aec7aa777e85afd7cab14988e",
+            "sha256": "3bad99243404be3d86dda4ea9ef9f134626cdb7aec7aa777e85afd7cab14988e"
+          },
+          {
+            "bytes": 1602,
+            "path": "/mnt/raid0/llm/tmp/codex3-hil15b-heavy-20261029/r3/results-remaining/unit-12/slot-2/f13997f2a6b34d2aa3dc5e2aac7e2250/driver-2/cas/43/43a4dfc4ec19e4cb0873224724ab4d5550f879f073912cb9d7dab149e7185528",
+            "sha256": "43a4dfc4ec19e4cb0873224724ab4d5550f879f073912cb9d7dab149e7185528"
+          },
+          {
+            "bytes": 1757,
+            "path": "/mnt/raid0/llm/tmp/codex3-hil15b-heavy-20261029/r3/results-remaining/unit-12/slot-2/f13997f2a6b34d2aa3dc5e2aac7e2250/driver-2/cas/62/62578f93c10ba5b19023cc9d2dac287cc5180913829b4d83fde62934e1ea0af6",
+            "sha256": "62578f93c10ba5b19023cc9d2dac287cc5180913829b4d83fde62934e1ea0af6"
+          },
+          {
+            "bytes": 378,
+            "path": "/mnt/raid0/llm/tmp/codex3-hil15b-heavy-20261029/r3/results-remaining/unit-12/slot-2/f13997f2a6b34d2aa3dc5e2aac7e2250/driver-2/cas/7b/7bb33bf727ab577d15b8e78e8d8b10bd0a00328f92e2364cb9dc685445e8055d",
+            "sha256": "7bb33bf727ab577d15b8e78e8d8b10bd0a00328f92e2364cb9dc685445e8055d"
+          },
+          {
+            "bytes": 877,
+            "path": "/mnt/raid0/llm/tmp/codex3-hil15b-heavy-20261029/r3/results-remaining/unit-12/slot-2/f13997f2a6b34d2aa3dc5e2aac7e2250/driver-2/cas/f5/f5eb978f049ce39c8f4f8f1217ddf84e2bd0f7ca07a22de2d94681f8562e5b69",
+            "sha256": "f5eb978f049ce39c8f4f8f1217ddf84e2bd0f7ca07a22de2d94681f8562e5b69"
+          },
+          {
+            "bytes": 258048,
+            "path": "/mnt/raid0/llm/tmp/codex3-hil15b-heavy-20261029/r3/results-remaining/unit-12/slot-2/f13997f2a6b34d2aa3dc5e2aac7e2250/driver-2/events.sqlite",
+            "sha256": "44791d5721018d8f82eaf93931f840ee4d7da0fdf2918ef04bf24bd9d9d8ef41"
+          },
+          {
+            "bytes": 53864,
+            "path": "/mnt/raid0/llm/tmp/codex3-hil15b-heavy-20261029/r3/results-remaining/unit-12/slot-2/f13997f2a6b34d2aa3dc5e2aac7e2250/driver-2/events.sqlite-journal",
+            "sha256": "c43339878a932afcbc7a036fb4b3213d759fc7dbd7f50a86a1cf2ec69c44bc8b"
+          },
+          {
+            "bytes": 0,
+            "path": "/mnt/raid0/llm/tmp/codex3-hil15b-heavy-20261029/r3/results-remaining/unit-12/slot-2/f13997f2a6b34d2aa3dc5e2aac7e2250/driver-2/tmp/heavy_model.lock",
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          {
+            "bytes": 311,
+            "path": "/mnt/raid0/llm/tmp/codex3-hil15b-heavy-20261029/r3/results-remaining/unit-12/slot-2/f13997f2a6b34d2aa3dc5e2aac7e2250/driver-2/tmp/repl_tap.log",
+            "sha256": "2dbd467d992510faac03a2b1551b9ec50bf9755711aaaaa577629d3a16603208"
+          },
+          {
+            "bytes": 173,
+            "path": "/mnt/raid0/llm/tmp/codex3-hil15b-heavy-20261029/r3/results-remaining/unit-12/slot-2/f13997f2a6b34d2aa3dc5e2aac7e2250/driver-2/tmp/session_filter-12-p2-r0.md",
+            "sha256": "4005d2b5ff15bbbadd55b40e4bf32196105db41d959f3b2c9042d7d0418f9ce0"
+          },
+          {
+            "bytes": 54,
+            "path": "/mnt/raid0/llm/tmp/codex3-hil15b-heavy-20261029/r3/results-remaining/unit-12/slot-2/f13997f2a6b34d2aa3dc5e2aac7e2250/driver.out",
+            "sha256": "b9948b82f34b46741fb9fbf9244917fb7764dc237520dc025e15306f1752eed3"
+          },
+          {
+            "bytes": 1142,
+            "path": "/mnt/raid0/llm/tmp/codex3-hil15b-heavy-20261029/r3/results-remaining/unit-12/slot-2/f13997f2a6b34d2aa3dc5e2aac7e2250/tasks-2.json",
+            "sha256": "cb780e5141d3edfb6d897fd91d931bd6f551f0419df3680a803f7ae0988f7d49"
+          }
+        ],
+        "slot": "12/2"
+      }
+    ],
+    "untouched_units": "13\u201320, all three slots each"
+  },
+  "source_audits": {
+    "/mnt/raid0/llm/tmp/codex3-file-fa4r5-0128-20261030/audit.json": "ebd685ab45d66132a65e569134d9150ac733b220bed2d6fa4d5117103b6a2c46",
+    "/mnt/raid0/llm/tmp/codex3-pip02-eight-event-audit-20261030/original-eight-events.json": "0f25245949ce97a65fc0b5a055175a50b1a92927a8bf3d2fd98251b3ea3607df",
+    "/mnt/raid0/llm/tmp/codex3-ws58-rearm-fix-draft-20261030/R3-PARTIAL-AUDIT.json": "a8d79aa126d7d2f14bb0dcff456161da35f1ccf33cb94e134485907f3a195027"
+  },
+  "rearm_fix": {
+    "at": "2026-10-30T01:26:56.879839+00:00",
+    "path": "/mnt/raid0/llm/tmp/compute-flags/ws58_rearm.py",
+    "old_sha256": "a4a2cb891982e60fac452a077e568279a60437b58ab95aca7b3f0d626fcc9c66",
+    "new_sha256": "b8f19b0699955a26cdc116da50ac08ca2b4cf0171f4cd35368e1c7e5ff3279db",
+    "scope": "Only launcher Popen environment binds WS58_REGIONS to supplied regs. No row, queue, grant, kernel or running process modified by this source installation. No keeper reload required; future helper invocations read the fix.",
+    "tests": "Actual isolated helper passed all4CPUquarters plusGPU with inherited0-95; sampled model-free peak43252KiB, drained.",
+    "backup": "/mnt/raid0/llm/tmp/codex3-ws58-rearm-fix-draft-20261030/SHARED-PRE-FIX-ws58_rearm.py"
+  },
+  "opaque_path_note": "Opaque nanosecond directory labels omitted from this summary; complete native paths remain in SHA-pinned source audits."
+}

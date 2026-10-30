@@ -198,3 +198,24 @@ Each outer job exited rc75; the last capture started before that exit reports di
 All seven last pre-end results record `reason: disk floor`; g17/g23 also report timeout deadline/admission/output limit; g29/g26/g32/g35/g8 report timeout admission. Full native result paths, hashes, capture-bound start receipts, later capture identities and exact end_line evidence are in original-seven-events.json. Matched means the native result carries the matching start hash and completed by the event; it is not a source-grade or quality assertion.
 
 [Committed original audit](../../artifacts/compute/results-filing-20261030-0107.json). Existing collection/full-cohort boxes remain open. [belief: cc]
+
+
+### 2026-10-30 original eight Paddle collection partials
+
+
+Each outer job exited rc75. The last capture started before each exit reports disk floor and TimeoutError: admission. Attempt result JSON has no finished_at: pairing that last pre-end capture with the outer end is inferred from sequential launcher execution, not a separately timestamped native finish. RPC counts use originated_at/completed_at and original capture hashes at each event end; matched means native result has matching start hash and completed by then, not a quality or full source-grade claim. Unknown remains unknown; no redraw.
+
+| Group | Outer end UTC | Last capture start UTC | Result SHA256 | RPC starts / matched / unmatched | Later captures excluded |
+|---|---|---|---|---|---|
+| 38 | 2026-10-30T01:12:11Z | 2026-10-30T01:11:44Z | bcf50dbfc8d8bde3369100c26891d3993b8c5c43a0eac1b009215516389b83aa | 20 / 20 / 0 | 0 |
+| 41 | 2026-10-30T01:12:00Z | 2026-10-30T01:11:36Z | b6b6720907778b35b95f9ba013286e9f78c09e9554605d81534de39b9b205316 | 0 / 0 / 0 | 0 |
+| 44 | 2026-10-30T01:15:04Z | 2026-10-30T01:14:40Z | ac7f3dee9269038959a882960739bdf540b2f9605ed0d3424c8d6e5cef3b16fa | 0 / 0 / 0 | 0 |
+| 47 | 2026-10-30T01:15:06Z | 2026-10-30T01:14:42Z | ccd0b132022f27db012961ff958d2ee0aa42ef805f4607cc9b60a0f4f66a0dde | 0 / 0 / 0 | 0 |
+| 50 | 2026-10-30T01:15:07Z | 2026-10-30T01:14:43Z | 8379d2d768c14470a1ac49ce2322a43385310c3431d5c5ccaa514cf43fb22279 | 0 / 0 / 0 | 0 |
+| 53 | 2026-10-30T01:15:09Z | 2026-10-30T01:14:45Z | 87de7abb1ef069e7b4e0d983759e5b8bb5462e75bec535655f3dba1423fd3e8d | 0 / 0 / 0 | 0 |
+| 56 | 2026-10-30T01:20:16Z | 2026-10-30T01:19:52Z | 02cc7d71893cc4d0b02095a040280596c897d2ac9c4220729bcb8377f7d0d767 | 0 / 0 / 0 | 0 |
+| 59 | 2026-10-30T01:20:17Z | 2026-10-30T01:19:53Z | 26a59f5f9809e4c26249c089d24c111b3858ef272da4b0e19596cb13f2a28166 | 0 / 0 / 0 | 0 |
+
+Full exact native paths, capture SHA256, source registry, grant, result SHA256 and individual request-origin files are in original-eight-events.json. Native collection partial only; no TEDS, parser comparison, adoption, or completed scientific-cohort claim.
+
+[Committed native audit](../../artifacts/compute/results-filing-20261030-0138.json). [belief: cc]
