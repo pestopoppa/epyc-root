@@ -1,0 +1,8 @@
+{
+  "sampled_epoch": 1793399398.8896768,
+  "server_pid": 2004047,
+  "server_birth_ticks": 152082605,
+  "server_process_present": false,
+  "driver_cleanup_scope": "original native logs report rc0 and owned descendants drained for all five new drivers; no new live server/driver started by offline audit",
+  "original_run_retained": true
+}

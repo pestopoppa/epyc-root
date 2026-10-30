@@ -1,0 +1,20 @@
+--- unit-original.py
++++ unit-fixed.py
+@@ -30,6 +30,16 @@
+   assert type(passed) is bool and counts['traces']==1 and counts['unknown_outcome']==0
+   assert counts['passed']==int(passed) and counts['failed']==int(not passed)
+   auc=json.loads((d/'auc_table.json').read_text())
+-  assert auc==m['auc_table'] and auc['status']=='insufficient' and auc['n_runs']==1 and auc['n_tasks']==1
++  # Canonical dependency_features.load_runs counts tool_dependency runs,
++  # not every task/model/tool_step run. A retained zero-dependency run is
++  # a known answer outcome with an insufficient 0/0 AUC, never an AUC gain.
++  labels=json.loads((d/'labels.json').read_text())
++  assert labels=={expected:[m['runs'][0]['task_key'],passed]}
++  with sqlite3.connect(f'file:{d / "events.sqlite"}?mode=ro',uri=True) as db:
++   dep_ids={json.loads(row[0])['run_id'] for row in db.execute("select detail_json from event where category='tool_dependency' order by id")}
++  assert dep_ids <= {expected}
++  auc_ids=dep_ids & labels.keys()
++  expected_auc={'status':'insufficient','n_runs':len(auc_ids),'n_tasks':len({labels[r][0] for r in auc_ids})}
++  assert auc==m['auc_table']==expected_auc
+  print('complete unit',n)
+ else: raise SystemExit('unknown command')
