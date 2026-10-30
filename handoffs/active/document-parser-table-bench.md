@@ -272,3 +272,21 @@ The later 02:37 grant completed ordinals 737–749, preserving the 12 earlier un
 Per-page native audit: `/dev/shm/codex3-pip02-s29-original-audit-20261030/native-audit.json` SHA256 `bd5132a6b0365f4a02f6ccb7a8e3fdbe2148bd5e5c0ee39fef41ad2306b7c846`. Model-free audit ran on SMT126/127 under pair mutex, rc0, sampled peak 27,877,376 bytes.
 
 [Committed native audits](../../artifacts/compute/results-filing-20261030-0252.json). Preserve terminal unknowns; no replacement when all pages exposed. [belief: cc]
+
+
+2026-10-30 original Paddle groups74/77/80:
+
+Each original outer job exited rc75. The last pre-end capture reports disk floor; results have no finished_at, so attribution to the outer event uses sequential capture start order and the launcher end, and is an inference. Request counts use native origin/completion times and matching start hash by the original boundary; they are not later cumulative snapshots.
+
+| Group | Original end UTC | Last capture started UTC | Result SHA256 | RPC started / matched / unmatched | Later captures excluded |
+|---|---|---|---|---|---|
+| 74 | 2026-10-30T03:00:13Z | 2026-10-30T02:59:21Z | d721ee391ffe3f3014acab54d6fcc22db07a8f043812836bc45978d37834ebb8 | 65 / 65 / 0 | 1 |
+| 77 | 2026-10-30T03:00:21Z | 2026-10-30T02:59:53Z | e2e9368b9d33a6ae66c8e4fda69b6020e6dc8538ee16e50e95055da099ef2861 | 65 / 65 / 0 | 1 |
+| 80 | 2026-10-30T03:00:15Z | 2026-10-30T02:59:47Z | 0ab2d32b262302deac8f308bc34690e339568ec2bde9cc93c370dd8651768cb9 | 45 / 45 / 0 | 1 |
+
+g74 final native error was `TimeoutError: deadline, admission or output limit`; g77 and g80 recorded `TimeoutError: admission`. All original captures match the 74-file prospective source registry `20b60b7ac3fb6fcd4db6d49163eea7d3158a4be0c6b4a94e04a2fab850226ebb`, protocol and recorded grant interval. Each group has zero original-capture-bound page finish receipts among its 15 pages. One g80 finish belongs to a later capture and is excluded; the finish record itself has no finish timestamp. Preserve all unknowns; no full-page completeness, TEDS, quality, adoption or full-cohort claim.
+
+Native capture/hash/time details: `original-three-events.json`; exact page-finisher classification: `original-finish-audit.json`; source/grant audit: `source-capture-audit.json`.
+
+
+[belief: cc] [Durable audit references](../../artifacts/compute/20261030-0310/results.json).

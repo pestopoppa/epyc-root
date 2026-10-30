@@ -1,0 +1,464 @@
+{
+  "results": [
+    {
+      "id": "codex3-pip02-paddle-relocatable-r11-g65-20261029",
+      "at": "2026-10-30T03:04:11.083604+00:00",
+      "captured": {
+        "pid": 3014573,
+        "state": "S",
+        "ppid": 531045,
+        "birth": "144693103",
+        "uid": 1000,
+        "argv": [
+          "bash",
+          "/mnt/raid0/llm/tmp/codex3-pip02-paddle-r11-next12-20261030/group-65/engine/filler_run13.sh",
+          "--id",
+          "codex3-pip02-paddle-relocatable-r11-g65-20261029",
+          "--class",
+          "cpu",
+          "--role",
+          "bench",
+          "--claim-cpus",
+          "24-47",
+          "--min-window",
+          "3600",
+          "--port",
+          "24065",
+          "--stop",
+          "/mnt/raid0/llm/tmp/codex3-pip02-paddle-r11-next12-20261030/group-65/STOP-65",
+          "--workdir",
+          "/mnt/raid0/llm/tmp/codex3-pip02-paddle-r11-next12-20261030/group-65",
+          "--cmd",
+          "taskset -c \"$FILLER_CPUS\" /usr/bin/python3 -B /mnt/raid0/llm/tmp/codex3-pip02-paddle-r11-next12-20261030/group-65/parallel_entry.py --first-shard 65 --regions 24-47 --port 24065",
+          "--complete-cmd",
+          "test -e /mnt/raid0/llm/tmp/codex3-pip02-paddle-r11-next12-20261030/group-65/DONE-65"
+        ]
+      },
+      "captured_sleep_children": [
+        {
+          "pid": 4088078,
+          "state": "S",
+          "ppid": 3014573,
+          "birth": "145188145",
+          "uid": 1000,
+          "argv": [
+            "sleep",
+            "45"
+          ]
+        }
+      ],
+      "stop": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-r11-next12-20261030/group-65/STOP-65",
+      "archived": [
+        "/mnt/raid0/llm/tmp/compute-flags/ready/withdrawn/codex3-quarter-rebalance-0305-20261030/codex3-pip02-paddle-relocatable-r11-g65-20261029.armed.json"
+      ],
+      "pid_after": null,
+      "children_after": [
+        null
+      ],
+      "grant_after": false,
+      "status": "dead-verified"
+    },
+    {
+      "id": "codex3-pip02-paddle-relocatable-r11-g26-20261029",
+      "at": "2026-10-30T03:04:11.184543+00:00",
+      "captured": {
+        "pid": 2484439,
+        "state": "S",
+        "ppid": 531045,
+        "birth": "144386727",
+        "uid": 1000,
+        "argv": [
+          "bash",
+          "/mnt/raid0/llm/tmp/codex3-pip02-paddle-relocatable-r11-20261030/packets/group-26/engine/filler_run13.sh",
+          "--id",
+          "codex3-pip02-paddle-relocatable-r11-g26-20261029",
+          "--class",
+          "cpu",
+          "--role",
+          "bench",
+          "--claim-cpus",
+          "48-71",
+          "--min-window",
+          "3600",
+          "--port",
+          "24026",
+          "--stop",
+          "/mnt/raid0/llm/tmp/codex3-pip02-paddle-relocatable-r11-20261030/packets/group-26/STOP-26",
+          "--workdir",
+          "/mnt/raid0/llm/tmp/codex3-pip02-paddle-relocatable-r11-20261030/packets/group-26",
+          "--cmd",
+          "taskset -c \"$FILLER_CPUS\" /usr/bin/python3 -B /mnt/raid0/llm/tmp/codex3-pip02-paddle-relocatable-r11-20261030/packets/group-26/parallel_entry.py --first-shard 26 --regions 48-71 --port 24026",
+          "--complete-cmd",
+          "test -e /mnt/raid0/llm/tmp/codex3-pip02-paddle-relocatable-r11-20261030/packets/group-26/DONE-26"
+        ]
+      },
+      "captured_sleep_children": [
+        {
+          "pid": 4093931,
+          "state": "S",
+          "ppid": 2484439,
+          "birth": "145192275",
+          "uid": 1000,
+          "argv": [
+            "sleep",
+            "45"
+          ]
+        }
+      ],
+      "stop": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-relocatable-r11-20261030/packets/group-26/STOP-26",
+      "archived": [],
+      "pid_after": null,
+      "children_after": [
+        null
+      ],
+      "grant_after": false,
+      "status": "dead-verified"
+    },
+    {
+      "id": "codex3-pip02-paddle-relocatable-r11-g32-20261029",
+      "at": "2026-10-30T03:04:11.285462+00:00",
+      "captured": {
+        "pid": 2467494,
+        "state": "S",
+        "ppid": 531045,
+        "birth": "144373801",
+        "uid": 1000,
+        "argv": [
+          "bash",
+          "/mnt/raid0/llm/tmp/codex3-pip02-paddle-r11-candidates-20261030/group-32/engine/filler_run13.sh",
+          "--id",
+          "codex3-pip02-paddle-relocatable-r11-g32-20261029",
+          "--class",
+          "cpu",
+          "--role",
+          "bench",
+          "--claim-cpus",
+          "72-95",
+          "--min-window",
+          "3600",
+          "--port",
+          "24032",
+          "--stop",
+          "/mnt/raid0/llm/tmp/codex3-pip02-paddle-r11-candidates-20261030/group-32/STOP-32",
+          "--workdir",
+          "/mnt/raid0/llm/tmp/codex3-pip02-paddle-r11-candidates-20261030/group-32",
+          "--cmd",
+          "taskset -c \"$FILLER_CPUS\" /usr/bin/python3 -B /mnt/raid0/llm/tmp/codex3-pip02-paddle-r11-candidates-20261030/group-32/parallel_entry.py --first-shard 32 --regions 72-95 --port 24032",
+          "--complete-cmd",
+          "test -e /mnt/raid0/llm/tmp/codex3-pip02-paddle-r11-candidates-20261030/group-32/DONE-32"
+        ]
+      },
+      "captured_sleep_children": [
+        {
+          "pid": 4088545,
+          "state": "S",
+          "ppid": 2467494,
+          "birth": "145188355",
+          "uid": 1000,
+          "argv": [
+            "sleep",
+            "45"
+          ]
+        }
+      ],
+      "stop": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-r11-candidates-20261030/group-32/STOP-32",
+      "archived": [
+        "/mnt/raid0/llm/tmp/compute-flags/ready/withdrawn/codex3-quarter-rebalance-0305-20261030/codex3-pip02-paddle-relocatable-r11-g32-20261029.armed.json"
+      ],
+      "pid_after": null,
+      "children_after": [
+        null
+      ],
+      "grant_after": false,
+      "status": "dead-verified"
+    },
+    {
+      "id": "codex3-pip02-paddle-relocatable-r11-g35-20261029",
+      "at": "2026-10-30T03:04:11.386501+00:00",
+      "captured": {
+        "pid": 2467555,
+        "state": "S",
+        "ppid": 531045,
+        "birth": "144373939",
+        "uid": 1000,
+        "argv": [
+          "bash",
+          "/mnt/raid0/llm/tmp/codex3-pip02-paddle-r11-candidates-20261030/group-35/engine/filler_run13.sh",
+          "--id",
+          "codex3-pip02-paddle-relocatable-r11-g35-20261029",
+          "--class",
+          "cpu",
+          "--role",
+          "bench",
+          "--claim-cpus",
+          "72-95",
+          "--min-window",
+          "3600",
+          "--port",
+          "24035",
+          "--stop",
+          "/mnt/raid0/llm/tmp/codex3-pip02-paddle-r11-candidates-20261030/group-35/STOP-35",
+          "--workdir",
+          "/mnt/raid0/llm/tmp/codex3-pip02-paddle-r11-candidates-20261030/group-35",
+          "--cmd",
+          "taskset -c \"$FILLER_CPUS\" /usr/bin/python3 -B /mnt/raid0/llm/tmp/codex3-pip02-paddle-r11-candidates-20261030/group-35/parallel_entry.py --first-shard 35 --regions 72-95 --port 24035",
+          "--complete-cmd",
+          "test -e /mnt/raid0/llm/tmp/codex3-pip02-paddle-r11-candidates-20261030/group-35/DONE-35"
+        ]
+      },
+      "captured_sleep_children": [
+        {
+          "pid": 4088863,
+          "state": "S",
+          "ppid": 2467555,
+          "birth": "145188492",
+          "uid": 1000,
+          "argv": [
+            "sleep",
+            "45"
+          ]
+        }
+      ],
+      "stop": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-r11-candidates-20261030/group-35/STOP-35",
+      "archived": [],
+      "pid_after": null,
+      "children_after": [
+        null
+      ],
+      "grant_after": false,
+      "status": "dead-verified"
+    },
+    {
+      "id": "codex3-pip02-paddle-relocatable-r11-g8-20261029",
+      "at": "2026-10-30T03:04:11.487425+00:00",
+      "captured": {
+        "pid": 2502965,
+        "state": "S",
+        "ppid": 531045,
+        "birth": "144399227",
+        "uid": 1000,
+        "argv": [
+          "bash",
+          "/mnt/raid0/llm/tmp/codex3-pip02-paddle-relocatable-r11-20261030/packets/group-8/engine/filler_run13.sh",
+          "--id",
+          "codex3-pip02-paddle-relocatable-r11-g8-20261029",
+          "--class",
+          "cpu",
+          "--role",
+          "bench",
+          "--claim-cpus",
+          "48-71",
+          "--min-window",
+          "3600",
+          "--port",
+          "24008",
+          "--stop",
+          "/mnt/raid0/llm/tmp/codex3-pip02-paddle-relocatable-r11-20261030/packets/group-8/STOP-8",
+          "--workdir",
+          "/mnt/raid0/llm/tmp/codex3-pip02-paddle-relocatable-r11-20261030/packets/group-8",
+          "--cmd",
+          "taskset -c \"$FILLER_CPUS\" /usr/bin/python3 -B /mnt/raid0/llm/tmp/codex3-pip02-paddle-relocatable-r11-20261030/packets/group-8/parallel_entry.py --first-shard 8 --regions 48-71 --port 24008",
+          "--complete-cmd",
+          "test -e /mnt/raid0/llm/tmp/codex3-pip02-paddle-relocatable-r11-20261030/packets/group-8/DONE-8"
+        ]
+      },
+      "captured_sleep_children": [
+        {
+          "pid": 4093162,
+          "state": "S",
+          "ppid": 2502965,
+          "birth": "145191282",
+          "uid": 1000,
+          "argv": [
+            "sleep",
+            "45"
+          ]
+        }
+      ],
+      "stop": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-relocatable-r11-20261030/packets/group-8/STOP-8",
+      "archived": [
+        "/mnt/raid0/llm/tmp/compute-flags/ready/withdrawn/codex3-quarter-rebalance-0305-20261030/codex3-pip02-paddle-relocatable-r11-g8-20261029.armed.json"
+      ],
+      "pid_after": null,
+      "children_after": [
+        null
+      ],
+      "grant_after": false,
+      "status": "dead-verified"
+    },
+    {
+      "id": "codex3-pip02-paddle-relocatable-r11-g11-20261029",
+      "at": "2026-10-30T03:04:11.588436+00:00",
+      "captured": {
+        "pid": 2468854,
+        "state": "S",
+        "ppid": 2468853,
+        "birth": "144374299",
+        "uid": 1000,
+        "argv": [
+          "bash",
+          "/mnt/raid0/llm/tmp/codex3-pip02-paddle-relocatable-r11-20261030/packets/group-11/engine/filler_run13.sh",
+          "--id",
+          "codex3-pip02-paddle-relocatable-r11-g11-20261029",
+          "--class",
+          "cpu",
+          "--role",
+          "bench",
+          "--claim-cpus",
+          "48-71",
+          "--min-window",
+          "3600",
+          "--port",
+          "24011",
+          "--stop",
+          "/mnt/raid0/llm/tmp/codex3-pip02-paddle-relocatable-r11-20261030/packets/group-11/STOP-11",
+          "--workdir",
+          "/mnt/raid0/llm/tmp/codex3-pip02-paddle-relocatable-r11-20261030/packets/group-11",
+          "--cmd",
+          "taskset -c \"$FILLER_CPUS\" /usr/bin/python3 -B /mnt/raid0/llm/tmp/codex3-pip02-paddle-relocatable-r11-20261030/packets/group-11/parallel_entry.py --first-shard 11 --regions 48-71 --port 24011",
+          "--complete-cmd",
+          "test -e /mnt/raid0/llm/tmp/codex3-pip02-paddle-relocatable-r11-20261030/packets/group-11/DONE-11"
+        ]
+      },
+      "captured_sleep_children": [
+        {
+          "pid": 4089694,
+          "state": "S",
+          "ppid": 2468854,
+          "birth": "145188864",
+          "uid": 1000,
+          "argv": [
+            "sleep",
+            "45"
+          ]
+        }
+      ],
+      "stop": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-relocatable-r11-20261030/packets/group-11/STOP-11",
+      "archived": [
+        "/mnt/raid0/llm/tmp/compute-flags/ready/withdrawn/codex3-quarter-rebalance-0305-20261030/codex3-pip02-paddle-relocatable-r11-g11-20261029.armed.json"
+      ],
+      "pid_after": null,
+      "children_after": [
+        null
+      ],
+      "grant_after": false,
+      "status": "dead-verified"
+    },
+    {
+      "id": "codex3-pip02-paddle-relocatable-r11-g17-20261029",
+      "at": "2026-10-30T03:04:11.689412+00:00",
+      "captured": {
+        "pid": 2468929,
+        "state": "S",
+        "ppid": 2468928,
+        "birth": "144374452",
+        "uid": 1000,
+        "argv": [
+          "bash",
+          "/mnt/raid0/llm/tmp/codex3-pip02-paddle-r11-candidates-20261030/group-17/engine/filler_run13.sh",
+          "--id",
+          "codex3-pip02-paddle-relocatable-r11-g17-20261029",
+          "--class",
+          "cpu",
+          "--role",
+          "bench",
+          "--claim-cpus",
+          "72-95",
+          "--min-window",
+          "3600",
+          "--port",
+          "24017",
+          "--stop",
+          "/mnt/raid0/llm/tmp/codex3-pip02-paddle-r11-candidates-20261030/group-17/STOP-17",
+          "--workdir",
+          "/mnt/raid0/llm/tmp/codex3-pip02-paddle-r11-candidates-20261030/group-17",
+          "--cmd",
+          "taskset -c \"$FILLER_CPUS\" /usr/bin/python3 -B /mnt/raid0/llm/tmp/codex3-pip02-paddle-r11-candidates-20261030/group-17/parallel_entry.py --first-shard 17 --regions 72-95 --port 24017",
+          "--complete-cmd",
+          "test -e /mnt/raid0/llm/tmp/codex3-pip02-paddle-r11-candidates-20261030/group-17/DONE-17"
+        ]
+      },
+      "captured_sleep_children": [
+        {
+          "pid": 4089759,
+          "state": "S",
+          "ppid": 2468929,
+          "birth": "145189016",
+          "uid": 1000,
+          "argv": [
+            "sleep",
+            "45"
+          ]
+        }
+      ],
+      "stop": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-r11-candidates-20261030/group-17/STOP-17",
+      "archived": [
+        "/mnt/raid0/llm/tmp/compute-flags/ready/withdrawn/codex3-quarter-rebalance-0305-20261030/codex3-pip02-paddle-relocatable-r11-g17-20261029.armed.json"
+      ],
+      "pid_after": null,
+      "children_after": [
+        null
+      ],
+      "grant_after": false,
+      "status": "dead-verified"
+    },
+    {
+      "id": "codex3-pip02-paddle-relocatable-r9-g5-20261029",
+      "at": "2026-10-30T03:04:11.790590+00:00",
+      "captured": {
+        "pid": 2486784,
+        "state": "S",
+        "ppid": 2486783,
+        "birth": "144386961",
+        "uid": 1000,
+        "argv": [
+          "bash",
+          "/mnt/raid0/llm/tmp/codex3-pip02-paddle-relocatable-r9-20261029/packets/group-5/engine/filler_run13.sh",
+          "--id",
+          "codex3-pip02-paddle-relocatable-r9-g5-20261029",
+          "--class",
+          "cpu",
+          "--role",
+          "bench",
+          "--claim-cpus",
+          "48-71",
+          "--min-window",
+          "3600",
+          "--port",
+          "24005",
+          "--stop",
+          "/mnt/raid0/llm/tmp/codex3-pip02-paddle-relocatable-r9-20261029/packets/group-5/STOP-5",
+          "--workdir",
+          "/mnt/raid0/llm/tmp/codex3-pip02-paddle-relocatable-r9-20261029/packets/group-5",
+          "--cmd",
+          "taskset -c \"$FILLER_CPUS\" /usr/bin/python3 -B /mnt/raid0/llm/tmp/codex3-pip02-paddle-relocatable-r9-20261029/packets/group-5/parallel_entry.py --first-shard 5 --regions 48-71 --port 24005",
+          "--complete-cmd",
+          "test -e /mnt/raid0/llm/tmp/codex3-pip02-paddle-relocatable-r9-20261029/packets/group-5/DONE-5"
+        ]
+      },
+      "captured_sleep_children": [
+        {
+          "pid": 4087537,
+          "state": "S",
+          "ppid": 2486784,
+          "birth": "145188024",
+          "uid": 1000,
+          "argv": [
+            "sleep",
+            "45"
+          ]
+        }
+      ],
+      "stop": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-relocatable-r9-20261029/packets/group-5/STOP-5",
+      "archived": [
+        "/mnt/raid0/llm/tmp/compute-flags/ready/withdrawn/codex3-quarter-rebalance-0305-20261030/codex3-pip02-paddle-relocatable-r9-g5-20261029.armed.json"
+      ],
+      "pid_after": null,
+      "children_after": [
+        null
+      ],
+      "grant_after": false,
+      "status": "dead-verified"
+    }
+  ]
+}

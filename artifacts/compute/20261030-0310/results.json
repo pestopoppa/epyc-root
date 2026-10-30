@@ -1,0 +1,35 @@
+{
+  "filed_evidence_at": "2026-10-30T03:07:37.717178+00:00",
+  "audits": [
+    {
+      "path": "/mnt/raid0/llm/tmp/compute-flags/ready/withdrawn/codex3-quarter-rebalance-0305-20261030/codex-ni-yarn-dca-attribution-cpu-r2-20261030/codex3-filing-audit-0310.json",
+      "sha256": "a2cff3ad4eb9adae6ca95fb18778a8bed66889d2ec5cc724b2355936803865b3"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/compute-flags/ready/withdrawn/codex3-quarter-rebalance-0305-20261030/codex3-evl34-deepdive-r1-20261030/codex3-filing-audit-0310.json",
+      "sha256": "93b87976058064fdf4bd945e5a3b9382a52bccdd4740986000122c403c92e3e2"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/compute-flags/ready/withdrawn/codex3-quarter-rebalance-0305-20261030/codex3-evl34-deepdive-r1-20261030/codex3-filing-audit-extra-0310.json",
+      "sha256": "022b96c8122a41274ccc61a9d392bc3671dd7eae793235d1e2ed587afbd2a290"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/compute-flags/ready/withdrawn/codex3-quarter-rebalance-0305-20261030/original-three-events.json",
+      "sha256": "36e1b21e9b767243e72aa53e1e0a82ccfdd90a96542f09b838346d756c0ae6eb"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/compute-flags/ready/withdrawn/codex3-quarter-rebalance-0305-20261030/original-finish-audit.json",
+      "sha256": "0aabd7e6f6896a12ab70d53f505a53e811dd9a2ead85b3d4c611dce3fc09532a"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/compute-flags/ready/withdrawn/codex3-quarter-rebalance-0305-20261030/source-capture-audit.json",
+      "sha256": "7987324a4ce9d3c88e63a1f46c0b9616711996be36ff5891f662f07c17ca5281"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/compute-flags/ready/withdrawn/codex3-quarter-rebalance-0305-20261030/s0v6-native-audit.json",
+      "sha256": "605920e4dcae6eee0bf14fd5eabe02b8192ad00da60382040161de9ea0f9f5c7"
+    }
+  ],
+  "rebalance": "Four unchanged-source real-smoked launchers republished: g83/g86 q2, g89/g92 q3. Eight old ungranted registrations stopped and captured PIDs verified dead. No queue or grant writes; partials retained. Other reserve manifests unpinned.",
+  "limitations": "Original-event boundaries only; no full-cohort TEDS, completed natural-delegation A/B, matched tokenwise attribution, significance or adoption claim."
+}

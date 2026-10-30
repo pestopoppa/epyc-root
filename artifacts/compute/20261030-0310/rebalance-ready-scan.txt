@@ -1,0 +1,10 @@
+ok	83	codex3-pip02-paddle-relocatable-r11-g104-20261029	any-cpu-quarter	/mnt/raid0/llm/tmp/codex3-pip02-paddle-r11-next24-20261030/group-104/parallel-g104.sh	32400	96
+ok	83	codex3-pip02-paddle-relocatable-r11-g110-20261029	any-cpu-quarter	/mnt/raid0/llm/tmp/codex3-pip02-paddle-r11-next24-20261030/group-110/parallel-g110.sh	32400	96
+ok	83	codex3-pip02-paddle-relocatable-r11-g113-20261029	any-cpu-quarter	/mnt/raid0/llm/tmp/codex3-pip02-paddle-r11-next24-20261030/group-113/parallel-g113.sh	32400	96
+ok	83	codex3-pip02-paddle-relocatable-r11-g83-20261029	48-71	/mnt/raid0/llm/tmp/codex3-pip02-paddle-r11-next16-20261030/group-83/parallel-g83.sh	32400	96
+ok	83	codex3-pip02-paddle-relocatable-r11-g86-20261029	48-71	/mnt/raid0/llm/tmp/codex3-pip02-paddle-r11-next20-20261030/group-86/parallel-g86.sh	32400	96
+ok	83	codex3-pip02-paddle-relocatable-r11-g89-20261029	72-95	/mnt/raid0/llm/tmp/codex3-pip02-paddle-r11-next20-20261030/group-89/parallel-g89.sh	32400	96
+ok	83	codex3-pip02-paddle-relocatable-r11-g92-20261029	72-95	/mnt/raid0/llm/tmp/codex3-pip02-paddle-r11-next20-20261030/group-92/parallel-g92.sh	32400	96
+ok	83	codex3-pip02-paddle-relocatable-r11-g95-20261029	any-cpu-quarter	/mnt/raid0/llm/tmp/codex3-pip02-paddle-r11-next20-20261030/group-95/parallel-g95.sh	32400	96
+ok	83	codex3-pip02-paddle-relocatable-r11-g98-20261029	any-cpu-quarter	/mnt/raid0/llm/tmp/codex3-pip02-paddle-r11-next24-20261030/group-98/parallel-g98.sh	32400	96
+bad	-	ufh14-a3a-single-warm-r2-20261028	hold=q3 scheduler safety patch unverified; do not arm until verified.

@@ -1,0 +1,42 @@
+{
+  "at": "2026-10-30T03:03:49.091978+00:00",
+  "stage": "four republish packets prepared; original unarmed manifests withdrawn",
+  "records": [
+    {
+      "id": "codex3-pip02-paddle-relocatable-r11-g83-20261029",
+      "regions": "48-71",
+      "original_manifest_sha256": "6d4cd5241a9be59aed8e468a0d43304d46c458c606e6a6fd0684ac381524a2fa",
+      "launcher_sha256": "3c552a5399a912504f33cb21cac96de7017480add946c47ac2b507a65344dd7f",
+      "smoke_preserved": true,
+      "pending_manifest": "/mnt/raid0/llm/tmp/compute-flags/ready/withdrawn/codex3-quarter-rebalance-0305-20261030/codex3-pip02-paddle-relocatable-r11-g83-20261029.json.republish",
+      "target_manifest": "/mnt/raid0/llm/tmp/compute-flags/ready/codex3-pip02-paddle-relocatable-r11-g83-20261029.json"
+    },
+    {
+      "id": "codex3-pip02-paddle-relocatable-r11-g86-20261029",
+      "regions": "48-71",
+      "original_manifest_sha256": "849d3aa4704a7599f406cce9e63abdb69d08e45e3143507952a7fc478852f16c",
+      "launcher_sha256": "3c552a5399a912504f33cb21cac96de7017480add946c47ac2b507a65344dd7f",
+      "smoke_preserved": true,
+      "pending_manifest": "/mnt/raid0/llm/tmp/compute-flags/ready/withdrawn/codex3-quarter-rebalance-0305-20261030/codex3-pip02-paddle-relocatable-r11-g86-20261029.json.republish",
+      "target_manifest": "/mnt/raid0/llm/tmp/compute-flags/ready/codex3-pip02-paddle-relocatable-r11-g86-20261029.json"
+    },
+    {
+      "id": "codex3-pip02-paddle-relocatable-r11-g89-20261029",
+      "regions": "72-95",
+      "original_manifest_sha256": "e14fec0d85cb60658de1efc980a97249a13f2be39466e4b316b97666566075c7",
+      "launcher_sha256": "3c552a5399a912504f33cb21cac96de7017480add946c47ac2b507a65344dd7f",
+      "smoke_preserved": true,
+      "pending_manifest": "/mnt/raid0/llm/tmp/compute-flags/ready/withdrawn/codex3-quarter-rebalance-0305-20261030/codex3-pip02-paddle-relocatable-r11-g89-20261029.json.republish",
+      "target_manifest": "/mnt/raid0/llm/tmp/compute-flags/ready/codex3-pip02-paddle-relocatable-r11-g89-20261029.json"
+    },
+    {
+      "id": "codex3-pip02-paddle-relocatable-r11-g92-20261029",
+      "regions": "72-95",
+      "original_manifest_sha256": "25b0deb1bbb4371673e5b6cc7528a4096c1445fb9b00169e67ecfbc4feeeb9fd",
+      "launcher_sha256": "3c552a5399a912504f33cb21cac96de7017480add946c47ac2b507a65344dd7f",
+      "smoke_preserved": true,
+      "pending_manifest": "/mnt/raid0/llm/tmp/compute-flags/ready/withdrawn/codex3-quarter-rebalance-0305-20261030/codex3-pip02-paddle-relocatable-r11-g92-20261029.json.republish",
+      "target_manifest": "/mnt/raid0/llm/tmp/compute-flags/ready/codex3-pip02-paddle-relocatable-r11-g92-20261029.json"
+    }
+  ]
+}

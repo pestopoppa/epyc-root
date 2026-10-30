@@ -40,3 +40,13 @@ Four original Paddle groups62/65/68/71 rc75 disk-floor partials audited separate
 
 
 ODLR4s24/s25completed50pages withsource/grant/image/result/DONEbindings; s29completed13andretains12actualunknowns, no missing/no redraw. s28original12unknown/13missing separatefromlaterwindows; sampledRSSexceeded96GiB butstop-predicateunrecorded. HILR4threeaccepted nativefailedanswers→25/2/21; scanner collateralbugfixedinqualifiedR5. FA4r6A228(224OK/4NF), model0/10NF, server/proc/exe snapshotfailure, Babsent/noFA4tick. All4CPUquarters andGPUobservedrunning02:43:24; DeepDiveR1nativecontrolpassed andGPUjobarmed/running, no Step3claim. [belief: cc]
+
+
+Operator-requested quarter rebalance: g83/g86 republished q2 (48–71), g89/g92 q3 (72–95), exactly two queued PIP pins each and zero on q0/q1. Eight older ungranted waiting launchers plus their captured sleep children stopped and verified dead; active g74/g77/g80 untouched. Real-smoke/source hashes unchanged; keeper READY scan accepted4/4. Native partials retained; other reserve packets remain unpinned. Evidence artifacts/compute/20261030-0310/. [belief: cc]
+
+CPU attribution R2 completed full64K PPL13.6293±0.20758 with64 exact tokenwise rows; no matchedGPUattributionclaim. DeepDiveR1 original11/20complete,nineunknown,eight native incompletedelegations, no completedpositiveA/B. OriginalPaddle74/77/80 matchedRPC65/65,65/65,45/45 withzero originalboundpagefinishreceipts; latercapturesseparate. [belief: cc]
+
+Filing timestamp correction: prior six-event commit f58547b27979 had actual FILED timestamp02:57:08.430305Z. FA4r6 deadline02:54:05 was missed by3m03.430305s; no backdating or all-timely claim.
+
+
+S0v6originalrc75 verified32accepted/3unknown/10unexposed of45; two new native receipts(one taskfail,one goldpass), no cohort-AUC or exhaustiontick. Preserve exposed12/1 without redraw. Native output-cap-or-disk-reserve gate does not uniquely identify its predicate. [belief: cc]
