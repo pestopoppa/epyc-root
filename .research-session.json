@@ -1,9 +1,9 @@
 {
  "session_id": "intake-ds41-unsloth-20261030",
  "started_at": "2026-10-30T18:03:00Z",
- "last_checkpoint": "2026-10-30T18:45:00Z",
- "stage": 1,
- "phase": "stage1-complete",
+ "last_checkpoint": "2026-10-30T19:20:00Z",
+ "stage": 2,
+ "phase": "stage2-complete",
  "lane": "/mnt/raid0/llm/worktrees/intake-ds41-unsloth-20261030",
  "branch": "intake/ds41-unsloth-20261030",
  "topic": "unsloth.ai/docs/models/deepseek-v4.1-flash (Unsloth Dynamic V3.1 DS41-1017 GGUFs): should EPYC replace the served antirez DS41-1017 MXFP4-experts weights?",
@@ -19,10 +19,12 @@
   "intake-2516",
   "intake-2517",
   "intake-2518",
-  "intake-2519"
+  "intake-2519",
+  "intake-2520",
+  "intake-2521"
  ],
  "entries_remaining": [],
- "next_intake_id": 2520,
+ "next_intake_id": 2522,
  "expansion_cap": 10,
  "expansion_count": 8,
  "expansion_entries": [
@@ -92,7 +94,43 @@
    "reason": "Nothing downloaded beyond headers/metadata; nothing deleted; the disk plan is a list for operator approval only."
   }
  ],
- "actionable_ledger": [],
+ "actionable_ledger": [
+  {
+   "ledger_id": "DS41U-1",
+   "source": "intake-2511/2512/2513 dives (hdr/class_tables.txt, diff_sha_1020_1030.txt)",
+   "action": "Keep the served antirez 1017 MXFP4-experts weights; do not download unsloth UD-Q4_K_XL (same native MXFP4 experts, lower-precision dense path, byte-identical to the 10-20 files already rejected, not loadable in any EPYC tree)."
+  },
+  {
+   "ledger_id": "DS41U-2",
+   "source": "intake-2512 dive (HF LFS sha256 vs local)",
+   "action": "Keep the two local unsloth files that are sha256-identical to HF (dspark Q8_0, imatrix); nothing to download or delete."
+  },
+  {
+   "ledger_id": "DS41U-3",
+   "source": "intake-2514/2515/2516/2520 dives + kernel audit",
+   "action": "Record in deepseek-v41-flash-evaluation.md that upstream deepseek41 (#31086, b11870) uses a layout our port does not load, that type 43 is now F8_E4M3 upstream (MXFP8-table unsloth quants misload), and the Route A (port reads the layout, ~300-450 LOC) / Route B (offline MXFP8-only converter, ~200-300 LOC, ~203 GB temp) estimates."
+  },
+  {
+   "ledger_id": "DS41U-4",
+   "source": "kernel audit (intake-2514 notes)",
+   "action": "Record which DS41 AK keeps/seeds carry over to each weight family and that the 2.862% floor binds the antirez artifact (split digest ba9f129c), so any weight change needs its own 24-pair floor."
+  },
+  {
+   "ledger_id": "DS41U-5",
+   "source": "intake-2517 dive",
+   "action": "Add a prompt-prefix-reuse / checkpoint-restore conformance check (controls cache_prompt:false, -ctxcp 0, multi-sequence) to the DS41 port gates."
+  },
+  {
+   "ledger_id": "DS41U-6",
+   "source": "intake-2511/2512/2518 dives",
+   "action": "Evaluate a low-bit DS41 serving artifact (antirez 1017 IQ2_XXS-Q2_K loads as-is; UD-Q2_K_XL / UD-IQ2_XXS / ISTA GSQ-RCO need Route A) for decode speed; header bound <=19-24% fewer bytes/token."
+  },
+  {
+   "ledger_id": "DS41U-7",
+   "source": "intake-2512 dive (tokenizer KVs)",
+   "action": "Note the add_bos_token KV difference (unsloth false, antirez true) for any future unsloth-layout load."
+  }
+ ],
  "prior_sessions": [
   {
    "session_id": "intake-underdog-bark-20261021",
@@ -64308,5 +64346,115 @@
     "new10_note": "Operator disk/download call 2026-10-22 recorded under NEW-10: IQ3_XXS first (~65 GB), IQ3_S only if needed; booked by workspace-58."
    }
   }
- ]
+ ],
+ "stage2_waves": {
+  "wave1": {
+   "dived": [
+    "intake-2511",
+    "intake-2512",
+    "intake-2513",
+    "intake-2514",
+    "intake-2515",
+    "intake-2516",
+    "intake-2517",
+    "intake-2518",
+    "intake-2519"
+   ],
+   "groups": {
+    "headers": [
+     "intake-2512",
+     "intake-2513",
+     "intake-2511"
+    ],
+    "upstream": [
+     "intake-2514",
+     "intake-2515",
+     "intake-2516",
+     "intake-2517"
+    ],
+    "ista_ud3": [
+     "intake-2518",
+     "intake-2519"
+    ],
+    "kernel_audit": [
+     "intake-2514"
+    ]
+   },
+   "artifacts": {
+    "headers": "/mnt/raid0/llm/tmp/dive-ds41-unsloth-20261030/hdr/",
+    "github": "/mnt/raid0/llm/tmp/dive-ds41-unsloth-20261030/gh/",
+    "ista_rco_ud3": "/mnt/raid0/llm/tmp/dive-ds41-unsloth-20261030/d2/",
+    "kernel_audit": "/mnt/raid0/llm/tmp/dive-ds41-unsloth-20261030/kernel/",
+    "seed": "/mnt/raid0/llm/tmp/dive-ds41-unsloth-20261030/src/"
+   }
+  },
+  "wave2": {
+   "stage2b": [
+    "intake-2520",
+    "intake-2521"
+   ],
+   "note": "Stage 1+2 combined from files saved by the wave-1 dive (gh/pr-27512.*, gh/issue-31263.json); read by main from disk."
+  }
+ },
+ "second_reader": {
+  "mechanical_quote_refind": "all claim_anchors quotes re-found in their saved files by gen.py (normalized whitespace); 0 misses",
+  "support_check": "main re-read each anchor against its key_claim: yes for all except intake-2518 claim 1 (partial, recorded as narrowed) and intake-2517 claim 1 (Stage-1 framing overturned, recorded)"
+ },
+ "dive_surfaced_sources": [
+  {
+   "id_or_url": "https://github.com/ggml-org/llama.cpp/pull/27512",
+   "what_it_would_settle": "what upstream ggml type 43 means now (explains unsloth gibberish)",
+   "bears_on": "intake-2516",
+   "recommend": "ingest-and-dive",
+   "status": "dived wave 2 -> intake-2520"
+  },
+  {
+   "id_or_url": "https://github.com/ggml-org/llama.cpp/issues/31263",
+   "what_it_would_settle": "which DS41 GGUF families load upstream",
+   "bears_on": "intake-2514",
+   "recommend": "ingest-and-dive",
+   "status": "dived wave 2 -> intake-2521"
+  },
+  {
+   "id_or_url": "https://github.com/ggml-org/llama.cpp/pull/31137",
+   "what_it_would_settle": "whether the post-#31086 KV schema changed",
+   "bears_on": "intake-2514",
+   "recommend": "decline",
+   "reason": "read during the wave-1 dive: no GGUF key change; recorded in intake-2514 dive_corrections"
+  },
+  {
+   "id_or_url": "https://github.com/ggml-org/llama.cpp/issues/31346 (+ PRs #31300, #31344)",
+   "what_it_would_settle": "upstream DS41 test/batching correctness",
+   "bears_on": "intake-2514",
+   "recommend": "decline",
+   "reason": "bears only on adopting upstream DS41 support, which no plan item proposes; recorded in intake-2514 dive_corrections"
+  },
+  {
+   "id_or_url": "https://unsloth.ai/docs/basics/unsloth-dynamic-v3.0-gguf",
+   "what_it_would_settle": "whether a v3.1 method description exists",
+   "bears_on": "intake-2511",
+   "recommend": "decline",
+   "reason": "v3.1 changed only three low-bit quants (header diff); no EPYC decision depends on its method; recorded in intake-2511 dive_corrections"
+  },
+  {
+   "id_or_url": "ISTA repo tensor-allocation files for IQ1_M/IQ2_XS and benchmark bar plot",
+   "what_it_would_settle": "per-build type maps; error bars",
+   "bears_on": "intake-2518",
+   "recommend": "decline",
+   "reason": "no DS41 low-bit serving decision is open; recorded in intake-2518 dive_corrections"
+  },
+  {
+   "id_or_url": "https://github.com/IST-DASLab/GSQ and arXiv 2604.18556",
+   "what_it_would_settle": "GSQ method",
+   "bears_on": "intake-2518",
+   "recommend": "decline",
+   "reason": "already indexed (GSQ paper + repo)"
+  }
+ ],
+ "stage2_closeout": {
+  "wave_cap": "4 (operator pre-approval); 2 used",
+  "declined_by_wave_cap": [],
+  "declined_by_dives": "five sources recommended decline, each named in the bearing entry's dive_corrections",
+  "gate": "closed"
+ }
 }

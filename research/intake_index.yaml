@@ -363823,10 +363823,109 @@
   contradicting_evidence: null
   referenced_arxiv_ids: []
   notes: 'Stage 1 (main + subagents, 2026-10-30): seed page curl-fetched and read from disk; expansion found by a literature
-    subagent (search + gh/HF API). Operator pre-approved all recommended Stage-2 dives (max 4 waves).'
-  verification: stage1-unverified
+    subagent (search + gh/HF API). Operator pre-approved all recommended Stage-2 dives (max 4 waves).
+
+
+    Stage 1 (main, 2026-10-30): page fetched by curl (not WebFetch) to /mnt/raid0/llm/tmp/dive-ds41-unsloth-20261030/src/
+    and read in full from a tag-stripped extract. Stage 2 (wave 1): cross-checked against GGUF headers and HF sha256 (intake-2512),
+    upstream PRs/issues (intake-2514..2517, 2521, 2522), our trees (DS41 port served build dd3d9721c, champion c72ec82f5,
+    production v10 ffc1bac82). EPYC context: served DS41 = antirez 1017 MXFP4-experts (intake-2513); operator ruling 2026-10-20
+    already chose antirez MXFP4 over unsloth (deepseek-v41-flash-evaluation.md §W).'
+  verification: dive-verified
   handoffs_updated: []
   handoffs_created: []
+  source_revision: unsloth.ai/docs/models/deepseek-v4.1-flash retrieved 2026-10-30T18:04Z (html sha256-12 224377376137; text
+    extract sha256-12 a16fda293690)
+  read_depth: FULL
+  reader_should_conclude: 'Cite only for: Unsloth publishes a 1017 GGUF ladder whose Q4_K_XL/Q8_K_XL keep native MXFP4 experts
+    (claim 1) and vendor-reported KLD/top-1 vs the F32 reference (claim 2, vendor-only). Do NOT cite it as a reason to replace
+    the served antirez 1017 MXFP4-experts build: the "V3.1" update did not touch Q4_K_XL (byte-identical to 10-20), whose
+    experts are the same lossless MXFP4 as ours and whose dense path is lower precision (Q8_0 where antirez is F16). Do NOT
+    follow its llama.cpp instruction: PR #30817 is closed and type 43 now means F8_E4M3 upstream. Its low-bit benchmark table
+    is vendor-vs-vendor at unmatched sizes.'
+  claim_anchors:
+  - claim_index: 0
+    kind: heading-and-hash
+    locator: §Dynamic V3.1 Update (October 30th 2026), para 1
+    quote: We're releasing new DeepSeek-V4.1-Flash-1017 GGUFs which using our new Unsloth Dynamic V3.1 (preview) algorithm
+    quote_sha256: 91980aac4556222c0e290f1a99ab43ade3e605a0cfff333e7853923163d41fcc
+    source_revision: unsloth.ai/docs/models/deepseek-v4.1-flash retrieved 2026-10-30T18:04Z (html sha256-12 224377376137;
+      text extract sha256-12 a16fda293690)
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: heading-and-hash
+    locator: §Quantization Analysis, para 2
+    quote: Q4 and Q8 retain MXFP4 experts and the same Engram table; their labels do not describe every tensor’s precision.
+      Q4 stores many non-expert weights in Q8_0; Q8 uses BF16.
+    quote_sha256: 51df4db61fec45a680ddf661c2ae290fb829df47df3cba1a6ebcedc2efed1be9
+    source_revision: unsloth.ai/docs/models/deepseek-v4.1-flash retrieved 2026-10-30T18:04Z (html sha256-12 224377376137;
+      text extract sha256-12 a16fda293690)
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: heading-and-hash
+    locator: §Quantization Analysis table, rows UD-Q4_K_XL / UD-Q8_K_XL (text extract)
+    quote: UD-Q4_K_XL 500.7 GB 9.00e-03 / 98.2% 4.46e-03 / 98.5% UD-Q8_K_XL 508.4 GB 4.76e-03 / 98.5% 2.81e-03 / 98.7%
+    quote_sha256: a7f6934a26067b115790764a9f76bb115e793daa60030c5c67b4265b3687a0c3
+    source_revision: unsloth.ai/docs/models/deepseek-v4.1-flash retrieved 2026-10-30T18:04Z (html sha256-12 224377376137;
+      text extract sha256-12 a16fda293690)
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: heading-and-hash
+    locator: §Run DeepSeek-V4.1-Flash in llama.cpp, build snippet
+    quote: git -C llama.cpp fetch origin pull/30817/head:deepseek41
+    quote_sha256: 088052cd6d521a5181599e5a5ea181a90b26abffa3674b5d0b19e613b468be6f
+    source_revision: unsloth.ai/docs/models/deepseek-v4.1-flash retrieved 2026-10-30T18:04Z (html sha256-12 224377376137;
+      text extract sha256-12 a16fda293690)
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: heading-and-hash
+    locator: §Engram removal for benchmarks
+    quote: all low bit quants use IQ4_NL as the engram - Q2_K_XL and IQ2_XXS use Q5_K
+    quote_sha256: f02305d408e65aa2b3be8c35683deb0852d9ec4223213a86121fb6ee41ccad4d
+    source_revision: unsloth.ai/docs/models/deepseek-v4.1-flash retrieved 2026-10-30T18:04Z (html sha256-12 224377376137;
+      text extract sha256-12 a16fda293690)
+    verified_by: research-intake/stage2
+  - claim_index: 5
+    kind: heading-and-hash
+    locator: §Quantization increases reasoning lengths
+    quote: We also tested if lower bit quants think for longer - we set all tests at a 32K context length and fail quants
+      if they think for too long.
+    quote_sha256: ccccb051023b89a601dfbc70d144f2898ced3089ed596fccb09f51df50d70c6b
+    source_revision: unsloth.ai/docs/models/deepseek-v4.1-flash retrieved 2026-10-30T18:04Z (html sha256-12 224377376137;
+      text extract sha256-12 a16fda293690)
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 0
+    effect: narrowed
+    note: 'HF sha256 diff 60ad3651 -> 8a6ec9cf (intake-2512): the V3.1 update re-quantized only UD-IQ1_M, UD-IQ1_S and UD-Q2_K_XL
+      with unchanged type maps; UD-Q4_K_XL / Q8_K_XL / Q3_K_XL / IQ3_* / IQ2_XXS are byte-identical to the 10-20 files EPYC
+      already evaluated and rejected (DS41-W, alt-quants.md). "Improves nearly all benchmarks" is vendor-only and cannot apply
+      to unchanged files.'
+  - claim_index: 1
+    effect: unaffected
+    note: 'Confirmed by GGUF headers (intake-2512): MXFP4 experts in all 40 layers for Q4_K_XL and Q8_K_XL; Q4 dense Q8_0
+      incl. token_embd/compressor/indexer that antirez keeps at F16.'
+  - claim_index: 2
+    effect: unaffected
+    note: Numbers are present in the source as stated; they remain vendor-reported, not EPYC measurements, and no comparable
+      figure exists for the antirez build.
+  - claim_index: 3
+    effect: overturned
+    note: 'PR #30817 closed unmerged 2026-10-27 (intake-2515); upstream #31086 dropped MXFP8 (intake-2514) and #27512 reassigned
+      type 43 to F8_E4M3 (intake-2520), so MXFP8-table quants fail to load or output gibberish upstream (intake-2516). The
+      page instruction is stale; only the closed PR branch or Unsloth fork reads these files.'
+  - claim_index: 4
+    effect: narrowed
+    note: 'Headers: IQ1_M/IQ1_S IQ4_NL, Q2_K_XL/IQ2_XXS Q5_K, IQ3_XXS Q6_K, Q3_K_XL/Q4_K_XL/Q8_K_XL MXFP8. The table swap
+      is real (engram/README) but tables below MXFP8 are lossy re-encodings of the FP8 rows.'
+  - claim_index: 5
+    effect: unaffected
+    note: The truncation observation is stated as described; vendor-measured, harness differs from ISTA, sizes unmatched.
+  dive_corrections: '2026-10-30 (Stage 2, wave 1): read the full page from disk. Narrowed claim 0: only three low-bit quants
+    changed in V3.1; Q4_K_XL is unchanged since 10-20. Overturned claim 3: the PR #30817 build instruction is stale (closed
+    unmerged; type 43 collides upstream). Declined dive-surfaced sources: the alternate slug unsloth.ai/docs/basics/unsloth-dynamic-v3.0-gguf
+    (the page fetched as intake-2519 states no v3.1 content and the seed page is the primary record); the ISTA benchmark bar
+    plot (the card table carries the same numbers).'
 - id: intake-2512
   arxiv_id: null
   url: https://huggingface.co/unsloth/DeepSeek-V4.1-Flash-1017-GGUF
@@ -363882,10 +363981,94 @@
   contradicting_evidence: null
   referenced_arxiv_ids: []
   notes: 'Stage 1 (main + subagents, 2026-10-30): seed page curl-fetched and read from disk; expansion found by a literature
-    subagent (search + gh/HF API). Operator pre-approved all recommended Stage-2 dives (max 4 waves).'
-  verification: stage1-unverified
+    subagent (search + gh/HF API). Operator pre-approved all recommended Stage-2 dives (max 4 waves).
+
+
+    Files: /mnt/raid0/llm/tmp/dive-ds41-unsloth-20261030/hdr/ (per-quant JSON, class_tables.txt, active_bytes.txt, diff_sha_1020_1030.txt,
+    READMEs, chat template). Local identical files (name+size+sha256): dspark-DeepSeek-V4.1-Flash-1017-Q8_0.gguf (sha256 6ba6ac1b...)
+    and imatrix_unsloth.gguf_file (22ed7e8f...) under /mnt/raid0/llm/models/unsloth/DeepSeek-V4.1-Flash-1017-GGUF/. Disk:
+    UD-Q4_K_XL 466.32 GiB, UD-Q2_K_XL 311.80 GiB, UD-IQ2_XXS 279.84 GiB, UD-IQ3_XXS 367.63 GiB; /mnt/raid0/llm free 391.99
+    GiB at 2026-10-30T18:0xZ.'
+  verification: dive-verified
   handoffs_updated: []
   handoffs_created: []
+  source_revision: HF unsloth/DeepSeek-V4.1-Flash-1017-GGUF @ 8a6ec9cf118e785a362ea94ee123c61c70553be6 (GGUF headers via HTTP
+    Range, 2026-10-30)
+  read_depth: PARTIAL
+  reader_should_conclude: 'Cite for per-tensor types, sizes and the fact that the 2026-10-30 update changed only UD-IQ1_M,
+    UD-IQ1_S and UD-Q2_K_XL. Do NOT cite the active-bytes table as a speed prediction: it is a header-derived upper bound
+    and dense tensors are about two-thirds of the bytes, so low-bit experts cut per-token bytes by at most about 19-24% (Q2_K_XL
+    / IQ2_XXS). Do NOT assume any of these files load in an EPYC tree: none do (intake-2514 notes).'
+  claim_anchors:
+  - claim_index: 0
+    kind: line-range
+    locator: 'hdr/class_tables.txt: unsloth_UD-Q4_K_XL block @ 8a6ec9cf'
+    quote: 'routed_gate n= 40 96.259 GB {''MXFP4'': 40}'
+    quote_sha256: 783ce6e2591b63da287981e6b399d232e58da6cd54919db27e39cd10736aa455
+    source_revision: HF unsloth/DeepSeek-V4.1-Flash-1017-GGUF @ 8a6ec9cf118e785a362ea94ee123c61c70553be6 (GGUF headers via
+      HTTP Range, 2026-10-30)
+    verified_by: research-intake/stage2
+  - claim_index: 0
+    kind: line-range
+    locator: 'hdr/class_tables.txt: unsloth_UD-Q4_K_XL engram row'
+    quote: 'engram_table n= 1 202.758 GB {''T43'': 1}'
+    quote_sha256: 417427862b8ade421aef46b4c1e7c7646960b23a1d85fcf796873ea08c44c23b
+    source_revision: HF unsloth/DeepSeek-V4.1-Flash-1017-GGUF @ 8a6ec9cf118e785a362ea94ee123c61c70553be6 (GGUF headers via
+      HTTP Range, 2026-10-30)
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: line-range
+    locator: 'hdr/diff_sha_1020_1030.txt: changed groups (60ad3651 -> 8a6ec9cf)'
+    quote: 'CHANGED per group: {''README.md'': 1, ''UD-IQ1_M'': 4, ''UD-IQ1_S'': 4, ''UD-Q2_K_XL'': 6}'
+    quote_sha256: 6795531c66358c83e8f74828d0d9858ffc76bd6ac8208fbdbf1b0b7578d7f42d
+    source_revision: HF unsloth/DeepSeek-V4.1-Flash-1017-GGUF @ 8a6ec9cf118e785a362ea94ee123c61c70553be6 (GGUF headers via
+      HTTP Range, 2026-10-30)
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: line-range
+    locator: README.md:31 @ 8a6ec9cf
+    quote: To run, please use our llama.cpp PR or the
+    quote_sha256: f070d6015d9f113f6e01400f5e50fe73dcff2aacb424215dfda96db900c2eb20
+    source_revision: HF unsloth/DeepSeek-V4.1-Flash-1017-GGUF @ 8a6ec9cf118e785a362ea94ee123c61c70553be6 (GGUF headers via
+      HTTP Range, 2026-10-30)
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: line-range
+    locator: dspark/README.md:28 @ 8a6ec9cf
+    quote: DeepSeek-V4.1 (`deepseek41`) and its DSpark drafter are not in upstream llama.cpp yet.
+    quote_sha256: 45cdffdd6551321230b94fad379f25d73f8864dc8cde219cfe10cc5c4a48fa0d
+    source_revision: HF unsloth/DeepSeek-V4.1-Flash-1017-GGUF @ 8a6ec9cf118e785a362ea94ee123c61c70553be6 (GGUF headers via
+      HTTP Range, 2026-10-30)
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: json-pointer
+    locator: imatrix_unsloth.gguf_file header KV imatrix.chunk_count
+    quote: '"imatrix.chunk_count": 558'
+    quote_sha256: 38500ed055b078ed5c8effa4897894577a19aecfc206f2752ec22a98f745243d
+    source_revision: HF unsloth/DeepSeek-V4.1-Flash-1017-GGUF @ 8a6ec9cf118e785a362ea94ee123c61c70553be6 (GGUF headers via
+      HTTP Range, 2026-10-30)
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: Header facts read directly.
+  - claim_index: 1
+    effect: unaffected
+    note: sha256 diff read directly from HF API at both revisions.
+  - claim_index: 2
+    effect: unaffected
+    note: Per-layer type ranges from headers (hdr/class_tables.txt).
+  - claim_index: 3
+    effect: unaffected
+    note: Template KV identical across quants; README silent on fixes.
+  - claim_index: 4
+    effect: unaffected
+    note: imatrix KVs read via Range.
+  dive_corrections: '2026-10-30 (Stage 2, wave 1): header-only survey of every UD quant plus DSpark and Engram files at 8a6ec9cf
+    and the three changed quants at 60ad3651; no tensor data read. Corrected the seed framing: V3.1 changed 3 quants only.
+    Tokenizer: same vocab/merges as antirez, but unsloth sets add_bos_token=false and a pad id while antirez sets add_bos_token=true
+    (a loader-trusted KV difference). Not read: tensor bytes (so expert byte-identity with antirez MXFP4 is inferred from
+    type/shape/size, not hashed).'
 - id: intake-2513
   arxiv_id: null
   url: https://huggingface.co/antirez/deepseek-v4.1-flash-gguf
@@ -363933,10 +364116,69 @@
   contradicting_evidence: null
   referenced_arxiv_ids: []
   notes: 'Stage 1 (main + subagents, 2026-10-30): seed page curl-fetched and read from disk; expansion found by a literature
-    subagent (search + gh/HF API). Operator pre-approved all recommended Stage-2 dives (max 4 waves).'
-  verification: stage1-unverified
+    subagent (search + gh/HF API). Operator pre-approved all recommended Stage-2 dives (max 4 waves).
+
+
+    Served artifact since DS41-W1/W7 (2026-10-21). Local: /mnt/raid0/llm/models/antirez/deepseek-v4.1-flash-gguf/ (9 shards,
+    501,602,535,360 B = 467.15 GiB), sha256 per shard verified at download against HF LFS oids. AutoKernel floor 2.862% and
+    recipe ds41-1017-mxfp4-cpu-t48-targetonly bind this artifact by split digest ba9f129c.'
+  verification: dive-verified
   handoffs_updated: []
   handoffs_created: []
+  source_revision: HF antirez/deepseek-v4.1-flash-gguf @ 9dcee51692e6540f697141fc98b097e3c96492a3; local shard headers read
+    from disk 2026-10-30
+  read_depth: PARTIAL
+  reader_should_conclude: Cite as the identity of the served DS41 trunk. Its routed experts carry the same information as
+    UD-Q4_K_XL's (both native MXFP4) and its dense path is equal or higher precision (F16 token_embd/compressor/indexer vs
+    Q8_0). The 1017 IQ2_XXS-Q2_K file is the only low-bit 1017 build that loads in our port without code changes.
+  claim_anchors:
+  - claim_index: 0
+    kind: line-range
+    locator: 'hdr/class_tables.txt: antirez_mxfp4_local block'
+    quote: 'engram_table n= 2 202.758 GB {''I8'': 2}'
+    quote_sha256: 799c0cc728d73981f5c7bbd1dd9fc37bd3d936a8141ff7f54d699b300be3c858
+    source_revision: HF antirez/deepseek-v4.1-flash-gguf @ 9dcee51692e6540f697141fc98b097e3c96492a3; local shard headers read
+      from disk 2026-10-30
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: line-range
+    locator: 'hdr/class_tables.txt: antirez_mxfp4_local quantize_kv'
+    quote: '''deepseek41.calibration'': ''native MXFP4; imatrix provenance only'''
+    quote_sha256: f2760e1d3674d8e1c13a8634ce4f96114488570330fa5e0925de7aa6dd7a79e9
+    source_revision: HF antirez/deepseek-v4.1-flash-gguf @ 9dcee51692e6540f697141fc98b097e3c96492a3; local shard headers read
+      from disk 2026-10-30
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: line-range
+    locator: 'hdr/class_tables.txt: antirez_iq2q2 block'
+    quote: 'routed_down n= 40 59.454 GB {''Q2_K'': 40}'
+    quote_sha256: b134e131bddab1a52f52405972f17b8ca79ff02d855f569d1d815dd95fb13c0d
+    source_revision: HF antirez/deepseek-v4.1-flash-gguf @ 9dcee51692e6540f697141fc98b097e3c96492a3; local shard headers read
+      from disk 2026-10-30
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: line-range
+    locator: README.md @ 9dcee516 (Download target table)
+    quote: '| `ds41f-q4` | 482.98 GiB | 294.15 GiB |'
+    quote_sha256: 8f4b15795694804d6d6fa6c2b9b0dccf2c12f14b8c970087282e97de1c490e17
+    source_revision: HF antirez/deepseek-v4.1-flash-gguf @ 9dcee51692e6540f697141fc98b097e3c96492a3; local shard headers read
+      from disk 2026-10-30
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: Local headers.
+  - claim_index: 1
+    effect: unaffected
+    note: Local headers.
+  - claim_index: 2
+    effect: unaffected
+    note: HF Range header.
+  - claim_index: 3
+    effect: unaffected
+    note: README identical to the local September copy.
+  dive_corrections: '2026-10-30 (Stage 2, wave 1): confirmed the served build is the antirez/ds4 layout with lossless MXFP4
+    experts and I8-packed FP8 Engram; it is the only 1017 layout our DS41 port loads. No correction.'
 - id: intake-2514
   arxiv_id: null
   url: https://github.com/ggml-org/llama.cpp/pull/31086
@@ -363989,10 +364231,84 @@
   contradicting_evidence: null
   referenced_arxiv_ids: []
   notes: 'Stage 1 (main + subagents, 2026-10-30): seed page curl-fetched and read from disk; expansion found by a literature
-    subagent (search + gh/HF API). Operator pre-approved all recommended Stage-2 dives (max 4 waves).'
-  verification: stage1-unverified
+    subagent (search + gh/HF API). Operator pre-approved all recommended Stage-2 dives (max 4 waves).
+
+
+    Port effort read from the PR diff and our port (kernel audit, /mnt/raid0/llm/tmp/dive-ds41-unsloth-20261030/kernel/):
+    Route A, teach the DS41 port the #31086/unsloth layout, about 300-450 LOC across 6-9 files (ple.* keys, single-table row
+    views, engram_gate as q_norm with k_norm=1, get_rows for Q5_K/Q6_K/IQ4_NL tables, MXFP8 remapped to I8 with an interleaved
+    gather variant); Route B, offline converter for MXFP8-table files only (per-row byte shuffle [e,q*32]*8 -> 256 codes +
+    8 scales; lossless), about 200-300 LOC of gguf-py plus about 203 GB temporary disk.'
+  verification: dive-verified
   handoffs_updated: []
   handoffs_created: []
+  source_revision: 'ggml-org/llama.cpp PR #31086 head 205269266bbe11a1437618d7ba12c6c4228703a5, merge 74bca3950054eed1795f525cb9cf06bfe796492d
+    (retrieved 2026-10-30)'
+  read_depth: PARTIAL
+  reader_should_conclude: 'Cite for the upstream deepseek41 layout (single per_layer_token_embd, BF16 table, ple.* keys) and
+    its b11870 release. Do NOT infer that EPYC can load upstream-layout GGUFs: our DS41 port reads only the antirez layout.
+    Adopting upstream DS41 support is a port decision, not a weight swap.'
+  claim_anchors:
+  - claim_index: 0
+    kind: line-range
+    locator: pr-31086.diff:864 (gguf-py constants)
+    quote: 'MODEL_ARCH.DEEPSEEK41: "deepseek41",'
+    quote_sha256: c895e05b3898c68aba6c750b6bfe29d85ef39a9e65b0e53fd500b86743d77b29
+    source_revision: 'ggml-org/llama.cpp PR #31086 head 205269266bbe11a1437618d7ba12c6c4228703a5, merge 74bca3950054eed1795f525cb9cf06bfe796492d
+      (retrieved 2026-10-30)'
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: line-range
+    locator: pr-31086.diff:399 (converter docstring)
+    quote: The Engram tables of all layers are written as one per_layer_token_embd (rows concatenated in layer order)
+    quote_sha256: 3647ef70cf548b29c6352dcd845f328248106fe786c6deb64ee3f80fd6af4506
+    source_revision: 'ggml-org/llama.cpp PR #31086 head 205269266bbe11a1437618d7ba12c6c4228703a5, merge 74bca3950054eed1795f525cb9cf06bfe796492d
+      (retrieved 2026-10-30)'
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: line-range
+    locator: pr-31086.patch:4759 (commit 02/10 subject)
+    quote: 'Subject: [PATCH 02/10] deepseek41 : remove MXFP8, convert the Engram table to'
+    quote_sha256: 4c2ca11c883530217051696df3ff071bb27de1786938797d9c2b6e9859cbaa8a
+    source_revision: 'ggml-org/llama.cpp PR #31086 head 205269266bbe11a1437618d7ba12c6c4228703a5, merge 74bca3950054eed1795f525cb9cf06bfe796492d
+      (retrieved 2026-10-30)'
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: json-pointer
+    locator: release-b11870.json .body
+    quote: 'deepseek41 : remove MXFP8, convert the Engram table to BF16'
+    quote_sha256: 8be7c1071464830261e1869c51a50b48b9c8d80e26e6d87128c5141904dbb55b
+    source_revision: 'ggml-org/llama.cpp PR #31086 head 205269266bbe11a1437618d7ba12c6c4228703a5, merge 74bca3950054eed1795f525cb9cf06bfe796492d
+      (retrieved 2026-10-30)'
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: line-range
+    locator: pr-31086.diff:577
+    quote: DeepSeek-V4.1 DSpark speculative draft (mtp.0..2 of the checkpoint) as a DFLASH GGUF (`--dspark`).
+    quote_sha256: 849b111784b2f077afe217a221385dae11bbbf72a49d2449bb0d70d252cf99f7
+    source_revision: 'ggml-org/llama.cpp PR #31086 head 205269266bbe11a1437618d7ba12c6c4228703a5, merge 74bca3950054eed1795f525cb9cf06bfe796492d
+      (retrieved 2026-10-30)'
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: Read from diff.
+  - claim_index: 1
+    effect: unaffected
+    note: Read from diff.
+  - claim_index: 2
+    effect: unaffected
+    note: 'MXFP8 removal is the author''s commit; the reviewer request lives on #30817.'
+  - claim_index: 3
+    effect: unaffected
+    note: No new CPU kernels; softplus one-liner only.
+  dive_corrections: '2026-10-30 (Stage 2, wave 1): the Stage-1 reader said the reviewer on #31086 asked to drop MXFP8; reattributed
+    - the request is on #30817 and the removal is commit 02/10 of #31086. EPYC trees: none contain 74bca395 or 68d20b884 (git
+    cat-file in /mnt/raid0/llm/llama.cpp); production v10 ffc1bac82 has no deepseek41 arch; the DS41 port (served dd3d9721c,
+    champion c72ec82f5) loads only the antirez layout and rejects the #31086 layout (missing kv_source_layer_ids / string
+    expert_gating_func, deepseek41.cpp:134-178) and type 43 (gguf.cpp:705/715). Declined dive-surfaced sources: #31137 (follow-up,
+    no GGUF key change; noted here), #31346/#31300/#31344 (upstream test/batching fixes; bear only on adopting upstream, which
+    no plan item proposes).'
 - id: intake-2515
   arxiv_id: null
   url: https://github.com/ggml-org/llama.cpp/pull/30817
@@ -364037,10 +364353,65 @@
   contradicting_evidence: null
   referenced_arxiv_ids: []
   notes: 'Stage 1 (main + subagents, 2026-10-30): seed page curl-fetched and read from disk; expansion found by a literature
-    subagent (search + gh/HF API). Operator pre-approved all recommended Stage-2 dives (max 4 waves).'
-  verification: stage1-unverified
+    subagent (search + gh/HF API). Operator pre-approved all recommended Stage-2 dives (max 4 waves).
+
+
+    Saved: /mnt/raid0/llm/tmp/dive-ds41-unsloth-20261030/gh/pr-30817.{json,diff}. Review-comment list was empty; the discussion
+    is in issue comments.'
+  verification: dive-verified
   handoffs_updated: []
   handoffs_created: []
+  source_revision: 'ggml-org/llama.cpp PR #30817 head b72050d03ae14bb3cb5138ecefab3f3f65157d31 (closed unmerged; retrieved
+    2026-10-30)'
+  read_depth: PARTIAL
+  reader_should_conclude: 'Cite only as the origin of the MXFP8 (type 43) Engram encoding in unsloth GGUFs and of Unsloth''s
+    near-lossless KL claim (vendor, quant unnamed). It is superseded by #31086 and its type id now collides with upstream
+    F8_E4M3.'
+  claim_anchors:
+  - claim_index: 0
+    kind: line-range
+    locator: pr-30817.diff:796 (ggml.h)
+    quote: GGML_TYPE_MXFP8   = 43, // MXFP8 (E4M3, E8M0 scale), gather-only
+    quote_sha256: 95139e51fc73a6509557f32d65ec25be36c375690767e8ff99f947259a76ff2a
+    source_revision: 'ggml-org/llama.cpp PR #30817 head b72050d03ae14bb3cb5138ecefab3f3f65157d31 (closed unmerged; retrieved
+      2026-10-30)'
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: json-pointer
+    locator: pr-30817.json .body
+    quote: mean KL 4.8e-3 (wiki) / 2.8e-3 (17k-token context), versus 2.6e-2 / 1.5e-2 for the reference's own native kernels
+    quote_sha256: 59c70960a9b006306ab781684242effbaa62af2864157d58ba4c71670ebd8681
+    source_revision: 'ggml-org/llama.cpp PR #30817 head b72050d03ae14bb3cb5138ecefab3f3f65157d31 (closed unmerged; retrieved
+      2026-10-30)'
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: json-pointer
+    locator: pr-30817.json comments[6] am17an 2026-10-21T06:33Z
+    quote: For faster merge I would just remove MXFP8 and add that back in
+    quote_sha256: 4e12292e1205585b3be817ef62b554e7236e79c8c3a847ece5e4920a9d98746c
+    source_revision: 'ggml-org/llama.cpp PR #30817 head b72050d03ae14bb3cb5138ecefab3f3f65157d31 (closed unmerged; retrieved
+      2026-10-30)'
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: json-pointer
+    locator: pr-30817.json comments[8] danielhanchen 2026-10-27T02:07Z
+    quote: has landed support!
+    quote_sha256: ba4509bc3d8d7f768d95d891a0f76dcb3feefd4ca2d7cec9e911d2c6f71f50e5
+    source_revision: 'ggml-org/llama.cpp PR #30817 head b72050d03ae14bb3cb5138ecefab3f3f65157d31 (closed unmerged; retrieved
+      2026-10-30)'
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: Block = 1 E8M0 + 32 E4M3 = 33 B per 32 values (struct + static_assert).
+  - claim_index: 1
+    effect: unaffected
+    note: Present as a vendor claim; quant unnamed.
+  - claim_index: 2
+    effect: unaffected
+    note: Closed unmerged.
+  dive_corrections: '2026-10-30 (Stage 2, wave 1): confirmed. Byte layout of MXFP8 rows is a lossless per-row shuffle of antirez''s
+    I8 [264] rows (same 256 E4M3 codes and 8 E8M0 scales); NaN handling differs (our gather outputs 0).'
 - id: intake-2516
   arxiv_id: null
   url: https://github.com/ggml-org/llama.cpp/issues/31385
@@ -364088,10 +364459,62 @@
   contradicting_evidence: null
   referenced_arxiv_ids: []
   notes: 'Stage 1 (main + subagents, 2026-10-30): seed page curl-fetched and read from disk; expansion found by a literature
-    subagent (search + gh/HF API). Operator pre-approved all recommended Stage-2 dives (max 4 waves).'
-  verification: stage1-unverified
+    subagent (search + gh/HF API). Operator pre-approved all recommended Stage-2 dives (max 4 waves).
+
+
+    Saved /mnt/raid0/llm/tmp/dive-ds41-unsloth-20261030/gh/issue-31385.json (sha256-12 f92a26aa8331). Independent of Unsloth.'
+  verification: dive-verified
   handoffs_updated: []
   handoffs_created: []
+  source_revision: 'ggml-org/llama.cpp issue #31385 as of 2026-10-30T08:24Z (retrieved 2026-10-30)'
+  read_depth: FULL
+  reader_should_conclude: Cite as independent evidence that unsloth UD-Q4_K_XL (and other MXFP8-table quants) cannot be run
+    correctly on current upstream llama.cpp. It does not bear on our DS41 port, which rejects type 43 cleanly.
+  claim_anchors:
+  - claim_index: 0
+    kind: json-pointer
+    locator: issue-31385.json .body (log)
+    quote: tensor 'per_layer_token_embd.weight' has invalid ggml type 43. should be in [0, 43)
+    quote_sha256: e5c5323785f543d7580f79061b80dddd6e50ec14629386f705be0800e00e07c6
+    source_revision: 'ggml-org/llama.cpp issue #31385 as of 2026-10-30T08:24Z (retrieved 2026-10-30)'
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: json-pointer
+    locator: issue-31385.json comments[0] CISC 2026-10-29T17:40Z
+    quote: seeing as type 43 (FP8) was just merged this is about to blow up unless fixed.
+    quote_sha256: 80a5f6e3c2165c125c5b30e949aa47be8da8e1777770b53fa8a7b822c26372f2
+    source_revision: 'ggml-org/llama.cpp issue #31385 as of 2026-10-30T08:24Z (retrieved 2026-10-30)'
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: json-pointer
+    locator: issue-31385.json comments[1] createthis 2026-10-29T19:00Z
+    quote: loads now, but outputs gibberish
+    quote_sha256: ca4d101d4b7ca5cb9b03d60192666dae45e2f4a13b19a4eadd2f96d61b3b35ef
+    source_revision: 'ggml-org/llama.cpp issue #31385 as of 2026-10-30T08:24Z (retrieved 2026-10-30)'
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: json-pointer
+    locator: issue-31385.json .body
+    quote: does someone just need to regenerate the GGUFs?
+    quote_sha256: 8fa7b76b49f1eea9030ca66dbc873f1e5b45ad27302b795ff9563d9d486937e7
+    source_revision: 'ggml-org/llama.cpp issue #31385 as of 2026-10-30T08:24Z (retrieved 2026-10-30)'
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: Read.
+  - claim_index: 1
+    effect: unaffected
+    note: 'Maintainer statement; mechanism (33 B/32 MXFP8 bytes read as 1-byte F8_E4M3) is our inference from #30817 and #27512.'
+  - claim_index: 2
+    effect: unaffected
+    note: Single reporter, CUDA box.
+  - claim_index: 3
+    effect: unaffected
+    note: No answer at retrieval.
+  dive_corrections: '2026-10-30 (Stage 2, wave 1): confirmed; whole thread read (3 comments). The affected set is every unsloth
+    quant with an MXFP8 table (UD-Q3_K_XL, UD-Q4_K_XL, UD-Q8_K_XL); Q5_K/Q6_K/IQ4_NL-table quants are not affected by the
+    type clash (intake-2521).'
 - id: intake-2517
   arxiv_id: null
   url: https://github.com/ggml-org/llama.cpp/issues/30944
@@ -364145,10 +364568,77 @@
   contradicting_evidence: null
   referenced_arxiv_ids: []
   notes: 'Stage 1 (main + subagents, 2026-10-30): seed page curl-fetched and read from disk; expansion found by a literature
-    subagent (search + gh/HF API). Operator pre-approved all recommended Stage-2 dives (max 4 waves).'
-  verification: stage1-unverified
+    subagent (search + gh/HF API). Operator pre-approved all recommended Stage-2 dives (max 4 waves).
+
+
+    Port relevance (derived, not in source): any DS41 port should check that (a) per-position token ids used for Engram n-gram
+    hashing are restored with a reused prefix, (b) compressed-KV and mirror/shared-source layers are restored only after deferred
+    reads land, (c) multi-sequence restore; controls cache_prompt:false and -ctxcp 0.'
+  verification: dive-verified
   handoffs_updated: []
   handoffs_created: []
+  source_revision: 'ggml-org/llama.cpp issue #30944 (filed against b72050d) + PR #31292 head 63ea84ec8865c61da12d2c4170a9f1fb7eb20ff6
+    (retrieved 2026-10-30)'
+  read_depth: FULL
+  reader_should_conclude: 'Cite as an open upstream DS4.1 correctness defect on prompt-prefix reuse / checkpoint restore.
+    Do NOT cite the lazy-mode race as a cause. Do NOT assume our port is affected or immune: untested.'
+  claim_anchors:
+  - claim_index: 0
+    kind: json-pointer
+    locator: issue-30944.json .body
+    quote: 'Trigger isolated: KV prompt-prefix reuse corrupts output with the Engram (both `--lazy-mode` settings)'
+    quote_sha256: 71564ce826641270c2eb9b2db226c335c7fd2f43fecce4d73bd6ff075336d219
+    source_revision: 'ggml-org/llama.cpp issue #30944 (filed against b72050d) + PR #31292 head 63ea84ec8865c61da12d2c4170a9f1fb7eb20ff6
+      (retrieved 2026-10-30)'
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: json-pointer
+    locator: pr-30817.json comments[2] bertusmt 2026-10-21T05:24Z
+    quote: the suspicion on `llm_graph_host_get_rows` / the lazy read path was wrong
+    quote_sha256: 1f66e3162ff2b748256c5beae25c841496312f0b4dcbfe33bdcd32390b3df5cd
+    source_revision: 'ggml-org/llama.cpp issue #30944 (filed against b72050d) + PR #31292 head 63ea84ec8865c61da12d2c4170a9f1fb7eb20ff6
+      (retrieved 2026-10-30)'
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: json-pointer
+    locator: issue-30944.json comments[5] songwanqian 2026-10-28T07:02Z
+    quote: the carrier is the checkpoint restore path, not the engram n-gram history itself
+    quote_sha256: dacc3a6d78555197f3812f69f9a4dc9e178131f4c7cf93f6e79dd65bf843f785
+    source_revision: 'ggml-org/llama.cpp issue #30944 (filed against b72050d) + PR #31292 head 63ea84ec8865c61da12d2c4170a9f1fb7eb20ff6
+      (retrieved 2026-10-30)'
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: line-range
+    locator: pr-31292.diff state_read hunk
+    quote: the io can defer the tensor reads until it is destroyed, so the mirrors are refilled before the next graph
+    quote_sha256: 911bf9923cc9bbe1c9b336749b298db73e75fdf365f877d3cf70d60910cbbbbe
+    source_revision: 'ggml-org/llama.cpp issue #30944 (filed against b72050d) + PR #31292 head 63ea84ec8865c61da12d2c4170a9f1fb7eb20ff6
+      (retrieved 2026-10-30)'
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: json-pointer
+    locator: pr-31292.json comments[0] vikcious 2026-10-28T10:17Z
+    quote: Well, it's still not doing better.
+    quote_sha256: bfed08453bda40814d233221670a9ed1e0c1cf60ceadd432fb9a3cc0a731bb40
+    source_revision: 'ggml-org/llama.cpp issue #30944 (filed against b72050d) + PR #31292 head 63ea84ec8865c61da12d2c4170a9f1fb7eb20ff6
+      (retrieved 2026-10-30)'
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: Read.
+  - claim_index: 1
+    effect: overturned
+    note: The Stage-1 framing "lazy-mode race 7/20 vs 0/20" was the reporter's first guess and was retracted by him.
+  - claim_index: 2
+    effect: unaffected
+    note: Single tester matrix; mechanism not proven.
+  - claim_index: 3
+    effect: unaffected
+    note: PR open, not fixing the visible bug at retrieval.
+  dive_corrections: '2026-10-30 (Stage 2, wave 1): overturned the Stage-1 "lazy-mode host-to-GPU race" framing (retracted
+    by its author); the live hypothesis is checkpoint-restore of compressed-KV mirror state with concurrent sequences. Upstream-only
+    evidence; whether our port shares the defect is untested.'
 - id: intake-2518
   arxiv_id: null
   url: https://huggingface.co/ISTA-DASLab/DeepSeek-V4.1-Flash-1017-GSQ-RCO-GGUF
@@ -364198,10 +364688,86 @@
   referenced_arxiv_ids:
   - '2605.00649'
   notes: 'Stage 1 (main + subagents, 2026-10-30): seed page curl-fetched and read from disk; expansion found by a literature
-    subagent (search + gh/HF API). Operator pre-approved all recommended Stage-2 dives (max 4 waves).'
-  verification: stage1-unverified
+    subagent (search + gh/HF API). Operator pre-approved all recommended Stage-2 dives (max 4 waves).
+
+
+    Files under /mnt/raid0/llm/tmp/dive-ds41-unsloth-20261030/d2/ (s1_*). Engram table IQ4_NL 110.6 GB, excluded from the
+    RCO search. Loads on upstream b11870+ per issue #31263/#31385, not in our port (upstream layout).'
+  verification: dive-verified
   handoffs_updated: []
   handoffs_created: []
+  source_revision: HF ISTA-DASLab/DeepSeek-V4.1-Flash-1017-GSQ-RCO-GGUF @ 65d53bc8be65123e255ff02f3ded958b6dbf54fd (retrieved
+    2026-10-30)
+  read_depth: PARTIAL
+  reader_should_conclude: 'Cite only as a low-bit (2-bit-class) DS41-1017 build in the upstream layout with vendor accuracy
+    claims at effort 50. Do NOT cite "100% recovery" as evidence of losslessness: AIME25 is saturated and sampling conditions
+    are unstated.'
+  claim_anchors:
+  - claim_index: 0
+    kind: line-range
+    locator: README.md:77 (Available files table)
+    quote: '| `IQ2_XXS` | 2.00 | 138.24 GB | 110.60 GB | 248.84 GB | Recommended; closest to the base model |'
+    quote_sha256: 9c64fe40398f6e2b0b67b217e6978af94c56111472747858cff22bc6db263d3a
+    source_revision: HF ISTA-DASLab/DeepSeek-V4.1-Flash-1017-GSQ-RCO-GGUF @ 65d53bc8be65123e255ff02f3ded958b6dbf54fd (retrieved
+      2026-10-30)
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: line-range
+    locator: README.md:98
+    quote: All numbers in this card were measured at **reasoning effort 50**.
+    quote_sha256: e3a76c16c03a8fa711381f9a4032c261a38cf39f479a17eecd039d65f3ca5986
+    source_revision: HF ISTA-DASLab/DeepSeek-V4.1-Flash-1017-GSQ-RCO-GGUF @ 65d53bc8be65123e255ff02f3ded958b6dbf54fd (retrieved
+      2026-10-30)
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: line-range
+    locator: README.md:102
+    quote: '| Base (FP8 / FP4) | n/a | 100.00 | 90.91 | 89.71 | 93.54 | 100.0% |'
+    quote_sha256: 853a45ad1f9855f3d057bb795a23e8d48a6355384fc8661e9e36472acfca51d5
+    source_revision: HF ISTA-DASLab/DeepSeek-V4.1-Flash-1017-GSQ-RCO-GGUF @ 65d53bc8be65123e255ff02f3ded958b6dbf54fd (retrieved
+      2026-10-30)
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: line-range
+    locator: README.md:39 (Update, October 27, 2026)
+    quote: The files now use llama.cpp's own DeepSeek-V4.1 layout and load in llama.cpp
+    quote_sha256: 2c451c1b2e672ada4edf42cf84822267ee3dfc7fd3b62a4fc4e6526d7af891b3
+    source_revision: HF ISTA-DASLab/DeepSeek-V4.1-Flash-1017-GSQ-RCO-GGUF @ 65d53bc8be65123e255ff02f3ded958b6dbf54fd (retrieved
+      2026-10-30)
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: line-range
+    locator: convert_ds41_upstream.py:5
+    quote: support (ggml-org/llama.cpp#31086, merged October 25, 2026) reads the layout of its converter
+    quote_sha256: b0469b679b93ce2cb39893417579496167c82817db74c6443d375604bfd16ff7
+    source_revision: HF ISTA-DASLab/DeepSeek-V4.1-Flash-1017-GSQ-RCO-GGUF @ 65d53bc8be65123e255ff02f3ded958b6dbf54fd (retrieved
+      2026-10-30)
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: line-range
+    locator: chat_template.jinja:1
+    quote: Based on Unsloth's DeepSeek-V4.1 template, extracted from
+    quote_sha256: 6318143a5759ebf8d96de81919b3c1baf013878052c2e61c23ed812ce2283cdb
+    source_revision: HF ISTA-DASLab/DeepSeek-V4.1-Flash-1017-GSQ-RCO-GGUF @ 65d53bc8be65123e255ff02f3ded958b6dbf54fd (retrieved
+      2026-10-30)
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: Sizes cross-checked with HF file sizes.
+  - claim_index: 1
+    effect: narrowed
+    note: Samples per item, temperature and harness are not stated; base at 100.00 makes AIME25 non-discriminating; GPQA-D
+      values are exact k/198, consistent with about one sample per item (our inference).
+  - claim_index: 2
+    effect: unaffected
+    note: 'Header verified: deepseek41 arch with ple.* keys.'
+  - claim_index: 3
+    effect: unaffected
+    note: Header and allocation file read.
+  dive_corrections: '2026-10-30 (Stage 2, wave 1): narrowed the recovery claim (saturated AIME25, conditions unstated). The
+    card still carries TBD comments. Declined dive-surfaced sources: per-build allocation files for IQ1_M/IQ2_XS and the benchmark
+    bar plot (would not change any EPYC decision while DS41 low-bit serving is not on the plan).'
 - id: intake-2519
   arxiv_id: null
   url: https://unsloth.ai/docs/basics/dynamic-3.0-ggufs
@@ -364242,7 +364808,209 @@
   contradicting_evidence: null
   referenced_arxiv_ids: []
   notes: 'Stage 1 (main + subagents, 2026-10-30): seed page curl-fetched and read from disk; expansion found by a literature
-    subagent (search + gh/HF API). Operator pre-approved all recommended Stage-2 dives (max 4 waves).'
-  verification: stage1-unverified
+    subagent (search + gh/HF API). Operator pre-approved all recommended Stage-2 dives (max 4 waves).
+
+
+    Read from disk: /mnt/raid0/llm/tmp/dive-ds41-unsloth-20261030/d2/s3_dyn3.{html,txt}.'
+  verification: dive-verified
   handoffs_updated: []
   handoffs_created: []
+  source_revision: unsloth.ai/docs/basics/dynamic-3.0-ggufs retrieved 2026-10-30 (html sha256-12 93500f802aac)
+  read_depth: FULL
+  reader_should_conclude: Cite for what Unsloth says Dynamic 3.0 changed (calibration set, layer selection, PTQ only) on Qwen3.8-27B.
+    Do NOT treat it as documenting V3.1 or any DeepSeek-V4.1 result.
+  claim_anchors:
+  - claim_index: 0
+    kind: heading-and-hash
+    locator: body para (txt:106)
+    quote: We now use a much higher-quality imatrix calibration dataset from diverse sources.
+    quote_sha256: f0ebc43f2f831826a3909f532e1bfdaf811fd51fcbc29d1ccf6a35409bed4a15
+    source_revision: unsloth.ai/docs/basics/dynamic-3.0-ggufs retrieved 2026-10-30 (html sha256-12 93500f802aac)
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: heading-and-hash
+    locator: body para (txt:107)
+    quote: we do NOT use QAT or QAD. Everything is done through post-training quantization.
+    quote_sha256: e0352c15483208e68a8a3ff51b7e3f83f2cbb4976e2153813701fcc63371f243
+    source_revision: unsloth.ai/docs/basics/dynamic-3.0-ggufs retrieved 2026-10-30 (html sha256-12 93500f802aac)
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: heading-and-hash
+    locator: body para (txt:114)
+    quote: we did greedy argmax decoding for 32 tokens for BF16 vs all quants and providers
+    quote_sha256: ca1570e99529c9f529d8e2718cc1fa542e0ff42239d7eb80e9abe352458cc63b
+    source_revision: unsloth.ai/docs/basics/dynamic-3.0-ggufs retrieved 2026-10-30 (html sha256-12 93500f802aac)
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: Read; dataset composition not given.
+  - claim_index: 1
+    effect: unaffected
+    note: Read.
+  - claim_index: 2
+    effect: unaffected
+    note: Aggregation formula not given.
+  - claim_index: 3
+    effect: unaffected
+    note: grep for v3.1 found none.
+  dive_corrections: '2026-10-30 (Stage 2, wave 1): confirmed; no v3.1 description exists on this page, so the seed''s "Dynamic
+    V3.1" has no published method.'
+- id: intake-2520
+  arxiv_id: null
+  url: https://github.com/ggml-org/llama.cpp/pull/27512
+  source_type: repo
+  title: 'ggml-org/llama.cpp PR #27512 "Quant: OCP FP8 E4M3 support" (GGML_TYPE_F8_E4M3 = 43, merged 2026-10-29)'
+  categories:
+  - quantization
+  - local_inference
+  novelty: medium
+  relevance: high
+  discovered_via: expansion
+  expanded_from: intake-2516
+  verdict: worth_investigating
+  ingested_date: '2026-10-30'
+  authors:
+  - ORippler (Oliver Simons)
+  key_claims:
+  - Upstream ggml gained OCP FP8 E4M3 (saturating) as GGML_TYPE_F8_E4M3 = 43, raising GGML_TYPE_COUNT to 44; merged 2026-10-29.
+  - 'Type 43 upstream is a 1-byte-per-element type, so a GGUF that stored PR #30817''s 33-byte-block MXFP8 under id 43 is
+    reinterpreted rather than rejected on trees that include it.'
+  - The PR is the first of a stack (KV cache, CUDA, scaled-tensor handling, Vulkan); scale plumbing is not part of it.
+  techniques:
+  - GGML_TYPE_F8_E4M3
+  reported_results: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - deepseek-v41-flash-evaluation.md
+    experiments: []
+    intake_entries:
+    - intake-2516
+    - intake-2515
+    intake_entry_notes:
+    - intake-2516 (gibberish symptom)
+    - intake-2515 (the colliding MXFP8 id)
+  recommended_actions:
+  - 'Knowledge: any future tree that imports upstream ggml types must not load MXFP8-Engram GGUFs.'
+  credibility_score: null
+  contradicting_evidence: null
+  referenced_arxiv_ids: []
+  notes: 'Saved by the wave-1 dive: /mnt/raid0/llm/tmp/dive-ds41-unsloth-20261030/gh/pr-27512.{json,diff} (sha256-12 554cded81e15
+    / 900fdc1d7c22); read by main from disk.'
+  verification: dive-verified
+  handoffs_updated: []
+  handoffs_created: []
+  source_revision: 'ggml-org/llama.cpp PR #27512 head 6f53ba82d7268bd6e0dc10c081d6519d37098171, merged 2026-10-29T17:14:38Z
+    (retrieved 2026-10-30)'
+  read_depth: PARTIAL
+  reader_should_conclude: 'Cite for: upstream ggml type 43 = F8_E4M3 since 2026-10-29. Any EPYC tree that ever imports it
+    must refuse PR-#30817 MXFP8 GGUFs explicitly.'
+  claim_anchors:
+  - claim_index: 0
+    kind: line-range
+    locator: pr-27512.diff:680 (ggml.h)
+    quote: GGML_TYPE_F8_E4M3 = 43,
+    quote_sha256: aad2b8aea67ac774122e7f9ae3cda638511725fa3944d75f534e553859438f90
+    source_revision: 'ggml-org/llama.cpp PR #27512 head 6f53ba82d7268bd6e0dc10c081d6519d37098171, merged 2026-10-29T17:14:38Z
+      (retrieved 2026-10-30)'
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: json-pointer
+    locator: pr-27512.json .body
+    quote: This stacked PR chain does not add plumbing of scales
+    quote_sha256: 9f1105ca74fa2909a31369193930835b08553c3093912f789a817971aeae6bf6
+    source_revision: 'ggml-org/llama.cpp PR #27512 head 6f53ba82d7268bd6e0dc10c081d6519d37098171, merged 2026-10-29T17:14:38Z
+      (retrieved 2026-10-30)'
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: Read.
+  - claim_index: 1
+    effect: unaffected
+    note: Type traits blck_size 1 / type_size 1 per diff; the reinterpretation of MXFP8 bytes is our inference, consistent
+      with intake-2516.
+  - claim_index: 2
+    effect: unaffected
+    note: Read.
+  dive_corrections: '2026-10-30 (Stage 2b, wave 2; Stage 1+2 combined): ingested from the #31385 dive. Confirmed the type-43
+    reassignment that explains the unsloth gibberish symptom.'
+- id: intake-2521
+  arxiv_id: null
+  url: https://github.com/ggml-org/llama.cpp/issues/31263
+  source_type: repo
+  title: 'ggml-org/llama.cpp issue #31263 "Eval bug: GSQ-RCO implementation of DSV4.1 does not load" (closed by an HF re-upload)'
+  categories:
+  - local_inference
+  novelty: low
+  relevance: medium
+  discovered_via: expansion
+  expanded_from: intake-2514
+  verdict: already_integrated
+  ingested_date: '2026-10-30'
+  authors:
+  - SteinAcker1
+  key_claims:
+  - 'On build 11937 the old ISTA GSQ-RCO IQ2_XXS failed with "array key not found in model: deepseek41.attention.kv_source_layers",
+    i.e. pre-#31086 layout files do not load upstream.'
+  - The reporter states Unsloth's IQ3_S quant (a Q6_K Engram table) loads on the same build.
+  - The issue closed after ISTA re-uploaded in the upstream layout (HF commit a419d74).
+  techniques: []
+  reported_results: []
+  cross_references:
+    chapters: []
+    handoffs: []
+    experiments: []
+    intake_entries:
+    - intake-2518
+    - intake-2514
+    intake_entry_notes:
+    - intake-2518 (the re-uploaded repo)
+    - intake-2514 (layout)
+  recommended_actions:
+  - Knowledge only.
+  credibility_score: null
+  contradicting_evidence: null
+  referenced_arxiv_ids: []
+  notes: 'Saved: /mnt/raid0/llm/tmp/dive-ds41-unsloth-20261030/gh/issue-31263.json (sha256-12 ef9805b71148).'
+  verification: dive-verified
+  handoffs_updated: []
+  handoffs_created: []
+  source_revision: 'ggml-org/llama.cpp issue #31263 closed 2026-10-28T01:34Z (retrieved 2026-10-30)'
+  read_depth: FULL
+  reader_should_conclude: 'Cite for: pre-#31086-layout DS41 GGUFs do not load upstream, and unsloth quants without an MXFP8
+    table do. Knowledge only.'
+  claim_anchors:
+  - claim_index: 0
+    kind: json-pointer
+    locator: issue-31263.json .body (log)
+    quote: 'array key not found in model: deepseek41.attention.kv_source_layers'
+    quote_sha256: d503f2ab4e773f79b47eee9d95d576ca9012cf7ad5a58f84889a1aa9561d6518
+    source_revision: 'ggml-org/llama.cpp issue #31263 closed 2026-10-28T01:34Z (retrieved 2026-10-30)'
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: json-pointer
+    locator: issue-31263.json .body
+    quote: Unsloth's much larger IQ3_S quant of this model loads fine
+    quote_sha256: 15918244d016cbb1311f49dfaa671fd62373fc5affa2358760c75bd23fc735d3
+    source_revision: 'ggml-org/llama.cpp issue #31263 closed 2026-10-28T01:34Z (retrieved 2026-10-30)'
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: json-pointer
+    locator: issue-31263.json comments[0] SteinAcker1 2026-10-28T01:34Z
+    quote: Issue is now resolved with commit a419d74 on this model
+    quote_sha256: 1038377ba313898bc9b141333c26191657d31b387647ce06429f7255eeb558d9
+    source_revision: 'ggml-org/llama.cpp issue #31263 closed 2026-10-28T01:34Z (retrieved 2026-10-30)'
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: Read.
+  - claim_index: 1
+    effect: unaffected
+    note: User statement; IQ3_S has a Q6_K table (no type-43 clash).
+  - claim_index: 2
+    effect: unaffected
+    note: Read.
+  dive_corrections: '2026-10-30 (Stage 2b, wave 2; Stage 1+2 combined): ingested from the #31086 dive; confirmed.'
