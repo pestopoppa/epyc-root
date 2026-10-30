@@ -296,7 +296,7 @@ First full smoke run of the trial loop. Four defects, three silent.
       - **Box left unchecked deliberately** — nothing is fixed, and the decision is per-module:
         wire BSV-3, or retire the ledger and correct its docstring. Same for the other 23.
 
-- [ ] **The metric's NAME and its new tooltip both overstate what it counts.** `contention_gate.py:325`
+- [x] **The metric's NAME and its new tooltip both overstate what it counts.** `contention_gate.py:325`
   increments inside `if nway_decision != PairDecision.ALLOW:` — **not** inside the
   `if _prec[nway_decision] > _prec[worst]:` test one line above. So it counts *"the N-way check fired
   non-ALLOW"*, not *"N-way was the binding constraint"*: if pairwise already said BLOCK and N-way says
@@ -306,8 +306,20 @@ First full smoke run of the trial loop. Four defects, three silent.
   The subagent spotted the looseness in its own report and wrote the loose form into the UI anyway,
   which is the `§ Reporting Units` failure one level in: a LABEL asserting more than the number
   measures. *(Verified by `mainC` by reading the enclosing block, not the comment.)*
-  Fix is either wording (*"N-way check returned non-ALLOW"*) or moving the increment under the
-  precedence test — a semantics decision for the contention-gate owner, not a wording tidy.
+  ✅ 2026-10-30 — the counter now names its actual event, `contention_nway_non_allow_count`, and the
+  operator panel says an N-way check returned non-ALLOW whether or not that changed the pairwise
+  result. The unrelated admitted-decision count is no longer shown as its denominator. The counter
+  increment and every admission decision are unchanged. Orchestrator commits
+  `4b0eb6a9a932` (label), `de636086e679` (predicate regression), and `b387c5dded66` (rolling
+  compatibility); the root dashboard changes are included in this checkpoint.
+  Both dashboards prefer the new field and use nullish fallback to the deprecated
+  `contention_nway_restricted_count` alias, preserving a real zero. Focused validation: 33
+  orchestrator tests and 6 root tests passed, including real-Node old-key fallback, new-key
+  precedence, and zero-value cases; Ruff and diff checks passed. Final compatibility log:
+  `/mnt/raid0/llm/tmp/codex-ni-ap-nway-metric-audit-20261030/compat-focused-rerun-20261030.log`
+  (SHA-256 `dc6ab57893870bdcc3b791c582332eb4d1fd7ffd2eb48f771efe45f68ebf718d`). The source commit
+  `b387c5dded66` is public on orchestrator `main`. No admission policy, counter predicate, service, or
+  measurement rule changed. [no-belief: code/API wording correction; no measurement]
 
 - [ ] **SIBLING SWEEP: six more runtime imports are hard, unguarded and declared NOWHERE** — the same
   defect class, found by AST-walking every import in `src/` against every `pyproject` table.

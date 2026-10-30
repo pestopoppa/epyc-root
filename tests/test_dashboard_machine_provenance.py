@@ -35,8 +35,8 @@ _PAGE = Path(__file__).resolve().parents[1] / "dashboard" / "static" / "machine.
 
 
 def _extract_function(src: str, name: str) -> str:
-    """Return the full text of top-level ``function <name>(...) { ... }``."""
-    m = re.search(rf"^function {re.escape(name)}\(", src, re.MULTILINE)
+    """Return a top-level sync or async ``function <name>(...) { ... }``."""
+    m = re.search(rf"^(?:async\s+)?function {re.escape(name)}\(", src, re.MULTILINE)
     if not m:
         raise AssertionError(f"function {name} not found in machine.html")
     i = src.index("{", m.start())
@@ -79,6 +79,65 @@ class MachinePageProvenanceContract(unittest.TestCase):
         # The declared chip is distinct markup from the observed chip.
         self.assertIn('<span class="chip gpu">GPU</span>', self.src)
         self.assertIn('GPU <span class="dimtx">declared</span>', self.src)
+
+    def test_contention_row_uses_the_nway_non_allow_metric_contract(self) -> None:
+        self.assertIn("contention_nway_non_allow_count", self.src)
+        self.assertIn("contention_nway_restricted_count", self.src)
+        self.assertIn('row("N-way non-ALLOW checks", nwayNonAllow', self.src)
+
+
+@unittest.skipUnless(shutil.which("node"), "node not available")
+class ContentionMetricRollingCompatUnderNode(unittest.TestCase):
+    """Exercise the real contention renderer with old and mixed-version payloads."""
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.poll = _extract_function(_PAGE.read_text(encoding="utf-8"), "pollContention")
+
+    def _render(self, payload: dict) -> str:
+        script = f"""
+const payload = {json.dumps(payload)};
+const API = "";
+const T_SMALL = 0;
+const PANELS = {{contention: {{body: {{innerHTML: ""}}}}}};
+const esc = value => String(value);
+const getJSON = async () => payload;
+const fail = () => {{}};
+const setMeta = () => {{}};
+const ok = () => {{}};
+{self.poll}
+(async () => {{
+  await pollContention();
+  process.stdout.write(PANELS.contention.body.innerHTML);
+}})().catch(error => {{ console.error(error); process.exit(1); }});
+"""
+        result = subprocess.run(
+            ["node", "-e", script], check=True, capture_output=True, text=True, timeout=30
+        )
+        return result.stdout
+
+    def test_new_dashboard_reads_old_server_payload(self) -> None:
+        html = self._render({"matrix_status": "ok", "contention_nway_restricted_count": 4})
+        self.assertIn("N-way non-ALLOW checks", html)
+        self.assertIn(">4<", html)
+
+    def test_new_key_wins_when_both_server_versions_are_present(self) -> None:
+        html = self._render({
+            "matrix_status": "ok",
+            "contention_nway_non_allow_count": 2,
+            "contention_nway_restricted_count": 9,
+        })
+        self.assertIn(">2<", html)
+        self.assertNotIn(">9<", html)
+
+    def test_new_zero_value_is_not_replaced_by_nonzero_old_alias(self) -> None:
+        html = self._render({
+            "matrix_status": "ok",
+            "contention_nway_non_allow_count": 0,
+            "contention_nway_restricted_count": 9,
+        })
+        self.assertIn(">0<", html)
+        self.assertNotIn(">9<", html)
 
 
 @unittest.skipUnless(shutil.which("node"), "node not available")

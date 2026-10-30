@@ -1004,7 +1004,7 @@ async function pollContention() {
   const timeout = d.contention_timeout_count || 0;
   const degraded = d.contention_degraded_allow_count || 0;
   const unknown = d.contention_unknown_pair_count || 0;
-  const nway = d.contention_nway_restricted_count || 0;
+  const nwayNonAllow = d.contention_nway_non_allow_count ?? d.contention_nway_restricted_count ?? 0;
 
   let h = `<div class="chiprow"><span class="chip ${msCls}">matrix ${esc(ms)}</span></div>`;
   if (ms !== "OK" && ms !== "UNAVAILABLE") {
@@ -1018,7 +1018,7 @@ async function pollContention() {
   h += row("timeouts", timeout, timeout ? "warn" : "dimtx");
   h += row("degraded allows", degraded, degraded ? "warn" : "dimtx");
   h += row("unknown pairs", unknown, unknown ? "warn" : "dimtx");
-  h += row("n-way restricted", nway, nway ? "warn" : "dimtx");
+  h += row("N-way non-ALLOW checks", nwayNonAllow, nwayNonAllow ? "warn" : "dimtx");
   h += "</div>";
 
   const blocked = d.contention_blocked_count || {};

@@ -585,9 +585,10 @@ verdict is the current production shape.
 - [ ] **Retire the stale `q*` nomenclature on half-sized instances** — a reader seeing `q0` on a
       48-thread instance infers a quarter. It already caused one agent to describe this live defect as
       a legacy one.
-- [ ] **Look at this together with `contention_nway_restricted_count`** (`contention_gate.py:325`
-      increments outside the precedence test, so the operator-facing label overstates what the counter
-      measures — `mainC`, same day). Both are *the value asserts more than the measurement supports*,
+- [ ] **Look at this together with `contention_nway_non_allow_count`** (`contention_gate.py:325`
+      increments outside the precedence test, so it counts every N-way non-ALLOW check, including a
+      verdict less restrictive than an existing pairwise decision — `mainC`, same day). Both are
+      *the value asserts more than the measurement supports*,
       in the same subsystem, found by different agents hours apart; one review, not two local fixes.
 - [ ] **REGION-SIBLING-1 — `region-lock` must map SMT-sibling CPUs to their physical core's region, not drop
       them.** (filed 2026-10-04, workspace-ec, from INC-20261004-subagent-unlocked-cpu-in-held-window)
