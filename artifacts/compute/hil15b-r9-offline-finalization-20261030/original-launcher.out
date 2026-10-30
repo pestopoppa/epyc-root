@@ -1,0 +1,41 @@
+2026-10-30T22:11:21Z [codex3-hil15b-heavy-r9-split-20261030] launcher up pid=1991008 class=cpu poll=45s grants=/mnt/raid0/llm/tmp/compute-flags/grants stop=/mnt/raid0/llm/tmp/codex3-hil15b-heavy-r9-split-20261030/STOP minwin=1500s ports=19966
+2026-10-30T22:12:06Z [codex3-hil15b-heavy-r9-split-20261030] START regions=0-23 cpus=0-23 threads=24 gpu=0 end=2026-10-31T02:11Z
+[region-lock] acquiring regions ['q0'] as role='bench' (timeout_s=14334.0) …
+[region-lock] held ['q0'] after 0.0s wait; running: /bin/bash /mnt/raid0/llm/tmp/codex3-build-t1-r2-20261030/hil/engine/filler_run13.sh --inner --id codex3-hil15b-heavy-r9-split-20261030 --class cpu --cmd bash /mnt/raid0/llm/tmp/codex3-hil15b-heavy-r9-split-20261030/launch-t1-r3.sh --job --min-window 1500 --stop /mnt/raid0/llm/tmp/codex3-hil15b-heavy-r9-split-20261030/STOP --port 19966 --workdir /mnt/raid0/llm/tmp/codex3-build-t1-r2-20261030/hil --gpu-threads 184-191
+/mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/llama-server: OK
+/mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/libggml-base.so: OK
+/mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/libggml-cpu.so: OK
+/mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/libggml.so: OK
+/mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/libllama-batched-bench-impl.so: OK
+/mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/libllama-bench-impl.so: OK
+/mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/libllama-cli-impl.so: OK
+/mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/libllama-common.so: OK
+/mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/libllama-completion-impl.so: OK
+/mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/libllama-fit-params-impl.so: OK
+/mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/libllama-perplexity-impl.so: OK
+/mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/libllama-quantize-impl.so: OK
+/mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/libllama-server-impl.so: OK
+/mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/libllama.so: OK
+/mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/libmtmd.so: OK
+/mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/libggml-base.so.0.16.0: OK
+/mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/libggml-cpu.so.0.16.0: OK
+/mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/libggml.so.0.16.0: OK
+/mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/libllama.so.0.0.10303: OK
+/mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/libllama-common.so.0.0.10303: OK
+verified commit e4a749027d9b9e6a5f9a35b475c12ca30d77b9dd tracked files 213
+20 independently parsed gold checks PASS; all prompts require write and read; five joins require both paths
+R2/R3/R4 sources, retained 39 native replays, four unknowns, five unexposed and pinned collateral verified
+complete unit 04
+admit: MemAvailable 986 GiB, need 40 GiB
+{"event": "server_started", "pid": 2004047, "uid": 1000, "birth": 152082605, "argv": ["/mnt/raid0/llm/kernels/production/cpu/llama-server", "-m", "/mnt/raid0/llm/models/Qwen3.6-35B-A3B-MTP-Q8_0.gguf", "-t", "24", "-np", "1", "-c", "16384", "--reasoning", "off", "--jinja", "--host", "127.0.0.1", "--port", "19966", "--no-webui", "-ngl", "0"]}
+{"event": "target_calibration", "prompt_n": 9, "predicted_n": 1, "path": "/mnt/micron/codex3-hil15b-heavy-r9-20261030/results-remaining/bootstrap-1793398328002842273/target-calibration.json"}
+Traceback (most recent call last):
+  File "/mnt/micron/codex3-hil15b-heavy-r9-20261030/server_bootstrap.py", line 240, in <module>
+    if __name__=='__main__': sys.exit(run() or 0)
+                                      ^^^^^
+  File "/mnt/micron/codex3-hil15b-heavy-r9-20261030/server_bootstrap.py", line 199, in run
+    if entry_rc not in (0,75): raise Refusal('native entry failed; evidence retained')
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+checkpoint_controller.Refusal: native entry failed; evidence retained
+job rc=1
+2026-10-30T22:22:56Z [codex3-hil15b-heavy-r9-split-20261030] ended rc=1 reason=job-rc-1:exited (grant deleted)

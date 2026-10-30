@@ -1,0 +1,35 @@
+verified commit e4a749027d9b9e6a5f9a35b475c12ca30d77b9dd tracked files 213
+verified commit e4a749027d9b9e6a5f9a35b475c12ca30d77b9dd tracked files 213
+verified commit e4a749027d9b9e6a5f9a35b475c12ca30d77b9dd tracked files 213
+{"event": "driver_started", "pid": 2133804, "uid": 1000, "birth": 152137607, "argv": ["/home/daniele/.local/share/uv/python/cpython-3.11.17-linux-x86_64-gnu/bin/python3.11", "-S", "/mnt/micron/codex3-hil15b-heavy-r9-20261030/driver.py", "--repeats", "1", "--min-task-keys", "1", "--min-dep-task-keys", "1", "--max-wall-s", "400", "--out-dir", "/mnt/micron/codex3-hil15b-heavy-r9-20261030/results-remaining/unit-20/slot-0/4ac530e42b7e4da2b782185ba7617e5e/driver-0", "--server-url", "http://127.0.0.1:19966", "--server-pid", "2004047", "--tasks", "/mnt/micron/codex3-hil15b-heavy-r9-20261030/results-remaining/unit-20/slot-0/4ac530e42b7e4da2b782185ba7617e5e/tasks-0.json", "--served-model", "/mnt/raid0/llm/models/Qwen3.6-35B-A3B-MTP-Q8_0.gguf", "--epyc-root", "/mnt/micron/codex3-hil15b-root-capsule-e4a749-20261030"]}
+{"event": "driver_cleanup", "pid": 2133804, "uid": 1000, "birth": 152137607, "rc": 0, "reason": null, "owned_descendants_drained": true}
+verified commit e4a749027d9b9e6a5f9a35b475c12ca30d77b9dd tracked files 213
+verified commit e4a749027d9b9e6a5f9a35b475c12ca30d77b9dd tracked files 213
+{"event": "driver_started", "pid": 2140171, "uid": 1000, "birth": 152139763, "argv": ["/home/daniele/.local/share/uv/python/cpython-3.11.17-linux-x86_64-gnu/bin/python3.11", "-S", "/mnt/micron/codex3-hil15b-heavy-r9-20261030/driver.py", "--repeats", "1", "--min-task-keys", "1", "--min-dep-task-keys", "1", "--max-wall-s", "400", "--out-dir", "/mnt/micron/codex3-hil15b-heavy-r9-20261030/results-remaining/unit-20/slot-1/168ee6cce8d342dd9a2394b9957582d8/driver-1", "--server-url", "http://127.0.0.1:19966", "--server-pid", "2004047", "--tasks", "/mnt/micron/codex3-hil15b-heavy-r9-20261030/results-remaining/unit-20/slot-1/168ee6cce8d342dd9a2394b9957582d8/tasks-1.json", "--served-model", "/mnt/raid0/llm/models/Qwen3.6-35B-A3B-MTP-Q8_0.gguf", "--epyc-root", "/mnt/micron/codex3-hil15b-root-capsule-e4a749-20261030"]}
+{"event": "driver_cleanup", "pid": 2140171, "uid": 1000, "birth": 152139763, "rc": 0, "reason": null, "owned_descendants_drained": true}
+verified commit e4a749027d9b9e6a5f9a35b475c12ca30d77b9dd tracked files 213
+verified commit e4a749027d9b9e6a5f9a35b475c12ca30d77b9dd tracked files 213
+{"event": "driver_started", "pid": 2143159, "uid": 1000, "birth": 152142184, "argv": ["/home/daniele/.local/share/uv/python/cpython-3.11.17-linux-x86_64-gnu/bin/python3.11", "-S", "/mnt/micron/codex3-hil15b-heavy-r9-20261030/driver.py", "--repeats", "1", "--min-task-keys", "1", "--min-dep-task-keys", "1", "--max-wall-s", "400", "--out-dir", "/mnt/micron/codex3-hil15b-heavy-r9-20261030/results-remaining/unit-20/slot-2/e90751ab3cb5409992247cebb72c5d17/driver-2", "--server-url", "http://127.0.0.1:19966", "--server-pid", "2004047", "--tasks", "/mnt/micron/codex3-hil15b-heavy-r9-20261030/results-remaining/unit-20/slot-2/e90751ab3cb5409992247cebb72c5d17/tasks-2.json", "--served-model", "/mnt/raid0/llm/models/Qwen3.6-35B-A3B-MTP-Q8_0.gguf", "--epyc-root", "/mnt/micron/codex3-hil15b-root-capsule-e4a749-20261030"]}
+{"event": "driver_cleanup", "pid": 2143159, "uid": 1000, "birth": 152142184, "rc": 0, "reason": null, "owned_descendants_drained": true}
+Traceback (most recent call last):
+  File "/mnt/micron/codex3-hil15b-heavy-r9-20261030/native_entry.py", line 205, in <module>
+    result=run(json.loads(Path(args.config).read_text()))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/micron/codex3-hil15b-heavy-r9-20261030/native_entry.py", line 95, in run
+    return run_checked(cfg)
+           ^^^^^^^^^^^^^^^^
+  File "/mnt/micron/codex3-hil15b-heavy-r9-20261030/native_entry.py", line 198, in run_checked
+    return c.run(deadline=deadline,cleanup_margin=cfg['cleanup_margin_s'],stop=stopped,preflight=preflight,
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/micron/codex3-hil15b-heavy-r9-20261030/overlay_controller.py", line 99, in run
+    return assess(self.unit,slots)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/micron/codex3-hil15b-heavy-r9-20261030/native_entry.py", line 195, in assess
+    if check.returncode: raise Refusal('unit validator failed: '+check.stderr[-1000:])
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+checkpoint_controller.Refusal: unit validator failed: Traceback (most recent call last):
+  File "/mnt/micron/codex3-hil15b-heavy-r9-20261030/unit.py", line 33, in <module>
+    assert auc==m['auc_table'] and auc['status']=='insufficient' and auc['n_runs']==1 and auc['n_tasks']==1
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError
+

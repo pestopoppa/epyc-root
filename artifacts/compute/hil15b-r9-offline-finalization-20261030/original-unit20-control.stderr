@@ -1,0 +1,5 @@
+Traceback (most recent call last):
+  File "/mnt/raid0/llm/tmp/codex3-hil15b-r9-failure-audit-20261030/unit-original.py", line 33, in <module>
+    assert auc==m['auc_table'] and auc['status']=='insufficient' and auc['n_runs']==1 and auc['n_tasks']==1
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError

@@ -1,0 +1,9 @@
+# HIL15b heavy R9 retained collection finalization — 2026-10-30
+
+The original22:22:56Z rc1 was a final-validator bug after all five remaining native captures completed. The harness confused task/step-bearing counts with canonical dependency-only AUC counts. Preserve the failed launcher event. A separate offline companion now derives exact AUC denominators from SQLite and labels; original AUC results remain insufficient0/0. Original unit20 reproduces the refusal, the repaired validator passes it and retained dependency-bearing unit04, all five original captures pass fresh offline replay verification, and the original39 accepted/four unknown artifact trees retain their hashes.
+
+Units05–20 are exhausted as44known/4unknown/0unexposed of48;25 observed answer passes imply descriptive count bounds25–29/48. Five new native labels are True. No new inference, redraw, model smoke exception, production change or full60-slot quality/AUC verdict. The HIL-15b parent stays open. One operational offline-validator repair task is completed; the failed original run receives no success tick.
+
+Evidence: [native finalization audit](../../artifacts/compute/hil15b-r9-offline-finalization-20261030/OFFLINE-FINALIZATION.json), original and fixed validator, minimal diff, original failure logs, repeated replay outputs and R6 audit log. R6 audit2.2405s, sampled134,885,376bytes, children drained; original server PID absent at follow-up observation. KEEP retains the declared small audit scratch; no worktree was created or removed, zero GiB reclaimed.
+
+Validation: supervised index regeneration33.46s and check71.68s both rc0, zero problems; README check rc0 without warnings. Combined105.41s, sampled790,872,064bytes, captured children drained. Existing unrelated scratch warnings remain report-only. No index rows were added, pruned or re-pointed.
