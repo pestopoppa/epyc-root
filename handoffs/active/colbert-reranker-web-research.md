@@ -1,6 +1,6 @@
 # ColBERT Reranker for web_research Pipeline
 
-**Scratch**: `/mnt/raid0/llm/tmp/codex-ni-g14-reason32m-20261030/` (KEEP-marked READY diagnostic/evidence); `/mnt/raid0/llm/tmp/codex-ni06-kb-20261006/`; owned APP worktrees `/mnt/raid0/llm/worktrees/codex-ni07-s9-20261006/`, `/mnt/raid0/llm/worktrees/codex-ni07-promote-s9-20261006/`.
+**Scratch**: `/mnt/raid0/llm/tmp/codex-ni-g14-reason32m-20261030/` (KEEP-marked READY diagnostic and evidence); `/mnt/raid0/llm/tmp/codex-ni06-kb-20261006/`; owned APP worktrees `/mnt/raid0/llm/worktrees/codex-ni07-s9-20261006/`, `/mnt/raid0/llm/worktrees/codex-ni07-promote-s9-20261006/`.
 
 **Status**: refreshed 2026-05-28; S5 gate rechecked 2026-06-14 — S1-S4 complete; zero-page telemetry defect repaired; targeted and representative direct-tool probes produced real fetched/synthesized counters. Current S5 request-path reranker decision is **NO-GO/HOLD**: representative direct-tool deep-research sentinel sample synthesized 55 pages with 0 irrelevant pages, below the >20% waste threshold. Live Gate-3 now passes hard telemetry plus the `web_research` soft structured-output probe after `epyc-orchestrator` `9a220b9`; keep instrumentation and reranker utilities available but do not add request-path reranking complexity.
 **Created**: 2026-04-05 (extracted from `04-mirothinker-worker-eval.md` intake-174)
