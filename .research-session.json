@@ -1,7 +1,7 @@
 {
  "session_id": "intake-ds41-unsloth-20261030",
  "started_at": "2026-10-30T18:03:00Z",
- "last_checkpoint": "2026-10-30T20:30:00Z",
+ "last_checkpoint": "2026-10-30T18:55:00Z",
  "stage": 4,
  "phase": "stage4-complete",
  "lane": "/mnt/raid0/llm/worktrees/intake-ds41-unsloth-20261030",
@@ -64855,7 +64855,7 @@
  "stage4": {
   "reconciled": true,
   "status": "complete",
-  "completed_at": "2026-10-30T20:30:00Z",
+  "completed_at": "2026-10-30T18:55:00Z",
   "plan_sha256": "fab4a3b81080dae58ab4a2864dbbe7de4efad227e12ed70f7c8d51bc0fc27832",
   "applied": [
    "handoffs/active/deepseek-v41-flash-evaluation.md: DS41-W9 [x] + 7 sub-bullets (2 monitor triggers) before ### T",
@@ -64870,6 +64870,7 @@
   "approved": "operator 2026-10-30 via coordinator (decision tool: \"Approve: keep antirez\")",
   "text_adjustments": [
    "Citation form only, required by the index_state cite-check gate: \"(intake-2511..2521)\" -> \"(intake-2511#record to intake-2521#record)\" in the DS41-W9 line, \"(intake-2517)\" -> \"(intake-2517#record)\", \"(intake-2511, 2512, 2518)\" -> \"#record\" forms; no semantic change."
-  ]
+  ],
+  "timestamp_note": "Earlier checkpoint timestamps 19:20Z/19:45Z/20:30Z were estimates written ahead of the clock; actual commits landed ~18:3x-18:5xZ (see git log)."
  }
 }
