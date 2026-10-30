@@ -1,0 +1,103 @@
+{
+  "schema": "epyc-root-wrap-receipt/v1",
+  "status": "PROPOSED_ONLY",
+  "root_base": {
+    "ref": "origin/main",
+    "sha": "9ba32b12f77d910ef78f3288de5e0f1f5dabd51b"
+  },
+  "patch": "root-r18a-c3-l.patch",
+  "root_patch_sha256": "f941e9de3a048fc4a5223fac1e1e3729db4247b04ff1cecc19228ab36bffd8f1",
+  "progress_target": "progress/2026-10/2026-10-30.md",
+  "closures": [
+    {
+      "id": "R18-A-READY-INDEPENDENT-SYMBOLS",
+      "status": "READY_PUBLISHED_LAUNCHER_QUALIFICATION_ONLY",
+      "ready_id": "refactor-r18a-v10-independent-symbols-20261030",
+      "ready_sha256": "fbb5633bb1529aa33d9599d4e8584438dd3a56c44530a6754eeee06e44eb08a9",
+      "source_commit": "ffc1bac82eeca6f9099e1ccd9ba49703c460a115",
+      "full_independent_build_complete": false,
+      "symbol_comparison_complete": false,
+      "production_predicate": false,
+      "no_new_checkout": true
+    },
+    {
+      "id": "C3-FINAL-BUNDLE-L-CONTROL",
+      "source_manifest_sha256": "e9be4ba1b89960e3d211b3444e1eaf9c1773305f7656e6fdda0cdf84e5f7b4e3",
+      "status": "PASS_HTTP_CONTROL_AND_RESIDENCY_ONLY",
+      "generated_tokens": {
+        "warm": 160,
+        "S": 160,
+        "P": 160
+      },
+      "in_request_samples": {
+        "warm": 443,
+        "S": 391,
+        "P": 932
+      },
+      "server_dead": true,
+      "native_feature_counts_present": false,
+      "zero_nonfinite_claim": false,
+      "B_control_pending": true,
+      "active_cutoff_pending": true
+    }
+  ],
+  "guardrails": [
+    "leave R18-A and C3 parent open",
+    "do not claim full independent build or symbol identity",
+    "do not change production recipe predicate",
+    "do not claim zero nonfinite, profile READY, parent study, grade, speed or quality",
+    "reuse existing ClaimTuple ladders only; planning canaries remain pending"
+  ],
+  "evidence": [
+    {
+      "label": "R18 READY publication receipt",
+      "path": "/mnt/raid0/llm/tmp/refactor-oab21-metrics-20261030/r18a-independent-packet/READY-PUBLISHED.json",
+      "sha256": "2fbc990ed6c505dfcd9f0fdce3d773202ab129ee498c7ae568d3b88822dbf6dd"
+    },
+    {
+      "label": "R18 reviewed READY proposal",
+      "path": "/mnt/raid0/llm/tmp/refactor-oab21-metrics-20261030/r18a-independent-packet/READY-PROPOSAL.json",
+      "sha256": "0a7da3e48680aef8fe47f1590d26e8aa052e73f395d7cd4217b1c0ae9a43363c"
+    },
+    {
+      "label": "R18 READY review receipt",
+      "path": "/mnt/raid0/llm/tmp/refactor-oab21-metrics-20261030/r18a-independent-packet/READY-REVIEW-RECEIPT.json",
+      "sha256": "6fedaa69fef332bca8f9efa3322425402eb1f2568b77d285e3dbfde1a0a114fa"
+    },
+    {
+      "label": "R18 whole-launcher smoke summary",
+      "path": "/mnt/raid0/llm/tmp/refactor-oab21-metrics-20261030/r18a-independent-packet/SMOKE-SUMMARY.json",
+      "sha256": "28d772c66332bbc122aa72821f51f674241f2834907d8a5de46909dc3a61b4b2"
+    },
+    {
+      "label": "R18 source protection receipt",
+      "path": "/mnt/raid0/llm/tmp/refactor-oab21-metrics-20261030/r18a-independent-packet/SOURCE-PROTECTION.txt",
+      "sha256": "cb9ea835a5c33b109c4e0b700dfb13ac824a45317700c8abd48c870b2f1a08f5"
+    },
+    {
+      "label": "published canonical READY manifest",
+      "path": "/mnt/raid0/llm/tmp/compute-flags/ready/refactor-r18a-v10-independent-symbols-20261030.json",
+      "sha256": "fbb5633bb1529aa33d9599d4e8584438dd3a56c44530a6754eeee06e44eb08a9"
+    },
+    {
+      "label": "C3 final-bundle L qualified summary",
+      "path": "/mnt/raid0/llm/tmp/codex3-bolt-expert-proposal-20261030/final-gpu-controls-r2/l-smoke-QUALIFIED.json",
+      "sha256": "2b1dcd426d30a9f7c1a3da7b406cf26cc647af1e02d56583e9504c0e170e9bfa"
+    },
+    {
+      "label": "C3 exact final source identity",
+      "path": "/mnt/raid0/llm/tmp/refactor-c3-native-profile-20261030/C3-SOURCE-IDENTITY.json",
+      "sha256": "044c38c80572b394deb94d4bd88fa77b8c8b7c68a57891206c71bf3dfc109e27"
+    },
+    {
+      "label": "C3 frozen 40-file source manifest",
+      "path": "/mnt/raid0/llm/tmp/refactor-c3-native-profile-20261030/SOURCE.sha256",
+      "sha256": "e9be4ba1b89960e3d211b3444e1eaf9c1773305f7656e6fdda0cdf84e5f7b4e3"
+    },
+    {
+      "label": "C3 pending profile proposal",
+      "path": "/mnt/raid0/llm/tmp/refactor-c3-native-profile-20261030/READY-PROPOSAL.json",
+      "sha256": "8f34de6ce327ba1bdfc045aeaa379772c4eb389a36cb622621a2521b0c283cb6"
+    }
+  ]
+}
