@@ -1,0 +1,42 @@
+{
+  "basis": {
+    "cell": "g2-c2148",
+    "layout_control_Cmask_vs_C0": {
+      "all_pairs_identical": false
+    },
+    "matched_Xc_vs_Cmask": {
+      "identical_all_64_tokens_and_top2": true,
+      "pairs": 6
+    },
+    "near_tie_context": {
+      "Xc_margin_within_band": false,
+      "Xc_top2_margin_at_Xc_vs_Cf_divergence": 0.4469757080078125,
+      "fixed_gpu_band": 0.031567,
+      "historical_17_4b_first_divergence_gap": 0.09389,
+      "historical_gap_within_band": false,
+      "source": "KPF-13.1b predeclared v4; label only, not a spec-off verdict clause"
+    },
+    "original_comparison_reproduced_Xc_vs_Cf": {
+      "first_token_divergence_index": 56,
+      "identical_all": false,
+      "pairs": 6
+    },
+    "predeclared_174c_mechanical_outcome": "none_reproduced / control_layout_numerics",
+    "same_binary_and_image": {
+      "binary_sha256": "18afca1656b2d93e65312e0a8bcc3bc9f62ac0405fcb8d629c4634f16e48f078",
+      "historical_image": "gpu-20261023-82c16126f-kpf191"
+    }
+  },
+  "decision_rule_provenance": "No new rule. Applies KPF-17.4c PREDECLARATION.md exact matched Xc~Cmask comparison and existing explains_174b mapping; reads fixed 0.031567 context from KPF-13.1b rules v4. The v4 predeclaration says spec-off is tokens-only and the near-tie label is not a verdict. Original KPF-17.4b FAIL remains intact.",
+  "non_scope": "No KPF-13.1b cells, no KPF-17.4b g1-c2148, no KPF-17.4 parent/drafter-on clause, no new execution, no GPU run, no ledger write.",
+  "original_verdict_preserved": {
+    "meaning": "historical v2 result remains unchanged; this scoped re-judgment supplies its layout-matched interpretation",
+    "path": "/mnt/raid0/llm/tmp/f8-launchers-20261023/kpf-gpu-followups/VERDICT.kpf174b-specoff.json",
+    "verdict": "FAIL"
+  },
+  "result": "CONTROL_LAYOUT_NUMERICS",
+  "schema": "epyc.kpf17_4d.offline_rejudgment/v1",
+  "scope": "KPF-17.4b spec-off g2-c2148 only",
+  "target_restore_defect_supported_for_scope": false,
+  "task": "KPF-17.4d(a)"
+}

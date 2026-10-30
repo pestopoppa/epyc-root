@@ -322,6 +322,9 @@ SOURCES: dict[str, Source] = {s.name: s for s in (
            note="D-RI-PREVIEW-1 per role x rendering correct-rate with class counts; mock and partial "
                 "results refused",
            task="VB-DRIPREVIEW-WRITE"),
+    Source("kpf261-plan-steps", "kpf261_plan_steps", _run_dirs("capture-complete.json"),
+           note="Prospective planner journal counts; synthetic records refused; no terse verdict",
+           task="VB-KPF-PLAN-STEPS-WIRE"),
     Source("kv-prefix-fork", "kv_prefix_fork",
            _files("belief_measurements.jsonl", "*/belief_measurements.jsonl",
                   "*/*/belief_measurements.jsonl"),

@@ -1,0 +1,72 @@
+{
+  "already_filed_check": {
+    "evidence": "immutable ROOT handoff/progress snapshots at commit 7edab852fb2e2718d540763f962c408d8a8fc1d7 and scratch context contain the 2026-10-26 checkpoint and a prior file explicitly marked draft; no qualifying A verdict/custody was found",
+    "fully_qualified_A_filing_found": false
+  },
+  "derived_integrity": {
+    "174c_cell_prompt_sha256": "ff0e65a0aeb779472053298635ebf0b84004976caf1a533eeafdabbadee9b016",
+    "layout_comparisons": {
+      "C0_runs": 3,
+      "Cmask_runs": 3,
+      "differing_pair_count": 9
+    },
+    "matched_comparisons": {
+      "Cmask_runs": 3,
+      "Xc_runs": 2,
+      "exact_pair_count": 6
+    },
+    "original_174b_cell_prompt_sha256": "ff0e65a0aeb779472053298635ebf0b84004976caf1a533eeafdabbadee9b016",
+    "original_and_174c_binary_sha256": "18afca1656b2d93e65312e0a8bcc3bc9f62ac0405fcb8d629c4634f16e48f078",
+    "original_and_174c_binary_sha256_equal": true,
+    "original_and_174c_prompt_sha256": "ff0e65a0aeb779472053298635ebf0b84004976caf1a533eeafdabbadee9b016",
+    "original_and_174c_prompt_sha256_equal": true,
+    "original_and_174c_recorded_rules_sha256": {
+      "174b": "2be6f9b01641a52dabf17adcc6b9a92421ebaca9339701b1fcb11eaa86b45293",
+      "174c": "b871d9a05396536bd6c342f21a1b2be1775e441783b7a0b418581249cdaf6233"
+    },
+    "reproduced_comparisons": {
+      "Cf_runs": 3,
+      "Xc_runs": 2,
+      "differing_pair_count": 6
+    }
+  },
+  "filing_status": "prepared for owning ROOT session to apply; no ROOT handoff/index/progress edits made",
+  "limitations": [
+    "same-load repeats are not independent loads",
+    "re-judgment is scoped to this exact image and g2-c2148 cell",
+    "KPF-13.1b five spec-off cells on image a1f0c8cf9 remain separate and untouched"
+  ],
+  "method": "read-only source comparison; deterministic model-free derivation; no inference/GPU execution",
+  "prepared_artifacts_sha256": {
+    "derive.py": "c2453c918f9d3d0d2b6c97be64c3f456bc1de0fa5f4537d06b2d9ba49b1ebb00",
+    "handoff-child-proposed.md": "e25bf2c6a127c873512fe113ab51a41733ffd1446e61ae6fc8c5a83b4f28cd3c",
+    "progress-proposed.md": "fcf4164a28c5d6d8f9757bbed5cdc0a82980e43a406635faeee99a5b34c8d79f",
+    "verdict.json": "3a40ba733151ea80a45cbcfe58e487775d3729132e6747d7e9895ab357cef7a6"
+  },
+  "prepared_utc": "2026-10-30",
+  "proposed_handoff_text": "handoff-child-proposed.md",
+  "proposed_progress_text": "progress-proposed.md",
+  "schema": "epyc.kpf17_4d.offline_custody/v1",
+  "scope": "KPF-17.4b spec-off g2-c2148 only",
+  "source_artifacts_sha256": {
+    "174c_cell_g2_c2148": "03eafcabace8eb9c275f6254668ef40622b3a55481f4dbd0b61d4d8385855fcb",
+    "174c_predeclaration": "1aca75d52686b4a63dcf1458cc38bfdaa4b90946f7bac67febad20835bc712d9",
+    "174c_rows": "d63265a5b46ee71cbe1a396242efe8f4e7dded48feddf52be3b9217a649ac484",
+    "174c_rules": "a8c3e0eca4ffeb92df1449c1e04bdf8510559aa69d6c8f06590e54bf9eb203af",
+    "174c_run_record": "761763c3dd7d20189babfb4ef0382d858ffd69c47115d563e1b70af3173cb1ec",
+    "174c_verdict": "4a2aadc55bc430e6e2a56c4b6f38a488d0d2d498d3a39d20a6ff2c221c0ab6b5",
+    "original_174b_cell": "50c95c78a1f39bdae2a4ce4bda6c4307f9885c7aad87c8226c47fe192a1abd51",
+    "original_174b_rows": "1283dec443a66e6dd782676590cd7a60d42d4bf2e73802f7d51f615d2cde2037",
+    "original_174b_rules": "f73d48f22fb2ec4582ac277c8018257314fabb25df915c4f209c55ec7422fe4d",
+    "original_174b_run_record": "3b25a9dbb95c36da969567f2dcade96e8dba2bc54ad35a64b935529b01168477",
+    "original_174b_verdict": "e715e72254b02d15e0f6d92e2c58800a0925f8f127ec009d68031bf20aba0752",
+    "predecl_174b_and_131b_v4": "8b3cbce1ef5ac6db21e385795b4efb6a9000e5aff9e05f16d456015fec71f114",
+    "prior_draft_only": "70648537800e29a71d745591827f7944a1cdbdf90c877d267d0434bf370af0d1",
+    "root_handoff": "194fab58c77dc789cfe835451eaa58daa14008c3fd80cf7ebbb71565bfccebb8",
+    "root_progress_20261026": "f554a7626811d37b7fa66a737dd8bdaae8ae1d853ba1dbdd89db4c5021cc1187",
+    "root_source_context_record": "71ea03a2013f9bc8ff2c6fcb21240e710efe1c09aa2d0ef7f5ad727da693777c",
+    "rules_131b_v4": "631ee8d673addff283beeefcbef622b5183ee149876a0f38566bf1cbfa316052"
+  },
+  "task": "KPF-17.4d(a)",
+  "verdict_artifact": "verdict.json"
+}

@@ -581,7 +581,7 @@ _FILE_SOURCES = (
     "evidence-durability",
     "kb-rag-qlen", "inf70-arms", "contention-gate", "contention-matrix", "beam", "tulving",
     "hs-prof1-profile-arms",
-    "chat-template-ab", "kv-prefix-fork", "pb-hol", "occ1", "tale-budget", "review-f1", "opencode-shell",
+    "chat-template-ab", "kpf261-plan-steps", "kv-prefix-fork", "pb-hol", "occ1", "tale-budget", "review-f1", "opencode-shell",
     "memento-lora", "pareval", "eval-tower-band", "fanout-outcome",
     "research-sweep-g1", "research-sweep-g234", "autopilot-journal", "sealed-manifest",
     "mhs-guard-verdicts", "mhs-guard-ops",

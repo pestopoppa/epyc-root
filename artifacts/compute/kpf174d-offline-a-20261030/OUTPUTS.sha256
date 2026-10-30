@@ -1,0 +1,14 @@
+4e6543d66c64a80d0504c08e61d5f2b884c6ca3a0e62e82cfb07ee9960bfc0b2  ./INPUTS.sha256
+ff4e72f6412f5ffa6d0498667391a37624770ac18c095c14f91c43dcb158ef20  ./custody.json
+c2453c918f9d3d0d2b6c97be64c3f456bc1de0fa5f4537d06b2d9ba49b1ebb00  ./derive.py
+e25bf2c6a127c873512fe113ab51a41733ffd1446e61ae6fc8c5a83b4f28cd3c  ./handoff-child-proposed.md
+fcf4164a28c5d6d8f9757bbed5cdc0a82980e43a406635faeee99a5b34c8d79f  ./progress-proposed.md
+33e1c5673bf3481bd9327fdf43476b420b1db0164ac5970e8b38dec875448612  ./rerun_once.py
+f554a7626811d37b7fa66a737dd8bdaae8ae1d853ba1dbdd89db4c5021cc1187  ./source-context/2026-10-26-workspace-58.md
+71ea03a2013f9bc8ff2c6fcb21240e710efe1c09aa2d0ef7f5ad727da693777c  ./source-context/ROOT-SOURCE-CONTEXT.json
+194fab58c77dc789cfe835451eaa58daa14008c3fd80cf7ebbb71565bfccebb8  ./source-context/kv-prefix-fork-and-paged-attention.md
+60a082f43b0a6de02efa3ff3a7460c24444ae32a1f2b19b03718e0ac27b1dc85  ./supervisor.log
+3a40ba733151ea80a45cbcfe58e487775d3729132e6747d7e9895ab357cef7a6  ./verdict.json
+8982acb3e9aba60357a405a6d67c0783cd0121097a784556610c1f368dac2ef9  ./verify-stable.log
+6738d891b2089f8b4f63974a8479b4d273f2e249ed4f8abbd8518573d968a68c  ./verify.log
+fca8959afbdd40abe1f0884bef63a0c687b77b21d951321056cd8381e4efd837  ./verify_artifacts.py

@@ -1,0 +1,20 @@
+{
+  "schema": "epyc.root-source-snapshot/v1",
+  "root_repo": "/mnt/micron/codex3-lanes/root",
+  "root_commit": "7edab852fb2e2718d540763f962c408d8a8fc1d7",
+  "working_tree_status_for_paths": "clean at snapshot time",
+  "snapshots": [
+    {
+      "repo_path": "handoffs/active/kv-prefix-fork-and-paged-attention.md",
+      "snapshot_path": "source-context/kv-prefix-fork-and-paged-attention.md",
+      "git_blob_at_commit": "1daf327e11467bfe6ead501402eed723748dcc32",
+      "snapshot_sha256": "194fab58c77dc789cfe835451eaa58daa14008c3fd80cf7ebbb71565bfccebb8"
+    },
+    {
+      "repo_path": "progress/2026-10/2026-10-26-workspace-58.md",
+      "snapshot_path": "source-context/2026-10-26-workspace-58.md",
+      "git_blob_at_commit": "fa336da4b1bb498026cba63788761759e7213368",
+      "snapshot_sha256": "f554a7626811d37b7fa66a737dd8bdaae8ae1d853ba1dbdd89db4c5021cc1187"
+    }
+  ]
+}

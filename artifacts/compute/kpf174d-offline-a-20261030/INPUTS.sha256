@@ -1,0 +1,17 @@
+194fab58c77dc789cfe835451eaa58daa14008c3fd80cf7ebbb71565bfccebb8  /mnt/raid0/llm/tmp/codex3-kpf174d-offline-a-20261030/source-context/kv-prefix-fork-and-paged-attention.md
+f554a7626811d37b7fa66a737dd8bdaae8ae1d853ba1dbdd89db4c5021cc1187  /mnt/raid0/llm/tmp/codex3-kpf174d-offline-a-20261030/source-context/2026-10-26-workspace-58.md
+71ea03a2013f9bc8ff2c6fcb21240e710efe1c09aa2d0ef7f5ad727da693777c  /mnt/raid0/llm/tmp/codex3-kpf174d-offline-a-20261030/source-context/ROOT-SOURCE-CONTEXT.json
+70648537800e29a71d745591827f7944a1cdbdf90c877d267d0434bf370af0d1  /mnt/raid0/llm/tmp/refactor-01a16fc3/kpf174b-offline-rejudge/CUSTODY-DRAFT.md
+8b3cbce1ef5ac6db21e385795b4efb6a9000e5aff9e05f16d456015fec71f114  /mnt/raid0/llm/tmp/f8-launchers-20261023/kpf-gpu-followups/PREDECLARATION.md
+631ee8d673addff283beeefcbef622b5183ee149876a0f38566bf1cbfa316052  /mnt/raid0/llm/tmp/f8-launchers-20261023/kpf-gpu-followups/out/kpf131b/rules.json
+e715e72254b02d15e0f6d92e2c58800a0925f8f127ec009d68031bf20aba0752  /mnt/raid0/llm/tmp/f8-launchers-20261023/kpf-gpu-followups/VERDICT.kpf174b-specoff.json
+50c95c78a1f39bdae2a4ce4bda6c4307f9885c7aad87c8226c47fe192a1abd51  /mnt/raid0/llm/tmp/f8-launchers-20261023/kpf-gpu-followups/out/kpf174b-specoff/cells/honest_specoff/g2-c2148.json
+1283dec443a66e6dd782676590cd7a60d42d4bf2e73802f7d51f615d2cde2037  /mnt/raid0/llm/tmp/f8-launchers-20261023/kpf-gpu-followups/out/kpf174b-specoff/rows/honest_specoff.jsonl
+3b25a9dbb95c36da969567f2dcade96e8dba2bc54ad35a64b935529b01168477  /mnt/raid0/llm/tmp/f8-launchers-20261023/kpf-gpu-followups/out/kpf174b-specoff/records/kpf174-honest_specoff-20261023T182942Z.json
+f73d48f22fb2ec4582ac277c8018257314fabb25df915c4f209c55ec7422fe4d  /mnt/raid0/llm/tmp/f8-launchers-20261023/kpf-gpu-followups/out/kpf174b-specoff/rules.json
+1aca75d52686b4a63dcf1458cc38bfdaa4b90946f7bac67febad20835bc712d9  /mnt/raid0/llm/tmp/f8-launchers-20261024/kpf17-4c-bisect/PREDECLARATION.md
+4a2aadc55bc430e6e2a56c4b6f38a488d0d2d498d3a39d20a6ff2c221c0ab6b5  /mnt/raid0/llm/tmp/f8-launchers-20261024/kpf17-4c-bisect/VERDICT.json
+a8c3e0eca4ffeb92df1449c1e04bdf8510559aa69d6c8f06590e54bf9eb203af  /mnt/raid0/llm/tmp/f8-launchers-20261024/kpf17-4c-bisect/out/kpf174c/rules.json
+761763c3dd7d20189babfb4ef0382d858ffd69c47115d563e1b70af3173cb1ec  /mnt/raid0/llm/tmp/f8-launchers-20261024/kpf17-4c-bisect/out/kpf174c/records/kpf174c-bisect_specoff-20261024T110836Z.json
+03eafcabace8eb9c275f6254668ef40622b3a55481f4dbd0b61d4d8385855fcb  /mnt/raid0/llm/tmp/f8-launchers-20261024/kpf17-4c-bisect/out/kpf174c/cells/bisect_specoff/g2-c2148.json
+d63265a5b46ee71cbe1a396242efe8f4e7dded48feddf52be3b9217a649ac484  /mnt/raid0/llm/tmp/f8-launchers-20261024/kpf17-4c-bisect/out/kpf174c/rows/bisect_specoff.jsonl
