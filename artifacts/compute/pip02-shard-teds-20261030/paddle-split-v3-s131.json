@@ -1,0 +1,110 @@
+{
+  "arm": "paddle",
+  "cohort": "pip02-english-fresh-20261029",
+  "shard": 131,
+  "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+  "gt_sha256": "a45cd84b04ad8b793e775089640e6b681209abea33ead54c1828ddca35fae496",
+  "config_sha256": "e424bd8aea788ad3662e1d5a695b99f4e0fdae13ed484160b909ac22681bbbc3",
+  "scoring_sources_sha256": {
+    "pip02_records.py": "2d364d7a7ef1d47b21fb8f3352ff4ffe98e93c682da3996f6e1270c8193c81cd",
+    "pip02_lineage.py": "6dea759fe4fa7adc5c78d34fe7b01aea1d44ab98bc3103ccacbb3f36efb831fa",
+    "pip02_compare.py": "37e9d673ba46ac16c5f8169db97290933b3c63fb48ef133b825d5db3a9ba995e",
+    "pip02_native_score.py": "27f0b630b6812aecad35d1c65329841a5011e421326e81f9f14c8c66a6fdbe5e"
+  },
+  "pages": [
+    {
+      "position": 655,
+      "image": "exam_paper_en-file-putnam-archive_2005_Solutions_2005s_page_006.png",
+      "gt_index": 1549,
+      "gt_tables": 0,
+      "status": "unknown",
+      "reason": "no durable completed page",
+      "tables": null,
+      "input_sha256": {
+        "/mnt/micron/codex3-pip-split-r22-20261030/campaigns-fresh/shard-131/shard-131/82f2e9915a8dff9d30d647a6e6a97ecce06a294abdc8a42a6f821e8341f60e57.sent": "30ff64f3bd0dd329d0e56482dc27b8c89b72bdf219f41625173e4c2641762986",
+        "/mnt/micron/codex3-pip-split-r22-20261030/campaigns-fresh/shard-131/shard-131/82f2e9915a8dff9d30d647a6e6a97ecce06a294abdc8a42a6f821e8341f60e57.start": "0b264943988eacca6e04758f16096389e0ecbc27ff67cb2c6c3bbc5e24a011ba",
+        "/mnt/micron/codex3-pip-split-r22-20261030/campaigns-fresh/shard-131/shard-131/region-553045c23ec359eb19353c6d-000000.result.json": "86fd69be59398300954c8d1096365aea1300577906d38afe2b7e33881efaf0db",
+        "/mnt/micron/codex3-pip-split-r22-20261030/campaigns-fresh/shard-131/shard-131/region-553045c23ec359eb19353c6d-000000.result.json.durable": "33d0df466a409af61e132ea090ca72e54f2684586727a9eb98d018400728475e",
+        "/mnt/micron/codex3-pip-split-r22-20261030/campaigns-fresh/shard-131/shard-131/region-553045c23ec359eb19353c6d-000000.start.json": "10e89aafc029407229755a6b23d441dbf771e5f734a1fccd73e85252d22ddd73",
+        "/mnt/micron/codex3-pip-split-r22-20261030/campaigns-fresh/shard-131/shard-131/region-553045c23ec359eb19353c6d-layout.json": "244dd3fdf637544beb9c9f06919af999537d82bd78f9ef28dfdb89ba0f9b4dae"
+      }
+    },
+    {
+      "position": 656,
+      "image": "exam_paper_en-file-putnam-archive_2015_Problems_2015_page_001.png",
+      "gt_index": 1550,
+      "gt_tables": 0,
+      "status": "unknown",
+      "reason": "no durable completed page",
+      "tables": null,
+      "input_sha256": {
+        "/mnt/micron/codex3-pip-split-r22-20261030/campaigns-fresh/shard-131/shard-131/1bfdf5211e00fef0f71fca4d61750d532d8b8a157dc1ba66fb6db8902d957eb8.start": "0e8aca9b972daf5b8cc9b5f438306de9f491f8162867116fcecc2050b15a11a3",
+        "/mnt/micron/codex3-pip-split-r22-20261030/campaigns-fresh/shard-131/shard-131/region-dfd2022b6c7e836b164784ac-layout.json": "2fa0fb23318e897e8ab4910a9182d1d8e09345a7d80c4159ec8d1386c0087565"
+      }
+    },
+    {
+      "position": 657,
+      "image": "exam_paper_en-file-putnam-archive_1996_Solutions_1996s_page_001.png",
+      "gt_index": 1551,
+      "gt_tables": 0,
+      "status": "unknown",
+      "reason": "no durable completed page",
+      "tables": null,
+      "input_sha256": {
+        "/mnt/micron/codex3-pip-split-r22-20261030/campaigns-fresh/shard-131/shard-131/27b60a5cca98e140c2171b5ff67e8688f57712bb2ce6d19724d959194a4abb26.sent": "9ef2e8c6ce0bd473f8c6b5d341a95b9c5f5a7031c558041bdd0d0e8409b3eb76",
+        "/mnt/micron/codex3-pip-split-r22-20261030/campaigns-fresh/shard-131/shard-131/27b60a5cca98e140c2171b5ff67e8688f57712bb2ce6d19724d959194a4abb26.start": "bec6817054b19a7f091ccab3578e4868633a5400608bac16c6b3da66016e86b6",
+        "/mnt/micron/codex3-pip-split-r22-20261030/campaigns-fresh/shard-131/shard-131/region-4ac94822806c39b16e1507b8-000000.result.json": "5f41bff26b6db6f72d276de6fbcfd4683ea60f92843cfcc8ea8481dbccd50b37",
+        "/mnt/micron/codex3-pip-split-r22-20261030/campaigns-fresh/shard-131/shard-131/region-4ac94822806c39b16e1507b8-000000.result.json.durable": "59f5ee9cdf86d893c8b794dbde785e12b106656c13e7c219bb593b3c26fc0e65",
+        "/mnt/micron/codex3-pip-split-r22-20261030/campaigns-fresh/shard-131/shard-131/region-4ac94822806c39b16e1507b8-000000.start.json": "2095b0fa8caf2e21ed48e04f4ae3fe2be1a844f847fa4cec6aae58be840d6e9f",
+        "/mnt/micron/codex3-pip-split-r22-20261030/campaigns-fresh/shard-131/shard-131/region-4ac94822806c39b16e1507b8-layout.json": "386f2c96a732caedb1d8a46e8d581c6bec4117e7134e80588e56f6332a44bcfb"
+      }
+    },
+    {
+      "position": 658,
+      "image": "exam_paper_en-file-putnam-archive_1997_Solutions_1997s_page_002.png",
+      "gt_index": 1552,
+      "gt_tables": 0,
+      "status": "unknown",
+      "reason": "no durable completed page",
+      "tables": null,
+      "input_sha256": {
+        "/mnt/micron/codex3-pip-split-r22-20261030/campaigns-fresh/shard-131/shard-131/3ae7fab2771eaeb2d9757c7672e735bb3b2d40ca11c530deaa496f25251e6ccb.sent": "b57c3ed72a438534c6eb6f8cb725de15d8fb587dbe7b00e92031b6cc4246684d",
+        "/mnt/micron/codex3-pip-split-r22-20261030/campaigns-fresh/shard-131/shard-131/3ae7fab2771eaeb2d9757c7672e735bb3b2d40ca11c530deaa496f25251e6ccb.start": "cbe5093753f2ef42ad0f814a2b74c528a66a5c1bdf43f30e2a6c89878569773e",
+        "/mnt/micron/codex3-pip-split-r22-20261030/campaigns-fresh/shard-131/shard-131/region-33f931fedcc867f4ff1dc234-000000.result.json": "6c69b182487b582ec988d9c77db6f5a969f4b79eabf8c1c0b4a86bab8d26ffa5",
+        "/mnt/micron/codex3-pip-split-r22-20261030/campaigns-fresh/shard-131/shard-131/region-33f931fedcc867f4ff1dc234-000000.result.json.durable": "9bbc10fd694937db591d16f04b84e7de1f676baef684f66d5539e34d6d46882f",
+        "/mnt/micron/codex3-pip-split-r22-20261030/campaigns-fresh/shard-131/shard-131/region-33f931fedcc867f4ff1dc234-000000.start.json": "58e7d0a894270fd47341f01f16ebdecf2b20d125d913fa034b817c268b6ba9a2",
+        "/mnt/micron/codex3-pip-split-r22-20261030/campaigns-fresh/shard-131/shard-131/region-33f931fedcc867f4ff1dc234-layout.json": "4eb6834d81eb563195167ffb06f9a61168e3404263702d80cca248756f122319"
+      }
+    },
+    {
+      "position": 659,
+      "image": "exam_paper_2016\u5e74\u5b89\u5fbd\u7701\u4e2d\u8003\u82f1\u8bed\u8bd5\u9898\uff08\u89e3\u6790\uff09_page_003.png",
+      "gt_index": 1554,
+      "gt_tables": 0,
+      "status": "unknown",
+      "reason": "no durable completed page",
+      "tables": null,
+      "input_sha256": {
+        "/mnt/micron/codex3-pip-split-r22-20261030/campaigns-fresh/shard-131/shard-131/4e170735d634950f1bf1395c6fa2be3981bcc6c36bc2af6bb25b5cf6adee9374.sent": "6ffb5b0934ddc5fe0314b30c756f84314b22aa9f912168841e35fe37a741e996",
+        "/mnt/micron/codex3-pip-split-r22-20261030/campaigns-fresh/shard-131/shard-131/4e170735d634950f1bf1395c6fa2be3981bcc6c36bc2af6bb25b5cf6adee9374.start": "e863e56e294a9e1694ccdd4662975035ed680a6aeeb4219414d956fb68f80358",
+        "/mnt/micron/codex3-pip-split-r22-20261030/campaigns-fresh/shard-131/shard-131/region-e8419595b9350fa2f94af8b8-000000.result.json": "bc594e3adab0241d8cb80ecd67513eb0bf084d1300ecdfe58ebab0681346e67e",
+        "/mnt/micron/codex3-pip-split-r22-20261030/campaigns-fresh/shard-131/shard-131/region-e8419595b9350fa2f94af8b8-000000.result.json.durable": "cc2ec7ea7638f87efa48231f71c692fffc04c3f57311d6526399141dab0e6453",
+        "/mnt/micron/codex3-pip-split-r22-20261030/campaigns-fresh/shard-131/shard-131/region-e8419595b9350fa2f94af8b8-000000.start.json": "d9d8c8b2e97e9237dd5c67ac1c95a91069117b087ae90847ed5bc2705eaf8dae",
+        "/mnt/micron/codex3-pip-split-r22-20261030/campaigns-fresh/shard-131/shard-131/region-e8419595b9350fa2f94af8b8-000001.result.json": "ae8898c8621bae74572397fb5c84820e3432ef1f6325d0e388585cd27851fd66",
+        "/mnt/micron/codex3-pip-split-r22-20261030/campaigns-fresh/shard-131/shard-131/region-e8419595b9350fa2f94af8b8-000001.result.json.durable": "50367d11752a2da770b433295d2ba536b3b128bfef88538f6b4cd3dc9883c7bc",
+        "/mnt/micron/codex3-pip-split-r22-20261030/campaigns-fresh/shard-131/shard-131/region-e8419595b9350fa2f94af8b8-000001.start.json": "d42f44fb947eba36010dd9691f1be2e6c4fcd3f2903f538ff336b343d8bc727c",
+        "/mnt/micron/codex3-pip-split-r22-20261030/campaigns-fresh/shard-131/shard-131/region-e8419595b9350fa2f94af8b8-layout.json": "21a4106414d8ac3507717d1acb72bdda5a4c3857edf0fdd4a8cc01585b2b338c"
+      }
+    }
+  ],
+  "coverage": {
+    "pages_complete": 0,
+    "pages_total": 5,
+    "gt_tables_scored": 0,
+    "gt_tables_total": 0
+  },
+  "means": {
+    "teds": null,
+    "teds_structure_only": null
+  }
+}

@@ -1,0 +1,86 @@
+{
+  "arm": "paddle",
+  "cohort": "pip02-english-fresh-20261029",
+  "shard": 19,
+  "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+  "gt_sha256": "a45cd84b04ad8b793e775089640e6b681209abea33ead54c1828ddca35fae496",
+  "config_sha256": "e424bd8aea788ad3662e1d5a695b99f4e0fdae13ed484160b909ac22681bbbc3",
+  "scoring_sources_sha256": {
+    "pip02_records.py": "2d364d7a7ef1d47b21fb8f3352ff4ffe98e93c682da3996f6e1270c8193c81cd",
+    "pip02_lineage.py": "6dea759fe4fa7adc5c78d34fe7b01aea1d44ab98bc3103ccacbb3f36efb831fa",
+    "pip02_compare.py": "37e9d673ba46ac16c5f8169db97290933b3c63fb48ef133b825d5db3a9ba995e",
+    "pip02_native_score.py": "27f0b630b6812aecad35d1c65329841a5011e421326e81f9f14c8c66a6fdbe5e"
+  },
+  "pages": [
+    {
+      "position": 95,
+      "image": "page-83587fc3-fe55-4e51-a3c5-f0664edba743.png",
+      "gt_index": 206,
+      "gt_tables": 2,
+      "status": "unknown",
+      "reason": "no durable completed page",
+      "tables": null,
+      "input_sha256": {
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-19/shard-19/c92a920f1de4da5bb25f4173d7a1889384cca5b348c385d814260e89a0b06c8f.start": "92a2c1a3e7cb0eec8d492a17b1c8a45eb1dbb56c7f99f801f9b3472bfea7760a",
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-19/shard-19/region-ccf0a651535b6c259791e548-layout.json": "e7d0145c18c90fa94e23c943a3d30088615be3eb1618ae442eb5bd3fe9270a3f"
+      }
+    },
+    {
+      "position": 96,
+      "image": "page-28c45f5f-7e0d-464a-89ec-8de3a4abb927.png",
+      "gt_index": 208,
+      "gt_tables": 1,
+      "status": "unknown",
+      "reason": "no durable completed page",
+      "tables": null,
+      "input_sha256": {
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-19/shard-19/6740a60b81be001bd3701a31e87ddfbb1937b7f6d539d266cdbfda54bd8d29df.sent": "ab5e90d5d0cad93087a16892ab2ea0e6465f0dec818fc6d89f541f26821bf116",
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-19/shard-19/6740a60b81be001bd3701a31e87ddfbb1937b7f6d539d266cdbfda54bd8d29df.start": "6065166d21f4d8b199fc24ebc5714e88818d017f94af291001240acef8a0c77a",
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-19/shard-19/region-982e37675dfc03064043535c-000000.result.json": "bec9133123decef3a7bafa29867ab1bd755e955d20d0c9cf3caa97d20991c506",
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-19/shard-19/region-982e37675dfc03064043535c-000000.start.json": "dbaa10b04ddee1fe0cc520f27d214dc8382941e0d26087cd90fb791c988a0d39",
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-19/shard-19/region-982e37675dfc03064043535c-000001.start.json": "13870572b43f65458fa03b9c606f6dc883262251e3fafb330aee3e4f95951867",
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-19/shard-19/region-982e37675dfc03064043535c-layout.json": "6d99fdcf95341084760ff2a6a466ae4b1765d3cbf785cbac3f4f38655178f97f"
+      }
+    },
+    {
+      "position": 97,
+      "image": "page-dca64e05-1ce6-49ee-857a-9b5d05a87357.png",
+      "gt_index": 216,
+      "gt_tables": 1,
+      "status": "unknown",
+      "reason": "no durable completed page",
+      "tables": null,
+      "input_sha256": {}
+    },
+    {
+      "position": 98,
+      "image": "page-2deb83b3-abe2-442c-a544-0b6a8db464f1.png",
+      "gt_index": 255,
+      "gt_tables": 1,
+      "status": "unknown",
+      "reason": "no durable completed page",
+      "tables": null,
+      "input_sha256": {}
+    },
+    {
+      "position": 99,
+      "image": "page-fd04ea51-677c-4de2-8e8e-adfd791e2957.png",
+      "gt_index": 258,
+      "gt_tables": 1,
+      "status": "unknown",
+      "reason": "no durable completed page",
+      "tables": null,
+      "input_sha256": {}
+    }
+  ],
+  "coverage": {
+    "pages_complete": 0,
+    "pages_total": 5,
+    "gt_tables_scored": 0,
+    "gt_tables_total": 6
+  },
+  "means": {
+    "teds": null,
+    "teds_structure_only": null
+  }
+}

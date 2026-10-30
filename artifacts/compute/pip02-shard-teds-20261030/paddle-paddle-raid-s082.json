@@ -1,0 +1,91 @@
+{
+  "arm": "paddle",
+  "cohort": "pip02-english-fresh-20261029",
+  "storage": "raid",
+  "shard": 82,
+  "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+  "gt_sha256": "a45cd84b04ad8b793e775089640e6b681209abea33ead54c1828ddca35fae496",
+  "config_sha256": "e424bd8aea788ad3662e1d5a695b99f4e0fdae13ed484160b909ac22681bbbc3",
+  "lineage_sha256": "39a511a6cf4de532c0847eab3eced768aa740ff4e39022c5c49b582aa95a7d2e",
+  "pages": [
+    {
+      "position": 410,
+      "image": "yanbaor2_yanbaoPPT_3745.jpg",
+      "gt_index": 1265,
+      "gt_tables": 0,
+      "status": "unknown",
+      "reason": "no durable completed page",
+      "tables": null
+    },
+    {
+      "position": 411,
+      "image": "yanbaor2_yanbaoPPT_5946.jpg",
+      "gt_index": 1267,
+      "gt_tables": 0,
+      "status": "unknown",
+      "reason": "no durable completed page",
+      "tables": null
+    },
+    {
+      "position": 412,
+      "image": "docstructbench_llm-raw-scihub-o.O-s001280000131.pdf_5.jpg",
+      "gt_index": 1270,
+      "gt_tables": 1,
+      "status": "complete",
+      "reason": "native finish and request origins verified",
+      "tables": [
+        {
+          "gt_idx": [
+            0
+          ],
+          "pred_idx": [
+            0
+          ],
+          "teds": 0.8517598378382693,
+          "teds_structure_only": 0.9333333333333333
+        }
+      ],
+      "source_lineage": {
+        "verified": true,
+        "request_origins_verified": true,
+        "origin_capture_sha256": [
+          "2c79fe9bd13481bda97b8cf3461b48975b7e482d38334fa9d7c13b90c1bfeae6",
+          "46bf7dac18e602d91a260a031aebb8d83cc8a71d06cc3e27213be9ed9ffcb5e4",
+          "56ce06ec6d0340491937173143a785b527933379c8a719c511d7d5f7ff29caf9",
+          "fb2286d27803e996b3934be63cb451e6475a793469996865bd41425b7615cf59"
+        ],
+        "finish_capture_sha256": "2c79fe9bd13481bda97b8cf3461b48975b7e482d38334fa9d7c13b90c1bfeae6",
+        "basis": "native R9/R10/R11/R13/R15 finish receipt binds page result and markdown to captured grant and registered source"
+      },
+      "prediction_sha256": "be710af93bcbb8af49279342b783c356f2790cb6ce77190f2cac49e9467325de"
+    },
+    {
+      "position": 413,
+      "image": "scihub_j.1528-1167.2008.01552.x.pdf_3.jpg",
+      "gt_index": 1273,
+      "gt_tables": 1,
+      "status": "unknown",
+      "reason": "no durable completed page",
+      "tables": null
+    },
+    {
+      "position": 414,
+      "image": "scihub_journal.pone.0166577.pdf_5.jpg",
+      "gt_index": 1274,
+      "gt_tables": 1,
+      "status": "unknown",
+      "reason": "no durable completed page",
+      "tables": null
+    }
+  ],
+  "coverage": {
+    "pages_complete": 1,
+    "pages_total": 5,
+    "gt_tables_scored": 1,
+    "gt_tables_total": 3
+  },
+  "means": {
+    "teds": 0.8517598378382693,
+    "teds_structure_only": 0.9333333333333333
+  }
+}

@@ -1,0 +1,99 @@
+{
+  "arm": "paddle",
+  "cohort": "pip02-english-fresh-20261029",
+  "shard": 29,
+  "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+  "gt_sha256": "a45cd84b04ad8b793e775089640e6b681209abea33ead54c1828ddca35fae496",
+  "config_sha256": "e424bd8aea788ad3662e1d5a695b99f4e0fdae13ed484160b909ac22681bbbc3",
+  "scoring_sources_sha256": {
+    "pip02_records.py": "2d364d7a7ef1d47b21fb8f3352ff4ffe98e93c682da3996f6e1270c8193c81cd",
+    "pip02_lineage.py": "6dea759fe4fa7adc5c78d34fe7b01aea1d44ab98bc3103ccacbb3f36efb831fa",
+    "pip02_compare.py": "37e9d673ba46ac16c5f8169db97290933b3c63fb48ef133b825d5db3a9ba995e",
+    "pip02_native_score.py": "27f0b630b6812aecad35d1c65329841a5011e421326e81f9f14c8c66a6fdbe5e"
+  },
+  "pages": [
+    {
+      "position": 145,
+      "image": "docstructbench_llm-raw-scihub-o.O-chem.200700133.pdf_6.jpg",
+      "gt_index": 436,
+      "gt_tables": 0,
+      "status": "unknown",
+      "reason": "no durable completed page",
+      "tables": null,
+      "input_sha256": {
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-29/shard-29/f88113da29c9da249d84a7348fe077a7a2eb97710842ccd7503b56d93b7085cf.start": "8220798dabaa99bb479a8ade4a1f0bd3901a38c2b9e42fbe7c136cb76014eb1c",
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-29/shard-29/region-28ef2764f3e14e7b2f579855-layout.json": "2094bac2add2c28fbc425aa27b4c1a5e0f5a7694954f7ee52ffbc747ef265a14"
+      }
+    },
+    {
+      "position": 146,
+      "image": "docstructbench_llm-raw-scihub-o.O-chem.200701412.pdf_10.jpg",
+      "gt_index": 437,
+      "gt_tables": 0,
+      "status": "unknown",
+      "reason": "no durable completed page",
+      "tables": null,
+      "input_sha256": {
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-29/shard-29/510b11ee3e847f06331785720a31cb8caa116dec07f925ccc260764fa0625c4c.sent": "9e2566de398f766ae8c1a04fe1317c2535171c6040f5b08c82855cc378282b31",
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-29/shard-29/510b11ee3e847f06331785720a31cb8caa116dec07f925ccc260764fa0625c4c.start": "1b21de63219778a7fff8e9061dcb9a94bb9b1ddf84f7469b829720f18a1034a8",
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-29/shard-29/region-e09edc4e813bfcb6d6e77542-000000.result.json": "e1b33c2d894ef1bd5998129ac78d3e3120706ca99b81863b3c70d5d892141c88",
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-29/shard-29/region-e09edc4e813bfcb6d6e77542-000000.start.json": "284314241f207a53218a7f079820cd74fa6e84e986ff1fb3eec6348fba0d754e",
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-29/shard-29/region-e09edc4e813bfcb6d6e77542-000001.result.json": "a833cc0f89c3edd618be3f03d59f4ec7d3682c89e7045ca4ecfe8e0c9f9fbb2a",
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-29/shard-29/region-e09edc4e813bfcb6d6e77542-000001.start.json": "00125fa1b590806dec9846ccc60bb01b43a8de09e918d02acbf9f2c127092a4d",
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-29/shard-29/region-e09edc4e813bfcb6d6e77542-layout.json": "3ed0b8bfe2691497dec416bb0a10ff612eb421dd3f966ff624d677f14d93dd64"
+      }
+    },
+    {
+      "position": 147,
+      "image": "docstructbench_llm-raw-scihub-o.O-chem.200701981.pdf_9.jpg",
+      "gt_index": 438,
+      "gt_tables": 0,
+      "status": "unknown",
+      "reason": "no durable completed page",
+      "tables": null,
+      "input_sha256": {
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-29/shard-29/380db44cd4a28de36cbbea125bc7b17e94c976d5caa976144aea87f78913b5f1.start": "a58a22f4cc5758c826764c1d673c6019737aa9ecbeac1122a44f288cd231d932",
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-29/shard-29/region-f167c8f3a7e443102a5d0049-layout.json": "177e654a4ea8815a85baf77c998331f2af4f00a864488947d8aae6a9b48a2580"
+      }
+    },
+    {
+      "position": 148,
+      "image": "docstructbench_llm-raw-scihub-o.O-chin.200305072.pdf_1.jpg",
+      "gt_index": 439,
+      "gt_tables": 0,
+      "status": "unknown",
+      "reason": "no durable completed page",
+      "tables": null,
+      "input_sha256": {
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-29/shard-29/5662c718fa3f1e420a9130ef9723f537d1c1ecb41a73a4f7ff53d20b592d3097.start": "70541943eff475e64f7a612126abd7f7e3f178823382044b6174ffe296216d54",
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-29/shard-29/region-055bff1b277cc01767ab26f4-layout.json": "9bac97efd6056ff8f2288ce5ba702a91bafedb6a90fbe3995a19204163dc6099"
+      }
+    },
+    {
+      "position": 149,
+      "image": "docstructbench_llm-raw-scihub-o.O-chin.200427104.pdf_1.jpg",
+      "gt_index": 440,
+      "gt_tables": 0,
+      "status": "unknown",
+      "reason": "no durable completed page",
+      "tables": null,
+      "input_sha256": {
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-29/shard-29/a58cecba63a954290519076c0a0144b2ac6da559acb0e7fedbaf50e0594a5135.sent": "04d7cb955e8624a96c0f5848df1497c0181ae141ee37b05903a42067c48af2d6",
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-29/shard-29/a58cecba63a954290519076c0a0144b2ac6da559acb0e7fedbaf50e0594a5135.start": "4e843891c2ef8b56b55614326cea779da72695c3f563d2064cd43984cdf06e85",
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-29/shard-29/region-198f0b63ceb20fc4d333b27a-000000.result.json": "b996d8cc9da80b7120adbd4d7c69850162a9d74cf2a3103c3832f4aed9a9b5d5",
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-29/shard-29/region-198f0b63ceb20fc4d333b27a-000000.start.json": "88c965d687ac65185e3412521252cc019a1b99967204def69feb8e8e6d1630e0",
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-29/shard-29/region-198f0b63ceb20fc4d333b27a-layout.json": "8b5ddaa7106cb7497a56b9c057edc34bc9da715156d469cc4b4c457fa0a8d0d9"
+      }
+    }
+  ],
+  "coverage": {
+    "pages_complete": 0,
+    "pages_total": 5,
+    "gt_tables_scored": 0,
+    "gt_tables_total": 0
+  },
+  "means": {
+    "teds": null,
+    "teds_structure_only": null
+  }
+}

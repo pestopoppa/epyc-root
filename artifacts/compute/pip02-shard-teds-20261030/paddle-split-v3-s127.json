@@ -1,0 +1,116 @@
+{
+  "arm": "paddle",
+  "cohort": "pip02-english-fresh-20261029",
+  "shard": 127,
+  "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+  "gt_sha256": "a45cd84b04ad8b793e775089640e6b681209abea33ead54c1828ddca35fae496",
+  "config_sha256": "e424bd8aea788ad3662e1d5a695b99f4e0fdae13ed484160b909ac22681bbbc3",
+  "scoring_sources_sha256": {
+    "pip02_records.py": "2d364d7a7ef1d47b21fb8f3352ff4ffe98e93c682da3996f6e1270c8193c81cd",
+    "pip02_lineage.py": "6dea759fe4fa7adc5c78d34fe7b01aea1d44ab98bc3103ccacbb3f36efb831fa",
+    "pip02_compare.py": "37e9d673ba46ac16c5f8169db97290933b3c63fb48ef133b825d5db3a9ba995e",
+    "pip02_native_score.py": "27f0b630b6812aecad35d1c65329841a5011e421326e81f9f14c8c66a6fdbe5e"
+  },
+  "pages": [
+    {
+      "position": 635,
+      "image": "exam_paper_en-file-putnam-archive_1996_Solutions_1996s_page_003.png",
+      "gt_index": 1529,
+      "gt_tables": 0,
+      "status": "unknown",
+      "reason": "no durable completed page",
+      "tables": null,
+      "input_sha256": {
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-127/shard-127/1d5c6a4d2317aaf98816949ca7d431f682b86bf23fc2264e504314da176dddc0.sent": "11efe597e70c5c6d5ad90e625e742739b6ae01aab2c9910cc5d908654c09acc5",
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-127/shard-127/1d5c6a4d2317aaf98816949ca7d431f682b86bf23fc2264e504314da176dddc0.start": "3a8c13d8bd12f75f041207279c130a26ad75581e934b9a1e4860c68eb8db7a20",
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-127/shard-127/region-eac8a438d0f863ad3f544664-000000.result.json": "7f8e7fcead3e4324dec9fc30f84632661f1daecd82efd8681f34da130da1047e",
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-127/shard-127/region-eac8a438d0f863ad3f544664-000000.start.json": "0a190a340428395ed4e0c74a6eb33b7323c60b4fa35914926d0b0365bc5207a7",
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-127/shard-127/region-eac8a438d0f863ad3f544664-000001.result.json": "fef5ca5b923bdd7222cce45ef299a87c465b220d91ae66b367b84066faef43c0",
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-127/shard-127/region-eac8a438d0f863ad3f544664-000001.start.json": "4e997746453d5f4a13f9277eba377d4e64f332c8c923060aee943a3e30a6f6b0",
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-127/shard-127/region-eac8a438d0f863ad3f544664-000002.result.json": "67c05f8fe6b0c11b85b87b9b569895cdf36e7b63084e820126ef7e76c05fc25d",
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-127/shard-127/region-eac8a438d0f863ad3f544664-000002.start.json": "acc97796d19dc0d9f9b79d2af159f3a8977c07fc8bde91bb38f55a55fe398e7b",
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-127/shard-127/region-eac8a438d0f863ad3f544664-000003.result.json": "54aac6c41432c772c17e9fb22fa09cda48bfb58ca2eb20a837fec7cff50e6cfd",
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-127/shard-127/region-eac8a438d0f863ad3f544664-000003.start.json": "5bfa63953cd95f8e43290289b2b03d38ef27d450a44280fc859c95de6d2e1e08",
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-127/shard-127/region-eac8a438d0f863ad3f544664-000004.result.json": "c56076f799298a3c89ea6ec8263784a74f4e6bcfbe9cfeb4899426bde690217b",
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-127/shard-127/region-eac8a438d0f863ad3f544664-000004.start.json": "5b90e1fd212be958e54ee0c835cbed023c585339666eee85fca8b993bcfcce56",
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-127/shard-127/region-eac8a438d0f863ad3f544664-000005.result.json": "5854c7371c23ddb5c7f9b3ceed0ebfe33fc2c2fa595a2b0d413a51234cab375d",
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-127/shard-127/region-eac8a438d0f863ad3f544664-000005.start.json": "785913562100a62828b9c58520ddd093107a04e077a92b2092245ac01da09dde",
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-127/shard-127/region-eac8a438d0f863ad3f544664-000006.result.json": "8c131b5cd05726474619c786d486ed637505ea1b13054880ddab9244668cf44d",
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-127/shard-127/region-eac8a438d0f863ad3f544664-000006.start.json": "07f544e5e46112b76575f9b72395866a8596b92dfddcaaa1af6dd74ce53c03a1",
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-127/shard-127/region-eac8a438d0f863ad3f544664-000007.result.json": "dcbf29fc25c8558fca9271c25eca1f75af9ca8e27d13836cae17d6a106bf522d",
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-127/shard-127/region-eac8a438d0f863ad3f544664-000007.start.json": "b9bf9eb84c4abdb23388ce24eda597ad2e7200e11df2a0624ea337a332fdcf85",
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-127/shard-127/region-eac8a438d0f863ad3f544664-layout.json": "8b1c816047b63113d8e3c068f12831352b36d6401136fa922c315a56344729d9"
+      }
+    },
+    {
+      "position": 636,
+      "image": "exam_paper_en-file-putnam-archive_1999_Solutions_1999s_page_001.png",
+      "gt_index": 1530,
+      "gt_tables": 0,
+      "status": "unknown",
+      "reason": "no durable completed page",
+      "tables": null,
+      "input_sha256": {
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-127/shard-127/e76295fb2591dd8eb153f88ad269408b7f86430cdd5b6528d83bce18d751ed3b.sent": "84fc4ce7ce0b8c2e16c02f4b49a2347468d477d1a887bc3979dba75e39c01c78",
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-127/shard-127/e76295fb2591dd8eb153f88ad269408b7f86430cdd5b6528d83bce18d751ed3b.start": "3520105b7733797fba44815bb793652316abbf74280c69de51ff3fd2ef8553ef",
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-127/shard-127/region-1b6750b784a598cb4e3aca57-000000.result.json": "d37b7381af67596941ee8df320fa57079d7f82f249f797bbf17f61679ed69d7a",
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-127/shard-127/region-1b6750b784a598cb4e3aca57-000000.start.json": "ddf7a0a2f21aaa77dcb5f9190ad4595f5035516c43120af6f879a5e4ae7f1ead",
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-127/shard-127/region-1b6750b784a598cb4e3aca57-000001.result.json": "b40d48e21eee5161760d4df9ddf6decf8d7aba4cb2b3f022d5b3471d3044db15",
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-127/shard-127/region-1b6750b784a598cb4e3aca57-000001.start.json": "c6bfec4255f7c343fcb3c5042bb5c414c0a25ee57c132ad84178f6eb24673d83",
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-127/shard-127/region-1b6750b784a598cb4e3aca57-000002.result.json": "35685e060b2121d754f3bb8368ac3f68934210a212273acb22a1e936a5311499",
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-127/shard-127/region-1b6750b784a598cb4e3aca57-000002.start.json": "56a95bf6f83bd9072355a04f8a0569bc713ac05c3232642743bd40e8b704b2e7",
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-127/shard-127/region-1b6750b784a598cb4e3aca57-000003.result.json": "5455193c0346af4b2261a575f1bf23e104a834aed2dd5858568a6e6c6fc0a1db",
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-127/shard-127/region-1b6750b784a598cb4e3aca57-000003.start.json": "560eddb4bc27e4c321b0542e636383834b1bd4fa0ac695e785011e43a3d546c9",
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-127/shard-127/region-1b6750b784a598cb4e3aca57-000004.result.json": "770ffe5280dff0b4fc3473f9d7c17541113caa7a6f67f04cc3f77bdde8dcd0d8",
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-127/shard-127/region-1b6750b784a598cb4e3aca57-000004.start.json": "2057c680d855c5ba0efbfc6f395f83b2fc0a63c0fcce5fc21ed237a8bb8db9a2",
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-127/shard-127/region-1b6750b784a598cb4e3aca57-000005.result.json": "a1d4d11274b783849b5f3911f0b9f022bc982b0d02dcec0c9706292736f937af",
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-127/shard-127/region-1b6750b784a598cb4e3aca57-000005.start.json": "5a6bb5c927189388797a1e08f8a90aa979dcf620a3893ac04d808a6920591dd3",
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-127/shard-127/region-1b6750b784a598cb4e3aca57-000006.result.json": "83f33b698bc1b7f9c60c7b503c76040d456d7c7fc896bdc48a930529d0467f43",
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-127/shard-127/region-1b6750b784a598cb4e3aca57-000006.start.json": "3d8e5e7dc3d70b5d435a9274028874094f530a7eb5ae896ac577c03b5dae747e",
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-127/shard-127/region-1b6750b784a598cb4e3aca57-layout.json": "a8d1bd79f7804737c35f3c7a0ae1472264e74ea4a72a409372aad6d9c06f6860"
+      }
+    },
+    {
+      "position": 637,
+      "image": "exam_paper_en-file-putnam-archive_2005_Solutions_2005s_page_007.png",
+      "gt_index": 1531,
+      "gt_tables": 0,
+      "status": "unknown",
+      "reason": "no durable completed page",
+      "tables": null,
+      "input_sha256": {
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-127/shard-127/50451190cb2030fb6804d64143002e242d38bbb4ac17646604fdfd48d8c4d541.start": "d58fa3d602826a04e8b5f21567d9863dec753ed67064782568236109f01bb49c"
+      }
+    },
+    {
+      "position": 638,
+      "image": "exam_paper_en-file-putnam-archive_2007_Solutions_2007s_page_005.png",
+      "gt_index": 1532,
+      "gt_tables": 0,
+      "status": "unknown",
+      "reason": "no durable completed page",
+      "tables": null,
+      "input_sha256": {}
+    },
+    {
+      "position": 639,
+      "image": "exam_paper_en-file-putnam-archive_2009_Problems_2009_page_001.png",
+      "gt_index": 1533,
+      "gt_tables": 0,
+      "status": "unknown",
+      "reason": "no durable completed page",
+      "tables": null,
+      "input_sha256": {}
+    }
+  ],
+  "coverage": {
+    "pages_complete": 0,
+    "pages_total": 5,
+    "gt_tables_scored": 0,
+    "gt_tables_total": 0
+  },
+  "means": {
+    "teds": null,
+    "teds_structure_only": null
+  }
+}

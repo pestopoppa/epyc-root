@@ -1,0 +1,86 @@
+{
+  "arm": "paddle",
+  "cohort": "pip02-english-fresh-20261029",
+  "storage": "raid",
+  "shard": 126,
+  "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+  "gt_sha256": "a45cd84b04ad8b793e775089640e6b681209abea33ead54c1828ddca35fae496",
+  "config_sha256": "e424bd8aea788ad3662e1d5a695b99f4e0fdae13ed484160b909ac22681bbbc3",
+  "lineage_sha256": "39a511a6cf4de532c0847eab3eced768aa740ff4e39022c5c49b582aa95a7d2e",
+  "pages": [
+    {
+      "position": 630,
+      "image": "exam_paper_en-file-putnam-archive_2007_Problems_2007_page_001.png",
+      "gt_index": 1524,
+      "gt_tables": 0,
+      "status": "unknown",
+      "reason": "no durable completed page",
+      "tables": null
+    },
+    {
+      "position": 631,
+      "image": "exam_paper_en-file-putnam-archive_2013_Problems_2013_page_002.png",
+      "gt_index": 1525,
+      "gt_tables": 0,
+      "status": "complete",
+      "reason": "native finish and request origins verified",
+      "tables": [],
+      "source_lineage": {
+        "verified": true,
+        "request_origins_verified": true,
+        "origin_capture_sha256": [
+          "1ae96343a6465f3f6f682d53af517677021f4edf4ad85d745afdac6a87ecdb28",
+          "28949139b2d3192bd79d14142aa088130144fe8288218c4e8642deac1b2a3d37",
+          "3e23499a71e28afbf1d4823eb2fbe7d9fd93dda7df1bd68a54610be5112af005",
+          "3f39fdbc429d4540395386a1763099eec29a4a5853cd8b7f17ab62c69fd63bea",
+          "45e89874bfbaa5df7f92fcd48901e5db95ce90e21849bf5da2718c8162c2868d",
+          "93f0708aa2e4bfc8aaa5f2a5a5af2148600d7ed29e15a1f10f7247c9d150d460",
+          "aa231cd173aeb121a11af88bde55e8ecf31580eb0b3486d66792eae224db9da4",
+          "c98870180871f1477383de7001efb0127ae1e60e8e00015ec74a58ff10bce6a0",
+          "d8ae5dfd23d012e903a79814d095338cbdc072ef3c327894d58913f643e4c954",
+          "e5f0a12432234b89ed7a53d2d88479b43e9873948131198904854bb191ea1c38"
+        ],
+        "finish_capture_sha256": "28949139b2d3192bd79d14142aa088130144fe8288218c4e8642deac1b2a3d37",
+        "basis": "native R9/R10/R11/R13/R15 finish receipt binds page result and markdown to captured grant and registered source"
+      },
+      "prediction_sha256": "ffe11b86f7abb504b4a171f33d301516a7d0b6881eb195dab95cdc4b018adbaa"
+    },
+    {
+      "position": 632,
+      "image": "exam_paper_en-file-putnam-archive_2004_Problems_2004_page_001.png",
+      "gt_index": 1526,
+      "gt_tables": 0,
+      "status": "unknown",
+      "reason": "no durable completed page",
+      "tables": null
+    },
+    {
+      "position": 633,
+      "image": "exam_paper_en-file-putnam-archive_2008_Problems_2008_page_001.png",
+      "gt_index": 1527,
+      "gt_tables": 0,
+      "status": "unknown",
+      "reason": "no durable completed page",
+      "tables": null
+    },
+    {
+      "position": 634,
+      "image": "exam_paper_en-file-putnam-archive_2008_Solutions_2008s_page_007.png",
+      "gt_index": 1528,
+      "gt_tables": 0,
+      "status": "unknown",
+      "reason": "no durable completed page",
+      "tables": null
+    }
+  ],
+  "coverage": {
+    "pages_complete": 1,
+    "pages_total": 5,
+    "gt_tables_scored": 0,
+    "gt_tables_total": 0
+  },
+  "means": {
+    "teds": null,
+    "teds_structure_only": null
+  }
+}

@@ -1,0 +1,583 @@
+{
+  "recorded_at": "2026-10-30T18:28:30.299089+00:00",
+  "scope": "source-verified partial English fresh cohort; historical snapshots retained separately",
+  "paddle_snapshots": [
+    {
+      "artifact": "paddle-paddle-raid-s014.json",
+      "sha256": "e14f176c2c34f8379b76083020d4a1fb776f9ea2690b07f1d4c584c9cf89147b",
+      "coverage": {
+        "pages_complete": 2,
+        "pages_total": 5,
+        "gt_tables_scored": 0,
+        "gt_tables_total": 0
+      },
+      "source_snapshot": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle/raid-s014.json",
+      "snapshot": "R11 RAID"
+    },
+    {
+      "artifact": "paddle-paddle-raid-s015.json",
+      "sha256": "3626633fdf35d00200dc8c3031055f1f839b46f5ac1b5d2125500dac1cb4f7e0",
+      "coverage": {
+        "pages_complete": 2,
+        "pages_total": 5,
+        "gt_tables_scored": 0,
+        "gt_tables_total": 0
+      },
+      "source_snapshot": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle/raid-s015.json",
+      "snapshot": "R11 RAID"
+    },
+    {
+      "artifact": "paddle-paddle-raid-s016.json",
+      "sha256": "740e80ea479a06ebfdfb27e1f4c78c0dee036b74534eb19db8fe892d21c31f1a",
+      "coverage": {
+        "pages_complete": 3,
+        "pages_total": 5,
+        "gt_tables_scored": 0,
+        "gt_tables_total": 1
+      },
+      "source_snapshot": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle/raid-s016.json",
+      "snapshot": "R11 RAID"
+    },
+    {
+      "artifact": "paddle-paddle-raid-s064.json",
+      "sha256": "be55d0a5debc5e1c1c840f2853197f49e08b24a8aded8b12aa085782ab00e57b",
+      "coverage": {
+        "pages_complete": 3,
+        "pages_total": 5,
+        "gt_tables_scored": 0,
+        "gt_tables_total": 0
+      },
+      "source_snapshot": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle/raid-s064.json",
+      "snapshot": "R11 RAID"
+    },
+    {
+      "artifact": "paddle-paddle-raid-s077.json",
+      "sha256": "6b50cee354db4086c7659c962339bb260888e156e007ad406f41bd6f6feae20d",
+      "coverage": {
+        "pages_complete": 1,
+        "pages_total": 5,
+        "gt_tables_scored": 2,
+        "gt_tables_total": 3
+      },
+      "source_snapshot": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle/raid-s077.json",
+      "snapshot": "R11 RAID"
+    },
+    {
+      "artifact": "paddle-paddle-raid-s081.json",
+      "sha256": "91f6ff5e97d74a6fc7692fb68dd2dfd4a41600d37420fa019c89dcc3c55fdfd7",
+      "coverage": {
+        "pages_complete": 2,
+        "pages_total": 5,
+        "gt_tables_scored": 0,
+        "gt_tables_total": 0
+      },
+      "source_snapshot": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle/raid-s081.json",
+      "snapshot": "R11 RAID"
+    },
+    {
+      "artifact": "paddle-paddle-raid-s082.json",
+      "sha256": "134861f94d7146eceb115650ad4b8171d98b867e5fe5093440e51bcfb8a2425b",
+      "coverage": {
+        "pages_complete": 1,
+        "pages_total": 5,
+        "gt_tables_scored": 1,
+        "gt_tables_total": 3
+      },
+      "source_snapshot": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle/raid-s082.json",
+      "snapshot": "R11 RAID"
+    },
+    {
+      "artifact": "paddle-paddle-raid-s086.json",
+      "sha256": "2ced009e9877e1359348cf098da5f7db1d504c179a42822b7bba1266e5ff0657",
+      "coverage": {
+        "pages_complete": 4,
+        "pages_total": 5,
+        "gt_tables_scored": 0,
+        "gt_tables_total": 0
+      },
+      "source_snapshot": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle/raid-s086.json",
+      "snapshot": "R11 RAID"
+    },
+    {
+      "artifact": "paddle-paddle-raid-s087.json",
+      "sha256": "6c6314bf306422a997ea5cfe33342ef131940fcf9601c8d403398d19aabd14db",
+      "coverage": {
+        "pages_complete": 4,
+        "pages_total": 5,
+        "gt_tables_scored": 0,
+        "gt_tables_total": 0
+      },
+      "source_snapshot": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle/raid-s087.json",
+      "snapshot": "R11 RAID"
+    },
+    {
+      "artifact": "paddle-paddle-raid-s088.json",
+      "sha256": "2495d89208de724b14f227e8ce1185a2ee360bfbc41c27f0be037394fa8370f6",
+      "coverage": {
+        "pages_complete": 2,
+        "pages_total": 5,
+        "gt_tables_scored": 0,
+        "gt_tables_total": 0
+      },
+      "source_snapshot": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle/raid-s088.json",
+      "snapshot": "R11 RAID"
+    },
+    {
+      "artifact": "paddle-paddle-raid-s098.json",
+      "sha256": "88f9b6ec1654d9ff70f4fba9d270df196621cc2e22997f1b4b48598b41876a8a",
+      "coverage": {
+        "pages_complete": 3,
+        "pages_total": 5,
+        "gt_tables_scored": 0,
+        "gt_tables_total": 0
+      },
+      "source_snapshot": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle/raid-s098.json",
+      "snapshot": "R11 RAID"
+    },
+    {
+      "artifact": "paddle-paddle-raid-s099.json",
+      "sha256": "2fe8168751d04d77bbd5bc67f3984d299cb173250558fc34762ce9cd5a7d357d",
+      "coverage": {
+        "pages_complete": 2,
+        "pages_total": 5,
+        "gt_tables_scored": 2,
+        "gt_tables_total": 2
+      },
+      "source_snapshot": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle/raid-s099.json",
+      "snapshot": "R11 RAID"
+    },
+    {
+      "artifact": "paddle-paddle-raid-s100.json",
+      "sha256": "c7a2b4f0bda26de6206430bb4696fcd13fbe69e45ff0957c5f7b1bdb1f0e083a",
+      "coverage": {
+        "pages_complete": 2,
+        "pages_total": 5,
+        "gt_tables_scored": 0,
+        "gt_tables_total": 0
+      },
+      "source_snapshot": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle/raid-s100.json",
+      "snapshot": "R11 RAID"
+    },
+    {
+      "artifact": "paddle-paddle-raid-s119.json",
+      "sha256": "8a54680be2eee0641f7988e434a996fe5e1fe49a7c4f9b2b76d25041e9041ad5",
+      "coverage": {
+        "pages_complete": 1,
+        "pages_total": 5,
+        "gt_tables_scored": 0,
+        "gt_tables_total": 0
+      },
+      "source_snapshot": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle/raid-s119.json",
+      "snapshot": "R11 RAID"
+    },
+    {
+      "artifact": "paddle-paddle-raid-s120.json",
+      "sha256": "6bf6039b1b7757d0ffb47faca60cc6f72a578c292642e8877bcb3248dfcce3b9",
+      "coverage": {
+        "pages_complete": 1,
+        "pages_total": 5,
+        "gt_tables_scored": 0,
+        "gt_tables_total": 1
+      },
+      "source_snapshot": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle/raid-s120.json",
+      "snapshot": "R11 RAID"
+    },
+    {
+      "artifact": "paddle-paddle-raid-s121.json",
+      "sha256": "44c56da9cf0ec7298ce64e84e3aabffe8c59f70bfafb5ae325ebb3b83ffb08f7",
+      "coverage": {
+        "pages_complete": 2,
+        "pages_total": 5,
+        "gt_tables_scored": 0,
+        "gt_tables_total": 0
+      },
+      "source_snapshot": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle/raid-s121.json",
+      "snapshot": "R11 RAID"
+    },
+    {
+      "artifact": "paddle-paddle-raid-s126.json",
+      "sha256": "65b5e7aa85e78fab3c66ab940d70c3b6e38e85185595ab1da45f3a892d595640",
+      "coverage": {
+        "pages_complete": 1,
+        "pages_total": 5,
+        "gt_tables_scored": 0,
+        "gt_tables_total": 0
+      },
+      "source_snapshot": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle/raid-s126.json",
+      "snapshot": "R11 RAID"
+    },
+    {
+      "artifact": "paddle-paddle-split-s010.json",
+      "sha256": "11affbfb4df9e1c6de95d922dff1c393ab1b02f332cc4406a9646e5533283954",
+      "coverage": {
+        "pages_complete": 3,
+        "pages_total": 5,
+        "gt_tables_scored": 0,
+        "gt_tables_total": 0
+      },
+      "source_snapshot": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split/s010.json",
+      "snapshot": "layered RAID + Micron"
+    },
+    {
+      "artifact": "paddle-paddle-split-s011.json",
+      "sha256": "5b46e21ff70b222a58b8cc42d22a8b0a097e37aa9f6f37626ce1c5f3aa207455",
+      "coverage": {
+        "pages_complete": 2,
+        "pages_total": 5,
+        "gt_tables_scored": 0,
+        "gt_tables_total": 0
+      },
+      "source_snapshot": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split/s011.json",
+      "snapshot": "layered RAID + Micron"
+    },
+    {
+      "artifact": "paddle-paddle-split-s012.json",
+      "sha256": "b5e45125e2215ed6e0a3a0edf68281ab4ea4c3593f3807b2b77c501b8e79127a",
+      "coverage": {
+        "pages_complete": 4,
+        "pages_total": 5,
+        "gt_tables_scored": 0,
+        "gt_tables_total": 0
+      },
+      "source_snapshot": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split/s012.json",
+      "snapshot": "layered RAID + Micron"
+    },
+    {
+      "artifact": "paddle-paddle-split-s013.json",
+      "sha256": "28c759577caf33d032231005516990fc2442897b8f983aa69eaa7352e2784882",
+      "coverage": {
+        "pages_complete": 1,
+        "pages_total": 5,
+        "gt_tables_scored": 0,
+        "gt_tables_total": 0
+      },
+      "source_snapshot": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split/s013.json",
+      "snapshot": "layered RAID + Micron"
+    },
+    {
+      "artifact": "paddle-paddle-split-s014.json",
+      "sha256": "8c12523741f27078571bc5040aff1fd6dc6f0ef784d2659855d0290a32f81e51",
+      "coverage": {
+        "pages_complete": 2,
+        "pages_total": 5,
+        "gt_tables_scored": 0,
+        "gt_tables_total": 0
+      },
+      "source_snapshot": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split/s014.json",
+      "snapshot": "layered RAID + Micron"
+    },
+    {
+      "artifact": "paddle-paddle-split-s015.json",
+      "sha256": "3a705f79d73d8f74a943c41c41e2848b774f5fa051b77c704f878fc18043bcc4",
+      "coverage": {
+        "pages_complete": 2,
+        "pages_total": 5,
+        "gt_tables_scored": 0,
+        "gt_tables_total": 0
+      },
+      "source_snapshot": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split/s015.json",
+      "snapshot": "layered RAID + Micron"
+    },
+    {
+      "artifact": "paddle-paddle-split-s016.json",
+      "sha256": "9234c5936aa78faf0884f0a87180314da977ffbb3b9a65690005c1de426c669f",
+      "coverage": {
+        "pages_complete": 3,
+        "pages_total": 5,
+        "gt_tables_scored": 0,
+        "gt_tables_total": 1
+      },
+      "source_snapshot": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split/s016.json",
+      "snapshot": "layered RAID + Micron"
+    },
+    {
+      "artifact": "paddle-paddle-split-s020.json",
+      "sha256": "ee570f0c0f9087a0e3e91e4432ee45e3c7d479c3b0e60cdb30097f9e6494f88b",
+      "coverage": {
+        "pages_complete": 3,
+        "pages_total": 5,
+        "gt_tables_scored": 3,
+        "gt_tables_total": 5
+      },
+      "source_snapshot": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split/s020.json",
+      "snapshot": "layered RAID + Micron"
+    },
+    {
+      "artifact": "paddle-paddle-split-s021.json",
+      "sha256": "b24f112507e07ab478c2d38dfacb09bed8531c9e562242c225fcf5ca0d5d371c",
+      "coverage": {
+        "pages_complete": 5,
+        "pages_total": 5,
+        "gt_tables_scored": 5,
+        "gt_tables_total": 5
+      },
+      "source_snapshot": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split/s021.json",
+      "snapshot": "layered RAID + Micron"
+    },
+    {
+      "artifact": "paddle-paddle-split-s022.json",
+      "sha256": "625985c530b5d92587eb729be62c11d66a8153fa0ab6c56dd36486fcb66c3a0d",
+      "coverage": {
+        "pages_complete": 2,
+        "pages_total": 5,
+        "gt_tables_scored": 3,
+        "gt_tables_total": 6
+      },
+      "source_snapshot": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split/s022.json",
+      "snapshot": "layered RAID + Micron"
+    },
+    {
+      "artifact": "paddle-paddle-split-s035.json",
+      "sha256": "184c80b57e85fb076dec7b79d780a870d1c5fcf9827b6fd16d63fc3666d00a92",
+      "coverage": {
+        "pages_complete": 5,
+        "pages_total": 5,
+        "gt_tables_scored": 4,
+        "gt_tables_total": 4
+      },
+      "source_snapshot": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split/s035.json",
+      "snapshot": "layered RAID + Micron"
+    },
+    {
+      "artifact": "paddle-paddle-split-s036.json",
+      "sha256": "c811809da5c7af3a0cc9ca409c86d7dd2e272c485f326a93481b097b76bc2dbe",
+      "coverage": {
+        "pages_complete": 5,
+        "pages_total": 5,
+        "gt_tables_scored": 0,
+        "gt_tables_total": 0
+      },
+      "source_snapshot": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split/s036.json",
+      "snapshot": "layered RAID + Micron"
+    },
+    {
+      "artifact": "paddle-paddle-split-s037.json",
+      "sha256": "c986b2d5a7509f961f23eb81dc3124b98f09ebeb7f9a54c64702e4bf45f24498",
+      "coverage": {
+        "pages_complete": 5,
+        "pages_total": 5,
+        "gt_tables_scored": 0,
+        "gt_tables_total": 0
+      },
+      "source_snapshot": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split/s037.json",
+      "snapshot": "layered RAID + Micron"
+    },
+    {
+      "artifact": "paddle-paddle-split-s056.json",
+      "sha256": "ef000e67c8c200b4891edff128f283a3794af79f41a3b60677e6f2516f1f8ef5",
+      "coverage": {
+        "pages_complete": 5,
+        "pages_total": 5,
+        "gt_tables_scored": 0,
+        "gt_tables_total": 0
+      },
+      "source_snapshot": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split/s056.json",
+      "snapshot": "layered RAID + Micron"
+    },
+    {
+      "artifact": "paddle-paddle-split-s057.json",
+      "sha256": "30bc6b71c8050148d561e359a51c1af4086cf3636642eec483b386ef9385e6a4",
+      "coverage": {
+        "pages_complete": 5,
+        "pages_total": 5,
+        "gt_tables_scored": 1,
+        "gt_tables_total": 1
+      },
+      "source_snapshot": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split/s057.json",
+      "snapshot": "layered RAID + Micron"
+    },
+    {
+      "artifact": "paddle-paddle-split-s058.json",
+      "sha256": "c9106d862f9ebe285fed880a12fb9d3223981688bb805641f867d9927cda740b",
+      "coverage": {
+        "pages_complete": 5,
+        "pages_total": 5,
+        "gt_tables_scored": 3,
+        "gt_tables_total": 3
+      },
+      "source_snapshot": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split/s058.json",
+      "snapshot": "layered RAID + Micron"
+    },
+    {
+      "artifact": "paddle-paddle-split-s059.json",
+      "sha256": "d20a0120126ef88b58319cb0453525daa7905358b0fbb4fda1e120475d87a915",
+      "coverage": {
+        "pages_complete": 5,
+        "pages_total": 5,
+        "gt_tables_scored": 4,
+        "gt_tables_total": 4
+      },
+      "source_snapshot": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split/s059.json",
+      "snapshot": "layered RAID + Micron"
+    },
+    {
+      "artifact": "paddle-paddle-split-s060.json",
+      "sha256": "c16e236bd7fc7b6a05f154b8cc2cda04710558e841a7ea98b2ec3bd9c8702328",
+      "coverage": {
+        "pages_complete": 5,
+        "pages_total": 5,
+        "gt_tables_scored": 0,
+        "gt_tables_total": 0
+      },
+      "source_snapshot": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split/s060.json",
+      "snapshot": "layered RAID + Micron"
+    },
+    {
+      "artifact": "paddle-paddle-split-s061.json",
+      "sha256": "fc2567dfe8fdc725a0720a46d567ce4a366e6ae30659daee69346884ecf0f275",
+      "coverage": {
+        "pages_complete": 5,
+        "pages_total": 5,
+        "gt_tables_scored": 1,
+        "gt_tables_total": 1
+      },
+      "source_snapshot": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split/s061.json",
+      "snapshot": "layered RAID + Micron"
+    },
+    {
+      "artifact": "paddle-paddle-split-s083.json",
+      "sha256": "2c4aca95619f28f47059b805232b681ce91bf11c74be5572733f5942b6e311bf",
+      "coverage": {
+        "pages_complete": 5,
+        "pages_total": 5,
+        "gt_tables_scored": 2,
+        "gt_tables_total": 2
+      },
+      "source_snapshot": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split/s083.json",
+      "snapshot": "layered RAID + Micron"
+    },
+    {
+      "artifact": "paddle-paddle-split-s084.json",
+      "sha256": "c694a2e4a7165ed4a9c8d2a096a4d42ad8eb0a6bc3ece5f5299b320c87cf3e49",
+      "coverage": {
+        "pages_complete": 5,
+        "pages_total": 5,
+        "gt_tables_scored": 0,
+        "gt_tables_total": 0
+      },
+      "source_snapshot": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split/s084.json",
+      "snapshot": "layered RAID + Micron"
+    },
+    {
+      "artifact": "paddle-paddle-split-s085.json",
+      "sha256": "2c6af151f5dae38e5d9624ff3a753065dcc451dddb47941de96d2a085f58181b",
+      "coverage": {
+        "pages_complete": 5,
+        "pages_total": 5,
+        "gt_tables_scored": 0,
+        "gt_tables_total": 0
+      },
+      "source_snapshot": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split/s085.json",
+      "snapshot": "layered RAID + Micron"
+    },
+    {
+      "artifact": "paddle-paddle-split-s092.json",
+      "sha256": "32925ec36c74450fdce337cfb6fd180fd17d1923357596ce82b218bc60087839",
+      "coverage": {
+        "pages_complete": 5,
+        "pages_total": 5,
+        "gt_tables_scored": 0,
+        "gt_tables_total": 0
+      },
+      "source_snapshot": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split/s092.json",
+      "snapshot": "layered RAID + Micron"
+    },
+    {
+      "artifact": "paddle-paddle-split-s093.json",
+      "sha256": "92c87a9bb2540d2e03a3c918b86082e1ca25c7a0db46298dce586dfbac6fa1fc",
+      "coverage": {
+        "pages_complete": 5,
+        "pages_total": 5,
+        "gt_tables_scored": 0,
+        "gt_tables_total": 0
+      },
+      "source_snapshot": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split/s093.json",
+      "snapshot": "layered RAID + Micron"
+    },
+    {
+      "artifact": "paddle-paddle-split-s094.json",
+      "sha256": "bb5b24b0bcd4f452cb2ffd57cb8191e60d411173fe516702ca176697521fd52c",
+      "coverage": {
+        "pages_complete": 5,
+        "pages_total": 5,
+        "gt_tables_scored": 0,
+        "gt_tables_total": 0
+      },
+      "source_snapshot": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split/s094.json",
+      "snapshot": "layered RAID + Micron"
+    },
+    {
+      "artifact": "paddle-paddle-split-s095.json",
+      "sha256": "cb14c9b56b4da5891deede45c6910dde22ee0c77f1e17faa2b586424c95608fb",
+      "coverage": {
+        "pages_complete": 5,
+        "pages_total": 5,
+        "gt_tables_scored": 0,
+        "gt_tables_total": 0
+      },
+      "source_snapshot": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split/s095.json",
+      "snapshot": "layered RAID + Micron"
+    },
+    {
+      "artifact": "paddle-paddle-split-s096.json",
+      "sha256": "8a3770767e20db190873fc0dcbdb032c75c29c77b4fb425809029d4eb9e6ab5f",
+      "coverage": {
+        "pages_complete": 5,
+        "pages_total": 5,
+        "gt_tables_scored": 1,
+        "gt_tables_total": 1
+      },
+      "source_snapshot": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split/s096.json",
+      "snapshot": "layered RAID + Micron"
+    },
+    {
+      "artifact": "paddle-paddle-split-s097.json",
+      "sha256": "f268143b403ab80366776b6c177c8757c8f5d6d852faad7e263e66531af78069",
+      "coverage": {
+        "pages_complete": 5,
+        "pages_total": 5,
+        "gt_tables_scored": 0,
+        "gt_tables_total": 0
+      },
+      "source_snapshot": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split/s097.json",
+      "snapshot": "layered RAID + Micron"
+    },
+    {
+      "artifact": "paddle-paddle-split-s108.json",
+      "sha256": "51b8c3227bcc06cfbb12c117bb6aa52e691dda7ae3ed59758e4a00df7714dbac",
+      "coverage": {
+        "pages_complete": 5,
+        "pages_total": 5,
+        "gt_tables_scored": 0,
+        "gt_tables_total": 0
+      },
+      "source_snapshot": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split/s108.json",
+      "snapshot": "layered RAID + Micron"
+    },
+    {
+      "artifact": "paddle-paddle-split-s109.json",
+      "sha256": "da65ede6174f848f98eb6796ade7b945b4ab7f67edf9d28fa2e7f0f703263df3",
+      "coverage": {
+        "pages_complete": 1,
+        "pages_total": 5,
+        "gt_tables_scored": 0,
+        "gt_tables_total": 0
+      },
+      "source_snapshot": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split/s109.json",
+      "snapshot": "layered RAID + Micron"
+    }
+  ],
+  "odl_shards": [
+    5,
+    8,
+    9,
+    16,
+    17,
+    20,
+    21,
+    24,
+    25,
+    28,
+    29
+  ]
+}

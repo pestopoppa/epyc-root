@@ -1,0 +1,90 @@
+{
+  "arm": "paddle",
+  "cohort": "pip02-english-fresh-20261029",
+  "shard": 133,
+  "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+  "gt_sha256": "a45cd84b04ad8b793e775089640e6b681209abea33ead54c1828ddca35fae496",
+  "config_sha256": "e424bd8aea788ad3662e1d5a695b99f4e0fdae13ed484160b909ac22681bbbc3",
+  "scoring_sources_sha256": {
+    "pip02_records.py": "2d364d7a7ef1d47b21fb8f3352ff4ffe98e93c682da3996f6e1270c8193c81cd",
+    "pip02_lineage.py": "6dea759fe4fa7adc5c78d34fe7b01aea1d44ab98bc3103ccacbb3f36efb831fa",
+    "pip02_compare.py": "37e9d673ba46ac16c5f8169db97290933b3c63fb48ef133b825d5db3a9ba995e",
+    "pip02_native_score.py": "27f0b630b6812aecad35d1c65329841a5011e421326e81f9f14c8c66a6fdbe5e"
+  },
+  "pages": [
+    {
+      "position": 665,
+      "image": "exam_paper_en-file-putnam-archive_2001_Solutions_2001s_page_001.png",
+      "gt_index": 1560,
+      "gt_tables": 0,
+      "status": "unknown",
+      "reason": "no durable completed page",
+      "tables": null,
+      "input_sha256": {
+        "/mnt/micron/codex3-pip-split-r22-20261030/campaigns-fresh/shard-133/shard-133/edb26c97702906118e8eb18b5ce36bdd3ed138e2a67222727a4d3ad6dc32b3d0.sent": "8d8723b24aac06d2ba851c1a5109136d188d78360e245bd99f517401a3da8540",
+        "/mnt/micron/codex3-pip-split-r22-20261030/campaigns-fresh/shard-133/shard-133/edb26c97702906118e8eb18b5ce36bdd3ed138e2a67222727a4d3ad6dc32b3d0.start": "6471a37e5ee37a36ddd505d5feb2a360f9afe5faecd8e93ec99bcfdc9a6544e9",
+        "/mnt/micron/codex3-pip-split-r22-20261030/campaigns-fresh/shard-133/shard-133/region-b1be767769fc2e427afa8ab7-000000.result.json": "b23a005234868f2671d099296ef55d9784012793ed4408118f57658301aaec79",
+        "/mnt/micron/codex3-pip-split-r22-20261030/campaigns-fresh/shard-133/shard-133/region-b1be767769fc2e427afa8ab7-000000.result.json.durable": "5105cbe4e41cc9aab60fdec00394da5d947a25b6696821786457f0b5704b52f1",
+        "/mnt/micron/codex3-pip-split-r22-20261030/campaigns-fresh/shard-133/shard-133/region-b1be767769fc2e427afa8ab7-000000.start.json": "7d533b7d8255724a85999bc95af788882379636750dafb63b04edb46bd77dc72",
+        "/mnt/micron/codex3-pip-split-r22-20261030/campaigns-fresh/shard-133/shard-133/region-b1be767769fc2e427afa8ab7-layout.json": "29741d780e27c09b6aca021eaf72011ffca5e0fff9a74cb72a783398e437f2ca"
+      }
+    },
+    {
+      "position": 666,
+      "image": "exam_paper_en-file-putnam-archive_2015_Solutions_2015s_page_006.png",
+      "gt_index": 1561,
+      "gt_tables": 0,
+      "status": "unknown",
+      "reason": "no durable completed page",
+      "tables": null,
+      "input_sha256": {
+        "/mnt/micron/codex3-pip-split-r22-20261030/campaigns-fresh/shard-133/shard-133/75a34f9cf908f24ce78716a06acd6a5934ca798db6f83367893986a4ff08674c.sent": "e70e8930866443e4cccf48cc82e6f599aa83875074e70363d30d62cdae7e48a6",
+        "/mnt/micron/codex3-pip-split-r22-20261030/campaigns-fresh/shard-133/shard-133/75a34f9cf908f24ce78716a06acd6a5934ca798db6f83367893986a4ff08674c.start": "e82f2cfd6b98949d87d6a94ac77bbf2372a7442f92ee41e36fbfd80cf2b3cafc",
+        "/mnt/micron/codex3-pip-split-r22-20261030/campaigns-fresh/shard-133/shard-133/region-98a12bad35993cd532063b50-000000.result.json": "f54c586fd9b05c29f7d9796c3a907a850ad44677edc4b1a6f389a0582aecbf3d",
+        "/mnt/micron/codex3-pip-split-r22-20261030/campaigns-fresh/shard-133/shard-133/region-98a12bad35993cd532063b50-000000.result.json.durable": "c02d261ebca64a92d4374e79404440c78e271a2546464e8e2bf2261e3e8aee99",
+        "/mnt/micron/codex3-pip-split-r22-20261030/campaigns-fresh/shard-133/shard-133/region-98a12bad35993cd532063b50-000000.start.json": "0d26a0758e13298e9f2bf24dc78b8ca584d69185dfe6f821584bc1bc062daea6",
+        "/mnt/micron/codex3-pip-split-r22-20261030/campaigns-fresh/shard-133/shard-133/region-98a12bad35993cd532063b50-layout.json": "ecfb1321c91f4e8ddec91a3e0df4cf9b4fbfce09e0ee7a6fb8df845f02cf07d1"
+      }
+    },
+    {
+      "position": 667,
+      "image": "exam_paper_en-file-putnam-archive_2002_Solutions_2002s_page_004.png",
+      "gt_index": 1562,
+      "gt_tables": 0,
+      "status": "unknown",
+      "reason": "no durable completed page",
+      "tables": null,
+      "input_sha256": {}
+    },
+    {
+      "position": 668,
+      "image": "exam_paper_en-file-putnam-archive_2005_Solutions_2005s_page_004.png",
+      "gt_index": 1563,
+      "gt_tables": 0,
+      "status": "unknown",
+      "reason": "no durable completed page",
+      "tables": null,
+      "input_sha256": {}
+    },
+    {
+      "position": 669,
+      "image": "exam_paper_en-file-putnam-archive_2010_Solutions_2010s_page_005.png",
+      "gt_index": 1564,
+      "gt_tables": 0,
+      "status": "unknown",
+      "reason": "no durable completed page",
+      "tables": null,
+      "input_sha256": {}
+    }
+  ],
+  "coverage": {
+    "pages_complete": 0,
+    "pages_total": 5,
+    "gt_tables_scored": 0,
+    "gt_tables_total": 0
+  },
+  "means": {
+    "teds": null,
+    "teds_structure_only": null
+  }
+}

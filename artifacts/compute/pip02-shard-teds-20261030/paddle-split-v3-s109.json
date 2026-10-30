@@ -1,0 +1,139 @@
+{
+  "arm": "paddle",
+  "cohort": "pip02-english-fresh-20261029",
+  "shard": 109,
+  "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+  "gt_sha256": "a45cd84b04ad8b793e775089640e6b681209abea33ead54c1828ddca35fae496",
+  "config_sha256": "e424bd8aea788ad3662e1d5a695b99f4e0fdae13ed484160b909ac22681bbbc3",
+  "scoring_sources_sha256": {
+    "pip02_records.py": "2d364d7a7ef1d47b21fb8f3352ff4ffe98e93c682da3996f6e1270c8193c81cd",
+    "pip02_lineage.py": "6dea759fe4fa7adc5c78d34fe7b01aea1d44ab98bc3103ccacbb3f36efb831fa",
+    "pip02_compare.py": "37e9d673ba46ac16c5f8169db97290933b3c63fb48ef133b825d5db3a9ba995e",
+    "pip02_native_score.py": "27f0b630b6812aecad35d1c65329841a5011e421326e81f9f14c8c66a6fdbe5e"
+  },
+  "pages": [
+    {
+      "position": 545,
+      "image": "book_en_\u56fd\u5916\u6570\u5b66\u6559\u6750-An Excursion through Elementary Mathematics\uff08\u521d\u7b49\u6570\u5b66\u6f2b\u6e38\uff09-An excursion through elementary mathematics, Vol.3 (Caminha Muniz Neto A)_0035.png",
+      "gt_index": 1424,
+      "gt_tables": 0,
+      "status": "complete",
+      "reason": "native finish and request origins verified",
+      "tables": [],
+      "source_lineage": {
+        "verified": true,
+        "request_origins_verified": true,
+        "origin_capture_sha256": [
+          "15946108e74c5fd8c8137aa14e4ae76ca192a6e8a599c16972185a40beca7149",
+          "18ce5840e238585104493e609396900ee1ddcc8bc87f24ebcd4a19be418fed40",
+          "1e857b8da451272ab7b69bbf6a1486b582ce9631e3dfddc1c34ad257bbdbb9ae",
+          "2bce71671464223db9643d2534966daa6f51a2ade5820dac8b7388fbc77543cb",
+          "4298cbdd9a0178844ceb1bd86be69e38ae01bfa5e7fb741607f96d5cf7b7afb7",
+          "6c4aa8eae3244de1cd2efec5260316623d7f686e4efe218cb53c8ba748e3ddb6",
+          "764d2ba6c91423a96fc1afb88dc5f6b71010d1a5dc5943ed97d3e4595a0d3826",
+          "81880d0b2100a3c7e1675455379688f1ba312dfa7c657a709e7ff063f263eabf",
+          "890203d0cc72223cdace2fdf33cd24b6c54cc3a6ac0176a564e9363fab538214",
+          "9481e9ba5b8988fef34622917d5bb7da5768b71ac4be11995845b4323492b539",
+          "ae94f70b83cedcdeb69715cdfacadced983fcc71aec016195d2c041f66e5117d",
+          "bace02f4a4f515372ce2d9051023a816ceaad185e1b0b6d3ca4b640ae36c3787",
+          "cc771484b3644fb38bc613cd06274f1b334e951e628e82a9e536a200693cf10e",
+          "d388e79191670cd1152ab5fb2c868a8cd1965028e69da70f50fe3e9877496b0a",
+          "dee0001f716df81cdceed595691ddd4c9fb4a6a422e0f12d84fe3ac229f60601"
+        ],
+        "finish_capture_sha256": "cc771484b3644fb38bc613cd06274f1b334e951e628e82a9e536a200693cf10e",
+        "basis": "native registered finish receipt binds page result and markdown to captured grant and registered source"
+      },
+      "prediction_sha256": "b1e1694ee22906d0dc5d6e2488f6f515a5a927a339ac5af1c6e91c487373bd59",
+      "input_sha256": {
+        "/mnt/micron/codex3-pip-split-r22-20261030/campaigns-fresh/shard-109/shard-109/0a5b354f68eff79beed8cd3ef3d299d00c25c9781e473bedcf14d7b2232a2da2.finish.json": "905ac238fc02e4daba7a256689fb8eb0bd1a6cb178be4279eaaed5a638f3595f",
+        "/mnt/micron/codex3-pip-split-r22-20261030/campaigns-fresh/shard-109/shard-109/0a5b354f68eff79beed8cd3ef3d299d00c25c9781e473bedcf14d7b2232a2da2.result": "cad303747c0cd200fa98f1cb94346801a8b5d9ae60cadc7f5159e9848c296b68",
+        "/mnt/micron/codex3-pip-split-r22-20261030/campaigns-fresh/shard-109/shard-109/0a5b354f68eff79beed8cd3ef3d299d00c25c9781e473bedcf14d7b2232a2da2.result.durable": "594debddb33d73073ee17f0095ed263a2a18526b1435143c26b6b224109e9eeb",
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-109/shard-109/0a5b354f68eff79beed8cd3ef3d299d00c25c9781e473bedcf14d7b2232a2da2.sent": "5f484b872942b7fcd5cf9127cc8a1145bad0c076b14134058123d1f253e99470",
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-109/shard-109/0a5b354f68eff79beed8cd3ef3d299d00c25c9781e473bedcf14d7b2232a2da2.start": "a5ad856b9592304106a4187c570c9fe076021cc730e17cbd9acf62bf37da4f59",
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-109/shard-109/region-9aefab0683307cd3190062ff-000000.result.json": "55d5e5ed28212fe330d00b8d672bde6b614413cf05a45b7d0f345ee9daf5b428",
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-109/shard-109/region-9aefab0683307cd3190062ff-000000.start.json": "dd993866476252073211cb7e41b84bf7203f7ec70a7c8f53afaa9d9ec5ad7552",
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-109/shard-109/region-9aefab0683307cd3190062ff-000001.result.json": "891fb3257afce041b92deb1903859d9a8d1f516ca503bec2b8c184c59ff748a0",
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-109/shard-109/region-9aefab0683307cd3190062ff-000001.start.json": "28a3ca8b3016a367627d2079c4d955b0a2c40c53b18bb129479ab0f39d6c5062",
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-109/shard-109/region-9aefab0683307cd3190062ff-000002.result.json": "9db5071924700f64f2ad28e63d01f9d94dc7c849efb3804f44cb7e5d7609789c",
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-109/shard-109/region-9aefab0683307cd3190062ff-000002.start.json": "bc73214e2c119cca849cb6823a3f375efedca92e7ffe5df43f1d34580902b56d",
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-109/shard-109/region-9aefab0683307cd3190062ff-000003.result.json": "ca1c05642e4b9cc20e13c91d6101337bb531354af9ed15ff51d936b5f6b60421",
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-109/shard-109/region-9aefab0683307cd3190062ff-000003.start.json": "ae374383b48df20fa098e303d8f97f369938a8590aba59cebf881e130b287036",
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-109/shard-109/region-9aefab0683307cd3190062ff-000004.result.json": "70cd69ada98ff344f837cdc2fcb4e60c9683dfc9d392b90efa53653cc80db74b",
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-109/shard-109/region-9aefab0683307cd3190062ff-000004.start.json": "f2cf759422dd2d8150bec4aa45225b7983da5df8260a494e1287136c9c999fed",
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-109/shard-109/region-9aefab0683307cd3190062ff-000005.result.json": "536a2f25315cc8b5cc6513973f4b7dd7d1b20f8c898487ff072fe12b7a1dcb8d",
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-109/shard-109/region-9aefab0683307cd3190062ff-000005.start.json": "e2529d7ff42e28869bcda67f2393055635c614f68bd70d178e20d13d03cb138d",
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-109/shard-109/region-9aefab0683307cd3190062ff-000006.result.json": "a66eb08565444098ac0cae4d02e92427bc4669f11dccc3e79ec038c983964022",
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-109/shard-109/region-9aefab0683307cd3190062ff-000006.start.json": "c7a61bca44ed450588ba6c27dde25fbfbd340299594c92fa5e928d0a70c30202",
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-109/shard-109/region-9aefab0683307cd3190062ff-000007.result.json": "9d1f6fcd2a8fcccba0a20ddf13d90f2400a8bb63879f7fa98597bd2ed9ab6f78",
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-109/shard-109/region-9aefab0683307cd3190062ff-000007.start.json": "5e0645be0888f7aac0871c4a9bfc3d276f30d174053685d2b15e3851dfca548e",
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-109/shard-109/region-9aefab0683307cd3190062ff-000008.result.json": "f76b835b55cc3e729833ae0ed90b0ffc2b602a17781bc95be70005dd3bf266a1",
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-109/shard-109/region-9aefab0683307cd3190062ff-000008.start.json": "9aeffacb988b4e10a8bb4660855505a9f052b5041300af4e8eace126adf19b09",
+        "/mnt/micron/codex3-pip-split-r22-20261030/campaigns-fresh/shard-109/shard-109/region-9aefab0683307cd3190062ff-000009.result.json": "600d31d895151cdf362195936a5084f10e10ac95a0c3924a1c8a76b06134993c",
+        "/mnt/micron/codex3-pip-split-r22-20261030/campaigns-fresh/shard-109/shard-109/region-9aefab0683307cd3190062ff-000009.result.json.durable": "e38e20a0642790143dba3bea019de14cfdf3c94f310b35302a57e14a395cce4a",
+        "/mnt/micron/codex3-pip-split-r22-20261030/campaigns-fresh/shard-109/shard-109/region-9aefab0683307cd3190062ff-000009.start.json": "0825d7cb529d8dd454635fa6f98d4f8354e6174be7e0ea53a764caa1884a9878",
+        "/mnt/micron/codex3-pip-split-r22-20261030/campaigns-fresh/shard-109/shard-109/region-9aefab0683307cd3190062ff-000010.result.json": "bf4a20defb18ad1b0fee3fb8324722a3e2fc5ee54b356d751d464c945f0cdc30",
+        "/mnt/micron/codex3-pip-split-r22-20261030/campaigns-fresh/shard-109/shard-109/region-9aefab0683307cd3190062ff-000010.result.json.durable": "f1a5169125b57ad91e8e55dedcc61b72bfcaa346b1a7272468ac42072d219573",
+        "/mnt/micron/codex3-pip-split-r22-20261030/campaigns-fresh/shard-109/shard-109/region-9aefab0683307cd3190062ff-000010.start.json": "d3d6a12ce5d3a10db06c1f71905926ba28d06495465fa0eb1d33e1f4ff53096b",
+        "/mnt/micron/codex3-pip-split-r22-20261030/campaigns-fresh/shard-109/shard-109/region-9aefab0683307cd3190062ff-000011.result.json": "f874248491a45bea43db7f0a79a96961f9076d7121389bf224dd3d503bb8b82c",
+        "/mnt/micron/codex3-pip-split-r22-20261030/campaigns-fresh/shard-109/shard-109/region-9aefab0683307cd3190062ff-000011.result.json.durable": "abae91353c667f46a699da8eba5cbad2a158ba5b232990a87fc14e3aa7e15dac",
+        "/mnt/micron/codex3-pip-split-r22-20261030/campaigns-fresh/shard-109/shard-109/region-9aefab0683307cd3190062ff-000011.start.json": "3f825a06c19f18ebda2ffe7cc8344d2afe6518fa85c68582cc1c4a8a8087d77c",
+        "/mnt/micron/codex3-pip-split-r22-20261030/campaigns-fresh/shard-109/shard-109/region-9aefab0683307cd3190062ff-000012.result.json": "fe39aa66fbae5d577732fa017a5bd44c05721a734d4aa7c0f120963a54fac655",
+        "/mnt/micron/codex3-pip-split-r22-20261030/campaigns-fresh/shard-109/shard-109/region-9aefab0683307cd3190062ff-000012.result.json.durable": "2f9276ef8f99670d7a838149917bf774b9fe018ade659f64c528e1c639b520d3",
+        "/mnt/micron/codex3-pip-split-r22-20261030/campaigns-fresh/shard-109/shard-109/region-9aefab0683307cd3190062ff-000012.start.json": "1d8b7c1fc4e19a64327f92e9295a3241f639ccc9177da96861e82b2499cc3b2d",
+        "/mnt/micron/codex3-pip-split-r22-20261030/campaigns-fresh/shard-109/shard-109/region-9aefab0683307cd3190062ff-000013.result.json": "4642b00a183ccf503f75a4dec9d2985eb6483a760a8f42bf6ba81d6af05af726",
+        "/mnt/micron/codex3-pip-split-r22-20261030/campaigns-fresh/shard-109/shard-109/region-9aefab0683307cd3190062ff-000013.result.json.durable": "73e92f557b6919a300029279a14cdec691b045cf306f76c158aa68023f5c9e51",
+        "/mnt/micron/codex3-pip-split-r22-20261030/campaigns-fresh/shard-109/shard-109/region-9aefab0683307cd3190062ff-000013.start.json": "06137af3cf8989ba376248badaa9f7e22decb06d849671f5bda511dad7d229bc",
+        "/mnt/micron/codex3-pip-split-r22-20261030/campaigns-fresh/shard-109/shard-109/region-9aefab0683307cd3190062ff-000014.result.json": "9910675c241fd4fd1fa2bb4c2789b23ecb453f62f7731277ee99c1d62e7932d5",
+        "/mnt/micron/codex3-pip-split-r22-20261030/campaigns-fresh/shard-109/shard-109/region-9aefab0683307cd3190062ff-000014.result.json.durable": "c62618f424f3bc45b72760e411126c545a93873bb15948b43a17380b5b8514fa",
+        "/mnt/micron/codex3-pip-split-r22-20261030/campaigns-fresh/shard-109/shard-109/region-9aefab0683307cd3190062ff-000014.start.json": "6a7ff403f48ba17d6feaa36d486706065fe55b55342374de303688d508f804ee",
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-109/shard-109/region-9aefab0683307cd3190062ff-layout.json": "7d513de22ade468d2717e6b8be71a38b78e8bf9203e7b88a68821a171aaa1e0d"
+      }
+    },
+    {
+      "position": 546,
+      "image": "book_en_40.Puzzles.and.Problems.in.Probability.and.Mathematical.Statistics,.Schwarz,.Springer,.2008_page_115.png",
+      "gt_index": 1425,
+      "gt_tables": 0,
+      "status": "error",
+      "reason": "ValueError: unregistered original capture",
+      "tables": null
+    },
+    {
+      "position": 547,
+      "image": "book_en_\u56fd\u5916\u6570\u5b66\u6559\u6750-\u6570\u8bba-Melvyn B. Nathanson\u2014Elementary Methods in Number Theory_0007.png",
+      "gt_index": 1426,
+      "gt_tables": 0,
+      "status": "error",
+      "reason": "ValueError: unregistered original capture",
+      "tables": null
+    },
+    {
+      "position": 548,
+      "image": "book_en_\u56fd\u5916\u6570\u5b66\u6559\u6750-\u6570\u8bba-Melvyn B. Nathanson\u2014Elementary Methods in Number Theory_0017.png",
+      "gt_index": 1427,
+      "gt_tables": 0,
+      "status": "error",
+      "reason": "ValueError: unregistered original capture",
+      "tables": null
+    },
+    {
+      "position": 549,
+      "image": "book_en_A.Concise.Introduction.to.Linear.Algebra,.Geza.Schay,.Birkhauser,.2012_page_194.png",
+      "gt_index": 1428,
+      "gt_tables": 0,
+      "status": "error",
+      "reason": "ValueError: unregistered original capture",
+      "tables": null
+    }
+  ],
+  "coverage": {
+    "pages_complete": 1,
+    "pages_total": 5,
+    "gt_tables_scored": 0,
+    "gt_tables_total": 0
+  },
+  "means": {
+    "teds": null,
+    "teds_structure_only": null
+  }
+}

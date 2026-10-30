@@ -1,0 +1,191 @@
+{
+  "arm": "paddle",
+  "cohort": "pip02-english-fresh-20261029",
+  "storage": "raid",
+  "shard": 16,
+  "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+  "gt_sha256": "a45cd84b04ad8b793e775089640e6b681209abea33ead54c1828ddca35fae496",
+  "config_sha256": "e424bd8aea788ad3662e1d5a695b99f4e0fdae13ed484160b909ac22681bbbc3",
+  "lineage_sha256": "39a511a6cf4de532c0847eab3eced768aa740ff4e39022c5c49b582aa95a7d2e",
+  "pages": [
+    {
+      "position": 80,
+      "image": "page-bd9166d9-2c1a-4e3c-87f3-717e2474c77e.png",
+      "gt_index": 136,
+      "gt_tables": 0,
+      "status": "complete",
+      "reason": "native finish and request origins verified",
+      "tables": [],
+      "source_lineage": {
+        "verified": true,
+        "request_origins_verified": true,
+        "origin_capture_sha256": [
+          "2a56a71adc2a2ac88c1ca0dff830f8a52b2401b2ad7c2faecd0c822c3543eced",
+          "2bbb8bce12717408ff9f8a40e9f248d1a7519b263399aed1482310f19a24e9f5",
+          "34346196f9947070778df2b987a6da49db1bf141ce43b5ee6dd3b6f503b17fe5",
+          "3a6e0f706776305de5ba81f670c0dab0c140469228a4a0f6fa7ff2a236111ed3",
+          "591f67223b9fb16a8fbc9ca4db292c76af8f5a039dfc30507fa6e1ce8de71e44",
+          "7cadaccae22039dd9683c4f8f074e1dd1859dc3a754b9660da77fa3c2ae01138",
+          "8742c26b1201b8f8455be4f3e1183c309b6ffd9d6667a999511ca531419a72df",
+          "8d3643767fb860f857e9d1aa41f3ff53bb894102bf3fe85c6505e48c44abf590",
+          "94d99859fca3aa6518ca5287b83feab068580c40f1db1a9c7de823b49532bd7d",
+          "a7a30f2de2c5ea6866de6d15396a26b2f817ace5ccaa3ce4e3366126c5eeb3a4",
+          "ae190ba408afa18850f91664e9a05f6a9d10e68fc24d304cf1c7ee8af93b2580",
+          "b92a89c69166136832234bfbe604b5b60fa6796625aba6b9f6f85950b1bb37a9",
+          "d4ca3402f6bef56ec11584775a43b5094bc6aa64c084c8e7185564ce2fcb6bb7",
+          "db833ea05524fe67f3ffa3bed8bc9154d19d221501a19f297f23d7f3fe9bde6f",
+          "e8afe75fdabd3559b54b58904ca3d409465fb207a11ede374abb9e9551094119",
+          "eccd895a80e62434d63f9d9c899bcc5c8c2eac4130ca42cd7610c30bfac1c9b1",
+          "efea1a76ccdcf35a6ce4dedc8d55d2e35a52f2d5ac1535071ddb864d26a8524d",
+          "f435cd8faaba663b55f32973ac09f6c44fc8eba9934ccc59b63337cfbfd929bf",
+          "f9cf147e88adfd82f069730c21acfb3a7ae813b2f6a93b4da24471474ef9e506",
+          "ff27623fff750b94119f439ec84ccb35c11e2334b65a2d56f25d071a635ce842"
+        ],
+        "finish_capture_sha256": "ff27623fff750b94119f439ec84ccb35c11e2334b65a2d56f25d071a635ce842",
+        "basis": "native R9/R10/R11/R13/R15 finish receipt binds page result and markdown to captured grant and registered source"
+      },
+      "prediction_sha256": "39c8e32017d142bfbae21057cb79b963fe4f29fca201fb48870f31d07a5bf7df"
+    },
+    {
+      "position": 81,
+      "image": "page-d271a2ab-4523-44c4-94b5-303bf54b69e9.png",
+      "gt_index": 140,
+      "gt_tables": 0,
+      "status": "complete",
+      "reason": "native finish and request origins verified",
+      "tables": [],
+      "source_lineage": {
+        "verified": true,
+        "request_origins_verified": true,
+        "origin_capture_sha256": [
+          "1f7468c3642efec00d3cb0421acbfb6daa89f3259d42dc491e59a9e128c02954",
+          "2bbb8bce12717408ff9f8a40e9f248d1a7519b263399aed1482310f19a24e9f5",
+          "34346196f9947070778df2b987a6da49db1bf141ce43b5ee6dd3b6f503b17fe5",
+          "3a6e0f706776305de5ba81f670c0dab0c140469228a4a0f6fa7ff2a236111ed3",
+          "3febdaee30ee7f3eea93cb05c3723dad13e622ceaa126ef6ea42f95db3f5fba8",
+          "5417031ead3febe05b39199481f9479dd0f6ca093e90238d6a1eb8db9d516dc1",
+          "827d5d89ca3be614f966c58b04902bad376ff6e20dc44744b57f2745e2c37be1",
+          "94a6c28654bc54fd4a3817a5269a8996dd6002e06b3edf0bb80711c118be205f",
+          "94d99859fca3aa6518ca5287b83feab068580c40f1db1a9c7de823b49532bd7d",
+          "9a70f935ce9c131703e81c4c53452592a3978407b00370a160c3f020d5fd9ac2",
+          "d4ca3402f6bef56ec11584775a43b5094bc6aa64c084c8e7185564ce2fcb6bb7",
+          "e1aeb339841494109b3aa6a6337a11a3ac301f628f73653c9311405cc7447b26",
+          "e4d26441bf6fce6a228051e08c8a7474f3f740ebd974830c10e8898183e475bd",
+          "e8afe75fdabd3559b54b58904ca3d409465fb207a11ede374abb9e9551094119",
+          "eccd895a80e62434d63f9d9c899bcc5c8c2eac4130ca42cd7610c30bfac1c9b1"
+        ],
+        "finish_capture_sha256": "eccd895a80e62434d63f9d9c899bcc5c8c2eac4130ca42cd7610c30bfac1c9b1",
+        "basis": "native R9/R10/R11/R13/R15 finish receipt binds page result and markdown to captured grant and registered source"
+      },
+      "prediction_sha256": "f7101d8257ecbe9e647e11e25b10673d41e009a5df7885fc721d71d8e22fad06"
+    },
+    {
+      "position": 82,
+      "image": "page-52e82aa9-7bd7-4683-8adc-520cae0291e0.png",
+      "gt_index": 142,
+      "gt_tables": 1,
+      "status": "unverified",
+      "reason": "native request origins verified; page-result record has no assembler/finishing-capture binding, so page lineage remains unverified",
+      "tables": null,
+      "source_lineage": {
+        "verified": false,
+        "request_origins_verified": true,
+        "origin_capture_sha256": [
+          "34346196f9947070778df2b987a6da49db1bf141ce43b5ee6dd3b6f503b17fe5",
+          "5417031ead3febe05b39199481f9479dd0f6ca093e90238d6a1eb8db9d516dc1",
+          "591f67223b9fb16a8fbc9ca4db292c76af8f5a039dfc30507fa6e1ce8de71e44",
+          "6f506fecd7fff654ef0cd637476630ec74fc146e2e7ace0f6c8cc70518a24063",
+          "7cadaccae22039dd9683c4f8f074e1dd1859dc3a754b9660da77fa3c2ae01138",
+          "8220d3f5dbb5ad7796e11c713d337647718dfb74bd10e60a8ae797d74c9897fa",
+          "827d5d89ca3be614f966c58b04902bad376ff6e20dc44744b57f2745e2c37be1",
+          "872b229ea3cdcd3e33aefcb6ac426cd85d5107d74673fe992edb5352d9fa16bb",
+          "88df404052419807916b6ebcd96c89216fa945512666f889600e86cf94df5bdf",
+          "971ccca61b363d9b14ebef618c335e9bb63cdbd21c58d01e57ab1693ae67d295",
+          "b92a89c69166136832234bfbe604b5b60fa6796625aba6b9f6f85950b1bb37a9",
+          "be80b9cd10e1d1869269611bfc1f7149b4b39a3f7a9c9addeaddf255b7698bc5",
+          "d4ca3402f6bef56ec11584775a43b5094bc6aa64c084c8e7185564ce2fcb6bb7",
+          "e34a25c5bce06cd4213bab262dabeceaf55c7600ec701c90897d3f16a2c4b619",
+          "e4d26441bf6fce6a228051e08c8a7474f3f740ebd974830c10e8898183e475bd",
+          "efea1a76ccdcf35a6ce4dedc8d55d2e35a52f2d5ac1535071ddb864d26a8524d"
+        ],
+        "basis": "native request origins verified; page-result record has no assembler/finishing-capture binding, so page lineage remains unverified"
+      },
+      "prediction_sha256": "0c6bd118e2022a472e4a06dd89238de67143a57155c94cb98f72fc2a695de428"
+    },
+    {
+      "position": 83,
+      "image": "page-21ad32ba-fd62-43e5-964a-f5e95c0e0441.png",
+      "gt_index": 148,
+      "gt_tables": 0,
+      "status": "unverified",
+      "reason": "native request origins verified; page-result record has no assembler/finishing-capture binding, so page lineage remains unverified",
+      "tables": null,
+      "source_lineage": {
+        "verified": false,
+        "request_origins_verified": true,
+        "origin_capture_sha256": [
+          "1f7468c3642efec00d3cb0421acbfb6daa89f3259d42dc491e59a9e128c02954",
+          "24ca54cb3800f7360185774b8c2287d47390bf9bc6bce0ef33d82a81d48de3b4",
+          "2a56a71adc2a2ac88c1ca0dff830f8a52b2401b2ad7c2faecd0c822c3543eced",
+          "3b71478f0b530ca630f4c20b53ce110e3c4e6f1db85d36636f62cd9297ab713a",
+          "3febdaee30ee7f3eea93cb05c3723dad13e622ceaa126ef6ea42f95db3f5fba8",
+          "7cadaccae22039dd9683c4f8f074e1dd1859dc3a754b9660da77fa3c2ae01138",
+          "8220d3f5dbb5ad7796e11c713d337647718dfb74bd10e60a8ae797d74c9897fa",
+          "872b229ea3cdcd3e33aefcb6ac426cd85d5107d74673fe992edb5352d9fa16bb",
+          "971ccca61b363d9b14ebef618c335e9bb63cdbd21c58d01e57ab1693ae67d295",
+          "ae190ba408afa18850f91664e9a05f6a9d10e68fc24d304cf1c7ee8af93b2580",
+          "be80b9cd10e1d1869269611bfc1f7149b4b39a3f7a9c9addeaddf255b7698bc5",
+          "db833ea05524fe67f3ffa3bed8bc9154d19d221501a19f297f23d7f3fe9bde6f",
+          "e34a25c5bce06cd4213bab262dabeceaf55c7600ec701c90897d3f16a2c4b619",
+          "efea1a76ccdcf35a6ce4dedc8d55d2e35a52f2d5ac1535071ddb864d26a8524d"
+        ],
+        "basis": "native request origins verified; page-result record has no assembler/finishing-capture binding, so page lineage remains unverified"
+      },
+      "prediction_sha256": "a7a7ac95aefe99e01195f1d5fd1363fab32f110c5c9c64ce7a23c6fbc016662b"
+    },
+    {
+      "position": 84,
+      "image": "page-8d57c3d2-8e50-4161-871f-bfa7b8c0fdb6.png",
+      "gt_index": 150,
+      "gt_tables": 0,
+      "status": "complete",
+      "reason": "native finish and request origins verified",
+      "tables": [],
+      "source_lineage": {
+        "verified": true,
+        "request_origins_verified": true,
+        "origin_capture_sha256": [
+          "04fb5a73340013b57e04596b4eef48ac549832af237543ad109c83707d15f131",
+          "1f7468c3642efec00d3cb0421acbfb6daa89f3259d42dc491e59a9e128c02954",
+          "2bbb8bce12717408ff9f8a40e9f248d1a7519b263399aed1482310f19a24e9f5",
+          "3b71478f0b530ca630f4c20b53ce110e3c4e6f1db85d36636f62cd9297ab713a",
+          "7cadaccae22039dd9683c4f8f074e1dd1859dc3a754b9660da77fa3c2ae01138",
+          "7d53d16dfadb0aed5b3c469d35315a40b3f9a5e2ad6aecb043d2b608a9de5be4",
+          "827d5d89ca3be614f966c58b04902bad376ff6e20dc44744b57f2745e2c37be1",
+          "872b229ea3cdcd3e33aefcb6ac426cd85d5107d74673fe992edb5352d9fa16bb",
+          "8d3643767fb860f857e9d1aa41f3ff53bb894102bf3fe85c6505e48c44abf590",
+          "971ccca61b363d9b14ebef618c335e9bb63cdbd21c58d01e57ab1693ae67d295",
+          "9a70f935ce9c131703e81c4c53452592a3978407b00370a160c3f020d5fd9ac2",
+          "a7a30f2de2c5ea6866de6d15396a26b2f817ace5ccaa3ce4e3366126c5eeb3a4",
+          "db833ea05524fe67f3ffa3bed8bc9154d19d221501a19f297f23d7f3fe9bde6f",
+          "e1aeb339841494109b3aa6a6337a11a3ac301f628f73653c9311405cc7447b26",
+          "e34a25c5bce06cd4213bab262dabeceaf55c7600ec701c90897d3f16a2c4b619",
+          "e4d26441bf6fce6a228051e08c8a7474f3f740ebd974830c10e8898183e475bd"
+        ],
+        "finish_capture_sha256": "a7a30f2de2c5ea6866de6d15396a26b2f817ace5ccaa3ce4e3366126c5eeb3a4",
+        "basis": "native R9/R10/R11/R13/R15 finish receipt binds page result and markdown to captured grant and registered source"
+      },
+      "prediction_sha256": "ba778a80f53217d45babb6e46358db4bf511c431bc1b29a88364f9b4fed9b74a"
+    }
+  ],
+  "coverage": {
+    "pages_complete": 3,
+    "pages_total": 5,
+    "gt_tables_scored": 0,
+    "gt_tables_total": 1
+  },
+  "means": {
+    "teds": null,
+    "teds_structure_only": null
+  }
+}

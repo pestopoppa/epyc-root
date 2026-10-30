@@ -1,0 +1,159 @@
+{
+  "arm": "paddle",
+  "cohort": "pip02-english-fresh-20261029",
+  "storage": "raid",
+  "shard": 15,
+  "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+  "gt_sha256": "a45cd84b04ad8b793e775089640e6b681209abea33ead54c1828ddca35fae496",
+  "config_sha256": "e424bd8aea788ad3662e1d5a695b99f4e0fdae13ed484160b909ac22681bbbc3",
+  "lineage_sha256": "39a511a6cf4de532c0847eab3eced768aa740ff4e39022c5c49b582aa95a7d2e",
+  "pages": [
+    {
+      "position": 75,
+      "image": "page-268266af-56c0-4b3b-9d07-73c6e50feb58.png",
+      "gt_index": 99,
+      "gt_tables": 0,
+      "status": "complete",
+      "reason": "native finish and request origins verified",
+      "tables": [],
+      "source_lineage": {
+        "verified": true,
+        "request_origins_verified": true,
+        "origin_capture_sha256": [
+          "04fb5a73340013b57e04596b4eef48ac549832af237543ad109c83707d15f131",
+          "1f7468c3642efec00d3cb0421acbfb6daa89f3259d42dc491e59a9e128c02954",
+          "24ca54cb3800f7360185774b8c2287d47390bf9bc6bce0ef33d82a81d48de3b4",
+          "2a56a71adc2a2ac88c1ca0dff830f8a52b2401b2ad7c2faecd0c822c3543eced",
+          "2bbb8bce12717408ff9f8a40e9f248d1a7519b263399aed1482310f19a24e9f5",
+          "3febdaee30ee7f3eea93cb05c3723dad13e622ceaa126ef6ea42f95db3f5fba8",
+          "5417031ead3febe05b39199481f9479dd0f6ca093e90238d6a1eb8db9d516dc1",
+          "591f67223b9fb16a8fbc9ca4db292c76af8f5a039dfc30507fa6e1ce8de71e44",
+          "6f506fecd7fff654ef0cd637476630ec74fc146e2e7ace0f6c8cc70518a24063",
+          "747020a19f1c5865a8d3a8c5a14afdffbabe163a307538316486499bdb92632c",
+          "7d53d16dfadb0aed5b3c469d35315a40b3f9a5e2ad6aecb043d2b608a9de5be4",
+          "8220d3f5dbb5ad7796e11c713d337647718dfb74bd10e60a8ae797d74c9897fa",
+          "827d5d89ca3be614f966c58b04902bad376ff6e20dc44744b57f2745e2c37be1",
+          "872b229ea3cdcd3e33aefcb6ac426cd85d5107d74673fe992edb5352d9fa16bb",
+          "88df404052419807916b6ebcd96c89216fa945512666f889600e86cf94df5bdf",
+          "94a6c28654bc54fd4a3817a5269a8996dd6002e06b3edf0bb80711c118be205f",
+          "971ccca61b363d9b14ebef618c335e9bb63cdbd21c58d01e57ab1693ae67d295",
+          "9931391455844a240d51a9862d8223490337f5f99c63d8d325e01fec350b6574",
+          "99a2c287fefea770bd23c5350e95270cf1e2b7074ff799326125599cd0a62d1f",
+          "b92a89c69166136832234bfbe604b5b60fa6796625aba6b9f6f85950b1bb37a9",
+          "be80b9cd10e1d1869269611bfc1f7149b4b39a3f7a9c9addeaddf255b7698bc5",
+          "f9cf147e88adfd82f069730c21acfb3a7ae813b2f6a93b4da24471474ef9e506"
+        ],
+        "finish_capture_sha256": "f9cf147e88adfd82f069730c21acfb3a7ae813b2f6a93b4da24471474ef9e506",
+        "basis": "native R9/R10/R11/R13/R15 finish receipt binds page result and markdown to captured grant and registered source"
+      },
+      "prediction_sha256": "244a3456b4ac3465504e3f80896a6af7a2ac296ef5801d6de498ef51afcb51c3"
+    },
+    {
+      "position": 76,
+      "image": "page-24b49b01-6c1f-46d2-a389-6e537f9902e1.png",
+      "gt_index": 107,
+      "gt_tables": 0,
+      "status": "unverified",
+      "reason": "native request origins verified; page-result record has no assembler/finishing-capture binding, so page lineage remains unverified",
+      "tables": null,
+      "source_lineage": {
+        "verified": false,
+        "request_origins_verified": true,
+        "origin_capture_sha256": [
+          "3febdaee30ee7f3eea93cb05c3723dad13e622ceaa126ef6ea42f95db3f5fba8",
+          "747020a19f1c5865a8d3a8c5a14afdffbabe163a307538316486499bdb92632c",
+          "9931391455844a240d51a9862d8223490337f5f99c63d8d325e01fec350b6574",
+          "99a2c287fefea770bd23c5350e95270cf1e2b7074ff799326125599cd0a62d1f",
+          "ae190ba408afa18850f91664e9a05f6a9d10e68fc24d304cf1c7ee8af93b2580",
+          "efea1a76ccdcf35a6ce4dedc8d55d2e35a52f2d5ac1535071ddb864d26a8524d",
+          "f2f87fec8e829bc12662f62530098acd948fb88444656f1c32d8d4fe9ac59c31"
+        ],
+        "basis": "native request origins verified; page-result record has no assembler/finishing-capture binding, so page lineage remains unverified"
+      },
+      "prediction_sha256": "80a2f363cb52900a524eaebea829a66d1c1102ffd9928916dd7c5d47c316778f"
+    },
+    {
+      "position": 77,
+      "image": "page-0c28f48b-33da-489c-bfc1-1fe82e5be68f.png",
+      "gt_index": 119,
+      "gt_tables": 0,
+      "status": "unverified",
+      "reason": "native request origins verified; page-result record has no assembler/finishing-capture binding, so page lineage remains unverified",
+      "tables": null,
+      "source_lineage": {
+        "verified": false,
+        "request_origins_verified": true,
+        "origin_capture_sha256": [
+          "747020a19f1c5865a8d3a8c5a14afdffbabe163a307538316486499bdb92632c",
+          "9931391455844a240d51a9862d8223490337f5f99c63d8d325e01fec350b6574",
+          "99a2c287fefea770bd23c5350e95270cf1e2b7074ff799326125599cd0a62d1f",
+          "f2f87fec8e829bc12662f62530098acd948fb88444656f1c32d8d4fe9ac59c31",
+          "f435cd8faaba663b55f32973ac09f6c44fc8eba9934ccc59b63337cfbfd929bf"
+        ],
+        "basis": "native request origins verified; page-result record has no assembler/finishing-capture binding, so page lineage remains unverified"
+      },
+      "prediction_sha256": "802fa5072861c286c4d8a3b758de707bb52e5067f051f7c04f8bd1027e871044"
+    },
+    {
+      "position": 78,
+      "image": "page-2861127b-41a4-44d5-b026-2de9cb408347.png",
+      "gt_index": 129,
+      "gt_tables": 0,
+      "status": "complete",
+      "reason": "native finish and request origins verified",
+      "tables": [],
+      "source_lineage": {
+        "verified": true,
+        "request_origins_verified": true,
+        "origin_capture_sha256": [
+          "04fb5a73340013b57e04596b4eef48ac549832af237543ad109c83707d15f131",
+          "24ca54cb3800f7360185774b8c2287d47390bf9bc6bce0ef33d82a81d48de3b4",
+          "34346196f9947070778df2b987a6da49db1bf141ce43b5ee6dd3b6f503b17fe5",
+          "3a6e0f706776305de5ba81f670c0dab0c140469228a4a0f6fa7ff2a236111ed3",
+          "591f67223b9fb16a8fbc9ca4db292c76af8f5a039dfc30507fa6e1ce8de71e44",
+          "7d53d16dfadb0aed5b3c469d35315a40b3f9a5e2ad6aecb043d2b608a9de5be4",
+          "8220d3f5dbb5ad7796e11c713d337647718dfb74bd10e60a8ae797d74c9897fa",
+          "8d3643767fb860f857e9d1aa41f3ff53bb894102bf3fe85c6505e48c44abf590",
+          "94a6c28654bc54fd4a3817a5269a8996dd6002e06b3edf0bb80711c118be205f",
+          "94d99859fca3aa6518ca5287b83feab068580c40f1db1a9c7de823b49532bd7d",
+          "be80b9cd10e1d1869269611bfc1f7149b4b39a3f7a9c9addeaddf255b7698bc5",
+          "e8afe75fdabd3559b54b58904ca3d409465fb207a11ede374abb9e9551094119",
+          "f2f87fec8e829bc12662f62530098acd948fb88444656f1c32d8d4fe9ac59c31",
+          "f9cf147e88adfd82f069730c21acfb3a7ae813b2f6a93b4da24471474ef9e506"
+        ],
+        "finish_capture_sha256": "f9cf147e88adfd82f069730c21acfb3a7ae813b2f6a93b4da24471474ef9e506",
+        "basis": "native R9/R10/R11/R13/R15 finish receipt binds page result and markdown to captured grant and registered source"
+      },
+      "prediction_sha256": "306f1e9d8bc4d4d3c71cf6c33eacc355cc507849e5713190503943f82af6fa74"
+    },
+    {
+      "position": 79,
+      "image": "page-1f9a7efa-1d99-46c5-a2aa-48402d699f06.png",
+      "gt_index": 133,
+      "gt_tables": 0,
+      "status": "unverified",
+      "reason": "native request origins verified; page-result record has no assembler/finishing-capture binding, so page lineage remains unverified",
+      "tables": null,
+      "source_lineage": {
+        "verified": false,
+        "request_origins_verified": true,
+        "origin_capture_sha256": [
+          "747020a19f1c5865a8d3a8c5a14afdffbabe163a307538316486499bdb92632c",
+          "9931391455844a240d51a9862d8223490337f5f99c63d8d325e01fec350b6574"
+        ],
+        "basis": "native request origins verified; page-result record has no assembler/finishing-capture binding, so page lineage remains unverified"
+      },
+      "prediction_sha256": "d91017f12981a40a09271b484f6b3b9c89331be3ff9ab97f2293c1e291b83da2"
+    }
+  ],
+  "coverage": {
+    "pages_complete": 2,
+    "pages_total": 5,
+    "gt_tables_scored": 0,
+    "gt_tables_total": 0
+  },
+  "means": {
+    "teds": null,
+    "teds_structure_only": null
+  }
+}

@@ -1,0 +1,90 @@
+{
+  "arm": "paddle",
+  "cohort": "pip02-english-fresh-20261029",
+  "shard": 1,
+  "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+  "gt_sha256": "a45cd84b04ad8b793e775089640e6b681209abea33ead54c1828ddca35fae496",
+  "config_sha256": "e424bd8aea788ad3662e1d5a695b99f4e0fdae13ed484160b909ac22681bbbc3",
+  "scoring_sources_sha256": {
+    "pip02_records.py": "2d364d7a7ef1d47b21fb8f3352ff4ffe98e93c682da3996f6e1270c8193c81cd",
+    "pip02_lineage.py": "6dea759fe4fa7adc5c78d34fe7b01aea1d44ab98bc3103ccacbb3f36efb831fa",
+    "pip02_compare.py": "37e9d673ba46ac16c5f8169db97290933b3c63fb48ef133b825d5db3a9ba995e",
+    "pip02_native_score.py": "27f0b630b6812aecad35d1c65329841a5011e421326e81f9f14c8c66a6fdbe5e"
+  },
+  "pages": [
+    {
+      "position": 5,
+      "image": "page-bb98165a-8033-4ea4-a527-58ac974f2c32.png",
+      "gt_index": 19,
+      "gt_tables": 0,
+      "status": "unknown",
+      "reason": "no durable completed page",
+      "tables": null,
+      "input_sha256": {
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-01/shard-1/410c745f4d7e40d5be34bcba7ca0f280275754e9f749ed1685e3284d401ce521.sent": "c8ff6445f1badc1adbce6374db84d4ee4482855c230ea1968ee304f39c5c2232",
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-01/shard-1/410c745f4d7e40d5be34bcba7ca0f280275754e9f749ed1685e3284d401ce521.start": "b68d94f4ab6198032af810add4ec2da11abf334932257304bb329fd456de9f7e",
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-01/shard-1/region-4d4ec7adbdf5948497e4db61-000000.result.json": "ae0c151ca4dc074af2fb846990c5db36fe55c8f17150981098c39f819ff3c7d1",
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-01/shard-1/region-4d4ec7adbdf5948497e4db61-000000.start.json": "b6a25533349adeb3090394ae162629d0d63f5d53231e6492cca04a353c351f00",
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-01/shard-1/region-4d4ec7adbdf5948497e4db61-000001.result.json": "f80c1ab0b2a36f7403c66ed295ceffcb8076b339826cfeb2172cd3d7a7c06258",
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-01/shard-1/region-4d4ec7adbdf5948497e4db61-000001.start.json": "779dce932b274789d1eda315697f588b2d9ebfbee316b89d33db2cc47c947cdc",
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-01/shard-1/region-4d4ec7adbdf5948497e4db61-000002.result.json": "be7e8eaea99f5f59f2f64c18e44bb3535d67c4d267799d227bfb7e093db6c32e",
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-01/shard-1/region-4d4ec7adbdf5948497e4db61-000002.start.json": "3441db1c9b71fec9cf8528705d5c0e5f4619ed796ba43db8ccc27b0634b8aac7",
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-01/shard-1/region-4d4ec7adbdf5948497e4db61-000003.result.json": "9f7a70ed16c7c520c5f63599cc962a3f4093551691c55236fa10609eab478f79",
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-01/shard-1/region-4d4ec7adbdf5948497e4db61-000003.start.json": "352ce03f1b148d06092986807339e51a233ab86d305ea8390db185298f5a34f9",
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-01/shard-1/region-4d4ec7adbdf5948497e4db61-000004.result.json": "6c8973380925ab298465e602c61d5d875210406c6b58572eabed92ff10024d7d",
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-01/shard-1/region-4d4ec7adbdf5948497e4db61-000004.start.json": "01dc01fe8ee49036baa17fd1d9c4fddc5463a8273b27e6f6ccfd04a59d1e60b8",
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-01/shard-1/region-4d4ec7adbdf5948497e4db61-layout.json": "2db1e4a8056f320aa0a713e229da8beea50451134d24a42709b248ba2ca95390"
+      }
+    },
+    {
+      "position": 6,
+      "image": "page-8c21f73a-b849-4f71-9573-57d50fbcc180.png",
+      "gt_index": 20,
+      "gt_tables": 0,
+      "status": "unknown",
+      "reason": "no durable completed page",
+      "tables": null,
+      "input_sha256": {}
+    },
+    {
+      "position": 7,
+      "image": "page-1853e666-6f83-432c-afc8-923ce8cf0fea.png",
+      "gt_index": 21,
+      "gt_tables": 0,
+      "status": "unknown",
+      "reason": "no durable completed page",
+      "tables": null,
+      "input_sha256": {}
+    },
+    {
+      "position": 8,
+      "image": "page-4431f432-9e71-46d3-a5ea-4d705ad163a8.png",
+      "gt_index": 22,
+      "gt_tables": 0,
+      "status": "unknown",
+      "reason": "no durable completed page",
+      "tables": null,
+      "input_sha256": {}
+    },
+    {
+      "position": 9,
+      "image": "page-30aa7cae-34fd-4b0b-b01a-fd35ff3bdfea.png",
+      "gt_index": 32,
+      "gt_tables": 0,
+      "status": "unknown",
+      "reason": "no durable completed page",
+      "tables": null,
+      "input_sha256": {}
+    }
+  ],
+  "coverage": {
+    "pages_complete": 0,
+    "pages_total": 5,
+    "gt_tables_scored": 0,
+    "gt_tables_total": 0
+  },
+  "means": {
+    "teds": null,
+    "teds_structure_only": null
+  }
+}

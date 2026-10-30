@@ -1,0 +1,86 @@
+{
+  "arm": "paddle",
+  "cohort": "pip02-english-fresh-20261029",
+  "shard": 63,
+  "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+  "gt_sha256": "a45cd84b04ad8b793e775089640e6b681209abea33ead54c1828ddca35fae496",
+  "config_sha256": "e424bd8aea788ad3662e1d5a695b99f4e0fdae13ed484160b909ac22681bbbc3",
+  "scoring_sources_sha256": {
+    "pip02_records.py": "2d364d7a7ef1d47b21fb8f3352ff4ffe98e93c682da3996f6e1270c8193c81cd",
+    "pip02_lineage.py": "6dea759fe4fa7adc5c78d34fe7b01aea1d44ab98bc3103ccacbb3f36efb831fa",
+    "pip02_compare.py": "37e9d673ba46ac16c5f8169db97290933b3c63fb48ef133b825d5db3a9ba995e",
+    "pip02_native_score.py": "27f0b630b6812aecad35d1c65329841a5011e421326e81f9f14c8c66a6fdbe5e"
+  },
+  "pages": [
+    {
+      "position": 315,
+      "image": "jiaocaineedrop_jiaocai_needrop_en_854.jpg",
+      "gt_index": 853,
+      "gt_tables": 2,
+      "status": "unknown",
+      "reason": "no durable completed page",
+      "tables": null,
+      "input_sha256": {
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-63/shard-63/548efe305b12d6336fdb31644ba0165e7b19144ad9cf64959bc3e063916cd7d3.start": "927dee827404f378a977665cea839d7a3fc068f5aceef58d79ac939533fb63eb"
+      }
+    },
+    {
+      "position": 316,
+      "image": "jiaocaineedrop_jiaocai_needrop_en_961.jpg",
+      "gt_index": 862,
+      "gt_tables": 0,
+      "status": "unknown",
+      "reason": "no durable completed page",
+      "tables": null,
+      "input_sha256": {
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-63/shard-63/0d817aec6fc2be4f9091f56c580c2db27abd68969ebb7e84ad16d68b1eeaa148.start": "241c84f77245b895c5b3d757d270aeb649f9848465624a4e6faaeb16dc91ae59"
+      }
+    },
+    {
+      "position": 317,
+      "image": "jiaocaineedrop_math-134115.pdf_670.jpg",
+      "gt_index": 865,
+      "gt_tables": 0,
+      "status": "unknown",
+      "reason": "no durable completed page",
+      "tables": null,
+      "input_sha256": {
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-63/shard-63/ce273a793852b6d1545f279070c88b9ab2d33f9660c0c3bcd2fc305b4d501fe5.start": "ad0186f30ae1ea534dcbcacbafd766b7f1bf9e8177b7e553fc5f1d55e66880e3"
+      }
+    },
+    {
+      "position": 318,
+      "image": "jiaocaineedrop_socialsci-74973.pdf_31.jpg",
+      "gt_index": 866,
+      "gt_tables": 3,
+      "status": "unknown",
+      "reason": "no durable completed page",
+      "tables": null,
+      "input_sha256": {
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-63/shard-63/54f6a8c1a37ec513a2c54cc1e9ca8d417fa971501453ec28439132309d35bf3d.start": "c5b64fbba229350370d4595aede998bce5abdde3655d54cda351104896bed652"
+      }
+    },
+    {
+      "position": 319,
+      "image": "jiaocaineedrop_unit2t03.pdf_63.jpg",
+      "gt_index": 867,
+      "gt_tables": 0,
+      "status": "unknown",
+      "reason": "no durable completed page",
+      "tables": null,
+      "input_sha256": {
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-63/shard-63/c6c54227489a61490d0b496b434422fa16b995bf3c1df3c4df9657f7be2cab19.start": "56fa2483532cfc85cccef77ab8daec586dc224eab3eebb872b8a4523a37ac240"
+      }
+    }
+  ],
+  "coverage": {
+    "pages_complete": 0,
+    "pages_total": 5,
+    "gt_tables_scored": 0,
+    "gt_tables_total": 5
+  },
+  "means": {
+    "teds": null,
+    "teds_structure_only": null
+  }
+}

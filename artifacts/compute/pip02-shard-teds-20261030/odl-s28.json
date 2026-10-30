@@ -1,0 +1,334 @@
+{
+  "arm": "odl",
+  "cohort": "pip02-english-fresh-20261029",
+  "shard": 28,
+  "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+  "gt_sha256": "a45cd84b04ad8b793e775089640e6b681209abea33ead54c1828ddca35fae496",
+  "pins_sha256": "262462c58402db48aa88063cdb1817915dcdef0c1933e72869682dd905c34cf0",
+  "scorer_sha256": "27f0b630b6812aecad35d1c65329841a5011e421326e81f9f14c8c66a6fdbe5e",
+  "pages": [
+    {
+      "position": 700,
+      "image": "magazine_TheEconomist.2023.12.23_page_012.png",
+      "gt_index": 1596,
+      "gt_tables": 0,
+      "status": "unknown",
+      "reason": "no durable complete output",
+      "tables": null
+    },
+    {
+      "position": 701,
+      "image": "magazine_TheEconomist.2023.11.18_page_082.png",
+      "gt_index": 1597,
+      "gt_tables": 0,
+      "status": "unknown",
+      "reason": "no durable complete output",
+      "tables": null
+    },
+    {
+      "position": 702,
+      "image": "magazine_TheEconomist.2024.03.02_page_075.png",
+      "gt_index": 1598,
+      "gt_tables": 0,
+      "status": "unknown",
+      "reason": "no durable complete output",
+      "tables": null
+    },
+    {
+      "position": 703,
+      "image": "magazine_TheEconomist.2024.03.09_page_016.png",
+      "gt_index": 1599,
+      "gt_tables": 0,
+      "status": "unknown",
+      "reason": "no durable complete output",
+      "tables": null
+    },
+    {
+      "position": 704,
+      "image": "magazine_TheEconomist.2024.03.09_page_029.png",
+      "gt_index": 1600,
+      "gt_tables": 0,
+      "status": "unknown",
+      "reason": "no durable complete output",
+      "tables": null
+    },
+    {
+      "position": 705,
+      "image": "magazine_TheEconomist.2023.11.25_page_093.png",
+      "gt_index": 1601,
+      "gt_tables": 0,
+      "status": "unknown",
+      "reason": "no durable complete output",
+      "tables": null
+    },
+    {
+      "position": 706,
+      "image": "magazine_TheEconomist.2024.03.02_page_032.png",
+      "gt_index": 1602,
+      "gt_tables": 0,
+      "status": "unknown",
+      "reason": "no durable complete output",
+      "tables": null
+    },
+    {
+      "position": 707,
+      "image": "magazine_TheEconomist.2024.03.09_page_079.png",
+      "gt_index": 1603,
+      "gt_tables": 0,
+      "status": "unknown",
+      "reason": "no durable complete output",
+      "tables": null
+    },
+    {
+      "position": 708,
+      "image": "magazine_TheEconomist.2023.11.25_page_069.png",
+      "gt_index": 1604,
+      "gt_tables": 0,
+      "status": "unknown",
+      "reason": "no durable complete output",
+      "tables": null
+    },
+    {
+      "position": 709,
+      "image": "magazine_TheEconomist.2023.12.09_page_082.png",
+      "gt_index": 1605,
+      "gt_tables": 0,
+      "status": "unknown",
+      "reason": "no durable complete output",
+      "tables": null
+    },
+    {
+      "position": 710,
+      "image": "magazine_TheEconomist.2023.12.16_page_062.png",
+      "gt_index": 1606,
+      "gt_tables": 0,
+      "status": "unknown",
+      "reason": "no durable complete output",
+      "tables": null
+    },
+    {
+      "position": 711,
+      "image": "magazine_TheEconomist.2023.12.09_page_015.png",
+      "gt_index": 1607,
+      "gt_tables": 0,
+      "status": "unknown",
+      "reason": "no durable complete output",
+      "tables": null
+    },
+    {
+      "position": 712,
+      "image": "magazine_TheEconomist.2023.12.09_page_009.png",
+      "gt_index": 1608,
+      "gt_tables": 0,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [],
+      "prediction_sha256": "74674bff440b1ce9800619def7a074b29ed1b63a183a7d382ce49199da69961e",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=72-95 start=2026-10-30T02:29Z end=2026-10-30T03:29Z\n",
+        "input_sha256": "1dc77b88bdf4ba8db31d7052760f119b9042e7b6088189a2cd062137b8c6927a",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 769210,
+          "image": "magazine_TheEconomist.2023.12.09_page_009.png",
+          "index": 1608,
+          "language": "english",
+          "sha256": "eff1c820227bcb675d91c437ce3319d5d940db4075e15ebe80068684ccf72bc0",
+          "table_count": 0
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "producer_id": "codex3-pip02-odl-relocatable-r4-s28-20261030",
+        "producer_source_manifest_path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-relocatable-r4-20261030/SOURCES.sha256",
+        "producer_source_manifest_sha256": "af6262aaf380b3a69031fc5b7f5b11ec0f8b697f314c410c159568bccf4cc62a",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793327405.6432137
+      }
+    },
+    {
+      "position": 713,
+      "image": "magazine_TheEconomist.2023.12.23_page_052.png",
+      "gt_index": 1609,
+      "gt_tables": 0,
+      "status": "unknown",
+      "reason": "no durable complete output",
+      "tables": null
+    },
+    {
+      "position": 714,
+      "image": "magazine_TheEconomist.2023.12.02_page_062.png",
+      "gt_index": 1610,
+      "gt_tables": 0,
+      "status": "unknown",
+      "reason": "no durable complete output",
+      "tables": null
+    },
+    {
+      "position": 715,
+      "image": "magazine_TheEconomist.2023.12.23_page_060.png",
+      "gt_index": 1611,
+      "gt_tables": 0,
+      "status": "unknown",
+      "reason": "no durable complete output",
+      "tables": null
+    },
+    {
+      "position": 716,
+      "image": "magazine_TheEconomist.2023.12.23_page_104.png",
+      "gt_index": 1612,
+      "gt_tables": 0,
+      "status": "unknown",
+      "reason": "no durable complete output",
+      "tables": null
+    },
+    {
+      "position": 717,
+      "image": "magazine_TheEconomist.2023.11.25_page_068.png",
+      "gt_index": 1613,
+      "gt_tables": 0,
+      "status": "unknown",
+      "reason": "no durable complete output",
+      "tables": null
+    },
+    {
+      "position": 718,
+      "image": "magazine_TheEconomist.2023.12.09_page_048.png",
+      "gt_index": 1614,
+      "gt_tables": 0,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [],
+      "prediction_sha256": "374b9ba47c2cc46637f2dc1741e4d9cf74dcf321f9311b52244e0d4286790dfb",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=72-95 start=2026-10-30T02:29Z end=2026-10-30T03:29Z\n",
+        "input_sha256": "7e24894d2b10863af4b8b2982878cec934f6f0a90641264889bba120808c4604",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 767364,
+          "image": "magazine_TheEconomist.2023.12.09_page_048.png",
+          "index": 1614,
+          "language": "english",
+          "sha256": "00b2577c94cb3f7ce4effe563c5bd49f280b64d4466a83187fea05cedb0c2a2f",
+          "table_count": 0
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "producer_id": "codex3-pip02-odl-relocatable-r4-s28-20261030",
+        "producer_source_manifest_path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-relocatable-r4-20261030/SOURCES.sha256",
+        "producer_source_manifest_sha256": "af6262aaf380b3a69031fc5b7f5b11ec0f8b697f314c410c159568bccf4cc62a",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793327405.5638974
+      }
+    },
+    {
+      "position": 719,
+      "image": "magazine_TheEconomist.2023.12.09_page_045.png",
+      "gt_index": 1615,
+      "gt_tables": 0,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [],
+      "prediction_sha256": "6c775f7fc2240e54d905b438bd5c6cee8092aa627121f88fe77a416c7cd0cc6d",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=72-95 start=2026-10-30T02:29Z end=2026-10-30T03:29Z\n",
+        "input_sha256": "87cef8df243d6c3c1a28372b5a31d2d4867123e4b0a8b7103828a45e9b0bbb0e",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 855610,
+          "image": "magazine_TheEconomist.2023.12.09_page_045.png",
+          "index": 1615,
+          "language": "english",
+          "sha256": "3d3d5be39343c8c7b72a1a515a033a47c5ce24995d9aeb77e8a4ad1b233daaf9",
+          "table_count": 0
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "producer_id": "codex3-pip02-odl-relocatable-r4-s28-20261030",
+        "producer_source_manifest_path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-relocatable-r4-20261030/SOURCES.sha256",
+        "producer_source_manifest_sha256": "af6262aaf380b3a69031fc5b7f5b11ec0f8b697f314c410c159568bccf4cc62a",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793327405.5689387
+      }
+    },
+    {
+      "position": 720,
+      "image": "magazine_TheEconomist.2024.02.24_page_033.png",
+      "gt_index": 1616,
+      "gt_tables": 0,
+      "status": "unknown",
+      "reason": "no durable complete output",
+      "tables": null
+    },
+    {
+      "position": 721,
+      "image": "magazine_TheEconomist.2024.02.24_page_068.png",
+      "gt_index": 1617,
+      "gt_tables": 0,
+      "status": "unknown",
+      "reason": "no durable complete output",
+      "tables": null
+    },
+    {
+      "position": 722,
+      "image": "magazine_TheEconomist.2023.12.16_page_037.png",
+      "gt_index": 1618,
+      "gt_tables": 0,
+      "status": "unknown",
+      "reason": "no durable complete output",
+      "tables": null
+    },
+    {
+      "position": 723,
+      "image": "magazine_TheEconomist.2024.03.02_page_031.png",
+      "gt_index": 1619,
+      "gt_tables": 0,
+      "status": "unknown",
+      "reason": "no durable complete output",
+      "tables": null
+    },
+    {
+      "position": 724,
+      "image": "magazine_TheEconomist.2023.12.16_page_019.png",
+      "gt_index": 1620,
+      "gt_tables": 0,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [],
+      "prediction_sha256": "720fec20ed7efe11a67f98d86e42a6b2f6651dd749c0a95fa1841e6cb1012c37",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=72-95 start=2026-10-30T02:35Z end=2026-10-30T03:35Z\n",
+        "input_sha256": "61a487b4e4263fe8543797478798510423be081617ba87c42402780f341615e1",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 10274994,
+          "image": "magazine_TheEconomist.2023.12.16_page_019.png",
+          "index": 1620,
+          "language": "english",
+          "sha256": "1cf6737ad4bca84fc82cb93d446aaef001357d7dd08e46a509875f2ed7e6b436",
+          "table_count": 0
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "producer_id": "codex3-pip02-odl-relocatable-r4-s28-20261030",
+        "producer_source_manifest_path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-relocatable-r4-20261030/SOURCES.sha256",
+        "producer_source_manifest_sha256": "af6262aaf380b3a69031fc5b7f5b11ec0f8b697f314c410c159568bccf4cc62a",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793327748.699425
+      }
+    }
+  ],
+  "coverage": {
+    "pages_complete": 4,
+    "pages_total": 25,
+    "gt_tables_scored": 0,
+    "gt_tables_total": 0
+  },
+  "means": {
+    "teds": null,
+    "teds_structure_only": null
+  }
+}

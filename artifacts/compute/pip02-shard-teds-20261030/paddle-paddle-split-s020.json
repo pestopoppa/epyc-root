@@ -1,0 +1,154 @@
+{
+  "arm": "paddle",
+  "cohort": "pip02-english-fresh-20261029",
+  "shard": 20,
+  "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+  "gt_sha256": "a45cd84b04ad8b793e775089640e6b681209abea33ead54c1828ddca35fae496",
+  "config_sha256": "e424bd8aea788ad3662e1d5a695b99f4e0fdae13ed484160b909ac22681bbbc3",
+  "scoring_sources_sha256": {
+    "pip02_records.py": "2d364d7a7ef1d47b21fb8f3352ff4ffe98e93c682da3996f6e1270c8193c81cd",
+    "pip02_lineage.py": "824d67678010363cf37314edda4bc4b4c38aceb5333cdfcd1e944e432be8b906",
+    "pip02_compare.py": "37e9d673ba46ac16c5f8169db97290933b3c63fb48ef133b825d5db3a9ba995e",
+    "pip02_native_score.py": "27f0b630b6812aecad35d1c65329841a5011e421326e81f9f14c8c66a6fdbe5e"
+  },
+  "pages": [
+    {
+      "position": 100,
+      "image": "page-232d386f-6c9d-4b50-9463-89dedce995e5.png",
+      "gt_index": 259,
+      "gt_tables": 1,
+      "status": "unknown",
+      "reason": "no durable completed page",
+      "tables": null
+    },
+    {
+      "position": 101,
+      "image": "page-cb30bac7-d4bd-47d0-ac84-e0b46d051fe9.png",
+      "gt_index": 260,
+      "gt_tables": 1,
+      "status": "complete",
+      "reason": "native finish and request origins verified",
+      "tables": [
+        {
+          "gt_idx": [
+            0
+          ],
+          "pred_idx": [
+            0
+          ],
+          "teds": 0.9412951631701632,
+          "teds_structure_only": 1.0
+        }
+      ],
+      "source_lineage": {
+        "verified": true,
+        "request_origins_verified": true,
+        "origin_capture_sha256": [
+          "1365cee5a87c55711dda65e7b00a230adcb42488dcf77caff56e732bcf7ed418",
+          "7d3cc6f8bd0ef326c0fdb83a7aef837ea2f3f379e8f44d47945ab6c5a2f5b355",
+          "8402b490905752b1feea106eaae8c2129b7a49cd77179ca7bfcb7973581c6929",
+          "8af1253dd3e9ff5dceab6f53ac5c5fff2f26f53b5adaa54e23e634a4b5b7093e",
+          "af931b21f9e5a6c4c0f03ef06b76e55d75e70dc1b7071234e56e7fbe37d0c07a",
+          "fb983dc628d14e1d03f331ecdbf58fa20c78b76c106cdbe9d62c6bbf609171ed"
+        ],
+        "finish_capture_sha256": "8402b490905752b1feea106eaae8c2129b7a49cd77179ca7bfcb7973581c6929",
+        "basis": "native registered finish receipt binds page result and markdown to captured grant and registered source"
+      },
+      "prediction_sha256": "511f3eee2add94f46e2483fd77d769bb2702d31047af2abd27c147d2b193969c"
+    },
+    {
+      "position": 102,
+      "image": "page-1955f827-fb35-4806-b3a4-463d9e0d6cc8.png",
+      "gt_index": 261,
+      "gt_tables": 1,
+      "status": "complete",
+      "reason": "native finish and request origins verified",
+      "tables": [
+        {
+          "gt_idx": [
+            0
+          ],
+          "pred_idx": [
+            0
+          ],
+          "teds": 0.9375048449705199,
+          "teds_structure_only": 0.9386503067484663
+        }
+      ],
+      "source_lineage": {
+        "verified": true,
+        "request_origins_verified": true,
+        "origin_capture_sha256": [
+          "072a66f038cb451047dce143ba37bbf9249f3d7398c992b9a7444152cb4de635",
+          "23082a92c5e3f23529d06af893b3bd2ef2374fd0b14c24dbf07d7897bde6126a",
+          "7ad6d6836e9e6e649e9865b530fdec28cc9e7105060e753ca29138c37ba1f0f0",
+          "846c8a7fc95ff7541fc454d91ef382f504c41061b7f4fa42f58ca9364d99f1fe",
+          "af14a488dd26cdd9b1cd80f7f85477ca72abfe2844bd01f628c5fb694313c418",
+          "af931b21f9e5a6c4c0f03ef06b76e55d75e70dc1b7071234e56e7fbe37d0c07a",
+          "bd9a8c6eb68bf0bd1f77946f8e7d2a74bbe660328267a8a07ef447da695930d4",
+          "c06df433736437f0b8ed44771ecb32a0e90c7c17847ec652d114f52f51bbb70b"
+        ],
+        "finish_capture_sha256": "bd9a8c6eb68bf0bd1f77946f8e7d2a74bbe660328267a8a07ef447da695930d4",
+        "basis": "native registered finish receipt binds page result and markdown to captured grant and registered source"
+      },
+      "prediction_sha256": "257de27c3ad4729148fe2830225cd1d9e7ca8138c0be5c1bf7e458a64041d1a6"
+    },
+    {
+      "position": 103,
+      "image": "page-ddb9d794-5230-4b43-b1ec-273b9e7ebc11.png",
+      "gt_index": 262,
+      "gt_tables": 1,
+      "status": "complete",
+      "reason": "native finish and request origins verified",
+      "tables": [
+        {
+          "gt_idx": [
+            0
+          ],
+          "pred_idx": [
+            0
+          ],
+          "teds": 1.0,
+          "teds_structure_only": 1.0
+        }
+      ],
+      "source_lineage": {
+        "verified": true,
+        "request_origins_verified": true,
+        "origin_capture_sha256": [
+          "11d11540019e9474c1cc3d3aeb66157734af15227b7b60c9b2bf749e80a95e0f",
+          "26fd058080e7c396bb0653c1eeb4505b407c54bc0243c29a31b0fd4b8e05210b",
+          "7d3cc6f8bd0ef326c0fdb83a7aef837ea2f3f379e8f44d47945ab6c5a2f5b355",
+          "8402b490905752b1feea106eaae8c2129b7a49cd77179ca7bfcb7973581c6929",
+          "a9bcfab32b9ba11a2c897214e7cea3037ca7fb052d5351cd134b20b6ef414fe0",
+          "af14a488dd26cdd9b1cd80f7f85477ca72abfe2844bd01f628c5fb694313c418",
+          "bd9a8c6eb68bf0bd1f77946f8e7d2a74bbe660328267a8a07ef447da695930d4",
+          "c06df433736437f0b8ed44771ecb32a0e90c7c17847ec652d114f52f51bbb70b",
+          "c42bcb79af1a73622e28f7169d2e4b14efe803647b4f51248b9733aecc5f4833"
+        ],
+        "finish_capture_sha256": "a9bcfab32b9ba11a2c897214e7cea3037ca7fb052d5351cd134b20b6ef414fe0",
+        "basis": "native registered finish receipt binds page result and markdown to captured grant and registered source"
+      },
+      "prediction_sha256": "71b05a29798bb26bafda07aaf88af1476aa611e9ead404c644f0e41838fc9522"
+    },
+    {
+      "position": 104,
+      "image": "page-dbed9c07-e155-4ba1-92f9-a2962dc9a8f9.png",
+      "gt_index": 263,
+      "gt_tables": 1,
+      "status": "unknown",
+      "reason": "no durable completed page",
+      "tables": null
+    }
+  ],
+  "coverage": {
+    "pages_complete": 3,
+    "pages_total": 5,
+    "gt_tables_scored": 3,
+    "gt_tables_total": 5
+  },
+  "means": {
+    "teds": 0.9596000027135609,
+    "teds_structure_only": 0.9795501022494887
+  }
+}

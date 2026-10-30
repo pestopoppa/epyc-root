@@ -1,0 +1,92 @@
+{
+  "arm": "paddle",
+  "cohort": "pip02-english-fresh-20261029",
+  "storage": "raid",
+  "shard": 121,
+  "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+  "gt_sha256": "a45cd84b04ad8b793e775089640e6b681209abea33ead54c1828ddca35fae496",
+  "config_sha256": "e424bd8aea788ad3662e1d5a695b99f4e0fdae13ed484160b909ac22681bbbc3",
+  "lineage_sha256": "39a511a6cf4de532c0847eab3eced768aa740ff4e39022c5c49b582aa95a7d2e",
+  "pages": [
+    {
+      "position": 605,
+      "image": "color_textbook_zhonggaokao_\u5c0f\u5b66_13.\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed\uff084-5\u5e74\u7ea7\uff09_\u4eba\u6559\u65b0\u8d77\u70b9\u4e94\u5e74\u7ea7\u82f1\u8bed\u4e0a\u518c_\u8bfe\u672c_\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed5A\u7535\u5b50\u8bfe\u672c_page_060.png",
+      "gt_index": 1485,
+      "gt_tables": 0,
+      "status": "unknown",
+      "reason": "no durable completed page",
+      "tables": null
+    },
+    {
+      "position": 606,
+      "image": "color_textbook_zhonggaokao_\u5c0f\u5b66_13.\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed\uff084-5\u5e74\u7ea7\uff09_\u4eba\u6559\u65b0\u8d77\u70b9\u4e94\u5e74\u7ea7\u82f1\u8bed\u4e0a\u518c_\u8bfe\u672c_\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed5A\u7535\u5b50\u8bfe\u672c_page_055.png",
+      "gt_index": 1486,
+      "gt_tables": 0,
+      "status": "complete",
+      "reason": "native finish and request origins verified",
+      "tables": [],
+      "source_lineage": {
+        "verified": true,
+        "request_origins_verified": true,
+        "origin_capture_sha256": [
+          "0234aba7cf45a45ce2b9a715e25267712a948e93f3c3301e5b9fcb79c3729328",
+          "03cb65f9c7d8c55a2137bc5afa69a1de7a9335fb4125c82e4322e445d7e9eabe",
+          "64b5ff88d62f86e669b4b831d60f1027a066407829df1a43770cedb65f9bafd3",
+          "fcc0c66ab2efa1e85e6ba291315500cd6cb5c2adcf17a77321bf9fade618b5cd",
+          "fda707ba6480175e67ee9aaa13d72124c2aaa764b47b51126d88b7943f449819"
+        ],
+        "finish_capture_sha256": "fda707ba6480175e67ee9aaa13d72124c2aaa764b47b51126d88b7943f449819",
+        "basis": "native R9/R10/R11/R13/R15 finish receipt binds page result and markdown to captured grant and registered source"
+      },
+      "prediction_sha256": "3c739489b5563d1a5a1a18705e109f62a7a80977cfda9b9f2190b378064c0cbb"
+    },
+    {
+      "position": 607,
+      "image": "color_textbook_zhonggaokao_\u5c0f\u5b66_13.\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed\uff084-5\u5e74\u7ea7\uff09_\u4eba\u6559\u65b0\u8d77\u70b9\u56db\u5e74\u7ea7\u82f1\u8bed\u4e0b\u518c_\u8bfe\u672c_\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed4B\u7535\u5b50\u8bfe\u672c_page_017.png",
+      "gt_index": 1487,
+      "gt_tables": 0,
+      "status": "complete",
+      "reason": "native finish and request origins verified",
+      "tables": [],
+      "source_lineage": {
+        "verified": true,
+        "request_origins_verified": true,
+        "origin_capture_sha256": [
+          "7a5447183d11398c57a02360f6a721d0782ffc31257132a78bfcb2a78ec9a846",
+          "98c1125004d3cdec8cad4578f42129eef6a38f38ef9ba26b1f790028b8252006"
+        ],
+        "finish_capture_sha256": "98c1125004d3cdec8cad4578f42129eef6a38f38ef9ba26b1f790028b8252006",
+        "basis": "native R9/R10/R11/R13/R15 finish receipt binds page result and markdown to captured grant and registered source"
+      },
+      "prediction_sha256": "3e1e79d2fb03dce2b781868910554549fb267e49a39c584a075e365c3f281fa9"
+    },
+    {
+      "position": 608,
+      "image": "color_textbook_zhonggaokao_\u5c0f\u5b66_13.\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed\uff084-5\u5e74\u7ea7\uff09_\u4eba\u6559\u65b0\u8d77\u70b9\u56db\u5e74\u7ea7\u82f1\u8bed\u4e0b\u518c_\u8bfe\u672c_\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed4B\u7535\u5b50\u8bfe\u672c_page_048.png",
+      "gt_index": 1489,
+      "gt_tables": 0,
+      "status": "unknown",
+      "reason": "no durable completed page",
+      "tables": null
+    },
+    {
+      "position": 609,
+      "image": "color_textbook_zhonggaokao_\u5c0f\u5b66_KET\u542c\u8bf4\u8bfb\u5199\u9010\u9879\u7a81\u7834_KET\u542c\u8bf4\u8bfb\u5199\u9010\u9879\u7a81\u7834\u4e4b\u8f7b\u677e\u641e\u5b9aKET\u9605\u8bfb25\u5206\u301010\u8bb2 \u891a\u8fde\u4e00 \u3011_\u7b2c01\u8bb2\u7b2c\u4e00\u8bfe\u9605\u8bfb\u9898\u578b\u7efc\u8ff0_\u7b2c\u4e00\u8bfe\u9605\u8bfb\u9898\u578b\u7efc\u8ff0_page_004.png",
+      "gt_index": 1492,
+      "gt_tables": 0,
+      "status": "unknown",
+      "reason": "no durable completed page",
+      "tables": null
+    }
+  ],
+  "coverage": {
+    "pages_complete": 2,
+    "pages_total": 5,
+    "gt_tables_scored": 0,
+    "gt_tables_total": 0
+  },
+  "means": {
+    "teds": null,
+    "teds_structure_only": null
+  }
+}

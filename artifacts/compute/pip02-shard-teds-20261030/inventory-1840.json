@@ -1,0 +1,1157 @@
+{
+  "recorded_at": "2026-10-30T18:43:32.888520+00:00",
+  "cohort": "pip02-english-fresh-20261029",
+  "source_main": "243067bed40d0ed5e08827ed4c7c760a0250b196",
+  "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+  "gt_sha256": "a45cd84b04ad8b793e775089640e6b681209abea33ead54c1828ddca35fae496",
+  "native_scorer_sha256": "27f0b630b6812aecad35d1c65329841a5011e421326e81f9f14c8c66a6fdbe5e",
+  "coverage": {
+    "pages_complete": 251,
+    "pages_total": 755,
+    "gt_tables_scored": 78,
+    "gt_tables_total": 243
+  },
+  "artifacts": [
+    {
+      "artifact": "paddle-split-v3-s000.json",
+      "sha256": "5e5123d25681bc2cccba4613905a7f6f7f1fa84e9d79e29123349ec7fdb6b932",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s000.json"
+    },
+    {
+      "artifact": "paddle-split-v3-s001.json",
+      "sha256": "ee429a45715ae5551a7dd53f55418e0a5571305301f2f8f8543a68503503575e",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s001.json"
+    },
+    {
+      "artifact": "paddle-split-v3-s002.json",
+      "sha256": "3b34c6762b1877dad3934fcd6d198c4e667f5999e21ffe9a28ef27efdc372816",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s002.json"
+    },
+    {
+      "artifact": "paddle-split-v3-s003.json",
+      "sha256": "fec1ad86a87f5d69f4ed38ceb41557f8f1a1e54537db994c2a49ffd3c5bacb17",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s003.json"
+    },
+    {
+      "artifact": "paddle-split-v3-s004.json",
+      "sha256": "6510b7bd007427d1d1d39a6c10dcaea3614ea803502a6429b6ceb926a6f6a2a1",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s004.json"
+    },
+    {
+      "artifact": "paddle-split-v3-s005.json",
+      "sha256": "d093269f0b50b70921551c40b2166cb244a7933bcdcd83065ca9c424fce8518b",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s005.json"
+    },
+    {
+      "artifact": "paddle-split-v3-s006.json",
+      "sha256": "f4d31044b45d18334c3696613f284b50c22ef675bf6ac47650a9f014a20b8d7f",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s006.json"
+    },
+    {
+      "artifact": "paddle-split-v3-s007.json",
+      "sha256": "c6b4332804653791c207a8b5f11352f9409b144702f1c4b82b8a4f1490a9104b",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s007.json"
+    },
+    {
+      "artifact": "paddle-split-v3-s008.json",
+      "sha256": "1f77c46e65d444428466976402b9ef81156b3cc7ab5edb8b58f7ef00755b9d7a",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s008.json"
+    },
+    {
+      "artifact": "paddle-split-v3-s009.json",
+      "sha256": "2f7b86b9114f7b47a85b2df24fd899c528b3c4fc8fbe646fd8f54209fb235e3c",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s009.json"
+    },
+    {
+      "artifact": "paddle-split-v3-s010.json",
+      "sha256": "03fbb29dfc514e9efcd13ae1edf2ec1830bffe790e39031752c45246d15b41a7",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s010.json"
+    },
+    {
+      "artifact": "paddle-split-v3-s011.json",
+      "sha256": "e12e5b63a96c9149b29f7bbfa459a43de36d20bc5b580853b991e7e7984269cb",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s011.json"
+    },
+    {
+      "artifact": "paddle-split-v3-s012.json",
+      "sha256": "4c8e47b49d56ece5a24cb3db13e12f6f34cd79a2b6f2100a621f089fc791d4c9",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s012.json"
+    },
+    {
+      "artifact": "paddle-split-v3-s013.json",
+      "sha256": "a2447e8a8f1b6d9868b3d11deb9ce84546b521ac845e8d4b8c8dcbd1ef6ed429",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s013.json"
+    },
+    {
+      "artifact": "paddle-split-v3-s014.json",
+      "sha256": "4056c784adb401e7899b67d2b46343c613804b09da1aacd0445ee8037a5ae308",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s014.json"
+    },
+    {
+      "artifact": "paddle-split-v3-s015.json",
+      "sha256": "182d4b04532ae3f530962564fd30bc39702234f7afd2250e4ee1172a01aa0ee4",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s015.json"
+    },
+    {
+      "artifact": "paddle-split-v3-s016.json",
+      "sha256": "e42f36bb013c65fe1cdb1ece18af4782110b2bae6a85671327eb3186dd1971b2",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s016.json"
+    },
+    {
+      "artifact": "paddle-split-v3-s017.json",
+      "sha256": "67038211a3423b2e48ad11a90009e3f43c31b3545b835394bcc5c939e49c7665",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s017.json"
+    },
+    {
+      "artifact": "paddle-split-v3-s018.json",
+      "sha256": "35deeac23a6ace05b4b76a3b72c64637e629b1f3f34c1cd6e5c619e872c9e1fd",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s018.json"
+    },
+    {
+      "artifact": "paddle-split-v3-s019.json",
+      "sha256": "5da9222b955705793887214bb86a5d85e1acdb5720f02f52da98236be5d765b9",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s019.json"
+    },
+    {
+      "artifact": "paddle-split-v3-s020.json",
+      "sha256": "d2fab5036e21c115f33ca35d9be888468c4eb517f3f98915fd7a730d1949fec0",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s020.json"
+    },
+    {
+      "artifact": "paddle-split-v3-s021.json",
+      "sha256": "0672d2d975ecbe60176c4c7ac38e474ad39c31592a2d4f6c705039e305e96139",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s021.json"
+    },
+    {
+      "artifact": "paddle-split-v3-s022.json",
+      "sha256": "789aca3bf88422458c74042555fba0c27ec20125b0bbdb6314cddfe4280a7018",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s022.json"
+    },
+    {
+      "artifact": "paddle-split-v3-s023.json",
+      "sha256": "7710781d7f8caf89816226fe57985b94aafcda80a7fbee201b189fe8e7c9621a",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s023.json"
+    },
+    {
+      "artifact": "paddle-split-v3-s024.json",
+      "sha256": "68db9d6c09a1fa6378bd426caec4a4c54b07e21e35f2e74e20fef218dba4ff44",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s024.json"
+    },
+    {
+      "artifact": "paddle-split-v3-s025.json",
+      "sha256": "ebd4f3cf5a3c6a86f60ddd4c1e13c014665ef8cb085f7fb2e90515e09ea7b815",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s025.json"
+    },
+    {
+      "artifact": "paddle-split-v3-s026.json",
+      "sha256": "28f0dbef3455e2e3ea48f636210941bccd6ad1f7651001f5e36fe0a214019c88",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s026.json"
+    },
+    {
+      "artifact": "paddle-split-v3-s027.json",
+      "sha256": "4ec16bea4c8502d22a8cc22ce470f6e07b8af41144e91b67bf25e3a5dbb219d3",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s027.json"
+    },
+    {
+      "artifact": "paddle-split-v3-s028.json",
+      "sha256": "3744cc147e9f2f4852e49e724d84a7b707429c525c8be4b6cc27a1716b4184d6",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s028.json"
+    },
+    {
+      "artifact": "paddle-split-v3-s029.json",
+      "sha256": "8b177fe723070c1d430520e73c8f2fdb3744c1564823a921bdc3bb261e747d9a",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s029.json"
+    },
+    {
+      "artifact": "paddle-split-v3-s030.json",
+      "sha256": "aa87099d2f792f29cc7f45debaf0710ce401919ad23cef8d655525b6f4dd5e25",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s030.json"
+    },
+    {
+      "artifact": "paddle-split-v3-s031.json",
+      "sha256": "4ea0fb09776c669a013c5a807cb3a364f7bd42823e4a5ee3fc98854bffa4768e",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s031.json"
+    },
+    {
+      "artifact": "paddle-split-v3-s032.json",
+      "sha256": "3c821ff34e5015ff1c5e35bea1dbd5bb47eb58e9980a05a4f8e026f7bda4253a",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s032.json"
+    },
+    {
+      "artifact": "paddle-split-v3-s033.json",
+      "sha256": "b3bb51b8f6d29964fc7dcbc21cc1207041792e35c4a3a3a308956212c552694d",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s033.json"
+    },
+    {
+      "artifact": "paddle-split-v3-s034.json",
+      "sha256": "0fc9493f79ee35e29760f125b187a6d5b6fc7d237fc7c2b539b20313a6289ef0",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s034.json"
+    },
+    {
+      "artifact": "paddle-split-v3-s035.json",
+      "sha256": "757e3080d20a2548e979207ab0d0f7f68e5d5bcd9d1647ce63125df484800a07",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s035.json"
+    },
+    {
+      "artifact": "paddle-split-v3-s036.json",
+      "sha256": "dcd11ab5c5f034fe12efbd75475ffe9b37becd1846bc16c84c29e60c1d453a08",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s036.json"
+    },
+    {
+      "artifact": "paddle-split-v3-s037.json",
+      "sha256": "99cefd7d01a0df63e1ebdb1d87583e85db16289a9f6742e5952c91ada7ffab1d",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s037.json"
+    },
+    {
+      "artifact": "paddle-split-v3-s038.json",
+      "sha256": "a26f42cacac561a807cd97cb5a370f61e52940cdba9933f2c4c55bdcd7fee557",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s038.json"
+    },
+    {
+      "artifact": "paddle-split-v3-s039.json",
+      "sha256": "ac560d84ed72595c3168fb8bddc1d4f36546b9b4bc0449b1b90326b6f2b60f99",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s039.json"
+    },
+    {
+      "artifact": "paddle-split-v3-s040.json",
+      "sha256": "8733cb60308b465c8884522cf215868ed14d466d34809e7030d2bddbeaee124b",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s040.json"
+    },
+    {
+      "artifact": "paddle-split-v3-s041.json",
+      "sha256": "fce8d2133670bae4df31d59d28f9b87b50cc5bbe70396521dafb7c929e77901e",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s041.json"
+    },
+    {
+      "artifact": "paddle-split-v3-s042.json",
+      "sha256": "a660c45306c110074ad4eb386f4d3685a1d064f956211cce4b686dec42981eb9",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s042.json"
+    },
+    {
+      "artifact": "paddle-split-v3-s043.json",
+      "sha256": "cc7e943fc019e406b4ed01a1841fba7806423c2019bdd4bd3ff41a36edf0e3bd",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s043.json"
+    },
+    {
+      "artifact": "paddle-split-v3-s044.json",
+      "sha256": "6725aea8969fdfb0b9db1e59d011c1a319b1d9fbedffa2301235c5da8b3a90e3",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s044.json"
+    },
+    {
+      "artifact": "paddle-split-v3-s045.json",
+      "sha256": "4b4c2acf61f9d22844a184612854f44bf8dc34733a4a9651da480d4270ba574c",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s045.json"
+    },
+    {
+      "artifact": "paddle-split-v3-s046.json",
+      "sha256": "543401ab1354dadb0eba52726f19e2a97845f4f707b2d451c29956eabfa84acf",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s046.json"
+    },
+    {
+      "artifact": "paddle-split-v3-s047.json",
+      "sha256": "9baae373ef63ffaa99e3ff7e650ec8276f01ef3812f774c5ab786d6e9bad7aa6",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s047.json"
+    },
+    {
+      "artifact": "paddle-split-v3-s048.json",
+      "sha256": "9b5d6123ded79c1305cee424e0a2c055328ccc4857a42a709197dc700206e505",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s048.json"
+    },
+    {
+      "artifact": "paddle-split-v3-s049.json",
+      "sha256": "4db851a7b086afab83e002f90ebf55bf1408d4a8623b240ddec47d3cc33c04cb",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s049.json"
+    },
+    {
+      "artifact": "paddle-split-v3-s050.json",
+      "sha256": "0a47ab2b39eea116cce71e2497b19fc128d5dd40a044ca57d12b51084d1c94f9",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s050.json"
+    },
+    {
+      "artifact": "paddle-split-v3-s051.json",
+      "sha256": "9e45a3477854f4cd1e1d8218ebeccc131f56ccd156bcbc89e81176594e2444db",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s051.json"
+    },
+    {
+      "artifact": "paddle-split-v3-s052.json",
+      "sha256": "2e6c897fa5675b0128fb9929dab7a3e8d14372bf38b4a1030aec4b3aa28aae77",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s052.json"
+    },
+    {
+      "artifact": "paddle-split-v3-s053.json",
+      "sha256": "28d8f2745e2aa2c7eccadf8207173b3ce11b3100ce55b9a2f6363e293312be0d",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s053.json"
+    },
+    {
+      "artifact": "paddle-split-v3-s054.json",
+      "sha256": "c4a2967f44ba9a775bc93f925f913d88c77bc7904e057aaeb684f34c9ad35164",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s054.json"
+    },
+    {
+      "artifact": "paddle-split-v3-s055.json",
+      "sha256": "97349c7c9f46d0b35c908c2271c20db155befee12303f470fbd90addb3d9b359",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s055.json"
+    },
+    {
+      "artifact": "paddle-split-v3-s056.json",
+      "sha256": "c30b63a52b823489eb85d0f182e44089deaeb643645a823f3f6ccebfdbe87617",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s056.json"
+    },
+    {
+      "artifact": "paddle-split-v3-s057.json",
+      "sha256": "a1da17f57b2653b3643c6a841c17c076db6e8646bd0b2558677acf4df41c2917",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s057.json"
+    },
+    {
+      "artifact": "paddle-split-v3-s058.json",
+      "sha256": "b024acadaa6c170728c81f2b709930efe7f464792e74ff3b4502839dc71a33c9",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s058.json"
+    },
+    {
+      "artifact": "paddle-split-v3-s059.json",
+      "sha256": "7aedb74b37b7d0fefe1300d01b61ea02c3d9b7daac29a832d7be75c7ff503a82",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s059.json"
+    },
+    {
+      "artifact": "paddle-split-v3-s060.json",
+      "sha256": "77b10891c6e8db20d71da43520eb7e86431a1c9f754dd8cfa9ce1474659bf15c",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s060.json"
+    },
+    {
+      "artifact": "paddle-split-v3-s061.json",
+      "sha256": "5982048da79ccf0d0ab0236da93d1433a26b579f2305ebc714b5bd9944cdf7d4",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s061.json"
+    },
+    {
+      "artifact": "paddle-split-v3-s062.json",
+      "sha256": "b1aab5af2fa5f18c36240c5d90ba1ecb12f34f9f491e17763740ecf5c73d9b02",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s062.json"
+    },
+    {
+      "artifact": "paddle-split-v3-s063.json",
+      "sha256": "7788834ec2adec732637c0a63b6dfaa079ceb23cf2c4b880b6f8989fa9ff8720",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s063.json"
+    },
+    {
+      "artifact": "paddle-split-v3-s064.json",
+      "sha256": "bc29255c915a7e1b9b4cf2158cbcc60c3b57ea39cfb683e8f773a1ba5f4ca6a4",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s064.json"
+    },
+    {
+      "artifact": "paddle-split-v3-s065.json",
+      "sha256": "f86f2a153c4292ea4c6414d5f40b26996c223cc54886d86c00c02f331e1b1f27",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s065.json"
+    },
+    {
+      "artifact": "paddle-split-v3-s066.json",
+      "sha256": "95dcca4e412b98f94db4cfbd6e26359bcb016e987cd1e55eea563434a943a538",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s066.json"
+    },
+    {
+      "artifact": "paddle-split-v3-s067.json",
+      "sha256": "0a0063fe63d10d930fbfd0d0149ee5a0184b732fdd7924a4c48902f51d38749c",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s067.json"
+    },
+    {
+      "artifact": "paddle-split-v3-s068.json",
+      "sha256": "b338730fc7275513493e513f69c5a44330c8c38bd0487fd0c8b42fe840192f37",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s068.json"
+    },
+    {
+      "artifact": "paddle-split-v3-s069.json",
+      "sha256": "fba687817d0458a98f32e93ef8de559ea716c556433411395adf4979d149f4bb",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s069.json"
+    },
+    {
+      "artifact": "paddle-split-v3-s070.json",
+      "sha256": "264b00c292513b3d1ac70416fe5fb918fba042fa9e52c110697d40612d01f70a",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s070.json"
+    },
+    {
+      "artifact": "paddle-split-v3-s071.json",
+      "sha256": "0ac971ee5c923088c83d1413e6c7131327304da8adb3316c96ed9d59d199028d",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s071.json"
+    },
+    {
+      "artifact": "paddle-split-v3-s072.json",
+      "sha256": "9c42da99ed1f7ec8168f2301f23f85a33a24861e67444ef60746028c81152356",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s072.json"
+    },
+    {
+      "artifact": "paddle-split-v3-s073.json",
+      "sha256": "a52c27e80a23a0fcceb110ec97d2b397e9e27f61eec58bcb7f10162cdb23d7fc",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s073.json"
+    },
+    {
+      "artifact": "paddle-split-v3-s074.json",
+      "sha256": "9f9ad1070af247e1add4e6660c631202c6f6b895579e99ce0efece292e034719",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s074.json"
+    },
+    {
+      "artifact": "paddle-split-v3-s075.json",
+      "sha256": "e7628c610929e4f81119f3a0914355792ec865bc5a90931808219452ca50f8fd",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s075.json"
+    },
+    {
+      "artifact": "paddle-split-v3-s076.json",
+      "sha256": "fdb7fe9b7c006ddd121985950b192f67705184c1c338223b532c83cf90ba828f",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s076.json"
+    },
+    {
+      "artifact": "paddle-split-v3-s077.json",
+      "sha256": "cf4b2634ff50c603cef663bba37f76995fa6a2368aee8cdc97f1b8a2a898fb84",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s077.json"
+    },
+    {
+      "artifact": "paddle-split-v3-s078.json",
+      "sha256": "df5b990d920d1089297960a58112971b6a575ec32e30a47240685987f42e22d0",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s078.json"
+    },
+    {
+      "artifact": "paddle-split-v3-s079.json",
+      "sha256": "aced59a6ac4f3de017d029bec838808c88ee611d7e0ae4c83f68626b89367590",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s079.json"
+    },
+    {
+      "artifact": "paddle-split-v3-s080.json",
+      "sha256": "1ca089bd7e42058f6a2c63869fcb99be5d72d562238d45ef51b80a4c359f0e14",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s080.json"
+    },
+    {
+      "artifact": "paddle-split-v3-s081.json",
+      "sha256": "70dfed09c54af1fb3ef17d38a04e0b56504e43b74875cc9587ead11bd0d20252",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s081.json"
+    },
+    {
+      "artifact": "paddle-split-v3-s082.json",
+      "sha256": "64611d869263db1a1e6b37727b5a41e2d941c9e95c9d4924d662b920a50dad6c",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s082.json"
+    },
+    {
+      "artifact": "paddle-split-v3-s083.json",
+      "sha256": "de8bd3d23f8bf553be7ed9f73df630d0472c726493681bbcccb333a3a70f1c6a",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s083.json"
+    },
+    {
+      "artifact": "paddle-split-v3-s084.json",
+      "sha256": "c5e7ec92f04945db0e2a69c839b8f4f8f5a38b4823ffb9a505807c7699b84320",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s084.json"
+    },
+    {
+      "artifact": "paddle-split-v3-s085.json",
+      "sha256": "6fe4a7555419b748a291c000fa6e20126f9ac0983a547dd0f3fc9a7791e7e17a",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s085.json"
+    },
+    {
+      "artifact": "paddle-split-v3-s086.json",
+      "sha256": "e8c57574ab9c9867d94bae9d01386be0028d4874bf73cb7b1bc2300d7f873676",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s086.json"
+    },
+    {
+      "artifact": "paddle-split-v3-s087.json",
+      "sha256": "e71d823655a791cb94dbd60317137867fbbb4160da25573f28fa2d85f772c9a3",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s087.json"
+    },
+    {
+      "artifact": "paddle-split-v3-s088.json",
+      "sha256": "19d2b4d7e6e5037a7327f4e5af3b6dafa5dcb62e5f231da7e717f7f950f5ebfe",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s088.json"
+    },
+    {
+      "artifact": "paddle-split-v3-s089.json",
+      "sha256": "dfdeee8e6293c4d2b92f4600059140cbe98ad7b165feaf7dc5868abb940f3a16",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s089.json"
+    },
+    {
+      "artifact": "paddle-split-v3-s090.json",
+      "sha256": "fbbb031b74fa5f60b7e15622b405322175c01e9cedfb61ee92e6fcb56e7869e9",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s090.json"
+    },
+    {
+      "artifact": "paddle-split-v3-s091.json",
+      "sha256": "3e2d5aaf7b309ac376347f654562b1ffb302f93beea777e90343f32e8d1482be",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s091.json"
+    },
+    {
+      "artifact": "paddle-split-v3-s092.json",
+      "sha256": "189fafc5b62e76216811c9cf7aacfa6edf20599a9700b587187c45f1d248cea0",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s092.json"
+    },
+    {
+      "artifact": "paddle-split-v3-s093.json",
+      "sha256": "3ad98b26ae864b8ee8005f6b275b454fb608ae47e365aa62809952ea4394920b",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s093.json"
+    },
+    {
+      "artifact": "paddle-split-v3-s094.json",
+      "sha256": "b7325e5d213d0ee91c14f78584808bb13554a23761b861573f58677f7eab2f3c",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s094.json"
+    },
+    {
+      "artifact": "paddle-split-v3-s095.json",
+      "sha256": "f97c787cbef5a3b7ff2f8973f8ddf4d06f3c82f4961facaa3039ede1daa3eff7",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s095.json"
+    },
+    {
+      "artifact": "paddle-split-v3-s096.json",
+      "sha256": "bc8f53f375f0835ec4f917ec6abb77998fe6bff5a9110c7a8bea2c9d1ea2038b",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s096.json"
+    },
+    {
+      "artifact": "paddle-split-v3-s097.json",
+      "sha256": "89422b256115bb75b255030f62fce7f7db03a39c9f36421c120ee2797d990e23",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s097.json"
+    },
+    {
+      "artifact": "paddle-split-v3-s098.json",
+      "sha256": "6963103436ad7a9d064a115471b9db17a6e487a8b3533bdc7e6ed398eb4b5dde",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s098.json"
+    },
+    {
+      "artifact": "paddle-split-v3-s099.json",
+      "sha256": "53d7d178187c59e3ce43c015c1d1e3b181f44122b8b2d54191640e388fab0844",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s099.json"
+    },
+    {
+      "artifact": "paddle-split-v3-s100.json",
+      "sha256": "d2ddc3af1aa8295d04d73393011658db6c34fee9a3af86a7f6914bedf06eed2d",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s100.json"
+    },
+    {
+      "artifact": "paddle-split-v3-s101.json",
+      "sha256": "2f3e8f367c60b2eb72aec6c07973b4f2c4f30c0acbca454e3ed865ddd599f509",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s101.json"
+    },
+    {
+      "artifact": "paddle-split-v3-s102.json",
+      "sha256": "3e60e03162746aa195fb17fe19edc8e534c3a999f0b10ce32e0f41ccf5065a5f",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s102.json"
+    },
+    {
+      "artifact": "paddle-split-v3-s103.json",
+      "sha256": "aae951c8eb773af384e1ce32e3b472a8f3f6fa8efa21bfc28e117d698bc00e72",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s103.json"
+    },
+    {
+      "artifact": "paddle-split-v3-s104.json",
+      "sha256": "005bcdf26a705dfe4e991109778a87cb56e79f9ea1885ee76b9f6cd462a15030",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s104.json"
+    },
+    {
+      "artifact": "paddle-split-v3-s105.json",
+      "sha256": "d45b7f3a09fac571625aa53b4704fc237f2432ad58ec47f0ee3919fb1e57f80f",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s105.json"
+    },
+    {
+      "artifact": "paddle-split-v3-s106.json",
+      "sha256": "7971d5402d7a2237dfed4509abd770eff85853fd9f9859cdbb9ab251af4f78cb",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s106.json"
+    },
+    {
+      "artifact": "paddle-split-v3-s107.json",
+      "sha256": "499f23016f0fe6c421ed024b31a3ef3eb160787293eddf79c9b55ed33639373f",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s107.json"
+    },
+    {
+      "artifact": "paddle-split-v3-s108.json",
+      "sha256": "b1630a618abce42dcd7dda6576755855c2a746e0069dd14a8ecab5ed6550a1f2",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s108.json"
+    },
+    {
+      "artifact": "paddle-split-v3-s109.json",
+      "sha256": "6053d48f379b7d0637c5b53a7c1526c834613bae3906ebd3e2a52cfb3240386e",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s109.json"
+    },
+    {
+      "artifact": "paddle-split-v3-s110.json",
+      "sha256": "2ba62d019ab1553d76f1dc3156fa68f65f305caf63a19640589eaf67b0a04408",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s110.json"
+    },
+    {
+      "artifact": "paddle-split-v3-s111.json",
+      "sha256": "70377e11a953436c0f9461dc5c819070e7abbed077035746eb3a82afb8fdab84",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s111.json"
+    },
+    {
+      "artifact": "paddle-split-v3-s112.json",
+      "sha256": "ebdf5515278b9782670cdf3dffcd405d14fa52ddad3cd1c79577af3b00607aea",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s112.json"
+    },
+    {
+      "artifact": "paddle-split-v3-s113.json",
+      "sha256": "dbf3bea623840bcbe44a4dab8045fa5992d51d15770d3aa549ab81d19d9cd4c9",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s113.json"
+    },
+    {
+      "artifact": "paddle-split-v3-s114.json",
+      "sha256": "2313d7dfd545b320bb99325c8b03fbc8eedee1bd8458e2d195100b4820faf12b",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s114.json"
+    },
+    {
+      "artifact": "paddle-split-v3-s115.json",
+      "sha256": "052186d0db3aeb5736511b453625cca20fb44f46d3025b43aa02f4169370c10d",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s115.json"
+    },
+    {
+      "artifact": "paddle-split-v3-s116.json",
+      "sha256": "d75af12e550be6f85f9b414636269c0d6de2734e0035baa9c756a362f8bbd086",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s116.json"
+    },
+    {
+      "artifact": "paddle-split-v3-s117.json",
+      "sha256": "63785d020586017f06e13c2100a71bd7cfd194a2791c2aa332de166069585acd",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s117.json"
+    },
+    {
+      "artifact": "paddle-split-v3-s118.json",
+      "sha256": "a7443cd150cdc77a80f2b272f4585ee0992471d3b3d02b7988caaac030a827b4",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s118.json"
+    },
+    {
+      "artifact": "paddle-split-v3-s119.json",
+      "sha256": "4c5df76f15e887a16c07cbe0ef01cab664240144aa7fbd022b06b5481618d60c",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s119.json"
+    },
+    {
+      "artifact": "paddle-split-v3-s120.json",
+      "sha256": "e979440ee920d2a02121300d173906040d9002bda29b3d8342a41a5ff969b735",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s120.json"
+    },
+    {
+      "artifact": "paddle-split-v3-s121.json",
+      "sha256": "bde3e5b92cd24c59a1bdeb35e609448cde2dc0e12ee06ec10049916566a2d7b3",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s121.json"
+    },
+    {
+      "artifact": "paddle-split-v3-s122.json",
+      "sha256": "f17a9ff0cb0451b101207bb2414119a26f27f3411baf39f05a1c65d68aabd6b9",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s122.json"
+    },
+    {
+      "artifact": "paddle-split-v3-s123.json",
+      "sha256": "ad833e94e8e5fa2798f1e9464e9960f5fdf4907983aec067aba647709efe4909",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s123.json"
+    },
+    {
+      "artifact": "paddle-split-v3-s124.json",
+      "sha256": "a07b580ffb98557e02863a965d73598ed555aab0e8f876b677916701bdce54aa",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s124.json"
+    },
+    {
+      "artifact": "paddle-split-v3-s125.json",
+      "sha256": "0508bfd94c30f622fa326057a3189a60da4138821cdbd590422189b8bb1ec6a5",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s125.json"
+    },
+    {
+      "artifact": "paddle-split-v3-s126.json",
+      "sha256": "75228a76ed39585cde1ce8ec318cabcf18fd7f950d3fd96956af04cbe8b89c5a",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s126.json"
+    },
+    {
+      "artifact": "paddle-split-v3-s127.json",
+      "sha256": "a5baf60d3b125b0189006a3b25c6c3bde4a240ad458fb620d9ed28f56f3b4b0c",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s127.json"
+    },
+    {
+      "artifact": "paddle-split-v3-s128.json",
+      "sha256": "9936e20c8dc88ecd85faf5becf7fbfd8ea309ab6be0f70f665d7ff098168c847",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s128.json"
+    },
+    {
+      "artifact": "paddle-split-v3-s129.json",
+      "sha256": "cdacc88d6dd56e015d8640126149b1330d270ca35989e80657044fdb9ed6351a",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s129.json"
+    },
+    {
+      "artifact": "paddle-split-v3-s130.json",
+      "sha256": "b28dfe15aa51f5fa604d05930591e5e61e8be6dc9ada7a75d6c2e31852b1a779",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s130.json"
+    },
+    {
+      "artifact": "paddle-split-v3-s131.json",
+      "sha256": "3e42d12afd14226fb6a6500a8327319b84a3ca0b4ae9b7b74a3db7ef71ca5bbf",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s131.json"
+    },
+    {
+      "artifact": "paddle-split-v3-s132.json",
+      "sha256": "493cd35870d1643e1ca50401baa822a8f8fbca6e7a044797730fc2dacdd8db16",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s132.json"
+    },
+    {
+      "artifact": "paddle-split-v3-s133.json",
+      "sha256": "597663bcab970be7379fce0d71561a83a4330f0f1c1c5f9639d4b1b46dde3686",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s133.json"
+    },
+    {
+      "artifact": "paddle-split-v3-s134.json",
+      "sha256": "c6aba097d964d565fef38894a7b53f7233f938ca458b8ac717ea994ab888a391",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s134.json"
+    },
+    {
+      "artifact": "paddle-split-v3-s135.json",
+      "sha256": "fc9bd3609b8d7e0b5defdc88d7464496adff9c6539fff3d7b0a3eafbb80fa667",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s135.json"
+    },
+    {
+      "artifact": "paddle-split-v3-s136.json",
+      "sha256": "c6c5b6aa8cb48ccc4d22ab21e438cda91bb8cc8402bb8d1d543b1d285c311519",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s136.json"
+    },
+    {
+      "artifact": "paddle-split-v3-s137.json",
+      "sha256": "cec5eedecf25b77d733870937b33d33730fe0623dda2370f714ff4c53416320d",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s137.json"
+    },
+    {
+      "artifact": "paddle-split-v3-s138.json",
+      "sha256": "ad0a3a644b5429694401167af9b771fbc284278ed8880c3f03f4712dc54c8d2b",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s138.json"
+    },
+    {
+      "artifact": "paddle-split-v3-s139.json",
+      "sha256": "5371c80c6dfb824d9a475aa474486840e494f8c4601cba59235e0cce9b83feb0",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s139.json"
+    },
+    {
+      "artifact": "paddle-split-v3-s140.json",
+      "sha256": "87bb064c49525a56601d29620db28f7ebfefdf32dd892b8e434a872cda36ea96",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s140.json"
+    },
+    {
+      "artifact": "paddle-split-v3-s141.json",
+      "sha256": "309eaf8905c4127d1128cbb2a376ac94e385ce6837c99ae5d0c6e953828f0a6e",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s141.json"
+    },
+    {
+      "artifact": "paddle-split-v3-s142.json",
+      "sha256": "04c9ec198596394ab9b3a2edfac31a2cbc41cc6fd407a10bd7aaac850968946a",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s142.json"
+    },
+    {
+      "artifact": "paddle-split-v3-s143.json",
+      "sha256": "3fe8110eaa8fa9e94a66bf73b76730922f02b5742bf3c9c6971e58de6c151ac5",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s143.json"
+    },
+    {
+      "artifact": "paddle-split-v3-s144.json",
+      "sha256": "1109c54fbea45fdc20ae49dc26abc907d05e79410cad212506bdb0aeb8e99c86",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s144.json"
+    },
+    {
+      "artifact": "paddle-split-v3-s145.json",
+      "sha256": "49022aefe63a74288bb845e1492142f343ae5736f3dc7b068f6cf89a1c5da043",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s145.json"
+    },
+    {
+      "artifact": "paddle-split-v3-s146.json",
+      "sha256": "29c08555caf36bdc975dfd8623415dc00bd743ccc353d6677921d5062754fd1c",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s146.json"
+    },
+    {
+      "artifact": "paddle-split-v3-s147.json",
+      "sha256": "7365e6002dd0e53f2748fd1f32cace3b0ca11e8d3fb07137746831b57aafa0d6",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s147.json"
+    },
+    {
+      "artifact": "paddle-split-v3-s148.json",
+      "sha256": "fdbb6040395c13bbe5b3f1b1fa208975eff901586a1be1312be03da43085401e",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s148.json"
+    },
+    {
+      "artifact": "paddle-split-v3-s149.json",
+      "sha256": "75f5cecfb4bb515f6647a85f43a39de8ad401f87e7a8198a725e2a32994c87f4",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s149.json"
+    },
+    {
+      "artifact": "paddle-split-v3-s150.json",
+      "sha256": "9044c3aab2fca8e9d82c76bc3dfd6a5cf438403469e5142cd2ce69f90c6c8ce3",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s150.json"
+    },
+    {
+      "artifact": "paddle-snapshot-paddle-split-v3-s008.json",
+      "sha256": "1f77c46e65d444428466976402b9ef81156b3cc7ab5edb8b58f7ef00755b9d7a",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s008.json"
+    },
+    {
+      "artifact": "paddle-snapshot-paddle-split-v3-s009.json",
+      "sha256": "2f7b86b9114f7b47a85b2df24fd899c528b3c4fc8fbe646fd8f54209fb235e3c",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s009.json"
+    },
+    {
+      "artifact": "paddle-snapshot-paddle-split-v3-s010.json",
+      "sha256": "03fbb29dfc514e9efcd13ae1edf2ec1830bffe790e39031752c45246d15b41a7",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s010.json"
+    },
+    {
+      "artifact": "paddle-snapshot-paddle-watch-s011.json",
+      "sha256": "b12dce0ca720e9f19e632e22fd5fc2c05a12f4652616758ac21b2e80c1c4a630",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-watch/s011.json"
+    },
+    {
+      "artifact": "paddle-snapshot-paddle-watch-s012.json",
+      "sha256": "56a86329033350ea581b35dc21c69c8ccc60e5b497ebba379a3ea1af2aa0b692",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-watch/s012.json"
+    },
+    {
+      "artifact": "paddle-snapshot-paddle-watch-s013.json",
+      "sha256": "d8ea52f6e9f1b687a86cd72e58024f9fa1dc031baaa8498b44d1fa6eb1cd1fd9",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-watch/s013.json"
+    },
+    {
+      "artifact": "paddle-snapshot-paddle-watch-s014.json",
+      "sha256": "9a3dbe7c4f13448d2606f7b665672067ad4ae321c4529375f41b3d58b256edbe",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-watch/s014.json"
+    },
+    {
+      "artifact": "paddle-snapshot-paddle-watch-s015.json",
+      "sha256": "b7c3c1c3cc56c423279624d1ab010c9705aa202b80da5ecbb7ac034cd54aadfc",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-watch/s015.json"
+    },
+    {
+      "artifact": "paddle-snapshot-paddle-watch-s016.json",
+      "sha256": "b8b250f763555b505efcb01e5942d4c7cc97a3fc0e78cf1b413d89743c154cb0",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-watch/s016.json"
+    },
+    {
+      "artifact": "paddle-snapshot-paddle-split-v3-s020.json",
+      "sha256": "d2fab5036e21c115f33ca35d9be888468c4eb517f3f98915fd7a730d1949fec0",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s020.json"
+    },
+    {
+      "artifact": "paddle-snapshot-paddle-split-v3-s021.json",
+      "sha256": "0672d2d975ecbe60176c4c7ac38e474ad39c31592a2d4f6c705039e305e96139",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s021.json"
+    },
+    {
+      "artifact": "paddle-snapshot-paddle-split-v3-s022.json",
+      "sha256": "789aca3bf88422458c74042555fba0c27ec20125b0bbdb6314cddfe4280a7018",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s022.json"
+    },
+    {
+      "artifact": "paddle-snapshot-paddle-split-v3-s023.json",
+      "sha256": "7710781d7f8caf89816226fe57985b94aafcda80a7fbee201b189fe8e7c9621a",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s023.json"
+    },
+    {
+      "artifact": "paddle-snapshot-paddle-split-v3-s024.json",
+      "sha256": "68db9d6c09a1fa6378bd426caec4a4c54b07e21e35f2e74e20fef218dba4ff44",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s024.json"
+    },
+    {
+      "artifact": "paddle-snapshot-paddle-split-v3-s025.json",
+      "sha256": "ebd4f3cf5a3c6a86f60ddd4c1e13c014665ef8cb085f7fb2e90515e09ea7b815",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s025.json"
+    },
+    {
+      "artifact": "paddle-snapshot-paddle-split-v3-s026.json",
+      "sha256": "28f0dbef3455e2e3ea48f636210941bccd6ad1f7651001f5e36fe0a214019c88",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s026.json"
+    },
+    {
+      "artifact": "paddle-snapshot-paddle-split-v3-s026.json",
+      "sha256": "28f0dbef3455e2e3ea48f636210941bccd6ad1f7651001f5e36fe0a214019c88",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s026.json"
+    },
+    {
+      "artifact": "paddle-snapshot-paddle-split-v3-s027.json",
+      "sha256": "4ec16bea4c8502d22a8cc22ce470f6e07b8af41144e91b67bf25e3a5dbb219d3",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s027.json"
+    },
+    {
+      "artifact": "paddle-snapshot-paddle-split-v3-s027.json",
+      "sha256": "4ec16bea4c8502d22a8cc22ce470f6e07b8af41144e91b67bf25e3a5dbb219d3",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s027.json"
+    },
+    {
+      "artifact": "paddle-snapshot-paddle-split-v3-s028.json",
+      "sha256": "3744cc147e9f2f4852e49e724d84a7b707429c525c8be4b6cc27a1716b4184d6",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s028.json"
+    },
+    {
+      "artifact": "paddle-snapshot-paddle-split-v3-s028.json",
+      "sha256": "3744cc147e9f2f4852e49e724d84a7b707429c525c8be4b6cc27a1716b4184d6",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s028.json"
+    },
+    {
+      "artifact": "paddle-snapshot-paddle-split-v3-s032.json",
+      "sha256": "3c821ff34e5015ff1c5e35bea1dbd5bb47eb58e9980a05a4f8e026f7bda4253a",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s032.json"
+    },
+    {
+      "artifact": "paddle-snapshot-paddle-split-v3-s033.json",
+      "sha256": "b3bb51b8f6d29964fc7dcbc21cc1207041792e35c4a3a3a308956212c552694d",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s033.json"
+    },
+    {
+      "artifact": "paddle-snapshot-paddle-split-v3-s034.json",
+      "sha256": "0fc9493f79ee35e29760f125b187a6d5b6fc7d237fc7c2b539b20313a6289ef0",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s034.json"
+    },
+    {
+      "artifact": "paddle-snapshot-paddle-watch-s035.json",
+      "sha256": "75ae8d0ac249ed17d7bfbd67bb7c742b99c92d557e12e55fb07b7a46bf862880",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-watch/s035.json"
+    },
+    {
+      "artifact": "paddle-snapshot-paddle-split-v3-s036.json",
+      "sha256": "dcd11ab5c5f034fe12efbd75475ffe9b37becd1846bc16c84c29e60c1d453a08",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s036.json"
+    },
+    {
+      "artifact": "paddle-snapshot-paddle-split-v3-s037.json",
+      "sha256": "99cefd7d01a0df63e1ebdb1d87583e85db16289a9f6742e5952c91ada7ffab1d",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s037.json"
+    },
+    {
+      "artifact": "paddle-snapshot-paddle-split-v3-s038.json",
+      "sha256": "a26f42cacac561a807cd97cb5a370f61e52940cdba9933f2c4c55bdcd7fee557",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s038.json"
+    },
+    {
+      "artifact": "paddle-snapshot-paddle-split-v3-s039.json",
+      "sha256": "ac560d84ed72595c3168fb8bddc1d4f36546b9b4bc0449b1b90326b6f2b60f99",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s039.json"
+    },
+    {
+      "artifact": "paddle-snapshot-paddle-split-v3-s040.json",
+      "sha256": "8733cb60308b465c8884522cf215868ed14d466d34809e7030d2bddbeaee124b",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s040.json"
+    },
+    {
+      "artifact": "paddle-snapshot-paddle-split-v3-s047.json",
+      "sha256": "9baae373ef63ffaa99e3ff7e650ec8276f01ef3812f774c5ab786d6e9bad7aa6",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s047.json"
+    },
+    {
+      "artifact": "paddle-snapshot-paddle-split-v3-s048.json",
+      "sha256": "9b5d6123ded79c1305cee424e0a2c055328ccc4857a42a709197dc700206e505",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s048.json"
+    },
+    {
+      "artifact": "paddle-snapshot-paddle-split-v3-s049.json",
+      "sha256": "4db851a7b086afab83e002f90ebf55bf1408d4a8623b240ddec47d3cc33c04cb",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s049.json"
+    },
+    {
+      "artifact": "paddle-snapshot-paddle-split-v3-s050.json",
+      "sha256": "0a47ab2b39eea116cce71e2497b19fc128d5dd40a044ca57d12b51084d1c94f9",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s050.json"
+    },
+    {
+      "artifact": "paddle-snapshot-paddle-split-v3-s051.json",
+      "sha256": "9e45a3477854f4cd1e1d8218ebeccc131f56ccd156bcbc89e81176594e2444db",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s051.json"
+    },
+    {
+      "artifact": "paddle-snapshot-paddle-split-v3-s052.json",
+      "sha256": "2e6c897fa5675b0128fb9929dab7a3e8d14372bf38b4a1030aec4b3aa28aae77",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s052.json"
+    },
+    {
+      "artifact": "paddle-snapshot-paddle-split-v3-s056.json",
+      "sha256": "c30b63a52b823489eb85d0f182e44089deaeb643645a823f3f6ccebfdbe87617",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s056.json"
+    },
+    {
+      "artifact": "paddle-snapshot-paddle-split-v3-s057.json",
+      "sha256": "a1da17f57b2653b3643c6a841c17c076db6e8646bd0b2558677acf4df41c2917",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s057.json"
+    },
+    {
+      "artifact": "paddle-snapshot-paddle-split-v3-s058.json",
+      "sha256": "b024acadaa6c170728c81f2b709930efe7f464792e74ff3b4502839dc71a33c9",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s058.json"
+    },
+    {
+      "artifact": "paddle-snapshot-paddle-split-v3-s059.json",
+      "sha256": "7aedb74b37b7d0fefe1300d01b61ea02c3d9b7daac29a832d7be75c7ff503a82",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s059.json"
+    },
+    {
+      "artifact": "paddle-snapshot-paddle-split-v3-s060.json",
+      "sha256": "77b10891c6e8db20d71da43520eb7e86431a1c9f754dd8cfa9ce1474659bf15c",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s060.json"
+    },
+    {
+      "artifact": "paddle-snapshot-paddle-split-v3-s061.json",
+      "sha256": "5982048da79ccf0d0ab0236da93d1433a26b579f2305ebc714b5bd9944cdf7d4",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s061.json"
+    },
+    {
+      "artifact": "paddle-snapshot-paddle-split-v3-s064.json",
+      "sha256": "bc29255c915a7e1b9b4cf2158cbcc60c3b57ea39cfb683e8f773a1ba5f4ca6a4",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s064.json"
+    },
+    {
+      "artifact": "paddle-snapshot-paddle-split-v3-s077.json",
+      "sha256": "cf4b2634ff50c603cef663bba37f76995fa6a2368aee8cdc97f1b8a2a898fb84",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s077.json"
+    },
+    {
+      "artifact": "paddle-snapshot-paddle-split-v3-s080.json",
+      "sha256": "1ca089bd7e42058f6a2c63869fcb99be5d72d562238d45ef51b80a4c359f0e14",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s080.json"
+    },
+    {
+      "artifact": "paddle-snapshot-paddle-split-v3-s081.json",
+      "sha256": "70dfed09c54af1fb3ef17d38a04e0b56504e43b74875cc9587ead11bd0d20252",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s081.json"
+    },
+    {
+      "artifact": "paddle-snapshot-paddle-split-v3-s081.json",
+      "sha256": "70dfed09c54af1fb3ef17d38a04e0b56504e43b74875cc9587ead11bd0d20252",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s081.json"
+    },
+    {
+      "artifact": "paddle-snapshot-paddle-split-v3-s082.json",
+      "sha256": "64611d869263db1a1e6b37727b5a41e2d941c9e95c9d4924d662b920a50dad6c",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s082.json"
+    },
+    {
+      "artifact": "paddle-snapshot-paddle-split-v3-s082.json",
+      "sha256": "64611d869263db1a1e6b37727b5a41e2d941c9e95c9d4924d662b920a50dad6c",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s082.json"
+    },
+    {
+      "artifact": "paddle-snapshot-paddle-split-v3-s083.json",
+      "sha256": "de8bd3d23f8bf553be7ed9f73df630d0472c726493681bbcccb333a3a70f1c6a",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s083.json"
+    },
+    {
+      "artifact": "paddle-snapshot-paddle-split-v3-s084.json",
+      "sha256": "c5e7ec92f04945db0e2a69c839b8f4f8f5a38b4823ffb9a505807c7699b84320",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s084.json"
+    },
+    {
+      "artifact": "paddle-snapshot-paddle-split-v3-s085.json",
+      "sha256": "6fe4a7555419b748a291c000fa6e20126f9ac0983a547dd0f3fc9a7791e7e17a",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s085.json"
+    },
+    {
+      "artifact": "paddle-snapshot-paddle-split-v3-s086.json",
+      "sha256": "e8c57574ab9c9867d94bae9d01386be0028d4874bf73cb7b1bc2300d7f873676",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s086.json"
+    },
+    {
+      "artifact": "paddle-snapshot-paddle-split-v3-s087.json",
+      "sha256": "e71d823655a791cb94dbd60317137867fbbb4160da25573f28fa2d85f772c9a3",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s087.json"
+    },
+    {
+      "artifact": "paddle-snapshot-paddle-split-v3-s088.json",
+      "sha256": "19d2b4d7e6e5037a7327f4e5af3b6dafa5dcb62e5f231da7e717f7f950f5ebfe",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s088.json"
+    },
+    {
+      "artifact": "paddle-snapshot-paddle-split-v3-s092.json",
+      "sha256": "189fafc5b62e76216811c9cf7aacfa6edf20599a9700b587187c45f1d248cea0",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s092.json"
+    },
+    {
+      "artifact": "paddle-snapshot-paddle-split-v3-s093.json",
+      "sha256": "3ad98b26ae864b8ee8005f6b275b454fb608ae47e365aa62809952ea4394920b",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s093.json"
+    },
+    {
+      "artifact": "paddle-snapshot-paddle-split-v3-s094.json",
+      "sha256": "b7325e5d213d0ee91c14f78584808bb13554a23761b861573f58677f7eab2f3c",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s094.json"
+    },
+    {
+      "artifact": "paddle-snapshot-paddle-split-v3-s095.json",
+      "sha256": "f97c787cbef5a3b7ff2f8973f8ddf4d06f3c82f4961facaa3039ede1daa3eff7",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s095.json"
+    },
+    {
+      "artifact": "paddle-snapshot-paddle-split-v3-s096.json",
+      "sha256": "bc8f53f375f0835ec4f917ec6abb77998fe6bff5a9110c7a8bea2c9d1ea2038b",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s096.json"
+    },
+    {
+      "artifact": "paddle-snapshot-paddle-split-v3-s097.json",
+      "sha256": "89422b256115bb75b255030f62fce7f7db03a39c9f36421c120ee2797d990e23",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s097.json"
+    },
+    {
+      "artifact": "paddle-snapshot-paddle-split-v3-s098.json",
+      "sha256": "6963103436ad7a9d064a115471b9db17a6e487a8b3533bdc7e6ed398eb4b5dde",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s098.json"
+    },
+    {
+      "artifact": "paddle-snapshot-paddle-split-v3-s099.json",
+      "sha256": "53d7d178187c59e3ce43c015c1d1e3b181f44122b8b2d54191640e388fab0844",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s099.json"
+    },
+    {
+      "artifact": "paddle-snapshot-paddle-split-v3-s100.json",
+      "sha256": "d2ddc3af1aa8295d04d73393011658db6c34fee9a3af86a7f6914bedf06eed2d",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s100.json"
+    },
+    {
+      "artifact": "paddle-snapshot-paddle-split-v3-s105.json",
+      "sha256": "d45b7f3a09fac571625aa53b4704fc237f2432ad58ec47f0ee3919fb1e57f80f",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s105.json"
+    },
+    {
+      "artifact": "paddle-snapshot-paddle-split-v3-s108.json",
+      "sha256": "b1630a618abce42dcd7dda6576755855c2a746e0069dd14a8ecab5ed6550a1f2",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s108.json"
+    },
+    {
+      "artifact": "paddle-snapshot-paddle-watch-s109.json",
+      "sha256": "34a6a9f93b1f754e2832e13622025e23497b21aa2e2bbeb125dba40dee83f98e",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-watch/s109.json"
+    },
+    {
+      "artifact": "paddle-snapshot-paddle-split-v3-s119.json",
+      "sha256": "4c5df76f15e887a16c07cbe0ef01cab664240144aa7fbd022b06b5481618d60c",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s119.json"
+    },
+    {
+      "artifact": "paddle-snapshot-paddle-split-v3-s119.json",
+      "sha256": "4c5df76f15e887a16c07cbe0ef01cab664240144aa7fbd022b06b5481618d60c",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s119.json"
+    },
+    {
+      "artifact": "paddle-snapshot-paddle-split-v3-s120.json",
+      "sha256": "e979440ee920d2a02121300d173906040d9002bda29b3d8342a41a5ff969b735",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s120.json"
+    },
+    {
+      "artifact": "paddle-snapshot-paddle-split-v3-s120.json",
+      "sha256": "e979440ee920d2a02121300d173906040d9002bda29b3d8342a41a5ff969b735",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s120.json"
+    },
+    {
+      "artifact": "paddle-snapshot-paddle-split-v3-s121.json",
+      "sha256": "bde3e5b92cd24c59a1bdeb35e609448cde2dc0e12ee06ec10049916566a2d7b3",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s121.json"
+    },
+    {
+      "artifact": "paddle-snapshot-paddle-split-v3-s121.json",
+      "sha256": "bde3e5b92cd24c59a1bdeb35e609448cde2dc0e12ee06ec10049916566a2d7b3",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s121.json"
+    },
+    {
+      "artifact": "paddle-snapshot-paddle-split-v3-s126.json",
+      "sha256": "75228a76ed39585cde1ce8ec318cabcf18fd7f950d3fd96956af04cbe8b89c5a",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-split-v3/s126.json"
+    },
+    {
+      "artifact": "paddle-snapshot-paddle-running-refusals.json",
+      "sha256": "ab7bc1657e58c922025155458da0e6d2a3f343f77b09667c2e16edea8171b81b",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-running-refusals.json"
+    },
+    {
+      "artifact": "paddle-refusals-1840.json",
+      "sha256": "ab7bc1657e58c922025155458da0e6d2a3f343f77b09667c2e16edea8171b81b",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-running-refusals.json"
+    },
+    {
+      "artifact": "paddle-scoring-wrapper-1840.py",
+      "sha256": "46656ec9f08f6c5624079e194edf9f1bccb6c9c1c3c4f5690005517333005f0c",
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle_split_v3.py"
+    }
+  ],
+  "scope": "descriptive partial cohort; no decision-grade historical warrant or paired winner"
+}
