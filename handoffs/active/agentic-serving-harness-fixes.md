@@ -528,9 +528,13 @@ Orchestrator and stack side (workspace-ec; items are linked here as they land):
     - [ ] **UFH14-DEPLOY-EC-2d — B4: one dispatched primitives-lane record carrying `request.prefix_fp`.** No
       primitives call ran in the block (`primitives-lane prefix_fp present: []`). The record's `long_prefill` field is
       KVU-15d.
-    - [ ] **UFH14-DEPLOY-EC-2e — `deploy_ec2_lease.py`: the default lane B must send `x_session_id`.** (filed
-      2026-10-04, workspace-ec) In /v1 client mode the passthrough requires it, so the default config 422s. Make the
-      default two passthrough lanes (as re-run), or add `x_session_id` to the client-mode body, and dry-run it.
+    - [x] **UFH14-DEPLOY-EC-2e — `deploy_ec2_lease.py`: the default lane B must send `x_session_id`.** ✅ 2026-10-30
+      (filed 2026-10-04, workspace-ec) The durable runner is `epyc-orchestrator/scripts/research/deploy_ec2_lease.py`
+      at commit `a75f030c062530dae0e1f0f18f39ce25486b211a`; lane B client requests carry a fresh valid ID, the
+      runner preserves lane-A passthrough behavior, and its streaming lease order overlaps lane A with lane B before
+      the credit call. Default dry-run and opt-in input-file execution are covered by four tests, including the real
+      guard's missing-ID 422 and an overlapping mock-stream regression. No live lease, inference, or performance
+      measurement was performed. [no-belief: implementation/tooling; no new measurement]
 - [x] **UFH14-DIAG-EC — a recorded, TTL-bound diagnostic env override for one llama-server component.** ✅ 2026-10-03
   (workspace-ec) Orch main aa1d6894 (branch `feat/diag-env-override-ec`, ada71720 rebased). It is CLI-only, so no
   reload was needed.
