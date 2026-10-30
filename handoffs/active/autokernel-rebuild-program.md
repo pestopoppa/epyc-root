@@ -2219,11 +2219,17 @@ production model at pairs=5, ~18% cadence overhead). Six operator decision items
         Integrated validation: 78 tests plus 13 subtests passed; no new lint defects. Graph indexing reached
         its unchanged 7 GiB stop twice; exact current caller/source audit supplemented the index.
         [no-belief: dependency and API compatibility repair]
-          - [ ] **R23-67 — state the `unit` in the D8 instrument-characterisation artifact behind
-        `MEASURED_FLOOR_PCT`**, which carries none: the built-in table is now labelled in code
-        (`bench.FLOOR_UNIT`, `MEASURED_FLOOR_N = 20`) but the artifact's field is only derivable from its
-        single-writer schema (`artifacts/autokernel-aa-noise-floor/aa-noise-floor.json`) (found 2026-09-14,
-        noninf sweep).
+          - [x] **R23-67 — state the `unit` in the D8 instrument-characterisation artifact behind
+        `MEASURED_FLOOR_PCT`**, which carried none: the built-in table is labelled in code
+        (`bench.FLOOR_UNIT`, `MEASURED_FLOOR_N = 20`) and the artifact now records that unit. ✅ 2026-10-30 [belief: cc]
+        Research main `5d92b1bea7ff4e3274a28a2d797c62d4f93099e8` adds canonical `UNIT_PROCESS` metadata to the sole
+        writer and the existing artifact. Source confirms one fresh `llama-bench` subprocess per A/B sample and one
+        `avg_ts` value collected per invocation; `--reps` is internal to each process. Removing only the new
+        `unit` field leaves the original artifact payload identical (canonical SHA-256
+        `dae87dad186b2c0e829cf86ea302d21e98e45dd0de6b1d40187eb6a0672d7fc1`). The fake-process writer regression
+        verifies four distinct invocation PIDs, serialized unit and sample vectors; the original writer fails on the
+        missing field. This closes only the unit-metadata gap: no measurement rerun, floor recalibration, new warrant,
+        grade, or performance conclusion. [Evidence](../../artifacts/compute/refactor-r23-67-aa-noise-floor-unit-20261030.json)
           - [ ] **R23-68 — record the autokernel-loop pytest baseline and the `TMPDIR` prerequisite**:
         `pytest scripts/kernel_rnd/autokernel/loop -q` at `origin/main` `7ea556f4` reads **176 failed / 201
         errors / 2509 passed**, the remainder environmental on this host (HTTP-child fixtures, live-store and

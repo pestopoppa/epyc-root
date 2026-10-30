@@ -1,0 +1,56 @@
+{
+  "schema": "epyc.refactor.r23_67_unit_source_closure.v1",
+  "task": "R23-67",
+  "source_commit": "5d92b1bea7ff4e3274a28a2d797c62d4f93099e8",
+  "source_repository": "epyc-inference-research",
+  "source_base": "f0737320a54f6454a67f957bf1b6eb5ec204149d",
+  "source_paths": [
+    "scripts/benchmark/autokernel_aa_noise_floor.py",
+    "artifacts/autokernel-aa-noise-floor/aa-noise-floor.json",
+    "scripts/benchmark/test_autokernel_aa_noise_floor_unit.py"
+  ],
+  "unit": "process",
+  "unit_basis": "Each A/B sample is one new subprocess.run invocation and one collected avg_ts value; --reps is internal to the process. Canonical vocabulary is UNIT_PROCESS from scripts/kernel_rnd/autokernel/loop/floor_units.py.",
+  "artifact_original_sha256": "9f13dec36ac06b4e8d5eeae00ce29952fd2918443268d6d9522063b08294777e",
+  "artifact_annotated_sha256": "1736265bfca6f7296ad289d0049a96caa7184763246f9de04b6d57d22efd1b2b",
+  "canonical_nonunit_payload_sha256_before_and_after": "dae87dad186b2c0e829cf86ea302d21e98e45dd0de6b1d40187eb6a0672d7fc1",
+  "accepted_patch_sha256": "26e827ea0b5841bb30c7deda536fcf2076cb5b989688aeb7fcf231cbb4721cdb",
+  "test_sha256": "8e807e95d66226f3604016cbd6e2e57530c299db38fd909563414c06d2ed0ec6",
+  "validation": {
+    "positive": {
+      "result": "passed",
+      "log": "/mnt/raid0/llm/tmp/refactor-01a16fc3/r23-67-unit-proposal-20261030/live-positive-r6.log",
+      "sha256": "847f9f112cf474d279d5875278968f63e3c9754f1fdb47e2321e8ed7de968b1c",
+      "duration_s": 0.2123791330959648,
+      "sampled_tree_rss_bytes": 37609472,
+      "children_drained": true
+    },
+    "negative_original_writer": {
+      "result": "expected failure: missing unit KeyError",
+      "log": "/mnt/raid0/llm/tmp/refactor-01a16fc3/r23-67-unit-proposal-20261030/live-negative-r6.log",
+      "sha256": "f77d9b26354d1b294ba3840c806642c933e5f2483cd3217df6b01d345ebdf99d",
+      "duration_s": 0.21272889501415193,
+      "sampled_tree_rss_bytes": 38797312,
+      "children_drained": true
+    },
+    "admission": {
+      "lock": "/mnt/raid0/llm/tmp/compute-flags/prep-locks/26-27.lock",
+      "cpus": [
+        122,
+        123
+      ],
+      "checker": "/mnt/raid0/llm/tmp/codex3-bolt-build-r2-20261030/prep_admission.py",
+      "supervisor": "/mnt/raid0/llm/tmp/codex3-bolt-build-r2-20261030/prep_supervisor.py",
+      "deadline_s": 900,
+      "sampled_tree_rss_stop_bytes": 7516192768
+    },
+    "gpu_inference_or_measurement_rerun": false,
+    "floor_recalibration": false
+  },
+  "claim_or_grade": null,
+  "status": "completed source-only closure",
+  "source_receipt_path": "/mnt/raid0/llm/tmp/refactor-01a16fc3/r23-67-unit-proposal-20261030/publication-receipt.json",
+  "source_receipt_sha256": "a58360c9c37d65cf673da4b26a6742b046f2dbb51e853fb7739712b46d502a8d",
+  "source_writer_sha256": "dd82f4ad2e9cb66621473bf445e9e0e891fcfc1cf78b5e3bb2d069df8d2c74d7",
+  "canonical_floor_units_sha256": "7e99b1ee575eaf5b4efecfd9e4bbf148b0fb1bf23e6b0b05b57105323459a78d"
+}
