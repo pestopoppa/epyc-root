@@ -1,0 +1,89 @@
+{
+  "acceptance": "Original CS8.STT3: paired 95% interval contains 0 in every language AND zero silent tail drops across every required pause case for every required configuration; no unknown, VOID or incomplete case establishes PASS. Collection completeness is not parity.",
+  "campaign": "codex3-cs8-stt3-20261030-v1",
+  "decode": {
+    "beam_size": 1,
+    "best_of": 1,
+    "fallback": false,
+    "flash_attention": false,
+    "forced_language": "source",
+    "temperature": 0,
+    "threshold_difference": "transcribe compression ratio and reference/Crisp entropy have different meanings; log native defaults, do not claim equivalence"
+  },
+  "execution": "CPU correctness normal calendar build-role grant; dynamic keeper CPUs; 24 threads only when actually granted; R11 smoke two SMT threads <=8GiB <=300s beside non-timing; immutable per-cell exposures, no redraw, strict native-byte resume, rc75 plus partial at cutoff, verified captured-process cleanup; retain prior unrelated JFK diagnostics separately.",
+  "fleurs_path": "/mnt/raid0/llm/tmp/codex3-cs8-stt3-transcribe-20261030/corpus-candidate/manifest.json",
+  "fleurs_sha256": "8116e0bbbb44876f592542a94e31a3717d73ad96e94f80209b5cbd80c9664b10",
+  "frozen_at": "2026-10-30T22:16:10.485886+00:00",
+  "matrix": {
+    "prompt": [
+      false,
+      true
+    ],
+    "transcribe_kv": [
+      "auto",
+      "f32"
+    ],
+    "vad": [
+      false,
+      true
+    ]
+  },
+  "model_sha256": "1fc70f774d38eb169993ac391eea357ef47c88757ef72ee5943879b7e8e2bc69",
+  "owner": "codex3",
+  "pause_path": "/mnt/raid0/llm/tmp/codex3-cs8-stt3-transcribe-20261030/pause-candidate-v2/manifest.json",
+  "pause_sha256": "885329943e7b3a056d6572926f84806683e907d0aeb8a87ffe7e836735cd878d",
+  "population": {
+    "de_de": 862,
+    "en_us": 647,
+    "fr_fr": 676,
+    "it_it": 865,
+    "pause_selection_only": 20
+  },
+  "prompt": "This is a transcription of spoken audio.",
+  "schema": "cs8.stt3.prospective-plan/v1",
+  "scoring": {
+    "interval": "95% percentile candidate-minus-reference pooled WER difference, percentage points",
+    "known_decode_failure": "empty hypothesis, full reference deletions, retained in denominator",
+    "methods": "canonical score_utterance plus paired_bootstrap_delta over complete matched error/reference arrays, canonical in-run contract/property checks",
+    "normalizer": "stt_norm/v1",
+    "resamples": 4000,
+    "seed": 3155678808,
+    "seed_derivation": "unsigned integer of first 8 hex SHA256(campaign UTF-8)",
+    "snapshot_research_commit": "99301fa149af86a6f9743d2b0405c9234ba39586",
+    "token_identity": "literal actual-generated text IDs 0<=id<50257, same universe for every arm; concatenate chunks by original index; retain all-native IDs separately, no retokenization substitute",
+    "uncertainty_summary": "95% interval half-width in percentage points: (upper-lower)/2; this is not an A/A instrument floor",
+    "unknown_or_void": "retain immutable exposure; no redraw; cannot establish PASS"
+  },
+  "segmentation": {
+    "before_asr": "derived shared manifest pins this plan and original source inputs, raw native VAD and producer catalog; ASR launcher pins that manifest digest before first ASR",
+    "max_samples": 480000,
+    "other_parameters": "pinned producer native defaults",
+    "policy": "latest native Silero speech end within each 480000-sample window; exact contiguous original PCM cover; no boundary is VOID; no replacement",
+    "sample_rate": 16000,
+    "threshold": 0.5,
+    "vad_sha256": "2aa269b785eeb53a82983a20501ddf7c1d9c48e33ab63a41391ac6c9f7fb6987"
+  },
+  "source_contract": "Final launcher embeds expected source-catalog SHA before checking members; catalog pins this plan, actual job/readers/native model and library bytes and derived chunk manifest before ASR. Engineering corrections may create a new immutable source catalog before exposure, retaining prior source and controls; scientific methods/inputs/gate stay fixed. No additional admission receipt or human review prerequisite.",
+  "source_review_snapshot": {
+    "/mnt/raid0/llm/tmp/codex3-cs8-stt3-crisp-20261030/DRAFT-SHA256SUMS": "859271eda11d9b99fbb276d763ea2fc2e838d0eff4fd0f7eed49f78ac49147b4",
+    "/mnt/raid0/llm/tmp/codex3-cs8-stt3-crisp-20261030/chunk_manifest.py": "8bb2e8c2c5dbc93c35a0354f9b65c456f033c5204071f4e15f9d92563a704d58",
+    "/mnt/raid0/llm/tmp/codex3-cs8-stt3-crisp-20261030/collect_chunks.py": "222184877853c2b1ca71f77e8affa32d8802534ffd421a3b1e17d27349a2052a",
+    "/mnt/raid0/llm/tmp/codex3-cs8-stt3-crisp-20261030/crisp_cell.py": "3fc7c300635ebe2defc213559385196990b42a3c0e6cafe504a3eafa92873f91",
+    "/mnt/raid0/llm/tmp/codex3-cs8-stt3-crisp-20261030/paired_integrator.py": "f2aed310125c7cf7bf2fee4b0caa9a4c393c3e0772b5080b71699da1bf3ed85b",
+    "/mnt/raid0/llm/tmp/codex3-cs8-stt3-crisp-20261030/reference_cell.py": "f03c01b634a5a6aa81b3456a5cbe8c813946f38d0ae554e18caf0f1e01b40ea5",
+    "/mnt/raid0/llm/tmp/codex3-cs8-stt3-crisp-20261030/reference_tokens_v2.so": "2f788770f463a3128b61a6360d5161f6f215306a6934ac11010a643979b34e76",
+    "/mnt/raid0/llm/tmp/codex3-cs8-stt3-crisp-20261030/reference_trace.py": "f367b80e12ad2721d573fbe6e737a9dad9d662a19ddaeb323acddccd21cd2885",
+    "/mnt/raid0/llm/tmp/codex3-cs8-stt3-transcribe-20261030/CANDIDATE-SOURCE-SHA256SUMS": "b48ef5cc8b60f5156a69fd81651c84f90154d0ff41e899d820e9bd2808b2af7d",
+    "/mnt/raid0/llm/tmp/codex3-cs8-stt3-transcribe-20261030/CHUNK-SOURCE-SHA256SUMS": "57dcbb36e64acf0e9c475cd1b35d7c7b71190987db4fbeb0d2af6ca4364d3944",
+    "/mnt/raid0/llm/tmp/codex3-cs8-stt3-transcribe-20261030/SCORER-SHA256SUMS": "74f4c45bacf0ea2da83d9869e5b0f0e33fa8a5a2d3043081c0da7d2f4c18b8a2",
+    "/mnt/raid0/llm/tmp/codex3-cs8-stt3-transcribe-20261030/identity_draft.py": "293459e291168003d3250767e37ce8d4ca0d2594413204d73796b8ca3d593a88",
+    "/mnt/raid0/llm/tmp/codex3-cs8-stt3-transcribe-20261030/native_candidate_reader.py": "89123c61da46f8ea62cec8003a2c6391725ff6229b8759156bc5f156cb3286d3",
+    "/mnt/raid0/llm/tmp/codex3-cs8-stt3-transcribe-20261030/paired_reduction_draft.py": "ef29b8903d6c874333db0c5451aab4fb1833cd436dd3682d383ee05be6f76bd7",
+    "/mnt/raid0/llm/tmp/codex3-cs8-stt3-transcribe-20261030/tail_oracle_draft.py": "4266e3c552783f63450be29355d63b3cc9211a105ccdda6f8849a470dfcb2370"
+  },
+  "tail_oracle": {
+    "method": "reviewed conservative canonical v1 independent normalization/alignment; full suffix deletion with observed prefix and original endpoint at/before pause is SILENT_TAIL_DROP; no suffix deletions plus exact tail match and endpoint beyond pause is TAIL_OBSERVED; ambiguity, partial deletion, uncheckable timing/text or decode status are UNKNOWN",
+    "source_sha256": "4266e3c552783f63450be29355d63b3cc9211a105ccdda6f8849a470dfcb2370",
+    "timing": "map VAD-compressed spans back to original timeline; ambiguous mapping UNKNOWN"
+  }
+}

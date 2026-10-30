@@ -1,0 +1,74 @@
+{
+  "main_compared": "cfcdac549b499d2e7d08916ea84ca4f0dbf20a47",
+  "new_case_artifacts": [
+    "paddle-watch/epochs/s104/e76b365d2845b1cf299fe7dbc17a0212ab5014722084ccc1d5ce21b692b0f8ee/s104.json",
+    "paddle-watch/epochs/s131/769b96c0920aa2e2860c79006548fdb85e9c9ea6f71cdccacccf3b1de7a2625c/s131.json",
+    "paddle-watch/epochs/s132/174cbd8d3c96ebc3d1153df28796a35b0ee8140a8688846fb25eb3b34be70e4a/s132.json",
+    "paddle-watch/epochs/s133/58ff5bb791fbb48b33fdccd4a9e52ea6c978c855a5123543df00542c64234c74/s133.json"
+  ],
+  "copy": [
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-watch/epochs/s104/e76b365d2845b1cf299fe7dbc17a0212ab5014722084ccc1d5ce21b692b0f8ee/s104.json",
+      "relative": "paddle-watch/epochs/s104/e76b365d2845b1cf299fe7dbc17a0212ab5014722084ccc1d5ce21b692b0f8ee/s104.json",
+      "sha256": "8d1aab333c5e35307a4d9e7fe7c3d26e327d0094d390b79ed7be285a604c07ee"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-watch/epochs/s104/e76b365d2845b1cf299fe7dbc17a0212ab5014722084ccc1d5ce21b692b0f8ee/s104.score-receipt.json",
+      "relative": "paddle-watch/epochs/s104/e76b365d2845b1cf299fe7dbc17a0212ab5014722084ccc1d5ce21b692b0f8ee/s104.score-receipt.json",
+      "sha256": "779d3ca6aa1b7c54097b1ae7ccd879f0fe29f9064cecaa3a3bb3b8d40a2da788"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-watch/epochs/s104/e76b365d2845b1cf299fe7dbc17a0212ab5014722084ccc1d5ce21b692b0f8ee/execution-status.json",
+      "relative": "paddle-watch/epochs/s104/e76b365d2845b1cf299fe7dbc17a0212ab5014722084ccc1d5ce21b692b0f8ee/execution-status.json",
+      "sha256": "3832c3eda0c5c1a23fe399319ced7ced5a27b22288dc64ae1653963ad0a417ef"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-watch/epochs/s131/769b96c0920aa2e2860c79006548fdb85e9c9ea6f71cdccacccf3b1de7a2625c/s131.json",
+      "relative": "paddle-watch/epochs/s131/769b96c0920aa2e2860c79006548fdb85e9c9ea6f71cdccacccf3b1de7a2625c/s131.json",
+      "sha256": "ed491cb5ab08d860ddd49f60d79cf5d423637e51a8b79a8dd51c555a857edf08"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-watch/epochs/s131/769b96c0920aa2e2860c79006548fdb85e9c9ea6f71cdccacccf3b1de7a2625c/s131.score-receipt.json",
+      "relative": "paddle-watch/epochs/s131/769b96c0920aa2e2860c79006548fdb85e9c9ea6f71cdccacccf3b1de7a2625c/s131.score-receipt.json",
+      "sha256": "bae4c712f2c4f1ee56c92617330deccbe04979d16f8b0d17ee3973569edae0d6"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-watch/epochs/s131/769b96c0920aa2e2860c79006548fdb85e9c9ea6f71cdccacccf3b1de7a2625c/execution-status.json",
+      "relative": "paddle-watch/epochs/s131/769b96c0920aa2e2860c79006548fdb85e9c9ea6f71cdccacccf3b1de7a2625c/execution-status.json",
+      "sha256": "3aad8a3dd3a91279203406154e23b4f822173a8b2784248312ebb28300088531"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-watch/epochs/s132/174cbd8d3c96ebc3d1153df28796a35b0ee8140a8688846fb25eb3b34be70e4a/s132.json",
+      "relative": "paddle-watch/epochs/s132/174cbd8d3c96ebc3d1153df28796a35b0ee8140a8688846fb25eb3b34be70e4a/s132.json",
+      "sha256": "7dca044eb7e9234c30b76e438918ea9377c521f4459c0df294e326e7fc118967"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-watch/epochs/s132/174cbd8d3c96ebc3d1153df28796a35b0ee8140a8688846fb25eb3b34be70e4a/s132.score-receipt.json",
+      "relative": "paddle-watch/epochs/s132/174cbd8d3c96ebc3d1153df28796a35b0ee8140a8688846fb25eb3b34be70e4a/s132.score-receipt.json",
+      "sha256": "7fd19cf093753882bfbdfe4bd221428cf6611f24cb3cb50a7ccb97e55647ed99"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-watch/epochs/s132/174cbd8d3c96ebc3d1153df28796a35b0ee8140a8688846fb25eb3b34be70e4a/execution-status.json",
+      "relative": "paddle-watch/epochs/s132/174cbd8d3c96ebc3d1153df28796a35b0ee8140a8688846fb25eb3b34be70e4a/execution-status.json",
+      "sha256": "b83c238dfd5e08a04a9021f137493fefd858304bb6d0b8b2ed75be7eaef72c12"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-watch/epochs/s133/58ff5bb791fbb48b33fdccd4a9e52ea6c978c855a5123543df00542c64234c74/s133.json",
+      "relative": "paddle-watch/epochs/s133/58ff5bb791fbb48b33fdccd4a9e52ea6c978c855a5123543df00542c64234c74/s133.json",
+      "sha256": "f2d543243dfc0a5a9fcdc3eb40fbda48e1f960ab11c363f6e5bfe7a5b46cb657"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-watch/epochs/s133/58ff5bb791fbb48b33fdccd4a9e52ea6c978c855a5123543df00542c64234c74/s133.score-receipt.json",
+      "relative": "paddle-watch/epochs/s133/58ff5bb791fbb48b33fdccd4a9e52ea6c978c855a5123543df00542c64234c74/s133.score-receipt.json",
+      "sha256": "1c16b64a5319d6dd250fb87699a8754f0c23537e379b575f3c9ef7893108c2a1"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-watch/epochs/s133/58ff5bb791fbb48b33fdccd4a9e52ea6c978c855a5123543df00542c64234c74/execution-status.json",
+      "relative": "paddle-watch/epochs/s133/58ff5bb791fbb48b33fdccd4a9e52ea6c978c855a5123543df00542c64234c74/execution-status.json",
+      "sha256": "49c7b9ebdcc9017399bc063f974188cecdc84558d15c8018fa0253ef87209467"
+    }
+  ],
+  "verified_unique_pages": 271,
+  "verified_gt_tables": 78,
+  "scope": "unique verified native completed pages; repeated epoch planned denominators not summed"
+}
