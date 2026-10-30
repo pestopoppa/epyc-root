@@ -1,0 +1,64 @@
+{
+  "backend_failure_cause": {
+    "evidence": "/mnt/raid0/llm/tmp/c3-nonfinite-cause-20261030/CAUSE-REPORT.md",
+    "evidence_sha256": "3e935499adf62c004ccf12b5d87a170824f0cbe32fe211713a4f8e6eb01ce4db",
+    "final_compatibility_outcome": "CAUSE-REPORT now includes 2026-10-30 21:22 UTC final compatibility outcome; exact-L single-change caveat retained",
+    "finding": "v10 instrument failed after first 154-token chunk with 3901440/3942400 nonfinite target feature floats; newer C3 ROCWMMA-OFF exact-L succeeds; #27870 divergent __syncthreads repair is supported as likely cause, not proven sole change because source differs elsewhere"
+  },
+  "date": "2026-10-30",
+  "expert_count_source_cause": {
+    "evidence": "/mnt/raid0/llm/tmp/codex3-bolt-expert-proposal-20261030/GETTER-FINAL-r2.json",
+    "finding": "Bolt expert_used_count is ARRAY<INT32>[88], not scalar UINT32; checked signed/unsigned array path plus signed-INT64 ternary correction; final direct getter 10/10 including negative -1 refusal. One additional zero entry accepted; not all-zero-model validation.",
+    "getter_sha256": "7b4aeb4850c5c2f338029d202c41ad5d317fca89a7caee7394c3f26eb0fb9896",
+    "image_sha256": "ebf812750dfcd662743547b7c521cf1f51b59a48966a2453a30d50ec723c7af2",
+    "source_commit": "7ba0f48b754f74c7ac40c7aeb2c8bc84bd3a8ac0"
+  },
+  "limitations": [
+    "scheduled 3600s diagnostic profile not run",
+    "no zero-nonfinite claim",
+    "no profile grade or speed/quality claim",
+    "no ClaimTuple emitted",
+    "planning-context canary pending",
+    "scientific parent stays open"
+  ],
+  "qualification": {
+    "cutoff_marker": "/mnt/raid0/llm/tmp/codex3-bolt-expert-proposal-20261030/final-r2-controls/cutoff-QUALIFIED.json",
+    "cutoff_marker_sha256": "a2acd2fa130de998b71cc0542f46128b5a08219af250013d2049dda6534a966a",
+    "r2_result_path": "/mnt/raid0/llm/tmp/codex3-bolt-expert-proposal-20261030/R2-CONTROLS-RESULT.md",
+    "r2_result_sha256": "cb43f7ffff465b58fdec8f32171e9c2ab712ac325b9f2927dc21835414856eaa",
+    "raw_join": "complete; six raw roles, 24 source-time artifacts, 442 native events; warm/M 48/96 emitted tokens, 50/97 native calls, 0/0 unknowns; purpose refused scoring; 0 ClaimTuples",
+    "raw_join_path": "/mnt/raid0/llm/tmp/codex3-bolt-expert-proposal-20261030/B-RAW-JOIN-DIAGNOSTIC-r3.json",
+    "raw_join_sha256": "821d7891bc35bfacfdcd5dc53165487a8944d1a816859af1e554bba8154c796c",
+    "source_manifest_sha256": "bf7c7158c0778a260cd6aea4f5f075d5f07b0caa360d40eebbdaf356db955fda",
+    "terminal": "PASS runner rc0 reaped; source hashes match; B/L/cutoff markers pass and servers absent",
+    "terminal_path": "/mnt/raid0/llm/tmp/codex3-bolt-expert-proposal-20261030/final-r2-controls/TERMINAL.json",
+    "terminal_sha256": "d0e1a857fd143550afb61f7d490922f61404057e4006e4cf40f3d3ec177d1a09"
+  },
+  "reader_failure_cause": {
+    "cause": "two emitted tokens had multiple completed-call candidates from chunked prompt prefill and later generation; R2 accepts uniquely latest candidate only when earlier candidates are strictly completed prompt calls",
+    "r1_diagnostic": "/mnt/raid0/llm/tmp/codex3-bolt-expert-proposal-20261030/B-RAW-JOIN-DIAGNOSTIC-r2.json",
+    "r1_sha256": "931b7faeb526a53d6bbfaf3a7453dafda8ae061e999d1c742978f84f3af289ba",
+    "r2_review": "/mnt/raid0/llm/tmp/refactor-c3-native-profile-r2-20261030/R2-REVIEW.md"
+  },
+  "ready": {
+    "accepted_at": "2026-10-30T21:22:23Z",
+    "accepted_class": "block-timing-pairable",
+    "accepted_manifest": "/mnt/raid0/llm/tmp/compute-flags/ready/armed/refactor-c3-native-bolt-profile-r2-20261030.json",
+    "accepted_manifest_sha256": "8b0028972bb862fbf06d61f5cc39328eeba853ce10ba47874453bf1549842fac",
+    "arm_acceptance": "QUEUED; PID 1247338; validator OK, 1 row, 0 refusals, 1 legacy-retention warning; MemAvailable 954 GiB, need 64 GiB",
+    "arm_acceptance_receipt": "/mnt/raid0/llm/tmp/codex3-bolt-expert-proposal-20261030/ARM-ACCEPTANCE-r2.json",
+    "arm_acceptance_receipt_scope": "PID 1247338, birth ticks 151781509; exact R2 argv; canonical fillers ARMED and ws58-gpu.queue entry; actual for-grant rc0; no grant observed at receipt time",
+    "arm_acceptance_receipt_sha256": "dacd88560225d48b132ca09585122c08447f4e92b1194df7f394d5b6c3f4560a",
+    "corrected_receipt": "/mnt/raid0/llm/tmp/refactor-c3-native-profile-r2-20261030/READY-CORRECTED-SUBMISSION.json",
+    "corrected_receipt_sha256": "7ed729ffd0727d051f412bbebcc1bd2083e6857f1afa8976a6033c3ce7fe4871",
+    "first_refusal": "/mnt/raid0/llm/tmp/compute-flags/ready/refused/refactor-c3-native-bolt-profile-r2-20261030.json",
+    "first_refusal_class": "none",
+    "first_refusal_sha256": "82206a60207fb87476a80b9456080d9e7cc3c0981998637b3dad6f4f150a252b",
+    "keeper_log": "/mnt/raid0/llm/tmp/compute-flags/ws58-calendar-keeper.log",
+    "submitted_manifest": "/mnt/raid0/llm/tmp/compute-flags/ready/refactor-c3-native-bolt-profile-r2-20261030.json",
+    "submitted_manifest_sha256": "ffbd663df922abd4a0c9665c6a8bc82036eeaccf31f2e95f99d12cc508ddf650"
+  },
+  "root_base": "f250760c0c0d8f726e2ae9afed63397a63fb2372",
+  "schema": "epyc.root.c3_r2_compatibility_checkpoint.v1",
+  "scope": "C3 prerequisite build/getter/control compatibility and launcher queue admission only; scheduled scientific profile and NEMO parent remain open"
+}
