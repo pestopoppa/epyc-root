@@ -4,15 +4,29 @@
     "handoff-active": 179,
     "handoff-blocked": 2,
     "handoff-completed": 221,
-    "progress": 955,
+    "progress": 957,
     "research": 140
   },
   "kind": "project-wiki-source-manifest",
   "last_compile": "2026-10-29T23:19:19Z",
-  "mode": "touch",
-  "scan_time": "2026-10-29T23:19:19Z",
+  "last_touch": {
+    "advanced": {
+      "added": 2,
+      "changed": 1,
+      "removed": 0
+    },
+    "at": "2026-10-30T14:21:42Z",
+    "scope_paths": [
+      "handoffs/active/non-inference-backlog.md",
+      "progress/2026-10/2026-10-30-workspace-58.md",
+      "progress/2026-10/2026-10-30.md"
+    ],
+    "scope_types": []
+  },
+  "mode": "touch:scoped",
+  "scan_time": "2026-10-30T14:21:42Z",
   "schema_version": 1,
-  "source_set_hash": "7cbae5a5c71fc75421832bd502864505c814bbff7fc3286132e6e21addd3b607",
+  "source_set_hash": "45c30617338e70e8f77114c34d46eb7b02b4e7a41a1d55ab35fb8662e1928b8a",
   "sources": [
     {
       "content_hash": "79865b0c101f4b6a9b14665950a430467345202b33986b3ba348bc3df428170a",
@@ -927,10 +941,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "311231c08cc738ca72071c8fa1206f019c033b7be34cab9b3b793c6f0539c8cf",
-      "modified": "2026-10-29T23:15:37Z",
+      "content_hash": "0cafdd3ddaa547d69d8ccb127ff8d7803a80ba2a542de0a7232edc2391a92e76",
+      "modified": "2026-10-30T14:19:07Z",
       "path": "handoffs/active/non-inference-backlog.md",
-      "size": 226531,
+      "size": 228387,
       "title": "Non-Inference Backlog \u2014 Round 2 (2026-05-19 audit refresh)",
       "type": "handoff-active"
     },
@@ -11967,6 +11981,22 @@
       "type": "progress"
     },
     {
+      "content_hash": "0cba5a2693b4e137bfe49ea9015e959656db47a9a045ad2c03bd9d9a587be033",
+      "modified": "2026-10-30T14:19:07Z",
+      "path": "progress/2026-10/2026-10-30-workspace-58.md",
+      "size": 2393,
+      "title": "2026-10-30 workspace-58 filing",
+      "type": "progress"
+    },
+    {
+      "content_hash": "277fc80c0d3219501b74d830960e0e389869f5593ad861572dbd40f6ff54637d",
+      "modified": "2026-10-30T14:18:39Z",
+      "path": "progress/2026-10/2026-10-30.md",
+      "size": 65925,
+      "title": "Progress \u2014 2026-10-30",
+      "type": "progress"
+    },
+    {
       "content_hash": "f09dfb9256e3641dbb66f5512ccf58ad391f9054084415c54574ddc1e7878530",
       "modified": "2026-10-29T23:14:21Z",
       "path": "progress/2026-10-28-codex-ni-periodic-checkpoint.md",
@@ -13887,7 +13917,7 @@
       "type": "docs"
     }
   ],
-  "total_new": 1734,
+  "total_new": 1736,
   "writer_evidence_policy": {
     "applies_to": "generated-wiki-article-writes",
     "minimum_confidence": "verified",
