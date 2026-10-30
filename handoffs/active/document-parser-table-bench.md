@@ -521,3 +521,16 @@ Four more completed English Paddle shards have been scored with the unchanged Ph
 | s131 | 5/5 | 0/0 | — | — | [JSON](../../artifacts/compute/pip02-shard-teds-20261030/paddle-watch/epochs/s131/769b96c0920aa2e2860c79006548fdb85e9c9ea6f71cdccacccf3b1de7a2625c/s131.json) |
 | s132 | 5/5 | 0/0 | — | — | [JSON](../../artifacts/compute/pip02-shard-teds-20261030/paddle-watch/epochs/s132/174cbd8d3c96ebc3d1153df28796a35b0ee8140a8688846fb25eb3b34be70e4a/s132.json) |
 | s133 | 5/5 | 0/0 | — | — | [JSON](../../artifacts/compute/pip02-shard-teds-20261030/paddle-watch/epochs/s133/58ff5bb791fbb48b33fdccd4a9e52ea6c978c855a5123543df00542c64234c74/s133.json) |
+
+
+### 2026-10-30 23:26 incremental Paddle filing
+
+Five newly completed shard generations add **23 unique verified pages and 4 GT tables** to the prior 271/78: **294 pages and 82 GT tables**. s105 replaces its prior two verified pages, adding three; the other four add five each. Counts use unique positions and completed native status, never summed epoch planned denominators. Zero GT means undefined. The 755-page and paired-parser gates stay open; the 11 ODL unverified batches remain ordinary results outside strict totals. [Current running table](../../artifacts/compute/pip02-shard-teds-20261030/epochwatch-v3/paddle-running-table.md), [refusals](../../artifacts/compute/pip02-shard-teds-20261030/epochwatch-v3/paddle-running-refusals.json), [verified transfer hashes](../../artifacts/compute/codex3-speech-v2-transfer-20261030.json). [belief: cc]
+
+| Shard | Verified pages | GT tables | TEDS | Structure TEDS | Native score |
+|---|---:|---:|---:|---:|---|
+| s044 | 5/5 | 1 | 1.000000 | 1.000000 | [case](../../artifacts/compute/pip02-shard-teds-20261030/paddle-watch/epochs/s044/df426e627327e1f3d1fb4b2f92416b3e5b7cecfb565eaa6dc9b3aeed65e47d13/s044.json) |
+| s045 | 5/5 | 3 | 0.951240 | 1.000000 | [case](../../artifacts/compute/pip02-shard-teds-20261030/paddle-watch/epochs/s045/fe4cf9daf2cf012dfb5d55b8c992c82e85d8c053b370064379bbf1b90558ebf1/s045.json) |
+| s046 | 5/5 | 0 | — | — | [case](../../artifacts/compute/pip02-shard-teds-20261030/paddle-watch/epochs/s046/d42d08f38d8573fd248239bab7a7dd28cd5ea7b8440212f683295f6edbb1988c/s046.json) |
+| s105 | 5/5 | 0 | — | — | [case](../../artifacts/compute/pip02-shard-teds-20261030/paddle-watch/epochs/s105/f8c50b4963e8367751cab661018557839054d926a5df0a21808208a4828ef792/s105.json) |
+| s106 | 5/5 | 0 | — | — | [case](../../artifacts/compute/pip02-shard-teds-20261030/paddle-watch/epochs/s106/d12a280efc1778d807567d40e9cc574ff28979e25b3f9c1026e61d5c51fdbf63/s106.json) |

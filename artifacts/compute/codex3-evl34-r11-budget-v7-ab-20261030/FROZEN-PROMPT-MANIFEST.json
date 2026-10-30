@@ -1,0 +1,94 @@
+{
+  "control": {
+    "id": "49",
+    "prompt_bytes": 873,
+    "prompt_sha256": "cec8f40d533b52b21120faff4b0dfc97cf85d294d56f25c374a0e6c24e3bbe27",
+    "question_sha256": "cec8f40d533b52b21120faff4b0dfc97cf85d294d56f25c374a0e6c24e3bbe27",
+    "row_sha256": "7d9f48635b3be55f1f7e3564907eda1d30add7e027f9b2414f587bb32effbecd",
+    "source_index": 49
+  },
+  "declaration_sha256": "f6ef91a8f85c040736e1c0ba779bfec6f993131a8b2326fedc952f4362414ae5",
+  "pilot": [
+    {
+      "id": "39",
+      "prompt_bytes": 650,
+      "prompt_sha256": "66c850b3646bf91474e1b91f6b0b9c17e5844a673cfcc4aaaa9cc5ea3710efc7",
+      "question_sha256": "66c850b3646bf91474e1b91f6b0b9c17e5844a673cfcc4aaaa9cc5ea3710efc7",
+      "row_sha256": "19e7a9b7d8a560f1606b474cd4bf6f6bc5e7b9ad12203731269a4e5f79905cf1",
+      "source_index": 39
+    },
+    {
+      "id": "40",
+      "prompt_bytes": 764,
+      "prompt_sha256": "b0729768439855154a786a69fb8fc3ffc3ded1c4c4b77c8bcacde1c26224e72a",
+      "question_sha256": "b0729768439855154a786a69fb8fc3ffc3ded1c4c4b77c8bcacde1c26224e72a",
+      "row_sha256": "bd0050b93a471e818af19cb3f8f2046a5cc4051f56dbfa87c52ebc9b7ecb567a",
+      "source_index": 40
+    },
+    {
+      "id": "41",
+      "prompt_bytes": 1245,
+      "prompt_sha256": "d28fd0bb683645a2764404ce1975b7e32644c4ae0c14657943489faf619cea8a",
+      "question_sha256": "d28fd0bb683645a2764404ce1975b7e32644c4ae0c14657943489faf619cea8a",
+      "row_sha256": "0affc0e6752472dc3189e059dc1b0fd08f81939fc62b51c9cdf857a0a8903d0d",
+      "source_index": 41
+    },
+    {
+      "id": "42",
+      "prompt_bytes": 683,
+      "prompt_sha256": "46c95b93fbe17a3e1d9d27e67f27f2ed46f68de18e7f16db501e16ce42ea4949",
+      "question_sha256": "46c95b93fbe17a3e1d9d27e67f27f2ed46f68de18e7f16db501e16ce42ea4949",
+      "row_sha256": "da541599f3e7fde9cdcb9fd4cb8e46dfe7f2ce3c657afd1f552db9d438843c9d",
+      "source_index": 42
+    },
+    {
+      "id": "43",
+      "prompt_bytes": 821,
+      "prompt_sha256": "99178dc0655d0f0470b3120eb4505f54feb1c80d3d773f8bc56eab71211b7a59",
+      "question_sha256": "99178dc0655d0f0470b3120eb4505f54feb1c80d3d773f8bc56eab71211b7a59",
+      "row_sha256": "05272bc5d20460c1c0e4aabea9fe51317f2f4c5bfa71ef4b69ae0ffb4475be80",
+      "source_index": 43
+    },
+    {
+      "id": "44",
+      "prompt_bytes": 1191,
+      "prompt_sha256": "c068b238e9ca8ed1a4825e30197e0b096a2f2c357e566f0341f38114861dc0af",
+      "question_sha256": "c068b238e9ca8ed1a4825e30197e0b096a2f2c357e566f0341f38114861dc0af",
+      "row_sha256": "5ea243edebd368bd8306382e33815fb4a3540c5a0ea9e3c3ce5d158e0c117e31",
+      "source_index": 44
+    },
+    {
+      "id": "45",
+      "prompt_bytes": 1152,
+      "prompt_sha256": "259fce83ebb27bc88525766dccb86faf293e3373515cf4779349c73f18556e14",
+      "question_sha256": "259fce83ebb27bc88525766dccb86faf293e3373515cf4779349c73f18556e14",
+      "row_sha256": "5cd768509963da3ac061f2bf760121efacfc459ab3df788177db432bcd604513",
+      "source_index": 45
+    },
+    {
+      "id": "46",
+      "prompt_bytes": 1049,
+      "prompt_sha256": "9c7a3e5418717c6faac018f0714c0e559b0f1b27bf2f7835adced5891805f4b7",
+      "question_sha256": "9c7a3e5418717c6faac018f0714c0e559b0f1b27bf2f7835adced5891805f4b7",
+      "row_sha256": "5b4d1bb87ed9ac672af9f51f2b1c52d8f6d4e5eba21485f7d4b3eacd6584a8ee",
+      "source_index": 46
+    },
+    {
+      "id": "47",
+      "prompt_bytes": 1263,
+      "prompt_sha256": "37d24b0bf544636cbff7c5f1d16f4dc1f31db804927f0b5d830454c75c3e4ef3",
+      "question_sha256": "37d24b0bf544636cbff7c5f1d16f4dc1f31db804927f0b5d830454c75c3e4ef3",
+      "row_sha256": "a1a48cb679a26e9df2958e5f1393c7994bea4f96acfed9a2abd402acf33ae791",
+      "source_index": 47
+    },
+    {
+      "id": "48",
+      "prompt_bytes": 874,
+      "prompt_sha256": "be90358fd73c0cee13132bc138eb8ccd62cf46a0590cd1cbc1c92b0a395bd85f",
+      "question_sha256": "be90358fd73c0cee13132bc138eb8ccd62cf46a0590cd1cbc1c92b0a395bd85f",
+      "row_sha256": "6f7890cf477ca1309471707f011ad470b697f54ba096990c8996dbd82754cf49",
+      "source_index": 48
+    }
+  ],
+  "source_sha256": "cfde3734fb4367cc748fefb7ac6df034269a8f40f20bfa05c81e69eaea7eeadb"
+}

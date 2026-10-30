@@ -1,0 +1,1 @@
+{"model": "tiny", "cores": [124, 125], "started": 0, "outcomes": 0, "unknown": 0, "unexposed": 2, "sampled_peak_rss_bytes": 0, "co_tenancy": "uncontrolled; concurrent pinned workers", "reason": null, "timed_out_unknown": [], "worker_returncodes": []}

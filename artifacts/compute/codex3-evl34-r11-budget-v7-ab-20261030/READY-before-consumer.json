@@ -1,0 +1,67 @@
+{
+  "id": "codex3-evl34-r11-budget-v7-ab-20261030",
+  "owner": "codex3",
+  "priority_rank": 93,
+  "regions": "mi210_0,184-191",
+  "min_window_s": 19740,
+  "window_s": 20100,
+  "gib": 64,
+  "launcher": {
+    "path": "/mnt/raid0/llm/tmp/codex3-evl34-r11-budget-v7-ab-20261030/launch_campaign.sh",
+    "sha256": "99ed4c71f3c012f181b561497ffacba63529a3ade6a7b55579bf646856e073a2"
+  },
+  "job": {
+    "path": "/mnt/raid0/llm/tmp/codex3-evl34-r11-budget-v7-ab-20261030/campaign_job.py",
+    "sha256": "fba5389a19f770f1c7d3c5208eea4a7962e55068c612f912ef398d5ea8f9bcdb"
+  },
+  "source_manifest": {
+    "path": "/mnt/raid0/llm/tmp/codex3-evl34-r11-budget-v7-ab-20261030/CAMPAIGN-SOURCES.sha256",
+    "sha256": "fc909212d2fbddcc7c43cf383ddc2da144f6a9803c88a0009ac40d968d3a9607"
+  },
+  "result_path": "/mnt/raid0/llm/tmp/codex3-evl34-r11-budget-v7-ab-20261030/PILOT-DONE.json",
+  "decision_rule": "Ten fresh DeepDive paired cases 39-48; control49 excluded. Report unchanged normalized exact match, paired difference and complete-pair bootstrap CI, missing-outcome bounds, native matched delegation, wall, tokens and adoption LoC; no promotion threshold. Higher accuracy is better; incomplete is unknown.",
+  "class": "diagnostic",
+  "enrollment": "n/a: diagnostic",
+  "smoke": {
+    "ran_at": "2026-10-30T23:41:39.266247+00:00",
+    "regions": "mi210_0,184-185",
+    "model": "/mnt/raid0/llm/models/Qwen3.6-35B-A3B-MTP-Q8_0.gguf",
+    "model_sha256": "c1283d8b80c3e38b2735ddbc9766d3b3126f44d6c484be419d4e101d09a76131",
+    "first_request_ok": true,
+    "result_writer_ok": true,
+    "exit_ok": true,
+    "wall_s": 114.55250294297002,
+    "log": "/mnt/raid0/llm/tmp/codex3-evl34-r11-budget-v7-ab-20261030/real-smoke-v7.log",
+    "log_sha256": "0df157c8a47869f8505a136409ed0b2fc457ab1d7638375b3afeeb44901ba25c",
+    "launcher_sha256": "99ed4c71f3c012f181b561497ffacba63529a3ade6a7b55579bf646856e073a2",
+    "qualification_scope": "entry-only; control49 partial/unknown",
+    "qualification_receipt": "/mnt/raid0/llm/tmp/codex3-evl34-r11-budget-v7-ab-20261030/LAUNCH-QUALIFICATION.json",
+    "qualification_receipt_sha256": "4b03965c09ec1ea4ac3629b6c4d6c0c310d77b8c1066d01c13f12f6ce4a70671"
+  },
+  "hold": null,
+  "scratch_root": "/mnt/raid0/llm/tmp/codex3-evl34-r11-budget-v7-ab-20261030",
+  "keep": [
+    "KEEP",
+    "*.py",
+    "*.sh",
+    "*.json",
+    "*.md",
+    "*.sha256",
+    "*.log",
+    "ws58-launcher.out"
+  ],
+  "est_output_GiB": 0.125,
+  "native_output_budget_GiB": 0.5,
+  "native_output_device": "Micron",
+  "launcher_log": "/mnt/raid0/llm/tmp/codex3-evl34-r11-budget-v7-ab-20261030/ws58-launcher.out",
+  "launcher_log_initial_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "keeper_launcher_log": "/mnt/raid0/llm/tmp/compute-flags/ready/codex3-evl34-r11-budget-v7-ab-20261030.launcher.out",
+  "feasibility": "20 cells x 900 seconds plus 1740 seconds startup/teardown = 19740; requested 20100 provides >=300 seconds admission slack; timeout can censor cells",
+  "resource_limits": {
+    "ram_GiB": 64,
+    "native_output_sampled_cap_GiB": 0.5,
+    "raid_metadata_sampled_cap_GiB": 0.125,
+    "raid_free_floor_GiB": 150
+  },
+  "status": "READY"
+}
