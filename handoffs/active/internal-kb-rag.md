@@ -1001,7 +1001,7 @@ dim 96. This is a **projection, not a measurement.** Two conditions on any adopt
   - **2026-10-30 G11 R2 result — reject the 100% INT8 top-1 gate.** The 70 existing K7 certification queries against the same 200 frozen real KB documents yielded **59/70** mirror FP32–INT8 and **59/70** upstream FP32–INT8; mirror–upstream same-precision pairs each **70/70**. The separate self-containing 200-chunk ranking agreed **200/200** for all four pairs and is not the primary test. Both query/document roles cover 200/200; all 1,880 expected per-item pair records and all 70/70 primary query records per pair are present; missing/shape/transport failures 0. For FP32–INT8, max absolute delta is **0.141253 query** and **0.184379 document**, respectively 21.402×/+0.134653 and 27.936×/+0.177779 vs accepted 0.00660; same-precision mirror–upstream maxabs 0. Per-token distributions and K7 values are in `progress/2026-10/2026-10-30-codex3-ni-native-filings.md`. No numerical same-order tolerance was predeclared, so no invented maxabs pass/fail; top-1 alone fails. This is graph fidelity, not retrieval quality, B6 adoption or promotion. Upstream literal-prefix tokenizer guard still refuses serving independently of numeric-ID diagnostic. Native records, pins, rankings and failure denominators: `/mnt/raid0/llm/tmp/codex-ni-kbrag-g11-parity-r2-20261030/`. [belief: cc]
   - [ ] Investigate the 11 FP32–INT8 K7 rank disagreements and resolve the independent upstream literal-prefix serving guard before any adoption decision; retain G11 open.
 
-- [ ] **G12 — structural query-shift evaluation.** Add a verbose/narrative arm (~20 cases, 60–150
+- [x] **G12 — structural query-shift evaluation.** Add a verbose/narrative arm (~20 cases, 60–150
       words) to the K7 pool and score the incumbent. Our current pool is **90 short well-formed
       queries** of 9–18 words (`scripts/kb_rag/k7_cert_cases.json` 70 + `k7_seed_cases.json` 20),
       median ~23 tokens, max 33, with **0 of 90 reaching the 48-token cap** — exactly the distribution
@@ -1021,6 +1021,8 @@ dim 96. This is a **projection, not a measurement.** Two conditions on any adopt
     with missing/moved evidence paths disclosed (cert 74.76%, seed 72.5%); none is filtered or
     relabelled. See `G12`'s `PROTOCOL.md` and `READY.proposed.json` for exact cohort and pin
     definitions.
+  - 2026-10-30: fixed 20 paired certification questions, short vs 66–73-word narratives, evidence-file recall@10 (higher is better): **37.50% vs 38.333%**, short-minus-verbose **−0.833 pp**, so the predeclared strictly >2 pp drop does **not** open B7. Full native 110/110 = 70 original cert + 20 seed short + 20 verbose on the unchanged 34,214-chunk/1,522-file gte INT8 qd-v1 index (query cap 48, document cap 256; optional weights zero). Secondary 90-short recall = 37.685% (70 cert 36.786%, 20 seed 40.833%). Uncapped tokens: cert 16–33, seed 20–29 (0/90 over cap); verbose 77–91 (20/20 over cap). Original evidence denominators and stale/missing paths are retained: catalog-missing evidence entries cert 53/201, seed 15/50, verbose 18/51; case records report every listed path missing in the execution environment. This limits local sensitivity and generalization; no path was dropped or relabelled. Fixed cohort is not live-traffic evidence, and the comparison does not isolate 48-token truncation as the cause. No cap/model adoption. All 110 case query/source/index hashes and metrics independently rechecked with the pinned scorer; 20 paired values and evidence: [filing artifact](../../artifacts/compute/results-filing-c3-g12-20261030.json), raw `/mnt/raid0/llm/tmp/codex-ni-kbrag-g12-queryshift-20261030/results/`. ✅ 2026-10-30 [belief: cc]
+
 - [ ] **G13 — doc-truncation recall sweep.** recall@10 on the K7 70-case pool at `_DOC_MAX_TOKENS`
       **256** vs **300** (the incumbent's declared `document_length`, verified in
       `gte-moderncolbert-v1-onnx/onnx_config.json`) vs a chunker `max_chunk_chars` reduced to
@@ -1042,7 +1044,7 @@ dim 96. This is a **projection, not a measurement.** Two conditions on any adopt
       is enough to *load* such a graph but not enough to fail loudly on a mis-declared one. Do not
       attempt the swap before G11 returns a number, and note this is a **decision**, not a task: it
       trades 1.32 pp of BEIR against −24.3 % footprint on a corpus whose own noise floor is 2 pp.
-- [ ] **B7 — raise `query_maxlen` above the checkpoint default and measure.** **Blocked on G12.**
+- [ ] **B7 — raise `query_maxlen` above the checkpoint default and measure.** **G12 did not meet its >2 pp opening rule; remains blocked on that signal.**
       Pointless without a verbose-query arm: our current pool never reaches even 33 tokens, so raising
       the cap today would measure padding rather than retrieval. Record the architectural disanalogy
       that most limits the reproduction paper's transfer to us — GTE-ModernColBERT-v1 is
