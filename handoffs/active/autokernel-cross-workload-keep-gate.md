@@ -692,7 +692,7 @@ Global constraints:
   - **Acceptance:** the batch cannot advance with any required row pending or failed. Per-keep INERT reuse is refused by test.
 - [ ] **AKX-P3b — LOO restricted to TOUCHED workloads per keep**, plus the AK-GH-1 count on the promotion record.
   - **Acceptance:** a promotion record without the count or the LOO receipts refuses (the existing required-field rule).
-- [ ] **AKX-P3c — DO-NOT-FOLD fixture:** a fold containing `2516c9807` refuses at screen plus gate.
+- [x] **AKX-P3c — DO-NOT-FOLD fixture:** a fold containing `2516c9807` refuses at screen plus gate. ✅ 2026-10-30 Research `d480cac2e2c78b522aafcb872705e0660d398da8`: an introduced exact `2516c9807` range with default-ON footprint knobs fails the source screen and persists as a FAILED required-source row that raises at the gate; an inherited baseline passes and missing protected context stays pending. Six current-source capsule tests passed. The separate CPU workload-census mapping and broader P3 composition work remain open. [no-belief: source fixture and tests]
 
 ### P4 — receipts, dashboard, belief wiring
 
