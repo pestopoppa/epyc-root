@@ -1,0 +1,1107 @@
+{
+  "schema": "codex3.results-filing.v1",
+  "filed_at": "2026-10-30T00:39:11.932232+00:00",
+  "original_events": {
+    "codex-ni-yarn-dca-xdev-gpu-r2-20261029": {
+      "id": "codex-ni-yarn-dca-xdev-gpu-r2-20261029",
+      "ended_file": "/mnt/raid0/llm/tmp/compute-flags/grants/codex-ni-yarn-dca-xdev-gpu-r2-20261029.ended",
+      "end_line": "rc=1 time=2026-10-30T00:11:03Z reason=job-rc-1:exited",
+      "seen_at": "2026-10-30T00:11:47Z",
+      "result_path": "/mnt/raid0/llm/tmp/codex-ni-yarn-dca-xdev-gpu-r2-20261029/runs",
+      "scratch_root": "/mnt/raid0/llm/tmp/codex-ni-yarn-dca-xdev-gpu-r2-20261029",
+      "decision_rule": "paired CPU/GPU estimates on identical model bytes, text bytes, source commit, context, batch, ubatch, attention mode and KV types; lower_is_better. llama-perplexity's reported +/- is within-run token spread, not a between-run confidence interval; do not claim statistical significance from one run",
+      "class": "block-correctness",
+      "owner": "codex-ni"
+    },
+    "codex3-pip02-paddle-relocatable-r9-g5-20261029": {
+      "id": "codex3-pip02-paddle-relocatable-r9-g5-20261029",
+      "ended_file": "/mnt/raid0/llm/tmp/compute-flags/grants/codex3-pip02-paddle-relocatable-r9-g5-20261029.ended",
+      "end_line": "rc=75 time=2026-10-30T00:17:05Z reason=job-rc-75:exited",
+      "seen_at": "2026-10-30T00:18:00Z",
+      "result_path": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-relocatable-r9-20261029/DONE-5",
+      "scratch_root": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-relocatable-r9-20261029/packets/group-5",
+      "decision_rule": "Collect original fresh English Paddle shards[5, 6, 7], native full layout/crop/recognition/assembly, temperature0,4096outputtokens,8192contextslot,np12. Preserve original requests and unknowns; exact cached replay only; native prospective source-bound page finish receipt. Collection diagnostic; no TEDS/adoption verdict.",
+      "class": "diagnostic",
+      "owner": "codex3"
+    },
+    "codex-ni-inf50-existing-graph-r11-20261029": {
+      "id": "codex-ni-inf50-existing-graph-r11-20261029",
+      "ended_file": "/mnt/raid0/llm/tmp/compute-flags/grants/codex-ni-inf50-existing-graph-r11-20261029.ended",
+      "end_line": "rc=1 time=2026-10-30T00:21:08Z reason=job-rc-1:exited",
+      "seen_at": "2026-10-30T00:22:08Z",
+      "result_path": "/mnt/raid0/llm/tmp/codex-ni-inf50-existing-graph-r11-20261029/results/RESULT.json",
+      "scratch_root": "/mnt/raid0/llm/tmp/codex-ni-inf50-existing-graph-r11-20261029",
+      "decision_rule": "Qualify exact read-only existing-graph status/context/upstream-impact outputs against the pinned native GitNexus graph and C5 baseline; require exact UID/path bindings, trusted read-only provenance, PID-bound native-cap proof, and unchanged graph plus exact C5 target record. Descriptive correctness/coverage only; no source patch, fold, performance or promotion claim.",
+      "class": "diagnostic",
+      "owner": "codex-ni"
+    },
+    "codex-ni-yarn-dca-xdev-gpu-r3-20261030": {
+      "id": "codex-ni-yarn-dca-xdev-gpu-r3-20261030",
+      "ended_file": "/mnt/raid0/llm/tmp/compute-flags/grants/codex-ni-yarn-dca-xdev-gpu-r3-20261030.ended",
+      "end_line": "rc=1 time=2026-10-30T00:28:46Z reason=job-rc-1:incomplete:exited",
+      "seen_at": "2026-10-30T00:29:22Z",
+      "result_path": "/mnt/raid0/llm/tmp/codex-ni-yarn-dca-xdev-gpu-r3-20261030/runs",
+      "scratch_root": "/mnt/raid0/llm/tmp/codex-ni-yarn-dca-xdev-gpu-r3-20261030",
+      "decision_rule": "paired CPU/GPU estimates on identical model bytes, text bytes, source commit, context, batch, ubatch, attention mode and KV types; lower_is_better. llama-perplexity's reported +/- is within-run token spread, not a between-run confidence interval; do not claim statistical significance from one run",
+      "class": "diagnostic",
+      "owner": "codex-ni"
+    },
+    "codex3-pip02-paddle-relocatable-r11-g107-20261029": {
+      "id": "codex3-pip02-paddle-relocatable-r11-g107-20261029",
+      "ended_file": "/mnt/raid0/llm/tmp/compute-flags/grants/codex3-pip02-paddle-relocatable-r11-g107-20261029.ended",
+      "end_line": "rc=75 time=2026-10-30T00:29:28Z reason=job-rc-75:exited",
+      "seen_at": "2026-10-30T00:30:24Z",
+      "result_path": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-relocatable-r11-20261030/DONE-107",
+      "scratch_root": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-relocatable-r11-20261030/packets/group-107",
+      "decision_rule": "Collect original fresh English Paddle shards[107, 108, 109], native full layout/crop/recognition/assembly, temperature0,4096outputtokens,8192contextslot,np12. Preserve original requests and unknowns; exact cached replay only; native prospective source-bound page finish receipt. Collection diagnostic; no TEDS/adoption verdict.",
+      "class": "diagnostic",
+      "owner": "codex3"
+    },
+    "codex3-pip02-paddle-relocatable-r11-g11-20261029": {
+      "id": "codex3-pip02-paddle-relocatable-r11-g11-20261029",
+      "ended_file": "/mnt/raid0/llm/tmp/compute-flags/grants/codex3-pip02-paddle-relocatable-r11-g11-20261029.ended",
+      "end_line": "rc=75 time=2026-10-30T00:29:29Z reason=job-rc-75:exited",
+      "seen_at": "2026-10-30T00:30:24Z",
+      "result_path": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-relocatable-r11-20261030/DONE-11",
+      "scratch_root": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-relocatable-r11-20261030/packets/group-11",
+      "decision_rule": "Collect original fresh English Paddle shards[11, 12, 13], native full layout/crop/recognition/assembly, temperature0,4096outputtokens,8192contextslot,np12. Preserve original requests and unknowns; exact cached replay only; native prospective source-bound page finish receipt. Collection diagnostic; no TEDS/adoption verdict.",
+      "class": "diagnostic",
+      "owner": "codex3"
+    }
+  },
+  "ni": {
+    "audit_sha256": "ad92642b0cb49bd0e8c50ca63b12bf7a8d2b11c8d313ac98459e31c45c536d79",
+    "native_audit": {
+      "source_sha256": {
+        "/mnt/raid0/llm/tmp/compute-flags/ready/codex-ni-yarn-dca-xdev-gpu-r2-20261029.launcher.out": "d1729be3d84e2e8a19b979318e3dcfe4df0b7cb797a09c33862a959b4affe3ad",
+        "/mnt/raid0/llm/tmp/compute-flags/ready/codex-ni-yarn-dca-xdev-gpu-r3-20261030.launcher.out": "a1f614f14359ae868f0640a2b17aef576d42637ca5b7778db6264e22bed95879",
+        "/mnt/raid0/llm/tmp/compute-flags/ready/codex-ni-inf50-existing-graph-r11-20261029.launcher.out": "136a241acfb7c9009a27d58f30518fff4700a45d6c526c37a1a85c7a3e4aaf19",
+        "/mnt/raid0/llm/tmp/codex-ni-yarn-dca-xdev-gpu-r3-20261030/runs/codex-ni-yarn-dca-xdev-gpu-r3-20261030-full-1793321220/result.json": "4607b1e453bfc6677679ce74a54ad4451f20ff81a7cdcd9ac7937436bc4ac0b5",
+        "/mnt/raid0/llm/tmp/codex-ni-yarn-dca-xdev-gpu-r3-20261030/runs/codex-ni-yarn-dca-xdev-gpu-r3-20261030-full-1793321220/run.log": "fcdf60c9571752ac0dced19f61c8b87de6d99f108635588574cfd1db7bb77522",
+        "/mnt/raid0/llm/tmp/codex-ni-yarn-dca-xdev-gpu-r3-20261030/runs/codex-ni-yarn-dca-xdev-gpu-r3-20261030-full-1793321220/residency.jsonl": "fcbce4435a6516a2776b95be1be56320c9d24ed389441e88d29f7564c2416a7d",
+        "/mnt/raid0/llm/tmp/codex-ni-yarn-dca-xdev-20261029-r4/runs/yarn-dca-xdev-cpu-r4-budget16-smoke-20261029T2345Z/result.json": "3f70ade653faa9e51ea8490788a9c4556bdd9afa0401a3077248e031e921c648",
+        "/mnt/raid0/llm/tmp/codex-ni-inf50-existing-graph-r11-20261029/source-pins.json": "8e2b8de79e6d6092d6fa48b3fcf1db1cb9cdefa66903900cb6306d89ead11a05"
+      },
+      "gpu_native_ppl": 14.394,
+      "gpu_within_run_spread": 0.21592,
+      "gpu_native_residency_samples": 137,
+      "gpu_cleanup_verified": true,
+      "gpu_recipe": {
+        "batch": 2048,
+        "cache_type_k": "f16",
+        "cache_type_v": "f16",
+        "chunks": 1,
+        "context": 65536,
+        "flash_attention": "off",
+        "max_wall_s": 900,
+        "min_memavailable_GiB": 40,
+        "process_ram_budget_GiB": 32,
+        "threads": 24,
+        "threads_batch": 24,
+        "ubatch": 256
+      },
+      "cpu_smoke_recipe": {
+        "batch": 512,
+        "cache_type_k": "f16",
+        "cache_type_v": "f16",
+        "chunks": 1,
+        "context": 8192,
+        "flash_attention": "off",
+        "max_wall_s": 300,
+        "min_memavailable_GiB": 8,
+        "process_ram_budget_GiB": 6,
+        "threads": 2,
+        "threads_batch": 2,
+        "ubatch": 128
+      },
+      "r2": "RUN_ID unbound before native work",
+      "r3": "native job rc0, outer completion failed rc1 incomplete",
+      "inf50": "source pin drift before graph queries; no result",
+      "pair_valid": false
+    }
+  },
+  "paddle": {
+    "audit_sha256": "bd6d46e4d1189c4e4c3431ee40e180893944e662c3bb309abde624672cb2c77d",
+    "native_audit": {
+      "events": [
+        {
+          "attempts": [
+            {
+              "attempt": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-relocatable-r9-20261029/attempts/codex3-pip02-paddle-relocatable-r9-g5-20261029-36dc5e3a6d7a41a8b29f3294d44cacc1",
+              "capture_sha256": "305953691e3e3d2da203a423e63e946fbcf7c0cc0dd2270ff0a4221c11504649",
+              "capture_started_utc": "2026-10-30T00:11:31Z",
+              "grant": "regions=48-71 start=2026-10-30T00:10Z end=2026-10-30T06:00Z\n",
+              "grant_sha256": "af9fc34968130751cf45e6a64268a6ffe6c60272e3deb26def6bf7b80347f619",
+              "result": {
+                "error": null,
+                "factory": {
+                  "captured_server": [
+                    1966337,
+                    144158934
+                  ],
+                  "cpu_sampling": {
+                    "first_ns": 1441590620292426,
+                    "last_ns": 1441731885367628,
+                    "peak_vram": 0,
+                    "samples": 1236
+                  },
+                  "server_identity": {
+                    "birth": 144158934,
+                    "ppid": 1961608,
+                    "state": "R"
+                  },
+                  "worker_identity": {
+                    "birth": 144159060,
+                    "ppid": 1961608,
+                    "state": "R"
+                  },
+                  "worker_rc": 75
+                },
+                "partial": true,
+                "rc": 75,
+                "reason": null,
+                "sampled_peak_tree_rss_bytes": 9475436544,
+                "samples": 135,
+                "schema": "pip02-paddle-parallel-owner/v1",
+                "shards": [
+                  5,
+                  6,
+                  7
+                ],
+                "smoke": false
+              },
+              "result_sha256": "5352eecdfca90e1cf01c8fcec71b5777fbf68a3e6fc4ced58da9525cf9a9289b",
+              "server_log_sha256": "cf7766342ef9422edc75ff908a98ff841007483fa18122ebda355858d124be3d",
+              "worker_log_sha256": "4dec0c942d8b0e7991c132ebd6b5eacfeab8cbef14ca063d8cb92f5e0820cd2c",
+              "worker_summaries": [
+                {
+                  "new_requests": 5,
+                  "partial": true,
+                  "pool_workers": 12,
+                  "results": [
+                    {
+                      "error": "RuntimeError: Exception from the 'vlm' worker: Connection error.",
+                      "page": "page-47977c29-59ca-4534-9a00-becad3bfdaa4.png"
+                    },
+                    {
+                      "error": "RuntimeError: Exception from the 'vlm' worker: Connection error.",
+                      "page": "page-87c18f88-ea2f-4044-b092-02e9b2a7436d.png"
+                    },
+                    {
+                      "error": "RuntimeError: Exception from the 'vlm' worker: Connection error.",
+                      "page": "page-7050793e-109f-4066-be91-107f94b617b9.png"
+                    },
+                    {
+                      "error": "RuntimeError: Exception from the 'vlm' worker: Connection error.",
+                      "page": "page-c6168ed8-ca6a-4ddd-8bfc-92dec77f1870.png"
+                    },
+                    {
+                      "error": "RuntimeError: Exception from the 'vlm' worker: Connection error.",
+                      "page": "page-e9e8bc8e-e22d-4d1a-a3fb-5d175e5e4d70.png"
+                    },
+                    {
+                      "error": "RuntimeError: Exception from the 'vlm' worker: Connection error.",
+                      "page": "page-85377cdf-d6a2-4611-bd50-08795bf7acb6.png"
+                    },
+                    {
+                      "error": "RuntimeError: Exception from the 'vlm' worker: Connection error.",
+                      "page": "page-d2816bbe-3c28-4905-ad6d-5f873b525de3.png"
+                    },
+                    {
+                      "error": "RuntimeError: Exception from the 'vlm' worker: Connection error.",
+                      "page": "page-7a7566fd-43d8-46e4-8a4f-0330e1f27a88.png"
+                    },
+                    {
+                      "error": "RuntimeError: Exception from the 'vlm' worker: Connection error.",
+                      "page": "page-c7fec126-2adb-4094-8110-5d81a92e05b0.png"
+                    },
+                    {
+                      "error": "RuntimeError: Exception from the 'vlm' worker: Connection error.",
+                      "page": "page-fb79f57d-9d7e-4129-a08c-6fc189e84a21.png"
+                    },
+                    {
+                      "error": "RuntimeError: Exception from the 'vlm' worker: Connection error.",
+                      "page": "page-d9a27df2-127e-4f76-bb61-e7e741078bef.png"
+                    },
+                    {
+                      "error": "RuntimeError: Exception from the 'vlm' worker: Connection error.",
+                      "page": "page-b0bdb7a8-c7de-4e6c-9e9c-bf979f3a3227.png"
+                    },
+                    {
+                      "complete": 0,
+                      "invalid": 0,
+                      "missing": 1,
+                      "unknown": 0
+                    },
+                    {
+                      "complete": 0,
+                      "invalid": 0,
+                      "missing": 1,
+                      "unknown": 0
+                    },
+                    {
+                      "complete": 0,
+                      "invalid": 0,
+                      "missing": 1,
+                      "unknown": 0
+                    }
+                  ],
+                  "schema": "pip02-paddle-parallel-pages/v1",
+                  "shards": [
+                    5,
+                    6,
+                    7
+                  ]
+                }
+              ]
+            },
+            {
+              "attempt": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-relocatable-r9-20261029/attempts/codex3-pip02-paddle-relocatable-r9-g5-20261029-45d60bebfa264003a3ae77ddb17f99a4",
+              "capture_sha256": "24f8a32df6d675af2d09a5d85489576d265967e141e03e12fb96970bd90f9a92",
+              "capture_started_utc": "2026-10-30T00:14:18Z",
+              "grant": "regions=48-71 start=2026-10-30T00:10Z end=2026-10-30T06:00Z\n",
+              "grant_sha256": "af9fc34968130751cf45e6a64268a6ffe6c60272e3deb26def6bf7b80347f619",
+              "result": {
+                "error": null,
+                "factory": {
+                  "captured_server": [
+                    2028521,
+                    144175898
+                  ],
+                  "cpu_sampling": {
+                    "first_ns": 1441760291707182,
+                    "last_ns": 1441868890892175,
+                    "peak_vram": 0,
+                    "samples": 959
+                  },
+                  "server_identity": {
+                    "birth": 144175898,
+                    "ppid": 1961608,
+                    "state": "R"
+                  },
+                  "worker_identity": {
+                    "birth": 144176027,
+                    "ppid": 1961608,
+                    "state": "R"
+                  },
+                  "worker_rc": 75
+                },
+                "partial": true,
+                "rc": 75,
+                "reason": null,
+                "sampled_peak_tree_rss_bytes": 9403695104,
+                "samples": 104,
+                "schema": "pip02-paddle-parallel-owner/v1",
+                "shards": [
+                  5,
+                  6,
+                  7
+                ],
+                "smoke": false
+              },
+              "result_sha256": "9627a7a7af509d2bdfa7e0d93be087236bb395d1d28b12be5921e151fc769924",
+              "server_log_sha256": "dec9e84638d10657d50c83ffe73e740df9b04c0cd59ba83cfd9197fa8731eb17",
+              "worker_log_sha256": "4dec0c942d8b0e7991c132ebd6b5eacfeab8cbef14ca063d8cb92f5e0820cd2c",
+              "worker_summaries": [
+                {
+                  "new_requests": 5,
+                  "partial": true,
+                  "pool_workers": 12,
+                  "results": [
+                    {
+                      "error": "RuntimeError: Exception from the 'vlm' worker: Connection error.",
+                      "page": "page-47977c29-59ca-4534-9a00-becad3bfdaa4.png"
+                    },
+                    {
+                      "error": "RuntimeError: Exception from the 'vlm' worker: Connection error.",
+                      "page": "page-87c18f88-ea2f-4044-b092-02e9b2a7436d.png"
+                    },
+                    {
+                      "error": "RuntimeError: Exception from the 'vlm' worker: Connection error.",
+                      "page": "page-7050793e-109f-4066-be91-107f94b617b9.png"
+                    },
+                    {
+                      "error": "RuntimeError: Exception from the 'vlm' worker: Connection error.",
+                      "page": "page-c6168ed8-ca6a-4ddd-8bfc-92dec77f1870.png"
+                    },
+                    {
+                      "error": "RuntimeError: Exception from the 'vlm' worker: Connection error.",
+                      "page": "page-e9e8bc8e-e22d-4d1a-a3fb-5d175e5e4d70.png"
+                    },
+                    {
+                      "error": "RuntimeError: Exception from the 'vlm' worker: Connection error.",
+                      "page": "page-85377cdf-d6a2-4611-bd50-08795bf7acb6.png"
+                    },
+                    {
+                      "error": "RuntimeError: Exception from the 'vlm' worker: Connection error.",
+                      "page": "page-d2816bbe-3c28-4905-ad6d-5f873b525de3.png"
+                    },
+                    {
+                      "error": "RuntimeError: Exception from the 'vlm' worker: Connection error.",
+                      "page": "page-7a7566fd-43d8-46e4-8a4f-0330e1f27a88.png"
+                    },
+                    {
+                      "error": "RuntimeError: Exception from the 'vlm' worker: Connection error.",
+                      "page": "page-c7fec126-2adb-4094-8110-5d81a92e05b0.png"
+                    },
+                    {
+                      "error": "RuntimeError: Exception from the 'vlm' worker: Connection error.",
+                      "page": "page-fb79f57d-9d7e-4129-a08c-6fc189e84a21.png"
+                    },
+                    {
+                      "error": "RuntimeError: Exception from the 'vlm' worker: Connection error.",
+                      "page": "page-d9a27df2-127e-4f76-bb61-e7e741078bef.png"
+                    },
+                    {
+                      "error": "RuntimeError: Exception from the 'vlm' worker: Connection error.",
+                      "page": "page-b0bdb7a8-c7de-4e6c-9e9c-bf979f3a3227.png"
+                    },
+                    {
+                      "complete": 0,
+                      "invalid": 0,
+                      "missing": 1,
+                      "unknown": 0
+                    },
+                    {
+                      "complete": 0,
+                      "invalid": 0,
+                      "missing": 1,
+                      "unknown": 0
+                    },
+                    {
+                      "complete": 0,
+                      "invalid": 0,
+                      "missing": 1,
+                      "unknown": 0
+                    }
+                  ],
+                  "schema": "pip02-paddle-parallel-pages/v1",
+                  "shards": [
+                    5,
+                    6,
+                    7
+                  ]
+                }
+              ]
+            },
+            {
+              "attempt": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-relocatable-r9-20261029/attempts/codex3-pip02-paddle-relocatable-r9-g5-20261029-c1bf9a3cd4cb4621be411495f370a99f",
+              "capture_sha256": "77c59fafaf3b18003890fe5e70d2284031ee7ee1113666a887d66b15fd92f3d6",
+              "capture_started_utc": "2026-10-30T00:16:36Z",
+              "grant": "regions=48-71 start=2026-10-30T00:10Z end=2026-10-30T06:00Z\n",
+              "grant_sha256": "af9fc34968130751cf45e6a64268a6ffe6c60272e3deb26def6bf7b80347f619",
+              "result": {
+                "error": "TimeoutError: deadline, admission or output limit",
+                "factory": null,
+                "partial": true,
+                "rc": 75,
+                "reason": "disk floor",
+                "sampled_peak_tree_rss_bytes": 3897954304,
+                "samples": 3,
+                "schema": "pip02-paddle-parallel-owner/v1",
+                "shards": [
+                  5,
+                  6,
+                  7
+                ],
+                "smoke": false
+              },
+              "result_sha256": "cb127f4bbb6339014e90cfb9ef3f715d6dd20c8cbd1edcd8fbf8065151309a99",
+              "server_log_sha256": "5a3ba724dc1954c82d17ec12437eea0e7887a698071effc07015aa16a59c6840",
+              "worker_log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "worker_summaries": []
+            }
+          ],
+          "event": {
+            "class": "diagnostic",
+            "decision_rule": "Collect original fresh English Paddle shards[5, 6, 7], native full layout/crop/recognition/assembly, temperature0,4096outputtokens,8192contextslot,np12. Preserve original requests and unknowns; exact cached replay only; native prospective source-bound page finish receipt. Collection diagnostic; no TEDS/adoption verdict.",
+            "end_line": "rc=75 time=2026-10-30T00:17:05Z reason=job-rc-75:exited",
+            "ended_file": "/mnt/raid0/llm/tmp/compute-flags/grants/codex3-pip02-paddle-relocatable-r9-g5-20261029.ended",
+            "id": "codex3-pip02-paddle-relocatable-r9-g5-20261029",
+            "owner": "codex3",
+            "result_path": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-relocatable-r9-20261029/DONE-5",
+            "scratch_root": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-relocatable-r9-20261029/packets/group-5",
+            "seen_at": "2026-10-30T00:18:00Z"
+          },
+          "event_launcher_log": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-relocatable-r9-20261029/packets/group-5/ws58-launcher.out",
+          "interpretation": "Original final owner records disk-floor stop; connection errors are present in worker summaries, causation not proven. Later rearm records excluded by original log and capture digest. Preserve all exposed unknowns.",
+          "original_start_log_line": "2026-10-30T00:11:31Z [codex3-pip02-paddle-relocatable-r9-g5-20261029] START regions=48-71 cpus=48-71 threads=24 gpu=0 end=2026-10-30T06:00Z",
+          "page_finish_records": [],
+          "region_records": [
+            {
+              "body_sha256": "0c53d43651d77d0d1f5d7324189ac71c4208154aebc88d249ed36b43b80e716e",
+              "completed_at": "2026-10-30T00:16:31.952291+00:00",
+              "origin_capture_sha256": "24f8a32df6d675af2d09a5d85489576d265967e141e03e12fb96970bd90f9a92",
+              "originated_at": "2026-10-30T00:16:22.436902+00:00",
+              "result": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-05/shard-5/region-fed0aa51a9366edc4ef15025-000001.result.json",
+              "result_sha256": "aca0ecb74cfa777592ee8cae34ccbd1b4cde315e7d39c8ac4fffb23b79e7e0a3",
+              "shard": 5,
+              "start": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-05/shard-5/region-fed0aa51a9366edc4ef15025-000001.start.json",
+              "start_sha256": "4aef9e448cc892ac80e4c3c668ecb79a619f2cd3c250b138d2d265edfe15c3b9",
+              "state": "response",
+              "status": 200
+            },
+            {
+              "body_sha256": "4cb24c74512ac3968be272189e7b310cb737aec5d34801e51dda83f21fc3e8ae",
+              "completed_at": "2026-10-30T00:14:08.475089+00:00",
+              "origin_capture_sha256": "305953691e3e3d2da203a423e63e946fbcf7c0cc0dd2270ff0a4221c11504649",
+              "originated_at": "2026-10-30T00:13:13.012523+00:00",
+              "result": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-05/shard-5/region-fed0aa51a9366edc4ef15025-000000.result.json",
+              "result_sha256": "e415a9049078538d8feef2a5a03d793b6c54385dabd9f0fde2d802b2e8cdb1cf",
+              "shard": 5,
+              "start": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-05/shard-5/region-fed0aa51a9366edc4ef15025-000000.start.json",
+              "start_sha256": "71825411be110eb4929cdca7d9845bf59ff75af1a707a6a0272f0ab656b64c84",
+              "state": "response",
+              "status": 200
+            },
+            {
+              "body_sha256": "89178b8b5e940529f3c27d20de71cad1e2d93feb6af9349a8af71ed512b85b61",
+              "completed_at": "2026-10-30T00:14:06.362193+00:00",
+              "origin_capture_sha256": "305953691e3e3d2da203a423e63e946fbcf7c0cc0dd2270ff0a4221c11504649",
+              "originated_at": "2026-10-30T00:13:13.035535+00:00",
+              "result": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-05/shard-5/region-01c143053cbaa5a7ce62a7a6-000000.result.json",
+              "result_sha256": "022e0044c46511a7f3c460d6cfb52a82294f2c437be29429628c4a03235c4c2d",
+              "shard": 5,
+              "start": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-05/shard-5/region-01c143053cbaa5a7ce62a7a6-000000.start.json",
+              "start_sha256": "1b775a4285b9cd3a4e9e141c95cd1f25a2384e75b846eb23c9c642527ba3ac9b",
+              "state": "response",
+              "status": 200
+            },
+            {
+              "body_sha256": "5045a89ff97dc6530904f015df9fcefad4b778aa52390bf6685d4878ead83760",
+              "completed_at": "2026-10-30T00:16:32.172191+00:00",
+              "origin_capture_sha256": "24f8a32df6d675af2d09a5d85489576d265967e141e03e12fb96970bd90f9a92",
+              "originated_at": "2026-10-30T00:16:22.508034+00:00",
+              "result": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-05/shard-5/region-5bb3b93b26bdb943bf502438-000000.result.json",
+              "result_sha256": "08e82a72c649979044a53814861637cb758c113f32226a83cb4ce829dab7bd9c",
+              "shard": 5,
+              "start": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-05/shard-5/region-5bb3b93b26bdb943bf502438-000000.start.json",
+              "start_sha256": "56fee93a02812bdc19fac6fec1f6b79df4e4118bf8c830d3de2c217aa8999498",
+              "state": "response",
+              "status": 200
+            },
+            {
+              "body_sha256": "5bf9e1b9f09e1a384bf0ec1973db4fa6ec7118013c66628ef4ddb18e1ae437fa",
+              "completed_at": "2026-10-30T00:16:34.812290+00:00",
+              "origin_capture_sha256": "24f8a32df6d675af2d09a5d85489576d265967e141e03e12fb96970bd90f9a92",
+              "originated_at": "2026-10-30T00:16:22.380358+00:00",
+              "result": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-06/shard-6/region-9731696c898a7682400b17c7-000001.result.json",
+              "result_sha256": "84042d60e0312672d3cee96c0dfab7402339ac0f56576cdf9682d5b8f3a3d9de",
+              "shard": 6,
+              "start": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-06/shard-6/region-9731696c898a7682400b17c7-000001.start.json",
+              "start_sha256": "63cf1149c1b9ed6bc82b2555811a6199d19c64da837cf7419df67dabd55db53a",
+              "state": "response",
+              "status": 200
+            },
+            {
+              "body_sha256": "042522dae58de720f85428dc8c57293be339319007a5a31df89932ef81e2c06d",
+              "completed_at": "2026-10-30T00:16:33.193380+00:00",
+              "origin_capture_sha256": "24f8a32df6d675af2d09a5d85489576d265967e141e03e12fb96970bd90f9a92",
+              "originated_at": "2026-10-30T00:16:22.339423+00:00",
+              "result": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-06/shard-6/region-8c135fabd3baf27cf8b16bb4-000000.result.json",
+              "result_sha256": "17a55a106cbf0cbb54c64a9577c6640101e40224b72f8174f3321ef0b1960e66",
+              "shard": 6,
+              "start": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-06/shard-6/region-8c135fabd3baf27cf8b16bb4-000000.start.json",
+              "start_sha256": "1c377f1727b5da16570c5827e5da46c9405ffb701ff5407905ecd6e3da9b9a42",
+              "state": "response",
+              "status": 200
+            },
+            {
+              "body_sha256": "5ee247e1998d507c74b6e43a7552ca16876be2934408b82cc4976d0cc0798203",
+              "completed_at": "2026-10-30T00:14:05.397446+00:00",
+              "origin_capture_sha256": "305953691e3e3d2da203a423e63e946fbcf7c0cc0dd2270ff0a4221c11504649",
+              "originated_at": "2026-10-30T00:13:13.051781+00:00",
+              "result": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-06/shard-6/region-9731696c898a7682400b17c7-000000.result.json",
+              "result_sha256": "0d080663cfd8cfa3ac4d39c11140e417f3b1f5d59dba1bffff9cb029e5e11280",
+              "shard": 6,
+              "start": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-06/shard-6/region-9731696c898a7682400b17c7-000000.start.json",
+              "start_sha256": "647533df96b86b06626d08c1687c24c1a8899fe3ed78847e54bdcd25cf2679bd",
+              "state": "response",
+              "status": 200
+            },
+            {
+              "body_sha256": "a04f760794cd1f488c9481ce3536f0827f047169ff2b68b33469d70287d2def2",
+              "completed_at": "2026-10-30T00:16:32.034678+00:00",
+              "origin_capture_sha256": "24f8a32df6d675af2d09a5d85489576d265967e141e03e12fb96970bd90f9a92",
+              "originated_at": "2026-10-30T00:16:22.431265+00:00",
+              "result": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-06/shard-6/region-1053a4517965340c83cb9578-000000.result.json",
+              "result_sha256": "03c5c1da75988597f0db6e13fad92f7703443d3ebca38e2e6e93cb0b1f3c58b7",
+              "shard": 6,
+              "start": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-06/shard-6/region-1053a4517965340c83cb9578-000000.start.json",
+              "start_sha256": "fa11bc84c667a8d06c1edaf7c344ef5a1c5f0a53ca006bb2d64a09aa380d0f11",
+              "state": "response",
+              "status": 200
+            },
+            {
+              "body_sha256": "af9158fb581b8b95c98873436d2bb5da312c1a7c27402ab846d76559f80d584f",
+              "completed_at": "2026-10-30T00:14:17.757321+00:00",
+              "origin_capture_sha256": "305953691e3e3d2da203a423e63e946fbcf7c0cc0dd2270ff0a4221c11504649",
+              "originated_at": "2026-10-30T00:13:13.038520+00:00",
+              "result": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-06/shard-6/region-f333125d328560878469f500-000000.result.json",
+              "result_sha256": "09675edaa36aa9d73e49fb1e5ed1aca19315d0749c2ac0695e0b04a5b0d288aa",
+              "shard": 6,
+              "start": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-06/shard-6/region-f333125d328560878469f500-000000.start.json",
+              "start_sha256": "40c5e66f930989f727effbba2921af1f4bb4b6e33028df37b46405d16fdab935",
+              "state": "response",
+              "status": 200
+            },
+            {
+              "body_sha256": "849ead16329e739ae9d7c5e3e2c4728b371914b308d635d78395d67f6950a32e",
+              "completed_at": "2026-10-30T00:14:05.264309+00:00",
+              "origin_capture_sha256": "305953691e3e3d2da203a423e63e946fbcf7c0cc0dd2270ff0a4221c11504649",
+              "originated_at": "2026-10-30T00:13:12.827353+00:00",
+              "result": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-07/shard-7/region-14ac9232f75e365da2ca973a-000000.result.json",
+              "result_sha256": "cb767087eada356d1f597c4cefe10a0c41a24eb1a82488a163749cd2c6738ab5",
+              "shard": 7,
+              "start": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-07/shard-7/region-14ac9232f75e365da2ca973a-000000.start.json",
+              "start_sha256": "aa38b805f25d2e8e59ec61cde103d6cb28889d3c4f204d7da4064dff3fcc6ab6",
+              "state": "response",
+              "status": 200
+            }
+          ],
+          "source_pins_sha256": "f553ebd2c1239866c35bb93e7a5b5794bc6ecaebc90b7a01ef1fc34e2f5a0b23",
+          "stats": {
+            "finish_receipts": 0,
+            "region_starts": 10,
+            "response_codes": {
+              "200": 10
+            },
+            "responses": 10,
+            "unknown_at_event": 0,
+            "worker_error_counts": {
+              "RuntimeError: Exception from the 'vlm' worker: Connection error.": 24
+            },
+            "worker_reported_new_requests": 10
+          }
+        },
+        {
+          "attempts": [
+            {
+              "attempt": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-relocatable-r11-20261030/attempts/codex3-pip02-paddle-relocatable-r11-g107-20261029-f3eeed76cf204da79e63a57d3beede6f",
+              "capture_sha256": "4298cbdd9a0178844ceb1bd86be69e38ae01bfa5e7fb741607f96d5cf7b7afb7",
+              "capture_started_utc": "2026-10-30T00:25:15Z",
+              "grant": "regions=72-95 start=2026-10-30T00:24Z end=2026-10-30T06:00Z\n",
+              "grant_sha256": "ef97b8bc7e11924cb5cef32b1c412896b0933274bc3dbfb7c163e5c05436c191",
+              "result": {
+                "error": null,
+                "factory": {
+                  "captured_server": [
+                    2114278,
+                    144241114
+                  ],
+                  "cpu_sampling": {
+                    "first_ns": 1442412219357316,
+                    "last_ns": 1442484313871705,
+                    "peak_vram": 0,
+                    "samples": 640
+                  },
+                  "server_identity": {
+                    "birth": 144241114,
+                    "ppid": 2113365,
+                    "state": "R"
+                  },
+                  "worker_identity": {
+                    "birth": 144241220,
+                    "ppid": 2113365,
+                    "state": "R"
+                  },
+                  "worker_rc": 75
+                },
+                "partial": true,
+                "rc": 75,
+                "reason": null,
+                "sampled_peak_tree_rss_bytes": 10537463808,
+                "samples": 69,
+                "schema": "pip02-paddle-parallel-owner/v1",
+                "shards": [
+                  107,
+                  108,
+                  109
+                ],
+                "smoke": false
+              },
+              "result_sha256": "a3eff6f00d957c07a5c5a22b8454d19af5db342ca4bac5de58ce031544490ef5",
+              "server_log_sha256": "c91d33382f82d225aac8439bb3f50feab92736d81890b8438d006fd24f67ac80",
+              "worker_log_sha256": "219811a1a0fe6473de7d69a1bad2d993b21d789318df1d9531926b4c78822de3",
+              "worker_summaries": [
+                {
+                  "new_requests": 5,
+                  "partial": true,
+                  "pool_workers": 12,
+                  "results": [
+                    {
+                      "error": "RuntimeError: Exception from the 'vlm' worker: Connection error.",
+                      "page": "newspaper_The Guardian UK_0801@magazinesclubnew_page_052.png"
+                    },
+                    {
+                      "error": "RuntimeError: Exception from the 'vlm' worker: Connection error.",
+                      "page": "newspaper_USAToday-2025-01-08@magazinesclubnew_page_021.png"
+                    },
+                    {
+                      "error": "RuntimeError: Exception from the 'vlm' worker: Connection error.",
+                      "page": "newspaper_USAToday-2025-01-08@magazinesclubnew_page_024.png"
+                    },
+                    {
+                      "error": "RuntimeError: Exception from the 'vlm' worker: Connection error.",
+                      "page": "newspaper_The Wall Street Journal - 2025-01-08@magazinesclubnew_page_018.png"
+                    },
+                    {
+                      "error": "RuntimeError: Exception from the 'vlm' worker: Connection error.",
+                      "page": "newspaper_The Wall Street Journal - 2025-01-08@magazinesclubnew_page_021.png"
+                    },
+                    {
+                      "error": "RuntimeError: Exception from the 'vlm' worker: Connection error.",
+                      "page": "newspaper_TheBostonGlobe-2025-1-8@magazinesclubnew_page_003.png"
+                    },
+                    {
+                      "error": "RuntimeError: Exception from the 'vlm' worker: Connection error.",
+                      "page": "newspaper_The Times UK_0801@magazinesclubnew_page_020.png"
+                    },
+                    {
+                      "error": "RuntimeError: Exception from the 'vlm' worker: Connection error.",
+                      "page": "newspaper_Daily Mail_2022-08-01@magazinesclubnew_page_068.png"
+                    },
+                    {
+                      "error": "RuntimeError: Exception from the 'vlm' worker: Connection error.",
+                      "page": "book_zh_CNASGL0092018_extracted_page_69.png"
+                    },
+                    {
+                      "error": "RuntimeError: Exception from the 'vlm' worker: Connection error.",
+                      "page": "book_en_6.Complex.Analysis.-.Elias.M..Stein_page_205.png"
+                    },
+                    {
+                      "error": "RuntimeError: Exception from the 'vlm' worker: Connection error.",
+                      "page": "book_en_\u56fd\u5916\u6570\u5b66\u6559\u6750-An Excursion through Elementary Mathematics\uff08\u521d\u7b49\u6570\u5b66\u6f2b\u6e38\uff09-An excursion through elementary mathematics, Vol.3 (Caminha Muniz Neto A)_0035.png"
+                    },
+                    {
+                      "error": "RuntimeError: Exception from the 'vlm' worker: Connection error.",
+                      "page": "book_en_40.Puzzles.and.Problems.in.Probability.and.Mathematical.Statistics,.Schwarz,.Springer,.2008_page_115.png"
+                    },
+                    {
+                      "complete": 0,
+                      "invalid": 0,
+                      "missing": 1,
+                      "unknown": 0
+                    },
+                    {
+                      "complete": 0,
+                      "invalid": 0,
+                      "missing": 1,
+                      "unknown": 0
+                    },
+                    {
+                      "complete": 0,
+                      "invalid": 0,
+                      "missing": 1,
+                      "unknown": 0
+                    }
+                  ],
+                  "schema": "pip02-paddle-parallel-pages/v1",
+                  "shards": [
+                    107,
+                    108,
+                    109
+                  ]
+                }
+              ]
+            },
+            {
+              "attempt": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-relocatable-r11-20261030/attempts/codex3-pip02-paddle-relocatable-r11-g107-20261029-a9f9a43f5b44458d91a265d2c499904a",
+              "capture_sha256": "c2bca67680df651710a6ad672e55ea93ee758cfcc1fe93172b9b8ec9522d87ad",
+              "capture_started_utc": "2026-10-30T00:26:51Z",
+              "grant": "regions=72-95 start=2026-10-30T00:24Z end=2026-10-30T06:00Z\n",
+              "grant_sha256": "ef97b8bc7e11924cb5cef32b1c412896b0933274bc3dbfb7c163e5c05436c191",
+              "result": {
+                "error": null,
+                "factory": {
+                  "captured_server": [
+                    2133024,
+                    144250814
+                  ],
+                  "cpu_sampling": {
+                    "first_ns": 1442509214132624,
+                    "last_ns": 1442596044845849,
+                    "peak_vram": 0,
+                    "samples": 769
+                  },
+                  "server_identity": {
+                    "birth": 144250814,
+                    "ppid": 2113365,
+                    "state": "R"
+                  },
+                  "worker_identity": {
+                    "birth": 144250920,
+                    "ppid": 2113365,
+                    "state": "R"
+                  },
+                  "worker_rc": 75
+                },
+                "partial": true,
+                "rc": 75,
+                "reason": null,
+                "sampled_peak_tree_rss_bytes": 9934061568,
+                "samples": 83,
+                "schema": "pip02-paddle-parallel-owner/v1",
+                "shards": [
+                  107,
+                  108,
+                  109
+                ],
+                "smoke": false
+              },
+              "result_sha256": "f7ec5739145fcb286e3883f75875add9885b4e4e1a17ca3b4dd084ec97952d94",
+              "server_log_sha256": "2d2d4602bb6455ad560a529e0a880b4b29dca86d84223729bbec2ab589328681",
+              "worker_log_sha256": "8d1c98e401f75ef20b63476f22c9b7ce0e0347c660ac3a8d5dd6ec6a9c1aacfb",
+              "worker_summaries": [
+                {
+                  "new_requests": 5,
+                  "partial": true,
+                  "pool_workers": 12,
+                  "results": [
+                    {
+                      "error": "RuntimeError: Exception from the 'vlm' worker: Connection error.",
+                      "page": "newspaper_The Guardian UK_0801@magazinesclubnew_page_052.png"
+                    },
+                    {
+                      "error": "RuntimeError: Exception from the 'vlm' worker: Connection error.",
+                      "page": "newspaper_USAToday-2025-01-08@magazinesclubnew_page_021.png"
+                    },
+                    {
+                      "error": "RuntimeError: Exception from the 'vlm' worker: Connection error.",
+                      "page": "newspaper_USAToday-2025-01-08@magazinesclubnew_page_024.png"
+                    },
+                    {
+                      "error": "RuntimeError: Exception from the 'vlm' worker: Connection error.",
+                      "page": "newspaper_The Wall Street Journal - 2025-01-08@magazinesclubnew_page_018.png"
+                    },
+                    {
+                      "error": "RuntimeError: Exception from the 'vlm' worker: Connection error.",
+                      "page": "newspaper_The Wall Street Journal - 2025-01-08@magazinesclubnew_page_021.png"
+                    },
+                    {
+                      "error": "RuntimeError: Exception from the 'vlm' worker: Connection error.",
+                      "page": "newspaper_TheBostonGlobe-2025-1-8@magazinesclubnew_page_003.png"
+                    },
+                    {
+                      "error": "RuntimeError: Exception from the 'vlm' worker: Connection error.",
+                      "page": "newspaper_The Times UK_0801@magazinesclubnew_page_020.png"
+                    },
+                    {
+                      "error": "RuntimeError: Exception from the 'vlm' worker: Connection error.",
+                      "page": "newspaper_Daily Mail_2022-08-01@magazinesclubnew_page_068.png"
+                    },
+                    {
+                      "error": "RuntimeError: Exception from the 'vlm' worker: Connection error.",
+                      "page": "book_zh_CNASGL0092018_extracted_page_69.png"
+                    },
+                    {
+                      "error": "RuntimeError: Exception from the 'vlm' worker: Connection error.",
+                      "page": "book_en_6.Complex.Analysis.-.Elias.M..Stein_page_205.png"
+                    },
+                    {
+                      "error": "RuntimeError: Exception from the 'vlm' worker: Connection error.",
+                      "page": "book_en_\u56fd\u5916\u6570\u5b66\u6559\u6750-An Excursion through Elementary Mathematics\uff08\u521d\u7b49\u6570\u5b66\u6f2b\u6e38\uff09-An excursion through elementary mathematics, Vol.3 (Caminha Muniz Neto A)_0035.png"
+                    },
+                    {
+                      "error": "RuntimeError: Exception from the 'vlm' worker: Connection error.",
+                      "page": "book_en_40.Puzzles.and.Problems.in.Probability.and.Mathematical.Statistics,.Schwarz,.Springer,.2008_page_115.png"
+                    },
+                    {
+                      "complete": 0,
+                      "invalid": 0,
+                      "missing": 1,
+                      "unknown": 0
+                    },
+                    {
+                      "complete": 0,
+                      "invalid": 0,
+                      "missing": 1,
+                      "unknown": 0
+                    },
+                    {
+                      "complete": 0,
+                      "invalid": 0,
+                      "missing": 1,
+                      "unknown": 0
+                    }
+                  ],
+                  "schema": "pip02-paddle-parallel-pages/v1",
+                  "shards": [
+                    107,
+                    108,
+                    109
+                  ]
+                }
+              ]
+            },
+            {
+              "attempt": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-relocatable-r11-20261030/attempts/codex3-pip02-paddle-relocatable-r11-g107-20261029-14d6220a64d548f4a90f4a48c852e464",
+              "capture_sha256": "cc60d32d67e337ed827430b6417832d6e0c745a65600294aca11525af0ce72f2",
+              "capture_started_utc": "2026-10-30T00:28:43Z",
+              "grant": "regions=72-95 start=2026-10-30T00:24Z end=2026-10-30T06:00Z\n",
+              "grant_sha256": "ef97b8bc7e11924cb5cef32b1c412896b0933274bc3dbfb7c163e5c05436c191",
+              "result": {
+                "error": "TimeoutError: deadline, admission or output limit",
+                "factory": null,
+                "partial": true,
+                "rc": 75,
+                "reason": "disk floor",
+                "sampled_peak_tree_rss_bytes": 9422155776,
+                "samples": 18,
+                "schema": "pip02-paddle-parallel-owner/v1",
+                "shards": [
+                  107,
+                  108,
+                  109
+                ],
+                "smoke": false
+              },
+              "result_sha256": "1ef2e523335e8064a098b9da9ef85609b48536ae67d52ce6fed561474b9ce9f1",
+              "server_log_sha256": "495bd0e4d0b035bdd36f18d0a6c43bc11b96204134d186a72d6658ecbb2a1da4",
+              "worker_log_sha256": "eb773594a0d547785a1d3f26ff221ee2d7cab1e0699fd08dafd9708fb2ef50d4",
+              "worker_summaries": []
+            }
+          ],
+          "event": {
+            "class": "diagnostic",
+            "decision_rule": "Collect original fresh English Paddle shards[107, 108, 109], native full layout/crop/recognition/assembly, temperature0,4096outputtokens,8192contextslot,np12. Preserve original requests and unknowns; exact cached replay only; native prospective source-bound page finish receipt. Collection diagnostic; no TEDS/adoption verdict.",
+            "end_line": "rc=75 time=2026-10-30T00:29:28Z reason=job-rc-75:exited",
+            "ended_file": "/mnt/raid0/llm/tmp/compute-flags/grants/codex3-pip02-paddle-relocatable-r11-g107-20261029.ended",
+            "id": "codex3-pip02-paddle-relocatable-r11-g107-20261029",
+            "owner": "codex3",
+            "result_path": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-relocatable-r11-20261030/DONE-107",
+            "scratch_root": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-relocatable-r11-20261030/packets/group-107",
+            "seen_at": "2026-10-30T00:30:24Z"
+          },
+          "event_launcher_log": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-relocatable-r11-20261030/packets/group-107/ws58-launcher.out",
+          "interpretation": "Original final owner records disk-floor stop; connection errors are present in worker summaries, causation not proven. Later rearm records excluded by original log and capture digest. Preserve all exposed unknowns.",
+          "original_start_log_line": "2026-10-30T00:25:15Z [codex3-pip02-paddle-relocatable-r11-g107-20261029] START regions=72-95 cpus=72-95 threads=24 gpu=0 end=2026-10-30T06:00Z",
+          "page_finish_records": [],
+          "region_records": [
+            {
+              "body_sha256": "17aa0427c3b471362bc320e7b3e79854c603a81acae49ed538990fe364452c62",
+              "completed_at": "2026-10-30T00:28:38.911243+00:00",
+              "origin_capture_sha256": "c2bca67680df651710a6ad672e55ea93ee758cfcc1fe93172b9b8ec9522d87ad",
+              "originated_at": "2026-10-30T00:28:31.890481+00:00",
+              "result": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-107/shard-107/region-fb2714fed06645cd13f439b0-000002.result.json",
+              "result_sha256": "13246645f18368a5d30e97d0de5cdcfdddaa0ce758a7b58aea111ad4a71b080a",
+              "shard": 107,
+              "start": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-107/shard-107/region-fb2714fed06645cd13f439b0-000002.start.json",
+              "start_sha256": "7fcd4a1aad510ede6adaa6b0a4dc237d134d0a6d9a45d066d7490956459b37c1",
+              "state": "response",
+              "status": 200
+            },
+            {
+              "body_sha256": "ecd2a673a1165bd1c8fff2ffefbea84b0edd7e48440e4e8897d979826a5ed769",
+              "completed_at": "2026-10-30T00:28:38.873734+00:00",
+              "origin_capture_sha256": "c2bca67680df651710a6ad672e55ea93ee758cfcc1fe93172b9b8ec9522d87ad",
+              "originated_at": "2026-10-30T00:28:31.495078+00:00",
+              "result": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-108/shard-108/region-5164a224c9a84497c95e1498-000001.result.json",
+              "result_sha256": "aa4a8716632df7d136e0098dd7b179c8200c1cda717844d079b62f8e171d38cd",
+              "shard": 108,
+              "start": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-108/shard-108/region-5164a224c9a84497c95e1498-000001.start.json",
+              "start_sha256": "404eb50031aca68eb518c3b6172330c58d2a73ec405b1a9dd7c18ba9ca6ce710",
+              "state": "response",
+              "status": 200
+            },
+            {
+              "body_sha256": "d8768c3f3d1f5de42078edf0d1cddab88c157a37d685c07e3b13c70b49735d2d",
+              "completed_at": "2026-10-30T00:28:38.782844+00:00",
+              "origin_capture_sha256": "c2bca67680df651710a6ad672e55ea93ee758cfcc1fe93172b9b8ec9522d87ad",
+              "originated_at": "2026-10-30T00:28:31.929968+00:00",
+              "result": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-108/shard-108/region-f5fc6ac16ce9ec7526a12572-000005.result.json",
+              "result_sha256": "13096d51899f0d3ef55a2081013cce9a4dc5d5fd9911565f48d5ae4bf3e3f534",
+              "shard": 108,
+              "start": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-108/shard-108/region-f5fc6ac16ce9ec7526a12572-000005.start.json",
+              "start_sha256": "c9974b8749a8021dc0eb5189b218649570aa913ba08491b0ab2743bcebcae537",
+              "state": "response",
+              "status": 200
+            },
+            {
+              "body_sha256": "512085e8bae881fe799cda433203a8311a00dd7fb87005c1b7ba7aea73d956c6",
+              "completed_at": "2026-10-30T00:26:49.033706+00:00",
+              "origin_capture_sha256": "4298cbdd9a0178844ceb1bd86be69e38ae01bfa5e7fb741607f96d5cf7b7afb7",
+              "originated_at": "2026-10-30T00:26:44.049484+00:00",
+              "result": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-108/shard-108/region-1f64ca6dd02b8d2c8be7b065-000001.result.json",
+              "result_sha256": "55d90ec2623746b89553f1c7512c7dcb48040827705ffe16e86b9942021389d7",
+              "shard": 108,
+              "start": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-108/shard-108/region-1f64ca6dd02b8d2c8be7b065-000001.start.json",
+              "start_sha256": "efd2f4e6c79b903696e04979a80914cb9daae72db0bae5c3f105ee8234fd4e98",
+              "state": "response",
+              "status": 200
+            },
+            {
+              "body_sha256": "1b9e4fbec9d8745aba3c7cf6dfd9b8156d9f751dd6772cf02b9c35e98e19fd61",
+              "completed_at": "2026-10-30T00:26:49.271746+00:00",
+              "origin_capture_sha256": "4298cbdd9a0178844ceb1bd86be69e38ae01bfa5e7fb741607f96d5cf7b7afb7",
+              "originated_at": "2026-10-30T00:26:43.976541+00:00",
+              "result": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-108/shard-108/region-f5fc6ac16ce9ec7526a12572-000004.result.json",
+              "result_sha256": "384e8bc4aba3faa1100606ef225042719cc8ec1c6b7aff0f99c6eeb14a278337",
+              "shard": 108,
+              "start": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-108/shard-108/region-f5fc6ac16ce9ec7526a12572-000004.start.json",
+              "start_sha256": "0ef513a088235f59899c36f7de9b6e5d5f95047b259e9a66ec7c0c7f3a333cd1",
+              "state": "response",
+              "status": 200
+            },
+            {
+              "body_sha256": "e26597af725a2f5120be8a6d8755642100eceeb26ce14c33e2d2c33d2f63fbe5",
+              "completed_at": "2026-10-30T00:26:49.956092+00:00",
+              "origin_capture_sha256": "4298cbdd9a0178844ceb1bd86be69e38ae01bfa5e7fb741607f96d5cf7b7afb7",
+              "originated_at": "2026-10-30T00:26:44.216201+00:00",
+              "result": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-108/shard-108/region-0654ed19ffd6cb0c6516e77d-000003.result.json",
+              "result_sha256": "a88f35e5ec52b2b81c621de0e7beea47c38783837b61647cfb7e26362eb21750",
+              "shard": 108,
+              "start": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-108/shard-108/region-0654ed19ffd6cb0c6516e77d-000003.start.json",
+              "start_sha256": "d71e621652fb23e5879bc687dab7ac816b65ebc2f2b30e0d9c362f7b00415c7f",
+              "state": "response",
+              "status": 200
+            },
+            {
+              "body_sha256": "0df2eee53c867eb3cfe551453ae719e3646956da6e66fc3f93943d71b9e9fb9e",
+              "completed_at": "2026-10-30T00:28:39.819527+00:00",
+              "origin_capture_sha256": "c2bca67680df651710a6ad672e55ea93ee758cfcc1fe93172b9b8ec9522d87ad",
+              "originated_at": "2026-10-30T00:28:31.984467+00:00",
+              "result": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-108/shard-108/region-0654ed19ffd6cb0c6516e77d-000004.result.json",
+              "result_sha256": "4de97eec64118378f3a194b2e700b82d4925f6b08505cae95fa4031f9bdad415",
+              "shard": 108,
+              "start": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-108/shard-108/region-0654ed19ffd6cb0c6516e77d-000004.start.json",
+              "start_sha256": "12a275a95c7f30a248923373f91e386de57e93d91e217772f5c9e1864a6acc6c",
+              "state": "response",
+              "status": 200
+            },
+            {
+              "body_sha256": "9b790595c290e5dfa07021858f889eba288d9b8b976b2f5ec134992ef1a6bad7",
+              "completed_at": "2026-10-30T00:26:49.488113+00:00",
+              "origin_capture_sha256": "4298cbdd9a0178844ceb1bd86be69e38ae01bfa5e7fb741607f96d5cf7b7afb7",
+              "originated_at": "2026-10-30T00:26:44.294464+00:00",
+              "result": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-109/shard-109/region-9aefab0683307cd3190062ff-000004.result.json",
+              "result_sha256": "70cd69ada98ff344f837cdc2fcb4e60c9683dfc9d392b90efa53653cc80db74b",
+              "shard": 109,
+              "start": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-109/shard-109/region-9aefab0683307cd3190062ff-000004.start.json",
+              "start_sha256": "f2cf759422dd2d8150bec4aa45225b7983da5df8260a494e1287136c9c999fed",
+              "state": "response",
+              "status": 200
+            },
+            {
+              "body_sha256": "ea84e58e394f61a945dc58f1a0d8ca438216d173a7fc0977a7a0a317068ca6cd",
+              "completed_at": "2026-10-30T00:26:50.312318+00:00",
+              "origin_capture_sha256": "4298cbdd9a0178844ceb1bd86be69e38ae01bfa5e7fb741607f96d5cf7b7afb7",
+              "originated_at": "2026-10-30T00:26:43.202677+00:00",
+              "result": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-109/shard-109/region-84f3c618140e88458b93b224-000004.result.json",
+              "result_sha256": "64b83b502532955c6233af6bc31d9cfe4a8372e2ad0c0bf368c7b4ad934c052a",
+              "shard": 109,
+              "start": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-109/shard-109/region-84f3c618140e88458b93b224-000004.start.json",
+              "start_sha256": "3adf0ed739ad783ccb161df851959656538c6d3e47835601d1bb1033d9b8a155",
+              "state": "response",
+              "status": 200
+            },
+            {
+              "body_sha256": "a2724c9cf9f41770f85dcd4c29150c0f0c9c00571c6191637e7f008781c6676b",
+              "completed_at": "2026-10-30T00:28:39.355345+00:00",
+              "origin_capture_sha256": "c2bca67680df651710a6ad672e55ea93ee758cfcc1fe93172b9b8ec9522d87ad",
+              "originated_at": "2026-10-30T00:28:31.941131+00:00",
+              "result": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-109/shard-109/region-84f3c618140e88458b93b224-000005.result.json",
+              "result_sha256": "a5fd7332a0478ae533bf12054321aa0856b031246d40493dcad805ae5bde2ce3",
+              "shard": 109,
+              "start": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-109/shard-109/region-84f3c618140e88458b93b224-000005.start.json",
+              "start_sha256": "790a62b03a8219b9455cd1c77e1f9aa634d24cb7a465bb1b601baac5a60c3d43",
+              "state": "response",
+              "status": 200
+            }
+          ],
+          "source_pins_sha256": "20b60b7ac3fb6fcd4db6d49163eea7d3158a4be0c6b4a94e04a2fab850226ebb",
+          "stats": {
+            "finish_receipts": 0,
+            "region_starts": 10,
+            "response_codes": {
+              "200": 10
+            },
+            "responses": 10,
+            "unknown_at_event": 0,
+            "worker_error_counts": {
+              "RuntimeError: Exception from the 'vlm' worker: Connection error.": 24
+            },
+            "worker_reported_new_requests": 10
+          }
+        },
+        {
+          "attempts": [
+            {
+              "attempt": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-relocatable-r11-20261030/attempts/codex3-pip02-paddle-relocatable-r11-g11-20261029-3922a37357e24094962ffd68409f30c4",
+              "capture_sha256": "c016eb529dd0b04e63d424500833c5b56d2d866c37b41b45577185d8351898be",
+              "capture_started_utc": "2026-10-30T00:28:05Z",
+              "grant": "regions=48-71 start=2026-10-30T00:27Z end=2026-10-30T06:00Z\n",
+              "grant_sha256": "ef10f186c2ccddbd91af9a6bc670e255ccb43e21437428e0a7e8225a5bc67aea",
+              "result": {
+                "error": "TimeoutError: deadline, admission or output limit",
+                "factory": null,
+                "partial": true,
+                "rc": 75,
+                "reason": "disk floor",
+                "sampled_peak_tree_rss_bytes": 9473601536,
+                "samples": 55,
+                "schema": "pip02-paddle-parallel-owner/v1",
+                "shards": [
+                  11,
+                  12,
+                  13
+                ],
+                "smoke": false
+              },
+              "result_sha256": "6c7500e5ceeded05e76ea95a569d5377955845767538467be718c9ceeaf4203b",
+              "server_log_sha256": "e68af9c88c20065902a7adc2a84994b451320fb5c32a462231bac9023375eaa8",
+              "worker_log_sha256": "092c266d08e9b323356a85b972c8d14abfedac5b9e2e88db66c58822484aea25",
+              "worker_summaries": []
+            }
+          ],
+          "event": {
+            "class": "diagnostic",
+            "decision_rule": "Collect original fresh English Paddle shards[11, 12, 13], native full layout/crop/recognition/assembly, temperature0,4096outputtokens,8192contextslot,np12. Preserve original requests and unknowns; exact cached replay only; native prospective source-bound page finish receipt. Collection diagnostic; no TEDS/adoption verdict.",
+            "end_line": "rc=75 time=2026-10-30T00:29:29Z reason=job-rc-75:exited",
+            "ended_file": "/mnt/raid0/llm/tmp/compute-flags/grants/codex3-pip02-paddle-relocatable-r11-g11-20261029.ended",
+            "id": "codex3-pip02-paddle-relocatable-r11-g11-20261029",
+            "owner": "codex3",
+            "result_path": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-relocatable-r11-20261030/DONE-11",
+            "scratch_root": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-relocatable-r11-20261030/packets/group-11",
+            "seen_at": "2026-10-30T00:30:24Z"
+          },
+          "event_launcher_log": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-relocatable-r11-20261030/packets/group-11/ws58-launcher.out",
+          "interpretation": "Original final owner records disk-floor stop; connection errors are present in worker summaries, causation not proven. Later rearm records excluded by original log and capture digest. Preserve all exposed unknowns.",
+          "original_start_log_line": "2026-10-30T00:28:05Z [codex3-pip02-paddle-relocatable-r11-g11-20261029] START regions=48-71 cpus=48-71 threads=24 gpu=0 end=2026-10-30T06:00Z",
+          "page_finish_records": [],
+          "region_records": [],
+          "source_pins_sha256": "20b60b7ac3fb6fcd4db6d49163eea7d3158a4be0c6b4a94e04a2fab850226ebb",
+          "stats": {
+            "finish_receipts": 0,
+            "region_starts": 0,
+            "response_codes": {},
+            "responses": 0,
+            "unknown_at_event": 0,
+            "worker_error_counts": {},
+            "worker_reported_new_requests": 0
+          }
+        }
+      ],
+      "schema": "paddle-event-audit/v1"
+    }
+  },
+  "scorer_source": {
+    "research_commit": "46244248728c",
+    "tests_passed": 9,
+    "pin_preflight_elapsed_s": 3.1679381818976253,
+    "pin_preflight_sampled_rss_bytes": 262639616,
+    "scope": "Strict captured ODL producer and registered R9-R11 native page-finish eligibility; legacy missing-warrant pages remain unverified. Metric/matching/denominator/threshold unchanged; no new cohort score/adoption result."
+  },
+  "additional_ready": {
+    "at": "2026-10-30T00:36:39.085955+00:00",
+    "ids": [
+      "codex3-pip02-paddle-relocatable-r11-g17-20261029",
+      "codex3-pip02-paddle-relocatable-r11-g23-20261029",
+      "codex3-pip02-paddle-relocatable-r11-g29-20261029",
+      "codex3-pip02-paddle-relocatable-r11-g32-20261029",
+      "codex3-pip02-paddle-relocatable-r11-g35-20261029"
+    ],
+    "regions": "any-cpu-quarter",
+    "source_smoke": "same qualified immutable R11 launcher/source,58.883s5HTTP2000unknown"
+  }
+}
