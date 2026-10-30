@@ -1,0 +1,98 @@
+silero_lid: loaded 95 lang, 58 groups, 8 stages
+original=en, English confidence=0.965034544 scored_top=en, English
+0	fr, French	-14.5156651
+1	zh, Chinese	-18.7728863
+2	ln, Lingala	-28.5082073
+3	fy-NL, Western Frisian	-4.9347043
+4	hi, Hindi	-17.1848583
+5	ru, Russian	-11.6073399
+6	yo, Yoruba	-19.3767395
+7	da, Danish	-15.3606281
+8	it, Italian	-9.63778114
+9	hr, Croatian	-15.4228582
+10	si, Sinhala, Sinhalese	-22.4903145
+11	as, Assamese	-16.9770927
+12	lo, Lao	-18.4758816
+13	uk, Ukrainian	-10.0248957
+14	ko, Korean	-23.3003025
+15	az, Azerbaijani	-16.7792892
+16	gu, Gujarati	-15.6690779
+17	nn, Norwegian Nynorsk	-15.3134212
+18	zh-CN, Chinese	-10.3893185
+19	es, Spanish, Castilian	-9.39844036
+20	lb, Luxembourgish, Letzeburgesch	-18.8460655
+21	ha, Hausa	-18.4586411
+22	id, Indonesian	-13.7741232
+23	nl, Dutch, Flemish	-4.8011117
+24	af, Afrikaans	-13.493576
+25	pa-IN, Punjabi, Panjabi	-14.5350895
+26	oc, Occitan	-20.9056511
+27	ps, Pashto, Pushto	-17.3793201
+28	et, Estonian	-7.05783033
+29	fa, Persian	-10.6076775
+30	en, English	-0.700321436
+31	sw, Swahili	-21.1179943
+32	fi, Finnish	-6.89563274
+33	sq, Albanian	-16.8649597
+34	hy, Armenian	-19.2426929
+35	tt, Tatar	-14.2660561
+36	ta, Tamil	-11.4797382
+37	mn, Mongolian	-12.9321146
+38	kk, Kazakh	-22.6624775
+39	ht, Haitian, Haitian Creole	-23.6217651
+40	ja, Japanese	-15.5604572
+41	ur, Urdu	-19.7307186
+42	yi, Yiddish	-18.9717503
+43	sv, Swedish	-17.9427433
+44	ca, Catalan, Valencian	-9.64630318
+45	vi, Vietnamese	-10.9820786
+46	am, Amharic	-21.6394119
+47	sl, Slovenian	-12.6191235
+48	th, Thai	-12.8078403
+49	hu, Hungarian	-10.2883654
+50	pl, Polish	-11.9039783
+51	tg, Tajik	-22.9998474
+52	uz, Uzbek	-19.8889599
+53	sn, Shona	-19.5480461
+54	mk, Macedonian	-18.6248398
+55	ar, Arabic	-11.0991392
+56	la, Latin	-15.9893055
+57	be, Belarusian	-17.4658661
+58	km, Central Khmer	-15.8202753
+59	mg, Malagasy	-25.5230522
+60	ne, Nepali	-17.9514599
+61	te, Telugu	-18.1094151
+62	or, Oriya	-17.417223
+63	pt, Portuguese	-8.89091015
+64	tl, Tagalog	-14.9508924
+65	sk, Slovak	-18.5784817
+66	ky, Kirghiz, Kyrgyz	-13.6921625
+67	my, Burmese	-18.0049953
+68	pa, Punjabi, Panjabi	-19.4265156
+69	no, Norwegian	-17.3790779
+70	ro, Romanian, Moldavian, Moldovan	-11.7522707
+71	el, Greek, Modern (1453–)	-12.5538445
+72	ml, Malayalam	-15.3473539
+73	mt, Maltese	-11.3652143
+74	bo, Tibetan	-18.6991215
+75	de, German	-12.2316885
+76	tk, Turkmen	-17.1850681
+77	sr, Serbian	-15.774085
+78	bg, Bulgarian	-16.805481
+79	cs, Czech	-14.0875149
+80	tr, Turkish	-12.2883244
+81	so, Somali	-17.4411354
+82	bn, Bengali	-19.8621521
+83	ms, Malay	-19.6432076
+84	sv-SE, Swedish	-9.81414223
+85	zh-HK, Chinese	-11.3275661
+86	mr, Marathi	-18.4685135
+87	su, Sundanese	-21.1698265
+88	rw, Kinyarwanda	-10.7920074
+89	ba, Bashkir	-19.1233711
+90	bs, Bosnian	-14.7708635
+91	sd, Sindhi	-18.5273991
+92	gl, Galician	-17.2164154
+93	kn, Kannada	-19.59515
+94	zh-TW, Chinese	-10.7666798
+{"schema": "bounded-r11-native-profile-supervisor/v1", "elapsed_s": 0.3179290168918669, "sampled_peak_tree_rss_bytes": 51941376, "samples": 4, "verified_exited_processes": 0, "verified_exited_threads": 0, "per_process_address_space_limit_bytes": null, "rss_scope": "sum of sampled resident pages across owned process tree; sampling may miss transients and double-count shared pages", "leader_pid": 2443672, "leader_birth": 152278593, "child_rc": 0, "children_drained": true, "failure": null}

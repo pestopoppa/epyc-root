@@ -1,0 +1,16 @@
+binary : /mnt/raid0/llm/tmp/codex3-cs26-lid1-20261030/libfirered_asr_scored.so
+expect : libraries under /mnt/micron/codex3-cs8-stt2-crisp-20261030
+
+  OK   libggml.so.0                 -> /mnt/micron/codex3-cs8-stt2-crisp-20261030/install/lib/libggml.so.0
+  OK   libggml-base.so.0            -> /mnt/micron/codex3-cs8-stt2-crisp-20261030/install/lib/libggml-base.so.0
+  OK   libggml-cpu.so.0             -> /mnt/micron/codex3-cs8-stt2-crisp-20261030/install/lib/libggml-cpu.so.0
+
+LD_LIBRARY_PATH order as the loader sees it:
+         1	/mnt/micron/codex3-cs8-stt2-crisp-20261030/install/lib
+
+PASS: all linked ggml libraries resolve inside /mnt/micron/codex3-cs8-stt2-crisp-20261030
+NOTE: ggml backends (ggml-hip, ggml-cpu-<arch>) are dlopened at RUNTIME and
+      are not covered by ldd. Confirm the intended device appears in the
+      program's own startup log (e.g. 'Device 0: AMD Instinct MI210') and
+      do not trust a 'use gpu = 1' flag alone — that flag reports what was
+      REQUESTED, not what was loaded.
