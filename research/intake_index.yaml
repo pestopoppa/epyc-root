@@ -365056,3 +365056,394 @@
     effect: unaffected
     note: Read.
   dive_corrections: '2026-10-30 (Stage 2b, wave 2; Stage 1+2 combined): ingested from the #31086 dive; confirmed.'
+- id: intake-2522
+  arxiv_id: null
+  url: https://x.com/Alezander9/status/2115842962521509968
+  source_type: blog
+  title: '"Compaction is a mistake" — Mainplane context retrieval vs compaction (Alexander Yue, X post, 2026-10-29)'
+  categories:
+  - context_management
+  - agent_architecture
+  novelty: low
+  relevance: high
+  discovered_via: input
+  verdict: worth_investigating
+  ingested_date: '2026-10-30'
+  authors:
+  - Alexander Yue (@Alezander9, Mainplane)
+  key_claims:
+  - Compaction as done by Codex and Claude Code re-prefills the whole session, writes a summary, and starts a new session
+    from the summary.
+  - On one ~400k-token Opus 5.5 session, compaction took 38 s / $1.99 with an expired prompt cache and 29 s / $0.17 with a
+    warm one; Mainplane resume took 15 s / $0.10.
+  - 'Summaries are lossy: exact error messages, file paths and specific numbers are often lost.'
+  - Mainplane keeps every session as a file and starts the continuation with one instruction, "You are continuing session
+    X. Retrieve key context from it as you go."; the agent searches the old session and copies exact lines when needed.
+  - 'Framed as the Bitter Lesson applied to agent memory: give the model the full record and good tools rather than hand-designing
+    what it remembers.'
+  techniques:
+  - retrieval over compaction
+  - zero-summary session continuation
+  reported_results:
+  - 'Hand-off cost only, one session, n=1: 38 s/$1.99 (cold cache), 29 s/$0.17 (warm), 15 s/$0.10 (Mainplane resume). No end-task
+    accuracy measured.'
+  cross_references:
+    chapters: []
+    handoffs:
+    - tool-output-compression.md
+    - repl-session-memory-maturity.md
+    - repl-embedding-retrieval.md
+    - context-folding-progressive.md
+    experiments: []
+    intake_entries:
+    - intake-914
+    - intake-919
+    - intake-901
+    - intake-1316
+    - intake-140
+    - intake-274
+    - intake-2523
+    - intake-2524
+    intake_entry_notes:
+    - 'intake-914 (ACM: lossless offload + query_memory; source of the filed A/B)'
+    - 'intake-919 (PRO-LONG: code search over an append-only log; source of the filed A/B)'
+    - intake-901 (fast-rlm resumed sessions; owned by EVL-36 D-c)
+    - 'intake-1316#record (Scroll: agent code over an out-of-context lossless log)'
+    - 'intake-140 (LCM: never-discard store + summaries in view)'
+    - intake-274 (observation masking = our default compaction)
+    - intake-2523 (Mainplane repo)
+    - 'intake-2524 (Cursor: summary + history-file pointer)'
+  recommended_actions:
+  - 'Dive: verify numbers against the post text; compare with Claude Code and Cursor hybrid summary+pointer behaviour.'
+  credibility_score: 1
+  contradicting_evidence: null
+  referenced_arxiv_ids: []
+  notes: 'Stage 1 (main, 2026-10-30, session intake-mainplane-20261030): operator pre-approved all recommended Stage-2 dives
+    (max 4 waves); stop at Stage-3 plan; no compute. Fetched via api.fxtwitter.com JSON to /mnt/raid0/llm/tmp/dive-mainplane-20261030/x/.
+    The quoted predecessor post https://x.com/Alezander9/status/2115131891766657357 (2026-10-27, "Context compaction was a
+    mistake") carries only a 56.7 s video, not read; recorded here rather than as its own entry. Commercial author (vendor
+    bias -1).'
+  verification: stage1-unverified
+  handoffs_updated: []
+  handoffs_created: []
+- id: intake-2523
+  arxiv_id: null
+  url: https://github.com/mainplane-ai/mainplane
+  source_type: repo
+  title: mainplane-ai/mainplane — open-source Go agent harness (control plane + WireGuard-mesh workers; session-file continuation)
+  categories:
+  - agent_architecture
+  - context_management
+  - tool_implementation
+  novelty: low
+  relevance: high
+  discovered_via: input
+  verdict: adopt_patterns
+  ingested_date: '2026-10-30'
+  authors:
+  - Alexander Yue
+  - Mainplane
+  key_claims:
+  - MIT-licensed Go harness; the control plane owns credentials and LLM calls and appends every record to an append-only .state
+    file; workers execute tools over a harness-coordinated WireGuard mesh.
+  - The model tool set is restricted to run/read/write/edit/patch, each taking a worker argument.
+  - At session end the .state file is copied to each worker as <scratch>/logs/<id>.log (media removed); a continuing session
+    is told the path and the system prompt says the file is searchable with rg.
+  - Standing context lives in AGENTS.md files that agents may write; root AGENTS.md files are read whole at every session
+    start.
+  - Context limit is a per-session config value; past it the session fails rather than compacting.
+  techniques:
+  - framed append-only session record
+  - AGENTS.md persistent context
+  - agent-visible context meter
+  reported_results: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - tool-output-compression.md
+    - repl-session-memory-maturity.md
+    - repl-embedding-retrieval.md
+    - context-folding-progressive.md
+    experiments: []
+    intake_entries:
+    - intake-914
+    - intake-919
+    - intake-901
+    - intake-1316
+    - intake-140
+    - intake-274
+    - intake-2522
+    intake_entry_notes:
+    - 'intake-914 (ACM: lossless offload + query_memory; source of the filed A/B)'
+    - 'intake-919 (PRO-LONG: code search over an append-only log; source of the filed A/B)'
+    - intake-901 (fast-rlm resumed sessions; owned by EVL-36 D-c)
+    - 'intake-1316#record (Scroll: agent code over an out-of-context lossless log)'
+    - 'intake-140 (LCM: never-discard store + summaries in view)'
+    - intake-274 (observation masking = our default compaction)
+    - intake-2522 (the post)
+  recommended_actions:
+  - 'Dive: read harness system prompt, continuation command, context-limit enforcement, log copy; docs/self-hosting.md.'
+  credibility_score: null
+  contradicting_evidence: null
+  referenced_arxiv_ids: []
+  notes: 'Stage 1 (main, 2026-10-30, session intake-mainplane-20261030): operator pre-approved all recommended Stage-2 dives
+    (max 4 waves); stop at Stage-3 plan; no compute. Includes https://github.com/mainplane-ai/mainplane/blob/main/docs/self-hosting.md
+    (operator-listed URL; same repo, read at the same commit). curl -sIL: 200, no redirect. Shallow clone at /mnt/raid0/llm/tmp/dive-mainplane-20261030/repo.'
+  verification: stage1-unverified
+  handoffs_updated: []
+  handoffs_created: []
+- id: intake-2524
+  arxiv_id: null
+  url: https://cursor.com/blog/dynamic-context-discovery
+  source_type: blog
+  title: 'Cursor: Dynamic context discovery (Jediah Katz, 2026-01-06)'
+  categories:
+  - context_management
+  - agent_architecture
+  - tool_implementation
+  novelty: low
+  relevance: high
+  discovered_via: search
+  expanded_from: intake-2522
+  verdict: worth_investigating
+  ingested_date: '2026-10-30'
+  authors:
+  - Jediah Katz (Cursor)
+  key_claims:
+  - Long tool outputs are written to files the agent reads with tail/read instead of being truncated in context.
+  - At context limit Cursor still summarizes, but gives the agent a reference to the full chat-history file so it can search
+    for details missing from the summary.
+  - Only MCP tool names sit in static context; an A/B reported a 46.9% total-token reduction on runs that called an MCP tool.
+  techniques:
+  - dynamic context discovery
+  - chat history as file
+  - tool output to file
+  reported_results:
+  - 46.9% total agent token reduction (MCP tool lookup A/B, runs that called an MCP tool).
+  cross_references:
+    chapters: []
+    handoffs:
+    - tool-output-compression.md
+    - repl-session-memory-maturity.md
+    - repl-embedding-retrieval.md
+    - context-folding-progressive.md
+    experiments: []
+    intake_entries:
+    - intake-2522
+    - intake-914
+    intake_entry_notes:
+    - intake-2522 (pure retrieval variant)
+    - intake-914 (ACM)
+  recommended_actions:
+  - 'Dive: confirm the summary+pointer hybrid wording; it is the incumbent that Mainplane argues against.'
+  credibility_score: null
+  contradicting_evidence: null
+  referenced_arxiv_ids: []
+  notes: 'Stage 1 (main, 2026-10-30, session intake-mainplane-20261030): operator pre-approved all recommended Stage-2 dives
+    (max 4 waves); stop at Stage-3 plan; no compute. Expansion (Tier 2 search) from intake-2522: operator note says Cursor
+    lets a post-compaction agent re-read the transcript.'
+  verification: stage1-unverified
+  handoffs_updated: []
+  handoffs_created: []
+- id: intake-2525
+  arxiv_id: '2607.25066'
+  url: https://arxiv.org/abs/2607.25066
+  source_type: paper
+  title: Addressable Recall Compaction for Long Context-Window Control in AI Agents
+  categories:
+  - context_management
+  - agent_architecture
+  novelty: medium
+  relevance: high
+  discovered_via: search
+  expanded_from: intake-2522
+  verdict: worth_investigating
+  ingested_date: '2026-10-30'
+  authors: []
+  key_claims:
+  - ARC stores tool observations in an append-only ID-addressable log and replaces older ones with compact citations the agent
+    can use to recall stored content.
+  techniques:
+  - Addressable Recall Compaction (ARC)
+  reported_results: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - tool-output-compression.md
+    - repl-session-memory-maturity.md
+    - repl-embedding-retrieval.md
+    - context-folding-progressive.md
+    experiments: []
+    intake_entries:
+    - intake-2522
+    - intake-914
+    intake_entry_notes:
+    - intake-2522
+    - intake-914
+  recommended_actions:
+  - 'Dive: verify the accuracy comparison and whether retrieval cost is reported.'
+  credibility_score: 2
+  contradicting_evidence: null
+  referenced_arxiv_ids: []
+  notes: 'Stage 1 (main, 2026-10-30, session intake-mainplane-20261030): operator pre-approved all recommended Stage-2 dives
+    (max 4 waves); stop at Stage-3 plan; no compute. Tier 2 search hit; abs title resolved 2026-10-30 (v1, 2026-07-27).'
+  verification: stage1-unverified
+  handoffs_updated: []
+  handoffs_created: []
+- id: intake-2526
+  arxiv_id: '2606.11213'
+  url: https://arxiv.org/abs/2606.11213
+  source_type: paper
+  title: 'Beyond Compaction: Structured Context Eviction for Long-Horizon Agents'
+  categories:
+  - context_management
+  - agent_architecture
+  novelty: medium
+  relevance: medium
+  discovered_via: search
+  expanded_from: intake-2522
+  verdict: worth_investigating
+  ingested_date: '2026-10-30'
+  authors: []
+  key_claims:
+  - 'Context Window Lifecycle (CWL): the agent annotates its trajectory as typed, dependency-linked episodes and a deterministic
+    LLM-free policy evicts by priority when over budget.'
+  techniques:
+  - Context Window Lifecycle (CWL)
+  reported_results: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - context-folding-progressive.md
+    - tool-output-compression.md
+    experiments: []
+    intake_entries:
+    - intake-274
+    intake_entry_notes:
+    - intake-274 (observation masking)
+  recommended_actions:
+  - 'Dive: verify the unbounded-horizon claim and baselines.'
+  credibility_score: 2
+  contradicting_evidence: null
+  referenced_arxiv_ids: []
+  notes: 'Stage 1 (main, 2026-10-30, session intake-mainplane-20261030): operator pre-approved all recommended Stage-2 dives
+    (max 4 waves); stop at Stage-3 plan; no compute. Tier 2 search hit; abs title resolved 2026-10-30 (v1, 2026-05-01).'
+  verification: stage1-unverified
+  handoffs_updated: []
+  handoffs_created: []
+- id: intake-2527
+  arxiv_id: '2608.06503'
+  url: https://arxiv.org/abs/2608.06503
+  source_type: paper
+  title: 'Towards Reliable Context Compression for Long-Horizon Agents: An Empirical Study of Execution Instability'
+  categories:
+  - context_management
+  - benchmark_methodology
+  novelty: medium
+  relevance: medium
+  discovered_via: search
+  expanded_from: intake-2522
+  verdict: worth_investigating
+  ingested_date: '2026-10-30'
+  authors: []
+  key_claims:
+  - Recurrent context compression can weaken the influence of recent interactions, increasing blocked actions, repeated exploration
+    and run-to-run instability; TRACE optimizes the compression prompt via paired continuations.
+  techniques:
+  - TRACE
+  reported_results: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - tool-output-compression.md
+    experiments: []
+    intake_entries:
+    - intake-2522
+    intake_entry_notes:
+    - 'intake-2522 (contradiction-pass candidate: evidence that summaries hurt)'
+  recommended_actions:
+  - 'Dive: what instability metrics are measured; relevance to the filed A/B metrics.'
+  credibility_score: 2
+  contradicting_evidence: null
+  referenced_arxiv_ids: []
+  notes: 'Stage 1 (main, 2026-10-30, session intake-mainplane-20261030): operator pre-approved all recommended Stage-2 dives
+    (max 4 waves); stop at Stage-3 plan; no compute. Tier 2b cheap contradiction-pass hit; abs title resolved 2026-10-30 (v2).'
+  verification: stage1-unverified
+  handoffs_updated: []
+  handoffs_created: []
+- id: intake-2528
+  arxiv_id: '2605.23296'
+  url: https://arxiv.org/abs/2605.23296
+  source_type: paper
+  title: Parallel Context Compaction for Long-Horizon LLM Agent Serving
+  categories:
+  - context_management
+  - inference_serving
+  novelty: medium
+  relevance: medium
+  discovered_via: search
+  expanded_from: intake-2522
+  verdict: worth_investigating
+  ingested_date: '2026-10-30'
+  authors: []
+  key_claims:
+  - Summarization-based compaction is lossy and its blocking call stalls agent inference; parallel compaction is proposed
+    for agent serving.
+  techniques:
+  - parallel compaction
+  reported_results: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - tool-output-compression.md
+    experiments: []
+    intake_entries:
+    - intake-2522
+    intake_entry_notes:
+    - intake-2522 (serving-path cost of compaction)
+  recommended_actions:
+  - 'Dive: verify stall magnitudes and run-to-run retained-information variance.'
+  credibility_score: 2
+  contradicting_evidence: null
+  referenced_arxiv_ids: []
+  notes: 'Stage 1 (main, 2026-10-30, session intake-mainplane-20261030): operator pre-approved all recommended Stage-2 dives
+    (max 4 waves); stop at Stage-3 plan; no compute. Tier 2 search hit; abs title resolved 2026-10-30 (v1, 2026-05-22).'
+  verification: stage1-unverified
+  handoffs_updated: []
+  handoffs_created: []
+- id: intake-2529
+  arxiv_id: null
+  url: http://www.incompleteideas.net/IncIdeas/BitterLesson.html
+  source_type: blog
+  title: The Bitter Lesson (Rich Sutton, 2019-03-13)
+  categories:
+  - agent_architecture
+  novelty: low
+  relevance: low
+  discovered_via: input
+  verdict: worth_investigating
+  ingested_date: '2026-10-30'
+  authors:
+  - Richard S. Sutton
+  key_claims:
+  - General methods that leverage computation (search and learning) ultimately beat methods that build in human knowledge.
+  techniques: []
+  reported_results: []
+  cross_references:
+    chapters: []
+    handoffs: []
+    experiments: []
+    intake_entries:
+    - intake-2522
+    intake_entry_notes:
+    - intake-2522 (uses it as framing)
+  recommended_actions:
+  - 'Knowledge only: framing essay cited by intake-2522; no empirical claim about agent memory.'
+  credibility_score: null
+  contradicting_evidence: null
+  referenced_arxiv_ids: []
+  notes: 'Stage 1 (main, 2026-10-30, session intake-mainplane-20261030): operator pre-approved all recommended Stage-2 dives
+    (max 4 waves); stop at Stage-3 plan; no compute. Operator-listed reference. Fetched to /mnt/raid0/llm/tmp/dive-mainplane-20261030/exp/sutton.html.'
+  verification: stage1-unverified
+  handoffs_updated: []
+  handoffs_created: []
