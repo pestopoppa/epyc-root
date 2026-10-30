@@ -590,7 +590,7 @@ _FILE_SOURCES = (
     "hil15a-auc", "repl-preview",
     "rus2-probe", "gpu-leak-probe", "v11-oracle-rerun", "ds41-w5d", "akx-lb32", "repl-embedder-parity", "clbench-cache-hit", "spec-rng-1-2", "pb-qcost", "ev19-gold-selfcheck", "oolong", "yarn-gate-agg", "nemotron-bolt-fold", "np-ctx-kvu-measurement", "ufh14-lb7-stall", "ch19-t3-screen",
     "hil17-attribution-ladder", "hil-lb1-loop-score",
-    "ak-width-dimension", "ak-width-cells-cpu",
+    "ak-width-dimension", "ak-width-cells-cpu", "autokernel-census",
     "moe-routing",
     "gpu-cpu-noise", "launch-affinity", "q38-serving-gate", "fused-decode-div", "champion-fold-gate", "calendar-overrun", "floor-registry", "weight-handoff",
     "hsf5p-microbench", "m4-cpu-recipe-speed",

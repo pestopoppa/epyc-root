@@ -481,6 +481,11 @@ SOURCES: dict[str, Source] = {s.name: s for s in (
            _files("belief_measurements.jsonl", "*/belief_measurements.jsonl"),
            note="OCC-1 run dirs (`run_occ1.py report` sidecars); VOID/pre-hook runs decline",
            task="SC85"),
+    Source("autokernel-census", "autokernel_census",
+           _files("*.belief.jsonl", "*/*.belief.jsonl"),
+           frames="frames_for_record",
+           note="Prospective scheduler census sidecars; strict native warrant required",
+           task="SC81 census slice"),
     Source("ak-width-dimension", "autokernel_width_dimension",
            _files("width_dimension.json", "*/width_dimension.json"),
            note="AKX-ALL-27 HIP width-invariance dimension records (`width_dimension.json` beside "
