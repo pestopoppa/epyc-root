@@ -16,3 +16,6 @@ Filed GPUcross-device r2pre-nativefailure andr3standalone nativePPL14.3940 witho
 
 
 Three original00:17 HIL partials audited: S0 has29accepted/1unknown/15unexposed; S2 17/1/27; fresh60slotHILb no replays. No fullcohort tick. [belief: cc]
+
+
+Operator quarter rebalance: withdrew eight excess ungranted PIP pollers, verified captured processes dead, and replaced two q2 pollers whose live CPU arguments disagreed with queue metadata. Waiting set q2 R9g5/R11g11; q3 R11g17/R11g26; R11g8 started onq3. Four republished packets pass keeper ready_scan against unchanged smoke-qualified launcher bytes; active grants retained. [Rebalance evidence](../../artifacts/compute/pip02-quarter-rebalance-20261030.json). [no-belief: queue placement and process control, no new measurement result]

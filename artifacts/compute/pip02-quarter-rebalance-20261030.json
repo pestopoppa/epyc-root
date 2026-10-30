@@ -1,0 +1,71 @@
+{
+  "at": "2026-10-30T00:46:15.413907+00:00",
+  "parked": [],
+  "republished": [
+    {
+      "id": "codex3-pip02-paddle-relocatable-r9-g5-20261029",
+      "captured": {
+        "pid": 2062422,
+        "prior_capture_verified_dead": true,
+        "argv": "--stop /mnt/raid0/llm/tmp/codex3-pip02-paddle-relocatable-r9-20261029/packets/group-5/STOP-5"
+      },
+      "children": [],
+      "verified_dead": true,
+      "stop": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-relocatable-r9-20261029/packets/group-5/STOP-5"
+    },
+    {
+      "id": "codex3-pip02-paddle-relocatable-r11-g11-20261029",
+      "captured": {
+        "pid": 2194927,
+        "birth": 144271689,
+        "ppid": 531045,
+        "state": "S",
+        "uid": 1000,
+        "argv": "bash /mnt/raid0/llm/tmp/codex3-pip02-paddle-relocatable-r11-20261030/packets/group-11/engine/filler_run13.sh --id codex3-pip02-paddle-relocatable-r11-g11-20261029 --class cpu --role bench --claim-cpus 72-95 --min-window 3600 --port 24011 --stop /mnt/raid0/llm/tmp/codex3-pip02-paddle-relocatable-r11-20261030/packets/group-11/STOP-11 --workdir /mnt/raid0/llm/tmp/codex3-pip02-paddle-relocatable-r11-20261030/packets/group-11 --cmd taskset -c \"$FILLER_CPUS\" /usr/bin/python3 -B /mnt/raid0/llm/tmp/codex3-pip02-paddle-relocatable-r11-20261030/packets/group-11/parallel_entry.py --first-shard 11 --regions 72-95 --port 24011 --complete-cmd test -e /mnt/raid0/llm/tmp/codex3-pip02-paddle-relocatable-r11-20261030/packets/group-11/DONE-11 "
+      },
+      "children": [
+        {
+          "pid": 2455855,
+          "birth": 144361697,
+          "ppid": 2194927,
+          "state": "S",
+          "uid": 1000,
+          "argv": "sleep 45 "
+        }
+      ],
+      "verified_dead": true,
+      "stop": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-relocatable-r11-20261030/packets/group-11/STOP-11"
+    }
+  ],
+  "skipped_active": [],
+  "already_dead": [
+    "codex3-pip02-paddle-relocatable-r8-g107-20261029",
+    "codex3-pip02-odl-relocatable-r2-s24-20261029",
+    "codex3-pip02-odl-relocatable-r2-s25-20261029",
+    "codex3-pip02-odl-relocatable-r2-s28-20261029",
+    "codex3-pip02-odl-relocatable-r2-s29-20261029",
+    "codex3-pip02-paddle-relocatable-r11-g17-20261029",
+    "codex3-pip02-paddle-relocatable-r11-g23-20261029",
+    "codex3-pip02-paddle-relocatable-r11-g29-20261029"
+  ],
+  "additional_q3_publication": "codex3-pip02-paddle-relocatable-r11-g17-20261029",
+  "final_expected_waiting": {
+    "q2": [
+      "codex3-pip02-paddle-relocatable-r9-g5-20261029",
+      "codex3-pip02-paddle-relocatable-r11-g11-20261029"
+    ],
+    "q3": [
+      "codex3-pip02-paddle-relocatable-r11-g17-20261029",
+      "codex3-pip02-paddle-relocatable-r11-g26-20261029"
+    ]
+  },
+  "withdrawn_pid_death_verified_at": "2026-10-30T00:47:13.915459+00:00",
+  "note": "First stop pass completed eight captures and parked manifests before row-name lookup error; rerun verified all eight absent and republished q2 pair. Actual ready_scan accepts all three republished packets. Existing q3g8 unchanged; activeg26 excluded from waiting count.",
+  "newly_running": "codex3-pip02-paddle-relocatable-r11-g8-20261029",
+  "parked_after_their_grants_ended": [
+    "codex3-pip02-paddle-relocatable-r11-g35-20261029",
+    "codex3-pip02-paddle-relocatable-r11-g107-20261029"
+  ],
+  "ready_scan": "ok\t83\tcodex3-pip02-paddle-relocatable-r11-g26-20261029\t72-95\t/mnt/raid0/llm/tmp/codex3-pip02-paddle-relocatable-r11-20261030/packets/group-26/parallel-g26.sh\t32400\t96\nok\t83\tcodex3-pip02-paddle-relocatable-r9-g5-20261029\t48-71\t/mnt/raid0/llm/tmp/codex3-pip02-paddle-relocatable-r9-20261029/packets/group-5/parallel-g5.sh\t32400\t96\nbad\t-\tcodex-hil15-s0-unknown-preserving-v5-20261030\thold=disk admission: need151.125GiB (150floor+1GiBsampledcontinuation+.125margin), actual150.937809GiB\nbad\t-\tufh14-a3a-single-warm-r2-20261028\thold=q3 scheduler safety patch unverified; do not arm until verified.\n",
+  "verified_at": "2026-10-30T00:48:03.183921+00:00"
+}
