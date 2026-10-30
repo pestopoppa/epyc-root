@@ -420,7 +420,7 @@ First full smoke run of the trial loop. Four defects, three silent.
   structural precedence remain intact. Regression tests cover `1.503s`, `0.502s`, `1.504`, `1503`,
   `foo503bar`, `503s`, standalone/HTTP/status 503, actual `http_status=503`, the anchored `[ERROR:`
   path and legacy connection text through both classifier APIs. Private orchestrator commit
-  `d7aa9d95`; integrated source SHA: `PENDING_PARENT_PUBLICATION`. Eight direct-caller suites passed
+  `d7aa9d952b5f6312cfef02059145e698c6735756`; integrated source SHA: `b101d4c108c24ca9c24d0b443f32c11200236c61af1dc82c41a956d8929bd470`. Eight direct-caller suites passed
   163 tests; EV6b caller suite passed 39 tests; Ruff lint and diff checks passed. GitNexus at indexed
   source reports CRITICAL, 121 affected nodes and 19 direct callers; its index predates current main
   by 40 commits, while the edited function is unchanged between indexed checkout and private base.
