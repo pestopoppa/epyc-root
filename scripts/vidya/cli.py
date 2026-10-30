@@ -556,6 +556,7 @@ INF70_CORPUS_ROOT = Path("/mnt/raid0/llm/tmp/inf70")
 # Kept literal (not imported) so `cli.py --help` stays cheap; test_ingest_sources pins it
 # equal to ingest_sources.SOURCES.
 _FILE_SOURCES = (
+    "lb49-combined-diagnostic",
     "ufh12-irt-paired",
     "ufh12-gs-coverage",
     "rtg57-vkq-comparison", "rtg57-vkq-oracle",
