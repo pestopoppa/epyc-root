@@ -364,3 +364,8 @@ HSF PROFILE-6 R12's original whole-host event ended 05:14:53Z rc75 before A1/B/A
 
 
 At05:58:40Z HSF13 normal A1 had completed warmup, six four-stream waves and restore. All211 during-driver samples recorded KFD and positiveVRAM; latest serving sample52.18GB. Serving had drained while the captured profiler process remained live in native trace export. Full A1/B/A2 remains incomplete; grant ownership is not substituted for native evidence. Canonical launcher log now hardlinks the actual keeper stdout inode. [Live native proof](../../artifacts/compute/results-filing-20261030-0600.json). [belief: cc]
+
+
+### 2026-10-30 HSF R13 and HIL S2 Micron original partials
+
+HSF PROFILE-6 R13 original whole-host run ended 06:06:06Z rc75 during A2 profiler export when its sampled 16 GiB Micron native-output cap was exceeded. A1, B and A2 each reached seven waves and one restore; A1 and B export statuses were natural-zero, while A2 has no completed export status. Sampled native-output peak was 17,312,783,006 bytes; the four retained A1/B/A2/slot trees occupy 5,073,874,944 / 4,909,334,528 / 5,105,082,368 / 2,220,183,552 unique allocated bytes respectively. No full trace or attribution verdict follows. The owner retired the later ungranted waiter and captured sleep child with dead verification at 06:12:22Z. HSF R15 is separate successor preparation; no full result is implied. R13's original event is present in its timestamped native log but absent from `filing-due.jsonl`; no seen timestamp or deadline is invented. [Native partial and custody audit](../../artifacts/compute/results-filing-20261030-0619.json). [belief: cc]

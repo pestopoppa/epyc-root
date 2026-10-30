@@ -582,3 +582,11 @@ Seven original HIL events: S0 v7/v8, S2 v6/v7 and bounded r5/r6 were T1 disk-flo
 
 - Heavy R7 split-storage successor was real-smoke qualified and published, then keeper accepted05:48:38Z. At its handoff the fixed48-slot scope retained39 accepted,4 unknown and5 unexposed; unknowns11/0,12/2,16/1,19/0 are preserved. Final-wrapper target Qwen35B control used two SMT threads,9 prompt/1 predicted token plus witnessed active-request cutoff, rc75/partial and captured cleanup. Native output has its independent1GiB Micron budget; real RAID metadata reserves128MiB above150GiB. Old own ungranted R6 poller and captured sleep child were retired and verified absent. Publication is not cohort completion.
   - [belief: cc] [Source and native proof references](../../artifacts/compute/results-filing-20261030-0600.json).
+
+
+### 2026-10-30 HSF R13 and HIL S2 Micron original partials
+
+HIL S2 Micron v8 original grant ended 06:13:40Z rc75; its original slice partial records `refused: unsafe grant` without isolating the subcondition. Unit 07 slot 0 produced a native pass, replay rc0 and L2 scan rc0; its original manifest says the L2 belief sidecar was disabled, so no sidecar capture is claimed. Slot 1 has an exposed incomplete native attempt and no manifest; retain it unknown. The original 45-slot scope is now 18 accepted / 2 unknown / 25 unexposed, preserving earlier unknown 06/2 and new unknown 07/1. No redraw, complete-cohort verdict or new grade. The producer's existing slot-0 hash manifest and original partial/cutoff evidence were verified; later slice records are separate. [Native partial audit](../../artifacts/compute/results-filing-20261030-0619.json). [belief: cc]
+
+
+Runtime cleanup: the e4a749 linked checkout was retired after exact213-file Git-blob/mode verification and archive of R2–R8 source/native bytes. Continue from `/mnt/micron/codex3-hil15b-root-capsule-e4a749-20261030` and its commit-bound verifier, using the prospective source preflight rather than the removed linked Git admin path. The capsule successor is preflight-only and still needs a fresh launcher, smoke and cohort inventory check before READY; preserve39 accepted/4 unknown/5 unexposed unless a newer original-boundary audit proves progress. Restore details and archived source are in the capsule. No old packet warrant is transferred. [no-belief: runtime custody migration]

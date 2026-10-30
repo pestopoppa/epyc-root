@@ -1,0 +1,94 @@
+{
+  "schema": "original-event-filing/v1",
+  "prepared_at": "2026-10-30T13:08:31Z",
+  "original_payload": {
+    "path": "/mnt/raid0/llm/tmp/codex3-filing-original-1245-20261030/filing-payload.json",
+    "sha256": "dfcaf8925564f5908afcb9b11a706a8a9fd16d03395cc2a3e4e29ef76bdd200f"
+  },
+  "prepared_payload": {
+    "path": "/mnt/raid0/llm/tmp/codex3-filing-original-1245-20261030/PREPARED-CANONICAL-PAYLOAD.json",
+    "sha256": "99d91262c13ef110bddfb158c7f4a198d119098fc8a9bbe193e9a1d2fa4fbe0f"
+  },
+  "native_supplement": {
+    "path": "/mnt/raid0/llm/tmp/codex3-filing-original-1245-20261030/native-extra.json",
+    "sha256": "a93dff88523b1c5dc8eccbab2640fc6e7ab96e384b00fc751dd9bc9ea8bb2aca"
+  },
+  "events": [
+    {
+      "id": "codex3-hil15b-heavy-r7-split-20261030",
+      "seen_at": "2026-10-30T06:07:04Z",
+      "original_end": "rc=127 time=2026-10-30T06:06:40Z reason=job-rc-127:exited"
+    },
+    {
+      "id": "codex3-pip02-paddle-relocatable-r15-pool0-20261030",
+      "seen_at": "2026-10-30T06:08:06Z",
+      "original_end": "rc=75 time=2026-10-30T06:07:20Z reason=job-rc-75:exited"
+    },
+    {
+      "id": "codex3-pip02-paddle-relocatable-r15-pool2-20261030",
+      "seen_at": "2026-10-30T06:08:06Z",
+      "original_end": "rc=75 time=2026-10-30T06:08:02Z reason=job-rc-75:exited"
+    },
+    {
+      "id": "codex3-pip02-paddle-relocatable-r17-head-20261030",
+      "seen_at": "2026-10-30T06:08:06Z",
+      "original_end": "rc=75 time=2026-10-30T06:07:21Z reason=job-rc-75:exited"
+    },
+    {
+      "id": "hpr-fix2-prospective64k-r2-20261030",
+      "seen_at": "2026-10-30T06:08:06Z",
+      "original_end": "rc=70 time=2026-10-30T06:07:38Z reason=job-rc-70:exited"
+    },
+    {
+      "id": "yarn-oolong-s0-budget256-eligible28-v25-20261030",
+      "seen_at": "2026-10-30T06:08:07Z",
+      "original_end": "rc=6 time=2026-10-30T06:07:12Z reason=t1-admission:DRYRUN_REFUSED: disk free-after-output 149.90 GiB < floor 150 GiB"
+    },
+    {
+      "id": "kpf18-g3-r12-integration-cpu-r5",
+      "seen_at": "2026-10-30T06:15:21Z",
+      "original_end": "rc=75 time=2026-10-30T06:14:22Z reason=job-rc-75:exited"
+    },
+    {
+      "id": "codex-hil15-s0-micron-v9-20261030",
+      "seen_at": "2026-10-30T06:17:25Z",
+      "original_end": "rc=6 time=2026-10-30T06:17:06Z reason=t1-admission:DRYRUN_REFUSED: disk free-after-output 146.51 GiB < floor 150 GiB"
+    },
+    {
+      "id": "codex3-pip02-paddle-relocatable-r22-pool1-20261030",
+      "seen_at": "2026-10-30T06:17:25Z",
+      "original_end": "rc=75 time=2026-10-30T06:17:02Z reason=job-rc-75:exited"
+    },
+    {
+      "id": "codex3-pip02-paddle-relocatable-r22-pool2-20261030",
+      "seen_at": "2026-10-30T06:17:25Z",
+      "original_end": "rc=75 time=2026-10-30T06:17:03Z reason=job-rc-75:exited"
+    },
+    {
+      "id": "hil15b-split-output-r7-20261030",
+      "seen_at": "2026-10-30T06:21:34Z",
+      "original_end": "rc=75 time=2026-10-30T06:21:02Z reason=job-rc-75:exited"
+    },
+    {
+      "id": "codex3-pip02-paddle-relocatable-r22-pool3-20261030",
+      "seen_at": "2026-10-30T06:22:36Z",
+      "original_end": "rc=75 time=2026-10-30T06:22:00Z reason=job-rc-75:exited"
+    },
+    {
+      "id": "codex3-pip02-paddle-relocatable-r22-pool0-20261030",
+      "seen_at": "2026-10-30T06:24:40Z",
+      "original_end": "rc=75 time=2026-10-30T06:24:37Z reason=job-rc-75:exited"
+    },
+    {
+      "id": "codex3-hsf5p-profile6-r15-20261030",
+      "seen_at": "2026-10-30T06:40:10Z",
+      "original_end": "rc=75 time=2026-10-30T06:39:29Z reason=job-rc-75:exited"
+    },
+    {
+      "id": "codex-hil15-s2-split-v9-20261030",
+      "seen_at": "2026-10-30T07:27:44Z",
+      "original_end": "rc=75 time=2026-10-30T07:27:03Z reason=job-rc-75:exited"
+    }
+  ],
+  "filing_time_policy": "Actual markers written only after verified push; all original deadlines were missed, no backdating."
+}

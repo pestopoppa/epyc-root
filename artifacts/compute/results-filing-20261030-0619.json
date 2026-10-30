@@ -1,0 +1,6 @@
+{
+  "schema": "original-event-filing/v1",
+  "audit_path": "/mnt/raid0/llm/tmp/codex3-filing-hsf13-s2v8-20261030/audit.json",
+  "audit_sha256": "412d4823f5967d0d3e17d6ec80e75d38c05ec7aef68091c980a9c96a615834d4",
+  "scope": "HSF13 original A2 export partial and HIL S2 Micron v8 original18 accepted/2 unknown/25 unexposed; full immutable audit retained at its pinned path."
+}
