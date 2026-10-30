@@ -64,6 +64,7 @@
 | s098 | r11 | 3/5 | 0/0 | — | — | `paddle-split-v3/s098.json` |
 | s099 | r11 | 2/5 | 2/2 | 0.935813 | 1.000000 | `paddle-split-v3/s099.json` |
 | s100 | r11 | 2/5 | 0/0 | — | — | `paddle-split-v3/s100.json` |
+| s104 | r22 | 5/5 | 0/0 | — | — | `paddle-watch/epochs/s104/e76b365d2845b1cf299fe7dbc17a0212ab5014722084ccc1d5ce21b692b0f8ee/s104.json` |
 | s105 | r22 | 2/5 | 0/0 | — | — | `paddle-split-v3/s105.json` |
 | s108 | r22 | 5/5 | 0/0 | — | — | `paddle-split-v3/s108.json` |
 | s109 | r22 | 1/5 | 0/0 | — | — | `paddle-watch/epochs/s109/321bef896778942c00f98865d99146633343851e16a12a52ebd7da6cce3ba7a6/s109.json` |
@@ -74,5 +75,8 @@
 | s121 | r11 | 2/5 | 0/0 | — | — | `paddle-split-v3/s121.json` |
 | s121 | r22 | 2/5 | 0/0 | — | — | `paddle-split-v3/s121.json` |
 | s126 | r11 | 1/5 | 0/0 | — | — | `paddle-split-v3/s126.json` |
+| s131 | r22 | 5/5 | 0/0 | — | — | `paddle-watch/epochs/s131/769b96c0920aa2e2860c79006548fdb85e9c9ea6f71cdccacccf3b1de7a2625c/s131.json` |
+| s132 | r22 | 5/5 | 0/0 | — | — | `paddle-watch/epochs/s132/174cbd8d3c96ebc3d1153df28796a35b0ee8140a8688846fb25eb3b34be70e4a/s132.json` |
+| s133 | r22 | 5/5 | 0/0 | — | — | `paddle-watch/epochs/s133/58ff5bb791fbb48b33fdccd4a9e52ea6c978c855a5123543df00542c64234c74/s133.json` |
 
 Descriptive English fresh cohort snapshots, table weighted, higher better; denominators repeat where a shard spans epochs and must not be summed. Each case is counted once; newer receipt-verified generations supersede earlier completed cases, while prior events and refusals remain recorded. No paired or full-population claim.

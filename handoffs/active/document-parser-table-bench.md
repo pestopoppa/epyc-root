@@ -510,3 +510,14 @@ The exact 11-row, 255-page UNVERIFIED inventory follows; all native page inputs,
 | s26 | 25/25 | 0/0 | — | — | missing original producer ID and source manifest | [JSON](../../artifacts/compute/pip02-shard-teds-20261030/odl-legacy-recheck/odl-s26.json) / 74f769136b621bedf69879a30eca71456bbda0cca5e1fc6c166950218a4c1505 |
 | s27 | 25/25 | 5/5 | 0.795710 | 0.964456 | missing original producer ID and source manifest | [JSON](../../artifacts/compute/pip02-shard-teds-20261030/odl-legacy-recheck/odl-s27.json) / 713d9df128fac71ac85580b2e177d0615b658809feee19bdb43dc80333c2f129 |
 | s30 | 5/5 | 0/0 | — | — | missing original producer ID and source manifest | [JSON](../../artifacts/compute/pip02-shard-teds-20261030/odl-legacy-recheck/odl-s30.json) / ffb4a78e49901bfd8ce56c60d17fb74b3a9c858eded1a992fd08292bcadc52a2 |
+
+### 2026-10-30 22:18 incremental Paddle filing
+
+Four more completed English Paddle shards have been scored with the unchanged Phase C scorer, GT and matcher. Each has five verified pages and zero GT tables, so both TEDS means are undefined rather than zero or a passing score. Deduplicated verified coverage is now **271 pages and 78 GT tables**, up20 pages from251; repeated native epochs are never summed. Higher TEDS remains better where defined. The755-page and paired-parser quality gates remain open. [Running table](../../artifacts/compute/pip02-shard-teds-20261030/epochwatch-v2/paddle-running-table.md), [refusal history](../../artifacts/compute/pip02-shard-teds-20261030/epochwatch-v2/paddle-running-refusals.json), [hash-checked transfer audit](../../artifacts/compute/pip02-shard-teds-20261030/TRANSFER-AUDIT-2218.json). [belief: cc]
+
+| Paddle shard | Verified pages | GT tables | TEDS | Structure-only TEDS | Native score artifact |
+|---|---:|---:|---:|---:|---|
+| s104 | 5/5 | 0/0 | — | — | [JSON](../../artifacts/compute/pip02-shard-teds-20261030/paddle-watch/epochs/s104/e76b365d2845b1cf299fe7dbc17a0212ab5014722084ccc1d5ce21b692b0f8ee/s104.json) |
+| s131 | 5/5 | 0/0 | — | — | [JSON](../../artifacts/compute/pip02-shard-teds-20261030/paddle-watch/epochs/s131/769b96c0920aa2e2860c79006548fdb85e9c9ea6f71cdccacccf3b1de7a2625c/s131.json) |
+| s132 | 5/5 | 0/0 | — | — | [JSON](../../artifacts/compute/pip02-shard-teds-20261030/paddle-watch/epochs/s132/174cbd8d3c96ebc3d1153df28796a35b0ee8140a8688846fb25eb3b34be70e4a/s132.json) |
+| s133 | 5/5 | 0/0 | — | — | [JSON](../../artifacts/compute/pip02-shard-teds-20261030/paddle-watch/epochs/s133/58ff5bb791fbb48b33fdccd4a9e52ea6c978c855a5123543df00542c64234c74/s133.json) |
