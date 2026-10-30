@@ -2781,6 +2781,8 @@ R24-1/2/3/5/8/9 must trim to fit or raise the budget with a reason. Code citatio
       (intake-1427#record). Zero compute; journal logic only.
       - Research `8b1cdb6fb8dd2255acf3f4194e690d1a23465510` captures source code/work identity prospectively, journals the prior and new effects, and uses the existing `MeasurementInvalid` path before keep when divergence exceeds the current native floor. Missing identity/floor stays unknown. Ten current-source tests (native comparison objects), new-module Ruff and private-index promotion passed; no live excursion or historical regrade. [Evidence](../../artifacts/compute/refactor-r24-same-code-source-20261030.json).
 
+      - [x] Bind plain CPU bench repeats to the CPU code manifest even without a direct-serving launch. ✅ 2026-10-30 Research `5412cae12ec806514f27f510eadf4206d4b0f9be`; eleven source-bound tests and new-module Ruff pass. This corrects source `8b1cdb6fb` choosing HIP for ordinary CPU bench calls; no historical verdict changed. [no-belief: backend dispatch source fix]
+
 - [ ] **R24-10 — randomized multi-draw arm for near-tie ops (rider on R22-5).** For selection and near-tie ops
       (ARGMAX, TOP_K, sampler paths), run N ≥ 100 fresh input draws per boundary case instead of one fixed input, and
       record a mismatch rate. A 3-draw oracle misses a p=0.015 failure 95.6 % of the time. LLM-CUDA's agent-assisted

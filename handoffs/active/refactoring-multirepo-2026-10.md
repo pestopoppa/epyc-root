@@ -555,3 +555,8 @@ C1-22 disappears with the unified plane.
 **Source/build wrap checkpoint (2026-10-30):**
 
 - [x] Land repo-owned A6 sandbox isolation source and pre-exposure writer as research `276d75fab`; normal native read-denial proof and six focused controls accepted, with held draft/uncut request limits explicit. Publish a separately qualified, frozen-source C5 CPU build READY packet for the recipe successor. Source and build preparation only; broader refactor, A6 standing rule and AKX-ALL-8 measurement parent remain open. [Proof](../../artifacts/compute/refactor-a6-source-build-ready-20261030.json). ✅ 2026-10-30 [belief: cc]
+
+
+**Refactor HIL S2 inner-admission repair (2026-10-30):**
+
+- [x] Qualify and publish `codex-hil15-s2-r12-inner-t1-20261030` as the successor to withdrawn r11. ✅ 2026-10-30 [no-belief: launcher qualification only] Original45 slots remain18 accepted,2 immutable unknown and25 unexposed; no redraw or full native completion. The final source/engine bundle passed normal native replay and active decode cutoff at100tokens, rc75/partial with all owned descendants drained, plus actual no-argument entry and private inner controls. Source-bound job admission remains; only obsolete inner/outer T1 receipts are bypassed in the private diagnostic engine. Micron native output and8MiB RAID metadata budgets remain. HIL S0 and HILb8 live inputs were untouched. [Evidence](../../artifacts/compute/refactor-hils2-and-source-guards-20261030.json).

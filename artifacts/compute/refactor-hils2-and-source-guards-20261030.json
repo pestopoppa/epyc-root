@@ -1,0 +1,269 @@
+{
+  "hil_s2": {
+    "accounting": {
+      "accepted": 18,
+      "full_complete": false,
+      "future": {
+        "07": [
+          2
+        ],
+        "08": [
+          0,
+          1,
+          2
+        ],
+        "09": [
+          0,
+          1,
+          2
+        ],
+        "10": [
+          0,
+          1,
+          2
+        ],
+        "11": [
+          0,
+          1,
+          2
+        ],
+        "12": [
+          0,
+          1,
+          2
+        ],
+        "13": [
+          0,
+          1,
+          2
+        ],
+        "14": [
+          0,
+          1,
+          2
+        ],
+        "15": [
+          0,
+          1,
+          2
+        ]
+      },
+      "native_grade": null,
+      "original": 45,
+      "unexposed": 25,
+      "unknown": 2,
+      "unknown_slots": [
+        {
+          "slot": 2,
+          "unit": "06"
+        },
+        {
+          "slot": 1,
+          "unit": "07"
+        }
+      ],
+      "target_terminal_known": 43,
+      "target_terminal_status": "collection-exhausted-with-two-unknown",
+      "state": "partial; unexposed slots remain"
+    },
+    "class": "diagnostic",
+    "cwd": "/mnt/raid0/llm/tmp/hil15-s3-t1-repair-20261030/s2-r12",
+    "decision_rule": "Higher known collection coverage is better. Preserve the original 45 denominator: 18 accepted, 2 immutable unknown (unit06/slot2 and unit07/slot1), and 25 unexposed. Run only unit07/slot2 and units08-15 slots0/1/2. Unknowns retain native_grade=null; no redraw, no full-unit07 grading. Collection exhaustion at 43 known plus 2 unknown is not full native completion or promotion evidence.",
+    "engine_files": {
+      "/mnt/raid0/llm/tmp/hil15-s3-t1-repair-20261030/s2-r12/engine/PARENT-ENGINE.sha256": "ceba1231710abad1da6c0ea4d94a9af5e2572f63d2389b4444275b19db55e24c",
+      "/mnt/raid0/llm/tmp/hil15-s3-t1-repair-20261030/s2-r12/engine/dryrun_check.py": "06361c9061e5e8326fbe55aedd2fcf198e346b1cae4610fc7a4647616dc70daf",
+      "/mnt/raid0/llm/tmp/hil15-s3-t1-repair-20261030/s2-r12/engine/dryrun_disk_policy.json": "a271e93a7a9ac54386352d254e5ad2ab57a5f39fc40daad99106afa919bfa157",
+      "/mnt/raid0/llm/tmp/hil15-s3-t1-repair-20261030/s2-r12/engine/engine.sha256": "77b9f3fd81d84816a8e48dd001a577d1b9ee5b9ecfb726df7ee1dbbfe0efae14",
+      "/mnt/raid0/llm/tmp/hil15-s3-t1-repair-20261030/s2-r12/engine/filler_lib.sh": "241e522f4a7d7208e7485834c90d77676434a9bc88fd253575e034ad2934237c",
+      "/mnt/raid0/llm/tmp/hil15-s3-t1-repair-20261030/s2-r12/engine/filler_run13.sh": "79f9bb0eff26422ae8a4883533ca8a4e7acc7f0f3ead4db1b21998255800a699"
+    },
+    "enrollment": "n/a: diagnostic",
+    "est_output_GiB": 0.0078125,
+    "external_output": {
+      "external_native_retention": "retain complete native outputs, source and smoke raw on Micron",
+      "metadata_log_caps": {
+        "lifetime_bytes": 4194304,
+        "per_launcher_epoch_bytes": 262144
+      },
+      "metadata_root": "/mnt/raid0/llm/tmp/hil15-s3-t1-repair-20261030/s2-r12",
+      "metadata_sampled_cap_bytes": 8388608,
+      "micron_reserve_GiB": 151.125,
+      "models": "canonical RAID only",
+      "native_output_cap_GiB": 1,
+      "native_output_cap_bytes": 1073741824,
+      "native_output_root": "/mnt/micron/refactor-hil15-s2-r12-inner-t1-20261030",
+      "native_sampled_output_cap_bytes": 1073741824,
+      "native_source_manifest": "/mnt/micron/refactor-hil15-s2-r12-inner-t1-20261030/SOURCE.sha256",
+      "no_floor_or_protocol_reduction": true,
+      "source_manifest_sha256": "ed1220fdb2b75e883e840a995d9147b55a0e37e29609b4ea3dbc2ddaaeb43ea7"
+    },
+    "feasibility": "25 x 990s + 1200s startup + 90s cleanup = 26040s <= 28800s nominal; resumable windows >= 1800s; no guaranteed completion.",
+    "full_disk_admission_GiB": 150.0078125,
+    "gib": 64,
+    "handshake_log": "/mnt/raid0/llm/tmp/hil15-s3-t1-repair-20261030/s2-r12/ws58-launcher.out",
+    "hold": null,
+    "id": "codex-hil15-s2-r12-inner-t1-20261030",
+    "job": {
+      "path": "/mnt/raid0/llm/tmp/hil15-s3-t1-repair-20261030/s2-r12/launch.sh",
+      "sha256": "0ec7a56d3af8eba445ff7e5528b0700fdaa6dd6ba74e014021cf03bb9b47e085"
+    },
+    "keep": [
+      "KEEP",
+      "*.py",
+      "*.sh",
+      "*.json",
+      "*.md",
+      "*.sha256",
+      "*.log",
+      "ws58-launcher.out",
+      "engine/**",
+      "scheduler-state/**",
+      "BUNDLE.sha256",
+      "fixture-*/**",
+      "normal-smoke.log",
+      "cutoff-smoke.log"
+    ],
+    "launcher": {
+      "path": "/mnt/raid0/llm/tmp/hil15-s3-t1-repair-20261030/s2-r12/launch.sh",
+      "sha256": "0ec7a56d3af8eba445ff7e5528b0700fdaa6dd6ba74e014021cf03bb9b47e085"
+    },
+    "launcher_log": "/mnt/raid0/llm/tmp/hil15-s3-t1-repair-20261030/s2-r12/ws58-launcher.out",
+    "log_consumer": "/mnt/micron/refactor-hil15-s2-r12-inner-t1-20261030/read_logs.py",
+    "log_consumer_sha256": "268b6794a5bc0990909ede8d3456255a0f783ad62b1f5a3fdb764d5b3a743d4c",
+    "min_window_s": 1800,
+    "model": {
+      "path": "/mnt/raid0/llm/models/Qwen3.6-35B-A3B-MTP-Q8_0.gguf",
+      "sha256": "c1283d8b80c3e38b2735ddbc9766d3b3126f44d6c484be419d4e101d09a76131"
+    },
+    "output_budget": {
+      "GiB": 1,
+      "Micron_native_cap_GiB": 1,
+      "Micron_reserve_GiB": 151.125,
+      "RAID_floor_reservation": "150 GiB + remaining metadata cap",
+      "RAID_metadata_cap_MiB": 8,
+      "RAID_metadata_estimate_GiB": 0.0078125,
+      "cap_behavior": "rc75 partial after owned tree drain; exposed incomplete retained unknown",
+      "floor_GiB": 150,
+      "kind": "sampled; may overshoot, not hard quota or completion guarantee",
+      "safety_GiB": 0.125
+    },
+    "output_filesystem": "Micron distinct from RAID; Micron reserve remains 151.125 GiB; RAID floor remains 150 GiB with 8 MiB metadata cap and remaining-cap reserve",
+    "owner": "codex-refactor-01a16fc3",
+    "port": 19433,
+    "predecessor": {
+      "change": "Private successor skips obsolete inner T1 resources receipt only for diagnostic ID; native grant, affinity, source, STOP, disk and timing guards remain.",
+      "id": "codex-hil15-s2-r11-t1-20261030",
+      "known": 18,
+      "old_bytes_retained": true,
+      "parent_source_manifest_sha256": "78014dcb7c1b65a47aba7ff9682a4b617f3ae49ded22e3968013a8a68c2b302a",
+      "private_derivative_source_manifest_sha256": "ed1220fdb2b75e883e840a995d9147b55a0e37e29609b4ea3dbc2ddaaeb43ea7",
+      "status": "withdrawn preventively for obsolete inner T1 resource-receipt dependency; no native refusal observed",
+      "unexposed": 25,
+      "unknown": 2
+    },
+    "preferred_regions": "any-cpu-quarter",
+    "priority_rank": 21,
+    "private_engine_note": "Final whole-bundle freeze precedes model smokes. RUS3_DIAGNOSTIC=1 skips only obsolete legacy T1 dryrun and inner resources receipts for this diagnostic ID. Engine retains exact grant, min-window, STOP, region-lock, affinity taskset, port, and job-native resource guards.",
+    "ram_budget": {
+      "GiB": 64,
+      "R11_GiB": 8,
+      "artifact": "/mnt/micron/refactor-hil15-s2-r12-inner-t1-20261030/RAM-BUDGET.json",
+      "kind": "planning envelope, sampled tree RSS, not measured peak"
+    },
+    "regions": "any-cpu-quarter",
+    "result_path": "/mnt/micron/refactor-hil15-s2-r12-inner-t1-20261030/s2-official-results/collection-status.json",
+    "scratch_root": "/mnt/raid0/llm/tmp/hil15-s3-t1-repair-20261030/s2-r12",
+    "smoke": {
+      "exit_ok": true,
+      "first_request_ok": true,
+      "log": "/mnt/raid0/llm/tmp/hil15-s3-t1-repair-20261030/s2-r12/normal-smoke.log",
+      "model": "/mnt/raid0/llm/models/gemma-3-1b-it-Q8_0.gguf",
+      "model_sha256": "b205840c5dcef55078e37d344677869a714ffd42a4ae448c48dcfb52e4bb10d5",
+      "ran_at": "2026-10-30T17:19:40.395860+00:00",
+      "regions": "154,155",
+      "result_writer_ok": true,
+      "wall_s": 27.9
+    },
+    "smoke_controls": {
+      "actual_noarg": {
+        "exit": 3,
+        "log": "/mnt/raid0/llm/tmp/hil15-s3-t1-repair-20261030/s2-r12/ws58-launcher.out",
+        "private_flags_root": "/mnt/raid0/llm/tmp/hil15-s3-t1-repair-20261030/s2-r12/fixture-noarg",
+        "reason": "540s window below 1800s minimum after RUS3 outer bypass"
+      },
+      "bundle_sha256": "f49eb8d6ae0910258d1e207f931efb5381207612f8a19f34a09c20dd2ffeca94",
+      "cutoff": {
+        "descendants_drained": true,
+        "expected_exit": 75,
+        "first_request_ok": true,
+        "log": "/mnt/raid0/llm/tmp/hil15-s3-t1-repair-20261030/s2-r12/cutoff-smoke.log",
+        "partial": true,
+        "partial_path": "/mnt/micron/refactor-hil15-s2-r12-inner-t1-20261030/real-unit-smoke-cutoff-Hxe7ArSe/slot-2/partial.json",
+        "raw_root": "/mnt/micron/refactor-hil15-s2-r12-inner-t1-20261030/real-unit-smoke-cutoff-Hxe7ArSe",
+        "result_writer_ok": true,
+        "wall_s": 78.59761800710112
+      },
+      "id": "codex-hil15-s2-r12-inner-t1-20261030",
+      "inner_fixture": {
+        "exit": 0,
+        "job_executed": true,
+        "log": "/mnt/raid0/llm/tmp/hil15-s3-t1-repair-20261030/s2-r12/inner-fixture.log",
+        "obsolete_t1_resources_skipped": true,
+        "private_flags_root": "/mnt/raid0/llm/tmp/hil15-s3-t1-repair-20261030/s2-r12/fixture-inner"
+      },
+      "launcher_sha256": "0ec7a56d3af8eba445ff7e5528b0700fdaa6dd6ba74e014021cf03bb9b47e085",
+      "normal": {
+        "descendants_drained": true,
+        "exit": 0,
+        "first_request_ok": true,
+        "log": "/mnt/raid0/llm/tmp/hil15-s3-t1-repair-20261030/s2-r12/normal-smoke.log",
+        "raw_root": "/mnt/micron/refactor-hil15-s2-r12-inner-t1-20261030/real-unit-smoke-normal-1MTwV4Kj",
+        "result_writer_ok": true,
+        "strict_native_replay_verified": true
+      },
+      "regions": "154,155",
+      "source_manifest_sha256": "ed1220fdb2b75e883e840a995d9147b55a0e37e29609b4ea3dbc2ddaaeb43ea7"
+    },
+    "source_manifest": {
+      "path": "/mnt/micron/refactor-hil15-s2-r12-inner-t1-20261030/SOURCE.sha256",
+      "sha256": "ed1220fdb2b75e883e840a995d9147b55a0e37e29609b4ea3dbc2ddaaeb43ea7"
+    },
+    "status": "READY",
+    "threads": 24,
+    "window_s": 28800,
+    "min_effect": "n/a (diagnostic discovery; original45 denominator and immutable unknowns retained)",
+    "publication_disk": {
+      "raid_free_bytes": 422508888064,
+      "checked_at": "2026-10-30T17:21:11.075737+00:00"
+    }
+  },
+  "manifest_sha256": "c2b3b587832783b9371d99c00883e06e2585e932cebacb0e4455b9120ac2a517",
+  "sgw1_source": {
+    "source_commit": "e3adf8b097e09f7a4c3d582e26f95bdca077bbae",
+    "base": "f510391798f853bd7910a12909a0f0d02149b913",
+    "ref": "refs/heads/refactor/sgw1-prompt-noop-20261030",
+    "patch_sha256": "4e5918f29145583e8da90d301921491541d618e5f23f305bac1c964a5f97affa",
+    "files": [
+      "scripts/autopilot/actions.py",
+      "tests/unit/test_autopilot_actions.py"
+    ],
+    "real_index_unchanged": true,
+    "pushed_main": true,
+    "no_worktree_created": true
+  },
+  "r24_cpu_followup": {
+    "source_commit": "5412cae12ec806514f27f510eadf4206d4b0f9be",
+    "base": "8b1cdb6fb8dd2255acf3f4194e690d1a23465510",
+    "ref": "refs/heads/refactor/r24-cpu-backend-20261030",
+    "patch_sha256": "ea1a673abcfe87f962964834a18fcd64d4f48bc95068a21fe942b8eefa41045a",
+    "files": [
+      "scripts/kernel_rnd/autokernel/loop/run.py",
+      "scripts/kernel_rnd/autokernel/loop/same_code_tripwire.py",
+      "scripts/kernel_rnd/autokernel/loop/test_same_code_tripwire.py"
+    ],
+    "real_index_unchanged": true,
+    "pushed_main": true,
+    "no_worktree_created": true
+  },
+  "claims": "HIL launcher qualified only, no full discovery grade; source guards regression-tested only, no live speed or quality gain."
+}

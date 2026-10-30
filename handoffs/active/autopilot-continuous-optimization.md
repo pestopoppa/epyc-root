@@ -658,10 +658,12 @@ its comparator on 2 of 4 tasks there, so no frontier API is required. Cite `inta
 
 ### Research Intake Update — 2026-08-15 (acceptance cannot currently see a no-op; intake-1129/1141)
 
-- [ ] **SG-W1 — No-op guard.** Refuse to promote a candidate whose config/diff is byte-identical to its
+- [x] **SG-W1 — No-op guard.** ✅ 2026-10-30 [no-belief: source guard and tests] Refuse to promote a candidate whose config/diff is byte-identical to its
       parent, regardless of score. Under a stochastic LLM-graded objective a byte-identical candidate
       can score above its parent on noise alone, and `intake-1141`'s own data gives the magnitude: an
       **unchanged** harness scored 0.800 and 0.547 on the same suite. A few lines; zero exploration cost.
+
+      - Orchestrator `e3adf8b097e09f7a4c3d582e26f95bdca077bbae` skips byte-identical prompt and GEPA candidates before eval/promotion; code, numeric and structural paths already reject no-op changes. All148 action tests passed against current-source archive. Baselines and score thresholds unchanged; no reload or live efficacy claim. [Evidence](../../artifacts/compute/refactor-hils2-and-source-guards-20261030.json).
 
 - [ ] **SG-W2 — Warrant as telemetry (explicitly NOT a gate).** Record whether an accepted edit cites
       an observed failure instance, without blocking on it. Structural obstacle to plan for:
