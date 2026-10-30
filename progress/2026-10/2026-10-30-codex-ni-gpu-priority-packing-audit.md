@@ -1,0 +1,11 @@
+# GPU priority-packing F1 owner handoff — 2026-10-30
+
+Owner review and revision-b correction completed for the GPU priority-packing proposal. The review isolated F1: the old writer's hardcoded predecessor guard did not survive the keeper's generated-version rewrite, and a failed existing destination could be retried on a later tick. Revision b parameterizes predecessor PID/birth checks and validates every generated candidate before launch. The audit also retains the previously reviewed FIFO renewal, busy-GPU enrollment, and actual-minimum protections; no throughput or live-scheduler result is claimed.
+
+The corrected proposal passed 76 isolated controls: 50 original controls rerun on revision-b sources and 26 executing the actual keeper generation recipe through v17b → v18 → v19. Coverage includes PID/birth/cap propagation, stale or corrupt candidate refusal across rediscovery, unknown identity and `ps`-failure refusal, priority order, actual minima, derived claims, and current-native protection. Temporary fixtures use `/tmp`. Required `ws58_arm-v2.py` bytes are unchanged.
+
+Parent approved the exact revision and verified all 13 manifest hashes. Direct owner inbox receipt `db017930-a8c6-4c32-9b62-f7cc2338c932` confirms delivery/acceptance only; it does not show owner read, deployment, or live scheduler state. The owner transition remains the existing versioned native-boundary procedure. NI made no scheduler, grant, queue, FILLERS, hook-pin, process, or deployment changes.
+
+Runtime mapping: `grant-gpu-1030-v17b.sh.PROPOSED` installs as numeric `grant-gpu-1030-v17.sh` for existing version/log/PID discovery; `ws58-calendar-keeper-v7b.sh.PROPOSED` installs under that v7b name and its new hash requires the owner's trusted pin procedure; `ws58_arm-v2.py.PROPOSED` remains unchanged. Source SHA-256: writer `98c80237d7b2df6783aae0f1a047e6a9cfb1a97443fd9703df14c462290fae93`; keeper `e6aa0c784eec9dee919656af802188db36cdd92a30cd6d79003e8d37b5ab6d23`; arm `edb4ab253331d38735f42257e74b6a17bdf5d74898ca923b1b2fe9442031762e`.
+
+Evidence: `/mnt/raid0/llm/tmp/codex-ni-gpu-priority-packing-audit-20261030/{REPORT-vb.txt,REVISION-B-MANIFEST.json,CONTROLS-vb.json,SUCCESSION-CONTROLS-vb.json,OWNER-REVISION-B-DELIVERY-RECEIPT.json,REVISION-B-CLOSEOUT.json}`. [belief: cc]
