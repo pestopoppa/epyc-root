@@ -1306,10 +1306,11 @@ now trustworthy, where before they were not. Verified against the live registry 
       `validate_template()` reports them (missing `architect_critic`, `vision_escalation` on retired
       8087, `coder_escalation` aliasing frontdoor, quarter-port rows for quarters retired
       2026-07-30) but the pipeline never invokes that validator. Wire it into the gate.
-- [ ] **`validate_model_paths()` validates files the stack does not launch** — its own hardcoded
+- [x] **`validate_model_paths()` validates files the stack does not launch** — its own hardcoded
       path list (frontdoor GGUF, architect/ingest dirs) no longer matches the declared models, and
       both stale files still exist on disk so it returns clean. Derive from
       `stack_priors.roles.*.serving.launch.requirements`.
+      ✅ 2026-10-30 — orchestrator main `47d4fc1a8be6479a81fe24426883c43e30238dd2` validates active generated model/draft/projector files, deduplicates checks, and retains real embedding/aux/tool inputs. Missing/malformed active requirements fail closed; optional null external drafters and remote backends remain valid. Non-dev start validates before host prerequisites. The old function returned no errors when the active critic drafter was missing in the controlled fixture; the new function reports that exact canonical path.186 focused tests, red/green control and Ruff pass; no model/config or live service changes. [no-belief: source implementation and deterministic preflight controls]
 - [x] **`autopilot.py:5589` `_MODEL_SIGNATURES_PATH` names a deleted file.** Harmless today (the
       arg is ignored) but should be removed with its call-site arg. ✅ 2026-10-29 — orchestrator main `5e1e9bcd2530` removes the retired constant and passes only `descriptors_path` to the existing loader. Descriptor-only fail-closed behavior is unchanged; 38 state-store regression tests and Ruff pass. No autopilot process was reloaded. [no-belief: source cleanup and regression tests]
 - [ ] **`NON_QUARTERABLE` still names `architect_general`** in `contention_matrix.py` — now inert
