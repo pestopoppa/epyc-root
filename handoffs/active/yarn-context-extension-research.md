@@ -433,3 +433,10 @@ Evidence: `/mnt/raid0/llm/tmp/yarn-judged-cell-repair-v4-20261029/YARN-s{0,1,2,3
 - Native full result: `/mnt/raid0/llm/tmp/codex-ni-yarn-dca-attribution-cpu-r2-20261030/runs/codex-ni-yarn-dca-attribution-cpu-r2-20261030-full-1793328131/result.json`, SHA256 `b5c0bea9394489312af09f32b16ca163a1ff94b7b27a61dc178ff651a381cb02`. Native run duration 351.666s, sampled peak RSS 24,530,640,896 bytes across 698 samples; clean exit, writer and cleanup verified.
 - Its CSV has exactly 64 rows for prediction positions 32768–32831 and target positions 32769–32832; SHA256 `9eb6b7a76b06e6d375552ee09fed60169754b037e76700143b2ff359b57448fb`. The full CSV, run log, process and resource sample hashes, source, binary, six loaded libraries, model and text checks are in [durable audit references](../../artifacts/compute/20261030-0310/results.json). Source commit `9264f8095e4272f84e3b375e73b57ec380ecb328`; packet SHA256 `0fe6d05d62b87cd79ea42c276cdb5c8941c1d7537a35952c2e8a38f8b3a938dc`.
 - [belief: cc] Observation is limited to this native CPU diagnostic. Compare tokenwise only after a full matched GPU arm verifies identical source, model, text, context, batch, ubatch, attention and KV configuration; retain the original one-pair limitation.
+
+
+2026-10-30 original GPU tokenwise attribution R1:
+
+- **FAILED-RUN `codex-ni-yarn-dca-attribution-gpu-r1-20261030`:** the 03:13:08–03:13:11 GPU grant ended rc70 at in-claim admission, logging `invalid window, output or RAM`. The original row requests 1590 seconds, which is 30 seconds short of a whole-minute multiple, while `dryrun_check.py` rejects `requested % 60`; the row's 6 GiB RAM and 0.25 GiB output estimate satisfy that predicate. No `YDX_FULL_ENTRY` or full-run result was present. Prior bounded GPU smokes remain separate evidence; no matched full tokenwise attribution, kernel cause or significance verdict follows. [belief: cc]
+
+[Original native audit references](../../artifacts/compute/results-filing-20261030-0320.json).

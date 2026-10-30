@@ -50,3 +50,11 @@ Filing timestamp correction: prior six-event commit f58547b27979 had actual FILE
 
 
 S0v6originalrc75 verified32accepted/3unknown/10unexposed of45; two new native receipts(one taskfail,one goldpass), no cohort-AUC or exhaustiontick. Preserve exposed12/1 without redraw. Native output-cap-or-disk-reserve gate does not uniquely identify its predicate. [belief: cc]
+
+
+Previous goal turn was progress: four fixed PIP replacements published and eight obsolete waiting registrations retired. This turn added eight original source-order Paddle reserves g116/119/122/125/128/131/134/137, all any-cpu-quarter, unchanged real-smoked launcher/source and 120 image hashes with no matching previous exposures. Existing two-fixed-PIP-per-quarter limit retained. HIL6 fixes silent disk admission rc1 to explicit resource rc75; HSF11 fixes all-core plus GPU claim coverage using cpu+gpu and mi210_0,0-95; actual engine plus grant-validator controls pass, normal166GiB trace guard unchanged. Their bounded smoke watchers remain live while free space is below admission. EVL2 keeps model/kernel/context and fresh source-order questions, increases prospective call/token reservations and retains malformed-call failures explicitly. No new model smoke success claimed. [belief: cc]
+
+Eight original events audited: HIL5 silent admission consistent with low disk but historical free bytes unlogged; S2v5 and boundedR4 explicit T1 disk refusals; KPF4 later output-reserve refusal kept separate from earlier312.967s native disk partial with null bridge; GPU attributionR1 rejected requested_window_s1590 modulo60 before full entry; Paddle104/89/95 original zero RPC starts and no original-bound finish receipts, later captures separate. All existing scientific boxes stay open. CPU physical utilization03:14:33–38 was2.6–4.2% and GPU0VRAM despite HELD quarters; disk147.27GiB. Do not claim busy from locks alone. [belief: cc]
+
+
+Four additional final source-order reserves g140/143/146/149 published, bringing this turn to12 new Paddle reserves covering175 fresh-cohort unexposed pages. Tailg149 has exactlytwo shards/10pages, not15. One image has an older distinct-campaign diagnostic exposure; approved fresh-cohort inclusion reuses none of its outputs or warrants. Source and native smoke unchanged; no full755page quality/completion claim. [belief: cc]

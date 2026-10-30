@@ -290,3 +290,23 @@ Native capture/hash/time details: `original-three-events.json`; exact page-finis
 
 
 [belief: cc] [Durable audit references](../../artifacts/compute/20261030-0310/results.json).
+
+
+2026-10-30 original Paddle g104/g89/g95 windows:
+
+Each original outer job exited rc75. Its last pre-end capture reports disk floor and TimeoutError: admission. Result JSON has no finished_at; association with the outer event follows sequential capture start order and launcher end and remains an inference. Request counts use native timestamps and matching start hash at the original boundary; later captures are separate.
+
+| Group | Original end UTC | Last capture start UTC | Result SHA256 | RPC started / matched / unmatched | Later captures excluded |
+|---|---|---|---|---|---|
+| 104 | 2026-10-30T03:11:36Z | 2026-10-30T03:11:12Z | 53cae3967f30c2494e069052e1971319d46f75bc4d1e95577e3bf8e39a05d31f | 0 / 0 / 0 | 2 |
+| 89 | 2026-10-30T03:14:44Z | 2026-10-30T03:14:20Z | 2722b981fd8f0d07157aee2c2a4ed53551d8edc3415a0167a8f4218ab68d9132 | 0 / 0 / 0 | 0 |
+| 95 | 2026-10-30T03:14:45Z | 2026-10-30T03:14:21Z | c553cd3bc2681e411eb1f30f57589cbd172488d4794294bb6c9d503b453ecd55 | 0 / 0 / 0 | 0 |
+
+All original captures match the 74-file R11 source registry `20b60b7ac3fb6fcd4db6d49163eea7d3158a4be0c6b4a94e04a2fab850226ebb`, protocol and captured grant intervals. No original-capture-bound page finish receipts exist among the 15 pages of each group. Preserve unknowns, no redraw; no page-completeness, TEDS, quality, adoption or full-cohort claim.
+
+Native details in original-three-events.json, original-finish-audit.json and source-capture-audit.json.
+
+
+[belief: cc]
+
+[Original native audit references](../../artifacts/compute/results-filing-20261030-0320.json).

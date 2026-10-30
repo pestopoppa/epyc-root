@@ -1083,3 +1083,10 @@ Trigger-gated (no checkbox until the trigger fires):
 
 
 2026-10-30 01:33:18Z, `kpf18-g3-r12-integration-cpu-r3` refused rc70 before the full replay: `grant/engine CPU, thread, or substrate mismatch`. The recorded grant/engine resource output and taskset show CPUs 0–23 and 24 threads, while the packet parser requires a `q0`/`q1`/`q2` grant representation and a 24-core-plus-16-sibling CPU list. The exact active grant file is no longer retained here, so the failing field cannot be isolated more narrowly from the original log. No result was created for this admission; the existing older `attempts/1793313120-1793316720/RESULT.json` is a separate rc143 event, not r3's result. Owner action: reconcile the replay guard's grant format and CPU requirements with the actual assigned engine resources and validate with a fresh successor; retain the R6 historical verdict unchanged. [belief: cc] [Committed native audit](../../artifacts/compute/results-filing-20261030-0157.json).
+
+
+2026-10-30 original R4 windows, kept separate:
+
+- **FAILED-RUN `kpf18-g3-r12-integration-cpu-r4`:** the 03:09:05–03:09:08 q0 grant ended rc70; its native launcher explicitly refused because the 150 GiB floor plus 2 GiB scheduled output reserve was unavailable. Preserve the separate earlier 03:02 grant attempt: native `RESULT.json` SHA256 `d1e683cf6e906cae42e9e17d63965e71f6f8f73366bfa6d8f66d01b42f122268` reports 312.967 s, sampled peak 35,271,639,040 bytes, rc75 disk-floor partial, cleanup verified and `bridge_result=null`. Neither event establishes full replay framing or alters the original R6 INVALID verdict. The declared raw and ledger pins verified. [belief: cc]
+
+[Original native audit references](../../artifacts/compute/results-filing-20261030-0320.json).

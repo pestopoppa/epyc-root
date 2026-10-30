@@ -1,0 +1,41 @@
+{
+  "prepared_at": "2026-10-30T03:21:16.353141+00:00",
+  "native_audits": [
+    {
+      "path": "/mnt/raid0/llm/tmp/codex3-filing-0320-20261030/codex3-hil-three0318-20261030.json",
+      "sha256": "42c03fe3261269890c8eaf9f86a202fe4c295cd1516d31e465e3140ac80bb39c"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/codex3-filing-0320-20261030/codex3-ni-two0320-20261030.json",
+      "sha256": "f3090582dcfec6a8ea63dbe26c5171eba11089ce1814bd8df1549c0b6fba98b9"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/codex3-filing-0320-20261030/original-three-events.json",
+      "sha256": "12b4200ac0fcf09a787be616ea609bd7465988bc41bce2736b05ff0132ea445c"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/codex3-filing-0320-20261030/original-finish-audit.json",
+      "sha256": "f8a5fda3425e93cdb4e265aad695db48b89c10fd0a93b2af9c733357570a7525"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/codex3-filing-0320-20261030/source-capture-audit.json",
+      "sha256": "3c367d1b77959a6772b44c75c0f331e43459493b2a4bb3e337c4c5032e9e5681"
+    }
+  ],
+  "new_ready_preparation": [
+    {
+      "path": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-r11-next32-20261030/PREPARATION.json",
+      "sha256": "7b5a22cf8f4649335544108ffcb3000cbd4e96845af672eb0c6032fa4e4b0612"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-r11-next36-20261030/PREPARATION.json",
+      "sha256": "d562d4bf5bea979bb53e7a808c2d3a0882815e6348ccbb85cf1a3a7d0c76c9ef"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-r11-next40-20261030/PREPARATION.json",
+      "sha256": "bf2ca8a013c6eab25216e33f5f1ac9579eccd76ad2f9624eb06f28684c1a5dfb"
+    }
+  ],
+  "claim_scope": "Original admission/partial events only. No new cohort quality, full framing, matched attribution or completion tick.",
+  "pipeline": "Twelve source-order unexposed Paddle reserves published; HIL6 explicit rc75 disk resource pause, HSF11 CPU+GPU grant shape and EVL2 longer prospective budget prepared; actual new smokes require native disk floors."
+}
