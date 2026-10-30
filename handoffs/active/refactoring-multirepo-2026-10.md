@@ -25,11 +25,29 @@ and confirmation of one index owner. The correction below does not claim owner a
 The owner verified those fixes in private `d3cba7b6` at 16:40, but still withheld merge: this
 branch must withdraw its wiki page/manifest contribution and retain the runbook's live executor
 offender until the cleanup source merges. Findings stay in the research record for the next sweep.
+That prior review-withhold is superseded for the root wrap-up: `fcdc09c08a807491531dc0527942244a638bd957`
+was accepted and merged by the owning main as `d369b3798` on 2026-10-26 at 16:44 UTC. The earlier
+review history above is retained as chronology.
 
-**Current next action (2026-10-26):** repair CI report compatibility and runtime isolation, then rerun baseline.
-CI already contains integration in local merge `753e0287a1ae6b06f2a5c91269899ff8cc8452b5`.
-P3 is accepted and published at `fb5db1a0a24b92172643bb670c77a4343a508c96` on its private
-`codex/*` branch. Run the separate root wrap-up checks in an official q1 grant.
+**Current next action (2026-10-27):** P3 is accepted and published on its private `codex/*` branch;
+the original integration candidate remains privately validated. O8's CI fixture-isolation and
+guard-tripwire work now has scoped preflight evidence, but no complete baseline JUnit/native grade,
+accepted baseline dataset, full candidate run, or publication. The 08:29:09–08:29:17 UTC native
+admission passed three safe cases with a conformant `Judged/Located` shared grade, normal
+completion, matching custody, zero guard violations, and the corrected editable `851` v4 inventory.
+It does not validate the full baseline. The subsequent V6 full baseline started at 08:42:16 UTC and
+was stopped after the tripwire refused four test-originated connections to configured backend ports
+(first 8070) from `TestHealthEndpoint::test_health_returns_ok`; the owned process group was dead by
+08:43:10 and official exit was 143. No JUnit/native grade or accepted counts/dataset resulted.
+Fix the API health fixture with a fake backend that preserves health semantics and the tripwire,
+then rerun the relevant guarded API integration and scoped baseline proof before another full
+baseline. Tool bootstrap is complete, but its standalone checks are not project gates. Only after a
+valid complete baseline capture should the dataset be derived, followed by full candidate native
+validation and required gates/coverage. O8 remains unchecked. Checkpoint details and evidence paths:
+[2026-10-27 CI checkpoint](../../progress/2026-10/2026-10-27-refactor-ci-checkpoint-01a16fc3.md).
+Codex NI owns the production `embedder.py` fix; this session's scope is test guard/tripwire only.
+Keep the four protected P5 files unchanged. Only private `codex/*` publication is in scope; no
+main promotion.
 
 Origin: cloud refactor-audit session (claude.ai/code session_01C4SLLAQhop8AA9rJJusAYj), run in an ephemeral
 4-CPU container on fresh clones, never on the host. Evidence, data and tooling:
