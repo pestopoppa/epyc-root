@@ -989,6 +989,18 @@ dim 96. This is a **projection, not a measurement.** Two conditions on any adopt
       (`internal-kb-rag.md`). **Gate — what result opens it**: a verbose arm scoring **>2 pp below
       the short arm** would be the **first local evidence of query-length sensitivity**, which today
       exists nowhere in the repo. Opens **B7**.
+  - **2026-10-30 preparation checkpoint (G12; no cohort result):** The final packet is
+    `/mnt/raid0/llm/tmp/codex-ni-kbrag-g12-queryshift-20261030`. It freezes the 90 original short
+    queries plus 20 paired 66–73-word narrative counterparts (certification indices 0–13 and
+    50–55) against the unchanged full `index-qd-v1` incumbent (34,214 chunks, 1,522 files, GTE
+    INT8, query/doc caps 48/256, optional weights zero). The two-query full-index smoke passed in
+    56.70 s with 0.572 GiB sampled RSS; the one-query cutoff returned rc 75 in 27.88 s and
+    verified cleanup. The keeper accepted rank 59, any CPU quarter, 8 GiB, 7,200 s; the row was
+    not armed or granted. The full 110-query cohort and its 20-pair primary comparison remain
+    pending, so there is no B7 verdict or cap/model decision. Existing truth coverage is preserved
+    with missing/moved evidence paths disclosed (cert 74.76%, seed 72.5%); none is filtered or
+    relabelled. See `G12`'s `PROTOCOL.md` and `READY.proposed.json` for exact cohort and pin
+    definitions.
 - [ ] **G13 — doc-truncation recall sweep.** recall@10 on the K7 70-case pool at `_DOC_MAX_TOKENS`
       **256** vs **300** (the incumbent's declared `document_length`, verified in
       `gte-moderncolbert-v1-onnx/onnx_config.json`) vs a chunker `max_chunk_chars` reduced to

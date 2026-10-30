@@ -850,6 +850,13 @@ runs**, same rule and same reason as SC49. Source row added to
     ingest, emitted ClaimTuple, or planning-context canary is claimed. G11 remains fidelity only,
     with the existing measurement carrier and `claim_tuple.grade()`; no new ladder or retrospective
     run warrant is introduced.
+  - **2026-10-30 G12 preparation update:** The fixed paired query-shift packet is qualified and
+    keeper-accepted as READY at rank 59. Its 110-query full cohort remains unrun; the 20-pair
+    short-minus-verbose signal and B7 verdict are pending. The record schema retains case IDs,
+    existing truth paths and missingness, evidence-file recall@10, uncapped token counts, and
+    source/index/model pins. The existing SC50 adapter/projection task remains open; smoke output
+    is not a retrieval measurement, and no cap change, new ladder, ingest, or planning-context
+    canary is claimed.
 
 ## SC56–SC60 — Prove2Me intake wave (filed 2026-09-07)
 
