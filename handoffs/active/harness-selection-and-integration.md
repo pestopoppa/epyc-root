@@ -1,7 +1,9 @@
 # Harness Selection & Integration — Orchestrator ↔ User-Facing Harness
 
 **Status**: active — HS-4 decided 2026-09-16 (OpenCode shell, pi fallback, Hermes-style features inside the orchestrator). Phase 0 live acceptance PASSED 2026-09-26 (P0.4 r3); HS-19a stage 1 "Linked" PASSED 2026-09-27. HS-19b, HS-19c and HS-19d P1–P6 are ❄ FROZEN behind UFH-13 (narrowed plan 2026-09-27). Phase 0 now lives in UFH-15; next source work: P7 and HS-19d.P0, with HS-OD-4 awaiting its API-contract choice.
-**Scratch**: `/mnt/raid0/llm/worktrees/codex-ni06-promote-root-k3-20261006`, `/mnt/raid0/llm/worktrees/ni08-screen-proposals-root-20261006`.
+**Scratch**: `/mnt/raid0/llm/worktrees/ni08-screen-proposals-root-20261006`.
+
+Retired ROOT publication custody: `/mnt/raid0/llm/tmp/codex-ni-root-legacy-retirement-20261030`; original heads, patches and exact dirty bytes remain preserved there.
 **Created**: 2026-07-16 (operator question: keep the Orch orthogonal to its harness, or bake it in?)
 **Categories**: agent_architecture, inference_serving, tool_implementation, context_management
 **Related (down)**: [`hermes-outer-shell.md`](../completed/hermes-outer-shell.md) (Hermes candidate eval — closed 2026-09-16, not selected; findings in [`hermes-evaluation-20260916.md`](../../docs/reference/harness-candidates/hermes-evaluation-20260916.md)), [`client-surface-audit.md`](../../docs/reference/harness-candidates/client-surface-audit.md) (the reusable audit instrument; HS-4 P0.3 re-ran it on OpenCode — [`opencode-p03-audit-20260916.md`](../../docs/reference/harness-candidates/opencode-p03-audit-20260916.md)), [`user-facing-harness-index.md`](user-facing-harness-index.md) (dispatch index), [`tool-output-compression.md`](tool-output-compression.md) (context-collision surface), [`meta-harness-optimization.md`](../completed/meta-harness-optimization.md) (RLM harness self-improvement lineage)

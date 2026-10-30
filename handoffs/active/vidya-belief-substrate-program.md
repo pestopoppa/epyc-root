@@ -1,6 +1,8 @@
 # Vidya Belief-Substrate Program
 
-**Scratch**: `/mnt/raid0/llm/tmp/vidya-belief-substrate-program/` · worktrees: `/mnt/raid0/llm/worktrees/vidya-belief-substrate-program-*` NI08 source and native review and private ledger coverage preparation: `/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/`, `/mnt/raid0/llm/tmp/ni08-inf50-projection-finish-20261007/`; MAIN acceptance originals `/mnt/raid0/llm/tmp/codex-ni06-main-20261006/`. Further own recipe and original publication custody: `/mnt/raid0/llm/worktrees/ni08-c26-native-recipe-20261007/`, `/mnt/raid0/llm/tmp/c106-root-wrap-publish-*`, `/mnt/raid0/llm/tmp/threeview-narrow-validation-*`, `/mnt/raid0/llm/tmp/intake175-narrow-validation-*`. Codex NI scope: `/mnt/raid0/llm/tmp/codex-ni-20261024-vidya/` · worktree: `/mnt/raid0/llm/worktrees/codex-ni-20261024-vidya`. · `/mnt/raid0/llm/tmp/refactor-01a16fc3/` (M4 and HIL prospective writer packets and retained capture evidence; keep)
+**Scratch**: `/mnt/raid0/llm/tmp/vidya-belief-substrate-program/` · worktrees: `/mnt/raid0/llm/worktrees/vidya-belief-substrate-program-*` NI08 source and native review and private ledger coverage preparation: `/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/`, `/mnt/raid0/llm/tmp/ni08-inf50-projection-finish-20261007/`; MAIN acceptance originals `/mnt/raid0/llm/tmp/codex-ni06-main-20261006/`. Further own recipe and original publication custody: `/mnt/raid0/llm/worktrees/ni08-c26-native-recipe-20261007/`, `/mnt/raid0/llm/tmp/c106-root-wrap-publish-*`, `/mnt/raid0/llm/tmp/threeview-narrow-validation-*`, `/mnt/raid0/llm/tmp/intake175-narrow-validation-*`. Codex NI scope: `/mnt/raid0/llm/tmp/codex-ni-20261024-vidya/` · `/mnt/raid0/llm/tmp/refactor-01a16fc3/` (M4 and HIL prospective writer packets and retained capture evidence; keep)
+
+Retired Codex NI ROOT worktree custody: `/mnt/raid0/llm/tmp/codex-ni-root-legacy-retirement-20261030`; exact historical refs and dirty bytes remain preserved.
 
 **Status**: active
 **Created**: 2026-08-09 (via research intake, operator-approved Stage-3 plan `linear-kindling-possum`)
@@ -2757,7 +2759,7 @@ extensions, not amendments to the completed decision-tools checkpoint or applica
   boolean proposition through the existing verifier class and `ClaimTuple.grade()`; counts remain descriptive.
   Missing, inconsistent or entirely skipped cases stay diagnostics. No old-run backfill, protocol/trust
   amendments, scientific attestation, inference, performance or promotion authority. Initial CI runs remain
-  ordinary validation evidence. Owner: Codex NI05-15; scratch `/mnt/raid0/llm/worktrees/codex-ni-ci-capture-20261005`.
+  ordinary validation evidence. Owner: Codex NI05-15; retired scratch custody `/mnt/raid0/llm/tmp/codex-ni-root-legacy-retirement-20261030/trees/codex-ni-ci-capture-20261005`.
 
   Completion evidence: 25/25 original execution and CLI-to-ledger fixtures passed in run `37278646239`;
   byte-preserved native receipt/request/log/JUnit/source artifacts are in `artifacts/ni05/ci-conformance-37278646239/`.
@@ -3875,3 +3877,8 @@ These are notes only. The adapters README is not edited here; the owner applies 
 ### Prospective NEMO native producer
 
 - [ ] **VB-NEMO-PROF-TOKEN-BINDING** — finalize/project the prospective native NEMO producer through the existing measurement ladder and adapter. Preserve source-time API/request/context/scope/position/sequence/HIP/clock identities, exact unknown/partial/coverage accounting and separate encode/dispatch-sum/union-busy/wall semantics. Reopen one owner-scheduled original L/B capture through the strict reader and pass its planning-context canary; tiny CPU/GPU plumbing canaries and old counts do not substitute. No historical warrant or second grading ladder. Source packet: `/mnt/raid0/llm/tmp/nemo-prof-reseg-review-20261030/PROSPECTIVE-CAPTURE-PACKET.json`, SHA `df16eb2c39dc87d978b44ef21e954fda5c96a673f1334ad8069674bb18816f14`. Native source `b1e820a0ad8bc2192fc38c3c1beda7abf3a28ecf`; strict reader assigned to refactor worker. Original measurement remains open.
+
+
+### NI source custody relocation — 2026-10-30
+
+Unused NI Research/Orchestrator linked checkouts were retired through `scripts/system/worktree_gate.py`; original branches and exact patches/indexes remain preserved under `/mnt/raid0/llm/tmp/codex-ni-repo-legacy-retirement-20261030/`. The prospective HPR producer remains `c4c2a3638cf6a62c823920c3d9d271e6aec8f911` on retained `codex/hpr-b-sim-fix-2-20261025`; its seven-file driver readset is in `source-readsets/codex-ni-20261024-hpr-recovery/MANIFEST.json`. Raw/golden captures stay at their existing locations. The earlier dirty HPR suffix draft was archived as superseded by that producer; no new source was landed. VB-KVU-HPR-PREFIX, native contract UNVERIFIED and owner-reviewed admission/holdout requirements remain open. Finished historical launch scripts retain exact bytes at `.sh.retired-20261030`, catalogued in `retired-scripts.json`; those archived scripts are not runnable scheduling inputs. [no-belief: source custody relocation]

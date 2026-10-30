@@ -1,6 +1,8 @@
 # Reviewer Control Plane — Escalation & Human-Gate Policy (H7, stub-grade)
 
-**Scratch**: `/mnt/raid0/llm/tmp/codex-ni06-integrity-20261006/`; owned publication worktree `/mnt/raid0/llm/worktrees/codex-ni06-promote-root-k3-20261006/`.
+**Scratch**: `/mnt/raid0/llm/tmp/codex-ni06-integrity-20261006/`.
+
+Retired ROOT publication custody: `/mnt/raid0/llm/tmp/codex-ni-root-legacy-retirement-20261030`; original heads, patches and exact dirty bytes remain preserved there.
 
 **Status**: stub — deliberately LAST (M4 "governed"); policies derive from H4/H5 evidence that does not exist yet
 **Created**: 2026-07-16 (Architect→Reviewer control-plane series; see index)

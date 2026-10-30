@@ -1,6 +1,8 @@
 # Context-Folding: Progressive Session Compaction Upgrade
 
-**Scratch**: `/mnt/raid0/llm/tmp/ni08-equation-designs-20261006/` (CF-HF1 source survey) · worktrees: `/mnt/raid0/llm/worktrees/codex-ni06-promote-root-k3-20261006`
+**Scratch**: `/mnt/raid0/llm/tmp/ni08-equation-designs-20261006/` (CF-HF1 source survey)
+
+Retired ROOT publication custody: `/mnt/raid0/llm/tmp/codex-ni-root-legacy-retirement-20261030`; original heads, patches and exact dirty bytes remain preserved there.
 **Status**: refreshed 2026-07-14 - core context-folding phases landed; active only for L5/Phase 3c validation and design probes. The 2026-06-19 alpha sweep is now decision-scoped: promote the dual-objective score into the Phase 2b design variant, but do not change production compaction behavior without live/held-out validation.
 **Created**: 2026-03-17
 **Updated**: 2026-06-13

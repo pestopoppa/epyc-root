@@ -1,6 +1,8 @@
 # Internal Knowledge-Base RAG
 
-**Scratch**: `/mnt/raid0/llm/tmp/codex-ni06-kb-20261006/`; owned APP worktrees `/mnt/raid0/llm/worktrees/codex-ni07-k2-20261006/`, `/mnt/raid0/llm/worktrees/codex-ni07-s9-20261006/`; owned ROOT publication worktree `/mnt/raid0/llm/worktrees/codex-ni06-promote-root-k3-20261006/`.
+**Scratch**: `/mnt/raid0/llm/tmp/codex-ni06-kb-20261006/`; owned APP worktrees `/mnt/raid0/llm/worktrees/codex-ni07-k2-20261006/`, `/mnt/raid0/llm/worktrees/codex-ni07-s9-20261006/`.
+
+Retired ROOT publication custody: `/mnt/raid0/llm/tmp/codex-ni-root-legacy-retirement-20261030`; original heads, patches and exact dirty bytes remain preserved there.
 
 **Status**: K1-K7 CERTIFIED 2026-06-13 — `epyc-orchestrator/src/retrieval/` (additive shared `colbert_encoder.py`, `markdown_chunker.py`, `kb_rag.py` build/update/query) + CLI + `.claude/hooks/post_commit_kb_rag_update.sh` + `.claude/skills/kb-search/SKILL.md` + unit tests. **Fresh K7 build**: 577 files / 18,010 chunks / 1,227.6 MiB embeddings, max corpus mtime `2026-06-13T00:26:51Z`. **K7 certification sweep complete** over the final 70-case pool (50 HotpotQA-template + 20 LoCoMo-template): best aggregate recall@10 is `recency_w0.1_s90_rerank_w0.3` at 0.6298, but `recency_w0.3_s90` is within the 2pp noise band at 0.6167 and is the only config with 0 missed-all-evidence cases. Decision: validate the temporal recency signal; do not promote cross-encoder rerank as a default without a consumer that explicitly prefers first-rank/recall@3 over miss-risk. K8 wikilink scorer remains deferred; the next concrete no-inference slice is doc maintenance only, not a retrieval-code change. K11 FTS5 lexical signal is implemented default-off in `epyc-orchestrator` `74120be`; the 2026-07-21 batch sweep found no recall uplift from lexical weights 0.1-0.3, so ColBERT-only `lexical_weight=0` remains the default.
 **Created**: 2026-04-25 (from local-RAG architecture review of friend's stack)
