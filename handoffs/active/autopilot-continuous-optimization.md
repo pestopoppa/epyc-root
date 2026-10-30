@@ -792,12 +792,20 @@ its comparator on 2 of 4 tasks there, so no frontier API is required. Cite `inta
       (surface, param, value) proposals is measured ONCE, inside AP-53's zero-compute re-proposal
       count, not twice. intake-1372#02.
 
-- [ ] **AP-69 (S3-AP-07) — label every planner-critic verdict kind=proposal_filter, never
+- [x] **AP-69 (S3-AP-07) — label every planner-critic verdict kind=proposal_filter, never
       validation**, in the journal and any receipt/dashboard summarizing it. The critic
       (local_frontdoor) reads only the planner's prose draft, which is the manuscript-only review
       shape (intake-1373#01). This is the autopilot twin of S3-AKU-05, with the kind enum widened to
       script / oracle / proposal_filter / llm_judge. Eval tower + safety_gate stay the validation
-      path.
+      path. **Implemented** in epyc-orchestrator `e822e3788ec016be1f7ee06d13225179a6dc816e`
+      (initial writer `dff7dabbd4cc95ee2e310349cc0930e6eaa4eee4`, plus digest guard). Coordinator/archive
+      and provider-health records mark only supported parsed critic decisions `proposal_filter`; absent
+      and invalid decisions remain unknown. The prior-decision digest preserves a missing legacy kind as
+      `unknown_legacy`, preserves only exact `proposal_filter`, and maps unsupported explicit values or
+      malformed types to `unknown`. No grade, validation gate, threshold, or live service changed. Five
+      focused files passed 271 tests; log `/mnt/raid0/llm/tmp/codex-ni-ap69-proposal-filter-20261030-orch2/VALIDATION-AP69-r3-20261030.log`
+      (SHA-256 `736ab9a3a24f0cf778115c2d2a227e66883033457ad53dfc237e419ba936fb37`). ✅ 2026-10-30
+      [no-belief: implementation/tooling; no new measurement]
 
 - [ ] **AP-70 (S3-AP-08) — rotation-boundary generalisation drop, observe-only.** At every
       core-rotation boundary, score the outgoing incumbent on both the outgoing and the incoming
