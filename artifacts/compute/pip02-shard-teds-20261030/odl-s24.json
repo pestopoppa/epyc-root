@@ -1,0 +1,851 @@
+{
+  "arm": "odl",
+  "cohort": "pip02-english-fresh-20261029",
+  "shard": 24,
+  "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+  "gt_sha256": "a45cd84b04ad8b793e775089640e6b681209abea33ead54c1828ddca35fae496",
+  "pins_sha256": "262462c58402db48aa88063cdb1817915dcdef0c1933e72869682dd905c34cf0",
+  "scorer_sha256": "27f0b630b6812aecad35d1c65329841a5011e421326e81f9f14c8c66a6fdbe5e",
+  "pages": [
+    {
+      "position": 600,
+      "image": "color_textbook_zhonggaokao_\u5c0f\u5b66_13.\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed\uff084-5\u5e74\u7ea7\uff09_\u4eba\u6559\u65b0\u8d77\u70b9\u4e94\u5e74\u7ea7\u82f1\u8bed\u4e0b\u518c_\u8bfe\u672c_\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed5B\u7535\u5b50\u8bfe\u672c_page_076.png",
+      "gt_index": 1480,
+      "gt_tables": 1,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [
+        {
+          "gt_idx": [
+            0
+          ],
+          "pred_idx": [
+            0
+          ],
+          "teds": 0.8,
+          "teds_structure_only": 0.8
+        }
+      ],
+      "prediction_sha256": "c2a3af9a5fecb36fdadf364e5aff157259d72fa1a9d4ddab3cffdd7cad92eea6",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=24-47 start=2026-10-30T02:23Z end=2026-10-30T03:23Z\n",
+        "input_sha256": "c5f7bde1871b0a25cecb8c316521b45a1cb849dd0adc71cca6b252621c03f9c2",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 2885378,
+          "image": "color_textbook_zhonggaokao_\u5c0f\u5b66_13.\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed\uff084-5\u5e74\u7ea7\uff09_\u4eba\u6559\u65b0\u8d77\u70b9\u4e94\u5e74\u7ea7\u82f1\u8bed\u4e0b\u518c_\u8bfe\u672c_\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed5B\u7535\u5b50\u8bfe\u672c_page_076.png",
+          "index": 1480,
+          "language": "english",
+          "sha256": "113dba6a31954d7e48646951d2624e34c51fee45804183ea2a42558f04177666",
+          "table_count": 1
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "producer_id": "codex3-pip02-odl-relocatable-r4-s24-20261030",
+        "producer_source_manifest_path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-relocatable-r4-20261030/SOURCES.sha256",
+        "producer_source_manifest_sha256": "af6262aaf380b3a69031fc5b7f5b11ec0f8b697f314c410c159568bccf4cc62a",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793327034.3837445
+      }
+    },
+    {
+      "position": 601,
+      "image": "color_textbook_zhonggaokao_\u5c0f\u5b66_13.\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed\uff084-5\u5e74\u7ea7\uff09_\u4eba\u6559\u65b0\u8d77\u70b9\u4e94\u5e74\u7ea7\u82f1\u8bed\u4e0a\u518c_\u8bfe\u672c_\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed5A\u7535\u5b50\u8bfe\u672c_page_008.png",
+      "gt_index": 1481,
+      "gt_tables": 0,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [],
+      "prediction_sha256": "c76614a2c86ba505e5761ea59b6d3b42baeb4009ce655564e24dde083362be6e",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=24-47 start=2026-10-30T02:23Z end=2026-10-30T03:23Z\n",
+        "input_sha256": "579831cd45db5f815665fa892848cb9fec6348a5a1d2779b7356345c36345f13",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 1104070,
+          "image": "color_textbook_zhonggaokao_\u5c0f\u5b66_13.\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed\uff084-5\u5e74\u7ea7\uff09_\u4eba\u6559\u65b0\u8d77\u70b9\u4e94\u5e74\u7ea7\u82f1\u8bed\u4e0a\u518c_\u8bfe\u672c_\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed5A\u7535\u5b50\u8bfe\u672c_page_008.png",
+          "index": 1481,
+          "language": "english",
+          "sha256": "5f8697812b4bde0875ea187890ced92b27849ba1ff3325cdca8bb938d0ef47a3",
+          "table_count": 0
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "producer_id": "codex3-pip02-odl-relocatable-r4-s24-20261030",
+        "producer_source_manifest_path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-relocatable-r4-20261030/SOURCES.sha256",
+        "producer_source_manifest_sha256": "af6262aaf380b3a69031fc5b7f5b11ec0f8b697f314c410c159568bccf4cc62a",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793327034.3311527
+      }
+    },
+    {
+      "position": 602,
+      "image": "color_textbook_zhonggaokao_\u5c0f\u5b66_13.\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed\uff084-5\u5e74\u7ea7\uff09_\u4eba\u6559\u65b0\u8d77\u70b9\u56db\u5e74\u7ea7\u82f1\u8bed\u4e0b\u518c_\u8bfe\u672c_\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed4B\u7535\u5b50\u8bfe\u672c_page_047.png",
+      "gt_index": 1482,
+      "gt_tables": 0,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [],
+      "prediction_sha256": "2fbc330f4540fe87ece3c71332cdc12b94b36a04944de88d2bfbf9a4c1b511b4",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=24-47 start=2026-10-30T02:23Z end=2026-10-30T03:23Z\n",
+        "input_sha256": "fbdda416263980c1144ec6e999f2d9baea96d267babcfd147a36ec6c72a53314",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 1736691,
+          "image": "color_textbook_zhonggaokao_\u5c0f\u5b66_13.\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed\uff084-5\u5e74\u7ea7\uff09_\u4eba\u6559\u65b0\u8d77\u70b9\u56db\u5e74\u7ea7\u82f1\u8bed\u4e0b\u518c_\u8bfe\u672c_\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed4B\u7535\u5b50\u8bfe\u672c_page_047.png",
+          "index": 1482,
+          "language": "english",
+          "sha256": "bb25cfb4a75af8e86bbadb8e2e002a9040a70f5ea683f7970833bbbfd2bcde02",
+          "table_count": 0
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "producer_id": "codex3-pip02-odl-relocatable-r4-s24-20261030",
+        "producer_source_manifest_path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-relocatable-r4-20261030/SOURCES.sha256",
+        "producer_source_manifest_sha256": "af6262aaf380b3a69031fc5b7f5b11ec0f8b697f314c410c159568bccf4cc62a",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793327034.3760405
+      }
+    },
+    {
+      "position": 603,
+      "image": "color_textbook_zhonggaokao_\u5c0f\u5b66_13.\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed\uff084-5\u5e74\u7ea7\uff09_\u4eba\u6559\u65b0\u8d77\u70b9\u4e94\u5e74\u7ea7\u82f1\u8bed\u4e0a\u518c_\u8bfe\u672c_\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed5A\u7535\u5b50\u8bfe\u672c_page_004.png",
+      "gt_index": 1483,
+      "gt_tables": 0,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [],
+      "prediction_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=24-47 start=2026-10-30T02:23Z end=2026-10-30T03:23Z\n",
+        "input_sha256": "7590e9a38accbd5d3de25c2f618dc8fc03e9765533882e170349ed3937d09607",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 872546,
+          "image": "color_textbook_zhonggaokao_\u5c0f\u5b66_13.\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed\uff084-5\u5e74\u7ea7\uff09_\u4eba\u6559\u65b0\u8d77\u70b9\u4e94\u5e74\u7ea7\u82f1\u8bed\u4e0a\u518c_\u8bfe\u672c_\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed5A\u7535\u5b50\u8bfe\u672c_page_004.png",
+          "index": 1483,
+          "language": "english",
+          "sha256": "94cf568b778b23c3d991858d461703b1fc180da77474db11f92070e56ab5318d",
+          "table_count": 0
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "producer_id": "codex3-pip02-odl-relocatable-r4-s24-20261030",
+        "producer_source_manifest_path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-relocatable-r4-20261030/SOURCES.sha256",
+        "producer_source_manifest_sha256": "af6262aaf380b3a69031fc5b7f5b11ec0f8b697f314c410c159568bccf4cc62a",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793327034.297487
+      }
+    },
+    {
+      "position": 604,
+      "image": "color_textbook_zhonggaokao_\u5c0f\u5b66_13.\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed\uff084-5\u5e74\u7ea7\uff09_\u4eba\u6559\u65b0\u8d77\u70b9\u56db\u5e74\u7ea7\u82f1\u8bed\u4e0b\u518c_\u8bfe\u672c_\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed4B\u7535\u5b50\u8bfe\u672c_page_016.png",
+      "gt_index": 1484,
+      "gt_tables": 0,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [],
+      "prediction_sha256": "49e00639fc02f6fc4ecdad8d7fe14cc87decb6e00bffe97ed72282876fb52773",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=24-47 start=2026-10-30T02:23Z end=2026-10-30T03:23Z\n",
+        "input_sha256": "ec5f077fe28a4fe461f716bbabd776f53d180cc8c152d0cd8addb230ee2c2340",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 4391569,
+          "image": "color_textbook_zhonggaokao_\u5c0f\u5b66_13.\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed\uff084-5\u5e74\u7ea7\uff09_\u4eba\u6559\u65b0\u8d77\u70b9\u56db\u5e74\u7ea7\u82f1\u8bed\u4e0b\u518c_\u8bfe\u672c_\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed4B\u7535\u5b50\u8bfe\u672c_page_016.png",
+          "index": 1484,
+          "language": "english",
+          "sha256": "fa14feefc64e2cc6e89217507e0798bc4815052efe7cbcebf9b614e947333747",
+          "table_count": 0
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "producer_id": "codex3-pip02-odl-relocatable-r4-s24-20261030",
+        "producer_source_manifest_path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-relocatable-r4-20261030/SOURCES.sha256",
+        "producer_source_manifest_sha256": "af6262aaf380b3a69031fc5b7f5b11ec0f8b697f314c410c159568bccf4cc62a",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793327034.5594966
+      }
+    },
+    {
+      "position": 605,
+      "image": "color_textbook_zhonggaokao_\u5c0f\u5b66_13.\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed\uff084-5\u5e74\u7ea7\uff09_\u4eba\u6559\u65b0\u8d77\u70b9\u4e94\u5e74\u7ea7\u82f1\u8bed\u4e0a\u518c_\u8bfe\u672c_\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed5A\u7535\u5b50\u8bfe\u672c_page_060.png",
+      "gt_index": 1485,
+      "gt_tables": 0,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [],
+      "prediction_sha256": "2d694fa96aa5ae31693fb3f66957e387246ea05a1bf32066b50904a354c3543c",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=24-47 start=2026-10-30T02:23Z end=2026-10-30T03:23Z\n",
+        "input_sha256": "63add817ae7d5c8b86a03253a02b7d9c6b98f14b5b92710f67455ae6389eb742",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 1600503,
+          "image": "color_textbook_zhonggaokao_\u5c0f\u5b66_13.\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed\uff084-5\u5e74\u7ea7\uff09_\u4eba\u6559\u65b0\u8d77\u70b9\u4e94\u5e74\u7ea7\u82f1\u8bed\u4e0a\u518c_\u8bfe\u672c_\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed5A\u7535\u5b50\u8bfe\u672c_page_060.png",
+          "index": 1485,
+          "language": "english",
+          "sha256": "6b4bd5a80917ee8bf8a469c55df44bbed9747e134dd5295a739075ad00582f69",
+          "table_count": 0
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "producer_id": "codex3-pip02-odl-relocatable-r4-s24-20261030",
+        "producer_source_manifest_path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-relocatable-r4-20261030/SOURCES.sha256",
+        "producer_source_manifest_sha256": "af6262aaf380b3a69031fc5b7f5b11ec0f8b697f314c410c159568bccf4cc62a",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793327034.4314742
+      }
+    },
+    {
+      "position": 606,
+      "image": "color_textbook_zhonggaokao_\u5c0f\u5b66_13.\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed\uff084-5\u5e74\u7ea7\uff09_\u4eba\u6559\u65b0\u8d77\u70b9\u4e94\u5e74\u7ea7\u82f1\u8bed\u4e0a\u518c_\u8bfe\u672c_\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed5A\u7535\u5b50\u8bfe\u672c_page_055.png",
+      "gt_index": 1486,
+      "gt_tables": 0,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [],
+      "prediction_sha256": "71f1d0d3ed25060e8c37333d231d5c5dcbafc890a393c66591e47b07d29e5449",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=24-47 start=2026-10-30T02:23Z end=2026-10-30T03:23Z\n",
+        "input_sha256": "2f593683c15856f009583001d261b2d54f0db5603626bb4349d4eafeb7dfafd5",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 2172454,
+          "image": "color_textbook_zhonggaokao_\u5c0f\u5b66_13.\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed\uff084-5\u5e74\u7ea7\uff09_\u4eba\u6559\u65b0\u8d77\u70b9\u4e94\u5e74\u7ea7\u82f1\u8bed\u4e0a\u518c_\u8bfe\u672c_\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed5A\u7535\u5b50\u8bfe\u672c_page_055.png",
+          "index": 1486,
+          "language": "english",
+          "sha256": "9811ced94691f184218eaefed7fa0153dd1892b8d32721733b625f2aabd5513b",
+          "table_count": 0
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "producer_id": "codex3-pip02-odl-relocatable-r4-s24-20261030",
+        "producer_source_manifest_path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-relocatable-r4-20261030/SOURCES.sha256",
+        "producer_source_manifest_sha256": "af6262aaf380b3a69031fc5b7f5b11ec0f8b697f314c410c159568bccf4cc62a",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793327034.4497833
+      }
+    },
+    {
+      "position": 607,
+      "image": "color_textbook_zhonggaokao_\u5c0f\u5b66_13.\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed\uff084-5\u5e74\u7ea7\uff09_\u4eba\u6559\u65b0\u8d77\u70b9\u56db\u5e74\u7ea7\u82f1\u8bed\u4e0b\u518c_\u8bfe\u672c_\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed4B\u7535\u5b50\u8bfe\u672c_page_017.png",
+      "gt_index": 1487,
+      "gt_tables": 0,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [],
+      "prediction_sha256": "a82ec737ba769d87c49e94a872389d0404e06b54ac74c775b5614f4f4a8d4df3",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=24-47 start=2026-10-30T02:23Z end=2026-10-30T03:23Z\n",
+        "input_sha256": "cc6ccbd0c3ecf5db8a5c684295b103f7bacf801568755dd89de31f7b73112bd2",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 7412669,
+          "image": "color_textbook_zhonggaokao_\u5c0f\u5b66_13.\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed\uff084-5\u5e74\u7ea7\uff09_\u4eba\u6559\u65b0\u8d77\u70b9\u56db\u5e74\u7ea7\u82f1\u8bed\u4e0b\u518c_\u8bfe\u672c_\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed4B\u7535\u5b50\u8bfe\u672c_page_017.png",
+          "index": 1487,
+          "language": "english",
+          "sha256": "b5344c0c24c3159823b59fcf4d4a88826b8307ff101bed7d018de93ef965e533",
+          "table_count": 0
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "producer_id": "codex3-pip02-odl-relocatable-r4-s24-20261030",
+        "producer_source_manifest_path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-relocatable-r4-20261030/SOURCES.sha256",
+        "producer_source_manifest_sha256": "af6262aaf380b3a69031fc5b7f5b11ec0f8b697f314c410c159568bccf4cc62a",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793327034.6204338
+      }
+    },
+    {
+      "position": 608,
+      "image": "color_textbook_zhonggaokao_\u5c0f\u5b66_13.\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed\uff084-5\u5e74\u7ea7\uff09_\u4eba\u6559\u65b0\u8d77\u70b9\u56db\u5e74\u7ea7\u82f1\u8bed\u4e0b\u518c_\u8bfe\u672c_\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed4B\u7535\u5b50\u8bfe\u672c_page_048.png",
+      "gt_index": 1489,
+      "gt_tables": 0,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [],
+      "prediction_sha256": "6fb23785825787253ed66dfd0084801270c1a6e11da647d2b2a8360cf015cbf1",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=24-47 start=2026-10-30T02:23Z end=2026-10-30T03:23Z\n",
+        "input_sha256": "3d86da4ac3c6e36f8441f985f33ba06083c434f55cf6f8fb80817b525a36565b",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 2138415,
+          "image": "color_textbook_zhonggaokao_\u5c0f\u5b66_13.\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed\uff084-5\u5e74\u7ea7\uff09_\u4eba\u6559\u65b0\u8d77\u70b9\u56db\u5e74\u7ea7\u82f1\u8bed\u4e0b\u518c_\u8bfe\u672c_\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed4B\u7535\u5b50\u8bfe\u672c_page_048.png",
+          "index": 1489,
+          "language": "english",
+          "sha256": "8bb6a7f9551427e77c26248188d0388d6285fcc2ce9e59569bb016c985351004",
+          "table_count": 0
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "producer_id": "codex3-pip02-odl-relocatable-r4-s24-20261030",
+        "producer_source_manifest_path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-relocatable-r4-20261030/SOURCES.sha256",
+        "producer_source_manifest_sha256": "af6262aaf380b3a69031fc5b7f5b11ec0f8b697f314c410c159568bccf4cc62a",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793327034.4454408
+      }
+    },
+    {
+      "position": 609,
+      "image": "color_textbook_zhonggaokao_\u5c0f\u5b66_KET\u542c\u8bf4\u8bfb\u5199\u9010\u9879\u7a81\u7834_KET\u542c\u8bf4\u8bfb\u5199\u9010\u9879\u7a81\u7834\u4e4b\u8f7b\u677e\u641e\u5b9aKET\u9605\u8bfb25\u5206\u301010\u8bb2 \u891a\u8fde\u4e00 \u3011_\u7b2c01\u8bb2\u7b2c\u4e00\u8bfe\u9605\u8bfb\u9898\u578b\u7efc\u8ff0_\u7b2c\u4e00\u8bfe\u9605\u8bfb\u9898\u578b\u7efc\u8ff0_page_004.png",
+      "gt_index": 1492,
+      "gt_tables": 0,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [],
+      "prediction_sha256": "ee4ce450eec06bc8115a49c1d721b59f82064cffa9be77a668159f3dbecb0b05",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=24-47 start=2026-10-30T02:23Z end=2026-10-30T03:23Z\n",
+        "input_sha256": "43220eedadb8f91be299d88911013bddb46dc12a68f569ec1cc41eaf8a2a9127",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 324325,
+          "image": "color_textbook_zhonggaokao_\u5c0f\u5b66_KET\u542c\u8bf4\u8bfb\u5199\u9010\u9879\u7a81\u7834_KET\u542c\u8bf4\u8bfb\u5199\u9010\u9879\u7a81\u7834\u4e4b\u8f7b\u677e\u641e\u5b9aKET\u9605\u8bfb25\u5206\u301010\u8bb2 \u891a\u8fde\u4e00 \u3011_\u7b2c01\u8bb2\u7b2c\u4e00\u8bfe\u9605\u8bfb\u9898\u578b\u7efc\u8ff0_\u7b2c\u4e00\u8bfe\u9605\u8bfb\u9898\u578b\u7efc\u8ff0_page_004.png",
+          "index": 1492,
+          "language": "english",
+          "sha256": "b5991d5873f8fd816e63ce18b6b84f23cbfd05750716395ba4bece09ae0afcfc",
+          "table_count": 0
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "producer_id": "codex3-pip02-odl-relocatable-r4-s24-20261030",
+        "producer_source_manifest_path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-relocatable-r4-20261030/SOURCES.sha256",
+        "producer_source_manifest_sha256": "af6262aaf380b3a69031fc5b7f5b11ec0f8b697f314c410c159568bccf4cc62a",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793327034.268751
+      }
+    },
+    {
+      "position": 610,
+      "image": "color_textbook_zhonggaokao_\u5c0f\u5b66_13.\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed\uff084-5\u5e74\u7ea7\uff09_\u4eba\u6559\u65b0\u8d77\u70b9\u4e94\u5e74\u7ea7\u82f1\u8bed\u4e0a\u518c_\u8bfe\u672c_\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed5A\u7535\u5b50\u8bfe\u672c_page_006.png",
+      "gt_index": 1494,
+      "gt_tables": 1,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [
+        {
+          "gt_idx": [
+            0
+          ],
+          "pred_idx": [
+            0
+          ],
+          "teds": 0.20858585858585854,
+          "teds_structure_only": 0.2272727272727273
+        }
+      ],
+      "prediction_sha256": "c118ae388159736a79fb92990fb1da73936ab6e9728eb04043913deb13d1ffd5",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=24-47 start=2026-10-30T02:23Z end=2026-10-30T03:23Z\n",
+        "input_sha256": "3d85a693a563e691c3b802a722b4bb6f79d1f0e0bd49b0868adfe8f7628e8f1a",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 2533320,
+          "image": "color_textbook_zhonggaokao_\u5c0f\u5b66_13.\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed\uff084-5\u5e74\u7ea7\uff09_\u4eba\u6559\u65b0\u8d77\u70b9\u4e94\u5e74\u7ea7\u82f1\u8bed\u4e0a\u518c_\u8bfe\u672c_\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed5A\u7535\u5b50\u8bfe\u672c_page_006.png",
+          "index": 1494,
+          "language": "english",
+          "sha256": "20e7ec86ca4aaf8c99e540b403dc5276223bbe87a4a473a3fa4f0776da2ca887",
+          "table_count": 1
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "producer_id": "codex3-pip02-odl-relocatable-r4-s24-20261030",
+        "producer_source_manifest_path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-relocatable-r4-20261030/SOURCES.sha256",
+        "producer_source_manifest_sha256": "af6262aaf380b3a69031fc5b7f5b11ec0f8b697f314c410c159568bccf4cc62a",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793327034.3837233
+      }
+    },
+    {
+      "position": 611,
+      "image": "color_textbook_zhonggaokao_\u5c0f\u5b66_13.\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed\uff084-5\u5e74\u7ea7\uff09_\u4eba\u6559\u65b0\u8d77\u70b9\u4e94\u5e74\u7ea7\u82f1\u8bed\u4e0b\u518c_\u8bfe\u672c_\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed5B\u7535\u5b50\u8bfe\u672c_page_011.png",
+      "gt_index": 1498,
+      "gt_tables": 1,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [
+        {
+          "gt_idx": [
+            0
+          ],
+          "pred_idx": [
+            ""
+          ],
+          "teds": 0.0,
+          "teds_structure_only": 0.0
+        }
+      ],
+      "prediction_sha256": "e6de31bfb2e525a0c6e36b02b9af3953f06639df66a92c22d090893532001b79",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=24-47 start=2026-10-30T02:23Z end=2026-10-30T03:23Z\n",
+        "input_sha256": "980a352c0ea52ef0c7baa8901f2f9868432769bb14d49ce8c72df3d501de8f90",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 2384425,
+          "image": "color_textbook_zhonggaokao_\u5c0f\u5b66_13.\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed\uff084-5\u5e74\u7ea7\uff09_\u4eba\u6559\u65b0\u8d77\u70b9\u4e94\u5e74\u7ea7\u82f1\u8bed\u4e0b\u518c_\u8bfe\u672c_\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed5B\u7535\u5b50\u8bfe\u672c_page_011.png",
+          "index": 1498,
+          "language": "english",
+          "sha256": "d3e3c30b691f7ba43381e83fbbfe5fd6807910e62942d719d0919351f1326e25",
+          "table_count": 1
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "producer_id": "codex3-pip02-odl-relocatable-r4-s24-20261030",
+        "producer_source_manifest_path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-relocatable-r4-20261030/SOURCES.sha256",
+        "producer_source_manifest_sha256": "af6262aaf380b3a69031fc5b7f5b11ec0f8b697f314c410c159568bccf4cc62a",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793327034.4679363
+      }
+    },
+    {
+      "position": 612,
+      "image": "color_textbook_zhonggaokao_\u5c0f\u5b66_KET\u542c\u8bf4\u8bfb\u5199\u9010\u9879\u7a81\u7834_KET\u542c\u8bf4\u8bfb\u5199\u9010\u9879\u7a81\u7834\u4e4b\u8f7b\u677e\u641e\u5b9aKET\u5199\u4f5c25\u5206 \u301010\u8bb2 \u891a\u8fde\u4e00\u3011_\u7b2c04\u8bb2\u7b2c\u56db\u8bfeKET\u5206\u7c7b\u8bcd\u6c47\u8bad\u7ec3\u4e8c_\u7b2c\u56db\u8bfeKET\u5206\u7c7b\u8bcd\u6c47\u8bad\u7ec3\u4e8c_page_003.png",
+      "gt_index": 1500,
+      "gt_tables": 0,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [],
+      "prediction_sha256": "56b954ac7b12aecd88fdfb18b7d946060d514367f3f13849652c6e13e70afbfb",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=24-47 start=2026-10-30T02:23Z end=2026-10-30T03:23Z\n",
+        "input_sha256": "0a1d45b80990b473ff84b4c44c4596a0d6a2636f996e6401dbf48371c8db2732",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 319801,
+          "image": "color_textbook_zhonggaokao_\u5c0f\u5b66_KET\u542c\u8bf4\u8bfb\u5199\u9010\u9879\u7a81\u7834_KET\u542c\u8bf4\u8bfb\u5199\u9010\u9879\u7a81\u7834\u4e4b\u8f7b\u677e\u641e\u5b9aKET\u5199\u4f5c25\u5206 \u301010\u8bb2 \u891a\u8fde\u4e00\u3011_\u7b2c04\u8bb2\u7b2c\u56db\u8bfeKET\u5206\u7c7b\u8bcd\u6c47\u8bad\u7ec3\u4e8c_\u7b2c\u56db\u8bfeKET\u5206\u7c7b\u8bcd\u6c47\u8bad\u7ec3\u4e8c_page_003.png",
+          "index": 1500,
+          "language": "english",
+          "sha256": "c3c359458792507d1118ee16c0ceef7cd504dd902111506446ad72173808e591",
+          "table_count": 0
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "producer_id": "codex3-pip02-odl-relocatable-r4-s24-20261030",
+        "producer_source_manifest_path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-relocatable-r4-20261030/SOURCES.sha256",
+        "producer_source_manifest_sha256": "af6262aaf380b3a69031fc5b7f5b11ec0f8b697f314c410c159568bccf4cc62a",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793327289.4770415
+      }
+    },
+    {
+      "position": 613,
+      "image": "color_textbook_zhonggaokao_\u5c0f\u5b66_13.\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed\uff084-5\u5e74\u7ea7\uff09_\u4eba\u6559\u65b0\u8d77\u70b9\u4e94\u5e74\u7ea7\u82f1\u8bed\u4e0b\u518c_\u8bfe\u672c_\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed5B\u7535\u5b50\u8bfe\u672c_page_027.png",
+      "gt_index": 1501,
+      "gt_tables": 0,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [],
+      "prediction_sha256": "438e7ba7ebb17eda58ca62f2a8e0eac7f8813c2db4476c9409c64fe05d3c00f7",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=24-47 start=2026-10-30T02:23Z end=2026-10-30T03:23Z\n",
+        "input_sha256": "7211175a7ca2ea518b641f75a3e06a4968acf2b279495f953affca0efb0bffc0",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 2095863,
+          "image": "color_textbook_zhonggaokao_\u5c0f\u5b66_13.\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed\uff084-5\u5e74\u7ea7\uff09_\u4eba\u6559\u65b0\u8d77\u70b9\u4e94\u5e74\u7ea7\u82f1\u8bed\u4e0b\u518c_\u8bfe\u672c_\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed5B\u7535\u5b50\u8bfe\u672c_page_027.png",
+          "index": 1501,
+          "language": "english",
+          "sha256": "39aed341a8302e272166b95d450d30723a55ac8a1b30af43ac9d57b5b40f3fd1",
+          "table_count": 0
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "producer_id": "codex3-pip02-odl-relocatable-r4-s24-20261030",
+        "producer_source_manifest_path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-relocatable-r4-20261030/SOURCES.sha256",
+        "producer_source_manifest_sha256": "af6262aaf380b3a69031fc5b7f5b11ec0f8b697f314c410c159568bccf4cc62a",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793327289.981692
+      }
+    },
+    {
+      "position": 614,
+      "image": "color_textbook_zhonggaokao_\u5c0f\u5b66_13.\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed\uff084-5\u5e74\u7ea7\uff09_\u4eba\u6559\u65b0\u8d77\u70b9\u4e94\u5e74\u7ea7\u82f1\u8bed\u4e0b\u518c_\u8bfe\u672c_\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed5B\u7535\u5b50\u8bfe\u672c_page_034.png",
+      "gt_index": 1502,
+      "gt_tables": 0,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [],
+      "prediction_sha256": "7d6f480590caa0fefb80bf0f691004f83fe0eb933f8074eb4e4069f08f6b8edb",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=24-47 start=2026-10-30T02:23Z end=2026-10-30T03:23Z\n",
+        "input_sha256": "92ab4b0e171ae8de486cf71780e4884dfcad9c2d84696639006aee19768112e8",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 2256093,
+          "image": "color_textbook_zhonggaokao_\u5c0f\u5b66_13.\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed\uff084-5\u5e74\u7ea7\uff09_\u4eba\u6559\u65b0\u8d77\u70b9\u4e94\u5e74\u7ea7\u82f1\u8bed\u4e0b\u518c_\u8bfe\u672c_\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed5B\u7535\u5b50\u8bfe\u672c_page_034.png",
+          "index": 1502,
+          "language": "english",
+          "sha256": "4638d29d96ff18d0a13a816a17bceaef23def9552183430d43b65171ea2a5410",
+          "table_count": 0
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "producer_id": "codex3-pip02-odl-relocatable-r4-s24-20261030",
+        "producer_source_manifest_path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-relocatable-r4-20261030/SOURCES.sha256",
+        "producer_source_manifest_sha256": "af6262aaf380b3a69031fc5b7f5b11ec0f8b697f314c410c159568bccf4cc62a",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793327289.995466
+      }
+    },
+    {
+      "position": 615,
+      "image": "color_textbook_zhonggaokao_\u5c0f\u5b66_13.\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed\uff084-5\u5e74\u7ea7\uff09_\u4eba\u6559\u65b0\u8d77\u70b9\u4e94\u5e74\u7ea7\u82f1\u8bed\u4e0b\u518c_\u8bfe\u672c_\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed5B\u7535\u5b50\u8bfe\u672c_page_036.png",
+      "gt_index": 1503,
+      "gt_tables": 1,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [
+        {
+          "gt_idx": [
+            0
+          ],
+          "pred_idx": [
+            0
+          ],
+          "teds": 0.6474014336917563,
+          "teds_structure_only": 0.6666666666666667
+        }
+      ],
+      "prediction_sha256": "09e0ae237070dd4a50375db963ac85e570f6f7b3c075bf7d8fe88d01007dc2f6",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=24-47 start=2026-10-30T02:23Z end=2026-10-30T03:23Z\n",
+        "input_sha256": "5f8bc3f1c980623e36b74ffd9c5d3b18ed841c663e32aa37e321210ec3c0ef6b",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 2593986,
+          "image": "color_textbook_zhonggaokao_\u5c0f\u5b66_13.\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed\uff084-5\u5e74\u7ea7\uff09_\u4eba\u6559\u65b0\u8d77\u70b9\u4e94\u5e74\u7ea7\u82f1\u8bed\u4e0b\u518c_\u8bfe\u672c_\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed5B\u7535\u5b50\u8bfe\u672c_page_036.png",
+          "index": 1503,
+          "language": "english",
+          "sha256": "6d1a568f177ba5f0d5dfbdd4b467eb30d94a912a3657f887f6acd82fda582f74",
+          "table_count": 1
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "producer_id": "codex3-pip02-odl-relocatable-r4-s24-20261030",
+        "producer_source_manifest_path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-relocatable-r4-20261030/SOURCES.sha256",
+        "producer_source_manifest_sha256": "af6262aaf380b3a69031fc5b7f5b11ec0f8b697f314c410c159568bccf4cc62a",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793327289.8185945
+      }
+    },
+    {
+      "position": 616,
+      "image": "color_textbook_zhonggaokao_\u5c0f\u5b66_13.\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed\uff084-5\u5e74\u7ea7\uff09_\u4eba\u6559\u65b0\u8d77\u70b9\u56db\u5e74\u7ea7\u82f1\u8bed\u4e0a\u518c_\u8bfe\u672c_\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed4A\u7535\u5b50\u8bfe\u672c_page_091.png",
+      "gt_index": 1504,
+      "gt_tables": 0,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [],
+      "prediction_sha256": "c3efacb7962d8971de578e7c57d46dd5a6b6de4eb5df061f4263d2d7eff9f1a3",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=24-47 start=2026-10-30T02:23Z end=2026-10-30T03:23Z\n",
+        "input_sha256": "770378688f02b5c0a5d3b7e6c1408639230bf1ca532bb83788c5a90cb55ef19a",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 2144356,
+          "image": "color_textbook_zhonggaokao_\u5c0f\u5b66_13.\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed\uff084-5\u5e74\u7ea7\uff09_\u4eba\u6559\u65b0\u8d77\u70b9\u56db\u5e74\u7ea7\u82f1\u8bed\u4e0a\u518c_\u8bfe\u672c_\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed4A\u7535\u5b50\u8bfe\u672c_page_091.png",
+          "index": 1504,
+          "language": "english",
+          "sha256": "175d591c6559f87bd62ca3b23aa57866d78656a9ccffbeff8cfd9ffe7a62152f",
+          "table_count": 0
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "producer_id": "codex3-pip02-odl-relocatable-r4-s24-20261030",
+        "producer_source_manifest_path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-relocatable-r4-20261030/SOURCES.sha256",
+        "producer_source_manifest_sha256": "af6262aaf380b3a69031fc5b7f5b11ec0f8b697f314c410c159568bccf4cc62a",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793327290.3391967
+      }
+    },
+    {
+      "position": 617,
+      "image": "color_textbook_zhonggaokao_\u5c0f\u5b66_13.\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed\uff084-5\u5e74\u7ea7\uff09_\u4eba\u6559\u65b0\u8d77\u70b9\u4e94\u5e74\u7ea7\u82f1\u8bed\u4e0a\u518c_\u8bfe\u672c_\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed5A\u7535\u5b50\u8bfe\u672c_page_056.png",
+      "gt_index": 1506,
+      "gt_tables": 1,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [
+        {
+          "gt_idx": [
+            0
+          ],
+          "pred_idx": [
+            0
+          ],
+          "teds": 0.938034188034188,
+          "teds_structure_only": 1.0
+        }
+      ],
+      "prediction_sha256": "8ac39155a339af5afc17606fc4f85a0ca710445190266dc4575d4f03f56c8d9f",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=24-47 start=2026-10-30T02:23Z end=2026-10-30T03:23Z\n",
+        "input_sha256": "895d735755a7f3a8bc0eb5ba6d53d8f493548e09a9cc4eebdab9757dd23b1bb4",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 2446103,
+          "image": "color_textbook_zhonggaokao_\u5c0f\u5b66_13.\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed\uff084-5\u5e74\u7ea7\uff09_\u4eba\u6559\u65b0\u8d77\u70b9\u4e94\u5e74\u7ea7\u82f1\u8bed\u4e0a\u518c_\u8bfe\u672c_\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed5A\u7535\u5b50\u8bfe\u672c_page_056.png",
+          "index": 1506,
+          "language": "english",
+          "sha256": "d4e28a2d7bd0b2609679746932ec04b8ce690bc3fc31c911a05aa74caebd8bf4",
+          "table_count": 1
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "producer_id": "codex3-pip02-odl-relocatable-r4-s24-20261030",
+        "producer_source_manifest_path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-relocatable-r4-20261030/SOURCES.sha256",
+        "producer_source_manifest_sha256": "af6262aaf380b3a69031fc5b7f5b11ec0f8b697f314c410c159568bccf4cc62a",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793327290.2858653
+      }
+    },
+    {
+      "position": 618,
+      "image": "color_textbook_zhonggaokao_\u5c0f\u5b66_KET\u542c\u8bf4\u8bfb\u5199\u9010\u9879\u7a81\u7834_KET\u542c\u8bf4\u8bfb\u5199\u9010\u9879\u7a81\u7834\u4e4b\u8f7b\u677e\u641e\u5b9aKET\u5199\u4f5c25\u5206 \u301010\u8bb2 \u891a\u8fde\u4e00\u3011_\u7b2c10\u8bb2\u7b2c\u5341\u8bfe\u5199\u4f5cPart9\u5c0f\u4f5c\u6587\u7ec3\u4e60_\u7b2c\u5341\u8bfe\u5199\u4f5cPart9\u5c0f\u4f5c\u6587\u7ec3\u4e60_page_010.png",
+      "gt_index": 1507,
+      "gt_tables": 0,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [],
+      "prediction_sha256": "55196f6b23d1d011b26e54c5f67a60b718ea0634c31761b302f9e7902a2ec5a4",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=24-47 start=2026-10-30T02:23Z end=2026-10-30T03:23Z\n",
+        "input_sha256": "07cd85ad0a2e6f6a6f5ff416b7a24db505b4044bdc8eba8b836ea7314cf4a06f",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 607783,
+          "image": "color_textbook_zhonggaokao_\u5c0f\u5b66_KET\u542c\u8bf4\u8bfb\u5199\u9010\u9879\u7a81\u7834_KET\u542c\u8bf4\u8bfb\u5199\u9010\u9879\u7a81\u7834\u4e4b\u8f7b\u677e\u641e\u5b9aKET\u5199\u4f5c25\u5206 \u301010\u8bb2 \u891a\u8fde\u4e00\u3011_\u7b2c10\u8bb2\u7b2c\u5341\u8bfe\u5199\u4f5cPart9\u5c0f\u4f5c\u6587\u7ec3\u4e60_\u7b2c\u5341\u8bfe\u5199\u4f5cPart9\u5c0f\u4f5c\u6587\u7ec3\u4e60_page_010.png",
+          "index": 1507,
+          "language": "english",
+          "sha256": "d4a40c302062790dc348c70625ba54539834b33bbe5218672c7cbfcffd857d2b",
+          "table_count": 0
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "producer_id": "codex3-pip02-odl-relocatable-r4-s24-20261030",
+        "producer_source_manifest_path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-relocatable-r4-20261030/SOURCES.sha256",
+        "producer_source_manifest_sha256": "af6262aaf380b3a69031fc5b7f5b11ec0f8b697f314c410c159568bccf4cc62a",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793327290.3371878
+      }
+    },
+    {
+      "position": 619,
+      "image": "color_textbook_zhonggaokao_\u5c0f\u5b66_13.\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed\uff084-5\u5e74\u7ea7\uff09_\u4eba\u6559\u65b0\u8d77\u70b9\u4e94\u5e74\u7ea7\u82f1\u8bed\u4e0b\u518c_\u8bfe\u672c_\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed5B\u7535\u5b50\u8bfe\u672c_page_043.png",
+      "gt_index": 1508,
+      "gt_tables": 0,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [],
+      "prediction_sha256": "9fc602ab382a864dea9e2388757a5daabf1a8e1a5765c73adc0cbd9fb5c83ddd",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=24-47 start=2026-10-30T02:23Z end=2026-10-30T03:23Z\n",
+        "input_sha256": "e8311077f5f2da0bd41736457e583453b6f7483b0280b7c571361a13f36b904b",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 2774717,
+          "image": "color_textbook_zhonggaokao_\u5c0f\u5b66_13.\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed\uff084-5\u5e74\u7ea7\uff09_\u4eba\u6559\u65b0\u8d77\u70b9\u4e94\u5e74\u7ea7\u82f1\u8bed\u4e0b\u518c_\u8bfe\u672c_\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed5B\u7535\u5b50\u8bfe\u672c_page_043.png",
+          "index": 1508,
+          "language": "english",
+          "sha256": "84ae7659f112a02aab716699b86f72552ca8d4d6c3c1aea4b366a3331926141e",
+          "table_count": 0
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "producer_id": "codex3-pip02-odl-relocatable-r4-s24-20261030",
+        "producer_source_manifest_path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-relocatable-r4-20261030/SOURCES.sha256",
+        "producer_source_manifest_sha256": "af6262aaf380b3a69031fc5b7f5b11ec0f8b697f314c410c159568bccf4cc62a",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793327290.9012878
+      }
+    },
+    {
+      "position": 620,
+      "image": "color_textbook_zhonggaokao_\u5c0f\u5b66_13.\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed\uff084-5\u5e74\u7ea7\uff09_\u4eba\u6559\u65b0\u8d77\u70b9\u4e94\u5e74\u7ea7\u82f1\u8bed\u4e0a\u518c_\u8bfe\u672c_\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed5A\u7535\u5b50\u8bfe\u672c_page_010.png",
+      "gt_index": 1510,
+      "gt_tables": 0,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [],
+      "prediction_sha256": "fda06b37e1c8bb9177b2cc9c85b8c769fca202c641e070af71ac4c85ef146d35",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=24-47 start=2026-10-30T02:23Z end=2026-10-30T03:23Z\n",
+        "input_sha256": "c59b59a0cedd14d198afbda0db341fea81492e783e013034551fac8450c32c0c",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 1479834,
+          "image": "color_textbook_zhonggaokao_\u5c0f\u5b66_13.\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed\uff084-5\u5e74\u7ea7\uff09_\u4eba\u6559\u65b0\u8d77\u70b9\u4e94\u5e74\u7ea7\u82f1\u8bed\u4e0a\u518c_\u8bfe\u672c_\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed5A\u7535\u5b50\u8bfe\u672c_page_010.png",
+          "index": 1510,
+          "language": "english",
+          "sha256": "c3efb22e8fd5a146454f4c699197981e97f8fb7fb171021c29fae06db5807d5c",
+          "table_count": 0
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "producer_id": "codex3-pip02-odl-relocatable-r4-s24-20261030",
+        "producer_source_manifest_path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-relocatable-r4-20261030/SOURCES.sha256",
+        "producer_source_manifest_sha256": "af6262aaf380b3a69031fc5b7f5b11ec0f8b697f314c410c159568bccf4cc62a",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793327291.7933903
+      }
+    },
+    {
+      "position": 621,
+      "image": "color_textbook_zhonggaokao_\u5c0f\u5b66_13.\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed\uff084-5\u5e74\u7ea7\uff09_\u4eba\u6559\u65b0\u8d77\u70b9\u56db\u5e74\u7ea7\u82f1\u8bed\u4e0b\u518c_\u8bfe\u672c_\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed4B\u7535\u5b50\u8bfe\u672c_page_043.png",
+      "gt_index": 1513,
+      "gt_tables": 0,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [],
+      "prediction_sha256": "e31a468fe2e745cac1dcf813948a45c3bd72fb40833c3f1c6e33ff3e29523883",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=24-47 start=2026-10-30T02:23Z end=2026-10-30T03:23Z\n",
+        "input_sha256": "217ab56610a30e2d47e2efc3371aad8abacf048bb5d5f6da4c0b4bbee6c20aac",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 7571189,
+          "image": "color_textbook_zhonggaokao_\u5c0f\u5b66_13.\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed\uff084-5\u5e74\u7ea7\uff09_\u4eba\u6559\u65b0\u8d77\u70b9\u56db\u5e74\u7ea7\u82f1\u8bed\u4e0b\u518c_\u8bfe\u672c_\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed4B\u7535\u5b50\u8bfe\u672c_page_043.png",
+          "index": 1513,
+          "language": "english",
+          "sha256": "79e2fc174c7b3960706fb6a62af101dd8101c23183459025bc10ff1b98ae0baf",
+          "table_count": 0
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "producer_id": "codex3-pip02-odl-relocatable-r4-s24-20261030",
+        "producer_source_manifest_path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-relocatable-r4-20261030/SOURCES.sha256",
+        "producer_source_manifest_sha256": "af6262aaf380b3a69031fc5b7f5b11ec0f8b697f314c410c159568bccf4cc62a",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793327292.5877528
+      }
+    },
+    {
+      "position": 622,
+      "image": "color_textbook_zhonggaokao_\u5c0f\u5b66_KET\u542c\u8bf4\u8bfb\u5199\u9010\u9879\u7a81\u7834_KET\u542c\u8bf4\u8bfb\u5199\u9010\u9879\u7a81\u7834\u4e4b\u8f7b\u677e\u641e\u5b9aKET\u53e3\u8bed25\u5206\u301010 \u891a\u8fde\u4e00\u3011_\u7b2c02\u8bb2\u7b2c\u4e8c\u8bfe\u53e3\u8bed\u90e8\u5206Part1\u8be6\u89e3_\u7b2c\u4e8c\u8bfe\u53e3\u8bed\u90e8\u5206Part1\u8be6\u89e3_page_002.png",
+      "gt_index": 1514,
+      "gt_tables": 0,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [],
+      "prediction_sha256": "7538a1c5539be1c500d20fdc3ae68bece3e5f384a93712bbdddfa50af58b8760",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=24-47 start=2026-10-30T02:23Z end=2026-10-30T03:23Z\n",
+        "input_sha256": "cf6ad8d5a097ca9906e2e92da7304bd0159f08b618cc64c1e80db1cab17daaea",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 177652,
+          "image": "color_textbook_zhonggaokao_\u5c0f\u5b66_KET\u542c\u8bf4\u8bfb\u5199\u9010\u9879\u7a81\u7834_KET\u542c\u8bf4\u8bfb\u5199\u9010\u9879\u7a81\u7834\u4e4b\u8f7b\u677e\u641e\u5b9aKET\u53e3\u8bed25\u5206\u301010 \u891a\u8fde\u4e00\u3011_\u7b2c02\u8bb2\u7b2c\u4e8c\u8bfe\u53e3\u8bed\u90e8\u5206Part1\u8be6\u89e3_\u7b2c\u4e8c\u8bfe\u53e3\u8bed\u90e8\u5206Part1\u8be6\u89e3_page_002.png",
+          "index": 1514,
+          "language": "english",
+          "sha256": "6be7c4806c8c8d88665f9197bca44be59b3ebf3f52a11dbb24dfa9efb65f288a",
+          "table_count": 0
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "producer_id": "codex3-pip02-odl-relocatable-r4-s24-20261030",
+        "producer_source_manifest_path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-relocatable-r4-20261030/SOURCES.sha256",
+        "producer_source_manifest_sha256": "af6262aaf380b3a69031fc5b7f5b11ec0f8b697f314c410c159568bccf4cc62a",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793327293.0367277
+      }
+    },
+    {
+      "position": 623,
+      "image": "color_textbook_zhonggaokao_\u5c0f\u5b66_13.\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed\uff084-5\u5e74\u7ea7\uff09_\u4eba\u6559\u65b0\u8d77\u70b9\u56db\u5e74\u7ea7\u82f1\u8bed\u4e0a\u518c_\u8bfe\u672c_\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed4A\u7535\u5b50\u8bfe\u672c_page_072.png",
+      "gt_index": 1515,
+      "gt_tables": 0,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [],
+      "prediction_sha256": "ece12aff4d2494c0e51bb48622ff8883339ba3432afbabd91515a3ffb05cb347",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=24-47 start=2026-10-30T02:23Z end=2026-10-30T03:23Z\n",
+        "input_sha256": "3fbeac319d771433d42cb29c71f362cd312ce246d8e888ddf68f183bee0a1add",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 2211243,
+          "image": "color_textbook_zhonggaokao_\u5c0f\u5b66_13.\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed\uff084-5\u5e74\u7ea7\uff09_\u4eba\u6559\u65b0\u8d77\u70b9\u56db\u5e74\u7ea7\u82f1\u8bed\u4e0a\u518c_\u8bfe\u672c_\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed4A\u7535\u5b50\u8bfe\u672c_page_072.png",
+          "index": 1515,
+          "language": "english",
+          "sha256": "3bad0b56aa23eacb05488db8ed35e72fa1d88b94a8ad431c56a8ad354144b059",
+          "table_count": 0
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "producer_id": "codex3-pip02-odl-relocatable-r4-s24-20261030",
+        "producer_source_manifest_path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-relocatable-r4-20261030/SOURCES.sha256",
+        "producer_source_manifest_sha256": "af6262aaf380b3a69031fc5b7f5b11ec0f8b697f314c410c159568bccf4cc62a",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793327293.9622204
+      }
+    },
+    {
+      "position": 624,
+      "image": "exam_paper_en-file-putnam-archive_2000_Solutions_2000s_page_002.png",
+      "gt_index": 1517,
+      "gt_tables": 0,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [],
+      "prediction_sha256": "2a2ceb59a8121c6149a6bfb6b743419ef5013e720066723b19ff74b199f56b6f",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=24-47 start=2026-10-30T02:23Z end=2026-10-30T03:23Z\n",
+        "input_sha256": "5492adc4d0b9f0e3c8f32d66d8ff4fd9600a2b191f72fb8a63fd316caeb390ab",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 518419,
+          "image": "exam_paper_en-file-putnam-archive_2000_Solutions_2000s_page_002.png",
+          "index": 1517,
+          "language": "english",
+          "sha256": "61e73c27c2f169905b811d3356b18e932d83856d087f9d632866d49592451930",
+          "table_count": 0
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "producer_id": "codex3-pip02-odl-relocatable-r4-s24-20261030",
+        "producer_source_manifest_path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-relocatable-r4-20261030/SOURCES.sha256",
+        "producer_source_manifest_sha256": "af6262aaf380b3a69031fc5b7f5b11ec0f8b697f314c410c159568bccf4cc62a",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793327350.488482
+      }
+    }
+  ],
+  "coverage": {
+    "pages_complete": 25,
+    "pages_total": 25,
+    "gt_tables_scored": 5,
+    "gt_tables_total": 5
+  },
+  "means": {
+    "teds": 0.5188042960623604,
+    "teds_structure_only": 0.5387878787878788
+  }
+}

@@ -1,0 +1,1271 @@
+{
+  "arm": "odl",
+  "cohort": "pip02-english-fresh-20261029",
+  "shard": 20,
+  "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+  "gt_sha256": "a45cd84b04ad8b793e775089640e6b681209abea33ead54c1828ddca35fae496",
+  "pins_sha256": "262462c58402db48aa88063cdb1817915dcdef0c1933e72869682dd905c34cf0",
+  "scorer_sha256": "27f0b630b6812aecad35d1c65329841a5011e421326e81f9f14c8c66a6fdbe5e",
+  "pages": [
+    {
+      "position": 500,
+      "image": "PPT_lay_linalg5_01_05_page_004.png",
+      "gt_index": 1360,
+      "gt_tables": 0,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [],
+      "prediction_sha256": "b5847bd253a85cb17c897812d59c1e1f27cc822429762c07c67b3180df006f82",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=24-47 start=2026-10-29T23:46Z end=2026-10-30T00:46Z\n",
+        "input_sha256": "9fea78a13ed9a011865201566fbd9e3102046c2b6a34cab6dc12b6a2eefd41b5",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 142748,
+          "image": "PPT_lay_linalg5_01_05_page_004.png",
+          "index": 1360,
+          "language": "english",
+          "sha256": "2b019e0b2d18e100766858397cc8383d595cc321ad3e3ea48a4229d79661665e",
+          "table_count": 0
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "producer_id": "codex3-pip02-odl-relocatable-r2-s20-20261029",
+        "producer_source_manifest_path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-relocatable-r2/SOURCES.sha256",
+        "producer_source_manifest_sha256": "a17e08f66ffcd3c49e980110e444db2841ae5367b5f6dfff410db18423897cb9",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793317597.5420313
+      }
+    },
+    {
+      "position": 501,
+      "image": "PPT_linear-algebra primer_page_008.png",
+      "gt_index": 1361,
+      "gt_tables": 0,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [],
+      "prediction_sha256": "35b2aa3a58632a2370759ca835c9b75741e9f2730109ebab6e93fb4478f17cc1",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=24-47 start=2026-10-29T23:46Z end=2026-10-30T00:46Z\n",
+        "input_sha256": "9811e2460dfef8d5be070ea1592c974ac96e6a96dffdb920a811f00a97c1257a",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 180407,
+          "image": "PPT_linear-algebra primer_page_008.png",
+          "index": 1361,
+          "language": "english",
+          "sha256": "55a77102cfbe85c2c0cb5c7e2e01dadbbb9ef3eb33f6bdb62c238eb9b7da61a2",
+          "table_count": 0
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "producer_id": "codex3-pip02-odl-relocatable-r2-s20-20261029",
+        "producer_source_manifest_path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-relocatable-r2/SOURCES.sha256",
+        "producer_source_manifest_sha256": "a17e08f66ffcd3c49e980110e444db2841ae5367b5f6dfff410db18423897cb9",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793317597.521761
+      }
+    },
+    {
+      "position": 502,
+      "image": "PPT_session 10_page_023.png",
+      "gt_index": 1362,
+      "gt_tables": 0,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [],
+      "prediction_sha256": "24a162e59b233f3f58b5ac960aea89fd8404564a69d247beccf18a5ee0fce962",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=24-47 start=2026-10-29T23:46Z end=2026-10-30T00:46Z\n",
+        "input_sha256": "9497870c5c37a85535631e8702f167bb0ad27b8964cd38debf3a70e1631cd836",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 54420,
+          "image": "PPT_session 10_page_023.png",
+          "index": 1362,
+          "language": "english",
+          "sha256": "3a34b031f51b13c65d2212cbd1d06e11d3b26dd270a435acba1ef49920bf5258",
+          "table_count": 0
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "producer_id": "codex3-pip02-odl-relocatable-r2-s20-20261029",
+        "producer_source_manifest_path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-relocatable-r2/SOURCES.sha256",
+        "producer_source_manifest_sha256": "a17e08f66ffcd3c49e980110e444db2841ae5367b5f6dfff410db18423897cb9",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793317597.5759625
+      }
+    },
+    {
+      "position": 503,
+      "image": "newspaper_The Guardian UK_0801@magazinesclubnew_page_061.png",
+      "gt_index": 1363,
+      "gt_tables": 0,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [],
+      "prediction_sha256": "d0a95d54542722ab655162dfb64831632de4ac776549e6bca00196259b2376a7",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=24-47 start=2026-10-29T23:46Z end=2026-10-30T00:46Z\n",
+        "input_sha256": "ccbd505ec1e00582328f047e28e12572fb9da74dbb25bf36d16616e46b9b0f43",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 8273515,
+          "image": "newspaper_The Guardian UK_0801@magazinesclubnew_page_061.png",
+          "index": 1363,
+          "language": "english",
+          "sha256": "6298584bcd96d36bb8340fb7eb37fce9c7e869dad6e1edf337a13acf38f2a646",
+          "table_count": 0
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "producer_id": "codex3-pip02-odl-relocatable-r2-s20-20261029",
+        "producer_source_manifest_path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-relocatable-r2/SOURCES.sha256",
+        "producer_source_manifest_sha256": "a17e08f66ffcd3c49e980110e444db2841ae5367b5f6dfff410db18423897cb9",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793317600.7963586
+      }
+    },
+    {
+      "position": 504,
+      "image": "newspaper_The Wall Street Journal - 2025-01-08@magazinesclubnew_page_009.png",
+      "gt_index": 1364,
+      "gt_tables": 0,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [],
+      "prediction_sha256": "e8418c1e42446d693521854a9cfb6529dbb1733591caa9b4887119c30e5e6fbd",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=24-47 start=2026-10-29T23:46Z end=2026-10-30T00:46Z\n",
+        "input_sha256": "65f66b1f20e91706174621aa8eec92ea47b99a56e7e613af068b5d445337a9ae",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 4781645,
+          "image": "newspaper_The Wall Street Journal - 2025-01-08@magazinesclubnew_page_009.png",
+          "index": 1364,
+          "language": "english",
+          "sha256": "ff0db5922c385b194f978a3fd0644d7a02d369ce8ad2f2bd961df349071c0317",
+          "table_count": 0
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "producer_id": "codex3-pip02-odl-relocatable-r2-s20-20261029",
+        "producer_source_manifest_path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-relocatable-r2/SOURCES.sha256",
+        "producer_source_manifest_sha256": "a17e08f66ffcd3c49e980110e444db2841ae5367b5f6dfff410db18423897cb9",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793317598.0703063
+      }
+    },
+    {
+      "position": 505,
+      "image": "newspaper_The Globe and Mail - 2025-1-8@magazinesclubnew_page_027.png",
+      "gt_index": 1365,
+      "gt_tables": 0,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [],
+      "prediction_sha256": "4e2397cf0b729c58db7b19b4436a9a338cfb04c0ff6b4bb3e99028f2afad3c66",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=24-47 start=2026-10-29T23:46Z end=2026-10-30T00:46Z\n",
+        "input_sha256": "5d9f80fec53432eedbf429110d77fc2b1018f97cfc82fa3b57b15377e924e851",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 2540149,
+          "image": "newspaper_The Globe and Mail - 2025-1-8@magazinesclubnew_page_027.png",
+          "index": 1365,
+          "language": "english",
+          "sha256": "854a9981be969d8373367d40d21f7c64778148c2fe1b6558e581cb962e29a5b2",
+          "table_count": 0
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "producer_id": "codex3-pip02-odl-relocatable-r2-s20-20261029",
+        "producer_source_manifest_path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-relocatable-r2/SOURCES.sha256",
+        "producer_source_manifest_sha256": "a17e08f66ffcd3c49e980110e444db2841ae5367b5f6dfff410db18423897cb9",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793317597.8452682
+      }
+    },
+    {
+      "position": 506,
+      "image": "newspaper_Daily Mirror 2025-1-8@magazinesclubnew_page_058.png",
+      "gt_index": 1366,
+      "gt_tables": 0,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [],
+      "prediction_sha256": "69d119e6ddb4a3fdf4f4b3f2fec8157016e540daaa218c50c332915b2954c2af",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=24-47 start=2026-10-29T23:46Z end=2026-10-30T00:46Z\n",
+        "input_sha256": "5cdb0ce67b93bf98809a6335b6533f54e2c3385f063d91301293220458169b29",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 3288941,
+          "image": "newspaper_Daily Mirror 2025-1-8@magazinesclubnew_page_058.png",
+          "index": 1366,
+          "language": "english",
+          "sha256": "c2f3736dd34334028373ba72229d339b81ebd7e56bd762fa87d07ddf461210dc",
+          "table_count": 0
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "producer_id": "codex3-pip02-odl-relocatable-r2-s20-20261029",
+        "producer_source_manifest_path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-relocatable-r2/SOURCES.sha256",
+        "producer_source_manifest_sha256": "a17e08f66ffcd3c49e980110e444db2841ae5367b5f6dfff410db18423897cb9",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793317597.946178
+      }
+    },
+    {
+      "position": 507,
+      "image": "newspaper_Chicago Tribune_0801@magazinesclubnew_page_019.png",
+      "gt_index": 1367,
+      "gt_tables": 13,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [
+        {
+          "gt_idx": [
+            0
+          ],
+          "pred_idx": [
+            1
+          ],
+          "teds": 0.33844440631856254,
+          "teds_structure_only": 0.5294117647058824
+        },
+        {
+          "gt_idx": [
+            1
+          ],
+          "pred_idx": [
+            ""
+          ],
+          "teds": 0.0,
+          "teds_structure_only": 0.0
+        },
+        {
+          "gt_idx": [
+            2
+          ],
+          "pred_idx": [
+            2
+          ],
+          "teds": 0.2699331161643844,
+          "teds_structure_only": 0.3992395437262357
+        },
+        {
+          "gt_idx": [
+            3
+          ],
+          "pred_idx": [
+            ""
+          ],
+          "teds": 0.0,
+          "teds_structure_only": 0.0
+        },
+        {
+          "gt_idx": [
+            4
+          ],
+          "pred_idx": [
+            3
+          ],
+          "teds": 0.19493813457877418,
+          "teds_structure_only": 0.41666666666666663
+        },
+        {
+          "gt_idx": [
+            5
+          ],
+          "pred_idx": [
+            4
+          ],
+          "teds": 0.19301017093968453,
+          "teds_structure_only": 0.45662100456621
+        },
+        {
+          "gt_idx": [
+            6
+          ],
+          "pred_idx": [
+            0
+          ],
+          "teds": -0.015587797619047716,
+          "teds_structure_only": 0.5
+        },
+        {
+          "gt_idx": [
+            7
+          ],
+          "pred_idx": [
+            ""
+          ],
+          "teds": 0.0,
+          "teds_structure_only": 0.0
+        },
+        {
+          "gt_idx": [
+            8
+          ],
+          "pred_idx": [
+            ""
+          ],
+          "teds": 0.0,
+          "teds_structure_only": 0.0
+        },
+        {
+          "gt_idx": [
+            9
+          ],
+          "pred_idx": [
+            ""
+          ],
+          "teds": 0.0,
+          "teds_structure_only": 0.0
+        },
+        {
+          "gt_idx": [
+            10
+          ],
+          "pred_idx": [
+            ""
+          ],
+          "teds": 0.0,
+          "teds_structure_only": 0.0
+        },
+        {
+          "gt_idx": [
+            11
+          ],
+          "pred_idx": [
+            ""
+          ],
+          "teds": 0.0,
+          "teds_structure_only": 0.0
+        },
+        {
+          "gt_idx": [
+            12
+          ],
+          "pred_idx": [
+            5
+          ],
+          "teds": 0.6566524623382712,
+          "teds_structure_only": 1.0
+        }
+      ],
+      "prediction_sha256": "fae50fd2246663d4d8f2376b77f2e2f7d1d01b2ec8800839e6ae5da7384c417a",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=24-47 start=2026-10-29T23:46Z end=2026-10-30T00:46Z\n",
+        "input_sha256": "36125d9d7daa18a9dfe24285cf21e1fba575eab2eb1b67acada0f8bd8f0ae521",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 2897868,
+          "image": "newspaper_Chicago Tribune_0801@magazinesclubnew_page_019.png",
+          "index": 1367,
+          "language": "english",
+          "sha256": "5584b20371aae2853936725b2fb268c1961925bf0938ba9b67a19fcd550f88f5",
+          "table_count": 13
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "producer_id": "codex3-pip02-odl-relocatable-r2-s20-20261029",
+        "producer_source_manifest_path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-relocatable-r2/SOURCES.sha256",
+        "producer_source_manifest_sha256": "a17e08f66ffcd3c49e980110e444db2841ae5367b5f6dfff410db18423897cb9",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793317598.0047884
+      }
+    },
+    {
+      "position": 508,
+      "image": "newspaper_TheBostonGlobe-2025-1-8@magazinesclubnew_page_025.png",
+      "gt_index": 1368,
+      "gt_tables": 26,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [
+        {
+          "gt_idx": [
+            0
+          ],
+          "pred_idx": [
+            0
+          ],
+          "teds": 0.8284096214243273,
+          "teds_structure_only": 0.9880952380952381
+        },
+        {
+          "gt_idx": [
+            1
+          ],
+          "pred_idx": [
+            5
+          ],
+          "teds": 0.16666666666666674,
+          "teds_structure_only": 0.375
+        },
+        {
+          "gt_idx": [
+            2
+          ],
+          "pred_idx": [
+            12
+          ],
+          "teds": 0.06012094731509621,
+          "teds_structure_only": 0.09999999999999998
+        },
+        {
+          "gt_idx": [
+            3
+          ],
+          "pred_idx": [
+            19
+          ],
+          "teds": 0.25,
+          "teds_structure_only": 0.5
+        },
+        {
+          "gt_idx": [
+            4
+          ],
+          "pred_idx": [
+            29
+          ],
+          "teds": 0.2901444788441694,
+          "teds_structure_only": 0.5
+        },
+        {
+          "gt_idx": [
+            5
+          ],
+          "pred_idx": [
+            16
+          ],
+          "teds": 0.2875,
+          "teds_structure_only": 0.5
+        },
+        {
+          "gt_idx": [
+            6
+          ],
+          "pred_idx": [
+            10
+          ],
+          "teds": 0.09518263455264342,
+          "teds_structure_only": 0.5578231292517006
+        },
+        {
+          "gt_idx": [
+            7
+          ],
+          "pred_idx": [
+            4
+          ],
+          "teds": 0.10154943920888193,
+          "teds_structure_only": 0.2571428571428571
+        },
+        {
+          "gt_idx": [
+            8
+          ],
+          "pred_idx": [
+            26
+          ],
+          "teds": -0.0072581114350223075,
+          "teds_structure_only": 0.2549019607843137
+        },
+        {
+          "gt_idx": [
+            9
+          ],
+          "pred_idx": [
+            17
+          ],
+          "teds": 0.10149124332976323,
+          "teds_structure_only": 0.15555555555555556
+        },
+        {
+          "gt_idx": [
+            10
+          ],
+          "pred_idx": [
+            7
+          ],
+          "teds": 0.05220567993440928,
+          "teds_structure_only": 0.09523809523809523
+        },
+        {
+          "gt_idx": [
+            11
+          ],
+          "pred_idx": [
+            18
+          ],
+          "teds": 0.08911370311792544,
+          "teds_structure_only": 0.16326530612244894
+        },
+        {
+          "gt_idx": [
+            12
+          ],
+          "pred_idx": [
+            20
+          ],
+          "teds": 0.1367373504425694,
+          "teds_structure_only": 0.25
+        },
+        {
+          "gt_idx": [
+            13
+          ],
+          "pred_idx": [
+            14
+          ],
+          "teds": 0.16927758681995964,
+          "teds_structure_only": 0.41428571428571426
+        },
+        {
+          "gt_idx": [
+            14
+          ],
+          "pred_idx": [
+            2
+          ],
+          "teds": 0.07848122396792478,
+          "teds_structure_only": 0.1428571428571429
+        },
+        {
+          "gt_idx": [
+            15
+          ],
+          "pred_idx": [
+            23
+          ],
+          "teds": 0.04493083874856718,
+          "teds_structure_only": 0.08163265306122447
+        },
+        {
+          "gt_idx": [
+            16
+          ],
+          "pred_idx": [
+            25
+          ],
+          "teds": 0.12490311246542862,
+          "teds_structure_only": 0.3214285714285714
+        },
+        {
+          "gt_idx": [
+            17
+          ],
+          "pred_idx": [
+            9
+          ],
+          "teds": 0.06419250392464682,
+          "teds_structure_only": 0.4107142857142857
+        },
+        {
+          "gt_idx": [
+            18
+          ],
+          "pred_idx": [
+            21
+          ],
+          "teds": -0.055145972019036815,
+          "teds_structure_only": 0.6904761904761905
+        },
+        {
+          "gt_idx": [
+            19
+          ],
+          "pred_idx": [
+            13
+          ],
+          "teds": 0.29036458333333326,
+          "teds_structure_only": 0.5
+        },
+        {
+          "gt_idx": [
+            20
+          ],
+          "pred_idx": [
+            8
+          ],
+          "teds": 0.2678571428571428,
+          "teds_structure_only": 0.5
+        },
+        {
+          "gt_idx": [
+            21
+          ],
+          "pred_idx": [
+            28
+          ],
+          "teds": 0.09472175567355778,
+          "teds_structure_only": 0.16666666666666663
+        },
+        {
+          "gt_idx": [
+            22
+          ],
+          "pred_idx": [
+            22
+          ],
+          "teds": 0.2212835164835164,
+          "teds_structure_only": 0.4
+        },
+        {
+          "gt_idx": [
+            23
+          ],
+          "pred_idx": [
+            3
+          ],
+          "teds": 0.18990384615384615,
+          "teds_structure_only": 0.33333333333333337
+        },
+        {
+          "gt_idx": [
+            24
+          ],
+          "pred_idx": [
+            15
+          ],
+          "teds": 0.2868969298245614,
+          "teds_structure_only": 0.5
+        },
+        {
+          "gt_idx": [
+            25
+          ],
+          "pred_idx": [
+            27
+          ],
+          "teds": 0.25,
+          "teds_structure_only": 0.5
+        }
+      ],
+      "prediction_sha256": "afb4960adb9012305dde284316f1868d0683cc0fc05c4b8b404dc7c4b873f770",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=24-47 start=2026-10-29T23:46Z end=2026-10-30T00:46Z\n",
+        "input_sha256": "8340335bd0431b961ef4c0d22eb03f3f2dfa50af344af3dfedc336e32a480fbc",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 4743671,
+          "image": "newspaper_TheBostonGlobe-2025-1-8@magazinesclubnew_page_025.png",
+          "index": 1368,
+          "language": "english",
+          "sha256": "4c47161ad3a07049940eba19cbbc93e57d474562b65942d33cb2af25e594eda3",
+          "table_count": 26
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "producer_id": "codex3-pip02-odl-relocatable-r2-s20-20261029",
+        "producer_source_manifest_path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-relocatable-r2/SOURCES.sha256",
+        "producer_source_manifest_sha256": "a17e08f66ffcd3c49e980110e444db2841ae5367b5f6dfff410db18423897cb9",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793317598.0335467
+      }
+    },
+    {
+      "position": 509,
+      "image": "newspaper_The Wall Street Journal - 2025-01-08@magazinesclubnew_page_004.png",
+      "gt_index": 1369,
+      "gt_tables": 0,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [],
+      "prediction_sha256": "0cec907ea6d5cd2fa98cacb593d2feb365305d691777366f28536d186af515f0",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=24-47 start=2026-10-29T23:46Z end=2026-10-30T00:46Z\n",
+        "input_sha256": "d38ce78e1784a9f750bc294e90c6b9938d9024560c8d06f2db8aac5419674c1f",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 4429381,
+          "image": "newspaper_The Wall Street Journal - 2025-01-08@magazinesclubnew_page_004.png",
+          "index": 1369,
+          "language": "english",
+          "sha256": "93b69c7c91a46bf109af9d1842a14164d086ca818da3569b52aa45a55043c638",
+          "table_count": 0
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "producer_id": "codex3-pip02-odl-relocatable-r2-s20-20261029",
+        "producer_source_manifest_path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-relocatable-r2/SOURCES.sha256",
+        "producer_source_manifest_sha256": "a17e08f66ffcd3c49e980110e444db2841ae5367b5f6dfff410db18423897cb9",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793317597.9624178
+      }
+    },
+    {
+      "position": 510,
+      "image": "newspaper_Chicago Tribune_0801@magazinesclubnew_page_015.png",
+      "gt_index": 1370,
+      "gt_tables": 0,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [],
+      "prediction_sha256": "72e0cd3726b7b3aecfed43ae9fe8801875171cf68bc44df104a4dd1a933be95d",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=24-47 start=2026-10-29T23:46Z end=2026-10-30T00:46Z\n",
+        "input_sha256": "f9cae8dbbe88d1a153ca236223e9103e0cfe99afb12b9d627cd2a0f55989edee",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 4185252,
+          "image": "newspaper_Chicago Tribune_0801@magazinesclubnew_page_015.png",
+          "index": 1370,
+          "language": "english",
+          "sha256": "f8088152f7ee7931eb783933e72baf006de885806dff182af98b1f13afb373a4",
+          "table_count": 0
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "producer_id": "codex3-pip02-odl-relocatable-r2-s20-20261029",
+        "producer_source_manifest_path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-relocatable-r2/SOURCES.sha256",
+        "producer_source_manifest_sha256": "a17e08f66ffcd3c49e980110e444db2841ae5367b5f6dfff410db18423897cb9",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793317598.1220593
+      }
+    },
+    {
+      "position": 511,
+      "image": "newspaper_Chicago Tribune_0801@magazinesclubnew_page_032.png",
+      "gt_index": 1371,
+      "gt_tables": 0,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [],
+      "prediction_sha256": "0b448a6dc51e821c7afa98d7ceae216ae085ac930c2aaca8541b98356834ace1",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=24-47 start=2026-10-29T23:46Z end=2026-10-30T00:46Z\n",
+        "input_sha256": "83fdc1b18f3f4ba81d91ac35ee738e396886345d71211a4cc6f83a035201f170",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 8333124,
+          "image": "newspaper_Chicago Tribune_0801@magazinesclubnew_page_032.png",
+          "index": 1371,
+          "language": "english",
+          "sha256": "3d5c40de4f222c0c9f01c3298956c3855c163215979468c711394171fc3950a3",
+          "table_count": 0
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "producer_id": "codex3-pip02-odl-relocatable-r2-s20-20261029",
+        "producer_source_manifest_path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-relocatable-r2/SOURCES.sha256",
+        "producer_source_manifest_sha256": "a17e08f66ffcd3c49e980110e444db2841ae5367b5f6dfff410db18423897cb9",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793317598.2302513
+      }
+    },
+    {
+      "position": 512,
+      "image": "newspaper_The Times UK_0801@magazinesclubnew_page_083.png",
+      "gt_index": 1372,
+      "gt_tables": 0,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [],
+      "prediction_sha256": "5a29b5c17909c569b993042e8a1a5fc1bf008cc89924a95b849cead2c20757f3",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=24-47 start=2026-10-29T23:46Z end=2026-10-30T00:46Z\n",
+        "input_sha256": "90baf9be5b6a5f7a58ca4810fabe42070dc535b2a4f8d1c7bf8c8fc4926cb12c",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 2359136,
+          "image": "newspaper_The Times UK_0801@magazinesclubnew_page_083.png",
+          "index": 1372,
+          "language": "english",
+          "sha256": "bce4e102948824826f61dde270bb92fdb9fd5e32bdf8250b38702d7b28e12da8",
+          "table_count": 0
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "producer_id": "codex3-pip02-odl-relocatable-r2-s20-20261029",
+        "producer_source_manifest_path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-relocatable-r2/SOURCES.sha256",
+        "producer_source_manifest_sha256": "a17e08f66ffcd3c49e980110e444db2841ae5367b5f6dfff410db18423897cb9",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793317660.6093311
+      }
+    },
+    {
+      "position": 513,
+      "image": "newspaper_TheGuardianUS-2025-1-8@magazinesclubnew_page_033.png",
+      "gt_index": 1373,
+      "gt_tables": 0,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [],
+      "prediction_sha256": "650645f25e7334316132cbbe8625bb49d9fbd1b512c6c190a6eb8b7b8284b645",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=24-47 start=2026-10-29T23:46Z end=2026-10-30T00:46Z\n",
+        "input_sha256": "4974fb3cab60e10b9b7fa2aed02b519b1741bcda58c401eb94b02fe4b54a29f3",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 6428213,
+          "image": "newspaper_TheGuardianUS-2025-1-8@magazinesclubnew_page_033.png",
+          "index": 1373,
+          "language": "english",
+          "sha256": "602fa027b160f237059d3810c2e15f51f12210aa3fd708530c1bbbaa530145e5",
+          "table_count": 0
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "producer_id": "codex3-pip02-odl-relocatable-r2-s20-20261029",
+        "producer_source_manifest_path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-relocatable-r2/SOURCES.sha256",
+        "producer_source_manifest_sha256": "a17e08f66ffcd3c49e980110e444db2841ae5367b5f6dfff410db18423897cb9",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793317668.5551116
+      }
+    },
+    {
+      "position": 514,
+      "image": "newspaper_TheWashingtonPost-2025-01-08@magazinesclubnew_page_009.png",
+      "gt_index": 1374,
+      "gt_tables": 0,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [],
+      "prediction_sha256": "0fd611c0a5bed179a8ad7523215022d50b8c9a301da0643e78816b9239e9369f",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=24-47 start=2026-10-29T23:46Z end=2026-10-30T00:46Z\n",
+        "input_sha256": "28273214774c1b2aaffa71582e8f7952c5c9a92a0648e20ce91af82c43096bf7",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 2247280,
+          "image": "newspaper_TheWashingtonPost-2025-01-08@magazinesclubnew_page_009.png",
+          "index": 1374,
+          "language": "english",
+          "sha256": "107a07b3c0a47b2a68831f087d4c4adb00bed46d39f5ed63932c5aa841c4f4b4",
+          "table_count": 0
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "producer_id": "codex3-pip02-odl-relocatable-r2-s20-20261029",
+        "producer_source_manifest_path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-relocatable-r2/SOURCES.sha256",
+        "producer_source_manifest_sha256": "a17e08f66ffcd3c49e980110e444db2841ae5367b5f6dfff410db18423897cb9",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793317668.6937585
+      }
+    },
+    {
+      "position": 515,
+      "image": "newspaper_The Globe and Mail - 2025-1-8@magazinesclubnew_page_014.png",
+      "gt_index": 1375,
+      "gt_tables": 5,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [
+        {
+          "gt_idx": [
+            0
+          ],
+          "pred_idx": [
+            ""
+          ],
+          "teds": 0.0,
+          "teds_structure_only": 0.0
+        },
+        {
+          "gt_idx": [
+            1
+          ],
+          "pred_idx": [
+            ""
+          ],
+          "teds": 0.0,
+          "teds_structure_only": 0.0
+        },
+        {
+          "gt_idx": [
+            2
+          ],
+          "pred_idx": [
+            0
+          ],
+          "teds": 0.2633516376290215,
+          "teds_structure_only": 0.5680272108843538
+        },
+        {
+          "gt_idx": [
+            3
+          ],
+          "pred_idx": [
+            ""
+          ],
+          "teds": 0.0,
+          "teds_structure_only": 0.0
+        },
+        {
+          "gt_idx": [
+            4
+          ],
+          "pred_idx": [
+            ""
+          ],
+          "teds": 0.0,
+          "teds_structure_only": 0.0
+        }
+      ],
+      "prediction_sha256": "329be1662dc146d68b29ac1f041c283180650868d964f4bbea7a2d8d1850bcb2",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=24-47 start=2026-10-29T23:46Z end=2026-10-30T00:46Z\n",
+        "input_sha256": "517ca6a2d3cc50e3aa6eb41791ecbcbccc4ab364ad72c0ff35c1c47382a6864b",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 1409703,
+          "image": "newspaper_The Globe and Mail - 2025-1-8@magazinesclubnew_page_014.png",
+          "index": 1375,
+          "language": "english",
+          "sha256": "6e560ae90e4d26a33be3056680d8218077e87734171dffcac6a491229a034b4f",
+          "table_count": 5
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "producer_id": "codex3-pip02-odl-relocatable-r2-s20-20261029",
+        "producer_source_manifest_path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-relocatable-r2/SOURCES.sha256",
+        "producer_source_manifest_sha256": "a17e08f66ffcd3c49e980110e444db2841ae5367b5f6dfff410db18423897cb9",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793317673.893891
+      }
+    },
+    {
+      "position": 516,
+      "image": "newspaper_Daily Star 2025-1-8@magazinesclubnew_page_060.png",
+      "gt_index": 1376,
+      "gt_tables": 2,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [
+        {
+          "gt_idx": [
+            0
+          ],
+          "pred_idx": [
+            0
+          ],
+          "teds": 0.033333333333333326,
+          "teds_structure_only": 0.0444444444444444
+        },
+        {
+          "gt_idx": [
+            1
+          ],
+          "pred_idx": [
+            2
+          ],
+          "teds": 0.05555555555555558,
+          "teds_structure_only": 0.06666666666666665
+        }
+      ],
+      "prediction_sha256": "ec0f494a77fc1e0a85a878f9ffeb4c45bc7fb67193dffe4f68c3dd1a9f25724b",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=24-47 start=2026-10-29T23:46Z end=2026-10-30T00:46Z\n",
+        "input_sha256": "a641ec99f332d16faee8c3b7cf265fe0c36223777fdce79e0e8572675f0b8c0a",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 405371,
+          "image": "newspaper_Daily Star 2025-1-8@magazinesclubnew_page_060.png",
+          "index": 1376,
+          "language": "english",
+          "sha256": "349031e6cc7405ff918f51fd86fad3d01947cf2f2e3298d1b7775741a0822523",
+          "table_count": 2
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "producer_id": "codex3-pip02-odl-relocatable-r2-s20-20261029",
+        "producer_source_manifest_path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-relocatable-r2/SOURCES.sha256",
+        "producer_source_manifest_sha256": "a17e08f66ffcd3c49e980110e444db2841ae5367b5f6dfff410db18423897cb9",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793317677.251083
+      }
+    },
+    {
+      "position": 517,
+      "image": "newspaper_Daily Mirror 2025-1-8@magazinesclubnew_page_029.png",
+      "gt_index": 1377,
+      "gt_tables": 0,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [],
+      "prediction_sha256": "a9c1665ecb1837b3e7dc330b7bf66cc72c6baa99420cd15eb599754cda6e1417",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=24-47 start=2026-10-29T23:46Z end=2026-10-30T00:46Z\n",
+        "input_sha256": "33ad3ea9ca0f68d1fa8117f3a7b43005c341468199330f5c41a4e8ad44884f14",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 3879440,
+          "image": "newspaper_Daily Mirror 2025-1-8@magazinesclubnew_page_029.png",
+          "index": 1377,
+          "language": "english",
+          "sha256": "d524e3eb1f7f6f5c6c6789ac21551f72a90d4540b27df11cb97734f7e7522c22",
+          "table_count": 0
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "producer_id": "codex3-pip02-odl-relocatable-r2-s20-20261029",
+        "producer_source_manifest_path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-relocatable-r2/SOURCES.sha256",
+        "producer_source_manifest_sha256": "a17e08f66ffcd3c49e980110e444db2841ae5367b5f6dfff410db18423897cb9",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793317677.5367436
+      }
+    },
+    {
+      "position": 518,
+      "image": "newspaper_The Times UK_0801@magazinesclubnew_page_031.png",
+      "gt_index": 1378,
+      "gt_tables": 1,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [
+        {
+          "gt_idx": [
+            0
+          ],
+          "pred_idx": [
+            ""
+          ],
+          "teds": 0.0,
+          "teds_structure_only": 0.0
+        }
+      ],
+      "prediction_sha256": "5af4c61f4662265b7d3518297bbe74ec554ea207517d5a3336c1a43fd50d7778",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=24-47 start=2026-10-29T23:46Z end=2026-10-30T00:46Z\n",
+        "input_sha256": "ce22058c03ecec1f4b55b807c9ada17fb167c759c2ef9ca33785aef7cbfc9cde",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 2954129,
+          "image": "newspaper_The Times UK_0801@magazinesclubnew_page_031.png",
+          "index": 1378,
+          "language": "english",
+          "sha256": "31ee82a52ecf6347b47a04d48571b392af6c2370e1764aa33b53d7e91260cb8b",
+          "table_count": 1
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "producer_id": "codex3-pip02-odl-relocatable-r2-s20-20261029",
+        "producer_source_manifest_path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-relocatable-r2/SOURCES.sha256",
+        "producer_source_manifest_sha256": "a17e08f66ffcd3c49e980110e444db2841ae5367b5f6dfff410db18423897cb9",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793317683.9933867
+      }
+    },
+    {
+      "position": 519,
+      "image": "newspaper_The Guardian UK_0801@magazinesclubnew_page_048.png",
+      "gt_index": 1379,
+      "gt_tables": 0,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [],
+      "prediction_sha256": "db564623b3855501569f3308930d34b9f70d80f71fb894d356c5af5f8c7169ba",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=24-47 start=2026-10-29T23:46Z end=2026-10-30T00:46Z\n",
+        "input_sha256": "ba8385e0a0293763d9c558f63d076e6e92cc676b50270149e826c48a9568feed",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 11210828,
+          "image": "newspaper_The Guardian UK_0801@magazinesclubnew_page_048.png",
+          "index": 1379,
+          "language": "english",
+          "sha256": "0fc48b1811994f28bc4ebf73c15fc903d5cfdcb2f0b878580d15a8498e0cb044",
+          "table_count": 0
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "producer_id": "codex3-pip02-odl-relocatable-r2-s20-20261029",
+        "producer_source_manifest_path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-relocatable-r2/SOURCES.sha256",
+        "producer_source_manifest_sha256": "a17e08f66ffcd3c49e980110e444db2841ae5367b5f6dfff410db18423897cb9",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793317686.6141443
+      }
+    },
+    {
+      "position": 520,
+      "image": "newspaper_The Times UK_0801@magazinesclubnew_page_001.png",
+      "gt_index": 1380,
+      "gt_tables": 0,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [],
+      "prediction_sha256": "0939f789a764b77a1ce7b9761aa8cf86c016f9117fd9f8ac81db4baf83ba1a07",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=24-47 start=2026-10-29T23:46Z end=2026-10-30T00:46Z\n",
+        "input_sha256": "d2bb1919b6fa7683544e1020434bd44517922e4180876fb361d58683fd40bce9",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 2575849,
+          "image": "newspaper_The Times UK_0801@magazinesclubnew_page_001.png",
+          "index": 1380,
+          "language": "english",
+          "sha256": "af47df7d4e43620fc1db0c8301c35433b84d380634d5292f9cd497f2f9d8e229",
+          "table_count": 0
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "producer_id": "codex3-pip02-odl-relocatable-r2-s20-20261029",
+        "producer_source_manifest_path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-relocatable-r2/SOURCES.sha256",
+        "producer_source_manifest_sha256": "a17e08f66ffcd3c49e980110e444db2841ae5367b5f6dfff410db18423897cb9",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793317711.2991283
+      }
+    },
+    {
+      "position": 521,
+      "image": "newspaper_TheBostonGlobe-2025-1-8@magazinesclubnew_page_011.png",
+      "gt_index": 1381,
+      "gt_tables": 0,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [],
+      "prediction_sha256": "7adc407a7b2c97758a24c97777d8ce1f878eb4f727977efe3db08cef7c343e0f",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=24-47 start=2026-10-29T23:46Z end=2026-10-30T00:46Z\n",
+        "input_sha256": "9844f3d1b343cb4685936f8b5166efa0e1c2083b0e4bf176b1071f6fa964e549",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 3645557,
+          "image": "newspaper_TheBostonGlobe-2025-1-8@magazinesclubnew_page_011.png",
+          "index": 1381,
+          "language": "english",
+          "sha256": "662c292aa740a4ea4f8050e4c8a05e17feb50c545a09b7e5395d50d8ed69192d",
+          "table_count": 0
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "producer_id": "codex3-pip02-odl-relocatable-r2-s20-20261029",
+        "producer_source_manifest_path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-relocatable-r2/SOURCES.sha256",
+        "producer_source_manifest_sha256": "a17e08f66ffcd3c49e980110e444db2841ae5367b5f6dfff410db18423897cb9",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793317732.0035083
+      }
+    },
+    {
+      "position": 522,
+      "image": "newspaper_Daily Mail_2022-08-01@magazinesclubnew_page_009.png",
+      "gt_index": 1382,
+      "gt_tables": 0,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [],
+      "prediction_sha256": "e9e380fc432946c1b726b9ad25e8d5f8a26c0cd1abf71749e6ff8feae9c1912c",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=24-47 start=2026-10-29T23:46Z end=2026-10-30T00:46Z\n",
+        "input_sha256": "f0567e990d0be79896f8c92754e54029ca9bd2d2459fde5084265f3159f0a688",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 4772862,
+          "image": "newspaper_Daily Mail_2022-08-01@magazinesclubnew_page_009.png",
+          "index": 1382,
+          "language": "english",
+          "sha256": "5b34e17e35760910b07d4b95c91b41119a84f2d8066afe1c3aa34c2a3dfe2391",
+          "table_count": 0
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "producer_id": "codex3-pip02-odl-relocatable-r2-s20-20261029",
+        "producer_source_manifest_path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-relocatable-r2/SOURCES.sha256",
+        "producer_source_manifest_sha256": "a17e08f66ffcd3c49e980110e444db2841ae5367b5f6dfff410db18423897cb9",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793317742.1556995
+      }
+    },
+    {
+      "position": 523,
+      "image": "newspaper_TheGuardianUS-2025-1-8@magazinesclubnew_page_015.png",
+      "gt_index": 1383,
+      "gt_tables": 0,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [],
+      "prediction_sha256": "9550c54a318df9cc7f4b2f2944a27ac98de80e90001eeea106c9d4c0ba7db925",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=24-47 start=2026-10-29T23:46Z end=2026-10-30T00:46Z\n",
+        "input_sha256": "f05efd05bd9c3e768aa71664cf0436a91c39f4dc69849071b3009c17a8f1ef6d",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 4975615,
+          "image": "newspaper_TheGuardianUS-2025-1-8@magazinesclubnew_page_015.png",
+          "index": 1383,
+          "language": "english",
+          "sha256": "6f3a0084de7f4ba085b18bf0cf137626fb1c6ee5583b16bcb936be205ff20501",
+          "table_count": 0
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "producer_id": "codex3-pip02-odl-relocatable-r2-s20-20261029",
+        "producer_source_manifest_path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-relocatable-r2/SOURCES.sha256",
+        "producer_source_manifest_sha256": "a17e08f66ffcd3c49e980110e444db2841ae5367b5f6dfff410db18423897cb9",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793317751.6289606
+      }
+    },
+    {
+      "position": 524,
+      "image": "newspaper_TheGuardianUS-2025-1-8@magazinesclubnew_page_029.png",
+      "gt_index": 1384,
+      "gt_tables": 0,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [],
+      "prediction_sha256": "a57d96eb2ec7eeee4e4f217da68238a12f82423508636c0f660cd97a625692b6",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=24-47 start=2026-10-29T23:46Z end=2026-10-30T00:46Z\n",
+        "input_sha256": "da870a741877416bb59af980c5b7573a18205b0e17bee12c8b36a23c5954530c",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 5863770,
+          "image": "newspaper_TheGuardianUS-2025-1-8@magazinesclubnew_page_029.png",
+          "index": 1384,
+          "language": "english",
+          "sha256": "6808412d65c7bb62c264f260d8c8b2e79b649cd609749b512ff7d0e9a69b2703",
+          "table_count": 0
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "producer_id": "codex3-pip02-odl-relocatable-r2-s20-20261029",
+        "producer_source_manifest_path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-relocatable-r2/SOURCES.sha256",
+        "producer_source_manifest_sha256": "a17e08f66ffcd3c49e980110e444db2841ae5367b5f6dfff410db18423897cb9",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793317761.918841
+      }
+    }
+  ],
+  "coverage": {
+    "pages_complete": 25,
+    "pages_total": 25,
+    "gt_tables_scored": 47,
+    "gt_tables_total": 47
+  },
+  "means": {
+    "teds": 0.1376417391675195,
+    "teds_structure_only": 0.29020200003561275
+  }
+}
