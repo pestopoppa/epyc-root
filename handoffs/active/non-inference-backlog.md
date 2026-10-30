@@ -1089,3 +1089,4 @@ Operator 2026-10-28: "file IMMEDIATELY". The daemons below run zero-token from `
 - [ ] **LOOP-39 — worktree_gate reference sources must include stale `.bak` and `.env` files.** About 67 content-safe trees stay blocked by `.env`/`.bash`/campaign-input references; the gate should ignore stale backups and age these out. [no-belief: tooling-repair]
 - [ ] **LOOP-40 — ai-sessions backup retention policy (operator, host-side).** Three backups of about 9 GB each run nightly; deleting the older two awaits operator OK. Supersedes LOOP-21's one-line form. [no-belief: tooling-repair]
 - [ ] **LOOP-41 — remaining ~67 blocked worktrees.** Re-run the gate after they age out (about 11-20 to 11-27) and remove the clean+landed ones; ledger `WORKTREE-WRAP-20261030.md`. [no-belief: tooling-repair]
+- [x] LOOP-42 legacy T1 admission off by default in the canonical filler_run13 template ✅ 2026-10-30 [no-belief: tooling-repair]
