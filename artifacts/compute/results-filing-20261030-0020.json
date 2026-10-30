@@ -1,0 +1,1348 @@
+{
+  "schema": "codex3.results-filing.v1",
+  "filed_at": "2026-10-30T00:21:50.347869+00:00",
+  "original_events": {
+    "codex3-pip02-odl-relocatable-r2-s21-20261029": {
+      "id": "codex3-pip02-odl-relocatable-r2-s21-20261029",
+      "ended_file": "/mnt/raid0/llm/tmp/compute-flags/grants/codex3-pip02-odl-relocatable-r2-s21-20261029.ended",
+      "end_line": "rc=0 time=2026-10-29T23:58:24Z reason=complete",
+      "seen_at": "2026-10-29T23:59:22Z",
+      "result_path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/ODL-BATCH-DONE-21",
+      "scratch_root": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-relocatable-r2-prepared-20261029/shard-21",
+      "decision_rule": "Collect25 original fresh English pages in ODL shard21, ODL2.5+Docling2.91 docling-fast hybrid full on canonical image-only PDFs, twelve native page workers on assigned quarter. Preserve every input/start/result/DONE hash and all unknowns; never redraw an actual client exposure. No quality/adoption verdict until common scoring.",
+      "class": "diagnostic",
+      "owner": "codex3"
+    },
+    "codex3-pip02-odl-relocatable-r2-s24-20261029": {
+      "id": "codex3-pip02-odl-relocatable-r2-s24-20261029",
+      "ended_file": "/mnt/raid0/llm/tmp/compute-flags/grants/codex3-pip02-odl-relocatable-r2-s24-20261029.ended",
+      "end_line": "rc=75 time=2026-10-30T00:01:05Z reason=job-rc-75:exited",
+      "seen_at": "2026-10-30T00:01:27Z",
+      "result_path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/ODL-BATCH-DONE-24",
+      "scratch_root": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-relocatable-r2-prepared-20261029/shard-24",
+      "decision_rule": "Collect25 original fresh English pages in ODL shard24, ODL2.5+Docling2.91 docling-fast hybrid full on canonical image-only PDFs, twelve native page workers on assigned quarter. Preserve every input/start/result/DONE hash and all unknowns; never redraw an actual client exposure. No quality/adoption verdict until common scoring.",
+      "class": "diagnostic",
+      "owner": "codex3"
+    },
+    "codex3-pip02-odl-relocatable-r2-s25-20261029": {
+      "id": "codex3-pip02-odl-relocatable-r2-s25-20261029",
+      "ended_file": "/mnt/raid0/llm/tmp/compute-flags/grants/codex3-pip02-odl-relocatable-r2-s25-20261029.ended",
+      "end_line": "rc=75 time=2026-10-30T00:01:07Z reason=job-rc-75:exited",
+      "seen_at": "2026-10-30T00:01:27Z",
+      "result_path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/ODL-BATCH-DONE-25",
+      "scratch_root": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-relocatable-r2-prepared-20261029/shard-25",
+      "decision_rule": "Collect25 original fresh English pages in ODL shard25, ODL2.5+Docling2.91 docling-fast hybrid full on canonical image-only PDFs, twelve native page workers on assigned quarter. Preserve every input/start/result/DONE hash and all unknowns; never redraw an actual client exposure. No quality/adoption verdict until common scoring.",
+      "class": "diagnostic",
+      "owner": "codex3"
+    },
+    "fa4-c5-exact-set-r4-20261029": {
+      "id": "fa4-c5-exact-set-r4-20261029",
+      "ended_file": "/mnt/raid0/llm/tmp/compute-flags/grants/fa4-c5-exact-set-r4-20261029.ended",
+      "end_line": "rc=75 time=2026-10-30T00:01:49Z reason=job-rc-75:exited",
+      "seen_at": "2026-10-30T00:02:29Z",
+      "result_path": "/mnt/raid0/llm/tmp/codex-ni-fa4-exact-set-successor-r4-20261029/NORMAL-COMPLETE.json",
+      "scratch_root": "/mnt/raid0/llm/tmp/codex-ni-fa4-exact-set-successor-r4-20261029",
+      "decision_rule": "Diagnostic only: retain exact 228-case native outcomes and preserve differences. No correctness-equivalence, mechanism, timing/performance, or promotion claim.",
+      "class": "diagnostic",
+      "owner": "codex-ni"
+    },
+    "codex3-pip02-odl-relocatable-r2-s28-20261029": {
+      "id": "codex3-pip02-odl-relocatable-r2-s28-20261029",
+      "ended_file": "/mnt/raid0/llm/tmp/compute-flags/grants/codex3-pip02-odl-relocatable-r2-s28-20261029.ended",
+      "end_line": "rc=75 time=2026-10-30T00:03:14Z reason=job-rc-75:exited",
+      "seen_at": "2026-10-30T00:03:31Z",
+      "result_path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/ODL-BATCH-DONE-28",
+      "scratch_root": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-relocatable-r2-prepared-20261029/shard-28",
+      "decision_rule": "Collect25 original fresh English pages in ODL shard28, ODL2.5+Docling2.91 docling-fast hybrid full on canonical image-only PDFs, twelve native page workers on assigned quarter. Preserve every input/start/result/DONE hash and all unknowns; never redraw an actual client exposure. No quality/adoption verdict until common scoring.",
+      "class": "diagnostic",
+      "owner": "codex3"
+    },
+    "codex3-pip02-odl-relocatable-r2-s29-20261029": {
+      "id": "codex3-pip02-odl-relocatable-r2-s29-20261029",
+      "ended_file": "/mnt/raid0/llm/tmp/compute-flags/grants/codex3-pip02-odl-relocatable-r2-s29-20261029.ended",
+      "end_line": "rc=75 time=2026-10-30T00:03:15Z reason=job-rc-75:exited",
+      "seen_at": "2026-10-30T00:03:31Z",
+      "result_path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/ODL-BATCH-DONE-29",
+      "scratch_root": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-relocatable-r2-prepared-20261029/shard-29",
+      "decision_rule": "Collect25 original fresh English pages in ODL shard29, ODL2.5+Docling2.91 docling-fast hybrid full on canonical image-only PDFs, twelve native page workers on assigned quarter. Preserve every input/start/result/DONE hash and all unknowns; never redraw an actual client exposure. No quality/adoption verdict until common scoring.",
+      "class": "diagnostic",
+      "owner": "codex3"
+    },
+    "codex-hil15-s2-unknown-resume-v3-20261029": {
+      "id": "codex-hil15-s2-unknown-resume-v3-20261029",
+      "ended_file": "/mnt/raid0/llm/tmp/compute-flags/grants/codex-hil15-s2-unknown-resume-v3-20261029.ended",
+      "end_line": "rc=6 time=2026-10-30T00:04:12Z reason=t1-admission:DRYRUN_REFUSED: disk free-after-output 149.90 GiB < floor 150 GiB",
+      "seen_at": "2026-10-30T00:04:33Z",
+      "result_path": "/mnt/raid0/llm/tmp/hil15-s2-unknown-continuation-v3-20261029/s2-official-results/collection-status.json",
+      "scratch_root": "/mnt/raid0/llm/tmp/hil15-s2-unknown-continuation-v3-20261029",
+      "decision_rule": "Preserve original45 denominator,17 accepted native,one immutable unknown06slot2,run only units07-15 slots0/1/2. Newly exposed incomplete slots refuse redraw. Terminal44 known+one unknown is collection exhaustion, never full native completion or promotion evidence.",
+      "class": "diagnostic",
+      "owner": "codex-refactor-01a16fc3"
+    },
+    "codex-ni-inf50-writerrace-resume-r14-20261029": {
+      "id": "codex-ni-inf50-writerrace-resume-r14-20261029",
+      "ended_file": "/mnt/raid0/llm/tmp/compute-flags/grants/codex-ni-inf50-writerrace-resume-r14-20261029.ended",
+      "end_line": "rc=0 time=2026-10-30T00:05:03Z reason=complete",
+      "seen_at": "2026-10-30T00:05:35Z",
+      "result_path": null,
+      "scratch_root": "/mnt/raid0/llm/tmp/codex-ni-inf50-writerrace-resume-r14-20261029",
+      "decision_rule": "Normal scheduled run must complete the full 3,072-path inventory and all five pinned native grammar targets with resolved UID coverage; retain failed phases and make no fold/performance claim.",
+      "class": "block-correctness",
+      "owner": "codex-ni"
+    },
+    "hil15-s1-unexposed-slots-v22-20261030": {
+      "id": "hil15-s1-unexposed-slots-v22-20261030",
+      "ended_file": "/mnt/raid0/llm/tmp/compute-flags/grants/hil15-s1-unexposed-slots-v22-20261030.ended",
+      "end_line": "rc=0 time=2026-10-30T00:16:02Z reason=complete",
+      "seen_at": "2026-10-30T00:16:58Z",
+      "result_path": "/mnt/raid0/llm/tmp/hil15-s1-unknown-continuation-v22-20261030/results-pilot/DONE",
+      "scratch_root": "/mnt/raid0/llm/tmp/hil15-s1-unknown-continuation-v22-20261030",
+      "decision_rule": "Fixed discovery cohort: original45 native slots. Preserve42 accepted native replays; original unit15 slot0 remains unknown with no grade, run only predeclared slots1/2. Report task15 native pass-count bounds [observed passes,observed passes+1] (higher=more passes), original denominator45, and collection-exhausted-with-unknown; no full-completion/confirmation claim.",
+      "class": "diagnostic",
+      "owner": "codex-refactor-01a16fc3"
+    }
+  },
+  "odl": {
+    "native_audit_path": "/mnt/raid0/llm/tmp/codex3-file-odl-0015-20261030/audit.json",
+    "native_audit_sha256": "473c740aa0f57dca40c0a8cce4c7ca846a8bf7aef9db50ab98874659f133a78f",
+    "verified_native_audit": {
+      "created_utc": "2026-10-30T00:16:58.453127+00:00",
+      "events": [
+        {
+          "attempt_sha256": "bbfe5a5bfc4aac4057d711ac937c9800e14dd1841ae4faf5b7213f0688b42350",
+          "batch_done_sha256": "2c7dc234bf438f1c81fd47508484cca0fa36c39e575a99a40b0325c393a98718",
+          "filing_event": {
+            "class": "diagnostic",
+            "decision_rule": "Collect25 original fresh English pages in ODL shard21, ODL2.5+Docling2.91 docling-fast hybrid full on canonical image-only PDFs, twelve native page workers on assigned quarter. Preserve every input/start/result/DONE hash and all unknowns; never redraw an actual client exposure. No quality/adoption verdict until common scoring.",
+            "end_line": "rc=0 time=2026-10-29T23:58:24Z reason=complete",
+            "ended_file": "/mnt/raid0/llm/tmp/compute-flags/grants/codex3-pip02-odl-relocatable-r2-s21-20261029.ended",
+            "id": "codex3-pip02-odl-relocatable-r2-s21-20261029",
+            "owner": "codex3",
+            "result_path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/ODL-BATCH-DONE-21",
+            "scratch_root": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-relocatable-r2-prepared-20261029/shard-21",
+            "seen_at": "2026-10-29T23:59:22Z"
+          },
+          "id": "codex3-pip02-odl-relocatable-r2-s21-20261029",
+          "interpretation": "25 native predictions and page child-drain records verified; collection diagnostic only, no parser-quality or TEDS verdict.",
+          "launcher_log": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-relocatable-r2-prepared-20261029/shard-21/ws58-launcher.out",
+          "launcher_sha256": "dde211ab05b35f9760b2d8e7299b4c85edefb99a60bc1521ab4aad87d54b0fe0",
+          "native_summary": {
+            "cohort": "pip02-english-fresh-20261029",
+            "error": null,
+            "finished_epoch": 1793318302.897291,
+            "partial": false,
+            "rc": 0,
+            "sampled_peak_tree_rss_bytes": 85389053952,
+            "schema": "pip02-odl-parallel/v1",
+            "shard": 21,
+            "statuses": {
+              "525": "complete",
+              "526": "complete",
+              "527": "complete",
+              "528": "complete",
+              "529": "complete",
+              "530": "complete",
+              "531": "complete",
+              "532": "complete",
+              "533": "complete",
+              "534": "complete",
+              "535": "complete",
+              "536": "complete",
+              "537": "complete",
+              "538": "complete",
+              "539": "complete",
+              "540": "complete",
+              "541": "complete",
+              "542": "complete",
+              "543": "complete",
+              "544": "complete",
+              "545": "complete",
+              "546": "complete",
+              "547": "complete",
+              "548": "complete",
+              "549": "complete"
+            },
+            "workers": 12
+          },
+          "original_attempt": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-relocatable-r2/attempts/45e3c208418b45dcba35180fd3d83b51.json",
+          "original_event_end": "2026-10-29T23:58:24Z",
+          "original_grant": "regions=72-95 start=2026-10-29T23:48Z end=2026-10-30T00:48Z\n",
+          "original_start_log_line": "2026-10-29T23:48:35Z [codex3-pip02-odl-relocatable-r2-s21-20261029] START regions=72-95 cpus=72-95 threads=24 gpu=0 end=2026-10-30T00:48Z",
+          "page_worker_disk_floor_refusals": 0,
+          "pages": [
+            {
+              "children_drained": true,
+              "claim_tuple_sha256": "0faf250b7845eab406d2be01e1e40a147cc076504d50f741d2a101dbae1d225a",
+              "done_sha256": "9436ef87ac3f497674109a8d2160548100965b5f9a5beea1d0e05110fba2cb82",
+              "image": "/mnt/raid0/llm/datasets/omnidocbench/images/newspaper_TheWashingtonPost-2025-01-08@magazinesclubnew_page_042.png",
+              "image_sha256": "3b77eb5bbd75744e625d356f6902ffd790488bf5611b32e503d71f3a6a0674b5",
+              "index": 525,
+              "input_identity_sha256": "8ba9c47d4541758c388265a4d2d4d3a31bd999349035cbdeb6c4315d18066727",
+              "pdf": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-21/page-0525/input.pdf",
+              "pdf_sha256": "20b1d5c0881a411baa06687718d2a2bc7a7f18dc16b10ca79fb3e2570135a4fc",
+              "prediction_sha256": "e32b1729407766b1d29d4b8f66ca642cc05902bff8bf251b68a1282620814ace",
+              "result_sha256": "36d7d5a9afd106260f30774decb68782248d8abdb9088dddf79f909dd09f3941",
+              "start_sha256": "39dab699a4a10ab6aa6e5782e7054b801c152fe102d78dc1ce4738bb27f8a2c5",
+              "started": 1793317725.8054638
+            },
+            {
+              "children_drained": true,
+              "claim_tuple_sha256": "bf6e69d5068b110145cdf4bf85d2266bdc77103d1197af35f7532363a30f6651",
+              "done_sha256": "0349aa51e179eb797fed56282a198a1cb6867f8778478db08211322151010fe1",
+              "image": "/mnt/raid0/llm/datasets/omnidocbench/images/newspaper_TheGuardianUS-2025-1-8@magazinesclubnew_page_041.png",
+              "image_sha256": "2feb3b2298ee6423ee8dff0d7bbbdaaf20d333a991e54fe2f7c018c6330113dc",
+              "index": 526,
+              "input_identity_sha256": "32b8b91c8cd11c5d3af928181d14b202fc401bd98275ef87854428fb6e1d6a0c",
+              "pdf": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-21/page-0526/input.pdf",
+              "pdf_sha256": "00bb6b7a2564afdf3b5e5efdc79b77ff7f2d3b6b21251039c124cfd236f3017d",
+              "prediction_sha256": "4d5f9ed07680aaa5b31ae266bdab3439062816a2af60d7ba3377417f2f4a4b20",
+              "result_sha256": "f31efecb9abd0b310d2c4c698113fce08ed9ff0d485d13edf33adc93d88d66f2",
+              "start_sha256": "9866db72d5b986c94aae01f79d045a8b4eba7f6dfc6ea0a7e18e5ecae590ab1f",
+              "started": 1793317728.0077586
+            },
+            {
+              "children_drained": true,
+              "claim_tuple_sha256": "8a0cb89e370697251e55fbd810c27bac25f2d8de3206a0d4215c94869595b512",
+              "done_sha256": "80eb59377876ee85de6f03446ad592238331feece8e6cfe4e6898227c28c2fae",
+              "image": "/mnt/raid0/llm/datasets/omnidocbench/images/newspaper_NY Daily News_August 1@magazinesclubnew_page_007.png",
+              "image_sha256": "1daef9a8484cc89363be4ecf45a396339ff993f50c46df7ee3186c9edef3cba6",
+              "index": 527,
+              "input_identity_sha256": "32562411fdda538dadcce215a193b60d6dd18acec141204768e50c347b98e527",
+              "pdf": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-21/page-0527/input.pdf",
+              "pdf_sha256": "a94da323b451f584f443330cddb8854d7c052cf57f7940aff934da6f0964a99e",
+              "prediction_sha256": "ae86afe9bcdb690537bc0e7388b0460bd68f8cb9d05c7e4b9e19d4c9b3f9acb6",
+              "result_sha256": "ce7007bd7b2cee21823e0146fdd8434a8bf7ec20d06d68e09f091b8942011dc0",
+              "start_sha256": "0916cc4ec8c330030e26b60f7af73be66297a6b1c18c232cbebb83f79479f34f",
+              "started": 1793317725.481719
+            },
+            {
+              "children_drained": true,
+              "claim_tuple_sha256": "ed5c5012cc76c64ecdc507c2f53cd678f9ede5fc436bcec411b241944b046fb1",
+              "done_sha256": "07b7e622ae1dfa887e5473e1812fe780de6e55d994e158b80a93507b98099032",
+              "image": "/mnt/raid0/llm/datasets/omnidocbench/images/newspaper_The Globe and Mail - 2025-1-8@magazinesclubnew_page_003.png",
+              "image_sha256": "66ae294435c7c529796657a9af93a0582672598d05126c70ffd6f8c03c50c4ea",
+              "index": 528,
+              "input_identity_sha256": "3044ab73b52894aeb566209c0896743908270d03b3503b0a2acc35205e8aa94f",
+              "pdf": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-21/page-0528/input.pdf",
+              "pdf_sha256": "5fc4a46ff6c300be112528ce1c5b1e02a4afe4ebd04204385b2e25520b1d2ea5",
+              "prediction_sha256": "fa3a69d1bd206e0c7d234a11c3bc06fbd355674f2f542382d489ea9aa11f0158",
+              "result_sha256": "437cda4e0ef31a06bd61f6bb0333e8c7eea0c1dd436ae87611d4741ab97e6652",
+              "start_sha256": "a342eb673b2caf02cf9ccbc2cc636368d8454c062d1ca04c4683eb332297a12c",
+              "started": 1793317725.2592158
+            },
+            {
+              "children_drained": true,
+              "claim_tuple_sha256": "ed60da971b30643daf3157f1c53c462f75e059e6cbc13e32d78b417a2151088a",
+              "done_sha256": "48564a3f31d5e370e7fe3a8d8d062a1b8a8fda69c6c3d2ee0e83a15e7fe351c5",
+              "image": "/mnt/raid0/llm/datasets/omnidocbench/images/newspaper_The Guardian UK_0801@magazinesclubnew_page_051.png",
+              "image_sha256": "9a90df26d192b857cab1c8c685f77e38816b6e0bf212df287229bab52a3ed3ff",
+              "index": 529,
+              "input_identity_sha256": "e9ed3498156782d4b119ec5475c761d6c613c6781516e6905155cd2772750a5a",
+              "pdf": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-21/page-0529/input.pdf",
+              "pdf_sha256": "ec557c8787011822069af09836700619f2f2b1e6d7346a535a262c346f76bc1c",
+              "prediction_sha256": "171293ac7bd8ad19b355146ca1518bd4aacf26b07fcf016e0cd75e26d1542bb6",
+              "result_sha256": "6e62c4c083632927048480a956b45c6a630f980204557a4f0a888cef5bf1bc25",
+              "start_sha256": "2047233a8598190207bc3f19bbc56c15f1a5f3091507fd6b6fa8e35148230f1f",
+              "started": 1793317728.0328486
+            },
+            {
+              "children_drained": true,
+              "claim_tuple_sha256": "6c3c0c56193307628c32e8ea33264e96327fe6317a76d84d91792599e4f2c3fb",
+              "done_sha256": "8ae8d819bdbc9b5aa82d6dbf4b04c1252601d499cc0950ae17aea046330f1e29",
+              "image": "/mnt/raid0/llm/datasets/omnidocbench/images/newspaper_TheBostonGlobe-2025-1-8@magazinesclubnew_page_033.png",
+              "image_sha256": "931b879fcc932486fa924333b50e71b655edbb81035ae1832fdcae8c48c78c7b",
+              "index": 530,
+              "input_identity_sha256": "d78d22646f5199e07caa54b0f7fd97d69522ff3b9b4cdd9a81a4f4be59bf5d3d",
+              "pdf": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-21/page-0530/input.pdf",
+              "pdf_sha256": "a2e36c268c700971973e5849fc5f46bea76a4b88afcf51a4d054c41952dd4039",
+              "prediction_sha256": "635eb7f64c652a5535bfe886a55414baec77a04f2e631f0b63b0ec70616f0f03",
+              "result_sha256": "eec8ab5a484c47646561166d24d67488e1d12adad55a4b4fe3413a496344572c",
+              "start_sha256": "342ae49606b2b5e504dab2b57213f072961504111e4e717c806e934285c871a0",
+              "started": 1793317725.7891164
+            },
+            {
+              "children_drained": true,
+              "claim_tuple_sha256": "8693da3424f8f2dda74308b9d08541838c739b4c9966c4a04a0ff1101c8a6228",
+              "done_sha256": "d826400a083ea3be071aaddd7f564695cf8c7b254ee85b665d7b9e91a04f9cf9",
+              "image": "/mnt/raid0/llm/datasets/omnidocbench/images/newspaper_USAToday-2025-01-08@magazinesclubnew_page_012.png",
+              "image_sha256": "9e9881983412a83922be1f9d964ea737f0ea4b2a59241831c7bf9a5fa1675b9b",
+              "index": 531,
+              "input_identity_sha256": "e32d9d3287d16cbfd60782019f9c50ce2657d9c021e3211490c4d354d6c08845",
+              "pdf": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-21/page-0531/input.pdf",
+              "pdf_sha256": "4928136f70deb08685d28e9b0dde9f6dfe08c930917530815effffc9a199bef7",
+              "prediction_sha256": "41287327d11925b874d20a6a037411aab7d0ceda54a4a89894a3d7d9e485526b",
+              "result_sha256": "115ff034553ae95ab97ae37ea147a019f5b4675d370dbae8067ddd8200af1d16",
+              "start_sha256": "21131b2081804266b0cf0cabfe168c9422aa1aa612b797ec75209eec2af79e9b",
+              "started": 1793317725.4183185
+            },
+            {
+              "children_drained": true,
+              "claim_tuple_sha256": "ddb29bc674d983101eb06ae48a4750834fc7eede167bf2c89bb8adc8e22b47f3",
+              "done_sha256": "f8464019fbaa22035530db04d049f24faef295a495b85fdf924f928f44378145",
+              "image": "/mnt/raid0/llm/datasets/omnidocbench/images/newspaper_Daily Mirror 2025-1-8@magazinesclubnew_page_034.png",
+              "image_sha256": "14a0a32b2e145147ef774015d12e4cf3e81ce4df7c8014942eaaa6bf3ee75f7e",
+              "index": 532,
+              "input_identity_sha256": "f2e2d6ecd3f284a9f852bc1b5a841760b294ca0c39032f81a90b3bceadaa9e31",
+              "pdf": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-21/page-0532/input.pdf",
+              "pdf_sha256": "4671d145f63e6e324989bf3ac97a6f9109fa102e1c87e002dc0666ff00450a60",
+              "prediction_sha256": "7be2862c71746c0cb5144312b97e581afb52583481052a973ccb6d29a91386ec",
+              "result_sha256": "4faa8030486451be19aedce8c7efa6b54cb8d84e05166e1abd8a0f8b2f00e2bc",
+              "start_sha256": "9bd7692553bd44508d5f1daa6458aa50109748743619b1e9f0c8a05d65f1c092",
+              "started": 1793317725.466021
+            },
+            {
+              "children_drained": true,
+              "claim_tuple_sha256": "8ec8d9d645d1c9e7676c0639f2eecef0eca7c0c757c3ee77b7a0bbbdbbeb96b7",
+              "done_sha256": "a8adbb26f4f970ee4bb8fd5762cfd7d1722e95e6f5bae97bd815e8eafd482c76",
+              "image": "/mnt/raid0/llm/datasets/omnidocbench/images/newspaper_NY Daily News_August 1@magazinesclubnew_page_020.png",
+              "image_sha256": "f876fcee426da6e457a618fce137473193e9229afd6ece22f0554facd10d12f5",
+              "index": 533,
+              "input_identity_sha256": "ec8e7ae292fdf3261ba4ba2d1a56b2ae4050142475c7d24dd143bdedae7023c8",
+              "pdf": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-21/page-0533/input.pdf",
+              "pdf_sha256": "d6d7d050355262210952d02032f82df4ff1d9f8be5b66a8ab94a9dee2cc69283",
+              "prediction_sha256": "460910d67845a606d8f3f4eaa0f6ebdbefe2d9198276979df48529be1418c81c",
+              "result_sha256": "f6f624cd21c927974558ccf6a358e6a375036ad4e4a93d1e877021c184262c42",
+              "start_sha256": "00300c76a16c74ac51be16e5695b95f0d0fcefbc3621c035708aae0475958334",
+              "started": 1793317725.6648178
+            },
+            {
+              "children_drained": true,
+              "claim_tuple_sha256": "ba5fd4b070cef8edaaf3f3600be0c1b8f8b4d82265ad7fa1bcd10bc8a02bcbca",
+              "done_sha256": "d769d38db47987e10881fa1db7adc8d82561701eaeed5c219f539ce9915669ab",
+              "image": "/mnt/raid0/llm/datasets/omnidocbench/images/newspaper_The Globe and Mail - 2025-1-8@magazinesclubnew_page_018.png",
+              "image_sha256": "9ccd21b2b073ce2f97dd4ce6a444fe0da40f370c2a47e50dd2480bff1b8f2a35",
+              "index": 534,
+              "input_identity_sha256": "8fa6fb1798cade8e24d1e3d0f434a26ed2a271f2bb4cb46abbeabf3bbf89f65f",
+              "pdf": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-21/page-0534/input.pdf",
+              "pdf_sha256": "d8fee577e661331999a41b40ad4810873822acabfaaba098bb470855ea1a0a2f",
+              "prediction_sha256": "6d591d5eddbad992f85ea6b94861a9a203b86db98a94456d6151e3c75227c645",
+              "result_sha256": "add7d51ac386c5a316839713ef75b3585d0fba26e4dd96abaf13d3f81b71030e",
+              "start_sha256": "30ac6cc946493b280cae14da94663e07602f168b52fe6521f08ab69aaae86963",
+              "started": 1793317725.4828253
+            },
+            {
+              "children_drained": true,
+              "claim_tuple_sha256": "230ba7b3c2ed3ae0b4a9cbc4c2468bbfb78250b4ce32249f3a58d963cf4f0443",
+              "done_sha256": "b2f66f09a4eaf24d88f58957e7f17f69fbebbcd3d88fb68ac1bd44329f257482",
+              "image": "/mnt/raid0/llm/datasets/omnidocbench/images/newspaper_The Guardian UK_0801@magazinesclubnew_page_052.png",
+              "image_sha256": "c4a2777adcdd42d3d0c59abb9d8a278a9b5e4b0b3fce17e84acaae2536ae6401",
+              "index": 535,
+              "input_identity_sha256": "9010525616f7326d292c691e024f71e898d0048e6c2d6160cc3b82fd2a6ae933",
+              "pdf": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-21/page-0535/input.pdf",
+              "pdf_sha256": "dff734a0ba952229d639596da36d2959c6c0a0b4e3f6dc362ae57cc1debb2950",
+              "prediction_sha256": "300d7872795c3ad53f54752fe04415b71c97acda4ab62096257268891f156686",
+              "result_sha256": "8a96bd8afaef655436d2c7867528b00f9d3d3cb1d2f173e5ed4812c1b4cd3adc",
+              "start_sha256": "dc088f7b2e50b9e56754e55836a64fbcd856010bfe18147f3928d5f4e9ed322d",
+              "started": 1793317727.933104
+            },
+            {
+              "children_drained": true,
+              "claim_tuple_sha256": "1889bf808e71738837d302909896aa31a93730f3cf968c6617945d4d71640791",
+              "done_sha256": "2a4ef4ec22775bcbbc06451723bcfacc00cc2c6342138b43c7752f263c648940",
+              "image": "/mnt/raid0/llm/datasets/omnidocbench/images/newspaper_USAToday-2025-01-08@magazinesclubnew_page_021.png",
+              "image_sha256": "15538dd8b944e984d9469618420793fec217264a932068536efbf63fa154864c",
+              "index": 536,
+              "input_identity_sha256": "0938e5127d998dc0b581e43f1201d2d3b4ba9ae2e487a7af9c5e924ebc3388a9",
+              "pdf": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-21/page-0536/input.pdf",
+              "pdf_sha256": "5cb8f00fb9db573b7d6242b29febf5d18149d7cffc8cd33026f45aad89047431",
+              "prediction_sha256": "b28345df65f9fa73611eb1c211fc9dba49c3391fd1c17e5f19ebf8524eaed5bd",
+              "result_sha256": "83ede2f06724caaf210ee10b9733afa9792d5fece1973d813e6e9407896d1cb8",
+              "start_sha256": "7b62ea494da991b8738987f3363fe7408bbd326288afc09a9382236417e982a7",
+              "started": 1793317725.9800658
+            },
+            {
+              "children_drained": true,
+              "claim_tuple_sha256": "ab63836a79c0fa7ab0964833d45218117e8c77f1df30e827e74fa2002da5e0b1",
+              "done_sha256": "6c856e0d808988e501a675e89843d9fdfc0cd0109495f3e48ad55fafd4c07a37",
+              "image": "/mnt/raid0/llm/datasets/omnidocbench/images/newspaper_USAToday-2025-01-08@magazinesclubnew_page_024.png",
+              "image_sha256": "bf1bb1c10ff67c76015a7da6e98570a255be573107314854a745983f7472f87a",
+              "index": 537,
+              "input_identity_sha256": "85c44c4148a977163baaa3a7d5452962f5158f0b48072872e5e575e76b3fa18e",
+              "pdf": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-21/page-0537/input.pdf",
+              "pdf_sha256": "0a0ba4ff3b304aded910806d302728ac012877eef75f74f3a6f5b487d8026b9c",
+              "prediction_sha256": "30d509ab9b2e152dbc3046c11679335e97aa7adce1a565e7277502642fb57630",
+              "result_sha256": "545ea8f73761971a3bd9b8eb9d89b39a6aeac198acd71e566fcaf73ada9dd8d0",
+              "start_sha256": "0d257b40750fe378c9a840e1cbbdbda16422c973a78c613fea1832b48c947fb5",
+              "started": 1793317830.78913
+            },
+            {
+              "children_drained": true,
+              "claim_tuple_sha256": "cc3195a08992b1569020b7cdc1043103766c459a9114d5c6e7d930f0b851bf33",
+              "done_sha256": "df55a010d9a5aa11c20cf700846b434b669fcfe8fc1b74a035ecaf504253beeb",
+              "image": "/mnt/raid0/llm/datasets/omnidocbench/images/newspaper_The Wall Street Journal - 2025-01-08@magazinesclubnew_page_018.png",
+              "image_sha256": "c65e0039aa37812192c5ed13d8b9d54e29a8c570c126f226a90f4074ef870b5a",
+              "index": 538,
+              "input_identity_sha256": "8d55c9d3da6e38d89994f761e38264370643b8f8b9e85da1eec9bf6388dcfc77",
+              "pdf": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-21/page-0538/input.pdf",
+              "pdf_sha256": "ab408bac28373f70583635287859306919aececf0ae548d9895abeb7a9cdccb7",
+              "prediction_sha256": "258f2442cddcc0642f5977cfd9e967664b3189d176a1cf5498385496669a34f2",
+              "result_sha256": "9ade29b28e2e0cea7086b289f169b4731581c21f814393839e45c9fa5dd355cb",
+              "start_sha256": "bccb11a2b3dd579481ed9d4968c77d3a848d84645a8815e180f339cf80685a6b",
+              "started": 1793317841.8351247
+            },
+            {
+              "children_drained": true,
+              "claim_tuple_sha256": "d74e653339992f1ca263f8763ea5b2a01fe0892fed64cc727c0f4b7224063a1d",
+              "done_sha256": "ea0227f2190e246103fc2048074950bfaef761270a5a476f7bafc749a4701087",
+              "image": "/mnt/raid0/llm/datasets/omnidocbench/images/newspaper_The Wall Street Journal - 2025-01-08@magazinesclubnew_page_021.png",
+              "image_sha256": "aec0559e222ca31527ab0ac78673d155a2b228a23d2f4519de789ac7452c0fb4",
+              "index": 539,
+              "input_identity_sha256": "c4231a5779f5f95e31961698c47ab33d345d86cc152b0fec310b278530567ef0",
+              "pdf": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-21/page-0539/input.pdf",
+              "pdf_sha256": "2a13f0315bb82e8d97f5421e9b5bee740ad3b8ccc5f87bf02199bafc287a10d6",
+              "prediction_sha256": "cfb2b2465b2861925b3df08628fd9b36432897bc35b2ca16d9069c17bb1d675b",
+              "result_sha256": "11dc9f572a21934d9dc86a37c460438cce592f10f90d409fcbc7a7b748c08698",
+              "start_sha256": "789ed8f1fd2302347f54e18989f6e73b8e8fa19b069eec74c2a83b390a4a2232",
+              "started": 1793317846.393738
+            },
+            {
+              "children_drained": true,
+              "claim_tuple_sha256": "9dcad14904e576e42cd29dd9df45245f601dd8b82dbfde93bd14a984d0327d1d",
+              "done_sha256": "01f04fdee3b67e69f75fd8a9cc56a026b4ac72ac8ae6425ec1c2b931a49d9a01",
+              "image": "/mnt/raid0/llm/datasets/omnidocbench/images/newspaper_TheBostonGlobe-2025-1-8@magazinesclubnew_page_003.png",
+              "image_sha256": "f799f774b2beb71792ea4c331f1133d98943e51e044afd06d42ef587a7c4c23f",
+              "index": 540,
+              "input_identity_sha256": "c1c654be9628344f5b8f7f49b07aa821cce5e2acbcc3baf5bac13daf24c71f2e",
+              "pdf": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-21/page-0540/input.pdf",
+              "pdf_sha256": "f63cdd345ac1676ad0c195a5eae98f624adbb8ca7984b8aa9c74d6300ee9dc9b",
+              "prediction_sha256": "6ec540e7b2b60b78ff5fd17cb746e0dc341efdb3d8b79b1fbe48f2bfb3c176cd",
+              "result_sha256": "163b4b3995c7be41d14011a8ddf658cf80eecacf8d007caee2bfc25cf2be419a",
+              "start_sha256": "83103cbe77c5316245adde3637c824a632e27bc4285bc91b8adedbd87506b17c",
+              "started": 1793317849.47744
+            },
+            {
+              "children_drained": true,
+              "claim_tuple_sha256": "bfb300a4702d4530eecade9c3bbb642007a784c60550992ff4499e7195ee5588",
+              "done_sha256": "d14c8d690759d2d6d119e4ef738ce585dcaeecdfa52000e94074ed6d24bc7f93",
+              "image": "/mnt/raid0/llm/datasets/omnidocbench/images/newspaper_The Times UK_0801@magazinesclubnew_page_020.png",
+              "image_sha256": "f8e8bf63ab208873403f609f9b6280fd7d46ad41739edbf3f867eb877cae3963",
+              "index": 541,
+              "input_identity_sha256": "dee53353b2fe4366de20b75dea6c15fe7ec5b10f4791c85a73c49c2a257bfd70",
+              "pdf": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-21/page-0541/input.pdf",
+              "pdf_sha256": "45ebf3f58d558c7ceebed6c023eaaec586954b506e875873fd7a359466b35ebb",
+              "prediction_sha256": "d32ba73ee4a59521a439d59ed00862ec50a1e9488983b955dc6750f0d5d8c821",
+              "result_sha256": "0bf3f1283c9ed4851bc4ca8438810460b20866060d5ac4ffb021d5315a3a4a26",
+              "start_sha256": "558ad71658815a0c4f8672ea0a4309bedf82a0b0f8a5ff5dfca7c0162d31b441",
+              "started": 1793317855.585811
+            },
+            {
+              "children_drained": true,
+              "claim_tuple_sha256": "1e5b84091a14f7ae27f0f8b95a324ca623980a0bc1cc86d8714ab410d2563352",
+              "done_sha256": "41360f565010bac47b4ed7af8b3e1a39784276bbf479c93cc0fb6dcdfbeb9d6c",
+              "image": "/mnt/raid0/llm/datasets/omnidocbench/images/newspaper_Daily Mail_2022-08-01@magazinesclubnew_page_068.png",
+              "image_sha256": "615fab6b2ba2c5ce2cf67a30065b8db51a26f84ffadc0264f2a550a4e47e615e",
+              "index": 542,
+              "input_identity_sha256": "f147bd35dbbf0f6382b6864de355d3cc5eaa671628e3c5aa73990cca3f1b4056",
+              "pdf": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-21/page-0542/input.pdf",
+              "pdf_sha256": "c69788f9315337a1a78410e58403d72b2001835f7208955883f2140488eb2bb5",
+              "prediction_sha256": "48412531f28f0df9e066179dc641baf89e5ca0979c38f13de8f21da1db87d8b7",
+              "result_sha256": "26de352575de90452d3b7ee8bc93457c48fdc8193e66530a7bfcd87c2ed18eb2",
+              "start_sha256": "4cf0a09ee8dccbe3a89a24d318b264afe41787689a0249a4dd15e4b6dd9ae474",
+              "started": 1793317862.9351642
+            },
+            {
+              "children_drained": true,
+              "claim_tuple_sha256": "4e60ddbf903fd1889e8a6a0973b6f7d663a097a21c91552610fe5a2048c3b5dd",
+              "done_sha256": "3bcf238a5ecb57c466f60fcfdcd9ed6c03d1949c6dc9b62c422d8ec83a45cf1d",
+              "image": "/mnt/raid0/llm/datasets/omnidocbench/images/book_zh_CNASGL0092018_extracted_page_69.png",
+              "image_sha256": "2898e2002eff38b5671d7b3f8c01f1e84264fb05b06cf03298cc521c0dceb149",
+              "index": 543,
+              "input_identity_sha256": "fe323e09fc76867d5dab999b01750294e61e549984424b76a1b08fe764d67f52",
+              "pdf": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-21/page-0543/input.pdf",
+              "pdf_sha256": "cf882ee98da2e588e6ff5a28ad841efc35d31b4b6d4b9ac65a0078e91eb53c91",
+              "prediction_sha256": "c1f47867b264e05dee53dea4217ecf7db4be3123f868e93f72319fe26f7660f7",
+              "result_sha256": "34c74edb734b6787c6527ddf90d4478cd978e82ab4be8d7a987fb90d0637e842",
+              "start_sha256": "59115c7c9ee173d4b0c7ca6ee87680b14678f0a14387728c23ea40105f8836f1",
+              "started": 1793317861.3373678
+            },
+            {
+              "children_drained": true,
+              "claim_tuple_sha256": "16f14fedd64da9485a67a330358ff38a958e9778536ad7461b3ca2ed11d6ab6a",
+              "done_sha256": "c90016fe443b683598139cc99e7130bbe288d22a4e4d7ab2aaad04dca40113bf",
+              "image": "/mnt/raid0/llm/datasets/omnidocbench/images/book_en_6.Complex.Analysis.-.Elias.M..Stein_page_205.png",
+              "image_sha256": "ba8e198570a75ff783d90a456d67a2837b48039e13eccd716225390c867981f9",
+              "index": 544,
+              "input_identity_sha256": "c56307b2cbc4c129b8b24f47a1a4e6dfc48c4452d2e68781cf75500efaac2755",
+              "pdf": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-21/page-0544/input.pdf",
+              "pdf_sha256": "8fba3779c5ade1b8e9c15a5fe7a6c8086c91aa3fe7c0392718abdc2c9a9e557f",
+              "prediction_sha256": "a4aac36c32629b0731a901075c75a972564503e45aaca093349d8bc6da10f54a",
+              "result_sha256": "697caac3282726a44568b4385997aee3a9f17806a09718d0c9a159fd1fc118b4",
+              "start_sha256": "2917253fafde40c677514249e8e068bea6aa430b6909fdeafa30838083d46f78",
+              "started": 1793317862.907713
+            },
+            {
+              "children_drained": true,
+              "claim_tuple_sha256": "397bf5cb3261473576ba0315413ef3cdf0e82591e37586a21f3f8baf7a702f2f",
+              "done_sha256": "95db5ae570b9a6a3be165c68f90e79b2eb8751109cd69a75efd6a33a92e7c244",
+              "image": "/mnt/raid0/llm/datasets/omnidocbench/images/book_en_\u56fd\u5916\u6570\u5b66\u6559\u6750-An Excursion through Elementary Mathematics\uff08\u521d\u7b49\u6570\u5b66\u6f2b\u6e38\uff09-An excursion through elementary mathematics, Vol.3 (Caminha Muniz Neto A)_0035.png",
+              "image_sha256": "9796fe43ed7bfe692b236021192dd05b5cd864a83e62c93442fd6f79b98caef5",
+              "index": 545,
+              "input_identity_sha256": "98044ba8d58e75945ae417873ebeeec0e431b830a4dd716194b15c3f9eaa2c55",
+              "pdf": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-21/page-0545/input.pdf",
+              "pdf_sha256": "a5016b021ffcc6070f0fbc155630bd2aab29b4313f4662dc1f91e7fac31599cb",
+              "prediction_sha256": "a822870ba9ead1fd849f38ef043b4be88e8b32841b0ac32e9045c47ac30e714f",
+              "result_sha256": "bb6395c3d9bd2a65cf64fc3aa396d50887331c0eb55d4bae80d1998fcdb052e0",
+              "start_sha256": "64514c8e2ab6652a901765e11e57a770778264a98ca944b8423dd34fca56f17e",
+              "started": 1793317909.1002028
+            },
+            {
+              "children_drained": true,
+              "claim_tuple_sha256": "9d4cca19e37d86a5f61afbe64ce4be063b33c9f6e7da0210a980df746f5e71a7",
+              "done_sha256": "16df65d3ac92c40eb13120426b6ab196eac3a793e97c03611f5c39a1ebdc8b54",
+              "image": "/mnt/raid0/llm/datasets/omnidocbench/images/book_en_40.Puzzles.and.Problems.in.Probability.and.Mathematical.Statistics,.Schwarz,.Springer,.2008_page_115.png",
+              "image_sha256": "7f19bcaabaa7596328867ea52cf2a504495358ba4f84eaf51c639f9575415fe8",
+              "index": 546,
+              "input_identity_sha256": "123123cf6a46a40193d5c513b6f1d32b2de05c51b9442efc2b21ae3e03d21d25",
+              "pdf": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-21/page-0546/input.pdf",
+              "pdf_sha256": "6cfe760a7387ba5579f6ad82b4da076dcbd6eaeca3953543eea60a8c70de691e",
+              "prediction_sha256": "3a7cc329ec1e3aaf060e12b083b59daef7693623195d852070775d5c5ad52ced",
+              "result_sha256": "c03f92f80105eeb5454423192ad12c592043aad12fbb9c7436d330ca5e2cfa43",
+              "start_sha256": "4f7baa3001aabcd2f7e564f9330494e018cab81bd655ac882c50401f65cd74e1",
+              "started": 1793317908.4955537
+            },
+            {
+              "children_drained": true,
+              "claim_tuple_sha256": "8984d2ead50e08e084103a9618ba8da631e2550706b2a03f2275097363a04f63",
+              "done_sha256": "6a7c7ae354ec9eb4088f11d1e77155285300813412ac705b9920cf4f8eef0cc4",
+              "image": "/mnt/raid0/llm/datasets/omnidocbench/images/book_en_\u56fd\u5916\u6570\u5b66\u6559\u6750-\u6570\u8bba-Melvyn B. Nathanson\u2014Elementary Methods in Number Theory_0007.png",
+              "image_sha256": "b0c25a3a40e8728cc720c62157d0cbf9428bb35d9f6d1e3ecd33a6938950fe4b",
+              "index": 547,
+              "input_identity_sha256": "35b29169fe7d8412ba6b00c173e1da806a7845d743f94dc530d532158c4f7027",
+              "pdf": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-21/page-0547/input.pdf",
+              "pdf_sha256": "0fe42b90fa3e23a08799a542571ae309be69f5ae8cdafc727cf6757b5d9b3a7b",
+              "prediction_sha256": "b1961f73e33b57020e7ea66d256e608e181f4a73ba95c363bbd193c82c21e24f",
+              "result_sha256": "16854134577f93c7eb013fbe380dda7d690c0566ec75af076c18a0cbfcff276c",
+              "start_sha256": "79041c9729eb7f5d2201d439d98d9154dca0ce09ee4da407bc5d2381828c35c6",
+              "started": 1793317932.1467295
+            },
+            {
+              "children_drained": true,
+              "claim_tuple_sha256": "59dad5f1398ce19784e6e5519159c28de51d6ad5de67430128995ab3527087ae",
+              "done_sha256": "5c9b9d83178a7765930961b9bd340d60c96308b66dc7684876a37a071ec5fe11",
+              "image": "/mnt/raid0/llm/datasets/omnidocbench/images/book_en_\u56fd\u5916\u6570\u5b66\u6559\u6750-\u6570\u8bba-Melvyn B. Nathanson\u2014Elementary Methods in Number Theory_0017.png",
+              "image_sha256": "84cf746efc74469de18d774c8deccdd28eee9af57f670454bfe3a9491eb5d0c6",
+              "index": 548,
+              "input_identity_sha256": "095229b674a2f3e433d4d1cdba74117ce63db0220096064804c43dda9131e328",
+              "pdf": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-21/page-0548/input.pdf",
+              "pdf_sha256": "bacab1a6e61cb077b4c63e0ba78589a6bd38f5bf6bc9af518a06e7670d40eee5",
+              "prediction_sha256": "7379977172de45949ef47fb003a1fbe40f5f5b12359a7ca6154b520506cb99b9",
+              "result_sha256": "05f22ea2eb8b7f97e6d40959b28c550349ef6e0aa19644ce47f9e47386a9149b",
+              "start_sha256": "db24ce2e14596acf636b8e023f32cef7179b09ee71df2f7a1dc6109d3f6d9356",
+              "started": 1793317935.6932218
+            },
+            {
+              "children_drained": true,
+              "claim_tuple_sha256": "b254802e79a24b21d5b42488a50b1c85e758bf9678914b9a1b65167c33a49c04",
+              "done_sha256": "879404da639816d489eefc8e340698ef71ff5be4b26f2afec4eaf306ca6292ab",
+              "image": "/mnt/raid0/llm/datasets/omnidocbench/images/book_en_A.Concise.Introduction.to.Linear.Algebra,.Geza.Schay,.Birkhauser,.2012_page_194.png",
+              "image_sha256": "1aba0f1eb05b9c0628e80d67907b775366676fcfd381f179a273ecf83acf5a66",
+              "index": 549,
+              "input_identity_sha256": "cc305fb6ae9e08f4f7b22fb87009d31e6f568b3a79f6b2067d6b1959e89b5104",
+              "pdf": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-21/page-0549/input.pdf",
+              "pdf_sha256": "860c8d8d41a051faed45d1319a8954b9dd8c59e93bfeb8f9c0bf5f730f6dc8dd",
+              "prediction_sha256": "b9c5240ee9cbbe49a802cca39b4f3f9f8f3c7b5c100fd0f5a17f05ed22793d13",
+              "result_sha256": "f37b304a6e25d12f7489fb578e0bc4eb2091409a2e55062533c3cfa502cd486a",
+              "start_sha256": "57701302cd26886db9ace2033476480783b6918b9738d2e4949e7afa163d7b0d",
+              "started": 1793317936.214697
+            }
+          ],
+          "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+          "source_manifest": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-relocatable-r2/SOURCES.sha256",
+          "source_manifest_sha256": "a17e08f66ffcd3c49e980110e444db2841ae5367b5f6dfff410db18423897cb9",
+          "status_counts": {
+            "complete": 25
+          }
+        },
+        {
+          "attempt_sha256": "95c2636fee76685555b4323f25d657535ddbb0674db34b34b9469655f5089aa4",
+          "filing_event": {
+            "class": "diagnostic",
+            "decision_rule": "Collect25 original fresh English pages in ODL shard24, ODL2.5+Docling2.91 docling-fast hybrid full on canonical image-only PDFs, twelve native page workers on assigned quarter. Preserve every input/start/result/DONE hash and all unknowns; never redraw an actual client exposure. No quality/adoption verdict until common scoring.",
+            "end_line": "rc=75 time=2026-10-30T00:01:05Z reason=job-rc-75:exited",
+            "ended_file": "/mnt/raid0/llm/tmp/compute-flags/grants/codex3-pip02-odl-relocatable-r2-s24-20261029.ended",
+            "id": "codex3-pip02-odl-relocatable-r2-s24-20261029",
+            "owner": "codex3",
+            "result_path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/ODL-BATCH-DONE-24",
+            "scratch_root": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-relocatable-r2-prepared-20261029/shard-24",
+            "seen_at": "2026-10-30T00:01:27Z"
+          },
+          "id": "codex3-pip02-odl-relocatable-r2-s24-20261029",
+          "interpretation": "Original native statuses: 25 missing. Contemporaneous worker log shows disk-floor admission refusals before page output creation; later rearmed states are outside this event. Any exposed unknown must never be redrawn.",
+          "launcher_log": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-relocatable-r2-prepared-20261029/shard-24/ws58-launcher.out",
+          "launcher_sha256": "dde211ab05b35f9760b2d8e7299b4c85edefb99a60bc1521ab4aad87d54b0fe0",
+          "native_summary": {
+            "cohort": "pip02-english-fresh-20261029",
+            "error": null,
+            "finished_epoch": 1793318463.575462,
+            "partial": true,
+            "rc": 75,
+            "sampled_peak_tree_rss_bytes": 20086784,
+            "schema": "pip02-odl-parallel/v1",
+            "shard": 24,
+            "statuses": {
+              "600": "missing",
+              "601": "missing",
+              "602": "missing",
+              "603": "missing",
+              "604": "missing",
+              "605": "missing",
+              "606": "missing",
+              "607": "missing",
+              "608": "missing",
+              "609": "missing",
+              "610": "missing",
+              "611": "missing",
+              "612": "missing",
+              "613": "missing",
+              "614": "missing",
+              "615": "missing",
+              "616": "missing",
+              "617": "missing",
+              "618": "missing",
+              "619": "missing",
+              "620": "missing",
+              "621": "missing",
+              "622": "missing",
+              "623": "missing",
+              "624": "missing"
+            },
+            "workers": 12
+          },
+          "original_attempt": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-relocatable-r2/attempts/dd73a57ec5794b838ca73189de9ff256.json",
+          "original_event_end": "2026-10-30T00:01:05Z",
+          "original_start_log_line": "2026-10-30T00:01:02Z [codex3-pip02-odl-relocatable-r2-s24-20261029] START regions=24-47 cpus=24-47 threads=24 gpu=0 end=2026-10-30T01:00Z",
+          "page_worker_disk_floor_refusals": 25,
+          "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+          "source_manifest": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-relocatable-r2/SOURCES.sha256",
+          "source_manifest_sha256": "a17e08f66ffcd3c49e980110e444db2841ae5367b5f6dfff410db18423897cb9",
+          "status_counts": {
+            "missing": 25
+          }
+        },
+        {
+          "attempt_sha256": "b6780f73a2aa51884717dacc381ea7dd38f5355c9bb3ce3350bd6e571a88b4f7",
+          "filing_event": {
+            "class": "diagnostic",
+            "decision_rule": "Collect25 original fresh English pages in ODL shard25, ODL2.5+Docling2.91 docling-fast hybrid full on canonical image-only PDFs, twelve native page workers on assigned quarter. Preserve every input/start/result/DONE hash and all unknowns; never redraw an actual client exposure. No quality/adoption verdict until common scoring.",
+            "end_line": "rc=75 time=2026-10-30T00:01:07Z reason=job-rc-75:exited",
+            "ended_file": "/mnt/raid0/llm/tmp/compute-flags/grants/codex3-pip02-odl-relocatable-r2-s25-20261029.ended",
+            "id": "codex3-pip02-odl-relocatable-r2-s25-20261029",
+            "owner": "codex3",
+            "result_path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/ODL-BATCH-DONE-25",
+            "scratch_root": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-relocatable-r2-prepared-20261029/shard-25",
+            "seen_at": "2026-10-30T00:01:27Z"
+          },
+          "id": "codex3-pip02-odl-relocatable-r2-s25-20261029",
+          "interpretation": "Original native statuses: 25 missing. Contemporaneous worker log shows disk-floor admission refusals before page output creation; later rearmed states are outside this event. Any exposed unknown must never be redrawn.",
+          "launcher_log": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-relocatable-r2-prepared-20261029/shard-25/ws58-launcher.out",
+          "launcher_sha256": "dde211ab05b35f9760b2d8e7299b4c85edefb99a60bc1521ab4aad87d54b0fe0",
+          "native_summary": {
+            "cohort": "pip02-english-fresh-20261029",
+            "error": null,
+            "finished_epoch": 1793318465.1146832,
+            "partial": true,
+            "rc": 75,
+            "sampled_peak_tree_rss_bytes": 20021248,
+            "schema": "pip02-odl-parallel/v1",
+            "shard": 25,
+            "statuses": {
+              "625": "missing",
+              "626": "missing",
+              "627": "missing",
+              "628": "missing",
+              "629": "missing",
+              "630": "missing",
+              "631": "missing",
+              "632": "missing",
+              "633": "missing",
+              "634": "missing",
+              "635": "missing",
+              "636": "missing",
+              "637": "missing",
+              "638": "missing",
+              "639": "missing",
+              "640": "missing",
+              "641": "missing",
+              "642": "missing",
+              "643": "missing",
+              "644": "missing",
+              "645": "missing",
+              "646": "missing",
+              "647": "missing",
+              "648": "missing",
+              "649": "missing"
+            },
+            "workers": 12
+          },
+          "original_attempt": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-relocatable-r2/attempts/ca1794533b9140079621b9ca068e437c.json",
+          "original_event_end": "2026-10-30T00:01:07Z",
+          "original_start_log_line": "2026-10-30T00:01:04Z [codex3-pip02-odl-relocatable-r2-s25-20261029] START regions=72-95 cpus=72-95 threads=24 gpu=0 end=2026-10-30T01:00Z",
+          "page_worker_disk_floor_refusals": 25,
+          "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+          "source_manifest": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-relocatable-r2/SOURCES.sha256",
+          "source_manifest_sha256": "a17e08f66ffcd3c49e980110e444db2841ae5367b5f6dfff410db18423897cb9",
+          "status_counts": {
+            "missing": 25
+          }
+        },
+        {
+          "attempt_sha256": "9b342406f43d38cf662a420a0ccad7dc20f6bf8669a6682cf7f30276ba3b3e26",
+          "filing_event": {
+            "class": "diagnostic",
+            "decision_rule": "Collect25 original fresh English pages in ODL shard28, ODL2.5+Docling2.91 docling-fast hybrid full on canonical image-only PDFs, twelve native page workers on assigned quarter. Preserve every input/start/result/DONE hash and all unknowns; never redraw an actual client exposure. No quality/adoption verdict until common scoring.",
+            "end_line": "rc=75 time=2026-10-30T00:03:14Z reason=job-rc-75:exited",
+            "ended_file": "/mnt/raid0/llm/tmp/compute-flags/grants/codex3-pip02-odl-relocatable-r2-s28-20261029.ended",
+            "id": "codex3-pip02-odl-relocatable-r2-s28-20261029",
+            "owner": "codex3",
+            "result_path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/ODL-BATCH-DONE-28",
+            "scratch_root": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-relocatable-r2-prepared-20261029/shard-28",
+            "seen_at": "2026-10-30T00:03:31Z"
+          },
+          "id": "codex3-pip02-odl-relocatable-r2-s28-20261029",
+          "interpretation": "Original native statuses: 25 missing. Contemporaneous worker log shows disk-floor admission refusals before page output creation; later rearmed states are outside this event. Any exposed unknown must never be redrawn.",
+          "launcher_log": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-relocatable-r2-prepared-20261029/shard-28/ws58-launcher.out",
+          "launcher_sha256": "dde211ab05b35f9760b2d8e7299b4c85edefb99a60bc1521ab4aad87d54b0fe0",
+          "native_summary": {
+            "cohort": "pip02-english-fresh-20261029",
+            "error": null,
+            "finished_epoch": 1793318592.1150737,
+            "partial": true,
+            "rc": 75,
+            "sampled_peak_tree_rss_bytes": 20041728,
+            "schema": "pip02-odl-parallel/v1",
+            "shard": 28,
+            "statuses": {
+              "700": "missing",
+              "701": "missing",
+              "702": "missing",
+              "703": "missing",
+              "704": "missing",
+              "705": "missing",
+              "706": "missing",
+              "707": "missing",
+              "708": "missing",
+              "709": "missing",
+              "710": "missing",
+              "711": "missing",
+              "712": "missing",
+              "713": "missing",
+              "714": "missing",
+              "715": "missing",
+              "716": "missing",
+              "717": "missing",
+              "718": "missing",
+              "719": "missing",
+              "720": "missing",
+              "721": "missing",
+              "722": "missing",
+              "723": "missing",
+              "724": "missing"
+            },
+            "workers": 12
+          },
+          "original_attempt": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-relocatable-r2/attempts/3f1a40fe0a884741bdd7ba30497b0753.json",
+          "original_event_end": "2026-10-30T00:03:14Z",
+          "original_start_log_line": "2026-10-30T00:03:11Z [codex3-pip02-odl-relocatable-r2-s28-20261029] START regions=24-47 cpus=24-47 threads=24 gpu=0 end=2026-10-30T01:02Z",
+          "page_worker_disk_floor_refusals": 25,
+          "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+          "source_manifest": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-relocatable-r2/SOURCES.sha256",
+          "source_manifest_sha256": "a17e08f66ffcd3c49e980110e444db2841ae5367b5f6dfff410db18423897cb9",
+          "status_counts": {
+            "missing": 25
+          }
+        },
+        {
+          "attempt_sha256": "e7a3876af4276228f63f0bcede35c25700de686172bbc2f11780f970b7ddcf42",
+          "filing_event": {
+            "class": "diagnostic",
+            "decision_rule": "Collect25 original fresh English pages in ODL shard29, ODL2.5+Docling2.91 docling-fast hybrid full on canonical image-only PDFs, twelve native page workers on assigned quarter. Preserve every input/start/result/DONE hash and all unknowns; never redraw an actual client exposure. No quality/adoption verdict until common scoring.",
+            "end_line": "rc=75 time=2026-10-30T00:03:15Z reason=job-rc-75:exited",
+            "ended_file": "/mnt/raid0/llm/tmp/compute-flags/grants/codex3-pip02-odl-relocatable-r2-s29-20261029.ended",
+            "id": "codex3-pip02-odl-relocatable-r2-s29-20261029",
+            "owner": "codex3",
+            "result_path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/ODL-BATCH-DONE-29",
+            "scratch_root": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-relocatable-r2-prepared-20261029/shard-29",
+            "seen_at": "2026-10-30T00:03:31Z"
+          },
+          "id": "codex3-pip02-odl-relocatable-r2-s29-20261029",
+          "interpretation": "Original native statuses: 25 missing. Contemporaneous worker log shows disk-floor admission refusals before page output creation; later rearmed states are outside this event. Any exposed unknown must never be redrawn.",
+          "launcher_log": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-relocatable-r2-prepared-20261029/shard-29/ws58-launcher.out",
+          "launcher_sha256": "dde211ab05b35f9760b2d8e7299b4c85edefb99a60bc1521ab4aad87d54b0fe0",
+          "native_summary": {
+            "cohort": "pip02-english-fresh-20261029",
+            "error": null,
+            "finished_epoch": 1793318593.6648118,
+            "partial": true,
+            "rc": 75,
+            "sampled_peak_tree_rss_bytes": 20258816,
+            "schema": "pip02-odl-parallel/v1",
+            "shard": 29,
+            "statuses": {
+              "725": "missing",
+              "726": "missing",
+              "727": "missing",
+              "728": "missing",
+              "729": "missing",
+              "730": "missing",
+              "731": "missing",
+              "732": "missing",
+              "733": "missing",
+              "734": "missing",
+              "735": "missing",
+              "736": "missing",
+              "737": "missing",
+              "738": "missing",
+              "739": "missing",
+              "740": "missing",
+              "741": "missing",
+              "742": "missing",
+              "743": "missing",
+              "744": "missing",
+              "745": "missing",
+              "746": "missing",
+              "747": "missing",
+              "748": "missing",
+              "749": "missing"
+            },
+            "workers": 12
+          },
+          "original_attempt": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-relocatable-r2/attempts/1602675996214ee0a267a62f43458edb.json",
+          "original_event_end": "2026-10-30T00:03:15Z",
+          "original_start_log_line": "2026-10-30T00:03:12Z [codex3-pip02-odl-relocatable-r2-s29-20261029] START regions=72-95 cpus=72-95 threads=24 gpu=0 end=2026-10-30T01:02Z",
+          "page_worker_disk_floor_refusals": 25,
+          "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+          "source_manifest": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-relocatable-r2/SOURCES.sha256",
+          "source_manifest_sha256": "a17e08f66ffcd3c49e980110e444db2841ae5367b5f6dfff410db18423897cb9",
+          "status_counts": {
+            "missing": 25
+          }
+        }
+      ],
+      "limitations": "Event snapshots do not describe subsequent rearms. Page cleanup is witnessed by each native result; the batch summary has no explicit separate cleanup field. No parser quality or selection claim.",
+      "schema": "pip02-odl-five-filing-audit/v1"
+    }
+  },
+  "inf50_fa4": {
+    "native_audit_path": "/mnt/raid0/llm/tmp/codex3-file-inf50-fa4-0015-20261030/audit.json",
+    "native_audit_sha256": "8ca7110d83ef26f7db2f7a6f6d496cde947a89e6f92c082ad66b9ef868b7439c",
+    "verified_native_audit": {
+      "fa4": {
+        "ended_snapshot": "rc=75 time=2026-10-30T00:01:49Z reason=job-rc-75:exited",
+        "exact_segment": [
+          "2026-10-30T00:01:46Z [fa4-c5-exact-set-r4-20261029] START regions=mi210_0,184-191 cpus=184-191 threads=8 gpu=1 end=2026-10-30T01:21Z",
+          "[region-lock] acquiring gpu-quiet exclusive as role='bench' (timeout_s=4754.0) \u2026",
+          "[region-lock] held gpu-quiet exclusive + regions [] after 0.0s wait; running: /bin/bash /mnt/raid0/llm/tmp/codex-ni-fa4-exact-set-successor-r4-20261029/runner-private/filler_run13.sh --inner --id fa4-c5-exact-set-r4-20261029 --class gpu --cmd exec taskset -c $FILLER_CPUS /usr/bin/python3 -B '/mnt/raid0/llm/tmp/codex-ni-fa4-exact-set-successor-r4-20261029/normal_entry.py' --min-window 4500 --stop /mnt/raid0/llm/tmp/codex-ni-fa4-exact-set-successor-r4-20261029/STOP --port  --workdir /mnt/raid0/llm/tmp/codex-ni-fa4-exact-set-successor-r4-20261029 --gpu-threads 184-191",
+          "2026-10-30T00:01:46Z mi210_0 flock held",
+          "DRYRUN_RESOURCES {\"affinity\": [184, 185, 186, 187, 188, 189, 190, 191], \"cgroup\": \"0::/\", \"cgroup_memory_max\": \"max\", \"process_limit_gib\": 96.0, \"reserved_ram_gib\": 96.0, \"rlimits\": {\"AS\": [-1, -1], \"DATA\": [-1, -1], \"NOFILE\": [524288, 524288], \"RSS\": [-1, -1]}}",
+          "RESOURCE_PASS id=fa4-c5-exact-set-r4-20261029 scope=normal-grant",
+          "WAIT-INTERRUPTED: disk free below 150 GiB floor plus bounded 1 GiB output reserve",
+          "job rc=75",
+          "2026-10-30T00:01:49Z [fa4-c5-exact-set-r4-20261029] ended rc=75 reason=job-rc-75:exited (grant deleted)"
+        ],
+        "exact_segment_sha256": "69631df960190c1d5af65758e5ee9ecbd2017cf77a816cc3a7bde90105dc0832",
+        "later_ended_now": "rc=1 time=2026-10-30T00:06:34Z reason=job-rc-1:exited\njob_id=fa4-c5-exact-set-r4-20261029\nowner=codex-ni\nstep=job-run\nestimated_wall_s=4800\nstarted=2026-10-30T00:04:58Z\nregions=mi210_0,184-191\n",
+        "launcher_sha256": "0e481b00ba97b89b4ad88ed796393f7defd9578af5d4c9a1db6759574f416bf6",
+        "prior_run_dirs": [
+          "20261029T232256Z-1350694",
+          "20261029T212849Z-3739216",
+          "20261029T233654Z-1553066",
+          "20261029T212640Z-3710611"
+        ],
+        "result_path_exists_now": false
+      },
+      "inf50": {
+        "external_sha256": "d12607f9bb936e7b1003aa8694697712870eb76138acae8ecf8b024d2ea7a619",
+        "fold_gate": "REVIEW-REQUIRED",
+        "graph_sha256": "a6f2de57d4daa449a52f9601037ddb9e75f9ea6c7639640b3dce2cb1bb7ee31a",
+        "new_candidate_symbols_covered": false,
+        "packet_sha256": "c2cbe6de0338224a398029611aec78c8efb91ab62e3519285d36990d1e4b61be",
+        "phase_checks": [
+          {
+            "all_dead": null,
+            "failure": null,
+            "phase": "input-seals",
+            "rc": 0,
+            "violation": null
+          },
+          {
+            "all_dead": null,
+            "failure": null,
+            "phase": "source-compile",
+            "rc": 0,
+            "violation": null
+          },
+          {
+            "all_dead": null,
+            "failure": null,
+            "phase": "consumer-fixtures",
+            "rc": 0,
+            "violation": null
+          },
+          {
+            "all_dead": null,
+            "failure": null,
+            "phase": "completion-contract-fixtures",
+            "rc": 0,
+            "violation": null
+          },
+          {
+            "all_dead": null,
+            "failure": null,
+            "phase": "proc-cleanup-race-fixtures",
+            "rc": 0,
+            "violation": null
+          },
+          {
+            "all_dead": null,
+            "failure": null,
+            "phase": "inflight-cutoff-fixtures",
+            "rc": 0,
+            "violation": null
+          },
+          {
+            "all_dead": null,
+            "failure": null,
+            "phase": "cutoff-controller-contract-fixtures",
+            "rc": 0,
+            "violation": null
+          },
+          {
+            "all_dead": null,
+            "failure": null,
+            "phase": "constructor-fixtures",
+            "rc": 0,
+            "violation": null
+          },
+          {
+            "all_dead": null,
+            "failure": null,
+            "phase": "owner-pin",
+            "rc": 0,
+            "violation": null
+          },
+          {
+            "all_dead": null,
+            "failure": null,
+            "phase": "head",
+            "rc": 0,
+            "violation": null
+          },
+          {
+            "all_dead": null,
+            "failure": null,
+            "phase": "ancestor",
+            "rc": 0,
+            "violation": null
+          },
+          {
+            "all_dead": null,
+            "failure": null,
+            "phase": "clean-before",
+            "rc": 0,
+            "violation": null
+          },
+          {
+            "all_dead": null,
+            "failure": null,
+            "phase": "tracked-source-before",
+            "rc": 0,
+            "violation": null
+          },
+          {
+            "all_dead": null,
+            "failure": null,
+            "phase": "cache-eligible-files",
+            "rc": 0,
+            "violation": null
+          },
+          {
+            "all_dead": null,
+            "failure": null,
+            "phase": "analyze",
+            "rc": 0,
+            "violation": null
+          },
+          {
+            "all_dead": null,
+            "failure": null,
+            "phase": "tracked-source-after",
+            "rc": 0,
+            "violation": null
+          },
+          {
+            "all_dead": true,
+            "failure": null,
+            "phase": "status",
+            "rc": 0,
+            "violation": null
+          },
+          {
+            "all_dead": true,
+            "failure": null,
+            "phase": "context-llama_grammar_apply_impl",
+            "rc": 0,
+            "violation": null
+          },
+          {
+            "all_dead": true,
+            "failure": null,
+            "phase": "resolved-context-llama_grammar_apply_impl-0",
+            "rc": 0,
+            "violation": null
+          },
+          {
+            "all_dead": true,
+            "failure": null,
+            "phase": "impact-llama_grammar_apply_impl-0",
+            "rc": 0,
+            "violation": null
+          },
+          {
+            "all_dead": true,
+            "failure": null,
+            "phase": "context-llama_grammar_accept_impl",
+            "rc": 0,
+            "violation": null
+          },
+          {
+            "all_dead": true,
+            "failure": null,
+            "phase": "resolved-context-llama_grammar_accept_impl-0",
+            "rc": 0,
+            "violation": null
+          },
+          {
+            "all_dead": true,
+            "failure": null,
+            "phase": "impact-llama_grammar_accept_impl-0",
+            "rc": 0,
+            "violation": null
+          },
+          {
+            "all_dead": true,
+            "failure": null,
+            "phase": "context-llama_grammar_clone_impl",
+            "rc": 0,
+            "violation": null
+          },
+          {
+            "all_dead": true,
+            "failure": null,
+            "phase": "resolved-context-llama_grammar_clone_impl-0",
+            "rc": 0,
+            "violation": null
+          },
+          {
+            "all_dead": true,
+            "failure": null,
+            "phase": "impact-llama_grammar_clone_impl-0",
+            "rc": 0,
+            "violation": null
+          },
+          {
+            "all_dead": true,
+            "failure": null,
+            "phase": "context-llama_grammar_init_impl",
+            "rc": 0,
+            "violation": null
+          },
+          {
+            "all_dead": true,
+            "failure": null,
+            "phase": "resolved-context-llama_grammar_init_impl-0",
+            "rc": 0,
+            "violation": null
+          },
+          {
+            "all_dead": true,
+            "failure": null,
+            "phase": "impact-llama_grammar_init_impl-0",
+            "rc": 0,
+            "violation": null
+          },
+          {
+            "all_dead": true,
+            "failure": null,
+            "phase": "context-llama_grammar",
+            "rc": 0,
+            "violation": null
+          },
+          {
+            "all_dead": true,
+            "failure": null,
+            "phase": "resolved-context-llama_grammar-0",
+            "rc": 0,
+            "violation": null
+          },
+          {
+            "all_dead": true,
+            "failure": null,
+            "phase": "impact-llama_grammar-0",
+            "rc": 0,
+            "violation": null
+          }
+        ],
+        "phase_count": 32,
+        "preflight": {
+          "eligible_path_count": 3072,
+          "eligible_path_inventory_sha256": "7667062d50e443950c72d30620099a83856db57dab145aa547722c549fac9cdf",
+          "file_count": 3072,
+          "keys": [
+            "f52a031740d88a5e4311018ad6367fff2405f61bfea203c7896953486e2de69a"
+          ],
+          "parse_shard_bytes": 129154041,
+          "parsed_file_worker_shards": 46,
+          "version": "6+1.6.8"
+        },
+        "preflight_sha256": "37e6ef9acde7664b9958ad4da63853261fb6fbd702567747241461283b7ba451",
+        "qualified_index": true,
+        "result_sha256": "6bdf06a442b09bac2b6f37b9aa2e66bcd31f968e01d85b708c7c06ea6bec23c8",
+        "resume": {
+          "chunks": 1,
+          "hits": 1,
+          "misses": 0,
+          "worker_pool_creations": 0
+        },
+        "resume_sha256": "d1f048f769b02f12d2114ba913ed44f4a90c764475a4b41098b25cc7cd80601e",
+        "targets": [
+          {
+            "cap_pids": [
+              1920804,
+              1921146,
+              1920971
+            ],
+            "impact_count": 0,
+            "native_coverage": {
+              "classification": "QUALIFIED_NATIVE_GRAPH",
+              "high_critical": [],
+              "missing_or_partial_targets": [],
+              "native_risk_unchanged": true,
+              "publication_qualified": true,
+              "source_current": true
+            },
+            "risk": "LOW",
+            "symbol": "llama_grammar_apply_impl",
+            "uid": "Function:src/llama-grammar.cpp:llama_grammar_apply_impl"
+          },
+          {
+            "cap_pids": [
+              1921253,
+              1921384,
+              1921322
+            ],
+            "impact_count": 0,
+            "native_coverage": {
+              "classification": "QUALIFIED_NATIVE_GRAPH",
+              "high_critical": [],
+              "missing_or_partial_targets": [],
+              "native_risk_unchanged": true,
+              "publication_qualified": true,
+              "source_current": true
+            },
+            "risk": "LOW",
+            "symbol": "llama_grammar_accept_impl",
+            "uid": "Function:src/llama-grammar.cpp:llama_grammar_accept_impl"
+          },
+          {
+            "cap_pids": [
+              1921471,
+              1921717,
+              1921660
+            ],
+            "impact_count": 0,
+            "native_coverage": {
+              "classification": "QUALIFIED_NATIVE_GRAPH",
+              "high_critical": [],
+              "missing_or_partial_targets": [],
+              "native_risk_unchanged": true,
+              "publication_qualified": true,
+              "source_current": true
+            },
+            "risk": "LOW",
+            "symbol": "llama_grammar_clone_impl",
+            "uid": "Function:src/llama-grammar.cpp:llama_grammar_clone_impl"
+          },
+          {
+            "cap_pids": [
+              1921764,
+              1921901,
+              1921829
+            ],
+            "impact_count": 0,
+            "native_coverage": {
+              "classification": "QUALIFIED_NATIVE_GRAPH",
+              "high_critical": [],
+              "missing_or_partial_targets": [],
+              "native_risk_unchanged": true,
+              "publication_qualified": true,
+              "source_current": true
+            },
+            "risk": "LOW",
+            "symbol": "llama_grammar_init_impl",
+            "uid": "Function:src/llama-grammar.cpp:llama_grammar_init_impl"
+          },
+          {
+            "cap_pids": [
+              1922093,
+              1922361,
+              1922219
+            ],
+            "impact_count": 3,
+            "native_coverage": {
+              "classification": "QUALIFIED_NATIVE_GRAPH",
+              "high_critical": [],
+              "missing_or_partial_targets": [],
+              "native_risk_unchanged": true,
+              "publication_qualified": true,
+              "source_current": true
+            },
+            "risk": "LOW",
+            "symbol": "llama_grammar",
+            "uid": "Struct:src/llama-grammar.h:llama_grammar"
+          }
+        ],
+        "transition_sha256": "6016a629a0f8f349258cef880105bc66353351d4e3d733b3af5c61c402dd8819",
+        "unrelated_catalog_entries": 44,
+        "unrelated_unchanged": true
+      }
+    }
+  },
+  "hil_s1": {
+    "native_audit_path": "/mnt/raid0/llm/tmp/codex3-file-s1v22-20261030/audit.json",
+    "native_audit_sha256": "47abd94dd565ca05193fd7ad2dc10b113cd986e75b81d6a661e55b26f29f117f",
+    "verified_native_audit": {
+      "history": {
+        "accepted_native_replays": 42,
+        "original_denominator": 45,
+        "unknown_slots": [
+          "filter-s1-15-p0-r0"
+        ]
+      },
+      "replays": [
+        {
+          "slot": 1,
+          "native_pass": false,
+          "evidence": {
+            "id": "filter-s1-15-p1-r0",
+            "attempt": "/mnt/raid0/llm/tmp/hil15-s1-unknown-continuation-v22-20261030/results-pilot/unit-15/slot-1/c95ac9b5d7304df198d0b0df398f07cd",
+            "manifest_sha256": "004e55368cdff395b1c328896a5ae7a695930a1bca1a4222a39079936a5d9114",
+            "db_sha256": "d00fac2a3ca77dac5c8cd6ae7f5ec88512faae6d1c5bae0baedebbb9d2a7246c"
+          },
+          "join": {
+            "step_bearing_runs": 1,
+            "joined_outcome": 1,
+            "task_runs": 1,
+            "zero_step_recorded_failed": [],
+            "join_ok": true
+          },
+          "l2_rc": 0,
+          "replay_rc": 0,
+          "replay_tail": "clean",
+          "l2_sha256": "c624e9a61cb23173ae531ead59c3600b2a8040ae40d3a5484f232f608ef8be85"
+        },
+        {
+          "slot": 2,
+          "native_pass": true,
+          "evidence": {
+            "id": "filter-s1-15-p2-r0",
+            "attempt": "/mnt/raid0/llm/tmp/hil15-s1-unknown-continuation-v22-20261030/results-pilot/unit-15/slot-2/cd073cf947fc41e393987f840a74532a",
+            "manifest_sha256": "aab72789a739a34fc35be32963e4a09138e900fc7081ac061f5e188fe55563ad",
+            "db_sha256": "64a3b9489a5b71a879d66fee8ed066410426a5ffee9bb78e46a9693ea48bb97d"
+          },
+          "join": {
+            "step_bearing_runs": 1,
+            "joined_outcome": 1,
+            "task_runs": 1,
+            "zero_step_recorded_failed": [],
+            "join_ok": true
+          },
+          "l2_rc": 0,
+          "replay_rc": 0,
+          "replay_tail": "clean",
+          "l2_sha256": "308b75eb50200d7514de2e85825a46771bac2b9485b81c889fc057a1b8d73510"
+        }
+      ],
+      "collection_status": {
+        "schema": "hil15-fixed-cohort-unknown-accounting/v1",
+        "status": "collection-exhausted-with-unknown",
+        "partial": false,
+        "full_complete": false,
+        "original_denominator": 45,
+        "prior_accepted_native_replays": 42,
+        "new_accepted_native_replays": 2,
+        "unknown_native_replays": 1,
+        "unknown": {
+          "status": "unknown",
+          "native_grade": null,
+          "attempt": "/mnt/raid0/llm/tmp/hil15-s1-bounded-v18-20261029/results-pilot/unit-15/slot-0/a1f4151e6cc54931a87fc366306d1e12"
+        },
+        "new_runs": [
+          {
+            "slot": 1,
+            "native_pass": false,
+            "evidence": {
+              "id": "filter-s1-15-p1-r0",
+              "attempt": "/mnt/raid0/llm/tmp/hil15-s1-unknown-continuation-v22-20261030/results-pilot/unit-15/slot-1/c95ac9b5d7304df198d0b0df398f07cd",
+              "manifest_sha256": "004e55368cdff395b1c328896a5ae7a695930a1bca1a4222a39079936a5d9114",
+              "db_sha256": "d00fac2a3ca77dac5c8cd6ae7f5ec88512faae6d1c5bae0baedebbb9d2a7246c"
+            }
+          },
+          {
+            "slot": 2,
+            "native_pass": true,
+            "evidence": {
+              "id": "filter-s1-15-p2-r0",
+              "attempt": "/mnt/raid0/llm/tmp/hil15-s1-unknown-continuation-v22-20261030/results-pilot/unit-15/slot-2/cd073cf947fc41e393987f840a74532a",
+              "manifest_sha256": "aab72789a739a34fc35be32963e4a09138e900fc7081ac061f5e188fe55563ad",
+              "db_sha256": "64a3b9489a5b71a879d66fee8ed066410426a5ffee9bb78e46a9693ea48bb97d"
+            }
+          }
+        ],
+        "task15_pass_count_bounds": [
+          1,
+          2
+        ],
+        "task15_variance_classification": "variance_for_either_unknown_outcome",
+        "metric_note": "unknown contributes no invented grade; task15 pass fraction bounds are pass-count bounds divided by3"
+      },
+      "collection_status_sha256": "87558a17b723569f05d371b72112a6ebb01a6ff2ad6dc9c8f20b0f5fb73afd21",
+      "launcher_sha256": "e6dad0eebdea8a3b7842b4995a81ff07bbe2d15d33804aa3a3564f8528289500",
+      "cleanup_verified_native": true
+    }
+  },
+  "hil_s2_original_admission": {
+    "native_ended_sha256": "f28bba9a957b3d05aba5e1c439eaaad62a417f31a8da043772dd665904f46989",
+    "native_ended": "rc=6 time=2026-10-30T00:04:12Z reason=t1-admission:DRYRUN_REFUSED: disk free-after-output 149.90 GiB < floor 150 GiB \n",
+    "outcome": "invalid pre-native disk admission; no official replay result",
+    "owner_action": "Preserve originalrefusal and source-declared17accepted/1unknown/27unexposed; refactor owns separately qualified v4 successor."
+  },
+  "r11_ready_publication": {
+    "at": "2026-10-30T00:23:35.241501+00:00",
+    "ids": [
+      "codex3-pip02-paddle-relocatable-r11-g11-20261029",
+      "codex3-pip02-paddle-relocatable-r11-g8-20261029",
+      "codex3-pip02-paddle-relocatable-r11-g26-20261029",
+      "codex3-pip02-paddle-relocatable-r11-g107-20261029",
+      "codex3-pip02-paddle-relocatable-r11-g14-20261029"
+    ],
+    "smoke": {
+      "schema": "hil15-r11-smoke-supervisor/v1",
+      "elapsed_s": 58.88341902918182,
+      "sampled_peak_tree_rss_bytes": 5916839936,
+      "samples": 567,
+      "verified_exited_processes": 0,
+      "verified_exited_threads": 0,
+      "per_process_address_space_limit_bytes": 17179869184,
+      "rss_scope": "sum of sampled resident pages across owned process tree; sampling may miss transients and double-count shared pages",
+      "leader_pid": 2075162,
+      "leader_birth": 144210865,
+      "child_rc": 75,
+      "children_drained": true,
+      "failure": null
+    },
+    "control_HTTP200": 5,
+    "control_unknown": 0,
+    "minimum_control_decode_tokens_s": 1.7940158135766406,
+    "requested_window_s": 32400
+  }
+}
