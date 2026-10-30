@@ -6709,3 +6709,13 @@ Sources: [ABLATE-1](../handoffs/active/cpu-decode-roofline-program.md) · [INF-7
 
 - **The LB4.9 shared-parser recut needs deterministic reduction.** The first isolated candidate failed the pinned byte-equality fixture in 26 of 54 cases. A successor with fixed block partitions and ordered reduction passed 54/54, and its feature-on and feature-off builds are clean. The legacy worksize test still FAILs (219 shortfalls) because it models the replaced split-K consumer. Original-route coverage, regression and performance remain open, and nothing was promoted. ([LB4.9 experimental](../progress/2026-10/2026-10-28-codex-refactor-lb49-experimental.md); [LB4.9 final prep](../progress/2026-10/2026-10-28-codex-refactor-lb49-final-prep.md))
 - **FA4 ON/OFF nonfinite mismatch:** FP16 unnormalized accumulation overflow is a source-inspection hypothesis, not a proven mechanism. A 112.55 s HIP trace did not identify the dispatched kernels. ([UFH14/FA4 prep](../progress/2026-10/2026-10-28-codex-refactor-ufh14-fa4-prep.md))
+
+## Compiled Update — 2026-10-30 (operator wiki sweep, workspace-58)
+
+**Confidence: verified** for the recorded counts; no mitigation, production or speed claim.
+
+- **GPU-LEAK-1e optional-factor probe closed:** three 15-request one-factor arms each retained 290.27 MiB/request growth against 290.26 MiB/request in the historical E1 run, so none of the probed factors changes the leak. ([codex3 inference pipeline](../progress/2026-10/2026-10-30-codex3-inference-pipeline.md))
+- **KVU-16h no-draft correction:** the three current K35 no-spec scenarios now launch as dedicated `spec_type=none` servers (no `-md`, no request-level `n_max=0`); a request-zero scenario on a drafted server is refused at plan time. Historical output is unchanged and no performance result is claimed. ([daily log](../progress/2026-10/2026-10-30.md), research commit b205f566a)
+- **Inference-side effect of the disk floor:** PROFILE-6 stayed unrun on 10-29 and several HIL successors failed T1 on 1 GiB output estimates vs RAID headroom; the S2 successor split storage (scratch on RAID, native outputs on a separate Micron device). ([PROFILE-6 capacity](../progress/2026-10/2026-10-29-codex3-hsf-profile6-capacity.md))
+
+Sources: [codex3 inference pipeline](../progress/2026-10/2026-10-30-codex3-inference-pipeline.md), [daily log 2026-10-30](../progress/2026-10/2026-10-30.md), [PROFILE-6 capacity](../progress/2026-10/2026-10-29-codex3-hsf-profile6-capacity.md)
