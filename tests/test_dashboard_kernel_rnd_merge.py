@@ -59,13 +59,16 @@ import shutil
 import subprocess
 import sys
 import threading
+import time
 import unittest
+from contextlib import contextmanager
 from pathlib import Path
+from unittest.mock import patch
 
 REPO = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO))
 
-from dashboard import server as S  # noqa: E402
+from dashboard import loop_status, panels, server as S  # noqa: E402
 
 STATIC = REPO / "dashboard" / "static"
 LOOP_PAGE = STATIC / "loop.html"
@@ -379,29 +382,142 @@ class TestTheOneLiveProducerMoved(unittest.TestCase):
         self.assertNotEqual(payload["_freshness"].get("evidence"),
                             payload["operator_gates"].get("evidence"))
 
-    def test_the_loop_probe_still_answers_for_the_loop_alone(self):
-        """DECLARED SEAM, pinned so it cannot change silently.
+    def test_loop_probe_folds_bundle_without_merging_source_envelopes(self):
+        """The endpoint reports both producer verdicts without dating either by
+        the other's envelope or promoting a gate HOLD into a health failure."""
+        bundle = {
+            "available": True,
+            "freshness": {
+                "state": loop_status.OPGATE_RELEVANT,
+                "age_s": 40 * 86400,
+                "detail": "still describes the current subject",
+                "advisory": "old measurement; consider re-measuring",
+            },
+            "gates": [{"status": "HOLD"}],
+            "evidence": "/tmp/operator-gates.json",
+        }
+        with _clean_loop_probe(), patch.object(
+                S, "_read_operator_gate_bundle", return_value=bundle):
+            code, body = S.loop_data_health()
 
-        `/api/loop/health` was NOT widened to fold the bundle. Registering a
-        second panel would change what `health_payload()` folds, and that function
-        is under concurrent edit elsewhere. The bundle's verdict therefore travels
-        in the body it dates, rendered on the card. `dashboard/README.md` carries
-        this under Known open items; this test is what makes a future widening a
-        deliberate act rather than an accident.
-        """
+        self.assertEqual(code, 200)
+        self.assertEqual(body["status"], panels.STATUS_OK)
+        self.assertEqual(body["constituents"]["autokernel_loop"]["status"],
+                         panels.STATUS_OK)
+        self.assertEqual(body["constituents"]["operator_gates"]["status"],
+                         panels.STATUS_OK)
+        self.assertEqual(body["constituents"]["operator_gates"]["source_verdict"],
+                         loop_status.OPGATE_RELEVANT)
+        self.assertEqual(body["operator_gates"]["freshness"]["age_s"], 40 * 86400)
+        self.assertIn("HOLD", json.dumps(body["operator_gates"]))
+        self.assertIsNot(body["freshness"], body["operator_gates"]["freshness"])
+
+    def test_missing_bundle_is_absent_even_when_loop_is_fresh(self):
         import tempfile
+
         original = S.OPERATOR_GATE_BUNDLE_JSON
         with tempfile.TemporaryDirectory() as td:
-            S.OPERATOR_GATE_BUNDLE_JSON = Path(td) / "gone.json"
+            missing = Path(td) / "gone.json"
+            S.OPERATOR_GATE_BUNDLE_JSON = missing
             try:
-                status, body = S.loop_data_health()
+                with _clean_loop_probe():
+                    code, body = S.loop_data_health()
             finally:
                 S.OPERATOR_GATE_BUNDLE_JSON = original
-        self.assertIn("status", body)
-        self.assertNotIn("operator", json.dumps(body).lower(),
-                         "the loop probe has started reporting the champion "
-                         "bundle; if that is intended, register it as a panel "
-                         "rather than letting one probe answer for two producers")
+
+        self.assertEqual(code, 503)
+        self.assertEqual(body["status"], panels.STATUS_ABSENT)
+        self.assertEqual(body["constituents"]["autokernel_loop"]["status"],
+                         panels.STATUS_OK)
+        self.assertEqual(body["constituents"]["operator_gates"]["source_verdict"],
+                         "absent")
+        self.assertEqual(body["worst"]["panel"], "operator_gates")
+        self.assertEqual(body["status_set_by"]["panel"], "operator_gates")
+        self.assertEqual(body["absent"][0]["panel"], "operator_gates")
+
+    def test_malformed_bundle_is_degraded_not_hidden_by_fresh_loop(self):
+        import tempfile
+
+        original = S.OPERATOR_GATE_BUNDLE_JSON
+        with tempfile.TemporaryDirectory() as td:
+            poison = Path(td) / "poison.json"
+            poison.write_text(
+                json.dumps({"schema": "wrong", "authority": "untrusted"}),
+                encoding="utf-8",
+            )
+            S.OPERATOR_GATE_BUNDLE_JSON = poison
+            try:
+                with _clean_loop_probe():
+                    code, body = S.loop_data_health()
+            finally:
+                S.OPERATOR_GATE_BUNDLE_JSON = original
+
+        self.assertEqual(code, 503)
+        self.assertEqual(body["status"], panels.STATUS_DEGRADED)
+        self.assertEqual(body["constituents"]["operator_gates"]["source_verdict"],
+                         "malformed")
+        self.assertEqual(body["worst"]["panel"], "operator_gates")
+        self.assertIn("schema", body["worst"]["why"])
+
+    def test_superseded_unverifiable_and_unknown_bundle_verdicts_fail_closed(self):
+        for state in (loop_status.OPGATE_SUPERSEDED,
+                      loop_status.OPGATE_UNVERIFIABLE, "poison"):
+            with self.subTest(state=state):
+                bundle = {
+                    "available": True,
+                    "freshness": {"state": state, "detail": f"source says {state}"},
+                    "evidence": "/tmp/operator-gates.json",
+                }
+                with _clean_loop_probe(), patch.object(
+                        S, "_read_operator_gate_bundle", return_value=bundle):
+                    code, body = S.loop_data_health()
+
+                self.assertEqual(code, 503)
+                self.assertEqual(body["constituents"]["operator_gates"]["status"],
+                                 panels.STATUS_DEGRADED)
+                self.assertEqual(body["worst"]["panel"], "operator_gates")
+
+    def test_loop_failure_remains_worst_when_operator_bundle_is_relevant(self):
+        bundle = {
+            "available": True,
+            "freshness": {"state": loop_status.OPGATE_RELEVANT,
+                          "detail": "current subject"},
+            "evidence": "/tmp/operator-gates.json",
+        }
+        with _clean_loop_probe(loop_state="failed"), patch.object(
+                S, "_read_operator_gate_bundle", return_value=bundle):
+            code, body = S.loop_data_health()
+
+        self.assertEqual(code, 503)
+        self.assertEqual(body["constituents"]["autokernel_loop"]["status"],
+                         panels.STATUS_DEGRADED)
+        self.assertEqual(body["constituents"]["operator_gates"]["status"],
+                         panels.STATUS_OK)
+        self.assertEqual(body["worst"]["panel"], "autokernel_loop")
+
+
+@contextmanager
+def _clean_loop_probe(*, loop_state="running"):
+    payload = {
+        "loop": {"state": loop_state},
+        "campaign": {"configured": False},
+        "serial": None,
+        "freshness_state": loop_status.STATE_FRESH,
+        "age_s": 1.0,
+        "stale_after_s": 1800,
+        "evidence": "/tmp/loop-status.json",
+        "reader_error": None,
+    }
+    observation = panels.Observation(
+        artifact_present=True,
+        timestamp=time.time(),
+        source="test fixture",
+        populated=True,
+    )
+    loop_envelope = panels.envelope(panels.source("autokernel_loop"), observation)
+    with patch.object(loop_status, "snapshot", return_value=(payload, observation)), \
+            patch.object(S, "_panel_envelope", return_value=loop_envelope):
+        yield
 
 
 class TestTheRetiredSubsystemDidNotComeAlong(unittest.TestCase):

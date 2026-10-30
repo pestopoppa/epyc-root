@@ -31,6 +31,7 @@ import subprocess
 import sys
 import tempfile
 import unittest
+from unittest.mock import patch
 
 REPO = Path(__file__).resolve().parents[1]
 if str(REPO) not in sys.path:
@@ -175,6 +176,18 @@ class _Fixture(unittest.TestCase):
         # test would make one test's verdict depend on another's ordering.
         with S._watchdog_lock:
             S._watchdog_state.clear()
+        # Most legacy probe tests isolate the loop's three-valued contract.
+        # Bundle-specific fold behavior is exercised explicitly in the merge
+        # tests, so keep this fixture's second constituent healthy and stable.
+        self._operator_bundle = patch.object(
+            S, "_read_operator_gate_bundle", return_value={
+                "available": True,
+                "freshness": {"state": loop_status.OPGATE_RELEVANT,
+                              "detail": "controlled relevant bundle"},
+                "evidence": "/tmp/operator-gates.json",
+            })
+        self._operator_bundle.start()
+        self.addCleanup(self._operator_bundle.stop)
         self.addCleanup(self._restore)
 
     def _restore(self) -> None:

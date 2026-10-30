@@ -598,11 +598,11 @@ audits its own source to keep it that way.
   `/health` is untouched and answers with every producer dead or broken.
 * **The running hub on :8100 holds pre-change code in memory.** Reloading it
   belongs to whoever owns that service; nothing here restarts it.
-* **`/loop` now has THREE producers and one probe.** `/api/loop/health` still
-  answers for the **loop** producer only; it was not changed to fold the
-  operator-gate bundle's envelope, and `_read_operator_gate_bundle` is not
-  registered in `dashboard/panels.py`, so the bundle is not in the `/api/health`
-  global fold either. The third producer, added 2026-08-30, sits on exactly the
+* **`/loop` now has THREE producers and two independent health views.**
+  `/api/loop/health` folds the loop and operator-gate subject verdicts while
+  keeping their freshness/evidence envelopes separate. The operator-gate reader
+  remains unregistered in `dashboard/panels.py`, so it is not in the `/api/health`
+  global fold. The third producer, added 2026-08-30, sits on exactly the
   same seam and is declared here for the same reason:
   `epyc.autokernel.champion_vs_production.v1` — the champion headline, read by
   `loop_status.champion_snapshot` from `<store>/champion-vs-production.json` — is
@@ -610,20 +610,19 @@ audits its own source to keep it that way.
   that carrier yet) does not reach `/api/health`. Its four-valued verdict travels
   in the body it dates and renders as **NOT YET MEASURED** with the A/B that
   would fill it named on the card, so a human reader is not misled; an automated
-  consumer of the two health routes is under-informed about it in the same way,
+  consumer of `/api/health` is under-informed about it in the same way,
   and for the same reason — registering a panel changes what `health_payload()`
   folds. Both of the operator-gate facts were already true before the merge — that
   reader has never been a registered panel — but they were true of a card on a
   secondary page, and they are now true of a card on the **primary** surface, so
-  the gap is declared here rather than left to be inferred. The mitigation, not a
-  fix: the bundle's five-valued verdict
+  the gap is declared here rather than left to be inferred. The bundle's
+  five-valued verdict
   (`relevant`/`superseded`/`unverifiable`/`absent`/`malformed`)
   travels in the body it dates and is rendered loudly on the card — its own badge,
   its own verdict line, an amber number when the subject moved — so a reader on the
-  page is never misled, only an automated consumer of `/api/loop/health` or
-  `/api/health` is under-informed. It was not closed in this change because
-  registering a new panel changes what `health_payload()` folds, and that function
-  is under concurrent edit in another session.
+  page is never misled; an automated consumer of `/api/health` remains
+  under-informed. This change closes the `/api/loop/health` gap without changing
+  what `health_payload()` folds.
 * **`/api/kernel`, `/api/kernel/live` and `/api/kernel/health` still exist and
   still serve the retired page's data.** Only the *page* was retired. Removing the
   routes would strand `panels.PANELS["kernel"]` and `panels.PANELS["kernel_live"]`,

@@ -1071,6 +1071,12 @@ def test_configured_malformed_campaign_cannot_hide_behind_fresh_legacy_loop(
     payload = server.loop_payload()
     assert payload["freshness_state"] == "fresh"
     assert payload["campaign"]["state"] == "malformed"
+    monkeypatch.setattr(server, "_read_operator_gate_bundle", lambda: {
+        "available": True,
+        "freshness": {"state": loop_status.OPGATE_RELEVANT,
+                      "detail": "controlled relevant bundle"},
+        "evidence": "/tmp/operator-gates.json",
+    })
     code, health_result = server.loop_data_health()
     assert code == 503 and health_result["status"] == "degraded"
     assert "campaign" in health_result["campaign_attention"]
@@ -1096,6 +1102,12 @@ def test_selected_live_campaign_replaces_failed_legacy_health_fields(
     monkeypatch.setattr(C, "snapshot", lambda **_kwargs: live)
     with server._watchdog_lock:
         server._watchdog_state.clear()
+    monkeypatch.setattr(server, "_read_operator_gate_bundle", lambda: {
+        "available": True,
+        "freshness": {"state": loop_status.OPGATE_RELEVANT,
+                      "detail": "controlled relevant bundle"},
+        "evidence": "/tmp/operator-gates.json",
+    })
     code, result = server.loop_data_health()
     assert code == 200 and result["status"] == "ok"
     assert result["selected_producer"] == "campaign"

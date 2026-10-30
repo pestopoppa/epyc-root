@@ -14654,16 +14654,43 @@ def loop_payload() -> dict:
     Merging them is precisely how one producer's silence gets certified by
     another's liveness.
 
-    ``/api/loop/health`` is likewise left alone — it answers for the loop
-    producer, and the bundle's verdict travels in the body it dates. That seam is
-    declared in ``dashboard/README.md`` under "Known open items" rather than left
-    to be inferred.
+    ``/api/loop/health`` folds the loop and operator-gate subject verdicts as
+    independent constituents. This route does not merge their envelopes: each
+    producer's evidence and age remain attached to its own result.
     """
     payload, observation = loop_status.snapshot()
     payload["_freshness"] = _panel_envelope("autokernel_loop", observation)
     payload["operator_gates"] = _read_operator_gate_bundle()
     payload["now"] = time.time()
     return payload
+
+
+def _operator_gate_health_status(bundle: dict) -> dict:
+    """Map the bundle's five-valued subject verdict to the loop probe's status.
+
+    The bundle's age is informational, and individual gate outcomes (including
+    an intentional HOLD) describe measurement authority rather than producer
+    health. Only its existing subject/freshness verdict participates here.
+    """
+    freshness = bundle.get("freshness") if isinstance(bundle, dict) else None
+    freshness = freshness if isinstance(freshness, dict) else {}
+    source_verdict = freshness.get("state")
+    status_by_verdict = {
+        loop_status.OPGATE_RELEVANT: panels.STATUS_OK,
+        loop_status.OPGATE_SUPERSEDED: panels.STATUS_DEGRADED,
+        loop_status.OPGATE_UNVERIFIABLE: panels.STATUS_DEGRADED,
+        "absent": panels.STATUS_ABSENT,
+        "malformed": panels.STATUS_DEGRADED,
+    }
+    status = status_by_verdict.get(source_verdict, panels.STATUS_DEGRADED)
+    return {
+        "status": status,
+        "source_verdict": source_verdict,
+        "why": freshness.get("detail") or freshness.get("reason") or
+               f"operator-gate bundle verdict is {source_verdict!r}",
+        "age_s": freshness.get("age_s"),
+        "evidence": bundle.get("evidence") if isinstance(bundle, dict) else None,
+    }
 
 
 def loop_data_health() -> tuple[int, dict]:
@@ -14673,9 +14700,9 @@ def loop_data_health() -> tuple[int, dict]:
     transport-only and stays green over a dead producer, which is why the
     supervisor may poll it and must never poll this one.
 
-    Non-recursive by construction: it folds ONE envelope, so a registry consumer
-    can distinguish a live hub from a silent loop without dragging in the global
-    fold (whose dashboard-directory panel points back at this route).
+    Non-recursive by construction: it folds the loop and operator-gate verdicts
+    directly, without dragging in the global fold (whose dashboard-directory
+    panel points back at this route). Their source envelopes remain independent.
 
     Three-valued, and the third value is load-bearing:
 
@@ -14780,6 +14807,61 @@ def loop_data_health() -> tuple[int, dict]:
         selected_error = payload["reader_error"]
         selected_loop_state = legacy_state
         selected_stale_after = payload["stale_after_s"]
+    operator_gates = _read_operator_gate_bundle()
+    operator_gate_health = _operator_gate_health_status(operator_gates)
+    loop_health_status = status
+    health_components = {
+        "autokernel_loop": {
+            "status": loop_health_status,
+            "source_verdict": selected_state,
+            "loop_state": selected_loop_state,
+            "why": (verdict.get("worst") or {}).get("why") or
+                   declared_failure or campaign_attention or
+                   "selected loop producer is reporting",
+        },
+        "operator_gates": operator_gate_health,
+    }
+    worst_component = max(
+        health_components.items(),
+        key=lambda item: panels.STATUS_ORDER.index(item[1]["status"]),
+    )[0]
+    status = health_components[worst_component]["status"]
+    if worst_component == "operator_gates":
+        status_set_by = {
+            "panel": "operator_gates",
+            "verdict": operator_gate_health["status"],
+            "why": operator_gate_health["why"],
+            "gates_health": True,
+        }
+        worst = {
+            "panel": "operator_gates",
+            "producer": "operator-gated serving evidence",
+            "verdict": operator_gate_health["status"],
+            "source_verdict": operator_gate_health["source_verdict"],
+            "why": operator_gate_health["why"],
+            "gates_health": True,
+        }
+    else:
+        status_set_by = verdict["status_set_by"]
+        worst = verdict["worst"]
+    attention = list(verdict["attention"])
+    if operator_gate_health["status"] != panels.STATUS_OK:
+        attention.append({
+            "panel": "operator_gates",
+            "verdict": operator_gate_health["status"],
+            "why": operator_gate_health["why"],
+            "gates_health": True,
+        })
+    absent = list(verdict["absent"])
+    if operator_gate_health["status"] == panels.STATUS_ABSENT:
+        absent.append({
+            "panel": "operator_gates",
+            "producer": "operator-gated serving evidence",
+            "evidence": operator_gate_health["evidence"],
+            "absence_means": operator_gates.get("absence_means"),
+            "anomalous": True,
+        })
+
     out = {
         "status": status,
         "probe": "panel-data",
@@ -14787,10 +14869,12 @@ def loop_data_health() -> tuple[int, dict]:
         "data_route": panels.source("autokernel_loop").route,
         "transport_health": "/health",
         "global_health": "/api/health",
-        "status_set_by": verdict["status_set_by"],
-        "worst": verdict["worst"],
-        "attention": verdict["attention"],
-        "absent": verdict["absent"],
+        "status_set_by": status_set_by,
+        "worst": worst,
+        "attention": attention,
+        "absent": absent,
+        "constituents": health_components,
+        "operator_gates": operator_gates,
         # The producer contract's own four-valued verdict, beside the hub's fold.
         # They answer different questions — "is this report current?" versus "is
         # this panel healthy?" — and printing one under the other's name is how

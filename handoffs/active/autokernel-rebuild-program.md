@@ -579,10 +579,11 @@ failure mode this program exists to end.
         travels the *compliant-silence* path the hub honours. The JSON therefore does not read
         stale even though the data is. Fix the contract, not the one endpoint: compliant silence
         must still carry an age, and an age past the envelope must degrade the verdict.
-  - [ ] P6.7 — **`/api/loop/health` folds only the loop producer**, not the operator-gate bundle
-        that moved onto the page in `e0ceada9`. A human is never misled — the verdict travels in
-        the body and renders loudly — but an automated consumer is under-informed. It is pinned by
-        a test, so widening the fold is a deliberate edit, not a drift.
+  - [x] P6.7 — **`/api/loop/health` folds the loop and operator-gate subject verdicts** ✅ 2026-10-30.
+        The endpoint keeps both source envelopes independent, treats intentional gate HOLD and
+        artifact age as non-health signals, and maps the five bundle verdicts into the existing
+        three-valued health response. Missing/malformed/poisoned bundle and loop-worse cases are
+        covered. `/api/health` and `panels.py` remain unchanged; no service reload/deployment.
   - [ ] P6.8 — **coverage genuinely lost.** The funnel and lane-hero render tests went away *with*
         the deleted page rather than being fixed. The reader still exists and nothing renders it;
         restore render coverage against the surviving surface when the funnel is re-hosted.
