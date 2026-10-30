@@ -16,5 +16,9 @@
       "sha256": "972677cf1be3409cfb11c0c8867cf811f5605884f3d3b235bc1ff1804ef09f94"
     }
   ],
-  "note": "Original source/output retained. This is queue placement evidence, not model progress or a scientific result."
+  "note": "Original source/output retained. This is queue placement evidence, not model progress or a scientific result.",
+  "latest_live_snapshot": {
+    "path": "/mnt/raid0/llm/tmp/codex3-filing-hsf-yarn-0530-20261030/quarter-live-snapshot.json",
+    "sha256": "b1d313f8031a1f481f8aaefdd77d736b5a3e94d7d4695016643ddba7c083ee7d"
+  }
 }

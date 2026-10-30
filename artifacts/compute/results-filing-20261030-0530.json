@@ -1,0 +1,6 @@
+{
+  "schema": "original-event-filing/v1",
+  "source_audit": "/mnt/raid0/llm/tmp/codex3-filing-hsf-yarn-0530-20261030/audit.json",
+  "source_audit_sha256": "b420704c19a1b8d0f57583692d4785e70dc8f92a73de14c703f54b50ac3c052a",
+  "scope": "Original HSF/YaRN admission outcomes; separately qualified EVL8 control, no scientific parent closure."
+}

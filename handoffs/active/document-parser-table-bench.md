@@ -350,3 +350,8 @@ Correction to the earlier R14 admission inference: R14 did receive actual CPU gr
 
 
 2026-10-30 05:26Z operator quarter rebalance: withdrew seven captured own ungranted PIP pollers and verified all dead, preserving native outputs and source. Actual remaining waiting registrations are q0=0, q1=0, q2=2 and q3=2. Retained pool0/pool2 on q2 and pool1/head on q3; own armed manifests and staged row artifacts now name those exact regions with unchanged verified launcher hashes. No scheduler queue, grant, or canonical FILLERS edits. A separately declared pool3 successor is being prepared to replace the head registration within the same two-item q3 cap; it is not yet smoke-qualified or published. [Placement receipts](../../artifacts/compute/pip02-quarter-rebalance-20261030-0523.json). [belief: cc]
+
+
+2026-10-30 05:33Z: research source projection `55e24b6fd2dc` pushed and verified for exactly four R15 producer IDs, all 49 declared groups and their 146 shards, including the two-shard tail. Parent supervised 18 tests passed, including incorrect pool/group/source/grant refusal and legacy missing-warrant refusal; sampled peak260012KiB and cleanup verified. Scoring, fixed population/denominators and grade rules are unchanged. [belief: cc]
+
+Fresh five-second quarter verification found q0/q1 waiting0/0 and q2/q3 waiting2/2 with exact actual48–71/72–95 arguments and zero active PIP grants. Mean CPU utilization including SMT siblings was2.13%,4.69%,3.80%,3.47%; queue placement does not establish useful inference progress. None of60 previously retired IDs reappeared. Full snapshot is bound by the placement artifact's durable reference. [belief: cc]
