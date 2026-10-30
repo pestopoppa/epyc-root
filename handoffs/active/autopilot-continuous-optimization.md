@@ -410,11 +410,21 @@ First full smoke run of the trial loop. Four defects, three silent.
   `contention_nway_restricted_count` label defect filed above: a value whose name asserts more than
   the measurement supports.
 
-- [ ] **The legacy substring fallback FALSE-POSITIVES, and the evidence is comical:** applied to
+- [x] **The legacy substring fallback FALSE-POSITIVES, and the evidence is comical:** applied to
   `outcome_details` it flagged 23 tasks as infra purely because **`"1.503s"` contains `"503"`**. Every
   one of its hits on the live journal was that. The dry-run deliberately uses only the structural
   `[ERROR:` anchor. This is the strongest argument yet for structural-over-substring classification —
-  the fallback does not merely miss infra failures, it invents them. **UNOWNED.**
+  the fallback does not merely miss infra failures, it invents them. ✅ 2026-10-30 — the shared
+  measurement guard now matches legacy numeric HTTP status tokens only as standalone ASCII codes,
+  excluding adjacent letters, digits, underscores and decimal points; textual legacy fallbacks and
+  structural precedence remain intact. Regression tests cover `1.503s`, `0.502s`, `1.504`, `1503`,
+  `foo503bar`, `503s`, standalone/HTTP/status 503, actual `http_status=503`, the anchored `[ERROR:`
+  path and legacy connection text through both classifier APIs. Private orchestrator commit
+  `d7aa9d95`; integrated source SHA: `PENDING_PARENT_PUBLICATION`. Eight direct-caller suites passed
+  163 tests; EV6b caller suite passed 39 tests; Ruff lint and diff checks passed. GitNexus at indexed
+  source reports CRITICAL, 121 affected nodes and 19 direct callers; its index predates current main
+  by 40 commits, while the edited function is unchanged between indexed checkout and private base.
+  No live journal recount or service reload was performed. [no-belief: code-only classifier correction; no measurement]
 
 - [ ] **8,855 failure records (pre-2026-07-27) have NO `work` payload at all** — nothing durable
   distinguishes infra from genuine, same mechanism as the seeding path. Unclassifiable, and stated as
