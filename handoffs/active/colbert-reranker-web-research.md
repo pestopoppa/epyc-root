@@ -546,8 +546,8 @@ quality tradeoff.
   arms — but it does mean the absolute gain is unproven here. Resolve PREFIX-1 before treating any BEIR
   delta as a production forecast.
 
-- [ ] **PREFIX-3 — re-run the banked ONNX↔PyLate parity through `colbert_encoder.encode(role=ROLE_DOCUMENT)`
-  before S3b's 8.24e-03 or S3c's 2.72e-03 is cited again**, because `_encode_onnx` fed raw text (no `[D]`,
+- [x] **PREFIX-3 — re-run the banked ONNX↔PyLate parity through `colbert_encoder.encode(role=ROLE_DOCUMENT)` [belief: cc] — negative/unknown completion: 44 rows; cosine unknown; no parity/adoption claim.
+  before S3b's 8.24e-03 or S3c's 2.72e-03 is cited again** ✅ 2026-10-30 — unchanged APP `de6c56e3` rerun: Reason 22 `OUTPUT_CONTRACT_MISMATCH`, LateOn 22 `TOKEN_OR_POSITION_MISMATCH`; cosine was not computed. Because `_encode_onnx` fed raw text (no `[D]`,
   hardcoded two-input feed, no `do_lower_case`) while `_encode_pylate` inserted `[D]`, so both figures are
   prefix-free-vs-prefixed rather than like-for-like and mean pooling (`_pooled_vec:462`) plus reference
   truncation (`:519`) were forgiving enough to pass it; needs the ONNX encoder, so not zero-inference
@@ -613,21 +613,46 @@ at caps 32/64/128. These are scoped smoke observations; masked-padding ID
 0 versus 50284 is explicitly retained in the native record. Raw original
 Reason preprocessing omits trained lowercasing: TOKEN_MISMATCH, **no cosine
 computed**. Native full output is 18×128 while independent PyLate.encode
-punctuation pruning returns 17×128. **PREFIX-3 remains unmet**, without pooling
-or truncating away the mismatch; historical pooled prefix-free numbers cannot
-satisfy it. No retrieval-quality or adoption evaluation ran.
+punctuation pruning returns 17×128. At this earlier smoke checkpoint, the full
+PREFIX-3 rerun remained outstanding; its canonical unchanged-APP closeout is
+recorded below. Historical pooled prefix-free numbers cannot establish parity.
+No retrieval-quality or adoption evaluation ran.
 
 Final same-entry resource receipt (`QUALIFIED-NATIVE-SMOKE.log`): child runtime
 24.9707 s; supervisor runtime 26.8240 s; sampled peak process-tree RSS
 1,982,087,168 bytes; child rc 0, children drained. Post-work cutoff qualification
 retains four rows with child rc 75 after 8.9393 s supervisor time, children
-drained. Next: run the admitted full 110-row diagnostic, retain token/shape
-refusals, and reconcile the encode punctuation contract before claiming
-PREFIX-3. Existing SC50 covers this source family; future projection must carry
-baseline/candidate pins, native token/mask/shape refusals, cohort coverage and
-run phase through its existing ClaimTuple ladder. No adapter/canary completion
-or new measurement warrant is claimed. G14 and PREFIX-3 stay unchecked; no
-artificial preparation checkbox is added. [no-belief: compute-preparation]
+drained. The then-planned 110-row candidate diagnostic was superseded for
+PREFIX-3 by the 44-row unchanged-APP rerun below; retain candidate diagnostics
+as separate evidence. Existing SC50 covers this source family; future projection
+must carry baseline/candidate pins, native token/mask/shape refusals, cohort
+coverage and run phase through its existing ClaimTuple ladder. No adapter/canary
+completion or new measurement warrant is claimed. At this preparation checkpoint,
+G14 and PREFIX-3 were still unchecked; no artificial preparation checkbox was
+added. [no-belief: compute-preparation]
+
+**PREFIX-3 canonical unchanged-APP rerun closeout — 2026-10-30:** the original
+task is complete as a negative/unknown pipeline finding, not as a parity pass.
+The exact APP source from `de6c56e34f5f23c2155d2b7dc839554ae692f771` (git blob
+`2562a78b7a60fb832dd1a95ae6187651ab2259cd`, SHA-256
+`23bee710f784bdcdbf7e67be82be3f186c82695bb185098313377b684bd39510`) was run
+unchanged through `colbert_encoder.encode(role=ROLE_DOCUMENT)` against untouched
+native PyLate 1.4 public `ColBERT.encode` for all 20 banked snippets: 44 rows in
+27.348 s. Reason's 22 rows are `OUTPUT_CONTRACT_MISMATCH`; LateOn's 22 rows are
+`TOKEN_OR_POSITION_MISMATCH`. For the first snippet at cap 64, both actual
+matrices are 18×128 versus 17×128 native references. Full input IDs, masks and
+retained positions do not match, so cosine was never computed (numeric comparisons
+0); the acceptance threshold was not evaluated. Original model graphs, native
+weights, relevant JSON and APP source passed before/after pin checks. The old
+8.24e-3 and 2.72e-3 pooled/prefix-mismatched figures remain unusable for current
+pipeline parity. This closes the rerun task only: no retrieval-quality, parity,
+adoption, deployment, or stored-index compatibility result is claimed. The
+separate private candidate's 66 rows are excluded from this canonical finding.
+Evidence: `/mnt/raid0/llm/tmp/codex-ni-prefix3-native-20261030/baseline-current-app/REPORT.md`
+and `results/RESULT.json`. Existing SC50 covers this source family; no new source,
+adapter, ladder, or retrospective measurement warrant was created. Further
+canonical encoder changes require caller and stored-index provenance review before
+integration.
 
 ### Independence note
 
