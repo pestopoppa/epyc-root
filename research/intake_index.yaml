@@ -365067,7 +365067,7 @@
   novelty: low
   relevance: high
   discovered_via: input
-  verdict: worth_investigating
+  verdict: adopt_patterns
   ingested_date: '2026-10-30'
   authors:
   - Alexander Yue (@Alezander9, Mainplane)
@@ -365116,16 +365116,93 @@
   recommended_actions:
   - 'Dive: verify numbers against the post text; compare with Claude Code and Cursor hybrid summary+pointer behaviour.'
   credibility_score: 1
-  contradicting_evidence: null
+  contradicting_evidence:
+  - 'Our planner file-mode measurement on the 27B seat (wiki/context-management.md:87-128): moving context into files halved
+    first-step context but roughly doubled tool calls and raised wall time and peak context; inline stays the baseline.'
   referenced_arxiv_ids: []
   notes: 'Stage 1 (main, 2026-10-30, session intake-mainplane-20261030): operator pre-approved all recommended Stage-2 dives
     (max 4 waves); stop at Stage-3 plan; no compute. Fetched via api.fxtwitter.com JSON to /mnt/raid0/llm/tmp/dive-mainplane-20261030/x/.
     The quoted predecessor post https://x.com/Alezander9/status/2115131891766657357 (2026-10-27, "Context compaction was a
     mistake") carries only a 56.7 s video, not read; recorded here rather than as its own entry. Commercial author (vendor
     bias -1).'
-  verification: stage1-unverified
+  verification: dive-verified
   handoffs_updated: []
   handoffs_created: []
+  read_depth: PARTIAL
+  source_revision: api.fxtwitter.com JSON for status 2115842962521509968, retrieved 2026-10-30 (sha256-12 981ca7905b31)
+  reader_should_conclude: 'Cite only for the pointer-only (no-summary) continuation variant and its n=1 hand-off cost. Do
+    NOT cite as evidence that retrieval beats compaction on task accuracy: no accuracy was measured. Do NOT call transcript-as-file
+    new: Claude Code and Cursor already do it with a summary.'
+  claim_anchors:
+  - claim_index: 0
+    kind: heading-and-hash
+    locator: post body, numbered list item 1
+    quote: The model prefills the entire session again
+    quote_sha256: e231f9c5c3637127ce3c3065046f36df09308df456a3648d385f89ab4140975f
+    source_revision: api.fxtwitter.com JSON for status 2115842962521509968, retrieved 2026-10-30 (sha256-12 981ca7905b31)
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: heading-and-hash
+    locator: post body, measurement list
+    quote: 38 s and $1.99 when the prompt cache has expired
+    quote_sha256: 1d7214497d22bfab754a3292e0f89d5e7c0d60b67f5944faf6daac8b88d77d41
+    source_revision: api.fxtwitter.com JSON for status 2115842962521509968, retrieved 2026-10-30 (sha256-12 981ca7905b31)
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: heading-and-hash
+    locator: post body, para 7
+    quote: 'Same session, same model: 15 s and $0.10 to get back to work.'
+    quote_sha256: 9b68a0b7ee629050c389d536e957e4088419450190f3f321257aeea2e607bba1
+    source_revision: api.fxtwitter.com JSON for status 2115842962521509968, retrieved 2026-10-30 (sha256-12 981ca7905b31)
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: heading-and-hash
+    locator: post body, para 3
+    quote: The exact error message, the file path, the one number you needed is often gone.
+    quote_sha256: 3b298a3305c2fe2525c75e8c8a19546044a1d9ce1659854ac6a313984b6eeada
+    source_revision: api.fxtwitter.com JSON for status 2115842962521509968, retrieved 2026-10-30 (sha256-12 981ca7905b31)
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: heading-and-hash
+    locator: post body, para 5
+    quote: You are continuing session X. Retrieve key context from it as you go.
+    quote_sha256: 437bdf90b5c389044fa157d3491d7d3787dd76f96a335fe0a0fcc75eb499453e
+    source_revision: api.fxtwitter.com JSON for status 2115842962521509968, retrieved 2026-10-30 (sha256-12 981ca7905b31)
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: heading-and-hash
+    locator: post body, para 8
+    quote: This is the bitter lesson applied to agent memory.
+    quote_sha256: 8b381c3b003c2b52a4c16f2d3698572ee1a056fd5d4cca6ed0ad05270784e72c
+    source_revision: api.fxtwitter.com JSON for status 2115842962521509968, retrieved 2026-10-30 (sha256-12 981ca7905b31)
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 0
+    effect: narrowed
+    note: 'True of the summarize step, but Claude Code (our own harness; a local transcript shows "If you need specific details
+      from before compaction ... read the full transcript at: <path>") and Cursor since 2026-01-06 (intake-2524) also hand
+      the post-compaction agent the full transcript. The real contrast is summary+pointer versus pointer-only.'
+  - claim_index: 1
+    effect: narrowed
+    note: Numbers present in the post. One session, n=1, hand-off cost only (time-to-resume and dollars for the switch); the
+      later retrieval turns of the resumed session are not costed, and no end-task accuracy is measured.
+  - claim_index: 2
+    effect: unaffected
+    note: 'Assertion; no measurement in the post. Independent support for summary loss: intake-2527 (TRACE) and intake-2528
+      (PCC).'
+  - claim_index: 3
+    effect: narrowed
+    note: Confirmed as the continuation text (intake-2523 commands.go). In code the continuation is user-issued (/continue,
+      alias /compact); the session itself fails at its context limit. Not an automatic restart as "starts right away" implies.
+  - claim_index: 4
+    effect: unaffected
+    note: Framing only (intake-2529).
+  dive_corrections: '2026-10-30 (Stage 2, wave 1): Numbers confirmed verbatim but scope narrowed: n=1, hand-off cost only,
+    no accuracy. Novelty narrowed to LOW: transcript-as-file plus agent search already ships as summary+pointer in Claude
+    Code and Cursor (intake-2524), and our orchestrator already writes old REPL context to a file with a read_file pointer
+    (src/graph/compaction.py) and injects "Full log: peek(...)" (src/graph/session_summary.py). The only distinct element
+    is dropping the summary entirely (pointer-only continuation). Predecessor post 2115131891766657357 is a 56.7 s video,
+    not read (read_depth PARTIAL).'
 - id: intake-2523
   arxiv_id: null
   url: https://github.com/mainplane-ai/mainplane
@@ -365152,6 +365229,9 @@
   - Standing context lives in AGENTS.md files that agents may write; root AGENTS.md files are read whole at every session
     start.
   - Context limit is a per-session config value; past it the session fails rather than compacting.
+  - 'Continuation is a user command: the terminal app''s /continue (alias /compact) opens a new session pre-filled with the
+    continuation sentence; switching model also continues this way.'
+  - Every tool result ends with elapsed time and the input context size of the step, so the agent sees its own context usage.
   techniques:
   - framed append-only session record
   - AGENTS.md persistent context
@@ -365189,9 +365269,101 @@
   notes: 'Stage 1 (main, 2026-10-30, session intake-mainplane-20261030): operator pre-approved all recommended Stage-2 dives
     (max 4 waves); stop at Stage-3 plan; no compute. Includes https://github.com/mainplane-ai/mainplane/blob/main/docs/self-hosting.md
     (operator-listed URL; same repo, read at the same commit). curl -sIL: 200, no redirect. Shallow clone at /mnt/raid0/llm/tmp/dive-mainplane-20261030/repo.'
-  verification: stage1-unverified
+  verification: dive-verified
   handoffs_updated: []
   handoffs_created: []
+  read_depth: PARTIAL
+  source_revision: mainplane-ai/mainplane @ 47a7f690d5ae97ffee3b767e9daff775f68e296f (shallow clone 2026-10-30)
+  reader_should_conclude: Cite for the concrete continuation recipe (framed append-only log + rg recipe in the system prompt
+    + one continuation sentence) and the agent-visible context meter. Do NOT describe it as having a dedicated transcript-search
+    tool or automatic continuation.
+  claim_anchors:
+  - claim_index: 0
+    kind: line-range
+    locator: pkg/harness/tools.go:L27 @ 47a7f69
+    quote: the harness code takes a .state file and steps it, calling the LLM API, executing tools, and appending the new
+      records to the .state file
+    quote_sha256: c3bc95d9530363bb424a709938dcaa574c5006310dfba7a987c88f2e2f5336d4
+    source_revision: mainplane-ai/mainplane @ 47a7f690d5ae97ffee3b767e9daff775f68e296f (shallow clone 2026-10-30)
+    verified_by: research-intake/stage2
+  - claim_index: 0
+    kind: line-range
+    locator: docs/self-hosting.md:L290 @ 47a7f69
+    quote: Every worker joins a WireGuard mesh that the harness coordinates.
+    quote_sha256: b6cddd86d845225d4b51015dc71ec5737e8d2fff253265f44ce5a0a6b753ab18
+    source_revision: mainplane-ai/mainplane @ 47a7f690d5ae97ffee3b767e9daff775f68e296f (shallow clone 2026-10-30)
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: line-range
+    locator: pkg/harness/tools.go:L36 @ 47a7f69
+    quote: There are two kinds of tools, shell execution and file operations
+    quote_sha256: 720444924b23c796edfb80021aaa5eb34906189653e7c1679167c9e5c8265535
+    source_revision: mainplane-ai/mainplane @ 47a7f690d5ae97ffee3b767e9daff775f68e296f (shallow clone 2026-10-30)
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: line-range
+    locator: pkg/harness/tools.go:L96 @ 47a7f69
+    quote: That file holds the whole previous session and is searchable with rg
+    quote_sha256: b836296fd682abb27ff6b8f13db8f97a52f82dd933b8a49115be648b0e52f1d8
+    source_revision: mainplane-ai/mainplane @ 47a7f690d5ae97ffee3b767e9daff775f68e296f (shallow clone 2026-10-30)
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: line-range
+    locator: pkg/harness/tools.go:L109 @ 47a7f69
+    quote: Every root AGENTS.md of every worker scratch and every drive is read whole at the start of every session
+    quote_sha256: 609435557cd5e7b8fcce020533041dbd018902972cd78fb6e8636ded1e440d20
+    source_revision: mainplane-ai/mainplane @ 47a7f690d5ae97ffee3b767e9daff775f68e296f (shallow clone 2026-10-30)
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: line-range
+    locator: pkg/harness/harness.go:L301 @ 47a7f69
+    quote: fmt.Sprintf("context %d exceeds limit %d", p, conf.ContextLimit)
+    quote_sha256: e1ecf1e6b4275d2c9cab17a76776db029e5e82df87764c19d744523bfcc9817b
+    source_revision: mainplane-ai/mainplane @ 47a7f690d5ae97ffee3b767e9daff775f68e296f (shallow clone 2026-10-30)
+    verified_by: research-intake/stage2
+  - claim_index: 5
+    kind: line-range
+    locator: pkg/connector/tui/commands.go:L51 @ 47a7f69
+    quote: '{"continue", []string{"compact"}, "Continue in a new session", "", (*session).carryOn},'
+    quote_sha256: d1e8b8d769644378e47cff6bca89b36465f103c8ad54e8ec382ad7d13b763a7a
+    source_revision: mainplane-ai/mainplane @ 47a7f690d5ae97ffee3b767e9daff775f68e296f (shallow clone 2026-10-30)
+    verified_by: research-intake/stage2
+  - claim_index: 6
+    kind: line-range
+    locator: pkg/harness/tools.go:L94 @ 47a7f69
+    quote: Every tool result ends with the time since session start and the input context size of the step that made the call
+    quote_sha256: 32988507754d01312989ac887051b62ddb20e72da81123e01fda90c51a0879f1
+    source_revision: mainplane-ai/mainplane @ 47a7f690d5ae97ffee3b767e9daff775f68e296f (shallow clone 2026-10-30)
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: Confirmed; LICENSE is MIT (Copyright 2026 Alexander Yue); 140 files, ~27.5k Go lines.
+  - claim_index: 1
+    effect: unaffected
+    note: 'Confirmed (Tools(), tools.go:182-196). There is NO dedicated transcript-search tool: retrieval is `rg` through
+      the generic run tool.'
+  - claim_index: 2
+    effect: unaffected
+    note: Confirmed; record format is one JSON header line + len raw bytes, so rg hits are mapped to records by the nearest
+      header above.
+  - claim_index: 3
+    effect: unaffected
+    note: Confirmed; agents may write AGENTS.md to persist context.
+  - claim_index: 4
+    effect: unaffected
+    note: 'Confirmed: Step() kills environments and fails the session past ContextLimit; no compaction path. The Claude Code
+      provider sets DISABLE_AUTO_COMPACT=1 and DISABLE_COMPACT=1 (pkg/provider/claudecode.go:82-83).'
+  - claim_index: 5
+    effect: unaffected
+    note: New claim from the dive.
+  - claim_index: 6
+    effect: unaffected
+    note: New claim from the dive.
+  dive_corrections: '2026-10-30 (Stage 2, wave 1): Confirmed the mechanism at 47a7f69: the "search tools" are rg via the run
+    tool plus a system-prompt recipe for the .log record format, not a purpose-built search tool; continuation is user-issued
+    (/continue, alias /compact), not automatic; past context_limit the session fails. Read: README, AGENTS.md, pkg/harness/{tools,harness,info}.go,
+    pkg/connector/tui/commands.go (continuation), docs/self-hosting.md (grep). Not read: providers, mesh, worker, e2e.'
 - id: intake-2524
   arxiv_id: null
   url: https://cursor.com/blog/dynamic-context-discovery
@@ -365205,7 +365377,7 @@
   relevance: high
   discovered_via: search
   expanded_from: intake-2522
-  verdict: worth_investigating
+  verdict: already_integrated
   ingested_date: '2026-10-30'
   authors:
   - Jediah Katz (Cursor)
@@ -365242,9 +365414,51 @@
   notes: 'Stage 1 (main, 2026-10-30, session intake-mainplane-20261030): operator pre-approved all recommended Stage-2 dives
     (max 4 waves); stop at Stage-3 plan; no compute. Expansion (Tier 2 search) from intake-2522: operator note says Cursor
     lets a post-compaction agent re-read the transcript.'
-  verification: stage1-unverified
+  verification: dive-verified
   handoffs_updated: []
   handoffs_created: []
+  read_depth: FULL
+  source_revision: cursor.com/blog/dynamic-context-discovery (dated Jan 6, 2026) retrieved 2026-10-30 (html sha256-12 fd257f756d0c)
+  reader_should_conclude: Cite as the published summary+pointer incumbent (2026-01-06). The 46.9% figure is about MCP tool
+    lookup, never about chat-history retrieval.
+  claim_anchors:
+  - claim_index: 0
+    kind: heading-and-hash
+    locator: section 1 "Turning long tool responses into files"
+    quote: In Cursor, we instead write the output to a file and give the agent the ability to read it.
+    quote_sha256: 48ab9d6ebaba938e0692566e5e04dd8f8dd68069f4126d15bc135aa0dbe85cc6
+    source_revision: cursor.com/blog/dynamic-context-discovery (dated Jan 6, 2026) retrieved 2026-10-30 (html sha256-12 fd257f756d0c)
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: heading-and-hash
+    locator: section 2 "Referencing chat history during summarization"
+    quote: we give the agent a reference to the history file. If the agent knows that it needs more details that are missing
+      from the summary, it can search through the history to recover them.
+    quote_sha256: 9a085110ae8de6320ac540e2b20efe0a14a278e353ced2668c8cc034763d67de
+    source_revision: cursor.com/blog/dynamic-context-discovery (dated Jan 6, 2026) retrieved 2026-10-30 (html sha256-12 fd257f756d0c)
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: heading-and-hash
+    locator: section 4 "Efficiently loading only the MCP tools needed"
+    quote: this strategy reduced total agent tokens by 46.9%
+    quote_sha256: 4ddef45aaac24957392b09686be9adc7afbc3ac25cf49a75b4773f6a13e86aa0
+    source_revision: cursor.com/blog/dynamic-context-discovery (dated Jan 6, 2026) retrieved 2026-10-30 (html sha256-12 fd257f756d0c)
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: Confirmed.
+  - claim_index: 1
+    effect: unaffected
+    note: 'Confirmed: summary is KEPT and the history file is an addition. No measurement of the history-file feature is given.'
+  - claim_index: 2
+    effect: unaffected
+    note: Confirmed; applies to MCP tool lookup only, runs that called an MCP tool, described as statistically significant
+      with high variance.
+  dive_corrections: '2026-10-30 (Stage 2, wave 1): Confirmed. This is the summary+pointer hybrid that Mainplane argues against,
+    published 2026-01-06. Our orchestrator already implements the same hybrid: _session_log_prompt_block injects the summary
+    plus "Full log: peek(...)" (src/graph/session_summary.py) and output spill writes long outputs to files with peek pointers
+    (src/graph/file_artifacts.py). Verdict -> already_integrated.'
 - id: intake-2525
   arxiv_id: '2607.25066'
   url: https://arxiv.org/abs/2607.25066
@@ -365257,12 +365471,19 @@
   relevance: high
   discovered_via: search
   expanded_from: intake-2522
-  verdict: worth_investigating
+  verdict: adopt_patterns
   ingested_date: '2026-10-30'
-  authors: []
+  authors:
+  - Fujitsu / RIKEN (per paper)
   key_claims:
   - ARC stores tool observations in an append-only ID-addressable log and replaces older ones with compact citations the agent
     can use to recall stored content.
+  - On a synthetic Needle-in-a-Haystack task ARC averages 99.40% exact-answer accuracy versus 88.12% for the best baseline
+    (Qwen3-8B/32B, 3 seeds).
+  - On LongBench-v2 Hard ARC averages 29.97% versus 28.25% for the best baseline.
+  - 'The compaction routine is deterministic and calls no LLM: old thoughts truncated, long observations replaced by citations,
+    recent turns verbatim.'
+  - ARC's own token overhead from recall is not quantified; the paper lists it as an open question.
   techniques:
   - Addressable Recall Compaction (ARC)
   reported_results: []
@@ -365287,9 +365508,78 @@
   referenced_arxiv_ids: []
   notes: 'Stage 1 (main, 2026-10-30, session intake-mainplane-20261030): operator pre-approved all recommended Stage-2 dives
     (max 4 waves); stop at Stage-3 plan; no compute. Tier 2 search hit; abs title resolved 2026-10-30 (v1, 2026-07-27).'
-  verification: stage1-unverified
+  verification: dive-verified
   handoffs_updated: []
   handoffs_created: []
+  read_depth: PARTIAL
+  source_revision: arXiv 2607.25066v1 HTML (sha256-12 bf8ee3b6a268)
+  reader_should_conclude: Cite for the content-addressed citation-stub mechanism and recall guards. Do NOT cite 99.40 vs 88.12
+    as evidence that pointer retrieval beats summaries on agent tasks; the fixture is a lookup that baselines drop by rule.
+  claim_anchors:
+  - claim_index: 0
+    kind: heading-and-hash
+    locator: Abstract
+    quote: ARC stores tool observations in an append-only, ID-addressable log
+    quote_sha256: 3afa4fda9e3cba1244af6615c158f264abaf504d89643f3190a53e4990cc06d4
+    source_revision: arXiv 2607.25066v1 HTML (sha256-12 bf8ee3b6a268)
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: heading-and-hash
+    locator: Abstract (Table 2)
+    quote: achieves an average exact-answer accuracy of 99.40%
+    quote_sha256: 2acb247c2c6fc50b4926954fe56155778b1f08907df1f4a628b96c33fb2cebed
+    source_revision: arXiv 2607.25066v1 HTML (sha256-12 bf8ee3b6a268)
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: heading-and-hash
+    locator: Abstract (Table 1)
+    quote: obtains an average accuracy of 29.97%
+    quote_sha256: 8f50c26ca721a338a0e9e5287de0951d4f3384e05d799172150c1ea85806b7b2
+    source_revision: arXiv 2607.25066v1 HTML (sha256-12 bf8ee3b6a268)
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: heading-and-hash
+    locator: Method, compaction routine
+    quote: Summarize is deterministic and does not call an LLM
+    quote_sha256: a801b843d016d8ea2acc1ff30b867c56416ff991d9b29e78faca7c8dd19e9e2e
+    source_revision: arXiv 2607.25066v1 HTML (sha256-12 bf8ee3b6a268)
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: heading-and-hash
+    locator: Conclusion
+    quote: The main open questions are quantifying ARC's own token overhead, testing generalization beyond the Qwen3 family
+    quote_sha256: cfbeedbda3053e52d813e4b20747a1771c325f5d1f2dc54ade57622efc92e882
+    source_revision: arXiv 2607.25066v1 HTML (sha256-12 bf8ee3b6a268)
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: Confirmed; ids are short SHA1 prefixes of action signature + observation; recall via `_recall §id` with per-step
+      and working-set caps.
+  - claim_index: 1
+    effect: narrowed
+    note: Needle is placed in a ~4.5k-char read above the 500-char keep-verbatim threshold all lossy baselines use (Appendix
+      B), and compaction is forced at fixed call indices; at 32B the margin is ~3 points. A summary is kept alongside citations
+      and never ablated; no grep or pointer-only arm.
+  - claim_index: 2
+    effect: narrowed
+    note: Margins ~1.6-1.8 points vs seed SD ~1.4-1.7, near chance on 4-way multiple choice; Appendix B reports different
+      ARC numbers than Table 1.
+  - claim_index: 3
+    effect: unaffected
+    note: Confirmed.
+  - claim_index: 4
+    effect: unaffected
+    note: 'Confirmed: recall count, re-injected tokens and added turns are not reported.'
+  dive_corrections: '2026-10-30 (Stage 2, wave 1): Retrieval benefit is real but narrow (synthetic lookup, Qwen3 only, no
+    code released, paper CC BY-NC-ND). Serving-cost claims are a roofline replay on a modeled H200, not measurements. Usable
+    patterns: content-addressed spill stubs (head/tail preview + id + length) and recall guards; an exact-value needle probe.
+    Read PARTIAL: proofs, Tables 7-13 cells not read. Dive-surfaced sources (ARC/CWL dive) DECLINED at Stage-2 close, 2026-10-30:
+    2510.08276 Beyond Turn Limits and 2510.06727 SUPO (trained context control; bears only on the summary arm, which matters
+    only if it wins the A/B); 2605.29640 VikingMem (structured-state baseline source; no structured-state arm planned); 2407.01437
+    NIAH-for-memory (needle design taken from ARC Appendix B); 2602.14337 LongCLI-Bench, Recovery-Bench, U-NIAH (suite choice
+    belongs to the A/B-INSTR owner); github.com/Kiz8-Team/pi-cwl (CWL agent-annotated eviction declined for our small workers).
+    Already indexed, not re-ingested: 2510.11967, 2510.00615, 2509.13313, 2601.11868. Ingested in wave 2: 2310.08560 (intake-2530).'
 - id: intake-2526
   arxiv_id: '2606.11213'
   url: https://arxiv.org/abs/2606.11213
@@ -365304,10 +365594,16 @@
   expanded_from: intake-2522
   verdict: worth_investigating
   ingested_date: '2026-10-30'
-  authors: []
+  authors:
+  - Kiz8
   key_claims:
   - 'Context Window Lifecycle (CWL): the agent annotates its trajectory as typed, dependency-linked episodes and a deterministic
     LLM-free policy evicts by priority when over budget.'
+  - A single session completes 89 sequential Terminal-Bench 2.0 tasks across ~80M tokens with no measurable accuracy loss
+    versus per-task isolated sessions (GPT-5.4, n=5).
+  - 'CWL keeps no archive or recall tool: evicted content is gone and is recovered only by re-running tools.'
+  - A low budget preserves accuracy through re-exploration, which adds latency and token cost.
+  - The 20-70% inference-cost reduction is relative to uncapped sessions, not to compaction.
   techniques:
   - Context Window Lifecycle (CWL)
   reported_results: []
@@ -365328,9 +365624,70 @@
   referenced_arxiv_ids: []
   notes: 'Stage 1 (main, 2026-10-30, session intake-mainplane-20261030): operator pre-approved all recommended Stage-2 dives
     (max 4 waves); stop at Stage-3 plan; no compute. Tier 2 search hit; abs title resolved 2026-10-30 (v1, 2026-05-01).'
-  verification: stage1-unverified
+  verification: dive-verified
   handoffs_updated: []
   handoffs_created: []
+  read_depth: FULL
+  source_revision: arXiv 2606.11213v1 HTML (sha256-12 7812efdaa7af)
+  reader_should_conclude: Cite for "a low budget shifts cost into re-exploration" and for the cache-stability cost mechanism.
+    Do NOT cite as a retrieval-vs-summary comparison.
+  claim_anchors:
+  - claim_index: 0
+    kind: heading-and-hash
+    locator: Abstract
+    quote: a deterministic, LLM-free policy evicts
+    quote_sha256: 16d8fb3cb5122337164f4db5506be54b18c0ac181accd44455b99eb8cc1cdcf9
+    source_revision: arXiv 2606.11213v1 HTML (sha256-12 7812efdaa7af)
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: heading-and-hash
+    locator: Abstract / Section 6.3
+    quote: 89 sequential tasks across 80 million tokens
+    quote_sha256: 5d542e862ff56f9f8eb741241bb7e20acd7d5838c3debd2371667f81c0610246
+    source_revision: arXiv 2606.11213v1 HTML (sha256-12 7812efdaa7af)
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: heading-and-hash
+    locator: Related Work, "Retrieval-augmented context"
+    quote: addresses a different problem from CWL
+    quote_sha256: 31acb444688081421a43a97890f76c88de5b7e309356cbba9811f8f49864e126
+    source_revision: arXiv 2606.11213v1 HTML (sha256-12 7812efdaa7af)
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: heading-and-hash
+    locator: Section 6.4
+    quote: the extra tool calls added latency and token cost
+    quote_sha256: b6cab463d066fb0260bf6def2759be474a7b2f9f0fbaf3dcf53a3e6361d4e767
+    source_revision: arXiv 2606.11213v1 HTML (sha256-12 7812efdaa7af)
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: heading-and-hash
+    locator: Section 5
+    quote: reduction in inference cost relative to uncapped sessions
+    quote_sha256: a0f7166d7a7616497026f726886d387309c34540c58babcf5cfa6e828233403b
+    source_revision: arXiv 2606.11213v1 HTML (sha256-12 7812efdaa7af)
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: Confirmed; agent annotates typed episodes via a delimiter tool.
+  - claim_index: 1
+    effect: narrowed
+    note: TB2 tasks are independent, so cross-task retention is not exercised and the isolated baseline never faces context
+      pressure; no variance reported.
+  - claim_index: 2
+    effect: unaffected
+    note: Confirmed.
+  - claim_index: 3
+    effect: unaffected
+    note: Confirmed qualitatively; re-exploration tokens not quantified.
+  - claim_index: 4
+    effect: unaffected
+    note: Confirmed; cause is prefix-cache stability under an ~80k cap; Section 5 concedes in-place eviction can be net-negative
+      for caching.
+  dive_corrections: '2026-10-30 (Stage 2, wave 1): Evidence about eviction under a budget, not retrieval. Useful for our A/B:
+    re-fetch/re-exploration cost must be logged per arm, and prefix-cache invalidation matters for CPU prefill. Agent-authored
+    episode annotation declined for our small workers. Code: github.com/Kiz8-Team/pi-cwl (not fetched).'
 - id: intake-2527
   arxiv_id: '2608.06503'
   url: https://arxiv.org/abs/2608.06503
@@ -365343,12 +365700,17 @@
   relevance: medium
   discovered_via: search
   expanded_from: intake-2522
-  verdict: worth_investigating
+  verdict: adopt_patterns
   ingested_date: '2026-10-30'
-  authors: []
+  authors:
+  - Min et al. (UVA / Nokia)
   key_claims:
   - Recurrent context compression can weaken the influence of recent interactions, increasing blocked actions, repeated exploration
     and run-to-run instability; TRACE optimizes the compression prompt via paired continuations.
+  - On AppWorld, FIFO (recent turns only) matches or slightly exceeds summary-based compaction except at the tightest budget.
+  - Right after a compaction boundary the agent issues more blocked/error actions than before it.
+  - Compression converts reliably solved tasks into intermittently solved ones (Pass^2 falls more than accuracy).
+  - TRACE's cross-model transfer is shown on a single target model only.
   techniques:
   - TRACE
   reported_results: []
@@ -365368,9 +365730,75 @@
   referenced_arxiv_ids: []
   notes: 'Stage 1 (main, 2026-10-30, session intake-mainplane-20261030): operator pre-approved all recommended Stage-2 dives
     (max 4 waves); stop at Stage-3 plan; no compute. Tier 2b cheap contradiction-pass hit; abs title resolved 2026-10-30 (v2).'
-  verification: stage1-unverified
+  verification: dive-verified
   handoffs_updated: []
   handoffs_created: []
+  read_depth: PARTIAL
+  source_revision: arXiv 2608.06503v2 HTML (sha256-12 edda8896fbaf)
+  reader_should_conclude: 'Cite for: a raw recent-turn tail ties summaries at moderate budgets on AppWorld, and compaction
+    raises post-boundary blocked actions and run-to-run unreliability. Do NOT cite as evidence about pointer/grep retrieval;
+    it has no such arm.'
+  claim_anchors:
+  - claim_index: 0
+    kind: heading-and-hash
+    locator: Section 3.2
+    quote: our experiments do not fully separate these causes
+    quote_sha256: e0d6e604a58417640e6f9c32b1083fa48c288503ca3ec47487611e5509fcd9ff
+    source_revision: arXiv 2608.06503v2 HTML (sha256-12 edda8896fbaf)
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: heading-and-hash
+    locator: Section 3.1
+    quote: FIFO matches or slightly exceeds summary-based execution. Their difference emerges only under the tightest budget
+    quote_sha256: 34ba5c41ae98afad17eec49a6a5e8098fcaacf6d0de8c21112252a8cc4303370
+    source_revision: arXiv 2608.06503v2 HTML (sha256-12 edda8896fbaf)
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: heading-and-hash
+    locator: Section 3.3
+    quote: Compression immediately increases blocked execution
+    quote_sha256: c93514049271fe005ef6c01cf2f9c85f57d2e9485639e0e9c2ed3526219b5c06
+    source_revision: arXiv 2608.06503v2 HTML (sha256-12 edda8896fbaf)
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: heading-and-hash
+    locator: Section 3.1
+    quote: it converts some tasks that were reliably solved into tasks that are only intermittently solved
+    quote_sha256: 2aec831946926a92f00d3e01355773ae06efcbb0fcfb724b8d96208b79d8745d
+    source_revision: arXiv 2608.06503v2 HTML (sha256-12 edda8896fbaf)
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: heading-and-hash
+    locator: Section 5
+    quote: broader cross-model generalization remains to be established
+    quote_sha256: 1fd03eb5f8bc293656f3d2ec225bdcd379e17a10897b2177ab80d4c54266ab49
+    source_revision: arXiv 2608.06503v2 HTML (sha256-12 edda8896fbaf)
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 0
+    effect: narrowed
+    note: Confirmed as observed; authors state they cannot separate omission, distortion and ineffective use as causes.
+  - claim_index: 1
+    effect: unaffected
+    note: Confirmed.
+  - claim_index: 2
+    effect: unaffected
+    note: Confirmed (590 boundaries, first 5 actions).
+  - claim_index: 3
+    effect: unaffected
+    note: Confirmed; Table 1 Acc/Pass^2/Pass@2 for no compression vs best prompt shows the gap widening.
+  - claim_index: 4
+    effect: unaffected
+    note: Confirmed.
+  dive_corrections: '2026-10-30 (Stage 2, wave 1): v2 (2026-10-14) read. Single benchmark (AppWorld, 168 tasks), 2 runs/task,
+    4,096-token compression window (frequent compaction regime). No pointer/grep arm. Adoptable: Pass^2/Pass@2 reliability
+    metrics and a post-boundary blocked-action count (count re-reads separately). Efficiency numbers are image-only (Fig 6,
+    not viewed). Code github.com/nokia-applied-research/Trace has no license file (not cloned). Dive-surfaced sources (TRACE/PCC
+    dive) DECLINED at Stage-2 close, 2026-10-30: github.com/nokia-applied-research/Trace (metric definitions anchored from
+    the paper suffice; no LICENSE file); Hermes agent/context_compressor.py @ cca3b77 (a second summary prompt; OpenClaw''s
+    published sectioned prompt chosen as the fair summary arm); 2602.03784 ComprExIT (latent compression, not session-level
+    retrieval). Already indexed: 2510.00615, 2510.05381, 2509.13313, 2602.16284, 2506.16411. Ingested in wave 2: 2502.05167
+    (intake-2531), 2506.07982 (intake-2532), OpenClaw (intake-2534); tau-bench 2406.12045 read as the metric source (intake-2533).'
 - id: intake-2528
   arxiv_id: '2605.23296'
   url: https://arxiv.org/abs/2605.23296
@@ -365385,10 +365813,16 @@
   expanded_from: intake-2522
   verdict: worth_investigating
   ingested_date: '2026-10-30'
-  authors: []
+  authors:
+  - Cim et al. (Penn State)
   key_claims:
   - Summarization-based compaction is lossy and its blocking call stalls agent inference; parallel compaction is proposed
     for agent serving.
+  - 'Summary length is nearly input-invariant: as input grows 48x, summary output grows ~3x.'
+  - Repeated compactions of the same input produce different summaries (CV of length and embedding cosine reported over 10
+    repeats).
+  - Block-size accuracy rises monotonically across the sweep for all configurations.
+  - Parallel compaction reduces end-to-end wall time.
   techniques:
   - parallel compaction
   reported_results: []
@@ -365408,9 +365842,71 @@
   referenced_arxiv_ids: []
   notes: 'Stage 1 (main, 2026-10-30, session intake-mainplane-20261030): operator pre-approved all recommended Stage-2 dives
     (max 4 waves); stop at Stage-3 plan; no compute. Tier 2 search hit; abs title resolved 2026-10-30 (v1, 2026-05-22).'
-  verification: stage1-unverified
+  verification: dive-verified
   handoffs_updated: []
   handoffs_created: []
+  read_depth: PARTIAL
+  source_revision: arXiv 2605.23296v1 HTML (sha256-12 eb20259c9741)
+  reader_should_conclude: 'Cite intake-2528#record. Usable: summary length is input-invariant and summaries vary run to run.
+    Do NOT cite the monotonic block-size claim or a uniform parallel speedup.'
+  claim_anchors:
+  - claim_index: 0
+    kind: heading-and-hash
+    locator: Abstract
+    quote: stalls agent inference for tens of seconds
+    quote_sha256: 756dc2f7c565c0adbbfbea82db7cb786d01c4c953ad2efda474aa64ec56ced2e
+    source_revision: arXiv 2605.23296v1 HTML (sha256-12 eb20259c9741)
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: heading-and-hash
+    locator: 'Takeaway #1 / Table 1'
+    quote: summarization output grows by only
+    quote_sha256: 700db423eb15c16d549f70acbcd63f03819512053454edfd21274ffcb49ca916
+    source_revision: arXiv 2605.23296v1 HTML (sha256-12 eb20259c9741)
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: heading-and-hash
+    locator: Section 5.2 / Table 5
+    quote: the model produces a different summary on every call
+    quote_sha256: 9df181a39959fbb093c1fb5a7531a64c6ed878aebe064144df337f5c34ef3e09
+    source_revision: arXiv 2605.23296v1 HTML (sha256-12 eb20259c9741)
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: heading-and-hash
+    locator: Section 6
+    quote: accuracy increases monotonically across the block-size sweep
+    quote_sha256: 9f61c416a38141aef47740cf8e3690b8c088eca6be45838bc2a24c338d117af1
+    source_revision: arXiv 2605.23296v1 HTML (sha256-12 eb20259c9741)
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: heading-and-hash
+    locator: Section 6
+    quote: compaction output token counts fluctuate across runs
+    quote_sha256: c7cb62ea733858eb71e212289a2aa65a6160467763de6617358cdb4ec64a9fde
+    source_revision: arXiv 2605.23296v1 HTML (sha256-12 eb20259c9741)
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 0
+    effect: narrowed
+    note: No per-call latency table; Table 2 gives compaction as a share of E2E time for two small models only (e.g. Llama-3.1-8B
+      62.4% at 16k, 14.5% at 96k).
+  - claim_index: 1
+    effect: unaffected
+    note: Confirmed (Table 1).
+  - claim_index: 2
+    effect: unaffected
+    note: Confirmed (10 repeats per point); no link to downstream accuracy is measured.
+  - claim_index: 3
+    effect: overturned
+    note: Fig 4a is non-monotone for gpt-oss-20B and Llama-3.3-70B; accuracy also confounded with summary volume.
+  - claim_index: 4
+    effect: narrowed
+    note: 'Speedup not uniform: Table 7 shows 0.78-0.99x (slower) for gpt-oss-120B and 0.80-0.86x for gpt-oss-20B; the matched-volume
+      claim is supported by throughput rows, not wall time.'
+  dive_corrections: '2026-10-30 (Stage 2, wave 1): v1 read. One claim (monotonic block-size gain) OVERTURNED by the paper''s
+    own Fig 4a; parallel speedup narrowed. Best quantified evidence in this batch that summaries are unstable run to run and
+    that compaction can dominate wall time on small models. No retrieval arm. Parallel/async compaction declined until a summary
+    arm wins our A/B. Figures other than 4a not viewed.'
 - id: intake-2529
   arxiv_id: null
   url: http://www.incompleteideas.net/IncIdeas/BitterLesson.html
@@ -365444,6 +365940,529 @@
   referenced_arxiv_ids: []
   notes: 'Stage 1 (main, 2026-10-30, session intake-mainplane-20261030): operator pre-approved all recommended Stage-2 dives
     (max 4 waves); stop at Stage-3 plan; no compute. Operator-listed reference. Fetched to /mnt/raid0/llm/tmp/dive-mainplane-20261030/exp/sutton.html.'
-  verification: stage1-unverified
+  verification: dive-verified
   handoffs_updated: []
   handoffs_created: []
+  read_depth: FULL
+  source_revision: incompleteideas.net/IncIdeas/BitterLesson.html retrieved 2026-10-30 (html sha256-12 f1baabbabfde)
+  reader_should_conclude: Knowledge only. Do NOT cite as evidence for any context-management design.
+  claim_anchors:
+  - claim_index: 0
+    kind: heading-and-hash
+    locator: para 1
+    quote: general methods that leverage computation are ultimately the most effective, and by a large margin
+    quote_sha256: 5a3379e36e7cab05c77a4c15a857ae09f30fc0333aa6af18e038647a125e6037
+    source_revision: incompleteideas.net/IncIdeas/BitterLesson.html retrieved 2026-10-30 (html sha256-12 f1baabbabfde)
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: Confirmed; 2019-03-13 essay. Says nothing about agent memory or context management.
+  dive_corrections: '2026-10-30 (Stage 2, wave 1): Confirmed. Framing only; intake-2522 extends it to agent memory without
+    evidence.'
+- id: intake-2530
+  arxiv_id: '2310.08560'
+  url: https://arxiv.org/abs/2310.08560
+  source_type: paper
+  title: 'MemGPT: Towards LLMs as Operating Systems'
+  categories:
+  - memory_augmented
+  - context_management
+  - agent_architecture
+  novelty: low
+  relevance: high
+  discovered_via: expansion
+  expanded_from: intake-2525
+  verdict: adopt_patterns
+  ingested_date: '2026-10-30'
+  authors:
+  - Charles Packer
+  - Sarah Wooders
+  - Kevin Lin
+  - Vivian Fang
+  - Shishir G. Patil
+  - Ion Stoica
+  - Joseph E. Gonzalez
+  key_claims:
+  - The first slot of the FIFO message queue holds a recursive summary of messages evicted from it.
+  - Every message is written to recall storage and stays readable through function calls (conversation_search) after eviction.
+  - At a warning threshold (example 70% of the window) the agent gets a memory-pressure message and may save facts before
+    eviction; at flush a share of messages is evicted and the recursive summary is regenerated.
+  - In Deep Memory Retrieval the baseline sees only a lossy summary of past sessions while MemGPT searches the full history;
+    MemGPT scores far higher (e.g. GPT-4 32.1% -> 92.5%).
+  - MemGPT often stops paging through retriever results before exhausting them.
+  techniques:
+  - recall storage
+  - recursive summary
+  - memory-pressure warning
+  reported_results:
+  - 'DMR accuracy: GPT-4 32.1% -> 92.5%; GPT-4 Turbo 35.3% -> 93.4%; GPT-3.5 38.7% -> 66.9% (Table 2).'
+  cross_references:
+    chapters: []
+    handoffs:
+    - tool-output-compression.md
+    experiments: []
+    intake_entries:
+    - intake-2522
+    - intake-2525
+    intake_entry_notes:
+    - intake-2522 (2026 restatement of summary+search vs summary)
+    - intake-2525 (ARC, cites it)
+  recommended_actions:
+  - Novelty baseline for retrieval-over-summary (2023). Adopt the pre-eviction memory-pressure warning as an A/B variant.
+  credibility_score: 5
+  contradicting_evidence: null
+  referenced_arxiv_ids: []
+  notes: Surfaced by the ARC/CWL (intake-2525/2526) and TRACE/PCC (intake-2527/2528) dives; previously only a referenced id
+    in the index. Read by a Stage-2b subagent from disk; quotes re-found mechanically by main.
+  verification: dive-verified
+  handoffs_updated: []
+  handoffs_created: []
+  source_revision: arXiv 2310.08560v2 HTML (sha256-12 454a01f49921)
+  read_depth: FULL
+  reader_should_conclude: Cite as the 2023 prior art for "keep the full history searchable and let the agent recall it". Do
+    NOT cite DMR as a full-context vs retrieval result; the baseline was summary-only.
+  claim_anchors:
+  - claim_index: 0
+    kind: heading-and-hash
+    locator: Section 2.1
+    quote: The first index in the FIFO queue stores a system message containing a recursive summary of messages that have
+      been evicted from the queue
+    quote_sha256: 471197485f05449178989869de018ef4889e99194a92ebb66968b7d6413e1795
+    source_revision: arXiv 2310.08560v2 HTML (sha256-12 454a01f49921)
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: heading-and-hash
+    locator: Section 2.2
+    quote: are stored indefinitely in recall storage and readable via MemGPT function calls
+    quote_sha256: f09a3150c998e90754997c76bbe2576f8fdf899714045a43cfe39c002858fb5d
+    source_revision: arXiv 2310.08560v2 HTML (sha256-12 454a01f49921)
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: heading-and-hash
+    locator: Section 2.2
+    quote: generates a new recursive summary using the existing recursive summary and evicted messages
+    quote_sha256: 917d409877738c6620bcb4116fb6a23abbd85a06ae603ae53ee5b69bc6aa30e7
+    source_revision: arXiv 2310.08560v2 HTML (sha256-12 454a01f49921)
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: heading-and-hash
+    locator: Section 3.1.1
+    quote: while MemGPT instead has access to the full conversation history but must access it via paginated search queries
+    quote_sha256: a0a44cb46cfab36b40d5f416a5d576838209fc61bb36322c97d54fde081d4c4f
+    source_revision: arXiv 2310.08560v2 HTML (sha256-12 454a01f49921)
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: heading-and-hash
+    locator: Section 3.2 (document QA)
+    quote: MemGPT will often stop paging through retriever results before exhausting the retriever database
+    quote_sha256: 41f70e20255cc3cdb1543260c86cc903f7351cc7ed0b6a0179af827b105dab18
+    source_revision: arXiv 2310.08560v2 HTML (sha256-12 454a01f49921)
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: Confirmed.
+  - claim_index: 1
+    effect: narrowed
+    note: Only conversation_search is named in the paper; whether recall search is keyword or vector is not stated.
+  - claim_index: 2
+    effect: unaffected
+    note: Confirmed; 70% and 50% are given as examples.
+  - claim_index: 3
+    effect: narrowed
+    note: Baseline gets ONLY a summary although sessions would fit raw; DMR N not stated; generous GPT-4 judge. Tests "summary
+      loses detail", not full-context vs search.
+  - claim_index: 4
+    effect: unaffected
+    note: Confirmed; a retrieval-miss failure mode relevant to the Mainplane trade-off.
+  dive_corrections: '2026-10-30 (Stage 2b, wave 2; surfaced by the wave-1 dives of intake-2525..2528): Confirmed: summary
+    + searchable full history + agent-initiated recall shipped in 2023, with a summary-vs-search evaluation. This sets novelty
+    of intake-2522 to LOW. Wave-2 dive-surfaced sources DECLINED at Stage-2 close, 2026-10-30 (wave cap not reached; 2 of
+    4 waves used): 2304.03442 Generative Agents, 2112.09332 WebGPT, 2305.06983 FLARE (earlier precedence cannot lower the
+    novelty verdict below LOW, already set by this entry); LoCoMo (ACL 2024; conversational-memory QA, not REPL agent trajectories;
+    suite choice belongs to A/B-INSTR); RULER and BABILong (long-context reading benchmarks, no retrieval arm). Already indexed:
+    2307.03172 Lost in the Middle.'
+- id: intake-2531
+  arxiv_id: '2502.05167'
+  url: https://arxiv.org/abs/2502.05167
+  source_type: paper
+  title: 'NoLiMa: Long-Context Evaluation Beyond Literal Matching'
+  categories:
+  - benchmark_methodology
+  - context_extension
+  - search_retrieval
+  novelty: medium
+  relevance: medium
+  discovered_via: expansion
+  expanded_from: intake-2525
+  verdict: worth_investigating
+  ingested_date: '2026-10-30'
+  authors:
+  - Ali Modarressi
+  - et al. (Adobe Research / LMU)
+  key_claims:
+  - Without literal overlap between question and needle, 11 of 13 models fall below 50% of their short-context baseline at
+    32K.
+  - Literal matches make the task much easier.
+  - Literal distractors cut GPT-4o's effective length to 1K.
+  - Even reasoning models drop below 50% at 32K on NoLiMa-Hard.
+  techniques:
+  - latent-association needle test
+  reported_results:
+  - GPT-4o 99.3% -> 69.7% at 32K; Llama 3.3 70B 97.3 -> 42.7 (Table 3).
+  cross_references:
+    chapters: []
+    handoffs:
+    - tool-output-compression.md
+    experiments: []
+    intake_entries:
+    - intake-2522
+    intake_entry_notes:
+    - intake-2522 (grep retrieval depends on knowing the literal)
+  recommended_actions:
+  - Stratify retrieval-vs-compaction probes by literal recoverability.
+  credibility_score: 4
+  contradicting_evidence: null
+  referenced_arxiv_ids: []
+  notes: Surfaced by the wave-1 dives as evidence on literal (grep) retrieval. Read by a Stage-2b subagent; quotes re-found
+    mechanically by main.
+  verification: dive-verified
+  handoffs_updated: []
+  handoffs_created: []
+  source_revision: arXiv 2502.05167v3 HTML (sha256-12 fb44902732ec)
+  read_depth: PARTIAL
+  reader_should_conclude: 'Cite for: in-context reading degrades with length when the query does not share literals with the
+    evidence. Do NOT cite as a grep-vs-summary result.'
+  claim_anchors:
+  - claim_index: 0
+    kind: heading-and-hash
+    locator: Abstract
+    quote: At 32K, for instance, 11 models drop below 50% of their strong short-length baselines
+    quote_sha256: 8f0f8868a7a258a8183ccef625c1fb86a43d1b9dc98d034c2a490ece598d5dac
+    source_revision: arXiv 2502.05167v3 HTML (sha256-12 fb44902732ec)
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: heading-and-hash
+    locator: Section 1
+    quote: the presence of literal matches significantly simplifies the task
+    quote_sha256: c699ab8baf86587c9900cf09d33c62b0a381914f59003362617e04230d49ad6d
+    source_revision: arXiv 2502.05167v3 HTML (sha256-12 fb44902732ec)
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: heading-and-hash
+    locator: Section 4.4.4
+    quote: GPT-4o now demonstrates an effective length of just 1K
+    quote_sha256: f86a5270b38688093162d96addf26bae8e7003159d4721728a5772abc499f9ec
+    source_revision: arXiv 2502.05167v3 HTML (sha256-12 fb44902732ec)
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: heading-and-hash
+    locator: Section 4.4 (NoLiMa-Hard, Table 5)
+    quote: performance drops below the 50% mark at 32K
+    quote_sha256: ca9f30409454af4b649ea7dfba0f8bf497f53322dd17295b2ec4463ed37113e5
+    source_revision: arXiv 2502.05167v3 HTML (sha256-12 fb44902732ec)
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: Confirmed (Table 3).
+  - claim_index: 1
+    effect: unaffected
+    note: Confirmed (Table 6).
+  - claim_index: 2
+    effect: unaffected
+    note: Confirmed.
+  - claim_index: 3
+    effect: unaffected
+    note: Confirmed.
+  dive_corrections: '2026-10-30 (Stage 2b, wave 2; surfaced by the wave-1 dives of intake-2525..2528): Confirmed. In-context
+    reading only; no tool/search arm, synthetic single needle. The extrapolation to grep over agent transcripts is ours. Appendices
+    A-D and figures not read.'
+- id: intake-2532
+  arxiv_id: '2506.07982'
+  url: https://arxiv.org/abs/2506.07982
+  source_type: paper
+  title: 'tau2-Bench: Evaluating Conversational Agents in a Dual-Control Environment'
+  categories:
+  - benchmark_methodology
+  - agent_architecture
+  novelty: low
+  relevance: medium
+  discovered_via: expansion
+  expanded_from: intake-2527
+  verdict: adopt_patterns
+  ingested_date: '2026-10-30'
+  authors:
+  - Sierra Research (per paper)
+  key_claims:
+  - Each task is run four times at temperature 0.
+  - pass^k falls with k, faster in telecom than airline.
+  - pass^k is inherited from tau-bench as the fraction of k independent runs that all succeed.
+  techniques:
+  - pass^k
+  reported_results:
+  - gpt-4.1 pass^1 74% retail / 56% airline / 34% telecom.
+  cross_references:
+    chapters: []
+    handoffs:
+    - tool-output-compression.md
+    experiments: []
+    intake_entries:
+    - intake-2527
+    intake_entry_notes:
+    - intake-2527 (TRACE uses Pass^2)
+  recommended_actions:
+  - Metric source for reliability reporting in the A/B.
+  credibility_score: 4
+  contradicting_evidence: null
+  referenced_arxiv_ids: []
+  notes: Surfaced by the TRACE dive (Pass^k metric family). Read by a Stage-2b subagent; quotes re-found mechanically by main.
+  verification: dive-verified
+  handoffs_updated: []
+  handoffs_created: []
+  source_revision: arXiv 2506.07982v1 HTML (sha256-12 53a884b733a4)
+  read_depth: PARTIAL
+  reader_should_conclude: Cite for n=4, temperature-0 trial protocol. Take the pass^k estimator from intake-2533.
+  claim_anchors:
+  - claim_index: 0
+    kind: heading-and-hash
+    locator: Section 4.1
+    quote: Each task is run four times, maintaining a consistent LLM temperature of 0
+    quote_sha256: 58ae4599f9e583abd4286449ea2497cc3d3b87a1d9b9620930a5d0824f510b7a
+    source_revision: arXiv 2506.07982v1 HTML (sha256-12 53a884b733a4)
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: heading-and-hash
+    locator: Section 4.2
+    quote: scores decline more rapidly for telecom compared to airline
+    quote_sha256: cb7e054a325b008254e7bd7a224263e3f3259ad093d3c6d86177306ccbef81cf
+    source_revision: arXiv 2506.07982v1 HTML (sha256-12 53a884b733a4)
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: heading-and-hash
+    locator: Section 2
+    quote: the fraction of k independent runs that succeed
+    quote_sha256: 14d8b98b5d798996dc972d8fc47f3d2ca8f5e00a21aedad8afddcf212cf64540
+    source_revision: arXiv 2506.07982v1 HTML (sha256-12 53a884b733a4)
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: Confirmed.
+  - claim_index: 1
+    effect: unaffected
+    note: Per-k numbers are in Fig 3 (image), not text.
+  - claim_index: 2
+    effect: narrowed
+    note: No formula in tau2; the estimator is in tau-bench (intake-2533).
+  dive_corrections: '2026-10-30 (Stage 2b, wave 2; surfaced by the wave-1 dives of intake-2525..2528): Confirmed. Appendix
+    policies and figures not read.'
+- id: intake-2533
+  arxiv_id: '2406.12045'
+  url: https://arxiv.org/abs/2406.12045
+  source_type: paper
+  title: 'tau-bench: A Benchmark for Tool-Agent-User Interaction in Real-World Domains'
+  categories:
+  - benchmark_methodology
+  - agent_architecture
+  novelty: low
+  relevance: medium
+  discovered_via: expansion
+  expanded_from: intake-2527
+  verdict: adopt_patterns
+  ingested_date: '2026-10-30'
+  authors:
+  - Shunyu Yao
+  - Noah Shinn
+  - Pedram Razavi
+  - Karthik Narasimhan
+  key_claims:
+  - pass^k is the chance that all k i.i.d. trials of a task succeed, averaged over tasks, estimated per task from c successes
+    in n trials as C(c,k)/C(n,k).
+  - Even the best gpt-4o agent (>60% average success) falls below 25% at pass^8.
+  - At least 3 trials are run per task.
+  techniques:
+  - pass^k unbiased estimator
+  reported_results:
+  - gpt-4o pass^8 < 25%.
+  cross_references:
+    chapters: []
+    handoffs:
+    - tool-output-compression.md
+    experiments: []
+    intake_entries:
+    - intake-2532
+    intake_entry_notes:
+    - intake-2532 (tau2 inherits the metric)
+  recommended_actions:
+  - Operator-review candidate: the A/B would use the per-task estimator rather than p^k of the mean.
+  credibility_score: 4
+  contradicting_evidence: null
+  referenced_arxiv_ids: []
+  notes: Fetched by the wave-2 tau2 dive as the metric source (previously only a referenced id). Quotes re-found mechanically
+    by main.
+  verification: dive-verified
+  handoffs_updated: []
+  handoffs_created: []
+  source_revision: arXiv 2406.12045v1 HTML (sha256-12 ff6267f05194)
+  read_depth: PARTIAL
+  reader_should_conclude: Cite for the pass^k / pass@k estimators. With n=2, pass^2 is the share of tasks with both runs passing.
+  claim_anchors:
+  - claim_index: 0
+    kind: heading-and-hash
+    locator: Section 3, "Pass^k metric"
+    quote: defined as the chance that all k i.i.d. task trials are successful, averaged across tasks
+    quote_sha256: da6d85a707f50b9cb9067111e396e9cbef407357c9f53fa0ec9c8800a9662fa0
+    source_revision: arXiv 2406.12045v1 HTML (sha256-12 ff6267f05194)
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: heading-and-hash
+    locator: Section 5
+    quote: drops to <25%
+    quote_sha256: 328ded7ed12d7a68bfbc093b3eecf844c8b71d1a9691d8ff1881c1eb61424c92
+    source_revision: arXiv 2406.12045v1 HTML (sha256-12 ff6267f05194)
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: heading-and-hash
+    locator: Section 4
+    quote: we run at least 3 trials per task
+    quote_sha256: eb2386db8b0c6d32764b5ce46320375153b7ba44e0b2a6d45bfaaaa6a89492dc
+    source_revision: arXiv 2406.12045v1 HTML (sha256-12 ff6267f05194)
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: 'Confirmed: pass^k = E_task[C(c,k)/C(n,k)], pass@k = 1 - E_task[C(n-c,k)/C(n,k)].'
+  - claim_index: 1
+    effect: unaffected
+    note: Confirmed.
+  - claim_index: 2
+    effect: unaffected
+    note: Confirmed.
+  dive_corrections: '2026-10-30 (Stage 2b, wave 2; surfaced by the wave-1 dives of intake-2525..2528): Confirmed. Appendices
+    not read.'
+- id: intake-2534
+  arxiv_id: null
+  url: https://docs.openclaw.ai/concepts/session-pruning
+  source_type: repo
+  title: OpenClaw session pruning + compaction (docs + packages/agent-core compaction.ts @ 0e7b5c3)
+  categories:
+  - context_management
+  - agent_architecture
+  - tool_implementation
+  novelty: low
+  relevance: high
+  discovered_via: expansion
+  expanded_from: intake-2527
+  verdict: adopt_patterns
+  ingested_date: '2026-10-30'
+  authors:
+  - OpenClaw maintainers
+  key_claims:
+  - Session pruning removes only old tool results from the model view; conversation text is untouched and no LLM is called.
+  - Pruned originals stay in the on-disk transcript, but the placeholder carries no pointer for the model.
+  - The last three assistant turns are never pruned.
+  - Compaction summarizes the conversation while the full history stays on disk for explicit retrieval.
+  - The compaction prompt is a sectioned summary that asks to preserve exact file paths, function names and error messages.
+  techniques:
+  - session pruning
+  - sectioned compaction summary
+  reported_results: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - tool-output-compression.md
+    experiments: []
+    intake_entries:
+    - intake-2522
+    - intake-2527
+    intake_entry_notes:
+    - intake-2522 (Mainplane contrasts against summary compaction)
+    - intake-2527 (TRACE cites OpenClaw compaction)
+  recommended_actions:
+  - Model a no-summary pruning arm on the client path, adding a pointer in the placeholder; reuse the sectioned summary prompt
+    as the fair summary arm.
+  credibility_score: null
+  contradicting_evidence: null
+  referenced_arxiv_ids: []
+  notes: Surfaced by the TRACE dive (cites the OpenClaw compaction source at 0e7b5c3 and the session-pruning docs). docs.openclaw.ai
+    200, no redirect; openclaw.ai/docs/... 308 -> docs.openclaw.ai. Repo license MIT (GitHub API). Read by a Stage-2b subagent;
+    quotes re-found mechanically by main.
+  verification: dive-verified
+  handoffs_updated: []
+  handoffs_created: []
+  source_revision: docs.openclaw.ai/concepts/session-pruning.md (sha256-12 2978740c3da2) + /concepts/compaction.md (sha256-12
+    89a211734955), live docs retrieved 2026-10-30; openclaw/openclaw packages/agent-core/src/harness/compaction/compaction.ts
+    @ 0e7b5c34292cc28707a0e5a0b730cff295ef0f8a (sha256-12 83b7fb640a67)
+  read_depth: PARTIAL
+  reader_should_conclude: Cite for the client-side pruning parameters and the sectioned summary prompt as a published baseline
+    arm. Do NOT claim OpenClaw gives the model a pointer to pruned content.
+  claim_anchors:
+  - claim_index: 0
+    kind: line-range
+    locator: session-pruning.md:L102
+    quote: normal conversation text is left alone.
+    quote_sha256: 305a415b3c8280cf63d34d2256686029dd2c011208a45c579b75bfd03794014f
+    source_revision: docs.openclaw.ai/concepts/session-pruning.md (sha256-12 2978740c3da2) + /concepts/compaction.md (sha256-12
+      89a211734955), live docs retrieved 2026-10-30; openclaw/openclaw packages/agent-core/src/harness/compaction/compaction.ts
+      @ 0e7b5c34292cc28707a0e5a0b730cff295ef0f8a (sha256-12 83b7fb640a67)
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: line-range
+    locator: session-pruning.md:LNone
+    quote: Original tool-result entries are not rewritten
+    quote_sha256: 452c9838f70c79f2b348a49890dc69a5fbee879c3c2149dd761a3a1bafcda5a8
+    source_revision: docs.openclaw.ai/concepts/session-pruning.md (sha256-12 2978740c3da2) + /concepts/compaction.md (sha256-12
+      89a211734955), live docs retrieved 2026-10-30; openclaw/openclaw packages/agent-core/src/harness/compaction/compaction.ts
+      @ 0e7b5c34292cc28707a0e5a0b730cff295ef0f8a (sha256-12 83b7fb640a67)
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: line-range
+    locator: session-pruning.md:L100
+    quote: the last three assistant turns are never pruned
+    quote_sha256: a9d5805a6bf1ec51399a9e8650b9e18c9c248e66fa7a06e1908fe846e8402e3e
+    source_revision: docs.openclaw.ai/concepts/session-pruning.md (sha256-12 2978740c3da2) + /concepts/compaction.md (sha256-12
+      89a211734955), live docs retrieved 2026-10-30; openclaw/openclaw packages/agent-core/src/harness/compaction/compaction.ts
+      @ 0e7b5c34292cc28707a0e5a0b730cff295ef0f8a (sha256-12 83b7fb640a67)
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: line-range
+    locator: compaction.md:L23
+    quote: The full conversation history stays on disk. Compaction only changes what the model sees on the next turn.
+    quote_sha256: f29a515ba0af67665cf11f02a5f0ca5d37d63069dc7e4a49e1d63ad4f976ddee
+    source_revision: docs.openclaw.ai/concepts/session-pruning.md (sha256-12 2978740c3da2) + /concepts/compaction.md (sha256-12
+      89a211734955), live docs retrieved 2026-10-30; openclaw/openclaw packages/agent-core/src/harness/compaction/compaction.ts
+      @ 0e7b5c34292cc28707a0e5a0b730cff295ef0f8a (sha256-12 83b7fb640a67)
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: line-range
+    locator: compaction.ts:L472 @ 0e7b5c3
+    quote: Preserve exact file paths, function names, and error messages.
+    quote_sha256: 79810c934e96642815edf342ba86d29f07f3a4b14c4216eafe21176d78b803e5
+    source_revision: docs.openclaw.ai/concepts/session-pruning.md (sha256-12 2978740c3da2) + /concepts/compaction.md (sha256-12
+      89a211734955), live docs retrieved 2026-10-30; openclaw/openclaw packages/agent-core/src/harness/compaction/compaction.ts
+      @ 0e7b5c34292cc28707a0e5a0b730cff295ef0f8a (sha256-12 83b7fb640a67)
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: Confirmed; soft-trim >4,000 chars to head/tail 1,500, hard-clear to a placeholder at ~50% context.
+  - claim_index: 1
+    effect: unaffected
+    note: Pointer absence is a NOT-FOUND-IN-SOURCE finding, not a stated design.
+  - claim_index: 2
+    effect: unaffected
+    note: Confirmed.
+  - claim_index: 3
+    effect: unaffected
+    note: Confirmed; the docs also say facts never summarized become unreachable to the model.
+  - claim_index: 4
+    effect: unaffected
+    note: Confirmed; keepRecentTokens 20000, reserveTokens 16384 defaults (compaction.ts:142-146).
+  dive_corrections: '2026-10-30 (Stage 2b, wave 2; surfaced by the wave-1 dives of intake-2525..2528): Confirmed. Another
+    shipping harness keeping the full transcript on disk beside a summary; docs are live (unpinned) and may differ from 0e7b5c3.
+    compaction.md sections 125-235 not read. Wave-2 dive-surfaced sources DECLINED at Stage-2 close, 2026-10-30: platform.claude.com
+    context-editing doc (clear_tool_uses; its trigger and keep parameters are already recorded via the OpenClaw docs and it
+    adds no decision-bearing mechanism); OpenClaw /concepts/context-engine, /reference/transcript-hygiene, /concepts/memory
+    (compaction and pruning pages read; these do not bear on the A/B arms).'

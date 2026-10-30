@@ -1,9 +1,9 @@
 {
   "session_id": "intake-mainplane-20261030",
   "started_at": "2026-10-30T23:00:00Z",
-  "last_checkpoint": "2026-10-30T23:30:00Z",
-  "stage": 1,
-  "phase": "stage1-complete",
+  "last_checkpoint": "2026-10-31T00:30:00Z",
+  "stage": 2,
+  "phase": "stage2-closed",
   "lane": "/mnt/raid0/llm/tmp/intake-mainplane-20261030/root",
   "branch": "intake/mainplane-20261030",
   "topic": "Mainplane \"retrieval over compaction\" (X posts 2115842962521509968 / 2115131891766657357, github mainplane-ai/mainplane, docs/self-hosting.md, Sutton Bitter Lesson)",
@@ -22,10 +22,15 @@
     "intake-2526",
     "intake-2527",
     "intake-2528",
-    "intake-2529"
+    "intake-2529",
+    "intake-2530",
+    "intake-2531",
+    "intake-2532",
+    "intake-2533",
+    "intake-2534"
   ],
   "entries_remaining": [],
-  "next_intake_id": 2530,
+  "next_intake_id": 2535,
   "expansion_cap": 10,
   "expansion_count": 5,
   "expansion_entries": [
@@ -80,7 +85,98 @@
       "reason": "Ruling (b): owning session applies index rows; Stage 4 not run by this lane."
     }
   ],
-  "actionable_ledger": [],
+  "actionable_ledger": [
+    {
+      "ledger_id": "MPL-1",
+      "source": "Stage-1 prelim / intake-2522,2523 dive + orchestrator compaction.py/session_summary.py read",
+      "action": "Add a pointer-only (no summary) continuation arm to the filed verbatim-log vs summarize A/B."
+    },
+    {
+      "ledger_id": "MPL-2",
+      "source": "orchestrator environment.py _validate_file_path read (main, 2026-10-30)",
+      "action": "Prove every context pointer the REPL emits (session-log peek, compaction read_file, spill peek) is readable under default, task_root and request-scope modes; fix any denial."
+    },
+    {
+      "ledger_id": "MPL-3",
+      "source": "intake-2524/2530/2534 dives",
+      "action": "Keep summary+pointer (current production shape) and summary-only as A/B arms; add full-history-in-context while it fits; equal context budget."
+    },
+    {
+      "ledger_id": "MPL-4",
+      "source": "intake-2534 dive",
+      "action": "Add a no-summary pruning arm modeled on OpenClaw client-side pruning, with a pointer in the placeholder; use OpenClaw sectioned summary prompt for the summary arm."
+    },
+    {
+      "ledger_id": "MPL-5",
+      "source": "intake-2527/2532/2533 dives",
+      "action": "Report pass^k/pass@k per arm with the per-task estimator (n>=2, prefer 4) and post-boundary blocked actions counted separately from re-reads."
+    },
+    {
+      "ledger_id": "MPL-6",
+      "source": "intake-2522 trade-off + intake-2530 claim 4 + intake-2526 claim 3",
+      "action": "Log retrieval-miss rate (needed fact never searched), re-fetch tokens and wall time per arm."
+    },
+    {
+      "ledger_id": "MPL-7",
+      "source": "intake-2531 dive",
+      "action": "Stratify A/B probes by literal recoverability (direct / paraphrase / two-hop)."
+    },
+    {
+      "ledger_id": "MPL-8",
+      "source": "intake-2528 dive",
+      "action": "Report compaction wall time as a fraction of end-to-end wall time per arm."
+    },
+    {
+      "ledger_id": "MPL-9",
+      "source": "intake-2525 dive (Appendix B fixture)",
+      "action": "Run an exact-value needle correctness screen across summary-only / summary+pointer / pointer-only before the full A/B."
+    },
+    {
+      "ledger_id": "MPL-10",
+      "source": "intake-2525 dive",
+      "action": "Content-addressed spill stubs (head/tail preview + id + length) and recall guards as pointer-arm refinements."
+    },
+    {
+      "ledger_id": "MPL-11",
+      "source": "intake-2530 dive",
+      "action": "MemGPT-style memory-pressure warning before eviction as a pointer-arm refinement."
+    },
+    {
+      "ledger_id": "MPL-12",
+      "source": "intake-2528/2527 dives",
+      "action": "Parallel or async compaction and verifier-optimised summary prompts."
+    },
+    {
+      "ledger_id": "MPL-13",
+      "source": "intake-2523 dive",
+      "action": "Agent-visible context meter in every tool result."
+    },
+    {
+      "ledger_id": "MPL-14",
+      "source": "intake-2523 dive",
+      "action": "Agent-writable AGENTS.md as persistent standing context."
+    },
+    {
+      "ledger_id": "MPL-15",
+      "source": "intake-2523 dive + orchestrator sqlite_store.py read",
+      "action": "Cross-session continuation: expose past-session transcript search to the REPL and a pointer-only resume."
+    },
+    {
+      "ledger_id": "MPL-16",
+      "source": "intake-2526 dive",
+      "action": "Agent-authored episode annotation for eviction (CWL)."
+    },
+    {
+      "ledger_id": "MPL-17",
+      "source": "intake-2525 dive",
+      "action": "Adopt ARC HBM roofline serving-cost model."
+    },
+    {
+      "ledger_id": "MPL-18",
+      "source": "Stage-1 prelim (operator question)",
+      "action": "Record the novelty verdict and prior-art chain in the context-management wiki."
+    }
+  ],
   "prior_sessions": [
     {
       "session_id": "intake-underdog-bark-20261021",
@@ -64956,5 +65052,120 @@
         "timestamp_note": "Earlier checkpoint timestamps 19:20Z/19:45Z/20:30Z were estimates written ahead of the clock; actual commits landed ~18:3x-18:5xZ (see git log)."
       }
     }
-  ]
+  ],
+  "stage2_waves": {
+    "wave1": {
+      "dived": [
+        "intake-2522",
+        "intake-2523",
+        "intake-2524",
+        "intake-2525",
+        "intake-2526",
+        "intake-2527",
+        "intake-2528",
+        "intake-2529"
+      ],
+      "groups": {
+        "main": [
+          "intake-2522",
+          "intake-2523",
+          "intake-2524",
+          "intake-2529"
+        ],
+        "arc_cwl": [
+          "intake-2525",
+          "intake-2526"
+        ],
+        "trace_pcc": [
+          "intake-2527",
+          "intake-2528"
+        ]
+      },
+      "artifacts": {
+        "x": "/mnt/raid0/llm/tmp/dive-mainplane-20261030/x/",
+        "repo": "/mnt/raid0/llm/tmp/dive-mainplane-20261030/repo/",
+        "exp": "/mnt/raid0/llm/tmp/dive-mainplane-20261030/exp/",
+        "arc_cwl": "/mnt/raid0/llm/tmp/dive-mainplane-20261030/arc_cwl/",
+        "trace_pcc": "/mnt/raid0/llm/tmp/dive-mainplane-20261030/trace_pcc/"
+      }
+    },
+    "wave2": {
+      "dived": [
+        "intake-2530",
+        "intake-2531",
+        "intake-2532",
+        "intake-2533",
+        "intake-2534"
+      ],
+      "artifacts": {
+        "w2a": "/mnt/raid0/llm/tmp/dive-mainplane-20261030/w2a/",
+        "w2b": "/mnt/raid0/llm/tmp/dive-mainplane-20261030/w2b/"
+      }
+    }
+  },
+  "second_reader": "main re-found every claim_anchor quote mechanically (whitespace-normalized substring) in the on-disk source before write; stage2_apply.py aborts on any miss. Two subagent quotes failed verbatim (MathML-garbled numbers) and were replaced by unaffected adjacent text.",
+  "dive_surfaced_sources": [
+    {
+      "id_or_url": "arXiv 2310.08560 MemGPT",
+      "bears_on": "intake-2522/2525",
+      "recommend": "ingest-and-dive",
+      "status": "wave 2 -> intake-2530"
+    },
+    {
+      "id_or_url": "arXiv 2502.05167 NoLiMa",
+      "bears_on": "intake-2522",
+      "recommend": "ingest-and-dive",
+      "status": "wave 2 -> intake-2531"
+    },
+    {
+      "id_or_url": "arXiv 2506.07982 tau2-bench",
+      "bears_on": "intake-2527",
+      "recommend": "ingest-and-dive",
+      "status": "wave 2 -> intake-2532"
+    },
+    {
+      "id_or_url": "arXiv 2406.12045 tau-bench",
+      "bears_on": "intake-2532",
+      "recommend": "ingest-and-dive",
+      "status": "wave 2 -> intake-2533"
+    },
+    {
+      "id_or_url": "docs.openclaw.ai/concepts/session-pruning + compaction.ts @0e7b5c3",
+      "bears_on": "intake-2527",
+      "recommend": "ingest-and-dive",
+      "status": "wave 2 -> intake-2534"
+    },
+    {
+      "id_or_url": "arXiv 2510.08276, 2510.06727, 2605.29640, 2407.01437, 2602.14337, Recovery-Bench, U-NIAH, Kiz8-Team/pi-cwl",
+      "bears_on": "intake-2525",
+      "recommend": "decline",
+      "status": "declined; recorded in intake-2525 dive_corrections"
+    },
+    {
+      "id_or_url": "nokia-applied-research/Trace, Hermes context_compressor.py, arXiv 2602.03784",
+      "bears_on": "intake-2527",
+      "recommend": "decline",
+      "status": "declined; recorded in intake-2527 dive_corrections"
+    },
+    {
+      "id_or_url": "arXiv 2304.03442, 2112.09332, 2305.06983, LoCoMo, RULER, BABILong",
+      "bears_on": "intake-2530",
+      "recommend": "decline",
+      "status": "declined; recorded in intake-2530 dive_corrections"
+    },
+    {
+      "id_or_url": "Anthropic context-editing doc; OpenClaw context-engine/transcript-hygiene/memory pages",
+      "bears_on": "intake-2534",
+      "recommend": "decline",
+      "status": "declined; recorded in intake-2534 dive_corrections"
+    }
+  ],
+  "stage2_closeout": {
+    "wave_cap": 4,
+    "waves_used": 2,
+    "declined_by_wave_cap": [],
+    "declined_by_dives": "see dive_surfaced_sources rows with recommend=decline",
+    "gate": "closed 2026-10-31: every surfaced source ingested-and-dived (wave 2) or declined with reason in the bearing entry"
+  },
+  "dive_artifact_audit": "clean: all dive artifacts under /mnt/raid0/llm/tmp/dive-mainplane-20261030/ (sources, text conversions, scripts/h2t.py); no repo writes outside research/intake_index.yaml and .research-session.json"
 }
