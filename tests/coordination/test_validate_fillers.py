@@ -357,3 +357,40 @@ def test_negated_timing_mentions_are_not_timing_signals(text):
 ])
 def test_real_timing_mentions_still_timing_signals(text):
     assert vf.has_timing_signal(text)
+
+
+
+@pytest.mark.parametrize("dec,eff", [
+    ("C2 CAS: noise unit for the dd3d9721c Q38FN recipe on the current host state", "n/a (noise unit)"),
+    ("Measure candidate build ffc1bac82 baseline CPU A/A floor characterization", "n/a (uncertified raw characterization)"),
+])
+def test_build_floor_measurement_admits_without_existing_floor(tmp_path, dec, eff):
+    record = row(cls="block-timing-quiet", dec=dec, eff=eff)
+    f = table(tmp_path, record)
+    assert _derive(tmp_path, cls="block-timing-quiet", dec=dec, eff=eff).stdout.strip() == "block-timing-quiet"
+    checked = cli("--file", f, "--row", "r1", "--for-grant")
+    assert checked.returncode == 0, checked.stdout
+
+
+@pytest.mark.parametrize("dec,eff", [
+    ("noise unit for the thing", "n/a (noise unit)"),
+    ("A/A floor characterization", "n/a (raw observations)"),
+    ("candidate throughput comparison, stddev retained", "+2% tok/s"),
+    ("candidate versus baseline speed comparison", "n/a (noise observed)"),
+    ("recipe only; no floor-producing operation", "n/a (stddev recorded)"),
+    ("noise unit without declared identity", "n/a (spread)"),
+])
+def test_nonmeasurement_quiet_keeps_existing_floor_requirement(tmp_path, dec, eff):
+    f = table(tmp_path, row(cls="block-timing-quiet", dec=dec, eff=eff))
+    checked = cli("--file", f, "--row", "r1", "--for-grant")
+    assert checked.returncode == 2, checked.stdout
+    assert "must cite a floor file" in checked.stdout
+    assert _derive(tmp_path, cls="block-timing-quiet", dec=dec, eff=eff).stdout.strip() != "block-timing-quiet"
+
+
+def test_comparative_quiet_real_floor_contract_unchanged(tmp_path):
+    floor = tmp_path / "serving-floor.q.json"
+    floor.write_text('{"fixture_only": true}\n')
+    f = table(tmp_path, row(cls="block-timing-quiet", dec="candidate versus baseline throughput", notes=str(floor)))
+    checked = cli("--file", f, "--row", "r1", "--for-grant")
+    assert checked.returncode == 0, checked.stdout

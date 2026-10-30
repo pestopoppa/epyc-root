@@ -296,6 +296,13 @@ def strict_scratch_retention(notes: str) -> bool:
     return bool(re.search(r'(?:^|;)\s*retention_v2\s*=\s*1\s*(?:;|$)', notes))
 
 
+def measures_build_floor(cells: list[str], col: dict[str, int]) -> bool:
+    """The existing floor-measurement exception, shared by derivation and admission."""
+    dec = cells[col["decision"]]
+    return bool(FLOOR_MEASURE_RE.search(dec + " " + cells[col["min_effect"]])
+                and BUILD_REF_RE.search(dec))
+
+
 def derive_booking_class(cells: list[str], col: dict[str, int]) -> str:
     """CTC-Q-C: derive the booking class of a row from its decision / prior / notes (and min_effect unit).
 
@@ -314,7 +321,7 @@ def derive_booking_class(cells: list[str], col: dict[str, int]) -> str:
     cites_floor = any(FLOOR_RE.search(t) or REGISTRY_FLOOR_RE.search(t) for t in (dec, notes, prior))
     if names_baseline and cites_floor:
         return "block-timing-quiet"
-    if FLOOR_MEASURE_RE.search(dec + " " + g("min_effect")) and BUILD_REF_RE.search(dec):
+    if measures_build_floor(cells, col):
         return "block-timing-quiet"
     if has_timing_signal(" ".join((dec, g("min_effect"), notes))):
         return "block-timing-pairable"
@@ -371,7 +378,7 @@ def check_row(cells: list[str], col: dict[str, int], seen: set[str], pid_alive=N
     elif not (EFFECT_BUILD_RE.match(eff) or EFFECT_NUM_RE.search(eff) or EFFECT_QUAL_RE.search(eff)):
         out.append(f"min_effect {eff[:60]!r}: no number/unit, exact-identity wording or 'n/a (<reason>)'")
 
-    if g("class") == "block-timing-quiet":
+    if g("class") == "block-timing-quiet" and not measures_build_floor(cells, col):
         if not BASELINE_RE.search(dec):
             out.append("block-timing-quiet: decision must name a champion/candidate baseline")
         if not (FLOOR_RE.search(g("notes")) or FLOOR_RE.search(prior)):
