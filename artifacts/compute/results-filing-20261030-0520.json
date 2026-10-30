@@ -1,0 +1,28 @@
+{
+  "schema": "original-event-filing/v1",
+  "note": "Original events only; later rearm evidence distinct; preserve actual seen/end times and filing lateness.",
+  "audit_files": [
+    {
+      "path": "/mnt/raid0/llm/tmp/codex3-filing-overdue-0520-20261030/codex3-hil-overdue-0520-20261030.json",
+      "sha256": "4f4e16f06a3b71fbb9a62f7aa8f9f9e9e22ebaeda796aec2408fffb01648afed"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/codex3-filing-overdue-0520-20261030/codex3-r14-overdue-0520-20261030.json",
+      "sha256": "076a47869ecc7eeec08ffed388e652a9c2143cc24c3b10a83504d3cf2e1c0973"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/codex3-filing-overdue-0520-20261030/codex3-ni-fa4gpu-0520-20261030.json",
+      "sha256": "3b72abe9e4c7543add5b36989e4956ab2f7fdb9caea2c63a4a53b80bdd5e9688"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/codex3-filing-overdue-0520-20261030/codex3-hil-overdue-0520-20261030.md",
+      "sha256": "f06f4365a8093de6ed61a4edcc19b799e6a1e343e66c1467f086c5b43ad9bfb4"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/codex3-filing-overdue-0520-20261030/codex3-r14-overdue-0520-20261030.md",
+      "sha256": "a0ca77a56d77244e23316d77b265cd00f422f5e9ad247f4b382a3c466bcb474a"
+    }
+  ],
+  "native_audits_retained_in_full": true,
+  "prepared_at": "2026-10-30T05:27:56.744218+00:00"
+}
