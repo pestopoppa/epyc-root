@@ -563,6 +563,7 @@ _FILE_SOURCES = (
     "df2-row-exact-akx",
     "hg5-request-event",
     "graph-profiler-measurement",
+    "pip02-incremental-teds",
     "odl-unlimited-ocr-run",
     "dtap-timeout-report",
     "pii-staged-gate",
