@@ -25,3 +25,6 @@ Original CPU DCA r5 admission failure, DF2 artifact-recovery partial and Paddle 
 
 
 Seven original Paddle rc75 windows filed separately from later rearms: last pre-end captures record disk floor; g17 has5unmatchedstarts, g23/g29 have0unmatched, other4noRPCstarts. Native capture-to-outer-end association is explicitly inferred; no invented native finish timestamp. Four new Paddle groups38/41/44/47 plus four unexposed ODLshards24/25/28/29 published from verified real smoke and full packet closure under any-cpu-quarter. HILR3 and HSF10 actual smokes passed; EVLR9 actual both arms/wire schemas/drain passed and diagnosticGPU READY, control26no delegation andStep3open. [belief: cc]
+
+
+Matched YaRN CPU/GPU pair completed: CPU13.6293/GPU14.3940, GPU−CPU+.7647 atmatched64Ksettings. Offsetremainsunattributed; no quality/equivalence/speedtick. S0v5 now30accepted/2unknown/13unexposed, fixed45; no redraw. Bothoriginaleventsauditedwithnativehashes. [belief: cc]

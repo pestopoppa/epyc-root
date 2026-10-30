@@ -1,0 +1,100 @@
+{
+  "at": "2026-10-30T01:17:32.778622+00:00",
+  "original_events": {
+    "codex-hil15-s0-unknown-preserving-v5-20261030": {
+      "id": "codex-hil15-s0-unknown-preserving-v5-20261030",
+      "ended_file": "/mnt/raid0/llm/tmp/compute-flags/grants/codex-hil15-s0-unknown-preserving-v5-20261030.ended",
+      "end_line": "rc=75 time=2026-10-30T01:06:38Z reason=job-rc-75:exited",
+      "seen_at": "2026-10-30T01:07:40Z",
+      "result_path": "/mnt/raid0/llm/tmp/hil15-s0-safe-prep-20261029/s0-r5-official-results",
+      "scratch_root": "/mnt/raid0/llm/tmp/hil15-s0-safe-prep-20261029",
+      "decision_rule": "Diagnostic discovery: original45 replay denominator fixed. Retain29 accepted and unit10slot2 unknown; schedule only original15 unexposed unit11-15 slots. Collection exhaustion means44known+1unknown, full_complete=false; no redraw or complete-cohort verdict.",
+      "class": "diagnostic",
+      "owner": "codex-refactor-01a16fc3"
+    },
+    "codex-ni-yarn-dca-xdev-cpu-r6-20261030": {
+      "id": "codex-ni-yarn-dca-xdev-cpu-r6-20261030",
+      "ended_file": "/mnt/raid0/llm/tmp/compute-flags/grants/codex-ni-yarn-dca-xdev-cpu-r6-20261030.ended",
+      "end_line": "rc=0 time=2026-10-30T01:07:09Z reason=complete",
+      "seen_at": "2026-10-30T01:07:40Z",
+      "result_path": "/mnt/raid0/llm/tmp/codex-ni-yarn-dca-xdev-20261029-r6/runs",
+      "scratch_root": "/mnt/raid0/llm/tmp/codex-ni-yarn-dca-xdev-20261029-r6",
+      "decision_rule": "Perplexity is lower-is-better. Compare only after the matching GPU arm completes on identical source/model/text/context/batch/ubatch/attention/KV settings. Reported +/- is within-run token spread, not a between-run confidence interval; one pair does not establish statistical significance.",
+      "class": "diagnostic",
+      "owner": "codex-ni"
+    }
+  },
+  "audit": {
+    "sha256": {
+      "/mnt/raid0/llm/tmp/codex-ni-yarn-dca-xdev-20261029-r6/runs/codex-ni-yarn-dca-xdev-cpu-r6-20261030-full-1793323200/result.json": "39f1643502aab70a5847e47651f6094fd58e599812900ab0a19fa920eb43ccad",
+      "/mnt/raid0/llm/tmp/codex-ni-yarn-dca-xdev-gpu-r3-20261030/runs/codex-ni-yarn-dca-xdev-gpu-r3-20261030-full-1793321220/result.json": "4607b1e453bfc6677679ce74a54ad4451f20ff81a7cdcd9ac7937436bc4ac0b5",
+      "/mnt/raid0/llm/tmp/hil15-s0-safe-prep-20261029/s0-r5-official-results/unit-11/slot-0/driver-0/manifest.json": "a9966adad49d6e2948281ed0a2efdda2567086440a8a4536b04ef607f4f0e62e",
+      "/mnt/raid0/llm/tmp/hil15-s0-safe-prep-20261029/s0-r5-official-results/resource-partial.json": "4e66d5da25731f47fe956e5bfd8e8d7d088c8f7d321b2a6028526450f2def09a",
+      "/mnt/raid0/llm/tmp/hil15-s0-safe-prep-20261029/s0-r5-official-results/unit-11/slot-0.sha256": "8058b23f17383c2ddc68e96e06749775354dafd48decca18eaa4fb7544674730",
+      "/mnt/raid0/llm/tmp/hil15-s0-safe-prep-20261029/s0-r5-official-results/unit-11/slot-1/driver.log": "9b8c1389257185c436a84687f8f119ce3530a993f7fae461671cbcbe34c62e87",
+      "/mnt/raid0/llm/tmp/codex-ni-yarn-dca-xdev-20261029/src/common/common.h": "29e4e24976d8a905810bbedacf1a167e1e66fb1d2f50cee2a4b23193a1a74f7b"
+    },
+    "matched": {
+      "model_sha256": true,
+      "text_sha256": true,
+      "source_commit": true,
+      "context": true,
+      "batch": true,
+      "ubatch": true,
+      "flash_attention": true,
+      "cache_type_k": true,
+      "cache_type_v": true,
+      "chunks": true,
+      "threads": true,
+      "threads_batch": true
+    },
+    "stride": "neither argv overrides --ppl-stride; source default 0; legacy perplexity path",
+    "seed": "neither argv specifies seed; no runtime numeric seed capture; do not assert deterministic seed value",
+    "cpu_ppl": 13.6293,
+    "cpu_within_run_spread": 0.20758,
+    "gpu_ppl": 14.394,
+    "gpu_within_run_spread": 0.21592,
+    "gpu_minus_cpu": 0.7647,
+    "yarn_task_complete": false,
+    "reason": "matched offset persists; no mechanism attributed",
+    "s0": "29 prior accepted + 1 new failed accepted + 2 unknown + 13 unexposed = 45",
+    "slot11_0": "filter-s0-11-p0-r0",
+    "slot11_0_hash_list_valid": true,
+    "resource_partial": {
+      "output_accounting_complete": true,
+      "output_bytes": 1105920,
+      "output_cap_bytes": 1073741824,
+      "partial": true,
+      "peak_detail": {
+        "per_pid": [
+          {
+            "pid": 2535426,
+            "rss_bytes": 156999680
+          },
+          {
+            "birth": 144450312,
+            "pid": 2570204,
+            "rss_bytes": 134914048
+          },
+          {
+            "birth": 144423876,
+            "pid": 2537588,
+            "rss_bytes": 40808050688
+          }
+        ],
+        "pids": [
+          2570204,
+          2537588
+        ],
+        "rss_bytes": 41099964416,
+        "sampled": true
+      },
+      "reason": "output cap or remaining-output disk reserve",
+      "rss_scope": "sum of sampled resident pages across whole owned process tree; may miss transients and double-count shared pages",
+      "sampled_peak_rss_bytes": 41099964416,
+      "samples": 8041,
+      "unknown_exposures": "incomplete exposed native slots must never be redrawn"
+    },
+    "evl_keeper_wait": "2026-10-30T01:08:40Z READY-WAIT codex3-evl34-native-r9-pilot-20261030 (rank 62): regions mi210_0,184-191 not fittable now"
+  }
+}
