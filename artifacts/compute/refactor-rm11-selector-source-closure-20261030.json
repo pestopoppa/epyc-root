@@ -1,0 +1,81 @@
+{
+  "schema": "epyc-root-source-closure/v1",
+  "status": "PROPOSED_ROOT_FILING",
+  "root_base": {
+    "ref": "origin/main",
+    "sha": "f250760c0c0d8f726e2ae9afed63397a63fb2372"
+  },
+  "task": "RM-11a-SOURCE",
+  "parent_task_text": "RM-11a — Cross-family vs same-family verifier gain.",
+  "source_repo": "epyc-inference-research",
+  "source_commit": "f0737320a54f6454a67f957bf1b6eb5ec204149d",
+  "source_base": "6d2ab2803c6cc742a102ed18021247427d6b7be4",
+  "accepted_patch_sha256": "c5e168c7f406c2966a0b3c24e27e2850cf0c75f7647a2384cba8dbc51481ba3c",
+  "changed_source_paths": [
+    "scripts/benchmark/qwable_verifier_selector_runner.py",
+    "scripts/benchmark/test_selector_governed_code.py"
+  ],
+  "source_pair": {
+    "selector_path": "scripts/benchmark/qwable_verifier_selector_runner.py",
+    "selector_sha256": "de05a45612bfa8270c6db89b9a017274dadd8f767ec19350c52959d3e517e1d8",
+    "governed_scorer_repo": "epyc-orchestrator",
+    "governed_scorer_commit": "65b2b0e66b4da5ff718141bee1f87457b2b36149",
+    "governed_scorer_path": "scripts/benchmark/debug_scorer.py",
+    "governed_scorer_sha256": "01cf5a675a1f107120ae6b69c1b9f9ee22783052d15239925d86d0d013755fce"
+  },
+  "behavior": "Every selector code_execution candidate delegates to the existing governed B7 scorer, preserving its executable oracle, unavailable outcome, private execution and cleanup.",
+  "retired_defect": "The duplicate executor ignored entry_point_cases, synthesized a zero-argument assertion from expected text and bypassed governed oracle validation and isolation.",
+  "verification": {
+    "related_suite": "22 passed: 14 existing selector tests and 8 new behavioral cases",
+    "negative_control": "All 8 new behavioral cases fail against the untouched selector under the same governed scorer; candidate restored in finally.",
+    "transport_boundary": "Actual run_question and execute code paths, real synthetic scorer subprocesses, mocked HTTP/server edges; persisted unavailable-oracle error and continued next valid question.",
+    "source_closure": "Fresh upstream accepted paths unchanged; existing selector-test and research shim bytes verified against publication base; governed scorer verified against immutable ORCH65b2 object.",
+    "supervision": "Existing R6 pair28-29 mutex, CPUs124,125, OMP1, live-grant admission and sampled <=8GiB/300s supervisor; 0.815s elapsed, 71958528B sampled tree RSS, rc0, children drained."
+  },
+  "publication": {
+    "remote_sha_verified": "f0737320a54f6454a67f957bf1b6eb5ec204149d",
+    "private_index_commit_tree": true,
+    "canonical_head_index_worktree_preserved": true,
+    "research_push_lease_released": true
+  },
+  "scope": {
+    "selector_source_defect_complete": true,
+    "RM_11_study_complete": false,
+    "RM_11a_measured_comparison_complete": false,
+    "runtime_adoption": false,
+    "historical_rescore": false,
+    "new_score_grammar": false,
+    "new_grading_rule": false,
+    "measurement_protocol_change": false,
+    "model_quality_or_performance_claim": false
+  },
+  "future_measurement_boundary": "Pin the selector and governed scorer actually loaded; retain historical duplicate-executor outputs and do not pool them with governed-executor outcomes as one instrument. Remote publication is not shared-checkout or runtime adoption.",
+  "progress_target": "progress/2026-10/2026-10-30.md",
+  "evidence": [
+    {
+      "label": "research_publication_receipt",
+      "path": "/mnt/raid0/llm/tmp/refactor-selector-governed-code-20261030/publication-receipt.json",
+      "sha256": "cb32008f202300eab6badebcd46405bab041ed51f8c1ef4222b80fd2c7d5b8f2"
+    },
+    {
+      "label": "fresh_base_exact_scorer_validation",
+      "path": "/mnt/raid0/llm/tmp/refactor-selector-governed-code-20261030/publication-validation.log",
+      "sha256": "9a44e79fcfa0263c09705062c6e98714567783ea3cf26811724c62f65820e0a7"
+    },
+    {
+      "label": "untouched_selector_negative_control",
+      "path": "/mnt/raid0/llm/tmp/refactor-selector-governed-code-20261030/negative-control.log",
+      "sha256": "431b8b7b620e0c69be3db6b3f8ebae9f739a04e6571ac5452cea4bff95f2758f"
+    },
+    {
+      "label": "accepted_source_patch",
+      "path": "/mnt/raid0/llm/tmp/refactor-selector-governed-code-20261030/PROPOSED.patch",
+      "sha256": "c5e168c7f406c2966a0b3c24e27e2850cf0c75f7647a2384cba8dbc51481ba3c"
+    },
+    {
+      "label": "paired_source_version_notes",
+      "path": "/mnt/raid0/llm/tmp/refactor-selector-governed-code-20261030/SOURCE-VERSION-NOTES.md",
+      "sha256": "0a531ace610b29fbe809e52393e8f0e9b8d0b06c6312e2f6064f287c4ffe6db0"
+    }
+  ]
+}

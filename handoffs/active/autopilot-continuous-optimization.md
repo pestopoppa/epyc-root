@@ -498,9 +498,7 @@ First full smoke run of the trial loop. Four defects, three silent.
   Same family as debugbench's reference-fails: the scorer rejecting right answers, not just accepting
   wrong ones.
 
-- [ ] **Scorer defect reported, not worked around:** `_extract_code_block` truncates UNFENCED code at
-  the first blank line. Gating on the unfenced reference would cost 344 rows (15.85% vs 29.83%), so it
-  is measured and reported rather than silently absorbed. **UNOWNED.**
+- [x] **Unfenced Python scorer repair (2026-10-30).** Orchestrator `65b2b0e66b4da5ff718141bee1f87457b2b36149` preserves complete valid modules and future imports. Exact-source validation: 67 passed, one lifecycle test deselected with matched base/candidate zombie and drain evidence. The earlier 344-row estimate was not rescored; future measurements must pin the new scorer version. See `artifacts/audit/orch65b-unfenced-scorer-20261030.md`. [belief: cc]
 
 - [ ] **REGENERATE `ma_hard_code_001`** — hand-authored tracked YAML
   (`mode_advantage_hard.yaml:288-328`), two defects: `test_code` wires stdin and never asserts, AND

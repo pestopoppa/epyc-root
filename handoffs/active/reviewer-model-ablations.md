@@ -77,6 +77,17 @@ rerun; it is the remaining anchor/floor set and the screening protocol.
     self-verification rates come from a keyword scan, so treat that mechanism as a hypothesis, not an
     established cause; and their cross-family recommendation holds only for **unoptimised** solver
     distributions (intake-875 shows it fails under optimisation pressure).
+    - [x] **RM-11a-SOURCE — remove the selector's duplicate code executor.** ✅ 2026-10-30 —
+      research main `f0737320a54f6454a67f957bf1b6eb5ec204149d` delegates every code-execution
+      candidate to the existing governed B7 scorer. The retired branch ignored `entry_point_cases`,
+      synthesized zero-argument assertions from expected text, and bypassed oracle validation and
+      private execution. Twenty-two selector tests pass against orchestrator
+      `65b2b0e66b4da5ff718141bee1f87457b2b36149`; all eight new behavioral controls fail against
+      the untouched selector. The measured RM-11/RM-11a study remains open: no inference,
+      historical rescoring, runtime adoption, or model-quality conclusion. Future arms must pin
+      both selector and governed-scorer bytes and preserve the instrument boundary.
+      [Receipt](../../artifacts/compute/refactor-rm11-selector-source-closure-20261030.json).
+      [no-belief: source and deterministic test closure only]
   - [ ] **RM-11b — Measure reviewer solve-accuracy** — the intake-875 Corollary 1 anchoring test, which
     we have never run. One offline pass on the C-CRAB P-REV-1 slice: have each reviewer arm *solve* the
     patch-review problems independently, and compare against its FPR-implied threshold. GLM-5.2's
