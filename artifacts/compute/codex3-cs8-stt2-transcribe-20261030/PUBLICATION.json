@@ -1,0 +1,57 @@
+{
+  "schema": "codex3.cs8-stt2.publication/v1",
+  "receipt_written_at": "2026-10-30T20:43:28.128604+00:00",
+  "ready_manifest": {
+    "path": "/mnt/raid0/llm/tmp/compute-flags/ready/codex3-cs8-stt2-transcribe-cpu-20261030.json",
+    "sha256": "052bc6da3e9a715b1e630dbccbcf37d1aa9607f3abd1b9bffc9da34bb915d117",
+    "mtime_utc": "2026-10-30T20:39:02.969377+00:00",
+    "timestamp_basis": "manifest filesystem mtime; exact original publication clock not separately captured"
+  },
+  "sources_and_smokes": {
+    "launch.sh": {
+      "path": "/mnt/raid0/llm/tmp/codex3-cs8-stt2-transcribe-20261030/launch.sh",
+      "sha256": "1f76e1593112492bf36f7b46efa3c0f3bf3357474e56fa8309a233bd91282181"
+    },
+    "job.py": {
+      "path": "/mnt/raid0/llm/tmp/codex3-cs8-stt2-transcribe-20261030/job.py",
+      "sha256": "3f427f11a22105d93d3f641f656b5938e59b6951b77a5a0d6a2acf704faaf653"
+    },
+    "SOURCE-SHA256SUMS": {
+      "path": "/mnt/raid0/llm/tmp/codex3-cs8-stt2-transcribe-20261030/SOURCE-SHA256SUMS",
+      "sha256": "2ffaa3939c113f16fe3a57acdd0ce81d45bb56179aeb905efae4bf0e946649ee"
+    },
+    "smoke-final-v2.log": {
+      "path": "/mnt/raid0/llm/tmp/codex3-cs8-stt2-transcribe-20261030/smoke-final-v2.log",
+      "sha256": "67bdf8aa59bd14010497be51a07fa2d7305a319416ebbc8c232ad4dd8993ccb1"
+    },
+    "smoke-final-v2-cutoff.log": {
+      "path": "/mnt/raid0/llm/tmp/codex3-cs8-stt2-transcribe-20261030/smoke-final-v2-cutoff.log",
+      "sha256": "40ba090c17cd095bfae775ae7a7cd9550857d4f90865f0ef06e107f27424615b"
+    }
+  },
+  "keeper_validation": {
+    "v6": {
+      "source": "/mnt/raid0/llm/tmp/compute-flags/ws58-calendar-keeper-v6.sh",
+      "source_sha256": "76429edc0635ee4235ea48b6578b745cc77a0282b433708f3769b38a6d5c6c0b",
+      "output": "/mnt/raid0/llm/tmp/codex3-cs8-stt2-transcribe-20261030/keeper-scan-v6.txt",
+      "output_sha256": "76b7e738dc6ae1fe8f58a5a71302f560631632f92ba7356a2feabf7edda8f001",
+      "result": "ok\t100\tcodex3-cs8-stt2-transcribe-cpu-20261030\tany-cpu-quarter\t/mnt/raid0/llm/tmp/codex3-cs8-stt2-transcribe-20261030/launch.sh\t3600\t4"
+    },
+    "v7b": {
+      "source": "/mnt/raid0/llm/tmp/compute-flags/ws58-calendar-keeper-v7b.sh",
+      "source_sha256": "e6aa0c784eec9dee919656af802188db36cdd92a30cd6d79003e8d37b5ab6d23",
+      "output": "/mnt/raid0/llm/tmp/codex3-cs8-stt2-transcribe-20261030/keeper-scan-v7b.txt",
+      "output_sha256": "76b7e738dc6ae1fe8f58a5a71302f560631632f92ba7356a2feabf7edda8f001",
+      "result": "ok\t100\tcodex3-cs8-stt2-transcribe-cpu-20261030\tany-cpu-quarter\t/mnt/raid0/llm/tmp/codex3-cs8-stt2-transcribe-20261030/launch.sh\t3600\t4"
+    }
+  },
+  "keeper_log_hardlink": {
+    "packet_path": "/mnt/raid0/llm/tmp/codex3-cs8-stt2-transcribe-20261030/ws58-launcher.out",
+    "ready_path": "/mnt/raid0/llm/tmp/compute-flags/ready/codex3-cs8-stt2-transcribe-cpu-20261030.launcher.out",
+    "device": 2431,
+    "inode": 193607009,
+    "links": 2
+  },
+  "terminal_engine": "launch.sh complete-cmd accepts COMPLETE.json OR TERMINAL-INCOMPLETE.json; R13 line 309 calls is_complete after rc0 and mark_complete; rc75 partial remains noncomplete. Scheduler complete means terminal disposition, not necessarily 40 successes.",
+  "limitations": "READY only; no full 40-clip result, other STT2 runners, streaming acceptance or T1 result."
+}
