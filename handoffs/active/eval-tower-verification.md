@@ -220,12 +220,14 @@ loads `6,701` candidate-level items across HE-R/HE-R+/MBPP-R/MBPP-R+ with
 
 - [x] Download ThinkPRM-1.5B from HuggingFace, quantize to Q4_K_M GGUF (~2GB) ✅ 2026-10-30 — [no-belief: operational model acquisition and format/load validation; no decision-grade inference claim]. Pinned `launch/ThinkPRM-1.5B` revision `fcf2c6f6ca28ac2b901206609d8714845290f72e`; produced `ThinkPRM-1.5B-Q4_K_M.gguf` (1,117,320,992 bytes; SHA-256 `ffabf3ea931fd710d8197704e6afd6331bf3b7c3c1af0b175e3f0f9dbf5cfc49`). A 16-token capped native control using CPU llama-cli loaded the model and generated output (6.081 s; peak RSS 1,875,025,920 bytes). Elapsed time and RSS validate bounded execution only; verification quality and comparative performance were not evaluated.
 - [ ] Add server config for ThinkPRM in `orchestrator_stack.py` (load only during T2 eval, unload main models — sequential loading per memory note)
-- [ ] Implement verification pass in `eval_tower.py` `eval_t2()`:
+- [x] Implement verification pass in `eval_tower.py` `eval_t2()`: ✅ 2026-10-30 — orchestrator `de6c56e34f5f23c2155d2b7dc839554ae692f771`; opt-in postpass selects actual scored/core finite-confidence rows with deterministic uncertainty ties, sends problem/answer to native ThinkPRM CoT verification, extracts explicit per-step verdicts and the conditional score from both observed Yes/No logprobs (missing support is unknown), and stores feedback in per-question details plus fsynced attribution JSONL and aggregate coverage. [no-belief: structural software implementation; no quality or calibration claim]
   - After standard scoring, identify N most uncertain questions (lowest |confidence - 0.5|)
   - For each uncertain question: send to ThinkPRM with verification CoT prompt
   - Extract step-level verdicts and P("yes")/(P("yes")+P("no")) score
   - Store per-step attribution in `QuestionResult.details`
-- [ ] Cross-family verification: enforce that ThinkPRM model family differs from evaluated models
+- [x] Cross-family verification: enforce that ThinkPRM model family differs from evaluated models ✅ 2026-10-30 — orchestrator `de6c56e34f5f23c2155d2b7dc839554ae692f771` classifies ThinkPRM as Qwen and rejects Qwen or unknown generators before verifier loading. [no-belief: fail-closed software guard]
+
+**Source qualification (2026-10-30):** The merged 11-file implementation passed 392 deduplicated tests (96 focused, 236 compatibility, 102 RTE with 42 overlaps), schema, scoped Ruff and normal hooks. Receipt: `/mnt/raid0/llm/tmp/codex-ni-app-source-lane-20261030/t2/T2-PUBLISHED.json`. Private native N1 qualification took 33.51 s; postwork returned 75 and resume/completed reentry returned 0 without a completed-output rewrite. This operational Gemma control uses confidence 0.5 and is not representative quality evidence or an independent resume N2. Its private source binding is preserved; merged-source tests do not retroactively rebind the native run. The server-config leaf stays open: private generation-drained ownership does not implement automatic shared-main-model unloading. No full 500-question T2, adoption or calibration gain is claimed. Prospective belief write/read/canary wiring remains `VB-EV5-PROCESS-ATTRIBUTION-WIRE`.
 
 **Files**: `eval_tower.py` L324-355 (eval_t2), `orchestrator_stack.py`, new verification module
 
