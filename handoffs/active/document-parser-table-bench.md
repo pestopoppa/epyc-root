@@ -233,3 +233,20 @@ Fresh offline scorer pin `pins.json` SHA256 `1a71361536d7dc2a5abde8366f565888a84
 The one GT table on recovered ordinal 118 has descriptive native TEDS 0.4005603400 and structure-only TEDS 0.9287020110 (higher is better); ordinals 50 and 310 have no GT tables. The raw aggregate ODL table-weighted values 0.5236367252 and 0.6641641385 include pages without verified source lineage and are descriptive only. Paddle raw 1.0/1.0 is from one table, not a cohort comparison. Both full-population and gate eligibility flags are false; all decision metric values in `report/row_set.json` remain null. No parser-quality, adoption, full-755 or production-performance verdict follows.
 
 [Committed native audit and frozen QC files](../../artifacts/compute/results-filing-20261030-0157.json). Existing full-population/adoption gate remains open. [belief: cc]
+
+
+### 2026-10-30 original Paddle groups62/65/68/71
+
+
+All four original outer events exited rc75. Their last captures before those ends record disk floor and TimeoutError: deadline, admission or output limit. Pairing each native result with its outer event is inferred from sequential capture starts and the outer end; result.json has no finished_at. No new quality or completed-cohort claim.
+
+| Group | Original end UTC | Last capture start UTC | Result SHA256 | Original RPC starts/matched/unmatched | Later captures excluded |
+|---|---|---|---|---|---|
+| 62 | 2026-10-30T01:36:25Z | 2026-10-30T01:35:19Z | 11abe846ab210a39f0e2fe7de9301ef6ccc287e88618895eb4c8f3e7525b73cf | 0/0/0 | 12 |
+| 65 | 2026-10-30T01:36:23Z | 2026-10-30T01:35:20Z | 27e4280ce2f64c39b9f557b8cc73d916aa1a03ad7b209b72f04945b190a85364 | 0/0/0 | 2 |
+| 68 | 2026-10-30T01:36:25Z | 2026-10-30T01:35:22Z | ba44e2d13e04f18d442407526944abfde5c78bf8b1395cf4f6a0350cec154a10 | 0/0/0 | 12 |
+| 71 | 2026-10-30T01:36:23Z | 2026-10-30T01:35:23Z | 74a384cb815ca891b9eac40f4e90fd1a068f77c57a24b2f25ce897d410262d16 | 0/0/0 | 12 |
+
+RPC counts use native originated_at/completed_at and capture hash at the original end, not later cumulative state. Later captures are retained separately. Full original paths, grant/source identities and hashes are in original-four-events.json. Unknowns are never redrawn.
+
+[Committed original audit](../../artifacts/compute/results-filing-20261030-0206.json). [belief: cc]

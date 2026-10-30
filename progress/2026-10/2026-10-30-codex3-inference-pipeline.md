@@ -34,3 +34,6 @@ FA4r5originalA/ON228(224OK/4NF), model10/10withoutNF, server13HTTP200thenprocess
 
 
 Three pre-client ODL recoveries completed; oneGTtable, allsource/grant/result/DONE/drainchecksverified. Fresh94.94s offlineQC: ODL638/755complete(178sourceverified), Paddle17/755complete(7sourceverified); fullgatesfalse, alldecisioncellsnull. EVL10fixed20cellscomplete; REPL4/10vsReDel3/10, no delegation, Step3open. KPF18CPUr3resourceadmissionrefusalbeforereplay. ProspectiveODLR3/recoveryregistries+sourcepineligibilitycommitted/pushedResearch3ecaa3d66810;11testsPASS,246MBsampled, unchangedmetrics/denominators. FourmorePaddledraftsheldinRAM; distinct-IDHIL4/ODL3smokescannotstartbelow151GiB. AllquartersandGPUobservedfreeat01:51:54 whileRAIDbelow150floor; no claimhostbusy. [belief: cc]
+
+
+Four original Paddle groups62/65/68/71 rc75 disk-floor partials audited separately from later captures; noRPCstartsbyoriginalend, source/capture/grant/result hashesretained. No qualitytick. [belief: cc]
