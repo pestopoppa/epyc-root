@@ -1,0 +1,14 @@
+{
+  "research_main": "537a5fc921d10789522748bb44bc05b85da29bed",
+  "probe_source_commit": "c1a9bc6b",
+  "probe_evidence": "/mnt/raid0/llm/tmp/refactor-01a16fc3/ak-mask-file-probe-20261030/REVIEW.md",
+  "probe_tests": 44,
+  "probe_scope": "synthetic native N=2 DS41-shaped masks; source correctness only",
+  "producer_reviewed_hook": "8393305bc",
+  "native_capture_source": "d7015ff101",
+  "native_run_id": "ak-ds41-native-full16-g3-20261007T124555Z",
+  "publication_receipt": "/mnt/raid0/llm/tmp/ak-codex-handover-20261007/cpu-activation-next/MASK_CORPUS_VERIFIED_G3_PUBLISHED.json",
+  "verified_each_store_files": 35,
+  "verified_masks": 16,
+  "verification": "Published file SHA256, mask size ne[0]*ne[1]*2, sidecar FNV1a64 all match; historical source/corpus existence, no new measurement warrant or performance/promotion claim."
+}

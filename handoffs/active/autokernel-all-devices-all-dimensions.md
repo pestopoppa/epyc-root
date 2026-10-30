@@ -265,8 +265,9 @@ landing alone closes no box below whose done-test needs a live run; those carry 
     returned FAIL; corrected Python commit `5da222c4` received static PASS, then Astra's C++ review
     passed for research commit `f6b24d54` and kernel patch commit `8393305bc`. Bounded tests/build remain
     pending; the branch is not landed, and no live real-mask capture exists.
-    - [ ] C++ follow-up: a probe `--mask-file` mode.
-    - [ ] C++ follow-up: a llama.cpp DS41 top-k mask dump hook.
+    - **Current source/corpus audit (2026-10-30):** the older paragraph above is historical. The probe source and reviewed native producer/corpus now exist, as recorded in `autokernel-unified-surface-program.md`; the child closures below do not establish full AKX-ALL-11 route acceptance.
+    - [x] C++ follow-up: a probe `--mask-file` mode. ✅ 2026-10-30 — already implemented by research `c1a9bc6b`, retained in current main `537a5fc921d10789522748bb44bc05b85da29bed`; revalidated 44 focused tests plus native DS41-shaped N=2 synthetic-mask acceptance, deterministic repeats, malformed size/flag refusals and v10 linkage. [Source audit](../../artifacts/compute/refactor-mask-producer-audit-20261030.json). [no-belief: model-free source correctness; no new DS41 capture]
+    - [x] C++ follow-up: a llama.cpp DS41 top-k mask dump hook. ✅ 2026-10-30 — reviewed `8393305bc` is an ancestor of native capture source `d7015ff101`. Existing `ak-ds41-native-full16-g3-20261007T124555Z` publication has 35 files in each CPU store; all file digests, 16 mask lengths and sidecar FNV hashes reverified. This corrects the stale missing-producer statement, without rerunning or promoting a kernel. [Audit](../../artifacts/compute/refactor-mask-producer-audit-20261030.json). [belief: cc]
     - [ ] C++ follow-up: regenerate `test-backend-ops-cpu-fa-longctx-v1.patch`.
     - [ ] Complete bounded test validation and land after the corrected review; do so before the
       AKX-ALL-21 round, not alongside it.

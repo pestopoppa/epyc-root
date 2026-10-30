@@ -1,0 +1,68 @@
+{
+  "packets": [
+    {
+      "id": "codex-hil15-s0-micron-v10-20261030",
+      "manifest": "/mnt/raid0/llm/tmp/compute-flags/ready/codex-hil15-s0-micron-v10-20261030.json",
+      "manifest_sha256": "be1b771cd2602d17352d274211c2982d4ac669f902349914fa5c4b9fcfc44b6f",
+      "launcher": {
+        "path": "/mnt/raid0/llm/tmp/hil15-s0-t1-repair-20261030/launch.sh",
+        "sha256": "35b874b064d66505edb174af58977c9a29b86ddcebb1908cbd554b0e6fe2ab0c"
+      },
+      "smoke": {
+        "ran_at": "2026-10-30T14:37:57.135075+00:00",
+        "regions": "122,123",
+        "model": "/mnt/raid0/llm/models/gemma-3-1b-it-Q8_0.gguf",
+        "first_request_ok": true,
+        "result_writer_ok": true,
+        "exit_ok": true,
+        "wall_s": 29.031738698948175,
+        "normal_wall_s": 29.031738698948175,
+        "cutoff_wall_s": 69.74201531312428,
+        "normal_exit_code": 0,
+        "cutoff_exit_code": 75,
+        "launcher_sha256": "35b874b064d66505edb174af58977c9a29b86ddcebb1908cbd554b0e6fe2ab0c",
+        "engine_sha256": "b2bd7c6d7c3111f591af71385e1129de00cd8ebf27a862a19c95fc1ff48bdf48",
+        "source_manifest_sha256": "5e70fd0711a26d816181ec19bb6e0ae0ede51354c808c7dfce846be5d689f57c",
+        "log": "/mnt/raid0/llm/tmp/hil15-s0-t1-repair-20261030/SMOKE-EVIDENCE.json",
+        "scope": "real actual runtime entry; Gemma3 1B diagnostic replay only; active cutoff at decode; no official35B exposures or performance claim",
+        "active_decode": {
+          "task": "249",
+          "tokens": 100
+        },
+        "descendants_drained": true,
+        "sampled_peak_rss_bytes": 1531990016,
+        "samples": 940
+      },
+      "cutoff_smoke": null,
+      "classification": "diagnostic",
+      "regions": "any-cpu-quarter"
+    },
+    {
+      "id": "codex-hil15-s2-r11-t1-20261030",
+      "manifest": "/mnt/raid0/llm/tmp/compute-flags/ready/codex-hil15-s2-r11-t1-20261030.json",
+      "manifest_sha256": "1fe226603af29ee3c599055400ca003b700b7f0e9b7c85b1ae86cf30f52a9b6d",
+      "launcher": {
+        "path": "/mnt/raid0/llm/tmp/hil15-s3-t1-repair-20261030/s2-r11/launch.sh",
+        "sha256": "b7ff5f80431e7a3b615b3e508fff5e050c6c62929bcf136312991d409939efd9"
+      },
+      "smoke": {
+        "ran_at": "2026-10-30T14:36:00Z",
+        "regions": "154,155",
+        "model": "/mnt/raid0/llm/models/gemma-3-1b-it-Q8_0.gguf",
+        "model_sha256": "b205840c5dcef55078e37d344677869a714ffd42a4ae448c48dcfb52e4bb10d5",
+        "first_request_ok": true,
+        "result_writer_ok": true,
+        "exit_ok": true,
+        "wall_s": 39.460651697,
+        "log": "/mnt/raid0/llm/tmp/compute-flags/ready/codex-hil15-s2-r11-t1-20261030.smoke.log"
+      },
+      "cutoff_smoke": null,
+      "classification": "diagnostic",
+      "regions": "any-cpu-quarter"
+    }
+  ],
+  "ghost_booking_receipt": "/mnt/raid0/llm/tmp/refactor-01a16fc3/compute-coordination-20261026/M4-C2-TERMINAL-CLEANUP-20261030/receipt.json",
+  "ghost_booking_action": "Own runner terminal lifecycle rc64 revoked stale launcher before work; no signals or new completion claim; shared queue and FILLERS unchanged.",
+  "no_duplicate_cohorts": "S1 exhausted at44graded+1unknown; S3 already terminal. No successor inference published for them.",
+  "current_canonical_engine": "Owner subsequently made legacy T1 opt-in via FILLER_LEGACY_T1=1; published private runners already honor RUS3_DIAGNOSTIC=1, verified by actual smokes."
+}
