@@ -1,0 +1,148 @@
+{
+  "build_packet": {
+    "build_follow_on": "After full successful link, source-bound IDENTITY.json is written, then r3 rebind consumes the existing base candidate card/launch/spec and writes built-c5-r3 outputs to the actual base candidate directory. Matched floor remains separate.",
+    "class": "diagnostic",
+    "cwd": "/mnt/raid0/llm/tmp/refactor-01a16fc3/ufh14-next-source-20261030/build-packet-r3",
+    "decision_rule": "Clean C5 full CPU build on one approved Micron lane. Completion requires full llama-server target, required DSOs/knobs/linkage, source-bound IDENTITY.json accepted by current champion reader, and r3 unenrolled target card from the actual base candidate inputs. STOP/cutoff rc75 partial; no benchmark or production-equivalence claim from build alone.",
+    "engine_files": {
+      "/mnt/raid0/llm/tmp/refactor-01a16fc3/ufh14-next-source-20261030/build-packet-r3/disk_gate.py": "b5e55a4edc8e3875d75e85267b8f29bb9d7214874a748a02ad1757845b2cf40d",
+      "/mnt/raid0/llm/tmp/refactor-01a16fc3/ufh14-next-source-20261030/build-packet-r3/dryrun_check.py": "aa9ed900be5fb7f3efca043bfddb2ac8963964710db0b702c7491729a74f8542",
+      "/mnt/raid0/llm/tmp/refactor-01a16fc3/ufh14-next-source-20261030/build-packet-r3/filler_lib.sh": "241e522f4a7d7208e7485834c90d77676434a9bc88fd253575e034ad2934237c",
+      "/mnt/raid0/llm/tmp/refactor-01a16fc3/ufh14-next-source-20261030/build-packet-r3/filler_run13.sh": "29b88da445634de88b33a7a8d74ebdc21e4a011fac12417c02b25e5beec1c10d",
+      "/mnt/raid0/llm/tmp/refactor-01a16fc3/ufh14-next-source-20261030/build-packet-r3/resource_gate.py": "bbf26966a270a84b98a6b2f31a43dd2e54055c23fbddb0010db5bf9d0ca9e9f5"
+    },
+    "enrollment": "n/a: source build and unenrolled target preparation",
+    "est_output_GiB": 0.125,
+    "full_build_observer": "Fresh same-bundle normal and active-compiler cutoff on CPUs 140,141; 34/790 RSS samples peaked 0.473404/1.333054 GiB (<8 GiB); full mode uses bounded Ninja log. 32 GiB is a planning reservation, not observed full-build peak.",
+    "full_disk_admission_GiB": 150.125,
+    "gib": 32,
+    "hold": null,
+    "id": "refactor-akxall8-c5-cpu-build-r3-20261030",
+    "job": {
+      "path": "/mnt/raid0/llm/tmp/refactor-01a16fc3/ufh14-next-source-20261030/build-packet-r3/build-job.sh",
+      "sha256": "96b87f9fcbbc07ea02a050b64c434b122c7059f55ef17ac42a17095ef1fc1a61"
+    },
+    "keep": [
+      "*.json",
+      "*.md",
+      "*.patch",
+      "*.py",
+      "*.sh",
+      "build-packet-r2/**",
+      "build-packet-r2/*.jsonl",
+      "build-packet-r2/*.tsv",
+      "build-packet-r2/fixture-*/**",
+      "build-packet-r2/inner-noarg.log",
+      "build-packet-r3/**",
+      "build-packet/**",
+      "build-packet/*.json",
+      "build-packet/*.log",
+      "build-packet/*.py",
+      "build-packet/*.sh",
+      "build-packet/logs/*.log",
+      "candidate/*.json",
+      "candidate/*.log",
+      "declared/*.txt",
+      "declared/*.yaml",
+      "source-current/**",
+      "ws58-launcher.out",
+      "KEEP"
+    ],
+    "kernel_source": {
+      "frozen_production_ancestor": "ffc1bac82eeca6f9099e1ccd9ba49703c460a115",
+      "head": "c72ec82f5417bb2937310326120f149b665e8400",
+      "host_worktree": "/mnt/micron/refactor-lanes/llama.cpp-experimental",
+      "source_edit": "none"
+    },
+    "launcher": {
+      "path": "/mnt/raid0/llm/tmp/refactor-01a16fc3/ufh14-next-source-20261030/build-packet-r3/build-launch.sh",
+      "sha256": "48a74998b7d35958d2799e2d03b87da5d9584df088f65bfa5801c185981b6f10"
+    },
+    "launcher_log": "/mnt/raid0/llm/tmp/refactor-01a16fc3/ufh14-next-source-20261030/ws58-launcher.out",
+    "min_window_s": 1080,
+    "output_filesystem": "Micron build output; RAID metadata only, 150 GiB floor plus 0.125 GiB estimated metadata reservation",
+    "owner": "codex-refactor-01a16fc3",
+    "preferred_regions": "any-cpu-quarter",
+    "priority_rank": 8,
+    "ram_budget": {
+      "GiB": 32,
+      "kind": "planning envelope; Ninja jobs capped at 8; no sampled full build peak yet"
+    },
+    "regions": "any-cpu-quarter",
+    "result_path": "/mnt/raid0/llm/tmp/refactor-01a16fc3/ufh14-next-source-20261030/build-packet-r3/build-result.json",
+    "scratch_root": "/mnt/raid0/llm/tmp/refactor-01a16fc3/ufh14-next-source-20261030",
+    "smoke": {
+      "cutoff_log": "/mnt/raid0/llm/tmp/refactor-01a16fc3/ufh14-next-source-20261030/build-packet-r3/fixture-cutoff-final/outer.log",
+      "cutoff_log_sha256": "59aae80390218372fb7698b8293d30a42a716dd6a64b7da80f06deb16dc9f3ce",
+      "cutoff_rc": 75,
+      "cutoff_wall_s": 204.0,
+      "exit_ok": true,
+      "first_request_ok": true,
+      "model": "none: model-free source correctness qualification",
+      "normal_log": "/mnt/raid0/llm/tmp/refactor-01a16fc3/ufh14-next-source-20261030/build-packet-r3/fixture-r6-final/outer.log",
+      "normal_log_sha256": "9eb94f80d8de9fd5728f1935dd110672c8bf565038e3480fb0610579aec6fe79",
+      "normal_rc": 0,
+      "ran_at": "2026-10-30T17:43:47+00:00",
+      "regions": "140-141",
+      "result_writer_ok": true,
+      "sampled_smoke_peak_gib": 1.333054,
+      "wall_s": 9.0,
+      "log": "/mnt/raid0/llm/tmp/refactor-01a16fc3/ufh14-next-source-20261030/build-packet-r3/fixture-r6-final/outer.log"
+    },
+    "smoke_controls": {
+      "path": "/mnt/raid0/llm/tmp/refactor-01a16fc3/ufh14-next-source-20261030/build-packet-r3/final-smoke-controls.json",
+      "sha256": "0b4b008d19574a9488325a41af20ce114e31db7c92f624483a7a3a488e335397"
+    },
+    "source_bundle": {
+      "path": "/mnt/raid0/llm/tmp/refactor-01a16fc3/ufh14-next-source-20261030/build-packet-r3/execution-bundle.json",
+      "sha256": "0e9ee9ac4ecbe0f7cee6ddba4c1537a9bb912ba4f1bc4abebff7d067a49ec37c"
+    },
+    "source_manifest": {
+      "path": "/mnt/raid0/llm/tmp/refactor-01a16fc3/ufh14-next-source-20261030/build-packet-r3/source-manifest.json",
+      "sha256": "3656f0c567494f460c8af975565bbe15ebb22e6391500f0a9cd74ae72334fca1"
+    },
+    "status": "READY",
+    "window_s": 2400,
+    "min_effect": "n/a (source/build correctness)",
+    "keeper_log_alias": {
+      "path": "/mnt/raid0/llm/tmp/compute-flags/ready/refactor-akxall8-c5-cpu-build-r3-20261030.launcher.out",
+      "same_inode": true,
+      "scope": "package log retained at scratch_root; row IDs delimit each phase; old r2 never armed and remains withdrawn"
+    },
+    "publication_disk": {
+      "free_bytes": 421873692672,
+      "at": "2026-10-30T17:51:14.449823+00:00"
+    }
+  },
+  "manifest_observed_path": "/mnt/raid0/llm/tmp/compute-flags/ready/refactor-akxall8-c5-cpu-build-r3-20261030.json",
+  "manifest_sha256": "5c37d83d9348c33dbd283dccafb6d236a4726314ebea3be812c9447efdca3b5a",
+  "r2_state": "withdrawn unarmed after C3 review found wrong postbuild ROOT; original raw and manifest retained",
+  "r2_withdrawn_manifest": "/mnt/raid0/llm/tmp/refactor-01a16fc3/ufh14-next-source-20261030/build-packet-r2/READY-WITHDRAWN-REBIND-PATH-20261030.json",
+  "cpu_numa_source": {
+    "source_commit": "6cf25cfab8e45e760cbe4291134b58730ae1eb70",
+    "base": "5412cae12ec806514f27f510eadf4206d4b0f9be",
+    "ref": "refs/heads/refactor/cpu-recipe-numa-20261030",
+    "patch_sha256": "439110d1e46703e22f15702c2f44a81c415c7a96090cbc395d02a54e93fc14a9",
+    "files": [
+      "scripts/kernel_rnd/autokernel/loop/resolved_recipe.py",
+      "scripts/kernel_rnd/autokernel/loop/serving.py",
+      "scripts/kernel_rnd/autokernel/loop/test_cpu_serving_recipe.py"
+    ],
+    "real_index_unchanged": true,
+    "pushed_main": true,
+    "no_worktree_created": true
+  },
+  "append_preservation_source": {
+    "source_commit": "4cd6622f37079f44477ed3f138cc99639ef71685",
+    "base": "4a22a805d590aea741e59b127ebdece03bc4b541",
+    "ref": "refs/heads/refactor/evl15-preserve-logs-20261030",
+    "patch_sha256": "aa7b8d2b16869b8b3c6af9bc1b52303c8cd385b020f6d109eeae2b1c18bc5c23",
+    "files": [
+      "scripts/server/start_servers.sh"
+    ],
+    "real_index_unchanged": true,
+    "pushed_main": true,
+    "no_worktree_created": true
+  },
+  "claim_scope": "source software and launcher qualification; no actual full C5 build/card/floor or scientific efficacy claim"
+}
