@@ -1,0 +1,74 @@
+{
+  "smoke": {
+    "artifacts": {
+      "checkpoint": {
+        "path": "/mnt/micron/codex3-kpf-real-actions-20261030/continuation-v2/smoke-r2/sample/smoke-checkpoint.json",
+        "sha256": "a20ba48aabdab102033c7a54f45a3b619d4a7f7a355747e17e7574a87f8160c7"
+      },
+      "gpu_observations": {
+        "path": "/mnt/micron/codex3-kpf-real-actions-20261030/continuation-v2/smoke-r2/gpu-observations.jsonl",
+        "sha256": "e2e09e38331a92f8c518daa8851369102db460f17640f14b64193b9ae446e5eb"
+      },
+      "journal": {
+        "path": "/mnt/micron/codex3-kpf-real-actions-20261030/continuation-v2/smoke-r2/sample/journal/plan_steps_parsed.jsonl",
+        "sha256": "a91515b084092b3cd419826d3bf921ce4525819961c809d716c795a9816e90fb"
+      },
+      "launcher_log": {
+        "path": "/mnt/raid0/llm/tmp/codex3-kpf-real-actions-20261030/continuation-v2/real-smoke.log",
+        "sha256": "ec5a87477e3584373cf6b6d134e92956a6ddb1707709d542517fc0c5f66bd9bd"
+      },
+      "runtime_maps": {
+        "path": "/mnt/micron/codex3-kpf-real-actions-20261030/continuation-v2/smoke-r2/runtime-maps.json",
+        "sha256": "f4d197a0bb54e11db13c607fc81091ae2da49862c0fa7c26c98bbae06da27d0d"
+      }
+    },
+    "children_drained": true,
+    "corpus_start": 1,
+    "created_utc": "2026-10-30T18:01:12.068160+00:00",
+    "elapsed_s": 35.1439816839993,
+    "inflight_residency": [
+      {
+        "in_flight": [
+          "/mnt/micron/codex3-kpf-real-actions-20261030/continuation-v2/smoke-r2/sample/plan-001/wire-001-request.json"
+        ],
+        "pid": 1677886,
+        "utc": 1793382726.0592349,
+        "vram_bytes": 40547946496
+      },
+      {
+        "in_flight": [
+          "/mnt/micron/codex3-kpf-real-actions-20261030/continuation-v2/smoke-r2/sample/plan-001/wire-001-request.json"
+        ],
+        "pid": 1677886,
+        "utc": 1793382728.1919856,
+        "vram_bytes": 40547946496
+      }
+    ],
+    "journal_actions": 2,
+    "journal_sha256": "a91515b084092b3cd419826d3bf921ce4525819961c809d716c795a9816e90fb",
+    "launcher_sha256": "96f67eb7a8e527961176f4d5e0e16982d2efc1b1df92fa7a9e502ad76f86f0e4",
+    "next_corpus_position": 2,
+    "plans_attempted": 1,
+    "prior_attempt_sha256": "a6bd53ec537f91aaf57d13f18784740a2564b3fc8539d84a76f75b84e5060922",
+    "sampled_peak_tree_rss_bytes": 29588844544,
+    "sampler_sha256": "2321f3f7b9bd488ad6f2bec750f9fe83cda026a0cd1a5c8274d88557a4f01db2",
+    "schema": "kpf261.v2.smoke-proof.v1",
+    "scope": "one native planner control; count is not a terse-share result",
+    "server_dead": true,
+    "server_pid": 1677886,
+    "source_commit": "5778d55d01eac742566cd45277d148b3a681c4bf",
+    "source_manifest_sha256": "d89ff592c2f484e659031b938d2e282fbaa88e41bda6d4d5d00aafa77a4f1ce4",
+    "strict_native_rederivation": "passed on original checkpoint and wire; no completion marker fabricated",
+    "total_gpu_samples": 5,
+    "verified_exited_processes": 18,
+    "writer_ok": true
+  },
+  "publication": {
+    "published_at": "2026-10-30T18:03:32.046448+00:00",
+    "path": "/mnt/raid0/llm/tmp/compute-flags/ready/codex3-kpf261-real-actions-v2.json",
+    "sha256": "f2d9d15d0a3626df4194d0044fcfe491b906a222d16c21000047605c23d106f6",
+    "launcher_sha256": "96f67eb7a8e527961176f4d5e0e16982d2efc1b1df92fa7a9e502ad76f86f0e4",
+    "scope": "READY declaration only; keeper owns arming and grant"
+  },
+  "scope": "two actual native actions; no 50-action or classification verdict; full capture and planning-context canary remain open"
+}
