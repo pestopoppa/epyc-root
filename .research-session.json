@@ -1,9 +1,9 @@
 {
   "session_id": "intake-mainplane-20261030",
   "started_at": "2026-10-30T23:00:00Z",
-  "last_checkpoint": "2026-10-31T00:30:00Z",
-  "stage": 2,
-  "phase": "stage2-closed",
+  "last_checkpoint": "2026-10-31T00:45:00Z",
+  "stage": 3,
+  "phase": "stage3-plan-proposed",
   "lane": "/mnt/raid0/llm/tmp/intake-mainplane-20261030/root",
   "branch": "intake/mainplane-20261030",
   "topic": "Mainplane \"retrieval over compaction\" (X posts 2115842962521509968 / 2115131891766657357, github mainplane-ai/mainplane, docs/self-hosting.md, Sutton Bitter Lesson)",
@@ -65167,5 +65167,12 @@
     "declined_by_dives": "see dive_surfaced_sources rows with recommend=decline",
     "gate": "closed 2026-10-31: every surfaced source ingested-and-dived (wave 2) or declined with reason in the bearing entry"
   },
-  "dive_artifact_audit": "clean: all dive artifacts under /mnt/raid0/llm/tmp/dive-mainplane-20261030/ (sources, text conversions, scripts/h2t.py); no repo writes outside research/intake_index.yaml and .research-session.json"
+  "dive_artifact_audit": "clean: all dive artifacts under /mnt/raid0/llm/tmp/dive-mainplane-20261030/ (sources, text conversions, scripts/h2t.py); no repo writes outside research/intake_index.yaml and .research-session.json",
+  "stage3_plan_draft": {
+    "path": "/mnt/raid0/llm/tmp/intake-mainplane-20261030/stage3/STAGE3_PLAN.md",
+    "sha256": "525849605518c57ce866f299b686116b6686df9efb457f4af9fc5f0866ffe097",
+    "status": "proposed; awaiting operator approval (returned to caller as final report)",
+    "builder": "/mnt/raid0/llm/tmp/intake-mainplane-20261030/scripts/gen_plan.py",
+    "validator": "validate_intake.sh --plan-file/--session-file exit 0 (2026-10-31)"
+  }
 }
