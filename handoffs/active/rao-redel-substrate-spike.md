@@ -505,3 +505,5 @@ EVL-34 DeepDive R8's separately published native control completed both producti
 
 - EVL DeepDive R8 original grant ended 05:49:17Z rc1 at `disk floor plus concurrent reservations`. The source checks this before creating the pilot attempt or captured grant, so this event exposed no new pilot cell. Its separately retained two-arm native control had no matched natural delegation. R9 repair is separate; no pilot quality or Step 3 claim. [Native event audit](../../artifacts/compute/results-filing-20261030-0605.json).
   - [belief: cc] Original native records and unchanged criteria are linked above.
+
+- **FAILED-RUN `codex3-evl34-deepdive-r10-pilot-20261030` (owner codex3):** ended 13:19:56Z rc78 `job-rc-78:exited`; PILOT-DONE.json not produced. class=unknown (rc78 is the pilot's own code; root cause not in the launcher log). owner action: codex3 read the r10 preflight/pilot logs and record the rc78 meaning. Per predeclared rule, zero completed delegation-positive pairs is inconclusive; no Step3 claim, no redraw. [no-belief: failed run]

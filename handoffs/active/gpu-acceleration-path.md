@@ -601,3 +601,5 @@ FA4 exact-set R7 original grant ended 04:12:27 rc75 before the full run when fre
 
 - FA4 exact-set R8 original event ended05:36:28Z rc75 after explicit refusal at the unchanged150GiB floor plus1GiB output reserve, before the native driver. Its source, launcher, job and external-source manifest hashes match the packet; the exact timestamped launcher block is retained. Later grants are distinct. No full three-pair/22-band verdict, equivalence, mechanism or performance claim. Owner NI preserves originals and repairs resource admission under the existing task; no duplicate follow-up box added.
   - [belief: cc] [Original audit](../../artifacts/compute/results-filing-20261030-0600.json).
+
+- **FAILED-RUN `fa4-c5-exact-set-r10-20261030` (owner codex-ni):** started 12:49:25Z on mi210_0 + CPUs 184-191, ended 12:57:07Z rc1 `job-rc-1:exited`; no NORMAL-COMPLETE.json. Launcher log carries no root cause beyond rc1; earlier waits show RAID free 161.19 GB against 161.20 GB required (150 GiB floor + reserve). class=unknown (disk-floor adjacent). owner action: codex-ni read launcher/runs logs for the rc1 cause before r11; no verdict, no tick. [no-belief: failed run]
