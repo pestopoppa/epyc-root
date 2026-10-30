@@ -37,7 +37,7 @@
 | INF-18 | gpu acceleration path | [gpu-acceleration-path.md](gpu-acceleration-path.md) | Explain the bidirectional-only mechanism before this becomes a placement input | — |
 | INF-19 | gpu cot scaffold sidecar | [gpu-cot-scaffold-sidecar.md](gpu-cot-scaffold-sidecar.md) | G3-4 — future decision instrument (separate from G3-3). Select and run a decision-grade, | — |
 | INF-20 | gpu drafter control redesign | [gpu-drafter-control-redesign.md](gpu-drafter-control-redesign.md) | DR-3 — broader K2 admission runner/package: build the dry-run-first K2 | — |
-| INF-22 | gpu serving tie in program | [gpu-serving-tie-in-program.md](gpu-serving-tie-in-program.md) | M4 production gate (M4.2 PASS); PB-QCOST-1 confirm-q: decide ub1024 re-run amendment; GPU-ZOS-2.2 build launcher; CH-30 fold | — |
+| INF-22 | gpu serving tie in program | [gpu-serving-tie-in-program.md](gpu-serving-tie-in-program.md) | Finish M4 GPU load and all-role quality/speed fold gate; then PB-QCOST-1 confirm-q, GPU-ZOS-2.2 and CH-30 | — |
 | INF-23 | heterogeneous slot fabric residency | [heterogeneous-slot-fabric-residency.md](heterogeneous-slot-fabric-residency.md) | HSF-5.P: re-run microbench (-lv 4, G4 amendment) on GPU after v11-086-cpu ~10-25 00:00Z | — |
 | INF-24 | inference batch loop | [inference-batch-loop.md](inference-batch-loop.md) | P0 RCP prologue — RCP-W1 relaunch + preflight, RCP-W2 ledger materialize, RCP-W3 calibration smoke; gated OP-6a/6b + stack-restart approval | — |
 | INF-26 | iqk iquant enablement | [iqk-iquant-enablement.md](iqk-iquant-enablement.md) | C-L3-Q38FN: profile why GSQ IQ3_XXS decode is 28% slower than UD-IQ4_XS, then a low-bit kernel branch; NEW-8 steps 0-1 | — |

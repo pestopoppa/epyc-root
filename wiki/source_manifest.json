@@ -4,15 +4,27 @@
     "handoff-active": 184,
     "handoff-blocked": 2,
     "handoff-completed": 216,
-    "progress": 823,
+    "progress": 824,
     "research": 140
   },
   "kind": "project-wiki-source-manifest",
   "last_compile": "2026-10-27T10:08:50Z",
-  "mode": "touch",
-  "scan_time": "2026-10-27T10:08:50Z",
+  "last_touch": {
+    "advanced": {
+      "added": 1,
+      "changed": 0,
+      "removed": 0
+    },
+    "at": "2026-10-27T15:17:45Z",
+    "scope_paths": [
+      "progress/2026-10/2026-10-27-refactor-campaign-wrap.md"
+    ],
+    "scope_types": []
+  },
+  "mode": "touch:scoped",
+  "scan_time": "2026-10-27T15:17:45Z",
   "schema_version": 1,
-  "source_set_hash": "4630b6a75e98f84945f1adbdcebd4b3b751d251a40fc31152a664a940cd781cc",
+  "source_set_hash": "5fd6535ef893348440169c51f62207a6adadfe6faf8c6dcd7eaae5f14b7579aa",
   "sources": [
     {
       "content_hash": "6c067235a74a3b9667dd4fad23684206476aeac1cdefe3b4e0a0824d3179c241",
@@ -10927,6 +10939,14 @@
       "type": "progress"
     },
     {
+      "content_hash": "f5161de819ad62f5514c29391cc562c0d306bec597d49a74508a35f930eaaa39",
+      "modified": "2026-10-27T15:16:39Z",
+      "path": "progress/2026-10/2026-10-27-refactor-campaign-wrap.md",
+      "size": 4976,
+      "title": "Refactor campaign checkpoint \u2014 2026-10-27",
+      "type": "progress"
+    },
+    {
       "content_hash": "8ee2f6da97ca88aec2078f0248a15af9bf20b859f6d232f6f77589ec04986da7",
       "modified": "2026-10-27T10:02:27Z",
       "path": "progress/2026-10/2026-10-27-workspace-58.md",
@@ -12807,7 +12827,7 @@
       "type": "docs"
     }
   ],
-  "total_new": 1599,
+  "total_new": 1600,
   "writer_evidence_policy": {
     "applies_to": "generated-wiki-article-writes",
     "minimum_confidence": "verified",
