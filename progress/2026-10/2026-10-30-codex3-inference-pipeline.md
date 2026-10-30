@@ -13,3 +13,6 @@ R11 replacements passed real58.883s smoke (5nativeHTTP200,0unmatched,5.917GBsamp
 ## 00:38 UTC original failures, native arm and further READY packets
 
 Filed GPUcross-device r2pre-nativefailure andr3standalone nativePPL14.3940 withoutmismatchedCPUcomparison; sourcepindrift stoppedINF50graphr11 beforequeries. ThreeoriginalPaddlediskfloorpartials retained20matchednativeHTTP200responses andnopage-finishverdict. PublishedfivefurtherportableR11groups; source/testedstrictlineagecode ispushedResearch46244248728c (9tests,pinpreflight3.168s/262.6MB). Missingoriginalwarrants stayunverified; nofullTEDS/adoptionclaim. [Nativeaudit andpublication](../../artifacts/compute/results-filing-20261030-0038.json). [belief: cc]
+
+
+Three original00:17 HIL partials audited: S0 has29accepted/1unknown/15unexposed; S2 17/1/27; fresh60slotHILb no replays. No fullcohort tick. [belief: cc]

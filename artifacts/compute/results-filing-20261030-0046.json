@@ -1,0 +1,118 @@
+{
+  "files_sha256": {
+    "/mnt/raid0/llm/tmp/compute-flags/ready/codex-hil15-s0-resume-v4-20261029.launcher.out": "dc27f1b6d4829c844cdba19388ef8322531d92e64672520fc3acd3bd88bed085",
+    "/mnt/raid0/llm/tmp/compute-flags/ready/codex-hil15-s2-unknown-resume-v4-20261030.launcher.out": "f8eeda660723325f7a3e9e53ca0590cc6640f5cf109ff2fd2163c37c95550e96",
+    "/mnt/raid0/llm/tmp/compute-flags/ready/hil15b-bounded-output-r3-20261029.launcher.out": "5e15423bda55b3098cbfd328dac5776e18ed0cb36afe2a72019589ae7b91c4cc",
+    "/mnt/raid0/llm/tmp/hil15-s0-safe-prep-20261029/R4-OFFICIAL-EXPOSURE-AUDIT.json": "d1ac0fc511e97dfed5a7e1fe2bbfa8093ae892b6992c6e438a616d8a72ce5d7e",
+    "/mnt/raid0/llm/tmp/hil15-s0-safe-prep-20261029/s0-official-results/resource-partial.json": "4343c3366de875a2549f74ee947dcbf0bf5bdc589c1323207fd63961c6eab31d",
+    "/mnt/raid0/llm/tmp/hil15b-new-cohort-bounded-v7-20261029/results-pilot/resource-partial.json": "07139251eef7ec76e7a183ee2c2cccd967977a680c2e0c285367b9e745d3907b",
+    "/mnt/raid0/llm/tmp/hil15-s0-safe-prep-20261029/s0-official-results/unit-10/slot-0/driver-0/manifest.json": "56fcc3d4104d2369d4c7691cd34bf6f93f2b29fa4b3db1986809d470d6d686fd",
+    "/mnt/raid0/llm/tmp/hil15-s0-safe-prep-20261029/s0-official-results/unit-10/slot-1/driver-1/manifest.json": "d1440c9149739b41901abeabc44849c04ee586455ba7d78a77a606e030845e20"
+  },
+  "s0_accounting": "27 original accepted + 2 new accepted + 1 unknown + 15 unexposed = 45",
+  "s0_new": [
+    {
+      "id": "filter-s0-10-p0-r0",
+      "pass": false,
+      "l2_rc": 0,
+      "replay_rc": 0,
+      "join": {
+        "step_bearing_runs": 1,
+        "joined_outcome": 1,
+        "task_runs": 1,
+        "zero_step_recorded_failed": [],
+        "join_ok": true
+      }
+    },
+    {
+      "id": "filter-s0-10-p1-r0",
+      "pass": false,
+      "l2_rc": 0,
+      "replay_rc": 0,
+      "join": {
+        "step_bearing_runs": 1,
+        "joined_outcome": 1,
+        "task_runs": 1,
+        "zero_step_recorded_failed": [],
+        "join_ok": true
+      }
+    }
+  ],
+  "s0_partial": {
+    "output_accounting_complete": true,
+    "output_bytes": 1372160,
+    "output_cap_bytes": 1073741824,
+    "partial": true,
+    "peak_detail": {
+      "per_pid": [
+        {
+          "pid": 1941004,
+          "rss_bytes": 152416256
+        },
+        {
+          "birth": 144177383,
+          "pid": 2041389,
+          "rss_bytes": 131084288
+        },
+        {
+          "birth": 144140914,
+          "pid": 1943831,
+          "rss_bytes": 40549892096
+        }
+      ],
+      "pids": [
+        2041389,
+        1943831
+      ],
+      "rss_bytes": 40833392640,
+      "sampled": true
+    },
+    "reason": "output cap or remaining-output disk reserve",
+    "rss_scope": "sum of sampled resident pages across whole owned process tree; may miss transients and double-count shared pages",
+    "sampled_peak_rss_bytes": 40833392640,
+    "samples": 6187,
+    "unknown_exposures": "incomplete exposed native slots must never be redrawn"
+  },
+  "s2_original_accounting": "17 accepted + 1 unknown + 27 unexposed = 45; 0 new exposures",
+  "hil15b_partial": {
+    "limit_kind": "sampled; may overshoot",
+    "output_bytes": 8192,
+    "output_cap_bytes": 1073741824,
+    "partial": true,
+    "peak_detail": {
+      "per_pid": [
+        {
+          "pid": 2052865,
+          "rss_bytes": 30318592
+        },
+        {
+          "birth": 144188678,
+          "pid": 2052969,
+          "rss_bytes": 37445496832
+        },
+        {
+          "birth": 144188942,
+          "pid": 2053279,
+          "rss_bytes": 64585728
+        }
+      ],
+      "pids": [
+        2052969,
+        2053279
+      ],
+      "rss_bytes": 37540401152,
+      "sampled": true
+    },
+    "reason": "sampled output cap or remaining-output disk reserve",
+    "sampled_peak_rss_bytes": 37540401152,
+    "samples": 16,
+    "unknown_exposures": "incomplete exposed native slots must never be redrawn"
+  },
+  "hil15b_result_files": [
+    "resource-partial.json",
+    "bootstrap-<native-attempt-timestamp>/server.log",
+    "bootstrap-<native-attempt-timestamp>/entry-config-1.json",
+    "bootstrap-<native-attempt-timestamp>/entry-1.log"
+  ],
+  "hil15b_emitted_files": []
+}
