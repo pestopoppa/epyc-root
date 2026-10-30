@@ -80,3 +80,12 @@ The read-only04:04:02–10 visible-own-UID I/O sample identified only3.7MB and3.
 2026-10-30 05:33Z: research source projection `55e24b6fd2dc` pushed and verified for exactly four R15 producer IDs, all 49 declared groups and their 146 shards, including the two-shard tail. Parent supervised 18 tests passed, including incorrect pool/group/source/grant refusal and legacy missing-warrant refusal; sampled peak260012KiB and cleanup verified. Scoring, fixed population/denominators and grade rules are unchanged. [belief: cc]
 
 Fresh five-second quarter verification found q0/q1 waiting0/0 and q2/q3 waiting2/2 with exact actual48–71/72–95 arguments and zero active PIP grants. Mean CPU utilization including SMT siblings was2.13%,4.69%,3.80%,3.47%; queue placement does not establish useful inference progress. None of60 previously retired IDs reappeared. Full snapshot is bound by the placement artifact's durable reference. [belief: cc]
+
+
+### 2026-10-30 06:00 native entry and split-storage checkpoint
+
+- Current turn published and keeper-accepted heavyR7 and HSF13 split-storage successors, preserving native budgets and independent150GiB floors. The exact target controls and cleanup qualified both packets; parent cohort/quality/full-host comparisons remain incomplete. PIP split family is staged with persistent checkpoint write custody and private host runtime libraries; real smoke awaits the current timing grant. EVL9 source/runtime port is in preparation. FA4R8 original05:36 resource refusal is filed separately from later grants.
+  - [belief: cc] [Filing and publication evidence](../../artifacts/compute/results-filing-20261030-0600.json).
+
+
+At05:58:40Z HSF13 normal A1 had completed warmup, six four-stream waves and restore. All211 during-driver samples recorded KFD and positiveVRAM; latest serving sample52.18GB. Serving had drained while the captured profiler process remained live in native trace export. Full A1/B/A2 remains incomplete; grant ownership is not substituted for native evidence. Canonical launcher log now hardlinks the actual keeper stdout inode. [Live native proof](../../artifacts/compute/results-filing-20261030-0600.json). [belief: cc]

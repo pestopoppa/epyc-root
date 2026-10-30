@@ -595,3 +595,9 @@ _Via `/research-intake` Stage-4 (Hawkeye / agentic-kernel cohort, intake-1218..1
 ### 2026-10-30 overdue original-event filing (HIL, Paddle R14, FA4 and DCA)
 
 FA4 exact-set R7 original grant ended 04:12:27 rc75 before the full run when free space was below the 150 GiB floor plus 1 GiB output reserve. Later rearmed attempts are separate. No full 228-key A/B result or equivalence, mechanism or performance claim follows. Its original filing deadline had elapsed before audit. [Native event audit](../../artifacts/compute/results-filing-20261030-0520.json). [belief: cc]
+
+
+### 2026-10-30 06:00 native entry and split-storage checkpoint
+
+- FA4 exact-set R8 original event ended05:36:28Z rc75 after explicit refusal at the unchanged150GiB floor plus1GiB output reserve, before the native driver. Its source, launcher, job and external-source manifest hashes match the packet; the exact timestamped launcher block is retained. Later grants are distinct. No full three-pair/22-band verdict, equivalence, mechanism or performance claim. Owner NI preserves originals and repairs resource admission under the existing task; no duplicate follow-up box added.
+  - [belief: cc] [Original audit](../../artifacts/compute/results-filing-20261030-0600.json).

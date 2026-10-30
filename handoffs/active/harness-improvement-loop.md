@@ -576,3 +576,9 @@ Coordinated safe removal of a peer-owned landed checkout restored live disk head
 ### 2026-10-30 overdue original-event filing (HIL, Paddle R14, FA4 and DCA)
 
 Seven original HIL events: S0 v7/v8, S2 v6/v7 and bounded r5/r6 were T1 disk-floor refusals before cohort work, with their exact per-event free-after-output values and timestamps in the audit. Original S0 scope is 32 accepted/3 unknown/10 unexposed of 45; S2 is 17/1/27 of 45, including unknown 06/2; bounded scope is 0/0/60. Heavy R6 at 04:06:32 returned rc75 on the explicit disk check (free 157826616 KiB, required 158334976 KiB) before model work; at that boundary 25 accepted/2 unknown/21 unexposed. Its later rearmed output is separate and not attributed to this event. Preserve every unknown; no full-cohort or quality verdict. The first four events were already past their filing deadlines when audited. [Native event audit](../../artifacts/compute/results-filing-20261030-0520.json). [belief: cc]
+
+
+### 2026-10-30 06:00 native entry and split-storage checkpoint
+
+- Heavy R7 split-storage successor was real-smoke qualified and published, then keeper accepted05:48:38Z. At its handoff the fixed48-slot scope retained39 accepted,4 unknown and5 unexposed; unknowns11/0,12/2,16/1,19/0 are preserved. Final-wrapper target Qwen35B control used two SMT threads,9 prompt/1 predicted token plus witnessed active-request cutoff, rc75/partial and captured cleanup. Native output has its independent1GiB Micron budget; real RAID metadata reserves128MiB above150GiB. Old own ungranted R6 poller and captured sleep child were retired and verified absent. Publication is not cohort completion.
+  - [belief: cc] [Source and native proof references](../../artifacts/compute/results-filing-20261030-0600.json).

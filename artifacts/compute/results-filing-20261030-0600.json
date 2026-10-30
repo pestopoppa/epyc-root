@@ -1,0 +1,58 @@
+{
+  "original_audit": {
+    "path": "/mnt/raid0/llm/tmp/codex3-filing-fa4r8-0600-20261030/audit.json",
+    "sha256": "6457439eea740296f6ad14bc26688b007093273701f45ea54266a7e7d4a355ca"
+  },
+  "new_qualified_packets": [
+    {
+      "id": "codex3-hil15b-heavy-r7-split-20261030",
+      "manifest": "/mnt/raid0/llm/tmp/compute-flags/ready/armed/codex3-hil15b-heavy-r7-split-20261030.json",
+      "manifest_sha256": "08be7f857d6085d80553270d67d9f50e0f061dc578ab948f7b3d0a13e130faf9",
+      "smoke": {
+        "ran_at": "2026-10-30T05:44:30Z",
+        "first_request_ok": true,
+        "result_writer_ok": true,
+        "exit_ok": true,
+        "wall_s": 30,
+        "native_rc": 75,
+        "cleanup_verified": true
+      },
+      "launch_sha256": "01519c9dfd5ca3cc8e8ebe8e43cc69939adc7f5e17730ed8a26aa3103b92fa4e",
+      "source": {
+        "path": "/mnt/micron/codex3-hil15b-heavy-r7-20261030/source.sha256",
+        "sha256": "f57f945f370b702b2ede6798cfa0f0c631ecb9a4c3015dcc06bab68b18a698f9"
+      },
+      "full_proof": {
+        "path": "/mnt/raid0/llm/tmp/codex3-filing-fa4r8-0600-20261030/codex3-hil15b-heavy-r7-split-20261030-publication-proof.json",
+        "sha256": "45c5e90d0a3f89b1139a1b05305df46866f0b5e6dd7af453e1abf993d265d98c"
+      }
+    },
+    {
+      "id": "codex3-hsf5p-profile6-r13-20261030",
+      "manifest": "/mnt/raid0/llm/tmp/compute-flags/ready/armed/codex3-hsf5p-profile6-r13-20261030.json",
+      "manifest_sha256": "5dda918b10292f19901039a7f523c1b7d345f70bd6ce2e6b488e49d718f4f61a",
+      "smoke": {
+        "ran_at": "2026-10-30T05:48:38.372645Z",
+        "first_request_ok": true,
+        "result_writer_ok": true,
+        "exit_ok": true,
+        "wall_s": 112.05649218102917
+      },
+      "launch_sha256": "503e5f6fd8c48830feb44b8dfd98442e687594d1553373c1c80aea3251f0a756",
+      "source": {
+        "path": "/mnt/raid0/llm/tmp/codex3-hsf-profile6-r13-split-20261030/SOURCES.sha256",
+        "sha256": "bbda7f05dc56820b49ca3d7b704a0c07cc7b6ef9106f53d832ee7bdd46aa8c12"
+      },
+      "full_proof": {
+        "path": "/mnt/raid0/llm/tmp/codex3-filing-fa4r8-0600-20261030/codex3-hsf5p-profile6-r13-20261030-publication-proof.json",
+        "sha256": "6749dc4efbec4c14ae04affd30009d51da24f0eda050835b795dfd67f5f14789"
+      }
+    }
+  ],
+  "scope": "One original resource failure, two real-smoked successor publications; no completed parent inference or quality gate.",
+  "hsf13_during_normal_run": {
+    "path": "/mnt/raid0/llm/tmp/codex3-filing-fa4r8-0600-20261030/hsf13-live-0558.json",
+    "sha256": "11ba3420ca669412d6c5a45e12a42191869129ae5823069ff973b9e99b570d3f",
+    "scope": "A1 warmup and six four-stream waves plus restore completed; serving drained, profiler trace export live at05:58:40; 211/211 during-driver residency samples. No full A1/B/A2 verdict."
+  }
+}

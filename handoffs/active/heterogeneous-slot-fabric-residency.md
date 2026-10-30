@@ -355,3 +355,12 @@ Operator-approved 2026-10-20 via research intake (plan sha256 recorded in the se
 ### 2026-10-30 05:30 original HSF and YaRN event filing
 
 HSF PROFILE-6 R12's original whole-host event ended 05:14:53Z rc75 before A1/B/A2 because the unchanged 150 GiB floor plus 16 GiB normal trace reserve was unavailable. Three later grants made the same refusal; at 05:30:23Z the owner withdrew its ungranted waiter and verified its captured PID and sleep child dead, without changing the floor. The prior separate B-only 32,768-context control completed in 190.393s with trace/restore and cleanup; its full 42-member archive is 730,699,910 bytes, SHA-256 `464ad36b04f7c83ef3ce6acc56dc823b2bce2bab925b18be0ec4aaf3518703b7`. It is not a full-context or attribution result. [Original events and custody](../../artifacts/compute/results-filing-20261030-0530.json). [belief: cc]
+
+
+### 2026-10-30 06:00 native entry and split-storage checkpoint
+
+- HSF13 split-storage successor was real-smoke qualified and published, then keeper accepted05:52:45Z. B-only32,768-context native control completed112.06s,25/25 positive during-request GPU residency samples, rc0/writer/drain; native control is retained on Micron with individual member hashes. Full normal A1/B/A2 at393,216 context and its16GiB native-output budget are unchanged; real RAID metadata reserves128MiB above150GiB. The normal grant opened05:53–06:33Z and launcher started05:54:14Z; this grant alone does not establish native completion.
+  - [belief: cc] [Native/source evidence](../../artifacts/compute/results-filing-20261030-0600.json).
+
+
+At05:58:40Z HSF13 normal A1 had completed warmup, six four-stream waves and restore. All211 during-driver samples recorded KFD and positiveVRAM; latest serving sample52.18GB. Serving had drained while the captured profiler process remained live in native trace export. Full A1/B/A2 remains incomplete; grant ownership is not substituted for native evidence. Canonical launcher log now hardlinks the actual keeper stdout inode. [Live native proof](../../artifacts/compute/results-filing-20261030-0600.json). [belief: cc]
