@@ -1,0 +1,571 @@
+{
+  "original_event_audit": {
+    "due_file": {
+      "bytes": 228358,
+      "mtime_ns": 1793379907591542538,
+      "path": "/mnt/raid0/llm/tmp/compute-flags/filing-due.jsonl",
+      "sha256": "91c2864e40bb0afa9297c9ea597b6ac4c02cc8b3133a7a8eebcdd74184402a51"
+    },
+    "event": {
+      "due_record": {
+        "class": "diagnostic",
+        "decision_rule": "Diagnostic: H64/KVH1 sinks op cases at nth1/16/32/64/96 retain inherited NMSE <=5e-4 (lower better), max/mean absolute error descriptive. Independently linked baseline runtime generates65positions (prefill step0 plus64forced decode steps) for3fixedprompts and repeats same pinned sequence from freshKV; separately linked featureON process replays identical tokens. Report baseline repeat floor, firstflip, max/mean drift perposition and fliprates by baseline margin. No invented tolerance, timing/fold/promotion authority; thinmargin criterion remains unmet if no baseline margin<1 observed.",
+        "end_line": "rc=1 time=2026-10-30T17:04:13Z reason=job-rc-1:exited",
+        "ended_file": "/mnt/raid0/llm/tmp/compute-flags/grants/codex-ni-lb49-combined-ready-20261030.ended",
+        "id": "codex-ni-lb49-combined-ready-20261030",
+        "owner": "codex-ni",
+        "result_path": "/mnt/raid0/llm/tmp/codex-ni-lb49-combined-ready-20261030/COMPLETE.json",
+        "scratch_root": "/mnt/raid0/llm/tmp/codex-ni-lb49-combined-ready-20261030",
+        "seen_at": "2026-10-30T17:05:07Z"
+      },
+      "ended_file": {
+        "bytes": 192,
+        "mtime_ns": 1793379853005884117,
+        "path": "/mnt/raid0/llm/tmp/compute-flags/grants/codex-ni-lb49-combined-ready-20261030.ended",
+        "sha256": "ce615f42ebe9678f0cb9c6d82d5341ce23a7c3e2f97ac6fbe4b528adf25cdca5"
+      },
+      "native_record": {
+        "aggregate_refused_error": "ValueError: native invocation/input joins",
+        "aggregate_refused_exit_ok": false,
+        "aggregate_refused_file": {
+          "bytes": 85556,
+          "mtime_ns": 1793379850568333924,
+          "path": "REFUSED.json",
+          "sha256": "7892c397f7f0a440279e63240246be1bad9644af2b7c43718b1f86a4964aa0e3"
+        },
+        "disposition": {
+          "candidate_qualifying_task_text": "AKX-ALL-LB4.9-FU-OPCASES-01: run the FLASH_ATTN_EXT op cases that LB4.9 requires (DS41 SWA layers 0-1, stock-mask DS41 shape, gathered n_kv 640/768 with 64 heads and 1 KV head, per-head-distinct sinks at nth 1/16/32/64/96) against the ggml reference; addendum compares op deviation and implied logit drift against the observed DS41 step-0 0.41 logits. 72/72 op rows pass, 60/60 data rows meet inherited 5e-4 NMSE in this synthetic exact-shape fixture; this subphase can be filed separately if the owner accepts the preserved phase receipt.",
+          "do_not_tick": [
+            "AKX-ALL-LB4.9 parent implementation/fold box: diagnostic test is not sink-fold or code-change acceptance.",
+            "AKX-ALL-LB4.9-FU-DIVERGE-05a: aggregate refused; synthetic opcases alone do not report actual DS41 first-node deviation with/without sinks.",
+            "AKX-ALL-LB4.9-FU-DIVERGE-06: raw teacher-forced metrics exist, but aggregate native invocation/input join refused; do not treat the combined capture as accepted until corrected verifier validates full model/source joins."
+          ],
+          "event_class": "diagnostic",
+          "event_failure": "Native aggregate refused after work completed: ValueError native invocation/input joins; top-level grant ended rc1. Preserve every phase result and cleanup receipt.",
+          "failed_run_class": "diagnostic",
+          "full_combined_rule_accepted": false,
+          "owner_action": "Fix the model/input verifier to validate the command model argument as a member of the complete pinned nine-shard model map (and verify the full shard set), not against next(iter(model_pins)); then re-run the native writer/read on this immutable captured evidence. Preserve original rc1/REFUSED. If the corrected join still fails, publish the concrete failing join and only then decide on a new-id rerun; do not modify this original event.",
+          "reason": "The authoritative native result is error/REFUSED and no accepted COMPLETE.json exists. Phase-level rc0 does not override the aggregate refusal."
+        },
+        "model_pin_audit": {
+          "diagnosis": "Validator fails because it compares cmd[1] to next(iter(model_pins)), a single shard (00004), although capture-off and capture-feature both receive shard 00001 and that exact path is present in the full nine-shard pin map. Preserve REFUSED/rc1 until the verifier is corrected and the immutable evidence is re-read.",
+          "each_requested_path_is_in_pinned_shard_map": [
+            true,
+            true
+          ],
+          "phase_requested_model_paths": [
+            "/mnt/raid0/llm/models/antirez/deepseek-v4.1-flash-gguf/DeepSeek-V4.1-Flash-1017-MXFP4-experts-00001-of-00009.gguf",
+            "/mnt/raid0/llm/models/antirez/deepseek-v4.1-flash-gguf/DeepSeek-V4.1-Flash-1017-MXFP4-experts-00001-of-00009.gguf"
+          ],
+          "pinned_shard_count": 9,
+          "validator_expected_model_by_next_iter": "/mnt/raid0/llm/models/antirez/deepseek-v4.1-flash-gguf/DeepSeek-V4.1-Flash-1017-MXFP4-experts-00004-of-00009.gguf"
+        },
+        "native_json": {
+          "bytes": 108878,
+          "mtime_ns": 1793379850774441703,
+          "path": "native.json",
+          "sha256": "eed7625dced51755640eaf48bb65cfbd333dd14859bc568890348252535aa675"
+        },
+        "native_row_sha256": "894988a154fd153fbed376323421d6871777e50456ec2314a6bbdade4033954a",
+        "native_status": "error",
+        "opcases": {
+          "all_nmses_at_or_below_5e-4": true,
+          "all_rows_verdict_pass": true,
+          "case_names": [
+            "ds41-sinks-zero-stock",
+            "ds41-sinks-zero-swa0",
+            "ds41-stock-mask",
+            "ds41-swa-layer0",
+            "ds41-swa-layer1",
+            "fully-masked",
+            "gathered-640",
+            "gathered-640-sinks-zero",
+            "gathered-768",
+            "gathered-768-sinks-zero",
+            "generic-fallback",
+            "null-sinks"
+          ],
+          "control_rows": 12,
+          "data_cells": 60,
+          "max_abs_descriptive": 6.80238008e-06,
+          "max_nmse": 1.73434754e-09,
+          "max_oracle_nmse": 1.08894574e-13,
+          "nths": [
+            1,
+            16,
+            32,
+            64,
+            96
+          ],
+          "rows_total": 72
+        },
+        "phase_info": [
+          {
+            "birth_ticks": "150173792",
+            "cleanup_verified": true,
+            "command": [
+              "/mnt/raid0/llm/tmp/codex-ni-lb49-combined-ready-20261030/test_opcases"
+            ],
+            "cutoff": null,
+            "finished_at": "2026-10-30T16:54:28.211382+00:00",
+            "live_samples": 14,
+            "max_rss_bytes": 95977472,
+            "name": "opcases",
+            "native_binary": {
+              "dev": 2431,
+              "inode": 191395078,
+              "mtime_ns": 1793375424017937409,
+              "path": "/mnt/raid0/llm/tmp/codex-ni-lb49-combined-ready-20261030/test_opcases",
+              "sha256": "be21fc3f72e7bbb578f09f1c810fbe6b9c6e6b3e31385a084f94542add6dc9fe",
+              "size": 22048
+            },
+            "pid": 826745,
+            "rc": 0,
+            "runtime": "/mnt/raid0/llm/tmp/lb49-codex-evidence-20261028/build-deterministic/bin",
+            "started_at": "2026-10-30T16:54:24.688930+00:00"
+          },
+          {
+            "birth_ticks": "150175230",
+            "cleanup_verified": true,
+            "command": [
+              "/mnt/raid0/llm/tmp/codex-ni-lb49-combined-ready-20261030/capture-off",
+              "/mnt/raid0/llm/models/antirez/deepseek-v4.1-flash-gguf/DeepSeek-V4.1-Flash-1017-MXFP4-experts-00001-of-00009.gguf",
+              "/mnt/raid0/llm/tmp/codex-ni-lb49-combined-ready-20261030/runs/run-1793379263878762822/capture/baseline",
+              "24",
+              "65",
+              "3",
+              "baseline",
+              "/mnt/raid0/llm/tmp/codex-ni-lb49-combined-ready-20261030/runs/run-1793379263878762822/capture/baseline"
+            ],
+            "cutoff": null,
+            "finished_at": "2026-10-30T16:59:48.672471+00:00",
+            "live_samples": 1229,
+            "max_rss_bytes": 645717139456,
+            "name": "baseline",
+            "native_binary": {
+              "dev": 2431,
+              "inode": 191405708,
+              "mtime_ns": 1793375955097339648,
+              "path": "/mnt/raid0/llm/tmp/codex-ni-lb49-combined-ready-20261030/capture-off",
+              "sha256": "680e6c24cf12ed5b53fb172055d449d50585fe481fc32b39896d9e89bae94e91",
+              "size": 84768
+            },
+            "pid": 838899,
+            "rc": 0,
+            "requested_model_path": "/mnt/raid0/llm/models/antirez/deepseek-v4.1-flash-gguf/DeepSeek-V4.1-Flash-1017-MXFP4-experts-00001-of-00009.gguf",
+            "requested_model_path_is_in_complete_pinned_shard_map": true,
+            "requested_model_pin": {
+              "head_tail_64MiB_sha256": "7618349dd35019fefef5b39b5cf1fe0ae4003fad77cd8d28527953c514676ae7",
+              "size": 49353784544
+            },
+            "runtime": "/mnt/raid0/llm/tmp/lb49-codex-evidence-20261028/build-deterministic-off/bin",
+            "started_at": "2026-10-30T16:54:39.073480+00:00"
+          },
+          {
+            "birth_ticks": "150206190",
+            "cleanup_verified": true,
+            "command": [
+              "/mnt/raid0/llm/tmp/codex-ni-lb49-combined-ready-20261030/capture-feature",
+              "/mnt/raid0/llm/models/antirez/deepseek-v4.1-flash-gguf/DeepSeek-V4.1-Flash-1017-MXFP4-experts-00001-of-00009.gguf",
+              "/mnt/raid0/llm/tmp/codex-ni-lb49-combined-ready-20261030/runs/run-1793379263878762822/capture/candidate",
+              "24",
+              "65",
+              "3",
+              "candidate",
+              "/mnt/raid0/llm/tmp/codex-ni-lb49-combined-ready-20261030/runs/run-1793379263878762822/capture/baseline"
+            ],
+            "cutoff": null,
+            "finished_at": "2026-10-30T17:03:31.999990+00:00",
+            "live_samples": 886,
+            "max_rss_bytes": 744440188928,
+            "name": "candidate",
+            "native_binary": {
+              "dev": 2431,
+              "inode": 191405709,
+              "mtime_ns": 1793375957206543295,
+              "path": "/mnt/raid0/llm/tmp/codex-ni-lb49-combined-ready-20261030/capture-feature",
+              "sha256": "27b776265277525242509abc15bdd3e033165b8b37a3bf1b11a806a249a4b4bf",
+              "size": 84768
+            },
+            "pid": 896961,
+            "rc": 0,
+            "requested_model_path": "/mnt/raid0/llm/models/antirez/deepseek-v4.1-flash-gguf/DeepSeek-V4.1-Flash-1017-MXFP4-experts-00001-of-00009.gguf",
+            "requested_model_path_is_in_complete_pinned_shard_map": true,
+            "requested_model_pin": {
+              "head_tail_64MiB_sha256": "7618349dd35019fefef5b39b5cf1fe0ae4003fad77cd8d28527953c514676ae7",
+              "size": 49353784544
+            },
+            "runtime": "/mnt/raid0/llm/tmp/lb49-codex-evidence-20261028/build-deterministic-feature/bin",
+            "started_at": "2026-10-30T16:59:48.672592+00:00"
+          }
+        ],
+        "result_error": "ValueError: native invocation/input joins",
+        "result_exit_ok": false,
+        "teacher_forcing": {
+          "comparison_summary": [
+            {
+              "baseline_repeat_max_abs_floor": 0.0,
+              "baseline_x2_bitwise_equal": true,
+              "first_flip_step_zero_based": null,
+              "flip_rate": 0.0,
+              "horizon_including_prefill": 65,
+              "label": "threads-24.prompt-1",
+              "margin_buckets": {
+                "0.05-0.25": {
+                  "flips": 0,
+                  "n": 0
+                },
+                "0.25-1": {
+                  "flips": 0,
+                  "n": 6
+                },
+                "<0.05": {
+                  "flips": 0,
+                  "n": 1
+                },
+                ">=1": {
+                  "flips": 0,
+                  "n": 58
+                }
+              },
+              "max_abs_logit_drift": 4.070798873901367,
+              "mean_of_per_position_mean_abs_logit_drift": 0.2773583029175364,
+              "prompt": "The capital of France is"
+            },
+            {
+              "baseline_repeat_max_abs_floor": 0.0,
+              "baseline_x2_bitwise_equal": true,
+              "first_flip_step_zero_based": null,
+              "flip_rate": 0.0,
+              "horizon_including_prefill": 65,
+              "label": "threads-24.prompt-2",
+              "margin_buckets": {
+                "0.05-0.25": {
+                  "flips": 0,
+                  "n": 5
+                },
+                "0.25-1": {
+                  "flips": 0,
+                  "n": 15
+                },
+                "<0.05": {
+                  "flips": 0,
+                  "n": 1
+                },
+                ">=1": {
+                  "flips": 0,
+                  "n": 44
+                }
+              },
+              "max_abs_logit_drift": 5.670360565185547,
+              "mean_of_per_position_mean_abs_logit_drift": 0.19205487401996058,
+              "prompt": "A small bird landed on the windowsill and"
+            },
+            {
+              "baseline_repeat_max_abs_floor": 0.0,
+              "baseline_x2_bitwise_equal": true,
+              "first_flip_step_zero_based": 7,
+              "flip_rate": 0.03076923076923077,
+              "horizon_including_prefill": 65,
+              "label": "threads-24.prompt-3",
+              "margin_buckets": {
+                "0.05-0.25": {
+                  "flips": 0,
+                  "n": 0
+                },
+                "0.25-1": {
+                  "flips": 2,
+                  "n": 11
+                },
+                "<0.05": {
+                  "flips": 0,
+                  "n": 1
+                },
+                ">=1": {
+                  "flips": 0,
+                  "n": 53
+                }
+              },
+              "max_abs_logit_drift": 7.545370817184448,
+              "mean_of_per_position_mean_abs_logit_drift": 0.2473838023002025,
+              "prompt": "Write a long imaginative story, at least 200 words, beginning: Beyond the blue doorway, I found"
+            }
+          ],
+          "metric_contract": "No invented drift tolerance; margins, first flips and max/mean per-position drift are descriptive. Baseline repeat floor is zero when the recorded x2 arms are bitwise identical.",
+          "predeclared_positions": 65,
+          "predeclared_prompts": 3,
+          "thin_margin_observed": true
+        }
+      },
+      "original_launcher_file": {
+        "bytes": 1985,
+        "mtime_ns": 1793379853010884177,
+        "path": "/mnt/raid0/llm/tmp/compute-flags/ready/codex-ni-lb49-combined-ready-20261030.launcher.out",
+        "sha256": "6268c84d85891f2855e7ccff8369eeeb5d12e850357c4f2272e320c5c762a426"
+      },
+      "root_identity_artifacts": [
+        {
+          "bytes": 2415,
+          "mtime_ns": 1793375797187083052,
+          "path": "MODEL-PINS.json",
+          "sha256": "0f17d4750184db7cb1833c51403f098c51374915034411beaf7b4b286358fd6b"
+        },
+        {
+          "bytes": 1686,
+          "mtime_ns": 1793376005082356695,
+          "path": "PLAN.json",
+          "sha256": "01ce704f2fbe53556b75f6c04db00adb88b0a0fb075223d728738c516d4076fa"
+        },
+        {
+          "bytes": 6742,
+          "mtime_ns": 1793379153330253681,
+          "path": "READY.draft.json",
+          "sha256": "f167d73508ce118584fd526e2a524f3fcae0912a5ffdc664485b8efb20304665"
+        },
+        {
+          "bytes": 1360,
+          "mtime_ns": 1793379048211367999,
+          "path": "READY.draft.row.md",
+          "sha256": "2de82246d7eddc6905b8142c21779562265cdd3c2b1a2e677cd12e593d8c1152"
+        },
+        {
+          "bytes": 2641,
+          "mtime_ns": 1793376122408227932,
+          "path": "PROGRESS-HANDOFF-BK.draft.md",
+          "sha256": "b06fbcaeea776b0ffe06b91703386cbce6c2e1162b39c2ce4898506373edbc6a"
+        },
+        {
+          "bytes": 5184,
+          "mtime_ns": 1793378767671961074,
+          "path": "SOURCES.sha256",
+          "sha256": "fe3dedf84fa8299d655af4982e0b21379a32d23b44913211e0b1a033b4a69902"
+        },
+        {
+          "bytes": 16953,
+          "mtime_ns": 1793378767563932328,
+          "path": "lb49_capture.py",
+          "sha256": "d6dd43b34a4bcd421911d7c0aff086f26d825c2e001fbb505878bdb96ea46c97"
+        },
+        {
+          "bytes": 84768,
+          "mtime_ns": 1793375955097339648,
+          "path": "capture-off",
+          "sha256": "680e6c24cf12ed5b53fb172055d449d50585fe481fc32b39896d9e89bae94e91"
+        },
+        {
+          "bytes": 84768,
+          "mtime_ns": 1793375957206543295,
+          "path": "capture-feature",
+          "sha256": "27b776265277525242509abc15bdd3e033165b8b37a3bf1b11a806a249a4b4bf"
+        },
+        {
+          "bytes": 103392,
+          "mtime_ns": 1793375423423019776,
+          "path": "capture_combined",
+          "sha256": "78a5b4649a5e3c3f5c413bcba1445802f1873646f775a6559a3df28f6512f5e2"
+        },
+        {
+          "bytes": 22048,
+          "mtime_ns": 1793375424017937409,
+          "path": "test_opcases",
+          "sha256": "be21fc3f72e7bbb578f09f1c810fbe6b9c6e6b3e31385a084f94542add6dc9fe"
+        },
+        {
+          "bytes": 1999,
+          "mtime_ns": 1793375984222173468,
+          "path": "reader.py",
+          "sha256": "959ea7b8ee0fcdccf417710b0b8e8df6f752a26b8747bde0ade5fdf53d292760"
+        }
+      ],
+      "run_artifacts": [
+        {
+          "bytes": 9191,
+          "mtime_ns": 1793379263879487361,
+          "path": "DECLARATION.json",
+          "sha256": "4c43c67e41536bebef5fbaad24e27ae7200a1ad112ca0c1ab1e1287cd71cfef3"
+        },
+        {
+          "bytes": 85556,
+          "mtime_ns": 1793379850568333924,
+          "path": "REFUSED.json",
+          "sha256": "7892c397f7f0a440279e63240246be1bad9644af2b7c43718b1f86a4964aa0e3"
+        },
+        {
+          "bytes": 85499,
+          "mtime_ns": 1793379830584689980,
+          "path": "RESULT.json",
+          "sha256": "6a988eff8b687a837f68ca30df832a335d3e3c701e5be8a787dde009a657cd21"
+        },
+        {
+          "bytes": 23605,
+          "mtime_ns": 1793379811749428959,
+          "path": "RESULT.partial.json",
+          "sha256": "516f15cf1fb75100b91ac1915efdceda62a53b3b909cf6b40678b0d31660d41e"
+        },
+        {
+          "bytes": 11875181,
+          "mtime_ns": 1793379588420683175,
+          "path": "baseline.live.jsonl",
+          "sha256": "a8e51eb96403786d937a2a9e379b28565ccee09721e25d15425de682bb8a62e4"
+        },
+        {
+          "bytes": 231378,
+          "mtime_ns": 1793379588580685106,
+          "path": "baseline.log",
+          "sha256": "16dd15ffcd63e3826101d56a52819bb8f30feb1b6617f85ddd8990eb8d300dc4"
+        },
+        {
+          "bytes": 8698956,
+          "mtime_ns": 1793379811748384132,
+          "path": "candidate.live.jsonl",
+          "sha256": "ccdf0a81b22abb103e3cb971c1efa6d6fd1d75ef092e2921b6bf1c296ef1b49c"
+        },
+        {
+          "bytes": 231493,
+          "mtime_ns": 1793379811846385319,
+          "path": "candidate.log",
+          "sha256": "5ab712b71f33fb550151deac95ea9a71bef213e6ee1bb5290fe38573d432cf45"
+        },
+        {
+          "bytes": 294,
+          "mtime_ns": 1793379515167799747,
+          "path": "capture/baseline/threads-24.prompt-1.baseline-token-ids.txt",
+          "sha256": "34fb0a6fafc1e8662b93372040f50c2691e7155a28d75efc2873a43aa932bd5a"
+        },
+        {
+          "bytes": 69,
+          "mtime_ns": 1793379524259909317,
+          "path": "capture/baseline/threads-24.prompt-1.comparison.json",
+          "sha256": "0c8374779edc8e36dd25ff395cf75e63bfe44cc6a9888e97cdea15d790082cb4"
+        },
+        {
+          "bytes": 33612800,
+          "mtime_ns": 1793379515167799747,
+          "path": "capture/baseline/threads-24.prompt-1.logits.f32le",
+          "sha256": "1f6b0ef0c6effafd6baca645792d9df01bf273cbfbeb1253a58e4902e1bafe9c"
+        },
+        {
+          "bytes": 33612800,
+          "mtime_ns": 1793379524256909281,
+          "path": "capture/baseline/threads-24.prompt-1.repeat.logits.f32le",
+          "sha256": "1f6b0ef0c6effafd6baca645792d9df01bf273cbfbeb1253a58e4902e1bafe9c"
+        },
+        {
+          "bytes": 289,
+          "mtime_ns": 1793379535366043190,
+          "path": "capture/baseline/threads-24.prompt-2.baseline-token-ids.txt",
+          "sha256": "054639bf7286a492b67b3e098e5d92050b8d5397ccbaa1210ffd62819f1e9bb3"
+        },
+        {
+          "bytes": 86,
+          "mtime_ns": 1793379545521165631,
+          "path": "capture/baseline/threads-24.prompt-2.comparison.json",
+          "sha256": "51e9d2080e22ed2055289f71a01e550960fdbd02d256d041aa4065c6d6342943"
+        },
+        {
+          "bytes": 33612800,
+          "mtime_ns": 1793379535366043190,
+          "path": "capture/baseline/threads-24.prompt-2.logits.f32le",
+          "sha256": "9001641f8f960364068ee958f27677fda5f05f7bf169f3ca7d70651114b50259"
+        },
+        {
+          "bytes": 33612800,
+          "mtime_ns": 1793379545519165607,
+          "path": "capture/baseline/threads-24.prompt-2.repeat.logits.f32le",
+          "sha256": "9001641f8f960364068ee958f27677fda5f05f7bf169f3ca7d70651114b50259"
+        },
+        {
+          "bytes": 285,
+          "mtime_ns": 1793379556827301982,
+          "path": "capture/baseline/threads-24.prompt-3.baseline-token-ids.txt",
+          "sha256": "cbbd1dcba6272f176f8ac9deb752ae7caa54114fee8f4a952c9279484647c5a9"
+        },
+        {
+          "bytes": 140,
+          "mtime_ns": 1793379566609419981,
+          "path": "capture/baseline/threads-24.prompt-3.comparison.json",
+          "sha256": "47ba8eeea93624bcc849fc1a9fc1ab70ac57977a95b6e81d866c12aba994bbe5"
+        },
+        {
+          "bytes": 33612800,
+          "mtime_ns": 1793379556827301982,
+          "path": "capture/baseline/threads-24.prompt-3.logits.f32le",
+          "sha256": "687db55ffa4ec7a0c32500fde88830740a3e8c8af6bf2df070dbdd9c1199c353"
+        },
+        {
+          "bytes": 33612800,
+          "mtime_ns": 1793379566608419969,
+          "path": "capture/baseline/threads-24.prompt-3.repeat.logits.f32le",
+          "sha256": "687db55ffa4ec7a0c32500fde88830740a3e8c8af6bf2df070dbdd9c1199c353"
+        },
+        {
+          "bytes": 70,
+          "mtime_ns": 1793379748197614536,
+          "path": "capture/candidate/threads-24.prompt-1.comparison.json",
+          "sha256": "c913a83e6dd3786fc5120da76dbd934dfb8dce0b5e4990894e50c0aac6adce0f"
+        },
+        {
+          "bytes": 33612800,
+          "mtime_ns": 1793379748197614536,
+          "path": "capture/candidate/threads-24.prompt-1.logits.f32le",
+          "sha256": "c482775cf1fb0fd17bff9419bda70b5351687d5005ccb3f07dff29b809431675"
+        },
+        {
+          "bytes": 87,
+          "mtime_ns": 1793379774157928829,
+          "path": "capture/candidate/threads-24.prompt-2.comparison.json",
+          "sha256": "33c831298f0dd29e48a047b7c421a8b7a52b4b0714b4cc06f4fd7159ef3c5a2d"
+        },
+        {
+          "bytes": 33612800,
+          "mtime_ns": 1793379774157928829,
+          "path": "capture/candidate/threads-24.prompt-2.logits.f32le",
+          "sha256": "c9db4f44e0ce034a5a389239692308e358cdf9a77f48f6d89248ed10971d1e99"
+        },
+        {
+          "bytes": 141,
+          "mtime_ns": 1793379790934131996,
+          "path": "capture/candidate/threads-24.prompt-3.comparison.json",
+          "sha256": "3fbbebd2bacecddaa3e378636e091cdf214a5c4cfd879afd421f0ba48c1c3903"
+        },
+        {
+          "bytes": 33612800,
+          "mtime_ns": 1793379790934131996,
+          "path": "capture/candidate/threads-24.prompt-3.logits.f32le",
+          "sha256": "90ad23c3de6c4df93d207c5254ac80744f01239400b74dcae02957b2b76e08dd"
+        },
+        {
+          "bytes": 108878,
+          "mtime_ns": 1793379850774441703,
+          "path": "native.json",
+          "sha256": "eed7625dced51755640eaf48bb65cfbd333dd14859bc568890348252535aa675"
+        },
+        {
+          "bytes": 68078,
+          "mtime_ns": 1793379267959831465,
+          "path": "opcases.live.jsonl",
+          "sha256": "158aa05ca8621d5ee38f817b31060981895ba9c8ffd2a49cdb4b45da973cb3d6"
+        },
+        {
+          "bytes": 12233,
+          "mtime_ns": 1793379268073832828,
+          "path": "opcases.log",
+          "sha256": "ceca7237518bc99bba2f2376179c1fc722722b081b71c3cbc10f022dd1ede87b"
+        }
+      ],
+      "run_root": "/mnt/raid0/llm/tmp/codex-ni-lb49-combined-ready-20261030/runs/run-1793379263878762822",
+      "scratch_root": "/mnt/raid0/llm/tmp/codex-ni-lb49-combined-ready-20261030"
+    },
+    "prepared_at": "2026-10-30T17:15:12.182509+00:00",
+    "schema": "compute-original-event-filing-audit/v1"
+  },
+  "parent_filing": {
+    "FU_DIVERGE_05a": "OPEN",
+    "FU_DIVERGE_06": "OPEN pending corrected original-capture identity validation",
+    "aggregate": "REFUSED rc1; original refusal preserved",
+    "full_FU_OPCASES_01": "OPEN: original10/28 implied-logit-drift addendum is not independently established by op-error scale; no full-task tick",
+    "op_matrix_phase": "72/72 PASS, max NMSE1.73434754e-9 versus inherited5e-4",
+    "owner_action": "Repair selected-model entry check against declared nine-shard model; revalidate immutable original capture including later joins; do not rerun native phases unless a real mismatch remains."
+  },
+  "recorded_at": "2026-10-30T17:32:25.793852+00:00"
+}
