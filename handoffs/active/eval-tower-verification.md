@@ -218,7 +218,7 @@ loads `6,701` candidate-level items across HE-R/HE-R+/MBPP-R/MBPP-R+ with
 
 ### EV-5: Deploy ThinkPRM-1.5B for T2 process verification (~100 lines)
 
-- [ ] Download ThinkPRM-1.5B from HuggingFace, quantize to Q4_K_M GGUF (~2GB)
+- [x] Download ThinkPRM-1.5B from HuggingFace, quantize to Q4_K_M GGUF (~2GB) ✅ 2026-10-30 — [no-belief: operational model acquisition and format/load validation; no decision-grade inference claim]. Pinned `launch/ThinkPRM-1.5B` revision `fcf2c6f6ca28ac2b901206609d8714845290f72e`; produced `ThinkPRM-1.5B-Q4_K_M.gguf` (1,117,320,992 bytes; SHA-256 `ffabf3ea931fd710d8197704e6afd6331bf3b7c3c1af0b175e3f0f9dbf5cfc49`). A 16-token capped native control using CPU llama-cli loaded the model and generated output (6.081 s; peak RSS 1,875,025,920 bytes). Elapsed time and RSS validate bounded execution only; verification quality and comparative performance were not evaluated.
 - [ ] Add server config for ThinkPRM in `orchestrator_stack.py` (load only during T2 eval, unload main models — sequential loading per memory note)
 - [ ] Implement verification pass in `eval_tower.py` `eval_t2()`:
   - After standard scoring, identify N most uncertain questions (lowest |confidence - 0.5|)
