@@ -1,0 +1,37 @@
+{
+  "prepared_at": "2026-10-30T03:43:31.295284+00:00",
+  "original_event_audits": [
+    {
+      "path": "/mnt/raid0/llm/tmp/codex3-filing-0343-20261030/codex3-paddle-four0330-20261030.json",
+      "sha256": "5c2d8d65af35090d7363093ff18358e57cce92c65d7f1a951c9e32ed932f60ca"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/codex3-filing-0343-20261030/codex3-paddle-two0342-20261030.json",
+      "sha256": "fc63d2f09b584e8103e9766e1eb9a82b4aafdbd4bab7a926a6c88b2cbc373212"
+    }
+  ],
+  "evl2_prepared_packet": [
+    {
+      "path": "/mnt/raid0/llm/tmp/codex3-evl34-deepdive-r2-20261030/PREDECLARATION-FROZEN.json",
+      "sha256": "ce11fa9b52a30c9634538e3e560bb6385e2206e2482d6441035bda8539cf29de"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/codex3-evl34-deepdive-r2-20261030/FROZEN-PROMPT-MANIFEST.json",
+      "sha256": "16e8eea8dd25a3a3c5135817f97d9e7b5b43ca6013014d161c46c4d54fc7802f"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/codex3-evl34-deepdive-r2-20261030/CAMPAIGN-SOURCES.sha256",
+      "sha256": "f9dfc2dd04968b7f17da85e436ca2c4590eed8fcc4a8163d7f9f64ead7b5d400"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/codex3-evl34-deepdive-r2-20261030/PACKET.sha256",
+      "sha256": "284f305349b5538e03c1ac6351584c4dcf9b71103377ea24aea3a02c4249d357"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/codex3-evl34-deepdive-r2-20261030/launch_campaign.sh",
+      "sha256": "55a408b9ff8ff067d28d7f1098752553300bd956720fd658c53a04a7b9b95d28"
+    }
+  ],
+  "meaning": "Six original disk admission partials only, zero requests attributed to their exact captures. No quality/completion tick. Later native runs are separate.",
+  "pipeline": "HIL6 exact target smoke passed and READY published. R12 pre-model O_NOFOLLOW source packaging failure retained; R13 regular-file fix and native pre-model witness passed, actual smoke started. EVL2 durable source-only packet frozen, model start remains guarded."
+}

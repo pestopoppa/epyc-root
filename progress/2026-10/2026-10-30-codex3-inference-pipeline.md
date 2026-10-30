@@ -58,3 +58,10 @@ Eight original events audited: HIL5 silent admission consistent with low disk bu
 
 
 Four additional final source-order reserves g140/143/146/149 published, bringing this turn to12 new Paddle reserves covering175 fresh-cohort unexposed pages. Tailg149 has exactlytwo shards/10pages, not15. One image has an older distinct-campaign diagnostic exposure; approved fresh-cohort inclusion reuses none of its outputs or warrants. Source and native smoke unchanged; no full755page quality/completion claim. [belief: cc]
+
+
+2026-10-30 03:43Z: Six original Paddle events g110/113/119/83/92/98 audited at their exact original boundaries: rc75 disk admission, factory null, no attributed region starts/responses/finishes, native source/grant hashes verified. Later rearms remain separate. No quality/completion tick. [belief: cc]
+
+Capacity changed after refactor's own recovery: HIL6 real exact Qwen35B CPU smoke admitted03:39:48 and completed39.984s, 9prompt/1predicted token, sampled36,800,048KiB, writer and drain verified; freshREADYpublished, original25/2/21 preserved. Three prior headroom watchers expired unexposed; none blindly restarted at unchanged state. R12 native pre-model smoke correctly rejected symlinked venv inventories via O_NOFOLLOW, a private packaging bug; original controls remained unexposed. R13 has byte-identical regular inventories, actual native packet witness checked22,634files/3,235dirs/4symlinks before first model; new same-launcher control began03:42:41 after151GiB guard passed. No R13 success/READY claim yet. [belief: cc]
+
+EVL2 source-only freeze guard now distinguishes its3,063,325bytes of code/input preparation from model startup; frozen packet is durable. The actual control rechecks150GiB plus control reserve and live active output reservations after GPU claim and immediately before model Popen. Seven guard/broker/malformed-call tests pass; source-order questions11–20/control21 and19,800s request preserved. Model remains unexposed while actual combined capacity is unmet. The PAW venv relief audit failed benefit/liveness/retention checks; no package or native evidence moved. [belief: cc]

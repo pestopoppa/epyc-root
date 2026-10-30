@@ -310,3 +310,25 @@ Native details in original-three-events.json, original-finish-audit.json and sou
 [belief: cc]
 
 [Original native audit references](../../artifacts/compute/results-filing-20261030-0320.json).
+
+
+### Original Paddle R11 partial events — 2026-10-30
+
+Each original attempt ended rc75 after `TimeoutError: admission`; its native owner result records `disk floor`, `partial=true`, and `factory=null`. Exact event-block source and grant captures were checked against original end time. In each attempt the worker and server logs were absent, and no region start, response or source-bound page finish was attributed to that capture. These are original-event counts, not a claim about later rearmed attempts; preserve any previously exposed or unknown requests without redraw. [belief: cc]
+
+- `codex3-pip02-paddle-relocatable-r11-g110-20261029`: capture 2026-10-30T03:16:32Z, rc=75 time=2026-10-30T03:16:56Z reason=job-rc-75:exited; attempt result SHA256 `523a35d52ff64d1c18ee6c674755dc15620fa362b5b32dfc05b2e5b6d199e208`, capture SHA256 `9621eb66d24f4b55fa67248948bf648fcc3d36c3e25e6e743448c53ec14ec327`; source pins verified (74). Original-event counts: 0 starts, 0 responses, 0 finish receipts.
+- `codex3-pip02-paddle-relocatable-r11-g113-20261029`: capture 2026-10-30T03:16:33Z, rc=75 time=2026-10-30T03:16:57Z reason=job-rc-75:exited; attempt result SHA256 `199367e2d9f3cfb02b715a4573a31f706f4e2b8858f928fc175eb5f215d7e04b`, capture SHA256 `e0392410d24aafc9eb1ad8b20d7caf969ecb87cbce708083116236fef94b2099`; source pins verified (74). Original-event counts: 0 starts, 0 responses, 0 finish receipts.
+- `codex3-pip02-paddle-relocatable-r11-g119-20261029`: capture 2026-10-30T03:20:29Z, rc=75 time=2026-10-30T03:20:53Z reason=job-rc-75:exited; attempt result SHA256 `1cf991c00793f5b1ea19a15f534425de1626090af1f0349efef65f14bcf32dc7`, capture SHA256 `218b14745f4e208d50c4754089571fb39d1b5180f05a99adcad93a88848c8ab5`; source pins verified (74). Original-event counts: 0 starts, 0 responses, 0 finish receipts.
+- `codex3-pip02-paddle-relocatable-r11-g83-20261029`: capture 2026-10-30T03:20:21Z, rc=75 time=2026-10-30T03:20:45Z reason=job-rc-75:exited; attempt result SHA256 `cb3f16c78ceade53ef25d43c67718c2f615161fe92b9103f66616590c70ba1f4`, capture SHA256 `4fc3e86d8da150651812b2c12481c13427d25f70d626df1f7cb523072c1ebd9c`; source pins verified (74). Original-event counts: 0 starts, 0 responses, 0 finish receipts.
+
+No quality, TEDS or adoption verdict. Full native paths, captured grants, exact boundary and file hashes: `[durable audit references](../../artifacts/compute/results-filing-20261030-0343.json)`; model-free sampled peak 18,220 KiB, cleanup verified.
+
+
+### Original Paddle R11 partial events — 2026-10-30
+
+Both original attempts ended rc75 after `TimeoutError: admission`; their native owner results record `disk floor`, `partial=true`, and `factory=null`. Source and captured grant bindings were verified against each exact original event block and end time. Neither original attempt has worker or server logs; no region start, response, or source-bound page finish was attributed to its capture. These counts concern the original attempts only; later rearmed attempts remain separate. Preserve any previously exposed or unknown requests without redraw. [belief: cc]
+
+- `codex3-pip02-paddle-relocatable-r11-g92-20261029`: capture 03:20:26Z; ended 03:20:50Z rc75; result SHA256 `4f91a3f47cbec9de1da3ff2c42dc71427428e5e0384e88cf04bf71a24da000f6`; capture SHA256 `5a5e3007d97408f6b52afbedea9a3299791dd837593e1e16a44f724a478ad2f6`; 74 source pins verified. Original capture: 0 starts, 0 responses, 0 finish receipts.
+- `codex3-pip02-paddle-relocatable-r11-g98-20261029`: capture 03:20:28Z; ended 03:20:52Z rc75; result SHA256 `82a6fcbb7bf67752c6ef6e8607b03faeb15a09d94d8ddf47bff45c0664222e9e`; capture SHA256 `4aab48bffdd1fac6839f972f36aab1b4c17e806fb01ec0afc13d7e0475d34c74`; 74 source pins verified. Original capture: 0 starts, 0 responses, 0 finish receipts.
+
+No TEDS, quality, adoption or full-cohort verdict. Exact native paths, grants and hashes: `[durable audit references](../../artifacts/compute/results-filing-20261030-0343.json)`. Model-free sampled peak 45,756,416 bytes; descendants drained.
