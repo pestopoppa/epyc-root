@@ -2774,11 +2774,13 @@ R24-1/2/3/5/8/9 must trim to fit or raise the budget with a reason. Code citatio
       - **Keep-rate alarm:** when N consecutive measured candidates sit below zero, or no keep lands within a window,
         raise `operator_attention` and add a planner-visible evidence line.
       Retrodict both on runs 5-9 and 18. Sources: intake-1425#record, intake-1426#record. Zero compute.
-- [ ] **R24-9 — same-code re-measurement tripwire (rider on R22-3 (2)).** When a candidate's code-section hash
+- [x] **R24-9 — same-code re-measurement tripwire (rider on R22-3 (2)).** When a candidate's code-section hash ✅ 2026-10-30 [no-belief: source regression guard]
       (`.text`+`.hip_fatbin`, the R22-3 basis) equals an already-measured one, log the new effect beside the old.
       Divergence beyond floor is an evaluator/session excursion, never a keep. Warrant: in LoongFlow's traces,
       byte-identical GDN-decode code scored 97 → 777 across a 7-day pause and was written up as a mechanism
       (intake-1427#record). Zero compute; journal logic only.
+      - Research `8b1cdb6fb8dd2255acf3f4194e690d1a23465510` captures source code/work identity prospectively, journals the prior and new effects, and uses the existing `MeasurementInvalid` path before keep when divergence exceeds the current native floor. Missing identity/floor stays unknown. Ten current-source tests (native comparison objects), new-module Ruff and private-index promotion passed; no live excursion or historical regrade. [Evidence](../../artifacts/compute/refactor-r24-same-code-source-20261030.json).
+
 - [ ] **R24-10 — randomized multi-draw arm for near-tie ops (rider on R22-5).** For selection and near-tie ops
       (ARGMAX, TOP_K, sampler paths), run N ≥ 100 fresh input draws per boundary case instead of one fixed input, and
       record a mismatch rate. A 3-draw oracle misses a p=0.015 failure 95.6 % of the time. LLM-CUDA's agent-assisted

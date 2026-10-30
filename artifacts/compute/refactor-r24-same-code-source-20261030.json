@@ -1,0 +1,19 @@
+{
+  "source_commit": "8b1cdb6fb8dd2255acf3f4194e690d1a23465510",
+  "base": "d480cac2e2c78b522aafcb872705e0660d398da8",
+  "ref": "refs/heads/refactor/r24-same-code-tripwire-20261030",
+  "patch_sha256": "a7b3c09ea8232d0307002015c69747c11ad0757cff673162cc2211c938b00cbd",
+  "files": [
+    "scripts/kernel_rnd/autokernel/controller/experiments.py",
+    "scripts/kernel_rnd/autokernel/loop/run.py",
+    "scripts/kernel_rnd/autokernel/loop/same_code_tripwire.py",
+    "scripts/kernel_rnd/autokernel/loop/test_same_code_tripwire.py"
+  ],
+  "real_index_unchanged": true,
+  "pushed_main": true,
+  "no_worktree_created": true,
+  "tests": "10 current-Git partial-source tests; actual bench/serving comparison objects; no native model execution",
+  "test_log": "/mnt/raid0/llm/tmp/refactor-01a16fc3/r24-same-code-tripwire-20261030/main-final-test.log",
+  "risk": "GitNexus LOW: record1, main4 upstream; current source inspected",
+  "limits": "No historical regrade, new measurement threshold or live excursion claim; existing-family invalid-row adapter extension and canary pending."
+}
