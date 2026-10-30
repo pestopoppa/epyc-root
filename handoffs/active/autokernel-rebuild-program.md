@@ -583,7 +583,7 @@ failure mode this program exists to end.
         The endpoint keeps both source envelopes independent, treats intentional gate HOLD and
         artifact age as non-health signals, and maps the five bundle verdicts into the existing
         three-valued health response. Missing/malformed/poisoned bundle and loop-worse cases are
-        covered. `/api/health` and `panels.py` remain unchanged; no service reload/deployment.
+        covered. `/api/health` and `panels.py` remain unchanged; no service reload/deployment. [belief: cc]
   - [ ] P6.8 — **coverage genuinely lost.** The funnel and lane-hero render tests went away *with*
         the deleted page rather than being fixed. The reader still exists and nothing renders it;
         restore render coverage against the surviving surface when the funnel is re-hosted.
