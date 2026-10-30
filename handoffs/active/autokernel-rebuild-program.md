@@ -863,6 +863,19 @@ on measurement, D3 approved and shipped.** Detail in each entry.
       zero diff, on `libggml-cpu.so`; 918/918 distinct device kernels, zero unique either side, on
       `libggml-hip.so`.** Attach the evidence to the flip — a `True` with no artifact behind it is
       the same defect in the other direction.
+  - [x] **R18-A-READY-INDEPENDENT-SYMBOLS** — publish the rank-23 diagnostic READY. ✅ 2026-10-30
+      `refactor-r18a-v10-independent-symbols-20261030` was published at 20:18:50Z (1080s
+      minimum/14400s window/32 GiB, any CPU quarter) for the eventual full symbol comparison.
+      Canonical READY normalization removed placeholder `claimed_cpus` so arming supplies the
+      actual quarter and renamed the Git source field `source_commit`; the READY is published at
+      `/mnt/raid0/llm/tmp/compute-flags/ready/refactor-r18a-v10-independent-symbols-20261030.json`.
+      The actual whole launcher passed its model-free CPU `gguf.cpp` + gfx90a HIP `acc.cu` smoke
+      (8.28s); its active `cc1` cutoff returned 75/partial and both owned tees drained. It reused
+      the exact FFC1 source through a read-only bind and protected lock; no new checkout was made.
+      This qualifies the launcher only: full independent build and CPU/HIP symbol comparison remain
+      pending, and `PRODUCTION_RECIPE_IS_VERIFIABLE` remains false. Evidence:
+      `artifacts/compute/refactor-r18a-ready-and-c3-l-control-20261030.json`. [no-belief: launcher
+      qualification only]
   - [x] Remove the host GCC/CMake dependency for the conditional v10 recipe proof. ✅ 2026-10-30 [no-belief: toolchain source preparation] Private GCC15.2/CMake3.31.6 overlay passes host C/C++ compile/link and guarded shared-library configure/build. The draft refuses absent C5 release or a non-FFC source. No v10 candidate compile/symbol verdict, no verifiability True, and no frozen-source change. [Packet](/mnt/raid0/llm/tmp/refactor-01a16fc3/r18a-recipe-verifiability-20261030/PREDICATE-RULING.md).
 
 - [ ] **R18-B — run-18 forensics: what binary was actually in `anchor-gen-001`, and why were
