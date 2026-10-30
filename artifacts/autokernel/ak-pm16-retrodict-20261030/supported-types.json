@@ -1,0 +1,14 @@
+{
+  "source_tree_sha": "78435821cc3d5756ba6ee1785c397f6d8fa8c90d",
+  "types": [
+    "cross_entropy",
+    "flash_attention",
+    "fused_mlp",
+    "layernorm",
+    "matmul",
+    "reduce",
+    "rmsnorm",
+    "rotary_embedding",
+    "softmax"
+  ]
+}

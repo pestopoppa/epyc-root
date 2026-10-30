@@ -1,0 +1,248 @@
+{
+  "source_commit": "78435821cc3d5756ba6ee1785c397f6d8fa8c90d",
+  "source_profile_sha256": "c79ea394e49e0e52de500ad25a4761c3fd375fee95f5a2d3b03c9268fd67ad36",
+  "source_extract_sha256": "e911972f9879309cbf68bd3e11521d783697c61fd7bc1d9032e371e553f216e7",
+  "g15_receipt_sha256": "d7a0c8c257c2a59435b95c39b988485a8283d709d83ef7397b3c67ee7ec8cca9",
+  "actual_b128_family_pct": {
+    "matrix": 54.881097609296326,
+    "gather_scatter": 18.631394384605613,
+    "recurrent": 17.463573718077658,
+    "copy_convert": 4.725696813383887,
+    "quantization": 2.127301335180663,
+    "norm": 0.6456821551142663,
+    "layout": 0.5342399240114083,
+    "activation": 0.5278583451935605,
+    "elementwise": 0.3164193753310808,
+    "position": 0.06717742439478411,
+    "attention": 0.05852744543590914,
+    "buffer_fill": 0.01691386442915146,
+    "other": 0.00411760554569916
+  },
+  "kernel_count": 49,
+  "actual_classifier_type_pct": {
+    "matmul": 26.097447999999996,
+    "other": 62.972173,
+    "cross_entropy": 9.888881999999999,
+    "fused_mlp": 0.437743,
+    "rmsnorm": 0.536577,
+    "rotary_embedding": 0.067177
+  },
+  "supported_total_pct": 37.027827,
+  "top_actual_kernel_rows": [
+    {
+      "rank": 1,
+      "name": "void mul_mat_vec_q<(ggml_type)8, 1, false, false>(void const*, void const*, int const*, ggml_cuda_mm_fusion_args_device, float*, unsigned int, HIP_vector_type<unsigned int, 3u>, unsigned int, unsigned int, unsigned int, HIP_vector_type<unsigned int, 3u>, unsigned int, unsigned int, unsigned int, HIP_vector_type<unsigned int, 3u>, unsigned int, unsigned int, unsigned int, unsigned int) [clone .kd]",
+      "share_pct": 22.341316,
+      "op_type": "matmul",
+      "supported": true,
+      "priority": "HIGH"
+    },
+    {
+      "rank": 2,
+      "name": "void k_get_rows_float<float, float>(float const*, int const*, float*, long, long, HIP_vector_type<unsigned int, 3u>, unsigned long, unsigned long, unsigned long, unsigned long, unsigned long, unsigned long, unsigned long, unsigned long, unsigned long) [clone .kd]",
+      "share_pct": 18.553136,
+      "op_type": "other",
+      "supported": false,
+      "priority": "HIGH"
+    },
+    {
+      "rank": 3,
+      "name": "void gated_delta_net_cuda<128, false, false, float>(float const*, float const*, float const*, float const*, float const*, float const*, float*, float*, long, long, long, long, long, long, long, long, long, long, long, long, HIP_vector_type<unsigned int, 3u>, HIP_vector_type<unsigned int, 3u>, float, long, int) [clone .kd]",
+      "share_pct": 16.686724,
+      "op_type": "other",
+      "supported": false,
+      "priority": "HIGH"
+    },
+    {
+      "rank": 4,
+      "name": "void mul_mat_q<(ggml_type)8, 64, false>(char const*, int const*, int const*, int const*, float*, float*, HIP_vector_type<unsigned int, 3u>, int, int, int, int, int, HIP_vector_type<unsigned int, 3u>, HIP_vector_type<unsigned int, 3u>, int, int, int, HIP_vector_type<unsigned int, 3u>, HIP_vector_type<unsigned int, 3u>, int, int, int, HIP_vector_type<unsigned int, 3u>) [clone .kd]",
+      "share_pct": 16.472529,
+      "op_type": "other",
+      "supported": false,
+      "priority": "HIGH"
+    },
+    {
+      "rank": 5,
+      "name": "Cijk_Alik_Bljk_HSS_BH_MT128x96x64_MI32x32x8x1_SE_1LDSB1_APM1_ABV0_ACED0_AF0EM8_AF1EM1_AMAS0_ASE_ASGT_ASLT_ASM_ASAE01_ASCE01_ASEM1_AAC0_BL1_BS1_CLR0_DTLA0_DTLB0_DTVA0_DTVB0_DVO0_ETSP_EPS1_ELFLR0_EMLL0_FSSC10_FL0_GLVWA8_GLVWB8_GRCGA1_GRCGB1_GRPM1_GRVW8_GSU1_GSUASB_GLS0_ISA90a_IU1_K1_KLA_LBSPPA128_LBSPPB128_LPA8_LPB8_LDL1_LRVW8_LWPMn1_LDW0_MAC_MIAV0_MDA2_MO40_MMFGLC_MKFGSU256_NTA0_NTB0_NTC0_NTD0_NEPBS0_NLCA1_NLCB1_ONLL1_OPLV0_PK0_PAP0_PGR1_PLR9_PKA0_SIA3_SLW1_SS0_SU0_SUM0_SUS0_SCIUI1_SPO0_SRVW4_SSO0_SVW4_SNLL0_TSGRA0_TSGRB0_TT1_96_TLDS1_UMLDSA1_UMLDSB1_USFGROn1_VAW2_VSn1_VW1_VWB1_VFLRP0_WSGRA1_WSGRB1_WS64_WG128_2_1_WGM15.kd",
+      "share_pct": 3.950057,
+      "op_type": "cross_entropy",
+      "supported": true,
+      "priority": "MEDIUM"
+    },
+    {
+      "rank": 6,
+      "name": "__amd_rocclr_copyBuffer.kd",
+      "share_pct": 3.492583,
+      "op_type": "other",
+      "supported": false,
+      "priority": "MEDIUM"
+    },
+    {
+      "rank": 7,
+      "name": "Cijk_Alik_Bljk_HSS_BH_MT64x64x64_MI32x32x8x1_SE_1LDSB1_APM1_ABV0_ACED0_AF0EM8_AF1EM1_AMAS0_ASE_ASGT_ASLT_ASM_ASAE01_ASCE01_ASEM1_AAC0_BL1_BS1_CLR0_DTLA0_DTLB0_DTVA0_DTVB0_DVO0_ETSP_EPS1_ELFLR0_EMLL0_FSSC10_FL0_GLVWA8_GLVWB8_GRCGA1_GRCGB1_GRPM1_GRVW8_GSU1_GSUASB_GLS0_ISA90a_IU1_K1_KLA_LBSPPA128_LBSPPB128_LPA8_LPB8_LDL1_LRVW8_LWPMn1_LDW0_MAC_MIAV0_MDA2_MO40_MMFGLC_MKFGSU256_NTA0_NTB0_NTC0_NTD0_NEPBS0_NLCA1_NLCB1_ONLL1_OPLV0_PK0_PAP0_PGR1_PLR9_PKA0_SIA3_SLW1_SS0_SU0_SUM0_SUS0_SCIUI1_SPO0_SRVW4_SSO0_SVW4_SNLL0_TSGRA0_TSGRB0_TT1_32_TLDS1_UMLDSA1_UMLDSB1_USFGROn1_VAW2_VSn1_VW1_VWB1_VFLRP0_WSGRA1_WSGRB1_WS64_WG64_4_1_WGM1.kd",
+      "share_pct": 3.03365,
+      "op_type": "cross_entropy",
+      "supported": true,
+      "priority": "MEDIUM"
+    },
+    {
+      "rank": 8,
+      "name": "Cijk_Alik_Bljk_HSS_BH_MT64x32x64_MI16x16x16x1_SE_1LDSB1_APM1_ABV0_ACED0_AF0EM8_AF1EM1_AMAS0_ASE_ASGT_ASLT_ASM_ASAE01_ASCE01_ASEM1_AAC0_BL1_BS1_CLR0_DTLA0_DTLB0_DTVA0_DTVB0_DVO0_ETSP_EPS1_ELFLR0_EMLL0_FSSC10_FL0_GLVWA8_GLVWB8_GRCGA1_GRCGB1_GRPM1_GRVW8_GSU1_GSUASB_GLS0_ISA90a_IU1_K1_KLA_LBSPPA128_LBSPPB128_LPA8_LPB8_LDL1_LRVW8_LWPMn1_LDW0_MAC_MIAV0_MDA2_MO40_MMFGLC_MKFGSU256_NTA0_NTB0_NTC0_NTD0_NEPBS0_NLCA1_NLCB1_ONLL1_OPLV0_PK0_PAP0_PGR1_PLR5_PKA0_SIA3_SLW1_SS0_SU32_SUM0_SUS128_SCIUI1_SPO0_SRVW4_SSO0_SVW4_SNLL0_TSGRA0_TSGRB0_TT2_16_TLDS1_UMLDSA1_UMLDSB1_USFGROn1_VAW2_VSn1_VW1_VWB1_VFLRP0_WSGRA1_WSGRB1_WS64_WG32_8_1_WGM2.kd",
+      "share_pct": 1.928716,
+      "op_type": "cross_entropy",
+      "supported": true,
+      "priority": "LOW"
+    },
+    {
+      "rank": 9,
+      "name": "void mul_mat_vec_f<__half, float, 1, 128, false, false>(__half const*, float const*, int const*, ggml_cuda_mm_fusion_args_device, float*, int, HIP_vector_type<unsigned int, 3u>, int, int, int, HIP_vector_type<unsigned int, 3u>, int, int, int, HIP_vector_type<unsigned int, 3u>, int, int, int, int) [clone .kd]",
+      "share_pct": 1.879623,
+      "op_type": "matmul",
+      "supported": true,
+      "priority": "LOW"
+    },
+    {
+      "rank": 10,
+      "name": "void mul_mat_vec_f<__half, __half, 1, 128, false, false>(__half const*, float const*, int const*, ggml_cuda_mm_fusion_args_device, float*, int, HIP_vector_type<unsigned int, 3u>, int, int, int, HIP_vector_type<unsigned int, 3u>, int, int, int, HIP_vector_type<unsigned int, 3u>, int, int, int, int) [clone .kd]",
+      "share_pct": 1.876509,
+      "op_type": "matmul",
+      "supported": true,
+      "priority": "LOW"
+    },
+    {
+      "rank": 11,
+      "name": "void dequantize_block_q8_0_f16<false>(void const*, __half*, long) [clone .kd]",
+      "share_pct": 1.674901,
+      "op_type": "other",
+      "supported": false,
+      "priority": "LOW"
+    },
+    {
+      "rank": 12,
+      "name": "void mul_mat_q<(ggml_type)8, 32, false>(char const*, int const*, int const*, int const*, float*, float*, HIP_vector_type<unsigned int, 3u>, int, int, int, int, int, HIP_vector_type<unsigned int, 3u>, HIP_vector_type<unsigned int, 3u>, int, int, int, HIP_vector_type<unsigned int, 3u>, HIP_vector_type<unsigned int, 3u>, int, int, int, HIP_vector_type<unsigned int, 3u>) [clone .kd]",
+      "share_pct": 1.31607,
+      "op_type": "other",
+      "supported": false,
+      "priority": "LOW"
+    },
+    {
+      "rank": 13,
+      "name": "void ssm_conv_f32<true, 128ul, 4ul>(float const*, float const*, float const*, int, int, int, int, float*, int, int, int, long) [clone .kd]",
+      "share_pct": 0.77685,
+      "op_type": "other",
+      "supported": false,
+      "priority": "LOW"
+    },
+    {
+      "rank": 14,
+      "name": "void cpy_scalar<&(void cpy_1_scalar<float, float>(char const*, char*))>(char const*, char*, long, long, long, long, long, long, long, long, long, long, long, long, long, long, long) [clone .kd]",
+      "share_pct": 0.60785,
+      "op_type": "other",
+      "supported": false,
+      "priority": "LOW"
+    },
+    {
+      "rank": 15,
+      "name": "void convert_unary<float, __half>(void const*, __half*, long, long, long, HIP_vector_type<unsigned int, 3u>, long, long, long) [clone .kd]",
+      "share_pct": 0.599687,
+      "op_type": "other",
+      "supported": false,
+      "priority": "LOW"
+    },
+    {
+      "rank": 16,
+      "name": "Cijk_Alik_Bljk_HSS_BH_MT64x64x64_MI32x32x8x1_SE_1LDSB1_APM1_ABV0_ACED0_AF0EM8_AF1EM1_AMAS0_ASE_ASGT_ASLT_ASM_ASAE01_ASCE01_ASEM1_AAC0_BL1_BS1_CLR0_DTLA0_DTLB0_DTVA0_DTVB0_DVO0_ETSP_EPS1_ELFLR0_EMLL0_FSSC10_FL0_GLVWA8_GLVWB8_GRCGA1_GRCGB1_GRPM1_GRVW8_GSU1_GSUASB_GLS0_ISA90a_IU1_K1_KLA_LBSPPA128_LBSPPB128_LPA8_LPB8_LDL1_LRVW8_LWPMn1_LDW0_MAC_MIAV0_MDA2_MO40_MMFGLC_MKFGSU256_NTA0_NTB0_NTC0_NTD0_NEPBS0_NLCA1_NLCB1_ONLL1_OPLV0_PK0_PAP0_PGR1_PLR9_PKA0_SIA3_SLW1_SS0_SU32_SUM0_SUS128_SCIUI1_SPO0_SRVW4_SSO0_SVW4_SNLL0_TSGRA0_TSGRB0_TT1_32_TLDS1_UMLDSA1_UMLDSB1_USFGROn1_VAW2_VSn1_VW1_VWB1_VFLRP0_WSGRA1_WSGRB1_WS64_WG64_4_1_WGM15.kd",
+      "share_pct": 0.516788,
+      "op_type": "cross_entropy",
+      "supported": true,
+      "priority": "LOW"
+    },
+    {
+      "rank": 17,
+      "name": "void mul_mat_q_stream_k_fixup<(ggml_type)8, 64, false>(int const*, int const*, float*, float*, HIP_vector_type<unsigned int, 3u>, int, int, int, HIP_vector_type<unsigned int, 3u>, int, HIP_vector_type<unsigned int, 3u>, int, HIP_vector_type<unsigned int, 3u>) [clone .kd]",
+      "share_pct": 0.504497,
+      "op_type": "other",
+      "supported": false,
+      "priority": "LOW"
+    },
+    {
+      "rank": 18,
+      "name": "void unary_gated_op_kernel<&(op_silu(float)), float>(float const*, float const*, float*, long, long, long, long) [clone .kd]",
+      "share_pct": 0.437743,
+      "op_type": "fused_mlp",
+      "supported": true,
+      "priority": "LOW"
+    },
+    {
+      "rank": 19,
+      "name": "void quantize_mmq_q8_1<(mmq_q8_1_ds_layout)0, false>(float const*, int const*, void*, long, long, long, long, long, int, int, int) [clone .kd]",
+      "share_pct": 0.397808,
+      "op_type": "other",
+      "supported": false,
+      "priority": "LOW"
+    },
+    {
+      "rank": 20,
+      "name": "void mul_mat_q_stream_k_fixup<(ggml_type)8, 64, true>(int const*, int const*, float*, float*, HIP_vector_type<unsigned int, 3u>, int, int, int, HIP_vector_type<unsigned int, 3u>, int, HIP_vector_type<unsigned int, 3u>, int, HIP_vector_type<unsigned int, 3u>) [clone .kd]",
+      "share_pct": 0.305174,
+      "op_type": "other",
+      "supported": false,
+      "priority": "LOW"
+    }
+  ],
+  "top_supported_for_extraction": [
+    {
+      "rank": 1,
+      "op_type": "matmul",
+      "autokernel_supported": true,
+      "pct_total": 22.341316
+    },
+    {
+      "rank": 5,
+      "op_type": "cross_entropy",
+      "autokernel_supported": true,
+      "pct_total": 3.950057
+    },
+    {
+      "rank": 7,
+      "op_type": "cross_entropy",
+      "autokernel_supported": true,
+      "pct_total": 3.03365
+    },
+    {
+      "rank": 8,
+      "op_type": "cross_entropy",
+      "autokernel_supported": true,
+      "pct_total": 1.928716
+    },
+    {
+      "rank": 9,
+      "op_type": "matmul",
+      "autokernel_supported": true,
+      "pct_total": 1.879623
+    }
+  ],
+  "literal_name_probes": {
+    "gather": {
+      "classified": "other",
+      "supported": false
+    },
+    "scatter": {
+      "classified": "other",
+      "supported": false
+    },
+    "recurrent": {
+      "classified": "other",
+      "supported": false
+    },
+    "rms_norm_f32": {
+      "classified": "rmsnorm",
+      "supported": true
+    },
+    "silu": {
+      "classified": "fused_mlp",
+      "supported": true
+    }
+  },
+  "family_input_interface": "ABSENT: build_report expects List[KernelRecord] individual names+GPU times, not a family-share map; this replay uses actual receipt kernel_table to avoid invented per-kernel records."
+}

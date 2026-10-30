@@ -4,6 +4,7 @@
 **Priority:** HIGH after the current production-topology work settles
 **Owner:** Inference Acceleration
 **Runtime owner repository:** `epyc-inference-research`
+**Scratch**: /mnt/raid0/llm/tmp/codex-ni-ak-pm16-20261030/
 **Parent index:** [Inference Acceleration — Active Index](inference-research-index.md)
 **Source draft:** [`docs/reference/autokernel/system-wide-inference-kernel-optimization-draft.md`](../../docs/reference/autokernel/system-wide-inference-kernel-optimization-draft.md)
 (SHA-256 `af2fd586d3b1e3b58b038fcc0a0c7d5def22d70b45dbdc54bd64799b082e7b8b`; moved out of `tmp/` on
@@ -5485,11 +5486,24 @@ because the best-CONSTRUCTED ablation in the family now exists and it **cuts aga
       ~40-line `detect_gpu` branch IN ISOLATION on the MI210 (do NOT run the agent loop, do NOT execute repo
       code wholesale) and confirm the 500.0/2000.0 reading; if confirmed it is a REPRODUCED fabricated-constant
       fail-open on our own hardware and belongs in `OPERATING_CONSTRAINTS.md`.
-- [ ] **AK-PM-16 — Retrodict the Amdahl selector against our own closed G15 result.** Feed AutoKernel's
-      ranking logic our strict frozen-v9 B=128 family map (gather/scatter **18.631%**, recurrent **17.464%**,
-      norm+activation+elementwise **1.490%**) and confirm it selects gather/scatter rather than the norm
-      cluster. A pass isolates the defect to the roofline layer and VALIDATES the selector as worth lifting;
-      a fail disqualifies the selector too. Zero inference, uses data we already hold.
+- [x] **AK-PM-16 — Retrodict the Amdahl selector against our own closed G15 result.** ✅ 2026-10-30 [belief: cc] —
+      **NEGATIVE for direct transfer.** The exact `RightNow-AI/autokernel` `78435821` source, replayed through
+      its unmodified pure classifier and supported-kernel extractor on the receipt-pinned frozen-v9 B=128
+      G15 kernel table, does not select gather/scatter for optimization. The actual gather kernel
+      `k_get_rows_float` is rank 2, 18.553136% of measured GPU time, but classified `other`/unsupported;
+      recurrent `gated_delta_net_cuda` is rank 3, 16.686724%, also `other`/unsupported. The source's
+      `extract.py --top 5` path retains ranks 1, 5, 7, 8, 9 and drops both. This is an interface/taxonomy
+      failure: the source accepts per-kernel records and has no family-share input. The arithmetic Amdahl
+      counterfactual **does** rank the measured 18.631% gather/scatter family above 17.464% recurrent and
+      1.490% norm+activation+elementwise. No evidence says the source selected norm, and this result does
+      not alter G15's predeclared 20% target floor or `CLOSED_NO_GO`. The pinned source's bare `nll`
+      substring also misclassifies MI210 matrix names containing `_ONLL1_` as `cross_entropy` (9.888882%
+      of replayed time), so direct lifting needs a taxonomy gate. Exact source and receipt SHAs, isolated
+      AST replay and result: `artifacts/autokernel/ak-pm16-retrodict-20261030/REVIEW-PACKET.md`.
+      - [belief: cc] Conclusion is an offline source/receipt compatibility observation; no new
+        measurement warrant or inference claim is asserted. The existing G15 measurement receipt remains
+        `/mnt/raid0/llm/autokernel/probes/inf36-g15-profile-v9-20260811-r4/receipt.json` (SHA-256
+        `d7a0c8c257c2a59435b95c39b988485a8283d709d83ef7397b3c67ee7ec8cca9`).
 - [ ] **AK-PM-17 — Lift the KernelAgent reflexion schema into the loop's per-round record.** Add
       `was_diagnosis_correct`, `was_fix_effective`, `expected_outcome`, `actual_outcome`, `lessons[]`,
       `avoid_patterns[]`, `try_patterns[]` and broadcast to all workers next round (`intake-1243#record`).

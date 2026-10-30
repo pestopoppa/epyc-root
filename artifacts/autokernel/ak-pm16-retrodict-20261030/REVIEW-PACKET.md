@@ -1,0 +1,23 @@
+# AK-PM-16 pinned-source retrodiction — review packet
+
+## Pinned inputs and executable replay
+
+- Exact external source: `RightNow-AI/autokernel` commit `78435821cc3d5756ba6ee1785c397f6d8fa8c90d`. Saved unchanged `profile.py`, SHA-256 `c79ea394e49e0e52de500ad25a4761c3fd375fee95f5a2d3b03c9268fd67ad36`, and `extract.py`, SHA-256 `e911972f9879309cbf68bd3e11521d783697c61fd7bc1d9032e371e553f216e7`. The exact commit's MIT `LICENSE` is saved as `LICENSE.upstream` (SHA-256 `468e1c94fd1df17861656d2d03d3f01e2f93cd39aac50b6c89208f94d8db5033`) alongside the vendored source. The exact commit's raw GitHub tree API response is saved as `github-tree-response.json` (SHA-256 `2f7f21a22cb6c1b9ed972d091b76add0cb3ba742e92e05e4f1cac0e657d7966c`); its embedded commit SHA and untruncated listing rederive the `kernels/*.py` type names in `supported-types.json` and are asserted by `replay.py`.
+- Actual G15 frozen-v9 receipt: `/mnt/raid0/llm/autokernel/probes/inf36-g15-profile-v9-20260811-r4/receipt.json`, SHA-256 `d7a0c8c257c2a59435b95c39b988485a8283d709d83ef7397b3c67ee7ec8cca9`; its B=128 `family_table` **and** `kernel_table` are the inputs. Committed source conclusion: `/workspace/progress/2026-08/2026-08-11.md:3334-3355`.
+- `replay.py` AST extracts the *original* `classify_kernel`, `is_autokernel_supported`, `_priority_label`, and literal classification table from pinned `profile.py`, plus `get_supported_kernels` from pinned `extract.py`. It runs only those pure functions and the source's descending total-time sort against actual B=128 kernel rows. It never imports torch, runs the external agent, or invents a kernel record. Command: `flock -n .../prep-locks/34-35.lock taskset -c 130,131 python3 -B replay.py` (completed). Full result: `REPLAY-RESULT.json`.
+
+## Result
+
+| G15 B=128 family | Actual share | 3x family Amdahl counterfactual | Actual upstream taxonomy |
+|---|---:|---:|---|
+| gather/scatter | 18.631394% | 1.141822x | no gather/scatter supported type |
+| recurrent | 17.463574% | 1.131768x | no recurrent supported type |
+| norm+activation+elementwise | 1.489960% | 1.010033x | only some norm/activation names supported |
+
+The counterfactual math ranks gather/scatter first. The actual selector does **not** pass the requested retrodiction: pinned `profile.py:645-646,683-698` sorts individual kernel records and labels them HIGH/MEDIUM/LOW by share. It has no family-map input. Its exact classifier maps literal `gather`, `scatter`, and `recurrent` to `other` (unsupported), while `rms_norm_f32` maps to supported `rmsnorm`. Against the real G15 kernel table, rank 2 `k_get_rows_float` is **18.553136%**, HIGH, but `other`/unsupported; rank 3 `gated_delta_net_cuda` is **16.686724%**, HIGH, but `other`/unsupported. These are the dominant gather and recurrent records; the actual family table binds their mechanism labels. Rank 1 `mul_mat_vec_q` is 22.341316%, `matmul`/supported. The exact `extract.py:405-423` function then filters to supported rows before selecting `--top 5`: its first five ranks are **1, 5, 7, 8, 9**, excluding actual ranks 2 and 3 (gather and recurrent). `program.md:85-99` explicitly calls this extraction the optimization candidate step. Across all G15 kernel rows, the source classifier calls 62.972173% `other` and reports only 37.027827% supported. The upstream source's Amdahl summary (`profile.py:700-715`) would apply its assumed 3x to that supported aggregate, giving ~1.32776x, not rank the three G15 families.
+
+A further concrete taxonomy error appears in the replay: MI210 matrix-kernel names with `..._ONLL1_...` match the source's bare `nll` substring and become `cross_entropy`/supported; this falsely labels 9.888882% of G15 time. The top case is 3.950057% and has no cross-entropy operation. This strengthens the negative direct-transfer verdict, but no new benchmark or performance claim is made.
+
+## Interpretation
+
+AK-PM-16's original pass condition (“select gather/scatter rather than norm”) fails for this source as written. The observed failure is selector **interface/taxonomy compatibility**, independent of AK-PM-15's fabricated roofline. It does not establish that the program would explicitly select norm; the source ranks all kernels, while support filtering excludes the dominant gather and recurrent targets. Retain the existing G15 `CLOSED_NO_GO` result and its 20% rule. For a future EPYC selector, the actionable finding within the existing AK program is to preserve measured family shares and surface unsupported high-share mechanisms instead of hiding them in `other`. No READY manifest is appropriate for this zero-inference replay.
