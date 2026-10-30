@@ -1,0 +1,5 @@
+# Owner application instructions
+
+Apply FILING.md beneath the existing UFH14-A3A-F1 option (a) item in handoffs/active/agentic-serving-harness-fixes.md. Resolve current origin/main by task text, not a stale line. Update today's progress with the same result and artifact pointers; do not apply the old WRAPUP-PROPOSED.patch's stale 'unrun' claims. F1 diagnostic option (a) has run, but do not claim a performance keep or tick a broader task without reviewing its exact done-when. Copy this filing and member-projections.json and SHA256SUMS to the owner's durable artifact destination if appropriate, updating paths and hash references. Keep private raw evidence immutable.
+
+The original scratch BK-WIRING-DRAFT.md supplies a proposed source-table row and prospective adapter task; inspect existing source family and VB-UFH14-A3A-DIAGNOSTIC-WIRE before adding duplicates. The producer has no retroactive measurement warrant; use existing class and claim_tuple.grade(), and require planning-context canary. Owner applies all rows.

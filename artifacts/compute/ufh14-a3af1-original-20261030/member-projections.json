@@ -1,0 +1,218 @@
+{
+  "cold": [
+    {
+      "member": 0,
+      "raw_path": "/mnt/raid0/llm/tmp/codex-ni-ufh14-a3af1-20261030/attempts/run-1793386153401272778/cold/group/member0.sse",
+      "raw_sha256": "e7790ef9a981b55281f9959ffa9e15a829e80ed1992746c96ec869396926579c",
+      "request_sha256": "ba1cf28f2b07f93029bcf2f12b5f7f294f30185fda6ee58d654a65e4cce1ba72",
+      "event_count": 5164,
+      "ordered_bijection": true,
+      "request_start": 1793386182.5667143,
+      "first_output_delta": {
+        "event_ordinal": 3,
+        "type": "response.reasoning_text.delta",
+        "arrival": 1793386294.9035382,
+        "delta_chars": 5
+      },
+      "client_ttft_s": 112.3368239402771,
+      "first_byte_s": 0.08999896049499512,
+      "first_recorded_event_s": 112.33676147460938,
+      "metric": "client arrival of first nonempty generated-output text/reasoning/function-arguments delta; a chunk may carry multiple tokens",
+      "direction": "lower",
+      "unit": "seconds",
+      "warrant": "none invented; direct projection of retained producer arrivals and raw SSE",
+      "native": {
+        "cache_n": 0,
+        "prompt_n": 56799,
+        "prompt_ms": 112247.049,
+        "prompt_per_token_ms": 1.9762152326625468,
+        "prompt_per_second": 506.01775731315666,
+        "predicted_n": 5207,
+        "predicted_ms": 385634.242,
+        "predicted_per_token_ms": 74.06073401190706,
+        "predicted_per_second": 13.502431664250395,
+        "draft_n": 10325,
+        "draft_n_accepted": 3732
+      }
+    },
+    {
+      "member": 1,
+      "raw_path": "/mnt/raid0/llm/tmp/codex-ni-ufh14-a3af1-20261030/attempts/run-1793386153401272778/cold/group/member1.sse",
+      "raw_sha256": "37fea1ba7710b6c4359f4bb5c1e910f7c70c923f99c4c41956b4c6f00d928f21",
+      "request_sha256": "6fc5d8a4d10b3ac7df6d0b27a433f658ea2d6b415e20e7bed4c3aae4a0027757",
+      "event_count": 8608,
+      "ordered_bijection": true,
+      "request_start": 1793386182.568012,
+      "first_output_delta": {
+        "event_ordinal": 3,
+        "type": "response.reasoning_text.delta",
+        "arrival": 1793386452.8482034,
+        "delta_chars": 3
+      },
+      "client_ttft_s": 270.2801914215088,
+      "first_byte_s": 8.783369064331055,
+      "first_recorded_event_s": 270.2801504135132,
+      "metric": "client arrival of first nonempty generated-output text/reasoning/function-arguments delta; a chunk may carry multiple tokens",
+      "direction": "lower",
+      "unit": "seconds",
+      "warrant": "none invented; direct projection of retained producer arrivals and raw SSE",
+      "native": {
+        "cache_n": 0,
+        "prompt_n": 56799,
+        "prompt_ms": 261497.385,
+        "prompt_per_token_ms": 4.603908255427032,
+        "prompt_per_second": 217.2067609777436,
+        "predicted_n": 8650,
+        "predicted_ms": 415901.994,
+        "predicted_per_token_ms": 48.081155375722545,
+        "predicted_per_second": 20.798169099424896,
+        "draft_n": 19306,
+        "draft_n_accepted": 5892
+      }
+    }
+  ],
+  "warm": [
+    {
+      "member": 0,
+      "raw_path": "/mnt/raid0/llm/tmp/codex-ni-ufh14-a3af1-20261030/attempts/run-1793386153401272778/warm/group/member0.sse",
+      "raw_sha256": "58776f09df232452b0ca081d21bc4c9069518b6855471eeb9c7a7941e51e783e",
+      "request_sha256": "ba1cf28f2b07f93029bcf2f12b5f7f294f30185fda6ee58d654a65e4cce1ba72",
+      "event_count": 20746,
+      "ordered_bijection": true,
+      "request_start": 1793386976.3755898,
+      "first_output_delta": {
+        "event_ordinal": 3,
+        "type": "response.reasoning_text.delta",
+        "arrival": 1793386976.6597624,
+        "delta_chars": 3
+      },
+      "client_ttft_s": 0.28417253494262695,
+      "first_byte_s": 0.10343170166015625,
+      "first_recorded_event_s": 0.2840738296508789,
+      "metric": "client arrival of first nonempty generated-output text/reasoning/function-arguments delta; a chunk may carry multiple tokens",
+      "direction": "lower",
+      "unit": "seconds",
+      "warrant": "none invented; direct projection of retained producer arrivals and raw SSE",
+      "native": {
+        "cache_n": 56794,
+        "prompt_n": 5,
+        "prompt_ms": 179.235,
+        "prompt_per_token_ms": 35.847,
+        "prompt_per_second": 27.8963372109242,
+        "predicted_n": 20779,
+        "predicted_ms": 1014974.812,
+        "predicted_per_token_ms": 48.84618181818182,
+        "predicted_per_second": 20.472429221228793,
+        "draft_n": 38255,
+        "draft_n_accepted": 15314
+      }
+    },
+    {
+      "member": 1,
+      "raw_path": "/mnt/raid0/llm/tmp/codex-ni-ufh14-a3af1-20261030/attempts/run-1793386153401272778/warm/group/member1.sse",
+      "raw_sha256": "66025e427c4cd410da792840074f40ffc29c797fa0041f1825ae48518ccfd3cd",
+      "request_sha256": "6fc5d8a4d10b3ac7df6d0b27a433f658ea2d6b415e20e7bed4c3aae4a0027757",
+      "event_count": 11075,
+      "ordered_bijection": true,
+      "request_start": 1793386979.3770328,
+      "first_output_delta": {
+        "event_ordinal": 3,
+        "type": "response.reasoning_text.delta",
+        "arrival": 1793387154.0149977,
+        "delta_chars": 3
+      },
+      "client_ttft_s": 174.63796496391296,
+      "first_byte_s": 0.2271876335144043,
+      "first_recorded_event_s": 174.63792943954468,
+      "metric": "client arrival of first nonempty generated-output text/reasoning/function-arguments delta; a chunk may carry multiple tokens",
+      "direction": "lower",
+      "unit": "seconds",
+      "warrant": "none invented; direct projection of retained producer arrivals and raw SSE",
+      "native": {
+        "cache_n": 0,
+        "prompt_n": 56799,
+        "prompt_ms": 174411.279,
+        "prompt_per_token_ms": 3.070675170337506,
+        "prompt_per_second": 325.6612779039365,
+        "predicted_n": 11112,
+        "predicted_ms": 541795.095,
+        "predicted_per_token_ms": 48.75765793736501,
+        "predicted_per_second": 20.50959874415253,
+        "draft_n": 23786,
+        "draft_n_accepted": 7714
+      }
+    }
+  ],
+  "all4warm": [
+    {
+      "member": 0,
+      "raw_path": "/mnt/raid0/llm/tmp/codex-ni-ufh14-a3af1-20261030/attempts/run-1793386153401272778/all4warm/group/member0.sse",
+      "raw_sha256": "dca82d8a28de25cfe2903e9e32b7eefdc470d5e0a510e871ee9acfdc3cfbd540",
+      "request_sha256": "ba1cf28f2b07f93029bcf2f12b5f7f294f30185fda6ee58d654a65e4cce1ba72",
+      "event_count": 7072,
+      "ordered_bijection": true,
+      "request_start": 1793388431.6381822,
+      "first_output_delta": {
+        "event_ordinal": 3,
+        "type": "response.reasoning_text.delta",
+        "arrival": 1793388431.9123483,
+        "delta_chars": 3
+      },
+      "client_ttft_s": 0.2741661071777344,
+      "first_byte_s": 0.09783577919006348,
+      "first_recorded_event_s": 0.27413058280944824,
+      "metric": "client arrival of first nonempty generated-output text/reasoning/function-arguments delta; a chunk may carry multiple tokens",
+      "direction": "lower",
+      "unit": "seconds",
+      "warrant": "none invented; direct projection of retained producer arrivals and raw SSE",
+      "native": {
+        "cache_n": 56794,
+        "prompt_n": 5,
+        "prompt_ms": 176.888,
+        "prompt_per_token_ms": 35.3776,
+        "prompt_per_second": 28.26647370087287,
+        "predicted_n": 7100,
+        "predicted_ms": 278580.059,
+        "predicted_per_token_ms": 39.236628028169015,
+        "predicted_per_second": 25.486389892680723,
+        "draft_n": 12439,
+        "draft_n_accepted": 5323
+      }
+    },
+    {
+      "member": 1,
+      "raw_path": "/mnt/raid0/llm/tmp/codex-ni-ufh14-a3af1-20261030/attempts/run-1793386153401272778/all4warm/group/member1.sse",
+      "raw_sha256": "529fd64ad2947a9c17c11612e9774bd0aa523811329223ca58f9c265c069d927",
+      "request_sha256": "6fc5d8a4d10b3ac7df6d0b27a433f658ea2d6b415e20e7bed4c3aae4a0027757",
+      "event_count": 5289,
+      "ordered_bijection": true,
+      "request_start": 1793388434.6395366,
+      "first_output_delta": {
+        "event_ordinal": 3,
+        "type": "response.reasoning_text.delta",
+        "arrival": 1793388435.607553,
+        "delta_chars": 3
+      },
+      "client_ttft_s": 0.9680163860321045,
+      "first_byte_s": 0.41623401641845703,
+      "first_recorded_event_s": 0.9679794311523438,
+      "metric": "client arrival of first nonempty generated-output text/reasoning/function-arguments delta; a chunk may carry multiple tokens",
+      "direction": "lower",
+      "unit": "seconds",
+      "warrant": "none invented; direct projection of retained producer arrivals and raw SSE",
+      "native": {
+        "cache_n": 56794,
+        "prompt_n": 5,
+        "prompt_ms": 552.037,
+        "prompt_per_token_ms": 110.40740000000001,
+        "prompt_per_second": 9.05736390857859,
+        "predicted_n": 5310,
+        "predicted_ms": 255661.637,
+        "predicted_per_token_ms": 48.14720094161958,
+        "predicted_per_second": 20.7696393651739,
+        "draft_n": 11431,
+        "draft_n_accepted": 3677
+      }
+    }
+  ]
+}
