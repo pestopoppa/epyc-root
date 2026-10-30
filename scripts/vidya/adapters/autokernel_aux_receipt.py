@@ -20,7 +20,8 @@ from typing import Any
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from claim_tuple import ClaimTuple, ProjectionError, register
-from adapters import _llama_bench_protocol as _lbp  # noqa: E402
+
+from adapters import _llama_bench_protocol as _lbp
 
 ADAPTER_ID = "vidya.adapters.autokernel_aux_receipt/v1"
 PROJECTION_SCHEMA = "epyc.vidya.autokernel_aux_measurements.v1"

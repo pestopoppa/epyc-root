@@ -10,8 +10,8 @@ import pytest
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "scripts/vidya"))
-import claim_tuple as ct  # noqa: E402
-from adapters import autokernel_aux_receipt as aux  # noqa: E402
+import claim_tuple as ct
+from adapters import autokernel_aux_receipt as aux
 
 
 @pytest.fixture
@@ -166,7 +166,7 @@ def test_raw_file_drift_refuses_before_projection(fixture, name):
 
 
 def test_direct_project_cannot_substitute_a_different_row(fixture):
-    root, receipt = fixture
+    _root, receipt = fixture
     native = dict(aux.native_rows(receipt)[0])
     native["measurement"] = {**native["measurement"], "value": 42}
     with pytest.raises(ct.ProjectionError):
