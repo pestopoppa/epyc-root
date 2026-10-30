@@ -332,3 +332,13 @@ Both original attempts ended rc75 after `TimeoutError: admission`; their native 
 - `codex3-pip02-paddle-relocatable-r11-g98-20261029`: capture 03:20:28Z; ended 03:20:52Z rc75; result SHA256 `82a6fcbb7bf67752c6ef6e8607b03faeb15a09d94d8ddf47bff45c0664222e9e`; capture SHA256 `4aab48bffdd1fac6839f972f36aab1b4c17e806fb01ec0afc13d7e0475d34c74`; 74 source pins verified. Original capture: 0 starts, 0 responses, 0 finish receipts.
 
 No TEDS, quality, adoption or full-cohort verdict. Exact native paths, grants and hashes: `[durable audit references](../../artifacts/compute/results-filing-20261030-0343.json)`. Model-free sampled peak 45,756,416 bytes; descendants drained.
+
+
+### Original Paddle R11 events — 2026-10-30 04:03 UTC
+
+- `codex3-pip02-paddle-relocatable-r11-g125-20261029`: original event ended 04:03:27 rc75; seven attempt captures within that event, with 30 capture-bound region starts and 30 matching HTTP 200 responses before the end, zero unmatched starts at that boundary, and no timestamp-proven page finish receipt. Final native partial records disk floor. [belief: cc]
+- `codex3-pip02-paddle-relocatable-r11-g86-20261029`: original event ended 04:03:26 rc75; seven attempt captures within that event, with 30 capture-bound region starts and 30 matching HTTP 200 responses before the end, zero unmatched starts at that boundary, and no timestamp-proven page finish receipt. Final native partial records disk floor. [belief: cc]
+
+Each original event was isolated by its exact start/end log block and attempt capture hashes; request/response body and lineage hashes and source pins were checked, and any later rearm was excluded. These are region-request counts, not complete-page, whole-cohort, TEDS or adoption results. Preserve all original requests and any unknowns without redraw. Full native paths and hashes: [durable original audit references](../../artifacts/compute/results-filing-20261030-0415.json); sampled guard peak 36,240 KiB, cleanup verified.
+
+Prospective R13 source projection is published in research commit569b3b6336f0: exact source registry, nine permitted producer IDs and their27 exact shard bindings, all existing native request/grant/finish checks retained. Fifteen actual tests pass, including rejection of old R4 origins missing their original warrant fields. No scoring formula, population, denominator or grade changed; no missing historical warrant was backfilled. [belief: cc]

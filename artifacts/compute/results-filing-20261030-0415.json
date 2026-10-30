@@ -1,0 +1,29 @@
+{
+  "prepared_at": "2026-10-30T04:18:58.494172+00:00",
+  "original_native_audits": [
+    {
+      "path": "/mnt/raid0/llm/tmp/codex3-filing-0415-20261030/codex3-paddle-two0405-20261030.json",
+      "sha256": "42ad47ee36b02e7a5aecaabe685ce7d6e38f9e0f5cbd27a80851d40d8cd968d1"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/codex3-filing-0415-20261030/codex3-io-sample-20261030.json",
+      "sha256": "2dd4e653fe115bcc6dc0f8634d02fbb6aa6d61f5163cdf7dc7f79cdd86161055"
+    }
+  ],
+  "pipeline_source_refs": [
+    {
+      "path": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-relocatable-r13-20261030/PUBLICATION.json",
+      "sha256": "8460a1eeb84613b9f95f1ea7a1c3012319c42ac1daf43287c609ae794e6701b6"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-pool-r14-20261030/source.sha256",
+      "sha256": "bff1d6bda148cd937e24e2c3767ff4db7ddf1b259276fc4abac368a9372dee78"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-pool-r15-20261030/source.sha256",
+      "sha256": "e407bbe43557585d635ba58a84cef2d2c323efce0502c772fc6edc0a861a3a8a"
+    }
+  ],
+  "research_source_projection_commit": "569b3b6336f0",
+  "claim_scope": "Two original partial windows only, 30 matched region requests each, no timestamp-proven full-page result or quality claim. R15 and HSF12 source preparations do not imply successful smoke."
+}
