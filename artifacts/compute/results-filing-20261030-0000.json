@@ -1,0 +1,859 @@
+{
+  "schema": "codex3.results-filing.v1",
+  "filed_at": "2026-10-30T00:01:58.900378+00:00",
+  "original_events": {
+    "hil15b-new-cohort-retry-r2-20261029": {
+      "id": "hil15b-new-cohort-retry-r2-20261029",
+      "ended_file": "/mnt/raid0/llm/tmp/compute-flags/grants/hil15b-new-cohort-retry-r2-20261029.ended",
+      "end_line": "rc=6 time=2026-10-29T23:37:53Z reason=t1-admission:DRYRUN_REFUSED: disk free-after-output 147.74 GiB < floor 150 GiB",
+      "seen_at": "2026-10-29T23:38:40Z",
+      "result_path": "/mnt/raid0/llm/tmp/hil15b-new-cohort-isolated-v6-20261029/results-pilot/DONE",
+      "scratch_root": "/mnt/raid0/llm/tmp/hil15b-new-cohort-isolated-v6-20261029",
+      "decision_rule": "Fresh 20-task diagnostic, 3 fixed slots per task; record native pass counts and L2/AUC; no prior cohort import or confirmation claim.",
+      "class": "diagnostic",
+      "owner": "codex-refactor-01a16fc3"
+    },
+    "codex3-pip02-paddle-relocatable-r8-g107-20261029": {
+      "id": "codex3-pip02-paddle-relocatable-r8-g107-20261029",
+      "ended_file": "/mnt/raid0/llm/tmp/compute-flags/grants/codex3-pip02-paddle-relocatable-r8-g107-20261029.ended",
+      "end_line": "rc=75 time=2026-10-29T23:46:32Z reason=job-rc-75:exited",
+      "seen_at": "2026-10-29T23:46:56Z",
+      "result_path": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-relocatable-r8-20261029/DONE-107",
+      "scratch_root": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-relocatable-r8-20261029/packets/group-107",
+      "decision_rule": "Collect original fresh English Paddle shards[107, 108, 109],15 disjoint pages, native layout/crop/recognition/assembly,temperature0,4096outputtokens,8192contextslot,np12. Preserve all original source/body/response hashes, replay complete RPCs only; never redraw an unmatched exposure. Collection diagnostic, no parser selection or TEDS verdict.",
+      "class": "diagnostic",
+      "owner": "codex3"
+    },
+    "gpu-leak1e-factor-isolation-20261029": {
+      "id": "gpu-leak1e-factor-isolation-20261029",
+      "ended_file": "/mnt/raid0/llm/tmp/compute-flags/grants/gpu-leak1e-factor-isolation-20261029.ended",
+      "end_line": "rc=0 time=2026-10-29T23:48:49Z reason=complete",
+      "seen_at": "2026-10-29T23:49:00Z",
+      "result_path": "/mnt/raid0/llm/tmp/codex-ni-gpu-leak-1e-20261029/out/RESULT.json",
+      "scratch_root": "/mnt/raid0/llm/tmp/codex-ni-gpu-leak-1e-20261029",
+      "decision_rule": "Diagnostic only: compare own-PID KFD VRAM-per-request slopes from pinned E1 baseline and the one-factor-at-a-time UB512, NP4, CACHE64 arms. Preserve each native request series and exact argv; no predeclared threshold, speed claim, production exposure inference, or mitigation decision.",
+      "class": "diagnostic",
+      "owner": "codex-ni"
+    },
+    "hil15-s1-unexposed-slots-v20-20261029": {
+      "id": "hil15-s1-unexposed-slots-v20-20261029",
+      "ended_file": "/mnt/raid0/llm/tmp/compute-flags/grants/hil15-s1-unexposed-slots-v20-20261029.ended",
+      "end_line": "rc=6 time=2026-10-29T23:48:33Z reason=t1-admission:DRYRUN_REFUSED: launcher min-window differs from row",
+      "seen_at": "2026-10-29T23:49:00Z",
+      "result_path": "/mnt/raid0/llm/tmp/hil15-s1-unknown-continuation-v20-20261029/results-pilot/DONE",
+      "scratch_root": "/mnt/raid0/llm/tmp/hil15-s1-unknown-continuation-v20-20261029",
+      "decision_rule": "Fixed discovery cohort: original45 native slots. Preserve42 accepted native replays; original unit15 slot0 remains unknown with no grade, run only predeclared slots1/2. Report task15 native pass-count bounds [observed passes,observed passes+1] (higher=more passes), original denominator45, and collection-exhausted-with-unknown; no full-completion/confirmation claim.",
+      "class": "diagnostic",
+      "owner": "codex-refactor-01a16fc3"
+    },
+    "codex-ni-yarn-dca-xdev-cpu-r4-20261029": {
+      "id": "codex-ni-yarn-dca-xdev-cpu-r4-20261029",
+      "ended_file": "/mnt/raid0/llm/tmp/compute-flags/grants/codex-ni-yarn-dca-xdev-cpu-r4-20261029.ended",
+      "end_line": "rc=75 time=2026-10-29T23:56:43Z reason=job-rc-75:exited",
+      "seen_at": "2026-10-29T23:57:18Z",
+      "result_path": "/mnt/raid0/llm/tmp/codex-ni-yarn-dca-xdev-20261029-r4/runs",
+      "scratch_root": "/mnt/raid0/llm/tmp/codex-ni-yarn-dca-xdev-20261029-r4",
+      "decision_rule": "Perplexity is lower-is-better. Compare only after the matching GPU arm completes on identical source/model/text/context/batch/ubatch/attention/KV settings. The reported +/- is within-run token spread, not a between-run confidence interval; one pair does not establish statistical significance.",
+      "class": "block-correctness",
+      "owner": "codex-ni"
+    },
+    "codex3-pip02-odl-relocatable-r2-s20-20261029": {
+      "id": "codex3-pip02-odl-relocatable-r2-s20-20261029",
+      "ended_file": "/mnt/raid0/llm/tmp/compute-flags/grants/codex3-pip02-odl-relocatable-r2-s20-20261029.ended",
+      "end_line": "rc=0 time=2026-10-29T23:56:47Z reason=complete",
+      "seen_at": "2026-10-29T23:57:18Z",
+      "result_path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/ODL-BATCH-DONE-20",
+      "scratch_root": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-relocatable-r2-prepared-20261029/shard-20",
+      "decision_rule": "Collect25 original fresh English pages in ODL shard20, ODL2.5+Docling2.91 docling-fast hybrid full on canonical image-only PDFs, twelve native page workers on assigned quarter. Preserve every input/start/result/DONE hash and all unknowns; never redraw an actual client exposure. No quality/adoption verdict until common scoring.",
+      "class": "diagnostic",
+      "owner": "codex3"
+    }
+  },
+  "admission_failures": [
+    {
+      "id": "hil15b-new-cohort-retry-r2-20261029",
+      "native_ended": {
+        "path": "/mnt/raid0/llm/tmp/compute-flags/grants/hil15b-new-cohort-retry-r2-20261029.ended",
+        "sha256": "96be810def006dd755d682c8b50ae63fe35096297a82e64a561a552b389cee10"
+      },
+      "outcome": "invalid admission; no scientific verdict",
+      "owner_action": "Preserve original refusal; qualify declared output planning against150GiBfloor without relaxing floor."
+    },
+    {
+      "id": "hil15-s1-unexposed-slots-v20-20261029",
+      "native_ended": {
+        "path": "/mnt/raid0/llm/tmp/compute-flags/grants/hil15-s1-unexposed-slots-v20-20261029.ended",
+        "sha256": "f4d8b2f5f5949ac5b06f00786af77cf63341d39c9bae02f1ceccf938a379edb2"
+      },
+      "outcome": "invalid admission; no scientific verdict",
+      "owner_action": "Match actual launcher min-window to3600s row, validate allfour actual T1 cases and republish a fresh real-smoked successor."
+    }
+  ],
+  "paddle_runtime_failure": {
+    "native_failure": {
+      "path": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-relocatable-r8-20261029/attempts/codex3-pip02-paddle-relocatable-r8-g107-20261029-0c53b95b093240cf9bd4805010e689a4/result.json",
+      "sha256": "df2d51c472b0f0b9a0fc273fbe81a28254e2a5192dddee11cbf512a96fe273b8"
+    },
+    "native": {
+      "error": "RuntimeError: venv directory changed",
+      "factory": null,
+      "partial": true,
+      "rc": 75,
+      "reason": null,
+      "sampled_peak_tree_rss_bytes": 10075918336,
+      "samples": 52,
+      "schema": "pip02-paddle-parallel-owner/v1",
+      "shards": [
+        107,
+        108,
+        109
+      ],
+      "smoke": false
+    },
+    "runtime_diff": {
+      "path": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-relocatable-r8-20261029/VENV-DIRECTORY-DIFF-2349.json",
+      "sha256": "6b2d5bed5120f71254f23423ce54c069a5cbfa09425fc75312b3562f5766f5ce"
+    },
+    "withdrawal": {
+      "path": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-relocatable-r8-20261029/WITHDRAWN-RUNTIME-DRIFT.json",
+      "sha256": "8a36679063510dee50871d36589a62ce1a69c925e43b254c3702c72ced5c91b8"
+    },
+    "cause": "Own delegated scorer tests invoked the shared Paddle Python without bytecode suppression. Three new __pycache__ directories and21pyc files caused the strict runtime witness to refuse. All22613 pre-existing file hashes and4symlinks were checked unchanged. No shared cache was deleted and no guard was relaxed.",
+    "r9_publication": {
+      "path": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-relocatable-r9-20261029/PUBLISHED.json",
+      "sha256": "1f815cb35c0f1dbc7ed70ad64897b7628a43e93bd34113221c6f09388509b141"
+    },
+    "r9_smoke": {
+      "path": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-relocatable-r9-20261029/real-smoke-20261029T2354.log",
+      "sha256": "a38953b0e716cbbbc4cd2fe8271a2bad6cea6ef819f5647ff19fbbfdfefbbb23"
+    },
+    "outcome": "invalid old runtime; repaired R9 real smoke70.259s,5native HTTP200 responses,5.364GBsampledRSS,drained; six R9 successors published, original complete/unknown journals preserved",
+    "later_r7_failure": {
+      "native_ended": {
+        "path": "/mnt/raid0/llm/tmp/compute-flags/grants/codex3-pip02-paddle-parallel-owner-r7-g14-20261029.ended",
+        "sha256": "cb006062bda6d094d64af1448d2347c3994c03fccb10825f9b1f3c1a4f319612"
+      },
+      "scope": "Later23:46 R7 admission failure is separate from its already filed23:17 first partial; native launcher traceback says venv directory mismatch."
+    }
+  },
+  "yarn_cpu_r4": {
+    "native_result": {
+      "path": "/mnt/raid0/llm/tmp/codex-ni-yarn-dca-xdev-20261029-r4/runs/codex-ni-yarn-dca-xdev-cpu-r4-20261029-full-1793319000/result.json",
+      "sha256": "7b5cd105077bdadef59c337e2f38b2b1d5fb12ace6f00b804c4ba8af4d8afcb0"
+    },
+    "outcome": "invalid for PPL comparison; original normal-context attempt partial rc75",
+    "process_ram_budget_GiB": 16,
+    "sampled_peak_rss_bytes": 17263681536,
+    "elapsed_s": 347.581,
+    "ppl": null,
+    "first_native_work_completed": false,
+    "cleanup_verified": true,
+    "owner_action": "Qualify normal-context resource planning; preserve original partial independently of later same-ID resume and short-context smoke."
+  },
+  "gpu_leak1e": {
+    "native_result": {
+      "path": "/mnt/raid0/llm/tmp/codex-ni-gpu-leak-1e-20261029/out/RESULT.json",
+      "sha256": "eb8fe0eb4148c22eb6b5ee9cbb0b12bc8fe062ff00df5fd7a66c2053aefa9d2b"
+    },
+    "baseline": {
+      "path": "/mnt/raid0/llm/tmp/gpu-leak-1-probe-20261023/arm_G.json",
+      "packet_copy": "/mnt/raid0/llm/tmp/codex-ni-gpu-leak-1e-20261029/baseline-arm-G.json",
+      "sha256": "5c4a6fcdfeeafc16de664ec8512870ff93682a8e337c7e427b44c9d17ff44901",
+      "arm": "E1/G",
+      "n_done": 30,
+      "slope_mib_per_req_5_to_n": 290.26,
+      "model": "Qwen3.8-27B-Q8_0",
+      "binary": "gpu-20260921-ffc1bac82 (v10 store build 10303)",
+      "source_path": "/mnt/raid0/llm/tmp/gpu-leak-1-probe-20261023/arm_G.json",
+      "argv_path": "/mnt/raid0/llm/tmp/gpu-leak-1-probe-20261023/run-20261023T130845Z/G.argv",
+      "argv_sha256": "a248af4215cba357997f4380aa2f2c541b30d823ad4b5da2b154812325f714ef"
+    },
+    "arms": {
+      "UB512": {
+        "native": {
+          "path": "/mnt/raid0/llm/tmp/codex-ni-gpu-leak-1e-20261029/out/state/UB512.json",
+          "sha256": "97cd2b7de8fc0db688f44e67e3bb79775bedee20cefe6db3ce66a5569e864394"
+        },
+        "argv": {
+          "path": "/mnt/raid0/llm/tmp/codex-ni-gpu-leak-1e-20261029/out/state/UB512.argv",
+          "sha256": "4077cc5e8268573ee9b24ca8d04062cebb93df0d10b26b55d9837dc9295c6bc9"
+        },
+        "model_identity": {
+          "path": "/mnt/raid0/llm/tmp/codex-ni-gpu-leak-1e-20261029/out/state/UB512.model-identity.json",
+          "sha256": "0a6005f16876031bced1002f3b9b9ff76e7f75b142842aa49c15fbcb9661b460"
+        },
+        "server_identity": {
+          "path": "/mnt/raid0/llm/tmp/codex-ni-gpu-leak-1e-20261029/out/state/UB512.server-identity.json",
+          "sha256": "809f4ffaa5a314ce46e0c65ce6ec0488dacc31930f4aa63a3e163c3a7a3c71c3"
+        },
+        "native_complete_requests": 15,
+        "observed_changes": {
+          "-ub": [
+            "2048",
+            "512"
+          ],
+          "--slot-save-path": [
+            "/mnt/raid0/llm/tmp/gpu-leak-1-probe-20261023/kv_slots_scratch",
+            "/mnt/raid0/llm/tmp/codex-ni-gpu-leak-1e-20261029/out/attempts/20261029T234043Z-1621886/kv_slots_scratch"
+          ],
+          "--port": [
+            "18979",
+            "18987"
+          ]
+        },
+        "slope_mib_per_request": 290.27,
+        "rederived_from_rounded_native_series": 290.27272727272725
+      },
+      "NP4": {
+        "native": {
+          "path": "/mnt/raid0/llm/tmp/codex-ni-gpu-leak-1e-20261029/out/state/NP4.json",
+          "sha256": "07adaa6d9346f3093ba900568c0c109a6afb1915055e89cfb90bc9543ade3924"
+        },
+        "argv": {
+          "path": "/mnt/raid0/llm/tmp/codex-ni-gpu-leak-1e-20261029/out/state/NP4.argv",
+          "sha256": "22394f9f58872d44c0b60352b4b0dc01ad440264785a4e1125ed172d50df4518"
+        },
+        "model_identity": {
+          "path": "/mnt/raid0/llm/tmp/codex-ni-gpu-leak-1e-20261029/out/state/NP4.model-identity.json",
+          "sha256": "0a6005f16876031bced1002f3b9b9ff76e7f75b142842aa49c15fbcb9661b460"
+        },
+        "server_identity": {
+          "path": "/mnt/raid0/llm/tmp/codex-ni-gpu-leak-1e-20261029/out/state/NP4.server-identity.json",
+          "sha256": "0e3860259a6864af92de35ea6e7aacaf101114ac0bba7dd68b2326bc30e7ad83"
+        },
+        "native_complete_requests": 15,
+        "observed_changes": {
+          "-np": [
+            "1",
+            "4"
+          ],
+          "--slot-save-path": [
+            "/mnt/raid0/llm/tmp/gpu-leak-1-probe-20261023/kv_slots_scratch",
+            "/mnt/raid0/llm/tmp/codex-ni-gpu-leak-1e-20261029/out/attempts/20261029T234043Z-1621886/kv_slots_scratch"
+          ],
+          "--port": [
+            "18979",
+            "18987"
+          ]
+        },
+        "slope_mib_per_request": 290.27,
+        "rederived_from_rounded_native_series": 290.27272727272725
+      },
+      "CACHE64": {
+        "native": {
+          "path": "/mnt/raid0/llm/tmp/codex-ni-gpu-leak-1e-20261029/out/state/CACHE64.json",
+          "sha256": "7d6637d42d0ccacd53cad71f4ee78ca4e4f2da105c3a71cb37ed737020388cd9"
+        },
+        "argv": {
+          "path": "/mnt/raid0/llm/tmp/codex-ni-gpu-leak-1e-20261029/out/state/CACHE64.argv",
+          "sha256": "465092da0bf4a6c9824eaf4d810d0ad012caef304e2aa460634dbb5bfe4bde98"
+        },
+        "model_identity": {
+          "path": "/mnt/raid0/llm/tmp/codex-ni-gpu-leak-1e-20261029/out/state/CACHE64.model-identity.json",
+          "sha256": "0a6005f16876031bced1002f3b9b9ff76e7f75b142842aa49c15fbcb9661b460"
+        },
+        "server_identity": {
+          "path": "/mnt/raid0/llm/tmp/codex-ni-gpu-leak-1e-20261029/out/state/CACHE64.server-identity.json",
+          "sha256": "7231f0697b000d92879ab8c6ce948303297eb0dda98966d1fb22ca2933ba03a3"
+        },
+        "native_complete_requests": 15,
+        "observed_changes": {
+          "--slot-save-path": [
+            "/mnt/raid0/llm/tmp/gpu-leak-1-probe-20261023/kv_slots_scratch",
+            "/mnt/raid0/llm/tmp/codex-ni-gpu-leak-1e-20261029/out/attempts/20261029T234043Z-1621886/kv_slots_scratch"
+          ],
+          "--port": [
+            "18979",
+            "18987"
+          ],
+          "--cache-ram": [
+            "0",
+            "65536"
+          ]
+        },
+        "slope_mib_per_request": 290.27,
+        "rederived_from_rounded_native_series": 290.27272727272725
+      }
+    },
+    "outcome": "correctness-only: predeclared one-factor probe collection met; descriptive observations only",
+    "meaning": "All three single-factor arms retain approximately290.27MiB/request growth, compared with historical pinned E1 baseline290.26. None removes the growth in this probe. No mitigation/adoption threshold, causal interaction conclusion, production exposure, or speed claim.",
+    "projection": "Committed conclusion only. New factor-result schema needs projection into the existing GPU leak observation source and planning canary; no retrospective measurement warrant."
+  },
+  "odl20": {
+    "native_done": {
+      "path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/ODL-BATCH-DONE-20",
+      "sha256": "1f1e6e552ebac4bccd820d1c0b4295bff7c5dfa735d06ee5bc49213d313d7b21"
+    },
+    "summary": {
+      "cohort": "pip02-english-fresh-20261029",
+      "error": null,
+      "finished_epoch": 1793318206.7260954,
+      "partial": false,
+      "rc": 0,
+      "sampled_peak_tree_rss_bytes": 69583757312,
+      "schema": "pip02-odl-parallel/v1",
+      "shard": 20,
+      "statuses": {
+        "500": "complete",
+        "501": "complete",
+        "502": "complete",
+        "503": "complete",
+        "504": "complete",
+        "505": "complete",
+        "506": "complete",
+        "507": "complete",
+        "508": "complete",
+        "509": "complete",
+        "510": "complete",
+        "511": "complete",
+        "512": "complete",
+        "513": "complete",
+        "514": "complete",
+        "515": "complete",
+        "516": "complete",
+        "517": "complete",
+        "518": "complete",
+        "519": "complete",
+        "520": "complete",
+        "521": "complete",
+        "522": "complete",
+        "523": "complete",
+        "524": "complete"
+      },
+      "workers": 12
+    },
+    "pages": [
+      {
+        "ordinal": 500,
+        "start": {
+          "path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-20/page-0500/start.json",
+          "sha256": "eca3221646aa0ae5f728b08afe111745b7654f7189f7e8498dd7209b1eb47d44"
+        },
+        "result": {
+          "path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-20/page-0500/result.json",
+          "sha256": "dc91d24d8cdc14b78bc599a7309db64fcfe061cca68d52f10ca55db25b23f688"
+        },
+        "DONE": {
+          "path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-20/page-0500/DONE",
+          "sha256": "4775743a0b11f9324885fbdbb42288b8c8ae1b3a9a5cbd5dfe5bb27c1a984b1b"
+        },
+        "prediction": {
+          "path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-20/page-0500/out/input.md",
+          "sha256": "b5847bd253a85cb17c897812d59c1e1f27cc822429762c07c67b3180df006f82"
+        }
+      },
+      {
+        "ordinal": 501,
+        "start": {
+          "path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-20/page-0501/start.json",
+          "sha256": "b1f263e66a8225dde75126f291ac11e9549861b255ec1f0eb74eaee6c728599e"
+        },
+        "result": {
+          "path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-20/page-0501/result.json",
+          "sha256": "7634396e6727a2b66ae46994f874ea89f2c7f3e45050565a7da8c4224945e4bc"
+        },
+        "DONE": {
+          "path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-20/page-0501/DONE",
+          "sha256": "15fc0ce47f2336d1f9812a9846a3208bea1b8e07098d0ccdfff8d40722638bcc"
+        },
+        "prediction": {
+          "path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-20/page-0501/out/input.md",
+          "sha256": "35b2aa3a58632a2370759ca835c9b75741e9f2730109ebab6e93fb4478f17cc1"
+        }
+      },
+      {
+        "ordinal": 502,
+        "start": {
+          "path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-20/page-0502/start.json",
+          "sha256": "226e69507027b624ee9ec9658a2f7162f24f761a4749ed7d01801cbc741ea84b"
+        },
+        "result": {
+          "path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-20/page-0502/result.json",
+          "sha256": "4634ad777c258d913984dab9a34724d4ad9086f1f41bc79e1263dc46434b4ab9"
+        },
+        "DONE": {
+          "path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-20/page-0502/DONE",
+          "sha256": "ca7ea96d5ca2519d51b01620a345faba6872af1cdc9a1cb974364b95efcedfc2"
+        },
+        "prediction": {
+          "path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-20/page-0502/out/input.md",
+          "sha256": "24a162e59b233f3f58b5ac960aea89fd8404564a69d247beccf18a5ee0fce962"
+        }
+      },
+      {
+        "ordinal": 503,
+        "start": {
+          "path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-20/page-0503/start.json",
+          "sha256": "e01bed9b7b8c8fe07d71627ffd5ab077b3a1e38eef6bd4a40724538b55dad326"
+        },
+        "result": {
+          "path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-20/page-0503/result.json",
+          "sha256": "e89ce79706bf96939ab7f73ce9f0d08b5d3b47609a7115e19a4cb442136765ae"
+        },
+        "DONE": {
+          "path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-20/page-0503/DONE",
+          "sha256": "ed62a495ae7a148b5c3e0dfff8f813c5decc32edf64f8fe3aeaa2ed3d6937851"
+        },
+        "prediction": {
+          "path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-20/page-0503/out/input.md",
+          "sha256": "d0a95d54542722ab655162dfb64831632de4ac776549e6bca00196259b2376a7"
+        }
+      },
+      {
+        "ordinal": 504,
+        "start": {
+          "path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-20/page-0504/start.json",
+          "sha256": "e1d4c49cd76f226e48e8872bb5813fe1e9cfa4e5ed2876b15e905f6519ce59ba"
+        },
+        "result": {
+          "path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-20/page-0504/result.json",
+          "sha256": "10595297b1fc68f71b6a1d265d5152417cc91d86c8f11478df2e80768e228943"
+        },
+        "DONE": {
+          "path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-20/page-0504/DONE",
+          "sha256": "5111ae0a6d5a03b03e9389829ddc6a949d0b321c68a11e17fd8bf8e1270543f0"
+        },
+        "prediction": {
+          "path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-20/page-0504/out/input.md",
+          "sha256": "e8418c1e42446d693521854a9cfb6529dbb1733591caa9b4887119c30e5e6fbd"
+        }
+      },
+      {
+        "ordinal": 505,
+        "start": {
+          "path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-20/page-0505/start.json",
+          "sha256": "832721f031fd841a5a9480635777fcecd546a729f3ad247ddc1b7020a52d3731"
+        },
+        "result": {
+          "path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-20/page-0505/result.json",
+          "sha256": "51c26b6ac4c3b25cfaef1ed82f098a2932ab741e7b2aaa61ca49c1be72434b87"
+        },
+        "DONE": {
+          "path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-20/page-0505/DONE",
+          "sha256": "6f0d63f2daee003e997ea1200cde684d3e0da65ca2563f949550c627cd98d5c9"
+        },
+        "prediction": {
+          "path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-20/page-0505/out/input.md",
+          "sha256": "4e2397cf0b729c58db7b19b4436a9a338cfb04c0ff6b4bb3e99028f2afad3c66"
+        }
+      },
+      {
+        "ordinal": 506,
+        "start": {
+          "path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-20/page-0506/start.json",
+          "sha256": "6e10fdf30f54c25e122b33353e3da31a540072bc308c8cb835bb080c3e34bb4e"
+        },
+        "result": {
+          "path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-20/page-0506/result.json",
+          "sha256": "db2f0e2e08cddb8a2a97827146172785dcd4fc2848ba4d1c2c6185c055272f88"
+        },
+        "DONE": {
+          "path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-20/page-0506/DONE",
+          "sha256": "990ade6faf4cfbd2d9589fcc802eacca8fc564bd08129811fc56b55e338602b9"
+        },
+        "prediction": {
+          "path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-20/page-0506/out/input.md",
+          "sha256": "69d119e6ddb4a3fdf4f4b3f2fec8157016e540daaa218c50c332915b2954c2af"
+        }
+      },
+      {
+        "ordinal": 507,
+        "start": {
+          "path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-20/page-0507/start.json",
+          "sha256": "abd46195aa19375b30a26cd0f1cd9e02f85c90dbc3a20eea9102537933ee24f0"
+        },
+        "result": {
+          "path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-20/page-0507/result.json",
+          "sha256": "9eaa79ffb9ef4c1acee0b023ab6eb93c3aef507a4b5347650ef22824fd34389a"
+        },
+        "DONE": {
+          "path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-20/page-0507/DONE",
+          "sha256": "dc0bd8d3b4d3adda031f0d8de7c56c259da6d01664381d93acfb4e38ae85bcaf"
+        },
+        "prediction": {
+          "path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-20/page-0507/out/input.md",
+          "sha256": "fae50fd2246663d4d8f2376b77f2e2f7d1d01b2ec8800839e6ae5da7384c417a"
+        }
+      },
+      {
+        "ordinal": 508,
+        "start": {
+          "path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-20/page-0508/start.json",
+          "sha256": "1d4402d6de63e103a817fafb3ae4a9976e9597343cde94da33c4a8ab8d6669f8"
+        },
+        "result": {
+          "path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-20/page-0508/result.json",
+          "sha256": "0dc2f9660ac80311423bba9faa7eb1423234c80a45371611d5d00badd6a8b2ae"
+        },
+        "DONE": {
+          "path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-20/page-0508/DONE",
+          "sha256": "11cbc03b602e22c0ba9e08d85dd473a87512918a092ce3280ef6c3520d63bd21"
+        },
+        "prediction": {
+          "path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-20/page-0508/out/input.md",
+          "sha256": "afb4960adb9012305dde284316f1868d0683cc0fc05c4b8b404dc7c4b873f770"
+        }
+      },
+      {
+        "ordinal": 509,
+        "start": {
+          "path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-20/page-0509/start.json",
+          "sha256": "65e9f6e41246be9c95cf347d8cca2e51057dbae76f2362d28aa58a9ab69dee89"
+        },
+        "result": {
+          "path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-20/page-0509/result.json",
+          "sha256": "12448563d6ea8b28b5b592935e37bbb336cae37a9c556a4651af26234d2f47a8"
+        },
+        "DONE": {
+          "path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-20/page-0509/DONE",
+          "sha256": "9ce76d03e5822f93677398512dfbbab8352f2b4a5ea6a19fb0106a22df65a655"
+        },
+        "prediction": {
+          "path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-20/page-0509/out/input.md",
+          "sha256": "0cec907ea6d5cd2fa98cacb593d2feb365305d691777366f28536d186af515f0"
+        }
+      },
+      {
+        "ordinal": 510,
+        "start": {
+          "path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-20/page-0510/start.json",
+          "sha256": "a52ca533ca63d089f55f2235b9f183fe82831ca661c2059bddcdbf0556246a7a"
+        },
+        "result": {
+          "path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-20/page-0510/result.json",
+          "sha256": "e742f0de41cdba77a34cf4ee7423c935539bc786d311fd68ff54f29765c2e927"
+        },
+        "DONE": {
+          "path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-20/page-0510/DONE",
+          "sha256": "fb3a44c76ee7cefce65dc9bf32cdf4519eae80acf1e796d3742a95addb655940"
+        },
+        "prediction": {
+          "path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-20/page-0510/out/input.md",
+          "sha256": "72e0cd3726b7b3aecfed43ae9fe8801875171cf68bc44df104a4dd1a933be95d"
+        }
+      },
+      {
+        "ordinal": 511,
+        "start": {
+          "path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-20/page-0511/start.json",
+          "sha256": "7e70824f211efd1454f600acc25863610d92d7119459229850aa9aa56c1bd417"
+        },
+        "result": {
+          "path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-20/page-0511/result.json",
+          "sha256": "335e30394d586da341367800b1db2d00eb8003706e3eda2475960a18cd8d10b5"
+        },
+        "DONE": {
+          "path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-20/page-0511/DONE",
+          "sha256": "8f683daf5060d4f0434401472aafd153f929d5a840ebd0cc5673bb4e41fd7bd3"
+        },
+        "prediction": {
+          "path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-20/page-0511/out/input.md",
+          "sha256": "0b448a6dc51e821c7afa98d7ceae216ae085ac930c2aaca8541b98356834ace1"
+        }
+      },
+      {
+        "ordinal": 512,
+        "start": {
+          "path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-20/page-0512/start.json",
+          "sha256": "f6d29bd1abd6f594b09959dce0ecb7af53f66900a0ef2c03942e09fc5d59ec56"
+        },
+        "result": {
+          "path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-20/page-0512/result.json",
+          "sha256": "91fe15bf1258c6e82ae699a76dca7a911a0a9d63412a84995416564228640f63"
+        },
+        "DONE": {
+          "path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-20/page-0512/DONE",
+          "sha256": "37e4ebf49a72bb6ad2bf4551f44ab219e660156ad77c2fc64a8e34e1b71c12a3"
+        },
+        "prediction": {
+          "path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-20/page-0512/out/input.md",
+          "sha256": "5a29b5c17909c569b993042e8a1a5fc1bf008cc89924a95b849cead2c20757f3"
+        }
+      },
+      {
+        "ordinal": 513,
+        "start": {
+          "path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-20/page-0513/start.json",
+          "sha256": "51d109367ce21a6fd5fada420aee9b402d74e5cdb10049535bcbfea51de9cb70"
+        },
+        "result": {
+          "path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-20/page-0513/result.json",
+          "sha256": "d194bad85bfb56eb48416e35b714ce03d12bd49dc496e96e048199b2503fc38b"
+        },
+        "DONE": {
+          "path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-20/page-0513/DONE",
+          "sha256": "395ad06818ae375d29e029d3223a515f61d05f58bb3562fb4cd88a5168fde30f"
+        },
+        "prediction": {
+          "path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-20/page-0513/out/input.md",
+          "sha256": "650645f25e7334316132cbbe8625bb49d9fbd1b512c6c190a6eb8b7b8284b645"
+        }
+      },
+      {
+        "ordinal": 514,
+        "start": {
+          "path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-20/page-0514/start.json",
+          "sha256": "6834a044243a4617cc8d7e8097047f7ee3ac25652861063638851c7fd44aa9b2"
+        },
+        "result": {
+          "path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-20/page-0514/result.json",
+          "sha256": "46e10c5304d51dd21d9a617bc6bacda579b3314a4e66d34fff817b36a4185ed5"
+        },
+        "DONE": {
+          "path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-20/page-0514/DONE",
+          "sha256": "c95c89347b1a67483fc1e9316a369559c4f3c2f4e5b2e38edb85a75eb1b66a38"
+        },
+        "prediction": {
+          "path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-20/page-0514/out/input.md",
+          "sha256": "0fd611c0a5bed179a8ad7523215022d50b8c9a301da0643e78816b9239e9369f"
+        }
+      },
+      {
+        "ordinal": 515,
+        "start": {
+          "path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-20/page-0515/start.json",
+          "sha256": "1f0513e9eafc402c28ed3295099e9ba52484c7fccd8e1c8a611467c41f720ef8"
+        },
+        "result": {
+          "path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-20/page-0515/result.json",
+          "sha256": "7757d9b6205e2f17d0b82b65288435e88cfb220db1349d72f00b0d2f1c65c111"
+        },
+        "DONE": {
+          "path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-20/page-0515/DONE",
+          "sha256": "98e07a8623df612b1eb57da1c40fd1ae68802614b219ea00617067c28603f86d"
+        },
+        "prediction": {
+          "path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-20/page-0515/out/input.md",
+          "sha256": "329be1662dc146d68b29ac1f041c283180650868d964f4bbea7a2d8d1850bcb2"
+        }
+      },
+      {
+        "ordinal": 516,
+        "start": {
+          "path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-20/page-0516/start.json",
+          "sha256": "c1bab42c081e447ab4d73439c28b637c10eb344df045571f0580744115507ab7"
+        },
+        "result": {
+          "path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-20/page-0516/result.json",
+          "sha256": "540d5b07af702444c09ded79750bb7482a08537aa583295ca76ede439d0b6301"
+        },
+        "DONE": {
+          "path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-20/page-0516/DONE",
+          "sha256": "58d0d5e18f42f628fdf2508f49705da9292730bbe1c9706a37c4f1e03ca60035"
+        },
+        "prediction": {
+          "path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-20/page-0516/out/input.md",
+          "sha256": "ec0f494a77fc1e0a85a878f9ffeb4c45bc7fb67193dffe4f68c3dd1a9f25724b"
+        }
+      },
+      {
+        "ordinal": 517,
+        "start": {
+          "path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-20/page-0517/start.json",
+          "sha256": "a25e6327256b8fdf8cf870cb565bb081fdc9d34f66eb6e9607205a3e7e59d33e"
+        },
+        "result": {
+          "path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-20/page-0517/result.json",
+          "sha256": "33d06829f12869de764dabf107a30faa407cb68194b76f8df42c9d98269969fa"
+        },
+        "DONE": {
+          "path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-20/page-0517/DONE",
+          "sha256": "4a7e7172f4866015768d02c1984213feff8c0023a2d1a5e60dacb22527165e11"
+        },
+        "prediction": {
+          "path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-20/page-0517/out/input.md",
+          "sha256": "a9c1665ecb1837b3e7dc330b7bf66cc72c6baa99420cd15eb599754cda6e1417"
+        }
+      },
+      {
+        "ordinal": 518,
+        "start": {
+          "path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-20/page-0518/start.json",
+          "sha256": "11ccc7c2df95308004263320ac943c33003eb80ef6a133b62c70b679e5372e31"
+        },
+        "result": {
+          "path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-20/page-0518/result.json",
+          "sha256": "8847b423a833f5bd407916aa3bca40e21f7a7bd9476cf272e8eae7e4ea75f8dc"
+        },
+        "DONE": {
+          "path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-20/page-0518/DONE",
+          "sha256": "c08814f3328bd417236d756e373a736ce1d198280aa77d4c5763f90f44cac56e"
+        },
+        "prediction": {
+          "path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-20/page-0518/out/input.md",
+          "sha256": "5af4c61f4662265b7d3518297bbe74ec554ea207517d5a3336c1a43fd50d7778"
+        }
+      },
+      {
+        "ordinal": 519,
+        "start": {
+          "path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-20/page-0519/start.json",
+          "sha256": "a0807c9a92d57af829d4844a68e54238524a2547c3026a15ea83bccb37effa2c"
+        },
+        "result": {
+          "path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-20/page-0519/result.json",
+          "sha256": "d17a92955afc5aad5ea951211208296854e9a152dc8c447cc7556e56b4421eda"
+        },
+        "DONE": {
+          "path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-20/page-0519/DONE",
+          "sha256": "bd3afc1f42f16b99c2c8fbdb94493d70dcde6aed6c105dbda6e4c727ea082fab"
+        },
+        "prediction": {
+          "path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-20/page-0519/out/input.md",
+          "sha256": "db564623b3855501569f3308930d34b9f70d80f71fb894d356c5af5f8c7169ba"
+        }
+      },
+      {
+        "ordinal": 520,
+        "start": {
+          "path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-20/page-0520/start.json",
+          "sha256": "defeb806ce9d324f1e97af730acba2e22437207111d4128be0e46bd9e1332a18"
+        },
+        "result": {
+          "path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-20/page-0520/result.json",
+          "sha256": "d5a4160eb5613b858a809b801e491fcf5ab5024a2be24e023f751011498bebfb"
+        },
+        "DONE": {
+          "path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-20/page-0520/DONE",
+          "sha256": "774084ea52caeb835c194d4f4cc6175032cebd07f5f4cc2a46027e57fc8e47ca"
+        },
+        "prediction": {
+          "path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-20/page-0520/out/input.md",
+          "sha256": "0939f789a764b77a1ce7b9761aa8cf86c016f9117fd9f8ac81db4baf83ba1a07"
+        }
+      },
+      {
+        "ordinal": 521,
+        "start": {
+          "path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-20/page-0521/start.json",
+          "sha256": "99f8894ec0ee5d598e1447747c870377aedbee1eff3af1113761c1a78b69658f"
+        },
+        "result": {
+          "path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-20/page-0521/result.json",
+          "sha256": "9942c47c4e85a0a2bf9c2c2d47eb78fd3e445d3790e3794e2522f66ece651331"
+        },
+        "DONE": {
+          "path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-20/page-0521/DONE",
+          "sha256": "20c6457359fd72c91af8143c2ae145ee9024bc7e5d6f2c8ba6272cc04785dda3"
+        },
+        "prediction": {
+          "path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-20/page-0521/out/input.md",
+          "sha256": "7adc407a7b2c97758a24c97777d8ce1f878eb4f727977efe3db08cef7c343e0f"
+        }
+      },
+      {
+        "ordinal": 522,
+        "start": {
+          "path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-20/page-0522/start.json",
+          "sha256": "844e78800806d380d26e87fb23aeac121c612fd7dba1e2ce0bc6b75699187e8b"
+        },
+        "result": {
+          "path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-20/page-0522/result.json",
+          "sha256": "8cdf8fb9ad877f9381ee804dd3a31959663248119b2a79d1d8a3d10f3f873f67"
+        },
+        "DONE": {
+          "path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-20/page-0522/DONE",
+          "sha256": "188613b8d3ab8e89cbc206319689dd6cbaeae209cdee685c89ade4a9a5b7627b"
+        },
+        "prediction": {
+          "path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-20/page-0522/out/input.md",
+          "sha256": "e9e380fc432946c1b726b9ad25e8d5f8a26c0cd1abf71749e6ff8feae9c1912c"
+        }
+      },
+      {
+        "ordinal": 523,
+        "start": {
+          "path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-20/page-0523/start.json",
+          "sha256": "009999631881c7280b13ef687b964690cf23e0203670801d6763d453a3a2a93b"
+        },
+        "result": {
+          "path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-20/page-0523/result.json",
+          "sha256": "b4ee06d1e3ad1d7826ca96e2bb64f1b33656129cebc14fccd4f54350c63e9bb8"
+        },
+        "DONE": {
+          "path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-20/page-0523/DONE",
+          "sha256": "d98d7c2f4237d87742361febe2572ae1c3a65be8deb3dc3623847ae813116051"
+        },
+        "prediction": {
+          "path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-20/page-0523/out/input.md",
+          "sha256": "9550c54a318df9cc7f4b2f2944a27ac98de80e90001eeea106c9d4c0ba7db925"
+        }
+      },
+      {
+        "ordinal": 524,
+        "start": {
+          "path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-20/page-0524/start.json",
+          "sha256": "7497ec1d2ba7626629c38ab758d82e2503d917dc6da82b491b72f002e3687f4b"
+        },
+        "result": {
+          "path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-20/page-0524/result.json",
+          "sha256": "efe2c840305610d972a902ced8bcf910287721c7e60d739a9bcf92bee48cda48"
+        },
+        "DONE": {
+          "path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-20/page-0524/DONE",
+          "sha256": "df43f7b6335fb06e5f0d3959314636d029649b08e4fb246d93276768caaeb45c"
+        },
+        "prediction": {
+          "path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-batch-results/shard-20/page-0524/out/input.md",
+          "sha256": "a57d96eb2ec7eeee4e4f217da68238a12f82423508636c0f660cd97a625692b6"
+        }
+      }
+    ],
+    "outcome": "correctness-only:25original English pages collected; no full cohort/TEDS/adoption verdict"
+  },
+  "new_odl_ready": {
+    "at": "2026-10-29T23:44:09.020544+00:00",
+    "ids": [
+      "codex3-pip02-odl-relocatable-r2-s20-20261029",
+      "codex3-pip02-odl-relocatable-r2-s21-20261029",
+      "codex3-pip02-odl-relocatable-r2-s24-20261029",
+      "codex3-pip02-odl-relocatable-r2-s25-20261029",
+      "codex3-pip02-odl-relocatable-r2-s28-20261029",
+      "codex3-pip02-odl-relocatable-r2-s29-20261029"
+    ],
+    "regions": "any-cpu-quarter",
+    "launcher_sha256": "dde211ab05b35f9760b2d8e7299b4c85edefb99a60bc1521ab4aad87d54b0fe0",
+    "smoke_scope": "same unchanged real launcher/source, original1407 native control retained",
+    "unchanged_fixed_queue": "Paddle g5/g11 q2, g8/g26 q3"
+  },
+  "new_paddle_ready": {
+    "at": "2026-10-29T23:56:22.317161+00:00",
+    "ids": [
+      "codex3-pip02-paddle-relocatable-r9-g5-20261029",
+      "codex3-pip02-paddle-relocatable-r9-g11-20261029",
+      "codex3-pip02-paddle-relocatable-r9-g8-20261029",
+      "codex3-pip02-paddle-relocatable-r9-g26-20261029",
+      "codex3-pip02-paddle-relocatable-r9-g107-20261029",
+      "codex3-pip02-paddle-relocatable-r9-g14-20261029"
+    ],
+    "smoke": {
+      "schema": "hil15-r11-smoke-supervisor/v1",
+      "elapsed_s": 70.2594812810421,
+      "sampled_peak_tree_rss_bytes": 5364490240,
+      "samples": 653,
+      "verified_exited_processes": 0,
+      "verified_exited_threads": 0,
+      "per_process_address_space_limit_bytes": 17179869184,
+      "rss_scope": "sum of sampled resident pages across owned process tree; sampling may miss transients and double-count shared pages",
+      "leader_pid": 1829773,
+      "leader_birth": 144049994,
+      "child_rc": 75,
+      "children_drained": true,
+      "failure": null
+    },
+    "matched_HTTP200": 5,
+    "minimum_control_decode_tokens_s": 0.9046656840274167
+  },
+  "hil_r3_prepared": {
+    "source_manifest": {
+      "path": "/mnt/raid0/llm/tmp/codex3-hil15b-heavy-20261029/r3/source.sha256",
+      "sha256": "84732af8a07ee7f90fdbca79a14a6561ba447f1042030793ec5f952c327cc54d"
+    },
+    "counts": {
+      "accepted": 18,
+      "unknown": 1,
+      "unexposed": 29
+    },
+    "status": "Integrated; independent offline tests passed; no fresh target-model smoke or READY, pending operator one-shot48GiB exception."
+  }
+}
