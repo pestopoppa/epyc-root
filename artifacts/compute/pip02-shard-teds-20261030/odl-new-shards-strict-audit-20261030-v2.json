@@ -1,0 +1,1231 @@
+[
+  {
+    "shard": 3,
+    "artifact": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/recheck/odl-s03.json",
+    "artifact_sha256": "146684bb1e3f918289d7aa64cd54545dc553762644ffff3092bd00665653c8dc",
+    "pages_verified": 0,
+    "pages_total": 25,
+    "coverage": {
+      "pages_complete": 25,
+      "pages_total": 25,
+      "gt_tables_scored": 7,
+      "gt_tables_total": 7
+    },
+    "means": {
+      "teds": 0.5440251593226749,
+      "teds_structure_only": 0.7605234718425303
+    },
+    "refusals": [
+      {
+        "position": 75,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 76,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 77,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 78,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 79,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 80,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 81,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 82,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 83,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 84,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 85,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 86,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 87,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 88,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 89,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 90,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 91,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 92,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 93,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 94,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 95,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 96,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 97,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 98,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 99,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      }
+    ]
+  },
+  {
+    "shard": 6,
+    "artifact": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/recheck/odl-s06.json",
+    "artifact_sha256": "b30075d67bad6cd5384a80014d5d93ab7452f8ac5415ccb6754f10e71185f66b",
+    "pages_verified": 0,
+    "pages_total": 25,
+    "coverage": {
+      "pages_complete": 25,
+      "pages_total": 25,
+      "gt_tables_scored": 10,
+      "gt_tables_total": 10
+    },
+    "means": {
+      "teds": 0.8533273400927032,
+      "teds_structure_only": 0.8886818345224269
+    },
+    "refusals": [
+      {
+        "position": 150,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 151,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 152,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 153,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 154,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 155,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 156,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 157,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 158,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 159,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 160,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 161,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 162,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 163,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 164,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 165,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 166,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 167,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 168,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 169,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 170,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 171,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 172,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 173,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 174,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      }
+    ]
+  },
+  {
+    "shard": 7,
+    "artifact": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/recheck/odl-s07.json",
+    "artifact_sha256": "1747fc697d5db7a3ac431b6fab3adde34d5d757c6dca6b09977f5a007734db57",
+    "pages_verified": 0,
+    "pages_total": 25,
+    "coverage": {
+      "pages_complete": 25,
+      "pages_total": 25,
+      "gt_tables_scored": 4,
+      "gt_tables_total": 4
+    },
+    "means": {
+      "teds": 0.8635871103462661,
+      "teds_structure_only": 0.9652777777777778
+    },
+    "refusals": [
+      {
+        "position": 175,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 176,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 177,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 178,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 179,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 180,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 181,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 182,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 183,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 184,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 185,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 186,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 187,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 188,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 189,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 190,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 191,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 192,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 193,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 194,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 195,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 196,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 197,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 198,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 199,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      }
+    ]
+  },
+  {
+    "shard": 10,
+    "artifact": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/recheck/odl-s10.json",
+    "artifact_sha256": "e2ea4cf3510782cecff325d1e5c3fa6cce8ee00fbbbc0382ddbb392d197369fc",
+    "pages_verified": 0,
+    "pages_total": 25,
+    "coverage": {
+      "pages_complete": 25,
+      "pages_total": 25,
+      "gt_tables_scored": 36,
+      "gt_tables_total": 36
+    },
+    "means": {
+      "teds": 0.6032355262933037,
+      "teds_structure_only": 0.7670112226048409
+    },
+    "refusals": [
+      {
+        "position": 250,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 251,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 252,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 253,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 254,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 255,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 256,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 257,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 258,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 259,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 260,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 261,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 262,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 263,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 264,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 265,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 266,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 267,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 268,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 269,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 270,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 271,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 272,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 273,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 274,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      }
+    ]
+  },
+  {
+    "shard": 13,
+    "artifact": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/recheck/odl-s13.json",
+    "artifact_sha256": "841f3dd5e4ad32433321a59c218245099f71faacc38902a0cb2f65a5a41bf787",
+    "pages_verified": 0,
+    "pages_total": 25,
+    "coverage": {
+      "pages_complete": 25,
+      "pages_total": 25,
+      "gt_tables_scored": 5,
+      "gt_tables_total": 5
+    },
+    "means": {
+      "teds": 0.591423394682573,
+      "teds_structure_only": 0.7012626262626263
+    },
+    "refusals": [
+      {
+        "position": 325,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 326,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 327,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 328,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 329,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 330,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 331,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 332,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 333,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 334,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 335,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 336,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 337,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 338,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 339,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 340,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 341,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 342,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 343,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 344,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 345,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 346,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 347,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 348,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 349,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      }
+    ]
+  },
+  {
+    "shard": 18,
+    "artifact": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/recheck/odl-s18.json",
+    "artifact_sha256": "b96643f7b2be90c0b0641ea4240b95b29b0316bb472ca3e56593b95a33c3b895",
+    "pages_verified": 0,
+    "pages_total": 25,
+    "coverage": {
+      "pages_complete": 25,
+      "pages_total": 25,
+      "gt_tables_scored": 0,
+      "gt_tables_total": 0
+    },
+    "means": {
+      "teds": null,
+      "teds_structure_only": null
+    },
+    "refusals": [
+      {
+        "position": 450,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 451,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 452,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 453,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 454,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 455,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 456,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 457,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 458,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 459,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 460,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 461,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 462,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 463,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 464,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 465,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 466,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 467,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 468,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 469,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 470,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 471,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 472,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 473,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 474,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      }
+    ]
+  },
+  {
+    "shard": 19,
+    "artifact": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/recheck/odl-s19.json",
+    "artifact_sha256": "9c82822b495150764eb744cdfed5d5cf97bb222819a361bf0df8e19e534ca070",
+    "pages_verified": 0,
+    "pages_total": 25,
+    "coverage": {
+      "pages_complete": 25,
+      "pages_total": 25,
+      "gt_tables_scored": 3,
+      "gt_tables_total": 3
+    },
+    "means": {
+      "teds": 0.3879886195487546,
+      "teds_structure_only": 0.6666666666666666
+    },
+    "refusals": [
+      {
+        "position": 475,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 476,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 477,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 478,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 479,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 480,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 481,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 482,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 483,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 484,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 485,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 486,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 487,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 488,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 489,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 490,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 491,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 492,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 493,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 494,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 495,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 496,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 497,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 498,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 499,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      }
+    ]
+  },
+  {
+    "shard": 23,
+    "artifact": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/recheck/odl-s23.json",
+    "artifact_sha256": "383e7b5253305984c313471c5237612e28707b4896ae81b3ededc8a030cd9b7b",
+    "pages_verified": 0,
+    "pages_total": 25,
+    "coverage": {
+      "pages_complete": 25,
+      "pages_total": 25,
+      "gt_tables_scored": 0,
+      "gt_tables_total": 0
+    },
+    "means": {
+      "teds": null,
+      "teds_structure_only": null
+    },
+    "refusals": [
+      {
+        "position": 575,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 576,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 577,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 578,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 579,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 580,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 581,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 582,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 583,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 584,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 585,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 586,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 587,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 588,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 589,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 590,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 591,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 592,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 593,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 594,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 595,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 596,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 597,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 598,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 599,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      }
+    ]
+  },
+  {
+    "shard": 26,
+    "artifact": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/recheck/odl-s26.json",
+    "artifact_sha256": "74f769136b621bedf69879a30eca71456bbda0cca5e1fc6c166950218a4c1505",
+    "pages_verified": 0,
+    "pages_total": 25,
+    "coverage": {
+      "pages_complete": 25,
+      "pages_total": 25,
+      "gt_tables_scored": 0,
+      "gt_tables_total": 0
+    },
+    "means": {
+      "teds": null,
+      "teds_structure_only": null
+    },
+    "refusals": [
+      {
+        "position": 650,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 651,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 652,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 653,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 654,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 655,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 656,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 657,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 658,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 659,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 660,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 661,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 662,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 663,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 664,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 665,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 666,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 667,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 668,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 669,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 670,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 671,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 672,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 673,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 674,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      }
+    ]
+  },
+  {
+    "shard": 27,
+    "artifact": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/recheck/odl-s27.json",
+    "artifact_sha256": "713d9df128fac71ac85580b2e177d0615b658809feee19bdb43dc80333c2f129",
+    "pages_verified": 0,
+    "pages_total": 25,
+    "coverage": {
+      "pages_complete": 25,
+      "pages_total": 25,
+      "gt_tables_scored": 5,
+      "gt_tables_total": 5
+    },
+    "means": {
+      "teds": 0.7957103796612659,
+      "teds_structure_only": 0.964456307320383
+    },
+    "refusals": [
+      {
+        "position": 675,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 676,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 677,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 678,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 679,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 680,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 681,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 682,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 683,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 684,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 685,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 686,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 687,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 688,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 689,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 690,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 691,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 692,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 693,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 694,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 695,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 696,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 697,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 698,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 699,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      }
+    ]
+  },
+  {
+    "shard": 30,
+    "artifact": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/recheck/odl-s30.json",
+    "artifact_sha256": "ffb4a78e49901bfd8ce56c60d17fb74b3a9c858eded1a992fd08292bcadc52a2",
+    "pages_verified": 0,
+    "pages_total": 5,
+    "coverage": {
+      "pages_complete": 5,
+      "pages_total": 5,
+      "gt_tables_scored": 0,
+      "gt_tables_total": 0
+    },
+    "means": {
+      "teds": null,
+      "teds_structure_only": null
+    },
+    "refusals": [
+      {
+        "position": 750,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 751,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 752,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 753,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      },
+      {
+        "position": 754,
+        "reason": "legacy ODL start does not capture producer source; cannot infer from packet time or mtime"
+      }
+    ]
+  }
+]

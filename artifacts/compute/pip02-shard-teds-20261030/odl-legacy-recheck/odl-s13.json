@@ -1,0 +1,774 @@
+{
+  "arm": "odl",
+  "cohort": "pip02-english-fresh-20261029",
+  "shard": 13,
+  "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+  "gt_sha256": "a45cd84b04ad8b793e775089640e6b681209abea33ead54c1828ddca35fae496",
+  "pins_sha256": "262462c58402db48aa88063cdb1817915dcdef0c1933e72869682dd905c34cf0",
+  "scorer_sha256": "27f0b630b6812aecad35d1c65329841a5011e421326e81f9f14c8c66a6fdbe5e",
+  "pages": [
+    {
+      "position": 325,
+      "image": "yanbaor2_930d8c81854d7450cd35af7b050fed88e4e461b4f0ac0dab07e3232a4e703a06.pdf_14.jpg",
+      "gt_index": 879,
+      "gt_tables": 0,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [],
+      "prediction_sha256": "956e71a0aa971fbc1d51fc57617cd1846c9cb2c43d9dc640d1d65bececb5fb8f",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=0-23 start=2026-10-29T20:22Z end=2026-10-29T21:22Z\n",
+        "input_sha256": "09ce921670b920a9bd3006d19c649ed5664467da94518691ca4605f88ea57ae2",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 369297,
+          "image": "yanbaor2_930d8c81854d7450cd35af7b050fed88e4e461b4f0ac0dab07e3232a4e703a06.pdf_14.jpg",
+          "index": 879,
+          "language": "english",
+          "sha256": "27698e90614d7058fdb31798e694d5d16ddb9c9b6a535e435f498b268a3fa26b",
+          "table_count": 0
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793305402.8023295
+      }
+    },
+    {
+      "position": 326,
+      "image": "yanbaor2_b997efc056ce194205f46dbd1c669eb32da025c4a3055c88d5f19ce434040b7b.pdf_46.jpg",
+      "gt_index": 880,
+      "gt_tables": 0,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [],
+      "prediction_sha256": "c85192ba3494ff66d1a692eb8c76a7d7276d8a0705c385a4cd4082f998f262d3",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=0-23 start=2026-10-29T20:22Z end=2026-10-29T21:22Z\n",
+        "input_sha256": "8245cc0d5e2d81ed7de9d5b284e764a9f6206f21c86b21e68d661d48eb4e98ca",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 281152,
+          "image": "yanbaor2_b997efc056ce194205f46dbd1c669eb32da025c4a3055c88d5f19ce434040b7b.pdf_46.jpg",
+          "index": 880,
+          "language": "english",
+          "sha256": "6fd8a4562c41e558375db269c302eaa0ca42cd3726c0b143a1c78d3f712498bf",
+          "table_count": 0
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793305446.5653324
+      }
+    },
+    {
+      "position": 327,
+      "image": "yanbaor2_ey-digital-state-tax-article.pdf_0.jpg",
+      "gt_index": 888,
+      "gt_tables": 0,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [],
+      "prediction_sha256": "a9931a23b829c8d0c12f413f7066a6e6f1fb67ef3429031ed1ca3390c7f27170",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=0-23 start=2026-10-29T20:22Z end=2026-10-29T21:22Z\n",
+        "input_sha256": "2541e092841821de47b11e4b5e2ca63e56d6dc1144edbd9749f66d0c10d55ee6",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 505529,
+          "image": "yanbaor2_ey-digital-state-tax-article.pdf_0.jpg",
+          "index": 888,
+          "language": "english",
+          "sha256": "e5075e9524c1e959c5b3ad81df753cb46fd3b99f94d0b5853b0d2e99ad542924",
+          "table_count": 0
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793305486.6922843
+      }
+    },
+    {
+      "position": 328,
+      "image": "yanbaor2_yanbaoPPT_1517.jpg",
+      "gt_index": 890,
+      "gt_tables": 0,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [],
+      "prediction_sha256": "e0f9172029167311207e676b75b2156e382c799d244768a5a7d4fe245e6d55dc",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=0-23 start=2026-10-29T20:22Z end=2026-10-29T21:22Z\n",
+        "input_sha256": "518c906a1737d2ef8be8d87790f31475fe48ff259e1d228dfdc58d0f338d41b7",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 180613,
+          "image": "yanbaor2_yanbaoPPT_1517.jpg",
+          "index": 890,
+          "language": "english",
+          "sha256": "b31a63fb72ee2b5165cbbdd743c7e2a2ed6c2a1fb106d07cc90eed66b60e0046",
+          "table_count": 0
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793305528.6920843
+      }
+    },
+    {
+      "position": 329,
+      "image": "yanbaor2_yanbaoPPT_5627.jpg",
+      "gt_index": 893,
+      "gt_tables": 0,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [],
+      "prediction_sha256": "6fb465ede44abe6287522c4bf819b254db58d48e1ac547aea1803b1f8969e674",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=0-23 start=2026-10-29T20:22Z end=2026-10-29T21:22Z\n",
+        "input_sha256": "55f5e21401fd5743d9e0900428c3599614b1bc2748e6e20a112434203b70d09b",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 266239,
+          "image": "yanbaor2_yanbaoPPT_5627.jpg",
+          "index": 893,
+          "language": "english",
+          "sha256": "28b7489faa828a68e3fa5fb13509cf83b2125c8bf64f7d07634ae93011589ea9",
+          "table_count": 0
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793305569.518589
+      }
+    },
+    {
+      "position": 330,
+      "image": "notes_f7f010b78016aeebd76e56d9283eb67f_5.jpg",
+      "gt_index": 983,
+      "gt_tables": 0,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [],
+      "prediction_sha256": "701264bb51aa18fc912944d786e2486d88096d72a990122a1254622e555c2db6",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=0-23 start=2026-10-29T20:22Z end=2026-10-29T21:22Z\n",
+        "input_sha256": "779d3bef65cbb77caa7f2eb5ff67e93c100f4327f67036b214388dccf0bfb2e1",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 140480,
+          "image": "notes_f7f010b78016aeebd76e56d9283eb67f_5.jpg",
+          "index": 983,
+          "language": "english",
+          "sha256": "b37e9159dcdce003d40f16374260448fb3d9f3ce5e4f66b2b487eb1528d61ad6",
+          "table_count": 0
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793305609.3888671
+      }
+    },
+    {
+      "position": 331,
+      "image": "newspaper_0edcd83c195557b43279fa73edaa59aa_1.jpg",
+      "gt_index": 1019,
+      "gt_tables": 0,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [],
+      "prediction_sha256": "70d93d49723e4d31ee1e662ddd07ef7acfbea3ebbca19bfe0dd053a57f1335bc",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=0-23 start=2026-10-29T20:22Z end=2026-10-29T21:22Z\n",
+        "input_sha256": "f3f63ff5bf4d9ee2b2640e554af68c4e312f9484e0698eebda073674af95e6c7",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 781825,
+          "image": "newspaper_0edcd83c195557b43279fa73edaa59aa_1.jpg",
+          "index": 1019,
+          "language": "english",
+          "sha256": "71c10c15401bd6f3758bc4ba9b6bfff39880a64830d73387ef9cf47588dd0512",
+          "table_count": 0
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793305648.4462335
+      }
+    },
+    {
+      "position": 332,
+      "image": "newspaper_2a6b4fa088699701a6fa9ccecfb5c25d_1.jpg",
+      "gt_index": 1026,
+      "gt_tables": 2,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [
+        {
+          "gt_idx": [
+            0
+          ],
+          "pred_idx": [
+            0
+          ],
+          "teds": 0.14455016673916188,
+          "teds_structure_only": 0.40909090909090906
+        },
+        {
+          "gt_idx": [
+            1
+          ],
+          "pred_idx": [
+            1
+          ],
+          "teds": 0.1445460992907801,
+          "teds_structure_only": 0.19999999999999996
+        }
+      ],
+      "prediction_sha256": "7f7e7171315b848e3dd22d248430d31b77ac2e8022fbdc1b62d8d3652152c3e0",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=0-23 start=2026-10-29T20:22Z end=2026-10-29T21:22Z\n",
+        "input_sha256": "e9da3d42a90527db8f9810c7461c5fd8cd81d71a5974f8ae5b65f9ea696c4c24",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 573193,
+          "image": "newspaper_2a6b4fa088699701a6fa9ccecfb5c25d_1.jpg",
+          "index": 1026,
+          "language": "english",
+          "sha256": "f2f5c28a99d2ee6ffcea9aa92e7f578e408d2310647d4228a3ee2e8ce8381a78",
+          "table_count": 2
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793305699.9020963
+      }
+    },
+    {
+      "position": 333,
+      "image": "newspaper_2a6b4fa088699701a6fa9ccecfb5c25d_10.jpg",
+      "gt_index": 1027,
+      "gt_tables": 0,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [],
+      "prediction_sha256": "08265fe538a43aefc3e1cdfcde69e23921eeb4e2e4ec73d5238548c6459ce779",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=0-23 start=2026-10-29T20:22Z end=2026-10-29T21:22Z\n",
+        "input_sha256": "2c5af2340193e366acfd48e0186395b83a3ff26990613e70e4b5a2542ec18326",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 887292,
+          "image": "newspaper_2a6b4fa088699701a6fa9ccecfb5c25d_10.jpg",
+          "index": 1027,
+          "language": "english",
+          "sha256": "55ac57e573ff05d630cba3c47402bf65ff671f87e3fb74dd278ffa3b373ee470",
+          "table_count": 0
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793305750.9219153
+      }
+    },
+    {
+      "position": 334,
+      "image": "newspaper_2a6b4fa088699701a6fa9ccecfb5c25d_11.jpg",
+      "gt_index": 1028,
+      "gt_tables": 0,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [],
+      "prediction_sha256": "27d9ba7c23b1ef1ff027047e0cf202e17ff6cc77fcd183007316f089fc661f57",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=0-23 start=2026-10-29T20:22Z end=2026-10-29T21:22Z\n",
+        "input_sha256": "cba2c83ab78131ec8fae8e971e4cd556e925536504f7c2cab266db32e3cd56d7",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 881960,
+          "image": "newspaper_2a6b4fa088699701a6fa9ccecfb5c25d_11.jpg",
+          "index": 1028,
+          "language": "english",
+          "sha256": "37c433fe858c3c48eb4f5ce8be6f1307367767af2b0fd0042cbf9594016b9a16",
+          "table_count": 0
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793305804.4772174
+      }
+    },
+    {
+      "position": 335,
+      "image": "newspaper_2a6b4fa088699701a6fa9ccecfb5c25d_12.jpg",
+      "gt_index": 1029,
+      "gt_tables": 0,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [],
+      "prediction_sha256": "ad8966ce6343c7d75794d0b49e00ac4320d12f86afc9312672428b6c88d04522",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=0-23 start=2026-10-29T20:22Z end=2026-10-29T21:22Z\n",
+        "input_sha256": "a652c6aba4912bcaa2bcd3d39fdefc4f6da42e4fda1d928eafa3c5bd8ee077b0",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 907407,
+          "image": "newspaper_2a6b4fa088699701a6fa9ccecfb5c25d_12.jpg",
+          "index": 1029,
+          "language": "english",
+          "sha256": "559a38e39f9110bf201c0aa0a2d2940fc555aebeccdc2d3fb67308a19f325ea9",
+          "table_count": 0
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793305857.8037407
+      }
+    },
+    {
+      "position": 336,
+      "image": "newspaper_2a6b4fa088699701a6fa9ccecfb5c25d_13.jpg",
+      "gt_index": 1030,
+      "gt_tables": 0,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [],
+      "prediction_sha256": "638e3e9916e45e5446438568d74e209e09c9a119567651425de75c9af34c6fcd",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=0-23 start=2026-10-29T20:22Z end=2026-10-29T21:22Z\n",
+        "input_sha256": "3abd5594e8064743070b3f349c8ee31f92e3e5b5037054c34f666a61396be64b",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 887984,
+          "image": "newspaper_2a6b4fa088699701a6fa9ccecfb5c25d_13.jpg",
+          "index": 1030,
+          "language": "english",
+          "sha256": "3b4ec71e9c58a5a082534793b804af0650124e3617d66c55399e547dee9fd86f",
+          "table_count": 0
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793305911.0568292
+      }
+    },
+    {
+      "position": 337,
+      "image": "newspaper_2a6b4fa088699701a6fa9ccecfb5c25d_14.jpg",
+      "gt_index": 1031,
+      "gt_tables": 0,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [],
+      "prediction_sha256": "9d7f7d450cff863f969643aa32014a329d284c43a930139398ac9648161ae855",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=0-23 start=2026-10-29T20:22Z end=2026-10-29T21:22Z\n",
+        "input_sha256": "4faae8046732d479861aeab1ed337be04245b41edb064d8e9731ab0c415a4d10",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 884636,
+          "image": "newspaper_2a6b4fa088699701a6fa9ccecfb5c25d_14.jpg",
+          "index": 1031,
+          "language": "english",
+          "sha256": "4b79f5631d5352908bce6b4a92dd1898d130d2deea483f94f2be5a6dd027e10d",
+          "table_count": 0
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793305964.171852
+      }
+    },
+    {
+      "position": 338,
+      "image": "newspaper_2a6b4fa088699701a6fa9ccecfb5c25d_15.jpg",
+      "gt_index": 1032,
+      "gt_tables": 0,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [],
+      "prediction_sha256": "6c9b9bea2a22a36679b4d3b219233add138215cef0c769c2d5a3936a89e545b5",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=0-23 start=2026-10-29T20:22Z end=2026-10-29T21:22Z\n",
+        "input_sha256": "7431df20570988129b1bcb2ce92582acc16cce5b98818e9b34f434194b3bfe2a",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 911571,
+          "image": "newspaper_2a6b4fa088699701a6fa9ccecfb5c25d_15.jpg",
+          "index": 1032,
+          "language": "english",
+          "sha256": "7da5ed976b27d3c24f6b269e7aaa46b9ab35bc1f3c7997e25119d8180366e860",
+          "table_count": 0
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793306017.1905675
+      }
+    },
+    {
+      "position": 339,
+      "image": "newspaper_2a6b4fa088699701a6fa9ccecfb5c25d_16.jpg",
+      "gt_index": 1033,
+      "gt_tables": 0,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [],
+      "prediction_sha256": "36b80dd7f0eeea408cfbd0aacf645cd81b1fe78c6b191e56787a05e91e666f7c",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=0-23 start=2026-10-29T20:22Z end=2026-10-29T21:22Z\n",
+        "input_sha256": "fe6eee02397c5dff82a6f3ec76c0c9611b83e9399706910efe413693871fd78c",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 890161,
+          "image": "newspaper_2a6b4fa088699701a6fa9ccecfb5c25d_16.jpg",
+          "index": 1033,
+          "language": "english",
+          "sha256": "0a20956ff01c1f9292d730cfccf3798f2ca4097c488f2418f1542217a4ad469e",
+          "table_count": 0
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793306070.5916753
+      }
+    },
+    {
+      "position": 340,
+      "image": "newspaper_2a6b4fa088699701a6fa9ccecfb5c25d_17.jpg",
+      "gt_index": 1034,
+      "gt_tables": 0,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [],
+      "prediction_sha256": "83422eefe8ab2c716718610e9bdbf69ce23e5768dc0c8b1a2edec0bc5482a35c",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=0-23 start=2026-10-29T20:22Z end=2026-10-29T21:22Z\n",
+        "input_sha256": "f64fd94b8c95b91dbdcab25bbeac6f90408dc2efdd4d0702f35a5848395d8eb7",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 885213,
+          "image": "newspaper_2a6b4fa088699701a6fa9ccecfb5c25d_17.jpg",
+          "index": 1034,
+          "language": "english",
+          "sha256": "b8f4073f8285f8898b0a4d77bdbe17a40ba0130445faeed4da2516d1de4a572c",
+          "table_count": 0
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793306122.7404656
+      }
+    },
+    {
+      "position": 341,
+      "image": "newspaper_2a6b4fa088699701a6fa9ccecfb5c25d_18.jpg",
+      "gt_index": 1035,
+      "gt_tables": 2,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [
+        {
+          "gt_idx": [
+            0
+          ],
+          "pred_idx": [
+            0
+          ],
+          "teds": 0.882604486687148,
+          "teds_structure_only": 0.9305555555555556
+        },
+        {
+          "gt_idx": [
+            1
+          ],
+          "pred_idx": [
+            1
+          ],
+          "teds": 0.9530322655377941,
+          "teds_structure_only": 1.0
+        }
+      ],
+      "prediction_sha256": "c60162423edad2e02c9785b7e2f1aeb6ee04c0beac6abe36228f9f6de94ac073",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=0-23 start=2026-10-29T20:22Z end=2026-10-29T21:22Z\n",
+        "input_sha256": "454830ae54307e5cf1c01a5153691c38f3fc7665868cfc691e1a783761c1f8cf",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 636270,
+          "image": "newspaper_2a6b4fa088699701a6fa9ccecfb5c25d_18.jpg",
+          "index": 1035,
+          "language": "english",
+          "sha256": "37b5322bc57c91fb31fda702c95555522cd70b92498181d607eedc0dc246b502",
+          "table_count": 2
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793306174.801344
+      }
+    },
+    {
+      "position": 342,
+      "image": "newspaper_2a6b4fa088699701a6fa9ccecfb5c25d_2.jpg",
+      "gt_index": 1036,
+      "gt_tables": 1,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [
+        {
+          "gt_idx": [
+            0
+          ],
+          "pred_idx": [
+            0
+          ],
+          "teds": 0.8323839551579808,
+          "teds_structure_only": 0.9666666666666667
+        }
+      ],
+      "prediction_sha256": "e4f5257345777cced989365a5ddd211ec1754fd9e3c9cc3892f0c108e5022cd0",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=0-23 start=2026-10-29T20:22Z end=2026-10-29T21:22Z\n",
+        "input_sha256": "3e341317ce05579e4ad7a5a84d5750f342bb473f2f53a4e441cbf7ee37b9ca59",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 782475,
+          "image": "newspaper_2a6b4fa088699701a6fa9ccecfb5c25d_2.jpg",
+          "index": 1036,
+          "language": "english",
+          "sha256": "72e7f242ceb1e84aa6f762095875d6fa8c302cc9998324eee9285b64b6b01c5a",
+          "table_count": 1
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793306232.7219472
+      }
+    },
+    {
+      "position": 343,
+      "image": "newspaper_2a6b4fa088699701a6fa9ccecfb5c25d_3.jpg",
+      "gt_index": 1037,
+      "gt_tables": 0,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [],
+      "prediction_sha256": "674fe418bce4c299aa5eb29f0d5bcdf8ddd73a848355769471e03bfb59c6d030",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=0-23 start=2026-10-29T20:22Z end=2026-10-29T21:22Z\n",
+        "input_sha256": "516bceb74c1e5dbd9b1a407bc5a3091f15b27b8245cff18547f8e9fec11ce793",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 871814,
+          "image": "newspaper_2a6b4fa088699701a6fa9ccecfb5c25d_3.jpg",
+          "index": 1037,
+          "language": "english",
+          "sha256": "51bd747312c7a9009b5c02bf49218616e4a0b75c7f85481501313689ac408a6c",
+          "table_count": 0
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793306286.306688
+      }
+    },
+    {
+      "position": 344,
+      "image": "newspaper_2a6b4fa088699701a6fa9ccecfb5c25d_4.jpg",
+      "gt_index": 1038,
+      "gt_tables": 0,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [],
+      "prediction_sha256": "ef2622db78d357d40fe8aac6dcf8dd6c9f0a7f1e2a717818a9201327a276f984",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=0-23 start=2026-10-29T20:22Z end=2026-10-29T21:22Z\n",
+        "input_sha256": "e1354fdf7dfc470bdc5e26eaafcd442fe187fdc62d7a8404b2879e7e03cec90e",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 869086,
+          "image": "newspaper_2a6b4fa088699701a6fa9ccecfb5c25d_4.jpg",
+          "index": 1038,
+          "language": "english",
+          "sha256": "00627d236c89d48af0beec70b9dc1b3a116d7e49b5073cc80e1871558086add8",
+          "table_count": 0
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793306339.1644127
+      }
+    },
+    {
+      "position": 345,
+      "image": "newspaper_2a6b4fa088699701a6fa9ccecfb5c25d_5.jpg",
+      "gt_index": 1039,
+      "gt_tables": 0,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [],
+      "prediction_sha256": "79471bb9dbca8866bc9966dd1b46e7ecb1617d5814652ba7d5c53ec5d7d4925f",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=0-23 start=2026-10-29T20:22Z end=2026-10-29T21:22Z\n",
+        "input_sha256": "d3a06a48a679a36547aa76c902710fd1f13acdec25c0cf252a674d513b8655f7",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 879719,
+          "image": "newspaper_2a6b4fa088699701a6fa9ccecfb5c25d_5.jpg",
+          "index": 1039,
+          "language": "english",
+          "sha256": "919399f17a04668823ef2e1623bb373184b9b88b67eab88424d951a0ad1ab8db",
+          "table_count": 0
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793306392.1750293
+      }
+    },
+    {
+      "position": 346,
+      "image": "newspaper_2a6b4fa088699701a6fa9ccecfb5c25d_6.jpg",
+      "gt_index": 1040,
+      "gt_tables": 0,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [],
+      "prediction_sha256": "ced544be8bb8cf0942f791475cacacaf3987a488a9f87b105e04cc41621c979c",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=0-23 start=2026-10-29T20:22Z end=2026-10-29T21:22Z\n",
+        "input_sha256": "ce137c64896c7c621686f598a0e0550ef8f891fd576466c1359f0ffb947d2466",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 875926,
+          "image": "newspaper_2a6b4fa088699701a6fa9ccecfb5c25d_6.jpg",
+          "index": 1040,
+          "language": "english",
+          "sha256": "617e0a09bb1553eddc206c2820ec8a54a13d6e7c7c047c0c69bf35aff43fd9c0",
+          "table_count": 0
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793306446.2423928
+      }
+    },
+    {
+      "position": 347,
+      "image": "newspaper_2a6b4fa088699701a6fa9ccecfb5c25d_7.jpg",
+      "gt_index": 1041,
+      "gt_tables": 0,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [],
+      "prediction_sha256": "9faf4db8ae9b709cbad4eaeb53baa5db68716751c135e6c6db587320a0ffd5f9",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=0-23 start=2026-10-29T20:22Z end=2026-10-29T21:22Z\n",
+        "input_sha256": "7bea5dd26bff8efb5666960dee57b06b0606929dd01746d899a72cae26fc6417",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 893195,
+          "image": "newspaper_2a6b4fa088699701a6fa9ccecfb5c25d_7.jpg",
+          "index": 1041,
+          "language": "english",
+          "sha256": "a5513ad4fcaaf915d08a8bd523eb9dba111a1cb2f29cd7ad8933afb9a1faf855",
+          "table_count": 0
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793306500.5545998
+      }
+    },
+    {
+      "position": 348,
+      "image": "newspaper_2a6b4fa088699701a6fa9ccecfb5c25d_8.jpg",
+      "gt_index": 1042,
+      "gt_tables": 0,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [],
+      "prediction_sha256": "4f9ff1856014335e595fd61a59cd7e1e2ac30bb7d45a020cc959e32dd03349ab",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=0-23 start=2026-10-29T20:22Z end=2026-10-29T21:22Z\n",
+        "input_sha256": "636e4e126a5c43cde5feaaba4cd3a9fcf66b0b72f26670d4df0d4d08ed281a18",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 887565,
+          "image": "newspaper_2a6b4fa088699701a6fa9ccecfb5c25d_8.jpg",
+          "index": 1042,
+          "language": "english",
+          "sha256": "5976a4c32c6ff898ff80702fdb42280b6c8b3bc281bea0e5b01d53eae94f435e",
+          "table_count": 0
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793306554.6451266
+      }
+    },
+    {
+      "position": 349,
+      "image": "newspaper_2a6b4fa088699701a6fa9ccecfb5c25d_9.jpg",
+      "gt_index": 1043,
+      "gt_tables": 0,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [],
+      "prediction_sha256": "42f6d90dd2c2b6a82f6280649d959f22995f38343bcc19d2c8f5e80efc6a214e",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=0-23 start=2026-10-29T20:22Z end=2026-10-29T21:22Z\n",
+        "input_sha256": "8aba627d7414529c75bc46569989a3f7d02afbe799a8b6605684f7d2514a1964",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 881525,
+          "image": "newspaper_2a6b4fa088699701a6fa9ccecfb5c25d_9.jpg",
+          "index": 1043,
+          "language": "english",
+          "sha256": "b5aff94116d8b095319b9c549483160cf6c069f55fe1b76c0a13c8f34319cc3b",
+          "table_count": 0
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793306607.766957
+      }
+    }
+  ],
+  "coverage": {
+    "pages_complete": 25,
+    "pages_total": 25,
+    "gt_tables_scored": 5,
+    "gt_tables_total": 5
+  },
+  "means": {
+    "teds": 0.5914233946825729,
+    "teds_structure_only": 0.7012626262626263
+  }
+}

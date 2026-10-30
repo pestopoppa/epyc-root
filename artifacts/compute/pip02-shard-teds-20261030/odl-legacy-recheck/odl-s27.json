@@ -1,0 +1,772 @@
+{
+  "arm": "odl",
+  "cohort": "pip02-english-fresh-20261029",
+  "shard": 27,
+  "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+  "gt_sha256": "a45cd84b04ad8b793e775089640e6b681209abea33ead54c1828ddca35fae496",
+  "pins_sha256": "262462c58402db48aa88063cdb1817915dcdef0c1933e72869682dd905c34cf0",
+  "scorer_sha256": "27f0b630b6812aecad35d1c65329841a5011e421326e81f9f14c8c66a6fdbe5e",
+  "pages": [
+    {
+      "position": 675,
+      "image": "exam_paper_en-file-putnam-archive_2011_Solutions_2011s_page_002.png",
+      "gt_index": 1570,
+      "gt_tables": 0,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [],
+      "prediction_sha256": "3f8ae325b7d55c706ae0049cc3e61ba8bef115183ae1d5c02bad0ecdf3d3d6d7",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=72-95 start=2026-10-29T21:25Z end=2026-10-29T22:25Z\n",
+        "input_sha256": "fae3b846d73370c33821754edd1d2fa35c1bbd847e9217bf7903297937dd174c",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 547263,
+          "image": "exam_paper_en-file-putnam-archive_2011_Solutions_2011s_page_002.png",
+          "index": 1570,
+          "language": "english",
+          "sha256": "1766cb29b6b1a16d4f8f5c0da33c67d08ed51e1f1cbf68f3a493f40526fb5d4a",
+          "table_count": 0
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793309197.9133682
+      }
+    },
+    {
+      "position": 676,
+      "image": "exam_paper_en-file-putnam-archive_1994_Problems_1994_page_001.png",
+      "gt_index": 1571,
+      "gt_tables": 0,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [],
+      "prediction_sha256": "05f5314f58d2311d280687d1d2bc8b919eddfbc8b9cc1ae5b6b4718ecea99836",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=72-95 start=2026-10-29T21:25Z end=2026-10-29T22:25Z\n",
+        "input_sha256": "e3f1f1cbb355a862f489d1e653cb73dee8f344d2ee80f53670ce7b9cba5cd386",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 341226,
+          "image": "exam_paper_en-file-putnam-archive_1994_Problems_1994_page_001.png",
+          "index": 1571,
+          "language": "english",
+          "sha256": "0e900403738a5aa6e50db1bf072d34a6fecf57e04b527cbdd9bac9fcf8850f15",
+          "table_count": 0
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793309197.8389418
+      }
+    },
+    {
+      "position": 677,
+      "image": "exam_paper_en-file-putnam-archive_1991_Problems_1991_page_001.png",
+      "gt_index": 1572,
+      "gt_tables": 0,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [],
+      "prediction_sha256": "e09378534254c3674ba9c4cbdc5ec00c10e7cfdc8b45c4373e31034b48dcd9e7",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=72-95 start=2026-10-29T21:25Z end=2026-10-29T22:25Z\n",
+        "input_sha256": "0af07ef1efa8b93effe00fdea34fd48fa56327f3be92cd12fb4b3e5e5a61b27d",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 398812,
+          "image": "exam_paper_en-file-putnam-archive_1991_Problems_1991_page_001.png",
+          "index": 1572,
+          "language": "english",
+          "sha256": "aecd0f995c6b453d6dbd4f6cb7f4bf47d2a0ed9d5a6d15af5ddef913c8f440d1",
+          "table_count": 0
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793309197.84205
+      }
+    },
+    {
+      "position": 678,
+      "image": "exam_paper_en-file-putnam-archive_2000_Problems_2000_page_001.png",
+      "gt_index": 1573,
+      "gt_tables": 0,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [],
+      "prediction_sha256": "e0dfb0c372bdad0a09b4217833f882dcd152ae1954d8ba03ac03510f4b10d8d2",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=72-95 start=2026-10-29T21:25Z end=2026-10-29T22:25Z\n",
+        "input_sha256": "23070a20a451578c80fe5c61ae5bcfa5c14567646a48ba29c8ba26b2aedd29e8",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 318857,
+          "image": "exam_paper_en-file-putnam-archive_2000_Problems_2000_page_001.png",
+          "index": 1573,
+          "language": "english",
+          "sha256": "ec68cbea73d32d551a3f979e6c87ef258ab38d3f679c4e98f5b99135bc76c21b",
+          "table_count": 0
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793309197.8377347
+      }
+    },
+    {
+      "position": 679,
+      "image": "exam_paper_en-file-putnam-archive_2009_Solutions_2009s_page_002.png",
+      "gt_index": 1574,
+      "gt_tables": 0,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [],
+      "prediction_sha256": "a6d49f1585671eac786c37affae9417b4b3e876f85a580bfa05e76b990efb13b",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=72-95 start=2026-10-29T21:25Z end=2026-10-29T22:25Z\n",
+        "input_sha256": "62e7f519952a2f20cd46b705caaf3a62fc3b4dd7585aec15ab7cd7421f62b00c",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 541198,
+          "image": "exam_paper_en-file-putnam-archive_2009_Solutions_2009s_page_002.png",
+          "index": 1574,
+          "language": "english",
+          "sha256": "74cac6931fe6e86e26c094f68984f76ba4e0f4f51c3ded4c6fcbe483134507a3",
+          "table_count": 0
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793309197.8353734
+      }
+    },
+    {
+      "position": 680,
+      "image": "exam_paper_en-file-putnam-archive_1996_Problems_1996_page_001.png",
+      "gt_index": 1576,
+      "gt_tables": 0,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [],
+      "prediction_sha256": "2c71cee36aa317c248ce72659977623ce14949d4b24ecd6a980eaab5b4ca4574",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=72-95 start=2026-10-29T21:25Z end=2026-10-29T22:25Z\n",
+        "input_sha256": "c4815dd7867bb0ce5c67f0c4dd929e5ab0a87116b23e70ca612227485cd0044d",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 391462,
+          "image": "exam_paper_en-file-putnam-archive_1996_Problems_1996_page_001.png",
+          "index": 1576,
+          "language": "english",
+          "sha256": "5e2237d1e9a02c9874efee5858a8f1c9b0fafbea7ef1e244a9f2c7fe33b30d7a",
+          "table_count": 0
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793309197.8389952
+      }
+    },
+    {
+      "position": 681,
+      "image": "exam_paper_en-file-putnam-archive_2001_Solutions_2001s_page_002.png",
+      "gt_index": 1577,
+      "gt_tables": 0,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [],
+      "prediction_sha256": "11e35f6d45fd5ada0fe7a6705b3b14e86d74a81214df8cea3361ab42c660847a",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=72-95 start=2026-10-29T21:25Z end=2026-10-29T22:25Z\n",
+        "input_sha256": "8f029df25972fe6ef9f3c4c20690dcf0777cae00b550348a1d273ca35ee2b010",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 458633,
+          "image": "exam_paper_en-file-putnam-archive_2001_Solutions_2001s_page_002.png",
+          "index": 1577,
+          "language": "english",
+          "sha256": "197fd72772f4a418dca2cd8c235b4a6eac09399c85b2b0d79b4bcf15bec5284b",
+          "table_count": 0
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793309197.8418171
+      }
+    },
+    {
+      "position": 682,
+      "image": "exam_paper_en-file-putnam-archive_2006_Solutions_2006s_page_006.png",
+      "gt_index": 1578,
+      "gt_tables": 0,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [],
+      "prediction_sha256": "ecf9319cdb475a1200af13d17b7768bf5256a9df14d6975fb990a29bc3589e2d",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=72-95 start=2026-10-29T21:25Z end=2026-10-29T22:25Z\n",
+        "input_sha256": "748bdb105fdeb8b5b06929f752d9de544fede141b9d6981e11471704ad95aec5",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 512626,
+          "image": "exam_paper_en-file-putnam-archive_2006_Solutions_2006s_page_006.png",
+          "index": 1578,
+          "language": "english",
+          "sha256": "23b39a76fa16b9f35d716f0ee493f2b8f29d71ffb8c92f434ba6339f9a5563c7",
+          "table_count": 0
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793309197.831829
+      }
+    },
+    {
+      "position": 683,
+      "image": "exam_paper_en-file-putnam-archive_2007_Solutions_2007s_page_001.png",
+      "gt_index": 1579,
+      "gt_tables": 0,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [],
+      "prediction_sha256": "68815ee3835d7df1100f33d2097311d3e88125fc5bb1bfdd1df21b6eb862d26e",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=72-95 start=2026-10-29T21:25Z end=2026-10-29T22:25Z\n",
+        "input_sha256": "7488c3d33d4ee494c7d7cfd81aa2c54890bb3336489d57841aa53fb362d94824",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 529867,
+          "image": "exam_paper_en-file-putnam-archive_2007_Solutions_2007s_page_001.png",
+          "index": 1579,
+          "language": "english",
+          "sha256": "4b6ec25ff6c7019b66c3ab44f362ff9de58b5f78ea5f34b0fcc4675159f6fecb",
+          "table_count": 0
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793309197.821038
+      }
+    },
+    {
+      "position": 684,
+      "image": "exam_paper_en-file-putnam-archive_1999_Solutions_1999s_page_002.png",
+      "gt_index": 1580,
+      "gt_tables": 0,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [],
+      "prediction_sha256": "a87b18ff2cb90279d2011af97c0a8fefc069c044cda3ad33112c127ca3a51298",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=72-95 start=2026-10-29T21:25Z end=2026-10-29T22:25Z\n",
+        "input_sha256": "555ba5bc9b8147353bf8f1f28ffc3a220061efa6bc487c96ba56243293a841b9",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 439204,
+          "image": "exam_paper_en-file-putnam-archive_1999_Solutions_1999s_page_002.png",
+          "index": 1580,
+          "language": "english",
+          "sha256": "e8892bd5331f17866882bd463186cd760b7bc3e0c14ea9f496ce6367d065a035",
+          "table_count": 0
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793309197.815837
+      }
+    },
+    {
+      "position": 685,
+      "image": "exam_paper_en-file-putnam-archive_2009_Solutions_2009s_page_001.png",
+      "gt_index": 1581,
+      "gt_tables": 0,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [],
+      "prediction_sha256": "04c4698c20d0bcf1bb37e93f765b38be0237ef06bd44278581abd2906a930af7",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=72-95 start=2026-10-29T21:25Z end=2026-10-29T22:25Z\n",
+        "input_sha256": "50c93388c32b791ac29fd5ac2491e5adeb45f03e40456689d562c99de247f46c",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 500647,
+          "image": "exam_paper_en-file-putnam-archive_2009_Solutions_2009s_page_001.png",
+          "index": 1581,
+          "language": "english",
+          "sha256": "db98a66703e33e7dd34256c8aabd064421695f3bef78af64bdb3d1d2b7bea0cc",
+          "table_count": 0
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793309197.8136413
+      }
+    },
+    {
+      "position": 686,
+      "image": "exam_paper_en-file-putnam-archive_2011_Problems_2011_page_001.png",
+      "gt_index": 1582,
+      "gt_tables": 0,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [],
+      "prediction_sha256": "5663788934202616c577480133f0c1c5c68ae959184633901e8cdc4bf82406a4",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=72-95 start=2026-10-29T21:25Z end=2026-10-29T22:25Z\n",
+        "input_sha256": "d2129d0bc79d25120f3786e44a5c2369347f8969dee977e60b1d329e32ae0eca",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 471082,
+          "image": "exam_paper_en-file-putnam-archive_2011_Problems_2011_page_001.png",
+          "index": 1582,
+          "language": "english",
+          "sha256": "6ca241a5ea416d543a8fdff9d78a11c425ea9ab9856a4220fa1427eedc9d05b5",
+          "table_count": 0
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793309197.82051
+      }
+    },
+    {
+      "position": 687,
+      "image": "exam_paper_en-file-putnam-archive_2012_Solutions_2012s_page_001.png",
+      "gt_index": 1583,
+      "gt_tables": 0,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [],
+      "prediction_sha256": "3be79aaac7ed20429f83a61321691888c8ebbc1c2c079bbc6a3103e8df633dab",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=72-95 start=2026-10-29T21:25Z end=2026-10-29T22:25Z\n",
+        "input_sha256": "f16574e821f6eed18da7864fbf18748d21d6f8a3a5ae9fe5394400fbf7a8add1",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 565134,
+          "image": "exam_paper_en-file-putnam-archive_2012_Solutions_2012s_page_001.png",
+          "index": 1583,
+          "language": "english",
+          "sha256": "c7d957e9c20ae16f8c68d69d59640a43173727d652344ed33b5db50f15fed9ff",
+          "table_count": 0
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793309294.3161564
+      }
+    },
+    {
+      "position": 688,
+      "image": "exam_paper_en-file-putnam-archive_2008_Solutions_2008s_page_005.png",
+      "gt_index": 1584,
+      "gt_tables": 0,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [],
+      "prediction_sha256": "4d84e41082feda9082ceae477246c8efc47d3e97209b5f5e11a79e90b5f3195b",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=72-95 start=2026-10-29T21:25Z end=2026-10-29T22:25Z\n",
+        "input_sha256": "254cfb3389c8878907323345961d77dec6bad1353defa681eb458a2491893f66",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 593048,
+          "image": "exam_paper_en-file-putnam-archive_2008_Solutions_2008s_page_005.png",
+          "index": 1584,
+          "language": "english",
+          "sha256": "53b26dafe97cfc39b2df09549f2ac01a97c4b53a020b4e7d09b2c9ff143812ed",
+          "table_count": 0
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793309294.53047
+      }
+    },
+    {
+      "position": 689,
+      "image": "exam_paper_en-file-putnam-archive_2010_Solutions_2010s_page_001.png",
+      "gt_index": 1585,
+      "gt_tables": 0,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [],
+      "prediction_sha256": "95c67a7ff0753648aaf3e86c054fee5bb484edd6f5504fc332d3262edf63b1c7",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=72-95 start=2026-10-29T21:25Z end=2026-10-29T22:25Z\n",
+        "input_sha256": "39c470cbd081d0a71bcc2310e18462edb4e9d768a9689daec2577a19c021d5cf",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 500658,
+          "image": "exam_paper_en-file-putnam-archive_2010_Solutions_2010s_page_001.png",
+          "index": 1585,
+          "language": "english",
+          "sha256": "82e66f6bfb653ed44545b8cc3613d9cccd7a9384bbecb909df556a9562f669b8",
+          "table_count": 0
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793309295.2453218
+      }
+    },
+    {
+      "position": 690,
+      "image": "exam_paper_en-file-putnam-archive_2011_Solutions_2011s_page_003.png",
+      "gt_index": 1586,
+      "gt_tables": 0,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [],
+      "prediction_sha256": "fe4daacac69b1e5fad09a0ce071ce8416c9901cf561b654d5f15c60dd8eb611a",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=72-95 start=2026-10-29T21:25Z end=2026-10-29T22:25Z\n",
+        "input_sha256": "4514ee78974acd6db52a48d721bfa612bfa283c234424cefc2e3e9c2283270a1",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 500416,
+          "image": "exam_paper_en-file-putnam-archive_2011_Solutions_2011s_page_003.png",
+          "index": 1586,
+          "language": "english",
+          "sha256": "757de4d69efc00502dc884f1e2da5f016b6951b20bb97f1288291e660e97846f",
+          "table_count": 0
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793309297.5358346
+      }
+    },
+    {
+      "position": 691,
+      "image": "magazine_TheEconomist.2023.12.02_page_028.png",
+      "gt_index": 1587,
+      "gt_tables": 0,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [],
+      "prediction_sha256": "969cef015f6bd8e565ab3ee5ce962139d4632fae03a70511418eeee5f6b605f5",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=72-95 start=2026-10-29T21:25Z end=2026-10-29T22:25Z\n",
+        "input_sha256": "30b6ed9847b161e404c801e4f12288c2d239c68d749ed539a26e2c200ce3f724",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 5010827,
+          "image": "magazine_TheEconomist.2023.12.02_page_028.png",
+          "index": 1587,
+          "language": "english",
+          "sha256": "7d7e9f47a70138a3eaa49ab49006cc24fda048d7298ea4fa19b127805b9e26a7",
+          "table_count": 0
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793309298.7517097
+      }
+    },
+    {
+      "position": 692,
+      "image": "magazine_TheEconomist.2024.03.02_page_025.png",
+      "gt_index": 1588,
+      "gt_tables": 0,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [],
+      "prediction_sha256": "77f6541f2d78c3b3fdb3bf440e0f2ea02641be80b5c7a2490a073b8c4b5ffbaf",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=72-95 start=2026-10-29T21:25Z end=2026-10-29T22:25Z\n",
+        "input_sha256": "bf5b136154c14758031c695b91ffd30e43f5fbe4713a8f71e899e940ccb6e5fe",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 6695031,
+          "image": "magazine_TheEconomist.2024.03.02_page_025.png",
+          "index": 1588,
+          "language": "english",
+          "sha256": "9a0f121f09882848f76dbd09c0617b6ba859856d4ed7af618ff7ee37b5ea9f37",
+          "table_count": 0
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793309298.2256484
+      }
+    },
+    {
+      "position": 693,
+      "image": "magazine_TheEconomist.2023.11.25_page_006.png",
+      "gt_index": 1589,
+      "gt_tables": 0,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [],
+      "prediction_sha256": "fd32df274b2e85f61cc043ff472eb4e80b5303b9828c940344058f65ae510115",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=72-95 start=2026-10-29T21:25Z end=2026-10-29T22:25Z\n",
+        "input_sha256": "bc3fd512412e9e62edd26f4aad30192cdc91bed94f260cff20cb65371e7e224d",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 2562497,
+          "image": "magazine_TheEconomist.2023.11.25_page_006.png",
+          "index": 1589,
+          "language": "english",
+          "sha256": "4b07bb93eeaa79ab72490308aaa38fe27a322c7db189c356c5a9b26f6e252f0e",
+          "table_count": 0
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793309299.8858068
+      }
+    },
+    {
+      "position": 694,
+      "image": "magazine_TheEconomist.2023.11.18_page_071.png",
+      "gt_index": 1590,
+      "gt_tables": 0,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [],
+      "prediction_sha256": "661bb3c2a9865c4ff501e1e29a983ef9b2608bef8becc631e7b9bb502e52a091",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=72-95 start=2026-10-29T21:25Z end=2026-10-29T22:25Z\n",
+        "input_sha256": "a7509f0eeb7bcda38daf5bf22098274797a74a0c35e97f18819428ae2bc8e260",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 5397589,
+          "image": "magazine_TheEconomist.2023.11.18_page_071.png",
+          "index": 1590,
+          "language": "english",
+          "sha256": "bcc18202b4bd03c1c9d9fd0ba3d9796d5da80e5789c5e60b6c0cc3db32c6ed36",
+          "table_count": 0
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793309299.656354
+      }
+    },
+    {
+      "position": 695,
+      "image": "magazine_TheEconomist.2023.12.23_page_024.png",
+      "gt_index": 1591,
+      "gt_tables": 0,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [],
+      "prediction_sha256": "1d4c8f0ca0b9584da59b3dff55009085662947c0a540183306ae71f238c93ff2",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=72-95 start=2026-10-29T21:25Z end=2026-10-29T22:25Z\n",
+        "input_sha256": "9b93fefa3799ee708d2d5e6d2c63d7b5dae9e8fd2232e56e5346c6b2f3d619e3",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 18175600,
+          "image": "magazine_TheEconomist.2023.12.23_page_024.png",
+          "index": 1591,
+          "language": "english",
+          "sha256": "55053b88d1900f46a3c7ff75521f8c0e83ccabcb5fae854fc14b6b81ef828543",
+          "table_count": 0
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793309301.4736774
+      }
+    },
+    {
+      "position": 696,
+      "image": "magazine_TheEconomist.2023.12.02_page_031.png",
+      "gt_index": 1592,
+      "gt_tables": 0,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [],
+      "prediction_sha256": "43a36907638547c1eba69a9da62cf41fc15685b0cb0f79972dbf7cba594a6195",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=72-95 start=2026-10-29T21:25Z end=2026-10-29T22:25Z\n",
+        "input_sha256": "55d97504fe2f4cf419abff518f58aa0c2ff5d664987f738f1e3446fdf3420d42",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 4948757,
+          "image": "magazine_TheEconomist.2023.12.02_page_031.png",
+          "index": 1592,
+          "language": "english",
+          "sha256": "37ab3d001ad36a1caf0ccc4c2730bbd8768050dd9e388372098e5f16e7369125",
+          "table_count": 0
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793309302.4402142
+      }
+    },
+    {
+      "position": 697,
+      "image": "magazine_TheEconomist.2023.12.16_page_026.png",
+      "gt_index": 1593,
+      "gt_tables": 0,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [],
+      "prediction_sha256": "f95f205c4a064fa232181f3277e73e76c1660e6f02aba0d3598673f706bd8f4f",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=72-95 start=2026-10-29T21:25Z end=2026-10-29T22:25Z\n",
+        "input_sha256": "60f3081b097f4b345ae963e11bfe3fdf8441dfa170b3595e24f8464c0ce0a720",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 5081451,
+          "image": "magazine_TheEconomist.2023.12.16_page_026.png",
+          "index": 1593,
+          "language": "english",
+          "sha256": "820ff0ebcaba8b1308ef8c430dec8c61f9f696131a75b594636f7f43bfb7976e",
+          "table_count": 0
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793309309.2224445
+      }
+    },
+    {
+      "position": 698,
+      "image": "magazine_TheEconomist.2024.02.24_page_007.png",
+      "gt_index": 1594,
+      "gt_tables": 0,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [],
+      "prediction_sha256": "4cf3649c205b098a56216f1ad9c2f871af78736f98cf01484dde0da8f24bebbd",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=72-95 start=2026-10-29T21:25Z end=2026-10-29T22:25Z\n",
+        "input_sha256": "84bedc21729270a6ad62b1ea69d8ef99d588b48b84a7de0b245cbc0b372e2521",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 6278242,
+          "image": "magazine_TheEconomist.2024.02.24_page_007.png",
+          "index": 1594,
+          "language": "english",
+          "sha256": "ee7a0f9b313d31d6b9d8eb85cfbcc3f953b02569b43c1a8738e1ce3ccbbf1668",
+          "table_count": 0
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793309316.5504706
+      }
+    },
+    {
+      "position": 699,
+      "image": "magazine_TheEconomist.2024.02.24_page_076.png",
+      "gt_index": 1595,
+      "gt_tables": 5,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [
+        {
+          "gt_idx": [
+            0
+          ],
+          "pred_idx": [
+            0
+          ],
+          "teds": 0.6453691443693068,
+          "teds_structure_only": 0.9840255591054313
+        },
+        {
+          "gt_idx": [
+            1
+          ],
+          "pred_idx": [
+            1
+          ],
+          "teds": 0.8683673198146882,
+          "teds_structure_only": 1.0
+        },
+        {
+          "gt_idx": [
+            2
+          ],
+          "pred_idx": [
+            2
+          ],
+          "teds": 0.8205533690269357,
+          "teds_structure_only": 0.9493670886075949
+        },
+        {
+          "gt_idx": [
+            3
+          ],
+          "pred_idx": [
+            3
+          ],
+          "teds": 0.8515151515151516,
+          "teds_structure_only": 1.0
+        },
+        {
+          "gt_idx": [
+            4
+          ],
+          "pred_idx": [
+            4
+          ],
+          "teds": 0.792746913580247,
+          "teds_structure_only": 0.8888888888888888
+        }
+      ],
+      "prediction_sha256": "1d91e0b41f94650f204f4e13a50ddff38ed8ba313873806df914541a1e25e539",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=72-95 start=2026-10-29T21:25Z end=2026-10-29T22:25Z\n",
+        "input_sha256": "21422c33fd97f1787b01ca4b8c399a783a3a8376b2cb2e5e41d4736c12dda529",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 4924041,
+          "image": "magazine_TheEconomist.2024.02.24_page_076.png",
+          "index": 1595,
+          "language": "english",
+          "sha256": "76e50d3cfceb2a6c9ecefb293380d3c8f3221246c4f78f34d3af658a9b15ea58",
+          "table_count": 5
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793309439.1311243
+      }
+    }
+  ],
+  "coverage": {
+    "pages_complete": 25,
+    "pages_total": 25,
+    "gt_tables_scored": 5,
+    "gt_tables_total": 5
+  },
+  "means": {
+    "teds": 0.7957103796612659,
+    "teds_structure_only": 0.964456307320383
+  }
+}

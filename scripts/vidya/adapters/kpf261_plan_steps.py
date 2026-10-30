@@ -164,6 +164,7 @@ def validate_native(out, protocol, complete, records):
  tree=ast.parse(parser_path.read_text());schema=None
  if v2:
   if protocol['corpus_start']!=1:raise ProjectionError('continuation offset mismatch')
+  if protocol['stop']!='after >=50 journalled parsed actions, keeping the entire last plan; synthetic stops after first plan':raise ProjectionError('continuation stop rule mismatch')
   sampler_sha='2321f3f7b9bd488ad6f2bec750f9fe83cda026a0cd1a5c8274d88557a4f01db2'
   if protocol['sampler_sha256']!=sampler_sha or hashlib.sha256((root.parent/'sampler.py').read_bytes()).hexdigest()!=sampler_sha:raise ProjectionError('continuation sampler mismatch')
   validate_prior(root,protocol,corpus)
@@ -270,7 +271,16 @@ def _project(out, allow_synthetic=False):
   server=json.loads((out/'server-preflight.json').read_text()); argv=server['argv']
   if argv.count('-m')!=1 or argv[argv.index('-m')+1]!='/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf':raise ProjectionError('native model scope missing')
   scope={'model_file':argv[argv.index('-m')+1]}
- t=ClaimTuple(measurement_id='kpf261-actions-'+digest[:24],metric='planner_actions_journalled',value=n,date=records[-1]['timestamp'],category='BASELINE',claim=f'{tag}: {n} parsed actions journalled; no terse-share classification',metric_direction='higher_better',protocol_id='',reps=1,reps_basis='native capture invocation; actions are not independent replications',unit='actions',attestation_path=str(path),attestation_sha256=digest,attestation_locator='kpf261-planner:'+digest,attestation_present=True,attestation_verified=True,source_kind='kpf261-plan-steps',applicability=scope,observation={'outcome_reason':'Count of parsed actions recorded in the native journal.'},extra={'synthetic':protocol['synthetic'],'corpus_sha256':protocol['corpus_sha256'],'journal_actions':n})
+ source_commit=SOURCE_VERSIONS[protocol['schema']][0]
+ mechanism_id=f"kpf261-plan-actions/{source_commit[:12]}/{protocol['corpus_sha256'][:16]}"
+ reason=f"Native capture journalled {n} actions"
+ if type(complete.get('plans_attempted')) is int:reason+=f" across {complete['plans_attempted']} plans"
+ if type(complete.get('next_corpus_position')) is int:reason+=f"; next corpus position {complete['next_corpus_position']}"
+ reason+='.'
+ observation={'outcome_native':'count_target_met' if complete['count_target_met'] else 'count_target_not_met',
+              'outcome_reason':reason,
+              'mechanism':{'id':mechanism_id,'statement':'Native fixed-corpus planner action capture, preserving plan-boundary stop and journal.'}}
+ t=ClaimTuple(measurement_id='kpf261-actions-'+digest[:24],metric='planner_actions_journalled',value=n,date=records[-1]['timestamp'],category='BASELINE',claim=f'{tag}: {n} parsed actions journalled; no terse-share classification',metric_direction='higher_better',protocol_id='',reps=1,reps_basis='native capture invocation; actions are not independent replications',unit='actions',attestation_path=str(path),attestation_sha256=digest,attestation_locator='kpf261-planner:'+digest,attestation_present=True,attestation_verified=True,source_kind='kpf261-plan-steps',applicability=scope,observation=observation,extra={'synthetic':protocol['synthetic'],'corpus_sha256':protocol['corpus_sha256'],'journal_actions':n})
  return t
 @register('kpf261-plan-steps')
 def project(out, allow_synthetic=False):

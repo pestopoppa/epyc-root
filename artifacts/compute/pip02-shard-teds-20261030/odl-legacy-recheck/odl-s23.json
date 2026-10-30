@@ -1,0 +1,721 @@
+{
+  "arm": "odl",
+  "cohort": "pip02-english-fresh-20261029",
+  "shard": 23,
+  "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+  "gt_sha256": "a45cd84b04ad8b793e775089640e6b681209abea33ead54c1828ddca35fae496",
+  "pins_sha256": "262462c58402db48aa88063cdb1817915dcdef0c1933e72869682dd905c34cf0",
+  "scorer_sha256": "27f0b630b6812aecad35d1c65329841a5011e421326e81f9f14c8c66a6fdbe5e",
+  "pages": [
+    {
+      "position": 575,
+      "image": "book_en_\u56fd\u5916\u6570\u5b66\u6559\u6750-\u6570\u8bba-Melvyn B. Nathanson\u2014Elementary Methods in Number Theory_0119.png",
+      "gt_index": 1454,
+      "gt_tables": 0,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [],
+      "prediction_sha256": "63efe63b0b4b35c29dad56982faeff28f53927aba9aab22e30035760f1e928e8",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=72-95 start=2026-10-29T21:21Z end=2026-10-29T22:21Z\n",
+        "input_sha256": "84d1f808cef002a647b92968e4dc04b41b33ce1e74f9a8f81a27f6ea47dbc230",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 205625,
+          "image": "book_en_\u56fd\u5916\u6570\u5b66\u6559\u6750-\u6570\u8bba-Melvyn B. Nathanson\u2014Elementary Methods in Number Theory_0119.png",
+          "index": 1454,
+          "language": "english",
+          "sha256": "a06930c21b3f1d11252b4a31bea5413430a1eb2916a236b9ee9fd3013fad5695",
+          "table_count": 0
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793308907.1665363
+      }
+    },
+    {
+      "position": 576,
+      "image": "book_en_\u642c\u4e66\u5320-2253-The Well-Grounded Rubyist 3rd Edition-2019-\u82f1\u6587\u7248_page_194.png",
+      "gt_index": 1455,
+      "gt_tables": 0,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [],
+      "prediction_sha256": "d2460946d54e0f4c2ded0f2803bfe9b1d60af7ec47fc0cc894b20be98b4056cf",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=72-95 start=2026-10-29T21:21Z end=2026-10-29T22:21Z\n",
+        "input_sha256": "7bc4d3ef148f9ab7d5bd4d685b8c024c4de89fce81a383078ff36e3d575f5c96",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 258220,
+          "image": "book_en_\u642c\u4e66\u5320-2253-The Well-Grounded Rubyist 3rd Edition-2019-\u82f1\u6587\u7248_page_194.png",
+          "index": 1455,
+          "language": "english",
+          "sha256": "7cc47183de889416075f177fb9e6ed370ef79a644b6222d50eabb92169fcc953",
+          "table_count": 0
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793308907.2352204
+      }
+    },
+    {
+      "position": 577,
+      "image": "book_en_\u642c\u4e66\u5320-3246-Electronics Cookbook-2017-\u82f1\u6587\u7248_page_193.png",
+      "gt_index": 1456,
+      "gt_tables": 0,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [],
+      "prediction_sha256": "65988bffead901ca7bad5e8826d53fb50cc705c86838f1aea65396f501f9c09a",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=72-95 start=2026-10-29T21:21Z end=2026-10-29T22:21Z\n",
+        "input_sha256": "9c2d99cc9937c7114d9d7de8e5a4bd26810253365e03fe93a8199e0cc99b471c",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 209299,
+          "image": "book_en_\u642c\u4e66\u5320-3246-Electronics Cookbook-2017-\u82f1\u6587\u7248_page_193.png",
+          "index": 1456,
+          "language": "english",
+          "sha256": "ab50898675d5f91df123afc6b3ba8e9f3248255a6dc2f0879e82cade38ce01e0",
+          "table_count": 0
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793308907.2064614
+      }
+    },
+    {
+      "position": 578,
+      "image": "book_en_\u56fd\u5916\u6570\u5b66\u6559\u6750-An Excursion through Elementary Mathematics\uff08\u521d\u7b49\u6570\u5b66\u6f2b\u6e38\uff09-An excursion through elementary mathematics, Vol.3 (Caminha Muniz Neto A)_0119.png",
+      "gt_index": 1457,
+      "gt_tables": 0,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [],
+      "prediction_sha256": "cfdf10904f783b4f157f2445c1278edc854f0e1b12450e30112cf9cec367f8f1",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=72-95 start=2026-10-29T21:21Z end=2026-10-29T22:21Z\n",
+        "input_sha256": "5e982732b3b3873a2ffa278bf52d692d4bba1849e3efcc7906e3dbc594d10a9a",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 322647,
+          "image": "book_en_\u56fd\u5916\u6570\u5b66\u6559\u6750-An Excursion through Elementary Mathematics\uff08\u521d\u7b49\u6570\u5b66\u6f2b\u6e38\uff09-An excursion through elementary mathematics, Vol.3 (Caminha Muniz Neto A)_0119.png",
+          "index": 1457,
+          "language": "english",
+          "sha256": "5566a3a9eb7898abb46f3b02226701e96cabb0d3a7518e86f76aacec7a4b53b9",
+          "table_count": 0
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793308907.1808643
+      }
+    },
+    {
+      "position": 579,
+      "image": "book_en_\u56fd\u5916\u6570\u5b66\u6559\u6750-An Excursion through Elementary Mathematics\uff08\u521d\u7b49\u6570\u5b66\u6f2b\u6e38\uff09-An excursion through elementary mathematics, Vol.3 (Caminha Muniz Neto A)_0451.png",
+      "gt_index": 1458,
+      "gt_tables": 0,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [],
+      "prediction_sha256": "96d3c48959e72d33bac0482dd84c9739c5e9d78d08bc4ce6f44b882bb8c6e714",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=72-95 start=2026-10-29T21:21Z end=2026-10-29T22:21Z\n",
+        "input_sha256": "70c7ea906168917e2e2d57280c670f3507e10bfe737faf6badf8ddf77367ca74",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 148516,
+          "image": "book_en_\u56fd\u5916\u6570\u5b66\u6559\u6750-An Excursion through Elementary Mathematics\uff08\u521d\u7b49\u6570\u5b66\u6f2b\u6e38\uff09-An excursion through elementary mathematics, Vol.3 (Caminha Muniz Neto A)_0451.png",
+          "index": 1458,
+          "language": "english",
+          "sha256": "858b3c7acd9cf1637dbe15337c9e795bb98b0fafe308478ad47e8a84fab8f1f2",
+          "table_count": 0
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793308907.2305064
+      }
+    },
+    {
+      "position": 580,
+      "image": "book_en_\u56fd\u5916\u6570\u5b66\u6559\u6750-\u6570\u8bba-Melvyn B. Nathanson\u2014Elementary Methods in Number Theory_0242.png",
+      "gt_index": 1459,
+      "gt_tables": 0,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [],
+      "prediction_sha256": "f61779b9701abcbc5c268b6efde38f3fb72488c4c962533a36db452f67768e38",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=72-95 start=2026-10-29T21:21Z end=2026-10-29T22:21Z\n",
+        "input_sha256": "093491a1b48e9ba8b2043f8b4ed78576d9d5fdcf68ae3fcc7804c2e0ccf077e3",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 195933,
+          "image": "book_en_\u56fd\u5916\u6570\u5b66\u6559\u6750-\u6570\u8bba-Melvyn B. Nathanson\u2014Elementary Methods in Number Theory_0242.png",
+          "index": 1459,
+          "language": "english",
+          "sha256": "fbe3f26ac7c9f9bdba30bc73aff1accdee7692ca8a397dd286673c6305c27160",
+          "table_count": 0
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793308907.23698
+      }
+    },
+    {
+      "position": 581,
+      "image": "book_en_\u56fd\u5916\u6570\u5b66\u6559\u6750-An Excursion through Elementary Mathematics\uff08\u521d\u7b49\u6570\u5b66\u6f2b\u6e38\uff09-An excursion through elementary mathematics, Vol.3 (Caminha Muniz Neto A)_0085.png",
+      "gt_index": 1460,
+      "gt_tables": 0,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [],
+      "prediction_sha256": "bd5e94b3f6af88950b72529c84347aae1c7755f5ec1a78fb220dd82a36845e44",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=72-95 start=2026-10-29T21:21Z end=2026-10-29T22:21Z\n",
+        "input_sha256": "482832f1691d74c6b7338b60c0f08be13ae11fb47a913e4df8b486bc59ed208e",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 178571,
+          "image": "book_en_\u56fd\u5916\u6570\u5b66\u6559\u6750-An Excursion through Elementary Mathematics\uff08\u521d\u7b49\u6570\u5b66\u6f2b\u6e38\uff09-An excursion through elementary mathematics, Vol.3 (Caminha Muniz Neto A)_0085.png",
+          "index": 1460,
+          "language": "english",
+          "sha256": "b8f325aa5571c1c9fcfa5f80fe3a105341ddca207d407d5991a66cccac6f323d",
+          "table_count": 0
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793308907.2405276
+      }
+    },
+    {
+      "position": 582,
+      "image": "book_en_[\u642c\u4e66\u5320#20][HTML5 Canvas].2011.\u82f1\u6587\u7248_page_208.png",
+      "gt_index": 1461,
+      "gt_tables": 0,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [],
+      "prediction_sha256": "81a98eb877e1de01cd0cac3497ad5e4ea8dba76ddadc08479b025826f91bcac5",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=72-95 start=2026-10-29T21:21Z end=2026-10-29T22:21Z\n",
+        "input_sha256": "bb1ca4f99dc85b680b0f840cb259db4c56a8e6e986e457df003da115aba7738a",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 162290,
+          "image": "book_en_[\u642c\u4e66\u5320#20][HTML5 Canvas].2011.\u82f1\u6587\u7248_page_208.png",
+          "index": 1461,
+          "language": "english",
+          "sha256": "9a910747454efe1805202e071adfdd75cce01adf8e1506abd55c4b2dc8af7e2b",
+          "table_count": 0
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793308907.255472
+      }
+    },
+    {
+      "position": 583,
+      "image": "book_en_\u56fd\u5916\u6570\u5b66\u6559\u6750-\u6570\u8bba-Melvyn B. Nathanson\u2014Elementary Methods in Number Theory_0085.png",
+      "gt_index": 1462,
+      "gt_tables": 0,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [],
+      "prediction_sha256": "e51d9d2df85215b586424d3d2ad9dd1f1289067f1332c2e57af59d66e2e70724",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=72-95 start=2026-10-29T21:21Z end=2026-10-29T22:21Z\n",
+        "input_sha256": "7b5559bc4cc3c12d71db7f7892ea792c52da150fb841214cb9717dfba706d46a",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 233139,
+          "image": "book_en_\u56fd\u5916\u6570\u5b66\u6559\u6750-\u6570\u8bba-Melvyn B. Nathanson\u2014Elementary Methods in Number Theory_0085.png",
+          "index": 1462,
+          "language": "english",
+          "sha256": "325b756077bb5ba381516974c467162dd72925766c78fe4f090c73731bf5891f",
+          "table_count": 0
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793308907.2473958
+      }
+    },
+    {
+      "position": 584,
+      "image": "book_en_\u56fd\u5916\u6570\u5b66\u6559\u6750-\u975e\u6570\u5b66\u4e13\u4e1a\u6559\u6750-\u7ebf\u6027\u4ee3\u6570-Gilbert Strang\u2014Linear Algebra and Its Applications 4e_0119.png",
+      "gt_index": 1463,
+      "gt_tables": 0,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [],
+      "prediction_sha256": "cad7d169a30f8d5ddbca6f4322559cbe8cf7e76a2fe3d06fa713981798086025",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=72-95 start=2026-10-29T21:21Z end=2026-10-29T22:21Z\n",
+        "input_sha256": "35686788f3bce6c7d23b1c279405241f5ee3974312c9357d5de28b7ec7b0f0b7",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 286324,
+          "image": "book_en_\u56fd\u5916\u6570\u5b66\u6559\u6750-\u975e\u6570\u5b66\u4e13\u4e1a\u6559\u6750-\u7ebf\u6027\u4ee3\u6570-Gilbert Strang\u2014Linear Algebra and Its Applications 4e_0119.png",
+          "index": 1463,
+          "language": "english",
+          "sha256": "54c110855093f4662a2dd8b311c207dc4fa8355e010b36daf422369ab742779b",
+          "table_count": 0
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793308907.3356006
+      }
+    },
+    {
+      "position": 585,
+      "image": "book_en_\u56fd\u5916\u6570\u5b66\u6559\u6750-\u975e\u6570\u5b66\u4e13\u4e1a\u6559\u6750-\u7ebf\u6027\u4ee3\u6570-Gilbert Strang\u2014Linear Algebra and Its Applications 4e_0242.png",
+      "gt_index": 1464,
+      "gt_tables": 0,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [],
+      "prediction_sha256": "79d9aedfdb1c411f2629f0fc87fb15dca050d373d0544b8cf5babdd1aaa042ec",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=72-95 start=2026-10-29T21:21Z end=2026-10-29T22:21Z\n",
+        "input_sha256": "c61d216512df6519cdad4f2592c77f5c0948a157ced8d55ca0ac7027f61aa174",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 293221,
+          "image": "book_en_\u56fd\u5916\u6570\u5b66\u6559\u6750-\u975e\u6570\u5b66\u4e13\u4e1a\u6559\u6750-\u7ebf\u6027\u4ee3\u6570-Gilbert Strang\u2014Linear Algebra and Its Applications 4e_0242.png",
+          "index": 1464,
+          "language": "english",
+          "sha256": "c34a8375a51b53f349a007e0cbe68c6b1e2fd2ac41c6b7abc5a6e812eb427ad3",
+          "table_count": 0
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793308907.352604
+      }
+    },
+    {
+      "position": 586,
+      "image": "book_en_\u642c\u4e66\u5320-3299-Swift Data Structure and Algorithms-2016-\u82f1\u6587\u7248_page_111.png",
+      "gt_index": 1465,
+      "gt_tables": 0,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [],
+      "prediction_sha256": "b65c3b152408d8c273bad46c6b6792c9e7d947c9cbaecccc002242c155c104b2",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=72-95 start=2026-10-29T21:21Z end=2026-10-29T22:21Z\n",
+        "input_sha256": "1d0a43f39835433d788dc7ca0a6c245addbfcfc678cd42b582da91aecbfdf7d0",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 213390,
+          "image": "book_en_\u642c\u4e66\u5320-3299-Swift Data Structure and Algorithms-2016-\u82f1\u6587\u7248_page_111.png",
+          "index": 1465,
+          "language": "english",
+          "sha256": "e7f84579314145d1681c085e907d2c88e246019e061617aa372bf2fea857ccfc",
+          "table_count": 0
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793308907.2651894
+      }
+    },
+    {
+      "position": 587,
+      "image": "book_en_\u642c\u4e66\u5320-3396-iPhone The Missing Manual 10th Edition-2017-\u82f1\u6587\u7248_page_099.png",
+      "gt_index": 1466,
+      "gt_tables": 0,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [],
+      "prediction_sha256": "21a735150984a6468e7c0d726a082209094bb8fe1a45ab105b0932953e8cb3b2",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=72-95 start=2026-10-29T21:21Z end=2026-10-29T22:21Z\n",
+        "input_sha256": "0612ebe66f8674f418988c2c1e6e50b78fc248c6be398cf3679c7b1692fb810a",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 496434,
+          "image": "book_en_\u642c\u4e66\u5320-3396-iPhone The Missing Manual 10th Edition-2017-\u82f1\u6587\u7248_page_099.png",
+          "index": 1466,
+          "language": "english",
+          "sha256": "fa255c241af8720edf8bb79707372162c5b794e342ed3789a72fb2fb926f7b21",
+          "table_count": 0
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793308990.6080818
+      }
+    },
+    {
+      "position": 588,
+      "image": "book_en_\u56fd\u5916\u6570\u5b66\u6559\u6750-An Excursion through Elementary Mathematics\uff08\u521d\u7b49\u6570\u5b66\u6f2b\u6e38\uff09-An excursion through elementary mathematics, Vol.3 (Caminha Muniz Neto A)_0596.png",
+      "gt_index": 1467,
+      "gt_tables": 0,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [],
+      "prediction_sha256": "3ae0cb013dff4b68f11289f53c13c9b769b317e7d2a27350d9ddde3e5588a73a",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=72-95 start=2026-10-29T21:21Z end=2026-10-29T22:21Z\n",
+        "input_sha256": "dfa15282d6ed280c25f7114fcb57cf315aa1a7ad13b1fa7901c19fffdc4b52aa",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 426692,
+          "image": "book_en_\u56fd\u5916\u6570\u5b66\u6559\u6750-An Excursion through Elementary Mathematics\uff08\u521d\u7b49\u6570\u5b66\u6f2b\u6e38\uff09-An excursion through elementary mathematics, Vol.3 (Caminha Muniz Neto A)_0596.png",
+          "index": 1467,
+          "language": "english",
+          "sha256": "299dba66c7fb41f6364694271f2f0e9c3f9e79f245892d19b09d7a171a0fca34",
+          "table_count": 0
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793308990.6455684
+      }
+    },
+    {
+      "position": 589,
+      "image": "book_en_\u56fd\u5916\u6570\u5b66\u6559\u6750-\u6570\u8bba-Melvyn B. Nathanson\u2014Elementary Methods in Number Theory_0035.png",
+      "gt_index": 1468,
+      "gt_tables": 0,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [],
+      "prediction_sha256": "e2bc8b5bb5e727562bc17437ef8ca68c5e15c4a3fb9c22953a38e669848fec45",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=72-95 start=2026-10-29T21:21Z end=2026-10-29T22:21Z\n",
+        "input_sha256": "6ce4311b1291acc35251b531237f073c0df8ca390188edacf1909b2ee0f57837",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 225652,
+          "image": "book_en_\u56fd\u5916\u6570\u5b66\u6559\u6750-\u6570\u8bba-Melvyn B. Nathanson\u2014Elementary Methods in Number Theory_0035.png",
+          "index": 1468,
+          "language": "english",
+          "sha256": "2671c808f1714708b662c12169b21caa3b0216e6892bc2952cfa0c5d124ce77d",
+          "table_count": 0
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793308992.357658
+      }
+    },
+    {
+      "position": 590,
+      "image": "book_en_\u56fd\u5916\u6570\u5b66\u6559\u6750-\u975e\u6570\u5b66\u4e13\u4e1a\u6559\u6750-\u7ebf\u6027\u4ee3\u6570-Gilbert Strang\u2014Linear Algebra and Its Applications 4e_0100.png",
+      "gt_index": 1469,
+      "gt_tables": 0,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [],
+      "prediction_sha256": "bd4f83dcc6b99ec353e3afbfd441a7d84bd16f86cd0bb5b1629ec9da775ac86d",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=72-95 start=2026-10-29T21:21Z end=2026-10-29T22:21Z\n",
+        "input_sha256": "4aee950a5394db452c51876dbb1cd9fb4181daba6e4ddce6430d837ca07033ac",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 434515,
+          "image": "book_en_\u56fd\u5916\u6570\u5b66\u6559\u6750-\u975e\u6570\u5b66\u4e13\u4e1a\u6559\u6750-\u7ebf\u6027\u4ee3\u6570-Gilbert Strang\u2014Linear Algebra and Its Applications 4e_0100.png",
+          "index": 1469,
+          "language": "english",
+          "sha256": "4bc69a882a953517067ee16a7f6d676bb234b732d66a4e25cc6c771f8131b3a5",
+          "table_count": 0
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793308994.6030772
+      }
+    },
+    {
+      "position": 591,
+      "image": "book_en_\u56fd\u5916\u6570\u5b66\u6559\u6750-\u975e\u6570\u5b66\u4e13\u4e1a\u6559\u6750-\u7ebf\u6027\u4ee3\u6570-Gilbert Strang\u2014Linear Algebra and Its Applications 4e_0035.png",
+      "gt_index": 1470,
+      "gt_tables": 0,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [],
+      "prediction_sha256": "c3112c22e52ca9d000b276ac177eeb3492a3b43511829a7e305239c6b01374f5",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=72-95 start=2026-10-29T21:21Z end=2026-10-29T22:21Z\n",
+        "input_sha256": "80119f36942298ab885e4bfac54c35763a251c89ceecd841c7d32895266673df",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 422414,
+          "image": "book_en_\u56fd\u5916\u6570\u5b66\u6559\u6750-\u975e\u6570\u5b66\u4e13\u4e1a\u6559\u6750-\u7ebf\u6027\u4ee3\u6570-Gilbert Strang\u2014Linear Algebra and Its Applications 4e_0035.png",
+          "index": 1470,
+          "language": "english",
+          "sha256": "d1d480b6510d855b00696ccaef262c3f05b9866274a23a980e24fa717276e982",
+          "table_count": 0
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793308995.7532334
+      }
+    },
+    {
+      "position": 592,
+      "image": "book_en_\u56fd\u5916\u6570\u5b66\u6559\u6750-\u975e\u6570\u5b66\u4e13\u4e1a\u6559\u6750-\u7ebf\u6027\u4ee3\u6570-Gilbert Strang\u2014Linear Algebra and Its Applications 4e_0363.png",
+      "gt_index": 1471,
+      "gt_tables": 0,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [],
+      "prediction_sha256": "aa6043a03bfe0a7e3be9e55d2a8e05abd6d6e10d8cc2e12bec60a2b0721c7887",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=72-95 start=2026-10-29T21:21Z end=2026-10-29T22:21Z\n",
+        "input_sha256": "3bc33face687585022a31f2f969f5cedc362cd169a7b2a4cca1d63db63ac4723",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 404768,
+          "image": "book_en_\u56fd\u5916\u6570\u5b66\u6559\u6750-\u975e\u6570\u5b66\u4e13\u4e1a\u6559\u6750-\u7ebf\u6027\u4ee3\u6570-Gilbert Strang\u2014Linear Algebra and Its Applications 4e_0363.png",
+          "index": 1471,
+          "language": "english",
+          "sha256": "e14df4c88752e4fbe254a886f3326ce23bb4971587ee8a3389834239943e683d",
+          "table_count": 0
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793308995.7187505
+      }
+    },
+    {
+      "position": 593,
+      "image": "book_en_\u56fd\u5916\u6570\u5b66\u6559\u6750-\u975e\u6570\u5b66\u4e13\u4e1a\u6559\u6750-\u7ebf\u6027\u4ee3\u6570-Gilbert Strang\u2014Linear Algebra and Its Applications 4e_0451.png",
+      "gt_index": 1472,
+      "gt_tables": 0,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [],
+      "prediction_sha256": "e6feea99d7af930c861a6803f72a06d2a3c62556009e2ef7b9cbd366611bda1c",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=72-95 start=2026-10-29T21:21Z end=2026-10-29T22:21Z\n",
+        "input_sha256": "35d47b1124f0004901fe39354189acb16bc58494cb5b4b736b25e501d966af76",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 333262,
+          "image": "book_en_\u56fd\u5916\u6570\u5b66\u6559\u6750-\u975e\u6570\u5b66\u4e13\u4e1a\u6559\u6750-\u7ebf\u6027\u4ee3\u6570-Gilbert Strang\u2014Linear Algebra and Its Applications 4e_0451.png",
+          "index": 1472,
+          "language": "english",
+          "sha256": "e68ad1c19dbcde849c9c62c33a9e286768ae41efc53b9146a45263d66740af6f",
+          "table_count": 0
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793308996.1655545
+      }
+    },
+    {
+      "position": 594,
+      "image": "book_en_\u642c\u4e66\u5320-3473-Reactive Programming with RxJS-2015-\u82f1\u6587\u7248_page_003.png",
+      "gt_index": 1473,
+      "gt_tables": 0,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [],
+      "prediction_sha256": "5638d1f6ed80cf7f812380982a5772dccf769ac33dadcd55bd5b1ad8860829c3",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=72-95 start=2026-10-29T21:21Z end=2026-10-29T22:21Z\n",
+        "input_sha256": "fc4733abdba15b2f2050f9aff0519fa748769a9ff2491ec60dccce764008a80a",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 187228,
+          "image": "book_en_\u642c\u4e66\u5320-3473-Reactive Programming with RxJS-2015-\u82f1\u6587\u7248_page_003.png",
+          "index": 1473,
+          "language": "english",
+          "sha256": "be387238dd7a8cef27349e94b512aefb293940b764f7f32e144ed813026a3d35",
+          "table_count": 0
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793308996.5973787
+      }
+    },
+    {
+      "position": 595,
+      "image": "book_en_\u642c\u4e66\u5320-3473-Reactive Programming with RxJS-2015-\u82f1\u6587\u7248_page_021.png",
+      "gt_index": 1474,
+      "gt_tables": 0,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [],
+      "prediction_sha256": "55ef9d673f4e081dc335475652a0453f2cd81cfd70bf372028644aff466d5c59",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=72-95 start=2026-10-29T21:21Z end=2026-10-29T22:21Z\n",
+        "input_sha256": "e7cf307abd67b9b0aab2fd18762d2639accb1285e289d1c9970423b939cd4689",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 307681,
+          "image": "book_en_\u642c\u4e66\u5320-3473-Reactive Programming with RxJS-2015-\u82f1\u6587\u7248_page_021.png",
+          "index": 1474,
+          "language": "english",
+          "sha256": "5a2885a5362c5ca8e8cc4d0014642c32a7f1f04c15533cb7fd19572eeeec17cd",
+          "table_count": 0
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793308997.0486572
+      }
+    },
+    {
+      "position": 596,
+      "image": "color_textbook_zhonggaokao_\u5c0f\u5b66_13.\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed\uff084-5\u5e74\u7ea7\uff09_\u4eba\u6559\u65b0\u8d77\u70b9\u4e94\u5e74\u7ea7\u82f1\u8bed\u4e0a\u518c_\u8bfe\u672c_\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed5A\u7535\u5b50\u8bfe\u672c_page_011.png",
+      "gt_index": 1475,
+      "gt_tables": 0,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [],
+      "prediction_sha256": "b7ae47ecc4a0fc9c93cfe3e9724c275cb39896ed800e09b4c092da076a42080e",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=72-95 start=2026-10-29T21:21Z end=2026-10-29T22:21Z\n",
+        "input_sha256": "63dad6ad62effb572d34a5adeeb1bfa78bda8cb72e83744332a6370e4efe3136",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 1685634,
+          "image": "color_textbook_zhonggaokao_\u5c0f\u5b66_13.\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed\uff084-5\u5e74\u7ea7\uff09_\u4eba\u6559\u65b0\u8d77\u70b9\u4e94\u5e74\u7ea7\u82f1\u8bed\u4e0a\u518c_\u8bfe\u672c_\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed5A\u7535\u5b50\u8bfe\u672c_page_011.png",
+          "index": 1475,
+          "language": "english",
+          "sha256": "b5dfa07e164d29bf481197dccff6eb10db55245dd936fe0f22aa695fcc9a875a",
+          "table_count": 0
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793308997.2574615
+      }
+    },
+    {
+      "position": 597,
+      "image": "color_textbook_zhonggaokao_\u5c0f\u5b66_13.\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed\uff084-5\u5e74\u7ea7\uff09_\u4eba\u6559\u65b0\u8d77\u70b9\u56db\u5e74\u7ea7\u82f1\u8bed\u4e0a\u518c_\u8bfe\u672c_\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed4A\u7535\u5b50\u8bfe\u672c_page_044.png",
+      "gt_index": 1476,
+      "gt_tables": 0,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [],
+      "prediction_sha256": "2337e86a14159250190c74e8d58355ed6dd38288dc383041b7b91ef96dc923a4",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=72-95 start=2026-10-29T21:21Z end=2026-10-29T22:21Z\n",
+        "input_sha256": "9aed97f9f7ca60a679d13c56aed2dbd8332c20ef2fff8a22278f983da222bbf6",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 2034859,
+          "image": "color_textbook_zhonggaokao_\u5c0f\u5b66_13.\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed\uff084-5\u5e74\u7ea7\uff09_\u4eba\u6559\u65b0\u8d77\u70b9\u56db\u5e74\u7ea7\u82f1\u8bed\u4e0a\u518c_\u8bfe\u672c_\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed4A\u7535\u5b50\u8bfe\u672c_page_044.png",
+          "index": 1476,
+          "language": "english",
+          "sha256": "23c9becb3e48fb70b67691989fd49b298cc896ecef1b4c500145f95e6d98da5e",
+          "table_count": 0
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793309000.2807736
+      }
+    },
+    {
+      "position": 598,
+      "image": "color_textbook_zhonggaokao_\u5c0f\u5b66_KET\u542c\u8bf4\u8bfb\u5199\u9010\u9879\u7a81\u7834_KET\u542c\u8bf4\u8bfb\u5199\u9010\u9879\u7a81\u7834\u4e4b\u8f7b\u677e\u641e\u5b9aKET\u5199\u4f5c25\u5206 \u301010\u8bb2 \u891a\u8fde\u4e00\u3011_\u7b2c05\u8bb2\u7b2c\u4e94\u8bfe\u5199\u4f5cPart7\u8be6\u89e3_\u7b2c\u4e94\u8bfe\u5199\u4f5cPart7\u8be6\u89e3_page_001.png",
+      "gt_index": 1477,
+      "gt_tables": 0,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [],
+      "prediction_sha256": "5aeaffa84d6455590cb55b89806900bb9650b36b6587dbc42ea5a283e27cf872",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=72-95 start=2026-10-29T21:21Z end=2026-10-29T22:21Z\n",
+        "input_sha256": "a3b0b34d122f8ee42ef84082e885f5d73ccffeb3aed2e04923b916560e91ab21",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 336387,
+          "image": "color_textbook_zhonggaokao_\u5c0f\u5b66_KET\u542c\u8bf4\u8bfb\u5199\u9010\u9879\u7a81\u7834_KET\u542c\u8bf4\u8bfb\u5199\u9010\u9879\u7a81\u7834\u4e4b\u8f7b\u677e\u641e\u5b9aKET\u5199\u4f5c25\u5206 \u301010\u8bb2 \u891a\u8fde\u4e00\u3011_\u7b2c05\u8bb2\u7b2c\u4e94\u8bfe\u5199\u4f5cPart7\u8be6\u89e3_\u7b2c\u4e94\u8bfe\u5199\u4f5cPart7\u8be6\u89e3_page_001.png",
+          "index": 1477,
+          "language": "english",
+          "sha256": "200dcd5d29a8e69b75601e63546fad54418414a0d621b8eb15b190c686b1b914",
+          "table_count": 0
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793309001.8966749
+      }
+    },
+    {
+      "position": 599,
+      "image": "color_textbook_zhonggaokao_\u5c0f\u5b66_13.\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed\uff084-5\u5e74\u7ea7\uff09_\u4eba\u6559\u65b0\u8d77\u70b9\u4e94\u5e74\u7ea7\u82f1\u8bed\u4e0b\u518c_\u8bfe\u672c_\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed5B\u7535\u5b50\u8bfe\u672c_page_046.png",
+      "gt_index": 1479,
+      "gt_tables": 0,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [],
+      "prediction_sha256": "17b997ae82e1dd0988961bedd5904095c6388e9842b326498d7dd6e0541a2b0c",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=72-95 start=2026-10-29T21:21Z end=2026-10-29T22:21Z\n",
+        "input_sha256": "a33f0ff5fd69e8e3c621cc2d7b68a707d9ab539009a30814a40dd0d612d533a0",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 1763822,
+          "image": "color_textbook_zhonggaokao_\u5c0f\u5b66_13.\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed\uff084-5\u5e74\u7ea7\uff09_\u4eba\u6559\u65b0\u8d77\u70b9\u4e94\u5e74\u7ea7\u82f1\u8bed\u4e0b\u518c_\u8bfe\u672c_\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed5B\u7535\u5b50\u8bfe\u672c_page_046.png",
+          "index": 1479,
+          "language": "english",
+          "sha256": "0a00e0562cd745b62603b5f1aa2c47c990550834e5f40ec6684ad88913d3d182",
+          "table_count": 0
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793309073.7584403
+      }
+    }
+  ],
+  "coverage": {
+    "pages_complete": 25,
+    "pages_total": 25,
+    "gt_tables_scored": 0,
+    "gt_tables_total": 0
+  },
+  "means": {
+    "teds": null,
+    "teds_structure_only": null
+  }
+}

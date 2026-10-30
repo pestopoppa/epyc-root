@@ -1,0 +1,112 @@
+[
+  {
+    "shard": 3,
+    "pages": 25,
+    "tables": 7,
+    "teds": 0.5440251593226749,
+    "teds_structure_only": 0.7605234718425303,
+    "artifact": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/recheck/odl-s03.json",
+    "sha256": "146684bb1e3f918289d7aa64cd54545dc553762644ffff3092bd00665653c8dc",
+    "source": "unverified: native start lacks producer identity and source manifest"
+  },
+  {
+    "shard": 6,
+    "pages": 25,
+    "tables": 10,
+    "teds": 0.8533273400927032,
+    "teds_structure_only": 0.888681834522427,
+    "artifact": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/recheck/odl-s06.json",
+    "sha256": "b30075d67bad6cd5384a80014d5d93ab7452f8ac5415ccb6754f10e71185f66b",
+    "source": "unverified: native start lacks producer identity and source manifest"
+  },
+  {
+    "shard": 7,
+    "pages": 25,
+    "tables": 4,
+    "teds": 0.8635871103462662,
+    "teds_structure_only": 0.9652777777777778,
+    "artifact": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/recheck/odl-s07.json",
+    "sha256": "1747fc697d5db7a3ac431b6fab3adde34d5d757c6dca6b09977f5a007734db57",
+    "source": "unverified: native start lacks producer identity and source manifest"
+  },
+  {
+    "shard": 10,
+    "pages": 25,
+    "tables": 36,
+    "teds": 0.6032355262933037,
+    "teds_structure_only": 0.7670112226048409,
+    "artifact": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/recheck/odl-s10.json",
+    "sha256": "e2ea4cf3510782cecff325d1e5c3fa6cce8ee00fbbbc0382ddbb392d197369fc",
+    "source": "unverified: native start lacks producer identity and source manifest"
+  },
+  {
+    "shard": 13,
+    "pages": 25,
+    "tables": 5,
+    "teds": 0.5914233946825729,
+    "teds_structure_only": 0.7012626262626263,
+    "artifact": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/recheck/odl-s13.json",
+    "sha256": "841f3dd5e4ad32433321a59c218245099f71faacc38902a0cb2f65a5a41bf787",
+    "source": "unverified: native start lacks producer identity and source manifest"
+  },
+  {
+    "shard": 18,
+    "pages": 25,
+    "tables": 0,
+    "teds": null,
+    "teds_structure_only": null,
+    "artifact": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/recheck/odl-s18.json",
+    "sha256": "b96643f7b2be90c0b0641ea4240b95b29b0316bb472ca3e56593b95a33c3b895",
+    "source": "unverified: native start lacks producer identity and source manifest"
+  },
+  {
+    "shard": 19,
+    "pages": 25,
+    "tables": 3,
+    "teds": 0.3879886195487546,
+    "teds_structure_only": 0.6666666666666666,
+    "artifact": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/recheck/odl-s19.json",
+    "sha256": "9c82822b495150764eb744cdfed5d5cf97bb222819a361bf0df8e19e534ca070",
+    "source": "unverified: native start lacks producer identity and source manifest"
+  },
+  {
+    "shard": 23,
+    "pages": 25,
+    "tables": 0,
+    "teds": null,
+    "teds_structure_only": null,
+    "artifact": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/recheck/odl-s23.json",
+    "sha256": "383e7b5253305984c313471c5237612e28707b4896ae81b3ededc8a030cd9b7b",
+    "source": "unverified: native start lacks producer identity and source manifest"
+  },
+  {
+    "shard": 26,
+    "pages": 25,
+    "tables": 0,
+    "teds": null,
+    "teds_structure_only": null,
+    "artifact": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/recheck/odl-s26.json",
+    "sha256": "74f769136b621bedf69879a30eca71456bbda0cca5e1fc6c166950218a4c1505",
+    "source": "unverified: native start lacks producer identity and source manifest"
+  },
+  {
+    "shard": 27,
+    "pages": 25,
+    "tables": 5,
+    "teds": 0.7957103796612659,
+    "teds_structure_only": 0.964456307320383,
+    "artifact": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/recheck/odl-s27.json",
+    "sha256": "713d9df128fac71ac85580b2e177d0615b658809feee19bdb43dc80333c2f129",
+    "source": "unverified: native start lacks producer identity and source manifest"
+  },
+  {
+    "shard": 30,
+    "pages": 5,
+    "tables": 0,
+    "teds": null,
+    "teds_structure_only": null,
+    "artifact": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/recheck/odl-s30.json",
+    "sha256": "ffb4a78e49901bfd8ce56c60d17fb74b3a9c858eded1a992fd08292bcadc52a2",
+    "source": "unverified: native start lacks producer identity and source manifest"
+  }
+]
