@@ -31,3 +31,6 @@ Matched YaRN CPU/GPU pair completed: CPU13.6293/GPU14.3940, GPU−CPU+.7647 atma
 
 
 FA4r5originalA/ON228(224OK/4NF), model10/10withoutNF, server13HTTP200thenprocess-samplingfailure, Babsent; noFA4tick. EightoriginalPaddlepartialsretain20matchedRPCsg38, noRPCsother7; explicitcaptureassociationinference, noqualityclaim. HILR3fournewacceptednativefailedanswers, source22/2/24, no redraw. Originalauditscommitted; future-rearmregionenvironmentfixpassedactualisolatedhelper5-regionfixturesandinstalledatomically, oldsourcebackupretained. EVL10actualarmeracceptedandODL3-case recoveryactualsmokepassed/READY. [belief: cc]
+
+
+Three pre-client ODL recoveries completed; oneGTtable, allsource/grant/result/DONE/drainchecksverified. Fresh94.94s offlineQC: ODL638/755complete(178sourceverified), Paddle17/755complete(7sourceverified); fullgatesfalse, alldecisioncellsnull. EVL10fixed20cellscomplete; REPL4/10vsReDel3/10, no delegation, Step3open. KPF18CPUr3resourceadmissionrefusalbeforereplay. ProspectiveODLR3/recoveryregistries+sourcepineligibilitycommitted/pushedResearch3ecaa3d66810;11testsPASS,246MBsampled, unchangedmetrics/denominators. FourmorePaddledraftsheldinRAM; distinct-IDHIL4/ODL3smokescannotstartbelow151GiB. AllquartersandGPUobservedfreeat01:51:54 whileRAIDbelow150floor; no claimhostbusy. [belief: cc]

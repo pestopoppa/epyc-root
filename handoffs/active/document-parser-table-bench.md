@@ -219,3 +219,17 @@ Each outer job exited rc75. The last capture started before each exit reports di
 Full exact native paths, capture SHA256, source registry, grant, result SHA256 and individual request-origin files are in original-eight-events.json. Native collection partial only; no TEDS, parser comparison, adoption, or completed scientific-cohort claim.
 
 [Committed native audit](../../artifacts/compute/results-filing-20261030-0138.json). [belief: cc]
+
+
+### 2026-10-30 three first-client recoveries and partial QC
+
+
+Original scheduled `codex3-pip02-odl-recover-50-118-310-r1-20261030` completed rc0 at 2026-10-30T01:28:32Z. Its native batch DONE reports three complete first-client pages, 3 workers, 17,177,640,960-byte sampled tree RSS and no batch error. Native results and DONE, prediction hashes, canonical page image/PDF identity, prospective captured source/plan/protocol, grant interval, drained children and the original pre-client evidence were reopened and verified. Ordinals 50, 118 and 310 have respectively 0, 1 and 0 ground-truth tables. Original source branch and logs place the prior failures before the HTTP client; prior files remain retained. This is image-only PDF ODL2.5 + Docling2.91 hybrid collection, not original-PDF performance.
+
+The pinned dependency manifest and source assert the canonical CPU Docling asset set; the original producer calls its asset-digest verification before the first-client start. This observation does not invent a separate per-model runtime receipt. Native per-page audit: `recovery-native-audit.json` SHA256 `08f78a15aa64de56404a4eef2df3f9d4ef9ab794c8563ea5da00bbfe6a5ab9dc`. Source manifest `b2ce8fc980bba8d6aaca2bfc73508e24db33e798baa799e55d782af78ef449cd`.
+
+Fresh offline scorer pin `pins.json` SHA256 `1a71361536d7dc2a5abde8366f565888a844d24c1f5740ed05b13c59d71e4c7c` includes current producer registries plus original recovery producer, failure-log and input evidence. Common scorer completed rc0 under SMT126/127 and pair mutex; 94.94 s, sampled peak 450,068,480 bytes, no model calls. Raw snapshot (`report/coverage-and-scores.json` SHA256 `44478bba72b2221160c8617629a9a5fae6d80bfea19e04828514ddae83f35fe3`): ODL 638/755 complete pages and 224/243 GT tables scored, with source lineage verified for 178 of 638 complete pages; Paddle 17/755 pages and 1/243 tables, lineage verified for 7 of 17. Missing or unverified records remain unverified. These are observational coverage counts, not a matched complete comparison.
+
+The one GT table on recovered ordinal 118 has descriptive native TEDS 0.4005603400 and structure-only TEDS 0.9287020110 (higher is better); ordinals 50 and 310 have no GT tables. The raw aggregate ODL table-weighted values 0.5236367252 and 0.6641641385 include pages without verified source lineage and are descriptive only. Paddle raw 1.0/1.0 is from one table, not a cohort comparison. Both full-population and gate eligibility flags are false; all decision metric values in `report/row_set.json` remain null. No parser-quality, adoption, full-755 or production-performance verdict follows.
+
+[Committed native audit and frozen QC files](../../artifacts/compute/results-filing-20261030-0157.json). Existing full-population/adoption gate remains open. [belief: cc]

@@ -1,0 +1,47 @@
+{
+  "at": "2026-10-30T01:57:45.638398+00:00",
+  "original_events": {
+    "codex3-pip02-odl-recover-50-118-310-r1-20261030": {
+      "id": "codex3-pip02-odl-recover-50-118-310-r1-20261030",
+      "ended_file": "/mnt/raid0/llm/tmp/compute-flags/grants/codex3-pip02-odl-recover-50-118-310-r1-20261030.ended",
+      "end_line": "rc=0 time=2026-10-30T01:28:32Z reason=complete",
+      "seen_at": "2026-10-30T01:29:21Z",
+      "result_path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-recover-50-118-310-r1-20261030/DONE",
+      "scratch_root": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-recover-50-118-310-r1-20261030",
+      "decision_rule": "Collect first-client ODL hybrid full results for original fresh English ordinals 50, 118 and 310 only. Original pre-client disk failures and resolutions retained; never redraw an exposed unknown. No quality or adoption verdict until common scoring.",
+      "class": "diagnostic",
+      "owner": "codex3"
+    },
+    "codex3-evl34-native-r10-pilot-20261030": {
+      "id": "codex3-evl34-native-r10-pilot-20261030",
+      "ended_file": "/mnt/raid0/llm/tmp/compute-flags/grants/codex3-evl34-native-r10-pilot-20261030.ended",
+      "end_line": "rc=0 time=2026-10-30T01:31:41Z reason=complete",
+      "seen_at": "2026-10-30T01:32:27Z",
+      "result_path": "/mnt/raid0/llm/tmp/codex3-evl34-native-r10-20261030/PILOT-DONE.json",
+      "scratch_root": "/mnt/raid0/llm/tmp/codex3-evl34-native-r10-20261030",
+      "decision_rule": "Fixed pilot rows10-19, paired production REPL vs ReDel depth<=1; report accuracy higher better, wall and tokens lower better plus natural delegation. Zero matched delegations = INCONCLUSIVE_NO_DELEGATION; positive delegation needs paired evaluation before Step3. Preserve unknowns, no redraw.",
+      "class": "diagnostic",
+      "owner": "codex3"
+    },
+    "kpf18-g3-r12-integration-cpu-r3": {
+      "id": "kpf18-g3-r12-integration-cpu-r3",
+      "ended_file": "/mnt/raid0/llm/tmp/compute-flags/grants/kpf18-g3-r12-integration-cpu-r3.ended",
+      "end_line": "rc=70 time=2026-10-30T01:33:18Z reason=job-rc-70:exited",
+      "seen_at": "2026-10-30T01:33:30Z",
+      "result_path": "/mnt/raid0/llm/tmp/codex-ni-20261027-kpf18-native-successor-r10/revision-r12-r3/cpu-replay/attempts/*/RESULT.json",
+      "scratch_root": "/mnt/raid0/llm/tmp/codex-ni-20261027-kpf18-native-successor-r10/revision-r12-r3/cpu-replay",
+      "decision_rule": "For the immutable pinned R6 X1 raw capture and event ledger, emit the exact R12 full-replay framing/layout result or a retained explicit refusal; do not repair or reinterpret the historical R6 verdict. The bounded smoke proves only the first X1-filler2 parser/layout compute. It does not prove positive task binding, full-bridge framing, native control, model equivalence, or R6 validity.",
+      "class": "diagnostic",
+      "owner": "codex-ni"
+    }
+  },
+  "files": {
+    "recovery-native-audit.json": "08f78a15aa64de56404a4eef2df3f9d4ef9ab794c8563ea5da00bbfe6a5ab9dc",
+    "row_set.json": "eb11f6b4f6be02a0f27abb363d272c6dcce84cd8d4645bbf99128bfd10c55b4a",
+    "pins.json": "1a71361536d7dc2a5abde8366f565888a844d24c1f5740ed05b13c59d71e4c7c",
+    "coverage-and-scores.json": "44478bba72b2221160c8617629a9a5fae6d80bfea19e04828514ddae83f35fe3",
+    "evl-kpf-audit.json": "49fbf0b24ec9eca45b19db329aaaf565aab7c4cfa8b6981a14b3f9777f32ce91"
+  },
+  "research_commit": "3ecaa3d66810",
+  "scope": "Three original scheduled results and partial offline QC; metric values in decision row set remain null. No quality/adoption/promotion claim."
+}
