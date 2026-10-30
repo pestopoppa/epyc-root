@@ -231,7 +231,7 @@ The current next action is to finish and review the integration proof, then vali
 ### Wave 2: decision-dependent and structural
 
 - [ ] P5: Autopilot evaluator: ONE batched era event (operator decision 2026-10-24) [B5-03, B2-01, B2-M1, B2-M2, B2-10, B5-06, B5-07, B2-19, B2-04, B2-05, B2-06, B2-07, B2-08, B2-14, B2-15, B2-18, B2-12, B2-13, B5-14, B3-09]
-- [ ] K3: AutoKernel prune of the three approved planes, after fresh closure and retained-contract checks [C2-01, C1-04, C2-03, C2-05, C2-08, C2-12, C2-M2, C2-13, C3-03, C3-01, C3-M1, C3-13, C3-14, C3-18, C5-03, C5-15, C6-07, C4-01, C4-02, C4-03, C4-11, C5-13, C5-12, C6-09, C5-06, C6-08, C2-09, C5-07, C2-M1]; C4-01's old deletion advice is superseded by INF64's retained manifest.
+- [ ] K3: AutoKernel prune of the three approved planes, after fresh closure and retained-contract checks [C2-01, C1-04, C2-03, C2-05, C2-08, C2-12, C2-M2, C2-13, C3-03, C3-01, C3-M1, C3-13, C3-14, C3-18, C5-03, C5-15, C4-01, C4-02, C4-03, C4-11, C5-13, C5-12, C6-09, C5-06, C6-08, C2-09, C5-07, C2-M1]; C4-01's old deletion advice is superseded by INF64's retained manifest.
 - [ ] K4: AutoKernel regrowth guard and CI repair (operator decision 2026-10-24) [C2-04, C5-02, C3-05, C1-02, C1-M3, C5-01, C6-01, C5-14, C6-13, C3-11, C2-02, C6-16]
 - [ ] O8: Orchestrator CI, honest gates, and the ni63 pin design (operator decision 2026-10-24) [A6-04, B1-M3, B5-10, B5-17, A6-13]
 - [ ] D1: Decompose the autopilot loop (_run_loop_inner) behind the P1 safety net [B1-02, B1-05, B1-12, B1-10, B1-06, B1-07, B1-11, B1-16, B1-18, B1-19]
@@ -517,3 +517,5 @@ C1-22 disappears with the unified plane.
 - [x] **M4-WORKER-CALIBRATION-SOURCE-ENROLLMENT** — enroll prospective worker/frontdoor CPU load and warmup samples and open their strict-reader/planning task. Preparation only; no model execution or peak claim. ✅ 2026-10-28 [no-belief: prospective source enrollment only]
 
 - [x] **M4-VISION-CALIBRATION-SOURCE-ENROLLMENT** — enroll prospective vision CPU load and warmup samples and open their strict-reader/planning task. Preparation only; no model execution or peak claim. ✅ 2026-10-28 [no-belief: prospective source enrollment only]
+
+- [x] K3 / C6-07: isolate T3 test fixtures in private temporary checkout roots; preserve actual authority/refusal boundaries and historical fixture bytes. Research main `1f1fc348e6dec11fd4c90cdaf3b6972c226af74c` includes reviewed `e9c1a3ac`;384 host controls plus124 related tests pass. Collection of1009 release tests succeeds in Git and exported source without touching live operator fixtures. Runtime default-root positives remain explicitly host-dependent. ✅ 2026-10-30 [no-belief: fixture isolation and source regressions]

@@ -496,9 +496,7 @@ Completed history through 2026-10-24 (moved verbatim, no open tasks): [kv-unifie
   - an opencode bypass.
 
   Then merge, and the owner runs the API reload (`orchestrator_stack.py reload orchestrator`, API only).
-- [ ] **KVU-3a — detect truncation of streamed chat.** The branch cannot see it today, because the stream carries
-  no token counts. Request usage in the stream (`stream_options.include_usage`), or count streamed tokens against
-  the live limit, and mark `completion_reason=context_limit`.
+- [x] **KVU-3a — detect truncation of streamed chat.** Stream usage now drives the same context-limit classification as nonstream responses, preserving native counts and effective request limits. Orchestrator main `61bf851858bbdd5d911d51051cb87b45a3699ef4` includes reviewed `445cb6be`;209 tests across seven modules pass, including actual SSE content/finish/usage-only/DONE public-path regression. No API reload performed. ✅ 2026-10-30 [no-belief: source repair and deterministic regression controls]
 - [x] **KVU-4 — promotion gate: clear the 4 strict known-gap errors.** ✅ 2026-09-24 The operator chose option A:
   `option/critic-general-suite-evidence-20260924` @ `9692c7f9` was merged into the fix branch as `d7ab368e`.
   Strict now counts `general_suite_quality` as per-axis evidence, never as `overall`. The role-purpose critic-suite
