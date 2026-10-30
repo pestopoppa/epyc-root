@@ -457,3 +457,8 @@ YaRN 128K MI210 R1's original 05:26:22Z grant ended rc1 at `live grant/GPU/disk 
 
 - YaRN Oolong S2 v27, S1 v26 and S3 v28 original grants ended 05:53:35/47/48Z rc75; each native record reports `new_exposures=0` and refusal at the 150 GiB floor plus 1 GiB aggregate reserve and 128 MiB safety. Retain the original 120-pair denominator: S2 has four unknown A0 and 26 candidate pairs, S1 one unknown and 29, S3 three unknown and 27; A1 requires matched A0 success. No full-cohort McNemar verdict. [Native event audit](../../artifacts/compute/results-filing-20261030-0605.json).
   - [belief: cc] Original native records and unchanged criteria are linked above.
+
+
+**Refactor launcher repair checkpoint (2026-10-30):**
+
+- [x] Repair and qualify retained Oolong S1/S2/S3 continuation launchers after obsolete T1 admission refusal. ✅ 2026-10-30 [no-belief: launcher qualification; no scientific result] Three READY successors retain original120 denominator and respectively1/4/3 immutable A0 unknowns, with29/26/27 eligible pairs. Each final frozen executed bundle passed normal native request/result and active cutoff rc75/partial/drain, plus actual no-argument startup and private scheduled-entry/inner controls. Private engines bypass obsolete outer and inner T1 receipts while actual jobs retain grant, CPU affinity, source, lock and resource validation. Smoke uses0.6B and shortened prompts; full27B cohort efficacy remains open. [Evidence](../../artifacts/compute/refactor-yarn-s123-t1-repair-20261030.json).

@@ -1,0 +1,307 @@
+{
+  "published": [
+    {
+      "id": "yarn-oolong-s1-budget256-eligible29-v26-r2-20261030",
+      "manifest_path": "/mnt/raid0/llm/tmp/compute-flags/ready/yarn-oolong-s1-budget256-eligible29-v26-r2-20261030.json",
+      "manifest_sha256": "4bd4b3729cc4838d1d884f42c5a611d7220c8c0b1ab7533f93b97e59e7e38930",
+      "launcher": {
+        "path": "/mnt/raid0/llm/tmp/refactor-01a16fc3/yarn-s1-eligible29-v26-r2-20261030/common-entry.sh",
+        "sha256": "7b52bc1ee8ccd98c50e3d1cac08060a7f32fe1d69e92e6c5d7543080020e8272"
+      },
+      "job": {
+        "path": "/mnt/raid0/llm/tmp/refactor-01a16fc3/yarn-s1-eligible29-v26-r2-20261030/launch.sh",
+        "sha256": "fc821e6614333a2839321353f17ebcd6f08911c80f0f24fa11464f1b54b6aa34"
+      },
+      "source_manifest": {
+        "path": "/mnt/raid0/llm/tmp/refactor-01a16fc3/yarn-s1-eligible29-v26-r2-20261030/SOURCE-MANIFEST-v26.json",
+        "sha256": "a1cc0e789e8afc72b81f41e7ba1318dd6d9f24ec32a6d7723c3c3cc1053a42b5"
+      },
+      "smoke": {
+        "ran_at": "2026-10-30T17:03:37.301451+00:00",
+        "regions": "136,137",
+        "model": "/mnt/raid0/llm/models/Qwen_Qwen3-0.6B-Q8_0.gguf",
+        "first_request_ok": true,
+        "result_writer_ok": true,
+        "exit_ok": true,
+        "wall_s": 26.27284063398838,
+        "log": "/mnt/raid0/llm/tmp/refactor-01a16fc3/yarn-s1-eligible29-v26-r2-20261030/smoke-normal-tBt8zmWH/ws58-launcher.out",
+        "normal": {
+          "root": "/mnt/raid0/llm/tmp/refactor-01a16fc3/yarn-s1-eligible29-v26-r2-20261030/smoke-normal-tBt8zmWH",
+          "log": "/mnt/raid0/llm/tmp/refactor-01a16fc3/yarn-s1-eligible29-v26-r2-20261030/smoke-normal-tBt8zmWH/ws58-launcher.out",
+          "wall_s": 26.27284063398838,
+          "native_rc": 0,
+          "native": {
+            "completed": 1,
+            "cutoff_due_to_window": false,
+            "cutoff_pass": false,
+            "elapsed_s": 26.27284063398838,
+            "failure": null,
+            "mode": "normal",
+            "native_slot_active_near_cutoff": false,
+            "normal_pass": true,
+            "owned_descendants_drained": true,
+            "partial": false,
+            "sampled_output_budget": {
+              "remaining_reserved_bytes": 268406784,
+              "sampled_free_bytes": 422754869248,
+              "sampled_output_bytes": 28672
+            },
+            "schema": "private.yarn.r11_smoke.v1",
+            "scope": "small model; 4000-character Oolong prompt prefixes; no cohort result",
+            "slot_sample_lead_s": null,
+            "unknown": []
+          }
+        },
+        "cutoff": {
+          "root": "/mnt/raid0/llm/tmp/refactor-01a16fc3/yarn-s1-eligible29-v26-r2-20261030/smoke-cutoff-48DzqLrL",
+          "log": "/mnt/raid0/llm/tmp/refactor-01a16fc3/yarn-s1-eligible29-v26-r2-20261030/smoke-cutoff-48DzqLrL/ws58-launcher.out",
+          "wall_s": 50.369150400860235,
+          "native_rc": 75,
+          "native": {
+            "completed": 16,
+            "cutoff_due_to_window": true,
+            "cutoff_pass": true,
+            "elapsed_s": 50.369150400860235,
+            "failure": "WindowDeadline: actual owned worker window deadline",
+            "mode": "cutoff",
+            "native_slot_active_near_cutoff": true,
+            "normal_pass": false,
+            "owned_descendants_drained": true,
+            "partial": true,
+            "sampled_output_budget": {
+              "remaining_reserved_bytes": 268193792,
+              "sampled_free_bytes": 422683754496,
+              "sampled_output_bytes": 241664
+            },
+            "schema": "private.yarn.r11_smoke.v1",
+            "scope": "small model; 4000-character Oolong prompt prefixes; no cohort result",
+            "slot_sample_lead_s": 4.849888285156339,
+            "unknown": [
+              "10199b7ad47b1a702df9af8c87792f512de581a4f5358aabfc5c902957f98152.start"
+            ]
+          }
+        },
+        "scope": "same final source bundle, real small-model normal request/result and active window cutoff; no full27B cohort claim"
+      },
+      "decision_rule": "Partial diagnostic: higher completed matching-pair coverage is better. Retain the original120 denominator; 1 ambiguous s1 A0 candidates remain unknown. Only 29 other pairs may run; A1 requires matching A0 success. No full-cohort McNemar verdict.",
+      "regions": "any-cpu-quarter",
+      "min_window_s": 42000,
+      "window_s": 43200,
+      "scope": "launcher qualification only; no full27B result or fullcohort quality verdict"
+    },
+    {
+      "id": "yarn-oolong-s2-budget256-eligible26-v29-20261030",
+      "manifest_path": "/mnt/raid0/llm/tmp/compute-flags/ready/yarn-oolong-s2-budget256-eligible26-v29-20261030.json",
+      "manifest_sha256": "e028a8db99b936b9fa145b3f3365a030d4f07f8dc7e9376741374cbc2d7d4ed2",
+      "launcher": {
+        "path": "/mnt/raid0/llm/tmp/yarn-oolong-s2-eligible26-budget-v29-20261030/common-entry.sh",
+        "sha256": "760849f3ba22d4037fc8d4cdd69396f475a419fe28b19af1699297e45cc3cd56"
+      },
+      "job": {
+        "path": "/mnt/raid0/llm/tmp/yarn-oolong-s2-eligible26-budget-v29-20261030/launch.sh",
+        "sha256": "60e84aace3ddb4dcfc233f0b192333018138375fac6f5e1773b798fe1c04d903"
+      },
+      "source_manifest": {
+        "path": "/mnt/raid0/llm/tmp/yarn-oolong-s2-eligible26-budget-v29-20261030/SOURCE-MANIFEST-v27.json",
+        "sha256": "36c23a49efa8f4b0c2614d7fa3ab7e315ae7013af87107644ec7f30215dbbe40"
+      },
+      "smoke": {
+        "cutoff": {
+          "log": "/mnt/raid0/llm/tmp/yarn-oolong-s2-eligible26-budget-v29-20261030/smoke-cutoff-YyVU4EvW/ws58-launcher.out",
+          "native": {
+            "completed": 14,
+            "cutoff_due_to_window": true,
+            "cutoff_pass": true,
+            "elapsed_s": 51.29730766103603,
+            "failure": "WindowDeadline: actual owned worker window deadline",
+            "mode": "cutoff",
+            "native_slot_active_near_cutoff": true,
+            "normal_pass": false,
+            "owned_descendants_drained": true,
+            "partial": true,
+            "sampled_output_budget": {
+              "remaining_reserved_bytes": 268222464,
+              "sampled_free_bytes": 422680961024,
+              "sampled_output_bytes": 212992
+            },
+            "schema": "private.yarn.r11_smoke.v1",
+            "scope": "small model; 4000-character Oolong prompt prefixes; no cohort result",
+            "slot_sample_lead_s": 4.948293355992064,
+            "unknown": [
+              "8f75aa3c9dc714944f80d22a93321b691b7eeb7cea658b6a020b9594b0ebcca3.start"
+            ]
+          },
+          "native_rc": 75,
+          "root": "/mnt/raid0/llm/tmp/yarn-oolong-s2-eligible26-budget-v29-20261030/smoke-cutoff-YyVU4EvW",
+          "supervisor": {
+            "child_rc": 75,
+            "children_drained": true,
+            "elapsed_s": 51.39995040604845,
+            "failure": null,
+            "leader_birth": 150227964,
+            "leader_pid": 947898,
+            "per_process_address_space_limit_bytes": 17179869184,
+            "rss_scope": "sum of sampled resident pages across owned process tree; sampling may miss transients and double-count shared pages",
+            "sampled_peak_tree_rss_bytes": 1469693952,
+            "samples": 474,
+            "schema": "hil15-r11-smoke-supervisor/v1",
+            "verified_exited_processes": 0,
+            "verified_exited_threads": 0
+          },
+          "wall_s": 51.39995040604845
+        },
+        "exit_ok": true,
+        "first_request_ok": true,
+        "log": "/mnt/raid0/llm/tmp/yarn-oolong-s2-eligible26-budget-v29-20261030/smoke-normal-Bc8B8FuH/ws58-launcher.out",
+        "model": "/mnt/raid0/llm/models/Qwen_Qwen3-0.6B-Q8_0.gguf",
+        "normal": {
+          "log": "/mnt/raid0/llm/tmp/yarn-oolong-s2-eligible26-budget-v29-20261030/smoke-normal-Bc8B8FuH/ws58-launcher.out",
+          "native": {
+            "completed": 1,
+            "cutoff_due_to_window": false,
+            "cutoff_pass": false,
+            "elapsed_s": 20.24579972680658,
+            "failure": null,
+            "mode": "normal",
+            "native_slot_active_near_cutoff": false,
+            "normal_pass": true,
+            "owned_descendants_drained": true,
+            "partial": false,
+            "sampled_output_budget": {
+              "remaining_reserved_bytes": 268406784,
+              "sampled_free_bytes": 422684696576,
+              "sampled_output_bytes": 28672
+            },
+            "schema": "private.yarn.r11_smoke.v1",
+            "scope": "small model; 4000-character Oolong prompt prefixes; no cohort result",
+            "slot_sample_lead_s": null,
+            "unknown": []
+          },
+          "native_rc": 0,
+          "root": "/mnt/raid0/llm/tmp/yarn-oolong-s2-eligible26-budget-v29-20261030/smoke-normal-Bc8B8FuH",
+          "supervisor": {
+            "child_rc": 0,
+            "children_drained": true,
+            "elapsed_s": 20.399543021107092,
+            "failure": null,
+            "leader_birth": 150225680,
+            "leader_pid": 945005,
+            "per_process_address_space_limit_bytes": 17179869184,
+            "rss_scope": "sum of sampled resident pages across owned process tree; sampling may miss transients and double-count shared pages",
+            "sampled_peak_tree_rss_bytes": 1455218688,
+            "samples": 194,
+            "schema": "hil15-r11-smoke-supervisor/v1",
+            "verified_exited_processes": 0,
+            "verified_exited_threads": 0
+          },
+          "wall_s": 20.399543021107092
+        },
+        "ran_at": "2026-10-30T17:04:51.349857+00:00",
+        "regions": "154,155",
+        "result_writer_ok": true,
+        "scope": "R11 final whole outer-entry bundle, small-model shortened prompt; no full cohort result",
+        "wall_s": 20.399543021107092
+      },
+      "decision_rule": "Partial diagnostic; higher completed matching-pair coverage is better. Preserve original 120-pair denominator and four predecessor A0 unknown; allow only 26 s2 candidates. A1 requires successful matching A0. No redraw and no full-cohort McNemar verdict.",
+      "regions": "any-cpu-quarter",
+      "min_window_s": 42000,
+      "window_s": 43200,
+      "scope": "launcher qualification only; no full27B result or fullcohort quality verdict"
+    },
+    {
+      "id": "yarn-oolong-s3-budget256-eligible27-t1-v29-20261030",
+      "manifest_path": "/mnt/raid0/llm/tmp/compute-flags/ready/yarn-oolong-s3-budget256-eligible27-t1-v29-20261030.json",
+      "manifest_sha256": "0a00a696028f003b3c9cd26ec6da3896d96e2a640463295bfec6581f188edabe",
+      "launcher": {
+        "path": "/mnt/raid0/llm/tmp/yarn-oolong-s3-eligible27-t1-v29-20261030/common-entry.sh",
+        "sha256": "93007576da34efce2e034e278c8d53517634f087b2ea4dbdba0a03f597464d44"
+      },
+      "job": {
+        "path": "/mnt/raid0/llm/tmp/yarn-oolong-s3-eligible27-t1-v29-20261030/launch.sh",
+        "sha256": "1d88bf3d3457f94cfb043b98e4c453a46da960bfc92db07d20cf3ac56ce3ffcf"
+      },
+      "source_manifest": {
+        "path": "/mnt/raid0/llm/tmp/yarn-oolong-s3-eligible27-t1-v29-20261030/SOURCE-MANIFEST-v29.json",
+        "sha256": "eafb15e6f970bf940cf45501d3dfddbc599d0180257f313315e4ec99589c741c"
+      },
+      "smoke": {
+        "ran_at": "2026-10-30T17:08:41.454047+00:00",
+        "regions": "142,143",
+        "model": "/mnt/raid0/llm/models/Qwen_Qwen3-0.6B-Q8_0.gguf",
+        "first_request_ok": true,
+        "result_writer_ok": true,
+        "exit_ok": true,
+        "normal": {
+          "root": "/mnt/raid0/llm/tmp/yarn-oolong-s3-eligible27-t1-v29-20261030/smoke-normal-5U4Opmvu",
+          "log": "/mnt/raid0/llm/tmp/yarn-oolong-s3-eligible27-t1-v29-20261030/smoke-normal-5U4Opmvu/ws58-launcher.out",
+          "native_rc": 0,
+          "native": {
+            "completed": 1,
+            "cutoff_due_to_window": false,
+            "cutoff_pass": false,
+            "elapsed_s": 15.368384041823447,
+            "failure": null,
+            "mode": "normal",
+            "native_slot_active_near_cutoff": false,
+            "normal_pass": true,
+            "owned_descendants_drained": true,
+            "partial": false,
+            "sampled_output_budget": {
+              "remaining_reserved_bytes": 268406784,
+              "sampled_free_bytes": 422676967424,
+              "sampled_output_bytes": 28672
+            },
+            "schema": "private.yarn.r11_smoke.v1",
+            "scope": "small model; 4000-character Oolong prompt prefixes; no cohort result",
+            "slot_sample_lead_s": null,
+            "unknown": []
+          },
+          "wall_s": 15.368384041823447
+        },
+        "cutoff": {
+          "root": "/mnt/raid0/llm/tmp/yarn-oolong-s3-eligible27-t1-v29-20261030/smoke-cutoff-09pvKKvB",
+          "log": "/mnt/raid0/llm/tmp/yarn-oolong-s3-eligible27-t1-v29-20261030/smoke-cutoff-09pvKKvB/ws58-launcher.out",
+          "native_rc": 75,
+          "native": {
+            "completed": 15,
+            "cutoff_due_to_window": true,
+            "cutoff_pass": true,
+            "elapsed_s": 26.31142801209353,
+            "failure": "WindowDeadline: actual owned worker window deadline",
+            "mode": "cutoff",
+            "native_slot_active_near_cutoff": true,
+            "normal_pass": false,
+            "owned_descendants_drained": true,
+            "partial": true,
+            "sampled_output_budget": {
+              "remaining_reserved_bytes": 268210176,
+              "sampled_free_bytes": 422660411392,
+              "sampled_output_bytes": 225280
+            },
+            "schema": "private.yarn.r11_smoke.v1",
+            "scope": "small model; 4000-character Oolong prompt prefixes; no cohort result",
+            "slot_sample_lead_s": 4.964815899031237,
+            "unknown": [
+              "581ba4ac74307cf0de3d7ad2579d4295b0a784e6f88962b5a4e13366dc5a4b13.start"
+            ]
+          },
+          "wall_s": 26.31142801209353
+        },
+        "log": "/mnt/raid0/llm/tmp/yarn-oolong-s3-eligible27-t1-v29-20261030/smoke-normal-5U4Opmvu/ws58-launcher.out",
+        "wall_s": 15.368384041823447
+      },
+      "decision_rule": "Partial diagnostic; higher completed matching-pair coverage is better. Original120 denominator and three predecessor A0 unknown remain. Only27 S3 candidates may run, A1 only after matching successful A0; no redraw or full-cohort verdict.",
+      "regions": "any-cpu-quarter",
+      "min_window_s": 42000,
+      "window_s": 43200,
+      "scope": "launcher qualification only; no full27B result or fullcohort quality verdict"
+    }
+  ],
+  "recorded_at": "2026-10-30T17:09:35.327409+00:00",
+  "withdrawn_unarmed": [
+    "refactor-akxall8-c5-cpu-build-20261030",
+    "codex-hil15-s2-r11-t1-20261030"
+  ],
+  "withdrawal_reason": "unarmed private engines retained legacy inner T1 receipt dependency; successor preparation required, no live process edit",
+  "live_hil_s0": "RESOURCE_PASS and job entry17:06; existing source untouched"
+}
