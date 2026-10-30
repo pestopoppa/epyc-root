@@ -1233,6 +1233,8 @@ no rate at all. A later session may extend the audit but may not report these fi
   do not backfill. Any eligible native record projects through `ClaimTuple` and `claim_tuple.grade()`; no new
   ladder or campaign/keep authority. Source-table row: `scripts/vidya/adapters/README.md`.
 
+
+- [ ] **VB-AK-SERVING-PROFILE-WIRE — add prospective write-side capture and projection for AKX-ALL-16/29.2a native GPU serving profiles before future profile evidence is used for planner ranking or candidate timing order.** Preserve native SSE/token counts (null when absent), frozen request/window and model/target/drafter inputs, executable/DSO hashes, live PID/birth/executable/maps and loader linkage, during-run KFD/VRAM, trace clock/fiducial, per-window counters/denominators, partial/refusal state and cleanup. Strictly join the native record to its source and inputs, then project through existing `ClaimTuple` and `claim_tuple.grade()` only; keep null/missing outcomes explicit. Run the actual planning-context canary before calling this source wired. Current private qualification is diagnostic and has no tuple/canary; do not backfill its measurements, change the keep gate, or add a ladder. The completed prep/keeper conclusion may use `VB-CC-PILOT` only after that future/conditional register is implemented; no register ingestion is available now.
 ## VB-GPU-PREP — write-side hooks for three GPU-runner producers (filed 2026-09-16, sub-gpu-prep)
 
 Ported by wrap-up pass 2 from the /workspace working copy. The sub-gpu-prep producers `a454b7fd` and
