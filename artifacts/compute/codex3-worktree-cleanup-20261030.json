@@ -2,7 +2,6 @@
   "prepared_at": "2026-10-30T13:17:45.591169+00:00",
   "before_linked_count": 9,
   "removed_before_final_root_landing": 8,
-  "final_root_tree_pending_landing": "/mnt/raid0/llm/worktrees/codex3-evl34-production-20261029",
   "proofs": [
     {
       "path": "/mnt/raid0/llm/tmp/codex3-filing-original-1245-20261030/PAW-WORKTREE-CLEANUP.json",
@@ -15,6 +14,10 @@
     {
       "path": "/mnt/raid0/llm/tmp/codex3-filing-original-1245-20261030/WORKTREE-INVENTORY-BEFORE.json",
       "sha256": "abce4b053123e6f357b44a8be40e4d5a36c9b0eec9783f87ebf62aef33b5a47b"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/codex3-filing-original-1245-20261030/WORKTREE-INVENTORY-AFTER.json",
+      "sha256": "e2d3905f3eb0279749b7dfc862a1fe4c9f2183fa0ab2dffda90f0e10db4f59ad"
     }
   ],
   "retained_capsules": [
@@ -26,5 +29,13 @@
     "/mnt/micron/codex3-lanes/root",
     "/mnt/micron/codex3-lanes/research"
   ],
-  "policy": "One reusable checkout per lane; remove linked task trees through worktree_gate after landing or explicit abandonment. Keep source/native bytes and commit refs; no force/prune/gc."
+  "policy": "One reusable checkout per lane; remove linked task trees through worktree_gate after landing or explicit abandonment. Keep source/native bytes and commit refs; no force/prune/gc.",
+  "completed_at": "2026-10-30T13:24:25.594212+00:00",
+  "removed_linked_count": 9,
+  "remaining_owned_linked_task_trees": 0,
+  "landed_commit": "01edaaa7ff3f9a0f15622f61f30df165062fa8cc",
+  "measured_released_allocated_bytes_excluding_hil": 1317015552,
+  "hil_before_du_rounded": "201M; no exact byte count captured",
+  "approximate_released_tree_GiB": 1.42,
+  "attribution": "Sum of captured tree allocations less retained compatibility directory; rounded HIL du separately. Concurrent filesystem free-space changes excluded."
 }
