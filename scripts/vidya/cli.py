@@ -592,7 +592,7 @@ _FILE_SOURCES = (
     "conversation-stack-measurement", "speech-ggml-optest",
     "speech-cpu-measurement", "speech-listen-rating",
     "hil15a-auc", "repl-preview",
-    "rus2-probe", "gpu-leak-probe", "v11-oracle-rerun", "ds41-w5d", "akx-lb32", "repl-embedder-parity", "clbench-cache-hit", "spec-rng-1-2", "pb-qcost", "ev19-gold-selfcheck", "oolong", "yarn-gate-agg", "nemotron-bolt-fold", "np-ctx-kvu-measurement", "ufh14-lb7-stall", "ch19-t3-screen",
+    "rus2-probe", "gpu-leak-probe", "v11-oracle-rerun", "ds41-w5d", "akx-lb32", "repl-embedder-parity", "clbench-cache-hit", "cme7t-response", "spec-rng-1-2", "pb-qcost", "ev19-gold-selfcheck", "oolong", "yarn-gate-agg", "nemotron-bolt-fold", "np-ctx-kvu-measurement", "ufh14-lb7-stall", "ch19-t3-screen",
     "hil17-attribution-ladder", "hil-lb1-loop-score",
     "ak-width-dimension", "ak-width-cells-cpu",
     "moe-routing",

@@ -432,6 +432,10 @@ SOURCES: dict[str, Source] = {s.name: s for s in (
            note="CL-Bench prefix-cache hit report: prompt_prefix and cme5 hit ratios plus the three missed_split "
                 "buckets, re-derived from the recorded counts; pre-08ace05fd reports project nothing",
            task="VB-CLBENCH-CACHE-WIRE"),
+    Source("cme7t-response", "cme7t_response", _run_dirs("RUN_RECORD.json"),
+           note="CME-7T sealed native response/hand records; closed artifact seal and native journal accounting "
+                "are re-verified; hand profits are diagnostic observations only, no efficacy/adoption claim",
+           task="VB-CME7T-RESPONSE-WIRE"),
     Source("spec-rng-1-2", "spec_rng_1_2", _run_dirs("VERDICT.json"),
            note="SPEC-RNG.1.2 poskey depth-invariance launcher dirs (`VERDICT.json` + `out/records.jsonl` + "
                 "`out/verdict.json`); chi-square/acceptance re-derived from the request rows, INDICATIVE "
