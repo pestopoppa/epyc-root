@@ -124,7 +124,9 @@ dashboard sees checkbox state only (axiom above).
   broken, the uncleaned scratch was the defect. A wrap-up that leaves a task's scratch worktrees and
   tmp dirs behind "for later" is exactly the deferred cleanup that produced the crisis; check disk
   headroom and retire a task's own scratch paths as a normal wrap-up step, not only when a launch is
-  already refused.
+  already refused. Keep one reusable checkout per lane; gate-remove exceptional throwaway worktrees
+  immediately when the task lands, after resolving dirty/unlanded tails and migrating dependencies and
+  stale references as required by the *Parallel Subagent Fan-Out* close-out contract.
 - **A wrap-up may run via a subagent on a session's behalf** — preferred when the session is
   already dispatched into new work. That subagent may **PREPARE** index edits: draft row text, run
   `scripts/handoffs/index_state.py --check`, and report the exact diff. **The owning session

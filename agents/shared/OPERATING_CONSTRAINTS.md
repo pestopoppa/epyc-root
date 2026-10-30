@@ -485,16 +485,17 @@ including the dispatches whose nudge says nothing about subagents.
   with extra steps; put the independent calls in one block.
 - **Match subagent model and effort to the task** (`agents/README.md` → Model Routing (Task-Based);
   Codex-side sizing in the section below).
-- **Every subagent brief names its scratch root** — the owning handoff's declared `**Scratch**:`
-  root, with worktrees named `/mnt/raid0/llm/worktrees/<id>-<purpose>` — and the subagent writes
-  nowhere else. That is what lets the wrap-up's scratch step (§ *Filesystem and Storage*) clean up
-  after the whole fan-out by listing one directory.
+- **Every subagent brief names its lane checkout and the owning handoff's declared `**Scratch**:`
+  root (operator, 2026-10-30).** The subagent writes only in those locations. Any exceptional throwaway
+  worktree belongs under that scratch root and is removed through the gate when its task lands.
 - **Every subagent brief says how to READ and where to WRITE the repo (2026-10-21).** The `/workspace`
   shared clone can sit hundreds of commits behind `origin/main` (2026-10-21: about 400) and can carry a
   peer's staged change (a hygiene-hook edit was riding its index), so a file read from it describes an old
-  tree. Read through `git fetch origin && git show origin/main:<path>` or a fresh worktree off
-  `origin/main`; never trust a working-tree read in the shared clone for current state. Write only in the
-  subagent's own worktree; a subagent that edited the shared clone directly (it happened more than once on
+  tree. Read through `git fetch origin && git show origin/main:<path>` or the lane's private checkout
+  refreshed from `origin/main`; never trust a working-tree read in the shared clone for current state.
+  **Reuse one checkout per lane; do not create a new checkout per task or smoke.** Any exceptional
+  throwaway worktree belongs under the declared scratch root. Write only in the lane's private checkout;
+  a subagent that edited the shared clone directly (it happened more than once on
   2026-10-21) is stopped and corrected, its stray hunks reverted by path, and a staged peer change is left
   alone. This is the read-side twin of the pathspec/private-index rules in `agents/commands/wrap-up.md`.
 - **Every subagent brief requires a CPU-region claim for local compute.** Builds, self-launched servers and
@@ -505,8 +506,12 @@ including the dispatches whose nudge says nothing about subagents.
   (origin: INC-20261004-subagent-unlocked-cpu-in-held-window)
 - **Every subagent brief states the close-out sequence (operator, 2026-10-21).** Report first; once
   main approves, the subagent ticks the box, writes its agent_log, appends a progress shard,
-  updates the relevant handoffs, cleans its own scratch and removes its worktree (index rows stay
-  prepare-only, ruling (b)). Operator: *"subagents should update logs, progress report, and
+  updates the relevant handoffs and cleans its task scratch (index rows stay prepare-only, ruling (b)).
+  Retain the lane's one reusable checkout; remove an exceptional throwaway worktree through
+  `scripts/system/worktree_gate.py` immediately when its task lands. Resolve DIRTY/UNLANDED tails by
+  reviewed landing or documented abandonment with patches/evidence and refs preserved. Migrate live
+  dependencies and retire stale references before removal; never bypass the gate.
+  Operator: *"subagents should update logs, progress report, and
   relevant handoffs when their tasks are approved as complete. This allows us to not lose
   important work logging in between major/thorough /wrap-up which you should trigger/dispatch at
   major work boundaries"*. The boundary dispatch is in `agents/shared/SESSION_LIFECYCLE.md` →
