@@ -1,0 +1,846 @@
+{
+  "capsule": "/mnt/raid0/llm/tmp/refactor-r18-anchor-integrity-20261030",
+  "checks": {
+    "all_copied_shared_objects_match_store_SHA256SUMS": true,
+    "all_needed_shared_dependencies_resolve": true,
+    "canonical_aliases_resolve_only_inside_private_view": true,
+    "gpu_hip_alias_is_ratified_versioned_elf": true,
+    "unversioned_bad_HIP_not_present_as_regular_file_in_view": true
+  },
+  "created_at_utc": "2026-10-30T22:37:00Z",
+  "ldd": {
+    "cpu": {
+      "llama-server": {
+        "missing": false,
+        "rc": 0,
+        "stdout": "\tlinux-vdso.so.1 (0x00007f2b7ac2d000)\n\tlibllama-server-impl.so => /mnt/raid0/llm/tmp/refactor-r18-anchor-integrity-20261030/private-view/cpu/bin/libllama-server-impl.so (0x00007f2b7a600000)\n\tlibstdc++.so.6 => /lib/x86_64-linux-gnu/libstdc++.so.6 (0x00007f2b7a373000)\n\tlibgcc_s.so.1 => /lib/x86_64-linux-gnu/libgcc_s.so.1 (0x00007f2b7a346000)\n\tlibc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007f2b7a103000)\n\tlibllama-common.so.0 => /mnt/raid0/llm/tmp/refactor-r18-anchor-integrity-20261030/private-view/cpu/bin/libllama-common.so.0 (0x00007f2b79c00000)\n\tlibmtmd.so.0 => /mnt/raid0/llm/tmp/refactor-r18-anchor-integrity-20261030/private-view/cpu/bin/libmtmd.so.0 (0x00007f2b79ab8000)\n\tlibllama.so.0 => /mnt/raid0/llm/tmp/refactor-r18-anchor-integrity-20261030/private-view/cpu/bin/libllama.so.0 (0x00007f2b79600000)\n\tlibggml.so.0 => /mnt/raid0/llm/tmp/refactor-r18-anchor-integrity-20261030/private-view/cpu/bin/libggml.so.0 (0x00007f2b7a0f5000)\n\tlibggml-base.so.0 => /mnt/raid0/llm/tmp/refactor-r18-anchor-integrity-20261030/private-view/cpu/bin/libggml-base.so.0 (0x00007f2b799e3000)\n\tlibm.so.6 => /lib/x86_64-linux-gnu/libm.so.6 (0x00007f2b794f3000)\n\t/lib64/ld-linux-x86-64.so.2 (0x00007f2b7ac2f000)\n\tlibggml-cpu.so.0 => /mnt/raid0/llm/tmp/refactor-r18-anchor-integrity-20261030/private-view/cpu/bin/libggml-cpu.so.0 (0x00007f2b79000000)\n\tlibgomp.so.1 => /lib/x86_64-linux-gnu/libgomp.so.1 (0x00007f2b7949a000)\n"
+      }
+    },
+    "gpu": {
+      "libggml-hip.so.0.16.0": {
+        "missing": false,
+        "rc": 0,
+        "stdout": "\tlinux-vdso.so.1 (0x000076d69998e000)\n\tlibggml-base.so.0 => /mnt/raid0/llm/tmp/refactor-r18-anchor-integrity-20261030/private-view/gpu/bin/libggml-base.so.0 (0x000076d69592b000)\n\tlibhipblas.so.2 => /opt/rocm/lib/libhipblas.so.2 (0x000076d695810000)\n\tlibrocblas.so.4 => /opt/rocm/lib/librocblas.so.4 (0x000076d654400000)\n\tlibamdhip64.so.6 => /opt/rocm/lib/libamdhip64.so.6 (0x000076d652c00000)\n\tlibstdc++.so.6 => /lib/x86_64-linux-gnu/libstdc++.so.6 (0x000076d652973000)\n\tlibm.so.6 => /lib/x86_64-linux-gnu/libm.so.6 (0x000076d6542f3000)\n\tlibgcc_s.so.1 => /lib/x86_64-linux-gnu/libgcc_s.so.1 (0x000076d699955000)\n\tlibc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x000076d652730000)\n\tlibgomp.so.1 => /lib/x86_64-linux-gnu/libgomp.so.1 (0x000076d65429a000)\n\tlibrocsolver.so.0 => /opt/rocm/lib/librocsolver.so.0 (0x000076d5ed800000)\n\t/lib64/ld-linux-x86-64.so.2 (0x000076d699990000)\n\tlibrocprofiler-register.so.0 => /opt/rocm/lib/librocprofiler-register.so.0 (0x000076d6526ab000)\n\tlibamd_comgr.so.2 => /opt/rocm/lib/libamd_comgr.so.2 (0x000076d5e4c00000)\n\tlibhsa-runtime64.so.1 => /opt/rocm/lib/libhsa-runtime64.so.1 (0x000076d5e4800000)\n\tlibnuma.so.1 => /lib/x86_64-linux-gnu/libnuma.so.1 (0x000076d699945000)\n\tlibrocsparse.so.1 => /opt/rocm/lib/librocsparse.so.1 (0x000076d590600000)\n\tlibz.so.1 => /lib/x86_64-linux-gnu/libz.so.1 (0x000076d6957f0000)\n\tlibzstd.so.1 => /lib/x86_64-linux-gnu/libzstd.so.1 (0x000076d5ed737000)\n\tlibtinfo.so.6 => /lib/x86_64-linux-gnu/libtinfo.so.6 (0x000076d654263000)\n\tlibelf.so.1 => /lib/x86_64-linux-gnu/libelf.so.1 (0x000076d654244000)\n\tlibdrm.so.2 => /lib/x86_64-linux-gnu/libdrm.so.2 (0x000076d69992c000)\n\tlibdrm_amdgpu.so.1 => /lib/x86_64-linux-gnu/libdrm_amdgpu.so.1 (0x000076d6957e3000)\n"
+      },
+      "llama-server": {
+        "missing": false,
+        "rc": 0,
+        "stdout": "\tlinux-vdso.so.1 (0x00007368c3aaf000)\n\tlibllama-server-impl.so => /mnt/raid0/llm/tmp/refactor-r18-anchor-integrity-20261030/private-view/gpu/bin/libllama-server-impl.so (0x00007368c3400000)\n\tlibstdc++.so.6 => /lib/x86_64-linux-gnu/libstdc++.so.6 (0x00007368c3173000)\n\tlibgcc_s.so.1 => /lib/x86_64-linux-gnu/libgcc_s.so.1 (0x00007368c3a73000)\n\tlibc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007368c2f30000)\n\tlibllama-common.so.0 => /mnt/raid0/llm/tmp/refactor-r18-anchor-integrity-20261030/private-view/gpu/bin/libllama-common.so.0 (0x00007368c2a00000)\n\tlibmtmd.so.0 => /mnt/raid0/llm/tmp/refactor-r18-anchor-integrity-20261030/private-view/gpu/bin/libmtmd.so.0 (0x00007368c28b8000)\n\tlibllama.so.0 => /mnt/raid0/llm/tmp/refactor-r18-anchor-integrity-20261030/private-view/gpu/bin/libllama.so.0 (0x00007368c2400000)\n\tlibggml.so.0 => /mnt/raid0/llm/tmp/refactor-r18-anchor-integrity-20261030/private-view/gpu/bin/libggml.so.0 (0x00007368c3a64000)\n\tlibggml-base.so.0 => /mnt/raid0/llm/tmp/refactor-r18-anchor-integrity-20261030/private-view/gpu/bin/libggml-base.so.0 (0x00007368c27e3000)\n\tlibm.so.6 => /lib/x86_64-linux-gnu/libm.so.6 (0x00007368c22f3000)\n\t/lib64/ld-linux-x86-64.so.2 (0x00007368c3ab1000)\n\tlibggml-cpu.so.0 => /mnt/raid0/llm/tmp/refactor-r18-anchor-integrity-20261030/private-view/gpu/bin/libggml-cpu.so.0 (0x00007368c1e00000)\n\tlibggml-hip.so.0 => /mnt/raid0/llm/tmp/refactor-r18-anchor-integrity-20261030/private-view/gpu/bin/libggml-hip.so.0 (0x00007368bde00000)\n\tlibgomp.so.1 => /lib/x86_64-linux-gnu/libgomp.so.1 (0x00007368c2ed7000)\n\tlibhipblas.so.2 => /opt/rocm/lib/libhipblas.so.2 (0x00007368c21d8000)\n\tlibrocblas.so.4 => /opt/rocm/lib/librocblas.so.4 (0x000073687ca00000)\n\tlibamdhip64.so.6 => /opt/rocm/lib/libamdhip64.so.6 (0x000073687b200000)\n\tlibrocsolver.so.0 => /opt/rocm/lib/librocsolver.so.0 (0x0000736816400000)\n\tlibrocprofiler-register.so.0 => /opt/rocm/lib/librocprofiler-register.so.0 (0x00007368c2153000)\n\tlibamd_comgr.so.2 => /opt/rocm/lib/libamd_comgr.so.2 (0x000073680d800000)\n\tlibhsa-runtime64.so.1 => /opt/rocm/lib/libhsa-runtime64.so.1 (0x000073680d400000)\n\tlibnuma.so.1 => /lib/x86_64-linux-gnu/libnuma.so.1 (0x00007368c3a50000)\n\tlibrocsparse.so.1 => /opt/rocm/lib/librocsparse.so.1 (0x00007367b9200000)\n\tlibz.so.1 => /lib/x86_64-linux-gnu/libz.so.1 (0x00007368c3a30000)\n\tlibzstd.so.1 => /lib/x86_64-linux-gnu/libzstd.so.1 (0x00007368c1d37000)\n\tlibtinfo.so.6 => /lib/x86_64-linux-gnu/libtinfo.so.6 (0x000073687c9c9000)\n\tlibelf.so.1 => /lib/x86_64-linux-gnu/libelf.so.1 (0x00007368c2eb8000)\n\tlibdrm.so.2 => /lib/x86_64-linux-gnu/libdrm.so.2 (0x00007368c3a17000)\n\tlibdrm_amdgpu.so.1 => /lib/x86_64-linux-gnu/libdrm_amdgpu.so.1 (0x00007368c2eab000)\n"
+      }
+    }
+  },
+  "protected_store_unchanged": true,
+  "root_manifest": {
+    "gpu_core_entries": {
+      "libggml-base.so.0.16.0": "92cc3dfd7e1119b7bcc83c18f758099c47363073013a896ee76efcd6ad19145a",
+      "libggml-cpu.so.0.16.0": "3f4edd2fc0f1e78003735be59db987d43c4bc0e6a8f821bc419d7b6f492346c0",
+      "libggml-hip.so.0.16.0": "f26a166b8ea3089d19a395ae00afa22e917df8eba71ca6ef4be5235d65ea8079",
+      "libggml.so.0.16.0": "8709bbacc79b0d4faf43d66370a5db73d9ab378995f1f0964c03df8af6422639"
+    },
+    "path": "/workspace/artifacts/operator/v10-cutover-20260922-ffc1bac82/v10-hip.manifest",
+    "sha256": "2dc6790106a22938e04b82fe95ca33bd5551ac58b0f2092d123d8160705c279a"
+  },
+  "schema": "r18-gpu-private-anchor-view/v1",
+  "unexpected_unversioned_hip": {
+    "copy": "/mnt/raid0/llm/tmp/refactor-r18-anchor-integrity-20261030/evidence/unversioned-libggml-hip.so.bad-original.copy",
+    "copy_device": 2431,
+    "copy_inode": 190466070,
+    "copy_is_readonly_copy": true,
+    "copy_mode": "0o444",
+    "copy_sha256": "daf086c2a805a8cac8ab800198762a379e3d6852342f86539bf7d83837280d80",
+    "copy_size": 68101784,
+    "expected_bad_sha256": "daf086c2a805a8cac8ab800198762a379e3d6852342f86539bf7d83837280d80",
+    "same_device_inode": false,
+    "source": "/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libggml-hip.so",
+    "source_device": 2431,
+    "source_inode": 110023851,
+    "source_stat_original": {
+      "inode": 110023851,
+      "lstat_mode": 493,
+      "mtime_ns": 1793142007143035590,
+      "sha256": "daf086c2a805a8cac8ab800198762a379e3d6852342f86539bf7d83837280d80",
+      "size": 68101784
+    },
+    "source_stat_recheck": {
+      "inode": 110023851,
+      "lstat_mode": 493,
+      "mtime_ns": 1793142007143035590,
+      "sha256": "daf086c2a805a8cac8ab800198762a379e3d6852342f86539bf7d83837280d80",
+      "size": 68101784
+    }
+  },
+  "views": {
+    "cpu": {
+      "aliases": [
+        {
+          "alias": "libggml-base.so",
+          "link_text": "libggml-base.so.0",
+          "resolved_chain_final": "/mnt/raid0/llm/tmp/refactor-r18-anchor-integrity-20261030/private-view/cpu/bin/libggml-base.so.0.16.0",
+          "sha256": "92cc3dfd7e1119b7bcc83c18f758099c47363073013a896ee76efcd6ad19145a"
+        },
+        {
+          "alias": "libggml-base.so.0",
+          "link_text": "libggml-base.so.0.16.0",
+          "resolved_chain_final": "/mnt/raid0/llm/tmp/refactor-r18-anchor-integrity-20261030/private-view/cpu/bin/libggml-base.so.0.16.0",
+          "sha256": "92cc3dfd7e1119b7bcc83c18f758099c47363073013a896ee76efcd6ad19145a"
+        },
+        {
+          "alias": "libggml-cpu.so",
+          "link_text": "libggml-cpu.so.0",
+          "resolved_chain_final": "/mnt/raid0/llm/tmp/refactor-r18-anchor-integrity-20261030/private-view/cpu/bin/libggml-cpu.so.0.16.0",
+          "sha256": "3f4edd2fc0f1e78003735be59db987d43c4bc0e6a8f821bc419d7b6f492346c0"
+        },
+        {
+          "alias": "libggml-cpu.so.0",
+          "link_text": "libggml-cpu.so.0.16.0",
+          "resolved_chain_final": "/mnt/raid0/llm/tmp/refactor-r18-anchor-integrity-20261030/private-view/cpu/bin/libggml-cpu.so.0.16.0",
+          "sha256": "3f4edd2fc0f1e78003735be59db987d43c4bc0e6a8f821bc419d7b6f492346c0"
+        },
+        {
+          "alias": "libggml.so",
+          "link_text": "libggml.so.0",
+          "resolved_chain_final": "/mnt/raid0/llm/tmp/refactor-r18-anchor-integrity-20261030/private-view/cpu/bin/libggml.so.0.16.0",
+          "sha256": "87074c95c8709c491e84b2c8b9c0b8fa911b1cd309fbd5536a4947063a96998e"
+        },
+        {
+          "alias": "libggml.so.0",
+          "link_text": "libggml.so.0.16.0",
+          "resolved_chain_final": "/mnt/raid0/llm/tmp/refactor-r18-anchor-integrity-20261030/private-view/cpu/bin/libggml.so.0.16.0",
+          "sha256": "87074c95c8709c491e84b2c8b9c0b8fa911b1cd309fbd5536a4947063a96998e"
+        },
+        {
+          "alias": "libllama.so",
+          "link_text": "libllama.so.0",
+          "resolved_chain_final": "/mnt/raid0/llm/tmp/refactor-r18-anchor-integrity-20261030/private-view/cpu/bin/libllama.so.0.0.10303",
+          "sha256": "5cdd003d3f441e1efe42e4c06e4434b0195f25ab6317d64aa7e7cf60deaba844"
+        },
+        {
+          "alias": "libllama.so.0",
+          "link_text": "libllama.so.0.0.10303",
+          "resolved_chain_final": "/mnt/raid0/llm/tmp/refactor-r18-anchor-integrity-20261030/private-view/cpu/bin/libllama.so.0.0.10303",
+          "sha256": "5cdd003d3f441e1efe42e4c06e4434b0195f25ab6317d64aa7e7cf60deaba844"
+        },
+        {
+          "alias": "libllama-common.so",
+          "link_text": "libllama-common.so.0",
+          "resolved_chain_final": "/mnt/raid0/llm/tmp/refactor-r18-anchor-integrity-20261030/private-view/cpu/bin/libllama-common.so.0.0.10303",
+          "sha256": "dfd31d4bb51818e5507b9eeaa7766452cab914f02bdbd1e0f18b4c3e9294de09"
+        },
+        {
+          "alias": "libllama-common.so.0",
+          "link_text": "libllama-common.so.0.0.10303",
+          "resolved_chain_final": "/mnt/raid0/llm/tmp/refactor-r18-anchor-integrity-20261030/private-view/cpu/bin/libllama-common.so.0.0.10303",
+          "sha256": "dfd31d4bb51818e5507b9eeaa7766452cab914f02bdbd1e0f18b4c3e9294de09"
+        },
+        {
+          "alias": "libmtmd.so",
+          "link_text": "libmtmd.so.0",
+          "resolved_chain_final": "/mnt/raid0/llm/tmp/refactor-r18-anchor-integrity-20261030/private-view/cpu/bin/libmtmd.so.0.0.10303",
+          "sha256": "ba6f3ba8797a42d0d0b9927484a2b5d7e1dd8a0694521ff4bf49c9c413d419ab"
+        },
+        {
+          "alias": "libmtmd.so.0",
+          "link_text": "libmtmd.so.0.0.10303",
+          "resolved_chain_final": "/mnt/raid0/llm/tmp/refactor-r18-anchor-integrity-20261030/private-view/cpu/bin/libmtmd.so.0.0.10303",
+          "sha256": "ba6f3ba8797a42d0d0b9927484a2b5d7e1dd8a0694521ff4bf49c9c413d419ab"
+        }
+      ],
+      "elf_dependencies": {
+        "libggml-base.so.0.16.0": {
+          "needed": [
+            "libgomp.so.1",
+            "libstdc++.so.6",
+            "libm.so.6",
+            "libgcc_s.so.1",
+            "libc.so.6"
+          ],
+          "sha256": "92cc3dfd7e1119b7bcc83c18f758099c47363073013a896ee76efcd6ad19145a",
+          "soname": [
+            "libggml-base.so.0"
+          ]
+        },
+        "libggml-cpu.so.0.16.0": {
+          "needed": [
+            "libggml-base.so.0",
+            "libgomp.so.1",
+            "libstdc++.so.6",
+            "libm.so.6",
+            "libgcc_s.so.1",
+            "libc.so.6",
+            "ld-linux-x86-64.so.2"
+          ],
+          "sha256": "3f4edd2fc0f1e78003735be59db987d43c4bc0e6a8f821bc419d7b6f492346c0",
+          "soname": [
+            "libggml-cpu.so.0"
+          ]
+        },
+        "libggml.so.0.16.0": {
+          "needed": [
+            "libggml-cpu.so.0",
+            "libggml-base.so.0",
+            "libstdc++.so.6",
+            "libgcc_s.so.1",
+            "libc.so.6"
+          ],
+          "sha256": "87074c95c8709c491e84b2c8b9c0b8fa911b1cd309fbd5536a4947063a96998e",
+          "soname": [
+            "libggml.so.0"
+          ]
+        },
+        "libllama-batched-bench-impl.so": {
+          "needed": [
+            "libllama-common.so.0",
+            "libllama.so.0",
+            "libggml-base.so.0",
+            "libstdc++.so.6",
+            "libgcc_s.so.1",
+            "libc.so.6"
+          ],
+          "sha256": "bdf5f96d52e188acf09703d63995d78bbd7583053a6f55a1601dc094f1365baf",
+          "soname": [
+            "libllama-batched-bench-impl.so"
+          ]
+        },
+        "libllama-bench-impl.so": {
+          "needed": [
+            "libllama-common.so.0",
+            "libllama.so.0",
+            "libggml.so.0",
+            "libggml-base.so.0",
+            "libstdc++.so.6",
+            "libm.so.6",
+            "libgcc_s.so.1",
+            "libc.so.6"
+          ],
+          "sha256": "f17b0842acc9854ecb3ac9d1c7512600551c4a6573c9fecc3e030ce5f12640d5",
+          "soname": [
+            "libllama-bench-impl.so"
+          ]
+        },
+        "libllama-cli-impl.so": {
+          "needed": [
+            "libllama-server-impl.so",
+            "libllama-common.so.0",
+            "libllama.so.0",
+            "libggml-base.so.0",
+            "libstdc++.so.6",
+            "libgcc_s.so.1",
+            "libc.so.6"
+          ],
+          "sha256": "8e559212d9d8330c1579f3045c77812ab29f2570b5ddcc89b4f23df6e6c450e4",
+          "soname": [
+            "libllama-cli-impl.so"
+          ]
+        },
+        "libllama-common.so.0.0.10303": {
+          "needed": [
+            "libllama.so.0",
+            "libggml.so.0",
+            "libggml-base.so.0",
+            "libstdc++.so.6",
+            "libm.so.6",
+            "libgcc_s.so.1",
+            "libc.so.6",
+            "ld-linux-x86-64.so.2"
+          ],
+          "sha256": "dfd31d4bb51818e5507b9eeaa7766452cab914f02bdbd1e0f18b4c3e9294de09",
+          "soname": [
+            "libllama-common.so.0"
+          ]
+        },
+        "libllama-completion-impl.so": {
+          "needed": [
+            "libllama-common.so.0",
+            "libllama.so.0",
+            "libggml.so.0",
+            "libggml-base.so.0",
+            "libstdc++.so.6",
+            "libgcc_s.so.1",
+            "libc.so.6"
+          ],
+          "sha256": "431e25f4acbd06e24176a1fb845941cbc9ddad260296a9a79d6e024c1363af15",
+          "soname": [
+            "libllama-completion-impl.so"
+          ]
+        },
+        "libllama-fit-params-impl.so": {
+          "needed": [
+            "libllama-common.so.0",
+            "libllama.so.0",
+            "libggml-base.so.0",
+            "libstdc++.so.6",
+            "libgcc_s.so.1",
+            "libc.so.6"
+          ],
+          "sha256": "d4e9ebc0dd17ce6d5c35568082ef63d925a1ceaaff574df64bea3e8c82aebd1f",
+          "soname": [
+            "libllama-fit-params-impl.so"
+          ]
+        },
+        "libllama-perplexity-impl.so": {
+          "needed": [
+            "libllama-common.so.0",
+            "libllama.so.0",
+            "libggml-base.so.0",
+            "libstdc++.so.6",
+            "libm.so.6",
+            "libgcc_s.so.1",
+            "libc.so.6"
+          ],
+          "sha256": "85cb8769ef8929d1f802d56ace5b77473d5bedfc6f0ce42c949c5c3ebf8667e1",
+          "soname": [
+            "libllama-perplexity-impl.so"
+          ]
+        },
+        "libllama-quantize-impl.so": {
+          "needed": [
+            "libllama-common.so.0",
+            "libllama.so.0",
+            "libggml-base.so.0",
+            "libstdc++.so.6",
+            "libgcc_s.so.1",
+            "libc.so.6"
+          ],
+          "sha256": "a40d13aa037ecafe0f9984795df5cfbcebbc080b4e94e4c20365f9e01ec756c5",
+          "soname": [
+            "libllama-quantize-impl.so"
+          ]
+        },
+        "libllama-server-impl.so": {
+          "needed": [
+            "libllama-common.so.0",
+            "libmtmd.so.0",
+            "libllama.so.0",
+            "libggml.so.0",
+            "libggml-base.so.0",
+            "libstdc++.so.6",
+            "libm.so.6",
+            "libgcc_s.so.1",
+            "libc.so.6",
+            "ld-linux-x86-64.so.2"
+          ],
+          "sha256": "64817c163bf7efdd4eb6cd46ca97749199d299949131970a9a49c36dcfd3ef57",
+          "soname": [
+            "libllama-server-impl.so"
+          ]
+        },
+        "libllama.so.0.0.10303": {
+          "needed": [
+            "libggml.so.0",
+            "libggml-cpu.so.0",
+            "libggml-base.so.0",
+            "libstdc++.so.6",
+            "libm.so.6",
+            "libgcc_s.so.1",
+            "libc.so.6",
+            "ld-linux-x86-64.so.2"
+          ],
+          "sha256": "5cdd003d3f441e1efe42e4c06e4434b0195f25ab6317d64aa7e7cf60deaba844",
+          "soname": [
+            "libllama.so.0"
+          ]
+        },
+        "libmtmd.so.0.0.10303": {
+          "needed": [
+            "libllama.so.0",
+            "libggml.so.0",
+            "libggml-base.so.0",
+            "libstdc++.so.6",
+            "libm.so.6",
+            "libgcc_s.so.1",
+            "libc.so.6",
+            "ld-linux-x86-64.so.2"
+          ],
+          "sha256": "ba6f3ba8797a42d0d0b9927484a2b5d7e1dd8a0694521ff4bf49c9c413d419ab",
+          "soname": [
+            "libmtmd.so.0"
+          ]
+        }
+      },
+      "file_count": 15,
+      "files": [
+        {
+          "name": "libggml-base.so.0.16.0",
+          "sha256": "92cc3dfd7e1119b7bcc83c18f758099c47363073013a896ee76efcd6ad19145a",
+          "size": 939848
+        },
+        {
+          "name": "libggml-cpu.so.0.16.0",
+          "sha256": "3f4edd2fc0f1e78003735be59db987d43c4bc0e6a8f821bc419d7b6f492346c0",
+          "size": 2982176
+        },
+        {
+          "name": "libggml.so.0.16.0",
+          "sha256": "87074c95c8709c491e84b2c8b9c0b8fa911b1cd309fbd5536a4947063a96998e",
+          "size": 59648
+        },
+        {
+          "name": "libllama-batched-bench-impl.so",
+          "sha256": "bdf5f96d52e188acf09703d63995d78bbd7583053a6f55a1601dc094f1365baf",
+          "size": 44144
+        },
+        {
+          "name": "libllama-bench-impl.so",
+          "sha256": "f17b0842acc9854ecb3ac9d1c7512600551c4a6573c9fecc3e030ce5f12640d5",
+          "size": 511656
+        },
+        {
+          "name": "libllama-cli-impl.so",
+          "sha256": "8e559212d9d8330c1579f3045c77812ab29f2570b5ddcc89b4f23df6e6c450e4",
+          "size": 460944
+        },
+        {
+          "name": "libllama-common.so.0.0.10303",
+          "sha256": "dfd31d4bb51818e5507b9eeaa7766452cab914f02bdbd1e0f18b4c3e9294de09",
+          "size": 6067360
+        },
+        {
+          "name": "libllama-completion-impl.so",
+          "sha256": "431e25f4acbd06e24176a1fb845941cbc9ddad260296a9a79d6e024c1363af15",
+          "size": 106880
+        },
+        {
+          "name": "libllama-fit-params-impl.so",
+          "sha256": "d4e9ebc0dd17ce6d5c35568082ef63d925a1ceaaff574df64bea3e8c82aebd1f",
+          "size": 34824
+        },
+        {
+          "name": "libllama-perplexity-impl.so",
+          "sha256": "85cb8769ef8929d1f802d56ace5b77473d5bedfc6f0ce42c949c5c3ebf8667e1",
+          "size": 163688
+        },
+        {
+          "name": "libllama-quantize-impl.so",
+          "sha256": "a40d13aa037ecafe0f9984795df5cfbcebbc080b4e94e4c20365f9e01ec756c5",
+          "size": 84048
+        },
+        {
+          "name": "libllama-server-impl.so",
+          "sha256": "64817c163bf7efdd4eb6cd46ca97749199d299949131970a9a49c36dcfd3ef57",
+          "size": 7181064
+        },
+        {
+          "name": "libllama.so.0.0.10303",
+          "sha256": "5cdd003d3f441e1efe42e4c06e4434b0195f25ab6317d64aa7e7cf60deaba844",
+          "size": 4513808
+        },
+        {
+          "name": "libmtmd.so.0.0.10303",
+          "sha256": "ba6f3ba8797a42d0d0b9927484a2b5d7e1dd8a0694521ff4bf49c9c413d419ab",
+          "size": 1460072
+        },
+        {
+          "name": "llama-server",
+          "sha256": "4483bcfc92c5c3bb0005df31e1c668cb565d49f7b40ba94f4df5a126cbbb648c",
+          "size": 17984
+        }
+      ],
+      "manifest_path": "/mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/SHA256SUMS",
+      "manifest_sha256": "ccfe57b18bc720e569c2e97e55454a27865d15dd928857d4ba3674874a1608a2",
+      "view_bin": "/mnt/raid0/llm/tmp/refactor-r18-anchor-integrity-20261030/private-view/cpu/bin"
+    },
+    "gpu": {
+      "aliases": [
+        {
+          "alias": "libggml-base.so",
+          "link_text": "libggml-base.so.0",
+          "resolved_chain_final": "/mnt/raid0/llm/tmp/refactor-r18-anchor-integrity-20261030/private-view/gpu/bin/libggml-base.so.0.16.0",
+          "sha256": "92cc3dfd7e1119b7bcc83c18f758099c47363073013a896ee76efcd6ad19145a"
+        },
+        {
+          "alias": "libggml-base.so.0",
+          "link_text": "libggml-base.so.0.16.0",
+          "resolved_chain_final": "/mnt/raid0/llm/tmp/refactor-r18-anchor-integrity-20261030/private-view/gpu/bin/libggml-base.so.0.16.0",
+          "sha256": "92cc3dfd7e1119b7bcc83c18f758099c47363073013a896ee76efcd6ad19145a"
+        },
+        {
+          "alias": "libggml-cpu.so",
+          "link_text": "libggml-cpu.so.0",
+          "resolved_chain_final": "/mnt/raid0/llm/tmp/refactor-r18-anchor-integrity-20261030/private-view/gpu/bin/libggml-cpu.so.0.16.0",
+          "sha256": "3f4edd2fc0f1e78003735be59db987d43c4bc0e6a8f821bc419d7b6f492346c0"
+        },
+        {
+          "alias": "libggml-cpu.so.0",
+          "link_text": "libggml-cpu.so.0.16.0",
+          "resolved_chain_final": "/mnt/raid0/llm/tmp/refactor-r18-anchor-integrity-20261030/private-view/gpu/bin/libggml-cpu.so.0.16.0",
+          "sha256": "3f4edd2fc0f1e78003735be59db987d43c4bc0e6a8f821bc419d7b6f492346c0"
+        },
+        {
+          "alias": "libggml.so",
+          "link_text": "libggml.so.0",
+          "resolved_chain_final": "/mnt/raid0/llm/tmp/refactor-r18-anchor-integrity-20261030/private-view/gpu/bin/libggml.so.0.16.0",
+          "sha256": "8709bbacc79b0d4faf43d66370a5db73d9ab378995f1f0964c03df8af6422639"
+        },
+        {
+          "alias": "libggml.so.0",
+          "link_text": "libggml.so.0.16.0",
+          "resolved_chain_final": "/mnt/raid0/llm/tmp/refactor-r18-anchor-integrity-20261030/private-view/gpu/bin/libggml.so.0.16.0",
+          "sha256": "8709bbacc79b0d4faf43d66370a5db73d9ab378995f1f0964c03df8af6422639"
+        },
+        {
+          "alias": "libllama.so",
+          "link_text": "libllama.so.0",
+          "resolved_chain_final": "/mnt/raid0/llm/tmp/refactor-r18-anchor-integrity-20261030/private-view/gpu/bin/libllama.so.0.0.10303",
+          "sha256": "808a4de5ad3f9754f1c3c70bdd87da3418aa73b3b39d26e4dc38ba4c75b5c60a"
+        },
+        {
+          "alias": "libllama.so.0",
+          "link_text": "libllama.so.0.0.10303",
+          "resolved_chain_final": "/mnt/raid0/llm/tmp/refactor-r18-anchor-integrity-20261030/private-view/gpu/bin/libllama.so.0.0.10303",
+          "sha256": "808a4de5ad3f9754f1c3c70bdd87da3418aa73b3b39d26e4dc38ba4c75b5c60a"
+        },
+        {
+          "alias": "libllama-common.so",
+          "link_text": "libllama-common.so.0",
+          "resolved_chain_final": "/mnt/raid0/llm/tmp/refactor-r18-anchor-integrity-20261030/private-view/gpu/bin/libllama-common.so.0.0.10303",
+          "sha256": "0f33ec5cc9967c14c8eeb2d560d6d827301c50cf42dfd701cc1752cc4a7bf9cb"
+        },
+        {
+          "alias": "libllama-common.so.0",
+          "link_text": "libllama-common.so.0.0.10303",
+          "resolved_chain_final": "/mnt/raid0/llm/tmp/refactor-r18-anchor-integrity-20261030/private-view/gpu/bin/libllama-common.so.0.0.10303",
+          "sha256": "0f33ec5cc9967c14c8eeb2d560d6d827301c50cf42dfd701cc1752cc4a7bf9cb"
+        },
+        {
+          "alias": "libmtmd.so",
+          "link_text": "libmtmd.so.0",
+          "resolved_chain_final": "/mnt/raid0/llm/tmp/refactor-r18-anchor-integrity-20261030/private-view/gpu/bin/libmtmd.so.0.0.10303",
+          "sha256": "e244e0054e255698a57da7ffab2c4b4d42f98716f543c2388c4e923464743b05"
+        },
+        {
+          "alias": "libmtmd.so.0",
+          "link_text": "libmtmd.so.0.0.10303",
+          "resolved_chain_final": "/mnt/raid0/llm/tmp/refactor-r18-anchor-integrity-20261030/private-view/gpu/bin/libmtmd.so.0.0.10303",
+          "sha256": "e244e0054e255698a57da7ffab2c4b4d42f98716f543c2388c4e923464743b05"
+        },
+        {
+          "alias": "libggml-hip.so",
+          "link_text": "libggml-hip.so.0",
+          "resolved_chain_final": "/mnt/raid0/llm/tmp/refactor-r18-anchor-integrity-20261030/private-view/gpu/bin/libggml-hip.so.0.16.0",
+          "sha256": "f26a166b8ea3089d19a395ae00afa22e917df8eba71ca6ef4be5235d65ea8079"
+        },
+        {
+          "alias": "libggml-hip.so.0",
+          "link_text": "libggml-hip.so.0.16.0",
+          "resolved_chain_final": "/mnt/raid0/llm/tmp/refactor-r18-anchor-integrity-20261030/private-view/gpu/bin/libggml-hip.so.0.16.0",
+          "sha256": "f26a166b8ea3089d19a395ae00afa22e917df8eba71ca6ef4be5235d65ea8079"
+        }
+      ],
+      "elf_dependencies": {
+        "libggml-base.so.0.16.0": {
+          "needed": [
+            "libgomp.so.1",
+            "libstdc++.so.6",
+            "libm.so.6",
+            "libgcc_s.so.1",
+            "libc.so.6"
+          ],
+          "sha256": "92cc3dfd7e1119b7bcc83c18f758099c47363073013a896ee76efcd6ad19145a",
+          "soname": [
+            "libggml-base.so.0"
+          ]
+        },
+        "libggml-cpu.so.0.16.0": {
+          "needed": [
+            "libggml-base.so.0",
+            "libgomp.so.1",
+            "libstdc++.so.6",
+            "libm.so.6",
+            "libgcc_s.so.1",
+            "libc.so.6",
+            "ld-linux-x86-64.so.2"
+          ],
+          "sha256": "3f4edd2fc0f1e78003735be59db987d43c4bc0e6a8f821bc419d7b6f492346c0",
+          "soname": [
+            "libggml-cpu.so.0"
+          ]
+        },
+        "libggml-hip.so.0.16.0": {
+          "needed": [
+            "libggml-base.so.0",
+            "libhipblas.so.2",
+            "librocblas.so.4",
+            "libamdhip64.so.6",
+            "libstdc++.so.6",
+            "libm.so.6",
+            "libgcc_s.so.1",
+            "libc.so.6"
+          ],
+          "sha256": "f26a166b8ea3089d19a395ae00afa22e917df8eba71ca6ef4be5235d65ea8079",
+          "soname": [
+            "libggml-hip.so.0"
+          ]
+        },
+        "libggml.so.0.16.0": {
+          "needed": [
+            "libggml-cpu.so.0",
+            "libggml-hip.so.0",
+            "libggml-base.so.0",
+            "libstdc++.so.6",
+            "libgcc_s.so.1",
+            "libc.so.6"
+          ],
+          "sha256": "8709bbacc79b0d4faf43d66370a5db73d9ab378995f1f0964c03df8af6422639",
+          "soname": [
+            "libggml.so.0"
+          ]
+        },
+        "libllama-batched-bench-impl.so": {
+          "needed": [
+            "libllama-common.so.0",
+            "libllama.so.0",
+            "libggml-base.so.0",
+            "libstdc++.so.6",
+            "libgcc_s.so.1",
+            "libc.so.6"
+          ],
+          "sha256": "7c9cdc42f62c89aaab2793c2b42bffeebeb80ec33eccb0ba249a9fb9b8f35850",
+          "soname": [
+            "libllama-batched-bench-impl.so"
+          ]
+        },
+        "libllama-bench-impl.so": {
+          "needed": [
+            "libllama-common.so.0",
+            "libllama.so.0",
+            "libggml.so.0",
+            "libggml-base.so.0",
+            "libstdc++.so.6",
+            "libm.so.6",
+            "libgcc_s.so.1",
+            "libc.so.6"
+          ],
+          "sha256": "0b7d16945e7d1d4379100751130d7374a2272a9632772caa2b522558b9a5af24",
+          "soname": [
+            "libllama-bench-impl.so"
+          ]
+        },
+        "libllama-cli-impl.so": {
+          "needed": [
+            "libllama-server-impl.so",
+            "libllama-common.so.0",
+            "libllama.so.0",
+            "libggml-base.so.0",
+            "libstdc++.so.6",
+            "libgcc_s.so.1",
+            "libc.so.6"
+          ],
+          "sha256": "37aef2003cce81fdccc703e135514c2fa0be6bda9643698fb45ec0ee849321b4",
+          "soname": [
+            "libllama-cli-impl.so"
+          ]
+        },
+        "libllama-common.so.0.0.10303": {
+          "needed": [
+            "libllama.so.0",
+            "libggml.so.0",
+            "libggml-base.so.0",
+            "libstdc++.so.6",
+            "libm.so.6",
+            "libgcc_s.so.1",
+            "libc.so.6",
+            "ld-linux-x86-64.so.2"
+          ],
+          "sha256": "0f33ec5cc9967c14c8eeb2d560d6d827301c50cf42dfd701cc1752cc4a7bf9cb",
+          "soname": [
+            "libllama-common.so.0"
+          ]
+        },
+        "libllama-completion-impl.so": {
+          "needed": [
+            "libllama-common.so.0",
+            "libllama.so.0",
+            "libggml.so.0",
+            "libggml-base.so.0",
+            "libstdc++.so.6",
+            "libgcc_s.so.1",
+            "libc.so.6"
+          ],
+          "sha256": "a2c30ac9f85857cee0032894999fb0d4ffef55fdb70a574594a61521bd804fc4",
+          "soname": [
+            "libllama-completion-impl.so"
+          ]
+        },
+        "libllama-fit-params-impl.so": {
+          "needed": [
+            "libllama-common.so.0",
+            "libllama.so.0",
+            "libggml-base.so.0",
+            "libstdc++.so.6",
+            "libgcc_s.so.1",
+            "libc.so.6"
+          ],
+          "sha256": "4b2da5ccd953a2eea7ca30cbf379433a0a112aace97d7614e5e0efe953f922c3",
+          "soname": [
+            "libllama-fit-params-impl.so"
+          ]
+        },
+        "libllama-perplexity-impl.so": {
+          "needed": [
+            "libllama-common.so.0",
+            "libllama.so.0",
+            "libggml-base.so.0",
+            "libstdc++.so.6",
+            "libm.so.6",
+            "libgcc_s.so.1",
+            "libc.so.6"
+          ],
+          "sha256": "faa780af6275c74aa3e87ee45482ee4a2f1d2da7e7c9701226cee81708425b47",
+          "soname": [
+            "libllama-perplexity-impl.so"
+          ]
+        },
+        "libllama-quantize-impl.so": {
+          "needed": [
+            "libllama-common.so.0",
+            "libllama.so.0",
+            "libggml-base.so.0",
+            "libstdc++.so.6",
+            "libgcc_s.so.1",
+            "libc.so.6"
+          ],
+          "sha256": "c3311e0f4dc436268c56c9120b536249d7ee4b4c93ccd8cbd86d152c7414846b",
+          "soname": [
+            "libllama-quantize-impl.so"
+          ]
+        },
+        "libllama-server-impl.so": {
+          "needed": [
+            "libllama-common.so.0",
+            "libmtmd.so.0",
+            "libllama.so.0",
+            "libggml.so.0",
+            "libggml-base.so.0",
+            "libstdc++.so.6",
+            "libm.so.6",
+            "libgcc_s.so.1",
+            "libc.so.6",
+            "ld-linux-x86-64.so.2"
+          ],
+          "sha256": "d9f143d7b056c0bc24a1822fb309ddd01c96df2b63b1b1bc61791e97f519e96f",
+          "soname": [
+            "libllama-server-impl.so"
+          ]
+        },
+        "libllama.so.0.0.10303": {
+          "needed": [
+            "libggml.so.0",
+            "libggml-cpu.so.0",
+            "libggml-base.so.0",
+            "libstdc++.so.6",
+            "libm.so.6",
+            "libgcc_s.so.1",
+            "libc.so.6",
+            "ld-linux-x86-64.so.2"
+          ],
+          "sha256": "808a4de5ad3f9754f1c3c70bdd87da3418aa73b3b39d26e4dc38ba4c75b5c60a",
+          "soname": [
+            "libllama.so.0"
+          ]
+        },
+        "libmtmd.so.0.0.10303": {
+          "needed": [
+            "libllama.so.0",
+            "libggml.so.0",
+            "libggml-base.so.0",
+            "libstdc++.so.6",
+            "libm.so.6",
+            "libgcc_s.so.1",
+            "libc.so.6",
+            "ld-linux-x86-64.so.2"
+          ],
+          "sha256": "e244e0054e255698a57da7ffab2c4b4d42f98716f543c2388c4e923464743b05",
+          "soname": [
+            "libmtmd.so.0"
+          ]
+        }
+      },
+      "file_count": 16,
+      "files": [
+        {
+          "name": "libggml-base.so.0.16.0",
+          "sha256": "92cc3dfd7e1119b7bcc83c18f758099c47363073013a896ee76efcd6ad19145a",
+          "size": 939848
+        },
+        {
+          "name": "libggml-cpu.so.0.16.0",
+          "sha256": "3f4edd2fc0f1e78003735be59db987d43c4bc0e6a8f821bc419d7b6f492346c0",
+          "size": 2982176
+        },
+        {
+          "name": "libggml-hip.so.0.16.0",
+          "sha256": "f26a166b8ea3089d19a395ae00afa22e917df8eba71ca6ef4be5235d65ea8079",
+          "size": 68250624
+        },
+        {
+          "name": "libggml.so.0.16.0",
+          "sha256": "8709bbacc79b0d4faf43d66370a5db73d9ab378995f1f0964c03df8af6422639",
+          "size": 59440
+        },
+        {
+          "name": "libllama-batched-bench-impl.so",
+          "sha256": "7c9cdc42f62c89aaab2793c2b42bffeebeb80ec33eccb0ba249a9fb9b8f35850",
+          "size": 44144
+        },
+        {
+          "name": "libllama-bench-impl.so",
+          "sha256": "0b7d16945e7d1d4379100751130d7374a2272a9632772caa2b522558b9a5af24",
+          "size": 511656
+        },
+        {
+          "name": "libllama-cli-impl.so",
+          "sha256": "37aef2003cce81fdccc703e135514c2fa0be6bda9643698fb45ec0ee849321b4",
+          "size": 460944
+        },
+        {
+          "name": "libllama-common.so.0.0.10303",
+          "sha256": "0f33ec5cc9967c14c8eeb2d560d6d827301c50cf42dfd701cc1752cc4a7bf9cb",
+          "size": 6067360
+        },
+        {
+          "name": "libllama-completion-impl.so",
+          "sha256": "a2c30ac9f85857cee0032894999fb0d4ffef55fdb70a574594a61521bd804fc4",
+          "size": 106880
+        },
+        {
+          "name": "libllama-fit-params-impl.so",
+          "sha256": "4b2da5ccd953a2eea7ca30cbf379433a0a112aace97d7614e5e0efe953f922c3",
+          "size": 34824
+        },
+        {
+          "name": "libllama-perplexity-impl.so",
+          "sha256": "faa780af6275c74aa3e87ee45482ee4a2f1d2da7e7c9701226cee81708425b47",
+          "size": 163688
+        },
+        {
+          "name": "libllama-quantize-impl.so",
+          "sha256": "c3311e0f4dc436268c56c9120b536249d7ee4b4c93ccd8cbd86d152c7414846b",
+          "size": 84048
+        },
+        {
+          "name": "libllama-server-impl.so",
+          "sha256": "d9f143d7b056c0bc24a1822fb309ddd01c96df2b63b1b1bc61791e97f519e96f",
+          "size": 7181064
+        },
+        {
+          "name": "libllama.so.0.0.10303",
+          "sha256": "808a4de5ad3f9754f1c3c70bdd87da3418aa73b3b39d26e4dc38ba4c75b5c60a",
+          "size": 4513808
+        },
+        {
+          "name": "libmtmd.so.0.0.10303",
+          "sha256": "e244e0054e255698a57da7ffab2c4b4d42f98716f543c2388c4e923464743b05",
+          "size": 1460072
+        },
+        {
+          "name": "llama-server",
+          "sha256": "2b49713f0e3c022132393bf302dab954a1e2c1974b91c28d01ce2d192abdfa7b",
+          "size": 17984
+        }
+      ],
+      "manifest_path": "/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/SHA256SUMS",
+      "manifest_sha256": "c882cd42598c3bdd6490a422ab74e5b4fb5c74bca60b5d31338077c6ebe632ff",
+      "view_bin": "/mnt/raid0/llm/tmp/refactor-r18-anchor-integrity-20261030/private-view/gpu/bin"
+    }
+  }
+}

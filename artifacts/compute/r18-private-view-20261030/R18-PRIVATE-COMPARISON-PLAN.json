@@ -1,0 +1,27 @@
+{
+  "anchor_cpu": "/mnt/raid0/llm/tmp/refactor-r18-anchor-integrity-20261030/private-view/cpu",
+  "anchor_gpu": "/mnt/raid0/llm/tmp/refactor-r18-anchor-integrity-20261030/private-view/gpu",
+  "candidate_cpu": "/mnt/raid0/llm/tmp/refactor-oab21-metrics-20261030/r18a-independent-packet/scratch/full/buildcpu",
+  "candidate_gate": "full-result.json mode=full partial=false and full compile/comparator step recorded; tee-drain-full.json says drained; candidate CPU and GPU comparator inputs exist.",
+  "candidate_gpu": "/mnt/raid0/llm/tmp/refactor-oab21-metrics-20261030/r18a-independent-packet/scratch/full/buildgpu",
+  "candidate_source": {
+    "commit": "ffc1bac82eeca6f9099e1ccd9ba49703c460a115",
+    "tree": "a7c564ffbac0a86ce648ef6f11c1748c81a6560d"
+  },
+  "command_script": "/mnt/raid0/llm/tmp/refactor-r18-anchor-integrity-20261030/compare-after-full-private-view.sh",
+  "command_sha256": "c8c4709f99e6be57f32a268b436b8209109e964b034386632f41e7bf2d75538e",
+  "comparison_inputs": [
+    "anchor CPU libggml-cpu.so resolved via private alias to SHA3f4edd2fc0f1e78003735be59db987d43c4bc0e6a8f821bc419d7b6f492346c0",
+    "anchor GPU libggml-hip.so resolved via private alias to ratified SHA f26a166b8ea3089d19a395ae00afa22e917df8eba71ca6ef4be5235d65ea8079",
+    "candidate CPU/GPU outputs from unchanged R18 full recipe"
+  ],
+  "existing_comparator": {
+    "audited_expected_sha256": "08a5e9e15f8ac07d573d8e0c8c38ec4aef6d78820032ec4e2eb0325a3447bf61",
+    "path": "/mnt/raid0/llm/tmp/refactor-01a16fc3/r18a-recipe-verifiability-20261030/compare_symbols.py",
+    "sha256": "08a5e9e15f8ac07d573d8e0c8c38ec4aef6d78820032ec4e2eb0325a3447bf61"
+  },
+  "pass_rule": "unchanged compare_symbols.py returns symbol_identity_pass=true with zero added/removed exported symbols in CPU, HIP host and gfx90a device sets; no result is claimed yet.",
+  "r18_runtime_recipe_or_comparator_modified": false,
+  "schema": "r18-private-anchor-comparison-plan/v1",
+  "status": "prepared, not executed; candidate full build currently running at last observation"
+}
