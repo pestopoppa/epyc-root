@@ -923,6 +923,22 @@ dim 96. This is a **projection, not a measurement.** Two conditions on any adopt
       never *by how much* — any character-coverage figure must be re-derived by tokenizing with
       truncation disabled. Quantifying is zero-compute; the remedy arms need a full corpus re-embed
       and are **G13**.
+  - **2026-10-30 preparation checkpoint (G13; full sweep not run):** READY packet
+    `/mnt/raid0/llm/tmp/codex-ni-kbrag-g13-truncskip-20261030`, current ID
+    `codex-ni-kbrag-g13-truncskip-r2-20261030`, rank 60, any CPU quarter, 21,600 s, 16 GiB,
+    48 GiB output reservation. R2 supersedes R1, withdrawn before ARM/FILLERS/grant after the
+    counter-field review; R2 pins source manifest `b4c1d90a670ebf147e17521dbe6b7cdbe87186a9ff8780da656e0174be28637f`. Final native smoke
+    passed (32.061 s, rc 0); captured post-work cleanup returned 75 after 7.324 s. Full design is
+    six arms (doc caps 256/300/rechunk 1,100 × punctuation skiplist off/on), 490 native
+    query calls (7 indexes × 70 original K7 queries), eight pinned encoding workers, resumable chunks/cases, plus the canonical index
+    scored separately. Inputs: 1,522 indexed paths, 34,221 4,000-char chunks / 61,353 1,100-char
+    chunks, 39,382,114 bytes. 1,520 complete candidate snapshots reproduce the indexed chunk
+    multisets, but historical whole-raw-file identity is unproved; these comprise 1,469 current
+    files and 51 Git-recovered files. Two other paths use complete current fallback snapshots
+    with changed-snapshot flags. Native atomic worker records support NEW=3 normal / NEW=2 cutoff, parent NEW=0 each;
+    missing/invalid records remain unknown. Only doc-cap 256 has the matched new baseline; doc-cap 300, rechunk 1,100, and
+    punctuation arms are candidate comparisons. June historical 0.5690 over 577 files / 18,010 chunks is not comparable, original gate is
+    unassessable, and adoption is unsupported. The full sweep remains unrun; leave G13 open.
 - [x] **H2 (Z) — no query-length instrumentation exists anywhere in the retrieval path.** We cannot
       today answer whether a live agent query has *ever* exceeded 48 tokens; every statement about the
       caps is inferred from a 90-case curated pool and never observed from traffic. Log the encoded
