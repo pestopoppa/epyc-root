@@ -1,0 +1,16 @@
+{
+  "model": "large-v3-turbo",
+  "cores": [
+    124,
+    125
+  ],
+  "started": 2,
+  "outcomes": 0,
+  "unknown": 2,
+  "unexposed": 0,
+  "sampled_peak_rss_bytes": 0,
+  "co_tenancy": "uncontrolled; concurrent pinned workers",
+  "reason": null,
+  "timed_out_unknown": [],
+  "worker_returncodes": []
+}

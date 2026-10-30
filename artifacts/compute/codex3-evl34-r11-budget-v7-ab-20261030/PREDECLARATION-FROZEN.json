@@ -1,0 +1,160 @@
+{
+  "arm_order": "source order; even pilot ordinal REPL then ReDel, odd ordinal ReDel then REPL; disjoint control REPL then ReDel",
+  "arms": [
+    "actual production _execute_repl",
+    "ReDel DelegateAndWait depth <= 1"
+  ],
+  "budget": {
+    "case_arm_wall_timeout_seconds": 900,
+    "child_limit_basis": "ReDel at most 16 persistent helpers, 16 lifetime model calls per helper across rounds; REPL at most 256 distinct one-call tracked lookups; common root, child call and aggregate limits, architecture differs.",
+    "child_model_requests_total_max": 256,
+    "enforcement": "mandatory on both routes; refuse exposure if unsupported; no silent change",
+    "max_delegation_depth": 1,
+    "max_native_repl_turns": 8,
+    "native_depth_fix": "Pinned ReDel registers child delegation based on parent depth; max_delegation_depth=0 preserves root delegate/wait while withholding those tools from depth-1 children, enforcing observed depth <=1.",
+    "per_case_arm_max_reserved_generated_tokens": 1572864,
+    "per_child_model_requests_max": 16,
+    "per_model_request_max_generated_tokens": 4096,
+    "redel_distinct_helpers_max": 16,
+    "reservation": "128 root plus at most 256 child model calls, each reserves up to 4096; common aggregate 384*4096; 900 seconds may censor any case",
+    "root_model_requests_max": 128,
+    "seed": 42,
+    "temperature": 0
+  },
+  "calibration_exception": {
+    "max_rss_bytes": 51539607552,
+    "max_seconds": 265,
+    "model_path": "/mnt/raid0/llm/models/Qwen3.6-35B-A3B-MTP-Q8_0.gguf",
+    "model_sha256": "c1283d8b80c3e38b2735ddbc9766d3b3126f44d6c484be419d4e101d09a76131",
+    "operator_authorization_required": false,
+    "scope": "DeepDive source index 49 only; exclusive GPU; no CPU region claim; affinity 184-185",
+    "state": "explicit calibration smoke only"
+  },
+  "control_policy": "one disjoint control cell per arm; never included in pilot analysis; no redraw or rerun after exposure",
+  "control_repair_note": "New disjoint control49; first-response entry qualification only, natural delegation not forced.",
+  "control_storage": {
+    "archive": "after descendant drain, preserve and hash control records; archive-only recovery without model replay",
+    "environment": "inherit HOME; task-specific TMPDIR/XDG_CACHE_HOME/HF_HOME and declared log targets are RAM; unrelated system/GPU caches are not claimed controlled",
+    "pilot_guard": "unchanged R2 full-pilot disk reservation guard",
+    "raid_floor_bytes": 161061273600,
+    "raid_metadata_reserve_bytes": 16777216,
+    "ram_root": "/mnt/micron/codex3-evl34-r11-budget-v7-ab-20261030/control",
+    "sampled_cap_bytes": 536870912,
+    "storage": "persistent Micron, sampled 512 MiB output cap; RAID metadata 128 MiB reserve"
+  },
+  "default_smoke_limit": "265 seconds; 8 GiB aggregate RSS",
+  "exact_scoring": "lowercase, replace characters outside ASCII letters digits and spaces with spaces, collapse whitespace, exact match",
+  "exposure": "Prior declarations through 38 excluded; 39-49 no conflict in recorded exposure scan; model-training exposure unknown.",
+  "feasibility": "20 cells x 900 seconds plus fixed startup/teardown allowance; the limit does not promise 384 full-output requests fit in 900 seconds.",
+  "independent_smoke_control": {
+    "id": "49",
+    "question_sha256": "cec8f40d533b52b21120faff4b0dfc97cf85d294d56f25c374a0e6c24e3bbe27",
+    "row_sha256": "7d9f48635b3be55f1f7e3564907eda1d30add7e027f9b2414f587bb32effbecd",
+    "source_index": 49
+  },
+  "inventory_sha256": "0573de8f7f68854440bd47cd54d276962fe393544c35148f971c3591233270e4",
+  "model_path": "/mnt/raid0/llm/models/Qwen3.6-35B-A3B-MTP-Q8_0.gguf",
+  "model_qualification": "Entry-only smoke requires first completed real model response on each native REPL and ReDel route, native usage/writer, unforced tool schema, GPU residency, quiescent sends and server/supervisor drain. Control natural delegation is not required, and partial semantic controls remain unknown. Full pilot criteria unchanged.",
+  "model_sha256": "c1283d8b80c3e38b2735ddbc9766d3b3126f44d6c484be419d4e101d09a76131",
+  "orchestrator_observed_commit": "b0f8613d65f30986f147e5467b1c66892c887ce5",
+  "orchestrator_repl_executor_sha256": "e007f2ffdfe55ab38abfd6eadb1240a3dd86ae66453c1934464b426e39b3f8b0",
+  "pilot": [
+    {
+      "id": "39",
+      "question_sha256": "66c850b3646bf91474e1b91f6b0b9c17e5844a673cfcc4aaaa9cc5ea3710efc7",
+      "row_sha256": "19e7a9b7d8a560f1606b474cd4bf6f6bc5e7b9ad12203731269a4e5f79905cf1",
+      "source_index": 39
+    },
+    {
+      "id": "40",
+      "question_sha256": "b0729768439855154a786a69fb8fc3ffc3ded1c4c4b77c8bcacde1c26224e72a",
+      "row_sha256": "bd0050b93a471e818af19cb3f8f2046a5cc4051f56dbfa87c52ebc9b7ecb567a",
+      "source_index": 40
+    },
+    {
+      "id": "41",
+      "question_sha256": "d28fd0bb683645a2764404ce1975b7e32644c4ae0c14657943489faf619cea8a",
+      "row_sha256": "0affc0e6752472dc3189e059dc1b0fd08f81939fc62b51c9cdf857a0a8903d0d",
+      "source_index": 41
+    },
+    {
+      "id": "42",
+      "question_sha256": "46c95b93fbe17a3e1d9d27e67f27f2ed46f68de18e7f16db501e16ce42ea4949",
+      "row_sha256": "da541599f3e7fde9cdcb9fd4cb8e46dfe7f2ce3c657afd1f552db9d438843c9d",
+      "source_index": 42
+    },
+    {
+      "id": "43",
+      "question_sha256": "99178dc0655d0f0470b3120eb4505f54feb1c80d3d773f8bc56eab71211b7a59",
+      "row_sha256": "05272bc5d20460c1c0e4aabea9fe51317f2f4c5bfa71ef4b69ae0ffb4475be80",
+      "source_index": 43
+    },
+    {
+      "id": "44",
+      "question_sha256": "c068b238e9ca8ed1a4825e30197e0b096a2f2c357e566f0341f38114861dc0af",
+      "row_sha256": "5ea243edebd368bd8306382e33815fb4a3540c5a0ea9e3c3ce5d158e0c117e31",
+      "source_index": 44
+    },
+    {
+      "id": "45",
+      "question_sha256": "259fce83ebb27bc88525766dccb86faf293e3373515cf4779349c73f18556e14",
+      "row_sha256": "5cd768509963da3ac061f2bf760121efacfc459ab3df788177db432bcd604513",
+      "source_index": 45
+    },
+    {
+      "id": "46",
+      "question_sha256": "9c7a3e5418717c6faac018f0714c0e559b0f1b27bf2f7835adced5891805f4b7",
+      "row_sha256": "5b4d1bb87ed9ac672af9f51f2b1c52d8f6d4e5eba21485f7d4b3eacd6584a8ee",
+      "source_index": 46
+    },
+    {
+      "id": "47",
+      "question_sha256": "37d24b0bf544636cbff7c5f1d16f4dc1f31db804927f0b5d830454c75c3e4ef3",
+      "row_sha256": "a1a48cb679a26e9df2958e5f1393c7994bea4f96acfed9a2abd402acf33ae791",
+      "source_index": 47
+    },
+    {
+      "id": "48",
+      "question_sha256": "be90358fd73c0cee13132bc138eb8ccd62cf46a0590cd1cbc1c92b0a395bd85f",
+      "row_sha256": "6f7890cf477ca1309471707f011ad470b697f54ba096990c8996dbd82754cf49",
+      "source_index": 48
+    }
+  ],
+  "pilot_interpretation": "Report normalized exact match, paired ReDel minus REPL difference and missing-outcome bounds on the original denominator. Report a 95% percentile paired bootstrap interval on complete pairs only by exact multinomial enumeration; it is descriptive and has no missing-data adjustment. Report native delegation, wall and token use; no Step 3 promotion threshold invented. Zero matched delegation with fully observed routes is inconclusive for mechanism comparison.",
+  "predecessor_predeclaration_sha256": "1e15a5010e73e9a0869d5f6095c382734f6729b272f666070e8266613926e32c",
+  "prior_control_disposition": "New disjoint control49; prior control outputs never reused.",
+  "prior_exposure_caveat": "Original R11 cases 11-20 and controls 28-33 remain immutable. Dual-role reserved 29-38 excluded. No prior output reused.",
+  "prompt_recipe": "source question verbatim only, gold excluded",
+  "purpose": "Separate naturally-delegating 10-pair A/B diagnostic after R11 observed delegation.",
+  "redel_commit": "79eb988facdc7c36a1377c034603065932ce85c8",
+  "requirements": [
+    "same context, question, model and matching enforced generation budget",
+    "all arms marked exposed durably before dispatch; unfinished remains unknown; no replay",
+    "record all outcomes and report conservative normalized exact match, elapsed and native token usage, actual delegation and depth",
+    "verify full execution confinement, depth attribution, descendant custody and usage before admission",
+    "sample available disk throughout; stop before crossing 150 GiB floor"
+  ],
+  "runtime_source_note": "Fresh prospective run pins current native source; it differs from immutable R11. Exact inventory and source manifest determine execution.",
+  "schema": "evl34-predecl-v1",
+  "selection": "source-order fixed before exposure; no substitutions or redraw",
+  "server_port": 19987,
+  "smoke_limit": "Default 265 seconds and 8 GiB RSS; explicit R7 calibration exception 265 seconds and 48 GiB RSS",
+  "source_declaration_sha256": "bf6e22402216d222fabdfe9ed625557fa6be148e0b501f5c6303383c2a096519",
+  "source_revision": "36b28945eaf271e64003e7fcd4ddb81af0828eb5",
+  "source_selection": "source-order 39-48 paired A/B, control49 disjoint",
+  "source_sha256": "cfde3734fb4367cc748fefb7ac6df034269a8f40f20bfa05c81e69eaea7eeadb",
+  "source_split": "qa_rl training split; diagnostic only; model training exposure unknown",
+  "source_url": "https://huggingface.co/datasets/zai-org/DeepDive",
+  "status": "FROZEN BEFORE V7 EXPOSURE",
+  "tool_policy": "Unforced ReDel root delegate/wait; max depth 1; 16 helper instances, 16 lifetime requests each; REPL up to 256 one-call child lookups; common 128 root requests and 384 total; empty wait fixed; capture native events and errors.",
+  "window": {
+    "cell_count": 20,
+    "cell_wall_cap_seconds": 900,
+    "deadline_and_last_cell_guard_seconds": 60,
+    "interpretation": "planning arithmetic; no hard completion guarantee; missing cells rc75, unknowns retained without replay",
+    "maximum_cell_seconds": 18000,
+    "minimum_grant_seconds": 1500,
+    "planning_startup_teardown_overhead_slack_seconds": 1740,
+    "requested_seconds": 19800
+  }
+}
