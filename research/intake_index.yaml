@@ -356053,7 +356053,7 @@
     GGUF/IQ support (it does not in public code), or that we can run it on Q38FN (needs a full HF bf16 model plus per-option
     deltas on accelerators). The ISTA Q38FN allocation files are RCO-style OUTPUTS in a format stock llama-quantize can consume;
     that, not the RCO code, is what is usable here.
-  notes: 'Clone /mnt/raid0/llm/tmp/intake-ist-slq-20261022/src-RCO at 9a1e09c07d468109cbe60a1b87d5036034a79d10; paper v3 HTML
+  notes: 'Re-encountered 2026-10-30 via the DS41 unsloth intake (ISTA-DASLab DeepSeek-V4.1-Flash-1017 GSQ-RCO card, intake-2518, cites arXiv 2605.00649); not re-minted. Clone /mnt/raid0/llm/tmp/intake-ist-slq-20261022/src-RCO at 9a1e09c07d468109cbe60a1b87d5036034a79d10; paper v3 HTML
     /mnt/raid0/llm/tmp/intake-ist-slq-20261022/src-rco-paper/p.html. 2605.00649 previously only a referenced id (intake-2197/2206/2207
     notes). Combined repo+paper entry. | DIVE 2026-10-22: Dive 2026-10-22, repo 9a1e09c and arXiv:2605.00649v3 HTML: README
     in full; rco_search_quant.py args and post-processing; src/search/quant.py (parse_bitwidth_map, InterpolatedModel.setup,
@@ -363765,3 +363765,484 @@
     effect: unaffected
     note: Metadata only; deliberately no causal claim.
   depends_on: []
+- id: intake-2511
+  arxiv_id: null
+  url: https://unsloth.ai/docs/models/deepseek-v4.1-flash
+  source_type: blog
+  title: 'Unsloth docs: DeepSeek-V4.1-Flash Run Locally Guide (Dynamic V3.1 update of the 1017 GGUFs, 2026-10-30)'
+  categories:
+  - quantization
+  - local_inference
+  - benchmark_methodology
+  novelty: medium
+  relevance: high
+  discovered_via: input
+  verdict: superseded
+  ingested_date: '2026-10-30'
+  authors:
+  - Unsloth AI
+  key_claims:
+  - Unsloth released new DeepSeek-V4.1-Flash-1017 GGUFs made with a "Dynamic V3.1 (preview)" algorithm on 2026-10-30, claimed
+    to improve its quants on nearly all benchmarks.
+  - UD-Q4_K_XL and UD-Q8_K_XL keep the checkpoint's native MXFP4 routed experts and the same Engram table; Q4 stores many
+    non-expert weights in Q8_0 and Q8 in BF16, so the labels do not describe every tensor's precision.
+  - Against DeepSeek's official reference the page reports UD-Q4_K_XL (500.7 GB) at KL 9.00e-03 / top-1 98.2% on wiki1100
+    and 4.46e-03 / 98.5% on long17k, UD-Q8_K_XL (508.4 GB) at 4.76e-03 / 98.5% and 2.81e-03 / 98.7%, falling to 0.138 / 91.5%
+    for UD-Q2_K_XL and 0.457 / 82.8% for UD-IQ1_S.
+  - 'The page tells users to build llama.cpp from PR #30817 (git fetch origin pull/30817/head) to run these GGUFs.'
+  - The Engram table is offered at MXFP8 (202.8 GB, original), Q6_K (161.3), Q5_K (135.2) and IQ4_NL (110.6) and can be swapped
+    between quants; low-bit quants ship IQ4_NL or Q5_K tables.
+  - A six-benchmark table (AIME25, HMMT Feb26, GPQA-D, MMLU-Pro, IFEval, LCB v6 at 32K) puts UD-Q2_K_XL at 87.49 average vs
+    87.68 for UD-Q8_K_XL and ISTA GSQ-RCO IQ2_XXS at 83.68; the page says it could not reproduce GSQ-RCO's 100% AIME25 and
+    that lower-bit quants truncate (think longer) more often.
+  techniques:
+  - Unsloth Dynamic V3.1 (preview) per-layer mixed-type GGUF quantization
+  - native MXFP4 expert retention
+  - swappable Engram table precision
+  - KLD / top-1 agreement vs F32 reference
+  reported_results:
+  - 'Vendor-reported KL / top-1 vs DeepSeek official reference (wiki1100; long17k): UD-Q4_K_XL 9.00e-03/98.2%; 4.46e-03/98.5%.
+    UD-Q8_K_XL 4.76e-03/98.5%; 2.81e-03/98.7%. UD-IQ3_XXS 0.0625/94.6%. UD-Q2_K_XL 0.138/91.5%. UD-IQ1_S 0.457/82.8%. Not
+    EPYC measurements.'
+  - 'Vendor-reported avg of 6 benchmarks: UD-Q8_K_XL 87.68, UD-Q2_K_XL 87.49, UD-IQ2_XXS 86.63, UD-IQ1_M 85.55, GSQ-RCO IQ2_XS
+    85.64, GSQ-RCO IQ2_XXS 83.68 (sizes not matched; harness differs from ISTA).'
+  cross_references:
+    chapters: []
+    handoffs:
+    - deepseek-v41-flash-evaluation.md
+    experiments: []
+    intake_entries:
+    - intake-2121
+    - intake-2117
+    intake_entry_notes:
+    - intake-2121 (the 1017 checkpoint these GGUFs quantize)
+    - intake-2117 (DeepSeek-V4.1-Flash tech report)
+  recommended_actions:
+  - 'Operator-review candidate: do not replace the served antirez 1017 MXFP4-experts weights with UD-Q4_K_XL; see reader_should_conclude.'
+  credibility_score: 2
+  contradicting_evidence: null
+  referenced_arxiv_ids: []
+  notes: 'Stage 1 (main + subagents, 2026-10-30): seed page curl-fetched and read from disk; expansion found by a literature
+    subagent (search + gh/HF API). Operator pre-approved all recommended Stage-2 dives (max 4 waves).'
+  verification: stage1-unverified
+  handoffs_updated: []
+  handoffs_created: []
+- id: intake-2512
+  arxiv_id: null
+  url: https://huggingface.co/unsloth/DeepSeek-V4.1-Flash-1017-GGUF
+  source_type: repo
+  title: unsloth/DeepSeek-V4.1-Flash-1017-GGUF @ 8a6ec9cf (UD GGUF files, imatrix, DSpark, swappable Engram tables)
+  categories:
+  - quantization
+  - local_inference
+  novelty: medium
+  relevance: high
+  discovered_via: expansion
+  expanded_from: intake-2511
+  verdict: superseded
+  ingested_date: '2026-10-30'
+  authors:
+  - Unsloth AI
+  key_claims:
+  - UD-Q4_K_XL (500,707,576,573 B, 9 shards) has MXFP4 routed experts in all 40 layers, Q8_0 attention, shared experts, compressor/indexer,
+    token_embd and output, F32 hyper-connections, and one 202.76 GB per_layer_token_embd Engram table of ggml type 43 (MXFP8).
+  - The 2026-10-30 "Dynamic V3.1" update changed only UD-IQ1_M, UD-IQ1_S and UD-Q2_K_XL (re-quantized with the same type map
+    and a new imatrix KV); UD-Q4_K_XL, UD-Q8_K_XL, UD-Q3_K_XL, UD-IQ3_XXS, UD-IQ3_S, UD-IQ2_XXS, the Engram tables, the imatrix,
+    DSpark and mmproj files are sha256-identical to revision 60ad3651 (2026-10-20).
+  - The low-bit quants use mixed per-layer expert types (IQ1_S..IQ3_S, Q2_K/Q3_K, some MXFP4 layers) and Q8_0/Q6_K/Q5_K dense
+    paths; UD-Q2_K_XL and UD-IQ2_XXS carry a Q5_K Engram table, UD-IQ3_XXS Q6_K, UD-IQ1_M IQ4_NL.
+  - 'Every main GGUF embeds the same 17,564-char "Unsloth port of DS41" chat template; the READMEs say the files need Unsloth''s
+    llama.cpp PR (DSpark: unslothai/llama.cpp#298) and say nothing about bug or template fixes.'
+  - The imatrix_unsloth.gguf_file (sha256 22ed7e8f...) has chunk_count 558 x chunk_size 4096 and names only internal corpus
+    paths plus a rows-only probe for experts hit by fewer than 128 tokens.
+  techniques:
+  - per-layer mixed expert types
+  - 'MXFP8 Engram table (ggml type 43, PR #30817 only)'
+  - expert-coverage imatrix supplement
+  reported_results:
+  - 'File-metadata facts only (GGUF headers via HTTP Range, HF API LFS sha256). Active bytes per decoded token (header-derived
+    upper bound, 6 of 384 experts, dense counted in full): antirez MXFP4 13,249 MB; UD-Q4_K_XL 12,975 MB (0.979x); UD-Q2_K_XL
+    10,761 MB (0.812x); UD-IQ2_XXS 10,164 MB (0.767x); UD-IQ1_M 8,951 MB (0.676x). Not a speed measurement.'
+  cross_references:
+    chapters: []
+    handoffs:
+    - deepseek-v41-flash-evaluation.md
+    experiments: []
+    intake_entries:
+    - intake-2511
+    - intake-2513
+    - intake-2515
+    intake_entry_notes:
+    - intake-2511 (docs page for these files)
+    - intake-2513 (antirez build EPYC serves)
+    - intake-2515 (PR that defined MXFP8 type 43)
+  recommended_actions:
+  - 'Operator-review candidate: keep the two local identical files (dspark Q8_0, imatrix); download nothing.'
+  credibility_score: null
+  contradicting_evidence: null
+  referenced_arxiv_ids: []
+  notes: 'Stage 1 (main + subagents, 2026-10-30): seed page curl-fetched and read from disk; expansion found by a literature
+    subagent (search + gh/HF API). Operator pre-approved all recommended Stage-2 dives (max 4 waves).'
+  verification: stage1-unverified
+  handoffs_updated: []
+  handoffs_created: []
+- id: intake-2513
+  arxiv_id: null
+  url: https://huggingface.co/antirez/deepseek-v4.1-flash-gguf
+  source_type: repo
+  title: antirez/deepseek-v4.1-flash-gguf @ 9dcee516 (the DS4/DwarfStar-layout DS41 GGUFs EPYC serves, incl. 1017 MXFP4-experts)
+  categories:
+  - quantization
+  - local_inference
+  novelty: low
+  relevance: high
+  discovered_via: expansion
+  expanded_from: intake-2511
+  verdict: already_integrated
+  ingested_date: '2026-10-30'
+  authors:
+  - antirez (Salvatore Sanfilippo)
+  key_claims:
+  - The served 1017 build is nine shards totalling 501,602,535,360 B; all 120 routed-expert tensors are MXFP4, attention/shared/output
+    Q8_0, token_embd/compressor/indexer/engram_kv F16, and the two Engram tables are native FP8 rows stored as I8 [264, rows].
+  - Its quantization KVs say "native MXFP4; imatrix provenance only" with imatrix file bootstrap-calibration-8192.dat (sha256
+    75fadebe...); there is no chat template KV (the ds4 engine renders prompts) and no mtp/DSpark tensors.
+  - The repo also ships a 1017 IQ2_XXS gate/up + Q2_K down single-file build (365,713,686,528 B) with the same dense types
+    and I8 Engram, in the same layout.
+  - The README (unchanged since the September upload) documents only the September Q2/Q4/vision targets and the DwarfStar
+    Metal runtime; it does not describe the 1017 files.
+  techniques:
+  - lossless MXFP4 expert repack
+  - I8-packed FP8 Engram table (e4m3 + e8m0, 264 B rows)
+  reported_results:
+  - Local shard sha256 values match the HF LFS oids (recorded at download, /mnt/raid0/llm/tmp/ds41-1017-swap/download_1017.log).
+  cross_references:
+    chapters: []
+    handoffs:
+    - deepseek-v41-flash-evaluation.md
+    experiments: []
+    intake_entries:
+    - intake-2121
+    - intake-2512
+    intake_entry_notes:
+    - intake-2121 (source checkpoint)
+    - intake-2512 (unsloth comparison)
+  recommended_actions:
+  - 'None new: the build is already served (DS41-W1/W7).'
+  credibility_score: null
+  contradicting_evidence: null
+  referenced_arxiv_ids: []
+  notes: 'Stage 1 (main + subagents, 2026-10-30): seed page curl-fetched and read from disk; expansion found by a literature
+    subagent (search + gh/HF API). Operator pre-approved all recommended Stage-2 dives (max 4 waves).'
+  verification: stage1-unverified
+  handoffs_updated: []
+  handoffs_created: []
+- id: intake-2514
+  arxiv_id: null
+  url: https://github.com/ggml-org/llama.cpp/pull/31086
+  source_type: repo
+  title: 'ggml-org/llama.cpp PR #31086 "model: DSV4.1 flash" (upstream deepseek41 support, merged 2026-10-25, b11870)'
+  categories:
+  - local_inference
+  - inference_serving
+  - quantization
+  novelty: high
+  relevance: high
+  discovered_via: search
+  expanded_from: intake-2511
+  verdict: worth_investigating
+  ingested_date: '2026-10-30'
+  authors:
+  - am17an
+  - Daniel Han (commit 1)
+  key_claims:
+  - Upstream llama.cpp gained DeepSeek-V4.1-Flash support as GGUF architecture "deepseek41" (converter class DeepseekV41ForCausalLM),
+    merged 2026-10-25 (merge 74bca395), first release b11870.
+  - The Engram tables of all layers are written as one per_layer_token_embd tensor plus per-layer engram_kv / engram_gate,
+    reusing PLE keys; the default converter writes the table as exact BF16, not FP8.
+  - 'MXFP8 (the #30817 ggml type 43) was removed by the author in commit 02/10; the final diff adds no ggml type.'
+  - The PR also adds the DSpark drafter (mtp.0..2 converted to a DFLASH GGUF via --dspark) and the vision mmproj; no new CPU
+    kernels beyond a one-line softplus change.
+  techniques:
+  - deepseek41 upstream architecture
+  - BF16 Engram table
+  - DFLASH DSpark drafter conversion
+  reported_results: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - deepseek-v41-flash-evaluation.md
+    - llama-cpp-dsa-contribution.md
+    experiments: []
+    intake_entries:
+    - intake-2515
+    - intake-2516
+    - intake-2520
+    intake_entry_notes:
+    - intake-2515 (superseded PR)
+    - intake-2516 (unsloth GGUF breakage)
+    - intake-2520 (FP8 type 43)
+  recommended_actions:
+  - 'Operator-review candidate: record that an upstream deepseek41 now exists whose layout our port does not load; evaluate
+    upstream as a donor only when DS41 kernel work resumes.'
+  credibility_score: null
+  contradicting_evidence: null
+  referenced_arxiv_ids: []
+  notes: 'Stage 1 (main + subagents, 2026-10-30): seed page curl-fetched and read from disk; expansion found by a literature
+    subagent (search + gh/HF API). Operator pre-approved all recommended Stage-2 dives (max 4 waves).'
+  verification: stage1-unverified
+  handoffs_updated: []
+  handoffs_created: []
+- id: intake-2515
+  arxiv_id: null
+  url: https://github.com/ggml-org/llama.cpp/pull/30817
+  source_type: repo
+  title: 'ggml-org/llama.cpp PR #30817 "model : add DeepSeek-V4.1-Flash (deepseek41)" (Unsloth; closed unmerged 2026-10-27)'
+  categories:
+  - local_inference
+  - quantization
+  novelty: medium
+  relevance: high
+  discovered_via: expansion
+  expanded_from: intake-2511
+  verdict: superseded
+  ingested_date: '2026-10-30'
+  authors:
+  - danielhanchen
+  key_claims:
+  - The PR added GGML_TYPE_MXFP8 = 43, gather-only, a 33-byte block of one E8M0 scale and 32 E4M3 codes, so the Engram table
+    could be stored losslessly.
+  - Its body claims mean KL 4.8e-3 (wiki) / 2.8e-3 (17k context) for a "near-lossless" GGUF against the F32 reference, versus
+    2.6e-2 / 1.5e-2 for the reference's own native kernels; the quant measured is not named.
+  - 'The reviewer asked to drop MXFP8 for a faster merge because upstream FP8 was in progress; the PR was closed unmerged
+    on 2026-10-27 as superseded by #31086.'
+  techniques:
+  - GGML_TYPE_MXFP8 (gather-only)
+  reported_results:
+  - 'Vendor-reported KL (body, quant unnamed): 4.8e-3 wiki / 2.8e-3 long context vs F32 reference.'
+  cross_references:
+    chapters: []
+    handoffs:
+    - deepseek-v41-flash-evaluation.md
+    experiments: []
+    intake_entries:
+    - intake-2514
+    - intake-2511
+    intake_entry_notes:
+    - intake-2514 (successor)
+    - intake-2511 (page still points here)
+  recommended_actions:
+  - 'None: superseded by #31086.'
+  credibility_score: null
+  contradicting_evidence: null
+  referenced_arxiv_ids: []
+  notes: 'Stage 1 (main + subagents, 2026-10-30): seed page curl-fetched and read from disk; expansion found by a literature
+    subagent (search + gh/HF API). Operator pre-approved all recommended Stage-2 dives (max 4 waves).'
+  verification: stage1-unverified
+  handoffs_updated: []
+  handoffs_created: []
+- id: intake-2516
+  arxiv_id: null
+  url: https://github.com/ggml-org/llama.cpp/issues/31385
+  source_type: repo
+  title: 'ggml-org/llama.cpp issue #31385 "Eval bug: DeepSeek-V4.1-Flash-1017 GGUF issues" (unsloth UD-Q4_K_XL type-43 load
+    failure, then gibberish)'
+  categories:
+  - local_inference
+  - quantization
+  novelty: high
+  relevance: high
+  discovered_via: search
+  expanded_from: intake-2511
+  verdict: new_opportunity
+  ingested_date: '2026-10-30'
+  authors:
+  - createthis
+  - CISC (maintainer reply)
+  key_claims:
+  - On upstream build 11997 the unsloth UD-Q4_K_XL fails to load with "per_layer_token_embd.weight has invalid ggml type 43".
+  - A maintainer attributes it to an unofficial quantization scheme and notes type 43 was just merged upstream as FP8.
+  - After rebuilding at eb4e244 with the FP8 code the unsloth file loads but outputs gibberish; the ISTA GSQ-RCO IQ2_XS GGUF
+    works on the same build.
+  - No re-upload plan or resolution is stated (issue open at retrieval).
+  techniques: []
+  reported_results:
+  - Independent user report, n=1 machine (dual EPYC 9355 + RTX 6000 Pro).
+  cross_references:
+    chapters: []
+    handoffs:
+    - deepseek-v41-flash-evaluation.md
+    experiments: []
+    intake_entries:
+    - intake-2512
+    - intake-2520
+    - intake-2518
+    intake_entry_notes:
+    - intake-2512 (the affected files)
+    - intake-2520 (FP8 type 43)
+    - intake-2518 (the GGUF that loads)
+  recommended_actions:
+  - 'Operator-review candidate: treat every MXFP8-Engram unsloth quant (Q3_K_XL, Q4_K_XL, Q8_K_XL) as unloadable-or-wrong
+    on any tree with upstream FP8; prefer Q5_K/Q6_K/IQ4_NL-table quants or a converted table if ever needed.'
+  credibility_score: null
+  contradicting_evidence: null
+  referenced_arxiv_ids: []
+  notes: 'Stage 1 (main + subagents, 2026-10-30): seed page curl-fetched and read from disk; expansion found by a literature
+    subagent (search + gh/HF API). Operator pre-approved all recommended Stage-2 dives (max 4 waves).'
+  verification: stage1-unverified
+  handoffs_updated: []
+  handoffs_created: []
+- id: intake-2517
+  arxiv_id: null
+  url: https://github.com/ggml-org/llama.cpp/issues/30944
+  source_type: repo
+  title: 'ggml-org/llama.cpp issue #30944: DeepSeek-V4.1-Flash single-token corruption on cached prompt-prefix reuse (and
+    PR #31292)'
+  categories:
+  - local_inference
+  - kv_cache
+  - inference_serving
+  novelty: high
+  relevance: medium
+  discovered_via: search
+  expanded_from: intake-2511
+  verdict: worth_investigating
+  ingested_date: '2026-10-30'
+  authors:
+  - bertusmt
+  - songwanqian
+  - vikcious
+  - 'am17an (PR #31292)'
+  key_claims:
+  - Reusing a cached prompt prefix produces deterministic single-token substitutions in DS4.1 output (CJK characters or spaces
+    replacing hex digits), growing with prefix length; cache_prompt false gives 0/20 bad.
+  - 'The first hypothesis (a lazy-mode host-to-GPU upload race, 7/20 vs 0/20) was retracted by its author: prefix reuse is
+    the trigger with lazy mode on or off.'
+  - 'A later matrix localises it to the checkpoint-restore path while another sequence is in flight: -ctxcp 0, --no-cache-prompt
+    or --no-cont-batching each make it disappear; single sequences are always correct.'
+  - 'PR #31292 defers refilling compressed-KV mirror layers until the deferred state read lands; testers report it does not
+    fix the user-visible bug (open at retrieval).'
+  techniques:
+  - compressed-KV mirror layers
+  - checkpoint restore
+  - prompt-prefix cache reuse
+  reported_results:
+  - User-reported corruption counts (20-item literal-copy harness); not EPYC measurements.
+  cross_references:
+    chapters: []
+    handoffs:
+    - deepseek-v41-flash-evaluation.md
+    - kv-prefix-fork-and-paged-attention.md
+    experiments: []
+    intake_entries:
+    - intake-2514
+    intake_entry_notes:
+    - intake-2514 (the upstream implementation affected)
+  recommended_actions:
+  - 'Operator-review candidate: add a prefix-reuse / checkpoint-restore conformance check to the DS41 port''s gates when DS41
+    serving work resumes.'
+  credibility_score: null
+  contradicting_evidence: null
+  referenced_arxiv_ids: []
+  notes: 'Stage 1 (main + subagents, 2026-10-30): seed page curl-fetched and read from disk; expansion found by a literature
+    subagent (search + gh/HF API). Operator pre-approved all recommended Stage-2 dives (max 4 waves).'
+  verification: stage1-unverified
+  handoffs_updated: []
+  handoffs_created: []
+- id: intake-2518
+  arxiv_id: null
+  url: https://huggingface.co/ISTA-DASLab/DeepSeek-V4.1-Flash-1017-GSQ-RCO-GGUF
+  source_type: repo
+  title: 'ISTA-DASLab/DeepSeek-V4.1-Flash-1017-GSQ-RCO-GGUF @ 65d53bc8 (IQ1_M / IQ2_XXS / IQ2_XS, upstream #31086 layout)'
+  categories:
+  - quantization
+  - local_inference
+  novelty: medium
+  relevance: medium
+  discovered_via: search
+  expanded_from: intake-2511
+  verdict: worth_investigating
+  ingested_date: '2026-10-30'
+  authors:
+  - IST Austria DAS Lab
+  key_claims:
+  - Three builds at 1.75 / 2.00 / 2.25 bpw over the 551.9B backbone (231.3 / 248.8 / 265.8 GB) share one IQ4_NL Engram table
+    of 110.60 GB.
+  - The card reports base 100.00 AIME25 and 100.0% recovery for IQ2_XXS at reasoning effort 50; samples per item, temperature
+    and harness are not stated, and a 100% base makes AIME25 non-discriminating.
+  - 'Since 2026-10-27 the files use llama.cpp''s upstream DeepSeek-V4.1 layout (b11870 or newer); the converter names #31086.'
+  - The IQ2_XXS build mixes IQ1_M, IQ2_XXS and IQ2_XS experts per layer with Q5_K/Q8_0 dense and BF16 router; its chat template
+    is adapted from Unsloth's at revision 60ad3651.
+  techniques:
+  - GSQ scalar quantization
+  - RCO per-tensor type allocation under an exact size budget
+  reported_results:
+  - 'Vendor-reported (effort 50, conditions otherwise unstated): AIME25 / GPQA-D / LCB v6 = 100.00 / 90.91 / 89.71 for both
+    base and IQ2_XXS; IQ1_M 100.00 / 88.38 / 88.57.'
+  cross_references:
+    chapters: []
+    handoffs:
+    - deepseek-v41-flash-evaluation.md
+    experiments: []
+    intake_entries:
+    - intake-2470
+    - intake-2511
+    intake_entry_notes:
+    - intake-2470 (RCO method, already indexed)
+    - intake-2511 (Unsloth disputes the AIME25 claim)
+  recommended_actions:
+  - 'None immediate: a low-bit candidate only if the operator re-opens DS41 low-bit serving.'
+  credibility_score: null
+  contradicting_evidence:
+  - intake-2511 (Unsloth measures 94.64% AIME25 retention for GSQ-RCO at 16 samples per item; vendor vs vendor)
+  referenced_arxiv_ids:
+  - '2605.00649'
+  notes: 'Stage 1 (main + subagents, 2026-10-30): seed page curl-fetched and read from disk; expansion found by a literature
+    subagent (search + gh/HF API). Operator pre-approved all recommended Stage-2 dives (max 4 waves).'
+  verification: stage1-unverified
+  handoffs_updated: []
+  handoffs_created: []
+- id: intake-2519
+  arxiv_id: null
+  url: https://unsloth.ai/docs/basics/dynamic-3.0-ggufs
+  source_type: blog
+  title: 'Unsloth docs: Unsloth Dynamic 3.0 GGUFs (methodology page, Qwen3.8-27B release)'
+  categories:
+  - quantization
+  - benchmark_methodology
+  novelty: low
+  relevance: medium
+  discovered_via: search
+  expanded_from: intake-2511
+  verdict: worth_investigating
+  ingested_date: '2026-10-30'
+  authors:
+  - Unsloth AI
+  key_claims:
+  - Dynamic 3.0 uses a new higher-quality imatrix calibration set (agentic coding, chat, multilingual), improved layer selection
+    and more quantization techniques; larger quants still use UD-2.
+  - 'Everything is post-training quantization: no QAT or QAD and no training on the calibration set.'
+  - 'It defines "Divergence-300 @32": 300 held-out prompts, greedy decoding for 32 tokens, compared against BF16.'
+  - The page describes v3.0 for Qwen3.8-27B; it contains no description of v3.1 or of DeepSeek-V4.1.
+  techniques:
+  - imatrix calibration set curation
+  - Divergence-300 @32 trajectory metric
+  reported_results: []
+  cross_references:
+    chapters: []
+    handoffs: []
+    experiments: []
+    intake_entries:
+    - intake-2511
+    intake_entry_notes:
+    - intake-2511 (claims a v3.1 successor)
+  recommended_actions:
+  - Knowledge only.
+  credibility_score: null
+  contradicting_evidence: null
+  referenced_arxiv_ids: []
+  notes: 'Stage 1 (main + subagents, 2026-10-30): seed page curl-fetched and read from disk; expansion found by a literature
+    subagent (search + gh/HF API). Operator pre-approved all recommended Stage-2 dives (max 4 waves).'
+  verification: stage1-unverified
+  handoffs_updated: []
+  handoffs_created: []
