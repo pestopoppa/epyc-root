@@ -1,0 +1,126 @@
+{
+  "build_ready": {
+    "build_follow_on": "Post-success producer writes actual build/IDENTITY.json before r2 rebind; r2 rebind writes built-c5-r2 launch, longctx launch and target card. Matched floor is separate.",
+    "class": "diagnostic",
+    "cwd": "/mnt/raid0/llm/tmp/refactor-01a16fc3/ufh14-next-source-20261030/build-packet-r2",
+    "decision_rule": "Clean C5 full CPU build on one approved Micron lane. Completion requires full llama-server target, required DSOs/knobs/linkage, source-bound IDENTITY.json accepted by current champion reader, and r2 unenrolled target card. STOP or cutoff is rc75 partial; build alone yields no benchmark or production-equivalence claim.",
+    "engine_files": {
+      "/mnt/raid0/llm/tmp/refactor-01a16fc3/ufh14-next-source-20261030/build-packet-r2/disk_gate.py": "b5e55a4edc8e3875d75e85267b8f29bb9d7214874a748a02ad1757845b2cf40d",
+      "/mnt/raid0/llm/tmp/refactor-01a16fc3/ufh14-next-source-20261030/build-packet-r2/dryrun_check.py": "aa9ed900be5fb7f3efca043bfddb2ac8963964710db0b702c7491729a74f8542",
+      "/mnt/raid0/llm/tmp/refactor-01a16fc3/ufh14-next-source-20261030/build-packet-r2/filler_lib.sh": "241e522f4a7d7208e7485834c90d77676434a9bc88fd253575e034ad2934237c",
+      "/mnt/raid0/llm/tmp/refactor-01a16fc3/ufh14-next-source-20261030/build-packet-r2/filler_run13.sh": "29b88da445634de88b33a7a8d74ebdc21e4a011fac12417c02b25e5beec1c10d",
+      "/mnt/raid0/llm/tmp/refactor-01a16fc3/ufh14-next-source-20261030/build-packet-r2/resource_gate.py": "bbf26966a270a84b98a6b2f31a43dd2e54055c23fbddb0010db5bf9d0ca9e9f5"
+    },
+    "enrollment": "n/a: source build and unenrolled target preparation",
+    "est_output_GiB": 0.125,
+    "full_build_observer": "Fresh same-entry normal and active-compiler cutoff on CPUs 140,141; sampled smoke peaks 0.461/0.893 GiB, both <8 GiB. Full mode has bounded Ninja log. Ninja jobs <=8. 32 GiB remains a planning reservation, not an observed full-build peak.",
+    "full_disk_admission_GiB": 150.125,
+    "gib": 32,
+    "hold": null,
+    "id": "refactor-akxall8-c5-cpu-build-r2-20261030",
+    "job": {
+      "path": "/mnt/raid0/llm/tmp/refactor-01a16fc3/ufh14-next-source-20261030/build-packet-r2/build-job.sh",
+      "sha256": "0c72827d10b3dea452bf6d55bd5321c5c78fdb06c2cd9444a5f9ea4594281691"
+    },
+    "keep": [
+      "*.py",
+      "*.md",
+      "*.patch",
+      "*.json",
+      "*.sh",
+      "candidate/*.json",
+      "candidate/*.log",
+      "declared/*.yaml",
+      "declared/*.txt",
+      "source-current/**",
+      "build-packet/*.py",
+      "build-packet/*.sh",
+      "build-packet/*.json",
+      "build-packet/*.log",
+      "build-packet/logs/*.log",
+      "build-packet/**",
+      "build-packet-r2/fixture-*/**",
+      "build-packet-r2/inner-noarg.log",
+      "build-packet-r2/*.tsv",
+      "build-packet-r2/*.jsonl",
+      "build-packet-r2/**",
+      "ws58-launcher.out",
+      "KEEP"
+    ],
+    "kernel_source": {
+      "frozen_production_ancestor": "ffc1bac82eeca6f9099e1ccd9ba49703c460a115",
+      "head": "c72ec82f5417bb2937310326120f149b665e8400",
+      "host_worktree": "/mnt/micron/refactor-lanes/llama.cpp-experimental",
+      "source_edit": "none"
+    },
+    "launcher": {
+      "path": "/mnt/raid0/llm/tmp/refactor-01a16fc3/ufh14-next-source-20261030/build-packet-r2/build-launch.sh",
+      "sha256": "7f4aa0908584eaa2dbec9d87d35a30a5bb02d072b3fc2442dd49da3d9db01aaf"
+    },
+    "launcher_log": "/mnt/raid0/llm/tmp/refactor-01a16fc3/ufh14-next-source-20261030/ws58-launcher.out",
+    "min_window_s": 1080,
+    "output_filesystem": "Micron build output; RAID metadata only, 150 GiB floor plus 0.125 GiB estimated metadata reservation",
+    "owner": "codex-refactor-01a16fc3",
+    "preferred_regions": "any-cpu-quarter",
+    "priority_rank": 8,
+    "ram_budget": {
+      "GiB": 32,
+      "kind": "planning envelope; Ninja jobs capped at 8; no sampled full build peak yet"
+    },
+    "regions": "any-cpu-quarter",
+    "result_path": "/mnt/raid0/llm/tmp/refactor-01a16fc3/ufh14-next-source-20261030/build-packet-r2/build-result.json",
+    "scratch_root": "/mnt/raid0/llm/tmp/refactor-01a16fc3/ufh14-next-source-20261030",
+    "smoke": {
+      "cutoff_rc": 75,
+      "exit_ok": true,
+      "first_request_ok": true,
+      "log": "/mnt/raid0/llm/tmp/refactor-01a16fc3/ufh14-next-source-20261030/build-packet-r2/fixture-r6-final/outer.log",
+      "model": "none: model-free source correctness qualification",
+      "normal_rc": 0,
+      "sampled_smoke_peak_gib": 0.893341,
+      "ran_at": "2026-10-30T17:28:08+00:00",
+      "regions": "140,141",
+      "wall_s": 12.0,
+      "result_writer_ok": true
+    },
+    "smoke_controls": {
+      "path": "/mnt/raid0/llm/tmp/refactor-01a16fc3/ufh14-next-source-20261030/build-packet-r2/final-smoke-controls.json",
+      "sha256": "c5a773ddc6e648f325def73cd04e77bb04a8c75412110a3fa09d02499a02ce76"
+    },
+    "source_bundle": {
+      "path": "/mnt/raid0/llm/tmp/refactor-01a16fc3/ufh14-next-source-20261030/build-packet-r2/execution-bundle.json",
+      "sha256": "de4db7d58f0405f4e53aaa7650029964b85c66997e0907fcde2a8c3d18039e8b"
+    },
+    "source_manifest": {
+      "path": "/mnt/raid0/llm/tmp/refactor-01a16fc3/ufh14-next-source-20261030/build-packet-r2/source-manifest.json",
+      "sha256": "6ba92003097bb40fed0958ea9046d07b7ee93a4af8ac7e47a8e8058185c66fa1"
+    },
+    "status": "READY",
+    "window_s": 2400,
+    "min_effect": "n/a (model-free source/build correctness)",
+    "keeper_log_alias": {
+      "path": "/mnt/raid0/llm/tmp/compute-flags/ready/refactor-akxall8-c5-cpu-build-r2-20261030.launcher.out",
+      "same_inode": true,
+      "contract": "keeper-v6 appends launcher stdout to adjacent ready log; hardlink retains identical stream under scratch_root/ws58-launcher.out; no executed code change"
+    },
+    "publication_disk": {
+      "free_bytes": 422019756032,
+      "checked_at": "2026-10-30T17:32:52.477867+00:00"
+    }
+  },
+  "ready_path": "/mnt/raid0/llm/tmp/compute-flags/ready/refactor-akxall8-c5-cpu-build-r2-20261030.json",
+  "manifest_sha256": "0ee133c357e22bdc19c99562e5c5ad1703a2a67f2461b2c764060d514701fcae",
+  "evidence_guard": {
+    "source_repo": "research",
+    "fix_commit": "a4da03e04",
+    "current_source": "5412cae12ec806514f27f510eadf4206d4b0f9be",
+    "test": "TestRelativeCitationsGetTheSameGuard 8 passed, current Git archive",
+    "tracked_installer": "root scripts/hooks/install_git_hooks.sh copies repo-tracked scripts/hooks/pre-commit.extras"
+  },
+  "stack_import": {
+    "fix_commit": "74c68a2a8e01a0f4a8c93a49fa32c0b85494f501",
+    "current_source": "e3adf8b097e09f7a4c3d582e26f95bdca077bbae",
+    "tests": "28 focused tests and fresh NUMA=both CLI help, no service operation"
+  },
+  "r18_state": "private GCC15.2/CMake3.31.6 overlay passes host tiny compile/link/configure tests; actual v10 proof unrun, verifiability False; C5 lane release still required"
+}

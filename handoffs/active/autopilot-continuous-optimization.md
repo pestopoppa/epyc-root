@@ -202,12 +202,14 @@ First full smoke run of the trial loop. Four defects, three silent.
       `vision_stage.py:76` treats `request.files` as vision input, but routing telemetry records
       neither a retained path nor displayable bytes for that form.
 
-- [ ] **Evidence-durability symlink guard covers the form that barely occurs.**
+- [x] **Evidence-durability symlink guard covers the form that barely occurs.** ✅ 2026-10-30 [no-belief: source and regression verification]
       `check_evidence_durability.py:306` — `inside_repo = (not absolute) or ...` is unconditionally
       True for relative paths, so `_is_scratch()` is never consulted for them. **416 of 421** registry
       citations are relative, and the remediation playbook tells remediators to use relative paths.
       Also: the new pre-commit wiring exists only as `.git/hooks/pre-commit.extras` on this host —
       unversioned, so no clone gets it.
+
+      - Already fixed by research `a4da03e04` (ancestor of current main): resolve every citation before repo membership/scratch checks; tracked extras are installed by the ROOT hook installer. Eight isolated current-source relative-citation regressions pass. [Evidence](../../artifacts/compute/refactor-c5-r2-and-code-audits-20261030.json).
 
 ### New instances of the same class, found by the critic, previously unowned
 
@@ -468,12 +470,14 @@ First full smoke run of the trial loop. Four defects, three silent.
   and `git apply --cached`, then commit from the index. *(Demonstrated live: the resume agent hit
   exactly this and used it to avoid sweeping 63 lines of another agent's in-flight work.)*
 
-- [ ] **`ImportError: cannot import name 'LLAMA_SERVER' ... circular import` prints on every stack
+- [x] **`ImportError: cannot import name 'LLAMA_SERVER' ... circular import` prints on every stack ✅ 2026-10-30 [no-belief: source import regression verification]
       command.** Fail-open — `runtime-facts selected-servers read failed` and the
       `ORCHESTRATOR_STACK_NUMA_MODE=both env-filter branch failed ... falling through to
       stack-priors`. Both degrade silently to a fallback path, so a real defect there would be
       invisible. It also makes genuine errors hard to spot in stack output.
 
+
+      - Already fixed by orchestrator `74c68a2a8` (ancestor of current main), with kernel-store resolution preserved by `42b926ff0`. Self-contained path initialization removes the cycle;28 focused tests and a fresh NUMA=both CLI help pass without the reported warning. No production stack operation or reload. [Evidence](../../artifacts/compute/refactor-c5-r2-and-code-audits-20261030.json).
 
 ### Scorer repair and an unprovable outage (2026-08-04)
 

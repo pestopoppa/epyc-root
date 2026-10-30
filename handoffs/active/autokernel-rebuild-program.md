@@ -863,6 +863,8 @@ on measurement, D3 approved and shipped.** Detail in each entry.
       zero diff, on `libggml-cpu.so`; 918/918 distinct device kernels, zero unique either side, on
       `libggml-hip.so`.** Attach the evidence to the flip — a `True` with no artifact behind it is
       the same defect in the other direction.
+  - [x] Remove the host GCC/CMake dependency for the conditional v10 recipe proof. ✅ 2026-10-30 [no-belief: toolchain source preparation] Private GCC15.2/CMake3.31.6 overlay passes host C/C++ compile/link and guarded shared-library configure/build. The draft refuses absent C5 release or a non-FFC source. No v10 candidate compile/symbol verdict, no verifiability True, and no frozen-source change. [Packet](/mnt/raid0/llm/tmp/refactor-01a16fc3/r18a-recipe-verifiability-20261030/PREDICATE-RULING.md).
+
 - [ ] **R18-B — run-18 forensics: what binary was actually in `anchor-gen-001`, and why were
       post-promotion effects −9.5%? OPEN — three hypotheses raised, three refuted.**
       (a) *candidates missing the champion patch* — **REFUTED**, every lane source tree is at
