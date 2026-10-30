@@ -5,6 +5,7 @@
 **Owner**: not yet assigned. Proposed owner: the INF-73 implementation owner (`autokernel-unified-20260908`). The subject is that program's serial controller and its required-target validation.
 **Categories**: autonomous_research, hardware_optimization, benchmark_methodology
 **Index row**: `inference-research-index.md` → INF-75 (proposed). **Domain**: inference research.
+**2026-10-30 owner checkpoint; full W5s task remains open.** R5 fixes only the real-smoke RSS ceiling (8 GiB to 192 GiB, equal to the existing full process cap) and retains host-memory admission, 151-GiB disk admission and the current W5s full recipe (t96, ctx262144, ub2048, MTP4, 1224 primary targets in ordered shards 0/373/851; P0d remains open). Its focused controls pass 69 tests; no native R5 request smoke or full census has run. A no-lock watcher is pre-work only. The planned R6 split-storage successor keeps the original 6-GiB task output budget on Micron (minimum 156.125 GiB free) and caps RAID source/launcher/state/log metadata at 128 MiB above the unchanged 150-GiB RAID floor; full-host 0-95 ownership remains explicit. [no-belief: source/control validation and prospective storage plan]
 **Related (Deps edges)**:
 - **INF-73** [`autokernel-unified-surface-program.md`](autokernel-unified-surface-program.md) is the parent.
   - It owns the serial controller, required-target validation, U2 floors, U3 oracle extension, §8.17C validation batch and OP-41.
