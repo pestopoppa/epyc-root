@@ -1,0 +1,150 @@
+{
+  "accuracy_notes": "unknowns are not wrong; bounds use original ten cases",
+  "aggregates": {
+    "production_repl": {
+      "complete": 10,
+      "completed_server_tokens": {
+        "completion_tokens": 28412,
+        "prompt_tokens": 41023
+      },
+      "completed_wall_seconds_sum": 362.164145,
+      "em_bounds": [
+        0,
+        0
+      ],
+      "normalized_em_correct_known": 0,
+      "original_denominator": 10,
+      "unknown": 0
+    },
+    "redel_delegate_wait": {
+      "complete": 4,
+      "completed_server_tokens": {
+        "completion_tokens": 16786,
+        "prompt_tokens": 193338
+      },
+      "completed_wall_seconds_sum": 441.628797,
+      "em_bounds": [
+        0,
+        6
+      ],
+      "normalized_em_correct_known": 0,
+      "original_denominator": 10,
+      "unknown": 6
+    }
+  },
+  "all_20_start_identities_verified": true,
+  "cases": [
+    {
+      "accuracy_status": "unknown",
+      "captured_unforced_first_request": true,
+      "case": 11,
+      "first_request_sha256": "3817052aed2a99dc06e348f1f4bb7ae6fef32f3a50922dd324a25cbc35c8d26c",
+      "native_events_sha256": "7b226ce0737c6c7d581cfdbd9a4a749b6453ac660426b48de985e89543f23274",
+      "native_matched_delegation_observed": true
+    },
+    {
+      "accuracy_status": "complete",
+      "captured_unforced_first_request": true,
+      "case": 12,
+      "first_request_sha256": "8aa75e7424d818e08c72c5d941d48e8685583a75d324d89e834080a1c32acd75",
+      "native_events_sha256": "242a5e9e3cb42f3c58bcf416564d185e7f1b1cd240b11a87aeb1648f13b16034",
+      "native_matched_delegation_observed": true
+    },
+    {
+      "accuracy_status": "unknown",
+      "captured_unforced_first_request": true,
+      "case": 13,
+      "first_request_sha256": "2a2cc93e37e7a9a68e6625b6c8c577f4570b7f8424c5444fe324bac3635a256d",
+      "native_events_sha256": "086d41d8ed826afff1670717b96d285986a19a9c2acb8dac7357fe421a20b7a9",
+      "native_matched_delegation_observed": true
+    },
+    {
+      "accuracy_status": "unknown",
+      "captured_unforced_first_request": true,
+      "case": 14,
+      "first_request_sha256": "beb53af6155f5a102c4161de35062546be41d6eee034cbded5af29c518596009",
+      "native_events_sha256": "d92596319366b07b1ec3e7a22b92c023ca64fdfcede6a00542744275dd08d6a9",
+      "native_matched_delegation_observed": true
+    },
+    {
+      "accuracy_status": "unknown",
+      "captured_unforced_first_request": true,
+      "case": 15,
+      "first_request_sha256": "b4f9e588ca268701309f060f21f22efb68b8c93a8db9d9a85941131b84942876",
+      "native_events_sha256": "ee9c41afb432985ea3930cd0729add9a59a3b5c03afae2e83ea9ef5671c997d3",
+      "native_matched_delegation_observed": true
+    },
+    {
+      "accuracy_status": "unknown",
+      "captured_unforced_first_request": true,
+      "case": 16,
+      "first_request_sha256": "d9338b12f0bcaf9edcb95ae87faa054bdba0c0b6d308881ece7005d7785f221c",
+      "native_events_sha256": "cb42e543f2960884d5494f1a235336846214fc4deb7a270ca6a806949cdd31bf",
+      "native_matched_delegation_observed": true
+    },
+    {
+      "accuracy_status": "complete",
+      "captured_unforced_first_request": true,
+      "case": 17,
+      "first_request_sha256": "284beabfab6a5ec0f36c4cc6a5a62eaa27c31664ea2e1ea328c048dd73d43df7",
+      "native_events_sha256": "9c1b446292cb5ff2f1cf8a5c2f6e3a6112e0486b921ff5ccf0486772c02ad0e9",
+      "native_matched_delegation_observed": false
+    },
+    {
+      "accuracy_status": "complete",
+      "captured_unforced_first_request": true,
+      "case": 18,
+      "first_request_sha256": "186da89e9e50e191d7acfba8231288d81c0d176f07eaf44dfd476bfa036d5c0a",
+      "native_events_sha256": "7a5f653c5a55839952efcbb3a1989ead1e91068d25c1385a80ea6ee77062c8dd",
+      "native_matched_delegation_observed": false
+    },
+    {
+      "accuracy_status": "complete",
+      "captured_unforced_first_request": true,
+      "case": 19,
+      "first_request_sha256": "2466e319f3139a95a7860b0206901e3ca86aa6e8ce65865b7df07f828b581b57",
+      "native_events_sha256": "1d8ff8e1e6b5e1a964fb96f8fa5e61e20a3f1879c3652e4c060f5424d4dead4f",
+      "native_matched_delegation_observed": true
+    },
+    {
+      "accuracy_status": "unknown",
+      "captured_unforced_first_request": true,
+      "case": 20,
+      "first_request_sha256": "b69b0713ec520d1eae67561e80df59c0abbfd41d683235750ccd6ba8c5d36584",
+      "native_events_sha256": "c6d4e4295980faf86945b165fe2ea7da16bb4f3c16634490a2b076891b6076de",
+      "native_matched_delegation_observed": false
+    }
+  ],
+  "declaration_sha256": "1e15a5010e73e9a0869d5f6095c382734f6729b272f666070e8266613926e32c",
+  "denominator_pairs": 10,
+  "failure_causes": {
+    "11": "journal record exceeds 2 MiB bound",
+    "13-16": "native child logs aggregate reservation exhausted",
+    "20": "native child log invalid tool-call argument JSON"
+  },
+  "matched_delegation_definition": "frozen event_qualification: root assistant delegate call before linked depth-1 spawn and kani_delegated event",
+  "native_result_sha256": "3794d6706f1ea8da6a7992e126965328a84cdd0a74a6c545f54b2288bf7be648",
+  "offline_validation": {
+    "child_rc": 0,
+    "children_drained": true,
+    "elapsed_s": 0.1051059509627521,
+    "failure": null,
+    "leader_birth": 152305721,
+    "leader_pid": 2498341,
+    "per_process_address_space_limit_bytes": null,
+    "rss_scope": "sum of sampled resident pages across owned process tree; sampling may miss transients and double-count shared pages",
+    "sampled_peak_tree_rss_bytes": 20209664,
+    "samples": 2,
+    "schema": "bounded-r11-native-profile-supervisor/v1",
+    "verified_exited_processes": 0,
+    "verified_exited_threads": 0
+  },
+  "pilot_assessment": "DELEGATION_OBSERVED_EVALUATION_PENDING",
+  "pilot_done": false,
+  "raw_event_match_notes": "positive observations on incomplete routes establish presence only; no absence claim for incomplete case 20",
+  "result": "INCOMPLETE_DIAGNOSTIC",
+  "schema": "evl34-r11-offline-partial-audit/v1",
+  "server_drained": true,
+  "source_manifest_sha256": "e5998c644c49ec90e67b0a15aa16e724cf18ae9816d70ed5c21f8380e9c1e5ce",
+  "step3_gate_passed": false
+}
