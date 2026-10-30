@@ -968,6 +968,19 @@ dim 96. This is a **projection, not a measurement.** Two conditions on any adopt
       baseline** (`MEASUREMENT.md`: no third-party number gates this stack). Belief-kernel caveat to
       carry in every tuple this produces: an INT8-vs-fp32 cosine is a **fidelity** claim about one
       graph pair, never a retrieval-quality claim.
+
+  - **2026-10-30 preparation checkpoint (R2; no full result):** The final packet is
+    `/mnt/raid0/llm/tmp/codex-ni-kbrag-g11-parity-r2-20261030`. It pins 200 real KB chunks, the
+    four canonical mirror/upstream-root FP32/INT8 graphs, both encode roles, and the existing 70
+    K7 queries for primary MaxSim top-1 fidelity. The actual native qualification passed 12
+    encode operations with rc 0; the bounded cutoff retained four operations and returned rc 75
+    with cleanup verified. A resume smoke reused 12 cached rows and performed zero new native
+    operations. R1 was withdrawn before arm/grant after its missing mandatory resources helper and
+    nonnumeric CPU metadata were found; R2 includes the helper and a read-only proof of actual
+    CPU-fill behavior. The keeper accepted R2 as READY-WAIT at rank 58, any CPU quarter, with no
+    quarter available; it was not armed or granted. The full 200-chunk run remains pending. The
+    upstream literal-prefix tokenizer guard remains a separate serving refusal; numeric-token-ID
+    parity does not imply serving adoption. No retrieval-quality or B6 decision follows.
 - [ ] **G12 — structural query-shift evaluation.** Add a verbose/narrative arm (~20 cases, 60–150
       words) to the K7 pool and score the incumbent. Our current pool is **90 short well-formed
       queries** of 9–18 words (`scripts/kb_rag/k7_cert_cases.json` 70 + `k7_seed_cases.json` 20),
