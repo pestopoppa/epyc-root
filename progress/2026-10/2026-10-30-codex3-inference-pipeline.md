@@ -37,3 +37,6 @@ Three pre-client ODL recoveries completed; oneGTtable, allsource/grant/result/DO
 
 
 Four original Paddle groups62/65/68/71 rc75 disk-floor partials audited separately from later captures; noRPCstartsbyoriginalend, source/capture/grant/result hashesretained. No qualitytick. [belief: cc]
+
+
+ODLR4s24/s25completed50pages withsource/grant/image/result/DONEbindings; s29completed13andretains12actualunknowns, no missing/no redraw. s28original12unknown/13missing separatefromlaterwindows; sampledRSSexceeded96GiB butstop-predicateunrecorded. HILR4threeaccepted nativefailedanswers→25/2/21; scanner collateralbugfixedinqualifiedR5. FA4r6A228(224OK/4NF), model0/10NF, server/proc/exe snapshotfailure, Babsent/noFA4tick. All4CPUquarters andGPUobservedrunning02:43:24; DeepDiveR1nativecontrolpassed andGPUjobarmed/running, no Step3claim. [belief: cc]

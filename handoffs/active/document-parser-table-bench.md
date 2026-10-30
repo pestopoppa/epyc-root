@@ -250,3 +250,25 @@ All four original outer events exited rc75. Their last captures before those end
 RPC counts use native originated_at/completed_at and capture hash at the original end, not later cumulative state. Later captures are retained separately. Full original paths, grant/source identities and hashes are in original-four-events.json. Unknowns are never redrawn.
 
 [Committed original audit](../../artifacts/compute/results-filing-20261030-0206.json). [belief: cc]
+
+
+### 2026-10-30 R4 original collection outcomes
+
+
+The original `codex3-pip02-odl-relocatable-r4-s24-20261030` and `...-s25-20261030` scheduled runs completed rc0 at 02:29:48Z and 02:29:50Z on 2026-10-30, respectively. Each native batch DONE has 25/25 completed pages; their complete DONE SHA256 values are `715cf83af802c4ee6274f3579d18b2b3f760d8eee187483557d51ce5d1edce1b` and `cc35eac49a886459d459b28c757e10df3bb58a277eaf7e7ba469008613f7afee`. The 50 original page records were individually checked against canonical image hashes, frozen plan, PDF identity, result and DONE/prediction links, captured grant intervals and the registered R4 producer/source manifest `af6262aaf380b3a69031fc5b7f5b11ec0f8b697f314c410c159568bccf4cc62a`. They cover respectively 5 and 0 GT tables. Sampled peak tree RSS was 62,442,586,112 and 94,929,620,992 bytes. This is native collection on image-only wrappers, not a TEDS, parser-selection or original-PDF performance verdict.
+
+The original `...-s28-20261030` ended rc75 at 02:27:57Z. Its original batch result `/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-relocatable-r4-20261030/attempts/2aa57e09ad5a4f37afe39545d9694784.json` SHA256 `2de7d4d14a24efce05f767bf664bca848f9f88d208d8971e217d5c96d257a543` recorded 12 unknown pages (ordinals 700–711), 13 missing pages (712–724), no completed page and zero GT tables across these positions at the original boundary. All 12 partial result writers report forced cutoff after owned-subtree drain; original pre-client producer/grant/plan start captures were checked. Unknown exposure remains unknown and cannot be redrawn. The later 02:29 grant is a separate continuation and is not used to reconstruct this original result.
+
+The original s28 sampled tree-RSS peak was 103,174,090,752 bytes, 94,875,648 bytes above the 96 GiB threshold (103,079,215,104 bytes). The batch record has `error: null` and does not capture which stop predicate fired; a unique stop cause or disk-floor attribution is not established. Native audit with all page paths and digests is `/dev/shm/codex3-pip02-r4-original-audit-20261030/native-audit.json`. Audit ran model-free on SMT126/127 under the pair mutex with a sampled peak of 26,296,320 bytes and rc0. No quality or full-755 completion claim.
+
+
+
+`codex3-pip02-odl-relocatable-r4-s29-20261030` ended rc78 at 2026-10-30T02:40:04Z, observed 02:40:41Z. The final native batch result `/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-relocatable-r4-20261030/attempts/4617a9016a1d45e9b5c6b7248569071d.json` SHA256 `c9d4a37bd89f1ec34c86cbcde7010d23c9ad71a9860a2cd722ade9fb3c286003` records 13 complete pages, 12 unknown and no missing pages; `error` is null. The result is partial, not completed cohort or parser quality.
+
+The earlier grant at 02:31 produced the separate rc75 batch `/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-relocatable-r4-20261030/attempts/959d4b96101b4415973af23ef6135b49.json` SHA256 `652519dbe64376bb77ec885a09519f5d703df467642bd83b90a64a107996e35b`, with ordinals 725–736 unknown and 737–749 unstarted at that boundary. Its sampled tree-RSS peak was 103,783,727,104 bytes, above the 96 GiB threshold; the native record does not identify a unique stopping predicate. All 12 unknown pages have client backend-routing and sidecar document-processing evidence; their captured partial writers report forced cutoff after owned subtree drain. No unknown page may be redrawn.
+
+The later 02:37 grant completed ordinals 737–749, preserving the 12 earlier unknowns; its sampled tree-RSS peak was 62,807,142,400 bytes. All 25 images, PDF identity, plan, pre-client start, producer/source and grant links were checked; all 13 completed pages also passed result, prediction and DONE bindings and registered source lineage. These 13 pages contain 3 GT tables; the 12 unknown pages contain 1. There are no remaining unexposed pages to repair or schedule in this shard. The safe next action is to retain its terminal partial and unknown evidence; the full-cohort gate remains open. No quality verdict or TEDS is asserted.
+
+Per-page native audit: `/dev/shm/codex3-pip02-s29-original-audit-20261030/native-audit.json` SHA256 `bd5132a6b0365f4a02f6ccb7a8e3fdbe2148bd5e5c0ee39fef41ad2306b7c846`. Model-free audit ran on SMT126/127 under pair mutex, rc0, sampled peak 27,877,376 bytes.
+
+[Committed native audits](../../artifacts/compute/results-filing-20261030-0252.json). Preserve terminal unknowns; no replacement when all pages exposed. [belief: cc]
