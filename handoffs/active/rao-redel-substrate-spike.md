@@ -499,3 +499,9 @@ Owner action: preserve nine unknown exposures without redraw; investigate native
 ### 2026-10-30 05:30 original HSF and YaRN event filing
 
 EVL-34 DeepDive R8's separately published native control completed both production REPL and ReDel delegate/wait arms in 88.698s, rc0, with writer and child cleanup. Neither produced a matched natural delegation and child, so qualification is `no_matched_natural_delegate_and_child`; no pilot, Step 3, quality or overhead claim follows. Durable control archive SHA-256 `29d3ed0820b85ea9a83192447a4f39325772131afd467680c9d004fe6ec3bac7`, native result SHA-256 `242297db3a41fc1204d1aa97c74d1bb09e3314e3bb80f97cfa125929c07f575d`. [Control evidence](../../artifacts/compute/results-filing-20261030-0530.json). [belief: cc]
+
+
+### 2026-10-30 06:05 original EVL, Paddle and YaRN resource events
+
+- EVL DeepDive R8 original grant ended 05:49:17Z rc1 at `disk floor plus concurrent reservations`. The source checks this before creating the pilot attempt or captured grant, so this event exposed no new pilot cell. Its separately retained two-arm native control had no matched natural delegation. R9 repair is separate; no pilot quality or Step 3 claim. [Native event audit](../../artifacts/compute/results-filing-20261030-0605.json).
+  - [belief: cc] Original native records and unchanged criteria are linked above.

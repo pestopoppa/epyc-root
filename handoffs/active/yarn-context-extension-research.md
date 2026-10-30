@@ -450,3 +450,9 @@ GPU token-attribution R2 completed the full 65,536-context diagnostic: GPU PPL 1
 ### 2026-10-30 05:30 original HSF and YaRN event filing
 
 YaRN 128K MI210 R1's original 05:26:22Z grant ended rc1 at `live grant/GPU/disk admission refused`, before the scheduled output root or A0/A1 execution. This aggregate predicate also checks affinity, STOP, deadline, live grant and GPU lock; the original diagnostic does not isolate which check returned false. The frozen 120-pair McNemar rule therefore has no new verdict from this attempt. [Original event](../../artifacts/compute/results-filing-20261030-0530.json). [belief: cc]
+
+
+### 2026-10-30 06:05 original EVL, Paddle and YaRN resource events
+
+- YaRN Oolong S2 v27, S1 v26 and S3 v28 original grants ended 05:53:35/47/48Z rc75; each native record reports `new_exposures=0` and refusal at the 150 GiB floor plus 1 GiB aggregate reserve and 128 MiB safety. Retain the original 120-pair denominator: S2 has four unknown A0 and 26 candidate pairs, S1 one unknown and 29, S3 three unknown and 27; A1 requires matched A0 success. No full-cohort McNemar verdict. [Native event audit](../../artifacts/compute/results-filing-20261030-0605.json).
+  - [belief: cc] Original native records and unchanged criteria are linked above.
