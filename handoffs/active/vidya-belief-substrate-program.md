@@ -2556,6 +2556,7 @@ RI-16's routing `stage_ms` is covered by VB-ROUTE-LAT above, not by a new task.
     (CPU) and the turn index. The projection carries what that file records and nothing more; the build id and argv sit
     only in `block.log` and the scratch server logs. Wire both runners' write side before YARN-CPU-512k runs.
 
+  - [ ] **VB-YARN-E1-JETLONG-4XJ — project complete full-scope records for the new JETLONG-SMALL-RECALL 4xJ/static-YaRN comparison.** Accept only original COMPLETE arm records with `native_prompt_n=130000` and unchanged fixture/model/build/recipe identity; require both Y and J arms before emitting a comparison. Preserve six-needle count/6 as one prompt/run (not six reps), strict ordered-JSON scoring, source/binary/DSO identity, captured process/affinity/maps, sampled RSS, and explicit failed, cutoff, malformed, missing, or incomplete dispositions. Do not compare against historical Y3/6, backfill tuples, or infer from the short smoke. Reuse INF-59/VB-YARN-E1's measurement source class and `claim_tuple.grade()`; run the planning-context canary before any belief-gated use. Current preparation has no tuple/canary and full scientific work remains open.
 - [ ] **VB-YARN-DEPTH-RECIPE — write side and adapter for the q36 depth-recipe native-window validation** (filed 2026-10-05,
   workspace-ec). Producer: `q36_depth_recipe.py` on Qwen3.6-35B-A3B CPU, canonical :8070 recipe, 2026-10-05 12:10Z.
   Record shape: per (arm: native vs YaRN ×2) and (depth: 0%/30%/50%/70%/90%), needle correctness, decode tok/s, and
