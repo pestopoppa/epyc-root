@@ -1,0 +1,69 @@
+{
+  "id": "codex3-cs22-a1-native-f32-cpu-20261030",
+  "owner": "codex3",
+  "priority_rank": 100,
+  "regions": "any-cpu-quarter",
+  "min_window_s": 900,
+  "window_s": 3600,
+  "gib": 4,
+  "booking_class": "block-correctness",
+  "class": "diagnostic",
+  "decision_rule": "F32 cache parity subtest: 80 of 80 clip/context comparisons must have identical native token IDs; any mismatch fails this subtest; A1 acceptance and T1 remain gated on all original criteria.",
+  "enrollment": "n/a: diagnostic",
+  "launcher": {
+    "path": "/mnt/raid0/llm/tmp/codex3-cs22-a1-native-20261030/launch.sh",
+    "sha256": "436a72f5a9ba41bad0b76c6fb74f2a5a750e1349ab0b9191d2ec5316b2c4f255"
+  },
+  "job": {
+    "path": "/mnt/raid0/llm/tmp/codex3-cs22-a1-native-20261030/job.py",
+    "sha256": "356409c59d5fec29249b67fe077543305eab9e792820e8471b5caf3d7cb159bf"
+  },
+  "source_manifest": {
+    "path": "/mnt/raid0/llm/tmp/codex3-cs22-a1-native-20261030/SOURCE-SHA256SUMS",
+    "sha256": "ce265240d6a7d4e6bd583bd21fd4ab1e8dc3707b2147c3fff4c4e978979b1741"
+  },
+  "scratch_root": "/mnt/raid0/llm/tmp/codex3-cs22-a1-native-20261030",
+  "keep": [
+    "*.py",
+    "*.c",
+    "*.sh",
+    "*.json",
+    "*.md",
+    "*.log",
+    "*.out",
+    "*SHA256SUMS",
+    "native",
+    "engine/**",
+    "clips/**",
+    "results/**",
+    "qual-smoke*/**",
+    "smoke/**",
+    "startup-probe/**"
+  ],
+  "result_path": "/mnt/raid0/llm/tmp/codex3-cs22-a1-native-20261030/results",
+  "est_output_GiB": 1,
+  "feasibility": "20 clips total 151.985s PCM (first 8.28s, max 9.42s); 160 legs = 8 repetitions per clip. First-clip two-leg smoke 12.82s; 160-leg linear extrapolation ~1026s plus host contention, budget 3600s, per-case continuation. Planning estimate only. 4 GiB exceeds sampled peak 2,762,678,272 bytes by 1.42 GiB.",
+  "smoke": {
+    "ran_at": "2026-10-30T20:51:09.928380+00:00",
+    "regions": "R11 CPU 120,121",
+    "model": "/mnt/raid0/llm/models/nemotron-3.5-asr-streaming-0.6b-F32.gguf",
+    "first_request_ok": true,
+    "result_writer_ok": true,
+    "exit_ok": true,
+    "wall_s": 12.822478484828025,
+    "peak_sampled_tree_rss_bytes": 2762678272,
+    "launcher_sha256": "436a72f5a9ba41bad0b76c6fb74f2a5a750e1349ab0b9191d2ec5316b2c4f255",
+    "log": "/mnt/raid0/llm/tmp/codex3-cs22-a1-native-20261030/qualification-v2.log",
+    "log_sha256": "d404a1b7cfdf7312d9aeb9f82509d1740a439ca14072b1a8fc6355619e67bb1f"
+  },
+  "hold": null,
+  "completion": "COMPLETE only after all 160 valid native cases; TERMINAL-INCOMPLETE for unknown/failure; PARTIAL rc75 at cutoff; mismatched IDs retained as failing parity without hiding results. Original full A1 criterion remains open.",
+  "log_consumer": "/mnt/raid0/llm/tmp/codex3-cs22-a1-native-20261030/log_consumer.py",
+  "raw_globs": [
+    "results/*.stdout",
+    "results/*.stderr",
+    "results/*.json",
+    "results/.tmp-*",
+    "ws58-launcher.out"
+  ]
+}

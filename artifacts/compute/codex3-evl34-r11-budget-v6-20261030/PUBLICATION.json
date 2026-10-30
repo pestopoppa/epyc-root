@@ -1,0 +1,16 @@
+{
+  "id": "codex3-evl34-deepdive-r11-budget-v6-pilot-20261030",
+  "status": "QUEUED",
+  "keeper_result": "2026-10-30T20:55:01Z READY-RESULT codex3-evl34-deepdive-r11-budget-v6-pilot-20261030: QUEUED codex3-evl34-deepdive-r11-budget-v6-pilot-20261030 1025770 | OK: 1 row(s) checked, 0 refusal(s), 0 warning(s) | admit: validator OK; admit: MemAvailable 955 GiB, need 64 GiB; class=block-correctness launcher=filler_run13.s",
+  "published_utc": "2026-10-30T20:51:56Z",
+  "queued_utc": "2026-10-30T20:55:01Z",
+  "manifest": "/mnt/raid0/llm/tmp/compute-flags/ready/armed/codex3-evl34-deepdive-r11-budget-v6-pilot-20261030.json",
+  "row": "/mnt/raid0/llm/tmp/compute-flags/ready/codex3-evl34-deepdive-r11-budget-v6-pilot-20261030.row.md",
+  "qualification_scope": "entry-only; control33 partial/unknown",
+  "qualification_receipt": "/mnt/raid0/llm/tmp/codex3-evl34-deepdive-r11-budget-v6-20261030/LAUNCH-QUALIFICATION.json",
+  "qualification_sha256": "e85c17887667519e92c722956b7828fd1e13f0d059f9b3262e522a766e815e0f",
+  "launcher_sha256": "2de02c1723a1ac9a196603a2ebed342d03de0f7bcd055210517d0b2ba2ed8172",
+  "initial_refusal_archive": "/mnt/raid0/llm/tmp/codex3-evl34-budget-v6-watch-20261030/FIRST-REFUSAL.json",
+  "pilot_verdict": "PENDING",
+  "canonical_keeper_log_hardlink": "2431:193607420"
+}
