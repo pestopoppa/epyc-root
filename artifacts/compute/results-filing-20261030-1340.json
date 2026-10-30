@@ -1,0 +1,37 @@
+{
+  "scope": "Original events only; later re-arms excluded",
+  "records": [
+    {
+      "run": "HIL15b heavy R8 original",
+      "rule": "Original units 05–20: preserve 39 accepted, unknown 11/0, 12/2, 16/1, 19/0; run only five unexposed; bounds over original denominators, no full-cohort verdict.",
+      "verdict": "FAILED rc1: native entry refused an unbound Python stdlib import before replay; prior 39 accepted, four unknown, five unexposed remain.",
+      "native_path": "/mnt/micron/codex3-hil15b-heavy-r8-20261030/results-remaining/bootstrap-1793363790641405684/entry-1.log",
+      "sha256": "c9bc489d42b270cd4f92537d54d0972328a5be58d1f914bd3fd8c3ab8c3cb111",
+      "belief": "cc"
+    },
+    {
+      "run": "DF2 recovery R3 original",
+      "rule": "Validate pinned retained CPU/HIP artifacts, profiles, linkage, HIP marker and diagnostic-symbol absence; native CPU architecture test rc0 with verified cleanup. No fresh build, GPU, inference, parity or promotion.",
+      "verdict": "COMPLETE rc0; architecture test 4.749s; cleanup verified.",
+      "native_path": "/mnt/raid0/llm/tmp/codex-ni-df2-recovery-r3-20261030/runs/attempt-1793365380/RESULT.json",
+      "sha256": "0f1f644afb65d0571a2e859bd1af5496f94a2125e64a8742790a12b5d001f8ab",
+      "belief": "cc"
+    },
+    {
+      "run": "FA4 exact set R10 original",
+      "rule": "Retain exact 228-case native outcomes for each arm with unique six-field keys and native arm_check=OK; diagnostic only; no equivalence, mechanism, timing or promotion grade.",
+      "verdict": "FAILED rc1: live thread affinity census did not stabilize at backend stage; cleanup verified. Exact B reported 228 identical/0 differing/0 unsupported; both-arm acceptance was not established.",
+      "native_path": "/mnt/micron/codex-ni-fa4-exact-set-r10-20261030/runs/20261030T124925Z-3471468/FAILED.json",
+      "sha256": "bb7cdff82dc635d70f7a9b861bafce55829d2622fda537c2fab4d34d89549599",
+      "belief": "cc"
+    },
+    {
+      "run": "EVL34 DeepDive R10 original",
+      "rule": "Fixed source-order pilot 11–20, paired production REPL vs ReDel depth <=1, same questions/model/web tools and 32x2048 reservations per arm; report native outcomes, delegation and unknowns. No redraw; zero completed delegation-positive pairs inconclusive; no Step 3 claim.",
+      "verdict": "FAILED rc78, partial: REPL 10 complete; ReDel 2 complete, 8 unknown. Server drained; no pilot assessment. At least one child exhausted aggregate reservation budget.",
+      "native_path": "/mnt/micron/codex3-evl34-deepdive-r10-20261030/pilot/campaign-pilot-1793365239998477299/result.json",
+      "sha256": "bc7bf269bcee0cdb35fef978fb8e25b6de99d0064af5bfecaf8685b904a7456c",
+      "belief": "cc"
+    }
+  ]
+}

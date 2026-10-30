@@ -1506,3 +1506,5 @@ Insert under V11-FA-4a in /workspace/handoffs/active/kv-unified-stack-rollout.md
 Owner action: investigate how the process executable can disappear while the retained pidfd appears live, preserving birth identity and refusing to count missing process/residency evidence; keep the original run immutable and use a new successor identity for any later execution. No new checkbox is needed.
 
 [Committed original audit](../../artifacts/compute/results-filing-20261030-0252.json).
+
+**2026-10-30 original-event filing — FA4 exact set R10 original:** FAILED rc1: live thread affinity census did not stabilize at backend stage; cleanup verified. Exact B reported 228 identical/0 differing/0 unsupported; both-arm acceptance was not established. Native evidence `/mnt/micron/codex-ni-fa4-exact-set-r10-20261030/runs/20261030T124925Z-3471468/FAILED.json`, SHA-256 `bb7cdff82dc635d70f7a9b861bafce55829d2622fda537c2fab4d34d89549599`. [Audit](../../artifacts/compute/results-filing-20261030-1340.json). [belief: cc]
