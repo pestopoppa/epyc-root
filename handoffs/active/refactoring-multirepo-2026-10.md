@@ -2,18 +2,16 @@
 
 **Status**: ACTIVE — operator resumed implementation 2026-10-24 after an independent handoff audit; review and finish existing branches before integration
 **Created**: 2026-10-07
-**Updated**: 2026-10-27
+**Updated**: 2026-10-30
 **Priority**: High
 **Scope**: epyc-orchestrator (`src/`, `scripts/`, `tests/`, `scripts/autopilot/`, `src/autopilot_core/`);
 epyc-inference-research `scripts/kernel_rnd/autokernel/`; epyc-root `scripts/hooks/` (guard bugs found on the way)
 **Estimated effort**: 382 findings → 26 packages (12 in wave 1, 14 in wave 2); deletion size is a planning estimate, subject to current per-file reachability and retention contracts
-**Scratch**: `/mnt/raid0/llm/tmp/refactor-01a16fc3/` · worktrees: `/mnt/raid0/llm/worktrees/refactor-01a16fc3-*` · root integration: `/mnt/raid0/llm/worktrees/refactor-audit-01a16fc3-root` · wrap checkpoints: `/mnt/raid0/llm/worktrees/wrap-root-20261027`, `/mnt/raid0/llm/worktrees/wrap-root-fresh-20261027`, `/mnt/raid0/llm/worktrees/prep-progress-publish-20261027`
+**Scratch**: `/mnt/raid0/llm/tmp/refactor-01a16fc3/`. Use one reusable checkout per active lane. Retired task and wrap checkout paths below are historical evidence locators; their source states, commits and retained outputs are preserved in the cleanup receipts, rather than live launch inputs.
 
 **Current working priority (operator, 2026-10-27)**: support the Claude inference owner by resolving prioritized non-inference blockers, validating source-bound launchers, and handing them over unarmed. Coordinate with the parallel NI Codex session. CI/O8 remains parked; this checkpoint does not claim the full refactor complete. Current evidence and next actions: [campaign checkpoint](../../progress/2026-10/2026-10-27-refactor-campaign-wrap.md).
 
-Each package uses its own branch/worktree and scratch subdirectory. Tests whose safety contracts
-require `/tmp` use the manually cleaned exception `/tmp/refactor-01a16fc3/`. The earlier cloud run's
-`/workspace/wt/` and expired container scratch paths are historical, not host cleanup targets.
+Each active lane reuses its checkout and scratch area. Remove each worktree through `scripts/system/worktree_gate.py` when its task lands. Cold dirty and unlanded drafts were archived before abandoning their materialized checkouts; this does not accept, merge or close the underlying packages. Locked or running source views remain intact. Historical checkpoint paths and process IDs below describe their recorded date, not present-day launch instructions.
 
 **Start here:** the [Pending work](#pending-work) checklist is the queue; §Branches says what each pushed
 branch holds and how to merge it; per-finding evidence is in `research/refactor-audit-2026-10/findings-*.md`.
@@ -542,3 +540,8 @@ C1-22 disappears with the unified plane.
 - [x] HIL15 S2 resource-admission repair: preserve original45=17accepted/1immutableunknown/27unexposed; place new native outputs on Micron while real source/launcher/state/log scratch stays RAID. RAID metadata has a sampled128MiB cap and independent150GiB floor+.125GiB margin; native output retains its full1GiB sampled cap,64GiB RSS budget and unchanged cohort/protocol. Existing arm/validator/T1/grant controls pass all four quarters; actual same outer launcher normal31.264s/active-cutoff68.389s, partial100-token witness and captured-tree drain pass. `codex-hil15-s2-micron-v8-20261030` accepted by normal keeper05:36:16 on0–23, PID2214155, zero validator refusals. This closes launcher preparation only; original collection/measurement remains open. Evidence `/mnt/raid0/llm/tmp/hil15-s2-split-storage-v8-20261030/READY-PUBLISHED.json`. ✅ 2026-10-30 [no-belief: operational resource repair and native launcher qualification]
 
 - [x] HIL15 S0 resource-admission repair: split actual RAID launcher/state/log metadata from full1GiB native output on Micron, preserving original45=32accepted/3immutableunknown/10unexposed. Existing arm/full validator/T1/grant controls pass all four quarters with actual RAID disk; same outer launcher normal16.341s rc0 and witnessed active cutoff26.323s rc75/partial/drain pass. Normal keeper accepted `codex-hil15-s0-micron-v9-20261030`05:48:37 on0–23, PID2281641, zero refusals. Native capture remains pending; no original measurement closure. Evidence `/mnt/raid0/llm/tmp/hil15-s0-split-storage-v9-20261030/READY-PUBLISHED.json`. ✅ 2026-10-30 [no-belief: operational admission and native launcher qualification]
+
+
+## Disk-emergency checkout cleanup — 2026-10-30
+
+- [x] Archive or abandon owned cold source drafts, retire stale launch helpers, and gate-remove 61 RAID worktrees; two RAM candidate views were also removed. Recorded allocation reclaimed is at least 40.91 GiB, including one verified duplicate-block recovery and excluding unmeasured removals and other sessions' free-space changes. Source refs, dirty drafts and retained evidence remain preserved; refactor package acceptance is unchanged. Locked census/HIL runtime and live INF22 views remain intact. The completed INF70 row's retained-build reference awaits its scheduler owner's update; its build is already checksum-archived. [Cleanup proof](../../artifacts/compute/refactor-worktree-cleanup-20261030.json). ✅ 2026-10-30 [no-belief: operational checkout cleanup; no measurement or feature completion claim]

@@ -1,0 +1,149 @@
+{
+  "schema": "epyc.disk_emergency_cleanup_consolidated_proof.v1",
+  "recorded_utc": "2026-10-30",
+  "measurement_contract": "Allocated bytes are the sum of recorded du -s -B1 immediately before each exact gate removal. Do not infer actual filesystem df delta. Earlier unmeasured entries remain included in view counts but contribute zero to the measured-byte sum; deduplicated sources counted once.",
+  "aggregate_before_orchestrator16_and_newc5": {
+    "raid_view_count": 45,
+    "allocated_du_bytes": 36318449664,
+    "allocated_gib": 33.82419204711914,
+    "components": [
+      {
+        "name": "base owned cold cohort",
+        "view_count": 31,
+        "allocated_du_bytes": 16128622592,
+        "receipt_basis": "coordinator-provided measured minimum before M4-kernel/outside cohorts; individual early 3 + NIB2 views are unmeasured and included in counts"
+      },
+      {
+        "name": "M4 kernel cohort",
+        "view_count": 4,
+        "allocated_du_bytes": 930295808,
+        "receipt": {
+          "file": "COLD-M4-KERNEL-REMOVALS-20261030.json",
+          "path": "/mnt/raid0/llm/tmp/refactor-01a16fc3/preservation-receipts-20261030/COLD-M4-KERNEL-REMOVALS-20261030.json",
+          "sha256": "5e625331942787f35a2cb609f79e3189d262119fa4a85b8c83c7416b49160fc8",
+          "view_count": 4,
+          "allocated_du_bytes": 930295808
+        }
+      },
+      {
+        "name": "outside-worktree cohort",
+        "view_count": 10,
+        "allocated_du_bytes": 19259531264,
+        "receipt": {
+          "file": "OUTSIDE-COLD-WORKTREE-REMOVALS-20261030.json",
+          "path": "/mnt/raid0/llm/tmp/refactor-01a16fc3/preservation-receipts-20261030/OUTSIDE-COLD-WORKTREE-REMOVALS-20261030.json",
+          "sha256": "92b12fdd79e99a31ff49eea883044d47a7300194dc1bca936c2e54b53a52aa4b",
+          "view_count": 10,
+          "allocated_du_bytes": 19259531264
+        }
+      }
+    ]
+  },
+  "aggregate_after_orchestrator16": {
+    "raid_view_count": 61,
+    "allocated_du_bytes": 43929714688,
+    "allocated_gib": 40.91273498535156,
+    "added_cohort": {
+      "file": "OWN-ORCHESTRATOR-REMOVALS-20261030.json",
+      "path": "/mnt/raid0/llm/tmp/refactor-01a16fc3/preservation-receipts-20261030/OWN-ORCHESTRATOR-REMOVALS-20261030.json",
+      "sha256": "dfca67db4957d64398ca70b19816156ba0ee230c97626fcf9a184d04ac7c728e",
+      "view_count": 16,
+      "allocated_du_bytes": 7611265024
+    }
+  },
+  "ram_views_excluded_from_raid_accounting": 2,
+  "supporting_receipts": [
+    {
+      "file": "COLD-CI-WRAP-REMOVALS-20261030.json",
+      "path": "/mnt/raid0/llm/tmp/refactor-01a16fc3/preservation-receipts-20261030/COLD-CI-WRAP-REMOVALS-20261030.json",
+      "sha256": "e387015d5ba9922107b4f0717845720492eb96b6c885247409ef3d6e48142b5e",
+      "view_count": 6,
+      "allocated_du_bytes": 1745657856
+    },
+    {
+      "file": "COLD-M4-KERNEL-REMOVALS-20261030.json",
+      "path": "/mnt/raid0/llm/tmp/refactor-01a16fc3/preservation-receipts-20261030/COLD-M4-KERNEL-REMOVALS-20261030.json",
+      "sha256": "5e625331942787f35a2cb609f79e3189d262119fa4a85b8c83c7416b49160fc8",
+      "view_count": 4,
+      "allocated_du_bytes": 930295808
+    },
+    {
+      "file": "OUTSIDE-COLD-WORKTREE-REMOVALS-20261030.json",
+      "path": "/mnt/raid0/llm/tmp/refactor-01a16fc3/preservation-receipts-20261030/OUTSIDE-COLD-WORKTREE-REMOVALS-20261030.json",
+      "sha256": "92b12fdd79e99a31ff49eea883044d47a7300194dc1bca936c2e54b53a52aa4b",
+      "view_count": 10,
+      "allocated_du_bytes": 19259531264
+    },
+    {
+      "file": "OWN-ORCHESTRATOR-REMOVALS-20261030.json",
+      "path": "/mnt/raid0/llm/tmp/refactor-01a16fc3/preservation-receipts-20261030/OWN-ORCHESTRATOR-REMOVALS-20261030.json",
+      "sha256": "dfca67db4957d64398ca70b19816156ba0ee230c97626fcf9a184d04ac7c728e",
+      "view_count": 16,
+      "allocated_du_bytes": 7611265024
+    },
+    {
+      "file": "NIB98-VIEW-ABANDONMENT-20261030.json",
+      "path": "/mnt/raid0/llm/tmp/refactor-01a16fc3/NIB98-VIEW-ABANDONMENT-20261030.json",
+      "sha256": "46b74b625567a1197822169365a217aa724ad95740fe297a74e9d1da5c3f3263",
+      "view_count": 2,
+      "allocated_du_bytes": null
+    },
+    {
+      "file": "OWN-COLD-SOURCE-ARCHIVE-20261030.json",
+      "path": "/mnt/raid0/llm/tmp/refactor-01a16fc3/preservation-receipts-20261030/OWN-COLD-SOURCE-ARCHIVE-20261030.json",
+      "sha256": "214c10fca0040e12cb2c3ece64f4ed166761d83d5e35b166dec3cf231b1a3b44",
+      "view_count": 3,
+      "allocated_du_bytes": null
+    },
+    {
+      "file": "OWN-COLD-SOURCE-ARCHIVE-CHUNK2-20261030.json",
+      "path": "/mnt/raid0/llm/tmp/refactor-01a16fc3/preservation-receipts-20261030/OWN-COLD-SOURCE-ARCHIVE-CHUNK2-20261030.json",
+      "sha256": "c6c07087d7f71a4c6d1db2561dcc700e5b01046c4863f961561d0af4e5ca3f21",
+      "view_count": 7,
+      "allocated_du_bytes": null
+    }
+  ],
+  "preservation": {
+    "source_archive_refs_verified": 10,
+    "dirty_state_micron_archives_verified": 5,
+    "micron_locator": "/mnt/raid0/llm/tmp/refactor-01a16fc3/preservation-receipts-20261030/MICRON-OUTSIDE-DIRTY-STATE-ARCHIVE-20261030.json",
+    "helper_retirement_receipt": "/mnt/raid0/llm/tmp/refactor-01a16fc3/preservation-receipts-20261030/RETIRED-OWN-WORKTREE-HELPERS-20261030.json"
+  },
+  "exceptions_and_retained": [
+    {
+      "path": "/mnt/raid0/llm/worktrees/prep-01a16fc3-census",
+      "state": "retained/protected",
+      "reason": "locked pending INF75 GPU source-bound PF; no bypass"
+    },
+    {
+      "path": "/dev/shm/refactor-task-wrap-01a16fc3-20261029",
+      "state": "retained",
+      "reason": "active integration document lane"
+    },
+    {
+      "path": "/mnt/raid0/llm/worktrees/mains/codex-refactor-01a16fc3",
+      "state": "retained/protected",
+      "reason": "protected mains lane"
+    },
+    {
+      "scope": "active runtime paths",
+      "state": "retained",
+      "reason": "HIL15 and YaRN active jobs were outside cleanup scope and untouched"
+    },
+    {
+      "path": "/mnt/raid0/llm/worktrees/prep-01a16fc3-c5-candidate",
+      "state": "pending/not included",
+      "reason": "possible additional cohort; no bytes/count claimed in these aggregates"
+    },
+    {
+      "path": "/mnt/raid0/llm/worktrees/refactor-01a16fc3-root-checkpoint-20261027",
+      "state": "observed absent/unregistered after concurrent cleanup",
+      "reason": "not removed or byte-attributed by this session; reconcile against owning receipt"
+    }
+  ],
+  "draft_only": {
+    "path": "/mnt/raid0/llm/tmp/refactor-01a16fc3/preservation-receipts-20261030/ROOT-REFACTOR-HANDOFF-CLEANUP-DRAFT-20261030.md",
+    "shared_handoff_or_index_applied": false
+  },
+  "operations": "Exact owned paths only through worktree_gate.py remove; no force, reset, prune, gc, new worktree, or shared canonical edits."
+}
