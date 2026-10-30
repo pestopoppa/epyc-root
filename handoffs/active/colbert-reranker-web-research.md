@@ -1,6 +1,6 @@
 # ColBERT Reranker for web_research Pipeline
 
-**Scratch**: `/mnt/raid0/llm/tmp/codex-ni06-kb-20261006/`; owned APP worktrees `/mnt/raid0/llm/worktrees/codex-ni07-s9-20261006/`, `/mnt/raid0/llm/worktrees/codex-ni07-promote-s9-20261006/`.
+**Scratch**: `/mnt/raid0/llm/tmp/codex-ni-g14-reason32m-20261030/` (KEEP-marked READY diagnostic/evidence); `/mnt/raid0/llm/tmp/codex-ni06-kb-20261006/`; owned APP worktrees `/mnt/raid0/llm/worktrees/codex-ni07-s9-20261006/`, `/mnt/raid0/llm/worktrees/codex-ni07-promote-s9-20261006/`.
 
 **Status**: refreshed 2026-05-28; S5 gate rechecked 2026-06-14 — S1-S4 complete; zero-page telemetry defect repaired; targeted and representative direct-tool probes produced real fetched/synthesized counters. Current S5 request-path reranker decision is **NO-GO/HOLD**: representative direct-tool deep-research sentinel sample synthesized 55 pages with 0 irrelevant pages, below the >20% waste threshold. Live Gate-3 now passes hard telemetry plus the `web_research` soft structured-output probe after `epyc-orchestrator` `9a220b9`; keep instrumentation and reranker utilities available but do not add request-path reranking complexity.
 **Created**: 2026-04-05 (extracted from `04-mirothinker-worker-eval.md` intake-174)
@@ -586,6 +586,48 @@ Tasks:
 - [x] **S4c**: CPU latency benchmark with Reason-mxbai INT8 at 48 threads for 10 snippets (~30 min). Target median ≤80 ms. **Harness prereq DONE 2026-06-14**: `epyc-orchestrator` `b37de4a` added `scripts/benchmark/bench_colbert_rerank.py` with warmup-separated latency metrics, JSON output, explicit LateOn/Reason-mxbai model-slot overrides, and no-model skip behavior. **Measured 2026-06-14** on the real ONNX Runtime path after `7c1e41e` hardened availability checks: artifact `/mnt/raid0/llm/models/reason-mxbai-colbert-v0-32m-onnx-int8`, 50 measured calls, 5 warmup calls, 10 snippets/call, median `104.434 ms`, mean `104.301 ms`, p95 `105.237 ms`, first call `107.838 ms`, throughput `95.876 snippets/s`. Result: latency is faster than the older ~180 ms GTE baseline but misses the original ≤80 ms target; treat Reason-mxbai as promising-but-not-yet-accepted until request-path A/B and any optimization pass. **Superseded 2026-08-12** — that 104 ms was an unbounded-ONNX-thread-pool measurement; with the intra-op bound the same harness reads **49.1 ms**, inside the ≤80 ms gate. See "S4b measurement (2026-08-12)" below.
 - [x] **S5-amend**: **LANDED 2026-06-14** in `epyc-orchestrator` `107a8db`. `src/tools/web/colbert_reranker.py` now has a three-slot selector documented in code comments: `LATEON_MODEL_PATH` primary, `REASON_MXBAI_MODEL_PATH` 32M fallback, and GTE-ModernColBERT-v1 default. Unit coverage verifies default, Reason-mxbai-only, and LateOn-over-Reason precedence. Full A/B remains inference-gated on AR-3 Package D, same gate as S5.
 - [ ] **G14 (compute-gated) — re-export `Reason-mxbai-colbert-v0-32m` with `pylate-onnx-export` 1.7.0 so the slot finally has an `onnx_config.json`.** The staged artifact at `/mnt/raid0/llm/models/reason-mxbai-colbert-v0-32m-onnx-int8` ships `config_sentence_transformers.json` but **no `onnx_config.json`** — the file the NextPlaid Rust reader requires and the one `colbert_encoder._load_declared_config()` now prefers (`epyc-orchestrator` `4e5e84c0`). Install **from git**: `pip install "pylate-onnx-export @ git+https://github.com/lightonai/next-plaid.git#subdirectory=next-plaid-onnx/python"` — **not** the model card's `onnx/python` path, which 404s at head and at `00e26aae`, and **not** PyPI 0.1.0, which takes the projection from `pylate_model[1].linear` while reading the output dimension from `pylate_model[-1]`: on this **3-Dense** checkpoint (`1_Dense` 384→768, `2_Dense` 768→768, `3_Dense` 768→128) that emits a **truncated graph with a mislabelled `embedding_dim`**. Pin a PyLate ceiling as well — `query_prefix_id` gained a `None` return at 1.6.0 that `export.py:264-265`'s bare `int()` would crash on. **Compute is one CPU trace of a 32M model — seconds.** **Owning handoff**: this one (`colbert-reranker-web-research.md`). **What opens the gate**: the real blocker is an **environment prerequisite, not compute** — 1.7.0 declares `requires-python ">=3.10,<3.13"` and this host is Python 3.13.7, so a **Python 3.10–3.12 venv must exist first**. Once it does, the gate opens when the exported graph's declared `embedding_dim` matches the last Dense's `out_features` (**128** here) **and** parity holds against the existing **92 MB** (92,079,820 B) `model_int8.onnx`. The older cp314 / `fast-plaid` / `voyager` objection on file is **stale**: `voyager` is an optional extra gated `python_version < 3.14`, `fast-plaid` ships cp310–cp314 manylinux wheels, and `pylate/__init__.py` never imports `pylate/indexes/`, so neither is imported on this path.
+
+
+**G14 preparation checkpoint — 2026-10-30 (task remains open):** READY packet
+`codex-ni-g14-reason32m-r1-20261030` is published at rank 74, `any-cpu-quarter`,
+8 GiB, with **300 s minimum / 600 s booked window**. The public manifest SHA-256
+is `c8547a4e05987da8a01c47d72560274b4e313db0582ae27c94630342dc38876b`;
+`SOURCE.sha256` is `857000058e6a990051db8f11774eac92333895a65321cfceb6d3afc732e72f39`
+and all listed files verify. The preserved `PUBLISHED.json` keeper-scan stdout's
+600 field is the booked window, not the minimum; the explicit manifest fields
+above govern. Packet and receipts:
+`/mnt/raid0/llm/tmp/codex-ni-g14-reason32m-20261030`.
+
+Python 3.12, PyLate 1.4.0 and exporter 1.7.0 at
+`00e26aae0006b322727db277672211d9a0e3ccec` now produce experimental FP32/INT8
+ONNX and declared dimension 128, exercising all Dense projections
+384→768→768→128. The original 92,079,820-byte graph is unchanged. Final native
+smoke (`smoke-final/RESULT.json`) covers **one banked snippet, 15 rows and six
+pairwise graph comparisons**, not the full 20-snippet/110-row run. Lower maxabs
+and cosine divergence mean better fidelity. Candidate FP32 vs independently
+aligned PyLate.forward has maxabs `1.7881393432617188e-7`; candidate INT8 max
+cosine divergence is `0.0006961226463317871`. With matching real token IDs and
+full masks, corrected-contract old INT8 vs PyLate.forward has max cosine
+divergence `0.006514549255371094`, `0.00673598051071167`, `0.007153213024139404`
+at caps 32/64/128. These are scoped smoke observations; masked-padding ID
+0 versus 50284 is explicitly retained in the native record. Raw original
+Reason preprocessing omits trained lowercasing: TOKEN_MISMATCH, **no cosine
+computed**. Native full output is 18×128 while independent PyLate.encode
+punctuation pruning returns 17×128. **PREFIX-3 remains unmet**, without pooling
+or truncating away the mismatch; historical pooled prefix-free numbers cannot
+satisfy it. No retrieval-quality or adoption evaluation ran.
+
+Final same-entry resource receipt (`QUALIFIED-NATIVE-SMOKE.log`): child runtime
+24.9707 s; supervisor runtime 26.8240 s; sampled peak process-tree RSS
+1,982,087,168 bytes; child rc 0, children drained. Post-work cutoff qualification
+retains four rows with child rc 75 after 8.9393 s supervisor time, children
+drained. Next: run the admitted full 110-row diagnostic, retain token/shape
+refusals, and reconcile the encode punctuation contract before claiming
+PREFIX-3. Existing SC50 covers this source family; future projection must carry
+baseline/candidate pins, native token/mask/shape refusals, cohort coverage and
+run phase through its existing ClaimTuple ladder. No adapter/canary completion
+or new measurement warrant is claimed. G14 and PREFIX-3 stay unchecked; no
+artificial preparation checkbox is added. [no-belief: compute-preparation]
 
 ### Independence note
 
