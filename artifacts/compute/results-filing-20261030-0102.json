@@ -1,0 +1,514 @@
+{
+  "at": "2026-10-30T01:01:48.060861+00:00",
+  "original_events": {
+    "codex-ni-yarn-dca-xdev-cpu-r5-20261030": {
+      "id": "codex-ni-yarn-dca-xdev-cpu-r5-20261030",
+      "ended_file": "/mnt/raid0/llm/tmp/compute-flags/grants/codex-ni-yarn-dca-xdev-cpu-r5-20261030.ended",
+      "end_line": "rc=70 time=2026-10-30T00:33:08Z reason=job-rc-70:exited",
+      "seen_at": "2026-10-30T00:33:29Z",
+      "result_path": "/mnt/raid0/llm/tmp/codex-ni-yarn-dca-xdev-20261029-r5/runs",
+      "scratch_root": "/mnt/raid0/llm/tmp/codex-ni-yarn-dca-xdev-20261029-r5",
+      "decision_rule": "Perplexity is lower-is-better. Compare only after the matching GPU arm completes on identical source/model/text/context/batch/ubatch/attention/KV settings. The reported +/- is within-run token spread, not a between-run confidence interval; one pair does not establish statistical significance.",
+      "class": "diagnostic",
+      "owner": "codex-ni"
+    },
+    "codex3-pip02-paddle-relocatable-r11-g14-20261029": {
+      "id": "codex3-pip02-paddle-relocatable-r11-g14-20261029",
+      "ended_file": "/mnt/raid0/llm/tmp/compute-flags/grants/codex3-pip02-paddle-relocatable-r11-g14-20261029.ended",
+      "end_line": "rc=0 time=2026-10-30T00:34:43Z reason=complete",
+      "seen_at": "2026-10-30T00:35:33Z",
+      "result_path": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-relocatable-r11-20261030/DONE-14",
+      "scratch_root": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-relocatable-r11-20261030/packets/group-14",
+      "decision_rule": "Collect original fresh English Paddle shards[14, 15, 16], native full layout/crop/recognition/assembly, temperature0,4096outputtokens,8192contextslot,np12. Preserve original requests and unknowns; exact cached replay only; native prospective source-bound page finish receipt. Collection diagnostic; no TEDS/adoption verdict.",
+      "class": "diagnostic",
+      "owner": "codex3"
+    },
+    "codex-ni-df2-build-recovery-r2-20261030": {
+      "id": "codex-ni-df2-build-recovery-r2-20261030",
+      "ended_file": "/mnt/raid0/llm/tmp/compute-flags/grants/codex-ni-df2-build-recovery-r2-20261030.ended",
+      "end_line": "rc=75 time=2026-10-30T00:44:04Z reason=job-rc-75:exited",
+      "seen_at": "2026-10-30T00:44:50Z",
+      "result_path": "/mnt/raid0/llm/tmp/codex-ni-20261027-df2-row-exact-prep/recovery-r2-20261030/runs",
+      "scratch_root": "/mnt/raid0/llm/tmp/codex-ni-20261027-df2-row-exact-prep/recovery-r2-20261030",
+      "decision_rule": "Complete only when the pinned retained CPU/HIP artifacts, house profiles, linkage, HIP row-exact marker and absence of diagnostic symbols validate, and the native CPU architecture test exits 0 with verified child cleanup. Explicit cutoff after work starts is rc75/PARTIAL only after pidfd cleanup is verified; unrelated failures remain failures. This does not claim a fresh build, GPU run, parity result, inference result or kernel promotion.",
+      "class": "diagnostic",
+      "owner": "codex-ni"
+    }
+  },
+  "ni": {
+    "sources": {
+      "/mnt/raid0/llm/tmp/compute-flags/ready/codex-ni-yarn-dca-xdev-cpu-r5-20261030.launcher.out": "94385141b61ae11401d54476138221ca69a4176e407237b75251c1f5666cd232",
+      "/mnt/raid0/llm/tmp/compute-flags/ready/codex-ni-df2-build-recovery-r2-20261030.launcher.out": "c44fdc39a37d5c35246ce2bd4358aad5db671141fc2de77d1cca1cd1a61400c7",
+      "/mnt/raid0/llm/tmp/codex-ni-20261027-df2-row-exact-prep/recovery-r2-20261030/runs/attempt-1793321880/RESULT.json": "135724692716f03596548c6890b36adf3684ad37fbeedc152895afab9f068813",
+      "/mnt/raid0/llm/tmp/codex-ni-20261027-df2-row-exact-prep/recovery-r2-20261030/runs/attempt-1793321880/test-llama-archs.log": "4701a92f88e89c173b5f6e5197b3f9f6b0a73ea21e8bc588ea7d26b18c698809",
+      "/mnt/raid0/llm/tmp/codex-ni-20261027-df2-row-exact-prep/recovery-r2-20261030/runs/attempt-1793322180/RESULT.json": "a2b02b6d79a42b092a078fc9bee60c8f1f8f1e1b97fd5404e99f59138867fa13"
+    },
+    "cpu_r5": "rc70 malformed claimed_cpus before native work, no full PPL",
+    "df2_original": {
+      "artifacts": {
+        "cpu_ggml_sha256": "838262cb0bbd3f192ac7a4d036e567fce2b7bcbacbc7c322cfa9cd46ae8d951a",
+        "cpu_test_sha256": "5a346ef4908515d9e14a02d2935c7ec1e5d8cfc17d25857658c63dbe8ee9b982",
+        "diagnostic_symbols_absent": true,
+        "fixture_sha256": "9335fcc161ecbe61989400a16cdf6a3d859769127887f70f184dde444f690d88",
+        "hip_ggml_sha256": "6771e1fd33a5de8818478a4c95574e651acce3703c9ad2da6cdc6b2afb852c1d",
+        "hip_row_exact_marker": true,
+        "hip_test_sha256": "8863b9bb93a7746752d16592ebc06f4112b57ac4183013d667653ee2deff608a",
+        "width_probe_sha256": "8934f4a9693921e12fdffb3a9fc92b570504708ddccf06fdf80259fce09d3ccc"
+      },
+      "cleanup_verified": true,
+      "controlled_cutoff": true,
+      "cutoff_reason": "disk_floor",
+      "ended_at_utc": "2026-10-30T00:44:01.938346+00:00",
+      "mode": "scheduled",
+      "native_test": {
+        "allocated_output_bytes_before_result": 20480,
+        "child_rc": -15,
+        "cleanup_verified": true,
+        "first_native_compute_ok": false,
+        "reason": "disk_floor",
+        "wall_s": 1.494,
+        "work_started": true
+      },
+      "partial": true,
+      "pins": {
+        "candidate_commit": "c72ec82f5417bb2937310326120f149b665e8400",
+        "candidate_patch_sha256": "873bda9d5d0d5d70686b03056f7c7bd5836853201957f79234efb500c56683da",
+        "initial_recovery_state_sha256": "ee38b3c887f68662f4537eb2f13f43a9dfc5df0e7bb714e57215c21154766977",
+        "original_build_manifest_sha256": "4a6749cdbafd15a9d73c9d210775a0864b81c31ffeeaeabed965c3b0bf5fc566",
+        "recovery_manifest_sha256": "3997738c99b97c31263b926a52d458a8606e9c667b58d15902827245a454b0b6",
+        "task_source_manifest_sha256": "316efb3a3908b77cf45531a903a7a5fae594f5d22b533ed3b50fa897d3eb17ad",
+        "toolchain_manifest_sha256": "e4c43616495c400e2cf33a4b9a05c6deaacf4be75c0eb43e371d01cf85783185",
+        "tracked_source_manifest_sha256": "96f82deefd342c218d90e3bfec7ba79810b9deb7e4e45af19877879825cdcae4",
+        "ui_manifest_sha256": "bb6b16c4ae75291837b57e889b8b52d251218b6cf6960afddc92a52679ad768a"
+      },
+      "rc": 75,
+      "schema": "df2.build-artifact-recovery.v1",
+      "scope": "Revalidate existing private C5 CPU/HIP build outputs and run one native CPU architecture test; no build, model inference, GPU execution, parity or kernel promotion.",
+      "smoke": {
+        "exit_ok": false,
+        "first_request_basis": "test-llama-archs native CPU compute; no model or inference request applies",
+        "first_request_ok": false,
+        "log": null,
+        "model": "none (native CPU test)",
+        "ran_at": "2026-10-30T00:43:58.978039+00:00",
+        "regions": "",
+        "result_writer_ok": true,
+        "wall_s": 1.494
+      },
+      "started_at_utc": "2026-10-30T00:43:58.978039+00:00",
+      "status": "PARTIAL",
+      "task_id": "codex-ni-df2-build-recovery-r2-20261030",
+      "work_started": true
+    },
+    "df2_later_separate": {
+      "artifacts": {},
+      "cleanup_verified": true,
+      "controlled_cutoff": false,
+      "cutoff_reason": null,
+      "ended_at_utc": "2026-10-30T00:48:25.752527+00:00",
+      "mode": "scheduled",
+      "native_test": {
+        "first_native_compute_ok": false,
+        "wall_s": 0.0,
+        "work_started": false
+      },
+      "partial": false,
+      "pins": {},
+      "rc": 70,
+      "schema": "df2.build-artifact-recovery.v1",
+      "scope": "Revalidate existing private C5 CPU/HIP build outputs and run one native CPU architecture test; no build, model inference, GPU execution, parity or kernel promotion.",
+      "smoke": {
+        "exit_ok": false,
+        "first_request_basis": "test-llama-archs native CPU compute; no model or inference request applies",
+        "first_request_ok": false,
+        "log": null,
+        "model": "none (native CPU test)",
+        "ran_at": "2026-10-30T00:48:25.752464+00:00",
+        "regions": "",
+        "result_writer_ok": true,
+        "wall_s": 0.0
+      },
+      "started_at_utc": "2026-10-30T00:48:25.752464+00:00",
+      "status": "REFUSED",
+      "task_id": "codex-ni-df2-build-recovery-r2-20261030",
+      "work_started": false
+    }
+  },
+  "pip_native": {
+    "scope": "read-only native collection audit; no TEDS or quality verdict",
+    "source_registry_sha256": "20b60b7ac3fb6fcd4db6d49163eea7d3158a4be0c6b4a94e04a2fab850226ebb",
+    "source_files_match": true,
+    "done14": "complete",
+    "pages": [
+      {
+        "page_index": 94,
+        "shard": 14,
+        "start": true,
+        "result": true,
+        "finish": true,
+        "result_valid": true,
+        "finish_binding_valid": true,
+        "region_starts": 16,
+        "region_unmatched": 0
+      },
+      {
+        "page_index": 95,
+        "shard": 14,
+        "start": true,
+        "result": true,
+        "finish": false,
+        "result_valid": true,
+        "finish_binding_valid": false,
+        "region_starts": 14,
+        "region_unmatched": 0
+      },
+      {
+        "page_index": 96,
+        "shard": 14,
+        "start": true,
+        "result": true,
+        "finish": false,
+        "result_valid": true,
+        "finish_binding_valid": false,
+        "region_starts": 5,
+        "region_unmatched": 0
+      },
+      {
+        "page_index": 97,
+        "shard": 14,
+        "start": true,
+        "result": true,
+        "finish": false,
+        "result_valid": true,
+        "finish_binding_valid": false,
+        "region_starts": 17,
+        "region_unmatched": 0
+      },
+      {
+        "page_index": 98,
+        "shard": 14,
+        "start": true,
+        "result": true,
+        "finish": true,
+        "result_valid": true,
+        "finish_binding_valid": true,
+        "region_starts": 18,
+        "region_unmatched": 0
+      },
+      {
+        "page_index": 99,
+        "shard": 15,
+        "start": true,
+        "result": true,
+        "finish": true,
+        "result_valid": true,
+        "finish_binding_valid": true,
+        "region_starts": 23,
+        "region_unmatched": 0
+      },
+      {
+        "page_index": 107,
+        "shard": 15,
+        "start": true,
+        "result": true,
+        "finish": false,
+        "result_valid": true,
+        "finish_binding_valid": false,
+        "region_starts": 8,
+        "region_unmatched": 0
+      },
+      {
+        "page_index": 119,
+        "shard": 15,
+        "start": true,
+        "result": true,
+        "finish": false,
+        "result_valid": true,
+        "finish_binding_valid": false,
+        "region_starts": 5,
+        "region_unmatched": 0
+      },
+      {
+        "page_index": 129,
+        "shard": 15,
+        "start": true,
+        "result": true,
+        "finish": true,
+        "result_valid": true,
+        "finish_binding_valid": true,
+        "region_starts": 14,
+        "region_unmatched": 0
+      },
+      {
+        "page_index": 133,
+        "shard": 15,
+        "start": true,
+        "result": true,
+        "finish": false,
+        "result_valid": true,
+        "finish_binding_valid": false,
+        "region_starts": 2,
+        "region_unmatched": 0
+      },
+      {
+        "page_index": 136,
+        "shard": 16,
+        "start": true,
+        "result": true,
+        "finish": true,
+        "result_valid": true,
+        "finish_binding_valid": true,
+        "region_starts": 28,
+        "region_unmatched": 0
+      },
+      {
+        "page_index": 140,
+        "shard": 16,
+        "start": true,
+        "result": true,
+        "finish": true,
+        "result_valid": true,
+        "finish_binding_valid": true,
+        "region_starts": 15,
+        "region_unmatched": 0
+      },
+      {
+        "page_index": 142,
+        "shard": 16,
+        "start": true,
+        "result": true,
+        "finish": false,
+        "result_valid": true,
+        "finish_binding_valid": false,
+        "region_starts": 16,
+        "region_unmatched": 0
+      },
+      {
+        "page_index": 148,
+        "shard": 16,
+        "start": true,
+        "result": true,
+        "finish": false,
+        "result_valid": true,
+        "finish_binding_valid": false,
+        "region_starts": 15,
+        "region_unmatched": 0
+      },
+      {
+        "page_index": 150,
+        "shard": 16,
+        "start": true,
+        "result": true,
+        "finish": true,
+        "result_valid": true,
+        "finish_binding_valid": true,
+        "region_starts": 18,
+        "region_unmatched": 0
+      }
+    ],
+    "valid_page_results": 15,
+    "valid_r11_finish_bindings": 7,
+    "no_finish_receipt": 8,
+    "unmatched_region_starts": 0,
+    "partial_attempts": {
+      "17": [
+        {
+          "path": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-relocatable-r11-20261030/attempts/codex3-pip02-paddle-relocatable-r11-g17-20261029-bc77b1f74e7d409f90d77e005efaad79/result.json",
+          "rc": 75,
+          "partial": true,
+          "reason": null,
+          "error": null,
+          "shards": [
+            17,
+            18,
+            19
+          ]
+        },
+        {
+          "path": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-relocatable-r11-20261030/attempts/codex3-pip02-paddle-relocatable-r11-g17-20261029-ed84da71ae944471b00e8a524f2babac/result.json",
+          "rc": 75,
+          "partial": true,
+          "reason": "disk floor",
+          "error": "TimeoutError: deadline, admission or output limit",
+          "shards": [
+            17,
+            18,
+            19
+          ]
+        }
+      ],
+      "23": [
+        {
+          "path": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-relocatable-r11-20261030/attempts/codex3-pip02-paddle-relocatable-r11-g23-20261029-9f5cc9132dfc4c80b848d554cb2bd42b/result.json",
+          "rc": 75,
+          "partial": true,
+          "reason": "disk floor",
+          "error": "TimeoutError: deadline, admission or output limit",
+          "shards": [
+            23,
+            24,
+            25
+          ]
+        },
+        {
+          "path": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-relocatable-r11-20261030/attempts/codex3-pip02-paddle-relocatable-r11-g23-20261029-a37882134062474ab988c73b8c9cfa98/result.json",
+          "rc": 75,
+          "partial": true,
+          "reason": null,
+          "error": null,
+          "shards": [
+            23,
+            24,
+            25
+          ]
+        }
+      ],
+      "29": [
+        {
+          "path": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-relocatable-r11-20261030/attempts/codex3-pip02-paddle-relocatable-r11-g29-20261029-0f4cc1a156f54de19406e3bb7aa31628/result.json",
+          "rc": 75,
+          "partial": true,
+          "reason": null,
+          "error": null,
+          "shards": [
+            29,
+            30,
+            31
+          ]
+        },
+        {
+          "path": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-relocatable-r11-20261030/attempts/codex3-pip02-paddle-relocatable-r11-g29-20261029-40b5cd0ea2e9491ab5f9eb61837847ae/result.json",
+          "rc": 75,
+          "partial": true,
+          "reason": null,
+          "error": null,
+          "shards": [
+            29,
+            30,
+            31
+          ]
+        },
+        {
+          "path": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-relocatable-r11-20261030/attempts/codex3-pip02-paddle-relocatable-r11-g29-20261029-be85235828fc41c895ec2206e7ede038/result.json",
+          "rc": 75,
+          "partial": true,
+          "reason": "disk floor",
+          "error": "TimeoutError: admission",
+          "shards": [
+            29,
+            30,
+            31
+          ]
+        }
+      ],
+      "26": [
+        {
+          "path": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-relocatable-r11-20261030/attempts/codex3-pip02-paddle-relocatable-r11-g26-20261029-021101fef6974c648476c54a201d51dd/result.json",
+          "rc": 75,
+          "partial": true,
+          "reason": "disk floor",
+          "error": "TimeoutError: admission",
+          "shards": [
+            26,
+            27,
+            28
+          ]
+        },
+        {
+          "path": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-relocatable-r11-20261030/attempts/codex3-pip02-paddle-relocatable-r11-g26-20261029-3a7fae2a0d044a5692386fca604eef81/result.json",
+          "rc": 75,
+          "partial": true,
+          "reason": "disk floor",
+          "error": "TimeoutError: admission",
+          "shards": [
+            26,
+            27,
+            28
+          ]
+        },
+        {
+          "path": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-relocatable-r11-20261030/attempts/codex3-pip02-paddle-relocatable-r11-g26-20261029-8d845a8918fc4ea4abfce8665735efed/result.json",
+          "rc": 75,
+          "partial": true,
+          "reason": "disk floor",
+          "error": "TimeoutError: admission",
+          "shards": [
+            26,
+            27,
+            28
+          ]
+        }
+      ],
+      "32": [
+        {
+          "path": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-relocatable-r11-20261030/attempts/codex3-pip02-paddle-relocatable-r11-g32-20261029-889ad501adac462bb5b0eea517bfdfa8/result.json",
+          "rc": 75,
+          "partial": true,
+          "reason": "disk floor",
+          "error": "TimeoutError: admission",
+          "shards": [
+            32,
+            33,
+            34
+          ]
+        }
+      ],
+      "35": [
+        {
+          "path": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-relocatable-r11-20261030/attempts/codex3-pip02-paddle-relocatable-r11-g35-20261029-71b957d59876453ca0aabdcf471a3017/result.json",
+          "rc": 75,
+          "partial": true,
+          "reason": "disk floor",
+          "error": "TimeoutError: admission",
+          "shards": [
+            35,
+            36,
+            37
+          ]
+        }
+      ],
+      "8": [
+        {
+          "path": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-relocatable-r11-20261030/attempts/codex3-pip02-paddle-relocatable-r11-g8-20261029-c8fd2a5f016749a0805b46677736cee1/result.json",
+          "rc": 75,
+          "partial": true,
+          "reason": "disk floor",
+          "error": "TimeoutError: admission",
+          "shards": [
+            8,
+            9,
+            10
+          ]
+        },
+        {
+          "path": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-relocatable-r11-20261030/attempts/codex3-pip02-paddle-relocatable-r11-g8-20261029-e12b4e80985e43309220fc09582b400b/result.json",
+          "rc": 75,
+          "partial": true,
+          "reason": "disk floor",
+          "error": "TimeoutError: admission",
+          "shards": [
+            8,
+            9,
+            10
+          ]
+        }
+      ]
+    }
+  },
+  "audit_sources": {
+    "/mnt/raid0/llm/tmp/codex3-file-ni-0050-20261030/audit.json": "dd4e6af63f48821b7d5e7aa8ca7508ac29c5fb17f8969fd96d895cdc67b81a2c",
+    "/mnt/raid0/llm/tmp/codex3-pip02-native-audit-20261030/native-audit.json": "0ece63d3359b185ceb70b76838410316cf3e05beabbf62520fc529100cff29a5",
+    "/mnt/raid0/llm/tmp/codex3-pip02-native-audit-20261030/g14-rpc-audit.json": "e89a11bad31944248d3875c1e1150a2bf74bb371b1400f21d5c149f285516fe4",
+    "/mnt/raid0/llm/tmp/codex3-pip02-native-audit-20261030/g14-finish-grants.json": "4ca7f2bb93cac0232acc690be973d1f6ff29ddf30d1a7d11dd9d66baa32ad174"
+  },
+  "g14_rpc_audit_summary": {
+    "retained_pairs": 214,
+    "verified_original_origin_grant_body_hash": 214,
+    "origin_r7": 185,
+    "origin_r11": 29,
+    "page_results": 15,
+    "verified_original_finisher_receipts": 7,
+    "unverified_no_finisher_receipt": 8
+  },
+  "scope": "Original events only; other groups in native audit are separately labelled point-in-time observations, not filed original events."
+}

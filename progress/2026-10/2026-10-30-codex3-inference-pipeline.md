@@ -19,3 +19,6 @@ Three original00:17 HIL partials audited: S0 has29accepted/1unknown/15unexposed;
 
 
 Operator quarter rebalance: withdrew eight excess ungranted PIP pollers, verified captured processes dead, and replaced two q2 pollers whose live CPU arguments disagreed with queue metadata. Waiting set q2 R9g5/R11g11; q3 R11g17/R11g26; R11g8 started onq3. Four republished packets pass keeper ready_scan against unchanged smoke-qualified launcher bytes; active grants retained. [Rebalance evidence](../../artifacts/compute/pip02-quarter-rebalance-20261030.json). [no-belief: queue placement and process control, no new measurement result]
+
+
+Original CPU DCA r5 admission failure, DF2 artifact-recovery partial and Paddle g14 collection audited. Paddle15complete/7originalfinishreceipts/214verifiedRPCorigins; no fullqualitytick. Exact35B HILR3 realcalibration passed and READY; HSF R10 real113.49s native export passed and READY, normal166GiBreserve unchanged. Reversibly omitted duplicate committed artifact copies from5own code views, recovering2.75GiB without removing native evidence or model files. [belief: cc]
