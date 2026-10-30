@@ -1,0 +1,7 @@
+# Codex3 original HIL/C3/R18-A results filing — 2026-10-30
+
+Three original events audited under their predeclared rules. HIL returned a partial:40 known/4 unknown/1 unexposed of45, four new known outcomes all False. Its collection threshold remains unmet. C3 full run failed on nested device claim; R18-A full run refused cross-role placement preflight. Neither failed run receives a scientific verdict or checkbox tick. Native evidence is pinned in [audit](../../artifacts/compute/results-filing-hil-c3-r18a-20261030.json). Existing one ROOT checkout reused; all prior six owned dirty/untracked paths byte-verified equal promoted cfcd main before safe ref/index synchronization. No new checkout and no GiB reclaimed. [belief: cc]
+
+Validation and promotion receipts are recorded in the canonical filing-done markers after verified remote-main publication. No handoff index rows manually changed; zero completed checkboxes.
+
+Post-measurement classes: HIL correctness-only partial; C3 and R18-A invalid original runs. Belief readiness: these are committed-conclusion OBSERVATION candidates, not retrofitted measurements. Existing VB-HIL15A-WRITE remains distinct from sidecar-disabled diagnostic records; VB-NEMO-C3-NATIVE-PROFILE-WIRE remains open because no original full profile was produced. Wiki candidates for the next operator compilation: native collection censorship and nested device-claim admission; no sweep is triggered here.

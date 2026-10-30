@@ -1,0 +1,210 @@
+{
+  "schema": "codex3-original-results-filing/v1",
+  "captured_at": "2026-10-30T22:16:39.893135+00:00",
+  "items": [
+    {
+      "event": {
+        "id": "codex-hil15-s0-micron-v11-20261030",
+        "ended_file": "/mnt/raid0/llm/tmp/compute-flags/grants/codex-hil15-s0-micron-v11-20261030.ended",
+        "end_line": "rc=75 time=2026-10-30T21:53:40Z reason=job-rc-75:exited",
+        "seen_at": "2026-10-30T21:54:09Z",
+        "result_path": "/mnt/micron/refactor-hil15-s0-v11-20261030/s0-r11-official-results",
+        "scratch_root": "/mnt/raid0/llm/tmp/hil15-s0-no-sidecar-v11-20261030",
+        "decision_rule": "Higher known collection coverage is better. Original45 denominator. Prior32 accepted + four immutable replay-verified outcomes (one True, three False) = 36 known; original unknown3 immutable. Resume ONLY six original unexposed unit14/15 slots. Exhaustion requires 42 known/3 unknown. No efficacy/native grade.",
+        "class": "diagnostic",
+        "owner": "codex-refactor-01a16fc3"
+      },
+      "outcome": "PARTIAL_DIAGNOSTIC",
+      "original_partial": {
+        "path": "/mnt/micron/refactor-hil15-s0-v11-20261030/s0-r11-official-results/slice-1793396620221797192/partial.json",
+        "sha256": "4f8b4f98af9e36ac784c88cc7f1e07dac0571b4d3f6f70060698181a5109f11b",
+        "bytes": 629
+      },
+      "new_complete_slots": [
+        {
+          "unit": 14,
+          "slot": 0,
+          "pass": false,
+          "join_ok": true,
+          "replay_rc": 0,
+          "l2_rc": 0,
+          "sidecar": false,
+          "manifest": {
+            "path": "/mnt/micron/refactor-hil15-s0-v11-20261030/s0-r11-official-results/unit-14/slot-0/driver-0/manifest.json",
+            "sha256": "b08b2d1730b8148efc84470423bfa5fae818502482064790077f8e00fbe6611f",
+            "bytes": 2038
+          },
+          "events": {
+            "path": "/mnt/micron/refactor-hil15-s0-v11-20261030/s0-r11-official-results/unit-14/slot-0/driver-0/events.sqlite",
+            "sha256": "3304becfc11dc35ebd437f467c477acbdaf6a9ebb8f923fdbd4a989f65ab13aa",
+            "bytes": 270336
+          },
+          "outcomes": {
+            "path": "/mnt/micron/refactor-hil15-s0-v11-20261030/s0-r11-official-results/unit-14/slot-0/driver-0/progress/outcomes.jsonl",
+            "sha256": "07bab69bd8f9065a774f8d53f40bfe0779f2adb9ed8d6100f53709b660ed041f",
+            "bytes": 198
+          }
+        },
+        {
+          "unit": 14,
+          "slot": 1,
+          "pass": false,
+          "join_ok": true,
+          "replay_rc": 0,
+          "l2_rc": 0,
+          "sidecar": false,
+          "manifest": {
+            "path": "/mnt/micron/refactor-hil15-s0-v11-20261030/s0-r11-official-results/unit-14/slot-1/driver-1/manifest.json",
+            "sha256": "f3b24adbc0df7d9600e3a6eb46f0005e5a281404d272bd8c938c0e56ff58c445",
+            "bytes": 2037
+          },
+          "events": {
+            "path": "/mnt/micron/refactor-hil15-s0-v11-20261030/s0-r11-official-results/unit-14/slot-1/driver-1/events.sqlite",
+            "sha256": "b5cb18f901e49aaeeca8185af657379b8ce678f8e70fde8cd2aac013a97d0997",
+            "bytes": 258048
+          },
+          "outcomes": {
+            "path": "/mnt/micron/refactor-hil15-s0-v11-20261030/s0-r11-official-results/unit-14/slot-1/driver-1/progress/outcomes.jsonl",
+            "sha256": "1a9532d74bf88528ad6548e9b64c2e59706d233eee53687e751fb1466b6daae7",
+            "bytes": 197
+          }
+        },
+        {
+          "unit": 14,
+          "slot": 2,
+          "pass": false,
+          "join_ok": true,
+          "replay_rc": 0,
+          "l2_rc": 0,
+          "sidecar": false,
+          "manifest": {
+            "path": "/mnt/micron/refactor-hil15-s0-v11-20261030/s0-r11-official-results/unit-14/slot-2/driver-2/manifest.json",
+            "sha256": "b0b449913431c20a2e2086c810321bcf9eff55d187e528720bc9828ff64b26ae",
+            "bytes": 2038
+          },
+          "events": {
+            "path": "/mnt/micron/refactor-hil15-s0-v11-20261030/s0-r11-official-results/unit-14/slot-2/driver-2/events.sqlite",
+            "sha256": "295b0da3a62973590c8871d70e3ce407feee5468460bedba13c47e1de00e19a4",
+            "bytes": 274432
+          },
+          "outcomes": {
+            "path": "/mnt/micron/refactor-hil15-s0-v11-20261030/s0-r11-official-results/unit-14/slot-2/driver-2/progress/outcomes.jsonl",
+            "sha256": "394d242946c9dd91613e2630828e59386c87f7fa7b8f49910e5da4e66be74ec1",
+            "bytes": 198
+          }
+        },
+        {
+          "unit": 15,
+          "slot": 0,
+          "pass": false,
+          "join_ok": true,
+          "replay_rc": 0,
+          "l2_rc": 0,
+          "sidecar": false,
+          "manifest": {
+            "path": "/mnt/micron/refactor-hil15-s0-v11-20261030/s0-r11-official-results/unit-15/slot-0/driver-0/manifest.json",
+            "sha256": "34a663f68b38b081253c61d35fc9c7d37c8471591c8dce0b22c0e9f3a1a700b9",
+            "bytes": 2037
+          },
+          "events": {
+            "path": "/mnt/micron/refactor-hil15-s0-v11-20261030/s0-r11-official-results/unit-15/slot-0/driver-0/events.sqlite",
+            "sha256": "d7ca258fbb2bee15f957c85c36207b77bf28a004a732a3028fcfcb9d374bafad",
+            "bytes": 258048
+          },
+          "outcomes": {
+            "path": "/mnt/micron/refactor-hil15-s0-v11-20261030/s0-r11-official-results/unit-15/slot-0/driver-0/progress/outcomes.jsonl",
+            "sha256": "b19e905553280666281fd9c41dba424969943cb852b6b6cb978207b2771f2951",
+            "bytes": 197
+          }
+        }
+      ],
+      "accounting": {
+        "original_denominator": 45,
+        "prior_known": 36,
+        "prior_unknown": 3,
+        "new_known": 4,
+        "new_unknown": [
+          [
+            15,
+            1
+          ]
+        ],
+        "known": 40,
+        "unknown": 4,
+        "unexposed": [
+          [
+            15,
+            2
+          ]
+        ]
+      },
+      "meaning": "Four replay-verified original outcomes are all False; incomplete exposed 15/1 remains unknown. 42-known/3-unknown exhaustion rule is not met; no efficacy, AUC, sidecar or full-cohort verdict. Later same-ID slices are separate.",
+      "next": "Preserve unknown 15/1 and earlier unknowns. Reconcile source reader against immutable original native slot paths, then schedule only still-unexposed 15/2.",
+      "post_measurement_class": "correctness-only",
+      "belief_projection": "Committed conclusion OBSERVATION [belief: cc]; no measurement warrant or ClaimTuple is retrofitted.",
+      "incomplete_exposure_evidence": [
+        {
+          "path": "/mnt/micron/refactor-hil15-s0-v11-20261030/s0-r11-official-results/unit-15/slot-1/driver-1/events.sqlite",
+          "sha256": "49d66ca8602cc76e62f1d7b39a2f65f5a26ec01f5803f5cba136d0d62df058bd"
+        },
+        {
+          "path": "/mnt/micron/refactor-hil15-s0-v11-20261030/s0-r11-official-results/unit-15/slot-1/driver-1/events.sqlite-journal",
+          "sha256": "ed7e967867dd85d41c853494772ed27a9f7751a342683e798d2b9c627cc8aa5e"
+        },
+        {
+          "path": "/mnt/micron/refactor-hil15-s0-v11-20261030/s0-r11-official-results/unit-15/slot-1/driver-1/tmp/session_filter-s0-15-p1-r0.md",
+          "sha256": "9a0d99714b38db2a04de55e13a5861712bad38e5d00c922f595ed7131b7a2c51"
+        }
+      ]
+    },
+    {
+      "event": {
+        "id": "refactor-c3-native-bolt-profile-r2-20261030",
+        "ended_file": "/mnt/raid0/llm/tmp/compute-flags/grants/refactor-c3-native-bolt-profile-r2-20261030.ended",
+        "end_line": "rc=1 time=2026-10-30T21:53:55Z reason=job-rc-1:exited",
+        "seen_at": "2026-10-30T21:54:10Z",
+        "result_path": "/mnt/raid0/llm/tmp/refactor-c3-native-profile-r2-20261030/SUCCESS",
+        "scratch_root": "/mnt/raid0/llm/tmp/refactor-c3-native-profile-r2-20261030",
+        "decision_rule": "Original B Bolt per-op native trace: report per-step GPU busy milliseconds compared with observed wall; diagnostic attribution only. Original L is a prerequisite control; no L or LiLiCorr completion claim.",
+        "class": "diagnostic",
+        "owner": "codex-refactor-01a16fc3"
+      },
+      "outcome": "FAILED-RUN rc=1 reason=nested-device-claim; class=harness; owner action=make inner native claim compatible with the already-held R13 device claim, qualify final normal and cutoff, republish successor",
+      "evidence": {
+        "path": "/mnt/raid0/llm/tmp/refactor-c3-native-profile-r2-20261030/ws58-launcher.out",
+        "sha256": "f83979a4c759327b94d3a99ab6739daac03d83c2989c6e829add6f0e6ccef67c",
+        "bytes": 9388
+      },
+      "meaning": "Original full START21:53:52 reached acquire_device_claim and DeviceClaimTimeout before profile capture. No GPU-busy/wall attribution or scientific completion; earlier smoke remains separate.",
+      "post_measurement_class": "invalid",
+      "belief_projection": "Committed conclusion OBSERVATION [belief: cc]; no measurement warrant or ClaimTuple is retrofitted."
+    },
+    {
+      "event": {
+        "id": "refactor-r18a-v10-independent-symbols-20261030",
+        "ended_file": "/mnt/raid0/llm/tmp/compute-flags/grants/refactor-r18a-v10-independent-symbols-20261030.ended",
+        "end_line": "rc=64 time=2026-10-30T22:07:59Z reason=job-rc-64:exited",
+        "seen_at": "2026-10-30T22:08:45Z",
+        "result_path": "/mnt/raid0/llm/tmp/refactor-oab21-metrics-20261030/r18a-independent-packet/scratch/full/full-result.json",
+        "scratch_root": "/mnt/raid0/llm/tmp/refactor-oab21-metrics-20261030/r18a-independent-packet",
+        "decision_rule": "PASS iff unchanged compare_symbols.py returns identity for independent CPU, HIP host, and gfx90a device exported symbol sets versus immutable v10 store; added/removed symbols fail. Lower difference count is better; exactly zero required. No predicate change or production claim from partial compile.",
+        "class": "diagnostic",
+        "owner": "codex-refactor-01a16fc3"
+      },
+      "outcome": "FAILED-RUN rc=64 reason=cross-role-region-preflight; class=admission; owner action=repair cross-role placement contract in an authorized private successor, real final-launcher normal/cutoff, republish",
+      "evidence": {
+        "path": "/mnt/raid0/llm/tmp/refactor-oab21-metrics-20261030/r18a-independent-packet/ws58-launcher.out",
+        "sha256": "833aaea6145d50d0cade6b5f7ea58db3bdb8f1d0903c988b944ee03a6f680c42",
+        "bytes": 4474
+      },
+      "meaning": "Original full START22:07:56 refused because observed dispatch PID1918670 lacked ORCHESTRATOR_CROSS_ROLE_DISJOINT_PLACEMENT. Full result absent; independent CPU/HIP/device zero-symbol-difference criterion was not evaluated. Later smokes are separate.",
+      "post_measurement_class": "invalid",
+      "belief_projection": "Committed conclusion OBSERVATION [belief: cc]; no measurement warrant or ClaimTuple is retrofitted."
+    }
+  ],
+  "checkbox_flips": 0,
+  "limitations": [
+    "Launcher logs are append-only shared across re-arms; original dated START/end segments alone determine each original event. Hashes pin observed complete log at filing time, not retroactive immutable original capture.",
+    "Native HIL manifests and sqlite/CAS are retained in place; only paths/hashes and aggregate outcomes copied to ROOT."
+  ]
+}
