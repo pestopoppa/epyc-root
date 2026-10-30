@@ -2232,7 +2232,8 @@ VB-NPD-1) are activation records in the durable-triggers list above.
     decode_tps, held_s, ttft_after_release_s), `compactions` (n, rewritten, reprefill tokens/s sums, unfinished) and
     `sandbox_denials` (denied_hits). Project each as an OBSERVATION metric on the existing context × arm × repeat locator,
     with its own unit and direction; `sandbox_denials.denied_hits` is a run-validity fact carried on the tuple, not graded.
-    A `compactions.unfinished > 0` call is censored. These arms are pre-hook too: copy `results/C{2,4}/cxa+a*` durably first.
+    A `compactions.unfinished > 0` call is censored. These arms are pre-hook too: copy `results/C{2,4}/cxa+a*` durably first.  - 2026-10-30 writer source is available in research `276d75fab` (`scripts/harness/ds41_c95/`): future calls publish exclusive pre-exposure metadata and reference its SHA in results; verified backend identity/grade unknowns remain null. Project the existing `contamination_crosscheck` and normal native isolation fields using the same source ladder, never backfill a warrant for historical calls. Adapter/reader and planning-context canary are still required before any fully-wired claim. [Source/proof](../../artifacts/compute/refactor-a6-source-build-ready-20261030.json).
+
 - [ ] **VB-MT-REPLAY — wire the write side of the multi-turn replay** (`dynamic-stack-concurrency.md` "(G) #25592" row and its G5 extension) before the first replay: per-turn rows keyed by `x_session_id` with prompt_n, cache_n, forced-re-prefill cause (a/b/c/unattributed), N, gap lengths and the HSF-3 receipt digest, plus binary/store digests and argv. Locator = run × N. Project; do not grade.
 
 ## VB-THESIS-1 — the thesis experiment's per-item receipts (filed 2026-09-27, narrowed plan)

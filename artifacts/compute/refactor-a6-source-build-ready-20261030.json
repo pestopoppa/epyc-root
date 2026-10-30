@@ -1,0 +1,38 @@
+{
+  "source_commit": "276d75fab38b5c541624daba29affb7bc8dbbd4b",
+  "source_capsule": "/mnt/raid0/llm/tmp/refactor-01a16fc3/ufh14-a6-unblock-20261030/adopted-276d75fab/scripts/harness/ds41_c95",
+  "source_file_hashes": {
+    "scripts/harness/ds41_c95/README.md": "39b7dda87b390e221d3f48a263fece0cd1e1219bb091d2022e1d73bbbe86eb68",
+    "scripts/harness/ds41_c95/fixtures/a3warm-event22.raw.jsonl": "3097f03b548859b84dcf2bd14d93df4b0215241e789a1e0860a9932509c010f6",
+    "scripts/harness/ds41_c95/native_canary.py": "2424ef49ee06bccd1c2b9449057dd5cffd37460a5415efc74b9410d235b87369",
+    "scripts/harness/ds41_c95/native_client.py": "c83a1b30044840b716954705eb74a1f1ef27b49d8f847716a3f97136c2c81300",
+    "scripts/harness/ds41_c95/probe_offline.py": "7d7b36da7aed7c70231f2ee8e7d9af03a65f5f56e3ee8529bd29897ac327b50c",
+    "scripts/harness/ds41_c95/proxy3.py": "b92e8e18986418abe4bb9c04d0bb0dfb97ca22a1d91f41875f001d4f9610958a",
+    "scripts/harness/ds41_c95/run3.py": "8065094609df58ceafa270cbce3a3a39a9fb9094338fa5541e4de5798c30c724",
+    "scripts/harness/ds41_c95/sandbox3.py": "8b8fa744537d534fe02546f1dfa67bc54a1cee3c93ec49720e0d8b39eef050b0",
+    "scripts/harness/ds41_c95/test_a6.py": "98777bedced06c95027dedd36c9a641060af381ea81ea389e0b95c2b57e1b28e"
+  },
+  "normal_native_evidence": "/mnt/raid0/llm/tmp/refactor-01a16fc3/ufh14-a6-unblock-20261030/native-run/normal/result.json",
+  "normal_native_evidence_sha256": "f2da698d49c0b097e512e699414e5ed6d4567d4b1b9c819ad5bfd5c74f8388ca",
+  "normal_client_checks": {
+    "future_denied": true,
+    "live_denied": true,
+    "anchor_read": true,
+    "workspace_write": true,
+    "result_write": true,
+    "model_http": true,
+    "model_text": "READY\n",
+    "wire_proxy_reached": true
+  },
+  "normal_wire_rows": 1,
+  "normal_proxy_dead": true,
+  "normal_server_dead": true,
+  "claim_scope": "Normal C2 Landlock isolation observation; later pre-exposure writer, output preservation and portability are source-tested. No full27B efficacy, retroactive ClaimTuple or active-cutoff warrant. Held draft remains unpublished.",
+  "build_ready_manifest": "/mnt/raid0/llm/tmp/compute-flags/ready/refactor-akxall8-c5-cpu-build-20261030.json",
+  "build_ready_sha256": "ff3d671e4107b64e07700b3bdfa87f190d9ad971ff59c3131cfd0606cfb692e5",
+  "build_launcher": {
+    "path": "/mnt/raid0/llm/tmp/refactor-01a16fc3/ufh14-next-source-20261030/build-packet/build-launch.sh",
+    "sha256": "e5bc303644d2c032840c7c99087eeaf197b1b5371c170730ecf1d73f2e7a7a03"
+  },
+  "build_state": "Final frozen-bundle fresh normal compile/link and in-flight compiler cutoff passed; complete llama-server build and new floor/serving measurements remain pending; no prior floor reuse."
+}

@@ -550,3 +550,8 @@ C1-22 disappears with the unified plane.
 **T1 repair checkpoint (2026-10-30):**
 
 - [x] Publish S0 v10 and S2 r11 with private T1 bypasses and same-final-hash real normal/active-cutoff smokes; original accepted/unknown/unexposed ledgers are preserved. Normal keeper reports both READY-WAIT for a free quarter. Revoke the ghost M4 booking through the own runner terminal lifecycle after proving its PID was a recycled kernel thread; no signals or native work occurred. S1/S3 exhausted cohorts were not replayed. [Proof](../../artifacts/compute/refactor-t1-repair-20261030.json). ✅ 2026-10-30 [no-belief: launcher repair and scheduling lifecycle; no cohort outcome claim]
+
+
+**Source/build wrap checkpoint (2026-10-30):**
+
+- [x] Land repo-owned A6 sandbox isolation source and pre-exposure writer as research `276d75fab`; normal native read-denial proof and six focused controls accepted, with held draft/uncut request limits explicit. Publish a separately qualified, frozen-source C5 CPU build READY packet for the recipe successor. Source and build preparation only; broader refactor, A6 standing rule and AKX-ALL-8 measurement parent remain open. [Proof](../../artifacts/compute/refactor-a6-source-build-ready-20261030.json). ✅ 2026-10-30 [belief: cc]

@@ -228,6 +228,8 @@ landing alone closes no box below whose done-test needs a live run; those carry 
   `-ub 8192` and neither env. The long surface runs at the production shape, or the target card states which pin is
   kept and why (`GGML_FA_SPLIT_KV=0` exists for spec-decode row-exactness, INF-70 be2-fa). Done when the long
   surface's recipe digest matches the `:8074` argv apart from documented, justified deltas.
+  - [x] Prepare a fresh C5 CPU build and production-declaration recipe successor in one reusable Micron lane. ✅ 2026-10-30 [no-belief: source/build preparation only] Current committed declarations give96threads and effectiveub2048 (the old8192 prose was nominal and clamped). C5c72 descends frozenFFC; hostGCC13.3 toolchain delta is explicit and a new target/floor namespace is used. The frozen-bundle build launcher passed fresh compile/link and in-flight compiler cutoff/drain controls and is READY `refactor-akxall8-c5-cpu-build-20261030`. Full binary, live shape comparison and new calibration are not complete. [Proof](../../artifacts/compute/refactor-a6-source-build-ready-20261030.json).
+
 - [ ] **AKX-ALL-9 (C2): `cpu_fa_schedule` route (bit-exact).** Branch `feat/ak-cpu-fa-route`.
   - Scope: the FA dispatch body, `ggml_compute_forward_flash_attn_ext_f16_one_chunk`, `reduce_partials`, new static
     helpers (`ops.cpp:9241-9982` at `dd6c9cdbd`).
