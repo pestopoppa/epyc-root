@@ -363832,8 +363832,12 @@
     production v10 ffc1bac82). EPYC context: served DS41 = antirez 1017 MXFP4-experts (intake-2513); operator ruling 2026-10-20
     already chose antirez MXFP4 over unsloth (deepseek-v41-flash-evaluation.md §W).'
   verification: dive-verified
-  handoffs_updated: []
+  handoffs_updated:
+  - deepseek-v41-flash-evaluation.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - DS41U-1 -> P1 / DS41-W9 (keep antirez; no download)
   source_revision: unsloth.ai/docs/models/deepseek-v4.1-flash retrieved 2026-10-30T18:04Z (html sha256-12 224377376137; text
     extract sha256-12 a16fda293690)
   read_depth: FULL
@@ -363990,8 +363994,13 @@
     UD-Q4_K_XL 466.32 GiB, UD-Q2_K_XL 311.80 GiB, UD-IQ2_XXS 279.84 GiB, UD-IQ3_XXS 367.63 GiB; /mnt/raid0/llm free 391.99
     GiB at 2026-10-30T18:0xZ.'
   verification: dive-verified
-  handoffs_updated: []
+  handoffs_updated:
+  - deepseek-v41-flash-evaluation.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - DS41U-1/DS41U-3 -> P1 / DS41-W9
+  - DS41U-2, DS41U-7 -> K1 knowledge-only
   source_revision: HF unsloth/DeepSeek-V4.1-Flash-1017-GGUF @ 8a6ec9cf118e785a362ea94ee123c61c70553be6 (GGUF headers via HTTP
     Range, 2026-10-30)
   read_depth: PARTIAL
@@ -364123,8 +364132,12 @@
     501,602,535,360 B = 467.15 GiB), sha256 per shard verified at download against HF LFS oids. AutoKernel floor 2.862% and
     recipe ds41-1017-mxfp4-cpu-t48-targetonly bind this artifact by split digest ba9f129c.'
   verification: dive-verified
-  handoffs_updated: []
+  handoffs_updated:
+  - deepseek-v41-flash-evaluation.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - Served artifact (DS41-W1/W7); identity recorded under DS41-W9
   source_revision: HF antirez/deepseek-v4.1-flash-gguf @ 9dcee51692e6540f697141fc98b097e3c96492a3; local shard headers read
     from disk 2026-10-30
   read_depth: PARTIAL
@@ -364240,8 +364253,12 @@
     gather variant); Route B, offline converter for MXFP8-table files only (per-row byte shuffle [e,q*32]*8 -> 256 codes +
     8 scales; lossless), about 200-300 LOC of gguf-py plus about 203 GB temporary disk.'
   verification: dive-verified
-  handoffs_updated: []
+  handoffs_updated:
+  - deepseek-v41-flash-evaluation.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - DS41U-3/DS41U-4 -> P1 / DS41-W9; Route A/B estimates recorded there
   source_revision: 'ggml-org/llama.cpp PR #31086 head 205269266bbe11a1437618d7ba12c6c4228703a5, merge 74bca3950054eed1795f525cb9cf06bfe796492d
     (retrieved 2026-10-30)'
   read_depth: PARTIAL
@@ -364361,6 +364378,9 @@
   verification: dive-verified
   handoffs_updated: []
   handoffs_created: []
+  integration_disposition: knowledge_only
+  disposition_evidence:
+  - 'Superseded by #31086 (intake-2514); facts summarised under DS41-W9'
   source_revision: 'ggml-org/llama.cpp PR #30817 head b72050d03ae14bb3cb5138ecefab3f3f65157d31 (closed unmerged; retrieved
     2026-10-30)'
   read_depth: PARTIAL
@@ -364464,8 +364484,12 @@
 
     Saved /mnt/raid0/llm/tmp/dive-ds41-unsloth-20261030/gh/issue-31385.json (sha256-12 f92a26aa8331). Independent of Unsloth.'
   verification: dive-verified
-  handoffs_updated: []
+  handoffs_updated:
+  - deepseek-v41-flash-evaluation.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - DS41U-3 -> P1 / DS41-W9 (MXFP8-table quants misload upstream)
   source_revision: 'ggml-org/llama.cpp issue #31385 as of 2026-10-30T08:24Z (retrieved 2026-10-30)'
   read_depth: FULL
   reader_should_conclude: Cite as independent evidence that unsloth UD-Q4_K_XL (and other MXFP8-table quants) cannot be run
@@ -364575,8 +364599,12 @@
     hashing are restored with a reused prefix, (b) compressed-KV and mirror/shared-source layers are restored only after deferred
     reads land, (c) multi-sequence restore; controls cache_prompt:false and -ctxcp 0.'
   verification: dive-verified
-  handoffs_updated: []
+  handoffs_updated:
+  - deepseek-v41-flash-evaluation.md
   handoffs_created: []
+  integration_disposition: monitor
+  disposition_evidence:
+  - 'DS41U-5 -> M1 trigger prose under DS41-W9: fires when the operator lifts the DS41 hold for serving/port work'
   source_revision: 'ggml-org/llama.cpp issue #30944 (filed against b72050d) + PR #31292 head 63ea84ec8865c61da12d2c4170a9f1fb7eb20ff6
     (retrieved 2026-10-30)'
   read_depth: FULL
@@ -364694,8 +364722,12 @@
     Files under /mnt/raid0/llm/tmp/dive-ds41-unsloth-20261030/d2/ (s1_*). Engram table IQ4_NL 110.6 GB, excluded from the
     RCO search. Loads on upstream b11870+ per issue #31263/#31385, not in our port (upstream layout).'
   verification: dive-verified
-  handoffs_updated: []
+  handoffs_updated:
+  - deepseek-v41-flash-evaluation.md
   handoffs_created: []
+  integration_disposition: monitor
+  disposition_evidence:
+  - 'DS41U-6 -> M1 trigger prose under DS41-W9: fires if the operator reopens DS41 low-bit serving after AK kernel work'
   source_revision: HF ISTA-DASLab/DeepSeek-V4.1-Flash-1017-GSQ-RCO-GGUF @ 65d53bc8be65123e255ff02f3ded958b6dbf54fd (retrieved
     2026-10-30)
   read_depth: PARTIAL
@@ -364815,6 +364847,9 @@
   verification: dive-verified
   handoffs_updated: []
   handoffs_created: []
+  integration_disposition: knowledge_only
+  disposition_evidence:
+  - Documents Dynamic 3.0 only; no v3.1 method; no EPYC consumer
   source_revision: unsloth.ai/docs/basics/dynamic-3.0-ggufs retrieved 2026-10-30 (html sha256-12 93500f802aac)
   read_depth: FULL
   reader_should_conclude: Cite for what Unsloth says Dynamic 3.0 changed (calibration set, layer selection, PTQ only) on Qwen3.8-27B.
@@ -364899,8 +364934,12 @@
   notes: 'Saved by the wave-1 dive: /mnt/raid0/llm/tmp/dive-ds41-unsloth-20261030/gh/pr-27512.{json,diff} (sha256-12 554cded81e15
     / 900fdc1d7c22); read by main from disk.'
   verification: dive-verified
-  handoffs_updated: []
+  handoffs_updated:
+  - deepseek-v41-flash-evaluation.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - DS41U-3 -> P1 / DS41-W9 (type 43 = F8_E4M3 upstream)
   source_revision: 'ggml-org/llama.cpp PR #27512 head 6f53ba82d7268bd6e0dc10c081d6519d37098171, merged 2026-10-29T17:14:38Z
     (retrieved 2026-10-30)'
   read_depth: PARTIAL
@@ -364977,6 +365016,9 @@
   verification: dive-verified
   handoffs_updated: []
   handoffs_created: []
+  integration_disposition: knowledge_only
+  disposition_evidence:
+  - Confirms which DS41 GGUF families load upstream; no EPYC consumer
   source_revision: 'ggml-org/llama.cpp issue #31263 closed 2026-10-28T01:34Z (retrieved 2026-10-30)'
   read_depth: FULL
   reader_should_conclude: 'Cite for: pre-#31086-layout DS41 GGUFs do not load upstream, and unsloth quants without an MXFP8

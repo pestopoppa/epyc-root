@@ -1,9 +1,9 @@
 {
  "session_id": "intake-ds41-unsloth-20261030",
  "started_at": "2026-10-30T18:03:00Z",
- "last_checkpoint": "2026-10-30T19:45:00Z",
- "stage": 3,
- "phase": "stage3-plan-presented",
+ "last_checkpoint": "2026-10-30T18:55:00Z",
+ "stage": 4,
+ "phase": "stage4-complete",
  "lane": "/mnt/raid0/llm/worktrees/intake-ds41-unsloth-20261030",
  "branch": "intake/ds41-unsloth-20261030",
  "topic": "unsloth.ai/docs/models/deepseek-v4.1-flash (Unsloth Dynamic V3.1 DS41-1017 GGUFs): should EPYC replace the served antirez DS41-1017 MXFP4-experts weights?",
@@ -98,37 +98,44 @@
   {
    "ledger_id": "DS41U-1",
    "source": "intake-2511/2512/2513 dives (hdr/class_tables.txt, diff_sha_1020_1030.txt)",
-   "action": "Keep the served antirez 1017 MXFP4-experts weights; do not download unsloth UD-Q4_K_XL (same native MXFP4 experts, lower-precision dense path, byte-identical to the 10-20 files already rejected, not loadable in any EPYC tree)."
+   "action": "Keep the served antirez 1017 MXFP4-experts weights; do not download unsloth UD-Q4_K_XL (same native MXFP4 experts, lower-precision dense path, byte-identical to the 10-20 files already rejected, not loadable in any EPYC tree).",
+   "terminal_mapping": "P1 / DS41-W9"
   },
   {
    "ledger_id": "DS41U-2",
    "source": "intake-2512 dive (HF LFS sha256 vs local)",
-   "action": "Keep the two local unsloth files that are sha256-identical to HF (dspark Q8_0, imatrix); nothing to download or delete."
+   "action": "Keep the two local unsloth files that are sha256-identical to HF (dspark Q8_0, imatrix); nothing to download or delete.",
+   "terminal_mapping": "K1 knowledge-only"
   },
   {
    "ledger_id": "DS41U-3",
    "source": "intake-2514/2515/2516/2520 dives + kernel audit",
-   "action": "Record in deepseek-v41-flash-evaluation.md that upstream deepseek41 (#31086, b11870) uses a layout our port does not load, that type 43 is now F8_E4M3 upstream (MXFP8-table unsloth quants misload), and the Route A (port reads the layout, ~300-450 LOC) / Route B (offline MXFP8-only converter, ~200-300 LOC, ~203 GB temp) estimates."
+   "action": "Record in deepseek-v41-flash-evaluation.md that upstream deepseek41 (#31086, b11870) uses a layout our port does not load, that type 43 is now F8_E4M3 upstream (MXFP8-table unsloth quants misload), and the Route A (port reads the layout, ~300-450 LOC) / Route B (offline MXFP8-only converter, ~200-300 LOC, ~203 GB temp) estimates.",
+   "terminal_mapping": "P1 / DS41-W9"
   },
   {
    "ledger_id": "DS41U-4",
    "source": "kernel audit (intake-2514 notes)",
-   "action": "Record which DS41 AK keeps/seeds carry over to each weight family and that the 2.862% floor binds the antirez artifact (split digest ba9f129c), so any weight change needs its own 24-pair floor."
+   "action": "Record which DS41 AK keeps/seeds carry over to each weight family and that the 2.862% floor binds the antirez artifact (split digest ba9f129c), so any weight change needs its own 24-pair floor.",
+   "terminal_mapping": "P1 / DS41-W9"
   },
   {
    "ledger_id": "DS41U-5",
    "source": "intake-2517 dive",
-   "action": "Add a prompt-prefix-reuse / checkpoint-restore conformance check (controls cache_prompt:false, -ctxcp 0, multi-sequence) to the DS41 port gates."
+   "action": "Add a prompt-prefix-reuse / checkpoint-restore conformance check (controls cache_prompt:false, -ctxcp 0, multi-sequence) to the DS41 port gates.",
+   "terminal_mapping": "M1 monitor trigger"
   },
   {
    "ledger_id": "DS41U-6",
    "source": "intake-2511/2512/2518 dives",
-   "action": "Evaluate a low-bit DS41 serving artifact (antirez 1017 IQ2_XXS-Q2_K loads as-is; UD-Q2_K_XL / UD-IQ2_XXS / ISTA GSQ-RCO need Route A) for decode speed; header bound <=19-24% fewer bytes/token."
+   "action": "Evaluate a low-bit DS41 serving artifact (antirez 1017 IQ2_XXS-Q2_K loads as-is; UD-Q2_K_XL / UD-IQ2_XXS / ISTA GSQ-RCO need Route A) for decode speed; header bound <=19-24% fewer bytes/token.",
+   "terminal_mapping": "M1 monitor trigger"
   },
   {
    "ledger_id": "DS41U-7",
    "source": "intake-2512 dive (tokenizer KVs)",
-   "action": "Note the add_bos_token KV difference (unsloth false, antirez true) for any future unsloth-layout load."
+   "action": "Note the add_bos_token KV difference (unsloth false, antirez true) for any future unsloth-layout load.",
+   "terminal_mapping": "K1 knowledge-only"
   }
  ],
  "prior_sessions": [
@@ -64460,9 +64467,410 @@
  "stage3_plan_draft": {
   "path": "/mnt/raid0/llm/tmp/dive-ds41-unsloth-20261030/stage3/STAGE3_PLAN.md",
   "sha256": "fab4a3b81080dae58ab4a2864dbbe7de4efad227e12ed70f7c8d51bc0fc27832",
-  "status": "presented to the caller for operator approval, NOT approved; Stage 4 not run",
+  "status": "approved by the operator 2026-10-30; applied in Stage 4",
   "builder": "hand-written; entries via /mnt/raid0/llm/tmp/dive-ds41-unsloth-20261030-scripts/gen.py",
   "validator": "validate_intake.sh --plan-file/--session-file exit 0 (2026-10-30)"
  },
- "dive_artifact_audit": "not clean: /mnt/raid0/llm/tmp/dive-ds41-unsloth-20261030/hdr/.hfhome (12 KB huggingface_hub cache left by the header subagent; its rm was blocked by the scratch-delete guard; no figures were produced)"
+ "dive_artifact_audit": "not clean: /mnt/raid0/llm/tmp/dive-ds41-unsloth-20261030/hdr/.hfhome (12 KB huggingface_hub cache left by the header subagent; its rm was blocked by the scratch-delete guard; no figures were produced)",
+ "stage3_filing": {
+  "format_version": 2,
+  "entry_updates": [
+   {
+    "id": "intake-2511",
+    "integration_disposition": "integrated",
+    "handoffs_updated": [
+     "deepseek-v41-flash-evaluation.md"
+    ],
+    "handoffs_created": [],
+    "disposition_evidence": [
+     "DS41U-1 -> P1 / DS41-W9 (keep antirez; no download)"
+    ]
+   },
+   {
+    "id": "intake-2512",
+    "integration_disposition": "integrated",
+    "handoffs_updated": [
+     "deepseek-v41-flash-evaluation.md"
+    ],
+    "handoffs_created": [],
+    "disposition_evidence": [
+     "DS41U-1/DS41U-3 -> P1 / DS41-W9",
+     "DS41U-2, DS41U-7 -> K1 knowledge-only"
+    ]
+   },
+   {
+    "id": "intake-2513",
+    "integration_disposition": "integrated",
+    "handoffs_updated": [
+     "deepseek-v41-flash-evaluation.md"
+    ],
+    "handoffs_created": [],
+    "disposition_evidence": [
+     "Served artifact (DS41-W1/W7); identity recorded under DS41-W9"
+    ]
+   },
+   {
+    "id": "intake-2514",
+    "integration_disposition": "integrated",
+    "handoffs_updated": [
+     "deepseek-v41-flash-evaluation.md"
+    ],
+    "handoffs_created": [],
+    "disposition_evidence": [
+     "DS41U-3/DS41U-4 -> P1 / DS41-W9; Route A/B estimates recorded there"
+    ]
+   },
+   {
+    "id": "intake-2515",
+    "integration_disposition": "knowledge_only",
+    "handoffs_updated": [],
+    "handoffs_created": [],
+    "disposition_evidence": [
+     "Superseded by #31086 (intake-2514); facts summarised under DS41-W9"
+    ]
+   },
+   {
+    "id": "intake-2516",
+    "integration_disposition": "integrated",
+    "handoffs_updated": [
+     "deepseek-v41-flash-evaluation.md"
+    ],
+    "handoffs_created": [],
+    "disposition_evidence": [
+     "DS41U-3 -> P1 / DS41-W9 (MXFP8-table quants misload upstream)"
+    ]
+   },
+   {
+    "id": "intake-2517",
+    "integration_disposition": "monitor",
+    "handoffs_updated": [
+     "deepseek-v41-flash-evaluation.md"
+    ],
+    "handoffs_created": [],
+    "disposition_evidence": [
+     "DS41U-5 -> M1 trigger prose under DS41-W9: fires when the operator lifts the DS41 hold for serving/port work"
+    ]
+   },
+   {
+    "id": "intake-2518",
+    "integration_disposition": "monitor",
+    "handoffs_updated": [
+     "deepseek-v41-flash-evaluation.md"
+    ],
+    "handoffs_created": [],
+    "disposition_evidence": [
+     "DS41U-6 -> M1 trigger prose under DS41-W9: fires if the operator reopens DS41 low-bit serving after AK kernel work"
+    ]
+   },
+   {
+    "id": "intake-2519",
+    "integration_disposition": "knowledge_only",
+    "handoffs_updated": [],
+    "handoffs_created": [],
+    "disposition_evidence": [
+     "Documents Dynamic 3.0 only; no v3.1 method; no EPYC consumer"
+    ]
+   },
+   {
+    "id": "intake-2520",
+    "integration_disposition": "integrated",
+    "handoffs_updated": [
+     "deepseek-v41-flash-evaluation.md"
+    ],
+    "handoffs_created": [],
+    "disposition_evidence": [
+     "DS41U-3 -> P1 / DS41-W9 (type 43 = F8_E4M3 upstream)"
+    ]
+   },
+   {
+    "id": "intake-2521",
+    "integration_disposition": "knowledge_only",
+    "handoffs_updated": [],
+    "handoffs_created": [],
+    "disposition_evidence": [
+     "Confirms which DS41 GGUF families load upstream; no EPYC consumer"
+    ]
+   }
+  ],
+  "opportunity_reviews": {
+   "P1": {
+    "project_objective": "Answer the operator's question whether to replace the served DS41-1017 weights, and keep the lane's artifact record current",
+    "implementation_ref": "handoffs/active/deepseek-v41-flash-evaluation.md \u00a7W (DS41-W1..W8) @ fb819b348; epyc-inference-research scripts/lib/deepseek_v41_flash_recipe.py; DS41 port deepseek41.cpp @ dd3d9721c / c72ec82f5",
+    "gap": "\u00a7W records the 10-20 rejection of unsloth but not the 10-30 V3.1 update, the upstream #31086 layout, the type-43 collision, or the port effort and AK carry-over",
+    "operational_change": "A settled DS41-W9 task with the verdict and the facts, so no session re-downloads or re-evaluates the same files",
+    "benefit_direction": "Avoids a 466 GiB download, a blind serving gap and invalidating the AK floor, at no quality cost",
+    "owner": "handoffs/active/deepseek-v41-flash-evaluation.md",
+    "execution_conditions": "Text-only edit; no compute; DS41 hold unaffected",
+    "closure_basis": "Settled by the dives; the task lands ticked"
+   },
+   "M1": {
+    "project_objective": "Keep two plausible DS41 follow-ups discoverable without queueing held work",
+    "implementation_ref": "deepseek-v41-flash-evaluation.md header (operator 2026-10-22 hold); memory feedback_ds41_tests_wait_for_kernel_work",
+    "gap": "No record of the upstream prefix-reuse defect or of the low-bit artifact options in the lane",
+    "operational_change": "Trigger prose under DS41-W9; no checkbox",
+    "benefit_direction": "The checks run at the right time instead of being forgotten or run against the hold",
+    "owner": "handoffs/active/deepseek-v41-flash-evaluation.md",
+    "execution_conditions": "Fires only on an operator decision (hold lifted, or low-bit DS41 serving reopened)",
+    "closure_basis": "Monitor: running either needs a DS41 server, downloads or a new floor, all barred by the hold and the no-download instruction"
+   },
+   "K1": {
+    "project_objective": "Disk and tokenizer facts for the record",
+    "implementation_ref": "/mnt/raid0/llm/models/unsloth/DeepSeek-V4.1-Flash-1017-GGUF/ (local sha256 vs HF LFS); intake-2512 tokenizer KVs",
+    "gap": "None operational: nothing to download or delete; we do not serve unsloth-layout files",
+    "operational_change": "None",
+    "benefit_direction": "Prevents a redundant re-download",
+    "owner": "handoffs/active/deepseek-v41-flash-evaluation.md",
+    "execution_conditions": "None",
+    "closure_basis": "Knowledge-only; recorded in intake-2512 notes and the DS41-W9 note"
+   }
+  },
+  "opportunity_scan": [
+   {
+    "scan_id": "S1",
+    "source_ref": "intake-2512 hdr/class_tables.txt (UD-Q4_K_XL vs antirez_mxfp4_local)",
+    "implementation_ref": "deepseek_v41_flash_recipe.py TRUNK shards (antirez)",
+    "mechanism": "same native MXFP4 experts, lower-precision dense",
+    "consumer": "DS41 serving trunk",
+    "application": "keep the served weights",
+    "disposition": "actionable",
+    "ledger_ids": [
+     "DS41U-1"
+    ],
+    "basis": "type/size identity of experts; dense precision compared per class"
+   },
+   {
+    "scan_id": "S2",
+    "source_ref": "intake-2512 hdr/diff_sha_1020_1030.txt",
+    "implementation_ref": "\u00a7W 10-20 rejection (alt-quants.md)",
+    "mechanism": "V3.1 changed only three low-bit quants",
+    "consumer": "DS41 lane record",
+    "application": "record that UD-Q4_K_XL is unchanged",
+    "disposition": "actionable",
+    "ledger_ids": [
+     "DS41U-1",
+     "DS41U-3"
+    ],
+    "basis": "HF sha256 at both revisions"
+   },
+   {
+    "scan_id": "S3",
+    "source_ref": "intake-2514 pr-31086.diff:399; intake-2520 pr-27512.diff:680; intake-2516 comments[1]",
+    "implementation_ref": "DS41 port deepseek41.cpp:134-178 @ dd3d9721c; ggml.h:433 @ c72ec82f5",
+    "mechanism": "upstream layout + type-43 collision",
+    "consumer": "DS41 port loader",
+    "application": "record loadability and Route A/B effort",
+    "disposition": "actionable",
+    "ledger_ids": [
+     "DS41U-3"
+    ],
+    "basis": "port read by the kernel audit; upstream diffs read from disk"
+   },
+   {
+    "scan_id": "S4",
+    "source_ref": "kernel audit (intake-2514 notes); floor file under /mnt/raid0/llm/tmp/ds41-1017-baseline-20261021/aa/floor-store/",
+    "implementation_ref": "AK campaign ak-ds41-1017-cpu-decode-20261021 inbox 30/31; champion c72ec82f5",
+    "mechanism": "keeps are type-specific; floor binds artifact digest",
+    "consumer": "AutoKernel DS41 campaign",
+    "application": "record carry-over and floor invalidation",
+    "disposition": "actionable",
+    "ledger_ids": [
+     "DS41U-4"
+    ],
+    "basis": "keep kernels mapped to ggml types; floor frame carries model.sha256"
+   },
+   {
+    "scan_id": "S5",
+    "source_ref": "intake-2517 issue-30944.json comments[5]; pr-31292.diff",
+    "implementation_ref": "DS41 port prompt-cache / checkpoint path (untested)",
+    "mechanism": "compressed-KV mirror restore with concurrent sequences",
+    "consumer": "DS41 port gates",
+    "application": "conformance check when DS41 work resumes",
+    "disposition": "actionable",
+    "ledger_ids": [
+     "DS41U-5"
+    ],
+    "basis": "upstream defect open; our port unverified"
+   },
+   {
+    "scan_id": "S6",
+    "source_ref": "intake-2511 KLD table; intake-2512 active_bytes.txt; intake-2518 README:77",
+    "implementation_ref": "iqk_typeA_supported @ c72ec82f5; DS41 hold",
+    "mechanism": "low-bit experts cut <=19-24% of active bytes",
+    "consumer": "DS41 serving speed",
+    "application": "low-bit artifact evaluation",
+    "disposition": "actionable",
+    "ledger_ids": [
+     "DS41U-6"
+    ],
+    "basis": "dense path dominates bytes; low-bit needs Route A except antirez IQ2"
+   },
+   {
+    "scan_id": "S7",
+    "source_ref": "intake-2512 HF LFS sha256 vs local",
+    "implementation_ref": "/mnt/raid0/llm/models/unsloth/DeepSeek-V4.1-Flash-1017-GGUF/",
+    "mechanism": "identical files",
+    "consumer": "disk plan",
+    "application": "keep, never re-download",
+    "disposition": "context-only",
+    "ledger_ids": [
+     "DS41U-2"
+    ],
+    "basis": "no operational change; recorded"
+   },
+   {
+    "scan_id": "S8",
+    "source_ref": "intake-2512 tokenizer KVs (add_bos_token)",
+    "implementation_ref": "antirez shard-1 KVs (served)",
+    "mechanism": "BOS KV difference",
+    "consumer": "none (unsloth layout not served)",
+    "application": "note only",
+    "disposition": "context-only",
+    "ledger_ids": [
+     "DS41U-7"
+    ],
+    "basis": "no consumer loads unsloth-layout files"
+   }
+  ],
+  "actionable_additions": [],
+  "steering_reconciliation": [
+   {
+    "seq": 1,
+    "stage": 1,
+    "ts": "2026-10-30T18:45:00Z",
+    "verbatim": "Accept ALL recommended Stage-2 deep dives and literature expansions, for at most 4 Stage-2 waves.",
+    "disposition": "context-only",
+    "plan_ref": null,
+    "reason": "Stage-2 scope pre-approval; executed as Stage-2 waves (2 used), no Stage-3 item needed."
+   },
+   {
+    "seq": 2,
+    "stage": 1,
+    "ts": "2026-10-30T18:45:00Z",
+    "verbatim": "No benchmarks or compute runs. The decision must be made from first principles.",
+    "disposition": "context-only",
+    "plan_ref": null,
+    "reason": "Constraint honoured: only HTTP Range header reads, HF/GitHub API metadata and local file metadata were used; no runs."
+   },
+   {
+    "seq": 3,
+    "stage": 1,
+    "ts": "2026-10-30T18:45:00Z",
+    "verbatim": "The operator's main question: is there good reason to abandon the current DS41F-1017 weights in favour of this new unsloth quant? The operator leans yes.",
+    "disposition": "planned",
+    "plan_ref": "P1",
+    "reason": "Answered by the decision package (keep); recorded as DS41-W9."
+   },
+   {
+    "seq": 4,
+    "stage": 1,
+    "ts": "2026-10-30T18:45:00Z",
+    "verbatim": "The AutoKernel/DS41 hold stays in place.",
+    "disposition": "context-only",
+    "plan_ref": null,
+    "reason": "No plan item queues DS41 compute; the hold (feedback_ds41_tests_wait_for_kernel_work) is respected."
+   },
+   {
+    "seq": 5,
+    "stage": 1,
+    "ts": "2026-10-30T18:45:00Z",
+    "verbatim": "Do NOT download anything and do NOT delete anything.",
+    "disposition": "context-only",
+    "plan_ref": null,
+    "reason": "Nothing downloaded beyond headers/metadata; nothing deleted; the disk plan is a list for operator approval only."
+   }
+  ],
+  "outcome_reviews": {
+   "DS41U-1": {
+    "required_outcome": "The lane records that the served weights stay and why",
+    "review_status": "preserved",
+    "review_basis": "DS41-W9 carries the verdict and the three reasons",
+    "task_refs": [
+     {
+      "owner": "handoffs/active/deepseek-v41-flash-evaluation.md",
+      "task_id": "DS41-W9",
+      "task_text": "- [x] **DS41-W9 \u2014 Re-check 2026-10-30: unsloth \"Dynamic V3.1\" 1017 GGUFs vs the served antirez MXFP4-experts build. Verdict: keep antirez; download nothing, delete nothing (intake-2511#record to intake-2521#record).** \u2705 2026-10-30 [belief: cc]",
+      "acceptance": "Line present in \u00a7W before ### T; sub-bullets match the plan"
+     }
+    ]
+   },
+   "DS41U-2": {
+    "required_outcome": "No redundant download of files already on disk",
+    "review_status": "closed-with-basis",
+    "review_basis": "K1: files kept; fact recorded in intake-2512 notes and the DS41-W9 note; no operational step",
+    "task_refs": []
+   },
+   "DS41U-3": {
+    "required_outcome": "Loadability and port-effort facts discoverable in the lane",
+    "review_status": "preserved",
+    "review_basis": "DS41-W9 sub-bullets 2-3",
+    "task_refs": [
+     {
+      "owner": "handoffs/active/deepseek-v41-flash-evaluation.md",
+      "task_id": "DS41-W9",
+      "task_text": "- [x] **DS41-W9 \u2014 Re-check 2026-10-30: unsloth \"Dynamic V3.1\" 1017 GGUFs vs the served antirez MXFP4-experts build. Verdict: keep antirez; download nothing, delete nothing (intake-2511#record to intake-2521#record).** \u2705 2026-10-30 [belief: cc]",
+      "acceptance": "Sub-bullets name #30817, #31086, #27512, #31385 and Routes A/B"
+     }
+    ]
+   },
+   "DS41U-4": {
+    "required_outcome": "Any future weight change knows which keeps carry and that the floor must be redone",
+    "review_status": "preserved",
+    "review_basis": "DS41-W9 sub-bullet 4",
+    "task_refs": [
+     {
+      "owner": "handoffs/active/deepseek-v41-flash-evaluation.md",
+      "task_id": "DS41-W9",
+      "task_text": "- [x] **DS41-W9 \u2014 Re-check 2026-10-30: unsloth \"Dynamic V3.1\" 1017 GGUFs vs the served antirez MXFP4-experts build. Verdict: keep antirez; download nothing, delete nothing (intake-2511#record to intake-2521#record).** \u2705 2026-10-30 [belief: cc]",
+      "acceptance": "Sub-bullet names the carried keeps and the artifact-bound floor"
+     }
+    ]
+   },
+   "DS41U-5": {
+    "required_outcome": "The prefix-reuse conformance check runs when DS41 serving/port work resumes",
+    "review_status": "closed-with-basis",
+    "review_basis": "M1 monitor: needs a DS41 server, barred by the 2026-10-22 hold; trigger prose under DS41-W9",
+    "task_refs": []
+   },
+   "DS41U-6": {
+    "required_outcome": "A low-bit DS41 artifact is evaluated if DS41 low-bit serving is reopened",
+    "review_status": "closed-with-basis",
+    "review_basis": "M1 monitor: needs downloads, Route A and a new floor, barred by the hold and the no-download instruction; trigger prose under DS41-W9",
+    "task_refs": []
+   },
+   "DS41U-7": {
+    "required_outcome": "BOS difference known before any unsloth-layout load",
+    "review_status": "closed-with-basis",
+    "review_basis": "K1: no consumer loads unsloth-layout files; recorded in intake-2512",
+    "task_refs": []
+   }
+  },
+  "proposed_tasks": [
+   {
+    "owner": "handoffs/active/deepseek-v41-flash-evaluation.md",
+    "task_text": "- [x] **DS41-W9 \u2014 Re-check 2026-10-30: unsloth \"Dynamic V3.1\" 1017 GGUFs vs the served antirez MXFP4-experts build. Verdict: keep antirez; download nothing, delete nothing (intake-2511#record to intake-2521#record).** \u2705 2026-10-30 [belief: cc]"
+   }
+  ],
+  "plan_sha256": "fab4a3b81080dae58ab4a2864dbbe7de4efad227e12ed70f7c8d51bc0fc27832"
+ },
+ "stage4": {
+  "reconciled": true,
+  "status": "complete",
+  "completed_at": "2026-10-30T18:55:00Z",
+  "plan_sha256": "fab4a3b81080dae58ab4a2864dbbe7de4efad227e12ed70f7c8d51bc0fc27832",
+  "applied": [
+   "handoffs/active/deepseek-v41-flash-evaluation.md: DS41-W9 [x] + 7 sub-bullets (2 monitor triggers) before ### T",
+   "research/intake_index.yaml: entry_updates for intake-2511..2521",
+   "progress/2026-10/2026-10-30.md: intake section"
+  ],
+  "checkbox_flips": 0,
+  "new_tasks": 1,
+  "new_tasks_ticked": 1,
+  "index_rows_changed": 0,
+  "plan_path": "/mnt/raid0/llm/tmp/dive-ds41-unsloth-20261030/stage3/STAGE3_PLAN.md",
+  "approved": "operator 2026-10-30 via coordinator (decision tool: \"Approve: keep antirez\")",
+  "text_adjustments": [
+   "Citation form only, required by the index_state cite-check gate: \"(intake-2511..2521)\" -> \"(intake-2511#record to intake-2521#record)\" in the DS41-W9 line, \"(intake-2517)\" -> \"(intake-2517#record)\", \"(intake-2511, 2512, 2518)\" -> \"#record\" forms; no semantic change."
+  ],
+  "timestamp_note": "Earlier checkpoint timestamps 19:20Z/19:45Z/20:30Z were estimates written ahead of the clock; actual commits landed ~18:3x-18:5xZ (see git log)."
+ }
 }

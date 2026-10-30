@@ -128,3 +128,30 @@ def test_v2_repair_calls_are_replayed_and_extra_rpc_refused(tmp_path, monkeypatc
         (tmp_path / f"wire-999-{kind}.json").write_text((tmp_path / f"wire-001-{kind}.json").read_text())
     with pytest.raises(ProjectionError, match="unmatched completion"):
         adapter.validate_v2_primary(tmp_path, primary, steps, lambda raw: [], schema, tmp_path, {})
+
+
+def test_native_count_is_one_capture_observation(tmp_path, monkeypatch):
+    import hashlib
+    from adapters import kpf261_plan_steps as adapter
+    from claim_tuple import grade, to_frames
+
+    (tmp_path / "journal").mkdir()
+    steps = [{"step_id": "S1"}, {"step_id": "S2"}]
+    row = {"schema": "epyc.plan_steps_parsed.v1", "task_id": "t1", "timestamp": "2026-10-30T18:42:01Z",
+           "data": {"plan_id": "t1", "n_steps": 2, "step_ids": ["S1", "S2"], "steps": steps}}
+    raw = (json.dumps(row) + "\n").encode()
+    (tmp_path / "journal" / "plan_steps_parsed.jsonl").write_bytes(raw)
+    (tmp_path / "protocol.json").write_text(json.dumps({"schema": "kpf261.real-planner.protocol.v2",
+        "synthetic": True, "corpus_sha256": "fixture", "fixture_model_file": "fixture.gguf"}))
+    (tmp_path / "capture-complete.json").write_text(json.dumps({"synthetic": True,
+        "journal_sha256": hashlib.sha256(raw).hexdigest(), "journal_actions": 2, "count_target_met": False}))
+    (tmp_path / "corpus.jsonl").write_text("{}\n")
+    monkeypatch.setattr(adapter, "validate_native", lambda *args: None)
+    monkeypatch.setattr(adapter, "validate_v2_checkpoints", lambda *args: None)
+    tup = adapter.project(tmp_path, allow_synthetic=True)
+    assert tup.value == 2 and tup.unit == "actions" and tup.reps == 1
+    assert tup.extra["journal_actions"] == 2 and tup.protocol_id == ""
+    assert grade(tup)[:2] == ("Judged", "Located")
+    frame = to_frames(tup, as_of="2026-10-30T19:00:00Z", adapter_id=adapter.ADAPTER_ID)[-1]
+    assert frame["assertion"]["value"] == 2 and frame["assertion"]["unit"] == "actions"
+    assert frame["assertion"]["reps"] == 1

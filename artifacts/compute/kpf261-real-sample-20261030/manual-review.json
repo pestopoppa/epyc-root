@@ -1,0 +1,372 @@
+{
+  "reviewer": "Codex session /root/kpf_ingest_implementation",
+  "review_date": "2026-10-30",
+  "method": "Manual review of every original parsed and journalled action; fixed TERSE definition is answer-only/no-working. Explicit final-line formatting alone does not prohibit working.",
+  "journal_sha256": "6c13072ba7f08adf510299c0840cf1101db920294e2abe6fa70a7c7d4084a650",
+  "labels": [
+    {
+      "task_id": "win1-w0s1",
+      "step_index": 0,
+      "step_id": "S1",
+      "label": "WORKING-ALLOWED",
+      "reason": "Action permits intermediate work and contains no answer-only or no-working restriction."
+    },
+    {
+      "task_id": "win1-w0s1",
+      "step_index": 1,
+      "step_id": "S2",
+      "label": "WORKING-ALLOWED",
+      "reason": "Action permits intermediate work and contains no answer-only or no-working restriction."
+    },
+    {
+      "task_id": "win1-w0s2",
+      "step_index": 0,
+      "step_id": "S1",
+      "label": "WORKING-ALLOWED",
+      "reason": "Action permits intermediate work and contains no answer-only or no-working restriction."
+    },
+    {
+      "task_id": "win1-w0s2",
+      "step_index": 1,
+      "step_id": "S2",
+      "label": "WORKING-ALLOWED",
+      "reason": "Action permits intermediate work and contains no answer-only or no-working restriction."
+    },
+    {
+      "task_id": "win1-w0s3",
+      "step_index": 0,
+      "step_id": "S1",
+      "label": "WORKING-ALLOWED",
+      "reason": "Action permits intermediate work and contains no answer-only or no-working restriction."
+    },
+    {
+      "task_id": "win1-w0s3",
+      "step_index": 1,
+      "step_id": "S2",
+      "label": "WORKING-ALLOWED",
+      "reason": "Action permits intermediate work and contains no answer-only or no-working restriction."
+    },
+    {
+      "task_id": "win1-w0s4",
+      "step_index": 0,
+      "step_id": "S1",
+      "label": "WORKING-ALLOWED",
+      "reason": "Action permits intermediate work and contains no answer-only or no-working restriction."
+    },
+    {
+      "task_id": "win1-w0s4",
+      "step_index": 1,
+      "step_id": "S2",
+      "label": "WORKING-ALLOWED",
+      "reason": "Action permits intermediate work and contains no answer-only or no-working restriction."
+    },
+    {
+      "task_id": "win1-w0s5",
+      "step_index": 0,
+      "step_id": "S1",
+      "label": "WORKING-ALLOWED",
+      "reason": "Action permits intermediate work and contains no answer-only or no-working restriction."
+    },
+    {
+      "task_id": "win1-w0s5",
+      "step_index": 1,
+      "step_id": "S2",
+      "label": "WORKING-ALLOWED",
+      "reason": "Action permits intermediate work and contains no answer-only or no-working restriction."
+    },
+    {
+      "task_id": "win1-w0s5",
+      "step_index": 2,
+      "step_id": "S3",
+      "label": "WORKING-ALLOWED",
+      "reason": "Action permits intermediate work and contains no answer-only or no-working restriction."
+    },
+    {
+      "task_id": "win1-w1s0",
+      "step_index": 0,
+      "step_id": "S1",
+      "label": "WORKING-ALLOWED",
+      "reason": "Action permits intermediate work and contains no answer-only or no-working restriction."
+    },
+    {
+      "task_id": "win1-w1s0",
+      "step_index": 1,
+      "step_id": "S2",
+      "label": "WORKING-ALLOWED",
+      "reason": "Action permits intermediate work and contains no answer-only or no-working restriction."
+    },
+    {
+      "task_id": "win1-w1s1",
+      "step_index": 0,
+      "step_id": "S1",
+      "label": "WORKING-ALLOWED",
+      "reason": "Action permits intermediate work and contains no answer-only or no-working restriction."
+    },
+    {
+      "task_id": "win1-w1s1",
+      "step_index": 1,
+      "step_id": "S2",
+      "label": "WORKING-ALLOWED",
+      "reason": "Action permits intermediate work and contains no answer-only or no-working restriction."
+    },
+    {
+      "task_id": "win1-w1s2",
+      "step_index": 0,
+      "step_id": "S1",
+      "label": "WORKING-ALLOWED",
+      "reason": "Action permits intermediate work and contains no answer-only or no-working restriction."
+    },
+    {
+      "task_id": "win1-w1s2",
+      "step_index": 1,
+      "step_id": "S2",
+      "label": "WORKING-ALLOWED",
+      "reason": "Action permits intermediate work and contains no answer-only or no-working restriction."
+    },
+    {
+      "task_id": "win1-w1s3",
+      "step_index": 0,
+      "step_id": "S1",
+      "label": "WORKING-ALLOWED",
+      "reason": "Action permits intermediate work and contains no answer-only or no-working restriction."
+    },
+    {
+      "task_id": "win1-w1s3",
+      "step_index": 1,
+      "step_id": "S2",
+      "label": "WORKING-ALLOWED",
+      "reason": "Action permits intermediate work and contains no answer-only or no-working restriction."
+    },
+    {
+      "task_id": "win1-w1s4",
+      "step_index": 0,
+      "step_id": "S1",
+      "label": "WORKING-ALLOWED",
+      "reason": "Action permits intermediate work and contains no answer-only or no-working restriction."
+    },
+    {
+      "task_id": "win1-w1s5",
+      "step_index": 0,
+      "step_id": "S1",
+      "label": "WORKING-ALLOWED",
+      "reason": "Action permits intermediate work and contains no answer-only or no-working restriction."
+    },
+    {
+      "task_id": "win1-w1s5",
+      "step_index": 1,
+      "step_id": "S2",
+      "label": "WORKING-ALLOWED",
+      "reason": "Action permits intermediate work and contains no answer-only or no-working restriction."
+    },
+    {
+      "task_id": "win1-w1s5",
+      "step_index": 2,
+      "step_id": "S3",
+      "label": "WORKING-ALLOWED",
+      "reason": "Action permits intermediate work and contains no answer-only or no-working restriction."
+    },
+    {
+      "task_id": "win1-w2s0",
+      "step_index": 0,
+      "step_id": "S1",
+      "label": "WORKING-ALLOWED",
+      "reason": "Action permits intermediate work and contains no answer-only or no-working restriction."
+    },
+    {
+      "task_id": "win1-w2s0",
+      "step_index": 1,
+      "step_id": "S2",
+      "label": "WORKING-ALLOWED",
+      "reason": "Action permits intermediate work and contains no answer-only or no-working restriction."
+    },
+    {
+      "task_id": "win1-w2s1",
+      "step_index": 0,
+      "step_id": "S1",
+      "label": "WORKING-ALLOWED",
+      "reason": "Action permits intermediate work and contains no answer-only or no-working restriction."
+    },
+    {
+      "task_id": "win1-w2s1",
+      "step_index": 1,
+      "step_id": "S2",
+      "label": "WORKING-ALLOWED",
+      "reason": "Action permits intermediate work and contains no answer-only or no-working restriction."
+    },
+    {
+      "task_id": "win1-w2s2",
+      "step_index": 0,
+      "step_id": "S1",
+      "label": "WORKING-ALLOWED",
+      "reason": "Action permits intermediate work and contains no answer-only or no-working restriction."
+    },
+    {
+      "task_id": "win1-w2s2",
+      "step_index": 1,
+      "step_id": "S2",
+      "label": "WORKING-ALLOWED",
+      "reason": "Action permits intermediate work and contains no answer-only or no-working restriction."
+    },
+    {
+      "task_id": "win1-w2s3",
+      "step_index": 0,
+      "step_id": "S1",
+      "label": "WORKING-ALLOWED",
+      "reason": "Action permits intermediate work and contains no answer-only or no-working restriction."
+    },
+    {
+      "task_id": "win1-w2s3",
+      "step_index": 1,
+      "step_id": "S2",
+      "label": "WORKING-ALLOWED",
+      "reason": "Action permits intermediate work and contains no answer-only or no-working restriction."
+    },
+    {
+      "task_id": "win1-w2s4",
+      "step_index": 0,
+      "step_id": "S1",
+      "label": "WORKING-ALLOWED",
+      "reason": "Action permits intermediate work and contains no answer-only or no-working restriction."
+    },
+    {
+      "task_id": "win1-w2s4",
+      "step_index": 1,
+      "step_id": "S2",
+      "label": "WORKING-ALLOWED",
+      "reason": "Action permits intermediate work and contains no answer-only or no-working restriction."
+    },
+    {
+      "task_id": "win1-w2s4",
+      "step_index": 2,
+      "step_id": "S3",
+      "label": "WORKING-ALLOWED",
+      "reason": "Action permits intermediate work and contains no answer-only or no-working restriction."
+    },
+    {
+      "task_id": "win1-w2s5",
+      "step_index": 0,
+      "step_id": "S1",
+      "label": "WORKING-ALLOWED",
+      "reason": "Action permits intermediate work and contains no answer-only or no-working restriction."
+    },
+    {
+      "task_id": "win1-w2s5",
+      "step_index": 1,
+      "step_id": "S2",
+      "label": "WORKING-ALLOWED",
+      "reason": "Action permits intermediate work and contains no answer-only or no-working restriction."
+    },
+    {
+      "task_id": "win1-w2s5",
+      "step_index": 2,
+      "step_id": "S3",
+      "label": "WORKING-ALLOWED",
+      "reason": "Action permits intermediate work and contains no answer-only or no-working restriction."
+    },
+    {
+      "task_id": "win1-w3s0",
+      "step_index": 0,
+      "step_id": "S1",
+      "label": "WORKING-ALLOWED",
+      "reason": "Action permits intermediate work and contains no answer-only or no-working restriction."
+    },
+    {
+      "task_id": "win1-w3s0",
+      "step_index": 1,
+      "step_id": "S2",
+      "label": "WORKING-ALLOWED",
+      "reason": "Action permits intermediate work and contains no answer-only or no-working restriction."
+    },
+    {
+      "task_id": "win1-w3s1",
+      "step_index": 0,
+      "step_id": "S1",
+      "label": "WORKING-ALLOWED",
+      "reason": "Action permits intermediate work and contains no answer-only or no-working restriction."
+    },
+    {
+      "task_id": "win1-w3s1",
+      "step_index": 1,
+      "step_id": "S2",
+      "label": "WORKING-ALLOWED",
+      "reason": "Action permits intermediate work and contains no answer-only or no-working restriction."
+    },
+    {
+      "task_id": "win1-w3s1",
+      "step_index": 2,
+      "step_id": "S3",
+      "label": "WORKING-ALLOWED",
+      "reason": "Action permits intermediate work and contains no answer-only or no-working restriction."
+    },
+    {
+      "task_id": "win1-w3s2",
+      "step_index": 0,
+      "step_id": "S1",
+      "label": "WORKING-ALLOWED",
+      "reason": "Action permits intermediate work and contains no answer-only or no-working restriction."
+    },
+    {
+      "task_id": "win1-w3s2",
+      "step_index": 1,
+      "step_id": "S2",
+      "label": "WORKING-ALLOWED",
+      "reason": "Action permits intermediate work and contains no answer-only or no-working restriction."
+    },
+    {
+      "task_id": "win1-w3s3",
+      "step_index": 0,
+      "step_id": "S1",
+      "label": "WORKING-ALLOWED",
+      "reason": "Action permits intermediate work and contains no answer-only or no-working restriction."
+    },
+    {
+      "task_id": "win1-w3s3",
+      "step_index": 1,
+      "step_id": "S2",
+      "label": "WORKING-ALLOWED",
+      "reason": "Action permits intermediate work and contains no answer-only or no-working restriction."
+    },
+    {
+      "task_id": "win1-w3s3",
+      "step_index": 2,
+      "step_id": "S3",
+      "label": "WORKING-ALLOWED",
+      "reason": "Action permits intermediate work and contains no answer-only or no-working restriction."
+    },
+    {
+      "task_id": "win1-w3s4",
+      "step_index": 0,
+      "step_id": "S1",
+      "label": "WORKING-ALLOWED",
+      "reason": "Action permits intermediate work and contains no answer-only or no-working restriction."
+    },
+    {
+      "task_id": "win1-w3s4",
+      "step_index": 1,
+      "step_id": "S2",
+      "label": "WORKING-ALLOWED",
+      "reason": "Action permits intermediate work and contains no answer-only or no-working restriction."
+    },
+    {
+      "task_id": "win1-w3s5",
+      "step_index": 0,
+      "step_id": "S1",
+      "label": "WORKING-ALLOWED",
+      "reason": "Action permits intermediate work and contains no answer-only or no-working restriction."
+    },
+    {
+      "task_id": "win1-w3s5",
+      "step_index": 1,
+      "step_id": "S2",
+      "label": "WORKING-ALLOWED",
+      "reason": "Action permits intermediate work and contains no answer-only or no-working restriction."
+    },
+    {
+      "task_id": "win1-w3s5",
+      "step_index": 2,
+      "step_id": "S3",
+      "label": "WORKING-ALLOWED",
+      "reason": "Action permits intermediate work and contains no answer-only or no-working restriction."
+    }
+  ]
+}
