@@ -1,0 +1,203 @@
+{
+  "recorded_at": "2026-10-30T18:05:06.471369+00:00",
+  "events": [
+    {
+      "schema": "compute-original-event-audit/v1",
+      "event_id": "kpf18-g3-r12-integration-cpu-r7",
+      "owner": "codex-ni",
+      "class": "diagnostic",
+      "due_row": {
+        "path": "/mnt/raid0/llm/tmp/compute-flags/filing-due.jsonl",
+        "line": 310,
+        "seen_at": "2026-10-30T17:52:54Z",
+        "deadline": "2026-10-30T18:22:54Z",
+        "ended": "2026-10-30T17:52:15Z",
+        "end_status": "rc=0 reason=complete",
+        "result_path": "/mnt/raid0/llm/tmp/codex-ni-kpf18-native-segfault-r7-20261030/cpu-replay/attempts/*/RESULT.json",
+        "decision_rule": "Diagnostic correctness replay; metric direction n/a. Complete requires exact R7 identity/source/input hashes, every full original X1 prompt partition and all four stages, framing_pass=true, cross-device native manifests, verified captured-child cleanup. Bounded smoke remains partial with framing_pass=false; zero resolved work, missing/full framing failures, native crash and wrong source cannot complete. Historical R6 remains INVALID."
+      },
+      "original_event": {
+        "attempt": "1793382000-1793385600",
+        "grant_start": "2026-10-30T17:40:00Z",
+        "grant_end": "2026-10-30T18:40:00Z",
+        "worker_start": "2026-10-30T17:41:18Z",
+        "worker_end": "2026-10-30T17:52:15Z",
+        "worker_identity": {
+          "pid": 1499647,
+          "pgid": 1499647,
+          "sid": 1499647,
+          "uid": 1000,
+          "start_ticks": 150455499
+        },
+        "work_started": true,
+        "status": "COMPLETE",
+        "rc": 0,
+        "partial": false,
+        "controlled_cutoff": false,
+        "cleanup_verified": true,
+        "historical_r6_verdict": "INVALID unchanged"
+      },
+      "identity": {
+        "r7_root": "/mnt/raid0/llm/tmp/codex-ni-kpf18-native-segfault-r7-20261030",
+        "source_manifest_sha256": "4998ee152cedd2dd5079e8442b51293c9201bb0f1d655fe5ce92e47b331bbd1d",
+        "root_source_manifest_sha256": "e6beebeaeb9b996437fcfaef2dac56bc178e601a1bc6ea77cd6cfedd8cc5c19b",
+        "raw_original_x1_sha256": "7cbf105def05e9f874080f6def041754b19c109c7c9ddab5b2d64bf4666a33ee",
+        "ledger_sha256": "a6b18b1b96bc773fa74559c9bfc28248287c1dfcf08deb7ef07278d95d9f304a",
+        "layouts_sha256": "546cd4eab6d500235b0702cf448f444cb0cbf3b564adefb018e430d3295ab39e",
+        "fork_bindings_sha256": "eacbebf58017d8f44da91df7db08cff8291e3a1b947448aa599fae6b067c2de7",
+        "fresh_canonical_source": "FRESH-SOURCE.json pins origin/main 2a652c5b81b74e815c6723e7e53fdabd07ab3062; restored accepted R14r3 and r13 sources by reference; native raw and ledger unchanged"
+      },
+      "full_framing_predicate": {
+        "bridge_framing_pass": true,
+        "grid_count": 1128,
+        "event_count": 8,
+        "event_sequence": [
+          "input.hash",
+          "raw.read",
+          "view.build",
+          "grid.parse",
+          "fork.binding",
+          "request.binding",
+          "trial.target-prefix",
+          "trial.target-suffix",
+          "trial.draft",
+          "trial.done",
+          "result.written"
+        ],
+        "event_count_semantics": "eight captured source X1 events; sequence above is the bridge phase ledger, not the event count",
+        "required_stages": [
+          "draft_first_decode",
+          "draft_initial",
+          "target_prefix",
+          "target_suffix"
+        ],
+        "all_stages_present": true,
+        "result_scope": "R12 bridge framing of recorded R6 X1 only; not native control or model equivalence"
+      },
+      "cross_device_native_manifest": {
+        "manifest_path": "/mnt/raid0/llm/tmp/codex-ni-kpf18-native-segfault-r7-20261030/cpu-replay/attempts/1793382000-1793385600/NATIVE-OUTPUT-MANIFEST.json",
+        "manifest_sha256": "afc19c77104717a787f92e1b855e12b37b75409616233117b8427f1fd9dec287",
+        "micron_device": 66307,
+        "raid_metadata_device": 2431,
+        "native_files": [
+          {
+            "path": "bridge/PHASES.jsonl",
+            "sha256": "e92f0e4ee83321f99e3130aaca0d39698f39a0d3315b8e866f623838a75d4570",
+            "bytes": 1926
+          },
+          {
+            "path": "bridge/RESULT.json",
+            "sha256": "4a73ae89c6211b9df7e508633c828c274c5f68007b6516ca7cc7328ca5b5db81",
+            "bytes": 766
+          },
+          {
+            "path": "bridge/STACKS.log",
+            "sha256": "e4fa53c3ffb500a2808c529147f45c566a69bf672362b61e42c1976fcf474255",
+            "bytes": 33858
+          },
+          {
+            "path": "bridge/X1-observed-layouts.json",
+            "sha256": "546cd4eab6d500235b0702cf448f444cb0cbf3b564adefb018e430d3295ab39e",
+            "bytes": 750521
+          },
+          {
+            "path": "bridge/fork-bindings.json",
+            "sha256": "eacbebf58017d8f44da91df7db08cff8291e3a1b947448aa599fae6b067c2de7",
+            "bytes": 522
+          }
+        ]
+      },
+      "receipt_hashes": {
+        "result_sha256": "2b7eae2083bd5a116c8bd60db07a9a398154e8eb2d3b6098924a14d2eeeb8edf",
+        "complete_marker_sha256": "2ebad10619e3a90c58bcc9e636205381ebc6beef7e76c4dec556a68e5e7f4691",
+        "complete_marker_binds_result_sha256": true,
+        "result_native_manifest_sha256": "afc19c77104717a787f92e1b855e12b37b75409616233117b8427f1fd9dec287"
+      },
+      "verdict": {
+        "decision_rule_satisfied": true,
+        "qualifying_task_text": "Diagnostic correctness replay of exact R7 identity/source/input hashes over every full original X1 prompt partition and all four stages; framing_pass=true, cross-device native output manifest hashes verified, captured-child cleanup verified.",
+        "scope_limit": "This closes only the bounded R7 bridge-framing diagnostic. It does not regrade or change historical R6 INVALID and makes no native-control, model-equivalence, GPU, kernel, or performance claim."
+      }
+    },
+    {
+      "schema": "compute-original-event-audit/v1",
+      "event_id": "hpr-fix2-prospective64k-r4-20261030",
+      "owner": "codex-ni",
+      "class": "diagnostic",
+      "due_row": {
+        "path": "/mnt/raid0/llm/tmp/compute-flags/filing-due.jsonl",
+        "line": 311,
+        "seen_at": "2026-10-30T17:54:58Z",
+        "deadline": "2026-10-30T18:24:58Z",
+        "ended": "2026-10-30T17:54:53Z",
+        "end_status": "rc=1 reason=job-rc-1:exited",
+        "result_path": "/mnt/micron/codex-hpr-native-admission-r4-20261030/results/run-*/result.json",
+        "scratch_root": "/mnt/raid0/llm/tmp/codex-hpr-native-admission-r4-20261030",
+        "decision_rule": "Diagnostic; checkpoint bytes lower is better and prompt_n must remain within measured dense spread under unchanged decide_121. Full completion requires six fresh q36_35b 64k dense/coarse x3-wave cells, exact source/model/build, complete native request capture and verified writer/cleanup. Tiny smoke, partial, historical golden and UNVERIFIED raw rows cannot complete or regrade the holdout. No production/timing adoption warrant."
+      },
+      "predeclared_scope": {
+        "cells_required": 6,
+        "model": "q36_35b (Qwen3.6-35B-A3B-MTP-Q8_0)",
+        "context": 65536,
+        "arms": [
+          "dense",
+          "coarse"
+        ],
+        "waves": 3,
+        "fresh_server_per_cell": true,
+        "threads": 24,
+        "n_predict": 16,
+        "temperature": 0,
+        "seed": 42,
+        "decision": "unchanged decide_121 on six fresh admitted cells only",
+        "direction": "checkpoint bytes lower is better; prompt_n within measured dense spread",
+        "authority": "diagnostic only; no timing/production adoption warrant"
+      },
+      "identity_pins": {
+        "predeclaration_path": "/mnt/raid0/llm/tmp/codex-hpr-native-admission-r4-20261030/PREDECLARATION.json",
+        "source_pins_path": "/mnt/raid0/llm/tmp/codex-hpr-native-admission-r4-20261030/source-pins.json",
+        "source_pins_sha256": "1471810d48e264e5571bf18e28cc1327966dffd957d3b76ff8ecbf70a800aa9b",
+        "binary_sha256": "1442c95d7516efadda0639cf07319078df0bae326b6a9bb95d72532b1499ad67",
+        "model_sha256": "c1283d8b80c3e38b2735ddbc9766d3b3126f44d6c484be419d4e101d09a76131",
+        "template_sha256": "1443ea9ab4bb0a2663b1002a5d4baad970e9f0b2f42ca4ec12b4683838284551",
+        "native_result_root": "/mnt/micron/codex-hpr-native-admission-r4-20261030/results"
+      },
+      "original_event_boundary": {
+        "launcher_start": "2026-10-30T17:54:05Z",
+        "grant_start": "2026-10-30T17:54:50Z",
+        "grant_end": "2026-10-30T17:54:53Z",
+        "result_validation_stage": "job.py validate_entry()",
+        "exact_failure": "region-lock: orchestrator venv python not found at /mnt/raid0/llm/epyc-orchestrator/.venv/bin/python3",
+        "traceback": "job.py validate_entry() -> subprocess.check_output(['/mnt/raid0/llm/epyc-orchestrator/scripts/region-lock','status','--json']) -> CalledProcessError exit status 64",
+        "event_result_rc": 1,
+        "full_run_result_written": false,
+        "full_run_directory_created": false,
+        "latest_smoke_files_substituted": false
+      },
+      "work_and_cleanup": {
+        "native_run_directories_at_original_result_root": 0,
+        "native_run_result_files": 0,
+        "native_server_started": false,
+        "native_requests_attempted": 0,
+        "full_native_request_capture": false,
+        "writer_result": false,
+        "captured_child_cleanup": "not applicable; validation failed before resource watcher, model server, or native request work started",
+        "pre_entry_refusal_receipt": false,
+        "smoke_directories_present": 3,
+        "smoke_directories_are_original_full_event_evidence": false
+      },
+      "failure": {
+        "class": "infrastructure / runtime dependency failure before measurement work",
+        "owner_action": "Restore/provision the required /mnt/raid0/llm/epyc-orchestrator/.venv/bin/python3 dependency for the official region-lock status path, or correct that runtime dependency while preserving official quarter-lock validation. Then launch a new authorized full event; do not bypass the lock, turn old smoke results into a full result, or regrade the holdout.",
+        "claim": "Original R4 ended rc1; no pre-entry refusal receipt and no native model work is evidenced. Preserve its original failure."
+      },
+      "verdict": {
+        "six_cell_rule_satisfied": false,
+        "qualifying_completed_task": null,
+        "no_checkbox_tick": true,
+        "historical_holdout_unchanged": true,
+        "production_or_timing_claim": false
+      }
+    }
+  ]
+}
