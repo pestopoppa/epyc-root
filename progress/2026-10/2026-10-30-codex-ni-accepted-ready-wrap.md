@@ -1,0 +1,9 @@
+# Accepted READY preparation outcomes — 2026-10-30
+
+Recorded three accepted preparation outcomes without closing their parent scientific gates:
+
+- **YARN R3:** actual frozen native A1 smoke completed in 232.102s (223.848s request, 103,311 prompt tokens); result writer and owned cleanup passed. Active-slot observation had 23 positive samples among 24 successful samples, with 120 observer timeouts retained. Keeper accepted READY-WAIT at 15:14:17Z; exact READY payload was restored at 15:18:38Z. The 120-pair decision remains open. Four approved cold retirements removed 4,512,149,504 allocated bytes (4.2023 GiB); no filesystem-free delta is claimed. Evidence: `/mnt/raid0/llm/tmp/codex-ni-yarn-128k-mi210-r3-20261030/review-evidence/YARN-R3-WRAP-DRAFT.md`.
+- **FA4 R12:** actual frozen-byte smoke completed in 67.765s with two model_A contexts, one A HTTP 200, A/B 80/80 cases per arm, four-stage residency and cleanup, and 713 COMPLETE current-live censuses with zero unresolved live observations. Keeper accepted READY-WAIT rank 3 at 15:22:23Z; actual normal no-argument execution proved `RUS3_DIAGNOSTIC=1` at 15:23:01Z. Optional `pidfd_bindings` capture metadata is unavailable; R11's exact descriptor cause remains unknown. Full comparison and read-side wiring remain open. Evidence: `/mnt/raid0/llm/tmp/codex-ni-fa4-exact-set-successor-r12-20261030/review-evidence/`.
+- **HPR R3:** native admission smoke completed 21 requests in 94.009s; a separate set of 18 unit controls passed after an indentation-only helper repair. Keeper validation was 15:18:17Z. The full six-cell 64K holdout remains open. Evidence: `/mnt/raid0/llm/tmp/codex-hpr-native-admission-r3-20261030/CLOSEOUT-SHARD.md`.
+
+These are bounded operational qualifications, not full scientific results. No parent-task checkbox or measurement grade was added. [belief: cc — committed operational observations, not original measurement warrants]
