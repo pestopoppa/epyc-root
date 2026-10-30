@@ -302,6 +302,9 @@ def test_every_source_has_an_end_to_end_fixture_or_a_named_exemption():
     # test_kv_quant_27b_v10_adapter.py, including its CLI source and ledger fold.
     assert set(ingest_sources.SOURCES) == set(BUILDERS) | {
         "kpf261-plan-steps",  # Synthetic refusal: test_kpf261_plan_steps.py; native canary uses pinned external capture.
+        # Prospective real native custody, 13 refusal controls and CLI reingest:
+        # test_lb49_combined_diagnostic.py (external capture; no fabricated measurement fixture).
+        "lb49-combined-diagnostic",
         "ufh12-irt-paired",  # Synthetic producer, CLI ingest, tamper and planning: test_ufh12_irt_paired_canary.py.
         # Real original oracle plus synthetic native timing writer -> planner and tamper.
         "rtg57-vkq-oracle", "rtg57-vkq-comparison",

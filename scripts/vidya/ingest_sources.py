@@ -397,6 +397,10 @@ SOURCES: dict[str, Source] = {s.name: s for s in (
            note="RUS-2 trace-length probe cells, OBSERVATION only (temperature and finish_reason "
                 "absent at source)",
            task="VB-RUS2-PROBE-WIRE"),
+    Source("lb49-combined-diagnostic", "lb49_combined_diagnostic",
+           _files("beliefs.jsonl", "*/beliefs.jsonl"),
+           note="Prospective LB4.9 native diagnostic OBSERVATION only; strict process/output custody; no historical warrant",
+           task="VB-LB49-COMBINED-DIAGNOSTIC-WRITE"),
     Source("gpu-leak-probe", "gpu_leak_probe",
            _files("gpu_leak_probe.beliefs.jsonl", "*/gpu_leak_probe.beliefs.jsonl"),
            note="GPU-LEAK-1/1d own-PID VRAM slope per arm (slopes re-derived from the recorded series), "
