@@ -1,0 +1,63 @@
+{
+  "schema": "epyc-root-source-closure/v1",
+  "status": "PROPOSED_ROOT_FILING",
+  "root_base": {
+    "ref": "origin/main",
+    "sha": "db0f082bc68bf416362fc13df5d3015b213e3868"
+  },
+  "task": "R21-1",
+  "source_repo": "epyc-inference-research",
+  "source_commit": "bebe42b9a56d9cf6c951fc75a227c8666a194080",
+  "source_base": "6cf25cfab8e45e760cbe4291134b58730ae1eb70",
+  "accepted_patch_sha256": "fbb2f4980eee6d2aaf0dcdb8230a3f59fd3262063ab9d1fcbfb85b11678139e2",
+  "changed_source_paths": [
+    "scripts/kernel_rnd/autokernel/loop/run.py",
+    "scripts/kernel_rnd/autokernel/loop/test_startup_headline.py"
+  ],
+  "behavior": "Ordinary startup invokes existing production.refresh inside existing claims/measurement windows before lane provisioning; failure preserves the old headline and pool dispatch continues.",
+  "source_cost": "One startup refresh. Carryover measures champion alone; missing/stale baseline may build a scratch baseline and run paired A/B. Conditional build/A-B time not separately measured.",
+  "verification": {
+    "focused_behavior_cases": "4 passed",
+    "related_suite": "138 passed, 10 subtests passed",
+    "supervision": "R6 supervised; child trees drained",
+    "negative_control": "Removing startup refresh made all 4 focused cases fail; candidate restored in finally."
+  },
+  "limits": [
+    "No hardware headline, reload, inference, actual build, or performance result.",
+    "Root filing does not add a source claim tuple; source and tests are a code closure."
+  ],
+  "progress_target": "progress/2026-10/2026-10-30.md",
+  "evidence": [
+    {
+      "label": "research_publication_receipt",
+      "path": "/mnt/raid0/llm/tmp/refactor-oab21-metrics-20261030/r21-1-startup-headline/publication-receipt.json",
+      "sha256": "df32934bed5646f18afb5978af6798a17de7e526e42ed82bd321aec11cf737b5"
+    },
+    {
+      "label": "accepted_research_patch",
+      "path": "/mnt/raid0/llm/tmp/refactor-oab21-metrics-20261030/r21-1-startup-headline/PROPOSED.patch",
+      "sha256": "fbb2f4980eee6d2aaf0dcdb8230a3f59fd3262063ab9d1fcbfb85b11678139e2"
+    },
+    {
+      "label": "findings",
+      "path": "/mnt/raid0/llm/tmp/refactor-oab21-metrics-20261030/r21-1-startup-headline/FINDINGS.md",
+      "sha256": "ecc0d5b191265db83f33588581767acb741110ff6075e5f721170486e59274e2"
+    },
+    {
+      "label": "related_suite_validation",
+      "path": "/mnt/raid0/llm/tmp/refactor-oab21-metrics-20261030/r21-1-startup-headline/publication-validation.log",
+      "sha256": "103ac1b2a6c4c2559391302a51d28ae7b25b2929c70f4051ce4ba070c100d2a2"
+    },
+    {
+      "label": "focused_startup_validation",
+      "path": "/mnt/raid0/llm/tmp/refactor-oab21-metrics-20261030/r21-1-startup-headline/startup-validation.log",
+      "sha256": "cf0f547fd677f26a185538eb26e0446dfb033dcc7645fdf31e1e3f83734c8144"
+    },
+    {
+      "label": "startup_removal_negative_control",
+      "path": "/mnt/raid0/llm/tmp/refactor-oab21-metrics-20261030/r21-1-startup-headline/startup-mutation-validation.log",
+      "sha256": "7ff482ccf9c3f30b7ae8455c39f6ff34df8096b620abaf5457a6c817c6624ae5"
+    }
+  ],
+  "root_filing_patch_sha256": "7b3c260067ce53f65492f8c7cb38ee8a8835cd356b09dc45d999467fc116133f"
+}

@@ -1159,9 +1159,20 @@ Full session record: `progress/2026-08/2026-08-31-ak-rebuild-20260828.md`.
       (R21-L8); `llama-batched-bench` expresses parallel decode natively and is closer to the
       serving shape. Needs its own floor calibration (`--calibrate-surface` method) before any
       verdict may cite it; zero compute until then.
-- [ ] **R21-1 — refresh the champion headline at STARTUP, not only per-advance.** A restart after
-      an unmeasured advance briefly shows `SUPERSEDED-BASELINE` until the first advance re-emits.
-      Small: emit the headline once during loop startup from the same path `068ffb67` added.
+- [x] **R21-1 — refresh the champion headline at STARTUP, not only per-advance.** ✅ 2026-10-30
+      Research main `bebe42b9a56d9cf6c951fc75a227c8666a194080` accepted the two-file closure
+      (`scripts/kernel_rnd/autokernel/loop/run.py` + `test_startup_headline.py`; accepted patch
+      SHA-256 `fbb2f4980eee6d2aaf0dcdb8230a3f59fd3262063ab9d1fcbfb85b11678139e2`). The ordinary
+      startup refresh uses the existing `production.refresh` path inside held original claims and
+      the established CPU/GPU measurement windows, before pool provisioning. Carryover measures
+      the champion alone; absent/stale baseline may build a scratch baseline and run paired A/B.
+      Refresh failure preserves the prior headline and still dispatches the pool. This adds one
+      startup refresh; the conditional build/A-B cost was not timed separately. Four real-main
+      behavior cases cover carryover/fallback × success/failure; 138 tests plus 10 subtests passed,
+      with R6 supervisor completion and drained children. Source/test closure only; no hardware
+      headline, reload, or performance result is claimed. Evidence:
+      `artifacts/compute/refactor-r21-1-startup-headline-20261030.json`. [no-belief: code and test
+      closure; no performance measurement]
 - [x] **R21-2 — promote the reconciliation A/B evidence out of volatile tmp.** ✅ 2026-09-01 —
       landed as research `2ee10ff5` (`artifacts/autokernel-champ-a2728701-ab/`, 24 files ≈1.4 MB:
       result JSON, `run_ab.py`, `run_ab.log`, 3 oracle logs, symdiff; regenerable dumps excluded),
