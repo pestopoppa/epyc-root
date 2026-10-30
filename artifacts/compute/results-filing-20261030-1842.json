@@ -1,0 +1,828 @@
+{
+  "recorded_at": "2026-10-30T19:05:30.704461+00:00",
+  "scope": "four exact original events; no later rearm or smoke substituted",
+  "events": [
+    {
+      "schema": "codex3.original-event-audit.v1",
+      "id": "fa4-c5-exact-set-r12-20261030",
+      "owner": "codex-ni",
+      "class": "diagnostic",
+      "seen_at": "2026-10-30T18:38:51Z",
+      "deadline": "2026-10-30T19:08:51Z",
+      "ended": {
+        "rc": 1,
+        "at": "2026-10-30T18:37:55Z",
+        "reason": "job-rc-1:exited"
+      },
+      "original_rule": "Diagnostic only: retain exact 228-case native outcomes for each arm over the source-derived input universe, with unique six-field keys and native arm_check=OK. Per-key verdict and nonfinite counts are outcomes; ON/OFF flagged-set equality is not an input-coverage criterion. Preserve all outcomes. Do not grade equivalence, infer mechanism, establish timing/performance, or claim promotion. Full comparison remains the original three-pair, 22-band, two-KV-type protocol with unchanged numeric criteria.",
+      "native_run": "/mnt/micron/codex-ni-fa4-exact-set-r12-20261030/runs/20261030T183112Z-2305064",
+      "event": {
+        "launcher_log": "/mnt/raid0/llm/tmp/codex-ni-fa4-exact-set-successor-r12-20261030/ws58-launcher.out",
+        "start": "2026-10-30T18:31:12Z",
+        "regions": "mi210_0,184-191",
+        "resource_pass": true,
+        "last_stage": "exact_B",
+        "failure": "R12 required launch-evidence capture failed at evidence_exec.py:55 while os.readlink('/proc/2423529/exe'); the exact_B process had already exited. FAILED.json reports INCOMPLETE, exit_code=1, partial=false, cleanup_verified=true, cleanup_error=null. exact_B native record says rc=-15, partial=true; it is not a completed arm.",
+        "native_record": "/mnt/micron/codex-ni-fa4-exact-set-r12-20261030/runs/20261030T183112Z-2305064/native_records/exact_B.json",
+        "failed_json_sha256": "20052dff56329f0e0a84ddac42a1a825687e6233356412d1a8cb41dca13380f2",
+        "exact_B_native_sha256": "8676a04df3b3a03f979b84953467d9649b4afffdc420959e20b3e1cb75992d48",
+        "exact_B_native_record_sha256": "58354761cc222a6f673d7d7b8b409d17063dc8902f21a0f80ac8ec81f68efcbf",
+        "exact_B_proofs_sha256": "7fb57b3e0ed17ea5959d11b7b0d5d4a1d9156effbfa78b6c6f37fac338df2776",
+        "exact_B_argv_sha256": "5b08682b87832eefa759c4e010b5eea3928df07853f697a4bf7b0923ef353ee1",
+        "cleanup": {
+          "verified": true,
+          "error": null
+        },
+        "preserved_prior_stages": [
+          "nan_A",
+          "nan_B",
+          "model_A",
+          "model_B",
+          "server_A",
+          "server_B",
+          "perf_1..perf_6 partial/present as native outputs"
+        ],
+        "not_completed": [
+          "exact_B native arm_check=OK and complete 228-case retained outcome",
+          "228 outcomes per arm",
+          "three matched pairs x 22 bands x two KV types full comparison"
+        ]
+      },
+      "verdict": "FAILED-RUN / INCOMPLETE. This is a capture-instrumentation race at the final exact_B launch-evidence gate, not a numerical or model-quality finding. No efficacy, equivalence, timing, performance, mechanism, or promotion claim. Existing outcomes remain preserved; missing exact_B final gate means do not tick original completion.",
+      "owner_action": "Make executable identity custody race-safe by retaining an opened executable fd or capturing its inode/hash while the child is still live, then bind the final record to the captured child identity. Preserve this failed R12 record and raw exact_B output. Resume only against the unchanged original full protocol; do not replace the failed boundary with a later smoke or arm.",
+      "proposed_handoff_checkbox": "[ ] Retain exact 228-case native outcomes for each arm over source-derived input universe with unique six-field keys and native arm_check=OK; preserve all outcomes; diagnostic only, no equivalence/mechanism/timing/performance/promotion claim.",
+      "proposed_progress_cc": "2026-10-30: R12 full event ended rc=1 at exact_B. Native FAILED.json identifies a launch-evidence FileNotFoundError on /proc/2423529/exe after child exit; cleanup_verified=true. Partial exact_B native output and prior stage outcomes remain on Micron. The 228-case-per-arm exact set and original full comparison are incomplete; no efficacy or performance conclusion. codex-ni: bind executable identity while child is live, retain original failure/raw evidence, then resume unchanged protocol.",
+      "qualifying_task_text": null,
+      "evidence_hashes": {
+        "ended_file_sha256": "2013aefcd78239965286e814cf7b0500ff27c872a469bac594736e249a171b7d",
+        "launcher_log_sha256": "17d08c876f0139bfdf858ed7f032280c9fb6cd82a05dbc5db8af76ca9c1d6b51"
+      }
+    },
+    {
+      "schema": "codex3.original-event-audit.v1",
+      "id": "codex3-kpf261-real-actions-v2",
+      "owner": "codex3",
+      "class": "diagnostic",
+      "seen_at": "2026-10-30T18:43:06Z",
+      "deadline": "2026-10-30T19:13:06Z",
+      "ended": {
+        "rc": 0,
+        "at": "2026-10-30T18:42:06Z",
+        "reason": "complete"
+      },
+      "original_rule": "In original corpus order retain all native planner actions until >=50 journalled actions or corpus exhaustion; manual TERSE/WORKING-ALLOWED/UNKNOWN review follows. Classification is not inferred from action count.",
+      "native_capture": "/mnt/micron/codex3-kpf-real-actions-20261030/continuation-v2/smoke-r2/sample",
+      "original_result_path": "/mnt/micron/codex3-kpf-real-actions-20261030/continuation-v2/smoke-r2/sample/capture-complete.json",
+      "capture_complete": {
+        "synthetic": false,
+        "journal_actions": 52,
+        "count_target_met": true,
+        "corpus_exhausted": false,
+        "plans_attempted": 23,
+        "next_corpus_position": 24,
+        "journal_sha256": "6c13072ba7f08adf510299c0840cf1101db920294e2abe6fa70a7c7d4084a650",
+        "capture_complete_sha256": "1f7b0bde0a36d451ab9e705384d2e754b941bb1121495bee82f6ac480b34b60a",
+        "corpus_sha256": "acd3089c3fb559a94bcd1c18b29dadd89e23afbe16cf5c48c9edaf1bf113fbf0",
+        "protocol": {
+          "corpus_start": 1,
+          "order": "seed 261 then 262, wave/step order",
+          "stop": "after >=50 journalled parsed actions, keeping the entire last plan",
+          "source_commit": "5778d55d01eac742566cd45277d148b3a681c4bf",
+          "sampler_sha256": "2321f3f7b9bd488ad6f2bec750f9fe83cda026a0cd1a5c8274d88557a4f01db2",
+          "source_manifest_sha256": "d89ff592c2f484e659031b938d2e282fbaa88e41bda6d4d5d00aafa77a4f1ce4"
+        },
+        "launcher": {
+          "start": "2026-10-30T18:38:32Z",
+          "end": "2026-10-30T18:42:06Z",
+          "regions": "mi210_0,184-191",
+          "launcher_sha256": "96f67eb7a8e527961176f4d5e0e16982d2efc1b1df92fa7a9e502ad76f86f0e4"
+        },
+        "manual_labels": "not present in this native boundary: every plan carries classification-pending.json; no manual review result/counts are asserted",
+        "gpu_and_model_claim_limit": "The original wrapper result says sampler_rc=0 but explicitly requires manual verification of nonzero VRAM/KFD during request and says no claim until verified. This audit does not substitute separate normal-control/smoke artifacts for the original result."
+      },
+      "verdict": "The predeclared collection threshold is met: original ordered corpus yielded 52 non-synthetic journalled actions across 23 plans, stopping at corpus position 24 after completing the last plan. Manual semantic label review remains pending, so no TERSE share or downstream decision can be reported. This is a diagnostic planner-action capture only; no GPU-residency claim is established by the original wrapper result.",
+      "owner_action": "Codex3: preserve the immutable original corpus, capture-complete record, and journal; perform the separately required manual review across all 52 actions using only TERSE / WORKING-ALLOWED / UNKNOWN (ambiguity/redaction/truncation stays UNKNOWN), then report counts and the predeclared threshold outcome. Do not infer labels from the 52-action count or turn this capture into a mechanism/production claim.",
+      "proposed_handoff_checkbox": "[x] Capture at least 50 native planner actions in original corpus order (or exhaust corpus); retain full final plan and journal. [ ] Manually review every captured action as TERSE / WORKING-ALLOWED / UNKNOWN; report observed counts and apply the original threshold rule.",
+      "proposed_progress_cc": "2026-10-30: continuation-v2 original native capture met its collection target at 52 journalled actions across 23 plans (non-synthetic, corpus not exhausted; journal SHA-256 6c13072ba7f08adf510299c0840cf1101db920294e2abe6fa70a7c7d4084a650). Manual semantic review remains pending; no labels or TERSE share inferred. Original wrapper asks for manual VRAM/KFD qualification before any GPU claim. Codex3: review all 52 captured actions with the predeclared three labels and report the exact bounded threshold result. [belief: cc]",
+      "qualifying_task_text": "KPF-26.1h prospective native planner action capture: continue fixed corpus from position 2 until >=50 journalled actions or exhaustion; manual semantic review follows",
+      "evidence_hashes": {
+        "ended_file_sha256": "12dd2f21481ff848b240cc76ed28334b4b838b109147a854a09c0e5a281edb26",
+        "result_sha256": "1f7b0bde0a36d451ab9e705384d2e754b941bb1121495bee82f6ac480b34b60a",
+        "journal_sha256": "6c13072ba7f08adf510299c0840cf1101db920294e2abe6fa70a7c7d4084a650",
+        "corpus_sha256": "acd3089c3fb559a94bcd1c18b29dadd89e23afbe16cf5c48c9edaf1bf113fbf0",
+        "launcher_sha256": "96f67eb7a8e527961176f4d5e0e16982d2efc1b1df92fa7a9e502ad76f86f0e4"
+      }
+    },
+    {
+      "schema": "codex3.original-event-audit.v1",
+      "id": "codex-ni-ak29-native-token-profile-20261030",
+      "owner": "codex-ni",
+      "class": "block-correctness",
+      "seen_at": "2026-10-30T18:48:19Z",
+      "deadline": "2026-10-30T19:18:19Z",
+      "ended": {
+        "rc": 0,
+        "at": "2026-10-30T18:48:01Z",
+        "reason": "complete"
+      },
+      "original_rule": "Diagnostic native prefill and short-decode tokens, trace-clock/fiducial and per-window launches/token x ns/launch only. No keep, speed, performance or promotion verdict. Missing native count stays null.",
+      "original_event_run": "/mnt/raid0/llm/tmp/codex-ni-ak29-native-token-profile-20261030/runs/20261030T184719Z-2554542",
+      "result_path": "/mnt/raid0/llm/tmp/codex-ni-ak29-native-token-profile-20261030/DONE",
+      "result": {
+        "status": "OBSERVED",
+        "hip_proof": "proven",
+        "ranking": "observed",
+        "elapsed_seconds": 19.34,
+        "native_tokens": {
+          "prefill": 102.0,
+          "short_decode": 255.0,
+          "concurrent_decode": null,
+          "long_decode": null,
+          "prefill_at_depth": null
+        },
+        "profile_key": "1f7f83013e0c8b32755b070a7ecfd65ff8f9ab246cf9e96128d0434c8bc30da7",
+        "result_sha256": "0fc5dc1c016913bb4c2729d7773272dce9d24a9affb1bdbad3c63e2b158f317f"
+      },
+      "identity": {
+        "source_commit": "b0ba1d42783585e15b0a0464715fd1fb6a808888",
+        "build": "/mnt/raid0/llm/kernels/builds/gpu-20261004-b0ba1d427/bin/llama-server",
+        "binary_sha256": "33248d7623f4d2dff26482fddabc316d294419fd871971ea4357ba16c443d84b",
+        "model": "/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf",
+        "model_sha256": "a680f44a06920e5d689774823782006aa3acc8db95750323373b24139b67e348",
+        "draft_model": "/mnt/raid0/llm/models/Qwen3.8-27B-DFlash2-Q8_0.gguf",
+        "draft_sha256": "7f1c9a31a6ed40044c69f6508b50fd63b87abd8e1fb7fe4290303df549153751",
+        "live_linkage": "proven while native PID 2564271 (birth 150853426) alive; HIP backend mapped from same b0ba1d427 build; no foreign ggml libraries",
+        "live_linkage_sha256": "7690f00e2c96c400600d54369ad3522d3f45fedb5a9e32f5f105bc6b09dc812b",
+        "event_input_sha256": "eca745af32bd0904db85bb6cbc61923d9eb239a76604fa5637986c3d5fce46d1"
+      },
+      "trace_and_windows": {
+        "trace_clock": "clock:boot",
+        "boot_fiducial_ms": 14.98,
+        "fiducial_ok": true,
+        "profile_sha256": "53622168137671cbcd4b11e5fdae501ebf75853397d38b9231cf1e803edd095d",
+        "prefill": {
+          "native_tokens": 102.0,
+          "dispatches": 5804,
+          "window_status": "observed"
+        },
+        "short_decode": {
+          "native_tokens": 255.0,
+          "dispatches": 151639,
+          "window_status": "observed"
+        },
+        "concurrent_decode": "null: serving recipe uses np=1; no concurrent slots",
+        "long_decode": "null: no long-context surface installed",
+        "prefill_at_depth": "null: no long-context surface installed",
+        "per_window_metric_source": "/mnt/raid0/llm/tmp/codex-ni-ak29-native-token-profile-20261030/PER-WINDOW.md (launches/token \u00d7 ns/launch table; keep exact values as captured)"
+      },
+      "verdict": "Original diagnostic event completed. Native prefill=102 and short_decode=255, both windows observed, HIP linkage proven against the exact b0ba1d427 binary/DSO set while process was live, clock:boot fiducial accepted at 14.98 ms. Missing surfaces remain null. This grants only the specified diagnostic token/trace profile; no keep, speed, performance, kernel-selection, or promotion verdict.",
+      "owner_action": "Codex-ni: retain this event result, its exact profile key, source/build/model identity, live linkage receipt, trace profile, and per-window metric table with the AKX-ALL-29.2a handoff. Continue the handoff's candidate-order work using the source-defined launches-per-token \u00d7 time-at-shape rule; keep the gate unchanged and rerun the profile only when a candidate first reaches timing. Do not treat the profile as a keep/performance or promotion decision.",
+      "proposed_handoff_checkbox": "[x] Capture diagnostic native prefill and short-decode token counts plus trace-clock/fiducial and per-window launches/token \u00d7 ns/launch; preserve exact build/model identity; keep unavailable native counts null; make no keep/speed/performance/promotion verdict.",
+      "proposed_progress_cc": "2026-10-30: AK29 native profile event completed rc=0 (18:48:01Z). Native result OBSERVED: prefill 102, short_decode 255; concurrent_decode, long_decode and prefill_at_depth remain null. Exact b0ba1d427 build/model/draft hashes are recorded; live ggml-HIP linkage proven; trace clock:boot fiducial 14.98ms accepted. Per-window launches/token \u00d7 ns/launch are in retained PER-WINDOW.md. Diagnostic only: no keep, speed, performance or promotion verdict. codex-ni: apply the existing 29.2 candidate ordering rule, leave the gate unchanged, and rerun profile when a candidate first reaches timing. [no-belief: diagnostic native token profile only; no keep/performance/promotion warrant]",
+      "qualifying_task_text": "AKX-ALL-29.2a - implement the 29.2 ruling. Candidate timing order and kernel choice use launches-per-token x time-at-shape from the AKX-ALL-16 table; profile re-run when a candidate first reaches timing; keep gate unchanged.",
+      "evidence_hashes": {
+        "ended_file_sha256": "32a994e6c281c3ee4c33b933bd9507790eeb5aef9e168a4b49ea3f0d5ce4e916",
+        "done_sha256": "4d80531b2687314e9fdb213ac3958115529a81923dea3911ad4e6fd481c150ea",
+        "qualified_json_sha256": "1744ff7b2a18cf5023ef9ad8581c72a2ec149ae841028eb4308634f7dd0f0e91",
+        "view_sha256": "851f66bef3192f000dc55fa3a486af1fe1a66ea0bf54c5e3b375311aaa696395",
+        "native_sse_sha256": "8f64d320e67b1c19b30d96d7f57fd1b3466ffa814ed0807a274c75e2abc911d3",
+        "captured_child_sha256": "a7aea957da1307227ae1f2d322626be1633da1ccb8a7e690f30a796f73279089",
+        "provenance_sha256": "af6d2b80c7a5fde952e6baddfe2db13f20726f02f6dd2cc63e82845d91654240",
+        "launcher_log_sha256": "229e917ddbd298873af41d7a6c2054e5f57c1f07227e8937803535ba018d904a"
+      }
+    },
+    {
+      "schema": "codex3.original-event-audit.v1",
+      "id": "yarn-128k-mi210-r3-20261030",
+      "owner": "codex-ni",
+      "class": "decision",
+      "seen_at": "2026-10-30T18:49:23Z",
+      "deadline": "2026-10-30T19:19:23Z",
+      "ended": {
+        "rc": 1,
+        "at": "2026-10-30T18:48:44Z",
+        "reason": "job-rc-1:exited"
+      },
+      "original_rule": "Unchanged frozen full120 paired Oolong items. RIGHT iff score>=1.0. b=A0right/A1wrong,c=A0wrong/A1right; A1 fails iff one-sided exact McNemar P(X>=b|n=b+c,p=.5)<=.05. Report paired mean score A1-A0,b,c,p. Higher score is better. NOT-FAIL does not establish equivalence.",
+      "native_result": "/mnt/micron/codex-ni-yarn-128k-mi210-r3-20261030/full-runs/decision.json",
+      "native_result_status": "not produced; exact original output root has only one A0 session directory (server.argv, server.log, worker.log); no A0 item results, no A1 session, no decision.json",
+      "original_event": {
+        "launcher_start": "2026-10-30T18:48:16Z",
+        "native_A0_server_session": "/mnt/micron/codex-ni-yarn-128k-mi210-r3-20261030/full-runs/sessions/A0-20261030T184836Z-2569193",
+        "server_loaded_and_listening": true,
+        "worker_failure": "Pinned arm_runner Client.model_id() requested /v1/models and received HTTP 404. Traceback is in worker.log. The same run's normal_entry.py builds --base-url http://127.0.0.1:{port}/v1; arm_runner.py then appends /v1/models, producing /v1/v1/models. This is the concrete route mismatch causing the A0 runner rc=1.",
+        "server_command": "/mnt/raid0/llm/kernels/production/gpu/llama-server -m /mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf ... -c 262144 on port 18138",
+        "server_argv_sha256": "9c2a8293b744e509f924f6c4a36577f71b9562aefc4297c376d07c46d718c619",
+        "server_log_sha256": "cc43f7bf32e51712f897a2f0872ffbad151b24d175b8449596bfddd85b5343d0",
+        "worker_log_sha256": "5a8587f3a3a9acceebb4d9e3fc238940990ca639097ab638648d74f8714e0383",
+        "launcher_log_sha256": "34cf23806f75fe4f4ec2e3de835d88ebc40806574c6a9f998cb76b27b5a5ca12",
+        "normal_entry_sha256": "abd044ec4bbe7769ed23de2ecf6a67f024bbe79922fec1f861d931e244e03717",
+        "pinned_runner_sha256": "4a40ce947f9b7af35f530f563c6cf6d46dde1752bdb1ea34a3c4a046e8bcf0f0",
+        "cleanup_claim": "No decision/output record is available to certify normal-entry cleanup fields; the server log records shutdown, but this packet does not infer the wrapper's captured-child cleanup predicate."
+      },
+      "verdict": "FAILED-RUN before any paired cohort output. A0 runner's model-ID lookup failed with HTTP 404 from a duplicated /v1 route; no paired scores, mean difference, b, c, or p exist. The 120-pair decision remains unmeasured. No pass/fail/equivalence conclusion about A1 is supported.",
+      "owner_action": "Codex-ni: fix the base URL contract so the pinned runner's /v1/models request resolves against the actual spawned A0/A1 server (the concrete current mismatch is normal_entry.py passing a URL ending in /v1 while Client.model_id appends /v1/models). Add a same-server model-ID preflight before starting any cohort item, then resume the unchanged frozen 120-pair A0/A1 plan only after the route works. Preserve this failed event; do not redraw, use earlier A1 smoke as paired evidence, or alter the score/McNemar criterion.",
+      "proposed_handoff_checkbox": "[ ] Run unchanged frozen 120-item paired Oolong cohort on A0/A1; RIGHT iff score>=1.0; report paired mean score A1-A0,b,c,one-sided exact McNemar p; A1 fails iff p<=0.05; NOT-FAIL is not equivalence.",
+      "proposed_progress_cc": "2026-10-30: YARN MI210 R3 full event ended rc=1 before any item result. A0 server loaded/listened, but the pinned runner's GET /v1/models received 404 because normal_entry.py passed a base URL ending /v1 and arm_runner.Client appended another /v1. No decision.json, A0/A1 item scores, paired mean, b/c, or p; full120 remains unmeasured. Codex-ni: correct the base URL contract and add same-server model-ID preflight, preserve this failure, then resume the unchanged 120-pair plan. [belief: cc]",
+      "qualifying_task_text": "Run unchanged frozen full120 paired Oolong items; RIGHT iff score>=1.0; b=A0right/A1wrong,c=A0wrong/A1right; A1 fails iff one-sided exact McNemar P(X>=b|n=b+c,p=.5)<=.05. Report paired mean score A1-A0,b,c,p; higher score is better; NOT-FAIL does not establish equivalence.",
+      "evidence_hashes": {
+        "ended_file_sha256": "d30733e15c9735807f9c3ade092ee63499f1cd79252163c527426191bf01c7b1",
+        "native_output_readset_sha256": "1c6b75c925f09cab6c6b6a5100ab76c47d8a9fa64bb7ae0f868836d4ad74706c",
+        "decision_json": null
+      }
+    }
+  ],
+  "kpf_manual_classification": {
+    "journal_sha256": "6c13072ba7f08adf510299c0840cf1101db920294e2abe6fa70a7c7d4084a650",
+    "synthetic": false,
+    "n": 52,
+    "counts": {
+      "TERSE": 0,
+      "WORKING-ALLOWED": 52,
+      "UNKNOWN": 0
+    },
+    "terse_share_bounds": [
+      0.0,
+      0.0
+    ],
+    "decision": "NO_THIRD_WINDOW",
+    "reviewer": "Codex session /root/kpf_ingest_implementation",
+    "review_date": "2026-10-30"
+  },
+  "kpf_normal_residency": {
+    "during_request_residency_count": 79,
+    "hip_maps_paths": [
+      "/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libggml-base.so.0.16.0",
+      "/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libggml-cpu.so.0.16.0",
+      "/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libggml-hip.so.0.16.0",
+      "/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libggml.so.0.16.0",
+      "/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libllama-common.so.0.0.10303",
+      "/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libllama-server-impl.so",
+      "/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libllama.so.0.0.10303"
+    ],
+    "inflight_samples": [
+      {
+        "in_flight": [
+          "/mnt/micron/codex3-kpf-real-actions-20261030/continuation-v2/smoke-r2/sample/plan-002/wire-001-request.json"
+        ],
+        "utc": 1793385541.1552303,
+        "vram_bytes": 40216072192
+      },
+      {
+        "in_flight": [
+          "/mnt/micron/codex3-kpf-real-actions-20261030/continuation-v2/smoke-r2/sample/plan-002/wire-001-request.json"
+        ],
+        "utc": 1793385543.2742977,
+        "vram_bytes": 40547946496
+      },
+      {
+        "in_flight": [
+          "/mnt/micron/codex3-kpf-real-actions-20261030/continuation-v2/smoke-r2/sample/plan-002/wire-001-request.json"
+        ],
+        "utc": 1793385545.3972714,
+        "vram_bytes": 40547946496
+      },
+      {
+        "in_flight": [
+          "/mnt/micron/codex3-kpf-real-actions-20261030/continuation-v2/smoke-r2/sample/plan-002/wire-001-request.json"
+        ],
+        "utc": 1793385547.5276406,
+        "vram_bytes": 40547946496
+      },
+      {
+        "in_flight": [
+          "/mnt/micron/codex3-kpf-real-actions-20261030/continuation-v2/smoke-r2/sample/plan-003/wire-000-request.json"
+        ],
+        "utc": 1793385549.6826825,
+        "vram_bytes": 40547946496
+      },
+      {
+        "in_flight": [
+          "/mnt/micron/codex3-kpf-real-actions-20261030/continuation-v2/smoke-r2/sample/plan-003/wire-000-request.json"
+        ],
+        "utc": 1793385551.8204288,
+        "vram_bytes": 40547946496
+      },
+      {
+        "in_flight": [
+          "/mnt/micron/codex3-kpf-real-actions-20261030/continuation-v2/smoke-r2/sample/plan-003/wire-000-request.json"
+        ],
+        "utc": 1793385553.9680316,
+        "vram_bytes": 40547946496
+      },
+      {
+        "in_flight": [
+          "/mnt/micron/codex3-kpf-real-actions-20261030/continuation-v2/smoke-r2/sample/plan-004/wire-000-request.json"
+        ],
+        "utc": 1793385556.112773,
+        "vram_bytes": 40547946496
+      },
+      {
+        "in_flight": [
+          "/mnt/micron/codex3-kpf-real-actions-20261030/continuation-v2/smoke-r2/sample/plan-004/wire-000-request.json"
+        ],
+        "utc": 1793385559.2037957,
+        "vram_bytes": 40547946496
+      },
+      {
+        "in_flight": [
+          "/mnt/micron/codex3-kpf-real-actions-20261030/continuation-v2/smoke-r2/sample/plan-004/wire-000-request.json"
+        ],
+        "utc": 1793385561.3375688,
+        "vram_bytes": 40547946496
+      },
+      {
+        "in_flight": [
+          "/mnt/micron/codex3-kpf-real-actions-20261030/continuation-v2/smoke-r2/sample/plan-005/wire-000-request.json"
+        ],
+        "utc": 1793385563.544308,
+        "vram_bytes": 40547946496
+      },
+      {
+        "in_flight": [
+          "/mnt/micron/codex3-kpf-real-actions-20261030/continuation-v2/smoke-r2/sample/plan-005/wire-000-request.json"
+        ],
+        "utc": 1793385565.6730187,
+        "vram_bytes": 40547946496
+      },
+      {
+        "in_flight": [
+          "/mnt/micron/codex3-kpf-real-actions-20261030/continuation-v2/smoke-r2/sample/plan-005/wire-000-request.json"
+        ],
+        "utc": 1793385567.8031647,
+        "vram_bytes": 40547946496
+      },
+      {
+        "in_flight": [
+          "/mnt/micron/codex3-kpf-real-actions-20261030/continuation-v2/smoke-r2/sample/plan-005/wire-000-request.json"
+        ],
+        "utc": 1793385569.9186387,
+        "vram_bytes": 40547946496
+      },
+      {
+        "in_flight": [
+          "/mnt/micron/codex3-kpf-real-actions-20261030/continuation-v2/smoke-r2/sample/plan-005/wire-000-request.json"
+        ],
+        "utc": 1793385572.052599,
+        "vram_bytes": 40547946496
+      },
+      {
+        "in_flight": [
+          "/mnt/micron/codex3-kpf-real-actions-20261030/continuation-v2/smoke-r2/sample/plan-006/wire-000-request.json"
+        ],
+        "utc": 1793385575.2123883,
+        "vram_bytes": 40547946496
+      },
+      {
+        "in_flight": [
+          "/mnt/micron/codex3-kpf-real-actions-20261030/continuation-v2/smoke-r2/sample/plan-006/wire-000-request.json"
+        ],
+        "utc": 1793385577.3479145,
+        "vram_bytes": 40547946496
+      },
+      {
+        "in_flight": [
+          "/mnt/micron/codex3-kpf-real-actions-20261030/continuation-v2/smoke-r2/sample/plan-007/wire-000-request.json"
+        ],
+        "utc": 1793385579.4750748,
+        "vram_bytes": 40547946496
+      },
+      {
+        "in_flight": [
+          "/mnt/micron/codex3-kpf-real-actions-20261030/continuation-v2/smoke-r2/sample/plan-007/wire-000-request.json"
+        ],
+        "utc": 1793385581.609239,
+        "vram_bytes": 40547946496
+      },
+      {
+        "in_flight": [
+          "/mnt/micron/codex3-kpf-real-actions-20261030/continuation-v2/smoke-r2/sample/plan-007/wire-000-request.json"
+        ],
+        "utc": 1793385583.7427433,
+        "vram_bytes": 40547946496
+      },
+      {
+        "in_flight": [
+          "/mnt/micron/codex3-kpf-real-actions-20261030/continuation-v2/smoke-r2/sample/plan-008/wire-000-request.json"
+        ],
+        "utc": 1793385587.9892325,
+        "vram_bytes": 40547946496
+      },
+      {
+        "in_flight": [
+          "/mnt/micron/codex3-kpf-real-actions-20261030/continuation-v2/smoke-r2/sample/plan-008/wire-000-request.json"
+        ],
+        "utc": 1793385590.107856,
+        "vram_bytes": 40547946496
+      },
+      {
+        "in_flight": [
+          "/mnt/micron/codex3-kpf-real-actions-20261030/continuation-v2/smoke-r2/sample/plan-009/wire-000-request.json"
+        ],
+        "utc": 1793385593.2657359,
+        "vram_bytes": 40547946496
+      },
+      {
+        "in_flight": [
+          "/mnt/micron/codex3-kpf-real-actions-20261030/continuation-v2/smoke-r2/sample/plan-009/wire-000-request.json"
+        ],
+        "utc": 1793385595.3966436,
+        "vram_bytes": 40547946496
+      },
+      {
+        "in_flight": [
+          "/mnt/micron/codex3-kpf-real-actions-20261030/continuation-v2/smoke-r2/sample/plan-009/wire-000-request.json"
+        ],
+        "utc": 1793385597.5248418,
+        "vram_bytes": 40547946496
+      },
+      {
+        "in_flight": [
+          "/mnt/micron/codex3-kpf-real-actions-20261030/continuation-v2/smoke-r2/sample/plan-009/wire-000-request.json"
+        ],
+        "utc": 1793385599.642601,
+        "vram_bytes": 40547946496
+      },
+      {
+        "in_flight": [
+          "/mnt/micron/codex3-kpf-real-actions-20261030/continuation-v2/smoke-r2/sample/plan-010/wire-000-request.json"
+        ],
+        "utc": 1793385601.7735686,
+        "vram_bytes": 40547946496
+      },
+      {
+        "in_flight": [
+          "/mnt/micron/codex3-kpf-real-actions-20261030/continuation-v2/smoke-r2/sample/plan-010/wire-000-request.json"
+        ],
+        "utc": 1793385603.8992589,
+        "vram_bytes": 40547946496
+      },
+      {
+        "in_flight": [
+          "/mnt/micron/codex3-kpf-real-actions-20261030/continuation-v2/smoke-r2/sample/plan-011/wire-001-request.json"
+        ],
+        "utc": 1793385606.0353758,
+        "vram_bytes": 40547946496
+      },
+      {
+        "in_flight": [
+          "/mnt/micron/codex3-kpf-real-actions-20261030/continuation-v2/smoke-r2/sample/plan-011/wire-001-request.json"
+        ],
+        "utc": 1793385608.1579347,
+        "vram_bytes": 40547946496
+      },
+      {
+        "in_flight": [
+          "/mnt/micron/codex3-kpf-real-actions-20261030/continuation-v2/smoke-r2/sample/plan-011/wire-001-request.json"
+        ],
+        "utc": 1793385611.238775,
+        "vram_bytes": 40547946496
+      },
+      {
+        "in_flight": [
+          "/mnt/micron/codex3-kpf-real-actions-20261030/continuation-v2/smoke-r2/sample/plan-011/wire-001-request.json"
+        ],
+        "utc": 1793385613.359808,
+        "vram_bytes": 40547946496
+      },
+      {
+        "in_flight": [
+          "/mnt/micron/codex3-kpf-real-actions-20261030/continuation-v2/smoke-r2/sample/plan-011/wire-001-request.json"
+        ],
+        "utc": 1793385615.4805224,
+        "vram_bytes": 40547946496
+      },
+      {
+        "in_flight": [
+          "/mnt/micron/codex3-kpf-real-actions-20261030/continuation-v2/smoke-r2/sample/plan-012/wire-000-request.json"
+        ],
+        "utc": 1793385617.6154485,
+        "vram_bytes": 40547946496
+      },
+      {
+        "in_flight": [
+          "/mnt/micron/codex3-kpf-real-actions-20261030/continuation-v2/smoke-r2/sample/plan-012/wire-000-request.json"
+        ],
+        "utc": 1793385619.732912,
+        "vram_bytes": 40547946496
+      },
+      {
+        "in_flight": [
+          "/mnt/micron/codex3-kpf-real-actions-20261030/continuation-v2/smoke-r2/sample/plan-012/wire-000-request.json"
+        ],
+        "utc": 1793385621.870855,
+        "vram_bytes": 40547946496
+      },
+      {
+        "in_flight": [
+          "/mnt/micron/codex3-kpf-real-actions-20261030/continuation-v2/smoke-r2/sample/plan-012/wire-000-request.json"
+        ],
+        "utc": 1793385624.0072181,
+        "vram_bytes": 40547946496
+      },
+      {
+        "in_flight": [
+          "/mnt/micron/codex3-kpf-real-actions-20261030/continuation-v2/smoke-r2/sample/plan-013/wire-000-request.json"
+        ],
+        "utc": 1793385626.138836,
+        "vram_bytes": 40547946496
+      },
+      {
+        "in_flight": [
+          "/mnt/micron/codex3-kpf-real-actions-20261030/continuation-v2/smoke-r2/sample/plan-013/wire-000-request.json"
+        ],
+        "utc": 1793385629.2870758,
+        "vram_bytes": 40547946496
+      },
+      {
+        "in_flight": [
+          "/mnt/micron/codex3-kpf-real-actions-20261030/continuation-v2/smoke-r2/sample/plan-013/wire-000-request.json"
+        ],
+        "utc": 1793385631.4293005,
+        "vram_bytes": 40547946496
+      },
+      {
+        "in_flight": [
+          "/mnt/micron/codex3-kpf-real-actions-20261030/continuation-v2/smoke-r2/sample/plan-014/wire-000-request.json"
+        ],
+        "utc": 1793385633.577616,
+        "vram_bytes": 40547946496
+      },
+      {
+        "in_flight": [
+          "/mnt/micron/codex3-kpf-real-actions-20261030/continuation-v2/smoke-r2/sample/plan-014/wire-000-request.json"
+        ],
+        "utc": 1793385635.717343,
+        "vram_bytes": 40547946496
+      },
+      {
+        "in_flight": [
+          "/mnt/micron/codex3-kpf-real-actions-20261030/continuation-v2/smoke-r2/sample/plan-014/wire-000-request.json"
+        ],
+        "utc": 1793385637.8496985,
+        "vram_bytes": 40547946496
+      },
+      {
+        "in_flight": [
+          "/mnt/micron/codex3-kpf-real-actions-20261030/continuation-v2/smoke-r2/sample/plan-014/wire-000-request.json"
+        ],
+        "utc": 1793385639.9728239,
+        "vram_bytes": 40547946496
+      },
+      {
+        "in_flight": [
+          "/mnt/micron/codex3-kpf-real-actions-20261030/continuation-v2/smoke-r2/sample/plan-015/wire-000-request.json"
+        ],
+        "utc": 1793385642.1054528,
+        "vram_bytes": 40547946496
+      },
+      {
+        "in_flight": [
+          "/mnt/micron/codex3-kpf-real-actions-20261030/continuation-v2/smoke-r2/sample/plan-015/wire-000-request.json"
+        ],
+        "utc": 1793385644.2446752,
+        "vram_bytes": 40547946496
+      },
+      {
+        "in_flight": [
+          "/mnt/micron/codex3-kpf-real-actions-20261030/continuation-v2/smoke-r2/sample/plan-015/wire-000-request.json"
+        ],
+        "utc": 1793385647.2758353,
+        "vram_bytes": 40547946496
+      },
+      {
+        "in_flight": [
+          "/mnt/micron/codex3-kpf-real-actions-20261030/continuation-v2/smoke-r2/sample/plan-016/wire-000-request.json"
+        ],
+        "utc": 1793385649.4144166,
+        "vram_bytes": 40547946496
+      },
+      {
+        "in_flight": [
+          "/mnt/micron/codex3-kpf-real-actions-20261030/continuation-v2/smoke-r2/sample/plan-016/wire-000-request.json"
+        ],
+        "utc": 1793385651.5470989,
+        "vram_bytes": 40547946496
+      },
+      {
+        "in_flight": [
+          "/mnt/micron/codex3-kpf-real-actions-20261030/continuation-v2/smoke-r2/sample/plan-016/wire-000-request.json"
+        ],
+        "utc": 1793385653.6716352,
+        "vram_bytes": 40547946496
+      },
+      {
+        "in_flight": [
+          "/mnt/micron/codex3-kpf-real-actions-20261030/continuation-v2/smoke-r2/sample/plan-016/wire-000-request.json"
+        ],
+        "utc": 1793385655.7991328,
+        "vram_bytes": 40547946496
+      },
+      {
+        "in_flight": [
+          "/mnt/micron/codex3-kpf-real-actions-20261030/continuation-v2/smoke-r2/sample/plan-016/wire-000-request.json"
+        ],
+        "utc": 1793385657.928943,
+        "vram_bytes": 40547946496
+      },
+      {
+        "in_flight": [
+          "/mnt/micron/codex3-kpf-real-actions-20261030/continuation-v2/smoke-r2/sample/plan-017/wire-000-request.json"
+        ],
+        "utc": 1793385660.0622375,
+        "vram_bytes": 40547946496
+      },
+      {
+        "in_flight": [
+          "/mnt/micron/codex3-kpf-real-actions-20261030/continuation-v2/smoke-r2/sample/plan-017/wire-000-request.json"
+        ],
+        "utc": 1793385662.2017007,
+        "vram_bytes": 40547946496
+      },
+      {
+        "in_flight": [
+          "/mnt/micron/codex3-kpf-real-actions-20261030/continuation-v2/smoke-r2/sample/plan-017/wire-000-request.json"
+        ],
+        "utc": 1793385665.3937178,
+        "vram_bytes": 40547946496
+      },
+      {
+        "in_flight": [
+          "/mnt/micron/codex3-kpf-real-actions-20261030/continuation-v2/smoke-r2/sample/plan-017/wire-000-request.json"
+        ],
+        "utc": 1793385667.5199168,
+        "vram_bytes": 40547946496
+      },
+      {
+        "in_flight": [
+          "/mnt/micron/codex3-kpf-real-actions-20261030/continuation-v2/smoke-r2/sample/plan-017/wire-000-request.json"
+        ],
+        "utc": 1793385669.6479573,
+        "vram_bytes": 40547946496
+      },
+      {
+        "in_flight": [
+          "/mnt/micron/codex3-kpf-real-actions-20261030/continuation-v2/smoke-r2/sample/plan-018/wire-001-request.json"
+        ],
+        "utc": 1793385671.7686713,
+        "vram_bytes": 40547946496
+      },
+      {
+        "in_flight": [
+          "/mnt/micron/codex3-kpf-real-actions-20261030/continuation-v2/smoke-r2/sample/plan-018/wire-001-request.json"
+        ],
+        "utc": 1793385673.8929088,
+        "vram_bytes": 40547946496
+      },
+      {
+        "in_flight": [
+          "/mnt/micron/codex3-kpf-real-actions-20261030/continuation-v2/smoke-r2/sample/plan-018/wire-001-request.json"
+        ],
+        "utc": 1793385676.0170095,
+        "vram_bytes": 40547946496
+      },
+      {
+        "in_flight": [
+          "/mnt/micron/codex3-kpf-real-actions-20261030/continuation-v2/smoke-r2/sample/plan-019/wire-000-request.json"
+        ],
+        "utc": 1793385678.159456,
+        "vram_bytes": 40547946496
+      },
+      {
+        "in_flight": [
+          "/mnt/micron/codex3-kpf-real-actions-20261030/continuation-v2/smoke-r2/sample/plan-019/wire-000-request.json"
+        ],
+        "utc": 1793385681.3290465,
+        "vram_bytes": 40547946496
+      },
+      {
+        "in_flight": [
+          "/mnt/micron/codex3-kpf-real-actions-20261030/continuation-v2/smoke-r2/sample/plan-019/wire-000-request.json"
+        ],
+        "utc": 1793385683.4791017,
+        "vram_bytes": 40547946496
+      },
+      {
+        "in_flight": [
+          "/mnt/micron/codex3-kpf-real-actions-20261030/continuation-v2/smoke-r2/sample/plan-019/wire-000-request.json"
+        ],
+        "utc": 1793385685.6060436,
+        "vram_bytes": 40547946496
+      },
+      {
+        "in_flight": [
+          "/mnt/micron/codex3-kpf-real-actions-20261030/continuation-v2/smoke-r2/sample/plan-019/wire-000-request.json"
+        ],
+        "utc": 1793385687.7436383,
+        "vram_bytes": 40547946496
+      },
+      {
+        "in_flight": [
+          "/mnt/micron/codex3-kpf-real-actions-20261030/continuation-v2/smoke-r2/sample/plan-020/wire-000-request.json"
+        ],
+        "utc": 1793385689.8743494,
+        "vram_bytes": 40547946496
+      },
+      {
+        "in_flight": [
+          "/mnt/micron/codex3-kpf-real-actions-20261030/continuation-v2/smoke-r2/sample/plan-020/wire-000-request.json"
+        ],
+        "utc": 1793385692.006179,
+        "vram_bytes": 40547946496
+      },
+      {
+        "in_flight": [
+          "/mnt/micron/codex3-kpf-real-actions-20261030/continuation-v2/smoke-r2/sample/plan-020/wire-000-request.json"
+        ],
+        "utc": 1793385694.1490488,
+        "vram_bytes": 40547946496
+      },
+      {
+        "in_flight": [
+          "/mnt/micron/codex3-kpf-real-actions-20261030/continuation-v2/smoke-r2/sample/plan-021/wire-000-request.json"
+        ],
+        "utc": 1793385696.2636921,
+        "vram_bytes": 40547946496
+      },
+      {
+        "in_flight": [
+          "/mnt/micron/codex3-kpf-real-actions-20261030/continuation-v2/smoke-r2/sample/plan-021/wire-000-request.json"
+        ],
+        "utc": 1793385699.3650794,
+        "vram_bytes": 40547946496
+      },
+      {
+        "in_flight": [
+          "/mnt/micron/codex3-kpf-real-actions-20261030/continuation-v2/smoke-r2/sample/plan-021/wire-000-request.json"
+        ],
+        "utc": 1793385701.5005841,
+        "vram_bytes": 40547946496
+      },
+      {
+        "in_flight": [
+          "/mnt/micron/codex3-kpf-real-actions-20261030/continuation-v2/smoke-r2/sample/plan-021/wire-000-request.json"
+        ],
+        "utc": 1793385703.629081,
+        "vram_bytes": 40547946496
+      },
+      {
+        "in_flight": [
+          "/mnt/micron/codex3-kpf-real-actions-20261030/continuation-v2/smoke-r2/sample/plan-022/wire-000-request.json"
+        ],
+        "utc": 1793385705.7742627,
+        "vram_bytes": 40547946496
+      },
+      {
+        "in_flight": [
+          "/mnt/micron/codex3-kpf-real-actions-20261030/continuation-v2/smoke-r2/sample/plan-022/wire-000-request.json"
+        ],
+        "utc": 1793385707.9042194,
+        "vram_bytes": 40547946496
+      },
+      {
+        "in_flight": [
+          "/mnt/micron/codex3-kpf-real-actions-20261030/continuation-v2/smoke-r2/sample/plan-022/wire-000-request.json"
+        ],
+        "utc": 1793385710.2364974,
+        "vram_bytes": 40547946496
+      },
+      {
+        "in_flight": [
+          "/mnt/micron/codex3-kpf-real-actions-20261030/continuation-v2/smoke-r2/sample/plan-023/wire-000-request.json"
+        ],
+        "utc": 1793385713.3942342,
+        "vram_bytes": 40547946496
+      },
+      {
+        "in_flight": [
+          "/mnt/micron/codex3-kpf-real-actions-20261030/continuation-v2/smoke-r2/sample/plan-023/wire-000-request.json"
+        ],
+        "utc": 1793385715.5250342,
+        "vram_bytes": 40547946496
+      },
+      {
+        "in_flight": [
+          "/mnt/micron/codex3-kpf-real-actions-20261030/continuation-v2/smoke-r2/sample/plan-023/wire-000-request.json"
+        ],
+        "utc": 1793385717.6501873,
+        "vram_bytes": 40547946496
+      },
+      {
+        "in_flight": [
+          "/mnt/micron/codex3-kpf-real-actions-20261030/continuation-v2/smoke-r2/sample/plan-023/wire-000-request.json"
+        ],
+        "utc": 1793385719.8103073,
+        "vram_bytes": 40547946496
+      }
+    ],
+    "maps_path": "/mnt/micron/codex3-kpf-real-actions-20261030/continuation-v2/normal-control-1793389080/runtime-maps.json",
+    "maps_sha256": "4dd91f38cd37960e409986715692a90fb59786ecc774a7811653cbc3e612968c",
+    "normal_result_sha256": "62a39fb23347a707a1a2b155423afeb9e0993f3d9eb792fdf7fa5fc869d03cb2",
+    "observations_path": "/mnt/micron/codex3-kpf-real-actions-20261030/continuation-v2/normal-control-1793389080/gpu-observations.jsonl",
+    "observations_sha256": "ddd77466bdb273952eca846b82c0c850dfd6b423112633d9bde9a6f232ed48c9",
+    "process_dead": true,
+    "schema": "kpf261.normal-residency-proof.v1",
+    "server_pid": 2432006,
+    "total_samples": 82
+  }
+}

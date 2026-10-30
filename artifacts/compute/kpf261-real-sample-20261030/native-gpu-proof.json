@@ -1,0 +1,576 @@
+{
+  "during_request_residency_count": 79,
+  "hip_maps_paths": [
+    "/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libggml-base.so.0.16.0",
+    "/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libggml-cpu.so.0.16.0",
+    "/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libggml-hip.so.0.16.0",
+    "/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libggml.so.0.16.0",
+    "/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libllama-common.so.0.0.10303",
+    "/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libllama-server-impl.so",
+    "/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libllama.so.0.0.10303"
+  ],
+  "inflight_samples": [
+    {
+      "in_flight": [
+        "/mnt/micron/codex3-kpf-real-actions-20261030/continuation-v2/smoke-r2/sample/plan-002/wire-001-request.json"
+      ],
+      "utc": 1793385541.1552303,
+      "vram_bytes": 40216072192
+    },
+    {
+      "in_flight": [
+        "/mnt/micron/codex3-kpf-real-actions-20261030/continuation-v2/smoke-r2/sample/plan-002/wire-001-request.json"
+      ],
+      "utc": 1793385543.2742977,
+      "vram_bytes": 40547946496
+    },
+    {
+      "in_flight": [
+        "/mnt/micron/codex3-kpf-real-actions-20261030/continuation-v2/smoke-r2/sample/plan-002/wire-001-request.json"
+      ],
+      "utc": 1793385545.3972714,
+      "vram_bytes": 40547946496
+    },
+    {
+      "in_flight": [
+        "/mnt/micron/codex3-kpf-real-actions-20261030/continuation-v2/smoke-r2/sample/plan-002/wire-001-request.json"
+      ],
+      "utc": 1793385547.5276406,
+      "vram_bytes": 40547946496
+    },
+    {
+      "in_flight": [
+        "/mnt/micron/codex3-kpf-real-actions-20261030/continuation-v2/smoke-r2/sample/plan-003/wire-000-request.json"
+      ],
+      "utc": 1793385549.6826825,
+      "vram_bytes": 40547946496
+    },
+    {
+      "in_flight": [
+        "/mnt/micron/codex3-kpf-real-actions-20261030/continuation-v2/smoke-r2/sample/plan-003/wire-000-request.json"
+      ],
+      "utc": 1793385551.8204288,
+      "vram_bytes": 40547946496
+    },
+    {
+      "in_flight": [
+        "/mnt/micron/codex3-kpf-real-actions-20261030/continuation-v2/smoke-r2/sample/plan-003/wire-000-request.json"
+      ],
+      "utc": 1793385553.9680316,
+      "vram_bytes": 40547946496
+    },
+    {
+      "in_flight": [
+        "/mnt/micron/codex3-kpf-real-actions-20261030/continuation-v2/smoke-r2/sample/plan-004/wire-000-request.json"
+      ],
+      "utc": 1793385556.112773,
+      "vram_bytes": 40547946496
+    },
+    {
+      "in_flight": [
+        "/mnt/micron/codex3-kpf-real-actions-20261030/continuation-v2/smoke-r2/sample/plan-004/wire-000-request.json"
+      ],
+      "utc": 1793385559.2037957,
+      "vram_bytes": 40547946496
+    },
+    {
+      "in_flight": [
+        "/mnt/micron/codex3-kpf-real-actions-20261030/continuation-v2/smoke-r2/sample/plan-004/wire-000-request.json"
+      ],
+      "utc": 1793385561.3375688,
+      "vram_bytes": 40547946496
+    },
+    {
+      "in_flight": [
+        "/mnt/micron/codex3-kpf-real-actions-20261030/continuation-v2/smoke-r2/sample/plan-005/wire-000-request.json"
+      ],
+      "utc": 1793385563.544308,
+      "vram_bytes": 40547946496
+    },
+    {
+      "in_flight": [
+        "/mnt/micron/codex3-kpf-real-actions-20261030/continuation-v2/smoke-r2/sample/plan-005/wire-000-request.json"
+      ],
+      "utc": 1793385565.6730187,
+      "vram_bytes": 40547946496
+    },
+    {
+      "in_flight": [
+        "/mnt/micron/codex3-kpf-real-actions-20261030/continuation-v2/smoke-r2/sample/plan-005/wire-000-request.json"
+      ],
+      "utc": 1793385567.8031647,
+      "vram_bytes": 40547946496
+    },
+    {
+      "in_flight": [
+        "/mnt/micron/codex3-kpf-real-actions-20261030/continuation-v2/smoke-r2/sample/plan-005/wire-000-request.json"
+      ],
+      "utc": 1793385569.9186387,
+      "vram_bytes": 40547946496
+    },
+    {
+      "in_flight": [
+        "/mnt/micron/codex3-kpf-real-actions-20261030/continuation-v2/smoke-r2/sample/plan-005/wire-000-request.json"
+      ],
+      "utc": 1793385572.052599,
+      "vram_bytes": 40547946496
+    },
+    {
+      "in_flight": [
+        "/mnt/micron/codex3-kpf-real-actions-20261030/continuation-v2/smoke-r2/sample/plan-006/wire-000-request.json"
+      ],
+      "utc": 1793385575.2123883,
+      "vram_bytes": 40547946496
+    },
+    {
+      "in_flight": [
+        "/mnt/micron/codex3-kpf-real-actions-20261030/continuation-v2/smoke-r2/sample/plan-006/wire-000-request.json"
+      ],
+      "utc": 1793385577.3479145,
+      "vram_bytes": 40547946496
+    },
+    {
+      "in_flight": [
+        "/mnt/micron/codex3-kpf-real-actions-20261030/continuation-v2/smoke-r2/sample/plan-007/wire-000-request.json"
+      ],
+      "utc": 1793385579.4750748,
+      "vram_bytes": 40547946496
+    },
+    {
+      "in_flight": [
+        "/mnt/micron/codex3-kpf-real-actions-20261030/continuation-v2/smoke-r2/sample/plan-007/wire-000-request.json"
+      ],
+      "utc": 1793385581.609239,
+      "vram_bytes": 40547946496
+    },
+    {
+      "in_flight": [
+        "/mnt/micron/codex3-kpf-real-actions-20261030/continuation-v2/smoke-r2/sample/plan-007/wire-000-request.json"
+      ],
+      "utc": 1793385583.7427433,
+      "vram_bytes": 40547946496
+    },
+    {
+      "in_flight": [
+        "/mnt/micron/codex3-kpf-real-actions-20261030/continuation-v2/smoke-r2/sample/plan-008/wire-000-request.json"
+      ],
+      "utc": 1793385587.9892325,
+      "vram_bytes": 40547946496
+    },
+    {
+      "in_flight": [
+        "/mnt/micron/codex3-kpf-real-actions-20261030/continuation-v2/smoke-r2/sample/plan-008/wire-000-request.json"
+      ],
+      "utc": 1793385590.107856,
+      "vram_bytes": 40547946496
+    },
+    {
+      "in_flight": [
+        "/mnt/micron/codex3-kpf-real-actions-20261030/continuation-v2/smoke-r2/sample/plan-009/wire-000-request.json"
+      ],
+      "utc": 1793385593.2657359,
+      "vram_bytes": 40547946496
+    },
+    {
+      "in_flight": [
+        "/mnt/micron/codex3-kpf-real-actions-20261030/continuation-v2/smoke-r2/sample/plan-009/wire-000-request.json"
+      ],
+      "utc": 1793385595.3966436,
+      "vram_bytes": 40547946496
+    },
+    {
+      "in_flight": [
+        "/mnt/micron/codex3-kpf-real-actions-20261030/continuation-v2/smoke-r2/sample/plan-009/wire-000-request.json"
+      ],
+      "utc": 1793385597.5248418,
+      "vram_bytes": 40547946496
+    },
+    {
+      "in_flight": [
+        "/mnt/micron/codex3-kpf-real-actions-20261030/continuation-v2/smoke-r2/sample/plan-009/wire-000-request.json"
+      ],
+      "utc": 1793385599.642601,
+      "vram_bytes": 40547946496
+    },
+    {
+      "in_flight": [
+        "/mnt/micron/codex3-kpf-real-actions-20261030/continuation-v2/smoke-r2/sample/plan-010/wire-000-request.json"
+      ],
+      "utc": 1793385601.7735686,
+      "vram_bytes": 40547946496
+    },
+    {
+      "in_flight": [
+        "/mnt/micron/codex3-kpf-real-actions-20261030/continuation-v2/smoke-r2/sample/plan-010/wire-000-request.json"
+      ],
+      "utc": 1793385603.8992589,
+      "vram_bytes": 40547946496
+    },
+    {
+      "in_flight": [
+        "/mnt/micron/codex3-kpf-real-actions-20261030/continuation-v2/smoke-r2/sample/plan-011/wire-001-request.json"
+      ],
+      "utc": 1793385606.0353758,
+      "vram_bytes": 40547946496
+    },
+    {
+      "in_flight": [
+        "/mnt/micron/codex3-kpf-real-actions-20261030/continuation-v2/smoke-r2/sample/plan-011/wire-001-request.json"
+      ],
+      "utc": 1793385608.1579347,
+      "vram_bytes": 40547946496
+    },
+    {
+      "in_flight": [
+        "/mnt/micron/codex3-kpf-real-actions-20261030/continuation-v2/smoke-r2/sample/plan-011/wire-001-request.json"
+      ],
+      "utc": 1793385611.238775,
+      "vram_bytes": 40547946496
+    },
+    {
+      "in_flight": [
+        "/mnt/micron/codex3-kpf-real-actions-20261030/continuation-v2/smoke-r2/sample/plan-011/wire-001-request.json"
+      ],
+      "utc": 1793385613.359808,
+      "vram_bytes": 40547946496
+    },
+    {
+      "in_flight": [
+        "/mnt/micron/codex3-kpf-real-actions-20261030/continuation-v2/smoke-r2/sample/plan-011/wire-001-request.json"
+      ],
+      "utc": 1793385615.4805224,
+      "vram_bytes": 40547946496
+    },
+    {
+      "in_flight": [
+        "/mnt/micron/codex3-kpf-real-actions-20261030/continuation-v2/smoke-r2/sample/plan-012/wire-000-request.json"
+      ],
+      "utc": 1793385617.6154485,
+      "vram_bytes": 40547946496
+    },
+    {
+      "in_flight": [
+        "/mnt/micron/codex3-kpf-real-actions-20261030/continuation-v2/smoke-r2/sample/plan-012/wire-000-request.json"
+      ],
+      "utc": 1793385619.732912,
+      "vram_bytes": 40547946496
+    },
+    {
+      "in_flight": [
+        "/mnt/micron/codex3-kpf-real-actions-20261030/continuation-v2/smoke-r2/sample/plan-012/wire-000-request.json"
+      ],
+      "utc": 1793385621.870855,
+      "vram_bytes": 40547946496
+    },
+    {
+      "in_flight": [
+        "/mnt/micron/codex3-kpf-real-actions-20261030/continuation-v2/smoke-r2/sample/plan-012/wire-000-request.json"
+      ],
+      "utc": 1793385624.0072181,
+      "vram_bytes": 40547946496
+    },
+    {
+      "in_flight": [
+        "/mnt/micron/codex3-kpf-real-actions-20261030/continuation-v2/smoke-r2/sample/plan-013/wire-000-request.json"
+      ],
+      "utc": 1793385626.138836,
+      "vram_bytes": 40547946496
+    },
+    {
+      "in_flight": [
+        "/mnt/micron/codex3-kpf-real-actions-20261030/continuation-v2/smoke-r2/sample/plan-013/wire-000-request.json"
+      ],
+      "utc": 1793385629.2870758,
+      "vram_bytes": 40547946496
+    },
+    {
+      "in_flight": [
+        "/mnt/micron/codex3-kpf-real-actions-20261030/continuation-v2/smoke-r2/sample/plan-013/wire-000-request.json"
+      ],
+      "utc": 1793385631.4293005,
+      "vram_bytes": 40547946496
+    },
+    {
+      "in_flight": [
+        "/mnt/micron/codex3-kpf-real-actions-20261030/continuation-v2/smoke-r2/sample/plan-014/wire-000-request.json"
+      ],
+      "utc": 1793385633.577616,
+      "vram_bytes": 40547946496
+    },
+    {
+      "in_flight": [
+        "/mnt/micron/codex3-kpf-real-actions-20261030/continuation-v2/smoke-r2/sample/plan-014/wire-000-request.json"
+      ],
+      "utc": 1793385635.717343,
+      "vram_bytes": 40547946496
+    },
+    {
+      "in_flight": [
+        "/mnt/micron/codex3-kpf-real-actions-20261030/continuation-v2/smoke-r2/sample/plan-014/wire-000-request.json"
+      ],
+      "utc": 1793385637.8496985,
+      "vram_bytes": 40547946496
+    },
+    {
+      "in_flight": [
+        "/mnt/micron/codex3-kpf-real-actions-20261030/continuation-v2/smoke-r2/sample/plan-014/wire-000-request.json"
+      ],
+      "utc": 1793385639.9728239,
+      "vram_bytes": 40547946496
+    },
+    {
+      "in_flight": [
+        "/mnt/micron/codex3-kpf-real-actions-20261030/continuation-v2/smoke-r2/sample/plan-015/wire-000-request.json"
+      ],
+      "utc": 1793385642.1054528,
+      "vram_bytes": 40547946496
+    },
+    {
+      "in_flight": [
+        "/mnt/micron/codex3-kpf-real-actions-20261030/continuation-v2/smoke-r2/sample/plan-015/wire-000-request.json"
+      ],
+      "utc": 1793385644.2446752,
+      "vram_bytes": 40547946496
+    },
+    {
+      "in_flight": [
+        "/mnt/micron/codex3-kpf-real-actions-20261030/continuation-v2/smoke-r2/sample/plan-015/wire-000-request.json"
+      ],
+      "utc": 1793385647.2758353,
+      "vram_bytes": 40547946496
+    },
+    {
+      "in_flight": [
+        "/mnt/micron/codex3-kpf-real-actions-20261030/continuation-v2/smoke-r2/sample/plan-016/wire-000-request.json"
+      ],
+      "utc": 1793385649.4144166,
+      "vram_bytes": 40547946496
+    },
+    {
+      "in_flight": [
+        "/mnt/micron/codex3-kpf-real-actions-20261030/continuation-v2/smoke-r2/sample/plan-016/wire-000-request.json"
+      ],
+      "utc": 1793385651.5470989,
+      "vram_bytes": 40547946496
+    },
+    {
+      "in_flight": [
+        "/mnt/micron/codex3-kpf-real-actions-20261030/continuation-v2/smoke-r2/sample/plan-016/wire-000-request.json"
+      ],
+      "utc": 1793385653.6716352,
+      "vram_bytes": 40547946496
+    },
+    {
+      "in_flight": [
+        "/mnt/micron/codex3-kpf-real-actions-20261030/continuation-v2/smoke-r2/sample/plan-016/wire-000-request.json"
+      ],
+      "utc": 1793385655.7991328,
+      "vram_bytes": 40547946496
+    },
+    {
+      "in_flight": [
+        "/mnt/micron/codex3-kpf-real-actions-20261030/continuation-v2/smoke-r2/sample/plan-016/wire-000-request.json"
+      ],
+      "utc": 1793385657.928943,
+      "vram_bytes": 40547946496
+    },
+    {
+      "in_flight": [
+        "/mnt/micron/codex3-kpf-real-actions-20261030/continuation-v2/smoke-r2/sample/plan-017/wire-000-request.json"
+      ],
+      "utc": 1793385660.0622375,
+      "vram_bytes": 40547946496
+    },
+    {
+      "in_flight": [
+        "/mnt/micron/codex3-kpf-real-actions-20261030/continuation-v2/smoke-r2/sample/plan-017/wire-000-request.json"
+      ],
+      "utc": 1793385662.2017007,
+      "vram_bytes": 40547946496
+    },
+    {
+      "in_flight": [
+        "/mnt/micron/codex3-kpf-real-actions-20261030/continuation-v2/smoke-r2/sample/plan-017/wire-000-request.json"
+      ],
+      "utc": 1793385665.3937178,
+      "vram_bytes": 40547946496
+    },
+    {
+      "in_flight": [
+        "/mnt/micron/codex3-kpf-real-actions-20261030/continuation-v2/smoke-r2/sample/plan-017/wire-000-request.json"
+      ],
+      "utc": 1793385667.5199168,
+      "vram_bytes": 40547946496
+    },
+    {
+      "in_flight": [
+        "/mnt/micron/codex3-kpf-real-actions-20261030/continuation-v2/smoke-r2/sample/plan-017/wire-000-request.json"
+      ],
+      "utc": 1793385669.6479573,
+      "vram_bytes": 40547946496
+    },
+    {
+      "in_flight": [
+        "/mnt/micron/codex3-kpf-real-actions-20261030/continuation-v2/smoke-r2/sample/plan-018/wire-001-request.json"
+      ],
+      "utc": 1793385671.7686713,
+      "vram_bytes": 40547946496
+    },
+    {
+      "in_flight": [
+        "/mnt/micron/codex3-kpf-real-actions-20261030/continuation-v2/smoke-r2/sample/plan-018/wire-001-request.json"
+      ],
+      "utc": 1793385673.8929088,
+      "vram_bytes": 40547946496
+    },
+    {
+      "in_flight": [
+        "/mnt/micron/codex3-kpf-real-actions-20261030/continuation-v2/smoke-r2/sample/plan-018/wire-001-request.json"
+      ],
+      "utc": 1793385676.0170095,
+      "vram_bytes": 40547946496
+    },
+    {
+      "in_flight": [
+        "/mnt/micron/codex3-kpf-real-actions-20261030/continuation-v2/smoke-r2/sample/plan-019/wire-000-request.json"
+      ],
+      "utc": 1793385678.159456,
+      "vram_bytes": 40547946496
+    },
+    {
+      "in_flight": [
+        "/mnt/micron/codex3-kpf-real-actions-20261030/continuation-v2/smoke-r2/sample/plan-019/wire-000-request.json"
+      ],
+      "utc": 1793385681.3290465,
+      "vram_bytes": 40547946496
+    },
+    {
+      "in_flight": [
+        "/mnt/micron/codex3-kpf-real-actions-20261030/continuation-v2/smoke-r2/sample/plan-019/wire-000-request.json"
+      ],
+      "utc": 1793385683.4791017,
+      "vram_bytes": 40547946496
+    },
+    {
+      "in_flight": [
+        "/mnt/micron/codex3-kpf-real-actions-20261030/continuation-v2/smoke-r2/sample/plan-019/wire-000-request.json"
+      ],
+      "utc": 1793385685.6060436,
+      "vram_bytes": 40547946496
+    },
+    {
+      "in_flight": [
+        "/mnt/micron/codex3-kpf-real-actions-20261030/continuation-v2/smoke-r2/sample/plan-019/wire-000-request.json"
+      ],
+      "utc": 1793385687.7436383,
+      "vram_bytes": 40547946496
+    },
+    {
+      "in_flight": [
+        "/mnt/micron/codex3-kpf-real-actions-20261030/continuation-v2/smoke-r2/sample/plan-020/wire-000-request.json"
+      ],
+      "utc": 1793385689.8743494,
+      "vram_bytes": 40547946496
+    },
+    {
+      "in_flight": [
+        "/mnt/micron/codex3-kpf-real-actions-20261030/continuation-v2/smoke-r2/sample/plan-020/wire-000-request.json"
+      ],
+      "utc": 1793385692.006179,
+      "vram_bytes": 40547946496
+    },
+    {
+      "in_flight": [
+        "/mnt/micron/codex3-kpf-real-actions-20261030/continuation-v2/smoke-r2/sample/plan-020/wire-000-request.json"
+      ],
+      "utc": 1793385694.1490488,
+      "vram_bytes": 40547946496
+    },
+    {
+      "in_flight": [
+        "/mnt/micron/codex3-kpf-real-actions-20261030/continuation-v2/smoke-r2/sample/plan-021/wire-000-request.json"
+      ],
+      "utc": 1793385696.2636921,
+      "vram_bytes": 40547946496
+    },
+    {
+      "in_flight": [
+        "/mnt/micron/codex3-kpf-real-actions-20261030/continuation-v2/smoke-r2/sample/plan-021/wire-000-request.json"
+      ],
+      "utc": 1793385699.3650794,
+      "vram_bytes": 40547946496
+    },
+    {
+      "in_flight": [
+        "/mnt/micron/codex3-kpf-real-actions-20261030/continuation-v2/smoke-r2/sample/plan-021/wire-000-request.json"
+      ],
+      "utc": 1793385701.5005841,
+      "vram_bytes": 40547946496
+    },
+    {
+      "in_flight": [
+        "/mnt/micron/codex3-kpf-real-actions-20261030/continuation-v2/smoke-r2/sample/plan-021/wire-000-request.json"
+      ],
+      "utc": 1793385703.629081,
+      "vram_bytes": 40547946496
+    },
+    {
+      "in_flight": [
+        "/mnt/micron/codex3-kpf-real-actions-20261030/continuation-v2/smoke-r2/sample/plan-022/wire-000-request.json"
+      ],
+      "utc": 1793385705.7742627,
+      "vram_bytes": 40547946496
+    },
+    {
+      "in_flight": [
+        "/mnt/micron/codex3-kpf-real-actions-20261030/continuation-v2/smoke-r2/sample/plan-022/wire-000-request.json"
+      ],
+      "utc": 1793385707.9042194,
+      "vram_bytes": 40547946496
+    },
+    {
+      "in_flight": [
+        "/mnt/micron/codex3-kpf-real-actions-20261030/continuation-v2/smoke-r2/sample/plan-022/wire-000-request.json"
+      ],
+      "utc": 1793385710.2364974,
+      "vram_bytes": 40547946496
+    },
+    {
+      "in_flight": [
+        "/mnt/micron/codex3-kpf-real-actions-20261030/continuation-v2/smoke-r2/sample/plan-023/wire-000-request.json"
+      ],
+      "utc": 1793385713.3942342,
+      "vram_bytes": 40547946496
+    },
+    {
+      "in_flight": [
+        "/mnt/micron/codex3-kpf-real-actions-20261030/continuation-v2/smoke-r2/sample/plan-023/wire-000-request.json"
+      ],
+      "utc": 1793385715.5250342,
+      "vram_bytes": 40547946496
+    },
+    {
+      "in_flight": [
+        "/mnt/micron/codex3-kpf-real-actions-20261030/continuation-v2/smoke-r2/sample/plan-023/wire-000-request.json"
+      ],
+      "utc": 1793385717.6501873,
+      "vram_bytes": 40547946496
+    },
+    {
+      "in_flight": [
+        "/mnt/micron/codex3-kpf-real-actions-20261030/continuation-v2/smoke-r2/sample/plan-023/wire-000-request.json"
+      ],
+      "utc": 1793385719.8103073,
+      "vram_bytes": 40547946496
+    }
+  ],
+  "maps_path": "/mnt/micron/codex3-kpf-real-actions-20261030/continuation-v2/normal-control-1793389080/runtime-maps.json",
+  "maps_sha256": "4dd91f38cd37960e409986715692a90fb59786ecc774a7811653cbc3e612968c",
+  "normal_result_sha256": "62a39fb23347a707a1a2b155423afeb9e0993f3d9eb792fdf7fa5fc869d03cb2",
+  "observations_path": "/mnt/micron/codex3-kpf-real-actions-20261030/continuation-v2/normal-control-1793389080/gpu-observations.jsonl",
+  "observations_sha256": "ddd77466bdb273952eca846b82c0c850dfd6b423112633d9bde9a6f232ed48c9",
+  "process_dead": true,
+  "schema": "kpf261.normal-residency-proof.v1",
+  "server_pid": 2432006,
+  "total_samples": 82
+}

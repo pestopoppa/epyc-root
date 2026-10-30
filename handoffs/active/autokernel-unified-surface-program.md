@@ -4325,3 +4325,5 @@ The environment-roster geometry correction is committed as `aae9c15fbd7155781e51
 ## Orchestrator FIFO-control candidate — 2026-10-07 10:10Z
 
 Candidate `56fabf52ba832315cf9b0896650e2267d3fa4773` passed the r2 native unit gate (84 passed) and `make gates` with Popen wait rc 0. The clean candidate worktree keeps `EPYC_LOCK_FIFO` opt-in and default OFF; ROOT audit is pending. Receipt: `/mnt/raid0/llm/tmp/ak-codex-handover-20261007/fifo-controls/fifo-r2.receipt.json`. No default change, live restart, or deployment is recorded.
+
+2026-10-30 original-event filing: Original AK29 native token-profile event completed rc0 at18:48:01Z: prefill102 and short_decode255; concurrent_decode,long_decode,prefill_at_depth remain null. Exact b0ba1d427/model/draft identity and own live HIP linkage verified; clock:boot fiducial14.98ms accepted and per-window launches/token ×ns/launch retained. This completes its bounded native capture only, with no keep,speed,performance,selection or promotion verdict. Existing29.2 candidate-ordering and timing gates remain unchanged. [Original event audits](../../artifacts/compute/results-filing-20261030-1842.json). [belief: cc]

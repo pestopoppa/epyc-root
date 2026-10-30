@@ -1,0 +1,18 @@
+{
+  "claim_absent_before_capture": true,
+  "final_plan_actions": 3,
+  "first_journal_record_matches_smoke_sha256": true,
+  "historical_as_of": "2026-10-30T18:41:00Z",
+  "journal_actions": 52,
+  "native_loop_do_not_repeat_belief_history_tested": false,
+  "new_position_range": [
+    1,
+    23
+  ],
+  "original_prior_position": 0,
+  "real_index_fresh": true,
+  "resume_checkpoint_next": 2,
+  "schema": "kpf261.history-canary.v1",
+  "scope": "Temporal visibility and native corpus checkpoint integrity; not evidence that sampler loads Vidya do-not-repeat history.",
+  "unique_task_ids": 23
+}

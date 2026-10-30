@@ -1,0 +1,17 @@
+{
+  "journal_sha256": "6c13072ba7f08adf510299c0840cf1101db920294e2abe6fa70a7c7d4084a650",
+  "synthetic": false,
+  "n": 52,
+  "counts": {
+    "TERSE": 0,
+    "WORKING-ALLOWED": 52,
+    "UNKNOWN": 0
+  },
+  "terse_share_bounds": [
+    0.0,
+    0.0
+  ],
+  "decision": "NO_THIRD_WINDOW",
+  "reviewer": "Codex session /root/kpf_ingest_implementation",
+  "review_date": "2026-10-30"
+}
