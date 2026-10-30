@@ -1,0 +1,76 @@
+{
+  "arm": "paddle",
+  "cohort": "pip02-english-fresh-20261029",
+  "shard": 143,
+  "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+  "gt_sha256": "a45cd84b04ad8b793e775089640e6b681209abea33ead54c1828ddca35fae496",
+  "config_sha256": "e424bd8aea788ad3662e1d5a695b99f4e0fdae13ed484160b909ac22681bbbc3",
+  "scoring_sources_sha256": {
+    "pip02_records.py": "2d364d7a7ef1d47b21fb8f3352ff4ffe98e93c682da3996f6e1270c8193c81cd",
+    "pip02_lineage.py": "6dea759fe4fa7adc5c78d34fe7b01aea1d44ab98bc3103ccacbb3f36efb831fa",
+    "pip02_compare.py": "37e9d673ba46ac16c5f8169db97290933b3c63fb48ef133b825d5db3a9ba995e",
+    "pip02_native_score.py": "27f0b630b6812aecad35d1c65329841a5011e421326e81f9f14c8c66a6fdbe5e"
+  },
+  "pages": [
+    {
+      "position": 715,
+      "image": "magazine_TheEconomist.2023.12.23_page_060.png",
+      "gt_index": 1611,
+      "gt_tables": 0,
+      "status": "unknown",
+      "reason": "no durable completed page",
+      "tables": null,
+      "input_sha256": {}
+    },
+    {
+      "position": 716,
+      "image": "magazine_TheEconomist.2023.12.23_page_104.png",
+      "gt_index": 1612,
+      "gt_tables": 0,
+      "status": "unknown",
+      "reason": "no durable completed page",
+      "tables": null,
+      "input_sha256": {}
+    },
+    {
+      "position": 717,
+      "image": "magazine_TheEconomist.2023.11.25_page_068.png",
+      "gt_index": 1613,
+      "gt_tables": 0,
+      "status": "unknown",
+      "reason": "no durable completed page",
+      "tables": null,
+      "input_sha256": {}
+    },
+    {
+      "position": 718,
+      "image": "magazine_TheEconomist.2023.12.09_page_048.png",
+      "gt_index": 1614,
+      "gt_tables": 0,
+      "status": "unknown",
+      "reason": "no durable completed page",
+      "tables": null,
+      "input_sha256": {}
+    },
+    {
+      "position": 719,
+      "image": "magazine_TheEconomist.2023.12.09_page_045.png",
+      "gt_index": 1615,
+      "gt_tables": 0,
+      "status": "unknown",
+      "reason": "no durable completed page",
+      "tables": null,
+      "input_sha256": {}
+    }
+  ],
+  "coverage": {
+    "pages_complete": 0,
+    "pages_total": 5,
+    "gt_tables_scored": 0,
+    "gt_tables_total": 0
+  },
+  "means": {
+    "teds": null,
+    "teds_structure_only": null
+  }
+}

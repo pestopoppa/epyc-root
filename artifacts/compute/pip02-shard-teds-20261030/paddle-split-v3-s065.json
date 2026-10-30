@@ -1,0 +1,86 @@
+{
+  "arm": "paddle",
+  "cohort": "pip02-english-fresh-20261029",
+  "shard": 65,
+  "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+  "gt_sha256": "a45cd84b04ad8b793e775089640e6b681209abea33ead54c1828ddca35fae496",
+  "config_sha256": "e424bd8aea788ad3662e1d5a695b99f4e0fdae13ed484160b909ac22681bbbc3",
+  "scoring_sources_sha256": {
+    "pip02_records.py": "2d364d7a7ef1d47b21fb8f3352ff4ffe98e93c682da3996f6e1270c8193c81cd",
+    "pip02_lineage.py": "6dea759fe4fa7adc5c78d34fe7b01aea1d44ab98bc3103ccacbb3f36efb831fa",
+    "pip02_compare.py": "37e9d673ba46ac16c5f8169db97290933b3c63fb48ef133b825d5db3a9ba995e",
+    "pip02_native_score.py": "27f0b630b6812aecad35d1c65329841a5011e421326e81f9f14c8c66a6fdbe5e"
+  },
+  "pages": [
+    {
+      "position": 325,
+      "image": "yanbaor2_930d8c81854d7450cd35af7b050fed88e4e461b4f0ac0dab07e3232a4e703a06.pdf_14.jpg",
+      "gt_index": 879,
+      "gt_tables": 0,
+      "status": "unknown",
+      "reason": "no durable completed page",
+      "tables": null,
+      "input_sha256": {
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-65/shard-65/8c759a99542b366f31e0870c38e16f361636978b8fb03e5b78cbff73ec861049.start": "826052deb894e30ecf9f09f5e38a14873157f9bb63d14f8b3b4c1f4bf19febaa"
+      }
+    },
+    {
+      "position": 326,
+      "image": "yanbaor2_b997efc056ce194205f46dbd1c669eb32da025c4a3055c88d5f19ce434040b7b.pdf_46.jpg",
+      "gt_index": 880,
+      "gt_tables": 0,
+      "status": "unknown",
+      "reason": "no durable completed page",
+      "tables": null,
+      "input_sha256": {
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-65/shard-65/ec464048bba851f9407e6f4b73fa63d45374fa316733466d9d6f85d0fdc7c52b.start": "9a77c2c12e4fac842a530b38c1e5045f21c4cfc1a79346fb2aa27a0643028932"
+      }
+    },
+    {
+      "position": 327,
+      "image": "yanbaor2_ey-digital-state-tax-article.pdf_0.jpg",
+      "gt_index": 888,
+      "gt_tables": 0,
+      "status": "unknown",
+      "reason": "no durable completed page",
+      "tables": null,
+      "input_sha256": {
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-65/shard-65/bd536235c8fc2e43d6823e2479ae2a0483dc0ab613ba02a43687857203ddcbcb.start": "4e64c7052c9561b706bbbdbb740e6641e9b46314d61e724f8a2b0479102b0ca1"
+      }
+    },
+    {
+      "position": 328,
+      "image": "yanbaor2_yanbaoPPT_1517.jpg",
+      "gt_index": 890,
+      "gt_tables": 0,
+      "status": "unknown",
+      "reason": "no durable completed page",
+      "tables": null,
+      "input_sha256": {
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-65/shard-65/2bf1eace70b3ae1d164e60bac3dda16a9768d825e51a5d96562f4aa1cf9423d3.start": "0761de673aa6a75f1b813aa5025faa60f6564c0f7791b39093d00b1cc29026a6"
+      }
+    },
+    {
+      "position": 329,
+      "image": "yanbaor2_yanbaoPPT_5627.jpg",
+      "gt_index": 893,
+      "gt_tables": 0,
+      "status": "unknown",
+      "reason": "no durable completed page",
+      "tables": null,
+      "input_sha256": {
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-65/shard-65/134a62bbb24ce134e0fe074c1856f4a26bf15e883bc0f3c4406efaea3d79a08b.start": "73a5a4d234af4b76b656329c03cab34b40ccc2c90a694e98a5355344c28ca9e8"
+      }
+    }
+  ],
+  "coverage": {
+    "pages_complete": 0,
+    "pages_total": 5,
+    "gt_tables_scored": 0,
+    "gt_tables_total": 0
+  },
+  "means": {
+    "teds": null,
+    "teds_structure_only": null
+  }
+}

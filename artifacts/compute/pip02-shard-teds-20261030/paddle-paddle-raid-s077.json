@@ -1,0 +1,111 @@
+{
+  "arm": "paddle",
+  "cohort": "pip02-english-fresh-20261029",
+  "storage": "raid",
+  "shard": 77,
+  "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+  "gt_sha256": "a45cd84b04ad8b793e775089640e6b681209abea33ead54c1828ddca35fae496",
+  "config_sha256": "e424bd8aea788ad3662e1d5a695b99f4e0fdae13ed484160b909ac22681bbbc3",
+  "lineage_sha256": "39a511a6cf4de532c0847eab3eced768aa740ff4e39022c5c49b582aa95a7d2e",
+  "pages": [
+    {
+      "position": 385,
+      "image": "scihub_j.jnutbio.2010.09.015.pdf_0.jpg",
+      "gt_index": 1217,
+      "gt_tables": 0,
+      "status": "unknown",
+      "reason": "no durable completed page",
+      "tables": null
+    },
+    {
+      "position": 386,
+      "image": "scihub_j.physe.2007.10.027.pdf_0.jpg",
+      "gt_index": 1218,
+      "gt_tables": 0,
+      "status": "unknown",
+      "reason": "no durable completed page",
+      "tables": null
+    },
+    {
+      "position": 387,
+      "image": "scihub_jai.12343.pdf_3.jpg",
+      "gt_index": 1219,
+      "gt_tables": 2,
+      "status": "complete",
+      "reason": "native finish and request origins verified",
+      "tables": [
+        {
+          "gt_idx": [
+            0
+          ],
+          "pred_idx": [
+            0
+          ],
+          "teds": 0.9920689655172413,
+          "teds_structure_only": 1.0
+        },
+        {
+          "gt_idx": [
+            1
+          ],
+          "pred_idx": [
+            1
+          ],
+          "teds": 0.9474920844406138,
+          "teds_structure_only": 1.0
+        }
+      ],
+      "source_lineage": {
+        "verified": true,
+        "request_origins_verified": true,
+        "origin_capture_sha256": [
+          "0156d635e10e29af7ff659eadc9ef7a6120fb86c1a707c896ee8cb934657fd85",
+          "330e005260800cac992cd8278152ef5afd5dbc05468a20d48738058ba8de1e83",
+          "3a00fc7a9691913ed3883936c921b34e3bf08fa0da99c717ca358a6f67acadfd",
+          "47f9947b24e72e9c995622336e384b865d450c5365385682dd2e6119007b9c6f",
+          "816dababd3cb9130a90a2bfbee8d4152b3a215744ada0d3cf22f6322bb4eee31",
+          "892114941eeefb42c725c09f5c7e1a13dae0e506fd58ab79edd16abbf64b6049",
+          "9b0843e9b0cbdbcca205fae1b13ec5c7a9aca1ef0c47520054846073ff2767ad",
+          "9f509d2de2fa9389dd4f94660c1988a55d65d719dc59fc2a41d3091a971617d4",
+          "9ff199c64ead4b2ebfaf0c3c282df8612d0f3c6d8180697f44a6784fb6c4d529",
+          "ba1a0e7c2cc28c3a1be85b0eb2bdce4def433ceaa0c80691e490f0b68b0359c2",
+          "bb5ad9c379137801578b904f050ff7696549f59aaf57ebcc88b219de9d467be0",
+          "d4e039876c0690616783266720578f2f2efab9d923b7a02d82afb9d77690d976",
+          "e10e5b76a620839bc6920fc98cce55d452b9525bef39fe87e0736c89a2695061",
+          "ec6e78bfa7d305a89aa9da9e802786ace0848fdddaf713b096bc812da0a7e2e6"
+        ],
+        "finish_capture_sha256": "330e005260800cac992cd8278152ef5afd5dbc05468a20d48738058ba8de1e83",
+        "basis": "native R9/R10/R11/R13/R15 finish receipt binds page result and markdown to captured grant and registered source"
+      },
+      "prediction_sha256": "57a3cf07b0b27360a966b0b55128aea79f2c097613600919b6a3e551295722d4"
+    },
+    {
+      "position": 388,
+      "image": "scihub_jb%2Fmvh022.pdf_1.jpg",
+      "gt_index": 1220,
+      "gt_tables": 1,
+      "status": "unknown",
+      "reason": "no durable completed page",
+      "tables": null
+    },
+    {
+      "position": 389,
+      "image": "scihub_jee%2Ftoaa103.pdf_2.jpg",
+      "gt_index": 1221,
+      "gt_tables": 0,
+      "status": "unknown",
+      "reason": "no durable completed page",
+      "tables": null
+    }
+  ],
+  "coverage": {
+    "pages_complete": 1,
+    "pages_total": 5,
+    "gt_tables_scored": 2,
+    "gt_tables_total": 3
+  },
+  "means": {
+    "teds": 0.9697805249789275,
+    "teds_structure_only": 1.0
+  }
+}

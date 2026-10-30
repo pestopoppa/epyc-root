@@ -1,0 +1,86 @@
+{
+  "arm": "paddle",
+  "cohort": "pip02-english-fresh-20261029",
+  "shard": 69,
+  "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+  "gt_sha256": "a45cd84b04ad8b793e775089640e6b681209abea33ead54c1828ddca35fae496",
+  "config_sha256": "e424bd8aea788ad3662e1d5a695b99f4e0fdae13ed484160b909ac22681bbbc3",
+  "scoring_sources_sha256": {
+    "pip02_records.py": "2d364d7a7ef1d47b21fb8f3352ff4ffe98e93c682da3996f6e1270c8193c81cd",
+    "pip02_lineage.py": "6dea759fe4fa7adc5c78d34fe7b01aea1d44ab98bc3103ccacbb3f36efb831fa",
+    "pip02_compare.py": "37e9d673ba46ac16c5f8169db97290933b3c63fb48ef133b825d5db3a9ba995e",
+    "pip02_native_score.py": "27f0b630b6812aecad35d1c65329841a5011e421326e81f9f14c8c66a6fdbe5e"
+  },
+  "pages": [
+    {
+      "position": 345,
+      "image": "newspaper_2a6b4fa088699701a6fa9ccecfb5c25d_5.jpg",
+      "gt_index": 1039,
+      "gt_tables": 0,
+      "status": "unknown",
+      "reason": "no durable completed page",
+      "tables": null,
+      "input_sha256": {
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-69/shard-69/1e70696fea896de721d0b5a4d4247bf4ce5b2742e048330b4520276ad5e8cee3.start": "58ce57902d2bf3f740ae18c64e30c4f6a4da1ed2bd45a344cc20e5dc56c73339"
+      }
+    },
+    {
+      "position": 346,
+      "image": "newspaper_2a6b4fa088699701a6fa9ccecfb5c25d_6.jpg",
+      "gt_index": 1040,
+      "gt_tables": 0,
+      "status": "unknown",
+      "reason": "no durable completed page",
+      "tables": null,
+      "input_sha256": {
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-69/shard-69/c37de53eccb6e54c440fb2460a3953d1748fdeabe990d4b9c0c59dac3fdfcc83.start": "c25206ec58bba8759396c0addf701980bda1aebc2255533b1983bbb7cb0df155"
+      }
+    },
+    {
+      "position": 347,
+      "image": "newspaper_2a6b4fa088699701a6fa9ccecfb5c25d_7.jpg",
+      "gt_index": 1041,
+      "gt_tables": 0,
+      "status": "unknown",
+      "reason": "no durable completed page",
+      "tables": null,
+      "input_sha256": {
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-69/shard-69/c8103a973f768d931ff15f134988cbf814b1547c41d7702345de462b73250ce4.start": "693a21a85eabe357b91b1b0684be1fff00b52eb3e35dffde2323410a7ad73448"
+      }
+    },
+    {
+      "position": 348,
+      "image": "newspaper_2a6b4fa088699701a6fa9ccecfb5c25d_8.jpg",
+      "gt_index": 1042,
+      "gt_tables": 0,
+      "status": "unknown",
+      "reason": "no durable completed page",
+      "tables": null,
+      "input_sha256": {
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-69/shard-69/6db5940f2d71e809c1a6cfb628c991469ec2255305dd577a7098acb7b442368e.start": "4e6eb6ed3f782f57987fe82d45b10de962257c3df521ae69c30f18df35db3fb5"
+      }
+    },
+    {
+      "position": 349,
+      "image": "newspaper_2a6b4fa088699701a6fa9ccecfb5c25d_9.jpg",
+      "gt_index": 1043,
+      "gt_tables": 0,
+      "status": "unknown",
+      "reason": "no durable completed page",
+      "tables": null,
+      "input_sha256": {
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-69/shard-69/9c85088611768e0375e79a9b921a5c70af7002bd60378e4865cb817cf5f2fde8.start": "bc6086d2ab8ba9a9aaf6e70e2c9e662bf6ef1944f59b2a0564cba836dd2e5ccd"
+      }
+    }
+  ],
+  "coverage": {
+    "pages_complete": 0,
+    "pages_total": 5,
+    "gt_tables_scored": 0,
+    "gt_tables_total": 0
+  },
+  "means": {
+    "teds": null,
+    "teds_structure_only": null
+  }
+}

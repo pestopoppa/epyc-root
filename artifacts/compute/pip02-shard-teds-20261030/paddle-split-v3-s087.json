@@ -1,0 +1,228 @@
+{
+  "arm": "paddle",
+  "cohort": "pip02-english-fresh-20261029",
+  "shard": 87,
+  "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+  "gt_sha256": "a45cd84b04ad8b793e775089640e6b681209abea33ead54c1828ddca35fae496",
+  "config_sha256": "e424bd8aea788ad3662e1d5a695b99f4e0fdae13ed484160b909ac22681bbbc3",
+  "scoring_sources_sha256": {
+    "pip02_records.py": "2d364d7a7ef1d47b21fb8f3352ff4ffe98e93c682da3996f6e1270c8193c81cd",
+    "pip02_lineage.py": "6dea759fe4fa7adc5c78d34fe7b01aea1d44ab98bc3103ccacbb3f36efb831fa",
+    "pip02_compare.py": "37e9d673ba46ac16c5f8169db97290933b3c63fb48ef133b825d5db3a9ba995e",
+    "pip02_native_score.py": "27f0b630b6812aecad35d1c65329841a5011e421326e81f9f14c8c66a6fdbe5e"
+  },
+  "pages": [
+    {
+      "position": 435,
+      "image": "PPT_fundamental_theorem_of_calculus___page_006.png",
+      "gt_index": 1295,
+      "gt_tables": 0,
+      "status": "complete",
+      "reason": "native finish and request origins verified",
+      "tables": [],
+      "source_lineage": {
+        "verified": true,
+        "request_origins_verified": true,
+        "origin_capture_sha256": [
+          "1058193b976f14c56a3cdcc4e3bb480177bda2a7a244db5f5de20ac903b47b9d",
+          "a657a22377f6a81db4eb7880308901e79305fb45a798612812c0295ffc424287",
+          "e584ec4bcb45dca9e956884fea9b3336fb44bf381a4a2cb63b57bf356e3edb10"
+        ],
+        "finish_capture_sha256": "1058193b976f14c56a3cdcc4e3bb480177bda2a7a244db5f5de20ac903b47b9d",
+        "basis": "native registered finish receipt binds page result and markdown to captured grant and registered source"
+      },
+      "prediction_sha256": "c9978f1a82cf6943292efccb0338310fd88ede628ac547a1dc3d34020d58fb0b",
+      "input_sha256": {
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-87/shard-87/0f9788e1307ce7b85a931c5be328ddc4c978f1d984d3d4324c841a0ac484eb5b.finish.json": "9a6e96d5a165c288bfaf5ce80ae6f603e2c1a0e59530e0142380c343810210a6",
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-87/shard-87/0f9788e1307ce7b85a931c5be328ddc4c978f1d984d3d4324c841a0ac484eb5b.result": "31036c4eb9296f75de33e2f2bfb2403124c5323beede6d49ae12d9a8a18132bc",
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-87/shard-87/0f9788e1307ce7b85a931c5be328ddc4c978f1d984d3d4324c841a0ac484eb5b.sent": "bf7712f57d95964b2d97b88028b8df1e8efbecc7dda70ef2d4fd7eff930bb666",
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-87/shard-87/0f9788e1307ce7b85a931c5be328ddc4c978f1d984d3d4324c841a0ac484eb5b.start": "e137016c746eb526a82c283ec9edf9a3d8a02dc28f17b3ec900e79cc845a71fd",
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-87/shard-87/region-6fcd7628dd4e559e2b25396a-000000.result.json": "74a2288771d463a143bee487e5214ddda80d8590a92811fb979c5d91fe1f2553",
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-87/shard-87/region-6fcd7628dd4e559e2b25396a-000000.start.json": "18e872f3215364e85ce13b1d9622745ef4644ebe16a4163ebe9bb8937e6cf6d2",
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-87/shard-87/region-6fcd7628dd4e559e2b25396a-000001.result.json": "6c1d93933703d0985f9d023b28ed9440235a97863d84d0f4ea3cc843a9011d72",
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-87/shard-87/region-6fcd7628dd4e559e2b25396a-000001.start.json": "0d9c9cfdf9ac9dde47da3b89725fa9ccd33e406402239aabc35d154947d27582",
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-87/shard-87/region-6fcd7628dd4e559e2b25396a-000002.result.json": "ee701600478fdb905149c95bd90cce3cb0ed6567403b72ec2768f75fe823b61b",
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-87/shard-87/region-6fcd7628dd4e559e2b25396a-000002.start.json": "d5e2b63cd33231026465c5e46d097274c5746320af5722a0397f3b536c854878",
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-87/shard-87/region-6fcd7628dd4e559e2b25396a-layout.json": "e56d1a6dea28852f515b6f50c0a105f5abb599152353ff6dd258e2325d10faa9"
+      }
+    },
+    {
+      "position": 436,
+      "image": "PPT_CalculusReview_page_004.png",
+      "gt_index": 1296,
+      "gt_tables": 0,
+      "status": "complete",
+      "reason": "native finish and request origins verified",
+      "tables": [],
+      "source_lineage": {
+        "verified": true,
+        "request_origins_verified": true,
+        "origin_capture_sha256": [
+          "12eb86cc0fed8b3187f5c31a6f0d082e994795ea7bc27f50822aa9dadc41e46e",
+          "2393f96bd89e9cc543d951ed2b2efc94a09c64d97543b227a5294744ae67a169",
+          "39642ddc740025bc490364db932fb6fc21e215b5ed3a0d3133fbe549e4bdd48d",
+          "572778249c64679990c303755851c0ea8bbaa68b42c1acd7a7cfc1d43c1000f1",
+          "7e820f57fd34faf1c8d824dbd9465079338145b9a14c85669c52b3859e0cde5c",
+          "943543385d3e2081c6217535d4f2d008727ad165d32d03ce8e5b095215533952",
+          "c9d094d60a9972c4751d84328da64688a3aa8074d092526321231040888becf5",
+          "e584ec4bcb45dca9e956884fea9b3336fb44bf381a4a2cb63b57bf356e3edb10",
+          "f8392bd6d5bf756ac863807d930853a0e8348fb1e50b94c9557780252530d77a"
+        ],
+        "finish_capture_sha256": "2393f96bd89e9cc543d951ed2b2efc94a09c64d97543b227a5294744ae67a169",
+        "basis": "native registered finish receipt binds page result and markdown to captured grant and registered source"
+      },
+      "prediction_sha256": "3cddef654a35d46c7f45209055ae9e7b38775c4678ae0f283c8247dded1686fd",
+      "input_sha256": {
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-87/shard-87/60515a869c7bdeb9e8a5ad116034c56e96fa3b2ef3442d7e6e6b594e550277e4.finish.json": "b35f45e3bcbda32c067a222f276d5993d9198c7d9b15f48408a04fa61c6219fc",
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-87/shard-87/60515a869c7bdeb9e8a5ad116034c56e96fa3b2ef3442d7e6e6b594e550277e4.result": "6b60ec4d4e11a534b3f80a22d216c9717df98bc52975b60391bcea9a27be2235",
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-87/shard-87/60515a869c7bdeb9e8a5ad116034c56e96fa3b2ef3442d7e6e6b594e550277e4.sent": "0c14b30e8502e801d6d6e9d17eb5e8cd8013894d2e72e681da9b5ebb1c422ad9",
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-87/shard-87/60515a869c7bdeb9e8a5ad116034c56e96fa3b2ef3442d7e6e6b594e550277e4.start": "b2cf63a74197570ef7875eba7d946d0f2f18fe33cbc28b65bd33d439d6af538d",
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-87/shard-87/region-fa6f2f3546b00190a16fcfe2-000000.result.json": "69a55200b7adb8570416728647288d0d45026a3792b5d7d9b92547f043c61f90",
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-87/shard-87/region-fa6f2f3546b00190a16fcfe2-000000.start.json": "7666533d68d464a1c5258e246cb2f57e06af98f678556e4ec9a2ba215ded547e",
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-87/shard-87/region-fa6f2f3546b00190a16fcfe2-000001.result.json": "a8770889f196ef7d7b9d68a700c1aba895f05f00dfc88b59f6904c6143abe069",
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-87/shard-87/region-fa6f2f3546b00190a16fcfe2-000001.start.json": "e8a73403fc77d3c3e8adf50cbae7806bfc1b6dafc75fcfcd39d1e6ecfb2143a0",
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-87/shard-87/region-fa6f2f3546b00190a16fcfe2-000002.result.json": "16d0a631284756bd1513013426153e924560b12fb075acc0455022b4aecf0816",
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-87/shard-87/region-fa6f2f3546b00190a16fcfe2-000002.start.json": "6806b5a92dd89003775e9cce6aa0f55b14a173cf1641d0ac32b398317702e1b8",
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-87/shard-87/region-fa6f2f3546b00190a16fcfe2-000003.result.json": "a3b666df29fa960e6145332122530efa3a0ae4819ce41d18bb93286870336fca",
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-87/shard-87/region-fa6f2f3546b00190a16fcfe2-000003.start.json": "37d7946849942251b030d26370ec0165da90fa21db5a7e2bf637d5c5a36e6860",
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-87/shard-87/region-fa6f2f3546b00190a16fcfe2-000004.result.json": "71b777164ffe6797d5a2d801ffcb975a4cfa3f63162dfb5412f0f2df407c5a08",
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-87/shard-87/region-fa6f2f3546b00190a16fcfe2-000004.start.json": "9206ae003eaffb204a15c17c420251c98268efbf997384c95311b2314c4c271f",
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-87/shard-87/region-fa6f2f3546b00190a16fcfe2-000005.result.json": "d36170f835add23c9ee1d07132f6c128501ea7350578396dd6ff03bbbf1880cb",
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-87/shard-87/region-fa6f2f3546b00190a16fcfe2-000005.start.json": "421de1f6d3f54308f03f1d1d53d5b98d7abc03f83831b240389526bfeb3fcb93",
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-87/shard-87/region-fa6f2f3546b00190a16fcfe2-000006.result.json": "467db2cd6488fb593ba9d1649a17eb36ad31210de20d347d72bd6892526636cb",
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-87/shard-87/region-fa6f2f3546b00190a16fcfe2-000006.start.json": "949804fed2e89359c62442e97905fdcaa8df047ce01a770ce515963a9357475c",
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-87/shard-87/region-fa6f2f3546b00190a16fcfe2-000007.result.json": "3c8fcc3ec6018f6e5a0c8fddeb68be6d633401f22e75cb944820d897705aef02",
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-87/shard-87/region-fa6f2f3546b00190a16fcfe2-000007.start.json": "ef68396ac75884372be83b05476b99613616b542ac016b28df22aa5c0816b3db",
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-87/shard-87/region-fa6f2f3546b00190a16fcfe2-000008.result.json": "61cc376191f0c3be74c65b985ee2495f828e7e4b418cf53fc3727d752853fe0d",
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-87/shard-87/region-fa6f2f3546b00190a16fcfe2-000008.start.json": "c437b3604f220e60536b4744de755544807dfe66811835a3bdea700155bbed27",
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-87/shard-87/region-fa6f2f3546b00190a16fcfe2-layout.json": "a8ad4f434b6c206901db3b38e1475836430546c48e4787233961ab409d895f47"
+      }
+    },
+    {
+      "position": 437,
+      "image": "PPT_Keuk Chan Narith_page_005.png",
+      "gt_index": 1297,
+      "gt_tables": 0,
+      "status": "complete",
+      "reason": "native finish and request origins verified",
+      "tables": [],
+      "source_lineage": {
+        "verified": true,
+        "request_origins_verified": true,
+        "origin_capture_sha256": [
+          "1058193b976f14c56a3cdcc4e3bb480177bda2a7a244db5f5de20ac903b47b9d",
+          "39642ddc740025bc490364db932fb6fc21e215b5ed3a0d3133fbe549e4bdd48d",
+          "a657a22377f6a81db4eb7880308901e79305fb45a798612812c0295ffc424287",
+          "bd95fa32d8105b06138c0e5ddaf49f982d6b0aff8b3a34224c57285b84737738",
+          "c9d094d60a9972c4751d84328da64688a3aa8074d092526321231040888becf5"
+        ],
+        "finish_capture_sha256": "1058193b976f14c56a3cdcc4e3bb480177bda2a7a244db5f5de20ac903b47b9d",
+        "basis": "native registered finish receipt binds page result and markdown to captured grant and registered source"
+      },
+      "prediction_sha256": "bc5519b3a1459ac6e5446ce91480ef17a4f6c222a8d0557d41aa713d4da9b1d5",
+      "input_sha256": {
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-87/shard-87/9cf2ccca8d7b6961aca017c44376863ce6e3b64c220d23544e3af053d4736861.finish.json": "8e86ee36525c7873fdd9a541c16855e02647733110e23ff2c4941a883ac50258",
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-87/shard-87/9cf2ccca8d7b6961aca017c44376863ce6e3b64c220d23544e3af053d4736861.result": "c33767fa620392b3097589ca7b84b2bd1f52b7b92ba8340cebe6dd9ac9494957",
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-87/shard-87/9cf2ccca8d7b6961aca017c44376863ce6e3b64c220d23544e3af053d4736861.sent": "a99a543b37f53f04c55179249c2f450fe11c6e10d6e46b90a6d31dce2c709144",
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-87/shard-87/9cf2ccca8d7b6961aca017c44376863ce6e3b64c220d23544e3af053d4736861.start": "929d7db6600d206e357e9d3273343bc5556ea0ded576396edbdfedadef405c12",
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-87/shard-87/region-63c5f7da8653e1988e0c31cb-000000.result.json": "6ee3a5b0df30a85abaf4465885e0825d84c26960fddbea6354f3d8ca9be53cdc",
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-87/shard-87/region-63c5f7da8653e1988e0c31cb-000000.start.json": "136586ed5955e591d9b28356af8785274b084443c90429ff6fa5104b4138e464",
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-87/shard-87/region-63c5f7da8653e1988e0c31cb-000001.result.json": "c1ad68648ab08aefa780e2f33789e0756101dd8572aecd410cc447046773d4c9",
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-87/shard-87/region-63c5f7da8653e1988e0c31cb-000001.start.json": "85f102c801e6498c51414172de86fb7bb6102852f6c88df9976288e7ab812084",
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-87/shard-87/region-63c5f7da8653e1988e0c31cb-000002.result.json": "1e6ba908d674cca53c55a068a53db268eb56aac52cc5b8b014b708dfcf841c1d",
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-87/shard-87/region-63c5f7da8653e1988e0c31cb-000002.start.json": "5513ffec59c77bd8dafa3ead4432e114307985d0b494ecab4f781a42926d877e",
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-87/shard-87/region-63c5f7da8653e1988e0c31cb-000003.result.json": "a0136ef81809b1787f2cd2320e4979af766dc1353f0d31d264366e9c6636ff57",
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-87/shard-87/region-63c5f7da8653e1988e0c31cb-000003.start.json": "ce886c0bbb1aabc8423f9c04deb5e2d310a09f37fc2989588811a640e30c2b4f",
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-87/shard-87/region-63c5f7da8653e1988e0c31cb-000004.result.json": "a262496a71406ce284e5f8edffd9f6ec7b54a32344841a75cd384c7648bc62fa",
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-87/shard-87/region-63c5f7da8653e1988e0c31cb-000004.start.json": "a4d37c78033c2109f795139629d771b5297f8d696e271a1265fff89c93ecb0cc",
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-87/shard-87/region-63c5f7da8653e1988e0c31cb-layout.json": "53cfc1f0860e82c9e66310f8108ac1f429785ee21657b775c82f01081e6348a4"
+      }
+    },
+    {
+      "position": 438,
+      "image": "PPT_MMAT5390Lecture1_page_023.png",
+      "gt_index": 1298,
+      "gt_tables": 0,
+      "status": "unknown",
+      "reason": "no durable completed page",
+      "tables": null,
+      "input_sha256": {
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-87/shard-87/1469de66dd65af5afa803abfa130d25175c01f9f51624f201c73d79705374226.sent": "73bcc3eb648229d9babc08342ce3fc7353eccecb83cba9eadf9a2a08bff76a4b",
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-87/shard-87/1469de66dd65af5afa803abfa130d25175c01f9f51624f201c73d79705374226.start": "5a57ef45e0eaba6eec79bd5b6f38df6c164e5e9c1a8e0b4450594c0ce326755d",
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-87/shard-87/region-9deded78f73037431d335074-000000.result.json": "a0679e86c8be6ddc8c6eeea8cd90277436fa7509f6e4f26ac3c6b7fcd23c9db7",
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-87/shard-87/region-9deded78f73037431d335074-000000.start.json": "6d1ff595505d09e929cbce6032109a069448a0f1e173c803ce91de2b6a1b1eb0",
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-87/shard-87/region-9deded78f73037431d335074-000001.result.json": "6866ed7094a7b194f1b51828bb1b9df2f3e86120c989f5e59b32afccbbae73d7",
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-87/shard-87/region-9deded78f73037431d335074-000001.start.json": "db16fee877905cff4cb5267322987e0f2c036e960fc9d3fa0c4b638419a891d9",
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-87/shard-87/region-9deded78f73037431d335074-000002.result.json": "9123336321dcf28a584b8c569f640bc3038ce90e0120e3368a20a9b8fddfa6a8",
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-87/shard-87/region-9deded78f73037431d335074-000002.start.json": "efeae61445e543918d5d5d512a496e5214504204e98851d04edbbe0de67c4aa6",
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-87/shard-87/region-9deded78f73037431d335074-000003.result.json": "698f47dd7c17787128171a3f2e892e02675e3e141b68d6edf4f2f9825dc413d9",
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-87/shard-87/region-9deded78f73037431d335074-000003.start.json": "da30dbfdb3ecea624db48c2877bd62f71939ac7fc7b7807494e80c0dc5e35f0d",
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-87/shard-87/region-9deded78f73037431d335074-000004.result.json": "dbe56b32f7d0ade5430973894b7bc73aafc1ef428f1ced3ec7fd7a301700973b",
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-87/shard-87/region-9deded78f73037431d335074-000004.start.json": "19fae408bbdc1a6ef8156d7b3bcdc9b3515b9c6f3a75716705ebe92a7753e947",
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-87/shard-87/region-9deded78f73037431d335074-000005.result.json": "272f8cecd0c0e0c60a8fbe872cc7f7a228313e3d861857772a98790bc60fc8f9",
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-87/shard-87/region-9deded78f73037431d335074-000005.start.json": "16dfc00151ccfb4a4c3d336f04c03b64b42941558dc4f1b3c591a86fa52317b1",
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-87/shard-87/region-9deded78f73037431d335074-000006.result.json": "98b4cc81d72a68083be39092a4298b5084d80c1020a93c4975da310b0c106b9b",
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-87/shard-87/region-9deded78f73037431d335074-000006.start.json": "07ab6294df0827c99c8933d6f74c9c602e18f31390e40a13a6fd3d76d3fe0e6e",
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-87/shard-87/region-9deded78f73037431d335074-000007.result.json": "9c04d29b943b3a9aa71c3300baa7f148ab9c70b4d6ad389287c9d1ba68ea2bef",
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-87/shard-87/region-9deded78f73037431d335074-000007.start.json": "b42606705905e469035d5e9277234e1c80efced9729b5bbec64566e1dc08f545",
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-87/shard-87/region-9deded78f73037431d335074-layout.json": "37af764202b65ab08fb655ff9f3457988f8cc749c817b393361a0e413bdda283"
+      }
+    },
+    {
+      "position": 439,
+      "image": "PPT_StewartCalcET7e_03_02_page_012.png",
+      "gt_index": 1299,
+      "gt_tables": 0,
+      "status": "complete",
+      "reason": "native finish and request origins verified",
+      "tables": [],
+      "source_lineage": {
+        "verified": true,
+        "request_origins_verified": true,
+        "origin_capture_sha256": [
+          "12eb86cc0fed8b3187f5c31a6f0d082e994795ea7bc27f50822aa9dadc41e46e",
+          "7e820f57fd34faf1c8d824dbd9465079338145b9a14c85669c52b3859e0cde5c",
+          "8f71f676440815471f28d76ee1719ca92e30296b3801f25cbfc62d69d42b51de",
+          "a68338d249a9b7872c085c0585af3643ab4f9f8cefbae09c87064d42c8a8476d",
+          "c9d094d60a9972c4751d84328da64688a3aa8074d092526321231040888becf5",
+          "e584ec4bcb45dca9e956884fea9b3336fb44bf381a4a2cb63b57bf356e3edb10",
+          "f8392bd6d5bf756ac863807d930853a0e8348fb1e50b94c9557780252530d77a"
+        ],
+        "finish_capture_sha256": "a68338d249a9b7872c085c0585af3643ab4f9f8cefbae09c87064d42c8a8476d",
+        "basis": "native registered finish receipt binds page result and markdown to captured grant and registered source"
+      },
+      "prediction_sha256": "e2e8991d23b064a9801d5175307613153ff04962cd80fe0a5675e6c6dce4ac11",
+      "input_sha256": {
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-87/shard-87/a328e88ccaf1795f4820a13b6f4b66150114a80d76a3059470ee460afbf6b947.finish.json": "e0ef61269c26442114a4c4364707eb70833be5d53834eee69495427462338c45",
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-87/shard-87/a328e88ccaf1795f4820a13b6f4b66150114a80d76a3059470ee460afbf6b947.result": "2e82945298bd7b394dcbed5158c9f492acf28d44b80b2433158f8515a52029f8",
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-87/shard-87/a328e88ccaf1795f4820a13b6f4b66150114a80d76a3059470ee460afbf6b947.sent": "040704913c5edbb4a979e45211a3f1744608e074e82c13c1f8dfd8e2854e7ca4",
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-87/shard-87/a328e88ccaf1795f4820a13b6f4b66150114a80d76a3059470ee460afbf6b947.start": "c23ad954507220c7de90a31203dc381da54706141fb35dc6ab738be4c105f472",
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-87/shard-87/region-6066e26539079d7d52499862-000000.result.json": "f818b400d482ba6ec82d9a3c3674de1d34d2b986e34d0890f6b82fcface98b6c",
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-87/shard-87/region-6066e26539079d7d52499862-000000.start.json": "f899606f6cf5d72d4664403847208a3d2ac1541ad4f338f9a1ab840a2021b713",
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-87/shard-87/region-6066e26539079d7d52499862-000001.result.json": "c49bea925c4ece1e8d5615a22541a6e3cb03ead945c659bedca8bb2fa67259e2",
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-87/shard-87/region-6066e26539079d7d52499862-000001.start.json": "d3f54b509e2f17c71e2968489e1fe0510ddd6098fda19eae2b48d7132bd055fe",
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-87/shard-87/region-6066e26539079d7d52499862-000002.result.json": "0239c37920e8c2f982d7f21b311cab65d6922fd5eef0ca6bfc87fe8e82439812",
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-87/shard-87/region-6066e26539079d7d52499862-000002.start.json": "554a28aaafab5c8eecc7adb1d72f2d791643de89c9f3d46d1a04919c64335416",
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-87/shard-87/region-6066e26539079d7d52499862-000003.result.json": "5bf2f0a09c399a441e822c6d1e86db24aae2f89e446f8c4a71707d70c47f9b28",
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-87/shard-87/region-6066e26539079d7d52499862-000003.start.json": "25028959b3ef7833ff68883643a183275c14fe61fb5f4c26aa7f734f11c5e98f",
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-87/shard-87/region-6066e26539079d7d52499862-000004.result.json": "0ad84edcfbba0c6f5c5a78495074c0145bf589ce417eb7cb1260d4c3b3943a6a",
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-87/shard-87/region-6066e26539079d7d52499862-000004.start.json": "ff2db3dd9ac90fce225255ec768956ce78272b85fc173e25a749dd56de427709",
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-87/shard-87/region-6066e26539079d7d52499862-000005.result.json": "87f99392d5f352d680dd826ae8767b5c13eae1314500346494d7008aa9273a26",
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-87/shard-87/region-6066e26539079d7d52499862-000005.start.json": "24b91629da4688cd46dcb885273bb4de6c61c3222b9939dd90236c9e9258c773",
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-87/shard-87/region-6066e26539079d7d52499862-000006.result.json": "f842fb4f52f65047eedf88ff08fb7102c760b1b44bf130d7527f39f48b9f2f3d",
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-87/shard-87/region-6066e26539079d7d52499862-000006.start.json": "f403ec47b9a876b957aa2df69c17f0df99af046c436e5e822aa5c35fff076d8b",
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-87/shard-87/region-6066e26539079d7d52499862-layout.json": "de37c1926ef0f2ebefe974870019766a0b805ec9a074c3bfbcbb758f52c408c5"
+      }
+    }
+  ],
+  "coverage": {
+    "pages_complete": 4,
+    "pages_total": 5,
+    "gt_tables_scored": 0,
+    "gt_tables_total": 0
+  },
+  "means": {
+    "teds": null,
+    "teds_structure_only": null
+  }
+}

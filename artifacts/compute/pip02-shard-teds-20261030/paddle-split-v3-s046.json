@@ -1,0 +1,96 @@
+{
+  "arm": "paddle",
+  "cohort": "pip02-english-fresh-20261029",
+  "shard": 46,
+  "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+  "gt_sha256": "a45cd84b04ad8b793e775089640e6b681209abea33ead54c1828ddca35fae496",
+  "config_sha256": "e424bd8aea788ad3662e1d5a695b99f4e0fdae13ed484160b909ac22681bbbc3",
+  "scoring_sources_sha256": {
+    "pip02_records.py": "2d364d7a7ef1d47b21fb8f3352ff4ffe98e93c682da3996f6e1270c8193c81cd",
+    "pip02_lineage.py": "6dea759fe4fa7adc5c78d34fe7b01aea1d44ab98bc3103ccacbb3f36efb831fa",
+    "pip02_compare.py": "37e9d673ba46ac16c5f8169db97290933b3c63fb48ef133b825d5db3a9ba995e",
+    "pip02_native_score.py": "27f0b630b6812aecad35d1c65329841a5011e421326e81f9f14c8c66a6fdbe5e"
+  },
+  "pages": [
+    {
+      "position": 230,
+      "image": "yanbaor2_0a49fd5fc362650bf30a0a9391a2d2f091e751ba3d51da18e630e23856905c63.pdf_8.jpg",
+      "gt_index": 560,
+      "gt_tables": 0,
+      "status": "unknown",
+      "reason": "no durable completed page",
+      "tables": null,
+      "input_sha256": {
+        "/mnt/micron/codex3-pip-split-r22-20261030/campaigns-fresh/shard-46/shard-46/55b0046f924c11ec56ca46aa9d6e9c7d120a033053bf8837f8b8902be7225a16.sent": "984df9951f4fe798a4126a50b1939e8fc75c6afb6f9398eb3238f679b44ee207",
+        "/mnt/micron/codex3-pip-split-r22-20261030/campaigns-fresh/shard-46/shard-46/55b0046f924c11ec56ca46aa9d6e9c7d120a033053bf8837f8b8902be7225a16.start": "4de8ab70e8b687b36a4c7383f31069b3fac90aaef2ff69d26b00b22362af70d7",
+        "/mnt/micron/codex3-pip-split-r22-20261030/campaigns-fresh/shard-46/shard-46/region-c387167d0b88583b694ca79e-000000.result.json": "da929078df52af04a61c5778d956ab5946db2f181f000e50b7482538cbd31dc3",
+        "/mnt/micron/codex3-pip-split-r22-20261030/campaigns-fresh/shard-46/shard-46/region-c387167d0b88583b694ca79e-000000.result.json.durable": "89c7874433f695bd7691a5b80426a2cd5194c4c384937af14489aaa59e1a2c07",
+        "/mnt/micron/codex3-pip-split-r22-20261030/campaigns-fresh/shard-46/shard-46/region-c387167d0b88583b694ca79e-000000.start.json": "8e6a8931d4e0eb3ccb377c7cc225418897bb6b3d254e70355f89eed1485736b2",
+        "/mnt/micron/codex3-pip-split-r22-20261030/campaigns-fresh/shard-46/shard-46/region-c387167d0b88583b694ca79e-layout.json": "6819aad1d52f399a123414293a3e5f4d1077ba9014ff0ca5f70b4a32c0d7f1b9"
+      }
+    },
+    {
+      "position": 231,
+      "image": "yanbaor2_46d1322f4302f190a3c973320545b892f3a83f0931f1e3ac158069c324049979.pdf_8.jpg",
+      "gt_index": 563,
+      "gt_tables": 0,
+      "status": "unknown",
+      "reason": "no durable completed page",
+      "tables": null,
+      "input_sha256": {
+        "/mnt/micron/codex3-pip-split-r22-20261030/campaigns-fresh/shard-46/shard-46/1aa58ad61bf084d5ce2f54576c162c28e2abcb7c0fd27b485e3a63ef069d1bac.sent": "c6e82bd1160690d8e4f2abdf6cc9fe97a2f647c41c3af67f0b6d80dca3cabc05",
+        "/mnt/micron/codex3-pip-split-r22-20261030/campaigns-fresh/shard-46/shard-46/1aa58ad61bf084d5ce2f54576c162c28e2abcb7c0fd27b485e3a63ef069d1bac.start": "a633e156e123ff52bc89b8a3548cdead99f2aad57f3c0140320d0562ed92ea98",
+        "/mnt/micron/codex3-pip-split-r22-20261030/campaigns-fresh/shard-46/shard-46/region-2549fd1b8750ba750c667240-000000.result.json": "62882412ff6f110279f44bf9158a4c2b357c7ebc1a0f0923924e20bc25818787",
+        "/mnt/micron/codex3-pip-split-r22-20261030/campaigns-fresh/shard-46/shard-46/region-2549fd1b8750ba750c667240-000000.result.json.durable": "61bb47e76274985d8c9ec9a9efb2c5b7e2ef42292c3d8bdd69a48e67eabfe5bf",
+        "/mnt/micron/codex3-pip-split-r22-20261030/campaigns-fresh/shard-46/shard-46/region-2549fd1b8750ba750c667240-000000.start.json": "dc7cae7b035442d12ab4f463a6258531178fa89d50d35d988d367e14df1aa5e2",
+        "/mnt/micron/codex3-pip-split-r22-20261030/campaigns-fresh/shard-46/shard-46/region-2549fd1b8750ba750c667240-000001.result.json": "ac163eb48fbffea8e2c39643c27aeba7e43257fc67b476db32f933e9bf3cdaa8",
+        "/mnt/micron/codex3-pip-split-r22-20261030/campaigns-fresh/shard-46/shard-46/region-2549fd1b8750ba750c667240-000001.result.json.durable": "d4385a699bc2fa5c54ad98d72b8a3d76573e01fe4a54b1f60a5bf0ebc10c6773",
+        "/mnt/micron/codex3-pip-split-r22-20261030/campaigns-fresh/shard-46/shard-46/region-2549fd1b8750ba750c667240-000001.start.json": "f3369534275c4810a1624db5df80cbcb5de65df0f44799c3caf1e74f6165be80",
+        "/mnt/micron/codex3-pip-split-r22-20261030/campaigns-fresh/shard-46/shard-46/region-2549fd1b8750ba750c667240-000002.result.json": "cfa2d9dacb08e946aca3762ec67f36f971d641813bec84dedd70823d4f714715",
+        "/mnt/micron/codex3-pip-split-r22-20261030/campaigns-fresh/shard-46/shard-46/region-2549fd1b8750ba750c667240-000002.result.json.durable": "d38f9894549174b9f9293113f66d2a9b3ebdd7f4dbe0b1d5e39a8ca76a7906ea",
+        "/mnt/micron/codex3-pip-split-r22-20261030/campaigns-fresh/shard-46/shard-46/region-2549fd1b8750ba750c667240-000002.start.json": "07c5366694b5c2322a7323cecdf1a6a8a64c22c988f9c06f49430b2b61446eeb",
+        "/mnt/micron/codex3-pip-split-r22-20261030/campaigns-fresh/shard-46/shard-46/region-2549fd1b8750ba750c667240-layout.json": "e4afb6823093e81db48064fae108749cde856d50adfa9fa6366ac0a053dc8fe7"
+      }
+    },
+    {
+      "position": 232,
+      "image": "yanbaor2_9674ff37a7d4ea8fb80538bf2d8193dd0dca8f838bdd51f4862769746e996126.pdf_26.jpg",
+      "gt_index": 568,
+      "gt_tables": 0,
+      "status": "unknown",
+      "reason": "no durable completed page",
+      "tables": null,
+      "input_sha256": {}
+    },
+    {
+      "position": 233,
+      "image": "yanbaor2_e2f6b15971d68a7f081216b0c0d8538cab413124fc8911f4db4fbb3d17f167c4.pdf_14.jpg",
+      "gt_index": 574,
+      "gt_tables": 0,
+      "status": "unknown",
+      "reason": "no durable completed page",
+      "tables": null,
+      "input_sha256": {}
+    },
+    {
+      "position": 234,
+      "image": "yanbaor2_ey-drug-device-combination-products-whitepaper.pdf_6.jpg",
+      "gt_index": 575,
+      "gt_tables": 0,
+      "status": "unknown",
+      "reason": "no durable completed page",
+      "tables": null,
+      "input_sha256": {}
+    }
+  ],
+  "coverage": {
+    "pages_complete": 0,
+    "pages_total": 5,
+    "gt_tables_scored": 0,
+    "gt_tables_total": 0
+  },
+  "means": {
+    "teds": null,
+    "teds_structure_only": null
+  }
+}

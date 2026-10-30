@@ -1,0 +1,109 @@
+{
+  "arm": "paddle",
+  "cohort": "pip02-english-fresh-20261029",
+  "storage": "raid",
+  "shard": 98,
+  "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+  "gt_sha256": "a45cd84b04ad8b793e775089640e6b681209abea33ead54c1828ddca35fae496",
+  "config_sha256": "e424bd8aea788ad3662e1d5a695b99f4e0fdae13ed484160b909ac22681bbbc3",
+  "lineage_sha256": "39a511a6cf4de532c0847eab3eced768aa740ff4e39022c5c49b582aa95a7d2e",
+  "pages": [
+    {
+      "position": 490,
+      "image": "PPT_lay_linalg5_01_05_page_008.png",
+      "gt_index": 1350,
+      "gt_tables": 0,
+      "status": "unknown",
+      "reason": "no durable completed page",
+      "tables": null
+    },
+    {
+      "position": 491,
+      "image": "PPT_linear-algebra primer_page_016.png",
+      "gt_index": 1351,
+      "gt_tables": 0,
+      "status": "unknown",
+      "reason": "no durable completed page",
+      "tables": null
+    },
+    {
+      "position": 492,
+      "image": "PPT_1637904769_page_001.png",
+      "gt_index": 1352,
+      "gt_tables": 0,
+      "status": "complete",
+      "reason": "native finish and request origins verified",
+      "tables": [],
+      "source_lineage": {
+        "verified": true,
+        "request_origins_verified": true,
+        "origin_capture_sha256": [
+          "0c3cc5da7963e233b345b70190ad8854aad116b2a5df12d90363502b3430ffbe",
+          "c4d466daebd5e9319d1440e77c491f8ed25cb3a5f2837a07838ffef02205bf73"
+        ],
+        "finish_capture_sha256": "0c3cc5da7963e233b345b70190ad8854aad116b2a5df12d90363502b3430ffbe",
+        "basis": "native R9/R10/R11/R13/R15 finish receipt binds page result and markdown to captured grant and registered source"
+      },
+      "prediction_sha256": "6f63c99435dbc6799e945bc2781017c9abb1d796664c667588b4d993ae18b850"
+    },
+    {
+      "position": 493,
+      "image": "PPT_MMAT5390Lecture1_page_024.png",
+      "gt_index": 1353,
+      "gt_tables": 0,
+      "status": "complete",
+      "reason": "native finish and request origins verified",
+      "tables": [],
+      "source_lineage": {
+        "verified": true,
+        "request_origins_verified": true,
+        "origin_capture_sha256": [
+          "0c3cc5da7963e233b345b70190ad8854aad116b2a5df12d90363502b3430ffbe",
+          "1b01e0dc0bc1f12467a550df82353c9fb8bc9b08ed490cab31a9597469111294",
+          "1c41a9dacd87eb6dad5077fb9c130c43a1b3800247cc1e95706971870af6b4cd",
+          "4be43fefbc584554b4b1675ee745aeb62c82db955afa1cd3ed8b7d3b2cc161ca",
+          "8653152f2a3aa916792e4fee400c625fac21309e0afb9b9daaa60377dce14580",
+          "ac72b0f195317e718ca823351d47b3cb71d113d838f857c49dcd5d5ca5e5232e",
+          "bf15efcb9dcb772de7d7d853ba3545c9e5fc5e5f67b2e6a013f7a6066f7ceb92"
+        ],
+        "finish_capture_sha256": "1c41a9dacd87eb6dad5077fb9c130c43a1b3800247cc1e95706971870af6b4cd",
+        "basis": "native R9/R10/R11/R13/R15 finish receipt binds page result and markdown to captured grant and registered source"
+      },
+      "prediction_sha256": "5aad46f195be7b61ac94ff8efcf4e416faee9cffef2fef6dc06f82c816d4724e"
+    },
+    {
+      "position": 494,
+      "image": "PPT_ch7_page_035.png",
+      "gt_index": 1354,
+      "gt_tables": 0,
+      "status": "complete",
+      "reason": "native finish and request origins verified",
+      "tables": [],
+      "source_lineage": {
+        "verified": true,
+        "request_origins_verified": true,
+        "origin_capture_sha256": [
+          "26d5be22ace48b8866e63c397d4edba4baa015853dae563abba3531891e631c1",
+          "6e25bc5429991f5e2c9927b27f14df11cf4bc708a40720feec0abd86cb886f0a",
+          "8653152f2a3aa916792e4fee400c625fac21309e0afb9b9daaa60377dce14580",
+          "951afb3841402aea6746ed5771662566c4a4dbf548ec1d3ffdf66d816f793d1f",
+          "ac72b0f195317e718ca823351d47b3cb71d113d838f857c49dcd5d5ca5e5232e",
+          "c4d466daebd5e9319d1440e77c491f8ed25cb3a5f2837a07838ffef02205bf73"
+        ],
+        "finish_capture_sha256": "6e25bc5429991f5e2c9927b27f14df11cf4bc708a40720feec0abd86cb886f0a",
+        "basis": "native R9/R10/R11/R13/R15 finish receipt binds page result and markdown to captured grant and registered source"
+      },
+      "prediction_sha256": "49f10f63f0ecc1845b71e84f7bc6c7b14d0cbf6e696ce730ccbc1e011d564349"
+    }
+  ],
+  "coverage": {
+    "pages_complete": 3,
+    "pages_total": 5,
+    "gt_tables_scored": 0,
+    "gt_tables_total": 0
+  },
+  "means": {
+    "teds": null,
+    "teds_structure_only": null
+  }
+}

@@ -1,0 +1,127 @@
+{
+  "arm": "paddle",
+  "cohort": "pip02-english-fresh-20261029",
+  "storage": "raid",
+  "shard": 87,
+  "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+  "gt_sha256": "a45cd84b04ad8b793e775089640e6b681209abea33ead54c1828ddca35fae496",
+  "config_sha256": "e424bd8aea788ad3662e1d5a695b99f4e0fdae13ed484160b909ac22681bbbc3",
+  "lineage_sha256": "39a511a6cf4de532c0847eab3eced768aa740ff4e39022c5c49b582aa95a7d2e",
+  "pages": [
+    {
+      "position": 435,
+      "image": "PPT_fundamental_theorem_of_calculus___page_006.png",
+      "gt_index": 1295,
+      "gt_tables": 0,
+      "status": "complete",
+      "reason": "native finish and request origins verified",
+      "tables": [],
+      "source_lineage": {
+        "verified": true,
+        "request_origins_verified": true,
+        "origin_capture_sha256": [
+          "1058193b976f14c56a3cdcc4e3bb480177bda2a7a244db5f5de20ac903b47b9d",
+          "a657a22377f6a81db4eb7880308901e79305fb45a798612812c0295ffc424287",
+          "e584ec4bcb45dca9e956884fea9b3336fb44bf381a4a2cb63b57bf356e3edb10"
+        ],
+        "finish_capture_sha256": "1058193b976f14c56a3cdcc4e3bb480177bda2a7a244db5f5de20ac903b47b9d",
+        "basis": "native R9/R10/R11/R13/R15 finish receipt binds page result and markdown to captured grant and registered source"
+      },
+      "prediction_sha256": "c9978f1a82cf6943292efccb0338310fd88ede628ac547a1dc3d34020d58fb0b"
+    },
+    {
+      "position": 436,
+      "image": "PPT_CalculusReview_page_004.png",
+      "gt_index": 1296,
+      "gt_tables": 0,
+      "status": "complete",
+      "reason": "native finish and request origins verified",
+      "tables": [],
+      "source_lineage": {
+        "verified": true,
+        "request_origins_verified": true,
+        "origin_capture_sha256": [
+          "12eb86cc0fed8b3187f5c31a6f0d082e994795ea7bc27f50822aa9dadc41e46e",
+          "2393f96bd89e9cc543d951ed2b2efc94a09c64d97543b227a5294744ae67a169",
+          "39642ddc740025bc490364db932fb6fc21e215b5ed3a0d3133fbe549e4bdd48d",
+          "572778249c64679990c303755851c0ea8bbaa68b42c1acd7a7cfc1d43c1000f1",
+          "7e820f57fd34faf1c8d824dbd9465079338145b9a14c85669c52b3859e0cde5c",
+          "943543385d3e2081c6217535d4f2d008727ad165d32d03ce8e5b095215533952",
+          "c9d094d60a9972c4751d84328da64688a3aa8074d092526321231040888becf5",
+          "e584ec4bcb45dca9e956884fea9b3336fb44bf381a4a2cb63b57bf356e3edb10",
+          "f8392bd6d5bf756ac863807d930853a0e8348fb1e50b94c9557780252530d77a"
+        ],
+        "finish_capture_sha256": "2393f96bd89e9cc543d951ed2b2efc94a09c64d97543b227a5294744ae67a169",
+        "basis": "native R9/R10/R11/R13/R15 finish receipt binds page result and markdown to captured grant and registered source"
+      },
+      "prediction_sha256": "3cddef654a35d46c7f45209055ae9e7b38775c4678ae0f283c8247dded1686fd"
+    },
+    {
+      "position": 437,
+      "image": "PPT_Keuk Chan Narith_page_005.png",
+      "gt_index": 1297,
+      "gt_tables": 0,
+      "status": "complete",
+      "reason": "native finish and request origins verified",
+      "tables": [],
+      "source_lineage": {
+        "verified": true,
+        "request_origins_verified": true,
+        "origin_capture_sha256": [
+          "1058193b976f14c56a3cdcc4e3bb480177bda2a7a244db5f5de20ac903b47b9d",
+          "39642ddc740025bc490364db932fb6fc21e215b5ed3a0d3133fbe549e4bdd48d",
+          "a657a22377f6a81db4eb7880308901e79305fb45a798612812c0295ffc424287",
+          "bd95fa32d8105b06138c0e5ddaf49f982d6b0aff8b3a34224c57285b84737738",
+          "c9d094d60a9972c4751d84328da64688a3aa8074d092526321231040888becf5"
+        ],
+        "finish_capture_sha256": "1058193b976f14c56a3cdcc4e3bb480177bda2a7a244db5f5de20ac903b47b9d",
+        "basis": "native R9/R10/R11/R13/R15 finish receipt binds page result and markdown to captured grant and registered source"
+      },
+      "prediction_sha256": "bc5519b3a1459ac6e5446ce91480ef17a4f6c222a8d0557d41aa713d4da9b1d5"
+    },
+    {
+      "position": 438,
+      "image": "PPT_MMAT5390Lecture1_page_023.png",
+      "gt_index": 1298,
+      "gt_tables": 0,
+      "status": "unknown",
+      "reason": "no durable completed page",
+      "tables": null
+    },
+    {
+      "position": 439,
+      "image": "PPT_StewartCalcET7e_03_02_page_012.png",
+      "gt_index": 1299,
+      "gt_tables": 0,
+      "status": "complete",
+      "reason": "native finish and request origins verified",
+      "tables": [],
+      "source_lineage": {
+        "verified": true,
+        "request_origins_verified": true,
+        "origin_capture_sha256": [
+          "12eb86cc0fed8b3187f5c31a6f0d082e994795ea7bc27f50822aa9dadc41e46e",
+          "7e820f57fd34faf1c8d824dbd9465079338145b9a14c85669c52b3859e0cde5c",
+          "8f71f676440815471f28d76ee1719ca92e30296b3801f25cbfc62d69d42b51de",
+          "a68338d249a9b7872c085c0585af3643ab4f9f8cefbae09c87064d42c8a8476d",
+          "c9d094d60a9972c4751d84328da64688a3aa8074d092526321231040888becf5",
+          "e584ec4bcb45dca9e956884fea9b3336fb44bf381a4a2cb63b57bf356e3edb10",
+          "f8392bd6d5bf756ac863807d930853a0e8348fb1e50b94c9557780252530d77a"
+        ],
+        "finish_capture_sha256": "a68338d249a9b7872c085c0585af3643ab4f9f8cefbae09c87064d42c8a8476d",
+        "basis": "native R9/R10/R11/R13/R15 finish receipt binds page result and markdown to captured grant and registered source"
+      },
+      "prediction_sha256": "e2e8991d23b064a9801d5175307613153ff04962cd80fe0a5675e6c6dce4ac11"
+    }
+  ],
+  "coverage": {
+    "pages_complete": 4,
+    "pages_total": 5,
+    "gt_tables_scored": 0,
+    "gt_tables_total": 0
+  },
+  "means": {
+    "teds": null,
+    "teds_structure_only": null
+  }
+}

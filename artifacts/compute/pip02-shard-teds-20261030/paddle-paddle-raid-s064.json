@@ -1,0 +1,113 @@
+{
+  "arm": "paddle",
+  "cohort": "pip02-english-fresh-20261029",
+  "storage": "raid",
+  "shard": 64,
+  "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+  "gt_sha256": "a45cd84b04ad8b793e775089640e6b681209abea33ead54c1828ddca35fae496",
+  "config_sha256": "e424bd8aea788ad3662e1d5a695b99f4e0fdae13ed484160b909ac22681bbbc3",
+  "lineage_sha256": "39a511a6cf4de532c0847eab3eced768aa740ff4e39022c5c49b582aa95a7d2e",
+  "pages": [
+    {
+      "position": 320,
+      "image": "docstructbench_dianzishu_zhongwenzaixian-o.O-60832903.pdf_88.jpg",
+      "gt_index": 868,
+      "gt_tables": 0,
+      "status": "unknown",
+      "reason": "no durable completed page",
+      "tables": null
+    },
+    {
+      "position": 321,
+      "image": "docstructbench_enbook-zlib-o.O-21353024.pdf_39.jpg",
+      "gt_index": 872,
+      "gt_tables": 0,
+      "status": "unknown",
+      "reason": "no durable completed page",
+      "tables": null
+    },
+    {
+      "position": 322,
+      "image": "docstructbench_enbook-zlib-o.O-21882649.pdf_3.jpg",
+      "gt_index": 873,
+      "gt_tables": 0,
+      "status": "complete",
+      "reason": "native finish and request origins verified",
+      "tables": [],
+      "source_lineage": {
+        "verified": true,
+        "request_origins_verified": true,
+        "origin_capture_sha256": [
+          "05a893df7bdcc3e3d6608510c0ae4187466da6956a3395a5cae51a100a5d8ce6",
+          "480ed68a65b04e09f46eb811e5df7cd8210909eaddd3f60a541ce78c290e5b5d",
+          "52c6ad25a465d0cc96ca1f7f64adf420bd5d2cb4d85a5ce984c602cd16dbb561",
+          "8cc103e3897c51bd83d2a6544bd3504400980181ff903f16ba79c17820e81e29",
+          "d1617e17f46756e85d0d0f76976dcad4a39ce4fae883943517eb633aa4a91c0c",
+          "e7840e41e31b159135cb57065b9e0997366eb2ea6341f5ce95d5af2855d5d01f"
+        ],
+        "finish_capture_sha256": "e7840e41e31b159135cb57065b9e0997366eb2ea6341f5ce95d5af2855d5d01f",
+        "basis": "native R9/R10/R11/R13/R15 finish receipt binds page result and markdown to captured grant and registered source"
+      },
+      "prediction_sha256": "1f1cbd9c7b4a5d78177a3def41ea9e11e3e8b4ad1a2c7ffe501c0befac6013a2"
+    },
+    {
+      "position": 323,
+      "image": "docstructbench_enbook-zlib-o.O-22206811.pdf_5.jpg",
+      "gt_index": 874,
+      "gt_tables": 0,
+      "status": "complete",
+      "reason": "native finish and request origins verified",
+      "tables": [],
+      "source_lineage": {
+        "verified": true,
+        "request_origins_verified": true,
+        "origin_capture_sha256": [
+          "05a893df7bdcc3e3d6608510c0ae4187466da6956a3395a5cae51a100a5d8ce6",
+          "480ed68a65b04e09f46eb811e5df7cd8210909eaddd3f60a541ce78c290e5b5d",
+          "52c6ad25a465d0cc96ca1f7f64adf420bd5d2cb4d85a5ce984c602cd16dbb561",
+          "8cc103e3897c51bd83d2a6544bd3504400980181ff903f16ba79c17820e81e29",
+          "90168f530eb31bb95cbbb0c723aaac68e951d9a05d1941494b27646444baa0c8",
+          "d1617e17f46756e85d0d0f76976dcad4a39ce4fae883943517eb633aa4a91c0c"
+        ],
+        "finish_capture_sha256": "90168f530eb31bb95cbbb0c723aaac68e951d9a05d1941494b27646444baa0c8",
+        "basis": "native R9/R10/R11/R13/R15 finish receipt binds page result and markdown to captured grant and registered source"
+      },
+      "prediction_sha256": "b4cc4fee0aff5b43e32ae373514149bcb13e11288d310631b2c5d3b7a1409c07"
+    },
+    {
+      "position": 324,
+      "image": "yanbaor2_0071908e787f90267682e19ef093bb18dda6e1c1614534c445ddd62c425b3a94.pdf_36.jpg",
+      "gt_index": 875,
+      "gt_tables": 0,
+      "status": "complete",
+      "reason": "native finish and request origins verified",
+      "tables": [],
+      "source_lineage": {
+        "verified": true,
+        "request_origins_verified": true,
+        "origin_capture_sha256": [
+          "05a893df7bdcc3e3d6608510c0ae4187466da6956a3395a5cae51a100a5d8ce6",
+          "52c6ad25a465d0cc96ca1f7f64adf420bd5d2cb4d85a5ce984c602cd16dbb561",
+          "8cc103e3897c51bd83d2a6544bd3504400980181ff903f16ba79c17820e81e29",
+          "90168f530eb31bb95cbbb0c723aaac68e951d9a05d1941494b27646444baa0c8",
+          "bf1d4727153766c21c48c6a0469d94f9c22241be590e6eb3a53635c02d3f42b1",
+          "d1617e17f46756e85d0d0f76976dcad4a39ce4fae883943517eb633aa4a91c0c",
+          "e7840e41e31b159135cb57065b9e0997366eb2ea6341f5ce95d5af2855d5d01f"
+        ],
+        "finish_capture_sha256": "bf1d4727153766c21c48c6a0469d94f9c22241be590e6eb3a53635c02d3f42b1",
+        "basis": "native R9/R10/R11/R13/R15 finish receipt binds page result and markdown to captured grant and registered source"
+      },
+      "prediction_sha256": "96bde7801db2cd00b4399895b5680616dd609a7d78317a2a660635e7ef020f0c"
+    }
+  ],
+  "coverage": {
+    "pages_complete": 3,
+    "pages_total": 5,
+    "gt_tables_scored": 0,
+    "gt_tables_total": 0
+  },
+  "means": {
+    "teds": null,
+    "teds_structure_only": null
+  }
+}

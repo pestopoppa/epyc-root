@@ -1,0 +1,101 @@
+{
+  "arm": "paddle",
+  "cohort": "pip02-english-fresh-20261029",
+  "storage": "raid",
+  "shard": 81,
+  "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+  "gt_sha256": "a45cd84b04ad8b793e775089640e6b681209abea33ead54c1828ddca35fae496",
+  "config_sha256": "e424bd8aea788ad3662e1d5a695b99f4e0fdae13ed484160b909ac22681bbbc3",
+  "lineage_sha256": "39a511a6cf4de532c0847eab3eced768aa740ff4e39022c5c49b582aa95a7d2e",
+  "pages": [
+    {
+      "position": 405,
+      "image": "yanbaor2_ey-better-pension-outcomes-reimagined-20180926.pdf_1.jpg",
+      "gt_index": 1256,
+      "gt_tables": 0,
+      "status": "complete",
+      "reason": "native finish and request origins verified",
+      "tables": [],
+      "source_lineage": {
+        "verified": true,
+        "request_origins_verified": true,
+        "origin_capture_sha256": [
+          "14f13957ac41d2586d56f88ed80348d9ab9b1d2b30c90161cf61ccd3ae5902d9",
+          "186f8f027a81fa96e4ce6a9f87bd9187c4bf5e4c8c9155e7d19ccfb159da0218",
+          "206ce16ce744cbfb7403e5283fc5b5e722423800b5efec199de781ed989fef65",
+          "40e922dba5ce5f9312d7c73f8896c3eb380b1b5b543859120960ca02bfe83c2f",
+          "46bf7dac18e602d91a260a031aebb8d83cc8a71d06cc3e27213be9ed9ffcb5e4",
+          "56ce06ec6d0340491937173143a785b527933379c8a719c511d7d5f7ff29caf9",
+          "6815e704b0ba38845dfa76c394cd7e6e29e7095b7279bd59edaf7532775420b7",
+          "7518f9d0e7baac9b5c37d8095af06660a0ae8e4fa93b1d70f8600b670959eec2",
+          "a1f81b0144981336bf4a2eb33651b2ddac46c3c7f90bb158872533da2f1d0431",
+          "fb2286d27803e996b3934be63cb451e6475a793469996865bd41425b7615cf59"
+        ],
+        "finish_capture_sha256": "206ce16ce744cbfb7403e5283fc5b5e722423800b5efec199de781ed989fef65",
+        "basis": "native R9/R10/R11/R13/R15 finish receipt binds page result and markdown to captured grant and registered source"
+      },
+      "prediction_sha256": "05fc6fc150c3be365fc9ac2410ffb698c9eb207cf8ba4cf39941d56c14692d2e"
+    },
+    {
+      "position": 406,
+      "image": "yanbaor2_ey-beyond-traditional-corporate-governance.pdf_1.jpg",
+      "gt_index": 1257,
+      "gt_tables": 0,
+      "status": "unknown",
+      "reason": "no durable completed page",
+      "tables": null
+    },
+    {
+      "position": 407,
+      "image": "yanbaor2_ey-icl-barking-and-dagenham-case-study.pdf_10.jpg",
+      "gt_index": 1258,
+      "gt_tables": 0,
+      "status": "complete",
+      "reason": "native finish and request origins verified",
+      "tables": [],
+      "source_lineage": {
+        "verified": true,
+        "request_origins_verified": true,
+        "origin_capture_sha256": [
+          "623509d47fceab045f9c37c8e14575e3f15a1647022da91ed47393c4f48649ea",
+          "6815e704b0ba38845dfa76c394cd7e6e29e7095b7279bd59edaf7532775420b7",
+          "7489a7e87712b4233483c8cb141f1a9ff66cd477ec272687524b583b664f72d5",
+          "7518f9d0e7baac9b5c37d8095af06660a0ae8e4fa93b1d70f8600b670959eec2",
+          "75bb35212bc2d7f808fbedc0d0198c6a8135dc493b8dc949f7d31be84539c6f1",
+          "d52da078bf4261f42cd646f46a8d723b91d5ae479d9614f351f719e71ddade0a"
+        ],
+        "finish_capture_sha256": "d52da078bf4261f42cd646f46a8d723b91d5ae479d9614f351f719e71ddade0a",
+        "basis": "native R9/R10/R11/R13/R15 finish receipt binds page result and markdown to captured grant and registered source"
+      },
+      "prediction_sha256": "0c4bdf43c9c98fe5a6142c4fee5b4274d37ee81b0d816c20a2aad847b7d1ab7a"
+    },
+    {
+      "position": 408,
+      "image": "yanbaor2_ey-icl-harnessing-the-power-of-data.pdf_13.jpg",
+      "gt_index": 1259,
+      "gt_tables": 0,
+      "status": "unknown",
+      "reason": "no durable completed page",
+      "tables": null
+    },
+    {
+      "position": 409,
+      "image": "yanbaor2_yanbaoPPT_1295.jpg",
+      "gt_index": 1260,
+      "gt_tables": 0,
+      "status": "unknown",
+      "reason": "no durable completed page",
+      "tables": null
+    }
+  ],
+  "coverage": {
+    "pages_complete": 2,
+    "pages_total": 5,
+    "gt_tables_scored": 0,
+    "gt_tables_total": 0
+  },
+  "means": {
+    "teds": null,
+    "teds_structure_only": null
+  }
+}

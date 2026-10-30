@@ -1,0 +1,76 @@
+{
+  "arm": "paddle",
+  "cohort": "pip02-english-fresh-20261029",
+  "shard": 116,
+  "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+  "gt_sha256": "a45cd84b04ad8b793e775089640e6b681209abea33ead54c1828ddca35fae496",
+  "config_sha256": "e424bd8aea788ad3662e1d5a695b99f4e0fdae13ed484160b909ac22681bbbc3",
+  "scoring_sources_sha256": {
+    "pip02_records.py": "2d364d7a7ef1d47b21fb8f3352ff4ffe98e93c682da3996f6e1270c8193c81cd",
+    "pip02_lineage.py": "6dea759fe4fa7adc5c78d34fe7b01aea1d44ab98bc3103ccacbb3f36efb831fa",
+    "pip02_compare.py": "37e9d673ba46ac16c5f8169db97290933b3c63fb48ef133b825d5db3a9ba995e",
+    "pip02_native_score.py": "27f0b630b6812aecad35d1c65329841a5011e421326e81f9f14c8c66a6fdbe5e"
+  },
+  "pages": [
+    {
+      "position": 580,
+      "image": "book_en_\u56fd\u5916\u6570\u5b66\u6559\u6750-\u6570\u8bba-Melvyn B. Nathanson\u2014Elementary Methods in Number Theory_0242.png",
+      "gt_index": 1459,
+      "gt_tables": 0,
+      "status": "unknown",
+      "reason": "no durable completed page",
+      "tables": null,
+      "input_sha256": {}
+    },
+    {
+      "position": 581,
+      "image": "book_en_\u56fd\u5916\u6570\u5b66\u6559\u6750-An Excursion through Elementary Mathematics\uff08\u521d\u7b49\u6570\u5b66\u6f2b\u6e38\uff09-An excursion through elementary mathematics, Vol.3 (Caminha Muniz Neto A)_0085.png",
+      "gt_index": 1460,
+      "gt_tables": 0,
+      "status": "unknown",
+      "reason": "no durable completed page",
+      "tables": null,
+      "input_sha256": {}
+    },
+    {
+      "position": 582,
+      "image": "book_en_[\u642c\u4e66\u5320#20][HTML5 Canvas].2011.\u82f1\u6587\u7248_page_208.png",
+      "gt_index": 1461,
+      "gt_tables": 0,
+      "status": "unknown",
+      "reason": "no durable completed page",
+      "tables": null,
+      "input_sha256": {}
+    },
+    {
+      "position": 583,
+      "image": "book_en_\u56fd\u5916\u6570\u5b66\u6559\u6750-\u6570\u8bba-Melvyn B. Nathanson\u2014Elementary Methods in Number Theory_0085.png",
+      "gt_index": 1462,
+      "gt_tables": 0,
+      "status": "unknown",
+      "reason": "no durable completed page",
+      "tables": null,
+      "input_sha256": {}
+    },
+    {
+      "position": 584,
+      "image": "book_en_\u56fd\u5916\u6570\u5b66\u6559\u6750-\u975e\u6570\u5b66\u4e13\u4e1a\u6559\u6750-\u7ebf\u6027\u4ee3\u6570-Gilbert Strang\u2014Linear Algebra and Its Applications 4e_0119.png",
+      "gt_index": 1463,
+      "gt_tables": 0,
+      "status": "unknown",
+      "reason": "no durable completed page",
+      "tables": null,
+      "input_sha256": {}
+    }
+  ],
+  "coverage": {
+    "pages_complete": 0,
+    "pages_total": 5,
+    "gt_tables_scored": 0,
+    "gt_tables_total": 0
+  },
+  "means": {
+    "teds": null,
+    "teds_structure_only": null
+  }
+}

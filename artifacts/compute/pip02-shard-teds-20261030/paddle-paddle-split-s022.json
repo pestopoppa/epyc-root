@@ -1,0 +1,135 @@
+{
+  "arm": "paddle",
+  "cohort": "pip02-english-fresh-20261029",
+  "shard": 22,
+  "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+  "gt_sha256": "a45cd84b04ad8b793e775089640e6b681209abea33ead54c1828ddca35fae496",
+  "config_sha256": "e424bd8aea788ad3662e1d5a695b99f4e0fdae13ed484160b909ac22681bbbc3",
+  "scoring_sources_sha256": {
+    "pip02_records.py": "2d364d7a7ef1d47b21fb8f3352ff4ffe98e93c682da3996f6e1270c8193c81cd",
+    "pip02_lineage.py": "824d67678010363cf37314edda4bc4b4c38aceb5333cdfcd1e944e432be8b906",
+    "pip02_compare.py": "37e9d673ba46ac16c5f8169db97290933b3c63fb48ef133b825d5db3a9ba995e",
+    "pip02_native_score.py": "27f0b630b6812aecad35d1c65329841a5011e421326e81f9f14c8c66a6fdbe5e"
+  },
+  "pages": [
+    {
+      "position": 110,
+      "image": "page-49746735-505c-442d-b3f6-c55b1bf9e48b.png",
+      "gt_index": 274,
+      "gt_tables": 1,
+      "status": "unknown",
+      "reason": "no durable completed page",
+      "tables": null
+    },
+    {
+      "position": 111,
+      "image": "page-9390721f-e06c-47ea-8b21-0f27c72df7b7.png",
+      "gt_index": 275,
+      "gt_tables": 1,
+      "status": "unknown",
+      "reason": "no durable completed page",
+      "tables": null
+    },
+    {
+      "position": 112,
+      "image": "page-5d58cdf7-6d00-4ea5-97b2-358cbc0cab21.png",
+      "gt_index": 276,
+      "gt_tables": 1,
+      "status": "complete",
+      "reason": "native finish and request origins verified",
+      "tables": [
+        {
+          "gt_idx": [
+            0
+          ],
+          "pred_idx": [
+            0
+          ],
+          "teds": 0.9893576234419337,
+          "teds_structure_only": 1.0
+        }
+      ],
+      "source_lineage": {
+        "verified": true,
+        "request_origins_verified": true,
+        "origin_capture_sha256": [
+          "05371ad35590dda62ee99916eb533ee73ba3e239ab5f5f237c058b087f33e9bc",
+          "072a66f038cb451047dce143ba37bbf9249f3d7398c992b9a7444152cb4de635",
+          "4b67240d54d1fed6c2f32c125db4bb5e79940271a92e0fb7d7e62f70bebdbcc4",
+          "7ad6d6836e9e6e649e9865b530fdec28cc9e7105060e753ca29138c37ba1f0f0",
+          "8402b490905752b1feea106eaae8c2129b7a49cd77179ca7bfcb7973581c6929",
+          "97029bd1b366f4811044f2238f623540b7059315be192114fb6d33423a6e5101",
+          "bc319e5a23e37368f56296762418ebed34bb5df546b30d735239c352579bd02a",
+          "bd9a8c6eb68bf0bd1f77946f8e7d2a74bbe660328267a8a07ef447da695930d4",
+          "f3e025db87c0163767bec02c1c31b30a141b6704e8a7613033158e2f93870c1a"
+        ],
+        "finish_capture_sha256": "bc319e5a23e37368f56296762418ebed34bb5df546b30d735239c352579bd02a",
+        "basis": "native registered finish receipt binds page result and markdown to captured grant and registered source"
+      },
+      "prediction_sha256": "120a0090aaf3b956b61d8035fc22e4b2be0ce2ba35450ae05e31c8dc079d7d1a"
+    },
+    {
+      "position": 113,
+      "image": "page-f222e5f3-8628-47cd-a0b6-40f62123228f.png",
+      "gt_index": 278,
+      "gt_tables": 1,
+      "status": "unknown",
+      "reason": "no durable completed page",
+      "tables": null
+    },
+    {
+      "position": 114,
+      "image": "page-c7771a62-5b6b-48f0-b591-6b657d26e125.png",
+      "gt_index": 279,
+      "gt_tables": 2,
+      "status": "complete",
+      "reason": "native finish and request origins verified",
+      "tables": [
+        {
+          "gt_idx": [
+            0
+          ],
+          "pred_idx": [
+            0
+          ],
+          "teds": 0.8746337775469152,
+          "teds_structure_only": 0.9433106575963719
+        },
+        {
+          "gt_idx": [
+            1
+          ],
+          "pred_idx": [
+            1
+          ],
+          "teds": 0.9757921936624507,
+          "teds_structure_only": 0.9767441860465116
+        }
+      ],
+      "source_lineage": {
+        "verified": true,
+        "request_origins_verified": true,
+        "origin_capture_sha256": [
+          "05371ad35590dda62ee99916eb533ee73ba3e239ab5f5f237c058b087f33e9bc",
+          "072a66f038cb451047dce143ba37bbf9249f3d7398c992b9a7444152cb4de635",
+          "4b67240d54d1fed6c2f32c125db4bb5e79940271a92e0fb7d7e62f70bebdbcc4",
+          "806e7604270b2096bd96394084f3b04397c8af1935a34828bf847c4a654fd943",
+          "97029bd1b366f4811044f2238f623540b7059315be192114fb6d33423a6e5101"
+        ],
+        "finish_capture_sha256": "97029bd1b366f4811044f2238f623540b7059315be192114fb6d33423a6e5101",
+        "basis": "native registered finish receipt binds page result and markdown to captured grant and registered source"
+      },
+      "prediction_sha256": "8052114d001c2666adfc592c951cd41161ba5524bf7a855579f658cc56f9f5b2"
+    }
+  ],
+  "coverage": {
+    "pages_complete": 2,
+    "pages_total": 5,
+    "gt_tables_scored": 3,
+    "gt_tables_total": 6
+  },
+  "means": {
+    "teds": 0.9465945315504332,
+    "teds_structure_only": 0.9733516145476279
+  }
+}

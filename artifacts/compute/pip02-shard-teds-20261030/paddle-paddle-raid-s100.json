@@ -1,0 +1,103 @@
+{
+  "arm": "paddle",
+  "cohort": "pip02-english-fresh-20261029",
+  "storage": "raid",
+  "shard": 100,
+  "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+  "gt_sha256": "a45cd84b04ad8b793e775089640e6b681209abea33ead54c1828ddca35fae496",
+  "config_sha256": "e424bd8aea788ad3662e1d5a695b99f4e0fdae13ed484160b909ac22681bbbc3",
+  "lineage_sha256": "39a511a6cf4de532c0847eab3eced768aa740ff4e39022c5c49b582aa95a7d2e",
+  "pages": [
+    {
+      "position": 500,
+      "image": "PPT_lay_linalg5_01_05_page_004.png",
+      "gt_index": 1360,
+      "gt_tables": 0,
+      "status": "complete",
+      "reason": "native finish and request origins verified",
+      "tables": [],
+      "source_lineage": {
+        "verified": true,
+        "request_origins_verified": true,
+        "origin_capture_sha256": [
+          "1c41a9dacd87eb6dad5077fb9c130c43a1b3800247cc1e95706971870af6b4cd",
+          "26d5be22ace48b8866e63c397d4edba4baa015853dae563abba3531891e631c1",
+          "4be43fefbc584554b4b1675ee745aeb62c82db955afa1cd3ed8b7d3b2cc161ca",
+          "8653152f2a3aa916792e4fee400c625fac21309e0afb9b9daaa60377dce14580",
+          "951afb3841402aea6746ed5771662566c4a4dbf548ec1d3ffdf66d816f793d1f",
+          "ac72b0f195317e718ca823351d47b3cb71d113d838f857c49dcd5d5ca5e5232e",
+          "bf15efcb9dcb772de7d7d853ba3545c9e5fc5e5f67b2e6a013f7a6066f7ceb92",
+          "c1fc21c2eb847bd46785572e4ecc29693955362f9bec16495f74126911a9256b"
+        ],
+        "finish_capture_sha256": "c1fc21c2eb847bd46785572e4ecc29693955362f9bec16495f74126911a9256b",
+        "basis": "native R9/R10/R11/R13/R15 finish receipt binds page result and markdown to captured grant and registered source"
+      },
+      "prediction_sha256": "799f19dad2436fc933c5a7e0883f5653ef5324875fc4684a609c28cf91dac4da"
+    },
+    {
+      "position": 501,
+      "image": "PPT_linear-algebra primer_page_008.png",
+      "gt_index": 1361,
+      "gt_tables": 0,
+      "status": "complete",
+      "reason": "native finish and request origins verified",
+      "tables": [],
+      "source_lineage": {
+        "verified": true,
+        "request_origins_verified": true,
+        "origin_capture_sha256": [
+          "102a15f7125bed0ce06ea6f30abba6c52098e76d805112299b741017c22bae4d",
+          "1b01e0dc0bc1f12467a550df82353c9fb8bc9b08ed490cab31a9597469111294",
+          "1c41a9dacd87eb6dad5077fb9c130c43a1b3800247cc1e95706971870af6b4cd",
+          "26d5be22ace48b8866e63c397d4edba4baa015853dae563abba3531891e631c1",
+          "453c8ee0a45bee55491caaa73f9058f2d146a609790f8a2045d0b35f3189b17a",
+          "4be43fefbc584554b4b1675ee745aeb62c82db955afa1cd3ed8b7d3b2cc161ca",
+          "6e25bc5429991f5e2c9927b27f14df11cf4bc708a40720feec0abd86cb886f0a",
+          "bf15efcb9dcb772de7d7d853ba3545c9e5fc5e5f67b2e6a013f7a6066f7ceb92",
+          "c1fc21c2eb847bd46785572e4ecc29693955362f9bec16495f74126911a9256b",
+          "e65cf7cd8b8d548cdcaf2166ed344157b6aea04bffd7c423d79841243a44cdb1"
+        ],
+        "finish_capture_sha256": "453c8ee0a45bee55491caaa73f9058f2d146a609790f8a2045d0b35f3189b17a",
+        "basis": "native R9/R10/R11/R13/R15 finish receipt binds page result and markdown to captured grant and registered source"
+      },
+      "prediction_sha256": "f63fb655dd362e39fe159e92a0ed1ad05f20445f1317b97441c2a80ca6f64fd0"
+    },
+    {
+      "position": 502,
+      "image": "PPT_session 10_page_023.png",
+      "gt_index": 1362,
+      "gt_tables": 0,
+      "status": "unknown",
+      "reason": "no durable completed page",
+      "tables": null
+    },
+    {
+      "position": 503,
+      "image": "newspaper_The Guardian UK_0801@magazinesclubnew_page_061.png",
+      "gt_index": 1363,
+      "gt_tables": 0,
+      "status": "unknown",
+      "reason": "no durable completed page",
+      "tables": null
+    },
+    {
+      "position": 504,
+      "image": "newspaper_The Wall Street Journal - 2025-01-08@magazinesclubnew_page_009.png",
+      "gt_index": 1364,
+      "gt_tables": 0,
+      "status": "unknown",
+      "reason": "no durable completed page",
+      "tables": null
+    }
+  ],
+  "coverage": {
+    "pages_complete": 2,
+    "pages_total": 5,
+    "gt_tables_scored": 0,
+    "gt_tables_total": 0
+  },
+  "means": {
+    "teds": null,
+    "teds_structure_only": null
+  }
+}

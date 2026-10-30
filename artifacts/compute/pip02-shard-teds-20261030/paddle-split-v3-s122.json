@@ -1,0 +1,76 @@
+{
+  "arm": "paddle",
+  "cohort": "pip02-english-fresh-20261029",
+  "shard": 122,
+  "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+  "gt_sha256": "a45cd84b04ad8b793e775089640e6b681209abea33ead54c1828ddca35fae496",
+  "config_sha256": "e424bd8aea788ad3662e1d5a695b99f4e0fdae13ed484160b909ac22681bbbc3",
+  "scoring_sources_sha256": {
+    "pip02_records.py": "2d364d7a7ef1d47b21fb8f3352ff4ffe98e93c682da3996f6e1270c8193c81cd",
+    "pip02_lineage.py": "6dea759fe4fa7adc5c78d34fe7b01aea1d44ab98bc3103ccacbb3f36efb831fa",
+    "pip02_compare.py": "37e9d673ba46ac16c5f8169db97290933b3c63fb48ef133b825d5db3a9ba995e",
+    "pip02_native_score.py": "27f0b630b6812aecad35d1c65329841a5011e421326e81f9f14c8c66a6fdbe5e"
+  },
+  "pages": [
+    {
+      "position": 610,
+      "image": "color_textbook_zhonggaokao_\u5c0f\u5b66_13.\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed\uff084-5\u5e74\u7ea7\uff09_\u4eba\u6559\u65b0\u8d77\u70b9\u4e94\u5e74\u7ea7\u82f1\u8bed\u4e0a\u518c_\u8bfe\u672c_\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed5A\u7535\u5b50\u8bfe\u672c_page_006.png",
+      "gt_index": 1494,
+      "gt_tables": 1,
+      "status": "unknown",
+      "reason": "no durable completed page",
+      "tables": null,
+      "input_sha256": {}
+    },
+    {
+      "position": 611,
+      "image": "color_textbook_zhonggaokao_\u5c0f\u5b66_13.\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed\uff084-5\u5e74\u7ea7\uff09_\u4eba\u6559\u65b0\u8d77\u70b9\u4e94\u5e74\u7ea7\u82f1\u8bed\u4e0b\u518c_\u8bfe\u672c_\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed5B\u7535\u5b50\u8bfe\u672c_page_011.png",
+      "gt_index": 1498,
+      "gt_tables": 1,
+      "status": "unknown",
+      "reason": "no durable completed page",
+      "tables": null,
+      "input_sha256": {}
+    },
+    {
+      "position": 612,
+      "image": "color_textbook_zhonggaokao_\u5c0f\u5b66_KET\u542c\u8bf4\u8bfb\u5199\u9010\u9879\u7a81\u7834_KET\u542c\u8bf4\u8bfb\u5199\u9010\u9879\u7a81\u7834\u4e4b\u8f7b\u677e\u641e\u5b9aKET\u5199\u4f5c25\u5206 \u301010\u8bb2 \u891a\u8fde\u4e00\u3011_\u7b2c04\u8bb2\u7b2c\u56db\u8bfeKET\u5206\u7c7b\u8bcd\u6c47\u8bad\u7ec3\u4e8c_\u7b2c\u56db\u8bfeKET\u5206\u7c7b\u8bcd\u6c47\u8bad\u7ec3\u4e8c_page_003.png",
+      "gt_index": 1500,
+      "gt_tables": 0,
+      "status": "unknown",
+      "reason": "no durable completed page",
+      "tables": null,
+      "input_sha256": {}
+    },
+    {
+      "position": 613,
+      "image": "color_textbook_zhonggaokao_\u5c0f\u5b66_13.\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed\uff084-5\u5e74\u7ea7\uff09_\u4eba\u6559\u65b0\u8d77\u70b9\u4e94\u5e74\u7ea7\u82f1\u8bed\u4e0b\u518c_\u8bfe\u672c_\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed5B\u7535\u5b50\u8bfe\u672c_page_027.png",
+      "gt_index": 1501,
+      "gt_tables": 0,
+      "status": "unknown",
+      "reason": "no durable completed page",
+      "tables": null,
+      "input_sha256": {}
+    },
+    {
+      "position": 614,
+      "image": "color_textbook_zhonggaokao_\u5c0f\u5b66_13.\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed\uff084-5\u5e74\u7ea7\uff09_\u4eba\u6559\u65b0\u8d77\u70b9\u4e94\u5e74\u7ea7\u82f1\u8bed\u4e0b\u518c_\u8bfe\u672c_\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed5B\u7535\u5b50\u8bfe\u672c_page_034.png",
+      "gt_index": 1502,
+      "gt_tables": 0,
+      "status": "unknown",
+      "reason": "no durable completed page",
+      "tables": null,
+      "input_sha256": {}
+    }
+  ],
+  "coverage": {
+    "pages_complete": 0,
+    "pages_total": 5,
+    "gt_tables_scored": 0,
+    "gt_tables_total": 2
+  },
+  "means": {
+    "teds": null,
+    "teds_structure_only": null
+  }
+}

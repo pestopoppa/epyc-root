@@ -1,0 +1,116 @@
+{
+  "arm": "paddle",
+  "cohort": "pip02-english-fresh-20261029",
+  "storage": "raid",
+  "shard": 99,
+  "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+  "gt_sha256": "a45cd84b04ad8b793e775089640e6b681209abea33ead54c1828ddca35fae496",
+  "config_sha256": "e424bd8aea788ad3662e1d5a695b99f4e0fdae13ed484160b909ac22681bbbc3",
+  "lineage_sha256": "39a511a6cf4de532c0847eab3eced768aa740ff4e39022c5c49b582aa95a7d2e",
+  "pages": [
+    {
+      "position": 495,
+      "image": "PPT_ch7_page_132.png",
+      "gt_index": 1355,
+      "gt_tables": 0,
+      "status": "unknown",
+      "reason": "no durable completed page",
+      "tables": null
+    },
+    {
+      "position": 496,
+      "image": "PPT_8076_MEYER_Chapter_2_-_Language_Change_page_014.png",
+      "gt_index": 1356,
+      "gt_tables": 1,
+      "status": "complete",
+      "reason": "native finish and request origins verified",
+      "tables": [
+        {
+          "gt_idx": [
+            0
+          ],
+          "pred_idx": [
+            0
+          ],
+          "teds": 0.9216269841269842,
+          "teds_structure_only": 1.0
+        }
+      ],
+      "source_lineage": {
+        "verified": true,
+        "request_origins_verified": true,
+        "origin_capture_sha256": [
+          "0c3cc5da7963e233b345b70190ad8854aad116b2a5df12d90363502b3430ffbe",
+          "1b01e0dc0bc1f12467a550df82353c9fb8bc9b08ed490cab31a9597469111294",
+          "1c41a9dacd87eb6dad5077fb9c130c43a1b3800247cc1e95706971870af6b4cd",
+          "6e25bc5429991f5e2c9927b27f14df11cf4bc708a40720feec0abd86cb886f0a",
+          "c1fc21c2eb847bd46785572e4ecc29693955362f9bec16495f74126911a9256b"
+        ],
+        "finish_capture_sha256": "6e25bc5429991f5e2c9927b27f14df11cf4bc708a40720feec0abd86cb886f0a",
+        "basis": "native R9/R10/R11/R13/R15 finish receipt binds page result and markdown to captured grant and registered source"
+      },
+      "prediction_sha256": "33e52550026239f3eb40832d83bfff69814ac4fa8da7676ba186ccb701bbd69e"
+    },
+    {
+      "position": 497,
+      "image": "PPT_8076_MEYER_Chapter_2_-_Language_Change_page_021.png",
+      "gt_index": 1357,
+      "gt_tables": 1,
+      "status": "complete",
+      "reason": "native finish and request origins verified",
+      "tables": [
+        {
+          "gt_idx": [
+            0
+          ],
+          "pred_idx": [
+            0
+          ],
+          "teds": 0.95,
+          "teds_structure_only": 1.0
+        }
+      ],
+      "source_lineage": {
+        "verified": true,
+        "request_origins_verified": true,
+        "origin_capture_sha256": [
+          "102a15f7125bed0ce06ea6f30abba6c52098e76d805112299b741017c22bae4d",
+          "951afb3841402aea6746ed5771662566c4a4dbf548ec1d3ffdf66d816f793d1f",
+          "ac72b0f195317e718ca823351d47b3cb71d113d838f857c49dcd5d5ca5e5232e",
+          "bf15efcb9dcb772de7d7d853ba3545c9e5fc5e5f67b2e6a013f7a6066f7ceb92"
+        ],
+        "finish_capture_sha256": "bf15efcb9dcb772de7d7d853ba3545c9e5fc5e5f67b2e6a013f7a6066f7ceb92",
+        "basis": "native R9/R10/R11/R13/R15 finish receipt binds page result and markdown to captured grant and registered source"
+      },
+      "prediction_sha256": "f032cbadad07a627fdfceaabc6116f9e66388142d9c2cc61c26ea637ca668a81"
+    },
+    {
+      "position": 498,
+      "image": "PPT_CalculusReview_page_014.png",
+      "gt_index": 1358,
+      "gt_tables": 0,
+      "status": "unknown",
+      "reason": "no durable completed page",
+      "tables": null
+    },
+    {
+      "position": 499,
+      "image": "PPT_fundamental_theorem_of_calculus___page_005.png",
+      "gt_index": 1359,
+      "gt_tables": 0,
+      "status": "unknown",
+      "reason": "no durable completed page",
+      "tables": null
+    }
+  ],
+  "coverage": {
+    "pages_complete": 2,
+    "pages_total": 5,
+    "gt_tables_scored": 2,
+    "gt_tables_total": 2
+  },
+  "means": {
+    "teds": 0.9358134920634921,
+    "teds_structure_only": 1.0
+  }
+}

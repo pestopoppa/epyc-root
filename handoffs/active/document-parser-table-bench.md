@@ -378,13 +378,17 @@ Same Phase C native scorer and ground truth, locked fresh English cohort `pip02-
 
 | Arm / shard | Complete pages | GT tables scored / planned | Table TEDS ↑ | Structure-only TEDS ↑ |
 |---|---:|---:|---:|---:|
-| ODL+Docling hybrid fresh s20 | 25/25 | 47/47 | 0.137642 | 0.290202 |
-| ODL+Docling hybrid fresh s21 | 25/25 | 8/8 | 0.078004 | 0.116914 |
 | ODL+Docling hybrid fresh s05 | 25/25 | 8/8 | 0.554871 | 0.640090 |
 | ODL+Docling hybrid fresh s08 | 25/25 | 10/10 | 0.733307 | 0.815572 |
 | ODL+Docling hybrid fresh s09 | 25/25 | 7/7 | 0.842202 | 0.916755 |
+| ODL+Docling hybrid fresh s16 | 25/25 | 7/7 | 0.243788 | 0.562940 |
+| ODL+Docling hybrid fresh s17 | 25/25 | 1/1 | 0.951119 | 1.000000 |
+| ODL+Docling hybrid fresh s20 | 25/25 | 47/47 | 0.137642 | 0.290202 |
+| ODL+Docling hybrid fresh s21 | 25/25 | 8/8 | 0.078004 | 0.116914 |
 | ODL+Docling hybrid fresh s24 | 25/25 | 5/5 | 0.518804 | 0.538788 |
-| ODL+Docling hybrid fresh s25 | 25/25 | 0/0 | n/a (no GT tables) | n/a (no GT tables) |
+| ODL+Docling hybrid fresh s25 | 25/25 | 0/0 | — | — |
+| ODL+Docling hybrid fresh s28 | 4/25 | 0/0 | — | — |
+| ODL+Docling hybrid fresh s29 | 13/25 | 3/4 | 0.312108 | 0.333333 |
 
 Native complete-page records passed prediction/output, original source/protocol/dependency/input and frozen plan bindings. PlanSHA `63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68`; GTSHA `a45cd84b04ad8b793e775089640e6b681209abea33ead54c1828ddca35fae496`; scorerSHA `27f0b630b6812aecad35d1c65329841a5011e421326e81f9f14c8c66a6fdbe5e`; pinmanifest `262462c58402db48aa88063cdb1817915dcdef0c1933e72869682dd905c34cf0`. English inputs, native matched GT/prediction indices and every per-table score are committed in [s20](../../artifacts/compute/pip02-shard-teds-20261030/odl-s20.json) and [s21](../../artifacts/compute/pip02-shard-teds-20261030/odl-s21.json). An independent repeat under the correct original26-27 mutex on admitted SMT122/123 reproduced both files byte-for-byte;17.466s, sampled503,226,368 bytes and descendants drained. [belief: cc]
 
@@ -392,3 +396,92 @@ Native complete-page records passed prediction/output, original source/protocol/
 - [ ] Continue this table for every verified completed ODL/Paddle shard as it finishes, with epoch/source and coverage preserved. Do not wait for the755-page full-cohort gate.
 
 Incremental scoring also verified completed s05/s08/s09 (originalR2 source) and s24/s25 (originalR4 source `af6262aaf380b3a69031fc5b7f5b11ec0f8b697f314c410c159568bccf4cc62a`), with the same scorer/GT. Their per-table records are committed in the same artifact directory; s25 has no GT table and therefore no table mean. The first seven filed rows cover175complete pages/85GTtables, as a descriptive partial cohort only. [belief: cc]
+
+
+#### Paddle English scores by original finish epoch
+
+The current full151-shard snapshot has251 verified complete pages and78 scored GT tables. Its other504 pages remain476 unknown,20 errors and8 with request origins but no verified finishing-capture binding. All755 original page IDs and243 planned GT tables remain represented. Per-epoch rows below are components of fixed shards: their repeated planned denominators must not be summed. A case is deduplicated only when original prediction/finish hashes and native table values match; conflicting complete snapshots refuse, and later partials cannot erase an earlier complete observation.
+
+| Paddle shard | Finish epoch | Verified pages / planned | GT tables scored / planned | TEDS | Structure-only TEDS | Case artifact |
+|---|---|---:|---:|---:|---:|---|
+| s008 | r22 | 5/5 | 0/0 | — | — | [case data](../../artifacts/compute/pip02-shard-teds-20261030/paddle-snapshot-paddle-split-v3-s008.json) |
+| s009 | r22 | 5/5 | 0/0 | — | — | [case data](../../artifacts/compute/pip02-shard-teds-20261030/paddle-snapshot-paddle-split-v3-s009.json) |
+| s010 | r22 | 5/5 | 0/0 | — | — | [case data](../../artifacts/compute/pip02-shard-teds-20261030/paddle-snapshot-paddle-split-v3-s010.json) |
+| s011 | r22 | 2/5 | 0/0 | — | — | [case data](../../artifacts/compute/pip02-shard-teds-20261030/paddle-snapshot-paddle-watch-s011.json) |
+| s012 | r22 | 4/5 | 0/0 | — | — | [case data](../../artifacts/compute/pip02-shard-teds-20261030/paddle-snapshot-paddle-watch-s012.json) |
+| s013 | r22 | 1/5 | 0/0 | — | — | [case data](../../artifacts/compute/pip02-shard-teds-20261030/paddle-snapshot-paddle-watch-s013.json) |
+| s014 | r11 | 2/5 | 0/0 | — | — | [case data](../../artifacts/compute/pip02-shard-teds-20261030/paddle-snapshot-paddle-watch-s014.json) |
+| s015 | r11 | 2/5 | 0/0 | — | — | [case data](../../artifacts/compute/pip02-shard-teds-20261030/paddle-snapshot-paddle-watch-s015.json) |
+| s016 | r11 | 3/5 | 0/1 | — | — | [case data](../../artifacts/compute/pip02-shard-teds-20261030/paddle-snapshot-paddle-watch-s016.json) |
+| s020 | r22 | 3/5 | 3/5 | 0.959600 | 0.979550 | [case data](../../artifacts/compute/pip02-shard-teds-20261030/paddle-snapshot-paddle-split-v3-s020.json) |
+| s021 | r22 | 5/5 | 5/5 | 0.966403 | 0.995597 | [case data](../../artifacts/compute/pip02-shard-teds-20261030/paddle-snapshot-paddle-split-v3-s021.json) |
+| s022 | r22 | 2/5 | 3/6 | 0.946595 | 0.973352 | [case data](../../artifacts/compute/pip02-shard-teds-20261030/paddle-snapshot-paddle-split-v3-s022.json) |
+| s023 | r22 | 5/5 | 5/5 | 0.969951 | 0.986704 | [case data](../../artifacts/compute/pip02-shard-teds-20261030/paddle-snapshot-paddle-split-v3-s023.json) |
+| s024 | r22 | 5/5 | 6/6 | 0.985741 | 0.999556 | [case data](../../artifacts/compute/pip02-shard-teds-20261030/paddle-snapshot-paddle-split-v3-s024.json) |
+| s025 | r22 | 4/5 | 5/5 | 0.900181 | 0.952941 | [case data](../../artifacts/compute/pip02-shard-teds-20261030/paddle-snapshot-paddle-split-v3-s025.json) |
+| s026 | r14 | 3/5 | 0/0 | — | — | [case data](../../artifacts/compute/pip02-shard-teds-20261030/paddle-snapshot-paddle-split-v3-s026.json) |
+| s026 | r22 | 2/5 | 0/0 | — | — | [case data](../../artifacts/compute/pip02-shard-teds-20261030/paddle-snapshot-paddle-split-v3-s026.json) |
+| s027 | r14 | 2/5 | 0/0 | — | — | [case data](../../artifacts/compute/pip02-shard-teds-20261030/paddle-snapshot-paddle-split-v3-s027.json) |
+| s027 | r22 | 3/5 | 0/0 | — | — | [case data](../../artifacts/compute/pip02-shard-teds-20261030/paddle-snapshot-paddle-split-v3-s027.json) |
+| s028 | r14 | 2/5 | 0/3 | — | — | [case data](../../artifacts/compute/pip02-shard-teds-20261030/paddle-snapshot-paddle-split-v3-s028.json) |
+| s028 | r22 | 3/5 | 3/3 | 0.990874 | 1.000000 | [case data](../../artifacts/compute/pip02-shard-teds-20261030/paddle-snapshot-paddle-split-v3-s028.json) |
+| s032 | r22 | 5/5 | 3/3 | 0.417395 | 0.424469 | [case data](../../artifacts/compute/pip02-shard-teds-20261030/paddle-snapshot-paddle-split-v3-s032.json) |
+| s033 | r22 | 3/5 | 0/0 | — | — | [case data](../../artifacts/compute/pip02-shard-teds-20261030/paddle-snapshot-paddle-split-v3-s033.json) |
+| s034 | r22 | 3/5 | 0/5 | — | — | [case data](../../artifacts/compute/pip02-shard-teds-20261030/paddle-snapshot-paddle-split-v3-s034.json) |
+| s035 | r22 | 5/5 | 4/4 | 0.909152 | 1.000000 | [case data](../../artifacts/compute/pip02-shard-teds-20261030/paddle-snapshot-paddle-watch-s035.json) |
+| s036 | r22 | 5/5 | 0/0 | — | — | [case data](../../artifacts/compute/pip02-shard-teds-20261030/paddle-snapshot-paddle-split-v3-s036.json) |
+| s037 | r22 | 5/5 | 0/0 | — | — | [case data](../../artifacts/compute/pip02-shard-teds-20261030/paddle-snapshot-paddle-split-v3-s037.json) |
+| s038 | r22 | 5/5 | 0/0 | — | — | [case data](../../artifacts/compute/pip02-shard-teds-20261030/paddle-snapshot-paddle-split-v3-s038.json) |
+| s039 | r22 | 1/5 | 0/0 | — | — | [case data](../../artifacts/compute/pip02-shard-teds-20261030/paddle-snapshot-paddle-split-v3-s039.json) |
+| s040 | r22 | 4/5 | 2/2 | 0.900544 | 0.925306 | [case data](../../artifacts/compute/pip02-shard-teds-20261030/paddle-snapshot-paddle-split-v3-s040.json) |
+| s047 | r22 | 5/5 | 1/1 | 0.997619 | 1.000000 | [case data](../../artifacts/compute/pip02-shard-teds-20261030/paddle-snapshot-paddle-split-v3-s047.json) |
+| s048 | r22 | 3/5 | 0/0 | — | — | [case data](../../artifacts/compute/pip02-shard-teds-20261030/paddle-snapshot-paddle-split-v3-s048.json) |
+| s049 | r22 | 2/5 | 1/3 | 0.997727 | 1.000000 | [case data](../../artifacts/compute/pip02-shard-teds-20261030/paddle-snapshot-paddle-split-v3-s049.json) |
+| s050 | r22 | 3/5 | 6/7 | 0.950152 | 0.985481 | [case data](../../artifacts/compute/pip02-shard-teds-20261030/paddle-snapshot-paddle-split-v3-s050.json) |
+| s051 | r22 | 5/5 | 7/7 | 0.948362 | 0.957008 | [case data](../../artifacts/compute/pip02-shard-teds-20261030/paddle-snapshot-paddle-split-v3-s051.json) |
+| s052 | r22 | 3/5 | 4/6 | 0.997927 | 1.000000 | [case data](../../artifacts/compute/pip02-shard-teds-20261030/paddle-snapshot-paddle-split-v3-s052.json) |
+| s056 | r22 | 5/5 | 0/0 | — | — | [case data](../../artifacts/compute/pip02-shard-teds-20261030/paddle-snapshot-paddle-split-v3-s056.json) |
+| s057 | r22 | 5/5 | 1/1 | 1.000000 | 1.000000 | [case data](../../artifacts/compute/pip02-shard-teds-20261030/paddle-snapshot-paddle-split-v3-s057.json) |
+| s058 | r22 | 5/5 | 3/3 | 0.938161 | 0.950000 | [case data](../../artifacts/compute/pip02-shard-teds-20261030/paddle-snapshot-paddle-split-v3-s058.json) |
+| s059 | r22 | 5/5 | 4/4 | 0.964214 | 1.000000 | [case data](../../artifacts/compute/pip02-shard-teds-20261030/paddle-snapshot-paddle-split-v3-s059.json) |
+| s060 | r22 | 5/5 | 0/0 | — | — | [case data](../../artifacts/compute/pip02-shard-teds-20261030/paddle-snapshot-paddle-split-v3-s060.json) |
+| s061 | r22 | 5/5 | 1/1 | 1.000000 | 1.000000 | [case data](../../artifacts/compute/pip02-shard-teds-20261030/paddle-snapshot-paddle-split-v3-s061.json) |
+| s064 | r11 | 3/5 | 0/0 | — | — | [case data](../../artifacts/compute/pip02-shard-teds-20261030/paddle-snapshot-paddle-split-v3-s064.json) |
+| s077 | r11 | 1/5 | 2/3 | 0.969781 | 1.000000 | [case data](../../artifacts/compute/pip02-shard-teds-20261030/paddle-snapshot-paddle-split-v3-s077.json) |
+| s080 | r22 | 4/5 | 2/2 | 0.667766 | 0.740260 | [case data](../../artifacts/compute/pip02-shard-teds-20261030/paddle-snapshot-paddle-split-v3-s080.json) |
+| s081 | r11 | 2/5 | 0/0 | — | — | [case data](../../artifacts/compute/pip02-shard-teds-20261030/paddle-snapshot-paddle-split-v3-s081.json) |
+| s081 | r22 | 2/5 | 0/0 | — | — | [case data](../../artifacts/compute/pip02-shard-teds-20261030/paddle-snapshot-paddle-split-v3-s081.json) |
+| s082 | r11 | 1/5 | 1/3 | 0.851760 | 0.933333 | [case data](../../artifacts/compute/pip02-shard-teds-20261030/paddle-snapshot-paddle-split-v3-s082.json) |
+| s082 | r22 | 3/5 | 1/3 | 0.909740 | 0.956522 | [case data](../../artifacts/compute/pip02-shard-teds-20261030/paddle-snapshot-paddle-split-v3-s082.json) |
+| s083 | r22 | 5/5 | 2/2 | 0.931377 | 1.000000 | [case data](../../artifacts/compute/pip02-shard-teds-20261030/paddle-snapshot-paddle-split-v3-s083.json) |
+| s084 | r22 | 5/5 | 0/0 | — | — | [case data](../../artifacts/compute/pip02-shard-teds-20261030/paddle-snapshot-paddle-split-v3-s084.json) |
+| s085 | r22 | 5/5 | 0/0 | — | — | [case data](../../artifacts/compute/pip02-shard-teds-20261030/paddle-snapshot-paddle-split-v3-s085.json) |
+| s086 | r11 | 4/5 | 0/0 | — | — | [case data](../../artifacts/compute/pip02-shard-teds-20261030/paddle-snapshot-paddle-split-v3-s086.json) |
+| s087 | r11 | 4/5 | 0/0 | — | — | [case data](../../artifacts/compute/pip02-shard-teds-20261030/paddle-snapshot-paddle-split-v3-s087.json) |
+| s088 | r11 | 2/5 | 0/0 | — | — | [case data](../../artifacts/compute/pip02-shard-teds-20261030/paddle-snapshot-paddle-split-v3-s088.json) |
+| s092 | r22 | 5/5 | 0/0 | — | — | [case data](../../artifacts/compute/pip02-shard-teds-20261030/paddle-snapshot-paddle-split-v3-s092.json) |
+| s093 | r22 | 5/5 | 0/0 | — | — | [case data](../../artifacts/compute/pip02-shard-teds-20261030/paddle-snapshot-paddle-split-v3-s093.json) |
+| s094 | r22 | 5/5 | 0/0 | — | — | [case data](../../artifacts/compute/pip02-shard-teds-20261030/paddle-snapshot-paddle-split-v3-s094.json) |
+| s095 | r22 | 5/5 | 0/0 | — | — | [case data](../../artifacts/compute/pip02-shard-teds-20261030/paddle-snapshot-paddle-split-v3-s095.json) |
+| s096 | r22 | 5/5 | 1/1 | 0.952341 | 1.000000 | [case data](../../artifacts/compute/pip02-shard-teds-20261030/paddle-snapshot-paddle-split-v3-s096.json) |
+| s097 | r22 | 5/5 | 0/0 | — | — | [case data](../../artifacts/compute/pip02-shard-teds-20261030/paddle-snapshot-paddle-split-v3-s097.json) |
+| s098 | r11 | 3/5 | 0/0 | — | — | [case data](../../artifacts/compute/pip02-shard-teds-20261030/paddle-snapshot-paddle-split-v3-s098.json) |
+| s099 | r11 | 2/5 | 2/2 | 0.935813 | 1.000000 | [case data](../../artifacts/compute/pip02-shard-teds-20261030/paddle-snapshot-paddle-split-v3-s099.json) |
+| s100 | r11 | 2/5 | 0/0 | — | — | [case data](../../artifacts/compute/pip02-shard-teds-20261030/paddle-snapshot-paddle-split-v3-s100.json) |
+| s105 | r22 | 2/5 | 0/0 | — | — | [case data](../../artifacts/compute/pip02-shard-teds-20261030/paddle-snapshot-paddle-split-v3-s105.json) |
+| s108 | r22 | 5/5 | 0/0 | — | — | [case data](../../artifacts/compute/pip02-shard-teds-20261030/paddle-snapshot-paddle-split-v3-s108.json) |
+| s109 | r22 | 1/5 | 0/0 | — | — | [case data](../../artifacts/compute/pip02-shard-teds-20261030/paddle-snapshot-paddle-watch-s109.json) |
+| s119 | r11 | 1/5 | 0/0 | — | — | [case data](../../artifacts/compute/pip02-shard-teds-20261030/paddle-snapshot-paddle-split-v3-s119.json) |
+| s119 | r22 | 2/5 | 0/0 | — | — | [case data](../../artifacts/compute/pip02-shard-teds-20261030/paddle-snapshot-paddle-split-v3-s119.json) |
+| s120 | r11 | 1/5 | 0/1 | — | — | [case data](../../artifacts/compute/pip02-shard-teds-20261030/paddle-snapshot-paddle-split-v3-s120.json) |
+| s120 | r22 | 1/5 | 0/1 | — | — | [case data](../../artifacts/compute/pip02-shard-teds-20261030/paddle-snapshot-paddle-split-v3-s120.json) |
+| s121 | r11 | 2/5 | 0/0 | — | — | [case data](../../artifacts/compute/pip02-shard-teds-20261030/paddle-snapshot-paddle-split-v3-s121.json) |
+| s121 | r22 | 2/5 | 0/0 | — | — | [case data](../../artifacts/compute/pip02-shard-teds-20261030/paddle-snapshot-paddle-split-v3-s121.json) |
+| s126 | r11 | 1/5 | 0/0 | — | — | [case data](../../artifacts/compute/pip02-shard-teds-20261030/paddle-snapshot-paddle-split-v3-s126.json) |
+
+Descriptive English fresh cohort snapshots, table weighted, higher better; denominators repeat where a shard spans epochs and must not be summed. Native request origins may span earlier epochs and are preserved per case. Each case is counted once; matching completed snapshots deduplicate by prediction, finisher and table values, while conflicting completions are refused. Current non-complete cases and every historical non-complete event are retained in [case data](../../artifacts/compute/pip02-shard-teds-20261030/paddle-snapshot-paddle-running-refusals.json); no paired or full-population claim.
+
+
+The native Phase C TEDS scorer, GT, table matcher and English cohort remain unchanged. Research main `243067bed40d0ed5e08827ed4c7c760a0250b196` adds only strict original capture/finish joins across RAID/R14/R22/R25/R26/R27 layers;18 lineage controls and actual mixed-epoch cases passed. Missing original R4 warrant and orphan/native-finish failures remain refused, not repaired by guessing. These partial descriptive observations do not establish a full755-page quality gate or paired parser winner. [Full151-shard inventory](../../artifacts/compute/pip02-shard-teds-20261030/inventory-1840.json). [belief: cc]
+
+Both source-bound, bounded scoring watchers are active: ODL PID2373051 and Paddle PID2341453 at this checkpoint. They score newly finished shards through the same native scorer/GT, with the standing R6 mutex, admission, memory and wall limits. The original case snapshots and all earlier unknown/error events remain in the declared KEEP root. Future outputs still need incremental filing here; the full cohort is not a filing prerequisite.

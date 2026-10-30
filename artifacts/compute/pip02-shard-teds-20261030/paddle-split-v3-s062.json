@@ -1,0 +1,86 @@
+{
+  "arm": "paddle",
+  "cohort": "pip02-english-fresh-20261029",
+  "shard": 62,
+  "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+  "gt_sha256": "a45cd84b04ad8b793e775089640e6b681209abea33ead54c1828ddca35fae496",
+  "config_sha256": "e424bd8aea788ad3662e1d5a695b99f4e0fdae13ed484160b909ac22681bbbc3",
+  "scoring_sources_sha256": {
+    "pip02_records.py": "2d364d7a7ef1d47b21fb8f3352ff4ffe98e93c682da3996f6e1270c8193c81cd",
+    "pip02_lineage.py": "6dea759fe4fa7adc5c78d34fe7b01aea1d44ab98bc3103ccacbb3f36efb831fa",
+    "pip02_compare.py": "37e9d673ba46ac16c5f8169db97290933b3c63fb48ef133b825d5db3a9ba995e",
+    "pip02_native_score.py": "27f0b630b6812aecad35d1c65329841a5011e421326e81f9f14c8c66a6fdbe5e"
+  },
+  "pages": [
+    {
+      "position": 310,
+      "image": "jiaocaineedrop_jiaocai_needrop_en_2198.jpg",
+      "gt_index": 757,
+      "gt_tables": 0,
+      "status": "unknown",
+      "reason": "no durable completed page",
+      "tables": null,
+      "input_sha256": {
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-62/shard-62/22361a0b650eddb734d5a07681f59aa94d6834e215ed145a11f91fd9bf184aa2.start": "0381f71327f7c03a7a199918aad39b7b6e29d36f3a735a7490c9136558473743"
+      }
+    },
+    {
+      "position": 311,
+      "image": "jiaocaineedrop_jiaocai_needrop_en_223.jpg",
+      "gt_index": 759,
+      "gt_tables": 0,
+      "status": "unknown",
+      "reason": "no durable completed page",
+      "tables": null,
+      "input_sha256": {
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-62/shard-62/21e9d0e672ad1eac248a1a240540a2da4d50eb73e50dbc9027b3509d062a5bb1.start": "a461f680540582fcf1ebffee9a61eb09e795c22c7bbc1f3d3fbfb3224bf10e73"
+      }
+    },
+    {
+      "position": 312,
+      "image": "jiaocaineedrop_jiaocai_needrop_en_3375.jpg",
+      "gt_index": 808,
+      "gt_tables": 0,
+      "status": "unknown",
+      "reason": "no durable completed page",
+      "tables": null,
+      "input_sha256": {
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-62/shard-62/323fd9e8a6f1b9c3de0b38228ba67677764b09d828eebf464e0e7cd2727ced87.start": "874436820af389faa91e948197f3df096545a859a47b0d86b1b91aa55a69abf6"
+      }
+    },
+    {
+      "position": 313,
+      "image": "jiaocaineedrop_jiaocai_needrop_en_3718.jpg",
+      "gt_index": 815,
+      "gt_tables": 0,
+      "status": "unknown",
+      "reason": "no durable completed page",
+      "tables": null,
+      "input_sha256": {
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-62/shard-62/346e1c733d4548a69ca044e97f357d661156b3b769786e7dc71c0c22ddb0c4ad.start": "5c20415ddc06e70098bb235ac46ba7f1c1d750947742057e998d6fdce0c51b02"
+      }
+    },
+    {
+      "position": 314,
+      "image": "jiaocaineedrop_jiaocai_needrop_en_453.jpg",
+      "gt_index": 831,
+      "gt_tables": 0,
+      "status": "unknown",
+      "reason": "no durable completed page",
+      "tables": null,
+      "input_sha256": {
+        "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-62/shard-62/55bb46e1f48ce4d88af1df169b9624c6edbd7f677f93849eb508fde5b003bf4b.start": "1f790edbdf94843eb1857cc93b49ba478707cd8d4c3a3e0e9ce294b5aaa8e0ab"
+      }
+    }
+  ],
+  "coverage": {
+    "pages_complete": 0,
+    "pages_total": 5,
+    "gt_tables_scored": 0,
+    "gt_tables_total": 0
+  },
+  "means": {
+    "teds": null,
+    "teds_structure_only": null
+  }
+}
