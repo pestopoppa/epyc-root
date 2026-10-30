@@ -1,0 +1,122 @@
+{
+  "schema": "codex3.cs22-a1.publication/v2",
+  "created_at": "2026-10-30T21:17:40.350902+00:00",
+  "manifests": {
+    "codex3-cs22-a1-native-f32-cpu-20261030": {
+      "path": "/mnt/raid0/llm/tmp/compute-flags/ready/codex3-cs22-a1-native-f32-cpu-20261030.json",
+      "sha256": "8579cf4c3e13081870631fb5fd3889365f181e04fa2163ffae4557f7dc559c97",
+      "state": "ready"
+    },
+    "codex3-cs22-a1-native-timing-v2-cpu-20261030": {
+      "path": "/mnt/raid0/llm/tmp/compute-flags/ready/armed/codex3-cs22-a1-native-timing-v2-cpu-20261030.json",
+      "sha256": "fdff7d01ac72fd0973036e429c4d7865af9af0de16907802f0180da4c0b71cad",
+      "state": "armed"
+    },
+    "codex3-cs22-a1-native-long-v2-cpu-20261030": {
+      "path": "/mnt/raid0/llm/tmp/compute-flags/ready/codex3-cs22-a1-native-long-v2-cpu-20261030.json",
+      "sha256": "4780f875ff1b16f98b05b4c7587705cc6edcae57153045daad151474d40837d4",
+      "state": "ready"
+    }
+  },
+  "long_source": {
+    "launch.sh": {
+      "path": "/mnt/raid0/llm/tmp/codex3-cs22-a1-long-v2-20261030/launch.sh",
+      "sha256": "ea76cb0b71852e4ba36918440e7fe7bac072544113956adbe895ee4ea43982cc"
+    },
+    "job.py": {
+      "path": "/mnt/raid0/llm/tmp/codex3-cs22-a1-long-v2-20261030/job.py",
+      "sha256": "505d3120516a7e5074a32b258689bd68aa9e17e1f20b00227fd5df4a21ce217e"
+    },
+    "SOURCE-SHA256SUMS": {
+      "path": "/mnt/raid0/llm/tmp/codex3-cs22-a1-long-v2-20261030/SOURCE-SHA256SUMS",
+      "sha256": "bbab6cfe3b2a4a955d41a51d7a611c8dad18542b888b7800a8cc31b5df53e053"
+    },
+    "PLAN.json": {
+      "path": "/mnt/raid0/llm/tmp/codex3-cs22-a1-long-v2-20261030/PLAN.json",
+      "sha256": "9a1b43acd23e1f67ce6ab22bead535add9c42b9d2194de7143321a88885e1a56"
+    },
+    "P-STT-1-protocol.md": {
+      "path": "/mnt/raid0/llm/tmp/codex3-cs22-a1-long-v2-20261030/P-STT-1-protocol.md",
+      "sha256": "929ea183da2ee0cdf3d6d50bb01b103ba6a6557ac0766b90936850f96554908b"
+    }
+  },
+  "long_qualification": {
+    "smoke-v1.log": {
+      "path": "/mnt/raid0/llm/tmp/codex3-cs22-a1-long-v2-20261030/smoke-v1.log",
+      "sha256": "c849e227dc642293d3879b9354ba2a2b4e4547ea24bac019e205a2760234d353"
+    },
+    "resume-v1.log": {
+      "path": "/mnt/raid0/llm/tmp/codex3-cs22-a1-long-v2-20261030/resume-v1.log",
+      "sha256": "becd612139187c9bbe9709511e681fd35f0627e729b9e8c71486906b4aab86b7"
+    },
+    "cutoff-v1.log": {
+      "path": "/mnt/raid0/llm/tmp/codex3-cs22-a1-long-v2-20261030/cutoff-v1.log",
+      "sha256": "1e019698b56d80e5d9a1a31381705b6650bdd64c3df9db176efe1b0961c9f03a"
+    },
+    "custody-fixture.log": {
+      "path": "/mnt/raid0/llm/tmp/codex3-cs22-a1-long-v2-20261030/custody-fixture.log",
+      "sha256": "e4fa440b16943aee532486ec9cb11041bb3218bd9f3fdfddc04f2a7ac361dedd"
+    },
+    "scorer-fixture.log": {
+      "path": "/mnt/raid0/llm/tmp/codex3-cs22-a1-long-v2-20261030/scorer-fixture.log",
+      "sha256": "cff4108cb36f8a73e3c2ba62bbcc66f91e18b3cd0a10cff87d7e5bce1f75f6c9"
+    }
+  },
+  "scorer_snapshot": {
+    "relative_files": [
+      "scorer-snapshot/data/stt-cs4/private_custody.json",
+      "scorer-snapshot/scripts/kernel_rnd/autokernel/__init__.py",
+      "scorer-snapshot/scripts/kernel_rnd/autokernel/adapters/__init__.py",
+      "scorer-snapshot/scripts/kernel_rnd/autokernel/adapters/whisper_stt.py",
+      "scorer-snapshot/scripts/kernel_rnd/autokernel/evaluator/__init__.py",
+      "scorer-snapshot/scripts/kernel_rnd/autokernel/evaluator/api.py",
+      "scorer-snapshot/scripts/kernel_rnd/autokernel/evaluator/devices.py",
+      "scorer-snapshot/scripts/kernel_rnd/autokernel/evaluator/integrity.py",
+      "scorer-snapshot/scripts/kernel_rnd/autokernel/evaluator/surface.py",
+      "scorer-snapshot/scripts/kernel_rnd/autokernel/release/__init__.py",
+      "scorer-snapshot/scripts/kernel_rnd/autokernel/release/plan.py",
+      "scorer-snapshot/scripts/kernel_rnd/autokernel/schemas.py",
+      "scorer-snapshot/scripts/speech/stt_bakeoff/__init__.py",
+      "scorer-snapshot/scripts/speech/stt_bakeoff/align.py",
+      "scorer-snapshot/scripts/speech/stt_bakeoff/custody.py",
+      "scorer-snapshot/scripts/speech/stt_bakeoff/private_custody.py",
+      "scorer-snapshot/scripts/speech/stt_bakeoff/scorer.py",
+      "scorer-snapshot/scripts/speech/stt_bakeoff/stt_norm.py"
+    ],
+    "source_commit": "99301fa149af86a6f9743d2b0405c9234ba39586",
+    "read_only_mode": "0444",
+    "source_manifest_sha256": "bbab6cfe3b2a4a955d41a51d7a611c8dad18542b888b7800a8cc31b5df53e053",
+    "guard": "imports constrained to local snapshot, bound per exposure and rehashed before scoring"
+  },
+  "timing_evidence": {
+    "launch.sh": {
+      "path": "/mnt/raid0/llm/tmp/codex3-cs22-a1-timing-v2-20261030/launch.sh",
+      "sha256": "77b1d9ecf3b22296d7f0fc53007004effa1fe4405f02bead9b9b8c5dad365573"
+    },
+    "job.py": {
+      "path": "/mnt/raid0/llm/tmp/codex3-cs22-a1-timing-v2-20261030/job.py",
+      "sha256": "c4195aeaad6e19dc5d68cd99812bbff238d2565e2af3961816d8462c61df8745"
+    },
+    "SOURCE-SHA256SUMS": {
+      "path": "/mnt/raid0/llm/tmp/codex3-cs22-a1-timing-v2-20261030/SOURCE-SHA256SUMS",
+      "sha256": "28a6f3989536a9a44015f718b15a47431290d08baa666c9f14bf5a3ea28b4184"
+    },
+    "smoke-v1.log": {
+      "path": "/mnt/raid0/llm/tmp/codex3-cs22-a1-timing-v2-20261030/smoke-v1.log",
+      "sha256": "6a5836622316f507a74fd79f97865de3868eede4c54a2f2b4f2564c5b3cf8c83"
+    },
+    "resume-v1.log": {
+      "path": "/mnt/raid0/llm/tmp/codex3-cs22-a1-timing-v2-20261030/resume-v1.log",
+      "sha256": "2fc20dff6ef87d85ab86a477df331d485bfb1c24bf5d9c596055821d8889149d"
+    },
+    "cutoff-v1.log": {
+      "path": "/mnt/raid0/llm/tmp/codex3-cs22-a1-timing-v2-20261030/cutoff-v1.log",
+      "sha256": "a81351c5c0283a40123cf3dcdef727ef0ee7cd8e2084341c9dae8c3ae6fce50a"
+    },
+    "grant-ok-admission.txt": {
+      "path": "/mnt/raid0/llm/tmp/codex3-cs22-a1-timing-v2-20261030/grant-ok-admission.txt",
+      "sha256": "8a6dc6d14e7e5879a78ef66f0eb7d0a4ee0e441184cdbe7c5a09b496e64f718e"
+    }
+  },
+  "limitations": "Prepared/queued only. Timing selection-only, combined 24-47 and mi210_0; 8h correctness CPU-only. Confirmation native and per-utterance outputs go to canonical custody at actual execution, not yet sealed or scored. R1 native rejection remains an explicit mismatch. No full A1 acceptance or T1 result; no belief warrant asserted."
+}

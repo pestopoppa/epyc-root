@@ -1,0 +1,14 @@
+{
+  "published_utc": "2026-10-30T21:27:14.503325+00:00",
+  "id": "codex3-cs8-stt2-mudler-cpu-20261030",
+  "owner_review": "approved by root",
+  "before": "no published ready manifest; draft row BACKLOG",
+  "after": "READY manifest and row published; latest observed no FILLERS row and no grant (scheduler may change)",
+  "manifest_sha256": "0f0016951ccabb941fb098535ce36fb5a9930dddff4efb450a48ce7501a31a82",
+  "row_sha256": "2a5740698da928769023e890d2da440299a1ad075e3e43c6566105fdfadff895",
+  "smoke_log_sha256": "3a5bb00a2a59f41d5e9842d96d2743bb2a60ffcce5c5cc133fbf22dc14efb6b0",
+  "launcher_sha256": "8884668cd5bc531cebd7a620d47a2572c93f25d566151825c758ba601d546595",
+  "source_manifest_sha256": "8e65c40cc2661e03afc991cc6790d732d63b5471f54e121ab9740a995dbf2f59",
+  "launcher_log_inode": 188903020,
+  "full_cohort_run": "pending"
+}
