@@ -1,0 +1,904 @@
+{
+  "arm": "odl",
+  "cohort": "pip02-english-fresh-20261029",
+  "shard": 8,
+  "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+  "gt_sha256": "a45cd84b04ad8b793e775089640e6b681209abea33ead54c1828ddca35fae496",
+  "pins_sha256": "262462c58402db48aa88063cdb1817915dcdef0c1933e72869682dd905c34cf0",
+  "scorer_sha256": "27f0b630b6812aecad35d1c65329841a5011e421326e81f9f14c8c66a6fdbe5e",
+  "pages": [
+    {
+      "position": 200,
+      "image": "docstructbench_llm-raw-scihub-o.O-s00348-006-0148-3.pdf_5.jpg",
+      "gt_index": 491,
+      "gt_tables": 0,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [],
+      "prediction_sha256": "8c73258b9d7f2bc97dff88fded8acc5bb86e49f1914d73677b9181a6e49400eb",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=48-71 start=2026-10-29T23:31Z end=2026-10-30T00:31Z\n",
+        "input_sha256": "bd6fe32fc5904ad5553a43450bb05ffcd3a78f9efb5b2e37d80832f3fd53ed9c",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 1096450,
+          "image": "docstructbench_llm-raw-scihub-o.O-s00348-006-0148-3.pdf_5.jpg",
+          "index": 491,
+          "language": "english",
+          "sha256": "f0afe2ecd35ae9cc3af2af506ab410cf178c604b5f5711faa8af5d3c94c3a933",
+          "table_count": 0
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "producer_id": "codex3-pip02-odl-relocatable-r2-s8-20261029",
+        "producer_source_manifest_path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-relocatable-r2/SOURCES.sha256",
+        "producer_source_manifest_sha256": "a17e08f66ffcd3c49e980110e444db2841ae5367b5f6dfff410db18423897cb9",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793316711.9133263
+      }
+    },
+    {
+      "position": 201,
+      "image": "docstructbench_llm-raw-scihub-o.O-s00348-006-0169-y.pdf_2.jpg",
+      "gt_index": 492,
+      "gt_tables": 0,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [],
+      "prediction_sha256": "04958125aca130a9bc2bad07f0b87107e19366aeeed8f133afa85f41d0b06d63",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=48-71 start=2026-10-29T23:31Z end=2026-10-30T00:31Z\n",
+        "input_sha256": "b5b7c8a7e2dd8f29b3f76d56ecee00d04faed5c165df39a69927c78698df7dc4",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 1221518,
+          "image": "docstructbench_llm-raw-scihub-o.O-s00348-006-0169-y.pdf_2.jpg",
+          "index": 492,
+          "language": "english",
+          "sha256": "9d1b2e1844fe4c514f66ab19b0a6c3983da87147f73c79553156552d9fd5ebec",
+          "table_count": 0
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "producer_id": "codex3-pip02-odl-relocatable-r2-s8-20261029",
+        "producer_source_manifest_path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-relocatable-r2/SOURCES.sha256",
+        "producer_source_manifest_sha256": "a17e08f66ffcd3c49e980110e444db2841ae5367b5f6dfff410db18423897cb9",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793316711.9437745
+      }
+    },
+    {
+      "position": 202,
+      "image": "docstructbench_llm-raw-scihub-o.O-s00374-003-0583-8.pdf_1.jpg",
+      "gt_index": 493,
+      "gt_tables": 0,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [],
+      "prediction_sha256": "285c47490cd532e7118bcd529ef6bcc65f85ba7a926015600d98a82d5d4fb37b",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=48-71 start=2026-10-29T23:31Z end=2026-10-30T00:31Z\n",
+        "input_sha256": "533e0c81a3eb22c81da8d8f7994eae1a70e643b172cf469c15af304af309f834",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 883057,
+          "image": "docstructbench_llm-raw-scihub-o.O-s00374-003-0583-8.pdf_1.jpg",
+          "index": 493,
+          "language": "english",
+          "sha256": "cd673e311c387abbd12bfde7f00fcf3faafa7ee7ada6a90bbb1032c978e112b6",
+          "table_count": 0
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "producer_id": "codex3-pip02-odl-relocatable-r2-s8-20261029",
+        "producer_source_manifest_path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-relocatable-r2/SOURCES.sha256",
+        "producer_source_manifest_sha256": "a17e08f66ffcd3c49e980110e444db2841ae5367b5f6dfff410db18423897cb9",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793316711.9271278
+      }
+    },
+    {
+      "position": 203,
+      "image": "docstructbench_llm-raw-scihub-o.O-s00374-003-0589-2.pdf_6.jpg",
+      "gt_index": 494,
+      "gt_tables": 1,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [
+        {
+          "gt_idx": [
+            0
+          ],
+          "pred_idx": [
+            0
+          ],
+          "teds": 0.5880952380952381,
+          "teds_structure_only": 0.6785714285714286
+        }
+      ],
+      "prediction_sha256": "e24bcefa24b6c15b0dfb0ea91d2b2865b65e5a338395cfa40d1f53b8afb28bbc",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=48-71 start=2026-10-29T23:31Z end=2026-10-30T00:31Z\n",
+        "input_sha256": "ceeb8fbe61c04dba16d91b918deccbe93d700c9ea1bd94302f4badc778641794",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 453302,
+          "image": "docstructbench_llm-raw-scihub-o.O-s00374-003-0589-2.pdf_6.jpg",
+          "index": 494,
+          "language": "english",
+          "sha256": "671f0982cddc3d22ea7a7694cb0630a194c42aa03ff45f860a07126331406e82",
+          "table_count": 1
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "producer_id": "codex3-pip02-odl-relocatable-r2-s8-20261029",
+        "producer_source_manifest_path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-relocatable-r2/SOURCES.sha256",
+        "producer_source_manifest_sha256": "a17e08f66ffcd3c49e980110e444db2841ae5367b5f6dfff410db18423897cb9",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793316711.8311832
+      }
+    },
+    {
+      "position": 204,
+      "image": "docstructbench_llm-raw-scihub-o.O-s00374-004-0768-9.pdf_2.jpg",
+      "gt_index": 495,
+      "gt_tables": 1,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [
+        {
+          "gt_idx": [
+            0
+          ],
+          "pred_idx": [
+            0
+          ],
+          "teds": 0.5251010101010101,
+          "teds_structure_only": 0.6
+        }
+      ],
+      "prediction_sha256": "9438d413f32ab30beb513b4618a6128d3df309711bda6453d013354f2f887986",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=48-71 start=2026-10-29T23:31Z end=2026-10-30T00:31Z\n",
+        "input_sha256": "781e65fc1bf5944082c8718d38772efb53130e30ef256b99fd686480602e91ec",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 947580,
+          "image": "docstructbench_llm-raw-scihub-o.O-s00374-004-0768-9.pdf_2.jpg",
+          "index": 495,
+          "language": "english",
+          "sha256": "f217e05c17b690d2ba2562d5ed28014e437f854c37f7667a0e80bc5693d52e68",
+          "table_count": 1
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "producer_id": "codex3-pip02-odl-relocatable-r2-s8-20261029",
+        "producer_source_manifest_path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-relocatable-r2/SOURCES.sha256",
+        "producer_source_manifest_sha256": "a17e08f66ffcd3c49e980110e444db2841ae5367b5f6dfff410db18423897cb9",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793316711.946344
+      }
+    },
+    {
+      "position": 205,
+      "image": "docstructbench_llm-raw-scihub-o.O-s00374-006-0103-8.pdf_11.jpg",
+      "gt_index": 496,
+      "gt_tables": 2,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [
+        {
+          "gt_idx": [
+            0
+          ],
+          "pred_idx": [
+            0
+          ],
+          "teds": 0.6793123849942032,
+          "teds_structure_only": 0.9680589680589681
+        },
+        {
+          "gt_idx": [
+            1
+          ],
+          "pred_idx": [
+            1
+          ],
+          "teds": 0.8515151515151516,
+          "teds_structure_only": 0.9090909090909091
+        }
+      ],
+      "prediction_sha256": "d4eb8cd915390c074d8b13de266bd11f6463c1384786a22c8b112a934de19bdb",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=48-71 start=2026-10-29T23:31Z end=2026-10-30T00:31Z\n",
+        "input_sha256": "8a84b608d3b340cbbbf275f1809b3aff42dc73d59a0c56cccce6649dac75fe9e",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 517398,
+          "image": "docstructbench_llm-raw-scihub-o.O-s00374-006-0103-8.pdf_11.jpg",
+          "index": 496,
+          "language": "english",
+          "sha256": "0bed0f0421e3f19a0081ff2722833057c67c387a3d46a69aac79b6c9f91626d3",
+          "table_count": 2
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "producer_id": "codex3-pip02-odl-relocatable-r2-s8-20261029",
+        "producer_source_manifest_path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-relocatable-r2/SOURCES.sha256",
+        "producer_source_manifest_sha256": "a17e08f66ffcd3c49e980110e444db2841ae5367b5f6dfff410db18423897cb9",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793316711.8403153
+      }
+    },
+    {
+      "position": 206,
+      "image": "docstructbench_llm-raw-scihub-o.O-s00395-011-0222-8.pdf_10.jpg",
+      "gt_index": 497,
+      "gt_tables": 0,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [],
+      "prediction_sha256": "e7d8c1048289ae01f9fa64abb8c3d0741dcf6c1821f0ef6195cf8a80bc5e313e",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=48-71 start=2026-10-29T23:31Z end=2026-10-30T00:31Z\n",
+        "input_sha256": "0de4f3bc1596bddd8ac53860cdfcc0e24520c83a32742184eefdd89b86125492",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 364706,
+          "image": "docstructbench_llm-raw-scihub-o.O-s00395-011-0222-8.pdf_10.jpg",
+          "index": 497,
+          "language": "english",
+          "sha256": "e0157946a35aefbaf846c0ede638dc77e8873fbe5994ea3f0761ebebf386ceb8",
+          "table_count": 0
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "producer_id": "codex3-pip02-odl-relocatable-r2-s8-20261029",
+        "producer_source_manifest_path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-relocatable-r2/SOURCES.sha256",
+        "producer_source_manifest_sha256": "a17e08f66ffcd3c49e980110e444db2841ae5367b5f6dfff410db18423897cb9",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793316711.853828
+      }
+    },
+    {
+      "position": 207,
+      "image": "docstructbench_llm-raw-the-eye-o.O-Attitudes_Towards_Rainwater_Harvesting_1999.pdf_5.jpg",
+      "gt_index": 498,
+      "gt_tables": 0,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [],
+      "prediction_sha256": "30ff27db9fb7de680b883eeae5ea5291e9b307ed657732e4b8009ea23b9d2fce",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=48-71 start=2026-10-29T23:31Z end=2026-10-30T00:31Z\n",
+        "input_sha256": "eeaad0f0d43d7ca407ef0c1939157763d6b6f574ea7498cb57c71852ec7c77bf",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 471788,
+          "image": "docstructbench_llm-raw-the-eye-o.O-Attitudes_Towards_Rainwater_Harvesting_1999.pdf_5.jpg",
+          "index": 498,
+          "language": "english",
+          "sha256": "2e0e7704f50abc046c7836ecec7ed25dcf92099f7701532d1e7af465088e5784",
+          "table_count": 0
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "producer_id": "codex3-pip02-odl-relocatable-r2-s8-20261029",
+        "producer_source_manifest_path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-relocatable-r2/SOURCES.sha256",
+        "producer_source_manifest_sha256": "a17e08f66ffcd3c49e980110e444db2841ae5367b5f6dfff410db18423897cb9",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793316711.8699787
+      }
+    },
+    {
+      "position": 208,
+      "image": "docstructbench_dianzishu_zhongwenzaixian-o.O-63710191.pdf_336.jpg",
+      "gt_index": 533,
+      "gt_tables": 2,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [
+        {
+          "gt_idx": [
+            0
+          ],
+          "pred_idx": [
+            0
+          ],
+          "teds": 0.9939814814814815,
+          "teds_structure_only": 1.0
+        },
+        {
+          "gt_idx": [
+            1
+          ],
+          "pred_idx": [
+            1
+          ],
+          "teds": 0.9207852564102564,
+          "teds_structure_only": 1.0
+        }
+      ],
+      "prediction_sha256": "f48fbd1b6b2569a54058af75ebdaa8f3ac621e54c5699e5c895f8abfea63a1de",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=48-71 start=2026-10-29T23:31Z end=2026-10-30T00:31Z\n",
+        "input_sha256": "1f06d5f5a7c38648dd052450b004faccfe1ea74a169f31940c7ef2e579fb8b63",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 289590,
+          "image": "docstructbench_dianzishu_zhongwenzaixian-o.O-63710191.pdf_336.jpg",
+          "index": 533,
+          "language": "english",
+          "sha256": "2fbdc1b68386d7120400bfa232c7049f2e83757bb0b1bc1d9ef842d30ddef1c8",
+          "table_count": 2
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "producer_id": "codex3-pip02-odl-relocatable-r2-s8-20261029",
+        "producer_source_manifest_path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-relocatable-r2/SOURCES.sha256",
+        "producer_source_manifest_sha256": "a17e08f66ffcd3c49e980110e444db2841ae5367b5f6dfff410db18423897cb9",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793316711.657693
+      }
+    },
+    {
+      "position": 209,
+      "image": "docstructbench_enbook-zlib-o.O-17208435.pdf_105.jpg",
+      "gt_index": 537,
+      "gt_tables": 0,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [],
+      "prediction_sha256": "3ae4c458c3d5faae1b771381d995dd7cae8547181a41d48f7fc0113173174d06",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=48-71 start=2026-10-29T23:31Z end=2026-10-30T00:31Z\n",
+        "input_sha256": "2a430d5c69744b1c8129fe95a24d3dfc7274b60c83b1941738848394fc790268",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 867261,
+          "image": "docstructbench_enbook-zlib-o.O-17208435.pdf_105.jpg",
+          "index": 537,
+          "language": "english",
+          "sha256": "8498d0aa3f7e6beb68627bb6848621d7a72f65dc2396837f61cf6cbaec1d8bf7",
+          "table_count": 0
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "producer_id": "codex3-pip02-odl-relocatable-r2-s8-20261029",
+        "producer_source_manifest_path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-relocatable-r2/SOURCES.sha256",
+        "producer_source_manifest_sha256": "a17e08f66ffcd3c49e980110e444db2841ae5367b5f6dfff410db18423897cb9",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793316711.7776191
+      }
+    },
+    {
+      "position": 210,
+      "image": "docstructbench_enbook-zlib-o.O-17208435.pdf_57.jpg",
+      "gt_index": 538,
+      "gt_tables": 0,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [],
+      "prediction_sha256": "47adb70f184b4c1d6a6552a174555609b237eeb8b4b9b509e4e9fadb8b058a5a",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=48-71 start=2026-10-29T23:31Z end=2026-10-30T00:31Z\n",
+        "input_sha256": "e91bd389140ddc428e972fd84c1e6af45a69eb48574bd9307e268029cb5252ef",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 959813,
+          "image": "docstructbench_enbook-zlib-o.O-17208435.pdf_57.jpg",
+          "index": 538,
+          "language": "english",
+          "sha256": "18fa444cb54bcc896188ca88184b56c84182be6f454cf64368575d33c4c194fc",
+          "table_count": 0
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "producer_id": "codex3-pip02-odl-relocatable-r2-s8-20261029",
+        "producer_source_manifest_path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-relocatable-r2/SOURCES.sha256",
+        "producer_source_manifest_sha256": "a17e08f66ffcd3c49e980110e444db2841ae5367b5f6dfff410db18423897cb9",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793316711.8104184
+      }
+    },
+    {
+      "position": 211,
+      "image": "docstructbench_enbook-zlib-o.O-17342542.pdf_25.jpg",
+      "gt_index": 539,
+      "gt_tables": 0,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [],
+      "prediction_sha256": "351e3a80a6b94b8b1600e4fc48c2704eb7b422ebec5b6a7848797c29b227aff8",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=48-71 start=2026-10-29T23:31Z end=2026-10-30T00:31Z\n",
+        "input_sha256": "4d9e22acab8c2359c54262efb4e5f42d8516f94568f242673d33979553bbeab3",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 214138,
+          "image": "docstructbench_enbook-zlib-o.O-17342542.pdf_25.jpg",
+          "index": 539,
+          "language": "english",
+          "sha256": "55b4772479e0bc7dc68561ea54685730d2c08372a2c207035584a40e650afa46",
+          "table_count": 0
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "producer_id": "codex3-pip02-odl-relocatable-r2-s8-20261029",
+        "producer_source_manifest_path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-relocatable-r2/SOURCES.sha256",
+        "producer_source_manifest_sha256": "a17e08f66ffcd3c49e980110e444db2841ae5367b5f6dfff410db18423897cb9",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793316711.6958237
+      }
+    },
+    {
+      "position": 212,
+      "image": "docstructbench_enbook-zlib-o.O-19221575.pdf_1173.jpg",
+      "gt_index": 540,
+      "gt_tables": 0,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [],
+      "prediction_sha256": "a01bb8d0a824c3ed8e2dcb193f766fd673918fda2bee8df79f022e0a39563542",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=48-71 start=2026-10-29T23:31Z end=2026-10-30T00:31Z\n",
+        "input_sha256": "1387352dc512c8e69794dfc5dd9d4990dd08bf72c667869375b23648066201e9",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 292124,
+          "image": "docstructbench_enbook-zlib-o.O-19221575.pdf_1173.jpg",
+          "index": 540,
+          "language": "english",
+          "sha256": "7a28738dc334089c664e4beeb8182df42f8c9e5ad9099d607f134fbf4a1ed73b",
+          "table_count": 0
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "producer_id": "codex3-pip02-odl-relocatable-r2-s8-20261029",
+        "producer_source_manifest_path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-relocatable-r2/SOURCES.sha256",
+        "producer_source_manifest_sha256": "a17e08f66ffcd3c49e980110e444db2841ae5367b5f6dfff410db18423897cb9",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793316778.4165428
+      }
+    },
+    {
+      "position": 213,
+      "image": "docstructbench_llm-raw-the-eye-o.O-ST-169-R1-072694.pdf_76.jpg",
+      "gt_index": 541,
+      "gt_tables": 0,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [],
+      "prediction_sha256": "3441d86c1188a2aa28ec78ba664df1f636b25e2524972bf420fa4a1eb978a168",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=48-71 start=2026-10-29T23:31Z end=2026-10-30T00:31Z\n",
+        "input_sha256": "cf169cdd82af36258be3423b32020b9ca6bcd42369857463ab7ddba3fa1d9a84",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 265034,
+          "image": "docstructbench_llm-raw-the-eye-o.O-ST-169-R1-072694.pdf_76.jpg",
+          "index": 541,
+          "language": "english",
+          "sha256": "d305f7866b1db2279b8a36d9cab2f0b3ee57ce02f82f80c108af3dcd4565697c",
+          "table_count": 0
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "producer_id": "codex3-pip02-odl-relocatable-r2-s8-20261029",
+        "producer_source_manifest_path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-relocatable-r2/SOURCES.sha256",
+        "producer_source_manifest_sha256": "a17e08f66ffcd3c49e980110e444db2841ae5367b5f6dfff410db18423897cb9",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793316779.9176195
+      }
+    },
+    {
+      "position": 214,
+      "image": "docstructbench_llm-raw-the-eye-o.O-TraneGuide.pdf_7.jpg",
+      "gt_index": 542,
+      "gt_tables": 1,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [
+        {
+          "gt_idx": [
+            0
+          ],
+          "pred_idx": [
+            ""
+          ],
+          "teds": 0.0,
+          "teds_structure_only": 0.0
+        }
+      ],
+      "prediction_sha256": "13b824bb13be635559ba980d1431e384763010f73ef58332437a8ad46e52fae1",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=48-71 start=2026-10-29T23:31Z end=2026-10-30T00:31Z\n",
+        "input_sha256": "8ac426c344735785f587d9c4b887239b7032b0de44015932f8b92bb21fad3520",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 112758,
+          "image": "docstructbench_llm-raw-the-eye-o.O-TraneGuide.pdf_7.jpg",
+          "index": 542,
+          "language": "english",
+          "sha256": "509bf65fb7c3846e9fb5e38b01164b4c6b7b0a69546666d9d40fc63f072f3558",
+          "table_count": 1
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "producer_id": "codex3-pip02-odl-relocatable-r2-s8-20261029",
+        "producer_source_manifest_path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-relocatable-r2/SOURCES.sha256",
+        "producer_source_manifest_sha256": "a17e08f66ffcd3c49e980110e444db2841ae5367b5f6dfff410db18423897cb9",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793316782.3862224
+      }
+    },
+    {
+      "position": 215,
+      "image": "docstructbench_llm-raw-the-eye-o.O-chap08.pdf_12.jpg",
+      "gt_index": 543,
+      "gt_tables": 1,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [
+        {
+          "gt_idx": [
+            0
+          ],
+          "pred_idx": [
+            0
+          ],
+          "teds": 0.8885840993288812,
+          "teds_structure_only": 1.0
+        }
+      ],
+      "prediction_sha256": "d6e4de8eb876e6a62816a21b09795131ec9eaeabb70dc986fa46ff4e62a8c0d6",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=48-71 start=2026-10-29T23:31Z end=2026-10-30T00:31Z\n",
+        "input_sha256": "9c63fcd593ff89b41bd05026e1dc417bca56cb270617e60669c36f3089cf234c",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 554926,
+          "image": "docstructbench_llm-raw-the-eye-o.O-chap08.pdf_12.jpg",
+          "index": 543,
+          "language": "english",
+          "sha256": "6dcb7ef3ad68fe67020b9249396c629d5d5981b90b98fe18cd994bc410a3847c",
+          "table_count": 1
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "producer_id": "codex3-pip02-odl-relocatable-r2-s8-20261029",
+        "producer_source_manifest_path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-relocatable-r2/SOURCES.sha256",
+        "producer_source_manifest_sha256": "a17e08f66ffcd3c49e980110e444db2841ae5367b5f6dfff410db18423897cb9",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793316782.9095373
+      }
+    },
+    {
+      "position": 216,
+      "image": "yanbaopptmerge_293df2702e017fa1e78f6fe9b42d64ce.pdf_928.jpg",
+      "gt_index": 544,
+      "gt_tables": 0,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [],
+      "prediction_sha256": "e0250e81d1542107920c10fde52c062c4d39385b585d9d2703ed6ddd6faab97a",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=48-71 start=2026-10-29T23:31Z end=2026-10-30T00:31Z\n",
+        "input_sha256": "adc411fa1fe8ff25b88cd34e2ef7c22f5270749d8cab226a7dbfbb2d70ea1fc7",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 319823,
+          "image": "yanbaopptmerge_293df2702e017fa1e78f6fe9b42d64ce.pdf_928.jpg",
+          "index": 544,
+          "language": "english",
+          "sha256": "0dad0a9f04182717a22e3de894b8e228fa980383a0837285fafea9a5bd0445e5",
+          "table_count": 0
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "producer_id": "codex3-pip02-odl-relocatable-r2-s8-20261029",
+        "producer_source_manifest_path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-relocatable-r2/SOURCES.sha256",
+        "producer_source_manifest_sha256": "a17e08f66ffcd3c49e980110e444db2841ae5367b5f6dfff410db18423897cb9",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793316783.108997
+      }
+    },
+    {
+      "position": 217,
+      "image": "yanbaopptmerge_3aa9b6677e17fd012b0a7a230b9f18db.pdf_1327.jpg",
+      "gt_index": 545,
+      "gt_tables": 1,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [
+        {
+          "gt_idx": [
+            0
+          ],
+          "pred_idx": [
+            0
+          ],
+          "teds": 0.9071337347199416,
+          "teds_structure_only": 1.0
+        }
+      ],
+      "prediction_sha256": "644d895c2ea2e6984291fdccfaf23174e5a7a455d715700207d67748f2981b3c",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=48-71 start=2026-10-29T23:31Z end=2026-10-30T00:31Z\n",
+        "input_sha256": "d9ce65bf0d3c715dfab44204146cb5f80ebf62b63d00a8a7cf7bb63308c40744",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 262018,
+          "image": "yanbaopptmerge_3aa9b6677e17fd012b0a7a230b9f18db.pdf_1327.jpg",
+          "index": 545,
+          "language": "english",
+          "sha256": "58b806bbeaf78051ed6a4b32a54d335dcd32da2ad0e47b762faea63ee178d614",
+          "table_count": 1
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "producer_id": "codex3-pip02-odl-relocatable-r2-s8-20261029",
+        "producer_source_manifest_path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-relocatable-r2/SOURCES.sha256",
+        "producer_source_manifest_sha256": "a17e08f66ffcd3c49e980110e444db2841ae5367b5f6dfff410db18423897cb9",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793316785.4797397
+      }
+    },
+    {
+      "position": 218,
+      "image": "yanbaopptmerge_593a9a157e4d56a5a57eb14f1d1beec5.pdf_944.jpg",
+      "gt_index": 546,
+      "gt_tables": 0,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [],
+      "prediction_sha256": "9608100543b479466985c453f28c5e3667995581cf190a016cdcb80a6af966b6",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=48-71 start=2026-10-29T23:31Z end=2026-10-30T00:31Z\n",
+        "input_sha256": "67cee92d8590425b9d38e092620fe561b3b0d95be1cbd051b4ad76bd3800efcf",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 512525,
+          "image": "yanbaopptmerge_593a9a157e4d56a5a57eb14f1d1beec5.pdf_944.jpg",
+          "index": 546,
+          "language": "english",
+          "sha256": "5a159d13496eae147184d9b188c37864c1632a9ce6ee698902ab5a9b7069927d",
+          "table_count": 0
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "producer_id": "codex3-pip02-odl-relocatable-r2-s8-20261029",
+        "producer_source_manifest_path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-relocatable-r2/SOURCES.sha256",
+        "producer_source_manifest_sha256": "a17e08f66ffcd3c49e980110e444db2841ae5367b5f6dfff410db18423897cb9",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793316786.4812121
+      }
+    },
+    {
+      "position": 219,
+      "image": "yanbaopptmerge_9081a70ff98b3e7d640660a9412c447d.pdf_1287.jpg",
+      "gt_index": 547,
+      "gt_tables": 0,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [],
+      "prediction_sha256": "ed38aeebd46e21cadf02ddd0d440f6835c2456f5c4689f96f134eb19786e8ca8",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=48-71 start=2026-10-29T23:31Z end=2026-10-30T00:31Z\n",
+        "input_sha256": "8bbefcdecd50833d0c54c16e0d4c9d1544098ff5d6c812c54a974abaa7621822",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 256264,
+          "image": "yanbaopptmerge_9081a70ff98b3e7d640660a9412c447d.pdf_1287.jpg",
+          "index": 547,
+          "language": "english",
+          "sha256": "d977045fd2d26873c81268f425bb3be86fc3b60ce0d10f12c91336f7940c1489",
+          "table_count": 0
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "producer_id": "codex3-pip02-odl-relocatable-r2-s8-20261029",
+        "producer_source_manifest_path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-relocatable-r2/SOURCES.sha256",
+        "producer_source_manifest_sha256": "a17e08f66ffcd3c49e980110e444db2841ae5367b5f6dfff410db18423897cb9",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793316789.1811044
+      }
+    },
+    {
+      "position": 220,
+      "image": "yanbaopptmerge_9882208cc25205150eeb522e78541631.pdf_501.jpg",
+      "gt_index": 548,
+      "gt_tables": 0,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [],
+      "prediction_sha256": "52981cc91243056172bd6ed569a39c5457b8312c3222fdd2a687558d7b359d40",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=48-71 start=2026-10-29T23:31Z end=2026-10-30T00:31Z\n",
+        "input_sha256": "046aa658d2276dab75460056c2044ea771a8ca0aa5df671ff8671d20823b64bd",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 357326,
+          "image": "yanbaopptmerge_9882208cc25205150eeb522e78541631.pdf_501.jpg",
+          "index": 548,
+          "language": "english",
+          "sha256": "092894f5e6b59a628bb2bd8c306d3aa3316e73edeb0bb183bf17f0dbadb11801",
+          "table_count": 0
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "producer_id": "codex3-pip02-odl-relocatable-r2-s8-20261029",
+        "producer_source_manifest_path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-relocatable-r2/SOURCES.sha256",
+        "producer_source_manifest_sha256": "a17e08f66ffcd3c49e980110e444db2841ae5367b5f6dfff410db18423897cb9",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793316789.896026
+      }
+    },
+    {
+      "position": 221,
+      "image": "yanbaopptmerge_abef2a4978ae4d13e931f0392502bd40.pdf_1130.jpg",
+      "gt_index": 549,
+      "gt_tables": 0,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [],
+      "prediction_sha256": "bc533e93c36824bbaa6addc77f2d08cb8d2da8977a6fccade803a5e9dff2589e",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=48-71 start=2026-10-29T23:31Z end=2026-10-30T00:31Z\n",
+        "input_sha256": "e982834c809d9c4027a32275faab8824a3aa6d6e455c4ab1ef5f3e3b26c12bd2",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 134387,
+          "image": "yanbaopptmerge_abef2a4978ae4d13e931f0392502bd40.pdf_1130.jpg",
+          "index": 549,
+          "language": "english",
+          "sha256": "130ad02f08af3a647c6d47a64ad7b9a6134976bf32c6e7418c3bc8a817190b1d",
+          "table_count": 0
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "producer_id": "codex3-pip02-odl-relocatable-r2-s8-20261029",
+        "producer_source_manifest_path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-relocatable-r2/SOURCES.sha256",
+        "producer_source_manifest_sha256": "a17e08f66ffcd3c49e980110e444db2841ae5367b5f6dfff410db18423897cb9",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793316809.2875295
+      }
+    },
+    {
+      "position": 222,
+      "image": "yanbaopptmerge_abef2a4978ae4d13e931f0392502bd40.pdf_1287.jpg",
+      "gt_index": 550,
+      "gt_tables": 0,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [],
+      "prediction_sha256": "1c41e8cdab545bdf070003b054018e02128d6c0889340ee0c8fb13cdeb882144",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=48-71 start=2026-10-29T23:31Z end=2026-10-30T00:31Z\n",
+        "input_sha256": "f482d1777c4470799c61278175225dbec2a85ab0596cc0475c121eef204d9589",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 274109,
+          "image": "yanbaopptmerge_abef2a4978ae4d13e931f0392502bd40.pdf_1287.jpg",
+          "index": 550,
+          "language": "english",
+          "sha256": "a1b6723179f4a274002c1db857db21039ce156a2411149d0d01783cab6c84ec2",
+          "table_count": 0
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "producer_id": "codex3-pip02-odl-relocatable-r2-s8-20261029",
+        "producer_source_manifest_path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-relocatable-r2/SOURCES.sha256",
+        "producer_source_manifest_sha256": "a17e08f66ffcd3c49e980110e444db2841ae5367b5f6dfff410db18423897cb9",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793316825.686619
+      }
+    },
+    {
+      "position": 223,
+      "image": "yanbaopptmerge_ba38a4c7e8f15937f3ae537cf2de2cd5.pdf_104.jpg",
+      "gt_index": 551,
+      "gt_tables": 0,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [],
+      "prediction_sha256": "284e9a3fb945d2f6dbf7723e7f91419e4ffe12fdd70db71e8f3a9eb9fe0d1ee7",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=48-71 start=2026-10-29T23:31Z end=2026-10-30T00:31Z\n",
+        "input_sha256": "19e58652c877912b33eb99cdea07263455a4457360576bcbfb3e02d93c10994b",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 534207,
+          "image": "yanbaopptmerge_ba38a4c7e8f15937f3ae537cf2de2cd5.pdf_104.jpg",
+          "index": 551,
+          "language": "english",
+          "sha256": "d01a203a75a5f208d66163d5c46ea70bcdd0ced08f4212c31a0c5fa2c19882c2",
+          "table_count": 0
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "producer_id": "codex3-pip02-odl-relocatable-r2-s8-20261029",
+        "producer_source_manifest_path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-relocatable-r2/SOURCES.sha256",
+        "producer_source_manifest_sha256": "a17e08f66ffcd3c49e980110e444db2841ae5367b5f6dfff410db18423897cb9",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793316837.6398914
+      }
+    },
+    {
+      "position": 224,
+      "image": "yanbaopptmerge_d346b889f1d85c61950a71d4b0ac2752.pdf_89.jpg",
+      "gt_index": 552,
+      "gt_tables": 1,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [
+        {
+          "gt_idx": [
+            0
+          ],
+          "pred_idx": [
+            0
+          ],
+          "teds": 0.9785575048732944,
+          "teds_structure_only": 1.0
+        }
+      ],
+      "prediction_sha256": "d44cdae7ecac053d499a166ff161f6af9917d0ce3b910fce9066d7798bae7999",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=48-71 start=2026-10-29T23:31Z end=2026-10-30T00:31Z\n",
+        "input_sha256": "b5c2165fcaa910163523b89033f14b6e8cadb8944ae8866601936d3827900009",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 560921,
+          "image": "yanbaopptmerge_d346b889f1d85c61950a71d4b0ac2752.pdf_89.jpg",
+          "index": 552,
+          "language": "english",
+          "sha256": "806031964e14c88a62c03447dae096bd9fd3e79200bd8619e1e1e2e2f0ccae6e",
+          "table_count": 1
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "producer_id": "codex3-pip02-odl-relocatable-r2-s8-20261029",
+        "producer_source_manifest_path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-relocatable-r2/SOURCES.sha256",
+        "producer_source_manifest_sha256": "a17e08f66ffcd3c49e980110e444db2841ae5367b5f6dfff410db18423897cb9",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793316847.2420416
+      }
+    }
+  ],
+  "coverage": {
+    "pages_complete": 25,
+    "pages_total": 25,
+    "gt_tables_scored": 10,
+    "gt_tables_total": 10
+  },
+  "means": {
+    "teds": 0.7333065861519458,
+    "teds_structure_only": 0.8155721305721306
+  }
+}

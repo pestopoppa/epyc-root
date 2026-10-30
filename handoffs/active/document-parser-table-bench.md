@@ -371,3 +371,24 @@ Runtime cleanup: the full2a172b09 phase-C linked checkout was removed through th
 **2026-10-30 Codex3 R25 relocatable cutover:** pools 0 and 3 were published after a final same-entry control: five matched HTTP200 responses, no unmatched RPCs, rc75 partial and verified drain. They request `any-cpu-quarter`; fixed-quarter R24 predecessors were archived before native exposure. R25 pools 1 and 2 remain prepared behind live R22 predecessors; their zero-token watcher refuses cutover while the owner keeper can rearm those predecessors. The R26 head successor retains all 25 pages through group starts 0 and 3, verifies 49 historical response bindings and preserves unknown starts; its final control has five matched durable responses and verified drain. See [publication audit](../../artifacts/compute/codex3-publications-20261030-1415.json). These are preparation results; quality grading still requires explicit source registration and complete native coverage. The legacy PIP binary remains version10125, distinct from production10303. [no-belief: bounded admission and source-custody checkpoint]
 
 **2026-10-30 final T1 successors:** PIP R27 pools 0, 3, and head have final relocatable packets. Pool1/pool2 registrations remain unchanged behind live R22 predecessors; successor rows stay held by the owner watcher until those predecessors are retired. No pool1/pool2 cutover or quality result is claimed. The NEMO C3 and KPF item-4 r2 entries are model-free build packets only; each still requires the full linked build and its declared help/linkage/knob checks. At the 15:54:53Z keeper snapshot, candidate rows were READY-WAIT for lack of a free CPU quarter. [T1 successor ledger](../../artifacts/compute/codex3-t1-successors-20261030.json). [no-belief: packet preparation and admission only]
+
+### PIP-02 running English shard TEDS — 2026-10-30
+
+Same Phase C native scorer and ground truth, locked fresh English cohort `pip02-english-fresh-20261029` (755 pages/243 GT tables). Both metrics are table-weighted means; higher is better. These are descriptive partial-cohort scores; full-cohort and paired parser-selection gates remain open. Complete pages with no GT table do not enter the table mean. Missing/error pages remain visible in coverage and are not silently counted as successful pages.
+
+| Arm / shard | Complete pages | GT tables scored / planned | Table TEDS ↑ | Structure-only TEDS ↑ |
+|---|---:|---:|---:|---:|
+| ODL+Docling hybrid fresh s20 | 25/25 | 47/47 | 0.137642 | 0.290202 |
+| ODL+Docling hybrid fresh s21 | 25/25 | 8/8 | 0.078004 | 0.116914 |
+| ODL+Docling hybrid fresh s05 | 25/25 | 8/8 | 0.554871 | 0.640090 |
+| ODL+Docling hybrid fresh s08 | 25/25 | 10/10 | 0.733307 | 0.815572 |
+| ODL+Docling hybrid fresh s09 | 25/25 | 7/7 | 0.842202 | 0.916755 |
+| ODL+Docling hybrid fresh s24 | 25/25 | 5/5 | 0.518804 | 0.538788 |
+| ODL+Docling hybrid fresh s25 | 25/25 | 0/0 | n/a (no GT tables) | n/a (no GT tables) |
+
+Native complete-page records passed prediction/output, original source/protocol/dependency/input and frozen plan bindings. PlanSHA `63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68`; GTSHA `a45cd84b04ad8b793e775089640e6b681209abea33ead54c1828ddca35fae496`; scorerSHA `27f0b630b6812aecad35d1c65329841a5011e421326e81f9f14c8c66a6fdbe5e`; pinmanifest `262462c58402db48aa88063cdb1817915dcdef0c1933e72869682dd905c34cf0`. English inputs, native matched GT/prediction indices and every per-table score are committed in [s20](../../artifacts/compute/pip02-shard-teds-20261030/odl-s20.json) and [s21](../../artifacts/compute/pip02-shard-teds-20261030/odl-s21.json). An independent repeat under the correct original26-27 mutex on admitted SMT122/123 reproduced both files byte-for-byte;17.466s, sampled503,226,368 bytes and descendants drained. [belief: cc]
+
+- [x] **PIP-02 incremental score filing: ODL s20/s21.** Both verified25-page shards scored with the unchanged Phase C English scorer/GT and filed above; this closes only their incremental score reporting. ✅ 2026-10-30 [belief: cc]
+- [ ] Continue this table for every verified completed ODL/Paddle shard as it finishes, with epoch/source and coverage preserved. Do not wait for the755-page full-cohort gate.
+
+Incremental scoring also verified completed s05/s08/s09 (originalR2 source) and s24/s25 (originalR4 source `af6262aaf380b3a69031fc5b7f5b11ec0f8b697f314c410c159568bccf4cc62a`), with the same scorer/GT. Their per-table records are committed in the same artifact directory; s25 has no GT table and therefore no table mean. The first seven filed rows cover175complete pages/85GTtables, as a descriptive partial cohort only. [belief: cc]
