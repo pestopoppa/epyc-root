@@ -22,3 +22,6 @@ Operator quarter rebalance: withdrew eight excess ungranted PIP pollers, verifie
 
 
 Original CPU DCA r5 admission failure, DF2 artifact-recovery partial and Paddle g14 collection audited. Paddle15complete/7originalfinishreceipts/214verifiedRPCorigins; no fullqualitytick. Exact35B HILR3 realcalibration passed and READY; HSF R10 real113.49s native export passed and READY, normal166GiBreserve unchanged. Reversibly omitted duplicate committed artifact copies from5own code views, recovering2.75GiB without removing native evidence or model files. [belief: cc]
+
+
+Seven original Paddle rc75 windows filed separately from later rearms: last pre-end captures record disk floor; g17 has5unmatchedstarts, g23/g29 have0unmatched, other4noRPCstarts. Native capture-to-outer-end association is explicitly inferred; no invented native finish timestamp. Four new Paddle groups38/41/44/47 plus four unexposed ODLshards24/25/28/29 published from verified real smoke and full packet closure under any-cpu-quarter. HILR3 and HSF10 actual smokes passed; EVLR9 actual both arms/wire schemas/drain passed and diagnosticGPU READY, control26no delegation andStep3open. [belief: cc]

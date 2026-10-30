@@ -178,3 +178,23 @@ Strictlineage implementation shipped Researchmain46244248728c: registeredpre-cli
 
 
 2026-10-30 original Paddle R11 g14 completed all15 native page results; exact input/result/markdown hashes validate. All214 retained RPC origin chains pass source, grant-interval and body-hash checks (185 from R7,29 fromR11). Seven completed pages have original R11 finisher receipts; eight remain assembler-lineage unverified and are never retrospectively backfilled. This is collection, not a full755-page TEDS or parser-selection verdict. Existing full-cohort gate remains open. [Native audit](../../artifacts/compute/results-filing-20261030-0102.json). [belief: cc]
+
+
+### 2026-10-30 original seven Paddle continuation partials
+
+
+Each outer job exited rc75; the last capture started before that exit reports disk floor. Attempt result JSON does not record finished_at, so pairing that last pre-end capture with the outer end is inferred from sequential launcher execution, not a separately timestamped native finish. RPC counts below use native originated_at/completed_at and original capture hashes, at each outer end; they are not the later 00:52 cumulative snapshot. Unknowns remain unknown and are never redrawn. No TEDS or parser quality claim.
+
+| Group | Outer end UTC | Last capture start UTC | Result SHA256 | RPC starts / matched / unmatched | Later captures excluded |
+|---|---|---|---|---|---|
+| 17 | 2026-10-30T00:41:29Z | 2026-10-30T00:39:31Z | 4d586aa6c4332afec4e753eeb727ed5d158a3f79f3e3e6a9fb2cafc16f113e82 | 10 / 5 / 5 | 0 |
+| 23 | 2026-10-30T00:41:24Z | 2026-10-30T00:40:43Z | 3d933176729a49e9b9327b3dc3532ca533a27ef3e4cb082a2101bb9dd599353c | 5 / 5 / 0 | 0 |
+| 29 | 2026-10-30T00:41:41Z | 2026-10-30T00:41:15Z | 030ede2987d5d89d01f1c2658a5eb9d176fa49a426eee7cc93a4e1068eb72f7d | 10 / 10 / 0 | 0 |
+| 26 | 2026-10-30T00:42:25Z | 2026-10-30T00:42:01Z | a9b135ae459d73889f0cd84faccc18abc9d914d6ace652de14f13d0d066c273a | 0 / 0 / 0 | 2 |
+| 32 | 2026-10-30T00:44:24Z | 2026-10-30T00:44:00Z | d22b9ec090f362e3ed92e50107172e53c94844aea2dc489842fb1448bbb0ac08 | 0 / 0 / 0 | 0 |
+| 35 | 2026-10-30T00:44:25Z | 2026-10-30T00:44:01Z | 36e4f2a4e36eb72542b473cc5821a6aedca15f4b1fea454d84b2ec47e85f605b | 0 / 0 / 0 | 0 |
+| 8 | 2026-10-30T00:46:42Z | 2026-10-30T00:46:18Z | dc3b5c60abd6ebccc341d8db968935f599732410115c0e51eb322d05abed2839 | 0 / 0 / 0 | 1 |
+
+All seven last pre-end results record `reason: disk floor`; g17/g23 also report timeout deadline/admission/output limit; g29/g26/g32/g35/g8 report timeout admission. Full native result paths, hashes, capture-bound start receipts, later capture identities and exact end_line evidence are in original-seven-events.json. Matched means the native result carries the matching start hash and completed by the event; it is not a source-grade or quality assertion.
+
+[Committed original audit](../../artifacts/compute/results-filing-20261030-0107.json). Existing collection/full-cohort boxes remain open. [belief: cc]

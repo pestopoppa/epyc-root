@@ -1,0 +1,690 @@
+{
+  "at": "2026-10-30T01:07:21.508293+00:00",
+  "original_events": {
+    "codex3-pip02-paddle-relocatable-r11-g17-20261029": {
+      "id": "codex3-pip02-paddle-relocatable-r11-g17-20261029",
+      "ended_file": "/mnt/raid0/llm/tmp/compute-flags/grants/codex3-pip02-paddle-relocatable-r11-g17-20261029.ended",
+      "end_line": "rc=75 time=2026-10-30T00:41:29Z reason=job-rc-75:exited",
+      "seen_at": "2026-10-30T00:41:45Z",
+      "result_path": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-relocatable-r11-20261030/DONE-17",
+      "scratch_root": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-r11-candidates-20261030/group-17",
+      "decision_rule": "Collect original fresh English Paddle shards[17, 18, 19], native full layout/crop/recognition/assembly, temperature0,4096outputtokens,8192contextslot,np12. Preserve original requests and unknowns; exact cached replay only; native prospective source-bound page finish receipt. Collection diagnostic; no TEDS/adoption verdict.",
+      "class": "diagnostic",
+      "owner": "codex3"
+    },
+    "codex3-pip02-paddle-relocatable-r11-g23-20261029": {
+      "id": "codex3-pip02-paddle-relocatable-r11-g23-20261029",
+      "ended_file": "/mnt/raid0/llm/tmp/compute-flags/grants/codex3-pip02-paddle-relocatable-r11-g23-20261029.ended",
+      "end_line": "rc=75 time=2026-10-30T00:41:24Z reason=job-rc-75:exited",
+      "seen_at": "2026-10-30T00:41:45Z",
+      "result_path": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-relocatable-r11-20261030/DONE-23",
+      "scratch_root": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-r11-candidates-20261030/group-23",
+      "decision_rule": "Collect original fresh English Paddle shards[23, 24, 25], native full layout/crop/recognition/assembly, temperature0,4096outputtokens,8192contextslot,np12. Preserve original requests and unknowns; exact cached replay only; native prospective source-bound page finish receipt. Collection diagnostic; no TEDS/adoption verdict.",
+      "class": "diagnostic",
+      "owner": "codex3"
+    },
+    "codex3-pip02-paddle-relocatable-r11-g29-20261029": {
+      "id": "codex3-pip02-paddle-relocatable-r11-g29-20261029",
+      "ended_file": "/mnt/raid0/llm/tmp/compute-flags/grants/codex3-pip02-paddle-relocatable-r11-g29-20261029.ended",
+      "end_line": "rc=75 time=2026-10-30T00:41:41Z reason=job-rc-75:exited",
+      "seen_at": "2026-10-30T00:41:45Z",
+      "result_path": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-relocatable-r11-20261030/DONE-29",
+      "scratch_root": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-r11-candidates-20261030/group-29",
+      "decision_rule": "Collect original fresh English Paddle shards[29, 30, 31], native full layout/crop/recognition/assembly, temperature0,4096outputtokens,8192contextslot,np12. Preserve original requests and unknowns; exact cached replay only; native prospective source-bound page finish receipt. Collection diagnostic; no TEDS/adoption verdict.",
+      "class": "diagnostic",
+      "owner": "codex3"
+    },
+    "codex3-pip02-paddle-relocatable-r11-g26-20261029": {
+      "id": "codex3-pip02-paddle-relocatable-r11-g26-20261029",
+      "ended_file": "/mnt/raid0/llm/tmp/compute-flags/grants/codex3-pip02-paddle-relocatable-r11-g26-20261029.ended",
+      "end_line": "rc=75 time=2026-10-30T00:42:25Z reason=job-rc-75:exited",
+      "seen_at": "2026-10-30T00:42:47Z",
+      "result_path": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-relocatable-r11-20261030/DONE-26",
+      "scratch_root": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-relocatable-r11-20261030/packets/group-26",
+      "decision_rule": "Collect original fresh English Paddle shards[26, 27, 28], native full layout/crop/recognition/assembly, temperature0,4096outputtokens,8192contextslot,np12. Preserve original requests and unknowns; exact cached replay only; native prospective source-bound page finish receipt. Collection diagnostic; no TEDS/adoption verdict.",
+      "class": "diagnostic",
+      "owner": "codex3"
+    },
+    "codex3-pip02-paddle-relocatable-r11-g32-20261029": {
+      "id": "codex3-pip02-paddle-relocatable-r11-g32-20261029",
+      "ended_file": "/mnt/raid0/llm/tmp/compute-flags/grants/codex3-pip02-paddle-relocatable-r11-g32-20261029.ended",
+      "end_line": "rc=75 time=2026-10-30T00:44:24Z reason=job-rc-75:exited",
+      "seen_at": "2026-10-30T00:44:51Z",
+      "result_path": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-relocatable-r11-20261030/DONE-32",
+      "scratch_root": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-r11-candidates-20261030/group-32",
+      "decision_rule": "Collect original fresh English Paddle shards[32, 33, 34], native full layout/crop/recognition/assembly, temperature0,4096outputtokens,8192contextslot,np12. Preserve original requests and unknowns; exact cached replay only; native prospective source-bound page finish receipt. Collection diagnostic; no TEDS/adoption verdict.",
+      "class": "diagnostic",
+      "owner": "codex3"
+    },
+    "codex3-pip02-paddle-relocatable-r11-g35-20261029": {
+      "id": "codex3-pip02-paddle-relocatable-r11-g35-20261029",
+      "ended_file": "/mnt/raid0/llm/tmp/compute-flags/grants/codex3-pip02-paddle-relocatable-r11-g35-20261029.ended",
+      "end_line": "rc=75 time=2026-10-30T00:44:25Z reason=job-rc-75:exited",
+      "seen_at": "2026-10-30T00:44:51Z",
+      "result_path": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-relocatable-r11-20261030/DONE-35",
+      "scratch_root": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-r11-candidates-20261030/group-35",
+      "decision_rule": "Collect original fresh English Paddle shards[35, 36, 37], native full layout/crop/recognition/assembly, temperature0,4096outputtokens,8192contextslot,np12. Preserve original requests and unknowns; exact cached replay only; native prospective source-bound page finish receipt. Collection diagnostic; no TEDS/adoption verdict.",
+      "class": "diagnostic",
+      "owner": "codex3"
+    },
+    "codex3-pip02-paddle-relocatable-r11-g8-20261029": {
+      "id": "codex3-pip02-paddle-relocatable-r11-g8-20261029",
+      "ended_file": "/mnt/raid0/llm/tmp/compute-flags/grants/codex3-pip02-paddle-relocatable-r11-g8-20261029.ended",
+      "end_line": "rc=75 time=2026-10-30T00:46:42Z reason=job-rc-75:exited",
+      "seen_at": "2026-10-30T00:46:54Z",
+      "result_path": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-relocatable-r11-20261030/DONE-8",
+      "scratch_root": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-relocatable-r11-20261030/packets/group-8",
+      "decision_rule": "Collect original fresh English Paddle shards[8, 9, 10], native full layout/crop/recognition/assembly, temperature0,4096outputtokens,8192contextslot,np12. Preserve original requests and unknowns; exact cached replay only; native prospective source-bound page finish receipt. Collection diagnostic; no TEDS/adoption verdict.",
+      "class": "diagnostic",
+      "owner": "codex3"
+    }
+  },
+  "native": {
+    "17": {
+      "outer_event": {
+        "id": "codex3-pip02-paddle-relocatable-r11-g17-20261029",
+        "ended_file": "/mnt/raid0/llm/tmp/compute-flags/grants/codex3-pip02-paddle-relocatable-r11-g17-20261029.ended",
+        "end_line": "rc=75 time=2026-10-30T00:41:29Z reason=job-rc-75:exited",
+        "seen_at": "2026-10-30T00:41:45Z",
+        "result_path": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-relocatable-r11-20261030/DONE-17",
+        "scratch_root": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-r11-candidates-20261030/group-17",
+        "decision_rule": "Collect original fresh English Paddle shards[17, 18, 19], native full layout/crop/recognition/assembly, temperature0,4096outputtokens,8192contextslot,np12. Preserve original requests and unknowns; exact cached replay only; native prospective source-bound page finish receipt. Collection diagnostic; no TEDS/adoption verdict.",
+        "class": "diagnostic",
+        "owner": "codex3"
+      },
+      "outer_finished_utc": "2026-10-30T00:41:29Z",
+      "original_window_attempts": [
+        {
+          "capture": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-relocatable-r11-20261030/attempts/codex3-pip02-paddle-relocatable-r11-g17-20261029-bc77b1f74e7d409f90d77e005efaad79/capture.json",
+          "capture_sha256": "f4faef393a58bde58133979698fba9b61f61fd099317fdd7f97d2aca7788cf51",
+          "started_utc": "2026-10-30T00:37:41Z",
+          "result": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-relocatable-r11-20261030/attempts/codex3-pip02-paddle-relocatable-r11-g17-20261029-bc77b1f74e7d409f90d77e005efaad79/result.json",
+          "result_sha256": "1cb4e2ab3747d1233bc48ab6c5a0d5136cd51edec45eabac895d15bead5e300e",
+          "rc": 75,
+          "reason": null,
+          "error": null,
+          "factory_present": true,
+          "within_original_window": true,
+          "native_finished_at": null
+        },
+        {
+          "capture": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-relocatable-r11-20261030/attempts/codex3-pip02-paddle-relocatable-r11-g17-20261029-ed84da71ae944471b00e8a524f2babac/capture.json",
+          "capture_sha256": "420f5e30b49ded204a3e4a289de01ec4de68bede69f02bb7611ddad2438ef70b",
+          "started_utc": "2026-10-30T00:39:31Z",
+          "result": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-relocatable-r11-20261030/attempts/codex3-pip02-paddle-relocatable-r11-g17-20261029-ed84da71ae944471b00e8a524f2babac/result.json",
+          "result_sha256": "4d586aa6c4332afec4e753eeb727ed5d158a3f79f3e3e6a9fb2cafc16f113e82",
+          "rc": 75,
+          "reason": "disk floor",
+          "error": "TimeoutError: deadline, admission or output limit",
+          "factory_present": false,
+          "within_original_window": true,
+          "native_finished_at": null
+        }
+      ],
+      "later_distinct_attempts": [],
+      "rpc_by_capture": {
+        "f4faef393a58bde58133979698fba9b61f61fd099317fdd7f97d2aca7788cf51": {
+          "starts": 5,
+          "matched_at_event": 5,
+          "unmatched_at_event": 0,
+          "invalid": 0,
+          "files": [
+            {
+              "start": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-17/shard-17/region-2c174e7001c5ad55ec2a92bb-000000.start.json",
+              "origin_capture_sha256": "f4faef393a58bde58133979698fba9b61f61fd099317fdd7f97d2aca7788cf51",
+              "originated_at": "2026-10-30T00:39:14.008964+00:00",
+              "matched_at_event": true
+            },
+            {
+              "start": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-17/shard-17/region-c814eb2cac6e9f316f5f703a-000000.start.json",
+              "origin_capture_sha256": "f4faef393a58bde58133979698fba9b61f61fd099317fdd7f97d2aca7788cf51",
+              "originated_at": "2026-10-30T00:39:14.011217+00:00",
+              "matched_at_event": true
+            },
+            {
+              "start": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-18/shard-18/region-4943ed5bba2651a731db5024-000000.start.json",
+              "origin_capture_sha256": "f4faef393a58bde58133979698fba9b61f61fd099317fdd7f97d2aca7788cf51",
+              "originated_at": "2026-10-30T00:39:14.011986+00:00",
+              "matched_at_event": true
+            },
+            {
+              "start": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-18/shard-18/region-67e5ec34fbe01160e77040a1-000000.start.json",
+              "origin_capture_sha256": "f4faef393a58bde58133979698fba9b61f61fd099317fdd7f97d2aca7788cf51",
+              "originated_at": "2026-10-30T00:39:13.990134+00:00",
+              "matched_at_event": true
+            },
+            {
+              "start": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-19/shard-19/region-982e37675dfc03064043535c-000000.start.json",
+              "origin_capture_sha256": "f4faef393a58bde58133979698fba9b61f61fd099317fdd7f97d2aca7788cf51",
+              "originated_at": "2026-10-30T00:39:14.010428+00:00",
+              "matched_at_event": true
+            }
+          ]
+        },
+        "420f5e30b49ded204a3e4a289de01ec4de68bede69f02bb7611ddad2438ef70b": {
+          "starts": 5,
+          "matched_at_event": 0,
+          "unmatched_at_event": 5,
+          "invalid": 0,
+          "files": [
+            {
+              "start": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-17/shard-17/region-0fdd5289069767f2826d2e62-000000.start.json",
+              "origin_capture_sha256": "420f5e30b49ded204a3e4a289de01ec4de68bede69f02bb7611ddad2438ef70b",
+              "originated_at": "2026-10-30T00:41:05.496870+00:00",
+              "matched_at_event": false
+            },
+            {
+              "start": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-18/shard-18/region-4943ed5bba2651a731db5024-000001.start.json",
+              "origin_capture_sha256": "420f5e30b49ded204a3e4a289de01ec4de68bede69f02bb7611ddad2438ef70b",
+              "originated_at": "2026-10-30T00:41:05.990501+00:00",
+              "matched_at_event": false
+            },
+            {
+              "start": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-18/shard-18/region-ee1503d02b9af7f8cd920ad7-000000.start.json",
+              "origin_capture_sha256": "420f5e30b49ded204a3e4a289de01ec4de68bede69f02bb7611ddad2438ef70b",
+              "originated_at": "2026-10-30T00:41:06.057986+00:00",
+              "matched_at_event": false
+            },
+            {
+              "start": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-18/shard-18/region-cdc080fe4371e049973e2d8c-000000.start.json",
+              "origin_capture_sha256": "420f5e30b49ded204a3e4a289de01ec4de68bede69f02bb7611ddad2438ef70b",
+              "originated_at": "2026-10-30T00:41:05.529991+00:00",
+              "matched_at_event": false
+            },
+            {
+              "start": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-19/shard-19/region-982e37675dfc03064043535c-000001.start.json",
+              "origin_capture_sha256": "420f5e30b49ded204a3e4a289de01ec4de68bede69f02bb7611ddad2438ef70b",
+              "originated_at": "2026-10-30T00:41:05.682404+00:00",
+              "matched_at_event": false
+            }
+          ]
+        }
+      },
+      "rpc_other_origin_before_end": {
+        "starts": 0,
+        "matched_at_event": 0,
+        "unmatched_at_event": 0,
+        "invalid": 0,
+        "files": []
+      },
+      "mapping_limit": "Capture has started_utc, result has no finished_at. Sequential attempt ordering and outer launcher end associate the last pre-end result with the outer event; this is an inference, not an individually timestamped completion."
+    },
+    "23": {
+      "outer_event": {
+        "id": "codex3-pip02-paddle-relocatable-r11-g23-20261029",
+        "ended_file": "/mnt/raid0/llm/tmp/compute-flags/grants/codex3-pip02-paddle-relocatable-r11-g23-20261029.ended",
+        "end_line": "rc=75 time=2026-10-30T00:41:24Z reason=job-rc-75:exited",
+        "seen_at": "2026-10-30T00:41:45Z",
+        "result_path": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-relocatable-r11-20261030/DONE-23",
+        "scratch_root": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-r11-candidates-20261030/group-23",
+        "decision_rule": "Collect original fresh English Paddle shards[23, 24, 25], native full layout/crop/recognition/assembly, temperature0,4096outputtokens,8192contextslot,np12. Preserve original requests and unknowns; exact cached replay only; native prospective source-bound page finish receipt. Collection diagnostic; no TEDS/adoption verdict.",
+        "class": "diagnostic",
+        "owner": "codex3"
+      },
+      "outer_finished_utc": "2026-10-30T00:41:24Z",
+      "original_window_attempts": [
+        {
+          "capture": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-relocatable-r11-20261030/attempts/codex3-pip02-paddle-relocatable-r11-g23-20261029-a37882134062474ab988c73b8c9cfa98/capture.json",
+          "capture_sha256": "b42a8f50136290a4cf865f261cefcaaf4e44de478b918e9155cb505e4a97c095",
+          "started_utc": "2026-10-30T00:37:42Z",
+          "result": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-relocatable-r11-20261030/attempts/codex3-pip02-paddle-relocatable-r11-g23-20261029-a37882134062474ab988c73b8c9cfa98/result.json",
+          "result_sha256": "ce1479845229aa8f614e5284404591123afbc875ec60fb67603ab7a9ab5fda92",
+          "rc": 75,
+          "reason": null,
+          "error": null,
+          "factory_present": true,
+          "within_original_window": true,
+          "native_finished_at": null
+        },
+        {
+          "capture": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-relocatable-r11-20261030/attempts/codex3-pip02-paddle-relocatable-r11-g23-20261029-9f5cc9132dfc4c80b848d554cb2bd42b/capture.json",
+          "capture_sha256": "67e4f957b0f67f701d7e9b42ba788f41210d78f298e13e93faa4ba83c6be58e4",
+          "started_utc": "2026-10-30T00:40:43Z",
+          "result": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-relocatable-r11-20261030/attempts/codex3-pip02-paddle-relocatable-r11-g23-20261029-9f5cc9132dfc4c80b848d554cb2bd42b/result.json",
+          "result_sha256": "3d933176729a49e9b9327b3dc3532ca533a27ef3e4cb082a2101bb9dd599353c",
+          "rc": 75,
+          "reason": "disk floor",
+          "error": "TimeoutError: deadline, admission or output limit",
+          "factory_present": false,
+          "within_original_window": true,
+          "native_finished_at": null
+        }
+      ],
+      "later_distinct_attempts": [],
+      "rpc_by_capture": {
+        "b42a8f50136290a4cf865f261cefcaaf4e44de478b918e9155cb505e4a97c095": {
+          "starts": 5,
+          "matched_at_event": 5,
+          "unmatched_at_event": 0,
+          "invalid": 0,
+          "files": [
+            {
+              "start": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-23/shard-23/region-7ba42cdbe91fdb94c53d6c5e-000000.start.json",
+              "origin_capture_sha256": "b42a8f50136290a4cf865f261cefcaaf4e44de478b918e9155cb505e4a97c095",
+              "originated_at": "2026-10-30T00:39:17.108571+00:00",
+              "matched_at_event": true
+            },
+            {
+              "start": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-23/shard-23/region-205b02c3903d3962e54f5444-000000.start.json",
+              "origin_capture_sha256": "b42a8f50136290a4cf865f261cefcaaf4e44de478b918e9155cb505e4a97c095",
+              "originated_at": "2026-10-30T00:39:17.504832+00:00",
+              "matched_at_event": true
+            },
+            {
+              "start": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-24/shard-24/region-09698aea79bff39291dd1976-000000.start.json",
+              "origin_capture_sha256": "b42a8f50136290a4cf865f261cefcaaf4e44de478b918e9155cb505e4a97c095",
+              "originated_at": "2026-10-30T00:39:17.082848+00:00",
+              "matched_at_event": true
+            },
+            {
+              "start": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-24/shard-24/region-9fbaaf60810aeacf35a78e5b-000000.start.json",
+              "origin_capture_sha256": "b42a8f50136290a4cf865f261cefcaaf4e44de478b918e9155cb505e4a97c095",
+              "originated_at": "2026-10-30T00:39:17.525862+00:00",
+              "matched_at_event": true
+            },
+            {
+              "start": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-25/shard-25/region-eff0e0d62896e3bed3a458af-000000.start.json",
+              "origin_capture_sha256": "b42a8f50136290a4cf865f261cefcaaf4e44de478b918e9155cb505e4a97c095",
+              "originated_at": "2026-10-30T00:39:17.992490+00:00",
+              "matched_at_event": true
+            }
+          ]
+        },
+        "67e4f957b0f67f701d7e9b42ba788f41210d78f298e13e93faa4ba83c6be58e4": {
+          "starts": 0,
+          "matched_at_event": 0,
+          "unmatched_at_event": 0,
+          "invalid": 0,
+          "files": []
+        }
+      },
+      "rpc_other_origin_before_end": {
+        "starts": 0,
+        "matched_at_event": 0,
+        "unmatched_at_event": 0,
+        "invalid": 0,
+        "files": []
+      },
+      "mapping_limit": "Capture has started_utc, result has no finished_at. Sequential attempt ordering and outer launcher end associate the last pre-end result with the outer event; this is an inference, not an individually timestamped completion."
+    },
+    "29": {
+      "outer_event": {
+        "id": "codex3-pip02-paddle-relocatable-r11-g29-20261029",
+        "ended_file": "/mnt/raid0/llm/tmp/compute-flags/grants/codex3-pip02-paddle-relocatable-r11-g29-20261029.ended",
+        "end_line": "rc=75 time=2026-10-30T00:41:41Z reason=job-rc-75:exited",
+        "seen_at": "2026-10-30T00:41:45Z",
+        "result_path": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-relocatable-r11-20261030/DONE-29",
+        "scratch_root": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-r11-candidates-20261030/group-29",
+        "decision_rule": "Collect original fresh English Paddle shards[29, 30, 31], native full layout/crop/recognition/assembly, temperature0,4096outputtokens,8192contextslot,np12. Preserve original requests and unknowns; exact cached replay only; native prospective source-bound page finish receipt. Collection diagnostic; no TEDS/adoption verdict.",
+        "class": "diagnostic",
+        "owner": "codex3"
+      },
+      "outer_finished_utc": "2026-10-30T00:41:41Z",
+      "original_window_attempts": [
+        {
+          "capture": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-relocatable-r11-20261030/attempts/codex3-pip02-paddle-relocatable-r11-g29-20261029-0f4cc1a156f54de19406e3bb7aa31628/capture.json",
+          "capture_sha256": "4e2b6c066c1fa753594055ce9b2f4426564f483cabcca0097ebb5ea72262eda2",
+          "started_utc": "2026-10-30T00:37:44Z",
+          "result": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-relocatable-r11-20261030/attempts/codex3-pip02-paddle-relocatable-r11-g29-20261029-0f4cc1a156f54de19406e3bb7aa31628/result.json",
+          "result_sha256": "088edd5abbd65927b355c91ed7680769a5db1e1e1d63dab0bdfcdab70646d0fa",
+          "rc": 75,
+          "reason": null,
+          "error": null,
+          "factory_present": true,
+          "within_original_window": true,
+          "native_finished_at": null
+        },
+        {
+          "capture": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-relocatable-r11-20261030/attempts/codex3-pip02-paddle-relocatable-r11-g29-20261029-40b5cd0ea2e9491ab5f9eb61837847ae/capture.json",
+          "capture_sha256": "d9ae3ba0f10b77a9be449078ccdf65935c75100531c90d88437024b397dfc4fe",
+          "started_utc": "2026-10-30T00:39:29Z",
+          "result": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-relocatable-r11-20261030/attempts/codex3-pip02-paddle-relocatable-r11-g29-20261029-40b5cd0ea2e9491ab5f9eb61837847ae/result.json",
+          "result_sha256": "84e7dcf7603a5b96127752f7020dcb4abb1700dca01a5b4b834ef8927951f340",
+          "rc": 75,
+          "reason": null,
+          "error": null,
+          "factory_present": true,
+          "within_original_window": true,
+          "native_finished_at": null
+        },
+        {
+          "capture": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-relocatable-r11-20261030/attempts/codex3-pip02-paddle-relocatable-r11-g29-20261029-be85235828fc41c895ec2206e7ede038/capture.json",
+          "capture_sha256": "b4e1a4693c5fd0173bd277289e33cc34927a624313e7bdf787aa0783e973a165",
+          "started_utc": "2026-10-30T00:41:15Z",
+          "result": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-relocatable-r11-20261030/attempts/codex3-pip02-paddle-relocatable-r11-g29-20261029-be85235828fc41c895ec2206e7ede038/result.json",
+          "result_sha256": "030ede2987d5d89d01f1c2658a5eb9d176fa49a426eee7cc93a4e1068eb72f7d",
+          "rc": 75,
+          "reason": "disk floor",
+          "error": "TimeoutError: admission",
+          "factory_present": false,
+          "within_original_window": true,
+          "native_finished_at": null
+        }
+      ],
+      "later_distinct_attempts": [],
+      "rpc_by_capture": {
+        "4e2b6c066c1fa753594055ce9b2f4426564f483cabcca0097ebb5ea72262eda2": {
+          "starts": 5,
+          "matched_at_event": 5,
+          "unmatched_at_event": 0,
+          "invalid": 0,
+          "files": [
+            {
+              "start": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-29/shard-29/region-e09edc4e813bfcb6d6e77542-000000.start.json",
+              "origin_capture_sha256": "4e2b6c066c1fa753594055ce9b2f4426564f483cabcca0097ebb5ea72262eda2",
+              "originated_at": "2026-10-30T00:39:17.971083+00:00",
+              "matched_at_event": true
+            },
+            {
+              "start": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-29/shard-29/region-198f0b63ceb20fc4d333b27a-000000.start.json",
+              "origin_capture_sha256": "4e2b6c066c1fa753594055ce9b2f4426564f483cabcca0097ebb5ea72262eda2",
+              "originated_at": "2026-10-30T00:39:18.095272+00:00",
+              "matched_at_event": true
+            },
+            {
+              "start": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-30/shard-30/region-bee6da0931c587f4219fac37-000000.start.json",
+              "origin_capture_sha256": "4e2b6c066c1fa753594055ce9b2f4426564f483cabcca0097ebb5ea72262eda2",
+              "originated_at": "2026-10-30T00:39:18.098637+00:00",
+              "matched_at_event": true
+            },
+            {
+              "start": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-30/shard-30/region-39e80f6c2632acfc054e82d6-000000.start.json",
+              "origin_capture_sha256": "4e2b6c066c1fa753594055ce9b2f4426564f483cabcca0097ebb5ea72262eda2",
+              "originated_at": "2026-10-30T00:39:18.642592+00:00",
+              "matched_at_event": true
+            },
+            {
+              "start": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-30/shard-30/region-468def1574a0dbf66a72b441-000000.start.json",
+              "origin_capture_sha256": "4e2b6c066c1fa753594055ce9b2f4426564f483cabcca0097ebb5ea72262eda2",
+              "originated_at": "2026-10-30T00:39:18.241409+00:00",
+              "matched_at_event": true
+            }
+          ]
+        },
+        "d9ae3ba0f10b77a9be449078ccdf65935c75100531c90d88437024b397dfc4fe": {
+          "starts": 5,
+          "matched_at_event": 5,
+          "unmatched_at_event": 0,
+          "invalid": 0,
+          "files": [
+            {
+              "start": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-29/shard-29/region-e09edc4e813bfcb6d6e77542-000001.start.json",
+              "origin_capture_sha256": "d9ae3ba0f10b77a9be449078ccdf65935c75100531c90d88437024b397dfc4fe",
+              "originated_at": "2026-10-30T00:41:04.657234+00:00",
+              "matched_at_event": true
+            },
+            {
+              "start": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-30/shard-30/region-03dbbebfeb468e122c20c8cf-000000.start.json",
+              "origin_capture_sha256": "d9ae3ba0f10b77a9be449078ccdf65935c75100531c90d88437024b397dfc4fe",
+              "originated_at": "2026-10-30T00:41:04.624029+00:00",
+              "matched_at_event": true
+            },
+            {
+              "start": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-30/shard-30/region-39e80f6c2632acfc054e82d6-000001.start.json",
+              "origin_capture_sha256": "d9ae3ba0f10b77a9be449078ccdf65935c75100531c90d88437024b397dfc4fe",
+              "originated_at": "2026-10-30T00:41:04.577968+00:00",
+              "matched_at_event": true
+            },
+            {
+              "start": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-30/shard-30/region-468def1574a0dbf66a72b441-000001.start.json",
+              "origin_capture_sha256": "d9ae3ba0f10b77a9be449078ccdf65935c75100531c90d88437024b397dfc4fe",
+              "originated_at": "2026-10-30T00:41:04.544008+00:00",
+              "matched_at_event": true
+            },
+            {
+              "start": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh/shard-31/shard-31/region-ba2c672a5eeac326c51c38b7-000000.start.json",
+              "origin_capture_sha256": "d9ae3ba0f10b77a9be449078ccdf65935c75100531c90d88437024b397dfc4fe",
+              "originated_at": "2026-10-30T00:41:04.576121+00:00",
+              "matched_at_event": true
+            }
+          ]
+        },
+        "b4e1a4693c5fd0173bd277289e33cc34927a624313e7bdf787aa0783e973a165": {
+          "starts": 0,
+          "matched_at_event": 0,
+          "unmatched_at_event": 0,
+          "invalid": 0,
+          "files": []
+        }
+      },
+      "rpc_other_origin_before_end": {
+        "starts": 0,
+        "matched_at_event": 0,
+        "unmatched_at_event": 0,
+        "invalid": 0,
+        "files": []
+      },
+      "mapping_limit": "Capture has started_utc, result has no finished_at. Sequential attempt ordering and outer launcher end associate the last pre-end result with the outer event; this is an inference, not an individually timestamped completion."
+    },
+    "26": {
+      "outer_event": {
+        "id": "codex3-pip02-paddle-relocatable-r11-g26-20261029",
+        "ended_file": "/mnt/raid0/llm/tmp/compute-flags/grants/codex3-pip02-paddle-relocatable-r11-g26-20261029.ended",
+        "end_line": "rc=75 time=2026-10-30T00:42:25Z reason=job-rc-75:exited",
+        "seen_at": "2026-10-30T00:42:47Z",
+        "result_path": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-relocatable-r11-20261030/DONE-26",
+        "scratch_root": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-relocatable-r11-20261030/packets/group-26",
+        "decision_rule": "Collect original fresh English Paddle shards[26, 27, 28], native full layout/crop/recognition/assembly, temperature0,4096outputtokens,8192contextslot,np12. Preserve original requests and unknowns; exact cached replay only; native prospective source-bound page finish receipt. Collection diagnostic; no TEDS/adoption verdict.",
+        "class": "diagnostic",
+        "owner": "codex3"
+      },
+      "outer_finished_utc": "2026-10-30T00:42:25Z",
+      "original_window_attempts": [
+        {
+          "capture": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-relocatable-r11-20261030/attempts/codex3-pip02-paddle-relocatable-r11-g26-20261029-021101fef6974c648476c54a201d51dd/capture.json",
+          "capture_sha256": "9e7ab4f25ad1e3461f407c4412da6801a4c38f4a650bc93b7790044857d55bce",
+          "started_utc": "2026-10-30T00:42:01Z",
+          "result": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-relocatable-r11-20261030/attempts/codex3-pip02-paddle-relocatable-r11-g26-20261029-021101fef6974c648476c54a201d51dd/result.json",
+          "result_sha256": "a9b135ae459d73889f0cd84faccc18abc9d914d6ace652de14f13d0d066c273a",
+          "rc": 75,
+          "reason": "disk floor",
+          "error": "TimeoutError: admission",
+          "factory_present": false,
+          "within_original_window": true,
+          "native_finished_at": null
+        }
+      ],
+      "later_distinct_attempts": [
+        {
+          "capture": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-relocatable-r11-20261030/attempts/codex3-pip02-paddle-relocatable-r11-g26-20261029-3a7fae2a0d044a5692386fca604eef81/capture.json",
+          "capture_sha256": "54bf0a6f0822f6bb73b07f20f5c97243699880f5e187ecdf591ade948f644493",
+          "started_utc": "2026-10-30T00:45:25Z",
+          "result": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-relocatable-r11-20261030/attempts/codex3-pip02-paddle-relocatable-r11-g26-20261029-3a7fae2a0d044a5692386fca604eef81/result.json",
+          "result_sha256": "4f9eda370b697845744cecc5190627d091781a5e4fad376195336573db4ba321",
+          "rc": 75,
+          "reason": "disk floor",
+          "error": "TimeoutError: admission",
+          "factory_present": false,
+          "within_original_window": false,
+          "native_finished_at": null
+        },
+        {
+          "capture": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-relocatable-r11-20261030/attempts/codex3-pip02-paddle-relocatable-r11-g26-20261029-8d845a8918fc4ea4abfce8665735efed/capture.json",
+          "capture_sha256": "63020670278f39a64b2f92d46723c565e5675dc14c8575a72c6900156cfe8fc3",
+          "started_utc": "2026-10-30T00:48:28Z",
+          "result": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-relocatable-r11-20261030/attempts/codex3-pip02-paddle-relocatable-r11-g26-20261029-8d845a8918fc4ea4abfce8665735efed/result.json",
+          "result_sha256": "97cc7697831dc9befc0e059373b6b10684b5d0fa659f306e850e911a1a04775d",
+          "rc": 75,
+          "reason": "disk floor",
+          "error": "TimeoutError: admission",
+          "factory_present": false,
+          "within_original_window": false,
+          "native_finished_at": null
+        }
+      ],
+      "rpc_by_capture": {
+        "9e7ab4f25ad1e3461f407c4412da6801a4c38f4a650bc93b7790044857d55bce": {
+          "starts": 0,
+          "matched_at_event": 0,
+          "unmatched_at_event": 0,
+          "invalid": 0,
+          "files": []
+        }
+      },
+      "rpc_other_origin_before_end": {
+        "starts": 0,
+        "matched_at_event": 0,
+        "unmatched_at_event": 0,
+        "invalid": 0,
+        "files": []
+      },
+      "mapping_limit": "Capture has started_utc, result has no finished_at. Sequential attempt ordering and outer launcher end associate the last pre-end result with the outer event; this is an inference, not an individually timestamped completion."
+    },
+    "32": {
+      "outer_event": {
+        "id": "codex3-pip02-paddle-relocatable-r11-g32-20261029",
+        "ended_file": "/mnt/raid0/llm/tmp/compute-flags/grants/codex3-pip02-paddle-relocatable-r11-g32-20261029.ended",
+        "end_line": "rc=75 time=2026-10-30T00:44:24Z reason=job-rc-75:exited",
+        "seen_at": "2026-10-30T00:44:51Z",
+        "result_path": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-relocatable-r11-20261030/DONE-32",
+        "scratch_root": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-r11-candidates-20261030/group-32",
+        "decision_rule": "Collect original fresh English Paddle shards[32, 33, 34], native full layout/crop/recognition/assembly, temperature0,4096outputtokens,8192contextslot,np12. Preserve original requests and unknowns; exact cached replay only; native prospective source-bound page finish receipt. Collection diagnostic; no TEDS/adoption verdict.",
+        "class": "diagnostic",
+        "owner": "codex3"
+      },
+      "outer_finished_utc": "2026-10-30T00:44:24Z",
+      "original_window_attempts": [
+        {
+          "capture": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-relocatable-r11-20261030/attempts/codex3-pip02-paddle-relocatable-r11-g32-20261029-889ad501adac462bb5b0eea517bfdfa8/capture.json",
+          "capture_sha256": "ed06d8dc5cfa50c675726fe18268df3ac421c9233236db3109516ab7d0f49c95",
+          "started_utc": "2026-10-30T00:44:00Z",
+          "result": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-relocatable-r11-20261030/attempts/codex3-pip02-paddle-relocatable-r11-g32-20261029-889ad501adac462bb5b0eea517bfdfa8/result.json",
+          "result_sha256": "d22b9ec090f362e3ed92e50107172e53c94844aea2dc489842fb1448bbb0ac08",
+          "rc": 75,
+          "reason": "disk floor",
+          "error": "TimeoutError: admission",
+          "factory_present": false,
+          "within_original_window": true,
+          "native_finished_at": null
+        }
+      ],
+      "later_distinct_attempts": [],
+      "rpc_by_capture": {
+        "ed06d8dc5cfa50c675726fe18268df3ac421c9233236db3109516ab7d0f49c95": {
+          "starts": 0,
+          "matched_at_event": 0,
+          "unmatched_at_event": 0,
+          "invalid": 0,
+          "files": []
+        }
+      },
+      "rpc_other_origin_before_end": {
+        "starts": 0,
+        "matched_at_event": 0,
+        "unmatched_at_event": 0,
+        "invalid": 0,
+        "files": []
+      },
+      "mapping_limit": "Capture has started_utc, result has no finished_at. Sequential attempt ordering and outer launcher end associate the last pre-end result with the outer event; this is an inference, not an individually timestamped completion."
+    },
+    "35": {
+      "outer_event": {
+        "id": "codex3-pip02-paddle-relocatable-r11-g35-20261029",
+        "ended_file": "/mnt/raid0/llm/tmp/compute-flags/grants/codex3-pip02-paddle-relocatable-r11-g35-20261029.ended",
+        "end_line": "rc=75 time=2026-10-30T00:44:25Z reason=job-rc-75:exited",
+        "seen_at": "2026-10-30T00:44:51Z",
+        "result_path": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-relocatable-r11-20261030/DONE-35",
+        "scratch_root": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-r11-candidates-20261030/group-35",
+        "decision_rule": "Collect original fresh English Paddle shards[35, 36, 37], native full layout/crop/recognition/assembly, temperature0,4096outputtokens,8192contextslot,np12. Preserve original requests and unknowns; exact cached replay only; native prospective source-bound page finish receipt. Collection diagnostic; no TEDS/adoption verdict.",
+        "class": "diagnostic",
+        "owner": "codex3"
+      },
+      "outer_finished_utc": "2026-10-30T00:44:25Z",
+      "original_window_attempts": [
+        {
+          "capture": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-relocatable-r11-20261030/attempts/codex3-pip02-paddle-relocatable-r11-g35-20261029-71b957d59876453ca0aabdcf471a3017/capture.json",
+          "capture_sha256": "8552491f976789ed5d79c9edf3a64ff99a3c716b9e23fa5d4eb6117cd8899e72",
+          "started_utc": "2026-10-30T00:44:01Z",
+          "result": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-relocatable-r11-20261030/attempts/codex3-pip02-paddle-relocatable-r11-g35-20261029-71b957d59876453ca0aabdcf471a3017/result.json",
+          "result_sha256": "36e4f2a4e36eb72542b473cc5821a6aedca15f4b1fea454d84b2ec47e85f605b",
+          "rc": 75,
+          "reason": "disk floor",
+          "error": "TimeoutError: admission",
+          "factory_present": false,
+          "within_original_window": true,
+          "native_finished_at": null
+        }
+      ],
+      "later_distinct_attempts": [],
+      "rpc_by_capture": {
+        "8552491f976789ed5d79c9edf3a64ff99a3c716b9e23fa5d4eb6117cd8899e72": {
+          "starts": 0,
+          "matched_at_event": 0,
+          "unmatched_at_event": 0,
+          "invalid": 0,
+          "files": []
+        }
+      },
+      "rpc_other_origin_before_end": {
+        "starts": 0,
+        "matched_at_event": 0,
+        "unmatched_at_event": 0,
+        "invalid": 0,
+        "files": []
+      },
+      "mapping_limit": "Capture has started_utc, result has no finished_at. Sequential attempt ordering and outer launcher end associate the last pre-end result with the outer event; this is an inference, not an individually timestamped completion."
+    },
+    "8": {
+      "outer_event": {
+        "id": "codex3-pip02-paddle-relocatable-r11-g8-20261029",
+        "ended_file": "/mnt/raid0/llm/tmp/compute-flags/grants/codex3-pip02-paddle-relocatable-r11-g8-20261029.ended",
+        "end_line": "rc=75 time=2026-10-30T00:46:42Z reason=job-rc-75:exited",
+        "seen_at": "2026-10-30T00:46:54Z",
+        "result_path": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-relocatable-r11-20261030/DONE-8",
+        "scratch_root": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-relocatable-r11-20261030/packets/group-8",
+        "decision_rule": "Collect original fresh English Paddle shards[8, 9, 10], native full layout/crop/recognition/assembly, temperature0,4096outputtokens,8192contextslot,np12. Preserve original requests and unknowns; exact cached replay only; native prospective source-bound page finish receipt. Collection diagnostic; no TEDS/adoption verdict.",
+        "class": "diagnostic",
+        "owner": "codex3"
+      },
+      "outer_finished_utc": "2026-10-30T00:46:42Z",
+      "original_window_attempts": [
+        {
+          "capture": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-relocatable-r11-20261030/attempts/codex3-pip02-paddle-relocatable-r11-g8-20261029-e12b4e80985e43309220fc09582b400b/capture.json",
+          "capture_sha256": "5782248625ef868cd2e890b21bd7496c2a7a00b590388ce7e4c2510ce1c98411",
+          "started_utc": "2026-10-30T00:46:18Z",
+          "result": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-relocatable-r11-20261030/attempts/codex3-pip02-paddle-relocatable-r11-g8-20261029-e12b4e80985e43309220fc09582b400b/result.json",
+          "result_sha256": "dc3b5c60abd6ebccc341d8db968935f599732410115c0e51eb322d05abed2839",
+          "rc": 75,
+          "reason": "disk floor",
+          "error": "TimeoutError: admission",
+          "factory_present": false,
+          "within_original_window": true,
+          "native_finished_at": null
+        }
+      ],
+      "later_distinct_attempts": [
+        {
+          "capture": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-relocatable-r11-20261030/attempts/codex3-pip02-paddle-relocatable-r11-g8-20261029-c8fd2a5f016749a0805b46677736cee1/capture.json",
+          "capture_sha256": "01a2b3f13ad16b6a52efa583ee2b02b969de15f5c691070af9ba1044d2ada4ab",
+          "started_utc": "2026-10-30T00:50:02Z",
+          "result": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-relocatable-r11-20261030/attempts/codex3-pip02-paddle-relocatable-r11-g8-20261029-c8fd2a5f016749a0805b46677736cee1/result.json",
+          "result_sha256": "dce4b589b83840697753c6dc3fb8242f0ee08bf6b004b84f5615a5f541d598b7",
+          "rc": 75,
+          "reason": "disk floor",
+          "error": "TimeoutError: admission",
+          "factory_present": false,
+          "within_original_window": false,
+          "native_finished_at": null
+        }
+      ],
+      "rpc_by_capture": {
+        "5782248625ef868cd2e890b21bd7496c2a7a00b590388ce7e4c2510ce1c98411": {
+          "starts": 0,
+          "matched_at_event": 0,
+          "unmatched_at_event": 0,
+          "invalid": 0,
+          "files": []
+        }
+      },
+      "rpc_other_origin_before_end": {
+        "starts": 0,
+        "matched_at_event": 0,
+        "unmatched_at_event": 0,
+        "invalid": 0,
+        "files": []
+      },
+      "mapping_limit": "Capture has started_utc, result has no finished_at. Sequential attempt ordering and outer launcher end associate the last pre-end result with the outer event; this is an inference, not an individually timestamped completion."
+    }
+  },
+  "source_scope": "Original event boundaries are captured outer timestamps. Native result JSON has no finish timestamp; last pre-end capture association inferred from sequential original execution, explicitly labelled. Later captures separate; completed requests require matching start hash before outer end."
+}
