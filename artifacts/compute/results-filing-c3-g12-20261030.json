@@ -1,0 +1,315 @@
+{
+  "c3": {
+    "packet": "/mnt/micron/refactor-c3-native-profile-r3-20261030/run-20261030T230847-2762954/pass-B",
+    "belief_receipt_sha256": "efc8317918ba87ed38a3dfd37193af3992aa183d256b85c66d1898f262194cc7",
+    "raw_readset": {
+      "agents": "50189a58f15ffb0008e840a8a6d18db1a88f73e3492b686b167d773de6b9323e",
+      "hip": "a3d9781dbdad8032dc3a56f844b3e07640f044eabf84566141dea681d93b694d",
+      "kernels": "fdb1d0555330fd123ec77018873f12b5bf0f53a4d1155bfdd51e6ebe8b32f1d8",
+      "markers": "3fa7127ad6d67f5aede059815c1aedae5ea7ead5169d6734a91a21970d83404c",
+      "native": "8b4db20fc64612d623706507c246ccef488de8bd58f636e46897af3632cc86fb",
+      "run": "9ee7b26a9554d60c200006551fc6c73e8d9027218e88c6a712e39d12fe820d97"
+    },
+    "request_wall_s": 4.07586535,
+    "request_predicted_tokens": 96,
+    "decode_steps": 95,
+    "gpu_busy_union_ms_per_step": 20.974068600000003,
+    "dispatch_sum_ms_per_step": 20.974271831578946,
+    "per_kernel_dispatch_sum_ms_per_step": [
+      {
+        "kernel": "void mul_mat_vec_q<(ggml_type)16, 1, false, false, 0, false, false, false>(void const*, void const*, int const*, ggml_cuda_mm_fusion_args_device, float*, unsigned int, HIP_vector_type<unsigned int, 3u>, unsigned int, unsigned int, unsigned int, HIP_vector_type<unsigned int, 3u>, unsigned int, unsigned int, unsigned int, HIP_vector_type<unsigned int, 3u>, unsigned int, unsigned int, unsigned int, unsigned int)",
+        "ms_per_step": 5.585502652631579,
+        "dispatch_count": 11400
+      },
+      {
+        "kernel": "void mul_mat_vec_q<(ggml_type)40, 1, true, false, 0, false, false, false>(void const*, void const*, int const*, ggml_cuda_mm_fusion_args_device, float*, unsigned int, HIP_vector_type<unsigned int, 3u>, unsigned int, unsigned int, unsigned int, HIP_vector_type<unsigned int, 3u>, unsigned int, unsigned int, unsigned int, HIP_vector_type<unsigned int, 3u>, unsigned int, unsigned int, unsigned int, unsigned int)",
+        "ms_per_step": 3.31148252631579,
+        "dispatch_count": 7600
+      },
+      {
+        "kernel": "void mul_mat_vec_q<(ggml_type)16, 1, true, false, 0, false, false, false>(void const*, void const*, int const*, ggml_cuda_mm_fusion_args_device, float*, unsigned int, HIP_vector_type<unsigned int, 3u>, unsigned int, unsigned int, unsigned int, HIP_vector_type<unsigned int, 3u>, unsigned int, unsigned int, unsigned int, HIP_vector_type<unsigned int, 3u>, unsigned int, unsigned int, unsigned int, unsigned int)",
+        "ms_per_step": 1.529984505263158,
+        "dispatch_count": 3800
+      },
+      {
+        "kernel": "quantize_q8_1_1d(float const*, void*, long, long)",
+        "ms_per_step": 1.327697347368421,
+        "dispatch_count": 28231
+      },
+      {
+        "kernel": "void mul_mat_vec_q<(ggml_type)8, 1, false, true, 0, false, false, true>(void const*, void const*, int const*, ggml_cuda_mm_fusion_args_device, float*, unsigned int, HIP_vector_type<unsigned int, 3u>, unsigned int, unsigned int, unsigned int, HIP_vector_type<unsigned int, 3u>, unsigned int, unsigned int, unsigned int, HIP_vector_type<unsigned int, 3u>, unsigned int, unsigned int, unsigned int, unsigned int)",
+        "ms_per_step": 1.2428567684210527,
+        "dispatch_count": 9975
+      },
+      {
+        "kernel": "void k_argsort_f32_i32<(ggml_sort_order)1>(float const*, int*, int, int)",
+        "ms_per_step": 0.9203213789473684,
+        "dispatch_count": 3800
+      },
+      {
+        "kernel": "void k_bin_bcast<&(op_add(float, float)), float, float, float, float const*>(float const*, float const*, float*, unsigned int, unsigned int, unsigned int, HIP_vector_type<unsigned int, 3u>, HIP_vector_type<unsigned int, 3u>, HIP_vector_type<unsigned int, 3u>, HIP_vector_type<unsigned int, 3u>, HIP_vector_type<unsigned int, 3u>, unsigned int, unsigned int, unsigned int, unsigned int, unsigned int, unsigned int, unsigned int, unsigned int, unsigned int, unsigned int, unsigned int, float const*)",
+        "ms_per_step": 0.895652347368421,
+        "dispatch_count": 19000
+      },
+      {
+        "kernel": "void rms_norm_f32<1024, true, false, false>(float const*, float*, int, long, long, long, float, float const*, long, long, long, HIP_vector_type<unsigned int, 3u>, HIP_vector_type<unsigned int, 3u>, HIP_vector_type<unsigned int, 3u>, HIP_vector_type<unsigned int, 3u>, float const*, long, long, long, HIP_vector_type<unsigned int, 3u>, HIP_vector_type<unsigned int, 3u>, HIP_vector_type<unsigned int, 3u>, HIP_vector_type<unsigned int, 3u>)",
+        "ms_per_step": 0.7738194736842106,
+        "dispatch_count": 12255
+      },
+      {
+        "kernel": "__amd_rocclr_copyBuffer",
+        "ms_per_step": 0.6459649684210527,
+        "dispatch_count": 11400
+      },
+      {
+        "kernel": "void ssm_scan_f32_group<4, 128>(float const*, float const*, float const*, float const*, float const*, float const*, int const*, float*, int, int, int, int, int, int, int, int, int, int, int, long, long, long, long, long, long)",
+        "ms_per_step": 0.5498195684210526,
+        "dispatch_count": 3800
+      },
+      {
+        "kernel": "void mul_mat_vec_f<float, float, 1, 128, false, false>(float const*, float const*, int const*, ggml_cuda_mm_fusion_args_device, float*, int, HIP_vector_type<unsigned int, 3u>, int, int, int, HIP_vector_type<unsigned int, 3u>, int, int, int, HIP_vector_type<unsigned int, 3u>, int, int, int, int)",
+        "ms_per_step": 0.43262292631578947,
+        "dispatch_count": 3800
+      },
+      {
+        "kernel": "void k_get_rows_float<float, float>(float const*, int const*, float*, long, long, HIP_vector_type<unsigned int, 3u>, unsigned long, unsigned long, unsigned long, unsigned long, unsigned long, unsigned long, unsigned long, unsigned long, unsigned long)",
+        "ms_per_step": 0.36368072631578946,
+        "dispatch_count": 7790
+      },
+      {
+        "kernel": "void k_bin_bcast<&(op_mul(float, float)), float, float, float, float const*>(float const*, float const*, float*, unsigned int, unsigned int, unsigned int, HIP_vector_type<unsigned int, 3u>, HIP_vector_type<unsigned int, 3u>, HIP_vector_type<unsigned int, 3u>, HIP_vector_type<unsigned int, 3u>, HIP_vector_type<unsigned int, 3u>, unsigned int, unsigned int, unsigned int, unsigned int, unsigned int, unsigned int, unsigned int, unsigned int, unsigned int, unsigned int, unsigned int, float const*)",
+        "ms_per_step": 0.3529272947368421,
+        "dispatch_count": 7600
+      },
+      {
+        "kernel": "void unary_op_kernel<&(op_relu_sqr(float)), float>(float const*, float*, int)",
+        "ms_per_step": 0.35252112631578947,
+        "dispatch_count": 7600
+      },
+      {
+        "kernel": "void flash_attn_ext_vec<128, 1, (ggml_type)8, (ggml_type)8, false, false>(char const*, char const*, char const*, char const*, char const*, int const*, unsigned char const*, float*, HIP_vector_type<float, 2u>*, float, float, float, float, unsigned int, float, int, HIP_vector_type<unsigned int, 3u>, int, int, int, int, int, int, int, int, int, int, int, long, int, int, long, int, int, int, int, int, long)",
+        "ms_per_step": 0.23602212631578948,
+        "dispatch_count": 760
+      },
+      {
+        "kernel": "void mul_mat_vec_q<(ggml_type)8, 1, true, true, 0, false, false, true>(void const*, void const*, int const*, ggml_cuda_mm_fusion_args_device, float*, unsigned int, HIP_vector_type<unsigned int, 3u>, unsigned int, unsigned int, unsigned int, HIP_vector_type<unsigned int, 3u>, unsigned int, unsigned int, unsigned int, HIP_vector_type<unsigned int, 3u>, unsigned int, unsigned int, unsigned int, unsigned int)",
+        "ms_per_step": 0.19627415789473684,
+        "dispatch_count": 760
+      },
+      {
+        "kernel": "void cpy_scalar<&(void cpy_1_scalar<float, float>(char const*, char*))>(char const*, char*, long, long, long, long, long, long, long, long, long, long, long, long, long, long, long)",
+        "ms_per_step": 0.18812771578947368,
+        "dispatch_count": 3800
+      },
+      {
+        "kernel": "void reduce_rows_f32<false>(float const*, float*, int)",
+        "ms_per_step": 0.1798478,
+        "dispatch_count": 3800
+      },
+      {
+        "kernel": "scale_f32(float const*, float*, float, float, long)",
+        "ms_per_step": 0.17961387368421053,
+        "dispatch_count": 3800
+      },
+      {
+        "kernel": "void concat_cont<unsigned int, 0>(unsigned int const*, unsigned int const*, unsigned int*, long, long, long, long, long, long)",
+        "ms_per_step": 0.17941352631578947,
+        "dispatch_count": 3800
+      },
+      {
+        "kernel": "void k_bin_bcast<&(op_add(float, float)), float, float, float, float const*, float const*, float const*, float const*, float const*, float const*, float const*, float const*>(float const*, float const*, float*, unsigned int, unsigned int, unsigned int, HIP_vector_type<unsigned int, 3u>, HIP_vector_type<unsigned int, 3u>, HIP_vector_type<unsigned int, 3u>, HIP_vector_type<unsigned int, 3u>, HIP_vector_type<unsigned int, 3u>, unsigned int, unsigned int, unsigned int, unsigned int, unsigned int, unsigned int, unsigned int, unsigned int, unsigned int, unsigned int, unsigned int, float const*, float const*, float const*, float const*, float const*, float const*, float const*, float const*)",
+        "ms_per_step": 0.1791894105263158,
+        "dispatch_count": 3800
+      },
+      {
+        "kernel": "void op_clamp_kernel<float>(float const*, float*, float, float, int)",
+        "ms_per_step": 0.17917774736842107,
+        "dispatch_count": 3800
+      },
+      {
+        "kernel": "void ssm_conv_f32<true, 128ul, 4ul>(float const*, float const*, float const*, int, int, int, int, float*, int, int, int, long)",
+        "ms_per_step": 0.17903953684210527,
+        "dispatch_count": 3800
+      },
+      {
+        "kernel": "void k_bin_bcast<&(op_div(float, float)), float, float, float, float const*>(float const*, float const*, float*, unsigned int, unsigned int, unsigned int, HIP_vector_type<unsigned int, 3u>, HIP_vector_type<unsigned int, 3u>, HIP_vector_type<unsigned int, 3u>, HIP_vector_type<unsigned int, 3u>, HIP_vector_type<unsigned int, 3u>, unsigned int, unsigned int, unsigned int, unsigned int, unsigned int, unsigned int, unsigned int, unsigned int, unsigned int, unsigned int, unsigned int, float const*)",
+        "ms_per_step": 0.17899571578947368,
+        "dispatch_count": 3800
+      },
+      {
+        "kernel": "void unary_gated_op_kernel<&(op_silu(float)), float>(float const*, float const*, float*, long, long, long, long)",
+        "ms_per_step": 0.17830015789473685,
+        "dispatch_count": 3800
+      },
+      {
+        "kernel": "void unary_op_kernel<&(op_sigmoid(float)), float>(float const*, float*, int)",
+        "ms_per_step": 0.17675889473684211,
+        "dispatch_count": 3800
+      },
+      {
+        "kernel": "quantize_q8_1(float const*, void*, long, long, long, long, long, unsigned int, HIP_vector_type<unsigned int, 3u>)",
+        "ms_per_step": 0.17318025263157893,
+        "dispatch_count": 3800
+      },
+      {
+        "kernel": "_ZL16k_set_rows_quantIl10block_q8_0Li32ETnPFvPKfPT0_EXadL_ZL23quantize_f32_q8_0_blockS2_PS0_EEEvS2_PKT_S4_llllllllllllll15HIP_vector_typeIjLj3EESC_SC_SC_SC_",
+        "ms_per_step": 0.10961091578947368,
+        "dispatch_count": 1520
+      },
+      {
+        "kernel": "void fwht_cuda<128>(float const*, float*, long, float)",
+        "ms_per_step": 0.07143797894736842,
+        "dispatch_count": 1520
+      },
+      {
+        "kernel": "void fwht_cuda<64>(float const*, float*, long, float)",
+        "ms_per_step": 0.0700232,
+        "dispatch_count": 1520
+      },
+      {
+        "kernel": "void flash_attn_combine_results<128>(float const*, HIP_vector_type<float, 2u> const*, float*, int)",
+        "ms_per_step": 0.03440521052631579,
+        "dispatch_count": 760
+      }
+    ],
+    "unbound_dispatches": 135,
+    "overlapping_residency_samples": 386,
+    "vram_min_bytes": 22423326720,
+    "vram_max_bytes": 22431715328,
+    "interpretation": "One request, 95 dependent steps, no repeat/no noise floor. Per-kernel sums are not disjoint union attribution; cross-kernel and cross-queue intervals can overlap. Request wall includes prefill and overhead and is not a per-step latency comparator. Diagnostic only."
+  },
+  "g12": {
+    "packet": "/mnt/raid0/llm/tmp/codex-ni-kbrag-g12-queryshift-20261030",
+    "result_sha256": "e6b181a364acb48fa0bac7f8bf530d6e15afe5452485dab3be436b22e621899f",
+    "source_manifest_sha256": "2470f692f22e28760527d36384c53a8e1383eab6b68be0ed14b9a4061a0be487",
+    "index_pin_sha256": "3223d69cc265ec6fed911ce9a5b99742a04e50a041a6a302a29b527f56f05750",
+    "paired_rows": [
+      {
+        "id": "hotpot_kbrag_fable_queue",
+        "short": 0.0,
+        "verbose": 0.5
+      },
+      {
+        "id": "hotpot_dcp_campaign",
+        "short": 1.0,
+        "verbose": 1.0
+      },
+      {
+        "id": "hotpot_ledger_sequential_verdicts",
+        "short": 0.3333333333333333,
+        "verbose": 0.0
+      },
+      {
+        "id": "hotpot_batched_decode_gpu",
+        "short": 0.0,
+        "verbose": 0.0
+      },
+      {
+        "id": "hotpot_routing_retrain_block",
+        "short": 0.5,
+        "verbose": 0.5
+      },
+      {
+        "id": "hotpot_colbert_shared_encoder",
+        "short": 0.0,
+        "verbose": 0.0
+      },
+      {
+        "id": "hotpot_chat_template_thinking",
+        "short": 0.5,
+        "verbose": 0.5
+      },
+      {
+        "id": "hotpot_minddr_md9",
+        "short": 0.5,
+        "verbose": 0.5
+      },
+      {
+        "id": "hotpot_shape_placement",
+        "short": 1.0,
+        "verbose": 1.0
+      },
+      {
+        "id": "hotpot_granite_kbrag_embedder",
+        "short": 0.6666666666666666,
+        "verbose": 0.6666666666666666
+      },
+      {
+        "id": "hotpot_streaming_kv",
+        "short": 1.0,
+        "verbose": 1.0
+      },
+      {
+        "id": "hotpot_sliders_rag_alternative",
+        "short": 1.0,
+        "verbose": 1.0
+      },
+      {
+        "id": "hotpot_instrument_repair_measurement",
+        "short": 0.0,
+        "verbose": 0.0
+      },
+      {
+        "id": "hotpot_routing_truth_controller",
+        "short": 0.3333333333333333,
+        "verbose": 0.3333333333333333
+      },
+      {
+        "id": "locomo_fable_handoff_evolution",
+        "short": 0.0,
+        "verbose": 0.0
+      },
+      {
+        "id": "locomo_measurement_integrity_chain",
+        "short": 0.0,
+        "verbose": 0.0
+      },
+      {
+        "id": "locomo_objective_design_trace",
+        "short": 0.0,
+        "verbose": 0.0
+      },
+      {
+        "id": "locomo_kernel_concurrency_trace",
+        "short": 0.0,
+        "verbose": 0.0
+      },
+      {
+        "id": "locomo_trace_memory_events",
+        "short": 0.0,
+        "verbose": 0.6666666666666666
+      },
+      {
+        "id": "locomo_tool_contract_to_eval",
+        "short": 0.6666666666666666,
+        "verbose": 0.0
+      }
+    ],
+    "short_cert": {
+      "n": 70,
+      "mean_recall_at10": 0.3678571428571429,
+      "mean_evidence_catalog_coverage": 0.7476190476190476,
+      "over_cap": 0,
+      "max_tokens": 33
+    },
+    "short_seed": {
+      "n": 20,
+      "mean_recall_at10": 0.4083333333333333,
+      "mean_evidence_catalog_coverage": 0.725,
+      "over_cap": 0,
+      "max_tokens": 29
+    },
+    "verbose": {
+      "n": 20,
+      "mean_recall_at10": 0.38333333333333336,
+      "mean_evidence_catalog_coverage": 0.675,
+      "over_cap": 20,
+      "max_tokens": 91
+    },
+    "paired_short_recall_at10": 0.375,
+    "paired_verbose_recall_at10": 0.38333333333333336,
+    "paired_short_minus_verbose_pp": -0.8333333333333359,
+    "opens_B7": false,
+    "verification": "All 110 saved case query SHA, evidence lists, source/index pins and pinned score_case metrics independently rederived; no model recomputation."
+  }
+}

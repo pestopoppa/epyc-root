@@ -1,0 +1,3 @@
+# 2026-10-30 — C3 R3 and G12 original results filing
+
+C3 B: 95 dependent native steps, union GPU busy 20.974069 ms/step vs 4.075865 s request wall; own residency overlaps request. Diagnostic only, no promotion. Prior R2 nested-lock failure preserved; no L/LiLiCorr closure. G12: 110 native queries; paired 20 short 37.50% vs verbose 38.333%, −0.833 pp, no >2 pp signal and B7 stays closed. Original truth/missingness and uncapped token counts retained; fixed local cohort is not live traffic. Full detail and source pins: `artifacts/compute/results-filing-c3-g12-20261030.json`; both are committed-conclusion candidates. Wiki candidates: native GPU profiling and KB retrieval quality; next operator-invoked compilation. [belief: cc]
