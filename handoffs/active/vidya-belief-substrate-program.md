@@ -1091,6 +1091,7 @@ between plan and apply, so this wave takes the next free block, SC65–SC68.*
       persistence, restart/retraction and capacity-one failed/conflicting attempts verified.
       Main89 research and65 ROOT combined tests pass; broader selected-profiler wiring remains open.
   - [ ] **VB-AK-UNIFIED-PREPARATION — wire source/build preparation findings at write time.**
+    - Codex3 prospective build extension (2026-10-30): full C3-native479ee3bbb and KPF item4 trace84d0a316 build records belong to this existing source family. Preserve source-time identity, recipe, commands, actual completion/refusal and linked-artifact/help/knob proofs; project dependency or categorical findings through the existing carrier. Object smokes and plain success markers create no retrospective measurement warrant. Source rows are updated now; do not call the loops wired until their planning-context canary passes.
     Owner `autokernel-unified-20260908`; bind selected actor advice/assignment, authored immutable
     manifest and patch, actual guarded source commit/tree, derived diff-policy checks and original
     mutation receipt before the first live preparation. Persist through the owning native artifact
@@ -3884,3 +3885,5 @@ These are notes only. The adapters README is not edited here; the owner applies 
 ### NI source custody relocation — 2026-10-30
 
 Unused NI Research/Orchestrator linked checkouts were retired through `scripts/system/worktree_gate.py`; original branches and exact patches/indexes remain preserved under `/mnt/raid0/llm/tmp/codex-ni-repo-legacy-retirement-20261030/`. The prospective HPR producer remains `c4c2a3638cf6a62c823920c3d9d271e6aec8f911` on retained `codex/hpr-b-sim-fix-2-20261025`; its seven-file driver readset is in `source-readsets/codex-ni-20261024-hpr-recovery/MANIFEST.json`. Raw/golden captures stay at their existing locations. The earlier dirty HPR suffix draft was archived as superseded by that producer; no new source was landed. VB-KVU-HPR-PREFIX, native contract UNVERIFIED and owner-reviewed admission/holdout requirements remain open. Finished historical launch scripts retain exact bytes at `.sh.retired-20261030`, catalogued in `retired-scripts.json`; those archived scripts are not runnable scheduling inputs. [no-belief: source custody relocation]
+
+- [ ] **VB-KPF-PLAN-STEPS-WIRE** — project prospective planner journal records as descriptive observations through the existing carrier and shared grade. Retain identities, redaction/truncation and unknown capture failures; no TERSE classification or historic warrant. Strict ingest and writer-to-planning-context canary are required. Producer f5103917 is on orchestrator main with six unit tests passed; no API reload or real-action sample yet. See the source table.

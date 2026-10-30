@@ -1,0 +1,184 @@
+{
+  "recorded_at": "2026-10-30T14:16:14.048995+00:00",
+  "scope": "Reviewed prospective READY packets; no full inference completion or new quality acceptance",
+  "records": [
+    {
+      "id": "codex3-pip02-paddle-relocatable-r25-pool0-20261030",
+      "manifest": "/mnt/raid0/llm/tmp/compute-flags/ready/codex3-pip02-paddle-relocatable-r25-pool0-20261030.json",
+      "sha256": "0b70939948734afc8dffa8aae196ee170683b6cda478ca7a6d53cd0d60d7c909",
+      "regions": "any-cpu-quarter",
+      "launcher": {
+        "path": "/mnt/raid0/llm/tmp/codex3-pip-relocatable-r25-20261030/packets/pool-0/launch-p0.sh",
+        "sha256": "3e76f013ba51af8d160c9fef78c08f458fa80ee0dd76a2d99e0f75bac3e8369e"
+      },
+      "smoke": {
+        "ran_at": "2026-10-30T13:46:25Z",
+        "wall_s": 100.09584873798303,
+        "log": "/mnt/raid0/llm/tmp/codex3-pip-relocatable-r25-20261030/r25-control-smoke.log",
+        "log_sha256": "68f27627cead5a62dbd6dd5cf12f41d8542aa78b96c27cfdae3aab75376c0e48",
+        "first_request_ok": true,
+        "result_writer_ok": true,
+        "exit_ok": true,
+        "scope": "one same-byte four-pool launcher, actual host-native R11 control",
+        "qualification": null
+      },
+      "decision_rule": "Continue original fresh Paddle groups [5, 17, 29, 41, 53, 65, 77, 89, 101, 113, 125, 137, 149]; preserve legacy checkpoints and unknown exposures; no quality verdict."
+    },
+    {
+      "id": "codex3-pip02-paddle-relocatable-r25-pool3-20261030",
+      "manifest": "/mnt/raid0/llm/tmp/compute-flags/ready/codex3-pip02-paddle-relocatable-r25-pool3-20261030.json",
+      "sha256": "ba87f108386175b2cb1b8bffa7510f4b7a0eb155cb89d99dca6c0cc4c4f32de1",
+      "regions": "any-cpu-quarter",
+      "launcher": {
+        "path": "/mnt/raid0/llm/tmp/codex3-pip-relocatable-r25-20261030/packets/pool-3/launch-p3.sh",
+        "sha256": "3e76f013ba51af8d160c9fef78c08f458fa80ee0dd76a2d99e0f75bac3e8369e"
+      },
+      "smoke": {
+        "ran_at": "2026-10-30T13:46:25Z",
+        "wall_s": 100.09584873798303,
+        "log": "/mnt/raid0/llm/tmp/codex3-pip-relocatable-r25-20261030/r25-control-smoke.log",
+        "log_sha256": "68f27627cead5a62dbd6dd5cf12f41d8542aa78b96c27cfdae3aab75376c0e48",
+        "first_request_ok": true,
+        "result_writer_ok": true,
+        "exit_ok": true,
+        "scope": "one same-byte four-pool launcher, actual host-native R11 control",
+        "qualification": null
+      },
+      "decision_rule": "Continue original fresh Paddle groups [14, 26, 38, 50, 62, 74, 86, 98, 110, 122, 134, 146]; preserve legacy checkpoints and unknown exposures; no quality verdict."
+    },
+    {
+      "id": "codex3-hil15b-heavy-r9-split-20261030",
+      "manifest": "/mnt/raid0/llm/tmp/compute-flags/ready/codex3-hil15b-heavy-r9-split-20261030.json",
+      "sha256": "a544c42bc771ba54849cd3fb065952d5d652ed92a876420d14c4503453d798f6",
+      "regions": "any-cpu-quarter",
+      "launcher": {
+        "path": "/mnt/raid0/llm/tmp/codex3-hil15b-heavy-r9-split-20261030/launch.sh",
+        "sha256": "c9841d2b3306245299a778cb60f5194fce77ba873e6d76c3f2f5c4f6190044c9"
+      },
+      "smoke": {
+        "ran_at": "2026-10-30T13:46:26Z",
+        "wall_s": 41.07,
+        "log": "/mnt/raid0/llm/tmp/compute-flags/ready/codex3-hil15b-heavy-r9-split-20261030.smoke.log",
+        "log_sha256": "aa4d63bbea1152b638580b9f467007d7c29cf0f7a4558554af064097e0afac12",
+        "first_request_ok": true,
+        "result_writer_ok": true,
+        "exit_ok": true,
+        "scope": "exact target calibration plus witnessed independent active-request cutoff, no cohort replay",
+        "qualification": null
+      },
+      "decision_rule": "Original units 05\u201320: preserve 39 accepted and unknown 11/0, 12/2, 16/1 and 19/0; run only five unexposed slots. Report bounds over original denominators; no full-cohort verdict."
+    },
+    {
+      "id": "codex3-paw-standard-a-r2-20261030",
+      "manifest": "/mnt/raid0/llm/tmp/compute-flags/ready/codex3-paw-standard-a-r2-20261030.json",
+      "sha256": "d018798c3b5a4d91d297c3bdedf7c8d5af6849c4558d322829121f41ce406842",
+      "regions": "any-cpu-quarter",
+      "launcher": {
+        "path": "/mnt/raid0/llm/tmp/codex3-paw-standard-r2-20261030/prospective/A/launch.sh",
+        "sha256": "fb0a0caa94b65e0d91ef0ed84b2460206029a6b4ecf3baefe926cafec3a98ba3"
+      },
+      "smoke": {
+        "ran_at": "2026-10-30T13:56:14.558180+00:00",
+        "wall_s": 275.01,
+        "log": "/mnt/raid0/llm/tmp/compute-flags/ready/codex3-paw-standard-a-r2-20261030.smoke.log",
+        "log_sha256": "756a7e73729cf37de5f5cc6b76026b3b361fefb4a6b24a7e00e7c421a69364fd",
+        "first_request_ok": true,
+        "result_writer_ok": true,
+        "exit_ok": true,
+        "scope": "104 compiler tokens; rc75 partial; 64 cases unexposed; children drained",
+        "qualification": null
+      },
+      "decision_rule": "n/a (standard-arm capability diagnostic; report complete and missing case dispositions and per-task exact match, no threshold or adoption decision)"
+    },
+    {
+      "id": "codex3-paw-standard-b-r2-20261030",
+      "manifest": "/mnt/raid0/llm/tmp/compute-flags/ready/codex3-paw-standard-b-r2-20261030.json",
+      "sha256": "fa72fc723daadf3890fc1269966fa10d465a55c9e0f6d846adf901c675edbaa7",
+      "regions": "any-cpu-quarter",
+      "launcher": {
+        "path": "/mnt/raid0/llm/tmp/codex3-paw-standard-r2-20261030/prospective/B/launch.sh",
+        "sha256": "cd0c82a09b580173936eb600f524274867053e12b72830cd31a1cb414d451997"
+      },
+      "smoke": {
+        "ran_at": "2026-10-30T14:00:52.677814+00:00",
+        "wall_s": 275.14449005411007,
+        "log": "/mnt/raid0/llm/tmp/compute-flags/ready/codex3-paw-standard-b-r2-20261030.smoke.log",
+        "log_sha256": "1a1c07ea52f3329b8521fc16bbda2e6c78618746cb24e420608e5f746f0739dd",
+        "first_request_ok": true,
+        "result_writer_ok": true,
+        "exit_ok": true,
+        "scope": "98 compiler tokens; rc75 partial; 72 cases unexposed; children drained",
+        "qualification": null
+      },
+      "decision_rule": "n/a (standard-arm capability diagnostic; report complete and missing case dispositions and per-task exact match, no threshold or adoption decision)"
+    },
+    {
+      "id": "codex3-nemo-c3-native-build-r1-20261030",
+      "manifest": "/mnt/raid0/llm/tmp/compute-flags/ready/codex3-nemo-c3-native-build-r1-20261030.json",
+      "sha256": "1481ac1d3d9c11ce6448a9921931e96528688c1ffada48aabae917aa9fe90fec",
+      "regions": "any-cpu-quarter",
+      "launcher": {
+        "path": "/mnt/raid0/llm/tmp/codex3-nemo-native-r1-20261030/build-launch.sh",
+        "sha256": "4d0498a89c1424c4e975b25c68e29926cb13c365341b27f5046d1d8d158a23c4"
+      },
+      "smoke": {
+        "ran_at": "2026-10-30T13:59:49Z",
+        "wall_s": 7.542,
+        "log": "/mnt/raid0/llm/tmp/compute-flags/ready/codex3-nemo-c3-native-build-r1-20261030.smoke.log",
+        "log_sha256": "74e710c8717285b9d48d7bc5f275785bec88b18627472fd03ace34f7583de634",
+        "first_request_ok": true,
+        "result_writer_ok": true,
+        "exit_ok": true,
+        "scope": null,
+        "qualification": "same launcher and real ninja compiled llama-context.cpp object, not full binary"
+      },
+      "decision_rule": "Build full C3+native experimental server with HIP gfx90a; require successful bounded --help and own-generation ggml linkage. Model-free build only: no GPU execution or original profile acceptance."
+    },
+    {
+      "id": "codex3-kpf-item4-trace-build-r1-20261030",
+      "manifest": "/mnt/raid0/llm/tmp/compute-flags/ready/codex3-kpf-item4-trace-build-r1-20261030.json",
+      "sha256": "832c3a7e58aa106bbd37215c834b0f67375dc76f49514ce46acd8b45f0cf5c20",
+      "regions": "any-cpu-quarter",
+      "launcher": {
+        "path": "/mnt/raid0/llm/tmp/codex3-kpf-item4-control-20261030/build-launch.sh",
+        "sha256": "49496219c4c1bb77f108f861c5fc61866cf5b61d8e75959eae717d6933259fce"
+      },
+      "smoke": {
+        "ran_at": "2026-10-30T14:09:09.809191+00:00",
+        "wall_s": 28.154850833117962,
+        "log": "/mnt/raid0/llm/tmp/compute-flags/ready/codex3-kpf-item4-trace-build-r1-20261030.smoke.log",
+        "log_sha256": "c24b134ddb2a6f7977422c70350129040397c7ad7b6d7a6016c106ec8e869c5c",
+        "first_request_ok": true,
+        "result_writer_ok": true,
+        "exit_ok": true,
+        "scope": null,
+        "qualification": "Final build-launch --smoke invoked real job and rebuilt server-context.cpp.o; model-free and not linked binary."
+      },
+      "decision_rule": "Complete full HIP gfx90a diagnostic image; require exact source ancestry and clean state, compiled fork/prefill/trace knobs, own-generation linkage, and nonempty bounded help output. Build only; no GPU control or original-result judgment."
+    },
+    {
+      "id": "codex3-pip02-paddle-relocatable-r26-head-20261030",
+      "manifest": "/mnt/raid0/llm/tmp/compute-flags/ready/codex3-pip02-paddle-relocatable-r26-head-20261030.json",
+      "sha256": "ce15b94668ce8f5db465faddf6ff607e44fc4ccb81fa810c2313af2d742df4f1",
+      "regions": "any-cpu-quarter",
+      "launcher": {
+        "path": "/mnt/raid0/llm/tmp/codex3-pip-head-r26-20261030/launch-p0.sh",
+        "sha256": "24746cba591704f9176469376b2a2a23eb48a256f4570e14f54a3eaab28e21a0"
+      },
+      "smoke": {
+        "ran_at": "2026-10-30T14:11:22Z",
+        "wall_s": 127.56791957304813,
+        "log": "/mnt/raid0/llm/tmp/codex3-pip-head-r26-20261030/control-r2.log",
+        "log_sha256": "e181b59f4c0e2663b85c7796396c4a0ed62b18fbd75688fdfce6fc2d36852b5b",
+        "first_request_ok": true,
+        "result_writer_ok": true,
+        "exit_ok": true,
+        "scope": "same final launcher and host-native R11 control; non-timing only",
+        "qualification": null
+      },
+      "decision_rule": "Continue original English head 25 pages: group starts 0 and 3 cover shards 0\u20134. Preserve original checkpoint provenance and unknown exposures; no quality verdict."
+    }
+  ],
+  "timing_boundary": "M4 C2 GPU timing grant starts 14:11Z; model-free journal tests have a guard-respecting zero-token watcher.",
+  "worktree_policy": "No new linked task trees; reuse source lanes. Nine original linked trees removed, approximately 1.42 GiB allocation released."
+}

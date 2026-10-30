@@ -1,0 +1,168 @@
+{
+  "recorded_at": "2026-10-30T14:55:46.306722+00:00",
+  "directive": "Operator: explicit RUS3_DIAGNOSTIC export before filler_run13; real final-entry re-smokes. Existing private engines may already omit T1, which is also permitted.",
+  "records": [
+    {
+      "id": "codex3-pip02-paddle-relocatable-r27-pool3-20261030",
+      "regions": "any-cpu-quarter",
+      "manifest": "/mnt/raid0/llm/tmp/compute-flags/ready/codex3-pip02-paddle-relocatable-r27-pool3-20261030.json",
+      "sha256": "14a5e8cc6f89ef1f541ee5570fec75f20c054dd17b042d9602f6e102da516419",
+      "launcher": {
+        "path": "/mnt/raid0/llm/tmp/codex3-pip-t1-r27-20261030/pool-3/launch-p3.sh",
+        "sha256": "cde01da53ccce48b4063c9ac2fa9bbd4adea9b67e303acccd5bbd4cb288476c1"
+      },
+      "smoke": {
+        "ran_at": "2026-10-30T14:26:37Z",
+        "wall_s": 138.55687628989108,
+        "log": "/mnt/raid0/llm/tmp/compute-flags/ready/codex3-pip02-paddle-relocatable-r27-pool3-20261030.smoke.log",
+        "log_sha256": "884e3fba048a2b6ac8252893c39e089a2b8efca79da2921473297895bcbe5e6c",
+        "scope": "same-byte four pool launchers; actual host-native R11 control",
+        "qualification": null
+      },
+      "decision_rule": "Continue original fresh Paddle groups [14, 26, 38, 50, 62, 74, 86, 98, 110, 122, 134, 146]; preserve legacy checkpoints and unknown exposures; no quality verdict."
+    },
+    {
+      "id": "codex3-kpf-item4-trace-build-r2-20261030",
+      "regions": "any-cpu-quarter",
+      "manifest": "/mnt/raid0/llm/tmp/compute-flags/ready/codex3-kpf-item4-trace-build-r2-20261030.json",
+      "sha256": "bb948bfd41eb083a6965090fb4c1fe1da769542a6cd8cca219ada1fa5b58673d",
+      "launcher": {
+        "path": "/mnt/raid0/llm/tmp/codex3-kpf-item4-control-20261030/build-launch-t1-r2.sh",
+        "sha256": "549b3ce59441b3dd5d8b99ce50c80e4e958b2de4451d526b0f85cc5980a6ab16"
+      },
+      "smoke": {
+        "ran_at": "2026-10-30T14:34:25.432151+00:00",
+        "wall_s": 27.486075513996184,
+        "log": "/mnt/raid0/llm/tmp/compute-flags/ready/codex3-kpf-item4-trace-build-r2-20261030.smoke.log",
+        "log_sha256": "0f506f113a792236624d91cd70c3c97d28315fed88412181433b183bd9dbde38",
+        "scope": null,
+        "qualification": "Exact placed successor launcher rebuilt real object; no linked full build."
+      },
+      "decision_rule": "Complete full HIP gfx90a diagnostic image; require exact source ancestry and clean state, compiled fork/prefill/trace knobs, own-generation linkage, and nonempty bounded help output. Build only; no GPU control or original-result judgment."
+    },
+    {
+      "id": "codex3-pip02-paddle-relocatable-r27-pool0-20261030",
+      "regions": "any-cpu-quarter",
+      "manifest": "/mnt/raid0/llm/tmp/compute-flags/ready/codex3-pip02-paddle-relocatable-r27-pool0-20261030.json",
+      "sha256": "022e14112e8091c4bc3396e3f8a232ab2df7ff0c2ce4dc2ce995a34606b76af3",
+      "launcher": {
+        "path": "/mnt/raid0/llm/tmp/codex3-pip-t1-r27-20261030/pool-0/launch-p0.sh",
+        "sha256": "cde01da53ccce48b4063c9ac2fa9bbd4adea9b67e303acccd5bbd4cb288476c1"
+      },
+      "smoke": {
+        "ran_at": "2026-10-30T14:26:37Z",
+        "wall_s": 138.55687628989108,
+        "log": "/mnt/raid0/llm/tmp/compute-flags/ready/codex3-pip02-paddle-relocatable-r27-pool0-20261030.smoke.log",
+        "log_sha256": "884e3fba048a2b6ac8252893c39e089a2b8efca79da2921473297895bcbe5e6c",
+        "scope": "same-byte four pool launchers; actual host-native R11 control",
+        "qualification": null
+      },
+      "decision_rule": "Continue original fresh Paddle groups [5, 17, 29, 41, 53, 65, 77, 89, 101, 113, 125, 137, 149]; preserve legacy checkpoints and unknown exposures; no quality verdict."
+    },
+    {
+      "id": "codex3-pip02-paddle-relocatable-r27-head-20261030",
+      "regions": "any-cpu-quarter",
+      "manifest": "/mnt/raid0/llm/tmp/compute-flags/ready/codex3-pip02-paddle-relocatable-r27-head-20261030.json",
+      "sha256": "3857ceaa947447f80438c0f44f9045fc8123a142e2d2edecd45df098352175b5",
+      "launcher": {
+        "path": "/mnt/raid0/llm/tmp/codex3-pip-t1-r27-20261030/head/launch-p0.sh",
+        "sha256": "ba5faf885c45dab4b7d3d9559932e04c675d2652812917a7c2acc247067daccb"
+      },
+      "smoke": {
+        "ran_at": "2026-10-30T14:28:14Z",
+        "wall_s": 102.25874688406475,
+        "log": "/mnt/raid0/llm/tmp/compute-flags/ready/codex3-pip02-paddle-relocatable-r27-head-20261030.smoke.log",
+        "log_sha256": "2ed017970134f328b7e07702a3213e349e035485839d36adc66acc5ee67ed380",
+        "scope": "actual head host-native R11 control",
+        "qualification": null
+      },
+      "decision_rule": "Continue original English head 25 pages: group starts 0 and 3 cover shards 0\u20134. Preserve original checkpoint provenance and unknown exposures; no quality verdict."
+    },
+    {
+      "id": "codex3-paw-standard-b-t1-20261030",
+      "regions": "any-cpu-quarter",
+      "manifest": "/mnt/raid0/llm/tmp/compute-flags/ready/codex3-paw-standard-b-t1-20261030.json",
+      "sha256": "745c66f9872ff7512014396fe81bf22f6bc24fe04d962af50752e9c67144c08a",
+      "launcher": {
+        "path": "/mnt/raid0/llm/tmp/codex3-paw-hsf-t1-20261030/B/launch.sh",
+        "sha256": "12e1fbbd094b14fd64750be6189f63d1cee06b6d52466bc7cf0782085909d911"
+      },
+      "smoke": {
+        "ran_at": "2026-10-30T14:32:19.690564+00:00",
+        "wall_s": 275.53572244988754,
+        "log": "/mnt/raid0/llm/tmp/compute-flags/ready/codex3-paw-standard-b-t1-20261030.smoke.log",
+        "log_sha256": "fc1473a403fb07986db0570916eb9641a57d8dfeb09e6de58424e01e132c815a",
+        "scope": "96 compiler tokens; rc75 partial; 72 cases unexposed; children drained",
+        "qualification": null
+      },
+      "decision_rule": "n/a (standard-arm capability diagnostic; report complete and missing case dispositions and per-task exact match, no threshold or adoption decision)"
+    },
+    {
+      "id": "codex3-nemo-c3-native-build-r2-20261030",
+      "regions": "any-cpu-quarter",
+      "manifest": "/mnt/raid0/llm/tmp/compute-flags/ready/codex3-nemo-c3-native-build-r2-20261030.json",
+      "sha256": "6c7dcc4fd4a3868ac02ca74287a44d8d2c8a56333c43255783126840e607370f",
+      "launcher": {
+        "path": "/mnt/raid0/llm/tmp/codex3-nemo-native-r1-20261030/build-launch-t1-r2.sh",
+        "sha256": "60d24333b8b119d4a56d573faf4151e7b5048cb64a36d786be02800ab86a4871"
+      },
+      "smoke": {
+        "ran_at": "2026-10-30T14:33:55.436773+00:00",
+        "wall_s": 4.303829099051654,
+        "log": "/mnt/raid0/llm/tmp/compute-flags/ready/codex3-nemo-c3-native-build-r2-20261030.smoke.log",
+        "log_sha256": "f593c726a59b46ae3d281a8237695e724be7ed3defd52a4ef75eba7af12b1316",
+        "scope": null,
+        "qualification": "Exact placed successor launcher rebuilt real object; no linked full build."
+      },
+      "decision_rule": "Build full C3+native experimental server with HIP gfx90a; require successful bounded --help and own-generation ggml linkage. Model-free build only: no GPU execution or original profile acceptance."
+    },
+    {
+      "id": "codex3-paw-standard-a-t1-20261030",
+      "regions": "any-cpu-quarter",
+      "manifest": "/mnt/raid0/llm/tmp/compute-flags/ready/codex3-paw-standard-a-t1-20261030.json",
+      "sha256": "b82026c3a73dce4161bea2b8076278fa58ab0e76b260461e59d5eccbc380d35a",
+      "launcher": {
+        "path": "/mnt/raid0/llm/tmp/codex3-paw-hsf-t1-20261030/A/launch.sh",
+        "sha256": "7abb4b190607f1d908fad53d44cafb1bc78cd8ea98f846e4909910a4b82a8568"
+      },
+      "smoke": {
+        "ran_at": "2026-10-30T14:27:40.494984+00:00",
+        "wall_s": 275.1385278010275,
+        "log": "/mnt/raid0/llm/tmp/compute-flags/ready/codex3-paw-standard-a-t1-20261030.smoke.log",
+        "log_sha256": "5f077b6953648bf604d4fcae8578f70e7d77bde0166f90ca8cd49e5e61e992fb",
+        "scope": "105 compiler tokens; rc75 partial; 64 cases unexposed; children drained",
+        "qualification": null
+      },
+      "decision_rule": "n/a (standard-arm capability diagnostic; report complete and missing case dispositions and per-task exact match, no threshold or adoption decision)"
+    }
+  ],
+  "pending": [
+    "HIL: at the 2026-10-30T15:54:53Z snapshot, the final same-target R9 control was complete; cohort remained unstarted and its READY-WAIT packet awaited a free CPU quarter. No new smoke approval was pending.",
+    "HSF: at the 2026-10-30T15:54:53Z snapshot, the final control was complete and the row was accepted READY-WAIT; the full run remained unstarted pending whole-host capacity, not smoke or NI R13 turnover."
+  ],
+  "no_full_run_or_quality_claim": true,
+  "updated_at": "2026-10-30T15:54:53Z",
+  "final_control_outcomes": [
+    {
+      "work": "HIL original R9, launch-t1-r3",
+      "wall_s": 43.345,
+      "owned_pids": 19,
+      "cleanup": "all 19 owned PIDs verified dead",
+      "cohort_cases": 0,
+      "current_state": "At 2026-10-30T15:54:53Z: READY-WAIT; no free CPU quarter",
+      "peak_rss_kib": 36998972,
+      "peak_rss_bytes": 37886947328,
+      "observed_at": "2026-10-30T15:54:53Z",
+      "peak_rss_gib": 35.29
+    },
+    {
+      "work": "HSF T1 control",
+      "wall_s": 213.68,
+      "rss_gb": 8.012,
+      "positive_hip_kfd_samples": 27,
+      "cleanup": "owned processes drained",
+      "current_state": "At 2026-10-30T15:54:53Z: keeper accepted READY-WAIT; whole-host slot unavailable; full run unstarted",
+      "observed_at": "2026-10-30T15:54:53Z"
+    }
+  ]
+}

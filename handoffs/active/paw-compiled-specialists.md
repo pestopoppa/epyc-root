@@ -2,6 +2,7 @@
 
 **Status**: stub
 **Created**: 2026-09-17 (via research intake, operator-approved 2026-09-17)
+**Scratch**: `/mnt/raid0/llm/tmp/codex3-paw-hsf-t1-20261030`, `/mnt/raid0/llm/tmp/codex3-paw-standard-r2-20261030`
 **Categories**: training_distillation, local_inference, inference_serving, tool_implementation
 **Parent index**: [inference-research-index.md](inference-research-index.md)
 **Evidence**: intake-811#record (parent paper + 2026-07-11 blocker), intake-1466/1467 (docs + SDK), intake-1477 (Compile by Training), intake-1478/1483 (Standard/Compact compiler weights), intake-1479 (FuzzyBench eval data), intake-1481 (self-hosted compile server, scope-overturned), intake-1482 (independent eval), intake-1484 (.paw corpus)
@@ -62,3 +63,7 @@ predating the 2026-07-11 blocker); licenses and a self-hosted compile path are t
 Re-open trigger status: MET on availability, NOT met on capability (no official self-hosted compile). License scope resolved
 2026-09-17 (OP-43): internal research only — all current work is in scope; distribution would require a grant. The 10M-example
 FuzzyBench training set remains unavailable; 1477's recipe is the closest self-hosted path. The 10M-example FuzzyBench training set remains unavailable; 1477's recipe is the closest self-hosted path.
+
+**2026-10-30 PAW standard R2 publication:** A and B were republished from the retained runtime capsule as relocatable CPU packets. Fresh same-launcher controls generated104 and98 compiler tokens respectively, returned rc75 with verified drain, and left all64 A and72 B selected cases unexposed. Their measured smoke rates support only resumable window estimates, not completed compilation or capability conclusions. Both retain the166 GiB admission threshold and predeclared source/cases. [Publication audit](../../artifacts/compute/codex3-publications-20261030-1415.json). [no-belief: bounded preparation; no standard-versus-compact verdict]
+
+**2026-10-30 final T1 status:** the PAW standard A/B successors were re-smoked and published as relocatable diagnostic packets. They remain bounded controls; no compilation completion, capability verdict, or standard-versus-compact conclusion follows. At the 15:54:53Z keeper snapshot, both rows were READY-WAIT while no CPU quarter was free. [T1 successor ledger](../../artifacts/compute/codex3-t1-successors-20261030.json). [no-belief: bounded preparation only]
