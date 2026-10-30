@@ -1,0 +1,10 @@
+{
+  "id": "codex3-cs8-stt2-nemospeech-cpu-20261030",
+  "republished_at": "2026-10-30T21:28:36.253583+00:00",
+  "supersedes": "PUBLICATION.json; withdrawn unarmed before source-seal fix",
+  "launcher_sha256": "8d82796ed9b3af7e38f5a441e6c0efe7478356138985ef0ec8988477d38e06d0",
+  "source_manifest_sha256": "8c551d608c52235737bc090414f1d0aa75354b93667f1a18b8fe831727eeeb8b",
+  "native_cohort_complete": false,
+  "validator_refusals": 0,
+  "keeper_scan": "ok"
+}
