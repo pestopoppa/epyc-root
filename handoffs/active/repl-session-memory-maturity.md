@@ -371,6 +371,7 @@ pinned SHA `f25f310b` plus a read of our own tree. Full evidence in intake-901 `
       `STATE_HISTORY_SNAPSHOTS` on, it grows by one row per turn without bound. Either wire a consumer
       (trace/debug view) or add a prune (keep the last N runs), and confirm the volume on the live
       API as part of D-f1.
+      Source implementation published 2026-10-30 in epyc-orchestrator `0151a3dbe3564a09b0e78e23c1a0b2b0bf2b42b2`: configurable defaults keep the newest 100 runs and newest 100 rows per retained run, including oversized legacy history on the next write. Pruning and insertion share the existing fenced transaction and roll back together. Twenty-three tests cover limits, ties, legacy data, cross-session scope, stale-fence refusal and rollback. Checkpoints, results and native evidence are untouched. The original item remains unchecked until its live API volume confirmation is performed with D-f1; no live database or service was changed. [no-belief: implementation/tooling; live verification remains pending]
 
 - [ ] **D-g — Journal uncertain external side effects before resume can replay them.** Add a durable
   per-action record with stable action/idempotency key, tool and normalized arguments hash, attempt
