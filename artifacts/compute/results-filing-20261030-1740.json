@@ -1,0 +1,151 @@
+{
+  "recorded_at": "2026-10-30T17:59:07.724671+00:00",
+  "event": {
+    "schema": "compute-original-event-audit/v1",
+    "event_id": "codex-hil15-s0-micron-v10-20261030",
+    "owner": "codex-refactor-01a16fc3",
+    "class": "diagnostic",
+    "due_row": {
+      "path": "/mnt/raid0/llm/tmp/compute-flags/filing-due.jsonl",
+      "line": 309,
+      "seen_at": "2026-10-30T17:40:26Z",
+      "deadline_derived_from_30m_rule": "2026-10-30T18:10:26Z",
+      "dispatch_reported_seen_at": "2026-10-30T17:46:26Z",
+      "seen_at_discrepancy": "Dispatch says 17:46:26Z; exact due JSONL row says 17:40:26Z. Using the due row as boundary source.",
+      "end_line": "rc=1 time=2026-10-30T17:39:32Z reason=job-rc-1:exited",
+      "result_path": "/mnt/micron/refactor-hil15-s0-v10-20261030/s0-r9-official-results",
+      "scratch_root": "/mnt/raid0/llm/tmp/hil15-s0-t1-repair-20261030",
+      "decision_rule": "Original45 denominator;32 retained accepted+3 unknown, only10 original unexposed replay slots. Collection exhaustion42known/3unknown; no full-complete/native grade claim."
+    },
+    "original_scope": {
+      "denominator": 45,
+      "retained_accepted_before_event": 32,
+      "immutable_unknown": [
+        [
+          10,
+          2
+        ],
+        [
+          11,
+          1
+        ],
+        [
+          12,
+          1
+        ]
+      ],
+      "original_unexposed_replay_slots": 10,
+      "required_collection_exhaustion": {
+        "known": 42,
+        "unknown": 3
+      },
+      "no_redraw": true,
+      "grade_authority": "none; diagnostic collection only"
+    },
+    "original_event_boundary": {
+      "native_root": "/mnt/micron/refactor-hil15-s0-v10-20261030/s0-r9-official-results",
+      "run_dir": "slice-1793380051743845805",
+      "launcher_start": "2026-10-30T17:06:53Z",
+      "first_observed_slot": "unit-12/slot-2",
+      "last_observed_slot_manifest_finished": "2026-10-30T17:39:29Z",
+      "ended": "2026-10-30T17:39:32Z",
+      "rc": 1,
+      "reason": "unit-13 validator AssertionError: required l2_scan sidecar and l2_report.beliefs.jsonl/auc_sidecar were absent",
+      "completion_marker": false,
+      "partial_marker": false,
+      "latest_rearm_artifacts_used": false
+    },
+    "identity": {
+      "source_manifest_path": "/mnt/micron/refactor-hil15-s0-v10-20261030/SOURCE.sha256",
+      "source_manifest_sha256": "5e70fd0711a26d816181ec19bb6e0ae0ede51354c808c7dfce846be5d689f57c",
+      "engine_sha256": "b2bd7c6d7c3111f591af71385e1129de00cd8ebf27a862a19c95fc1ff48bdf48",
+      "engine_commit": "51bcc77b5ea3e0a662525753f0d3ad7c21de72d2",
+      "served_model": "/mnt/raid0/llm/models/Qwen3.6-35B-A3B-MTP-Q8_0.gguf",
+      "model_sha256": "c1283d8b80c3e38b2735ddbc9766d3b3126f44d6c484be419d4e101d09a76131",
+      "source_identity_validation": "official runner checks exact source manifest and runtime binding before launching; recorded slot hashes all carry that source manifest hash"
+    },
+    "native_slot_outcomes": [
+      {
+        "unit": 12,
+        "slot": 2,
+        "task_id": "filter-s0-12-p2-r0",
+        "expected_label": true,
+        "recorded_event": "task_completed",
+        "manifest_verdict": "OK",
+        "l2_join": "1 step-bearing / 1 joined outcome",
+        "replay_verify": "rc0 clean",
+        "auc_table": "insufficient (0 runs/tasks)",
+        "slot_manifest_sha256": "8976ff4a82bf9b197a8e8dd8390524256ba6be91e6efa7bd682b16c616ed0518"
+      },
+      {
+        "unit": 13,
+        "slot": 0,
+        "task_id": "filter-s0-13-p0-r0",
+        "expected_label": false,
+        "recorded_event": "task_failed",
+        "manifest_verdict": "OK",
+        "l2_join": "1 step-bearing / 1 joined outcome",
+        "replay_verify": "rc0 clean",
+        "auc_table": "insufficient (0 runs/tasks)",
+        "slot_manifest_sha256": "f6291983f507cbdf28c3376102dda02030d1b24db1cc76d57b663854b891990b"
+      },
+      {
+        "unit": 13,
+        "slot": 1,
+        "task_id": "filter-s0-13-p1-r0",
+        "expected_label": false,
+        "recorded_event": "task_failed",
+        "manifest_verdict": "OK",
+        "l2_join": "1 step-bearing / 1 joined outcome",
+        "replay_verify": "rc0 clean",
+        "auc_table": "insufficient (0 runs/tasks)",
+        "slot_manifest_sha256": "f9c7b813338e10ee584bf951f1cb731e0c5ad4ef7a461b83b25a88cf27254d87"
+      },
+      {
+        "unit": 13,
+        "slot": 2,
+        "task_id": "filter-s0-13-p2-r0",
+        "expected_label": false,
+        "recorded_event": "task_failed",
+        "manifest_verdict": "OK",
+        "l2_join": "1 step-bearing / 1 joined outcome",
+        "replay_verify": "rc0 clean",
+        "auc_table": "insufficient (0 runs/tasks)",
+        "slot_manifest_sha256": "f5633397f03f2d1892ab04886fea945066d4141e9b8c8a77bcacdc5dcaa9752d"
+      }
+    ],
+    "accounting": {
+      "original_slots_attempted_this_event": 4,
+      "original_slots_with_task_output_and_join_replay_evidence": 4,
+      "new_expected_label_true_task_completed": 1,
+      "new_expected_label_false_tasks_failed": 3,
+      "original_unexposed_slots_remaining": 6,
+      "retained_unknown_unchanged": 3,
+      "outcome_bearing_count_if_raw_slot_outcomes_are_counted": 36,
+      "collection_exhaustion_42_known_3_unknown": false,
+      "accepted_cohort_count": "32 previously accepted; event artifacts preserved, but unit-13 set was rejected by wrapper validator; do not promote aggregate to accepted/complete until validator contract is reconciled and original files are revalidated",
+      "measurement_or_efficacy_grade": null
+    },
+    "validator_failure": {
+      "class": "instrumentation / validator-contract mismatch",
+      "failure_site": "/mnt/raid0/llm/tmp/hil15-s0-safe-prep-20261029/source-copy/unit.py:26",
+      "actual_check": "requires m['l2_scan']['rc']==0 AND m['l2_scan']['sidecar'] AND l2_report.beliefs.jsonl AND m.get('auc_sidecar')",
+      "runner_behavior": "/mnt/micron/refactor-hil15-s0-v10-20261030/official_s0_v14_r8.py deliberately configures diagnostic L2 scanning with sidecar disabled; finish() also raises if any *.beliefs* file exists",
+      "owner_action": "Reconcile unit.py validation with the predeclared diagnostic contract (the official runner explicitly forbids belief sidecars while the unit validator requires them), then validate the immutable original four slot directories and preserved unknown identities. Do not rerun or redraw these slots to repair acceptance; continue only on the six still-unexposed original slots after owner correction and an authorized new boundary.",
+      "native_result_preservation": "Do not overwrite rc1 or emit COMPLETE from slot manifests alone."
+    },
+    "cleanup": {
+      "server_pid_recorded": 1003247,
+      "server_log_final_line": "srv operator(): cleaning up before exit...",
+      "server_log_sha256": "034f306694a5c4c4eb9e434732ee360f4a9ed75bdf56c8646d86d02d42acd264",
+      "explicit_descendants_drained_witness": false,
+      "claim": "server log shows shutdown entry and process is absent now, but no event-boundary descendants_drained/cleanup receipt was captured; cleanup status is unverified"
+    },
+    "audit_limits": [
+      "Counts describe only the exact original result_path and its source-bound per-slot manifests.",
+      "No current/auto-rearmed result files were substituted.",
+      "No performance, efficacy, detector-quality, or native-grade conclusion is made."
+    ]
+  },
+  "scope": "original event only; later validator repair is separate"
+}
