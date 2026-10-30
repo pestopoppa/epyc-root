@@ -739,6 +739,8 @@ non-reasoning by design. Incumbent is unchanged: `worker_general` = `gemma-4-26B
       prompts inherited from a different question.
       Two structural findings surfaced while checking this, both filed below.
 
+      - *(2026-10-30, native diagnostic READY; no task tick.)* `codex-ni-wg-lfmi-quality-native-r1-20261030` is a descriptive probe from 211 complete observed `worker_general` prompt byte strings, joined to 236 existing oracle/config aliases across 32 suites, rather than the five inherited reference prompts. Seven separate-context cases and unsupported execution/judge scorers remain explicit unknowns; 33 arithmetic-suite cases are separate. The 168 supported non-executing official scorer cases per arm and raw/cap/empty/transport/partial observations remain bounded by all 422 planned arm-cases. Exact captured prompt arguments are replayed as user text through each LFM's embedded template; historical system/chat-payload/wire equivalence and representative organic traffic are unavailable. READY, smoke, and cutoff evidence do not resolve quality or close WG-LFMI-3. Full scheduled native results and audit remain required. Evidence packet: `/mnt/raid0/llm/tmp/codex-ni-wg-lfmi-quality-native-20261030/` [belief: cc]
+
 - [ ] **NO DETERMINISTIC COMPUTE TOOL EXISTS for a worker to route arithmetic to.** `src/tools/` holds
       `code/` (lint, run_tests), `data/`, `file/`, `web/`, `vision/`, `knowledge.py` — no calculator,
       no Python exec, no code interpreter. So arithmetic currently falls to the model **by default,
