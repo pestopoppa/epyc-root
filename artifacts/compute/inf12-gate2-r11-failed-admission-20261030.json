@@ -1,0 +1,15 @@
+{
+  "schema": "native-attempt-audit-v1",
+  "attempt_id": "codex-ni-inf12-gate2-triton36-r11-20261030",
+  "classification": "FAILED-RUN: legacy T1 admission refusal",
+  "ended_file": "/mnt/raid0/llm/tmp/compute-flags/grants/codex-ni-inf12-gate2-triton36-r11-20261030.ended",
+  "ended_sha256": "b982635df5e5b865806e8ca4a118c835d5d1a12345f747e789537fe4599efb00",
+  "ended_at": "2026-10-30T13:58:41Z",
+  "rc": 6,
+  "reason": "t1-admission DRYRUN_REFUSED: row missing dryrun_pass, launcher_path, job_path, source_manifest",
+  "filing_due_source": "/mnt/raid0/llm/tmp/compute-flags/filing-due.jsonl",
+  "filing_seen_at": "2026-10-30T13:58:52Z",
+  "native_coverage": "none: named full-results path absent; launcher state contains only empty lock files",
+  "decision_rule": "Diagnostic capture of the complete pinned MemoryAgentBench population for both base and Delta-Mem; report per-source and sample-weighted raw metrics, with no threshold or pass/fail decision. Smoke does not grade or close Gate 2.",
+  "disposition": "No acceptance, metrics, or Gate 2 closure; actual complete cases remain required. Owner action: RUS3 bypass for R13 as explicitly directed, not additional T1 proof."
+}
