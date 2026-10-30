@@ -1,0 +1,16 @@
+{
+  "schema": "epyc.results_filing.audit.v1",
+  "id": "fa4-c5-exact-set-r11-20261030",
+  "owner": "codex-ni",
+  "event": {"ended": "2026-10-30T14:35:59Z", "rc": 1, "reason": "job-rc-1:exited", "seen_at": "2026-10-30T14:36:29Z", "source": "/mnt/raid0/llm/tmp/compute-flags/filing-due.jsonl"},
+  "original_launcher": {"path": "/mnt/raid0/llm/tmp/codex-ni-fa4-exact-set-successor-r11-20261030/ws58-launcher.out", "start": "2026-10-30T14:35:32Z", "end": "2026-10-30T14:35:59Z", "regions": "mi210_0,184-191", "scope": "original START through first END; later re-arms excluded"},
+  "native_run": "/mnt/micron/codex-ni-fa4-exact-set-r11-20261030/runs/20261030T143532Z-2464861",
+  "status": "INCOMPLETE",
+  "failure": "model_A sample own_members refused captured member pidfd readable while process listed pid=2477095; subsequent child cleanup refused captured pidfd readable while PID live before signal pid=2477112. FAILED.json reports this cleanup failure as final error. Exact kernel or race mechanism is not established.",
+  "cleanup": "FAILED.json reports cleanup_verified=true and cleanup_error=null after retries, and records one cleanup retry refusal: terminal child pidfd remains live before reap pid=2468280. Launcher logged lock retention at that refusal; final record does not establish the precise lock-release time. Read-only ps at audit found none of the three PIDs; no signal was sent.",
+  "coverage": {"arm_A_nan": "228 native case rows, 228 unique six-field keys (rows,n_kv,v,attn,kv,grp), arm_check=OK, rc=0; native summary 224 OK, 4 NONFINITE, zero mismatch/noref/badref/unsupported. Retained native outcomes, not an equivalence or quality verdict.", "model_A": "probe artifacts include one PASS summary, but driver failed and verdict.txt is empty; no completed model_A stage result", "arm_B": "no native arm-B stage in this original run", "full_protocol": "incomplete; no NORMAL-COMPLETE.json or full three-pair 22-band two-KV comparison"},
+  "decision_rule": "Each arm requires all 228 source-derived cases, unique six-field keys and native arm_check=OK; retain per-key outcomes. Flagged-set equality is not coverage. No equivalence, mechanism, timing/performance or promotion claim.",
+  "owner_action": "codex-ni preserve the original native records; diagnose and repair the pidfd/process-list and cleanup handling without weakening identity checks, then requalify and run the full predeclared protocol in an authorized window. Do not treat the prior 80-case/backend census smoke as a full run.",
+  "evidence": ["FAILED.json", "nan_A.native", "nan_A.log", "nan_A.result.json", "native_records/nan_A.json", "model_A/armA.summary.txt", "model_A/verdict.txt", "RUN_RECORD.json"],
+  "filing_state": "prepared; not FILED until owning session commits and verifies push"
+}
