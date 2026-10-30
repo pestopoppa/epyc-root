@@ -1,6 +1,8 @@
 # Stack Change Governance Pipeline
 
-**Scratch**: `/mnt/raid0/llm/worktrees/ni08-scg-test-logdir-20261007` · `/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/scg-logdir-private-recipe-20261007` · `/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/scg-logdir-multipart-child-20261007` · `/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/scg-logdir-multipart-original-run-37602092844-20261007` (KEEP source and original custody).
+**Scratch**: `/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/scg-logdir-private-recipe-20261007` · `/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/scg-logdir-multipart-child-20261007` · `/mnt/raid0/llm/tmp/ni08_remaining_backlog_screen-20261007/scg-logdir-multipart-original-run-37602092844-20261007` (KEEP original custody).
+
+Accepted source is APP `b87998e3`, with durable [source and original acceptance](../../artifacts/ni08/scg-test-logdir-success-acceptance-20261007/README.md); the completed task no longer depends on its throwaway checkout.
 
 **Status**: IN PROGRESS - canonical stack-change command, generated
 stack-prior contract, guard/scanner ownership, runtime attestation, launch and

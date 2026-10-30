@@ -1,6 +1,6 @@
 # Episodic Memory Integrity — 2026-07-05 corruption, root cause and repair
 
-**Scratch**: `/mnt/raid0/llm/tmp/codex-ni06-main-20261006/` (NI08 record-design review) · worktrees: `/mnt/raid0/llm/worktrees/codex-ni07-promote-k2-20261006`
+**Scratch**: `/mnt/raid0/llm/tmp/codex-ni06-main-20261006/` (NI08 record-design review). Historical NI07 integration source is preserved by APP commit `b87998e3b5a0cbb9da36c8db9fd2fcfbb69aba0d`; the completed task no longer depends on its throwaway checkout.
 **Status**: active — **CLEARED FOR SEEDING (M-18 full-surface audit, 2026-07-28; semantic gate
 verified live 2026-07-29).** Write path FIXED and proven self-healing in production; reseed DONE;
 standing integrity gate (M-17) blocks AutoPilot on a broken store and runs in `health_check.sh`.
