@@ -393,6 +393,8 @@ First full smoke run of the trial loop. Four defects, three silent.
 
 ### Lost updates, stack-restart ergonomics, and `-np` live (2026-08-03, late)
 
+- [x] **P1 code repair — configured-primary provenance.** Orchestrator main `63f34e9845b028b364a14ad0c618dc60ef96c0a1` measures only both configured primary instances, including faithful overlap; alternate placements emit existing unknown-pair entries. Actual writer→YAML→loader→public-policy controls preserve existing unknown traffic behavior, unqualified all-unknown output and correct mixed topology stamps.166 controls, Ruff and full `make gates` pass with task-private tools. Stored matrix and consumer policy unchanged; the old1.89 row is archival commentary, not a new measured result. The original re-bench below remains open. ✅ 2026-10-30 [no-belief: prospective writer source repair; no new ratio]
+
 - [ ] **P1 — THE CONTENTION MATRIX ADMITS A DIFFERENTLY-MEASURED PRIOR AS A ROLE-PAIR VERDICT.**
   `scripts/server/contention_matrix.py:306-313` has **inverted marker polarity**: when it substitutes
   a DISJOINT geometry for a downed primary it returns `(a, b, None)` — **no marker** — and it
