@@ -1,0 +1,1102 @@
+{
+  "arm": "odl",
+  "cohort": "pip02-english-fresh-20261029",
+  "shard": 10,
+  "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+  "gt_sha256": "a45cd84b04ad8b793e775089640e6b681209abea33ead54c1828ddca35fae496",
+  "pins_sha256": "262462c58402db48aa88063cdb1817915dcdef0c1933e72869682dd905c34cf0",
+  "scorer_sha256": "27f0b630b6812aecad35d1c65329841a5011e421326e81f9f14c8c66a6fdbe5e",
+  "pages": [
+    {
+      "position": 250,
+      "image": "docstructbench_llm-raw-scihub-o.O-adsc.201190003.pdf_6.jpg",
+      "gt_index": 625,
+      "gt_tables": 0,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [],
+      "prediction_sha256": "5afb6abbc4a3d0f60871890dac0929623715ef54e51de989e010eef6d7a67370",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=24-47 start=2026-10-29T20:26Z end=2026-10-29T21:26Z\n",
+        "input_sha256": "2e1575d9ebdfa1538a78053840e5c1481bad49389304ed04bd88afcfc3897a8b",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 237506,
+          "image": "docstructbench_llm-raw-scihub-o.O-adsc.201190003.pdf_6.jpg",
+          "index": 625,
+          "language": "english",
+          "sha256": "ae25ff0172fa283d8d218e42ab63d2e2711bc4eea1ba7942f372429ca8565372",
+          "table_count": 0
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793305589.687397
+      }
+    },
+    {
+      "position": 251,
+      "image": "docstructbench_llm-raw-scihub-o.O-bf03175144.pdf_4.jpg",
+      "gt_index": 626,
+      "gt_tables": 3,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [
+        {
+          "gt_idx": [
+            0
+          ],
+          "pred_idx": [
+            0
+          ],
+          "teds": 0.5298309802571166,
+          "teds_structure_only": 0.8295454545454546
+        },
+        {
+          "gt_idx": [
+            1
+          ],
+          "pred_idx": [
+            1
+          ],
+          "teds": 0.538124549062049,
+          "teds_structure_only": 0.8295454545454546
+        },
+        {
+          "gt_idx": [
+            2
+          ],
+          "pred_idx": [
+            2
+          ],
+          "teds": 0.5589330808080808,
+          "teds_structure_only": 0.8295454545454546
+        }
+      ],
+      "prediction_sha256": "2050975d2d19b0ef86b052bb9f4ce67bedb6a41744875f2579d0bf03d9efced2",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=24-47 start=2026-10-29T20:26Z end=2026-10-29T21:26Z\n",
+        "input_sha256": "c8414540c9ee1683fb38bc2685d7f7286f11c8ef5a3e20c18032dd12fd87e4c2",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 832426,
+          "image": "docstructbench_llm-raw-scihub-o.O-bf03175144.pdf_4.jpg",
+          "index": 626,
+          "language": "english",
+          "sha256": "299daa711a9fa60bfb90d1f24f66c5352f5d6c1895ecc571a1e9879a105f9115",
+          "table_count": 3
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793305646.3139913
+      }
+    },
+    {
+      "position": 252,
+      "image": "docstructbench_llm-raw-scihub-o.O-ceat.200407001.pdf_3.jpg",
+      "gt_index": 627,
+      "gt_tables": 1,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [
+        {
+          "gt_idx": [
+            0
+          ],
+          "pred_idx": [
+            0
+          ],
+          "teds": 0.5392958586943548,
+          "teds_structure_only": 1.0
+        }
+      ],
+      "prediction_sha256": "9cae9154bb812c184a0a0347dbe69b1e24c17208101ee08adc0503abeca6b680",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=24-47 start=2026-10-29T20:26Z end=2026-10-29T21:26Z\n",
+        "input_sha256": "efdf062751b3cf7e53de92045d57986c655e17c632d63f878b2747a6c2fe14e0",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 749370,
+          "image": "docstructbench_llm-raw-scihub-o.O-ceat.200407001.pdf_3.jpg",
+          "index": 627,
+          "language": "english",
+          "sha256": "2ae27f3a9284810bf7ce479ac8921359ccf00b7ebee1017b5e8da3e28ebe4af4",
+          "table_count": 1
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793305741.6952763
+      }
+    },
+    {
+      "position": 253,
+      "image": "docstructbench_llm-raw-scihub-o.O-ceat.200600410.pdf_8.jpg",
+      "gt_index": 628,
+      "gt_tables": 2,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [
+        {
+          "gt_idx": [
+            0
+          ],
+          "pred_idx": [
+            0
+          ],
+          "teds": 0.7808080808080808,
+          "teds_structure_only": 0.8282828282828283
+        },
+        {
+          "gt_idx": [
+            1
+          ],
+          "pred_idx": [
+            1
+          ],
+          "teds": 0.4044444444444444,
+          "teds_structure_only": 0.8666666666666667
+        }
+      ],
+      "prediction_sha256": "c1f65e8a35b6a906b3769f057ae0311f0284aed67f239762a5f9e62fa8060cec",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=24-47 start=2026-10-29T20:26Z end=2026-10-29T21:26Z\n",
+        "input_sha256": "6243e61f817083e305985ad339b84657b97ace7a1e6ed1454990d36b6d9a8e6f",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 402967,
+          "image": "docstructbench_llm-raw-scihub-o.O-ceat.200600410.pdf_8.jpg",
+          "index": 628,
+          "language": "english",
+          "sha256": "0977e1ebe5f2105c6961b95ee7fc5b4a8f8eb1ab0a5e8e9b33ac4f8e99f2a46c",
+          "table_count": 2
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793305809.0769577
+      }
+    },
+    {
+      "position": 254,
+      "image": "docstructbench_llm-raw-scihub-o.O-chem.200700285.pdf_4.jpg",
+      "gt_index": 629,
+      "gt_tables": 1,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [
+        {
+          "gt_idx": [
+            0
+          ],
+          "pred_idx": [
+            0
+          ],
+          "teds": 0.6287315883291116,
+          "teds_structure_only": 0.9473684210526316
+        }
+      ],
+      "prediction_sha256": "f23ab59685f9a7d96b8d4539ebfe15aa2b53516c63e0b993a514ec8170de85a2",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=24-47 start=2026-10-29T20:26Z end=2026-10-29T21:26Z\n",
+        "input_sha256": "03d1c155edba7d27f4f3e6111d43e2559693d5b3ed6411219b02a2ac067a79e8",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 855994,
+          "image": "docstructbench_llm-raw-scihub-o.O-chem.200700285.pdf_4.jpg",
+          "index": 629,
+          "language": "english",
+          "sha256": "a6cbd6fe1c6d9569643fd9179548566e84031dba8cbb00aab594c58336ec39f7",
+          "table_count": 1
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793305881.7894068
+      }
+    },
+    {
+      "position": 255,
+      "image": "docstructbench_llm-raw-scihub-o.O-hup.777.pdf_8.jpg",
+      "gt_index": 630,
+      "gt_tables": 1,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [
+        {
+          "gt_idx": [
+            0
+          ],
+          "pred_idx": [
+            0
+          ],
+          "teds": 0.7386018595937074,
+          "teds_structure_only": 0.7771739130434783
+        }
+      ],
+      "prediction_sha256": "fef1169f6f67ddd2651db314030d4b5865d2b2fe76d0e3505cd1f63dc4379661",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=24-47 start=2026-10-29T20:26Z end=2026-10-29T21:26Z\n",
+        "input_sha256": "4455f2fc15b3a42111a1c08f8d3551edaadd23065d1eabc86e5c2b70bcff898a",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 646223,
+          "image": "docstructbench_llm-raw-scihub-o.O-hup.777.pdf_8.jpg",
+          "index": 630,
+          "language": "english",
+          "sha256": "ea9603a6b1cd595ecad672ff4f19afef92bf6ea9c90281ea2e6e8a792064f280",
+          "table_count": 1
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793305941.716004
+      }
+    },
+    {
+      "position": 256,
+      "image": "docstructbench_llm-raw-scihub-o.O-j.1444-2906.2002.00466.x.pdf_4.jpg",
+      "gt_index": 631,
+      "gt_tables": 1,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [
+        {
+          "gt_idx": [
+            0
+          ],
+          "pred_idx": [
+            0
+          ],
+          "teds": 0.5695118448407921,
+          "teds_structure_only": 0.8888888888888888
+        }
+      ],
+      "prediction_sha256": "8b2628098114ec4c8b29e85bcc46bae8c6e5d4dee86e94e3fa3587cc7db5215c",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=24-47 start=2026-10-29T20:26Z end=2026-10-29T21:26Z\n",
+        "input_sha256": "d7b6fb7beb574a588464eb7c732f2c7a367f310d42e82e7011f8b48924e12f12",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 632559,
+          "image": "docstructbench_llm-raw-scihub-o.O-j.1444-2906.2002.00466.x.pdf_4.jpg",
+          "index": 631,
+          "language": "english",
+          "sha256": "6ce6eadfc3456678fa2da06b781ec164ef4fddef16f9a814c9bc82e31b0251d7",
+          "table_count": 1
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793306017.0188575
+      }
+    },
+    {
+      "position": 257,
+      "image": "docstructbench_llm-raw-scihub-o.O-j.eswa.2008.01.070.pdf_5.jpg",
+      "gt_index": 632,
+      "gt_tables": 2,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [
+        {
+          "gt_idx": [
+            0
+          ],
+          "pred_idx": [
+            0
+          ],
+          "teds": 0.8567809616320317,
+          "teds_structure_only": 0.9862637362637363
+        },
+        {
+          "gt_idx": [
+            1
+          ],
+          "pred_idx": [
+            1
+          ],
+          "teds": 0.4117647058823529,
+          "teds_structure_only": 0.7843137254901961
+        }
+      ],
+      "prediction_sha256": "e22124acf3346729ca7800099af3c7e8ea99e788f46345bd1cdb98482342556b",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=24-47 start=2026-10-29T20:26Z end=2026-10-29T21:26Z\n",
+        "input_sha256": "1b65c193e663b79e02c43fe822b2175d6f8acb16033f9c4e47e8643b04f7356b",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 525501,
+          "image": "docstructbench_llm-raw-scihub-o.O-j.eswa.2008.01.070.pdf_5.jpg",
+          "index": 632,
+          "language": "english",
+          "sha256": "857986432f3c0cacebfb8c89f4b2c15cc7ca80afc35d598756f203d40fe150ea",
+          "table_count": 2
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793306083.6503477
+      }
+    },
+    {
+      "position": 258,
+      "image": "docstructbench_llm-raw-scihub-o.O-s00128-007-9171-1.pdf_3.jpg",
+      "gt_index": 633,
+      "gt_tables": 1,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [
+        {
+          "gt_idx": [
+            0
+          ],
+          "pred_idx": [
+            0
+          ],
+          "teds": 0.9700820521934892,
+          "teds_structure_only": 1.0
+        }
+      ],
+      "prediction_sha256": "fcde9ebe75701635005e8dd6ace553ef725e8bc8406807c12c0c8bc3185f6662",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=24-47 start=2026-10-29T20:26Z end=2026-10-29T21:26Z\n",
+        "input_sha256": "26b9d0558f5d80a20b04304eaac86ba4ed77d87754c9378d2fcc4f2c21596561",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 422265,
+          "image": "docstructbench_llm-raw-scihub-o.O-s00128-007-9171-1.pdf_3.jpg",
+          "index": 633,
+          "language": "english",
+          "sha256": "1a498c66c37e74f6169478c941cf30b78ab5615c895c28ea4745eb1b259c01f1",
+          "table_count": 1
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793306171.7711196
+      }
+    },
+    {
+      "position": 259,
+      "image": "docstructbench_llm-raw-scihub-o.O-s00128-008-9367-z.pdf_4.jpg",
+      "gt_index": 634,
+      "gt_tables": 2,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [
+        {
+          "gt_idx": [
+            0
+          ],
+          "pred_idx": [
+            0
+          ],
+          "teds": 0.6080705009276437,
+          "teds_structure_only": 0.8333333333333334
+        },
+        {
+          "gt_idx": [
+            1
+          ],
+          "pred_idx": [
+            1
+          ],
+          "teds": 0.7493055555555556,
+          "teds_structure_only": 0.8854166666666666
+        }
+      ],
+      "prediction_sha256": "45a5d787143a812d79fb178b98f37e33a3f5cf9a0f36ce260be1b8d962c6ac84",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=24-47 start=2026-10-29T20:26Z end=2026-10-29T21:26Z\n",
+        "input_sha256": "1eb0e7bcfd4a42b4981aa4045a44a1a2a8c08fac6bf0cda02a16867c5ccb5834",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 477989,
+          "image": "docstructbench_llm-raw-scihub-o.O-s00128-008-9367-z.pdf_4.jpg",
+          "index": 634,
+          "language": "english",
+          "sha256": "b239f0347a86b489a082ed4bd66e6d2328d3260f1ed05731de7edd930208491d",
+          "table_count": 2
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793306258.5833192
+      }
+    },
+    {
+      "position": 260,
+      "image": "docstructbench_llm-raw-scihub-o.O-s00128-010-0006-0.pdf_5.jpg",
+      "gt_index": 635,
+      "gt_tables": 1,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [
+        {
+          "gt_idx": [
+            0
+          ],
+          "pred_idx": [
+            0
+          ],
+          "teds": 0.9426642194568786,
+          "teds_structure_only": 1.0
+        }
+      ],
+      "prediction_sha256": "61bf40ebb39c5ca7ed515308165a33998c0fe688e46330c2ff8299c26c306efd",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=24-47 start=2026-10-29T20:26Z end=2026-10-29T21:26Z\n",
+        "input_sha256": "f0fc976d43721a772f491483c865385b0b0a82dc3513dc728df041f2bb109053",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 556478,
+          "image": "docstructbench_llm-raw-scihub-o.O-s00128-010-0006-0.pdf_5.jpg",
+          "index": 635,
+          "language": "english",
+          "sha256": "b5642f5f4eb3b96eaaef7cb3d6e77657859c52b4c28fa3041c46ee6327f1f9ee",
+          "table_count": 1
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793306332.1927092
+      }
+    },
+    {
+      "position": 261,
+      "image": "docstructbench_llm-raw-scihub-o.O-s00348-003-0689-7.pdf_3.jpg",
+      "gt_index": 636,
+      "gt_tables": 1,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [
+        {
+          "gt_idx": [
+            0
+          ],
+          "pred_idx": [
+            0
+          ],
+          "teds": 0.9774193548387097,
+          "teds_structure_only": 1.0
+        }
+      ],
+      "prediction_sha256": "8000630b438a90357919e1017bba1c668a70859a3cc2cf2d9f34ab15207fe788",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=24-47 start=2026-10-29T20:26Z end=2026-10-29T21:26Z\n",
+        "input_sha256": "246ff3c4b4febb5877d45fc9340ebe75b570f068296bc2fd3ee45b5a0ab5b0a8",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 733097,
+          "image": "docstructbench_llm-raw-scihub-o.O-s00348-003-0689-7.pdf_3.jpg",
+          "index": 636,
+          "language": "english",
+          "sha256": "2d5dd15d51beb6e5a74c1c48208f3464c10ef9893f251956e3e8ea6ac44f700e",
+          "table_count": 1
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793306408.1412613
+      }
+    },
+    {
+      "position": 262,
+      "image": "docstructbench_llm-raw-scihub-o.O-s003950050126.pdf_6.jpg",
+      "gt_index": 637,
+      "gt_tables": 1,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [
+        {
+          "gt_idx": [
+            0
+          ],
+          "pred_idx": [
+            0
+          ],
+          "teds": 0.9167540310471167,
+          "teds_structure_only": 1.0
+        }
+      ],
+      "prediction_sha256": "5f316c9afbc93147af1d01c00c8cb69096b416d0491ffeadc9dc1ab91ea2fab3",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=24-47 start=2026-10-29T20:26Z end=2026-10-29T21:26Z\n",
+        "input_sha256": "a60f5d0dcba28f354640e02eaf3a407b25d6484eebf7465e2c60241a45aefaaa",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 539709,
+          "image": "docstructbench_llm-raw-scihub-o.O-s003950050126.pdf_6.jpg",
+          "index": 637,
+          "language": "english",
+          "sha256": "7b4246541c3c895aebc57a42feb36ba77e957ac12773d681deb2cd0ce636464b",
+          "table_count": 1
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793306476.83496
+      }
+    },
+    {
+      "position": 263,
+      "image": "docstructbench_llm-raw-scihub-o.O-s00396-003-0935-9.pdf_2.jpg",
+      "gt_index": 638,
+      "gt_tables": 1,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [
+        {
+          "gt_idx": [
+            0
+          ],
+          "pred_idx": [
+            0
+          ],
+          "teds": 0.9456210244497495,
+          "teds_structure_only": 1.0
+        }
+      ],
+      "prediction_sha256": "8791ed3e233e08d0ef0ed69475caa7ddbfca1b62d12486dd5902ef8cb64c6042",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=24-47 start=2026-10-29T20:26Z end=2026-10-29T21:26Z\n",
+        "input_sha256": "0a7684bdc33749db2cae6805e224b534c3bc93f67c09400d58783aa663093d6c",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 500764,
+          "image": "docstructbench_llm-raw-scihub-o.O-s00396-003-0935-9.pdf_2.jpg",
+          "index": 638,
+          "language": "english",
+          "sha256": "2c6f736d33b625595de0ddb7e95fa7ceb8e604b46261a13c4930431438a799fe",
+          "table_count": 1
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793306563.7686224
+      }
+    },
+    {
+      "position": 264,
+      "image": "docstructbench_llm-raw-scihub-o.O-s0167-8655%2800%2900107-0.pdf_6.jpg",
+      "gt_index": 639,
+      "gt_tables": 2,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [
+        {
+          "gt_idx": [
+            0
+          ],
+          "pred_idx": [
+            0
+          ],
+          "teds": 0.9717171717171718,
+          "teds_structure_only": 1.0
+        },
+        {
+          "gt_idx": [
+            1
+          ],
+          "pred_idx": [
+            1
+          ],
+          "teds": 0.9738636363636364,
+          "teds_structure_only": 1.0
+        }
+      ],
+      "prediction_sha256": "078e1f581c41e453a891770582660fd182cb89265a2fcea03db60e0cd8950843",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=24-47 start=2026-10-29T20:26Z end=2026-10-29T21:26Z\n",
+        "input_sha256": "f9a098103e25399233436128eecc1c14359e5f151316db3df963c6dacf7214f1",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 586104,
+          "image": "docstructbench_llm-raw-scihub-o.O-s0167-8655%2800%2900107-0.pdf_6.jpg",
+          "index": 639,
+          "language": "english",
+          "sha256": "7be1a7358362de7ac879e9288b6f4b4472125d1cd75499fe9083687d87aabcea",
+          "table_count": 2
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793306633.6919875
+      }
+    },
+    {
+      "position": 265,
+      "image": "docstructbench_llm-raw-scihub-o.O-s0167-8655%2801%2900019-8.pdf_10.jpg",
+      "gt_index": 640,
+      "gt_tables": 1,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [
+        {
+          "gt_idx": [
+            0
+          ],
+          "pred_idx": [
+            0
+          ],
+          "teds": 0.7121212121212122,
+          "teds_structure_only": 0.8506493506493507
+        }
+      ],
+      "prediction_sha256": "d45edee3e76a6f2504c540f1a2c26941c7eec26a8b575b514bd8ad6225c73f9d",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=24-47 start=2026-10-29T20:26Z end=2026-10-29T21:26Z\n",
+        "input_sha256": "9d12a15acdac2710f22a70576e0f9121fab58bf9c4a2cbf88dd43355c4f02bcc",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 619688,
+          "image": "docstructbench_llm-raw-scihub-o.O-s0167-8655%2801%2900019-8.pdf_10.jpg",
+          "index": 640,
+          "language": "english",
+          "sha256": "ddcd104f259ef38dc7a122cbc8e06c838061dab85e2a1438b0a200d77780ac9c",
+          "table_count": 1
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793306711.5546606
+      }
+    },
+    {
+      "position": 266,
+      "image": "docstructbench_llm-raw-scihub-o.O-s0362-546x%2897%2900070-9.pdf_7.jpg",
+      "gt_index": 641,
+      "gt_tables": 3,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [
+        {
+          "gt_idx": [
+            0
+          ],
+          "pred_idx": [
+            0
+          ],
+          "teds": 0.6476190476190476,
+          "teds_structure_only": 0.7666666666666666
+        },
+        {
+          "gt_idx": [
+            1
+          ],
+          "pred_idx": [
+            1
+          ],
+          "teds": 0.9357142857142857,
+          "teds_structure_only": 1.0
+        },
+        {
+          "gt_idx": [
+            2
+          ],
+          "pred_idx": [
+            2
+          ],
+          "teds": 0.7137505723443224,
+          "teds_structure_only": 0.8125
+        }
+      ],
+      "prediction_sha256": "140d01a2dd16da9ee136580b3ef0319e178482ac16d9ca52d3354ec7da379f1e",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=24-47 start=2026-10-29T20:26Z end=2026-10-29T21:26Z\n",
+        "input_sha256": "fd2b1551e2d8c081def507daa884839065ae9756c68c13be4002b5fb88250991",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 594077,
+          "image": "docstructbench_llm-raw-scihub-o.O-s0362-546x%2897%2900070-9.pdf_7.jpg",
+          "index": 641,
+          "language": "english",
+          "sha256": "445a1c7a96fe5b614e90054b7a52e617bcdccf538a82f2068f6097ef7da47aaa",
+          "table_count": 3
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793306784.477956
+      }
+    },
+    {
+      "position": 267,
+      "image": "docstructbench_llm-raw-scihub-o.O-s10555-005-1578-8.pdf_5.jpg",
+      "gt_index": 642,
+      "gt_tables": 2,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [
+        {
+          "gt_idx": [
+            0
+          ],
+          "pred_idx": [
+            0
+          ],
+          "teds": 0.5027623517609545,
+          "teds_structure_only": 0.9778761061946902
+        },
+        {
+          "gt_idx": [
+            1
+          ],
+          "pred_idx": [
+            1
+          ],
+          "teds": 0.5760491623038615,
+          "teds_structure_only": 0.9540816326530612
+        }
+      ],
+      "prediction_sha256": "d41a05a0d274f21ee2004343cf808aa4d631996aa4a4c6ca4cd5dead98a33cd6",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=24-47 start=2026-10-29T20:26Z end=2026-10-29T21:26Z\n",
+        "input_sha256": "5360af40ee0027a0e31b6c7236dbeed4d4dff5a18405f6445d82a6ed425d5550",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 510659,
+          "image": "docstructbench_llm-raw-scihub-o.O-s10555-005-1578-8.pdf_5.jpg",
+          "index": 642,
+          "language": "english",
+          "sha256": "2a35a74a37afc559245027f4fa381d7bce7fdfd05fb4b05a874d47e7f587d946",
+          "table_count": 2
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793306854.135283
+      }
+    },
+    {
+      "position": 268,
+      "image": "docstructbench_llm-raw-scihub-o.O-s10653-010-9369-8.pdf_11.jpg",
+      "gt_index": 643,
+      "gt_tables": 1,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [
+        {
+          "gt_idx": [
+            0
+          ],
+          "pred_idx": [
+            0
+          ],
+          "teds": 0.8770253555967842,
+          "teds_structure_only": 0.9642857142857143
+        }
+      ],
+      "prediction_sha256": "d8a92d915b0b37b8bc660a3c118d2beb455ce3caff4099381d62999f75937e5c",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=24-47 start=2026-10-29T20:26Z end=2026-10-29T21:26Z\n",
+        "input_sha256": "a9417be53ac5d224195e401c66988c5bf7b2a949c281eb37c86200b29307bc0f",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 384866,
+          "image": "docstructbench_llm-raw-scihub-o.O-s10653-010-9369-8.pdf_11.jpg",
+          "index": 643,
+          "language": "english",
+          "sha256": "a9f8d3ac4d33dd3c00382e629e7d4fa9c6946455fae7036dc33cd33fc8c31459",
+          "table_count": 1
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793306941.052988
+      }
+    },
+    {
+      "position": 269,
+      "image": "docstructbench_llm-raw-the-eye-o.O-1%20Excel.pdf_12.jpg",
+      "gt_index": 644,
+      "gt_tables": 0,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [],
+      "prediction_sha256": "767a0d3e13d07c25a4d48d952efebc738979dbeeb628d7295861f73f18d139b0",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=24-47 start=2026-10-29T20:26Z end=2026-10-29T21:26Z\n",
+        "input_sha256": "bf55f5443448865394351d63c49a1289b70fb5ff0f0c978d83223b1c5b688f6a",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 710600,
+          "image": "docstructbench_llm-raw-the-eye-o.O-1%20Excel.pdf_12.jpg",
+          "index": 644,
+          "language": "english",
+          "sha256": "1fb5a2883d8eb6a3cccf2c4355bf45dade440756734e08dd6b1a2a7ff9bb75cd",
+          "table_count": 0
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793307018.6803384
+      }
+    },
+    {
+      "position": 270,
+      "image": "docstructbench_llm-raw-the-eye-o.O-1995_2418.pdf_1.jpg",
+      "gt_index": 645,
+      "gt_tables": 1,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [
+        {
+          "gt_idx": [
+            0
+          ],
+          "pred_idx": [
+            0
+          ],
+          "teds": 0.2905561003959173,
+          "teds_structure_only": 0.4
+        }
+      ],
+      "prediction_sha256": "a7e0f22bd9d0fcc3dfd3e66c32151d45dd58f86d421150628642fe6d1a3f1777",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=24-47 start=2026-10-29T20:26Z end=2026-10-29T21:26Z\n",
+        "input_sha256": "65bede1f85cf1e2624fab2ea7175b9be15f596be07335ecff05d3c66e07eb7dc",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 1244125,
+          "image": "docstructbench_llm-raw-the-eye-o.O-1995_2418.pdf_1.jpg",
+          "index": 645,
+          "language": "english",
+          "sha256": "2e55d95a912e722deec07720955000a860e99d1fdaa6e2138c7e290066391635",
+          "table_count": 1
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793307078.471623
+      }
+    },
+    {
+      "position": 271,
+      "image": "docstructbench_llm-raw-the-eye-o.O-Chapter14.pdf_2.jpg",
+      "gt_index": 646,
+      "gt_tables": 0,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [],
+      "prediction_sha256": "8c37d68930ebb281457689db93346672166623dfd35197b9555637bfc002ef88",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=24-47 start=2026-10-29T20:26Z end=2026-10-29T21:26Z\n",
+        "input_sha256": "c819702dd6c0b1c8eb1057c26ffedc54a1032a4c299c1e0272eace8bfc6cf9d7",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 440873,
+          "image": "docstructbench_llm-raw-the-eye-o.O-Chapter14.pdf_2.jpg",
+          "index": 646,
+          "language": "english",
+          "sha256": "89be6fd5ec9747a2a56b62a1f4e83a22191f72efa725724fd9e068ff64885697",
+          "table_count": 0
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793307149.327759
+      }
+    },
+    {
+      "position": 272,
+      "image": "docstructbench_llm-raw-the-eye-o.O-Character%20Sheet%20-%20Form%20Fillable.pdf_2.jpg",
+      "gt_index": 647,
+      "gt_tables": 6,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [
+        {
+          "gt_idx": [
+            0
+          ],
+          "pred_idx": [
+            ""
+          ],
+          "teds": 0.0,
+          "teds_structure_only": 0.0
+        },
+        {
+          "gt_idx": [
+            1
+          ],
+          "pred_idx": [
+            ""
+          ],
+          "teds": 0.0,
+          "teds_structure_only": 0.0
+        },
+        {
+          "gt_idx": [
+            2
+          ],
+          "pred_idx": [
+            ""
+          ],
+          "teds": 0.0,
+          "teds_structure_only": 0.0
+        },
+        {
+          "gt_idx": [
+            3
+          ],
+          "pred_idx": [
+            ""
+          ],
+          "teds": 0.0,
+          "teds_structure_only": 0.0
+        },
+        {
+          "gt_idx": [
+            4
+          ],
+          "pred_idx": [
+            0
+          ],
+          "teds": 0.3052631578947368,
+          "teds_structure_only": 0.6
+        },
+        {
+          "gt_idx": [
+            5
+          ],
+          "pred_idx": [
+            ""
+          ],
+          "teds": 0.0,
+          "teds_structure_only": 0.0
+        }
+      ],
+      "prediction_sha256": "233fcbd3cbc34645f64325f6f3dc213402ab433e2458bb54f31d0a829520ae5c",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=24-47 start=2026-10-29T20:26Z end=2026-10-29T21:26Z\n",
+        "input_sha256": "2ca13bf55e9652df1374c713c2fe52639226cfaae5a1676b37dd1436a28e306f",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 241144,
+          "image": "docstructbench_llm-raw-the-eye-o.O-Character%20Sheet%20-%20Form%20Fillable.pdf_2.jpg",
+          "index": 647,
+          "language": "english",
+          "sha256": "3ef05df4739a9cc371940d02979e725864c060363ec29db6fd94a9a183eb9337",
+          "table_count": 6
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793307217.9378014
+      }
+    },
+    {
+      "position": 273,
+      "image": "docstructbench_llm-raw-the-eye-o.O-Dragon%20Magazine%20-%20030.pdf_5.jpg",
+      "gt_index": 648,
+      "gt_tables": 0,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [],
+      "prediction_sha256": "7fc48115fe643e3a0d86f80c136e40d9f29cdaf16548222d062b05398bc9780a",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=24-47 start=2026-10-29T20:26Z end=2026-10-29T21:26Z\n",
+        "input_sha256": "4b7ab2e1554e4f43a7f31ebd91bc94f217c5789b2fedc2a3c6c4021c189fbf41",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 1082165,
+          "image": "docstructbench_llm-raw-the-eye-o.O-Dragon%20Magazine%20-%20030.pdf_5.jpg",
+          "index": 648,
+          "language": "english",
+          "sha256": "6f3ef81180834ddb3f93c581a17e72991c51213040694bb6743cb7f8597e3c35",
+          "table_count": 0
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793307275.6495402
+      }
+    },
+    {
+      "position": 274,
+      "image": "docstructbench_llm-raw-the-eye-o.O-Player%27s%20Options%20-%20Halflings.pdf_11.jpg",
+      "gt_index": 649,
+      "gt_tables": 2,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [
+        {
+          "gt_idx": [
+            0
+          ],
+          "pred_idx": [
+            0
+          ],
+          "teds": 0.6724397079655662,
+          "teds_structure_only": 1.0
+        },
+        {
+          "gt_idx": [
+            1
+          ],
+          "pred_idx": [
+            1
+          ],
+          "teds": 0.8708524919401723,
+          "teds_structure_only": 1.0
+        }
+      ],
+      "prediction_sha256": "96ceb7da91704d41247b7ba1a6d60213d52543d444f0a7ef8faa67d02b2ccc16",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=24-47 start=2026-10-29T20:26Z end=2026-10-29T21:26Z\n",
+        "input_sha256": "648e764d46fb02944f2c4f1b962388a1bb152a90186657c72006896b08c623fc",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 679840,
+          "image": "docstructbench_llm-raw-the-eye-o.O-Player%27s%20Options%20-%20Halflings.pdf_11.jpg",
+          "index": 649,
+          "language": "english",
+          "sha256": "75b82f61183e9dd1ce3a2f27135a5e39888f3822a2fb68a15881f4d008526ae6",
+          "table_count": 2
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793307341.0109918
+      }
+    }
+  ],
+  "coverage": {
+    "pages_complete": 25,
+    "pages_total": 25,
+    "gt_tables_scored": 36,
+    "gt_tables_total": 36
+  },
+  "means": {
+    "teds": 0.6032355262933037,
+    "teds_structure_only": 0.7670112226048409
+  }
+}

@@ -1,0 +1,825 @@
+{
+  "arm": "odl",
+  "cohort": "pip02-english-fresh-20261029",
+  "shard": 6,
+  "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+  "gt_sha256": "a45cd84b04ad8b793e775089640e6b681209abea33ead54c1828ddca35fae496",
+  "pins_sha256": "262462c58402db48aa88063cdb1817915dcdef0c1933e72869682dd905c34cf0",
+  "scorer_sha256": "27f0b630b6812aecad35d1c65329841a5011e421326e81f9f14c8c66a6fdbe5e",
+  "pages": [
+    {
+      "position": 150,
+      "image": "docstructbench_llm-raw-scihub-o.O-chin.201023119.pdf_1.jpg",
+      "gt_index": 441,
+      "gt_tables": 0,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [],
+      "prediction_sha256": "418851b974210605fcd5cd5d103aa7a334a0372f4076571ddd27662445041998",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=48-71 start=2026-10-29T21:28Z end=2026-10-29T22:28Z\n",
+        "input_sha256": "d0dcf8e47dd4722a3f60a4c56b08bb788212bcb55ca30879eea75e9d16022031",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 128121,
+          "image": "docstructbench_llm-raw-scihub-o.O-chin.201023119.pdf_1.jpg",
+          "index": 441,
+          "language": "english",
+          "sha256": "f14cd7f111da5641f472292212095b7f14b1117bc9d78a24da69cd318bed4a7c",
+          "table_count": 0
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793309324.6782477
+      }
+    },
+    {
+      "position": 151,
+      "image": "docstructbench_llm-raw-scihub-o.O-chin.201025015.pdf_1.jpg",
+      "gt_index": 442,
+      "gt_tables": 0,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [],
+      "prediction_sha256": "3c94f7ada0386faa23e11dd2449961b02f6b7a444de60e4f47eb52b969ec5473",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=48-71 start=2026-10-29T21:28Z end=2026-10-29T22:28Z\n",
+        "input_sha256": "315ac933c18f4fc511b60fe7ffaee19f65514e38623142716e7dd632ef23edcc",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 132775,
+          "image": "docstructbench_llm-raw-scihub-o.O-chin.201025015.pdf_1.jpg",
+          "index": 442,
+          "language": "english",
+          "sha256": "1201d95f39e23db66dcb5e2a5d065d8277f345fecb446208f25bef2ec416d6a9",
+          "table_count": 0
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793309326.0860994
+      }
+    },
+    {
+      "position": 152,
+      "image": "docstructbench_llm-raw-scihub-o.O-dneu.20401.pdf_2.jpg",
+      "gt_index": 443,
+      "gt_tables": 0,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [],
+      "prediction_sha256": "c7b1489f8860fcb9ce33ed99399a3b91a69a7a2d792b7654a67745479a86fbe4",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=48-71 start=2026-10-29T21:28Z end=2026-10-29T22:28Z\n",
+        "input_sha256": "8a18f7bdd0c4ba7d674fdfa65531dcb8cb2f95e82109eb8120d130e45bdb5625",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 1030770,
+          "image": "docstructbench_llm-raw-scihub-o.O-dneu.20401.pdf_2.jpg",
+          "index": 443,
+          "language": "english",
+          "sha256": "5b2e584e9f0266e0a3ec90a7a3b4792231ae5f60ed7aadf3520f490e6ff38a1e",
+          "table_count": 0
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793309324.8956244
+      }
+    },
+    {
+      "position": 153,
+      "image": "docstructbench_llm-raw-scihub-o.O-dneu.20833.pdf_13.jpg",
+      "gt_index": 444,
+      "gt_tables": 0,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [],
+      "prediction_sha256": "2d492779e77af2c3462b85922cb236dfb235bdbbcc7abd28bcb6b1c5341d5b69",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=48-71 start=2026-10-29T21:28Z end=2026-10-29T22:28Z\n",
+        "input_sha256": "e4467644707fa216418454d2529926f51352a39e41d4ffea2fbcb0bc9d8420d3",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 1024244,
+          "image": "docstructbench_llm-raw-scihub-o.O-dneu.20833.pdf_13.jpg",
+          "index": 444,
+          "language": "english",
+          "sha256": "f820a11cbddabb0467e09962bb299a19a9ac2096cddc9d12834e89db19178d90",
+          "table_count": 0
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793309324.9298174
+      }
+    },
+    {
+      "position": 154,
+      "image": "docstructbench_llm-raw-scihub-o.O-dvdy.10165.pdf_7.jpg",
+      "gt_index": 445,
+      "gt_tables": 0,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [],
+      "prediction_sha256": "83534937ebbff9e896bd54ae074254c8da1de341bc86fb380b71faae5a8d9fcb",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=48-71 start=2026-10-29T21:28Z end=2026-10-29T22:28Z\n",
+        "input_sha256": "4a132aae2c9a86aeb886289fa517111b5a52ee3661d6d34d255715609c0f48de",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 524011,
+          "image": "docstructbench_llm-raw-scihub-o.O-dvdy.10165.pdf_7.jpg",
+          "index": 445,
+          "language": "english",
+          "sha256": "b62b32a5dfab9bce595c5136a25a38ebedca892fddc51de610dff38afdf1d117",
+          "table_count": 0
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793309324.7671702
+      }
+    },
+    {
+      "position": 155,
+      "image": "docstructbench_llm-raw-scihub-o.O-hup.777.pdf_7.jpg",
+      "gt_index": 446,
+      "gt_tables": 1,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [
+        {
+          "gt_idx": [
+            0
+          ],
+          "pred_idx": [
+            0
+          ],
+          "teds": 0.7927975659329763,
+          "teds_structure_only": 0.8475609756097561
+        }
+      ],
+      "prediction_sha256": "f6675910c814b4b14ddb75e2a15cb4a5a9df6a988bf5f01650eed7a5849580c3",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=48-71 start=2026-10-29T21:28Z end=2026-10-29T22:28Z\n",
+        "input_sha256": "d50e4ca3d801228f1a23800d9489e62a2c4420197cbf78c0078bacc7614c430b",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 562083,
+          "image": "docstructbench_llm-raw-scihub-o.O-hup.777.pdf_7.jpg",
+          "index": 446,
+          "language": "english",
+          "sha256": "e334e4f823c20f95d0edf976f798cd899cae9327fa2d38c7f1ca77bb03c1b5f1",
+          "table_count": 1
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793309324.7495248
+      }
+    },
+    {
+      "position": 156,
+      "image": "docstructbench_llm-raw-scihub-o.O-hup.908.pdf_5.jpg",
+      "gt_index": 447,
+      "gt_tables": 1,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [
+        {
+          "gt_idx": [
+            0
+          ],
+          "pred_idx": [
+            0
+          ],
+          "teds": 0.9617806099822609,
+          "teds_structure_only": 1.0
+        }
+      ],
+      "prediction_sha256": "856f522207ebf95bba39218d1d24eb8dd571aaf4de959279f7ef2b5e906515c6",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=48-71 start=2026-10-29T21:28Z end=2026-10-29T22:28Z\n",
+        "input_sha256": "8ab4b87326ca15ef3cfe936b0a1edf448ce03d65e3d3fb7df37a842fb8101366",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 864881,
+          "image": "docstructbench_llm-raw-scihub-o.O-hup.908.pdf_5.jpg",
+          "index": 447,
+          "language": "english",
+          "sha256": "86dc1e3d1e0b97c7c318dc5eca07f92ac7ecf2f1563f6f33f34dd3f2953e76b8",
+          "table_count": 1
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793309324.8213248
+      }
+    },
+    {
+      "position": 157,
+      "image": "docstructbench_llm-raw-scihub-o.O-hyp.1040.pdf_9.jpg",
+      "gt_index": 448,
+      "gt_tables": 0,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [],
+      "prediction_sha256": "b811aef1c004f0c94c970691f33a925effec1c7939f93303dfcabbad1ea36908",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=48-71 start=2026-10-29T21:28Z end=2026-10-29T22:28Z\n",
+        "input_sha256": "0a69408ec870b103bc9020f482de10a5efaaf38d0a024ad34121ee9f44973a68",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 542122,
+          "image": "docstructbench_llm-raw-scihub-o.O-hyp.1040.pdf_9.jpg",
+          "index": 448,
+          "language": "english",
+          "sha256": "4130049fe5321619a31acec95f9a361bd37b6c97ccb1f798df81a81da9978fc2",
+          "table_count": 0
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793309324.7651384
+      }
+    },
+    {
+      "position": 158,
+      "image": "docstructbench_llm-raw-scihub-o.O-hyp.1092.pdf_1.jpg",
+      "gt_index": 449,
+      "gt_tables": 0,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [],
+      "prediction_sha256": "f2c9ac3df4f0a34acda5eeff0727d875abc65d48acebaa5de1a6c7c7c1ff36f7",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=48-71 start=2026-10-29T21:28Z end=2026-10-29T22:28Z\n",
+        "input_sha256": "6ecb2232bd6990b654c926b4f83281e23544039831506c5782d198e213ec279f",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 745175,
+          "image": "docstructbench_llm-raw-scihub-o.O-hyp.1092.pdf_1.jpg",
+          "index": 449,
+          "language": "english",
+          "sha256": "6c34770354f7cbcdab3fb611e7364d72c1f44bfb042ebe35c12e90fdc95db37f",
+          "table_count": 0
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793309324.7226746
+      }
+    },
+    {
+      "position": 159,
+      "image": "docstructbench_llm-raw-scihub-o.O-ijc.22820.pdf_4.jpg",
+      "gt_index": 450,
+      "gt_tables": 0,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [],
+      "prediction_sha256": "c58065a0fa65c905f42118cda4d5b8c04f7f06506bb5de7aba954bbe4817a5c1",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=48-71 start=2026-10-29T21:28Z end=2026-10-29T22:28Z\n",
+        "input_sha256": "fd1dc373082fb5da27913311ce2a44fc424826f1a69fd5228d66171a72c1ec4d",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 866052,
+          "image": "docstructbench_llm-raw-scihub-o.O-ijc.22820.pdf_4.jpg",
+          "index": 450,
+          "language": "english",
+          "sha256": "d708dfdbe96d6efd7346d206a7ecfd24f770f5e4fc5c4e072d402494071e2578",
+          "table_count": 0
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793309324.7937047
+      }
+    },
+    {
+      "position": 160,
+      "image": "docstructbench_llm-raw-scihub-o.O-ijc.22994.pdf_3.jpg",
+      "gt_index": 451,
+      "gt_tables": 3,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [
+        {
+          "gt_idx": [
+            0
+          ],
+          "pred_idx": [
+            0
+          ],
+          "teds": 0.6998174327601412,
+          "teds_structure_only": 0.8402777777777778
+        },
+        {
+          "gt_idx": [
+            1
+          ],
+          "pred_idx": [
+            1
+          ],
+          "teds": 0.7827004028561779,
+          "teds_structure_only": 0.8061224489795918
+        },
+        {
+          "gt_idx": [
+            2
+          ],
+          "pred_idx": [
+            2
+          ],
+          "teds": 0.849748817966903,
+          "teds_structure_only": 0.9285714285714286
+        }
+      ],
+      "prediction_sha256": "c4ee95d898be0fc099ea072e269c386ac181fcc0a50567f2472d51c3101bc1bb",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=48-71 start=2026-10-29T21:28Z end=2026-10-29T22:28Z\n",
+        "input_sha256": "3bfc921b1030d190fe1f7cb8a8603ca31d41e5c427fa687c32b1863a34e2c34d",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 677323,
+          "image": "docstructbench_llm-raw-scihub-o.O-ijc.22994.pdf_3.jpg",
+          "index": 451,
+          "language": "english",
+          "sha256": "e533614dc88bbbcf325dcf7dcac2ce64c66c5e167d4231b5f0d663db52f6608d",
+          "table_count": 3
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793309324.8082066
+      }
+    },
+    {
+      "position": 161,
+      "image": "docstructbench_llm-raw-scihub-o.O-ijc.22999.pdf_3.jpg",
+      "gt_index": 452,
+      "gt_tables": 0,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [],
+      "prediction_sha256": "6969ba14286644fd87fa1d7af3e75970b84f5c89e576cbfaf78675dd92d43d19",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=48-71 start=2026-10-29T21:28Z end=2026-10-29T22:28Z\n",
+        "input_sha256": "d2c73171fee0f02dfb155738efb0d8b8205191b7b2aee1f9464ea52bf70dec36",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 711864,
+          "image": "docstructbench_llm-raw-scihub-o.O-ijc.22999.pdf_3.jpg",
+          "index": 452,
+          "language": "english",
+          "sha256": "77c129d87449fa757593ef75984af1d57721e413faeee9d51e4bb2db6db71c44",
+          "table_count": 0
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793309324.8395534
+      }
+    },
+    {
+      "position": 162,
+      "image": "docstructbench_llm-raw-scihub-o.O-j.1365-2117.1999.00104.x.pdf_11.jpg",
+      "gt_index": 453,
+      "gt_tables": 0,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [],
+      "prediction_sha256": "c21853506494961e4e7c20b9c61e587fa73e8e6384082f6a595a3cdf37e4ca22",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=48-71 start=2026-10-29T21:28Z end=2026-10-29T22:28Z\n",
+        "input_sha256": "a1b0ebe15922a0508a8a740c1d0633679621ac3c61c06f0b4fc0711b5f24099f",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 748015,
+          "image": "docstructbench_llm-raw-scihub-o.O-j.1365-2117.1999.00104.x.pdf_11.jpg",
+          "index": 453,
+          "language": "english",
+          "sha256": "b92c1ba95a0e66a5b6764248d2f17f2445dd1b9af212bcfe853fb248dadc18ba",
+          "table_count": 0
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793309434.0456343
+      }
+    },
+    {
+      "position": 163,
+      "image": "docstructbench_llm-raw-scihub-o.O-j.1365-2117.2002.00179.x.pdf_10.jpg",
+      "gt_index": 454,
+      "gt_tables": 0,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [],
+      "prediction_sha256": "fccc64a27fdd719d719b752bec31aad823320821e3bf62796753a3eeb5e946e3",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=48-71 start=2026-10-29T21:28Z end=2026-10-29T22:28Z\n",
+        "input_sha256": "5159214210b0971ade1d3b4700296b605305a2e4355edcbf20ec326ae795cd81",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 781867,
+          "image": "docstructbench_llm-raw-scihub-o.O-j.1365-2117.2002.00179.x.pdf_10.jpg",
+          "index": 454,
+          "language": "english",
+          "sha256": "78f8236acd31d3af9c2ba51ac0df1117df20568940bb81e32c27121398bc153b",
+          "table_count": 0
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793309436.7722564
+      }
+    },
+    {
+      "position": 164,
+      "image": "docstructbench_llm-raw-scihub-o.O-j.1365-2818.2000.00739.x.pdf_4.jpg",
+      "gt_index": 455,
+      "gt_tables": 0,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [],
+      "prediction_sha256": "d57d96e217c745a5c77055cafb7fe4e47e66b49936e49999083a698b7c43ee0d",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=48-71 start=2026-10-29T21:28Z end=2026-10-29T22:28Z\n",
+        "input_sha256": "48d455f053ba68df4ab1464595131a9e585d9a1a0281c00c15cf60431192ea1b",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 580138,
+          "image": "docstructbench_llm-raw-scihub-o.O-j.1365-2818.2000.00739.x.pdf_4.jpg",
+          "index": 455,
+          "language": "english",
+          "sha256": "51377e5ad5231757508b3562b7dcfddecf93b5bd445fde93a2b6eb0ded02f742",
+          "table_count": 0
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793309437.5254765
+      }
+    },
+    {
+      "position": 165,
+      "image": "docstructbench_llm-raw-scihub-o.O-j.1365-2818.2000.00739.x.pdf_8.jpg",
+      "gt_index": 456,
+      "gt_tables": 0,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [],
+      "prediction_sha256": "c4b25a48a8fb277fe6b7258267d8841f51c29ad4199252419368531f7be84642",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=48-71 start=2026-10-29T21:28Z end=2026-10-29T22:28Z\n",
+        "input_sha256": "06c6bceef16ab1eb89bb9dbad257b24d3176c64212d9659e4da9e84af4e099bd",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 947551,
+          "image": "docstructbench_llm-raw-scihub-o.O-j.1365-2818.2000.00739.x.pdf_8.jpg",
+          "index": 456,
+          "language": "english",
+          "sha256": "51935d5465a32c9c219b084219c30d69d4a134236b3dfbf4a2e71ef9937d4a6d",
+          "table_count": 0
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793309438.5611923
+      }
+    },
+    {
+      "position": 166,
+      "image": "docstructbench_llm-raw-scihub-o.O-j.1365-2818.2003.01210.x.pdf_7.jpg",
+      "gt_index": 457,
+      "gt_tables": 0,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [],
+      "prediction_sha256": "cb0e1e1e87a7913a795bc5f51bdc6e67fd485f0e1629c390b92fd1c59ed4a6a9",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=48-71 start=2026-10-29T21:28Z end=2026-10-29T22:28Z\n",
+        "input_sha256": "667908d036cff4691db7fec57b0327a5ab103edcf1e5fd80ff41aaaab0824ab3",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 322051,
+          "image": "docstructbench_llm-raw-scihub-o.O-j.1365-2818.2003.01210.x.pdf_7.jpg",
+          "index": 457,
+          "language": "english",
+          "sha256": "9d2b76f971a648a3a1a76128c04d36152997fbd5495f848d41a62682aee14578",
+          "table_count": 0
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793309439.5009608
+      }
+    },
+    {
+      "position": 167,
+      "image": "docstructbench_llm-raw-scihub-o.O-j.1445-2197.2003.02751.x.pdf_3.jpg",
+      "gt_index": 458,
+      "gt_tables": 0,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [],
+      "prediction_sha256": "68409d4ee2864a27fe8850f0192507b1d3d9acbdfa98f705aee618931fe9e2e1",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=48-71 start=2026-10-29T21:28Z end=2026-10-29T22:28Z\n",
+        "input_sha256": "b1e8a7756b0fa630596b2a85ec2d030a761947ea7a77624fc889fc5d376a94be",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 676957,
+          "image": "docstructbench_llm-raw-scihub-o.O-j.1445-2197.2003.02751.x.pdf_3.jpg",
+          "index": 458,
+          "language": "english",
+          "sha256": "4911795c0102bdd5cbdb11e35ce4cb244a6e655ca66e2f1ffeccaa79217aa1b1",
+          "table_count": 0
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793309440.4758096
+      }
+    },
+    {
+      "position": 168,
+      "image": "docstructbench_llm-raw-scihub-o.O-j.ab.2007.10.021.pdf_3.jpg",
+      "gt_index": 459,
+      "gt_tables": 0,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [],
+      "prediction_sha256": "6c425e392f6db10c6bf6946f93a58c3c93cc21e777d60a4a5fc46ec2aa257001",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=48-71 start=2026-10-29T21:28Z end=2026-10-29T22:28Z\n",
+        "input_sha256": "972d3b1acc2dc898715421b86e96bef4aa9f455968e80e494218b4196865e0b1",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 462236,
+          "image": "docstructbench_llm-raw-scihub-o.O-j.ab.2007.10.021.pdf_3.jpg",
+          "index": 459,
+          "language": "english",
+          "sha256": "e996ca4fb34ab2f114d33e4c5ae50e7dadcbf3104e6cf81ba6e86c070614d0ff",
+          "table_count": 0
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793309443.4074128
+      }
+    },
+    {
+      "position": 169,
+      "image": "docstructbench_llm-raw-scihub-o.O-j.ab.2007.11.016.pdf_5.jpg",
+      "gt_index": 460,
+      "gt_tables": 0,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [],
+      "prediction_sha256": "6c38f13bdeb197fd2b9b156ccb22ab92d011b05426eb17c080509b31e0a57902",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=48-71 start=2026-10-29T21:28Z end=2026-10-29T22:28Z\n",
+        "input_sha256": "38744cba55a00f27885b3361b7c5988e89e40272d7ba2dd4620dc074023e71ac",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 512105,
+          "image": "docstructbench_llm-raw-scihub-o.O-j.ab.2007.11.016.pdf_5.jpg",
+          "index": 460,
+          "language": "english",
+          "sha256": "0e60befe9670f5aea9fb831c20bbdae5c33c4031bf6d736f42797ea4ec0c95dd",
+          "table_count": 0
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793309443.517861
+      }
+    },
+    {
+      "position": 170,
+      "image": "docstructbench_llm-raw-scihub-o.O-j.ab.2008.05.027.pdf_7.jpg",
+      "gt_index": 461,
+      "gt_tables": 0,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [],
+      "prediction_sha256": "bef74e6d86a0865a4345e74da58ca19224111e9dbf7c48a9400d271d89989573",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=48-71 start=2026-10-29T21:28Z end=2026-10-29T22:28Z\n",
+        "input_sha256": "e48abd627c6401c8c2780b7aac67fc9ad2578779163ba3c5d602fc32166ab894",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 901012,
+          "image": "docstructbench_llm-raw-scihub-o.O-j.ab.2008.05.027.pdf_7.jpg",
+          "index": 461,
+          "language": "english",
+          "sha256": "afa2406373d59a9b6699efd18ffaa19bc18354ef7f53fc417ef441697f1c0e2e",
+          "table_count": 0
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793309444.4666393
+      }
+    },
+    {
+      "position": 171,
+      "image": "docstructbench_llm-raw-scihub-o.O-j.apcata.2004.01.008.pdf_6.jpg",
+      "gt_index": 462,
+      "gt_tables": 0,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [],
+      "prediction_sha256": "69b1269dc5e187b5fc082e1a139e483ea8aef8eed5bcde5236a2c77c40cda06e",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=48-71 start=2026-10-29T21:28Z end=2026-10-29T22:28Z\n",
+        "input_sha256": "98f8d8941dd56298dcea9b3d369568f37b72690053aee90df0d407650ef91016",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 226340,
+          "image": "docstructbench_llm-raw-scihub-o.O-j.apcata.2004.01.008.pdf_6.jpg",
+          "index": 462,
+          "language": "english",
+          "sha256": "432e3729218838fae1aa73d2c2c4fe7987206651678aa2e361c72029008421ec",
+          "table_count": 0
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793309446.1209152
+      }
+    },
+    {
+      "position": 172,
+      "image": "docstructbench_llm-raw-scihub-o.O-j.apcata.2006.05.010.pdf_2.jpg",
+      "gt_index": 463,
+      "gt_tables": 0,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [],
+      "prediction_sha256": "f7edfdc521e347e9605194d2f7cc4ae0ef94e30d8b2456bece55df662177b018",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=48-71 start=2026-10-29T21:28Z end=2026-10-29T22:28Z\n",
+        "input_sha256": "264a67aad162c89d3e207bc981c4e83bbbae223f0e0b8127852d6b4025496151",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 1219862,
+          "image": "docstructbench_llm-raw-scihub-o.O-j.apcata.2006.05.010.pdf_2.jpg",
+          "index": 463,
+          "language": "english",
+          "sha256": "283d5f33489a9ce0d32c134153745376371f21171f73e95d996c59f0d8044c86",
+          "table_count": 0
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793309464.2502267
+      }
+    },
+    {
+      "position": 173,
+      "image": "docstructbench_llm-raw-scihub-o.O-j.apcata.2007.01.024.pdf_7.jpg",
+      "gt_index": 464,
+      "gt_tables": 0,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [],
+      "prediction_sha256": "e075d4f31280840854b21cb97b45e9e5f35993eea9555569708fa17f8d957e96",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=48-71 start=2026-10-29T21:28Z end=2026-10-29T22:28Z\n",
+        "input_sha256": "05958b4707fe047663caa338056bc76ea4a383c3c892a4bd99fd42180c42f889",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 1068787,
+          "image": "docstructbench_llm-raw-scihub-o.O-j.apcata.2007.01.024.pdf_7.jpg",
+          "index": 464,
+          "language": "english",
+          "sha256": "d1530d3e6b9525f38163a59d729f416a96009775010bd9b03f5508c0c0d9c4bd",
+          "table_count": 0
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793309474.3749177
+      }
+    },
+    {
+      "position": 174,
+      "image": "docstructbench_llm-raw-scihub-o.O-j.chroma.2005.02.018.pdf_6.jpg",
+      "gt_index": 465,
+      "gt_tables": 5,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [
+        {
+          "gt_idx": [
+            0
+          ],
+          "pred_idx": [
+            0
+          ],
+          "teds": 0.8928571428571429,
+          "teds_structure_only": 0.8928571428571429
+        },
+        {
+          "gt_idx": [
+            1
+          ],
+          "pred_idx": [
+            1
+          ],
+          "teds": 0.875,
+          "teds_structure_only": 0.8928571428571429
+        },
+        {
+          "gt_idx": [
+            2
+          ],
+          "pred_idx": [
+            2
+          ],
+          "teds": 0.8928571428571429,
+          "teds_structure_only": 0.8928571428571429
+        },
+        {
+          "gt_idx": [
+            3
+          ],
+          "pred_idx": [
+            3
+          ],
+          "teds": 0.8928571428571429,
+          "teds_structure_only": 0.8928571428571429
+        },
+        {
+          "gt_idx": [
+            4
+          ],
+          "pred_idx": [
+            4
+          ],
+          "teds": 0.8928571428571429,
+          "teds_structure_only": 0.8928571428571429
+        }
+      ],
+      "prediction_sha256": "e7c77a35963a10fb2c7287a27caaf683cde605038ef3cc42eb05f4606093d13e",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=48-71 start=2026-10-29T21:28Z end=2026-10-29T22:28Z\n",
+        "input_sha256": "92af9cbe0f248d6fb37acb9b47297d298e44c4e775d17324573a66ddd1e1b7b7",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 527731,
+          "image": "docstructbench_llm-raw-scihub-o.O-j.chroma.2005.02.018.pdf_6.jpg",
+          "index": 465,
+          "language": "english",
+          "sha256": "2ae70fa7b75e4a2ae168a3da31699334c8f037d6129c3e83ef67264a139aa4a1",
+          "table_count": 5
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793309498.7599201
+      }
+    }
+  ],
+  "coverage": {
+    "pages_complete": 25,
+    "pages_total": 25,
+    "gt_tables_scored": 10,
+    "gt_tables_total": 10
+  },
+  "means": {
+    "teds": 0.8533273400927032,
+    "teds_structure_only": 0.888681834522427
+  }
+}

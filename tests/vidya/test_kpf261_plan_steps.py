@@ -151,6 +151,8 @@ def test_native_count_is_one_capture_observation(tmp_path, monkeypatch):
     tup = adapter.project(tmp_path, allow_synthetic=True)
     assert tup.value == 2 and tup.unit == "actions" and tup.reps == 1
     assert tup.extra["journal_actions"] == 2 and tup.protocol_id == ""
+    assert tup.observation["outcome_native"] == "count_target_not_met"
+    assert tup.observation["mechanism"]["id"].startswith("kpf261-plan-actions/5778d55d01ea/")
     assert grade(tup)[:2] == ("Judged", "Located")
     frame = to_frames(tup, as_of="2026-10-30T19:00:00Z", adapter_id=adapter.ADAPTER_ID)[-1]
     assert frame["assertion"]["value"] == 2 and frame["assertion"]["unit"] == "actions"

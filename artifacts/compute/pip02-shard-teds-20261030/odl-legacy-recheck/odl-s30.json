@@ -1,0 +1,161 @@
+{
+  "arm": "odl",
+  "cohort": "pip02-english-fresh-20261029",
+  "shard": 30,
+  "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+  "gt_sha256": "a45cd84b04ad8b793e775089640e6b681209abea33ead54c1828ddca35fae496",
+  "pins_sha256": "262462c58402db48aa88063cdb1817915dcdef0c1933e72869682dd905c34cf0",
+  "scorer_sha256": "27f0b630b6812aecad35d1c65329841a5011e421326e81f9f14c8c66a6fdbe5e",
+  "pages": [
+    {
+      "position": 750,
+      "image": "PPT_B14_Claeys_Consistent Presentation of Images_v2_page_013.png",
+      "gt_index": 1646,
+      "gt_tables": 0,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [],
+      "prediction_sha256": "68ec545f1f540fe72a92262a58153f80c3863c1183e38d955e096a325daa2069",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=48-71 start=2026-10-29T21:25Z end=2026-10-29T22:25Z\n",
+        "input_sha256": "23fc287670059724726e5fa00f27ba8b1719614c0c50a3e0b2e553b6cabfc169",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 417494,
+          "image": "PPT_B14_Claeys_Consistent Presentation of Images_v2_page_013.png",
+          "index": 1646,
+          "language": "english",
+          "sha256": "ac60ad889038a28314bd9eb8b4f8c90a59c138d19e3846008fa1ae580758cc1b",
+          "table_count": 0
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793309157.254634
+      }
+    },
+    {
+      "position": 751,
+      "image": "PPT_B14_Claeys_Consistent Presentation of Images_v2_page_024.png",
+      "gt_index": 1647,
+      "gt_tables": 0,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [],
+      "prediction_sha256": "f25af1f59c911d52097121a28204f76f0d1bc3f5af400a1f3bc364a2ab412788",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=48-71 start=2026-10-29T21:25Z end=2026-10-29T22:25Z\n",
+        "input_sha256": "27b3253ba6ab692e22e2c544070d8aff7720aba264d6d1e23372f90ce7932e6f",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 582974,
+          "image": "PPT_B14_Claeys_Consistent Presentation of Images_v2_page_024.png",
+          "index": 1647,
+          "language": "english",
+          "sha256": "fc04b85b0e0ee1d163d9adb9ad1063adedcd6eaaa7b16feadb291fa134f83a68",
+          "table_count": 0
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793309159.7607782
+      }
+    },
+    {
+      "position": 752,
+      "image": "PPT_EnglishtoAmericanTransition_page_005.png",
+      "gt_index": 1648,
+      "gt_tables": 0,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [],
+      "prediction_sha256": "fc2fb638100d923b63afdf7e615b8eee47cdbd274319391a3ed08bad6d4d7c2d",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=48-71 start=2026-10-29T21:25Z end=2026-10-29T22:25Z\n",
+        "input_sha256": "cb37a1a5db4b35e149add45e6100df63f42bf72805651c981ac6a425f075a629",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 144623,
+          "image": "PPT_EnglishtoAmericanTransition_page_005.png",
+          "index": 1648,
+          "language": "english",
+          "sha256": "af0f8a14ee618fe3066deb61bf2301aea07b11e37dde59065e4a3097fdd6c008",
+          "table_count": 0
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793309157.3603659
+      }
+    },
+    {
+      "position": 753,
+      "image": "PPT_Keuk Chan Narith_page_019.png",
+      "gt_index": 1649,
+      "gt_tables": 0,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [],
+      "prediction_sha256": "8f506fba522b343f5563b5ea57f40124303fc3ac9063129f26d4b22cfe966552",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=48-71 start=2026-10-29T21:25Z end=2026-10-29T22:25Z\n",
+        "input_sha256": "4114c534567eba124249c5e084b3c43702b2fb02e279a2fdc842ce914aaeb638",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 586791,
+          "image": "PPT_Keuk Chan Narith_page_019.png",
+          "index": 1649,
+          "language": "english",
+          "sha256": "acf4898f87424c531f9b4bd35ba7edc1745e9faa8a65f95cce610dd892690d1f",
+          "table_count": 0
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793309157.4086006
+      }
+    },
+    {
+      "position": 754,
+      "image": "PPT_PresentationSpecification_page_025.png",
+      "gt_index": 1650,
+      "gt_tables": 0,
+      "status": "complete",
+      "reason": "native page produced",
+      "tables": [],
+      "prediction_sha256": "b3524e3e02ff5bb5a4b134cd8f23e3fa53db6056dd7f325edae44777742e3605",
+      "start": {
+        "cohort_id": "pip02-english-fresh-20261029",
+        "dependency_manifest_sha256": "38d2d27b681bbe398107470b84447ac45f426aa5d0fc0ecfbdcce34daa64ab9f",
+        "grant": "regions=48-71 start=2026-10-29T21:25Z end=2026-10-29T22:25Z\n",
+        "input_sha256": "389b5de79b76cd38b854c3281b35d3ffd417aff1a46206f8bbe29e124706d934",
+        "mode": "odl-2.5.0-docling-fast-full",
+        "page": {
+          "bytes": 148145,
+          "image": "PPT_PresentationSpecification_page_025.png",
+          "index": 1650,
+          "language": "english",
+          "sha256": "e33983f9e8b82565509cf7eea3824129ef12fff8e4cb4f049dcf3738f49ac86f",
+          "table_count": 0
+        },
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "protocol_sha256": "dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3",
+        "started": 1793309159.3157024
+      }
+    }
+  ],
+  "coverage": {
+    "pages_complete": 5,
+    "pages_total": 5,
+    "gt_tables_scored": 0,
+    "gt_tables_total": 0
+  },
+  "means": {
+    "teds": null,
+    "teds_structure_only": null
+  }
+}
