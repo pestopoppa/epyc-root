@@ -1,0 +1,36 @@
+{
+  "schema": "original-event-filing/v1",
+  "audit_path": "/mnt/raid0/llm/tmp/codex3-filing-five-0605-20261030/audit.json",
+  "audit_sha256": "15a339b57549081d997f159c89a3516bac2678a60597bf078641cf8d62b3fb14",
+  "scope": "Five original resource failures; no new exposure at original boundaries. Full audit retained at the pinned durable path.",
+  "r22_publications": [
+    {
+      "id": "codex3-pip02-paddle-relocatable-r22-pool0-20261030",
+      "regions": "48-71",
+      "path": "/mnt/raid0/llm/tmp/codex3-filing-five-0605-20261030/codex3-pip02-paddle-relocatable-r22-pool0-20261030-publication.json",
+      "sha256": "2c4b09ecd5847b9b1e734375deeb9a002fe785c72adef93bc11347699dd272f1",
+      "launcher_sha256": "15fd7360afa8e55a90d53dda10229698315d80d7594077f7b8677e2d1e656adb"
+    },
+    {
+      "id": "codex3-pip02-paddle-relocatable-r22-pool1-20261030",
+      "regions": "72-95",
+      "path": "/mnt/raid0/llm/tmp/codex3-filing-five-0605-20261030/codex3-pip02-paddle-relocatable-r22-pool1-20261030-publication.json",
+      "sha256": "d4c2b7744d1cbc860d82d5cc32e619fd6a06d30c6f5370a5adddb958437ab5ac",
+      "launcher_sha256": "15fd7360afa8e55a90d53dda10229698315d80d7594077f7b8677e2d1e656adb"
+    },
+    {
+      "id": "codex3-pip02-paddle-relocatable-r22-pool2-20261030",
+      "regions": "48-71",
+      "path": "/mnt/raid0/llm/tmp/codex3-filing-five-0605-20261030/codex3-pip02-paddle-relocatable-r22-pool2-20261030-publication.json",
+      "sha256": "0de30e370644ed36967c752e771f6a294f30a1e17ed7df4d6ab17e834062811e",
+      "launcher_sha256": "15fd7360afa8e55a90d53dda10229698315d80d7594077f7b8677e2d1e656adb"
+    },
+    {
+      "id": "codex3-pip02-paddle-relocatable-r22-pool3-20261030",
+      "regions": "72-95",
+      "path": "/mnt/raid0/llm/tmp/codex3-filing-five-0605-20261030/codex3-pip02-paddle-relocatable-r22-pool3-20261030-publication.json",
+      "sha256": "e544e660064ead6a3bf54cdb39a23e67576191b78d563a55ee852d13a82a2e57",
+      "launcher_sha256": "15fd7360afa8e55a90d53dda10229698315d80d7594077f7b8677e2d1e656adb"
+    }
+  ]
+}

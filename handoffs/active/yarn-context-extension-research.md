@@ -440,3 +440,19 @@ Evidence: `/mnt/raid0/llm/tmp/yarn-judged-cell-repair-v4-20261029/YARN-s{0,1,2,3
 - **FAILED-RUN `codex-ni-yarn-dca-attribution-gpu-r1-20261030`:** the 03:13:08–03:13:11 GPU grant ended rc70 at in-claim admission, logging `invalid window, output or RAM`. The original row requests 1590 seconds, which is 30 seconds short of a whole-minute multiple, while `dryrun_check.py` rejects `requested % 60`; the row's 6 GiB RAM and 0.25 GiB output estimate satisfy that predicate. No `YDX_FULL_ENTRY` or full-run result was present. Prior bounded GPU smokes remain separate evidence; no matched full tokenwise attribution, kernel cause or significance verdict follows. [belief: cc]
 
 [Original native audit references](../../artifacts/compute/results-filing-20261030-0320.json).
+
+
+### 2026-10-30 overdue original-event filing (HIL, Paddle R14, FA4 and DCA)
+
+GPU token-attribution R2 completed the full 65,536-context diagnostic: GPU PPL 14.3944 ± 0.21593 and prior matched CPU PPL 13.6293 (lower is better; ± is within-run token spread). The 64 prediction/target/token-ID keys match exactly, with shared model, text, source and recipe checks; GPU residency, native writer and cleanup verified. GPU result SHA-256 `f7f7aee0a479e29a103aa8085d51308048e23252eb04ca1b4ed8cc00ee330711`; token CSV `11c3ea9451ca277e76cc917cac17097d0a166bff70404263ba7483149257f745`. This single matched pair does not establish a kernel cause or statistical significance. [Native event audit](../../artifacts/compute/results-filing-20261030-0520.json). [belief: cc]
+
+
+### 2026-10-30 05:30 original HSF and YaRN event filing
+
+YaRN 128K MI210 R1's original 05:26:22Z grant ended rc1 at `live grant/GPU/disk admission refused`, before the scheduled output root or A0/A1 execution. This aggregate predicate also checks affinity, STOP, deadline, live grant and GPU lock; the original diagnostic does not isolate which check returned false. The frozen 120-pair McNemar rule therefore has no new verdict from this attempt. [Original event](../../artifacts/compute/results-filing-20261030-0530.json). [belief: cc]
+
+
+### 2026-10-30 06:05 original EVL, Paddle and YaRN resource events
+
+- YaRN Oolong S2 v27, S1 v26 and S3 v28 original grants ended 05:53:35/47/48Z rc75; each native record reports `new_exposures=0` and refusal at the 150 GiB floor plus 1 GiB aggregate reserve and 128 MiB safety. Retain the original 120-pair denominator: S2 has four unknown A0 and 26 candidate pairs, S1 one unknown and 29, S3 three unknown and 27; A1 requires matched A0 success. No full-cohort McNemar verdict. [Native event audit](../../artifacts/compute/results-filing-20261030-0605.json).
+  - [belief: cc] Original native records and unchanged criteria are linked above.

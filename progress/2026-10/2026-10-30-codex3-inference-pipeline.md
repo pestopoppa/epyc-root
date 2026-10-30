@@ -72,3 +72,20 @@ EVL2 source-only freeze guard now distinguishes its3,063,325bytes of code/input 
 Nine R13 continuation packets and HIL6 were real-smoke qualified and published this turn; R13 had5matchedHTTP200 in70.188s,5.427GBsampledRSS/drained. R14 addedfour disjoint9h pooled READYs after exact-outer69.026s/5matchedHTTP200/5.429GB/drain; handoff retired8ownungrantedpollers/23inactivemanifests whilepreserving4livegrants. Its conservative whole-window output reservation8.125/7.5GiB made it inadmissible at~151GiB, so this is not proof of useful pool execution. R15 adds a sampled per-grant output credit(.5GiB soft+.25GiB reserve, explicitly not a hard overshoot bound), source and real-child failure/drain tests pass, actual smoke pending151GiB floor with one bounded watcher and dependent handoff. HSF12 RAM-output/control-archive source preparation is underway; normalfull166GiB guard unchanged. No new R15/HSF12 smoke success claimed. [belief: cc]
 
 The read-only04:04:02–10 visible-own-UID I/O sample identified only3.7MB and3.6MB process write deltas, with no destination attribution. Permission and host-namespace gaps prevent a host-wide absence or writer claim. Existing PAW venv retention/liveness audit ruled out moving them; no peer/model/native evidence removed. [belief: cc]
+
+
+2026-10-30 05:26Z operator quarter rebalance: withdrew seven captured own ungranted PIP pollers and verified all dead, preserving native outputs and source. Actual remaining waiting registrations are q0=0, q1=0, q2=2 and q3=2. Retained pool0/pool2 on q2 and pool1/head on q3; own armed manifests and staged row artifacts now name those exact regions with unchanged verified launcher hashes. No scheduler queue, grant, or canonical FILLERS edits. A separately declared pool3 successor is being prepared to replace the head registration within the same two-item q3 cap; it is not yet smoke-qualified or published. [Placement receipts](../../artifacts/compute/pip02-quarter-rebalance-20261030-0523.json). [belief: cc]
+
+
+2026-10-30 05:33Z: research source projection `55e24b6fd2dc` pushed and verified for exactly four R15 producer IDs, all 49 declared groups and their 146 shards, including the two-shard tail. Parent supervised 18 tests passed, including incorrect pool/group/source/grant refusal and legacy missing-warrant refusal; sampled peak260012KiB and cleanup verified. Scoring, fixed population/denominators and grade rules are unchanged. [belief: cc]
+
+Fresh five-second quarter verification found q0/q1 waiting0/0 and q2/q3 waiting2/2 with exact actual48–71/72–95 arguments and zero active PIP grants. Mean CPU utilization including SMT siblings was2.13%,4.69%,3.80%,3.47%; queue placement does not establish useful inference progress. None of60 previously retired IDs reappeared. Full snapshot is bound by the placement artifact's durable reference. [belief: cc]
+
+
+### 2026-10-30 06:00 native entry and split-storage checkpoint
+
+- Current turn published and keeper-accepted heavyR7 and HSF13 split-storage successors, preserving native budgets and independent150GiB floors. The exact target controls and cleanup qualified both packets; parent cohort/quality/full-host comparisons remain incomplete. PIP split family is staged with persistent checkpoint write custody and private host runtime libraries; real smoke awaits the current timing grant. EVL9 source/runtime port is in preparation. FA4R8 original05:36 resource refusal is filed separately from later grants.
+  - [belief: cc] [Filing and publication evidence](../../artifacts/compute/results-filing-20261030-0600.json).
+
+
+At05:58:40Z HSF13 normal A1 had completed warmup, six four-stream waves and restore. All211 during-driver samples recorded KFD and positiveVRAM; latest serving sample52.18GB. Serving had drained while the captured profiler process remained live in native trace export. Full A1/B/A2 remains incomplete; grant ownership is not substituted for native evidence. Canonical launcher log now hardlinks the actual keeper stdout inode. [Live native proof](../../artifacts/compute/results-filing-20261030-0600.json). [belief: cc]

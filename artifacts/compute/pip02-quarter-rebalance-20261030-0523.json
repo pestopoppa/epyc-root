@@ -1,0 +1,24 @@
+{
+  "observed_waiting": {
+    "q0": 0,
+    "q1": 0,
+    "q2": 2,
+    "q3": 2
+  },
+  "retired_count": 7,
+  "proofs": [
+    {
+      "path": "/mnt/raid0/llm/tmp/compute-flags/ready/withdrawn/codex3-pip-rebalance-0523-20261030/RETIRE.json",
+      "sha256": "c040a2a121fb542e10ebed9ba32a817a27981746d9c011ee45d685427778d0fe"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/compute-flags/ready/withdrawn/codex3-pip-rebalance-0523-20261030/FOUR-PLACEMENTS.json",
+      "sha256": "972677cf1be3409cfb11c0c8867cf811f5605884f3d3b235bc1ff1804ef09f94"
+    }
+  ],
+  "note": "Original source/output retained. This is queue placement evidence, not model progress or a scientific result.",
+  "latest_live_snapshot": {
+    "path": "/mnt/raid0/llm/tmp/codex3-filing-hsf-yarn-0530-20261030/quarter-live-snapshot.json",
+    "sha256": "b1d313f8031a1f481f8aaefdd77d736b5a3e94d7d4695016643ddba7c083ee7d"
+  }
+}

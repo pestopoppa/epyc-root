@@ -342,3 +342,25 @@ No TEDS, quality, adoption or full-cohort verdict. Exact native paths, grants an
 Each original event was isolated by its exact start/end log block and attempt capture hashes; request/response body and lineage hashes and source pins were checked, and any later rearm was excluded. These are region-request counts, not complete-page, whole-cohort, TEDS or adoption results. Preserve all original requests and any unknowns without redraw. Full native paths and hashes: [durable original audit references](../../artifacts/compute/results-filing-20261030-0415.json); sampled guard peak 36,240 KiB, cleanup verified.
 
 Prospective R13 source projection is published in research commit569b3b6336f0: exact source registry, nine permitted producer IDs and their27 exact shard bindings, all existing native request/grant/finish checks retained. Fifteen actual tests pass, including rejection of old R4 origins missing their original warrant fields. No scoring formula, population, denominator or grade changed; no missing historical warrant was backfilled. [belief: cc]
+
+
+### 2026-10-30 overdue original-event filing (HIL, Paddle R14, FA4 and DCA)
+
+Correction to the earlier R14 admission inference: R14 did receive actual CPU grants; a manifest output estimate alone does not establish admission refusal. Original events for pool0, pool2, pool1 and pool3 each contain native `TimeoutError: admission`, `reason: disk floor`, `factory: null` partial records and zero capture-bound region starts or finishes. Pool1 and pool3 each have two separately recorded original events. Later attempts, including native compute, are separate. No per-grant credit sample or cohort-quality conclusion is established. Original filing deadlines had elapsed before this audit. [Native event audit](../../artifacts/compute/results-filing-20261030-0520.json). [belief: cc]
+
+
+2026-10-30 05:26Z operator quarter rebalance: withdrew seven captured own ungranted PIP pollers and verified all dead, preserving native outputs and source. Actual remaining waiting registrations are q0=0, q1=0, q2=2 and q3=2. Retained pool0/pool2 on q2 and pool1/head on q3; own armed manifests and staged row artifacts now name those exact regions with unchanged verified launcher hashes. No scheduler queue, grant, or canonical FILLERS edits. A separately declared pool3 successor is being prepared to replace the head registration within the same two-item q3 cap; it is not yet smoke-qualified or published. [Placement receipts](../../artifacts/compute/pip02-quarter-rebalance-20261030-0523.json). [belief: cc]
+
+
+2026-10-30 05:33Z: research source projection `55e24b6fd2dc` pushed and verified for exactly four R15 producer IDs, all 49 declared groups and their 146 shards, including the two-shard tail. Parent supervised 18 tests passed, including incorrect pool/group/source/grant refusal and legacy missing-warrant refusal; sampled peak260012KiB and cleanup verified. Scoring, fixed population/denominators and grade rules are unchanged. [belief: cc]
+
+Fresh five-second quarter verification found q0/q1 waiting0/0 and q2/q3 waiting2/2 with exact actual48–71/72–95 arguments and zero active PIP grants. Mean CPU utilization including SMT siblings was2.13%,4.69%,3.80%,3.47%; queue placement does not establish useful inference progress. None of60 previously retired IDs reappeared. Full snapshot is bound by the placement artifact's durable reference. [belief: cc]
+
+
+### 2026-10-30 06:05 original EVL, Paddle and YaRN resource events
+
+- Paddle R15 pool1 original grant ended 05:53:51Z rc75. Its `[8,9,10]` native attempt recorded `TimeoutError: admission`, `reason=disk floor`, `factory=null`; no region starts were bound to that attempt's capture hash. Prior group evidence and later rearm events are distinct. No whole-cohort quality verdict. [Native event audit](../../artifacts/compute/results-filing-20261030-0605.json).
+  - [belief: cc] Original native records and unchanged criteria are linked above.
+
+
+PIP split-storage R22 published all four disjoint logical pools: pool0/pool2 targetq2 and pool1/pool3 targetq3, maximum two queued offers per quarter. One identical-outer61.026s native control produced five matched HTTP responses with durable result markers,5.508GB sampled RSS, rc75/partial and verified descendant drain. Sampled native Micron growth442368bytes and RAID metadata12288bytes; each declared per-grant budget remains1GiB Micron and0.125GiB RAID above independent150GiB floors. The exact original read-only measurement recipe uses the source-pinned v9 binary10125, explicitly distinguished from production-store v10 version10303. Original checkpoint bytes and unknowns remain retained; missing lock metadata was initialized with same-inode flock and directory fsync. Individual publications followed natural old-producer boundaries, with no aggregate-capacity publication gate. The49 original group starts cover730 pages; the25-page head is separate, and this is not a whole-cohort completion or TEDS verdict. [Publication/native proof references](../../artifacts/compute/results-filing-20261030-0605.json). [belief: cc]
