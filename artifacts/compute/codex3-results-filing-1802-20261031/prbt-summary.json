@@ -1,0 +1,51 @@
+{
+  "captured_at": "2026-10-31T18:02:58.986336+00:00",
+  "row_id": "codex3-prbt4-r1-20261031",
+  "end": "2026-10-31T17:37:24Z",
+  "rc": 1,
+  "class": "harness",
+  "scientific_verdict": null,
+  "parent_open": true,
+  "tick_authorized": false,
+  "native_failure": "region-lock.sh: line 3: cd: /mnt/micron/codex3-lanes/orchestrator: No such file or directory",
+  "result_path": "/mnt/raid0/llm/tmp/codex3-next-gpu-prep-20261031/results/FINAL.json",
+  "result_exists_at_capture": false,
+  "records": [
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-next-gpu-prep-20261031/ws58-launcher.out",
+      "capsule": "prbt/ws58-launcher.out",
+      "sha256": "77bb3683bb221b4a9e46e6e443a34158e228023e35ec082903136d24ce5af501",
+      "size": 840,
+      "mtime": 1793468244.8927429
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-next-gpu-prep-20261031/region-lock.sh",
+      "capsule": "prbt/region-lock.sh",
+      "sha256": "1cf8ac27caa5f8a562e99156663c14d7312dae455da026b906281c025806c331",
+      "size": 132,
+      "mtime": 1793407514.981096
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-next-gpu-prep-20261031/PREDECLARED.md",
+      "capsule": "prbt/PREDECLARED.md",
+      "sha256": "b8f7df378356e23df5603b4999081aa9cab436911984f4fd4b1484d6526391cd",
+      "size": 4840,
+      "mtime": 1793409816.544787
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/compute-flags/grants/codex3-prbt4-r1-20261031.ended",
+      "capsule": "prbt/codex3-prbt4-r1-20261031.ended",
+      "sha256": "61cbbd176fd8a0bcb463fc50b66999a2f0fbf773797961ff84897155508d4085",
+      "size": 188,
+      "mtime": 1793468244.8896677
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/compute-flags/ready/armed/codex3-prbt4-r1-20261031.json",
+      "capsule": null,
+      "sha256": "60bffb48d67ac40d8e02544e502ab52eacc6c308e57f25749c336d7d28ecf7b1",
+      "size": 4105,
+      "mtime": 1793410234.4582384,
+      "publication_scope": "original manifest retained privately; SHA-256 locator only"
+    }
+  ]
+}
