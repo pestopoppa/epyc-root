@@ -1,0 +1,320 @@
+{
+  "accounting": {
+    "campaign_nominal_items": 120,
+    "cells": [
+      {
+        "arm": "A0",
+        "item_id": "oolong_synth@131072#617060046",
+        "status": "unknown"
+      },
+      {
+        "arm": "A0",
+        "item_id": "oolong_synth@131072#617060047",
+        "status": "ok"
+      },
+      {
+        "arm": "A0",
+        "item_id": "oolong_synth@131072#617060048",
+        "status": "unexposed"
+      },
+      {
+        "arm": "A0",
+        "item_id": "oolong_synth@131072#617060049",
+        "status": "unexposed"
+      },
+      {
+        "arm": "A0",
+        "item_id": "oolong_synth@131072#617060050",
+        "status": "unexposed"
+      },
+      {
+        "arm": "A0",
+        "item_id": "oolong_synth@131072#617060051",
+        "status": "unexposed"
+      },
+      {
+        "arm": "A0",
+        "item_id": "oolong_synth@131072#617060052",
+        "status": "unexposed"
+      },
+      {
+        "arm": "A0",
+        "item_id": "oolong_synth@131072#617060053",
+        "status": "unexposed"
+      },
+      {
+        "arm": "A0",
+        "item_id": "oolong_synth@131072#617060054",
+        "status": "unknown"
+      },
+      {
+        "arm": "A0",
+        "item_id": "oolong_synth@131072#617060055",
+        "status": "unexposed"
+      },
+      {
+        "arm": "A0",
+        "item_id": "oolong_synth@131072#617060056",
+        "status": "unexposed"
+      },
+      {
+        "arm": "A0",
+        "item_id": "oolong_synth@131072#717070046",
+        "status": "unexposed"
+      },
+      {
+        "arm": "A0",
+        "item_id": "oolong_synth@131072#717070047",
+        "status": "unexposed"
+      },
+      {
+        "arm": "A0",
+        "item_id": "oolong_synth@131072#717070048",
+        "status": "unexposed"
+      },
+      {
+        "arm": "A0",
+        "item_id": "oolong_synth@131072#717070049",
+        "status": "unexposed"
+      },
+      {
+        "arm": "A0",
+        "item_id": "oolong_synth@131072#717070050",
+        "status": "unexposed"
+      },
+      {
+        "arm": "A0",
+        "item_id": "oolong_synth@131072#717070051",
+        "status": "unexposed"
+      },
+      {
+        "arm": "A0",
+        "item_id": "oolong_synth@131072#717070052",
+        "status": "unexposed"
+      },
+      {
+        "arm": "A0",
+        "item_id": "oolong_synth@131072#717070053",
+        "status": "unexposed"
+      },
+      {
+        "arm": "A0",
+        "item_id": "oolong_synth@131072#717070054",
+        "status": "unexposed"
+      },
+      {
+        "arm": "A0",
+        "item_id": "oolong_synth@131072#717070055",
+        "status": "unexposed"
+      },
+      {
+        "arm": "A0",
+        "item_id": "oolong_synth@131072#717070056",
+        "status": "unexposed"
+      },
+      {
+        "arm": "A0",
+        "item_id": "oolong_synth@131072#717070057",
+        "status": "unexposed"
+      },
+      {
+        "arm": "A0",
+        "item_id": "oolong_synth@131072#717070058",
+        "status": "unexposed"
+      },
+      {
+        "arm": "A0",
+        "item_id": "oolong_synth@131072#717070059",
+        "status": "unexposed"
+      },
+      {
+        "arm": "A0",
+        "item_id": "oolong_synth@131072#717070060",
+        "status": "unexposed"
+      },
+      {
+        "arm": "A0",
+        "item_id": "oolong_synth@131072#717070061",
+        "status": "unexposed"
+      },
+      {
+        "arm": "A0",
+        "item_id": "oolong_synth@131072#717070062",
+        "status": "unexposed"
+      },
+      {
+        "arm": "A0",
+        "item_id": "oolong_synth@131072#717070063",
+        "status": "unexposed"
+      },
+      {
+        "arm": "A0",
+        "item_id": "oolong_synth@131072#717070064",
+        "status": "unexposed"
+      },
+      {
+        "arm": "A1",
+        "item_id": "oolong_synth@131072#617060046",
+        "status": "unexposed"
+      },
+      {
+        "arm": "A1",
+        "item_id": "oolong_synth@131072#617060047",
+        "status": "unexposed"
+      },
+      {
+        "arm": "A1",
+        "item_id": "oolong_synth@131072#617060048",
+        "status": "unexposed"
+      },
+      {
+        "arm": "A1",
+        "item_id": "oolong_synth@131072#617060049",
+        "status": "unexposed"
+      },
+      {
+        "arm": "A1",
+        "item_id": "oolong_synth@131072#617060050",
+        "status": "unexposed"
+      },
+      {
+        "arm": "A1",
+        "item_id": "oolong_synth@131072#617060051",
+        "status": "unexposed"
+      },
+      {
+        "arm": "A1",
+        "item_id": "oolong_synth@131072#617060052",
+        "status": "unexposed"
+      },
+      {
+        "arm": "A1",
+        "item_id": "oolong_synth@131072#617060053",
+        "status": "unexposed"
+      },
+      {
+        "arm": "A1",
+        "item_id": "oolong_synth@131072#617060054",
+        "status": "unexposed"
+      },
+      {
+        "arm": "A1",
+        "item_id": "oolong_synth@131072#617060055",
+        "status": "unexposed"
+      },
+      {
+        "arm": "A1",
+        "item_id": "oolong_synth@131072#617060056",
+        "status": "unexposed"
+      },
+      {
+        "arm": "A1",
+        "item_id": "oolong_synth@131072#717070046",
+        "status": "unexposed"
+      },
+      {
+        "arm": "A1",
+        "item_id": "oolong_synth@131072#717070047",
+        "status": "unexposed"
+      },
+      {
+        "arm": "A1",
+        "item_id": "oolong_synth@131072#717070048",
+        "status": "unexposed"
+      },
+      {
+        "arm": "A1",
+        "item_id": "oolong_synth@131072#717070049",
+        "status": "unexposed"
+      },
+      {
+        "arm": "A1",
+        "item_id": "oolong_synth@131072#717070050",
+        "status": "unexposed"
+      },
+      {
+        "arm": "A1",
+        "item_id": "oolong_synth@131072#717070051",
+        "status": "unexposed"
+      },
+      {
+        "arm": "A1",
+        "item_id": "oolong_synth@131072#717070052",
+        "status": "unexposed"
+      },
+      {
+        "arm": "A1",
+        "item_id": "oolong_synth@131072#717070053",
+        "status": "unexposed"
+      },
+      {
+        "arm": "A1",
+        "item_id": "oolong_synth@131072#717070054",
+        "status": "unexposed"
+      },
+      {
+        "arm": "A1",
+        "item_id": "oolong_synth@131072#717070055",
+        "status": "unexposed"
+      },
+      {
+        "arm": "A1",
+        "item_id": "oolong_synth@131072#717070056",
+        "status": "unexposed"
+      },
+      {
+        "arm": "A1",
+        "item_id": "oolong_synth@131072#717070057",
+        "status": "unexposed"
+      },
+      {
+        "arm": "A1",
+        "item_id": "oolong_synth@131072#717070058",
+        "status": "unexposed"
+      },
+      {
+        "arm": "A1",
+        "item_id": "oolong_synth@131072#717070059",
+        "status": "unexposed"
+      },
+      {
+        "arm": "A1",
+        "item_id": "oolong_synth@131072#717070060",
+        "status": "unexposed"
+      },
+      {
+        "arm": "A1",
+        "item_id": "oolong_synth@131072#717070061",
+        "status": "unexposed"
+      },
+      {
+        "arm": "A1",
+        "item_id": "oolong_synth@131072#717070062",
+        "status": "unexposed"
+      },
+      {
+        "arm": "A1",
+        "item_id": "oolong_synth@131072#717070063",
+        "status": "unexposed"
+      },
+      {
+        "arm": "A1",
+        "item_id": "oolong_synth@131072#717070064",
+        "status": "unexposed"
+      }
+    ],
+    "counts": {
+      "error": 0,
+      "ok": 1,
+      "unexposed": 57,
+      "unknown": 2
+    },
+    "nominal_items": 30,
+    "planned_cells": 60
+  },
+  "failure": "RuntimeError: lock lost",
+  "partial": false,
+  "reason": "no newly captured exposure; no partial rearm",
+  "state": "needs_review",
+  "window": null
+}

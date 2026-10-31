@@ -479,3 +479,8 @@ YaRN 128K MI210 R1's original 05:26:22Z grant ended rc1 at `live grant/GPU/disk 
 ### JetLong paired diagnostic — 2026-10-31 08:05 UTC
 
 `codex-ni-jetlong-small4x-paired-20261030` ended rc 1: **FAILED-RUN, class harness**. The Y server requested 131072 context but capped its slot at 32768, and rejected the 130000-token prompt with HTTP 400. Its slot reported zero processed tokens; J was not attempted. Cleanup was verified. This is an operational failure, not zero recall or a historical comparison. Owner action: repair and validate the native context setup before a source-bound successor, preserving exposure and original fixture custody. [Native result and server evidence](../../artifacts/compute/codex3-allowner-native-0805-20261031/jetlong/). [belief: cc]
+
+
+### OOLONG S0 v33 admission — 2026-10-31 08:16 UTC
+
+`yarn-oolong-s0-host256-eligible28-v33-20261031` ended rc 78: **FAILED-RUN, class admission**. Native state is `needs_review` with `RuntimeError: lock lost`; this arises in the second owner-birth/lock-table verification, and the retained record does not identify which part changed. It recorded no new exposure and did not rearm. Retained accounting is one completed A0, two prior unknown A0, 27 unexposed A0 and 30 unexposed A1 cells. Keep the original 120-campaign and 30-S0-pair denominator, 28 eligible pairs and A0-first matching; no quality or full-cohort verdict follows. Owner action: inspect and repair lock custody before a new authorized continuation, preserving the two unknowns and never redrawing them. [Terminal and source evidence](../../artifacts/compute/codex3-yarn-v33-admission-0816-20261031/TERMINAL.json). [belief: cc]
