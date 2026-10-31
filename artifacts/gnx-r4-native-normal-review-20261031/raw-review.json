@@ -1,0 +1,306 @@
+{
+  "state": "PROPOSED_INDEPENDENT_RAW_DIAGNOSTIC_REVIEW",
+  "cases_verified": [
+    {
+      "name": "fresh-fixtures",
+      "raw_artifacts_match": true,
+      "captured_identities_absent_now": true
+    },
+    {
+      "name": "status",
+      "raw_artifacts_match": true,
+      "captured_identities_absent_now": true
+    },
+    {
+      "name": "context",
+      "raw_artifacts_match": true,
+      "captured_identities_absent_now": true
+    },
+    {
+      "name": "impact",
+      "raw_artifacts_match": true,
+      "captured_identities_absent_now": true
+    },
+    {
+      "name": "readonly",
+      "raw_artifacts_match": true,
+      "captured_identities_absent_now": true
+    },
+    {
+      "name": "source-closure",
+      "raw_artifacts_match": true,
+      "captured_identities_absent_now": true
+    },
+    {
+      "name": "fast-exit",
+      "raw_artifacts_match": true,
+      "captured_identities_absent_now": true
+    },
+    {
+      "name": "thread-overflow",
+      "raw_artifacts_match": true,
+      "captured_identities_absent_now": true
+    },
+    {
+      "name": "forbidden-child",
+      "raw_artifacts_match": true,
+      "captured_identities_absent_now": true
+    },
+    {
+      "name": "affinity",
+      "raw_artifacts_match": true,
+      "captured_identities_absent_now": true
+    },
+    {
+      "name": "deadline",
+      "raw_artifacts_match": true,
+      "captured_identities_absent_now": true
+    },
+    {
+      "name": "supervisor-kill",
+      "raw_artifacts_match": true,
+      "captured_identities_absent_now": true
+    },
+    {
+      "name": "argv-0",
+      "raw_artifacts_match": true,
+      "captured_identities_absent_now": true
+    },
+    {
+      "name": "argv-1",
+      "raw_artifacts_match": true,
+      "captured_identities_absent_now": true
+    },
+    {
+      "name": "argv-2",
+      "raw_artifacts_match": true,
+      "captured_identities_absent_now": true
+    },
+    {
+      "name": "argv-3",
+      "raw_artifacts_match": true,
+      "captured_identities_absent_now": true
+    },
+    {
+      "name": "argv-4",
+      "raw_artifacts_match": true,
+      "captured_identities_absent_now": true
+    },
+    {
+      "name": "argv-5",
+      "raw_artifacts_match": true,
+      "captured_identities_absent_now": true
+    },
+    {
+      "name": "argv-6",
+      "raw_artifacts_match": true,
+      "captured_identities_absent_now": true
+    },
+    {
+      "name": "argv-7",
+      "raw_artifacts_match": true,
+      "captured_identities_absent_now": true
+    },
+    {
+      "name": "argv-8",
+      "raw_artifacts_match": true,
+      "captured_identities_absent_now": true
+    },
+    {
+      "name": "argv-9",
+      "raw_artifacts_match": true,
+      "captured_identities_absent_now": true
+    },
+    {
+      "name": "argv-10",
+      "raw_artifacts_match": true,
+      "captured_identities_absent_now": true
+    },
+    {
+      "name": "argv-11",
+      "raw_artifacts_match": true,
+      "captured_identities_absent_now": true
+    },
+    {
+      "name": "argv-12",
+      "raw_artifacts_match": true,
+      "captured_identities_absent_now": true
+    },
+    {
+      "name": "argv-13",
+      "raw_artifacts_match": true,
+      "captured_identities_absent_now": true
+    },
+    {
+      "name": "argv-14",
+      "raw_artifacts_match": true,
+      "captured_identities_absent_now": true
+    },
+    {
+      "name": "argv-15",
+      "raw_artifacts_match": true,
+      "captured_identities_absent_now": true
+    },
+    {
+      "name": "env-LD_PRELOAD",
+      "raw_artifacts_match": true,
+      "captured_identities_absent_now": true
+    },
+    {
+      "name": "env-LD_LIBRARY_PATH",
+      "raw_artifacts_match": true,
+      "captured_identities_absent_now": true
+    },
+    {
+      "name": "env-LD_AUDIT",
+      "raw_artifacts_match": true,
+      "captured_identities_absent_now": true
+    },
+    {
+      "name": "env-NODE_OPTIONS",
+      "raw_artifacts_match": true,
+      "captured_identities_absent_now": true
+    },
+    {
+      "name": "env-NODE_EXTRA_CA_CERTS",
+      "raw_artifacts_match": true,
+      "captured_identities_absent_now": true
+    },
+    {
+      "name": "env-NODE_EXTRA_FUTURE",
+      "raw_artifacts_match": true,
+      "captured_identities_absent_now": true
+    },
+    {
+      "name": "env-GITNEXUS_HOME",
+      "raw_artifacts_match": true,
+      "captured_identities_absent_now": true
+    },
+    {
+      "name": "env-GITNEXUS_TEST_ANY",
+      "raw_artifacts_match": true,
+      "captured_identities_absent_now": true
+    },
+    {
+      "name": "env-GITNEXUS_UNREVIEWED",
+      "raw_artifacts_match": true,
+      "captured_identities_absent_now": true
+    }
+  ],
+  "source_manifest_unchanged": true,
+  "derivative_sha256": "7abd5b65c6b2e5a69092e9fd31caf75f513a9479b7b7aa07918088f6c20fd4b0",
+  "normal_controller_exit": 0,
+  "outer_engine_exit": 1,
+  "outer_engine_cause": "launch.sh omitted --complete-cmd; filler_run13.sh is_complete returns1 when empty then rc0 becomes rc1 incomplete",
+  "risk": {
+    "risk": "CRITICAL",
+    "impactedCount": 26,
+    "summary": {
+      "direct": 1,
+      "processes_affected": 3,
+      "modules_affected": 5
+    }
+  },
+  "open_original_facets": [
+    "owner-controlled real own-grant revocation",
+    "policy acceptance of derivative",
+    "R4",
+    "impact coverage table"
+  ],
+  "runtime_identity": {
+    "/usr/bin/true": {
+      "realpath": "/usr/bin/gnutrue",
+      "dev": 45,
+      "inode": 66094703,
+      "sha256": "998fcdcce800c702ee6f14bc357dcbf2b6bdf5f48e5f9f037b524063574969fa"
+    },
+    "/usr/bin/sleep": {
+      "realpath": "/usr/lib/cargo/bin/coreutils/sleep",
+      "dev": 45,
+      "inode": 66094559,
+      "sha256": "2a9b9ccf4e9724a6d6d8c97c835c9932223fbdefc9706fef9d0dfef7a9076739"
+    }
+  },
+  "review_affinity": [
+    128,
+    129
+  ],
+  "peak_rss_bytes": 38903808,
+  "review_does_not_rerun_native": true,
+  "input_sha256": {
+    "/mnt/raid0/llm/tmp/codex-ni-gnx-r2-boundary-finish-20261031/results/fresh-fixtures.envelope.json": "12ab6a4c0a2b4df903a21c3dcd0e76291df21fd5c3b7e7f9103bad946f430163",
+    "/mnt/raid0/llm/tmp/codex-ni-gnx-r2-boundary-finish-20261031/results/fresh-fixtures.placement.jsonl": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/mnt/raid0/llm/tmp/codex-ni-gnx-r2-boundary-finish-20261031/results/status.envelope.json": "cd9e80b2b15532dd9a278a4348c1c2799da9ae54c53e00a6dc0abc364adf611f",
+    "/mnt/raid0/llm/tmp/codex-ni-gnx-r2-boundary-finish-20261031/results/status.placement.jsonl": "457cbc83211df9bd960187dfceb1a49a08d6ea94c4209cbc9763801d58c4c911",
+    "/mnt/raid0/llm/tmp/codex-ni-gnx-r2-boundary-finish-20261031/results/context.envelope.json": "6cadd8ac52c3e2db0ac20da1eb60b0f18b0e2a9c0e367b395bf125bd83eb0636",
+    "/mnt/raid0/llm/tmp/codex-ni-gnx-r2-boundary-finish-20261031/results/context.placement.jsonl": "ae5cd06f9a0945ab2af1b7cc75b2c1de25662113400e7099f21bd531557ae323",
+    "/mnt/raid0/llm/tmp/codex-ni-gnx-r2-boundary-finish-20261031/results/impact.envelope.json": "f51b3aca2cde03bc247b6d8860966f40b1381303494a0ab691d2bf925a318e0c",
+    "/mnt/raid0/llm/tmp/codex-ni-gnx-r2-boundary-finish-20261031/results/impact.placement.jsonl": "91568288cd757147b62a46ab63bc7e00e11cf842bcdcc803ae46fd6841572132",
+    "/mnt/raid0/llm/tmp/codex-ni-gnx-r2-boundary-finish-20261031/results/readonly.envelope.json": "93300ea519deed8904a3f16366961731d6a3522882b9468c437d09b3e12d296d",
+    "/mnt/raid0/llm/tmp/codex-ni-gnx-r2-boundary-finish-20261031/results/readonly.placement.jsonl": "1c37a170d64a2b297e84cd019278faabc51379e129f25c415b8cdd11e69e9347",
+    "/mnt/raid0/llm/tmp/codex-ni-gnx-r2-boundary-finish-20261031/results/source-closure.envelope.json": "476118fc3985cfe9a4065fc415360a9b78f8816fe42493cc93b9b9ec30ead0d8",
+    "/mnt/raid0/llm/tmp/codex-ni-gnx-r2-boundary-finish-20261031/results/source-closure.placement.jsonl": "bc3a5a2ef81c8606ce9c30c25cb9502629018494b8f811bb8d52f74c2bc8f1a3",
+    "/mnt/raid0/llm/tmp/codex-ni-gnx-r2-boundary-finish-20261031/results/fast-exit.envelope.json": "d7978c67d56373fe5127cf6aa1fe36e01ff9091737d2baf343bb06d547e3a580",
+    "/mnt/raid0/llm/tmp/codex-ni-gnx-r2-boundary-finish-20261031/results/fast-exit.placement.jsonl": "bc71ddd1682b694f2d4b8035597d368efe961cc57940df0ba7823c6cdb50c38d",
+    "/mnt/raid0/llm/tmp/codex-ni-gnx-r2-boundary-finish-20261031/results/thread-overflow.envelope.json": "e666d9d7b47f2c059a99c61426685bbb4f193816e42cf636dd1b107e6679e42d",
+    "/mnt/raid0/llm/tmp/codex-ni-gnx-r2-boundary-finish-20261031/results/thread-overflow.placement.jsonl": "4ce40987e4ae73f96fa54d2cf1e70a10daac1b9c05cb8e6f013393132f89a02f",
+    "/mnt/raid0/llm/tmp/codex-ni-gnx-r2-boundary-finish-20261031/results/forbidden-child.envelope.json": "cd2df9145bc914f9e3b7dc59fc08cfbde168ec185225c55af3d43eb617aa5e55",
+    "/mnt/raid0/llm/tmp/codex-ni-gnx-r2-boundary-finish-20261031/results/forbidden-child.placement.jsonl": "b125fb027fc237df923704b1c58e2e1a3443ef1f162c59bcd988b0c8b0d9c982",
+    "/mnt/raid0/llm/tmp/codex-ni-gnx-r2-boundary-finish-20261031/results/affinity.envelope.json": "24faa6ef96ba2df9fbab9ff692d1eb1c40ce9193cfba64e355f318bce4f0dc3d",
+    "/mnt/raid0/llm/tmp/codex-ni-gnx-r2-boundary-finish-20261031/results/affinity.placement.jsonl": "bf52e7c8947b04db0e482e4bfdc5c4117114d9c7e18e68c238227273d63bd412",
+    "/mnt/raid0/llm/tmp/codex-ni-gnx-r2-boundary-finish-20261031/results/deadline.envelope.json": "14f4968a661b3e38c6d124933b5801c05bca56eb57c03a874811cf3ec8b1156f",
+    "/mnt/raid0/llm/tmp/codex-ni-gnx-r2-boundary-finish-20261031/results/deadline.placement.jsonl": "f2f3195d581601a2b9f86e9622e637c12369d6e715f5087a09aa675ff8163574",
+    "/mnt/raid0/llm/tmp/codex-ni-gnx-r2-boundary-finish-20261031/results/supervisor-kill.envelope.json": "f87d020b648e2719f5de14fca9414cfc1e5fa4ce65f1a3fb8087a1607e697df9",
+    "/mnt/raid0/llm/tmp/codex-ni-gnx-r2-boundary-finish-20261031/results/supervisor-kill.placement.jsonl": "ac1dae69ba6e1445c8a95d92c13913a9fce43120fd85f80aeb9ff97e22ce92f1",
+    "/mnt/raid0/llm/tmp/codex-ni-gnx-r2-boundary-finish-20261031/results/argv-0.envelope.json": "d07d280824d7a4ee010e6c6820b91cd4dc4a4e479d59f2c0bd6df7d1cef52254",
+    "/mnt/raid0/llm/tmp/codex-ni-gnx-r2-boundary-finish-20261031/results/argv-0.placement.jsonl": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/mnt/raid0/llm/tmp/codex-ni-gnx-r2-boundary-finish-20261031/results/argv-1.envelope.json": "852d5026de825883b01361153df59ac1033771b52017e31bc305e12c941ac10a",
+    "/mnt/raid0/llm/tmp/codex-ni-gnx-r2-boundary-finish-20261031/results/argv-1.placement.jsonl": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/mnt/raid0/llm/tmp/codex-ni-gnx-r2-boundary-finish-20261031/results/argv-2.envelope.json": "e799718a37ba607f539a57a0788532f7b7f4f52ff866079250ab56d8dfb4fddd",
+    "/mnt/raid0/llm/tmp/codex-ni-gnx-r2-boundary-finish-20261031/results/argv-2.placement.jsonl": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/mnt/raid0/llm/tmp/codex-ni-gnx-r2-boundary-finish-20261031/results/argv-3.envelope.json": "8fdabd0ceb300d40c04e228f70f9ecdb85cc695a28352f5f3a24758ffed4e7a7",
+    "/mnt/raid0/llm/tmp/codex-ni-gnx-r2-boundary-finish-20261031/results/argv-3.placement.jsonl": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/mnt/raid0/llm/tmp/codex-ni-gnx-r2-boundary-finish-20261031/results/argv-4.envelope.json": "9080d42e3dbd1ea9515adbd6fde1f47b146175175575f72c321c0ef91ff08390",
+    "/mnt/raid0/llm/tmp/codex-ni-gnx-r2-boundary-finish-20261031/results/argv-4.placement.jsonl": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/mnt/raid0/llm/tmp/codex-ni-gnx-r2-boundary-finish-20261031/results/argv-5.envelope.json": "d6880ef916a1efb58c1b5a494b6df40040fd309b41d8491b67048993d322d9fe",
+    "/mnt/raid0/llm/tmp/codex-ni-gnx-r2-boundary-finish-20261031/results/argv-5.placement.jsonl": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/mnt/raid0/llm/tmp/codex-ni-gnx-r2-boundary-finish-20261031/results/argv-6.envelope.json": "80ac1025c95e50be1a6d5f2de3caf865038b533ae8e3d5d3d11386d4a417e662",
+    "/mnt/raid0/llm/tmp/codex-ni-gnx-r2-boundary-finish-20261031/results/argv-6.placement.jsonl": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/mnt/raid0/llm/tmp/codex-ni-gnx-r2-boundary-finish-20261031/results/argv-7.envelope.json": "ba8c88bbac9527ea9929f44da9859e8d6671e717f526d8db1a5564fcbe87b3bf",
+    "/mnt/raid0/llm/tmp/codex-ni-gnx-r2-boundary-finish-20261031/results/argv-7.placement.jsonl": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/mnt/raid0/llm/tmp/codex-ni-gnx-r2-boundary-finish-20261031/results/argv-8.envelope.json": "c7cbc085371c88753a82ce07b302a5aa6d8a9b15e66884bba5d50914c329ad29",
+    "/mnt/raid0/llm/tmp/codex-ni-gnx-r2-boundary-finish-20261031/results/argv-8.placement.jsonl": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/mnt/raid0/llm/tmp/codex-ni-gnx-r2-boundary-finish-20261031/results/argv-9.envelope.json": "5826bbc1e9738b93e032c341b5270385162ceba1d72f8ed987836742e0c29f5b",
+    "/mnt/raid0/llm/tmp/codex-ni-gnx-r2-boundary-finish-20261031/results/argv-9.placement.jsonl": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/mnt/raid0/llm/tmp/codex-ni-gnx-r2-boundary-finish-20261031/results/argv-10.envelope.json": "6be781dfa61deee9f7a792cfd0854f721b0df382435033ad9de7d092f09cbb91",
+    "/mnt/raid0/llm/tmp/codex-ni-gnx-r2-boundary-finish-20261031/results/argv-10.placement.jsonl": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/mnt/raid0/llm/tmp/codex-ni-gnx-r2-boundary-finish-20261031/results/argv-11.envelope.json": "69dcfbb65cbbdb971707b0a1fa20624b64e80f0f42ff7f902cdefef8a45ba7b0",
+    "/mnt/raid0/llm/tmp/codex-ni-gnx-r2-boundary-finish-20261031/results/argv-11.placement.jsonl": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/mnt/raid0/llm/tmp/codex-ni-gnx-r2-boundary-finish-20261031/results/argv-12.envelope.json": "d4985c388c4986ca704a46819fdf5cf309cea6c112af1a0f31850721a66d8a92",
+    "/mnt/raid0/llm/tmp/codex-ni-gnx-r2-boundary-finish-20261031/results/argv-12.placement.jsonl": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/mnt/raid0/llm/tmp/codex-ni-gnx-r2-boundary-finish-20261031/results/argv-13.envelope.json": "d5b9bd6a38add2bfb613c2786e646fc766f63b2895a3602b0b67f9adf042bcd6",
+    "/mnt/raid0/llm/tmp/codex-ni-gnx-r2-boundary-finish-20261031/results/argv-13.placement.jsonl": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/mnt/raid0/llm/tmp/codex-ni-gnx-r2-boundary-finish-20261031/results/argv-14.envelope.json": "e34fe831d934355516c12d412ef87ad0556347166b36dd6e6e2c11c066d9fe78",
+    "/mnt/raid0/llm/tmp/codex-ni-gnx-r2-boundary-finish-20261031/results/argv-14.placement.jsonl": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/mnt/raid0/llm/tmp/codex-ni-gnx-r2-boundary-finish-20261031/results/argv-15.envelope.json": "011adc9f93092c57e9cca19365c02c440333e77117fb46ef1f999e97fce69b52",
+    "/mnt/raid0/llm/tmp/codex-ni-gnx-r2-boundary-finish-20261031/results/argv-15.placement.jsonl": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/mnt/raid0/llm/tmp/codex-ni-gnx-r2-boundary-finish-20261031/results/env-LD_PRELOAD.envelope.json": "e69b10e1b3266e78faff0a35a0f87711cf6fb42ed87945d711199d2659b3b508",
+    "/mnt/raid0/llm/tmp/codex-ni-gnx-r2-boundary-finish-20261031/results/env-LD_PRELOAD.placement.jsonl": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/mnt/raid0/llm/tmp/codex-ni-gnx-r2-boundary-finish-20261031/results/env-LD_LIBRARY_PATH.envelope.json": "77e52ffa489492d8b9cef8019bbfe16a3301fa393f95064f591adabd3bf4f199",
+    "/mnt/raid0/llm/tmp/codex-ni-gnx-r2-boundary-finish-20261031/results/env-LD_LIBRARY_PATH.placement.jsonl": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/mnt/raid0/llm/tmp/codex-ni-gnx-r2-boundary-finish-20261031/results/env-LD_AUDIT.envelope.json": "ec3b3ccb59114204394c604afc7bbf8fe9b7cfdc1085ccf85d2431bb2fcdba4f",
+    "/mnt/raid0/llm/tmp/codex-ni-gnx-r2-boundary-finish-20261031/results/env-LD_AUDIT.placement.jsonl": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/mnt/raid0/llm/tmp/codex-ni-gnx-r2-boundary-finish-20261031/results/env-NODE_OPTIONS.envelope.json": "cd6d30a0aa5d2d3f7cbb6bf8c60a629fbdea11350313b8ed34689c5701eee916",
+    "/mnt/raid0/llm/tmp/codex-ni-gnx-r2-boundary-finish-20261031/results/env-NODE_OPTIONS.placement.jsonl": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/mnt/raid0/llm/tmp/codex-ni-gnx-r2-boundary-finish-20261031/results/env-NODE_EXTRA_CA_CERTS.envelope.json": "56a8856729dcff7baedfcbff3d0055bf84126a6daf1fe28677ff944192f3d893",
+    "/mnt/raid0/llm/tmp/codex-ni-gnx-r2-boundary-finish-20261031/results/env-NODE_EXTRA_CA_CERTS.placement.jsonl": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/mnt/raid0/llm/tmp/codex-ni-gnx-r2-boundary-finish-20261031/results/env-NODE_EXTRA_FUTURE.envelope.json": "da09bfac9a3475136a100e506cc243b68f362272e38146b3a6ce53df02d870de",
+    "/mnt/raid0/llm/tmp/codex-ni-gnx-r2-boundary-finish-20261031/results/env-NODE_EXTRA_FUTURE.placement.jsonl": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/mnt/raid0/llm/tmp/codex-ni-gnx-r2-boundary-finish-20261031/results/env-GITNEXUS_HOME.envelope.json": "5c090fdf615b7b76692ed7cd891d624e20c63a04cf8e088d461747e0e81caf63",
+    "/mnt/raid0/llm/tmp/codex-ni-gnx-r2-boundary-finish-20261031/results/env-GITNEXUS_HOME.placement.jsonl": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/mnt/raid0/llm/tmp/codex-ni-gnx-r2-boundary-finish-20261031/results/env-GITNEXUS_TEST_ANY.envelope.json": "a15f4e05db8c89e4d72edc58dcb4b0a9d08073466cdd73a84abdbe92e80e069f",
+    "/mnt/raid0/llm/tmp/codex-ni-gnx-r2-boundary-finish-20261031/results/env-GITNEXUS_TEST_ANY.placement.jsonl": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/mnt/raid0/llm/tmp/codex-ni-gnx-r2-boundary-finish-20261031/results/env-GITNEXUS_UNREVIEWED.envelope.json": "d03545181224df2e1247ca217f6c4072dfa0e90bcc52c46b505b5faf422aaa25",
+    "/mnt/raid0/llm/tmp/codex-ni-gnx-r2-boundary-finish-20261031/results/env-GITNEXUS_UNREVIEWED.placement.jsonl": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  }
+}
