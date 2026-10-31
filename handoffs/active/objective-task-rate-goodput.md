@@ -271,10 +271,11 @@ instrument's composition load-bearing in a way it never was under tokens/second.
   MAIN accepted bounded source/evidence: [review](../../artifacts/ni08/rtg23-w9-display-source-20261007/README.md).
       fields — the same sentinel class, left as a follow-up by coordinator ruling
       (`src/autopilot_core/planner_evidence.py:521`) (found 2026-09-14, noninf sweep).
-- [ ] **W10 — find out why the live `pareto_archive` is empty** (`state["pareto_archive"]` has no keys), so
+- [x] **W10 — find out why the live `pareto_archive` is empty** (`state["pareto_archive"]` has no keys), so ✅ 2026-10-31 [belief: cc] [source: APP 3c3e016c0f8a49e238c376a1f38493adbae74b40; artifact: artifacts/engineering/w10-archive-authority-20261031/README.md; historical closure hygiene, not quota]
       every count in RTG-23's table is journal replay rather than the live frontier: either expected
       post-flip epoch fencing or a silent loss (`orchestration/autopilot_state.json`) (found 2026-09-14,
       noninf sweep).
+  - The answer was already recorded by ROOT `49af91a00d5f79e08c8cd66f8ddaf79a973d5c01`: the 2026-08-10 epoch excludes every prior journal trial through #1505. A 2026-10-31 read-only strict report on retained canonical inputs agrees (`authorized_empty_current_era`, no current-era rows, no legacy state cache). Journal authority removes that cache; no running AutoPilot was observed at this audit, so this is not a claim about a running process or later data. [Evidence](../../artifacts/engineering/w10-archive-authority-20261031/README.md). [belief: cc]
 
 *Declined 2026-09-14: "no quality floor / admission gate exists anywhere in `src/autopilot_core/`" (`quality_floor`
 / `min_quality` grep returns only the replay report's local `QUALITY_FLOOR = 1.0`) — not filed because creating one

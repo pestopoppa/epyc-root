@@ -1,0 +1,5 @@
+# W10 archive authority read-only audit
+
+On 2026-10-31 the current APP read-only `archive_authority_report.py` was run in strict JSON mode against the canonical state and journal. It reported `match`, authorized empty current era, zero current-era objective/trial rows, last journal trial 1505, state trial counter 1506, and no state archive cache. The epoch boundary is 1786378983.880697 (2026-08-10 UTC); the existing 2026-09-16 ROOT record identifies the last journal trial as 2026-08-09. ROOT `49af91a00d5f79e08c8cd66f8ddaf79a973d5c01` had already documented that reason; this is closure hygiene, not a new code implementation or quota item.
+
+APP `3c3e016c0f8a49e238c376a1f38493adbae74b40` implements journal authority and removal of the legacy state cache. The audit does not establish that an AutoPilot process is running; a process listing found none at this boundary. The state and journal SHA-256 after the read were respectively `3679fae563972c236d61ac93747f13681019494fd52e3db565dec1aedd958c6e` and `1c5a665922de5c81c53cc6dd4218a9597123c1a1d42347344104683758f70dbc`. Neither input was edited. No inferred guarantee is made for later state or in-memory processes.
