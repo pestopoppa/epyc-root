@@ -1,9 +1,9 @@
 {
   "session_id": "intake-ws58-20261031",
   "started_at": "2026-10-31T21:30:00Z",
-  "last_checkpoint": "2026-10-31T23:40:00Z",
-  "stage": 2,
-  "phase": "stage2-closeout-complete",
+  "last_checkpoint": "2026-11-01T02:00:00Z",
+  "stage": 3,
+  "phase": "stage3-plan-drafted",
   "lane": "/mnt/raid0/llm/worktrees/intake-ws58-20261031",
   "branch": "intake/ws58-20261031",
   "topic": "ws58 mixed batch: Soft-MTP, ThinkingCap Qwen3.8-Flash-Next, LiquidAI LFM3 audio/omni, NCM, triton/ptx tooling, ontologies, agent-loop folding, 23 operator URLs",
@@ -69078,5 +69078,12 @@
     "declines_recorded_in": "bearing entries dive_corrections (declines_w1..w4.json)",
     "surfaced_total": 47
   },
-  "dive_artifact_audit": "clean: all dive artifacts under /mnt/raid0/llm/tmp/dive-ws58-20261031/ (raw, dive/<group>, out, scripts, briefs); one stray SPEC curl write in /workspace moved by the agent within a minute; one empty /tmp/x from a second-reader agent removed by main."
+  "dive_artifact_audit": "clean: all dive artifacts under /mnt/raid0/llm/tmp/dive-ws58-20261031/ (raw, dive/<group>, out, scripts, briefs); one stray SPEC curl write in /workspace moved by the agent within a minute; one empty /tmp/x from a second-reader agent removed by main.",
+  "stage3_plan_draft": {
+    "path": "research/intake-stage3-plan-2026-10-31-ws58.md",
+    "sha256": "e34ea081ee3d955ad16a32c60895b51db9de1e3cdc655655bbf986923f6379dc",
+    "status": "PROPOSED, awaiting operator approval (relay via ws58); no handoff or index edit applied",
+    "builder": "/mnt/raid0/llm/tmp/dive-ws58-20261031/scripts/gen_plan.py",
+    "validator": "validate_intake.sh --plan-file/--session-file exit 0 (2026-11-01)"
+  }
 }
