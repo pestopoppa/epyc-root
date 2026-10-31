@@ -1,0 +1,12 @@
+launcher RUS3_DIAGNOSTIC=1
+host RUS3_DIAGNOSTIC=1
+static source/history passed; no model started
+2026-10-31T04:56:17Z [codex-hil15-s2-r13-pid-20261031] launcher up pid=4026892 class=cpu poll=45s grants=/mnt/raid0/llm/tmp/compute-flags/grants stop=/mnt/raid0/llm/tmp/hil15-s3-t1-repair-20261030/s2-r13-pid-20261031/STOP minwin=1800s ports=19433
+2026-10-31T04:57:02Z [codex-hil15-s2-r13-pid-20261031] RUS3_DIAGNOSTIC=1: legacy T1 dryrun admission bypassed; real-smoke receipt required
+2026-10-31T04:57:02Z [codex-hil15-s2-r13-pid-20261031] START regions=48-71 cpus=48-71 threads=24 gpu=0 end=2026-10-31T06:00Z
+[region-lock] acquiring regions ['q2'] as role='build' (timeout_s=3778.0) …
+[region-lock] held ['q2'] after 0.0s wait; running: /bin/bash /mnt/raid0/llm/tmp/hil15-s3-t1-repair-20261030/s2-r13-pid-20261031/engine/filler_run13.sh --inner --id codex-hil15-s2-r13-pid-20261031 --class cpu --cmd /bin/bash /mnt/raid0/llm/tmp/hil15-s3-t1-repair-20261030/s2-r13-pid-20261031/launch.sh --job --min-window 1800 --stop /mnt/raid0/llm/tmp/hil15-s3-t1-repair-20261030/s2-r13-pid-20261031/STOP --port 19433 --workdir /mnt/raid0/llm/tmp/hil15-s3-t1-repair-20261030/s2-r13-pid-20261031 --gpu-threads 184-191
+diagnostic inner: obsolete T1 resources receipt skipped; native grant and affinity guards retained
+host RUS3_DIAGNOSTIC=1
+job rc=64
+2026-10-31T04:57:05Z [codex-hil15-s2-r13-pid-20261031] ended rc=64 reason=job-rc-64:exited (grant deleted)

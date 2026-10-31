@@ -843,3 +843,7 @@ Flip boxes here. The owning session (ak-ds41-main) updates INF-81's `Next action
 boundaries to it, and workspace-ec reports G1 window grants on the bus. Append to `progress/YYYY-MM/`. On
 completion, compile the long-context lesson ("a surface at 300 tokens is blind to the regime production spends
 67–88% of decode wall in") into the wiki and the AutoKernel README, move this file to `completed/` and delete the row.
+
+### 2026-10-31 C5 CPU build R5 — post-link failure
+
+**FAILED-RUN, class harness:** `refactor-akxall8-c5-cpu-build-r5-20261031` ended rc127 on the host after the build logged 315/315 and linked `llama-server`: `build-job.sh` line 76 invoked unavailable `rg`. Source was `c72ec82f5417bb2937310326120f149b665e8400`; bounded evidence retains the build log and hashes of the resulting server and two libraries. The failing command precedes required knob/linkage checks, factual `IDENTITY.json` and the unenrolled target card, so the original full build qualification is incomplete. The earlier 04:23 `build-result.json` is a smoke cutoff receipt, not this run's completion. Owner action: repair and qualify the host post-build command and complete the original declared checks on an immutable successor; no timing, serving equivalence or keep follows. [Evidence](../../artifacts/compute/codex3-filing-c5-hil15-20261031-0502/). [belief: cc]

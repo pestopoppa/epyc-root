@@ -1,0 +1,22 @@
+launcher RUS3_DIAGNOSTIC=1
+host RUS3_DIAGNOSTIC=1
+complete unit 14
+{'retained': {'retained_accepted': 32, 'retained_unknown': [[10, 2], [11, 1], [12, 1]], 'eligible_unexposed': 10, 'denominator': 45}, 'resume': {'slot': 'unit15/slot1', 'status': 'preserved_unknown_incomplete', 'directory_count': 18, 'file_count': 24, 'readset_sha256': '4567f0621fa25dab3127ba3c9ec490eb1bef513d3ce458fda89d0cd7c8d54707'}, 'only_eligible': [[15, 2]]}
+2026-10-31T04:52:07Z [codex-hil15-s0-micron-v12-20261031] launcher up pid=3939432 class=cpu poll=45s grants=/mnt/raid0/llm/tmp/compute-flags/grants stop=/mnt/raid0/llm/tmp/hil15-s0-v12-slot2-20261031/STOP minwin=1800s ports=19180
+2026-10-31T04:52:52Z [codex-hil15-s0-micron-v12-20261031] diagnostic admission: legacy T1 proof receipt not required
+2026-10-31T04:52:52Z [codex-hil15-s0-micron-v12-20261031] START regions=48-71 cpus=48-71 threads=24 gpu=0 end=2026-10-31T05:52Z
+[region-lock] acquiring regions ['q2'] as role='build' (timeout_s=3548.0) …
+[region-lock] held ['q2'] after 0.0s wait; running: /bin/bash /mnt/raid0/llm/tmp/hil15-s0-v12-slot2-20261031/engine-private/filler_run13.sh --inner --id codex-hil15-s0-micron-v12-20261031 --class cpu --cmd bash /mnt/raid0/llm/tmp/hil15-s0-v12-slot2-20261031/launch.sh --job --min-window 1800 --stop /mnt/raid0/llm/tmp/hil15-s0-v12-slot2-20261031/STOP --port 19180 --workdir /mnt/raid0/llm/tmp/hil15-s0-v12-slot2-20261031 --gpu-threads 184-191
+DRYRUN_RESOURCES {"affinity": [48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71], "cgroup": "0::/", "cgroup_memory_max": "max", "process_limit_gib": 64.0, "reserved_ram_gib": 64.0, "rlimits": {"AS": [-1, -1], "DATA": [-1, -1], "NOFILE": [524288, 524288], "RSS": [-1, -1]}}
+RESOURCE_PASS id=codex-hil15-s0-micron-v12-20261031 scope=normal-grant
+launcher RUS3_DIAGNOSTIC=1
+host RUS3_DIAGNOSTIC=1
+complete unit 13
+complete unit 14
+complete unit 14
+complete unit 14
+complete unit 14
+{"collection_exhausted": true, "full_complete": false, "known": 41, "unknown": 4, "unexposed": 0, "original_denominator": 45, "unknown_identity": [[10, 2], [11, 1], [12, 1], [15, 1]], "new_terminal_slot": [15, 2], "native_grade": null}
+job rc=0
+2026-10-31T04:55:37Z [codex-hil15-s0-micron-v12-20261031] ended rc=0 reason=complete (grant deleted)
+2026-10-31T04:55:37Z [codex-hil15-s0-micron-v12-20261031] ALL DONE: wrote /mnt/raid0/llm/tmp/compute-flags/grants/codex-hil15-s0-micron-v12-20261031.complete, row marked COMPLETE; exiting for good
