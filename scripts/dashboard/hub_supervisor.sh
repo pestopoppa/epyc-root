@@ -143,6 +143,9 @@ HUB_PIDFILE="${LOG_DIR}/hub_supervisor_hub.pid"
 # script, so it resolves even when EPYC_ROOT is unset.
 # shellcheck source=./daemon_provenance.sh
 source "$(cd "$(dirname "${BASH_SOURCE[0]}")/../coordination" && pwd)/daemon_provenance.sh"
+# Identity and health are separate: an unknown probe must never authorize restart.
+source "$(cd "$(dirname "${BASH_SOURCE[0]}")/../coordination" && pwd)/observer_guard.sh"
+og_init hub_supervisor
 
 # The hub is stdlib-only, so any python3 runs it; prefer the interpreter the
 # stack manager uses so the relaunched process matches the managed one.
@@ -174,24 +177,98 @@ log() {
 }
 
 # --------------------------------------------------------------------------- #
-# Health probe — true iff /health answers 200 with a "status"/"ok" body
+# Health: 0 healthy, 1 confirmed unhealthy, 3 unable to evaluate.
 # --------------------------------------------------------------------------- #
 health_ok() {
-  local body
-  body="$(curl -fsS --max-time "${HEALTH_TIMEOUT}" \
-          "http://${HUB_HOST}:${HUB_PORT}${HEALTH_PATH}" 2>/dev/null)" || return 1
-  case "${body}" in
-    *'"status"'*'ok'*) return 0 ;;
-    *) return 1 ;;
+  local body rc=0
+  command -v curl >/dev/null 2>&1 || return 3
+  body="$(curl --noproxy '*' -fsS --max-time "${HEALTH_TIMEOUT}" \
+          "http://${HUB_HOST}:${HUB_PORT}${HEALTH_PATH}" 2>/dev/null)" || rc=$?
+  case "${rc}" in
+    0)
+      # Only a concrete top-level status string can judge health. A malformed
+      # response or missing/wrong-type status is a failed observation, not down.
+      rc=0
+      "${HUB_PYTHON}" -c '
+import json, sys
+try:
+    value = json.load(sys.stdin)
+except (ValueError, UnicodeError):
+    sys.exit(3)
+if not isinstance(value, dict) or not isinstance(value.get("status"), str):
+    sys.exit(3)
+sys.exit(0 if value["status"] == "ok" else 1)
+' <<< "${body}" || rc=$?
+      case "${rc}" in 0|1) return "${rc}" ;; *) return 3 ;; esac
+      ;;
+    7|22) return 1 ;;  # refused connection or a concrete HTTP error response
+    *) return 3 ;;     # timeout, missing tool, DNS/permission/protocol failure
   esac
 }
 
-# 0 iff /health fails on TWO probes HEALTH_CONFIRM_DELAY_S apart. A hub that is
-# merely slow for one probe (host under load) must not be SIGTERMed for it.
+# Two independent, read-only local endpoint identity channels. Neither names a
+# kill target. The launch manifest must agree with the watched endpoint first;
+# otherwise a closed WRONG port would be indistinguishable from a dead hub.
+hub_observe() {
+  local state rc=0 listener http_code http_rc=0
+  og_round_begin
+  resolve_hub_spec
+  if [[ "${HUB_SPEC_SOURCE}" != manifest || "${HUB_M_PORT:-}" != "${HUB_PORT}" \
+        || "${HUB_M_HEALTH_PATH:-}" != "${HEALTH_PATH}" \
+        || ! "${HUB_HOST}" =~ ^(127\.0\.0\.1|localhost|::1)$ ]]; then
+    og_channel endpoint unavailable "manifest/endpoint mismatch or unresolved launch spec"
+  else
+    listener="$("${HUB_PYTHON}" - "${HUB_HOST}" "${HUB_PORT}" "${HEALTH_TIMEOUT}" <<'PY_SOCKET'
+import socket,sys
+try:
+    with socket.create_connection((sys.argv[1],int(sys.argv[2])),float(sys.argv[3])): pass
+except ConnectionRefusedError: print('absent')
+except (OSError,ValueError): print('unavailable')
+else: print('present')
+PY_SOCKET
+    )" || listener=unavailable
+    og_channel tcp "${listener}"
+    if command -v curl >/dev/null 2>&1; then
+      http_code="$(curl --noproxy '*' -sS --max-time "${HEALTH_TIMEOUT}" -o /dev/null -w '%{http_code}' \
+          "http://${HUB_HOST}:${HUB_PORT}${HEALTH_PATH}" 2>/dev/null)" || http_rc=$?
+      case "${http_rc}" in
+        0) [[ "${http_code}" =~ ^[1-5][0-9][0-9]$ ]] \
+             && og_channel http present || og_channel http unavailable "invalid HTTP status" ;;
+        7) og_channel http absent ;;
+        *) og_channel http unavailable "curl rc=${http_rc}" ;;
+      esac
+    else
+      og_channel http unavailable "curl missing"
+    fi
+  fi
+  state="$(og_verdict)" || rc=$?
+  [[ "${state}" == present ]] && og_note_sighting
+  printf '%s\n' "${state}"
+  return "${rc}"
+}
+
+cmd_observe() {
+  local state rc=0
+  state="$(hub_observe)" || rc=$?
+  printf 'state=%s\n' "${state}"
+  return "${rc}"
+}
+
+# 0 only after TWO confirmed unhealthy probes; 1 healthy/transient; 3 blind.
 hub_down_confirmed() {
-  health_ok && return 1
-  sleep "${HEALTH_CONFIRM_DELAY_S}"
-  health_ok && { log "transient /health failure — second probe healthy, no action"; return 1; }
+  local state rc health_rc attempt
+  for attempt in 1 2; do
+    rc=0; state="$(hub_observe)" || rc=$?
+    if [[ "${rc}" -eq 3 ]]; then
+      og_alarm "$(og_why)"; return 3
+    fi
+    health_rc=0; health_ok || health_rc=$?
+    case "${health_rc}" in
+      0) og_clear; return 1 ;;
+      3) og_alarm "health probe unavailable (timeout/tool/transport); no corrective action"; return 3 ;;
+    esac
+    [[ "${attempt}" -eq 2 ]] || sleep "${HEALTH_CONFIRM_DELAY_S}"
+  done
   return 0
 }
 
@@ -199,7 +276,9 @@ wait_health() {
   # Poll /health for up to $1 seconds; return 0 as soon as healthy.
   local deadline=$(( SECONDS + ${1:-$STARTUP_TIMEOUT} ))
   while (( SECONDS < deadline )); do
-    if health_ok; then return 0; fi
+    local rc=0; health_ok || rc=$?
+    [[ "${rc}" -eq 0 ]] && return 0
+    [[ "${rc}" -eq 3 ]] && return 3
     sleep 1
   done
   return 1
@@ -385,6 +464,7 @@ record_hub_pid() {
 restart_hub() {
   kill_wedged_hub || true
   start_hub || return 1
+  og_note_launch
   if wait_health "${STARTUP_TIMEOUT}"; then
     log "hub healthy after restart"
     record_hub_pid || true
@@ -430,7 +510,12 @@ cmd_status() {
   if health_ok; then
     echo "hub    : HEALTHY on http://${HUB_HOST}:${HUB_PORT}${HEALTH_PATH}"
   else
-    echo "hub    : DOWN (no healthy /health on :${HUB_PORT})"
+    local rc=$?
+    if [[ "${rc}" -eq 3 ]]; then
+      echo "hub    : UNOBSERVABLE (health probe unavailable on :${HUB_PORT})"
+    else
+      echo "hub    : UNHEALTHY (no healthy /health on :${HUB_PORT})"
+    fi
   fi
   local hp
   hp="$(hub_pids)"; hp="${hp% }"
@@ -745,7 +830,9 @@ cmd_once() {
   refuse_noncanonical_home
   acquire_lock
   run_hygiene_tick
-  if ! hub_down_confirmed; then
+  local rc=0; hub_down_confirmed || rc=$?
+  [[ "${rc}" -eq 3 ]] && return 3
+  if [[ "${rc}" -eq 1 ]]; then
     reconcile_hub_pid
     # Same healthy-path sequence as cmd_loop (view refresh, sync, then stale-source
     # check), so a cron `once` covers the whole surface while the daemon is dead.
@@ -781,7 +868,12 @@ cmd_loop() {
       log "running stale code; restart from ${BASH_SOURCE[0]}"
     fi
     run_hygiene_tick
-    if health_ok; then
+    local rc=0; hub_down_confirmed || rc=$?
+    if [[ "${rc}" -eq 3 ]]; then
+      sleep "${POLL_INTERVAL}"
+      continue
+    fi
+    if [[ "${rc}" -eq 1 ]]; then
       reconcile_hub_pid
       # DEPLOYMENT (2026-08-28). These were missing here while `loop` is the mode
       # the long-lived supervisor actually uses. (2026-09-16: `cmd_once` now runs
@@ -794,10 +886,6 @@ cmd_loop() {
       # A HEALTHY hub can still be the wrong hub.
       check_hub_stale_source || true   # failure: next poll takes the unhealthy path
       backoff="${POLL_INTERVAL}"
-      sleep "${POLL_INTERVAL}"
-      continue
-    fi
-    if ! hub_down_confirmed; then
       sleep "${POLL_INTERVAL}"
       continue
     fi
@@ -860,14 +948,16 @@ usage() {
   cat <<EOF
 hub_supervisor.sh — userspace watchdog for the :${HUB_PORT} dashboard hub
 
-Usage: hub_supervisor.sh [loop|once|status|plan|help]
+Usage: hub_supervisor.sh [loop|once|observe|status|plan|help]
   loop    (default) supervise forever: poll /health, restart on failure w/ backoff
   once    one pass of loop: restart if down (two probes), else view refresh + sync + stale check
+  observe print three-state endpoint identity (exit 0/1/3), without corrective action
   status  print hub + supervisor liveness and exit
   plan    print the manifest-resolved launch spec and sync/stale verdicts (read-only)
   help    this message
 
-Never restarts a healthy hub. Only ever touches :${HUB_PORT} (never :8000).
+Restarts a confirmed unhealthy hub or a healthy hub serving stale source.
+An unobservable endpoint never authorizes corrective action. Only ever touches :${HUB_PORT} (never :8000).
 EOF
 }
 
@@ -875,6 +965,7 @@ main() {
   case "${1:-loop}" in
     loop)   cmd_loop ;;
     once)   cmd_once ;;
+    observe) cmd_observe ;;
     status) cmd_status ;;
     plan)   cmd_plan ;;
     help|-h|--help) usage ;;
