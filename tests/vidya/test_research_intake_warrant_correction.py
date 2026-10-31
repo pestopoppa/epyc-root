@@ -121,8 +121,25 @@ class CorrectionTests(unittest.TestCase):
             assertion={'retracts': self.targets[-1]['old_support_frame_id']},
             provenance={'method': 'someone-else'}, actor='someone-else',
             authority_scope='research-verification', created_at=AS_OF))
-        with self.assertRaises(ValueError): self.run_emit()
+        from fold import fold
+        target = self.targets[-1]['old_support_frame_id']
+        state = fold(self.ledger.frames, as_of=AS_OF)
+        self.assertNotIn(target, {fid for b in state.beliefs.values() for fid in b.retracted_support})
+        before = list(self.ledger.frames)
+        with self.assertRaises(ValueError) as caught:
+            self.run_emit()
+        self.assertEqual(caught.exception.args[0]['code'], 'unexpected_target_retraction')
+        self.assertEqual(self.ledger.frames, before)
         self.assertEqual(self.ledger.calls, 0)
+
+    def test_malformed_target_retraction_requires_review(self):
+        self.ledger.frames.append({'frame_type': FT_RETRACT, 'assertion': {
+            'retracts': self.targets[-1]['old_support_frame_id']}})
+        with self.assertRaises(ValueError) as caught:
+            self.run_emit()
+        self.assertEqual(caught.exception.args[0]['code'], 'unexpected_target_retraction')
+        self.assertEqual(self.ledger.calls, 0)
+
     def test_generated_frame_validation_is_before_first_append(self):
         original = a.make_frame
         def fail_last(**kwargs):

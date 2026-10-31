@@ -368,6 +368,18 @@ def fold(
     as_of: str,
     max_iterations: int | None = None,
 ) -> FoldResult:
+    """Fold an ordered frame sequence using authorized persisted retractions."""
+    return _fold_engine(frames, as_of=as_of, max_iterations=max_iterations,
+                        hypothetical_retractions=frozenset())
+
+
+def _fold_engine(
+    frames: Sequence[dict],
+    *,
+    as_of: str,
+    max_iterations: int | None,
+    hypothetical_retractions: frozenset[str],
+) -> FoldResult:
     """Fold an ordered frame sequence into belief state.
 
     `frames` must be in ledger order. `as_of` is the explicit evaluation time -- required, never
@@ -402,6 +414,29 @@ def fold(
     superseded_judgments: list[str] = []
     ignored: dict[str, int] = {}
 
+    # Resolve targets over the supplied frontier, without inventing temporal ordering.
+    # Byte-identical duplicate frames represent the same target; conflicting copies do not.
+    targets: dict[str, dict | None] = {}
+    for candidate in frames:
+        fid = candidate.get("frame_id")
+        if isinstance(fid, str) and fid:
+            if fid not in targets:
+                targets[fid] = candidate
+            elif targets[fid] != candidate:
+                targets[fid] = None
+
+    def same_actor(frame: dict, target: object) -> bool:
+        if not isinstance(target, str) or not target:
+            return False
+        original = targets.get(target)
+        if original is None:
+            return False
+        pub = frame.get("pubinfo")
+        original_pub = original.get("pubinfo")
+        actor = pub.get("actor") if isinstance(pub, dict) else None
+        owner = original_pub.get("actor") if isinstance(original_pub, dict) else None
+        return isinstance(actor, str) and bool(actor.strip()) and actor == owner
+
     # Pass 1: collect retractions first, so a retracted support frame never enters the fold at
     # all. Zero-substitution on this carrier is exactly "the token is not there".
     # The frame -> claim index is built in the same walk: a retraction names the FRAME it removes,
@@ -430,8 +465,13 @@ def fold(
             # such frame: one retraction naming "" silently dropped every id-less support in the
             # ledger and reported it as retracted_support [""]. A retraction must name exactly one
             # frame; naming nothing retracts nothing.
-            if isinstance(target, str) and target:
+            if same_actor(frame, target):
                 retracted.add(target)
+            else:
+                ignored["unauthorized_retraction"] = ignored.get("unauthorized_retraction", 0) + 1
+
+    # Hypothetical withdrawals exist only in this private computation; they are never frames.
+    retracted.update(hypothetical_retractions)
 
     # Corrections are collected with retractions, before interpretation, so a correction that was
     # already reviewed never marks anything. Without this the review flag is a one-way ratchet: a
@@ -706,6 +746,8 @@ def fold(
             moves.append(("supersession of", pubinfo.get("supersedes"),
                           pubinfo.get("supersedes_reason")))
         for verb, target, text in moves:
+            if not same_actor(frame, target):
+                continue
             if not isinstance(text, str) or not text.strip():
                 continue   # absence is recorded as absence; a reason is never invented on read
             raw = assertion.get("claim_id")

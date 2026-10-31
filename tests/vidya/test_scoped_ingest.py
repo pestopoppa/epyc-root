@@ -133,7 +133,7 @@ def test_withdrawn_claim_is_never_revived_or_rescoped():
     support = next(f for f in existing if f["frame_type"].endswith("evidence_supports_claim/v1"))
     existing.append(make_frame(frame_type=FT_RETRACT, assertion={"retracts": support["frame_id"]},
                                provenance={"method": "test", "reason": "withdrawn"},
-                               actor="test", authority_scope="measurement", created_at=T0))
+                               actor=support["pubinfo"]["actor"], authority_scope="measurement", created_at=T0))
     incoming = _frames(dataclasses.replace(old, applicability=dict(SCOPE)), T1)
     kept, report = scope_aware_frames(existing, incoming, as_of=AS_OF)
     assert kept == [] and "no live evidence" in report["refused"][0]["reason"]
