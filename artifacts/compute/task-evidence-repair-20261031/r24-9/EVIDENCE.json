@@ -1,0 +1,74 @@
+{
+  "schema": "epyc.task_evidence_integrity.v1",
+  "task_id": "R24-9",
+  "original_task_first_line": "- [x] **R24-9 \u2014 same-code re-measurement tripwire (rider on R22-3 (2)).** When a candidate's code-section hash \u2705 2026-10-30 [no-belief: source regression guard]",
+  "decision": "keep_checked",
+  "reason": "Existing10 native-comparison-object controls cover prior/new effect journaling and MeasurementInvalid beyond native floor; existing11-case CPU followup fixes code-manifest backend selection. Missing identities/floors remain unknown, no historical regrade or live excursion claim.",
+  "implementation": [
+    {
+      "repo": "epyc-inference-research",
+      "implementation_commit": "8b1cdb6fb8dd2255acf3f4194e690d1a23465510",
+      "reachable_from_published_origin_main": true,
+      "files": [
+        {
+          "path": "scripts/kernel_rnd/autokernel/loop/same_code_tripwire.py",
+          "sha256": "21408e57a88c184effdb541b505a03538ef976a2813cc1ff81f5557d1d32d0b0",
+          "git_url": "https://github.com/pestopoppa/epyc-inference-research/blob/8b1cdb6fb8dd2255acf3f4194e690d1a23465510/scripts/kernel_rnd/autokernel/loop/same_code_tripwire.py"
+        },
+        {
+          "path": "scripts/kernel_rnd/autokernel/loop/test_same_code_tripwire.py",
+          "sha256": "f867d0e6de9b033e0ed942242fd407f13e360513a671fb97952ba8bfca440edc",
+          "git_url": "https://github.com/pestopoppa/epyc-inference-research/blob/8b1cdb6fb8dd2255acf3f4194e690d1a23465510/scripts/kernel_rnd/autokernel/loop/test_same_code_tripwire.py"
+        }
+      ]
+    },
+    {
+      "repo": "epyc-inference-research",
+      "implementation_commit": "5412cae12ec806514f27f510eadf4206d4b0f9be",
+      "reachable_from_published_origin_main": true,
+      "files": [
+        {
+          "path": "scripts/kernel_rnd/autokernel/loop/same_code_tripwire.py",
+          "sha256": "62fec54b851472c7607759c1fc56ac72469e51cf799a25217c3b2f98249391fd",
+          "git_url": "https://github.com/pestopoppa/epyc-inference-research/blob/5412cae12ec806514f27f510eadf4206d4b0f9be/scripts/kernel_rnd/autokernel/loop/same_code_tripwire.py"
+        },
+        {
+          "path": "scripts/kernel_rnd/autokernel/loop/test_same_code_tripwire.py",
+          "sha256": "bb06dffda410111e1407d6ebe8d96c0dc290a9bbd6c5e2fccba711a0e41b2b46",
+          "git_url": "https://github.com/pestopoppa/epyc-inference-research/blob/5412cae12ec806514f27f510eadf4206d4b0f9be/scripts/kernel_rnd/autokernel/loop/test_same_code_tripwire.py"
+        }
+      ]
+    }
+  ],
+  "original_dates_preserved": true,
+  "evidence_only_hygiene_not_new_code_or_today_quota": true,
+  "no_retest_or_redate": true,
+  "prior_artifacts": [
+    {
+      "path": "/mnt/raid0/llm/worktrees/mains/codex-refactor-01a16fc3/artifacts/compute/refactor-r24-same-code-source-20261030.json",
+      "sha256": "e5f5c6786253115fcefcffcd74a0f484cdd109dce40eb91f5d1ded8cf27dd22d",
+      "bytes": 1074
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/refactor-01a16fc3/r24-same-code-tripwire-20261030/main-final-test.log",
+      "sha256": "5bda0972336e977131480bf95e7790c7d3811319f70def79deed2f64e22a0bf7",
+      "bytes": 2040
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/refactor-01a16fc3/r24-same-code-tripwire-20261030/cpu-followup-test.log",
+      "sha256": "aa5bf3211a4badd861ce6cc98402100286b807436ebc00ca6c67bb3c55608c9b",
+      "bytes": 591
+    }
+  ],
+  "retained_test_output": {
+    "path": "artifacts/compute/task-evidence-repair-20261031/r24-9/test-output.txt",
+    "sha256": "c1383f999c2787659e330ca3b1310699d03a749fc7977c4db80e9047dc42f04d",
+    "scope": "Original test stdout excerpt; supervisor metadata omitted and trailing whitespace removed; full original hash retained"
+  },
+  "task_text_and_dates_recovery": {
+    "first_line_metadata": "HTML comment only; reopened task changes checkbox only",
+    "visible_evidence": "separate delimited metadata sub-bullet after original paragraph",
+    "original_paragraph_sha256": "f7a5c62a86d143e6c96d2faef66ef6eacef4491cd93bc2b025682327aac9f132",
+    "metadata_strip_restores_original_paragraph_byte_identically": true
+  }
+}

@@ -2819,11 +2819,15 @@ R24-1/2/3/5/8/9 must trim to fit or raise the budget with a reason. Code citatio
       - **Keep-rate alarm:** when N consecutive measured candidates sit below zero, or no keep lands within a window,
         raise `operator_attention` and add a planner-visible evidence line.
       Retrodict both on runs 5-9 and 18. Sources: intake-1425#record, intake-1426#record. Zero compute.
-- [x] **R24-9 — same-code re-measurement tripwire (rider on R22-3 (2)).** When a candidate's code-section hash ✅ 2026-10-30 [no-belief: source regression guard]
+- [x] **R24-9 — same-code re-measurement tripwire (rider on R22-3 (2)).** When a candidate's code-section hash ✅ 2026-10-30 [no-belief: source regression guard] <!-- evidence-integrity: Research `8b1cdb6fb8dd2255acf3f4194e690d1a23465510`, `5412cae12ec806514f27f510eadf4206d4b0f9be`; artifact: artifacts/compute/task-evidence-repair-20261031/r24-9/EVIDENCE.json; hygiene, not quota -->
       (`.text`+`.hip_fatbin`, the R22-3 basis) equals an already-measured one, log the new effect beside the old.
       Divergence beyond floor is an evaluator/session excursion, never a keep. Warrant: in LoongFlow's traces,
       byte-identical GDN-decode code scored 97 → 777 across a 7-day pause and was written up as a mechanism
       (intake-1427#record). Zero compute; journal logic only.
+
+  <!-- task-evidence-integrity:start R24-9 -->
+  - Evidence metadata (hygiene, not new quota): Research `8b1cdb6fb8dd2255acf3f4194e690d1a23465510`, `5412cae12ec806514f27f510eadf4206d4b0f9be`; [test/artifact](../../artifacts/compute/task-evidence-repair-20261031/r24-9/EVIDENCE.json).
+  <!-- task-evidence-integrity:end R24-9 -->
       - Research `8b1cdb6fb8dd2255acf3f4194e690d1a23465510` captures source code/work identity prospectively, journals the prior and new effects, and uses the existing `MeasurementInvalid` path before keep when divergence exceeds the current native floor. Missing identity/floor stays unknown. Ten current-source tests (native comparison objects), new-module Ruff and private-index promotion passed; no live excursion or historical regrade. [Evidence](../../artifacts/compute/refactor-r24-same-code-source-20261030.json).
 
       - [x] Bind plain CPU bench repeats to the CPU code manifest even without a direct-serving launch. ✅ 2026-10-30 Research `5412cae12ec806514f27f510eadf4206d4b0f9be`; eleven source-bound tests and new-module Ruff pass. This corrects source `8b1cdb6fb` choosing HIP for ordinary CPU bench calls; no historical verdict changed. [no-belief: backend dispatch source fix]
