@@ -1,0 +1,96 @@
+{
+  "schema": "epyc.refactor.yarn_cpu_host_preparation.v1",
+  "root_base": "3195c05f75f84e4af6b732a74f814dd4a2c9756a",
+  "id": "yarn-oolong-s3-host256-eligible27-v30-20261031",
+  "stage": "qualified launcher published; full27B scientific measurement remains OPEN",
+  "published_at": "2026-10-31T04:53:06.346748+00:00",
+  "READY_manifest_sha256": "776ab79a14c13c5514f144b5a75040b34b510bd12356228e49df850bfccd32cb",
+  "native_source_manifest_sha256": "bbda0457aaed3815959033a005c17a1c675267cc62b34e4693f0cca88cf938b3",
+  "scope": {
+    "shard": 3,
+    "official_original_denominator": 120,
+    "eligible_A0": 27,
+    "immutable_unknown_A0": 3,
+    "eligible_A1": 0,
+    "A1_gate": "successful matching A0 required",
+    "new_official_exposures": 0,
+    "RAM_GiB": 180,
+    "minimum_window_s": 42000,
+    "requested_window_s": 43200,
+    "study_grade": null,
+    "full_CPU_recipe": "same FFC CPU image, t24, ngl0, NUMA interleaveall; archived model/template/DSO/recipes unchanged"
+  },
+  "controls": {
+    "normal": {
+      "wall_s": 30.209,
+      "rc": 0,
+      "sampled_tree_RSS_GiB": 1.383,
+      "owned_children_drained": true,
+      "native_control_records": 1,
+      "control_unknown": 0,
+      "native_slot_active_near_cutoff": false,
+      "pass": true
+    },
+    "cutoff": {
+      "wall_s": 60.745,
+      "rc": 75,
+      "sampled_tree_RSS_GiB": 1.385,
+      "owned_children_drained": true,
+      "native_control_records": 16,
+      "control_unknown": 1,
+      "native_slot_active_near_cutoff": true,
+      "pass": true
+    }
+  },
+  "control_geometry": "0.6B canonical model;4000char prompt prefixes;full27B execution untested",
+  "preserved_negative_controls": "original25s cutoff timed out before native exposure; failed control remains protected",
+  "admission": "actual validator0refusals/0warnings; current keeper scan and read-only prearm metadata prefix; host source/storage checks; cross-filesystem pause negative",
+  "CPU_vs_NI141": "Same model/template/original120 prompt plan, distinct CPU binary4483bcfc/CPU DSO3f4edd2f/t24/ngl0/archived source versus NI141 GPU binary2b49713f/HIPf26a166b/ROCm0/nglall/fresh source7e7d; no pooling, replacement or retirement inferred",
+  "protected_raw_evidence": {
+    "PUBLICATION.json": {
+      "path": "/mnt/raid0/llm/tmp/yarn-oolong-s3-host-v30-20261031/PUBLICATION.json",
+      "sha256": "a53a239a47e68c572d88bbcc4ddffc0ec52adfcf7ac30127839c14470223edc1"
+    },
+    "QUALIFICATION.json": {
+      "path": "/mnt/raid0/llm/tmp/yarn-oolong-s3-host-v30-20261031/QUALIFICATION.json",
+      "sha256": "3f1e7ee5731d12020e2f849d8d5a700858f502147b3c61bf9880b25b41c3f566"
+    },
+    "HOST-MANIFEST.json": {
+      "path": "/mnt/raid0/llm/tmp/yarn-oolong-s3-host-v30-20261031/HOST-MANIFEST.json",
+      "sha256": "c67c17f984fb5e3950b81a19b8b7c1b45ccf940abf7d2affd11db3aae2e3f0dc"
+    },
+    "SCOPE-AND-SOURCE-CONTROLS.json": {
+      "path": "/mnt/raid0/llm/tmp/yarn-oolong-s3-host-v30-20261031/SCOPE-AND-SOURCE-CONTROLS.json",
+      "sha256": "d25aafd74414aa3c093964c18705cc82fa06d85b8b6f2f40392ad5966eb5b0d9"
+    },
+    "SCOPE-CONTROLS.log": {
+      "path": "/mnt/raid0/llm/tmp/yarn-oolong-s3-host-v30-20261031/SCOPE-CONTROLS.log",
+      "sha256": "8eaed08f4817494ae3a5b9ee393cad74f97dcfb3eba6f51dc4c2a8d0a3a5cc33"
+    },
+    "VALIDATOR.log": {
+      "path": "/mnt/raid0/llm/tmp/yarn-oolong-s3-host-v30-20261031/VALIDATOR.log",
+      "sha256": "da3e45b73abf6bd920ac617756fa57601da9834abf118afce5fef2fc6bf2070a"
+    },
+    "PREARM-FINAL.log": {
+      "path": "/mnt/raid0/llm/tmp/yarn-oolong-s3-host-v30-20261031/PREARM-FINAL.log",
+      "sha256": "209302715acea80e264ed459914ec1bf8509ce89e6dbe558bddbc0849a59a6fe"
+    },
+    "READY-SCAN.log": {
+      "path": "/mnt/raid0/llm/tmp/yarn-oolong-s3-host-v30-20261031/READY-SCAN.log",
+      "sha256": "c109817fdd886720d333f44400937f04e5fab337c5e8b5f230136bad3b036053"
+    },
+    "CPU-VS-NI141-IDENTITY.json": {
+      "path": "/mnt/raid0/llm/tmp/yarn-oolong-s3-host-v30-20261031/CPU-VS-NI141-IDENTITY.json",
+      "sha256": "de74f4c6b15e54aec153157d80c706bd8d2bf5c78c9a1e8d08f717f0cd2cbbc8"
+    }
+  },
+  "belief": "no-belief: preparation and cutoff controls only; no full scientific result or scientific parent task tick",
+  "actual_keeper_arming": {
+    "state": "armed",
+    "timestamp": "2026-10-31T04:58:22Z",
+    "raw_path": "/mnt/raid0/llm/tmp/compute-flags/ready/armed/yarn-oolong-s3-host256-eligible27-v30-20261031.json",
+    "captured_sha256": "7f7f1582bc37211a99158f91dba7e8f93208c1521e1cda1cf022239e6267f074",
+    "validator": "0refusals/0warnings",
+    "RAM_admitted_GiB": 180
+  }
+}
