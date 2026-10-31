@@ -153,6 +153,7 @@ non-executable format.
         traffic that is already running.
   - [ ] D-c2 — Decide D-c on D-c1's numbers, or close it if the measured re-derivation cost is
         negligible.
+  - **M-MP1 (monitor, 2026-10-30 intake) — pointer-only cross-session resume as a D-c variant.** Mainplane continues a session with one sentence plus the old session's log path and no summary (intake-2523). Our resume path returns summary + findings (`build_resume_context`, `src/api/routes/sessions.py:171`), and past-session search (`SQLiteSessionStore.search_sessions` / `search_by_embedding`, `src/session/sqlite_store.py:1449,1572`) is reachable only from the API/CLI, not the REPL. Trigger: D-c1 resumed-session numbers exist AND tool-output-compression TOC-MP-4 shows pointer-only recall >= summary+pointer. Then file a D-c arm that resumes from the log pointer alone and exposes past-session search to the REPL. No checkbox until the trigger fires.
 - [ ] D-d — **Curation layer.** An agent-facing annotate/pin call layered over the existing auto-save,
       plus comment-to-variable binding. Lowest priority — we already have `variable_lineage`.
   - **D-d acceptance (added 2026-09-26, research intake).**
