@@ -1,0 +1,12 @@
+AUTOKERNEL_PROPERTY_SELF_TEST suite_seed=71 sensitivity=1.000 specificity=1.000 planted=5 clean=5
+load_backend: failed to load /mnt/raid0/llm/kernels/builds/cpu-20261030-729599d69-c6/bin: /mnt/raid0/llm/kernels/builds/cpu-20261030-729599d69-c6/bin: cannot read file data: Is a directory
+[iqk] ACTIVE: ik_llama GEMM kernels engaged (first mul_mat type=3 activation=99 ne00=256)
+[iqk] ACTIVE: ik_llama GEMM kernels engaged (first mul_mat type=6 activation=99 ne00=256)
+[iqk] ACTIVE: ik_llama GEMM kernels engaged (first mul_mat type=7 activation=99 ne00=256)
+[iqk] ACTIVE: ik_llama GEMM kernels engaged (first mul_mat type=13 activation=99 ne00=256)
+[iqk] ACTIVE: ik_llama GEMM kernels engaged (first mul_mat type=16 activation=15 ne00=256)
+[iqk] ACTIVE: ik_llama GEMM kernels engaged (first mul_mat type=17 activation=15 ne00=256)
+[iqk] ACTIVE: ik_llama GEMM kernels engaged (first mul_mat type=22 activation=15 ne00=256)
+[iqk] ACTIVE: ik_llama GEMM kernels engaged (first mul_mat type=21 activation=15 ne00=256)
+[iqk] ACTIVE: ik_llama GEMM kernels engaged (first mul_mat type=23 activation=15 ne00=256)
+[iqk] ACTIVE: ik_llama GEMM kernels engaged (first mul_mat type=18 activation=15 ne00=256)

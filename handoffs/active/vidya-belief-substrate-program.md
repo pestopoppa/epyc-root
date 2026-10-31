@@ -2590,6 +2590,8 @@ RI-16's routing `stage_ms` is covered by VB-ROUTE-LAT above, not by a new task.
 
 ## VB-KVU-PF — KV prefix-fork program measurement sources (filed 2026-10-04, ak-ds41-main)
 
+- [ ] **VB-KVU-PF-KPF181-WIRE** — wire and verify prospective KPF-18.1 native capture; preserve every attempted and ambiguous cell, configuration and identity; refuse incomplete/tampered attestation, preserve unknowns, test real native records and pass the planning-context canary before calling it wired. No retrospective measurement invention or grading rule.
+
 - [ ] **VB-KVU-PF-CHAT-TRACE-WIRE** — capture the prospective KPF-18.3 chat attribution raw events and identities at write time; project only complete attested observations via existing `ClaimTuple.grade()`, refuse missing/tampered/mismatched inputs, preserve unknowns and pass the real planning-context canary before calling it wired. No new grading rule or historical backfill.
 
 - [ ] **VB-KVU-PF — write side + projection for RTG-58's measurement records** (CLAUDE.md *Belief Kernel*). Producers:
@@ -3962,3 +3964,5 @@ Unused NI Research/Orchestrator linked checkouts were retired through `scripts/s
 ## C6 served-shape Q4_K microbench source — 2026-10-31
 
 - [ ] **VB-C6-Q4-MICROBENCH-WIRE — project prospective C6 Q4_K native microbench captures through the existing measurement carrier/ladder and pass its planning-context canary.** Producer is `/mnt/raid0/llm/tmp/c6-35186-q4-microbench-prep-20261031/`: actual pinned 27B Q4_K tensor shapes plus a separately labeled synthetic Q4_K reference on the existing DS41 MXFP4 expert dimensions. Before each full calendar run, preserve instrument/model-header/case/recipe/source/image/seed/thread/grant/affinity identities; retain per-case native latency units and repeat coordinates plus raw hashes afterwards. Project observations only, using shared `claim_tuple.grade()`; do not invent a grading rule, missing input-byte identity, protocol/noise-floor, or historical warrant for R11 component controls. Acceptance: strict raw reread, incomplete/tampered/mismatched inputs refuse, source registry/reader coverage and planning-context canary. Existing G-AK op correctness and named serving-cell predicates remain separate. Source table: `scripts/vidya/adapters/README.md`.
+
+- [ ] **VB-C6-CPU-OPS-WIRE** — capture future C6 native per-op CPU run/source/binary identities, hashed stdout/stderr, seed, actual CPU/IQK environment and grant, with supported/unsupported counts at write time; project complete attestations through the existing seeded-operation source ladder and `ClaimTuple.grade()`. Refuse missing/tampered identities, preserve unsupported and unknown outcomes, and pass the real planning-context canary before calling it wired. Historical R3 remains a committed-conclusion observation; no new grading rule or historical backfill.

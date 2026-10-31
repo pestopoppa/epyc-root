@@ -1,0 +1,212 @@
+{
+  "schema": "c6.runtime.transport.v1",
+  "source_sha": "729599d69871181d67af715a4c2f9162d5153a2e",
+  "action": "cpu-ops",
+  "allocation": {
+    "id": "refactor-c6-cpu-ops-full-729599d69-20261031-r3",
+    "regions": "48-71",
+    "cpus": [
+      48,
+      49,
+      50,
+      51,
+      52,
+      53,
+      54,
+      55,
+      56,
+      57,
+      58,
+      59,
+      60,
+      61,
+      62,
+      63,
+      64,
+      65,
+      66,
+      67,
+      68,
+      69,
+      70,
+      71
+    ],
+    "deadline": 1793420130.0,
+    "memory_gib": 32,
+    "calendar_row": {
+      "gib": 32.0,
+      "class": "block-correctness"
+    }
+  },
+  "store_pair": {
+    "source_sha": "729599d69871181d67af715a4c2f9162d5153a2e",
+    "CPU_store_custody": true,
+    "paired_build_custody": false,
+    "same_source_pair_gate": "separate; not claimed here"
+  },
+  "argv": [
+    "/usr/bin/python3",
+    "-B",
+    "/mnt/raid0/llm/tmp/refactor-c6-cpu-ops-ready-20261031/worker.py",
+    "--action",
+    "cpu-ops",
+    "--cpu-store",
+    "/mnt/raid0/llm/kernels/builds/cpu-20261030-729599d69-c6",
+    "--gpu-store",
+    "/mnt/raid0/llm/kernels/builds/gpu-20261030-729599d69-c6",
+    "--out",
+    "/mnt/raid0/llm/tmp/refactor-c6-cpu-ops-ready-20261031/runs/cpu-ops-20261031T021821-239525"
+  ],
+  "status": "NATIVE_COMPLETE",
+  "gate_pass": null,
+  "qualification_only": false,
+  "process": {
+    "argv": [
+      "/usr/bin/python3",
+      "-B",
+      "/mnt/raid0/llm/tmp/refactor-c6-cpu-ops-ready-20261031/worker.py",
+      "--action",
+      "cpu-ops",
+      "--cpu-store",
+      "/mnt/raid0/llm/kernels/builds/cpu-20261030-729599d69-c6",
+      "--gpu-store",
+      "/mnt/raid0/llm/kernels/builds/gpu-20261030-729599d69-c6",
+      "--out",
+      "/mnt/raid0/llm/tmp/refactor-c6-cpu-ops-ready-20261031/runs/cpu-ops-20261031T021821-239525"
+    ],
+    "rc": 0,
+    "reason": null,
+    "elapsed_s": 524.6791070490144,
+    "sampled_peak_tree_rss_bytes": 9073614848,
+    "samples": 5195,
+    "children_drained": true,
+    "compiler_witness": [],
+    "interrupted_compilers": [],
+    "owned_pid_births": [
+      {
+        "pid": 239527,
+        "birth": 153557440
+      },
+      {
+        "pid": 239528,
+        "birth": 153557444
+      },
+      {
+        "pid": 239532,
+        "birth": 153557454
+      },
+      {
+        "pid": 239563,
+        "birth": 153557464
+      },
+      {
+        "pid": 239591,
+        "birth": 153557474
+      },
+      {
+        "pid": 239613,
+        "birth": 153557484
+      },
+      {
+        "pid": 2132542,
+        "birth": 153563238
+      },
+      {
+        "pid": 3480628,
+        "birth": 153567388
+      }
+    ],
+    "owned_process_argvs": [
+      {
+        "pid": 239527,
+        "birth": 153557440,
+        "argv": [
+          "/usr/bin/python3",
+          "-B",
+          "/mnt/raid0/llm/tmp/refactor-c6-cpu-ops-ready-20261031/worker.py",
+          "--action",
+          "cpu-ops",
+          "--cpu-store",
+          "/mnt/raid0/llm/kernels/builds/cpu-20261030-729599d69-c6",
+          "--gpu-store",
+          "/mnt/raid0/llm/kernels/builds/gpu-20261030-729599d69-c6",
+          "--out",
+          "/mnt/raid0/llm/tmp/refactor-c6-cpu-ops-ready-20261031/runs/cpu-ops-20261031T021821-239525"
+        ]
+      },
+      {
+        "pid": 239528,
+        "birth": 153557444,
+        "argv": []
+      },
+      {
+        "pid": 239532,
+        "birth": 153557454,
+        "argv": []
+      },
+      {
+        "pid": 239563,
+        "birth": 153557464,
+        "argv": []
+      },
+      {
+        "pid": 239591,
+        "birth": 153557474,
+        "argv": []
+      },
+      {
+        "pid": 239613,
+        "birth": 153557484,
+        "argv": [
+          "/mnt/raid0/llm/kernels/builds/cpu-20261030-729599d69-c6/bin/test-backend-ops",
+          "test",
+          "-b",
+          "CPU",
+          "-o",
+          "MUL_MAT",
+          "-j",
+          "1",
+          "--suite-seed",
+          "71",
+          "--autokernel-properties"
+        ]
+      },
+      {
+        "pid": 2132542,
+        "birth": 153563238,
+        "argv": [
+          "/mnt/raid0/llm/kernels/builds/cpu-20261030-729599d69-c6/bin/test-backend-ops",
+          "test",
+          "-b",
+          "CPU",
+          "-o",
+          "MUL_MAT_ID",
+          "-j",
+          "1",
+          "--suite-seed",
+          "71",
+          "--autokernel-properties"
+        ]
+      },
+      {
+        "pid": 3480628,
+        "birth": 153567388,
+        "argv": [
+          "/mnt/raid0/llm/kernels/builds/cpu-20261030-729599d69-c6/bin/test-backend-ops",
+          "test",
+          "-b",
+          "CPU",
+          "-o",
+          "FLASH_ATTN_EXT",
+          "-j",
+          "1",
+          "--suite-seed",
+          "71",
+          "--autokernel-properties"
+        ]
+      }
+    ]
+  },
+  "active_native_at_cutoff": null,
+  "partial": false
+}

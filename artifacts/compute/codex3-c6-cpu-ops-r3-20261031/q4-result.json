@@ -1,0 +1,306 @@
+{
+  "no_keep_or_serving_grade": true,
+  "pre_run_sha256": "1421a050e1917f14ba82009bad616c8f54f314c1550ccb2b8bef04315ecfd7f6",
+  "results": [
+    {
+      "cohort": "27b",
+      "component_seal_sha256": "c95b067d5e4c9dae692b1a48391d8f8461857866b5d05f676b07cfaae480f321",
+      "image": "candidate",
+      "outer_log_sha256": "960936e4ec21630d72d4c289168f5d920a775075262702302e2577fb64146618",
+      "result_sha256": "d9bbec4cce6f7873a0dfe0d93b9d1b36d9e5698c6b4f08a2ab65c9f68210201a",
+      "values": {
+        "case_count": 9,
+        "case_names": [
+          "served_q4km_27b_blk_3_ffn_gate_weight_n1",
+          "served_q4km_27b_blk_3_ffn_gate_weight_n8",
+          "served_q4km_27b_blk_3_ffn_gate_weight_n16",
+          "served_q4km_27b_blk_3_ffn_up_weight_n1",
+          "served_q4km_27b_blk_3_ffn_up_weight_n8",
+          "served_q4km_27b_blk_3_ffn_up_weight_n16",
+          "served_q4km_27b_blk_4_ffn_down_weight_n1",
+          "served_q4km_27b_blk_4_ffn_down_weight_n8",
+          "served_q4km_27b_blk_4_ffn_down_weight_n16"
+        ],
+        "purpose": "component timing only; no keep decision",
+        "results": {
+          "served_q4km_27b_blk_3_ffn_gate_weight_n1": {
+            "backend_name": "CPU",
+            "n_runs": 8772,
+            "time_us": 115.136229
+          },
+          "served_q4km_27b_blk_3_ffn_gate_weight_n16": {
+            "backend_name": "CPU",
+            "n_runs": 1169,
+            "time_us": 939.969204
+          },
+          "served_q4km_27b_blk_3_ffn_gate_weight_n8": {
+            "backend_name": "CPU",
+            "n_runs": 2197,
+            "time_us": 462.544379
+          },
+          "served_q4km_27b_blk_3_ffn_up_weight_n1": {
+            "backend_name": "CPU",
+            "n_runs": 8772,
+            "time_us": 116.195394
+          },
+          "served_q4km_27b_blk_3_ffn_up_weight_n16": {
+            "backend_name": "CPU",
+            "n_runs": 1169,
+            "time_us": 926.841745
+          },
+          "served_q4km_27b_blk_3_ffn_up_weight_n8": {
+            "backend_name": "CPU",
+            "n_runs": 2028,
+            "time_us": 501.718442
+          },
+          "served_q4km_27b_blk_4_ffn_down_weight_n1": {
+            "backend_name": "CPU",
+            "n_runs": 7740,
+            "time_us": 131.216537
+          },
+          "served_q4km_27b_blk_4_ffn_down_weight_n16": {
+            "backend_name": "CPU",
+            "n_runs": 1169,
+            "time_us": 915.209581
+          },
+          "served_q4km_27b_blk_4_ffn_down_weight_n8": {
+            "backend_name": "CPU",
+            "n_runs": 2028,
+            "time_us": 499.526134
+          }
+        },
+        "schema": "c6.35186.q4_cpu_perf_rows.v1"
+      }
+    },
+    {
+      "cohort": "27b",
+      "component_seal_sha256": "aacf92204c0acf9f16695bf1a01696cf09abd9375e65fba7f170ab314d015edd",
+      "image": "control",
+      "outer_log_sha256": "cbb3ce2138981e4957e2e2942997a78b81ad150c8de8c43ec5bb0762b869884f",
+      "result_sha256": "44a360a6c81feb25402f13639ad60173de92ff7abc6f11d314be1297762634bc",
+      "values": {
+        "case_count": 9,
+        "case_names": [
+          "served_q4km_27b_blk_3_ffn_gate_weight_n1",
+          "served_q4km_27b_blk_3_ffn_gate_weight_n8",
+          "served_q4km_27b_blk_3_ffn_gate_weight_n16",
+          "served_q4km_27b_blk_3_ffn_up_weight_n1",
+          "served_q4km_27b_blk_3_ffn_up_weight_n8",
+          "served_q4km_27b_blk_3_ffn_up_weight_n16",
+          "served_q4km_27b_blk_4_ffn_down_weight_n1",
+          "served_q4km_27b_blk_4_ffn_down_weight_n8",
+          "served_q4km_27b_blk_4_ffn_down_weight_n16"
+        ],
+        "purpose": "component timing only; no keep decision",
+        "results": {
+          "served_q4km_27b_blk_3_ffn_gate_weight_n1": {
+            "backend_name": "CPU",
+            "n_runs": 9460,
+            "time_us": 107.30814
+          },
+          "served_q4km_27b_blk_3_ffn_gate_weight_n16": {
+            "backend_name": "CPU",
+            "n_runs": 1002,
+            "time_us": 1093.0499
+          },
+          "served_q4km_27b_blk_3_ffn_gate_weight_n8": {
+            "backend_name": "CPU",
+            "n_runs": 2197,
+            "time_us": 467.249431
+          },
+          "served_q4km_27b_blk_3_ffn_up_weight_n1": {
+            "backend_name": "CPU",
+            "n_runs": 10320,
+            "time_us": 98.244089
+          },
+          "served_q4km_27b_blk_3_ffn_up_weight_n16": {
+            "backend_name": "CPU",
+            "n_runs": 1169,
+            "time_us": 960.153978
+          },
+          "served_q4km_27b_blk_3_ffn_up_weight_n8": {
+            "backend_name": "CPU",
+            "n_runs": 2197,
+            "time_us": 466.842968
+          },
+          "served_q4km_27b_blk_4_ffn_down_weight_n1": {
+            "backend_name": "CPU",
+            "n_runs": 9460,
+            "time_us": 107.218076
+          },
+          "served_q4km_27b_blk_4_ffn_down_weight_n16": {
+            "backend_name": "CPU",
+            "n_runs": 1002,
+            "time_us": 1054.096806
+          },
+          "served_q4km_27b_blk_4_ffn_down_weight_n8": {
+            "backend_name": "CPU",
+            "n_runs": 2028,
+            "time_us": 504.275641
+          }
+        },
+        "schema": "c6.35186.q4_cpu_perf_rows.v1"
+      }
+    },
+    {
+      "cohort": "ds41",
+      "component_seal_sha256": "a69349c7a17a97a2911cdb8069e2681b5b50d9a7de60ad2a4080477d0b2c7618",
+      "image": "candidate",
+      "outer_log_sha256": "b8c318b0f3a89f9446d6afdbc1b5593d12c7020501792863e0b3ff859c1e6c57",
+      "result_sha256": "4052d7bac076dd9556c884bd0109e57b93b2f76cb107305721fd657c90280d42",
+      "values": {
+        "purpose": "synthetic Q4 reference at actual MXFP4 1017 expert dimensions; no 1017 Q4 tensor or serving gate claim",
+        "results": [
+          {
+            "jsonl_sha256": "f90aba4aba9055facb322d82c13eafb99bc12077a21750510e7c170836a335ac",
+            "mode": "gateup",
+            "native_row": {
+              "bpw": 4.5,
+              "buf": "plain",
+              "bytes_per_node": 2547597312,
+              "copies": 4,
+              "expert_bytes": 6635520,
+              "fill_s": 0.25,
+              "footprint_mb": 10192,
+              "gbs_med": 87.69,
+              "k": 5120,
+              "label": "c6-35186-ds41-q4-ref-gateup",
+              "m": 2304,
+              "mode": "gateup",
+              "n": 512,
+              "n_alloc": 384,
+              "n_used": 6,
+              "reps": 15,
+              "status": "ok",
+              "threads": 24,
+              "uniq_experts": 383.933,
+              "us_med": 29053.921,
+              "us_min": 28732.885,
+              "us_p25": 28782.005,
+              "us_p75": 29245.928,
+              "wtype": "Q4_K"
+            },
+            "stderr_sha256": "de2d14db216fdbc65c105995de38e1bafe587271e882f66bd755a18d83c0c660",
+            "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          {
+            "jsonl_sha256": "c28f614d048d0241cc3396a23e682d10c4b17ec34034b26691f99f8f715a05d8",
+            "mode": "down",
+            "native_row": {
+              "bpw": 4.5,
+              "buf": "plain",
+              "bytes_per_node": 2546823168,
+              "copies": 4,
+              "expert_bytes": 6635520,
+              "fill_s": 0.32,
+              "footprint_mb": 10192,
+              "gbs_med": 90.5,
+              "k": 2304,
+              "label": "c6-35186-ds41-q4-ref-down",
+              "m": 5120,
+              "mode": "down",
+              "n": 512,
+              "n_alloc": 384,
+              "n_used": 6,
+              "reps": 15,
+              "status": "ok",
+              "threads": 24,
+              "uniq_experts": 383.817,
+              "us_med": 28141.327,
+              "us_min": 27147.174,
+              "us_p25": 27947.299,
+              "us_p75": 28247.482,
+              "wtype": "Q4_K"
+            },
+            "stderr_sha256": "e5c79dd0edc69fb7b9f9e59b07dc21b0eed4e87f7f0737ed314fa4374e14572b",
+            "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        ],
+        "schema": "c6.35186.ds41_q4_reference_component.v1",
+        "status": "COMPLETE_COMPONENT_ONLY",
+        "units": "us_med per MUL_MAT_ID node; process-level grouping, one process per mode"
+      }
+    },
+    {
+      "cohort": "ds41",
+      "component_seal_sha256": "e4be0febff6ff65c47304cce304972af2e8fc14e2dbbd4515277379849e09133",
+      "image": "control",
+      "outer_log_sha256": "b8c318b0f3a89f9446d6afdbc1b5593d12c7020501792863e0b3ff859c1e6c57",
+      "result_sha256": "bfaed1714244e872fb654f0b44f5c0773739c1e7cb380b5be7ac8c1b70cb8d3d",
+      "values": {
+        "purpose": "synthetic Q4 reference at actual MXFP4 1017 expert dimensions; no 1017 Q4 tensor or serving gate claim",
+        "results": [
+          {
+            "jsonl_sha256": "97b41cf183a338b3fe08cbf1ae09086fbd4b679607d914d8502b9d164d58cad0",
+            "mode": "gateup",
+            "native_row": {
+              "bpw": 4.5,
+              "buf": "plain",
+              "bytes_per_node": 2547597312,
+              "copies": 4,
+              "expert_bytes": 6635520,
+              "fill_s": 0.27,
+              "footprint_mb": 10192,
+              "gbs_med": 89.29,
+              "k": 5120,
+              "label": "c6-35186-ds41-q4-ref-gateup",
+              "m": 2304,
+              "mode": "gateup",
+              "n": 512,
+              "n_alloc": 384,
+              "n_used": 6,
+              "reps": 15,
+              "status": "ok",
+              "threads": 24,
+              "uniq_experts": 383.933,
+              "us_med": 28530.586,
+              "us_min": 28336.413,
+              "us_p25": 28410.644,
+              "us_p75": 28759.706,
+              "wtype": "Q4_K"
+            },
+            "stderr_sha256": "a7063f3c27a23dc397076282addfe55341466943cf2a72aae4b3eb013ee67e4a",
+            "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          {
+            "jsonl_sha256": "2f2df6de372ee39f3db858a4e16918e4306b1de5b7c3804c75a6ecfd72b16b83",
+            "mode": "down",
+            "native_row": {
+              "bpw": 4.5,
+              "buf": "plain",
+              "bytes_per_node": 2546823168,
+              "copies": 4,
+              "expert_bytes": 6635520,
+              "fill_s": 0.3,
+              "footprint_mb": 10192,
+              "gbs_med": 90.41,
+              "k": 2304,
+              "label": "c6-35186-ds41-q4-ref-down",
+              "m": 5120,
+              "mode": "down",
+              "n": 512,
+              "n_alloc": 384,
+              "n_used": 6,
+              "reps": 15,
+              "status": "ok",
+              "threads": 24,
+              "uniq_experts": 383.817,
+              "us_med": 28170.407,
+              "us_min": 27965.767,
+              "us_p25": 28124.816,
+              "us_p75": 28425.132,
+              "wtype": "Q4_K"
+            },
+            "stderr_sha256": "004eb6be006c812af3a6a78bf9826293a3e464ae6b6964a7c1d4a7af3f1a2bd7",
+            "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        ],
+        "schema": "c6.35186.ds41_q4_reference_component.v1",
+        "status": "COMPLETE_COMPONENT_ONLY",
+        "units": "us_med per MUL_MAT_ID node; process-level grouping, one process per mode"
+      }
+    }
+  ],
+  "schema": "c6.35186.q4_two_cohort_component_result.v1",
+  "status": "COMPLETE_MICROBENCH_ONLY"
+}
