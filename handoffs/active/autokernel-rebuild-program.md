@@ -1175,7 +1175,7 @@ Full session record: `progress/2026-08/2026-08-31-ak-rebuild-20260828.md`.
       (R21-L8); `llama-batched-bench` expresses parallel decode natively and is closer to the
       serving shape. Needs its own floor calibration (`--calibrate-surface` method) before any
       verdict may cite it; zero compute until then.
-- [x] **R21-1 — refresh the champion headline at STARTUP, not only per-advance.** ✅ 2026-10-30
+- [x] **R21-1 — refresh the champion headline at STARTUP, not only per-advance.** ✅ 2026-10-30 <!-- evidence-integrity: Research `bebe42b9a56d9cf6c951fc75a227c8666a194080`; artifact: artifacts/compute/task-evidence-repair-20261031/r21-1/EVIDENCE.json; hygiene, not quota -->
       Research main `bebe42b9a56d9cf6c951fc75a227c8666a194080` accepted the two-file closure
       (`scripts/kernel_rnd/autokernel/loop/run.py` + `test_startup_headline.py`; accepted patch
       SHA-256 `fbb2f4980eee6d2aaf0dcdb8230a3f59fd3262063ab9d1fcbfb85b11678139e2`). The ordinary
@@ -1189,6 +1189,10 @@ Full session record: `progress/2026-08/2026-08-31-ak-rebuild-20260828.md`.
       headline, reload, or performance result is claimed. Evidence:
       `artifacts/compute/refactor-r21-1-startup-headline-20261030.json`. [no-belief: code and test
       closure; no performance measurement]
+
+  <!-- task-evidence-integrity:start R21-1 -->
+  - Evidence metadata (hygiene, not new quota): Research `bebe42b9a56d9cf6c951fc75a227c8666a194080`; [test/artifact](../../artifacts/compute/task-evidence-repair-20261031/r21-1/EVIDENCE.json).
+  <!-- task-evidence-integrity:end R21-1 -->
 - [x] **R21-2 — promote the reconciliation A/B evidence out of volatile tmp.** ✅ 2026-09-01 —
       landed as research `2ee10ff5` (`artifacts/autokernel-champ-a2728701-ab/`, 24 files ≈1.4 MB:
       result JSON, `run_ab.py`, `run_ab.log`, 3 oracle logs, symdiff; regenerable dumps excluded),
