@@ -1,0 +1,72 @@
+{
+  "id": "codex3-ernie-typo20-20261031",
+  "owner": "codex3",
+  "priority_rank": 80,
+  "regions": "mi210_0,184-191",
+  "min_window_s": 1800,
+  "window_s": 7200,
+  "gib": 48,
+  "booking_class": "block-correctness",
+  "class": "diagnostic",
+  "decision_rule": "Diagnostic capture of all 20 original local EN/ZH prompts at 896 and 1024; retain each native image, exact settings, grant and failed/unknown attempt for separately attributed human typography review. No official benchmark, quality, product content-filter or promotion verdict; missing enhancer-on remains UNKNOWN.",
+  "enrollment": "4d2f90c47480f5920142090dae334ce1e448accb",
+  "launcher": {
+    "path": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/ernie-typo/launch.sh",
+    "sha256": "0583fb4444d6ba8f1d56517050acbdf1583a1f74657fb886a7389eada1bf5d45"
+  },
+  "job": {
+    "path": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/ernie-typo/worker.py",
+    "sha256": "0dd5470a156c349ebfd83e7d792b91603b4a97c2142be4b8ef5942d3dba4f703"
+  },
+  "source_manifest": {
+    "path": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/ernie-typo/SOURCE-SHA256SUMS",
+    "sha256": "c5eecbc902dec854aa3d1a5ed4f64b7edd5a096d78dc6eabf8f4089ccd3891b8"
+  },
+  "scratch_root": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/ernie-typo",
+  "keep": [
+    "TASK-SOURCE.txt",
+    "SOURCE-INPUTS.sha256",
+    "SOURCE-SHA256SUMS",
+    "RUNTIME.sha256",
+    "MODELS.sha256",
+    "EARLY.sha256",
+    "REGION-LOCK-INPUTS.sha256",
+    "REGION-LOCK-PYTHON-ALLOW.txt",
+    "region-lock",
+    "PLAN.json",
+    "*.py",
+    "*.sh",
+    "*.log",
+    "*.out",
+    "engine/*.sh",
+    "engine/*.py",
+    "engine/*.json",
+    "run/*.json",
+    "run/*.png",
+    "run/*.log",
+    "smoke-smoke/*.json",
+    "smoke-smoke/*.png",
+    "smoke-smoke/*.log",
+    "smoke-cutoff/*.json",
+    "smoke-cutoff/*.log"
+  ],
+  "result_path": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/ernie-typo/run/TERMINAL.json",
+  "est_output_GiB": 1,
+  "feasibility": "HOST 512x512 eight-step real target control completed in 19.33s including full model hashes and lock, with 16.93 GiB sampled peak global VRAM; the original 40 images at 896/1024, blank-output rate, GPU memory and total time are untested. The 7200s allocation is a budget, not a completion guarantee; unfinished or exposed interrupted cases remain UNKNOWN.",
+  "smoke": {
+    "ran_at": "2026-10-31T06:09:09.556567+00:00",
+    "regions": "GPU-quiet exclusive, CPU 184-185 R7",
+    "model": "retained ERNIE Q8 + Ministral text encoder + VAE, 512x512 engineering image",
+    "first_request_ok": true,
+    "result_writer_ok": true,
+    "exit_ok": true,
+    "wall_s": 19.33235819800757,
+    "peak_global_vram_bytes": 18176262144,
+    "launcher_sha256": "0583fb4444d6ba8f1d56517050acbdf1583a1f74657fb886a7389eada1bf5d45",
+    "log": "/mnt/raid0/llm/tmp/compute-flags/ready/codex3-ernie-typo20-20261031.smoke.log",
+    "log_sha256": "870746269ef102a75653fd7bcc771d1f94025367e3840767aa14b2edd407c48d"
+  },
+  "hold": null,
+  "log_consumer": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/ernie-typo/log_consumer.py",
+  "completion": "Same final HOST launcher, actual R13 --complete-cmd, explicit RUS3_DIAGNOSTIC inside env-i, real PNG with active PID KFD and global VRAM, normal and STOP75 partial with drained process trees; prior 1024 white-output failure retained."
+}

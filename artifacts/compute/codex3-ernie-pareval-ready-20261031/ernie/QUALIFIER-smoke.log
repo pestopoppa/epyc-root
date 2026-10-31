@@ -1,0 +1,6 @@
+{'checked_epoch': 1793426930.3576386, 'allowed_kfd': []}
+[region-lock] acquiring gpu-quiet exclusive as role='bench' (timeout_s=1.0) …
+[region-lock] held gpu-quiet exclusive + regions [] after 0.0s wait; running: /usr/bin/taskset -c 184,185 /bin/bash /mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/ernie-typo/launch.sh --smoke-locked
+{'checked_epoch': 1793426930.416891, 'allowed_kfd': []}
+{"leader_pid": 2473510, "leader_birth": 154941250, "event": "leader_started"}
+{"schema": "hil15-r11-smoke-supervisor/v1", "elapsed_s": 10.2878830418922, "sampled_peak_tree_rss_bytes": 817676288, "peak_global_vram_bytes": 18176262144, "samples": 34, "verified_exited_processes": 0, "verified_exited_threads": 0, "per_process_address_space_limit_bytes": null, "rss_scope": "sum of sampled resident pages across owned process tree; sampling may miss transients and double-count shared pages", "leader_pid": 2473510, "leader_birth": 154941250, "child_rc": 0, "children_drained": true, "failure": null}

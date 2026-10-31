@@ -1,0 +1,26 @@
+{
+  "status": "HOST_R7_CONTROLS_PASS",
+  "launcher_sha256": "0583fb4444d6ba8f1d56517050acbdf1583a1f74657fb886a7389eada1bf5d45",
+  "results": {
+    "smoke": {
+      "admission": "ran",
+      "rc": 0,
+      "elapsed_s": 19.33235819800757,
+      "captured_pid": 2473311,
+      "birth": "154940356",
+      "log_sha256": "870746269ef102a75653fd7bcc771d1f94025367e3840767aa14b2edd407c48d",
+      "peak_vram_bytes": 18176262144
+    },
+    "cutoff": {
+      "admission": "ran",
+      "rc": 75,
+      "elapsed_s": 12.322822768008336,
+      "captured_pid": 2474341,
+      "birth": "154942292",
+      "log_sha256": "7b905751f594542d4f2d111e688cf6fae74bc0cce0a238ddfb3f74bb2dcd8bb5",
+      "peak_vram_bytes": 17607839744
+    }
+  },
+  "full_target": "UNTESTED",
+  "ready_published": false
+}
