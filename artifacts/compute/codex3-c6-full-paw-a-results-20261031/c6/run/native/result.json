@@ -1,0 +1,208 @@
+{
+  "schema": "c6.runtime.transport.v1",
+  "source_sha": "729599d69871181d67af715a4c2f9162d5153a2e",
+  "action": "gpu-ops",
+  "allocation": {
+    "id": "refactor-c6-gpu-gak-full-729599d69-20261031",
+    "regions": "mi210_0,184-191",
+    "cpus": [
+      184,
+      185,
+      186,
+      187,
+      188,
+      189,
+      190,
+      191
+    ],
+    "deadline": 1793426310.0,
+    "memory_gib": 32,
+    "calendar_row": {
+      "gib": 32.0,
+      "class": "block-correctness"
+    }
+  },
+  "store_pair": {
+    "source_sha": "729599d69871181d67af715a4c2f9162d5153a2e",
+    "source_tree": "51b0a4fda906ffd3d029fd21bf41204675f08167",
+    "paired_build_custody": true,
+    "runtime_qualified": false
+  },
+  "argv": [
+    "/usr/bin/python3",
+    "-B",
+    "/mnt/raid0/llm/tmp/refactor-c6-gpu-gak-full-prep-20261031/worker.py",
+    "--action",
+    "gpu-ops",
+    "--cpu-store",
+    "/mnt/raid0/llm/kernels/builds/cpu-20261030-729599d69-c6",
+    "--gpu-store",
+    "/mnt/raid0/llm/kernels/builds/gpu-20261030-729599d69-c6",
+    "--out",
+    "/mnt/raid0/llm/tmp/refactor-c6-gpu-gak-full-prep-20261031/runs/20261031T051940Z-158757/native"
+  ],
+  "status": "NATIVE_FAILED",
+  "gate_pass": null,
+  "qualification_only": false,
+  "process": {
+    "argv": [
+      "/usr/bin/python3",
+      "-B",
+      "/mnt/raid0/llm/tmp/refactor-c6-gpu-gak-full-prep-20261031/worker.py",
+      "--action",
+      "gpu-ops",
+      "--cpu-store",
+      "/mnt/raid0/llm/kernels/builds/cpu-20261030-729599d69-c6",
+      "--gpu-store",
+      "/mnt/raid0/llm/kernels/builds/gpu-20261030-729599d69-c6",
+      "--out",
+      "/mnt/raid0/llm/tmp/refactor-c6-gpu-gak-full-prep-20261031/runs/20261031T051940Z-158757/native"
+    ],
+    "rc": 1,
+    "reason": null,
+    "elapsed_s": 47.51269027008675,
+    "sampled_peak_tree_rss_bytes": 1160683520,
+    "samples": 470,
+    "children_drained": true,
+    "compiler_witness": [],
+    "interrupted_compilers": [],
+    "owned_pid_births": [
+      {
+        "pid": 158773,
+        "birth": 154645420
+      },
+      {
+        "pid": 158774,
+        "birth": 154645423
+      },
+      {
+        "pid": 158779,
+        "birth": 154645443
+      },
+      {
+        "pid": 158810,
+        "birth": 154645453
+      },
+      {
+        "pid": 158838,
+        "birth": 154645463
+      },
+      {
+        "pid": 158869,
+        "birth": 154645473
+      },
+      {
+        "pid": 158876,
+        "birth": 154645504
+      },
+      {
+        "pid": 158906,
+        "birth": 154645514
+      },
+      {
+        "pid": 158936,
+        "birth": 154645525
+      },
+      {
+        "pid": 158958,
+        "birth": 154645535
+      }
+    ],
+    "owned_process_argvs": [
+      {
+        "pid": 158773,
+        "birth": 154645420,
+        "argv": [
+          "/usr/bin/python3",
+          "-B",
+          "/mnt/raid0/llm/tmp/refactor-c6-gpu-gak-full-prep-20261031/worker.py",
+          "--action",
+          "gpu-ops",
+          "--cpu-store",
+          "/mnt/raid0/llm/kernels/builds/cpu-20261030-729599d69-c6",
+          "--gpu-store",
+          "/mnt/raid0/llm/kernels/builds/gpu-20261030-729599d69-c6",
+          "--out",
+          "/mnt/raid0/llm/tmp/refactor-c6-gpu-gak-full-prep-20261031/runs/20261031T051940Z-158757/native"
+        ]
+      },
+      {
+        "pid": 158774,
+        "birth": 154645423,
+        "argv": [
+          "/mnt/raid0/llm/kernels/builds/gpu-20261024-c72ec82f5-c5/bin/llama-server",
+          "--version"
+        ]
+      },
+      {
+        "pid": 158779,
+        "birth": 154645443,
+        "argv": []
+      },
+      {
+        "pid": 158810,
+        "birth": 154645453,
+        "argv": []
+      },
+      {
+        "pid": 158838,
+        "birth": 154645463,
+        "argv": []
+      },
+      {
+        "pid": 158869,
+        "birth": 154645473,
+        "argv": [
+          "/mnt/raid0/llm/kernels/builds/gpu-20261030-729599d69-c6/bin/llama-server",
+          "--version"
+        ]
+      },
+      {
+        "pid": 158876,
+        "birth": 154645504,
+        "argv": [
+          "/usr/bin/python3",
+          "-B",
+          "/mnt/raid0/llm/tmp/refactor-c6-gpu-gak-full-prep-20261031/worker.py",
+          "--action",
+          "gpu-ops",
+          "--cpu-store",
+          "/mnt/raid0/llm/kernels/builds/cpu-20261030-729599d69-c6",
+          "--gpu-store",
+          "/mnt/raid0/llm/kernels/builds/gpu-20261030-729599d69-c6",
+          "--out",
+          "/mnt/raid0/llm/tmp/refactor-c6-gpu-gak-full-prep-20261031/runs/20261031T051940Z-158757/native"
+        ]
+      },
+      {
+        "pid": 158906,
+        "birth": 154645514,
+        "argv": []
+      },
+      {
+        "pid": 158936,
+        "birth": 154645525,
+        "argv": []
+      },
+      {
+        "pid": 158958,
+        "birth": 154645535,
+        "argv": [
+          "/mnt/raid0/llm/kernels/builds/gpu-20261024-c72ec82f5-c5/bin/test-backend-ops",
+          "test",
+          "-b",
+          "ROCm0",
+          "-o",
+          "MUL_MAT",
+          "-j",
+          "1",
+          "--suite-seed",
+          "71",
+          "--autokernel-properties"
+        ]
+      }
+    ]
+  },
+  "active_native_at_cutoff": null,
+  "partial": false
+}

@@ -1,0 +1,557 @@
+{
+  "status_counts": {
+    "OK": 1080,
+    "FAIL": 65,
+    "not_supported": 326
+  },
+  "by_type": {
+    "bf16": {
+      "OK": 149
+    },
+    "f16": {
+      "OK": 270
+    },
+    "f32": {
+      "OK": 202,
+      "not_supported": 62
+    },
+    "iq1_m": {
+      "OK": 11
+    },
+    "iq1_s": {
+      "OK": 11
+    },
+    "iq2_s": {
+      "OK": 12
+    },
+    "iq2_xs": {
+      "OK": 12
+    },
+    "iq2_xxs": {
+      "OK": 44,
+      "not_supported": 33
+    },
+    "iq3_s": {
+      "OK": 12
+    },
+    "iq3_xxs": {
+      "OK": 12
+    },
+    "iq4_nl": {
+      "OK": 12
+    },
+    "iq4_xs": {
+      "OK": 11
+    },
+    "mxfp4": {
+      "OK": 44,
+      "not_supported": 33
+    },
+    "nvfp4": {
+      "OK": 43,
+      "not_supported": 33
+    },
+    "q1_0": {
+      "OK": 45,
+      "not_supported": 33
+    },
+    "q2_K": {
+      "OK": 11
+    },
+    "q3_K": {
+      "OK": 11
+    },
+    "q4_0": {
+      "FAIL": 27,
+      "OK": 19,
+      "not_supported": 33
+    },
+    "q4_1": {
+      "OK": 45,
+      "not_supported": 33
+    },
+    "q4_K": {
+      "FAIL": 38,
+      "OK": 5,
+      "not_supported": 33
+    },
+    "q5_0": {
+      "OK": 12
+    },
+    "q5_1": {
+      "OK": 12
+    },
+    "q5_K": {
+      "OK": 11
+    },
+    "q6_K": {
+      "OK": 11
+    },
+    "q8_0": {
+      "OK": 53,
+      "not_supported": 33
+    }
+  },
+  "failures": [
+    {
+      "case_sha256": "a282aed9e3d8aa940b7e6b790fb9d5dda86fa77f03aad969d66372a3e110f68d",
+      "type_a": "q4_0",
+      "metric": "fp64_error_ratio/host-double-gguf-wire/v1",
+      "residual": 0.009736527850838459,
+      "tolerance": 0.006190778024513589
+    },
+    {
+      "case_sha256": "cf00dc9d5ae57c0c8c0985d04f6b81332e8ae81f8d3e5dc352b723f99bca1bfe",
+      "type_a": "q4_0",
+      "metric": "fp64_error_ratio/host-double-gguf-wire/v1",
+      "residual": 0.008604199131041452,
+      "tolerance": 0.006769099413632393
+    },
+    {
+      "case_sha256": "fc1084bbdec3d241b3ea96bfd60446778e67aed27092be98f71791817b152a54",
+      "type_a": "q4_0",
+      "metric": "fp64_error_ratio/host-double-gguf-wire/v1",
+      "residual": 0.007926996607630115,
+      "tolerance": 0.0068301856412856625
+    },
+    {
+      "case_sha256": "96853f1d166c1413aada504371922b65c45e7ffe77f5417a631cf3673102fccf",
+      "type_a": "q4_0",
+      "metric": "fp64_error_ratio/host-double-gguf-wire/v1",
+      "residual": 0.00834946741019234,
+      "tolerance": 0.005487232583794441
+    },
+    {
+      "case_sha256": "a31a390c57d7c0770d804cf739443777ec8375fec0109cdc97eee02396917bd9",
+      "type_a": "q4_0",
+      "metric": "fp64_error_ratio/host-double-gguf-wire/v1",
+      "residual": 0.007499157477262729,
+      "tolerance": 0.0050005604694795674
+    },
+    {
+      "case_sha256": "4f01ed0b434e43f32b4e9bdfaf74aa7dec68be36385b27f3a56928281d8bbec4",
+      "type_a": "q4_0",
+      "metric": "fp64_error_ratio/host-double-gguf-wire/v1",
+      "residual": 0.009570992354099406,
+      "tolerance": 0.0072804144233558545
+    },
+    {
+      "case_sha256": "4e87eff5418ad6bab6dfe467c491ceb3c6ae734e9f57c7f92ec87ace55a7084f",
+      "type_a": "q4_0",
+      "metric": "fp64_error_ratio/host-double-gguf-wire/v1",
+      "residual": 0.008111095291399327,
+      "tolerance": 0.005248770527419067
+    },
+    {
+      "case_sha256": "ac4b15102b546e675c9198f1e97f27a1c4bca66691092e80c3c01143d062961b",
+      "type_a": "q4_K",
+      "metric": "fp64_error_ratio/host-double-gguf-wire/v1",
+      "residual": 0.005977963789570535,
+      "tolerance": 0.005749509632923433
+    },
+    {
+      "case_sha256": "7754d73eef7c4131b228ec42ff63aa72e2f0544ce6ddde778ce81ae432d407c4",
+      "type_a": "q4_K",
+      "metric": "fp64_error_ratio/host-double-gguf-wire/v1",
+      "residual": 0.006503658487735926,
+      "tolerance": 0.006209034371642231
+    },
+    {
+      "case_sha256": "fff8d0ae738b8c2f84a89b19157cdb571cb10e475acfad74f9c1a6c525e63f2c",
+      "type_a": "q4_K",
+      "metric": "fp64_error_ratio/host-double-gguf-wire/v1",
+      "residual": 0.008789648441964703,
+      "tolerance": 0.005664967355087891
+    },
+    {
+      "case_sha256": "480f28c2ec88efa26071cb2e9a16f5ee7697c429f125caf4f954a53bbc907193",
+      "type_a": "q4_K",
+      "metric": "fp64_error_ratio/host-double-gguf-wire/v1",
+      "residual": 0.00866651716300633,
+      "tolerance": 0.005948093131031932
+    },
+    {
+      "case_sha256": "d507edd7b34e37fc3fea5420ed0b54e36b265f532ac021059d951bd4f992fd7a",
+      "type_a": "q4_K",
+      "metric": "fp64_error_ratio/host-double-gguf-wire/v1",
+      "residual": 0.007046881447635422,
+      "tolerance": 0.005943427848733825
+    },
+    {
+      "case_sha256": "a5c5082ebe368ec536443fafbf734ae048037203042c19514c6c37852238c794",
+      "type_a": "q4_K",
+      "metric": "fp64_error_ratio/host-double-gguf-wire/v1",
+      "residual": 0.010099375948725507,
+      "tolerance": 0.006472764385952585
+    },
+    {
+      "case_sha256": "28b0bb3dee62ed12d372b727d66dbd466c0086a4c7dd5fba025b2f620c9197db",
+      "type_a": "q4_K",
+      "metric": "fp64_error_ratio/host-double-gguf-wire/v1",
+      "residual": 0.007892324866033518,
+      "tolerance": 0.005537315458551297
+    },
+    {
+      "case_sha256": "a67b4be6426bb2261715208623ad2928e080be79ccd41b83dcd6c6bccdc795b8",
+      "type_a": "q4_0",
+      "metric": "fp64_error_ratio/host-double-gguf-wire/v1",
+      "residual": 0.009657082244917134,
+      "tolerance": 0.007387381447535889
+    },
+    {
+      "case_sha256": "a7b916ed7d598c77fa78c319864c6e8a12c18adbb8c6eee91416e8600141a3b3",
+      "type_a": "q4_0",
+      "metric": "fp64_error_ratio/host-double-gguf-wire/v1",
+      "residual": 0.007831123751802296,
+      "tolerance": 0.005199521024301297
+    },
+    {
+      "case_sha256": "7c08bd801cca9dd05e705e60d90ca8d32cfa135da7483db9af78a0cb1102aa99",
+      "type_a": "q4_0",
+      "metric": "fp64_error_ratio/host-double-gguf-wire/v1",
+      "residual": 0.008815773400910332,
+      "tolerance": 0.007014880862561908
+    },
+    {
+      "case_sha256": "5ff4da155fa3061a16608a323cf95b6072265de52d1cb5453078f9b7d55bdc75",
+      "type_a": "q4_0",
+      "metric": "fp64_error_ratio/host-double-gguf-wire/v1",
+      "residual": 0.006167374894048488,
+      "tolerance": 0.004218126372300325
+    },
+    {
+      "case_sha256": "06479ba02034153c1b6ee7ea2269d7c0beb3d8bcda600bbec8cf28780d9b3819",
+      "type_a": "q4_0",
+      "metric": "fp64_error_ratio/host-double-gguf-wire/v1",
+      "residual": 0.007600193297421482,
+      "tolerance": 0.005503313056817161
+    },
+    {
+      "case_sha256": "88a3e2e97be5260d43fafc816c7db35ad5e95e239f2b4039696cccd7d0dace40",
+      "type_a": "q4_0",
+      "metric": "fp64_error_ratio/host-double-gguf-wire/v1",
+      "residual": 0.007187555699152598,
+      "tolerance": 0.005859022190605455
+    },
+    {
+      "case_sha256": "8db7d2f16500b8892b8004ad17ef552cf5126ff38fb795d9a7621dde4dd38913",
+      "type_a": "q4_0",
+      "metric": "fp64_error_ratio/host-double-gguf-wire/v1",
+      "residual": 0.007921787988373043,
+      "tolerance": 0.00573694527743067
+    },
+    {
+      "case_sha256": "3589cbc965df530f3dcb3537a8b2fdccf74607fa7c1e005abab8eb3e6e31df2e",
+      "type_a": "q4_0",
+      "metric": "fp64_error_ratio/host-double-gguf-wire/v1",
+      "residual": 0.00718028620517436,
+      "tolerance": 0.0059739677351640895
+    },
+    {
+      "case_sha256": "846550ce90fd2f2d2674fe48bba0a8b11fb870d6738b79cec90d27857e96d011",
+      "type_a": "q4_0",
+      "metric": "fp64_error_ratio/host-double-gguf-wire/v1",
+      "residual": 0.0068506114966878535,
+      "tolerance": 0.005299656428834099
+    },
+    {
+      "case_sha256": "88106d98b33950d6aa807392692cb47cbfe2c20730e4003bf70463ec678130ef",
+      "type_a": "q4_0",
+      "metric": "fp64_error_ratio/host-double-gguf-wire/v1",
+      "residual": 0.007519448956225801,
+      "tolerance": 0.0056035471894842976
+    },
+    {
+      "case_sha256": "494f1078cf7ef7a28cdb67db233fcfb25ea356a5328bcf1ef9f1921212d57dbf",
+      "type_a": "q4_0",
+      "metric": "fp64_error_ratio/host-double-gguf-wire/v1",
+      "residual": 0.008679568833381819,
+      "tolerance": 0.005386404734966329
+    },
+    {
+      "case_sha256": "20cb4002d2861dfc775b00decaf08f0337cff19bc97b24d408896a4c76355ffd",
+      "type_a": "q4_0",
+      "metric": "fp64_error_ratio/host-double-gguf-wire/v1",
+      "residual": 0.008804577733663489,
+      "tolerance": 0.0066191710245077535
+    },
+    {
+      "case_sha256": "4f071aad0abcd0ea1527a036041d9d254822a726c17d4e24f558945b2e2511e5",
+      "type_a": "q4_0",
+      "metric": "fp64_error_ratio/host-double-gguf-wire/v1",
+      "residual": 0.007805481199527989,
+      "tolerance": 0.006686622632472177
+    },
+    {
+      "case_sha256": "b40b06d30abd470eb07eaa5fcdfc117fbf81880533ebe409c746100a20008deb",
+      "type_a": "q4_0",
+      "metric": "fp64_error_ratio/host-double-gguf-wire/v1",
+      "residual": 0.006754806141828322,
+      "tolerance": 0.005610414588900754
+    },
+    {
+      "case_sha256": "f823775c4b1a3fe76e0e7cdb71adf112a112f1e3ef46855d72706d0abc370f7e",
+      "type_a": "q4_0",
+      "metric": "fp64_error_ratio/host-double-gguf-wire/v1",
+      "residual": 0.006811926778728565,
+      "tolerance": 0.00531353530675438
+    },
+    {
+      "case_sha256": "1469ac0227f0bf551ed0a82988ce73b421fcda315a2d7c32cc54b9939352cdc2",
+      "type_a": "q4_0",
+      "metric": "fp64_error_ratio/host-double-gguf-wire/v1",
+      "residual": 0.0072399033038815785,
+      "tolerance": 0.005627268791658901
+    },
+    {
+      "case_sha256": "eef7bb5bd38d963fb02ce92bd3fc6aff0d2bc3022fb7ddf65048f717477d11f1",
+      "type_a": "q4_0",
+      "metric": "fp64_error_ratio/host-double-gguf-wire/v1",
+      "residual": 0.00793209764957515,
+      "tolerance": 0.005922076266466306
+    },
+    {
+      "case_sha256": "278d5715c9ce43e1ec4b3b24f0f2b6bc725457c6e2d1b5cebfc920349857950f",
+      "type_a": "q4_0",
+      "metric": "fp64_error_ratio/host-double-gguf-wire/v1",
+      "residual": 0.007665873483027428,
+      "tolerance": 0.005927526878995759
+    },
+    {
+      "case_sha256": "1d65764557a55d5c35ccf2c5349718dfe9f3893381f39c46ead59e595e9ae0c2",
+      "type_a": "q4_0",
+      "metric": "fp64_error_ratio/host-double-gguf-wire/v1",
+      "residual": 0.006931137067197275,
+      "tolerance": 0.00545683388785032
+    },
+    {
+      "case_sha256": "35483b03850182dcf47b8a3bc38fb39a689eee38589dfed584630b62dc89b154",
+      "type_a": "q4_0",
+      "metric": "fp64_error_ratio/host-double-gguf-wire/v1",
+      "residual": 0.007457376825745266,
+      "tolerance": 0.0056627349584429535
+    },
+    {
+      "case_sha256": "496cfa7086f5bf58d49bdabb0fd0e0dd6202d118f14a54174c8f76905a404527",
+      "type_a": "q4_K",
+      "metric": "fp64_error_ratio/host-double-gguf-wire/v1",
+      "residual": 0.009371594214346279,
+      "tolerance": 0.0068256778167287355
+    },
+    {
+      "case_sha256": "a33c1bdd80044a27bb2aa67bb2585070d144aa25788c35251dc2bfb5c547ca70",
+      "type_a": "q4_K",
+      "metric": "fp64_error_ratio/host-double-gguf-wire/v1",
+      "residual": 0.006969760525357505,
+      "tolerance": 0.006749427319400415
+    },
+    {
+      "case_sha256": "bc60aac4e1ccb89fe57a66e644f13982261572117d518f72f430c12f90ff705c",
+      "type_a": "q4_K",
+      "metric": "fp64_error_ratio/host-double-gguf-wire/v1",
+      "residual": 0.008076805420026612,
+      "tolerance": 0.00709989671748937
+    },
+    {
+      "case_sha256": "7eccb5d26f0f389935ed8213584cf14d96f11ab1c7ce39f3039e46c64b252999",
+      "type_a": "q4_K",
+      "metric": "fp64_error_ratio/host-double-gguf-wire/v1",
+      "residual": 0.005382906547931816,
+      "tolerance": 0.005107058942418502
+    },
+    {
+      "case_sha256": "f34d9d6092362f4d35bf461bab302fc6e6a4a13e26f8de28ab36a1a1a9df4fe1",
+      "type_a": "q4_K",
+      "metric": "fp64_error_ratio/host-double-gguf-wire/v1",
+      "residual": 0.005994427060454974,
+      "tolerance": 0.005783888772233027
+    },
+    {
+      "case_sha256": "f90c208b5521c4e0bc2089ef35fea25275790f3ca75672ed8826b84db80ec94a",
+      "type_a": "q4_K",
+      "metric": "fp64_error_ratio/host-double-gguf-wire/v1",
+      "residual": 0.007882023820631277,
+      "tolerance": 0.006010841602284265
+    },
+    {
+      "case_sha256": "ec87dc3398bf344ba532fad2e39116b90650a851794162fc423a2c0503b359d5",
+      "type_a": "q4_K",
+      "metric": "fp64_error_ratio/host-double-gguf-wire/v1",
+      "residual": 0.007836013064366999,
+      "tolerance": 0.005923909796048529
+    },
+    {
+      "case_sha256": "321f7ac058f64e6318f26103e0775345d7d88881445cae179227c7b7464a92a5",
+      "type_a": "q4_K",
+      "metric": "fp64_error_ratio/host-double-gguf-wire/v1",
+      "residual": 0.007148551097509587,
+      "tolerance": 0.005595352208076228
+    },
+    {
+      "case_sha256": "6b33af9a883ce8461c4151478c5c1d41dcb8177d2c044204a028bf52b3d59cf8",
+      "type_a": "q4_K",
+      "metric": "fp64_error_ratio/host-double-gguf-wire/v1",
+      "residual": 0.006764247401189471,
+      "tolerance": 0.0054298880939098355
+    },
+    {
+      "case_sha256": "c4b4bfd09dae8c7dc0fe64ed7c57d24ec7f3bef64a64b28ff9f64d0c15699846",
+      "type_a": "q4_K",
+      "metric": "fp64_error_ratio/host-double-gguf-wire/v1",
+      "residual": 0.007395849109514718,
+      "tolerance": 0.005374734734076899
+    },
+    {
+      "case_sha256": "743b883ed9e1dc2c65fea5c009af5081fd75a4be08a26573f53f5be95308474a",
+      "type_a": "q4_K",
+      "metric": "fp64_error_ratio/host-double-gguf-wire/v1",
+      "residual": 0.0073651238235874555,
+      "tolerance": 0.0055855310698471
+    },
+    {
+      "case_sha256": "f02d541423e222e1b44bd01f42b8964b4183c410393e26560205c8f0937b6bad",
+      "type_a": "q4_K",
+      "metric": "fp64_error_ratio/host-double-gguf-wire/v1",
+      "residual": 0.006997429669163066,
+      "tolerance": 0.006050874635998148
+    },
+    {
+      "case_sha256": "ff96e4301807b78b1e5363d2fc78362de13e1663e90a623a63604afb539a4be2",
+      "type_a": "q4_K",
+      "metric": "fp64_error_ratio/host-double-gguf-wire/v1",
+      "residual": 0.006569762348063015,
+      "tolerance": 0.005811857421534267
+    },
+    {
+      "case_sha256": "bfc33908a5fbaceae41541f1bf9f05e598c16ad97392fc2911a94553a0f41cfa",
+      "type_a": "q4_K",
+      "metric": "fp64_error_ratio/host-double-gguf-wire/v1",
+      "residual": 0.007169427893902289,
+      "tolerance": 0.005954371308293967
+    },
+    {
+      "case_sha256": "7fb840de591f5e5abb2671576287cb2873551066be03fbc9ddce35e991624d9a",
+      "type_a": "q4_K",
+      "metric": "fp64_error_ratio/host-double-gguf-wire/v1",
+      "residual": 0.006786375863144659,
+      "tolerance": 0.006025887908342381
+    },
+    {
+      "case_sha256": "5afa83e473eeef48a1135e6a756414af440bd32207de6a56815ab45eafe34f0e",
+      "type_a": "q4_K",
+      "metric": "fp64_error_ratio/host-double-gguf-wire/v1",
+      "residual": 0.006996447618939096,
+      "tolerance": 0.005858414095913229
+    },
+    {
+      "case_sha256": "b4d42d3019df58187d35278c4fbd3739d63813164f387accbba67af4434d859d",
+      "type_a": "q4_K",
+      "metric": "fp64_error_ratio/host-double-gguf-wire/v1",
+      "residual": 0.006838557780747718,
+      "tolerance": 0.00579494004411042
+    },
+    {
+      "case_sha256": "d6223125c7281e7a3ab8d00fac9ff4b6a4b635462a4ef7c9ae210e88d9e7abc2",
+      "type_a": "q4_K",
+      "metric": "fp64_error_ratio/host-double-gguf-wire/v1",
+      "residual": 0.005827938212098098,
+      "tolerance": 0.005039186490361524
+    },
+    {
+      "case_sha256": "e561032cae659f4140ebfb2c7a7599307a92f3ef4d0762713d5769fc07b71b6c",
+      "type_a": "q4_K",
+      "metric": "fp64_error_ratio/host-double-gguf-wire/v1",
+      "residual": 0.005391160445223069,
+      "tolerance": 0.0049233626070650585
+    },
+    {
+      "case_sha256": "5394a79aa7315803f1f6be198a8766190e8461843f9f15486816501cbcd7748d",
+      "type_a": "q4_K",
+      "metric": "fp64_error_ratio/host-double-gguf-wire/v1",
+      "residual": 0.007426463120529613,
+      "tolerance": 0.006011777852522346
+    },
+    {
+      "case_sha256": "3a2a61d30b7f7cae4a0c724f1ee7e2af43f490174a8e443ed4b2a43256a1c7cf",
+      "type_a": "q4_K",
+      "metric": "fp64_error_ratio/host-double-gguf-wire/v1",
+      "residual": 0.007597281269018137,
+      "tolerance": 0.005518246659316863
+    },
+    {
+      "case_sha256": "cbfc9a571f39925f00760a3fd83df35232fd4b6a8b7c373236af2b194541137c",
+      "type_a": "q4_K",
+      "metric": "fp64_error_ratio/host-double-gguf-wire/v1",
+      "residual": 0.006651752689832313,
+      "tolerance": 0.005734660251271128
+    },
+    {
+      "case_sha256": "aa69c03a40f0e53c585f67ade1d2d0e7c7497e75e0acb010789bd0e099ffb8ed",
+      "type_a": "q4_K",
+      "metric": "fp64_error_ratio/host-double-gguf-wire/v1",
+      "residual": 0.006087134213953707,
+      "tolerance": 0.005522714240936373
+    },
+    {
+      "case_sha256": "ec3fc810a2aa227d7cd75f4f84fe3bcecaba91fb19f792684014ce352a2ccecb",
+      "type_a": "q4_K",
+      "metric": "fp64_error_ratio/host-double-gguf-wire/v1",
+      "residual": 0.006507087210706955,
+      "tolerance": 0.005796936825849683
+    },
+    {
+      "case_sha256": "d7bca3a7a908505aa779724fc3751eb79a682a8a43ad8da5532f011c6e4c2140",
+      "type_a": "q4_K",
+      "metric": "fp64_error_ratio/host-double-gguf-wire/v1",
+      "residual": 0.006767624886047112,
+      "tolerance": 0.005796132180463137
+    },
+    {
+      "case_sha256": "bb45071505ee98b634a793464359eabbccbfaea29d2d092ab235e4d7ac0c92a7",
+      "type_a": "q4_K",
+      "metric": "fp64_error_ratio/host-double-gguf-wire/v1",
+      "residual": 0.007511825417304409,
+      "tolerance": 0.005952845972706577
+    },
+    {
+      "case_sha256": "96aa641d1737915eda473978c0b776fe529853795080815b6243be49d8ebf92a",
+      "type_a": "q4_K",
+      "metric": "fp64_error_ratio/host-double-gguf-wire/v1",
+      "residual": 0.006480215273720413,
+      "tolerance": 0.004888531383815579
+    },
+    {
+      "case_sha256": "abd8c3b0a9f5ff6f50707a4e5d067f318c2a6703a2dcfb88c138e679032892aa",
+      "type_a": "q4_K",
+      "metric": "fp64_error_ratio/host-double-gguf-wire/v1",
+      "residual": 0.007281840146295133,
+      "tolerance": 0.0059473274830782385
+    },
+    {
+      "case_sha256": "e7d88ee3ec23c2ffdd52a78921b127334c99924af54dd7f584291ebb342f911e",
+      "type_a": "q4_K",
+      "metric": "fp64_error_ratio/host-double-gguf-wire/v1",
+      "residual": 0.007391029987513268,
+      "tolerance": 0.0064593749269287355
+    },
+    {
+      "case_sha256": "8c32da0cd71499202ffd3ea6433019be90b0ff52a23f993d28eb531163c973e0",
+      "type_a": "q4_K",
+      "metric": "fp64_error_ratio/host-double-gguf-wire/v1",
+      "residual": 0.007104052541249754,
+      "tolerance": 0.005874535311293448
+    },
+    {
+      "case_sha256": "09d1d1122f39fba82544304fd24d47e940116582b17e056fafa6d5c70f770f61",
+      "type_a": "q4_K",
+      "metric": "fp64_error_ratio/host-double-gguf-wire/v1",
+      "residual": 0.006599464821686112,
+      "tolerance": 0.005500120488395217
+    }
+  ],
+  "native_stdout_sha256": "8ce2bdce8c29f7d184803d7af22c338c060b806223dfac64ac709133013033d1",
+  "native_stderr_sha256": "857705cef073bece5e67e435c76e3e855244ca2669331045ea70e55ca169bbcd",
+  "own_kfd_reads": 459,
+  "own_peak_vram_bytes": 806928384,
+  "source": "C5 baseline only; C6 phases not run; full gate unknown"
+}

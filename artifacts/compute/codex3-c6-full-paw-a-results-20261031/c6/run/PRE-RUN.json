@@ -1,0 +1,39 @@
+{
+  "both_arms_f32_knob": "GGML_FA_VKQ_F32=1",
+  "cpus": [
+    184,
+    185,
+    186,
+    187,
+    188,
+    189,
+    190,
+    191
+  ],
+  "deadline": 1793426310.0,
+  "expected_phases": [
+    "C5-MUL_MAT",
+    "C5-MUL_MAT_ID",
+    "C5-FLASH_ATTN_EXT",
+    "C6-MUL_MAT",
+    "C6-MUL_MAT_ID",
+    "C6-FLASH_ATTN_EXT",
+    "C6-G10"
+  ],
+  "grant_sha256": "9e29f70f60825637f7407e87f0310940e22991ef72c503a0b49cd48f46068b37",
+  "id": "refactor-c6-gpu-gak-full-729599d69-20261031",
+  "image_manifests": {
+    "C5": "33800df52d92efe54caac213ef6ef960bb2f92fc6053d7881846b4641a3b9a0e",
+    "C6_CPU": "f751b659d2ac30cb1169c72c2be7f8965b6d342530c7c06382717bb5e1e71191",
+    "C6_GPU": "64c34e61d12e5170acc77d69d4edcbab296754d2e3a48679ceb916fde3bb3704"
+  },
+  "original_input_byte_hashes": "UNKNOWN",
+  "package_closure_sha256": "47c16f1d5d5db6026c43bdf1b882987c661b6e26e6666b1ff5425b44e14059c9",
+  "recorded_at": 1793423980.6167133,
+  "regions": "mi210_0,184-191",
+  "runtime_closure_sha256": "9c9a9309f9d0e2e10880fe1469307b7503688ef7256c6d1b9c093f6803e5adfb",
+  "schema": "c6.gpu_gak_full_component_pre.v1",
+  "source": "729599d69871181d67af715a4c2f9162d5153a2e",
+  "suite_seed": 71,
+  "threads": 8
+}
