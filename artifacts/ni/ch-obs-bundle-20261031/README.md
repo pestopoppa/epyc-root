@@ -4,7 +4,7 @@
 
 - Original task: `handoffs/active/autokernel-champion-aggregate.md:1061` (ROOT task text reproduced below unchanged; source checkbox remains MAIN-owned).
 - Research producer source: commit `4b4207f3b2b0` (`Record AutoKernel loop process identity`), published in Research `origin/main` at `ae68d27a9063ed96ae0c0d86a50000ac3ef0ba6b`.
-- ROOT consumer source: commit `20fe66dc30508150083514aa8ca104af2b96d335` (`Guard champion bundle preflight with process identity`), integrated with fresh ROOT `origin/main` at `b88fccd3118c6195106949e3b217a1784479bfae`; merge commit `7d67fb84a301d384a8ba9807a5ce48da60ea3ffb`.
+- ROOT consumer source: commit `20fe66dc30508150083514aa8ca104af2b96d335` (`Guard champion bundle preflight with process identity`), integrated first with ROOT `origin/main` at `b88fccd3118c6195106949e3b217a1784479bfae` (merge `7d67fb84a301d384a8ba9807a5ce48da60ea3ffb`), then with fresh `origin/main` at `b4d4739f1092caf1ca33e973547d1feb522b08b5` (merge `e51583891f8b702bd6c8046255d6984986d2a0a4`).
 - Exact-byte C5 reference fixture remains SHA-256 `86095a308ff4834bc37b4b23190b6eeee8f37c24bebd96a2af1c66d38bc15327`.
 - The reviewed C3/C4/C5 verdict helpers are preserved. The existing C5 Q38FN sign-only acceptance remains unchanged.
 
