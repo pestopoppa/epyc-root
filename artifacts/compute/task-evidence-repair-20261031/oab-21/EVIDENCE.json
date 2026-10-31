@@ -1,0 +1,55 @@
+{
+  "schema": "epyc.task_evidence_integrity.v1",
+  "task_id": "OAB-21",
+  "original_task_first_line": "- [x] **OAB-21 \u2014 fix reasoning-token accounting in `actor_call_metrics`.** \u2705 2026-10-30 [belief: cc] `tokens.reasoning` reads 0 while the",
+  "decision": "keep_checked",
+  "reason": "Retained original six-step export was reopened by the published parser. Exact step6 carries 82482 reasoning characters and a flagged 20621-token chars estimate; decoded total remains inclusive and unchanged. This satisfies the native retained-source acceptance, without a new model call.",
+  "implementation": [
+    {
+      "repo": "epyc-inference-research",
+      "implementation_commit": "3e9c00e534ae29f138d13ec8962fe0d44fd86b41",
+      "reachable_from_published_origin_main": true,
+      "files": [
+        {
+          "path": "scripts/kernel_rnd/autokernel/loop/actor_metrics.py",
+          "sha256": "6d6f4c1e9de1336e6f2979f1b8e0295f29cfe8b6d4bfe4e4673b6c44dc8f26a6",
+          "git_url": "https://github.com/pestopoppa/epyc-inference-research/blob/3e9c00e534ae29f138d13ec8962fe0d44fd86b41/scripts/kernel_rnd/autokernel/loop/actor_metrics.py"
+        }
+      ]
+    }
+  ],
+  "original_dates_preserved": true,
+  "evidence_only_hygiene_not_new_code_or_today_quota": true,
+  "no_retest_or_redate": true,
+  "prior_artifacts": [
+    {
+      "path": "/mnt/raid0/llm/tmp/refactor-01a16fc3/oab21-reasoning-accounting-20261030/original-session/validation.md",
+      "sha256": "11462eac119d80599a6e5a4d209f22efc8a05fda7d83d6331331cf5d227cb09c",
+      "bytes": 3051
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/refactor-01a16fc3/oab21-reasoning-accounting-20261030/original-session/metrics.json",
+      "sha256": "2b4482332e866355c512d2abcaecf5bc63c0245043d82ac57fb34f3e627df6a8",
+      "bytes": 2314
+    }
+  ],
+  "original_native_acceptance": {
+    "export_sha256": "a53b40d1a530c1a7ed8798dff29385dfbd56311f85862d6f1edafcecb62c1d21",
+    "parser_implementation": "3e9c00e534ae29f138d13ec8962fe0d44fd86b41",
+    "verification_source_ref": "276d75fab38b5c541624daba29affb7bc8dbbd4b",
+    "step": 6,
+    "reasoning_chars": 82482,
+    "reasoning_tokens": 20621,
+    "reasoning_source": "chars_estimate",
+    "estimator": "ceil(chars/4)",
+    "decoded_tokens": 42547,
+    "decoded_includes_reasoning": true,
+    "source_scope": "exact previously retained OAB10/11 export; no new session/model call, no reconstructed prompt or measurement warrant"
+  },
+  "task_text_and_dates_recovery": {
+    "first_line_metadata": "HTML comment only; reopened task changes checkbox only",
+    "visible_evidence": "separate delimited metadata sub-bullet after original paragraph",
+    "original_paragraph_sha256": "d87fdea4c69cd4e007e09ada5ca6b0b1cc26e8ea71083de8f33ef1e037ab169e",
+    "metadata_strip_restores_original_paragraph_byte_identically": true
+  }
+}
