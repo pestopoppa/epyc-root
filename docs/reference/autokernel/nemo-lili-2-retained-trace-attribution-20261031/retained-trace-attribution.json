@@ -1,0 +1,49 @@
+{
+  "status": "COMPLETE",
+  "source_csv": "/mnt/raid0/llm/tmp/codex-ni-next-gpu-backlog-20261030/smoke-normal/native/trace/prof_kernel_trace.csv",
+  "source_csv_sha256": "63fb84108d0701071aa83eb7c13999d571b9cc2aa2a46136f4286f4917cb2fe2",
+  "source_run_sha256": "5112f67f8c7b1d29ec968a6aa197741986dbe2cd07aa32cbf01565224fceb5d2",
+  "ordered_stage_sequence_sha256": {
+    "target": "df701ccfc851d8590652cf44ac524601974358810185235ce94e3b182accbec6",
+    "drafter": "c5e53967ff8dc7c46c4a7b854a7f55059c32fa9ef9b3f78d1f125bca459928de",
+    "plain": "999ce0d299ff3f4cda16c87b6a81529d767203706f2f19f2a2628c8bd447a7e7"
+  },
+  "method": "40 target-only SSM scan dispatches per graph; exact repeated 2475-target/579-drafter/1873-plain dispatch fingerprints. GPU busy is the sum of individual kernel End-Start durations and can differ from elapsed span due to idle and overlap.",
+  "scope": "36 identical interior speculative target+drafter pairs; 157 complete steady plain steps. S has 39 target graph groups: 1 prefill, 37 full verifications, 1 final partial verification. The 37th full verification has a 576-dispatch following interval (3 fewer than the 579 identical interior drafter intervals) and is excluded from paired means. P has 160 groups: 1 prefill, 1 first-edge plain decode, 157 identical interior plain steps, 1 final edge.",
+  "target_verify_gpu_busy": {
+    "n": 36,
+    "mean_ms": 80.4177,
+    "median_ms": 78.583,
+    "min_ms": 75.7779,
+    "max_ms": 142.2262
+  },
+  "drafter_gpu_busy": {
+    "n": 36,
+    "mean_ms": 11.1099,
+    "median_ms": 11.0614,
+    "min_ms": 11.0201,
+    "max_ms": 12.7569
+  },
+  "spec_round_gpu_busy": {
+    "n": 36,
+    "mean_ms": 91.5276,
+    "median_ms": 89.6425,
+    "min_ms": 86.8347,
+    "max_ms": 153.2644
+  },
+  "plain_token_gpu_busy": {
+    "n": 157,
+    "mean_ms": 20.8195,
+    "median_ms": 20.7149,
+    "min_ms": 20.6188,
+    "max_ms": 31.3226
+  },
+  "round_vs_plain_busy_ratio": 4.3963,
+  "target_share_of_round_pct": 87.86,
+  "draft_acceptance": {
+    "accepted": 121,
+    "generated": 225
+  },
+  "wall_note": "P has long host/profiler idle; its 163.36 ms/token wall rate is not GPU busy and is excluded from the busy ratio.",
+  "prior_analysis_verdict": "INVALID: 50us segmentation claimed 2454 plain segments for 160 tokens and one target segment for 38 rounds"
+}
