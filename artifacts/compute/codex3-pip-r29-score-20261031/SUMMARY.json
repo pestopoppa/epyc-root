@@ -1,0 +1,35 @@
+{
+  "research_commits": [
+    "4fd00eb02d4a034bc37006e58c8dde84e657c38f",
+    "d2b95912cedd"
+  ],
+  "deployment": "/mnt/raid0/llm/artifacts/pip02-scorer/d2b95912cedd",
+  "deployment_manifest_sha256": "5b68b84847a5e7c084d4ffaf763bed48e1dbf29e35c9106a4b5de2eaf59d43f2",
+  "final_source_s001": {
+    "original_epoch_path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-watch-r29/epochs/s001/4b789ec73426ff21b80766a13efcb571d4edf4340a2936a1787d786904ce4196",
+    "pages": 5,
+    "gt_tables": 0,
+    "result_sha256": "4a16dbab8f99244ed6fc6d9fd84c089f87d7d065f0a3ae50ac2b21131db6683c",
+    "receipt_sha256": "9bba686f38eb5bee1b9c8fc8929617652e92b3f4695797a9b231f85542bec2d8"
+  },
+  "qualification": "Six native catalog controls passed; old s128 and new s001/s003 receipts replayed; final-source s001 and deduplicated union replayed after immutable deployment. All ten new unique pages compared with filed 334/82 have zero GT.",
+  "retention": "Retain immutable deployment and original epoch/source/capture paths for receipt replay; copies in capsule do not relocate bindings. Existing watcher left running.",
+  "final_source_union": {
+    "unique_pages": 344,
+    "gt_tables": 82,
+    "teds": 0.9274766122818409,
+    "structure": 0.9571778949590706,
+    "scope": "descriptive English fresh cohort; neither full population nor paired quality"
+  },
+  "service": {
+    "unit": "pip02-score-r29-d2-20261031.service",
+    "pid": 4099482,
+    "birth_ticks": "154530581",
+    "ppid": 1,
+    "bounded_runtime": "host stop timer at 2026-11-01 04:59:08 UTC, before the 24-hour RuntimeMaxSec; restart on failure is enabled before expiry",
+    "service_start_utc": "2026-10-31T05:00:32Z",
+    "watcher_lock": "held; second writer refused",
+    "old_new_watcher_4006088": "stopped and verified dead",
+    "pre_r29_watcher_793354": "alive"
+  }
+}
