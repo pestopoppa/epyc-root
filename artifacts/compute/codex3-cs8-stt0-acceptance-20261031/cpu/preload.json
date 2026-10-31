@@ -1,0 +1,38 @@
+{
+  "binary_mtime_ns": 1785497661814257202,
+  "binary_older_than_freeze_commit": true,
+  "binary_sha256": "71e5dd39248017f158afb2fa78e8ffdb83d3889f6405fafbc30ff3422deea5b6",
+  "co_tenant_state": "unknown; not sampled",
+  "ld_library_path": "/mnt/raid0/llm/whisper.cpp/build/bin:/opt/rocm/lib",
+  "libraries": {
+    "libggml-base.so.0.18.0": {
+      "mtime_ns": 1785497593136423192,
+      "sha256": "6c59614a8a984bb006047c75a104d376ec6f85257c5512c323bf5018170a26ac"
+    },
+    "libggml-cpu.so.0.18.0": {
+      "mtime_ns": 1785497600154508572,
+      "sha256": "23bc5bf9032ff4105d8d6f7f19f81b55091e5d9c76ebea0dd4df53f9d5b86387"
+    },
+    "libggml-hip.so.0.18.0": {
+      "mtime_ns": 1785497646917076570,
+      "sha256": "aee379c44477becb9fa3f6bb94fa4d3ca41617977d04eda324774c4a55916993"
+    },
+    "libggml.so.0.18.0": {
+      "mtime_ns": 1785497647726086383,
+      "sha256": "f2a706a7a24837e51b5ce05906df23f5bce05a7048351f52a3ad1f75b634ceed"
+    }
+  },
+  "linkage_log_sha256": "21bbd84823cba7bff1246fed823af9809b9e179777e12cf7cd0a2a2a083562a0",
+  "manifest_sha256": "2ded1024e8ae191c7e98ca12a42660520184bcc6a9549ccc9edcb2db86255ce7",
+  "model_revision": "35156454d1a39de06863303dd209fd2bed6ee079",
+  "model_sha256": "833bffc9513b2cae867ee9e51633cfd11e4d51aaa5597c8ac02159385a2b426f",
+  "note": "freeze commit records previously uncommitted build patch; mtime alone does not establish build provenance",
+  "predeclare_sha256": "65921cc6cb84e070d94b46eb670278ead9a274a9d34872247620e0e53486206a",
+  "preload_completed_at": "2026-10-28T19:58:21.954915+00:00",
+  "runner_sha256": "80c156be0e8408ab9e91c542a52d9e03f02c20f199472f5c247568fb5a92b213",
+  "source_sha256": {
+    "/mnt/raid0/llm/whisper.cpp/examples/parakeet-cli/parakeet-cli.cpp": "1b662a44a31dc637867d50922739ec74a9cee72368ebe5f445253c9a0cd2d7fe",
+    "/mnt/raid0/llm/whisper.cpp/src/parakeet.cpp": "84469da7cd1948cf1c00631dc80dbdde59b16c215cd3f5de6315843cc7279d2c"
+  },
+  "tree_head": "b307379226d93d9c5ed790d7cea0626613c0ef4b"
+}

@@ -12,3 +12,11 @@ Both CPU diagnostic packets have final same-entry HOST normal and STOP/drain con
 ### 2026-10-31 ERNIE typography preparation
 
 The prospective 20-prompt EN/ZH typography slice and source pins are prepared under the existing PIP-03 family. Host linkage is a build observation, not GPU residency. The actual GPU was busy at the preflight; no GPU smoke, image request, target model load or READY occurred. Enhancer-on and product filtering remain UNKNOWN; the local slice cannot establish the official benchmark score or a matched-Qwen result. [Bounded preparation](../../artifacts/compute/codex3-df2-ernie-prep-20261031/). [belief: cc]
+
+### 06:00Z — CS-8.STT0 acceptance and diagnostic publication
+
+The owner accepted the original fixed-corpus CS-8.STT0 task and its closeout: 80 retained CPU/GPU transcript files, 40/40 exact pairs and both linkage logs are bound in the [acceptance bundle](../../artifacts/compute/codex3-cs8-stt0-acceptance-20261031/ACCEPTANCE.json). This is corpus-specific correctness, not a quality or performance claim; the belief verifier remains open. Two owner-applied checkboxes close the parent task and closeout. [belief: cc]
+
+DF2-12 and DF2-13 subsequently published diagnostic READY manifests with actual source enrollment `4d2f90c47480f5920142090dae334ce1e448accb`; the earlier placeholder snapshots remain historical. Public small-model controls do not establish target DFlash behavior. [Publication receipts](../../artifacts/compute/codex3-df2-publication-20261031/SHA256SUMS). [no-belief: preparation only]
+
+A separately rederived paired PAW A comparison on 64 bound cases gave standard 57, compact 48 exact matches (both 45, standard only 12, compact only 3, neither 4). Standard's original rc1 and later offline writer are distinct; no inference was repeated and no PAW-3 decision follows. [Audit](../../artifacts/compute/codex3-paw-paired-a-20261031/paw-paired-audit.json). [belief: cc]

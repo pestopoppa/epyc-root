@@ -1,0 +1,690 @@
+{
+  "completed_at": "2026-10-27T23:22:42.939489+00:00",
+  "evidence_root": "/mnt/raid0/llm/tmp/refactor-01a16fc3/parakeet-reference-ready/reference-evidence/gpu/attempts/20261027T232209-2026845",
+  "leg": "gpu",
+  "preload_sha256": "f1182e958e52786d07f14e866217443a929bc6f263deb39972d6ad1089b3e643",
+  "results": [
+    {
+      "clip_id": "en_us:12741024238657315067.wav",
+      "elapsed_wall_s_descriptive": 0.7549676895141602,
+      "files": {
+        "argv.json": "ea1b3ac9498a8a68f5d206ce3fc21aa231c5f88838f07cb5434b73a594c3ecae",
+        "samples.json": "5579561e45df0adf3c37ca2bdbb05059d57a8f6c0dc8a1f49f8cca0e03767624",
+        "stderr.txt": "f2ec2c5f4bc31dc3560d25abf628011c323bef667f50445863724f2e48201dd8",
+        "stdout.txt": "9e68b4e67e001aaefbd4f90e32ff01c55d9a1b59da8e8d6cc081d2eb469da8b4"
+      },
+      "pcm_sha256": "52e73f675998d0cf346920865d3abdd8a22ad4f9de8196bc190f00896ba8a260",
+      "pid": 2027012,
+      "rc": 0,
+      "source_wav_sha256": "3e76cc5728bfd7c24f1039b5c9a47e8d79c7f225605862e977833a4f79249bff",
+      "started_epoch_s": 1793143330.9712124,
+      "transcript": "Unfortunately, studying traffic flow is difficult because driver's behavior cannot be predicted with 100 percent certainty.\n",
+      "wav_sha256": "240a643fad4f09e281b38527d60d0329d2f4a8aafef953aae827698e9a0e33bb"
+    },
+    {
+      "clip_id": "en_us:9055240296608129734.wav",
+      "elapsed_wall_s_descriptive": 0.7521152496337891,
+      "files": {
+        "argv.json": "e155e979e0ebc8a7bff66ef20200526e1b33eb0fabe263a13afda586664963f4",
+        "samples.json": "13ff669bc6ba4a12772c2688052c43ee431de35eccf0bfbbbc8c4784332191da",
+        "stderr.txt": "5d40d785b33808142b04fc73b5552fbd5f46ad0ab819328ff1378afa69094945",
+        "stdout.txt": "265233a7036daf3c2bc5b99c2163b5691b15d8fb69c59cee9d8490649769ba94"
+      },
+      "pcm_sha256": "a07bbf4747676ad1fe6873a3d7ff46bd59535e4fc790bd4d83d2d10ff1a851df",
+      "pid": 2027047,
+      "rc": 0,
+      "source_wav_sha256": "bd5092d79fb9ebee7fee37e428ec3648d09f650f981cd3d2ba1040f06cb52b32",
+      "started_epoch_s": 1793143331.7264435,
+      "transcript": "Unfortunately, studying traffic flow is difficult because driver behavior cannot be predicted with 100 percent certainty.\n",
+      "wav_sha256": "2274cf2198cc31205b7f286adb7b0a48ec9609247e1192c5d04b2e99c3af1169"
+    },
+    {
+      "clip_id": "en_us:621925716775998155.wav",
+      "elapsed_wall_s_descriptive": 0.7521152496337891,
+      "files": {
+        "argv.json": "a16a7f1a889aaef8e78be0a7f5fc255fabc4585f49fb5189b34b88967aa83da3",
+        "samples.json": "9d33d91c4e8d2a7e2ba7a7a749c8bb6a4a23db7de5421f0b6d52a6ce1e3cdb83",
+        "stderr.txt": "26d363791d3105e9de22237529d835dbaf77ccdcdabf95d213ea9d2836c7e97d",
+        "stdout.txt": "475fbd97049174a27d5a9351585694c2ef53815d413154f4dd96ea0551f8a420"
+      },
+      "pcm_sha256": "219c0050feb1e9f8fd80a7317113a0fdbfed1a1e1b9a50ce5390dd085c7fb544",
+      "pid": 2027079,
+      "rc": 0,
+      "source_wav_sha256": "cf4c405546467f94f1589e574bec7c07cfe2a709bdc40b65660ed24f74d13d60",
+      "started_epoch_s": 1793143332.478875,
+      "transcript": "Twentieth-century research has shown that there are two pools of genetic variation: hidden and expressed.\n",
+      "wav_sha256": "61182d1d121011abe734ff71623d3517aa6cdb6fdf501a6232d7df89a1728e19"
+    },
+    {
+      "clip_id": "en_us:10335587906469246566.wav",
+      "elapsed_wall_s_descriptive": 0.7521138191223145,
+      "files": {
+        "argv.json": "7cee66235524bd51c2132b98a67a1354e343d52bf73a180905015755be0628b7",
+        "samples.json": "90b8d6c6ff752efc05d83567fef7b24e87e4a4c672000504ca23610d8fda1db0",
+        "stderr.txt": "eed4f5da6da7197d38fde757491569863a8aeca07b9aa9ddc2f0aeea130e4d18",
+        "stdout.txt": "b54afb2d00b131af1e27233354595d26566e45a88f45105fbbdaefdecec8e557"
+      },
+      "pcm_sha256": "f112c6d36e3349ce43279d592d8cc3d03acc0e237692900e6eb769267e9c8d7a",
+      "pid": 2027112,
+      "rc": 0,
+      "source_wav_sha256": "14c9f40d7087ed487823917a9bc1838a037d78d315a694f7ace632651c612a61",
+      "started_epoch_s": 1793143333.2313137,
+      "transcript": "20th century research has shown that there are two pools of genetic variation hidden and expressed.\n",
+      "wav_sha256": "24c0b5ca0480c351c3accfd9dee364609af9216d89d84a1dcac1bc6e8fdbc1a3"
+    },
+    {
+      "clip_id": "en_us:2589557553267364799.wav",
+      "elapsed_wall_s_descriptive": 0.7521164417266846,
+      "files": {
+        "argv.json": "bc75d7da14446aec097797eb682e960ba006c303afd04143405236040bfcb902",
+        "samples.json": "1672512de5b457fc84aaf35be7ff95eebac29cb0fa4286e2a5ba69f692bb47f8",
+        "stderr.txt": "f3392b9e7cfc9c5a6281b6863eaf6b03703e92c4f83c92658eb15efec0d17e9d",
+        "stdout.txt": "1c952d8625016542fb8e0537b194cfe07317708ebddb74b07ed8a9674852aa34"
+      },
+      "pcm_sha256": "88a38da40bb1e6ea6dd641935ee836e2b92f682b41764812787660bd205afe55",
+      "pid": 2027159,
+      "rc": 0,
+      "source_wav_sha256": "5db6068216c1f013f1fda5068e1f3b4e326a533bb361682ef05795f35549aa4f",
+      "started_epoch_s": 1793143333.9838026,
+      "transcript": "Remember that even though music on the main stages may have finished, there may be sections of the festival that will keep playing music until late into the night.\n",
+      "wav_sha256": "74bb3ad431eb1c0b51b264665fb5ca1eec3a5c943b88def945e6fb83c8191498"
+    },
+    {
+      "clip_id": "en_us:17824557748066874904.wav",
+      "elapsed_wall_s_descriptive": 0.7519512176513672,
+      "files": {
+        "argv.json": "0649cce97159ef09a5dcd5d0c122dfdbb9f532510f0eee041371e3cc2e1dbeb7",
+        "samples.json": "23db08941d463cec81ff44f47cf15ca958b560ea2c6ec6627c77e1f4c1201aac",
+        "stderr.txt": "d139d7947c6172c1ab7f4a01f6c9fd7227a63b0d95640ed1ba79ff62c02b39e1",
+        "stdout.txt": "1c952d8625016542fb8e0537b194cfe07317708ebddb74b07ed8a9674852aa34"
+      },
+      "pcm_sha256": "1d63d47846c3501fe67178591dd02754a0134c00f0e55ad383836ff831615d8a",
+      "pid": 2027197,
+      "rc": 0,
+      "source_wav_sha256": "b0c1cb86ba5b11201c7664ff3a1f1a348fee4f3c38427b2606d2814f62fe17c9",
+      "started_epoch_s": 1793143334.7362468,
+      "transcript": "Remember that even though music on the main stages may have finished, there may be sections of the festival that will keep playing music until late into the night.\n",
+      "wav_sha256": "8b698aec342cbfd99aff7e8f9e0a69b33013d4b02fca33cf8dd3362818f9cb12"
+    },
+    {
+      "clip_id": "en_us:8173060820032255320.wav",
+      "elapsed_wall_s_descriptive": 0.7520816326141357,
+      "files": {
+        "argv.json": "734a255521247817cc14e116d3a539333a937881af58af4182ecba77da693847",
+        "samples.json": "f96dbd2897e492ac5cf3d278bc1c739333041cd481b00ddb5d6937b8ef74bb7b",
+        "stderr.txt": "8e6ef2099cd529067f9d60c6ef4dfb549ecf1cb185922fdee95517732c08b0c6",
+        "stdout.txt": "2fd998a8c74c056ac7bedcce7ccc9f649358351e962112533d85b4654573992c"
+      },
+      "pcm_sha256": "7069e84c7cc02acb91d2e99c84cbe1d753f1300b89f70671770671ee01029dfb",
+      "pid": 2027222,
+      "rc": 0,
+      "source_wav_sha256": "06e28072fe3853efcfd1d1c3bc3613ba5ec76c0931e9018e44aac5d946d4e210",
+      "started_epoch_s": 1793143335.4885619,
+      "transcript": "Police Superintendent Shandra Sankhar Salawski said the accused appeared in court with covered faces.\n",
+      "wav_sha256": "101084cea2087a84a38ac3205d842d37eb897dc389456e9ee2ec479cc8be2a69"
+    },
+    {
+      "clip_id": "en_us:15618717836108767541.wav",
+      "elapsed_wall_s_descriptive": 0.7521135807037354,
+      "files": {
+        "argv.json": "6bd4f87ef602bff450a8562d54606b70c4310963a84cacc2f6e4bd5f8502cae8",
+        "samples.json": "5d2fa3a0ad81f92bcd0a6ded3795ad39f61b62474c684ad8fe4775a327733b5b",
+        "stderr.txt": "7fc611b2df04101f52d79784ea5bf60102fc9a2a613f078960963526b6909732",
+        "stdout.txt": "012c3b91b48aa4731f3647c53575707a34d28cb3800fe55d29e687b79ed07be6"
+      },
+      "pcm_sha256": "5b676478f2bbb4b88fd59b934b19c8314cff33fc98354c7bbe70ebb6561238ed",
+      "pid": 2027260,
+      "rc": 0,
+      "source_wav_sha256": "40d7e92df0355f4836e2b8fa2a88d7c7e047d0472f0845ca08f0c21257785390",
+      "started_epoch_s": 1793143336.2409892,
+      "transcript": "Police Superintendent Chandra Shikar Sonaki said the accused appeared in court with covered faces.\n",
+      "wav_sha256": "487e8175fc9c9cb0a8e87128eef68200473a9b9aa8d6ff527f680e682ec121e6"
+    },
+    {
+      "clip_id": "en_us:2652155470394119415.wav",
+      "elapsed_wall_s_descriptive": 0.7520847320556641,
+      "files": {
+        "argv.json": "7ef7176d16a17ffb57426cdd23f5b139806732ac9ef9fdf5ac28551dd6854753",
+        "samples.json": "03da6eb55f1c637785cceda23824cf5f9b9c2cf2588427253c24756fe6a0f294",
+        "stderr.txt": "1fe5374624a2f3a5262afe9901f9a49016aee001654dd038d689c8b43bb7e925",
+        "stdout.txt": "6157e0ebbb6b5b390bc3e20804a1d891e68a9b6f374b91da7bb340371ae28f61"
+      },
+      "pcm_sha256": "246e955ca8b3e98a3a23149958068bf3f9fb1f18c7c11d1b05f89536f0fb6c5f",
+      "pid": 2027280,
+      "rc": 0,
+      "source_wav_sha256": "c88bd2077735b74a8cf4d9b4c600e886cc8766ea7b12e4ea728ea10ea921aaee",
+      "started_epoch_s": 1793143336.993466,
+      "transcript": "The term bug is used by entomologists in a formal sense for this group of insects.\n",
+      "wav_sha256": "7261436b09772723837d875c11dc35c29d334279ffb147e2c0bd37024e5e2bfb"
+    },
+    {
+      "clip_id": "en_us:14585898865749103727.wav",
+      "elapsed_wall_s_descriptive": 0.7519636154174805,
+      "files": {
+        "argv.json": "3d246e586234290c583620be9193cce2450effbe290a4a4682a624d81938d4a5",
+        "samples.json": "62796f8c9979e6175359b845109dc82188749bbc8e840f1b5b5640cafb333a96",
+        "stderr.txt": "b5786fa2986a0c5aa4a5051a40bb255dd2e12ee91c21f0340e3df6613a4bcd9c",
+        "stdout.txt": "6157e0ebbb6b5b390bc3e20804a1d891e68a9b6f374b91da7bb340371ae28f61"
+      },
+      "pcm_sha256": "b086e42ba26165a7cba95eb82dabe174007d0c872bf87dfca6315587e694029e",
+      "pid": 2027306,
+      "rc": 0,
+      "source_wav_sha256": "0e11afc830b3cde8e284191d35ddcdd0baa8d4075f407bf71027ed86680e1911",
+      "started_epoch_s": 1793143337.7459083,
+      "transcript": "The term bug is used by entomologists in a formal sense for this group of insects.\n",
+      "wav_sha256": "a2d19019ca3e828c5b98bde699a60b08f1cb176bb4e15155f80701ca6bbffcee"
+    },
+    {
+      "clip_id": "it_it:3299434526375775286.wav",
+      "elapsed_wall_s_descriptive": 0.7521395683288574,
+      "files": {
+        "argv.json": "7daa5c04cd39f8956ab29d9ab0b692060b278423610b94acb96beaa125d84a44",
+        "samples.json": "5d28bdce0a7ba723c12f31f17dc23cabfd9d6bb731b3d1550ecebbb756cb2599",
+        "stderr.txt": "94b756837b4a2bcb38a4a70e6422e19f4e22930537eb31245dc35d81b56a0876",
+        "stdout.txt": "11fa8ec3529a0b73edc4445c96f3052ff4090c3a341120d896c10298867f9b68"
+      },
+      "pcm_sha256": "32ff06bf637cc5f1066cee292a217e3830b53e15793b5b642b747496d8b4b665",
+      "pid": 2027319,
+      "rc": 0,
+      "source_wav_sha256": "b0bf42c8e5d01a73591c16cdfb7d67128541af45a8ba44ac2bfd543acae21127",
+      "started_epoch_s": 1793143338.4982426,
+      "transcript": "L'incidente è avvenuto in alta montagna e si ritiene sia stato causato da fuoco nemico.\n",
+      "wav_sha256": "bfd904c7aa0dfc67cecc3b6adce275c384b8f7e171eabeb39d51405e841fef75"
+    },
+    {
+      "clip_id": "it_it:1006729518827641482.wav",
+      "elapsed_wall_s_descriptive": 0.752220630645752,
+      "files": {
+        "argv.json": "4c7fef50936f6912beccf9f10bc7302b5ff6696073fe451007104483188c62b2",
+        "samples.json": "c30ba2fc3a102d8b35f241c9f7215ce8a13f0f186fc11e3d19bba4d2676bc915",
+        "stderr.txt": "e2dd9b7ac93d06e8edf79345ed160cdcd6665ddccf70dddeb5de4f51d37c3b2b",
+        "stdout.txt": "11fa8ec3529a0b73edc4445c96f3052ff4090c3a341120d896c10298867f9b68"
+      },
+      "pcm_sha256": "162e2e1b2b85fec6105f29dcb0476dd02a74f27721a9e3101b88b35eecbe549e",
+      "pid": 2027379,
+      "rc": 0,
+      "source_wav_sha256": "5672391e9d06efa5d7c46adb35494575d2dc39b836abba7ea120953aab660757",
+      "started_epoch_s": 1793143339.2507772,
+      "transcript": "L'incidente è avvenuto in alta montagna e si ritiene sia stato causato da fuoco nemico.\n",
+      "wav_sha256": "554238ff19492cd32e555a65f2fe0cfd5a0c79a5cebd97279d1326b6fd8f67f8"
+    },
+    {
+      "clip_id": "it_it:5761106912632880847.wav",
+      "elapsed_wall_s_descriptive": 0.7519991397857666,
+      "files": {
+        "argv.json": "019a61fcaaa52acb93167992451f65f16aa6b44063cddb9bf70b3c6efdbca767",
+        "samples.json": "6192c5d572f6e658b9cfda6f82849c91306da17e6cd70211f9845efa2fd32878",
+        "stderr.txt": "f85d99a484a876692d137e6e9634db726d6d0882ed7ffe5b778e8d7edb3fed61",
+        "stdout.txt": "11fa8ec3529a0b73edc4445c96f3052ff4090c3a341120d896c10298867f9b68"
+      },
+      "pcm_sha256": "ca94a8b1ef521430d3fe0d6f7503099f7644d7630f4320c7120c5c20d3d6711c",
+      "pid": 2027435,
+      "rc": 0,
+      "source_wav_sha256": "b9868c4c0cc39cc160e07c688187b7cd2a66f408896c5599bf495ca6e01cecad",
+      "started_epoch_s": 1793143340.003391,
+      "transcript": "L'incidente è avvenuto in alta montagna e si ritiene sia stato causato da fuoco nemico.\n",
+      "wav_sha256": "09123f4207b3aaa854ab97c01b3e3ebab2e393e624c0d8ab49a1f935c98051ff"
+    },
+    {
+      "clip_id": "it_it:1815772323593604298.wav",
+      "elapsed_wall_s_descriptive": 0.75215744972229,
+      "files": {
+        "argv.json": "a711d21dcefa2c72fd98e4dc90b4b3082ee25450bfb6f4c6890995dec34c0db0",
+        "samples.json": "6cefe6d5f890944cec20f43a5d14497905eaf2f2da620f28581a508ff76ada6d",
+        "stderr.txt": "42c52822656b2ee074aa6e73a517fc47d13c49b40f6dc0860b8988dfd3c7fbae",
+        "stdout.txt": "d22e5e023d8d8624618527d67d232985d7f7d4140dfdd409219b3a3eacaf49ed"
+      },
+      "pcm_sha256": "663f4f07ce89d58a27730877cdfad3c792596b715e081f23d162bc2ed922d871",
+      "pid": 2027445,
+      "rc": 0,
+      "source_wav_sha256": "a82491225a36784093dc9193f4003d72f0d1b1467f71185af8d457b9e5886357",
+      "started_epoch_s": 1793143340.7557986,
+      "transcript": "L'italiano è anche la lingua d'uso quotidiano parlata dalla maggior parte delle persone che lavorano all'interno dello Stato, mentre il latino è spesso usato nelle funzioni religiose.\n",
+      "wav_sha256": "8314b7745dd4c2a5a92d7d65bf9635b22ccf7c1faefcef28d463f51f73820ffc"
+    },
+    {
+      "clip_id": "it_it:5520246528580221640.wav",
+      "elapsed_wall_s_descriptive": 0.7519900798797607,
+      "files": {
+        "argv.json": "3eed9ea92cac448ac98ce53881906f0095fa90460b297cd50bf1bc0d1751807d",
+        "samples.json": "63258234559997adaa2f85cfc2d4e085620c9ac75e3dbd2961eb50b86c5913fe",
+        "stderr.txt": "6ee56cd5e44e774af99f2acf4ce2c66d7486b090482c080b9dd7497769c4d750",
+        "stdout.txt": "374821544155098bae374b86c87f0976cab61f425fbe317897f858b523761a8f"
+      },
+      "pcm_sha256": "64bdbbc33598dcce90f18b8658b1eb7cff484d6ffc1fb47996fb0e2f80eb6669",
+      "pid": 2027550,
+      "rc": 0,
+      "source_wav_sha256": "b7a4de1a5c03d4756fb4d12ba3c9637e9a0ad2f8c2df5a5d7a3109501b93baf4",
+      "started_epoch_s": 1793143341.5083652,
+      "transcript": "L'italiano è anche la lingua d'uso quotidiano parlato dalla maggior parte delle persone che lavorano all'interno dello Stato, mentre il latino è spesso usato nelle funzioni religiose.\n",
+      "wav_sha256": "58ce277ba7953cf54dde5ff47eef683ae0fe222bf94b6e9f61c7fd9532630d93"
+    },
+    {
+      "clip_id": "it_it:8800547400861953606.wav",
+      "elapsed_wall_s_descriptive": 0.7519738674163818,
+      "files": {
+        "argv.json": "20ae161769de09c77145513811912d4fa9d07d785a0a59cfa521a1c44fb24bd7",
+        "samples.json": "0e53d3ce4ffe3133c9932467d6c99d64f2121edbb3f6132183dccdfa8b6fb827",
+        "stderr.txt": "d09672ce7a04aaa0119c72bac1252e8c3acb8eaa45ef4879b2dcc6ba7e501e38",
+        "stdout.txt": "d22e5e023d8d8624618527d67d232985d7f7d4140dfdd409219b3a3eacaf49ed"
+      },
+      "pcm_sha256": "fbe8cbd4395f79f36ee9f53614f82337845cd7705bc1d05eff19d59d32ac4ce7",
+      "pid": 2027595,
+      "rc": 0,
+      "source_wav_sha256": "273a964a6610db2ea1f55cadf3e60455336ac17b23ea3dac00d007c0433f6084",
+      "started_epoch_s": 1793143342.2607574,
+      "transcript": "L'italiano è anche la lingua d'uso quotidiano parlata dalla maggior parte delle persone che lavorano all'interno dello Stato, mentre il latino è spesso usato nelle funzioni religiose.\n",
+      "wav_sha256": "fec2af99c5dff6fef4dd0656154eccc18bea7a1158abf88d60c0b5c42c83f7b9"
+    },
+    {
+      "clip_id": "it_it:325012546177289849.wav",
+      "elapsed_wall_s_descriptive": 0.7519612312316895,
+      "files": {
+        "argv.json": "cad81992b9930ac5c4e1940f956961841cf06ef13c279ffd15964912ec4c6d2a",
+        "samples.json": "11126e7e3e83661fdae29dc3c66c2dd0d1e6b64cd5846a4973d2c18576d55632",
+        "stderr.txt": "85e213e6b48ba343859db7e724abde6324323a7193c89240b1704826776f38be",
+        "stdout.txt": "d30c776fb67bafda46a15408c73abd75c785bf1b607e21fd42d424db0606f9a8"
+      },
+      "pcm_sha256": "5943fedae74ceeb8cce3e95ac7b809078bc816418e254ffd31b81560763d6e43",
+      "pid": 2027611,
+      "rc": 0,
+      "source_wav_sha256": "05d1f79183193d0a58cdeeaf2c2e2979406be6feac4a135e9a553a12123548d0",
+      "started_epoch_s": 1793143343.0131328,
+      "transcript": "Se non si ha l'abitudine di guidare su strade di campagna, si consiglia di tenere gli occhi ben aperti in quanto predominano ripide pendenze, stradine anguste e curve strette.\n",
+      "wav_sha256": "d985d232a02ad834d797346c799b086eaa5510f617159a3aef1632a2227941e4"
+    },
+    {
+      "clip_id": "it_it:4625363240754311860.wav",
+      "elapsed_wall_s_descriptive": 0.7519917488098145,
+      "files": {
+        "argv.json": "c7c23563be451b50e0687a672f4857cfa92515aa0482c8c9f292a8dab30f9a93",
+        "samples.json": "2535c58d32980a88c1afe89bf029cf0ba92ee67c1945813cd0f699a8b5be2bf5",
+        "stderr.txt": "f5b4406845c195d2f2eefa4844fe6b94db6aac5561e51095279dc1b1de2a3d3e",
+        "stdout.txt": "7654608a7aa24fffb4a0526be8827bd5b500cb3279c4ed95681e794c768f7362"
+      },
+      "pcm_sha256": "970400f64e60abc919195372f129350dadb44a2d28e1b21378d6af1e53651ec9",
+      "pid": 2027637,
+      "rc": 0,
+      "source_wav_sha256": "4af2ae3f8c3a4957bd86b6f19948ecf033a0f116f612a14c0300fadd3fd5ce03",
+      "started_epoch_s": 1793143343.765496,
+      "transcript": "Se non si ha l'abitudine di guidare su strade di campagna, si consiglia di tenere gli occhi ben aperti, in quanto predominano ripide pendenze, stradine anguste e curve strette.\n",
+      "wav_sha256": "2d44d0f18729ef1a73c1c15efc6fbbe365e580cf9abb6a1e06cd7ddfacf0de06"
+    },
+    {
+      "clip_id": "it_it:13079120887552488011.wav",
+      "elapsed_wall_s_descriptive": 0.8211851119995117,
+      "files": {
+        "argv.json": "323b41fb1f6518bb948c21788917185bba1d9d2d0f661f6bd1f4dffff1da7cab",
+        "samples.json": "0d4a9c322ad5c96be3cfaf909ae6335a182678e43aaa1ae813120fb859c9a723",
+        "stderr.txt": "58037ac1a8c98c33c68032b4f1e672d54d38bd7acfa8827338229c53afa5ecd2",
+        "stdout.txt": "d30c776fb67bafda46a15408c73abd75c785bf1b607e21fd42d424db0606f9a8"
+      },
+      "pcm_sha256": "e8e318a736df3402ba44cbbeafab599aed82af9cd773a7e749b9823d6bdc3fab",
+      "pid": 2027670,
+      "rc": 0,
+      "source_wav_sha256": "0e2ee331d5eb0e4317c708520e323fad6723ec656b852d44f03250ad269bfb32",
+      "started_epoch_s": 1793143344.5179102,
+      "transcript": "Se non si ha l'abitudine di guidare su strade di campagna, si consiglia di tenere gli occhi ben aperti in quanto predominano ripide pendenze, stradine anguste e curve strette.\n",
+      "wav_sha256": "e7d1d415c51f7f420eba93b7e7acb925ac7ffdf9f705918d73399e165b813559"
+    },
+    {
+      "clip_id": "it_it:17285555551155021824.wav",
+      "elapsed_wall_s_descriptive": 0.7521073818206787,
+      "files": {
+        "argv.json": "c7e0f29c997c537a0e679f8a170e4024521d8e055f2a23f79db1015a672bc6e5",
+        "samples.json": "3887052ae1617d6c1bd4fc682c4ee9c3fec4b783cc50109ae227567f541622be",
+        "stderr.txt": "b1c240ed957ed1b1b9dae8b5cf2c5ae8d75485be30ed2be6e233098a2753fb4d",
+        "stdout.txt": "f04c57b09662950fd8786e273016b550ef6804c2e7b5276e71f5b6aad1571741"
+      },
+      "pcm_sha256": "e77697f2f83481c202d08863b951a17ad7248a44a8af3b3052efb7175af535dc",
+      "pid": 2027721,
+      "rc": 0,
+      "source_wav_sha256": "6e41ea1952fdaede30f38f52d8acca00b05b9032e97b7fd1db7a65d8ea0f4206",
+      "started_epoch_s": 1793143345.339503,
+      "transcript": "Per la discesa a terra non sarà necessario un visto separato a partire dal 2009 utilizzando le escursioni di bordo.\n",
+      "wav_sha256": "d108f891f88a9be73277e2aeb1cc1d47d14873ebb7d841c5d136c6cae981cb2b"
+    },
+    {
+      "clip_id": "de_de:17113436913741548046.wav",
+      "elapsed_wall_s_descriptive": 1.0028250217437744,
+      "files": {
+        "argv.json": "372d00df645989c842f11576403ab66904b6cd15926d986eff56aca5f192905b",
+        "samples.json": "699d3faadd3d27d0d5e0e67d843532b7fa99f7e92ac836c5bc80790212dc97c6",
+        "stderr.txt": "7a07478905e66090afaa3a808eb97ee612cc2ae19677bda57b1559270e13be3f",
+        "stdout.txt": "3426e1f1183da83cf1c6b2dcd24d18c4a6bf31341262ddcf0b65524f939c90dc"
+      },
+      "pcm_sha256": "f9a318b39dbd02500da5d555d43cd1a919b26b4d3483af44e60d80264c1d50ca",
+      "pid": 2027752,
+      "rc": 0,
+      "source_wav_sha256": "82ac43fa718e4f6da6d69fbba3ada63f32c7947df59504864c3ce8314d218ee5",
+      "started_epoch_s": 1793143346.0921419,
+      "transcript": "Löwenrudel agieren ähnlich wie Wolfs- oder Hundenrudel. Tiere, die den Löwen, aber nicht anderen Großkatzen im Verhalten überraschend ähneln und ebenso tödlich gegenüber ihrer Beute sind.\n",
+      "wav_sha256": "38c91893578c8389b65b6647bfbeee7abcfe4eee3ab22025d586acd383973521"
+    },
+    {
+      "clip_id": "de_de:10555751885736126606.wav",
+      "elapsed_wall_s_descriptive": 1.0025689601898193,
+      "files": {
+        "argv.json": "ac2e2dac0eda802f4c76cd96de21b9c0918fea7ed1bf1a70ab84f7f96ac0caa9",
+        "samples.json": "531fe283034286f3b9d1a99919750567d2082fd91d17d94ca7bae1ba8910553a",
+        "stderr.txt": "3326e337bc291f96197c992148df7857a589d7542a6053ac8cae0084968cd798",
+        "stdout.txt": "52cdafaa80cc2227dc105687992367d01088fd75fa84e6146474c46d30c840da"
+      },
+      "pcm_sha256": "28031e83d6b70fe71d5a6bafe4861974a5e6d55060be1bb73da366ab42b32d0e",
+      "pid": 2027795,
+      "rc": 0,
+      "source_wav_sha256": "809b0afc5296df3747426f092b001f6147ac8277da31cd97c6faf23953be97fa",
+      "started_epoch_s": 1793143347.0955007,
+      "transcript": "Löwenrudel agieren ähnlich wie Wolfs- oder Hunderudel, Tiere, die den Löwen aber nicht anderen Großkatzen im Verhalten, überraschend ähneln und ebenso tödlich gegenüber ihrer Beute sind.\n",
+      "wav_sha256": "c9711271724d4b881b6e96eea8be7adb56c1ff632dbd3f75bf8bd1016b9dd215"
+    },
+    {
+      "clip_id": "de_de:13734019592211926155.wav",
+      "elapsed_wall_s_descriptive": 0.7521946430206299,
+      "files": {
+        "argv.json": "08f393906d8881a4eaf569eb77c4496cc806190af5edd0ba8de61a952d7c78c6",
+        "samples.json": "bf6bb3f347482c6bd8a30b104b6f58ae54ccfe1931c4684ed20d1d70fe9b915e",
+        "stderr.txt": "7422e5704631a61ecd1ccaf1561f47d9137d76b1501691245da92b2bc42328f9",
+        "stdout.txt": "8346f0ac0e7f5f708c234c6f9e3ea9ba8eaf08a211ae07f12707d863082800be"
+      },
+      "pcm_sha256": "d7a301d43a75ff0ad58aa7debe39d2cd2a4bba3fe82dc44044332c7ec2540716",
+      "pid": 2027826,
+      "rc": 0,
+      "source_wav_sha256": "1209f98385f76fa041a67a599ee5035e114a370915cc4476b7dc5e124672974d",
+      "started_epoch_s": 1793143348.0985663,
+      "transcript": "Löwenrudel agieren ähnlich wie Wolfs- oder Hunderudel Tiere, die den Löwen aber nicht anderen Großkarzen, dem Verhalten überraschend ähneln und ebenso tödlich gegenüber ihrer Beute sind.\n",
+      "wav_sha256": "284a215f23ca2593a7b2dca328d440a6827c38d9a0cece5a77a44e3e6973d249"
+    },
+    {
+      "clip_id": "de_de:4963712857525084701.wav",
+      "elapsed_wall_s_descriptive": 0.7523081302642822,
+      "files": {
+        "argv.json": "d296b165ac9c8c166854d389e6011ef5484ade7a68266e79db44d1e3d3982c49",
+        "samples.json": "9bb3836b7b6399e4f5a9b21328cdcd40e5be12b289f1e80117a980cd2ddd1193",
+        "stderr.txt": "ba5a633e7a0c2638831766dd965037f10b081aeea8455e5234204d07635421db",
+        "stdout.txt": "4b6fa35d092245a0cc9d99a4582e344672e80e2d682eefbaa167746b4c01ad61"
+      },
+      "pcm_sha256": "0824c8840d6fbb5dfdffd5bd383ef6352bf5de46030e97dd82e4edb073451289",
+      "pid": 2027847,
+      "rc": 0,
+      "source_wav_sha256": "2d3d6bf148a34be080a76052c0d9bdab29c4f25f2c60062c14a679bda2d3602a",
+      "started_epoch_s": 1793143348.8512454,
+      "transcript": "Ziegen wurden anscheinend bereits vor ungefähr 10.000 Jahren in Zagreb-Gebirge im Iran domestiziert.\n",
+      "wav_sha256": "f00f42ce16742349240de9f843aea0a12a77274c3c8b16ad5d4fd8feac7b414a"
+    },
+    {
+      "clip_id": "de_de:3653977734852118277.wav",
+      "elapsed_wall_s_descriptive": 0.7520833015441895,
+      "files": {
+        "argv.json": "cca9f2c7d109b0e719a1381dc0949ac91291aec92875b072589ac8cfa1a67518",
+        "samples.json": "c0e9ced4e0139f592346351739f65583dfec7b2c756d9ff007c1e570cf391dd5",
+        "stderr.txt": "0e048476238c02dfe589a26630e648c5494df112333ca8f85fcb7f610f6da22f",
+        "stdout.txt": "7bf7ea1ca96c30e90c3320b3c29712c720c0fe2afd359a34b5fb74df9bf0d7fb"
+      },
+      "pcm_sha256": "3159c2f1cf9a44c5b6f973a493408b2ab2cf0587b831ecaeba03fbcd3c6f8a0b",
+      "pid": 2027872,
+      "rc": 0,
+      "source_wav_sha256": "d2eb474344b331b9b9354213aa239f4109666be179f7597f0c157a6709c11e91",
+      "started_epoch_s": 1793143349.6040137,
+      "transcript": "Ziegen wurden anscheinend bereits vor ungefähr 10.000 Jahren im Zagros-Gebirge im Iran domestiziert.\n",
+      "wav_sha256": "7421b5981198775efd1f3e21104183b806f9abf4320af8d29ca8c4c9cce7d374"
+    },
+    {
+      "clip_id": "de_de:11725654714821576978.wav",
+      "elapsed_wall_s_descriptive": 0.7521722316741943,
+      "files": {
+        "argv.json": "cc1d49fa8c234054e267ed9962a51fecac11cd0382d83956eced48a600e4147f",
+        "samples.json": "c1ae8dfafbba090472682c42ed1c3a9afe7828747dd4f67ab37387175d7833a7",
+        "stderr.txt": "1c438aa68a84e218a82d113c145757e921894d3a180fb7143b0effb8bf244e89",
+        "stdout.txt": "7bf7ea1ca96c30e90c3320b3c29712c720c0fe2afd359a34b5fb74df9bf0d7fb"
+      },
+      "pcm_sha256": "c17549779d01f5b3aef74dca6dd37c54b517f06f6a66e6789b1b008e847e0a37",
+      "pid": 2027912,
+      "rc": 0,
+      "source_wav_sha256": "2b6dba16f02f4d9446da2f110836519cfc9803fc9576a2a6d5c658c938861aee",
+      "started_epoch_s": 1793143350.3565857,
+      "transcript": "Ziegen wurden anscheinend bereits vor ungefähr 10.000 Jahren im Zagros-Gebirge im Iran domestiziert.\n",
+      "wav_sha256": "d806a1e39ef4b011b1400dbef4f4a196a9bac70e74ef414a896f46f3c15873f7"
+    },
+    {
+      "clip_id": "de_de:12482370299689904904.wav",
+      "elapsed_wall_s_descriptive": 1.0025274753570557,
+      "files": {
+        "argv.json": "be1d191af528106aef2e72faad83873b596e0d0beae77440a9ff57c6b3085acc",
+        "samples.json": "2d1b3de916d0f0d4796264a74afde06d4daf0d9b1eb9ee5ea5b9c1225bc24fd2",
+        "stderr.txt": "c3113370b284c29aba966c001c29b4d6a243e887315ed0ebb67b84ea13c41471",
+        "stdout.txt": "5fbe21c56a9d2bd13a64363bdac2f8e8a8cf5d64ae75844240bd26eaf4ff16e5"
+      },
+      "pcm_sha256": "28947fd2c54d3d0d6b23b621eefa92fc02f2f4e7fbbe6df598fd98b6ba58f97f",
+      "pid": 2028131,
+      "rc": 0,
+      "source_wav_sha256": "dd52e69275e22b67b8d6a5ed7484d8477c9d3aa319ee5d2ec0223b73768a3390",
+      "started_epoch_s": 1793143351.1093342,
+      "transcript": "Leider fällt das Studium von Verkehrsflüssen schwer, da man Fahrerverhalten nicht mit hundertprozentiger Sicherheit voraussagen kann.\n",
+      "wav_sha256": "9f131fa124b0380979a25981d3acff392a62dacbfbf8952453c38aad6104613a"
+    },
+    {
+      "clip_id": "de_de:2561524221067958936.wav",
+      "elapsed_wall_s_descriptive": 0.7522366046905518,
+      "files": {
+        "argv.json": "7c21f738943c9090e3b356e45fe1eefa7f92489771c4d0f8420e3cd3312734ce",
+        "samples.json": "b2d5dfe0abff905165c0c97aef3cd15fc30a2162409a8c41b3e7d08f06e9d75d",
+        "stderr.txt": "897496369ccc9e1cff79a49db0f43aabcd215dc12f0fe365d1bd417fa616ac22",
+        "stdout.txt": "5fbe21c56a9d2bd13a64363bdac2f8e8a8cf5d64ae75844240bd26eaf4ff16e5"
+      },
+      "pcm_sha256": "6499e3c3c25413918dae45cd002f24f221b59baec57a87f9ed11a4871d1e4dcc",
+      "pid": 2029025,
+      "rc": 0,
+      "source_wav_sha256": "79c76128b79f11d8ec352de25c26716fa0bf0e63826b48ebd96e4e2899e498b5",
+      "started_epoch_s": 1793143352.112361,
+      "transcript": "Leider fällt das Studium von Verkehrsflüssen schwer, da man Fahrerverhalten nicht mit hundertprozentiger Sicherheit voraussagen kann.\n",
+      "wav_sha256": "4d0c2f9d0ff2d62cdb6a00aefc09c76bfc9279214d490e4201615f66de07a8ad"
+    },
+    {
+      "clip_id": "de_de:14996476656149482093.wav",
+      "elapsed_wall_s_descriptive": 0.7521698474884033,
+      "files": {
+        "argv.json": "a24263af0713447c05f3ed909fc30fdda5bd1b03497a49735e558925f6e69047",
+        "samples.json": "7d6d7fc905b9f8d653092a2684aa98a77d42940b599b93b3122cacc35fbfecbe",
+        "stderr.txt": "6ee3dad6a1b84eefc1edffc2d6bfe392aaa3bd41ead3dd548b19ad15ceffe3d6",
+        "stdout.txt": "39f8d56eddcb7bc3494fd027c453d6e232ad8de1abc80b6c0b744e054a574f79"
+      },
+      "pcm_sha256": "903acb8a6ec447ae42671b5027ef7826ef1d4114c8bf725b8a0fd9ac5e753524",
+      "pid": 2029129,
+      "rc": 0,
+      "source_wav_sha256": "bd3b688214ba63f99acf8c70ce78a398b6acec31206f564fa65aaa7cb5ddad79",
+      "started_epoch_s": 1793143352.8651836,
+      "transcript": "Es gibt Familienstrände, die manchmal überlaufen sind, mit einer schönen Einkaufspomenade entlang der Küste. Das Schwimmen ist hier sicher.\n",
+      "wav_sha256": "6a6394e2cf1776b51307ffc95aa04d2c25cdb7e1b9bc8bfbc32b22b730eb3dfb"
+    },
+    {
+      "clip_id": "de_de:10347138311808731867.wav",
+      "elapsed_wall_s_descriptive": 0.7520692348480225,
+      "files": {
+        "argv.json": "d133ed03cbcf997e1685a51cce11d6a3ce66efd4fed6bbd787d27aa933664795",
+        "samples.json": "1a0987f72b3e180c38662e7acf1170cf684633d7c19216382f939d6520b5a6de",
+        "stderr.txt": "b928d40489dd42c7e10659e50b3f42ed8a65189b226e5958901e5f1797b85271",
+        "stdout.txt": "2bb626391f3ed663515a781abb88dbf30cd1e07a3b33317800ed5c9adfda96a7"
+      },
+      "pcm_sha256": "02ebf4aba7f45a17f1824c53d1b159f3cd5f1a28e85e6e1311311ad296f74bf8",
+      "pid": 2029202,
+      "rc": 0,
+      "source_wav_sha256": "1cba9b708b7a4157497f5e2d358aaa726137b4d1378ed3f74aaa29882fd979ee",
+      "started_epoch_s": 1793143353.6178725,
+      "transcript": "Es gibt Familienstrände, die manchmal überlaufen sind, mit einer schönen Einkaufstromenade entlang der Küste. Das Schwimmen ist hier sicher.\n",
+      "wav_sha256": "4954b87e6ebcb63c338a95b15cd5abab346c71b54628ff71106851b7f937c89c"
+    },
+    {
+      "clip_id": "fr_fr:7105431834829365765.wav",
+      "elapsed_wall_s_descriptive": 0.7521693706512451,
+      "files": {
+        "argv.json": "ef2014e922bcc9e53f82df51e9f5f63837ab0df8be73eb1c7094d80811be2e82",
+        "samples.json": "a5f6764d75cdb06994e00debf8e7e34a5f887eb45d622bf2aa5db1fe3a8eb2c9",
+        "stderr.txt": "2105e1f084d46555282493598db61229f6ee2f2086e29ed2440411aae8473591",
+        "stdout.txt": "2822eb5deef0bdc7f174b78b5a54b3b458e1c4c6d4459b67b44e6d11739ae99a"
+      },
+      "pcm_sha256": "4d05ca83d9901b1e5b1063039ac1be9887a982950559637ab56b1030cc0de63e",
+      "pid": 2029225,
+      "rc": 0,
+      "source_wav_sha256": "84b9775ac39f437bfd565f5912942d1bde2237bded75473d98486499f200c990",
+      "started_epoch_s": 1793143354.370453,
+      "transcript": "Les voyageurs à destination de pays où les taxes sont élevées peuvent parfois faire des économies considérables, en particulier sur des produits comme les boissons alcoolisées ou le tabac.\n",
+      "wav_sha256": "bcc2f1735705d050ede88bd871cee2c968bb73be2a75d3c90560166961e6bf40"
+    },
+    {
+      "clip_id": "fr_fr:8412394508646602569.wav",
+      "elapsed_wall_s_descriptive": 0.7522759437561035,
+      "files": {
+        "argv.json": "015cb37405194d214880abef45f3d85cd31292215ab3ac4a92ccdc6e0c6aeef5",
+        "samples.json": "dd883e3cceb41fa7a18434b424d397dfd01140028865f07f20b9fe2915945db9",
+        "stderr.txt": "9fc11e71ffc8dadc4f7c74a233798b28f810f86337343763a23ace26bf65cf46",
+        "stdout.txt": "a7265c130f0a845ddb329e52e6d81e594a76f7dc3741591317e9e28abce6e0ae"
+      },
+      "pcm_sha256": "bb7f35e17f46367f2c2e8bbf2e4e6bcd50edc229939237afc31aa66f3dc1db34",
+      "pid": 2029273,
+      "rc": 0,
+      "source_wav_sha256": "8a6fee0c597c105e67c6bf84c5844f801cf879d19263d8d010b88cdf617a9cdf",
+      "started_epoch_s": 1793143355.1231499,
+      "transcript": "Les voyageurs à destination de pays où les taxes sont élevées peuvent parfois faire des économies considérables, en particulier sur des produits comme les bassons alcoolisés ou le tabac.\n",
+      "wav_sha256": "786fdbfa83243fcfffcc4922fc539972e2f88bae700c02746162faba3221b862"
+    },
+    {
+      "clip_id": "fr_fr:15519386366944716971.wav",
+      "elapsed_wall_s_descriptive": 0.7519824504852295,
+      "files": {
+        "argv.json": "b016eb1ccd5e20204552436540a25d039bfa9d192689922d4160438c6a2c01dc",
+        "samples.json": "99b1e9ac8d2a6220c32431ab32f8511888529383b586acc794063bee8d10844d",
+        "stderr.txt": "8ffc452a4f97166002f92a9cf383cb6d5b3a649deef38627f5eff771748c6daf",
+        "stdout.txt": "2822eb5deef0bdc7f174b78b5a54b3b458e1c4c6d4459b67b44e6d11739ae99a"
+      },
+      "pcm_sha256": "818cc42dcc17573461a4a6218166355fc9b8f4dff126c3325d7650becd78bf97",
+      "pid": 2029307,
+      "rc": 0,
+      "source_wav_sha256": "42b20369efacbd07914fbaa79acb1cc2b05be50f057cab3408b034a0eeb4e9c1",
+      "started_epoch_s": 1793143355.8759677,
+      "transcript": "Les voyageurs à destination de pays où les taxes sont élevées peuvent parfois faire des économies considérables, en particulier sur des produits comme les boissons alcoolisées ou le tabac.\n",
+      "wav_sha256": "239211c9b4af3a19aa9e98d467fef5c6237290079ad9a68aebd9af5b35e319cd"
+    },
+    {
+      "clip_id": "fr_fr:17999210160761730950.wav",
+      "elapsed_wall_s_descriptive": 1.0027403831481934,
+      "files": {
+        "argv.json": "85908d63529a354b3207e255a60973b9518dd7a5d6e4c0408ef389ad4236c64f",
+        "samples.json": "48e50e5adf4a565804640d8c2dc3a620f8c6296952e1df675e9a6fde8e0e48f0",
+        "stderr.txt": "e11b1ee0912857bc2f7717dd6ecfe6475c0db04b1d2a71b33ffb1de285ff47aa",
+        "stdout.txt": "448257297e5be45714c33a165fe2738fb791f9f1919daf62cee4640fd5f31414"
+      },
+      "pcm_sha256": "e6c4ce4fcabcd9877373473686468f0f2ffea3fd855c6d5efc7c45eb2dff6ed6",
+      "pid": 2029373,
+      "rc": 0,
+      "source_wav_sha256": "8e604fa3ed7d574fa2f4da0d96bece714164c22e3a454740708aec8438d61298",
+      "started_epoch_s": 1793143356.6285,
+      "transcript": "Le groupe Aerosmith a annulé les derniers concerts de sa tournée.\n",
+      "wav_sha256": "7d6982b921ca15f2ed8c115bd0b6a0b868d2d8d34881e941a6e4e63578a5cceb"
+    },
+    {
+      "clip_id": "fr_fr:14682302550249108464.wav",
+      "elapsed_wall_s_descriptive": 1.0028321743011475,
+      "files": {
+        "argv.json": "5e2ecea7cb03d8639fee80f5c782c1c74cd7c6ea63af8de1bc7ec91080f650c6",
+        "samples.json": "66317c190816acee5bdafdfc25eb555e474cee29d62a7f5b506f98bfec4ed773",
+        "stderr.txt": "af6726adae927f4665547e1fa539604acd108926ff6d7f5a3beb63c6e0ae7904",
+        "stdout.txt": "448257297e5be45714c33a165fe2738fb791f9f1919daf62cee4640fd5f31414"
+      },
+      "pcm_sha256": "8b9ff4d10d1ff9eb8085b775feac7c680348e7bd926c3d3ea8eef6ad7093f56f",
+      "pid": 2029467,
+      "rc": 0,
+      "source_wav_sha256": "b0eacc09a5185ea6e0df8db5d0d80d5810244a83c8eba221b86ec9c3c8ba9766",
+      "started_epoch_s": 1793143357.6319416,
+      "transcript": "Le groupe Aerosmith a annulé les derniers concerts de sa tournée.\n",
+      "wav_sha256": "dfda344af6c2926672039617d64d4d2056471fb70c0568777e5a78b7a32dc5d1"
+    },
+    {
+      "clip_id": "fr_fr:17467158799788389101.wav",
+      "elapsed_wall_s_descriptive": 1.002838134765625,
+      "files": {
+        "argv.json": "e9c2e874dfde8829342dbb60373cd7b50013f5a72dd7c2bd955baf88c04987eb",
+        "samples.json": "6efae87be0ba0bf3b67f9cb7c7fe2adc1c450c260c9384ed8bec7dd20bb841e5",
+        "stderr.txt": "c07c9e787e9e5793d67a136526f2dd91d3c95c0bcc67a226faf7a67b7bc67459",
+        "stdout.txt": "825d2196b893c36a69c906bcc1295bba56a09f273071dcdb722b460779702b8b"
+      },
+      "pcm_sha256": "75f8f9338c75af7252932793f9f104d63f43ee7b123d2c527d826b21ac4ec052",
+      "pid": 2029492,
+      "rc": 0,
+      "source_wav_sha256": "7923ce5db0b63dd1493a5450e9ddcd6900e9526f079a30b026f41a5b90b7ef3a",
+      "started_epoch_s": 1793143358.635438,
+      "transcript": "Il s'agit de l'un des parcs d'attractions les plus connus en Afrique du Sud et considéré comme le fleuron des parcs nationaux sud-africains Sand Parc.\n",
+      "wav_sha256": "bfd0510179d0785501ed8ab9993333495f521651797e30ed0516b6c626beb2f7"
+    },
+    {
+      "clip_id": "fr_fr:3661632639400662062.wav",
+      "elapsed_wall_s_descriptive": 1.0413429737091064,
+      "files": {
+        "argv.json": "6da9446c55e666743e9fa68e0cf8e8a56581b9cc05767bf2c9dfce3ac0bf084f",
+        "samples.json": "e96f6259cf21722739698be7d9ce2319b748baa0ee7f1006f59c18afbcc4b449",
+        "stderr.txt": "60e8e230f418b8f09e63a98826835406c9cb5f413c7c825ea8005280f57cde61",
+        "stdout.txt": "b21cceb0c47bc7ec18cce4512af5e3bc96e52f829bc9fd66e70f38dab5f15d67"
+      },
+      "pcm_sha256": "9796f6bed3f435897d7f25bebcb9e3e6cbb0ebc9ec31bae67d2f5fc4221873c2",
+      "pid": 2029519,
+      "rc": 0,
+      "source_wav_sha256": "dcc883334a90b3efc43bf80d1a346dacf0200747ba7ad6c78dd364af0f070eb1",
+      "started_epoch_s": 1793143359.6389985,
+      "transcript": "Il s'agit de l'un des parcs d'attractions les plus connus en Afrique du Sud et considéré comme le fleuron des parcs nationaux sud-africains Samparks.\n",
+      "wav_sha256": "afc67da31850ada7a560ba3f2efb0c9cf3f345ce2f1bbc968f5a872e487b7154"
+    },
+    {
+      "clip_id": "fr_fr:9118106854415790987.wav",
+      "elapsed_wall_s_descriptive": 0.7522079944610596,
+      "files": {
+        "argv.json": "61c57ebf5f2d85cf24e7da15df3183df01a3ad4e774d17c4a10179f142c00f90",
+        "samples.json": "8f2e14a9a11eb49e8d490ccb6a314a0ea31849b6896e17d5f1b2ec20dcde888c",
+        "stderr.txt": "1400acab0d20d71181178acb0b4b697be924c79bdb365bd163373e01a85a0c51",
+        "stdout.txt": "92ac19d3bf771a5e8a6ebce4807d52a0c472740cd6b55c911ee1567148eddf57"
+      },
+      "pcm_sha256": "cc0d02291a40327e389186ef1d94be0ba4f454da0bb3ca926ed62fc81a5dff52",
+      "pid": 2029558,
+      "rc": 0,
+      "source_wav_sha256": "e547e5f1644d4c1b3c37e45e530effbd56b8a5a44faea5ae8794e2b633d3dac6",
+      "started_epoch_s": 1793143360.6809847,
+      "transcript": "Il s'agit de l'un des parcs d'attractions les plus connus en Afrique du Sud et considéré comme le fleuron des parcs nationaux sud-africains.\n",
+      "wav_sha256": "cb6594a5ebc2b808d35547d0179683854512e0f6e9be1ac2b210bc46c2c1bca9"
+    },
+    {
+      "clip_id": "fr_fr:8969527857548188961.wav",
+      "elapsed_wall_s_descriptive": 0.7523112297058105,
+      "files": {
+        "argv.json": "9b7c9b371103874bdf6b0396721b8ec7d68f3804ab503baf4b7ed60bbb096ded",
+        "samples.json": "3c8932397bddf659875fea3987fdb81f0fa9519b3cdffd21231189759f446fd1",
+        "stderr.txt": "9ad0ad9a6b8308d4e8a624cb4bca2e6bf5c671ce5cd10b3bc43e008ccd4c908a",
+        "stdout.txt": "ff0fa9b1368fdde5e632db1d25e45f1ecf280fa648955187c27b26fca1ea61e0"
+      },
+      "pcm_sha256": "1f0ddc8e86578ab05dcf547fe1583fb9129d81eb0a29106014c306129eee3fea",
+      "pid": 2029574,
+      "rc": 0,
+      "source_wav_sha256": "6bb7a3677d4c7e4a5f3ed24626ee38f06fd2791b9bd60351783f580ea9a3f6b8",
+      "started_epoch_s": 1793143361.4338682,
+      "transcript": "Tout comme la Lune exerce une traction sur la Terre provoquant des marées, la Voie lactée exerce une force sur la galaxie du Sagittaire.\n",
+      "wav_sha256": "df495565311f08ae8d97680ff405b81b05cf0d77643587d5c814ed495a3afc2d"
+    },
+    {
+      "clip_id": "fr_fr:7989253100718399733.wav",
+      "elapsed_wall_s_descriptive": 0.7521209716796875,
+      "files": {
+        "argv.json": "c575e7d3fe679c9c625e229beedfc380f6479b1ff7458114ac0c2706e741cd64",
+        "samples.json": "b49ddcd8375d3d31f1541499a33d515ec754b764bc091389ae257e6575ab696e",
+        "stderr.txt": "3bf7745d33b692d969b7303bfbac28459b2ae86147749707afa399156c82f6ea",
+        "stdout.txt": "51fcfe7eeced498665943ec70646169b19fbab88cee52f293d82b5c055d37961"
+      },
+      "pcm_sha256": "2ca3a39d572deeb8816e86ec68c50c06520dfc19859c5dbf8deb4302cc324c8e",
+      "pid": 2029600,
+      "rc": 0,
+      "source_wav_sha256": "f03d7695256c492fbb3b5c71251bd288ff155236bf9455b7194bbd110cbf4e95",
+      "started_epoch_s": 1793143362.1868355,
+      "transcript": "La surface de la lune est constituée de pierres et de poussière, sa couche extérieure est appelée la croûte.\n",
+      "wav_sha256": "5a63f66f9dadb531d43440391c5e167a744540a15df389d16472928e87ccabb3"
+    }
+  ],
+  "schema": "epyc.parakeet-reference.v1",
+  "self_sha256": "64fb5b16893b768b1f6479055faa34dc6d78a85c9a1f76539533898cf94574a5"
+}

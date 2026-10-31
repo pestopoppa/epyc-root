@@ -1,0 +1,70 @@
+{
+  "id": "codex3-df2-13-reuse-cpu-20261031",
+  "owner": "codex3",
+  "priority_rank": 30,
+  "regions": "any-cpu-quarter",
+  "min_window_s": 3600,
+  "window_s": 7200,
+  "gib": 48,
+  "booking_class": "block-correctness",
+  "class": "diagnostic",
+  "decision_rule": "Compare native warm and cold B token sequences; report cache_n and draft counts. Checkpoint restoration is observed only with the native trace; absent trace, absent positive DFlash counts or interrupted exposure remain UNKNOWN. No speed, quality or promotion threshold.",
+  "enrollment": "4d2f90c47480f5920142090dae334ce1e448accb",
+  "launcher": {
+    "path": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/df2-13/launch.sh",
+    "sha256": "1bd9d8a65e1fa9a25e538bb6b5cf1d59fb57a7dd400fe9568509532172af1216"
+  },
+  "job": {
+    "path": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/df2-13/worker.py",
+    "sha256": "82fcde20c6fd35964f0fd87944e0cbcddc08438098f68fcf7fe56cebffa174e2"
+  },
+  "source_manifest": {
+    "path": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/df2-13/SOURCE-SHA256SUMS",
+    "sha256": "b0a39faad1c101c8ae8f2d0de365a3e00b26dbcba6a50b9f59d2949fab3944b0"
+  },
+  "scratch_root": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/df2-13",
+  "keep": [
+    "TASK-SOURCE.txt",
+    "SOURCE-INPUTS.sha256",
+    "SOURCE-SHA256SUMS",
+    "RUNTIME-INPUTS.sha256",
+    "MODELS.sha256",
+    "EARLY.sha256",
+    "REGION-LOCK-INPUTS.sha256",
+    "REGION-LOCK-PYTHON-ALLOW.txt",
+    "region-lock",
+    "PLAN.json",
+    "*.py",
+    "*.sh",
+    "*.log",
+    "*.out",
+    "engine/*.sh",
+    "engine/*.py",
+    "engine/*.json",
+    "run/*.json",
+    "run/*.log",
+    "smoke-final/*.json",
+    "smoke-final/*.log",
+    "smoke-stop-final/*.json",
+    "smoke-stop-final/*.log"
+  ],
+  "result_path": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/df2-13/run/TERMINAL.json",
+  "est_output_GiB": 1,
+  "feasibility": "Two-server public 0.6B control took 23.496s on two SMT siblings; the target 27B plus DFlash2 CPU feasibility, memory, and total wall time are untested. 7200s is a budget, not a completion guarantee. Exposed interrupted work remains unknown and is never redrawn.",
+  "smoke": {
+    "ran_at": "2026-10-31T05:44:55.051061+00:00",
+    "regions": "R11 128,129",
+    "model": "public Qwen3 0.6B, spec-type none; no DFlash or target claim",
+    "first_request_ok": true,
+    "result_writer_ok": true,
+    "exit_ok": true,
+    "wall_s": 23.49562389194034,
+    "peak_sampled_tree_rss_bytes": 1413423104,
+    "launcher_sha256": "1bd9d8a65e1fa9a25e538bb6b5cf1d59fb57a7dd400fe9568509532172af1216",
+    "log": "/mnt/raid0/llm/tmp/compute-flags/ready/codex3-df2-13-reuse-cpu-20261031.smoke.log",
+    "log_sha256": "8274457c18232e0a0e4379d7e0ff03ba0a668a3620a00c81cd586089a1a35561"
+  },
+  "hold": null,
+  "log_consumer": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/df2-13/log_consumer.py",
+  "completion": "Same HOST final launcher and native two-server A/warm-B/cold-B path; normal R13 --complete-cmd, RUS3 inside env-i, STOP75 partial and drained. Native warm/cold control tokens differed; no target conclusion. No replay after exposure."
+}
