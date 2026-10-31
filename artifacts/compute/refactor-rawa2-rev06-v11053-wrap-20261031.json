@@ -1,0 +1,137 @@
+{
+  "scope": "owner-applied wrap inventory; preparation/qualification only, no scientific task closure",
+  "root_snapshot": "6c190e8468715401e144abfeae78a206ae090c64",
+  "tasks": {
+    "PF1": {
+      "path": "handoffs/active/mi210-big-model-and-acceleration-roadmap.md",
+      "exact_current_checkbox_text": "- [ ] **PF1 (G) \u2014 measure the CPU-vs-MI210 prefill crossover for the served over-HBM MoE.** Artifact = the served",
+      "tick": false
+    },
+    "LB-1": {
+      "path": "handoffs/active/reviewer-latency-and-sampling-budget.md",
+      "exact_current_checkbox_text": "- [ ] **LB-1 \u2014 Reproduce + attribute the regression**: which calls dominate (plan-review prompt count vs prompt length vs architect queueing) on the RD-12 replay baseline.",
+      "tick": false
+    },
+    "C1": {
+      "path": "handoffs/active/cpu-decode-roofline-program.md",
+      "exact_current_checkbox_text": "- [ ] **C1 \u2014 report every decode result as achieved GB/s against the C0 number, alongside ms/token,**",
+      "tick": false
+    },
+    "VB-INF34-A2-DIAG-WIRE": {
+      "path": "handoffs/active/vidya-belief-substrate-program.md",
+      "exact_current_checkbox_text": "- [ ] **VB-INF34-A2-DIAG-WIRE \u2014 preserve the raw A2 single-cell observation.** Capture native output, canonical model and binary identities, exact recipe, GPU residency, window context and partial/cleanup state at write time; project only eligible observations through the existing prefill carrier and `ClaimTuple.grade()`. No diagnostic seal, receipt, retrospective warrant, crossover claim or new ladder; run the planning-context canary before calling wired. The full PF1 grid remains separate.",
+      "tick": false
+    }
+  },
+  "rawA2v13": {
+    "publication": {
+      "path": "/mnt/raid0/llm/tmp/refactor-inf34-a2-calendar-v13-20261031/PUBLICATION.json",
+      "sha256": "1095c415abe69ffa2856663130227af53eaae0a47c95c0bb86a66cf17c163e10"
+    },
+    "qualification": {
+      "path": "/mnt/raid0/llm/tmp/refactor-inf34-a2-calendar-v13-20261031/QUALIFICATION.json",
+      "sha256": "a90dd94826f4776f33eb997e02af80ec8d0d51498ae56bffb592006909c6de48"
+    },
+    "source": {
+      "path": "/mnt/raid0/llm/tmp/refactor-inf34-a2-calendar-v13-20261031/SOURCE.json",
+      "sha256": "9059f5b6aef65e4741c74cbf3b7a35de3c7b1a30b0a2664b67a33fc4763d044e"
+    },
+    "actual_host_transport": {
+      "path": "/mnt/raid0/llm/tmp/refactor-inf34-a2-calendar-v13-20261031/ACTUAL-HOST-I-TRANSPORT.json",
+      "sha256": "a1deb9480185b7dbd48ab48b44a0a9ba075443e0980b1e39eb3b928aba9827f1"
+    },
+    "actual_final_stdout_preflight": {
+      "path": "/mnt/raid0/llm/tmp/refactor-inf34-a2-calendar-v13-20261031/STARTUP-ACTUAL.json",
+      "sha256": "50c63e69fd477480c835f4d70834c4098752f5a8c4103e191402c5f87a6b4451"
+    },
+    "status": "published; actual keeper ARMED at08:34:16Z; no current grant/native/GPU result at inventory",
+    "original_recipe": "GPU single16384/reps1/t8/ub512/ngl99/expertCPU;200GiB; actual184-191; no grid/crossover",
+    "control": "R11 normal0/3.57s and activeSTOP75/3.96s, ~1.225GB, writer/reader/EXECUTION/drain",
+    "limits": "GPU qualification and original official run remain UNTESTED; ROOT enrollment source update prepared separately; no native wiring claim",
+    "source_bound_reader_proposal": {
+      "path": "/mnt/raid0/llm/tmp/refactor-inf34-a2-calendar-v13-20261031/wrap-owner-apply/RAW-A2-READER-EPOCH.patch",
+      "sha256": "5f7423741497cb4ababa6bd93ca7b6c33b80d580163b7c7d2e6974bc97183c23",
+      "base": "0e04f7ed4f",
+      "tests": {
+        "path": "/mnt/raid0/llm/tmp/refactor-inf34-a2-calendar-v13-20261031/READER-EPOCH-TESTS.log",
+        "sha256": "ce87bb26297a771f94171707a2ffcc97ae5fbc8956e75a74a53c36176bde1c0f"
+      },
+      "test_result": "17 native-shaped fixture controls pass; no native canary/wiring claim"
+    }
+  },
+  "rawA2v12": {
+    "retirement": {
+      "path": "/mnt/raid0/llm/tmp/refactor-inf34-a2-calendar-v13-20261031/PREDECESSOR-RETIREMENT.json",
+      "sha256": "075ff5bf9767ccda0ece4e982cc13737962fcbc348bf87265c26fa3915a35a17"
+    },
+    "status": "actual keeper prearm REFUSED no visible PID; idle own poller retired pregrant, no native/GPU exposures; failed bytes preserved"
+  },
+  "REV06v2": {
+    "publication": {
+      "path": "/mnt/raid0/llm/tmp/refactor-rev06-lb1-successor-v2-20261031/PUBLICATION.json",
+      "sha256": "3c1fc499581f8461bf0ff7359adfa7207e91b2ce1483f73df4d326d3b4fa7a76"
+    },
+    "qualification": {
+      "path": "/mnt/raid0/llm/tmp/refactor-rev06-lb1-successor-v2-20261031/QUALIFICATION.json",
+      "sha256": "905b6f4d52836fb50fcf9d0c50b4df08d474358673c8c932ff3b9cdf4d1924e5"
+    },
+    "owner_hold": {
+      "path": "/mnt/raid0/llm/tmp/refactor-inf34-a2-calendar-v13-20261031/REV06-OWN-HOLD.json",
+      "sha256": "e8821c235a6d3b1ba72f23f16fea1d74a422a89f851defbee6edd512e5226f1a"
+    },
+    "status": "qualified then published; unarmed owner-held for same stdout defect; STOP preserved; no v3 edits started before wrap request",
+    "control": "R11 normal0/41.61s and activeSTOP75/43.28s;1.44GB; native HTTP/raw/SQLite/consumer/drain",
+    "limits": "full fixed50q122B/t24/128GiB scoped diagnostic untested; July prompt count/length/architect queue attribution unchanged; no LB1 tick",
+    "pending_reader_proposal": {
+      "path": "/mnt/raid0/llm/tmp/refactor-rev06-reader-proposal-20261031/owner-apply/PROPOSED.patch",
+      "sha256": "9df965498f8869e50afc41becde5f00ae405e3931728233323342df16a499629"
+    }
+  },
+  "V11053_build": {
+    "custody": {
+      "path": "/mnt/raid0/llm/tmp/refactor-v11053-c5-control-build-v2-20261031/BUILD-CUSTODY.json",
+      "sha256": "87d98518e21129efd0bae6342a9f520f97256e9381e25b2a71d5e3fcabb2bf9b"
+    },
+    "source": {
+      "path": "/mnt/raid0/llm/tmp/refactor-v11053-c5-control-build-v2-20261031/SOURCE.json",
+      "sha256": "26879d58bcb06456acb0e3fcf2c5e40b8148f322b12542a6cdb1e61c4376024b"
+    },
+    "inputs": {
+      "path": "/mnt/raid0/llm/tmp/refactor-v11053-c5-control-build-v2-20261031/INPUTS.json",
+      "sha256": "f0707fa364b9ed6ebd42a1f936a9cf2f95b4a998d8cd63d02a9687f6c5a31485"
+    },
+    "status": "COMPLETE_BUILD_ONLY via actual bounded R6; no calendar booking or inference",
+    "base": "c72ec82f5417bb2937310326120f149b665e8400",
+    "control": "c4ac3c3849ce293f4652f4f0ef2d259e0acb1197",
+    "change": "exact reverse d40927c4, one ggml-cpu.c file, SUM_ROWS and unrelated rules preserved",
+    "proof": "447 input pins; baseline TU and DSO byte-identical; active compile STOP75/drain; full two-image producer3.658s/~185MB; independent custody pass",
+    "composition": "C5 frontend; control GGMLCPU backend from exact reverse; no uniform new frontend version claim",
+    "limits": "original t48/0-95/NUMAall/5AB+24AA/3prompt greedy downstream measurement not yet prepared; C1 per-op fields remain unmet"
+  },
+  "C6_prior_preps": {
+    "publication": {
+      "path": "/mnt/raid0/llm/tmp/refactor-c6-serving-gates-r2-20261031/LINKAGE-REPAIR-PUBLICATION.json",
+      "sha256": "60179ac2ca0827846cd015eb64080cda1942201d06c4874a59517a3479d935bf"
+    },
+    "status": "three r2 serving/greedy rows remain separate prepared full128GiB/t48 gates; no new result claim; parent owns C6 terminal filing"
+  },
+  "belief": "[no-belief: source/build/launcher preparation and bounded qualification; no native scientific observation]",
+  "cleanup": {
+    "safe_now": [],
+    "reason": "all packet evidence, source snapshots, pinned controls/images and failed history retained for reader enrollment/retry/custody; no deletion authorized or performed",
+    "possible_after_owner_archive": [
+      "private temporary HOST transport IPC directory in rawA2v13 after its proof JSON is durably archived; preserve JSON/logs and all pinned runtime files"
+    ]
+  },
+  "actual_calendar_inventory": {
+    "path": "/mnt/raid0/llm/tmp/refactor-inf34-a2-calendar-v13-20261031/WRAP-CALENDAR-INVENTORY.json",
+    "sha256": "8e4e0a87afae327b2ff12101c700a43e6fefaf12e511e7e41a1fc8d53ebf209e"
+  },
+  "actual_calendar_summary": [
+    "REV06 original admission rc6 (disk floor), no native exposure; already-filed predecessor retained",
+    "V11053 original build admission rc6 (disk floor), repaired via bounded R6 complete producer rather than artificial calendar row",
+    "A2v12 actual keeper PREARM refusal, own idle poller retired before grant/native",
+    "A2v13 actual keeper ARMED08:34:16, no grant/native terminal currently",
+    "three C6 r2 serving/greedy recipes remain prepared; no new calendar terminal for these IDs"
+  ]
+}

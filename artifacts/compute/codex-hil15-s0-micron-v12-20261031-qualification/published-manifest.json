@@ -1,0 +1,98 @@
+{
+  "id": "codex-hil15-s0-micron-v12-20261031",
+  "owner": "codex-refactor-01a16fc3",
+  "priority_rank": 19,
+  "regions": "any-cpu-quarter",
+  "min_window_s": 1800,
+  "window_s": 3600,
+  "gib": 64,
+  "launcher": {
+    "path": "/mnt/raid0/llm/tmp/hil15-s0-v12-slot2-20261031/launch.sh",
+    "sha256": "d14e685e78989b7c109b1c43ea8b24bab14f8df6c5083745752426ed1b5088f7"
+  },
+  "job": {
+    "path": "/mnt/raid0/llm/tmp/hil15-s0-v12-slot2-20261031/launch.sh",
+    "sha256": "d14e685e78989b7c109b1c43ea8b24bab14f8df6c5083745752426ed1b5088f7"
+  },
+  "result_path": "/mnt/micron/refactor-hil15-s0-v12-slot2-20261031/s0-v12-official-results",
+  "decision_rule": "Higher known collection coverage is better. Preserve original45 denominator:40 replay-verified known,4 immutable unknown,1 original unexposed15/2. Expose only15/2 once. Valid native terminal yields41/4/0. An exposed nonterminal cutoff remains unknown, initial rc75+partial then verified custody/inventory rearm exhausts40/5/0 without redraw. native_grade=null and full_complete=false in every state; operational collection receipt confers no evidentiary tier.",
+  "class": "diagnostic",
+  "enrollment": "n/a: diagnostic",
+  "smoke": {
+    "ran_at": "2026-10-31T04:30:16.028184+00:00",
+    "regions": "122,123",
+    "model": "/mnt/raid0/llm/models/gemma-3-1b-it-Q8_0.gguf",
+    "first_request_ok": true,
+    "result_writer_ok": true,
+    "exit_ok": true,
+    "wall_s": 33.7736970258411,
+    "normal_exit_code": 0,
+    "cutoff_exit_code": 75,
+    "log": "/mnt/raid0/llm/tmp/hil15-s0-v12-slot2-20261031/SMOKE-EVIDENCE.json",
+    "launcher_sha256": "d14e685e78989b7c109b1c43ea8b24bab14f8df6c5083745752426ed1b5088f7",
+    "source_manifest_sha256": "0f29d73acfd4ac5761f3b5c026c05a9816fdcb2bb0aca8cbb2d6cb66fd6cceca"
+  },
+  "hold": null,
+  "scratch_root": "/mnt/raid0/llm/tmp/hil15-s0-v12-slot2-20261031",
+  "keep": [
+    "KEEP",
+    "*.py",
+    "*.sh",
+    "*.json",
+    "*.md",
+    "*.sha256",
+    "*.log",
+    "ws58-launcher.out",
+    "engine-private/**",
+    "scheduler-state/**"
+  ],
+  "est_output_GiB": 0.125,
+  "min_effect": "n/a (diagnostic original-cohort collection)",
+  "source_manifest": {
+    "path": "/mnt/micron/refactor-hil15-s0-v12-slot2-20261031/SOURCE.sha256",
+    "sha256": "0f29d73acfd4ac5761f3b5c026c05a9816fdcb2bb0aca8cbb2d6cb66fd6cceca"
+  },
+  "log_consumer": "/mnt/raid0/llm/tmp/hil15-s0-v12-slot2-20261031/read_launcher_logs.py",
+  "log_consumer_sha256": "9d1ef452310fdc8b952f2731703980cfc132953f8e440a8be8e3dc58b8c19ea6",
+  "feasibility": "one original slot x990s replay envelope +1200s initial model/load verification +90s drain=2280s <=3600s requested; rc75/rearm remains supported; measured normal qualification16.52s/cutoff33.77s is Gemma1B scope, not a35B throughput claim.",
+  "new_scheduled_slots": [
+    [
+      15,
+      2
+    ]
+  ],
+  "unknown_immutable": [
+    [
+      10,
+      2
+    ],
+    [
+      11,
+      1
+    ],
+    [
+      12,
+      1
+    ],
+    [
+      15,
+      1
+    ]
+  ],
+  "current_known": 40,
+  "current_unknown": 4,
+  "current_unexposed": 1,
+  "original_denominator": 45,
+  "native_grade": null,
+  "full_complete": false,
+  "resource_limits": {
+    "ram_GiB": 64,
+    "native_output_sampled_cap_GiB": 1,
+    "raid_metadata_sampled_cap_GiB": 0.125,
+    "raid_free_floor_GiB": 150,
+    "stop": "rc75 partial after owned child drain"
+  },
+  "launcher_log": "/mnt/raid0/llm/tmp/hil15-s0-v12-slot2-20261031/ws58-launcher.out",
+  "preflight": "/mnt/raid0/llm/tmp/hil15-s0-v12-slot2-20261031/preflight.log",
+  "actual_main_controls": "/mnt/raid0/llm/tmp/refactor-01a16fc3/s0-v11-wrap-draft-20261030/v12-packet-r2/ACTUAL-MAIN-CONTROLS.log"
+}

@@ -1,0 +1,92 @@
+{
+  "archived_evidence": {
+    "active-cutoff-witness.json": {
+      "original": "/mnt/raid0/llm/tmp/refactor-01a16fc3/ufh14-next-source-20261030/build-packet-r4/ACTIVE-CUTOFF-WITNESS.json",
+      "path": "artifacts/compute/refactor-akxall8-c5-r4-ready-20261031/active-cutoff-witness.json",
+      "sha256": "ad37c2061a518c5a7d3da9b0fb34dbb819df3d65a906c714736245665d59c483"
+    },
+    "cutoff.log": {
+      "original": "/mnt/raid0/llm/tmp/refactor-01a16fc3/ufh14-next-source-20261030/build-packet-r4/fixture-r11-cutoff/outer.log",
+      "path": "artifacts/compute/refactor-akxall8-c5-r4-ready-20261031/cutoff.log",
+      "sha256": "72c5fe50d82f288ace493851e187c152c398b2e5e6937a91ef124de2358c65fb"
+    },
+    "native-qualification.json": {
+      "original": "/mnt/raid0/llm/tmp/refactor-01a16fc3/ufh14-next-source-20261030/build-packet-r4/final-smoke-controls.json",
+      "path": "artifacts/compute/refactor-akxall8-c5-r4-ready-20261031/native-qualification.json",
+      "sha256": "5ecf2f1c7cdf1a1b600bbbd81c41d8c6d72f86d2dfdb915f886b58fc2d5fed88"
+    },
+    "normal.log": {
+      "original": "/mnt/raid0/llm/tmp/refactor-01a16fc3/ufh14-next-source-20261030/build-packet-r4/fixture-r11-normal4/outer.log",
+      "path": "artifacts/compute/refactor-akxall8-c5-r4-ready-20261031/normal.log",
+      "sha256": "ee2020087bff4931195a541c64b0b9c93fa82e02aa22c35df0ba5cbee980513c"
+    },
+    "ready-publication.json": {
+      "original": "/mnt/raid0/llm/tmp/refactor-01a16fc3/ufh14-next-source-20261030/build-packet-r4/READY-PUBLISHED.json",
+      "path": "artifacts/compute/refactor-akxall8-c5-r4-ready-20261031/ready-publication.json",
+      "sha256": "eb0dcfb9ac36feb4fdff7f3d9bd9de272795162f56651cf8c648e12acc6bb5cd"
+    },
+    "source-manifest.json": {
+      "original": "/mnt/raid0/llm/tmp/refactor-01a16fc3/ufh14-next-source-20261030/build-packet-r4/source-manifest.json",
+      "path": "artifacts/compute/refactor-akxall8-c5-r4-ready-20261031/source-manifest.json",
+      "sha256": "da17bd761b8c44b60713f7205b11bae179c86fe353f54aec4bbac0fc32b6fc57"
+    }
+  },
+  "belief": "no-belief: source/build preparation and bounded native controls only",
+  "declaration_evidence_kind": "declared_config only, not a live :8074 argv comparison",
+  "original_target": "Q38FN t48/ub512 with GGML_FA_SPLIT_KV=0 and GGML_FUSED_DECODE_OFF=1 retained separately",
+  "packet": "/mnt/raid0/llm/tmp/refactor-01a16fc3/ufh14-next-source-20261030/build-packet-r4",
+  "post_publication_admission": {
+    "archived": "artifacts/compute/refactor-akxall8-c5-r4-ready-20261031/prearm-refused.json",
+    "native_qualification_unchanged": true,
+    "reason": "PRE-ARM REFUSED refactor-akxall8-c5-cpu-build-r4-20261031: conditional=False blockers=['build: awaiting keeper integration and full C5 link '] missing=[]",
+    "sha256": "72c289a3cb863362a9c183fc4ef295fb671f35a545a9614a80b3748f7848c9f2",
+    "state": "REFUSED_BEFORE_ARM",
+    "successor_id": "refactor-akxall8-c5-cpu-build-r5-20261031",
+    "successor_preparation": "R5 published after corrected exact prearm and new real controls; keeper owns actual arming"
+  },
+  "prepared_at": "2026-10-31T04:11:00.653639+00:00",
+  "r3_failure": {
+    "cause": "root-owned 755 r3/state prevented effective UID1000 launcher.lock open",
+    "launcher_log": "/mnt/raid0/llm/tmp/compute-flags/ready/refactor-akxall8-c5-cpu-build-r3-20261030.launcher.out",
+    "launcher_log_sha256": "33edd7ae752c4e535cbf7dfd4da3bef9310616316b336d97e8340b3bbb1830dd",
+    "manifest": "/mnt/raid0/llm/tmp/compute-flags/ready/refused/refactor-akxall8-c5-cpu-build-r3-20261030.json",
+    "manifest_sha256": "778c1f33730ab7d0082cfd4a2032c0a91159ef95c46a361a4b80c9bf115c9d27"
+  },
+  "r4_repair": {
+    "active_cutoff": {
+      "compiler_ticks_advanced": true,
+      "exact_pids_drained": true,
+      "pidfd_timeout_signal": true,
+      "rc": 75,
+      "sampled_peak_bytes": 848699392,
+      "wall_s": 127.00359414308332
+    },
+    "cause_2": "container had /mnt/micron directory but not source .git; changed host route predicate to actual C5 worktree .git; scoped Git safe.directory for clean UID1000 host worktree",
+    "gpu_execution": false,
+    "id": "refactor-akxall8-c5-cpu-build-r4-20261031",
+    "native_smoke_sha256": "5ecf2f1c7cdf1a1b600bbbd81c41d8c6d72f86d2dfdb915f886b58fc2d5fed88",
+    "normal": {
+      "actual_linked_target": "ggml-base",
+      "children_drained": true,
+      "rc": 0,
+      "sampled_peak_bytes": 554520576,
+      "wall_s": 21.516469958005473
+    },
+    "private_keeper_scan": "ok rank8 any-cpu-quarter 2400s 32GiB",
+    "private_validator": "1 row, 0 refusals",
+    "ready_manifest_sha256": "a0d10a519864aa7d0a29fb93163c54ce1fc51a8978d693ce0eacbead67c2ad05",
+    "ready_row_sha256": "6a1a197b30575fe498cf1c9a54b6df481ca38c177993715a85b5e8da46f40a80",
+    "source_manifest_sha256": "da17bd761b8c44b60713f7205b11bae179c86fe353f54aec4bbac0fc32b6fc57",
+    "source_sha256sums_sha256": "bce0afd564e1d8a8604ee071e65e47d698d3529bcb708871e3f89fdcc5e37a60"
+  },
+  "remaining": [
+    "actual full C5 llama-server build and source-bound IDENTITY.json",
+    "built-c5-r4 unenrolled target card",
+    "live :8074 argv identity comparison and justified-delta recipe digest",
+    "new matched floor and long-surface serving measurement under proper calendar; no legacy floor reuse"
+  ],
+  "schema": "epyc.akxall8.c5_build_r4_preparation.v1",
+  "source_head": "c72ec82f5417bb2937310326120f149b665e8400",
+  "successor_declaration": ":8074 t96/effective ub2048 with GGML_FUSED_DECODE_OFF unset; GGML_FA_SPLIT_KV=0 remains justified for row exactness",
+  "task_tick": false
+}

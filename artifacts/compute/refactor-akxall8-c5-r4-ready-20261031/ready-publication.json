@@ -1,0 +1,13 @@
+{
+  "full_build_complete": false,
+  "gpu_execution": false,
+  "id": "refactor-akxall8-c5-cpu-build-r4-20261031",
+  "launcher_log_hardlink_same_inode": true,
+  "manifest_sha256": "a0d10a519864aa7d0a29fb93163c54ce1fc51a8978d693ce0eacbead67c2ad05",
+  "published_at": "2026-10-31T04:09:41.415112+00:00",
+  "r3_refusal_preserved": true,
+  "row_sha256": "6a1a197b30575fe498cf1c9a54b6df481ca38c177993715a85b5e8da46f40a80",
+  "schema": "akxall8.c5_r4_ready_publication.v1",
+  "smoke_receipt_sha256": "5ecf2f1c7cdf1a1b600bbbd81c41d8c6d72f86d2dfdb915f886b58fc2d5fed88",
+  "source_manifest_sha256": "da17bd761b8c44b60713f7205b11bae179c86fe353f54aec4bbac0fc32b6fc57"
+}

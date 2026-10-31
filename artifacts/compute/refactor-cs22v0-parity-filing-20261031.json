@@ -1,0 +1,123 @@
+{
+  "schema": "epyc.cs22v0.parity_filing.v1",
+  "original": {
+    "result_path": "/mnt/raid0/llm/tmp/refactor-01a16fc3/inf79-speech-inference-ready/native-parity-q1/evidence/attempt-20261027T212809-1389083/run/result.json",
+    "result_sha256": "f8a68921ffc426fce16266b07ad5e7995fdbdd60972dced47d1dd1e444437eec",
+    "reference_sha256": "4cbf549b8326f60f80f2536d9eefeb450a9abe83365a098031c89719f1be17d2",
+    "serving_model_sha256": {
+      "gguf": "0d871a800c420fdd5d1b17a3aea4296d1c39608f0ff4a9295eb76457eb1c88e6",
+      "jit": "e1122837f4154c511485fe0b9c64455f7b929c96fbb8d79fbdb336383ebd3720",
+      "whisper": "2aa269b785eeb53a82983a20501ddf7c1d9c48e33ab63a41391ac6c9f7fb6987"
+    },
+    "clips": 224,
+    "comparisons": 672,
+    "errors": 0,
+    "operating_points": [
+      "0.5:0.3",
+      "0.5:0.5",
+      "0.5:0.75",
+      "0.5:1.0",
+      "0.5:1.2",
+      "0.6:1.2"
+    ],
+    "by_arm": [
+      {
+        "arm": "whisper",
+        "clips": 224,
+        "max_abs_diff": "0.859892",
+        "median_clip_max_abs": "0.581161",
+        "stop_equal": [
+          62,
+          65,
+          65,
+          66,
+          66,
+          64
+        ],
+        "segments_equal": [
+          36,
+          40,
+          40,
+          40,
+          40,
+          35
+        ],
+        "eligible_on_original_reference": false
+      },
+      {
+        "arm": "gguf",
+        "clips": 224,
+        "max_abs_diff": "0.860614",
+        "median_clip_max_abs": "0.589078",
+        "stop_equal": [
+          62,
+          66,
+          66,
+          67,
+          67,
+          70
+        ],
+        "segments_equal": [
+          35,
+          38,
+          38,
+          38,
+          38,
+          39
+        ],
+        "eligible_on_original_reference": false
+      },
+      {
+        "arm": "jit",
+        "clips": 224,
+        "max_abs_diff": "0.860613",
+        "median_clip_max_abs": "0.589076",
+        "stop_equal": [
+          62,
+          66,
+          66,
+          67,
+          67,
+          70
+        ],
+        "segments_equal": [
+          35,
+          38,
+          38,
+          38,
+          38,
+          39
+        ],
+        "eligible_on_original_reference": false
+      }
+    ]
+  },
+  "version_matched_control": {
+    "report_path": "/mnt/raid0/llm/tmp/refactor-cs22v0-v623-diag-20261031/REPORT.md",
+    "report_sha256": "8e004359f6d1f807a70df339957162d5275fa5dc2b3ca385d2d83f7286a42b5e",
+    "verified_path": "/mnt/raid0/llm/tmp/refactor-cs22v0-v623-diag-20261031/VERIFIED.json",
+    "verified_sha256": "2539c25212ca6954838aa6f0d125791e6b4879a50dd88e143faddd510e2e9e72",
+    "original_result_unchanged": true,
+    "all_224_stop_and_common_segments_match_at_each_of_six_points": [
+      "jit",
+      "gguf"
+    ],
+    "whisper_alignment_unresolved": true,
+    "model_custody": {
+      "path": "/mnt/raid0/llm/tmp/refactor-cs22v0-v623-diag-20261031/MODEL-HARDLINK-CUSTODY.json",
+      "sha256": "2050a5b9cdd345bb2766730b4c818f6417bda4b1694fef21875f68733c9ee075",
+      "canonical_root": "/mnt/raid0/llm/models/silero-vad-v6.2.3-official-wheel-20261031",
+      "method": "zero-copy hardlinks; identical device/inode and model hashes; no chmod"
+    }
+  },
+  "owner_readback": {
+    "log": "/mnt/raid0/llm/tmp/refactor-cs22-owner-replay-20261031/REPLAY.log",
+    "scope": "CPU-only rehash/rederivation; no new inference"
+  },
+  "limits": [
+    "Common segmenter only; native segment APIs untested",
+    "Co-tenancy unknown; no timing or quality grade",
+    "Version-matched control does not substitute for the original reference or grant V1 eligibility"
+  ],
+  "belief": "cc: committed conclusion; no retrospective native ClaimTuple"
+}

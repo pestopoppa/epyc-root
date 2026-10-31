@@ -1,0 +1,17 @@
+R6 relocated owned prep tree to 122,123
+test_before_exposure_cutoff (__main__.ActualMain.test_before_exposure_cutoff) ... ok
+test_changed_partial_refuses (__main__.ActualMain.test_changed_partial_refuses) ... ok
+test_cutoff_then_rearm_no_redraw (__main__.ActualMain.test_cutoff_then_rearm_no_redraw) ... ok
+test_invalid_seal_refuses (__main__.ActualMain.test_invalid_seal_refuses) ... ok
+test_invalid_terminal_refuses (__main__.ActualMain.test_invalid_terminal_refuses) ... ok
+test_no_drain_refuses_seal (__main__.ActualMain.test_no_drain_refuses_seal) ... ok
+test_old_tamper_after_drain (__main__.ActualMain.test_old_tamper_after_drain) ... ok
+test_old_tamper_before_service (__main__.ActualMain.test_old_tamper_before_service) ... ok
+test_terminal_normal (__main__.ActualMain.test_terminal_normal) ... ok
+test_unsealed_partial_refuses (__main__.ActualMain.test_unsealed_partial_refuses) ... ok
+
+----------------------------------------------------------------------
+Ran 10 tests in 0.012s
+
+OK
+{"schema": "bounded-r6-prep-supervisor/v1", "elapsed_s": 0.10654394002631307, "sampled_peak_tree_rss_bytes": 18202624, "samples": 2, "verified_exited_processes": 0, "verified_exited_threads": 0, "per_process_address_space_limit_bytes": null, "rss_scope": "sum of sampled resident pages across owned process tree; sampling may miss transients and double-count shared pages", "leader_pid": 3780013, "leader_birth": 154381985, "child_rc": 0, "children_drained": true, "failure": null}

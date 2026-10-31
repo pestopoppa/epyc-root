@@ -1,0 +1,101 @@
+{
+  "schema": "epyc.refactor.yarn_cpu_host_preparation.v1",
+  "id": "yarn-oolong-s2-host256-eligible26-v32-20261031",
+  "published_at": "2026-10-31T05:16:40.148160+00:00",
+  "READY_manifest_sha256": "6c16fab6c6318cfb1f19bc41c9ee0a69c83da938155763cd66825a69e3f94d58",
+  "native_source_manifest_sha256": "5bfe9ca7479a8349177f28e43fccf0d8ff03e39f520350ff9486aaf9003bdd51",
+  "stage": "qualified launcher published; original full27B study remains OPEN",
+  "official_scope": {
+    "original_denominator": 120,
+    "eligible_A0": 26,
+    "unknown_A0": 4,
+    "eligible_A1": 0,
+    "A1_gate": "successful matching A0 only",
+    "new_official_exposures": 0,
+    "RAM_GiB": 180,
+    "minimum_window_s": 42000,
+    "requested_window_s": 43200,
+    "recipe": "unchanged CPU FFC/t24/ngl0/NUMAall,full1024 response tokens",
+    "scientific_grade": null
+  },
+  "controls": {
+    "normal": {
+      "wall_s": 27.929,
+      "rc": 0,
+      "sampled_tree_RSS_GiB": 1.377,
+      "owned_children_drained": true,
+      "native_control_records": 1,
+      "unknown_control": 0,
+      "active_native_slot_near_cutoff": false
+    },
+    "cutoff": {
+      "wall_s": 36.072,
+      "rc": 75,
+      "sampled_tree_RSS_GiB": 1.386,
+      "owned_children_drained": true,
+      "native_control_records": 14,
+      "unknown_control": 1,
+      "active_native_slot_near_cutoff": true
+    }
+  },
+  "control_geometry": "canonical0.6B/4000char prefixes/max8 response tokens; five actual-constructor cases preserve full/characterization1024",
+  "smoke_only_boundary_fix": "single owned_window deadline owner plus same hard monotonic deadline transported to every smoke Client.chat before exposure.begin; longer HTTP timeout remains separate; owned_window and official mode unchanged",
+  "model_free_boundary_proofs": [
+    "actual old expired client starts one fixture exposure/backend call; corrected expired client invokes existing InfrastructureCutoff\u219275 before any exposure/backend call",
+    "same actual owned_window with real owned ignore-TERM child processes: old duplicate deadline produces witness-loss race; corrected policy yields WindowDeadline; truly killed server remains witness refusal",
+    "real pidfdTERM\u2192KILL cleanup exercised and all owned children drained; controlled boundary clock is not native model qualification"
+  ],
+  "admission": "actual validator0refusals/0warnings; keeper scan; read-only prearm metadata prefix; source/storage/pause controls",
+  "CPU_vs_NI141": "distinct CPU image/DSO/hardware/source/recipe despite shared model/template/original120 prompts; no pooling or replacement",
+  "protected_raw_evidence": {
+    "PUBLICATION.json": {
+      "path": "/mnt/raid0/llm/tmp/yarn-oolong-s2-host-v32-20261031/PUBLICATION.json",
+      "sha256": "e7da0b7c8dcd6e4847704a4c468feefc44a3a004234b22362b7153dd5e024a0c"
+    },
+    "QUALIFICATION.json": {
+      "path": "/mnt/raid0/llm/tmp/yarn-oolong-s2-host-v32-20261031/QUALIFICATION.json",
+      "sha256": "2c3cf0959d8026dd4c8ee8b3ac7f3d09193e13fca097f2f1d94a74f22d0147a7"
+    },
+    "HOST-MANIFEST.json": {
+      "path": "/mnt/raid0/llm/tmp/yarn-oolong-s2-host-v32-20261031/HOST-MANIFEST.json",
+      "sha256": "39e8fe0e88fcaf824b2e469d12fcb5b533f75607031b821506d1f3ccd1e99626"
+    },
+    "SCOPE-AND-SOURCE-CONTROLS.json": {
+      "path": "/mnt/raid0/llm/tmp/yarn-oolong-s2-host-v32-20261031/SCOPE-AND-SOURCE-CONTROLS.json",
+      "sha256": "abf63daac9fcd9e3204deb9922440a7804e4485342e643cfc172b894a22ddd45"
+    },
+    "BOUNDARY-CONTROLS.json": {
+      "path": "/mnt/raid0/llm/tmp/yarn-oolong-s2-host-v32-20261031/BOUNDARY-CONTROLS.json",
+      "sha256": "9be63421dcc3e7e19684b94699bdedb8847357037d96de5c0f24bca33084b494"
+    },
+    "BOUNDARY-CONTROLS-FINAL.log": {
+      "path": "/mnt/raid0/llm/tmp/yarn-oolong-s2-host-v32-20261031/BOUNDARY-CONTROLS-FINAL.log",
+      "sha256": "70f007ef3f4f1a06da3fa0364f86e05e914a0765feac6c345778d911341fd060"
+    },
+    "CONTROL-GEOMETRY-CASES.json": {
+      "path": "/mnt/raid0/llm/tmp/yarn-oolong-s2-host-v32-20261031/CONTROL-GEOMETRY-CASES.json",
+      "sha256": "4d811d281f92ff4dcfabfcbd0962eff47b6a6ed9df3b7693bebd435532e6b775"
+    },
+    "SCOPE-CONTROLS.log": {
+      "path": "/mnt/raid0/llm/tmp/yarn-oolong-s2-host-v32-20261031/SCOPE-CONTROLS.log",
+      "sha256": "f463af98fba5d988b240fcd4252611a20d54715b06850b031888eb392989e056"
+    },
+    "VALIDATOR.log": {
+      "path": "/mnt/raid0/llm/tmp/yarn-oolong-s2-host-v32-20261031/VALIDATOR.log",
+      "sha256": "da3e45b73abf6bd920ac617756fa57601da9834abf118afce5fef2fc6bf2070a"
+    },
+    "PREARM-FINAL.log": {
+      "path": "/mnt/raid0/llm/tmp/yarn-oolong-s2-host-v32-20261031/PREARM-FINAL.log",
+      "sha256": "d8172486e8bd5822cf045b91410c4a9a7040218f546bcf602c8b9dba46c912c3"
+    },
+    "READY-SCAN.log": {
+      "path": "/mnt/raid0/llm/tmp/yarn-oolong-s2-host-v32-20261031/READY-SCAN.log",
+      "sha256": "e2893deb9d9469394beba72415cdb7d50409bcc94efb909b4587dac29d2b41cb"
+    },
+    "CPU-VS-NI141-IDENTITY.json": {
+      "path": "/mnt/raid0/llm/tmp/yarn-oolong-s2-host-v32-20261031/CPU-VS-NI141-IDENTITY.json",
+      "sha256": "de74f4c6b15e54aec153157d80c706bd8d2bf5c78c9a1e8d08f717f0cd2cbbc8"
+    }
+  },
+  "belief": "no-belief: diagnostic preparation; no scientific task tick or result"
+}

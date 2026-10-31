@@ -1,0 +1,49 @@
+{
+  "schema": "hil15-s2-r14-qualification-publication/v1",
+  "at": "2026-10-31T06:01:33.544347+00:00",
+  "ready_id": "codex-hil15-s2-r14-dispatch-20261031",
+  "manifest": {
+    "path": "/mnt/raid0/llm/tmp/hil15-s3-t1-repair-20261030/s2-r14-dispatch-20261031/codex-hil15-s2-r14-dispatch-20261031.json",
+    "sha256": "0e7b6e80be433aa76c1329ad581c0c0580db7b3c87fa4f4c6fdf1d533da6228d"
+  },
+  "row": {
+    "path": "/mnt/raid0/llm/tmp/hil15-s3-t1-repair-20261030/s2-r14-dispatch-20261031/codex-hil15-s2-r14-dispatch-20261031.row.md",
+    "sha256": "72311f95e94fe47af4d67c83ec91760097307ba61df00bb9a944385cb402f096"
+  },
+  "canonical_ready_path": "/mnt/raid0/llm/tmp/compute-flags/ready/codex-hil15-s2-r14-dispatch-20261031.json",
+  "launcher": {
+    "path": "/mnt/raid0/llm/tmp/hil15-s3-t1-repair-20261030/s2-r14-dispatch-20261031/launch.sh",
+    "sha256": "57d0bf997687e356219353718ef7f6fe0158b6a5f6eb5a924b3b3bf79bc86530"
+  },
+  "source_manifest": {
+    "path": "/mnt/micron/refactor-hil15-s2-r14-dispatch-20261031/SOURCE.sha256",
+    "sha256": "ccb321eb095b5c845628f4b60c552c6eb2044bf6f9f2301021c72b73637701f7"
+  },
+  "qualification": {
+    "path": "/mnt/raid0/llm/tmp/hil15-s3-t1-repair-20261030/s2-r14-dispatch-20261031/QUALIFICATION.json",
+    "sha256": "cced4ff8cc2e8124ea0d3c57c0574cd52cf57eb4ee48f771dfbbcc661f51b667"
+  },
+  "exact_private_admission_gates": {
+    "path": "/mnt/raid0/llm/tmp/hil15-s3-t1-repair-20261030/s2-r14-dispatch-20261031/READY-GATES.log",
+    "sha256": "c296be496af9ca27e5d6e7de512a09b7a9185fb19c4cf4da7007cfacae49dee1"
+  },
+  "original_history": {
+    "path": "/mnt/raid0/llm/tmp/hil15-s3-t1-repair-20261030/s2-r14-dispatch-20261031/ACTUAL-HISTORY.json",
+    "sha256": "985efbf884923b948fc62c7c7ad25c55d6ee516e7c74e6b37cb617738e663ec3"
+  },
+  "original_native_exposure": {
+    "path": "/mnt/raid0/llm/tmp/hil15-s3-t1-repair-20261030/s2-r14-dispatch-20261031/PREPUBLICATION-NATIVE-EXPOSURE.json",
+    "sha256": "77e6ce7c5bfd19b3144b8f93a415cf5a7eaa95859d68797af6269cc4fb34f118"
+  },
+  "notify": {
+    "path": "/mnt/raid0/llm/tmp/hil15-s3-t1-repair-20261030/s2-r14-dispatch-20261031/READY-NOTIFY.json",
+    "sha256": "67df0cd0297a939fd0d7a4ef0d8685ed26557efb67c42acd7a140223bf9123ba"
+  },
+  "scope": "real engine callback --job -> HOSTboot -> sharednative main under explicit standingR11; no64GiB/quarter reservation or scientific parent completion claim",
+  "known": 18,
+  "unknown": 2,
+  "unexposed": 25,
+  "original_denominator": 45,
+  "native_grade": null,
+  "full_complete": false
+}

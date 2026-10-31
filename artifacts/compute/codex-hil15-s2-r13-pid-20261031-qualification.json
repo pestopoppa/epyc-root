@@ -1,0 +1,87 @@
+{
+  "actual_noarg_pid_handshake": {
+    "path": "/mnt/raid0/llm/tmp/hil15-s3-t1-repair-20261030/s2-r13-pid-20261031/NOARG-PID-HANDSHAKE.json",
+    "sha256": "a408976f527070b15494f928da8dcb5bd35cbaaa6a12d8c8322eec7fa995fa8a"
+  },
+  "actual_read_only_prearm_keeper_scan_and_transformed_schema": {
+    "path": "/mnt/raid0/llm/tmp/hil15-s3-t1-repair-20261030/s2-r13-pid-20261031/READY-GATES.log",
+    "sha256": "fb50d25d276277f116427a1d609c571249a9ad4e78642edcf47adac03fe8e3c1"
+  },
+  "archived_evidence": {
+    "admission-gates.log": {
+      "original": "/mnt/raid0/llm/tmp/hil15-s3-t1-repair-20261030/s2-r13-pid-20261031/READY-GATES.log",
+      "path": "artifacts/compute/codex-hil15-s2-r13-pid-20261031-qualification/admission-gates.log",
+      "sha256": "fb50d25d276277f116427a1d609c571249a9ad4e78642edcf47adac03fe8e3c1"
+    },
+    "native-smokes.json": {
+      "original": "/mnt/raid0/llm/tmp/hil15-s3-t1-repair-20261030/s2-r13-pid-20261031/SMOKE-EVIDENCE.json",
+      "path": "artifacts/compute/codex-hil15-s2-r13-pid-20261031-qualification/native-smokes.json",
+      "sha256": "522502157cb011773ea1035eaa834925ad789d8992bfa8fc214df63dcdb2c177"
+    },
+    "pid-handshake.json": {
+      "original": "/mnt/raid0/llm/tmp/hil15-s3-t1-repair-20261030/s2-r13-pid-20261031/NOARG-PID-HANDSHAKE.json",
+      "path": "artifacts/compute/codex-hil15-s2-r13-pid-20261031-qualification/pid-handshake.json",
+      "sha256": "a408976f527070b15494f928da8dcb5bd35cbaaa6a12d8c8322eec7fa995fa8a"
+    },
+    "preflight.log": {
+      "original": "/mnt/raid0/llm/tmp/hil15-s3-t1-repair-20261030/s2-r13-pid-20261031/preflight.log",
+      "path": "artifacts/compute/codex-hil15-s2-r13-pid-20261031-qualification/preflight.log",
+      "sha256": "c1aa91874af782c830a94dc8d66b8ee325a1b28bb25eb6d9f3bfbab3075c9f30"
+    },
+    "published-manifest.json": {
+      "original": "/mnt/raid0/llm/tmp/hil15-s3-t1-repair-20261030/s2-r13-pid-20261031/codex-hil15-s2-r13-pid-20261031.json",
+      "path": "artifacts/compute/codex-hil15-s2-r13-pid-20261031-qualification/published-manifest.json",
+      "sha256": "57336c3a6093f55ef773170902a288d71f88aa205b21c19265a5785d1f09c983"
+    }
+  },
+  "at": "2026-10-31T04:36:29.378601+00:00",
+  "canonical_ready_path": "/mnt/raid0/llm/tmp/compute-flags/ready/codex-hil15-s2-r13-pid-20261031.json",
+  "full_complete": false,
+  "history": {
+    "path": "/mnt/raid0/llm/tmp/hil15-s3-t1-repair-20261030/s2-r13-pid-20261031/ACTUAL-HISTORY.json",
+    "sha256": "985efbf884923b948fc62c7c7ad25c55d6ee516e7c74e6b37cb617738e663ec3"
+  },
+  "known": 18,
+  "launcher": {
+    "path": "/mnt/raid0/llm/tmp/hil15-s3-t1-repair-20261030/s2-r13-pid-20261031/launch.sh",
+    "sha256": "95dc67d2ea5b9ed26ff0110aed7e70284c65d21b36e57703eb217e906ccd39d7"
+  },
+  "manifest": {
+    "path": "/mnt/raid0/llm/tmp/hil15-s3-t1-repair-20261030/s2-r13-pid-20261031/codex-hil15-s2-r13-pid-20261031.json",
+    "sha256": "57336c3a6093f55ef773170902a288d71f88aa205b21c19265a5785d1f09c983"
+  },
+  "native_grade": null,
+  "native_smokes": {
+    "path": "/mnt/raid0/llm/tmp/hil15-s3-t1-repair-20261030/s2-r13-pid-20261031/SMOKE-EVIDENCE.json",
+    "sha256": "522502157cb011773ea1035eaa834925ad789d8992bfa8fc214df63dcdb2c177"
+  },
+  "original_denominator": 45,
+  "preflight": {
+    "path": "/mnt/raid0/llm/tmp/hil15-s3-t1-repair-20261030/s2-r13-pid-20261031/preflight.log",
+    "sha256": "c1aa91874af782c830a94dc8d66b8ee325a1b28bb25eb6d9f3bfbab3075c9f30"
+  },
+  "prepublication_native_exposure": {
+    "path": "/mnt/raid0/llm/tmp/hil15-s3-t1-repair-20261030/s2-r13-pid-20261031/PREPUBLICATION-NATIVE-EXPOSURE.json",
+    "sha256": "19ec3992162773071a381dcc87f46f173c5f8d2356749dbb49aea8f811cb28af"
+  },
+  "ready_id": "codex-hil15-s2-r13-pid-20261031",
+  "retained_evidence": {
+    "actual_history": {
+      "note": "Original native inode/epoch identity record retained byte-exact in the active protected packet; Git carries the hash and reference.",
+      "path": "/mnt/raid0/llm/tmp/hil15-s3-t1-repair-20261030/s2-r13-pid-20261031/ACTUAL-HISTORY.json",
+      "sha256": "985efbf884923b948fc62c7c7ad25c55d6ee516e7c74e6b37cb617738e663ec3"
+    }
+  },
+  "row": {
+    "path": "/mnt/raid0/llm/tmp/hil15-s3-t1-repair-20261030/s2-r13-pid-20261031/codex-hil15-s2-r13-pid-20261031.row.md",
+    "sha256": "e79fde1094eb44f1f84a3a0184afa5a3826cfd16f800421113c6b0b97c259190"
+  },
+  "schema": "hil15-s2-qualification-publication/v1",
+  "scientific_scope": "Original35B full-cohort campaign staysopen. Gemma1B smoke is reduced diagnostic control. Keeperownsarming; no scientificcompletion or newtier claimed.",
+  "source_manifest": {
+    "path": "/mnt/micron/refactor-hil15-s2-r13-pid-20261031/SOURCE.sha256",
+    "sha256": "fb651765ff14ecf02607775467b31e779156d8d33c78fbbdd3fcd50771ffc396"
+  },
+  "unexposed": 25,
+  "unknown": 2
+}

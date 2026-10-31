@@ -157,6 +157,8 @@ INF70_AGENT_RUNS = Path("/mnt/raid0/llm/tmp/inf70/agents")
 ORCHESTRATOR = Path("/mnt/raid0/llm/epyc-orchestrator")
 
 SOURCES: dict[str, Source] = {s.name: s for s in (
+    Source("inf34-a2-raw-prefill", "inf34_a2_raw", _files("raw-a2.observation.json"),
+           task="VB-INF34-A2-DIAG-WIRE", note="prospective exact original A2 observation; paired producer/source/view epoch; controls/partials decline; no crossover or protocol claim"),
     Source("ufh12-gs-coverage", "ufh12_gs_coverage", _files("*.belief_measurements.jsonl"), task="VB-UFH12-GS", note="prospective proxy-query and stored-token record coverage; explicit --path only"),
     Source("rtg57-vkq-comparison", "rtg57_vkq_comparison", _files("native-receipt.json"), task="VB-RTG57-VKQ-WIRE", note="prospective scoped T48/T96 timing; no adoption"),
     Source("rtg57-vkq-oracle", "rtg57_vkq_oracle", _files("native-receipt.json"), task="VB-RTG57-VKQ-WIRE", note="one model-free C5 numerical shape; no serving or adoption warrant"),
@@ -547,6 +549,11 @@ SOURCES: dict[str, Source] = {s.name: s for s in (
                 "each EXPLAINED-UI policy exception; gate verdict, code-identity flags, propositions and store "
                 "SHA256SUMS attestations are re-derived; text-only legacy output and pre-hook folds decline",
            task="VB-FOLDGATE-WRITE"),
+    Source("c6-q4-microbench", "c6_q4_microbench",
+           lambda p: importlib.import_module("adapters.c6_q4_microbench").units(p),
+           default=Path("/mnt/raid0/llm/tmp/c6-35186-q4-microbench-r2-20261031/runs"),
+           note="C6 Q4 diagnostic component timing native run bundles only; exact Q4_K 27B cases plus synthetic DS41 shape reference; strict input/image/run-seal rehash and raw timing re-derivation; unknown generated-input byte identity and co-tenancy remain explicit; empty protocol means observations only, no keep/serving grade",
+           task="VB-C6-Q4-MICROBENCH-WIRE"),
     Source("hsf5p-microbench", "hsf5p_microbench",
            lambda p: importlib.import_module("adapters.hsf5p_microbench").units(p),
            default=Path("/mnt/raid0/llm/tmp/f8-launchers-20261024/hsf-5p"),

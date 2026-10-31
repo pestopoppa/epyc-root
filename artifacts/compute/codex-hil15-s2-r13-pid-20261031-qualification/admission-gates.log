@@ -1,0 +1,4 @@
+PASS: actual read-only pre-arm predicates; no shared mutation; synthetic PID static-only
+ok	21	codex-hil15-s2-r13-pid-20261031	any-cpu-quarter	/mnt/raid0/llm/tmp/hil15-s3-t1-repair-20261030/s2-r13-pid-20261031/launch.sh	28800	64
+OK: 1 row(s) checked, 0 refusal(s), 0 warning(s)
+PASS: real keeper scan and exact pre-arm transformed-row validator (schema fixture PID only), zero blocker text

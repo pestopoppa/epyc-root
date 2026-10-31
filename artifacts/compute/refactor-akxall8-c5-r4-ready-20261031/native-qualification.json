@@ -1,0 +1,45 @@
+{
+  "cutoff": {
+    "children_drained": true,
+    "compiler_pid_birth": {
+      "birth": 154204616,
+      "pid": 3474150
+    },
+    "exact_pids_drained": true,
+    "live_compiler_ticks_advanced": true,
+    "log_sha256": "72c5fe50d82f288ace493851e187c152c398b2e5e6937a91ef124de2358c65fb",
+    "partial": true,
+    "partial_result_sha256": "5ad6284094d63bcd72027773255bf8024432397ee3e5489ae0ba3eab4956c493",
+    "rc": 75,
+    "reason": "window_cutoff",
+    "sampled_peak_bytes": 848699392,
+    "timeout_pid_birth": {
+      "birth": 154192474,
+      "pid": 3461381
+    },
+    "wall_s": 127.00359414308332,
+    "witness_sha256": "ad37c2061a518c5a7d3da9b0fb34dbb819df3d65a906c714736245665d59c483"
+  },
+  "failed_controls_preserved": [
+    "fixture-r11-normal",
+    "fixture-r11-normal2",
+    "fixture-r11-normal3"
+  ],
+  "full_build_complete": false,
+  "gpu_execution": false,
+  "normal": {
+    "children_drained": true,
+    "linked_target": "ggml-base",
+    "log_sha256": "ee2020087bff4931195a541c64b0b9c93fa82e02aa22c35df0ba5cbee980513c",
+    "rc": 0,
+    "result_sha256": "78f8f31169b5bde4a0541b04ad0d0eae94ca645286bafb8df8aea7a7cb0fb4d2",
+    "sampled_peak_bytes": 554520576,
+    "wall_s": 21.516469958005473
+  },
+  "recorded_at": "2026-10-31T04:07:39.612673+00:00",
+  "schema": "akxall8.c5_r4_native_qualification.v1",
+  "source": "c72ec82f5417bb2937310326120f149b665e8400",
+  "source_manifest_sha256": "da17bd761b8c44b60713f7205b11bae179c86fe353f54aec4bbac0fc32b6fc57",
+  "source_sha256sums_sha256": "bce0afd564e1d8a8604ee071e65e47d698d3529bcb708871e3f89fdcc5e37a60",
+  "timing_claim": null
+}

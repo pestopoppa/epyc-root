@@ -1,0 +1,133 @@
+{
+  "schema": "hil15-native-smoke-qualification/v1",
+  "at": "2026-10-31T04:35:12.913457+00:00",
+  "launcher_sha256": "95dc67d2ea5b9ed26ff0110aed7e70284c65d21b36e57703eb217e906ccd39d7",
+  "source_manifest_sha256": "fb651765ff14ecf02607775467b31e779156d8d33c78fbbdd3fcd50771ffc396",
+  "uid": 1000,
+  "regions": "154,155",
+  "normal_and_cutoff": {
+    "normal": {
+      "root": "/mnt/micron/refactor-hil15-s2-r13-pid-20261031/real-unit-smoke-normal-P0pw5E3m",
+      "log": "/mnt/raid0/llm/tmp/hil15-s3-t1-repair-20261030/s2-r13-pid-20261031/normal-smoke.log",
+      "log_sha256": "fed880bf521dca149e41e772032b1a11abcd3ed00a62e06204baf7d63457284d",
+      "outer_exit_code": 0,
+      "diagnostics": [
+        {
+          "result": {
+            "rc": 0,
+            "reason": "driver exit",
+            "descendants_drained": true,
+            "children": [
+              {
+                "pid": 3757674,
+                "identity": {
+                  "state": "R",
+                  "ppid": 3757336,
+                  "birth": 154367183
+                },
+                "exit": 0
+              },
+              {
+                "pid": 3757884,
+                "identity": {
+                  "state": "R",
+                  "ppid": 3757336,
+                  "birth": 154367242
+                },
+                "exit": 0
+              }
+            ]
+          },
+          "elapsed_s": 29.068679412826896,
+          "peak_rss_bytes": 1584312320,
+          "samples": 760
+        }
+      ]
+    },
+    "cutoff": {
+      "root": "/mnt/micron/refactor-hil15-s2-r13-pid-20261031/real-unit-smoke-cutoff-cZGTYymr",
+      "log": "/mnt/raid0/llm/tmp/hil15-s3-t1-repair-20261030/s2-r13-pid-20261031/cutoff-smoke.log",
+      "log_sha256": "e049d22671d1ede5b7edb20e0f52811deca68f88d1ce06ceac19280a627372e0",
+      "outer_exit_code": 75,
+      "diagnostics": [
+        {
+          "result": {
+            "rc": 0,
+            "reason": "driver exit",
+            "descendants_drained": true,
+            "children": [
+              {
+                "pid": 3762078,
+                "identity": {
+                  "state": "R",
+                  "ppid": 3759401,
+                  "birth": 154371113
+                },
+                "exit": 0
+              },
+              {
+                "pid": 3762306,
+                "identity": {
+                  "state": "R",
+                  "ppid": 3759401,
+                  "birth": 154371184
+                },
+                "exit": 0
+              }
+            ]
+          },
+          "elapsed_s": 37.43693595007062,
+          "peak_rss_bytes": 1585491968,
+          "samples": 888
+        },
+        {
+          "result": {
+            "rc": 75,
+            "reason": "cutoff",
+            "descendants_drained": true,
+            "children": [
+              {
+                "pid": 3771789,
+                "identity": {
+                  "state": "R",
+                  "ppid": 3759401,
+                  "birth": 154374858
+                },
+                "exit": 0
+              },
+              {
+                "pid": 3771988,
+                "identity": {
+                  "state": "R",
+                  "ppid": 3759401,
+                  "birth": 154374930
+                },
+                "exit": -15
+              }
+            ]
+          },
+          "elapsed_s": 70.71828366094269,
+          "peak_rss_bytes": 1585491968,
+          "samples": 1407
+        }
+      ],
+      "partial": "/mnt/micron/refactor-hil15-s2-r13-pid-20261031/real-unit-smoke-cutoff-cZGTYymr/slot-2/partial.json",
+      "partial_sha256": "f58ffebf96d5546a1a78fac6b4fa63edd18a977d1ad69f402693d5a45f66e743",
+      "active_decode": {
+        "task": "516",
+        "tokens": 100,
+        "active_sample_wall_s": 1793421308.4847388
+      }
+    }
+  },
+  "captured_pid_identities_drained": [
+    3757674,
+    3757884,
+    3762078,
+    3762306,
+    3771789,
+    3771988
+  ],
+  "grade": null,
+  "full_complete": false
+}

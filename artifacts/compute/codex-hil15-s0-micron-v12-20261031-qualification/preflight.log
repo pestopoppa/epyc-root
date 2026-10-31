@@ -1,0 +1,4 @@
+launcher RUS3_DIAGNOSTIC=1
+host RUS3_DIAGNOSTIC=1
+complete unit 14
+{'retained': {'retained_accepted': 32, 'retained_unknown': [[10, 2], [11, 1], [12, 1]], 'eligible_unexposed': 10, 'denominator': 45}, 'resume': {'slot': 'unit15/slot1', 'status': 'preserved_unknown_incomplete', 'directory_count': 18, 'file_count': 24, 'readset_sha256': '4567f0621fa25dab3127ba3c9ec490eb1bef513d3ce458fda89d0cd7c8d54707'}, 'only_eligible': [[15, 2]]}
