@@ -1,0 +1,2 @@
+FU03 completion verified normal-r2
+{"schema": "hil15-r11-smoke-supervisor/v1", "elapsed_s": 41.11419138498604, "sampled_peak_tree_rss_bytes": 1213685760, "samples": 342, "verified_exited_processes": 1, "verified_exited_threads": 0, "per_process_address_space_limit_bytes": 17179869184, "rss_scope": "sum of sampled resident pages across owned process tree; sampling may miss transients and double-count shared pages", "leader_pid": 4065904, "leader_birth": 154515566, "child_rc": 0, "children_drained": true, "failure": null}

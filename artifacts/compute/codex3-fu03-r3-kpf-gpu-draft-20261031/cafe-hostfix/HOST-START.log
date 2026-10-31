@@ -1,0 +1,2 @@
+2026-10-31T05:11:10Z [codex3-cafe1-pmin-hostfix-20261031] launcher up pid=81629 class=cpu poll=45s grants=/mnt/raid0/llm/tmp/compute-flags/grants stop=/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/cafe1-hostfix/STOP minwin=12000s ports=none
+2026-10-31T05:11:10Z [codex3-cafe1-pmin-hostfix-20261031] launcher signalled

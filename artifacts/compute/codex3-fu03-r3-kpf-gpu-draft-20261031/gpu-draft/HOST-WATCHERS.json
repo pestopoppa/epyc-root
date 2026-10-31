@@ -1,0 +1,24 @@
+{
+  "at": "2026-10-31T04:54:13.420646+00:00",
+  "qualifier": {
+    "unit": "codex3-kpf181-r7v2-qualifier-20261031.service",
+    "pid": 3955862,
+    "birth": 154491137,
+    "ppid": 1,
+    "affinity": "126,127",
+    "state": "active/running"
+  },
+  "publisher": {
+    "unit": "codex3-kpf181-r7v2-publisher-20261031.service",
+    "pid": 3955961,
+    "birth": 154491430,
+    "ppid": 1,
+    "affinity": "126,127",
+    "state": "active/running"
+  },
+  "launcher_sha256": "66527273a186bf5659dcc4ad2d1636d0d678496629ef165c2f5790c416353f76",
+  "source_sha256": "589a72c4ea7b335f43655c890908ad8d8e09137662c7b90659fb494890221ca0",
+  "gpu_grant": "yarn-agg-1g-power-20261031 03:12Z\u201305:12Z",
+  "target_or_public_gpu_inference_started": false,
+  "completion": "publisher only after real R7 normal/STOP and active ID-matched fork sample, consumer and e332 proof"
+}

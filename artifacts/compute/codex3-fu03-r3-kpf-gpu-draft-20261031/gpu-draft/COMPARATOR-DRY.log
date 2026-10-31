@@ -1,0 +1,27 @@
+====================================================================================================
+KPF-18 gate plan (DRY RUN: nothing is launched)  host Beelzebub  2026-10-31T04:50:33Z
+  out /mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/gpu-leg-v2/full/comparator | port 19639 | fork-min 1024 | n_predict 256 | n_probs 20 | window-id kpf18-20261031T045033Z | gpu-window-id dry-plan-only
+  launch prefix: taskset -c 184-191
+  gate argv (/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/gpu-leg-v2/full-argv.txt): -m /mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf --host 127.0.0.1 -np 4 -c 393216 -t 8 -b 512 -ub 512 --flash-attn on --jinja -ctk q8_0 -ctv q8_0 --kv-unified --no-mmap -ngl all --cache-ram 65536 --chat-template-file /mnt/raid0/llm/models/chat-templates/epyc-qwen3x-v1-terse.jinja -md /mnt/raid0/llm/models/Qwen3.8-27B-DFlash2-Q8_0.gguf -ngld 99 --spec-type draft-dflash --spec-draft-n-max 7 --device ROCm0 --slot-save-path /mnt/raid0/llm/cache/kv_slots/architect_critic --device-draft ROCm0 --no-cache-idle-slots
+  - --fork-bin /mnt/raid0/llm/kernels/builds/gpu-20261020-a1f0c8cf9/bin/llama-server (bin dir /mnt/raid0/llm/kernels/builds/gpu-20261020-a1f0c8cf9/bin; LD_LIBRARY_PATH /mnt/raid0/llm/kernels/builds/gpu-20261020-a1f0c8cf9/bin:/opt/rocm/lib:/usr/lib/llvm-20/lib:/opt/AMD/aocc-compiler-5.0.0/lib)
+  - --champion-bin /mnt/micron/codex3-lanes/kpf181-e332-hip-build/bin/llama-server (bin dir /mnt/micron/codex3-lanes/kpf181-e332-hip-build/bin; LD_LIBRARY_PATH /mnt/micron/codex3-lanes/kpf181-e332-hip-build/bin:/opt/rocm/lib:/usr/lib/llvm-20/lib:/opt/AMD/aocc-compiler-5.0.0/lib)
+  - card /sys/class/drm/card2/device: VRAM used 53.83 GiB of 63.98; KFD processes holding VRAM now: 1
+  - VRAM sampler: KFD sysfs per-pid at 1 Hz + rocm-smi (rocm-smi --showmeminfo vram --json) every 5 s
+  - GPU window file: {"file": "/mnt/raid0/llm/tmp/gpu-window/mi210.json", "exists": true, "holder": "production", "parked_ports": [], "parked_roles": [], "expected_end": null, "preempt_requested_at": null}
+  - device claim mi210_0 (advisory read): state locked_without_payload, holder -
+  - prompt set /mnt/raid0/llm/tmp/overnight-20261020/kpf18-run/prompt_set.jsonl sha256 dc37cdf1c407956d83d7b7354f4e48964306228793fc9095add945a17f2994de: 32 pairs
+  rate model: prefill ms/tok = (1.15 + 0.0235 x occupied_k) x 1.1; decode DFlash2 37.0-0.09/k tok/s, no-draft 30.8-0.15/k; 4-stream agg x1.3; load 90s, stop 45s
+----------------------------------------------------------------------------------------------------
+ITEM 6: 8 steps, est 18m42s
+      1m35s  [item6-champion-20261031T045033Z] linkage + launch + healthy + read-back: taskset -c 184-191 /mnt/micron/codex3-lanes/kpf181-e332-hip-build/bin/llama-server -m /mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf --host 127.0.0.1 -np 4 -c 393216 -t 8 -b 512 -ub 512 --flash-attn on --jinja -ctk q8_0 -ctv q8_0 --kv-unified --no-mmap -ngl all --cache-ram 65536 --chat-template-file /mnt/raid0/llm/models/chat-templates/epyc-qwen3x-v1-terse.jinja -md /mnt/raid0/llm/models/Qwen3.8-27B-DFlash2-Q8_0.gguf -ngld 99 --spec-type draft-dflash --spec-draft-n-max 7 --device ROCm0 --slot-save-path /mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/gpu-leg-v2/full/comparator/slot-save/item6-champion-20261031T045033Z --device-draft ROCm0 --no-cache-idle-slots --port 19639 --metrics
+      0m00s  open item-6 record (champion)
+      7m01s  item6 [champion] groups [0, 2, 4, 7]: per group erase, trunk+s0 then trunk+s1 on slot 0 (own-cache reuse), 256 tok, no fork-specific request fields
+      0m45s  [item6-champion-20261031T045033Z] SIGTERM own pid, verify dead, then finalize its records
+      1m35s  [item6-fork_off-20261031T045033Z] linkage + launch + healthy + read-back: taskset -c 184-191 /mnt/raid0/llm/kernels/builds/gpu-20261020-a1f0c8cf9/bin/llama-server -m /mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf --host 127.0.0.1 -np 4 -c 393216 -t 8 -b 512 -ub 512 --flash-attn on --jinja -ctk q8_0 -ctv q8_0 --kv-unified --no-mmap -ngl all --cache-ram 65536 --chat-template-file /mnt/raid0/llm/models/chat-templates/epyc-qwen3x-v1-terse.jinja -md /mnt/raid0/llm/models/Qwen3.8-27B-DFlash2-Q8_0.gguf -ngld 99 --spec-type draft-dflash --spec-draft-n-max 7 --device ROCm0 --slot-save-path /mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/gpu-leg-v2/full/comparator/slot-save/item6-fork_off-20261031T045033Z --device-draft ROCm0 --no-cache-idle-slots --port 19639 --metrics --slot-fork-min-tokens 0
+      0m00s  open item-6 record (fork_off)
+      7m01s  item6 [fork_off] groups [0, 2, 4, 7]: per group erase, trunk+s0 then trunk+s1 on slot 0 (own-cache reuse), 256 tok, no fork-specific request fields
+      0m45s  [item6-fork_off-20261031T045033Z] SIGTERM own pid, verify dead, then finalize its records
+====================================================================================================
+TOTAL estimate: 18m42s (19 min) for items [6]; budget --budget-min 180
+PREFLIGHT: inputs PASS (live-only checks run at execute: linkage, read-back, residency, claim)
+DRY RUN complete: no process was started, nothing was sent.

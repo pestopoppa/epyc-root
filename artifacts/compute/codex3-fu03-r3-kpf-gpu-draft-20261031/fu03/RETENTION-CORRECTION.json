@@ -1,0 +1,10 @@
+{
+  "at": "2026-10-31T05:07:01.044569+00:00",
+  "id": "codex3-lb49-fu03-cli-r3-20261031",
+  "correction": "scratch_root corrected r2 -> r3; KEEP and launcher .out logs explicitly retained; code/launcher/source/control hashes unchanged",
+  "manifest_sha256": "56cea4b0628e8242dc39f453fe166b83a2f03f07b8e22bcce1d74e6d4012c763",
+  "before_manifest": "/mnt/raid0/llm/tmp/compute-flags/withdrawn/20261031-fu03-r3-retention/codex3-lb49-fu03-cli-r3-20261031.pre-retention-fix.json",
+  "native_target_started_at_correction": false,
+  "smoke_repeated": false,
+  "basis": "metadata-only correction after withdrawal of own unarmed READY; original matching host normal/STOP remain applicable"
+}

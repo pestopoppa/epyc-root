@@ -1,0 +1,12 @@
+aca2f46735043bcfd0a44eca981d04627b9cdf74c4c9a04bf0856d04066f58fc  /mnt/raid0/llm/data/wikitext2_test.txt
+659b24008d9feef44444855e4060c5559b7c118bcaa9d76fac0878dbf4c8131d  /mnt/raid0/llm/epyc-inference-research/scripts/speech/stt_bakeoff/align.py
+3d05c7475221841aa8f6f15ba3fbe48ea8e37956e7ca276d4180fdf5339fe5bd  /mnt/raid0/llm/epyc-inference-research/scripts/speech/stt_bakeoff/lexicon.py
+21d5c121d11d4c5f7a5f237fd2618cfbd1ba915d9e191243688ed06e0eb9fd10  /mnt/raid0/llm/epyc-inference-research/scripts/speech/stt_bakeoff/stt_norm.py
+83f9cbba8485ca34d70801af54d77e077a6adb7a967601dd9405720d7be39bc7  /mnt/raid0/llm/epyc-inference-research/scripts/speech/stt_bakeoff/scorer.py
+e818caaca90af973ad8d8ed81b9cb75344c2fd35226394c6a932d619509e5bf3  /mnt/raid0/llm/epyc-inference-research/scripts/benchmark/occ1/prompts.py
+9714750da5e17a538d5ce6ff3bb9dd1fa3735584a88aae8b1144e9b0b7f41781  /mnt/raid0/llm/epyc-orchestrator/orchestration/model_registry.yaml
+15d7cfa5a2ca4abc373f44d41313b1abb9468b35f1d85c87ac244d9dad1b8de1  /mnt/raid0/llm/epyc-orchestrator/orchestration/stack_topology.yaml
+1443ea9ab4bb0a2663b1002a5d4baad970e9f0b2f42ca4ec12b4683838284551  /mnt/raid0/llm/models/chat-templates/sha256/1443ea9ab4bb0a2663b1002a5d4baad970e9f0b2f42ca4ec12b4683838284551.jinja
+d36594ebd72f2f6ec335e47e38bbc1975e80bea3af5a53801ebb9065d020ff1a  /mnt/raid0/llm/epyc-orchestrator/scripts/server/orchestrator_stack.py
+bc49258dca10b16bc83dc45c10a13117fc8410f58bfb070dcb40811e09651893  /mnt/raid0/llm/epyc-orchestrator/scripts/server/stack_manifest.py
+323567eb6f2fe5d78d957dc93541d49c2f3748801fad728d41ea8efef77486de  /mnt/raid0/llm/epyc-orchestrator/orchestration/launch_manifest.yaml
