@@ -1,0 +1,393 @@
+{
+  "admission_corpus_sha256": "954b14d5b1efb9156ee6a4c2639fae6a83605478a7eff61f2b0db2ed0d505c01",
+  "admission_corpus_version": "mi210-discovery-fallback-only-v1",
+  "authority": "nonpromotable_candidate_only_discovery",
+  "complete": false,
+  "deployment_identity_sha256": "32c6769936dce3f8837c8e8fa2da697bee0b21c804634610715c810aacb1b60e",
+  "experiment_template_registry_sha256": "f027cf613b1cf9e60d15710e83f3e0e457c25bb44627b0d5e4f016b563bd95cf",
+  "hypothesis_portfolio_sha256": "c894690f56041ae355a50fffe23688abed1fa3eea9df4b7201faee2e565b4e78",
+  "inflight": {
+    "authorization": {
+      "authorized_at": "2026-08-18T15:38:26.313754Z",
+      "authorized_by": "discovery_controller",
+      "campaign_id": "ak-discovery",
+      "do_not_repeat_outcome": "COULD_NOT_CHECK",
+      "do_not_repeat_reasons": [
+        "the do-not-repeat ledger could not compare this question: this ledger cannot answer that question, and an empty match set would say it did: the question names no 'mechanism', which is the key every match is made on, so NO entry in this ledger could have matched it. An empty result here is 'not comparable', never 'not previously tried'. Use disposition(regime, ledger), or pass matches=None to check_do_not_repeat(), which is COULD_NOT_CHECK"
+      ],
+      "entry_evidence_grade": "design_prior",
+      "falsifier": "Exact type-6 kernel duration does not improve under correctness-preserving replay",
+      "falsifier_source": "stated_with_the_hypothesis",
+      "hypothesis_id": "akh-v2-q5-type-specific-dequant",
+      "ledger_seq": 2,
+      "origin": "planner",
+      "purpose": "candidate_only_discovery"
+    },
+    "candidate": {
+      "experiment_intent": {
+        "correctness_id": "backend-ops-hip-v1",
+        "dispatch_id": "decode-tg128-rocprof-v1",
+        "expected_dispatch": [
+          {
+            "calls": 6063,
+            "grid": 57344,
+            "kernel_name": "void mul_mat_vec_q<(ggml_type)6, 1, true, true>(void const*, void const*, int const*, ggml_cuda_mm_fusion_args_device, float*, unsigned int, HIP_vector_type<unsigned int, 3u>, unsigned int, unsigned int, unsigned int, HIP_vector_type<unsigned int, 3u>, unsigned int, unsigned int, unsigned int, HIP_vector_type<unsigned int, 3u>, unsigned int, unsigned int, unsigned int, unsigned int) [clone .kd]",
+            "lds_bytes": 1024,
+            "route_id": "cuda-vecdotq-v1.anchor.0",
+            "workgroup": 128
+          },
+          {
+            "calls": 4644,
+            "grid": 8192,
+            "kernel_name": "void mul_mat_vec_q<(ggml_type)6, 1, true, true>(void const*, void const*, int const*, ggml_cuda_mm_fusion_args_device, float*, unsigned int, HIP_vector_type<unsigned int, 3u>, unsigned int, unsigned int, unsigned int, HIP_vector_type<unsigned int, 3u>, unsigned int, unsigned int, unsigned int, HIP_vector_type<unsigned int, 3u>, unsigned int, unsigned int, unsigned int, unsigned int) [clone .kd]",
+            "lds_bytes": 1024,
+            "route_id": "cuda-vecdotq-v1.anchor.1",
+            "workgroup": 128
+          },
+          {
+            "calls": 3096,
+            "grid": 311296,
+            "kernel_name": "void mul_mat_vec_q<(ggml_type)6, 1, true, true>(void const*, void const*, int const*, ggml_cuda_mm_fusion_args_device, float*, unsigned int, HIP_vector_type<unsigned int, 3u>, unsigned int, unsigned int, unsigned int, HIP_vector_type<unsigned int, 3u>, unsigned int, unsigned int, unsigned int, HIP_vector_type<unsigned int, 3u>, unsigned int, unsigned int, unsigned int, unsigned int) [clone .kd]",
+            "lds_bytes": 1024,
+            "route_id": "cuda-vecdotq-v1.anchor.2",
+            "workgroup": 128
+          }
+        ],
+        "load_mode_recommendation": {
+          "example_ids": [],
+          "mode": "cold_serialized",
+          "rationale": "Use the safer serialized load mode for this candidate."
+        },
+        "target_surface": "gpu_decode",
+        "target_symbol": "vec_dot_q5_0_q8_1",
+        "template_id": "cuda-vecdotq-v1"
+      },
+      "falsifier": "Exact type-6 kernel duration does not improve under correctness-preserving replay",
+      "hypothesis_id": "akh-v2-q5-type-specific-dequant",
+      "manifest": {
+        "campaign_id": "ak-discovery-32c6769936dce3f8",
+        "candidate_id": "akc-discovery-1",
+        "change_class": "arithmetic",
+        "declared_files": [
+          "ggml/src/ggml-cuda/vecdotq.cuh"
+        ],
+        "declared_symbols": {
+          "ggml/src/ggml-cuda/vecdotq.cuh": [
+            "vec_dot_q5_0_q8_1",
+            "vec_dot_q5_0_q8_1_impl"
+          ]
+        },
+        "instrument_commit": "81bf32f11b4a421880e8f25faec3e4ba872363f0",
+        "mechanism_id": "de29841bf1a6f628b0b49e14960f1d048eaa6a9718692f1154033f8f8bf9e162",
+        "patch_base64": "ZGlmZiAtLWdpdCBhL2dnbWwvc3JjL2dnbWwtY3VkYS92ZWNkb3RxLmN1aCBiL2dnbWwvc3JjL2dnbWwtY3VkYS92ZWNkb3RxLmN1aAotLS0gYS9nZ21sL3NyYy9nZ21sLWN1ZGEvdmVjZG90cS5jdWgKKysrIGIvZ2dtbC9zcmMvZ2dtbC1jdWRhL3ZlY2RvdHEuY3VoCkBAIC0xNzYsMTggKzE3NiwxMiBAQCB2ZWNfZG90X3E1XzBfcThfMV9pbXBsCiAKICNwcmFnbWEgdW5yb2xsCiAgICAgZm9yIChpbnQgaSA9IDA7IGkgPCB2ZHI7ICsraSkgewotICAgICAgICBpbnQgdmkwID0gKHZsW2ldID4+ICAwKSAmIDB4MEYwRjBGMEY7IC8vIGxvd2VyIDQgcXMgYml0cywgc3RpbGwgbmVlZCBxaCBhcyA1dGggYml0cwotICAgICAgICB2aTAgICAgfD0gKHZoW2ldIDw8ICA0KSAmIDB4MDAwMDAwMTA7IC8vIDAgLT4gIDQKLSAgICAgICAgdmkwICAgIHw9ICh2aFtpXSA8PCAxMSkgJiAweDAwMDAxMDAwOyAvLyAxIC0+IDEyCi0gICAgICAgIHZpMCAgICB8PSAodmhbaV0gPDwgMTgpICYgMHgwMDEwMDAwMDsgLy8gMiAtPiAyMAotICAgICAgICB2aTAgICAgfD0gKHZoW2ldIDw8IDI1KSAmIDB4MTAwMDAwMDA7IC8vIDMgLT4gMjgKKyAgICAgICAgY29uc3QgaW50IHZpMCA9ICgodmxbaV0gPj4gMCkgJiAweDBGMEYwRjBGKSB8CisgICAgICAgICAgICAoKCh2aFtpXSAmIDB4MDAwMDAwMEYpICogMHgwMjA0MDgxMCkgJiAweDEwMTAxMDEwKTsKICAgICAgICAgc3VtaSA9IGdnbWxfY3VkYV9kcDRhKHZpMCwgdVsyKmkrMF0sIHN1bWkpOyAvLyBTSU1EIGRvdCBwcm9kdWN0IG9mIHF1YW50aXplZCB2YWx1ZXMKIAotICAgICAgICBpbnQgdmkxID0gKHZsW2ldID4+ICA0KSAmIDB4MEYwRjBGMEY7IC8vIHVwcGVyIDQgcXMgYml0cywgc3RpbGwgbmVlZCBxaCBhcyA1dGggYml0cwotICAgICAgICB2aTEgICAgfD0gKHZoW2ldID4+IDEyKSAmIDB4MDAwMDAwMTA7IC8vIDE2IC0+ICA0Ci0gICAgICAgIHZpMSAgICB8PSAodmhbaV0gPj4gIDUpICYgMHgwMDAwMTAwMDsgLy8gMTcgLT4gMTIKLSAgICAgICAgdmkxICAgIHw9ICh2aFtpXSA8PCAgMikgJiAweDAwMTAwMDAwOyAvLyAxOCAtPiAyMAotICAgICAgICB2aTEgICAgfD0gKHZoW2ldIDw8ICA5KSAmIDB4MTAwMDAwMDA7IC8vIDE5IC0+IDI4CisgICAgICAgIGNvbnN0IGludCB2aTEgPSAoKHZsW2ldID4+IDQpICYgMHgwRjBGMEYwRikgfAorICAgICAgICAgICAgKCgoKHZoW2ldID4+IDE2KSAmIDB4MDAwMDAwMEYpICogMHgwMjA0MDgxMCkgJiAweDEwMTAxMDEwKTsKICAgICAgICAgc3VtaSA9IGdnbWxfY3VkYV9kcDRhKHZpMSwgdVsyKmkrMV0sIHN1bWkpOyAvLyBTSU1EIGRvdCBwcm9kdWN0IG9mIHF1YW50aXplZCB2YWx1ZXMKICAgICB9CiAKQEAgLTc2OCwxMCArNzYyLDEyIEBAIHZlY19kb3RfcTVfMF9xOF8xCiAgICAgaW50IHZoW1ZEUl9RNV8wX1E4XzFfTU1WUV07CiAgICAgaW50ICB1WzIqVkRSX1E1XzBfUThfMV9NTVZRXTsKIAorICAgIGNvbnN0IGludCBxaCA9IGdldF9pbnRfYjIoYnE1XzAtPnFoLCAwKTsKKwogI3ByYWdtYSB1bnJvbGwKICAgICBmb3IgKGludCBpID0gMDsgaSA8IFZEUl9RNV8wX1E4XzFfTU1WUTsgKytpKSB7CiAgICAgICAgIHZsW2ldICAgID0gZ2V0X2ludF9iMihicTVfMC0+cXMsIGlxcyArIGkpOwotICAgICAgICB2aFtpXSAgICA9IGdldF9pbnRfYjIoYnE1XzAtPnFoLCAwKSA+PiAoNCAqIChpcXMgKyBpKSk7CisgICAgICAgIHZoW2ldICAgID0gcWggPj4gKDQgKiAoaXFzICsgaSkpOwogICAgICAgICB1WzIqaSswXSA9IGdldF9pbnRfYjQoYnE4XzEtPnFzLCBpcXMgKyBpKTsKICAgICAgICAgdVsyKmkrMV0gPSBnZXRfaW50X2I0KGJxOF8xLT5xcywgaXFzICsgaSArIFFJNV8wKTsKICAgICB9Cg==",
+        "patch_sha256": "61e3698c77f83e08c51fc7d119d40635a1da8d94162f6aa32b127c05fb75b1f3",
+        "production_base_commit": "0db32c06e3e550065b78311a6031ef3dd2c4f27c",
+        "proposal_id": "akp-discovery-1",
+        "source_tree": "llama.cpp"
+      },
+      "manifest_file_sha256": "67fcda7c1e93fccb5514ce0ef2428dd1813724778d4ea7a1ce5c03375bfc516b",
+      "manifest_raw_base64": "eyJjYW1wYWlnbl9pZCI6ImFrLWRpc2NvdmVyeS0zMmM2NzY5OTM2ZGNlM2Y4IiwiY2FuZGlkYXRlX2lkIjoiYWtjLWRpc2NvdmVyeS0xIiwiY2hhbmdlX2NsYXNzIjoiYXJpdGhtZXRpYyIsImRlY2xhcmVkX2ZpbGVzIjpbImdnbWwvc3JjL2dnbWwtY3VkYS92ZWNkb3RxLmN1aCJdLCJkZWNsYXJlZF9zeW1ib2xzIjp7ImdnbWwvc3JjL2dnbWwtY3VkYS92ZWNkb3RxLmN1aCI6WyJ2ZWNfZG90X3E1XzBfcThfMSIsInZlY19kb3RfcTVfMF9xOF8xX2ltcGwiXX0sImluc3RydW1lbnRfY29tbWl0IjoiODFiZjMyZjExYjRhNDIxODgwZThmMjVmYWVjM2U0YmE4NzIzNjNmMCIsIm1lY2hhbmlzbV9pZCI6ImRlMjk4NDFiZjFhNmY2MjhiMGI0OWUxNDk2MGYxZDA0OGVhYTZhOTcxODY5MmYxMTU0MDMzZjhmOGJmOWUxNjIiLCJwYXRjaF9iYXNlNjQiOiJaR2xtWmlBdExXZHBkQ0JoTDJkbmJXd3ZjM0pqTDJkbmJXd3RZM1ZrWVM5MlpXTmtiM1J4TG1OMWFDQmlMMmRuYld3dmMzSmpMMmRuYld3dFkzVmtZUzkyWldOa2IzUnhMbU4xYUFvdExTMGdZUzluWjIxc0wzTnlZeTluWjIxc0xXTjFaR0V2ZG1WalpHOTBjUzVqZFdnS0t5c3JJR0l2WjJkdGJDOXpjbU12WjJkdGJDMWpkV1JoTDNabFkyUnZkSEV1WTNWb0NrQkFJQzB4TnpZc01UZ2dLekUzTml3eE1pQkFRQ0IyWldOZlpHOTBYM0UxWHpCZmNUaGZNVjlwYlhCc0NpQUtJQ053Y21GbmJXRWdkVzV5YjJ4c0NpQWdJQ0FnWm05eUlDaHBiblFnYVNBOUlEQTdJR2tnUENCMlpISTdJQ3NyYVNrZ2V3b3RJQ0FnSUNBZ0lDQnBiblFnZG1rd0lEMGdLSFpzVzJsZElENCtJQ0F3S1NBbUlEQjRNRVl3UmpCR01FWTdJQzh2SUd4dmQyVnlJRFFnY1hNZ1ltbDBjeXdnYzNScGJHd2dibVZsWkNCeGFDQmhjeUExZEdnZ1ltbDBjd290SUNBZ0lDQWdJQ0IyYVRBZ0lDQWdmRDBnS0hab1cybGRJRHc4SUNBMEtTQW1JREI0TURBd01EQXdNVEE3SUM4dklEQWdMVDRnSURRS0xTQWdJQ0FnSUNBZ2Rta3dJQ0FnSUh3OUlDaDJhRnRwWFNBOFBDQXhNU2tnSmlBd2VEQXdNREF4TURBd095QXZMeUF4SUMwK0lERXlDaTBnSUNBZ0lDQWdJSFpwTUNBZ0lDQjhQU0FvZG1oYmFWMGdQRHdnTVRncElDWWdNSGd3TURFd01EQXdNRHNnTHk4Z01pQXRQaUF5TUFvdElDQWdJQ0FnSUNCMmFUQWdJQ0FnZkQwZ0tIWm9XMmxkSUR3OElESTFLU0FtSURCNE1UQXdNREF3TURBN0lDOHZJRE1nTFQ0Z01qZ0tLeUFnSUNBZ0lDQWdZMjl1YzNRZ2FXNTBJSFpwTUNBOUlDZ29kbXhiYVYwZ1BqNGdNQ2tnSmlBd2VEQkdNRVl3UmpCR0tTQjhDaXNnSUNBZ0lDQWdJQ0FnSUNBb0tDaDJhRnRwWFNBbUlEQjRNREF3TURBd01FWXBJQ29nTUhnd01qQTBNRGd4TUNrZ0ppQXdlREV3TVRBeE1ERXdLVHNLSUNBZ0lDQWdJQ0FnYzNWdGFTQTlJR2RuYld4ZlkzVmtZVjlrY0RSaEtIWnBNQ3dnZFZzeUtta3JNRjBzSUhOMWJXa3BPeUF2THlCVFNVMUVJR1J2ZENCd2NtOWtkV04wSUc5bUlIRjFZVzUwYVhwbFpDQjJZV3gxWlhNS0lBb3RJQ0FnSUNBZ0lDQnBiblFnZG1reElEMGdLSFpzVzJsZElENCtJQ0EwS1NBbUlEQjRNRVl3UmpCR01FWTdJQzh2SUhWd2NHVnlJRFFnY1hNZ1ltbDBjeXdnYzNScGJHd2dibVZsWkNCeGFDQmhjeUExZEdnZ1ltbDBjd290SUNBZ0lDQWdJQ0IyYVRFZ0lDQWdmRDBnS0hab1cybGRJRDQrSURFeUtTQW1JREI0TURBd01EQXdNVEE3SUM4dklERTJJQzArSUNBMENpMGdJQ0FnSUNBZ0lIWnBNU0FnSUNCOFBTQW9kbWhiYVYwZ1BqNGdJRFVwSUNZZ01IZ3dNREF3TVRBd01Ec2dMeThnTVRjZ0xUNGdNVElLTFNBZ0lDQWdJQ0FnZG1reElDQWdJSHc5SUNoMmFGdHBYU0E4UENBZ01pa2dKaUF3ZURBd01UQXdNREF3T3lBdkx5QXhPQ0F0UGlBeU1Bb3RJQ0FnSUNBZ0lDQjJhVEVnSUNBZ2ZEMGdLSFpvVzJsZElEdzhJQ0E1S1NBbUlEQjRNVEF3TURBd01EQTdJQzh2SURFNUlDMCtJREk0Q2lzZ0lDQWdJQ0FnSUdOdmJuTjBJR2x1ZENCMmFURWdQU0FvS0hac1cybGRJRDQrSURRcElDWWdNSGd3UmpCR01FWXdSaWtnZkFvcklDQWdJQ0FnSUNBZ0lDQWdLQ2dvS0hab1cybGRJRDQrSURFMktTQW1JREI0TURBd01EQXdNRVlwSUNvZ01IZ3dNakEwTURneE1Da2dKaUF3ZURFd01UQXhNREV3S1RzS0lDQWdJQ0FnSUNBZ2MzVnRhU0E5SUdkbmJXeGZZM1ZrWVY5a2NEUmhLSFpwTVN3Z2RWc3lLbWtyTVYwc0lITjFiV2twT3lBdkx5QlRTVTFFSUdSdmRDQndjbTlrZFdOMElHOW1JSEYxWVc1MGFYcGxaQ0IyWVd4MVpYTUtJQ0FnSUNCOUNpQUtRRUFnTFRjMk9Dd3hNQ0FyTnpZeUxERXlJRUJBSUhabFkxOWtiM1JmY1RWZk1GOXhPRjh4Q2lBZ0lDQWdhVzUwSUhab1cxWkVVbDlSTlY4d1gxRTRYekZmVFUxV1VWMDdDaUFnSUNBZ2FXNTBJQ0IxV3pJcVZrUlNYMUUxWHpCZlVUaGZNVjlOVFZaUlhUc0tJQW9ySUNBZ0lHTnZibk4wSUdsdWRDQnhhQ0E5SUdkbGRGOXBiblJmWWpJb1luRTFYekF0UG5Gb0xDQXdLVHNLS3dvZ0kzQnlZV2R0WVNCMWJuSnZiR3dLSUNBZ0lDQm1iM0lnS0dsdWRDQnBJRDBnTURzZ2FTQThJRlpFVWw5Uk5WOHdYMUU0WHpGZlRVMVdVVHNnS3l0cEtTQjdDaUFnSUNBZ0lDQWdJSFpzVzJsZElDQWdJRDBnWjJWMFgybHVkRjlpTWloaWNUVmZNQzArY1hNc0lHbHhjeUFySUdrcE93b3RJQ0FnSUNBZ0lDQjJhRnRwWFNBZ0lDQTlJR2RsZEY5cGJuUmZZaklvWW5FMVh6QXRQbkZvTENBd0tTQStQaUFvTkNBcUlDaHBjWE1nS3lCcEtTazdDaXNnSUNBZ0lDQWdJSFpvVzJsZElDQWdJRDBnY1dnZ1BqNGdLRFFnS2lBb2FYRnpJQ3NnYVNrcE93b2dJQ0FnSUNBZ0lDQjFXeklxYVNzd1hTQTlJR2RsZEY5cGJuUmZZalFvWW5FNFh6RXRQbkZ6TENCcGNYTWdLeUJwS1RzS0lDQWdJQ0FnSUNBZ2RWc3lLbWtyTVYwZ1BTQm5aWFJmYVc1MFgySTBLR0p4T0Y4eExUNXhjeXdnYVhGeklDc2dhU0FySUZGSk5WOHdLVHNLSUNBZ0lDQjlDZz09IiwicGF0Y2hfZW5jb2RpbmciOiJiYXNlNjQiLCJwYXRjaF9zaGEyNTYiOiI2MWUzNjk4Yzc3ZjgzZTA4YzUxZmM3ZDExOWQ0MDYzNWExZGE4ZDk0MTYyZjZhYTMyYjEyN2MwNWZiNzViMWYzIiwicHJvZHVjdGlvbl9iYXNlX2NvbW1pdCI6IjBkYjMyYzA2ZTNlNTUwMDY1Yjc4MzExYTYwMzFlZjNkZDJjNGYyN2MiLCJwcm9wb3NhbF9pZCI6ImFrcC1kaXNjb3ZlcnktMSIsInNjaGVtYSI6ImVweWMuYXV0b2tlcm5lbC5zb3VyY2UtcGF0Y2gudjEiLCJzb3VyY2VfdHJlZSI6ImxsYW1hLmNwcCJ9",
+      "patch_bundle_sha256": "67fcda7c1e93fccb5514ce0ef2428dd1813724778d4ea7a1ce5c03375bfc516b",
+      "proposal": {
+        "change": {
+          "estimated_diff_size": 18,
+          "files_and_symbols": [
+            "ggml/src/ggml-cuda/vecdotq.cuh:vec_dot_q5_0_q8_1",
+            "ggml/src/ggml-cuda/vecdotq.cuh:vec_dot_q5_0_q8_1_impl"
+          ]
+        },
+        "change_class": "arithmetic",
+        "proposal_id": "akp-discovery-1"
+      },
+      "regime": {
+        "architecture": "gfx90a",
+        "backend": "hip",
+        "batch": 1,
+        "measurement_graphs": false,
+        "model_or_frame": "frame-current-qwen05b-q4km-tg128",
+        "phase": "decode",
+        "quant": "Q5_0",
+        "shape": "type6-mmvq",
+        "target_runtime_graphs": true
+      },
+      "source_manifest_sha256": "67fcda7c1e93fccb5514ce0ef2428dd1813724778d4ea7a1ce5c03375bfc516b",
+      "statement": "A Q5_0-specific packed-load, scale/unpack, control-flow, or data-reuse mechanism can reduce the current frame type-6 MMVQ band without changing wave count."
+    },
+    "confirmation": false,
+    "exception": {
+      "message": "committed diff in 'ggml/src/ggml-cuda/vecdotq.cuh' derives undeclared symbols ['<file-scope>']",
+      "type": "SourceCandidateError"
+    },
+    "lease": {
+      "admitted": true,
+      "device_claim_probe_open": {
+        "acquired_at": "2026-08-18T15:38:26.734472+00:00",
+        "campaign_id": "ak-discovery-32c6769936dce3f8",
+        "claim_id": "akd-8a7af86e49c24b3d",
+        "device_id": "mi210_0",
+        "expires_at": "2026-08-18T15:38:56.734485+00:00",
+        "holder_boot_id": "ffa56b5e-1da4-42e7-ac5d-d233ff830b65",
+        "holder_label": "autokernel-discovery-controller",
+        "holder_pid": 1831037,
+        "holder_start_ticks": 45231002,
+        "host": "Beelzebub",
+        "lock_path": "/mnt/raid0/llm/tmp/gpu_device.mi210_0.lock",
+        "purpose": "AutoKernel GPU discovery admission probe",
+        "reclaimed_from": null,
+        "released_at": null,
+        "schema": "epyc.autokernel.device_claim_receipt.v1",
+        "state": "held"
+      },
+      "device_claim_probe_released": {
+        "acquired_at": "2026-08-18T15:38:26.734472+00:00",
+        "campaign_id": "ak-discovery-32c6769936dce3f8",
+        "claim_id": "akd-8a7af86e49c24b3d",
+        "device_id": "mi210_0",
+        "expires_at": "2026-08-18T15:38:56.734485+00:00",
+        "holder_boot_id": "ffa56b5e-1da4-42e7-ac5d-d233ff830b65",
+        "holder_label": "autokernel-discovery-controller",
+        "holder_pid": 1831037,
+        "holder_start_ticks": 45231002,
+        "host": "Beelzebub",
+        "lock_path": "/mnt/raid0/llm/tmp/gpu_device.mi210_0.lock",
+        "purpose": "AutoKernel GPU discovery admission probe",
+        "reclaimed_from": null,
+        "released_at": "2026-08-18T15:38:26.739066+00:00",
+        "schema": "epyc.autokernel.device_claim_receipt.v1",
+        "state": "held"
+      },
+      "device_id": "mi210_0",
+      "inference_window_lock": "/mnt/raid0/llm/tmp/model-call.lock",
+      "load_admission": {
+        "actor_recommendation": "cold_serialized",
+        "decision_sha256": "4c5bb1cef708f55bf35cca65925354d5f45bb9be8a19ca20f6778da11e849b7e",
+        "disqualifiers": [
+          "telemetry_missing"
+        ],
+        "effective_context_sha256": "315f9f9a9acb4c98d4005a79dc52b85465a09902c24c515b5c4e6c032e0cc379",
+        "mode": "cold_serialized",
+        "policy_file_sha256": "0d87adf3450c75c646f4b3c4a064d5a2940814473d803eee0559eaa45ea9230c",
+        "policy_sha256": "954b14d5b1efb9156ee6a4c2639fae6a83605478a7eff61f2b0db2ed0d505c01",
+        "policy_version": "mi210-discovery-fallback-only-v1",
+        "profile": {
+          "calls_per_arm": 9,
+          "cold_load_host_bytes": 397807840,
+          "device_id": "mi210_0",
+          "evidence_sha256": "6cc206ca06c53db0388f072eb4757156fc3195ad1e92e1294bf8496b093b2843",
+          "minimum_headroom_bytes_per_s": 1152921504606846976,
+          "model_bytes": 397807840,
+          "model_path": "/mnt/raid0/llm/models/lmstudio-community/Qwen2.5-Coder-0.5B-GGUF/Qwen2.5-Coder-0.5B-Q4_K_M.gguf",
+          "model_sha256": "f175ecace8c24336cbf9e22bd71ea032a16492bd264a3caab6dfa4cafe80ddd3",
+          "profile_id": "mi210-qwen05b-tg128-fallback-only-v1",
+          "telemetry_max_age_ms": 5000,
+          "workload": "decode_tg128",
+          "worst_case_loads_per_interval": 18
+        },
+        "promotion_claim": false,
+        "reason": "reviewed profile lacked complete safe overlap observations",
+        "request": {
+          "calls_per_arm": 9,
+          "cold_load_host_bytes": 397807840,
+          "device_id": "mi210_0",
+          "effective_context_sha256": "315f9f9a9acb4c98d4005a79dc52b85465a09902c24c515b5c4e6c032e0cc379",
+          "expected_hot_identity_sha256": null,
+          "foreign_kfd_pids": [],
+          "hot_residency_identity_sha256": null,
+          "hot_revalidation_identity_sha256": null,
+          "model_bytes": 397807840,
+          "model_path": "/mnt/raid0/llm/models/lmstudio-community/Qwen2.5-Coder-0.5B-GGUF/Qwen2.5-Coder-0.5B-Q4_K_M.gguf",
+          "model_sha256": "f175ecace8c24336cbf9e22bd71ea032a16492bd264a3caab6dfa4cafe80ddd3",
+          "observed_headroom_bytes_per_s": null,
+          "runtime_arm": null,
+          "runtime_manifest_sha256": null,
+          "telemetry_age_ms": null,
+          "telemetry_observed": false,
+          "telemetry_receipt_sha256": null,
+          "workload": "decode_tg128",
+          "worst_case_loads_per_interval": 18
+        },
+        "schema": "epyc.autokernel.gpu_load_admission_decision.v1"
+      },
+      "mode": "cold_serialized",
+      "model_sha256": "f175ecace8c24336cbf9e22bd71ea032a16492bd264a3caab6dfa4cafe80ddd3",
+      "operation_key": "1bb72b61b21be5e013a76e763373a75deef3dafec5e6b910ca13a64291301926",
+      "phase": "prebuild_probe",
+      "promotion_claim": false,
+      "repetition": 1
+    },
+    "operation_key": "1bb72b61b21be5e013a76e763373a75deef3dafec5e6b910ca13a64291301926",
+    "parent_authorization": null,
+    "row": {
+      "context_sha256": "154146c6caefd2a3651da76f120b02b8e1c51032bc3b0b7a4e837024b204a261",
+      "critic": {
+        "decision": "accept",
+        "reason": "Bit-exact equivalence verified. vi0: original ORs vh bits 0-3 into positions 4/12/20/28; replacement ((vh & 0xF) * 0x02040810) & 0x10101010 places the nibble at shifts 4,11,18,25 in disjoint ranges (4-7, 11-14, 18-21, 25-28), so the multiply has no cross-term carries, and the 0x10101010 mask selects exactly b0->4, b1->12, b2->20, b3->28 \u2014 identical mapping. Max product 15*0x02040810 = 0x1E3C78F0 < INT_MAX, so no signed-overflow UB. vi1: original reads vh bits 16-19 into the same positions; replacement pre-shifts (vh >> 16) & 0xF and reuses the same multiply-mask; the & 0xF neutralizes arithmetic-shift sign fill. Since the original impl only ever consumes vh bits 0-3 and 16-19, the rewrite is equivalent for every caller of the templated impl regardless of vdr. The second hunk hoists the loop-invariant get_int_b2(bq5_0->qh, 0) (same address each iteration, pure load) \u2014 semantics-preserving and a plausible latency/VALU win consistent with the hypothesis mechanism. Governance: patch stays within cuda-vecdotq-v1 authority (single declared file ggml/src/ggml-cuda/vecdotq.cuh; symbols vec_dot_q5_0_q8_1 and vec_dot_q5_0_q8_1_impl only); change class arithmetic matches template and portfolio binding; no wave-count, launch-geometry, or dispatcher mutation, so it avoids dnr-q5-four-wave and matches the eligible akh-v2-q5-type-specific-dequant record's stop rules. Expected dispatch lists exactly the three sealed true/true type-6 anchors (grids 57344/8192/311296, workgroup 128, lds 1024) and correctly omits the 129-call false/true tail, which is an explicit planner_target_exclusion and excluded anchor. cold_serialized load mode matches the fallback-only admission policy (no telemetry authority for overlap). Falsifier (exact type-6 kernel duration under correctness-preserving replay) and correctness suite backend-ops-hip-v1 are declared. The critic source preimage excerpt (lines 148-196, sha c86566f7...) matches the patch's pre-context, so the diff applies to the sealed base c418082b... Risks are limited to compiler already\u6298 achieving this via strength reduction (flat result), which the falsifier will catch; no correctness risk identified."
+      },
+      "experiment_intent": {
+        "correctness_id": "backend-ops-hip-v1",
+        "dispatch_id": "decode-tg128-rocprof-v1",
+        "expected_dispatch": [
+          {
+            "calls": 6063,
+            "grid": 57344,
+            "kernel_name": "void mul_mat_vec_q<(ggml_type)6, 1, true, true>(void const*, void const*, int const*, ggml_cuda_mm_fusion_args_device, float*, unsigned int, HIP_vector_type<unsigned int, 3u>, unsigned int, unsigned int, unsigned int, HIP_vector_type<unsigned int, 3u>, unsigned int, unsigned int, unsigned int, HIP_vector_type<unsigned int, 3u>, unsigned int, unsigned int, unsigned int, unsigned int) [clone .kd]",
+            "lds_bytes": 1024,
+            "route_id": "cuda-vecdotq-v1.anchor.0",
+            "workgroup": 128
+          },
+          {
+            "calls": 4644,
+            "grid": 8192,
+            "kernel_name": "void mul_mat_vec_q<(ggml_type)6, 1, true, true>(void const*, void const*, int const*, ggml_cuda_mm_fusion_args_device, float*, unsigned int, HIP_vector_type<unsigned int, 3u>, unsigned int, unsigned int, unsigned int, HIP_vector_type<unsigned int, 3u>, unsigned int, unsigned int, unsigned int, HIP_vector_type<unsigned int, 3u>, unsigned int, unsigned int, unsigned int, unsigned int) [clone .kd]",
+            "lds_bytes": 1024,
+            "route_id": "cuda-vecdotq-v1.anchor.1",
+            "workgroup": 128
+          },
+          {
+            "calls": 3096,
+            "grid": 311296,
+            "kernel_name": "void mul_mat_vec_q<(ggml_type)6, 1, true, true>(void const*, void const*, int const*, ggml_cuda_mm_fusion_args_device, float*, unsigned int, HIP_vector_type<unsigned int, 3u>, unsigned int, unsigned int, unsigned int, HIP_vector_type<unsigned int, 3u>, unsigned int, unsigned int, unsigned int, HIP_vector_type<unsigned int, 3u>, unsigned int, unsigned int, unsigned int, unsigned int) [clone .kd]",
+            "lds_bytes": 1024,
+            "route_id": "cuda-vecdotq-v1.anchor.2",
+            "workgroup": 128
+          }
+        ],
+        "load_mode_recommendation": {
+          "example_ids": [],
+          "mode": "cold_serialized",
+          "rationale": "Use the safer serialized load mode for this candidate."
+        },
+        "target_surface": "gpu_decode",
+        "target_symbol": "vec_dot_q5_0_q8_1",
+        "template_id": "cuda-vecdotq-v1"
+      },
+      "falsifier": "Exact type-6 kernel duration does not improve under correctness-preserving replay",
+      "hypothesis_id": "akh-v2-q5-type-specific-dequant",
+      "mechanism_id": "de29841bf1a6f628b0b49e14960f1d048eaa6a9718692f1154033f8f8bf9e162",
+      "portfolio_binding": {
+        "change_class": "arithmetic",
+        "decision_policy": {
+          "conflict_policy": "retain_inconclusive",
+          "continuation_floor_pct": 0.25,
+          "effect_unit": "relative_percent",
+          "frame_id": "frame-current-qwen05b-q4km-tg128",
+          "max_distinct_candidates": 3,
+          "max_replication_spread_pct": 1,
+          "metric": "decode_tokens_per_s",
+          "min_replication_effect_pct": 0.125,
+          "nomination_floor_pct": 0.5,
+          "required_replications": 2,
+          "sign_policy": "all_positive",
+          "terminal_rule": "retire"
+        },
+        "expected_dispatch": [
+          {
+            "calls": 6063,
+            "grid": 57344,
+            "kernel_name": "void mul_mat_vec_q<(ggml_type)6, 1, true, true>(void const*, void const*, int const*, ggml_cuda_mm_fusion_args_device, float*, unsigned int, HIP_vector_type<unsigned int, 3u>, unsigned int, unsigned int, unsigned int, HIP_vector_type<unsigned int, 3u>, unsigned int, unsigned int, unsigned int, HIP_vector_type<unsigned int, 3u>, unsigned int, unsigned int, unsigned int, unsigned int) [clone .kd]",
+            "lds_bytes": 1024,
+            "route_id": "cuda-vecdotq-v1.anchor.0",
+            "workgroup": 128
+          },
+          {
+            "calls": 4644,
+            "grid": 8192,
+            "kernel_name": "void mul_mat_vec_q<(ggml_type)6, 1, true, true>(void const*, void const*, int const*, ggml_cuda_mm_fusion_args_device, float*, unsigned int, HIP_vector_type<unsigned int, 3u>, unsigned int, unsigned int, unsigned int, HIP_vector_type<unsigned int, 3u>, unsigned int, unsigned int, unsigned int, HIP_vector_type<unsigned int, 3u>, unsigned int, unsigned int, unsigned int, unsigned int) [clone .kd]",
+            "lds_bytes": 1024,
+            "route_id": "cuda-vecdotq-v1.anchor.1",
+            "workgroup": 128
+          },
+          {
+            "calls": 3096,
+            "grid": 311296,
+            "kernel_name": "void mul_mat_vec_q<(ggml_type)6, 1, true, true>(void const*, void const*, int const*, ggml_cuda_mm_fusion_args_device, float*, unsigned int, HIP_vector_type<unsigned int, 3u>, unsigned int, unsigned int, unsigned int, HIP_vector_type<unsigned int, 3u>, unsigned int, unsigned int, unsigned int, HIP_vector_type<unsigned int, 3u>, unsigned int, unsigned int, unsigned int, unsigned int) [clone .kd]",
+            "lds_bytes": 1024,
+            "route_id": "cuda-vecdotq-v1.anchor.2",
+            "workgroup": 128
+          }
+        ],
+        "falsifier": "Exact type-6 kernel duration does not improve under correctness-preserving replay",
+        "hypothesis_id": "akh-v2-q5-type-specific-dequant",
+        "mechanism_id": "de29841bf1a6f628b0b49e14960f1d048eaa6a9718692f1154033f8f8bf9e162",
+        "portfolio_sha256": "c894690f56041ae355a50fffe23688abed1fa3eea9df4b7201faee2e565b4e78",
+        "record_sha256": "ca1d5ee5b7514edbec8bb5d270489de55333f609f00d1a3751efd1f397580e07",
+        "regime": {
+          "architecture": "gfx90a",
+          "backend": "hip",
+          "batch": 1,
+          "measurement_graphs": false,
+          "model_or_frame": "frame-current-qwen05b-q4km-tg128",
+          "phase": "decode",
+          "quant": "Q5_0",
+          "shape": "type6-mmvq",
+          "target_runtime_graphs": true
+        },
+        "statement": "A Q5_0-specific packed-load, scale/unpack, control-flow, or data-reuse mechanism can reduce the current frame type-6 MMVQ band without changing wave count.",
+        "target_file": "ggml/src/ggml-cuda/vecdotq.cuh",
+        "target_symbols": [
+          "vec_dot_q5_0_q8_1",
+          "vec_dot_q5_0_q8_1_impl"
+        ],
+        "template_id": "cuda-vecdotq-v1"
+      },
+      "portfolio_decision_policy": {
+        "conflict_policy": "retain_inconclusive",
+        "continuation_floor_pct": 0.25,
+        "effect_unit": "relative_percent",
+        "frame_id": "frame-current-qwen05b-q4km-tg128",
+        "max_distinct_candidates": 3,
+        "max_replication_spread_pct": 1,
+        "metric": "decode_tokens_per_s",
+        "min_replication_effect_pct": 0.125,
+        "nomination_floor_pct": 0.5,
+        "required_replications": 2,
+        "sign_policy": "all_positive",
+        "terminal_rule": "retire"
+      },
+      "portfolio_hypothesis_id": "akh-v2-q5-type-specific-dequant",
+      "portfolio_record_sha256": "ca1d5ee5b7514edbec8bb5d270489de55333f609f00d1a3751efd1f397580e07",
+      "proposal_sha256": "6a09cf5c550a7e4668074c29464b703e127eb79a6df838e6f1b765494ccf3e2c",
+      "regime": {
+        "architecture": "gfx90a",
+        "backend": "hip",
+        "batch": 1,
+        "measurement_graphs": false,
+        "model_or_frame": "frame-current-qwen05b-q4km-tg128",
+        "phase": "decode",
+        "quant": "Q5_0",
+        "shape": "type6-mmvq",
+        "target_runtime_graphs": true
+      },
+      "source_manifest_sha256": "67fcda7c1e93fccb5514ce0ef2428dd1813724778d4ea7a1ce5c03375bfc516b",
+      "statement": "A Q5_0-specific packed-load, scale/unpack, control-flow, or data-reuse mechanism can reduce the current frame type-6 MMVQ band without changing wave count.",
+      "target_surface": "gpu_decode",
+      "target_symbol": "vec_dot_q5_0_q8_1",
+      "turn": 1
+    }
+  },
+  "iterations": [],
+  "next": 1,
+  "planner_context_sha256": "621a9095ef6bf3874299561c40ebefc43571eeab87f3aec11a3b26758c62a421",
+  "roster": {
+    "claude_members": 1,
+    "member_count": 2,
+    "members": [
+      {
+        "effort": "high",
+        "model": "gpt-5.6-sol",
+        "provider": "codex",
+        "role": "planner"
+      },
+      {
+        "effort": "high",
+        "model": "claude-fable-5",
+        "provider": "claude",
+        "role": "critic"
+      }
+    ],
+    "schema": "epyc.autokernel.discovery_roster.v3"
+  },
+  "schema": "epyc.autokernel.discovery_controller.v5",
+  "state_sha256": "6992f4f24ea7379204b16a40d61f68bd1ea894c13c971532ad4a12ff566f83d2",
+  "updated_at": "2026-08-18T15:38:29.569506Z"
+}

@@ -1,0 +1,466 @@
+{
+  "admission_corpus_sha256": "954b14d5b1efb9156ee6a4c2639fae6a83605478a7eff61f2b0db2ed0d505c01",
+  "admission_corpus_version": "mi210-discovery-fallback-only-v1",
+  "authority": "nonpromotable_candidate_only_discovery",
+  "c6_admission_config": {
+    "alpha": 1.2,
+    "beta": 1.2,
+    "config_sha256": "3cffe3886abbc57481a35e8ae104c45c1aa1d2b663a1c31964e3121e99c15ce3",
+    "evaluator_commit": "5bbcc5498e4732162356953b7be96a53073a6706",
+    "reopen_when": "candidate_commit, anchor_commit, evaluator_commit, or exact measurement frame changes",
+    "roofline_authority": {
+      "batch_size": 1,
+      "dense_model_bytes_per_token": true,
+      "facts_path": "/var/lib/epyc-autokernel/execution-closures/3aa7a2146f972b6d998c93dd25b96e88624622bc23f111a0ba89f4289e415ca1/scripts/kernel_rnd/autokernel/substrate_facts.json",
+      "facts_sha256": "ff4554d4f395d6b2250a773c2db1d88b76b26b53a59783fd90d6f3407b9a536f",
+      "gpu_part": "gfx90a",
+      "schema": "epyc.autokernel.c6_roofline_authority.v1",
+      "workload": "decode_tg128"
+    },
+    "schema": "epyc.autokernel.c6_admission_controller_config.v1",
+    "store_path": "/mnt/raid0/llm/autokernel/deployments/gpu-discovery-quant-ladder-occupancy-v27/evidence/c6-admission.jsonl"
+  },
+  "carry_forward_sha256": "4b863ea83fc9f9608a881d82454e1d526c9f81797d96347b140a0b1dc6caa012",
+  "complete": false,
+  "deployment_identity_sha256": "eac81e0d4755fd61aecf7688c6fddcc5b44f109500dd628e453a3ba2fb38f6df",
+  "experiment_template_registry_sha256": "8bf327bc1d6c6920de359bccdaea1952e3b165e66dc587e1f729a57710db6a10",
+  "hypothesis_portfolio_sha256": "7ba7dd1c3c246fb22a247d6e24facb5fbe0eaebec8b2eb21635fde20043e8303",
+  "inflight": {
+    "authorization": {
+      "authorized_at": "2026-08-27T12:54:23.256330Z",
+      "authorized_by": "discovery_controller",
+      "campaign_id": "ak-discovery",
+      "do_not_repeat_outcome": "PASS",
+      "do_not_repeat_reasons": [],
+      "entry_evidence_grade": "design_prior",
+      "falsifier": "Current governed correctness fails after the modern instrument build",
+      "falsifier_source": "stated_with_the_hypothesis",
+      "hypothesis_id": "akh-v2-q5-onewave-preauthored",
+      "ledger_seq": 2,
+      "origin": "import",
+      "purpose": "candidate_only_discovery"
+    },
+    "candidate": {
+      "composition_plan": null,
+      "experiment_intent": {
+        "correctness_id": "backend-ops-hip-v1",
+        "dispatch_id": "decode-tg128-rocprof-v3",
+        "expected_dispatch": [
+          {
+            "calls": 6063,
+            "grid": 57344,
+            "kernel_name": "void mul_mat_vec_q<(ggml_type)6, 1, true, true>(void const*, void const*, int const*, ggml_cuda_mm_fusion_args_device, float*, unsigned int, HIP_vector_type<unsigned int, 3u>, unsigned int, unsigned int, unsigned int, HIP_vector_type<unsigned int, 3u>, unsigned int, unsigned int, unsigned int, HIP_vector_type<unsigned int, 3u>, unsigned int, unsigned int, unsigned int, unsigned int)",
+            "lds_bytes": 1024,
+            "route_id": "cuda-mmvq-q5-onewave-continuation-v1.anchor.0",
+            "workgroup": 128
+          },
+          {
+            "calls": 4644,
+            "grid": 8192,
+            "kernel_name": "void mul_mat_vec_q<(ggml_type)6, 1, true, true>(void const*, void const*, int const*, ggml_cuda_mm_fusion_args_device, float*, unsigned int, HIP_vector_type<unsigned int, 3u>, unsigned int, unsigned int, unsigned int, HIP_vector_type<unsigned int, 3u>, unsigned int, unsigned int, unsigned int, HIP_vector_type<unsigned int, 3u>, unsigned int, unsigned int, unsigned int, unsigned int)",
+            "lds_bytes": 1024,
+            "route_id": "cuda-mmvq-q5-onewave-continuation-v1.anchor.1",
+            "workgroup": 128
+          },
+          {
+            "calls": 3096,
+            "grid": 311296,
+            "kernel_name": "void mul_mat_vec_q<(ggml_type)6, 1, true, true>(void const*, void const*, int const*, ggml_cuda_mm_fusion_args_device, float*, unsigned int, HIP_vector_type<unsigned int, 3u>, unsigned int, unsigned int, unsigned int, HIP_vector_type<unsigned int, 3u>, unsigned int, unsigned int, unsigned int, HIP_vector_type<unsigned int, 3u>, unsigned int, unsigned int, unsigned int, unsigned int)",
+            "lds_bytes": 1024,
+            "route_id": "cuda-mmvq-q5-onewave-continuation-v1.anchor.2",
+            "workgroup": 128
+          }
+        ],
+        "load_mode_recommendation": null,
+        "target_surface": "gpu_decode",
+        "target_symbol": "calc_nwarps",
+        "template_id": "cuda-mmvq-q5-onewave-continuation-v1"
+      },
+      "falsifier": "Current governed correctness fails after the modern instrument build",
+      "hypothesis_id": "akh-v2-q5-onewave-preauthored",
+      "manifest": {
+        "campaign_id": "ak-discovery-eac81e0d4755fd61",
+        "candidate_id": "akc-discovery-1",
+        "change_class": "dispatcher",
+        "declared_files": [
+          "ggml/src/ggml-cuda/mmvq.cu"
+        ],
+        "declared_symbols": {
+          "ggml/src/ggml-cuda/mmvq.cu": [
+            "calc_nwarps",
+            "calc_rows_per_block",
+            "get_device_table_id",
+            "mmvq_parameter_table_id"
+          ]
+        },
+        "instrument_commit": "5bbcc5498e4732162356953b7be96a53073a6706",
+        "mechanism_id": "q5_0_one_wave_per_output_block",
+        "patch_base64": "ZGlmZiAtLWdpdCBhL2dnbWwvc3JjL2dnbWwtY3VkYS9tbXZxLmN1IGIvZ2dtbC9zcmMvZ2dtbC1jdWRhL21tdnEuY3UKaW5kZXggOWY1OTI3NzcxLi44YTYwNWYwMDggMTAwNjQ0Ci0tLSBhL2dnbWwvc3JjL2dnbWwtY3VkYS9tbXZxLmN1CisrKyBiL2dnbWwvc3JjL2dnbWwtY3VkYS9tbXZxLmN1CkBAIC03NSw2ICs3NSw3IEBAIGVudW0gbW12cV9wYXJhbWV0ZXJfdGFibGVfaWQgewogICAgIE1NVlFfUEFSQU1FVEVSU19HRU5FUklDID0gMCwKICAgICBNTVZRX1BBUkFNRVRFUlNfVFVSSU5HLAogICAgIE1NVlFfUEFSQU1FVEVSU19HQ04sCisgICAgTU1WUV9QQVJBTUVURVJTX0NETkEyLAogICAgIE1NVlFfUEFSQU1FVEVSU19SRE5BMiwKICAgICBNTVZRX1BBUkFNRVRFUlNfUkROQTNfMCwKICAgICBNTVZRX1BBUkFNRVRFUlNfUkROQTQKQEAgLTg3LDYgKzg4LDggQEAgc3RhdGljIGNvbnN0ZXhwciBfX2RldmljZV9fIG1tdnFfcGFyYW1ldGVyX3RhYmxlX2lkIGdldF9kZXZpY2VfdGFibGVfaWQoKSB7CiAgICAgcmV0dXJuIE1NVlFfUEFSQU1FVEVSU19SRE5BM18wOwogI2VsaWYgZGVmaW5lZChSRE5BMikgfHwgZGVmaW5lZChSRE5BM181KQogICAgIHJldHVybiBNTVZRX1BBUkFNRVRFUlNfUkROQTI7CisjZWxpZiBkZWZpbmVkKENETkEyKQorICAgIHJldHVybiBNTVZRX1BBUkFNRVRFUlNfQ0ROQTI7CiAjZWxpZiBkZWZpbmVkKEdDTikgfHwgZGVmaW5lZChDRE5BKQogICAgIHJldHVybiBNTVZRX1BBUkFNRVRFUlNfR0NOOwogI2VsaWYgZGVmaW5lZChfX0NVREFfQVJDSF9fKSAmJiBfX0NVREFfQVJDSF9fID49IEdHTUxfQ1VEQV9DQ19UVVJJTkcgJiYgX19DVURBX0FSQ0hfXyA8IEdHTUxfQ1VEQV9DQ19BTVBFUkUKQEAgLTEwNiw2ICsxMDksOSBAQCBzdGF0aWMgX19ob3N0X18gbW12cV9wYXJhbWV0ZXJfdGFibGVfaWQgZ2V0X2RldmljZV90YWJsZV9pZChpbnQgY2MpIHsKICAgICBpZiAoR0dNTF9DVURBX0NDX0lTX1JETkEyKGNjKSB8fCBHR01MX0NVREFfQ0NfSVNfUkROQTNfNShjYykpIHsKICAgICAgICAgcmV0dXJuIE1NVlFfUEFSQU1FVEVSU19SRE5BMjsKICAgICB9CisgICAgaWYgKEdHTUxfQ1VEQV9DQ19JU19DRE5BMihjYykpIHsKKyAgICAgICAgcmV0dXJuIE1NVlFfUEFSQU1FVEVSU19DRE5BMjsKKyAgICB9CiAgICAgaWYgKEdHTUxfQ1VEQV9DQ19JU19HQ04oY2MpIHx8IEdHTUxfQ1VEQV9DQ19JU19DRE5BKGNjKSkgewogICAgICAgICByZXR1cm4gTU1WUV9QQVJBTUVURVJTX0dDTjsKICAgICB9CkBAIC0zODcsNyArMzkzLDcgQEAgc3RhdGljIGNvbnN0ZXhwciBfX2hvc3RfXyBfX2RldmljZV9fIGludCBjYWxjX253YXJwcyhnZ21sX3R5cGUgdHlwZSwgaW50IG5jb2xzX2QKICAgICAgICAgICAgIGRlZmF1bHQ6CiAgICAgICAgICAgICAgICAgcmV0dXJuIDE7CiAgICAgICAgIH0KLSAgICB9IGVsc2UgaWYgKHRhYmxlX2lkID09IE1NVlFfUEFSQU1FVEVSU19HQ04pIHsKKyAgICB9IGVsc2UgaWYgKHRhYmxlX2lkID09IE1NVlFfUEFSQU1FVEVSU19HQ04gfHwgdGFibGVfaWQgPT0gTU1WUV9QQVJBTUVURVJTX0NETkEyKSB7CiAgICAgICAgIC8vIENETkEyIHNpbmdsZS1zdHJlYW0gZXhwZXJpbWVudCAobWkyMTAtcTgtZGVxdWFudCBoYW5kb2ZmLCBsZXZlciAyLzMpOiBiYXRjaC0xIFE4XzAgR0VNViBpcwogICAgICAgICAvLyBhY2hpZXZlZC1CVy9vY2N1cGFuY3ktbGltaXRlZCBhdCBud2FycHM9MiAoMTI4IHRoci9ibG9jaykuIFJhaXNlIHdhcnBzLXBlci1ibG9jayB0byBwdXQgbW9yZQogICAgICAgICAvLyB3ZWlnaHQtbG9hZCByZXF1ZXN0cyBpbiBmbGlnaHQgKExpdHRsZSdzIGxhdykuIFJETkE0IGFscmVhZHkgdXNlcyBud2FycHM9OCBmb3IgUThfMC4gU2FtZQpAQCAtMzk3LDYgKzQwMywxMCBAQCBzdGF0aWMgY29uc3RleHByIF9faG9zdF9fIF9fZGV2aWNlX18gaW50IGNhbGNfbndhcnBzKGdnbWxfdHlwZSB0eXBlLCBpbnQgbmNvbHNfZAogICAgICAgICBpZiAobmNvbHNfZHN0ID09IDEgJiYgdHlwZSA9PSBHR01MX1RZUEVfUThfMCkgewogICAgICAgICAgICAgcmV0dXJuIDQ7CiAgICAgICAgIH0KKyAgICAgICAgLy8gQ0ROQTIgYmF0Y2gtMSBRNV8wIGV4cGVyaW1lbnQ6IHVzZSBvbmUgd2F2ZSBhbmQgb25lIG91dHB1dCByb3cgcGVyIGJsb2NrLgorICAgICAgICBpZiAodGFibGVfaWQgPT0gTU1WUV9QQVJBTUVURVJTX0NETkEyICYmIG5jb2xzX2RzdCA9PSAxICYmIHR5cGUgPT0gR0dNTF9UWVBFX1E1XzApIHsKKyAgICAgICAgICAgIHJldHVybiAxOworICAgICAgICB9CiAgICAgICAgIHN3aXRjaCAobmNvbHNfZHN0KSB7CiAgICAgICAgICAgICBjYXNlIDE6CiAgICAgICAgICAgICBjYXNlIDI6CkBAIC00ODcsNyArNDk3LDggQEAgc3RhdGljIGNvbnN0ZXhwciBfX2hvc3RfXyBfX2RldmljZV9fIGludCBjYWxjX253YXJwcyhnZ21sX3R5cGUgdHlwZSwgaW50IG5jb2xzX2QKIH0KIAogc3RhdGljIGNvbnN0ZXhwciBfX2hvc3RfXyBfX2RldmljZV9fIGludCBjYWxjX3Jvd3NfcGVyX2Jsb2NrKGludCBuY29sc19kc3QsIGludCB0YWJsZV9pZCwgYm9vbCBzbWFsbF9rID0gZmFsc2UsIGludCBud2FycHMgPSAxKSB7Ci0gICAgaWYgKHRhYmxlX2lkID09IE1NVlFfUEFSQU1FVEVSU19HRU5FUklDIHx8IHRhYmxlX2lkID09IE1NVlFfUEFSQU1FVEVSU19HQ04gfHwgdGFibGVfaWQgPT0gTU1WUV9QQVJBTUVURVJTX1RVUklORykgeworICAgIGlmICh0YWJsZV9pZCA9PSBNTVZRX1BBUkFNRVRFUlNfR0VORVJJQyB8fCB0YWJsZV9pZCA9PSBNTVZRX1BBUkFNRVRFUlNfR0NOIHx8CisgICAgICAgIHRhYmxlX2lkID09IE1NVlFfUEFSQU1FVEVSU19DRE5BMiB8fCB0YWJsZV9pZCA9PSBNTVZRX1BBUkFNRVRFUlNfVFVSSU5HKSB7CiAgICAgICAgIHN3aXRjaCAobmNvbHNfZHN0KSB7CiAgICAgICAgICAgICBjYXNlIDE6CiAgICAgICAgICAgICAgICAgcmV0dXJuIHNtYWxsX2sgPyBud2FycHMgOiAxOwo=",
+        "patch_sha256": "f4cc49cd11cdfd93a2d5d2e00e653f503b6a16ce675bfb12c034fbbfae3e7a77",
+        "production_base_commit": "0db32c06e3e550065b78311a6031ef3dd2c4f27c",
+        "proposal_id": "akp-discovery-1",
+        "source_tree": "llama.cpp"
+      },
+      "manifest_file_sha256": "b438efb09e16b966708714997e7252ddcb55bce4c633737aae6c66e05571efc4",
+      "manifest_raw_base64": "eyJjYW1wYWlnbl9pZCI6ImFrLWRpc2NvdmVyeS1lYWM4MWUwZDQ3NTVmZDYxIiwiY2FuZGlkYXRlX2lkIjoiYWtjLWRpc2NvdmVyeS0xIiwiY2hhbmdlX2NsYXNzIjoiZGlzcGF0Y2hlciIsImRlY2xhcmVkX2ZpbGVzIjpbImdnbWwvc3JjL2dnbWwtY3VkYS9tbXZxLmN1Il0sImRlY2xhcmVkX3N5bWJvbHMiOnsiZ2dtbC9zcmMvZ2dtbC1jdWRhL21tdnEuY3UiOlsiY2FsY19ud2FycHMiLCJjYWxjX3Jvd3NfcGVyX2Jsb2NrIiwiZ2V0X2RldmljZV90YWJsZV9pZCIsIm1tdnFfcGFyYW1ldGVyX3RhYmxlX2lkIl19LCJpbnN0cnVtZW50X2NvbW1pdCI6IjViYmNjNTQ5OGU0NzMyMTYyMzU2OTUzYjdiZTk2YTUzMDczYTY3MDYiLCJtZWNoYW5pc21faWQiOiJxNV8wX29uZV93YXZlX3Blcl9vdXRwdXRfYmxvY2siLCJwYXRjaF9iYXNlNjQiOiJaR2xtWmlBdExXZHBkQ0JoTDJkbmJXd3ZjM0pqTDJkbmJXd3RZM1ZrWVM5dGJYWnhMbU4xSUdJdloyZHRiQzl6Y21NdloyZHRiQzFqZFdSaEwyMXRkbkV1WTNVS2FXNWtaWGdnT1dZMU9USTNOemN4TGk0NFlUWXdOV1l3TURnZ01UQXdOalEwQ2kwdExTQmhMMmRuYld3dmMzSmpMMmRuYld3dFkzVmtZUzl0YlhaeExtTjFDaXNyS3lCaUwyZG5iV3d2YzNKakwyZG5iV3d0WTNWa1lTOXRiWFp4TG1OMUNrQkFJQzAzTlN3MklDczNOU3czSUVCQUlHVnVkVzBnYlcxMmNWOXdZWEpoYldWMFpYSmZkR0ZpYkdWZmFXUWdld29nSUNBZ0lFMU5WbEZmVUVGU1FVMUZWRVZTVTE5SFJVNUZVa2xESUQwZ01Dd0tJQ0FnSUNCTlRWWlJYMUJCVWtGTlJWUkZVbE5mVkZWU1NVNUhMQW9nSUNBZ0lFMU5WbEZmVUVGU1FVMUZWRVZTVTE5SFEwNHNDaXNnSUNBZ1RVMVdVVjlRUVZKQlRVVlVSVkpUWDBORVRrRXlMQW9nSUNBZ0lFMU5WbEZmVUVGU1FVMUZWRVZTVTE5U1JFNUJNaXdLSUNBZ0lDQk5UVlpSWDFCQlVrRk5SVlJGVWxOZlVrUk9RVE5mTUN3S0lDQWdJQ0JOVFZaUlgxQkJVa0ZOUlZSRlVsTmZVa1JPUVRRS1FFQWdMVGczTERZZ0t6ZzRMRGdnUUVBZ2MzUmhkR2xqSUdOdmJuTjBaWGh3Y2lCZlgyUmxkbWxqWlY5ZklHMXRkbkZmY0dGeVlXMWxkR1Z5WDNSaFlteGxYMmxrSUdkbGRGOWtaWFpwWTJWZmRHRmliR1ZmYVdRb0tTQjdDaUFnSUNBZ2NtVjBkWEp1SUUxTlZsRmZVRUZTUVUxRlZFVlNVMTlTUkU1Qk0xOHdPd29nSTJWc2FXWWdaR1ZtYVc1bFpDaFNSRTVCTWlrZ2ZId2daR1ZtYVc1bFpDaFNSRTVCTTE4MUtRb2dJQ0FnSUhKbGRIVnliaUJOVFZaUlgxQkJVa0ZOUlZSRlVsTmZVa1JPUVRJN0Npc2paV3hwWmlCa1pXWnBibVZrS0VORVRrRXlLUW9ySUNBZ0lISmxkSFZ5YmlCTlRWWlJYMUJCVWtGTlJWUkZVbE5mUTBST1FUSTdDaUFqWld4cFppQmtaV1pwYm1Wa0tFZERUaWtnZkh3Z1pHVm1hVzVsWkNoRFJFNUJLUW9nSUNBZ0lISmxkSFZ5YmlCTlRWWlJYMUJCVWtGTlJWUkZVbE5mUjBOT093b2dJMlZzYVdZZ1pHVm1hVzVsWkNoZlgwTlZSRUZmUVZKRFNGOWZLU0FtSmlCZlgwTlZSRUZmUVZKRFNGOWZJRDQ5SUVkSFRVeGZRMVZFUVY5RFExOVVWVkpKVGtjZ0ppWWdYMTlEVlVSQlgwRlNRMGhmWHlBOElFZEhUVXhmUTFWRVFWOURRMTlCVFZCRlVrVUtRRUFnTFRFd05pdzJJQ3N4TURrc09TQkFRQ0J6ZEdGMGFXTWdYMTlvYjNOMFgxOGdiVzEyY1Y5d1lYSmhiV1YwWlhKZmRHRmliR1ZmYVdRZ1oyVjBYMlJsZG1salpWOTBZV0pzWlY5cFpDaHBiblFnWTJNcElIc0tJQ0FnSUNCcFppQW9SMGROVEY5RFZVUkJYME5EWDBsVFgxSkVUa0V5S0dOaktTQjhmQ0JIUjAxTVgwTlZSRUZmUTBOZlNWTmZVa1JPUVROZk5TaGpZeWtwSUhzS0lDQWdJQ0FnSUNBZ2NtVjBkWEp1SUUxTlZsRmZVRUZTUVUxRlZFVlNVMTlTUkU1Qk1qc0tJQ0FnSUNCOUNpc2dJQ0FnYVdZZ0tFZEhUVXhmUTFWRVFWOURRMTlKVTE5RFJFNUJNaWhqWXlrcElIc0tLeUFnSUNBZ0lDQWdjbVYwZFhKdUlFMU5WbEZmVUVGU1FVMUZWRVZTVTE5RFJFNUJNanNLS3lBZ0lDQjlDaUFnSUNBZ2FXWWdLRWRIVFV4ZlExVkVRVjlEUTE5SlUxOUhRMDRvWTJNcElIeDhJRWRIVFV4ZlExVkVRVjlEUTE5SlUxOURSRTVCS0dOaktTa2dld29nSUNBZ0lDQWdJQ0J5WlhSMWNtNGdUVTFXVVY5UVFWSkJUVVZVUlZKVFgwZERUanNLSUNBZ0lDQjlDa0JBSUMwek9EY3NOeUFyTXprekxEY2dRRUFnYzNSaGRHbGpJR052Ym5OMFpYaHdjaUJmWDJodmMzUmZYeUJmWDJSbGRtbGpaVjlmSUdsdWRDQmpZV3hqWDI1M1lYSndjeWhuWjIxc1gzUjVjR1VnZEhsd1pTd2dhVzUwSUc1amIyeHpYMlFLSUNBZ0lDQWdJQ0FnSUNBZ0lHUmxabUYxYkhRNkNpQWdJQ0FnSUNBZ0lDQWdJQ0FnSUNBZ2NtVjBkWEp1SURFN0NpQWdJQ0FnSUNBZ0lIMEtMU0FnSUNCOUlHVnNjMlVnYVdZZ0tIUmhZbXhsWDJsa0lEMDlJRTFOVmxGZlVFRlNRVTFGVkVWU1UxOUhRMDRwSUhzS0t5QWdJQ0I5SUdWc2MyVWdhV1lnS0hSaFlteGxYMmxrSUQwOUlFMU5WbEZmVUVGU1FVMUZWRVZTVTE5SFEwNGdmSHdnZEdGaWJHVmZhV1FnUFQwZ1RVMVdVVjlRUVZKQlRVVlVSVkpUWDBORVRrRXlLU0I3Q2lBZ0lDQWdJQ0FnSUM4dklFTkVUa0V5SUhOcGJtZHNaUzF6ZEhKbFlXMGdaWGh3WlhKcGJXVnVkQ0FvYldreU1UQXRjVGd0WkdWeGRXRnVkQ0JvWVc1a2IyWm1MQ0JzWlhabGNpQXlMek1wT2lCaVlYUmphQzB4SUZFNFh6QWdSMFZOVmlCcGN3b2dJQ0FnSUNBZ0lDQXZMeUJoWTJocFpYWmxaQzFDVnk5dlkyTjFjR0Z1WTNrdGJHbHRhWFJsWkNCaGRDQnVkMkZ5Y0hNOU1pQW9NVEk0SUhSb2NpOWliRzlqYXlrdUlGSmhhWE5sSUhkaGNuQnpMWEJsY2kxaWJHOWpheUIwYnlCd2RYUWdiVzl5WlFvZ0lDQWdJQ0FnSUNBdkx5QjNaV2xuYUhRdGJHOWhaQ0J5WlhGMVpYTjBjeUJwYmlCbWJHbG5hSFFnS0V4cGRIUnNaU2R6SUd4aGR5a3VJRkpFVGtFMElHRnNjbVZoWkhrZ2RYTmxjeUJ1ZDJGeWNITTlPQ0JtYjNJZ1VUaGZNQzRnVTJGdFpRcEFRQ0F0TXprM0xEWWdLelF3TXl3eE1DQkFRQ0J6ZEdGMGFXTWdZMjl1YzNSbGVIQnlJRjlmYUc5emRGOWZJRjlmWkdWMmFXTmxYMThnYVc1MElHTmhiR05mYm5kaGNuQnpLR2RuYld4ZmRIbHdaU0IwZVhCbExDQnBiblFnYm1OdmJITmZaQW9nSUNBZ0lDQWdJQ0JwWmlBb2JtTnZiSE5mWkhOMElEMDlJREVnSmlZZ2RIbHdaU0E5UFNCSFIwMU1YMVJaVUVWZlVUaGZNQ2tnZXdvZ0lDQWdJQ0FnSUNBZ0lDQWdjbVYwZFhKdUlEUTdDaUFnSUNBZ0lDQWdJSDBLS3lBZ0lDQWdJQ0FnTHk4Z1EwUk9RVElnWW1GMFkyZ3RNU0JSTlY4d0lHVjRjR1Z5YVcxbGJuUTZJSFZ6WlNCdmJtVWdkMkYyWlNCaGJtUWdiMjVsSUc5MWRIQjFkQ0J5YjNjZ2NHVnlJR0pzYjJOckxnb3JJQ0FnSUNBZ0lDQnBaaUFvZEdGaWJHVmZhV1FnUFQwZ1RVMVdVVjlRUVZKQlRVVlVSVkpUWDBORVRrRXlJQ1ltSUc1amIyeHpYMlJ6ZENBOVBTQXhJQ1ltSUhSNWNHVWdQVDBnUjBkTlRGOVVXVkJGWDFFMVh6QXBJSHNLS3lBZ0lDQWdJQ0FnSUNBZ0lISmxkSFZ5YmlBeE93b3JJQ0FnSUNBZ0lDQjlDaUFnSUNBZ0lDQWdJSE4zYVhSamFDQW9ibU52YkhOZlpITjBLU0I3Q2lBZ0lDQWdJQ0FnSUNBZ0lDQmpZWE5sSURFNkNpQWdJQ0FnSUNBZ0lDQWdJQ0JqWVhObElESTZDa0JBSUMwME9EY3NOeUFyTkRrM0xEZ2dRRUFnYzNSaGRHbGpJR052Ym5OMFpYaHdjaUJmWDJodmMzUmZYeUJmWDJSbGRtbGpaVjlmSUdsdWRDQmpZV3hqWDI1M1lYSndjeWhuWjIxc1gzUjVjR1VnZEhsd1pTd2dhVzUwSUc1amIyeHpYMlFLSUgwS0lBb2djM1JoZEdsaklHTnZibk4wWlhod2NpQmZYMmh2YzNSZlh5QmZYMlJsZG1salpWOWZJR2x1ZENCallXeGpYM0p2ZDNOZmNHVnlYMkpzYjJOcktHbHVkQ0J1WTI5c2MxOWtjM1FzSUdsdWRDQjBZV0pzWlY5cFpDd2dZbTl2YkNCemJXRnNiRjlySUQwZ1ptRnNjMlVzSUdsdWRDQnVkMkZ5Y0hNZ1BTQXhLU0I3Q2kwZ0lDQWdhV1lnS0hSaFlteGxYMmxrSUQwOUlFMU5WbEZmVUVGU1FVMUZWRVZTVTE5SFJVNUZVa2xESUh4OElIUmhZbXhsWDJsa0lEMDlJRTFOVmxGZlVFRlNRVTFGVkVWU1UxOUhRMDRnZkh3Z2RHRmliR1ZmYVdRZ1BUMGdUVTFXVVY5UVFWSkJUVVZVUlZKVFgxUlZVa2xPUnlrZ2V3b3JJQ0FnSUdsbUlDaDBZV0pzWlY5cFpDQTlQU0JOVFZaUlgxQkJVa0ZOUlZSRlVsTmZSMFZPUlZKSlF5QjhmQ0IwWVdKc1pWOXBaQ0E5UFNCTlRWWlJYMUJCVWtGTlJWUkZVbE5mUjBOT0lIeDhDaXNnSUNBZ0lDQWdJSFJoWW14bFgybGtJRDA5SUUxTlZsRmZVRUZTUVUxRlZFVlNVMTlEUkU1Qk1pQjhmQ0IwWVdKc1pWOXBaQ0E5UFNCTlRWWlJYMUJCVWtGTlJWUkZVbE5mVkZWU1NVNUhLU0I3Q2lBZ0lDQWdJQ0FnSUhOM2FYUmphQ0FvYm1OdmJITmZaSE4wS1NCN0NpQWdJQ0FnSUNBZ0lDQWdJQ0JqWVhObElERTZDaUFnSUNBZ0lDQWdJQ0FnSUNBZ0lDQWdjbVYwZFhKdUlITnRZV3hzWDJzZ1B5QnVkMkZ5Y0hNZ09pQXhPd289IiwicGF0Y2hfZW5jb2RpbmciOiJiYXNlNjQiLCJwYXRjaF9zaGEyNTYiOiJmNGNjNDljZDExY2RmZDkzYTJkNWQyZTAwZTY1M2Y1MDNiNmExNmNlNjc1YmZiMTJjMDM0ZmJiZmFlM2U3YTc3IiwicHJvZHVjdGlvbl9iYXNlX2NvbW1pdCI6IjBkYjMyYzA2ZTNlNTUwMDY1Yjc4MzExYTYwMzFlZjNkZDJjNGYyN2MiLCJwcm9wb3NhbF9pZCI6ImFrcC1kaXNjb3ZlcnktMSIsInNjaGVtYSI6ImVweWMuYXV0b2tlcm5lbC5zb3VyY2UtcGF0Y2gudjEiLCJzb3VyY2VfdHJlZSI6ImxsYW1hLmNwcCJ9",
+      "patch_bundle_sha256": "b438efb09e16b966708714997e7252ddcb55bce4c633737aae6c66e05571efc4",
+      "proposal": {
+        "change": {
+          "estimated_diff_size": 15,
+          "files_and_symbols": [
+            "ggml/src/ggml-cuda/mmvq.cu:calc_nwarps",
+            "ggml/src/ggml-cuda/mmvq.cu:calc_rows_per_block",
+            "ggml/src/ggml-cuda/mmvq.cu:get_device_table_id",
+            "ggml/src/ggml-cuda/mmvq.cu:mmvq_parameter_table_id"
+          ]
+        },
+        "change_class": "dispatcher",
+        "preauthored_continuation_sha256": "819d16c0903d71649c4674080d2718159d12ea1769e1f4f943d04dc7e2974889",
+        "proposal_id": "akp-discovery-1"
+      },
+      "regime": {
+        "architecture": "gfx90a",
+        "backend": "hip",
+        "batch": 1,
+        "measurement_graphs": false,
+        "model_or_frame": "frame-current-qwen05b-q4km-tg128",
+        "phase": "decode",
+        "quant": "Q5_0",
+        "shape": "type6-mmvq",
+        "target_runtime_graphs": true
+      },
+      "source_manifest_sha256": "b438efb09e16b966708714997e7252ddcb55bce4c633737aae6c66e05571efc4",
+      "statement": "The exact eb26918 Q5_0 CDNA2 one-wave patch can be rebuilt against the byte-identical current MMVQ preimage and evaluated without another planner, critic, or source-authoring call."
+    },
+    "confirmation": false,
+    "infrastructure_retry_epoch": 0,
+    "lease": {
+      "admitted": true,
+      "device_claim_probe_open": {
+        "acquired_at": "2026-08-27T12:54:23.987117+00:00",
+        "campaign_id": "ak-discovery-eac81e0d4755fd61",
+        "claim_id": "akd-ad296c45f33445cb",
+        "device_id": "mi210_0",
+        "expires_at": "2026-08-27T12:54:53.987131+00:00",
+        "holder_boot_id": "ffa56b5e-1da4-42e7-ac5d-d233ff830b65",
+        "holder_label": "autokernel-discovery-controller",
+        "holder_pid": 1495444,
+        "holder_start_ticks": 122059281,
+        "host": "Beelzebub",
+        "lock_path": "/mnt/raid0/llm/tmp/gpu_device.mi210_0.lock",
+        "purpose": "AutoKernel GPU discovery admission probe",
+        "reclaimed_from": null,
+        "released_at": null,
+        "schema": "epyc.autokernel.device_claim_receipt.v1",
+        "state": "held"
+      },
+      "device_claim_probe_released": {
+        "acquired_at": "2026-08-27T12:54:23.987117+00:00",
+        "campaign_id": "ak-discovery-eac81e0d4755fd61",
+        "claim_id": "akd-ad296c45f33445cb",
+        "device_id": "mi210_0",
+        "expires_at": "2026-08-27T12:54:53.987131+00:00",
+        "holder_boot_id": "ffa56b5e-1da4-42e7-ac5d-d233ff830b65",
+        "holder_label": "autokernel-discovery-controller",
+        "holder_pid": 1495444,
+        "holder_start_ticks": 122059281,
+        "host": "Beelzebub",
+        "lock_path": "/mnt/raid0/llm/tmp/gpu_device.mi210_0.lock",
+        "purpose": "AutoKernel GPU discovery admission probe",
+        "reclaimed_from": null,
+        "released_at": "2026-08-27T12:54:23.989900+00:00",
+        "schema": "epyc.autokernel.device_claim_receipt.v1",
+        "state": "held"
+      },
+      "device_id": "mi210_0",
+      "inference_window_lock": "/mnt/raid0/llm/tmp/model-call.lock",
+      "load_admission": {
+        "actor_recommendation": null,
+        "decision_sha256": "1d34724f73469a83d5e37e7eefd03a348d7b767747385313e4bd92e164604573",
+        "disqualifiers": [
+          "telemetry_missing"
+        ],
+        "effective_context_sha256": "1898e8d2a1fd7d05d8bc6a7e2aeff3ff4c7481754d0f8a299091c3302b0c7b6a",
+        "mode": "cold_serialized",
+        "policy_file_sha256": "0d87adf3450c75c646f4b3c4a064d5a2940814473d803eee0559eaa45ea9230c",
+        "policy_sha256": "954b14d5b1efb9156ee6a4c2639fae6a83605478a7eff61f2b0db2ed0d505c01",
+        "policy_version": "mi210-discovery-fallback-only-v1",
+        "profile": {
+          "calls_per_arm": 9,
+          "cold_load_host_bytes": 397807840,
+          "device_id": "mi210_0",
+          "evidence_sha256": "6cc206ca06c53db0388f072eb4757156fc3195ad1e92e1294bf8496b093b2843",
+          "minimum_headroom_bytes_per_s": 1152921504606846976,
+          "model_bytes": 397807840,
+          "model_path": "/mnt/raid0/llm/models/lmstudio-community/Qwen2.5-Coder-0.5B-GGUF/Qwen2.5-Coder-0.5B-Q4_K_M.gguf",
+          "model_sha256": "f175ecace8c24336cbf9e22bd71ea032a16492bd264a3caab6dfa4cafe80ddd3",
+          "profile_id": "mi210-qwen05b-tg128-fallback-only-v1",
+          "telemetry_max_age_ms": 5000,
+          "workload": "decode_tg128",
+          "worst_case_loads_per_interval": 18
+        },
+        "promotion_claim": false,
+        "reason": "reviewed profile lacked complete safe overlap observations",
+        "request": {
+          "calls_per_arm": 9,
+          "cold_load_host_bytes": 397807840,
+          "device_id": "mi210_0",
+          "effective_context_sha256": "1898e8d2a1fd7d05d8bc6a7e2aeff3ff4c7481754d0f8a299091c3302b0c7b6a",
+          "expected_hot_identity_sha256": null,
+          "foreign_kfd_pids": [],
+          "hot_residency_identity_sha256": null,
+          "hot_revalidation_identity_sha256": null,
+          "model_bytes": 397807840,
+          "model_path": "/mnt/raid0/llm/models/lmstudio-community/Qwen2.5-Coder-0.5B-GGUF/Qwen2.5-Coder-0.5B-Q4_K_M.gguf",
+          "model_sha256": "f175ecace8c24336cbf9e22bd71ea032a16492bd264a3caab6dfa4cafe80ddd3",
+          "observed_headroom_bytes_per_s": null,
+          "runtime_arm": null,
+          "runtime_manifest_sha256": null,
+          "telemetry_age_ms": null,
+          "telemetry_observed": false,
+          "telemetry_receipt_sha256": null,
+          "workload": "decode_tg128",
+          "worst_case_loads_per_interval": 18
+        },
+        "schema": "epyc.autokernel.gpu_load_admission_decision.v1"
+      },
+      "mode": "cold_serialized",
+      "model_sha256": "f175ecace8c24336cbf9e22bd71ea032a16492bd264a3caab6dfa4cafe80ddd3",
+      "operation_key": "75ae62c47fea9e5e0ca2f745a21f734047f759797240b0c28ef17c7aa27c174e",
+      "phase": "prebuild_probe",
+      "promotion_claim": false,
+      "repetition": 1
+    },
+    "operation_key": "75ae62c47fea9e5e0ca2f745a21f734047f759797240b0c28ef17c7aa27c174e",
+    "parent_authorization": null,
+    "preauthored_continuation": {
+      "author": "reviewed-eb26918-continuation",
+      "authoring_turn": 1,
+      "candidate_semantic_sha256": "06973eb2e4f643b76de198d6cae5e2e9f1b915773dafdf5efd08682bf0df2b63",
+      "carrier_sha256": "819d16c0903d71649c4674080d2718159d12ea1769e1f4f943d04dc7e2974889",
+      "cross_campaign_candidate_sha256": "d5671a1dc197e5d0d53f34f9c4d25f640e0e410d6917b3099459bc40064581b2",
+      "historical_commit": "eb26918fa82f8aef3ab72f1e3263bd8fecde62e7",
+      "hypothesis_id": "akh-v2-q5-onewave-preauthored",
+      "modern_governed_correctness_required": true,
+      "origin": "import",
+      "receipt_sha256": "bc8e418efcdd7b6106c4c1fa9e59b550f1488150f681464ff9d577393ed2300a",
+      "schema": "epyc.autokernel.preauthored_checkpoint.v1",
+      "source_backed_diff_sha256": "2adf93c7af423debf39307a3e4d6fa675d5061c565f36682d0b22295df4339c9",
+      "source_manifest_sha256": "b438efb09e16b966708714997e7252ddcb55bce4c633737aae6c66e05571efc4"
+    },
+    "row": {
+      "authoring_turn": 1,
+      "campaign_ledger_dnr_outcome": "PASS",
+      "campaign_ledger_dnr_reasons": [],
+      "candidate_semantic_sha256": "06973eb2e4f643b76de198d6cae5e2e9f1b915773dafdf5efd08682bf0df2b63",
+      "context_sha256": "531d17c390e167e3a08b32aa1c8f660fd998ad68c5a460ef03c772b43ba00b2d",
+      "experiment_intent": {
+        "correctness_id": "backend-ops-hip-v1",
+        "dispatch_id": "decode-tg128-rocprof-v3",
+        "expected_dispatch": [
+          {
+            "calls": 6063,
+            "grid": 57344,
+            "kernel_name": "void mul_mat_vec_q<(ggml_type)6, 1, true, true>(void const*, void const*, int const*, ggml_cuda_mm_fusion_args_device, float*, unsigned int, HIP_vector_type<unsigned int, 3u>, unsigned int, unsigned int, unsigned int, HIP_vector_type<unsigned int, 3u>, unsigned int, unsigned int, unsigned int, HIP_vector_type<unsigned int, 3u>, unsigned int, unsigned int, unsigned int, unsigned int)",
+            "lds_bytes": 1024,
+            "route_id": "cuda-mmvq-q5-onewave-continuation-v1.anchor.0",
+            "workgroup": 128
+          },
+          {
+            "calls": 4644,
+            "grid": 8192,
+            "kernel_name": "void mul_mat_vec_q<(ggml_type)6, 1, true, true>(void const*, void const*, int const*, ggml_cuda_mm_fusion_args_device, float*, unsigned int, HIP_vector_type<unsigned int, 3u>, unsigned int, unsigned int, unsigned int, HIP_vector_type<unsigned int, 3u>, unsigned int, unsigned int, unsigned int, HIP_vector_type<unsigned int, 3u>, unsigned int, unsigned int, unsigned int, unsigned int)",
+            "lds_bytes": 1024,
+            "route_id": "cuda-mmvq-q5-onewave-continuation-v1.anchor.1",
+            "workgroup": 128
+          },
+          {
+            "calls": 3096,
+            "grid": 311296,
+            "kernel_name": "void mul_mat_vec_q<(ggml_type)6, 1, true, true>(void const*, void const*, int const*, ggml_cuda_mm_fusion_args_device, float*, unsigned int, HIP_vector_type<unsigned int, 3u>, unsigned int, unsigned int, unsigned int, HIP_vector_type<unsigned int, 3u>, unsigned int, unsigned int, unsigned int, HIP_vector_type<unsigned int, 3u>, unsigned int, unsigned int, unsigned int, unsigned int)",
+            "lds_bytes": 1024,
+            "route_id": "cuda-mmvq-q5-onewave-continuation-v1.anchor.2",
+            "workgroup": 128
+          }
+        ],
+        "load_mode_recommendation": null,
+        "target_surface": "gpu_decode",
+        "target_symbol": "calc_nwarps",
+        "template_id": "cuda-mmvq-q5-onewave-continuation-v1"
+      },
+      "falsifier": "Current governed correctness fails after the modern instrument build",
+      "historical_correctness_authority": "provenance_only",
+      "hypothesis_author": "reviewed-eb26918-continuation",
+      "hypothesis_id": "akh-v2-q5-onewave-preauthored",
+      "hypothesis_origin": "import",
+      "mechanism_id": "q5_0_one_wave_per_output_block",
+      "modern_governed_correctness_required": true,
+      "operation_key": "75ae62c47fea9e5e0ca2f745a21f734047f759797240b0c28ef17c7aa27c174e",
+      "portfolio_binding": {
+        "change_class": "dispatcher",
+        "decision_policy": {
+          "conflict_policy": "retain_inconclusive",
+          "continuation_floor_pct": 0.2,
+          "effect_unit": "relative_percent",
+          "frame_id": "frame-current-qwen05b-q4km-tg128",
+          "max_distinct_candidates": 1,
+          "max_replication_spread_pct": 1,
+          "metric": "decode_tokens_per_s",
+          "min_replication_effect_pct": 0.1,
+          "nomination_floor_pct": 0.5,
+          "required_replications": 2,
+          "sign_policy": "all_positive",
+          "terminal_rule": "retire"
+        },
+        "expected_dispatch": [
+          {
+            "calls": 6063,
+            "grid": 57344,
+            "kernel_name": "void mul_mat_vec_q<(ggml_type)6, 1, true, true>(void const*, void const*, int const*, ggml_cuda_mm_fusion_args_device, float*, unsigned int, HIP_vector_type<unsigned int, 3u>, unsigned int, unsigned int, unsigned int, HIP_vector_type<unsigned int, 3u>, unsigned int, unsigned int, unsigned int, HIP_vector_type<unsigned int, 3u>, unsigned int, unsigned int, unsigned int, unsigned int)",
+            "lds_bytes": 1024,
+            "route_id": "cuda-mmvq-q5-onewave-continuation-v1.anchor.0",
+            "workgroup": 128
+          },
+          {
+            "calls": 4644,
+            "grid": 8192,
+            "kernel_name": "void mul_mat_vec_q<(ggml_type)6, 1, true, true>(void const*, void const*, int const*, ggml_cuda_mm_fusion_args_device, float*, unsigned int, HIP_vector_type<unsigned int, 3u>, unsigned int, unsigned int, unsigned int, HIP_vector_type<unsigned int, 3u>, unsigned int, unsigned int, unsigned int, HIP_vector_type<unsigned int, 3u>, unsigned int, unsigned int, unsigned int, unsigned int)",
+            "lds_bytes": 1024,
+            "route_id": "cuda-mmvq-q5-onewave-continuation-v1.anchor.1",
+            "workgroup": 128
+          },
+          {
+            "calls": 3096,
+            "grid": 311296,
+            "kernel_name": "void mul_mat_vec_q<(ggml_type)6, 1, true, true>(void const*, void const*, int const*, ggml_cuda_mm_fusion_args_device, float*, unsigned int, HIP_vector_type<unsigned int, 3u>, unsigned int, unsigned int, unsigned int, HIP_vector_type<unsigned int, 3u>, unsigned int, unsigned int, unsigned int, HIP_vector_type<unsigned int, 3u>, unsigned int, unsigned int, unsigned int, unsigned int)",
+            "lds_bytes": 1024,
+            "route_id": "cuda-mmvq-q5-onewave-continuation-v1.anchor.2",
+            "workgroup": 128
+          }
+        ],
+        "falsifier": "Current governed correctness fails after the modern instrument build",
+        "hypothesis_id": "akh-v2-q5-onewave-preauthored",
+        "mechanism_id": "7d88a2725aab2276202324ecef22f2414a1d893f9081061314622c82a7c28919",
+        "portfolio_sha256": "7ba7dd1c3c246fb22a247d6e24facb5fbe0eaebec8b2eb21635fde20043e8303",
+        "record_sha256": "c14b7d7d06db1e215e2da6e74330eaecf4b535811faf3a7566ab33079cf8a346",
+        "regime": {
+          "architecture": "gfx90a",
+          "backend": "hip",
+          "batch": 1,
+          "measurement_graphs": false,
+          "model_or_frame": "frame-current-qwen05b-q4km-tg128",
+          "phase": "decode",
+          "quant": "Q5_0",
+          "shape": "type6-mmvq",
+          "target_runtime_graphs": true
+        },
+        "statement": "The exact eb26918 Q5_0 CDNA2 one-wave patch can be rebuilt against the byte-identical current MMVQ preimage and evaluated without another planner, critic, or source-authoring call.",
+        "target_files": [
+          "ggml/src/ggml-cuda/mmvq.cu"
+        ],
+        "target_symbols": [
+          "calc_nwarps",
+          "calc_rows_per_block",
+          "get_device_table_id",
+          "mmvq_parameter_table_id"
+        ],
+        "target_symbols_by_file": {
+          "ggml/src/ggml-cuda/mmvq.cu": [
+            "calc_nwarps",
+            "calc_rows_per_block",
+            "get_device_table_id",
+            "mmvq_parameter_table_id"
+          ]
+        },
+        "template_id": "cuda-mmvq-q5-onewave-continuation-v1"
+      },
+      "portfolio_decision_policy": {
+        "conflict_policy": "retain_inconclusive",
+        "continuation_floor_pct": 0.2,
+        "effect_unit": "relative_percent",
+        "frame_id": "frame-current-qwen05b-q4km-tg128",
+        "max_distinct_candidates": 1,
+        "max_replication_spread_pct": 1,
+        "metric": "decode_tokens_per_s",
+        "min_replication_effect_pct": 0.1,
+        "nomination_floor_pct": 0.5,
+        "required_replications": 2,
+        "sign_policy": "all_positive",
+        "terminal_rule": "retire"
+      },
+      "portfolio_exact_dnr_check": {
+        "candidate_mechanism_id": "7d88a2725aab2276202324ecef22f2414a1d893f9081061314622c82a7c28919",
+        "candidate_source_manifest_sha256": "b438efb09e16b966708714997e7252ddcb55bce4c633737aae6c66e05571efc4",
+        "canonical_regime_sha256": "d3a85f93fed7dd2d1c48addc39be930a7330fdaf0e6ee1378fc79b28b0cae239",
+        "matched_dnr_ids": [],
+        "outcome": "PASS",
+        "portfolio_hypothesis_id": "akh-v2-q5-onewave-preauthored",
+        "portfolio_semantic_sha256": "7ba7dd1c3c246fb22a247d6e24facb5fbe0eaebec8b2eb21635fde20043e8303",
+        "receipt_sha256": "f555a584087d552d94e1f4cb45e31c84226532aef65fa452e0122f56b3fc55e4",
+        "schema": "epyc.autokernel.portfolio_exact_dnr_check.v1"
+      },
+      "portfolio_hypothesis_id": "akh-v2-q5-onewave-preauthored",
+      "portfolio_record_sha256": "c14b7d7d06db1e215e2da6e74330eaecf4b535811faf3a7566ab33079cf8a346",
+      "preauthored_continuation": {
+        "author": "reviewed-eb26918-continuation",
+        "authoring_turn": 1,
+        "candidate_semantic_sha256": "06973eb2e4f643b76de198d6cae5e2e9f1b915773dafdf5efd08682bf0df2b63",
+        "carrier_sha256": "819d16c0903d71649c4674080d2718159d12ea1769e1f4f943d04dc7e2974889",
+        "cross_campaign_candidate_sha256": "d5671a1dc197e5d0d53f34f9c4d25f640e0e410d6917b3099459bc40064581b2",
+        "historical_commit": "eb26918fa82f8aef3ab72f1e3263bd8fecde62e7",
+        "hypothesis_id": "akh-v2-q5-onewave-preauthored",
+        "modern_governed_correctness_required": true,
+        "origin": "import",
+        "receipt_sha256": "bc8e418efcdd7b6106c4c1fa9e59b550f1488150f681464ff9d577393ed2300a",
+        "schema": "epyc.autokernel.preauthored_checkpoint.v1",
+        "source_backed_diff_sha256": "2adf93c7af423debf39307a3e4d6fa675d5061c565f36682d0b22295df4339c9",
+        "source_manifest_sha256": "b438efb09e16b966708714997e7252ddcb55bce4c633737aae6c66e05571efc4"
+      },
+      "proposal_sha256": "68afb91fabadf1c0129cee75045cdfd8a45707fe08be3890f3b96e306a2c6626",
+      "regime": {
+        "architecture": "gfx90a",
+        "backend": "hip",
+        "batch": 1,
+        "measurement_graphs": false,
+        "model_or_frame": "frame-current-qwen05b-q4km-tg128",
+        "phase": "decode",
+        "quant": "Q5_0",
+        "shape": "type6-mmvq",
+        "target_runtime_graphs": true
+      },
+      "source_manifest_sha256": "b438efb09e16b966708714997e7252ddcb55bce4c633737aae6c66e05571efc4",
+      "statement": "The exact eb26918 Q5_0 CDNA2 one-wave patch can be rebuilt against the byte-identical current MMVQ preimage and evaluated without another planner, critic, or source-authoring call.",
+      "target_surface": "gpu_decode",
+      "target_symbol": "calc_nwarps",
+      "turn": 1
+    }
+  },
+  "iterations": [],
+  "next": 1,
+  "planner_context_sha256": "ed4d9914aa8f109c16bb1b5ca17727452185876eba848f227fd908299850485e",
+  "preauthored_continuation_sha256": "819d16c0903d71649c4674080d2718159d12ea1769e1f4f943d04dc7e2974889",
+  "preauthored_source_backed_diff_sha256": "2adf93c7af423debf39307a3e4d6fa675d5061c565f36682d0b22295df4339c9",
+  "roster": {
+    "claude_members": 1,
+    "member_count": 2,
+    "members": [
+      {
+        "effort": "high",
+        "model": "gpt-5.6-sol",
+        "provider": "codex",
+        "role": "planner"
+      },
+      {
+        "effort": "high",
+        "model": "claude-fable-5",
+        "provider": "claude",
+        "role": "critic"
+      }
+    ],
+    "schema": "epyc.autokernel.discovery_roster.v3"
+  },
+  "schema": "epyc.autokernel.discovery_controller.v8",
+  "scientific_attempts": 0,
+  "state_sha256": "ffc23e82668ea01d357300de0e5d4bb8e95fac9fbf21accad096a4de514c0b5f",
+  "updated_at": "2026-08-27T12:54:23.990651Z"
+}

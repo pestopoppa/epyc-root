@@ -2,7 +2,7 @@
 
 MAIN accepted closing the original implementation checkbox only. The separately listed non-DS41 live exercise and CH-27 remain open. No source change, new floor, production change or duplicate READY packet was needed. [belief: cc]
 
-Research source audited from fresh `origin/main` git objects: `d1c7a8ffb9389b71d88b453d26c6c506346311e2`. Shared source working trees remained read-only.
+Implementation commits on research: `0628dea39be48cdf66149867d228d2222a243164`, `54cd18cd57ac3992d937e07c200d6f372d83b6fd`, `0cad527df1bae3c94fe39d802ac7c6b18d8a2ca9`, `22f7e55081dd2671c2ed15f3e12b8d30cb33e556`, and `eb753e4228b67c2829347acde08933a6f561bea9`. These are the floor-registry, hardening and re-anchor changes supporting the implementation closure. The prior `d1c7a8ffb9389b71d88b453d26c6c506346311e2` citation is a later unrelated one-line validation-document edit, not an implementing commit. Shared source working trees remained read-only.
 
 The adopted 2026-10-22 registry contract keys execution equivalence: source tree excluding tests/docs, raw CMake recipe and compiler. It records the actual measured execution digest, executable and DSO hashes. This permits the already-authorized equivalent rebuilds without using a tree label as identity. The master `orchestration/model_registry.yaml` is the only floor store; registry claims are calibration locks.
 

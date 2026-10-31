@@ -12,8 +12,9 @@ Three keys were added on 2026-08-28 (`champion_seeded_at`,
 `portfolio_critic_revisions` from the AK-VIS-2 revision budget) and would have bitten
 on the first campaign to complete.
 
-The test reads the LIVE deployment states rather than a fixture, because a fixture
-would have to be updated by the same person who forgot to update the allowlist.
+The test reads producer-recorded deployment-state fixtures rather than the live
+loop. Their source paths and digests are pinned in the fixture manifest, so this
+contract stays exercised while the producer is stopped.
 """
 from __future__ import annotations
 
@@ -22,19 +23,21 @@ from pathlib import Path
 import unittest
 
 from dashboard import server
+from tests.autokernel_no_live_reads import NoLiveAutokernelReads
 
-DEPLOYMENTS = Path("/mnt/raid0/llm/autokernel/deployments")
+REPO = Path(__file__).resolve().parents[1]
+DEPLOYMENTS = REPO / "tests/fixtures/autokernel_producers/deployment-states"
 
 #: Keys that exist only while a campaign is mid-flight; a terminal state has popped
 #: them. They must be accepted by the live gate but are not expected terminally.
 TRANSIENT = {"pending", "inflight", "planning"}
 
 
-def _live_states() -> list[tuple[str, dict]]:
+def _recorded_states() -> list[tuple[str, dict]]:
     out = []
     if not DEPLOYMENTS.is_dir():
         return out
-    for state_path in sorted(DEPLOYMENTS.glob("*/state/state.json")):
+    for state_path in sorted(DEPLOYMENTS.glob("*/state.json")):
         try:
             value = json.loads(state_path.read_text())
         except (OSError, json.JSONDecodeError):
@@ -45,12 +48,11 @@ def _live_states() -> list[tuple[str, dict]]:
     return out
 
 
-class ControllerStateContractTests(unittest.TestCase):
+class ControllerStateContractTests(NoLiveAutokernelReads, unittest.TestCase):
 
-    def test_every_live_state_key_is_known_to_the_dashboard(self):
-        states = _live_states()
-        if not states:
-            self.skipTest("no AutoKernel deployment states on this host")
+    def test_every_recorded_state_key_is_known_to_the_dashboard(self):
+        states = _recorded_states()
+        self.assertTrue(states, "producer-recorded controller-state fixtures are required")
         known = (server._DISCOVERY_TERMINAL_STATE_KEYS
                  | server._DISCOVERY_V26_STATE_REQUIRED
                  | server._DISCOVERY_V26_STATE_OPTIONAL)
@@ -65,17 +67,16 @@ class ControllerStateContractTests(unittest.TestCase):
                     "them to _DISCOVERY_TERMINAL_STATE_KEYS and "
                     "_DISCOVERY_V26_STATE_OPTIONAL.")
 
-    def test_a_terminal_state_would_be_accepted(self):
+    def test_a_recorded_terminal_state_would_be_accepted(self):
         """Simulate completion: drop the transient keys and require exact equality.
 
         Scoped to schema v5, because that is the only schema the terminal gate at
         `server.py` accepts — v7/v8 states go down the v26 live path and are governed
         by REQUIRED|OPTIONAL instead, which the first test already covers.
         """
-        states = [(n, v) for n, v in _live_states()
+        states = [(n, v) for n, v in _recorded_states()
                   if v.get("schema") == "epyc.autokernel.discovery_controller.v5"]
-        if not states:
-            self.skipTest("no v5 AutoKernel deployment states on this host")
+        self.assertTrue(states, "fixture set must retain the producer's v5 state")
         for name, state in states:
             with self.subTest(deployment=name):
                 terminal = {k: v for k, v in state.items() if k not in TRANSIENT}

@@ -1,0 +1,21 @@
+{
+  "pid": 704808,
+  "birth_ticks": "157126290",
+  "pid_absent_after_wait": true,
+  "rc": 0,
+  "samples": 317,
+  "peak_tree_rss_bytes": 171638784,
+  "elapsed_s": 16.010788505896926,
+  "cpus": "128-129",
+  "physical_cpus": "32-33",
+  "mutex": "/mnt/raid0/llm/tmp/compute-flags/prep-locks/32-33.lock",
+  "tests": [
+    "tests/integration/test_reasoning_runaway_retry.py",
+    "tests/integration/test_execute_turn.py",
+    "tests/integration/test_execute_turn_replay.py",
+    "tests/integration/test_ufh14_b1_graph.py",
+    "tests/unit/test_reasoning_length_alarm.py",
+    "tests/unit/test_features.py",
+    "tests/unit/test_thinking_roles_chat_lane.py"
+  ]
+}

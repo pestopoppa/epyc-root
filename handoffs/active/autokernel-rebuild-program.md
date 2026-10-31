@@ -1208,7 +1208,7 @@ Full session record: `progress/2026-08/2026-08-31-ak-rebuild-20260828.md`.
       `ak-loop-tree-c` held 82 uncommitted lines present in NO commit on any ref, so plain
       `worktree remove` would have refused and a reflex `--force` would have destroyed them —
       rescued first (R21-5), and only then was `--force` scoped to that one tree.
-- [ ] **R21-4 — the non-hermetic dashboard tests (4 red loop-down).** They assert on LIVE loop
+- [x] **R21-4 — the non-hermetic dashboard tests (4 red loop-down).** They assert on LIVE loop ✅ 2026-10-31 — implementation ROOT `c5f799ba77dc423d51fb0c9cabb8a6ae66e1a8f1`; `tests/test_dashboard_r21_4_fixtures.py` and four original suites, 109 PASS / 156 subtests; committed evidence `artifacts/engineering/r21-4-dashboard-hermetic-tests-20261031/FOCUSED-TESTS-RECEIPT.json`. [no-belief: source-bound deterministic fixture/guard controls; no measurement]
       state and were red between runs 20 and 21; with run 21 up, the six live-reading files pass
       (157 tests, verified 2026-08-31). The exact red set was never persisted and cannot be
       recovered without taking the loop down; the live readers are in

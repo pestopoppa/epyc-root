@@ -45,14 +45,12 @@ So every value here is lifted from a record that exists on disk:
 
   * the loop body is ``tests/fixtures/autokernel_loop_status_sample.json`` -- a
     verbatim recording of the running loop's own store root;
-  * the operator-gated bundle is the REAL emitted file, read from the host, and
-    these tests SKIP rather than invent one if it is not there;
-  * the champion bundle is the REAL emitted
-    ``loop-memory/champion-vs-production.json`` (a producer writes it since
-    2026-08-30), re-dated and re-anchored per test -- its baseline commit MUST
-    be parametrized, because the whole point of the live resolver is that the
-    correct anchor is whatever the (temp) frozen tree's HEAD is, not a sha
-    this file remembers.
+  * the operator-gated bundle is copied byte-for-byte from its producer and
+    source-bound in ``SOURCE-MANIFEST.json``;
+  * the champion bundle is a producer-published seed record in the research
+    repository, re-dated and re-anchored per test -- its baseline commit MUST
+    be parametrized, because the resolver's anchor is whatever the (temp)
+    frozen tree's HEAD is, not a remembered sha.
 """
 from __future__ import annotations
 
@@ -73,20 +71,17 @@ sys.path.insert(0, str(REPO))
 
 from dashboard import loop_status  # noqa: E402
 from dashboard import server as S  # noqa: E402
+from tests.autokernel_no_live_reads import NoLiveAutokernelReads  # noqa: E402
 
 PAGE = REPO / "dashboard/static/loop.html"
 HARNESS = Path(__file__).resolve().parent / "js" / "render_harness.js"
 SAMPLE = REPO / "tests/fixtures/autokernel_loop_status_sample.json"
 
-#: The real emitted operator-gated bundle, on this host. Read, never invented:
-#: it is the producer of the number that caused the confusion, and a hand-written
-#: stand-in would let this file and the page agree with each other while both
-#: disagreed with the emitter.
-REAL_BUNDLE = Path("/mnt/raid0/llm/autokernel/surface/operator_gate_bundle.json")
-#: The REAL champion-vs-production bundle: a producer writes this carrier since
-#: 2026-08-30, so its key names are recorded from disk rather than stated here.
-REAL_CHAMPION = Path(
-    "/mnt/raid0/llm/autokernel/loop-memory/champion-vs-production.json")
+#: Producer-recorded bundles. Their source paths and digests are in the fixture
+#: manifest; tests never depend on the live loop or its store.
+FIXTURE_DIR = Path(__file__).resolve().parent / "fixtures/autokernel_producers"
+RECORDED_GATE_BUNDLE = FIXTURE_DIR / "operator_gate_bundle.json"
+RECORDED_CHAMPION_BUNDLE = FIXTURE_DIR / "champion-vs-production.published.json"
 #: The real frozen production tree, used by exactly ONE read-only integration
 #: test. Every other test drives a temp repository posing as it.
 REAL_FROZEN_TREE = Path("/mnt/raid0/llm/llama.cpp")
@@ -129,12 +124,10 @@ def recorded_loop(*, age_s: float = 45.0, state: str = "running") -> dict:
     return body
 
 
-def real_bundle() -> dict:
-    if not REAL_BUNDLE.is_file():
-        raise unittest.SkipTest(
-            f"{REAL_BUNDLE} is not on this host; refusing to invent the emitted "
-            "bundle whose mislabelling is the subject of this file")
-    return json.loads(REAL_BUNDLE.read_text(encoding="utf-8"))
+def recorded_operator_bundle() -> dict:
+    if not RECORDED_GATE_BUNDLE.is_file():
+        raise AssertionError(f"missing recorded operator-gate fixture: {RECORDED_GATE_BUNDLE}")
+    return json.loads(RECORDED_GATE_BUNDLE.read_text(encoding="utf-8"))
 
 
 def expected_gate_treatment(bundle: dict) -> str:
@@ -145,29 +138,27 @@ def expected_gate_treatment(bundle: dict) -> str:
     return f"{effect * 100:+.1f}%"
 
 
-def real_champion() -> dict:
-    if not REAL_CHAMPION.is_file():
-        raise unittest.SkipTest(
-            f"{REAL_CHAMPION} is not on this host; refusing to hand-author the "
-            "producer's key names")
-    return json.loads(REAL_CHAMPION.read_text(encoding="utf-8"))
+def recorded_champion_bundle() -> dict:
+    if not RECORDED_CHAMPION_BUNDLE.is_file():
+        raise AssertionError(f"missing producer-published champion fixture: {RECORDED_CHAMPION_BUNDLE}")
+    return json.loads(RECORDED_CHAMPION_BUNDLE.read_text(encoding="utf-8"))
 
 
 def champion_bundle(*, baseline_commit: str,
                     age_s: float = 3600.0, champion_commit: str | None = None,
                     baseline_label: str = V9_BRANCH,
                     capabilities: object = "unset") -> dict:
-    """The REAL emitted champion bundle, re-dated and re-anchored per test.
+    """The producer-published champion bundle, re-dated and re-anchored per test.
 
     Every key comes from the file the producer actually writes (see the module
-    docstring). ``baseline_commit`` is REQUIRED with no default on purpose: the
+    manifest). ``baseline_commit`` is REQUIRED with no default on purpose: the
     correct anchor is whatever the posing frozen tree's HEAD is, and a default
     here would be exactly the remembered sha this revision removes.
     ``capabilities`` defaults to REMOVED so the unknown-path tests exercise a
     producer that never published the field; the real file's list is a real
-    record, not this file's.
+    source record, not a test-authored value.
     """
-    body = real_champion()
+    body = recorded_champion_bundle()
     body["generated_at"] = _stamp(age_s)
     body["stale_after_s"] = int(loop_status.CHAMPION_DEFAULT_STALE_AFTER_S)
     body["baseline"] = {"commit": baseline_commit, "label": baseline_label}
@@ -180,12 +171,13 @@ def champion_bundle(*, baseline_commit: str,
     return body
 
 
-class _Store(unittest.TestCase):
+class _Store(NoLiveAutokernelReads, unittest.TestCase):
     """Temp store root, temp gate path, and a TEMP GIT REPO posing as the
     frozen production tree — so no test below depends on the real host tree,
     and a "promotion" is three lines of git rather than a thought experiment."""
 
     def setUp(self) -> None:
+        super().setUp()
         self.root = Path(tempfile.mkdtemp(prefix="champ-headline-"))
         self.addCleanup(shutil.rmtree, self.root, ignore_errors=True)
         prior = os.environ.get(loop_status.STORE_ROOT_ENV)
@@ -220,6 +212,7 @@ class _Store(unittest.TestCase):
                         prior_champ)
         self.prior_gate = S.OPERATOR_GATE_BUNDLE_JSON
         self.addCleanup(setattr, S, "OPERATOR_GATE_BUNDLE_JSON", self.prior_gate)
+        S.OPERATOR_GATE_BUNDLE_JSON = RECORDED_GATE_BUNDLE
         with S._watchdog_lock:
             S._watchdog_state.clear()
 
@@ -252,18 +245,18 @@ class _Store(unittest.TestCase):
         target.write_text(body if isinstance(body, str) else json.dumps(body),
                           encoding="utf-8")
 
-    def use_real_bundle(self) -> dict:
-        """Copy the REAL emitted bundle in, so its mtime is inside its envelope."""
-        source = real_bundle()
+    def use_recorded_bundle(self) -> dict:
+        """Copy the producer-recorded bundle in, so its mtime is inside its envelope."""
+        source = recorded_operator_bundle()
         target = self.root / "operator_gate_bundle.json"
         target.write_text(json.dumps(source), encoding="utf-8")
         S.OPERATOR_GATE_BUNDLE_JSON = target
         return source
 
     def use_bundle_with_commit(self, commit: str) -> None:
-        """The REAL emitted bundle, re-pointed at ``commit`` — for driving the
+        """The producer-recorded bundle, re-pointed at ``commit`` — for driving the
         scope line's computed relationship against a posing champion tree."""
-        source = real_bundle()
+        source = recorded_operator_bundle()
         source["champion"] = dict(source.get("champion") or {}, commit=commit)
         target = self.root / "operator_gate_bundle.json"
         target.write_text(json.dumps(source), encoding="utf-8")
@@ -471,7 +464,7 @@ class Contract(_Store):
         """The normal case, not an edge one: a cumulative A/B is expensive and
         the champion advances on every keep."""
         self.write_loop(recorded_loop())
-        older = real_bundle()["champion"]["commit"]
+        older = recorded_operator_bundle()["champion"]["commit"]
         self.write_champion(self.bundle(champion_commit=older))
         got = self.block()
         self.assertTrue(got["measured"])
@@ -510,7 +503,7 @@ class Contract(_Store):
 
     def test_a_tip_past_the_measurement_supersedes_with_its_source_named(self):
         path, _ = self._champion_repo()
-        older = real_bundle()["champion"]["commit"]
+        older = recorded_operator_bundle()["champion"]["commit"]
         self.write_loop(recorded_loop())
         self.write_champion(self.bundle(champion_commit=older))
         got = self.block()
@@ -520,7 +513,7 @@ class Contract(_Store):
 
     def test_an_unresolvable_tree_falls_back_to_the_last_runs_view(self):
         self.write_loop(recorded_loop())
-        older = real_bundle()["champion"]["commit"]
+        older = recorded_operator_bundle()["champion"]["commit"]
         self.write_champion(self.bundle(champion_commit=older))
         got = self.block()
         self.assertIsNotNone(got["supersession"])
@@ -677,7 +670,7 @@ class ProductionResolution(_Store):
         orthogonal — a bundle can be both, and each block names its own facts."""
         self.write_loop(recorded_loop())
         old = self.prod_sha
-        older_champ = real_bundle()["champion"]["commit"]
+        older_champ = recorded_operator_bundle()["champion"]["commit"]
         new = self.promote("production-consolidated-v10")
         self.write_champion(self.bundle(
             baseline_commit=old, champion_commit=older_champ))
@@ -954,11 +947,11 @@ class RetiredHeadlineRendering:
     def test_a_superseded_measurement_is_marked_in_the_card(self):
         self.write_loop(recorded_loop())
         self.write_champion(self.bundle(
-            champion_commit=real_bundle()["champion"]["commit"]))
+            champion_commit=recorded_operator_bundle()["champion"]["commit"]))
         out = self._render()
         card = self._text(out["by_id"]["champ"])
         self.assertIn("SUPERSEDED CHAMPION", card)
-        self.assertIn(real_bundle()["champion"]["commit"][:12], card)
+        self.assertIn(recorded_operator_bundle()["champion"]["commit"][:12], card)
         self.assertIn(recorded_loop()["champion_head"][:12], card)
         # The badge names WHICH side is superseded — "SUPERSEDED" alone sends
         # an investigator to the wrong arm of the A/B.
@@ -1001,7 +994,7 @@ class RetiredHeadlineRendering:
         tellable apart in one card."""
         self.write_loop(recorded_loop())
         old = self.prod_sha
-        older_champ = real_bundle()["champion"]["commit"]
+        older_champ = recorded_operator_bundle()["champion"]["commit"]
         new = self.promote("production-consolidated-v10")
         self.write_champion(self.bundle(
             baseline_commit=old, champion_commit=older_champ))
@@ -1044,7 +1037,7 @@ class RetiredHeadlineRendering:
         """THE defect, in one assertion. Both cards carry a large percentage;
         each must name its own anchor, its own producer and its own question."""
         self.write_loop(recorded_loop())
-        source = self.use_real_bundle()
+        source = self.use_recorded_operator_bundle()
         treatment = expected_gate_treatment(source)
         self.write_champion(self.bundle())
         out = self._render()
@@ -1083,9 +1076,9 @@ class RetiredHeadlineRendering:
         """A `delta_pct` with no baseline beside it is the headline defect one
         level down. These are the rows the +48.9% is drawn from."""
         self.write_loop(recorded_loop())
-        self.use_real_bundle()
+        self.use_recorded_operator_bundle()
         gate = self._text(self._render()["by_id"]["opgate"])
-        points = [g for g in real_bundle()["gates"]
+        points = [g for g in recorded_operator_bundle()["gates"]
                   if g["gate"] == "dflash2_vs_production_serving_path"][0]["points"]
         for point in points:
             with self.subTest(in_flight=point["in_flight"]):
@@ -1187,7 +1180,7 @@ class RetiredHeadlineRendering:
         test.
         """
         self.write_loop(recorded_loop())
-        self.use_real_bundle()
+        self.use_recorded_operator_bundle()
         self.write_champion(self.bundle())
         out = self._render()
         offenders = []
@@ -1201,7 +1194,7 @@ class RetiredHeadlineRendering:
         accident. So: prove it counts real figures, and prove it rejects one
         with nothing near it."""
         self.write_loop(recorded_loop())
-        self.use_real_bundle()
+        self.use_recorded_operator_bundle()
         self.write_champion(self.bundle())
         out = self._render()
         found = sum(len(re.findall(r"[-+]?\d+(?:\.\d+)?%",
@@ -1348,7 +1341,7 @@ class RetiredGateCardCompact(RetiredHeadlineRendering):
     the accordion actually collapses and that the summary cannot be prose."""
 
     def _write_gate(self, mutate=None) -> dict:
-        source = real_bundle()
+        source = recorded_operator_bundle()
         if mutate:
             mutate(source)
         target = self.root / "operator_gate_bundle.json"
@@ -1387,7 +1380,7 @@ class RetiredGateCardCompact(RetiredHeadlineRendering):
 
     def test_the_evidence_is_collapsed_by_default_and_nothing_is_deleted(self):
         self.write_loop(recorded_loop())
-        source = self.use_real_bundle()
+        source = self.use_recorded_operator_bundle()
         html = self._card()
         m = re.search(r'<details class="og-details"([^>]*)>(.*?)</details>\s*$',
                       html, re.S)
@@ -1422,12 +1415,12 @@ class RetiredGateCardCompact(RetiredHeadlineRendering):
         fixtured by aging the file 10 days. Staleness is subject-anchored now
         (age never alarms an episodic producer), so the alarm is earned the
         honest way instead: this fixture's posing frozen tree resolves a HEAD
-        that is not the real bundle's production anchor — production promoted
+        that is not the recorded bundle's production anchor — production promoted
         past the measurement. The guard is unchanged: loud verdict outside the
         accordion, figure not painted as a live gain.
         """
         self.write_loop(recorded_loop())
-        self.use_real_bundle()
+        self.use_recorded_operator_bundle()
         html = self._card()
         before = html.split('<details class="og-details"')[0]
         self.assertIn("SUPERSEDED — the subject this evidence measured has "

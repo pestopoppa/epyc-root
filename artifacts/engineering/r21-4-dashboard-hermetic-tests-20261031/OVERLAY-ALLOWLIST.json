@@ -1,0 +1,152 @@
+{
+  "archive": "ROOT-R21-4-overlay.tar.gz",
+  "archive_sha256": "ce7a8965a79937b81a2aecbb81099cbb2e9e1b9e58e121061103388cb90ea359",
+  "member_count": 29,
+  "members": [
+    {
+      "path": "tests/autokernel_no_live_reads.py",
+      "bytes": 4020,
+      "sha256": "cf2bc9ca7564029e3e5c25cc3c417169fbb1b1915a2235d24547b3a8ee35d776"
+    },
+    {
+      "path": "tests/fixtures/autokernel_producers/README.md",
+      "bytes": 1416,
+      "sha256": "97dc1356727f0941ee1744b052611696c6db9b2c86461a37cd7448ed641e0f1c"
+    },
+    {
+      "path": "tests/fixtures/autokernel_producers/SOURCE-MANIFEST.json",
+      "bytes": 49974,
+      "sha256": "07abc07d39991f7e70a9cf37107241ce069aa16c6867eafd570fd3569410a46a"
+    },
+    {
+      "path": "tests/fixtures/autokernel_producers/champion-vs-production.published.json",
+      "bytes": 1671,
+      "sha256": "1647d0a2d90d6fc580f498de9b0e91608f7730b65a60761b0f95f1b2bbcb8149"
+    },
+    {
+      "path": "tests/fixtures/autokernel_producers/deployment-states/gpu-discovery-champion-v32/state.json",
+      "bytes": 344132,
+      "sha256": "be0d68ca80d8212beafdef8837c9139b4d51df2b35b53a9681847aa837c17288"
+    },
+    {
+      "path": "tests/fixtures/autokernel_producers/deployment-states/gpu-discovery-champion-v33/state.json",
+      "bytes": 61008,
+      "sha256": "13c5768c464c93faa41bc1ba6fbc922d5eca28e6101430603312df68726cbc22"
+    },
+    {
+      "path": "tests/fixtures/autokernel_producers/deployment-states/gpu-discovery-champion-v34/state.json",
+      "bytes": 345674,
+      "sha256": "fc7c4960f0f9a75597655e56aa5c1ea56cbae7b2f22a77b322effa72b337c5f8"
+    },
+    {
+      "path": "tests/fixtures/autokernel_producers/deployment-states/gpu-discovery-champion-v35/state.json",
+      "bytes": 30626,
+      "sha256": "01808f9ed2966adc3b3397f09c8c8bc6c6d64295ffb677cf3601647e9944675e"
+    },
+    {
+      "path": "tests/fixtures/autokernel_producers/deployment-states/gpu-discovery-champion-v36/state.json",
+      "bytes": 62943,
+      "sha256": "93e0a64d2e7bfc6662d494bcab0d54bf4938dd8d6a441da2f6f28775cf6ca366"
+    },
+    {
+      "path": "tests/fixtures/autokernel_producers/deployment-states/gpu-discovery-inaugural-kfd-guard-v1/state.json",
+      "bytes": 51771,
+      "sha256": "25095b616602f0c8e146acabe7c7d9a4ae24c42b8dd601b96d9168dfd41492ee"
+    },
+    {
+      "path": "tests/fixtures/autokernel_producers/deployment-states/gpu-discovery-quant-ladder-occupancy-v15/state.json",
+      "bytes": 42168,
+      "sha256": "dfe578a1b52cb55a5f9bd911fb6270a1a53a627edde06a66549eedd759a38722"
+    },
+    {
+      "path": "tests/fixtures/autokernel_producers/deployment-states/gpu-discovery-quant-ladder-occupancy-v16/state.json",
+      "bytes": 331272,
+      "sha256": "6c3b55831a2eb243b9a81e51f7f1abd511b071cb3500d8566e46c414790a652d"
+    },
+    {
+      "path": "tests/fixtures/autokernel_producers/deployment-states/gpu-discovery-quant-ladder-occupancy-v17/state.json",
+      "bytes": 29907,
+      "sha256": "efe0e4a80b8007afde5d16125300fa18031b94456d5ffb38162d57ce21ebe0e3"
+    },
+    {
+      "path": "tests/fixtures/autokernel_producers/deployment-states/gpu-discovery-quant-ladder-occupancy-v18/state.json",
+      "bytes": 42875,
+      "sha256": "7719d05b2a7c934f6325c2727edf83c14ee5bb88d048ee350297e75c9c777182"
+    },
+    {
+      "path": "tests/fixtures/autokernel_producers/deployment-states/gpu-discovery-quant-ladder-occupancy-v19/state.json",
+      "bytes": 456830,
+      "sha256": "e1368e751f06f0cee64c8a5bc86637f5e429694a20c3125debbe0d54badd4f34"
+    },
+    {
+      "path": "tests/fixtures/autokernel_producers/deployment-states/gpu-discovery-quant-ladder-occupancy-v24/state.json",
+      "bytes": 54799,
+      "sha256": "82f20235bfee1c2ac4bbb42f27a6a2aa868864ccc42bf8ab560792fbf23bbcaf"
+    },
+    {
+      "path": "tests/fixtures/autokernel_producers/deployment-states/gpu-discovery-quant-ladder-occupancy-v25/state.json",
+      "bytes": 135681,
+      "sha256": "7ce6e5561572390e0a1a31ff8a059be3b68c8cfc809a9233c2e22a8ca730ef3c"
+    },
+    {
+      "path": "tests/fixtures/autokernel_producers/deployment-states/gpu-discovery-quant-ladder-occupancy-v26/state.json",
+      "bytes": 41748,
+      "sha256": "b3257bcf51519e12c2888f8bbbf88270bf306f88ae1e047342957ed76568d48d"
+    },
+    {
+      "path": "tests/fixtures/autokernel_producers/deployment-states/gpu-discovery-quant-ladder-occupancy-v27/state.json",
+      "bytes": 34433,
+      "sha256": "579f84efe657a3aa3cf38d67d078728170ec832514de2792f12975fac133ea08"
+    },
+    {
+      "path": "tests/fixtures/autokernel_producers/deployment-states/gpu-discovery-quant-ladder-occupancy-v28/state.json",
+      "bytes": 65853,
+      "sha256": "3b1f46449af1b20872a0e6c2abb992cd09ad85776f7b612b563d12511a1d28fc"
+    },
+    {
+      "path": "tests/fixtures/autokernel_producers/deployment-states/gpu-discovery-quant-ladder-occupancy-v3/state.json",
+      "bytes": 28838,
+      "sha256": "7a55e2794ae8743f3e24f49dddf9bb13c8537617372f755124b8ac25693e3c12"
+    },
+    {
+      "path": "tests/fixtures/autokernel_producers/experiments-sample.db",
+      "bytes": 180224,
+      "sha256": "eaa63786777f71f85bdd31f9ef7882a9886c9f32c67eb5a21b046e411f16f903"
+    },
+    {
+      "path": "tests/fixtures/autokernel_producers/loop-status.json",
+      "bytes": 11548,
+      "sha256": "5f150aa672e7ff50c617658b23ef452263612dfa7ef2289bfa35e90012283b64"
+    },
+    {
+      "path": "tests/fixtures/autokernel_producers/operator_gate_bundle.json",
+      "bytes": 3603,
+      "sha256": "aba5bd4434b9863aca87ad54ecdcf44f64a8b00059d503e12f4237ce50532557"
+    },
+    {
+      "path": "tests/test_dashboard_champion_headline.py",
+      "bytes": 78935,
+      "sha256": "37287d6628d43131aa5d27ecf25eac43af81d8b9183de9e3b249dface8dd75d5"
+    },
+    {
+      "path": "tests/test_dashboard_controller_state_contract.py",
+      "bytes": 5080,
+      "sha256": "78aca8f605db8333bbc8564bba94294d441676ad389468664503234e3fe9ed01"
+    },
+    {
+      "path": "tests/test_dashboard_knowledge_card.py",
+      "bytes": 48275,
+      "sha256": "bceaf3588565b3427896a0d6d7632fc170ea91894895ab803c5c425404f65c63"
+    },
+    {
+      "path": "tests/test_dashboard_operator_gates.py",
+      "bytes": 4964,
+      "sha256": "409ac7191c2d70908f95880261ed427e694e7ee01c07b4c80d097eb8b1d36129"
+    },
+    {
+      "path": "tests/test_dashboard_r21_4_fixtures.py",
+      "bytes": 3711,
+      "sha256": "276f261024a6ead3130742445cdc446effd6d18a4189cdae0a92cb50a16490a1"
+    }
+  ]
+}
