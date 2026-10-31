@@ -1,0 +1,61 @@
+{
+  "actual_remote_APP_main": "b85b44f12ec857fc0249bc956e239feadfe92ca4",
+  "all11_proposal_pins_match": true,
+  "source_files": [
+    {
+      "path": "scripts/autopilot/strategy_projection_report.py",
+      "sha256": "bcf481d92791c620f7822057150b90a62515d1423c135da5ed034441d19da482",
+      "proposal_pin_matches": true
+    },
+    {
+      "path": "scripts/autopilot/experiment_journal.py",
+      "sha256": "534439520f61e0def6126f6ccf2defc846f500a412eec9c5f8921c1d807e1121",
+      "proposal_pin_matches": true
+    },
+    {
+      "path": "scripts/autopilot/journal_shards.py",
+      "sha256": "d7ed426ccc3972b6950f23a1af0e26ae6ed5e3e9dde7e6401f963cd63923adda",
+      "proposal_pin_matches": true
+    },
+    {
+      "path": "orchestration/repl_memory/strategy_store.py",
+      "sha256": "22dff48765c297fc8a2650e4e063e960bc69b275259296fea8172c4caa1e2207",
+      "proposal_pin_matches": true
+    },
+    {
+      "path": "orchestration/repl_memory/faiss_store.py",
+      "sha256": "38f24c3d3759fc74a506b1be91f911876c506b4c06b07b30e24a4d5f18d91676",
+      "proposal_pin_matches": true
+    },
+    {
+      "path": "orchestration/repl_memory/embedder.py",
+      "sha256": "e541765522564c373153dbef4d5be2e352b402a09495c00422ada500d3bf0b0e",
+      "proposal_pin_matches": true
+    },
+    {
+      "path": "orchestration/repl_memory/memory_record.py",
+      "sha256": "463ae4aa74ef7ecc0b7acc5dca14af091fd4ae0c0a1a75ed57123de644930702",
+      "proposal_pin_matches": true
+    },
+    {
+      "path": "src/__init__.py",
+      "sha256": "16e20bce77e6470646b90def0e3d653a3bd9fb024b484f7cd034f96ff8a0a5f8",
+      "proposal_pin_matches": true
+    },
+    {
+      "path": "src/inference_lock.py",
+      "sha256": "642b6a902a8c45949402d23aaf3237327619d338ee80f27f141ecb0dbb49f2c0",
+      "proposal_pin_matches": true
+    },
+    {
+      "path": "src/runtime/inference_lock.py",
+      "sha256": "659a51c1f1bd1c8db0e07d4092c5e9ddbf05f989be0ac84cb251a23be0ca9a36",
+      "proposal_pin_matches": true
+    },
+    {
+      "path": "src/autopilot_core/tier_specs.py",
+      "sha256": "3ff7a55425ac6770f1e6b9818152f953007b06dce711f5b12f7ffcd893dbe9d7",
+      "proposal_pin_matches": true
+    }
+  ]
+}

@@ -1,0 +1,89 @@
+{
+  "task_text": "- [ ] Refresh `scripts/harness/strategy_projection_report_capture.py` `TRUSTED_APP_SOURCES`: 6 of 11 pins already stale at base (incl. `tier_specs.py`), so the tool refuses (found by O3)",
+  "implementation_ROOT": "8cfbac4cec8074cde9768c33ec26c6cf49293aa4",
+  "source_published_main": "e4c5e9de720b7e0642d24a7d355c33fc28c97397",
+  "reviewed_patch_sha256": "5b28ab9b0fbe69e741d99094309e919285af15d7dc964365b7f8e8dd6a422ab1",
+  "current_producer_sha256": "d692234dbdd44ccbf5af0ece8e35d8b4b39dd4d4f80b1ecfecfc40e494859fb2",
+  "source_binding": "exact producer digest selects complete eleven-file epoch; unknown producer, stale/mixed/tampered member refuses; legacy complete epoch retained",
+  "current_APP_pin_identity": "5775730ccd2bb69805f5843ab1b001b002930fbd",
+  "legacy_APP_identity": "1a1f2c1260c7662235f1ed39e0cc0c9e16e74a",
+  "fresh_remote_APP_pin_match": {
+    "actual_remote_APP_main": "b85b44f12ec857fc0249bc956e239feadfe92ca4",
+    "all11_proposal_pins_match": true,
+    "source_files": [
+      {
+        "path": "scripts/autopilot/strategy_projection_report.py",
+        "sha256": "bcf481d92791c620f7822057150b90a62515d1423c135da5ed034441d19da482",
+        "proposal_pin_matches": true
+      },
+      {
+        "path": "scripts/autopilot/experiment_journal.py",
+        "sha256": "534439520f61e0def6126f6ccf2defc846f500a412eec9c5f8921c1d807e1121",
+        "proposal_pin_matches": true
+      },
+      {
+        "path": "scripts/autopilot/journal_shards.py",
+        "sha256": "d7ed426ccc3972b6950f23a1af0e26ae6ed5e3e9dde7e6401f963cd63923adda",
+        "proposal_pin_matches": true
+      },
+      {
+        "path": "orchestration/repl_memory/strategy_store.py",
+        "sha256": "22dff48765c297fc8a2650e4e063e960bc69b275259296fea8172c4caa1e2207",
+        "proposal_pin_matches": true
+      },
+      {
+        "path": "orchestration/repl_memory/faiss_store.py",
+        "sha256": "38f24c3d3759fc74a506b1be91f911876c506b4c06b07b30e24a4d5f18d91676",
+        "proposal_pin_matches": true
+      },
+      {
+        "path": "orchestration/repl_memory/embedder.py",
+        "sha256": "e541765522564c373153dbef4d5be2e352b402a09495c00422ada500d3bf0b0e",
+        "proposal_pin_matches": true
+      },
+      {
+        "path": "orchestration/repl_memory/memory_record.py",
+        "sha256": "463ae4aa74ef7ecc0b7acc5dca14af091fd4ae0c0a1a75ed57123de644930702",
+        "proposal_pin_matches": true
+      },
+      {
+        "path": "src/__init__.py",
+        "sha256": "16e20bce77e6470646b90def0e3d653a3bd9fb024b484f7cd034f96ff8a0a5f8",
+        "proposal_pin_matches": true
+      },
+      {
+        "path": "src/inference_lock.py",
+        "sha256": "642b6a902a8c45949402d23aaf3237327619d338ee80f27f141ecb0dbb49f2c0",
+        "proposal_pin_matches": true
+      },
+      {
+        "path": "src/runtime/inference_lock.py",
+        "sha256": "659a51c1f1bd1c8db0e07d4092c5e9ddbf05f989be0ac84cb251a23be0ca9a36",
+        "proposal_pin_matches": true
+      },
+      {
+        "path": "src/autopilot_core/tier_specs.py",
+        "sha256": "3ff7a55425ac6770f1e6b9818152f953007b06dce711f5b12f7ffcd893dbe9d7",
+        "proposal_pin_matches": true
+      }
+    ]
+  },
+  "verification": {
+    "current_source": "29 passed,3 warnings in1.56s; no skip/error/failure",
+    "current_pin_watch": "9 passed in4.41s",
+    "legacy": "actual retained producer/APP owned-empty-store capture rc0/report_ok true, unchanged Judged/Located; not live store/model",
+    "raw_log_sha256": {
+      "CURRENT-SOURCE-CONTROLS.log": "39cef86440a06cf5d26c17ba917a4cc3e1e70b67b216fc20eeda64219f0011d6",
+      "CURRENT-PIN-WATCH.log": "dbcbcba4ae16dba948b964d438a7c5a6f6387f406d0a940194cbe23dde73cee5",
+      "LEGACY-COMPATIBILITY-R2.log": "919a74ff6386a6d3baae5a229f102d04a185227cc15c5ddce60ee0331260d620",
+      "CURRENT-REMOTE-APP-SOURCE-CHECK.json": "3023e1efd37cb55b8b798fc7a7a1d1a4f33ee1ebb2aa154611c47827e0b39492",
+      "CURRENT-SUPPORT-CHECK.json": "6f50ae33a99467a26ea61ba946c5e05f899277e0dec0a89c0194aabaa9d9ce98",
+      "RUFF-COMPARISON.json": "23cfa98b8256d4f83eab63518c05f4c33e72fa45bad05d93a38188ff72723c7f"
+    },
+    "Git_presentation": "trailing whitespace only removed; raw originals retained in private evidence paths",
+    "ruff": "19 identical pre-existing diagnostics in baseline/proposal; no additional rule/message counts; full Ruff is not green"
+  },
+  "scope": "source epoch correctness and synthetic integrity only; schemas/proposition/carrier/shared grade unchanged; no live capture/model/embedding-quality/deployment claim",
+  "original_task_prose_recoverable": true,
+  "quota_credit": 1
+}
