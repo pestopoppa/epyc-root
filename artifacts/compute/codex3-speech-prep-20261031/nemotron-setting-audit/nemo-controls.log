@@ -1,0 +1,6 @@
+{"leader_pid": 2754016, "leader_birth": 152412129, "event": "leader_started"}
+GGUF_METADATA {"general.architecture": "parakeet", "stt.parakeet.encoder.att_context_left": 56, "stt.parakeet.encoder.att_context_right": 13, "stt.parakeet.encoder.att_context_size_choices": [56, 13, 56, 6, 56, 3, 56, 0], "stt.parakeet.encoder.att_context_style": "chunked_limited", "stt.variant": "nemotron-3.5-asr-streaming-0.6b"}
+CELL 13 1120 rc 0
+CELL 3 320 rc 0
+CELL 1 160 rc 1
+{"schema": "hil15-r11-smoke-supervisor/v1", "elapsed_s": 8.312800973188132, "sampled_peak_tree_rss_bytes": 1327185920, "samples": 82, "verified_exited_processes": 0, "verified_exited_threads": 0, "per_process_address_space_limit_bytes": 8589934592, "rss_scope": "sum of sampled resident pages across owned process tree; sampling may miss transients and double-count shared pages", "leader_pid": 2754016, "leader_birth": 152412129, "child_rc": 0, "children_drained": true, "failure": null}

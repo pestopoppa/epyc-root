@@ -1,0 +1,79 @@
+{
+  "status": "READY",
+  "id": "codex3-cs8-stt4-transcribe-hip-build-20261031",
+  "owner": "codex3",
+  "priority_rank": 100,
+  "regions": "any-cpu-quarter",
+  "class": "diagnostic",
+  "booking_class": "block-correctness",
+  "min_window_s": 3600,
+  "window_s": 10800,
+  "gib": 32,
+  "launcher": {
+    "path": "/mnt/raid0/llm/tmp/codex3-cs8-stt4-transcribe-20261031/launch.sh",
+    "sha256": "61d387bf3fab431cbf8d2d0d39ea5c300b4fb74cb1ad260e796ec464b7ba8b1e"
+  },
+  "job": {
+    "path": "/mnt/raid0/llm/tmp/codex3-cs8-stt4-transcribe-20261031/job.sh",
+    "sha256": "63df6c1c7a18d4d669191782b74c0e658b5aa4967491a7c69b957087a79925b4"
+  },
+  "source_manifest": {
+    "path": "/mnt/raid0/llm/tmp/codex3-cs8-stt4-transcribe-20261031/SOURCES.sha256",
+    "sha256": "56e32ca646b5934e362ab6adaeec54a6aa2af46dec7119b1c1a5cbfc079083b7"
+  },
+  "scratch_root": "/mnt/raid0/llm/tmp/codex3-cs8-stt4-transcribe-20261031",
+  "result_path": "/mnt/raid0/llm/tmp/codex3-cs8-stt4-transcribe-20261031/BUILD-SUCCESS",
+  "launcher_log": "/mnt/raid0/llm/tmp/codex3-cs8-stt4-transcribe-20261031/ws58-launcher.out",
+  "est_output_GiB": 8,
+  "keep": [
+    "*.sh",
+    "*.py",
+    "*.json",
+    "*.sha256",
+    "*.log",
+    "*.md",
+    "BUILD-SUCCESS",
+    "BUILD-PARTIAL",
+    "BUILD-DIGESTS.txt",
+    "build/**/*.o",
+    "build/**/*.so*",
+    "build/**/Makefile",
+    "build/**/*.make",
+    "build/**/*.cmake",
+    "build/CMakeCache.txt",
+    "build/bin/*",
+    "install/lib/*",
+    "install/include/*",
+    "state/*"
+  ],
+  "decision_rule": "Model-free gfx90a build and isolated ggml linkage; no GPU parity verdict",
+  "enrollment": "n/a diagnostic",
+  "hold": null,
+  "feasibility": "Duration unmeasured; 10800 s requested, 3600 s minimum, incremental resumable build; up to 8 compiler jobs subject to granted affinity; 32 GiB booked, sampled 30 GiB stop, 8 GiB output cap, 150 GiB free floor.",
+  "log_consumer": "/mnt/raid0/llm/tmp/codex3-cs8-stt4-transcribe-20261031/build-guard.py",
+  "log_consumer_sha256": "005f0339d1c615fd2001df5e47f3f90e1847da13551c2ac5f07cef0fb3474b9d",
+  "smoke": {
+    "regions": "R6 SMT 122,123 with 26-27 and 122-123 mutex and continuous admission",
+    "model": "none",
+    "first_request_ok": true,
+    "result_writer_ok": true,
+    "exit_ok": true,
+    "sampled_peak_tree_rss_bytes": 238542848,
+    "log": "/mnt/raid0/llm/tmp/compute-flags/ready/codex3-cs8-stt4-transcribe-hip-build-20261031.smoke.log",
+    "log_sha256": "6cdce8203359bb77aac2a0abe15f5201bedc7669d35a5b826e97f6a8b39a49d9",
+    "qualification": "actual HIP compiler object and fsynced digest; not full build or GPU execution",
+    "ran_at": "2026-10-31T00:09:59.847564+00:00"
+  },
+  "interrupt_tests": {
+    "stop": {
+      "log": "/mnt/raid0/llm/tmp/codex3-cs8-stt4-transcribe-20261031/STOP-TEST-PUBLISH.log",
+      "sha256": "6009a0e09ff9f0f259485234a8cdf080ac087c708e2a8d1bc49146014c0b46ed",
+      "exit_code": 75,
+      "compiler_observed": true,
+      "children_drained": true
+    }
+  },
+  "source_commit": "db678a031cf4c524bcab2c45a0dc6a7813106e4a",
+  "source_path": "/mnt/raid0/llm/tmp/dive-transcribe-cpp/tc",
+  "published_at": "2026-10-31T00:10:25.640714+00:00"
+}

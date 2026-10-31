@@ -1,0 +1,52 @@
+
+jfk f32
+frontend valid_mask 1100 mask_length 1101
+frontend raw shapes (1101, 128) (1100, 128)
+frontend raw SHAPE_MISMATCH
+frontend native-length prefix shapes (1100, 128) (1100, 128)
+frontend native-length prefix max_abs 0.005777955055236816 mean_abs 1.3181633221392985e-05 rmse 9.04062544577755e-05 equal_count 5082 finite True
+encoder shapes (138, 1024) (138, 1024)
+encoder max_abs 0.00031803734600543976 mean_abs 1.2597771274158731e-05 rmse 1.9162886019330472e-05 equal_count 14 finite True
+joint_logits step aligned shapes (46, 8198) (46, 8198)
+joint_logits step aligned max_abs 0.1138916015625 mean_abs 0.007880308665335178 rmse 0.012108173221349716 equal_count 119 finite True
+tokens torch/native [8192, 1976, 547, 7877, 1103, 309, 530, 596, 3213, 404, 667, 8192, 7877, 279, 583, 8192, 1491, 8192, 8192, 3470, 3629, 8192, 867, 331, 958, 7893, 2059, 458, 509, 1180, 8192, 7877, 279, 583, 3470, 1180, 2059, 458, 509, 3629, 867, 331, 958, 7893, 7883, 8192] [8192, 1976, 547, 7877, 1103, 309, 530, 596, 3213, 404, 667, 8192, 7877, 279, 583, 8192, 1491, 8192, 8192, 3470, 3629, 8192, 867, 331, 958, 7893, 2059, 458, 509, 1180, 8192, 7877, 279, 583, 3470, 1180, 2059, 458, 509, 3629, 867, 331, 958, 7893, 7883, 8192] identical True
+durations torch/native [3, 4, 3, 3, 3, 1, 2, 3, 3, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 2, 1, 1, 2, 2, 4, 4, 4, 4, 1, 4, 3, 4, 3, 4, 3, 2, 3, 3, 1, 1, 2, 4, 1, 2] [3, 4, 3, 3, 3, 1, 2, 3, 3, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 2, 1, 1, 2, 2, 4, 4, 4, 4, 1, 4, 3, 4, 3, 4, 3, 2, 3, 3, 1, 1, 2, 4, 1, 2] identical True
+
+jfk q8
+frontend valid_mask 1100 mask_length 1101
+frontend raw shapes (1101, 128) (1100, 128)
+frontend raw SHAPE_MISMATCH
+frontend native-length prefix shapes (1100, 128) (1100, 128)
+frontend native-length prefix max_abs 0.005777955055236816 mean_abs 1.3181633221392985e-05 rmse 9.04062544577755e-05 equal_count 5082 finite True
+encoder shapes (138, 1024) (138, 1024)
+encoder max_abs 0.006860524415969849 mean_abs 0.00041784002678468823 rmse 0.000546176393982023 equal_count 0 finite True
+joint_logits step aligned shapes (46, 8198) (46, 8198)
+joint_logits step aligned max_abs 2.1946334838867188 mean_abs 0.24311688542366028 rmse 0.3135966360569 equal_count 3 finite True
+tokens torch/native [8192, 1976, 547, 7877, 1103, 309, 530, 596, 3213, 404, 667, 8192, 7877, 279, 583, 8192, 1491, 8192, 8192, 3470, 3629, 8192, 867, 331, 958, 7893, 2059, 458, 509, 1180, 8192, 7877, 279, 583, 3470, 1180, 2059, 458, 509, 3629, 867, 331, 958, 7893, 7883, 8192] [8192, 1976, 547, 7877, 1103, 309, 530, 596, 3213, 404, 667, 8192, 7877, 279, 583, 8192, 1491, 8192, 8192, 3470, 3629, 8192, 867, 331, 958, 7893, 2059, 458, 509, 1180, 8192, 7877, 279, 583, 3470, 1180, 2059, 458, 509, 3629, 867, 331, 958, 7893, 7883, 8192] identical True
+durations torch/native [3, 4, 3, 3, 3, 1, 2, 3, 3, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 2, 1, 1, 2, 2, 4, 4, 4, 4, 1, 4, 3, 4, 3, 4, 3, 2, 3, 3, 1, 1, 2, 4, 1, 2] [3, 4, 3, 3, 3, 1, 2, 3, 3, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 2, 1, 1, 2, 2, 4, 4, 4, 4, 1, 4, 3, 4, 3, 4, 3, 2, 3, 3, 1, 1, 2, 4, 1, 2] identical True
+
+tone f32
+frontend valid_mask 100 mask_length 101
+frontend raw shapes (101, 128) (100, 128)
+frontend raw SHAPE_MISMATCH
+frontend native-length prefix shapes (100, 128) (100, 128)
+frontend native-length prefix max_abs 0.0001506805419921875 mean_abs 5.738295840274077e-06 rmse 1.2219181371619925e-05 equal_count 13 finite True
+encoder shapes (13, 1024) (13, 1024)
+encoder max_abs 0.00014925748109817505 mean_abs 1.57719332491979e-05 rmse 2.116267933160998e-05 equal_count 1 finite True
+joint_logits step aligned shapes (5, 8198) (5, 8198)
+joint_logits step aligned max_abs 0.0537567138671875 mean_abs 0.009104191325604916 rmse 0.012879638001322746 equal_count 3 finite True
+tokens torch/native [8192, 8192, 8192, 8192, 8192] [8192, 8192, 8192, 8192, 8192] identical True
+durations torch/native [3, 4, 4, 1, 1] [3, 4, 4, 1, 1] identical True
+
+tone q8
+frontend valid_mask 100 mask_length 101
+frontend raw shapes (101, 128) (100, 128)
+frontend raw SHAPE_MISMATCH
+frontend native-length prefix shapes (100, 128) (100, 128)
+frontend native-length prefix max_abs 0.0001506805419921875 mean_abs 5.738295840274077e-06 rmse 1.2219181371619925e-05 equal_count 13 finite True
+encoder shapes (13, 1024) (13, 1024)
+encoder max_abs 0.008555591106414795 mean_abs 0.0005161839071661234 rmse 0.0007280284189619124 equal_count 0 finite True
+joint_logits step aligned shapes (5, 8198) (5, 8198)
+joint_logits step aligned max_abs 1.3803176879882812 mean_abs 0.2690724730491638 rmse 0.3519807457923889 equal_count 0 finite True
+tokens torch/native [8192, 8192, 8192, 8192, 8192] [8192, 8192, 8192, 8192, 8192] identical True
+durations torch/native [3, 4, 4, 1, 1] [3, 4, 4, 1, 1] identical True

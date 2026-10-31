@@ -1,0 +1,3 @@
+{"leader_pid": 142220, "leader_birth": 152894376, "event": "leader_started"}
+HARNESS FAULT RuntimeError('result fingerprint changed torch')
+{"schema": "hil15-r11-smoke-supervisor/v1", "elapsed_s": 0.4076748569495976, "sampled_peak_tree_rss_bytes": 83505152, "samples": 5, "verified_exited_processes": 0, "verified_exited_threads": 0, "per_process_address_space_limit_bytes": null, "rss_scope": "sum of sampled resident pages across owned process tree; sampling may miss transients and double-count shared pages", "leader_pid": 142220, "leader_birth": 152894376, "child_rc": 2, "children_drained": true, "failure": null}

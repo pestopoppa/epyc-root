@@ -1,0 +1,11 @@
+# Speech preparation checkpoint, 2026-10-31
+
+These exact bounded snapshots preserve six qualified READY packets and their original control records. Model weights, audio and native numerical arrays remain in their declared KEEP roots. [Transfer audit](TRANSFER-AUDIT.json) lists copied bytes and SHA-256 values; launcher, job and smoke hashes were checked against the current READY metadata before copying. The checkpoint does not independently rehash canonical weights or binaries.
+
+The HIP transcribe and Crisp packets qualified one compiler object and STOP/drain; full builds remain waiting for a quarter, followed by STT2 acceptance and separate GPU residency/token-identity gates. Mudler and NeMo's isolated ROCm 6.2 type workaround compiles one object only.
+
+Voxtral, Ultra and transcribe Nemotron packets are FLEURS validation only. The matrix is 1,437 utterances; Nemotron executes R0/R3/R6/R13 in native automatic and forced-locale modes, while R1 remains an unavailable trained-setting row for this actual checkpoint. No validation scoring or FLEURS test inference is represented.
+
+The independent Ultra reference uses pinned upstream CPU Torch/transformers and the base processor/generation configuration. JFK and synthetic-tone controls match the native F32 and Q8 token IDs and durations, with retained numerical deltas and the raw frontend masked-frame shape mismatch. These are two engineering controls, not a full parity or accuracy result. The separate fixed 25 engineering clips remain unexposed. Its final dispatcher reopens and hashes raw arm artifacts and separately fingerprints result manifests, reruns parsers/comparisons on resume, checks a 210-second reserve before each arm, and preserves unknown exposure without redraw. Normal execution uses up to eight distinct granted physical cores under 64 GiB; the two-worker R11 smoke serializes each heavy child through reap, with 4.41 GB sampled whole-tree peak. Tamper, resume, reserve, negative-comparison and STOP fixtures are retained.
+
+The original STT2, STT3, STT4, STT5 and CPU/HIP acceptance parents remain open. Existing native Speech source projection and planning-context canaries remain open; READY/smoke records do not create measurement warrants.

@@ -1,0 +1,51 @@
+{
+  "models": {
+    "r0": "b94545b313b3223fda7b2857a52681da813935c2127643d1e9ff0c23d988089c",
+    "r13": "b94545b313b3223fda7b2857a52681da813935c2127643d1e9ff0c23d988089c",
+    "r3": "b94545b313b3223fda7b2857a52681da813935c2127643d1e9ff0c23d988089c",
+    "r6": "b94545b313b3223fda7b2857a52681da813935c2127643d1e9ff0c23d988089c"
+  },
+  "plan_sha256": "61722f4fa38bd4e50c1fc33a94e82f1ed3af414cbaaa1feb27dc12ababc71533",
+  "research_plan_commit": "d1c7a8ffb",
+  "runner_binary_sha256": {
+    "r0": "787d7b4bec0746cdb43884974045ac1e8ddba3f8697455b991ed056aacd58667",
+    "r13": "787d7b4bec0746cdb43884974045ac1e8ddba3f8697455b991ed056aacd58667",
+    "r3": "787d7b4bec0746cdb43884974045ac1e8ddba3f8697455b991ed056aacd58667",
+    "r6": "787d7b4bec0746cdb43884974045ac1e8ddba3f8697455b991ed056aacd58667"
+  },
+  "runner_libraries": {
+    "r0": {
+      "/mnt/raid0/llm/tmp/codex3-cs8-stt3-transcribe-20261030/install/lib/libggml-base.so.0.26.0": "3ab89cda63f8570364ba56d4a9edffb6e7035141cd81813083172f7c645ccf67",
+      "/mnt/raid0/llm/tmp/codex3-cs8-stt3-transcribe-20261030/install/lib/libggml-cpu.so.0.26.0": "ab4bb2d75111b0f866c7abaaf39c7ab4f4fc6d56819761bd31113310fda10725",
+      "/mnt/raid0/llm/tmp/codex3-cs8-stt3-transcribe-20261030/install/lib/libggml.so.0.26.0": "7875bba3f028e2275af74dc2539bbd9f7738e7927f6f9fa36e9500a094082844",
+      "/mnt/raid0/llm/tmp/codex3-cs8-stt3-transcribe-20261030/install/lib/libtranscribe.so.0.4.0": "646bbbf3bb58417a3200c8c8675524ee9f46627e108b5d3789950ab4afda255f"
+    },
+    "r13": {
+      "/mnt/raid0/llm/tmp/codex3-cs8-stt3-transcribe-20261030/install/lib/libggml-base.so.0.26.0": "3ab89cda63f8570364ba56d4a9edffb6e7035141cd81813083172f7c645ccf67",
+      "/mnt/raid0/llm/tmp/codex3-cs8-stt3-transcribe-20261030/install/lib/libggml-cpu.so.0.26.0": "ab4bb2d75111b0f866c7abaaf39c7ab4f4fc6d56819761bd31113310fda10725",
+      "/mnt/raid0/llm/tmp/codex3-cs8-stt3-transcribe-20261030/install/lib/libggml.so.0.26.0": "7875bba3f028e2275af74dc2539bbd9f7738e7927f6f9fa36e9500a094082844",
+      "/mnt/raid0/llm/tmp/codex3-cs8-stt3-transcribe-20261030/install/lib/libtranscribe.so.0.4.0": "646bbbf3bb58417a3200c8c8675524ee9f46627e108b5d3789950ab4afda255f"
+    },
+    "r3": {
+      "/mnt/raid0/llm/tmp/codex3-cs8-stt3-transcribe-20261030/install/lib/libggml-base.so.0.26.0": "3ab89cda63f8570364ba56d4a9edffb6e7035141cd81813083172f7c645ccf67",
+      "/mnt/raid0/llm/tmp/codex3-cs8-stt3-transcribe-20261030/install/lib/libggml-cpu.so.0.26.0": "ab4bb2d75111b0f866c7abaaf39c7ab4f4fc6d56819761bd31113310fda10725",
+      "/mnt/raid0/llm/tmp/codex3-cs8-stt3-transcribe-20261030/install/lib/libggml.so.0.26.0": "7875bba3f028e2275af74dc2539bbd9f7738e7927f6f9fa36e9500a094082844",
+      "/mnt/raid0/llm/tmp/codex3-cs8-stt3-transcribe-20261030/install/lib/libtranscribe.so.0.4.0": "646bbbf3bb58417a3200c8c8675524ee9f46627e108b5d3789950ab4afda255f"
+    },
+    "r6": {
+      "/mnt/raid0/llm/tmp/codex3-cs8-stt3-transcribe-20261030/install/lib/libggml-base.so.0.26.0": "3ab89cda63f8570364ba56d4a9edffb6e7035141cd81813083172f7c645ccf67",
+      "/mnt/raid0/llm/tmp/codex3-cs8-stt3-transcribe-20261030/install/lib/libggml-cpu.so.0.26.0": "ab4bb2d75111b0f866c7abaaf39c7ab4f4fc6d56819761bd31113310fda10725",
+      "/mnt/raid0/llm/tmp/codex3-cs8-stt3-transcribe-20261030/install/lib/libggml.so.0.26.0": "7875bba3f028e2275af74dc2539bbd9f7738e7927f6f9fa36e9500a094082844",
+      "/mnt/raid0/llm/tmp/codex3-cs8-stt3-transcribe-20261030/install/lib/libtranscribe.so.0.4.0": "646bbbf3bb58417a3200c8c8675524ee9f46627e108b5d3789950ab4afda255f"
+    }
+  },
+  "runner_library_set_sha256": {
+    "r0": "22c9dcb0678b60aaa46ff9b01917c4a793c755f287203d0f1560b9526914fbff",
+    "r13": "22c9dcb0678b60aaa46ff9b01917c4a793c755f287203d0f1560b9526914fbff",
+    "r3": "22c9dcb0678b60aaa46ff9b01917c4a793c755f287203d0f1560b9526914fbff",
+    "r6": "22c9dcb0678b60aaa46ff9b01917c4a793c755f287203d0f1560b9526914fbff"
+  },
+  "vad_binary_sha256": "ee509ce5347c4333e19fd28ab5fa9eb3bd97f35fc23292509461de4e88e22d9d",
+  "vad_model_sha256": "2aa269b785eeb53a82983a20501ddf7c1d9c48e33ab63a41391ac6c9f7fb6987",
+  "validation_sha256": "1bf2544d1d02d8f72b1a57d293c1e0869953aae31c3c526220b7965df09b536e"
+}

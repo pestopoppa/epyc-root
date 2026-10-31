@@ -1,0 +1,79 @@
+{
+  "status": "READY",
+  "id": "codex3-cs8-stt4-crisp-hip-build-20261031",
+  "owner": "codex3",
+  "priority_rank": 101,
+  "regions": "any-cpu-quarter",
+  "class": "diagnostic",
+  "booking_class": "block-correctness",
+  "min_window_s": 3600,
+  "window_s": 10800,
+  "gib": 32,
+  "launcher": {
+    "path": "/mnt/raid0/llm/tmp/codex3-cs8-stt4-crisp-20261031/launch.sh",
+    "sha256": "deb5cf73a7816dc4cb9112af471ae9fbb2bdc55860d18b6d5145340780c962d0"
+  },
+  "job": {
+    "path": "/mnt/raid0/llm/tmp/codex3-cs8-stt4-crisp-20261031/job.sh",
+    "sha256": "6043be04b15f7bdcb45cbdf9fda4d48517aa4bf78e652ff2e80adc4b08c8b15b"
+  },
+  "source_manifest": {
+    "path": "/mnt/raid0/llm/tmp/codex3-cs8-stt4-crisp-20261031/SOURCES.sha256",
+    "sha256": "bb9e0e91b3e0aef759622f3d6f4d4ba567cde10390c070c5c75759e02a7e45ea"
+  },
+  "scratch_root": "/mnt/raid0/llm/tmp/codex3-cs8-stt4-crisp-20261031",
+  "result_path": "/mnt/raid0/llm/tmp/codex3-cs8-stt4-crisp-20261031/BUILD-SUCCESS",
+  "launcher_log": "/mnt/raid0/llm/tmp/codex3-cs8-stt4-crisp-20261031/ws58-launcher.out",
+  "est_output_GiB": 8,
+  "keep": [
+    "*.sh",
+    "*.py",
+    "*.json",
+    "*.sha256",
+    "*.log",
+    "*.md",
+    "BUILD-SUCCESS",
+    "BUILD-PARTIAL",
+    "BUILD-DIGESTS.txt",
+    "build/**/*.o",
+    "build/**/*.so*",
+    "build/**/Makefile",
+    "build/**/*.make",
+    "build/**/*.cmake",
+    "build/CMakeCache.txt",
+    "build/bin/*",
+    "install/lib/*",
+    "install/include/*",
+    "state/*"
+  ],
+  "decision_rule": "Model-free gfx90a build and isolated ggml linkage; no GPU parity verdict",
+  "enrollment": "n/a diagnostic",
+  "hold": null,
+  "feasibility": "Duration unmeasured; 10800 s requested, 3600 s minimum, incremental resumable build; up to 8 compiler jobs subject to granted affinity; 32 GiB booked, sampled 30 GiB stop, 8 GiB output cap, 150 GiB free floor.",
+  "log_consumer": "/mnt/raid0/llm/tmp/codex3-cs8-stt4-crisp-20261031/build-guard.py",
+  "log_consumer_sha256": "2ca24b9dc6a83fa5e5043da1b353e62ded34fb830b2772d99593d5ee54f7cf8d",
+  "smoke": {
+    "ran_at": "2026-10-31T00:12:57.566577+00:00",
+    "regions": "R6 SMT 122,123 with 26-27 and 122-123 mutex and continuous admission",
+    "model": "none",
+    "first_request_ok": true,
+    "result_writer_ok": true,
+    "exit_ok": true,
+    "sampled_peak_tree_rss_bytes": 218836992,
+    "log": "/mnt/raid0/llm/tmp/compute-flags/ready/codex3-cs8-stt4-crisp-hip-build-20261031.smoke.log",
+    "log_sha256": "44bf695719a9b62028cc2cec7fe6668a54f04138b4d58695834e4b82052ee39e",
+    "qualification": "actual HIP compiler object and fsynced digest; not full build or GPU execution"
+  },
+  "interrupt_tests": {
+    "stop": {
+      "log": "/mnt/raid0/llm/tmp/codex3-cs8-stt4-crisp-20261031/STOP-TEST-PUBLISH.log",
+      "sha256": "2c015968febfcc34c61d7f511d51696473bc58de5baa445e5815db493a839f1c",
+      "exit_code": 75,
+      "compiler_observed": true,
+      "children_drained": true
+    }
+  },
+  "source_commit": "2aa8d7669fcaa18d98d61a4bc8a077464e6b9919",
+  "source_path": "/mnt/micron/codex3-cs8-stt2-crisp-20261030/src",
+  "published_at": "2026-10-31T00:13:10.866639+00:00"
+}

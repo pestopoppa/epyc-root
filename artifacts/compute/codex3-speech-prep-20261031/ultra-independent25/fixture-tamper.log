@@ -1,0 +1,3 @@
+{"leader_pid": 142117, "leader_birth": 152893946, "event": "leader_started"}
+HARNESS FAULT RuntimeError('missing or tampered /mnt/raid0/llm/tmp/codex3-ultra-torch-reference-v2/smoke-tamper/00cf4ce3935c8a60a1acd094b602276fed4618903839231e5d206dce24c0fe0f/f32/encoder.f32')
+{"schema": "hil15-r11-smoke-supervisor/v1", "elapsed_s": 0.40671445708721876, "sampled_peak_tree_rss_bytes": 91262976, "samples": 5, "verified_exited_processes": 0, "verified_exited_threads": 0, "per_process_address_space_limit_bytes": null, "rss_scope": "sum of sampled resident pages across owned process tree; sampling may miss transients and double-count shared pages", "leader_pid": 142117, "leader_birth": 152893946, "child_rc": 2, "children_drained": true, "failure": null}

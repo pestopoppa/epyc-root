@@ -1,0 +1,9 @@
+GUARD_ID pid=3636359 birth=152804794
+GUARD_STARTED mode=smoke leader=3636377 deadline=1793405834.0
+make: Entering directory '/mnt/raid0/llm/tmp/codex3-cs8-stt4-crisp-20261031/build'
+Building HIP object ggml/src/ggml-hip/CMakeFiles/ggml-hip.dir/__/ggml-cuda/acc.cu.o
+COMPILER_OBSERVED pid=3636381 birth=152804804 args=/opt/rocm-6.2.0/lib/llvm/bin/clang++ -DGGML_BACKEND_BUILD -DGGML_BACKEND_SHARED -DGGML_CUDA_FA_BF16_BF16=1 -DGGML_CUDA_FA_BF16_F16=0 -DGGML_CUDA_FA_BF16_Q4_0=0 -DGGML_CUDA_FA_BF16_Q4_1=0 -DGGML_CUDA_FA_BF16_Q5_0=0 -DGGML_CUDA_FA_BF16_Q5_1=0 -DGGML_CUDA_FA_BF16_Q8_0=0 -DGGML_CUDA_FA_F16_BF16=0 -DGGML
+make: Leaving directory '/mnt/raid0/llm/tmp/codex3-cs8-stt4-crisp-20261031/build'
+DRAIN_COMPLETE leader=3636377 leader_rc=0 term=0 kill=0 children=0
+OBJECT_SMOKE_PASS compiler_seen=true children_drained=true
+{"schema": "bounded-r11-native-profile-supervisor/v1", "elapsed_s": 2.853346423013136, "sampled_peak_tree_rss_bytes": 218836992, "samples": 29, "verified_exited_processes": 0, "verified_exited_threads": 0, "per_process_address_space_limit_bytes": null, "rss_scope": "sum of sampled resident pages across owned process tree; sampling may miss transients and double-count shared pages", "leader_pid": 3636359, "leader_birth": 152804794, "child_rc": 0, "children_drained": true, "failure": null}

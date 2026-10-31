@@ -1,0 +1,35 @@
+{
+  "models": {
+    "vox480": "0289e58b62c1da39e4f6d1ed962c6d1cab8d261ca193d25a528a71a9b1b36792",
+    "vox960": "0289e58b62c1da39e4f6d1ed962c6d1cab8d261ca193d25a528a71a9b1b36792"
+  },
+  "plan_sha256": "61722f4fa38bd4e50c1fc33a94e82f1ed3af414cbaaa1feb27dc12ababc71533",
+  "research_plan_commit": "d1c7a8ffb",
+  "runner_binary_sha256": {
+    "vox480": "7d9a5b382258ace43d191a20c27a98b406ee1c53b02d0c503663c017dda69347",
+    "vox960": "2ad39f7e546a97f579764ec177a294c71803de931a5a8e39290410e46438adb4"
+  },
+  "runner_libraries": {
+    "vox480": {
+      "/mnt/micron/codex3-cs8-stt2-crisp-20261030/install/lib/libcrispasr.so.0.8.44": "f077f9990ef58a12e182d1e6ce4c7aea2d3195a0604dceef4ee19d4998c21fc2",
+      "/mnt/micron/codex3-cs8-stt2-crisp-20261030/install/lib/libggml-base.so.0.26.0": "a219e1fbde274dc29933c75b06519a2f56e45b45b0f21f8cbe72e8189b4d13c9",
+      "/mnt/micron/codex3-cs8-stt2-crisp-20261030/install/lib/libggml-cpu.so.0.26.0": "6d32fbd5188e6c324a7d91068f8ffe8d733c03ed3cc460818011884a50cbc958",
+      "/mnt/micron/codex3-cs8-stt2-crisp-20261030/install/lib/libggml.so.0.26.0": "f321d8bd17b3c49b4fe4d99feefbc1a87210d59c09bbb59864d3ec3acf06caf4",
+      "/usr/lib/x86_64-linux-gnu/libopenblas.so.0": "bfc7492adbf84a8f567720a9e1fae2afc18f3d817da233e7f4d453683485308e"
+    },
+    "vox960": {
+      "/mnt/micron/codex3-cs8-stt2-crisp-20261030/install/lib/libggml-base.so.0.26.0": "a219e1fbde274dc29933c75b06519a2f56e45b45b0f21f8cbe72e8189b4d13c9",
+      "/mnt/micron/codex3-cs8-stt2-crisp-20261030/install/lib/libggml-cpu.so.0.26.0": "6d32fbd5188e6c324a7d91068f8ffe8d733c03ed3cc460818011884a50cbc958",
+      "/mnt/micron/codex3-cs8-stt2-crisp-20261030/install/lib/libggml.so.0.26.0": "f321d8bd17b3c49b4fe4d99feefbc1a87210d59c09bbb59864d3ec3acf06caf4",
+      "/mnt/raid0/llm/tmp/codex3-cs8-stt5-accuracy-20261030/ultra-adapter/voxtral960/libcrispasr.so.0.8.44": "4ed7e4e84077f95f77fa2e7b7a419f29a991ca071d6bf3f4714b44298b2a4b27",
+      "/usr/lib/x86_64-linux-gnu/libopenblas.so.0": "bfc7492adbf84a8f567720a9e1fae2afc18f3d817da233e7f4d453683485308e"
+    }
+  },
+  "runner_library_set_sha256": {
+    "vox480": "46a943d98277818a85587962372a93e905f39ff23f57583e8993b02eb4bb8f7c",
+    "vox960": "710c63d5342107533b11b4763a1ba6bcc944656b095d6d6d419c57a728959a9e"
+  },
+  "vad_binary_sha256": "ee509ce5347c4333e19fd28ab5fa9eb3bd97f35fc23292509461de4e88e22d9d",
+  "vad_model_sha256": "2aa269b785eeb53a82983a20501ddf7c1d9c48e33ab63a41391ac6c9f7fb6987",
+  "validation_sha256": "1bf2544d1d02d8f72b1a57d293c1e0869953aae31c3c526220b7965df09b536e"
+}

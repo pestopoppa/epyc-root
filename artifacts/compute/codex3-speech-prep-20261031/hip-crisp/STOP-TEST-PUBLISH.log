@@ -1,0 +1,14 @@
+GUARD_ID pid=3636664 birth=152805554
+GUARD_STARTED mode=smoke leader=3636682 deadline=1793405842.0
+make: Entering directory '/mnt/raid0/llm/tmp/codex3-cs8-stt4-crisp-20261031/build'
+Building HIP object ggml/src/ggml-hip/CMakeFiles/ggml-hip.dir/__/ggml-cuda/acc.cu.o
+COMPILER_OBSERVED pid=3636687 birth=152805563 args=/opt/rocm-6.2.0/lib/llvm/bin/clang++ -DGGML_BACKEND_BUILD -DGGML_BACKEND_SHARED -DGGML_CUDA_FA_BF16_BF16=1 -DGGML_CUDA_FA_BF16_F16=0 -DGGML_CUDA_FA_BF16_Q4_0=0 -DGGML_CUDA_FA_BF16_Q4_1=0 -DGGML_CUDA_FA_BF16_Q5_0=0 -DGGML_CUDA_FA_BF16_Q5_1=0 -DGGML_CUDA_FA_BF16_Q8_0=0 -DGGML_CUDA_FA_F16_BF16=0 -DGGML
+TEST_SENT mode=stop guard=(3636664, 152805554) compiler=(3636687, 152805563)
+CAPTURED_CHILD pid=3636682 birth=152805561
+make: *** [ggml/src/ggml-hip/CMakeFiles/ggml-hip.dir/build.make:75: ggml/src/ggml-hip/CMakeFiles/ggml-hip.dir/__/ggml-cuda/acc.cu.o] Terminated
+CAPTURED_CHILD pid=3636687 birth=152805563
+CAPTURED_CHILD pid=3636691 birth=152805564
+DRAIN_COMPLETE leader=3636682 leader_rc=-15 term=3 kill=0 children=0
+GUARD_CUTOFF reason=STOP compiler_seen=True leader_reaped=True children_drained=true
+{"schema": "bounded-r11-native-profile-supervisor/v1", "elapsed_s": 0.5166164541151375, "sampled_peak_tree_rss_bytes": 148496384, "samples": 6, "verified_exited_processes": 0, "verified_exited_threads": 0, "per_process_address_space_limit_bytes": null, "rss_scope": "sum of sampled resident pages across owned process tree; sampling may miss transients and double-count shared pages", "leader_pid": 3636664, "leader_birth": 152805554, "child_rc": 75, "children_drained": true, "failure": null}
+{"mode": "stop", "guard": [3636664, 152805554], "compiler": [3636687, 152805563], "launch_rc": 75, "captured_pids_absent": true, "partial": "STOP", "result": "PASS"}

@@ -1,0 +1,7 @@
+# Ultra independent reference engineering comparison
+
+The fixed 25 is selected from the original STT2 40 by sorted clip ID within language, 7 English and 6 each Italian, German and French. It is engineering reuse, not an independent accuracy holdout; do not use it to fit STT5 settings. No scoring is performed here. Source selection and output are pinned in engineering25.json.
+
+For each exact PCM16 WAV, decode native float PCM and soundfile float32 and require byte identity; capture HF CPU F32 frontend (including mask), encoder, joint logits, token IDs and durations, then native F32 and Q8 equivalents. Report original frontend shape mismatch and separately compare the valid frames, stage deltas without a numerical pass tolerance, every token/duration mismatch, all errors, model/config/audio hashes. The F32/F16 CPU versus HIP 25-clip identity and Q8 WER delta are separate original gates, not results of this job. Auxiliary VAD head weights are not used in this utterance-final reference.
+
+One CPU worker and single thread per model. Normal run uses dynamic granted CPU quarter, diagnostic, 64 GiB reservation, 3600s requested; measured R11 reference peak ~4.4 GB and native F32 ~3.1 GB. Smoke uses the same launcher and job, disjoint public JFK and synthetic tone on 2 SMT CPUs under sampled 8 GiB/300 s supervisor. STOP/deadline drains the active child, records exposure/result and exits 75; an exposed arm without result remains unknown and is never redrawn. Models stay in canonical model directories.

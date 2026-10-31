@@ -1,0 +1,650 @@
+{
+  "schema": "codex3-speech-prep-checkpoint/v1",
+  "as_of": "2026-10-31T00:31:47.489320+00:00",
+  "root_read_base": "4915c24d8f214b4a1e361848a45c7115d93fe50c",
+  "scope": "Exact qualified source, preparation and disjoint engineering controls. No full STT validation, engineering25, HIP model run, scientific parent closure or promotion. Model/audio arrays are not copied.",
+  "packets": [
+    {
+      "id": "codex3-cs8-stt4-transcribe-hip-build-20261031",
+      "snapshot": "hip-transcribe",
+      "launcher_sha256": "61d387bf3fab431cbf8d2d0d39ea5c300b4fb74cb1ad260e796ec464b7ba8b1e",
+      "job_sha256": "63df6c1c7a18d4d669191782b74c0e658b5aa4967491a7c69b957087a79925b4",
+      "gib": 32,
+      "regions": "any-cpu-quarter",
+      "smoke": {
+        "regions": "R6 SMT 122,123 with 26-27 and 122-123 mutex and continuous admission",
+        "model": "none",
+        "first_request_ok": true,
+        "result_writer_ok": true,
+        "exit_ok": true,
+        "sampled_peak_tree_rss_bytes": 238542848,
+        "log": "/mnt/raid0/llm/tmp/compute-flags/ready/codex3-cs8-stt4-transcribe-hip-build-20261031.smoke.log",
+        "log_sha256": "6cdce8203359bb77aac2a0abe15f5201bedc7669d35a5b826e97f6a8b39a49d9",
+        "qualification": "actual HIP compiler object and fsynced digest; not full build or GPU execution",
+        "ran_at": "2026-10-31T00:09:59.847564+00:00"
+      },
+      "actual_status": "Published READY at snapshot; full native build/corpus completion is not claimed"
+    },
+    {
+      "id": "codex3-cs8-stt4-crisp-hip-build-20261031",
+      "snapshot": "hip-crisp",
+      "launcher_sha256": "deb5cf73a7816dc4cb9112af471ae9fbb2bdc55860d18b6d5145340780c962d0",
+      "job_sha256": "6043be04b15f7bdcb45cbdf9fda4d48517aa4bf78e652ff2e80adc4b08c8b15b",
+      "gib": 32,
+      "regions": "any-cpu-quarter",
+      "smoke": {
+        "ran_at": "2026-10-31T00:12:57.566577+00:00",
+        "regions": "R6 SMT 122,123 with 26-27 and 122-123 mutex and continuous admission",
+        "model": "none",
+        "first_request_ok": true,
+        "result_writer_ok": true,
+        "exit_ok": true,
+        "sampled_peak_tree_rss_bytes": 218836992,
+        "log": "/mnt/raid0/llm/tmp/compute-flags/ready/codex3-cs8-stt4-crisp-hip-build-20261031.smoke.log",
+        "log_sha256": "44bf695719a9b62028cc2cec7fe6668a54f04138b4d58695834e4b82052ee39e",
+        "qualification": "actual HIP compiler object and fsynced digest; not full build or GPU execution"
+      },
+      "actual_status": "Published READY at snapshot; full native build/corpus completion is not claimed"
+    },
+    {
+      "id": "codex3-cs8-stt5-validation-voxtral-20261030",
+      "snapshot": "validation-voxtral",
+      "launcher_sha256": "837a18a2b9c9ced06f6ca5a1e44dcc4c5c87bf7d719ba17b47eb3bdf857dd667",
+      "job_sha256": "90787d57a46c1eb1af9da208f948b192e99d700db70be7304da3fbd36df1d76e",
+      "gib": 8,
+      "regions": "any-cpu-quarter",
+      "smoke": {
+        "ran_at": "2026-10-31T00:11:17.161441+00:00",
+        "regions": "R11 CPU 96,97",
+        "model": "/mnt/raid0/llm/models/cs8-cstr--voxtral-mini-4b-realtime-GGUF/voxtral-mini-4b-realtime-q8_0.gguf",
+        "first_request_ok": true,
+        "result_writer_ok": true,
+        "exit_ok": true,
+        "wall_s": 107.68726868997328,
+        "peak_sampled_tree_rss_bytes": 5841539072,
+        "launcher_sha256": "837a18a2b9c9ced06f6ca5a1e44dcc4c5c87bf7d719ba17b47eb3bdf857dd667",
+        "log": "/mnt/raid0/llm/tmp/compute-flags/ready/codex3-cs8-stt5-validation-voxtral-20261030.smoke.log",
+        "log_sha256": "534238877d307ee3212d769043d3c21dd3d7385b41fdb34298c46c56ffadde24"
+      },
+      "actual_status": "Published READY at snapshot; full native build/corpus completion is not claimed"
+    },
+    {
+      "id": "codex3-cs8-stt5-validation-ultra-20261030",
+      "snapshot": "validation-ultra",
+      "launcher_sha256": "cc624886f2bd795779b1935f9a3b20167819ff5669601ffa7dc102b1e343deb7",
+      "job_sha256": "9f889b6f7f5c9976618780839703cf1252714295300039b6b8d6938cdecaff0f",
+      "gib": 8,
+      "regions": "any-cpu-quarter",
+      "smoke": {
+        "ran_at": "2026-10-31T00:15:18.171166+00:00",
+        "regions": "R11 CPU 96,97",
+        "model": "/mnt/raid0/llm/models/Serveurperso-Parakeet-Ultra-GGUF/parakeet-ultra-Q8_0.gguf",
+        "first_request_ok": true,
+        "result_writer_ok": true,
+        "exit_ok": true,
+        "wall_s": 4.8311965491157025,
+        "peak_sampled_tree_rss_bytes": 3111292928,
+        "launcher_sha256": "cc624886f2bd795779b1935f9a3b20167819ff5669601ffa7dc102b1e343deb7",
+        "log": "/mnt/raid0/llm/tmp/compute-flags/ready/codex3-cs8-stt5-validation-ultra-20261030.smoke.log",
+        "log_sha256": "1a554cde7bf2e198abcd5af60e90d59388381743bd7487906ea87db38e813bc6"
+      },
+      "actual_status": "Published READY at snapshot; full native build/corpus completion is not claimed"
+    },
+    {
+      "id": "codex3-cs8-stt5-validation-nemotron-tc-20261030",
+      "snapshot": "validation-nemotron",
+      "launcher_sha256": "ef3e64ba9632c1a2986a2cc90530753c5ad99d52d603eae65d561e699e0b08d5",
+      "job_sha256": "71931af096c09433127c833fb0f78dbd1f0805e6814f95b3b856064418166a50",
+      "gib": 32,
+      "regions": "any-cpu-quarter",
+      "smoke": {
+        "ran_at": "2026-10-31T00:26:11.660729+00:00",
+        "regions": "R11 CPU 96,97",
+        "model": "/mnt/raid0/llm/models/nemotron-3.5-asr-streaming-0.6b-Q8_0.gguf",
+        "first_request_ok": true,
+        "result_writer_ok": true,
+        "exit_ok": true,
+        "wall_s": 40.37195422896184,
+        "peak_sampled_tree_rss_bytes": 2522484736,
+        "launcher_sha256": "ef3e64ba9632c1a2986a2cc90530753c5ad99d52d603eae65d561e699e0b08d5",
+        "log": "/mnt/raid0/llm/tmp/compute-flags/ready/codex3-cs8-stt5-validation-nemotron-tc-20261030.smoke.log",
+        "log_sha256": "b05514560d8e683afd2536f3f1e0fd4135d44d5a92e688211f484b74506e4bbd"
+      },
+      "actual_status": "Published READY at snapshot; full native build/corpus completion is not claimed"
+    },
+    {
+      "id": "codex3-ultra-independent-25-20261031",
+      "snapshot": "ultra-independent25",
+      "launcher_sha256": "9656f3a1e4c4afb123db8173c377eb50b9f5da1e29826414287f29c15ea2edc2",
+      "job_sha256": "5d6cf6726a775735bddf96c40602f22206bac85214bc8e463540aed5f6e9893d",
+      "gib": 64,
+      "regions": "any-cpu-quarter",
+      "smoke": {
+        "ran_at": "2026-10-31T00:27:35.381469+00:00",
+        "regions": "R11 CPU SMT pair",
+        "model": "moondream/parakeet-ultra + Serveurperso F32/Q8",
+        "first_request_ok": true,
+        "result_writer_ok": true,
+        "exit_ok": true,
+        "wall_s": 20.49128901702352,
+        "peak_sampled_tree_rss_bytes": 4411637760,
+        "launcher_sha256": "9656f3a1e4c4afb123db8173c377eb50b9f5da1e29826414287f29c15ea2edc2",
+        "log": "/mnt/raid0/llm/tmp/compute-flags/ready/codex3-ultra-independent-25-20261031.smoke.log",
+        "log_sha256": "f0ed5a5f2829e704acd015a50f7b5661425232aa1c8cd5605befdb61be4cb223"
+      },
+      "actual_status": "Published READY at snapshot; full native build/corpus completion is not claimed"
+    }
+  ],
+  "transfers": [
+    {
+      "source": "/mnt/raid0/llm/tmp/compute-flags/ready/codex3-cs8-stt4-transcribe-hip-build-20261031.json",
+      "destination": "artifacts/compute/codex3-speech-prep-20261031/hip-transcribe/READY.json",
+      "bytes": 3147,
+      "sha256": "bb64f9adc6aa4f571428a5bf7bb417f86e8614fd5c0850f780a2325cd28f2c64"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/compute-flags/ready/codex3-cs8-stt4-transcribe-hip-build-20261031.row.md",
+      "destination": "artifacts/compute/codex3-speech-prep-20261031/hip-transcribe/READY-row.md",
+      "bytes": 1558,
+      "sha256": "20ec0a6d65f21234116288b038ae07ba2fec7b9fe21c1738f7cce49d1f37782e"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt4-transcribe-20261031/launch.sh",
+      "destination": "artifacts/compute/codex3-speech-prep-20261031/hip-transcribe/launch.sh",
+      "bytes": 1319,
+      "sha256": "61d387bf3fab431cbf8d2d0d39ea5c300b4fb74cb1ad260e796ec464b7ba8b1e"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt4-transcribe-20261031/job.sh",
+      "destination": "artifacts/compute/codex3-speech-prep-20261031/hip-transcribe/job.sh",
+      "bytes": 547,
+      "sha256": "63df6c1c7a18d4d669191782b74c0e658b5aa4967491a7c69b957087a79925b4"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/compute-flags/ready/codex3-cs8-stt4-transcribe-hip-build-20261031.smoke.log",
+      "destination": "artifacts/compute/codex3-speech-prep-20261031/hip-transcribe/qualified-smoke.log",
+      "bytes": 1329,
+      "sha256": "6cdce8203359bb77aac2a0abe15f5201bedc7669d35a5b826e97f6a8b39a49d9"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt4-transcribe-20261031/SOURCES.sha256",
+      "destination": "artifacts/compute/codex3-speech-prep-20261031/hip-transcribe/SOURCES.sha256",
+      "bytes": 552068,
+      "sha256": "56e32ca646b5934e362ab6adaeec54a6aa2af46dec7119b1c1a5cbfc079083b7"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt4-transcribe-20261031/VALIDATOR-FIXTURE.md",
+      "destination": "artifacts/compute/codex3-speech-prep-20261031/hip-transcribe/VALIDATOR-FIXTURE.md",
+      "bytes": 1865,
+      "sha256": "f5a521b79daaff58bfa30e5413dcccc89507b3c777c1b3d0b085df780efc0f23"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt4-transcribe-20261031/VALIDATOR-FIXTURE.log",
+      "destination": "artifacts/compute/codex3-speech-prep-20261031/hip-transcribe/VALIDATOR-FIXTURE.log",
+      "bytes": 49,
+      "sha256": "da3e45b73abf6bd920ac617756fa57601da9834abf118afce5fef2fc6bf2070a"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt4-transcribe-20261031/GUARDED-SMOKE-PUBLISH.log",
+      "destination": "artifacts/compute/codex3-speech-prep-20261031/hip-transcribe/GUARDED-SMOKE-PUBLISH.log",
+      "bytes": 1329,
+      "sha256": "6cdce8203359bb77aac2a0abe15f5201bedc7669d35a5b826e97f6a8b39a49d9"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt4-transcribe-20261031/STOP-TEST-PUBLISH.log",
+      "destination": "artifacts/compute/codex3-speech-prep-20261031/hip-transcribe/STOP-TEST-PUBLISH.log",
+      "bytes": 1787,
+      "sha256": "6009a0e09ff9f0f259485234a8cdf080ac087c708e2a8d1bc49146014c0b46ed"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt4-transcribe-20261031/SMOKE-OBJECTS.sha256",
+      "destination": "artifacts/compute/codex3-speech-prep-20261031/hip-transcribe/SMOKE-OBJECTS.sha256",
+      "bytes": 191,
+      "sha256": "458bfdc723656fbf27fb41a59d55e14316c14a41f32bfc7d0769e1b6d9560195"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt4-transcribe-20261031/compiler-smoke.log",
+      "destination": "artifacts/compute/codex3-speech-prep-20261031/hip-transcribe/compiler-smoke.log",
+      "bytes": 1016,
+      "sha256": "dcd7f40544f9f09a04f140a80db39997d79ece1f397bc4269921a9dd64fdd969"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt4-transcribe-20261031/compiler-smoke-r2.log",
+      "destination": "artifacts/compute/codex3-speech-prep-20261031/hip-transcribe/compiler-smoke-r2.log",
+      "bytes": 753,
+      "sha256": "cc438acdf6e7b8dd7e8a5f8d04a347edd047208720d2dc164e664518f0d37720"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/compute-flags/ready/codex3-cs8-stt4-crisp-hip-build-20261031.json",
+      "destination": "artifacts/compute/codex3-speech-prep-20261031/hip-crisp/READY.json",
+      "bytes": 3102,
+      "sha256": "43375c5f278cbbadd619eb16b6746cf1fbc5270744d3763d3924f86606970358"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/compute-flags/ready/codex3-cs8-stt4-crisp-hip-build-20261031.row.md",
+      "destination": "artifacts/compute/codex3-speech-prep-20261031/hip-crisp/READY-row.md",
+      "bytes": 1508,
+      "sha256": "6e800b9fce314fe2b932c02a954b430fd682cbb54ea1af1b24ee56ea0d88b450"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt4-crisp-20261031/launch.sh",
+      "destination": "artifacts/compute/codex3-speech-prep-20261031/hip-crisp/launch.sh",
+      "bytes": 1336,
+      "sha256": "deb5cf73a7816dc4cb9112af471ae9fbb2bdc55860d18b6d5145340780c962d0"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt4-crisp-20261031/job.sh",
+      "destination": "artifacts/compute/codex3-speech-prep-20261031/hip-crisp/job.sh",
+      "bytes": 547,
+      "sha256": "6043be04b15f7bdcb45cbdf9fda4d48517aa4bf78e652ff2e80adc4b08c8b15b"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/compute-flags/ready/codex3-cs8-stt4-crisp-hip-build-20261031.smoke.log",
+      "destination": "artifacts/compute/codex3-speech-prep-20261031/hip-crisp/qualified-smoke.log",
+      "bytes": 1319,
+      "sha256": "44bf695719a9b62028cc2cec7fe6668a54f04138b4d58695834e4b82052ee39e"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt4-crisp-20261031/SOURCES.sha256",
+      "destination": "artifacts/compute/codex3-speech-prep-20261031/hip-crisp/SOURCES.sha256",
+      "bytes": 1117784,
+      "sha256": "bb9e0e91b3e0aef759622f3d6f4d4ba567cde10390c070c5c75759e02a7e45ea"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt4-crisp-20261031/VALIDATOR-FIXTURE.md",
+      "destination": "artifacts/compute/codex3-speech-prep-20261031/hip-crisp/VALIDATOR-FIXTURE.md",
+      "bytes": 1815,
+      "sha256": "367373ce2058af3a2bf9f84c622118bf4cdb0edb70a2290f45b6cf69f3ea0380"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt4-crisp-20261031/VALIDATOR-FIXTURE.log",
+      "destination": "artifacts/compute/codex3-speech-prep-20261031/hip-crisp/VALIDATOR-FIXTURE.log",
+      "bytes": 49,
+      "sha256": "da3e45b73abf6bd920ac617756fa57601da9834abf118afce5fef2fc6bf2070a"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt4-crisp-20261031/GUARDED-SMOKE-PUBLISH.log",
+      "destination": "artifacts/compute/codex3-speech-prep-20261031/hip-crisp/GUARDED-SMOKE-PUBLISH.log",
+      "bytes": 1319,
+      "sha256": "44bf695719a9b62028cc2cec7fe6668a54f04138b4d58695834e4b82052ee39e"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt4-crisp-20261031/STOP-TEST-PUBLISH.log",
+      "destination": "artifacts/compute/codex3-speech-prep-20261031/hip-crisp/STOP-TEST-PUBLISH.log",
+      "bytes": 1782,
+      "sha256": "2c015968febfcc34c61d7f511d51696473bc58de5baa445e5815db493a839f1c"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt4-crisp-20261031/SMOKE-OBJECTS.sha256",
+      "destination": "artifacts/compute/codex3-speech-prep-20261031/hip-crisp/SMOKE-OBJECTS.sha256",
+      "bytes": 186,
+      "sha256": "83653d0c7a8feb07f6e38d22369811d5315701d1e669bc91698d7559026d2b5d"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt4-crisp-20261031/compiler-smoke.log",
+      "destination": "artifacts/compute/codex3-speech-prep-20261031/hip-crisp/compiler-smoke.log",
+      "bytes": 742,
+      "sha256": "1e7c7a9b3c7b924a2ae773ea61f32c62a5b3ad76bad8d8e1aad38303ac439a17"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/compute-flags/ready/codex3-cs8-stt5-validation-voxtral-20261030.json",
+      "destination": "artifacts/compute/codex3-speech-prep-20261031/validation-voxtral/READY.json",
+      "bytes": 3404,
+      "sha256": "1ba5d8bccbf79c18eb1080054bdafa859ca7b10673a7c6f3eb1b024d40eeb79a"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/compute-flags/ready/codex3-cs8-stt5-validation-voxtral-20261030.row.md",
+      "destination": "artifacts/compute/codex3-speech-prep-20261031/validation-voxtral/READY-row.md",
+      "bytes": 2306,
+      "sha256": "aca166a6ea8262cde578d076526411e0e8cfcb7683e4b738edda3672d3644400"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-validation-voxtral-20261030/launch.sh",
+      "destination": "artifacts/compute/codex3-speech-prep-20261031/validation-voxtral/launch.sh",
+      "bytes": 2270,
+      "sha256": "837a18a2b9c9ced06f6ca5a1e44dcc4c5c87bf7d719ba17b47eb3bdf857dd667"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-validation-voxtral-20261030/voxtral_job.py",
+      "destination": "artifacts/compute/codex3-speech-prep-20261031/validation-voxtral/voxtral_job.py",
+      "bytes": 8632,
+      "sha256": "90787d57a46c1eb1af9da208f948b192e99d700db70be7304da3fbd36df1d76e"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/compute-flags/ready/codex3-cs8-stt5-validation-voxtral-20261030.smoke.log",
+      "destination": "artifacts/compute/codex3-speech-prep-20261031/validation-voxtral/qualified-smoke.log",
+      "bytes": 570,
+      "sha256": "534238877d307ee3212d769043d3c21dd3d7385b41fdb34298c46c56ffadde24"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-validation-voxtral-20261030/PLAN.md",
+      "destination": "artifacts/compute/codex3-speech-prep-20261031/validation-voxtral/PLAN.md",
+      "bytes": 5607,
+      "sha256": "61722f4fa38bd4e50c1fc33a94e82f1ed3af414cbaaa1feb27dc12ababc71533"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-validation-voxtral-20261030/INPUT-PINS.json",
+      "destination": "artifacts/compute/codex3-speech-prep-20261031/validation-voxtral/INPUT-PINS.json",
+      "bytes": 2539,
+      "sha256": "44b82ce35276a3d3b49f9f6a5c1178bce81b3b55261e2714ea49ac1410a1f248"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-validation-voxtral-20261030/SOURCE-SHA256SUMS",
+      "destination": "artifacts/compute/codex3-speech-prep-20261031/validation-voxtral/SOURCE-SHA256SUMS",
+      "bytes": 12689,
+      "sha256": "dd7730237fac45b6a87c59adfa1552cbf2895b672dbd3f8c97fece2def97d7b4"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-validation-voxtral-20261030/validator-fixture.md",
+      "destination": "artifacts/compute/codex3-speech-prep-20261031/validation-voxtral/validator-fixture.md",
+      "bytes": 2529,
+      "sha256": "b01a66c18ea3ba04adb8113ed21ca38b7a912df796304bbf11c1b5408f5cbc12"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-validation-voxtral-20261030/validator.log",
+      "destination": "artifacts/compute/codex3-speech-prep-20261031/validation-voxtral/validator.log",
+      "bytes": 49,
+      "sha256": "da3e45b73abf6bd920ac617756fa57601da9834abf118afce5fef2fc6bf2070a"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/compute-flags/ready/codex3-cs8-stt5-validation-ultra-20261030.json",
+      "destination": "artifacts/compute/codex3-speech-prep-20261031/validation-ultra/READY.json",
+      "bytes": 3342,
+      "sha256": "ad007a85edd79e6b6ae35561a364e150401013d190ed9b9b07f6d6d87ea3d332"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/compute-flags/ready/codex3-cs8-stt5-validation-ultra-20261030.row.md",
+      "destination": "artifacts/compute/codex3-speech-prep-20261031/validation-ultra/READY-row.md",
+      "bytes": 2266,
+      "sha256": "63e832922d752b3675e10d390f45dde87e97b7f72f5a390ceeae846fcb3f394e"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-validation-ultra-20261030/launch.sh",
+      "destination": "artifacts/compute/codex3-speech-prep-20261031/validation-ultra/launch.sh",
+      "bytes": 1967,
+      "sha256": "cc624886f2bd795779b1935f9a3b20167819ff5669601ffa7dc102b1e343deb7"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-validation-ultra-20261030/ultra_job.py",
+      "destination": "artifacts/compute/codex3-speech-prep-20261031/validation-ultra/ultra_job.py",
+      "bytes": 8689,
+      "sha256": "9f889b6f7f5c9976618780839703cf1252714295300039b6b8d6938cdecaff0f"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/compute-flags/ready/codex3-cs8-stt5-validation-ultra-20261030.smoke.log",
+      "destination": "artifacts/compute/codex3-speech-prep-20261031/validation-ultra/qualified-smoke.log",
+      "bytes": 568,
+      "sha256": "1a554cde7bf2e198abcd5af60e90d59388381743bd7487906ea87db38e813bc6"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-validation-ultra-20261030/PLAN.md",
+      "destination": "artifacts/compute/codex3-speech-prep-20261031/validation-ultra/PLAN.md",
+      "bytes": 5607,
+      "sha256": "61722f4fa38bd4e50c1fc33a94e82f1ed3af414cbaaa1feb27dc12ababc71533"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-validation-ultra-20261030/INPUT-PINS.json",
+      "destination": "artifacts/compute/codex3-speech-prep-20261031/validation-ultra/INPUT-PINS.json",
+      "bytes": 2578,
+      "sha256": "1d65f64e57ce20cb8eab04c55be7ad0da572f82560df335ec9b3d669f82ad4cd"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-validation-ultra-20261030/SOURCE-SHA256SUMS",
+      "destination": "artifacts/compute/codex3-speech-prep-20261031/validation-ultra/SOURCE-SHA256SUMS",
+      "bytes": 12557,
+      "sha256": "5d3bb46a4b240d78b6bb4b984c0f1264ae50f424633ebe1c7c21d5525946b5a0"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-validation-ultra-20261030/validator-fixture.md",
+      "destination": "artifacts/compute/codex3-speech-prep-20261031/validation-ultra/validator-fixture.md",
+      "bytes": 2489,
+      "sha256": "f2103fb6e6bf735a1186fb6c1b906374c0788f399ba4e02dc55b792e71d9e32d"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-validation-ultra-20261030/validator.log",
+      "destination": "artifacts/compute/codex3-speech-prep-20261031/validation-ultra/validator.log",
+      "bytes": 49,
+      "sha256": "da3e45b73abf6bd920ac617756fa57601da9834abf118afce5fef2fc6bf2070a"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/compute-flags/ready/codex3-cs8-stt5-validation-nemotron-tc-20261030.json",
+      "destination": "artifacts/compute/codex3-speech-prep-20261031/validation-nemotron/READY.json",
+      "bytes": 3464,
+      "sha256": "16a27ff319bed5a980caa5ce0d9c3a1b37bb8fb6b45f9fd05b08bf08ea02c565"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/compute-flags/ready/codex3-cs8-stt5-validation-nemotron-tc-20261030.row.md",
+      "destination": "artifacts/compute/codex3-speech-prep-20261031/validation-nemotron/READY-row.md",
+      "bytes": 2405,
+      "sha256": "bba0e67c86107292380fca89118c61cd72fd75f7b903a8ada8333a6d20847eeb"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-validation-nemotron-tc-20261030/launch.sh",
+      "destination": "artifacts/compute/codex3-speech-prep-20261031/validation-nemotron/launch.sh",
+      "bytes": 1868,
+      "sha256": "ef3e64ba9632c1a2986a2cc90530753c5ad99d52d603eae65d561e699e0b08d5"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-validation-nemotron-tc-20261030/nemo_job.py",
+      "destination": "artifacts/compute/codex3-speech-prep-20261031/validation-nemotron/nemo_job.py",
+      "bytes": 10821,
+      "sha256": "71931af096c09433127c833fb0f78dbd1f0805e6814f95b3b856064418166a50"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/compute-flags/ready/codex3-cs8-stt5-validation-nemotron-tc-20261030.smoke.log",
+      "destination": "artifacts/compute/codex3-speech-prep-20261031/validation-nemotron/qualified-smoke.log",
+      "bytes": 564,
+      "sha256": "b05514560d8e683afd2536f3f1e0fd4135d44d5a92e688211f484b74506e4bbd"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-validation-nemotron-tc-20261030/PLAN.md",
+      "destination": "artifacts/compute/codex3-speech-prep-20261031/validation-nemotron/PLAN.md",
+      "bytes": 5607,
+      "sha256": "61722f4fa38bd4e50c1fc33a94e82f1ed3af414cbaaa1feb27dc12ababc71533"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-validation-nemotron-tc-20261030/PROFILE.md",
+      "destination": "artifacts/compute/codex3-speech-prep-20261031/validation-nemotron/PROFILE.md",
+      "bytes": 1154,
+      "sha256": "8711ec7368fb7782a6706d9e6e7a66ee8c3ee61edfb83569e194d077df7ea779"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-validation-nemotron-tc-20261030/INPUT-PINS.json",
+      "destination": "artifacts/compute/codex3-speech-prep-20261031/validation-nemotron/INPUT-PINS.json",
+      "bytes": 4174,
+      "sha256": "ba399a97d5fc8791336988eed848d4c156a82c5089ba4a3b8aa467328438361d"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-validation-nemotron-tc-20261030/SOURCE-SHA256SUMS",
+      "destination": "artifacts/compute/codex3-speech-prep-20261031/validation-nemotron/SOURCE-SHA256SUMS",
+      "bytes": 13891,
+      "sha256": "7ea5b0f7c46a91b02f19ad714845a07779a40dedba81e0582fa7c967db9afae1"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-validation-nemotron-tc-20261030/validator-fixture.md",
+      "destination": "artifacts/compute/codex3-speech-prep-20261031/validation-nemotron/validator-fixture.md",
+      "bytes": 2627,
+      "sha256": "f7dc010cdf18480bf04baf408121840d78a95d715ff0f25bf102a77c1c0dc25f"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-validation-nemotron-tc-20261030/validator.log",
+      "destination": "artifacts/compute/codex3-speech-prep-20261031/validation-nemotron/validator.log",
+      "bytes": 49,
+      "sha256": "da3e45b73abf6bd920ac617756fa57601da9834abf118afce5fef2fc6bf2070a"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-validation-nemotron-tc-20261030/smoke-cutoff-final5.log",
+      "destination": "artifacts/compute/codex3-speech-prep-20261031/validation-nemotron/smoke-cutoff-final5.log",
+      "bytes": 565,
+      "sha256": "f5d7bcfa2c61d6e0e973951e4bd5556713ab88ce471b83a91e1a81ce012ed76f"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/compute-flags/ready/codex3-ultra-independent-25-20261031.json",
+      "destination": "artifacts/compute/codex3-speech-prep-20261031/ultra-independent25/READY.json",
+      "bytes": 3108,
+      "sha256": "e771ceaf77bacc7c7ff0b67480df076faf13f93a2ba5794703e97b49aeaf3b63"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/compute-flags/ready/codex3-ultra-independent-25-20261031.row.md",
+      "destination": "artifacts/compute/codex3-speech-prep-20261031/ultra-independent25/READY-row.md",
+      "bytes": 2134,
+      "sha256": "4f1dfa2367259b80309ba2c08d3447600e6d6a76631eb172635e2c0b13d8faf2"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-ultra-torch-reference-v2/launch.sh",
+      "destination": "artifacts/compute/codex3-speech-prep-20261031/ultra-independent25/launch.sh",
+      "bytes": 1273,
+      "sha256": "9656f3a1e4c4afb123db8173c377eb50b9f5da1e29826414287f29c15ea2edc2"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-ultra-torch-reference-v2/job.py",
+      "destination": "artifacts/compute/codex3-speech-prep-20261031/ultra-independent25/job.py",
+      "bytes": 10182,
+      "sha256": "5d6cf6726a775735bddf96c40602f22206bac85214bc8e463540aed5f6e9893d"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/compute-flags/ready/codex3-ultra-independent-25-20261031.smoke.log",
+      "destination": "artifacts/compute/codex3-speech-prep-20261031/ultra-independent25/qualified-smoke.log",
+      "bytes": 560,
+      "sha256": "f0ed5a5f2829e704acd015a50f7b5661425232aa1c8cd5605befdb61be4cb223"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-ultra-torch-reference-v2/PLAN.md",
+      "destination": "artifacts/compute/codex3-speech-prep-20261031/ultra-independent25/PLAN.md",
+      "bytes": 2516,
+      "sha256": "76624794f3ee5f32686adc9956891e9d12eed0b53c2bc3e1ba9978ef88cec621"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-ultra-torch-reference-v2/SOURCE-SHA256SUMS",
+      "destination": "artifacts/compute/codex3-speech-prep-20261031/ultra-independent25/SOURCE-SHA256SUMS",
+      "bytes": 2381372,
+      "sha256": "e0580422ae608dc4546c240ff36d4e88c17b7c79dcaccadba8171b59ad36b234"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-ultra-torch-reference-v2/validator-fixture.md",
+      "destination": "artifacts/compute/codex3-speech-prep-20261031/ultra-independent25/validator-fixture.md",
+      "bytes": 2356,
+      "sha256": "48b9a90c90f7ecf4f2aa566f5b00a70b0b0304dc32aadaa2a74925f2104f036b"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-ultra-torch-reference-v2/qualification-summary.json",
+      "destination": "artifacts/compute/codex3-speech-prep-20261031/ultra-independent25/qualification-summary.json",
+      "bytes": 188,
+      "sha256": "07145d33b0c8fa5bd18164f5f757287aa98bcab65c54118e1d377cc4551c2818"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-ultra-torch-reference-v2/normal-width-fixture.json",
+      "destination": "artifacts/compute/codex3-speech-prep-20261031/ultra-independent25/normal-width-fixture.json",
+      "bytes": 247,
+      "sha256": "0a6c42a66153c2dab3a381c5b52d6be8fbbc6227d4f9316fe972f52e0d7911b1"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-ultra-torch-reference-v2/fixture-resume.log",
+      "destination": "artifacts/compute/codex3-speech-prep-20261031/ultra-independent25/fixture-resume.log",
+      "bytes": 558,
+      "sha256": "2979917fc9cb7e1c9b7873fc442bb5b9fcfe551afe6f6327ddb4f92b3d02767f"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-ultra-torch-reference-v2/fixture-tamper.log",
+      "destination": "artifacts/compute/codex3-speech-prep-20261031/ultra-independent25/fixture-tamper.log",
+      "bytes": 753,
+      "sha256": "23dcb879c782b59a12c3b93c017372336b18374b8b626a755264bd79e950c41a"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-ultra-torch-reference-v2/fixture-result-tamper.log",
+      "destination": "artifacts/compute/codex3-speech-prep-20261031/ultra-independent25/fixture-result-tamper.log",
+      "bytes": 620,
+      "sha256": "e6a85db1b82e88fb6d942d6ef8198c0d4f7183ef5882c9209a9d727b0823b723"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-ultra-torch-reference-v2/fixture-admission.log",
+      "destination": "artifacts/compute/codex3-speech-prep-20261031/ultra-independent25/fixture-admission.log",
+      "bytes": 558,
+      "sha256": "eb828574bdd8b06a8a02e61bf974cc532494134f1a02856b02d7de4f4a6d423a"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-ultra-torch-reference-v2/fixture-negative.log",
+      "destination": "artifacts/compute/codex3-speech-prep-20261031/ultra-independent25/fixture-negative.log",
+      "bytes": 559,
+      "sha256": "441895f5e9506492dbdce09db7b861383e35b616575db1ff618e21f91eca1d52"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-ultra-torch-reference-v2/launcher-stop-smoke.log",
+      "destination": "artifacts/compute/codex3-speech-prep-20261031/ultra-independent25/launcher-stop-smoke.log",
+      "bytes": 560,
+      "sha256": "89838ecf6b34d71d3eb48adb1279a6e1d439413d0016da205cf0942cfbef86e0"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-ultra-torch-reference-v2/engineering25.json",
+      "destination": "artifacts/compute/codex3-speech-prep-20261031/ultra-independent25/engineering25.json",
+      "bytes": 11946,
+      "sha256": "f9f18362165121af8b590a901cdea34881dbbc96ae389bfaedef1e72195a6fec"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-ultra-torch-reference-v2/compare.py",
+      "destination": "artifacts/compute/codex3-speech-prep-20261031/ultra-independent25/compare.py",
+      "bytes": 2096,
+      "sha256": "371e4bf0b02945e4cd01ea58acbb3101f1abe396768e050b119b78cb0ec0f80c"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-ultra-torch-reference-v2/qualify_resume.py",
+      "destination": "artifacts/compute/codex3-speech-prep-20261031/ultra-independent25/qualify_resume.py",
+      "bytes": 2334,
+      "sha256": "28ee76b83cd65e55c75bff52a8a4b1ec24e7e8f62da2c709b6ee478580361b18"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt4-token-overlays-20261031/HANDOFF.md",
+      "destination": "artifacts/compute/codex3-speech-prep-20261031/hip-continuation/HANDOFF.md",
+      "bytes": 3048,
+      "sha256": "53923b8a9bd640095d98e005c4c651fc4ded51be0c530f2342c004ecca9d9ea6"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-ultra-torch-reference/PLAN.md",
+      "destination": "artifacts/compute/codex3-speech-prep-20261031/ultra-independent-controls/PLAN.md",
+      "bytes": 1516,
+      "sha256": "5b9bd943ccfa94d4536d5ae86f64068e7fd6fb8b7e749d20e196f1e9a95a56f4"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-ultra-torch-reference/reference.py",
+      "destination": "artifacts/compute/codex3-speech-prep-20261031/ultra-independent-controls/reference.py",
+      "bytes": 2840,
+      "sha256": "fa46714f5e99a01016a41e5189854e8c675937e1b8e1167d299934f5506a105f"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-ultra-torch-reference/stage-comparison.log",
+      "destination": "artifacts/compute/codex3-speech-prep-20261031/ultra-independent-controls/stage-comparison.log",
+      "bytes": 4759,
+      "sha256": "02bb067bd65db868ba6e89e4add58c3e7930607f534920829255651778add686"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-accuracy-20261030/nemo-controls.log",
+      "destination": "artifacts/compute/codex3-speech-prep-20261031/nemotron-setting-audit/nemo-controls.log",
+      "bytes": 950,
+      "sha256": "35ed3fe1b84041f52ee8a08246a5dbb92c3228e7a9eef5308ca765bd8a6ca403"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-accuracy-20261030/nemo-config-probe.log",
+      "destination": "artifacts/compute/codex3-speech-prep-20261031/nemotron-setting-audit/nemo-config-probe.log",
+      "bytes": 734,
+      "sha256": "682a1c531bf6eb6008286972ee4759cdbfc96dabb9b9de39c788042d81062734"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-accuracy-20261030/nemo-r1-probe.log",
+      "destination": "artifacts/compute/codex3-speech-prep-20261031/nemotron-setting-audit/nemo-r1-probe.log",
+      "bytes": 1385,
+      "sha256": "56aea9e6e8204ab4014e4e5aad771f7779c7a3983ce53b77caef7f1414bf55e6"
+    }
+  ],
+  "pip": {
+    "paddle_unique_verified_pages": 294,
+    "gt_tables": 82,
+    "unchanged_running_table_sha256": "33336c16dd90d8c30f1042696e640b1e8f6d282a96a9e2168a8377c938194d0b",
+    "full_755_and_paired_gates": "OPEN"
+  },
+  "deleted_candidate_scan": {
+    "needle": "UD-IQ3_XXS",
+    "ready_and_armed_json_count": 273,
+    "codex3_hits": []
+  },
+  "fresh_weight_or_binary_hashes": "Not performed by checkpoint; original native records and catalog identities retained."
+}

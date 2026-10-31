@@ -1,0 +1,16 @@
+{
+  "profile": "source-extracted allocation, model-free, no grant",
+  "simulated_affinity": "24-47",
+  "width": 8,
+  "first_wave_distinct_cpus": [
+    24,
+    25,
+    26,
+    27,
+    28,
+    29,
+    30,
+    31
+  ],
+  "all_within_affinity": true
+}
