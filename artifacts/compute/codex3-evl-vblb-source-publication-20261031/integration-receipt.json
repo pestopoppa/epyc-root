@@ -1,0 +1,124 @@
+{
+  "observed_at": "2026-10-31T12:28:42.010328+00:00",
+  "private_candidate": "e4adf8d645d6b6ac9f26c680cd07f63928e0333c",
+  "base_main": "1fda0ad840c1a91ea39a9a5f52bf1a59edf0beec",
+  "source_commits": [
+    "2d293edbc0eb9da5148200fb76aa7ff3a23a5aca",
+    "87002113585333013a47dce210ae654327777e5c"
+  ],
+  "additional_approved_change": "one named dedicated fixture coverage entry in tests/vidya/test_ingest_sources.py",
+  "files": [
+    {
+      "path": "scripts/dev_harness/belief_run_custody.py",
+      "sha256": "9880e17d84f73df1b5e6ba2d5f13abcc56bf1406e4651922804830e392d91f7e"
+    },
+    {
+      "path": "scripts/dev_harness/mine_m1.py",
+      "sha256": "00cd73c73e486411b310d2d1028771ee77dcf0b6979cef9a97074450bdd5b9b7"
+    },
+    {
+      "path": "scripts/dev_harness/mine_m2.py",
+      "sha256": "14a5ff0affab1d2dae8ba332f72db663b026c4264570d709c5bc27d2496a2485"
+    },
+    {
+      "path": "scripts/dev_harness/publish_mining_results.py",
+      "sha256": "d4945eb7078733585928e91631fddc66cbb9843fe2b8ed4487de777905c2fe1c"
+    },
+    {
+      "path": "scripts/vidya/adapters/calendar_overrun.py",
+      "sha256": "4c98a914e9cfea82a7eab88ddce916084329842cbda44a6bddd8ea59e9950c08"
+    },
+    {
+      "path": "scripts/vidya/adapters/dev_harness_aggregate.py",
+      "sha256": "e2ca6aeeb55b7a51c830c8dc3e2b2292cfe2f67ea43efbca936c71a35f011201"
+    },
+    {
+      "path": "scripts/vidya/adapters/research_intake.py",
+      "sha256": "99ae276d2f82693f6fbc183baf9eaa1f22dfd8d3133092cc1f66c7cb8258207e"
+    },
+    {
+      "path": "scripts/vidya/cli.py",
+      "sha256": "45fbb1d26e699456bb1a2747161d5a21cba27090fcc7fdfc923f4fb6e94bca52"
+    },
+    {
+      "path": "scripts/vidya/evaluate.py",
+      "sha256": "30de114cb64ce82f104d161936d0a5a4b763a5e9dea801d4445a461d97e59167"
+    },
+    {
+      "path": "scripts/vidya/fold.py",
+      "sha256": "42e1ccb832c59415501254aca427fb8e0d0cb2f7bc9e259ec3a8b10e7a369ef6"
+    },
+    {
+      "path": "scripts/vidya/impact.py",
+      "sha256": "e21aa4231ad2d098ebfc76e8585f17928985a7cfb5d33dabb71e83d1f3c13c33"
+    },
+    {
+      "path": "scripts/vidya/ingest_sources.py",
+      "sha256": "1d51ea1fa227d0ab8882d04223187a91d7fc0b6bf0214af4dfed6458fb952357"
+    },
+    {
+      "path": "tests/vidya/test_calendar_duplicate_repair.py",
+      "sha256": "f67de1d0fd03a7ebb6f5075b0143c6c93a3744a4233380e86ee1478cdbba49c1"
+    },
+    {
+      "path": "tests/vidya/test_dev_harness_aggregate.py",
+      "sha256": "0feda790e9543fc3b6cc83d7886014a1fffc32d24ac6c230b89b0e95fd3a53a7"
+    },
+    {
+      "path": "tests/vidya/test_fold_actor_authority.py",
+      "sha256": "f0daca19a7e05f7b9638d80ea5e1981b255c54b53aa33f23f56929dd827ab819"
+    },
+    {
+      "path": "tests/vidya/test_ingest_sources.py",
+      "sha256": "722da5bd3fc9abe349da9ffddf94a97fdbbfd30980e8620e57fa73e7e4b42507"
+    },
+    {
+      "path": "tests/vidya/test_research_intake_warrant_correction.py",
+      "sha256": "147fec98ab5d913787bc51d28094efc4310a67c800a907ea147de799f16768c0"
+    },
+    {
+      "path": "tests/vidya/test_scoped_ingest.py",
+      "sha256": "82656f2d91ac06fda20eddd4e323b46268e7077eed53987032da7ceb977f310c"
+    },
+    {
+      "path": "tests/vidya/test_supersession_reason.py",
+      "sha256": "7e4c9eed4c8deea01a2a733a824f69266100e7fa4324c8f16cbd29e7bad44eec"
+    },
+    {
+      "path": "tests/vidya/test_vidya_compliance.py",
+      "sha256": "71253f70263942d402ef6e2ef92849fb67e26853fbfd016dc0284221cbcaf74c"
+    },
+    {
+      "path": "tests/vidya/test_vidya_impact.py",
+      "sha256": "dab62409dc6b35ae2a1bdd5c1f996ef2a1f5bce27653916fbe0b99047d9842e4"
+    },
+    {
+      "path": "tests/vidya/test_vidya_p1.py",
+      "sha256": "7ad4992c101385fcb8a7133ff322ff940c3589cfdc170ee9ef233ee01431e388"
+    },
+    {
+      "path": "tests/vidya/test_vidya_projection_gate.py",
+      "sha256": "0681a86f888007464148d75ca4fb18c52e6c13640c4ddd419ae47d9e0c8184f0"
+    }
+  ],
+  "integration": {
+    "log": "/mnt/raid0/llm/tmp/codex3-evl-vblb-source-publish-20261031/integration-focused-r4.log",
+    "sha256": "7c3ac6ecbacda6c50dee81cc2f505cfa9d7a2d8862de652af71df22a8dfd057a",
+    "passed": 233,
+    "subtests_passed": 24,
+    "elapsed_s": 22.672269410919398,
+    "sampled_peak_tree_rss_bytes": 188321792,
+    "cpus": [
+      124,
+      125
+    ],
+    "mutex": "pair-28-29.lock",
+    "all_physical_quarters_granted_at_admission": true,
+    "region_lock_used": false,
+    "owned_children_drained": true
+  },
+  "publication": false,
+  "normal_commit_hooks": "pending final fresh-main integration commit; preliminary plumbing commits do not claim hooks",
+  "canonical_ledger_mutated": false,
+  "checkboxes_changed": 0
+}

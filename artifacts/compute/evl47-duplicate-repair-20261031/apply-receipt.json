@@ -1,0 +1,67 @@
+{
+  "after_state_hash": "sha256:5eaad94f71964f52363df2ab93a9ed88153951d56ec30e293f86dc797f682d91",
+  "after_witnesses": [
+    "evd_calendar-overrun:fd-div-1b-c5-asan-t1-repair:8fe11d2f966df747"
+  ],
+  "approved_prefix_last_seq": 38828,
+  "approved_prefix_sha256": "cef3c6f2d12f463b5bfd849c3006cd52d49b123b207adba65f3d9114a63e56ba",
+  "before_state_hash": "sha256:abb36ad89157828e23bf28d9a35fc00a6d9051ca15109d8273bcff080feb312b",
+  "before_witnesses": [
+    "evd_calendar-overrun:fd-div-1b-c5-asan-t1-repair:8fe11d2f966df747"
+  ],
+  "chain_verified": true,
+  "claim_id": "clm_calendar-overrun:fd-div-1b-c5-asan-t1-repair:8fe11d2f966df747",
+  "frame_ids_appended": [
+    "sha256:29586e0e5752b9a747a986704c00678377c44a0d8022c59316ad61a052a6aaab",
+    "sha256:83677850bd8174442e9f5a17dab38f9d94aac5ed70930db31e52962daf265d5e",
+    "sha256:7e350cb26041e21c72457c9a311bbe0fd4271ec15d2e55c6f9a5b4014cf29362"
+  ],
+  "grade": {
+    "Q": "Judged",
+    "T": "Located"
+  },
+  "implementation_commit": "2d293edbc0eb9da5148200fb76aa7ff3a23a5aca",
+  "native_api_result": {
+    "appended_or_present": 3,
+    "frame_ids": [
+      "sha256:29586e0e5752b9a747a986704c00678377c44a0d8022c59316ad61a052a6aaab",
+      "sha256:83677850bd8174442e9f5a17dab38f9d94aac5ed70930db31e52962daf265d5e",
+      "sha256:7e350cb26041e21c72457c9a311bbe0fd4271ec15d2e55c6f9a5b4014cf29362"
+    ],
+    "ledger_sha256": "342debaab6df28eb0869336aef01d0a7387479162f2ef25ee36d33cb8d52e356"
+  },
+  "native_sha256": "8fe11d2f966df747412edf9fa87c9bb3dee28abb2fbbf438c67f75ff8a691839",
+  "old_ids": [
+    "sha256:e39ad0bf284f3e98596f4896383413aeb5c17863a9e4297e3f19958a71cd5267",
+    "sha256:d6a47013d65943deba1c01bcb44cc61deced23a410c725a8e327b2785264d4ec",
+    "sha256:a3ff208783655db6a128ff7513d1698e35bc03fcba7fe5d48d2c3ac04719f09e"
+  ],
+  "other_belief_changes_excluding_retraction_metadata": [],
+  "plan_sha256": "2a60497ed77d125fb2ea9d17639f3ff5433063f7020a5699ad1d9f6868d6acb4",
+  "post_frontier": 38832,
+  "post_last_seq": 38831,
+  "post_ledger_sha256": "342debaab6df28eb0869336aef01d0a7387479162f2ef25ee36d33cb8d52e356",
+  "published_commit": "1103bccc540a04c535a5fa3baf7a81cdea512595",
+  "retained_frames_effective": true,
+  "retained_ids": [
+    "sha256:a02118f51ed4e1061a8dd16c82838abcfa855ff0a99ae63d97435123d696d144",
+    "sha256:ee81a1dee6cf33709d9c20ea0a1e2c3352efdddbb0ba4e79fb5e29661599209a",
+    "sha256:f4b90269de4970bd98988171be8500b2c7acded4588a84b9e22f34ef1537f16c"
+  ],
+  "seq_appended": [
+    38829,
+    38830,
+    38831
+  ],
+  "source_sha256": {
+    "adapters/calendar_overrun.py": "4c98a914e9cfea82a7eab88ddce916084329842cbda44a6bddd8ea59e9950c08",
+    "claim_tuple.py": "6ae969f7029c1a6356593fd2432eca2320931f22aa4a8c4e3a388a72b81944e7",
+    "fold.py": "42e1ccb832c59415501254aca427fb8e0d0cb2f7bc9e259ec3a8b10e7a369ef6",
+    "frames.py": "f47f148218ae99d54c51b322bf4f3b0632d4458e49572843f5ed4aa424d15749",
+    "impact.py": "e21aa4231ad2d098ebfc76e8585f17928985a7cfb5d33dabb71e83d1f3c13c33",
+    "ledger.py": "50d4872ab822b4912ba83ab8d05febf12b28e273b41237f3655bb13eb67a2e3e",
+    "ledger_write_lease.py": "f06c5aa7825ee0f9ac53ec3e1de16b826802dc3bfa646f3e117f7f082d83e8d4"
+  },
+  "status": "applied_and_verified",
+  "verified_at": "2026-10-31T12:47:25.419397+00:00"
+}

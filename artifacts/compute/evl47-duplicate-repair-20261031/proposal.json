@@ -1,0 +1,104 @@
+{
+  "after_state_hash": "sha256:5eaad94f71964f52363df2ab93a9ed88153951d56ec30e293f86dc797f682d91",
+  "before_state_hash": "sha256:abb36ad89157828e23bf28d9a35fc00a6d9051ca15109d8273bcff080feb312b",
+  "claim_id": "clm_calendar-overrun:fd-div-1b-c5-asan-t1-repair:8fe11d2f966df747",
+  "created_at": "2026-10-31T12:45:11Z",
+  "grade_after": {
+    "Q": "Judged",
+    "T": "Located"
+  },
+  "implementation_commit": "2d293edbc0eb9da5148200fb76aa7ff3a23a5aca",
+  "native_path": "/mnt/raid0/llm/tmp/compute-flags/grants/fd-div-1b-c5-asan-t1-repair.ended",
+  "native_sha256": "8fe11d2f966df747412edf9fa87c9bb3dee28abb2fbbf438c67f75ff8a691839",
+  "old_ids": [
+    "sha256:e39ad0bf284f3e98596f4896383413aeb5c17863a9e4297e3f19958a71cd5267",
+    "sha256:d6a47013d65943deba1c01bcb44cc61deced23a410c725a8e327b2785264d4ec",
+    "sha256:a3ff208783655db6a128ff7513d1698e35bc03fcba7fe5d48d2c3ac04719f09e"
+  ],
+  "other_belief_changes_excluding_retraction_metadata": [],
+  "prefix_frontier": 38829,
+  "prefix_last_seq": 38828,
+  "prefix_path": "/mnt/raid0/llm/tmp/codex3-evl47-supersede-20261031/published-prefix-2026-10-31T124511Z.jsonl",
+  "prefix_sha256": "cef3c6f2d12f463b5bfd849c3006cd52d49b123b207adba65f3d9114a63e56ba",
+  "published_commit": "1103bccc540a04c535a5fa3baf7a81cdea512595",
+  "retained_ids": [
+    "sha256:a02118f51ed4e1061a8dd16c82838abcfa855ff0a99ae63d97435123d696d144",
+    "sha256:ee81a1dee6cf33709d9c20ea0a1e2c3352efdddbb0ba4e79fb5e29661599209a",
+    "sha256:f4b90269de4970bd98988171be8500b2c7acded4588a84b9e22f34ef1537f16c"
+  ],
+  "reviewed_frames": [
+    {
+      "assertion": {
+        "reason": "Duplicate calendar-overrun projection; retain the later identical native record.",
+        "retracts": "sha256:e39ad0bf284f3e98596f4896383413aeb5c17863a9e4297e3f19958a71cd5267"
+      },
+      "frame_id": "sha256:29586e0e5752b9a747a986704c00678377c44a0d8022c59316ad61a052a6aaab",
+      "frame_type": "epyc.vidya/frame/retraction/v1",
+      "provenance": {
+        "method": "vidya.adapters.calendar_overrun/v1/duplicate-repair",
+        "native_sha256": "8fe11d2f966df747412edf9fa87c9bb3dee28abb2fbbf438c67f75ff8a691839",
+        "retained_frame_id": "sha256:a02118f51ed4e1061a8dd16c82838abcfa855ff0a99ae63d97435123d696d144"
+      },
+      "pubinfo": {
+        "actor": "vidya.adapters.calendar_overrun/v1",
+        "authority_scope": "measurement",
+        "created_at": "2026-10-31T12:45:11Z"
+      },
+      "signatures": []
+    },
+    {
+      "assertion": {
+        "reason": "Duplicate calendar-overrun projection; retain the later identical native record.",
+        "retracts": "sha256:d6a47013d65943deba1c01bcb44cc61deced23a410c725a8e327b2785264d4ec"
+      },
+      "frame_id": "sha256:83677850bd8174442e9f5a17dab38f9d94aac5ed70930db31e52962daf265d5e",
+      "frame_type": "epyc.vidya/frame/retraction/v1",
+      "provenance": {
+        "method": "vidya.adapters.calendar_overrun/v1/duplicate-repair",
+        "native_sha256": "8fe11d2f966df747412edf9fa87c9bb3dee28abb2fbbf438c67f75ff8a691839",
+        "retained_frame_id": "sha256:ee81a1dee6cf33709d9c20ea0a1e2c3352efdddbb0ba4e79fb5e29661599209a"
+      },
+      "pubinfo": {
+        "actor": "vidya.adapters.calendar_overrun/v1",
+        "authority_scope": "measurement",
+        "created_at": "2026-10-31T12:45:11Z"
+      },
+      "signatures": []
+    },
+    {
+      "assertion": {
+        "reason": "Duplicate calendar-overrun projection; retain the later identical native record.",
+        "retracts": "sha256:a3ff208783655db6a128ff7513d1698e35bc03fcba7fe5d48d2c3ac04719f09e"
+      },
+      "frame_id": "sha256:7e350cb26041e21c72457c9a311bbe0fd4271ec15d2e55c6f9a5b4014cf29362",
+      "frame_type": "epyc.vidya/frame/retraction/v1",
+      "provenance": {
+        "method": "vidya.adapters.calendar_overrun/v1/duplicate-repair",
+        "native_sha256": "8fe11d2f966df747412edf9fa87c9bb3dee28abb2fbbf438c67f75ff8a691839",
+        "retained_frame_id": "sha256:f4b90269de4970bd98988171be8500b2c7acded4588a84b9e22f34ef1537f16c"
+      },
+      "pubinfo": {
+        "actor": "vidya.adapters.calendar_overrun/v1",
+        "authority_scope": "measurement",
+        "created_at": "2026-10-31T12:45:11Z"
+      },
+      "signatures": []
+    }
+  ],
+  "source_sha256": {
+    "adapters/calendar_overrun.py": "4c98a914e9cfea82a7eab88ddce916084329842cbda44a6bddd8ea59e9950c08",
+    "claim_tuple.py": "6ae969f7029c1a6356593fd2432eca2320931f22aa4a8c4e3a388a72b81944e7",
+    "fold.py": "42e1ccb832c59415501254aca427fb8e0d0cb2f7bc9e259ec3a8b10e7a369ef6",
+    "frames.py": "f47f148218ae99d54c51b322bf4f3b0632d4458e49572843f5ed4aa424d15749",
+    "impact.py": "e21aa4231ad2d098ebfc76e8585f17928985a7cfb5d33dabb71e83d1f3c13c33",
+    "ledger.py": "50d4872ab822b4912ba83ab8d05febf12b28e273b41237f3655bb13eb67a2e3e",
+    "ledger_write_lease.py": "f06c5aa7825ee0f9ac53ec3e1de16b826802dc3bfa646f3e117f7f082d83e8d4"
+  },
+  "status": "PROPOSED_NOT_APPLIED",
+  "witnesses_after": [
+    "evd_calendar-overrun:fd-div-1b-c5-asan-t1-repair:8fe11d2f966df747"
+  ],
+  "witnesses_before": [
+    "evd_calendar-overrun:fd-div-1b-c5-asan-t1-repair:8fe11d2f966df747"
+  ]
+}

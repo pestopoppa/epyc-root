@@ -1,0 +1,18 @@
+
+==================================== ERRORS ====================================
+___ ERROR collecting tests/vidya/test_research_intake_warrant_correction.py ____
+tests/vidya/test_research_intake_warrant_correction.py:19: in <module>
+    spec.loader.exec_module(v)
+<frozen importlib._bootstrap_external>:1022: in exec_module
+    ???
+<frozen importlib._bootstrap_external>:1159: in get_code
+    ???
+<frozen importlib._bootstrap_external>:1217: in get_data
+    ???
+E   FileNotFoundError: [Errno 2] No such file or directory: '/mnt/raid0/llm/tmp/codex3-evl-vblb-source-publish-20261031/snapshot/.claude/skills/research-intake/scripts/validate_intake.py'
+P1-A carrier invariants: 2 tuples from 1 source kinds checked (byte identity / grade invariance), 0 violation(s)
+=========================== short test summary info ============================
+ERROR tests/vidya/test_research_intake_warrant_correction.py - FileNotFoundEr...
+!!!!!!!!!!!!!!!!!!!! Interrupted: 1 error during collection !!!!!!!!!!!!!!!!!!!!
+1 error in 0.40s
+{"schema": "bounded-r11-native-profile-supervisor/v1", "elapsed_s": 0.6079497660975903, "sampled_peak_tree_rss_bytes": 74792960, "samples": 7, "verified_exited_processes": 0, "verified_exited_threads": 0, "per_process_address_space_limit_bytes": null, "rss_scope": "sum of sampled resident pages across owned process tree; sampling may miss transients and double-count shared pages", "leader_pid": 862376, "leader_birth": 157200843, "child_rc": 2, "children_drained": true, "failure": null}
