@@ -1,0 +1,46 @@
+{
+  "cutoff": {
+    "cleanup_verified": true,
+    "launcher_rc": 75,
+    "partial": true,
+    "path": "/mnt/raid0/llm/tmp/codex-ni-fa4-exact-set-successor-r17-20261031/review-evidence/real-launch-cutoff-supervisor-v2.json",
+    "sha256": "69ff43a1622f7dd5a24a3f3a01ea06056510de8ae7aa2942f0617b6e1316818b"
+  },
+  "driver_sha256": "eab22dad50a8449295e8a0bee21ced6096392665514c96b6c831bdd7b982a848",
+  "event": "FA4_R17_QUALIFIED_READY_QUEUED",
+  "id": "fa4-c5-exact-set-r17-20261031",
+  "launcher_sha256": "e7ea01f441ea52f25298324d3d903b025729fb6b60068715e5bbd5f611ffd157",
+  "model_free_controls": 178,
+  "owner": "codex-ni",
+  "positive": {
+    "backend_A_cases": 80,
+    "backend_B_cases": 80,
+    "cleanup_verified": true,
+    "exact_B_original_cases": 228,
+    "exact_B_rc": 0,
+    "launcher_rc": 0,
+    "model_A_rc": 0,
+    "native_result_path": "/mnt/micron/codex-ni-fa4-exact-set-r17-20261031/runs/20261031T005235Z-468277/SMOKE-RESULT.json",
+    "native_result_sha256": "148092cbc2bf27c97b05bb77b26a4746842134827396c26374d2ddeb02b029d3",
+    "server_A_http_200": 28,
+    "server_A_original_13_http_200": 13,
+    "server_A_production_15_http_200": 15,
+    "wall_s": 129.91113430005498
+  },
+  "qualification_terminal": "utc=2026-10-31T00:55:27Z rc=0",
+  "queue": {
+    "admission": "validator 0 refusals and warnings; grant_ok admit 96 GiB / 4800 s / mi210_0,184-191",
+    "grant_active_at_publication": false,
+    "keeper_polling_pid": 1136809,
+    "keeper_result": "QUEUED",
+    "keeper_utc": "2026-10-31T01:06:35Z",
+    "manifest_path": "/mnt/raid0/llm/tmp/compute-flags/ready/armed/fa4-c5-exact-set-r17-20261031.json",
+    "manifest_sha256": "8e504093053ae98b6afbf757ecbeeef04bd82587c9ec9bfa8d0fc9b6a47418d3",
+    "row_path": "/mnt/raid0/llm/tmp/compute-flags/ready/fa4-c5-exact-set-r17-20261031.row.md",
+    "superseded_r13": "CANCELLED; no active grant; captured pidfd terminal"
+  },
+  "raw_packet": "/mnt/raid0/llm/tmp/codex-ni-fa4-exact-set-successor-r17-20261031",
+  "scope": "qualifies same frozen launcher and intentional cutoff; full original three-pair, 22-band, two-KV-type comparison still pending; no equivalence, mechanism, performance or promotion claim",
+  "source_manifest_sha256": "72f99a411cedfc56972b554605c1b37bb0e5f05c790cf3c6428006194c95d10d",
+  "utc": "2026-10-31T01:06:35Z"
+}
