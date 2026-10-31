@@ -1316,7 +1316,7 @@ are left to that still-running agent.
         candidate list.
       - **Action.** Decide per site whether it writes belief rows or governs a decision, and if so
         route it through `belief_capture.root_checkout`. AutoKernel sites need its quiet window.
-- [ ] **VB-PRB-T4-CAVEAT — mark the 24 ingested PRB-T4 TALE rows as sample-scoped (filed 2026-09-17,
+- [x] **VB-PRB-T4-CAVEAT — mark the 24 ingested PRB-T4 TALE rows as sample-scoped (filed 2026-09-17, ✅ 2026-10-31 [source: bf2ba1f3a45c8025ce910e8d6e0942b84e0fc931; artifact: artifacts/engineering/prb-t4-scope-review-20261031/canonical-append-receipt.json] [no-belief: scope correction of existing observations; no new measurement]
   sub-scorer-fix).**
   - **Affected rows.** The ledger holds 24 `vidya.adapters.tale_budget/v1` claims from run
     `prb_t4_gpu_20260916_191049`: 12 `math`, 12 `olympiadbench`. They are
@@ -1332,6 +1332,7 @@ are left to that still-running agent.
   - **Action.** Record a correction/scope frame through the kernel's correction path, never by editing
     the ledger. It should narrow the suite label (math → gsm8k subset; olympiadbench → skewed subset),
     or supersede the rows with the PRB-T4-RERUN rows once they exist.
+  - 2026-10-31: the native correction path appended two frames covering all 24 claims; their scope caveats are retained and require review. The locked full-ledger fold preserved original grades and unrelated beliefs. Historical raw JSONLs were unavailable, so sample composition is attributed to this committed handoff. Frame IDs and chain receipt are in the cited Git artifact.
   - **Other affected results (not in the ledger).**
     - The livecodebench sidecar stays withheld. Its accuracy is vacuous, and the stale rows are now
       refused by the scorer.
