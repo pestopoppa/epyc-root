@@ -1,0 +1,122 @@
+{
+  "prior": {
+    "pages": 309,
+    "tables": 82
+  },
+  "current": {
+    "pages": 334,
+    "tables": 82
+  },
+  "shards": [
+    {
+      "shard": 128,
+      "positions": [
+        640,
+        641,
+        642,
+        643,
+        644
+      ],
+      "coverage": {
+        "pages_complete": 5,
+        "pages_total": 5,
+        "gt_tables_scored": 0,
+        "gt_tables_total": 0
+      },
+      "result_sha256": "b80e9d1b3b79cbf28f5e20c3fd6b9d3977dafc9c337737efc24cbbdc6ce4cb9d",
+      "receipt_sha256": "e940d7692039a5d9426111336ce84bf37ef617874e72e91d87d28f61683fe345",
+      "epoch": "0b63474b8e91a70781f6c7b6ead76fe42a6ab7480578da468106c9f2b0723dc3",
+      "selected_inputs": 744,
+      "scorer_pins_match": true
+    },
+    {
+      "shard": 130,
+      "positions": [
+        650,
+        651,
+        652,
+        653,
+        654
+      ],
+      "coverage": {
+        "pages_complete": 5,
+        "pages_total": 5,
+        "gt_tables_scored": 0,
+        "gt_tables_total": 0
+      },
+      "result_sha256": "dbad07040f8faad38ce156a06678516bb1ef4a78040c2c19d4b730bc5469f1a7",
+      "receipt_sha256": "14d6e841586171fbe2b6d00970a1340a00e958803b33034848928ffc45853941",
+      "epoch": "851b90b99a7e6d849fda97662397c4d307294338e690a6b4cb2e73d8f2be6a60",
+      "selected_inputs": 529,
+      "scorer_pins_match": true
+    },
+    {
+      "shard": 143,
+      "positions": [
+        715,
+        716,
+        717,
+        718,
+        719
+      ],
+      "coverage": {
+        "pages_complete": 5,
+        "pages_total": 5,
+        "gt_tables_scored": 0,
+        "gt_tables_total": 0
+      },
+      "result_sha256": "ae9146ccdaa0eaf7c882e580d25c4c9919d87733a60afc940b0acf525a6486f0",
+      "receipt_sha256": "9b45555ab651d5a0d62f8ed1a50362efc6e88c7bc1165e16b105069342926346",
+      "epoch": "6ed3fc9b9f4bccfb3bafc6b4cf1e864943d9b6d84cfe57326556777fbea1703c",
+      "selected_inputs": 592,
+      "scorer_pins_match": true
+    },
+    {
+      "shard": 144,
+      "positions": [
+        720,
+        721,
+        722,
+        723,
+        724
+      ],
+      "coverage": {
+        "pages_complete": 5,
+        "pages_total": 5,
+        "gt_tables_scored": 0,
+        "gt_tables_total": 0
+      },
+      "result_sha256": "9e4bdab08847efa5f81de18283a8a15d9a6eb0240de015b55cb4ed217338b6f4",
+      "receipt_sha256": "354f0bf5b792c68f53547cb779365b318d2d1b696483976a7fd7d5bbe27682d0",
+      "epoch": "21b45800060df9ef39c71fe2b52b485742591b4299ccad57f38bb162e77d5262",
+      "selected_inputs": 559,
+      "scorer_pins_match": true
+    },
+    {
+      "shard": 145,
+      "positions": [
+        725,
+        726,
+        727,
+        728,
+        729
+      ],
+      "coverage": {
+        "pages_complete": 5,
+        "pages_total": 5,
+        "gt_tables_scored": 0,
+        "gt_tables_total": 0
+      },
+      "result_sha256": "9e7b25b6e43776ba4916a72dba60ca7b5d744531bc57f23ffda03246980db8f9",
+      "receipt_sha256": "98d75860ad793c86444e3809f5934b8fb71e121c29eca08942f02c33b38bda1f",
+      "epoch": "e6625ef313777d015d50ba2d64bf38727db8cd361b395433d5683c1bacbac8a2",
+      "selected_inputs": 577,
+      "scorer_pins_match": true
+    }
+  ],
+  "means": {
+    "teds": 0.9274766122818409,
+    "structure_only": 0.9571778949590706
+  },
+  "validation": "Strict native_rows replay verified receipt envelope, original start, selected inputs, raw prediction/lineage and result hashes. Four scoring source pins match prior filing."
+}
