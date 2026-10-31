@@ -1,0 +1,2 @@
+2026-10-31T04:57:17Z [codex3-paw-compact-b-hostfix2-20261031] launcher up pid=4056115 class=cpu poll=45s grants=/mnt/raid0/llm/tmp/compute-flags/grants stop=/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/paw-repair/b-host2/STOP minwin=2400s ports=19964
+2026-10-31T04:57:17Z [codex3-paw-compact-b-hostfix2-20261031] launcher signalled

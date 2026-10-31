@@ -1,0 +1,22 @@
+{
+  "original_checkpoint_sha256": "473a87778c5780082996e386ad5c2a4bed1617f28563515bd3e00f198b80fc57",
+  "original_declaration_sha256": "25dcf705fd8b8054b591eea20947b7d702bb2044a9757381ec01d428574ce302",
+  "original_source_manifest_sha256": "a517870b0e45a0187a9aa9149f1c1c50dea50c2fcc6653adfc003c16ad2cbcbd",
+  "saved_task_ids": [
+    "0",
+    "1",
+    "2",
+    "3",
+    "7",
+    "8",
+    "9"
+  ],
+  "missing_task_ids": [
+    "10"
+  ],
+  "prior_task_10_outcome": "compiling at interruption; no saved bundle; preserve attempt UNKNOWN",
+  "original_case_dispositions": {
+    "not_exposed": 64
+  },
+  "check": "read-only checkpoint/resume envelope; original native result and progress preserved"
+}
