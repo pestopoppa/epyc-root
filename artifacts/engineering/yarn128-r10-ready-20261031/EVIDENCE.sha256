@@ -1,0 +1,10 @@
+# SHA-256 of source evidence files; evidence remains at its original paths.
+e1ded3666e394f9e41935f839a2b9f7036d15d26f013bed13eb4e1343e443866  /mnt/raid0/llm/tmp/compute-flags/ready/yarn-128k-mi210-sol-r10-20261031.json
+4075cf8bde308ef64ef32a28f15e5d385cbe24eccb0db30c85de9538f2f09ae1  /mnt/raid0/llm/tmp/codex-ni-yarn128-cutoff-sol-20261031/packet-r10/LOCAL-PINS.sha256
+8cad0c1acfa27eeb40e2b796654b69138776f47af2297a1fbe1fcc40d7ca2452  /mnt/raid0/llm/tmp/codex-ni-yarn128-cutoff-sol-20261031/packet-r10/review-evidence/R10-PUBLICATION-REPAIR-COMPLETE.json
+0560d493a264251b028cc0bcb5a41ec2c541e8827cd676fd2584cfa539fe5aa7  /mnt/raid0/llm/tmp/codex-ni-yarn128-cutoff-sol-20261031/packet-r10/review-evidence/R10-SUMMARY-CONTROL.json
+c0d1d9c46867d67892da9df1ef2a8950d23982281e9ade59d6391943b5788d8f  /mnt/raid0/llm/tmp/codex-ni-yarn128-cutoff-sol-20261031/packet-r10/review-evidence/R9-FAILURE-AUDIT.json
+3c4f9380e60340d3f641be817ef29c6653cab916fcc6fa178be2a64d9e7abdba  /mnt/raid0/llm/tmp/codex-ni-yarn128-cutoff-sol-20261031/packet-r10/review-evidence/R5-CUTOFF-V6-QUALIFICATION.json
+d4dedb63e3f5fec068eac445ea9961caf6f87edffadd14ab8db85735bca963da  /mnt/raid0/llm/tmp/codex-ni-yarn128-cutoff-sol-20261031/packet-r10/review-evidence/R5-CUTOFF-V6-LIVE-WORK-CONTROLS.json
+873a977405e7d65a7bf34132ed56454d593ced3b1a57099e0efa855634d2089f  /mnt/raid0/llm/tmp/codex-ni-yarn128-cutoff-sol-20261031/packet-r10/review-evidence/PUBLIC-PID-CONTROL.json
+bcfd26a335c505e1c8ad2e81e99b7b23a8158c712e13df7b0bc6b6b0142f0b14  /mnt/raid0/llm/tmp/codex-ni-yarn128-cutoff-sol-20261031/packet-r10/review-evidence/R6-ANCHOR-POSITIVE-QUALIFICATION.json
