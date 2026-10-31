@@ -1,0 +1,7 @@
+rc=70 time=2026-10-31T02:01:39Z reason=job-rc-70:exited
+job_id=codex-ni-td29-m4-cache-r3-20261031
+owner=codex-ni
+step=job-run
+estimated_wall_s=1800
+started=2026-10-31T02:01:36Z
+regions=48-71

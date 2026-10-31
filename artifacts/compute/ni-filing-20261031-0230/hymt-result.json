@@ -1,0 +1,15 @@
+{
+  "status": "COMPLETE",
+  "partial": false,
+  "completed_cases": 16,
+  "target_cases": 16,
+  "native_operations_this_invocation": 16,
+  "children_drained": true,
+  "server_pid": 112073,
+  "server_returncode": 0,
+  "cutoff_reason": null,
+  "wall_s": 4.988449590979144,
+  "error": null,
+  "variant": "Q4_K_M ALTERNATIVE; no lowbit compatibility/speed/quality conclusion",
+  "full_ABC_RAG_quality_unrun": true
+}

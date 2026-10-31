@@ -1,0 +1,27 @@
+{
+  "source_sha": "729599d69871181d67af715a4c2f9162d5153a2e",
+  "store": "/mnt/raid0/llm/kernels/builds/gpu-20261030-729599d69-c6",
+  "checker_sha256": "57585b405f2d7c6062db2db7786c594d4c428f6952bd27db5a86c0d999cffe33",
+  "rows": [
+    {
+      "binary": "llama-server",
+      "rc": 0,
+      "log": "/mnt/raid0/llm/tmp/refactor-c6-store-build-qual-20261030/GPU-729-LINKAGE-llama-server.log",
+      "sha256": "1b64b207aed84e275d4985a73705fdd39fc52881e82c787a9ebee6e67efe229e"
+    },
+    {
+      "binary": "llama-bench",
+      "rc": 0,
+      "log": "/mnt/raid0/llm/tmp/refactor-c6-store-build-qual-20261030/GPU-729-LINKAGE-llama-bench.log",
+      "sha256": "0986a013ae9cc8c84e56fa410eebba7f5208eb3ae0de03e6b83c10e51401c600"
+    },
+    {
+      "binary": "test-backend-ops",
+      "rc": 0,
+      "log": "/mnt/raid0/llm/tmp/refactor-c6-store-build-qual-20261030/GPU-729-LINKAGE-test-backend-ops.log",
+      "sha256": "9432b7e8e0d41c3e452abd85772f6db5c7aa5e6f5e9418c5eb4d8348c2794a0d"
+    }
+  ],
+  "passed": true,
+  "scope": "Dynamic library resolution only; HIP is dynamically loaded, no device execution or residency proven."
+}

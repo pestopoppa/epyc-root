@@ -1,0 +1,8 @@
+{
+  "complete_utc": "2026-10-31T01:48:37.685330+00:00",
+  "grant_sha256": "2351eed81244997e6d520de0ff0097b87863bd83d975576544bd611541484a7a",
+  "id": "fa4-c5-exact-set-r17-20261031",
+  "out_dir": "/mnt/micron/codex-ni-fa4-exact-set-r17-20261031/runs/20261031T013334Z-1489672",
+  "source_manifest_sha256": "72f99a411cedfc56972b554605c1b37bb0e5f05c790cf3c6428006194c95d10d",
+  "verdict_sha256": "e6501870499a7f50fd67e5c74905fe63354ddc630c4ca03cd7880f2d41866b85"
+}

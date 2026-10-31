@@ -1,0 +1,9459 @@
+{
+  "OFF_only": [
+    [
+      "512",
+      "2048",
+      "bias1024",
+      "diffuse",
+      "f16",
+      "tail"
+    ],
+    [
+      "512",
+      "2048",
+      "bias1024",
+      "diffuse",
+      "q8_0",
+      "tail"
+    ],
+    [
+      "64",
+      "4096",
+      "bias1024",
+      "diffuse",
+      "f16",
+      "tail"
+    ],
+    [
+      "64",
+      "4096",
+      "bias1024",
+      "diffuse",
+      "q8_0",
+      "tail"
+    ]
+  ],
+  "ON_only": [
+    [
+      "64",
+      "2048",
+      "bias1024",
+      "diffuse",
+      "f16",
+      "tail"
+    ],
+    [
+      "64",
+      "2048",
+      "bias1024",
+      "diffuse",
+      "q8_0",
+      "tail"
+    ]
+  ],
+  "final_protocol_state": "INPUTS_MATCH_OUTCOMES_DIFFER",
+  "gate": "nan_cross_arm_exact_input_universe",
+  "input_case_sets_equal": true,
+  "input_native_records": {
+    "A": {
+      "flagged_cases": [
+        [
+          "512",
+          "4096",
+          "bias1024",
+          "diffuse",
+          "f16",
+          "tail"
+        ],
+        [
+          "512",
+          "4096",
+          "bias1024",
+          "diffuse",
+          "q8_0",
+          "tail"
+        ],
+        [
+          "64",
+          "2048",
+          "bias1024",
+          "diffuse",
+          "f16",
+          "tail"
+        ],
+        [
+          "64",
+          "2048",
+          "bias1024",
+          "diffuse",
+          "q8_0",
+          "tail"
+        ]
+      ],
+      "input_cases": [
+        [
+          "128",
+          "256",
+          "bias1024",
+          "diffuse",
+          "f16",
+          "prefill"
+        ],
+        [
+          "128",
+          "256",
+          "bias1024",
+          "diffuse",
+          "q8_0",
+          "prefill"
+        ],
+        [
+          "128",
+          "256",
+          "bias1024",
+          "peaked",
+          "f16",
+          "prefill"
+        ],
+        [
+          "128",
+          "256",
+          "bias1024",
+          "peaked",
+          "q8_0",
+          "prefill"
+        ],
+        [
+          "128",
+          "256",
+          "bias128",
+          "diffuse",
+          "f16",
+          "prefill"
+        ],
+        [
+          "128",
+          "256",
+          "bias128",
+          "diffuse",
+          "q8_0",
+          "prefill"
+        ],
+        [
+          "128",
+          "256",
+          "bias32",
+          "diffuse",
+          "f16",
+          "prefill"
+        ],
+        [
+          "128",
+          "256",
+          "bias32",
+          "diffuse",
+          "q8_0",
+          "prefill"
+        ],
+        [
+          "128",
+          "256",
+          "unit",
+          "diffuse",
+          "f16",
+          "prefill"
+        ],
+        [
+          "128",
+          "256",
+          "unit",
+          "diffuse",
+          "q8_0",
+          "prefill"
+        ],
+        [
+          "128",
+          "256",
+          "unit",
+          "peaked",
+          "f16",
+          "prefill"
+        ],
+        [
+          "128",
+          "256",
+          "unit",
+          "peaked",
+          "q8_0",
+          "prefill"
+        ],
+        [
+          "256",
+          "256",
+          "bias1024",
+          "diffuse",
+          "f16",
+          "prefill"
+        ],
+        [
+          "256",
+          "256",
+          "bias1024",
+          "diffuse",
+          "q8_0",
+          "prefill"
+        ],
+        [
+          "256",
+          "256",
+          "bias1024",
+          "peaked",
+          "f16",
+          "prefill"
+        ],
+        [
+          "256",
+          "256",
+          "bias1024",
+          "peaked",
+          "q8_0",
+          "prefill"
+        ],
+        [
+          "256",
+          "256",
+          "bias128",
+          "diffuse",
+          "f16",
+          "prefill"
+        ],
+        [
+          "256",
+          "256",
+          "bias128",
+          "diffuse",
+          "q8_0",
+          "prefill"
+        ],
+        [
+          "256",
+          "256",
+          "bias32",
+          "diffuse",
+          "f16",
+          "prefill"
+        ],
+        [
+          "256",
+          "256",
+          "bias32",
+          "diffuse",
+          "q8_0",
+          "prefill"
+        ],
+        [
+          "256",
+          "256",
+          "unit",
+          "diffuse",
+          "f16",
+          "prefill"
+        ],
+        [
+          "256",
+          "256",
+          "unit",
+          "diffuse",
+          "q8_0",
+          "prefill"
+        ],
+        [
+          "256",
+          "256",
+          "unit",
+          "peaked",
+          "f16",
+          "prefill"
+        ],
+        [
+          "256",
+          "256",
+          "unit",
+          "peaked",
+          "q8_0",
+          "prefill"
+        ],
+        [
+          "27",
+          "2048",
+          "bias1024",
+          "diffuse",
+          "f16",
+          "tail"
+        ],
+        [
+          "27",
+          "2048",
+          "bias1024",
+          "diffuse",
+          "q8_0",
+          "tail"
+        ],
+        [
+          "27",
+          "2048",
+          "bias1024",
+          "peaked",
+          "f16",
+          "tail"
+        ],
+        [
+          "27",
+          "2048",
+          "bias1024",
+          "peaked",
+          "q8_0",
+          "tail"
+        ],
+        [
+          "27",
+          "2048",
+          "bias128",
+          "diffuse",
+          "f16",
+          "tail"
+        ],
+        [
+          "27",
+          "2048",
+          "bias128",
+          "diffuse",
+          "q8_0",
+          "tail"
+        ],
+        [
+          "27",
+          "2048",
+          "bias32",
+          "diffuse",
+          "f16",
+          "tail"
+        ],
+        [
+          "27",
+          "2048",
+          "bias32",
+          "diffuse",
+          "q8_0",
+          "tail"
+        ],
+        [
+          "27",
+          "2048",
+          "unit",
+          "diffuse",
+          "f16",
+          "tail"
+        ],
+        [
+          "27",
+          "2048",
+          "unit",
+          "diffuse",
+          "q8_0",
+          "tail"
+        ],
+        [
+          "27",
+          "2048",
+          "unit",
+          "peaked",
+          "f16",
+          "tail"
+        ],
+        [
+          "27",
+          "2048",
+          "unit",
+          "peaked",
+          "q8_0",
+          "tail"
+        ],
+        [
+          "27",
+          "4096",
+          "bias1024",
+          "diffuse",
+          "f16",
+          "tail"
+        ],
+        [
+          "27",
+          "4096",
+          "bias1024",
+          "diffuse",
+          "q8_0",
+          "tail"
+        ],
+        [
+          "27",
+          "4096",
+          "bias128",
+          "diffuse",
+          "f16",
+          "tail"
+        ],
+        [
+          "27",
+          "4096",
+          "bias128",
+          "diffuse",
+          "q8_0",
+          "tail"
+        ],
+        [
+          "27",
+          "4096",
+          "bias32",
+          "diffuse",
+          "f16",
+          "tail"
+        ],
+        [
+          "27",
+          "4096",
+          "bias32",
+          "diffuse",
+          "q8_0",
+          "tail"
+        ],
+        [
+          "27",
+          "4096",
+          "unit",
+          "diffuse",
+          "f16",
+          "tail"
+        ],
+        [
+          "27",
+          "4096",
+          "unit",
+          "diffuse",
+          "q8_0",
+          "tail"
+        ],
+        [
+          "27",
+          "512",
+          "bias1024",
+          "diffuse",
+          "f16",
+          "tail"
+        ],
+        [
+          "27",
+          "512",
+          "bias1024",
+          "diffuse",
+          "q8_0",
+          "tail"
+        ],
+        [
+          "27",
+          "512",
+          "bias128",
+          "diffuse",
+          "f16",
+          "tail"
+        ],
+        [
+          "27",
+          "512",
+          "bias128",
+          "diffuse",
+          "q8_0",
+          "tail"
+        ],
+        [
+          "27",
+          "512",
+          "bias32",
+          "diffuse",
+          "f16",
+          "tail"
+        ],
+        [
+          "27",
+          "512",
+          "bias32",
+          "diffuse",
+          "q8_0",
+          "tail"
+        ],
+        [
+          "27",
+          "512",
+          "unit",
+          "diffuse",
+          "f16",
+          "tail"
+        ],
+        [
+          "27",
+          "512",
+          "unit",
+          "diffuse",
+          "q8_0",
+          "tail"
+        ],
+        [
+          "300",
+          "300",
+          "bias1024",
+          "diffuse",
+          "f16",
+          "prefill"
+        ],
+        [
+          "300",
+          "300",
+          "bias1024",
+          "diffuse",
+          "q8_0",
+          "prefill"
+        ],
+        [
+          "300",
+          "300",
+          "bias1024",
+          "peaked",
+          "f16",
+          "prefill"
+        ],
+        [
+          "300",
+          "300",
+          "bias1024",
+          "peaked",
+          "q8_0",
+          "prefill"
+        ],
+        [
+          "300",
+          "300",
+          "bias128",
+          "diffuse",
+          "f16",
+          "prefill"
+        ],
+        [
+          "300",
+          "300",
+          "bias128",
+          "diffuse",
+          "q8_0",
+          "prefill"
+        ],
+        [
+          "300",
+          "300",
+          "bias32",
+          "diffuse",
+          "f16",
+          "prefill"
+        ],
+        [
+          "300",
+          "300",
+          "bias32",
+          "diffuse",
+          "q8_0",
+          "prefill"
+        ],
+        [
+          "300",
+          "300",
+          "unit",
+          "diffuse",
+          "f16",
+          "prefill"
+        ],
+        [
+          "300",
+          "300",
+          "unit",
+          "diffuse",
+          "q8_0",
+          "prefill"
+        ],
+        [
+          "300",
+          "300",
+          "unit",
+          "peaked",
+          "f16",
+          "prefill"
+        ],
+        [
+          "300",
+          "300",
+          "unit",
+          "peaked",
+          "q8_0",
+          "prefill"
+        ],
+        [
+          "300",
+          "512",
+          "bias1024",
+          "diffuse",
+          "f16",
+          "prefill"
+        ],
+        [
+          "300",
+          "512",
+          "bias1024",
+          "diffuse",
+          "q8_0",
+          "prefill"
+        ],
+        [
+          "300",
+          "512",
+          "bias1024",
+          "peaked",
+          "f16",
+          "prefill"
+        ],
+        [
+          "300",
+          "512",
+          "bias1024",
+          "peaked",
+          "q8_0",
+          "prefill"
+        ],
+        [
+          "300",
+          "512",
+          "bias128",
+          "diffuse",
+          "f16",
+          "prefill"
+        ],
+        [
+          "300",
+          "512",
+          "bias128",
+          "diffuse",
+          "q8_0",
+          "prefill"
+        ],
+        [
+          "300",
+          "512",
+          "bias32",
+          "diffuse",
+          "f16",
+          "prefill"
+        ],
+        [
+          "300",
+          "512",
+          "bias32",
+          "diffuse",
+          "q8_0",
+          "prefill"
+        ],
+        [
+          "300",
+          "512",
+          "unit",
+          "diffuse",
+          "f16",
+          "prefill"
+        ],
+        [
+          "300",
+          "512",
+          "unit",
+          "diffuse",
+          "q8_0",
+          "prefill"
+        ],
+        [
+          "300",
+          "512",
+          "unit",
+          "peaked",
+          "f16",
+          "prefill"
+        ],
+        [
+          "300",
+          "512",
+          "unit",
+          "peaked",
+          "q8_0",
+          "prefill"
+        ],
+        [
+          "36",
+          "2048",
+          "bias1024",
+          "diffuse",
+          "f16",
+          "tail"
+        ],
+        [
+          "36",
+          "2048",
+          "bias1024",
+          "diffuse",
+          "q8_0",
+          "tail"
+        ],
+        [
+          "36",
+          "2048",
+          "bias1024",
+          "peaked",
+          "f16",
+          "tail"
+        ],
+        [
+          "36",
+          "2048",
+          "bias1024",
+          "peaked",
+          "q8_0",
+          "tail"
+        ],
+        [
+          "36",
+          "2048",
+          "bias128",
+          "diffuse",
+          "f16",
+          "tail"
+        ],
+        [
+          "36",
+          "2048",
+          "bias128",
+          "diffuse",
+          "q8_0",
+          "tail"
+        ],
+        [
+          "36",
+          "2048",
+          "bias32",
+          "diffuse",
+          "f16",
+          "tail"
+        ],
+        [
+          "36",
+          "2048",
+          "bias32",
+          "diffuse",
+          "q8_0",
+          "tail"
+        ],
+        [
+          "36",
+          "2048",
+          "unit",
+          "diffuse",
+          "f16",
+          "tail"
+        ],
+        [
+          "36",
+          "2048",
+          "unit",
+          "diffuse",
+          "q8_0",
+          "tail"
+        ],
+        [
+          "36",
+          "2048",
+          "unit",
+          "peaked",
+          "f16",
+          "tail"
+        ],
+        [
+          "36",
+          "2048",
+          "unit",
+          "peaked",
+          "q8_0",
+          "tail"
+        ],
+        [
+          "36",
+          "4096",
+          "bias1024",
+          "diffuse",
+          "f16",
+          "tail"
+        ],
+        [
+          "36",
+          "4096",
+          "bias1024",
+          "diffuse",
+          "q8_0",
+          "tail"
+        ],
+        [
+          "36",
+          "4096",
+          "bias128",
+          "diffuse",
+          "f16",
+          "tail"
+        ],
+        [
+          "36",
+          "4096",
+          "bias128",
+          "diffuse",
+          "q8_0",
+          "tail"
+        ],
+        [
+          "36",
+          "4096",
+          "bias32",
+          "diffuse",
+          "f16",
+          "tail"
+        ],
+        [
+          "36",
+          "4096",
+          "bias32",
+          "diffuse",
+          "q8_0",
+          "tail"
+        ],
+        [
+          "36",
+          "4096",
+          "unit",
+          "diffuse",
+          "f16",
+          "tail"
+        ],
+        [
+          "36",
+          "4096",
+          "unit",
+          "diffuse",
+          "q8_0",
+          "tail"
+        ],
+        [
+          "36",
+          "512",
+          "bias1024",
+          "diffuse",
+          "f16",
+          "tail"
+        ],
+        [
+          "36",
+          "512",
+          "bias1024",
+          "diffuse",
+          "q8_0",
+          "tail"
+        ],
+        [
+          "36",
+          "512",
+          "bias128",
+          "diffuse",
+          "f16",
+          "tail"
+        ],
+        [
+          "36",
+          "512",
+          "bias128",
+          "diffuse",
+          "q8_0",
+          "tail"
+        ],
+        [
+          "36",
+          "512",
+          "bias32",
+          "diffuse",
+          "f16",
+          "tail"
+        ],
+        [
+          "36",
+          "512",
+          "bias32",
+          "diffuse",
+          "q8_0",
+          "tail"
+        ],
+        [
+          "36",
+          "512",
+          "unit",
+          "diffuse",
+          "f16",
+          "tail"
+        ],
+        [
+          "36",
+          "512",
+          "unit",
+          "diffuse",
+          "q8_0",
+          "tail"
+        ],
+        [
+          "512",
+          "2048",
+          "bias1024",
+          "diffuse",
+          "f16",
+          "tail"
+        ],
+        [
+          "512",
+          "2048",
+          "bias1024",
+          "diffuse",
+          "q8_0",
+          "tail"
+        ],
+        [
+          "512",
+          "2048",
+          "bias1024",
+          "peaked",
+          "f16",
+          "tail"
+        ],
+        [
+          "512",
+          "2048",
+          "bias1024",
+          "peaked",
+          "q8_0",
+          "tail"
+        ],
+        [
+          "512",
+          "2048",
+          "bias128",
+          "diffuse",
+          "f16",
+          "tail"
+        ],
+        [
+          "512",
+          "2048",
+          "bias128",
+          "diffuse",
+          "q8_0",
+          "tail"
+        ],
+        [
+          "512",
+          "2048",
+          "bias32",
+          "diffuse",
+          "f16",
+          "tail"
+        ],
+        [
+          "512",
+          "2048",
+          "bias32",
+          "diffuse",
+          "q8_0",
+          "tail"
+        ],
+        [
+          "512",
+          "2048",
+          "unit",
+          "diffuse",
+          "f16",
+          "tail"
+        ],
+        [
+          "512",
+          "2048",
+          "unit",
+          "diffuse",
+          "q8_0",
+          "tail"
+        ],
+        [
+          "512",
+          "2048",
+          "unit",
+          "peaked",
+          "f16",
+          "tail"
+        ],
+        [
+          "512",
+          "2048",
+          "unit",
+          "peaked",
+          "q8_0",
+          "tail"
+        ],
+        [
+          "512",
+          "4096",
+          "bias1024",
+          "diffuse",
+          "f16",
+          "tail"
+        ],
+        [
+          "512",
+          "4096",
+          "bias1024",
+          "diffuse",
+          "q8_0",
+          "tail"
+        ],
+        [
+          "512",
+          "4096",
+          "bias128",
+          "diffuse",
+          "f16",
+          "tail"
+        ],
+        [
+          "512",
+          "4096",
+          "bias128",
+          "diffuse",
+          "q8_0",
+          "tail"
+        ],
+        [
+          "512",
+          "4096",
+          "bias32",
+          "diffuse",
+          "f16",
+          "tail"
+        ],
+        [
+          "512",
+          "4096",
+          "bias32",
+          "diffuse",
+          "q8_0",
+          "tail"
+        ],
+        [
+          "512",
+          "4096",
+          "unit",
+          "diffuse",
+          "f16",
+          "tail"
+        ],
+        [
+          "512",
+          "4096",
+          "unit",
+          "diffuse",
+          "q8_0",
+          "tail"
+        ],
+        [
+          "512",
+          "512",
+          "bias1024",
+          "diffuse",
+          "f16",
+          "prefill"
+        ],
+        [
+          "512",
+          "512",
+          "bias1024",
+          "diffuse",
+          "f16",
+          "tail"
+        ],
+        [
+          "512",
+          "512",
+          "bias1024",
+          "diffuse",
+          "q8_0",
+          "prefill"
+        ],
+        [
+          "512",
+          "512",
+          "bias1024",
+          "diffuse",
+          "q8_0",
+          "tail"
+        ],
+        [
+          "512",
+          "512",
+          "bias1024",
+          "peaked",
+          "f16",
+          "prefill"
+        ],
+        [
+          "512",
+          "512",
+          "bias1024",
+          "peaked",
+          "q8_0",
+          "prefill"
+        ],
+        [
+          "512",
+          "512",
+          "bias128",
+          "diffuse",
+          "f16",
+          "prefill"
+        ],
+        [
+          "512",
+          "512",
+          "bias128",
+          "diffuse",
+          "f16",
+          "tail"
+        ],
+        [
+          "512",
+          "512",
+          "bias128",
+          "diffuse",
+          "q8_0",
+          "prefill"
+        ],
+        [
+          "512",
+          "512",
+          "bias128",
+          "diffuse",
+          "q8_0",
+          "tail"
+        ],
+        [
+          "512",
+          "512",
+          "bias32",
+          "diffuse",
+          "f16",
+          "prefill"
+        ],
+        [
+          "512",
+          "512",
+          "bias32",
+          "diffuse",
+          "f16",
+          "tail"
+        ],
+        [
+          "512",
+          "512",
+          "bias32",
+          "diffuse",
+          "q8_0",
+          "prefill"
+        ],
+        [
+          "512",
+          "512",
+          "bias32",
+          "diffuse",
+          "q8_0",
+          "tail"
+        ],
+        [
+          "512",
+          "512",
+          "unit",
+          "diffuse",
+          "f16",
+          "prefill"
+        ],
+        [
+          "512",
+          "512",
+          "unit",
+          "diffuse",
+          "f16",
+          "tail"
+        ],
+        [
+          "512",
+          "512",
+          "unit",
+          "diffuse",
+          "q8_0",
+          "prefill"
+        ],
+        [
+          "512",
+          "512",
+          "unit",
+          "diffuse",
+          "q8_0",
+          "tail"
+        ],
+        [
+          "512",
+          "512",
+          "unit",
+          "peaked",
+          "f16",
+          "prefill"
+        ],
+        [
+          "512",
+          "512",
+          "unit",
+          "peaked",
+          "q8_0",
+          "prefill"
+        ],
+        [
+          "64",
+          "2048",
+          "bias1024",
+          "diffuse",
+          "f16",
+          "drafter"
+        ],
+        [
+          "64",
+          "2048",
+          "bias1024",
+          "diffuse",
+          "f16",
+          "tail"
+        ],
+        [
+          "64",
+          "2048",
+          "bias1024",
+          "diffuse",
+          "q8_0",
+          "drafter"
+        ],
+        [
+          "64",
+          "2048",
+          "bias1024",
+          "diffuse",
+          "q8_0",
+          "tail"
+        ],
+        [
+          "64",
+          "2048",
+          "bias1024",
+          "peaked",
+          "f16",
+          "tail"
+        ],
+        [
+          "64",
+          "2048",
+          "bias1024",
+          "peaked",
+          "q8_0",
+          "tail"
+        ],
+        [
+          "64",
+          "2048",
+          "bias128",
+          "diffuse",
+          "f16",
+          "tail"
+        ],
+        [
+          "64",
+          "2048",
+          "bias128",
+          "diffuse",
+          "q8_0",
+          "tail"
+        ],
+        [
+          "64",
+          "2048",
+          "bias32",
+          "diffuse",
+          "f16",
+          "drafter"
+        ],
+        [
+          "64",
+          "2048",
+          "bias32",
+          "diffuse",
+          "f16",
+          "tail"
+        ],
+        [
+          "64",
+          "2048",
+          "bias32",
+          "diffuse",
+          "q8_0",
+          "drafter"
+        ],
+        [
+          "64",
+          "2048",
+          "bias32",
+          "diffuse",
+          "q8_0",
+          "tail"
+        ],
+        [
+          "64",
+          "2048",
+          "unit",
+          "diffuse",
+          "f16",
+          "drafter"
+        ],
+        [
+          "64",
+          "2048",
+          "unit",
+          "diffuse",
+          "f16",
+          "tail"
+        ],
+        [
+          "64",
+          "2048",
+          "unit",
+          "diffuse",
+          "q8_0",
+          "drafter"
+        ],
+        [
+          "64",
+          "2048",
+          "unit",
+          "diffuse",
+          "q8_0",
+          "tail"
+        ],
+        [
+          "64",
+          "2048",
+          "unit",
+          "peaked",
+          "f16",
+          "tail"
+        ],
+        [
+          "64",
+          "2048",
+          "unit",
+          "peaked",
+          "q8_0",
+          "tail"
+        ],
+        [
+          "64",
+          "2304",
+          "bias1024",
+          "diffuse",
+          "f16",
+          "drafter"
+        ],
+        [
+          "64",
+          "2304",
+          "bias1024",
+          "diffuse",
+          "q8_0",
+          "drafter"
+        ],
+        [
+          "64",
+          "256",
+          "bias1024",
+          "diffuse",
+          "f16",
+          "prefill"
+        ],
+        [
+          "64",
+          "256",
+          "bias1024",
+          "diffuse",
+          "q8_0",
+          "prefill"
+        ],
+        [
+          "64",
+          "256",
+          "bias1024",
+          "peaked",
+          "f16",
+          "prefill"
+        ],
+        [
+          "64",
+          "256",
+          "bias1024",
+          "peaked",
+          "q8_0",
+          "prefill"
+        ],
+        [
+          "64",
+          "256",
+          "bias128",
+          "diffuse",
+          "f16",
+          "prefill"
+        ],
+        [
+          "64",
+          "256",
+          "bias128",
+          "diffuse",
+          "q8_0",
+          "prefill"
+        ],
+        [
+          "64",
+          "256",
+          "bias32",
+          "diffuse",
+          "f16",
+          "prefill"
+        ],
+        [
+          "64",
+          "256",
+          "bias32",
+          "diffuse",
+          "q8_0",
+          "prefill"
+        ],
+        [
+          "64",
+          "256",
+          "unit",
+          "diffuse",
+          "f16",
+          "prefill"
+        ],
+        [
+          "64",
+          "256",
+          "unit",
+          "diffuse",
+          "q8_0",
+          "prefill"
+        ],
+        [
+          "64",
+          "256",
+          "unit",
+          "peaked",
+          "f16",
+          "prefill"
+        ],
+        [
+          "64",
+          "256",
+          "unit",
+          "peaked",
+          "q8_0",
+          "prefill"
+        ],
+        [
+          "64",
+          "4096",
+          "bias1024",
+          "diffuse",
+          "f16",
+          "tail"
+        ],
+        [
+          "64",
+          "4096",
+          "bias1024",
+          "diffuse",
+          "q8_0",
+          "tail"
+        ],
+        [
+          "64",
+          "4096",
+          "bias128",
+          "diffuse",
+          "f16",
+          "tail"
+        ],
+        [
+          "64",
+          "4096",
+          "bias128",
+          "diffuse",
+          "q8_0",
+          "tail"
+        ],
+        [
+          "64",
+          "4096",
+          "bias32",
+          "diffuse",
+          "f16",
+          "tail"
+        ],
+        [
+          "64",
+          "4096",
+          "bias32",
+          "diffuse",
+          "q8_0",
+          "tail"
+        ],
+        [
+          "64",
+          "4096",
+          "unit",
+          "diffuse",
+          "f16",
+          "tail"
+        ],
+        [
+          "64",
+          "4096",
+          "unit",
+          "diffuse",
+          "q8_0",
+          "tail"
+        ],
+        [
+          "64",
+          "512",
+          "bias1024",
+          "diffuse",
+          "f16",
+          "tail"
+        ],
+        [
+          "64",
+          "512",
+          "bias1024",
+          "diffuse",
+          "q8_0",
+          "tail"
+        ],
+        [
+          "64",
+          "512",
+          "bias128",
+          "diffuse",
+          "f16",
+          "tail"
+        ],
+        [
+          "64",
+          "512",
+          "bias128",
+          "diffuse",
+          "q8_0",
+          "tail"
+        ],
+        [
+          "64",
+          "512",
+          "bias32",
+          "diffuse",
+          "f16",
+          "tail"
+        ],
+        [
+          "64",
+          "512",
+          "bias32",
+          "diffuse",
+          "q8_0",
+          "tail"
+        ],
+        [
+          "64",
+          "512",
+          "unit",
+          "diffuse",
+          "f16",
+          "tail"
+        ],
+        [
+          "64",
+          "512",
+          "unit",
+          "diffuse",
+          "q8_0",
+          "tail"
+        ],
+        [
+          "9",
+          "2048",
+          "bias1024",
+          "diffuse",
+          "f16",
+          "drafter"
+        ],
+        [
+          "9",
+          "2048",
+          "bias1024",
+          "diffuse",
+          "f16",
+          "tail"
+        ],
+        [
+          "9",
+          "2048",
+          "bias1024",
+          "diffuse",
+          "q8_0",
+          "drafter"
+        ],
+        [
+          "9",
+          "2048",
+          "bias1024",
+          "diffuse",
+          "q8_0",
+          "tail"
+        ],
+        [
+          "9",
+          "2048",
+          "bias1024",
+          "peaked",
+          "f16",
+          "tail"
+        ],
+        [
+          "9",
+          "2048",
+          "bias1024",
+          "peaked",
+          "q8_0",
+          "tail"
+        ],
+        [
+          "9",
+          "2048",
+          "bias128",
+          "diffuse",
+          "f16",
+          "tail"
+        ],
+        [
+          "9",
+          "2048",
+          "bias128",
+          "diffuse",
+          "q8_0",
+          "tail"
+        ],
+        [
+          "9",
+          "2048",
+          "bias32",
+          "diffuse",
+          "f16",
+          "drafter"
+        ],
+        [
+          "9",
+          "2048",
+          "bias32",
+          "diffuse",
+          "f16",
+          "tail"
+        ],
+        [
+          "9",
+          "2048",
+          "bias32",
+          "diffuse",
+          "q8_0",
+          "drafter"
+        ],
+        [
+          "9",
+          "2048",
+          "bias32",
+          "diffuse",
+          "q8_0",
+          "tail"
+        ],
+        [
+          "9",
+          "2048",
+          "unit",
+          "diffuse",
+          "f16",
+          "drafter"
+        ],
+        [
+          "9",
+          "2048",
+          "unit",
+          "diffuse",
+          "f16",
+          "tail"
+        ],
+        [
+          "9",
+          "2048",
+          "unit",
+          "diffuse",
+          "q8_0",
+          "drafter"
+        ],
+        [
+          "9",
+          "2048",
+          "unit",
+          "diffuse",
+          "q8_0",
+          "tail"
+        ],
+        [
+          "9",
+          "2048",
+          "unit",
+          "peaked",
+          "f16",
+          "tail"
+        ],
+        [
+          "9",
+          "2048",
+          "unit",
+          "peaked",
+          "q8_0",
+          "tail"
+        ],
+        [
+          "9",
+          "2304",
+          "bias1024",
+          "diffuse",
+          "f16",
+          "drafter"
+        ],
+        [
+          "9",
+          "2304",
+          "bias1024",
+          "diffuse",
+          "q8_0",
+          "drafter"
+        ],
+        [
+          "9",
+          "4096",
+          "bias1024",
+          "diffuse",
+          "f16",
+          "tail"
+        ],
+        [
+          "9",
+          "4096",
+          "bias1024",
+          "diffuse",
+          "q8_0",
+          "tail"
+        ],
+        [
+          "9",
+          "4096",
+          "bias128",
+          "diffuse",
+          "f16",
+          "tail"
+        ],
+        [
+          "9",
+          "4096",
+          "bias128",
+          "diffuse",
+          "q8_0",
+          "tail"
+        ],
+        [
+          "9",
+          "4096",
+          "bias32",
+          "diffuse",
+          "f16",
+          "tail"
+        ],
+        [
+          "9",
+          "4096",
+          "bias32",
+          "diffuse",
+          "q8_0",
+          "tail"
+        ],
+        [
+          "9",
+          "4096",
+          "unit",
+          "diffuse",
+          "f16",
+          "tail"
+        ],
+        [
+          "9",
+          "4096",
+          "unit",
+          "diffuse",
+          "q8_0",
+          "tail"
+        ],
+        [
+          "9",
+          "512",
+          "bias1024",
+          "diffuse",
+          "f16",
+          "tail"
+        ],
+        [
+          "9",
+          "512",
+          "bias1024",
+          "diffuse",
+          "q8_0",
+          "tail"
+        ],
+        [
+          "9",
+          "512",
+          "bias128",
+          "diffuse",
+          "f16",
+          "tail"
+        ],
+        [
+          "9",
+          "512",
+          "bias128",
+          "diffuse",
+          "q8_0",
+          "tail"
+        ],
+        [
+          "9",
+          "512",
+          "bias32",
+          "diffuse",
+          "f16",
+          "tail"
+        ],
+        [
+          "9",
+          "512",
+          "bias32",
+          "diffuse",
+          "q8_0",
+          "tail"
+        ],
+        [
+          "9",
+          "512",
+          "unit",
+          "diffuse",
+          "f16",
+          "tail"
+        ],
+        [
+          "9",
+          "512",
+          "unit",
+          "diffuse",
+          "q8_0",
+          "tail"
+        ]
+      ],
+      "outcomes": [
+        {
+          "case": [
+            "128",
+            "256",
+            "bias1024",
+            "diffuse",
+            "f16",
+            "prefill"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "128",
+            "256",
+            "bias1024",
+            "diffuse",
+            "q8_0",
+            "prefill"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "128",
+            "256",
+            "bias1024",
+            "peaked",
+            "f16",
+            "prefill"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "128",
+            "256",
+            "bias1024",
+            "peaked",
+            "q8_0",
+            "prefill"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "128",
+            "256",
+            "bias128",
+            "diffuse",
+            "f16",
+            "prefill"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "128",
+            "256",
+            "bias128",
+            "diffuse",
+            "q8_0",
+            "prefill"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "128",
+            "256",
+            "bias32",
+            "diffuse",
+            "f16",
+            "prefill"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "128",
+            "256",
+            "bias32",
+            "diffuse",
+            "q8_0",
+            "prefill"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "128",
+            "256",
+            "unit",
+            "diffuse",
+            "f16",
+            "prefill"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "128",
+            "256",
+            "unit",
+            "diffuse",
+            "q8_0",
+            "prefill"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "128",
+            "256",
+            "unit",
+            "peaked",
+            "f16",
+            "prefill"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "128",
+            "256",
+            "unit",
+            "peaked",
+            "q8_0",
+            "prefill"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "256",
+            "256",
+            "bias1024",
+            "diffuse",
+            "f16",
+            "prefill"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "256",
+            "256",
+            "bias1024",
+            "diffuse",
+            "q8_0",
+            "prefill"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "256",
+            "256",
+            "bias1024",
+            "peaked",
+            "f16",
+            "prefill"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "256",
+            "256",
+            "bias1024",
+            "peaked",
+            "q8_0",
+            "prefill"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "256",
+            "256",
+            "bias128",
+            "diffuse",
+            "f16",
+            "prefill"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "256",
+            "256",
+            "bias128",
+            "diffuse",
+            "q8_0",
+            "prefill"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "256",
+            "256",
+            "bias32",
+            "diffuse",
+            "f16",
+            "prefill"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "256",
+            "256",
+            "bias32",
+            "diffuse",
+            "q8_0",
+            "prefill"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "256",
+            "256",
+            "unit",
+            "diffuse",
+            "f16",
+            "prefill"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "256",
+            "256",
+            "unit",
+            "diffuse",
+            "q8_0",
+            "prefill"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "256",
+            "256",
+            "unit",
+            "peaked",
+            "f16",
+            "prefill"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "256",
+            "256",
+            "unit",
+            "peaked",
+            "q8_0",
+            "prefill"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "27",
+            "2048",
+            "bias1024",
+            "diffuse",
+            "f16",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "27",
+            "2048",
+            "bias1024",
+            "diffuse",
+            "q8_0",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "27",
+            "2048",
+            "bias1024",
+            "peaked",
+            "f16",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "27",
+            "2048",
+            "bias1024",
+            "peaked",
+            "q8_0",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "27",
+            "2048",
+            "bias128",
+            "diffuse",
+            "f16",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "27",
+            "2048",
+            "bias128",
+            "diffuse",
+            "q8_0",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "27",
+            "2048",
+            "bias32",
+            "diffuse",
+            "f16",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "27",
+            "2048",
+            "bias32",
+            "diffuse",
+            "q8_0",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "27",
+            "2048",
+            "unit",
+            "diffuse",
+            "f16",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "27",
+            "2048",
+            "unit",
+            "diffuse",
+            "q8_0",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "27",
+            "2048",
+            "unit",
+            "peaked",
+            "f16",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "27",
+            "2048",
+            "unit",
+            "peaked",
+            "q8_0",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "27",
+            "4096",
+            "bias1024",
+            "diffuse",
+            "f16",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "27",
+            "4096",
+            "bias1024",
+            "diffuse",
+            "q8_0",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "27",
+            "4096",
+            "bias128",
+            "diffuse",
+            "f16",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "27",
+            "4096",
+            "bias128",
+            "diffuse",
+            "q8_0",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "27",
+            "4096",
+            "bias32",
+            "diffuse",
+            "f16",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "27",
+            "4096",
+            "bias32",
+            "diffuse",
+            "q8_0",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "27",
+            "4096",
+            "unit",
+            "diffuse",
+            "f16",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "27",
+            "4096",
+            "unit",
+            "diffuse",
+            "q8_0",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "27",
+            "512",
+            "bias1024",
+            "diffuse",
+            "f16",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "27",
+            "512",
+            "bias1024",
+            "diffuse",
+            "q8_0",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "27",
+            "512",
+            "bias128",
+            "diffuse",
+            "f16",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "27",
+            "512",
+            "bias128",
+            "diffuse",
+            "q8_0",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "27",
+            "512",
+            "bias32",
+            "diffuse",
+            "f16",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "27",
+            "512",
+            "bias32",
+            "diffuse",
+            "q8_0",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "27",
+            "512",
+            "unit",
+            "diffuse",
+            "f16",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "27",
+            "512",
+            "unit",
+            "diffuse",
+            "q8_0",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "300",
+            "300",
+            "bias1024",
+            "diffuse",
+            "f16",
+            "prefill"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "300",
+            "300",
+            "bias1024",
+            "diffuse",
+            "q8_0",
+            "prefill"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "300",
+            "300",
+            "bias1024",
+            "peaked",
+            "f16",
+            "prefill"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "300",
+            "300",
+            "bias1024",
+            "peaked",
+            "q8_0",
+            "prefill"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "300",
+            "300",
+            "bias128",
+            "diffuse",
+            "f16",
+            "prefill"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "300",
+            "300",
+            "bias128",
+            "diffuse",
+            "q8_0",
+            "prefill"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "300",
+            "300",
+            "bias32",
+            "diffuse",
+            "f16",
+            "prefill"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "300",
+            "300",
+            "bias32",
+            "diffuse",
+            "q8_0",
+            "prefill"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "300",
+            "300",
+            "unit",
+            "diffuse",
+            "f16",
+            "prefill"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "300",
+            "300",
+            "unit",
+            "diffuse",
+            "q8_0",
+            "prefill"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "300",
+            "300",
+            "unit",
+            "peaked",
+            "f16",
+            "prefill"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "300",
+            "300",
+            "unit",
+            "peaked",
+            "q8_0",
+            "prefill"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "300",
+            "512",
+            "bias1024",
+            "diffuse",
+            "f16",
+            "prefill"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "300",
+            "512",
+            "bias1024",
+            "diffuse",
+            "q8_0",
+            "prefill"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "300",
+            "512",
+            "bias1024",
+            "peaked",
+            "f16",
+            "prefill"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "300",
+            "512",
+            "bias1024",
+            "peaked",
+            "q8_0",
+            "prefill"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "300",
+            "512",
+            "bias128",
+            "diffuse",
+            "f16",
+            "prefill"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "300",
+            "512",
+            "bias128",
+            "diffuse",
+            "q8_0",
+            "prefill"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "300",
+            "512",
+            "bias32",
+            "diffuse",
+            "f16",
+            "prefill"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "300",
+            "512",
+            "bias32",
+            "diffuse",
+            "q8_0",
+            "prefill"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "300",
+            "512",
+            "unit",
+            "diffuse",
+            "f16",
+            "prefill"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "300",
+            "512",
+            "unit",
+            "diffuse",
+            "q8_0",
+            "prefill"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "300",
+            "512",
+            "unit",
+            "peaked",
+            "f16",
+            "prefill"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "300",
+            "512",
+            "unit",
+            "peaked",
+            "q8_0",
+            "prefill"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "36",
+            "2048",
+            "bias1024",
+            "diffuse",
+            "f16",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "36",
+            "2048",
+            "bias1024",
+            "diffuse",
+            "q8_0",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "36",
+            "2048",
+            "bias1024",
+            "peaked",
+            "f16",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "36",
+            "2048",
+            "bias1024",
+            "peaked",
+            "q8_0",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "36",
+            "2048",
+            "bias128",
+            "diffuse",
+            "f16",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "36",
+            "2048",
+            "bias128",
+            "diffuse",
+            "q8_0",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "36",
+            "2048",
+            "bias32",
+            "diffuse",
+            "f16",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "36",
+            "2048",
+            "bias32",
+            "diffuse",
+            "q8_0",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "36",
+            "2048",
+            "unit",
+            "diffuse",
+            "f16",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "36",
+            "2048",
+            "unit",
+            "diffuse",
+            "q8_0",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "36",
+            "2048",
+            "unit",
+            "peaked",
+            "f16",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "36",
+            "2048",
+            "unit",
+            "peaked",
+            "q8_0",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "36",
+            "4096",
+            "bias1024",
+            "diffuse",
+            "f16",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "36",
+            "4096",
+            "bias1024",
+            "diffuse",
+            "q8_0",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "36",
+            "4096",
+            "bias128",
+            "diffuse",
+            "f16",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "36",
+            "4096",
+            "bias128",
+            "diffuse",
+            "q8_0",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "36",
+            "4096",
+            "bias32",
+            "diffuse",
+            "f16",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "36",
+            "4096",
+            "bias32",
+            "diffuse",
+            "q8_0",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "36",
+            "4096",
+            "unit",
+            "diffuse",
+            "f16",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "36",
+            "4096",
+            "unit",
+            "diffuse",
+            "q8_0",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "36",
+            "512",
+            "bias1024",
+            "diffuse",
+            "f16",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "36",
+            "512",
+            "bias1024",
+            "diffuse",
+            "q8_0",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "36",
+            "512",
+            "bias128",
+            "diffuse",
+            "f16",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "36",
+            "512",
+            "bias128",
+            "diffuse",
+            "q8_0",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "36",
+            "512",
+            "bias32",
+            "diffuse",
+            "f16",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "36",
+            "512",
+            "bias32",
+            "diffuse",
+            "q8_0",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "36",
+            "512",
+            "unit",
+            "diffuse",
+            "f16",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "36",
+            "512",
+            "unit",
+            "diffuse",
+            "q8_0",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "512",
+            "2048",
+            "bias1024",
+            "diffuse",
+            "f16",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "512",
+            "2048",
+            "bias1024",
+            "diffuse",
+            "q8_0",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "512",
+            "2048",
+            "bias1024",
+            "peaked",
+            "f16",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "512",
+            "2048",
+            "bias1024",
+            "peaked",
+            "q8_0",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "512",
+            "2048",
+            "bias128",
+            "diffuse",
+            "f16",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "512",
+            "2048",
+            "bias128",
+            "diffuse",
+            "q8_0",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "512",
+            "2048",
+            "bias32",
+            "diffuse",
+            "f16",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "512",
+            "2048",
+            "bias32",
+            "diffuse",
+            "q8_0",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "512",
+            "2048",
+            "unit",
+            "diffuse",
+            "f16",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "512",
+            "2048",
+            "unit",
+            "diffuse",
+            "q8_0",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "512",
+            "2048",
+            "unit",
+            "peaked",
+            "f16",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "512",
+            "2048",
+            "unit",
+            "peaked",
+            "q8_0",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "512",
+            "4096",
+            "bias1024",
+            "diffuse",
+            "f16",
+            "tail"
+          ],
+          "nonfinite": 49152,
+          "verdict": "NONFINITE"
+        },
+        {
+          "case": [
+            "512",
+            "4096",
+            "bias1024",
+            "diffuse",
+            "q8_0",
+            "tail"
+          ],
+          "nonfinite": 49152,
+          "verdict": "NONFINITE"
+        },
+        {
+          "case": [
+            "512",
+            "4096",
+            "bias128",
+            "diffuse",
+            "f16",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "512",
+            "4096",
+            "bias128",
+            "diffuse",
+            "q8_0",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "512",
+            "4096",
+            "bias32",
+            "diffuse",
+            "f16",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "512",
+            "4096",
+            "bias32",
+            "diffuse",
+            "q8_0",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "512",
+            "4096",
+            "unit",
+            "diffuse",
+            "f16",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "512",
+            "4096",
+            "unit",
+            "diffuse",
+            "q8_0",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "512",
+            "512",
+            "bias1024",
+            "diffuse",
+            "f16",
+            "prefill"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "512",
+            "512",
+            "bias1024",
+            "diffuse",
+            "f16",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "512",
+            "512",
+            "bias1024",
+            "diffuse",
+            "q8_0",
+            "prefill"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "512",
+            "512",
+            "bias1024",
+            "diffuse",
+            "q8_0",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "512",
+            "512",
+            "bias1024",
+            "peaked",
+            "f16",
+            "prefill"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "512",
+            "512",
+            "bias1024",
+            "peaked",
+            "q8_0",
+            "prefill"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "512",
+            "512",
+            "bias128",
+            "diffuse",
+            "f16",
+            "prefill"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "512",
+            "512",
+            "bias128",
+            "diffuse",
+            "f16",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "512",
+            "512",
+            "bias128",
+            "diffuse",
+            "q8_0",
+            "prefill"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "512",
+            "512",
+            "bias128",
+            "diffuse",
+            "q8_0",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "512",
+            "512",
+            "bias32",
+            "diffuse",
+            "f16",
+            "prefill"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "512",
+            "512",
+            "bias32",
+            "diffuse",
+            "f16",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "512",
+            "512",
+            "bias32",
+            "diffuse",
+            "q8_0",
+            "prefill"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "512",
+            "512",
+            "bias32",
+            "diffuse",
+            "q8_0",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "512",
+            "512",
+            "unit",
+            "diffuse",
+            "f16",
+            "prefill"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "512",
+            "512",
+            "unit",
+            "diffuse",
+            "f16",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "512",
+            "512",
+            "unit",
+            "diffuse",
+            "q8_0",
+            "prefill"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "512",
+            "512",
+            "unit",
+            "diffuse",
+            "q8_0",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "512",
+            "512",
+            "unit",
+            "peaked",
+            "f16",
+            "prefill"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "512",
+            "512",
+            "unit",
+            "peaked",
+            "q8_0",
+            "prefill"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "64",
+            "2048",
+            "bias1024",
+            "diffuse",
+            "f16",
+            "drafter"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "64",
+            "2048",
+            "bias1024",
+            "diffuse",
+            "f16",
+            "tail"
+          ],
+          "nonfinite": 6144,
+          "verdict": "NONFINITE"
+        },
+        {
+          "case": [
+            "64",
+            "2048",
+            "bias1024",
+            "diffuse",
+            "q8_0",
+            "drafter"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "64",
+            "2048",
+            "bias1024",
+            "diffuse",
+            "q8_0",
+            "tail"
+          ],
+          "nonfinite": 6144,
+          "verdict": "NONFINITE"
+        },
+        {
+          "case": [
+            "64",
+            "2048",
+            "bias1024",
+            "peaked",
+            "f16",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "64",
+            "2048",
+            "bias1024",
+            "peaked",
+            "q8_0",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "64",
+            "2048",
+            "bias128",
+            "diffuse",
+            "f16",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "64",
+            "2048",
+            "bias128",
+            "diffuse",
+            "q8_0",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "64",
+            "2048",
+            "bias32",
+            "diffuse",
+            "f16",
+            "drafter"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "64",
+            "2048",
+            "bias32",
+            "diffuse",
+            "f16",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "64",
+            "2048",
+            "bias32",
+            "diffuse",
+            "q8_0",
+            "drafter"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "64",
+            "2048",
+            "bias32",
+            "diffuse",
+            "q8_0",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "64",
+            "2048",
+            "unit",
+            "diffuse",
+            "f16",
+            "drafter"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "64",
+            "2048",
+            "unit",
+            "diffuse",
+            "f16",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "64",
+            "2048",
+            "unit",
+            "diffuse",
+            "q8_0",
+            "drafter"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "64",
+            "2048",
+            "unit",
+            "diffuse",
+            "q8_0",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "64",
+            "2048",
+            "unit",
+            "peaked",
+            "f16",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "64",
+            "2048",
+            "unit",
+            "peaked",
+            "q8_0",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "64",
+            "2304",
+            "bias1024",
+            "diffuse",
+            "f16",
+            "drafter"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "64",
+            "2304",
+            "bias1024",
+            "diffuse",
+            "q8_0",
+            "drafter"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "64",
+            "256",
+            "bias1024",
+            "diffuse",
+            "f16",
+            "prefill"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "64",
+            "256",
+            "bias1024",
+            "diffuse",
+            "q8_0",
+            "prefill"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "64",
+            "256",
+            "bias1024",
+            "peaked",
+            "f16",
+            "prefill"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "64",
+            "256",
+            "bias1024",
+            "peaked",
+            "q8_0",
+            "prefill"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "64",
+            "256",
+            "bias128",
+            "diffuse",
+            "f16",
+            "prefill"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "64",
+            "256",
+            "bias128",
+            "diffuse",
+            "q8_0",
+            "prefill"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "64",
+            "256",
+            "bias32",
+            "diffuse",
+            "f16",
+            "prefill"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "64",
+            "256",
+            "bias32",
+            "diffuse",
+            "q8_0",
+            "prefill"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "64",
+            "256",
+            "unit",
+            "diffuse",
+            "f16",
+            "prefill"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "64",
+            "256",
+            "unit",
+            "diffuse",
+            "q8_0",
+            "prefill"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "64",
+            "256",
+            "unit",
+            "peaked",
+            "f16",
+            "prefill"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "64",
+            "256",
+            "unit",
+            "peaked",
+            "q8_0",
+            "prefill"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "64",
+            "4096",
+            "bias1024",
+            "diffuse",
+            "f16",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "64",
+            "4096",
+            "bias1024",
+            "diffuse",
+            "q8_0",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "64",
+            "4096",
+            "bias128",
+            "diffuse",
+            "f16",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "64",
+            "4096",
+            "bias128",
+            "diffuse",
+            "q8_0",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "64",
+            "4096",
+            "bias32",
+            "diffuse",
+            "f16",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "64",
+            "4096",
+            "bias32",
+            "diffuse",
+            "q8_0",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "64",
+            "4096",
+            "unit",
+            "diffuse",
+            "f16",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "64",
+            "4096",
+            "unit",
+            "diffuse",
+            "q8_0",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "64",
+            "512",
+            "bias1024",
+            "diffuse",
+            "f16",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "64",
+            "512",
+            "bias1024",
+            "diffuse",
+            "q8_0",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "64",
+            "512",
+            "bias128",
+            "diffuse",
+            "f16",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "64",
+            "512",
+            "bias128",
+            "diffuse",
+            "q8_0",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "64",
+            "512",
+            "bias32",
+            "diffuse",
+            "f16",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "64",
+            "512",
+            "bias32",
+            "diffuse",
+            "q8_0",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "64",
+            "512",
+            "unit",
+            "diffuse",
+            "f16",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "64",
+            "512",
+            "unit",
+            "diffuse",
+            "q8_0",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "9",
+            "2048",
+            "bias1024",
+            "diffuse",
+            "f16",
+            "drafter"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "9",
+            "2048",
+            "bias1024",
+            "diffuse",
+            "f16",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "9",
+            "2048",
+            "bias1024",
+            "diffuse",
+            "q8_0",
+            "drafter"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "9",
+            "2048",
+            "bias1024",
+            "diffuse",
+            "q8_0",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "9",
+            "2048",
+            "bias1024",
+            "peaked",
+            "f16",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "9",
+            "2048",
+            "bias1024",
+            "peaked",
+            "q8_0",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "9",
+            "2048",
+            "bias128",
+            "diffuse",
+            "f16",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "9",
+            "2048",
+            "bias128",
+            "diffuse",
+            "q8_0",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "9",
+            "2048",
+            "bias32",
+            "diffuse",
+            "f16",
+            "drafter"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "9",
+            "2048",
+            "bias32",
+            "diffuse",
+            "f16",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "9",
+            "2048",
+            "bias32",
+            "diffuse",
+            "q8_0",
+            "drafter"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "9",
+            "2048",
+            "bias32",
+            "diffuse",
+            "q8_0",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "9",
+            "2048",
+            "unit",
+            "diffuse",
+            "f16",
+            "drafter"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "9",
+            "2048",
+            "unit",
+            "diffuse",
+            "f16",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "9",
+            "2048",
+            "unit",
+            "diffuse",
+            "q8_0",
+            "drafter"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "9",
+            "2048",
+            "unit",
+            "diffuse",
+            "q8_0",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "9",
+            "2048",
+            "unit",
+            "peaked",
+            "f16",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "9",
+            "2048",
+            "unit",
+            "peaked",
+            "q8_0",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "9",
+            "2304",
+            "bias1024",
+            "diffuse",
+            "f16",
+            "drafter"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "9",
+            "2304",
+            "bias1024",
+            "diffuse",
+            "q8_0",
+            "drafter"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "9",
+            "4096",
+            "bias1024",
+            "diffuse",
+            "f16",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "9",
+            "4096",
+            "bias1024",
+            "diffuse",
+            "q8_0",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "9",
+            "4096",
+            "bias128",
+            "diffuse",
+            "f16",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "9",
+            "4096",
+            "bias128",
+            "diffuse",
+            "q8_0",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "9",
+            "4096",
+            "bias32",
+            "diffuse",
+            "f16",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "9",
+            "4096",
+            "bias32",
+            "diffuse",
+            "q8_0",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "9",
+            "4096",
+            "unit",
+            "diffuse",
+            "f16",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "9",
+            "4096",
+            "unit",
+            "diffuse",
+            "q8_0",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "9",
+            "512",
+            "bias1024",
+            "diffuse",
+            "f16",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "9",
+            "512",
+            "bias1024",
+            "diffuse",
+            "q8_0",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "9",
+            "512",
+            "bias128",
+            "diffuse",
+            "f16",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "9",
+            "512",
+            "bias128",
+            "diffuse",
+            "q8_0",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "9",
+            "512",
+            "bias32",
+            "diffuse",
+            "f16",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "9",
+            "512",
+            "bias32",
+            "diffuse",
+            "q8_0",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "9",
+            "512",
+            "unit",
+            "diffuse",
+            "f16",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "9",
+            "512",
+            "unit",
+            "diffuse",
+            "q8_0",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        }
+      ],
+      "path": "/mnt/micron/codex-ni-fa4-exact-set-r17-20261031/runs/20261031T013334Z-1489672/nan_A.native",
+      "sha256": "22933a0b66801cbb14f3d489985eb609ee82d39251c232afb96bef7c409a68a2"
+    },
+    "B": {
+      "flagged_cases": [
+        [
+          "512",
+          "2048",
+          "bias1024",
+          "diffuse",
+          "f16",
+          "tail"
+        ],
+        [
+          "512",
+          "2048",
+          "bias1024",
+          "diffuse",
+          "q8_0",
+          "tail"
+        ],
+        [
+          "512",
+          "4096",
+          "bias1024",
+          "diffuse",
+          "f16",
+          "tail"
+        ],
+        [
+          "512",
+          "4096",
+          "bias1024",
+          "diffuse",
+          "q8_0",
+          "tail"
+        ],
+        [
+          "64",
+          "4096",
+          "bias1024",
+          "diffuse",
+          "f16",
+          "tail"
+        ],
+        [
+          "64",
+          "4096",
+          "bias1024",
+          "diffuse",
+          "q8_0",
+          "tail"
+        ]
+      ],
+      "input_cases": [
+        [
+          "128",
+          "256",
+          "bias1024",
+          "diffuse",
+          "f16",
+          "prefill"
+        ],
+        [
+          "128",
+          "256",
+          "bias1024",
+          "diffuse",
+          "q8_0",
+          "prefill"
+        ],
+        [
+          "128",
+          "256",
+          "bias1024",
+          "peaked",
+          "f16",
+          "prefill"
+        ],
+        [
+          "128",
+          "256",
+          "bias1024",
+          "peaked",
+          "q8_0",
+          "prefill"
+        ],
+        [
+          "128",
+          "256",
+          "bias128",
+          "diffuse",
+          "f16",
+          "prefill"
+        ],
+        [
+          "128",
+          "256",
+          "bias128",
+          "diffuse",
+          "q8_0",
+          "prefill"
+        ],
+        [
+          "128",
+          "256",
+          "bias32",
+          "diffuse",
+          "f16",
+          "prefill"
+        ],
+        [
+          "128",
+          "256",
+          "bias32",
+          "diffuse",
+          "q8_0",
+          "prefill"
+        ],
+        [
+          "128",
+          "256",
+          "unit",
+          "diffuse",
+          "f16",
+          "prefill"
+        ],
+        [
+          "128",
+          "256",
+          "unit",
+          "diffuse",
+          "q8_0",
+          "prefill"
+        ],
+        [
+          "128",
+          "256",
+          "unit",
+          "peaked",
+          "f16",
+          "prefill"
+        ],
+        [
+          "128",
+          "256",
+          "unit",
+          "peaked",
+          "q8_0",
+          "prefill"
+        ],
+        [
+          "256",
+          "256",
+          "bias1024",
+          "diffuse",
+          "f16",
+          "prefill"
+        ],
+        [
+          "256",
+          "256",
+          "bias1024",
+          "diffuse",
+          "q8_0",
+          "prefill"
+        ],
+        [
+          "256",
+          "256",
+          "bias1024",
+          "peaked",
+          "f16",
+          "prefill"
+        ],
+        [
+          "256",
+          "256",
+          "bias1024",
+          "peaked",
+          "q8_0",
+          "prefill"
+        ],
+        [
+          "256",
+          "256",
+          "bias128",
+          "diffuse",
+          "f16",
+          "prefill"
+        ],
+        [
+          "256",
+          "256",
+          "bias128",
+          "diffuse",
+          "q8_0",
+          "prefill"
+        ],
+        [
+          "256",
+          "256",
+          "bias32",
+          "diffuse",
+          "f16",
+          "prefill"
+        ],
+        [
+          "256",
+          "256",
+          "bias32",
+          "diffuse",
+          "q8_0",
+          "prefill"
+        ],
+        [
+          "256",
+          "256",
+          "unit",
+          "diffuse",
+          "f16",
+          "prefill"
+        ],
+        [
+          "256",
+          "256",
+          "unit",
+          "diffuse",
+          "q8_0",
+          "prefill"
+        ],
+        [
+          "256",
+          "256",
+          "unit",
+          "peaked",
+          "f16",
+          "prefill"
+        ],
+        [
+          "256",
+          "256",
+          "unit",
+          "peaked",
+          "q8_0",
+          "prefill"
+        ],
+        [
+          "27",
+          "2048",
+          "bias1024",
+          "diffuse",
+          "f16",
+          "tail"
+        ],
+        [
+          "27",
+          "2048",
+          "bias1024",
+          "diffuse",
+          "q8_0",
+          "tail"
+        ],
+        [
+          "27",
+          "2048",
+          "bias1024",
+          "peaked",
+          "f16",
+          "tail"
+        ],
+        [
+          "27",
+          "2048",
+          "bias1024",
+          "peaked",
+          "q8_0",
+          "tail"
+        ],
+        [
+          "27",
+          "2048",
+          "bias128",
+          "diffuse",
+          "f16",
+          "tail"
+        ],
+        [
+          "27",
+          "2048",
+          "bias128",
+          "diffuse",
+          "q8_0",
+          "tail"
+        ],
+        [
+          "27",
+          "2048",
+          "bias32",
+          "diffuse",
+          "f16",
+          "tail"
+        ],
+        [
+          "27",
+          "2048",
+          "bias32",
+          "diffuse",
+          "q8_0",
+          "tail"
+        ],
+        [
+          "27",
+          "2048",
+          "unit",
+          "diffuse",
+          "f16",
+          "tail"
+        ],
+        [
+          "27",
+          "2048",
+          "unit",
+          "diffuse",
+          "q8_0",
+          "tail"
+        ],
+        [
+          "27",
+          "2048",
+          "unit",
+          "peaked",
+          "f16",
+          "tail"
+        ],
+        [
+          "27",
+          "2048",
+          "unit",
+          "peaked",
+          "q8_0",
+          "tail"
+        ],
+        [
+          "27",
+          "4096",
+          "bias1024",
+          "diffuse",
+          "f16",
+          "tail"
+        ],
+        [
+          "27",
+          "4096",
+          "bias1024",
+          "diffuse",
+          "q8_0",
+          "tail"
+        ],
+        [
+          "27",
+          "4096",
+          "bias128",
+          "diffuse",
+          "f16",
+          "tail"
+        ],
+        [
+          "27",
+          "4096",
+          "bias128",
+          "diffuse",
+          "q8_0",
+          "tail"
+        ],
+        [
+          "27",
+          "4096",
+          "bias32",
+          "diffuse",
+          "f16",
+          "tail"
+        ],
+        [
+          "27",
+          "4096",
+          "bias32",
+          "diffuse",
+          "q8_0",
+          "tail"
+        ],
+        [
+          "27",
+          "4096",
+          "unit",
+          "diffuse",
+          "f16",
+          "tail"
+        ],
+        [
+          "27",
+          "4096",
+          "unit",
+          "diffuse",
+          "q8_0",
+          "tail"
+        ],
+        [
+          "27",
+          "512",
+          "bias1024",
+          "diffuse",
+          "f16",
+          "tail"
+        ],
+        [
+          "27",
+          "512",
+          "bias1024",
+          "diffuse",
+          "q8_0",
+          "tail"
+        ],
+        [
+          "27",
+          "512",
+          "bias128",
+          "diffuse",
+          "f16",
+          "tail"
+        ],
+        [
+          "27",
+          "512",
+          "bias128",
+          "diffuse",
+          "q8_0",
+          "tail"
+        ],
+        [
+          "27",
+          "512",
+          "bias32",
+          "diffuse",
+          "f16",
+          "tail"
+        ],
+        [
+          "27",
+          "512",
+          "bias32",
+          "diffuse",
+          "q8_0",
+          "tail"
+        ],
+        [
+          "27",
+          "512",
+          "unit",
+          "diffuse",
+          "f16",
+          "tail"
+        ],
+        [
+          "27",
+          "512",
+          "unit",
+          "diffuse",
+          "q8_0",
+          "tail"
+        ],
+        [
+          "300",
+          "300",
+          "bias1024",
+          "diffuse",
+          "f16",
+          "prefill"
+        ],
+        [
+          "300",
+          "300",
+          "bias1024",
+          "diffuse",
+          "q8_0",
+          "prefill"
+        ],
+        [
+          "300",
+          "300",
+          "bias1024",
+          "peaked",
+          "f16",
+          "prefill"
+        ],
+        [
+          "300",
+          "300",
+          "bias1024",
+          "peaked",
+          "q8_0",
+          "prefill"
+        ],
+        [
+          "300",
+          "300",
+          "bias128",
+          "diffuse",
+          "f16",
+          "prefill"
+        ],
+        [
+          "300",
+          "300",
+          "bias128",
+          "diffuse",
+          "q8_0",
+          "prefill"
+        ],
+        [
+          "300",
+          "300",
+          "bias32",
+          "diffuse",
+          "f16",
+          "prefill"
+        ],
+        [
+          "300",
+          "300",
+          "bias32",
+          "diffuse",
+          "q8_0",
+          "prefill"
+        ],
+        [
+          "300",
+          "300",
+          "unit",
+          "diffuse",
+          "f16",
+          "prefill"
+        ],
+        [
+          "300",
+          "300",
+          "unit",
+          "diffuse",
+          "q8_0",
+          "prefill"
+        ],
+        [
+          "300",
+          "300",
+          "unit",
+          "peaked",
+          "f16",
+          "prefill"
+        ],
+        [
+          "300",
+          "300",
+          "unit",
+          "peaked",
+          "q8_0",
+          "prefill"
+        ],
+        [
+          "300",
+          "512",
+          "bias1024",
+          "diffuse",
+          "f16",
+          "prefill"
+        ],
+        [
+          "300",
+          "512",
+          "bias1024",
+          "diffuse",
+          "q8_0",
+          "prefill"
+        ],
+        [
+          "300",
+          "512",
+          "bias1024",
+          "peaked",
+          "f16",
+          "prefill"
+        ],
+        [
+          "300",
+          "512",
+          "bias1024",
+          "peaked",
+          "q8_0",
+          "prefill"
+        ],
+        [
+          "300",
+          "512",
+          "bias128",
+          "diffuse",
+          "f16",
+          "prefill"
+        ],
+        [
+          "300",
+          "512",
+          "bias128",
+          "diffuse",
+          "q8_0",
+          "prefill"
+        ],
+        [
+          "300",
+          "512",
+          "bias32",
+          "diffuse",
+          "f16",
+          "prefill"
+        ],
+        [
+          "300",
+          "512",
+          "bias32",
+          "diffuse",
+          "q8_0",
+          "prefill"
+        ],
+        [
+          "300",
+          "512",
+          "unit",
+          "diffuse",
+          "f16",
+          "prefill"
+        ],
+        [
+          "300",
+          "512",
+          "unit",
+          "diffuse",
+          "q8_0",
+          "prefill"
+        ],
+        [
+          "300",
+          "512",
+          "unit",
+          "peaked",
+          "f16",
+          "prefill"
+        ],
+        [
+          "300",
+          "512",
+          "unit",
+          "peaked",
+          "q8_0",
+          "prefill"
+        ],
+        [
+          "36",
+          "2048",
+          "bias1024",
+          "diffuse",
+          "f16",
+          "tail"
+        ],
+        [
+          "36",
+          "2048",
+          "bias1024",
+          "diffuse",
+          "q8_0",
+          "tail"
+        ],
+        [
+          "36",
+          "2048",
+          "bias1024",
+          "peaked",
+          "f16",
+          "tail"
+        ],
+        [
+          "36",
+          "2048",
+          "bias1024",
+          "peaked",
+          "q8_0",
+          "tail"
+        ],
+        [
+          "36",
+          "2048",
+          "bias128",
+          "diffuse",
+          "f16",
+          "tail"
+        ],
+        [
+          "36",
+          "2048",
+          "bias128",
+          "diffuse",
+          "q8_0",
+          "tail"
+        ],
+        [
+          "36",
+          "2048",
+          "bias32",
+          "diffuse",
+          "f16",
+          "tail"
+        ],
+        [
+          "36",
+          "2048",
+          "bias32",
+          "diffuse",
+          "q8_0",
+          "tail"
+        ],
+        [
+          "36",
+          "2048",
+          "unit",
+          "diffuse",
+          "f16",
+          "tail"
+        ],
+        [
+          "36",
+          "2048",
+          "unit",
+          "diffuse",
+          "q8_0",
+          "tail"
+        ],
+        [
+          "36",
+          "2048",
+          "unit",
+          "peaked",
+          "f16",
+          "tail"
+        ],
+        [
+          "36",
+          "2048",
+          "unit",
+          "peaked",
+          "q8_0",
+          "tail"
+        ],
+        [
+          "36",
+          "4096",
+          "bias1024",
+          "diffuse",
+          "f16",
+          "tail"
+        ],
+        [
+          "36",
+          "4096",
+          "bias1024",
+          "diffuse",
+          "q8_0",
+          "tail"
+        ],
+        [
+          "36",
+          "4096",
+          "bias128",
+          "diffuse",
+          "f16",
+          "tail"
+        ],
+        [
+          "36",
+          "4096",
+          "bias128",
+          "diffuse",
+          "q8_0",
+          "tail"
+        ],
+        [
+          "36",
+          "4096",
+          "bias32",
+          "diffuse",
+          "f16",
+          "tail"
+        ],
+        [
+          "36",
+          "4096",
+          "bias32",
+          "diffuse",
+          "q8_0",
+          "tail"
+        ],
+        [
+          "36",
+          "4096",
+          "unit",
+          "diffuse",
+          "f16",
+          "tail"
+        ],
+        [
+          "36",
+          "4096",
+          "unit",
+          "diffuse",
+          "q8_0",
+          "tail"
+        ],
+        [
+          "36",
+          "512",
+          "bias1024",
+          "diffuse",
+          "f16",
+          "tail"
+        ],
+        [
+          "36",
+          "512",
+          "bias1024",
+          "diffuse",
+          "q8_0",
+          "tail"
+        ],
+        [
+          "36",
+          "512",
+          "bias128",
+          "diffuse",
+          "f16",
+          "tail"
+        ],
+        [
+          "36",
+          "512",
+          "bias128",
+          "diffuse",
+          "q8_0",
+          "tail"
+        ],
+        [
+          "36",
+          "512",
+          "bias32",
+          "diffuse",
+          "f16",
+          "tail"
+        ],
+        [
+          "36",
+          "512",
+          "bias32",
+          "diffuse",
+          "q8_0",
+          "tail"
+        ],
+        [
+          "36",
+          "512",
+          "unit",
+          "diffuse",
+          "f16",
+          "tail"
+        ],
+        [
+          "36",
+          "512",
+          "unit",
+          "diffuse",
+          "q8_0",
+          "tail"
+        ],
+        [
+          "512",
+          "2048",
+          "bias1024",
+          "diffuse",
+          "f16",
+          "tail"
+        ],
+        [
+          "512",
+          "2048",
+          "bias1024",
+          "diffuse",
+          "q8_0",
+          "tail"
+        ],
+        [
+          "512",
+          "2048",
+          "bias1024",
+          "peaked",
+          "f16",
+          "tail"
+        ],
+        [
+          "512",
+          "2048",
+          "bias1024",
+          "peaked",
+          "q8_0",
+          "tail"
+        ],
+        [
+          "512",
+          "2048",
+          "bias128",
+          "diffuse",
+          "f16",
+          "tail"
+        ],
+        [
+          "512",
+          "2048",
+          "bias128",
+          "diffuse",
+          "q8_0",
+          "tail"
+        ],
+        [
+          "512",
+          "2048",
+          "bias32",
+          "diffuse",
+          "f16",
+          "tail"
+        ],
+        [
+          "512",
+          "2048",
+          "bias32",
+          "diffuse",
+          "q8_0",
+          "tail"
+        ],
+        [
+          "512",
+          "2048",
+          "unit",
+          "diffuse",
+          "f16",
+          "tail"
+        ],
+        [
+          "512",
+          "2048",
+          "unit",
+          "diffuse",
+          "q8_0",
+          "tail"
+        ],
+        [
+          "512",
+          "2048",
+          "unit",
+          "peaked",
+          "f16",
+          "tail"
+        ],
+        [
+          "512",
+          "2048",
+          "unit",
+          "peaked",
+          "q8_0",
+          "tail"
+        ],
+        [
+          "512",
+          "4096",
+          "bias1024",
+          "diffuse",
+          "f16",
+          "tail"
+        ],
+        [
+          "512",
+          "4096",
+          "bias1024",
+          "diffuse",
+          "q8_0",
+          "tail"
+        ],
+        [
+          "512",
+          "4096",
+          "bias128",
+          "diffuse",
+          "f16",
+          "tail"
+        ],
+        [
+          "512",
+          "4096",
+          "bias128",
+          "diffuse",
+          "q8_0",
+          "tail"
+        ],
+        [
+          "512",
+          "4096",
+          "bias32",
+          "diffuse",
+          "f16",
+          "tail"
+        ],
+        [
+          "512",
+          "4096",
+          "bias32",
+          "diffuse",
+          "q8_0",
+          "tail"
+        ],
+        [
+          "512",
+          "4096",
+          "unit",
+          "diffuse",
+          "f16",
+          "tail"
+        ],
+        [
+          "512",
+          "4096",
+          "unit",
+          "diffuse",
+          "q8_0",
+          "tail"
+        ],
+        [
+          "512",
+          "512",
+          "bias1024",
+          "diffuse",
+          "f16",
+          "prefill"
+        ],
+        [
+          "512",
+          "512",
+          "bias1024",
+          "diffuse",
+          "f16",
+          "tail"
+        ],
+        [
+          "512",
+          "512",
+          "bias1024",
+          "diffuse",
+          "q8_0",
+          "prefill"
+        ],
+        [
+          "512",
+          "512",
+          "bias1024",
+          "diffuse",
+          "q8_0",
+          "tail"
+        ],
+        [
+          "512",
+          "512",
+          "bias1024",
+          "peaked",
+          "f16",
+          "prefill"
+        ],
+        [
+          "512",
+          "512",
+          "bias1024",
+          "peaked",
+          "q8_0",
+          "prefill"
+        ],
+        [
+          "512",
+          "512",
+          "bias128",
+          "diffuse",
+          "f16",
+          "prefill"
+        ],
+        [
+          "512",
+          "512",
+          "bias128",
+          "diffuse",
+          "f16",
+          "tail"
+        ],
+        [
+          "512",
+          "512",
+          "bias128",
+          "diffuse",
+          "q8_0",
+          "prefill"
+        ],
+        [
+          "512",
+          "512",
+          "bias128",
+          "diffuse",
+          "q8_0",
+          "tail"
+        ],
+        [
+          "512",
+          "512",
+          "bias32",
+          "diffuse",
+          "f16",
+          "prefill"
+        ],
+        [
+          "512",
+          "512",
+          "bias32",
+          "diffuse",
+          "f16",
+          "tail"
+        ],
+        [
+          "512",
+          "512",
+          "bias32",
+          "diffuse",
+          "q8_0",
+          "prefill"
+        ],
+        [
+          "512",
+          "512",
+          "bias32",
+          "diffuse",
+          "q8_0",
+          "tail"
+        ],
+        [
+          "512",
+          "512",
+          "unit",
+          "diffuse",
+          "f16",
+          "prefill"
+        ],
+        [
+          "512",
+          "512",
+          "unit",
+          "diffuse",
+          "f16",
+          "tail"
+        ],
+        [
+          "512",
+          "512",
+          "unit",
+          "diffuse",
+          "q8_0",
+          "prefill"
+        ],
+        [
+          "512",
+          "512",
+          "unit",
+          "diffuse",
+          "q8_0",
+          "tail"
+        ],
+        [
+          "512",
+          "512",
+          "unit",
+          "peaked",
+          "f16",
+          "prefill"
+        ],
+        [
+          "512",
+          "512",
+          "unit",
+          "peaked",
+          "q8_0",
+          "prefill"
+        ],
+        [
+          "64",
+          "2048",
+          "bias1024",
+          "diffuse",
+          "f16",
+          "drafter"
+        ],
+        [
+          "64",
+          "2048",
+          "bias1024",
+          "diffuse",
+          "f16",
+          "tail"
+        ],
+        [
+          "64",
+          "2048",
+          "bias1024",
+          "diffuse",
+          "q8_0",
+          "drafter"
+        ],
+        [
+          "64",
+          "2048",
+          "bias1024",
+          "diffuse",
+          "q8_0",
+          "tail"
+        ],
+        [
+          "64",
+          "2048",
+          "bias1024",
+          "peaked",
+          "f16",
+          "tail"
+        ],
+        [
+          "64",
+          "2048",
+          "bias1024",
+          "peaked",
+          "q8_0",
+          "tail"
+        ],
+        [
+          "64",
+          "2048",
+          "bias128",
+          "diffuse",
+          "f16",
+          "tail"
+        ],
+        [
+          "64",
+          "2048",
+          "bias128",
+          "diffuse",
+          "q8_0",
+          "tail"
+        ],
+        [
+          "64",
+          "2048",
+          "bias32",
+          "diffuse",
+          "f16",
+          "drafter"
+        ],
+        [
+          "64",
+          "2048",
+          "bias32",
+          "diffuse",
+          "f16",
+          "tail"
+        ],
+        [
+          "64",
+          "2048",
+          "bias32",
+          "diffuse",
+          "q8_0",
+          "drafter"
+        ],
+        [
+          "64",
+          "2048",
+          "bias32",
+          "diffuse",
+          "q8_0",
+          "tail"
+        ],
+        [
+          "64",
+          "2048",
+          "unit",
+          "diffuse",
+          "f16",
+          "drafter"
+        ],
+        [
+          "64",
+          "2048",
+          "unit",
+          "diffuse",
+          "f16",
+          "tail"
+        ],
+        [
+          "64",
+          "2048",
+          "unit",
+          "diffuse",
+          "q8_0",
+          "drafter"
+        ],
+        [
+          "64",
+          "2048",
+          "unit",
+          "diffuse",
+          "q8_0",
+          "tail"
+        ],
+        [
+          "64",
+          "2048",
+          "unit",
+          "peaked",
+          "f16",
+          "tail"
+        ],
+        [
+          "64",
+          "2048",
+          "unit",
+          "peaked",
+          "q8_0",
+          "tail"
+        ],
+        [
+          "64",
+          "2304",
+          "bias1024",
+          "diffuse",
+          "f16",
+          "drafter"
+        ],
+        [
+          "64",
+          "2304",
+          "bias1024",
+          "diffuse",
+          "q8_0",
+          "drafter"
+        ],
+        [
+          "64",
+          "256",
+          "bias1024",
+          "diffuse",
+          "f16",
+          "prefill"
+        ],
+        [
+          "64",
+          "256",
+          "bias1024",
+          "diffuse",
+          "q8_0",
+          "prefill"
+        ],
+        [
+          "64",
+          "256",
+          "bias1024",
+          "peaked",
+          "f16",
+          "prefill"
+        ],
+        [
+          "64",
+          "256",
+          "bias1024",
+          "peaked",
+          "q8_0",
+          "prefill"
+        ],
+        [
+          "64",
+          "256",
+          "bias128",
+          "diffuse",
+          "f16",
+          "prefill"
+        ],
+        [
+          "64",
+          "256",
+          "bias128",
+          "diffuse",
+          "q8_0",
+          "prefill"
+        ],
+        [
+          "64",
+          "256",
+          "bias32",
+          "diffuse",
+          "f16",
+          "prefill"
+        ],
+        [
+          "64",
+          "256",
+          "bias32",
+          "diffuse",
+          "q8_0",
+          "prefill"
+        ],
+        [
+          "64",
+          "256",
+          "unit",
+          "diffuse",
+          "f16",
+          "prefill"
+        ],
+        [
+          "64",
+          "256",
+          "unit",
+          "diffuse",
+          "q8_0",
+          "prefill"
+        ],
+        [
+          "64",
+          "256",
+          "unit",
+          "peaked",
+          "f16",
+          "prefill"
+        ],
+        [
+          "64",
+          "256",
+          "unit",
+          "peaked",
+          "q8_0",
+          "prefill"
+        ],
+        [
+          "64",
+          "4096",
+          "bias1024",
+          "diffuse",
+          "f16",
+          "tail"
+        ],
+        [
+          "64",
+          "4096",
+          "bias1024",
+          "diffuse",
+          "q8_0",
+          "tail"
+        ],
+        [
+          "64",
+          "4096",
+          "bias128",
+          "diffuse",
+          "f16",
+          "tail"
+        ],
+        [
+          "64",
+          "4096",
+          "bias128",
+          "diffuse",
+          "q8_0",
+          "tail"
+        ],
+        [
+          "64",
+          "4096",
+          "bias32",
+          "diffuse",
+          "f16",
+          "tail"
+        ],
+        [
+          "64",
+          "4096",
+          "bias32",
+          "diffuse",
+          "q8_0",
+          "tail"
+        ],
+        [
+          "64",
+          "4096",
+          "unit",
+          "diffuse",
+          "f16",
+          "tail"
+        ],
+        [
+          "64",
+          "4096",
+          "unit",
+          "diffuse",
+          "q8_0",
+          "tail"
+        ],
+        [
+          "64",
+          "512",
+          "bias1024",
+          "diffuse",
+          "f16",
+          "tail"
+        ],
+        [
+          "64",
+          "512",
+          "bias1024",
+          "diffuse",
+          "q8_0",
+          "tail"
+        ],
+        [
+          "64",
+          "512",
+          "bias128",
+          "diffuse",
+          "f16",
+          "tail"
+        ],
+        [
+          "64",
+          "512",
+          "bias128",
+          "diffuse",
+          "q8_0",
+          "tail"
+        ],
+        [
+          "64",
+          "512",
+          "bias32",
+          "diffuse",
+          "f16",
+          "tail"
+        ],
+        [
+          "64",
+          "512",
+          "bias32",
+          "diffuse",
+          "q8_0",
+          "tail"
+        ],
+        [
+          "64",
+          "512",
+          "unit",
+          "diffuse",
+          "f16",
+          "tail"
+        ],
+        [
+          "64",
+          "512",
+          "unit",
+          "diffuse",
+          "q8_0",
+          "tail"
+        ],
+        [
+          "9",
+          "2048",
+          "bias1024",
+          "diffuse",
+          "f16",
+          "drafter"
+        ],
+        [
+          "9",
+          "2048",
+          "bias1024",
+          "diffuse",
+          "f16",
+          "tail"
+        ],
+        [
+          "9",
+          "2048",
+          "bias1024",
+          "diffuse",
+          "q8_0",
+          "drafter"
+        ],
+        [
+          "9",
+          "2048",
+          "bias1024",
+          "diffuse",
+          "q8_0",
+          "tail"
+        ],
+        [
+          "9",
+          "2048",
+          "bias1024",
+          "peaked",
+          "f16",
+          "tail"
+        ],
+        [
+          "9",
+          "2048",
+          "bias1024",
+          "peaked",
+          "q8_0",
+          "tail"
+        ],
+        [
+          "9",
+          "2048",
+          "bias128",
+          "diffuse",
+          "f16",
+          "tail"
+        ],
+        [
+          "9",
+          "2048",
+          "bias128",
+          "diffuse",
+          "q8_0",
+          "tail"
+        ],
+        [
+          "9",
+          "2048",
+          "bias32",
+          "diffuse",
+          "f16",
+          "drafter"
+        ],
+        [
+          "9",
+          "2048",
+          "bias32",
+          "diffuse",
+          "f16",
+          "tail"
+        ],
+        [
+          "9",
+          "2048",
+          "bias32",
+          "diffuse",
+          "q8_0",
+          "drafter"
+        ],
+        [
+          "9",
+          "2048",
+          "bias32",
+          "diffuse",
+          "q8_0",
+          "tail"
+        ],
+        [
+          "9",
+          "2048",
+          "unit",
+          "diffuse",
+          "f16",
+          "drafter"
+        ],
+        [
+          "9",
+          "2048",
+          "unit",
+          "diffuse",
+          "f16",
+          "tail"
+        ],
+        [
+          "9",
+          "2048",
+          "unit",
+          "diffuse",
+          "q8_0",
+          "drafter"
+        ],
+        [
+          "9",
+          "2048",
+          "unit",
+          "diffuse",
+          "q8_0",
+          "tail"
+        ],
+        [
+          "9",
+          "2048",
+          "unit",
+          "peaked",
+          "f16",
+          "tail"
+        ],
+        [
+          "9",
+          "2048",
+          "unit",
+          "peaked",
+          "q8_0",
+          "tail"
+        ],
+        [
+          "9",
+          "2304",
+          "bias1024",
+          "diffuse",
+          "f16",
+          "drafter"
+        ],
+        [
+          "9",
+          "2304",
+          "bias1024",
+          "diffuse",
+          "q8_0",
+          "drafter"
+        ],
+        [
+          "9",
+          "4096",
+          "bias1024",
+          "diffuse",
+          "f16",
+          "tail"
+        ],
+        [
+          "9",
+          "4096",
+          "bias1024",
+          "diffuse",
+          "q8_0",
+          "tail"
+        ],
+        [
+          "9",
+          "4096",
+          "bias128",
+          "diffuse",
+          "f16",
+          "tail"
+        ],
+        [
+          "9",
+          "4096",
+          "bias128",
+          "diffuse",
+          "q8_0",
+          "tail"
+        ],
+        [
+          "9",
+          "4096",
+          "bias32",
+          "diffuse",
+          "f16",
+          "tail"
+        ],
+        [
+          "9",
+          "4096",
+          "bias32",
+          "diffuse",
+          "q8_0",
+          "tail"
+        ],
+        [
+          "9",
+          "4096",
+          "unit",
+          "diffuse",
+          "f16",
+          "tail"
+        ],
+        [
+          "9",
+          "4096",
+          "unit",
+          "diffuse",
+          "q8_0",
+          "tail"
+        ],
+        [
+          "9",
+          "512",
+          "bias1024",
+          "diffuse",
+          "f16",
+          "tail"
+        ],
+        [
+          "9",
+          "512",
+          "bias1024",
+          "diffuse",
+          "q8_0",
+          "tail"
+        ],
+        [
+          "9",
+          "512",
+          "bias128",
+          "diffuse",
+          "f16",
+          "tail"
+        ],
+        [
+          "9",
+          "512",
+          "bias128",
+          "diffuse",
+          "q8_0",
+          "tail"
+        ],
+        [
+          "9",
+          "512",
+          "bias32",
+          "diffuse",
+          "f16",
+          "tail"
+        ],
+        [
+          "9",
+          "512",
+          "bias32",
+          "diffuse",
+          "q8_0",
+          "tail"
+        ],
+        [
+          "9",
+          "512",
+          "unit",
+          "diffuse",
+          "f16",
+          "tail"
+        ],
+        [
+          "9",
+          "512",
+          "unit",
+          "diffuse",
+          "q8_0",
+          "tail"
+        ]
+      ],
+      "outcomes": [
+        {
+          "case": [
+            "128",
+            "256",
+            "bias1024",
+            "diffuse",
+            "f16",
+            "prefill"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "128",
+            "256",
+            "bias1024",
+            "diffuse",
+            "q8_0",
+            "prefill"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "128",
+            "256",
+            "bias1024",
+            "peaked",
+            "f16",
+            "prefill"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "128",
+            "256",
+            "bias1024",
+            "peaked",
+            "q8_0",
+            "prefill"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "128",
+            "256",
+            "bias128",
+            "diffuse",
+            "f16",
+            "prefill"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "128",
+            "256",
+            "bias128",
+            "diffuse",
+            "q8_0",
+            "prefill"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "128",
+            "256",
+            "bias32",
+            "diffuse",
+            "f16",
+            "prefill"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "128",
+            "256",
+            "bias32",
+            "diffuse",
+            "q8_0",
+            "prefill"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "128",
+            "256",
+            "unit",
+            "diffuse",
+            "f16",
+            "prefill"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "128",
+            "256",
+            "unit",
+            "diffuse",
+            "q8_0",
+            "prefill"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "128",
+            "256",
+            "unit",
+            "peaked",
+            "f16",
+            "prefill"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "128",
+            "256",
+            "unit",
+            "peaked",
+            "q8_0",
+            "prefill"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "256",
+            "256",
+            "bias1024",
+            "diffuse",
+            "f16",
+            "prefill"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "256",
+            "256",
+            "bias1024",
+            "diffuse",
+            "q8_0",
+            "prefill"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "256",
+            "256",
+            "bias1024",
+            "peaked",
+            "f16",
+            "prefill"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "256",
+            "256",
+            "bias1024",
+            "peaked",
+            "q8_0",
+            "prefill"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "256",
+            "256",
+            "bias128",
+            "diffuse",
+            "f16",
+            "prefill"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "256",
+            "256",
+            "bias128",
+            "diffuse",
+            "q8_0",
+            "prefill"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "256",
+            "256",
+            "bias32",
+            "diffuse",
+            "f16",
+            "prefill"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "256",
+            "256",
+            "bias32",
+            "diffuse",
+            "q8_0",
+            "prefill"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "256",
+            "256",
+            "unit",
+            "diffuse",
+            "f16",
+            "prefill"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "256",
+            "256",
+            "unit",
+            "diffuse",
+            "q8_0",
+            "prefill"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "256",
+            "256",
+            "unit",
+            "peaked",
+            "f16",
+            "prefill"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "256",
+            "256",
+            "unit",
+            "peaked",
+            "q8_0",
+            "prefill"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "27",
+            "2048",
+            "bias1024",
+            "diffuse",
+            "f16",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "27",
+            "2048",
+            "bias1024",
+            "diffuse",
+            "q8_0",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "27",
+            "2048",
+            "bias1024",
+            "peaked",
+            "f16",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "27",
+            "2048",
+            "bias1024",
+            "peaked",
+            "q8_0",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "27",
+            "2048",
+            "bias128",
+            "diffuse",
+            "f16",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "27",
+            "2048",
+            "bias128",
+            "diffuse",
+            "q8_0",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "27",
+            "2048",
+            "bias32",
+            "diffuse",
+            "f16",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "27",
+            "2048",
+            "bias32",
+            "diffuse",
+            "q8_0",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "27",
+            "2048",
+            "unit",
+            "diffuse",
+            "f16",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "27",
+            "2048",
+            "unit",
+            "diffuse",
+            "q8_0",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "27",
+            "2048",
+            "unit",
+            "peaked",
+            "f16",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "27",
+            "2048",
+            "unit",
+            "peaked",
+            "q8_0",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "27",
+            "4096",
+            "bias1024",
+            "diffuse",
+            "f16",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "27",
+            "4096",
+            "bias1024",
+            "diffuse",
+            "q8_0",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "27",
+            "4096",
+            "bias128",
+            "diffuse",
+            "f16",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "27",
+            "4096",
+            "bias128",
+            "diffuse",
+            "q8_0",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "27",
+            "4096",
+            "bias32",
+            "diffuse",
+            "f16",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "27",
+            "4096",
+            "bias32",
+            "diffuse",
+            "q8_0",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "27",
+            "4096",
+            "unit",
+            "diffuse",
+            "f16",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "27",
+            "4096",
+            "unit",
+            "diffuse",
+            "q8_0",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "27",
+            "512",
+            "bias1024",
+            "diffuse",
+            "f16",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "27",
+            "512",
+            "bias1024",
+            "diffuse",
+            "q8_0",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "27",
+            "512",
+            "bias128",
+            "diffuse",
+            "f16",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "27",
+            "512",
+            "bias128",
+            "diffuse",
+            "q8_0",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "27",
+            "512",
+            "bias32",
+            "diffuse",
+            "f16",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "27",
+            "512",
+            "bias32",
+            "diffuse",
+            "q8_0",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "27",
+            "512",
+            "unit",
+            "diffuse",
+            "f16",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "27",
+            "512",
+            "unit",
+            "diffuse",
+            "q8_0",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "300",
+            "300",
+            "bias1024",
+            "diffuse",
+            "f16",
+            "prefill"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "300",
+            "300",
+            "bias1024",
+            "diffuse",
+            "q8_0",
+            "prefill"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "300",
+            "300",
+            "bias1024",
+            "peaked",
+            "f16",
+            "prefill"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "300",
+            "300",
+            "bias1024",
+            "peaked",
+            "q8_0",
+            "prefill"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "300",
+            "300",
+            "bias128",
+            "diffuse",
+            "f16",
+            "prefill"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "300",
+            "300",
+            "bias128",
+            "diffuse",
+            "q8_0",
+            "prefill"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "300",
+            "300",
+            "bias32",
+            "diffuse",
+            "f16",
+            "prefill"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "300",
+            "300",
+            "bias32",
+            "diffuse",
+            "q8_0",
+            "prefill"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "300",
+            "300",
+            "unit",
+            "diffuse",
+            "f16",
+            "prefill"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "300",
+            "300",
+            "unit",
+            "diffuse",
+            "q8_0",
+            "prefill"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "300",
+            "300",
+            "unit",
+            "peaked",
+            "f16",
+            "prefill"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "300",
+            "300",
+            "unit",
+            "peaked",
+            "q8_0",
+            "prefill"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "300",
+            "512",
+            "bias1024",
+            "diffuse",
+            "f16",
+            "prefill"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "300",
+            "512",
+            "bias1024",
+            "diffuse",
+            "q8_0",
+            "prefill"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "300",
+            "512",
+            "bias1024",
+            "peaked",
+            "f16",
+            "prefill"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "300",
+            "512",
+            "bias1024",
+            "peaked",
+            "q8_0",
+            "prefill"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "300",
+            "512",
+            "bias128",
+            "diffuse",
+            "f16",
+            "prefill"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "300",
+            "512",
+            "bias128",
+            "diffuse",
+            "q8_0",
+            "prefill"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "300",
+            "512",
+            "bias32",
+            "diffuse",
+            "f16",
+            "prefill"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "300",
+            "512",
+            "bias32",
+            "diffuse",
+            "q8_0",
+            "prefill"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "300",
+            "512",
+            "unit",
+            "diffuse",
+            "f16",
+            "prefill"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "300",
+            "512",
+            "unit",
+            "diffuse",
+            "q8_0",
+            "prefill"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "300",
+            "512",
+            "unit",
+            "peaked",
+            "f16",
+            "prefill"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "300",
+            "512",
+            "unit",
+            "peaked",
+            "q8_0",
+            "prefill"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "36",
+            "2048",
+            "bias1024",
+            "diffuse",
+            "f16",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "36",
+            "2048",
+            "bias1024",
+            "diffuse",
+            "q8_0",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "36",
+            "2048",
+            "bias1024",
+            "peaked",
+            "f16",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "36",
+            "2048",
+            "bias1024",
+            "peaked",
+            "q8_0",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "36",
+            "2048",
+            "bias128",
+            "diffuse",
+            "f16",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "36",
+            "2048",
+            "bias128",
+            "diffuse",
+            "q8_0",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "36",
+            "2048",
+            "bias32",
+            "diffuse",
+            "f16",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "36",
+            "2048",
+            "bias32",
+            "diffuse",
+            "q8_0",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "36",
+            "2048",
+            "unit",
+            "diffuse",
+            "f16",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "36",
+            "2048",
+            "unit",
+            "diffuse",
+            "q8_0",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "36",
+            "2048",
+            "unit",
+            "peaked",
+            "f16",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "36",
+            "2048",
+            "unit",
+            "peaked",
+            "q8_0",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "36",
+            "4096",
+            "bias1024",
+            "diffuse",
+            "f16",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "36",
+            "4096",
+            "bias1024",
+            "diffuse",
+            "q8_0",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "36",
+            "4096",
+            "bias128",
+            "diffuse",
+            "f16",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "36",
+            "4096",
+            "bias128",
+            "diffuse",
+            "q8_0",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "36",
+            "4096",
+            "bias32",
+            "diffuse",
+            "f16",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "36",
+            "4096",
+            "bias32",
+            "diffuse",
+            "q8_0",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "36",
+            "4096",
+            "unit",
+            "diffuse",
+            "f16",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "36",
+            "4096",
+            "unit",
+            "diffuse",
+            "q8_0",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "36",
+            "512",
+            "bias1024",
+            "diffuse",
+            "f16",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "36",
+            "512",
+            "bias1024",
+            "diffuse",
+            "q8_0",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "36",
+            "512",
+            "bias128",
+            "diffuse",
+            "f16",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "36",
+            "512",
+            "bias128",
+            "diffuse",
+            "q8_0",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "36",
+            "512",
+            "bias32",
+            "diffuse",
+            "f16",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "36",
+            "512",
+            "bias32",
+            "diffuse",
+            "q8_0",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "36",
+            "512",
+            "unit",
+            "diffuse",
+            "f16",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "36",
+            "512",
+            "unit",
+            "diffuse",
+            "q8_0",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "512",
+            "2048",
+            "bias1024",
+            "diffuse",
+            "f16",
+            "tail"
+          ],
+          "nonfinite": 46848,
+          "verdict": "NONFINITE"
+        },
+        {
+          "case": [
+            "512",
+            "2048",
+            "bias1024",
+            "diffuse",
+            "q8_0",
+            "tail"
+          ],
+          "nonfinite": 46848,
+          "verdict": "NONFINITE"
+        },
+        {
+          "case": [
+            "512",
+            "2048",
+            "bias1024",
+            "peaked",
+            "f16",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "512",
+            "2048",
+            "bias1024",
+            "peaked",
+            "q8_0",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "512",
+            "2048",
+            "bias128",
+            "diffuse",
+            "f16",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "512",
+            "2048",
+            "bias128",
+            "diffuse",
+            "q8_0",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "512",
+            "2048",
+            "bias32",
+            "diffuse",
+            "f16",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "512",
+            "2048",
+            "bias32",
+            "diffuse",
+            "q8_0",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "512",
+            "2048",
+            "unit",
+            "diffuse",
+            "f16",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "512",
+            "2048",
+            "unit",
+            "diffuse",
+            "q8_0",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "512",
+            "2048",
+            "unit",
+            "peaked",
+            "f16",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "512",
+            "2048",
+            "unit",
+            "peaked",
+            "q8_0",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "512",
+            "4096",
+            "bias1024",
+            "diffuse",
+            "f16",
+            "tail"
+          ],
+          "nonfinite": 49152,
+          "verdict": "NONFINITE"
+        },
+        {
+          "case": [
+            "512",
+            "4096",
+            "bias1024",
+            "diffuse",
+            "q8_0",
+            "tail"
+          ],
+          "nonfinite": 49152,
+          "verdict": "NONFINITE"
+        },
+        {
+          "case": [
+            "512",
+            "4096",
+            "bias128",
+            "diffuse",
+            "f16",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "512",
+            "4096",
+            "bias128",
+            "diffuse",
+            "q8_0",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "512",
+            "4096",
+            "bias32",
+            "diffuse",
+            "f16",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "512",
+            "4096",
+            "bias32",
+            "diffuse",
+            "q8_0",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "512",
+            "4096",
+            "unit",
+            "diffuse",
+            "f16",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "512",
+            "4096",
+            "unit",
+            "diffuse",
+            "q8_0",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "512",
+            "512",
+            "bias1024",
+            "diffuse",
+            "f16",
+            "prefill"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "512",
+            "512",
+            "bias1024",
+            "diffuse",
+            "f16",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "512",
+            "512",
+            "bias1024",
+            "diffuse",
+            "q8_0",
+            "prefill"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "512",
+            "512",
+            "bias1024",
+            "diffuse",
+            "q8_0",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "512",
+            "512",
+            "bias1024",
+            "peaked",
+            "f16",
+            "prefill"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "512",
+            "512",
+            "bias1024",
+            "peaked",
+            "q8_0",
+            "prefill"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "512",
+            "512",
+            "bias128",
+            "diffuse",
+            "f16",
+            "prefill"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "512",
+            "512",
+            "bias128",
+            "diffuse",
+            "f16",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "512",
+            "512",
+            "bias128",
+            "diffuse",
+            "q8_0",
+            "prefill"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "512",
+            "512",
+            "bias128",
+            "diffuse",
+            "q8_0",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "512",
+            "512",
+            "bias32",
+            "diffuse",
+            "f16",
+            "prefill"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "512",
+            "512",
+            "bias32",
+            "diffuse",
+            "f16",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "512",
+            "512",
+            "bias32",
+            "diffuse",
+            "q8_0",
+            "prefill"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "512",
+            "512",
+            "bias32",
+            "diffuse",
+            "q8_0",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "512",
+            "512",
+            "unit",
+            "diffuse",
+            "f16",
+            "prefill"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "512",
+            "512",
+            "unit",
+            "diffuse",
+            "f16",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "512",
+            "512",
+            "unit",
+            "diffuse",
+            "q8_0",
+            "prefill"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "512",
+            "512",
+            "unit",
+            "diffuse",
+            "q8_0",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "512",
+            "512",
+            "unit",
+            "peaked",
+            "f16",
+            "prefill"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "512",
+            "512",
+            "unit",
+            "peaked",
+            "q8_0",
+            "prefill"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "64",
+            "2048",
+            "bias1024",
+            "diffuse",
+            "f16",
+            "drafter"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "64",
+            "2048",
+            "bias1024",
+            "diffuse",
+            "f16",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "64",
+            "2048",
+            "bias1024",
+            "diffuse",
+            "q8_0",
+            "drafter"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "64",
+            "2048",
+            "bias1024",
+            "diffuse",
+            "q8_0",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "64",
+            "2048",
+            "bias1024",
+            "peaked",
+            "f16",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "64",
+            "2048",
+            "bias1024",
+            "peaked",
+            "q8_0",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "64",
+            "2048",
+            "bias128",
+            "diffuse",
+            "f16",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "64",
+            "2048",
+            "bias128",
+            "diffuse",
+            "q8_0",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "64",
+            "2048",
+            "bias32",
+            "diffuse",
+            "f16",
+            "drafter"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "64",
+            "2048",
+            "bias32",
+            "diffuse",
+            "f16",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "64",
+            "2048",
+            "bias32",
+            "diffuse",
+            "q8_0",
+            "drafter"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "64",
+            "2048",
+            "bias32",
+            "diffuse",
+            "q8_0",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "64",
+            "2048",
+            "unit",
+            "diffuse",
+            "f16",
+            "drafter"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "64",
+            "2048",
+            "unit",
+            "diffuse",
+            "f16",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "64",
+            "2048",
+            "unit",
+            "diffuse",
+            "q8_0",
+            "drafter"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "64",
+            "2048",
+            "unit",
+            "diffuse",
+            "q8_0",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "64",
+            "2048",
+            "unit",
+            "peaked",
+            "f16",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "64",
+            "2048",
+            "unit",
+            "peaked",
+            "q8_0",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "64",
+            "2304",
+            "bias1024",
+            "diffuse",
+            "f16",
+            "drafter"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "64",
+            "2304",
+            "bias1024",
+            "diffuse",
+            "q8_0",
+            "drafter"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "64",
+            "256",
+            "bias1024",
+            "diffuse",
+            "f16",
+            "prefill"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "64",
+            "256",
+            "bias1024",
+            "diffuse",
+            "q8_0",
+            "prefill"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "64",
+            "256",
+            "bias1024",
+            "peaked",
+            "f16",
+            "prefill"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "64",
+            "256",
+            "bias1024",
+            "peaked",
+            "q8_0",
+            "prefill"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "64",
+            "256",
+            "bias128",
+            "diffuse",
+            "f16",
+            "prefill"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "64",
+            "256",
+            "bias128",
+            "diffuse",
+            "q8_0",
+            "prefill"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "64",
+            "256",
+            "bias32",
+            "diffuse",
+            "f16",
+            "prefill"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "64",
+            "256",
+            "bias32",
+            "diffuse",
+            "q8_0",
+            "prefill"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "64",
+            "256",
+            "unit",
+            "diffuse",
+            "f16",
+            "prefill"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "64",
+            "256",
+            "unit",
+            "diffuse",
+            "q8_0",
+            "prefill"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "64",
+            "256",
+            "unit",
+            "peaked",
+            "f16",
+            "prefill"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "64",
+            "256",
+            "unit",
+            "peaked",
+            "q8_0",
+            "prefill"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "64",
+            "4096",
+            "bias1024",
+            "diffuse",
+            "f16",
+            "tail"
+          ],
+          "nonfinite": 6144,
+          "verdict": "NONFINITE"
+        },
+        {
+          "case": [
+            "64",
+            "4096",
+            "bias1024",
+            "diffuse",
+            "q8_0",
+            "tail"
+          ],
+          "nonfinite": 6144,
+          "verdict": "NONFINITE"
+        },
+        {
+          "case": [
+            "64",
+            "4096",
+            "bias128",
+            "diffuse",
+            "f16",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "64",
+            "4096",
+            "bias128",
+            "diffuse",
+            "q8_0",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "64",
+            "4096",
+            "bias32",
+            "diffuse",
+            "f16",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "64",
+            "4096",
+            "bias32",
+            "diffuse",
+            "q8_0",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "64",
+            "4096",
+            "unit",
+            "diffuse",
+            "f16",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "64",
+            "4096",
+            "unit",
+            "diffuse",
+            "q8_0",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "64",
+            "512",
+            "bias1024",
+            "diffuse",
+            "f16",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "64",
+            "512",
+            "bias1024",
+            "diffuse",
+            "q8_0",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "64",
+            "512",
+            "bias128",
+            "diffuse",
+            "f16",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "64",
+            "512",
+            "bias128",
+            "diffuse",
+            "q8_0",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "64",
+            "512",
+            "bias32",
+            "diffuse",
+            "f16",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "64",
+            "512",
+            "bias32",
+            "diffuse",
+            "q8_0",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "64",
+            "512",
+            "unit",
+            "diffuse",
+            "f16",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "64",
+            "512",
+            "unit",
+            "diffuse",
+            "q8_0",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "9",
+            "2048",
+            "bias1024",
+            "diffuse",
+            "f16",
+            "drafter"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "9",
+            "2048",
+            "bias1024",
+            "diffuse",
+            "f16",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "9",
+            "2048",
+            "bias1024",
+            "diffuse",
+            "q8_0",
+            "drafter"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "9",
+            "2048",
+            "bias1024",
+            "diffuse",
+            "q8_0",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "9",
+            "2048",
+            "bias1024",
+            "peaked",
+            "f16",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "9",
+            "2048",
+            "bias1024",
+            "peaked",
+            "q8_0",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "9",
+            "2048",
+            "bias128",
+            "diffuse",
+            "f16",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "9",
+            "2048",
+            "bias128",
+            "diffuse",
+            "q8_0",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "9",
+            "2048",
+            "bias32",
+            "diffuse",
+            "f16",
+            "drafter"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "9",
+            "2048",
+            "bias32",
+            "diffuse",
+            "f16",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "9",
+            "2048",
+            "bias32",
+            "diffuse",
+            "q8_0",
+            "drafter"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "9",
+            "2048",
+            "bias32",
+            "diffuse",
+            "q8_0",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "9",
+            "2048",
+            "unit",
+            "diffuse",
+            "f16",
+            "drafter"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "9",
+            "2048",
+            "unit",
+            "diffuse",
+            "f16",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "9",
+            "2048",
+            "unit",
+            "diffuse",
+            "q8_0",
+            "drafter"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "9",
+            "2048",
+            "unit",
+            "diffuse",
+            "q8_0",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "9",
+            "2048",
+            "unit",
+            "peaked",
+            "f16",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "9",
+            "2048",
+            "unit",
+            "peaked",
+            "q8_0",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "9",
+            "2304",
+            "bias1024",
+            "diffuse",
+            "f16",
+            "drafter"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "9",
+            "2304",
+            "bias1024",
+            "diffuse",
+            "q8_0",
+            "drafter"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "9",
+            "4096",
+            "bias1024",
+            "diffuse",
+            "f16",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "9",
+            "4096",
+            "bias1024",
+            "diffuse",
+            "q8_0",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "9",
+            "4096",
+            "bias128",
+            "diffuse",
+            "f16",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "9",
+            "4096",
+            "bias128",
+            "diffuse",
+            "q8_0",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "9",
+            "4096",
+            "bias32",
+            "diffuse",
+            "f16",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "9",
+            "4096",
+            "bias32",
+            "diffuse",
+            "q8_0",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "9",
+            "4096",
+            "unit",
+            "diffuse",
+            "f16",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "9",
+            "4096",
+            "unit",
+            "diffuse",
+            "q8_0",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "9",
+            "512",
+            "bias1024",
+            "diffuse",
+            "f16",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "9",
+            "512",
+            "bias1024",
+            "diffuse",
+            "q8_0",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "9",
+            "512",
+            "bias128",
+            "diffuse",
+            "f16",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "9",
+            "512",
+            "bias128",
+            "diffuse",
+            "q8_0",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "9",
+            "512",
+            "bias32",
+            "diffuse",
+            "f16",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "9",
+            "512",
+            "bias32",
+            "diffuse",
+            "q8_0",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "9",
+            "512",
+            "unit",
+            "diffuse",
+            "f16",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        },
+        {
+          "case": [
+            "9",
+            "512",
+            "unit",
+            "diffuse",
+            "q8_0",
+            "tail"
+          ],
+          "nonfinite": 0,
+          "verdict": "OK"
+        }
+      ],
+      "path": "/mnt/micron/codex-ni-fa4-exact-set-r17-20261031/runs/20261031T013334Z-1489672/nan_B.native",
+      "sha256": "6b97a8eb39a5ad40f54c6db0b8f867277aa7dc523ef6c209916f4d00501142bb"
+    }
+  },
+  "intersection": [
+    [
+      "512",
+      "4096",
+      "bias1024",
+      "diffuse",
+      "f16",
+      "tail"
+    ],
+    [
+      "512",
+      "4096",
+      "bias1024",
+      "diffuse",
+      "q8_0",
+      "tail"
+    ]
+  ],
+  "measurement_warrant": "none added; references existing native inputs only",
+  "outcome_differences": [
+    {
+      "A": {
+        "nonfinite": 0,
+        "verdict": "OK"
+      },
+      "B": {
+        "nonfinite": 46848,
+        "verdict": "NONFINITE"
+      },
+      "case": [
+        "512",
+        "2048",
+        "bias1024",
+        "diffuse",
+        "f16",
+        "tail"
+      ]
+    },
+    {
+      "A": {
+        "nonfinite": 0,
+        "verdict": "OK"
+      },
+      "B": {
+        "nonfinite": 46848,
+        "verdict": "NONFINITE"
+      },
+      "case": [
+        "512",
+        "2048",
+        "bias1024",
+        "diffuse",
+        "q8_0",
+        "tail"
+      ]
+    },
+    {
+      "A": {
+        "nonfinite": 6144,
+        "verdict": "NONFINITE"
+      },
+      "B": {
+        "nonfinite": 0,
+        "verdict": "OK"
+      },
+      "case": [
+        "64",
+        "2048",
+        "bias1024",
+        "diffuse",
+        "f16",
+        "tail"
+      ]
+    },
+    {
+      "A": {
+        "nonfinite": 6144,
+        "verdict": "NONFINITE"
+      },
+      "B": {
+        "nonfinite": 0,
+        "verdict": "OK"
+      },
+      "case": [
+        "64",
+        "2048",
+        "bias1024",
+        "diffuse",
+        "q8_0",
+        "tail"
+      ]
+    },
+    {
+      "A": {
+        "nonfinite": 0,
+        "verdict": "OK"
+      },
+      "B": {
+        "nonfinite": 6144,
+        "verdict": "NONFINITE"
+      },
+      "case": [
+        "64",
+        "4096",
+        "bias1024",
+        "diffuse",
+        "f16",
+        "tail"
+      ]
+    },
+    {
+      "A": {
+        "nonfinite": 0,
+        "verdict": "OK"
+      },
+      "B": {
+        "nonfinite": 6144,
+        "verdict": "NONFINITE"
+      },
+      "case": [
+        "64",
+        "4096",
+        "bias1024",
+        "diffuse",
+        "q8_0",
+        "tail"
+      ]
+    }
+  ],
+  "outcome_membership_equal": false,
+  "partial": false,
+  "run": {
+    "admission": {
+      "end": "2026-10-31T02:52Z",
+      "regions": "mi210_0,184-191",
+      "start": "2026-10-31T01:32Z"
+    },
+    "begin": "2026-10-31T01:33:34.183724+00:00",
+    "case_budget_ms": 600,
+    "class": "INDICATIVE bench CANDIDATE",
+    "controls": [
+      "nan228_each",
+      "model10_each",
+      "server_orig_prod_each",
+      "exact228_OFF",
+      "backend_FA_both"
+    ],
+    "future_ELF": "StageB required; no invented digest",
+    "grant": {
+      "end": "2026-10-31T02:52Z",
+      "regions": "mi210_0,184-191",
+      "start": "2026-10-31T01:32Z"
+    },
+    "id": "fa4-c5-exact-set-r17-20261031",
+    "images": {
+      "A": "/mnt/raid0/llm/kernels/builds/gpu-20261024-c72ec82f5-c5",
+      "B": "/mnt/raid0/llm/tmp/cal-1026/fa4-c5-rwoff-r2/build"
+    },
+    "max_reps": 100,
+    "min_reps": 5,
+    "mode": "full",
+    "native_shapes_per_kv": 22,
+    "order": [
+      "A",
+      "B",
+      "A",
+      "B",
+      "A",
+      "B"
+    ],
+    "perf_kv": [
+      "q8_0",
+      "f16"
+    ],
+    "smoke_kind": null,
+    "source": "c72ec82f5417bb2937310326120f149b665e8400",
+    "source_manifest_sha256": "72f99a411cedfc56972b554605c1b37bb0e5f05c790cf3c6428006194c95d10d",
+    "window": 4800
+  },
+  "schema": "epyc.fa4.protocol_control_decision.v2"
+}

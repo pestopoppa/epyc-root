@@ -1,0 +1,37 @@
+{
+  "backend_counts": {
+    "A": [
+      [
+        "2978",
+        "2978"
+      ]
+    ],
+    "B": [
+      [
+        "2978",
+        "2978"
+      ]
+    ]
+  },
+  "band_pair_records": 132,
+  "interpretation": "full 228-case input coverage required and verified; per-case outcome differences are retained as diagnostic observations and do not constitute numerical equivalence",
+  "nan_control": {
+    "OFF_only_count": 4,
+    "ON_only_count": 2,
+    "input_case_count_per_arm": 228,
+    "input_case_sets_equal": true,
+    "outcome_difference_count": 6,
+    "outcome_membership_equal": false,
+    "record": "/mnt/micron/codex-ni-fa4-exact-set-r17-20261031/runs/20261031T013334Z-1489672/control_decisions/nan_cross_arm.json"
+  },
+  "not_claimed": [
+    "numerical equivalence",
+    "futurev11 certification",
+    "missing foreign-cell/P3 legs",
+    "promotion"
+  ],
+  "pairs": 3,
+  "quant_types": 2,
+  "scope": "INDICATIVE native22-band currentC5 comparison only",
+  "status": "COMPLETE"
+}

@@ -1,0 +1,7 @@
+rc=0 time=2026-10-31T02:10:15Z reason=complete
+job_id=codex-ni-g14-reason32m-r1-20261030
+owner=codex-ni
+step=job-run
+estimated_wall_s=600
+started=2026-10-31T02:09:56Z
+regions=48-71

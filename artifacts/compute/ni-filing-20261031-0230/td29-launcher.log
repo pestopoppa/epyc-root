@@ -1,0 +1,15 @@
+2026-10-31T00:20:28Z [codex-ni-td29-m4-cache-r1-20261031] launcher up pid=3729401 class=cpu poll=45s grants=/mnt/raid0/llm/tmp/compute-flags/grants stop=/mnt/raid0/llm/tmp/codex-ni-td29-m4-cache-20261030/STOP minwin=600s ports=18869
+2026-10-31T00:20:52Z [codex-ni-td29-m4-cache-r1-20261031] launcher up pid=3744396 class=cpu poll=45s grants=/mnt/raid0/llm/tmp/compute-flags/grants stop=/mnt/raid0/llm/tmp/codex-ni-td29-m4-cache-20261030/STOP minwin=600s ports=18869
+2026-10-31T00:25:36Z [codex-ni-td29-m4-cache-r1-20261031] launcher signalled
+2026-10-31T00:30:27Z [codex-ni-td29-m4-cache-r2-20261031] launcher up pid=200561 class=cpu poll=45s grants=/mnt/raid0/llm/tmp/compute-flags/grants stop=/mnt/raid0/llm/tmp/codex-ni-td29-m4-cache-20261030/STOP minwin=600s ports=18869
+2026-10-31T00:30:47Z [codex-ni-td29-m4-cache-r2-20261031] launcher signalled
+2026-10-31T00:40:56Z [codex-ni-td29-m4-cache-r3-20261031] launcher up pid=317016 class=cpu poll=45s grants=/mnt/raid0/llm/tmp/compute-flags/grants stop=/mnt/raid0/llm/tmp/codex-ni-td29-m4-cache-20261030/STOP minwin=600s ports=18869
+2026-10-31T00:41:09Z [codex-ni-td29-m4-cache-r3-20261031] launcher signalled
+2026-10-31T02:00:51Z [codex-ni-td29-m4-cache-r3-20261031] launcher up pid=2331434 class=cpu poll=45s grants=/mnt/raid0/llm/tmp/compute-flags/grants stop=/mnt/raid0/llm/tmp/codex-ni-td29-m4-cache-20261030/STOP minwin=600s ports=18869
+2026-10-31T02:01:36Z [codex-ni-td29-m4-cache-r3-20261031] diagnostic admission: legacy T1 proof receipt not required
+2026-10-31T02:01:36Z [codex-ni-td29-m4-cache-r3-20261031] START regions=48-71 cpus=48-71 threads=24 gpu=0 end=2026-10-31T02:31Z
+[region-lock] acquiring regions ['q2'] as role='build' (timeout_s=1764.0) …
+[region-lock] held ['q2'] after 0.0s wait; running: /bin/bash /mnt/raid0/llm/tmp/codex-ni-td29-m4-cache-20261030/engine/filler_run13.sh --inner --id codex-ni-td29-m4-cache-r3-20261031 --class cpu --cmd /bin/bash /mnt/raid0/llm/tmp/codex-ni-td29-m4-cache-20261030/launch.sh --job --min-window 600 --stop /mnt/raid0/llm/tmp/codex-ni-td29-m4-cache-20261030/STOP --port 18869 --workdir /mnt/raid0/llm/tmp/codex-ni-td29-m4-cache-20261030 --gpu-threads 184-191
+DRYRUN_REFUSED: malformed claimed_cpus
+REFUSED: in-claim RLIMIT/affinity/cgroup proof failed for codex-ni-td29-m4-cache-r3-20261031
+2026-10-31T02:01:39Z [codex-ni-td29-m4-cache-r3-20261031] ended rc=70 reason=job-rc-70:exited (grant deleted)

@@ -1,0 +1,20 @@
+{
+  "at": "2026-10-31T01:52:43.465955+00:00",
+  "consumer_path": "/mnt/raid0/llm/tmp/refactor-c6-store-build-prep-20261030/consume-gpu-build-729.py",
+  "consumer_run": "rc0; status COMPLETE_BUILD_ONLY; target_count29; exact source and seal verified",
+  "consumer_sha256": "2fbfc9a3458e7bb12422d8860cc9b4d45d66ffb0fc786465c50ceed06b85382a",
+  "correction": "Earlier hypothesis that outer-to-inner --complete-cmd forwarding was needed was false; focused actual OUTER fixture confirms calendar-only completion predicate is sufficient.",
+  "engine_sha256": "29b88da445634de88b33a7a8d74ebdc21e4a011fac12417c02b25e5beec1c10d",
+  "native_result": "/mnt/raid0/llm/kernels/builds/gpu-20261030-729599d69-c6/build-result.json",
+  "native_result_sha256": "d5b6e2b3b44eed194a849811e936bfbb765999bd59b8b910fd74a7f86b0ca39a",
+  "native_seal_sha256": "64c34e61d12e5170acc77d69d4edcbab296754d2e3a48679ceb916fde3bb3704",
+  "native_status": "COMPLETE_BUILD_ONLY",
+  "no_rebuild_or_source_mutation": true,
+  "outer_ended_path": "/mnt/raid0/llm/tmp/compute-flags/grants/refactor-c6-gpu-build-729599d69-20261030.ended",
+  "outer_failure": "rc1 job-rc-1:incomplete:exited",
+  "outer_fixture": "/mnt/raid0/llm/tmp/refactor-c6-store-build-qual-20261030/test_outer_completecmd.py",
+  "outer_log": "/mnt/raid0/llm/tmp/refactor-c6-store-build-prep-20261030/ws58-launcher-gpu-729.out",
+  "outer_log_sha256": "c6629853b6dafdc26383ac3f3b6152c2741d60cd6f54e0f49d2cd0024f118c1d",
+  "root_cause": "Original calendar.sh omits --complete-cmd. The sealed engine OUTER run_one owns is_complete() after waiting for the inner child; the inner child only runs the job and exits. Thus outer sees job rc0 but no completion predicate and records rc1 incomplete:exited.",
+  "schema": "c6.gpu_build_outer_completion_failure.v1"
+}

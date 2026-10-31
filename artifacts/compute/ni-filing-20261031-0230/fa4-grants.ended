@@ -1,0 +1,7 @@
+rc=0 time=2026-10-31T01:48:38Z reason=complete
+job_id=fa4-c5-exact-set-r17-20261031
+owner=codex-ni
+step=job-run
+estimated_wall_s=4800
+started=2026-10-31T01:33:33Z
+regions=mi210_0,184-191

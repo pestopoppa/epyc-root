@@ -1,0 +1,345 @@
+{
+  "state": "RAW_NATIVE_EVIDENCE_FOR_MAIN_REVIEW",
+  "policy_acceptance": "NOT_CLAIMED",
+  "cases": [
+    {
+      "name": "fresh-fixtures",
+      "rc": 0,
+      "expected": 0,
+      "events": 0,
+      "all_captured_absent": true,
+      "policy_admission_peak_including_supervisor_excluding_controller": 0,
+      "envelope_observed_peak_including_controller": 2
+    },
+    {
+      "name": "status",
+      "rc": 0,
+      "expected": 0,
+      "events": 129,
+      "all_captured_absent": true,
+      "policy_admission_peak_including_supervisor_excluding_controller": 9,
+      "envelope_observed_peak_including_controller": 10
+    },
+    {
+      "name": "context",
+      "rc": 0,
+      "expected": 0,
+      "events": 69,
+      "all_captured_absent": true,
+      "policy_admission_peak_including_supervisor_excluding_controller": 8,
+      "envelope_observed_peak_including_controller": 9
+    },
+    {
+      "name": "impact",
+      "rc": 0,
+      "expected": 0,
+      "events": 71,
+      "all_captured_absent": true,
+      "policy_admission_peak_including_supervisor_excluding_controller": 8,
+      "envelope_observed_peak_including_controller": 9
+    },
+    {
+      "name": "readonly",
+      "rc": 0,
+      "expected": 0,
+      "events": 62,
+      "all_captured_absent": true,
+      "policy_admission_peak_including_supervisor_excluding_controller": 8,
+      "envelope_observed_peak_including_controller": 9
+    },
+    {
+      "name": "source-closure",
+      "rc": 0,
+      "expected": 0,
+      "events": 41,
+      "all_captured_absent": true,
+      "policy_admission_peak_including_supervisor_excluding_controller": 6,
+      "envelope_observed_peak_including_controller": 7
+    },
+    {
+      "name": "fast-exit",
+      "rc": 64,
+      "expected": 64,
+      "events": 37,
+      "all_captured_absent": true,
+      "policy_admission_peak_including_supervisor_excluding_controller": 6,
+      "envelope_observed_peak_including_controller": 7
+    },
+    {
+      "name": "thread-overflow",
+      "rc": 64,
+      "expected": 64,
+      "events": 104,
+      "all_captured_absent": true,
+      "policy_admission_peak_including_supervisor_excluding_controller": 25,
+      "envelope_observed_peak_including_controller": 27
+    },
+    {
+      "name": "forbidden-child",
+      "rc": 64,
+      "expected": 64,
+      "events": 38,
+      "all_captured_absent": true,
+      "policy_admission_peak_including_supervisor_excluding_controller": 7,
+      "envelope_observed_peak_including_controller": 8
+    },
+    {
+      "name": "affinity",
+      "rc": 64,
+      "expected": 64,
+      "events": 47,
+      "all_captured_absent": true,
+      "policy_admission_peak_including_supervisor_excluding_controller": 8,
+      "envelope_observed_peak_including_controller": 9
+    },
+    {
+      "name": "deadline",
+      "rc": 64,
+      "expected": 64,
+      "events": 275,
+      "all_captured_absent": true,
+      "policy_admission_peak_including_supervisor_excluding_controller": 8,
+      "envelope_observed_peak_including_controller": 9
+    },
+    {
+      "name": "supervisor-kill",
+      "rc": -9,
+      "expected": -9,
+      "events": 37,
+      "all_captured_absent": true,
+      "policy_admission_peak_including_supervisor_excluding_controller": 8,
+      "envelope_observed_peak_including_controller": 9
+    },
+    {
+      "name": "argv-0",
+      "rc": 64,
+      "expected": 64,
+      "events": 0,
+      "all_captured_absent": true,
+      "policy_admission_peak_including_supervisor_excluding_controller": 0,
+      "envelope_observed_peak_including_controller": 2
+    },
+    {
+      "name": "argv-1",
+      "rc": 64,
+      "expected": 64,
+      "events": 0,
+      "all_captured_absent": true,
+      "policy_admission_peak_including_supervisor_excluding_controller": 0,
+      "envelope_observed_peak_including_controller": 2
+    },
+    {
+      "name": "argv-2",
+      "rc": 64,
+      "expected": 64,
+      "events": 0,
+      "all_captured_absent": true,
+      "policy_admission_peak_including_supervisor_excluding_controller": 0,
+      "envelope_observed_peak_including_controller": 2
+    },
+    {
+      "name": "argv-3",
+      "rc": 64,
+      "expected": 64,
+      "events": 0,
+      "all_captured_absent": true,
+      "policy_admission_peak_including_supervisor_excluding_controller": 0,
+      "envelope_observed_peak_including_controller": 2
+    },
+    {
+      "name": "argv-4",
+      "rc": 64,
+      "expected": 64,
+      "events": 0,
+      "all_captured_absent": true,
+      "policy_admission_peak_including_supervisor_excluding_controller": 0,
+      "envelope_observed_peak_including_controller": 2
+    },
+    {
+      "name": "argv-5",
+      "rc": 64,
+      "expected": 64,
+      "events": 0,
+      "all_captured_absent": true,
+      "policy_admission_peak_including_supervisor_excluding_controller": 0,
+      "envelope_observed_peak_including_controller": 2
+    },
+    {
+      "name": "argv-6",
+      "rc": 64,
+      "expected": 64,
+      "events": 0,
+      "all_captured_absent": true,
+      "policy_admission_peak_including_supervisor_excluding_controller": 0,
+      "envelope_observed_peak_including_controller": 2
+    },
+    {
+      "name": "argv-7",
+      "rc": 64,
+      "expected": 64,
+      "events": 0,
+      "all_captured_absent": true,
+      "policy_admission_peak_including_supervisor_excluding_controller": 0,
+      "envelope_observed_peak_including_controller": 2
+    },
+    {
+      "name": "argv-8",
+      "rc": 64,
+      "expected": 64,
+      "events": 0,
+      "all_captured_absent": true,
+      "policy_admission_peak_including_supervisor_excluding_controller": 0,
+      "envelope_observed_peak_including_controller": 2
+    },
+    {
+      "name": "argv-9",
+      "rc": 64,
+      "expected": 64,
+      "events": 0,
+      "all_captured_absent": true,
+      "policy_admission_peak_including_supervisor_excluding_controller": 0,
+      "envelope_observed_peak_including_controller": 2
+    },
+    {
+      "name": "argv-10",
+      "rc": 64,
+      "expected": 64,
+      "events": 0,
+      "all_captured_absent": true,
+      "policy_admission_peak_including_supervisor_excluding_controller": 0,
+      "envelope_observed_peak_including_controller": 2
+    },
+    {
+      "name": "argv-11",
+      "rc": 64,
+      "expected": 64,
+      "events": 0,
+      "all_captured_absent": true,
+      "policy_admission_peak_including_supervisor_excluding_controller": 0,
+      "envelope_observed_peak_including_controller": 2
+    },
+    {
+      "name": "argv-12",
+      "rc": 64,
+      "expected": 64,
+      "events": 0,
+      "all_captured_absent": true,
+      "policy_admission_peak_including_supervisor_excluding_controller": 0,
+      "envelope_observed_peak_including_controller": 2
+    },
+    {
+      "name": "argv-13",
+      "rc": 64,
+      "expected": 64,
+      "events": 0,
+      "all_captured_absent": true,
+      "policy_admission_peak_including_supervisor_excluding_controller": 0,
+      "envelope_observed_peak_including_controller": 2
+    },
+    {
+      "name": "argv-14",
+      "rc": 64,
+      "expected": 64,
+      "events": 0,
+      "all_captured_absent": true,
+      "policy_admission_peak_including_supervisor_excluding_controller": 0,
+      "envelope_observed_peak_including_controller": 2
+    },
+    {
+      "name": "argv-15",
+      "rc": 64,
+      "expected": 64,
+      "events": 0,
+      "all_captured_absent": true,
+      "policy_admission_peak_including_supervisor_excluding_controller": 0,
+      "envelope_observed_peak_including_controller": 2
+    },
+    {
+      "name": "env-LD_PRELOAD",
+      "rc": 64,
+      "expected": 64,
+      "events": 0,
+      "all_captured_absent": true,
+      "policy_admission_peak_including_supervisor_excluding_controller": 0,
+      "envelope_observed_peak_including_controller": 2
+    },
+    {
+      "name": "env-LD_LIBRARY_PATH",
+      "rc": 64,
+      "expected": 64,
+      "events": 0,
+      "all_captured_absent": true,
+      "policy_admission_peak_including_supervisor_excluding_controller": 0,
+      "envelope_observed_peak_including_controller": 2
+    },
+    {
+      "name": "env-LD_AUDIT",
+      "rc": 64,
+      "expected": 64,
+      "events": 0,
+      "all_captured_absent": true,
+      "policy_admission_peak_including_supervisor_excluding_controller": 0,
+      "envelope_observed_peak_including_controller": 2
+    },
+    {
+      "name": "env-NODE_OPTIONS",
+      "rc": 64,
+      "expected": 64,
+      "events": 0,
+      "all_captured_absent": true,
+      "policy_admission_peak_including_supervisor_excluding_controller": 0,
+      "envelope_observed_peak_including_controller": 2
+    },
+    {
+      "name": "env-NODE_EXTRA_CA_CERTS",
+      "rc": 64,
+      "expected": 64,
+      "events": 0,
+      "all_captured_absent": true,
+      "policy_admission_peak_including_supervisor_excluding_controller": 0,
+      "envelope_observed_peak_including_controller": 2
+    },
+    {
+      "name": "env-NODE_EXTRA_FUTURE",
+      "rc": 64,
+      "expected": 64,
+      "events": 0,
+      "all_captured_absent": true,
+      "policy_admission_peak_including_supervisor_excluding_controller": 0,
+      "envelope_observed_peak_including_controller": 2
+    },
+    {
+      "name": "env-GITNEXUS_HOME",
+      "rc": 64,
+      "expected": 64,
+      "events": 0,
+      "all_captured_absent": true,
+      "policy_admission_peak_including_supervisor_excluding_controller": 0,
+      "envelope_observed_peak_including_controller": 2
+    },
+    {
+      "name": "env-GITNEXUS_TEST_ANY",
+      "rc": 64,
+      "expected": 64,
+      "events": 0,
+      "all_captured_absent": true,
+      "policy_admission_peak_including_supervisor_excluding_controller": 0,
+      "envelope_observed_peak_including_controller": 2
+    },
+    {
+      "name": "env-GITNEXUS_UNREVIEWED",
+      "rc": 64,
+      "expected": 64,
+      "events": 0,
+      "all_captured_absent": true,
+      "policy_admission_peak_including_supervisor_excluding_controller": 0,
+      "envelope_observed_peak_including_controller": 2
+    }
+  ],
+  "owner_transition_control": "NOT_RUN_OWNER_TRANSITION_NOT_SUPPLIED",
+  "R4": "NOT_RUN",
+  "impact_coverage_table": "NOT_RUN",
+  "accepted_packet_sha256": "b4c1414eccc2b8987d8f2b3eaa397f0b10438bd77d39487e7fd58c9ee7e30bbc",
+  "counting": "policy admission counts exclude outer controller; envelope samples report controller separately",
+  "residual": "A transient stopped excess task can exist; refused before user code. Not kernel prevention."
+}

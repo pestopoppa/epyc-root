@@ -1,0 +1,65 @@
+{
+  "case": {
+    "id": "hymt-09",
+    "language": "ru",
+    "text": "Результат сохраняется перед завершением процесса.",
+    "provenance": "Frozen authored synthetic launch diagnostic; no quality or research-corpus claim",
+    "structured": false
+  },
+  "request": {
+    "model": "hymt",
+    "messages": [
+      {
+        "role": "user",
+        "content": "Translate the following text into English. Note that you should only output the translated result without any additional explanation:\n\nРезультат сохраняется перед завершением процесса."
+      }
+    ],
+    "temperature": 0.7,
+    "top_p": 0.6,
+    "top_k": 20,
+    "min_p": 0,
+    "repeat_penalty": 1.05,
+    "seed": 20261030,
+    "max_tokens": 96,
+    "stream": false
+  },
+  "response": {
+    "choices": [
+      {
+        "finish_reason": "stop",
+        "index": 0,
+        "message": {
+          "role": "assistant",
+          "content": "The result is saved before the process ends."
+        }
+      }
+    ],
+    "created": 1793412519,
+    "model": "/mnt/raid0/llm/models/hy-mt2-1.8b/Q4_K_M/Hy-MT2-1.8B-Q4_K_M.gguf",
+    "system_fingerprint": "b10303-ffc1bac82",
+    "object": "chat.completion",
+    "usage": {
+      "completion_tokens": 10,
+      "prompt_tokens": 40,
+      "total_tokens": 50,
+      "prompt_tokens_details": {
+        "cached_tokens": 23
+      }
+    },
+    "id": "chatcmpl-CTG3aVwclvRHkehq8C5wyrW2FQYXNHIJ",
+    "timings": {
+      "cache_n": 23,
+      "prompt_n": 17,
+      "prompt_ms": 44.5,
+      "prompt_per_token_ms": 2.6176470588235294,
+      "prompt_per_second": 382.02247191011236,
+      "predicted_n": 10,
+      "predicted_ms": 130.08,
+      "predicted_per_token_ms": 13.008000000000001,
+      "predicted_per_second": 76.87576875768757
+    }
+  },
+  "output": "The result is saved before the process ends.",
+  "wall_s": 0.17797591001726687,
+  "structural_diagnostic": null
+}

@@ -1,0 +1,65 @@
+{
+  "case": {
+    "id": "hymt-03",
+    "language": "it",
+    "text": "La misura richiede un confronto con la stessa configurazione di base.",
+    "provenance": "Frozen authored synthetic launch diagnostic; no quality or research-corpus claim",
+    "structured": false
+  },
+  "request": {
+    "model": "hymt",
+    "messages": [
+      {
+        "role": "user",
+        "content": "Translate the following text into English. Note that you should only output the translated result without any additional explanation:\n\nLa misura richiede un confronto con la stessa configurazione di base."
+      }
+    ],
+    "temperature": 0.7,
+    "top_p": 0.6,
+    "top_k": 20,
+    "min_p": 0,
+    "repeat_penalty": 1.05,
+    "seed": 20261030,
+    "max_tokens": 96,
+    "stream": false
+  },
+  "response": {
+    "choices": [
+      {
+        "finish_reason": "stop",
+        "index": 0,
+        "message": {
+          "role": "assistant",
+          "content": "The measurement requires a comparison with the same basic configuration."
+        }
+      }
+    ],
+    "created": 1793412518,
+    "model": "/mnt/raid0/llm/models/hy-mt2-1.8b/Q4_K_M/Hy-MT2-1.8B-Q4_K_M.gguf",
+    "system_fingerprint": "b10303-ffc1bac82",
+    "object": "chat.completion",
+    "usage": {
+      "completion_tokens": 12,
+      "prompt_tokens": 43,
+      "total_tokens": 55,
+      "prompt_tokens_details": {
+        "cached_tokens": 23
+      }
+    },
+    "id": "chatcmpl-3HDV0PLcZROsxd6t4qQQWzIJdXMLwbDj",
+    "timings": {
+      "cache_n": 23,
+      "prompt_n": 20,
+      "prompt_ms": 58.796,
+      "prompt_per_token_ms": 2.9398,
+      "prompt_per_second": 340.1591945030274,
+      "predicted_n": 12,
+      "predicted_ms": 175.496,
+      "predicted_per_token_ms": 14.624666666666668,
+      "predicted_per_second": 68.37762684049778
+    }
+  },
+  "output": "The measurement requires a comparison with the same basic configuration.",
+  "wall_s": 0.23768889717757702,
+  "structural_diagnostic": null
+}

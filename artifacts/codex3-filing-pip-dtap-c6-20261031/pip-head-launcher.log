@@ -1,0 +1,14 @@
+2026-10-31T02:13:22Z [codex3-pip02-paddle-relocatable-r27-head-20261030] launcher up pid=179884 class=cpu poll=45s grants=/mnt/raid0/llm/tmp/compute-flags/grants stop=/mnt/raid0/llm/tmp/codex3-pip-t1-r27-20261030/head/STOP-0 minwin=1320s ports=25400
+2026-10-31T02:14:07Z [codex3-pip02-paddle-relocatable-r27-head-20261030] START regions=48-71 cpus=48-71 threads=24 gpu=0 end=2026-10-31T06:00Z
+[region-lock] acquiring regions ['q2'] as role='bench' (timeout_s=13553.0) …
+[region-lock] held ['q2'] after 0.0s wait; running: /bin/bash /mnt/raid0/llm/tmp/codex3-pip02-paddle-relocatable-r13-20261030/engine/filler_run13.sh --inner --id codex3-pip02-paddle-relocatable-r27-head-20261030 --class cpu --cmd taskset -c ${FILLER_CPUS} bash /mnt/raid0/llm/tmp/codex3-pip-t1-r27-20261030/head/launch-p0.sh --job --min-window 1320 --stop /mnt/raid0/llm/tmp/codex3-pip-t1-r27-20261030/head/STOP-0 --port 25400 --workdir /mnt/raid0/llm/tmp/codex3-pip-t1-r27-20261030/head --gpu-threads 184-191
+Traceback (most recent call last):
+  File "/mnt/micron/codex3-pip-head-r26-20261030/pool.py", line 165, in <module>
+    if __name__=='__main__':raise SystemExit(main())
+                                             ^^^^^^
+  File "/mnt/micron/codex3-pip-head-r26-20261030/pool.py", line 124, in main
+    if ident!='codex3-pip02-paddle-relocatable-r26-head-20261030' or not grant.is_file():raise RuntimeError('pool identity or real grant missing')
+                                                                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+RuntimeError: pool identity or real grant missing
+job rc=1
+2026-10-31T02:14:10Z [codex3-pip02-paddle-relocatable-r27-head-20261030] ended rc=1 reason=job-rc-1:exited (grant deleted)

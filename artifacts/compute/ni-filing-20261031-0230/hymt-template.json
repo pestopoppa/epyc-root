@@ -1,0 +1,7 @@
+{
+  "native_response": {
+    "prompt": "<｜hy_begin▁of▁sentence｜><｜hy_User｜>template-probe<｜hy_Assistant｜>"
+  },
+  "expected": "<｜hy_begin▁of▁sentence｜><｜hy_User｜>template-probe<｜hy_Assistant｜>",
+  "exact_match": true
+}

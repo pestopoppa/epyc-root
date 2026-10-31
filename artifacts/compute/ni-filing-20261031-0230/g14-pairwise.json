@@ -1,0 +1,398 @@
+[
+  {
+    "snippet": 0,
+    "cap": 32,
+    "candidate": "reason-export170",
+    "baseline_bytes": 92079820,
+    "baseline_contract": "new1.7config on exact oldgraph hardlink",
+    "max_abs": 0.03792768344283104,
+    "max_cosine_divergence": 0.006514608860015869
+  },
+  {
+    "snippet": 0,
+    "cap": 32,
+    "candidate": "reason-export170-int8",
+    "baseline_bytes": 92079820,
+    "baseline_contract": "new1.7config on exact oldgraph hardlink",
+    "max_abs": 0.03730609640479088,
+    "max_cosine_divergence": 0.006453275680541992
+  },
+  {
+    "snippet": 0,
+    "cap": 64,
+    "candidate": "reason-export170",
+    "baseline_bytes": 92079820,
+    "baseline_contract": "new1.7config on exact oldgraph hardlink",
+    "max_abs": 0.03380657732486725,
+    "max_cosine_divergence": 0.00673598051071167
+  },
+  {
+    "snippet": 0,
+    "cap": 64,
+    "candidate": "reason-export170-int8",
+    "baseline_bytes": 92079820,
+    "baseline_contract": "new1.7config on exact oldgraph hardlink",
+    "max_abs": 0.034980371594429016,
+    "max_cosine_divergence": 0.006820321083068848
+  },
+  {
+    "snippet": 0,
+    "cap": 128,
+    "candidate": "reason-export170",
+    "baseline_bytes": 92079820,
+    "baseline_contract": "new1.7config on exact oldgraph hardlink",
+    "max_abs": 0.036902010440826416,
+    "max_cosine_divergence": 0.007153153419494629
+  },
+  {
+    "snippet": 0,
+    "cap": 128,
+    "candidate": "reason-export170-int8",
+    "baseline_bytes": 92079820,
+    "baseline_contract": "new1.7config on exact oldgraph hardlink",
+    "max_abs": 0.03550266474485397,
+    "max_cosine_divergence": 0.006787896156311035
+  },
+  {
+    "snippet": 1,
+    "cap": 64,
+    "candidate": "reason-export170",
+    "baseline_bytes": 92079820,
+    "baseline_contract": "new1.7config on exact oldgraph hardlink",
+    "max_abs": 0.5260438323020935,
+    "max_cosine_divergence": 1.200610876083374
+  },
+  {
+    "snippet": 1,
+    "cap": 64,
+    "candidate": "reason-export170-int8",
+    "baseline_bytes": 92079820,
+    "baseline_contract": "new1.7config on exact oldgraph hardlink",
+    "max_abs": 0.5424841046333313,
+    "max_cosine_divergence": 1.284873127937317
+  },
+  {
+    "snippet": 2,
+    "cap": 64,
+    "candidate": "reason-export170",
+    "baseline_bytes": 92079820,
+    "baseline_contract": "new1.7config on exact oldgraph hardlink",
+    "max_abs": 0.10174968838691711,
+    "max_cosine_divergence": 0.06059551239013672
+  },
+  {
+    "snippet": 2,
+    "cap": 64,
+    "candidate": "reason-export170-int8",
+    "baseline_bytes": 92079820,
+    "baseline_contract": "new1.7config on exact oldgraph hardlink",
+    "max_abs": 0.10217796266078949,
+    "max_cosine_divergence": 0.06107032299041748
+  },
+  {
+    "snippet": 3,
+    "cap": 64,
+    "candidate": "reason-export170",
+    "baseline_bytes": 92079820,
+    "baseline_contract": "new1.7config on exact oldgraph hardlink",
+    "max_abs": 0.5963345766067505,
+    "max_cosine_divergence": 1.820838451385498
+  },
+  {
+    "snippet": 3,
+    "cap": 64,
+    "candidate": "reason-export170-int8",
+    "baseline_bytes": 92079820,
+    "baseline_contract": "new1.7config on exact oldgraph hardlink",
+    "max_abs": 0.6055102348327637,
+    "max_cosine_divergence": 1.8410389423370361
+  },
+  {
+    "snippet": 4,
+    "cap": 64,
+    "candidate": "reason-export170",
+    "baseline_bytes": 92079820,
+    "baseline_contract": "new1.7config on exact oldgraph hardlink",
+    "max_abs": 0.5146336555480957,
+    "max_cosine_divergence": 1.654833197593689
+  },
+  {
+    "snippet": 4,
+    "cap": 64,
+    "candidate": "reason-export170-int8",
+    "baseline_bytes": 92079820,
+    "baseline_contract": "new1.7config on exact oldgraph hardlink",
+    "max_abs": 0.508348822593689,
+    "max_cosine_divergence": 1.643669605255127
+  },
+  {
+    "snippet": 5,
+    "cap": 64,
+    "candidate": "reason-export170",
+    "baseline_bytes": 92079820,
+    "baseline_contract": "new1.7config on exact oldgraph hardlink",
+    "max_abs": 0.06874389946460724,
+    "max_cosine_divergence": 0.01886063814163208
+  },
+  {
+    "snippet": 5,
+    "cap": 64,
+    "candidate": "reason-export170-int8",
+    "baseline_bytes": 92079820,
+    "baseline_contract": "new1.7config on exact oldgraph hardlink",
+    "max_abs": 0.06897417455911636,
+    "max_cosine_divergence": 0.019070446491241455
+  },
+  {
+    "snippet": 6,
+    "cap": 64,
+    "candidate": "reason-export170",
+    "baseline_bytes": 92079820,
+    "baseline_contract": "new1.7config on exact oldgraph hardlink",
+    "max_abs": 0.6098676323890686,
+    "max_cosine_divergence": 1.4326574802398682
+  },
+  {
+    "snippet": 6,
+    "cap": 64,
+    "candidate": "reason-export170-int8",
+    "baseline_bytes": 92079820,
+    "baseline_contract": "new1.7config on exact oldgraph hardlink",
+    "max_abs": 0.6029577255249023,
+    "max_cosine_divergence": 1.404839277267456
+  },
+  {
+    "snippet": 7,
+    "cap": 64,
+    "candidate": "reason-export170",
+    "baseline_bytes": 92079820,
+    "baseline_contract": "new1.7config on exact oldgraph hardlink",
+    "max_abs": 0.18838337063789368,
+    "max_cosine_divergence": 0.19251859188079834
+  },
+  {
+    "snippet": 7,
+    "cap": 64,
+    "candidate": "reason-export170-int8",
+    "baseline_bytes": 92079820,
+    "baseline_contract": "new1.7config on exact oldgraph hardlink",
+    "max_abs": 0.19188576936721802,
+    "max_cosine_divergence": 0.19954776763916016
+  },
+  {
+    "snippet": 8,
+    "cap": 64,
+    "candidate": "reason-export170",
+    "baseline_bytes": 92079820,
+    "baseline_contract": "new1.7config on exact oldgraph hardlink",
+    "max_abs": 0.29192399978637695,
+    "max_cosine_divergence": 0.5673866271972656
+  },
+  {
+    "snippet": 8,
+    "cap": 64,
+    "candidate": "reason-export170-int8",
+    "baseline_bytes": 92079820,
+    "baseline_contract": "new1.7config on exact oldgraph hardlink",
+    "max_abs": 0.31342583894729614,
+    "max_cosine_divergence": 0.6612622737884521
+  },
+  {
+    "snippet": 9,
+    "cap": 64,
+    "candidate": "reason-export170",
+    "baseline_bytes": 92079820,
+    "baseline_contract": "new1.7config on exact oldgraph hardlink",
+    "max_abs": 0.040118008852005005,
+    "max_cosine_divergence": 0.007966399192810059
+  },
+  {
+    "snippet": 9,
+    "cap": 64,
+    "candidate": "reason-export170-int8",
+    "baseline_bytes": 92079820,
+    "baseline_contract": "new1.7config on exact oldgraph hardlink",
+    "max_abs": 0.04241183400154114,
+    "max_cosine_divergence": 0.008530676364898682
+  },
+  {
+    "snippet": 10,
+    "cap": 64,
+    "candidate": "reason-export170",
+    "baseline_bytes": 92079820,
+    "baseline_contract": "new1.7config on exact oldgraph hardlink",
+    "max_abs": 0.05201156437397003,
+    "max_cosine_divergence": 0.01676034927368164
+  },
+  {
+    "snippet": 10,
+    "cap": 64,
+    "candidate": "reason-export170-int8",
+    "baseline_bytes": 92079820,
+    "baseline_contract": "new1.7config on exact oldgraph hardlink",
+    "max_abs": 0.05245216190814972,
+    "max_cosine_divergence": 0.016595005989074707
+  },
+  {
+    "snippet": 11,
+    "cap": 64,
+    "candidate": "reason-export170",
+    "baseline_bytes": 92079820,
+    "baseline_contract": "new1.7config on exact oldgraph hardlink",
+    "max_abs": 0.05062900483608246,
+    "max_cosine_divergence": 0.019494175910949707
+  },
+  {
+    "snippet": 11,
+    "cap": 64,
+    "candidate": "reason-export170-int8",
+    "baseline_bytes": 92079820,
+    "baseline_contract": "new1.7config on exact oldgraph hardlink",
+    "max_abs": 0.046787142753601074,
+    "max_cosine_divergence": 0.014090120792388916
+  },
+  {
+    "snippet": 12,
+    "cap": 64,
+    "candidate": "reason-export170",
+    "baseline_bytes": 92079820,
+    "baseline_contract": "new1.7config on exact oldgraph hardlink",
+    "max_abs": 0.6596206426620483,
+    "max_cosine_divergence": 1.9281724691390991
+  },
+  {
+    "snippet": 12,
+    "cap": 64,
+    "candidate": "reason-export170-int8",
+    "baseline_bytes": 92079820,
+    "baseline_contract": "new1.7config on exact oldgraph hardlink",
+    "max_abs": 0.6652061939239502,
+    "max_cosine_divergence": 1.9353477954864502
+  },
+  {
+    "snippet": 13,
+    "cap": 64,
+    "candidate": "reason-export170",
+    "baseline_bytes": 92079820,
+    "baseline_contract": "new1.7config on exact oldgraph hardlink",
+    "max_abs": 0.0924309566617012,
+    "max_cosine_divergence": 0.05606800317764282
+  },
+  {
+    "snippet": 13,
+    "cap": 64,
+    "candidate": "reason-export170-int8",
+    "baseline_bytes": 92079820,
+    "baseline_contract": "new1.7config on exact oldgraph hardlink",
+    "max_abs": 0.09371618926525116,
+    "max_cosine_divergence": 0.05761080980300903
+  },
+  {
+    "snippet": 14,
+    "cap": 64,
+    "candidate": "reason-export170",
+    "baseline_bytes": 92079820,
+    "baseline_contract": "new1.7config on exact oldgraph hardlink",
+    "max_abs": 0.036656372249126434,
+    "max_cosine_divergence": 0.006175816059112549
+  },
+  {
+    "snippet": 14,
+    "cap": 64,
+    "candidate": "reason-export170-int8",
+    "baseline_bytes": 92079820,
+    "baseline_contract": "new1.7config on exact oldgraph hardlink",
+    "max_abs": 0.03517305850982666,
+    "max_cosine_divergence": 0.006233394145965576
+  },
+  {
+    "snippet": 15,
+    "cap": 64,
+    "candidate": "reason-export170",
+    "baseline_bytes": 92079820,
+    "baseline_contract": "new1.7config on exact oldgraph hardlink",
+    "max_abs": 0.06330157816410065,
+    "max_cosine_divergence": 0.016303658485412598
+  },
+  {
+    "snippet": 15,
+    "cap": 64,
+    "candidate": "reason-export170-int8",
+    "baseline_bytes": 92079820,
+    "baseline_contract": "new1.7config on exact oldgraph hardlink",
+    "max_abs": 0.05995761975646019,
+    "max_cosine_divergence": 0.015706419944763184
+  },
+  {
+    "snippet": 16,
+    "cap": 64,
+    "candidate": "reason-export170",
+    "baseline_bytes": 92079820,
+    "baseline_contract": "new1.7config on exact oldgraph hardlink",
+    "max_abs": 0.030684038996696472,
+    "max_cosine_divergence": 0.0075626373291015625
+  },
+  {
+    "snippet": 16,
+    "cap": 64,
+    "candidate": "reason-export170-int8",
+    "baseline_bytes": 92079820,
+    "baseline_contract": "new1.7config on exact oldgraph hardlink",
+    "max_abs": 0.06629417836666107,
+    "max_cosine_divergence": 0.01695472002029419
+  },
+  {
+    "snippet": 17,
+    "cap": 64,
+    "candidate": "reason-export170",
+    "baseline_bytes": 92079820,
+    "baseline_contract": "new1.7config on exact oldgraph hardlink",
+    "max_abs": 0.4863530397415161,
+    "max_cosine_divergence": 1.4711236953735352
+  },
+  {
+    "snippet": 17,
+    "cap": 64,
+    "candidate": "reason-export170-int8",
+    "baseline_bytes": 92079820,
+    "baseline_contract": "new1.7config on exact oldgraph hardlink",
+    "max_abs": 0.45251786708831787,
+    "max_cosine_divergence": 1.3600828647613525
+  },
+  {
+    "snippet": 18,
+    "cap": 64,
+    "candidate": "reason-export170",
+    "baseline_bytes": 92079820,
+    "baseline_contract": "new1.7config on exact oldgraph hardlink",
+    "max_abs": 0.043457046151161194,
+    "max_cosine_divergence": 0.008617639541625977
+  },
+  {
+    "snippet": 18,
+    "cap": 64,
+    "candidate": "reason-export170-int8",
+    "baseline_bytes": 92079820,
+    "baseline_contract": "new1.7config on exact oldgraph hardlink",
+    "max_abs": 0.041714660823345184,
+    "max_cosine_divergence": 0.008794426918029785
+  },
+  {
+    "snippet": 19,
+    "cap": 64,
+    "candidate": "reason-export170",
+    "baseline_bytes": 92079820,
+    "baseline_contract": "new1.7config on exact oldgraph hardlink",
+    "max_abs": 0.028860539197921753,
+    "max_cosine_divergence": 0.0031020641326904297
+  },
+  {
+    "snippet": 19,
+    "cap": 64,
+    "candidate": "reason-export170-int8",
+    "baseline_bytes": 92079820,
+    "baseline_contract": "new1.7config on exact oldgraph hardlink",
+    "max_abs": 0.03063914179801941,
+    "max_cosine_divergence": 0.0033093690872192383
+  }
+]

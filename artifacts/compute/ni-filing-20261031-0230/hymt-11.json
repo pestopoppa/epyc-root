@@ -1,0 +1,65 @@
+{
+  "case": {
+    "id": "hymt-11",
+    "language": "ja",
+    "text": "評価には同じ条件の対照実験が必要です。",
+    "provenance": "Frozen authored synthetic launch diagnostic; no quality or research-corpus claim",
+    "structured": false
+  },
+  "request": {
+    "model": "hymt",
+    "messages": [
+      {
+        "role": "user",
+        "content": "Translate the following text into English. Note that you should only output the translated result without any additional explanation:\n\n評価には同じ条件の対照実験が必要です。"
+      }
+    ],
+    "temperature": 0.7,
+    "top_p": 0.6,
+    "top_k": 20,
+    "min_p": 0,
+    "repeat_penalty": 1.05,
+    "seed": 20261030,
+    "max_tokens": 96,
+    "stream": false
+  },
+  "response": {
+    "choices": [
+      {
+        "finish_reason": "stop",
+        "index": 0,
+        "message": {
+          "role": "assistant",
+          "content": "Evaluation requires control experiments under the same conditions."
+        }
+      }
+    ],
+    "created": 1793412520,
+    "model": "/mnt/raid0/llm/models/hy-mt2-1.8b/Q4_K_M/Hy-MT2-1.8B-Q4_K_M.gguf",
+    "system_fingerprint": "b10303-ffc1bac82",
+    "object": "chat.completion",
+    "usage": {
+      "completion_tokens": 10,
+      "prompt_tokens": 38,
+      "total_tokens": 48,
+      "prompt_tokens_details": {
+        "cached_tokens": 23
+      }
+    },
+    "id": "chatcmpl-DFdp2E0xAaA2mxFBzs0WJuvJpK3iEijv",
+    "timings": {
+      "cache_n": 23,
+      "prompt_n": 15,
+      "prompt_ms": 73.511,
+      "prompt_per_token_ms": 4.900733333333333,
+      "prompt_per_second": 204.05109439403628,
+      "predicted_n": 10,
+      "predicted_ms": 130.503,
+      "predicted_per_token_ms": 13.050299999999998,
+      "predicted_per_second": 76.62659095959481
+    }
+  },
+  "output": "Evaluation requires control experiments under the same conditions.",
+  "wall_s": 0.20778979803435504,
+  "structural_diagnostic": null
+}

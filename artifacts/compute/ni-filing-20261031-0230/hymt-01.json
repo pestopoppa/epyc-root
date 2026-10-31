@@ -1,0 +1,65 @@
+{
+  "case": {
+    "id": "hymt-01",
+    "language": "zh",
+    "text": "模型在独立测试集上接受评估，所有参数保持不变。",
+    "provenance": "Frozen authored synthetic launch diagnostic; no quality or research-corpus claim",
+    "structured": false
+  },
+  "request": {
+    "model": "hymt",
+    "messages": [
+      {
+        "role": "user",
+        "content": "Translate the following text into English. Note that you should only output the translated result without any additional explanation:\n\n模型在独立测试集上接受评估，所有参数保持不变。"
+      }
+    ],
+    "temperature": 0.7,
+    "top_p": 0.6,
+    "top_k": 20,
+    "min_p": 0,
+    "repeat_penalty": 1.05,
+    "seed": 20261030,
+    "max_tokens": 96,
+    "stream": false
+  },
+  "response": {
+    "choices": [
+      {
+        "finish_reason": "stop",
+        "index": 0,
+        "message": {
+          "role": "assistant",
+          "content": "The model was evaluated on a separate test set, with all parameters remaining unchanged."
+        }
+      }
+    ],
+    "created": 1793412518,
+    "model": "/mnt/raid0/llm/models/hy-mt2-1.8b/Q4_K_M/Hy-MT2-1.8B-Q4_K_M.gguf",
+    "system_fingerprint": "b10303-ffc1bac82",
+    "object": "chat.completion",
+    "usage": {
+      "completion_tokens": 17,
+      "prompt_tokens": 37,
+      "total_tokens": 54,
+      "prompt_tokens_details": {
+        "cached_tokens": 23
+      }
+    },
+    "id": "chatcmpl-xEGVFPv2SKM85BMBe3ECSgVFeIbvC57V",
+    "timings": {
+      "cache_n": 23,
+      "prompt_n": 14,
+      "prompt_ms": 51.694,
+      "prompt_per_token_ms": 3.6924285714285716,
+      "prompt_per_second": 270.824467056138,
+      "predicted_n": 17,
+      "predicted_ms": 265.167,
+      "predicted_per_token_ms": 15.59805882352941,
+      "predicted_per_second": 64.11054165865286
+    }
+  },
+  "output": "The model was evaluated on a separate test set, with all parameters remaining unchanged.",
+  "wall_s": 0.319335306994617,
+  "structural_diagnostic": null
+}

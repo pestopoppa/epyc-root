@@ -1,0 +1,65 @@
+{
+  "case": {
+    "id": "hymt-13",
+    "language": "ko",
+    "text": "측정값과 결론을 구분해야 합니다.",
+    "provenance": "Frozen authored synthetic launch diagnostic; no quality or research-corpus claim",
+    "structured": false
+  },
+  "request": {
+    "model": "hymt",
+    "messages": [
+      {
+        "role": "user",
+        "content": "Translate the following text into English. Note that you should only output the translated result without any additional explanation:\n\n측정값과 결론을 구분해야 합니다."
+      }
+    ],
+    "temperature": 0.7,
+    "top_p": 0.6,
+    "top_k": 20,
+    "min_p": 0,
+    "repeat_penalty": 1.05,
+    "seed": 20261030,
+    "max_tokens": 96,
+    "stream": false
+  },
+  "response": {
+    "choices": [
+      {
+        "finish_reason": "stop",
+        "index": 0,
+        "message": {
+          "role": "assistant",
+          "content": "The measured values and the conclusions must be distinguished."
+        }
+      }
+    ],
+    "created": 1793412520,
+    "model": "/mnt/raid0/llm/models/hy-mt2-1.8b/Q4_K_M/Hy-MT2-1.8B-Q4_K_M.gguf",
+    "system_fingerprint": "b10303-ffc1bac82",
+    "object": "chat.completion",
+    "usage": {
+      "completion_tokens": 11,
+      "prompt_tokens": 38,
+      "total_tokens": 49,
+      "prompt_tokens_details": {
+        "cached_tokens": 23
+      }
+    },
+    "id": "chatcmpl-40JfptMQI3haXYd0Mq12BYVIWv5BDNg1",
+    "timings": {
+      "cache_n": 23,
+      "prompt_n": 15,
+      "prompt_ms": 57.529,
+      "prompt_per_token_ms": 3.835266666666667,
+      "prompt_per_second": 260.7380625423699,
+      "predicted_n": 11,
+      "predicted_ms": 156.014,
+      "predicted_per_token_ms": 14.18309090909091,
+      "predicted_per_second": 70.50649300703782
+    }
+  },
+  "output": "The measured values and the conclusions must be distinguished.",
+  "wall_s": 0.21701293997466564,
+  "structural_diagnostic": null
+}

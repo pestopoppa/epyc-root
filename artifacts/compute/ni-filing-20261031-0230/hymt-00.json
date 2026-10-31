@@ -1,0 +1,65 @@
+{
+  "case": {
+    "id": "hymt-00",
+    "language": "zh",
+    "text": "今天的天气很好。",
+    "provenance": "Frozen authored synthetic launch diagnostic; no quality or research-corpus claim",
+    "structured": false
+  },
+  "request": {
+    "model": "hymt",
+    "messages": [
+      {
+        "role": "user",
+        "content": "Translate the following text into English. Note that you should only output the translated result without any additional explanation:\n\n今天的天气很好。"
+      }
+    ],
+    "temperature": 0.7,
+    "top_p": 0.6,
+    "top_k": 20,
+    "min_p": 0,
+    "repeat_penalty": 1.05,
+    "seed": 20261030,
+    "max_tokens": 96,
+    "stream": false
+  },
+  "response": {
+    "choices": [
+      {
+        "finish_reason": "stop",
+        "index": 0,
+        "message": {
+          "role": "assistant",
+          "content": "The weather is great today."
+        }
+      }
+    ],
+    "created": 1793412517,
+    "model": "/mnt/raid0/llm/models/hy-mt2-1.8b/Q4_K_M/Hy-MT2-1.8B-Q4_K_M.gguf",
+    "system_fingerprint": "b10303-ffc1bac82",
+    "object": "chat.completion",
+    "usage": {
+      "completion_tokens": 7,
+      "prompt_tokens": 28,
+      "total_tokens": 35,
+      "prompt_tokens_details": {
+        "cached_tokens": 0
+      }
+    },
+    "id": "chatcmpl-k4YVohx83mXTZVVk8lskrv9ybBxyxA9M",
+    "timings": {
+      "cache_n": 0,
+      "prompt_n": 28,
+      "prompt_ms": 73.506,
+      "prompt_per_token_ms": 2.6252142857142857,
+      "prompt_per_second": 380.9212853372514,
+      "predicted_n": 7,
+      "predicted_ms": 96.707,
+      "predicted_per_token_ms": 13.815285714285713,
+      "predicted_per_second": 72.38359167381886
+    }
+  },
+  "output": "The weather is great today.",
+  "wall_s": 0.17301198514178395,
+  "structural_diagnostic": null
+}

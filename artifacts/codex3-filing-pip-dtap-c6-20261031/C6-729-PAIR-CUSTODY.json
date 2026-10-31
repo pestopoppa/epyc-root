@@ -1,0 +1,99 @@
+{
+  "source_sha": "729599d69871181d67af715a4c2f9162d5153a2e",
+  "source_tree": "51b0a4fda906ffd3d029fd21bf41204675f08167",
+  "paired_build_custody": true,
+  "runtime_qualified": false,
+  "at": "2026-10-31T01:51:49.460253+00:00",
+  "stores": [
+    {
+      "path": "/mnt/raid0/llm/kernels/builds/cpu-20261030-729599d69-c6",
+      "build_result_sha256": "4aff6f1f2df98ddbaf35aaef58e5a0754f3c68786fb8f2212c56dcb3c70137d7",
+      "identity_sha256": "39f7f6f3a34e3431f6a1a3c11d22c9cf54189bf16c5fd4b0dd31df8789ca2041",
+      "manifest_sha256": "f751b659d2ac30cb1169c72c2be7f8965b6d342530c7c06382717bb5e1e71191",
+      "manifest_entries": 38,
+      "ggml_aliases": {
+        "libggml-base.so.0": {
+          "target": "libggml-base.so.0.16.0",
+          "resolved": "libggml-base.so.0.16.0"
+        },
+        "libggml.so.0": {
+          "target": "libggml.so.0.16.0",
+          "resolved": "libggml.so.0.16.0"
+        },
+        "libggml-base.so": {
+          "target": "libggml-base.so.0",
+          "resolved": "libggml-base.so.0.16.0"
+        },
+        "libggml.so": {
+          "target": "libggml.so.0",
+          "resolved": "libggml.so.0.16.0"
+        },
+        "libggml-cpu.so.0": {
+          "target": "libggml-cpu.so.0.16.0",
+          "resolved": "libggml-cpu.so.0.16.0"
+        },
+        "libggml-cpu.so": {
+          "target": "libggml-cpu.so.0",
+          "resolved": "libggml-cpu.so.0.16.0"
+        }
+      },
+      "targets": 29,
+      "recipe_kind": "cpu",
+      "target_files_all_present": true
+    },
+    {
+      "path": "/mnt/raid0/llm/kernels/builds/gpu-20261030-729599d69-c6",
+      "build_result_sha256": "d5b6e2b3b44eed194a849811e936bfbb765999bd59b8b910fd74a7f86b0ca39a",
+      "identity_sha256": "0f28bbcd2dca7f143b4add2bf29e19611051cc0918f413f1ec963c68d812aef5",
+      "manifest_sha256": "64c34e61d12e5170acc77d69d4edcbab296754d2e3a48679ceb916fde3bb3704",
+      "manifest_entries": 39,
+      "ggml_aliases": {
+        "libggml-base.so.0": {
+          "target": "libggml-base.so.0.16.0",
+          "resolved": "libggml-base.so.0.16.0"
+        },
+        "libggml-hip.so": {
+          "target": "libggml-hip.so.0",
+          "resolved": "libggml-hip.so.0.16.0"
+        },
+        "libggml.so.0": {
+          "target": "libggml.so.0.16.0",
+          "resolved": "libggml.so.0.16.0"
+        },
+        "libggml-base.so": {
+          "target": "libggml-base.so.0",
+          "resolved": "libggml-base.so.0.16.0"
+        },
+        "libggml.so": {
+          "target": "libggml.so.0",
+          "resolved": "libggml.so.0.16.0"
+        },
+        "libggml-cpu.so.0": {
+          "target": "libggml-cpu.so.0.16.0",
+          "resolved": "libggml-cpu.so.0.16.0"
+        },
+        "libggml-hip.so.0": {
+          "target": "libggml-hip.so.0.16.0",
+          "resolved": "libggml-hip.so.0.16.0"
+        },
+        "libggml-cpu.so": {
+          "target": "libggml-cpu.so.0",
+          "resolved": "libggml-cpu.so.0.16.0"
+        }
+      },
+      "targets": 29,
+      "recipe_kind": "gpu",
+      "target_files_all_present": true
+    }
+  ],
+  "outer_gpu_row": "Native rc0 but outer R13 reports incomplete:exited rc1; independent immutable-image custody PASS does not erase row failure; repair assigned.",
+  "gpu_strict_consumer": {
+    "build_only": true,
+    "kind": "gpu",
+    "result_path": "/mnt/raid0/llm/kernels/builds/gpu-20261030-729599d69-c6/build-result.json",
+    "result_sha256": "d5b6e2b3b44eed194a849811e936bfbb765999bd59b8b910fd74a7f86b0ca39a",
+    "source_sha": "729599d69871181d67af715a4c2f9162d5153a2e",
+    "status": "COMPLETE_BUILD_ONLY",
+    "target_count": 29
+  }
+}

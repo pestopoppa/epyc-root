@@ -1,0 +1,70 @@
+{
+  "case": {
+    "id": "hymt-15",
+    "language": "json",
+    "text": "{\"message\":\"Bonjour le monde\", \"model\":\"Hy-MT2\", \"count\":3}",
+    "provenance": "Frozen authored synthetic launch diagnostic; no quality or research-corpus claim",
+    "structured": true
+  },
+  "request": {
+    "model": "hymt",
+    "messages": [
+      {
+        "role": "user",
+        "content": "Translate ONLY user-facing values in this JSON into English. Preserve all keys, model names, numbers, and JSON structure exactly. Output only valid JSON without markdown:\n\n{\"message\":\"Bonjour le monde\", \"model\":\"Hy-MT2\", \"count\":3}"
+      }
+    ],
+    "temperature": 0.7,
+    "top_p": 0.6,
+    "top_k": 20,
+    "min_p": 0,
+    "repeat_penalty": 1.05,
+    "seed": 20261030,
+    "max_tokens": 96,
+    "stream": false
+  },
+  "response": {
+    "choices": [
+      {
+        "finish_reason": "stop",
+        "index": 0,
+        "message": {
+          "role": "assistant",
+          "content": "{\"message\":\"Hello world\", \"model\":\"Hy-MT2\", \"count\":3}"
+        }
+      }
+    ],
+    "created": 1793412521,
+    "model": "/mnt/raid0/llm/models/hy-mt2-1.8b/Q4_K_M/Hy-MT2-1.8B-Q4_K_M.gguf",
+    "system_fingerprint": "b10303-ffc1bac82",
+    "object": "chat.completion",
+    "usage": {
+      "completion_tokens": 20,
+      "prompt_tokens": 57,
+      "total_tokens": 77,
+      "prompt_tokens_details": {
+        "cached_tokens": 3
+      }
+    },
+    "id": "chatcmpl-n8Vhd4amnsBPNRZxJQ7tCd4y916tuuiS",
+    "timings": {
+      "cache_n": 3,
+      "prompt_n": 54,
+      "prompt_ms": 136.781,
+      "prompt_per_token_ms": 2.5329814814814817,
+      "prompt_per_second": 394.7916742822468,
+      "predicted_n": 20,
+      "predicted_ms": 302.348,
+      "predicted_per_token_ms": 15.1174,
+      "predicted_per_second": 66.1489409554553
+    }
+  },
+  "output": "{\"message\":\"Hello world\", \"model\":\"Hy-MT2\", \"count\":3}",
+  "wall_s": 0.44281330797821283,
+  "structural_diagnostic": {
+    "json_valid": true,
+    "keys_preserved": true,
+    "model_preserved": true,
+    "count_preserved": true
+  }
+}

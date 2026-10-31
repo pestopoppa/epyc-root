@@ -1,0 +1,65 @@
+{
+  "case": {
+    "id": "hymt-10",
+    "language": "ja",
+    "text": "モデルは入力文を英語に翻訳します。",
+    "provenance": "Frozen authored synthetic launch diagnostic; no quality or research-corpus claim",
+    "structured": false
+  },
+  "request": {
+    "model": "hymt",
+    "messages": [
+      {
+        "role": "user",
+        "content": "Translate the following text into English. Note that you should only output the translated result without any additional explanation:\n\nモデルは入力文を英語に翻訳します。"
+      }
+    ],
+    "temperature": 0.7,
+    "top_p": 0.6,
+    "top_k": 20,
+    "min_p": 0,
+    "repeat_penalty": 1.05,
+    "seed": 20261030,
+    "max_tokens": 96,
+    "stream": false
+  },
+  "response": {
+    "choices": [
+      {
+        "finish_reason": "stop",
+        "index": 0,
+        "message": {
+          "role": "assistant",
+          "content": "The model translates the input text into English."
+        }
+      }
+    ],
+    "created": 1793412520,
+    "model": "/mnt/raid0/llm/models/hy-mt2-1.8b/Q4_K_M/Hy-MT2-1.8B-Q4_K_M.gguf",
+    "system_fingerprint": "b10303-ffc1bac82",
+    "object": "chat.completion",
+    "usage": {
+      "completion_tokens": 10,
+      "prompt_tokens": 38,
+      "total_tokens": 48,
+      "prompt_tokens_details": {
+        "cached_tokens": 23
+      }
+    },
+    "id": "chatcmpl-peEdUXrDOFCau7UIfxmjYXoC4VPGctea",
+    "timings": {
+      "cache_n": 23,
+      "prompt_n": 15,
+      "prompt_ms": 65.192,
+      "prompt_per_token_ms": 4.3461333333333325,
+      "prompt_per_second": 230.08958154374773,
+      "predicted_n": 10,
+      "predicted_ms": 130.517,
+      "predicted_per_token_ms": 13.0517,
+      "predicted_per_second": 76.61837155313101
+    }
+  },
+  "output": "The model translates the input text into English.",
+  "wall_s": 0.19928394490852952,
+  "structural_diagnostic": null
+}

@@ -1,0 +1,162 @@
+{
+  "schema": "bounded-filing-evidence/v1",
+  "base": "3dca1d4d2773659defc76fde6bc638934e457433",
+  "files": {
+    "fa4-verdict.json": {
+      "source": "/mnt/micron/codex-ni-fa4-exact-set-r17-20261031/runs/20261031T013334Z-1489672/VERDICT.json",
+      "sha256": "e6501870499a7f50fd67e5c74905fe63354ddc630c4ca03cd7880f2d41866b85",
+      "bytes": 984
+    },
+    "fa4-cross-arm.json": {
+      "source": "/mnt/micron/codex-ni-fa4-exact-set-r17-20261031/runs/20261031T013334Z-1489672/control_decisions/nan_cross_arm.json",
+      "sha256": "c73af53532955bff8dad8f60af6338dd27a983ae09b039f4d6fd5a8d4737b123",
+      "bytes": 170337
+    },
+    "fa4-complete.json": {
+      "source": "/mnt/raid0/llm/tmp/codex-ni-fa4-exact-set-successor-r17-20261031/NORMAL-COMPLETE.json",
+      "sha256": "720e75aee5ef6767b939514eb52b8643d2cc2f9dd43f518977bd0020a554ed5a",
+      "bytes": 462
+    },
+    "gnx-result.json": {
+      "source": "/mnt/raid0/llm/tmp/codex-ni-gnx-r2-boundary-finish-20261031/results/RESULT.json",
+      "sha256": "cc188c902c5137ab22600181201ab4fd086c645c3554939fc0cba8ae2e85049e",
+      "bytes": 10350
+    },
+    "gnx-raw-review.json": {
+      "source": "/mnt/raid0/llm/tmp/codex-ni-gnx-r2-boundary-finish-20261031/PROPOSED-R4-RAW-REVIEW.json",
+      "sha256": "d9313de8f979b8f94f952e778f11e30c368c4d1bdfc301d916675b21acf09739",
+      "bytes": 18363
+    },
+    "td29-launcher.log": {
+      "source": "/mnt/raid0/llm/tmp/codex-ni-td29-m4-cache-20261030/ws58-launcher.out",
+      "sha256": "18b72eb1c99ddced1a44785afe6e22e5216a930603279b4b69920d7abd97e4ab",
+      "bytes": 2414
+    },
+    "hymt-result.json": {
+      "source": "/mnt/raid0/llm/tmp/codex-ni-hymt-q4-recipe-r1-20261030/results/RESULT.json",
+      "sha256": "a869c2f21a1bc71b970762d151ac2d24d399a68898e9e8d672d1e2c7f181e650",
+      "bytes": 411
+    },
+    "hymt-template.json": {
+      "source": "/mnt/raid0/llm/tmp/codex-ni-hymt-q4-recipe-r1-20261030/results/template_probe.json",
+      "sha256": "b430c681d309248e8a9d3570e87efced808bb8b758f71d152784eecabc36d10d",
+      "bytes": 251
+    },
+    "g14-result.json": {
+      "source": "/mnt/raid0/llm/tmp/codex-ni-g14-reason32m-20261030/results/RESULT.json",
+      "sha256": "76ba7a99aba1bf422fbc2e97c55f66718b3728167bcf5e34edb84bf2dd031792",
+      "bytes": 444342
+    },
+    "g14-pairwise.json": {
+      "source": "/mnt/raid0/llm/tmp/codex-ni-g14-reason32m-20261030/results/PAIRWISE.json",
+      "sha256": "447cd214e514fd5778699624bd30411a382d6644eabf613c249a9e2f12b7aead",
+      "bytes": 11749
+    },
+    "hymt-00.json": {
+      "source": "/mnt/raid0/llm/tmp/codex-ni-hymt-q4-recipe-r1-20261030/results/hymt-00.json",
+      "sha256": "e90458ace59ca961a14ad06f8f33407a070c749dda8a3fae7d448cd05021aaa5",
+      "bytes": 1777
+    },
+    "hymt-01.json": {
+      "source": "/mnt/raid0/llm/tmp/codex-ni-hymt-q4-recipe-r1-20261030/results/hymt-01.json",
+      "sha256": "d1f2f5f54f855c8f1cb0fc2d8bdbda6d06788a30dcfd51bb481d0f517eb88adb",
+      "bytes": 1990
+    },
+    "hymt-02.json": {
+      "source": "/mnt/raid0/llm/tmp/codex-ni-hymt-q4-recipe-r1-20261030/results/hymt-02.json",
+      "sha256": "ccef981f1dfbbd70a035fe347dd5413ea8301f0436b826a4321fd148501cd786",
+      "bytes": 1924
+    },
+    "hymt-03.json": {
+      "source": "/mnt/raid0/llm/tmp/codex-ni-hymt-q4-recipe-r1-20261030/results/hymt-03.json",
+      "sha256": "b3dc912fa0d056b4b715bfc9341b4c591bdaec815af9785ef2fbc22d1e1b64ce",
+      "bytes": 1950
+    },
+    "hymt-04.json": {
+      "source": "/mnt/raid0/llm/tmp/codex-ni-hymt-q4-recipe-r1-20261030/results/hymt-04.json",
+      "sha256": "b6e59eeb68d19f01dd1ce503ca9edbc1cb8daedf6d4996abf6f5f1d881b1bbcb",
+      "bytes": 1872
+    },
+    "hymt-05.json": {
+      "source": "/mnt/raid0/llm/tmp/codex-ni-hymt-q4-recipe-r1-20261030/results/hymt-05.json",
+      "sha256": "32be6e615e51d1e5de0ac3ab695277a3880b98428f4ee465156c0da7a54ae4fb",
+      "bytes": 1954
+    },
+    "hymt-06.json": {
+      "source": "/mnt/raid0/llm/tmp/codex-ni-hymt-q4-recipe-r1-20261030/results/hymt-06.json",
+      "sha256": "3268e3ecdf7f248e0b072182171caba9735d26fffd0b887e36373d5268dfa3c9",
+      "bytes": 1869
+    },
+    "hymt-07.json": {
+      "source": "/mnt/raid0/llm/tmp/codex-ni-hymt-q4-recipe-r1-20261030/results/hymt-07.json",
+      "sha256": "690e69a62c117b977a691f35f5f2078572f12118c1c6c45c67f7d3f6d6a78340",
+      "bytes": 1917
+    },
+    "hymt-08.json": {
+      "source": "/mnt/raid0/llm/tmp/codex-ni-hymt-q4-recipe-r1-20261030/results/hymt-08.json",
+      "sha256": "a2f67353731f9f87cf27b10af0ed8468230cf053c86c2f2ef12bf90120519d48",
+      "bytes": 2005
+    },
+    "hymt-09.json": {
+      "source": "/mnt/raid0/llm/tmp/codex-ni-hymt-q4-recipe-r1-20261030/results/hymt-09.json",
+      "sha256": "48fbdf5de464ef41b571c431135e0ac14f493a839b6df5efcc3016c6554d83fc",
+      "bytes": 1952
+    },
+    "hymt-10.json": {
+      "source": "/mnt/raid0/llm/tmp/codex-ni-hymt-q4-recipe-r1-20261030/results/hymt-10.json",
+      "sha256": "5c2a9dd03864237ed8ff3c9b5dec7cb0658f349bf071e19c6f2c1b42356161e4",
+      "bytes": 1870
+    },
+    "hymt-11.json": {
+      "source": "/mnt/raid0/llm/tmp/codex-ni-hymt-q4-recipe-r1-20261030/results/hymt-11.json",
+      "sha256": "e0be19ddf3b890262e6779c7c7e04354f77ea9215656694f0bdf8dc38e816b2e",
+      "bytes": 1926
+    },
+    "hymt-12.json": {
+      "source": "/mnt/raid0/llm/tmp/codex-ni-hymt-q4-recipe-r1-20261030/results/hymt-12.json",
+      "sha256": "25580832630c85e7c0a600b7d76126022913a657ec1bd713b5fdbf9a7030fcab",
+      "bytes": 1887
+    },
+    "hymt-13.json": {
+      "source": "/mnt/raid0/llm/tmp/codex-ni-hymt-q4-recipe-r1-20261030/results/hymt-13.json",
+      "sha256": "283d61484178c61cfba775340857736fd2c332d6c19cd81bdf3c865a0ef3a73f",
+      "bytes": 1894
+    },
+    "hymt-14.json": {
+      "source": "/mnt/raid0/llm/tmp/codex-ni-hymt-q4-recipe-r1-20261030/results/hymt-14.json",
+      "sha256": "f9b1107b7554f9d561ecfb5625a0a4afa2ad8b39c6ab037ed1f25a929f2a78a3",
+      "bytes": 1970
+    },
+    "hymt-15.json": {
+      "source": "/mnt/raid0/llm/tmp/codex-ni-hymt-q4-recipe-r1-20261030/results/hymt-15.json",
+      "sha256": "59b5ffb790809dfabc15115c9ca3e45b87721e231a85c9d3d8016ba7aa56e8d3",
+      "bytes": 2081
+    },
+    "fa4-grants.ended": {
+      "source": "/mnt/raid0/llm/tmp/compute-flags/grants/fa4-c5-exact-set-r17-20261031.ended",
+      "sha256": "a185d82a8f7ce5503b340843ff15a53b87eee2ad824b060521d58d57c57e7c63",
+      "bytes": 187
+    },
+    "gnx-grants.ended": {
+      "source": "/mnt/raid0/llm/tmp/compute-flags/grants/codex-ni-gnx-r2-nativeproof-r4-20261031.ended",
+      "sha256": "96905518fa94411d0d5d9adb8a5a6fb3cabf89bb2e52c2baab9a934ee7ee925e",
+      "bytes": 65
+    },
+    "td29-grants.ended": {
+      "source": "/mnt/raid0/llm/tmp/compute-flags/grants/codex-ni-td29-m4-cache-r3-20261031.ended",
+      "sha256": "58ec75b91fb6354c54c7aea0543f524dd2c8caac8344bb4f2879716c81c4fcac",
+      "bytes": 191
+    },
+    "hymt-grants.ended": {
+      "source": "/mnt/raid0/llm/tmp/compute-flags/grants/codex-ni-hymt-q4-recipe-r1-20261030.ended",
+      "sha256": "3a9d13de44e75bdf05eae30306dd753388c965365fe4f37663a5afa18ddcb0ff",
+      "bytes": 182
+    },
+    "g14-grants.ended": {
+      "source": "/mnt/raid0/llm/tmp/compute-flags/grants/codex-ni-g14-reason32m-r1-20261030.ended",
+      "sha256": "06e91cdcff1683704fe604ccaf78219fa602333ccd63fb3c69f34103856bb05a",
+      "bytes": 181
+    }
+  },
+  "limits": "Selected native records only; full run data and matrices are not reproduced. No new grading or inferred measurement warrant."
+}

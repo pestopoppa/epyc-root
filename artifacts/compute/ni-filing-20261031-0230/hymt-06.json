@@ -1,0 +1,65 @@
+{
+  "case": {
+    "id": "hymt-06",
+    "language": "de",
+    "text": "Die Datei enthält sechzehn unabhängige Testfälle.",
+    "provenance": "Frozen authored synthetic launch diagnostic; no quality or research-corpus claim",
+    "structured": false
+  },
+  "request": {
+    "model": "hymt",
+    "messages": [
+      {
+        "role": "user",
+        "content": "Translate the following text into English. Note that you should only output the translated result without any additional explanation:\n\nDie Datei enthält sechzehn unabhängige Testfälle."
+      }
+    ],
+    "temperature": 0.7,
+    "top_p": 0.6,
+    "top_k": 20,
+    "min_p": 0,
+    "repeat_penalty": 1.05,
+    "seed": 20261030,
+    "max_tokens": 96,
+    "stream": false
+  },
+  "response": {
+    "choices": [
+      {
+        "finish_reason": "stop",
+        "index": 0,
+        "message": {
+          "role": "assistant",
+          "content": "The file contains sixteen independent test cases."
+        }
+      }
+    ],
+    "created": 1793412519,
+    "model": "/mnt/raid0/llm/models/hy-mt2-1.8b/Q4_K_M/Hy-MT2-1.8B-Q4_K_M.gguf",
+    "system_fingerprint": "b10303-ffc1bac82",
+    "object": "chat.completion",
+    "usage": {
+      "completion_tokens": 9,
+      "prompt_tokens": 43,
+      "total_tokens": 52,
+      "prompt_tokens_details": {
+        "cached_tokens": 23
+      }
+    },
+    "id": "chatcmpl-hxAo62J89YyLWsXzJ75DJEuTqHN2M9mm",
+    "timings": {
+      "cache_n": 23,
+      "prompt_n": 20,
+      "prompt_ms": 57.587,
+      "prompt_per_token_ms": 2.87935,
+      "prompt_per_second": 347.30060603955747,
+      "predicted_n": 9,
+      "predicted_ms": 136.271,
+      "predicted_per_token_ms": 15.14122222222222,
+      "predicted_per_second": 66.04486647929494
+    }
+  },
+  "output": "The file contains sixteen independent test cases.",
+  "wall_s": 0.19774484704248607,
+  "structural_diagnostic": null
+}

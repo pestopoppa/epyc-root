@@ -5,6 +5,8 @@
 **Owner:** operator audit session, 2026-08-27. **Depends on:** INF-06 (campaign), INF-64 (repair track).
 ### C6 preparation checkpoint — 2026-10-30/31 (refactor)
 
+- *(2026-10-31, C6 build and CPU ops.)* **FAILED-RUN `refactor-c6-gpu-build-729599d69-20261030`** rc1 `incomplete:exited`, class=harness; owner action: repair the outer completion predicate. **FAILED-RUN `refactor-c6-cpu-iqkfa-on-build-729599d69-20261031`** rc1 `incomplete:exited`, class=harness; owner action: repair the outer completion predicate. Both native builds are separately `COMPLETE_BUILD_ONLY`, not outer successes. **FAILED-RUN `refactor-c6-cpu-ops-full-729599d69-20261031-r2`** rc1, class=harness: stderr/stdout interleaving broke the parser after native MUL_MAT 1145/1145; owner action: use the separately published R3 repair; full predicate remains unknown for R2. [Evidence](../../artifacts/codex3-filing-pip-dtap-c6-20261031/SHA256SUMS). [belief: cc]
+
 - [ ] **C6 complete candidate and qualification:** finish the operator-priority source fold from C5 `c72ec82f5`, build CPU/GPU stores at one final SHA, complete manifest gates and custody, then give ws58 the CAS package; refactor must not CAS. Current source is experimental and unqualified.
   - [x] **Read-only C5 custody verification.** ✅ 2026-10-30 — CPU117/117 and GPU118/118 retained SHA entries match; all shared-library aliases resolve to manifested versioned files. Receipt: [C5 custody receipt](../../artifacts/compute/refactor-c5-custody-20261030.json), SHA-256 `319982f05174621ff588751158d58e8e0bd67b47166c6fa1271b9acea16dd3b5`. No store was changed; no continuous-custody claim. [no-belief: custody/source inventory only]
 

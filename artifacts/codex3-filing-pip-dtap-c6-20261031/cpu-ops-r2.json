@@ -1,0 +1,170 @@
+{
+  "schema": "c6.runtime.transport.v1",
+  "source_sha": "729599d69871181d67af715a4c2f9162d5153a2e",
+  "action": "cpu-ops",
+  "allocation": {
+    "id": "refactor-c6-cpu-ops-full-729599d69-20261031-r2",
+    "regions": "48-71",
+    "cpus": [
+      48,
+      49,
+      50,
+      51,
+      52,
+      53,
+      54,
+      55,
+      56,
+      57,
+      58,
+      59,
+      60,
+      61,
+      62,
+      63,
+      64,
+      65,
+      66,
+      67,
+      68,
+      69,
+      70,
+      71
+    ],
+    "deadline": 1793419410.0,
+    "memory_gib": 32,
+    "calendar_row": {
+      "gib": 32.0,
+      "class": "block-correctness"
+    }
+  },
+  "store_pair": {
+    "source_sha": "729599d69871181d67af715a4c2f9162d5153a2e",
+    "CPU_store_custody": true,
+    "paired_build_custody": false,
+    "same_source_pair_gate": "separate; not claimed here"
+  },
+  "argv": [
+    "/usr/bin/python3",
+    "-B",
+    "/mnt/raid0/llm/tmp/refactor-c6-cpu-ops-ready-20261031/worker.py",
+    "--action",
+    "cpu-ops",
+    "--cpu-store",
+    "/mnt/raid0/llm/kernels/builds/cpu-20261030-729599d69-c6",
+    "--gpu-store",
+    "/mnt/raid0/llm/kernels/builds/gpu-20261030-729599d69-c6",
+    "--out",
+    "/mnt/raid0/llm/tmp/refactor-c6-cpu-ops-ready-20261031/runs/cpu-ops-20261031T020546-2389972"
+  ],
+  "status": "NATIVE_FAILED",
+  "gate_pass": null,
+  "qualification_only": false,
+  "process": {
+    "argv": [
+      "/usr/bin/python3",
+      "-B",
+      "/mnt/raid0/llm/tmp/refactor-c6-cpu-ops-ready-20261031/worker.py",
+      "--action",
+      "cpu-ops",
+      "--cpu-store",
+      "/mnt/raid0/llm/kernels/builds/cpu-20261030-729599d69-c6",
+      "--gpu-store",
+      "/mnt/raid0/llm/kernels/builds/gpu-20261030-729599d69-c6",
+      "--out",
+      "/mnt/raid0/llm/tmp/refactor-c6-cpu-ops-ready-20261031/runs/cpu-ops-20261031T020546-2389972"
+    ],
+    "rc": 1,
+    "reason": null,
+    "elapsed_s": 55.6704704510048,
+    "sampled_peak_tree_rss_bytes": 550371328,
+    "samples": 553,
+    "children_drained": true,
+    "compiler_witness": [],
+    "interrupted_compilers": [],
+    "owned_pid_births": [
+      {
+        "pid": 2389974,
+        "birth": 153482004
+      },
+      {
+        "pid": 2389975,
+        "birth": 153482008
+      },
+      {
+        "pid": 2389979,
+        "birth": 153482018
+      },
+      {
+        "pid": 2390016,
+        "birth": 153482028
+      },
+      {
+        "pid": 2390048,
+        "birth": 153482038
+      },
+      {
+        "pid": 2390070,
+        "birth": 153482048
+      }
+    ],
+    "owned_process_argvs": [
+      {
+        "pid": 2389974,
+        "birth": 153482004,
+        "argv": [
+          "/usr/bin/python3",
+          "-B",
+          "/mnt/raid0/llm/tmp/refactor-c6-cpu-ops-ready-20261031/worker.py",
+          "--action",
+          "cpu-ops",
+          "--cpu-store",
+          "/mnt/raid0/llm/kernels/builds/cpu-20261030-729599d69-c6",
+          "--gpu-store",
+          "/mnt/raid0/llm/kernels/builds/gpu-20261030-729599d69-c6",
+          "--out",
+          "/mnt/raid0/llm/tmp/refactor-c6-cpu-ops-ready-20261031/runs/cpu-ops-20261031T020546-2389972"
+        ]
+      },
+      {
+        "pid": 2389975,
+        "birth": 153482008,
+        "argv": []
+      },
+      {
+        "pid": 2389979,
+        "birth": 153482018,
+        "argv": []
+      },
+      {
+        "pid": 2390016,
+        "birth": 153482028,
+        "argv": []
+      },
+      {
+        "pid": 2390048,
+        "birth": 153482038,
+        "argv": []
+      },
+      {
+        "pid": 2390070,
+        "birth": 153482048,
+        "argv": [
+          "/mnt/raid0/llm/kernels/builds/cpu-20261030-729599d69-c6/bin/test-backend-ops",
+          "test",
+          "-b",
+          "CPU",
+          "-o",
+          "MUL_MAT",
+          "-j",
+          "1",
+          "--suite-seed",
+          "71",
+          "--autokernel-properties"
+        ]
+      }
+    ]
+  },
+  "active_native_at_cutoff": null,
+  "partial": false
+}
