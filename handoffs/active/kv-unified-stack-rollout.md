@@ -167,7 +167,7 @@ Completed history through 2026-10-24 (moved verbatim, no open tasks): [kv-unifie
       slots_text: slots_no_prompt}`, so the fallback is visible. The KVU-15a done-when also passes (above). Evidence
       `/mnt/raid0/llm/tmp/gpu-block-27b-20261003/results/ec2_lease/20261004T024825Z/report.json`. This opens the
       KVU-15b count (≥ 200 credited calls).
-  - [ ] **KVU-15d — primitives-lane serving records must say whether the call held the long-prefill lease.** (filed
+  - [x] **KVU-15d — primitives-lane serving records must say whether the call held the long-prefill lease.** ✅ 2026-10-31 APP `7ecfbe3fe70de976c117d71d48818cf4684c01f4`; [94 tests](../../artifacts/compute/codex3-kvu15d-20261031/related-v3.log). [no-belief: source and regression verification] (filed
     2026-10-03, workspace-ec, found while preparing the GPU-block runner) Passthrough records carry
     `passthrough.long_prefill`, but primitives-lane `serving_call.v1` records have no `long_prefill` field, only
     `queue.pre_dispatch_wait_ms`, which mixes lock, placement and lease wait. So the KVU-15a lease cannot be read
@@ -175,6 +175,7 @@ Completed history through 2026-10-24 (moved verbatim, no open tasks): [kv-unifie
     the same staging path that sets `kv_admission`, with a test. Done when a primitives record for a long prompt
     carries `long_prefill: true` and its lease wait.
     - *(2026-10-21 triage)* open (no evidence found); only later mentions are agentic-serving-harness-fixes.md:479,499 still citing it as missing.
+    - 2026-10-31: admission-time ownership is an actual same-ticket snapshot; `lease_wait_observed_ms` sums waits observed with the lease verdict, not total queue wait or a causal estimate. Legacy and non-admission fields remain unknown. Source/fake-transport tests only; no service reload or serving distribution. [no-belief: source and regression verification]
   - [ ] **KVU-15b — measure cache-credit misses on the serving records.** (filed 2026-10-03, workspace-ec; owner's
     decision was keep the credit and measure) On unified-KV servers the credit assumes the matched prefix survives in
     `--cache-ram`; a miss costs one extra concurrent long prefill. After KVU-15a is live, count calls admitted with

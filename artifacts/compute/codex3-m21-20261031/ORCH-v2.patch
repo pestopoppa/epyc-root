@@ -1,0 +1,380 @@
+--- a/src/api/models/requests.py
++++ b/src/api/models/requests.py
+@@ -114,7 +114,7 @@
+     """Request model for chat endpoint."""
+ 
+     x_request_source: str | None = Field(
+-        default=None, description="Optional prompt-log source label; never affects routing."
++        default=None, description="Optional source label; smoke/probe/health opt out of episodic scoring, not routing."
+     )
+ 
+     @field_validator("x_request_source", mode="before")
+--- a/src/api/routes/chat.py
++++ b/src/api/routes/chat.py
+@@ -32,7 +32,7 @@
+ from src.api.dependencies import dep_app_state
+ from src.api.models import ChatRequest, ChatResponse, RewardRequest
+ from src.api.state import AppState
+-from src.backends.prompt_layout import source_scope, source_stream
++from src.backends.prompt_layout import normalize_source, source_scope, source_stream
+ from src.config import get_config
+ from src.constants import TASK_IR_OBJECTIVE_LEN
+ from src.repl_environment import knowledge_fence
+@@ -211,6 +211,14 @@
+         )
+ 
+ 
++def _request_with_source_header(request: ChatRequest, http_request: Request | None) -> ChatRequest:
++    """Accept an explicit source header when the request has no body label."""
++    if request.x_request_source is not None or http_request is None:
++        return request
++    source = normalize_source(http_request.headers.get("x-request-source"))
++    return request.model_copy(update={"x_request_source": source}) if source else request
++
++
+ @router.post("/chat", response_model=ChatResponse)
+ async def chat(
+     request: ChatRequest,
+@@ -229,6 +237,7 @@
+     - Cache statistics in response
+     - Full orchestration loop with Root LM (Phase 8)
+     """
++    request = _request_with_source_header(request, http_request)
+     from src.runtime.live_telemetry import emit_lifecycle_transition
+ 
+     if not request.request_id:
+@@ -1343,6 +1352,7 @@
+ async def chat_stream(
+     request: ChatRequest,
+     state: AppState = Depends(dep_app_state),
++    http_request: Request = None,
+ ) -> StreamingResponse:
+     """SSE streaming endpoint with routing metadata.
+ 
+@@ -1364,6 +1374,7 @@
+     Note: Uses sse-starlette when available (via feature flag), otherwise
+     falls back to manual SSE formatting for backward compatibility.
+     """
++    request = _request_with_source_header(request, http_request)
+     # INF-78 review fix F2: neither streaming path below installs a task scope or a
+     # quiescence carrier (compare /chat's `begin_request_scope` / `quiescence.begin` in the
+     # `try` block above) — a caller that sends task_root/read_roots/quiescent_after/edit_mode
+@@ -1411,6 +1422,8 @@
+             "routing_preferences": request.routing_preferences,
+         }
+         task_ir = canonicalize_task_ir(task_ir)
++        if request.x_request_source in {"smoke", "probe", "health"}:
++            task_ir["request_source"] = request.x_request_source
+         if state.progress_logger:
+             state.progress_logger.log_task_started(
+                 task_id=task_id,
+--- a/src/api/routes/chat_pipeline/routing_decision.py
++++ b/src/api/routes/chat_pipeline/routing_decision.py
+@@ -667,7 +667,8 @@
+         return
+     state.progress_logger.log_task_started(
+         task_id=task_id,
+-        task_ir=task_ir,
++        task_ir=({**task_ir, "request_source": request.x_request_source}
++                 if request.x_request_source in {"smoke", "probe", "health"} else task_ir),
+         routing_decision=routing_decision,
+         routing_strategy=routing_strategy,
+         routing_meta=routing_meta(
+--- a/src/api/services/memrl.py
++++ b/src/api/services/memrl.py
+@@ -295,6 +295,10 @@
+         force_role: Optional forced role from request context.
+         real_mode: Whether request was real_mode.
+     """
++    from src.backends.prompt_layout import current_request_source, is_non_learning_source
++
++    if is_non_learning_source(current_request_source()):
++        return
+     if should_skip_background_scoring(force_role=force_role, real_mode=real_mode):
+         return
+     scorer = getattr(state, "q_scorer", None)
+@@ -352,6 +356,10 @@
+         task_id: The task ID to score.
+         mode: Execution mode used ("direct", "react", or "repl").
+     """
++    from src.backends.prompt_layout import current_request_source, is_non_learning_source
++
++    if is_non_learning_source(current_request_source()):
++        return
+     scorer = getattr(state, "q_scorer", None)
+     enabled = getattr(state, "q_scorer_enabled", False)
+     if scorer is None or enabled is not True:
+--- a/src/backends/prompt_layout.py
++++ b/src/backends/prompt_layout.py
+@@ -46,7 +46,8 @@
+     "system", "tools", "rules", "task", "state", "context",
+     "reference_code", "skill", "routing", "doc_chunk", "tool_output",
+ )
+-SOURCES = ("interactive", "autopilot", "benchmark", "repl_experiment")
++NON_LEARNING_SOURCES = frozenset({"smoke", "probe", "health"})
++SOURCES = ("interactive", "autopilot", "benchmark", "repl_experiment", "smoke", "probe", "health")
+ HEAD_CHARS = 256
+ MAX_AGE_S = 600.0
+ 
+@@ -61,6 +62,16 @@
+     return None
+ 
+ 
++def is_non_learning_source(source: Any) -> bool:
++    """Only explicit diagnostic tags opt a request out of episodic scoring."""
++    return normalize_source(source) in NON_LEARNING_SOURCES
++
++
++def current_request_source() -> str | None:
++    """Request-bound label only; never infer it from global environment."""
++    return _request_source.get()
++
++
+ def producer_source(default: str, explicit: str | None = None) -> str | None:
+     """Serialize the producer's source across HTTP without changing its environment."""
+     return (normalize_source(explicit) or normalize_source(os.environ.get(SOURCE_ENV))
+--- a/orchestration/repl_memory/progress_logger.py
++++ b/orchestration/repl_memory/progress_logger.py
+@@ -445,6 +445,9 @@
+                 "workload_class": self._task_workload_class(task_ir),
+                 "objective": task_ir.get("objective", "")[:PROGRESS_OBJECTIVE_LOG_LEN],
+                 "priority": task_ir.get("priority"),
++                **({"request_source": task_ir["request_source"]}
++                   if isinstance(task_ir.get("request_source"), str)
++                   and task_ir["request_source"] in {"smoke", "probe", "health"} else {}),
+             },
+         )
+         self.log(task_started_entry)
+@@ -1120,8 +1123,11 @@
+         completed_tasks: set[str] = set()
+         scored_memory_ids: set[str] = set()
+         routing_entries: list[tuple[str, str | None]] = []
++        non_learning_tasks: set[str] = set()
+ 
+         for entry in entries:
++            if entry.event_type == EventType.TASK_STARTED and isinstance(entry.data, dict) and isinstance(entry.data.get("request_source"), str) and entry.data["request_source"] in {"smoke", "probe", "health"}:
++                non_learning_tasks.add(entry.task_id)
+             if entry.event_type in (EventType.TASK_COMPLETED, EventType.TASK_FAILED):
+                 completed_tasks.add(entry.task_id)
+             elif entry.event_type == EventType.Q_VALUE_UPDATED:
+@@ -1138,7 +1144,7 @@
+                 elif not memory_id:
+                     unscored.add(task_id)
+ 
+-        result = list(unscored)
++        result = list(unscored - non_learning_tasks)
+         self._unscored_cache = result
+         self._unscored_cache_ts = now
+         return result
+--- a/orchestration/repl_memory/q_scorer.py
++++ b/orchestration/repl_memory/q_scorer.py
+@@ -1398,6 +1398,13 @@
+         if not task_outcome:
+             return {"error": "Task not completed yet"}
+ 
++        # The explicit request tag is journaled at dispatch, so this also protects
++        # idle replay after the request context and process have gone away.
++        start_data = task_started.data if task_started and isinstance(task_started.data, dict) else {}
++        if isinstance(start_data.get("request_source"), str) and start_data["request_source"] in {"smoke", "probe", "health"}:
++            return {"memories_updated": 0, "memories_created": 0,
++                    "skipped": "non_learning_request_source", "reward": None}
++
+         # An INFRA failure is the ABSENCE of a measurement, never a bad one, so
+         # it must not reach the reward writer at all. The serving pipeline
+         # stamps the structural disposition onto the TASK_FAILED entry
+--- a/scripts/benchmark/migration_probe.py
++++ b/scripts/benchmark/migration_probe.py
+@@ -65,7 +65,7 @@
+     t0 = time.time()
+     try:
+         with httpx.Client(timeout=timeout) as c:
+-            r = c.post(f"{API}/chat", json=payload)
++            r = c.post(f"{API}/chat", json=payload, headers={"X-Request-Source": "probe"})
+         ans = ""
+         try:
+             ans = (r.json().get("answer") or r.json().get("response") or "")[:60]
+--- /dev/null
++++ b/tests/unit/test_m21_probe_writeback.py
+@@ -0,0 +1,182 @@
++"""Explicit diagnostics stay out of immediate and replayed episodic updates."""
++from __future__ import annotations
++
++import asyncio
++from types import SimpleNamespace
++from unittest.mock import MagicMock
++
++from starlette.requests import Request
++from orchestration.repl_memory.progress_logger import ProgressLogger, ProgressReader
++from orchestration.repl_memory.q_scorer import QScorer
++from src.api.models import ChatRequest
++from src.backends.prompt_layout import current_request_source, source_scope
++from src.api.services import memrl
++
++
++def test_header_capture_and_request_scope():
++    from src.api.routes.chat import _request_with_source_header
++    h=Request({'type':'http','headers':[(b'x-request-source',b'probe')]})
++    request=_request_with_source_header(ChatRequest(prompt='ordinary'),h)
++    assert request.x_request_source=='probe'
++    assert _request_with_source_header(ChatRequest(prompt='ordinary',x_request_source='interactive'),h).x_request_source=='interactive'
++    with source_scope(request.x_request_source):
++        assert current_request_source()=='probe'
++    assert current_request_source() is None
++
++
++def test_immediate_suppression_and_normal_submission(monkeypatch):
++    pool=MagicMock(); monkeypatch.setattr(memrl,'_get_score_pool',lambda:pool)
++    monkeypatch.setattr('src.runtime.quiescence.suppress_scoring',lambda task_id:False)
++    state=SimpleNamespace(q_scorer=object(),q_scorer_enabled=True)
++    with source_scope('probe'):
++        memrl.score_completed_task(state,'probe-id')
++        memrl.score_completed_task_with_mode(state,'probe-id','direct')
++    assert pool.submit.call_count==0
++    with source_scope('interactive'):
++        memrl.score_completed_task(state,'normal-id')
++    assert pool.submit.call_count==1
++
++
++def test_durable_replay_excludes_only_explicit_tags(tmp_path,monkeypatch):
++    log=ProgressLogger(log_dir=tmp_path,buffer_size=1)
++    for task,source in [('probe','probe'),('normal',None),('benchmark','benchmark')]:
++        ir={'objective':'same text','task_type':'chat'}
++        if source: ir['request_source']=source
++        log.log_task_started(task,ir,['frontdoor'],'rules')
++        log.log_task_completed(task,success=True)
++    log.flush()
++    reader=ProgressReader(log_dir=tmp_path)
++    assert set(reader.get_unscored_tasks())=={'normal','benchmark'}
++    scorer=QScorer(store=MagicMock(),embedder=MagicMock(),logger=MagicMock(),reader=reader)
++    scorer._update_routing_memory=MagicMock(return_value={'memories_created':1,'memories_updated':0})
++    assert scorer._score_task('probe')['skipped']=='non_learning_request_source'
++    assert scorer._score_task('normal')['memories_created']==1
++    assert scorer._update_routing_memory.call_count==1
++    scorer._score_task=MagicMock(return_value={'memories_created':0,'memories_updated':0})
++    result=scorer.score_pending_tasks()
++    assert result['tasks_processed']==2
++    assert {c.args[0] for c in scorer._score_task.call_args_list}=={'normal','benchmark'}
++
++
++def test_http_header_to_persisted_replay_and_untagged_control(tmp_path, monkeypatch):
++    import importlib
++    from fastapi import FastAPI
++    from fastapi.testclient import TestClient
++    from src.api.models import ChatResponse
++    from src.api.state import AppState
++    from src.api.dependencies import dep_app_state
++    from src.api.routes.chat_pipeline import routing_decision
++    chatmod=importlib.import_module('src.api.routes.chat')
++    log=ProgressLogger(log_dir=tmp_path,buffer_size=1)
++    state=AppState(); state.progress_logger=log
++    state.q_scorer=MagicMock(); state.q_scorer_enabled=True
++    pool=MagicMock(); monkeypatch.setattr(memrl,'_get_score_pool',lambda:pool)
++    monkeypatch.setattr('src.runtime.quiescence.suppress_scoring',lambda task_id:False)
++    monkeypatch.setattr(routing_decision,'routing_meta',lambda *a,**kw:{})
++    seen=[]
++    async def fake_handle(request,state,cancel_event=None):
++        tid=request.request_id; seen.append(tid)
++        routing_decision.log_routing_start(request,state,tid,
++            {'task_type':'chat','objective':request.prompt},['frontdoor'],'rules',{},
++            0.0,'low','off',0.0,'easy',0.0,'frontdoor')
++        state.progress_logger.log_task_completed(tid,success=True)
++        memrl.score_completed_task(state,tid)
++        return ChatResponse(answer='ok',turns=1,elapsed_seconds=0.01,mock_mode=True)
++    monkeypatch.setattr(chatmod,'_handle_chat',fake_handle)
++    app=FastAPI();app.include_router(chatmod.router)
++    app.dependency_overrides[dep_app_state]=lambda:state
++    with TestClient(app) as client:
++        tagged=client.post('/chat',headers={'X-Request-Source':'probe'},json={'prompt':'same'})
++        plain=client.post('/chat',json={'prompt':'same'})
++    assert tagged.status_code==200 and plain.status_code==200
++    assert pool.submit.call_count==1
++    log.flush(); reader=ProgressReader(log_dir=tmp_path)
++    assert seen[0] not in reader.get_unscored_tasks() and seen[1] in reader.get_unscored_tasks()
++    scorer=QScorer(store=MagicMock(),embedder=MagicMock(),logger=MagicMock(),reader=reader)
++    scorer._update_routing_memory=MagicMock(return_value={'memories_created':1,'memories_updated':0})
++    assert scorer._score_task(seen[0])['skipped']=='non_learning_request_source'
++    assert scorer._score_task(seen[1])['memories_created']==1
++
++
++def test_source_class_is_exact_and_case_normalized(monkeypatch):
++    from src.backends.prompt_layout import is_non_learning_source, normalize_source
++    assert all(is_non_learning_source(normalize_source(x)) for x in ('SMOKE','probe',' Health '))
++    assert all(not is_non_learning_source(normalize_source(x)) for x in ('interactive','benchmark','autopilot','unknown',''))
++
++
++def test_operational_migration_client_sends_probe_header(monkeypatch):
++    import importlib.util
++    from pathlib import Path
++    file=Path(__file__).resolve().parents[2]/'scripts/benchmark/migration_probe.py'
++    spec=importlib.util.spec_from_file_location('m21_migration_probe',file)
++    mod=importlib.util.module_from_spec(spec); spec.loader.exec_module(mod)
++    observed={}
++    class FakeClient:
++        def __init__(self,**kwargs): pass
++        def __enter__(self): return self
++        def __exit__(self,*args): return False
++        def post(self,url,**kwargs):
++            observed.update(kwargs)
++            return SimpleNamespace(status_code=200,json=lambda:{'answer':'ok'})
++    monkeypatch.setattr(mod.httpx,'Client',FakeClient)
++    mod._chat('frontdoor','session')
++    assert observed['headers']['X-Request-Source']=='probe'
++
++
++def test_stream_header_bound_during_generator_and_cleanup(tmp_path,monkeypatch):
++    import importlib
++    from fastapi import FastAPI
++    from fastapi.testclient import TestClient
++    from src.api.state import AppState
++    from src.api.dependencies import dep_app_state
++    from src.api.routes.chat_pipeline import stream_adapter, routing_decision
++    chatmod=importlib.import_module('src.api.routes.chat')
++    state=AppState();state.progress_logger=ProgressLogger(log_dir=tmp_path,buffer_size=1)
++    state.q_scorer=MagicMock();state.q_scorer_enabled=True
++    pool=MagicMock();monkeypatch.setattr(memrl,'_get_score_pool',lambda:pool)
++    monkeypatch.setattr('src.runtime.quiescence.suppress_scoring',lambda tid:False)
++    monkeypatch.setattr(chatmod,'features',lambda:SimpleNamespace(unified_streaming=True))
++    monkeypatch.setattr(routing_decision,'routing_meta',lambda *a,**kw:{})
++    seen=[]
++    async def fake_stream(request,state):
++        seen.append(current_request_source())
++        routing_decision.log_routing_start(request,state,'stream-probe',
++            {'task_type':'chat','objective':request.prompt},['frontdoor'],'rules',{},
++            0.0,'low','off',0.0,'easy',0.0,'frontdoor')
++        state.progress_logger.log_task_completed('stream-probe',success=True)
++        memrl.score_completed_task(state,'stream-probe')
++        yield {'event':'done','data':'ok'}
++    monkeypatch.setattr(stream_adapter,'generate_stream',fake_stream)
++    app=FastAPI();app.include_router(chatmod.router);app.dependency_overrides[dep_app_state]=lambda:state
++    with TestClient(app) as client:
++        response=client.post('/chat/stream',headers={'X-Request-Source':'health'},json={'prompt':'same'})
++    assert response.status_code==200 and seen==['health'] and pool.submit.call_count==0
++    state.progress_logger.flush()
++    assert 'stream-probe' not in ProgressReader(log_dir=tmp_path).get_unscored_tasks()
++
++
++def test_concurrent_source_scopes_do_not_cross_requests():
++    async def worker(source):
++        with source_scope(source):
++            await asyncio.sleep(0)
++            return current_request_source()
++    async def run():
++        return await asyncio.gather(worker('probe'),worker('interactive'),worker(None))
++    assert asyncio.run(run())==['probe','interactive',None]
++
++
++def test_malformed_untrusted_task_metadata_does_not_break_normal_flow(tmp_path):
++    logger=ProgressLogger(log_dir=tmp_path,buffer_size=1)
++    logger.log_task_started('malformed',{'task_type':'chat','objective':'normal','request_source':['probe']},['frontdoor'],'rules')
++    logger.log_task_completed('malformed',success=True);logger.flush()
++    reader=ProgressReader(log_dir=tmp_path)
++    assert 'malformed' in reader.get_unscored_tasks()
++    from orchestration.repl_memory.progress_logger import EventType, ProgressEntry
++    logger.log(ProgressEntry(event_type=EventType.TASK_STARTED,task_id='legacy',data={'request_source':['probe']}))
++    logger.log(ProgressEntry(event_type=EventType.ROUTING_DECISION,task_id='legacy',data={'routing':['frontdoor']}))
++    logger.log_task_completed('legacy',success=True);logger.flush()
++    reader=ProgressReader(log_dir=tmp_path)
++    assert 'legacy' in reader.get_unscored_tasks()
++    scorer=QScorer(store=MagicMock(),embedder=MagicMock(),logger=MagicMock(),reader=reader)
++    scorer._update_routing_memory=MagicMock(return_value={'memories_created':1,'memories_updated':0})
++    assert scorer._score_task('legacy')['memories_created']==1

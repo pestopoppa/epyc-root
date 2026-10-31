@@ -1,0 +1,52 @@
+            return test_status_t::SKIPPED;
+        }
+        const std::string layout_receipt =
+            autokernel_layout_receipt(layout_families, suite_seed);
+
+        // check if the backends support the ops
+        bool supported = true;
+        for (ggml_backend_t backend : {backend1, backend2}) {
+            for (ggml_tensor * t = ggml_get_first_tensor(ctx.get()); t != NULL; t = ggml_get_next_tensor(ctx.get(), t)) {
+                if (!ggml_backend_supports_op(backend, t)) {
+                    supported = false;
+                    break;
+                }
+            }
+        }
+
+        if (!supported) {
+            // Create test result for unsupported operation
+            test_result result(ggml_backend_name(backend1), current_op_name, vars(), "test",
+                             false, false, (autokernel_layouts || autokernel_hostile_distributions)
+                                ? "non-contiguous layout is not supported"
+                                : (autokernel_stateful
+                                    ? "stateful case is not supported"
+                                    : "not supported"));
+            result.layout_receipt = layout_receipt;
+            if (autokernel_stateful) {
+                result.state_receipt =
+                    "AK_STATE_V1 inputs=" + std::to_string(state_inputs.size()) +
+                    " initial_equal=0 input_immutable=0 final_outputs=0 suite_seed=" +
+                    std::to_string(suite_seed);
+            }
+            result.hard_failure = autokernel_layouts || autokernel_hostile_distributions ||
+                                  autokernel_stateful;
+
+            print_test_result_locked(output_printer, result);
+
+            return (autokernel_layouts || autokernel_hostile_distributions ||
+                    autokernel_stateful)
+                ? test_status_t::FAIL : test_status_t::NOT_SUPPORTED;
+        }
+
+    }
+
+    if (autokernel_properties && (mode != MODE_TEST || !suite_seed_enabled)) {
+        fprintf(stderr, "--autokernel-properties requires test mode and --suite-seed\n");
+        return 1;
+    }
+    if (autokernel_layouts && (mode != MODE_TEST || !suite_seed_enabled)) {
+        fprintf(stderr, "--autokernel-layouts requires test mode and --suite-seed\n");
+        return 1;
+    }
+    if (autokernel_value_transforms && (mode != MODE_TEST || !suite_seed_enabled)) {
