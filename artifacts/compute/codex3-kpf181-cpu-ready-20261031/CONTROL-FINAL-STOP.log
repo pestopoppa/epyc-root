@@ -1,0 +1,33 @@
+====================================================================================================
+KPF-18 gate plan (EXECUTE)  host Beelzebub  2026-10-31T02:46:56Z
+  out /mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/control-final-stop | port 19627 | fork-min 128 | n_predict 1 | n_probs 20 | window-id kpf18-20261031T024656Z | gpu-window-id None
+  launch prefix: taskset -c 124,125
+  gate argv (/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/control-argv.txt): -m /mnt/raid0/llm/models/unsloth/Qwen3.5-0.8B-GGUF/Qwen3.5-0.8B-Q8_0.gguf --host 127.0.0.1 -np 4 -c 8192 -t 2 -tb 2 -b 512 -ub 512 --flash-attn on --jinja -ctk q8_0 -ctv q8_0 --no-mmap --cache-ram 0 --device none --kv-unified --no-cache-idle-slots
+  - --fork-bin /mnt/micron/codex3-lanes/kpf183-chat-build/bin/llama-server (bin dir /mnt/micron/codex3-lanes/kpf183-chat-build/bin; LD_LIBRARY_PATH /mnt/micron/codex3-lanes/kpf183-chat-build/bin:/opt/rocm/lib:/usr/lib/llvm-20/lib:/opt/AMD/aocc-compiler-5.0.0/lib)
+  - CPU mode: no KFD/VRAM sampler, no :8083 refusal, no HIP residency, no mi210 claim, no GPU window
+  - 181 drafter configurations: ['nodraft']; fork-off baseline launch added for arms A/B
+  - shape drift ALLOWED and recorded: ["-c = '8192', gate shape expects '393216'", "-ngl = None, gate shape expects 'all'", "--spec-type = None, gate shape expects 'draft-dflash'", "--spec-draft-n-max = None, gate shape expects '7'", "--device = 'none', gate shape expects 'ROCm0'", "--cache-ram = '0', gate shape expects '65536'", "-md '' is not the DFlash2 drafter"]
+  - prompt set /mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/public-control-prompts.jsonl sha256 30d66fdb3cf9e03891e526d675bf64f206338833c2cfa70779aa696cc5aa3b68: 16 pairs
+  rate model: prefill ms/tok = (1.15 + 0.0235 x occupied_k) x 1.1; decode DFlash2 37.0-0.09/k tok/s, no-draft 30.8-0.15/k; 4-stream agg x1.3; load 90s, stop 45s
+----------------------------------------------------------------------------------------------------
+ITEM 181: 8 steps, est 4m57s
+      1m35s  [kpf181-on-nodraft-20261031T024656Z] linkage + launch + healthy + read-back: taskset -c 124,125 /mnt/micron/codex3-lanes/kpf183-chat-build/bin/llama-server -m /mnt/raid0/llm/models/unsloth/Qwen3.5-0.8B-GGUF/Qwen3.5-0.8B-Q8_0.gguf --host 127.0.0.1 -np 4 -c 8192 -t 2 -tb 2 -b 512 -ub 512 --flash-attn on --jinja -ctk q8_0 -ctv q8_0 --no-mmap --cache-ram 0 --device none --kv-unified --no-cache-idle-slots --slot-save-path /mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/control-final-stop/slot-save/kpf181-on-nodraft-20261031T024656Z --port 19627 --metrics --slot-fork-min-tokens 128
+      0m04s  181 A [checkpoint_at=[T]] groups [0]: source slot 0 trunk+tail, 1 siblings on slot 1, fork on (rule A)
+      0m04s  181 A [tail only, no checkpoint_at] groups [0]: source slot 0 trunk+tail, 1 siblings on slot 1, fork on (rule A)
+      0m45s  [kpf181-on-nodraft-20261031T024656Z] SIGTERM own pid, verify dead, then finalize its records
+      1m35s  [kpf181-off-nodraft-20261031T024656Z] linkage + launch + healthy + read-back: taskset -c 124,125 /mnt/micron/codex3-lanes/kpf183-chat-build/bin/llama-server -m /mnt/raid0/llm/models/unsloth/Qwen3.5-0.8B-GGUF/Qwen3.5-0.8B-Q8_0.gguf --host 127.0.0.1 -np 4 -c 8192 -t 2 -tb 2 -b 512 -ub 512 --flash-attn on --jinja -ctk q8_0 -ctv q8_0 --no-mmap --cache-ram 0 --device none --kv-unified --no-cache-idle-slots --slot-save-path /mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/control-final-stop/slot-save/kpf181-off-nodraft-20261031T024656Z --port 19627 --metrics --slot-fork-min-tokens 0
+      0m04s  181 A fork-OFF baseline [ckpt]: every sibling must report n_fork_tokens 0
+      0m04s  181 A fork-OFF baseline [tail only]: every sibling must report n_fork_tokens 0
+      0m45s  [kpf181-off-nodraft-20261031T024656Z] SIGTERM own pid, verify dead, then finalize its records
+====================================================================================================
+TOTAL estimate: 4m57s (5 min) for items [181]; budget --budget-min 1440
+PREFLIGHT: inputs PASS (live-only checks run at execute: linkage, read-back, residency, claim)
+[kpf18 02:46:56Z] item 181: [kpf181-on-nodraft-20261031T024656Z] linkage + launch + healthy + read-back: taskset -c 124,125 /mnt/micron/codex3-lanes/kpf183-chat-build/bin/llama-server -m /mnt/raid0/llm/models/unsloth/Qwen3.5-0.8B-GGUF/Qwen3.5-0.8B-Q8_0.gguf --host 127.0.0.1 -np 4 -c 8192 -t 2 -tb 2 -b 512 -ub 512 --flash-attn on --jinja -ctk q8_0 -ctv q8_0 --no-mmap --cache-ram 0 --device none --kv-unified --no-cache-idle-slots --slot-save-path /mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/control-final-stop/slot-save/kpf181-on-nodraft-20261031T024656Z --port 19627 --metrics --slot-fork-min-tokens 128 (est 1m35s)
+[kpf18] launch kpf181-on-nodraft-20261031T024656Z: taskset -c 124,125 /mnt/micron/codex3-lanes/kpf183-chat-build/bin/llama-server -m /mnt/raid0/llm/models/unsloth/Qwen3.5-0.8B-GGUF/Qwen3.5-0.8B-Q8_0.gguf --host 127.0.0.1 -np 4 -c 8192 -t 2 -tb 2 -b 512 -ub 512 --flash-attn on --jinja -ctk q8_0 -ctv q8_0 --no-mmap --cache-ram 0 --device none --kv-unified --no-cache-idle-slots --slot-save-path /mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/control-final-stop/slot-save/kpf181-on-nodraft-20261031T024656Z --port 19627 --metrics --slot-fork-min-tokens 128
+[kpf18]   done in 0m04s
+[kpf18 02:47:00Z] item 181: 181 A [checkpoint_at=[T]] groups [0]: source slot 0 trunk+tail, 1 siblings on slot 1, fork on (rule A) (est 0m04s)
+[kpf18] ABORT: STOP or deadline: draining
+[kpf18] stopped kpf181-on-nodraft-20261031T024656Z pid 2239005: {'pid': 2239005, 'sent': ['TERM'], 'at': '2026-10-31T02:47:05Z', 'returncode': 0, 'verified_dead': True}
+[kpf18] record kpf18-20261031T024700Z-1 item 181 arm A_ckpt: {"control_floor": [0, 0], "vs_fresh": [0, 0], "bit_exact_ckpt": [0, 0], "source_invariance": [0, 0], "off_equals_champion": [0, 0]}
+[kpf18] exit rc=75 (0 ok, 2 refused, 3 abort, 4 error, 75 partial or claim held)
+{"schema": "hil15-r11-smoke-supervisor/v1", "elapsed_s": 12.29223322100006, "sampled_peak_tree_rss_bytes": 1220513792, "samples": 115, "verified_exited_processes": 0, "verified_exited_threads": 0, "per_process_address_space_limit_bytes": 17179869184, "rss_scope": "sum of sampled resident pages across owned process tree; sampling may miss transients and double-count shared pages", "leader_pid": 2238950, "leader_birth": 153728908, "child_rc": 75, "children_drained": true, "failure": null}

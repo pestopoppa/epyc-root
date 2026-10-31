@@ -1,0 +1,405 @@
+{
+ "schema": "epyc.kpf.run.v1",
+ "kpf_task": "KPF-18.1",
+ "kpf18_item": 181,
+ "run_id": "kpf18-20261031T024631Z-3",
+ "arm": "A_ckpt_forkoff",
+ "binary": "/mnt/micron/codex3-lanes/kpf183-chat-build/bin/llama-server",
+ "binary_realpath": "/mnt/micron/codex3-lanes/kpf183-chat-build/bin/llama-server",
+ "binary_sha256": "849bd4cc2f7722d8535e8244a2035740a2fbb959f7782ac705d856a912a56176",
+ "build_from_launch_log": null,
+ "argv": [
+  "/mnt/micron/codex3-lanes/kpf183-chat-build/bin/llama-server",
+  "-m",
+  "/mnt/raid0/llm/models/unsloth/Qwen3.5-0.8B-GGUF/Qwen3.5-0.8B-Q8_0.gguf",
+  "--host",
+  "127.0.0.1",
+  "-np",
+  "4",
+  "-c",
+  "8192",
+  "-t",
+  "2",
+  "-tb",
+  "2",
+  "-b",
+  "512",
+  "-ub",
+  "512",
+  "--flash-attn",
+  "on",
+  "--jinja",
+  "-ctk",
+  "q8_0",
+  "-ctv",
+  "q8_0",
+  "--no-mmap",
+  "--cache-ram",
+  "0",
+  "--device",
+  "none",
+  "--kv-unified",
+  "--no-cache-idle-slots",
+  "--slot-save-path",
+  "/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/control-final-normal/slot-save/kpf181-off-nodraft-20261031T024605Z",
+  "--port",
+  "19627",
+  "--metrics",
+  "--slot-fork-min-tokens",
+  "0"
+ ],
+ "launch_prefix": [
+  "taskset",
+  "-c",
+  "124,125"
+ ],
+ "argv_readback": {
+  "proc_cmdline_matches_argv": true,
+  "exe_matches_binary": true
+ },
+ "argv_source": {
+  "argv_file": "/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/control-argv.txt",
+  "argv_file_sha256": "11195b4657ab609b4fb90fedc753fc44bc35942059686e25b4d6e4b83b69f840",
+  "argv_file_header": [],
+  "shape_drift": [
+   "-c = '8192', gate shape expects '393216'",
+   "-ngl = None, gate shape expects 'all'",
+   "--spec-type = None, gate shape expects 'draft-dflash'",
+   "--spec-draft-n-max = None, gate shape expects '7'",
+   "--device = 'none', gate shape expects 'ROCm0'",
+   "--cache-ram = '0', gate shape expects '65536'",
+   "-md '' is not the DFlash2 drafter"
+  ],
+  "shape_drift_allowed": true
+ },
+ "env": {
+  "dropped_ambient": [
+   "LD_LIBRARY_PATH"
+  ],
+  "set": {
+   "HIP_PATH": "/opt/rocm",
+   "ROCM_PATH": "/opt/rocm",
+   "OMP_PROC_BIND": "spread",
+   "OMP_PLACES": "cores",
+   "OMP_WAIT_POLICY": "active",
+   "OMP_DYNAMIC": "false",
+   "GGML_IQK": "1",
+   "LD_LIBRARY_PATH": "/mnt/micron/codex3-lanes/kpf183-chat-build/bin:/opt/rocm/lib:/usr/lib/llvm-20/lib:/opt/AMD/aocc-compiler-5.0.0/lib"
+  }
+ },
+ "kv_mode_from_launch_log": "kv_unified = 'true'",
+ "slot_fork_from_launch_log": null,
+ "n_slots_n_ctx_slot_from_launch_log": [
+  4,
+  8192
+ ],
+ "prompt_set": "/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/public-control-prompts.jsonl",
+ "prompt_set_sha256": "30d66fdb3cf9e03891e526d675bf64f206338833c2cfa70779aa696cc5aa3b68",
+ "dflash2": false,
+ "spec_type_from_argv": null,
+ "draft_model_from_argv": null,
+ "speculative_requested": false,
+ "equivalence": {
+  "control_floor": {
+   "top1_agree": 0,
+   "n": 0,
+   "logit_maxabs": 0.0,
+   "kld": 0.0,
+   "greedy_prefix_len_min": 0,
+   "first_token_top1_agree": 0,
+   "max_abs_logit": null,
+   "max_kld": null,
+   "identical_greedy_prefix_min": 0,
+   "measured": false
+  },
+  "vs_fresh": {
+   "top1_agree": 0,
+   "n": 0,
+   "logit_maxabs": 0.0,
+   "kld": 0.0,
+   "greedy_prefix_len_min": 0,
+   "first_token_top1_agree": 0,
+   "max_abs_logit": null,
+   "max_kld": null,
+   "identical_greedy_prefix_min": 0,
+   "measured": false
+  },
+  "bit_exact_ckpt": {
+   "identical": 0,
+   "n": 0,
+   "tokens_identical": 0,
+   "measured": false
+  },
+  "source_invariance": {
+   "identical": 0,
+   "n": 0,
+   "tokens_identical": 0,
+   "measured": false
+  },
+  "off_equals_champion": {
+   "identical": 0,
+   "n": 0,
+   "tokens_identical": 0,
+   "measured": false
+  }
+ },
+ "equivalence_basis": "First-token top-k probabilities from /completion `n_probs` (completion_probabilities, post_sampling_probs false = softmax over the full vocabulary before sampling). The server cannot return full logits, so `logit_maxabs` is max |p_a - p_b| over the UNION of the two top-k sets (an id absent from one side counts as 0 there: an upper bound) and `kld` is KL(a||b) over the top-k union plus one tail bucket, absent ids imputed from that side's tail mass capped at its k-th prob (a coarse-grained KL: a lower bound on the full-vocab KL when the imputation is exact). Greedy-prefix length compares returned token ids over n_predict tokens (ignore_eos). `identical` = all token ids AND every per-position top-k entry equal.",
+ "n_probs": 20,
+ "n_predict": 1,
+ "ttft_ms": [],
+ "prompt_tokens_processed": 1120,
+ "cache_n": 0,
+ "n_fork_tokens": 0,
+ "unique_cells_peak": null,
+ "unique_cells_method": null,
+ "decode_tok_s": {
+  "per_slot": [
+   1000000.0,
+   1000000.0
+  ],
+  "aggregate": 1000000.0,
+  "aggregate_method": "sum predicted_n / sum predicted_ms over this run's requests (token-weighted mean decode rate; requests are sequential, not a concurrent aggregate)"
+ },
+ "window_id": "kpf18-20261031T024605Z-item181",
+ "gpu_window_id": null,
+ "start_utc": "2026-10-31T02:46:31Z",
+ "end_utc": "2026-10-31T02:46:50Z",
+ "host": "Beelzebub",
+ "checks": {
+  "n_fork_tokens_timings_equal_slot": {
+   "ok": 1,
+   "n": 1,
+   "failed": []
+  }
+ },
+ "server_log": "/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/control-final-normal/logs/kpf181-off-nodraft-20261031T024605Z.server.log",
+ "server_log_counts": {
+  "failed_to_find_memory_slot": 0,
+  "fork_lines": 0,
+  "fork_lines_busy": 0,
+  "fork_kinds": [],
+  "prefill_budget_iters": 13,
+  "prefill_budget_mixed_iters": 0,
+  "n_batch_observed": 60
+ },
+ "residency": {
+  "linkage": {
+   "rc": 0,
+   "pass": true,
+   "report": "/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/control-final-normal/logs/kpf181-off-nodraft-20261031T024605Z.linkage.txt",
+   "s": 0.03,
+   "cmd": "LD_LIBRARY_PATH=/mnt/micron/codex3-lanes/kpf183-chat-build/bin:/opt/rocm/lib:/usr/lib/llvm-20/lib:/opt/AMD/aocc-compiler-5.0.0/lib bash /mnt/raid0/llm/epyc-inference-research/scripts/utils/verify_ggml_linkage.sh /mnt/micron/codex3-lanes/kpf183-chat-build/bin/llama-server /mnt/micron/codex3-lanes/kpf183-chat-build/bin"
+  },
+  "hip_mapped": [],
+  "ggml_all_from_bin_dir": true,
+  "smi_tool": null,
+  "vram": null,
+  "process_start_utc": "2026-10-31T02:46:27Z",
+  "process_stop_utc": "2026-10-31T02:46:48Z",
+  "stop": {
+   "pid": 2235781,
+   "sent": [
+    "TERM"
+   ],
+   "at": "2026-10-31T02:46:48Z",
+   "returncode": 0,
+   "verified_dead": true
+  }
+ },
+ "rows": "/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/control-final-normal/rows/kpf18-20261031T024631Z-3.jsonl",
+ "rows_sha256": "c12dd5c25aaaaf3684ce9d6e5a73e43069bf252927bdcf3408c730a546a1c2d5",
+ "kpf_ext": {
+  "ext_version": 1,
+  "checkpoint_set": [
+   {
+    "role": "source",
+    "positions": []
+   },
+   {
+    "role": "sibling",
+    "positions": []
+   }
+  ],
+  "hit_components": [
+   {
+    "role": "source",
+    "tgt_kv_hit": 0,
+    "min": 0,
+    "n_fork_tokens": null
+   },
+   {
+    "role": "sibling",
+    "tgt_kv_hit": 512,
+    "min": 512,
+    "n_fork_tokens": null
+   }
+  ],
+  "hit_length_min": 0,
+  "hit_tokens": 0,
+  "tokens_lost_to_missing_checkpoint": null,
+  "drafter_drop_kind": null,
+  "request_lane": [
+   "completion_raw"
+  ],
+  "cache_skip_control": {
+   "requests_cache_prompt_false": 0,
+   "cache_n_zero": 0
+  },
+  "pinned_count": {
+   "max": 0,
+   "samples": 2
+  }
+ },
+ "instrument_class": "serving",
+ "category": "CANDIDATE",
+ "grading_note": "n=1 per cell, no codified protocol cited: an OBSERVATION; projects under VB-KVU-PF and grades Judged/Located through claim_tuple.grade(). Counts, not a pass word.",
+ "kpf18_arm": "A_ckpt_forkoff",
+ "kpf_config": "nodraft",
+ "fork_min_tokens": 0,
+ "fork_mode": "checkpoint",
+ "predeclared_rule": "A_ckpt: slot 0 prefills trunk(T)+private tail with checkpoint_at=[T]; each sibling = trunk + its own suffix (distinct first tokens) on slot 1, one at a time, fork on. SATISFIED iff every sibling n_fork_tokens == T. A_tailonly: same without checkpoint_at; RECORDED only (expected near 0: the source's near-end checkpoints lie past the shared prefix): counts of n_fork_tokens == 0 and the max. Fork-off arms (min tokens 0): SATISFIED iff every sibling n_fork_tokens == 0.",
+ "predeclared_rules_sha256": "049d663e7a57cbd70b56bb5bd1e8d1551aedcca3275dc728c8e57af90889b8c9",
+ "cells": [
+  {
+   "arm": "A_ckpt_forkoff",
+   "cell": "g0.src",
+   "role": "source",
+   "slot": 0,
+   "n_task": 576,
+   "lcp_client": 0,
+   "n_fork_tokens": null,
+   "n_fork_tokens_slot": null,
+   "fork_src_kind": null,
+   "fork_src_slot": null,
+   "cache_n": 0,
+   "prompt_n": 576,
+   "predicted_p": 0,
+   "predicted_kind": "none",
+   "predicted_src": null,
+   "predicted_tie": false,
+   "n_candidates": 0,
+   "expected": null,
+   "checkpoint_set_before": [],
+   "pinned_before": [],
+   "error": null,
+   "ckpt_sets_by_slot": {
+    "1": [],
+    "2": [],
+    "3": []
+   },
+   "checkpoint_at": [
+    512
+   ],
+   "cache_prompt": true,
+   "fork_requested": false,
+   "dflash_requested": true,
+   "n_predict": 0,
+   "group": 0,
+   "components": {
+    "tgt_kv_hit": 0,
+    "recurrent_ckpt_pos": null,
+    "drafter_kv_hit": null,
+    "source": {
+     "tgt_kv_hit": "client"
+    },
+    "drafter_exposed": false
+   },
+   "tokens_lost_to_missing_checkpoint": null
+  },
+  {
+   "arm": "A_ckpt_forkoff",
+   "cell": "g0.s0",
+   "role": "sibling",
+   "slot": 1,
+   "n_task": 544,
+   "lcp_client": 512,
+   "n_fork_tokens": null,
+   "n_fork_tokens_slot": null,
+   "fork_src_kind": null,
+   "fork_src_slot": null,
+   "cache_n": 0,
+   "prompt_n": 544,
+   "predicted_p": 0,
+   "predicted_kind": "none",
+   "predicted_src": null,
+   "predicted_tie": false,
+   "n_candidates": 0,
+   "expected": 0,
+   "checkpoint_set_before": [],
+   "pinned_before": [],
+   "error": null,
+   "ckpt_sets_by_slot": {
+    "0": [],
+    "2": [],
+    "3": []
+   },
+   "checkpoint_at": null,
+   "cache_prompt": true,
+   "fork_requested": true,
+   "dflash_requested": true,
+   "n_predict": 1,
+   "group": 0,
+   "suffix": 0,
+   "components": {
+    "tgt_kv_hit": 512,
+    "recurrent_ckpt_pos": null,
+    "drafter_kv_hit": null,
+    "source": {
+     "tgt_kv_hit": "client"
+    },
+    "drafter_exposed": false
+   },
+   "tokens_lost_to_missing_checkpoint": null
+  }
+ ],
+ "controls": {
+  "manifest": "prompt_set_sha256 + binary_sha256 + argv (read back from /proc and the launch log) are in this record; per-sibling raw cells (n_fork_tokens from timings and from /slots, prediction, checkpoint sets, errors) are under `cells`",
+  "baseline": "the fork-off arm (--slot-fork-min-tokens 0) of the same command on the same binary, and champion tip e33229348 (item 6 / KPF-18.0b)",
+  "held_out": "lengths or prompts used to SET a rule are never used to judge it (arm D holdout cell; arm C/D positions come from the server's own checkpoint offsets, not from fitted numbers)",
+  "counted": "every sibling is a cell, including errors, aborts and abstentions",
+  "reported_as": "counts under rule_result; no pass word",
+  "config": "nodraft",
+  "kpf_task": "KPF-18.1"
+ },
+ "arm_key": "A",
+ "with_checkpoint_at": true,
+ "expect": "zero",
+ "counters_start": {
+  "slot_forks_total": null,
+  "slot_fork_tokens_total": null
+ },
+ "counters_end": {
+  "slot_forks_total": null,
+  "slot_fork_tokens_total": null
+ },
+ "counters_delta": {
+  "slot_forks_total": null,
+  "slot_fork_tokens_total": null
+ },
+ "armed": {
+  "n_requests": 2,
+  "n_requests_with_fork": 0,
+  "sum_n_fork_tokens": 0,
+  "checkpoint_sets_nonempty": 0
+ },
+ "rule_result": {
+  "n": 1,
+  "n_error": 1,
+  "n_equal_expected": 0,
+  "n_not_equal_expected": 0,
+  "observed": [
+   null
+  ],
+  "expected": [
+   0
+  ],
+  "predeclared_rule_satisfied": false,
+  "n_siblings": 1,
+  "n_fork_min": null,
+  "n_fork_max": null,
+  "n_fork_zero": 0,
+  "n_fork_positive": 0,
+  "n_error_cells": 1
+ },
+ "record_sha256": "320f815cb1f649c9b2b206c1665bac876fd242bbd1aa6a187500383482cb070b"
+}

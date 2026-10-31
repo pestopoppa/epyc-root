@@ -1,0 +1,80 @@
+{
+  "status": "READY",
+  "id": "codex3-kpf181-cpu-r1-20261031",
+  "owner": "codex3",
+  "priority_rank": 2,
+  "regions": "any-cpu-quarter",
+  "class": "diagnostic",
+  "booking_class": "block-correctness",
+  "min_window_s": 3600,
+  "window_s": 86400,
+  "gib": 64,
+  "launcher": {
+    "path": "/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/launch.sh",
+    "sha256": "b2311fba73a5322ab61d28a331a4083519c8d5c161b8687b3711cfed08936834"
+  },
+  "job": {
+    "path": "/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/job.sh",
+    "sha256": "a68327121fc7b7959accd46c84c21dd4a34fa763d3d6ca556077a38f1d466f9d"
+  },
+  "result_path": "/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/full/RESULT.json",
+  "launcher_log": "/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/ws58-launcher.out",
+  "scratch_root": "/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240",
+  "est_output_GiB": 1,
+  "keep": [
+    "KEEP",
+    "*.py",
+    "*.sh",
+    "*.json",
+    "*.sha256",
+    "*.md",
+    "*.log",
+    "full/**/*.json",
+    "full/**/*.jsonl",
+    "full/**/*.log",
+    "champion/**/*.json",
+    "champion/**/*.jsonl",
+    "champion/**/*.log",
+    "control-final-normal/**/*.json",
+    "control-final-normal/**/*.jsonl",
+    "control-final-stop/**/*.json",
+    "control-final-stop/**/*.jsonl",
+    "scripts/benchmark/kpf18/*.py"
+  ],
+  "decision_rule": "KPF-18.1 CPU subset: count A/B/C/D outcomes with same-binary fork-off and e332 comparison; C uses 16 fixed-stride lengths with MTP request on/off and original pooled fresh/fresh floor; D checks MTP and no-drafter plus held-out position. Missing native values and interrupted units are unknown, never zero or redrawn. Full KPF-18.1 remains open: GPU DFlash2 is not run and models are not pooled.",
+  "min_effect": "n/a (correctness diagnostic)",
+  "enrollment": "n/a: diagnostic",
+  "hold": null,
+  "predeclaration": {
+    "path": "/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/PREDECLARED.json",
+    "sha256": "bd5edd29e58ac01f94151d7523e6ecff216bb7902d1521f80e79331c4942ee3d"
+  },
+  "source_manifest": {
+    "path": "/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/SOURCES.sha256",
+    "sha256": "c4eab78384a9ce0511f16502cc08da68250b1e6d4221890c12de78571bba0639"
+  },
+  "full_model": "/mnt/raid0/llm/models/Qwen3.6-35B-A3B-MTP-Q8_0.gguf",
+  "full_model_sha256_expected": "c1283d8b80c3e38b2735ddbc9766d3b3126f44d6c484be419d4e101d09a76131",
+  "full_target_tested": false,
+  "feasibility": "Planning estimate using previous different-binary same-model CPU logs: C 329728 prefill and 1536 decode tokens; reserve 200000 prefill and 2048 decode tokens for A/B/D, controls and champion. At 26.675 prompt tok/s and 0.08 decode tok/s: 64659 s; 25% reserve plus 720 s loads gives 81544 s <= 86400 s. Rates and reserve are estimates, not this binary or this run; rc75 preserves partial.",
+  "smoke": {
+    "ran_at": "2026-10-31T02:47:52.269026+00:00",
+    "regions": "124-125 R11 SMT siblings, 28-29 mutex",
+    "model": "Qwen3.5-0.8B-Q8_0 public control; 512-token control requests",
+    "first_request_ok": true,
+    "result_writer_ok": true,
+    "exit_ok": true,
+    "wall_s": 46.084,
+    "log": "/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/CONTROL-FINAL-NORMAL.log",
+    "launcher_sha256": "b2311fba73a5322ab61d28a331a4083519c8d5c161b8687b3711cfed08936834"
+  },
+  "stop_smoke": {
+    "rc": 75,
+    "partial": "/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/control-final-stop/PARTIAL.json",
+    "children_drained": true,
+    "wall_s": 12.292,
+    "log": "/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/CONTROL-FINAL-STOP.log"
+  },
+  "log_consumer": "/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/finish.py",
+  "log_consumer_sha256": "dad45369f03d7e67ba86277677406f4d7ee99e5f452f279ac6a11d390b995ad4"
+}
