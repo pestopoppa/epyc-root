@@ -367831,7 +367831,8 @@
     experiments: []
     intake_entries: []
   recommended_actions:
-  - Identify the STT model/runtime from the linked GitHub repo (expansion seed) before scoring for the speech lane.
+  - 'Proposal (operator-review candidate, derived by the ws58 intake): Identify the STT model/runtime from the linked GitHub repo (expansion
+    seed) before scoring for the speech lane.'
   credibility_score: null
   contradicting_evidence: null
   referenced_arxiv_ids: []
@@ -367884,8 +367885,8 @@
     experiments: []
     intake_entries: []
   recommended_actions:
-  - Read the paper (expansion seed arXiv 2610.14162) and judge whether coarse-to-fine parallel generation has a drafter or non-AR serving
-    role for EPYC.
+  - 'Proposal (operator-review candidate, derived by the ws58 intake): Read the paper (expansion seed arXiv 2610.14162) and judge whether
+    coarse-to-fine parallel generation has a drafter or non-AR serving role for EPYC.'
   credibility_score: 2
   contradicting_evidence: null
   referenced_arxiv_ids: []
@@ -367978,8 +367979,8 @@
     - intake-332
     - intake-457
   recommended_actions:
-  - 'Dive: decide whether looped/parallel-loop decoding changes bytes-per-token on bandwidth-bound CPU decode, and whether any served
-    or candidate model is looped.'
+  - 'Proposal (operator-review candidate, derived by the ws58 intake): Dive: decide whether looped/parallel-loop decoding changes bytes-per-token
+    on bandwidth-bound CPU decode, and whether any served or candidate model is looped.'
   credibility_score: 2
   contradicting_evidence: null
   referenced_arxiv_ids: []
@@ -368108,8 +368109,8 @@
     experiments: []
     intake_entries: []
   recommended_actions:
-  - 'Dive: verify Table 2 and decide whether Soft-MTP is the objective to use if we train or restore MTP heads (Flash-Next Axis E, drafter
-    training).'
+  - 'Proposal (operator-review candidate, derived by the ws58 intake): Dive: verify Table 2 and decide whether Soft-MTP is the objective
+    to use if we train or restore MTP heads (Flash-Next Axis E, drafter training).'
   credibility_score: 1
   contradicting_evidence:
   - 'Bounded search: nothing on Soft-MTP specifically; general MTP-head limits only.'
@@ -368272,7 +368273,8 @@
     intake_entries:
     - intake-2548
   recommended_actions:
-  - 'Dive with intake-2548: check the loss implementation and whether it composes with head-only training on a frozen trunk.'
+  - 'Proposal (operator-review candidate, derived by the ws58 intake): Dive with intake-2548: check the loss implementation and whether
+    it composes with head-only training on a frozen trunk.'
   credibility_score: null
   contradicting_evidence: null
   referenced_arxiv_ids:
@@ -368394,8 +368396,8 @@
     intake_entries:
     - intake-1487
   recommended_actions:
-  - 'Dive: separate the transferable mechanism (exact GDN-state addressing) from the demo; decide if it informs GDN-hybrid serving or
-    memory work.'
+  - 'Proposal (operator-review candidate, derived by the ws58 intake): Dive: separate the transferable mechanism (exact GDN-state addressing)
+    from the demo; decide if it informs GDN-hybrid serving or memory work.'
   credibility_score: 1
   contradicting_evidence: null
   referenced_arxiv_ids: []
@@ -368514,7 +368516,8 @@
     - intake-332
     - intake-341
   recommended_actions:
-  - 'Dive: check whether looped MoE trades weight bytes for compute in a way that suits bandwidth-bound EPYC decode.'
+  - 'Proposal (operator-review candidate, derived by the ws58 intake): Dive: check whether looped MoE trades weight bytes for compute
+    in a way that suits bandwidth-bound EPYC decode.'
   credibility_score: 2
   contradicting_evidence: null
   referenced_arxiv_ids: []
@@ -368611,8 +368614,8 @@
     - intake-1982
     - intake-2359
   recommended_actions:
-  - 'Dive: establish the actual llama.cpp audio path and whether it can replace or augment the whisper.cpp + qwentts.cpp cascade on
-    EPYC/MI210.'
+  - 'Proposal (operator-review candidate, derived by the ws58 intake): Dive: establish the actual llama.cpp audio path and whether it
+    can replace or augment the whisper.cpp + qwentts.cpp cascade on EPYC/MI210.'
   credibility_score: 1
   contradicting_evidence:
   - 'Bounded search: only restatements of the vendor table (benchlm.ai, orcarouter.ai); no independent evaluation.'
@@ -368724,8 +368727,8 @@
     - intake-1861
     - intake-1869
   recommended_actions:
-  - 'Dive: compare with the d1/Jev decision-model lineage already indexed and decide whether an audio/vision decision front end serves
-    orchestrator routing or the speech turn-taking loop.'
+  - 'Proposal (operator-review candidate, derived by the ws58 intake): Dive: compare with the d1/Jev decision-model lineage already
+    indexed and decide whether an audio/vision decision front end serves orchestrator routing or the speech turn-taking loop.'
   credibility_score: 1
   contradicting_evidence: null
   referenced_arxiv_ids: []
@@ -368851,7 +368854,8 @@
     - intake-1982
     - intake-2359
   recommended_actions:
-  - 'Dive: verify the llama.cpp realtime speech-server path and which ggml generation it needs relative to the frozen kernel set.'
+  - 'Proposal (operator-review candidate, derived by the ws58 intake): Dive: verify the llama.cpp realtime speech-server path and which
+    ggml generation it needs relative to the frozen kernel set.'
   credibility_score: 1
   contradicting_evidence:
   - 'Bounded search: only restatements of the vendor table; no independent evaluation.'
@@ -368979,7 +368983,8 @@
     experiments: []
     intake_entries: []
   recommended_actions:
-  - 'Dive: extract the loop design and the verified-vs-numeric gap; map onto the AK candidate gate and gfx90a/x86 targets.'
+  - 'Proposal (operator-review candidate, derived by the ws58 intake): Dive: extract the loop design and the verified-vs-numeric gap;
+    map onto the AK candidate gate and gfx90a/x86 targets.'
   credibility_score: 2
   contradicting_evidence:
   - 'Adjacent, not direct: PTXBench (NeurIPS 2026 listing) reports no evaluated LLM consistently matches frontier libraries; RealisticTritonBench
@@ -369140,7 +369145,8 @@
     intake_entries:
     - intake-2555
   recommended_actions:
-  - 'Dive with intake-2555: read the loop and trace layout for AK reuse.'
+  - 'Proposal (operator-review candidate, derived by the ws58 intake): Dive with intake-2555: read the loop and trace layout for AK
+    reuse.'
   credibility_score: null
   contradicting_evidence: null
   referenced_arxiv_ids: []
@@ -369312,7 +369318,8 @@
     intake_entries:
     - intake-2555
   recommended_actions:
-  - 'Dive: decide what an equivalence/race checker would add to the AK correctness gate on gfx90a and x86.'
+  - 'Proposal (operator-review candidate, derived by the ws58 intake): Dive: decide what an equivalence/race checker would add to the
+    AK correctness gate on gfx90a and x86.'
   credibility_score: null
   contradicting_evidence: null
   referenced_arxiv_ids:
@@ -369428,8 +369435,8 @@
     experiments: []
     intake_entries: []
   recommended_actions:
-  - 'Dive: test whether the certificate-plus-independent-checker pattern fits belief-kernel derivations or registry/handoff consistency
-    checks.'
+  - 'Proposal (operator-review candidate, derived by the ws58 intake): Dive: test whether the certificate-plus-independent-checker pattern
+    fits belief-kernel derivations or registry/handoff consistency checks.'
   credibility_score: null
   contradicting_evidence: null
   referenced_arxiv_ids: []
@@ -369584,7 +369591,8 @@
     - intake-352
     - intake-353
   recommended_actions:
-  - 'Dive: decide whether cache-level handoff between our role models is feasible in llama.cpp and what it would save over text handoff.'
+  - 'Proposal (operator-review candidate, derived by the ws58 intake): Dive: decide whether cache-level handoff between our role models
+    is feasible in llama.cpp and what it would save over text handoff.'
   credibility_score: 1
   contradicting_evidence: null
   referenced_arxiv_ids: []
@@ -369717,7 +369725,8 @@
     - intake-2561
     - intake-158
   recommended_actions:
-  - 'Dive with intake-2561: read the corrector implementation to size a llama.cpp port onto the DFlash2 drafter path.'
+  - 'Proposal (operator-review candidate, derived by the ws58 intake): Dive with intake-2561: read the corrector implementation to size
+    a llama.cpp port onto the DFlash2 drafter path.'
   credibility_score: null
   contradicting_evidence: null
   referenced_arxiv_ids:
@@ -369869,8 +369878,8 @@
     intake_entries:
     - intake-158
   recommended_actions:
-  - 'Dive: measure-first design — top-K coverage of the verifier token on our DFlash2 drafter logits decides whether a corrector is
-    worth porting.'
+  - 'Proposal (operator-review candidate, derived by the ws58 intake): Dive: measure-first design — top-K coverage of the verifier token
+    on our DFlash2 drafter logits decides whether a corrector is worth porting.'
   credibility_score: 1
   contradicting_evidence:
   - 'Bounded search (provisional): no independent DCOCO replication. Domino (intake-2569) abstract reports gains over DFlash, the opposite
@@ -370082,7 +370091,8 @@
     experiments: []
     intake_entries: []
   recommended_actions:
-  - 'Dive: read the architecture docs and the optimize-performance skill; extract what transfers to AK loops or llama.cpp serving.'
+  - 'Proposal (operator-review candidate, derived by the ws58 intake): Dive: read the architecture docs and the optimize-performance
+    skill; extract what transfers to AK loops or llama.cpp serving.'
   credibility_score: null
   contradicting_evidence: null
   referenced_arxiv_ids: []
@@ -370192,7 +370202,7 @@
     experiments: []
     intake_entries: []
   recommended_actions:
-  - None beyond architectural context; no measured result.
+  - 'Proposal (operator-review candidate, derived by the ws58 intake): None beyond architectural context; no measured result.'
   credibility_score: null
   contradicting_evidence: null
   referenced_arxiv_ids: []
@@ -370239,8 +370249,8 @@
     - intake-1982
     - intake-511
   recommended_actions:
-  - 'Dive (light): confirm availability and what is technically claimed; compare with full-duplex designs in the conversation-stack
-    lane.'
+  - 'Proposal (operator-review candidate, derived by the ws58 intake): Dive (light): confirm availability and what is technically claimed;
+    compare with full-duplex designs in the conversation-stack lane.'
   credibility_score: null
   contradicting_evidence:
   - Press coverage (TechCrunch and others, restatement) describes a research preview released 2026-10-23 with no API or weights.
@@ -370325,7 +370335,8 @@
     experiments: []
     intake_entries: []
   recommended_actions:
-  - 'Dive: map the folding criteria onto the orchestrator REPL/agent loop (roles as subagents vs skills) and its tool count.'
+  - 'Proposal (operator-review candidate, derived by the ws58 intake): Dive: map the folding criteria onto the orchestrator REPL/agent
+    loop (roles as subagents vs skills) and its tool count.'
   credibility_score: null
   contradicting_evidence:
   - Bounded search found no independent head-to-head; a cited "single agent with skills" paper id did not resolve to that title and
@@ -370451,7 +370462,7 @@
     experiments: []
     intake_entries: []
   recommended_actions:
-  - 'None: KB retrieval is ColBERT MaxSim; synthetic-only evidence.'
+  - 'Proposal (operator-review candidate, derived by the ws58 intake): None: KB retrieval is ColBERT MaxSim; synthetic-only evidence.'
   credibility_score: 0
   contradicting_evidence: null
   referenced_arxiv_ids: []
@@ -370515,7 +370526,8 @@
     intake_entries:
     - intake-892
   recommended_actions:
-  - 'Dive: verify the table, check the HF card (quant/MTP head) and decide a same-recipe token-count and accuracy probe on our harness.'
+  - 'Proposal (operator-review candidate, derived by the ws58 intake): Dive: verify the table, check the HF card (quant/MTP head) and
+    decide a same-recipe token-count and accuracy probe on our harness.'
   credibility_score: 0
   contradicting_evidence:
   - 'Bounded search: no independent evaluation of ThinkingCap Qwen3.8-Flash-Next found.'
@@ -370630,7 +370642,7 @@
     intake_entries:
     - intake-2546
   recommended_actions:
-  - Dive with intake-2546.
+  - 'Proposal (operator-review candidate, derived by the ws58 intake): Dive with intake-2546.'
   credibility_score: 2
   contradicting_evidence:
   - Secondary coverage (aiweekly.co, restatement) notes comparisons are only against small parameter-matched diffusion LMs, not AR models,
@@ -370752,7 +370764,8 @@
     - intake-2561
     - intake-738
   recommended_actions:
-  - 'Dive with intake-2561: sequential corrector baseline that DCOCO claims to beat under concurrency.'
+  - 'Proposal (operator-review candidate, derived by the ws58 intake): Dive with intake-2561: sequential corrector baseline that DCOCO
+    claims to beat under concurrency.'
   credibility_score: 1
   contradicting_evidence: null
   referenced_arxiv_ids: []
@@ -370907,7 +370920,8 @@
     - intake-2557
     - intake-2555
   recommended_actions:
-  - 'Dive: decide what a sound equivalence gate would need on gfx90a/x86 and which AK candidate classes it could cover.'
+  - 'Proposal (operator-review candidate, derived by the ws58 intake): Dive: decide what a sound equivalence gate would need on gfx90a/x86
+    and which AK candidate classes it could cover.'
   credibility_score: 4
   contradicting_evidence: null
   referenced_arxiv_ids: []
@@ -371050,7 +371064,7 @@
     intake_entries:
     - intake-2547
   recommended_actions:
-  - Dive with intake-2547.
+  - 'Proposal (operator-review candidate, derived by the ws58 intake): Dive with intake-2547.'
   credibility_score: 1
   contradicting_evidence: null
   referenced_arxiv_ids: []
@@ -371156,8 +371170,8 @@
     - intake-2567
     - intake-892
   recommended_actions:
-  - 'Dive: verify config (qwen4_exp, MTP layers), whether the GGUFs carry nextn tensors, and fit against the INF-70 Axis-E MTP restoration
-    need.'
+  - 'Proposal (operator-review candidate, derived by the ws58 intake): Dive: verify config (qwen4_exp, MTP layers), whether the GGUFs
+    carry nextn tensors, and fit against the INF-70 Axis-E MTP restoration need.'
   credibility_score: null
   contradicting_evidence: null
   referenced_arxiv_ids: []
@@ -371265,8 +371279,8 @@
     intake_entries:
     - intake-2545
   recommended_actions:
-  - 'Dive: decide whether transcribe.cpp Parakeet streaming is a candidate STT against frozen whisper.cpp; check what the index already
-    holds on transcribe.cpp.'
+  - 'Proposal (operator-review candidate, derived by the ws58 intake): Dive: decide whether transcribe.cpp Parakeet streaming is a candidate
+    STT against frozen whisper.cpp; check what the index already holds on transcribe.cpp.'
   credibility_score: null
   contradicting_evidence: null
   referenced_arxiv_ids: []
@@ -371355,7 +371369,7 @@
     intake_entries:
     - intake-2550
   recommended_actions:
-  - Dive with intake-2550.
+  - 'Proposal (operator-review candidate, derived by the ws58 intake): Dive with intake-2550.'
   credibility_score: null
   contradicting_evidence: null
   referenced_arxiv_ids: []
@@ -371509,8 +371523,8 @@
     - intake-2552
     - intake-2554
   recommended_actions:
-  - 'Dive: locate the llama.cpp code for the audio/realtime path and estimate the port onto llama.cpp-experimental; check ggml generation
-    vs the speech kernel set.'
+  - 'Proposal (operator-review candidate, derived by the ws58 intake): Dive: locate the llama.cpp code for the audio/realtime path and
+    estimate the port onto llama.cpp-experimental; check ggml generation vs the speech kernel set.'
   credibility_score: null
   contradicting_evidence: null
   referenced_arxiv_ids: []
@@ -371593,7 +371607,7 @@
     intake_entries:
     - intake-2559
   recommended_actions:
-  - Dive with intake-2559.
+  - 'Proposal (operator-review candidate, derived by the ws58 intake): Dive with intake-2559.'
   credibility_score: null
   contradicting_evidence: null
   referenced_arxiv_ids:
@@ -371697,8 +371711,10 @@
     intake_entries:
     - intake-2572
   recommended_actions:
-  - Add a per-request acceptance-collapse plus repetition canary to the Flash-Next MTP serving gate (SPEC2-1).
-  - Add a simultaneous-multi-prefill equal-length concurrency probe, MTP on vs off, to G2-CONC (SPEC2-2).
+  - 'Proposal (operator-review candidate, derived by the ws58 intake): Add a per-request acceptance-collapse plus repetition canary
+    to the Flash-Next MTP serving gate (SPEC2-1).'
+  - 'Proposal (operator-review candidate, derived by the ws58 intake): Add a simultaneous-multi-prefill equal-length concurrency probe,
+    MTP on vs off, to G2-CONC (SPEC2-2).'
   credibility_score: 2
   contradicting_evidence:
   - 'Reporter generic-engine-bug attribution is contradicted by the thread: ZJY0516 (Gemma not mamba) and jschmied (Gemma is a different
@@ -371848,8 +371864,8 @@
     intake_entries:
     - intake-2548
   recommended_actions:
-  - Record the recipe as a training option under DF2-DRAFTER-CAPABILITY / any future Flash-Next head refresh (SPEC2-4); no probe until
-    a trainable head exists.
+  - 'Proposal (operator-review candidate, derived by the ws58 intake): Record the recipe as a training option under DF2-DRAFTER-CAPABILITY
+    / any future Flash-Next head refresh (SPEC2-4); no probe until a trainable head exists.'
   credibility_score: 2
   contradicting_evidence: null
   referenced_arxiv_ids: []
@@ -371953,9 +371969,10 @@
     - intake-2554
     - intake-2383
   recommended_actions:
-  - 'Do not port for ASR alone: the realtime server needs the LFM3 audio arch (PR 31257) which is outside frozen v10 (10303). If the
-    interlocutor bake-off (CS-8 D1) is opened, a scratch upstream build of this PR is the cheapest native-duplex arm; the CS-22 controller
-    keeps owning turn detection because the server provides none.'
+  - 'Proposal (operator-review candidate, derived by the ws58 intake): Do not port for ASR alone: the realtime server needs the LFM3
+    audio arch (PR 31257) which is outside frozen v10 (10303). If the interlocutor bake-off (CS-8 D1) is opened, a scratch upstream
+    build of this PR is the cheapest native-duplex arm; the CS-22 controller keeps owning turn detection because the server provides
+    none.'
   credibility_score: null
   contradicting_evidence: null
   referenced_arxiv_ids: []
@@ -372067,8 +372084,9 @@
     - intake-2575
     - intake-2383
   recommended_actions:
-  - 'Add a CS-8.STT cell: Voxtral-Mini-4B-Realtime GGUF (ggml-org) through the mtmd-cli run_audio_stream mode on a scratch upstream
-    build, scored by the CS-8.STT1 scorer on the CS-45 clips, against Nemotron streaming and whisper.cpp. Screen only; promotes nothing.'
+  - 'Proposal (operator-review candidate, derived by the ws58 intake): Add a CS-8.STT cell: Voxtral-Mini-4B-Realtime GGUF (ggml-org)
+    through the mtmd-cli run_audio_stream mode on a scratch upstream build, scored by the CS-8.STT1 scorer on the CS-45 clips, against
+    Nemotron streaming and whisper.cpp. Screen only; promotes nothing.'
   credibility_score: null
   contradicting_evidence: null
   referenced_arxiv_ids: []
@@ -372175,8 +372193,9 @@
     - intake-1498
     - intake-1514
   recommended_actions:
-  - Do not use Omni for text-only routing (d1-2B text path beats it on 8 of 9 decision rows per the d1-2B card); reserve it for a spoken-state
-    decision probe (turn completeness, intent) only after human-recorded CS-45 strata exist.
+  - 'Proposal (operator-review candidate, derived by the ws58 intake): Do not use Omni for text-only routing (d1-2B text path beats
+    it on 8 of 9 decision rows per the d1-2B card); reserve it for a spoken-state decision probe (turn completeness, intent) only after
+    human-recorded CS-45 strata exist.'
   credibility_score: null
   contradicting_evidence: null
   referenced_arxiv_ids: []
@@ -372291,8 +372310,9 @@
     - intake-1502
     - intake-1517
   recommended_actions:
-  - 'TD-23 candidate: d1-2B-GGUF Q8_0 (1.85 GB) via /v1/systemone on a scratch upstream build as the "one available local compact decision
-    backend" against the constrained incumbent on the TD-11/CJ-15 sealed routing set (see ledger W2SP-3).'
+  - 'Proposal (operator-review candidate, derived by the ws58 intake): TD-23 candidate: d1-2B-GGUF Q8_0 (1.85 GB) via /v1/systemone
+    on a scratch upstream build as the "one available local compact decision backend" against the constrained incumbent on the TD-11/CJ-15
+    sealed routing set (see ledger W2SP-3).'
   credibility_score: null
   contradicting_evidence: null
   referenced_arxiv_ids: []
@@ -372406,8 +372426,8 @@
     - intake-2581
     - intake-2582
   recommended_actions:
-  - 'Use only as vendor context: the actionable artefacts are the GGUFs (intake-2581 / intake-2582). Treat its latency table as the
-    only llama.cpp-era timing and predeclare our own.'
+  - 'Proposal (operator-review candidate, derived by the ws58 intake): Use only as vendor context: the actionable artefacts are the
+    GGUFs (intake-2581 / intake-2582). Treat its latency table as the only llama.cpp-era timing and predeclare our own.'
   credibility_score: null
   contradicting_evidence: null
   referenced_arxiv_ids: []
@@ -372508,8 +372528,8 @@
     - intake-2571
     - intake-332
   recommended_actions:
-  - 'Monitor: llama.cpp PR for iquestpltcoder or independent replication; PLT decode equals batch-2 weight reuse, the one looped form
-    that is roofline-favourable.'
+  - 'Proposal (operator-review candidate, derived by the ws58 intake): Monitor: llama.cpp PR for iquestpltcoder or independent replication;
+    PLT decode equals batch-2 weight reuse, the one looped form that is roofline-favourable.'
   credibility_score: 2
   contradicting_evidence:
   - R=3 and R=4 regress below the non-looped baseline in the same paper.
@@ -372629,7 +372649,8 @@
     - intake-332
     - intake-2586
   recommended_actions:
-  - Bounded CPU loops=1/2/4 probe on an experimental branch (ledger W2LOOP-1).
+  - 'Proposal (operator-review candidate, derived by the ws58 intake): Bounded CPU loops=1/2/4 probe on an experimental branch (ledger
+    W2LOOP-1).'
   credibility_score: null
   contradicting_evidence: null
   referenced_arxiv_ids: []
@@ -372744,7 +372765,7 @@
     - intake-2547
     - intake-2585
   recommended_actions:
-  - Use as base for experimental-branch looped probe (W2LOOP-1).
+  - 'Proposal (operator-review candidate, derived by the ws58 intake): Use as base for experimental-branch looped probe (W2LOOP-1).'
   credibility_score: null
   contradicting_evidence: null
   referenced_arxiv_ids: []
@@ -372845,7 +372866,8 @@
     intake_entries:
     - intake-2550
   recommended_actions:
-  - 'Knowledge only; one-line structural check of GDN beta in our tree (done: sigmoid at qwen3next.cpp:417).'
+  - 'Proposal (operator-review candidate, derived by the ws58 intake): Knowledge only; one-line structural check of GDN beta in our
+    tree (done: sigmoid at qwen3next.cpp:417).'
   credibility_score: 1
   contradicting_evidence: null
   referenced_arxiv_ids: []
@@ -372980,7 +373002,7 @@
     intake_entries:
     - intake-2555
   recommended_actions:
-  - see ledger rows KERN-1, KERN-2
+  - 'Proposal (operator-review candidate, derived by the ws58 intake): see ledger rows KERN-1, KERN-2'
   credibility_score: 4
   contradicting_evidence: null
   referenced_arxiv_ids: []
@@ -373128,7 +373150,7 @@
     intake_entries:
     - intake-2555
   recommended_actions:
-  - see ledger rows KERN-3, KERN-4
+  - 'Proposal (operator-review candidate, derived by the ws58 intake): see ledger rows KERN-3, KERN-4'
   credibility_score: 3
   contradicting_evidence: null
   referenced_arxiv_ids: []
@@ -373251,7 +373273,7 @@
     intake_entries:
     - intake-2559
   recommended_actions:
-  - see ledger rows KERN-5, KERN-6
+  - 'Proposal (operator-review candidate, derived by the ws58 intake): see ledger rows KERN-5, KERN-6'
   credibility_score: 3
   contradicting_evidence: null
   referenced_arxiv_ids:
