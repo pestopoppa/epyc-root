@@ -340,6 +340,7 @@ episodic memory writing."
   - [ ] **TD-29.M3 — Trim the JSON-mode output.** In shadow mode emit no confidence fields, and put closed-set arguments
     only on exactness-critical tools (name them from `ToolRegistry`). Schema change and unit tests are zero-inference;
     the before/after tokens-per-pass count on the TD-4 case set is **GATE: mi210-window** (operator ruling Q3, 2026-09-29).
+    - 2026-10-31 source partial: APP `92f67a84b24bad6519d5f14ba34b1f978708861c` adds strict value-only JSON to tool-argument shadow selection, keeps unavailable confidence null, and preserves existing retry abstention and foreground arguments. Final focused controls passed 86/86; [committed source-bound proof](https://github.com/pestopoppa/epyc-orchestrator/tree/33693ca71d8a6c0a06a5aef121ac6df62475eccb/artifacts/typed_decisions/td29-m3-source-controls-20261031). Exactness-critical ToolRegistry selection and the declared MI210 tokens-per-pass comparison remain unfulfilled, so M3 stays OPEN with no completion credit. No model/GPU execution or live reload. [no-belief: source conformance controls only]
   - [ ] **TD-29.M4 — Confirm prompt-prefix cache reuse between the tool call and the typed call.** Check that the typed
     pass shares the tool call's prompt prefix, so llama-server reuses the cached prefix instead of re-prefilling it.
     Acceptance: `prompt_n`/`cache_n` recorded for paired calls (with TD-29.M0); if reuse is absent, name the prefix break.

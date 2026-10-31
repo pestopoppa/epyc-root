@@ -776,7 +776,7 @@ its comparator on 2 of 4 tasks there, so no frontier API is required. Cite `inta
       violation at a stated threshold or record why a warning is the right strength. S3-AP-08's
       rotation-drop data is the empirical basis for any threshold.
 
-- [ ] **AP-66 (S3-AP-04) — NumericSwarm must tell INFEASIBLE configs to the sampler, not hide
+- [x] **AP-66 (S3-AP-04) — NumericSwarm must tell INFEASIBLE configs to the sampler, not hide ✅ 2026-10-31 — IMPLEMENTS APP `464f129006c2968317f691ffac8a432a1e67a38e`; [tests and replay evidence](https://github.com/pestopoppa/epyc-orchestrator/tree/464f129006c2968317f691ffac8a432a1e67a38e/benchmarks/results/ap66-table-replay-20261031). [belief: cc]
       them.** Split non-answers (preimage unavailable, no-change, infra) from INFEASIBLE answers
       (invalid config; dominance axis unmeasured because the config broke the eval). Tell the latter
       as COMPLETE with a constraint violation via NSGAIISampler(constraints_func=…), or failing that
@@ -803,6 +803,8 @@ its comparator on 2 of 4 tasks there, so no frontier API is required. Cite `inta
       unnormalised L1 API. Report infeasible-proposal rate AND hypervolume at equal trial count.
       Pass = infeasible-proposal rate falls under the constraint encoding. Results in scratch.
       (intake-1372#02; intake-1381#05; intake-1389#02, #04; intake-1390#01; intake-1393#01)
+  - Implementation accepted: the real numeric dispatch finalizes Optuna only after native gate observation; infeasible trials carry finite worst-observed qualified objectives and bounded normalized constraints, with crashes strictly worse than finite misses. Non-answers remain PRUNED/unknown; an ordinary wrong answer alone is not config-failure evidence. The first compatible objective anchor flushes durably pending cold-start failures; abrupt SIGKILL/power loss can still leave an unrelated RUNNING trial. Missing quality/cost/reliability provenance cannot seed the anchor; cost is a reported-tier estimate. Integrated caller/gate/sampler controls passed 112/112 on final source; raw receipts and source bindings are committed with the implementation. No live reload or activation.
+  - Offline acceptance at the predeclared 100-call endpoint: FAIL/raw/bounded mean rule-infeasible rates were .782/.754/.754; at 50 they were .828/.828/.828, so no 50-call improvement is claimed. qLogNEHVI rates were .366/.191 at 50/100. Mean hypervolume at 50 was 54865.521/54865.521/54865.521 versus qLogNEHVI 41912.119; at 100 it was 60742.035/60202.704/60202.704 versus 41912.119 (requests/s × ms). Four arms, ten seeds, matched 20-row Sobol starts, and all 4000 stored/evaluated vectors were verified exact native table hits. Frequent joint-row repair before storage is disclosed (100-call FAIL/raw/bounded/qLogNEHVI fractions .800/.784/.784/.371); this is finite-table domain conditioning, not a production result. NSGA-II's default population size is 50. Earlier post-storage projection remains exploratory/NOT MET. This satisfies the literal offline rate-falls bar at 100, without statistical significance, hypervolume improvement, production optimizer gain or adoption claims. See the committed replay README and exact-row verifier above. [belief: cc]
 
 - [ ] **AP-67 (S3-AP-05) — planner-authored numeric trials must reach the sampler.** The
       explicit-params branch applies and evaluates without any study.tell, so NSGA-II is blind to
