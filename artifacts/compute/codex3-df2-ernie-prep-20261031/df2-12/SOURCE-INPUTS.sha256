@@ -1,0 +1,6 @@
+57ac6a1b53a119372d3119f25462fc972d501d41ee661c80785b954f644d8d01  TASK-SOURCE.txt
+d2b888ca9b4025a17878efae16a3b3f594cd01f6da0f3b782c3117f88071d1af  MODELS.sha256
+d3e0c6335fc4b85bcb1c8720140f77e18f4dd51614a12a52a399381d7a810031  PRIOR-BINARY-SOURCE.sha256
+4936a9ee0e893c91070d9d9a98dd4d0a57ecfb8f2bd449d042597fbe9686843b  /mnt/raid0/llm/llama.cpp/tools/server/server-schema.cpp
+f45a212c0a71e648fae6133ef7ae541ad8c2e00d850240a9d100339993bca902  /mnt/raid0/llm/llama.cpp/tools/server/server-context.cpp
+1e03ebc343e562b737de228bf9185b5e9f561066d8411e3061e082f171f19ca1  /mnt/raid0/llm/llama.cpp/tools/server/tests/unit/test_speculative.py

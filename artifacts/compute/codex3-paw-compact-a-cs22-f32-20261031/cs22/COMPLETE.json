@@ -1,0 +1,571 @@
+{
+  "partial": false,
+  "case_count": 160,
+  "success_count": 160,
+  "states": [
+    "success",
+    "success",
+    "success",
+    "success",
+    "success",
+    "success",
+    "success",
+    "success",
+    "success",
+    "success",
+    "success",
+    "success",
+    "success",
+    "success",
+    "success",
+    "success",
+    "success",
+    "success",
+    "success",
+    "success",
+    "success",
+    "success",
+    "success",
+    "success",
+    "success",
+    "success",
+    "success",
+    "success",
+    "success",
+    "success",
+    "success",
+    "success",
+    "success",
+    "success",
+    "success",
+    "success",
+    "success",
+    "success",
+    "success",
+    "success",
+    "success",
+    "success",
+    "success",
+    "success",
+    "success",
+    "success",
+    "success",
+    "success",
+    "success",
+    "success",
+    "success",
+    "success",
+    "success",
+    "success",
+    "success",
+    "success",
+    "success",
+    "success",
+    "success",
+    "success",
+    "success",
+    "success",
+    "success",
+    "success",
+    "success",
+    "success",
+    "success",
+    "success",
+    "success",
+    "success",
+    "success",
+    "success",
+    "success",
+    "success",
+    "success",
+    "success",
+    "success",
+    "success",
+    "success",
+    "success",
+    "success",
+    "success",
+    "success",
+    "success",
+    "success",
+    "success",
+    "success",
+    "success",
+    "success",
+    "success",
+    "success",
+    "success",
+    "success",
+    "success",
+    "success",
+    "success",
+    "success",
+    "success",
+    "success",
+    "success",
+    "success",
+    "success",
+    "success",
+    "success",
+    "success",
+    "success",
+    "success",
+    "success",
+    "success",
+    "success",
+    "success",
+    "success",
+    "success",
+    "success",
+    "success",
+    "success",
+    "success",
+    "success",
+    "success",
+    "success",
+    "success",
+    "success",
+    "success",
+    "success",
+    "success",
+    "success",
+    "success",
+    "success",
+    "success",
+    "success",
+    "success",
+    "success",
+    "success",
+    "success",
+    "success",
+    "success",
+    "success",
+    "success",
+    "success",
+    "success",
+    "success",
+    "success",
+    "success",
+    "success",
+    "success",
+    "success",
+    "success",
+    "success",
+    "success",
+    "success",
+    "success",
+    "success",
+    "success",
+    "success",
+    "success",
+    "success",
+    "success",
+    "success",
+    "success",
+    "success"
+  ],
+  "pairs": [
+    {
+      "clip_id": "tt1-p0001-a",
+      "right": 0,
+      "identical": true
+    },
+    {
+      "clip_id": "tt1-p0001-a",
+      "right": 3,
+      "identical": true
+    },
+    {
+      "clip_id": "tt1-p0001-a",
+      "right": 6,
+      "identical": true
+    },
+    {
+      "clip_id": "tt1-p0001-a",
+      "right": 13,
+      "identical": true
+    },
+    {
+      "clip_id": "tt1-p0001-b",
+      "right": 0,
+      "identical": true
+    },
+    {
+      "clip_id": "tt1-p0001-b",
+      "right": 3,
+      "identical": true
+    },
+    {
+      "clip_id": "tt1-p0001-b",
+      "right": 6,
+      "identical": true
+    },
+    {
+      "clip_id": "tt1-p0001-b",
+      "right": 13,
+      "identical": true
+    },
+    {
+      "clip_id": "tt1-p0002-a",
+      "right": 0,
+      "identical": true
+    },
+    {
+      "clip_id": "tt1-p0002-a",
+      "right": 3,
+      "identical": true
+    },
+    {
+      "clip_id": "tt1-p0002-a",
+      "right": 6,
+      "identical": true
+    },
+    {
+      "clip_id": "tt1-p0002-a",
+      "right": 13,
+      "identical": true
+    },
+    {
+      "clip_id": "tt1-p0002-b",
+      "right": 0,
+      "identical": true
+    },
+    {
+      "clip_id": "tt1-p0002-b",
+      "right": 3,
+      "identical": true
+    },
+    {
+      "clip_id": "tt1-p0002-b",
+      "right": 6,
+      "identical": true
+    },
+    {
+      "clip_id": "tt1-p0002-b",
+      "right": 13,
+      "identical": true
+    },
+    {
+      "clip_id": "tt1-p0003-a",
+      "right": 0,
+      "identical": true
+    },
+    {
+      "clip_id": "tt1-p0003-a",
+      "right": 3,
+      "identical": true
+    },
+    {
+      "clip_id": "tt1-p0003-a",
+      "right": 6,
+      "identical": true
+    },
+    {
+      "clip_id": "tt1-p0003-a",
+      "right": 13,
+      "identical": true
+    },
+    {
+      "clip_id": "tt1-p0003-b",
+      "right": 0,
+      "identical": true
+    },
+    {
+      "clip_id": "tt1-p0003-b",
+      "right": 3,
+      "identical": true
+    },
+    {
+      "clip_id": "tt1-p0003-b",
+      "right": 6,
+      "identical": true
+    },
+    {
+      "clip_id": "tt1-p0003-b",
+      "right": 13,
+      "identical": true
+    },
+    {
+      "clip_id": "tt1-p0004-a",
+      "right": 0,
+      "identical": true
+    },
+    {
+      "clip_id": "tt1-p0004-a",
+      "right": 3,
+      "identical": true
+    },
+    {
+      "clip_id": "tt1-p0004-a",
+      "right": 6,
+      "identical": true
+    },
+    {
+      "clip_id": "tt1-p0004-a",
+      "right": 13,
+      "identical": true
+    },
+    {
+      "clip_id": "tt1-p0004-b",
+      "right": 0,
+      "identical": true
+    },
+    {
+      "clip_id": "tt1-p0004-b",
+      "right": 3,
+      "identical": true
+    },
+    {
+      "clip_id": "tt1-p0004-b",
+      "right": 6,
+      "identical": true
+    },
+    {
+      "clip_id": "tt1-p0004-b",
+      "right": 13,
+      "identical": true
+    },
+    {
+      "clip_id": "tt1-p0006-a",
+      "right": 0,
+      "identical": true
+    },
+    {
+      "clip_id": "tt1-p0006-a",
+      "right": 3,
+      "identical": true
+    },
+    {
+      "clip_id": "tt1-p0006-a",
+      "right": 6,
+      "identical": true
+    },
+    {
+      "clip_id": "tt1-p0006-a",
+      "right": 13,
+      "identical": true
+    },
+    {
+      "clip_id": "tt1-p0006-b",
+      "right": 0,
+      "identical": true
+    },
+    {
+      "clip_id": "tt1-p0006-b",
+      "right": 3,
+      "identical": true
+    },
+    {
+      "clip_id": "tt1-p0006-b",
+      "right": 6,
+      "identical": true
+    },
+    {
+      "clip_id": "tt1-p0006-b",
+      "right": 13,
+      "identical": true
+    },
+    {
+      "clip_id": "tt1-p0007-a",
+      "right": 0,
+      "identical": true
+    },
+    {
+      "clip_id": "tt1-p0007-a",
+      "right": 3,
+      "identical": true
+    },
+    {
+      "clip_id": "tt1-p0007-a",
+      "right": 6,
+      "identical": true
+    },
+    {
+      "clip_id": "tt1-p0007-a",
+      "right": 13,
+      "identical": true
+    },
+    {
+      "clip_id": "tt1-p0007-b",
+      "right": 0,
+      "identical": true
+    },
+    {
+      "clip_id": "tt1-p0007-b",
+      "right": 3,
+      "identical": true
+    },
+    {
+      "clip_id": "tt1-p0007-b",
+      "right": 6,
+      "identical": true
+    },
+    {
+      "clip_id": "tt1-p0007-b",
+      "right": 13,
+      "identical": true
+    },
+    {
+      "clip_id": "tt1-p0008-a",
+      "right": 0,
+      "identical": true
+    },
+    {
+      "clip_id": "tt1-p0008-a",
+      "right": 3,
+      "identical": true
+    },
+    {
+      "clip_id": "tt1-p0008-a",
+      "right": 6,
+      "identical": true
+    },
+    {
+      "clip_id": "tt1-p0008-a",
+      "right": 13,
+      "identical": true
+    },
+    {
+      "clip_id": "tt1-p0008-b",
+      "right": 0,
+      "identical": true
+    },
+    {
+      "clip_id": "tt1-p0008-b",
+      "right": 3,
+      "identical": true
+    },
+    {
+      "clip_id": "tt1-p0008-b",
+      "right": 6,
+      "identical": true
+    },
+    {
+      "clip_id": "tt1-p0008-b",
+      "right": 13,
+      "identical": true
+    },
+    {
+      "clip_id": "tt1-p0009-a",
+      "right": 0,
+      "identical": true
+    },
+    {
+      "clip_id": "tt1-p0009-a",
+      "right": 3,
+      "identical": true
+    },
+    {
+      "clip_id": "tt1-p0009-a",
+      "right": 6,
+      "identical": true
+    },
+    {
+      "clip_id": "tt1-p0009-a",
+      "right": 13,
+      "identical": true
+    },
+    {
+      "clip_id": "tt1-p0009-b",
+      "right": 0,
+      "identical": true
+    },
+    {
+      "clip_id": "tt1-p0009-b",
+      "right": 3,
+      "identical": true
+    },
+    {
+      "clip_id": "tt1-p0009-b",
+      "right": 6,
+      "identical": true
+    },
+    {
+      "clip_id": "tt1-p0009-b",
+      "right": 13,
+      "identical": true
+    },
+    {
+      "clip_id": "tt1-p0010-a",
+      "right": 0,
+      "identical": true
+    },
+    {
+      "clip_id": "tt1-p0010-a",
+      "right": 3,
+      "identical": true
+    },
+    {
+      "clip_id": "tt1-p0010-a",
+      "right": 6,
+      "identical": true
+    },
+    {
+      "clip_id": "tt1-p0010-a",
+      "right": 13,
+      "identical": true
+    },
+    {
+      "clip_id": "tt1-p0010-b",
+      "right": 0,
+      "identical": true
+    },
+    {
+      "clip_id": "tt1-p0010-b",
+      "right": 3,
+      "identical": true
+    },
+    {
+      "clip_id": "tt1-p0010-b",
+      "right": 6,
+      "identical": true
+    },
+    {
+      "clip_id": "tt1-p0010-b",
+      "right": 13,
+      "identical": true
+    },
+    {
+      "clip_id": "tt1-p0012-a",
+      "right": 0,
+      "identical": true
+    },
+    {
+      "clip_id": "tt1-p0012-a",
+      "right": 3,
+      "identical": true
+    },
+    {
+      "clip_id": "tt1-p0012-a",
+      "right": 6,
+      "identical": true
+    },
+    {
+      "clip_id": "tt1-p0012-a",
+      "right": 13,
+      "identical": true
+    },
+    {
+      "clip_id": "tt1-p0012-b",
+      "right": 0,
+      "identical": true
+    },
+    {
+      "clip_id": "tt1-p0012-b",
+      "right": 3,
+      "identical": true
+    },
+    {
+      "clip_id": "tt1-p0012-b",
+      "right": 6,
+      "identical": true
+    },
+    {
+      "clip_id": "tt1-p0012-b",
+      "right": 13,
+      "identical": true
+    }
+  ],
+  "scope": "F32 cache parity only; A1 silence, soak, Q8 and startup validation remain required",
+  "cache_pass": true
+}

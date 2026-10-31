@@ -1,0 +1,6 @@
+- [ ] **DF2-13 — Checkpoint + prompt-reuse test on a GDN target under DFlash2.** Two requests (B extends A's conversation); compare B's output with a cold-cache run of B. The context-checkpoint path carries an upstream TODO (`server-context.cpp:2398-2400`). Evidence: intake-1513.
+      - *2026-10-03 (intake P7, code read plus F12 wire logs):* the reuse path is live in production on every turn.
+        On 179 of 230 follow-on F12 turns, all previous output was reused from the live recurrent state, and
+        41 turns fell back to the prompt-end checkpoint. So a B-extends-A request can exercise both restore
+        and live continuation. Details are under UFH14-A6 in
+        [`agentic-serving-harness-fixes.md`](agentic-serving-harness-fixes.md).

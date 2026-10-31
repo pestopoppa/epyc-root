@@ -1,0 +1,15 @@
+{
+  "schema": "df2-12.np4-parity.v1",
+  "scope": "27B GDN DFlash2; four mixed concurrent prompts, two request draft caps 7 and two caps 0, all in one np=4 server; then each same prompt with cap 0 in a separate fresh single-slot baseline server.",
+  "prompts": [
+    {"id":"p1","prompt":"User: Give two concise ways to make a retry safe.\nAssistant:","mixed_draft_cap":7},
+    {"id":"p2","prompt":"User: Explain why a checksum can detect corruption.\nAssistant:","mixed_draft_cap":0},
+    {"id":"p3","prompt":"User: Describe one simple method to bound queue memory.\nAssistant:","mixed_draft_cap":7},
+    {"id":"p4","prompt":"User: Explain the purpose of a read timeout.\nAssistant:","mixed_draft_cap":0}
+  ],
+  "seed":42,"temperature":0,"top_k":1,"n_predict":64,"n_probs":2,"post_sampling_probs":false,
+  "model":"Qwen3.8-27B-Q8_0","draft":"Qwen3.8-27B-DFlash2-Q8_0",
+  "classification":"Record first divergence and baseline pre-sampling top-two probabilities and log margin. Use inherited CPU 0.001-nat band only as an expressly attributed comparison, never claim measured same-run floor. Anything without positive native draft counts, actual server-trace evidence of mixed-slot interleaving, comparable top-two probabilities or evidence supporting degeneration remains UNKNOWN. Do not equate a non-near-tie margin alone with degenerative behavior.",
+  "stop":"On interruption preserve every exposed request and partial receipts, no redraw.",
+  "feasibility":"Full target, memory use and interleaved runtime are untested; request and time budgets are not completion promises."
+}

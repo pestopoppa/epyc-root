@@ -403,12 +403,19 @@ Incremental scoring also verified completed s05/s08/s09 (originalR2 source) and 
 
 #### Paddle English scores by original finish epoch
 
+At the 2026-10-31 05:45 post-freeze replay, the deduplicated Paddle union is **359 unique verified pages / 84 GT tables**, TEDS **0.9284350145629875** and structure-only **0.9581974688886165**. This adds 15 pages and two tables to the filed 344/82 snapshot; original strict receipts, GT and old paths remain intact. Pages 0 and 34 were prospectively reassembled from 15 and 13 authenticated original region responses: a new START preceded no-network/no-model recovery, which reproduced each original markdown byte-for-byte and created a new finish; no historical finishing receipt or process identity is inferred. The other 13 newly eligible pages are original native results. Both new strict native_rows score receipts replay with the same GT. The full 755-page and paired gates remain open. [Recovery, score receipts and union](../../artifacts/compute/codex3-pip-head-recovery-20261031/). [belief: cc]
+
 At the 2026-10-31 04:56 post-freeze replay, the strict deduplicated Paddle union contains **344 unique verified pages / 82 GT tables**, up 10 zero-GT pages from the previously filed 334/82. TEDS is **0.9274766122818409**, structure-only **0.9571778949590706** (unchanged because the additional pages have no GT tables). The original per-epoch rows below retain their planned denominators and historical snapshots. The full 755-page and paired-parser gates remain open. Final-source scoring and receipt replay use research commits `4fd00eb02d4a034bc37006e58c8dde84e657c38f` and `d2b95912cedd` at the immutable deployment; [post-freeze union, table and receipts](../../artifacts/compute/codex3-pip-r29-score-20261031/) retain original capture bindings. At 05:00:53 UTC the dedicated host watcher was active under its bounded systemd unit with writer lock, expiring by timer at 2026-11-01 04:59:08 UTC; this is a dated service observation, not a promise of continuing liveness. [belief: cc]
 
 The 2026-10-30 full151-shard snapshot had251 verified complete pages and78 scored GT tables. At that snapshot the other504 pages were476 unknown,20 errors and8 with request origins but no verified finishing-capture binding. All755 original page IDs and243 planned GT tables remain represented. Per-epoch rows below are components of fixed shards: their repeated planned denominators must not be summed. A case is deduplicated only when original prediction/finish hashes and native table values match; conflicting complete snapshots refuse, and later partials cannot erase an earlier complete observation.
 
 | Paddle shard | Finish epoch | Verified pages / planned | GT tables scored / planned | TEDS | Structure-only TEDS | Case artifact |
 |---|---|---:|---:|---:|---:|---|
+| s000 | headrec | 1/5 | 0/2 | — | — | [new recovery score](../../artifacts/compute/codex3-pip-head-recovery-20261031/s000.json) |
+| s000 | r28 | 4/5 | 2/2 | 0.967730 | 1.000000 | [strict score](../../artifacts/compute/codex3-pip-head-recovery-20261031/s000.json) |
+| s002 | headrec | 1/5 | 0/0 | — | — | [new recovery score](../../artifacts/compute/codex3-pip-head-recovery-20261031/s002.json) |
+| s002 | r28 | 4/5 | 0/0 | — | — | [strict score](../../artifacts/compute/codex3-pip-head-recovery-20261031/s002.json) |
+| s004 | r29 | 5/5 | 0/0 | — | — | [epoch reference](../../artifacts/compute/codex3-pip-head-recovery-20261031/paddle-running-table.md) |
 | s001 | r28 | 5/5 | 0/0 | — | — | [final-source case data](../../artifacts/compute/codex3-pip-r29-score-20261031/s001.json) |
 | s003 | r29 | 5/5 | 0/0 | — | — | [epoch reference and running table](../../artifacts/compute/codex3-pip-r29-score-20261031/d2-paddle-running-table.md) |
 | s008 | r22 | 5/5 | 0/0 | — | — | [case data](../../artifacts/compute/pip02-shard-teds-20261030/paddle-snapshot-paddle-split-v3-s008.json) |

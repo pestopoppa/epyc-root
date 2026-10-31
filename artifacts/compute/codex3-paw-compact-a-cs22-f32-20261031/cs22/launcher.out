@@ -1,0 +1,7 @@
+2026-10-31T05:38:25Z [codex3-cs22-a1-native-f32-cpu-20261030] launcher up pid=2247972 class=cpu poll=45s grants=/mnt/raid0/llm/tmp/compute-flags/grants stop=/mnt/raid0/llm/tmp/codex3-cs22-a1-native-20261030/STOP minwin=900s ports=none
+2026-10-31T05:39:10Z [codex3-cs22-a1-native-f32-cpu-20261030] START regions=24-47 cpus=24-47 threads=24 gpu=0 end=2026-10-31T06:00Z
+[region-lock] acquiring regions ['q1'] as role='build' (timeout_s=1250.0) …
+[region-lock] held ['q1'] after 0.0s wait; running: /bin/bash /mnt/raid0/llm/tmp/codex3-cs22-a1-native-20261030/engine/filler_run13.sh --inner --id codex3-cs22-a1-native-f32-cpu-20261030 --class cpu --cmd taskset -c "$FILLER_CPUS" python3 /mnt/raid0/llm/tmp/codex3-cs22-a1-native-20261030/job.py --min-window 900 --stop /mnt/raid0/llm/tmp/codex3-cs22-a1-native-20261030/STOP --port  --workdir /mnt/raid0/llm/tmp/codex3-cs22-a1-native-20261030 --gpu-threads 184-191
+job rc=0
+2026-10-31T05:48:53Z [codex3-cs22-a1-native-f32-cpu-20261030] ended rc=0 reason=complete (grant deleted)
+2026-10-31T05:48:53Z [codex3-cs22-a1-native-f32-cpu-20261030] ALL DONE: wrote /mnt/raid0/llm/tmp/compute-flags/grants/codex3-cs22-a1-native-f32-cpu-20261030.complete; row status remains scheduler-owned

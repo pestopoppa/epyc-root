@@ -1,0 +1,3 @@
+TOTALS 359 84 0.9284350145629875 0.9581974688886165
+epoch rows 97 current noncomplete 396 retained prior events 689
+{"schema": "bounded-r11-native-profile-supervisor/v1", "elapsed_s": 3.227671382948756, "sampled_peak_tree_rss_bytes": 127868928, "samples": 33, "verified_exited_processes": 0, "verified_exited_threads": 0, "per_process_address_space_limit_bytes": null, "rss_scope": "sum of sampled resident pages across owned process tree; sampling may miss transients and double-count shared pages", "leader_pid": 2329412, "leader_birth": 154823340, "child_rc": 0, "children_drained": true, "failure": null}

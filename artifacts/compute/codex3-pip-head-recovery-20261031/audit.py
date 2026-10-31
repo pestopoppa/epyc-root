@@ -1,0 +1,21 @@
+from pathlib import Path
+import json,hashlib,datetime
+sha=lambda b:hashlib.sha256(b).hexdigest();can=lambda o:json.dumps(o,sort_keys=True,separators=(',',':'),ensure_ascii=False).encode();R=Path('/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029');audit=json.loads(Path('/mnt/raid0/llm/tmp/codex3-pip-pool2-r30-v2-20261031/HEAD-0-34-AUDIT.json').read_bytes());plan=json.loads((R/'english755-fresh-plan.json').read_bytes());manifest=R/'PADDLE-FRESH-SOURCES.sha256';sources={str(Path(n)):h for h,n in (line.split('  ',1) for line in manifest.read_text().splitlines())};caps={sha(p.read_bytes()):p for p in (R/'attempts').glob('*/capture.json')};rows=[]
+for row in audit['rows']:
+ page=row['page'];sh=row['shard'];files=row['files'];layout=next((Path(x['path']) for x in files if x['path'].endswith('-layout.json')),None);starts=[Path(x['path']) for x in files if x['path'].endswith('.start.json')];problems=[];evidence={};capture_rows=[]
+ def pin(path):
+  p=Path(path);digest=sha(p.read_bytes());evidence[str(p)]=digest;return digest
+ try:
+  image=Path('/mnt/raid0/llm/datasets/omnidocbench/images')/page['image'];assert pin(image)==page['sha256'];pin(manifest)
+  assert layout and starts and len(starts)==len([x for x in files if x['path'].endswith('.result.json')]);lay=json.loads(layout.read_bytes());assert lay['count']==len(lay['boxes']);assert sha(json.dumps(lay['boxes'],sort_keys=True,separators=(',',':'),allow_nan=False).encode())==lay['layout_sha256'];pin(layout)
+  page_start=next(Path(x['path']) for x in files if x['path'].endswith('.start') and not x['path'].endswith('.start.json'));page_result=next(Path(x['path']) for x in files if x['path'].endswith('.result') and not x['path'].endswith('.result.json'));a=json.loads(page_start.read_bytes());b=json.loads(page_result.read_bytes());campaign_hash=a['campaign'];assert a['page']==page and b['start_sha256']==pin(page_start) and b['markdown_sha256']==sha(b['markdown'].encode());pin(page_result)
+  for n,path in enumerate(sorted(starts)):
+   a=json.loads(path.read_bytes());assert a['ordinal']==n;raw=bytes.fromhex(a['body_hex']);assert sha(raw)==a['body_sha256'];resp=path.with_name(path.name.replace('.start.json','.result.json'));b=json.loads(resp.read_bytes());body=bytes.fromhex(b['body_hex']);assert b['request_sha256']==a['body_sha256'] and b['start_sha256']==pin(path) and b['response_sha256']==sha(body) and b['status']==200;pin(resp)
+   prov=a['provenance'];cp=caps[prov['origin_capture_sha256']];c=json.loads(cp.read_bytes());assert c['id']==f'codex3-pip02-fresh-s{sh}-20261029' and c['shard']==sh and c['smoke'] is False and c['protocol_sha256']=='dc7d8e167edc79a07b9db10849940cb84a7f04c34f67274afbe067531d226ae3';assert c['grant']==prov['origin_grant'] and c['grant_sha256']==sha(c['grant'].encode());assert c['source_pins']==prov['identity']['source_pins'];assert prov['identity']['campaign_sha256']==campaign_hash;assert prov['identity']['model_pins']==json.loads(Path('/mnt/raid0/llm/tmp/pip02-pipeline-prep-20261029/paddle-cpu-campaign-config-v3.json').read_bytes())['server']['pins'];stamp=datetime.datetime.fromisoformat(a['originated_at'].replace('Z','+00:00'));fields=dict(x.split('=',1) for x in c['grant'].split());lo=datetime.datetime.fromisoformat(fields['start'].replace('Z','+00:00'));hi=datetime.datetime.fromisoformat(fields['end'].replace('Z','+00:00'));assert lo<=stamp<=hi
+   for name,digest in c['source_pins'].items():
+    assert not Path(name).is_absolute() and '..' not in Path(name).parts
+    p=R/name;assert sources.get(str(p))==digest and pin(p)==digest
+   capture_rows.append({'ordinal':n,'capture':str(cp),'capture_sha256':pin(cp),'captured_id':c['id'],'region_start':str(path),'region_result':str(resp)})
+ except (AssertionError,KeyError,ValueError,TypeError,OSError) as e:problems.append(type(e).__name__+': '+str(e))
+ rows.append({'index':page['index'],'position':row['position'],'shard':sh,'verified':not problems,'problems':problems,'image_layout_page_and_regions_sha256':evidence,'captures':capture_rows,'original_finish_present':any(x['path'].endswith('.finish.json') for x in files),'region_count':len(starts)})
+print(json.dumps({'scope':'source/capture/grant/region and page record audit; layout-to-assembly input sufficiency not yet established','manifest_sha256':sha(manifest.read_bytes()),'rows':rows},indent=2))

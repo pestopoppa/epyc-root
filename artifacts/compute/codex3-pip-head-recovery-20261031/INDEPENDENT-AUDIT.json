@@ -1,0 +1,31 @@
+{
+  "original_reference_files_rehashed": 118,
+  "mismatches": 0,
+  "original_pages": [
+    {
+      "index": 0,
+      "authenticated_regions": 15,
+      "original_finish_present": false
+    },
+    {
+      "index": 34,
+      "authenticated_regions": 13,
+      "original_finish_present": false
+    }
+  ],
+  "new_recovery_network_calls": 0,
+  "markdown_hashes_match_original": true,
+  "strict_native_rows": {
+    "s000": 2,
+    "s002": 0
+  },
+  "same_gt_sha256": "a45cd84b04ad8b793e775089640e6b681209abea33ead54c1828ddca35fae496",
+  "prior_pages": 344,
+  "prior_gt_tables": 82,
+  "new_pages": 15,
+  "new_gt_tables": 2,
+  "result_pages": 359,
+  "result_gt_tables": 84,
+  "weighted_teds": 0.9284350145629875,
+  "weighted_structure": 0.9581974688886165
+}

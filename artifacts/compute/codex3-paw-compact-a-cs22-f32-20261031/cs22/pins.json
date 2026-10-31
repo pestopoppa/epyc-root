@@ -1,0 +1,44 @@
+{
+  "pins": {
+    "source_commit": "db678a031cf4c524bcab2c45a0dc6a7813106e4a",
+    "model_sha256": "fbbc82e8e1084301a670fbc4d79c69c0c8980da506352fd83e74a182f38f5b78",
+    "binary_sha256": "c5e918ce7c4c4156ab45b938abfd14e85cdcec1d68f2a0c868bba419fed3684c",
+    "library_sha256": "58197839744b81c7db743bda3cec505d55d7fcead53e2665c9f0d246b7c940a1",
+    "cohort_sha256": "0d4444853449dfaa6432e85e814813db66d2fb094b3fb4d5b48c1415254fe117",
+    "driver_source_sha256": "585a1c48ac55614c40916f0887bbb4acfd655429f99c7236aea5c22c3b71df75",
+    "job_sha256": "356409c59d5fec29249b67fe077543305eab9e792820e8471b5caf3d7cb159bf"
+  },
+  "smoke_unsealed": false,
+  "environment": {
+    "LD_LIBRARY_PATH": "/mnt/raid0/llm/tmp/codex3-cs8-stt2-transcribe-20261030/install/lib",
+    "OMP_NUM_THREADS": "1",
+    "FILLER_CPUS": "24-47",
+    "WS58_REGIONS": "24-47"
+  },
+  "affinity": [
+    24,
+    25,
+    26,
+    27,
+    28,
+    29,
+    30,
+    31,
+    32,
+    33,
+    34,
+    35,
+    36,
+    37,
+    38,
+    39,
+    40,
+    41,
+    42,
+    43,
+    44,
+    45,
+    46,
+    47
+  ]
+}

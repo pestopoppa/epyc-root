@@ -1,0 +1,5 @@
+Recommended next slice:
+
+1. Build a 20-prompt local spot-check: EN/ZH typography, poster, infographic, scene, portrait, political/content-filter probes.
+2. Run with prompt enhancer on/off where applicable; record seed, dimensions, steps, wall-clock, and qualitative failure tags.
+3. Update this handoff and the deep dive only if the production recommendation changes.

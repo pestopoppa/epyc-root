@@ -221,3 +221,7 @@ enhancer**. This does **NOT** validate ERNIE's own 0.9655: both sides are vendor
         pre-registered A/B, zero-inference prep first. The run waits for the operator to lift the 2026-09-17
         GPU hold. Filed 2026-09-17 from recipe §5 being exhausted (`2026-09-16-sub-s5-topup.md`).
 - [ ] Re-litigate FLUX.1-schnell alternative if bilingual long-form in-image text not needed by product
+
+### 2026-10-31 ERNIE typography preparation
+
+The prospective 20-prompt EN/ZH typography slice and source pins are prepared under the existing PIP-03 family. Host linkage is a build observation, not GPU residency. The actual GPU was busy at the preflight; no GPU smoke, image request, target model load or READY occurred. Enhancer-on and product filtering remain UNKNOWN; the local slice cannot establish the official benchmark score or a matched-Qwen result. [Bounded preparation](../../artifacts/compute/codex3-df2-ernie-prep-20261031/). [belief: cc]

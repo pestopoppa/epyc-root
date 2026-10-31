@@ -105,3 +105,7 @@ At 05:24 the unchanged native writer was run offline over the retained receipts,
 ### 2026-10-31 PAW superlative HOST-fix diagnostic
 
 `codex3-paw-superlative-hostfix2-20261031` completed rc0 with eight paired cases. Independent declaration, program, grant and case checks rederive **binary 8/8 correct** and **semantic 7/8 correct**, zero UNSURE, invalid or missing. By category: different-group 4/4 for both arms; same-group binary 4/4 and semantic 3/4 (one incorrect). The source writer's single tuple is an observation; no superiority, adoption or full PAW-3 result follows from this small diagnostic. Original private case text and model outputs remain private. [Digest-only audit](../../artifacts/compute/codex3-c6-full-paw-a-results-20261031/super/). [belief: cc]
+
+### 2026-10-31 PAW compact A HOST-fix2 diagnostic
+
+`codex3-paw-compact-a-hostfix2-20261031` completed rc0 with 64/64 original compact-arm native case records and eight bundle hashes verified. Exact decoded-output matches after outer whitespace stripping, out of eight per task: 0=5, 1=5, 2=8, 3=6, 7=7, 8=7, 9=6 and 10=4 (48/64). SDK finish reasons remain UNKNOWN for all cases. This is descriptive compact-arm evidence only; the standard A continuation's failed final source check remains separate, so no standard-vs-compact or PAW-3 gate verdict follows. Original private cases and outputs stay in private custody. [Digest-only audit](../../artifacts/compute/codex3-paw-compact-a-cs22-f32-20261031/). [belief: cc]

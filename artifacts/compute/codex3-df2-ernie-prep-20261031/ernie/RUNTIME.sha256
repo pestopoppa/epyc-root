@@ -1,0 +1,10 @@
+1b13ca9f331a1772aa04bb9afe58ae5192e3d56feb0129a79ee89d42d40d2066  /mnt/raid0/llm/worktrees/sub-gpu-prep-stable-diffusion.cpp/build-rocm-gpuprep-20260916/bin/libggml-base.so.0.9.8
+e8b65a038a86f40f1d9408d5d803360fbdc5de950ba9a26e4b15531b1bdf4a36  /mnt/raid0/llm/worktrees/sub-gpu-prep-stable-diffusion.cpp/build-rocm-gpuprep-20260916/bin/libggml-cpu.so.0.9.8
+e16317c339c6278cbfa3163d5f932a33e07eb8552fe7992c027311b2c06620cd  /mnt/raid0/llm/worktrees/sub-gpu-prep-stable-diffusion.cpp/build-rocm-gpuprep-20260916/bin/libggml-hip.so.0.9.8
+3ffdba7b5f03c837308425baabd92013484db02dfe53ebc41d48c42ad2b7a217  /mnt/raid0/llm/worktrees/sub-gpu-prep-stable-diffusion.cpp/build-rocm-gpuprep-20260916/bin/libggml.so.0.9.8
+95bb0a548008c178a2788d338eeb37a6c346544456d8d2621cd854423da9718f  /mnt/raid0/llm/worktrees/sub-gpu-prep-stable-diffusion.cpp/build-rocm-gpuprep-20260916/bin/libsharpyuv.so.0.1.2
+2f6b83a1ad33b018989684594c2c0348c0d3353923cd04401047a46ec7afe628  /mnt/raid0/llm/worktrees/sub-gpu-prep-stable-diffusion.cpp/build-rocm-gpuprep-20260916/bin/libwebm.so
+48a9fcf8cf139f8ea5fe2aab60ed601181d704c8f20e76ff9756d42a92f40d8e  /mnt/raid0/llm/worktrees/sub-gpu-prep-stable-diffusion.cpp/build-rocm-gpuprep-20260916/bin/libwebp.so.7.2.0
+25135809d17b5c9635f1585cb8048ec3835f59e5545174e6c01f02324cc12532  /mnt/raid0/llm/worktrees/sub-gpu-prep-stable-diffusion.cpp/build-rocm-gpuprep-20260916/bin/libwebpmux.so.3.1.2
+5335caad06f0891e7d27520e495bc1e203fdce71e214c6f857d41c271fee4862  /mnt/raid0/llm/worktrees/sub-gpu-prep-stable-diffusion.cpp/build-rocm-gpuprep-20260916/bin/sd-server
+a5f965133433b66991388908832a689db7f3b9a0934a9edf91ca2ed4fa97921b  /mnt/raid0/llm/epyc-orchestrator/scripts/diffusion/ernie_content_filter_audit.py

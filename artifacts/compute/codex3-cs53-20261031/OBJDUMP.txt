@@ -1,0 +1,26 @@
+
+/mnt/raid0/llm/kernels/production/cpu/libggml-cpu.so:     file format elf64-x86-64
+
+
+Disassembly of section .init:
+
+Disassembly of section .plt:
+
+Disassembly of section .plt.got:
+
+Disassembly of section .plt.sec:
+
+Disassembly of section .text:
+
+0000000000018d30 <ggml_barrier>:
+   18d30:	f3 0f 1e fa          	endbr64
+   18d34:	8b 47 68             	mov    0x68(%rdi),%eax
+   18d37:	66 83 f8 01          	cmp    $0x1,%ax
+   18d3b:	74 13                	je     18d50 <ggml_barrier+0x20>
+   18d3d:	e9 fe e6 ff ff       	jmp    17440 <GOMP_barrier@plt>
+   18d42:	0f 1f 00             	nopl   (%rax)
+   18d45:	66 66 2e 0f 1f 84 00 	data16 cs nopw 0x0(%rax,%rax,1)
+   18d4c:	00 00 00 00
+   18d50:	c3                   	ret
+
+Disassembly of section .fini:

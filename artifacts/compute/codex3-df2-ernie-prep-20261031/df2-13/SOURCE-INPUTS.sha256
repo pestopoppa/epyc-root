@@ -1,0 +1,4 @@
+4100bcd67bacf9cf68719e37aa9fd49dc8a13a885cbaffa092074321a8229811  /mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/df2-13/TASK-SOURCE.txt
+4483bcfc92c5c3bb0005df31e1c668cb565d49f7b40ba94f4df5a126cbbb648c  /mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/llama-server
+3f4edd2fc0f1e78003735be59db987d43c4bc0e6a8f821bc419d7b6f492346c0  /mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/libggml-cpu.so.0.16.0
+64817c163bf7efdd4eb6cd46ca97749199d299949131970a9a49c36dcfd3ef57  /mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/libllama-server-impl.so

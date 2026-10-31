@@ -1,0 +1,32 @@
+prospective start created before assembly, hashes 428
+[32mCreating model: ('PP-DocLayoutV3', '/mnt/raid0/llm/models/PP-DocLayoutV3-paddle3.0.0', None)[0m
+[32mCreating model: ('PaddleOCR-VL-1.6-0.9B', None, None)[0m
+/mnt/raid0/llm/venvs/paddleocr/lib/python3.12/site-packages/paddlex/inference/models/doc_vlm/predictor.py:545: UserWarning: 'llama-cpp-server' does not support `min_pixels`.
+  warnings.warn(
+/mnt/raid0/llm/venvs/paddleocr/lib/python3.12/site-packages/paddlex/inference/models/doc_vlm/predictor.py:558: UserWarning: 'llama-cpp-server' does not support `max_pixels`.
+  warnings.warn(
+[32mCreating model: ('PP-DocLayoutV3', '/mnt/raid0/llm/models/PP-DocLayoutV3-paddle3.0.0', None)[0m
+[32mCreating model: ('PaddleOCR-VL-1.6-0.9B', None, None)[0m
+/mnt/raid0/llm/venvs/paddleocr/lib/python3.12/site-packages/paddlex/inference/models/doc_vlm/predictor.py:545: UserWarning: 'llama-cpp-server' does not support `min_pixels`.
+  warnings.warn(
+/mnt/raid0/llm/venvs/paddleocr/lib/python3.12/site-packages/paddlex/inference/models/doc_vlm/predictor.py:558: UserWarning: 'llama-cpp-server' does not support `max_pixels`.
+  warnings.warn(
+[
+  {
+    "index": 0,
+    "replayed": 15,
+    "network_calls": 0,
+    "expected_sha256": "89023205e21c1733879c42d94d7e553b12ad77fc50f47acbba2744767d2bd21c",
+    "actual_sha256": "89023205e21c1733879c42d94d7e553b12ad77fc50f47acbba2744767d2bd21c",
+    "byte_identical": true
+  },
+  {
+    "index": 34,
+    "replayed": 13,
+    "network_calls": 0,
+    "expected_sha256": "eb6961acace8d214227594a04395e85faf83081e645bdae1a47d921326df1383",
+    "actual_sha256": "eb6961acace8d214227594a04395e85faf83081e645bdae1a47d921326df1383",
+    "byte_identical": true
+  }
+]
+{"schema": "hil15-r11-smoke-supervisor/v1", "elapsed_s": 9.722466620150954, "sampled_peak_tree_rss_bytes": 990842880, "samples": 97, "verified_exited_processes": 0, "verified_exited_threads": 0, "per_process_address_space_limit_bytes": 17179869184, "rss_scope": "sum of sampled resident pages across owned process tree; sampling may miss transients and double-count shared pages", "leader_pid": 2300834, "leader_birth": 154798751, "child_rc": 0, "children_drained": true, "failure": null}

@@ -1,0 +1,32 @@
+{
+  "schema": "df2-13.reuse-plan.v1",
+  "task": "DF2-13",
+  "task_source_sha256": "4100bcd67bacf9cf68719e37aa9fd49dc8a13a885cbaffa092074321a8229811",
+  "source_catalog_sha256": "d3e0c6335fc4b85bcb1c8720140f77e18f4dd51614a12a52a399381d7a810031",
+  "A_prompt": "User: Explain how to safely retry a transient network request in a small service. Give two concrete steps.\nAssistant:",
+  "A_prompt_sha256": "99730b7d59f2f9e09d38093a5a7a755164a16a416d11cb245431f738a035a84d",
+  "B_rule": "A prompt + exact native A content + B suffix; never regenerate A for cold B",
+  "B_suffix": "\nUser: Now give one concise example of an idempotency key.\nAssistant:",
+  "seed": 42,
+  "temperature": 0,
+  "top_k": 1,
+  "A_n_predict": 32,
+  "B_n_predict": 64,
+  "n_slots": 1,
+  "cache_prompt": true,
+  "ctx_checkpoints": 32,
+  "ctx": 4096,
+  "cache_type_k": "f16",
+  "cache_type_v": "f16",
+  "spec_type": "draft-dflash",
+  "draft_n_max": 7,
+  "arms": [
+    "A_warm_server",
+    "B_warm_same_slot",
+    "B_cold_fresh_server"
+  ],
+  "target": "Qwen3.8-27B-Q8_0",
+  "draft": "Qwen3.8-27B-DFlash2-Q8_0",
+  "outcome": "Report B token equality and cache_n/prompt_n, and native context-checkpoint trace vs live/unknown. Positive native draft counts required for a DFlash2-qualified claim. No fixed quality/speed threshold; failure or absent trace is UNKNOWN. No redraw of exposed requests.",
+  "feasibility": "Full CPU 27B plus DFlash2 and long target timing untested. Window remains a budget only."
+}

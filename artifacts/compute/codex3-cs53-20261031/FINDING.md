@@ -1,0 +1,7 @@
+# CS-53: champion CPU barrier source and production build
+
+The frozen champion source tree is at `ffc1bac82eeca6f9099e1ccd9ba49703c460a115`. In `ggml/src/ggml-cpu/ggml-cpu.c:599`, the `GGML_USE_OPENMP` path uses `#pragma omp barrier`. The alternate non-OpenMP path atomically enters the barrier and then loops on `n_barrier_passed`; on x86-64 `ggml_thread_cpu_relax()` is `_mm_pause()` (lines 547–550). That loop contains no scheduler yield or futex call. This is a source finding about that branch, not a claim that every barrier implementation is spin-only.
+
+The actual `kernels/production/cpu` symlink resolves to `kernels/builds/cpu-20260921-ffc1bac82/bin`; its build cache has `GGML_OPENMP:BOOL=ON`. More directly, disassembly of its `libggml-cpu.so` `ggml_barrier` jumps to `GOMP_barrier@plt` for more than one thread, and `ldd` resolves `libgomp.so.1`. Therefore the actual production CPU library uses the OpenMP barrier branch, not the source's alternate `_mm_pause` branch. This establishes compile-time selection and linkage, not the runtime internals of libgomp, its scheduling, latency or a performance result. No executable or production source was changed.
+
+Evidence SHA-256: `ggml-cpu.c` `1b30ebae2f08253ee74aca42cf9458ed6d0126c39cae19d38cd5291945db405c`; actual production `libggml-cpu.so` `3f4edd2fc0f1e78003735be59db987d43c4bc0e6a8f821bc419d7b6f492346c0`; build `CMakeCache.txt` `df24a36f22c009ac43a6e32b32734221c76e99d322d77fcf0be2180bdee31921`.
