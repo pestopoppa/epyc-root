@@ -1481,7 +1481,25 @@ def main(argv=None):
                           help="collected .jsonl (repeatable); v1 and v2 both readable")
     p_report.add_argument("--output", default=None, help="write the rollup JSON here too")
 
+    p_dman = sub.add_parser("delegation-manifest",
+                            help="FM-7: freeze a sha256 manifest of Claude journals / Codex rollouts")
+    p_dman.add_argument("--claude-root", default=None, help="e.g. ~/.claude/projects/-workspace")
+    p_dman.add_argument("--codex-root", default=None, help="e.g. ~/.codex/sessions")
+    p_dman.add_argument("--since", default=None,
+                        help="Codex: include rollouts with mtime at/after this RFC3339 time; "
+                             "both backends: requests before it leave the A windows")
+    p_dman.add_argument("--cutoff", default=None, help="stated cutoff label (default: now, UTC)")
+    p_dman.add_argument("--output", required=True)
+
+    p_dacc = sub.add_parser("delegation-accounting",
+                            help="FM-7: delegation_accounting report over a frozen manifest")
+    p_dacc.add_argument("--manifest", required=True)
+    p_dacc.add_argument("--rows", required=True, help="per main session / per subagent JSONL")
+    p_dacc.add_argument("--output", required=True, help="report JSON")
+
     args = parser.parse_args(argv)
+    if args.cmd in ("delegation-manifest", "delegation-accounting"):
+        return _delegation_main(args)
     stats = {"workflows": 0, "subagents": 0, "subagent_files": 0, "rollout_files": 0,
              "malformed_lines": 0, "no_notification": 0, "parent_rollouts_indexed": 0}
 
@@ -1515,6 +1533,30 @@ def main(argv=None):
         if args.output:
             Path(args.output).parent.mkdir(parents=True, exist_ok=True)
             Path(args.output).write_text(text + "\n", encoding="utf-8")
+    return 0
+
+
+def _delegation_main(args):
+    """FM-7 entry points. The logic lives in delegation_accounting.py and shares
+    no state with the FM-1/FM-5/FM-6 collector above."""
+    try:
+        from scripts.coordination import delegation_accounting as da
+    except ImportError:  # run as a script: scripts/coordination is sys.path[0]
+        import delegation_accounting as da
+    if args.cmd == "delegation-manifest":
+        manifest = da.build_manifest(args.claude_root, args.codex_root, args.since, args.cutoff)
+        da.write_json(args.output, manifest)
+        print(f"manifest: {manifest['totals']['files']} files, {manifest['totals']['bytes']} bytes, "
+              f"{len(manifest['unreadable'])} unreadable -> {args.output}", file=sys.stderr)
+        return 0
+    manifest = json.loads(Path(args.manifest).read_text(encoding="utf-8"))
+    rows, report = da.account(manifest)
+    report["manifest"]["path"] = str(args.manifest)
+    report["manifest"]["sha256"] = hashlib.sha256(Path(args.manifest).read_bytes()).hexdigest()
+    da.write_jsonl(args.rows, rows)
+    da.write_json(args.output, report)
+    print(json.dumps({"claude_A": report["claude"]["A"], "verdict": report["claude"]["verdict"]},
+                     sort_keys=True), file=sys.stderr)
     return 0
 
 
