@@ -1,0 +1,76 @@
+{
+  "status": "PASS_BUILD_ONLY",
+  "rc": 0,
+  "timestamp": "2026-10-31T05:58:10.183451+00:00",
+  "guard_summary": {
+    "command": [
+      "cmake",
+      "--build",
+      "/mnt/raid0/llm/tmp/codex-ni-g16a-build-prep-20261031/build-hip",
+      "--target",
+      "test-backend-ops",
+      "-j",
+      "2"
+    ],
+    "rc": 0,
+    "reason": null,
+    "wall_s": 743.8946982610505,
+    "peak_whole_tree_rss_bytes": 1301749760,
+    "samples": 1401,
+    "live_after": [],
+    "cpus": "128,129",
+    "smt_fallback": true,
+    "active_grants": [
+      "codex3-pip02-paddle-relocatable-r22-pool1-20261030",
+      "codex3-cs22-a1-native-f32-cpu-20261030",
+      "codex3-paw-compact-b-hostfix2-20261031",
+      "codex3-paw-compact-a-hostfix2-20261031",
+      "codex3-kpf181-27b-gpu-r3-20261031"
+    ],
+    "captured_pid_count": 1322
+  },
+  "full_target": "test-backend-ops",
+  "images": {
+    "/mnt/raid0/llm/tmp/codex-ni-g16a-build-prep-20261031/build-cpu/bin/test-backend-ops": {
+      "sha256": "346caf7296d260b4534254c5386292ce2b9021325230a7cad45452bbf23811a9",
+      "bytes": 1418912,
+      "resolved_path": "/mnt/raid0/llm/tmp/codex-ni-g16a-build-prep-20261031/build-cpu/bin/test-backend-ops"
+    },
+    "/mnt/raid0/llm/tmp/codex-ni-g16a-build-prep-20261031/build-hip/bin/test-backend-ops": {
+      "sha256": "1f4b011550a36c94e835024790bda5cd32ccb7ac90bd73222f887e8d1e5ccd73",
+      "bytes": 1443488,
+      "resolved_path": "/mnt/raid0/llm/tmp/codex-ni-g16a-build-prep-20261031/build-hip/bin/test-backend-ops"
+    },
+    "/mnt/raid0/llm/tmp/codex-ni-g16a-build-prep-20261031/build-hip/bin/libggml-hip.so": {
+      "sha256": "2c944080746d671414d0cf80fa17e60aca3082e7706a26a973751395d7eb2b56",
+      "bytes": 87240584,
+      "resolved_path": "/mnt/raid0/llm/tmp/codex-ni-g16a-build-prep-20261031/build-hip/bin/libggml-hip.so.0.16.0"
+    },
+    "/mnt/raid0/llm/tmp/codex-ni-g16a-build-prep-20261031/build-hip/bin/libggml-base.so": {
+      "sha256": "4a48792a20b60ff4f3a585303bebb87c8be00de063115b8ba897095f21d3e387",
+      "bytes": 939848,
+      "resolved_path": "/mnt/raid0/llm/tmp/codex-ni-g16a-build-prep-20261031/build-hip/bin/libggml-base.so.0.16.0"
+    },
+    "/mnt/raid0/llm/tmp/codex-ni-g16a-build-prep-20261031/build-hip/bin/libggml.so": {
+      "sha256": "d88f6535c3862b5d6c39549737c02613d7db286fb4e50332de7cf90368b2d06f",
+      "bytes": 59440,
+      "resolved_path": "/mnt/raid0/llm/tmp/codex-ni-g16a-build-prep-20261031/build-hip/bin/libggml.so.0.16.0"
+    },
+    "/mnt/raid0/llm/tmp/codex-ni-g16a-build-prep-20261031/build-hip/bin/libggml-cpu.so": {
+      "sha256": "27b098a37a028bf189d0460992ac2b37effd80491fa0eeb12b9dfe14e67f00eb",
+      "bytes": 2982176,
+      "resolved_path": "/mnt/raid0/llm/tmp/codex-ni-g16a-build-prep-20261031/build-hip/bin/libggml-cpu.so.0.16.0"
+    },
+    "/mnt/raid0/llm/tmp/codex-ni-g16a-build-prep-20261031/build-hip/bin/libllama.so": {
+      "sha256": "53a84fc8bfd1b40a4a3579b0c65a765d592c7aec8c436ac828e13f82ef622feb",
+      "bytes": 4522000,
+      "resolved_path": "/mnt/raid0/llm/tmp/codex-ni-g16a-build-prep-20261031/build-hip/bin/libllama.so.0.0.10304"
+    }
+  },
+  "source_feature_presence": true,
+  "strict_public_entry_smoke": "/mnt/raid0/llm/tmp/codex-ni-g16a-build-prep-20261031/calendar/QUALIFICATION.json",
+  "native_run": false,
+  "numerical_qualification": "PENDING",
+  "greedy_AB": "PENDING",
+  "production_promotion": false
+}

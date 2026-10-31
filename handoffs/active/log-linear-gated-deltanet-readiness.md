@@ -1,6 +1,7 @@
 # Log-Linear Gated DeltaNet — Readiness Tracker
 
 **Status**: **GATES FIRED 2026-08-12** — all three activation gates are satisfied; this is no longer a monitoring-only tracker. See [§ Activation Evidence — 2026-08-12](#activation-evidence--2026-08-12).
+**Scratch**: `/mnt/raid0/llm/tmp/codex-ni-g16a-build-prep-20261031/` (retain with `KEEP` through G16 greedy A and B and coordinated champion integration) · `/mnt/raid0/llm/tmp/codex-ni-g16a-build-checkpoint-20261031/` (checkpoint patch and notification; clean after commit).
 **Created**: 2026-04-14 (via research intake deep dive)
 **Updated**: 2026-08-12 (gates re-checked against the live sources; all three fired)
 **Categories**: ssm_hybrid, context_extension, inference_serving
@@ -477,6 +478,12 @@ What is new here, and what determines what G16 must actually add, is the 50-case
         (`gated_delta_net.cu:608-610`), so setting it as an env var does nothing.
       Require `GGML_CUDA_DELTANET_CHUNKED_DEBUG=1` stderr showing `[gdn] chunked dispatch` for every long case in the
       run log. A G16 pass without that trace clears nothing. Source: intake-1434#record.
+    - **Build prerequisite complete (2026-10-31):** the exact two-file C3 candidate built the full
+      `test-backend-ops` target for CPU (152.53 s; 1.32 GB peak whole-tree RSS) and explicit gfx90a HIP
+      (743.895 s; 1.30 GB peak). It includes the two-sequence (`n_seqs=2`) T=2048/4096/8192 variants;
+      the original eight shapes and unrelaxed `1e-7` NMSE threshold are unchanged. This is build-only:
+      native dispatch trace/numerical qualification, greedy comparison, keep and production promotion
+      remain open. Evidence: `artifacts/engineering/g16a-build-prep-20261031/`.
 - [ ] **G16b — diagnostic arm if a dispatch-proven G16 fails 1e-7.** Rerun the failing shapes on a test build that
       forces the chunked kernel's scalar f32 path: `FGDN_TILE_MMA` undefined, with the host arch gate still admitting
       it (`gated_delta_net.cu:252-267, 305-321, 406-416`). This separates f16-operand GEMM error from pure
