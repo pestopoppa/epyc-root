@@ -97,3 +97,7 @@ Research implementation `6918763bd7c8c5259a8da8be2832c564707719b7` (remote main 
 ### Prior-work evidence hygiene: R23-66
 
 - Evidence-only integrity repair for R23-66: Published leaf constants and actual cold-import tests cover both import orders plus bench-only loading without serving. Existing78 tests/13 subtests pass; constants/reexports and unit semantics are unchanged. Original task text and dates retained; exact implementation commits and durable Git evidence are attached. This is hygiene, not new code throughput or today quota. [no-belief: task-evidence integrity repair] Durable evidence: `artifacts/compute/task-evidence-repair-20261031/r23-66/EVIDENCE.json`. Quota credit: 0.
+
+### Prior-work evidence hygiene: R24-9
+
+- Evidence-only integrity repair for R24-9: Existing10 native-comparison-object controls cover prior/new effect journaling and MeasurementInvalid beyond native floor; existing11-case CPU followup fixes code-manifest backend selection. Missing identities/floors remain unknown, no historical regrade or live excursion claim. Original task text and dates retained; exact implementation commits and durable Git evidence are attached. This is hygiene, not new code throughput or today quota. [no-belief: task-evidence integrity repair] Durable evidence: `artifacts/compute/task-evidence-repair-20261031/r24-9/EVIDENCE.json`. Quota credit: 0.
