@@ -2046,6 +2046,8 @@ Owner: RTG-57 (`kv-unified-stack-rollout.md`).
 
 ## VB-SPEECH-CONV-1 — conversation-stack voice measurements (filed 2026-09-24, speech vision session)
 
+- [ ] **VB-SPEECH-CONV-1F-CS47-VAP — wire prospective CS-47 VAP stereo native capture.** Extend the existing conversation-stack Speech writer/projector to retain original selection/confirmation clip and channel PCM identities, source, both checkpoint and CPC weights, runtime, context and causal probability traces, per-attempt statuses, failures and unknowns, plus placement/grant; freeze selection before single confirmation scoring. Add VAP to the end-of-turn arm vocabulary without a new ladder, preserve `ClaimTuple.grade()` and require a real planning-context canary. Synthetic evidence ranks/rejects only, never establishes human advance.
+
 - [ ] **VB-SPEECH-CONV-STT2-NATIVE — wire converted-asset CPU smoke native records before belief-gated use.** Extend the existing conversation-stack source and writer for prospective CS-8.STT2 separately converted Parakeet-v3 F16 and Whisper-large-v3-turbo F16 per-clip records. Bind original PCM/manifest, immutable model acquisition/provenance, runner source/binary/ggml linkage, CPU backend/mapping/KFD observation, grant/argv/decode options, per-clip status/transcript/raw digests, partial/failure and unknown denominator. Comparison to exact sealed reference is descriptive; no production-weight equivalence, STT3, WER or timing qualification. Preserve empty protocol/unknown co-tenancy when applicable. Existing ClaimTuple.grade decides; no second ladder or historical warrant. Require native record/tamper/incomplete fixtures and planning-context canary before claiming wired. Packets /mnt/raid0/llm/tmp/refactor-01a16fc3/speech-next-runners-ready/.
 
 The operator ratified the speech vision on 2026-09-24. It lives in
@@ -2366,6 +2368,7 @@ RI-16's routing `stage_ms` is covered by VB-ROUTE-LAT above, not by a new task.
     correctness check, coherence at production prompt length, acceptance. Must carry the kernel store build id
     (`gpu-20260921-ffc1bac82`), the drafter GGUF sha and the full argv.
   - **Qwen3-VL-30B on CPU** (S-18 in `multimodal-pipeline.md`): decode tok/s and MMMU parity at NUMA_HALF_A `-t 48`.
+    - [ ] Project S18 prospective native512-token/60-item records, with exact denominator, frozen source/model/cohort identity and CPU placement into the existing serving source class; partial/runtime-smoke records must not imply complete MMMU measurement; verify planning-context canary before marking wired. No second grading ladder, no invented retrospective warrant.
   - Also: the measured DFlash2 VRAM components in `/mnt/raid0/llm/tmp/kv-sizing-8083-20261003/DECISION.md` §1.3
     (drafter weights, GDN state per draft depth, KQ-mask slope) are a capacity source for SSU-F3's claim tuple.
   - Add one source-table row per producer in `scripts/vidya/adapters/README.md` (row text prepared for the owning

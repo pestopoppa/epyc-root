@@ -1,0 +1,94 @@
+{
+  "terminal_at": "2026-10-31T08:02:39.691351+00:00",
+  "normal": {
+    "task": "S-18 Qwen3-VL-30B CPU first-start",
+    "mode": "smoke",
+    "model_sha256": "7bd52989f39ddca3dde36edb902fef72c5fde81e9211ca0f5ceca0119bd16d9c",
+    "mmproj_sha256": "a31d2c298f28735f6d27847851b8e3662ceb29cd6a1e66aa13d54b17f45aefca",
+    "model_edge_pin": {
+      "size_bytes": 18556687200,
+      "first_last_64m_sha256": "cf1c339c5900c1f7be380595b4b28768754e649fc17f91e23b4d3d15780defbd"
+    },
+    "mmproj_edge_pin": {
+      "size_bytes": 1083499584,
+      "first_last_64m_sha256": "a576984c7c3c2f1447167ef9d1b62700f438d839bca75838a52321e91f8bfa83"
+    },
+    "port": 19931,
+    "max_tokens": 4,
+    "temperature": 0.2,
+    "seed": 42,
+    "cpu_backend": true,
+    "request_ok": true,
+    "peak_sampled_server_rss_bytes": 35889631232,
+    "r11_admission": {
+      "checked_unix": 1793433304.985809,
+      "active_grants": 0,
+      "active_grant_ids": [],
+      "job_cpus": [
+        96,
+        97
+      ]
+    },
+    "rows_written": 1,
+    "expected_rows": 1,
+    "partial": false,
+    "wall_s_including_drain": 221.43042720784433,
+    "exit_code": 0,
+    "drained": true,
+    "control": "normal",
+    "active_cutoff": false,
+    "server_log": "/mnt/raid0/llm/tmp/codex-ni-next-ranked-cpu-prep-20261031/smoke-normal/server.log",
+    "results": "/mnt/raid0/llm/tmp/codex-ni-next-ranked-cpu-prep-20261031/smoke-normal/results.jsonl"
+  },
+  "cutoff": {
+    "task": "S-18 Qwen3-VL-30B CPU first-start",
+    "mode": "smoke",
+    "model_sha256": "7bd52989f39ddca3dde36edb902fef72c5fde81e9211ca0f5ceca0119bd16d9c",
+    "mmproj_sha256": "a31d2c298f28735f6d27847851b8e3662ceb29cd6a1e66aa13d54b17f45aefca",
+    "model_edge_pin": {
+      "size_bytes": 18556687200,
+      "first_last_64m_sha256": "cf1c339c5900c1f7be380595b4b28768754e649fc17f91e23b4d3d15780defbd"
+    },
+    "mmproj_edge_pin": {
+      "size_bytes": 1083499584,
+      "first_last_64m_sha256": "a576984c7c3c2f1447167ef9d1b62700f438d839bca75838a52321e91f8bfa83"
+    },
+    "port": 19932,
+    "max_tokens": 4,
+    "temperature": 0.2,
+    "seed": 42,
+    "cpu_backend": true,
+    "request_ok": true,
+    "peak_sampled_server_rss_bytes": 35891449856,
+    "r11_admission": {
+      "checked_unix": 1793433526.6759715,
+      "active_grants": 5,
+      "active_grant_ids": [
+        "codex3-cs8-stt2-transcribe-cpu-20261030.grant",
+        "codex3-cs8-stt4-transcribe-hip-build-20261031.grant",
+        "codex3-kpf182-native-build-both-20261031.grant",
+        "codex3-paw-compact-b-hostfix2-20261031.grant",
+        "refactor-c6-gpu-property-diagnostic-729599d69-20261031.grant"
+      ],
+      "job_cpus": [
+        96,
+        97
+      ]
+    },
+    "rows_written": 1,
+    "expected_rows": 2,
+    "partial": true,
+    "wall_s_including_drain": 233.18515593814664,
+    "exit_code": 75,
+    "drained": true,
+    "control": "cutoff",
+    "active_cutoff": true,
+    "server_log": "/mnt/raid0/llm/tmp/codex-ni-next-ranked-cpu-prep-20261031/smoke-cutoff/server.log",
+    "results": "/mnt/raid0/llm/tmp/codex-ni-next-ranked-cpu-prep-20261031/smoke-cutoff/results.jsonl"
+  },
+  "cutoff_public_rc": 75,
+  "source_manifest_unchanged": true,
+  "source_hash_check_rc": 0,
+  "normal_public_receipt": "/mnt/raid0/llm/tmp/codex-ni-next-ranked-cpu-prep-20261031/LAUNCHER-TERMINAL-codex-ni-s18-qwenvl-cpu-r1-20261031-normal.json",
+  "cutoff_public_receipt": "/mnt/raid0/llm/tmp/codex-ni-next-ranked-cpu-prep-20261031/LAUNCHER-TERMINAL-codex-ni-s18-qwenvl-cpu-r1-20261031-cutoff.json"
+}

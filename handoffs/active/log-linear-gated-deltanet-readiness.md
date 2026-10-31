@@ -470,6 +470,21 @@ What is new here, and what determines what G16 must actually add, is the 50-case
       [mi210-big-model-and-acceleration-roadmap.md](mi210-big-model-and-acceleration-roadmap.md);
       neither may proceed on a chunked kernel this row has not cleared.
       Both compute planes were held by other sessions through this wave — **filed, not run**.
+    - **Greedy diagnostic READY (2026-10-31):** the separate production-recipe-aligned HIP
+      `97a82855...` passed fresh original eight-case `1e-7` controls. The original meaningful FA-on
+      2048-token two-slot comparison completed with finite/nonconstant output and real chunked dispatch:
+      first IDs matched, full UTF8 bytes **FAIL** (slot0 index45:198 vs1049; slot1 index109:2824 vs1326).
+      Preserve the counterexample; execution completion is separate from scientific verdict. A128-token
+      same-arm prefix replay varied slot0 in both arms, while slot1 matched; no unique GDN causality or
+      statistical inference follows. [belief: cc]
+      MAIN approved and NI published the full diagnostic manifest
+      `/mnt/raid0/llm/tmp/compute-flags/ready/codex-ni-g16-greedy-ab-aligned-r2-20261031.json`
+      (SHA256 `60b2785db876652ebd6d232ec3c3ed5dff4522ca8872b40e157eb400d65dbbe5`), published unarmed at07:57Z; keeper recorded ARMED at07:58:46Z.
+      The new entry explicitly reuses immutable-pinned original2048 source/input/image/raw provenance and must
+      capture8192/16384/24576; all four ledger rows are required. Real8192 compute cutoff returned75/partial
+      with drained descendants; current validator/grant_ok actual-PID checks passed. Source/build/raw
+      custody has KEEP through greedy and coordinated champion integration. G16/keep/promotion remain
+      open, and G16b was not triggered. [Preparation capsule](../../artifacts/compute/codex-ni-g16-greedy-aligned-r2-20261031/README.md).
 - [x] **G16a — make G16 fire the chunked kernel on MI210, or it is vacuous.** The H=32/d=128 long-prompt eval
       cases in `719a8529d` use `n_seqs=1`. That gives 256 blocks, below 3×nsm = 312, so on MI210 they assert the
       RECURRENT kernel against CPU. Fix it either way:

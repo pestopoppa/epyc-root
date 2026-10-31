@@ -1,0 +1,26 @@
+{
+  "created_at": "2026-10-31T07:53:07.298296+00:00",
+  "operational_authority": [
+    "/mnt/raid0/llm/tmp/compute-flags/OWNER-ORDER-20261029.md",
+    "/mnt/raid0/llm/tmp/compute-flags/LOOP-CONTRACT.md"
+  ],
+  "engine_custody_source": "/mnt/raid0/llm/tmp/codex-ni-rus3-runprep-20261028/runner-private",
+  "engine_adoption": "known DS41 final07:26 engine handed off by MAIN; RUS3_DIAGNOSTIC=1 in actual public exec; no edits to engine",
+  "research_origin_main_sha": "067aaee4646684feb52b644f3f70b0b0a78623b1",
+  "harness_source": "origin/main:data/vision_mmmu_cutover_20260731/harness.py",
+  "exact_recipe_provenance": {
+    "server_flags": "harness.py:243-263 --jinja --log-colors off --image-min-tokens1024 --cache-ram0",
+    "request": "harness.py:163-181 max_tokens512 temperature.2 seed42",
+    "sticky_no_think": "harness.py:287,318-326 enable_thinkingfalse only after empty content plus nonempty reasoning; persists rest arm",
+    "prompt_and_scorer": "harness.py build_prompt and extract_letter imported unchanged"
+  },
+  "files": {
+    "engine/filler_run13.sh": "5f970f501851e1f12c6cca75e60eeac0456425f014d0e89273aa55ee0ca817c4",
+    "engine/filler_lib.sh": "241e522f4a7d7208e7485834c90d77676434a9bc88fd253575e034ad2934237c",
+    "engine/dryrun_check.py": "aa9ed900be5fb7f3efca043bfddb2ac8963964710db0b702c7491729a74f8542",
+    "harness.py": "1334461599c6fa2a24a1741f58b43b396239df66b358788d128b10056d1017cd"
+  },
+  "validator_path": "/mnt/raid0/llm/tmp/compute-flags/validate_fillers.py",
+  "validator_sha256": "7ddfaa6b65de45a37d5f90bb9a6d186a071756977fac91d71aced55c053cd30e",
+  "grant_ok_sha256": "6a2467d67da413bf12a702a731b0b11f5715e01a5143584dc6df47761788ebba"
+}

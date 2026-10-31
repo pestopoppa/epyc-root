@@ -1,0 +1,117 @@
+{
+  "status": "PROPOSED qualified",
+  "source_hash_check": 0,
+  "traces": {
+    "normal": {
+      "samples": 179,
+      "max_rss": 35889631232,
+      "active_grant_count_min": 0,
+      "active_grant_count_max": 5,
+      "active_grant_ids": [
+        "codex3-cs8-stt2-transcribe-cpu-20261030.grant",
+        "codex3-cs8-stt4-transcribe-hip-build-20261031.grant",
+        "codex3-kpf182-native-build-both-20261031.grant",
+        "codex3-paw-compact-b-hostfix2-20261031.grant",
+        "refactor-c6-gpu-property-diagnostic-729599d69-20261031.grant"
+      ],
+      "first_sample": {
+        "checked_unix": 1793433305.3252952,
+        "active_grants": 0,
+        "active_grant_ids": [],
+        "job_cpus": [
+          96,
+          97
+        ]
+      },
+      "last_sample": {
+        "checked_unix": 1793433524.7562158,
+        "active_grants": 5,
+        "active_grant_ids": [
+          "codex3-cs8-stt2-transcribe-cpu-20261030.grant",
+          "codex3-cs8-stt4-transcribe-hip-build-20261031.grant",
+          "codex3-kpf182-native-build-both-20261031.grant",
+          "codex3-paw-compact-b-hostfix2-20261031.grant",
+          "refactor-c6-gpu-property-diagnostic-729599d69-20261031.grant"
+        ],
+        "job_cpus": [
+          96,
+          97
+        ]
+      },
+      "captured_pid": 3048895,
+      "raw_process_witness": "/mnt/raid0/llm/tmp/codex-ni-next-ranked-cpu-prep-20261031/smoke-normal/process-witness.json",
+      "raw_maps": "/mnt/raid0/llm/tmp/codex-ni-next-ranked-cpu-prep-20261031/smoke-normal/server.process-maps"
+    },
+    "cutoff": {
+      "samples": 165,
+      "max_rss": 35891449856,
+      "active_grant_count_min": 2,
+      "active_grant_count_max": 5,
+      "active_grant_ids": [
+        "codex3-cs8-stt2-transcribe-cpu-20261030.grant",
+        "codex3-cs8-stt4-transcribe-hip-build-20261031.grant",
+        "codex3-kpf182-native-build-both-20261031.grant",
+        "codex3-paw-compact-b-hostfix2-20261031.grant",
+        "refactor-c6-gpu-property-diagnostic-729599d69-20261031.grant"
+      ],
+      "first_sample": {
+        "checked_unix": 1793433527.3282928,
+        "active_grants": 5,
+        "active_grant_ids": [
+          "codex3-cs8-stt2-transcribe-cpu-20261030.grant",
+          "codex3-cs8-stt4-transcribe-hip-build-20261031.grant",
+          "codex3-kpf182-native-build-both-20261031.grant",
+          "codex3-paw-compact-b-hostfix2-20261031.grant",
+          "refactor-c6-gpu-property-diagnostic-729599d69-20261031.grant"
+        ],
+        "job_cpus": [
+          96,
+          97
+        ]
+      },
+      "last_sample": {
+        "checked_unix": 1793433754.680048,
+        "active_grants": 2,
+        "active_grant_ids": [
+          "codex3-paw-compact-b-hostfix2-20261031.grant",
+          "refactor-c6-gpu-property-diagnostic-729599d69-20261031.grant"
+        ],
+        "job_cpus": [
+          96,
+          97
+        ]
+      },
+      "captured_pid": 3326960,
+      "raw_process_witness": "/mnt/raid0/llm/tmp/codex-ni-next-ranked-cpu-prep-20261031/smoke-cutoff/process-witness.json",
+      "raw_maps": "/mnt/raid0/llm/tmp/codex-ni-next-ranked-cpu-prep-20261031/smoke-cutoff/server.process-maps"
+    }
+  },
+  "no_surviving_captured_server_pids": true,
+  "current_grant_class_corroboration": {
+    "codex3-cs8-stt2-transcribe-cpu-20261030.grant": {
+      "current_recheck_rc": 0,
+      "current_recheck_class": "block-correctness",
+      "scope": "post-run corroboration only; in-window guard decisions are pinned code plus native trace"
+    },
+    "codex3-cs8-stt4-transcribe-hip-build-20261031.grant": {
+      "current_recheck_rc": 0,
+      "current_recheck_class": "block-correctness",
+      "scope": "post-run corroboration only; in-window guard decisions are pinned code plus native trace"
+    },
+    "codex3-kpf182-native-build-both-20261031.grant": {
+      "current_recheck_rc": 0,
+      "current_recheck_class": "block-correctness",
+      "scope": "post-run corroboration only; in-window guard decisions are pinned code plus native trace"
+    },
+    "codex3-paw-compact-b-hostfix2-20261031.grant": {
+      "current_recheck_rc": 0,
+      "current_recheck_class": "block-correctness",
+      "scope": "post-run corroboration only; in-window guard decisions are pinned code plus native trace"
+    },
+    "refactor-c6-gpu-property-diagnostic-729599d69-20261031.grant": {
+      "current_recheck_rc": 0,
+      "current_recheck_class": "block-correctness",
+      "scope": "post-run corroboration only; in-window guard decisions are pinned code plus native trace"
+    }
+  }
+}

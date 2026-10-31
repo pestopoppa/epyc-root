@@ -1,0 +1,237 @@
+{
+  "id": "codex-ni-s18-qwenvl-cpu-r1-20261031",
+  "owner": "codex-ni",
+  "priority_rank": 36,
+  "priority_source": {
+    "path": "handoffs/active/backlog-priority.json",
+    "container": "rows (dict)",
+    "key": "INF-41",
+    "tier": 6,
+    "rank": 36,
+    "score": 0.7977,
+    "classification": "inference-ready",
+    "basis": "S-18 \u2014 measure Qwen3-VL-30B on CPU the first time it is started",
+    "task_identity": "handoffs/active/multimodal-pipeline.md S18 open checkbox; task text takes precedence over legacy INF-41 key",
+    "root_origin_main": "453e28240f6674e8cfe299ade2e012383b91ed7a",
+    "git_object": "origin/main:handoffs/active/backlog-priority.json",
+    "snapshot": "/mnt/raid0/llm/tmp/codex-ni-next-ranked-cpu-prep-20261031/BACKLOG-PRIORITY-ORIGIN.json",
+    "snapshot_sha256": "31f4bf3c68eeaf664b26415a511bd9844ef59df577f7fdc37c3aa55fd02e6bc2",
+    "exact_row": {
+      "kind": "inference-ready",
+      "tier": 6,
+      "rank": 36,
+      "score": 0.7977,
+      "basis": "T6 inference-ready best open item (I): S-18 \u2014 measure Qwen3-VL-30B on CPU the first time it is started (STACKCHG-DFLASH2 PACKAGE ",
+      "unblocks": [
+        "INF-59",
+        "INF-77",
+        "INF-78",
+        "INF-81",
+        "REV-02",
+        "REV-07",
+        "RTG-30",
+        "RTG-57",
+        "RTG-58",
+        "UFH-12",
+        "UFH-14"
+      ],
+      "blocker": ""
+    }
+  },
+  "regions": "0-47,96-143",
+  "fixed_region_reason": "Original S18 NUMA_HALF_A 48 physical cores plus SMT, NUMA interleave0,1 and40GiB/node pre-eviction; original first-on-demand CPU measurement requires this shared NUMA placement; no quarter substitution",
+  "min_window_s": 1800,
+  "window_s": 86400,
+  "gib": 48,
+  "launcher": {
+    "path": "/mnt/raid0/llm/tmp/codex-ni-next-ranked-cpu-prep-20261031/run_full.sh",
+    "sha256": "02629a94cc20e2f17a9d630a2e26d90dcaeda43b73bf1d5e277e4b4a532490ab"
+  },
+  "job": {
+    "path": "/mnt/raid0/llm/tmp/codex-ni-next-ranked-cpu-prep-20261031/s18_job.py",
+    "sha256": "add630341e96f07bfb6b30f408b2ab1195566e5eef5612b5613dbb653e729f54"
+  },
+  "result_path": "/mnt/raid0/llm/tmp/codex-ni-next-ranked-cpu-prep-20261031/run/run.json",
+  "decision_rule": "Descriptive CPU first-start decode throughput (higher is faster) and exact 60-item MMMU paired accuracy (higher is better); paired MI210 36/60=60.0%, original max_tokens=512 temperature=.2 seed=42; historical full MI210 159/250=63.6% is separate; no adoption threshold or equivalence claim.",
+  "class": "diagnostic",
+  "booking_class": "block-timing-pairable",
+  "enrollment": "n/a: diagnostic",
+  "hold": null,
+  "scratch_root": "/mnt/raid0/llm/tmp/codex-ni-next-ranked-cpu-prep-20261031",
+  "keep": [
+    "*.json",
+    "*.jsonl",
+    "*.md",
+    "*.py",
+    "*.sh",
+    "*.sha256",
+    "*.out",
+    "engine/*",
+    "dataset/*",
+    "dataset/images/*",
+    "smoke-*/*",
+    "run/*",
+    "smoke/*",
+    "development-normal-64/*",
+    "development-normal-4-pre-alias/*",
+    "ws58-launcher.out",
+    "KEEP",
+    "source_custody/*",
+    "failedsmoke/attempt-*/*",
+    "attempt-*/*",
+    "BUS-OUTAGE.flag",
+    "state/*.lock",
+    "state/*.pids"
+  ],
+  "est_output_GiB": 1,
+  "min_effect": "n/a (descriptive diagnostic; no adoption decision)",
+  "log_consumer": "/mnt/raid0/llm/tmp/codex-ni-next-ranked-cpu-prep-20261031/log_consumer.py",
+  "source_manifest": {
+    "path": "/mnt/raid0/llm/tmp/codex-ni-next-ranked-cpu-prep-20261031/SOURCES.sha256",
+    "sha256": "14cd3db8ea24e3bd704c80476ad028da3e6078e94237a787acf2bcce9afb97e7",
+    "unchanged_through_both_smokes": true
+  },
+  "source_main_sha": "453e28240f6674e8cfe299ade2e012383b91ed7a",
+  "launcher_log": "/mnt/raid0/llm/tmp/codex-ni-next-ranked-cpu-prep-20261031/ws58-launcher.out",
+  "ports": [
+    19929
+  ],
+  "stop": "/mnt/raid0/llm/tmp/codex-ni-next-ranked-cpu-prep-20261031/STOP",
+  "process_limit_GiB": 48,
+  "log_consumer_sha256": "3d24e82be7a5aa4e72eaaafcc01541f15204b083716160efd569085775bb9a18",
+  "smoke": {
+    "normal": {
+      "task": "S-18 Qwen3-VL-30B CPU first-start",
+      "mode": "smoke",
+      "model_sha256": "7bd52989f39ddca3dde36edb902fef72c5fde81e9211ca0f5ceca0119bd16d9c",
+      "mmproj_sha256": "a31d2c298f28735f6d27847851b8e3662ceb29cd6a1e66aa13d54b17f45aefca",
+      "model_edge_pin": {
+        "size_bytes": 18556687200,
+        "first_last_64m_sha256": "cf1c339c5900c1f7be380595b4b28768754e649fc17f91e23b4d3d15780defbd"
+      },
+      "mmproj_edge_pin": {
+        "size_bytes": 1083499584,
+        "first_last_64m_sha256": "a576984c7c3c2f1447167ef9d1b62700f438d839bca75838a52321e91f8bfa83"
+      },
+      "port": 19931,
+      "max_tokens": 4,
+      "temperature": 0.2,
+      "seed": 42,
+      "cpu_backend": true,
+      "request_ok": true,
+      "peak_sampled_server_rss_bytes": 35889631232,
+      "r11_admission": {
+        "checked_unix": 1793433304.985809,
+        "active_grants": 0,
+        "active_grant_ids": [],
+        "job_cpus": [
+          96,
+          97
+        ]
+      },
+      "rows_written": 1,
+      "expected_rows": 1,
+      "partial": false,
+      "wall_s_including_drain": 221.43042720784433,
+      "exit_code": 0,
+      "drained": true,
+      "control": "normal",
+      "active_cutoff": false,
+      "server_log": "/mnt/raid0/llm/tmp/codex-ni-next-ranked-cpu-prep-20261031/smoke-normal/server.log",
+      "results": "/mnt/raid0/llm/tmp/codex-ni-next-ranked-cpu-prep-20261031/smoke-normal/results.jsonl"
+    },
+    "cutoff": {
+      "task": "S-18 Qwen3-VL-30B CPU first-start",
+      "mode": "smoke",
+      "model_sha256": "7bd52989f39ddca3dde36edb902fef72c5fde81e9211ca0f5ceca0119bd16d9c",
+      "mmproj_sha256": "a31d2c298f28735f6d27847851b8e3662ceb29cd6a1e66aa13d54b17f45aefca",
+      "model_edge_pin": {
+        "size_bytes": 18556687200,
+        "first_last_64m_sha256": "cf1c339c5900c1f7be380595b4b28768754e649fc17f91e23b4d3d15780defbd"
+      },
+      "mmproj_edge_pin": {
+        "size_bytes": 1083499584,
+        "first_last_64m_sha256": "a576984c7c3c2f1447167ef9d1b62700f438d839bca75838a52321e91f8bfa83"
+      },
+      "port": 19932,
+      "max_tokens": 4,
+      "temperature": 0.2,
+      "seed": 42,
+      "cpu_backend": true,
+      "request_ok": true,
+      "peak_sampled_server_rss_bytes": 35891449856,
+      "r11_admission": {
+        "checked_unix": 1793433526.6759715,
+        "active_grants": 5,
+        "active_grant_ids": [
+          "codex3-cs8-stt2-transcribe-cpu-20261030.grant",
+          "codex3-cs8-stt4-transcribe-hip-build-20261031.grant",
+          "codex3-kpf182-native-build-both-20261031.grant",
+          "codex3-paw-compact-b-hostfix2-20261031.grant",
+          "refactor-c6-gpu-property-diagnostic-729599d69-20261031.grant"
+        ],
+        "job_cpus": [
+          96,
+          97
+        ]
+      },
+      "rows_written": 1,
+      "expected_rows": 2,
+      "partial": true,
+      "wall_s_including_drain": 233.18515593814664,
+      "exit_code": 75,
+      "drained": true,
+      "control": "cutoff",
+      "active_cutoff": true,
+      "server_log": "/mnt/raid0/llm/tmp/codex-ni-next-ranked-cpu-prep-20261031/smoke-cutoff/server.log",
+      "results": "/mnt/raid0/llm/tmp/codex-ni-next-ranked-cpu-prep-20261031/smoke-cutoff/results.jsonl"
+    },
+    "ran_at": "2026-10-31T07:58:46.289137+00:00",
+    "regions": "96-97",
+    "model": "/mnt/raid0/llm/models/lmstudio-community/Qwen3-VL-30B-A3B-Instruct-GGUF/Qwen3-VL-30B-A3B-Instruct-Q4_K_M.gguf",
+    "first_request_ok": true,
+    "result_writer_ok": true,
+    "exit_ok": true,
+    "wall_s": 221.53253702097572,
+    "log": "/mnt/raid0/llm/tmp/codex-ni-next-ranked-cpu-prep-20261031/qualified-normal.out",
+    "runtime_only": true,
+    "smoke_max_tokens": 4,
+    "primary_max_tokens": 512,
+    "cutoff_ok": true,
+    "normal_record": "/mnt/raid0/llm/tmp/codex-ni-next-ranked-cpu-prep-20261031/smoke-normal/run.json",
+    "cutoff_record": "/mnt/raid0/llm/tmp/codex-ni-next-ranked-cpu-prep-20261031/smoke-cutoff/run.json",
+    "normal_public_wall_s": 221.53253702097572,
+    "normal_public_rc": 0,
+    "cutoff_public_wall_s": 233.27807809016667,
+    "cutoff_public_rc": 75
+  },
+  "feasibility": {
+    "path": "/mnt/raid0/llm/tmp/codex-ni-next-ranked-cpu-prep-20261031/FEASIBILITY.json",
+    "record": {
+      "scope": "planning estimate only; measured two-SMT smoke rate, not projected t48 benchmark",
+      "cohort_n": 60,
+      "native_baseline_prompt_tokens_available": 60,
+      "sum_prompt_tokens": 70881,
+      "max_prompt_tokens": 1577,
+      "decode_cap_per_item": 512,
+      "measured_decode_tok_s_64_token_smoke": 11.66779668062123,
+      "measured_prompt_tok_s_4_token_smoke": 5.442483440064126,
+      "estimate_s": 15716.537940286726,
+      "requested_window_s": 86400,
+      "formula": "sum historical paired prompt_tokens / measured 2CPU prompt_tok_s +60*512/measured2CPUdecode_tok_s +60s launch budget",
+      "limitations": "input counts replay historical matched profile; allitems may hit512; throughput varies across images/questions, so this is feasibility planning, not a confidence bound or t48 speed prediction"
+    }
+  },
+  "qualification_terminal": {
+    "path": "/mnt/raid0/llm/tmp/codex-ni-next-ranked-cpu-prep-20261031/QUALIFICATION-TERMINAL.json",
+    "sha256": "0cbcfb71097a5e52333569d106c1d00544efc8235c599bab0368bb681ceaaa40"
+  },
+  "noarg_admission": {
+    "path": "/mnt/raid0/llm/tmp/codex-ni-next-ranked-cpu-prep-20261031/NOARG-ADMISSION.json",
+    "actual_pid_only": true,
+    "validator_and_grant_ok": true,
+    "no_grant_written": true
+  },
+  "scope": "Original S18 measurement prepared; actual t48/60-item/512-token native run and VB-SERVING-DF2 projection/canary remain pending. Runtime-only smokes do not complete original S18.",
+  "custody": "/mnt/raid0/llm/tmp/codex-ni-next-ranked-cpu-prep-20261031/source_custody/CUSTODY.json"
+}

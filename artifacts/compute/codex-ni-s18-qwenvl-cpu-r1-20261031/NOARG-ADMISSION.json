@@ -1,0 +1,39 @@
+{
+  "bridge_pid": 3054609,
+  "birth": "155585273",
+  "engine_pid": 3054610,
+  "engine_cmdline": "/bin/bash /mnt/raid0/llm/tmp/codex-ni-next-ranked-cpu-prep-20261031/engine/filler_run13.sh --id codex-ni-s18-qwenvl-cpu-r1-20261031 --class cpu --role build --gpu-quiet none --claim-cpus 0-47,96-143 --min-window 1800 --stop /mnt/raid0/llm/tmp/codex-ni-next-ranked-cpu-prep-20261031/STOP --workdir /mnt/raid0/llm/tmp/codex-ni-next-ranked-cpu-prep-20261031 --port 19929 --cmd /bin/bash /mnt/raid0/llm/tmp/codex-ni-next-ranked-cpu-prep-20261031/run_full.sh --job --complete-cmd /bin/bash /mnt/raid0/llm/tmp/codex-ni-next-ranked-cpu-prep-20261031/run_full.sh --complete ",
+  "tests": [
+    {
+      "argv": [
+        "python3",
+        "/mnt/raid0/llm/tmp/compute-flags/validate_fillers.py",
+        "--file",
+        "/mnt/raid0/llm/tmp/codex-ni-next-ranked-cpu-prep-20261031/ACTUAL-PID-ARMED-ROW.md",
+        "--row",
+        "codex-ni-s18-qwenvl-cpu-r1-20261031",
+        "--for-grant"
+      ],
+      "rc": 0,
+      "out": "OK: 1 row(s) checked, 0 refusal(s), 0 warning(s)\n"
+    },
+    {
+      "argv": [
+        "bash",
+        "/mnt/raid0/llm/tmp/compute-flags/grant_ok.sh",
+        "codex-ni-s18-qwenvl-cpu-r1-20261031",
+        "48",
+        "--window-s",
+        "86400",
+        "--regions",
+        "0-47,96-143",
+        "--pid",
+        "3054610"
+      ],
+      "rc": 0,
+      "out": "admit: validator OK; admit: MemAvailable 1026 GiB, need 48 GiB; class=block-timing-pairable launcher=filler_run13.sh:3054610 lclass=cpu minwin=1800(argv) window=86400 claim=0-47,96-143 gpuq=- claim_regions=q0+q1 regions=0-47,96-143\n"
+    }
+  ],
+  "local_row_only": true,
+  "no_grant_written": true
+}

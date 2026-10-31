@@ -1541,3 +1541,12 @@ Sources: [multimodal-pipeline handoff](../handoffs/active/multimodal-pipeline.md
 - **LID1 and STT3 remain plans.** Five full-public-FLEURS CPU LID packets are READY-WAIT with no corpus scored, and the joint STT3 plan was frozen before cohort ASR. ([speech LID preparation](../progress/2026-10/2026-10-30-codex3-speech-lid-preparation.md))
 
 Sources: [ernie-image-turbo-evaluation](../handoffs/active/ernie-image-turbo-evaluation.md) · [speech prep checkpoint](../progress/2026-10/2026-10-31-codex3-speech-prep-checkpoint.md) · [LID preparation](../progress/2026-10/2026-10-30-codex3-speech-lid-preparation.md)
+
+### Compiled Update — 2026-10-31 (S-18 runtime-only READY checkpoint)
+
+**Confidence: verified** for publication/admission and the two bounded runtime smokes; the requested `t48` CPU placement and 60-item throughput/quality result remain unmeasured. This does not imply absence of runtime execution.
+
+- The native S-18 READY packet was published with the pinned exact 60-item CPU cohort and recipe identity preserved. The normal four-token smoke returned rc0 after 221.4304 s but parsed as `parse_fail`; the active-cutoff smoke returned rc75/partial after 233.1852 s, with one of two rows and process-group drain. Both used `max_tokens=4`, so neither is an MMMU score or evidence of CPU quality parity.
+- Keep the exact-cohort baseline (36/60) separate from the historical 159/250 (63.6%) result. The S-18 measurement and VB-SERVING-DF2 projection/canary remain open; the projection schema is unwired and the planning-context canary is required.
+
+Sources: [S-18 READY capsule](../artifacts/compute/codex-ni-s18-qwenvl-cpu-r1-20261031/README.md); [2026-10-31 NI progress](../progress/2026-10/2026-10-31-codex-ni-01a16d6b.md); [multimodal pipeline handoff](../handoffs/active/multimodal-pipeline.md); [Vidya belief substrate program](../handoffs/active/vidya-belief-substrate-program.md).
