@@ -184,7 +184,7 @@ so this is a **new active stub, not a reopen**.
       **more** absolute calls. The completed file's pointer to
       `handoffs/active/meta-harness-optimization.md` is DANGLING — that file does not exist — which is
       why this stub, not a reopen, is the right shape. `intake-1317#03`. Zero compute.
-- [ ] **MHS-7 — force the isolated mutation path.** `apply_code_mutation` writes the live tree directly
+- [x] **MHS-7 — force the isolated mutation path.** `apply_code_mutation` writes the live tree directly ✅ 2026-10-31 — implementation APP `c91884ee5a38f7b4a2168c76fee1394a867e2e33`; `tests/unit/test_worktree_manager.py` and action controls; Git-retained proof `artifacts/audit/mhs7-isolated-mutation-20261031/` in APP main `a3c00d206a75044a2c01d67498f7bb633084eb0c` (433 focused tests, 162 correction controls). Existing transaction overlays main for evaluation; ordinary rejection/exception restores the preimage. [no-belief: deterministic mutation/commit safety controls; no measurement]
       (git-checkpointed) and the isolated `apply_code_mutation_in_context` exists but nothing requires its use
       (`scripts/autopilot/species/prompt_forge.py:~1440`) (found 2026-09-14, noninf sweep).
 - [ ] **MHS-8 — tighten the apply gate to "only screened effects apply"**, since only `MutationEffect.UNSAFE`
