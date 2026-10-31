@@ -681,12 +681,12 @@ its comparator on 2 of 4 tasks there, so no frontier API is required. Cite `inta
       [`eval-tower-verification.md`](eval-tower-verification.md).
       ✅ 2026-10-31 — APP `48ade72dc443d70294ce0e9db127b6f065bf9376` captures bounded explicit trial citations on action-local retention, resolves eligible journal negative evidence, and preserves unresolved/ineligible cases as UNKNOWN. The final trial verdict remains separate; this telemetry never gates acceptance. [Tests and journal round-trip](../../artifacts/compute/codex3-sg-w2-20261031/FINAL-v3.log). The known-null experiment and belief projection/canary remain open. [belief: cc]
 
-- [x] **SG-W3 — Dispose of `src/diversity_gate.py`: wire it or delete it.** ✅ 2026-10-29
+- [x] **SG-W3 — Dispose of `src/diversity_gate.py`: wire it or delete it.** ✅ 2026-10-29 [no-belief: retirement of unused code; no measurement claim] [source: epyc-orchestrator@da31e38b6bafc1dbcd91739330d6ef0c4756c923; test: epyc-orchestrator/tests/unit/test_module_identity.py]
       Removed in orchestrator main `da31e38b6bafc1dbcd91739330d6ef0c4756c923`, together with
       tests that exercised only this unused surface. The live autopilot safety gate remains;
       the module-identity guard now requires both retired source gate paths to stay absent.
       Four relevant suites passed all 46 tests after integration.
-      [no-belief: retirement of unused code; no measurement claim] Original rationale: zero production importers,
+      Original rationale: zero production importers,
       warn-only by default (`SAFETY_GATE_WARN_ONLY` defaults to `"1"`), renamed 2026-07-20 out of a
       bare-name collision with `scripts/autopilot/safety_gate.py` (the module the autopilot actually
       imports). Its `evaluate()` accepts on a raw `quality_delta > 0` with no resolution band, so it
