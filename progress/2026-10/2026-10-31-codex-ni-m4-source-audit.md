@@ -1,0 +1,9 @@
+# TD-29.M4 full18 source audit and bounded harness repair
+
+APP source fix pushed to main `367df713ee4e272164026a9c1498e7a82d31fda4` with normal hooks and separate wrapup/push leases. Only standalone benchmark dispatch observation and its7 model-free controls changed; focused/pilot/integration74tests and `make gates` passed. Original strict general pilot parser, schemas, Q4 foreground and feature flag stay unchanged. No model rerun, redraw or new READY.
+
+C3 original run filing main `e5c641188` owns the grade:18collected/36calls,12valid6invalid, original18valid criterion INCOMPLETE. Owner offline replay confirmed every failed original file_ticket object had all required fields plus invalid assignee:null; the harness discarded those objects and dispatched{}, amplifying genuine schema/model failures into synthetic missing-required errors. The future harness now forwards losslessly parsed original objects and preserves schemaerrors; unparseable replies do not fabricate{}. Raw and717-file historical snapshot hashes remain unchanged. Valid12 subset is explicitly scoped; no overall zero-cache or M4 completion claim. [belief: cc]
+
+Resource correction: the earlier native smoke was real67.58s/269RSSsamples/39,439,646,720B peak, but exceeded OWNER-RULINGS R11 explicit8GiB standing cap. It is actual ungranted over-cap evidence, not compliant R11 qualification. No further over8GiB standing CPU model runs; matching grants are required. The admitted full-run48GiB row and its original failure records remain intact.
+
+Offline audit2.557s/107.6MB peak; regression6.258s/156MB peak; gates3.041s/74.8MB peak, all sampled under8GiB/900s and owned processes drained. APP tree clean; source task O_EXCL claim and both source leases released. Exact evidence `/mnt/raid0/llm/tmp/codex-ni-td29-m4-cache-20261030/r4/full18-audit/`. Old ROOT-R4.patch never applied; this combined checkpoint supersedes its stale prepared status. Original M4 checkbox remains OPEN.
