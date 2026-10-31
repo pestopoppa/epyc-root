@@ -780,7 +780,8 @@ documented in this file's 2026-06-23 EV-9 section via `feedback_per_suite_gate_r
       proposer of five, and the trigger was a board-game genre prior whose analogue in
       kernel/routing/benchmark harnesses is untested — a null result here is informative, not
       exculpatory.
-- [ ] **EV-14g — decide whether `EvalResult` carries a completed count beside `n_questions`.** It has none
+- [x] ✅ 2026-10-31 **EV-14g — decide whether `EvalResult` carries a completed count beside `n_questions`.** Evidence: orch `e60e51887b3956d017af1ed74988e1d9fa795272`; `tests/unit/test_ev14g_completed_count.py`; `/mnt/raid0/llm/tmp/refactor-ev14g-integration-20261031/PROMOTION.json`. [no-belief: source contract and fixture validation, no inference claim]
+      Added nullable requested/completed counts through EvalResult, journal and task-rate inputs; explicit zero stays zero and legacy unknown keeps the existing fallback. Prior gap: it had none
       today (set from `total_count` at `:5580` on origin/main), so EV-14d's requested/completed split stops at
       the four per-role mode reports; if the pair belongs on `EvalResult` it also lands in `eval_details`, the
       journal and `tier_specs._task_rate_inputs_from_row` (`scripts/autopilot/eval_tower.py`) (found

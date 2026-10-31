@@ -194,7 +194,8 @@ so this is a **new active stub, not a reopen**.
 - [x] **MHS-9 — narrow `revert_code_mutation`'s new-file revert from `git add -A <path>` to an explicit ✅ 2026-10-29 (audit: orch 25c8e913 (2026-09-16, 'no commit sweep'): revert_code_mutation new-file path now calls _git_commit_paths([abs_path]) = git add -A -- <explicit pathspec> + commit --only (prompt_forge.py:1152,1466)) [no-belief: audit-reconciliation]
       pathspec**, the idiom the project's hygiene rules warn about
       (`scripts/autopilot/species/prompt_forge.py:~1478`) (found 2026-09-14, noninf sweep).
-- [ ] **MHS-10 — land a standalone formatting commit for `prompt_forge.py`**, which is format-dirty on
+- [x] ✅ 2026-10-31 **MHS-10 — land a standalone formatting commit for `prompt_forge.py`**. Evidence: orch `86f9985e97f010c3a9702b5f923a6d793159ef3c`; `/mnt/raid0/llm/tmp/refactor-01a16fc3/mhs10-format-20261031/QUALIFY-R3.log` and `PROMOTION.json` in that directory. [no-belief: formatting-only change; identical type-comment AST, Ruff checks and 260 existing tests pass]
+      Resolved the prior formatting dirt on
       `origin/main` (`ruff format --check` fails on a pristine clone), so future diffs stay readable
       (`scripts/autopilot/species/prompt_forge.py`) (found 2026-09-14, noninf sweep).
 - [ ] **MHS-11 — replace the operator guide's `prompt_forge.py` line-number citations with symbol names**,
