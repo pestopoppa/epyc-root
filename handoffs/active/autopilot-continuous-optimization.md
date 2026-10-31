@@ -501,9 +501,10 @@ First full smoke run of the trial loop. Four defects, three silent.
 
 - [x] **Unfenced Python scorer repair (2026-10-30).** Orchestrator `65b2b0e66b4da5ff718141bee1f87457b2b36149` preserves complete valid modules and future imports. Exact-source validation: 67 passed, one lifecycle test deselected with matched base/candidate zombie and drain evidence. The earlier 344-row estimate was not rescored; future measurements must pin the new scorer version. See `artifacts/audit/orch65b-unfenced-scorer-20261030.md`. [belief: cc]
 
-- [ ] **REGENERATE `ma_hard_code_001`** — hand-authored tracked YAML
+- [x] **REGENERATE `ma_hard_code_001`** — hand-authored tracked YAML. ✅ 2026-10-31 RESEARCH `a0a3df0ff43a9a66fe1f1f05a9e24e9214511b70`; [test](../../artifacts/compute/codex3-ma-hard-code-001-20261031/TEST.log). [belief: cc]
   (`mode_advantage_hard.yaml:288-328`), two defects: `test_code` wires stdin and never asserts, AND
   the prompt ships the author's unresolved self-correction (says 3, then 6; correct answer is 6).
+  ✅ 2026-10-31 — RESEARCH `a0a3df0ff43a9a66fe1f1f05a9e24e9214511b70`: corrected example and three executable input/output cases; native scorer accepts a correct bounded-path program and rejects wrong constants. [Test](../../artifacts/compute/codex3-ma-hard-code-001-20261031/TEST.log). The separate live-pool rebuild below remains open; no historical scores were re-derived. [belief: cc]
 
 - [ ] **The live pool still carries the OLD oracle** — the rebuild takes effect on the next pool
   rebuild, which is a measurement-instrument boundary (`eval_tower` stamps instrument identity) and
@@ -668,7 +669,7 @@ its comparator on 2 of 4 tasks there, so no frontier API is required. Cite `inta
 
       - Orchestrator `e3adf8b097e09f7a4c3d582e26f95bdca077bbae` skips byte-identical prompt and GEPA candidates before eval/promotion; code, numeric and structural paths already reject no-op changes. All148 action tests passed against current-source archive. Baselines and score thresholds unchanged; no reload or live efficacy claim. [Evidence](../../artifacts/compute/refactor-hils2-and-source-guards-20261030.json).
 
-- [ ] **SG-W2 — Warrant as telemetry (explicitly NOT a gate).** Record whether an accepted edit cites
+- [x] **SG-W2 — Warrant as telemetry (explicitly NOT a gate).** ✅ 2026-10-31 — APP `48ade72dc443d70294ce0e9db127b6f065bf9376`; [tests](../../artifacts/compute/codex3-sg-w2-20261031/FINAL-v3.log). [belief: cc] Record whether an accepted edit cites
       an observed failure instance, without blocking on it. Structural obstacle to plan for:
       `SafetyGate.check()` takes only an `EvalResult`, so the action payload must be threaded to the
       gate. The full warrant gate is **deliberately deferred** until this telemetry says it matters,
@@ -677,6 +678,7 @@ its comparator on 2 of 4 tasks there, so no frontier API is required. Cite `inta
       share **negatively** correlated with gain (ρ −0.31 to −0.64). The cheapest exposure measurement
       is the known-null corpus filed as EV-14f in
       [`eval-tower-verification.md`](eval-tower-verification.md).
+      ✅ 2026-10-31 — APP `48ade72dc443d70294ce0e9db127b6f065bf9376` captures bounded explicit trial citations on action-local retention, resolves eligible journal negative evidence, and preserves unresolved/ineligible cases as UNKNOWN. The final trial verdict remains separate; this telemetry never gates acceptance. [Tests and journal round-trip](../../artifacts/compute/codex3-sg-w2-20261031/FINAL-v3.log). The known-null experiment and belief projection/canary remain open. [belief: cc]
 
 - [x] **SG-W3 — Dispose of `src/diversity_gate.py`: wire it or delete it.** ✅ 2026-10-29
       Removed in orchestrator main `da31e38b6bafc1dbcd91739330d6ef0c4756c923`, together with

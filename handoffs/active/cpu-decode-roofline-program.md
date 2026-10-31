@@ -2332,12 +2332,13 @@ most, so its weaker provenance should be stated wherever it is relied on.
       **Task: give this a durable home outside this handoff** (with WRAP-6 and BACKUP-1), and add the
       branch to whatever the champion-fold checklist screens against, so the next fold cannot pick it
       up by ancestry alone.
-- [ ] **LOADAVG-1 — REMOVE the pre-arm `loadavg` gate; it costs the largest single setup item and
-      protects nothing.** Measured: it **passed at loadavg 11.61 and the arm then ran through 55.7**.
+- [x] **LOADAVG-1 — REMOVE the pre-arm `loadavg` gate; it costs the largest single setup item and protects nothing.** ✅ 2026-10-31 ROOT `68a4d5e9f057d0d1d639f1a7318aa7eda1cbccc2`; [verification](../../artifacts/compute/codex3-loadavg-1-20261031/VERIFY.log). [no-belief: harness source fix]
+      Measured: it **passed at loadavg 11.61 and the arm then ran through 55.7**.
       Cost: mean **129 s**, up to **195 s** per arm — the largest single setup cost in the harness.
       **The working replacement already exists and is free: the co-residency sampler runs DURING the
       arm.** A pre-arm snapshot cannot see what happens after it; only in-window sampling can. Delete
       the gate rather than tuning its threshold.
+      ✅ 2026-10-31 — ROOT `68a4d5e9f057d0d1d639f1a7318aa7eda1cbccc2` removes the wait and its log from the cold and hot harnesses while preserving in-window co-residency sampling. Both scripts pass syntax and source controls ([verification](../../artifacts/compute/codex3-loadavg-1-20261031/VERIFY.log)); no benchmark was run. [no-belief: harness source fix]
 - [ ] **BUILDVERIFY-1 — there is NO rebuild-and-compare-`.so` check in this harness.** Stated flatly
       in `harness1/REPORT.md` §8 with no owner. This is the standing
       `feedback_stale_build_artifact_masquerades_as_kernel_bug` surface: without it, a stale artifact
