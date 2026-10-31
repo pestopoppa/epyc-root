@@ -1,0 +1,28 @@
+test_actual_wake_submit_consumes_and_records_exact_space (dp5_test.WakeTests.test_actual_wake_submit_consumes_and_records_exact_space) ... FAIL
+
+======================================================================
+FAIL: test_actual_wake_submit_consumes_and_records_exact_space (dp5_test.WakeTests.test_actual_wake_submit_consumes_and_records_exact_space)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/mnt/raid0/llm/tmp/refactor-01a16fc3/dp5-private-20261031/final/scripts/coordination/tests/test_dp5_wake_pty.py", line 95, in test_actual_wake_submit_consumes_and_records_exact_space
+    self.assertEqual(view.sent, [' ', 'Enter'])
+AssertionError: Lists differ: ['Enter'] != [' ', 'Enter']
+
+First differing element 0:
+'Enter'
+' '
+
+Second list contains 1 additional elements.
+First extra element 1:
+'Enter'
+
+- ['Enter']
++ [' ', 'Enter']
+?  +++++
+
+
+----------------------------------------------------------------------
+Ran 1 test in 1.070s
+
+FAILED (failures=1)
+EXPECTED MUTATION RED: wake removal fails actual-helper PTY submission assertion

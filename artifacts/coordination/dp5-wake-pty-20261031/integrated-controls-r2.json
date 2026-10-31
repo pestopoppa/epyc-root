@@ -1,0 +1,121 @@
+{
+  "scope": "MODEL_FREE_R6_ONLY",
+  "family": "28-29",
+  "actual_cpus": [
+    124,
+    125
+  ],
+  "grant_snapshot": [
+    {
+      "id": "codex3-cs45-tail-rescore-20261031",
+      "class": "block-correctness",
+      "regions": "48-71"
+    },
+    {
+      "id": "codex3-cs8-lex2-dev-grid-hostfix2-20261031",
+      "class": "block-correctness",
+      "regions": "72-95"
+    },
+    {
+      "id": "codex-ni-g16-greedy-ab-aligned-r2-20261031",
+      "class": "block-correctness",
+      "regions": "mi210_0,184-191"
+    },
+    {
+      "id": "yarn-oolong-s2-host256-eligible26-v32-20261031",
+      "class": "block-correctness",
+      "regions": "24-47"
+    },
+    {
+      "id": "codex3-pareval120-k20-gen-20261031",
+      "class": "block-correctness",
+      "regions": "0-23"
+    }
+  ],
+  "returncode": 0,
+  "failure": null,
+  "elapsed_s": 7.237371116876602,
+  "sampled_peak_tree_rss_bytes": 49823744,
+  "kernel_childset_empty": true,
+  "captured": [
+    {
+      "pid": 1394374,
+      "birth": 159252344,
+      "ppid": 1394372,
+      "uid": 1000
+    },
+    {
+      "pid": 1394375,
+      "birth": 159252344,
+      "ppid": 1394374,
+      "uid": 1000
+    },
+    {
+      "pid": 1394376,
+      "birth": 159252355,
+      "ppid": 1394375,
+      "uid": 1000
+    },
+    {
+      "pid": 1394397,
+      "birth": 159252464,
+      "ppid": 1394375,
+      "uid": 1000
+    },
+    {
+      "pid": 1394432,
+      "birth": 159252573,
+      "ppid": 1394375,
+      "uid": 1000
+    },
+    {
+      "pid": 1394486,
+      "birth": 159252683,
+      "ppid": 1394375,
+      "uid": 1000
+    },
+    {
+      "pid": 1394487,
+      "birth": 159252692,
+      "ppid": 1394375,
+      "uid": 1000
+    },
+    {
+      "pid": 1394491,
+      "birth": 159252706,
+      "ppid": 1394375,
+      "uid": 1000
+    },
+    {
+      "pid": 1394492,
+      "birth": 159252713,
+      "ppid": 1394375,
+      "uid": 1000
+    },
+    {
+      "pid": 1394493,
+      "birth": 159252720,
+      "ppid": 1394375,
+      "uid": 1000
+    },
+    {
+      "pid": 1394793,
+      "birth": 159252827,
+      "ppid": 1394375,
+      "uid": 1000
+    },
+    {
+      "pid": 1394828,
+      "birth": 159252938,
+      "ppid": 1394374,
+      "uid": 1000
+    },
+    {
+      "pid": 1394829,
+      "birth": 159252949,
+      "ppid": 1394828,
+      "uid": 1000
+    }
+  ],
+  "native_or_GPU_execution": false
+}
