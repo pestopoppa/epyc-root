@@ -37,6 +37,7 @@ ROOT = HERE.parents[1]
 HARNESS = ROOT / "scripts" / "inf70" / "harness1"
 sys.path.insert(0, str(ROOT / "scripts" / "vidya"))
 
+import claim_tuple as ct  # noqa: E402
 import cli  # noqa: E402
 from adapters import inf70_serving_arm as reader  # noqa: E402
 from adapters import inf70_serving_arm_capture as capture  # noqa: E402
@@ -98,6 +99,55 @@ def _capture(arm, launch_json: Path, a0: int) -> subprocess.CompletedProcess:
     return _bash(f'sc75_capture_arm "{arm["runs"]}" "{arm["label"]}" "{launch_json}" "{a0}"', {})
 
 
+def _run_stubbed_client(arm, stub_dir: Path) -> tuple[subprocess.CompletedProcess, dict]:
+    stub_dir.mkdir()
+    (stub_dir / "sitecustomize.py").write_text(r'''
+import atexit, io, json, time, urllib.error, urllib.request
+_calls = 0
+def _urlopen(request, timeout=1800):
+    global _calls
+    _calls += 1
+    if _calls == 2:
+        raise urllib.error.URLError("controlled fixture failure")
+    payload = {
+        "choices": [{"message": {"content": "one two three four five six seven eight nine ten eleven twelve "
+                    "thirteen fourteen fifteen sixteen seventeen eighteen nineteen twenty twentyone twentytwo "
+                    "twentythree twentyfour"}, "finish_reason": "stop"}],
+        "usage": {"completion_tokens": 24, "prompt_tokens": 10},
+        "timings": {"predicted_n": 24, "predicted_ms": 1200.0, "predicted_per_second": 20.0,
+                    "prompt_n": 10, "prompt_ms": 100.0, "prompt_per_second": 100.0,
+                    "draft_n": 0, "draft_n_accepted": 0},
+    }
+    return io.BytesIO(json.dumps(payload).encode())
+urllib.request.urlopen = _urlopen
+atexit.register(lambda: time.sleep(0.2))
+''')
+    env = dict(os.environ, CLIENT_OUT=str(arm["runs"]), PYTHONPATH=str(stub_dir),
+               PYTHONDONTWRITEBYTECODE="1")
+    proc = subprocess.Popen([sys.executable, str(HARNESS / "client.py"), arm["label"], "19090"],
+                            cwd=ROOT, env=env, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+    start_epoch = time.time()
+    stat = Path(f"/proc/{proc.pid}/stat").read_text().split()
+    status = Path(f"/proc/{proc.pid}/status").read_text()
+    rss = next(line.split(":", 1)[1].strip() for line in status.splitlines() if line.startswith("VmRSS:"))
+    pid, start_ticks = proc.pid, stat[21]
+    try:
+        stdout, stderr = proc.communicate(timeout=60)
+    except subprocess.TimeoutExpired:
+        proc.terminate()
+        try:
+            stdout, stderr = proc.communicate(timeout=5)
+        except subprocess.TimeoutExpired:
+            proc.kill()
+            stdout, stderr = proc.communicate()
+        raise AssertionError("stubbed classifier client exceeded 60 seconds")
+    assert not Path(f"/proc/{pid}").exists(), f"client child {pid} remained after exit"
+    receipt = {"pid": pid, "start_epoch": start_epoch, "start_ticks": start_ticks,
+               "rss": rss, "absent_after_exit": True}
+    (stub_dir / "client-process.json").write_text(json.dumps(receipt, sort_keys=True) + "\n")
+    return subprocess.CompletedProcess(proc.args, proc.returncode, stdout, stderr), receipt
+
+
 def test_capture_step_emits_a_row_that_ingest_inf70_arms_ingests(arm, capsys):
     res = _launch(arm)
     assert res.returncode == 0, res.stderr
@@ -140,6 +190,45 @@ def test_capture_step_emits_a_row_that_ingest_inf70_arms_ingests(arm, capsys):
     report = json.loads(capsys.readouterr().out)
     assert report["refused"] == [], report["refused"]
     assert report["rows_projected"] == 1
+    assert report["frames_emitted"] == 3
+
+
+def test_stubbed_client_native_rows_sidecar_and_ingest_preserve_classifier_pair(arm, capsys):
+    launch_res = _launch(arm)
+    assert launch_res.returncode == 0, launch_res.stderr
+    client_res, receipt = _run_stubbed_client(arm, arm["tmp"] / "http-stub")
+    assert client_res.returncode == 0, client_res.stderr
+    assert "ARM_DONE" in client_res.stdout
+    rows = [json.loads(line) for line in
+            (arm["runs"] / f"{arm['label']}.rows.jsonl").read_text().splitlines()]
+    assert len(rows) == 24
+    assert rows[0]["verdict"] == "HTTP-ERROR"
+    assert "classifier" not in rows[0] and "token_source" not in rows[0]
+    successes = rows[1:]
+    assert len(successes) == 23
+    assert all(row["classifier"] == "inf70-classify.v1" for row in successes)
+    assert all(row["token_source"] == "synthetic-ids(uniq/top/run vacuous)" for row in successes)
+    assert receipt["pid"] > 0 and receipt["start_ticks"] and receipt["rss"]
+
+    launch_path = arm["runs"] / "S1.launch.json"
+    captured = _capture(arm, launch_path, int(time.time()) - 300)
+    assert captured.returncode == 0, captured.stdout + captured.stderr
+    native = reader.native_rows(capture.sidecar_path_for(arm["runs"], arm["label"]))
+    assert len(native) == 1
+    expected = {"UNREPORTED": {"UNREPORTED": 1},
+                "inf70-classify.v1": {"synthetic-ids(uniq/top/run vacuous)": 23}}
+    assert native[0]["row"]["extra"]["coherence_classifier"] == expected
+    tup = reader.project(native[0])
+    assert tup.extra["coherence_classifier"] == expected
+    assert ct.grade(tup)[:2] == ("Witnessed", "Attested")
+
+    ledger = arm["tmp"] / "stubbed-ledger.jsonl"
+    as_of = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+    rc = cli.main(["--ledger", str(ledger), "--json", "ingest", "inf70-arms",
+                   "--path", str(arm["tmp"] / "agents"), "--as-of", as_of])
+    assert rc == 0
+    report = json.loads(capsys.readouterr().out)
+    assert report["refused"] == [] and report["rows_projected"] == 1
     assert report["frames_emitted"] == 3
 
 

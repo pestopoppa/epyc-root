@@ -42,7 +42,8 @@ for k, it in enumerate(items):
     content = (ch.get("message") or {}).get("content", "") or ""
     u = j.get("usage") or {}; tim = j.get("timings") or {}
     npred = u.get("completion_tokens") or tim.get("predicted_n") or 0
-    c = classify(dict(tokens=list(range(npred)), stop_type=ch.get("finish_reason"), content=content))
+    synthetic_tokens = list(range(npred))
+    c = classify(dict(tokens=synthetic_tokens, stop_type=ch.get("finish_reason"), content=content))
     tps = tim.get("predicted_per_second") or (npred / wall if wall > 0 and npred else None)
     rows.append(dict(seq=k, id=it["id"], cls=it["cls"],
                      prompt_n=u.get("prompt_tokens") or tim.get("prompt_n"),
@@ -51,6 +52,8 @@ for k, it in enumerate(items):
                      prompt_ms=tim.get("prompt_ms"), pred_ms=tim.get("predicted_ms"),
                      wall=round(wall, 3), draft_n=tim.get("draft_n"), draft_acc=tim.get("draft_n_accepted"),
                      finish=ch.get("finish_reason"), verdict=c.get("cls"),
+                     classifier=c.get("classifier"),
+                     token_source="synthetic-ids(uniq/top/run vacuous)",
                      sha=__import__("hashlib").sha256(content.encode()).hexdigest()[:16],
                      n_uniq=c.get("uniq"), words=c.get("words"), text=content))
     r = rows[-1]

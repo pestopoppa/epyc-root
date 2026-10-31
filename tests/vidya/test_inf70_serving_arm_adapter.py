@@ -121,6 +121,28 @@ def test_rate_is_token_weighted_with_the_pred_n_floor(tmp_path):
     assert tup.unit == "tokens/s" and tup.metric_direction == "higher_better"
     assert tup.extra["n_rows"] == 4 and tup.extra["n_decode_rows"] == 3
     assert tup.extra["coherence_by_reason"] == {"COHERENT": 2, "EMPTY": 1, "REPETITION": 1}
+    assert tup.extra["coherence_classifier"] == {"UNREPORTED": {"UNREPORTED": 4}}
+
+
+def test_classifier_census_preserves_exact_pair_and_unknown_fields(tmp_path):
+    source = "synthetic-ids(uniq/top/run vacuous)"
+    rows = [
+        dict(ROWS[0], classifier="inf70-classify.v1", token_source=source),
+        dict(ROWS[1], classifier="inf70-classify.v1", token_source=source),
+        dict(ROWS[2], classifier="inf70-classify.v1"),
+        dict(ROWS[3], classifier=" ", token_source=source),
+    ]
+    runs = make_arm(tmp_path, rows=rows)
+    sidecar = write(runs)
+    raw = json.loads(sidecar.read_text())["extra"]["coherence_classifier"]
+    expected = {
+        "UNREPORTED": {source: 1},
+        "inf70-classify.v1": {"UNREPORTED": 1, source: 2},
+    }
+    assert raw == expected
+    tup = reader.project(reader.native_rows(sidecar)[0])
+    assert tup.extra["coherence_classifier"] == expected
+    assert ct.grade(tup)[:2] == ("Witnessed", "Attested")
 
 
 def test_contended_arm_still_emits_but_carries_the_verdict_separately(tmp_path):

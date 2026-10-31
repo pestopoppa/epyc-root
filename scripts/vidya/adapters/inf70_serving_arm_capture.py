@@ -264,15 +264,31 @@ def summarize_rows(text: str) -> dict[str, Any]:
     tokens = sum(r["pred_n"] for r in decode)
     seconds = sum(r["pred_ms"] for r in decode) / 1000.0
     reasons: dict[str, int] = {}
+    classifiers: dict[str, dict[str, int]] = {}
     for row in rows:
         key = str(row.get("verdict") or "UNCLASSIFIED")
         reasons[key] = reasons.get(key, 0) + 1
+        declared_classifier = row.get("classifier")
+        classifier = (declared_classifier if isinstance(declared_classifier, str)
+                      and declared_classifier and declared_classifier == declared_classifier.strip()
+                      else "UNREPORTED")
+        declared_source = row.get("token_source")
+        token_source = (declared_source if isinstance(declared_source, str)
+                        and declared_source and declared_source == declared_source.strip()
+                        else "UNREPORTED")
+        sources = classifiers.setdefault(classifier, {})
+        sources[token_source] = sources.get(token_source, 0) + 1
+    coherence_classifier = {
+        classifier: dict(sorted(sources.items()))
+        for classifier, sources in sorted(classifiers.items())
+    }
     return {
         "value": round(tokens / seconds, 4),
         "n_rows": len(rows),
         "n_decode_rows": len(decode),
         "decode_tokens": int(tokens),
         "coherence_by_reason": dict(sorted(reasons.items())),
+        "coherence_classifier": coherence_classifier,
     }
 
 
@@ -518,6 +534,7 @@ def write_arm_measurement(
         "decode_tokens": measured["decode_tokens"],
         "pred_n_floor": PRED_N_FLOOR,
         "coherence_by_reason": measured["coherence_by_reason"],
+        "coherence_classifier": measured["coherence_classifier"],
         "replicate_group": launch.get("replicate_group"),
         "replicate_launches": launch.get("replicate_launches"),
         "between_launch_sd": launch.get("between_launch_sd"),

@@ -19,22 +19,27 @@ import collections, json, os, sys
 
 MIN_N = 16          # below this the token statistics are meaningless
 EOS_MAX_N = 4       # <= this many tokens ending in eos == EARLY-EOS
+# Stable identity for the rule set below; output metadata does not change its verdicts.
+CLASSIFIER_ID = "inf70-classify.v1"
 
 def classify(d):
     if not isinstance(d, dict) or "error" in d:
-        return dict(cls="HTTP-ERROR", n=0, note=str(d.get("error"))[:80] if isinstance(d, dict) else "not-a-dict")
+        return dict(cls="HTTP-ERROR", classifier=CLASSIFIER_ID, n=0,
+                    note=str(d.get("error"))[:80] if isinstance(d, dict) else "not-a-dict")
     toks = d.get("tokens") or []
     n = len(toks)
     stop = d.get("stop_type")
     content = d.get("content", "") or ""
     st = dict(n=n, stop=stop, npred_req=(d.get("generation_settings") or {}).get("n_predict"))
     if n == 0:
-        return dict(cls=("EARLY-EOS" if stop == "eos" else "EMPTY"), **st)
+        return dict(cls=("EARLY-EOS" if stop == "eos" else "EMPTY"),
+                    classifier=CLASSIFIER_ID, **st)
     if n <= EOS_MAX_N and stop == "eos":
-        return dict(cls="EARLY-EOS", **st)
+        return dict(cls="EARLY-EOS", classifier=CLASSIFIER_ID, **st)
     if n < MIN_N:
         # short but not an eos stop: report as its own case rather than guessing
-        return dict(cls=("EARLY-EOS" if stop == "eos" else "SHORT"), **st)
+        return dict(cls=("EARLY-EOS" if stop == "eos" else "SHORT"),
+                    classifier=CLASSIFIER_ID, **st)
     uniq = len(set(toks)) / n
     c = collections.Counter(toks)
     top = c.most_common(1)[0][1] / n
@@ -48,7 +53,7 @@ def classify(d):
     # word floor must scale with n: a 24-token completion legitimately has ~15 words.
     salad = (uniq < 0.35) or (top >= 0.25) or (best >= 6) or (len(words) < 0.25 * n) or (ok_chars < 0.85)
     st.update(uniq=round(uniq, 3), top=round(top, 3), run=best, words=len(words), ascii_ok=round(ok_chars, 3))
-    return dict(cls=("SALAD" if salad else "COHERENT"), **st)
+    return dict(cls=("SALAD" if salad else "COHERENT"), classifier=CLASSIFIER_ID, **st)
 
 if __name__ == "__main__":
     root = sys.argv[1] if len(sys.argv) > 1 else "/mnt/raid0/llm/tmp/inf70/agents/gdn-rowexact/runs"
