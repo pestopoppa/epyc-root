@@ -1,0 +1,7 @@
+{
+  "scripts/coordination/tests/composer_tui_fixture.py": "eb26593466b3d81c13646910cb366e5414f27ff013528efe43dc5ee885046ec8",
+  "scripts/coordination/tests/test_dp5_wake_pty.py": "085ca915be0ec5a3e2fc1284e15ae88c063dc9a4e44395aeeb58358c4507eb8b",
+  "actual_helper_function_sha256": "773f44f92b0040f9db2313ef181f242b63d2bf084c7dff58ff75d59ffe57dace",
+  "helper_first_committed": "2054659d7",
+  "owner_head_at_seal": "30ee1961bb8151241a0af80dd788da7f23bbb879"
+}

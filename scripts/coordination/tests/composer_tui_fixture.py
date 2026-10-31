@@ -6,9 +6,11 @@ calibrated against real Codex / Claude Code panes (see its C6 block):
   * a SUBMITTED message is echoed into the transcript above and the composer clears
   * an empty composer renders a bare prompt glyph alone
 
-Three Enter behaviours, selected with --mode, so the adapter's submit path can be
+Selectable Enter behaviours, selected with --mode, so the adapter's submit path can be
 driven through success AND through each observed failure without a real TUI:
 
+  wake     Bare Enter/Ctrl-U are ignored until an ordinary character arrives;
+           after the character, Enter submits or Ctrl-U clears (DP-5/C55).
   submit   Enter submits: transcript gains "<glyph> <text>", composer clears.
   swallow  Enter is dropped on the floor: the composer keeps the text. This is the
            observed 2026-08-12 standing condition (text pending, never submitted).
@@ -20,6 +22,9 @@ driven through success AND through each observed failure without a real TUI:
            which "the buffer was consumed" is true and the message was still never
            delivered, so it is what forces the transcript-echo conjunct (and its
            pre-Enter occurrence anchor) to carry its own weight.
+
+wake mode ignores Enter/Ctrl-U until an ordinary character arrives after the
+initial queued input. A wake SPACE is a real edit; failed keys leave it queued.
 
 Ctrl-U clears the composer (the only sanctioned clear — Ctrl-C is never sent to a
 Codex pane). Ctrl-D quits, so the harness can stop it without killing by name.
@@ -36,8 +41,9 @@ GLYPHS = {"codex": "›", "claude": "❱"}
 
 def main() -> int:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--mode", choices=("submit", "swallow", "picker", "cancel"),
+    ap.add_argument("--mode", choices=("submit", "swallow", "picker", "cancel", "wake"),
                     default="submit")
+    ap.add_argument("--pending", default="", help="initial queued input; wake mode starts asleep")
     ap.add_argument("--glyph", choices=tuple(GLYPHS), default="codex")
     ap.add_argument("--seed", action="append", default=[],
                     help="transcript line present before anything is typed (repeatable)")
@@ -50,7 +56,8 @@ def main() -> int:
 
     glyph = GLYPHS[args.glyph]
     transcript: list[str] = list(args.seed)
-    composer = ""
+    composer = args.pending
+    awake = False
 
     def draw() -> None:
         out = ["\033[2J\033[H"]
@@ -72,15 +79,17 @@ def main() -> int:
             if ch == "\x04":                      # Ctrl-D: quit
                 break
             if ch == "\x15":                      # Ctrl-U: clear composer
-                if not args.ignore_clear:
+                if not args.ignore_clear and (args.mode != "wake" or awake):
                     composer = ""
+                    awake = False
             elif ch == "\x7f":                    # backspace
                 composer = composer[:-1]
             elif ch in ("\r", "\n"):
-                if args.mode == "submit":
+                if args.mode == "submit" or (args.mode == "wake" and awake):
                     if composer:
                         transcript.append(f"{glyph} {composer}")
                     composer = ""
+                    awake = False
                 elif args.mode == "picker":
                     composer = args.completion
                 elif args.mode == "cancel":
@@ -88,6 +97,7 @@ def main() -> int:
                 # swallow: nothing happens at all
             elif ch >= " ":
                 composer += ch
+                awake = True
             draw()
     finally:
         termios.tcsetattr(fd, termios.TCSADRAIN, saved)
