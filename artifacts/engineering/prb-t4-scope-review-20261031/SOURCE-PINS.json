@@ -1,0 +1,11 @@
+{
+  "root_head": "672934bae0501b579a64cbedcf684628b55ac2f3",
+  "read_only_source_sha256": {
+    "scripts/vidya/frames.py": "f47f148218ae99d54c51b322bf4f3b0632d4458e49572843f5ed4aa424d15749",
+    "scripts/vidya/ledger.py": "50d4872ab822b4912ba83ab8d05febf12b28e273b41237f3655bb13eb67a2e3e",
+    "scripts/vidya/fold.py": "42e1ccb832c59415501254aca427fb8e0d0cb2f7bc9e259ec3a8b10e7a369ef6",
+    "handoffs/active/vidya-belief-substrate-program.md": "ad2784fba54b16b03411b3b0f5502d4fd3c7dcbac7adc30b61f32c60e7fbfd38",
+    "agents/shared/MEASUREMENT_POLICY.md": "2a2d6c246191d0bb3d09e272582dfbe3bccca6e803ae24f95b5d01ed038b6068"
+  },
+  "new_script_gitnexus_impact": "UNKNOWN: private new artifact symbols unindexed; no production symbol modified"
+}

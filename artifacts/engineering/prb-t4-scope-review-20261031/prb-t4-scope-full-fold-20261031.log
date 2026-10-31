@@ -1,0 +1,33 @@
+{
+  "status": "PASS_FULL_LEDGER_SIMULATION_ONLY",
+  "belief_count": 14526,
+  "changed_claims": [
+    "clm_tale_04493dcf4e7cd28ac13d80f4",
+    "clm_tale_145d2eee8f5dbc6400ed2c19",
+    "clm_tale_25627bebb7313f148d4584d5",
+    "clm_tale_3215ee195747785b23406876",
+    "clm_tale_3385993bbf3188394cd537f6",
+    "clm_tale_641037c7fe93553e102a7884",
+    "clm_tale_68ae8a048751bc0370912bb9",
+    "clm_tale_72a90a1a7afa7692046e9b03",
+    "clm_tale_72da12c0028b99f27247acf7",
+    "clm_tale_75aef6171d3dfde495455f6d",
+    "clm_tale_764f74ec587dcfc9c138b27f",
+    "clm_tale_8109c2687f613513ef214c74",
+    "clm_tale_93e124008981a1981e2dafdc",
+    "clm_tale_93e7e0129e026fab67c0d509",
+    "clm_tale_9e461228ba11a0e2cb20f586",
+    "clm_tale_a12598cb28be0adcd8a389ae",
+    "clm_tale_a1bff625c11d34df85e31227",
+    "clm_tale_a416380f2de1a1e9533c5205",
+    "clm_tale_b0d32ebfd0856be32cc71bd2",
+    "clm_tale_b7f9ca52056fba1042bdc688",
+    "clm_tale_c28636a9f5d11d6842d555b2",
+    "clm_tale_d6577b3ae51602f2661a1506",
+    "clm_tale_effebb197c761d10d3ea5d31",
+    "clm_tale_fc1cb9c78e8f7c5d4223a5c0"
+  ],
+  "original_grades_preserved": true,
+  "unrelated_beliefs_unchanged": true,
+  "canonical_sha256": "3ab95f93b0dcde59f86e26d6b4d55a1e4fe75a9912066e7a7d87b104a6b20115"
+}

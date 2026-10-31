@@ -1,0 +1,2196 @@
+{
+  "status": "READ_ONLY_IDENTITY_CAPTURE",
+  "ledger_sha256": "3ab95f93b0dcde59f86e26d6b4d55a1e4fe75a9912066e7a7d87b104a6b20115",
+  "record_count": 38959,
+  "frontier": "sha256:5d07b14996126be458ebfcad7d2b0fe5f7871fb4f78940d84d379b077e901fc6",
+  "source_ids": [
+    "src_tale_04493dcf4e7cd28ac13d80f4",
+    "src_tale_145d2eee8f5dbc6400ed2c19",
+    "src_tale_25627bebb7313f148d4584d5",
+    "src_tale_3215ee195747785b23406876",
+    "src_tale_3385993bbf3188394cd537f6",
+    "src_tale_641037c7fe93553e102a7884",
+    "src_tale_68ae8a048751bc0370912bb9",
+    "src_tale_72a90a1a7afa7692046e9b03",
+    "src_tale_72da12c0028b99f27247acf7",
+    "src_tale_75aef6171d3dfde495455f6d",
+    "src_tale_764f74ec587dcfc9c138b27f",
+    "src_tale_8109c2687f613513ef214c74",
+    "src_tale_93e124008981a1981e2dafdc",
+    "src_tale_93e7e0129e026fab67c0d509",
+    "src_tale_9e461228ba11a0e2cb20f586",
+    "src_tale_a12598cb28be0adcd8a389ae",
+    "src_tale_a1bff625c11d34df85e31227",
+    "src_tale_a416380f2de1a1e9533c5205",
+    "src_tale_b0d32ebfd0856be32cc71bd2",
+    "src_tale_b7f9ca52056fba1042bdc688",
+    "src_tale_c28636a9f5d11d6842d555b2",
+    "src_tale_d6577b3ae51602f2661a1506",
+    "src_tale_effebb197c761d10d3ea5d31",
+    "src_tale_fc1cb9c78e8f7c5d4223a5c0"
+  ],
+  "claim_ids": [
+    "clm_tale_04493dcf4e7cd28ac13d80f4",
+    "clm_tale_145d2eee8f5dbc6400ed2c19",
+    "clm_tale_25627bebb7313f148d4584d5",
+    "clm_tale_3215ee195747785b23406876",
+    "clm_tale_3385993bbf3188394cd537f6",
+    "clm_tale_641037c7fe93553e102a7884",
+    "clm_tale_68ae8a048751bc0370912bb9",
+    "clm_tale_72a90a1a7afa7692046e9b03",
+    "clm_tale_72da12c0028b99f27247acf7",
+    "clm_tale_75aef6171d3dfde495455f6d",
+    "clm_tale_764f74ec587dcfc9c138b27f",
+    "clm_tale_8109c2687f613513ef214c74",
+    "clm_tale_93e124008981a1981e2dafdc",
+    "clm_tale_93e7e0129e026fab67c0d509",
+    "clm_tale_9e461228ba11a0e2cb20f586",
+    "clm_tale_a12598cb28be0adcd8a389ae",
+    "clm_tale_a1bff625c11d34df85e31227",
+    "clm_tale_a416380f2de1a1e9533c5205",
+    "clm_tale_b0d32ebfd0856be32cc71bd2",
+    "clm_tale_b7f9ca52056fba1042bdc688",
+    "clm_tale_c28636a9f5d11d6842d555b2",
+    "clm_tale_d6577b3ae51602f2661a1506",
+    "clm_tale_effebb197c761d10d3ea5d31",
+    "clm_tale_fc1cb9c78e8f7c5d4223a5c0"
+  ],
+  "records": [
+    {
+      "frame": {
+        "assertion": {
+          "locator": "tale-budget:prb_t4_gpu_20260916_191049_math:math:baseline:tale_suite_accuracy:/mnt/raid0/llm/tmp/sub-gpu-runner-20260916/prbt4/prb_t4_gpu_math_20260916_191049.jsonl",
+          "revision_observed": "2026-09-16",
+          "source_id": "src_tale_d6577b3ae51602f2661a1506",
+          "source_kind": "tale-budget-measurement",
+          "title": "tale_suite_accuracy"
+        },
+        "frame_id": "sha256:cd390d6f917bc0820df42bb6a76abe6e877c95d237918b14a92b3d47bfe52a34",
+        "frame_type": "epyc.vidya/frame/source_observed/v1",
+        "provenance": {
+          "about": "tale_d6577b3ae51602f2661a1506",
+          "method": "vidya.adapters.tale_budget/v1",
+          "retrofit": false
+        },
+        "pubinfo": {
+          "actor": "vidya.adapters.tale_budget/v1",
+          "authority_scope": "measurement",
+          "created_at": "2026-09-17T02:24:36Z"
+        },
+        "signatures": []
+      },
+      "frame_hash": "sha256:8ece12af9286ce8beead893250d78b85017100bb5b5cd486dad3bcd906843e36",
+      "prev_hash": "sha256:7e0e43aa3d4e30b37754c6486c07baf10d78599dcedb48bf971b693a740d92c8",
+      "seq": 13225
+    },
+    {
+      "frame": {
+        "assertion": {
+          "claim_id": "clm_tale_d6577b3ae51602f2661a1506",
+          "display_text": "TALE-EP prb_t4_gpu_20260916_191049_math: baseline arm on math -> tale_suite_accuracy = 0.9733 fraction_correct (n=150)",
+          "source_id": "src_tale_d6577b3ae51602f2661a1506"
+        },
+        "frame_id": "sha256:bce1909c5a8e16f1e63e1036ff090732fdceab1314f7805ccbbdec5df16dbdad",
+        "frame_type": "epyc.vidya/frame/claim_proposed/v1",
+        "provenance": {
+          "about": "tale_d6577b3ae51602f2661a1506",
+          "derived_from": "src_tale_d6577b3ae51602f2661a1506",
+          "method": "vidya.adapters.tale_budget/v1"
+        },
+        "pubinfo": {
+          "actor": "vidya.adapters.tale_budget/v1",
+          "authority_scope": "measurement",
+          "created_at": "2026-09-17T02:24:36Z"
+        },
+        "signatures": []
+      },
+      "frame_hash": "sha256:12c272b603b92fd9c69e9323f07bbd3dda8f7adff7c2e4f0478d094aa1cbbdda",
+      "prev_hash": "sha256:da2be23544d0b7796023164d94e9750f6783730fc6fcde67baf663cf5197d349",
+      "seq": 13226
+    },
+    {
+      "frame": {
+        "assertion": {
+          "category": "BASELINE",
+          "claim_id": "clm_tale_d6577b3ae51602f2661a1506",
+          "evidence_id": "evd_tale_d6577b3ae51602f2661a1506",
+          "grade": {
+            "Q": "Judged",
+            "T": "Located"
+          },
+          "metric_direction": "higher_better",
+          "protocol_id": "",
+          "reps": 150,
+          "source_id": "src_tale_d6577b3ae51602f2661a1506"
+        },
+        "frame_id": "sha256:835c38f890d711c124df1c99b77ab846478e02f08bf4aed63434b7dd6a4d672b",
+        "frame_type": "epyc.vidya/frame/evidence_supports_claim/v1",
+        "provenance": {
+          "about": "clm_tale_d6577b3ae51602f2661a1506",
+          "evidence": "evd_tale_d6577b3ae51602f2661a1506",
+          "grade_reasons": [
+            "no protocol citation \u2014 this is an OBSERVATION, never decision-gating (MEASUREMENT.md:13)"
+          ],
+          "method": "vidya.adapters.tale_budget/v1",
+          "reps_basis": "scored:questions"
+        },
+        "pubinfo": {
+          "actor": "vidya.adapters.tale_budget/v1",
+          "authority_scope": "measurement",
+          "created_at": "2026-09-17T02:24:36Z"
+        },
+        "signatures": []
+      },
+      "frame_hash": "sha256:a83eb0db20ad8463d8f2496354e33df0db6f396517f77c6876ef1ed7d9ec4585",
+      "prev_hash": "sha256:bb68baa643d11f6ea085f0eb3f17c537a8c8fa85aa8e468d8b647ffb6a3b9309",
+      "seq": 13227
+    },
+    {
+      "frame": {
+        "assertion": {
+          "locator": "tale-budget:prb_t4_gpu_20260916_191049_math:math:baseline:tale_mean_answer_tokens:/mnt/raid0/llm/tmp/sub-gpu-runner-20260916/prbt4/prb_t4_gpu_math_20260916_191049.jsonl",
+          "revision_observed": "2026-09-16",
+          "source_id": "src_tale_a416380f2de1a1e9533c5205",
+          "source_kind": "tale-budget-measurement",
+          "title": "tale_mean_answer_tokens"
+        },
+        "frame_id": "sha256:d736fe8ec7ffcb8266f11ce8bfdf854210f4a3e5787a4be04b986a8e0e11662d",
+        "frame_type": "epyc.vidya/frame/source_observed/v1",
+        "provenance": {
+          "about": "tale_a416380f2de1a1e9533c5205",
+          "method": "vidya.adapters.tale_budget/v1",
+          "retrofit": false
+        },
+        "pubinfo": {
+          "actor": "vidya.adapters.tale_budget/v1",
+          "authority_scope": "measurement",
+          "created_at": "2026-09-17T02:24:36Z"
+        },
+        "signatures": []
+      },
+      "frame_hash": "sha256:f7a82c6161fb400069d496c5db2e1c63ce85d203dc2cf08711d127228ef10505",
+      "prev_hash": "sha256:fa22dfa2314f78f88d5ae7cdb1869afa27e5f999c9f5831f2da1a4f18a203f9f",
+      "seq": 13228
+    },
+    {
+      "frame": {
+        "assertion": {
+          "claim_id": "clm_tale_a416380f2de1a1e9533c5205",
+          "display_text": "TALE-EP prb_t4_gpu_20260916_191049_math: baseline arm on math -> tale_mean_answer_tokens = 266.0333 tokens (n=150)",
+          "source_id": "src_tale_a416380f2de1a1e9533c5205"
+        },
+        "frame_id": "sha256:1f0e99ca276ecd44e7a3b4903e881ddcc5548c1c47842758a513a3a34a211302",
+        "frame_type": "epyc.vidya/frame/claim_proposed/v1",
+        "provenance": {
+          "about": "tale_a416380f2de1a1e9533c5205",
+          "derived_from": "src_tale_a416380f2de1a1e9533c5205",
+          "method": "vidya.adapters.tale_budget/v1"
+        },
+        "pubinfo": {
+          "actor": "vidya.adapters.tale_budget/v1",
+          "authority_scope": "measurement",
+          "created_at": "2026-09-17T02:24:36Z"
+        },
+        "signatures": []
+      },
+      "frame_hash": "sha256:2ada5a339d9ab4ae1fe16cdb7910526cf3fc6b881df0eae8c7f9d4791978252b",
+      "prev_hash": "sha256:9971a1ef3198709f908de7bcef32d42a7cd1759098f5127aa056b51441b63802",
+      "seq": 13229
+    },
+    {
+      "frame": {
+        "assertion": {
+          "category": "BASELINE",
+          "claim_id": "clm_tale_a416380f2de1a1e9533c5205",
+          "evidence_id": "evd_tale_a416380f2de1a1e9533c5205",
+          "grade": {
+            "Q": "Judged",
+            "T": "Located"
+          },
+          "metric_direction": "lower_better",
+          "protocol_id": "",
+          "reps": 150,
+          "source_id": "src_tale_a416380f2de1a1e9533c5205"
+        },
+        "frame_id": "sha256:222ac1a23f8c3ad49f997154ff25e78a272762f1eac9d3f4faa7fcf4b6291bd0",
+        "frame_type": "epyc.vidya/frame/evidence_supports_claim/v1",
+        "provenance": {
+          "about": "clm_tale_a416380f2de1a1e9533c5205",
+          "evidence": "evd_tale_a416380f2de1a1e9533c5205",
+          "grade_reasons": [
+            "no protocol citation \u2014 this is an OBSERVATION, never decision-gating (MEASUREMENT.md:13)"
+          ],
+          "method": "vidya.adapters.tale_budget/v1",
+          "reps_basis": "attempted:questions"
+        },
+        "pubinfo": {
+          "actor": "vidya.adapters.tale_budget/v1",
+          "authority_scope": "measurement",
+          "created_at": "2026-09-17T02:24:36Z"
+        },
+        "signatures": []
+      },
+      "frame_hash": "sha256:591affb0cf252bb366b86581c9120a5fa24d796cfe05a6928869481b4c71a607",
+      "prev_hash": "sha256:9ff227c4f8fdcba048f0147a1b68d9345e68d70a680102bbd40419879d00caed",
+      "seq": 13230
+    },
+    {
+      "frame": {
+        "assertion": {
+          "locator": "tale-budget:prb_t4_gpu_20260916_191049_math:math:baseline:tale_mean_tokens_incl_estimator:/mnt/raid0/llm/tmp/sub-gpu-runner-20260916/prbt4/prb_t4_gpu_math_20260916_191049.jsonl",
+          "revision_observed": "2026-09-16",
+          "source_id": "src_tale_3215ee195747785b23406876",
+          "source_kind": "tale-budget-measurement",
+          "title": "tale_mean_tokens_incl_estimator"
+        },
+        "frame_id": "sha256:d9b49f5056858450933c34b9cba3c7592f7e1694eb13e7e5a1f72abb8206429b",
+        "frame_type": "epyc.vidya/frame/source_observed/v1",
+        "provenance": {
+          "about": "tale_3215ee195747785b23406876",
+          "method": "vidya.adapters.tale_budget/v1",
+          "retrofit": false
+        },
+        "pubinfo": {
+          "actor": "vidya.adapters.tale_budget/v1",
+          "authority_scope": "measurement",
+          "created_at": "2026-09-17T02:24:36Z"
+        },
+        "signatures": []
+      },
+      "frame_hash": "sha256:31b3139a9c83e70f7f5db9056049b47b1002a8d4210fe0795cc772efccbfce07",
+      "prev_hash": "sha256:55acb1fbf807e3ffc2b362c03d2d7ac6d6e28599ff1e0fbd78740cede9e0b820",
+      "seq": 13231
+    },
+    {
+      "frame": {
+        "assertion": {
+          "claim_id": "clm_tale_3215ee195747785b23406876",
+          "display_text": "TALE-EP prb_t4_gpu_20260916_191049_math: baseline arm on math -> tale_mean_tokens_incl_estimator = 266.0333 tokens (n=150)",
+          "source_id": "src_tale_3215ee195747785b23406876"
+        },
+        "frame_id": "sha256:6cfae1594e81ba1ab586d6471d88ac833e91d4d9620ee4099d18076054c06a88",
+        "frame_type": "epyc.vidya/frame/claim_proposed/v1",
+        "provenance": {
+          "about": "tale_3215ee195747785b23406876",
+          "derived_from": "src_tale_3215ee195747785b23406876",
+          "method": "vidya.adapters.tale_budget/v1"
+        },
+        "pubinfo": {
+          "actor": "vidya.adapters.tale_budget/v1",
+          "authority_scope": "measurement",
+          "created_at": "2026-09-17T02:24:36Z"
+        },
+        "signatures": []
+      },
+      "frame_hash": "sha256:8b310530efa07bd544b1817c707bc4bd003d5da4d391affbeaef51e33c5dca2c",
+      "prev_hash": "sha256:56257449a54bd23ec46f8588261c6e75b5a5a6e423e22aa2cef8588c77f1afe6",
+      "seq": 13232
+    },
+    {
+      "frame": {
+        "assertion": {
+          "category": "BASELINE",
+          "claim_id": "clm_tale_3215ee195747785b23406876",
+          "evidence_id": "evd_tale_3215ee195747785b23406876",
+          "grade": {
+            "Q": "Judged",
+            "T": "Located"
+          },
+          "metric_direction": "lower_better",
+          "protocol_id": "",
+          "reps": 150,
+          "source_id": "src_tale_3215ee195747785b23406876"
+        },
+        "frame_id": "sha256:478d1371ad07d87acb087b16f761736132c5d103b8a2cc5b3ca849e4922a184d",
+        "frame_type": "epyc.vidya/frame/evidence_supports_claim/v1",
+        "provenance": {
+          "about": "clm_tale_3215ee195747785b23406876",
+          "evidence": "evd_tale_3215ee195747785b23406876",
+          "grade_reasons": [
+            "no protocol citation \u2014 this is an OBSERVATION, never decision-gating (MEASUREMENT.md:13)"
+          ],
+          "method": "vidya.adapters.tale_budget/v1",
+          "reps_basis": "attempted:questions"
+        },
+        "pubinfo": {
+          "actor": "vidya.adapters.tale_budget/v1",
+          "authority_scope": "measurement",
+          "created_at": "2026-09-17T02:24:36Z"
+        },
+        "signatures": []
+      },
+      "frame_hash": "sha256:dff2e9e4ccdee549a948f3982bcffab9072b703629f0e3ec7a3d354ae267f29c",
+      "prev_hash": "sha256:0c4f4d992caa27b1d370f9c64096c874d5438afd30c248bf42b4ca76e510e09f",
+      "seq": 13233
+    },
+    {
+      "frame": {
+        "assertion": {
+          "locator": "tale-budget:prb_t4_gpu_20260916_191049_math:math:baseline:tale_mean_latency_s_incl_estimator:/mnt/raid0/llm/tmp/sub-gpu-runner-20260916/prbt4/prb_t4_gpu_math_20260916_191049.jsonl",
+          "revision_observed": "2026-09-16",
+          "source_id": "src_tale_72a90a1a7afa7692046e9b03",
+          "source_kind": "tale-budget-measurement",
+          "title": "tale_mean_latency_s_incl_estimator"
+        },
+        "frame_id": "sha256:7761f072d8f4726f907441202f53b95f3a0c7d75225ed70e0de5e9a3c2908b1f",
+        "frame_type": "epyc.vidya/frame/source_observed/v1",
+        "provenance": {
+          "about": "tale_72a90a1a7afa7692046e9b03",
+          "method": "vidya.adapters.tale_budget/v1",
+          "retrofit": false
+        },
+        "pubinfo": {
+          "actor": "vidya.adapters.tale_budget/v1",
+          "authority_scope": "measurement",
+          "created_at": "2026-09-17T02:24:36Z"
+        },
+        "signatures": []
+      },
+      "frame_hash": "sha256:364ce599b0641913c79ee04c3d7e273e67e6b307e81637b48c57c2de87146fc3",
+      "prev_hash": "sha256:4bad1e6e5238b2ebc8eff03715f022f6b664a5381cc94f3c2009878872301119",
+      "seq": 13234
+    },
+    {
+      "frame": {
+        "assertion": {
+          "claim_id": "clm_tale_72a90a1a7afa7692046e9b03",
+          "display_text": "TALE-EP prb_t4_gpu_20260916_191049_math: baseline arm on math -> tale_mean_latency_s_incl_estimator = 4.3714 seconds (n=150)",
+          "source_id": "src_tale_72a90a1a7afa7692046e9b03"
+        },
+        "frame_id": "sha256:70b28771ae7560d8551f0db77f1f2dff809a2a87379fc4314ce1a0ab477de72e",
+        "frame_type": "epyc.vidya/frame/claim_proposed/v1",
+        "provenance": {
+          "about": "tale_72a90a1a7afa7692046e9b03",
+          "derived_from": "src_tale_72a90a1a7afa7692046e9b03",
+          "method": "vidya.adapters.tale_budget/v1"
+        },
+        "pubinfo": {
+          "actor": "vidya.adapters.tale_budget/v1",
+          "authority_scope": "measurement",
+          "created_at": "2026-09-17T02:24:36Z"
+        },
+        "signatures": []
+      },
+      "frame_hash": "sha256:ea0a040ddb298e8dd07026745c1486f63e87daf09df91aad889486298a8df3d4",
+      "prev_hash": "sha256:a6ba82bd5a30d438d9a73b5defbf5451a0d5cc3e5b04dafb6b27c0416bb9e7aa",
+      "seq": 13235
+    },
+    {
+      "frame": {
+        "assertion": {
+          "category": "BASELINE",
+          "claim_id": "clm_tale_72a90a1a7afa7692046e9b03",
+          "evidence_id": "evd_tale_72a90a1a7afa7692046e9b03",
+          "grade": {
+            "Q": "Judged",
+            "T": "Located"
+          },
+          "metric_direction": "lower_better",
+          "protocol_id": "",
+          "reps": 150,
+          "source_id": "src_tale_72a90a1a7afa7692046e9b03"
+        },
+        "frame_id": "sha256:5e7d89467c12b2cd0f0a2359e6022abbc722eaef942bf52f16ad39e7d030f341",
+        "frame_type": "epyc.vidya/frame/evidence_supports_claim/v1",
+        "provenance": {
+          "about": "clm_tale_72a90a1a7afa7692046e9b03",
+          "evidence": "evd_tale_72a90a1a7afa7692046e9b03",
+          "grade_reasons": [
+            "no protocol citation \u2014 this is an OBSERVATION, never decision-gating (MEASUREMENT.md:13)"
+          ],
+          "method": "vidya.adapters.tale_budget/v1",
+          "reps_basis": "attempted:questions"
+        },
+        "pubinfo": {
+          "actor": "vidya.adapters.tale_budget/v1",
+          "authority_scope": "measurement",
+          "created_at": "2026-09-17T02:24:36Z"
+        },
+        "signatures": []
+      },
+      "frame_hash": "sha256:cf9bc71e43ef870bf1ab561374fbc0a8cb94a44ccc2ac0106f10d20da0c8a0b7",
+      "prev_hash": "sha256:3923dcb8abf4446c1a09bfe2778a79fee8310577ab0d9e27ee06310a764a95b7",
+      "seq": 13236
+    },
+    {
+      "frame": {
+        "assertion": {
+          "locator": "tale-budget:prb_t4_gpu_20260916_191049_math:math:static:tale_suite_accuracy:/mnt/raid0/llm/tmp/sub-gpu-runner-20260916/prbt4/prb_t4_gpu_math_20260916_191049.jsonl",
+          "revision_observed": "2026-09-16",
+          "source_id": "src_tale_a1bff625c11d34df85e31227",
+          "source_kind": "tale-budget-measurement",
+          "title": "tale_suite_accuracy"
+        },
+        "frame_id": "sha256:1fdd7ab89ea367d2f51f4590fd9f25009f283e073f4d89bac630ee38193e2568",
+        "frame_type": "epyc.vidya/frame/source_observed/v1",
+        "provenance": {
+          "about": "tale_a1bff625c11d34df85e31227",
+          "method": "vidya.adapters.tale_budget/v1",
+          "retrofit": false
+        },
+        "pubinfo": {
+          "actor": "vidya.adapters.tale_budget/v1",
+          "authority_scope": "measurement",
+          "created_at": "2026-09-17T02:24:36Z"
+        },
+        "signatures": []
+      },
+      "frame_hash": "sha256:0cd834233282aa467d28971494e166cab640ba9b5e560bbf8746ee4a1b2440a3",
+      "prev_hash": "sha256:78c0e1acf8f43b8991b715151e786a4450270b15b3f325a19fa82d48b33686b6",
+      "seq": 13237
+    },
+    {
+      "frame": {
+        "assertion": {
+          "claim_id": "clm_tale_a1bff625c11d34df85e31227",
+          "display_text": "TALE-EP prb_t4_gpu_20260916_191049_math: static arm on math -> tale_suite_accuracy = 0.9667 fraction_correct (n=150)",
+          "source_id": "src_tale_a1bff625c11d34df85e31227"
+        },
+        "frame_id": "sha256:fea8a98e414426a9a8126d1248f8511dd342d17e667b70da9def8975a60b9f76",
+        "frame_type": "epyc.vidya/frame/claim_proposed/v1",
+        "provenance": {
+          "about": "tale_a1bff625c11d34df85e31227",
+          "derived_from": "src_tale_a1bff625c11d34df85e31227",
+          "method": "vidya.adapters.tale_budget/v1"
+        },
+        "pubinfo": {
+          "actor": "vidya.adapters.tale_budget/v1",
+          "authority_scope": "measurement",
+          "created_at": "2026-09-17T02:24:36Z"
+        },
+        "signatures": []
+      },
+      "frame_hash": "sha256:c87bde6d8259cab9458876f5887f8a8ffe5f610c78948b811ce7e9b863ddb9e3",
+      "prev_hash": "sha256:8ed5112d3889080bf1906588a0d78dbb98fd5d4e174de2dc65159098b92e7e9e",
+      "seq": 13238
+    },
+    {
+      "frame": {
+        "assertion": {
+          "category": "CANDIDATE",
+          "claim_id": "clm_tale_a1bff625c11d34df85e31227",
+          "evidence_id": "evd_tale_a1bff625c11d34df85e31227",
+          "grade": {
+            "Q": "Judged",
+            "T": "Located"
+          },
+          "metric_direction": "higher_better",
+          "protocol_id": "",
+          "reps": 150,
+          "source_id": "src_tale_a1bff625c11d34df85e31227"
+        },
+        "frame_id": "sha256:1832d93154228a2d2cc545f37e503c21ffa7a077116aba0cd141718bb5838a4a",
+        "frame_type": "epyc.vidya/frame/evidence_supports_claim/v1",
+        "provenance": {
+          "about": "clm_tale_a1bff625c11d34df85e31227",
+          "evidence": "evd_tale_a1bff625c11d34df85e31227",
+          "grade_reasons": [
+            "no protocol citation \u2014 this is an OBSERVATION, never decision-gating (MEASUREMENT.md:13)"
+          ],
+          "method": "vidya.adapters.tale_budget/v1",
+          "reps_basis": "scored:questions"
+        },
+        "pubinfo": {
+          "actor": "vidya.adapters.tale_budget/v1",
+          "authority_scope": "measurement",
+          "created_at": "2026-09-17T02:24:36Z"
+        },
+        "signatures": []
+      },
+      "frame_hash": "sha256:549d4c7af22453bb364a6780164022f7dbde4652d19ee0347af62fe526f8265f",
+      "prev_hash": "sha256:1e3bdc88e78367c96464e1f94f130d95d1adf3c2ce08702026875502b5433eb2",
+      "seq": 13239
+    },
+    {
+      "frame": {
+        "assertion": {
+          "locator": "tale-budget:prb_t4_gpu_20260916_191049_math:math:static:tale_mean_answer_tokens:/mnt/raid0/llm/tmp/sub-gpu-runner-20260916/prbt4/prb_t4_gpu_math_20260916_191049.jsonl",
+          "revision_observed": "2026-09-16",
+          "source_id": "src_tale_145d2eee8f5dbc6400ed2c19",
+          "source_kind": "tale-budget-measurement",
+          "title": "tale_mean_answer_tokens"
+        },
+        "frame_id": "sha256:e95343563a0c575eebde6c4653fa67fc91fa77b91b10f7d14acb0318116e4597",
+        "frame_type": "epyc.vidya/frame/source_observed/v1",
+        "provenance": {
+          "about": "tale_145d2eee8f5dbc6400ed2c19",
+          "method": "vidya.adapters.tale_budget/v1",
+          "retrofit": false
+        },
+        "pubinfo": {
+          "actor": "vidya.adapters.tale_budget/v1",
+          "authority_scope": "measurement",
+          "created_at": "2026-09-17T02:24:36Z"
+        },
+        "signatures": []
+      },
+      "frame_hash": "sha256:5ee65f1afad421075705345ac7c802c1a6235b8c47bba80be11f7dea1172801f",
+      "prev_hash": "sha256:2ff5c8161a1ce999ef554fddcd714c1900649feca144c68c0348db57171edbc6",
+      "seq": 13240
+    },
+    {
+      "frame": {
+        "assertion": {
+          "claim_id": "clm_tale_145d2eee8f5dbc6400ed2c19",
+          "display_text": "TALE-EP prb_t4_gpu_20260916_191049_math: static arm on math -> tale_mean_answer_tokens = 73.9267 tokens (n=150)",
+          "source_id": "src_tale_145d2eee8f5dbc6400ed2c19"
+        },
+        "frame_id": "sha256:be907231b134af57769cdbf04f0e851733951e5a51fd6af16138eaee079cc98d",
+        "frame_type": "epyc.vidya/frame/claim_proposed/v1",
+        "provenance": {
+          "about": "tale_145d2eee8f5dbc6400ed2c19",
+          "derived_from": "src_tale_145d2eee8f5dbc6400ed2c19",
+          "method": "vidya.adapters.tale_budget/v1"
+        },
+        "pubinfo": {
+          "actor": "vidya.adapters.tale_budget/v1",
+          "authority_scope": "measurement",
+          "created_at": "2026-09-17T02:24:36Z"
+        },
+        "signatures": []
+      },
+      "frame_hash": "sha256:919c0d9fcd184af7ca4d11de0ee8755c024110a21168e87e5fda11b49ffbdd12",
+      "prev_hash": "sha256:8eb34c3c4347cfad41fc3d6e359de4c9f293d187d4c9627edb3460db267fef42",
+      "seq": 13241
+    },
+    {
+      "frame": {
+        "assertion": {
+          "category": "CANDIDATE",
+          "claim_id": "clm_tale_145d2eee8f5dbc6400ed2c19",
+          "evidence_id": "evd_tale_145d2eee8f5dbc6400ed2c19",
+          "grade": {
+            "Q": "Judged",
+            "T": "Located"
+          },
+          "metric_direction": "lower_better",
+          "protocol_id": "",
+          "reps": 150,
+          "source_id": "src_tale_145d2eee8f5dbc6400ed2c19"
+        },
+        "frame_id": "sha256:d87799a8f8a882f75cfd0c13fef73636cafe2006358dcfaca8d86d8443a737ff",
+        "frame_type": "epyc.vidya/frame/evidence_supports_claim/v1",
+        "provenance": {
+          "about": "clm_tale_145d2eee8f5dbc6400ed2c19",
+          "evidence": "evd_tale_145d2eee8f5dbc6400ed2c19",
+          "grade_reasons": [
+            "no protocol citation \u2014 this is an OBSERVATION, never decision-gating (MEASUREMENT.md:13)"
+          ],
+          "method": "vidya.adapters.tale_budget/v1",
+          "reps_basis": "attempted:questions"
+        },
+        "pubinfo": {
+          "actor": "vidya.adapters.tale_budget/v1",
+          "authority_scope": "measurement",
+          "created_at": "2026-09-17T02:24:36Z"
+        },
+        "signatures": []
+      },
+      "frame_hash": "sha256:9cb1999ad6f7e753640f17bc5c0c3ded82dee2fefbb18c3433c6376b401633c6",
+      "prev_hash": "sha256:ecbcf96dac8f9b41caf973dd6f56d7348da6e82ad7389d905d15fd9bfa4d51ea",
+      "seq": 13242
+    },
+    {
+      "frame": {
+        "assertion": {
+          "locator": "tale-budget:prb_t4_gpu_20260916_191049_math:math:static:tale_mean_tokens_incl_estimator:/mnt/raid0/llm/tmp/sub-gpu-runner-20260916/prbt4/prb_t4_gpu_math_20260916_191049.jsonl",
+          "revision_observed": "2026-09-16",
+          "source_id": "src_tale_68ae8a048751bc0370912bb9",
+          "source_kind": "tale-budget-measurement",
+          "title": "tale_mean_tokens_incl_estimator"
+        },
+        "frame_id": "sha256:5d8c88534ef1574c5a296aa23f7aeacc973817f3e8064f524ab00e7792d0539f",
+        "frame_type": "epyc.vidya/frame/source_observed/v1",
+        "provenance": {
+          "about": "tale_68ae8a048751bc0370912bb9",
+          "method": "vidya.adapters.tale_budget/v1",
+          "retrofit": false
+        },
+        "pubinfo": {
+          "actor": "vidya.adapters.tale_budget/v1",
+          "authority_scope": "measurement",
+          "created_at": "2026-09-17T02:24:36Z"
+        },
+        "signatures": []
+      },
+      "frame_hash": "sha256:5a68cf451efeee8c13f4c91ba35ee4ca95d1f03d6e3c3d1253bbf7747360f153",
+      "prev_hash": "sha256:41c4d6d1439a980a9392cc9f109b0025a583cdc86c9e22bed722f6c6321a01df",
+      "seq": 13243
+    },
+    {
+      "frame": {
+        "assertion": {
+          "claim_id": "clm_tale_68ae8a048751bc0370912bb9",
+          "display_text": "TALE-EP prb_t4_gpu_20260916_191049_math: static arm on math -> tale_mean_tokens_incl_estimator = 73.9267 tokens (n=150)",
+          "source_id": "src_tale_68ae8a048751bc0370912bb9"
+        },
+        "frame_id": "sha256:4e39952b68ddaa6e551d01ff44251dec8c9bf23f7265fc38a29848791fbbdd09",
+        "frame_type": "epyc.vidya/frame/claim_proposed/v1",
+        "provenance": {
+          "about": "tale_68ae8a048751bc0370912bb9",
+          "derived_from": "src_tale_68ae8a048751bc0370912bb9",
+          "method": "vidya.adapters.tale_budget/v1"
+        },
+        "pubinfo": {
+          "actor": "vidya.adapters.tale_budget/v1",
+          "authority_scope": "measurement",
+          "created_at": "2026-09-17T02:24:36Z"
+        },
+        "signatures": []
+      },
+      "frame_hash": "sha256:1256738cfd3717bc016a79197ae71109b0f945faaeb878c0f5f10b0b6e35ae46",
+      "prev_hash": "sha256:93088d4f5b895cffc7e980ab5377e3f2bbb638200dccd272faf378f9db731263",
+      "seq": 13244
+    },
+    {
+      "frame": {
+        "assertion": {
+          "category": "CANDIDATE",
+          "claim_id": "clm_tale_68ae8a048751bc0370912bb9",
+          "evidence_id": "evd_tale_68ae8a048751bc0370912bb9",
+          "grade": {
+            "Q": "Judged",
+            "T": "Located"
+          },
+          "metric_direction": "lower_better",
+          "protocol_id": "",
+          "reps": 150,
+          "source_id": "src_tale_68ae8a048751bc0370912bb9"
+        },
+        "frame_id": "sha256:2da1142d8b8f179149e54e76e68b18bb62ef254d7aca97b4dfbf45591232682d",
+        "frame_type": "epyc.vidya/frame/evidence_supports_claim/v1",
+        "provenance": {
+          "about": "clm_tale_68ae8a048751bc0370912bb9",
+          "evidence": "evd_tale_68ae8a048751bc0370912bb9",
+          "grade_reasons": [
+            "no protocol citation \u2014 this is an OBSERVATION, never decision-gating (MEASUREMENT.md:13)"
+          ],
+          "method": "vidya.adapters.tale_budget/v1",
+          "reps_basis": "attempted:questions"
+        },
+        "pubinfo": {
+          "actor": "vidya.adapters.tale_budget/v1",
+          "authority_scope": "measurement",
+          "created_at": "2026-09-17T02:24:36Z"
+        },
+        "signatures": []
+      },
+      "frame_hash": "sha256:d4ca68f60f6ef7d0b16996c0510e0aa9fe92a6b45e3c34b56ec7dec4fb439029",
+      "prev_hash": "sha256:d2d8c5c8050d37cb99bc92d2d6a348d51f4c319592e9d4068056ecea7584332e",
+      "seq": 13245
+    },
+    {
+      "frame": {
+        "assertion": {
+          "locator": "tale-budget:prb_t4_gpu_20260916_191049_math:math:static:tale_mean_latency_s_incl_estimator:/mnt/raid0/llm/tmp/sub-gpu-runner-20260916/prbt4/prb_t4_gpu_math_20260916_191049.jsonl",
+          "revision_observed": "2026-09-16",
+          "source_id": "src_tale_641037c7fe93553e102a7884",
+          "source_kind": "tale-budget-measurement",
+          "title": "tale_mean_latency_s_incl_estimator"
+        },
+        "frame_id": "sha256:550075ba0606f2e76b3d17544a2d894a6c2b7f016f0a277e1d9be91e165fbbbb",
+        "frame_type": "epyc.vidya/frame/source_observed/v1",
+        "provenance": {
+          "about": "tale_641037c7fe93553e102a7884",
+          "method": "vidya.adapters.tale_budget/v1",
+          "retrofit": false
+        },
+        "pubinfo": {
+          "actor": "vidya.adapters.tale_budget/v1",
+          "authority_scope": "measurement",
+          "created_at": "2026-09-17T02:24:36Z"
+        },
+        "signatures": []
+      },
+      "frame_hash": "sha256:844a36bc8d115c979183af2b5adc56f466b9b12d9252e2483e62390b04b606d8",
+      "prev_hash": "sha256:6d99d8e929f77ef9972a6f2a6cee6b2c57581c0f9ff3369a930efab7a6e4ceee",
+      "seq": 13246
+    },
+    {
+      "frame": {
+        "assertion": {
+          "claim_id": "clm_tale_641037c7fe93553e102a7884",
+          "display_text": "TALE-EP prb_t4_gpu_20260916_191049_math: static arm on math -> tale_mean_latency_s_incl_estimator = 1.6945 seconds (n=150)",
+          "source_id": "src_tale_641037c7fe93553e102a7884"
+        },
+        "frame_id": "sha256:86517938af7f6e4f2bd12eb16193874e54dfb64a8ebf1658016425a827524443",
+        "frame_type": "epyc.vidya/frame/claim_proposed/v1",
+        "provenance": {
+          "about": "tale_641037c7fe93553e102a7884",
+          "derived_from": "src_tale_641037c7fe93553e102a7884",
+          "method": "vidya.adapters.tale_budget/v1"
+        },
+        "pubinfo": {
+          "actor": "vidya.adapters.tale_budget/v1",
+          "authority_scope": "measurement",
+          "created_at": "2026-09-17T02:24:36Z"
+        },
+        "signatures": []
+      },
+      "frame_hash": "sha256:28995998cb38231c6196a1933c4860c6ea13c41d3529c0af6cd895353bc2758b",
+      "prev_hash": "sha256:689801ad9562fcbaa6689786bcd26e3c72e9553e29fbe32e94853e1e3e89e9e1",
+      "seq": 13247
+    },
+    {
+      "frame": {
+        "assertion": {
+          "category": "CANDIDATE",
+          "claim_id": "clm_tale_641037c7fe93553e102a7884",
+          "evidence_id": "evd_tale_641037c7fe93553e102a7884",
+          "grade": {
+            "Q": "Judged",
+            "T": "Located"
+          },
+          "metric_direction": "lower_better",
+          "protocol_id": "",
+          "reps": 150,
+          "source_id": "src_tale_641037c7fe93553e102a7884"
+        },
+        "frame_id": "sha256:b54580f21beca57a3815435ca9555565761a242c7c6de2fb81c2c46945bbc34f",
+        "frame_type": "epyc.vidya/frame/evidence_supports_claim/v1",
+        "provenance": {
+          "about": "clm_tale_641037c7fe93553e102a7884",
+          "evidence": "evd_tale_641037c7fe93553e102a7884",
+          "grade_reasons": [
+            "no protocol citation \u2014 this is an OBSERVATION, never decision-gating (MEASUREMENT.md:13)"
+          ],
+          "method": "vidya.adapters.tale_budget/v1",
+          "reps_basis": "attempted:questions"
+        },
+        "pubinfo": {
+          "actor": "vidya.adapters.tale_budget/v1",
+          "authority_scope": "measurement",
+          "created_at": "2026-09-17T02:24:36Z"
+        },
+        "signatures": []
+      },
+      "frame_hash": "sha256:ee1c0e7054273b86fa0d74cea9040801ccc4177fe14d9c8dd0d5db0191172d12",
+      "prev_hash": "sha256:e34c5d0d635c5c806f0ac8121b397e47973d1e5453cbbf291b930276482a328a",
+      "seq": 13248
+    },
+    {
+      "frame": {
+        "assertion": {
+          "locator": "tale-budget:prb_t4_gpu_20260916_191049_math:math:tale:tale_suite_accuracy:/mnt/raid0/llm/tmp/sub-gpu-runner-20260916/prbt4/prb_t4_gpu_math_20260916_191049.jsonl",
+          "revision_observed": "2026-09-16",
+          "source_id": "src_tale_93e124008981a1981e2dafdc",
+          "source_kind": "tale-budget-measurement",
+          "title": "tale_suite_accuracy"
+        },
+        "frame_id": "sha256:49435d0385a0ce98cec50e3dc3bca279089f277230db17ffb7e67eca79a7dc47",
+        "frame_type": "epyc.vidya/frame/source_observed/v1",
+        "provenance": {
+          "about": "tale_93e124008981a1981e2dafdc",
+          "method": "vidya.adapters.tale_budget/v1",
+          "retrofit": false
+        },
+        "pubinfo": {
+          "actor": "vidya.adapters.tale_budget/v1",
+          "authority_scope": "measurement",
+          "created_at": "2026-09-17T02:24:36Z"
+        },
+        "signatures": []
+      },
+      "frame_hash": "sha256:0033d9ca580f7e48c3edd73947a574453cdfe91e456cb73764266c37ce05b02f",
+      "prev_hash": "sha256:1596731449905a0fc1a99ea4b751294c58952f2b99e654d8787d4b2c68d82e8c",
+      "seq": 13249
+    },
+    {
+      "frame": {
+        "assertion": {
+          "claim_id": "clm_tale_93e124008981a1981e2dafdc",
+          "display_text": "TALE-EP prb_t4_gpu_20260916_191049_math: tale arm on math -> tale_suite_accuracy = 0.9800 fraction_correct (n=150)",
+          "source_id": "src_tale_93e124008981a1981e2dafdc"
+        },
+        "frame_id": "sha256:67d9cc71905bc89640405122e5a933211da82708cf1a2b3f3d2158612349093f",
+        "frame_type": "epyc.vidya/frame/claim_proposed/v1",
+        "provenance": {
+          "about": "tale_93e124008981a1981e2dafdc",
+          "derived_from": "src_tale_93e124008981a1981e2dafdc",
+          "method": "vidya.adapters.tale_budget/v1"
+        },
+        "pubinfo": {
+          "actor": "vidya.adapters.tale_budget/v1",
+          "authority_scope": "measurement",
+          "created_at": "2026-09-17T02:24:36Z"
+        },
+        "signatures": []
+      },
+      "frame_hash": "sha256:4759c32618189e48aa912b98a2eeeb91274a16a3efa396c03568f5d2be3bd90d",
+      "prev_hash": "sha256:c8aff5283bae17f48d7707b0f71177df1addd8843197c32aa21f273d3f9e2aca",
+      "seq": 13250
+    },
+    {
+      "frame": {
+        "assertion": {
+          "category": "CANDIDATE",
+          "claim_id": "clm_tale_93e124008981a1981e2dafdc",
+          "evidence_id": "evd_tale_93e124008981a1981e2dafdc",
+          "grade": {
+            "Q": "Judged",
+            "T": "Located"
+          },
+          "metric_direction": "higher_better",
+          "protocol_id": "",
+          "reps": 150,
+          "source_id": "src_tale_93e124008981a1981e2dafdc"
+        },
+        "frame_id": "sha256:9affa6aff175c7ba926c4299b027a75efa04ebf74e6d85b00080d6737b08fe21",
+        "frame_type": "epyc.vidya/frame/evidence_supports_claim/v1",
+        "provenance": {
+          "about": "clm_tale_93e124008981a1981e2dafdc",
+          "evidence": "evd_tale_93e124008981a1981e2dafdc",
+          "grade_reasons": [
+            "no protocol citation \u2014 this is an OBSERVATION, never decision-gating (MEASUREMENT.md:13)"
+          ],
+          "method": "vidya.adapters.tale_budget/v1",
+          "reps_basis": "scored:questions"
+        },
+        "pubinfo": {
+          "actor": "vidya.adapters.tale_budget/v1",
+          "authority_scope": "measurement",
+          "created_at": "2026-09-17T02:24:36Z"
+        },
+        "signatures": []
+      },
+      "frame_hash": "sha256:dd4a4811f1a35850c18c07a316a97ae9149641789591c29fc434f14736f1c8e8",
+      "prev_hash": "sha256:be9564fcaf2b8a6b65743e3ab9672009c11ea63fcdca67f9433efd931bfb1103",
+      "seq": 13251
+    },
+    {
+      "frame": {
+        "assertion": {
+          "locator": "tale-budget:prb_t4_gpu_20260916_191049_math:math:tale:tale_mean_answer_tokens:/mnt/raid0/llm/tmp/sub-gpu-runner-20260916/prbt4/prb_t4_gpu_math_20260916_191049.jsonl",
+          "revision_observed": "2026-09-16",
+          "source_id": "src_tale_75aef6171d3dfde495455f6d",
+          "source_kind": "tale-budget-measurement",
+          "title": "tale_mean_answer_tokens"
+        },
+        "frame_id": "sha256:514846594ba3c3bd665471699a015495714baa5a359f8d37e8c4340f26f5117c",
+        "frame_type": "epyc.vidya/frame/source_observed/v1",
+        "provenance": {
+          "about": "tale_75aef6171d3dfde495455f6d",
+          "method": "vidya.adapters.tale_budget/v1",
+          "retrofit": false
+        },
+        "pubinfo": {
+          "actor": "vidya.adapters.tale_budget/v1",
+          "authority_scope": "measurement",
+          "created_at": "2026-09-17T02:24:36Z"
+        },
+        "signatures": []
+      },
+      "frame_hash": "sha256:07ec7603d1a86a50c25af2be1470f262d577c8bddeffa5adefb511420d5011ac",
+      "prev_hash": "sha256:03fde85b163eca2fdb3f7ddb7213cdb1faddb3446eeca6b9da462c399a59eb43",
+      "seq": 13252
+    },
+    {
+      "frame": {
+        "assertion": {
+          "claim_id": "clm_tale_75aef6171d3dfde495455f6d",
+          "display_text": "TALE-EP prb_t4_gpu_20260916_191049_math: tale arm on math -> tale_mean_answer_tokens = 103.0467 tokens (n=150)",
+          "source_id": "src_tale_75aef6171d3dfde495455f6d"
+        },
+        "frame_id": "sha256:72d156aace5b20cea88cc9fca2a418e7fdf80477787adde865ae8026c35cc5f1",
+        "frame_type": "epyc.vidya/frame/claim_proposed/v1",
+        "provenance": {
+          "about": "tale_75aef6171d3dfde495455f6d",
+          "derived_from": "src_tale_75aef6171d3dfde495455f6d",
+          "method": "vidya.adapters.tale_budget/v1"
+        },
+        "pubinfo": {
+          "actor": "vidya.adapters.tale_budget/v1",
+          "authority_scope": "measurement",
+          "created_at": "2026-09-17T02:24:36Z"
+        },
+        "signatures": []
+      },
+      "frame_hash": "sha256:23198d00771ffb7aabdb60bcc2c6efcf3baeb6ff35854ed29ee6607c12039c99",
+      "prev_hash": "sha256:74077761fc2ff9a321607c2a8b1399d70118251a2b99a58a9f3bf598cc53686d",
+      "seq": 13253
+    },
+    {
+      "frame": {
+        "assertion": {
+          "category": "CANDIDATE",
+          "claim_id": "clm_tale_75aef6171d3dfde495455f6d",
+          "evidence_id": "evd_tale_75aef6171d3dfde495455f6d",
+          "grade": {
+            "Q": "Judged",
+            "T": "Located"
+          },
+          "metric_direction": "lower_better",
+          "protocol_id": "",
+          "reps": 150,
+          "source_id": "src_tale_75aef6171d3dfde495455f6d"
+        },
+        "frame_id": "sha256:f57d41fe9c0585372d8a54dbc8921561b43d02510c088db04bfe7cfe58833f99",
+        "frame_type": "epyc.vidya/frame/evidence_supports_claim/v1",
+        "provenance": {
+          "about": "clm_tale_75aef6171d3dfde495455f6d",
+          "evidence": "evd_tale_75aef6171d3dfde495455f6d",
+          "grade_reasons": [
+            "no protocol citation \u2014 this is an OBSERVATION, never decision-gating (MEASUREMENT.md:13)"
+          ],
+          "method": "vidya.adapters.tale_budget/v1",
+          "reps_basis": "attempted:questions"
+        },
+        "pubinfo": {
+          "actor": "vidya.adapters.tale_budget/v1",
+          "authority_scope": "measurement",
+          "created_at": "2026-09-17T02:24:36Z"
+        },
+        "signatures": []
+      },
+      "frame_hash": "sha256:1bd2dc2226e35edf205f6b23213415e717b0a6cba82175e2700ec2fd8397bab7",
+      "prev_hash": "sha256:756b3e6522bb3bed10bf83e2ad8471a38086e727441565beab02276408c73d85",
+      "seq": 13254
+    },
+    {
+      "frame": {
+        "assertion": {
+          "locator": "tale-budget:prb_t4_gpu_20260916_191049_math:math:tale:tale_mean_tokens_incl_estimator:/mnt/raid0/llm/tmp/sub-gpu-runner-20260916/prbt4/prb_t4_gpu_math_20260916_191049.jsonl",
+          "revision_observed": "2026-09-16",
+          "source_id": "src_tale_a12598cb28be0adcd8a389ae",
+          "source_kind": "tale-budget-measurement",
+          "title": "tale_mean_tokens_incl_estimator"
+        },
+        "frame_id": "sha256:5de8b84d5967bcc481ad10cbc226421036865eaa53498960efaa490950a8f09a",
+        "frame_type": "epyc.vidya/frame/source_observed/v1",
+        "provenance": {
+          "about": "tale_a12598cb28be0adcd8a389ae",
+          "method": "vidya.adapters.tale_budget/v1",
+          "retrofit": false
+        },
+        "pubinfo": {
+          "actor": "vidya.adapters.tale_budget/v1",
+          "authority_scope": "measurement",
+          "created_at": "2026-09-17T02:24:36Z"
+        },
+        "signatures": []
+      },
+      "frame_hash": "sha256:92c20585f76e87203bde270836aa10357f8c2bd776f67467fa89934f5d704d4d",
+      "prev_hash": "sha256:59be1a63bc7bd1219841636972dad0f5886d656d4321fc95f401e888ecb997f6",
+      "seq": 13255
+    },
+    {
+      "frame": {
+        "assertion": {
+          "claim_id": "clm_tale_a12598cb28be0adcd8a389ae",
+          "display_text": "TALE-EP prb_t4_gpu_20260916_191049_math: tale arm on math -> tale_mean_tokens_incl_estimator = 110.5667 tokens (n=150)",
+          "source_id": "src_tale_a12598cb28be0adcd8a389ae"
+        },
+        "frame_id": "sha256:5e082bce1883de633ee364d61920fb8e4bbdab968965f1adf76f144cb70596a6",
+        "frame_type": "epyc.vidya/frame/claim_proposed/v1",
+        "provenance": {
+          "about": "tale_a12598cb28be0adcd8a389ae",
+          "derived_from": "src_tale_a12598cb28be0adcd8a389ae",
+          "method": "vidya.adapters.tale_budget/v1"
+        },
+        "pubinfo": {
+          "actor": "vidya.adapters.tale_budget/v1",
+          "authority_scope": "measurement",
+          "created_at": "2026-09-17T02:24:36Z"
+        },
+        "signatures": []
+      },
+      "frame_hash": "sha256:4aecac717a81f223b3b4015e4edbd12b0c3f9a5b78ff13f7f19292ebed0a82b0",
+      "prev_hash": "sha256:9c81c978bfc97618a2793d8d07fe90a523279ca5c5299598d397f0536a0880fc",
+      "seq": 13256
+    },
+    {
+      "frame": {
+        "assertion": {
+          "category": "CANDIDATE",
+          "claim_id": "clm_tale_a12598cb28be0adcd8a389ae",
+          "evidence_id": "evd_tale_a12598cb28be0adcd8a389ae",
+          "grade": {
+            "Q": "Judged",
+            "T": "Located"
+          },
+          "metric_direction": "lower_better",
+          "protocol_id": "",
+          "reps": 150,
+          "source_id": "src_tale_a12598cb28be0adcd8a389ae"
+        },
+        "frame_id": "sha256:0bcd8df3b4a984cd2322e2fb8559924ac140f4cca71343ed067e2fdba985649b",
+        "frame_type": "epyc.vidya/frame/evidence_supports_claim/v1",
+        "provenance": {
+          "about": "clm_tale_a12598cb28be0adcd8a389ae",
+          "evidence": "evd_tale_a12598cb28be0adcd8a389ae",
+          "grade_reasons": [
+            "no protocol citation \u2014 this is an OBSERVATION, never decision-gating (MEASUREMENT.md:13)"
+          ],
+          "method": "vidya.adapters.tale_budget/v1",
+          "reps_basis": "attempted:questions"
+        },
+        "pubinfo": {
+          "actor": "vidya.adapters.tale_budget/v1",
+          "authority_scope": "measurement",
+          "created_at": "2026-09-17T02:24:36Z"
+        },
+        "signatures": []
+      },
+      "frame_hash": "sha256:6b21fc603b1323e17cf7288869d5ca7fe197ac5be86949ef97bfac59fa914dc4",
+      "prev_hash": "sha256:fe84bc64af6eb1de547e593ee0b1e0789b0ed44638de17a4cc18fe45045c2943",
+      "seq": 13257
+    },
+    {
+      "frame": {
+        "assertion": {
+          "locator": "tale-budget:prb_t4_gpu_20260916_191049_math:math:tale:tale_mean_latency_s_incl_estimator:/mnt/raid0/llm/tmp/sub-gpu-runner-20260916/prbt4/prb_t4_gpu_math_20260916_191049.jsonl",
+          "revision_observed": "2026-09-16",
+          "source_id": "src_tale_c28636a9f5d11d6842d555b2",
+          "source_kind": "tale-budget-measurement",
+          "title": "tale_mean_latency_s_incl_estimator"
+        },
+        "frame_id": "sha256:81d32be058a33273a91b1a5b86a3f2b04d7f0a2915b620581aa705451aa07727",
+        "frame_type": "epyc.vidya/frame/source_observed/v1",
+        "provenance": {
+          "about": "tale_c28636a9f5d11d6842d555b2",
+          "method": "vidya.adapters.tale_budget/v1",
+          "retrofit": false
+        },
+        "pubinfo": {
+          "actor": "vidya.adapters.tale_budget/v1",
+          "authority_scope": "measurement",
+          "created_at": "2026-09-17T02:24:36Z"
+        },
+        "signatures": []
+      },
+      "frame_hash": "sha256:9bd99ecd0d6ceda1bf4ffd390a1f18ef77093fb4d79d3064562fee30d58e311c",
+      "prev_hash": "sha256:cffc928033a82c5896c008f9f70dd556e4ef7404e22b16da8426d00287d8b850",
+      "seq": 13258
+    },
+    {
+      "frame": {
+        "assertion": {
+          "claim_id": "clm_tale_c28636a9f5d11d6842d555b2",
+          "display_text": "TALE-EP prb_t4_gpu_20260916_191049_math: tale arm on math -> tale_mean_latency_s_incl_estimator = 2.9483 seconds (n=150)",
+          "source_id": "src_tale_c28636a9f5d11d6842d555b2"
+        },
+        "frame_id": "sha256:37039162684585e7a5ff6e0278ff6452e2fea66de7517ed64a5d3535b80eeeb0",
+        "frame_type": "epyc.vidya/frame/claim_proposed/v1",
+        "provenance": {
+          "about": "tale_c28636a9f5d11d6842d555b2",
+          "derived_from": "src_tale_c28636a9f5d11d6842d555b2",
+          "method": "vidya.adapters.tale_budget/v1"
+        },
+        "pubinfo": {
+          "actor": "vidya.adapters.tale_budget/v1",
+          "authority_scope": "measurement",
+          "created_at": "2026-09-17T02:24:36Z"
+        },
+        "signatures": []
+      },
+      "frame_hash": "sha256:ed323c4b3b73a007fe2822b6c6cc2275408b0e834394d5ba6314b6eb66add550",
+      "prev_hash": "sha256:9ad00d01001c362cfa2f97ad64014428dcd35e37d72d69d46b8d484e7e82c55c",
+      "seq": 13259
+    },
+    {
+      "frame": {
+        "assertion": {
+          "category": "CANDIDATE",
+          "claim_id": "clm_tale_c28636a9f5d11d6842d555b2",
+          "evidence_id": "evd_tale_c28636a9f5d11d6842d555b2",
+          "grade": {
+            "Q": "Judged",
+            "T": "Located"
+          },
+          "metric_direction": "lower_better",
+          "protocol_id": "",
+          "reps": 150,
+          "source_id": "src_tale_c28636a9f5d11d6842d555b2"
+        },
+        "frame_id": "sha256:cdca5380ade93515fdf24c3fc20f81c46945884d0ee2a33a4595f2d1e9a76326",
+        "frame_type": "epyc.vidya/frame/evidence_supports_claim/v1",
+        "provenance": {
+          "about": "clm_tale_c28636a9f5d11d6842d555b2",
+          "evidence": "evd_tale_c28636a9f5d11d6842d555b2",
+          "grade_reasons": [
+            "no protocol citation \u2014 this is an OBSERVATION, never decision-gating (MEASUREMENT.md:13)"
+          ],
+          "method": "vidya.adapters.tale_budget/v1",
+          "reps_basis": "attempted:questions"
+        },
+        "pubinfo": {
+          "actor": "vidya.adapters.tale_budget/v1",
+          "authority_scope": "measurement",
+          "created_at": "2026-09-17T02:24:36Z"
+        },
+        "signatures": []
+      },
+      "frame_hash": "sha256:7bea2961f9b7afb68c8a0e113841030f8fe02c76080c7734ec812f4a568ca606",
+      "prev_hash": "sha256:6dd40df8db007574693eb6dd2b6f0aceb7894166e49087aa0af79fc667b5c123",
+      "seq": 13260
+    },
+    {
+      "frame": {
+        "assertion": {
+          "locator": "tale-budget:prb_t4_gpu_20260916_191049_olympiadbench:olympiadbench:baseline:tale_suite_accuracy:/mnt/raid0/llm/tmp/sub-gpu-runner-20260916/prbt4/prb_t4_gpu_olympiadbench_20260916_191049.jsonl",
+          "revision_observed": "2026-09-17",
+          "source_id": "src_tale_3385993bbf3188394cd537f6",
+          "source_kind": "tale-budget-measurement",
+          "title": "tale_suite_accuracy"
+        },
+        "frame_id": "sha256:27c378f9489cb0ba89306d050b2e5db55c63d0e5cb7aa5ec35b313fcbefc9183",
+        "frame_type": "epyc.vidya/frame/source_observed/v1",
+        "provenance": {
+          "about": "tale_3385993bbf3188394cd537f6",
+          "method": "vidya.adapters.tale_budget/v1",
+          "retrofit": false
+        },
+        "pubinfo": {
+          "actor": "vidya.adapters.tale_budget/v1",
+          "authority_scope": "measurement",
+          "created_at": "2026-09-17T02:24:36Z"
+        },
+        "signatures": []
+      },
+      "frame_hash": "sha256:272cd6b93e20c63eba696dddbde088fa5053f604bfe91266bfe2ee4d680cdcf4",
+      "prev_hash": "sha256:1cbfbbca3491281bfb923bef72b7a477ef72c8078eaaacadd5e0be8dc25b28a7",
+      "seq": 13261
+    },
+    {
+      "frame": {
+        "assertion": {
+          "claim_id": "clm_tale_3385993bbf3188394cd537f6",
+          "display_text": "TALE-EP prb_t4_gpu_20260916_191049_olympiadbench: baseline arm on olympiadbench -> tale_suite_accuracy = 0.3200 fraction_correct (n=100)",
+          "source_id": "src_tale_3385993bbf3188394cd537f6"
+        },
+        "frame_id": "sha256:d2321e2e10a679cbf89eeb418632d7db55998013622f68dfe25e45e5fe22c8e2",
+        "frame_type": "epyc.vidya/frame/claim_proposed/v1",
+        "provenance": {
+          "about": "tale_3385993bbf3188394cd537f6",
+          "derived_from": "src_tale_3385993bbf3188394cd537f6",
+          "method": "vidya.adapters.tale_budget/v1"
+        },
+        "pubinfo": {
+          "actor": "vidya.adapters.tale_budget/v1",
+          "authority_scope": "measurement",
+          "created_at": "2026-09-17T02:24:36Z"
+        },
+        "signatures": []
+      },
+      "frame_hash": "sha256:b152a9e8875e005262dda5d6eef3cdc6d6a5aad38c683e3e817796ec4f5afa16",
+      "prev_hash": "sha256:3090fcb7414e823f022b6577e95865ea72fb62f04ffc5d0a2d30dd3f29bbad9c",
+      "seq": 13262
+    },
+    {
+      "frame": {
+        "assertion": {
+          "category": "BASELINE",
+          "claim_id": "clm_tale_3385993bbf3188394cd537f6",
+          "evidence_id": "evd_tale_3385993bbf3188394cd537f6",
+          "grade": {
+            "Q": "Judged",
+            "T": "Located"
+          },
+          "metric_direction": "higher_better",
+          "protocol_id": "",
+          "reps": 100,
+          "source_id": "src_tale_3385993bbf3188394cd537f6"
+        },
+        "frame_id": "sha256:1b63ecd28d98e610c1c44d37777dad6c49227a6bddad71e108f2ad7133922934",
+        "frame_type": "epyc.vidya/frame/evidence_supports_claim/v1",
+        "provenance": {
+          "about": "clm_tale_3385993bbf3188394cd537f6",
+          "evidence": "evd_tale_3385993bbf3188394cd537f6",
+          "grade_reasons": [
+            "no protocol citation \u2014 this is an OBSERVATION, never decision-gating (MEASUREMENT.md:13)"
+          ],
+          "method": "vidya.adapters.tale_budget/v1",
+          "reps_basis": "scored:questions"
+        },
+        "pubinfo": {
+          "actor": "vidya.adapters.tale_budget/v1",
+          "authority_scope": "measurement",
+          "created_at": "2026-09-17T02:24:36Z"
+        },
+        "signatures": []
+      },
+      "frame_hash": "sha256:9b1b1598ba263fabbe4e5696c2c72e0aba28f08b19bc7ac248d986b5faff26b4",
+      "prev_hash": "sha256:5b9a590b0cbad8cb6682f0933b1670b0e95987a4a95a22637b9c8134fc886f35",
+      "seq": 13263
+    },
+    {
+      "frame": {
+        "assertion": {
+          "locator": "tale-budget:prb_t4_gpu_20260916_191049_olympiadbench:olympiadbench:baseline:tale_mean_answer_tokens:/mnt/raid0/llm/tmp/sub-gpu-runner-20260916/prbt4/prb_t4_gpu_olympiadbench_20260916_191049.jsonl",
+          "revision_observed": "2026-09-17",
+          "source_id": "src_tale_b7f9ca52056fba1042bdc688",
+          "source_kind": "tale-budget-measurement",
+          "title": "tale_mean_answer_tokens"
+        },
+        "frame_id": "sha256:373e8a15c298cc548cbd9189ffdbdf25b9bd8b32abda81fcf64d85882358eac3",
+        "frame_type": "epyc.vidya/frame/source_observed/v1",
+        "provenance": {
+          "about": "tale_b7f9ca52056fba1042bdc688",
+          "method": "vidya.adapters.tale_budget/v1",
+          "retrofit": false
+        },
+        "pubinfo": {
+          "actor": "vidya.adapters.tale_budget/v1",
+          "authority_scope": "measurement",
+          "created_at": "2026-09-17T02:24:36Z"
+        },
+        "signatures": []
+      },
+      "frame_hash": "sha256:3a31741c6334e749e8ae260b184fa237f84cd0a1cd8fc3b174d306aeaece9234",
+      "prev_hash": "sha256:8d61657a49030d7a3f10ff872b614de7fa3889246901ffe77c5fb9f3c0ed6d8c",
+      "seq": 13264
+    },
+    {
+      "frame": {
+        "assertion": {
+          "claim_id": "clm_tale_b7f9ca52056fba1042bdc688",
+          "display_text": "TALE-EP prb_t4_gpu_20260916_191049_olympiadbench: baseline arm on olympiadbench -> tale_mean_answer_tokens = 6688.0700 tokens (n=100)",
+          "source_id": "src_tale_b7f9ca52056fba1042bdc688"
+        },
+        "frame_id": "sha256:f228dd9e03f91e808a062dec4dc68c0b60d9cbb151290b6175793a33dcdb8e9f",
+        "frame_type": "epyc.vidya/frame/claim_proposed/v1",
+        "provenance": {
+          "about": "tale_b7f9ca52056fba1042bdc688",
+          "derived_from": "src_tale_b7f9ca52056fba1042bdc688",
+          "method": "vidya.adapters.tale_budget/v1"
+        },
+        "pubinfo": {
+          "actor": "vidya.adapters.tale_budget/v1",
+          "authority_scope": "measurement",
+          "created_at": "2026-09-17T02:24:36Z"
+        },
+        "signatures": []
+      },
+      "frame_hash": "sha256:c7e93c8fe433d8cc86f52569fcbc47d55b812cd081f26c785130acbcc94b9f4f",
+      "prev_hash": "sha256:2f8857957dd630f2aedcbed227b2f65a08a362d461dc1492eb1f7ad5bc4564c8",
+      "seq": 13265
+    },
+    {
+      "frame": {
+        "assertion": {
+          "category": "BASELINE",
+          "claim_id": "clm_tale_b7f9ca52056fba1042bdc688",
+          "evidence_id": "evd_tale_b7f9ca52056fba1042bdc688",
+          "grade": {
+            "Q": "Judged",
+            "T": "Located"
+          },
+          "metric_direction": "lower_better",
+          "protocol_id": "",
+          "reps": 100,
+          "source_id": "src_tale_b7f9ca52056fba1042bdc688"
+        },
+        "frame_id": "sha256:c7107d0c811a8f595d0796f36afa347d1f7d7c94829b831be912c5b96c2f664d",
+        "frame_type": "epyc.vidya/frame/evidence_supports_claim/v1",
+        "provenance": {
+          "about": "clm_tale_b7f9ca52056fba1042bdc688",
+          "evidence": "evd_tale_b7f9ca52056fba1042bdc688",
+          "grade_reasons": [
+            "no protocol citation \u2014 this is an OBSERVATION, never decision-gating (MEASUREMENT.md:13)"
+          ],
+          "method": "vidya.adapters.tale_budget/v1",
+          "reps_basis": "attempted:questions"
+        },
+        "pubinfo": {
+          "actor": "vidya.adapters.tale_budget/v1",
+          "authority_scope": "measurement",
+          "created_at": "2026-09-17T02:24:36Z"
+        },
+        "signatures": []
+      },
+      "frame_hash": "sha256:1d5841c9ac00addeec1ba73884db9baef722b637ac38f975127c14a8367e7f3c",
+      "prev_hash": "sha256:c3b7382715ea0403189ce3664e6786ace4b3b25e4583b2073366c22ef322ffd2",
+      "seq": 13266
+    },
+    {
+      "frame": {
+        "assertion": {
+          "locator": "tale-budget:prb_t4_gpu_20260916_191049_olympiadbench:olympiadbench:baseline:tale_mean_tokens_incl_estimator:/mnt/raid0/llm/tmp/sub-gpu-runner-20260916/prbt4/prb_t4_gpu_olympiadbench_20260916_191049.jsonl",
+          "revision_observed": "2026-09-17",
+          "source_id": "src_tale_93e7e0129e026fab67c0d509",
+          "source_kind": "tale-budget-measurement",
+          "title": "tale_mean_tokens_incl_estimator"
+        },
+        "frame_id": "sha256:03d951267c9eb60cfc13c8e2a7a2120dea83f3dd20da717a976a5959c22afda3",
+        "frame_type": "epyc.vidya/frame/source_observed/v1",
+        "provenance": {
+          "about": "tale_93e7e0129e026fab67c0d509",
+          "method": "vidya.adapters.tale_budget/v1",
+          "retrofit": false
+        },
+        "pubinfo": {
+          "actor": "vidya.adapters.tale_budget/v1",
+          "authority_scope": "measurement",
+          "created_at": "2026-09-17T02:24:36Z"
+        },
+        "signatures": []
+      },
+      "frame_hash": "sha256:136a6e67c01af71b8b7c75e8ba96238f6b5849868090f68bac0c42505a30c707",
+      "prev_hash": "sha256:a3651f654ce4283a7b1b34a2da2dc2b59b0f8cd357cb0870f24b6d5cb8ea8917",
+      "seq": 13267
+    },
+    {
+      "frame": {
+        "assertion": {
+          "claim_id": "clm_tale_93e7e0129e026fab67c0d509",
+          "display_text": "TALE-EP prb_t4_gpu_20260916_191049_olympiadbench: baseline arm on olympiadbench -> tale_mean_tokens_incl_estimator = 6688.0700 tokens (n=100)",
+          "source_id": "src_tale_93e7e0129e026fab67c0d509"
+        },
+        "frame_id": "sha256:22a78a27fbd328cb928d1034b592c9f7f5679939eb7bfadba35b28d883b145eb",
+        "frame_type": "epyc.vidya/frame/claim_proposed/v1",
+        "provenance": {
+          "about": "tale_93e7e0129e026fab67c0d509",
+          "derived_from": "src_tale_93e7e0129e026fab67c0d509",
+          "method": "vidya.adapters.tale_budget/v1"
+        },
+        "pubinfo": {
+          "actor": "vidya.adapters.tale_budget/v1",
+          "authority_scope": "measurement",
+          "created_at": "2026-09-17T02:24:36Z"
+        },
+        "signatures": []
+      },
+      "frame_hash": "sha256:727f01bda56862d7e0f11b98f37bbb7259419ac4a63a266060e2feae66997fa9",
+      "prev_hash": "sha256:d421c17305c95fdb7b88ca5d1bb46d71577f32dc21355824693595586815dff8",
+      "seq": 13268
+    },
+    {
+      "frame": {
+        "assertion": {
+          "category": "BASELINE",
+          "claim_id": "clm_tale_93e7e0129e026fab67c0d509",
+          "evidence_id": "evd_tale_93e7e0129e026fab67c0d509",
+          "grade": {
+            "Q": "Judged",
+            "T": "Located"
+          },
+          "metric_direction": "lower_better",
+          "protocol_id": "",
+          "reps": 100,
+          "source_id": "src_tale_93e7e0129e026fab67c0d509"
+        },
+        "frame_id": "sha256:ea0812c1f3388dec3f5b759ed5ea051e85d7f1cbde95a64090907324d6c7ae0d",
+        "frame_type": "epyc.vidya/frame/evidence_supports_claim/v1",
+        "provenance": {
+          "about": "clm_tale_93e7e0129e026fab67c0d509",
+          "evidence": "evd_tale_93e7e0129e026fab67c0d509",
+          "grade_reasons": [
+            "no protocol citation \u2014 this is an OBSERVATION, never decision-gating (MEASUREMENT.md:13)"
+          ],
+          "method": "vidya.adapters.tale_budget/v1",
+          "reps_basis": "attempted:questions"
+        },
+        "pubinfo": {
+          "actor": "vidya.adapters.tale_budget/v1",
+          "authority_scope": "measurement",
+          "created_at": "2026-09-17T02:24:36Z"
+        },
+        "signatures": []
+      },
+      "frame_hash": "sha256:ccbf6bff00a6bc469c3ae4b812b9f9adfd28793734c88564e61a04433e537bc9",
+      "prev_hash": "sha256:a6b7c362b1119d878f8972a62f09a54ed41a2eef27f8de91657ab465028ed878",
+      "seq": 13269
+    },
+    {
+      "frame": {
+        "assertion": {
+          "locator": "tale-budget:prb_t4_gpu_20260916_191049_olympiadbench:olympiadbench:baseline:tale_mean_latency_s_incl_estimator:/mnt/raid0/llm/tmp/sub-gpu-runner-20260916/prbt4/prb_t4_gpu_olympiadbench_20260916_191049.jsonl",
+          "revision_observed": "2026-09-17",
+          "source_id": "src_tale_fc1cb9c78e8f7c5d4223a5c0",
+          "source_kind": "tale-budget-measurement",
+          "title": "tale_mean_latency_s_incl_estimator"
+        },
+        "frame_id": "sha256:5a10d6acb7e3d7bde92968b5df345d2690284ff15201c045d3ed03f0a17dee57",
+        "frame_type": "epyc.vidya/frame/source_observed/v1",
+        "provenance": {
+          "about": "tale_fc1cb9c78e8f7c5d4223a5c0",
+          "method": "vidya.adapters.tale_budget/v1",
+          "retrofit": false
+        },
+        "pubinfo": {
+          "actor": "vidya.adapters.tale_budget/v1",
+          "authority_scope": "measurement",
+          "created_at": "2026-09-17T02:24:36Z"
+        },
+        "signatures": []
+      },
+      "frame_hash": "sha256:461f3f797f539ed42d6e0e7e2130da9e973e344b425a7d02343de3efdc4cff5e",
+      "prev_hash": "sha256:ed4df6ba896be07bf1e35d9081da04ab25f7d4547f944ceec6efd54d9ac40f3b",
+      "seq": 13270
+    },
+    {
+      "frame": {
+        "assertion": {
+          "claim_id": "clm_tale_fc1cb9c78e8f7c5d4223a5c0",
+          "display_text": "TALE-EP prb_t4_gpu_20260916_191049_olympiadbench: baseline arm on olympiadbench -> tale_mean_latency_s_incl_estimator = 117.6872 seconds (n=100)",
+          "source_id": "src_tale_fc1cb9c78e8f7c5d4223a5c0"
+        },
+        "frame_id": "sha256:748a2252f113e91ab115005bcb218f2571f4f89666ff410f2fccf17458b41a26",
+        "frame_type": "epyc.vidya/frame/claim_proposed/v1",
+        "provenance": {
+          "about": "tale_fc1cb9c78e8f7c5d4223a5c0",
+          "derived_from": "src_tale_fc1cb9c78e8f7c5d4223a5c0",
+          "method": "vidya.adapters.tale_budget/v1"
+        },
+        "pubinfo": {
+          "actor": "vidya.adapters.tale_budget/v1",
+          "authority_scope": "measurement",
+          "created_at": "2026-09-17T02:24:36Z"
+        },
+        "signatures": []
+      },
+      "frame_hash": "sha256:9916053bb65b5f53ad86320c270113923a883b2975a85658e9c00f753bdd117c",
+      "prev_hash": "sha256:0c4e4df6f1261886ef373ee9dca32a4bdade1f43ff33888ec393cc3099c0c37b",
+      "seq": 13271
+    },
+    {
+      "frame": {
+        "assertion": {
+          "category": "BASELINE",
+          "claim_id": "clm_tale_fc1cb9c78e8f7c5d4223a5c0",
+          "evidence_id": "evd_tale_fc1cb9c78e8f7c5d4223a5c0",
+          "grade": {
+            "Q": "Judged",
+            "T": "Located"
+          },
+          "metric_direction": "lower_better",
+          "protocol_id": "",
+          "reps": 100,
+          "source_id": "src_tale_fc1cb9c78e8f7c5d4223a5c0"
+        },
+        "frame_id": "sha256:9df916a2f0ada1c6f1e5d504e036feeb74a20fcf3f2b85a34df6ba2e561d4907",
+        "frame_type": "epyc.vidya/frame/evidence_supports_claim/v1",
+        "provenance": {
+          "about": "clm_tale_fc1cb9c78e8f7c5d4223a5c0",
+          "evidence": "evd_tale_fc1cb9c78e8f7c5d4223a5c0",
+          "grade_reasons": [
+            "no protocol citation \u2014 this is an OBSERVATION, never decision-gating (MEASUREMENT.md:13)"
+          ],
+          "method": "vidya.adapters.tale_budget/v1",
+          "reps_basis": "attempted:questions"
+        },
+        "pubinfo": {
+          "actor": "vidya.adapters.tale_budget/v1",
+          "authority_scope": "measurement",
+          "created_at": "2026-09-17T02:24:36Z"
+        },
+        "signatures": []
+      },
+      "frame_hash": "sha256:468764962b9f5933edf147681da64ba614420345566b8f6956b955eb57251379",
+      "prev_hash": "sha256:00169d09c0885d4728dc77325f78c83d28bb0e748817be0dfe0f676a5ce216c2",
+      "seq": 13272
+    },
+    {
+      "frame": {
+        "assertion": {
+          "locator": "tale-budget:prb_t4_gpu_20260916_191049_olympiadbench:olympiadbench:static:tale_suite_accuracy:/mnt/raid0/llm/tmp/sub-gpu-runner-20260916/prbt4/prb_t4_gpu_olympiadbench_20260916_191049.jsonl",
+          "revision_observed": "2026-09-17",
+          "source_id": "src_tale_b0d32ebfd0856be32cc71bd2",
+          "source_kind": "tale-budget-measurement",
+          "title": "tale_suite_accuracy"
+        },
+        "frame_id": "sha256:c3cbffe7c56d15e02913245c5fbac6adaad081f128f148d3e187853b1682ab3f",
+        "frame_type": "epyc.vidya/frame/source_observed/v1",
+        "provenance": {
+          "about": "tale_b0d32ebfd0856be32cc71bd2",
+          "method": "vidya.adapters.tale_budget/v1",
+          "retrofit": false
+        },
+        "pubinfo": {
+          "actor": "vidya.adapters.tale_budget/v1",
+          "authority_scope": "measurement",
+          "created_at": "2026-09-17T02:24:36Z"
+        },
+        "signatures": []
+      },
+      "frame_hash": "sha256:295015e45dbd3fd24955e4725f3e215de16ddeecb8cfe8af032af3a3bb1f377d",
+      "prev_hash": "sha256:c8643c4896bf875dba0494c8dae70f29fb8eee6ece9ea463c853924ae841343a",
+      "seq": 13273
+    },
+    {
+      "frame": {
+        "assertion": {
+          "claim_id": "clm_tale_b0d32ebfd0856be32cc71bd2",
+          "display_text": "TALE-EP prb_t4_gpu_20260916_191049_olympiadbench: static arm on olympiadbench -> tale_suite_accuracy = 0.2000 fraction_correct (n=100)",
+          "source_id": "src_tale_b0d32ebfd0856be32cc71bd2"
+        },
+        "frame_id": "sha256:fbf92502e8774ace14c98282050f0e83bf226239d5f52240e86ee69ae091fd41",
+        "frame_type": "epyc.vidya/frame/claim_proposed/v1",
+        "provenance": {
+          "about": "tale_b0d32ebfd0856be32cc71bd2",
+          "derived_from": "src_tale_b0d32ebfd0856be32cc71bd2",
+          "method": "vidya.adapters.tale_budget/v1"
+        },
+        "pubinfo": {
+          "actor": "vidya.adapters.tale_budget/v1",
+          "authority_scope": "measurement",
+          "created_at": "2026-09-17T02:24:36Z"
+        },
+        "signatures": []
+      },
+      "frame_hash": "sha256:20361e3f81aa1aa190d56a11bb9581e6c985c68889e9b9c618edd364c78df54a",
+      "prev_hash": "sha256:700fea8690b9eca43c873178b781f7c44fd804a478f5c3e363625b8029973f45",
+      "seq": 13274
+    },
+    {
+      "frame": {
+        "assertion": {
+          "category": "CANDIDATE",
+          "claim_id": "clm_tale_b0d32ebfd0856be32cc71bd2",
+          "evidence_id": "evd_tale_b0d32ebfd0856be32cc71bd2",
+          "grade": {
+            "Q": "Judged",
+            "T": "Located"
+          },
+          "metric_direction": "higher_better",
+          "protocol_id": "",
+          "reps": 100,
+          "source_id": "src_tale_b0d32ebfd0856be32cc71bd2"
+        },
+        "frame_id": "sha256:289b5b3cbf7042c55877f48e3d26fb98e582bdc2904ce92ed821e1564b80ba74",
+        "frame_type": "epyc.vidya/frame/evidence_supports_claim/v1",
+        "provenance": {
+          "about": "clm_tale_b0d32ebfd0856be32cc71bd2",
+          "evidence": "evd_tale_b0d32ebfd0856be32cc71bd2",
+          "grade_reasons": [
+            "no protocol citation \u2014 this is an OBSERVATION, never decision-gating (MEASUREMENT.md:13)"
+          ],
+          "method": "vidya.adapters.tale_budget/v1",
+          "reps_basis": "scored:questions"
+        },
+        "pubinfo": {
+          "actor": "vidya.adapters.tale_budget/v1",
+          "authority_scope": "measurement",
+          "created_at": "2026-09-17T02:24:36Z"
+        },
+        "signatures": []
+      },
+      "frame_hash": "sha256:cc2e8416b47f677c2c5828c97d90017c947d157618586d52a2ed7aed6a207eac",
+      "prev_hash": "sha256:c798f95db0987434715795af21991542e956d863698b527de5959be79a896130",
+      "seq": 13275
+    },
+    {
+      "frame": {
+        "assertion": {
+          "locator": "tale-budget:prb_t4_gpu_20260916_191049_olympiadbench:olympiadbench:static:tale_mean_answer_tokens:/mnt/raid0/llm/tmp/sub-gpu-runner-20260916/prbt4/prb_t4_gpu_olympiadbench_20260916_191049.jsonl",
+          "revision_observed": "2026-09-17",
+          "source_id": "src_tale_72da12c0028b99f27247acf7",
+          "source_kind": "tale-budget-measurement",
+          "title": "tale_mean_answer_tokens"
+        },
+        "frame_id": "sha256:35d350cb9722785d3805a89f0da165057d02f46ef705a21f3524bd6b83ff0224",
+        "frame_type": "epyc.vidya/frame/source_observed/v1",
+        "provenance": {
+          "about": "tale_72da12c0028b99f27247acf7",
+          "method": "vidya.adapters.tale_budget/v1",
+          "retrofit": false
+        },
+        "pubinfo": {
+          "actor": "vidya.adapters.tale_budget/v1",
+          "authority_scope": "measurement",
+          "created_at": "2026-09-17T02:24:36Z"
+        },
+        "signatures": []
+      },
+      "frame_hash": "sha256:7df0a9ae9e06768c506394679116ffbd8a1d0ffaa27d6010c211dc8aa900ec20",
+      "prev_hash": "sha256:d2e7c5d7db531934fb57be92ab586f56a26b098e0b94d60d54cf7f6b8afcc643",
+      "seq": 13276
+    },
+    {
+      "frame": {
+        "assertion": {
+          "claim_id": "clm_tale_72da12c0028b99f27247acf7",
+          "display_text": "TALE-EP prb_t4_gpu_20260916_191049_olympiadbench: static arm on olympiadbench -> tale_mean_answer_tokens = 1494.2400 tokens (n=100)",
+          "source_id": "src_tale_72da12c0028b99f27247acf7"
+        },
+        "frame_id": "sha256:2b92eebbe01ab3330a4d9d16e9df45d1b5d747b725658d15b2f1e5301e804988",
+        "frame_type": "epyc.vidya/frame/claim_proposed/v1",
+        "provenance": {
+          "about": "tale_72da12c0028b99f27247acf7",
+          "derived_from": "src_tale_72da12c0028b99f27247acf7",
+          "method": "vidya.adapters.tale_budget/v1"
+        },
+        "pubinfo": {
+          "actor": "vidya.adapters.tale_budget/v1",
+          "authority_scope": "measurement",
+          "created_at": "2026-09-17T02:24:36Z"
+        },
+        "signatures": []
+      },
+      "frame_hash": "sha256:bafc21daeae3ffae47a17ac6bb8033c693464a56859d7835d4a4cac764d92d8c",
+      "prev_hash": "sha256:753dd4705f736557b725b341967dd5910f33bba700aa68079792d1e299e7399a",
+      "seq": 13277
+    },
+    {
+      "frame": {
+        "assertion": {
+          "category": "CANDIDATE",
+          "claim_id": "clm_tale_72da12c0028b99f27247acf7",
+          "evidence_id": "evd_tale_72da12c0028b99f27247acf7",
+          "grade": {
+            "Q": "Judged",
+            "T": "Located"
+          },
+          "metric_direction": "lower_better",
+          "protocol_id": "",
+          "reps": 100,
+          "source_id": "src_tale_72da12c0028b99f27247acf7"
+        },
+        "frame_id": "sha256:d64bb6fed5453f10ff4d8a6f63f60294bc4f4d650c94a0697bb92028bfef7295",
+        "frame_type": "epyc.vidya/frame/evidence_supports_claim/v1",
+        "provenance": {
+          "about": "clm_tale_72da12c0028b99f27247acf7",
+          "evidence": "evd_tale_72da12c0028b99f27247acf7",
+          "grade_reasons": [
+            "no protocol citation \u2014 this is an OBSERVATION, never decision-gating (MEASUREMENT.md:13)"
+          ],
+          "method": "vidya.adapters.tale_budget/v1",
+          "reps_basis": "attempted:questions"
+        },
+        "pubinfo": {
+          "actor": "vidya.adapters.tale_budget/v1",
+          "authority_scope": "measurement",
+          "created_at": "2026-09-17T02:24:36Z"
+        },
+        "signatures": []
+      },
+      "frame_hash": "sha256:9bbe2b6ab4e69a882df2dfced56f909ef3835ab6761e58808c5314ab8fb829ea",
+      "prev_hash": "sha256:6ac0847126f57f8c422bd0363485badbf3f5607db4fdd745590f44ff5ed80c00",
+      "seq": 13278
+    },
+    {
+      "frame": {
+        "assertion": {
+          "locator": "tale-budget:prb_t4_gpu_20260916_191049_olympiadbench:olympiadbench:static:tale_mean_tokens_incl_estimator:/mnt/raid0/llm/tmp/sub-gpu-runner-20260916/prbt4/prb_t4_gpu_olympiadbench_20260916_191049.jsonl",
+          "revision_observed": "2026-09-17",
+          "source_id": "src_tale_764f74ec587dcfc9c138b27f",
+          "source_kind": "tale-budget-measurement",
+          "title": "tale_mean_tokens_incl_estimator"
+        },
+        "frame_id": "sha256:ae6531db0d94952fa4a68c336652f34afd650852c2ab258df9d7b7b7bec3bb47",
+        "frame_type": "epyc.vidya/frame/source_observed/v1",
+        "provenance": {
+          "about": "tale_764f74ec587dcfc9c138b27f",
+          "method": "vidya.adapters.tale_budget/v1",
+          "retrofit": false
+        },
+        "pubinfo": {
+          "actor": "vidya.adapters.tale_budget/v1",
+          "authority_scope": "measurement",
+          "created_at": "2026-09-17T02:24:36Z"
+        },
+        "signatures": []
+      },
+      "frame_hash": "sha256:b4093b3fda3b4f1d5b843643459ed2bc552c82a8c4e6ec29ae39f48a3286d3b1",
+      "prev_hash": "sha256:61cdd77d691045925bdf64f52d055317bebe9127bdde19355b90d44422ffa2e2",
+      "seq": 13279
+    },
+    {
+      "frame": {
+        "assertion": {
+          "claim_id": "clm_tale_764f74ec587dcfc9c138b27f",
+          "display_text": "TALE-EP prb_t4_gpu_20260916_191049_olympiadbench: static arm on olympiadbench -> tale_mean_tokens_incl_estimator = 1494.2400 tokens (n=100)",
+          "source_id": "src_tale_764f74ec587dcfc9c138b27f"
+        },
+        "frame_id": "sha256:6bdd1a9384722445ccd65e8268b617e9faf7590f849ca4944b7701cdfa7ccffe",
+        "frame_type": "epyc.vidya/frame/claim_proposed/v1",
+        "provenance": {
+          "about": "tale_764f74ec587dcfc9c138b27f",
+          "derived_from": "src_tale_764f74ec587dcfc9c138b27f",
+          "method": "vidya.adapters.tale_budget/v1"
+        },
+        "pubinfo": {
+          "actor": "vidya.adapters.tale_budget/v1",
+          "authority_scope": "measurement",
+          "created_at": "2026-09-17T02:24:36Z"
+        },
+        "signatures": []
+      },
+      "frame_hash": "sha256:e59a796b9e2f8f872a21811bacbb9cccddcc79adee5bc3bb835ae3f1869fbf68",
+      "prev_hash": "sha256:63ab95a2aa0f8ad73412212b70718d7ba022e45bf588b79981053ad7c43d4f77",
+      "seq": 13280
+    },
+    {
+      "frame": {
+        "assertion": {
+          "category": "CANDIDATE",
+          "claim_id": "clm_tale_764f74ec587dcfc9c138b27f",
+          "evidence_id": "evd_tale_764f74ec587dcfc9c138b27f",
+          "grade": {
+            "Q": "Judged",
+            "T": "Located"
+          },
+          "metric_direction": "lower_better",
+          "protocol_id": "",
+          "reps": 100,
+          "source_id": "src_tale_764f74ec587dcfc9c138b27f"
+        },
+        "frame_id": "sha256:75f9b6b06f058c656e457d87b0fa0a9ea31d9b7ca13f15840a76457a8581a8a7",
+        "frame_type": "epyc.vidya/frame/evidence_supports_claim/v1",
+        "provenance": {
+          "about": "clm_tale_764f74ec587dcfc9c138b27f",
+          "evidence": "evd_tale_764f74ec587dcfc9c138b27f",
+          "grade_reasons": [
+            "no protocol citation \u2014 this is an OBSERVATION, never decision-gating (MEASUREMENT.md:13)"
+          ],
+          "method": "vidya.adapters.tale_budget/v1",
+          "reps_basis": "attempted:questions"
+        },
+        "pubinfo": {
+          "actor": "vidya.adapters.tale_budget/v1",
+          "authority_scope": "measurement",
+          "created_at": "2026-09-17T02:24:36Z"
+        },
+        "signatures": []
+      },
+      "frame_hash": "sha256:b39e40db550dccaaed4d307a17c09106e13d38153169cd2873e36050e8bf15ef",
+      "prev_hash": "sha256:32e8369854b7e0def450781b98e3eff968ca224830b8e483518dea1dca862e41",
+      "seq": 13281
+    },
+    {
+      "frame": {
+        "assertion": {
+          "locator": "tale-budget:prb_t4_gpu_20260916_191049_olympiadbench:olympiadbench:static:tale_mean_latency_s_incl_estimator:/mnt/raid0/llm/tmp/sub-gpu-runner-20260916/prbt4/prb_t4_gpu_olympiadbench_20260916_191049.jsonl",
+          "revision_observed": "2026-09-17",
+          "source_id": "src_tale_25627bebb7313f148d4584d5",
+          "source_kind": "tale-budget-measurement",
+          "title": "tale_mean_latency_s_incl_estimator"
+        },
+        "frame_id": "sha256:d6fe465dda09e74e800c35927f5beb881ffd78441ba93a6f7fcbf3f1f369e5d5",
+        "frame_type": "epyc.vidya/frame/source_observed/v1",
+        "provenance": {
+          "about": "tale_25627bebb7313f148d4584d5",
+          "method": "vidya.adapters.tale_budget/v1",
+          "retrofit": false
+        },
+        "pubinfo": {
+          "actor": "vidya.adapters.tale_budget/v1",
+          "authority_scope": "measurement",
+          "created_at": "2026-09-17T02:24:36Z"
+        },
+        "signatures": []
+      },
+      "frame_hash": "sha256:a8784f6738b719da1bf72472c5d5eeb9cb0ca020f2fe0807f3e09b2da6301079",
+      "prev_hash": "sha256:cdbc49be332000bcd58d766f0cc501b9b35786b614edac1390451c6e814c9343",
+      "seq": 13282
+    },
+    {
+      "frame": {
+        "assertion": {
+          "claim_id": "clm_tale_25627bebb7313f148d4584d5",
+          "display_text": "TALE-EP prb_t4_gpu_20260916_191049_olympiadbench: static arm on olympiadbench -> tale_mean_latency_s_incl_estimator = 27.8014 seconds (n=100)",
+          "source_id": "src_tale_25627bebb7313f148d4584d5"
+        },
+        "frame_id": "sha256:1a2ccd7858e8f1d39b300b79d1da06c912b75c700d8d0f98e2b00d604f1d203b",
+        "frame_type": "epyc.vidya/frame/claim_proposed/v1",
+        "provenance": {
+          "about": "tale_25627bebb7313f148d4584d5",
+          "derived_from": "src_tale_25627bebb7313f148d4584d5",
+          "method": "vidya.adapters.tale_budget/v1"
+        },
+        "pubinfo": {
+          "actor": "vidya.adapters.tale_budget/v1",
+          "authority_scope": "measurement",
+          "created_at": "2026-09-17T02:24:36Z"
+        },
+        "signatures": []
+      },
+      "frame_hash": "sha256:eba3e65eb43dc7b8984877d164039aff481fec221a44d4261f3caedca8f8b22e",
+      "prev_hash": "sha256:c4e0bfd165f6d8f7a1c4226128dc4b0d21818d78741b44ef6fdf84c52a2558ae",
+      "seq": 13283
+    },
+    {
+      "frame": {
+        "assertion": {
+          "category": "CANDIDATE",
+          "claim_id": "clm_tale_25627bebb7313f148d4584d5",
+          "evidence_id": "evd_tale_25627bebb7313f148d4584d5",
+          "grade": {
+            "Q": "Judged",
+            "T": "Located"
+          },
+          "metric_direction": "lower_better",
+          "protocol_id": "",
+          "reps": 100,
+          "source_id": "src_tale_25627bebb7313f148d4584d5"
+        },
+        "frame_id": "sha256:c7b31f87780d443eab10d3051aed4e7e4d364982c30806259a825af720ab0bdd",
+        "frame_type": "epyc.vidya/frame/evidence_supports_claim/v1",
+        "provenance": {
+          "about": "clm_tale_25627bebb7313f148d4584d5",
+          "evidence": "evd_tale_25627bebb7313f148d4584d5",
+          "grade_reasons": [
+            "no protocol citation \u2014 this is an OBSERVATION, never decision-gating (MEASUREMENT.md:13)"
+          ],
+          "method": "vidya.adapters.tale_budget/v1",
+          "reps_basis": "attempted:questions"
+        },
+        "pubinfo": {
+          "actor": "vidya.adapters.tale_budget/v1",
+          "authority_scope": "measurement",
+          "created_at": "2026-09-17T02:24:36Z"
+        },
+        "signatures": []
+      },
+      "frame_hash": "sha256:129cc705dec6a41642662ee281775a2321260843172c2cc90a3dbbc78a12fb65",
+      "prev_hash": "sha256:a7bd3b93f5e845b1f5f77f7a38656698346251237d7335432151172db39753d7",
+      "seq": 13284
+    },
+    {
+      "frame": {
+        "assertion": {
+          "locator": "tale-budget:prb_t4_gpu_20260916_191049_olympiadbench:olympiadbench:tale:tale_suite_accuracy:/mnt/raid0/llm/tmp/sub-gpu-runner-20260916/prbt4/prb_t4_gpu_olympiadbench_20260916_191049.jsonl",
+          "revision_observed": "2026-09-17",
+          "source_id": "src_tale_04493dcf4e7cd28ac13d80f4",
+          "source_kind": "tale-budget-measurement",
+          "title": "tale_suite_accuracy"
+        },
+        "frame_id": "sha256:438adb237268d4ddfd2f010a9c8878055f3383c613e0bb712f9ece631320e848",
+        "frame_type": "epyc.vidya/frame/source_observed/v1",
+        "provenance": {
+          "about": "tale_04493dcf4e7cd28ac13d80f4",
+          "method": "vidya.adapters.tale_budget/v1",
+          "retrofit": false
+        },
+        "pubinfo": {
+          "actor": "vidya.adapters.tale_budget/v1",
+          "authority_scope": "measurement",
+          "created_at": "2026-09-17T02:24:36Z"
+        },
+        "signatures": []
+      },
+      "frame_hash": "sha256:82150eea45196129cf57b2cadb6d4062649a694d839d21aa066064341e19cd0c",
+      "prev_hash": "sha256:33297e4935df54976e710481976f07681c51d3c8532d2279041f6009fa71d121",
+      "seq": 13285
+    },
+    {
+      "frame": {
+        "assertion": {
+          "claim_id": "clm_tale_04493dcf4e7cd28ac13d80f4",
+          "display_text": "TALE-EP prb_t4_gpu_20260916_191049_olympiadbench: tale arm on olympiadbench -> tale_suite_accuracy = 0.3100 fraction_correct (n=100)",
+          "source_id": "src_tale_04493dcf4e7cd28ac13d80f4"
+        },
+        "frame_id": "sha256:d3ad8696d1bdeb9442e172d626c9b519e9b2a8331f6bede74f9685f4f3d38fe6",
+        "frame_type": "epyc.vidya/frame/claim_proposed/v1",
+        "provenance": {
+          "about": "tale_04493dcf4e7cd28ac13d80f4",
+          "derived_from": "src_tale_04493dcf4e7cd28ac13d80f4",
+          "method": "vidya.adapters.tale_budget/v1"
+        },
+        "pubinfo": {
+          "actor": "vidya.adapters.tale_budget/v1",
+          "authority_scope": "measurement",
+          "created_at": "2026-09-17T02:24:36Z"
+        },
+        "signatures": []
+      },
+      "frame_hash": "sha256:c0cd09e12ab25ae71b09ce2df57f3c72ba9e5e90b60202cf82ce979d86fbdf40",
+      "prev_hash": "sha256:c79ab394fdcff962185dfe1d2126ee294da7e2a486f8a2f1a1e2b8f9dc46c269",
+      "seq": 13286
+    },
+    {
+      "frame": {
+        "assertion": {
+          "category": "CANDIDATE",
+          "claim_id": "clm_tale_04493dcf4e7cd28ac13d80f4",
+          "evidence_id": "evd_tale_04493dcf4e7cd28ac13d80f4",
+          "grade": {
+            "Q": "Judged",
+            "T": "Located"
+          },
+          "metric_direction": "higher_better",
+          "protocol_id": "",
+          "reps": 100,
+          "source_id": "src_tale_04493dcf4e7cd28ac13d80f4"
+        },
+        "frame_id": "sha256:babb79a8605003e1097aa352eba7854d302429e92a1292d241b00efeb2777bb1",
+        "frame_type": "epyc.vidya/frame/evidence_supports_claim/v1",
+        "provenance": {
+          "about": "clm_tale_04493dcf4e7cd28ac13d80f4",
+          "evidence": "evd_tale_04493dcf4e7cd28ac13d80f4",
+          "grade_reasons": [
+            "no protocol citation \u2014 this is an OBSERVATION, never decision-gating (MEASUREMENT.md:13)"
+          ],
+          "method": "vidya.adapters.tale_budget/v1",
+          "reps_basis": "scored:questions"
+        },
+        "pubinfo": {
+          "actor": "vidya.adapters.tale_budget/v1",
+          "authority_scope": "measurement",
+          "created_at": "2026-09-17T02:24:36Z"
+        },
+        "signatures": []
+      },
+      "frame_hash": "sha256:3bd905e81297f042b137615f1b8088eaf03c5376cfd99190dea7adb52b91294c",
+      "prev_hash": "sha256:097ca4695dbd999ebeb3f219d706956878dec63aaae7efba3c7a103f3b138e6a",
+      "seq": 13287
+    },
+    {
+      "frame": {
+        "assertion": {
+          "locator": "tale-budget:prb_t4_gpu_20260916_191049_olympiadbench:olympiadbench:tale:tale_mean_answer_tokens:/mnt/raid0/llm/tmp/sub-gpu-runner-20260916/prbt4/prb_t4_gpu_olympiadbench_20260916_191049.jsonl",
+          "revision_observed": "2026-09-17",
+          "source_id": "src_tale_9e461228ba11a0e2cb20f586",
+          "source_kind": "tale-budget-measurement",
+          "title": "tale_mean_answer_tokens"
+        },
+        "frame_id": "sha256:67da20475b603dad889187ae01d27cff809e537d5959c68f5604dad5bbf4e7be",
+        "frame_type": "epyc.vidya/frame/source_observed/v1",
+        "provenance": {
+          "about": "tale_9e461228ba11a0e2cb20f586",
+          "method": "vidya.adapters.tale_budget/v1",
+          "retrofit": false
+        },
+        "pubinfo": {
+          "actor": "vidya.adapters.tale_budget/v1",
+          "authority_scope": "measurement",
+          "created_at": "2026-09-17T02:24:36Z"
+        },
+        "signatures": []
+      },
+      "frame_hash": "sha256:43f41908e942bb8172f24acdc2fe8404f3d48f700f7338e8caf0a252f95eab2e",
+      "prev_hash": "sha256:f0a30d044d558524a471f2d07af528d519b6321b2b7ca4b3412f16f9f5fa966b",
+      "seq": 13288
+    },
+    {
+      "frame": {
+        "assertion": {
+          "claim_id": "clm_tale_9e461228ba11a0e2cb20f586",
+          "display_text": "TALE-EP prb_t4_gpu_20260916_191049_olympiadbench: tale arm on olympiadbench -> tale_mean_answer_tokens = 4900.8900 tokens (n=100)",
+          "source_id": "src_tale_9e461228ba11a0e2cb20f586"
+        },
+        "frame_id": "sha256:9bc49df87093a908a5a6dacba087ae8e8f40856b2c654c27e9171aa40ea33b9b",
+        "frame_type": "epyc.vidya/frame/claim_proposed/v1",
+        "provenance": {
+          "about": "tale_9e461228ba11a0e2cb20f586",
+          "derived_from": "src_tale_9e461228ba11a0e2cb20f586",
+          "method": "vidya.adapters.tale_budget/v1"
+        },
+        "pubinfo": {
+          "actor": "vidya.adapters.tale_budget/v1",
+          "authority_scope": "measurement",
+          "created_at": "2026-09-17T02:24:36Z"
+        },
+        "signatures": []
+      },
+      "frame_hash": "sha256:fb4d8ea4747e1305ea056fb250b8da6151d6ec1e3fe17f1f818d53b07924aeb5",
+      "prev_hash": "sha256:02fe855580d0adedec7aa053472e6a706237736578068611afa25247bc7d39bc",
+      "seq": 13289
+    },
+    {
+      "frame": {
+        "assertion": {
+          "category": "CANDIDATE",
+          "claim_id": "clm_tale_9e461228ba11a0e2cb20f586",
+          "evidence_id": "evd_tale_9e461228ba11a0e2cb20f586",
+          "grade": {
+            "Q": "Judged",
+            "T": "Located"
+          },
+          "metric_direction": "lower_better",
+          "protocol_id": "",
+          "reps": 100,
+          "source_id": "src_tale_9e461228ba11a0e2cb20f586"
+        },
+        "frame_id": "sha256:30d164e16758c1737d3a2d6a782d6cf2ed11ac2a6f60b3acc9ede9a0a1260472",
+        "frame_type": "epyc.vidya/frame/evidence_supports_claim/v1",
+        "provenance": {
+          "about": "clm_tale_9e461228ba11a0e2cb20f586",
+          "evidence": "evd_tale_9e461228ba11a0e2cb20f586",
+          "grade_reasons": [
+            "no protocol citation \u2014 this is an OBSERVATION, never decision-gating (MEASUREMENT.md:13)"
+          ],
+          "method": "vidya.adapters.tale_budget/v1",
+          "reps_basis": "attempted:questions"
+        },
+        "pubinfo": {
+          "actor": "vidya.adapters.tale_budget/v1",
+          "authority_scope": "measurement",
+          "created_at": "2026-09-17T02:24:36Z"
+        },
+        "signatures": []
+      },
+      "frame_hash": "sha256:fb461b1fe7079e72618973d287b7ed4c87dc52d4a926457abcf623ab66ca451e",
+      "prev_hash": "sha256:1ea1bb2f4dcd745f690c9df12d8c38f5eae7568741a20be13fcce0c7a8a9d814",
+      "seq": 13290
+    },
+    {
+      "frame": {
+        "assertion": {
+          "locator": "tale-budget:prb_t4_gpu_20260916_191049_olympiadbench:olympiadbench:tale:tale_mean_tokens_incl_estimator:/mnt/raid0/llm/tmp/sub-gpu-runner-20260916/prbt4/prb_t4_gpu_olympiadbench_20260916_191049.jsonl",
+          "revision_observed": "2026-09-17",
+          "source_id": "src_tale_8109c2687f613513ef214c74",
+          "source_kind": "tale-budget-measurement",
+          "title": "tale_mean_tokens_incl_estimator"
+        },
+        "frame_id": "sha256:1dcd69d7977e05205fc8ad89b43241a99f3a3457586f93bbeb602d379f3f1dff",
+        "frame_type": "epyc.vidya/frame/source_observed/v1",
+        "provenance": {
+          "about": "tale_8109c2687f613513ef214c74",
+          "method": "vidya.adapters.tale_budget/v1",
+          "retrofit": false
+        },
+        "pubinfo": {
+          "actor": "vidya.adapters.tale_budget/v1",
+          "authority_scope": "measurement",
+          "created_at": "2026-09-17T02:24:36Z"
+        },
+        "signatures": []
+      },
+      "frame_hash": "sha256:f1f335a71e5b57e1e1bd6e02b4ee3f6fac48ddfa0c9cd0c8801d3fd12ffdac74",
+      "prev_hash": "sha256:4c0b6dcfeb8ffc2fab74bee582a7bbc061cc9bceddeb7dee790c27d76024b054",
+      "seq": 13291
+    },
+    {
+      "frame": {
+        "assertion": {
+          "claim_id": "clm_tale_8109c2687f613513ef214c74",
+          "display_text": "TALE-EP prb_t4_gpu_20260916_191049_olympiadbench: tale arm on olympiadbench -> tale_mean_tokens_incl_estimator = 4908.2600 tokens (n=100)",
+          "source_id": "src_tale_8109c2687f613513ef214c74"
+        },
+        "frame_id": "sha256:b59d4cae3ec50cdd9dc411489239de2df90766aa40436a67d79d3ebc8d3fe761",
+        "frame_type": "epyc.vidya/frame/claim_proposed/v1",
+        "provenance": {
+          "about": "tale_8109c2687f613513ef214c74",
+          "derived_from": "src_tale_8109c2687f613513ef214c74",
+          "method": "vidya.adapters.tale_budget/v1"
+        },
+        "pubinfo": {
+          "actor": "vidya.adapters.tale_budget/v1",
+          "authority_scope": "measurement",
+          "created_at": "2026-09-17T02:24:36Z"
+        },
+        "signatures": []
+      },
+      "frame_hash": "sha256:f30cbacca9fb11c816269f05cfd4173c3782194b56a1a3a7b349251fb50e8f4c",
+      "prev_hash": "sha256:0ccc2cd8aacb508a54067932dde571633eb79884fa9356d9dbaef7110c06b88a",
+      "seq": 13292
+    },
+    {
+      "frame": {
+        "assertion": {
+          "category": "CANDIDATE",
+          "claim_id": "clm_tale_8109c2687f613513ef214c74",
+          "evidence_id": "evd_tale_8109c2687f613513ef214c74",
+          "grade": {
+            "Q": "Judged",
+            "T": "Located"
+          },
+          "metric_direction": "lower_better",
+          "protocol_id": "",
+          "reps": 100,
+          "source_id": "src_tale_8109c2687f613513ef214c74"
+        },
+        "frame_id": "sha256:96b37cc5ad9b1f5e755c1d0667c6bdf4aab8f687713d0b9bf3823ee1b3c86992",
+        "frame_type": "epyc.vidya/frame/evidence_supports_claim/v1",
+        "provenance": {
+          "about": "clm_tale_8109c2687f613513ef214c74",
+          "evidence": "evd_tale_8109c2687f613513ef214c74",
+          "grade_reasons": [
+            "no protocol citation \u2014 this is an OBSERVATION, never decision-gating (MEASUREMENT.md:13)"
+          ],
+          "method": "vidya.adapters.tale_budget/v1",
+          "reps_basis": "attempted:questions"
+        },
+        "pubinfo": {
+          "actor": "vidya.adapters.tale_budget/v1",
+          "authority_scope": "measurement",
+          "created_at": "2026-09-17T02:24:36Z"
+        },
+        "signatures": []
+      },
+      "frame_hash": "sha256:877487ce3310392492bd86124cae7a045196c112bc9c453cada81253d8e4a596",
+      "prev_hash": "sha256:75cd600d08675963126c2c617f284f92efca99fb2f033e43eaf07c960b71c5ed",
+      "seq": 13293
+    },
+    {
+      "frame": {
+        "assertion": {
+          "locator": "tale-budget:prb_t4_gpu_20260916_191049_olympiadbench:olympiadbench:tale:tale_mean_latency_s_incl_estimator:/mnt/raid0/llm/tmp/sub-gpu-runner-20260916/prbt4/prb_t4_gpu_olympiadbench_20260916_191049.jsonl",
+          "revision_observed": "2026-09-17",
+          "source_id": "src_tale_effebb197c761d10d3ea5d31",
+          "source_kind": "tale-budget-measurement",
+          "title": "tale_mean_latency_s_incl_estimator"
+        },
+        "frame_id": "sha256:05472e29a9038937e0ac0c15bb3c4ab116530df396c96fcd1493bf58e3e58427",
+        "frame_type": "epyc.vidya/frame/source_observed/v1",
+        "provenance": {
+          "about": "tale_effebb197c761d10d3ea5d31",
+          "method": "vidya.adapters.tale_budget/v1",
+          "retrofit": false
+        },
+        "pubinfo": {
+          "actor": "vidya.adapters.tale_budget/v1",
+          "authority_scope": "measurement",
+          "created_at": "2026-09-17T02:24:36Z"
+        },
+        "signatures": []
+      },
+      "frame_hash": "sha256:c9fbc26c1395ef436ebe4bb1016351b7bac02e1851ed653d0115655afe6b61b4",
+      "prev_hash": "sha256:1229693d1322937671634bb0ae0b27f6636f94a1e6b3315ef6d5ebec2d8b5b17",
+      "seq": 13294
+    },
+    {
+      "frame": {
+        "assertion": {
+          "claim_id": "clm_tale_effebb197c761d10d3ea5d31",
+          "display_text": "TALE-EP prb_t4_gpu_20260916_191049_olympiadbench: tale arm on olympiadbench -> tale_mean_latency_s_incl_estimator = 89.5289 seconds (n=100)",
+          "source_id": "src_tale_effebb197c761d10d3ea5d31"
+        },
+        "frame_id": "sha256:7baa270834e8f4d61556656bdcfb21df9f4216baca7eff1c5196ec819534ab6e",
+        "frame_type": "epyc.vidya/frame/claim_proposed/v1",
+        "provenance": {
+          "about": "tale_effebb197c761d10d3ea5d31",
+          "derived_from": "src_tale_effebb197c761d10d3ea5d31",
+          "method": "vidya.adapters.tale_budget/v1"
+        },
+        "pubinfo": {
+          "actor": "vidya.adapters.tale_budget/v1",
+          "authority_scope": "measurement",
+          "created_at": "2026-09-17T02:24:36Z"
+        },
+        "signatures": []
+      },
+      "frame_hash": "sha256:47eeb5a316bfa063e87c74e9c26a1bf53d58e66b5c86251f512222f69fe87d06",
+      "prev_hash": "sha256:e4714c969526f31c0646be4c18f095bb7e8a2b2e3ace30fc6dad04d74153cd36",
+      "seq": 13295
+    },
+    {
+      "frame": {
+        "assertion": {
+          "category": "CANDIDATE",
+          "claim_id": "clm_tale_effebb197c761d10d3ea5d31",
+          "evidence_id": "evd_tale_effebb197c761d10d3ea5d31",
+          "grade": {
+            "Q": "Judged",
+            "T": "Located"
+          },
+          "metric_direction": "lower_better",
+          "protocol_id": "",
+          "reps": 100,
+          "source_id": "src_tale_effebb197c761d10d3ea5d31"
+        },
+        "frame_id": "sha256:922c9c58ca5e601e2fdaeae961d19cdef154ff8a802fcd6f58016696fbb1a08f",
+        "frame_type": "epyc.vidya/frame/evidence_supports_claim/v1",
+        "provenance": {
+          "about": "clm_tale_effebb197c761d10d3ea5d31",
+          "evidence": "evd_tale_effebb197c761d10d3ea5d31",
+          "grade_reasons": [
+            "no protocol citation \u2014 this is an OBSERVATION, never decision-gating (MEASUREMENT.md:13)"
+          ],
+          "method": "vidya.adapters.tale_budget/v1",
+          "reps_basis": "attempted:questions"
+        },
+        "pubinfo": {
+          "actor": "vidya.adapters.tale_budget/v1",
+          "authority_scope": "measurement",
+          "created_at": "2026-09-17T02:24:36Z"
+        },
+        "signatures": []
+      },
+      "frame_hash": "sha256:ba52bd549a38f074d33aad371e1c1131165fc1546a65335479d28c8b7fc944ec",
+      "prev_hash": "sha256:dd5f8a3ca65e15bee317ffd18aebc1fbccbdfc6130d5aaddbc3e2da8d843619a",
+      "seq": 13296
+    }
+  ]
+}
