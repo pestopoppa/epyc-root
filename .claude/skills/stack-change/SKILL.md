@@ -52,8 +52,14 @@ A surface you did not touch is a surface you must be able to say why.
 The master registry is read from research origin/main by default; never sync or edit the shared research clone to make a rebuild work; pass `--research-registry` only for a deliberate alternative checkout.
 
 ### 3 — preflight
-`scripts/preflight.sh` on the scratch: `stack_change_pipeline.py check
---numa-mode <declared>`, declaration parity, capacity (both legs), evidence
+On a complete scratch orchestrator checkout, set `ORCH=<scratch checkout>` and
+run `scripts/preflight.sh`; pass `PYTHON=<existing orchestrator venv python>`
+if the checkout has no venv. The script runs `stack_change_pipeline.py check
+--repo-root <scratch checkout> --numa-mode <declared>`. For the topology and
+capacity checks use `topology_check.py --orchestrator "$ORCH"` and
+`ORCH="$ORCH" capacity.sh`. The source-only package made by `scratch.sh` is
+for review and patching; it is not an executable checkout. Declaration parity,
+capacity (both legs), evidence
 durability. Output is **ONE list**, every violation classified:
 
 | class | meaning |

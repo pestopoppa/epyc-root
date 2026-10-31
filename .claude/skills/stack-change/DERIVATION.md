@@ -11,12 +11,18 @@ from hand-editing something that is generated.
 | `epyc-inference-research/orchestration/model_registry.yaml` | **the master.** `roles.*`, `server_mode.*`, `serving_shape`, `shared_with`, deprecation markers |
 | `epyc-orchestrator/orchestration/stack_topology.yaml` | `numa_config.<HOST role>` — instances, cpu_shape, policies, mlock, pre-evict |
 | `epyc-orchestrator/scripts/server/stack_numa.py` | the cpu-shape table (`_CPU_SHAPES`, `_SHAPE_CLASSES`, undersubscription allowlist) |
+| `epyc-orchestrator/src/registry/stack_priors.py` | stack-prior compilation and role resolution used by launch flags |
 | `epyc-orchestrator/orchestration/launch_manifest.yaml` | `port_map`, `role_launch_meta`, fallback slots/contexts |
+| `epyc-orchestrator/scripts/server/stack_commands.py`, `orchestrator_stack.py`, `stack_manifest.py` | command construction, lifecycle and manifest-backed launch defaults |
+| `epyc-orchestrator/scripts/voice/` | speech launch wrappers, shim and declared layout |
 | `epyc-orchestrator/src/config/models.py`, `src/roles.py` | alias delegation in CODE |
 | `epyc-orchestrator/stack_templates/*.yaml` | what `start` actually launches |
 | `/mnt/raid0/llm/kernels/production/<backend>` | the serving binary symlink |
 
 The master registry is read from research origin/main by default; never sync or edit the shared research clone to make a rebuild work; pass `--research-registry` only for a deliberate alternative checkout.
+The scratch package copies these source files for review. Run the pipeline from
+a complete scratch **checkout**, not from this source-only package: generated
+artifacts, imports, tests and dependencies are outside this list.
 
 ## DERIVED — never edit by hand
 

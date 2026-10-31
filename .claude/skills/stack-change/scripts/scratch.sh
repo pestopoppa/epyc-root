@@ -14,8 +14,8 @@
 # half-edited live tree.
 set -euo pipefail
 
-RESEARCH=/mnt/raid0/llm/epyc-inference-research
-ORCH=/mnt/raid0/llm/epyc-orchestrator
+RESEARCH="${RESEARCH:-/mnt/raid0/llm/epyc-inference-research}"
+ORCH="${ORCH:-/mnt/raid0/llm/epyc-orchestrator}"
 TS="$(date -u +%Y%m%dT%H%M%SZ)"
 DEST="${1:-/mnt/raid0/llm/tmp/stack-change-${TS}}"
 
@@ -27,6 +27,15 @@ ORCH_SRC=(
   orchestration/stack_topology.yaml
   orchestration/launch_manifest.yaml
   scripts/server/stack_numa.py
+  src/registry/stack_priors.py
+  scripts/server/stack_commands.py
+  scripts/server/orchestrator_stack.py
+  scripts/server/stack_manifest.py
+  scripts/voice/check_speech_layout.py
+  scripts/voice/speech_layouts.yaml
+  scripts/voice/nprocs_shim.c
+  scripts/voice/run_wav_harness.py
+  scripts/voice/build_nprocs_shim.sh
   src/config/models.py
   src/roles.py
   stack_templates/default.yaml
