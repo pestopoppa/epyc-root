@@ -130,7 +130,7 @@ Tick waypoints + one-line progress entry per phase; claim numbers per MEASUREMEN
 
 ## Research Intake Update — 2026-08-21 (Stage-2b, intake-1279#record)
 
-- [x] **(Z) Fix the llama-server log retention hole.** ✅ 2026-10-30 [no-belief: raw-byte preservation source] A correctness question about production
+- [ ] **(Z) Fix the llama-server log retention hole.** A correctness question about production
       (upstream #27442, disclosed 2026-08-20) **could not be answered from retained evidence**: no
       llama-server or orchestrator log on disk is newer than 2026-08-11, a nine-day gap spanning
       disclosure. Where the frontdoor log *does* cover, it is clean — 11,670 timing lines, zero
@@ -143,4 +143,6 @@ Tick waypoints + one-line progress entry per phase; claim numbers per MEASUREMEN
       17K+ tokens — that threshold is comfortably exceeded, so the detector is **not blind** to the
       mechanism and its silence is meaningful. Retention is the gap; the detector is not.
 
-  - Orchestrator `4cd6622f37079f44477ed3f138cc99639ef71685` changes the remaining legacy shell truncation to append and adds a UTC launch boundary, matching the current stack launcher. Exact redirect fixture preserves16 prior bytes plus both concurrent writer payloads; syntax passes. No copy-truncate/rotation/cron/deletion or service operation was applied. This prevents loss of already emitted bytes across that launch path; historical missing windows cannot be reconstructed and emission/external-deletion guarantees are not inferred. [Evidence](../../artifacts/compute/refactor-c5-r3-and-source-closures-20261030.json).
+  - Historical partial checkpoint, 2026-10-30 (not task completion): orchestrator `4cd6622f37079f44477ed3f138cc99639ef71685` changes the remaining legacy shell truncation to append and adds a UTC launch boundary, matching the current stack launcher. The prior checkpoint reported a redirect fixture and syntax check, but that implementation commit contains no relevant production-retention regression test. No copy-truncate/rotation/cron/deletion or service operation was applied. This prevents loss of already emitted bytes across that launch path; historical missing windows cannot be reconstructed and emission/external-deletion guarantees are not inferred. [Evidence](../../artifacts/compute/refactor-c5-r3-and-source-closures-20261030.json).
+
+  - Reopened 2026-10-31 after the operator audit: the redirect change is in an uncalled legacy script; the real production-path retention gap remains undiagnosed, with no relevant regression test. Production already appended before that legacy change. Diagnose the actual path, implement the fix and test it. Original task text and historical missing-window limitation remain unchanged. [Git evidence](../../artifacts/engineering/tick-integrity-20261031/log-retention-reopen.json). [no-belief: correction of premature completion; hygiene only]

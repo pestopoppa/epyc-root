@@ -1,0 +1,29 @@
+{
+  "schema": "epyc.tick_integrity_correction.v1",
+  "item": 17,
+  "task_title": "(Z) Fix the llama-server log retention hole.",
+  "disposition": "REOPEN",
+  "original_completion_metadata_date": "2026-10-30",
+  "corrected_on": "2026-10-31",
+  "quota_credit_today": 0,
+  "prior_partial_implementation": {
+    "repository": "epyc-orchestrator",
+    "commit": "4cd6622f37079f44477ed3f138cc99639ef71685",
+    "path": "scripts/server/start_servers.sh",
+    "diff_sha256": "fe63f2b10d234f3b0b6dba0880d7856a65be2b38e638f73cd1fa0359d6c0072f",
+    "scope": "legacy redirect changes from truncation to append plus launch boundary; not a production-path retention diagnosis"
+  },
+  "operator_audit": {
+    "date": "2026-10-31",
+    "finding": "The > to >> change is in an uncalled legacy script; the real retention gap is undiagnosed and has no relevant regression test.",
+    "correction_requested": true
+  },
+  "acceptance_not_met": [
+    "diagnose the actual production-path retention hole",
+    "fix retention for the specified llama-server log family",
+    "add a relevant regression test"
+  ],
+  "task_description_preserved": true,
+  "historical_missing_windows_reconstructed": false,
+  "evidence_type": "source and operator-audit correction; not an inference measurement"
+}
