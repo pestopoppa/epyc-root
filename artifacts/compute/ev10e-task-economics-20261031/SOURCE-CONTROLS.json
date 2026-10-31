@@ -1,0 +1,95 @@
+{
+  "scope": "SOURCE_AND_SYNTHETIC_CONTROLS_ONLY",
+  "research_source_and_remote_main": "51aef79c6529f6362db0df632754bf37e7a0a3b9",
+  "research_base": "ae68d27a9063ed96ae0c0d86a50000ac3ef0ba6b",
+  "root_draft_base": "8a1388d494596e9ec332a613b1c7bb7410c2783d",
+  "reviewed_patch_sha256": "2519995bf0ad74991869d71bc84ee37b33a98d7e17222ff8da6e359cb17a2077",
+  "frozen_v7_sha256_unchanged": "20a97fbd4aecc6f3887299243362d5315b76f819aa1cbc4b8fd92f33b307b45a",
+  "versioned_runner_sha256": "9a5b77461e966868957753c09db8808a0f88b331734f02fb5f193774fa588427",
+  "source_test_path": "scripts/benchmark/test_task_economics_runner.py",
+  "focused_tests": "46 passed (22 new/adapted plus 24 frozen controls)",
+  "rebound_applicable_frozen_controls": "17 passed; 7 intentionally incompatible epoch fixtures replaced by new controls",
+  "touched_ruff": "passed",
+  "security_check": "passed",
+  "full_smoke_before_fixture_hydration": {
+    "passed": 4203,
+    "failed": 13,
+    "skipped": 6,
+    "xfailed": 1,
+    "subtests_passed": 2105
+  },
+  "after_hydration_selected_nodes": {
+    "passed": 2,
+    "failed": 11,
+    "baseline_error_comparison": "identical after root-prefix normalization"
+  },
+  "make_lint": "three identical base/lane diagnostics: missing historical converter and two E731 lambdas",
+  "baseline_lint_diagnostics": [
+    "E902 artifacts/architect-code-eval-20260724/convert_sr_to_patch.py absent at clean base",
+    "E731 scripts/kernel_rnd/autokernel/test_campaign.py:4374 lambda assignment",
+    "E731 scripts/kernel_rnd/autokernel/test_campaign.py:4466 lambda assignment"
+  ],
+  "baseline_failing_nodes_after_hydration": [
+    "scripts/kernel_rnd/autokernel/execution/test_control_runner.py::TestTheVerdictMustDescribeTheSubmission::test_a_verdict_reduced_from_other_material_is_refused",
+    "scripts/kernel_rnd/autokernel/test_campaign.py::TestTheBoundaryIsStructural::test_the_driver_imports_exactly_what_it_declares",
+    "scripts/kernel_rnd/autokernel/test_campaign_footprint.py::TestCampaignFootprint::test_campaign_path_does_not_reach_the_deferred_half",
+    "scripts/kernel_rnd/autokernel/test_campaign_footprint.py::TestCampaignFootprint::test_the_entrypoint_stays_inside_the_declared_closure",
+    "scripts/kernel_rnd/autokernel/test_campaign_footprint.py::TestTheBoundaryCatchesRealTreeViolations::test_a_compliant_module_produces_no_deferred_finding",
+    "scripts/kernel_rnd/autokernel/test_campaign_footprint.py::TestTheBoundaryCatchesRealTreeViolations::test_an_allow_listed_controller_module_is_not_a_finding",
+    "scripts/kernel_rnd/autokernel/test_campaign_footprint.py::TestTheBoundaryCatchesRealTreeViolations::test_an_fstring_dynamic_import_is_reported_unresolved",
+    "scripts/kernel_rnd/autokernel/test_campaign_footprint.py::TestFootprintDocumentMatchesTheTree::test_every_non_test_module_has_a_row",
+    "scripts/kernel_rnd/autokernel/test_campaign_footprint.py::TestFootprintDocumentMatchesTheTree::test_every_reachability_flag_matches_the_walked_graph",
+    "scripts/kernel_rnd/autokernel/test_campaign_footprint.py::TestFootprintDocumentMatchesTheTree::test_the_totals_are_the_tree",
+    "scripts/kernel_rnd/autokernel/test_readme.py::TestTheDocumentedFiguresComeFromOnePlace::test_the_footprint_document_exists_and_states_totals"
+  ],
+  "baseline_error_comparison_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "evidence_check": "exit 0; 262 checkout-verification warnings retained",
+  "docs_analysis_checks": "stale indices; not passed",
+  "autopilot_aggregate": "resource-guard cancellation after live grant topology changed; not passed",
+  "autopilot_interruption_custody": {
+    "scope": "MODEL_FREE_R6_ONLY",
+    "family": "28-29",
+    "actual_cpus": [
+      124,
+      125
+    ],
+    "returncode": null,
+    "failure": "RuntimeError: SMT fallback not required; choose free physical quarter",
+    "elapsed_s": 277.94922382500954,
+    "sampled_peak_tree_rss_bytes": 988610560,
+    "kernel_childset_empty": true,
+    "native_or_GPU_execution": false
+  },
+  "actual_accuracy_hook": "real-hook success/refusal, persisted attestation digest, source identity and locator verified",
+  "economics_projection": "prospective VB-V7-TASK-ECONOMICS-WRITE; no canary or wired claim",
+  "focused_custody": {
+    "scope": "MODEL_FREE_R6_ONLY",
+    "family": "28-29",
+    "actual_cpus": [
+      124,
+      125
+    ],
+    "returncode": 0,
+    "failure": null,
+    "elapsed_s": 0.5514326428528875,
+    "sampled_peak_tree_rss_bytes": 44158976,
+    "kernel_childset_empty": true,
+    "native_or_GPU_execution": false
+  },
+  "publication_custody": {
+    "scope": "MODEL_FREE_R6_ONLY",
+    "family": "30-31",
+    "actual_cpus": [
+      126,
+      127
+    ],
+    "returncode": 0,
+    "failure": null,
+    "elapsed_s": 24.89450291194953,
+    "sampled_peak_tree_rss_bytes": 114495488,
+    "kernel_childset_empty": true,
+    "native_or_GPU_execution": false
+  },
+  "native_inference_or_gpu_or_deployment": false,
+  "belief_measurement_or_grade_claim": false
+}
