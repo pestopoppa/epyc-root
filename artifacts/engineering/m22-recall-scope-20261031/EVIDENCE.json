@@ -1,0 +1,114 @@
+{
+  "schema": "epyc.m22.recall_scope_source_closure.v1",
+  "task": "M-22 \u2014 give recall() a live exploration write path, or say it is seed-only.",
+  "implementing_commit": "4c55fdd462d1d186963f7aedfb33fc388fdb8986",
+  "promoted_main": "c2407be32f1b4e958b0c1ff37c8edb0dfd75aefd",
+  "integration_base": "9c688eacbf8e0299c02136d60363b4f1ad29bad6",
+  "source_files": [
+    {
+      "repo": "epyc-orchestrator",
+      "commit": "4c55fdd462d1d186963f7aedfb33fc388fdb8986",
+      "path": "docs/chapters/03-repl-environment.md",
+      "sha256": "85f44481c5e54dc45f28303a84516f77831eba62c31aafab116a8214f4e1ff36"
+    },
+    {
+      "repo": "epyc-orchestrator",
+      "commit": "4c55fdd462d1d186963f7aedfb33fc388fdb8986",
+      "path": "docs/chapters/07-memrl-system.md",
+      "sha256": "aa09c1992a720fc6cd86b1a6f8d2fd58adc98d1104f8e4bc65bd05415bf3606b"
+    },
+    {
+      "repo": "epyc-orchestrator",
+      "commit": "4c55fdd462d1d186963f7aedfb33fc388fdb8986",
+      "path": "src/repl_environment/routing.py",
+      "sha256": "d0dfa9e33ded6cff730a54c1b68d62bfdf9fb05be50c8702977b39a9309db9cb"
+    },
+    {
+      "repo": "epyc-orchestrator",
+      "commit": "4c55fdd462d1d186963f7aedfb33fc388fdb8986",
+      "path": "tests/unit/test_repl_recall_v1.py",
+      "sha256": "13b9d87684b20601aca5d7e9efb11871a8a9407f0327e3c0226dc237ffb617fa"
+    }
+  ],
+  "scope": "seed/import/explicit-write lookup; no automatic live REPL exploration writeback",
+  "explicit_writers_preserved": true,
+  "M20_recall_arm": "pinned seed/import/explicit-write population; record any explicit writes during study",
+  "M20_route_advice_arm": "separate live-routing memory scope; unchanged",
+  "validation": {
+    "actual_current_main_related_tests_passed": 8,
+    "make_gates_rc": 0,
+    "focused_ruff_rc": 0,
+    "tests": "tests/unit/test_repl_recall_v1.py",
+    "model_inference": false,
+    "live_database_population_recount": false
+  },
+  "retained_evidence": [
+    {
+      "path": "artifacts/engineering/m22-recall-scope-20261031/INTEGRATION-ACTUAL-8.log",
+      "sha256": "0a094cd40dcdee58be4e3324fff08cbfddb1a667c223ca30010c976c25a252e8",
+      "bytes": 1206
+    },
+    {
+      "path": "artifacts/engineering/m22-recall-scope-20261031/INTEGRATION-MAKE-GATES.log",
+      "sha256": "01ac9119d5704b4139fe7cbfad98165fff0f00c1faa306a0e2a351f8ba25a215",
+      "bytes": 248
+    },
+    {
+      "path": "artifacts/engineering/m22-recall-scope-20261031/INTEGRATION-FOCUSED-RUFF.log",
+      "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+      "bytes": 19
+    },
+    {
+      "path": "artifacts/engineering/m22-recall-scope-20261031/PUBLICATION.json",
+      "sha256": "e7d061fe5c06b92e4d964803c6c437a4b77fc5250440de5b98eb22e9b844a00f",
+      "bytes": 1151
+    }
+  ],
+  "writer_closure_audit": [
+    {
+      "path": "orchestration/repl_memory/seed_loader.py",
+      "sha256": "2967bbe5877789915381833afc306cb92377922f93c551a38f793161bcb2c5a0"
+    },
+    {
+      "path": "scripts/memory/seed_remaining_phase_b.py",
+      "sha256": "9125b464aa3202b6f6141b4d8325f85c888acd02fd0d2fafe8f97063be82ee56"
+    },
+    {
+      "path": "orchestration/repl_memory/progress_logger.py",
+      "sha256": "003f6901de5568ec284def42a97ca6045480165916115e9f5da21aea87446ebb"
+    },
+    {
+      "path": "orchestration/repl_memory/q_scorer.py",
+      "sha256": "8b2f2abc4b74f4612b7a6ccd4819258fb6b9f2d4f3e8b54508a7d6ca348813ae"
+    },
+    {
+      "path": "orchestration/repl_memory/retriever.py",
+      "sha256": "a6a008ed999f3b76cac81f5dc37490b2d894f57ebd20da5d1a89ce8d76996805"
+    },
+    {
+      "path": "src/repl_environment/state.py",
+      "sha256": "51e8e02c6e2efa67112c6a9f1f7e15ae64d3fac63d9dba3e43d01add2d49b715"
+    },
+    {
+      "path": "src/api/services/memrl.py",
+      "sha256": "ce12e425f4fe07900c649418d2c97f07fe6e9d131cc2007c53e2d3fcecc14ce1"
+    },
+    {
+      "path": "src/api/routes/chat.py",
+      "sha256": "b80b80b82cf10f22f0c3dee4b90d77e50d5168b0ef0491f4e10a4110bdd4b0c9"
+    },
+    {
+      "path": "src/api/routes/chat_review.py",
+      "sha256": "d8e7629c993637ddf8c4cc167ee0de0be4f51bb02f5214f849a0595cc82856f2"
+    },
+    {
+      "path": "src/api/models/requests.py",
+      "sha256": "04a13f4f8cdb03ee2e1352834c1e193805838ddbca549aad7cb9f09478f0fa19"
+    }
+  ],
+  "writer_closure_audit_epoch": "a3c00d206a75044a2c01d67498f7bb633084eb0c",
+  "closure_unchanged_to_integration_base": true,
+  "runtime_reload": false,
+  "deployment_or_live_learning_claim": false,
+  "raw_measurement_warrant_created": false
+}

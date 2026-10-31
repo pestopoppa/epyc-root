@@ -600,10 +600,18 @@ failure caught in amber.
 - [x] **M-21 — filter smoke/probe traffic out of episodic write-back.** Live write-back is dominated by smoke prompts (`"What is 17 * 3?"` alone: 8,641 Q updates). Tag probe/smoke/health traffic at the API and skip its write-back; add a test and a one-off count of affected rows. (filed 2026-09-26) ✅ 2026-10-31 — APP `6de0e31dce409d3b974be3b78979f02dadcdc473`; [tests](../../artifacts/compute/codex3-m21-20261031/FINAL-v2.log); [read-only literal count](../../artifacts/compute/codex3-m21-20261031/COUNT.log). [belief: cc]
       - 2026-10-31 audit correction: original task text restored verbatim (line wrapping only); its historical attribution is not established by the literal count. Existing implementation/evidence scope follows. [no-belief: task-identity correction]
       Explicit smoke/probe/health tags on `/chat` and `/chat/stream` enter durable task-start records and suppress immediate and replayed episodic scoring; untagged requests remain eligible. Literal count: one matching row, 8,641 updates, historical request provenance UNKNOWN. Explicit external-reward APIs are separate and not covered by this replay filter; no historical memory was changed.
-- [ ] **M-22 — give `recall()` a live exploration write path, or say it is seed-only.** `recall()` reads only
+- [x] **M-22 — give `recall()` a live exploration write path, or say it is seed-only.** `recall()` reads only <!-- evidence-integrity: Orchestrator `4c55fdd462d1d186963f7aedfb33fc388fdb8986`; test: tests/unit/test_repl_recall_v1.py; artifact: artifacts/engineering/m22-recall-scope-20261031/EVIDENCE.json --> <!-- completion: ✅ 2026-10-31 [belief: cc] -->
       the 728 seed `exploration` rows (0 updates); nothing writes exploration rows from live traffic. Either
       write exploration memories from real REPL sessions (with M-21's filter) or document recall as a static
       seed lookup and scope M-20 accordingly. (filed 2026-09-26)
+
+  <!-- task-evidence-integrity:start M-22 -->
+  - Completed 2026-10-31 via the documented-population alternative: implementing APP `4c55fdd462d1d186963f7aedfb33fc388fdb8986` ([published tests](https://github.com/pestopoppa/epyc-orchestrator/blob/4c55fdd462d1d186963f7aedfb33fc388fdb8986/tests/unit/test_repl_recall_v1.py)); [original source-check evidence](../../artifacts/engineering/m22-recall-scope-20261031/EVIDENCE.json). Recall responses now declare seed/import/explicit-write exploration lookup and no automatic live REPL exploration writeback. Explicit Python, direct-store and import writers remain possible. Eight related real temporary-store/journal tests, actual make gates and focused Ruff pass. The historical728-row/zero-update figure above was not remeasured. No automatic writer, deployment or live-learning result is claimed. [belief: cc]
+  <!-- task-evidence-integrity:end M-22 -->
+
+  <!-- task-evidence-integrity:start M-20-scope -->
+  - M-22 scope clarification: the recall arm evaluates the pinned exploration seed/import population and records explicit writes during the study, not learning from normal live REPL exploration completion. `route_advice()` retains its separate live-routing-memory scope. M-20 telemetry and efficacy acceptance remain open; no new traffic, observed-use count or evaluation is claimed. [belief: cc]
+  <!-- task-evidence-integrity:end M-20-scope -->
 
 ## Why the reseed is necessary (and what it will NOT fix)
 
