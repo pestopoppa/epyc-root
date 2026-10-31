@@ -1,0 +1,12 @@
+{
+  "defect": "actual active external drafter missing while legacy checked paths exist",
+  "canonical_missing": "/mnt/raid0/llm/models/Qwen3.8-27B-DFlash2-Q8_0.gguf",
+  "baseline_errors": [],
+  "candidate_errors": [
+    "[HOT] architect_critic draft_model_path: /mnt/raid0/llm/models/Qwen3.8-27B-DFlash2-Q8_0.gguf"
+  ],
+  "baseline_false_green": true,
+  "candidate_refuses": true,
+  "baseline": "5f72ca3f2687d26ad7d59ff828f08b696db2e7b1",
+  "live_changes": false
+}

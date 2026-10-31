@@ -1,0 +1,37 @@
+{
+  "index": 20,
+  "task": "validate_model_paths",
+  "root_base": "72b592361654bc365d91f988a8d546f599bd28fb",
+  "disposition": "RETAIN_X",
+  "implementation_commit": "47d4fc1a8be6479a81fe24426883c43e30238dd2",
+  "reason": "Active paths derive from generated launch requirements; original missing-drafter red/green and186 focused controls cover fail-closed source behavior, with publication receipt.",
+  "evidence": [
+    {
+      "git_path": "artifacts/compute/refactor-evidence-corrections-20261031/20/focused.log",
+      "sha256": "96df448cb8cbbdc1e8247d6a587a4c36aa052fbcf6ba0293fe21fa2671f3124c",
+      "bytes": 1546,
+      "source": "/mnt/raid0/llm/tmp/refactor-unsupported-seven-v2-20261031/20/files/artifacts/compute/refactor-evidence-corrections-20261031/20/focused.log"
+    },
+    {
+      "git_path": "artifacts/compute/refactor-evidence-corrections-20261031/20/push-receipt.json",
+      "sha256": "2f8c3fea9198f37ba2b59307b564bc5f35417d8c392430cf0409e65fc52b9d5a",
+      "bytes": 548,
+      "source": "/mnt/raid0/llm/tmp/refactor-unsupported-seven-v2-20261031/20/files/artifacts/compute/refactor-evidence-corrections-20261031/20/push-receipt.json"
+    },
+    {
+      "git_path": "artifacts/compute/refactor-evidence-corrections-20261031/20/red-green.json",
+      "sha256": "9a60cf4851ef2996a1db86f2b3ff0637741bf14a263296d857e60a6bd1605ad5",
+      "bytes": 465,
+      "source": "/mnt/raid0/llm/tmp/refactor-unsupported-seven-v2-20261031/20/files/artifacts/compute/refactor-evidence-corrections-20261031/20/red-green.json"
+    }
+  ],
+  "task_prose_and_dates_unchanged": true,
+  "tests_rerun": false,
+  "new_code_quota_credit": false,
+  "recovery": {
+    "index": 20,
+    "original_paragraph_sha256": "a9fbc83f2a8b1269ad2d228f3dcc4ca1c8d5b80ed01f29c5f8d77fa99cc32345",
+    "whole_handoff_recovery_byte_identical": true,
+    "original_prose_and_dates_unchanged": true
+  }
+}

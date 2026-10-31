@@ -1,0 +1,14 @@
+{
+  "repo": "epyc-orchestrator",
+  "candidate": "47d4fc1a8be6479a81fe24426883c43e30238dd2",
+  "remote_main": "47d4fc1a8be6479a81fe24426883c43e30238dd2",
+  "candidate_is_ancestor": true,
+  "forced": false,
+  "gate": {
+    "verdict": "autonomous",
+    "hits": [],
+    "loop_plane": [],
+    "token_block": null,
+    "operator_ack": "Parent reviewed committed47d4fc1a three-file active generated model-path preflight candidate and186focused/red-green controls, explicitly authorized canonical nonforce integration. No live/config/model changes."
+  }
+}
