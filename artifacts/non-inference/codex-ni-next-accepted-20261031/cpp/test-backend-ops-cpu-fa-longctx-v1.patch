@@ -1,0 +1,93 @@
+diff --git a/tests/test-backend-ops.cpp b/tests/test-backend-ops.cpp
+index 46b556039..8b2991747 100644
+--- a/tests/test-backend-ops.cpp
++++ b/tests/test-backend-ops.cpp
+@@ -9794,6 +9794,52 @@ static const ggml_type other_types[] = {
+ #pragma optimize("", off)
+ #endif
+ 
++// AutoKernel cpu_fa_schedule case set (epyc-inference-research
++// scripts/kernel_rnd/autokernel/loop/cpu_fa_reference.py CASE_SET, generated).
++// Long-context decode/verify shapes: Q38FN D=256 2 KV heads x GQA 12, DS41 D=512
++// 1 KV head x 64 with sinks. Registered only when the reviewed selector names this
++// set, so the generic FLASH_ATTN_EXT corpus keeps its size.
++static void autokernel_add_cpu_fa_longctx_cases(std::vector<std::unique_ptr<test_case>> & test_cases) {
++    const char * case_set = std::getenv("AUTOKERNEL_CORRECTNESS_CASE_SET");
++    if (case_set != nullptr && std::strcmp(case_set, "cpu_fa_longctx_v1") == 0) {
++        test_cases.emplace_back(new test_flash_attn_ext(256, 256, 2, {12, 1}, 8192, 1, true, false, 0, 0, GGML_PREC_F32, GGML_TYPE_F16, GGML_TYPE_F16));
++        test_cases.emplace_back(new test_flash_attn_ext(256, 256, 2, {12, 1}, 8192, 2, true, false, 0, 0, GGML_PREC_F32, GGML_TYPE_F16, GGML_TYPE_F16));
++        test_cases.emplace_back(new test_flash_attn_ext(256, 256, 2, {12, 1}, 8192, 3, true, false, 0, 0, GGML_PREC_F32, GGML_TYPE_F16, GGML_TYPE_F16));
++        test_cases.emplace_back(new test_flash_attn_ext(256, 256, 2, {12, 1}, 8192, 4, true, false, 0, 0, GGML_PREC_F32, GGML_TYPE_F16, GGML_TYPE_F16));
++        test_cases.emplace_back(new test_flash_attn_ext(256, 256, 2, {12, 1}, 8192, 5, true, false, 0, 0, GGML_PREC_F32, GGML_TYPE_F16, GGML_TYPE_F16));
++        test_cases.emplace_back(new test_flash_attn_ext(256, 256, 2, {12, 1}, 65536, 1, true, false, 0, 0, GGML_PREC_F32, GGML_TYPE_F16, GGML_TYPE_F16));
++        test_cases.emplace_back(new test_flash_attn_ext(256, 256, 2, {12, 1}, 65536, 2, true, false, 0, 0, GGML_PREC_F32, GGML_TYPE_F16, GGML_TYPE_F16));
++        test_cases.emplace_back(new test_flash_attn_ext(256, 256, 2, {12, 1}, 65536, 3, true, false, 0, 0, GGML_PREC_F32, GGML_TYPE_F16, GGML_TYPE_F16));
++        test_cases.emplace_back(new test_flash_attn_ext(256, 256, 2, {12, 1}, 65536, 4, true, false, 0, 0, GGML_PREC_F32, GGML_TYPE_F16, GGML_TYPE_F16));
++        test_cases.emplace_back(new test_flash_attn_ext(256, 256, 2, {12, 1}, 65536, 5, true, false, 0, 0, GGML_PREC_F32, GGML_TYPE_F16, GGML_TYPE_F16));
++        test_cases.emplace_back(new test_flash_attn_ext(256, 256, 2, {12, 1}, 131072, 1, true, false, 0, 0, GGML_PREC_F32, GGML_TYPE_F16, GGML_TYPE_F16));
++        test_cases.emplace_back(new test_flash_attn_ext(256, 256, 2, {12, 1}, 131072, 2, true, false, 0, 0, GGML_PREC_F32, GGML_TYPE_F16, GGML_TYPE_F16));
++        test_cases.emplace_back(new test_flash_attn_ext(256, 256, 2, {12, 1}, 131072, 3, true, false, 0, 0, GGML_PREC_F32, GGML_TYPE_F16, GGML_TYPE_F16));
++        test_cases.emplace_back(new test_flash_attn_ext(256, 256, 2, {12, 1}, 131072, 4, true, false, 0, 0, GGML_PREC_F32, GGML_TYPE_F16, GGML_TYPE_F16));
++        test_cases.emplace_back(new test_flash_attn_ext(256, 256, 2, {12, 1}, 131072, 5, true, false, 0, 0, GGML_PREC_F32, GGML_TYPE_F16, GGML_TYPE_F16));
++        test_cases.emplace_back(new test_flash_attn_ext(512, 512, 1, {64, 1}, 4096, 1, true, true, 0, 0, GGML_PREC_F32, GGML_TYPE_F16, GGML_TYPE_F16));
++        test_cases.emplace_back(new test_flash_attn_ext(512, 512, 1, {64, 1}, 4096, 2, true, true, 0, 0, GGML_PREC_F32, GGML_TYPE_F16, GGML_TYPE_F16));
++        test_cases.emplace_back(new test_flash_attn_ext(512, 512, 1, {64, 1}, 4096, 3, true, true, 0, 0, GGML_PREC_F32, GGML_TYPE_F16, GGML_TYPE_F16));
++        test_cases.emplace_back(new test_flash_attn_ext(512, 512, 1, {64, 1}, 4096, 4, true, true, 0, 0, GGML_PREC_F32, GGML_TYPE_F16, GGML_TYPE_F16));
++        test_cases.emplace_back(new test_flash_attn_ext(512, 512, 1, {64, 1}, 4096, 5, true, true, 0, 0, GGML_PREC_F32, GGML_TYPE_F16, GGML_TYPE_F16));
++        test_cases.emplace_back(new test_flash_attn_ext(512, 512, 1, {64, 1}, 8192, 1, true, true, 0, 0, GGML_PREC_F32, GGML_TYPE_F16, GGML_TYPE_F16));
++        test_cases.emplace_back(new test_flash_attn_ext(512, 512, 1, {64, 1}, 8192, 2, true, true, 0, 0, GGML_PREC_F32, GGML_TYPE_F16, GGML_TYPE_F16));
++        test_cases.emplace_back(new test_flash_attn_ext(512, 512, 1, {64, 1}, 8192, 3, true, true, 0, 0, GGML_PREC_F32, GGML_TYPE_F16, GGML_TYPE_F16));
++        test_cases.emplace_back(new test_flash_attn_ext(512, 512, 1, {64, 1}, 8192, 4, true, true, 0, 0, GGML_PREC_F32, GGML_TYPE_F16, GGML_TYPE_F16));
++        test_cases.emplace_back(new test_flash_attn_ext(512, 512, 1, {64, 1}, 8192, 5, true, true, 0, 0, GGML_PREC_F32, GGML_TYPE_F16, GGML_TYPE_F16));
++        test_cases.emplace_back(new test_flash_attn_ext(512, 512, 1, {64, 1}, 32768, 1, true, true, 0, 0, GGML_PREC_F32, GGML_TYPE_F16, GGML_TYPE_F16));
++        test_cases.emplace_back(new test_flash_attn_ext(512, 512, 1, {64, 1}, 32768, 2, true, true, 0, 0, GGML_PREC_F32, GGML_TYPE_F16, GGML_TYPE_F16));
++        test_cases.emplace_back(new test_flash_attn_ext(512, 512, 1, {64, 1}, 32768, 3, true, true, 0, 0, GGML_PREC_F32, GGML_TYPE_F16, GGML_TYPE_F16));
++        test_cases.emplace_back(new test_flash_attn_ext(512, 512, 1, {64, 1}, 32768, 4, true, true, 0, 0, GGML_PREC_F32, GGML_TYPE_F16, GGML_TYPE_F16));
++        test_cases.emplace_back(new test_flash_attn_ext(512, 512, 1, {64, 1}, 32768, 5, true, true, 0, 0, GGML_PREC_F32, GGML_TYPE_F16, GGML_TYPE_F16));
++        test_cases.emplace_back(new test_flash_attn_ext(512, 512, 1, {64, 1}, 65536, 1, true, true, 0, 0, GGML_PREC_F32, GGML_TYPE_F16, GGML_TYPE_F16));
++        test_cases.emplace_back(new test_flash_attn_ext(512, 512, 1, {64, 1}, 65536, 2, true, true, 0, 0, GGML_PREC_F32, GGML_TYPE_F16, GGML_TYPE_F16));
++        test_cases.emplace_back(new test_flash_attn_ext(512, 512, 1, {64, 1}, 65536, 3, true, true, 0, 0, GGML_PREC_F32, GGML_TYPE_F16, GGML_TYPE_F16));
++        test_cases.emplace_back(new test_flash_attn_ext(512, 512, 1, {64, 1}, 65536, 4, true, true, 0, 0, GGML_PREC_F32, GGML_TYPE_F16, GGML_TYPE_F16));
++        test_cases.emplace_back(new test_flash_attn_ext(512, 512, 1, {64, 1}, 65536, 5, true, true, 0, 0, GGML_PREC_F32, GGML_TYPE_F16, GGML_TYPE_F16));
++    }
++}
++
+ // Test cases for evaluation: should try to cover edge cases while using small input sizes to keep the runtime low
+ static std::vector<std::unique_ptr<test_case>> make_test_cases_eval() {
+     std::vector<std::unique_ptr<test_case>> test_cases;
+@@ -11537,6 +11583,8 @@ static std::vector<std::unique_ptr<test_case>> make_test_cases_eval() {
+         }
+     }
+ 
++    autokernel_add_cpu_fa_longctx_cases(test_cases);
++
+     return test_cases;
+ }
+ #ifdef _MSC_VER
+@@ -11757,6 +11805,7 @@ static std::vector<std::unique_ptr<test_case>> make_test_cases_perf() {
+         test_cases.emplace_back(new test_flash_attn_ext(64, 64, 2, {7, 1},  512, 1, true,  false, 0, 0, GGML_PREC_F32, GGML_TYPE_F16, GGML_TYPE_F16));
+         test_cases.emplace_back(new test_flash_attn_ext(64, 64, 2, {7, 1}, 2048, 1, true,  false, 0, 0, GGML_PREC_F32, GGML_TYPE_F16, GGML_TYPE_F16));
+     }
++    autokernel_add_cpu_fa_longctx_cases(test_cases);
+ 
+     for (int kv : { 4096, 8192, 16384, }) {
+         for (int hs : { 64, 128, }) {
+@@ -12578,7 +12627,17 @@ int main(int argc, char ** argv) {
+         auto ggml_backend_set_n_threads_fn = (ggml_backend_set_n_threads_t) ggml_backend_reg_get_proc_address(reg, "ggml_backend_set_n_threads");
+         if (ggml_backend_set_n_threads_fn) {
+             // TODO: better value for n_threads
+-            ggml_backend_set_n_threads_fn(backend.get(), N_THREADS);
++            // AutoKernel: AUTOKERNEL_CPU_N_THREADS pins the team (the cpu_fa_schedule perf
++            // screen runs on the serving recipe's team, not hardware_concurrency()).
++            int n_threads = (int) N_THREADS;
++            if (const char * ak_threads = std::getenv("AUTOKERNEL_CPU_N_THREADS")) {
++                char * end = nullptr;
++                const long value = std::strtol(ak_threads, &end, 10);
++                if (ak_threads[0] && *end == '\0' && value >= 1 && value <= 1024) {
++                    n_threads = (int) value;
++                }
++            }
++            ggml_backend_set_n_threads_fn(backend.get(), n_threads);
+         }
+ 
+         size_t free, total;  // NOLINT

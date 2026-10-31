@@ -1,0 +1,491 @@
+{
+  "caveat": "suite-stratified draws differ from pool frequencies; scoring failures change weights",
+  "distinct_inputs": 76704,
+  "distinct_judge_fraction": 0.04616447642886942,
+  "distinct_judge_inputs": 3541,
+  "identity": "suite/prompt/context/image_path; image bytes not inspected",
+  "potential_quality_axis_share": null,
+  "quality_semantics": "higher is better; 3 * correct / scored denominator; equal row weight",
+  "realized_scored_quality_axis_share": null,
+  "rows": 77823,
+  "schema_version": 1,
+  "scope": "pool_inventory",
+  "source": {
+    "path": "/mnt/raid0/llm/epyc-inference-research/benchmarks/prompts/question_pool.jsonl",
+    "sha256": "73a2ed5aa87c38e554c818aff4b8c6dd865621c6134b4abacebfa9070a818f8b"
+  },
+  "suites": {
+    "agentic": {
+      "distinct_by_method": {
+        "exact_match": 1,
+        "substring": 43
+      },
+      "distinct_inputs": 44,
+      "distinct_judge_fraction": 0.0,
+      "distinct_judge_inputs": 0,
+      "duplicate_rows": 0,
+      "judge_rows": 0,
+      "potential_quality_axis_share": null,
+      "rows": 44
+    },
+    "aime": {
+      "distinct_by_method": {
+        "exact_match": 60
+      },
+      "distinct_inputs": 60,
+      "distinct_judge_fraction": 0.0,
+      "distinct_judge_inputs": 0,
+      "duplicate_rows": 0,
+      "judge_rows": 0,
+      "potential_quality_axis_share": null,
+      "rows": 60
+    },
+    "aime25": {
+      "distinct_by_method": {
+        "exact_match": 30
+      },
+      "distinct_inputs": 30,
+      "distinct_judge_fraction": 0.0,
+      "distinct_judge_inputs": 0,
+      "duplicate_rows": 0,
+      "judge_rows": 0,
+      "potential_quality_axis_share": null,
+      "rows": 30
+    },
+    "bigcodebench": {
+      "distinct_by_method": {
+        "code_execution": 1139
+      },
+      "distinct_inputs": 1139,
+      "distinct_judge_fraction": 0.0,
+      "distinct_judge_inputs": 0,
+      "duplicate_rows": 1,
+      "judge_rows": 0,
+      "potential_quality_axis_share": null,
+      "rows": 1140
+    },
+    "coder": {
+      "distinct_by_method": {
+        "substring": 664
+      },
+      "distinct_inputs": 664,
+      "distinct_judge_fraction": 0.0,
+      "distinct_judge_inputs": 0,
+      "duplicate_rows": 0,
+      "judge_rows": 0,
+      "potential_quality_axis_share": null,
+      "rows": 664
+    },
+    "cruxeval": {
+      "distinct_by_method": {
+        "exact_match": 1600
+      },
+      "distinct_inputs": 1600,
+      "distinct_judge_fraction": 0.0,
+      "distinct_judge_inputs": 0,
+      "duplicate_rows": 0,
+      "judge_rows": 0,
+      "potential_quality_axis_share": null,
+      "rows": 1600
+    },
+    "debugbench": {
+      "distinct_by_method": {
+        "substring": 3991
+      },
+      "distinct_inputs": 3991,
+      "distinct_judge_fraction": 0.0,
+      "distinct_judge_inputs": 0,
+      "duplicate_rows": 262,
+      "judge_rows": 0,
+      "potential_quality_axis_share": null,
+      "rows": 4253
+    },
+    "general": {
+      "distinct_by_method": {
+        "multiple_choice": 13937
+      },
+      "distinct_inputs": 13937,
+      "distinct_judge_fraction": 0.0,
+      "distinct_judge_inputs": 0,
+      "duplicate_rows": 105,
+      "judge_rows": 0,
+      "potential_quality_axis_share": null,
+      "rows": 14042
+    },
+    "gpqa": {
+      "distinct_by_method": {
+        "multiple_choice": 448
+      },
+      "distinct_inputs": 448,
+      "distinct_judge_fraction": 0.0,
+      "distinct_judge_inputs": 0,
+      "duplicate_rows": 0,
+      "judge_rows": 0,
+      "potential_quality_axis_share": null,
+      "rows": 448
+    },
+    "gpqa_diamond": {
+      "distinct_by_method": {
+        "multiple_choice": 198
+      },
+      "distinct_inputs": 198,
+      "distinct_judge_fraction": 0.0,
+      "distinct_judge_inputs": 0,
+      "duplicate_rows": 0,
+      "judge_rows": 0,
+      "potential_quality_axis_share": null,
+      "rows": 198
+    },
+    "gpqa_diamond_cot": {
+      "distinct_by_method": {
+        "multiple_choice": 198
+      },
+      "distinct_inputs": 198,
+      "distinct_judge_fraction": 0.0,
+      "distinct_judge_inputs": 0,
+      "duplicate_rows": 0,
+      "judge_rows": 0,
+      "potential_quality_axis_share": null,
+      "rows": 198
+    },
+    "hotpotqa": {
+      "distinct_by_method": {
+        "f1": 7405
+      },
+      "distinct_inputs": 7405,
+      "distinct_judge_fraction": 0.0,
+      "distinct_judge_inputs": 0,
+      "duplicate_rows": 0,
+      "judge_rows": 0,
+      "potential_quality_axis_share": null,
+      "rows": 7405
+    },
+    "instruction_precision": {
+      "distinct_by_method": {
+        "programmatic": 524,
+        "substring": 17
+      },
+      "distinct_inputs": 541,
+      "distinct_judge_fraction": 0.0,
+      "distinct_judge_inputs": 0,
+      "duplicate_rows": 0,
+      "judge_rows": 0,
+      "potential_quality_axis_share": null,
+      "rows": 541
+    },
+    "leval": {
+      "distinct_by_method": {
+        "exact_match": 285,
+        "llm_judge": 205
+      },
+      "distinct_inputs": 490,
+      "distinct_judge_fraction": 0.41836734693877553,
+      "distinct_judge_inputs": 205,
+      "duplicate_rows": 24,
+      "judge_rows": 229,
+      "potential_quality_axis_share": null,
+      "rows": 514
+    },
+    "livecodebench": {
+      "distinct_by_method": {
+        "code_execution": 704
+      },
+      "distinct_inputs": 704,
+      "distinct_judge_fraction": 0.0,
+      "distinct_judge_inputs": 0,
+      "duplicate_rows": 0,
+      "judge_rows": 0,
+      "potential_quality_axis_share": null,
+      "rows": 704
+    },
+    "long_context": {
+      "distinct_by_method": {
+        "exact_match": 4,
+        "substring": 40
+      },
+      "distinct_inputs": 44,
+      "distinct_judge_fraction": 0.0,
+      "distinct_judge_inputs": 0,
+      "duplicate_rows": 0,
+      "judge_rows": 0,
+      "potential_quality_axis_share": null,
+      "rows": 44
+    },
+    "longbench": {
+      "distinct_by_method": {
+        "exact_match": 503
+      },
+      "distinct_inputs": 503,
+      "distinct_judge_fraction": 0.0,
+      "distinct_judge_inputs": 0,
+      "duplicate_rows": 0,
+      "judge_rows": 0,
+      "potential_quality_axis_share": null,
+      "rows": 503
+    },
+    "longcot_mini": {
+      "distinct_by_method": {
+        "structural_exact_match": 400
+      },
+      "distinct_inputs": 400,
+      "distinct_judge_fraction": 0.0,
+      "distinct_judge_inputs": 0,
+      "duplicate_rows": 2,
+      "judge_rows": 0,
+      "potential_quality_axis_share": null,
+      "rows": 402
+    },
+    "math": {
+      "distinct_by_method": {
+        "exact_match": 1319,
+        "substring": 500
+      },
+      "distinct_inputs": 1819,
+      "distinct_judge_fraction": 0.0,
+      "distinct_judge_inputs": 0,
+      "duplicate_rows": 0,
+      "judge_rows": 0,
+      "potential_quality_axis_share": null,
+      "rows": 1819
+    },
+    "mmlu_pro": {
+      "distinct_by_method": {
+        "multiple_choice": 12032
+      },
+      "distinct_inputs": 12032,
+      "distinct_judge_fraction": 0.0,
+      "distinct_judge_inputs": 0,
+      "duplicate_rows": 0,
+      "judge_rows": 0,
+      "potential_quality_axis_share": null,
+      "rows": 12032
+    },
+    "mode_advantage": {
+      "distinct_by_method": {
+        "code_execution": 57,
+        "exact_match": 31,
+        "substring": 2
+      },
+      "distinct_inputs": 90,
+      "distinct_judge_fraction": 0.0,
+      "distinct_judge_inputs": 0,
+      "duplicate_rows": 0,
+      "judge_rows": 0,
+      "potential_quality_axis_share": null,
+      "rows": 90
+    },
+    "mode_advantage_hard": {
+      "distinct_by_method": {
+        "code_execution": 8,
+        "exact_match": 28,
+        "substring": 24
+      },
+      "distinct_inputs": 60,
+      "distinct_judge_fraction": 0.0,
+      "distinct_judge_inputs": 0,
+      "duplicate_rows": 0,
+      "judge_rows": 0,
+      "potential_quality_axis_share": null,
+      "rows": 60
+    },
+    "needle_parameterized": {
+      "distinct_by_method": {
+        "substring": 25
+      },
+      "distinct_inputs": 25,
+      "distinct_judge_fraction": 0.0,
+      "distinct_judge_inputs": 0,
+      "duplicate_rows": 0,
+      "judge_rows": 0,
+      "potential_quality_axis_share": null,
+      "rows": 25
+    },
+    "olympiadbench": {
+      "distinct_by_method": {
+        "substring": 674
+      },
+      "distinct_inputs": 674,
+      "distinct_judge_fraction": 0.0,
+      "distinct_judge_inputs": 0,
+      "duplicate_rows": 0,
+      "judge_rows": 0,
+      "potential_quality_axis_share": null,
+      "rows": 674
+    },
+    "omniscience": {
+      "distinct_by_method": {
+        "f1": 600
+      },
+      "distinct_inputs": 600,
+      "distinct_judge_fraction": 0.0,
+      "distinct_judge_inputs": 0,
+      "duplicate_rows": 0,
+      "judge_rows": 0,
+      "potential_quality_axis_share": null,
+      "rows": 600
+    },
+    "physics": {
+      "distinct_by_method": {
+        "llm_judge": 100
+      },
+      "distinct_inputs": 100,
+      "distinct_judge_fraction": 1.0,
+      "distinct_judge_inputs": 100,
+      "duplicate_rows": 0,
+      "judge_rows": 100,
+      "potential_quality_axis_share": null,
+      "rows": 100
+    },
+    "physreason": {
+      "distinct_by_method": {
+        "llm_judge": 3116
+      },
+      "distinct_inputs": 3116,
+      "distinct_judge_fraction": 1.0,
+      "distinct_judge_inputs": 3116,
+      "duplicate_rows": 1,
+      "judge_rows": 3117,
+      "potential_quality_axis_share": null,
+      "rows": 3117
+    },
+    "real_suite_v1": {
+      "distinct_by_method": {
+        "code_execution": 10,
+        "exact_match": 8,
+        "f1": 9,
+        "multiple_choice": 11,
+        "programmatic": 5,
+        "substring": 7
+      },
+      "distinct_inputs": 50,
+      "distinct_judge_fraction": 0.0,
+      "distinct_judge_inputs": 0,
+      "duplicate_rows": 0,
+      "judge_rows": 0,
+      "potential_quality_axis_share": null,
+      "rows": 50
+    },
+    "ruler": {
+      "distinct_by_method": {
+        "exact_match": 50
+      },
+      "distinct_inputs": 50,
+      "distinct_judge_fraction": 0.0,
+      "distinct_judge_inputs": 0,
+      "duplicate_rows": 0,
+      "judge_rows": 0,
+      "potential_quality_axis_share": null,
+      "rows": 50
+    },
+    "scoring_verifiers": {
+      "distinct_by_method": {
+        "multiple_choice": 6325
+      },
+      "distinct_inputs": 6325,
+      "distinct_judge_fraction": 0.0,
+      "distinct_judge_inputs": 0,
+      "duplicate_rows": 376,
+      "judge_rows": 0,
+      "potential_quality_axis_share": null,
+      "rows": 6701
+    },
+    "simpleqa": {
+      "distinct_by_method": {
+        "f1": 4326
+      },
+      "distinct_inputs": 4326,
+      "distinct_judge_fraction": 0.0,
+      "distinct_judge_inputs": 0,
+      "duplicate_rows": 0,
+      "judge_rows": 0,
+      "potential_quality_axis_share": null,
+      "rows": 4326
+    },
+    "skill_transfer": {
+      "distinct_by_method": {
+        "f1": 36
+      },
+      "distinct_inputs": 36,
+      "distinct_judge_fraction": 0.0,
+      "distinct_judge_inputs": 0,
+      "duplicate_rows": 0,
+      "judge_rows": 0,
+      "potential_quality_axis_share": null,
+      "rows": 36
+    },
+    "thinking": {
+      "distinct_by_method": {
+        "multiple_choice": 11214
+      },
+      "distinct_inputs": 11214,
+      "distinct_judge_fraction": 0.0,
+      "distinct_judge_inputs": 0,
+      "duplicate_rows": 0,
+      "judge_rows": 0,
+      "potential_quality_axis_share": null,
+      "rows": 11214
+    },
+    "tulving_episodic": {
+      "distinct_by_method": {
+        "f1_list": 456
+      },
+      "distinct_inputs": 456,
+      "distinct_judge_fraction": 0.0,
+      "distinct_judge_inputs": 0,
+      "duplicate_rows": 0,
+      "judge_rows": 0,
+      "potential_quality_axis_share": null,
+      "rows": 456
+    },
+    "usaco": {
+      "distinct_by_method": {
+        "code_execution": 520
+      },
+      "distinct_inputs": 520,
+      "distinct_judge_fraction": 0.0,
+      "distinct_judge_inputs": 0,
+      "duplicate_rows": 0,
+      "judge_rows": 0,
+      "potential_quality_axis_share": null,
+      "rows": 520
+    },
+    "vl": {
+      "distinct_by_method": {
+        "exact_match": 300,
+        "substring": 2275
+      },
+      "distinct_inputs": 2575,
+      "distinct_judge_fraction": 0.0,
+      "distinct_judge_inputs": 0,
+      "duplicate_rows": 0,
+      "judge_rows": 0,
+      "potential_quality_axis_share": null,
+      "rows": 2575
+    },
+    "web_research": {
+      "distinct_by_method": {
+        "f1": 50
+      },
+      "distinct_inputs": 50,
+      "distinct_judge_fraction": 0.0,
+      "distinct_judge_inputs": 0,
+      "duplicate_rows": 0,
+      "judge_rows": 0,
+      "potential_quality_axis_share": null,
+      "rows": 50
+    },
+    "zeroscrolls": {
+      "distinct_by_method": {
+        "llm_judge": 120,
+        "substring": 70
+      },
+      "distinct_inputs": 190,
+      "distinct_judge_fraction": 0.631578947368421,
+      "distinct_judge_inputs": 120,
+      "duplicate_rows": 348,
+      "judge_rows": 360,
+      "potential_quality_axis_share": null,
+      "rows": 538
+    }
+  }
+}

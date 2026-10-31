@@ -275,7 +275,7 @@ failure caught in amber.
         `repair_episodic_embeddings.py --diagnose-only` reported **HEALTHY** throughout: it checks
         structural coverage (id_map sync, orphans), not vector CONTENT. A content-level single-row
         defect has no tooling — see M-17e.
-  - [ ] M-17e — **No tool repairs a content-corrupt vector.** The 2026-08-04 fix was a one-off
+  - [x] M-17e — **No tool repairs a content-corrupt vector.** The 2026-08-04 fix was a one-off ✅ 2026-10-31 — APP `def3e2c08dbe5939ecbbc3e4c862f6110f29fda3`; `tests/unit/test_repair_episodic_vector.py` 17 native tests passed; [durable evidence](../../artifacts/non-inference/codex-ni-next-accepted-20261031/CAPSULE.md#m-17e-content-vector-repair). Future apply requires stopped cached readers; no live mutation/deployment. [no-belief: tooling-repair]
         script. `repair_faiss_id_map.py` fixes desync, `repair_episodic_embeddings.py` fixes
         coverage, `reseed_episodic_store.py` rebuilds everything — nothing targets "this row's
         vector is wrong". Promote the position-preserving single-row re-embed into

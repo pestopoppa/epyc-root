@@ -1,0 +1,10 @@
+==> schema
+  (no orchestration/last_task_ir.json to validate)
+  (no architecture/architecture_ir.json to validate)
+==> shellcheck
+  ✓ shellcheck passed
+==> shfmt (check shell formatting)
+==> mdlint
+  ✓ markdownlint passed
+
+✅ All gates passed

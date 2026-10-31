@@ -1,0 +1,17 @@
+usage: python -m src.runtime.gpu_window park [-h] [--roles ROLES]
+                                             [--ports PORTS]
+                                             [--holder {autokernel,released}]
+                                             --expected-end EXPECTED_END
+
+park only writes the window file; it does NOT stop servers or free the GPU. To
+stop servers, use gpu_window_executor open with a schedule entry and compute
+grant (60 min default cap).
+
+options:
+  -h, --help            show this help message and exit
+  --roles ROLES         comma-separated roles
+  --ports PORTS         comma-separated ports
+  --holder {autokernel,released}
+  --expected-end EXPECTED_END
+                        ISO 8601, epoch seconds or relative (+45m); at most
+                        +60m

@@ -1,0 +1,14 @@
+{
+  "pid": 3243389,
+  "pid_absent_after_wait": true,
+  "rc": 0,
+  "samples": 35,
+  "peak_tree_rss_bytes": 96964608,
+  "elapsed_s": 1.770608136896044,
+  "cpus": "132-133",
+  "physical_cpus": "36-37",
+  "mutex": "/mnt/raid0/llm/tmp/compute-flags/prep-locks/36-37.lock",
+  "classification": "R6 q1 block-correctness; disjoint q0 block-timing-pairable; no whole-host timing",
+  "conftest_scope": "--confcutdir=tests/unit; standalone CLI tests use native FAISS/numpy/SQLite, no API global fixtures",
+  "interpreter": "/mnt/raid0/llm/epyc-orchestrator/.venv/bin/python"
+}

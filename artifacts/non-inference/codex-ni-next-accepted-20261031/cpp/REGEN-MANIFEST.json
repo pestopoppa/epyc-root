@@ -1,0 +1,44 @@
+{
+  "schema": "codex.ni_cpp_fa_patch_regen.v1",
+  "task": "C++ follow-up: regenerate test-backend-ops-cpu-fa-longctx-v1.patch",
+  "source": {
+    "repo": "/mnt/raid0/llm/worktrees/mains/codex-ni-research-code",
+    "branch": "codex-ni/code-20261031",
+    "commit": "e95a9d2e25c3eeedc7a6f997e608d9bd338cbc31",
+    "file": "scripts/kernel_rnd/autokernel/loop/cpu_fa_reference.py",
+    "file_sha256": "ad028c93bccd49e227c2aa78466c7170421cd4e84d632d9d6af38f78591d55bf",
+    "generator": "backend_ops_patch_block",
+    "generated_block_sha256": "04517e1afda4dcf59f7ab031660176bd7590a5971ddeed3dd3ecf0ffd6b1f9ca",
+    "case_set_id": "cpu_fa_longctx_v1",
+    "case_count": 35
+  },
+  "declared_base": {
+    "repo": "/mnt/raid0/llm/llama.cpp-experimental",
+    "commit": "4348de400191c0b4c5127047037bf9ad83da19b6",
+    "file": "tests/test-backend-ops.cpp",
+    "blob": "46b556039d27a3a6048d87a807d8c99e16d1049d"
+  },
+  "reviewed_target_reference": {
+    "commit": "4e0ebc987e354556fbc44a7df0ba26413ed26d95",
+    "file": "tests/test-backend-ops.cpp",
+    "blob": "8b2991747a0f37b6b5a859e7a4da4fb879a8ee0f"
+  },
+  "prior_artifact": {
+    "path": "/mnt/raid0/llm/tmp/ak-codex-handover-20261007/test-backend-ops-cpu-fa-longctx-v1.patch",
+    "sha256": "395e5bbdd66f585dad4f233dfb2b57c1c0e882487244011d9d6ad39be24e0871",
+    "difference": "byte-identical to regenerated patch; same helper content, integration calls, thread override, and patch hash"
+  },
+  "output": {
+    "patch": "/mnt/raid0/llm/tmp/codex-ni-cpp-fa-patch-regen-20261031/test-backend-ops-cpu-fa-longctx-v1.patch",
+    "patch_sha256": "395e5bbdd66f585dad4f233dfb2b57c1c0e882487244011d9d6ad39be24e0871",
+    "candidate_blob_after_apply": "8b2991747a0f37b6b5a859e7a4da4fb879a8ee0f",
+    "apply_check": "passed against exact declared base in existing scratch file tree (local Git index; not a registered worktree)",
+    "verification_log": "/mnt/raid0/llm/tmp/codex-ni-cpp-fa-patch-regen-20261031/VERIFICATION.log"
+  },
+  "scope": "Patch artifact only; no build, inference, production tree, kernel store, champion, or research/root handoff edits.",
+  "path_audit": {
+    "handoff_named_location": "/mnt/raid0/llm/tmp/ak-cpu-fa-route-20261004/test-backend-ops-cpu-fa-longctx-v1.patch",
+    "state": "absent at regeneration time",
+    "replacement_artifact": "/mnt/raid0/llm/tmp/codex-ni-cpp-fa-patch-regen-20261031/test-backend-ops-cpu-fa-longctx-v1.patch"
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "sha": "c7d573c2661dc90aa83494d2b3f9e680742cf1d1",
+  "remote_main": "c7d573c2661dc90aa83494d2b3f9e680742cf1d1",
+  "normal_hooks": true,
+  "serialized_push_agent": "codex-ni-01a16d6b",
+  "tests": "92 passed",
+  "gates": "passed",
+  "cli": "real module help + temp-file park passed",
+  "clean_checkout": true,
+  "root_applies": "MAIN",
+  "rebase": "2 unrelated SEQ-B4 commits, no conflicts, same two-file patch"
+}

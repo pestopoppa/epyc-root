@@ -1,0 +1,51 @@
+Patch application proof (artifact scope only)
+The target under `scratch` is an existing plain file tree with a local Git index, not a registered Git worktree.
+Declared base commit: 4348de400191c0b4c5127047037bf9ad83da19b6; base blob: 46b556039d27a3a6048d87a807d8c99e16d1049d.
+Reviewed target commit: 4e0ebc987e354556fbc44a7df0ba26413ed26d95; target blob: 8b2991747a0f37b6b5a859e7a4da4fb879a8ee0f.
+No kernel tree or kernel-store file was modified.
+
+$ git -C /mnt/raid0/llm/tmp/codex-ni-cpp-fa-patch-regen-20261031 checkout -- tests/test-backend-ops.cpp
+returncode: 0
+stdout:
+stderr:
+
+$ git -C /mnt/raid0/llm/tmp/codex-ni-cpp-fa-patch-regen-20261031 hash-object tests/test-backend-ops.cpp
+returncode: 0
+stdout:
+46b556039d27a3a6048d87a807d8c99e16d1049d
+stderr:
+
+$ git -C /mnt/raid0/llm/llama.cpp-experimental rev-parse 4348de400191c0b4c5127047037bf9ad83da19b6:tests/test-backend-ops.cpp
+returncode: 0
+stdout:
+46b556039d27a3a6048d87a807d8c99e16d1049d
+stderr:
+
+$ git -C /mnt/raid0/llm/llama.cpp-experimental rev-parse 4e0ebc987e354556fbc44a7df0ba26413ed26d95:tests/test-backend-ops.cpp
+returncode: 0
+stdout:
+8b2991747a0f37b6b5a859e7a4da4fb879a8ee0f
+stderr:
+
+$ git -C /mnt/raid0/llm/tmp/codex-ni-cpp-fa-patch-regen-20261031 apply --check /mnt/raid0/llm/tmp/codex-ni-cpp-fa-patch-regen-20261031/test-backend-ops-cpu-fa-longctx-v1.patch
+returncode: 0
+stdout:
+stderr:
+
+$ git -C /mnt/raid0/llm/tmp/codex-ni-cpp-fa-patch-regen-20261031 apply /mnt/raid0/llm/tmp/codex-ni-cpp-fa-patch-regen-20261031/test-backend-ops-cpu-fa-longctx-v1.patch
+returncode: 0
+stdout:
+stderr:
+
+$ git -C /mnt/raid0/llm/tmp/codex-ni-cpp-fa-patch-regen-20261031 hash-object tests/test-backend-ops.cpp
+returncode: 0
+stdout:
+8b2991747a0f37b6b5a859e7a4da4fb879a8ee0f
+stderr:
+
+$ sha256sum /mnt/raid0/llm/tmp/codex-ni-cpp-fa-patch-regen-20261031/test-backend-ops-cpu-fa-longctx-v1.patch
+returncode: 0
+stdout:
+395e5bbdd66f585dad4f233dfb2b57c1c0e882487244011d9d6ad39be24e0871  /mnt/raid0/llm/tmp/codex-ni-cpp-fa-patch-regen-20261031/test-backend-ops-cpu-fa-longctx-v1.patch
+stderr:
+

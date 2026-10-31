@@ -1,0 +1,50 @@
+{
+  "m17": {
+    "sha": "def3e2c08dbe5939ecbbc3e4c862f6110f29fda3",
+    "origin_main": "c7d573c2661dc90aa83494d2b3f9e680742cf1d1",
+    "is_ancestor": true,
+    "ls_remote_main_verified": true
+  },
+  "judge": {
+    "sha": "fb127bf0206bd6f038ffd227e0499ed4d98ecedc",
+    "origin_main": "c7d573c2661dc90aa83494d2b3f9e680742cf1d1",
+    "is_ancestor": true,
+    "ls_remote_main_verified": true
+  },
+  "park": {
+    "sha": "c7d573c2661dc90aa83494d2b3f9e680742cf1d1",
+    "origin_main": "c7d573c2661dc90aa83494d2b3f9e680742cf1d1",
+    "is_ancestor": true,
+    "ls_remote_main_verified": true
+  },
+  "SCORE07": {
+    "sha": "b5da2080824e56fbdccc3dd38aac2ad6a31f04bc",
+    "origin_main": "c7d573c2661dc90aa83494d2b3f9e680742cf1d1",
+    "is_ancestor": true,
+    "ls_remote_main_verified": true
+  },
+  "TEST2": {
+    "sha": "ade26db3a9bda9b95500bc0f070ab929300fcffb",
+    "origin_main": "c7d573c2661dc90aa83494d2b3f9e680742cf1d1",
+    "is_ancestor": true,
+    "ls_remote_main_verified": true
+  },
+  "RLVR2": {
+    "sha": "4e9efe3285dca6c44ef57f642971616d7b3ad9ef",
+    "origin_main": "c7d573c2661dc90aa83494d2b3f9e680742cf1d1",
+    "is_ancestor": true,
+    "ls_remote_main_verified": true
+  },
+  "QID1": {
+    "sha": "ef0f3f21df39559acd36516e0c2d780f61a5651d",
+    "origin_main": "c7d573c2661dc90aa83494d2b3f9e680742cf1d1",
+    "is_ancestor": true,
+    "ls_remote_main_verified": true
+  },
+  "cpp_generator": {
+    "sha": "e95a9d2e25c3eeedc7a6f997e608d9bd338cbc31",
+    "origin_main": "85bf75960641803966b5151937e6167e82df3896",
+    "is_ancestor": true,
+    "ls_remote_main_verified": true
+  }
+}

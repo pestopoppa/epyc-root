@@ -1,0 +1,443 @@
+{
+  "batch_rows": 50,
+  "caveat": "exposure for this complete batch only; not a claim about other draws or current production",
+  "distinct_inputs": 45,
+  "distinct_judge_fraction": 0.022222222222222223,
+  "distinct_judge_inputs": 1,
+  "eval_batch_id": "evaltower-T1-1784826048454-a6294f29-50q",
+  "excluded_error_rows": 5,
+  "excluded_partition_rows": 0,
+  "identity": "native suite/qid",
+  "partition": "core",
+  "potential_quality_axis_share": 0.022222222222222223,
+  "quality_denominator": 45,
+  "quality_semantics": "higher is better; 3 * correct / scored denominator; equal row weight",
+  "realized_scored_quality_axis_share": 0.022222222222222223,
+  "rows": 45,
+  "schema_version": 1,
+  "scope": "complete_result_batch",
+  "source": {
+    "path": "orchestration/reports/r3_current_arm_rebaseline_corev2_20260723/question_results.T1.jsonl",
+    "sha256": "1988eb531a579892ceb54e4e0daedccedc8c068da1a9e8ea2a7166e91a2ae123"
+  },
+  "suites": {
+    "agentic": {
+      "distinct_by_method": {
+        "substring": 2
+      },
+      "distinct_inputs": 2,
+      "distinct_judge_fraction": 0.0,
+      "distinct_judge_inputs": 0,
+      "duplicate_rows": 0,
+      "judge_rows": 0,
+      "potential_quality_axis_share": 0.0,
+      "realized_scored_quality_axis_share": 0.0,
+      "rows": 2
+    },
+    "aime": {
+      "distinct_by_method": {
+        "exact_match": 2
+      },
+      "distinct_inputs": 2,
+      "distinct_judge_fraction": 0.0,
+      "distinct_judge_inputs": 0,
+      "duplicate_rows": 0,
+      "judge_rows": 0,
+      "potential_quality_axis_share": 0.0,
+      "realized_scored_quality_axis_share": 0.0,
+      "rows": 2
+    },
+    "aime25": {
+      "distinct_by_method": {
+        "exact_match": 1
+      },
+      "distinct_inputs": 1,
+      "distinct_judge_fraction": 0.0,
+      "distinct_judge_inputs": 0,
+      "duplicate_rows": 0,
+      "judge_rows": 0,
+      "potential_quality_axis_share": 0.0,
+      "realized_scored_quality_axis_share": 0.0,
+      "rows": 1
+    },
+    "bigcodebench": {
+      "distinct_by_method": {
+        "code_execution": 1
+      },
+      "distinct_inputs": 1,
+      "distinct_judge_fraction": 0.0,
+      "distinct_judge_inputs": 0,
+      "duplicate_rows": 0,
+      "judge_rows": 0,
+      "potential_quality_axis_share": 0.0,
+      "realized_scored_quality_axis_share": 0.0,
+      "rows": 1
+    },
+    "coder": {
+      "distinct_by_method": {
+        "substring": 2
+      },
+      "distinct_inputs": 2,
+      "distinct_judge_fraction": 0.0,
+      "distinct_judge_inputs": 0,
+      "duplicate_rows": 0,
+      "judge_rows": 0,
+      "potential_quality_axis_share": 0.0,
+      "realized_scored_quality_axis_share": 0.0,
+      "rows": 2
+    },
+    "cruxeval": {
+      "distinct_by_method": {
+        "exact_match": 2
+      },
+      "distinct_inputs": 2,
+      "distinct_judge_fraction": 0.0,
+      "distinct_judge_inputs": 0,
+      "duplicate_rows": 0,
+      "judge_rows": 0,
+      "potential_quality_axis_share": 0.0,
+      "realized_scored_quality_axis_share": 0.0,
+      "rows": 2
+    },
+    "debugbench": {
+      "distinct_by_method": {
+        "substring": 2
+      },
+      "distinct_inputs": 2,
+      "distinct_judge_fraction": 0.0,
+      "distinct_judge_inputs": 0,
+      "duplicate_rows": 0,
+      "judge_rows": 0,
+      "potential_quality_axis_share": 0.0,
+      "realized_scored_quality_axis_share": 0.0,
+      "rows": 2
+    },
+    "general": {
+      "distinct_by_method": {
+        "multiple_choice": 2
+      },
+      "distinct_inputs": 2,
+      "distinct_judge_fraction": 0.0,
+      "distinct_judge_inputs": 0,
+      "duplicate_rows": 0,
+      "judge_rows": 0,
+      "potential_quality_axis_share": 0.0,
+      "realized_scored_quality_axis_share": 0.0,
+      "rows": 2
+    },
+    "gpqa": {
+      "distinct_by_method": {
+        "multiple_choice": 2
+      },
+      "distinct_inputs": 2,
+      "distinct_judge_fraction": 0.0,
+      "distinct_judge_inputs": 0,
+      "duplicate_rows": 0,
+      "judge_rows": 0,
+      "potential_quality_axis_share": 0.0,
+      "realized_scored_quality_axis_share": 0.0,
+      "rows": 2
+    },
+    "gpqa_diamond": {
+      "distinct_by_method": {
+        "multiple_choice": 1
+      },
+      "distinct_inputs": 1,
+      "distinct_judge_fraction": 0.0,
+      "distinct_judge_inputs": 0,
+      "duplicate_rows": 0,
+      "judge_rows": 0,
+      "potential_quality_axis_share": 0.0,
+      "realized_scored_quality_axis_share": 0.0,
+      "rows": 1
+    },
+    "gpqa_diamond_cot": {
+      "distinct_by_method": {
+        "multiple_choice": 1
+      },
+      "distinct_inputs": 1,
+      "distinct_judge_fraction": 0.0,
+      "distinct_judge_inputs": 0,
+      "duplicate_rows": 0,
+      "judge_rows": 0,
+      "potential_quality_axis_share": 0.0,
+      "realized_scored_quality_axis_share": 0.0,
+      "rows": 1
+    },
+    "hotpotqa": {
+      "distinct_by_method": {
+        "f1": 2
+      },
+      "distinct_inputs": 2,
+      "distinct_judge_fraction": 0.0,
+      "distinct_judge_inputs": 0,
+      "duplicate_rows": 0,
+      "judge_rows": 0,
+      "potential_quality_axis_share": 0.0,
+      "realized_scored_quality_axis_share": 0.0,
+      "rows": 2
+    },
+    "instruction_precision": {
+      "distinct_by_method": {
+        "programmatic": 1
+      },
+      "distinct_inputs": 1,
+      "distinct_judge_fraction": 0.0,
+      "distinct_judge_inputs": 0,
+      "duplicate_rows": 0,
+      "judge_rows": 0,
+      "potential_quality_axis_share": 0.0,
+      "realized_scored_quality_axis_share": 0.0,
+      "rows": 1
+    },
+    "livecodebench": {
+      "distinct_by_method": {
+        "substring": 2
+      },
+      "distinct_inputs": 2,
+      "distinct_judge_fraction": 0.0,
+      "distinct_judge_inputs": 0,
+      "duplicate_rows": 0,
+      "judge_rows": 0,
+      "potential_quality_axis_share": 0.0,
+      "realized_scored_quality_axis_share": 0.0,
+      "rows": 2
+    },
+    "long_context": {
+      "distinct_by_method": {
+        "substring": 1
+      },
+      "distinct_inputs": 1,
+      "distinct_judge_fraction": 0.0,
+      "distinct_judge_inputs": 0,
+      "duplicate_rows": 0,
+      "judge_rows": 0,
+      "potential_quality_axis_share": 0.0,
+      "realized_scored_quality_axis_share": 0.0,
+      "rows": 1
+    },
+    "math": {
+      "distinct_by_method": {
+        "exact_match": 1,
+        "substring": 1
+      },
+      "distinct_inputs": 2,
+      "distinct_judge_fraction": 0.0,
+      "distinct_judge_inputs": 0,
+      "duplicate_rows": 0,
+      "judge_rows": 0,
+      "potential_quality_axis_share": 0.0,
+      "realized_scored_quality_axis_share": 0.0,
+      "rows": 2
+    },
+    "mmlu_pro": {
+      "distinct_by_method": {
+        "multiple_choice": 2
+      },
+      "distinct_inputs": 2,
+      "distinct_judge_fraction": 0.0,
+      "distinct_judge_inputs": 0,
+      "duplicate_rows": 0,
+      "judge_rows": 0,
+      "potential_quality_axis_share": 0.0,
+      "realized_scored_quality_axis_share": 0.0,
+      "rows": 2
+    },
+    "mode_advantage": {
+      "distinct_by_method": {
+        "code_execution": 1,
+        "exact_match": 1
+      },
+      "distinct_inputs": 2,
+      "distinct_judge_fraction": 0.0,
+      "distinct_judge_inputs": 0,
+      "duplicate_rows": 0,
+      "judge_rows": 0,
+      "potential_quality_axis_share": 0.0,
+      "realized_scored_quality_axis_share": 0.0,
+      "rows": 2
+    },
+    "mode_advantage_hard": {
+      "distinct_by_method": {
+        "code_execution": 1
+      },
+      "distinct_inputs": 1,
+      "distinct_judge_fraction": 0.0,
+      "distinct_judge_inputs": 0,
+      "duplicate_rows": 0,
+      "judge_rows": 0,
+      "potential_quality_axis_share": 0.0,
+      "realized_scored_quality_axis_share": 0.0,
+      "rows": 1
+    },
+    "needle_parameterized": {
+      "distinct_by_method": {
+        "substring": 1
+      },
+      "distinct_inputs": 1,
+      "distinct_judge_fraction": 0.0,
+      "distinct_judge_inputs": 0,
+      "duplicate_rows": 0,
+      "judge_rows": 0,
+      "potential_quality_axis_share": 0.0,
+      "realized_scored_quality_axis_share": 0.0,
+      "rows": 1
+    },
+    "olympiadbench": {
+      "distinct_by_method": {
+        "substring": 1
+      },
+      "distinct_inputs": 1,
+      "distinct_judge_fraction": 0.0,
+      "distinct_judge_inputs": 0,
+      "duplicate_rows": 0,
+      "judge_rows": 0,
+      "potential_quality_axis_share": 0.0,
+      "realized_scored_quality_axis_share": 0.0,
+      "rows": 1
+    },
+    "omniscience": {
+      "distinct_by_method": {
+        "f1": 1
+      },
+      "distinct_inputs": 1,
+      "distinct_judge_fraction": 0.0,
+      "distinct_judge_inputs": 0,
+      "duplicate_rows": 0,
+      "judge_rows": 0,
+      "potential_quality_axis_share": 0.0,
+      "realized_scored_quality_axis_share": 0.0,
+      "rows": 1
+    },
+    "physics": {
+      "distinct_by_method": {
+        "llm_judge": 1
+      },
+      "distinct_inputs": 1,
+      "distinct_judge_fraction": 1.0,
+      "distinct_judge_inputs": 1,
+      "duplicate_rows": 0,
+      "judge_rows": 1,
+      "potential_quality_axis_share": 0.022222222222222223,
+      "realized_scored_quality_axis_share": 0.022222222222222223,
+      "rows": 1
+    },
+    "real_suite_v1": {
+      "distinct_by_method": {
+        "multiple_choice": 1
+      },
+      "distinct_inputs": 1,
+      "distinct_judge_fraction": 0.0,
+      "distinct_judge_inputs": 0,
+      "duplicate_rows": 0,
+      "judge_rows": 0,
+      "potential_quality_axis_share": 0.0,
+      "realized_scored_quality_axis_share": 0.0,
+      "rows": 1
+    },
+    "ruler": {
+      "distinct_by_method": {
+        "exact_match": 1
+      },
+      "distinct_inputs": 1,
+      "distinct_judge_fraction": 0.0,
+      "distinct_judge_inputs": 0,
+      "duplicate_rows": 0,
+      "judge_rows": 0,
+      "potential_quality_axis_share": 0.0,
+      "realized_scored_quality_axis_share": 0.0,
+      "rows": 1
+    },
+    "scoring_verifiers": {
+      "distinct_by_method": {
+        "multiple_choice": 1
+      },
+      "distinct_inputs": 1,
+      "distinct_judge_fraction": 0.0,
+      "distinct_judge_inputs": 0,
+      "duplicate_rows": 0,
+      "judge_rows": 0,
+      "potential_quality_axis_share": 0.0,
+      "realized_scored_quality_axis_share": 0.0,
+      "rows": 1
+    },
+    "simpleqa": {
+      "distinct_by_method": {
+        "f1": 2
+      },
+      "distinct_inputs": 2,
+      "distinct_judge_fraction": 0.0,
+      "distinct_judge_inputs": 0,
+      "duplicate_rows": 0,
+      "judge_rows": 0,
+      "potential_quality_axis_share": 0.0,
+      "realized_scored_quality_axis_share": 0.0,
+      "rows": 2
+    },
+    "skill_transfer": {
+      "distinct_by_method": {
+        "f1": 1
+      },
+      "distinct_inputs": 1,
+      "distinct_judge_fraction": 0.0,
+      "distinct_judge_inputs": 0,
+      "duplicate_rows": 0,
+      "judge_rows": 0,
+      "potential_quality_axis_share": 0.0,
+      "realized_scored_quality_axis_share": 0.0,
+      "rows": 1
+    },
+    "thinking": {
+      "distinct_by_method": {
+        "multiple_choice": 1
+      },
+      "distinct_inputs": 1,
+      "distinct_judge_fraction": 0.0,
+      "distinct_judge_inputs": 0,
+      "duplicate_rows": 0,
+      "judge_rows": 0,
+      "potential_quality_axis_share": 0.0,
+      "realized_scored_quality_axis_share": 0.0,
+      "rows": 1
+    },
+    "usaco": {
+      "distinct_by_method": {
+        "code_execution": 1
+      },
+      "distinct_inputs": 1,
+      "distinct_judge_fraction": 0.0,
+      "distinct_judge_inputs": 0,
+      "duplicate_rows": 0,
+      "judge_rows": 0,
+      "potential_quality_axis_share": 0.0,
+      "realized_scored_quality_axis_share": 0.0,
+      "rows": 1
+    },
+    "vl": {
+      "distinct_by_method": {
+        "substring": 1
+      },
+      "distinct_inputs": 1,
+      "distinct_judge_fraction": 0.0,
+      "distinct_judge_inputs": 0,
+      "duplicate_rows": 0,
+      "judge_rows": 0,
+      "potential_quality_axis_share": 0.0,
+      "realized_scored_quality_axis_share": 0.0,
+      "rows": 1
+    },
+    "web_research": {
+      "distinct_by_method": {
+        "f1": 1
+      },
+      "distinct_inputs": 1,
+      "distinct_judge_fraction": 0.0,
+      "distinct_judge_inputs": 0,
+      "duplicate_rows": 0,
+      "judge_rows": 0,
+      "potential_quality_axis_share": 0.0,
+      "realized_scored_quality_axis_share": 0.0,
+      "rows": 1
+    }
+  }
+}

@@ -273,7 +273,7 @@ landing alone closes no box below whose done-test needs a live run; those carry 
     - **Current source/corpus audit (2026-10-30):** the older paragraph above is historical. The probe source and reviewed native producer/corpus now exist, as recorded in `autokernel-unified-surface-program.md`; the child closures below do not establish full AKX-ALL-11 route acceptance.
     - [x] C++ follow-up: a probe `--mask-file` mode. ✅ 2026-10-30 — already implemented by research `c1a9bc6b`, retained in current main `537a5fc921d10789522748bb44bc05b85da29bed`; revalidated 44 focused tests plus native DS41-shaped N=2 synthetic-mask acceptance, deterministic repeats, malformed size/flag refusals and v10 linkage. [Source audit](../../artifacts/compute/refactor-mask-producer-audit-20261030.json). [no-belief: model-free source correctness; no new DS41 capture]
     - [x] C++ follow-up: a llama.cpp DS41 top-k mask dump hook. ✅ 2026-10-30 — reviewed `8393305bc` is an ancestor of native capture source `d7015ff101`. Existing `ak-ds41-native-full16-g3-20261007T124555Z` publication has 35 files in each CPU store; all file digests, 16 mask lengths and sidecar FNV hashes reverified. This corrects the stale missing-producer statement, without rerunning or promoting a kernel. [Audit](../../artifacts/compute/refactor-mask-producer-audit-20261030.json). [belief: cc]
-    - [ ] C++ follow-up: regenerate `test-backend-ops-cpu-fa-longctx-v1.patch`.
+    - [x] C++ follow-up: regenerate `test-backend-ops-cpu-fa-longctx-v1.patch`. ✅ 2026-10-31 — generator research `e95a9d2e25c3eeedc7a6f997e608d9bd338cbc31`; [durable patch](../../artifacts/non-inference/codex-ni-next-accepted-20261031/cpp/test-backend-ops-cpu-fa-longctx-v1.patch) SHA256 `395e5bbdd66f585dad4f233dfb2b57c1c0e882487244011d9d6ad39be24e0871`, [application proof](../../artifacts/non-inference/codex-ni-next-accepted-20261031/cpp/VERIFICATION.log): 35 cases, declared-base apply check passed and reproduced reviewed target blob. No C++ build/runtime/real-mask validation. [no-belief: static artifact regeneration/application only]
     - [ ] Complete bounded test validation and land after the corrected review; do so before the
       AKX-ALL-21 round, not alongside it.
     - OP80 settled 2026-10-07: wire `check_cpu_fa_real_mask_identity` into `run.py`; fail-closed
@@ -362,6 +362,7 @@ landing alone closes no box below whose done-test needs a live run; those carry 
     workspace-ec) Install `scripts/server/gpu_window_watchdog.cron` in the host crontab (`* * * * *` +
     `@reboot sleep 90`). Done when a tick is seen writing `mi210.json.executor-status.json` after the restore and
     the hub probe is green.
+    Manual `gpu_window park` only writes the window file and does NOT stop servers or free the GPU. Stop servers through `gpu_window_executor open` with a schedule entry and compute grant (60 min default cap; approved schedule policy may allow longer windows). See APP `c7d573c2661dc90aa83494d2b3f9e680742cf1d1` for the CLI warning.
   - [ ] **AKX-ALL-15b — close review F3/F4/F5/F6 so that AK-requested windows can be ACKed.** (filed 2026-10-04,
     workspace-ec; needs a coordinator grant path)
     - F4: a window-scoped flock held in `serial_run`'s parent across batches.

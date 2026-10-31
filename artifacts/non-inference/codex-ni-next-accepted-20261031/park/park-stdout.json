@@ -1,0 +1,15 @@
+{
+  "boot_id": "3be2fb1a-7293-4c34-b733-c85d772b9474",
+  "expected_end": "2026-10-31T11:20:44+00:00",
+  "holder": "autokernel",
+  "parked_ports": [
+    8083
+  ],
+  "parked_roles": [
+    "architect_critic"
+  ],
+  "preempt_reason": null,
+  "preempt_requested_at": null,
+  "since": "2026-10-31T10:35:44+00:00",
+  "written_by": "stack_owner"
+}
