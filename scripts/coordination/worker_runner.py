@@ -1512,14 +1512,26 @@ def park_rows(bus_root: Path, agent: str, rows: list[dict], verdicts: dict,
 def load_assignment(args: argparse.Namespace) -> dict:
     if args.assignment:
         data = json.loads(Path(args.assignment).read_text(encoding="utf-8"))
-        if isinstance(data, dict) and isinstance(data.get("rows"), list):
-            return data
-        raise RefusalError("assignment file must be an object with a `rows` list")
-    if not (args.task_id and args.row_text):
-        raise RefusalError("need --assignment <file>, or --task-id and --row-text")
-    return {"rows": [{"task_id": args.task_id, "task_text": args.row_text,
-                      "row_ref": args.row_ref, "source_handoff": args.source_handoff,
-                      "screened_by": args.screened_by}]}
+        if not isinstance(data, dict) or not isinstance(data.get("rows"), list):
+            raise RefusalError("assignment file must be an object with a `rows` list")
+    else:
+        if not (args.task_id and args.row_text):
+            raise RefusalError("need --assignment <file>, or --task-id and --row-text")
+        data = {"rows": [{"task_id": args.task_id, "task_text": args.row_text,
+                          "row_ref": args.row_ref, "source_handoff": args.source_handoff,
+                          "screened_by": args.screened_by}]}
+    # The CLI always supplies bus_root. Direct file readers may call this
+    # helper with only `assignment`; they have no queue namespace to resolve.
+    bus_root = getattr(args, "bus_root", None)
+    queued = session_bus.fold_queue(Path(bus_root)) if bus_root is not None else {}
+    for row in data["rows"]:
+        original = queued.get(row.get("task_id"))
+        if original is not None and row.get("task_text") != original.get("task_text"):
+            raise RefusalError(
+                f"assignment text differs from the queued text for {row['task_id']}; "
+                "pass the row's verbatim task_text, not a paraphrase"
+            )
+    return data
 
 
 def check_batch(rows: list[dict], cfg: dict) -> None:

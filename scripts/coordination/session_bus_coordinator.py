@@ -505,7 +505,7 @@ def _exec_worker_runner(bus_root: Path, config: dict, entry: dict, row: dict,
                  "reason": "no free pool lane (all worktrees hold a live worker)"}]
     cmd = [sys.executable, str(script), "--bus-root", str(bus_root), "run",
            "--lane", lane, "--task-id", tid,
-           "--row-text", str(row.get("task_text") or "")[:4000]]
+           "--row-text", str(row.get("task_text") or "")]
     if row.get("spec_ref"):
         cmd += ["--row-ref", str(row["spec_ref"])]
     if row.get("screened_by"):
