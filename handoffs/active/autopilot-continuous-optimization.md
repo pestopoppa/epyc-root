@@ -1,5 +1,7 @@
 # AutoPilot: Continuous Recursive Optimization
 
+**Scratch**: `/mnt/raid0/llm/tmp/codex3-apme3-p66-checkpoint-20261031/` (checkpoint metadata scratch)
+
 > **Current checkpoint — 2026-09-25.** AutoPilot remains intentionally stopped; inference resources are operator-owned. Production baseline evidence is ratified on the frozen v10 kernel. Any restart remains a separate explicit operator action. The immediate research-intake path freezes the existing EPYC replay inputs under **AP-DGM-PROV**, runs the Shinka-style control in **SEQ-SHINKA-1**, and only then adds DGM/HGM formulas under **AP-DGM-SEL**. No selector, objective transform, or autonomous-science result has production authority.
 
 > **Compaction boundary.** Completed implementation history, dated runtime checkpoints, and the full pre-compaction ledger moved to [the 2026-06-21 through 2026-09-25 history sibling](../completed/autopilot-continuous-optimization-history-2026-06-21-through-2026-09-25.md). Earlier history remains in [the through-2026-06-20 sibling](../completed/autopilot-continuous-optimization-history-through-2026-06-20.md). This active file retains every open task and the context attached to it.
@@ -49,11 +51,12 @@ This packet is staging only; it does not run live RLM tasks, start Ouro training
 
 - [x] **AP-ME1-ME3-SRC — implement default-off prospective assembled-context capture and recorded same-context crossover diagnostics.** ✅ 2026-10-06 — [MAIN source acceptance](../../artifacts/ni08/mutation-context-source-20261006/README.md), original native88/88; APPmain036f4e68. Baseline/budget change and actual donor-selection parent tasks remain open.
 
-- [ ] **AP-ME-3 — Complementarity cue for crossover donor selection**, replacing frequency ranking in
+- [x] **AP-ME-3 — Complementarity cue for crossover donor selection**, replacing frequency ranking in ✅ 2026-10-31 — IMPLEMENTS `1ef19ab02c9387c33e076dcb1de1bfd08c76fa7f`; [published implementation, controls and provenance](https://github.com/pestopoppa/epyc-orchestrator/tree/22f4e87ff9eb9727248239f93c9f14177ae08c48/benchmarks/results/apme3-donor-selection-20261031); 46 model-free controls passed. [no-belief: software implementation and synthetic controls]
   `informed_crossover_candidates`. **BSV-3 already computes a semantic conflict severity** over shared
   subsystem, files touched, prompt sections touched, feature flags and behavior-signature delta. That
   is a complementarity signal with its sign flipped — crossover donor pairing and BSV-3 conflict
   scoring **must share one function** rather than be built twice with drifting definitions.
+  - Implementation detail: both flags remain off by default. The real caller connects the actual writer to same-source native content, the unchanged shared BSV scorer, and PromptForge; incomplete provenance yields no pair. Each prompt donor is capped at 4096 UTF-8 bytes and combined encoded author context at 8192 bytes including trial IDs and hashes. SafetyGate and BSV bars are unchanged; no optimizer-performance, live-adoption or deployment claim.
 
 - [x] **AP-ME-4 — Deterministic `error_signature` plus a repeated-failures counter.** Per the
   correction recorded in `autokernel-research-loop.md` §8.4.0, `ExperimentJournal.unfalsified_hypotheses()`

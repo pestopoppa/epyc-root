@@ -575,11 +575,12 @@ failure mode this program exists to end.
         `panels.PANELS["kernel"]` / `["kernel_live"]` and changes what `health_payload()` folds —
         a peer's live file, so it was deliberately left alone rather than done blind. Do it as part
         of the rewrite, with the panel registry and the health fold changed in the same commit.
-  - [ ] P6.6 — **a hole in the freshness contract itself.** `/api/kernel` reports
+  - [x] P6.6 — **a hole in the freshness contract itself.** `/api/kernel` reports ✅ 2026-10-31 — IMPLEMENTS ROOT `0875e49d8d38baba1a656c6fd9fc2c33c5b0b561`; API test/evidence commit `1b6e5303810f6d71d69b942b4fc00f8c1c2d62a1`; published on ROOT main `a1dee7344169dd92d911d7bbcc190e94ab366afc`; [artifact and validation](../../artifacts/engineering/p66-freshness-20261031/README.md). [no-belief: software verification]
         `reporting=observed, watchdog=idle` over a **16.8-day** export, because that producer
         travels the *compliant-silence* path the hub honours. The JSON therefore does not read
         stale even though the data is. Fix the contract, not the one endpoint: compliant silence
         must still carry an age, and an age past the envelope must degrade the verdict.
+      - Implementation detail: 31 checks plus 7 subtests and 10 actual API/red-team checks passed. Stale idle data degrades even when optional sections are missing; fresh and aging partial policy, non-gating panels, and absence/unknown states are preserved. The existing 180-second terminal-campaign envelope now degrades after expiry with its threshold unchanged. P6.7 operator-gate HOLD and subject age remain independent; no reload.
   - [x] P6.7 — **`/api/loop/health` folds the loop and operator-gate subject verdicts** ✅ 2026-10-30.
         The endpoint keeps both source envelopes independent, treats intentional gate HOLD and
         artifact age as non-health signals, and maps the five bundle verdicts into the existing
@@ -1082,12 +1083,13 @@ Full session record: `progress/2026-08/2026-08-31-ak-rebuild-20260828.md`.
       `inbox_file_unreadable` note, never raise. Verified 2026-09-01: all 17 current seeds
       read cleanly (42,783 chars, well within prompt budget), so this is preventive, not
       urgent.
-- [ ] **R23-2 — Demote/annotate the two benign-but-alarming DFlash2 load warnings.** "failed
+- [x] **R23-2 — Demote/annotate the two benign-but-alarming DFlash2 load warnings.** "failed ✅ 2026-10-31 — IMPLEMENTS llama.cpp-experimental `2d4e3225e13178674d27ef57b899f0255f15bf40`; [source, controls and provenance](https://github.com/pestopoppa/llama.cpp/tree/2d4e3225e13178674d27ef57b899f0255f15bf40/evidence/r23-2/README.md). [no-belief: software implementation and model-free controls]
       to measure draft model memory" and "legacy draft hidden size 5120" print identically in
       healthy 70 t/s runs and in a genuinely broken load — a peer session escalated a false
       champion-regression on exactly that signature (2026-09-01, retracted). Make the log
       distinguish "benign legacy path, sizes verified matching" from a fault, at the source in
       the champion lineage. Small; pairs naturally with R23-1's admission window.
+      - Implementation detail: legacy draft hidden-size text is emitted at INFO only after the dimension matches the target; mismatch remains an error. Draft/MTP memory-estimate failures remain warnings with the explicit reservation caveat and original exception. The compiled extracted-source C++ fixture with mock APIs passed legacy match/mismatch, invalid/explicit metadata, DSpark and draft/MTP estimation-error controls; the evidence README and native-controls.log bind tested blobs and receipt. No full loader integration, full CPU/GPU build, model run, regression or deployment claim.
 - [x] **R23-5 — H1 transfer falsifier EXECUTED (H1-first, operator-approved) ✅ 2026-09-01.**
       **H1 CONFIRMED in substance: the +17.9% headline is ne11=1-concentrated and collapses on
       production serving shapes.** Champion `9e18beb0` vs frozen v9, 20 pairs/surface, all four
