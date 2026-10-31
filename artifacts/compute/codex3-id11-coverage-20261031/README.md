@@ -1,0 +1,7 @@
+# ID-11 source verification — 2026-10-31
+
+ROOT `b940348b66d8439d41c6b50f7b3dea283dd8dd5d` was read from fresh `origin/main`. `source-trace.txt` records an exact-field search of all tracked `dashboard/` files and the task-flow path: `scripts/handoffs/build_handoff_timeline.py` reconstructs handoff checkbox flow from git history, emits `data/handoff_timeline.json`, `dashboard/server.py` serves `/api/handoff_timeline`, and `dashboard/static/handoffs.html` displays newly filed and completed tasks. The current dashboard does not use the field as a coverage metric. This does not establish when any older dashboard behavior changed.
+
+ROOT `4174b51db79cae55c5835e816fe75fa833696c13` introduced the current wiki lint classification and is an ancestor of the inspected base. Empty routing fields with a handoff citation or integrated disposition are reported as missing routing metadata; absent evidence on legacy records is classified as needing disposition. An explicit route suppresses the warning. These classifications do not assert missing integration from an empty field.
+
+`tests.log` captures the two existing fresh-base `tests/skills/test_project_wiki_lint.py -k unactioned_intake` tests, which cover empty/unknown metadata, cited entries, explicit created and updated references, and disposition states. The sampled R6 supervisor reports success. No historical records were changed, no source patch or deployment was made, and no current numerical coverage claim is made.

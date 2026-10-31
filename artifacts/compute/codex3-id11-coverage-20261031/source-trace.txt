@@ -1,0 +1,119 @@
+BASE b940348b66d8439d41c6b50f7b3dea283dd8dd5d
+Dashboard tree tracked files: 30
+Exact field search across all tracked dashboard files (exit 1 means no matches):
+field_search_exit=1
+Task flow route and producer references:
+b940348b66d8439d41c6b50f7b3dea283dd8dd5d:dashboard/README.md:133:| `scripts/handoffs/build_handoff_timeline.py` | git-history → `data/handoff_timeline.json` |
+b940348b66d8439d41c6b50f7b3dea283dd8dd5d:dashboard/README.md:135:| `tests/test_handoff_parser.py`, `tests/test_handoff_timeline.py` | `unittest` suites |
+b940348b66d8439d41c6b50f7b3dea283dd8dd5d:dashboard/README.md:143:- `GET /api/handoff_timeline` — the git-derived timeline artifact + freshness
+b940348b66d8439d41c6b50f7b3dea283dd8dd5d:dashboard/README.md:1011:`build_handoff_timeline.py` reconstructs progress over time from
+b940348b66d8439d41c6b50f7b3dea283dd8dd5d:dashboard/README.md:1110:one) that regenerates `data/handoff_timeline.json` whenever a commit touches
+b940348b66d8439d41c6b50f7b3dea283dd8dd5d:dashboard/README.md:1118:python3 tests/test_handoff_timeline.py
+b940348b66d8439d41c6b50f7b3dea283dd8dd5d:dashboard/server.py:17:GET /api/handoff_timeline    the git-derived timeline artifact (+ freshness)
+b940348b66d8439d41c6b50f7b3dea283dd8dd5d:dashboard/server.py:93:TIMELINE_PATH = REPO / "data" / "handoff_timeline.json"
+b940348b66d8439d41c6b50f7b3dea283dd8dd5d:dashboard/server.py:15091:    "/api/handoff_timeline": timeline_payload,
+b940348b66d8439d41c6b50f7b3dea283dd8dd5d:dashboard/static/handoffs.html:1003:   Source: /api/handoff_timeline -> daily_flow (build_handoff_timeline.build_daily_flow). */
+b940348b66d8439d41c6b50f7b3dea283dd8dd5d:dashboard/static/handoffs.html:1048:  try{ d = await getJSON("/api/handoff_timeline"); }
+b940348b66d8439d41c6b50f7b3dea283dd8dd5d:dashboard/static/handoffs.html:1060:  const filed=(d.totals&&((d.totals.tasks_newly_filed!=null)
+b940348b66d8439d41c6b50f7b3dea283dd8dd5d:dashboard/static/handoffs.html:1061:    ?d.totals.tasks_newly_filed:d.totals.tasks_opened))||0;
+b940348b66d8439d41c6b50f7b3dea283dd8dd5d:scripts/handoffs/build_handoff_timeline.py:4:Emits ``data/handoff_timeline.json`` for the dashboard hub's
+b940348b66d8439d41c6b50f7b3dea283dd8dd5d:scripts/handoffs/build_handoff_timeline.py:5:``/api/handoff_timeline`` endpoint. Two derived views:
+b940348b66d8439d41c6b50f7b3dea283dd8dd5d:scripts/handoffs/build_handoff_timeline.py:56:Run: ``python3 scripts/handoffs/build_handoff_timeline.py``  (``--repo`` to override)
+b940348b66d8439d41c6b50f7b3dea283dd8dd5d:scripts/handoffs/build_handoff_timeline.py:95:    # scripts/handoffs/build_handoff_timeline.py -> parents[2] == repo root
+b940348b66d8439d41c6b50f7b3dea283dd8dd5d:scripts/handoffs/build_handoff_timeline.py:697:            "tasks_newly_filed": total_newly_filed,
+b940348b66d8439d41c6b50f7b3dea283dd8dd5d:scripts/handoffs/build_handoff_timeline.py:762:    out = args.out or (repo / "data" / "handoff_timeline.json")
+Lint classification source:
+   170	INTAKE_REFERENCE_RE = re.compile(
+   171	    r"(?i)\bintake-(\d+)((?:\s*/\s*(?:intake-)?\d+)*)"
+   172	)
+   173
+   174
+   175	def _intake_handoff_routes(
+   176	    active_dir: Path | None,
+   177	    completed_dir: Path | None,
+   178	) -> dict[str, set[str]]:
+   179	    """Map intake IDs to non-index handoffs that cite them.
+   180
+   181	    Slash shorthand such as ``intake-902/903/907`` expands to all three IDs.
+   182	    Coordination indices are excluded because an index listing is not an owner.
+   183	    """
+   184	    routes: dict[str, set[str]] = {}
+   185	    for directory in (active_dir, completed_dir):
+   186	        if directory is None or not directory.exists():
+   187	            continue
+   188	        for path in sorted(directory.glob("*.md")):
+   189	            if path.name.endswith("index.md") or path.name == "master-handoff-index.md":
+   190	                continue
+   191	            content = path.read_text(errors="replace")
+   192	            for match in INTAKE_REFERENCE_RE.finditer(content):
+   193	                numbers = [match.group(1), *re.findall(r"\d+", match.group(2))]
+   194	                for number in numbers:
+   195	                    intake_id = f"intake-{int(number):03d}"
+   196	                    routes.setdefault(intake_id, set()).add(str(path))
+   197	    return routes
+   198
+   199
+   200	def check_unactioned_intake(
+   201	    index_path: Path,
+   202	    max_age_days: int,
+   203	    active_dir: Path | None = None,
+   204	    completed_dir: Path | None = None,
+   205	) -> list[Issue]:
+   206	    """Pass 4: classify aged actionable intake instead of conflating states."""
+   207	    issues: list[Issue] = []
+   208	    if not index_path.exists():
+   209	        return issues
+   210
+   211	    with open(index_path) as f:
+   212	        entries = yaml.safe_load(f)
+   213	    if not isinstance(entries, list):
+   214	        entries = entries.get("entries", []) if isinstance(entries, dict) else []
+   215
+   216	    today = date.today()
+   217	    actionable_verdicts = {"worth_investigating", "new_opportunity"}
+   218	    handoff_routes = _intake_handoff_routes(active_dir, completed_dir)
+   219
+   220	    for entry in entries:
+   221	        verdict = entry.get("verdict", "")
+   222	        if verdict not in actionable_verdicts:
+   223	            continue
+   224	        if entry.get("handoffs_created") or entry.get("handoffs_updated"):
+   225	            continue
+   226
+   227	        ingested = entry.get("ingested_date", "")
+   228	        if not ingested:
+   229	            continue
+   230	        try:
+   231	            ingested_date = datetime.strptime(str(ingested), "%Y-%m-%d").date()
+   232	        except (ValueError, TypeError):
+   233	            continue
+   234
+   235	        age = (today - ingested_date).days
+   236	        if age > max_age_days:
+   237	            eid = entry.get("id", "unknown")
+   238	            title = entry.get("title", "untitled")[:60]
+   239	            disposition = entry.get("integration_disposition")
+   240	            verification = entry.get("verification")
+   241	            if handoff_routes.get(eid) or disposition == "integrated":
+   242	                category = "missing-routing-metadata"
+   243	                detail = "handoff citation/integrated disposition exists but routing fields are absent"
+   244	            elif disposition in {"knowledge_only", "monitor", "declined"}:
+   245	                continue
+   246	            elif disposition == "awaiting_dive" or verification == "stage1-unverified":
+   247	                category = "stage1-awaiting-dive"
+   248	                detail = "Stage-1 review still needs a primary-source dive"
+   249	            elif verification in {"dive-verified", "dive-overturned"}:
+   250	                category = "verified-unactioned"
+   251	                detail = "dive verification exists but no route or terminal disposition is recorded"
+   252	            else:
+   253	                category = "legacy-needs-disposition"
+   254	                detail = "legacy actionable entry has no explicit disposition"
+   255	            issues.append((
+   256	                WARNING,
+   257	                eid,
+   258	                f"[{category}] {detail}; verdict='{verdict}', {age}d old: {title}",
+   259	            ))
+   260
+Original fix commit:
+4174b51db79cae55c5835e816fe75fa833696c13 Classify historical research intake backlog
+fix_ancestor_exit=0
