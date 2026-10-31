@@ -1302,10 +1302,11 @@ now trustworthy, where before they were not. Verified against the live registry 
       for null-quality roles, or close the root gap by running the judge suite.
 - [ ] **Run the canonical 79-question judge suite on Qwen3.6-27B.** This is the root close for both
       the three accepted gaps (expiring 2026-09-01) and the `q_scorer` degraded fallback.
-- [ ] **`stack_templates/default.yaml` has 9 errors the launch gate never sees.**
+- [x] **`stack_templates/default.yaml` has 9 errors the launch gate never sees.** ✅ 2026-10-31 — orchestrator implementation `c01e72bfe8d69a79c955f7d4b2bef5ea459bce96`; `tests/unit/test_stack_template_launch_gate.py` and Git capsule `artifacts/audit/stack-template-launch-gate-20261031/verification.md`; 115 focused tests pass. [no-belief: source launch-gate regression controls]
       `validate_template()` reports them (missing `architect_critic`, `vision_escalation` on retired
       8087, `coder_escalation` aliasing frontdoor, quarter-port rows for quarters retired
       2026-07-30) but the pipeline never invokes that validator. Wire it into the gate.
+      - Current-source audit found the default template valid with 0 errors and 0 warnings; the original nine-error inventory is historical. The new ordinary-start gate resolves explicit/environment/default profiles and calls the native validator before capacity, registry compilation/config writes, and launch effects. Invalid, missing, or malformed active templates refuse early; migration retains its target-specific validator. No live reload or template edit was performed.
 - [x] **`validate_model_paths()` validates files the stack does not launch** — its own hardcoded <!-- evidence-integrity: Orchestrator `47d4fc1a8be6479a81fe24426883c43e30238dd2`; artifact: artifacts/compute/refactor-evidence-corrections-20261031/20/focused.log; hygiene, not quota -->
       path list (frontdoor GGUF, architect/ingest dirs) no longer matches the declared models, and
       both stale files still exist on disk so it returns clean. Derive from
