@@ -1599,7 +1599,7 @@ our **465 gfx90a SQ/TA/TCC counters** validated 2026-08-03.
 
 ## Research Intake Update — 2026-08-23 (Stage-2b: upstream FA test coverage, Metal PRs, fla autotuner)
 
-- [ ] **Z10 (Z) — static read for the fp16-denorm bug class that #27413 fixed in Vulkan.** The bug
+- [x] **Z10 (Z) — static read for the fp16-denorm bug class that #27413 fixed in Vulkan.** The bug <!-- completion: ✅ 2026-10-31 [belief: cc]; audit implementation ROOT 3d80bf84750c58a7916f1b0038a4f308483e223e; Git artifact: artifacts/compute/refactor-z10-static-20261031/source-audit.json; source audit: docs/engineering/z10-fp16-denorm-static-audit-20261031.md -->
       shape is a denormal quantization scale `qd` whose reciprocal `1/qd` overflows fp16.
       **Locators corrected 2026-08-23 — the plan's `fattn-vec.cuh:620-637` does not exist; the file
       is 611 lines at frozen v9 `0db32c06e3e5`.** The real surface is
@@ -1612,6 +1612,12 @@ our **465 gfx90a SQ/TA/TCC counters** validated 2026-08-03.
       is handled; what remains to check is the **denormal-but-nonzero** case and every downstream
       site that takes a reciprocal of a stored scale. Complete that sweep before deciding.
       **Escalates to G10 only if the static read is inconclusive.** Zero compute; runnable now.
+
+  <!-- z10-source-completion:start -->
+
+  - ✅ 2026-10-31 [belief: cc] Source-read completion: ROOT `3d80bf84750c58a7916f1b0038a4f308483e223e`; [named producer/five-consumer audit](../../docs/engineering/z10-fp16-denorm-static-audit-20261031.md) and [25-file source/hash manifest](../../artifacts/compute/refactor-z10-static-20261031/source-audit.json). The exact fp16 reciprocal mechanism is absent in the audited CUDA/HIP path; the conditional Vulkan source retains it. Arbitrary fp32-subnormal, compiler/compiled-image, numerical, runtime and residency behavior remain unassessed. G10 measurement parents stay OPEN. The original source-only check was retained, not rerun.
+
+  <!-- z10-source-completion:end -->
 - [x] **G10 (G; the import half is Z) — import and run the 20 new backend-agnostic `FLASH_ATTN_EXT`
       test cases** from `tests/test-backend-ops.cpp` @ `70aff2525`: 6 q8_0-KV eval cases including
       **kv=16384**, the kv=1025 pad/sinks/ALiBi/softcap case, and 3 MLA cases. Upstream concedes its
