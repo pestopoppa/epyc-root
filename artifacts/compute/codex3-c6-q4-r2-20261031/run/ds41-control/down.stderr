@@ -1,0 +1,3 @@
+[iqk] ACTIVE: MoE mul_mat_id via ik kernels (type=12 activation=99 n_as=384)
+check Q4_K plain down N=512 y0=-0.377289 ref=-0.372016 rel=1.79e-04 OK
+  Q4_K   plain  down   N=512   30639.3 us/node     83.1 GB/s  uniq=383.82 copies=4 ws=10192MB

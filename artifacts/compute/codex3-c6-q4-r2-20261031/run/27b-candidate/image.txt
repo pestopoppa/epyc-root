@@ -1,0 +1,1 @@
+candidate 729599d69871181d67af715a4c2f9162d5153a2e /mnt/raid0/llm/kernels/builds/cpu-20261030-729599d69-c6

@@ -1,0 +1,172 @@
+{
+  "affinity": [
+    48,
+    49,
+    50,
+    51,
+    52,
+    53,
+    54,
+    55,
+    56,
+    57,
+    58,
+    59,
+    60,
+    61,
+    62,
+    63,
+    64,
+    65,
+    66,
+    67,
+    68,
+    69,
+    70,
+    71
+  ],
+  "cases": [
+    {
+      "argv": [
+        "/mnt/raid0/llm/tmp/c6-35186-q4-microbench-r2-20261031/ds41/bin/mb_mmid-control",
+        "--type",
+        "Q4_K",
+        "--buf",
+        "plain",
+        "--mode",
+        "gateup",
+        "--k",
+        "5120",
+        "--m",
+        "2304",
+        "--n-used",
+        "6",
+        "--n-alloc",
+        "384",
+        "--copies",
+        "4",
+        "--n",
+        "512",
+        "--threads",
+        "24",
+        "--reps",
+        "15",
+        "--min-mb",
+        "8192",
+        "--label",
+        "c6-35186-ds41-q4-ref-gateup",
+        "--out",
+        "/mnt/raid0/llm/tmp/c6-35186-q4-microbench-r2-20261031/runs/20261031T024056.425184Z-2158835/ds41-control/gateup.jsonl"
+      ],
+      "k": 5120,
+      "m": 2304,
+      "mode": "gateup"
+    },
+    {
+      "argv": [
+        "/mnt/raid0/llm/tmp/c6-35186-q4-microbench-r2-20261031/ds41/bin/mb_mmid-control",
+        "--type",
+        "Q4_K",
+        "--buf",
+        "plain",
+        "--mode",
+        "down",
+        "--k",
+        "2304",
+        "--m",
+        "5120",
+        "--n-used",
+        "6",
+        "--n-alloc",
+        "384",
+        "--copies",
+        "4",
+        "--n",
+        "512",
+        "--threads",
+        "24",
+        "--reps",
+        "15",
+        "--min-mb",
+        "8192",
+        "--label",
+        "c6-35186-ds41-q4-ref-down",
+        "--out",
+        "/mnt/raid0/llm/tmp/c6-35186-q4-microbench-r2-20261031/runs/20261031T024056.425184Z-2158835/ds41-control/down.jsonl"
+      ],
+      "k": 2304,
+      "m": 5120,
+      "mode": "down"
+    }
+  ],
+  "co_tenancy": "UNKNOWN; calendar grant/region-lock data recorded but no independent co-tenancy sample",
+  "copies": 4,
+  "expert_shapes": {
+    "count": {
+      "ffn_down_exps": 40,
+      "ffn_gate_exps": 40,
+      "ffn_up_exps": 40
+    },
+    "kv": {
+      "n_routed_experts": 384,
+      "num_experts_per_tok": 6
+    },
+    "shapes": {
+      "ffn_down_exps": [
+        [
+          2304,
+          5120,
+          384,
+          "MXFP4"
+        ]
+      ],
+      "ffn_gate_exps": [
+        [
+          5120,
+          2304,
+          384,
+          "MXFP4"
+        ]
+      ],
+      "ffn_up_exps": [
+        [
+          5120,
+          2304,
+          384,
+          "MXFP4"
+        ]
+      ]
+    }
+  },
+  "expert_shapes_sha256": "0e29d474330ada0723b798c1aa346a28398b85ba967e9c02fccf78c1e0292deb",
+  "filler_end_iso": "2026-10-31T04:40:00Z",
+  "filler_id": "refactor-c6-35186-q4-two-cohort-cpu-r2-20261031",
+  "grant_sha256": "c522f3c4eb638efeef232d8d5b745b5ecaeebcaa6c1645f21ff5beab7d40e369",
+  "grant_text": "regions=48-71 start=2026-10-31T02:40Z end=2026-10-31T04:40Z\n",
+  "harness_sha256": "01ff18a57db7eb57075841ff693e7a10a95292dce4c897ad0669ec7dda14d2c1",
+  "harness_source_sha256": "65b7570751085702a13fc51d5e94006318aacf1e172e651d0a3fdee0708f07a8",
+  "historical_predeclared_sha256": "fd6a3ab8ad7e7007eeef7b062308257882724ddd19a9aeb953fff86b6cb1b835",
+  "image": "control",
+  "min_mb": 8192,
+  "mode": "--full",
+  "n_alloc": 384,
+  "n_tokens": 512,
+  "n_used": 6,
+  "native_input_byte_hashes": "UNKNOWN; seed is not byte proof",
+  "recorded_at": "2026-10-31T02:41:26.842725+00:00",
+  "reps": 15,
+  "schema": "c6.35186.ds41_q4_reference_prerun.v1",
+  "seed": "mt19937(1234) in pinned harness source",
+  "source_sha": "3dbca8f4f407e21f11a2d04dcb6529ef40af9e62",
+  "store": "/mnt/raid0/llm/kernels/builds/cpu-20261030-3dbca8f4f-c6",
+  "store_identity": {
+    "loaded_dso_sha256": {
+      "libggml-base.so.0.16.0": "834bd2a00dd4620e7a9db61b26bc049ecf1c9445817f2bdd58ccf669ee949a56",
+      "libggml-cpu.so.0.16.0": "3a9c50087b7da3f383fa6c1aa20ecc1a459167d5e45ee85b60fe43168443fe5f"
+    },
+    "result_sha256": "8a9c0b4df2aa3ea8eef11f11a4eb3cda1a934da3cf0ee5520bce8d5293562d13",
+    "seal_sha256": "fe77c717899c3cefe071a620a2d605f351a3732d1f57bbbb5dda8b66eb331097"
+  },
+  "threads": 24,
+  "weight_type": "Q4_K synthetic reference; actual 1017 is MXFP4"
+}

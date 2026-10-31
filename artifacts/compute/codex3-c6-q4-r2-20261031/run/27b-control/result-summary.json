@@ -1,0 +1,63 @@
+{
+  "case_count": 9,
+  "case_names": [
+    "served_q4km_27b_blk_3_ffn_gate_weight_n1",
+    "served_q4km_27b_blk_3_ffn_gate_weight_n8",
+    "served_q4km_27b_blk_3_ffn_gate_weight_n16",
+    "served_q4km_27b_blk_3_ffn_up_weight_n1",
+    "served_q4km_27b_blk_3_ffn_up_weight_n8",
+    "served_q4km_27b_blk_3_ffn_up_weight_n16",
+    "served_q4km_27b_blk_4_ffn_down_weight_n1",
+    "served_q4km_27b_blk_4_ffn_down_weight_n8",
+    "served_q4km_27b_blk_4_ffn_down_weight_n16"
+  ],
+  "purpose": "component timing only; no keep decision",
+  "results": {
+    "served_q4km_27b_blk_3_ffn_gate_weight_n1": {
+      "backend_name": "CPU",
+      "n_runs": 10148,
+      "time_us": 99.056366
+    },
+    "served_q4km_27b_blk_3_ffn_gate_weight_n16": {
+      "backend_name": "CPU",
+      "n_runs": 1169,
+      "time_us": 933.681779
+    },
+    "served_q4km_27b_blk_3_ffn_gate_weight_n8": {
+      "backend_name": "CPU",
+      "n_runs": 2028,
+      "time_us": 506.769231
+    },
+    "served_q4km_27b_blk_3_ffn_up_weight_n1": {
+      "backend_name": "CPU",
+      "n_runs": 10148,
+      "time_us": 98.932203
+    },
+    "served_q4km_27b_blk_3_ffn_up_weight_n16": {
+      "backend_name": "CPU",
+      "n_runs": 835,
+      "time_us": 1253.37006
+    },
+    "served_q4km_27b_blk_3_ffn_up_weight_n8": {
+      "backend_name": "CPU",
+      "n_runs": 2197,
+      "time_us": 471.243059
+    },
+    "served_q4km_27b_blk_4_ffn_down_weight_n1": {
+      "backend_name": "CPU",
+      "n_runs": 7912,
+      "time_us": 127.85996
+    },
+    "served_q4km_27b_blk_4_ffn_down_weight_n16": {
+      "backend_name": "CPU",
+      "n_runs": 1002,
+      "time_us": 1030.424152
+    },
+    "served_q4km_27b_blk_4_ffn_down_weight_n8": {
+      "backend_name": "CPU",
+      "n_runs": 2197,
+      "time_us": 486.098771
+    }
+  },
+  "schema": "c6.35186.q4_cpu_perf_rows.v1"
+}

@@ -1,0 +1,72 @@
+{
+  "purpose": "synthetic Q4 reference at actual MXFP4 1017 expert dimensions; no 1017 Q4 tensor or serving gate claim",
+  "results": [
+    {
+      "jsonl_sha256": "4c2a5a528f6dff51425217a9b53a71f4161cd30d52a0999aceb2a11b08f22232",
+      "mode": "gateup",
+      "native_row": {
+        "bpw": 4.5,
+        "buf": "plain",
+        "bytes_per_node": 2547597312,
+        "copies": 4,
+        "expert_bytes": 6635520,
+        "fill_s": 0.25,
+        "footprint_mb": 10192,
+        "gbs_med": 84.33,
+        "k": 5120,
+        "label": "c6-35186-ds41-q4-ref-gateup",
+        "m": 2304,
+        "mode": "gateup",
+        "n": 512,
+        "n_alloc": 384,
+        "n_used": 6,
+        "reps": 15,
+        "status": "ok",
+        "threads": 24,
+        "uniq_experts": 383.933,
+        "us_med": 30209.59,
+        "us_min": 29623.493,
+        "us_p25": 29925.159,
+        "us_p75": 31011.293,
+        "wtype": "Q4_K"
+      },
+      "stderr_sha256": "5b717cb0c48698cac949f6afa20627ac3575500eb0276f523f94977a9574b69f",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "jsonl_sha256": "fe2a2344c8651a954a506c76b4cc0d3dd14ff5eea6802a6a0cd3701d5760909f",
+      "mode": "down",
+      "native_row": {
+        "bpw": 4.5,
+        "buf": "plain",
+        "bytes_per_node": 2546823168,
+        "copies": 4,
+        "expert_bytes": 6635520,
+        "fill_s": 0.3,
+        "footprint_mb": 10192,
+        "gbs_med": 83.12,
+        "k": 2304,
+        "label": "c6-35186-ds41-q4-ref-down",
+        "m": 5120,
+        "mode": "down",
+        "n": 512,
+        "n_alloc": 384,
+        "n_used": 6,
+        "reps": 15,
+        "status": "ok",
+        "threads": 24,
+        "uniq_experts": 383.817,
+        "us_med": 30639.317,
+        "us_min": 30284.926,
+        "us_p25": 30560.411,
+        "us_p75": 30750.948,
+        "wtype": "Q4_K"
+      },
+      "stderr_sha256": "a31f7fa9f108bf8ec58ea0c558cf81082139cdeba201df221a1e31c9a6384823",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "schema": "c6.35186.ds41_q4_reference_component.v1",
+  "status": "COMPLETE_COMPONENT_ONLY",
+  "units": "us_med per MUL_MAT_ID node; process-level grouping, one process per mode"
+}
