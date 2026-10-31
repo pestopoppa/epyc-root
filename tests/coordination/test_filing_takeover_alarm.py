@@ -438,3 +438,22 @@ def test_actual_watcher_bus_unavailable_keeps_one_owner_alert(fixture, failure):
     else:
         assert messages(bus) == []
     assert not list(bus.glob("inbox/*")) and not (bus / "queue.jsonl").exists()
+
+
+def test_owner_alert_never_creates_or_replaces_a_new_checkpoint(fixture, monkeypatch):
+    flags, bus = fixture
+    due(flags)
+    real = alarm.bus._write_atomic
+    writes = []
+
+    def only_existing_bus_state(path, value):
+        writes.append(path.name)
+        assert path.name == "filing-alarm.sent.json"
+        return real(path, value)
+
+    monkeypatch.setattr(alarm.bus, "_write_atomic", only_existing_bus_state)
+    alarm.scan_once(flags, bus, now=NOW)
+    alarm.scan_once(flags, bus, now=NOW)
+    assert len(alerts(flags)) == len(messages(bus)) == 1
+    assert writes and set(writes) == {"filing-alarm.sent.json"}
+    assert not (flags / "filing-alarm.alerted.json").exists()

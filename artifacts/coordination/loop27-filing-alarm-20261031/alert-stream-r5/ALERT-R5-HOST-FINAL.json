@@ -1,0 +1,91 @@
+{
+  "scope": "MODEL_FREE_R6_ONLY",
+  "family": "28-29",
+  "actual_cpus": [
+    124,
+    125
+  ],
+  "grant_snapshot": [
+    {
+      "id": "yarn-agg-1g-power-20261031",
+      "class": "block-correctness",
+      "regions": "mi210_0,184-191"
+    },
+    {
+      "id": "codex3-cs22-a1-native-long-v2-cpu-20261030",
+      "class": "block-correctness",
+      "regions": "72-95"
+    },
+    {
+      "id": "yarn-oolong-s2-host256-eligible26-v32-20261031",
+      "class": "block-correctness",
+      "regions": "24-47"
+    },
+    {
+      "id": "codex3-pareval120-k20-gen-20261031",
+      "class": "block-correctness",
+      "regions": "0-23"
+    },
+    {
+      "id": "yarn-oolong-s3-host256-eligible27-v30-20261031",
+      "class": "block-correctness",
+      "regions": "48-71"
+    }
+  ],
+  "returncode": 0,
+  "failure": null,
+  "elapsed_s": 0.948958297027275,
+  "sampled_peak_tree_rss_bytes": 84480000,
+  "kernel_childset_empty": true,
+  "captured": [
+    {
+      "pid": 2298756,
+      "birth": 157916886,
+      "ppid": 2298339,
+      "uid": 1000
+    },
+    {
+      "pid": 2298765,
+      "birth": 157916904,
+      "ppid": 2298756,
+      "uid": 1000
+    },
+    {
+      "pid": 2298775,
+      "birth": 157916907,
+      "ppid": 2298765,
+      "uid": 1000
+    },
+    {
+      "pid": 2298804,
+      "birth": 157916937,
+      "ppid": 2298756,
+      "uid": 1000
+    },
+    {
+      "pid": 2298810,
+      "birth": 157916938,
+      "ppid": 2298804,
+      "uid": 1000
+    },
+    {
+      "pid": 2298820,
+      "birth": 157916949,
+      "ppid": 2298756,
+      "uid": 1000
+    },
+    {
+      "pid": 2298828,
+      "birth": 157916955,
+      "ppid": 2298756,
+      "uid": 1000
+    },
+    {
+      "pid": 2298834,
+      "birth": 157916956,
+      "ppid": 2298828,
+      "uid": 1000
+    }
+  ],
+  "native_or_GPU_execution": false
+}
