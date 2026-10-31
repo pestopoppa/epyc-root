@@ -1,0 +1,5 @@
+# KPF-18.1 exact e332 GPU baseline build
+
+Build the retained exact e332 Git-archive source snapshot in the separate out-of-tree Micron build directory, with the same Release gfx90a HIP, rocWMMA attention, graphs, MFMA and NO_VMM options as the published a1f0 candidate recipe. Source catalog comprises 3,302 files and was independently matched against Git archive. Only the operator-authorized private build directory is written; frozen production source and store are not modified. Full completion requires native llama-server and libggml-hip, model-free help, same-directory ggml linkage and all library/binary hashes. It does not establish a GPU run or gate result.
+
+The bounded public control uses the SAME final launcher, source catalog verification, CMake configure and Ninja compilation path as the full build, but builds only e332's actual `ggml-cuda/acc.cu` gfx90a HIP translation unit, then links that exact object as a control shared object. It performs no GPU execution. STOP during the actual compiler must return rc75 with a partial marker and drain the captured process tree. The full build remains untested until an actual CPU-quarter grant.

@@ -1,0 +1,75 @@
+{
+  "status": "READY",
+  "id": "codex3-kpf181-e332-hip-build-r2-20261031",
+  "owner": "codex3",
+  "priority_rank": 2,
+  "regions": "any-cpu-quarter",
+  "class": "diagnostic",
+  "booking_class": "block-correctness",
+  "min_window_s": 3600,
+  "window_s": 14400,
+  "gib": 32,
+  "launcher": {
+    "path": "/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/gpu-e332-native/launch.sh",
+    "sha256": "72b351814d88b5f569c09a09c7fca91655e719868c3e8a5ca884a971d5eb6800"
+  },
+  "job": {
+    "path": "/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/gpu-e332-native/job.sh",
+    "sha256": "15769a9aca4689bf974a44b0e8eb43649100db3d33a94694c93c273f1c633659"
+  },
+  "result_path": "/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/gpu-e332-native/BUILD-SUCCESS",
+  "launcher_log": "/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/gpu-e332-native/ws58-launcher.out",
+  "scratch_root": "/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/gpu-e332-native",
+  "est_output_GiB": 0.25,
+  "native_output_budget_GiB": 20,
+  "native_output_root": "/mnt/micron/codex3-lanes/kpf181-e332-hip-build",
+  "keep": [
+    "KEEP",
+    "*.sh",
+    "*.py",
+    "*.md",
+    "*.sha256",
+    "*.txt",
+    "*.log",
+    "BUILD-SUCCESS",
+    "BUILD-PARTIAL",
+    "state/*.json",
+    "state/*.log",
+    "control-normal2/*.o",
+    "control-normal2/*.so"
+  ],
+  "decision_rule": "Compile exact e332 archived source as an out-of-tree gfx90a HIP llama-server; require HIP library, model-free help, same-directory ggml linkage and binary digests. This is a build diagnostic, not GPU execution, model equivalence, or full KPF-18.1 completion.",
+  "min_effect": "n/a (model-free build diagnostic)",
+  "enrollment": "n/a: diagnostic",
+  "hold": null,
+  "source_manifest": {
+    "path": "/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/gpu-e332-native/SOURCES.sha256",
+    "sha256": "2e5226e7929acb684e228671b162b8b46a28991bb66d6b78c5986d0f1273798c"
+  },
+  "predeclaration": {
+    "path": "/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/gpu-e332-native/PREDECLARED.md",
+    "sha256": "1aa55c7a61569151fc41ebd6efd1d2cc4f0ef8123d255916e4cafde8c0996159"
+  },
+  "feasibility": "Original a1 gfx90a full target build was 118s at j48. A conservative sixfold single-scaling estimate for j8 is 708s; 14400s includes configure and substantial overhead and is a planning estimate, not a measured e332 runtime. Stop/deadline returns rc75 after owned-child drain.",
+  "smoke": {
+    "ran_at": "2026-10-31T02:56:11.486662+00:00",
+    "regions": "124-125 R11, 28-29 mutex",
+    "model": "n/a (actual e332 CMake configure, Ninja gfx90a HIP acc.cu compile and link; no device execution)",
+    "first_request_ok": true,
+    "result_writer_ok": true,
+    "exit_ok": true,
+    "wall_s": 4.532,
+    "log": "/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/gpu-e332-native/SMOKE-NORMAL2.log",
+    "launcher_sha256": "72b351814d88b5f569c09a09c7fca91655e719868c3e8a5ca884a971d5eb6800"
+  },
+  "stop_smoke": {
+    "rc": 75,
+    "partial": "/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/gpu-e332-native/BUILD-PARTIAL",
+    "compiler_observed": true,
+    "children_drained": true,
+    "wall_s": 1.357,
+    "log": "/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/gpu-e332-native/SMOKE-STOP.log"
+  },
+  "log_consumer": "/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/gpu-e332-native/build-guard.py",
+  "log_consumer_sha256": "1aded22f1e97cdc58a43d66cb1f5a50fb5fe2015d9f08b422194a255856d7530"
+}
