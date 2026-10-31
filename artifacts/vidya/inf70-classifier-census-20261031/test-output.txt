@@ -1,0 +1,7 @@
+................................SC75 capture refused: B_NEW1: refusing to emit an invalid row: captured 32400s after the arm ended (limit 3600s): a verdict attached after the fact is a backfill, not a write-side hook
+.............
+P1-A carrier invariants: 15 tuples from 1 source kinds checked (byte identity / grade invariance), 0 violation(s)
+45 passed in 1.00s
+
+exit_code=0
+pytest_basetemp=/mnt/raid0/llm/tmp/codex-ni-research-kvu-runner-20261031/pytest-root-20261031T133316Z

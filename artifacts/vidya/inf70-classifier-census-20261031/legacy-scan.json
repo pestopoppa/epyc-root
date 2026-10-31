@@ -1,0 +1,19 @@
+{
+  "scan_type": "read-only maintained-consumer filename scan",
+  "source_of_pattern": "scripts/vidya/adapters/inf70_serving_arm.py rows_for_run_dir() uses Path(run_dir).glob(f\"*{SIDECAR_SUFFIX}\"); scripts/vidya/adapters/inf70_serving_arm_capture.py declares SIDECAR_SUFFIX = .belief_measurements.jsonl",
+  "sidecar_root": "/mnt/raid0/llm/tmp/inf70/agents",
+  "run_directory_pattern": "directories named runs recursively below sidecar_root",
+  "sidecar_filename_pattern_per_run_directory": "*.belief_measurements.jsonl",
+  "native_rows_root": "/mnt/raid0/llm/tmp/inf70/agents",
+  "native_rows_pattern": "**/*.rows.jsonl",
+  "run_directories": 29,
+  "native_row_files": 403,
+  "native_json_rows_parsed": 9654,
+  "matching_sidecars": 0,
+  "native_rows_with_classifier_key": 0,
+  "native_rows_with_token_source_key": 0,
+  "checkout_artifacts_root": "/mnt/raid0/llm/tmp/codex-ni-ap-legacy-status-wrap-20261030/artifacts",
+  "checkout_artifacts_sidecar_suffix_pattern": "**/*.belief_measurements.jsonl",
+  "checkout_artifacts_matching_sidecars": 0,
+  "inference_or_backfill": false
+}

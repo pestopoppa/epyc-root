@@ -1,0 +1,1 @@
+{"address_space_limit_bytes": 8589934592, "cpus": "36-37,132-133", "lock": "/mnt/raid0/llm/tmp/compute-flags/prep-locks/36-37.lock", "omp_threads": "1", "pid": 1680732, "rss_at_start": "768 kB", "source_head": "11724a356742577a9f8c958ae42480527b8097ec", "start_epoch": 1793453596.0177815, "start_ticks": "157606925", "timeout_seconds": 900}
