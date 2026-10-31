@@ -1,0 +1,37 @@
+{
+  "index": 21,
+  "task": "VB-UFH12-PLACEMENT-DISC",
+  "root_base": "72b592361654bc365d91f988a8d546f599bd28fb",
+  "disposition": "RETAIN_X",
+  "implementation_commit": "6ffee0ec72e1be2b1a04c9f4e9c48945908ae565",
+  "reason": "Discovery source plus two-level fixture and read-only projection of all9 original sidecars (99 rows/297 frames,zero refusals) satisfy full task; no ledger writes.",
+  "evidence": [
+    {
+      "git_path": "artifacts/compute/refactor-evidence-corrections-20261031/21/integrated-controls.log",
+      "sha256": "ead59f1affda12d264b340e1d6d8a24924602e7b9f3cb632dc58e720bd427440",
+      "bytes": 213,
+      "source": "/mnt/raid0/llm/tmp/refactor-unsupported-seven-v2-20261031/21/files/artifacts/compute/refactor-evidence-corrections-20261031/21/integrated-controls.log"
+    },
+    {
+      "git_path": "artifacts/compute/refactor-evidence-corrections-20261031/21/native-audit.json",
+      "sha256": "5e98de13037185317f6c012fce275764cc726e9c2063c3d0c621581f74b0d39d",
+      "bytes": 3750,
+      "source": "/mnt/raid0/llm/tmp/refactor-unsupported-seven-v2-20261031/21/files/artifacts/compute/refactor-evidence-corrections-20261031/21/native-audit.json"
+    },
+    {
+      "git_path": "artifacts/compute/refactor-evidence-corrections-20261031/21/push-receipt.json",
+      "sha256": "e49aaa0546fca6ddeb39aac8fdf9318793a114a8ededb6e11d0e3469e92605c3",
+      "bytes": 531,
+      "source": "/mnt/raid0/llm/tmp/refactor-unsupported-seven-v2-20261031/21/files/artifacts/compute/refactor-evidence-corrections-20261031/21/push-receipt.json"
+    }
+  ],
+  "task_prose_and_dates_unchanged": true,
+  "tests_rerun": false,
+  "new_code_quota_credit": false,
+  "recovery": {
+    "index": 21,
+    "original_paragraph_sha256": "4f3e237b8840cd4b26ace3111d99270a327f387d4a4dca2709866292e8a0439b",
+    "whole_handoff_recovery_byte_identical": true,
+    "original_prose_and_dates_unchanged": true
+  }
+}

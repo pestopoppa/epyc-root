@@ -1,0 +1,14 @@
+{
+  "repo": "epyc-root",
+  "candidate": "6ffee0ec72e1be2b1a04c9f4e9c48945908ae565",
+  "remote_main": "faf388a58af2cafaa482c6d036284661612a89df",
+  "candidate_is_ancestor": true,
+  "forced": false,
+  "gate": {
+    "verdict": "autonomous",
+    "hits": [],
+    "loop_plane": [],
+    "token_block": null,
+    "operator_ack": "/mnt/raid0/llm/tmp/compute-flags/WORK-refactor-code.md: VB-UFH12-PLACEMENT-DISC; parent reviewed exact two-file diff,13controls and read-only9sidecar99row audit and authorized nonforce root integration"
+  }
+}
