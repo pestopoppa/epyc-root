@@ -3,7 +3,7 @@
   "started_at": "2026-10-31T21:30:00Z",
   "last_checkpoint": "2026-10-31T23:40:00Z",
   "stage": 2,
-  "phase": "stage2-wave2-complete",
+  "phase": "stage2-closeout-complete",
   "lane": "/mnt/raid0/llm/worktrees/intake-ws58-20261031",
   "branch": "intake/ws58-20261031",
   "topic": "ws58 mixed batch: Soft-MTP, ThinkingCap Qwen3.8-Flash-Next, LiquidAI LFM3 audio/omni, NCM, triton/ptx tooling, ontologies, agent-loop folding, 23 operator URLs",
@@ -67,7 +67,7 @@
     "intake-2576"
   ],
   "entries_remaining": [],
-  "next_intake_id": 2591,
+  "next_intake_id": 2603,
   "expansion_cap": 10,
   "expansion_count": 9,
   "expansion_entries": [
@@ -111,7 +111,1056 @@
       "reason": "Scoring and grounding lens for Stages 1-3 (relayed via ws58 coordinator); provisional until Stage 3 assigns plan refs."
     }
   ],
-  "actionable_ledger": [],
+  "actionable_ledger": [
+    {
+      "ledger_id": "AGENT-1",
+      "source": "intake-2565 Stage-2 dive w1 ledger",
+      "action": "Run the fold article procedure as a zero-inference REPLAY over existing delegation records: for each delegate() role (worker_math, worker_general, worker_summarize, worker_vision, coder_escalation) compute from _delegations artifacts / delegation reports the ...",
+      "terminal_mapping": null,
+      "owner_hint": "handoffs/active/routing-intelligence.md",
+      "posture_hint": "cheap-screen-now"
+    },
+    {
+      "ledger_id": "AGENT-2",
+      "source": "intake-2565 Stage-2 dive w1 ledger",
+      "action": "Count and cap the model-visible tool surface: REPL exposes ~55 globals (peek, grep, delegate, escalate, run_shell, registry_*, benchmark_*, ...) in environment.py _build_globals while tool_registry.yaml holds 55 further tools (TOOL/CALL/list_tools = already ...",
+      "terminal_mapping": null,
+      "owner_hint": "handoffs/active/agentic-serving-harness-fixes.md",
+      "posture_hint": "cheap-screen-now"
+    },
+    {
+      "ledger_id": "AGENT-3",
+      "source": "intake-2565 Stage-2 dive w1 ledger",
+      "action": "Add a per-fold eval: before folding any worker role into skills, require a frozen end-to-end set covering every production chain (architect -> coder_escalation, frontdoor -> worker_*) and every must-not-break rule, repeated >=2 times, reporting flipped tasks. ...",
+      "terminal_mapping": null,
+      "owner_hint": "handoffs/active/tool-use-eval-contract.md",
+      "posture_hint": "monitor"
+    },
+    {
+      "ledger_id": "AGENT-4",
+      "source": "intake-2565 Stage-2 dive w1 ledger",
+      "action": "Do NOT adopt the article single-loop thesis for our CPU stack without measurement: the article premise is frontier models with thinking on; our workers are local quantised Qwen3.x on a BW-bound CPU where a separate small-context worker call is cheaper per ...",
+      "terminal_mapping": null,
+      "owner_hint": "handoffs/active/delegation-context-preassembly.md",
+      "posture_hint": "knowledge-only"
+    },
+    {
+      "ledger_id": "AGENT-5",
+      "source": "intake-2559, intake-2576 Stage-2 dive w1 ledger",
+      "action": "Bounded offline probe on CPU (HF transformers, no llama.cpp): with released nics-efc/C2C_Fuser qwen3_8b+qwen2.5_7b fuser, run n=200 frozen items from a MC set the stack already scores (e.g. MMLU-Redux subset used in canonical suites) in 4 arms: Receiver-only, ...",
+      "terminal_mapping": null,
+      "owner_hint": "NEW:kv-cache-communication-probe",
+      "posture_hint": "cheap-screen-now"
+    },
+    {
+      "ledger_id": "AGENT-6",
+      "source": "intake-2559, intake-2576 Stage-2 dive w1 ledger",
+      "action": "Design note (no compute): map C2C onto llama.cpp. Feasible path = out-of-process fuser. Receiver and Sharer each prefill the same prompt; read per-layer K/V from each via llama_state_seq_get_data (include/llama.h:881) or /slots/{id}?action=save ...",
+      "terminal_mapping": null,
+      "owner_hint": "NEW:kv-cache-communication-probe",
+      "posture_hint": "knowledge-only"
+    },
+    {
+      "ledger_id": "AGENT-7",
+      "source": "intake-2559 Stage-2 dive w1 ledger",
+      "action": "Role-pair candidate list, ranked: (1) architect_critic / coder_escalation (Qwen3.8-27B Q8_0, dense KV-densest per model_registry.yaml:541) as SHARER -> worker_general/worker_summarize (Qwen3.6-35B-A3B MoE, receiver; must check whether its layers are all full ...",
+      "terminal_mapping": null,
+      "owner_hint": "NEW:kv-cache-communication-probe",
+      "posture_hint": "monitor"
+    },
+    {
+      "ledger_id": "AGENT-8",
+      "source": "intake-2576 Stage-2 dive w1 ledger",
+      "action": "Read the thu-nics AKV repo (cache engineering for agents, follow-up to C2C, Apache-2.0, pushed 2026-10-21) before sizing any pair-training, since it may cover agent KV reuse without a per-pair trained fuser.",
+      "terminal_mapping": null,
+      "owner_hint": "NEW:kv-cache-communication-probe",
+      "posture_hint": "cheap-screen-now"
+    },
+    {
+      "ledger_id": "AGENT-9",
+      "source": "intake-2562 Stage-2 dive w1 ledger",
+      "action": "Copy the measurement-discipline text, not code, into the AK actor context: (a) record cache/graph/placement state and compare on the same allocation, (b) locate the limiting interval from a trace BEFORE kernel edits, (c) report the spread and do not call ...",
+      "terminal_mapping": null,
+      "owner_hint": "handoffs/active/autokernel-research-loop.md",
+      "posture_hint": "cheap-screen-now"
+    },
+    {
+      "ledger_id": "AGENT-10",
+      "source": "intake-2562 Stage-2 dive w1 ledger",
+      "action": "Use Resin docs/cache-pool.md + architecture.md Prefix reuse as design reference for hybrid prefix reuse: its snapshots are taken at an alignment equal to the LCM of all group block sizes and restore attention, SWA and recurrent state at the same boundary, ...",
+      "terminal_mapping": null,
+      "owner_hint": "handoffs/active/kv-prefix-fork-and-paged-attention.md",
+      "posture_hint": "knowledge-only"
+    },
+    {
+      "ledger_id": "AGENT-11",
+      "source": "intake-2562 Stage-2 dive w1 ledger",
+      "action": "Decline engine/runner split as an adoption target: there is no CPU or ROCm runner, and production serving is llama.cpp (frozen v10). Treat the split as vocabulary only.",
+      "terminal_mapping": null,
+      "owner_hint": "handoffs/active/speculative-decoding-mtp-refresh.md",
+      "posture_hint": "decline"
+    },
+    {
+      "ledger_id": "AGENT-12",
+      "source": "intake-2553 Stage-2 dive w1 ledger",
+      "action": "Screen d1-Omni-2B-GGUF (Q8_0, 1.85 GB) and d1-2B-GGUF as local typed-decision backends on a separate, scratch-built upstream llama-server (b11960+ in its own build dir; production tree untouched). Probe: replay a frozen set of already-routed orchestrator ...",
+      "terminal_mapping": null,
+      "owner_hint": "handoffs/active/typed-decision-plane.md",
+      "posture_hint": "cheap-screen-now"
+    },
+    {
+      "ledger_id": "AGENT-13",
+      "source": "intake-2553 Stage-2 dive w1 ledger",
+      "action": "Speech turn-taking decider test (only after human-recorded strata exist): d1-Omni-2B reads a short audio window and answers noul/score questions (end of turn? backchannel needed?) on the CS-45 corpus; compare against the CS-22 controller policy and the D1 ...",
+      "terminal_mapping": null,
+      "owner_hint": "handoffs/active/conversation-stack.md",
+      "posture_hint": "monitor"
+    },
+    {
+      "ledger_id": "AGENT-14",
+      "source": "intake-2553 Stage-2 dive w1 ledger",
+      "action": "Read LFM Open License v1.0 and the Open d1 blog before any use beyond a screen (licence is not Apache/MIT; sourcing policy is open-source only).",
+      "terminal_mapping": null,
+      "owner_hint": "handoffs/active/typed-decision-plane.md",
+      "posture_hint": "cheap-screen-now"
+    },
+    {
+      "ledger_id": "KERN-1",
+      "source": "intake-2570, intake-2555 Stage-2 dive w1 ledger",
+      "action": "Race-sensitivity mutation control for the GPU correctness gate. In a llama.cpp-experimental worktree, build 3 seeded-race HIP mutants, each deleting one __syncthreads/barrier: MMQ tile load, MMVQ partial-sum reduction, FA tile softmax. Run the existing AK ...",
+      "terminal_mapping": null,
+      "owner_hint": "handoffs/active/rocm-verify-profile-backend.md",
+      "posture_hint": "cheap-screen-now"
+    },
+    {
+      "ledger_id": "KERN-2",
+      "source": "intake-2557, intake-2570 Stage-2 dive w1 ledger",
+      "action": "Build a race-only symbolic executor for gfx90a AMDGCN: parse hipcc --save-temps asm, concrete thread/workgroup indices and launch params, per-byte LDS reader/writer sets between s_barrier, lgkmcnt/vmcnt waits as completion points, exec-mask lanes, wave64. ...",
+      "terminal_mapping": null,
+      "owner_hint": "handoffs/active/rocm-verify-profile-backend.md",
+      "posture_hint": "monitor"
+    },
+    {
+      "ledger_id": "KERN-3",
+      "source": "intake-2555 Stage-2 dive w1 ledger",
+      "action": "Add structured edge-value input families to the AK op suite beside the AK_SENS scale transforms. Families: f16-range near-max (overflow), subnormal-scale (underflow), cancellation pairs within reduction rows, softmax rows that are all-equal or contain -inf, ...",
+      "terminal_mapping": null,
+      "owner_hint": "handoffs/active/autokernel-research-loop.md",
+      "posture_hint": "primitive-now"
+    },
+    {
+      "ledger_id": "KERN-4",
+      "source": "intake-2555, intake-2570 Stage-2 dive w1 ledger",
+      "action": "Exhaustive bit-level decode check per served quant type (Q4_K, Q6_K, IQ2_*, IQ3_*, IQ4_XS, MXFP4). Enumerate the full per-element code space (quant codes x sub-block scale/min codes) at d/dmin in {0, subnormal, 1, f16 max}. Compare the candidate CPU (AVX-512) ...",
+      "terminal_mapping": null,
+      "owner_hint": "handoffs/active/autokernel-research-loop.md",
+      "posture_hint": "cheap-screen-now"
+    },
+    {
+      "ledger_id": "KERN-5",
+      "source": "intake-2556 Stage-2 dive w1 ledger",
+      "action": "Add a per-element worst-error bound next to NMSE on the GPU served-shape case set. Calibrate the anchor's max-abs error per (op, type, shape) over 5 seeds and gate on k x anchor, the way the CPU_REPACK oracle already does.",
+      "terminal_mapping": null,
+      "owner_hint": "handoffs/active/autokernel-research-loop.md",
+      "posture_hint": "primitive-now"
+    },
+    {
+      "ledger_id": "KERN-6",
+      "source": "intake-2555, intake-2556 Stage-2 dive w1 ledger",
+      "action": "Counter-grounded planner signals. For the top-1 hotspot kernel of each GPU screen, capture a fixed, declared counter subset via rocprofv2 (from the proven 465-counter taxonomy). Attach it to the hotspots rows. Adopt TAIC's rule that each hypothesis cites a ...",
+      "terminal_mapping": null,
+      "owner_hint": "handoffs/active/rocm-verify-profile-backend.md",
+      "posture_hint": "cheap-screen-now"
+    },
+    {
+      "ledger_id": "KERN-7",
+      "source": "intake-2555, intake-2556 Stage-2 dive w1 ledger",
+      "action": "Archive the hipcc AMDGCN ISA (--save-temps .s, or llvm-objdump of the code object) of the touched kernels into every AK GPU candidate record, next to the source diff and the hotspots table.",
+      "terminal_mapping": null,
+      "owner_hint": "handoffs/active/agentic-rocm-kernel-authoring.md",
+      "posture_hint": "primitive-now"
+    },
+    {
+      "ledger_id": "KERN-8",
+      "source": "intake-2555, intake-2556 Stage-2 dive w1 ledger",
+      "action": "GCN-Gym probe of AI lowering on gfx90a. Build a standalone harness that assembles LLM-patched AMDGCN for one compute-bound kernel (MMQ Q4_K prefill tile or FA at long context) with clang -target amdgcn-amd-amdhsa -mcpu=gfx90a, loads it via hipModuleLoad and ...",
+      "terminal_mapping": null,
+      "owner_hint": "handoffs/active/agentic-rocm-kernel-authoring.md",
+      "posture_hint": "monitor"
+    },
+    {
+      "ledger_id": "KERN-9",
+      "source": "intake-2556 Stage-2 dive w1 ledger",
+      "action": "Keep the AK-PL-1 prompt-leak guard. If diagnostic failure feedback (failing indices/values) is ever adopted from TAIC, generate it on a feedback seed disjoint from the acceptance seed population.",
+      "terminal_mapping": null,
+      "owner_hint": "handoffs/active/agentic-rocm-kernel-authoring.md",
+      "posture_hint": "knowledge-only"
+    },
+    {
+      "ledger_id": "KERN-10",
+      "source": "intake-2570 Stage-2 dive w1 ledger",
+      "action": "Wire a CPU race detector for routes touching threading. Build a TSAN test-backend-ops (CPU), using LLVM libomp with Archer annotations because production uses OpenMP; GGML_OPENMP=OFF would test a different threading path. Run it on the v10 anchor first.",
+      "terminal_mapping": null,
+      "owner_hint": "handoffs/active/autokernel-research-loop.md",
+      "posture_hint": "cheap-screen-now"
+    },
+    {
+      "ledger_id": "KERN-11",
+      "source": "intake-2570, intake-2557 Stage-2 dive w1 ledger",
+      "action": "Do not adopt upstream Volta or the Blackwell fork directly. Both are PTX/NVIDIA-only, and this host has no NVIDIA GPU. Reuse only the race model (KERN-2) and the scaffold code.",
+      "terminal_mapping": null,
+      "owner_hint": "handoffs/active/rocm-verify-profile-backend.md",
+      "posture_hint": "decline"
+    },
+    {
+      "ledger_id": "LOOP-1",
+      "source": "intake-2547, intake-2571 Stage-2 dive w1 ledger",
+      "action": "Add a knowledge note to the INF-70 roofline program: weight-reuse architectures. Sequential looping multiplies weight bytes per token by L, and with 32 MiB L3 per CCX (384 MiB total) a block above ~32 MiB per CCX cannot be cache-reused (e.g. a 7B 14-layer PLT ...",
+      "terminal_mapping": null,
+      "owner_hint": "handoffs/active/cpu-decode-roofline-program.md",
+      "posture_hint": "knowledge-only"
+    },
+    {
+      "ledger_id": "LOOP-2",
+      "source": "intake-2571, intake-2547 Stage-2 dive w1 ledger",
+      "action": "Ingest and dive LoopCoder-v2 (arXiv 2606.18023): released 7B PLT 2-loop coder (Apache-2.0, HF Multilingual-Multimodal-NLP/LoopCoder-V2, 14 layers, hidden 5120, 8 KV heads) is the first PLT checkpoint we can actually run; card claims SWE-bench Verified 43.0 -> ...",
+      "terminal_mapping": null,
+      "owner_hint": "handoffs/active/reasoning-compression.md",
+      "posture_hint": "cheap-screen-now"
+    },
+    {
+      "ledger_id": "LOOP-3",
+      "source": "intake-2547 Stage-2 dive w1 ledger",
+      "action": "Correct the stale gate: Ouro now has a community llama.cpp port (BrandeisPatrick/loop-transformer, ouro arch, 324 added lines, PR ggml-org/llama.cpp#29823, GGUFs for Ouro 1.4B/2.6B +Thinking) built on upstream looped-model machinery merged for Nanbeige4.2 (PR ...",
+      "terminal_mapping": null,
+      "owner_hint": "handoffs/active/reasoning-compression.md",
+      "posture_hint": "knowledge-only"
+    },
+    {
+      "ledger_id": "LOOP-4",
+      "source": "intake-2547, intake-2551 Stage-2 dive w1 ledger",
+      "action": "Bounded CPU probe on a llama.cpp-experimental branch with the Ouro port: Ouro-1.4B Q4_K_M (854 MB per card), llama-bench tg at num_loops 1/2/4 via --override-kv, reporting achieved GB/s counting bytes once per loop against the C0 153 GB/s ceiling. This ...",
+      "terminal_mapping": null,
+      "owner_hint": "handoffs/active/cpu-decode-roofline-program.md",
+      "posture_hint": "monitor"
+    },
+    {
+      "ledger_id": "LOOP-5",
+      "source": "intake-2551 Stage-2 dive w1 ledger",
+      "action": "Record in reasoning-compression.md only: looped MoE R=5 at 0.3B-1.3B reaches reasoning parity with 0.6B-2.9B at 1.8x training-compute-defined inference compute while trailing Overall 46.9 vs 50.2; no latency/bytes measured; no checkpoint released in the text.",
+      "terminal_mapping": null,
+      "owner_hint": "handoffs/active/reasoning-compression.md",
+      "posture_hint": "knowledge-only"
+    },
+    {
+      "ledger_id": "LOOP-6",
+      "source": "intake-2546, intake-2568 Stage-2 dive w1 ledger",
+      "action": "Monitor NCM as a drafter source: trigger = a released NCM-style generator with a general-text tokenizer sharing a served model vocabulary, or any measured acceptance rate against an AR target. Do not build now: released checkpoints are per-dataset ~100M-725M ...",
+      "terminal_mapping": null,
+      "owner_hint": "handoffs/active/dflash2-block-drafter-experimental-build.md",
+      "posture_hint": "monitor"
+    },
+    {
+      "ledger_id": "MEM-1",
+      "source": "intake-2550, intake-2574 Stage-2 dive w1 ledger",
+      "action": "Add a deterministic one-hot RAM oracle case to the GATED_DELTA_NET tests of an EXPERIMENTAL champion-derived llama.cpp branch (tests/test-backend-ops.cpp test_gated_delta_net family, or a sibling test-gdn-ram): alpha=1 (g=0), beta=1, one-hot k and q, ...",
+      "terminal_mapping": null,
+      "owner_hint": "handoffs/active/autokernel-champion-aggregate.md",
+      "posture_hint": "cheap-screen-now"
+    },
+    {
+      "ledger_id": "MEM-2",
+      "source": "intake-2574 Stage-2 dive w1 ledger",
+      "action": "Add a state-level conformance check to the hybrid checkpoint/fork path: after a restore (common_prompt_checkpoint load_tgt, or KPF fork from a checkpoint) serialise the recurrent half of source and destination with llama_state_seq_get_data_ext(PARTIAL_ONLY) ...",
+      "terminal_mapping": null,
+      "owner_hint": "handoffs/active/kv-prefix-fork-and-paged-attention.md",
+      "posture_hint": "cheap-screen-now"
+    },
+    {
+      "ledger_id": "MEM-3",
+      "source": "intake-2550, intake-2574 Stage-2 dive w1 ledger",
+      "action": "Do not pursue an in-weights calculator (compiled RISC-V/CHIP-8 layers) for the serving stack. Flag for operator review per the research-intake rule rather than closing silently.",
+      "terminal_mapping": null,
+      "owner_hint": "NEW:none",
+      "posture_hint": "decline"
+    },
+    {
+      "ledger_id": "MEM-4",
+      "source": "intake-2558 Stage-2 dive w1 ledger",
+      "action": "Write scripts/vidya/cert_check.py: a standalone verifier for the gate's epyc.vidya/certificate/v1, sharing NO imports with fold.py, gate.py or lattice.py. It reads the ledger JSONL and the ratified policy file directly, re-derives pro/con grade dominance and ...",
+      "terminal_mapping": null,
+      "owner_hint": "handoffs/active/vidya-belief-substrate-program.md",
+      "posture_hint": "cheap-screen-now"
+    },
+    {
+      "ledger_id": "MEM-5",
+      "source": "intake-2558 Stage-2 dive w1 ledger",
+      "action": "No certificate/checker layer for scripts/handoffs/index_state.py or registry consistency checks.",
+      "terminal_mapping": null,
+      "owner_hint": "NEW:none",
+      "posture_hint": "decline"
+    },
+    {
+      "ledger_id": "MEM-6",
+      "source": "intake-2558 Stage-2 dive w1 ledger",
+      "action": "When writing MEM-4, make the checker read and compare certificate.frontier and as_of explicitly and record in the certificate's proves-field that a certificate binds to a frontier, not to the truth of the world.",
+      "terminal_mapping": null,
+      "owner_hint": "handoffs/active/vidya-belief-substrate-program.md",
+      "posture_hint": "primitive-now"
+    },
+    {
+      "ledger_id": "MTP-1",
+      "source": "intake-2548, intake-2549 Stage-2 dive w1 ledger",
+      "action": "Amend the DF2-DRAFTER-CAPABILITY trainer and data contract (the INF-62 record contract inherited from the cancelled DF2-QWOPUS) so the default objective is forward-KL self-distillation to the target's own teacher-forced NTP distribution rather than hard ...",
+      "terminal_mapping": null,
+      "owner_hint": "handoffs/active/dflash2-block-drafter-experimental-build.md",
+      "posture_hint": "primitive-now"
+    },
+    {
+      "ledger_id": "MTP-2",
+      "source": "intake-2548, intake-2549 Stage-2 dive w1 ledger",
+      "action": "Bounded frozen-trunk probe on the Soft-MTP repo (MI210, ROCm torch, <=4 GPU-h, no llama.cpp). Take the released 167M (or 332M) NTP checkpoint, set freeze_backbone=true, and train fresh K=3 DeepSeek-style heads under two arms with identical data order, seed, ...",
+      "terminal_mapping": null,
+      "owner_hint": "handoffs/active/dflash2-block-drafter-experimental-build.md",
+      "posture_hint": "cheap-screen-now"
+    },
+    {
+      "ledger_id": "MTP-3",
+      "source": "intake-2548 Stage-2 dive w1 ledger",
+      "action": "No change to Axis E. Restoring the Qwen3.8-Flash-Next MTP head loads the published unsloth shared-Q8_0 head (no training), so the MTP-objective choice does not touch it.",
+      "terminal_mapping": null,
+      "owner_hint": "handoffs/active/cpu-decode-roofline-program.md",
+      "posture_hint": "knowledge-only"
+    },
+    {
+      "ledger_id": "MTP-4",
+      "source": "intake-2548 Stage-2 dive w1 ledger",
+      "action": "Record a trigger on the speculative-decoding refresh. If a served fine-tune ships with a stock (base-co-trained) MTP head, as already observed for ThinkingCap and Qwopus, the remedy is head-only re-alignment on the frozen fine-tuned trunk against its own NTP ...",
+      "terminal_mapping": null,
+      "owner_hint": "handoffs/active/speculative-decoding-mtp-refresh.md",
+      "posture_hint": "monitor"
+    },
+    {
+      "ledger_id": "MTP-5",
+      "source": "intake-2548 Stage-2 dive w1 ledger",
+      "action": "Decline adopting Soft-MTP as a pretraining objective.",
+      "terminal_mapping": null,
+      "owner_hint": "handoffs/active/speculative-decoding-mtp-refresh.md",
+      "posture_hint": "decline"
+    },
+    {
+      "ledger_id": "SPEC-1",
+      "source": "intake-2561, intake-2560 Stage-2 dive w1 ledger",
+      "action": "DF2-LAT zero-training lattice-headroom probe. (i) Experimental build from the current champion tip, env-gated and off by default: append the 16 unary draft logits to each packed DFlash2 lattice row (src/models/dflash.cpp build_post_sampling; row is K+K*K=272 ...",
+      "terminal_mapping": null,
+      "owner_hint": "handoffs/active/dflash2-block-drafter-experimental-build.md",
+      "posture_hint": "cheap-screen-now"
+    },
+    {
+      "ledger_id": "SPEC-2",
+      "source": "intake-2561 Stage-2 dive w1 ledger",
+      "action": "DF2-PM point-mass proposal screen at production temperature. Behind an env knob in the experimental build, the DFlash2 temp>0 branch takes the argmax selector walk instead of sampling softmax(scores/T), and emits dist {id, prob 1.0} per slot. The existing ...",
+      "terminal_mapping": null,
+      "owner_hint": "handoffs/active/speculative-decoding-mtp-refresh.md",
+      "posture_hint": "cheap-screen-now"
+    },
+    {
+      "ledger_id": "SPEC-3",
+      "source": "intake-2561, intake-2560 Stage-2 dive w1 ledger",
+      "action": "Port the DCOCO head to llama.cpp as a replacement DFlash2 selector, and train it on the frozen DFlash2 backbone. Gated on SPEC-1 PROMOTE. Port: converter keys/tensors for cand_proj, ctx_h_proj, cand_ctx_proj + LN, pair_proj and the 386->256->1 MLP (~100 LOC ...",
+      "terminal_mapping": null,
+      "owner_hint": "handoffs/active/dflash2-block-drafter-experimental-build.md",
+      "posture_hint": "monitor"
+    },
+    {
+      "ledger_id": "SPEC-4",
+      "source": "intake-2561, intake-2560, intake-2569 Stage-2 dive w1 ledger",
+      "action": "Prepare a text update (owning session applies) to the LiLiCorr monitor paragraph: name DCOCO (intake-2561#record) and Domino (intake-2569#record) as the same correction family; record that DFlash2 already ships a learned K=16 rank-256 selector lattice with a ...",
+      "terminal_mapping": null,
+      "owner_hint": "handoffs/active/dflash2-block-drafter-experimental-build.md",
+      "posture_hint": "knowledge-only"
+    },
+    {
+      "ledger_id": "SPEC-5",
+      "source": "intake-2569 Stage-2 dive w1 ledger",
+      "action": "Domino-style GRU + full-vocab low-rank correction head on the DFlash2 drafter: no work now. It needs full drafter co-training with the curriculum, and its sequential head adds a 256x248320 logit-residual projection per position on the critical path. Revisit ...",
+      "terminal_mapping": null,
+      "owner_hint": "handoffs/active/dflash2-block-drafter-experimental-build.md",
+      "posture_hint": "monitor"
+    },
+    {
+      "ledger_id": "SPEC-6",
+      "source": "intake-2561, intake-2569 Stage-2 dive w1 ledger",
+      "action": "CPU: no separate action. The 27B DFlash2 path is served on the MI210 only, and CPU speculative work for Flash-Next is MTP (Axis E). If SPEC-3 is ever built, its graph ops are backend-agnostic and must pass CPU no-regression in the four-step workflow.",
+      "terminal_mapping": null,
+      "owner_hint": "handoffs/active/cpu-decode-roofline-program.md",
+      "posture_hint": "knowledge-only"
+    },
+    {
+      "ledger_id": "SPEECH-1",
+      "source": "intake-2552, intake-2554, intake-2575 Stage-2 dive w1 ledger",
+      "action": "Bounded probe LFM3-1: build an experimental llama.cpp tree (fresh v10 + upstream b11960 audio path: PRs 31252, 30629, 30636, 31257, 31269, 31287, 31386) on CPU only first; run LFM3-Audio-2B Q8_0 ASR over the 40 pinned FLEURS clips (en/it/de/fr x10) and ...",
+      "terminal_mapping": null,
+      "owner_hint": "handoffs/active/conversation-stack.md",
+      "posture_hint": "cheap-screen-now"
+    },
+    {
+      "ledger_id": "SPEECH-2",
+      "source": "intake-2552, intake-2554, intake-2575 Stage-2 dive w1 ledger",
+      "action": "Add LFM3-Audio-2B/Omni-2B as a third challenger in the CS-8 G1/G3/G4 interlocutor bake-off: G1 en/it TTS intelligibility via llama-tts (note voice chat is English-only per card, so Italian only for TTS/ASR), G3 tool-call slot quality from speech, G4 ...",
+      "terminal_mapping": null,
+      "owner_hint": "handoffs/active/conversation-stack.md",
+      "posture_hint": "monitor"
+    },
+    {
+      "ledger_id": "SPEECH-3",
+      "source": "intake-2575 Stage-2 dive w1 ledger",
+      "action": "Estimate and record forward-port cost: experimental branch from current production-consolidated-v10, merge/cherry-pick the 7 LFM3 audio PRs plus their upstream prerequisites (b10303..b11960 is 1657 builds; PR 31257 alone +2721/-160 over 31 files, 30629 +998, ...",
+      "terminal_mapping": null,
+      "owner_hint": "handoffs/active/conversation-stack.md",
+      "posture_hint": "cheap-screen-now"
+    },
+    {
+      "ledger_id": "SPEECH-4",
+      "source": "intake-2575 Stage-2 dive w1 ledger",
+      "action": "Reuse the upstream /v1/realtime (OpenAI-compatible) and Voxtral-Realtime support as a CS-20 backend interface option: write a realtime client adapter in the voice controller that speaks /v1/realtime beside the whisper :9000 / qwentts :9002 cascade.",
+      "terminal_mapping": null,
+      "owner_hint": "handoffs/active/conversation-stack.md",
+      "posture_hint": "monitor"
+    },
+    {
+      "ledger_id": "SPEECH-5",
+      "source": "intake-2573 Stage-2 dive w1 ledger",
+      "action": "No new STT action. Hex confirms the transcribe.cpp Parakeet Unified streaming path (Vulkan GPU only). Parakeet streaming vs whisper.cpp is already a measured-pending candidate: CS-8.STT0 40/40 CPU==GPU identity done, transcribe.cpp CPU 40-clip run 37/40 ...",
+      "terminal_mapping": null,
+      "owner_hint": "handoffs/active/conversation-stack.md",
+      "posture_hint": "knowledge-only"
+    },
+    {
+      "ledger_id": "SPEECH-6",
+      "source": "intake-2573 Stage-2 dive w1 ledger",
+      "action": "Add Parakeet Unified English (streaming, lookahead variants) as a named arm check in CS-8.STT5 if not already present, noting hex pins fork rev 7045d1c0 (transcribe.cpp 0.4.1) while our build pins db678a03; record both pins.",
+      "terminal_mapping": null,
+      "owner_hint": "handoffs/active/conversation-stack.md",
+      "posture_hint": "knowledge-only"
+    },
+    {
+      "ledger_id": "SPEECH-7",
+      "source": "intake-2564 Stage-2 dive w1 ledger",
+      "action": "Monitor Dessa for paper, weights or API; trigger = any released checkpoint or paper with benchmark numbers, then fold into the M8 full-duplex reference slot check (language gate D2 likely fails if English-only).",
+      "terminal_mapping": null,
+      "owner_hint": "handoffs/active/conversation-stack.md",
+      "posture_hint": "monitor"
+    },
+    {
+      "ledger_id": "TCAP-1",
+      "source": "intake-2567, intake-2572 Stage-2 dive w1 ledger",
+      "action": "Bounded A/B: base UD-IQ4_XS (current :8074 file) vs bottlecapai ThinkingCap IQ4_XS GGUF, llama-server, same recipe qwen38-flash-next-cpu-mtp, enable_thinking=true on /v1/chat/completions, frozen 40-60 prompt set (arch/plan-critique + reasoning, AIME-style, ...",
+      "terminal_mapping": null,
+      "owner_hint": "handoffs/active/architect-model-selection-bench.md",
+      "posture_hint": "cheap-screen-now"
+    },
+    {
+      "ledger_id": "TCAP-2",
+      "source": "intake-2572 Stage-2 dive w1 ledger",
+      "action": "Record that INF-70 Axis-E \"MTP needs FP8 re-download\" is obsolete: head already on disk (mtp-Qwen3.8-Flash-Next-shared-Q8_0.gguf, 2.79 GB, 2026-09-02); no ThinkingCap download is needed for MTP",
+      "terminal_mapping": null,
+      "owner_hint": "handoffs/active/cpu-decode-roofline-program.md",
+      "posture_hint": "knowledge-only"
+    },
+    {
+      "ledger_id": "TCAP-3",
+      "source": "intake-2572 Stage-2 dive w1 ledger",
+      "action": "If A/B runs, add arm B2 = ThinkingCap trunk + our unsloth shared-Q8_0 draft file vs embedded head, measure alpha for both",
+      "terminal_mapping": null,
+      "owner_hint": "handoffs/active/qwen-mtp-llamacpp-port.md",
+      "posture_hint": "cheap-screen-now"
+    },
+    {
+      "ledger_id": "TCAP-4",
+      "source": "intake-2567 Stage-2 dive w1 ledger",
+      "action": "Do not pursue the vendor PRO tier or method discovery",
+      "terminal_mapping": null,
+      "owner_hint": "NEW:none",
+      "posture_hint": "decline"
+    },
+    {
+      "ledger_id": "W2KERN-1",
+      "source": "intake-2588 Stage-2 dive w2 ledger",
+      "action": "Add an instruction-executed gate to the AMD kernel-authoring path: when a candidate claims a mechanism (MFMA use, LDS staging, buffer/global load width), require a rocprof instruction-mix counter or ISA-disassembly execution check on the real workload before ...",
+      "terminal_mapping": null,
+      "owner_hint": "handoffs/active/agentic-rocm-kernel-authoring.md",
+      "posture_hint": "cheap-screen-now"
+    },
+    {
+      "ledger_id": "W2KERN-2",
+      "source": "intake-2588 Stage-2 dive w2 ledger",
+      "action": "Compare AK candidate generation as plain multi-turn refinement vs agent-harness mode on token cost per accepted keep (PTXBench: agent harness cost 3.3-5.1x tokens and was worse on attention). Use existing AK run logs only; no new compute.",
+      "terminal_mapping": null,
+      "owner_hint": "handoffs/active/autokernel-orchestrator-actor-backend.md",
+      "posture_hint": "knowledge-only"
+    },
+    {
+      "ledger_id": "W2KERN-3",
+      "source": "intake-2589, intake-2588 Stage-2 dive w2 ledger",
+      "action": "Close the verified AK gate gaps (no race detector, race_detector_id=None; no edge-value inputs; NMSE-only oracle) with a CAKE-style pre-GPU static filter tier: run the cheapest hazard/legality checks (LDS barrier ordering, wave64/exec-mask hazards from the ...",
+      "terminal_mapping": null,
+      "owner_hint": "handoffs/active/autokernel-research-loop.md",
+      "posture_hint": "primitive-now"
+    },
+    {
+      "ledger_id": "W2KERN-4",
+      "source": "intake-2589 Stage-2 dive w2 ledger",
+      "action": "Failure-to-rule loop for AK: after each rejected batch, classify the failure reason and, when a class recurs (>=3), have an agent propose a permanent static check or oracle input, merged only under corpus tests of all prior keeps (CAKE Sec 3.2).",
+      "terminal_mapping": null,
+      "owner_hint": "handoffs/active/autokernel-rebuild-program.md",
+      "posture_hint": "monitor"
+    },
+    {
+      "ledger_id": "W2KERN-5",
+      "source": "intake-2590 Stage-2 dive w2 ledger",
+      "action": "Bounded probe: tool-result KV drop+shift on a pure full-attention role in llama-server, using existing llama_memory_seq_rm + seq_add (as in the streaming-llm / context-shift path), on a recorded orchestrator agent trace. Measure (a) tokens re-prefilled per ...",
+      "terminal_mapping": null,
+      "owner_hint": "handoffs/active/context-folding-progressive.md",
+      "posture_hint": "cheap-screen-now"
+    },
+    {
+      "ledger_id": "W2KERN-6",
+      "source": "intake-2590 Stage-2 dive w2 ledger",
+      "action": "Record the history-dependence correctness rule for any future KV-editing serving feature: a slot/prefix index keyed only by token prefix (src/inference/prefix_index.py) must also key on the drop/shift operation history, or mark the slot unmatchable after an ...",
+      "terminal_mapping": null,
+      "owner_hint": "handoffs/active/kv-prefix-fork-and-paged-attention.md",
+      "posture_hint": "knowledge-only"
+    },
+    {
+      "ledger_id": "W2KERN-7",
+      "source": "intake-2590 Stage-2 dive w2 ledger",
+      "action": "Decline porting AKV server (SGLang, Rust build, softmax-attention only) as a serving path; keep as design reference only. Hybrid/linear-attention models (our main Qwen line) are unsupported by the authors and by llama.cpp seq ops.",
+      "terminal_mapping": null,
+      "owner_hint": "handoffs/active/kv-prefix-fork-and-paged-attention.md",
+      "posture_hint": "decline"
+    },
+    {
+      "ledger_id": "W2LOOP-1",
+      "source": "intake-2585, intake-2586 Stage-2 dive w2 ledger",
+      "action": "On an experimental llama.cpp branch freshly cut from production v10, cherry #25994 plus #29823 (about 590 added lines) and measure Ouro-1.4B Q8_0/Q4_K_M at --override-kv ouro.num_loops=int:1/2/4 on EPYC CPU (one quarter and full socket): tok/s, achieved GB/s ...",
+      "terminal_mapping": null,
+      "owner_hint": "handoffs/active/cpu-decode-roofline-program.md",
+      "posture_hint": "cheap-screen-now"
+    },
+    {
+      "ledger_id": "W2LOOP-2",
+      "source": "intake-2584 Stage-2 dive w2 ledger",
+      "action": "Monitor triggers: (a) llama.cpp or vLLM PR adding iquestpltcoder / PLT, (b) an independent replication of LoopCoder-v2 R=2 SWE-bench Verified, (c) a timing number for PLT decode. Any one fires ingest-and-dive on it.",
+      "terminal_mapping": null,
+      "owner_hint": "handoffs/active/cpu-decode-roofline-program.md",
+      "posture_hint": "monitor"
+    },
+    {
+      "ledger_id": "W2LOOP-3",
+      "source": "intake-2587 Stage-2 dive w2 ledger",
+      "action": "Knowledge-only: record that our GDN graph hard-caps beta at 1 (src/models/qwen3next.cpp:417 ggml_sigmoid) matching the Qwen3.5 control that failed to generalise hidden tracking; no probe.",
+      "terminal_mapping": null,
+      "owner_hint": "handoffs/active/cpu-decode-roofline-program.md",
+      "posture_hint": "knowledge-only"
+    },
+    {
+      "ledger_id": "W2LOOP-4",
+      "source": "intake-2585, intake-2586 Stage-2 dive w2 ledger",
+      "action": "Correct the stale note in gpu-acceleration-path.md ~line 248 (intake-332 \"Not llama.cpp compatible\") to say nanbeige looped arch merged 2026-07-27 and Ouro is PR #29823 open; owning session applies.",
+      "terminal_mapping": null,
+      "owner_hint": "handoffs/active/gpu-acceleration-path.md",
+      "posture_hint": "primitive-now"
+    },
+    {
+      "ledger_id": "SPEC2-1",
+      "source": "intake-2577 Stage-2 dive w2 ledger",
+      "action": "Add a per-request MTP health canary to the Flash-Next serving gate: flag any request with >=64 drafted tokens and zero accepted, or a repeated n-gram window in the generated tail (reuse coherence_gate tiers 0-2), and log per-request accepted/drafted from ...",
+      "terminal_mapping": null,
+      "owner_hint": "handoffs/active/cpu-decode-roofline-program.md",
+      "posture_hint": "cheap-screen-now"
+    },
+    {
+      "ledger_id": "SPEC2-2",
+      "source": "intake-2577 Stage-2 dive w2 ledger",
+      "action": "Extend G2-CONC with a simultaneous-multi-prefill probe: c in {2,3,5} identical-length prompts differing by a salt, issued at the same instant, temp 0, ignore-eos 128 tokens, MTP on vs MTP off, compare every request token-for-token to its solo -np 1 output; ...",
+      "terminal_mapping": null,
+      "owner_hint": "handoffs/active/cpu-decode-roofline-program.md",
+      "posture_hint": "cheap-screen-now"
+    },
+    {
+      "ledger_id": "SPEC2-3",
+      "source": "intake-2577 Stage-2 dive w2 ledger",
+      "action": "Note thinking-mode default sampling repetition risk: issue says model card recommends presence_penalty 0-2 and attributes loops to degenerate state amplified by temp 1.0 / top_k 20 / top_p 0.95; check the Flash-Next architect_general request sampler against ...",
+      "terminal_mapping": null,
+      "owner_hint": "handoffs/active/cpu-decode-roofline-program.md",
+      "posture_hint": "monitor"
+    },
+    {
+      "ledger_id": "SPEC2-4",
+      "source": "intake-2578 Stage-2 dive w2 ledger",
+      "action": "Add to DF2-DRAFTER-CAPABILITY the Nemotron Sec 3.4 head/drafter fine-tune recipe as an option: freeze target, sample hidden states from earlier draft steps, forward-KL T=2 to target logits on target on-policy rollouts at temp 1 (reference scale: 12K steps, bs ...",
+      "terminal_mapping": null,
+      "owner_hint": "handoffs/active/dflash2-block-drafter-experimental-build.md",
+      "posture_hint": "knowledge-only"
+    },
+    {
+      "ledger_id": "SPEC2-5",
+      "source": "intake-1724 Stage-2 dive w2 ledger",
+      "action": "Answer only (no entry): the z-lab card text does not say how the DFlash2 selector (top-16, rank-256 transition score) was trained, and reports no tau gain over DFlash 1 for Qwen3.8-27B. The inco.ai blog (sha256-12 99dc56f49911) gives the selector score ...",
+      "terminal_mapping": null,
+      "owner_hint": "handoffs/active/dflash2-block-drafter-experimental-build.md",
+      "posture_hint": "knowledge-only"
+    },
+    {
+      "ledger_id": "W2SP-1",
+      "source": "intake-2579, intake-2575 Stage-2 dive w2 ledger",
+      "action": "Build upstream master (or tag b11960+) as a SCRATCH llama-server on llama.cpp-experimental from fresh production; run examples/realtime_client.py with LFM3-Audio-2B Q8_0 and Q4_0 on the EPYC CPU and MI210 and record first-output-after-end-of-input, with a ...",
+      "terminal_mapping": null,
+      "owner_hint": "handoffs/active/conversation-stack.md",
+      "posture_hint": "cheap-screen-now"
+    },
+    {
+      "ledger_id": "W2SP-2",
+      "source": "intake-2579 Stage-2 dive w2 ledger",
+      "action": "Specify the server-turn contract in CS-22: because /v1/realtime has turn_detection null, our controller (VAD + CS-47 semantic gate) must send commit/response.create/response.cancel; add this as the integration seam in CS-22.A1 rather than waiting on a server ...",
+      "terminal_mapping": null,
+      "owner_hint": "handoffs/active/conversation-stack.md",
+      "posture_hint": "knowledge-only"
+    },
+    {
+      "ledger_id": "W2SP-3",
+      "source": "intake-2582, intake-2581, intake-2583 Stage-2 dive w2 ledger",
+      "action": "TD-23 screen: d1-2B-GGUF Q8_0 via /v1/systemone (scratch upstream build, CPU quarter or MI210 window) versus the constrained incumbent readout, on a frozen, row-pinned labelled routing set (the TD-11 / CJ-15 sealed workload; labels from the routing-replay ...",
+      "terminal_mapping": null,
+      "owner_hint": "handoffs/active/typed-decision-plane.md",
+      "posture_hint": "cheap-screen-now"
+    },
+    {
+      "ledger_id": "W2SP-4",
+      "source": "intake-2582 Stage-2 dive w2 ledger",
+      "action": "Record in TD-23 candidate list that d1-2B/3B are VL models with LFM Open License v1.0 and that the llama.cpp path supports noul/choice/score only; routing questions are choice+score so the subset is sufficient.",
+      "terminal_mapping": null,
+      "owner_hint": "handoffs/active/typed-decision-plane.md",
+      "posture_hint": "knowledge-only"
+    },
+    {
+      "ledger_id": "W2SP-5",
+      "source": "intake-2581 Stage-2 dive w2 ledger",
+      "action": "Spoken-state decision probe (turn completeness / intent) with d1-Omni-2B on the CS-45 turn-taking corpus once human_recorded strata exist; score with the CS-45 measurands against the CS-47 semantic-gate arms.",
+      "terminal_mapping": null,
+      "owner_hint": "handoffs/active/conversation-stack.md",
+      "posture_hint": "monitor"
+    },
+    {
+      "ledger_id": "W2SP-6",
+      "source": "intake-2580, intake-2383 Stage-2 dive w2 ledger",
+      "action": "Add a Voxtral-Mini-4B-Realtime GGUF through mtmd-cli run_audio_stream arm to the CS-8.STT5 screen (ranks and rejects only) on a scratch upstream build; record encoder and decoder times separately as the CLI already prints them.",
+      "terminal_mapping": null,
+      "owner_hint": "handoffs/active/conversation-stack.md",
+      "posture_hint": "cheap-screen-now"
+    },
+    {
+      "ledger_id": "W3DEC-1",
+      "source": "intake-2593, intake-2594 Stage-2 dive w3 ledger",
+      "action": "Add a precision-and-backend parity gate to the TD-23 decision-backend screen BEFORE any quality or calibration number is read: for the chosen decision GGUF (d1-2B Q8_0 first), serve the BF16 file on CPU as reference, then Q8_0 on CPU, Q8_0 on HIP (MI210), and ...",
+      "terminal_mapping": null,
+      "owner_hint": "handoffs/active/typed-decision-plane.md",
+      "posture_hint": "cheap-screen-now"
+    },
+    {
+      "ledger_id": "W3DEC-2",
+      "source": "intake-2595, intake-2593 Stage-2 dive w3 ledger",
+      "action": "Add a batch-/schedule-invariance gate to the same screen: serve with -np 3, -b = -ub = 2048 (state must fit one ubatch), send request A alone (x5), then A concurrently with a shorter, a longer and an identical companion (x5 each, with a blocker request to ...",
+      "terminal_mapping": null,
+      "owner_hint": "handoffs/active/typed-decision-plane.md",
+      "posture_hint": "cheap-screen-now"
+    },
+    {
+      "ledger_id": "W3DEC-3",
+      "source": "intake-2593, intake-2581, intake-2582 Stage-2 dive w3 ledger",
+      "action": "Plan the build route for any /v1/systemone work: the frozen v10 tree has neither the endpoint (PR 29818 merge a4cb4c61 is not an ancestor of ffc1bac82; no systemone string; no *decision* file in tools/server) nor LFM3 (needs >= b11960). Cheapest honest route ...",
+      "terminal_mapping": null,
+      "owner_hint": "handoffs/active/typed-decision-plane.md",
+      "posture_hint": "cheap-screen-now"
+    },
+    {
+      "ledger_id": "W3DEC-4",
+      "source": "intake-2593, intake-2582 Stage-2 dive w3 ledger",
+      "action": "Record in the TD-18 calibration receipt the model pin that determines the probabilities: GGUF sha256, every decision.temperature.* metadata key/value (read with gguf-dump), llama.cpp build SHA, -b/-ub/-np, and the question kind plus option count (some ...",
+      "terminal_mapping": null,
+      "owner_hint": "handoffs/active/typed-decision-plane.md",
+      "posture_hint": "primitive-now"
+    },
+    {
+      "ledger_id": "W3DEC-5",
+      "source": "intake-2593, intake-2595 Stage-2 dive w3 ledger",
+      "action": "Pin the serving-safe API subset for the probe and any shim: only choice/score/noul; options within the model limit (52 openjev, 255 laya; read from the model, d1 limits unread); state must fit one ubatch (use -ub, not -b; 30073); avoid router mode with ...",
+      "terminal_mapping": null,
+      "owner_hint": "handoffs/active/typed-decision-plane.md",
+      "posture_hint": "knowledge-only"
+    },
+    {
+      "ledger_id": "W3DEC-6",
+      "source": "intake-2596, intake-2590 Stage-2 dive w3 ledger",
+      "action": "Add one binding design line to the KV prefix-fork program: any future KV-editing operation (cell drop, position shift, ctx-shift variants) invalidates token-prefix matching as a correctness test; the orchestrator PrefixIndex and llama-server slot reuse key on ...",
+      "terminal_mapping": null,
+      "owner_hint": "handoffs/active/kv-prefix-fork-and-paged-attention.md",
+      "posture_hint": "knowledge-only"
+    },
+    {
+      "ledger_id": "W3DEC-7",
+      "source": "intake-2596, intake-2590 Stage-2 dive w3 ledger",
+      "action": "Zero-inference size screen before any AKV-style work: from existing orchestrator serving records and autopilot/REPL traces, compute for long agent loops the share of resident context tokens that are tool responses older than the latest 12 (the paper's drop ...",
+      "terminal_mapping": null,
+      "owner_hint": "handoffs/active/context-folding-progressive.md",
+      "posture_hint": "cheap-screen-now"
+    },
+    {
+      "ledger_id": "W3DEC-8",
+      "source": "intake-2596, intake-2590 Stage-2 dive w3 ledger",
+      "action": "Conditional on W3DEC-7: a bounded semantics probe on an attention-only role model on llama.cpp-experimental: compare (a) seq_rm of old tool-response cells + seq_add repositioning (the drop+repos analogue) vs (b) re-prefill of the text with those responses ...",
+      "terminal_mapping": null,
+      "owner_hint": "handoffs/active/kv-prefix-fork-and-paged-attention.md",
+      "posture_hint": "monitor"
+    },
+    {
+      "ledger_id": "W3SPEC-1",
+      "source": "intake-2591 Stage-2 dive w3 ledger",
+      "action": "Bounded probe (own scratch server, GPU correctness window, no region-lock needed per CORRECTNESS rule): on the production 27B shape (Q8_0, DFlash2 n-max 7, np 4, kv-unified, q8 KV, ROCm0) and on the frontdoor shape (Qwen3.6-35B-A3B-MTP Q8_0, draft-mtp n 4, np ...",
+      "terminal_mapping": null,
+      "owner_hint": "handoffs/active/dflash2-block-drafter-experimental-build.md",
+      "posture_hint": "cheap-screen-now"
+    },
+    {
+      "ledger_id": "W3SPEC-2",
+      "source": "intake-2591 Stage-2 dive w3 ledger",
+      "action": "Fold the DF2-12 row and W3SPEC-1 into one run; add the frontdoor :8070 MTP np4 shape (not covered by DF2-12, which names only Qwen3.8-27B DFlash2) and the cross-content canary.",
+      "terminal_mapping": null,
+      "owner_hint": "handoffs/active/dflash2-block-drafter-experimental-build.md",
+      "posture_hint": "cheap-screen-now"
+    },
+    {
+      "ledger_id": "W3SPEC-3",
+      "source": "intake-2591 Stage-2 dive w3 ledger",
+      "action": "If W3SPEC-1 shows divergence: reproduce on the experimental branch and try the PR #29454 approach (copy pre-ubatch state into unwritten snapshot slots every ubatch) as the candidate fix; it was never merged, so it must be carried as our own patch on a ...",
+      "terminal_mapping": null,
+      "owner_hint": "handoffs/active/dflash2-block-drafter-experimental-build.md",
+      "posture_hint": "monitor"
+    },
+    {
+      "ledger_id": "W3SPEC-4",
+      "source": "intake-2592 Stage-2 dive w3 ledger",
+      "action": "No action on our CPU/HIP stack; note in the speculative handoff that the n_vocab-sentinel failure is Vulkan-specific and fails loudly at src/llama-batch.cpp:52 (token validation), which our tree retains.",
+      "terminal_mapping": null,
+      "owner_hint": "handoffs/active/qwen-mtp-llamacpp-port.md",
+      "posture_hint": "knowledge-only"
+    },
+    {
+      "ledger_id": "W3SPEC-x",
+      "source": "intake-297 Stage-2 dive w3 ledger",
+      "action": "DF2-DRAFTER-CAPABILITY input: z-lab/dflash @ 07ebd93db9f4 (2026-08-18, remote HEAD identical today) contains NO training code. 659-line dflash/model.py has only inference: CandidateSelector (selector_top_k=16 candidates per position via topk of the draft ...",
+      "terminal_mapping": null,
+      "owner_hint": "handoffs/active/dflash2-block-drafter-experimental-build.md",
+      "posture_hint": "knowledge-only"
+    },
+    {
+      "ledger_id": "W4UP-1",
+      "source": "intake-2597, intake-2598 Stage-2 dive w4 ledger",
+      "action": "Temp-0 np>1 token-identity probe on :8070 (MTP np4) and :8083 (DFlash2 np4): per slot compare against an np=1 cold run of the same prompt AND the same np4 server with speculation off; include (i) mixed spec/non-spec interleaving, (ii) slot reuse: slot k ...",
+      "terminal_mapping": null,
+      "owner_hint": "handoffs/active/dflash2-block-drafter-experimental-build.md",
+      "posture_hint": "cheap-screen-now"
+    },
+    {
+      "ledger_id": "W4UP-2",
+      "source": "intake-2598 Stage-2 dive w4 ledger",
+      "action": "Run tests/test-recurrent-state-rollback (CPU, correctness only, no quiet host needed) on our qwen4exp-capable experimental binary with the frontdoor GGUF; require dirty-ctx and multi-seq split replay both pass. Prove binary freshness vs commit 0771238438 ...",
+      "terminal_mapping": null,
+      "owner_hint": "handoffs/active/dflash2-block-drafter-experimental-build.md",
+      "posture_hint": "primitive-now"
+    },
+    {
+      "ledger_id": "W4UP-3",
+      "source": "intake-2602, intake-2601, intake-2599, intake-2600 Stage-2 dive w4 ledger",
+      "action": "d1 decision-model screen build must include a4cb4c61fd (#29818 systemone API) and 7e3eeee048 (#30361) if H2O-Lightning-4B is screened; cbe28bb3 (#30408) only for non-causal/embedding-mode decision models at np>1; 7e8324f5 (#30100) is Metal-only and NOT needed ...",
+      "terminal_mapping": null,
+      "owner_hint": "handoffs/active/typed-decision-plane.md",
+      "posture_hint": "cheap-screen-now"
+    },
+    {
+      "ledger_id": "W4UP-4",
+      "source": "intake-2601 Stage-2 dive w4 ledger",
+      "action": "Add a GENERIC-readout arm to TD-23 (any lineup chat model, thinking off, U+22B2 label readout) as a comparator to dedicated decision backends after the systemone base is in the screen build.",
+      "terminal_mapping": null,
+      "owner_hint": "handoffs/active/typed-decision-plane.md",
+      "posture_hint": "monitor"
+    },
+    {
+      "ledger_id": "W4UP-5",
+      "source": "intake-2602 Stage-2 dive w4 ledger",
+      "action": "Offer/track the group-parent checkpoint fix for hybrid decision models; evaluate by prompt-token count (1254 vs 827 shape) on our model before adopting.",
+      "terminal_mapping": null,
+      "owner_hint": "handoffs/active/typed-decision-plane.md",
+      "posture_hint": "monitor"
+    },
+    {
+      "ledger_id": "PRE-2545",
+      "source": "intake-2545 Stage-1 preliminary actionable",
+      "action": "Identify the STT model/runtime from the linked GitHub repo (expansion seed) before scoring for the speech lane.",
+      "terminal_mapping": null,
+      "owner_hint": "",
+      "posture_hint": "stage1-prelim"
+    },
+    {
+      "ledger_id": "PRE-2546",
+      "source": "intake-2546 Stage-1 preliminary actionable",
+      "action": "Read the paper (expansion seed arXiv 2610.14162) and judge whether coarse-to-fine parallel generation has a drafter or non-AR serving role for EPYC.",
+      "terminal_mapping": null,
+      "owner_hint": "",
+      "posture_hint": "stage1-prelim"
+    },
+    {
+      "ledger_id": "PRE-2547",
+      "source": "intake-2547 Stage-1 preliminary actionable",
+      "action": "Dive: decide whether looped/parallel-loop decoding changes bytes-per-token on bandwidth-bound CPU decode, and whether any served or candidate model is looped.",
+      "terminal_mapping": null,
+      "owner_hint": "",
+      "posture_hint": "stage1-prelim"
+    },
+    {
+      "ledger_id": "PRE-2548",
+      "source": "intake-2548 Stage-1 preliminary actionable",
+      "action": "Dive: verify Table 2 and decide whether Soft-MTP is the objective to use if we train or restore MTP heads (Flash-Next Axis E, drafter training).",
+      "terminal_mapping": null,
+      "owner_hint": "",
+      "posture_hint": "stage1-prelim"
+    },
+    {
+      "ledger_id": "PRE-2549",
+      "source": "intake-2549 Stage-1 preliminary actionable",
+      "action": "Dive with intake-2548: check the loss implementation and whether it composes with head-only training on a frozen trunk.",
+      "terminal_mapping": null,
+      "owner_hint": "",
+      "posture_hint": "stage1-prelim"
+    },
+    {
+      "ledger_id": "PRE-2550",
+      "source": "intake-2550 Stage-1 preliminary actionable",
+      "action": "Dive: separate the transferable mechanism (exact GDN-state addressing) from the demo; decide if it informs GDN-hybrid serving or memory work.",
+      "terminal_mapping": null,
+      "owner_hint": "",
+      "posture_hint": "stage1-prelim"
+    },
+    {
+      "ledger_id": "PRE-2551",
+      "source": "intake-2551 Stage-1 preliminary actionable",
+      "action": "Dive: check whether looped MoE trades weight bytes for compute in a way that suits bandwidth-bound EPYC decode.",
+      "terminal_mapping": null,
+      "owner_hint": "",
+      "posture_hint": "stage1-prelim"
+    },
+    {
+      "ledger_id": "PRE-2552",
+      "source": "intake-2552 Stage-1 preliminary actionable",
+      "action": "Dive: establish the actual llama.cpp audio path and whether it can replace or augment the whisper.cpp + qwentts.cpp cascade on EPYC/MI210.",
+      "terminal_mapping": null,
+      "owner_hint": "",
+      "posture_hint": "stage1-prelim"
+    },
+    {
+      "ledger_id": "PRE-2553",
+      "source": "intake-2553 Stage-1 preliminary actionable",
+      "action": "Dive: compare with the d1/Jev decision-model lineage already indexed and decide whether an audio/vision decision front end serves orchestrator routing or the speech turn-taking loop.",
+      "terminal_mapping": null,
+      "owner_hint": "",
+      "posture_hint": "stage1-prelim"
+    },
+    {
+      "ledger_id": "PRE-2554",
+      "source": "intake-2554 Stage-1 preliminary actionable",
+      "action": "Dive: verify the llama.cpp realtime speech-server path and which ggml generation it needs relative to the frozen kernel set.",
+      "terminal_mapping": null,
+      "owner_hint": "",
+      "posture_hint": "stage1-prelim"
+    },
+    {
+      "ledger_id": "PRE-2555",
+      "source": "intake-2555 Stage-1 preliminary actionable",
+      "action": "Dive: extract the loop design and the verified-vs-numeric gap; map onto the AK candidate gate and gfx90a/x86 targets.",
+      "terminal_mapping": null,
+      "owner_hint": "",
+      "posture_hint": "stage1-prelim"
+    },
+    {
+      "ledger_id": "PRE-2556",
+      "source": "intake-2556 Stage-1 preliminary actionable",
+      "action": "Dive with intake-2555: read the loop and trace layout for AK reuse.",
+      "terminal_mapping": null,
+      "owner_hint": "",
+      "posture_hint": "stage1-prelim"
+    },
+    {
+      "ledger_id": "PRE-2557",
+      "source": "intake-2557 Stage-1 preliminary actionable",
+      "action": "Dive: decide what an equivalence/race checker would add to the AK correctness gate on gfx90a and x86.",
+      "terminal_mapping": null,
+      "owner_hint": "",
+      "posture_hint": "stage1-prelim"
+    },
+    {
+      "ledger_id": "PRE-2558",
+      "source": "intake-2558 Stage-1 preliminary actionable",
+      "action": "Dive: test whether the certificate-plus-independent-checker pattern fits belief-kernel derivations or registry/handoff consistency checks.",
+      "terminal_mapping": null,
+      "owner_hint": "",
+      "posture_hint": "stage1-prelim"
+    },
+    {
+      "ledger_id": "PRE-2559",
+      "source": "intake-2559 Stage-1 preliminary actionable",
+      "action": "Dive: decide whether cache-level handoff between our role models is feasible in llama.cpp and what it would save over text handoff.",
+      "terminal_mapping": null,
+      "owner_hint": "",
+      "posture_hint": "stage1-prelim"
+    },
+    {
+      "ledger_id": "PRE-2560",
+      "source": "intake-2560 Stage-1 preliminary actionable",
+      "action": "Dive with intake-2561: read the corrector implementation to size a llama.cpp port onto the DFlash2 drafter path.",
+      "terminal_mapping": null,
+      "owner_hint": "",
+      "posture_hint": "stage1-prelim"
+    },
+    {
+      "ledger_id": "PRE-2561",
+      "source": "intake-2561 Stage-1 preliminary actionable",
+      "action": "Dive: measure-first design — top-K coverage of the verifier token on our DFlash2 drafter logits decides whether a corrector is worth porting.",
+      "terminal_mapping": null,
+      "owner_hint": "",
+      "posture_hint": "stage1-prelim"
+    },
+    {
+      "ledger_id": "PRE-2562",
+      "source": "intake-2562 Stage-1 preliminary actionable",
+      "action": "Dive: read the architecture docs and the optimize-performance skill; extract what transfers to AK loops or llama.cpp serving.",
+      "terminal_mapping": null,
+      "owner_hint": "",
+      "posture_hint": "stage1-prelim"
+    },
+    {
+      "ledger_id": "PRE-2563",
+      "source": "intake-2563 Stage-1 preliminary actionable",
+      "action": "None beyond architectural context; no measured result.",
+      "terminal_mapping": null,
+      "owner_hint": "",
+      "posture_hint": "stage1-prelim"
+    },
+    {
+      "ledger_id": "PRE-2564",
+      "source": "intake-2564 Stage-1 preliminary actionable",
+      "action": "Dive (light): confirm availability and what is technically claimed; compare with full-duplex designs in the conversation-stack lane.",
+      "terminal_mapping": null,
+      "owner_hint": "",
+      "posture_hint": "stage1-prelim"
+    },
+    {
+      "ledger_id": "PRE-2565",
+      "source": "intake-2565 Stage-1 preliminary actionable",
+      "action": "Dive: map the folding criteria onto the orchestrator REPL/agent loop (roles as subagents vs skills) and its tool count.",
+      "terminal_mapping": null,
+      "owner_hint": "",
+      "posture_hint": "stage1-prelim"
+    },
+    {
+      "ledger_id": "PRE-2566",
+      "source": "intake-2566 Stage-1 preliminary actionable",
+      "action": "None: KB retrieval is ColBERT MaxSim; synthetic-only evidence.",
+      "terminal_mapping": null,
+      "owner_hint": "",
+      "posture_hint": "stage1-prelim"
+    },
+    {
+      "ledger_id": "PRE-2567",
+      "source": "intake-2567 Stage-1 preliminary actionable",
+      "action": "Dive: verify the table, check the HF card (quant/MTP head) and decide a same-recipe token-count and accuracy probe on our harness.",
+      "terminal_mapping": null,
+      "owner_hint": "",
+      "posture_hint": "stage1-prelim"
+    },
+    {
+      "ledger_id": "PRE-2568",
+      "source": "intake-2568 Stage-1 preliminary actionable",
+      "action": "Dive with intake-2546.",
+      "terminal_mapping": null,
+      "owner_hint": "",
+      "posture_hint": "stage1-prelim"
+    },
+    {
+      "ledger_id": "PRE-2569",
+      "source": "intake-2569 Stage-1 preliminary actionable",
+      "action": "Dive with intake-2561: sequential corrector baseline that DCOCO claims to beat under concurrency.",
+      "terminal_mapping": null,
+      "owner_hint": "",
+      "posture_hint": "stage1-prelim"
+    },
+    {
+      "ledger_id": "PRE-2570",
+      "source": "intake-2570 Stage-1 preliminary actionable",
+      "action": "Dive: decide what a sound equivalence gate would need on gfx90a/x86 and which AK candidate classes it could cover.",
+      "terminal_mapping": null,
+      "owner_hint": "",
+      "posture_hint": "stage1-prelim"
+    },
+    {
+      "ledger_id": "PRE-2571",
+      "source": "intake-2571 Stage-1 preliminary actionable",
+      "action": "Dive with intake-2547.",
+      "terminal_mapping": null,
+      "owner_hint": "",
+      "posture_hint": "stage1-prelim"
+    },
+    {
+      "ledger_id": "PRE-2572",
+      "source": "intake-2572 Stage-1 preliminary actionable",
+      "action": "Dive: verify config (qwen4_exp, MTP layers), whether the GGUFs carry nextn tensors, and fit against the INF-70 Axis-E MTP restoration need.",
+      "terminal_mapping": null,
+      "owner_hint": "",
+      "posture_hint": "stage1-prelim"
+    },
+    {
+      "ledger_id": "PRE-2573",
+      "source": "intake-2573 Stage-1 preliminary actionable",
+      "action": "Dive: decide whether transcribe.cpp Parakeet streaming is a candidate STT against frozen whisper.cpp; check what the index already holds on transcribe.cpp.",
+      "terminal_mapping": null,
+      "owner_hint": "",
+      "posture_hint": "stage1-prelim"
+    },
+    {
+      "ledger_id": "PRE-2574",
+      "source": "intake-2574 Stage-1 preliminary actionable",
+      "action": "Dive with intake-2550.",
+      "terminal_mapping": null,
+      "owner_hint": "",
+      "posture_hint": "stage1-prelim"
+    },
+    {
+      "ledger_id": "PRE-2575",
+      "source": "intake-2575 Stage-1 preliminary actionable",
+      "action": "Dive: locate the llama.cpp code for the audio/realtime path and estimate the port onto llama.cpp-experimental; check ggml generation vs the speech kernel set.",
+      "terminal_mapping": null,
+      "owner_hint": "",
+      "posture_hint": "stage1-prelim"
+    },
+    {
+      "ledger_id": "PRE-2576",
+      "source": "intake-2576 Stage-1 preliminary actionable",
+      "action": "Dive with intake-2559.",
+      "terminal_mapping": null,
+      "owner_hint": "",
+      "posture_hint": "stage1-prelim"
+    }
+  ],
   "prior_sessions": [
     {
       "session_id": "intake-underdog-bark-20261021",
@@ -66222,6 +67271,34 @@
         ]
       },
       "outputs": "/mnt/raid0/llm/tmp/dive-ws58-20261031/out/w2_*.yaml"
+    },
+    "w3": {
+      "groups": {
+        "dec": [
+          "intake-2593",
+          "intake-2594",
+          "intake-2595",
+          "intake-2596"
+        ],
+        "spec": [
+          "intake-2591",
+          "intake-2592"
+        ]
+      },
+      "outputs": "/mnt/raid0/llm/tmp/dive-ws58-20261031/out/w3_*.yaml"
+    },
+    "w4": {
+      "groups": {
+        "up": [
+          "intake-2597",
+          "intake-2598",
+          "intake-2599",
+          "intake-2600",
+          "intake-2601",
+          "intake-2602"
+        ]
+      },
+      "outputs": "/mnt/raid0/llm/tmp/dive-ws58-20261031/out/w4_*.yaml"
     }
   },
   "dive_ledger": [
@@ -67392,6 +68469,271 @@
       "decision_rule": "Vendor WER at 480 ms is behind offline Whisper on en/de/fr/it per intake-2383; advance only if our measured WER within 1 point of whisper.cpp and RTF < 1 on CPU quarter",
       "reason": "API is native upstream; cost is a build and a GGUF download",
       "wave": "w2"
+    },
+    {
+      "row": "W3DEC-1",
+      "entries": [
+        "intake-2593",
+        "intake-2594"
+      ],
+      "action": "Add a precision-and-backend parity gate to the TD-23 decision-backend screen BEFORE any quality or calibration number is read: for the chosen decision GGUF (d1-2B Q8_0 first), serve the BF16 file on CPU as reference, then Q8_0 on CPU, Q8_0 on HIP (MI210), and BF16 on HIP; send >=30 fixed state/question fixtures covering choice, score and noul types; record every probability, argmax, confidence and the build SHA, device and GGML env. 30064 proves a wrong-probability bug can look like quantization while the cause is a backend fusion path (Metal, fixed by 30100); the same class of risk applies to HIP fused mat-mul paths in a build we have not run. Test the exact pattern that broke: heads of the form W1@u + W2@v.",
+      "grounding": "handoffs/active/typed-decision-plane.md:599 (TD-23 freezes backend/model revisions, retains per-row probabilities, reports ECE/Brier and probability divergence but has no BF16/Q8 or cross-backend parity row); handoffs/active/typed-decision-plane.md:464 (TD-18 receipt has n, ECE, Brier, 10 bins and no model-pin field)",
+      "owner": "handoffs/active/typed-decision-plane.md",
+      "posture": "cheap-screen-now",
+      "benefit": "Prevents a calibration or routing verdict resting on a corrupted head; direction = fewer silent wrong probabilities. Must stay correct: the reference is the BF16 CPU run of the SAME GGUF lineage, not the vendor Python numbers.",
+      "decision_rule": "Per fixture set, stop (file as backend defect, do not calibrate) if any argmax flips or worst |dp| vs BF16-CPU exceeds 2.2e-2 (the worst parity gap upstream itself published, julia-1 in PR 29818); promote the Q8_0 file only if worst |dp| <= 2.2e-2 and 0 flips on CPU and HIP. The run itself rides the TD-23 mi210 window; fixture writing is zero-inference now.",
+      "reason": "Turns two upstream incidents into a predeclared gate the d1 probe lacks.",
+      "wave": "w3"
+    },
+    {
+      "row": "W3DEC-2",
+      "entries": [
+        "intake-2595",
+        "intake-2593"
+      ],
+      "action": "Add a batch-/schedule-invariance gate to the same screen: serve with -np 3, -b = -ub = 2048 (state must fit one ubatch), send request A alone (x5), then A concurrently with a shorter, a longer and an identical companion (x5 each, with a blocker request to force co-batching, as in the 30402 repro), and also with -np 1; record A's probabilities and the max per-run drift. Run it on a build that includes PR 30408 (cbe28bb3, merged 2026-10-12) and PR 30710 (shared-prefix cap, 2026-10-17); also run once WITHOUT 30408 on the same model to reproduce the defect and prove the harness can see it (a harness that cannot fail is not evidence).",
+      "grounding": "handoffs/active/typed-decision-plane.md:599 (TD-23 crosses position, order, repeated calls and \"irrelevant siblings\" but not concurrent co-batching of unequal-length requests); handoffs/active/typed-decision-plane.md:464; /v1/systemone answers each question as an independent task that can land on different slots (PR 29818 README)",
+      "owner": "handoffs/active/typed-decision-plane.md",
+      "posture": "cheap-screen-now",
+      "benefit": "Determines whether a router built on a decision model is deterministic under production concurrency; must stay correct: -np and -ub of the probe equal the intended serving config.",
+      "decision_rule": "Invariant if max |dp| across all companion types <= 1e-3 (and bitwise within the same schedule); between 1e-3 and 2.2e-2 -> restrict serving to -np 1 / serialized decisions and record the tolerance in the receipt; above 2.2e-2 or any argmax flip -> stop, file upstream with the repro. Issue 31475 already reports 0.007 shifts from batch cuts on Kev, so the 1e-3 line is expected to bind.",
+      "reason": "30402 is open and 30408 untested; concurrency is exactly how the orchestrator would call a router.",
+      "wave": "w3"
+    },
+    {
+      "row": "W3DEC-3",
+      "entries": [
+        "intake-2593",
+        "intake-2581",
+        "intake-2582"
+      ],
+      "action": "Plan the build route for any /v1/systemone work: the frozen v10 tree has neither the endpoint (PR 29818 merge a4cb4c61 is not an ancestor of ffc1bac82; no systemone string; no *decision* file in tools/server) nor LFM3 (needs >= b11960). Cheapest honest route = a scratch UPSTREAM checkout at a pinned post-2026-10-17 SHA used only as the measurement instrument (CPU and HIP builds under scratch, never touching the frozen tree), because porting 35 files/+2139 lines (llama-arch, llama-model, models/qwen35.cpp, modern-bert.cpp, server-*.cpp) onto llama.cpp-experimental cut from v10 would conflict with the fork's qwen35 patches and is only justified if the screen promotes. TD-20 already takes the lighter route (new files only, no src/ change) for Kev; record that the d1 route needs src/ changes and so is a different, heavier port.",
+      "grounding": "handoffs/active/typed-decision-plane.md:467 (TD-20: port common/decision.{h,cpp} + tools/kev as new files, branch from ffc1bac); CLAUDE.md production-immutability and experimental-branch rule; git check in this dive",
+      "owner": "handoffs/active/typed-decision-plane.md",
+      "posture": "cheap-screen-now",
+      "benefit": "Avoids both a frozen-tree edit and a premature heavy port; keeps the screen runnable on an instrument whose differences from production are known.",
+      "decision_rule": "Promote to an experimental-branch port only if the TD-23 screen passes W3DEC-1/2 AND beats the constrained incumbent on the sealed set; otherwise the scratch upstream build is deleted after the receipts are filed.",
+      "reason": "Build cost estimated, not a decline reason.",
+      "wave": "w3"
+    },
+    {
+      "row": "W3DEC-4",
+      "entries": [
+        "intake-2593",
+        "intake-2582"
+      ],
+      "action": "Record in the TD-18 calibration receipt the model pin that determines the probabilities: GGUF sha256, every decision.temperature.* metadata key/value (read with gguf-dump), llama.cpp build SHA, -b/-ub/-np, and the question kind plus option count (some temperatures are bucketed by option count). Calibrate on OUR post-temperature outputs; do not treat shipped temperatures as calibrated (README says so) and do not tune a request-time temperature (none is exposed).",
+      "grounding": "handoffs/active/typed-decision-plane.md:464 (receipt \"has no model-pin field\"); tools/server/README.md @a4cb4c6 \"probabilities are scaled with the temperatures stored in the model file\"",
+      "owner": "handoffs/active/typed-decision-plane.md",
+      "posture": "primitive-now",
+      "benefit": "Makes calibration comparable across GGUF re-releases; zero-inference schema change.",
+      "decision_rule": "n/a (schema field); done when the receipt schema carries the fields and a zero-inference adapter populates them for a downloaded GGUF header.",
+      "reason": "Cheap, prevents uncalibrated-temperature mixups.",
+      "wave": "w3"
+    },
+    {
+      "row": "W3DEC-5",
+      "entries": [
+        "intake-2593",
+        "intake-2595"
+      ],
+      "action": "Pin the serving-safe API subset for the probe and any shim: only choice/score/noul; options within the model limit (52 openjev, 255 laya; read from the model, d1 limits unread); state must fit one ubatch (use -ub, not -b; 30073); avoid router mode with concurrent decisions (31150 open, old build) and re-check shared-prefix 500s on builds before 30710. For the TD-19 shim direction (OUR path behind Kev's /v1/systemone) keep response fields exactly: choice/probabilities/confidence, score/legend, noul, usage.output_tokens=0.",
+      "grounding": "handoffs/active/typed-decision-plane.md:466 (TD-19 shim contract is Kev's; PR 29818 README is the llama.cpp-side contract); issues 30073, 31150, 30482",
+      "owner": "handoffs/active/typed-decision-plane.md",
+      "posture": "knowledge-only",
+      "benefit": "Fewer false failures in the screen; keeps the shim wire-compatible with both Kev's client and llama-server.",
+      "decision_rule": "n/a",
+      "reason": "Constraint list for the probe designer.",
+      "wave": "w3"
+    },
+    {
+      "row": "W3DEC-6",
+      "entries": [
+        "intake-2596",
+        "intake-2590"
+      ],
+      "action": "Add one binding design line to the KV prefix-fork program: any future KV-editing operation (cell drop, position shift, ctx-shift variants) invalidates token-prefix matching as a correctness test; the orchestrator PrefixIndex and llama-server slot reuse key on prompt text/tokens only, so an edited slot must carry its operation history in its key or be excluded from reuse and from fork sources. Frozen v10 already has the primitives (llama_memory seq_rm/seq_add, --context-shift at common/arg.cpp:1562, used server-context.cpp:2985), but context-shift edits the slot token list too, so its prefix match stays self-consistent; AKV-style drop (text kept, KV removed) is the case that breaks it.",
+      "grounding": "kv-prefix-fork-and-paged-attention.md:118-119 (\"a client-side prefix structure cannot share KV the server does not share\"); /workspace/repos/epyc-orchestrator/src/inference/prefix_index.py:36-38 (key = fingerprinted prompt text) and :1-12 (slot entries verified by /slots id_task); src/backends/llama_server.py:128-135,789 (cache_prompt default True)",
+      "owner": "handoffs/active/kv-prefix-fork-and-paged-attention.md",
+      "posture": "knowledge-only",
+      "benefit": "Prevents a silent wrong-KV reuse if cache editing is ever added; must stay correct: reuse is allowed only on equal token AND operation history.",
+      "decision_rule": "n/a (design constraint); revisit if W3DEC-7 promotes.",
+      "reason": "The paper's load-bearing correctness finding mapped onto our actual prefix machinery.",
+      "wave": "w3"
+    },
+    {
+      "row": "W3DEC-7",
+      "entries": [
+        "intake-2596",
+        "intake-2590"
+      ],
+      "action": "Zero-inference size screen before any AKV-style work: from existing orchestrator serving records and autopilot/REPL traces, compute for long agent loops the share of resident context tokens that are tool responses older than the latest 12 (the paper's drop policy), per role/model, and the fraction of decode steps whose context exceeds 48K/96K (the paper's summarization thresholds). Report median and P95 per role.",
+      "grounding": "tool-output-compression.md and context-folding-progressive.md (current context-reduction levers are text-level); prefix_index.py:36-38 shows the serving fingerprint already records prompt text per request",
+      "owner": "handoffs/active/context-folding-progressive.md",
+      "posture": "cheap-screen-now",
+      "benefit": "Bounds the possible saving: paper reports -27.7% cost and 1.5x P95 on SGLang/A800 with replay, a number that cannot transfer to EPYC CPU decode without this share.",
+      "decision_rule": "Escalate to W3DEC-8 only if old tool-response tokens are >=40% of resident context in the median long loop AND >=20% of decode steps exceed 48K tokens; otherwise decline AKV-style KV drop for our stack on measured grounds (CPU decode is bandwidth-bound, so only attention-read savings at long context pay).",
+      "reason": "Predeclared threshold; avoids building on a transferability assumption.",
+      "wave": "w3"
+    },
+    {
+      "row": "W3DEC-8",
+      "entries": [
+        "intake-2596",
+        "intake-2590"
+      ],
+      "action": "Conditional on W3DEC-7: a bounded semantics probe on an attention-only role model on llama.cpp-experimental: compare (a) seq_rm of old tool-response cells + seq_add repositioning (the drop+repos analogue) vs (b) re-prefill of the text with those responses removed vs (c) full context, on a replayed REPL trace set, scoring next-token KL and task success. Hybrid-SSM roles (Qwen3.5/3.6 family) are excluded: their recurrent state integrates dropped tokens irreversibly and the paper lists linear attention as future work.",
+      "grounding": "frozen tree common/arg.cpp:1562 and server-context.cpp:1281-1295,2985 (ctx-shift disabled for multimodal and some contexts); paper §6 Limitations",
+      "owner": "handoffs/active/kv-prefix-fork-and-paged-attention.md",
+      "posture": "monitor",
+      "benefit": "Would show whether retained-KV-carries-dropped-information helps (paper: repos+tool drop 55->62 BCP) or hurts on our models; must stay correct: compare against re-prefill, not only full context.",
+      "decision_rule": "Do not start unless W3DEC-7 passes; then promote if (a) matches (c) within the noise floor on task success and (a) beats (b) on decode tokens/s at >=48K context; stop if success drops >2 points vs (c).",
+      "reason": "Gated behind a measurement; build costs (server-level op-history key, per-request drop spec) estimated as a P2-sized program, not a decline.",
+      "wave": "w3"
+    },
+    {
+      "row": "W3SPEC-1",
+      "entries": [
+        "intake-2591"
+      ],
+      "action": "Bounded probe (own scratch server, GPU correctness window, no region-lock needed per CORRECTNESS rule): on the production 27B shape (Q8_0, DFlash2 n-max 7, np 4, kv-unified, q8 KV, ROCm0) and on the frontdoor shape (Qwen3.6-35B-A3B-MTP Q8_0, draft-mtp n 4, np 4) run 12 distinct complex prompts (code + prose, >=300 tokens each, temp 0, top_k 1, cache_prompt false, 384 tokens). Arm A = each prompt solo (c=1). Arm B = same prompts at c=2,3,4,5 (with c=5 exceeding slots to force queueing), interleaved starts. Compare token-for-token (sha256 of token ids) to arm A. Six controls: (1) spec off (--spec-type none) at c=4, same binary; (2) spec on, np 1 serial; (3) -np 4 server carrying ONE request (np inert, per DF2 handoff line ~408); (4) low-entropy ROCKET/BANANA pair (expected clean); (5) repeat arm B twice for run-to-run determinism and a no-spec repeat to separate batch-shape numeric splits (DF2-2) from state corruption; (6) a cross-content canary: plant a unique rare string in prompt k and grep every other response for it.",
+      "grounding": "dflash2-block-drafter-experimental-build.md:551 (DF2-12 np>1 GDN parity arm, unticked, says np>1 is untested); :777 (DF2-LB1 census already ran the same np4 n-max-7 shape, 3.47% ragged verify calls); common/common.h:390 need_n_rs_seq covers MTP and DFlash; src/models/delta-net-base.cpp:596 'trailing slots are left unwritten'",
+      "owner": "handoffs/active/dflash2-block-drafter-experimental-build.md",
+      "posture": "cheap-screen-now",
+      "benefit": "Settles whether any live np>1 speculative role can mix slot content; must stay correct: identical text to solo for greedy decode (divergence classified near-tie vs content-from-other-slot via the canary, per DF2-12).",
+      "decision_rule": "Any response containing another request's planted string, or a divergence that is not a near-tie, on arm B but not on controls 1-3 = CONFIRMED contamination: stop np>1 spec on that role (set slots 1 or spec none) and open a fix lane on experimental. Zero divergences beyond the control-5 numeric floor over >=48 request-pairs per shape = not reproduced on this tree.",
+      "reason": "Upstream never fixed or root-caused it and our roles are np 4 + rollback-spec, so the check is the only evidence.",
+      "wave": "w3"
+    },
+    {
+      "row": "W3SPEC-2",
+      "entries": [
+        "intake-2591"
+      ],
+      "action": "Fold the DF2-12 row and W3SPEC-1 into one run; add the frontdoor :8070 MTP np4 shape (not covered by DF2-12, which names only Qwen3.8-27B DFlash2) and the cross-content canary.",
+      "grounding": "orchestration/model_registry.yaml:1787-1796 (frontdoor port 8070 slots 4 full / 1 half) and :1831 draft_model MTP-Q8_0, acceleration draft-mtp draft_max 4",
+      "owner": "handoffs/active/dflash2-block-drafter-experimental-build.md",
+      "posture": "cheap-screen-now",
+      "benefit": "Closes the only live MTP+np>1 role (frontdoor) left outside the DF2-12 scope.",
+      "decision_rule": "Same as W3SPEC-1.",
+      "reason": "Frontdoor is Qwen3.6-35B-A3B (hybrid GDN) with MTP at np 4: nearest analogue to the qwen4exp report; not checked here whether it has an earlier np>1 identity record.",
+      "wave": "w3"
+    },
+    {
+      "row": "W3SPEC-3",
+      "entries": [
+        "intake-2591"
+      ],
+      "action": "If W3SPEC-1 shows divergence: reproduce on the experimental branch and try the PR #29454 approach (copy pre-ubatch state into unwritten snapshot slots every ubatch) as the candidate fix; it was never merged, so it must be carried as our own patch on a llama.cpp-experimental branch, not expected from upstream.",
+      "grounding": "pr29454.txt (PR body, closed unmerged 2026-09-27); delta-net-base.cpp:595-596 comment and n_written = min(n_seq_tokens, K)",
+      "owner": "handoffs/active/dflash2-block-drafter-experimental-build.md",
+      "posture": "monitor",
+      "benefit": "Conditional on W3SPEC-1; frozen v10 must not be touched.",
+      "decision_rule": "Only start if W3SPEC-1 confirms divergence.",
+      "reason": "Gap exists in code, harm unproven.",
+      "wave": "w3"
+    },
+    {
+      "row": "W3SPEC-4",
+      "entries": [
+        "intake-2592"
+      ],
+      "action": "No action on our CPU/HIP stack; note in the speculative handoff that the n_vocab-sentinel failure is Vulkan-specific and fails loudly at src/llama-batch.cpp:52 (token validation), which our tree retains.",
+      "grounding": "src/llama-batch.cpp:52 in /mnt/raid0/llm/llama.cpp; all reports Vulkan (issue28158.txt)",
+      "owner": "handoffs/active/qwen-mtp-llamacpp-port.md",
+      "posture": "knowledge-only",
+      "benefit": "Prevents a future agent adopting the OP's silent clamp suggestion.",
+      "decision_rule": "n/a",
+      "reason": "No HIP/CPU reproduction in the thread.",
+      "wave": "w3"
+    },
+    {
+      "row": "W3SPEC-x",
+      "entries": [
+        "intake-297"
+      ],
+      "action": "DF2-DRAFTER-CAPABILITY input: z-lab/dflash @ 07ebd93db9f4 (2026-08-18, remote HEAD identical today) contains NO training code. 659-line dflash/model.py has only inference: CandidateSelector (selector_top_k=16 candidates per position via topk of the draft logits, selector_rank from config; score = unary logit + einsum(predecessor_codebook[prev token] * hidden_projection(hidden), successor_codebook[candidate]); greedy argmax or sampled walk over precomputed scores). Selector is a low-rank bilinear form with two vocab x rank embedding tables plus a hidden projection; rank 256 comes from the inco.ai blog ('compact 256-dimensional embedding', context gate H(h_t)). Loss and data are NOT published: the blog says only 'All drafters are trained under the same setup'/'matched setups'; the README lists no train script, dataset or loss. Training the selector means re-deriving a pairwise-transition objective ourselves (natural choice, unverified: cross-entropy of the accepted path against target tokens), so DF2-DRAFTER-CAPABILITY must budget the training recipe as research, not a port.",
+      "grounding": "dflash2-block-drafter-experimental-build.md:196 (DF2-DRAFTER-CAPABILITY); dflash_repo/dflash/model.py:515-547; blog.txt",
+      "owner": "handoffs/active/dflash2-block-drafter-experimental-build.md",
+      "posture": "knowledge-only",
+      "benefit": "Sets honest scope: inference reference and architecture are public, training recipe is not.",
+      "decision_rule": "If an Inco/z-lab training release appears, re-open; otherwise first drafter-training probe must include an ablation of selector vs unary-only.",
+      "reason": "Answers the capability question; no new entry.",
+      "wave": "w3"
+    },
+    {
+      "row": "W4UP-1",
+      "entries": [
+        "intake-2597",
+        "intake-2598"
+      ],
+      "action": "Temp-0 np>1 token-identity probe on :8070 (MTP np4) and :8083 (DFlash2 np4): per slot compare against an np=1 cold run of the same prompt AND the same np4 server with speculation off; include (i) mixed spec/non-spec interleaving, (ii) slot reuse: slot k serves conversation A, then unrelated B (dirty-ctx), B vs cold B, (iii) log per round draft_n, accepted, rollback length vs batch length. Classify first divergence near-tie (top-2 margin small) vs degenerative; zero tolerance only for degenerative.",
+      "grounding": "dflash2-block-drafter-experimental-build.md DF2-12 (np>1 GDN parity arm, ~line 551); common/common.h:390-394 (need_n_rs_seq arms n_rs_seq=draft.n_max for MTP/EAGLE3/DFLASH/DSPARK); src/llama-memory-hybrid.cpp:80-87 (trailing n_rs_seq+1 tokens per seq kept in one ubatch); src/llama-memory-recurrent.cpp:190-200",
+      "owner": "handoffs/active/dflash2-block-drafter-experimental-build.md",
+      "posture": "cheap-screen-now",
+      "benefit": "correctness of np>1 speculative serving; token identity must stay except near-ties",
+      "decision_rule": "PASS if 0 degenerative divergences over >=N mixed prompts per server and dirty-ctx arm identical to cold; any degenerative divergence in slot-reuse arm only => file as #28019-class defect and run test-recurrent-state-rollback; any in the interleave arm => escalate as contamination",
+      "reason": "#26695 rules out anchor-token rollback as a cause (spec never removes the anchor); #28019 leaves slot-reuse under MTP on qwen4exp un-adjudicated",
+      "wave": "w4"
+    },
+    {
+      "row": "W4UP-2",
+      "entries": [
+        "intake-2598"
+      ],
+      "action": "Run tests/test-recurrent-state-rollback (CPU, correctness only, no quiet host needed) on our qwen4exp-capable experimental binary with the frontdoor GGUF; require dirty-ctx and multi-seq split replay both pass. Prove binary freshness vs commit 0771238438 mtime first.",
+      "grounding": "tests/test-recurrent-state-rollback.cpp:212 (dirty-ctx check); src/models/qwen4exp.cpp:1263 build_conv_state_at; git log 0771238438 (port of 0eadefebd)",
+      "owner": "handoffs/active/dflash2-block-drafter-experimental-build.md",
+      "posture": "primitive-now",
+      "benefit": "rules in/out the allegation that post-#28123 restore is incomplete",
+      "decision_rule": "fail => treat MTP np>1 slot reuse on qwen4exp as unsafe and block the np4 probe from being read as a pass",
+      "reason": "cheap, deterministic, unit-level",
+      "wave": "w4"
+    },
+    {
+      "row": "W4UP-3",
+      "entries": [
+        "intake-2602",
+        "intake-2601",
+        "intake-2599",
+        "intake-2600"
+      ],
+      "action": "d1 decision-model screen build must include a4cb4c61fd (#29818 systemone API) and 7e3eeee048 (#30361) if H2O-Lightning-4B is screened; cbe28bb3 (#30408) only for non-causal/embedding-mode decision models at np>1; 7e8324f5 (#30100) is Metal-only and NOT needed (optionally run its mm2+mm backend-op on HIP/CPU); #29832 and the #31475 local fix are unmerged: do not depend on them. Build on llama.cpp-experimental from fresh production tip; none of these shas are ancestors of v10 ffc1bac82.",
+      "grounding": "typed-decision-plane.md TD-23 (~line 599); local check: no tools/server/server-decision.* in /mnt/raid0/llm/llama.cpp; merge-base --is-ancestor exit 1 for cbe28bb3 and 7e8324f5",
+      "owner": "handoffs/active/typed-decision-plane.md",
+      "posture": "cheap-screen-now",
+      "benefit": "decision screen runs on supported endpoint; candidate validated as a whole",
+      "decision_rule": "screen uses np=1 per decision server unless #31475 fix imported; receipt pins np, n_batch, n_ubatch and records probability delta across two batch cuts; abstain thresholds not set closer than the measured delta",
+      "reason": "batch-cut sensitivity is the only correctness-relevant finding; the rest are inclusion constraints",
+      "wave": "w4"
+    },
+    {
+      "row": "W4UP-4",
+      "entries": [
+        "intake-2601"
+      ],
+      "action": "Add a GENERIC-readout arm to TD-23 (any lineup chat model, thinking off, U+22B2 label readout) as a comparator to dedicated decision backends after the systemone base is in the screen build.",
+      "grounding": "typed-decision-plane.md TD-23; PR 29832 server-decision.cpp init_generic",
+      "owner": "handoffs/active/typed-decision-plane.md",
+      "posture": "monitor",
+      "benefit": "no dedicated GGUF needed; compare against constrained incumbent readout",
+      "decision_rule": "promote only if held-out calibration (not these demo rows) beats incumbent; PR is draft and lacks calibration/hybrid prefix sharing",
+      "reason": "open draft, no baseline",
+      "wave": "w4"
+    },
+    {
+      "row": "W4UP-5",
+      "entries": [
+        "intake-2602"
+      ],
+      "action": "Offer/track the group-parent checkpoint fix for hybrid decision models; evaluate by prompt-token count (1254 vs 827 shape) on our model before adopting.",
+      "grounding": "server-context.cpp line cited in issue (c6fb3b5, not our tree); DF2-13 checkpoint/prompt-reuse test",
+      "owner": "handoffs/active/typed-decision-plane.md",
+      "posture": "monitor",
+      "benefit": "up to ~3.8x decisions/s at np4 on reporter hardware (Kev-4B)",
+      "decision_rule": "adopt only after upstream maintainer acceptance or our own identical-answer + delta measurement",
+      "reason": "unconfirmed single-reporter result",
+      "wave": "w4"
     }
   ],
   "dive_surfaced_sources": [
@@ -67646,7 +68988,95 @@
       "bears_on": "intake-2579",
       "recommend": "decline: already summarized in intake-2575 dive; re-read only if CS-8 bake-off opens",
       "wave": "w2"
+    },
+    {
+      "source": "https://github.com/ggml-org/llama.cpp/pull/30408",
+      "settles": "whether the non-causal multi-seq batch-split fix closes 30402 (read the full diff and llama-batch split_seq semantics)",
+      "bears_on": "intake-2595",
+      "recommend": "ingest-and-dive",
+      "wave": "w3"
+    },
+    {
+      "source": "https://github.com/ggml-org/llama.cpp/pull/30100",
+      "settles": "the Metal fusion root cause of 30064 and test-backend-ops mm2+mm check; whether an equivalent residual-selection bug exists in the HIP/CUDA fusion encoders",
+      "bears_on": "intake-2594",
+      "recommend": "ingest-and-dive",
+      "wave": "w3"
+    },
+    {
+      "source": "https://github.com/ggml-org/llama.cpp/issues/31475",
+      "settles": "shared-prefix scheduling changes probabilities by ~0.007 and the checkpoint-for-decision-tasks fix (3.8x throughput on Kev-4B at 4 slots): serving-throughput and invariance trade",
+      "bears_on": "intake-2595",
+      "recommend": "ingest-and-dive",
+      "wave": "w3"
+    },
+    {
+      "source": "https://github.com/ggml-org/llama.cpp/issues/31150",
+      "settles": "router-mode concurrent /v1/systemone instance death (old build; maintainer asked for retest)",
+      "bears_on": "intake-2593",
+      "recommend": "decline: reported on an outdated build and no repro on current master; revisit if the probe uses router mode",
+      "wave": "w3"
+    },
+    {
+      "source": "https://github.com/ggml-org/llama.cpp/pull/29832",
+      "settles": "alternative model-agnostic systemone/decision implementation (open) that may supersede the upstream server_decision_context path",
+      "bears_on": "intake-2593",
+      "recommend": "ingest-and-dive",
+      "wave": "w3"
+    },
+    {
+      "source": "https://github.com/ggml-org/llama.cpp/pull/29454",
+      "settles": "candidate fix for short-ubatch unwritten rollback snapshot slot; mechanism unconfirmed for #28286; closed unmerged",
+      "bears_on": "intake-2591",
+      "recommend": "decline: closed unmerged, content captured in this dive; use only as a patch template if W3SPEC-1 diverges",
+      "wave": "w3"
+    },
+    {
+      "source": "https://github.com/ggml-org/llama.cpp/issues/28019",
+      "settles": "qwen4exp multi-seq rs-rollback logits corruption (sibling report; resolved for the arch-support enum by #28123)",
+      "bears_on": "intake-2591",
+      "recommend": "ingest-and-dive",
+      "wave": "w3"
+    },
+    {
+      "source": "https://github.com/ggml-org/llama.cpp/issues/26695",
+      "settles": "maintainer argument that the server never rolls back the anchor token (why #29454 was declined)",
+      "bears_on": "intake-2591",
+      "recommend": "ingest-and-dive",
+      "wave": "w3"
+    },
+    {
+      "source": "https://github.com/ggml-org/llama.cpp/pull/25004",
+      "settles": "incidental fix of the whole-batch rollback state (referenced by #26695)",
+      "bears_on": "intake-2597",
+      "recommend": "decline: low value, anchor never removed by spec",
+      "wave": "w4"
+    },
+    {
+      "source": "https://github.com/ggml-org/llama.cpp/pull/28123",
+      "settles": "qwen4exp per-slot conv snapshots (already ported as 0771238438)",
+      "bears_on": "intake-2598",
+      "recommend": "ingest-and-dive",
+      "wave": "w4"
+    },
+    {
+      "source": "https://github.com/ggml-org/llama.cpp/pull/30361",
+      "settles": "H2O-Lightning-4B decision model support (sha 7e3eeee048)",
+      "bears_on": "intake-2602",
+      "recommend": "ingest-and-dive",
+      "wave": "w4"
     }
   ],
-  "second_reader": "mechanical: stage2_apply.py re-finds every claim_anchor quote (whitespace-normalized substring) in the on-disk source before write; 0 dropped in wave 1. Semantic per-claim check: pending (one independent reader at close-out)."
+  "second_reader": {
+    "mechanical": "stage2_apply.py re-found every claim_anchor quote (whitespace-normalized substring) in its on-disk source before write; 0 dropped across 4 waves.",
+    "semantic": "independent haiku reader per wave: w1 187 rows (128 yes/55 partial/4 no), w2-3 124 rows (25/96/3), w4 24 rows (2/22/0). Main ruling on the 7 no rows: 6 anchors dropped as not supporting their claim; intake-2574 claim 4 narrowed to state the README/rv32.md disagreement. Partial = quote supports one clause of a multi-part claim. Outputs: /mnt/raid0/llm/tmp/dive-ws58-20261031/out/second_reader_*.json"
+  },
+  "stage2_closeout": {
+    "waves_run": 4,
+    "wave_cap": 6,
+    "closed": "2026-11-01",
+    "declines_recorded_in": "bearing entries dive_corrections (declines_w1..w4.json)",
+    "surfaced_total": 47
+  },
+  "dive_artifact_audit": "clean: all dive artifacts under /mnt/raid0/llm/tmp/dive-ws58-20261031/ (raw, dive/<group>, out, scripts, briefs); one stray SPEC curl write in /workspace moved by the agent within a minute; one empty /tmp/x from a second-reader agent removed by main."
 }

@@ -372337,14 +372337,6 @@
     source_revision: HF LiquidAI/d1-2B-GGUF @e968f657 (2026-10-28) + d1-2B @10e7671d (2026-10-29) + d1-3B-GGUF @bb1e436e (2026-10-07)
       + d1-3B @051bcc46; cards and HF API, retrieved 2026-10-31
     verified_by: research-intake/stage2
-  - claim_index: 2
-    kind: heading-and-hash
-    locator: d1-2B card, Benchmarks
-    quote: Evaluation details
-    quote_sha256: 3bf5c5892c5f0542b740569df74c210db595c43c0e2800ac5f379e1ab16f7c7b
-    source_revision: HF LiquidAI/d1-2B-GGUF @e968f657 (2026-10-28) + d1-2B @10e7671d (2026-10-29) + d1-3B-GGUF @bb1e436e (2026-10-07)
-      + d1-3B @051bcc46; cards and HF API, retrieved 2026-10-31
-    verified_by: research-intake/stage2
   - claim_index: 3
     kind: heading-and-hash
     locator: d1-2B card, Speed
@@ -372376,7 +372368,8 @@
   depends_on: []
   dive_corrections: '2026-10-31 (Stage 2, wave 2 (Stage 2b)): New entry. Corrects "text-only" (d1-2B and d1-3B are VL models), supplies
     quant sizes, the nine-row board comparison (d1-2B above d1-Omni on 8 of 9; the earlier intake-2553 count of 7 of 9 is not reproduced
-    from this card), and the Q8_0 head-quantization risk from upstream issue 30064.'
+    from this card), and the Q8_0 head-quantization risk from upstream issue 30064. 2026-10-31 (second reader): main dropped an anchor
+    judged not to support its claim.'
 - id: intake-2583
   arxiv_id: null
   url: https://www.liquid.ai/blog/open-d1
@@ -373344,3 +373337,1486 @@
     but the mechanism needs mid-sequence KV removal plus RoPE position shift, which llama.cpp already has as llama_memory_seq_rm and
     seq_add for full-attention models and which is unsafe for recurrent/hybrid GDN memory. Gains are measured on SGLang with A800 BF16
     and price-table costs; nothing was measured on llama.cpp.'
+- id: intake-2591
+  arxiv_id: null
+  url: https://github.com/ggml-org/llama.cpp/issues/28286
+  source_type: repo
+  title: 'llama.cpp #28286: draft-mtp + --parallel > 1 causes cross-slot content contamination (Qwen3.8-Flash-Next, ROCm)'
+  categories:
+  - speculative_decoding
+  - inference_serving
+  - ssm_hybrid
+  novelty: medium
+  relevance: high
+  discovered_via: expansion
+  expanded_from: intake-2577
+  verdict: worth_investigating
+  ingested_date: '2026-10-31'
+  authors: []
+  key_claims:
+  - With --spec-type draft-mtp and --parallel 4 on Qwen3.8-Flash-Next (qwen4exp, a Gated-DeltaNet hybrid), temp-0 concurrent requests
+    with distinct prompts produced responses that drifted into another slot's content; the reporter ruled out HIP graphs (GGML_CUDA_DISABLE_GRAPHS=1)
+    and a client-side harness artifact.
+  - It does not reproduce at --parallel 1; low-entropy prompts (ROCKET vs BANANA x40) showed zero contamination, so the effect needs
+    content complexity to surface.
+  - 'The issue was closed by the stale bot on 2026-10-18 with no root cause and no merged fix; the only linked candidate, PR #29454
+    (fill unwritten rollback snapshot slot on short ubatches), was closed unmerged on 2026-09-27 and its connection to #28286 is stated
+    as unconfirmed.'
+  - Environment was a downstream fork on master 458681e1d with the qwen4exp MTP integration, Strix Halo gfx1151 ROCm; not tested on
+    a non-recurrent target.
+  techniques:
+  - draft-mtp
+  - draft-dflash
+  - recurrent-state rollback (n_rs_seq)
+  reported_results:
+  - 'Issue has 1 comment (stale bot close); no fix PR; PR #29454 closed unmerged 2026-09-27 (issue28286.txt, pr29454.txt)'
+  cross_references:
+    chapters: []
+    handoffs:
+    - qwen-mtp-llamacpp-port.md
+    - dflash2-block-drafter-experimental-build.md
+    - cpu-decode-roofline-program.md
+    experiments: []
+    intake_entries:
+    - intake-2577
+    - intake-1513
+  recommended_actions:
+  - 'Proposal (operator-review candidate, derived by the ws58 intake): Run the temp-0 np>1 identity probe (ledger W3SPEC-1) on the production
+    MTP/DFlash2 shapes.'
+  credibility_score: null
+  contradicting_evidence: null
+  referenced_arxiv_ids: []
+  notes: 'GitHub issue; read via API (issue, comments, timeline). Not read in dive: PR #28019 thread read only for context (rs-rollback
+    ask resolved by #28123); linked issue text of #27836 not read.'
+  verification: dive-verified
+  handoffs_updated: []
+  handoffs_created: []
+  source_revision: 'GitHub API ggml-org/llama.cpp issues/28286 (+comments, timeline, PR #29454) retrieved 2026-10-31; state closed(stale)
+    2026-10-18'
+  reader_should_conclude: 'Cite as an UNRESOLVED upstream report of draft-mtp + parallel>1 content mixing on a GDN-hybrid (qwen4exp)
+    target on ROCm; there is no fix commit to look for. Do NOT carry ''fixed upstream'' or ''qwen4exp-only''; the reporter says it was
+    not tested on non-recurrent targets. Our v10 tree has the same shape of code (delta-net-base.cpp: trailing snapshot slots left unwritten
+    when ubatch < K).'
+  read_depth: FULL
+  claim_anchors:
+  - claim_index: 0
+    kind: heading-and-hash
+    locator: issue28286 body, Summary
+    quote: With `--spec-type draft-mtp` and `--parallel N` (N > 1), concurrent requests carrying clearly
+    quote_sha256: 39a0689e8fc9d074a431e49e830dd0cd5c7d3fc4926c1bd5388c8b60f7d93a70
+    source_revision: 'GitHub API ggml-org/llama.cpp issues/28286 (+comments, timeline, PR #29454) retrieved 2026-10-31; state closed(stale)
+      2026-10-18'
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: heading-and-hash
+    locator: issue28286 body, Notes on isolation
+    quote: '- Does not reproduce at `--parallel 1` (single-stream), even under heavy multi-turn use with the'
+    quote_sha256: 31f0c3d25e0504f905f25796e560fb46a7804882c395e7e050251fc285adf087
+    source_revision: 'GitHub API ggml-org/llama.cpp issues/28286 (+comments, timeline, PR #29454) retrieved 2026-10-31; state closed(stale)
+      2026-10-18'
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: heading-and-hash
+    locator: issue28286 body, Environment
+    quote: '- Model: Qwen3.8-Flash-Next (`qwen4exp` architecture), UD-Q3_K_XL, with the'
+    quote_sha256: faa1c1e321b6d3ee502e57c8b3b42aa9e4aa9ad11a3c0ff065e960e3c118572e
+    source_revision: 'GitHub API ggml-org/llama.cpp issues/28286 (+comments, timeline, PR #29454) retrieved 2026-10-31; state closed(stale)
+      2026-10-18'
+    verified_by: research-intake/stage2
+  claim_corrections: []
+  depends_on: []
+  dive_corrections: '2026-10-31 (Stage 2, wave 3 (Stage 2b)): Stage-1 record created from the API; issue verified. Key finding: the
+    thread contains no root cause and no fix. Stale-closed is not resolved. The only candidate mechanism (short-ubatch unwritten rollback
+    snapshot slot, PR 29454) was declined by a contributor because the server never rolls back the anchor token (cites #26695), so the
+    mechanism is UNCONFIRMED and un-merged. 2026-10-31 (Stage-2 close-out): dive-surfaced sources DECLINED: llama.cpp PR #29454 (closed
+    unmerged; its content is captured in this entry and it matters only as a patch template under the trigger-gated follow-on).'
+- id: intake-2592
+  arxiv_id: null
+  url: https://github.com/ggml-org/llama.cpp/issues/28158
+  source_type: repo
+  title: 'llama.cpp #28158: Qwen3.8 DFlash/MTP speculative emits token id == n_vocab (248320) on Vulkan'
+  categories:
+  - speculative_decoding
+  - inference_serving
+  - ssm_hybrid
+  novelty: medium
+  relevance: medium
+  discovered_via: expansion
+  expanded_from: intake-2577
+  verdict: worth_investigating
+  ingested_date: '2026-10-31'
+  authors: []
+  key_claims:
+  - Qwen3.8-27B with --spec-type draft-dflash (z-lab DFlash2) or draft-mtp fails at the first target verify batch with 'invalid token[N]
+    = 248320' (exactly n_vocab) and HTTP 500, reproduced on Vulkan only (gfx1150, gfx1201, gfx1100, 3x RX 6800); CPU control with the
+    same GGUFs works.
+  - 'A commenter''s controlled datapoint reproduced the byte-identical signature by injecting a Vulkan mul_mm tile-layout bug that leaves
+    half of each prefill tile unwritten: the id is always exactly n_vocab, read as a sentinel emitted from NaN draft scores, not an
+    out-of-bounds index; the OP''s DFlash2 selector row had all 16 top-k slots at 248320 with NaN scores.'
+  - The issue is still open with no maintainer root cause; the only fix PR (#28206) was an AI-generated patch that was closed unmerged
+    on 2026-09-01.
+  - 'Reports on HIP/ROCm or CUDA are absent from the thread; one counter-datapoint (RX 7900 XTX Vulkan, tip 31288c9c6 + #30591) saw
+    no OOB over 8 server cycles.'
+  techniques:
+  - draft-mtp
+  - draft-dflash
+  - recurrent-state rollback (n_rs_seq)
+  reported_results:
+  - 'Issue open; 9 human comments + 0cc4m; PR #28206 closed unmerged; builds b10666/b10724/10711/ce8caa6 reported'
+  cross_references:
+    chapters: []
+    handoffs:
+    - dflash2-block-drafter-experimental-build.md
+    - qwen-mtp-llamacpp-port.md
+    experiments: []
+    intake_entries:
+    - intake-2577
+    - intake-1513
+  recommended_actions:
+  - 'Proposal (operator-review candidate, derived by the ws58 intake): Knowledge only: Vulkan-specific; keep the loud id validation
+    in llama-batch.cpp; do not add a silent clamp.'
+  credibility_score: null
+  contradicting_evidence: null
+  referenced_arxiv_ids: []
+  notes: 'GitHub issue; read via API (issue, comments, timeline). Not read in dive: Full thread read; the linked #27812, #28097 not
+    read.'
+  verification: dive-verified
+  handoffs_updated: []
+  handoffs_created: []
+  source_revision: 'GitHub API ggml-org/llama.cpp issues/28158 (+10 comments, timeline, PR #28206) retrieved 2026-10-31; state open'
+  reader_should_conclude: Cite as an OPEN Vulkan-only report; no fix exists. Do NOT carry 'off-by-one in draft sampling' (OP hypothesis,
+    contradicted by constant id) or the OP's suggested silent clamp (would convert a crash into silent garbage per tczank). Not a risk
+    for our CPU/HIP serving on current evidence.
+  read_depth: FULL
+  claim_anchors:
+  - claim_index: 0
+    kind: heading-and-hash
+    locator: issue28158 OP + comment 2
+    quote: 'init: invalid token[1] = 248320'
+    quote_sha256: b666a1c52da301d1917b8aa14013db38703729163e583e4c7e8948e26d52673b
+    source_revision: 'GitHub API ggml-org/llama.cpp issues/28158 (+10 comments, timeline, PR #28206) retrieved 2026-10-31; state open'
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: heading-and-hash
+    locator: issue28158 tczank 2026-09-22
+    quote: '**6/6 are exactly 248320, deterministic**'
+    quote_sha256: 6fcc3787c0d043e14590c796a7167ab09ef12261cf02a3e3a502a30692d0fbed
+    source_revision: 'GitHub API ggml-org/llama.cpp issues/28158 (+10 comments, timeline, PR #28206) retrieved 2026-10-31; state open'
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: heading-and-hash
+    locator: issue28158 tczank 2026-10-22
+    quote: '1. No OOB here: greedy 128-token sample'
+    quote_sha256: 3c558d63cbf3d314b39a999f86161151a2eda854f292e1f4d0256508990ec27e
+    source_revision: 'GitHub API ggml-org/llama.cpp issues/28158 (+10 comments, timeline, PR #28206) retrieved 2026-10-31; state open'
+    verified_by: research-intake/stage2
+  claim_corrections: []
+  depends_on: []
+  dive_corrections: '2026-10-31 (Stage 2, wave 3 (Stage 2b)): Stage-1 record created from the API; issue verified. Stage-2 correction
+    to the title framing: this is not a confirmed ''MTP/DFlash emits out-of-bounds id'' logic bug; evidence points to a Vulkan-backend
+    NaN-logits producer plus a sentinel n_vocab fill, and CPU is clean. No relevance to HIP/CPU serving was found.'
+- id: intake-2593
+  arxiv_id: null
+  url: https://github.com/ggml-org/llama.cpp/pull/29818
+  source_type: repo
+  title: 'llama.cpp PR 29818: /v1/systemone typed decision endpoint (laya, julia-1, lev, openjev, kev)'
+  categories:
+  - routing_intelligence
+  - inference_serving
+  - local_inference
+  novelty: medium
+  relevance: high
+  discovered_via: expansion
+  expanded_from: intake-2581
+  verdict: worth_investigating
+  ingested_date: '2026-10-31'
+  authors:
+  - ngxson (PR author)
+  - ggml-org maintainers (review)
+  key_claims:
+  - 'PR 29818 (ggml-org/llama.cpp, merged 2026-10-02T09:56:05Z, merge commit a4cb4c61fd9d, 35 files, +2139/-15) adds POST /v1/systemone,
+    a TypeSafe-API-compatible endpoint, plus conversion, libllama decision-head and server_decision_context support for 5 decision models:
+    laya, julia-1, lev, openjev (+vision) and kev. It is a thin wrapper over existing embedding-model (BERT/ModernBERT/Qwen) infrastructure:
+    the server switches input/output handling on the {arch}.decision.type GGUF key.'
+  - 'API: request = state (string/object/array), optional images (data URLs), questions{id: {type, instructions, criteria}}; type is
+    exactly choice | score | noul (no multi-select, extraction, estimates or boxes). Response per question: choice -> choice + probabilities
+    (sum 1) + confidence 0..1; score -> expected level index + legend + probabilities + confidence; noul -> a single probability of
+    true. usage.output_tokens is always 0; streaming unsupported; 400 invalid request, 501 non-decision model or missing mmproj. Option
+    limits are per model (52 openjev, 255 laya). Questions of one request are answered independently (each is its own task, so they
+    can land on different slots).'
+  - 'Calibration/temperature: probabilities are softmaxes of the head outputs scaled by temperatures stored in the model file (GGUF
+    keys decision.temperature.*, per question kind and, for some, bucketed by number of options; the server refuses temperature <= 0).
+    The README states they are not guaranteed calibrated for the user''s data. The server exposes no request-time temperature override
+    in the merged README.'
+  - 'Parity evidence in the PR (reference -> llama.cpp, one synthetic customer-ticket request, 5 questions): worst |dp| of any probability
+    is laya 8.4e-4, julia-1 2.2e-2, lev 5.2e-3, openjev 1.8e-4, kev-4b 1.3e-3. The reference is each model''s own Python implementation;
+    this is one request, not a distribution.'
+  - 'Model families supported at merge are decision heads on BERT/ModernBERT-style encoders (laya, julia-1, lev), a Qwen3-VL-based vision
+    model (openjev) and Qwen3.5-based Kev; Clef (Cloudflare) was explicitly deferred to a follow-up and later models (d1 LFM3, vllm-d3,
+    Granite-switch, H2O-Lightning, MiniCPM-OCR-Jev, pplx-decider) arrived in separate PRs. Build-number mapping: a user on build 11200
+    got 404 and was told the endpoint landed in b11361.'
+  - 'Frozen production tree /mnt/raid0/llm/llama.cpp (HEAD ffc1bac82, committer date 2026-09-21) does NOT contain the endpoint: PR merge
+    commit a4cb4c61 is not an ancestor of ffc1bac82, git grep -i systemone finds nothing, and tools/server has no *decision* file. Using
+    any d1/Kev-class model through /v1/systemone therefore needs an experimental-branch port or a scratch upstream build (>= b11361
+    for the endpoint, >= b11960 for LFM3/d1-2B per intake-2582).'
+  techniques:
+  - decision head on embedding models
+  - server_decision_context
+  - typed choice/score/noul answers
+  - GGUF-stored softmax temperatures
+  reported_results:
+  - 'PR: merged 2026-10-02T09:56:05Z, 35 files, +2139/-15, merge commit a4cb4c61fd9d9c2066c7c1747821d3d65b8943bd'
+  - Parity table worst |dp| laya 8.4e-4, julia-1 2.2e-2, lev 5.2e-3, openjev 1.8e-4, kev-4b 1.3e-3 (one synthetic request)
+  - Endpoint landed in b11361 per a commenter; frozen tree ffc1bac82 (2026-09-21) predates it
+  cross_references:
+    chapters: []
+    handoffs:
+    - typed-decision-plane.md
+    - routing-intelligence.md
+    - learned-routing-controller.md
+    experiments: []
+    intake_entries:
+    - intake-2581
+    - intake-2582
+    - intake-1498
+  recommended_actions:
+  - 'Proposal (operator-review candidate, derived by the ws58 intake): TD-23/TD-20: any local decision-model screen needs this endpoint
+    on an experimental branch; see ledger W3DEC-1..5'
+  credibility_score: null
+  contradicting_evidence: null
+  referenced_arxiv_ids: []
+  notes: 'Upstream PR record; GitHub API incl. all comments. Not read: full diff. Not read in dive: Full diff of the 35 files (read
+    file list, README, server-decision.cpp L40-66 and head only); later model PRs (d1/LFM3, vllm-d3, Granite switch) read by title only.'
+  verification: dive-verified
+  handoffs_updated: []
+  handoffs_created: []
+  source_revision: github.com/ggml-org/llama.cpp PR 29818 (merge a4cb4c61fd9d, 2026-10-02) via GitHub API incl. 6 comments, 6 review
+    comments, tools/server/README.md and server-decision.cpp @a4cb4c6, retrieved 2026-10-31; frozen tree ffc1bac82 checked by git
+  reader_should_conclude: 'Cite for the API contract, the temperature-in-GGUF fact and the parity-table scale (<=2.2e-2 on one request).
+    Do NOT read the parity table as a calibration or batch-invariance result: one request, reference is each model''s own Python code.'
+  read_depth: FULL
+  claim_anchors:
+  - claim_index: 0
+    kind: heading-and-hash
+    locator: PR 29818 header
+    quote: merged_at=2026-10-02T09:56:05Z
+    quote_sha256: f600ed390427471c24618e21966dc13ad20d95fc3ce9142abc34c8032a983a0b
+    source_revision: github.com/ggml-org/llama.cpp PR 29818 (merge a4cb4c61fd9d, 2026-10-02) via GitHub API incl. 6 comments, 6 review
+      comments, tools/server/README.md and server-decision.cpp @a4cb4c6, retrieved 2026-10-31; frozen tree ffc1bac82 checked by git
+    verified_by: research-intake/stage2
+  - claim_index: 0
+    kind: heading-and-hash
+    locator: PR 29818 body
+    quote: 'Support 5 decision models: laya, julia-1, lev, openjev (+vision), kev'
+    quote_sha256: 308f2b994359596a5aa407eb47f74bc8045943365e28bf8c1b242caf0e5c1186
+    source_revision: github.com/ggml-org/llama.cpp PR 29818 (merge a4cb4c61fd9d, 2026-10-02) via GitHub API incl. 6 comments, 6 review
+      comments, tools/server/README.md and server-decision.cpp @a4cb4c6, retrieved 2026-10-31; frozen tree ffc1bac82 checked by git
+    verified_by: research-intake/stage2
+  - claim_index: 0
+    kind: heading-and-hash
+    locator: PR 29818 body (Additional information)
+    quote: Main part is `server_decision_context` that switches the input/output handling based on `{arch}.decision.type` gguf metadata.
+    quote_sha256: 5fdd3ef5f1b39b7bf2e5e1a908cca0f53e05607d7fbeb74f11dc522301dc2540
+    source_revision: github.com/ggml-org/llama.cpp PR 29818 (merge a4cb4c61fd9d, 2026-10-02) via GitHub API incl. 6 comments, 6 review
+      comments, tools/server/README.md and server-decision.cpp @a4cb4c6, retrieved 2026-10-31; frozen tree ffc1bac82 checked by git
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: line-range
+    locator: tools/server/README.md @a4cb4c6 L1670-1700
+    quote: '- `type`: One of `choice`, `score`, `noul`.'
+    quote_sha256: 31b225415f437fedc316e155b99842cb838f06872b5a7cde756aaa181a8ba431
+    source_revision: github.com/ggml-org/llama.cpp PR 29818 (merge a4cb4c61fd9d, 2026-10-02) via GitHub API incl. 6 comments, 6 review
+      comments, tools/server/README.md and server-decision.cpp @a4cb4c6, retrieved 2026-10-31; frozen tree ffc1bac82 checked by git
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: line-range
+    locator: tools/server/README.md @a4cb4c6
+    quote: The questions of a request are answered independently, an answer does not depend on the other questions.
+    quote_sha256: c0ae4c1c465906823e17cb311ce6804143fbfa3e2a6dc8bf0f2086bcaa5dc52b
+    source_revision: github.com/ggml-org/llama.cpp PR 29818 (merge a4cb4c61fd9d, 2026-10-02) via GitHub API incl. 6 comments, 6 review
+      comments, tools/server/README.md and server-decision.cpp @a4cb4c6, retrieved 2026-10-31; frozen tree ffc1bac82 checked by git
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: line-range
+    locator: tools/server/README.md @a4cb4c6
+    quote: '`usage`: `input_tokens` is the number of prompt tokens of all questions. `output_tokens` is always 0.'
+    quote_sha256: 4c77ece62a59509690462245f2da49f528b60fdbc7d4f434110a31505d6644b4
+    source_revision: github.com/ggml-org/llama.cpp PR 29818 (merge a4cb4c61fd9d, 2026-10-02) via GitHub API incl. 6 comments, 6 review
+      comments, tools/server/README.md and server-decision.cpp @a4cb4c6, retrieved 2026-10-31; frozen tree ffc1bac82 checked by git
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: line-range
+    locator: tools/server/README.md @a4cb4c6
+    quote: 'The number of options of a `choice` question is limited by the model, for example: 52 for openjev, 255 for laya.'
+    quote_sha256: f47999630e86a2d749bc4fe8ad0bdb9a869db4e93ea413e23d4000a94a754904
+    source_revision: github.com/ggml-org/llama.cpp PR 29818 (merge a4cb4c61fd9d, 2026-10-02) via GitHub API incl. 6 comments, 6 review
+      comments, tools/server/README.md and server-decision.cpp @a4cb4c6, retrieved 2026-10-31; frozen tree ffc1bac82 checked by git
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: line-range
+    locator: tools/server/README.md @a4cb4c6
+    quote: The probabilities are scaled with the temperatures stored in the model file. They are not guaranteed to be calibrated for
+      your data.
+    quote_sha256: 53bc9d8e0d3f96f43cfbb8f1f62fd087db4c0649a81a17b0dc18d0b0198b97de
+    source_revision: github.com/ggml-org/llama.cpp PR 29818 (merge a4cb4c61fd9d, 2026-10-02) via GitHub API incl. 6 comments, 6 review
+      comments, tools/server/README.md and server-decision.cpp @a4cb4c6, retrieved 2026-10-31; frozen tree ffc1bac82 checked by git
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: line-range
+    locator: tools/server/server-decision.cpp @a4cb4c6 L49-63
+    quote: const std::string prefix_temp = prefix + "temperature.";
+    quote_sha256: 400c8f805f5d6091452d8cd09fc148b71e30824efd927eb1d1b9de4d8b6c4273
+    source_revision: github.com/ggml-org/llama.cpp PR 29818 (merge a4cb4c61fd9d, 2026-10-02) via GitHub API incl. 6 comments, 6 review
+      comments, tools/server/README.md and server-decision.cpp @a4cb4c6, retrieved 2026-10-31; frozen tree ffc1bac82 checked by git
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: heading-and-hash
+    locator: PR 29818 body, parity table
+    quote: worst diff, any probability | 8.4e-4 | 2.2e-2 | 5.2e-3 | 1.8e-4 | 1.3e-3
+    quote_sha256: da6eaac680a19494de68a2ca59a1c05989e0cbe4fe56a249508fc48a27e0f71b
+    source_revision: github.com/ggml-org/llama.cpp PR 29818 (merge a4cb4c61fd9d, 2026-10-02) via GitHub API incl. 6 comments, 6 review
+      comments, tools/server/README.md and server-decision.cpp @a4cb4c6, retrieved 2026-10-31; frozen tree ffc1bac82 checked by git
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: heading-and-hash
+    locator: PR 29818 body TODO list
+    quote: maybe support https://huggingface.co/Cloudflare/clef , just out 2 hours ago at the time writing this~~ planned as a follow-up
+    quote_sha256: d15bf2c398e6a1500b9cb9754520f346b8ed5df5758499a2d013dbba7d92f459
+    source_revision: github.com/ggml-org/llama.cpp PR 29818 (merge a4cb4c61fd9d, 2026-10-02) via GitHub API incl. 6 comments, 6 review
+      comments, tools/server/README.md and server-decision.cpp @a4cb4c6, retrieved 2026-10-31; frozen tree ffc1bac82 checked by git
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: heading-and-hash
+    locator: PR 29818 issue comment ServeurpersoCom 2026-10-03
+    quote: your build 11200 predates this PR, /v1/systemone landed in b11361 so you just need to update.
+    quote_sha256: fb4cd740a472321d1650b74fefdd65a9ce23d590fd6dce9c6737f921b995f67a
+    source_revision: github.com/ggml-org/llama.cpp PR 29818 (merge a4cb4c61fd9d, 2026-10-02) via GitHub API incl. 6 comments, 6 review
+      comments, tools/server/README.md and server-decision.cpp @a4cb4c6, retrieved 2026-10-31; frozen tree ffc1bac82 checked by git
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 5
+    effect: unaffected
+    note: 'new claim appended by dive: frozen tree lacks the endpoint'
+  depends_on: []
+  dive_corrections: '2026-10-31 (Stage 2, wave 3 (Stage 2b)): Stage-1 (intake-2581/2582) cited the PR only by number and merge date.
+    Dive adds the full request/response schema, the temperature mechanism (GGUF decision.temperature.* keys, no request override), the
+    per-model option limits, the parity table, the build mapping (b11361 for the endpoint) and a git check that the frozen tree has
+    none of it (merge commit not an ancestor of ffc1bac82; no systemone string; no decision source file). Commands: git merge-base --is-ancestor
+    a4cb4c61 ffc1bac82 returned non-ancestor; git grep -i systemone ffc1bac82 empty.'
+- id: intake-2594
+  arxiv_id: null
+  url: https://github.com/ggml-org/llama.cpp/issues/30064
+  source_type: repo
+  title: 'llama.cpp issue 30064: Clef Q8_0 /v1/systemone probabilities collapse (Metal MUL_MAT+ADD fusion bug, fixed by PR 30100)'
+  categories:
+  - routing_intelligence
+  - quantization
+  - inference_serving
+  novelty: low
+  relevance: medium
+  discovered_via: expansion
+  expanded_from: intake-2582
+  verdict: adopt_patterns
+  ingested_date: '2026-10-31'
+  authors:
+  - freeformz (reporter)
+  - nyo16 (fix PR 30100)
+  key_claims:
+  - Issue 30064 (opened 2026-10-06 by a user on build 11429, Apple M5 Max, Metal; closed 2026-10-07 by a maintainer) reported that ggml-org/Clef-GGUF
+    Q8_0 returns /v1/systemone probabilities collapsed toward uniform (Paris->France 0.540 vs BF16 0.994; confidence 0.309 vs 0.991)
+    while BF16 and Kev-4B Q8_0 were correct. The reporter's hypothesis was that the decision.* head tensors were quantized to Q8_0 and
+    should stay BF16.
+  - 'CORRECTED CAUSE: the hypothesis is wrong. The fix PR 30100 (merged 2026-10-07T13:41:50Z, commit 7e8324f5feba, +2 lines in ggml-metal-ops.cpp
+    plus a test-backend-ops mode) shows a Metal-backend bug in the fused MUL_MAT+ADD path: when both ADD operands are mat-mul outputs
+    (Clef''s head computes options = proj_option_context @ opt_ctx + proj_option_lexical @ lexical) the encoder picked the fused mat-mul''s
+    own never-written output as the residual. Output is deterministic per memory layout, so it shifts with graph-optimize or fusion
+    toggles. The same Q8_0 file is correct on the CPU backend and with GGML_METAL_FUSION_DISABLE=1.'
+  - 'Affected: Metal backend (Apple GPUs), any quant whose head mat-muls take the MMA fused path (the PR test fails 27 of 28 cases pre-fix,
+    the only pass being f16 n=2 below the MMA row threshold) and any graph with the x = W1@u + W2@v pattern. Not shown to affect CPU,
+    CUDA or HIP; the issue and PR report only Metal and CPU. The BF16-head Q4_K_M success in the issue''s follow-up comment is a layout/path
+    coincidence, not proof that heads must stay high-precision.'
+  - 'Status: closed and fixed upstream (PR 30100 merged 2026-10-07; the PR bot flagged the description as AI-generated, the diff was
+    reviewed by ggerganov). Workaround ''keep decision.* at BF16'' is unnecessary for this bug. Residual generic lesson that the dive
+    confirms: a quantized or backend-specific decision-head file can return wrong probabilities while still returning a plausible argmax,
+    so per-backend parity against a reference (CPU/BF16) is the only safe gate.'
+  techniques:
+  - per-backend parity check
+  - fusion toggles as bisect tool
+  reported_results:
+  - 'Clef Q8_0 vs BF16, Paris->France: 0.540 vs 0.994 (issue); Metal default billing 0.284 vs CPU/fixed 0.977 (PR 30100)'
+  - 'Fix: +2 lines in ggml/src/ggml-metal/ggml-metal-ops.cpp, test-backend-ops mm2+mm mode fails 27/28 pre-fix, 168/168 post'
+  cross_references:
+    chapters: []
+    handoffs:
+    - typed-decision-plane.md
+    experiments: []
+    intake_entries:
+    - intake-2582
+  recommended_actions:
+  - 'Proposal (operator-review candidate, derived by the ws58 intake): TD-23: include a CPU-vs-GPU and BF16-vs-Q8 parity gate; see ledger
+    W3DEC-1'
+  credibility_score: null
+  contradicting_evidence: null
+  referenced_arxiv_ids: []
+  notes: 'Issue closed; cause is Metal fusion not quantization. Not read in dive: Issue 30064 cross-referenced repos (oboete) not read;
+    Clef model card not read.'
+  verification: dive-overturned
+  handoffs_updated: []
+  handoffs_created: []
+  source_revision: github.com/ggml-org/llama.cpp issue 30064 (closed 2026-10-07) + comment + timeline, fix PR 30100 (merge 7e8324f5feba),
+    retrieved 2026-10-31 via GitHub API
+  reader_should_conclude: 'Cite as: a Metal-only fusion bug, fixed; not evidence that Q8_0 hurts decision heads. Do not carry the BF16-head
+    recipe as a requirement. Do carry the test design (same file, CPU vs GPU, BF16 vs quant, per-backend).'
+  read_depth: FULL
+  claim_anchors:
+  - claim_index: 0
+    kind: heading-and-hash
+    locator: issue 30064 title
+    quote: 'Eval bug: Clef-GGUF Q8_0 /v1/systemone probabilities collapse toward uniform, while BF16 gives correct ones.'
+    quote_sha256: d0410ca188e813b0b78339b674d5ac3745961b51b535ea8c702c3fba2b16c324
+    source_revision: github.com/ggml-org/llama.cpp issue 30064 (closed 2026-10-07) + comment + timeline, fix PR 30100 (merge 7e8324f5feba),
+      retrieved 2026-10-31 via GitHub API
+    verified_by: research-intake/stage2
+  - claim_index: 0
+    kind: heading-and-hash
+    locator: issue 30064 body, Hardware
+    quote: m5 Max Mac Studio w/128 GB of RAM
+    quote_sha256: f2e7f037e4893fa84cc8fa204c4e6521594531f4b39b6665b197ee0f2f58413b
+    source_revision: github.com/ggml-org/llama.cpp issue 30064 (closed 2026-10-07) + comment + timeline, fix PR 30100 (merge 7e8324f5feba),
+      retrieved 2026-10-31 via GitHub API
+    verified_by: research-intake/stage2
+  - claim_index: 0
+    kind: heading-and-hash
+    locator: issue 30064 body, Possible Fix
+    quote: keep the decision.* tensors at BF16 when quantizing.
+    quote_sha256: 40a3f4fda560e104a3fbc02b885f0b4a0dc6114933128fb80f4ffda3eef2fbdf
+    source_revision: github.com/ggml-org/llama.cpp issue 30064 (closed 2026-10-07) + comment + timeline, fix PR 30100 (merge 7e8324f5feba),
+      retrieved 2026-10-31 via GitHub API
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: heading-and-hash
+    locator: PR 30100 body Overview
+    quote: '`ggml_metal_op_mul_mat_mma` picks the residual of a fused `MUL_MAT+ADD` as "the ADD operand whose op is not `MUL_MAT`":'
+    quote_sha256: 2d9753de46d381f53952c7deb66bd25b8551f4c0d649bd4bc1da7a5e4b0c9c37
+    source_revision: github.com/ggml-org/llama.cpp issue 30064 (closed 2026-10-07) + comment + timeline, fix PR 30100 (merge 7e8324f5feba),
+      retrieved 2026-10-31 via GitHub API
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: heading-and-hash
+    locator: PR 30100 body
+    quote: Not a quantization issue — the same Q8_0 file is right on the CPU backend
+    quote_sha256: a0fb6b46b04116e10d00b1a8a470422fe9152f9b786c421e48ddd7cad97d8414
+    source_revision: github.com/ggml-org/llama.cpp issue 30064 (closed 2026-10-07) + comment + timeline, fix PR 30100 (merge 7e8324f5feba),
+      retrieved 2026-10-31 via GitHub API
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: heading-and-hash
+    locator: PR 30100 body table
+    quote: '| Metal, default | 0.284 | 0.431 |'
+    quote_sha256: bb6bf65c225a7a42549ffbecb0c8a53006a700e96dba278419825a12277ae214
+    source_revision: github.com/ggml-org/llama.cpp issue 30064 (closed 2026-10-07) + comment + timeline, fix PR 30100 (merge 7e8324f5feba),
+      retrieved 2026-10-31 via GitHub API
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: heading-and-hash
+    locator: PR 30100 body table
+    quote: '| CPU | **0.977** | 0.009 |'
+    quote_sha256: 1957e955e1177c4729e298adb5743174e5740f589966c6ae5de803f01f28b39e
+    source_revision: github.com/ggml-org/llama.cpp issue 30064 (closed 2026-10-07) + comment + timeline, fix PR 30100 (merge 7e8324f5feba),
+      retrieved 2026-10-31 via GitHub API
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: heading-and-hash
+    locator: PR 30100 header
+    quote: merged=2026-10-07T13:41:50Z
+    quote_sha256: e3edf8fc211b014d6292ec99dd4d799e98318c164de0d4398a602c6cad880f12
+    source_revision: github.com/ggml-org/llama.cpp issue 30064 (closed 2026-10-07) + comment + timeline, fix PR 30100 (merge 7e8324f5feba),
+      retrieved 2026-10-31 via GitHub API
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: heading-and-hash
+    locator: PR 30100 body Test
+    quote: On Metal at `48499d2e1` it fails **27 of 28** cases before
+    quote_sha256: 132b0f98c7ba41877f8dc3e01ec1cae8ae0d2dc7bcbfa3e2ee44b28336207688
+    source_revision: github.com/ggml-org/llama.cpp issue 30064 (closed 2026-10-07) + comment + timeline, fix PR 30100 (merge 7e8324f5feba),
+      retrieved 2026-10-31 via GitHub API
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: heading-and-hash
+    locator: PR 30100 body
+    quote: 'Fixes #30064.'
+    quote_sha256: 2eb2bdd5f294a48fc692e5fb45a4cf8ccdb1a192c62dc98bb1d855d16161a246
+    source_revision: github.com/ggml-org/llama.cpp issue 30064 (closed 2026-10-07) + comment + timeline, fix PR 30100 (merge 7e8324f5feba),
+      retrieved 2026-10-31 via GitHub API
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 1
+    effect: overturned
+    note: cause is a Metal MUL_MAT+ADD fusion residual-selection bug, not quantization of decision-head tensors
+  depends_on: []
+  dive_corrections: '2026-10-31 (Stage 2, wave 3 (Stage 2b)): Stage-1 text (in intake-2582 key_claims) said decision-head tensors were
+    quantized and that BF16-vs-Q8 parity must be checked per file. The first half is overturned: the cause is a Metal backend bug fixed
+    in PR 30100 on 2026-10-07 and the same Q8_0 file is correct on CPU. The recommendation (check parity per file and backend) survives
+    but for a different reason: backend fusion paths can silently corrupt a head.'
+- id: intake-2595
+  arxiv_id: null
+  url: https://github.com/ggml-org/llama.cpp/issues/30402
+  source_type: repo
+  title: 'llama.cpp issue 30402: vllm-d3 /v1/systemone answers change when a shorter request shares the batch (non-causal split_equal)'
+  categories:
+  - routing_intelligence
+  - inference_serving
+  - benchmark_methodology
+  novelty: low
+  relevance: medium
+  discovered_via: expansion
+  expanded_from: intake-2582
+  verdict: adopt_patterns
+  ingested_date: '2026-10-31'
+  authors:
+  - ivoras (reporter)
+  key_claims:
+  - Issue 30402 (opened 2026-10-12 against build 11572 / efe3626b1 on CUDA RTX 4000 Ada; ggml-org/vllm-d3-mini-GGUF Q8_0, -np 3 -c 12288
+    -b 2048 -ub 2048 -sps 0) reports that a /v1/systemone noul answer for request A changes from 0.2839 alone to 0.449-0.450 on every
+    run when a shorter request is decoded in the same batch. It is the vllm-d3 model, not a d1 model; no d1 or Kev model is shown affected
+    by the issue itself.
+  - 'Cause per the reporter''s title: the batch splitter split_equal cuts non-causal (bidirectional) prompts across ubatches, so a prompt
+    whose tokens are partly in a later ubatch loses cross-chunk attention and its answer depends on what shares the batch. Maintainer
+    PR 30408 (''model: fix vllm d3 multi seq case'', merged 2026-10-12T22:23:02Z, ~5 h after the report) adds the same invariant for
+    the KV-cache memory paths: when attention is non-causal, keep all tokens of a sequence in one ubatch and use split_seq instead of
+    split_equal (''non-causal + hybrid + multi seq''). The same invariant was fixed earlier for cache-less encoder models in #29902/#29903
+    (server batch capped to ubatch).'
+  - 'Status: issue still OPEN at retrieval (2026-10-31), 0 comments, no maintainer triage and no retest after 30408, so whether 30408
+    closes it is UNCONFIRMED. The conditions are: bidirectional (non-causal) decision model + more than one concurrent request in the
+    same decode (multiple slots/sequences of unequal length) + prompt shorter than ubatch. Reporter''s own condition: the longer request
+    must be batched with a shorter one; equal-length (identical) companions were also tested in the repro script but the issue does
+    not report their result.'
+  - 'Related residual batch-sensitivity: issue 31475 (open, 2026-10-31) states bitwise equality of /v1/systemone probabilities is not
+    guaranteed when shared-prefix scheduling changes the batch cuts (one synthetic probability moved by about 0.007), and the PR 29818
+    parity table shows julia-1 differing from its reference by up to 2.2e-2. So batch/schedule invariance has to be MEASURED per build,
+    not assumed, even for causal Kev-style models.'
+  - 'Other serving defects in the same family that bound a safe probe configuration: 500 ''the question and its options must fit in
+    one batch'' when two questions share a prefix and -np >= 2 (issue 30482, fixed by PR 30710 merged 2026-10-17); router-mode concurrent
+    requests killing the model instance (issue 31150, open, reported on an old build); -b is the logical and -ub the physical batch
+    so a state longer than -ub fails (issue 30073, user error).'
+  techniques:
+  - batch-invariance test with concurrent unequal-length requests
+  - non-causal sequences stay in one ubatch
+  reported_results:
+  - Alone 0.2839 vs batched with shorter request 0.449-0.450 (every run), vllm-d3-mini Q8_0, -np 3 -b 2048 -ub 2048
+  - Issue state open, 0 comments at 2026-10-31; PR 30408 merged 2026-10-12T22:23:02Z (small diff, 5 files in src/)
+  - 'Residual: 0.007 probability shift from batch cuts (issue 31475); julia-1 up to 2.2e-2 vs reference (PR 29818)'
+  cross_references:
+    chapters: []
+    handoffs:
+    - typed-decision-plane.md
+    experiments: []
+    intake_entries:
+    - intake-2582
+  recommended_actions:
+  - 'Proposal (operator-review candidate, derived by the ws58 intake): TD-23: batch-invariance gate; see ledger W3DEC-2'
+  credibility_score: null
+  contradicting_evidence: null
+  referenced_arxiv_ids: []
+  notes: 'Open issue; fix PR 30408 likely but unconfirmed. Not read in dive: Reporter''s linked claude.ai artifact fix; commit comment
+    204575113 on efe3626b1; source of llama-batch.cpp split_equal/split_seq.'
+  verification: dive-verified
+  handoffs_updated: []
+  handoffs_created: []
+  source_revision: github.com/ggml-org/llama.cpp issue 30402 (open, 0 comments, build 11572/efe3626b1) + PR 30408 (merge cbe28bb3cb07)
+    + issues 30482/31475/31150/29902/30073 + PR 30710/30567, retrieved 2026-10-31 via GitHub API; sha256 of paper not applicable
+  reader_should_conclude: Cite for the invariant (non-causal sequences must stay whole in one ubatch) and for the test shape. Do not
+    cite 30402 as proof that d1 is batch-dependent; do not assume 30408 fixes it until retested on a build containing cbe28bb3.
+  read_depth: FULL
+  claim_anchors:
+  - claim_index: 0
+    kind: heading-and-hash
+    locator: issue 30402 title
+    quote: 'Eval bug: vllm-d3 answers change when a shorter request shares the batch (split_equal splits non-causal prompts)'
+    quote_sha256: 318fdf59ffc726bcb5a8aa74c39a3d04bdfc7899bc753bafe5f8697e8bface1a
+    source_revision: github.com/ggml-org/llama.cpp issue 30402 (open, 0 comments, build 11572/efe3626b1) + PR 30408 (merge cbe28bb3cb07)
+      + issues 30482/31475/31150/29902/30073 + PR 30710/30567, retrieved 2026-10-31 via GitHub API; sha256 of paper not applicable
+    verified_by: research-intake/stage2
+  - claim_index: 0
+    kind: heading-and-hash
+    locator: issue 30402 body
+    quote: Sent alone, request A always gets noul = 0.2839. Batched with a shorter request it gets 0.449 to 0.450, on every run.
+    quote_sha256: 6b84a7e1ce62a306aa937de1e742850c86a264022bf96d1ae058b7db06ce4a12
+    source_revision: github.com/ggml-org/llama.cpp issue 30402 (open, 0 comments, build 11572/efe3626b1) + PR 30408 (merge cbe28bb3cb07)
+      + issues 30482/31475/31150/29902/30073 + PR 30710/30567, retrieved 2026-10-31 via GitHub API; sha256 of paper not applicable
+    verified_by: research-intake/stage2
+  - claim_index: 0
+    kind: heading-and-hash
+    locator: issue 30402 body, serve.sh
+    quote: -ngl 99 -np 3 -c 12288 -b 2048 -ub 2048 -sps 0
+    quote_sha256: 32d41b4209b84d90a493e033af3b004b8a9876db788e70b8f1358af248f2cce3
+    source_revision: github.com/ggml-org/llama.cpp issue 30402 (open, 0 comments, build 11572/efe3626b1) + PR 30408 (merge cbe28bb3cb07)
+      + issues 30482/31475/31150/29902/30073 + PR 30710/30567, retrieved 2026-10-31 via GitHub API; sha256 of paper not applicable
+    verified_by: research-intake/stage2
+  - claim_index: 0
+    kind: heading-and-hash
+    locator: issue 30402 body
+    quote: 'version: 0.6.0-dev (build 11572, commit efe3626b1)'
+    quote_sha256: cf13cad7f3b7b58b1c3e83c41ec1720faad32264b874322e436b50feaa8d9172
+    source_revision: github.com/ggml-org/llama.cpp issue 30402 (open, 0 comments, build 11572/efe3626b1) + PR 30408 (merge cbe28bb3cb07)
+      + issues 30482/31475/31150/29902/30073 + PR 30710/30567, retrieved 2026-10-31 via GitHub API; sha256 of paper not applicable
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: heading-and-hash
+    locator: PR 30408 patch src/llama-context.cpp
+    quote: // non-causal attention needs the whole sequence in one ubatch
+    quote_sha256: b394f7fbbe23a51b666d43e5bd99511065fdd70da01c196b1c5076fc43dcdc89
+    source_revision: github.com/ggml-org/llama.cpp issue 30402 (open, 0 comments, build 11572/efe3626b1) + PR 30408 (merge cbe28bb3cb07)
+      + issues 30482/31475/31150/29902/30073 + PR 30710/30567, retrieved 2026-10-31 via GitHub API; sha256 of paper not applicable
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: heading-and-hash
+    locator: PR 30408 body
+    quote: 'Not 100% sure but seems like there is a problem with the case: non-causal + hybrid + multi seq'
+    quote_sha256: 9192c1b2a198daee4462b1a658b0903f90fb56767bb25998f3ebd80793af2ce9
+    source_revision: github.com/ggml-org/llama.cpp issue 30402 (open, 0 comments, build 11572/efe3626b1) + PR 30408 (merge cbe28bb3cb07)
+      + issues 30482/31475/31150/29902/30073 + PR 30710/30567, retrieved 2026-10-31 via GitHub API; sha256 of paper not applicable
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: heading-and-hash
+    locator: PR 30408 header
+    quote: PR 30408 (merged 2026-10-12T22:23:02Z)
+    quote_sha256: 66b77df088f7b8ec88edcd67ce295267ae387b4c85ec84c46ec6748034ac29b9
+    source_revision: github.com/ggml-org/llama.cpp issue 30402 (open, 0 comments, build 11572/efe3626b1) + PR 30408 (merge cbe28bb3cb07)
+      + issues 30482/31475/31150/29902/30073 + PR 30710/30567, retrieved 2026-10-31 via GitHub API; sha256 of paper not applicable
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: heading-and-hash
+    locator: issue 29902 body
+    quote: Server collects several questions up until n_batch, but Laya must process batch with one ubatch (cause no KV-memory)
+    quote_sha256: 33644e70f2bb7bc641a377cc0cdbeb9d7a6e6033c0e83c7ea55eecd34b44332e
+    source_revision: github.com/ggml-org/llama.cpp issue 30402 (open, 0 comments, build 11572/efe3626b1) + PR 30408 (merge cbe28bb3cb07)
+      + issues 30482/31475/31150/29902/30073 + PR 30710/30567, retrieved 2026-10-31 via GitHub API; sha256 of paper not applicable
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: heading-and-hash
+    locator: issue 30402 header
+    quote: state=open created=2026-10-12T17:38:11Z closed=None comments=0
+    quote_sha256: e02a9fc5aa637273c2d32cbeb407e6d10ff7e45cc89ebb83167e8b9387dbaa24
+    source_revision: github.com/ggml-org/llama.cpp issue 30402 (open, 0 comments, build 11572/efe3626b1) + PR 30408 (merge cbe28bb3cb07)
+      + issues 30482/31475/31150/29902/30073 + PR 30710/30567, retrieved 2026-10-31 via GitHub API; sha256 of paper not applicable
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: heading-and-hash
+    locator: issue 31475 body
+    quote: Also, bitwise equality is not guaranteed because different batch cuts changed one synthetic probability by about `0.007`.
+    quote_sha256: 17f61ba1e1f69a48b4a898dcfbbdeb3c1bd2014594756f90c139cf431ac8ff50
+    source_revision: github.com/ggml-org/llama.cpp issue 30402 (open, 0 comments, build 11572/efe3626b1) + PR 30408 (merge cbe28bb3cb07)
+      + issues 30482/31475/31150/29902/30073 + PR 30710/30567, retrieved 2026-10-31 via GitHub API; sha256 of paper not applicable
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: heading-and-hash
+    locator: issue 30482 body
+    quote: failed to get embeddings, the question and its options must fit in one batch
+    quote_sha256: fd3e2f356300ace83cefb1fb218cdfeb92e8616d9dee2fd223c89846737eb651
+    source_revision: github.com/ggml-org/llama.cpp issue 30402 (open, 0 comments, build 11572/efe3626b1) + PR 30408 (merge cbe28bb3cb07)
+      + issues 30482/31475/31150/29902/30073 + PR 30710/30567, retrieved 2026-10-31 via GitHub API; sha256 of paper not applicable
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: heading-and-hash
+    locator: PR 30710 body
+    quote: Limit the shared prompt prefix to each task's first required output position
+    quote_sha256: 060de5784ebe3cf7faac0e6a1682cd33cbfe498de23c1daf79abd3bd38c55a48
+    source_revision: github.com/ggml-org/llama.cpp issue 30402 (open, 0 comments, build 11572/efe3626b1) + PR 30408 (merge cbe28bb3cb07)
+      + issues 30482/31475/31150/29902/30073 + PR 30710/30567, retrieved 2026-10-31 via GitHub API; sha256 of paper not applicable
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 0
+    effect: narrowed
+    note: stage-1 filing described this as a generic decision-model batch-dependence; the report is for vllm-d3-mini, non-causal+hybrid,
+      and no d1 model is shown affected
+  depends_on: []
+  dive_corrections: '2026-10-31 (Stage 2, wave 3 (Stage 2b)): Stage-1 filing was a bare pointer. Dive narrows it to the vllm-d3 model,
+    identifies the non-causal split_equal mechanism, finds the likely fix PR 30408 (merged hours after the report; no one has retested)
+    and adds the open adjacent defects (31475 schedule sensitivity, 31150 router crash, 30482 500s fixed by 30710). The linked claude.ai
+    artifact with the reporter''s proposed fix was not readable. Not asserted: that d1 (LFM3 conv/attention hybrid) or Kev are batch-sensitive.
+    2026-10-31 (Stage-2 close-out): dive-surfaced sources DECLINED: llama.cpp issue #31150 (reported on an old build; superseded by
+    the batch-split fixes being ingested).'
+- id: intake-2596
+  arxiv_id: '2610.28577'
+  url: https://arxiv.org/abs/2610.28577
+  source_type: paper
+  title: Cache Engineering for Agents
+  categories:
+  - kv_cache
+  - agent_architecture
+  - inference_serving
+  - context_management
+  novelty: medium
+  relevance: medium
+  discovered_via: expansion
+  expanded_from: intake-2590
+  verdict: worth_investigating
+  ingested_date: '2026-10-31'
+  authors:
+  - Tianyu Fu
+  - Ruoxi Wang
+  - Zihan Min
+  - Zhongqi Ren
+  - Zhihao Li
+  - Tengxuan Liu
+  - Shengxu Mu
+  - Hanling Zhang
+  - Yu Wang
+  key_claims:
+  - 'arXiv:2610.28577v1 (cs.CL, submitted 20 Oct 2026; title confirmed on the abs page: ''Cache Engineering for Agents''; Tsinghua University
+    + CUHK, corresponding author Yu Wang) proposes cache engineering: the agent harness controls the ACTIVE KV cache with two operations
+    beyond append. drop(P) removes selected KV entries from future attention while leaving retained entries, their position encodings
+    and the logical token sequence unchanged; repos rotates retained keys with RoPE (K <- R(q) R(p)^-1 K, values unchanged), compacting
+    positions to 0..r-1 and resetting the next position index. No re-prefill of retained context.'
+  - 'Mechanism for the retained KV: a retained entry''s K/V were computed while attending to the since-dropped tokens, so it can still
+    carry information from them (Figure 1, ''nested color blocks''); drop is NOT equivalent to deleting the text and re-prefilling.
+    The paper''s primary policy is tool-response rolling drop (keep KV of the latest 12 tool responses, drop older ones), with repos
+    triggered at a threshold equal to the Standard baseline''s summarization threshold.'
+  - 'Prefix-matching correctness hazard (the load-bearing finding): cache state is history-dependent. The same token prefix and retained
+    positions can have different KV under different drop/append/repos orders (Figure 5: C''s KV differs in all three trajectories that
+    retain B and C), so ordinary token-prefix matching can reuse an incorrect state. AKV (built on SGLang) keys an extended radix tree
+    on tokens PLUS operation history (drop nodes, reposition nodes, per-token position labels, exact vs ''retrigger'' matching), evicts
+    dropped cache first and per positional version, and restores evicted segments in one prefill pass with segment-batch attention (queries
+    split at drop/repos points; FFN still processes the whole sequence as one batch). Interface: stateless OpenAI-style request with
+    messages plus cache{drop, reposition}.'
+  - 'Agent results (Table 1; MiniMax-M2.7, GPT-OSS-120B, MiroThinker-1.7-Mini x BCP, GAIA-Text, SWE-Verified, xbench-DS): average score
+    AKV 53.7 / 53.1 / 45.8 vs Standard 52.4 / 51.0 / 44.1 (+1.3 to +2.1 points), average cost AKV 4.4 / 7.3 / 14.8 vs Standard 5.0 /
+    11.2 / 20.4 cents; -27.7% cost vs Standard and -21.9% vs Text Engineering averaged over all 12 cells. Wins are not uniform (e.g.
+    GPT-OSS-120B xbench 37.5 vs 38.5; MiniMax SWE 74.4 vs 75.2). Costs are API-price-table estimates (Groq, MiniMax, Qwen3-30B-A3B rates)
+    from active tokens, with repos tokens charged at the cache-hit rate; not measured spend.'
+  - 'Serving results (Table 2; GPT-OSS-120B, Top-80 longest SWE-Verified trajectories replayed at temperature 0 with ignore_eos, 8x
+    A800-80GB BF16, 4 prefill + 4 decode GPUs, TP4, SGLang base): peak-throughput comparison AKV C=14 vs Standard C=12 gives 1.36x mean
+    / 1.51x P95 latency, 1.53x input / 1.18x output throughput (input counts all logical tokens including dropped). Caveats: Standard
+    at C>=14 is reported over a fixed one-hour window with unfinished requests; AKV''s higher-C rows are truncated at the first 30 completed
+    tasks; replay length per method differs because each replays trajectories from its own policy; decode speedup comes mainly from
+    shorter attention (Fig 12).'
+  - 'Ablations and limits: repos raises BCP pass rate 55 -> 62 (Table 3/4, GPT-OSS-120B first 100 tasks) by removing a position limit,
+    at higher cost 7.1 -> 10.9; dropping reasoning KV lowers pass rate vs tool-only drop; recursive self-improvement policies cut cost
+    15.6% (iter 3) and 17.8% (iter 6) vs Standard on 100 held-out BCP tasks (the abstract''s 7.1% is vs the expert policy); GPT-OSS-20B
+    average 45.2 / 4.8 cents (Table 7); KV reads are 82.4% of API cost in their accounting. Authors'' stated limitation: linear-attention
+    models are future work, so hybrid-SSM models (Qwen3.5/3.6 family in our fleet) are outside the evidence.'
+  techniques:
+  - KV drop
+  - RoPE reposition
+  - history-aware radix tree
+  - drop-aware eviction
+  - segment-batch attention
+  - cache-as-tool
+  - recursive self-improvement of cache policies
+  reported_results:
+  - 'Table 1 avg score/cost: MiniMax AKV 53.7/4.4 vs Standard 52.4/5.0; GPT-OSS-120B 53.1/7.3 vs 51.0/11.2; MiroThinker 45.8/14.8 vs
+    44.1/20.4'
+  - 'Table 2 peak: AKV C=14 51837 in / 369 out tok/s, 9.09 s mean, 28.49 s P95; Standard C=12 33832 / 313, 12.39 s, 43.16 s'
+  - 'Table 3/4: Tool drop without repos BCP 55.0 cost 7.1; with repos 62.0 cost 10.9; Table 7 GPT-OSS-20B avg 45.2/4.8'
+  cross_references:
+    chapters: []
+    handoffs:
+    - kv-prefix-fork-and-paged-attention.md
+    - context-folding-progressive.md
+    - tool-output-compression.md
+    experiments: []
+    intake_entries:
+    - intake-2590
+    - intake-2559
+  recommended_actions:
+  - 'Proposal (operator-review candidate, derived by the ws58 intake): see ledger W3DEC-6..8'
+  credibility_score: 3
+  contradicting_evidence: null
+  referenced_arxiv_ids:
+  - '2610.28577'
+  notes: 'Companion paper of intake-2590 (repo). Read v1 HTML in full except appendices A.1.1, A.3, A.4, A.5. Single-lab, no peer review
+    yet, price-table cost. Not read in dive: Appendix A.1.1 kernel details, A.3, A.4 cost breakdowns, A.5 concurrent work, Figures (images),
+    reference list, repo code.'
+  verification: dive-verified
+  handoffs_updated: []
+  handoffs_created: []
+  source_revision: arXiv:2610.28577v1 HTML sha256-12 720743b692be, retrieved 2026-10-31 (submitted 20 Oct 2026)
+  reader_should_conclude: Cite for the history-dependence hazard and the drop/repos semantics. Cost numbers are price-table estimates
+    and serving numbers are SGLang BF16 on 8xA800 with replayed trajectories; not transferable to llama.cpp on EPYC/MI210. Hybrid-SSM
+    models are outside the evidence.
+  read_depth: FULL
+  claim_anchors:
+  - claim_index: 0
+    kind: heading-and-hash
+    locator: v1 abstract
+    quote: 'We formalize these cache operations and identify history dependence as a serving challenge: identical token sequences can
+      yield different cache states under different cache operation sequences, making prefix matching insufficient for correct cache
+      reuse.'
+    quote_sha256: bf06275b9161ea70f08c970a82ad77b6995064ff3cd3914cc85818bd07ecbbf1
+    source_revision: arXiv:2610.28577v1 HTML sha256-12 720743b692be, retrieved 2026-10-31 (submitted 20 Oct 2026)
+    verified_by: research-intake/stage2
+  - claim_index: 0
+    kind: heading-and-hash
+    locator: v1 §3.3 Drop
+    quote: removes selected KV states from subsequent attention, while leaving the retained states, their position encodings, and the
+      logical token sequence unchanged
+    quote_sha256: e3f8025f6ecb06bb77ef951e5dbf356ededdd2bd48d72cc8f184d77f67ecaf0f
+    source_revision: arXiv:2610.28577v1 HTML sha256-12 720743b692be, retrieved 2026-10-31 (submitted 20 Oct 2026)
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: heading-and-hash
+    locator: v1 §1
+    quote: Nested color blocks illustrate how retained KV can still carry information from dropped history.
+    quote_sha256: 76c70dd527bccbc85c5f32156824d5c376f0f2bffdb051c57b8f68d82472ac1b
+    source_revision: arXiv:2610.28577v1 HTML sha256-12 720743b692be, retrieved 2026-10-31 (submitted 20 Oct 2026)
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: heading-and-hash
+    locator: v1 §5.1 Baselines
+    quote: For AKV, we use a tool-response rolling-drop policy that retains the KV states of the latest 12 tool responses.
+    quote_sha256: 7179e76884f14f956c4b9b79bcf20e710e765c37c77055a894cdd2b88345d5af
+    source_revision: arXiv:2610.28577v1 HTML sha256-12 720743b692be, retrieved 2026-10-31 (submitted 20 Oct 2026)
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: heading-and-hash
+    locator: v1 §4.2.1
+    quote: Token prefixes alone no longer determine cache states, so ordinary prefix matching can incorrectly reuse states from different
+      cache operation histories
+    quote_sha256: 2d1a930d0fa9e7e80f8b406ddc94982740577b3bec81c9bd90ee284509300103
+    source_revision: arXiv:2610.28577v1 HTML sha256-12 720743b692be, retrieved 2026-10-31 (submitted 20 Oct 2026)
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: heading-and-hash
+    locator: v1 §4.2.3
+    quote: 'Prefix matching checks both token and operation histories: matching position indices allow direct reuse, while differing
+      indices require key rotation.'
+    quote_sha256: 30a8b2112cf43e5beb07a255e3c40878c31630cc5074dce1d6bc4dc68da94926
+    source_revision: arXiv:2610.28577v1 HTML sha256-12 720743b692be, retrieved 2026-10-31 (submitted 20 Oct 2026)
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: heading-and-hash
+    locator: v1 §5.2
+    quote: AKV also reduces inference cost by 27.7% relative to Standard and 21.9% relative to Text Engineering, averaged across all
+      three models and four benchmarks.
+    quote_sha256: e698a7fdd02fb35932d08b358f4bb95e88f362b98278812aae9ff1be4317f515
+    source_revision: arXiv:2610.28577v1 HTML sha256-12 720743b692be, retrieved 2026-10-31 (submitted 20 Oct 2026)
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: heading-and-hash
+    locator: v1 §5.1 Metrics
+    quote: deliberately overestimating the cost of key rotation for a conservative comparison.
+    quote_sha256: 82928096dd2ab69ac99fa6b1fa2b3d0599806454e7f78567f9730d36dd8ab3a1
+    source_revision: arXiv:2610.28577v1 HTML sha256-12 720743b692be, retrieved 2026-10-31 (submitted 20 Oct 2026)
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: heading-and-hash
+    locator: v1 §5.1 Serving configuration
+    quote: 'Serving experiments use eight NVIDIA A800-80GB GPUs: four for prefill and four for decode, with tensor parallelism of four.'
+    quote_sha256: 580f3fe132ed352c5bdee273f0c8c309a497798b2ce70f824bc64261889ff7bc
+    source_revision: arXiv:2610.28577v1 HTML sha256-12 720743b692be, retrieved 2026-10-31 (submitted 20 Oct 2026)
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: heading-and-hash
+    locator: v1 App A.1.4
+    quote: We use temperature 0 and ignore_eos=True to generate the prescribed number of tokens.
+    quote_sha256: 6fe831438d4d7d3170751ccf72e9f01720ca6c31e43d88d6a0b63735b03900bb
+    source_revision: arXiv:2610.28577v1 HTML sha256-12 720743b692be, retrieved 2026-10-31 (submitted 20 Oct 2026)
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: heading-and-hash
+    locator: v1 App A.1.4
+    quote: We therefore report these two runs over a fixed one-hour window, with some requests still unfinished at the cutoff.
+    quote_sha256: 209edae21bb81c8e2519cc3cb53aab263cb4f1fc419664a3fe7590a2df682ad4
+    source_revision: arXiv:2610.28577v1 HTML sha256-12 720743b692be, retrieved 2026-10-31 (submitted 20 Oct 2026)
+    verified_by: research-intake/stage2
+  - claim_index: 5
+    kind: heading-and-hash
+    locator: v1 §5.4
+    quote: The policies from iterations 3 and 6 reduce per-task cost by 15.6% and 17.8% relative to Standard, respectively.
+    quote_sha256: 1a36fa21b7f300ceebe2471e28ec73bbe7637b5919725ecced912cdaf936bc1f
+    source_revision: arXiv:2610.28577v1 HTML sha256-12 720743b692be, retrieved 2026-10-31 (submitted 20 Oct 2026)
+    verified_by: research-intake/stage2
+  - claim_index: 5
+    kind: heading-and-hash
+    locator: v1 §6 Limitations
+    quote: Further exploration of cache engineering strategies, training agents under this scheme, and extending serving support to
+      linear attention models remain future work.
+    quote_sha256: c9bc4f0fd3c4eb61d6acc6618a3f4da5e30c610a57b6b232d7e1fcdd8b5b1ee7
+    source_revision: arXiv:2610.28577v1 HTML sha256-12 720743b692be, retrieved 2026-10-31 (submitted 20 Oct 2026)
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 4
+    effect: narrowed
+    note: throughput/latency ratios hold for peak-vs-peak comparison but Standard C>=14 is a truncated one-hour window and replays use
+      ignore_eos
+  depends_on: []
+  dive_corrections: '2026-10-31 (Stage 2, wave 3 (Stage 2b)): Confirms the stage-1 AKV repo entry (intake-2590) against the paper and
+    adds: exact drop/repos formulas, the segment-batch attention design, the repos-node reasoning (A.1.2), the replay/truncation caveats,
+    and the linear-attention limitation. Intake-2590 numbers recompute from the tables. Nothing overturned. 2026-10-31 (second reader):
+    main dropped an anchor judged not to support its claim. 2026-10-31 (second reader): main dropped an anchor judged not to support
+    its claim.'
+- id: intake-2597
+  arxiv_id: null
+  url: https://github.com/ggml-org/llama.cpp/issues/26695
+  source_type: repo
+  title: 'llama.cpp issue 26695: llama_memory_seq_rm returns true but does not restore recurrent state when rolling back an entire last
+    decode (n_rs_seq>0)'
+  categories:
+  - speculative_decoding
+  - ssm_hybrid
+  - inference_serving
+  novelty: medium
+  relevance: high
+  discovered_via: expansion
+  expanded_from: intake-2591
+  verdict: worth_investigating
+  ingested_date: '2026-10-31'
+  authors:
+  - natemacfadden
+  key_claims:
+  - 'Reporter (natemacfadden, Vulkan, Qwen3.5-4B) shows that with n_rs_seq=1, decoding one token and calling llama_memory_seq_rm(seq
+    0, WARM, -1) returns true but leaves the recurrent state modified: next-token prediction differs (no undo 828 vs undone 264).'
+  - 'Maintainer am17an: n_rs_seq is only used for speculative decoding, where the anchor token (the first token of the batch) is never
+    removed; low priority because n_rs_seq is marked experimental.'
+  - 'Reporter notes a ~5% decode-time-cost fix (when n_rs_seq>0); am17an declines it: about 5% is too much for a bug that does not exist
+    when the feature is used as intended.'
+  - The issue is single-sequence; it makes no claim about cross-slot contamination. Issue closed (state=closed) with no code change;
+    first bad commit is the original MTP commit 255582687 (#22673), which IS an ancestor of our frozen tree.
+  techniques:
+  - recurrent snapshot rollback
+  - n_rs_seq
+  reported_results:
+  - no undo -> 828 / undone -> 264 (seq_rm returned true) / MISMATCH, Qwen_Qwen3.5-4B-Q4_K_M, n_rs_seq=1, WARM=12, Vulkan Strix Halo
+    (issue body log)
+  cross_references:
+    chapters: []
+    handoffs:
+    - dflash2-block-drafter-experimental-build.md
+    - speculative-decoding-mtp-refresh.md
+    experiments: []
+    intake_entries:
+    - intake-2591
+  recommended_actions:
+  - 'Proposal (operator-review candidate, derived by the ws58 intake): Add to temp-0 np>1 probe: log per verification round whether
+    any seq_rm reached rollback >= batch length (must be zero); treat any as out-of-contract, not as contamination.'
+  credibility_score: null
+  contradicting_evidence: null
+  referenced_arxiv_ids: []
+  notes: 'GitHub issue; 3 comments, all read. Hardware Vulkan/Strix Halo, not our HIP/CPU paths; logic is backend-independent graph/cache
+    code. Not read in dive: linked PR #25004/#26499/#22746/vLLM threads and the unmerged local patch bodies were not fetched; only the
+    assigned thread plus its files/review comments'
+  verification: dive-verified
+  handoffs_updated: []
+  handoffs_created: []
+  source_revision: GitHub REST API (issue/PR, comments, files) JSON rendered to all.txt, retrieved 2026-10-31 (https://github.com/ggml-org/llama.cpp/issues/26695)
+  reader_should_conclude: 'Cite as: upstream-acknowledged single-seq limitation of seq_rm on whole-batch rollback under n_rs_seq>0;
+    maintainer rationale that spec decoding never removes the anchor. Do NOT cite as evidence for or against np>1 cross-slot contamination,
+    and do not call the 5% fix available (declined, not merged).'
+  read_depth: FULL
+  claim_anchors:
+  - claim_index: 0
+    kind: heading-and-hash
+    locator: issue body, log
+    quote: no undo -> 828 undone -> 264 (seq_rm returned true)
+    quote_sha256: bde1a525347e2e0d168e48817897deea6512fce4db5ef68b9b99b4b6f8969ed7
+    source_revision: GitHub REST API (issue/PR, comments, files) JSON rendered to all.txt, retrieved 2026-10-31 (https://github.com/ggml-org/llama.cpp/issues/26695)
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: heading-and-hash
+    locator: am17an comment 2026-08-08T15:16:21Z
+    quote: The `n_rs_seq` stuff is only used for speculative decoding, where we never have to remove the anchor token i.e the first
+      token.
+    quote_sha256: 2b33d834282661a83a66141cf528e39e33f78388800634ebcfe61036d0355da0
+    source_revision: GitHub REST API (issue/PR, comments, files) JSON rendered to all.txt, retrieved 2026-10-31 (https://github.com/ggml-org/llama.cpp/issues/26695)
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: heading-and-hash
+    locator: am17an comment 2026-08-08T15:58:43Z
+    quote: ~5% is ~5% too much for a bug that doesn't exist when using this feature.
+    quote_sha256: ed70f23f9a4d0145b364bcdbcdbf15a239fbdb5dba7103f7292dc0142d1b2d34
+    source_revision: GitHub REST API (issue/PR, comments, files) JSON rendered to all.txt, retrieved 2026-10-31 (https://github.com/ggml-org/llama.cpp/issues/26695)
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: heading-and-hash
+    locator: issue body, First Bad Commit
+    quote: Comes at first writing of the code
+    quote_sha256: 45af1a760b4a134f2d59daf4dc02c63a85b562fca7bc9d416543a1d5e199c641
+    source_revision: GitHub REST API (issue/PR, comments, files) JSON rendered to all.txt, retrieved 2026-10-31 (https://github.com/ggml-org/llama.cpp/issues/26695)
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 1
+    effect: narrowed
+    note: 'Maintainer statement is an assertion about the speculative server path, not a measurement; our frozen tree seq_rm (src/llama-memory-recurrent.cpp:190-200)
+      shows the mechanism: rollback = cell.pos-(p0-1) selects snapshot group idx; groups beyond what the last batch wrote ("trailing
+      slots are left unwritten", src/models/delta-net-base.cpp:593) are stale, which only bites when rollback >= batch length, i.e.
+      the anchor itself is removed.'
+  depends_on: []
+  dive_corrections: '2026-10-31 (Stage 2, wave 4 (Stage 2b)): Stage 1 had no primary text for the mechanism. Dive adds: the defect needs
+    a rollback as long as the whole decode batch (anchor removed); spec verification batches are anchor+drafts so rollback <= n_draft
+    < batch length, hence not reachable from MTP/DFlash2 rejection. No cross-slot element exists in the thread (rs_idx is per-seq: llama-memory-recurrent.cpp:407).'
+- id: intake-2598
+  arxiv_id: null
+  url: https://github.com/ggml-org/llama.cpp/issues/28019
+  source_type: repo
+  title: 'llama.cpp issue 28019: qwen4exp multi-seq split replay corrupts recurrent state when rs rollback is enabled'
+  categories:
+  - speculative_decoding
+  - ssm_hybrid
+  - inference_serving
+  novelty: medium
+  relevance: high
+  discovered_via: expansion
+  expanded_from: intake-2591
+  verdict: worth_investigating
+  ingested_date: '2026-10-31'
+  authors:
+  - netmana808
+  key_claims:
+  - Issue (netmana808, 2026-08-30, closed stale 2026-10-26) force-enabled LLM_ARCH_QWEN4EXP in llm_arch_supports_rs_rollback on cc231cb0d;
+    test-recurrent-state-rollback failed test_multi_seq_split_replay with logits max diff 9.25491 (first at seq 0 pos 16), single-seq
+    checkpoint restore passed.
+  - 'Root cause guessed in the issue (PLE conv history in the same recurrent row, snapshot planes not widened) is the mechanism landed
+    by upstream 0eadefeb (#28123, 2026-09-01): build_conv_state_at now writes one conv snapshot per slot for delta-net QKV and PLE conv.
+    Our tree ports this as 0771238438 (src/models/qwen4exp.cpp:1263).'
+  - 'Follow-up comment: on master 95ef7fc (arch natively enabled) test-recurrent-state-rollback now fails the dirty-ctx subtest (diffs
+    8.23 vs 5.62 at position 6, CPU-only too); reporter reads it as incompleteness in the restore path of #28123 and states the exposed
+    population is MTP users reusing a slot across unrelated conversations. Unresolved: no maintainer reply visible, closed stale.'
+  - need_n_rs_seq() arms n_rs_seq only for DRAFT_MTP/EAGLE3/DFLASH/DSPARK; ngram-* types and no-spec leave n_rs_seq==0 so the rollback
+    path is unreachable. Our common/common.h:390-394 is identical.
+  - 'Aggregate numbers are GB10 reporter measurements: ngram-map-k4v --parallel 3 ~50 tok/s vs ~66-70 with speculation disabled (spec
+    inverts under concurrency without batched rollback).'
+  techniques:
+  - multi-seq split replay
+  - PLE conv snapshot
+  reported_results:
+  - test_multi_seq_split_replay max diff 9.25491 at seq 0 pos 16 (issue body)
+  - dirty-ctx diffs 8.23 vs 5.62 at pos 6 on master 95ef7fc (comment 2026-09-10); GB10 ngram spec np3 ~50 vs ~66-70 tok/s spec-off (issue
+    body)
+  cross_references:
+    chapters: []
+    handoffs:
+    - dflash2-block-drafter-experimental-build.md
+    - cpu-decode-roofline-program.md
+    experiments: []
+    intake_entries:
+    - intake-2591
+  recommended_actions:
+  - 'Proposal (operator-review candidate, derived by the ws58 intake): Run tests/test-recurrent-state-rollback (CPU, correctness-only)
+    against our v10/experimental qwen4exp build incl. dirty-ctx subtest on the frontdoor GGUF; then slot-reuse arm of the np4 identity
+    probe.'
+  credibility_score: null
+  contradicting_evidence: null
+  referenced_arxiv_ids: []
+  notes: 'GitHub issue, 2 human-visible comments + stale bot, read in full. Maintainer replies referenced by the reporter are absent
+    from the API listing. Not read in dive: linked PR #25004/#26499/#22746/vLLM threads and the unmerged local patch bodies were not
+    fetched; only the assigned thread plus its files/review comments'
+  verification: dive-verified
+  handoffs_updated: []
+  handoffs_created: []
+  source_revision: GitHub REST API (issue/PR, comments, files) JSON rendered to all.txt, retrieved 2026-10-31 (https://github.com/ggml-org/llama.cpp/issues/28019)
+  reader_should_conclude: 'Cite: qwen4exp rollback needs #28123 (ported locally as 0771238438); slot reuse across unrelated conversations
+    under MTP/DFlash is the suspect condition and is UNTESTED on our binary. Do not cite the 9.25 diff as a current defect (pre-fix),
+    and do not cite the dirty-ctx numbers as ours.'
+  read_depth: FULL
+  claim_anchors:
+  - claim_index: 0
+    kind: heading-and-hash
+    locator: issue body, step 3
+    quote: multi-seq split replay logits mismatch (max diff 9.25491, first at seq 0 pos 16)
+    quote_sha256: a342fb39765e4478bd400302b57ea60d91ba4714050cedeea82f1edd8fa0ac08
+    source_revision: GitHub REST API (issue/PR, comments, files) JSON rendered to all.txt, retrieved 2026-10-31 (https://github.com/ggml-org/llama.cpp/issues/28019)
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: heading-and-hash
+    locator: comment 2026-09-10
+    quote: '`build_conv_state_at` wrote a single plane, so a rollback restored a convolution history that was never captured.'
+    quote_sha256: 7325e1e71ff6f30e3cfbb3826909723ac92d627abd8ec6c3ce75018231c28226
+    source_revision: GitHub REST API (issue/PR, comments, files) JSON rendered to all.txt, retrieved 2026-10-31 (https://github.com/ggml-org/llama.cpp/issues/28019)
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: heading-and-hash
+    locator: comment 2026-09-10
+    quote: the exposed population is MTP users with more than one conversation per slot
+    quote_sha256: 13439fa283ff725328158d66bbacc49949e588428cbf170fdef1ef1dd909847b
+    source_revision: GitHub REST API (issue/PR, comments, files) JSON rendered to all.txt, retrieved 2026-10-31 (https://github.com/ggml-org/llama.cpp/issues/28019)
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: heading-and-hash
+    locator: comment 2026-09-10
+    quote: '`ngram-*` type:** `n_rs_seq == 0`, so the rollback planes are never allocated'
+    quote_sha256: fd1b20448b2f7b7ab941f262378e51c20be4ee81adc58fe8af49258ca7790b93
+    source_revision: GitHub REST API (issue/PR, comments, files) JSON rendered to all.txt, retrieved 2026-10-31 (https://github.com/ggml-org/llama.cpp/issues/28019)
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: heading-and-hash
+    locator: issue body
+    quote: three concurrent streams reach only ~50 tok/s aggregate on rewrite-style workloads vs ~66
+    quote_sha256: 58e4de4e3554da05006f3faa0fe793d997a0b452f886a6dd079f052aac57802f
+    source_revision: GitHub REST API (issue/PR, comments, files) JSON rendered to all.txt, retrieved 2026-10-31 (https://github.com/ggml-org/llama.cpp/issues/28019)
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 2
+    effect: narrowed
+    note: Only the reporter documents the dirty-ctx failure on 95ef7fc; verify on OUR binary (tests/test-recurrent-state-rollback.cpp:212
+      has the dirty-ctx check; our file is the older layout) before treating as live defect.
+  depends_on: []
+  dive_corrections: '2026-10-31 (Stage 2, wave 4 (Stage 2b)): Stage 1 unknown. The dive shows the multi-seq failure the issue opened
+    with was a pre-#28123 artifact (conv history never captured), but a different, later failure (dirty-ctx, slot reuse across conversations)
+    is alleged on post-#28123 master and was never adjudicated upstream. It is exactly the np>1 MTP condition. 2026-10-31 (Stage-2 close-out):
+    dive-surfaced sources DECLINED: llama.cpp PR #28123 (conv-state snapshot fix; our tree already carries it as local commit 0771238438,
+    and the proposed recurrent-state hash test checks its effect directly) and llama.cpp #25004 (older related thread; nothing load-bearing
+    beyond what this entry records).'
+- id: intake-2599
+  arxiv_id: null
+  url: https://github.com/ggml-org/llama.cpp/pull/30408
+  source_type: repo
+  title: 'llama.cpp PR 30408: model: fix vllm d3 multi seq case (keep non-causal sequences whole in one ubatch)'
+  categories:
+  - inference_serving
+  - ssm_hybrid
+  novelty: low
+  relevance: medium
+  discovered_via: expansion
+  expanded_from: intake-2595
+  verdict: worth_investigating
+  ingested_date: '2026-10-31'
+  authors:
+  - ngxson
+  key_claims:
+  - 'Merged 2026-10-12 as cbe28bb3 (5 files, +7/-7): embd_all = output_all || !cparams.causal_attn in llama_context::decode; llama_kv_cache
+    and llama_kv_cache_iswa init_batch now honor embd_all (previously GGML_UNUSED) and use split_seq instead of split_equal when n_stream>1
+    (unified-stream path still split_simple).'
+  - Scope is non-causal attention OR embeddings/output_all; causal LMs with embeddings off see embd_all==false, so their ubatching is
+    unchanged. Hybrid/recurrent memories already did split_seq on embd_all (our src/llama-memory-hybrid.cpp:77-79, llama-memory-recurrent.cpp:426-428).
+  - Not an ancestor of our frozen HEAD ffc1bac82 (merge-base a8dc0e326, 2026-07-16 per local graph); sha is present locally on remote
+    branches only. Author is "not 100% sure" of the diagnosis ("seems like there is a problem with the case non-causal + hybrid + multi
+    seq").
+  techniques:
+  - split_seq vs split_equal
+  reported_results:
+  - 5 files, +7/-7; merged 2026-10-12T22:23:02Z, sha cbe28bb3cb0758f0c566a9a3561766821aeb0748
+  cross_references:
+    chapters: []
+    handoffs:
+    - typed-decision-plane.md
+    experiments: []
+    intake_entries:
+    - intake-2595
+  recommended_actions:
+  - 'Proposal (operator-review candidate, derived by the ws58 intake): d1 screen build: include cbe28bb3 only if the screened decision
+    model is non-causal/embedding at np>1 (state the rule; check model attention in GGUF).'
+  credibility_score: null
+  contradicting_evidence: null
+  referenced_arxiv_ids: []
+  notes: 'PR files, patch, bodies, comments (none) read in full. Not read in dive: linked PR #25004/#26499/#22746/vLLM threads and the
+    unmerged local patch bodies were not fetched; only the assigned thread plus its files/review comments'
+  verification: dive-verified
+  handoffs_updated: []
+  handoffs_created: []
+  source_revision: GitHub REST API (issue/PR, comments, files) JSON rendered to all.txt, retrieved 2026-10-31 (https://github.com/ggml-org/llama.cpp/pull/30408)
+  reader_should_conclude: Cite as the ubatching fix for non-causal/embedding multi-seq batches. Do NOT carry as a requirement for MTP/DFlash2
+    np>1 identity (causal, embd_all false). Required only if the d1 screen build serves a non-causal or embedding-mode decision model
+    at np>1.
+  read_depth: FULL
+  claim_anchors:
+  - claim_index: 0
+    kind: heading-and-hash
+    locator: src/llama-context.cpp hunk
+    quote: const bool embd_all = output_all || !cparams.causal_attn;
+    quote_sha256: 254b522501f5c64712b3542c39249e9a28cd773ffa0a0519d4da44e9cd3df8d8
+    source_revision: GitHub REST API (issue/PR, comments, files) JSON rendered to all.txt, retrieved 2026-10-31 (https://github.com/ggml-org/llama.cpp/pull/30408)
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: heading-and-hash
+    locator: src/llama-memory.h hunk
+    quote: 'embd_all: keep all the tokens of a sequence in one ubatch (all tokens are output, or the attention is non-causal)'
+    quote_sha256: 0c691b2bb8a04ee1392580d90f2ca98c5fb9488bbad84168f9c0ca1cadccea39
+    source_revision: GitHub REST API (issue/PR, comments, files) JSON rendered to all.txt, retrieved 2026-10-31 (https://github.com/ggml-org/llama.cpp/pull/30408)
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: heading-and-hash
+    locator: PR body
+    quote: 'Not 100% sure but seems like there is a problem with the case: non-causal + hybrid + multi seq'
+    quote_sha256: 9192c1b2a198daee4462b1a658b0903f90fb56767bb25998f3ebd80793af2ce9
+    source_revision: GitHub REST API (issue/PR, comments, files) JSON rendered to all.txt, retrieved 2026-10-31 (https://github.com/ggml-org/llama.cpp/pull/30408)
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 1
+    effect: narrowed
+    note: Causal LMs are unaffected only when embeddings are off; in embedding mode with n_stream>1 the plain KV cache now splits per
+      sequence (new behaviour). Speculative servers do not run embedding mode.
+  depends_on: []
+  dive_corrections: '2026-10-31 (Stage 2, wave 4 (Stage 2b)): Stage 1 had only a title. Dive fixes scope: ubatch-split rule for non-causal
+    and output_all batches; not a causal-LM or speculative change.'
+- id: intake-2600
+  arxiv_id: null
+  url: https://github.com/ggml-org/llama.cpp/pull/30100
+  source_type: repo
+  title: 'llama.cpp PR 30100: metal: fix MUL_MAT+ADD fusion when the residual is itself a MUL_MAT'
+  categories:
+  - inference_serving
+  - hardware_optimization
+  novelty: low
+  relevance: low
+  discovered_via: expansion
+  expanded_from: intake-2594
+  verdict: already_integrated
+  ingested_date: '2026-10-31'
+  authors:
+  - nyo16
+  key_claims:
+  - 'Metal-only fix (merged 2026-10-07, 7e8324f5): the fused MUL_MAT+ADD encoder picked the residual as "the ADD operand whose op is
+    not MUL_MAT"; when both operands are mat-mul outputs it resolved to the fused op own output. Fix selects by identity (dst->src[0]==op).'
+  - Diff touches only ggml/src/ggml-metal/ggml-metal-ops.cpp (+2/-1) and tests/test-backend-ops.cpp (+9/-1, new mode mm2+mm); no CPU
+    or HIP source changes.
+  - 'Trigger: clef decision-model head options = proj_option_context@opt_ctx + proj_option_lexical@lexical. Reported: Metal default
+    billing 0.284 vs CPU 0.977 (technical 0.431 vs 0.009); with fix 0.977/0.008 on M1 Max; the BF16-keep-decision workaround was hiding
+    this bug, not quantization.'
+  - Not an ancestor of our HEAD; irrelevant to EPYC CPU/HIP serving, but the new backend-ops test mode is a free CPU/HIP check of the
+    same graph pattern.
+  techniques:
+  - Metal fusion residual selection
+  reported_results:
+  - Metal default 0.284/0.431 vs CPU, fix and fusion-disabled 0.977/0.008-0.009 (billing/technical, Cloudflare_clef-flash-Q8_0); 27
+    of 28 mm2+mm cases failed pre-fix, 168/168 pass post-fix (PR body)
+  cross_references:
+    chapters: []
+    handoffs:
+    - typed-decision-plane.md
+    experiments: []
+    intake_entries:
+    - intake-2594
+  recommended_actions:
+  - 'Proposal (operator-review candidate, derived by the ws58 intake): Optional cheap correctness check: test-backend-ops -o MUL_MAT_ADD
+    (mm2+mm) on CPU and HIP after import; skip otherwise.'
+  credibility_score: null
+  contradicting_evidence: null
+  referenced_arxiv_ids: []
+  notes: 'PR comments and review comment read (style nit only). Not read in dive: linked PR #25004/#26499/#22746/vLLM threads and the
+    unmerged local patch bodies were not fetched; only the assigned thread plus its files/review comments'
+  verification: dive-verified
+  handoffs_updated: []
+  handoffs_created: []
+  source_revision: GitHub REST API (issue/PR, comments, files) JSON rendered to all.txt, retrieved 2026-10-31 (https://github.com/ggml-org/llama.cpp/pull/30100)
+  reader_should_conclude: 'Cite as a Metal-specific defect; no action for EPYC kernels. Do not infer anything about HIP fusion from
+    it. Optional: run mm2+mm test-backend-ops on the HIP experimental build as a correctness-only check.'
+  read_depth: FULL
+  claim_anchors:
+  - claim_index: 0
+    kind: heading-and-hash
+    locator: ggml-metal-ops.cpp hunk
+    quote: 'res = dst->src[0] == op ? dst->src[1] : dst->src[0];'
+    quote_sha256: 08f4480bab36ab4b6e6dc1072109515d79609e4fe43e2348f8f1a099e9e70f9f
+    source_revision: GitHub REST API (issue/PR, comments, files) JSON rendered to all.txt, retrieved 2026-10-31 (https://github.com/ggml-org/llama.cpp/pull/30100)
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: heading-and-hash
+    locator: PR body table
+    quote: Metal, default | 0.284 | 0.431
+    quote_sha256: a0b0b30638177c4866cde67849c53455623f0dc0c8a6e7c2325b96dc919e59c9
+    source_revision: GitHub REST API (issue/PR, comments, files) JSON rendered to all.txt, retrieved 2026-10-31 (https://github.com/ggml-org/llama.cpp/pull/30100)
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: heading-and-hash
+    locator: PR body
+    quote: so the "keep `decision.*` at BF16" workaround in the issue is working around this bug.
+    quote_sha256: 48550d6faf4ef0aa96b2bf4fc6634393ad0a584bb640230a1af3c625411a9550
+    source_revision: GitHub REST API (issue/PR, comments, files) JSON rendered to all.txt, retrieved 2026-10-31 (https://github.com/ggml-org/llama.cpp/pull/30100)
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: heading-and-hash
+    locator: PR body
+    quote: New `MUL_MAT_ADD` mode `mm2+mm` in `test-backend-ops`
+    quote_sha256: 850bbc52d37ddb83acb2da7825f3fbff9cbf245a64693976fbd480f4f022e954
+    source_revision: GitHub REST API (issue/PR, comments, files) JSON rendered to all.txt, retrieved 2026-10-31 (https://github.com/ggml-org/llama.cpp/pull/30100)
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 3
+    effect: unaffected
+    note: Metal-only confirmed from the file list.
+  depends_on: []
+  dive_corrections: '2026-10-31 (Stage 2, wave 4 (Stage 2b)): Confirms Metal-only. No CPU/HIP code path change; CPU was the reference
+    in the PR own table.'
+- id: intake-2601
+  arxiv_id: null
+  url: https://github.com/ggml-org/llama.cpp/pull/29832
+  source_type: repo
+  title: 'llama.cpp PR 29832 (draft): server: model-agnostic implementation of the systemone/decision API'
+  categories:
+  - routing_intelligence
+  - inference_serving
+  novelty: high
+  relevance: high
+  discovered_via: expansion
+  expanded_from: intake-2593
+  verdict: worth_investigating
+  ingested_date: '2026-10-31'
+  authors:
+  - ngxson
+  key_claims:
+  - 'Draft PR by ngxson (base branch xsn/decision, state open, not merged, author "no intents to merge this (yet)") shows /v1/systemone
+    can run on ordinary chat models without fine-tuning: COMMON_DECISION_TYPE_GENERIC, server-built user template, answer read as the
+    next token after an open marker U+22B2 so a single-letter label is never merged with markers; thinking disabled.'
+  - 'Reported on Gemma 4 E4B and Qwen3.5-4B (image/audio/video accepted as the model supports): invoice image invoice 1.0/pay 1.0 vs
+    0.999/0.996; cat image animal 1.0/pay 0.002 vs 0.995/0.234; newspaper 1.0 and 0.95 vs 0.998 and 0.985; audio rows only for Gemma.'
+  - 'Stated gaps: always-thinking models corrupt the logits readout; shared prompt prefix does not work yet on hybrid/SWA models; calibration
+    not accepted. n_variants()==2 for non-score generic questions (option-order permutation); score questions single-variant.'
+  - 'Stage-1-era neighbours: the real systemone API merged as a4cb4c61fd (#29818) and H2O-Lightning-4B decision model as 7e3eeee048
+    (#30361), both present in the local object store but NOT in our HEAD (no server-decision files, grep systemone in tools/server/server-context.cpp
+    = 0). c78113ad6c (merge-commit sha of this open PR) is absent locally; the branch head is f30811c80b (present on a remote branch).'
+  techniques:
+  - next-token label readout
+  - option-order permutation variants
+  reported_results:
+  - Gemma 4 E4B / Qwen3.5-4B probabilities per image/audio test (PR body table); 4 files, +126/-17 across common.h, server-context.cpp,
+    server-decision.cpp/.h
+  cross_references:
+    chapters: []
+    handoffs:
+    - typed-decision-plane.md
+    experiments: []
+    intake_entries:
+    - intake-2593
+  recommended_actions:
+  - 'Proposal (operator-review candidate, derived by the ws58 intake): TD-23: add a GENERIC-readout arm (worker/frontdoor chat model,
+    enable_thinking off, ⊲label⊳ readout) beside the dedicated decision backends once the base is imported.'
+  credibility_score: null
+  contradicting_evidence: null
+  referenced_arxiv_ids: []
+  notes: 'Full diff, body read; no comments and no review comments exist. Not read in dive: linked PR #25004/#26499/#22746/vLLM threads
+    and the unmerged local patch bodies were not fetched; only the assigned thread plus its files/review comments'
+  verification: dive-verified
+  handoffs_updated: []
+  handoffs_created: []
+  source_revision: GitHub REST API (issue/PR, comments, files) JSON rendered to all.txt, retrieved 2026-10-31 (https://github.com/ggml-org/llama.cpp/pull/29832)
+  reader_should_conclude: Cite as an open draft demonstrating GENERIC typed decisions (next-token label readout with U+22B2 delimiters).
+    Do not cite its probabilities as accuracy evidence (a handful of hand-picked examples, no baseline). Needs the systemone base (a4cb4c61fd)
+    which our tree lacks.
+  read_depth: FULL
+  claim_anchors:
+  - claim_index: 0
+    kind: heading-and-hash
+    locator: PR body
+    quote: we can absolutely use any normal chat models to run a `/v1/systemone` API (no fine-tuning required)
+    quote_sha256: b8a8f16dbb4f02a1ac4cf6faa08bf28de7fddbcedc14878ff73c7659466bdd9f
+    source_revision: GitHub REST API (issue/PR, comments, files) JSON rendered to all.txt, retrieved 2026-10-31 (https://github.com/ggml-org/llama.cpp/pull/29832)
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: heading-and-hash
+    locator: PR body table
+    quote: invoice image | invoice 1.0, pay 1.0 | invoice 0.999, pay 0.996
+    quote_sha256: 860ddd7ebded8a63df50fc4aab1eeb107df17fbf6359930905c6fac36d0f6dcb
+    source_revision: GitHub REST API (issue/PR, comments, files) JSON rendered to all.txt, retrieved 2026-10-31 (https://github.com/ggml-org/llama.cpp/pull/29832)
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: heading-and-hash
+    locator: PR body
+    quote: Shared prompt prefix doesn't work yet, it's a bit tricky on hybrid/swa models
+    quote_sha256: 9cccb7049fbd285385eba5527aacf6aa4fac1890bc4c6ce1c3d4b1ed90d79b78
+    source_revision: GitHub REST API (issue/PR, comments, files) JSON rendered to all.txt, retrieved 2026-10-31 (https://github.com/ggml-org/llama.cpp/pull/29832)
+    verified_by: research-intake/stage2
+  - claim_index: 0
+    kind: heading-and-hash
+    locator: server-decision.cpp hunk
+    quote: Respond with only the label of the best option, written as " DECISION_GENERIC_OPEN "label" DECISION_GENERIC_CLOSE ".";
+    quote_sha256: ea26f7e75a062a47269f4d94633c597931cd62e3a3142a25194a6e7676328d11
+    source_revision: GitHub REST API (issue/PR, comments, files) JSON rendered to all.txt, retrieved 2026-10-31 (https://github.com/ggml-org/llama.cpp/pull/29832)
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 3
+    effect: narrowed
+    note: 'Do not state it is in or out of the production tree beyond: no server-decision.* files exist in our checkout.'
+  depends_on: []
+  dive_corrections: '2026-10-31 (Stage 2, wave 4 (Stage 2b)): Adds the decision-model-agnostic route: any in-lineup chat model can be
+    scored through the same typed-decision endpoint, giving a constrained-readout comparator without a dedicated decision GGUF. It is
+    a demo, not mergeable (no calibration, no hybrid prefix sharing). 2026-10-31 (Stage-2 close-out): dive-surfaced sources DECLINED:
+    llama.cpp PR #30361 (H2O-Lightning-4B decision-model support; adding a second decision family is a candidate-list choice for the
+    decision-screen owner, not something the PR thread settles). Wave cap reached by choice after wave 4: remaining surfaced items are
+    build-inclusion facts.'
+- id: intake-2602
+  arxiv_id: null
+  url: https://github.com/ggml-org/llama.cpp/issues/31475
+  source_type: repo
+  title: 'llama.cpp issue 31475: systemone reads shared prefix again for each question group (np>1, hybrid decision model)'
+  categories:
+  - inference_serving
+  - ssm_hybrid
+  - routing_intelligence
+  novelty: medium
+  relevance: high
+  discovered_via: expansion
+  expanded_from: intake-2595
+  verdict: new_opportunity
+  ingested_date: '2026-10-31'
+  authors:
+  - egehazar
+  key_claims:
+  - 'Open, bug-unconfirmed issue (egehazar, filed 2026-10-31, 0 comments, no linked PR): with a hybrid decision model (tinyopenjev-for-testing
+    Q8_0, Kev) at --parallel 4, 16 questions re-process the shared prefix once per slot group because decision tasks get no checkpoint
+    (server-context.cpp line 4286 on c6fb3b5, "make checkpoints only for completion tasks"), so recurrent state cannot be restored.'
+  - 'Reporter local fix (not submitted): checkpoints only for group parents at the end of the shared prefix, ~19 MiB (Kev-0.8B) / ~50
+    MiB (Kev-4B) each, needs enough --cache-ram under concurrency. Repro: 1254 tokens stock vs 827 with fix; sequential throughput 0.061
+    -> 0.234 decisions/s at 4 slots on Kev-4B (3.8x; medians of three runs, variable background load).'
+  - 'Numerical caveat: "bitwise equality is not guaranteed because different batch cuts changed one synthetic probability by about 0.007"
+    - the ~0.007 shift is a local-fix side effect on one synthetic probability in the reporter test, not an upstream stock-build defect,
+    and no condition beyond differing batch cuts is given.'
+  - AI-assisted report; reporter offers a PR with a regression test; unconfirmed by maintainers.
+  techniques:
+  - group-parent recurrent checkpoint
+  reported_results:
+  - 1254 vs 827 prompt tokens; 0.061 vs 0.234 decisions/s; checkpoint ~19 MiB (Kev-0.8B), ~50 MiB (Kev-4B); probability delta ~0.007
+    (issue body)
+  cross_references:
+    chapters: []
+    handoffs:
+    - typed-decision-plane.md
+    - dflash2-block-drafter-experimental-build.md
+    experiments: []
+    intake_entries:
+    - intake-2595
+  recommended_actions:
+  - 'Proposal (operator-review candidate, derived by the ws58 intake): d1 screen: run decision models at np=1 (or accept prefix recompute)
+    until an upstream fix lands; or port the group-parent checkpoint fix; pin n_ubatch/n_batch/np in the decision receipt and measure
+    probability delta across two batch cuts.'
+  credibility_score: null
+  contradicting_evidence: null
+  referenced_arxiv_ids: []
+  notes: 'Issue body only (0 comments at fetch time). Not read in dive: linked PR #25004/#26499/#22746/vLLM threads and the unmerged
+    local patch bodies were not fetched; only the assigned thread plus its files/review comments'
+  verification: dive-verified
+  handoffs_updated: []
+  handoffs_created: []
+  source_revision: GitHub REST API (issue/PR, comments, files) JSON rendered to all.txt, retrieved 2026-10-31 (https://github.com/ggml-org/llama.cpp/issues/31475)
+  reader_should_conclude: Cite as an open, unconfirmed perf defect for hybrid decision models at np>1, with an unmerged local fix. Do
+    not carry 0.007 as a general noise floor; carry only "batch cuts can move a decision probability; measure the shift on OUR model
+    before setting abstain thresholds".
+  read_depth: FULL
+  claim_anchors:
+  - claim_index: 0
+    kind: heading-and-hash
+    locator: issue body
+    quote: Decision tasks don't get a checkpoint saved, so it can't restore the hybrid model's recurrent state.
+    quote_sha256: 0492f98b6bdcdecf7073507db7139cfa41232eeb141bc926f936e0fc7aec9011
+    source_revision: GitHub REST API (issue/PR, comments, files) JSON rendered to all.txt, retrieved 2026-10-31 (https://github.com/ggml-org/llama.cpp/issues/31475)
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: heading-and-hash
+    locator: issue body
+    quote: Stock version processes 1,254 tokens, but with the local fix it processes 827.
+    quote_sha256: 695bb8b660ea058c69f669b7e8ff518861ac62740b2e1c40a67ae1528603f604
+    source_revision: GitHub REST API (issue/PR, comments, files) JSON rendered to all.txt, retrieved 2026-10-31 (https://github.com/ggml-org/llama.cpp/issues/31475)
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: heading-and-hash
+    locator: issue body
+    quote: different batch cuts changed one synthetic probability by about `0.007`
+    quote_sha256: 3d502b8d97b3603793382478f9c2d062b8d81a59b96cf7417f6af16d580cc362
+    source_revision: GitHub REST API (issue/PR, comments, files) JSON rendered to all.txt, retrieved 2026-10-31 (https://github.com/ggml-org/llama.cpp/issues/31475)
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: heading-and-hash
+    locator: issue body
+    quote: sequential throughput went from `0.061` to `0.234` decisions/s at 4 slots
+    quote_sha256: b0670ceb06452b102d1b199b3c0448fb9df7fdab0c2b77f6021e86ce5d222233
+    source_revision: GitHub REST API (issue/PR, comments, files) JSON rendered to all.txt, retrieved 2026-10-31 (https://github.com/ggml-org/llama.cpp/issues/31475)
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 2
+    effect: narrowed
+    note: The 0.007 is attributed to the reporter fix (checkpoint-restored vs recomputed prefix => different ubatch cuts), single synthetic
+      probability; not shown for stock. Stage-1 framing as an upstream defect is wrong.
+  depends_on: []
+  dive_corrections: '2026-10-31 (Stage 2, wave 4 (Stage 2b)): Dive corrects the task framing: the 0.007 shift is a one-probability observation
+    under a checkpointed-prefix variant; the actual finding is the missing hybrid-state checkpoint for decision tasks (throughput loss,
+    not correctness). Same recurrent-state class as DF2-13 checkpoint/prompt-reuse.'
