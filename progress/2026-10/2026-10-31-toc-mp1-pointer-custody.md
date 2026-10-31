@@ -1,0 +1,3 @@
+# TOC-MP-1 pointer custody — 2026-10-31
+
+ORCH `9ca8511726afddea9c4e0fc2af4a43fb27d2adf4` is promoted to main and repairs compaction read_file for default, task-root and request-scope, as well as session-log and spill peek in the two scoped modes. Access is limited to exact per-REPL session artifact capabilities; sibling and symlink paths, knowledge-fence and disabled-tool cases remain refused, while a resumed unowned legacy log pointer is withheld. The focused suite passed 47 with one skipped; 168 related tests passed and Ruff was clean. Zero inference was run. The result enters the committed-conclusion register as an observation; no new grading rule or canary is claimed. [belief: cc]
