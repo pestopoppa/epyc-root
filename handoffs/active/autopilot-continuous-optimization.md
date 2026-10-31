@@ -324,7 +324,7 @@ First full smoke run of the trial loop. Four defects, three silent.
   `b387c5dded66` is public on orchestrator `main`. No admission policy, counter predicate, service, or
   measurement rule changed. [no-belief: code/API wording correction; no measurement]
 
-- [ ] **SIBLING SWEEP: six more runtime imports are hard, unguarded and declared NOWHERE** — the same
+- [x] **SIBLING SWEEP: six more runtime imports are hard, unguarded and declared NOWHERE** — the same ✅ 2026-10-31 — APP `eb19045c4f1d4db04e80cd9b680c1187b9d4ebb9`; [implementation evidence](https://github.com/pestopoppa/epyc-orchestrator/blob/eb19045c4f1d4db04e80cd9b680c1187b9d4ebb9/artifacts/audit/runtime-dependency-sweep-20261031/README.md). [no-belief: model-free implementation checks]
   defect class, found by AST-walking every import in `src/` against every `pyproject` table.
   `aiohttp` (`src/services/worker_pool.py:41`), `sqlalchemy` (`src/db/models/vision.py:19`,
   also `src/vision/search.py:10`), `langchain_core` (`src/graph/langgraph/nodes.py:19` — `langgraph`
@@ -336,6 +336,7 @@ First full smoke run of the trial loop. Four defects, three silent.
   before its fix). *(Spot-verified by `mainC`: `aiohttp` and `sqlalchemy` both return ZERO pyproject
   declarations against a hard module-level import.)* A further ~14 are guarded with `try/except` and
   degrade explicitly — lower priority, listed in the subagent report. **UNOWNED**, reported not fixed.
+  - Completion limits: six runtime imports checked; five focused tests passed; actual UI constructor passed on Gradio 6.5.1; model-free CPU imports passed against exact Torch 2.9.0 / TV 0.24.0 / Transformers 5.22.1. Locked Gradio 6.15.1 was not tested at its exact version. No GPU, model-runtime, or deployment validation.
 
 - [ ] The ~77-test retired-topology failure bucket.
 

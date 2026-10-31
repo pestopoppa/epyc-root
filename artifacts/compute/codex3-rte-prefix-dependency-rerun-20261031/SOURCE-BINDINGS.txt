@@ -1,0 +1,24 @@
+Harness implementation and focused test source
+orchestrator commit b85b44f12ec857fc0249bc956e239feadfe92ca4
+focused test git blob 9d4e83e2b7a69fbf226ab0efe7822f02f2bcef52
+focused test file SHA-256 373293adc354441c389bedf3c27b8576d86b7a25707064114c74e7992bd391ae
+benchmark harness git blob 9f9c3116797400d07b0890d08adfb6b90b85d55f
+benchmark harness file SHA-256 55e3f5d2a971c8119aaff0259c9bea25633230820791c28533cfcdb28d7c8897
+
+Updated imported project-source files, from final implementation parent
+orchestrator commit bfa87454f482156b27b6e944af95bde46ddf4441
+src/repl_environment/context.py git blob dd08f0b5eee083a327ee8ae52b8cacedc9619466
+src/repl_environment/context.py file SHA-256 0c9d95404ddb5b098d56e1b833bc33d4b6e165f5db3ed9b3f28947b51b01afa8
+src/trace/dependency_log.py git blob b661ba48c8e9d0903263146e3a167fb19282d880
+src/trace/dependency_log.py file SHA-256 0544660af848c68ff13b7ff1dc9e0ddf4807fadf31757d52334ec87f7a23cab1
+
+R6 runner and admitted receipt
+prep_supervisor.py SHA-256 63222eb38697a0d15a7cee063d6e26fcbb9355c7e0c8701647a0dd9b7009ff65
+prep_admission.py SHA-256 6e0340cd380b7d268e0b68c18b35adeb5f71e7afaf5d7a6b408fd27d35abc2c0
+pytest.stdout.gz SHA-256 5932ffdd5fa19182aaf3fa86588172f954c3c494170a515ee52a33a05b45a3f1 (gzip -n; decompressed SHA-256 7cceff26cacfc03de090e04d347946f157fc5d6ca8a84f11d0730e1ea8ab4324)
+pytest.stderr SHA-256 e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+supervisor.stdout SHA-256 72056c6d5bd1c059656a3b712a578c4104d2a298a846757441928726c32a9ce7
+supervisor.stderr SHA-256 e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+Original source-binding baseline was orchestrator origin/main 2f130ee6721eee1dd37ba82e9781233b739f1669; checked=703 mismatches=0. Only the two listed imported modules changed by the final parent source and were overlaid; the test source and harness remain at b85b44f.
+
+Qualified R6 invocation uses the original `/mnt/raid0/llm/tmp/compute-flags/prep-locks/28-29.lock` (blocking wait bounded to 300 s) and taskset CPUs 148-149, physical pair 52-53 allowed at +24 with SMT +96. The 52-53.lock supplemental pass is not the qualified receipt.
