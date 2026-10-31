@@ -1,0 +1,5 @@
+2026-10-31T03:59:36Z [codex3-paw-compact-a-20261030] launcher up pid=3354143 class=cpu poll=45s grants=/mnt/raid0/llm/tmp/compute-flags/grants stop=/mnt/raid0/llm/tmp/codex3-paw-compact-a-20261030/STOP minwin=2400s ports=19953
+2026-10-31T04:00:21Z [codex3-paw-compact-a-20261030] START regions=0-23 cpus=0-23 threads=24 gpu=0 end=2026-10-31T06:00Z
+setsid: failed to execute /workspace/repos/epyc-orchestrator/scripts/region-lock: No such file or directory
+2026-10-31T04:00:21Z [codex3-paw-compact-a-20261030] WARN: 3378749 is not a group leader
+2026-10-31T04:00:21Z [codex3-paw-compact-a-20261030] ended rc=127 reason=job-rc-127:exited (grant deleted)

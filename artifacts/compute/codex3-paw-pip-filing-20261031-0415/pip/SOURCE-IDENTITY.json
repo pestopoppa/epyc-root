@@ -1,0 +1,8 @@
+{
+  "native_root": "/mnt/micron/codex3-pip-relocatable-r25-20261030",
+  "manifest_sha256": "6a6455a599014722cc7d92f828c346ceba696520691327ecfd403aa6e9d6df09",
+  "pins_sha256": "df6c355fa89f5182f28a3d25ba8b86f5524b31db682cb99ffa560070144cdbcd",
+  "launcher_sha256": "85f1c59c853db14fcec927e38ec45029d72fd26b22b4fd8043e83be614deb598",
+  "host_python_sha256": "e50d468e8b0adfb05733f5b87b3cff34829c4a8c1aea50c865aa8bdfe4bb150f",
+  "pins": 146
+}

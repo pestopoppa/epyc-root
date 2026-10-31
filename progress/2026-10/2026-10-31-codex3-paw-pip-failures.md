@@ -1,0 +1,13 @@
+# PAW compact and PIP head results filing — 2026-10-31
+
+
+### 2026-10-31 compact capability attempts: launcher failures
+
+- **FAILED-RUN, class harness:** `codex3-paw-compact-a-20261030` and `codex3-paw-compact-b-20261030` each ended rc127 before the inner job: `setsid` could not execute the declared `/workspace/repos/epyc-orchestrator/scripts/region-lock` in the host namespace. The predeclared compact-only slices were A: 8 tasks/64 cases and B: 9 tasks/72 cases. Both packet result directories are empty and neither has `DONE`; task exact-match scores and missing dispositions remain unknown, not zero. The inner jobs did not start, so these attempts did not expose their selected cases. Owner action: qualify a host-visible region-lock path and preserve both failed attempts and their original declarations when preparing any successor. No standard-versus-compact or PAW-3 completion follows. [Bounded records](../../artifacts/compute/codex3-paw-pip-filing-20261031-0415/) include digest-only extracts of the two predeclarations (original SHA-256 `9116940efb6793345a9bf16ce403f5267763538131605a13a459beaee7f7932c` and `a1be8ce5785984e93d0b349d32790bc72b5136df63ecdb2c853a6316a72e3e49`) and launcher logs. [belief: cc]
+
+
+### 2026-10-31 R28 head attempt: incomplete
+
+- **FAILED-RUN, class harness:** `codex3-pip02-paddle-relocatable-r28-head-20261031` ended pool rc78. The recorded pool reports group 0 rc0 and group 3 rc78. The layered page journal records 15 complete pages and 10 unknown pages (indices 39–48); all ten have page-start and layout records. Pages 39, 40, 44, 46 and 48 each have one region start, durable result and sent marker; the other five have no region starts. An exploratory region classifier reports pending, not proven terminal exhaustion; preserve and replay durable results rather than redraw them. In the retained group 3 attempt, the native Paddle worker segfaulted during PIR dialect registration (`worker_rc=-11`); its owner returned rc75 with null error/reason, and the pool ultimately reported rc78. The underlying cause of the native crash is not established. Owner action: investigate the native crash and correct failure propagation and terminal-state handling while preserving the page and region journal and unresolved exposures; do not redraw unknown work. The head cohort has no complete quality verdict and the full 755-page and paired gates remain open. [Bounded records](../../artifacts/compute/codex3-paw-pip-filing-20261031-0415/) retain the crash, pool events, source pins and journal snapshot. [belief: cc]
+
+No scientific checkbox changed. The evidence captures run observations, not new measurement warrant.

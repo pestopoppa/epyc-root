@@ -1,0 +1,50 @@
+{
+  "scope": "read-only verification of original region capture/source/request/response, not page completion",
+  "regions": [
+    {
+      "index": 39,
+      "start_path": "/mnt/micron/codex3-pip-head-r26-20261030/campaigns-fresh/shard-03/shard-3/region-319fbbc1e5a52b7fd3159a30-000000.start.json",
+      "start_sha256": "add8c4168bcca49e86f9ed1352e3ddc8def55e34c45d69fb008e8e72b0ac95b5",
+      "result_path": "/mnt/micron/codex3-pip-head-r26-20261030/campaigns-fresh/shard-03/shard-3/region-319fbbc1e5a52b7fd3159a30-000000.result.json",
+      "result_sha256": "6e179efd6e00cc3c9513ef2c18c0ae408f74de7e59224699c627edadca8802ff",
+      "capture_sha256": "3b1193b311ba470a72425864108fbfdc847251169add432bc5d440b22448ddf0",
+      "http_status": 200
+    },
+    {
+      "index": 40,
+      "start_path": "/mnt/micron/codex3-pip-head-r26-20261030/campaigns-fresh/shard-03/shard-3/region-87582c369490b6c6bde27921-000000.start.json",
+      "start_sha256": "218f39172223a631876296fc0848657dd85b553160a723cecee020346a7a97f3",
+      "result_path": "/mnt/micron/codex3-pip-head-r26-20261030/campaigns-fresh/shard-03/shard-3/region-87582c369490b6c6bde27921-000000.result.json",
+      "result_sha256": "f67a09c00960365f5a26e9ad6cae5f50f1eea72f512e1566e704472a6f80b9ec",
+      "capture_sha256": "3b1193b311ba470a72425864108fbfdc847251169add432bc5d440b22448ddf0",
+      "http_status": 200
+    },
+    {
+      "index": 44,
+      "start_path": "/mnt/micron/codex3-pip-head-r26-20261030/campaigns-fresh/shard-04/shard-4/region-a7923bd4826e42c0b27286d1-000000.start.json",
+      "start_sha256": "e1f63355420542845ad58ac902f633efaa5d063b56fba4b655ad485f960e252b",
+      "result_path": "/mnt/micron/codex3-pip-head-r26-20261030/campaigns-fresh/shard-04/shard-4/region-a7923bd4826e42c0b27286d1-000000.result.json",
+      "result_sha256": "acbc91617f76efe3fd009a1eaa55a844657343030210ab9ea2fa1c69069efc23",
+      "capture_sha256": "3b1193b311ba470a72425864108fbfdc847251169add432bc5d440b22448ddf0",
+      "http_status": 200
+    },
+    {
+      "index": 46,
+      "start_path": "/mnt/micron/codex3-pip-head-r26-20261030/campaigns-fresh/shard-04/shard-4/region-e5587c4bf24e4ec5eae4be19-000000.start.json",
+      "start_sha256": "020fd0382bd04ddb826e3da3b3d9bf84fa7b63653b98649a54507e5a0685934e",
+      "result_path": "/mnt/micron/codex3-pip-head-r26-20261030/campaigns-fresh/shard-04/shard-4/region-e5587c4bf24e4ec5eae4be19-000000.result.json",
+      "result_sha256": "37b8a8a53c077dfa17beff7d7bbefa074f95acca30f5733c2973b671497348e9",
+      "capture_sha256": "3b1193b311ba470a72425864108fbfdc847251169add432bc5d440b22448ddf0",
+      "http_status": 200
+    },
+    {
+      "index": 48,
+      "start_path": "/mnt/micron/codex3-pip-head-r26-20261030/campaigns-fresh/shard-04/shard-4/region-73f295cf78a19c874ad7274f-000000.start.json",
+      "start_sha256": "89e3d4d046abb1ff445c2b4ddec9d8ebaca63855add6e2557d27375667f2039c",
+      "result_path": "/mnt/micron/codex3-pip-head-r26-20261030/campaigns-fresh/shard-04/shard-4/region-73f295cf78a19c874ad7274f-000000.result.json",
+      "result_sha256": "9d7ca7c7dcdb194088a8a217127a2a6dc9c6d0e6881e2222b8e7ed8411283ff5",
+      "capture_sha256": "3b1193b311ba470a72425864108fbfdc847251169add432bc5d440b22448ddf0",
+      "http_status": 200
+    }
+  ]
+}

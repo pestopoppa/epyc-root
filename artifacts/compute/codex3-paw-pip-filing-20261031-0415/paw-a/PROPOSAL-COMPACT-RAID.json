@@ -1,0 +1,119 @@
+{
+  "capture_controls": {
+    "path": "/mnt/micron/codex3-paw-compact-a-20261030/packet/capture-controls.log",
+    "script": "/mnt/micron/codex3-paw-compact-a-20261030/packet/capture-controls.py",
+    "script_sha256": "789150353d14d6f43a99f3c14367076391569d71e419a2c68ddc529dc9636854",
+    "sha256": "6abcf5201a944c226cc6512c1580d5d1c1507550334786dbb306518dbaae2f34"
+  },
+  "checkpoint_semantics": "Each completed compiled task bundle and hash is fsync-checkpointed and reused; completed or exposed case keys are never redrawn. In-flight pseudo generation and incomplete compilation do not checkpoint: cutoff discards that attempt and restarts the current task. Minimum requested grant 3600s is chosen to exceed the 2689s pseudo retry estimate from the slower measured rate plus overhead; no progress guarantee under slower actual execution.",
+  "class": "diagnostic",
+  "compact_stage_control": {
+    "path": "/mnt/micron/codex3-paw-compact-control-20261030/run-1793383782221209105/CONTROL-RECEIPT.json",
+    "sha256": "cdf9bba02b8c6b0888784d628ace5dbd4ab9615aa3997c02383f224b37a47d9c"
+  },
+  "decision_rule": "n/a (compact-arm capability diagnostic; report complete and missing case dispositions and per-task exact-match accuracy; no adoption decision)",
+  "declaration": {
+    "paired_standard_commit": "7328d8641e38",
+    "paired_standard_enrollment": "artifacts/experiments/paw3-standard-a-20261029/predeclaration.json",
+    "path": "/mnt/micron/codex3-paw-compact-a-20261030/packet/PAW3-PREDECLARATION.json",
+    "sha256": "9116940efb6793345a9bf16ce403f5267763538131605a13a459beaee7f7932c"
+  },
+  "docker_image_id": "sha256:ea165e543ea5fa04ab7364570e2b3bdb326402baff066edd563eefd77d8b94f2",
+  "enrollment": "n/a: diagnostic",
+  "est_micron_output_GiB": 16,
+  "est_output_GiB": 16,
+  "est_raid_output_GiB": 16,
+  "feasibility": "8x3x512/0.546943 = 22467s pseudo generation (final bridge smoke), 8x7.4606 = 60s trained compact compilations, 64x128/3x0.8631 = 2357s case calls (one short control extrapolated from 3 retokenized outputs), 8x128.509 = 1028s integrity per window, 1200s overhead and 8x90s grant drain = 720s: total 27831s, headroom 8169s in 36000s. These measured-point extrapolations and token scaling do not bound longer input prefill, longer compiler pseudo context or contention; resumable and no completion guarantee.",
+  "filesystem_reservation": "166 GiB minimum and 150 GiB running floor on each of Micron and RAID",
+  "gib": 16,
+  "hold": null,
+  "id": "codex3-paw-compact-a-20261030",
+  "inner_source_manifest": {
+    "path": "/mnt/micron/codex3-paw-compact-a-20261030/packet/SOURCES.sha256",
+    "sha256": "29b7fe154519191b0bee45302f4fc60b01c79313b8a2d06b0673e1afdfd6db46"
+  },
+  "job": {
+    "path": "/mnt/raid0/llm/tmp/codex3-paw-compact-a-20261030/host-entry.sh",
+    "sha256": "9ef19480a8d7a70e8904c774ef4caaf054382a470b193b3161a331cfdd4f1554"
+  },
+  "keep": [
+    "*.json",
+    "*.jsonl",
+    "*.md",
+    "*.py",
+    "*.sh",
+    "*.log",
+    "*.out",
+    "SOURCES.sha256",
+    "RUNTIME-SOURCES.sha256",
+    "engine/**",
+    "results/**",
+    "smoke-results/**",
+    "epoch/**",
+    "smoke-epoch/**",
+    ".venv",
+    "/mnt/raid0/llm/models/PAW-programs/codex3-paw3-real-*",
+    "/mnt/raid0/llm/models/PAW-compact-a-cache-20261030/**",
+    "/mnt/raid0/llm/tmp/codex3-paw-compact-a-20261030/launch.sh",
+    "/mnt/raid0/llm/tmp/codex3-paw-compact-a-20261030/host-entry.sh",
+    "/mnt/raid0/llm/tmp/codex3-paw-compact-a-20261030/BRIDGE-SOURCES.sha256",
+    "/mnt/raid0/llm/tmp/codex3-paw-compact-a-20261030/INNER-SOURCES.sha256",
+    "/mnt/raid0/llm/tmp/codex3-paw-compact-a-20261030/ws58-smoke-final.out",
+    "/mnt/raid0/llm/tmp/codex3-paw-compact-a-20261030/ws58-smoke-stale-epoch.out",
+    "/mnt/raid0/llm/tmp/codex3-paw-compact-a-20261030/ws58-smoke-bridge-first.out"
+  ],
+  "launcher": {
+    "path": "/mnt/raid0/llm/tmp/codex3-paw-compact-a-20261030/launch.sh",
+    "sha256": "6a7ad5b8a44df3b68a7c3d4f84d34876894d3a846016654eafb26a541aec2e87"
+  },
+  "launcher_log": "/mnt/raid0/llm/tmp/codex3-paw-compact-a-20261030/ws58-launcher.out",
+  "log_consumer": "/mnt/micron/codex3-paw-compact-a-20261030/packet/job.py",
+  "min_effect": "n/a (diagnostic collection)",
+  "min_window_s": 3600,
+  "native_job": {
+    "path": "/mnt/micron/codex3-paw-compact-a-20261030/packet/job.py",
+    "sha256": "1cfd3c35766f8b05972abaabd9d639aadfa17cdc46928fd468dfff3b20e34ce4"
+  },
+  "native_launcher": {
+    "path": "/mnt/micron/codex3-paw-compact-a-20261030/packet/launch.sh",
+    "sha256": "311319f1723f8b734059d294fa3e9768c4075880977c29f64e192673c919422f"
+  },
+  "native_output_root": "/mnt/micron/codex3-paw-compact-a-20261030/packet",
+  "owner": "codex3",
+  "port": 19953,
+  "priority_rank": 85,
+  "regions": "any-cpu-quarter",
+  "result_path": "/mnt/micron/codex3-paw-compact-a-20261030/packet/DONE",
+  "runtime_dependencies": [
+    "/mnt/raid0/llm/tmp/codex3-paw-standard-r2-20261030/scripts",
+    "/mnt/raid0/llm/tmp/codex3-paw3-q0-20261029/.venv",
+    "/mnt/raid0/llm/tmp/inf76-paw-runtime-20261029",
+    "/mnt/raid0/llm/tmp/inf76-paw3-manifest-20261029/prospective-selection.json"
+  ],
+  "scratch_root": "/mnt/raid0/llm/tmp/codex3-paw-compact-a-20261030",
+  "smoke": {
+    "exit_ok": true,
+    "first_request_ok": true,
+    "launcher_sha256": "6a7ad5b8a44df3b68a7c3d4f84d34876894d3a846016654eafb26a541aec2e87",
+    "log": "/mnt/raid0/llm/tmp/codex3-paw-compact-a-20261030/ws58-smoke-final.out",
+    "log_basis": "native supervisor stdout/stderr captured at final RAID bridge",
+    "log_sha256": "92bb2b343e162eddc65bf6fef8de25dc58745cfada6d8da449482b7b43c96847",
+    "model": "/mnt/raid0/llm/models/Qwen3-4B-Instruct-2507",
+    "peak_sampled_tree_rss_bytes": 3078979584,
+    "ran_at": "2026-10-30T18:28:15.527438+00:00",
+    "ran_at_basis": "native smoke log final write mtime",
+    "regions": "R11 unlocked CPUs 124,125 with prep mutex 28-29",
+    "result": "/mnt/micron/codex3-paw-compact-a-20261030/packet/smoke-results/job-1793384733595866562/job-result.json",
+    "result_sha256": "504edb845e43a751a4d47727989e6ae34ff8dab5ae2fd6b3c255d5f9036ceef6",
+    "result_writer_ok": true,
+    "scope": "78 pseudo tokens, HTTP compact request accepted, rc75 partial, 64 unexposed, children drained",
+    "source_manifest_sha256": "3a604bbf5d8b2809fcb379b010da87cd68cbca1395a677a5637599aabeb1d67a",
+    "wall_s": 275.2949675070122
+  },
+  "source_manifest": {
+    "path": "/mnt/raid0/llm/tmp/codex3-paw-compact-a-20261030/BRIDGE-SOURCES.sha256",
+    "sha256": "3a604bbf5d8b2809fcb379b010da87cd68cbca1395a677a5637599aabeb1d67a"
+  },
+  "status": "READY_PROPOSAL_FOR_OWNER_REVIEW",
+  "window_s": 36000
+}

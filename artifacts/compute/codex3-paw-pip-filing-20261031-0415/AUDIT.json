@@ -1,0 +1,36 @@
+{
+  "paw_a": {
+    "planned_tasks": 8,
+    "planned_cases": 64,
+    "result_files": 0,
+    "done_present": false,
+    "rc": 127
+  },
+  "paw_b": {
+    "planned_tasks": 9,
+    "planned_cases": 72,
+    "result_files": 0,
+    "done_present": false,
+    "rc": 127
+  },
+  "pip": {
+    "page_complete": 15,
+    "page_unknown": 10,
+    "unknown_indices": [
+      39,
+      40,
+      41,
+      42,
+      43,
+      44,
+      45,
+      46,
+      47,
+      48
+    ],
+    "region_state": "unverified pending",
+    "worker_rc": -11,
+    "wrapped_rc": 75,
+    "pool_rc": 78
+  }
+}

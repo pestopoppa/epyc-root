@@ -1,0 +1,41 @@
+[32mCreating model: ('PP-DocLayoutV3', '/mnt/raid0/llm/models/PP-DocLayoutV3-paddle3.0.0', None)[0m
+[32mCreating model: ('PP-DocLayoutV3', '/mnt/raid0/llm/models/PP-DocLayoutV3-paddle3.0.0', None)[0m
+[32mCreating model: ('PP-DocLayoutV3', '/mnt/raid0/llm/models/PP-DocLayoutV3-paddle3.0.0', None)[0m
+[32mCreating model: ('PP-DocLayoutV3', '/mnt/raid0/llm/models/PP-DocLayoutV3-paddle3.0.0', None)[0m
+[32mCreating model: ('PP-DocLayoutV3', '/mnt/raid0/llm/models/PP-DocLayoutV3-paddle3.0.0', None)[0m
+[32mCreating model: ('PP-DocLayoutV3', '/mnt/raid0/llm/models/PP-DocLayoutV3-paddle3.0.0', None)[0m
+[32mCreating model: ('PP-DocLayoutV3', '/mnt/raid0/llm/models/PP-DocLayoutV3-paddle3.0.0', None)[0m
+[32mCreating model: ('PP-DocLayoutV3', '/mnt/raid0/llm/models/PP-DocLayoutV3-paddle3.0.0', None)[0m
+[32mCreating model: ('PP-DocLayoutV3', '/mnt/raid0/llm/models/PP-DocLayoutV3-paddle3.0.0', None)[0m
+[32mCreating model: ('PP-DocLayoutV3', '/mnt/raid0/llm/models/PP-DocLayoutV3-paddle3.0.0', None)[0m
+
+
+--------------------------------------
+C++ Traceback (most recent call last):
+--------------------------------------
+0   paddle_infer::Predictor::Predictor(paddle::AnalysisConfig const&)
+1   std::unique_ptr<paddle::PaddlePredictor, std::default_delete<paddle::PaddlePredictor> > paddle::CreatePaddlePredictor<paddle::AnalysisConfig, (paddle::PaddleEngineKind)2>(paddle::AnalysisConfig const&)
+2   paddle::AnalysisPredictor::Init(std::shared_ptr<paddle::framework::Scope> const&, std::shared_ptr<paddle::framework::ProgramDesc> const&)
+3   paddle::AnalysisPredictor::PreparePirProgram()
+4   paddle::AnalysisPredictor::OptimizeInferencePirProgram()
+5   pir::PassManager::Run(pir::Operation*)
+6   pir::detail::PassAdaptor::RunPipeline(pir::PassManager const&, pir::Operation*, pir::AnalysisManager, unsigned char, bool)
+7   pir::detail::PassAdaptor::RunPass(pir::Pass*, pir::Operation*, pir::AnalysisManager, unsigned char, bool)
+8   pir::ApplyPatternsGreedily(pir::Operation*, pir::FrozenRewritePatternSet const&, pir::GreedyRewriteConfig)
+9   pir::ApplyPatternsGreedily(pir::Region&, pir::FrozenRewritePatternSet const&, pir::GreedyRewriteConfig)
+10  pir::PatternApplicator::MatchAndRewrite(pir::Operation*, pir::PatternRewriter&, std::function<bool (pir::Pattern const&)>, std::function<void (pir::Pattern const&)>, std::function<bool (pir::Pattern const&)>)
+11  paddle::dialect::PdOpLowerToKernelPass(pir::Program*, phi::Place)
+12  pir::IrContext::GetOrRegisterDialect(std::string const&, std::function<pir::Dialect* ()>)
+13  std::_Function_handler<pir::Dialect* (), pir::IrContext::GetOrRegisterDialect<paddle::dialect::KernelDialect>()::{lambda()#1}>::_M_invoke(std::_Any_data const&)
+14  paddle::dialect::KernelDialect::KernelDialect(pir::IrContext*)
+15  paddle::dialect::KernelDialect::initialize()
+16  pir::IrContext::RegisterAbstractType(pir::TypeId, pir::AbstractType&&)
+17  pir::IrContext::GetRegisteredAbstractType(pir::TypeId)
+
+----------------------
+Error Message Summary:
+----------------------
+FatalError: `Segmentation fault` is detected by the operating system.
+  [TimeInfo: *** Aborted at 1793419309 (unix time) try "date -d @1793419309" if you are using GNU date ***]
+  [SignalInfo: *** SIGSEGV (@0x18) received by PID 3435275 (TID 0x795e067fc6c0) from PID 24 ***]
+
