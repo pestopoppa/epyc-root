@@ -1,0 +1,2 @@
+9d177c6c9ca63a7d3f2e34a91bba5603e97cd4888956d5b014ec7c1e87904b6d  ggml/src/ggml-cuda/gated_delta_net.cu
+fb6fc1b42e410db9ee21da3c9467b6a9d93a862b27b1e387ecbd0ae50382572a  tests/test-backend-ops.cpp
