@@ -2813,7 +2813,7 @@ Residuals the repair did NOT close. All four were observed in the same window; n
   a shared symlink, or make every write path assert a clean sequencer state (`CHERRY_PICK_HEAD`,
   `MERGE_HEAD`, `REBASE_HEAD` absent and no unmerged paths) before `git add`/`commit`/`checkout` in a
   shared clone. Fold into **Worktree isolation phase 2** above at cutover, or give it its own handoff.
-- [ ] **DP-5** (HIGH): **`cmd_clear`/`cmd_submit` send a BARE keystroke, and a Claude composer ignores
+- [x] **DP-5** (HIGH): **`cmd_clear`/`cmd_submit` send a BARE keystroke, and a Claude composer ignores ✅ 2026-10-31 [source: 8f4410d0a86297111ec761173f36f534391a9513; test: scripts/coordination/tests/test_dp5_wake_pty.py; mutation: artifacts/coordination/dp5-wake-pty-20261031/integrated-controls-r2.log] [no-belief: deterministic PTY regression, no live-pane measurement]
   it — pin the wake character in a committed test.** The call site is one line in
   `scripts/coordination/tmux_adapter.py` (~`:2597`): `key = "C-u" if verb == "clear" else "Enter"`.
   Measured 2026-08-12 against live panes: `Enter`, `C-m`, `C-u` and `BSpace` each left queued text
