@@ -1,0 +1,272 @@
+#!/bin/bash
+# Candidate successor for ws58-ready-depth.sh; do not install without ws58 review.
+set -euo pipefail
+F=${COMPUTE_FLAGS_ROOT:-/mnt/raid0/llm/tmp/compute-flags}
+LOG=${READY_DEPTH_LOG:-$F/ready-depth.log}
+echo "$(date -u +%FT%TZ) ready-depth start pid=$$" >> "$LOG"
+while :; do
+  python3 -I - "$F" <<'PY' >> "$LOG" 2>&1 || true
+import datetime
+import glob
+import importlib.util
+import json
+import math
+import os
+import re
+import shutil
+import sys
+
+F = sys.argv[1]
+GiB = 1024 ** 3
+FLOOR_BYTES = 150 * GiB
+HORIZON_S = 8 * 60 * 60
+HISTORY_MIN_S = 7 * 60 * 60
+HISTORY_MAX_S = 9 * 60 * 60
+SAMPLE_MAX_GAP_S = 20 * 60
+EST_RE = re.compile(r"(?:^|[;\s])est_output_GiB\s*=\s*([^;\s]+)", re.I)
+test_mode = os.environ.get('READY_DEPTH_TEST_MODE') == '1'
+now_dt = (datetime.datetime.fromisoformat(os.environ['READY_DEPTH_TEST_NOW'].replace('Z', '+00:00'))
+          if test_mode and os.environ.get('READY_DEPTH_TEST_NOW')
+          else datetime.datetime.now(datetime.timezone.utc))
+if now_dt.tzinfo is None or now_dt.utcoffset() != datetime.timedelta(0):
+    raise ValueError('forecast clock must be timezone-aware UTC')
+now = now_dt.strftime('%Y-%m-%dT%H:%M:%SZ')
+
+def parse_gib(value):
+    if isinstance(value, bool):
+        return None
+    try:
+        number = float(value)
+    except (TypeError, ValueError):
+        return None
+    if not math.isfinite(number) or number < 0:
+        return None
+    return number * GiB
+
+def reservation_estimates():
+    estimates = {}
+    unknown = set()
+    coverage_unknown = set()
+    ready_dir = os.path.join(F, 'ready')
+    for path in glob.glob(os.path.join(ready_dir, '*.json')):
+        row_id = os.path.basename(path)[:-5]
+        try:
+            with open(path, encoding='utf-8') as stream:
+                manifest = json.load(stream)
+            if manifest.get('hold') or os.path.exists(os.path.join(F, 'grants', row_id + '.complete')):
+                continue
+            manifest_id = manifest.get('id')
+            if manifest_id != row_id:
+                coverage_unknown.add(row_id)
+                if isinstance(manifest_id, str) and manifest_id:
+                    coverage_unknown.add(manifest_id)
+                continue
+            raw_estimate = manifest.get('est_output_GiB', manifest.get('estimated_output_GiB'))
+            value = parse_gib(raw_estimate)
+        except (OSError, ValueError, TypeError):
+            unknown.add(row_id)
+            continue
+        if value is None:
+            if raw_estimate is not None:
+                coverage_unknown.add(row_id)
+            else:
+                unknown.add(row_id)
+        else:
+            estimates.setdefault(row_id, []).append(value)
+
+    parser_path = os.path.join(F, 'validate_fillers.py')
+    spec = importlib.util.spec_from_file_location('ws58_native_filler_parser', parser_path)
+    if spec is None or spec.loader is None:
+        return 0.0, unknown | {'FILLERS-parser'}
+    parser = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(parser)
+    try:
+        with open(os.path.join(F, 'FILLERS.md'), encoding='utf-8') as stream:
+            _, rows, _ = parser.parse_table(stream.read())
+    except (OSError, ValueError, parser.Malformed):
+        return 0.0, unknown | {'FILLERS-table'}
+    col = {name: i for i, name in enumerate(parser.COLUMNS)}
+    seen_armed = set()
+    for line_no, cells in rows:
+        if len(cells) != len(parser.COLUMNS):
+            coverage_unknown.add(f'FILLERS-line-{line_no}')
+            continue
+        if cells[col['status']].split()[:1] != ['ARMED']:
+            continue
+        row_id = cells[col['filler-id']]
+        if row_id in seen_armed:
+            coverage_unknown.add(f'duplicate-ARMED-{row_id}')
+            continue
+        seen_armed.add(row_id)
+        if os.path.exists(os.path.join(F, 'grants', row_id + '.complete')):
+            continue
+        match = EST_RE.search(cells[col['notes']])
+        value = parse_gib(match.group(1)) if match else None
+        if value is None:
+            if match:
+                coverage_unknown.add(row_id)
+            else:
+                unknown.add(row_id)
+        else:
+            estimates.setdefault(row_id, []).append(value)
+
+    # Multiple native sources describe one row. Count one estimate only if all supplied
+    # values agree; a conflict or malformed duplicate is UNKNOWN, never double-counted.
+    total = 0.0
+    for row_id, values in estimates.items():
+        if len(values) > 1 and any(abs(v - values[0]) > 1 for v in values[1:]):
+            unknown.add(row_id)
+        elif values:
+            # A valid value on either native carrier covers a missing estimate on
+            # the duplicate carrier; conflicts still remain UNKNOWN above.
+            unknown.discard(row_id)
+            total += values[0]
+    return total, unknown | coverage_unknown
+
+def storage_identity(path):
+    target = os.path.realpath(path)
+    return {'target': target, 'device': os.stat(target).st_dev}
+
+def read_history(path):
+    points = []
+    try:
+        with open(path, encoding='utf-8') as stream:
+            for line in stream:
+                if not line.startswith('disk_sample '):
+                    continue
+                item = json.loads(line[len('disk_sample '):])
+                at = item['at']
+                if not isinstance(at, str) or not (at.endswith('Z') or at.endswith('+00:00')):
+                    raise ValueError('disk sample timestamp is not explicit UTC')
+                stamp = datetime.datetime.fromisoformat(at.replace('Z', '+00:00'))
+                if stamp.tzinfo is None or stamp.utcoffset() != datetime.timedelta(0):
+                    raise ValueError('disk sample timestamp is not unambiguous UTC')
+                free = item['free_bytes']
+                if isinstance(free, bool) or not isinstance(free, int) or free < 0:
+                    raise ValueError('disk sample free_bytes is not a nonnegative integer')
+                points.append((stamp.timestamp(), free, item.get('target'), item.get('device')))
+    except OSError:
+        pass
+    points.sort()
+    for previous, current in zip(points, points[1:]):
+        if previous[0] == current[0] and previous[1:] != current[1:]:
+            raise ValueError('conflicting duplicate disk samples')
+    deduped = []
+    for point in points:
+        if deduped and point[0] == deduped[-1][0]:
+            continue
+        deduped.append(point)
+    return deduped
+
+def forecast(current_free, reservation_bytes, unknown_ids, history, now_ts, identity):
+    # The latest recorded sample must be fresh, and the overnight window must have
+    # continuously sampled coverage. A cleanup spike or a gap makes the rate UNKNOWN.
+    if any(p[0] > now_ts for p in history):
+        return None, 'disk sample is from the future'
+    relevant = [p for p in history if now_ts - p[0] <= HISTORY_MAX_S and p[0] < now_ts]
+    if any(p[2] != identity['target'] or p[3] != identity['device'] for p in relevant):
+        return None, 'disk history target/filesystem identity changed or is missing'
+    previous = relevant
+    if not previous or now_ts - previous[-1][0] > SAMPLE_MAX_GAP_S:
+        return None, 'growth history missing or stale'
+    window_start = now_ts - HORIZON_S
+    window_points = [p for p in previous if p[0] >= window_start - 3600]
+    points = window_points + [(now_ts, current_free, identity['target'], identity['device'])]
+    if len(points) < 2 or now_ts - points[0][0] < HISTORY_MIN_S:
+        return None, 'less than 7h of overnight history'
+    if now_ts - points[0][0] > HISTORY_MAX_S:
+        return None, 'overnight history is outside the 7-9h window'
+    if any(b[0] - a[0] > SAMPLE_MAX_GAP_S for a, b in zip(points, points[1:])):
+        return None, 'overnight history has a sampling gap'
+    if any(b[1] > a[1] for a, b in zip(points, points[1:])):
+        return None, 'free-space increase indicates cleanup or a confounded segment'
+    growth_bytes = points[0][1] - current_free
+    if growth_bytes <= 0:
+        return None, 'overnight growth is non-positive or confounded by cleanup'
+    rate = growth_bytes / (now_ts - points[0][0])
+    projected = current_free - reservation_bytes - rate * HORIZON_S
+    if unknown_ids:
+        return None, 'reservation estimate unknown for ' + ','.join(sorted(unknown_ids))
+    return projected, 'measured'
+
+floor = {'cpu': 8, 'gpu': 3, 'host': 1}
+n = dict(cpu=0, gpu=0, host=0)
+for path in glob.glob(os.path.join(F, 'ready', '*.json')):
+    try:
+        with open(path, encoding='utf-8') as stream:
+            manifest = json.load(stream)
+    except Exception:
+        continue
+    row_id = os.path.basename(path)[:-5]
+    if manifest.get('hold') or os.path.exists(os.path.join(F, 'grants', row_id + '.complete')):
+        continue
+    regions = str(manifest.get('regions', ''))
+    if regions in ('0-95',) or regions.count('q') >= 4:
+        n['host'] += 1
+    elif 'mi210' in regions:
+        n['gpu'] += 1
+    else:
+        n['cpu'] += 1
+short = {key: floor[key] - n[key] for key in n if n[key] < floor[key]}
+print(f'{now} depth cpu={n["cpu"]} gpu={n["gpu"]} host={n["host"]} short={short}')
+
+log_path = os.environ.get('READY_DEPTH_LOG', os.path.join(F, 'ready-depth.log'))
+disk_path = os.environ.get('DISK_FORECAST_PATH', '/mnt/raid0')
+try:
+    identity = storage_identity(disk_path)
+    if test_mode:
+        current_free = int(os.environ['READY_DEPTH_TEST_FREE_BYTES'])
+    else:
+        current_free = shutil.disk_usage(disk_path).free
+    history = read_history(log_path)
+    total_reserved, unknown_ids = reservation_estimates()
+    projected, reason = forecast(current_free, total_reserved, unknown_ids, history, now_dt.timestamp(), identity)
+    forecast_line = (f'disk forecast free={current_free/GiB:.1f}GiB reserved='
+                    f'{total_reserved/GiB:.1f}GiB growth_window=8h '
+                    + (f'projected={projected/GiB:.1f}GiB floor=150GiB status='
+                       f'{"ALARM" if projected <= FLOOR_BYTES else "OK"}'
+                       if projected is not None else f'status=UNKNOWN reason={reason}'))
+    with open(log_path, 'a', encoding='utf-8') as stream:
+        sample = {'at': now, 'free_bytes': current_free, **identity}
+        stream.write(f'disk_sample {json.dumps(sample, sort_keys=True)}\n')
+except Exception as exc:
+    current_free = None
+    total_reserved = 0
+    unknown_ids = {'forecast-input'}
+    projected = None
+    forecast_line = f'disk forecast status=UNKNOWN reason={type(exc).__name__}:{exc}'
+print(f'{now} {forecast_line}')
+
+disk_alert = projected is None or projected <= FLOOR_BYTES
+if short or disk_alert:
+    msg_parts = []
+    if short:
+        msg_parts.append((f'READY-DEPTH LOW {now}: ready/ holds cpu={n["cpu"]}/8, '
+                          f'gpu={n["gpu"]}/3, whole-host={n["host"]}/1. Deficit {short}. '
+                          'Build AHEAD: smoke and publish ready/ manifests for the next '
+                          'backlog-priority.json inference items NOW, before slots free. '
+                          'Never build on the spot when a slot opens (operator 2026-10-28).'))
+    msg_parts.append(forecast_line)
+    msg = ' '.join(msg_parts)
+    owner_reply = os.environ.get('READY_DEPTH_OWNER_REPLY',
+        '/mnt/raid0/llm/tmp/refactor-01a16fc3/compute-coordination-20261026/owner-reply.md')
+    with open(owner_reply, 'a', encoding='utf-8') as stream:
+        stream.write(f'\n## {now} ws58 ready-depth alarm\n- {msg}\n')
+    owner_json = os.environ.get('READY_DEPTH_OWNER_JSON',
+        '/mnt/raid0/llm/tmp/codex-ni-20261024-scheduling/OWNER-REPLY.json')
+    with open(owner_json, encoding='utf-8') as stream:
+        data = json.load(stream)
+    data['updates'].append({'at': now, 'from': 'ws58 ready-depth alarm', 'text': msg})
+    tmp = owner_json + '.tmp'
+    with open(tmp, 'w', encoding='utf-8') as stream:
+        json.dump(data, stream, indent=1)
+    os.replace(tmp, owner_json)
+    channels = glob.glob(os.environ.get('READY_DEPTH_CHANNEL_GLOB',
+        '/mnt/raid0/llm/tmp/compute-flags/codex-channels/*.md'))
+    for channel in channels:
+        with open(channel, 'a', encoding='utf-8') as stream:
+            stream.write(f'\n## {now} ws58 ready-depth alarm\n- {msg}\n')
+PY
+  [[ ${READY_DEPTH_ONCE:-0} == 1 ]] && exit 0
+  sleep 600
+done
