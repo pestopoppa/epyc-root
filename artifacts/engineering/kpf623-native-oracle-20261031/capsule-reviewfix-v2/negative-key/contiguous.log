@@ -1,0 +1,1343 @@
+llama_model_loader: loaded meta data with 145 key-value pairs and 60 tensors from /mnt/raid0/llm/models/test-fixtures/kpf623-qwen3-dense-11e2886d547833ac.gguf (version GGUF V3 (latest))
+llama_model_loader: Dumping metadata keys/values. Note: KV overrides do not apply in this output.
+llama_model_loader: - kv   0:                       general.architecture str              = qwen3
+llama_model_loader: - kv   1:                               general.name str              = n/a
+llama_model_loader: - kv   2:                           qwen3.vocab_size u32              = 128
+llama_model_loader: - kv   3:                       qwen3.context_length u32              = 128
+llama_model_loader: - kv   4:                     qwen3.embedding_length u32              = 256
+llama_model_loader: - kv   5:                          qwen3.block_count u32              = 2
+llama_model_loader: - kv   6:            qwen3.leading_dense_block_count u32              = 0
+llama_model_loader: - kv   7:                  qwen3.feed_forward_length u32              = 384
+llama_model_loader: - kv   8:           qwen3.expert_feed_forward_length u32              = 0
+llama_model_loader: - kv   9:    qwen3.expert_shared_feed_forward_length u32              = 0
+llama_model_loader: - kv  10:     qwen3.expert_chunk_feed_forward_length u32              = 0
+llama_model_loader: - kv  11:                     qwen3.swiglu_clamp_exp arr[f32,512]     = [0.000000, 0.000000, 0.000000, 0.0000...
+llama_model_loader: - kv  12:                   qwen3.swiglu_clamp_shexp arr[f32,512]     = [0.000000, 0.000000, 0.000000, 0.0000...
+llama_model_loader: - kv  13:                qwen3.use_parallel_residual bool             = false
+llama_model_loader: - kv  14:                         qwen3.expert_count u32              = 0
+llama_model_loader: - kv  15:                    qwen3.expert_used_count u32              = 0
+llama_model_loader: - kv  16:                  qwen3.expert_shared_count u32              = 0
+llama_model_loader: - kv  17:                   qwen3.expert_group_count u32              = 0
+llama_model_loader: - kv  18:              qwen3.expert_group_used_count u32              = 0
+llama_model_loader: - kv  19:                 qwen3.expert_weights_scale f32              = 0.000000
+llama_model_loader: - kv  20:                  qwen3.expert_weights_norm bool             = false
+llama_model_loader: - kv  21:                   qwen3.expert_gating_func u32              = 0
+llama_model_loader: - kv  22:                   qwen3.expert_group_scale f32              = 0.050000
+llama_model_loader: - kv  23:                    qwen3.experts_per_group u32              = 0
+llama_model_loader: - kv  24:                   qwen3.moe_every_n_layers u32              = 0
+llama_model_loader: - kv  25:                 qwen3.nextn_predict_layers u32              = 0
+llama_model_loader: - kv  26:                   qwen3.n_deepstack_layers u32              = 0
+llama_model_loader: - kv  27:                    qwen3.deepstack_mapping arr[i32,512]     = [-1, -1, -1, -1, -1, -1, -1, -1, -1, ...
+llama_model_loader: - kv  28:                         qwen3.pooling_type u32              = 4294967295
+llama_model_loader: - kv  29:                          qwen3.logit_scale f32              = 0.000000
+llama_model_loader: - kv  30:               qwen3.decoder_start_token_id i32              = -1
+llama_model_loader: - kv  31:                  qwen3.decoder_block_count u32              = 0
+llama_model_loader: - kv  32:               qwen3.attn_logit_softcapping f32              = 50.000000
+llama_model_loader: - kv  33:             qwen3.router_logit_softcapping f32              = 30.000000
+llama_model_loader: - kv  34:              qwen3.final_logit_softcapping f32              = 30.000000
+llama_model_loader: - kv  35:                            qwen3.swin_norm bool             = false
+llama_model_loader: - kv  36:               qwen3.rescale_every_n_layers u32              = 0
+llama_model_loader: - kv  37:                   qwen3.time_mix_extra_dim u32              = 0
+llama_model_loader: - kv  38:                 qwen3.time_decay_extra_dim u32              = 0
+llama_model_loader: - kv  39:                       qwen3.residual_scale f32              = 0.000000
+llama_model_loader: - kv  40:                      qwen3.embedding_scale f32              = 0.000000
+llama_model_loader: - kv  41:                    qwen3.token_shift_count u32              = 2
+llama_model_loader: - kv  42:            qwen3.interleave_moe_layer_step u32              = 0
+llama_model_loader: - kv  43:                 qwen3.attention.head_count u32              = 2
+llama_model_loader: - kv  44:              qwen3.attention.head_count_kv u32              = 2
+llama_model_loader: - kv  45:             qwen3.attention.max_alibi_bias f32              = 0.000000
+llama_model_loader: - kv  46:                  qwen3.attention.clamp_kqv f32              = 0.000000
+llama_model_loader: - kv  47:                 qwen3.attention.key_length u32              = 128
+llama_model_loader: - kv  48:               qwen3.attention.value_length u32              = 128
+llama_model_loader: - kv  49:         qwen3.attention.layer_norm_epsilon f32              = 0.000000
+llama_model_loader: - kv  50:     qwen3.attention.layer_norm_rms_epsilon f32              = 0.000010
+llama_model_loader: - kv  51:         qwen3.attention.group_norm_epsilon f32              = 0.000000
+llama_model_loader: - kv  52:          qwen3.attention.group_norm_groups u32              = 0
+llama_model_loader: - kv  53:                     qwen3.attention.causal bool             = true
+llama_model_loader: - kv  54:                qwen3.attention.q_lora_rank u32              = 0
+llama_model_loader: - kv  55:               qwen3.attention.kv_lora_rank u32              = 0
+llama_model_loader: - kv  56:            qwen3.attention.decay_lora_rank u32              = 0
+llama_model_loader: - kv  57:             qwen3.attention.iclr_lora_rank u32              = 0
+llama_model_loader: - kv  58: qwen3.attention.value_residual_mix_lora_rank u32              = 0
+llama_model_loader: - kv  59:             qwen3.attention.gate_lora_rank u32              = 0
+llama_model_loader: - kv  60:     qwen3.attention.relative_buckets_count u32              = 0
+llama_model_loader: - kv  61:             qwen3.attention.sliding_window u32              = 0
+llama_model_loader: - kv  62:                      qwen3.attention.scale f32              = 0.000000
+llama_model_loader: - kv  63:               qwen3.attention.output_scale f32              = 0.000000
+llama_model_loader: - kv  64:                qwen3.attention.value_scale f32              = 0.000000
+llama_model_loader: - kv  65:         qwen3.attention.temperature_length u32              = 0
+llama_model_loader: - kv  66:          qwen3.attention.temperature_scale f32              = 0.000000
+llama_model_loader: - kv  67:             qwen3.attention.key_length_mla u32              = 0
+llama_model_loader: - kv  68:           qwen3.attention.value_length_mla u32              = 0
+llama_model_loader: - kv  69:             qwen3.attention.key_length_swa u32              = 128
+llama_model_loader: - kv  70:           qwen3.attention.value_length_swa u32              = 128
+llama_model_loader: - kv  71:         qwen3.attention.indexer.head_count u32              = 0
+llama_model_loader: - kv  72:         qwen3.attention.indexer.key_length u32              = 0
+llama_model_loader: - kv  73:              qwen3.attention.indexer.top_k u32              = 0
+llama_model_loader: - kv  74:           qwen3.attention.recurrent_layers u32              = 0
+llama_model_loader: - kv  75:         qwen3.attention.output_group_count u32              = 0
+llama_model_loader: - kv  76:           qwen3.attention.output_lora_rank u32              = 0
+llama_model_loader: - kv  77:    qwen3.attention.compress_rope_freq_base f32              = 0.000000
+llama_model_loader: - kv  78:            qwen3.attention.compress_ratios u32              = 0
+llama_model_loader: - kv  79:               qwen3.hyper_connection.count u32              = 0
+llama_model_loader: - kv  80: qwen3.hyper_connection.sinkhorn_iterations u32              = 0
+llama_model_loader: - kv  81:             qwen3.hyper_connection.epsilon f32              = 0.000000
+llama_model_loader: - kv  82:                     qwen3.hash_layer_count u32              = 0
+llama_model_loader: - kv  83:            qwen3.hyper_connection.low_rank u32              = 0
+llama_model_loader: - kv  84:                 qwen3.rope.dimension_count u32              = 128
+llama_model_loader: - kv  85:             qwen3.rope.dimension_count_swa u32              = 128
+llama_model_loader: - kv  86:              qwen3.rope.dimension_sections arr[i32,4]       = [0, 0, 0, 0]
+llama_model_loader: - kv  87:                       qwen3.rope.freq_base f32              = 10000.000000
+llama_model_loader: - kv  88:                   qwen3.rope.freq_base_swa f32              = 10000.000000
+llama_model_loader: - kv  89:                    qwen3.rope.scaling.type str              = linear
+llama_model_loader: - kv  90:                  qwen3.rope.scaling.factor f32              = 0.000000
+llama_model_loader: - kv  91:             qwen3.rope.scaling.attn_factor f32              = 1.000000
+llama_model_loader: - kv  92: qwen3.rope.scaling.original_context_length u32              = 128
+llama_model_loader: - kv  93:               qwen3.rope.scaling.finetuned bool             = false
+llama_model_loader: - kv  94:     qwen3.rope.scaling.yarn_log_multiplier f32              = 0.000000
+llama_model_loader: - kv  95:         qwen3.rope.scaling.yarn_ext_factor f32              = -1.000000
+llama_model_loader: - kv  96:        qwen3.rope.scaling.yarn_attn_factor f32              = 1.000000
+llama_model_loader: - kv  97:          qwen3.rope.scaling.yarn_beta_fast f32              = 32.000000
+llama_model_loader: - kv  98:          qwen3.rope.scaling.yarn_beta_slow f32              = 1.000000
+llama_model_loader: - kv  99:                       qwen3.ssm.inner_size u32              = 0
+llama_model_loader: - kv 100:                      qwen3.ssm.conv_kernel u32              = 0
+llama_model_loader: - kv 101:                       qwen3.ssm.state_size u32              = 0
+llama_model_loader: - kv 102:                   qwen3.ssm.time_step_rank u32              = 0
+llama_model_loader: - kv 103:                      qwen3.ssm.group_count u32              = 0
+llama_model_loader: - kv 104:                       qwen3.ssm.dt_b_c_rms bool             = false
+llama_model_loader: - kv 105:                         qwen3.kda.head_dim u32              = 0
+llama_model_loader: - kv 106:                        qwen3.wkv.head_size u32              = 0
+llama_model_loader: - kv 107:                       tokenizer.ggml.model str              = no_vocab
+llama_model_loader: - kv 108:                      tokenizer.ggml.tokens arr[str,128]     = ["", "", "", "", "", "", "", "", "", ...
+llama_model_loader: - kv 109:                  tokenizer.ggml.token_type arr[i32,128]     = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ...
+llama_model_loader: - kv 110:            tokenizer.ggml.token_type_count u32              = 0
+llama_model_loader: - kv 111:                      tokenizer.ggml.scores arr[f32,128]     = [0.000000, 0.000000, 0.000000, 0.0000...
+llama_model_loader: - kv 112:                      tokenizer.ggml.merges arr[str,0]       = []
+llama_model_loader: - kv 113:                tokenizer.ggml.bos_token_id u32              = 4294967295
+llama_model_loader: - kv 114:                tokenizer.ggml.eos_token_id u32              = 4294967295
+llama_model_loader: - kv 115:                tokenizer.ggml.eot_token_id u32              = 4294967295
+llama_model_loader: - kv 116:                tokenizer.ggml.eom_token_id u32              = 4294967295
+llama_model_loader: - kv 117:            tokenizer.ggml.unknown_token_id u32              = 4294967295
+llama_model_loader: - kv 118:          tokenizer.ggml.seperator_token_id u32              = 4294967295
+llama_model_loader: - kv 119:            tokenizer.ggml.padding_token_id u32              = 4294967295
+llama_model_loader: - kv 120:               tokenizer.ggml.add_bos_token bool             = false
+llama_model_loader: - kv 121:               tokenizer.ggml.add_eos_token bool             = false
+llama_model_loader: - kv 122:               tokenizer.ggml.add_sep_token bool             = false
+llama_model_loader: - kv 123:            tokenizer.ggml.add_space_prefix bool             = false
+llama_model_loader: - kv 124:    tokenizer.ggml.remove_extra_whitespaces bool             = false
+llama_model_loader: - kv 125:            tokenizer.ggml.fim_pre_token_id u32              = 4294967295
+llama_model_loader: - kv 126:            tokenizer.ggml.fim_suf_token_id u32              = 4294967295
+llama_model_loader: - kv 127:            tokenizer.ggml.fim_mid_token_id u32              = 4294967295
+llama_model_loader: - kv 128:            tokenizer.ggml.fim_pad_token_id u32              = 4294967295
+llama_model_loader: - kv 129:            tokenizer.ggml.fim_rep_token_id u32              = 4294967295
+llama_model_loader: - kv 130:            tokenizer.ggml.fim_sep_token_id u32              = 4294967295
+llama_model_loader: - kv 131:              qwen3.posnet.embedding_length u32              = 0
+llama_model_loader: - kv 132:                   qwen3.posnet.block_count u32              = 0
+llama_model_loader: - kv 133:            qwen3.convnext.embedding_length u32              = 0
+llama_model_loader: - kv 134:                 qwen3.convnext.block_count u32              = 0
+llama_model_loader: - kv 135:             qwen3.classifier.output_labels arr[str,0]       = []
+llama_model_loader: - kv 136:                    qwen3.shortconv.l_cache u32              = 0
+llama_model_loader: - kv 137:                              xielu.alpha_n arr[f32,512]     = [0.000000, 0.000000, 0.000000, 0.0000...
+llama_model_loader: - kv 138:                              xielu.alpha_p arr[f32,512]     = [0.000000, 0.000000, 0.000000, 0.0000...
+llama_model_loader: - kv 139:                                 xielu.beta arr[f32,512]     = [0.000000, 0.000000, 0.000000, 0.0000...
+llama_model_loader: - kv 140:                                  xielu.eps arr[f32,512]     = [0.000000, 0.000000, 0.000000, 0.0000...
+llama_model_loader: - kv 141:                      qwen3.dense_2_feat_in u32              = 0
+llama_model_loader: - kv 142:                     qwen3.dense_2_feat_out u32              = 0
+llama_model_loader: - kv 143:                      qwen3.dense_3_feat_in u32              = 0
+llama_model_loader: - kv 144:                     qwen3.dense_3_feat_out u32              = 0
+llama_model_loader: - type  f32:   60 tensors
+print_info: file format = GGUF V3 (latest)
+print_info: file type   = (guessed) all F32
+print_info: file size   = 4.51 MiB (32.00 BPW) 
+load: adding 128 dummy tokens
+print_info: arch                  = qwen3
+print_info: vocab_only            = 0
+print_info: no_alloc              = 0
+print_info: n_ctx_train           = 128
+print_info: n_embd_inp            = 256
+print_info: n_embd                = 256
+print_info: n_embd_out            = 256
+print_info: n_layer               = 2
+print_info: n_layer_all           = 2
+print_info: n_head                = 2
+print_info: n_head_kv             = 2
+print_info: n_rot                 = 128
+print_info: n_swa                 = 0
+print_info: is_swa_any            = 0
+print_info: n_embd_head_k         = 128
+print_info: n_embd_head_v         = 128
+print_info: n_gqa                 = 1
+print_info: n_embd_k_gqa          = 256
+print_info: n_embd_v_gqa          = 256
+print_info: f_norm_eps            = 0.0e+00
+print_info: f_norm_rms_eps        = 1.0e-05
+print_info: f_clamp_kqv           = 0.0e+00
+print_info: f_max_alibi_bias      = 0.0e+00
+print_info: f_logit_scale         = 0.0e+00
+print_info: f_attn_scale          = 0.0e+00
+print_info: f_attn_value_scale    = 0.0000
+print_info: n_ff                  = 384
+print_info: n_expert              = 0
+print_info: n_expert_used         = 0
+print_info: n_expert_groups       = 0
+print_info: n_group_used          = 0
+print_info: causal attn           = 1
+print_info: pooling type          = -1
+print_info: rope type             = 2
+print_info: rope scaling          = linear
+print_info: freq_base_train       = 10000.0
+print_info: freq_scale_train      = 1
+print_info: n_ctx_orig_yarn       = 128
+print_info: rope_yarn_log_mul     = 0.0000
+print_info: rope_finetuned        = unknown
+print_info: model type            = ?B
+print_info: model params          = 1.18 M
+print_info: general.name          = n/a
+print_info: vocab type            = no vocab
+print_info: n_vocab               = 128
+print_info: n_merges              = 0
+print_info: max token length      = 0
+load_tensors: loading model tensors, this can take a while... (mmap = true, direct_io = false)
+load_tensors: layer   0 assigned to device CPU, is_swa = 0
+load_tensors: layer   1 assigned to device CPU, is_swa = 0
+load_tensors: layer   2 assigned to device CPU, is_swa = 0
+create_tensor: loading tensor token_embd.weight
+create_tensor: loading tensor output_norm.weight
+create_tensor: loading tensor output.weight
+create_tensor: loading tensor cls.output.weight
+create_tensor: loading tensor blk.0.attn_norm.weight
+create_tensor: loading tensor blk.0.attn_qkv.weight
+create_tensor: loading tensor blk.0.attn_q.weight
+create_tensor: loading tensor blk.0.attn_k.weight
+create_tensor: loading tensor blk.0.attn_v.weight
+create_tensor: loading tensor blk.0.attn_q.bias
+create_tensor: loading tensor blk.0.attn_k.bias
+create_tensor: loading tensor blk.0.attn_v.bias
+create_tensor: loading tensor blk.0.attn_output.weight
+create_tensor: loading tensor blk.0.attn_k_norm.weight
+create_tensor: loading tensor blk.0.attn_q_norm.weight
+create_tensor: loading tensor blk.0.ffn_norm.weight
+create_tensor: loading tensor blk.0.ffn_gate.weight
+create_tensor: loading tensor blk.0.ffn_down.weight
+create_tensor: loading tensor blk.0.ffn_up.weight
+create_tensor: loading tensor blk.1.attn_norm.weight
+create_tensor: loading tensor blk.1.attn_qkv.weight
+create_tensor: loading tensor blk.1.attn_q.weight
+create_tensor: loading tensor blk.1.attn_k.weight
+create_tensor: loading tensor blk.1.attn_v.weight
+create_tensor: loading tensor blk.1.attn_q.bias
+create_tensor: loading tensor blk.1.attn_k.bias
+create_tensor: loading tensor blk.1.attn_v.bias
+create_tensor: loading tensor blk.1.attn_output.weight
+create_tensor: loading tensor blk.1.attn_k_norm.weight
+create_tensor: loading tensor blk.1.attn_q_norm.weight
+create_tensor: loading tensor blk.1.ffn_norm.weight
+create_tensor: loading tensor blk.1.ffn_gate.weight
+create_tensor: loading tensor blk.1.ffn_down.weight
+create_tensor: loading tensor blk.1.ffn_up.weight
+create_tensor: loading tensor blk.0.attn_q.scale
+create_tensor: loading tensor blk.0.attn_k.scale
+create_tensor: loading tensor blk.0.attn_v.scale
+create_tensor: loading tensor blk.0.attn_output.scale
+create_tensor: loading tensor blk.0.ffn_gate.scale
+create_tensor: loading tensor blk.0.ffn_down.scale
+create_tensor: loading tensor blk.0.ffn_up.scale
+create_tensor: loading tensor blk.0.attn_q.input_scale
+create_tensor: loading tensor blk.0.attn_k.input_scale
+create_tensor: loading tensor blk.0.attn_v.input_scale
+create_tensor: loading tensor blk.0.attn_output.input_scale
+create_tensor: loading tensor blk.0.ffn_gate.input_scale
+create_tensor: loading tensor blk.0.ffn_down.input_scale
+create_tensor: loading tensor blk.0.ffn_up.input_scale
+create_tensor: loading tensor blk.1.attn_q.scale
+create_tensor: loading tensor blk.1.attn_k.scale
+create_tensor: loading tensor blk.1.attn_v.scale
+create_tensor: loading tensor blk.1.attn_output.scale
+create_tensor: loading tensor blk.1.ffn_gate.scale
+create_tensor: loading tensor blk.1.ffn_down.scale
+create_tensor: loading tensor blk.1.ffn_up.scale
+create_tensor: loading tensor blk.1.attn_q.input_scale
+create_tensor: loading tensor blk.1.attn_k.input_scale
+create_tensor: loading tensor blk.1.attn_v.input_scale
+create_tensor: loading tensor blk.1.attn_output.input_scale
+create_tensor: loading tensor blk.1.ffn_gate.input_scale
+create_tensor: loading tensor blk.1.ffn_down.input_scale
+create_tensor: loading tensor blk.1.ffn_up.input_scale
+done_getting_tensors: tensor 'token_embd.weight' (f32) (and 59 others) cannot be used with preferred buffer type CPU_REPACK, using CPU instead
+load_tensors:   CPU_Mapped model buffer size =     4.51 MiB
+.................
+llama_context: constructing llama_context
+llama_context: n_seq_max     = 2
+llama_context: n_ctx         = 512
+llama_context: n_ctx_seq     = 256
+llama_context: n_batch       = 256
+llama_context: n_ubatch      = 256
+llama_context: causal_attn   = 1
+llama_context: flash_attn    = disabled
+llama_context: kv_unified    = false
+llama_context: freq_base     = 10000.0
+llama_context: freq_scale    = 1
+llama_context: n_rs_seq      = 0
+llama_context: n_outputs_max = 256
+llama_context: n_ctx_seq (256) > n_ctx_train (128) -- possible training context overflow
+set_abort_callback: call
+llama_context:        CPU  output buffer size =     0.00 MiB
+llama_kv_cache: layer   0: dev = CPU
+llama_kv_cache: layer   1: dev = CPU
+llama_kv_cache:        CPU KV buffer size =     2.00 MiB
+llama_kv_cache: size =    2.00 MiB (   256 cells,   2 layers,  2/2 seqs), K (f32):    1.00 MiB, V (f32):    1.00 MiB
+llama_kv_cache: attn_rot_k = 0, n_embd_head_k_all = 128
+llama_kv_cache: attn_rot_v = 0, n_embd_head_k_all = 128
+llama_context: enumerating backends
+llama_context: backend_ptrs.size() = 1
+sched_reserve: reserving ...
+sched_reserve: max_nodes = 1024
+sched_reserve: reserving full memory module
+sched_reserve: worst-case: n_tokens = 256, n_seqs = 2, n_outputs = 2
+resolve_fused_ops: resolving fused Gated Delta Net support:
+graph_reserve: reserving a graph for ubatch with n_tokens =    2, n_seqs =  2, n_outputs =    2
+resolve_fused_ops: fused Gated Delta Net (autoregressive) enabled
+graph_reserve: reserving a graph for ubatch with n_tokens =   32, n_seqs =  2, n_outputs =   32
+resolve_fused_ops: fused Gated Delta Net (chunked) enabled
+resolve_fused_ops: resolving fused Lightning Indexer support:
+graph_reserve: reserving a graph for ubatch with n_tokens =    2, n_seqs =  2, n_outputs =    2
+resolve_fused_ops: Lightning Indexer enabled
+resolve_fused_ops: resolving fused DeepSeek V4 HC support:
+graph_reserve: reserving a graph for ubatch with n_tokens =    2, n_seqs =  2, n_outputs =    2
+resolve_fused_ops: fused DeepSeek V4 HC pre enabled
+graph_reserve: reserving a graph for ubatch with n_tokens =    2, n_seqs =  2, n_outputs =    2
+resolve_fused_ops: fused DeepSeek V4 HC comb enabled
+graph_reserve: reserving a graph for ubatch with n_tokens =    2, n_seqs =  2, n_outputs =    2
+resolve_fused_ops: fused DeepSeek V4 HC post enabled
+graph_reserve: reserving a graph for ubatch with n_tokens =  256, n_seqs =  2, n_outputs =  256
+graph_reserve: reserving a graph for ubatch with n_tokens =    2, n_seqs =  2, n_outputs =    2
+graph_reserve: reserving a graph for ubatch with n_tokens =  256, n_seqs =  2, n_outputs =  256
+sched_reserve:        CPU compute buffer size =     2.50 MiB
+sched_reserve: graph nodes  = 108
+sched_reserve: graph splits = 1
+sched_reserve: reserve took 0.57 ms, sched copies = 1
+COMPARE phase=0 head=0 query=4 physical=0 logical=0 expected=0.19999623568625863 actual=0.19999624788761139 abs_error=1.2201352761476159e-08
+COMPARE phase=0 head=0 query=4 physical=1 logical=1 expected=0.19999909406352953 actual=0.19999910891056061 abs_error=1.4847031076792305e-08
+COMPARE phase=0 head=0 query=4 physical=2 logical=2 expected=0.20000200036487439 actual=0.20000201463699341 abs_error=1.4272119014391293e-08
+COMPARE phase=0 head=0 query=4 physical=3 logical=3 expected=0.20000235926398946 actual=0.20000237226486206 abs_error=1.3000872600699154e-08
+COMPARE phase=0 head=0 query=4 physical=4 logical=4 expected=0.20000031062134796 actual=0.20000031590461731 abs_error=5.2832693497872896e-09
+COMPARE phase=0 head=0 query=4 physical=5 logical=5 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=6 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=7 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=8 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=9 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=10 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=11 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=12 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=13 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=14 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=15 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=16 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=17 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=18 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=19 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=20 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=21 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=22 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=23 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=24 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=25 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=26 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=27 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=28 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=29 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=30 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=31 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=32 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=33 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=34 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=35 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=36 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=37 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=38 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=39 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=40 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=41 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=42 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=43 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=44 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=45 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=46 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=47 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=48 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=49 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=50 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=51 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=52 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=53 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=54 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=55 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=56 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=57 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=58 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=59 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=60 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=61 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=62 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=63 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=64 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=65 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=66 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=67 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=68 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=69 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=70 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=71 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=72 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=73 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=74 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=75 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=76 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=77 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=78 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=79 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=80 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=81 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=82 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=83 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=84 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=85 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=86 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=87 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=88 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=89 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=90 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=91 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=92 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=93 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=94 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=95 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=96 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=97 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=98 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=99 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=100 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=101 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=102 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=103 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=104 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=105 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=106 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=107 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=108 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=109 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=110 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=111 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=112 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=113 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=114 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=115 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=116 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=117 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=118 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=119 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=120 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=121 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=122 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=123 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=124 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=125 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=126 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=127 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=128 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=129 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=130 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=131 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=132 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=133 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=134 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=135 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=136 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=137 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=138 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=139 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=140 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=141 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=142 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=143 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=144 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=145 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=146 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=147 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=148 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=149 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=150 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=151 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=152 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=153 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=154 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=155 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=156 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=157 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=158 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=159 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=160 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=161 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=162 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=163 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=164 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=165 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=166 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=167 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=168 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=169 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=170 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=171 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=172 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=173 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=174 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=175 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=176 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=177 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=178 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=179 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=180 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=181 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=182 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=183 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=184 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=185 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=186 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=187 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=188 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=189 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=190 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=191 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=192 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=193 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=194 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=195 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=196 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=197 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=198 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=199 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=200 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=201 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=202 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=203 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=204 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=205 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=206 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=207 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=208 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=209 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=210 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=211 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=212 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=213 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=214 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=215 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=216 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=217 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=218 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=219 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=220 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=221 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=222 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=223 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=224 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=225 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=226 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=227 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=228 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=229 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=230 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=231 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=232 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=233 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=234 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=235 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=236 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=237 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=238 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=239 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=240 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=241 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=242 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=243 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=244 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=245 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=246 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=247 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=248 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=249 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=250 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=251 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=252 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=253 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=254 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=4 physical=255 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=0 logical=0 expected=0.16666423151181231 actual=0.16666422784328461 abs_error=3.6685277038372988e-09
+COMPARE phase=0 head=0 query=5 physical=1 logical=1 expected=0.16666402976420597 actual=0.16666401922702789 abs_error=1.053717807453225e-08
+COMPARE phase=0 head=0 query=5 physical=2 logical=2 expected=0.16666639661862076 actual=0.16666638851165771 abs_error=8.1069630453178831e-09
+COMPARE phase=0 head=0 query=5 physical=3 logical=3 expected=0.16666881793130575 actual=0.16666881740093231 abs_error=5.3037343961115369e-10
+COMPARE phase=0 head=0 query=5 physical=4 logical=4 expected=0.16666910919548725 actual=0.166669100522995 abs_error=8.6724922521153047e-09
+COMPARE phase=0 head=0 query=5 physical=5 logical=5 expected=0.16666741497856791 actual=0.1666674017906189 abs_error=1.3187949010617928e-08
+COMPARE phase=0 head=0 query=5 physical=6 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=7 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=8 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=9 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=10 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=11 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=12 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=13 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=14 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=15 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=16 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=17 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=18 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=19 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=20 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=21 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=22 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=23 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=24 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=25 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=26 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=27 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=28 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=29 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=30 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=31 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=32 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=33 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=34 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=35 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=36 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=37 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=38 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=39 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=40 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=41 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=42 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=43 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=44 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=45 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=46 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=47 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=48 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=49 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=50 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=51 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=52 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=53 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=54 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=55 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=56 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=57 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=58 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=59 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=60 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=61 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=62 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=63 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=64 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=65 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=66 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=67 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=68 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=69 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=70 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=71 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=72 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=73 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=74 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=75 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=76 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=77 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=78 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=79 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=80 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=81 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=82 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=83 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=84 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=85 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=86 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=87 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=88 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=89 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=90 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=91 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=92 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=93 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=94 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=95 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=96 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=97 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=98 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=99 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=100 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=101 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=102 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=103 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=104 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=105 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=106 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=107 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=108 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=109 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=110 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=111 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=112 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=113 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=114 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=115 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=116 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=117 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=118 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=119 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=120 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=121 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=122 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=123 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=124 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=125 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=126 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=127 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=128 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=129 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=130 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=131 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=132 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=133 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=134 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=135 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=136 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=137 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=138 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=139 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=140 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=141 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=142 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=143 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=144 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=145 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=146 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=147 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=148 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=149 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=150 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=151 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=152 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=153 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=154 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=155 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=156 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=157 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=158 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=159 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=160 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=161 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=162 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=163 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=164 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=165 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=166 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=167 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=168 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=169 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=170 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=171 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=172 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=173 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=174 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=175 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=176 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=177 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=178 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=179 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=180 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=181 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=182 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=183 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=184 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=185 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=186 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=187 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=188 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=189 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=190 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=191 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=192 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=193 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=194 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=195 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=196 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=197 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=198 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=199 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=200 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=201 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=202 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=203 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=204 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=205 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=206 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=207 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=208 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=209 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=210 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=211 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=212 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=213 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=214 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=215 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=216 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=217 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=218 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=219 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=220 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=221 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=222 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=223 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=224 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=225 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=226 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=227 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=228 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=229 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=230 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=231 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=232 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=233 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=234 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=235 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=236 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=237 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=238 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=239 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=240 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=241 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=242 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=243 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=244 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=245 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=246 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=247 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=248 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=249 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=250 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=251 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=252 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=253 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=254 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=0 query=5 physical=255 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=0 logical=0 expected=0.20000628733428927 actual=0.20000629127025604 abs_error=3.9359667747262961e-09
+COMPARE phase=0 head=1 query=4 physical=1 logical=1 expected=0.20000463194864929 actual=0.20000463724136353 abs_error=5.2927142391023807e-09
+COMPARE phase=0 head=1 query=4 physical=2 logical=2 expected=0.20000179512887675 actual=0.2000017911195755 abs_error=4.0093012521058569e-09
+COMPARE phase=0 head=1 query=4 physical=3 logical=3 expected=0.19999704074161201 actual=0.19999703764915466 abs_error=3.0924573457546956e-09
+COMPARE phase=0 head=1 query=4 physical=4 logical=4 expected=0.19999024484657274 actual=0.19999024271965027 abs_error=2.1269224714792756e-09
+COMPARE phase=0 head=1 query=4 physical=5 logical=5 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=6 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=7 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=8 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=9 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=10 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=11 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=12 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=13 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=14 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=15 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=16 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=17 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=18 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=19 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=20 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=21 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=22 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=23 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=24 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=25 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=26 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=27 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=28 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=29 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=30 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=31 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=32 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=33 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=34 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=35 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=36 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=37 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=38 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=39 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=40 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=41 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=42 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=43 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=44 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=45 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=46 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=47 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=48 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=49 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=50 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=51 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=52 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=53 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=54 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=55 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=56 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=57 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=58 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=59 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=60 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=61 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=62 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=63 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=64 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=65 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=66 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=67 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=68 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=69 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=70 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=71 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=72 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=73 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=74 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=75 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=76 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=77 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=78 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=79 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=80 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=81 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=82 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=83 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=84 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=85 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=86 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=87 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=88 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=89 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=90 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=91 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=92 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=93 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=94 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=95 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=96 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=97 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=98 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=99 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=100 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=101 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=102 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=103 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=104 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=105 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=106 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=107 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=108 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=109 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=110 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=111 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=112 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=113 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=114 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=115 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=116 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=117 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=118 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=119 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=120 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=121 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=122 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=123 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=124 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=125 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=126 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=127 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=128 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=129 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=130 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=131 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=132 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=133 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=134 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=135 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=136 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=137 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=138 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=139 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=140 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=141 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=142 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=143 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=144 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=145 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=146 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=147 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=148 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=149 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=150 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=151 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=152 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=153 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=154 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=155 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=156 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=157 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=158 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=159 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=160 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=161 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=162 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=163 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=164 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=165 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=166 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=167 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=168 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=169 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=170 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=171 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=172 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=173 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=174 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=175 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=176 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=177 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=178 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=179 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=180 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=181 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=182 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=183 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=184 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=185 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=186 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=187 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=188 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=189 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=190 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=191 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=192 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=193 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=194 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=195 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=196 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=197 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=198 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=199 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=200 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=201 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=202 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=203 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=204 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=205 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=206 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=207 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=208 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=209 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=210 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=211 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=212 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=213 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=214 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=215 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=216 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=217 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=218 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=219 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=220 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=221 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=222 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=223 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=224 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=225 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=226 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=227 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=228 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=229 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=230 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=231 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=232 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=233 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=234 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=235 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=236 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=237 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=238 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=239 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=240 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=241 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=242 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=243 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=244 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=245 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=246 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=247 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=248 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=249 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=250 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=251 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=252 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=253 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=254 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=4 physical=255 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=0 logical=0 expected=0.16667184696370502 actual=0.16667184233665466 abs_error=4.627050353978035e-09
+COMPARE phase=0 head=1 query=5 physical=1 logical=1 expected=0.16667086689600677 actual=0.16667085886001587 abs_error=8.0359909004901198e-09
+COMPARE phase=0 head=1 query=5 physical=2 logical=2 expected=0.16666947649310654 actual=0.16666947305202484 abs_error=3.4410816973640124e-09
+COMPARE phase=0 head=1 query=5 physical=3 logical=3 expected=0.16666713946933634 actual=0.16666713356971741 abs_error=5.8996189322702008e-09
+COMPARE phase=0 head=1 query=5 physical=4 logical=4 expected=0.16666317227766736 actual=0.16666316986083984 abs_error=2.4168275158942265e-09
+COMPARE phase=0 head=1 query=5 physical=5 logical=5 expected=0.166657497900178 actual=0.16665749251842499 abs_error=5.3817530154542936e-09
+COMPARE phase=0 head=1 query=5 physical=6 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=7 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=8 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=9 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=10 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=11 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=12 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=13 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=14 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=15 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=16 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=17 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=18 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=19 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=20 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=21 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=22 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=23 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=24 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=25 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=26 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=27 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=28 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=29 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=30 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=31 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=32 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=33 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=34 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=35 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=36 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=37 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=38 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=39 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=40 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=41 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=42 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=43 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=44 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=45 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=46 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=47 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=48 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=49 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=50 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=51 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=52 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=53 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=54 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=55 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=56 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=57 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=58 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=59 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=60 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=61 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=62 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=63 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=64 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=65 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=66 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=67 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=68 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=69 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=70 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=71 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=72 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=73 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=74 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=75 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=76 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=77 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=78 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=79 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=80 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=81 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=82 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=83 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=84 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=85 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=86 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=87 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=88 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=89 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=90 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=91 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=92 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=93 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=94 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=95 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=96 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=97 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=98 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=99 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=100 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=101 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=102 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=103 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=104 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=105 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=106 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=107 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=108 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=109 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=110 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=111 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=112 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=113 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=114 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=115 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=116 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=117 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=118 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=119 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=120 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=121 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=122 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=123 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=124 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=125 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=126 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=127 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=128 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=129 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=130 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=131 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=132 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=133 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=134 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=135 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=136 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=137 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=138 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=139 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=140 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=141 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=142 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=143 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=144 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=145 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=146 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=147 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=148 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=149 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=150 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=151 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=152 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=153 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=154 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=155 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=156 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=157 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=158 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=159 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=160 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=161 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=162 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=163 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=164 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=165 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=166 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=167 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=168 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=169 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=170 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=171 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=172 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=173 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=174 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=175 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=176 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=177 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=178 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=179 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=180 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=181 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=182 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=183 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=184 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=185 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=186 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=187 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=188 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=189 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=190 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=191 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=192 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=193 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=194 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=195 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=196 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=197 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=198 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=199 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=200 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=201 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=202 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=203 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=204 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=205 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=206 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=207 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=208 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=209 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=210 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=211 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=212 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=213 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=214 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=215 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=216 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=217 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=218 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=219 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=220 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=221 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=222 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=223 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=224 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=225 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=226 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=227 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=228 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=229 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=230 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=231 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=232 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=233 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=234 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=235 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=236 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=237 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=238 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=239 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=240 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=241 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=242 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=243 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=244 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=245 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=246 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=247 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=248 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=249 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=250 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=251 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=252 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=253 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=254 logical=-1 expected=0 actual=0 abs_error=0
+COMPARE phase=0 head=1 query=5 physical=255 logical=-1 expected=0 actual=0 abs_error=0
+ORACLE_REFUSED emitted key mapping mismatch

@@ -1,0 +1,15 @@
+fad4ea89caf2f53826a9c8d7bd4af11e2e313424cba00049fa6565fdfe48865f  /mnt/raid0/llm/tmp/codex-ni-20261028-ranked2/aux-private/build/bin/libggml-base.so.0
+fad4ea89caf2f53826a9c8d7bd4af11e2e313424cba00049fa6565fdfe48865f  /mnt/raid0/llm/tmp/codex-ni-20261028-ranked2/aux-private/build/bin/libggml-base.so.0.16.0
+2b8313285c884940ee326686c42f40fdcc420c0e1edcb8784a062922597f2288  /mnt/raid0/llm/tmp/codex-ni-20261028-ranked2/aux-private/build/bin/libggml-cpu.so.0
+2b8313285c884940ee326686c42f40fdcc420c0e1edcb8784a062922597f2288  /mnt/raid0/llm/tmp/codex-ni-20261028-ranked2/aux-private/build/bin/libggml-cpu.so.0.16.0
+1c65b4e3d730868fda7cf383bff6499f4448f735b52c757692110965d90808af  /mnt/raid0/llm/tmp/codex-ni-20261028-ranked2/aux-private/build/bin/libggml.so.0
+1c65b4e3d730868fda7cf383bff6499f4448f735b52c757692110965d90808af  /mnt/raid0/llm/tmp/codex-ni-20261028-ranked2/aux-private/build/bin/libggml.so.0.16.0
+5525d207be8303ea70c77bc230fa62d105b64d34117daeb38203e7f9bfe24c8d  /mnt/raid0/llm/tmp/codex-ni-20261028-ranked2/aux-private/build/bin/libllama.so.0
+5525d207be8303ea70c77bc230fa62d105b64d34117daeb38203e7f9bfe24c8d  /mnt/raid0/llm/tmp/codex-ni-20261028-ranked2/aux-private/build/bin/libllama.so.0.0.0
+cf631d9f202616b727993cae8274ad9898c8cc077e9537818b8fb4d387f9ea15  /mnt/raid0/llm/tmp/codex-ni-20261028-ranked2/aux-private/test_attention_capture.cpp
+7ab5bf8d38e973522e253d0a152349fcd56e1aef8655557e2ee9414267758c61  /mnt/raid0/llm/tmp/codex-ni-20261028-ranked2/aux-private/attention_capture.h
+2642569229ab46c33e21964c56285f5157908cb10171558a9045efe5ff632774  /mnt/raid0/llm/tmp/codex-ni-20261028-ranked2/aux-private/attention_producer.h
+9de7df7f23a9e03740930b1a67b841cfeec195caee4263d9088696be6a975818  /mnt/raid0/llm/tmp/codex-ni-20261028-ranked2/aux-private/attention_native.h
+6b2bd8d8ff0d5f67c42205005ca2956aa27a798d7aa67877fb28436ebc2e6e7e  /mnt/raid0/llm/tmp/codex-ni-20261028-ranked2/aux-private/position_map.h
+11e2886d547833ac80afea5d80432d2f2087b30f22683162c015e64f88aa76e2  /mnt/raid0/llm/models/test-fixtures/kpf623-qwen3-dense-11e2886d547833ac.gguf
+956c6bfafdcba2a4590ff6753de3946f9d6567f479c5bcdd1700781e68176348  /mnt/raid0/llm/tmp/codex-ni-ufh12-full-private-apply-r4-20261029/prep_supervisor.py

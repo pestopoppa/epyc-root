@@ -1,0 +1,8 @@
+{
+  "path": "/mnt/raid0/llm/models/test-fixtures/kpf623-qwen3-dense-11e2886d547833ac.gguf",
+  "sha256": "11e2886d547833ac80afea5d80432d2f2087b30f22683162c015e64f88aa76e2",
+  "original_path": "/mnt/raid0/llm/worktrees/kpf62-456-20261024/build-cpu-kpf62/tests/test-models/qwen3-dense.gguf",
+  "inode": 144118028,
+  "generated_fixture": true,
+  "hardlink_no_data_copy": true
+}

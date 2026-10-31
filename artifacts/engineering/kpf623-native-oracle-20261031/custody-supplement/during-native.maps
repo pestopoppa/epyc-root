@@ -1,0 +1,81 @@
+5db244e74000-5db244e76000 r--p 00000000 09:7f 195704649                  /mnt/raid0/llm/tmp/codex-ni-next-ranked-cpu-ready-20261031/oracle
+5db244e76000-5db244e7c000 r-xp 00002000 09:7f 195704649                  /mnt/raid0/llm/tmp/codex-ni-next-ranked-cpu-ready-20261031/oracle
+5db244e7c000-5db244e7e000 r--p 00008000 09:7f 195704649                  /mnt/raid0/llm/tmp/codex-ni-next-ranked-cpu-ready-20261031/oracle
+5db244e7e000-5db244e7f000 r--p 00009000 09:7f 195704649                  /mnt/raid0/llm/tmp/codex-ni-next-ranked-cpu-ready-20261031/oracle
+5db244e7f000-5db244e80000 rw-p 0000a000 09:7f 195704649                  /mnt/raid0/llm/tmp/codex-ni-next-ranked-cpu-ready-20261031/oracle
+5db2641df000-5db26421e000 rw-p 00000000 00:00 0                          [heap]
+5db26421e000-5db264222000 rw-p 00000000 00:00 0                          [heap]
+5db264222000-5db264231000 rw-p 00000000 00:00 0                          [heap]
+5db264231000-5db264236000 rw-p 00000000 00:00 0                          [heap]
+5db264236000-5db26429d000 rw-p 00000000 00:00 0                          [heap]
+752ee67c8000-752ee67c9000 rw-p 00000000 00:00 0 
+752ee67c9000-752ee6a49000 rw-p 00000000 00:00 0 
+752ee6a49000-752ee7e06000 rw-p 00000000 00:00 0 
+752ee7e06000-752ee8005000 rw-p 00000000 00:00 0 
+752ee8005000-752ee8006000 rw-p 00000000 00:00 0 
+752ee8006000-752ee848b000 r--s 00006000 09:7f 144118028                  /mnt/raid0/llm/models/test-fixtures/kpf623-qwen3-dense-11e2886d547833ac.gguf
+752ee8546000-752ee8600000 rw-p 00000000 00:00 0 
+752ee8600000-752ee8614000 r--p 00000000 09:7f 194151106                  /mnt/raid0/llm/tmp/codex-ni-20261028-ranked2/aux-private/build/bin/libggml-cpu.so.0.16.0
+752ee8614000-752ee8909000 r-xp 00014000 09:7f 194151106                  /mnt/raid0/llm/tmp/codex-ni-20261028-ranked2/aux-private/build/bin/libggml-cpu.so.0.16.0
+752ee8909000-752ee8941000 r--p 00309000 09:7f 194151106                  /mnt/raid0/llm/tmp/codex-ni-20261028-ranked2/aux-private/build/bin/libggml-cpu.so.0.16.0
+752ee8941000-752ee8943000 r--p 00340000 09:7f 194151106                  /mnt/raid0/llm/tmp/codex-ni-20261028-ranked2/aux-private/build/bin/libggml-cpu.so.0.16.0
+752ee8943000-752ee8945000 rw-p 00342000 09:7f 194151106                  /mnt/raid0/llm/tmp/codex-ni-20261028-ranked2/aux-private/build/bin/libggml-cpu.so.0.16.0
+752ee8945000-752ee89c9000 rw-p 00000000 00:00 0 
+752ee89e9000-752ee8af5000 rw-p 00000000 00:00 0 
+752ee8af5000-752ee8b00000 r--p 00000000 00:2d 76974843                   /usr/lib/x86_64-linux-gnu/libgomp.so.1.0.0
+752ee8b00000-752ee8b3e000 r-xp 0000b000 00:2d 76974843                   /usr/lib/x86_64-linux-gnu/libgomp.so.1.0.0
+752ee8b3e000-752ee8b4c000 r--p 00049000 00:2d 76974843                   /usr/lib/x86_64-linux-gnu/libgomp.so.1.0.0
+752ee8b4c000-752ee8b4d000 r--p 00056000 00:2d 76974843                   /usr/lib/x86_64-linux-gnu/libgomp.so.1.0.0
+752ee8b4d000-752ee8b4e000 rw-p 00057000 00:2d 76974843                   /usr/lib/x86_64-linux-gnu/libgomp.so.1.0.0
+752ee8b4e000-752ee8b76000 r--p 00000000 00:2d 66225893                   /usr/lib/x86_64-linux-gnu/libc.so.6
+752ee8b76000-752ee8d0f000 r-xp 00028000 00:2d 66225893                   /usr/lib/x86_64-linux-gnu/libc.so.6
+752ee8d0f000-752ee8d7e000 r--p 001c1000 00:2d 66225893                   /usr/lib/x86_64-linux-gnu/libc.so.6
+752ee8d7e000-752ee8d82000 r--p 0022f000 00:2d 66225893                   /usr/lib/x86_64-linux-gnu/libc.so.6
+752ee8d82000-752ee8d84000 rw-p 00233000 00:2d 66225893                   /usr/lib/x86_64-linux-gnu/libc.so.6
+752ee8d84000-752ee8d91000 rw-p 00000000 00:00 0 
+752ee8d91000-752ee8da2000 r--p 00000000 00:2d 66225929                   /usr/lib/x86_64-linux-gnu/libm.so.6
+752ee8da2000-752ee8e2d000 r-xp 00011000 00:2d 66225929                   /usr/lib/x86_64-linux-gnu/libm.so.6
+752ee8e2d000-752ee8e9c000 r--p 0009c000 00:2d 66225929                   /usr/lib/x86_64-linux-gnu/libm.so.6
+752ee8e9c000-752ee8e9d000 r--p 0010a000 00:2d 66225929                   /usr/lib/x86_64-linux-gnu/libm.so.6
+752ee8e9d000-752ee8e9e000 rw-p 0010b000 00:2d 66225929                   /usr/lib/x86_64-linux-gnu/libm.so.6
+752ee8e9e000-752ee8f40000 r--p 00000000 00:2d 66225976                   /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.34
+752ee8f40000-752ee908d000 r-xp 000a2000 00:2d 66225976                   /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.34
+752ee908d000-752ee9115000 r--p 001ef000 00:2d 66225976                   /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.34
+752ee9115000-752ee9124000 r--p 00276000 00:2d 66225976                   /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.34
+752ee9124000-752ee9127000 rw-p 00285000 00:2d 66225976                   /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.34
+752ee9127000-752ee912b000 rw-p 00000000 00:00 0 
+752ee912b000-752ee913f000 r--p 00000000 09:7f 194151046                  /mnt/raid0/llm/tmp/codex-ni-20261028-ranked2/aux-private/build/bin/libggml-base.so.0.16.0
+752ee913f000-752ee91da000 r-xp 00014000 09:7f 194151046                  /mnt/raid0/llm/tmp/codex-ni-20261028-ranked2/aux-private/build/bin/libggml-base.so.0.16.0
+752ee91da000-752ee91fc000 r--p 000af000 09:7f 194151046                  /mnt/raid0/llm/tmp/codex-ni-20261028-ranked2/aux-private/build/bin/libggml-base.so.0.16.0
+752ee91fc000-752ee91fe000 r--p 000d1000 09:7f 194151046                  /mnt/raid0/llm/tmp/codex-ni-20261028-ranked2/aux-private/build/bin/libggml-base.so.0.16.0
+752ee91fe000-752ee9200000 rw-p 000d3000 09:7f 194151046                  /mnt/raid0/llm/tmp/codex-ni-20261028-ranked2/aux-private/build/bin/libggml-base.so.0.16.0
+752ee9200000-752ee92a0000 r--p 00000000 09:7f 194151538                  /mnt/raid0/llm/tmp/codex-ni-20261028-ranked2/aux-private/build/bin/libllama.so.0.0.0
+752ee92a0000-752ee954b000 r-xp 000a0000 09:7f 194151538                  /mnt/raid0/llm/tmp/codex-ni-20261028-ranked2/aux-private/build/bin/libllama.so.0.0.0
+752ee954b000-752ee95d6000 r--p 0034b000 09:7f 194151538                  /mnt/raid0/llm/tmp/codex-ni-20261028-ranked2/aux-private/build/bin/libllama.so.0.0.0
+752ee95d6000-752ee95e4000 r--p 003d5000 09:7f 194151538                  /mnt/raid0/llm/tmp/codex-ni-20261028-ranked2/aux-private/build/bin/libllama.so.0.0.0
+752ee95e4000-752ee95e9000 rw-p 003e3000 09:7f 194151538                  /mnt/raid0/llm/tmp/codex-ni-20261028-ranked2/aux-private/build/bin/libllama.so.0.0.0
+752ee95e9000-752ee95ea000 rw-p 00000000 00:00 0 
+752ee960d000-752ee9615000 rw-p 00000000 00:00 0 
+752ee9615000-752ee9619000 r--p 00000000 00:2d 66225916                   /usr/lib/x86_64-linux-gnu/libgcc_s.so.1
+752ee9619000-752ee963c000 r-xp 00004000 00:2d 66225916                   /usr/lib/x86_64-linux-gnu/libgcc_s.so.1
+752ee963c000-752ee9640000 r--p 00027000 00:2d 66225916                   /usr/lib/x86_64-linux-gnu/libgcc_s.so.1
+752ee9640000-752ee9641000 r--p 0002a000 00:2d 66225916                   /usr/lib/x86_64-linux-gnu/libgcc_s.so.1
+752ee9641000-752ee9642000 rw-p 0002b000 00:2d 66225916                   /usr/lib/x86_64-linux-gnu/libgcc_s.so.1
+752ee9642000-752ee9644000 rw-p 00000000 00:00 0 
+752ee9648000-752ee964b000 r--p 00000000 09:7f 194151115                  /mnt/raid0/llm/tmp/codex-ni-20261028-ranked2/aux-private/build/bin/libggml.so.0.16.0
+752ee964b000-752ee9652000 r-xp 00003000 09:7f 194151115                  /mnt/raid0/llm/tmp/codex-ni-20261028-ranked2/aux-private/build/bin/libggml.so.0.16.0
+752ee9652000-752ee9654000 r--p 0000a000 09:7f 194151115                  /mnt/raid0/llm/tmp/codex-ni-20261028-ranked2/aux-private/build/bin/libggml.so.0.16.0
+752ee9654000-752ee9655000 r--p 0000b000 09:7f 194151115                  /mnt/raid0/llm/tmp/codex-ni-20261028-ranked2/aux-private/build/bin/libggml.so.0.16.0
+752ee9655000-752ee9656000 rw-p 0000c000 09:7f 194151115                  /mnt/raid0/llm/tmp/codex-ni-20261028-ranked2/aux-private/build/bin/libggml.so.0.16.0
+752ee9656000-752ee9658000 rw-p 00000000 00:00 0 
+752ee9658000-752ee965a000 r--p 00000000 00:00 0                          [vvar]
+752ee965a000-752ee965c000 r--p 00000000 00:00 0                          [vvar_vclock]
+752ee965c000-752ee965e000 r-xp 00000000 00:00 0                          [vdso]
+752ee965e000-752ee965f000 r--p 00000000 00:2d 66225873                   /usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2
+752ee965f000-752ee968d000 r-xp 00001000 00:2d 66225873                   /usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2
+752ee968d000-752ee969b000 r--p 0002f000 00:2d 66225873                   /usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2
+752ee969b000-752ee969d000 r--p 0003d000 00:2d 66225873                   /usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2
+752ee969d000-752ee969e000 rw-p 0003f000 00:2d 66225873                   /usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2
+752ee969e000-752ee969f000 rw-p 00000000 00:00 0 
+7ffd8960c000-7ffd8962d000 rw-p 00000000 00:00 0                          [stack]
+ffffffffff600000-ffffffffff601000 --xp 00000000 00:00 0                  [vsyscall]

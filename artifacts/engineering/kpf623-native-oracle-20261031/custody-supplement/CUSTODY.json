@@ -1,0 +1,51 @@
+{
+  "scope": "supplemental same-current-bytes runtime library custody, not retrospective maps for originalV2positive",
+  "accepted_V2_manifest_sha256": "0b8e5dd1eec417f4956ae00d22d06040c1d14d2fc6e566f03b906cc3edf74bd4",
+  "oracle_binary_sha256": "ab325f5e7594b3d60cad0acfee7779cddac8d5bdf7653b59bc5236cc27df1a64",
+  "oracle_source_sha256": "7ea4becc72ffd5874ed8d575998827412c0fedfcddb2d456d2c645e3fc2f3109",
+  "external_manifest_sha256": "5c8df54fbf97efd8894aaf59db82f59378a93f8272886b75743c2d90d639ce6b",
+  "pid": 3985874,
+  "birth_ticks": 154499729,
+  "sampled_utc": "2026-10-31T04:55:24.098937+00:00",
+  "allowed_cpus": [
+    128,
+    129
+  ],
+  "LD_LIBRARY_PATH": "/mnt/raid0/llm/tmp/codex-ni-20261028-ranked2/aux-private/build/bin",
+  "real_native_phase_observed": true,
+  "callback_pause": "explicit60s sleep after first native attention phase, modelpermuted; notcontinuouscompute",
+  "canonical_verifier": {
+    "path": "/mnt/raid0/llm/epyc-inference-research/scripts/utils/verify_ggml_linkage.sh",
+    "sha256": "57585b405f2d7c6062db2db7786c594d4c428f6952bd27db5a86c0d999cffe33",
+    "rc": 0,
+    "log_sha256": "d333af5400f44d9d5e85d1b6c9e1f977d0b0e7d8bf6c573838a3ee13fabd1929"
+  },
+  "loaded_library_closure": {
+    "/mnt/raid0/llm/tmp/codex-ni-20261028-ranked2/aux-private/build/bin/libggml-cpu.so.0.16.0": {
+      "sha256": "2b8313285c884940ee326686c42f40fdcc420c0e1edcb8784a062922597f2288",
+      "size_bytes": 3600320,
+      "inode": 194151106
+    },
+    "/mnt/raid0/llm/tmp/codex-ni-20261028-ranked2/aux-private/build/bin/libggml-base.so.0.16.0": {
+      "sha256": "fad4ea89caf2f53826a9c8d7bd4af11e2e313424cba00049fa6565fdfe48865f",
+      "size_bytes": 940008,
+      "inode": 194151046
+    },
+    "/mnt/raid0/llm/tmp/codex-ni-20261028-ranked2/aux-private/build/bin/libllama.so.0.0.0": {
+      "sha256": "5525d207be8303ea70c77bc230fa62d105b64d34117daeb38203e7f9bfe24c8d",
+      "size_bytes": 4743864,
+      "inode": 194151538
+    },
+    "/mnt/raid0/llm/tmp/codex-ni-20261028-ranked2/aux-private/build/bin/libggml.so.0.16.0": {
+      "sha256": "1c65b4e3d730868fda7cf383bff6499f4448f735b52c757692110965d90808af",
+      "size_bytes": 59648,
+      "inode": 194151115
+    }
+  },
+  "maps_sha256": "5e021746b7d8e95f78fc458a484b3bba59cb058e8513e7b8a50eb1d753785205",
+  "oracle_binds_originalV2": true,
+  "inflight_PID_birth_rechecked": true,
+  "native_rc": -15,
+  "cleanup_verified": true,
+  "wall_s": 0.04367793304845691
+}

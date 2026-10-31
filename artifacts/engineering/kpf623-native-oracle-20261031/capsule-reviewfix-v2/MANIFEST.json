@@ -1,0 +1,214 @@
+{
+  "scope": "same-task review correction; proposed independent native oracle portion only; MAIN review pending; no READY publication",
+  "original_task_file": "handoffs/active/kv-prefix-fork-and-paged-attention.md",
+  "original_task_parent": "KPF-62.3 selector",
+  "exact_original_task": "- Added requirement (KPF-62.3, not ticked): independent validation comparing emitted logical key/query positions and attention values against an independently implemented full-attention oracle on a real generated tiny model, including physically permuted KV slots and multiple query batches. Complete actual cross-vocabulary piece alignment and budget re-admission before G3/role quality.",
+  "authority_commit": "ae95bcad9853a33dfffc9e299451ef554a74074a",
+  "supersedes_provisional_capsule": "/mnt/raid0/llm/tmp/codex-ni-next-ranked-cpu-ready-20261031/capsule/MANIFEST.json",
+  "source_custody": "normal and each negative/cutoff producer RESULT records source-manifest, oracle-source, oracle-binary and external-manifest sha256 values",
+  "native_criteria": {
+    "probability_absolute_tolerance": 1e-06,
+    "direction": "lower absolute error is better",
+    "origin": "retained test_attention_capture.cpp:16 (engineering fixture tolerance only)",
+    "dot_residual": "reported ungraded"
+  },
+  "native_positive": {
+    "rc": 0,
+    "wall_s": 0.022032133070752025,
+    "comparison_count": 5120,
+    "phases_and_maps": [
+      {
+        "layout": "permuted",
+        "line": "EMITTED_MAP keys=1,2,0,3, query_rows=1,0,"
+      },
+      {
+        "layout": "permuted",
+        "line": "CHUNK_MEAN logical=0 physical=1 expected=0.1833346594169751 actual=0.18333465978503227"
+      },
+      {
+        "layout": "permuted",
+        "line": "CHUNK_MEAN logical=1 physical=2 expected=0.18333464626155815 actual=0.18333465233445168"
+      },
+      {
+        "layout": "permuted",
+        "line": "CHUNK_MEAN logical=2 physical=0 expected=0.18333491775693991 actual=0.18333491683006287"
+      },
+      {
+        "layout": "permuted",
+        "line": "CHUNK_MEAN logical=3 physical=3 expected=0.18333383935402542 actual=0.18333384394645691"
+      },
+      {
+        "layout": "permuted",
+        "line": "PHASE queries=2 max_abs_error=2.0056627136888494e-08 dot_abs_error=1.3681232405651778e-10 physical=0:2,1:0,2:1,3:3,4:4,5:5,"
+      },
+      {
+        "layout": "permuted",
+        "line": "EMITTED_MAP keys=1,2,0,3, query_rows=2,0,1,"
+      },
+      {
+        "layout": "permuted",
+        "line": "CHUNK_MEAN logical=0 physical=1 expected=0.1263258707291614 actual=0.12632587303717929"
+      },
+      {
+        "layout": "permuted",
+        "line": "CHUNK_MEAN logical=1 physical=2 expected=0.12632444812718005 actual=0.12632444749275842"
+      },
+      {
+        "layout": "permuted",
+        "line": "CHUNK_MEAN logical=2 physical=0 expected=0.12632324887298055 actual=0.12632325167457265"
+      },
+      {
+        "layout": "permuted",
+        "line": "CHUNK_MEAN logical=3 physical=3 expected=0.12632278862662302 actual=0.12632278725504875"
+      },
+      {
+        "layout": "permuted",
+        "line": "PHASE queries=3 max_abs_error=2.0056627136888494e-08 dot_abs_error=1.8865073305590618e-10 physical=0:2,1:0,2:1,3:3,4:4,5:5,6:6,7:7,8:8,"
+      },
+      {
+        "layout": "contiguous",
+        "line": "EMITTED_MAP keys=0,1,2,3, query_rows=1,0,"
+      },
+      {
+        "layout": "contiguous",
+        "line": "CHUNK_MEAN logical=0 physical=0 expected=0.18333465037401631 actual=0.18333465233445168"
+      },
+      {
+        "layout": "contiguous",
+        "line": "CHUNK_MEAN logical=1 physical=1 expected=0.1833346556680979 actual=0.18333465605974197"
+      },
+      {
+        "layout": "contiguous",
+        "line": "CHUNK_MEAN logical=2 physical=2 expected=0.1833349171513696 actual=0.18333491683006287"
+      },
+      {
+        "layout": "contiguous",
+        "line": "CHUNK_MEAN logical=3 physical=3 expected=0.18333383935156089 actual=0.18333384022116661"
+      },
+      {
+        "layout": "contiguous",
+        "line": "PHASE queries=2 max_abs_error=1.4847031076792305e-08 dot_abs_error=1.464462021701779e-10 physical=0:0,1:1,2:2,3:3,4:4,5:5,"
+      },
+      {
+        "layout": "contiguous",
+        "line": "EMITTED_MAP keys=0,1,2,3, query_rows=2,0,1,"
+      },
+      {
+        "layout": "contiguous",
+        "line": "CHUNK_MEAN logical=0 physical=0 expected=0.12632586201720455 actual=0.12632586186130842"
+      },
+      {
+        "layout": "contiguous",
+        "line": "CHUNK_MEAN logical=1 physical=1 expected=0.12632445199730741 actual=0.12632445245981216"
+      },
+      {
+        "layout": "contiguous",
+        "line": "CHUNK_MEAN logical=2 physical=2 expected=0.12632325201164668 actual=0.12632325291633606"
+      },
+      {
+        "layout": "contiguous",
+        "line": "CHUNK_MEAN logical=3 physical=3 expected=0.12632278902499985 actual=0.12632278725504875"
+      },
+      {
+        "layout": "contiguous",
+        "line": "PHASE queries=3 max_abs_error=1.4847031076792305e-08 dot_abs_error=1.8865073305590618e-10 physical=0:0,1:1,2:2,3:3,4:4,5:5,6:6,7:7,8:8,"
+      }
+    ],
+    "max_probability_error": 2.0056627136888494e-08,
+    "cleanup_verified": true,
+    "independent_forward_map": [
+      2,
+      0,
+      1,
+      3
+    ],
+    "independent_inverse_key_cells": [
+      1,
+      2,
+      0,
+      3
+    ],
+    "requested_query_positions": [
+      [
+        5,
+        4
+      ],
+      [
+        8,
+        6,
+        7
+      ]
+    ],
+    "independent_expected_query_rows": [
+      [
+        1,
+        0
+      ],
+      [
+        2,
+        0,
+        1
+      ]
+    ],
+    "explicit_assertions": "producer.captured.key_cells and query_rows equal independently specified expected vectors before numerical means; independent snapshot physical-layout check covers all physical cells",
+    "batches": "native submitted query batches[4,5] then[6,7,8], all2 final-layer heads, all256 physical columns per row incl masked slots"
+  },
+  "negative_controls": {
+    "corrupted_emitted_key_mapping": {
+      "rc": 1,
+      "reason": "emitted key mapping mismatch",
+      "structural_refusal_before_numeric_mean_comparison": true
+    },
+    "corrupted_emitted_query_mapping": {
+      "rc": 1,
+      "reason": "emitted query mapping mismatch",
+      "structural_refusal_before_numeric_mean_comparison": true
+    },
+    "note": "Nearuniform probabilities do not determine structural mapping; explicit vector comparison does."
+  },
+  "cutoff": {
+    "rc": 75,
+    "partial": true,
+    "cleanup_verified": true,
+    "wall_s": 0.012322728987783194,
+    "scope": "real native inference completed first attention callback then explicit60s sleep injection; supervisor TERM/reap; not a continuous-compute claim"
+  },
+  "limits": [
+    "generated tiny attention-only qwen3 model, final layer only",
+    "source/binary/library hashes retained; no per-process loaded-library map was captured",
+    "no cross-vocabulary alignment or budget-re-admission result",
+    "no selector quality, real-role G3, performance, GPU or production acceptance"
+  ],
+  "canonical_model": {
+    "path": "/mnt/raid0/llm/models/test-fixtures/kpf623-qwen3-dense-11e2886d547833ac.gguf",
+    "sha256": "11e2886d547833ac80afea5d80432d2f2087b30f22683162c015e64f88aa76e2",
+    "original_path": "/mnt/raid0/llm/worktrees/kpf62-456-20261024/build-cpu-kpf62/tests/test-models/qwen3-dense.gguf",
+    "inode": 144118028,
+    "generated_fixture": true,
+    "hardlink_no_data_copy": true
+  },
+  "files": {
+    "SOURCES.sha256": "ae548712b40ba77d53c19e5d138eb782cc4e4af2b284085ef824f30ef1087f0e",
+    "oracle.cpp": "7ea4becc72ffd5874ed8d575998827412c0fedfcddb2d456d2c645e3fc2f3109",
+    "position_map.h": "6b2bd8d8ff0d5f67c42205005ca2956aa27a798d7aa67877fb28436ebc2e6e7e",
+    "oracle": "ab325f5e7594b3d60cad0acfee7779cddac8d5bdf7653b59bc5236cc27df1a64",
+    "EXTERNAL.sha256": "5c8df54fbf97efd8894aaf59db82f59378a93f8272886b75743c2d90d639ce6b",
+    "test_attention_capture.cpp": "cf631d9f202616b727993cae8274ad9898c8cc077e9537818b8fb4d387f9ea15",
+    "runtime.py": "3cae94cf61006d850838ecb5cb154bac1202ed903f30ccba75b0511d8afcf44d",
+    "attention_producer.h": "2642569229ab46c33e21964c56285f5157908cb10171558a9045efe5ff632774",
+    "attention_native.h": "9de7df7f23a9e03740930b1a67b841cfeec195caee4263d9088696be6a975818",
+    "launch.sh": "54880393acb4d08fabb8674ca6a4417bec6f61b48b3ba3e98364b3f0cf5feaeb",
+    "attention_capture.h": "7ab5bf8d38e973522e253d0a152349fcd56e1aef8655557e2ee9414267758c61",
+    "ORIGINAL-TASK.txt": "d118199ab8f03d904f0c0b3f8f6ecb79bdb8be0245a3f16e537c3a5093925290",
+    "MODEL.json": "aab3d367e56b5a0c5955a4f1c87adf2bbf591a018a95912084cd53cbc5b102ab",
+    "negative-query/RESULT.json": "66be1bf3968db3fd0ae1f23a7d3e8eedcb76979f91fe127bf9442bf8ecc3b8fb",
+    "negative-query/contiguous.log": "7a78398c346b86c1b10d92ed391273a416cb715fd31f03c4d3eac3b8f53c3a10",
+    "negative-key/RESULT.json": "0216c7c1676fadd5d48b01b679006086ab64a156b235a9e6ff46c0bd65de0798",
+    "negative-key/contiguous.log": "aac76458f714a4d4035803f1cc21506810801fc217554d99201ff72ed8e4fa5c",
+    "normal/permuted.log": "1c1523151ade2b79fa9fe4d2f5b2c8d9b13c40571f55a1817603c788c418e140",
+    "normal/RESULT.json": "b56a2a13f0fb57efb2f2e02b216542a910e601b3541776312eedd6c6ee4caf0d",
+    "normal/contiguous.log": "4200cc82f014a75d8cc26f1cac9693d1a94b33d80e7f84b5b72dacbc22f729ec",
+    "cutoff/RESULT.json": "152e70a288dc8f12774eee5d82b9e1aa0f72a83044c69b5071b23330281998d5",
+    "cutoff/contiguous.log": "ff8a115f625837a80c42b2e58e3f5fc1833e5b1fefebb3739c7223d35b79d2c7"
+  }
+}

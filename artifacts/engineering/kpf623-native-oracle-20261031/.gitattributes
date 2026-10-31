@@ -1,0 +1,3 @@
+/capsule-reviewfix-v2/*/*.log -diff
+/custody-supplement/*.log -diff
+/custody-supplement/*.maps -diff
