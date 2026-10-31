@@ -1,0 +1,11 @@
+{
+  "validator_rc": 0,
+  "validator_stdout": "OK: 1 row(s) checked, 0 refusal(s), 0 warning(s)\n",
+  "validator_stderr": "",
+  "grant_ok_rc": 0,
+  "grant_ok_stdout": "admit: validator OK; admit: MemAvailable 990 GiB, need 16 GiB; class=block-correctness launcher=filler_run13.sh:1562887 lclass=cpu minwin=600(argv) window=900 claim=0-23 gpuq=- claim_regions=q0 regions=0-23\n",
+  "grant_ok_stderr": "",
+  "fixture_pid": 1562887,
+  "fixture_status": "DEAD_BEFORE_READY",
+  "normal_engine_entry_rus3_diagnostic": true
+}

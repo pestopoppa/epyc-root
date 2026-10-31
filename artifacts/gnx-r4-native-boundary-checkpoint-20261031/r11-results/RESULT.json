@@ -1,0 +1,77 @@
+{
+  "state": "R11_SMOKE_PASS",
+  "cases": [
+    {
+      "name": "status",
+      "rc": 0,
+      "peak_rss_bytes": 240148480,
+      "captured_pids": [
+        1540809,
+        1540811,
+        1541004,
+        1541163,
+        1541187,
+        1541261,
+        1541402,
+        1541545,
+        1541572
+      ],
+      "events": 127
+    },
+    {
+      "name": "readonly",
+      "rc": 0,
+      "peak_rss_bytes": 323506176,
+      "captured_pids": [
+        1540809,
+        1542048,
+        1542401
+      ],
+      "events": 65
+    },
+    {
+      "name": "forbidden",
+      "rc": 64,
+      "peak_rss_bytes": 240881664,
+      "captured_pids": [
+        1540809,
+        1551212,
+        1551620,
+        1551746
+      ],
+      "events": 39
+    }
+  ],
+  "negative_cases": [
+    {
+      "name": "wrong-cpus",
+      "rc": 64,
+      "native_events": 0
+    },
+    {
+      "name": "wrong-scope",
+      "rc": 64,
+      "native_events": 0
+    },
+    {
+      "name": "bad-authority",
+      "rc": 64,
+      "native_events": 0
+    },
+    {
+      "name": "expired-deadline",
+      "rc": 64,
+      "native_events": 0
+    }
+  ],
+  "source_sha256": "7abd5b65c6b2e5a69092e9fd31caf75f513a9479b7b7aa07918088f6c20fd4b0",
+  "parent_accepted_manifest": "b4c1414eccc2b8987d8f2b3eaa397f0b10438bd77d39487e7fd58c9ee7e30bbc",
+  "authority_sha256": "9e82b3ad03a8ed8c269065e962eb6a71a21de39918c17b410f0c1ac71645cbcd",
+  "cpus": [
+    128,
+    129
+  ],
+  "grant": null,
+  "outer_total_rss_limit_bytes": 8589934592,
+  "deadline_limit_s": 300
+}

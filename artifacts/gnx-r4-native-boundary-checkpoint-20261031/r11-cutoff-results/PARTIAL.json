@@ -1,0 +1,13 @@
+{
+  "state": "R11_ONLY_CUTOFF_PASS",
+  "partial": true,
+  "normal_24_cpu_proof": "NOT_RUN",
+  "underlying_native_rc": 64,
+  "launcher_exit": 75,
+  "owned_tree_death_proof": true,
+  "grant": null,
+  "cpus": [
+    128,
+    129
+  ]
+}
