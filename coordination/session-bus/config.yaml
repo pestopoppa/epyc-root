@@ -16,6 +16,8 @@ diagnostic_overrides:
 # key whose directory is missing REFUSES to spawn rather than silently using the shared
 # clone: `scripts/coordination/setup_main_worktrees.sh <agent>` recreates it.
 roster:
+  # LOOP-27: the existing filing watcher owns only its service outbox.
+  - {id: filing-watch, role: service, lanes: [none], endpoint: "monitor:file", drain: boundary, schedulable: false}
   # AutoKernel operator session 01a11473-3d55-7543-8830-0de817d87bbe; coordination only.
   - {id: codex-ak-main-01a11473, role: service, lanes: [none], endpoint: "monitor:file", drain: boundary, schedulable: false}
   # Operator-authorized non-inference campaign, 2026-10-05; no fleet dispatch or compute authority.

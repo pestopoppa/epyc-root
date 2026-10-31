@@ -101,3 +101,7 @@ Research implementation `6918763bd7c8c5259a8da8be2832c564707719b7` (remote main 
 ### Prior-work evidence hygiene: R24-9
 
 - Evidence-only integrity repair for R24-9: Existing10 native-comparison-object controls cover prior/new effect journaling and MeasurementInvalid beyond native floor; existing11-case CPU followup fixes code-manifest backend selection. Missing identities/floors remain unknown, no historical regrade or live excursion claim. Original task text and dates retained; exact implementation commits and durable Git evidence are attached. This is hygiene, not new code throughput or today quota. [no-belief: task-evidence integrity repair] Durable evidence: `artifacts/compute/task-evidence-repair-20261031/r24-9/EVIDENCE.json`. Quota credit: 0.
+
+### LOOP-27 source checkpoint — filing takeover alarm (task remains open)
+
+Added the tracked filing watcher successor and dedicated service outbox alarm, using the existing due producer and native bus/dispatcher contract. Twenty isolated controls cover repeated stale entries, FILED suppression, malformed/unterminated observations, missing runtime identity, checkpoint recovery, actual watcher entry and idempotent native relay. Ruff passes. Source/test/activation evidence: `artifacts/coordination/loop27-filing-alarm-20261031/EVIDENCE.json`. No live watcher, bus, peer PID, grant or shared checkout changed. The original checkbox remains open until its owner adopts the exact published source and verifies the actual runtime roster and relay. Zero completion quota at this checkpoint.
