@@ -1,0 +1,4 @@
+...................                                                      [100%]
+19 passed in 0.50s
+{"pytest_returncode": 0, "retained_files": 57, "fixture_count": 19, "pytest_factory_fixture_count": 4, "blocked_real_operations": 0, "receipt": "/mnt/raid0/llm/tmp/refactor-01a16fc3/c33-integration-retained-20261031/RECEIPT.json"}
+All checks passed!
