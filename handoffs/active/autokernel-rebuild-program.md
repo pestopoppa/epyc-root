@@ -1793,7 +1793,7 @@ production model at pairs=5, ~18% cadence overhead). Six operator decision items
         - [x] **Activate the pin**: set `cpu_list` in `qwen3.8-27b-q8-gpu-dflash2-np4.json` AND re-calibrate ✅ 2026-10-29 (audit: sibling [x] boxes in same parent: "serving recipe pinned 184-191 committed (research bdfab023 -> 624adbdd) 2026-09-08" and "serving floor re-calibration under the pin 2026-09-08" (root 4049e19b9: 4.581% p95 n=10)) [no-belief: audit-reconciliation]
           the serving floor under the pin, in the SAME window. Blocked on GPU time (run 30 holds the claim)
           and on OP-41, which may mandate the region lock instead.
-        - [ ] **Reuse INF-70's sibling-expanded affinity check** rather than rebuilding it: their sampler
+        - [x] **Reuse INF-70's sibling-expanded affinity check** rather than rebuilding it: their sampler — ✅ 2026-10-31, research `37dcdcd53f4cfbb27dd80564d5fc4bf407a0c566`; `scripts/kernel_rnd/autokernel/loop/test_serving_foreign_affinity.py` (10 passed; full targeted suite 63 passed + 8 subtests); artifact `artifacts/engineering/autokernel-rebuild-s-batch-20261031/LANDING-RECEIPT.json`. [no-belief: software-contract-fix]
           resolves foreign processes via `/proc/*/exe` and compares `cpus_allowed` against the
           SIBLING-EXPANDED bench set (the literal-range compare is what made `184-191` read as disjoint).
           Source: `/mnt/raid0/llm/tmp/inf70/agents/sync19-20/foreign.py` — **NOT `sync16/`, which INF-70
@@ -2570,8 +2570,8 @@ production model at pairs=5, ~18% cadence overhead). Six operator decision items
       are now performance-VALIDATED by this measurement, closing that gap for dec-b4), and R23-26
       (a promotion headline must state its workload). **No run starts, and no promotion step is
       taken, without explicit operator permission** (standing instruction 2026-09-03).
-- [ ] **R23-30 — the boundary driver's 15-min SIGTERM grace is WRONG for a confirm-rung run and
-      will SIGKILL every stop.** Measured 2026-09-03 stopping run 25 (27B rung, 7 workers):
+- [x] **R23-30 — the boundary driver's 15-min SIGTERM grace is WRONG for a confirm-rung run and will SIGKILL every stop.** ✅ 2026-10-31, research `37dcdcd53f4cfbb27dd80564d5fc4bf407a0c566`; `scripts/benchmark/test_boundary_20260901_drain.py` (11 passed); artifact `artifacts/engineering/autokernel-rebuild-s-batch-20261031/LANDING-RECEIPT.json`. [no-belief: software-contract-fix]
+      Measured 2026-09-03 stopping run 25 (27B rung, 7 workers):
       graceful drain took **~87 min** (SIGTERM 07:59:09Z -> last publish ~09:25Z), because each lane
       holding a measurement finishes it and lanes serialize on the claim. Publish cadence was
       steady at **17.3 / 17.5 / 17.8 min** per lane; 2 lanes abandoned at formation, 5 completed.

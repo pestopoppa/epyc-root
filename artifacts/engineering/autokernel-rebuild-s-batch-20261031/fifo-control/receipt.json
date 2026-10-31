@@ -1,0 +1,14 @@
+{
+  "status": "PUSHED_REMOTE_MAIN_VERIFIED",
+  "repo": "epyc-orchestrator",
+  "commit": "9e1155a10f809d9c63a818fd95b5e02276d0e43a",
+  "remote_main": "9e1155a10f809d9c63a818fd95b5e02276d0e43a",
+  "test": "tests/unit/test_lock_fifo_queue.py",
+  "result": "24 passed",
+  "test_log": "fifo-control/landed-native-suite.log",
+  "test_log_sha256": "42a51bb84a762dee9ad9f0c6a132f0dd83e0e1dfa243ccaacd02ee9159ad1d14",
+  "negative_control_log": "fifo-control/old-fairness-negative.log",
+  "negative_control_log_sha256": "f75687b4f4bd033437963d5a9fb6ee457c0ef13d87a4b43951f49e386bfa6c70",
+  "original_task": "Deterministic FIFO-off control in handoffs/active/autokernel-unified-surface-program.md",
+  "default_on": false
+}

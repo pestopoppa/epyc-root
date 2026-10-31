@@ -299,7 +299,7 @@ First full smoke run of the trial loop. Four defects, three silent.
       - **Box left unchecked deliberately** — nothing is fixed, and the decision is per-module:
         wire BSV-3, or retire the ledger and correct its docstring. Same for the other 23.
 
-- [x] **The metric's NAME and its new tooltip both overstate what it counts.** `contention_gate.py:325`
+- [x] **The metric's NAME and its new tooltip both overstate what it counts.** `contention_gate.py:325` — orchestrator `b387c5dded66`; 33 orchestrator + 6 ROOT tests; artifact `/mnt/raid0/llm/tmp/codex-ni-ap-nway-metric-audit-20261030/compat-focused-rerun-20261030.log` (SHA-256 `dc6ab57893870bdcc3b791c582332eb4d1fd7ffd2eb48f771efe45f68ebf718d`).
   increments inside `if nway_decision != PairDecision.ALLOW:` — **not** inside the
   `if _prec[nway_decision] > _prec[worst]:` test one line above. So it counts *"the N-way check fired
   non-ALLOW"*, not *"N-way was the binding constraint"*: if pairwise already said BLOCK and N-way says
@@ -427,7 +427,7 @@ First full smoke run of the trial loop. Four defects, three silent.
   `contention_nway_restricted_count` label defect filed above: a value whose name asserts more than
   the measurement supports.
 
-- [x] **The legacy substring fallback FALSE-POSITIVES, and the evidence is comical:** applied to
+- [x] **The legacy substring fallback FALSE-POSITIVES, and the evidence is comical:** orchestrator `d7aa9d952b5f6312cfef02059145e698c6735756`; 163 direct-caller + 39 EV6b tests; see `progress/2026-10/2026-10-30.md` → *AutoPilot legacy numeric-status false positive*. Applied to
   `outcome_details` it flagged 23 tasks as infra purely because **`"1.503s"` contains `"503"`**. Every
   one of its hits on the live journal was that. The dry-run deliberately uses only the structural
   `[ERROR:` anchor. This is the strongest argument yet for structural-over-substring classification —
@@ -813,8 +813,7 @@ its comparator on 2 of 4 tasks there, so no frontier API is required. Cite `inta
       (surface, param, value) proposals is measured ONCE, inside AP-53's zero-compute re-proposal
       count, not twice. intake-1372#02.
 
-- [x] **AP-69 (S3-AP-07) — label every planner-critic verdict kind=proposal_filter, never
-      validation**, in the journal and any receipt/dashboard summarizing it. The critic
+- [x] **AP-69 (S3-AP-07) — label every planner-critic verdict kind=proposal_filter, never validation**, in the journal and any receipt/dashboard summarizing it. Orchestrator `e822e3788ec016be1f7ee06d13225179a6dc816e`; 271 tests; artifact `/mnt/raid0/llm/tmp/codex-ni-ap69-proposal-filter-20261030-orch2/VALIDATION-AP69-r3-20261030.log` (SHA-256 `736ab9a3a24f0cf778115c2d2a227e66883033457ad53dfc237e419ba936fb37`). The critic
       (local_frontdoor) reads only the planner's prose draft, which is the manuscript-only review
       shape (intake-1373#01). This is the autopilot twin of S3-AKU-05, with the kind enum widened to
       script / oracle / proposal_filter / llm_judge. Eval tower + safety_gate stay the validation

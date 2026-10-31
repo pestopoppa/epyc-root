@@ -1,0 +1,191 @@
+{
+  "schema": "epyc.kpf18_r4.source_audit.v1",
+  "task": "KPF18-R4-FORK-CODEREAD-1",
+  "scope": "source read and retained-record verification only",
+  "kernel_commit": "a1f0c8cf9bd7102415a72577474f307b8ba94db9",
+  "runner_commit": "6e8ae35a274f9a356fefe8b118db543a079277c6",
+  "kpf174c_commit": "82c16126f2c2599e7a156c00f3ab15045ea1b8d1",
+  "source_and_native_refs": {
+    "/mnt/raid0/llm/kernels/builds/gpu-20261020-a1f0c8cf9/bin/llama-server": {
+      "sha256": "2be7a16ed6d3712d82a36c668417b4dcec8d9cadd13a682e069cb4d57b9d0635"
+    },
+    "/mnt/raid0/llm/tmp/overnight-20261020/argv.8083-gate.txt": {
+      "sha256": "26a6c265ad67249a486bfd68525368c00114346aba065b9b3757c9f87b3cc09c"
+    },
+    "/mnt/raid0/llm/tmp/overnight-20261020/kpf18-run/prompt_set.jsonl": {
+      "sha256": "dc37cdf1c407956d83d7b7354f4e48964306228793fc9095add945a17f2994de"
+    },
+    "/mnt/raid0/llm/tmp/f8-launchers-20261024/kpf18-s1-r4/PREDECLARATION.md": {
+      "sha256": "dd43b11c5b0c2517adb92bf954b14ffde2dd708b70fe2a42eef8f6482bfc20e2"
+    },
+    "/mnt/raid0/llm/tmp/f8-launchers-20261024/kpf18-s1-r4/forced_seq_183p4.json": {
+      "sha256": "80333287237f87288d0ed83bab10a47d1d9334e274a0a74c039ba1661a6fabbd"
+    },
+    "/mnt/raid0/llm/tmp/f8-launchers-20261024/kpf18-s1-r3/out/records/kpf18-20261024T085439Z-1.json": {
+      "sha256": "6d65e7a6b77f4bf2262cd64b4dfe646bb78e690fa0c125e8b5fafae5f0711edf"
+    },
+    "/mnt/raid0/llm/tmp/kpf-p1-20261004/src-store-p1r-20261020/tools/server/server-context.cpp": {
+      "sha256": "880c382aa2d474bab5d80b6de5905f1278ec6ab4c470d415c5d26f7e9e94e2c0"
+    },
+    "/mnt/raid0/llm/tmp/kpf-p1-20261004/src-store-p1r-20261020/common/common.cpp": {
+      "sha256": "392f55a4b07066fc3e6939397275eda9c763b3b14c159fea64528488d1be92ad"
+    },
+    "/mnt/raid0/llm/tmp/kpf-p1-20261004/src-store-p1r-20261020/src/llama-memory-hybrid.cpp": {
+      "sha256": "e84615d71453e30918db087a5a8beb61e53372a92693168e134308bcf7fffc64"
+    },
+    "/mnt/raid0/llm/tmp/kpf-p1-20261004/src-store-p1r-20261020/src/llama-kv-cache.cpp": {
+      "sha256": "a9aa9460b36e00123ede2fb22596fee648679f729ab17043b6c98e3f530064bc"
+    },
+    "/mnt/raid0/llm/tmp/kpf-p1-20261004/src-store-p1r-20261020/src/llama-kv-cells.h": {
+      "sha256": "d9ab701ef4286b26bbd9ba8fc5de8162b647215cda7d4116b9caeae7a47b7d6d"
+    },
+    "/mnt/raid0/llm/tmp/kpf-p1-20261004/src-store-p1r-20261020/src/llama-graph.cpp": {
+      "sha256": "8051d02e344dd9a441e4cabca90748d5565928621181b791ba72958097418bf0"
+    },
+    "/mnt/raid0/llm/tmp/kpf-p1-20261004/src-store-p1r-20261020/ggml/src/ggml-cuda/fattn.cu": {
+      "sha256": "b64e12050bc06c935ab2fe393ea92c9a44836379ee5683437c982dd71b3412f6"
+    },
+    "/mnt/raid0/llm/tmp/kpf-p1-20261004/src-store-p1r-20261020/ggml/src/ggml-cuda/fattn-vec.cuh": {
+      "sha256": "3a2ce9bc7b0fad45e4b3747cb424bfa8e688e272697b08bfd63cd72f9e7f5de3"
+    },
+    "/mnt/raid0/llm/tmp/kpf-p1-20261004/src-store-p1r-20261020/ggml/src/ggml-cuda/fattn-wmma-f16.cu": {
+      "sha256": "a70b4f6e4ece7c5267ce39aaaed9165db24c4ed37020f31bbb2bd3a3128e3962"
+    },
+    "/mnt/raid0/llm/worktrees/research-kpf18-r4-pin/scripts/benchmark/kpf18/kpf18_r4.py": {
+      "sha256": "489732a70cacef9a51990ea42db4fc5a9caab0c6e60977a10f3630f9b5f2eecc"
+    },
+    "/mnt/raid0/llm/tmp/f8-launchers-20261024/kpf18-s1-r4/RUN_RECORD.json": {
+      "sha256": "605adf4fcf5403ea39fe547544587f446e5b9cb52103b8282e49c35d601dd50f"
+    },
+    "/mnt/raid0/llm/tmp/f8-launchers-20261024/kpf18-s1-r4/VERDICT.json": {
+      "sha256": "624db3431883b3f4fb5e0de677df8a46c4c0c7e72cd46e5aaee4ccf0f8013c2f"
+    },
+    "/mnt/raid0/llm/tmp/f8-launchers-20261024/kpf18-s1-r4/out/records/kpf18-20261024T154558Z-1.json": {
+      "sha256": "4716c7ad7bd666b182de4a741d48230fb25fd19391e646aa2fc62c242543e82c"
+    },
+    "/mnt/raid0/llm/tmp/f8-launchers-20261024/kpf18-s1-r4/out/logs/kpf18r4-dflash2-20261024T154548Z.server.log": {
+      "sha256": "43d9b57a149682cbcc7c65c723d2592973f17625fd62c2d96ac317f131d7f6d7"
+    },
+    "/mnt/raid0/llm/tmp/f8-launchers-20261024/kpf18-s1-r4/out/logs/kpf18r4-dflash2-20261024T154548Z.linkage.txt": {
+      "sha256": "5193b998ee1289d38226b8950ed36f35fae64d0d94c5c53057136cc55cb2cc17"
+    },
+    "/mnt/raid0/llm/kernels/builds/gpu-20261020-a1f0c8cf9/PROVENANCE.md": {
+      "sha256": "268905df3d728d747ce8bce1c62c1bc4c9c08cef937e508b209b0798fa6ef750"
+    },
+    "/mnt/raid0/llm/kernels/builds/gpu-20261020-a1f0c8cf9/CMakeCache.txt": {
+      "sha256": "904f60112e41645becb0ad1acfd26cd50179a303f80eec1598a96cea4d234db9"
+    },
+    "/mnt/raid0/llm/kernels/builds/gpu-20261020-a1f0c8cf9/compile_commands.json": {
+      "sha256": "b749ca272b6c6cbfdd216e86a3b0b008f64cf38de552119cf088c8e6a9890030"
+    },
+    "/mnt/raid0/llm/kernels/builds/gpu-20261020-a1f0c8cf9/SHA256SUMS": {
+      "sha256": "9a39ccc804b16806d91bf4c3861642b24a035b19c1dcd89afd82f44851eb4369"
+    },
+    "/mnt/raid0/llm/kernels/builds/gpu-20261020-a1f0c8cf9/bin/libggml-base.so.0.16.0": {
+      "sha256": "ab180e2c966ea6c76227db05ed576b195285d02c716652192aa6ca2e8ff720c9"
+    },
+    "/mnt/raid0/llm/kernels/builds/gpu-20261020-a1f0c8cf9/bin/libggml-hip.so.0.16.0": {
+      "sha256": "65063d18e76079c2e74b5ca882e72f8266c9237dc9d9f598edc50576babc51e9"
+    },
+    "/mnt/raid0/llm/kernels/builds/gpu-20261020-a1f0c8cf9/bin/libllama-common.so.0.0.10348": {
+      "sha256": "c02f4c9f8c051c7ec314179d52436d13f97dd873d6a0316f616f8789f16d3989"
+    },
+    "/mnt/raid0/llm/kernels/builds/gpu-20261020-a1f0c8cf9/bin/libllama-server-impl.so": {
+      "sha256": "58e8905f269b9e6f6f38354f826ea83cbaf9b7f9a9d76e502ec54840394f9269"
+    },
+    "/mnt/raid0/llm/kernels/builds/gpu-20261020-a1f0c8cf9/bin/libllama.so.0.0.10348": {
+      "sha256": "33bf73eaedfee5a52aa07312d0d12431133e23c54d411744e7bd51bccf375f64"
+    },
+    "/mnt/raid0/llm/tmp/f8-launchers-20261024/kpf17-4c-bisect/VERDICT.json": {
+      "sha256": "4a2aadc55bc430e6e2a56c4b6f38a488d0d2d498d3a39d20a6ff2c221c0ab6b5"
+    }
+  },
+  "source_git_blobs": {
+    "tools/server/server-context.cpp": {
+      "r4_blob": "ec48c351b382a667fcaa024bb41e16aae7e72d67",
+      "kpf174c_blob": "c5ebfd23663e30f266ff2c48ce3847624617f518"
+    },
+    "common/common.cpp": {
+      "r4_blob": "e2e626d78aef91212d93f472bbd5d1de2f27029b",
+      "kpf174c_blob": "0c0d74914ed0dbb1d6196ce9411455221639410e"
+    },
+    "src/llama-memory-hybrid.cpp": {
+      "r4_blob": "9b22fbd9598a3fd699b32930b25a14ed1c6e5f36",
+      "kpf174c_blob": "9b22fbd9598a3fd699b32930b25a14ed1c6e5f36"
+    },
+    "src/llama-kv-cache.cpp": {
+      "r4_blob": "3dad4dfdef46d062320c003653d85b6f59321004",
+      "kpf174c_blob": "3dad4dfdef46d062320c003653d85b6f59321004"
+    },
+    "src/llama-kv-cells.h": {
+      "r4_blob": "5167c037db3e83d96a0b5f7f0d8e4801af9a4225",
+      "kpf174c_blob": "5167c037db3e83d96a0b5f7f0d8e4801af9a4225"
+    },
+    "src/llama-graph.cpp": {
+      "r4_blob": "6a961a8a8d18070c4a0836d670c17b5ca2caa750",
+      "kpf174c_blob": "6a961a8a8d18070c4a0836d670c17b5ca2caa750"
+    },
+    "ggml/src/ggml-cuda/fattn.cu": {
+      "r4_blob": "c4ab16ce5c85af00b400fe7fbe025295ebef9ab5",
+      "kpf174c_blob": "c4ab16ce5c85af00b400fe7fbe025295ebef9ab5"
+    },
+    "ggml/src/ggml-cuda/fattn-vec.cuh": {
+      "r4_blob": "2857f4e74a8ff5fbf43c6dcab243ef42d8784455",
+      "kpf174c_blob": "2857f4e74a8ff5fbf43c6dcab243ef42d8784455"
+    },
+    "ggml/src/ggml-cuda/fattn-wmma-f16.cu": {
+      "r4_blob": "501007ba251bee022ff220982165f246b415199b",
+      "kpf174c_blob": "501007ba251bee022ff220982165f246b415199b"
+    }
+  },
+  "private_audit_refs": {
+    "/mnt/raid0/llm/tmp/refactor-01a16fc3/kpf18-r4-fork-coderead-20261031/AUDIT.md": {
+      "sha256": "47ade80c8663dd698c4c7b92f5895ce9b23d2cd322b7bea77d797b12c70913ee"
+    },
+    "/mnt/raid0/llm/tmp/refactor-01a16fc3/kpf18-r4-fork-coderead-20261031/EVIDENCE.json": {
+      "sha256": "7ece6b24c9d584b47a55139f2fc37ae86e339481aa4c704b0855d9d6d9052068"
+    },
+    "/mnt/raid0/llm/tmp/refactor-01a16fc3/kpf18-r4-fork-coderead-20261031/SOURCE-EXCERPTS.json": {
+      "sha256": "23711178d12771e5da320e098648cc04c70f1481694ace7f6169e4d2b91dda10"
+    },
+    "/mnt/raid0/llm/tmp/refactor-01a16fc3/kpf18-r4-fork-coderead-20261031/verify_evidence.py": {
+      "sha256": "3fb6a15b6fe760d8215e69af347e2c0878fe4754daa50649f56ab9bd1450b4a9"
+    },
+    "/mnt/raid0/llm/tmp/refactor-01a16fc3/kpf18-r4-fork-coderead-20261031/VERIFY.log": {
+      "sha256": "a0c1e1377daf3f8156613aeef031e659faf97f056672036b8c304d0a541365de"
+    },
+    "/mnt/raid0/llm/tmp/refactor-01a16fc3/kpf18-r4-fork-coderead-20261031/VERIFY.json": {
+      "sha256": "aa9f71aea3e92cb1ab716b0275512bffb61e51df1bf666164079c52dc8766eb9"
+    }
+  },
+  "retained_result": {
+    "native_verdict": "FORK_PATH_SPECIFIC",
+    "common_positions": 256,
+    "child_coldE_mean_abs_logprob_delta_rounded": "0.032246",
+    "largest_cold_pair_mean_abs_logprob_delta_rounded": "0.031508",
+    "child_child2_exact_equal": true,
+    "precision_note": "Rounded display only; exact native records remain at pinned paths. No threshold or verdict was recomputed for publication."
+  },
+  "verification": {
+    "completed": true,
+    "returncode": 0,
+    "scope": "MODEL_FREE_R6_ONLY",
+    "standing_family": "30-31",
+    "actual_cpus": [
+      126,
+      127
+    ],
+    "elapsed_s_rounded": "0.213",
+    "sampled_peak_tree_rss_mib_rounded": "20.0",
+    "kernel_childset_empty": true,
+    "verified_inputs": 31,
+    "source_files": 9,
+    "rerun_for_publication": false
+  },
+  "limits": [
+    "No physical KV cell-ID, per-evaluation n_kv or selected flash-attention-kernel trace was captured for R4.",
+    "The named source mechanism is consistent with the controls; its contribution to the measured R4 gap is not established.",
+    "Original native verdicts and scientific parent acceptance are unchanged.",
+    "No inference, rebuild, production change or new measurement grade."
+  ]
+}

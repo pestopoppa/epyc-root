@@ -4177,7 +4177,7 @@ compaction and wiki compilation are not part of this implementation request's ro
 
 Landed orchestrator `11e6d86` (commit `11e6d867890952c01bcad367e931f86f5520df02`), gated by `EPYC_LOCK_FIFO` (default OFF). Ticket queue over role and GLOBAL per-region locks plus gpu-quiet writer preference. Reviewed by ak-ds41-main and workspace-ec. All tests passed (125 passed, 3 xfailed), validated against origin/main.
 
-- [ ] Deterministic FIFO-off control (barrier or fake-poll harness: the releaser re-requests while the waiter is provably parked), so the 3 starvation/barging xfails become strict. Required before default ON.
+- [x] Deterministic FIFO-off control (barrier or fake-poll harness: the releaser re-requests while the waiter is provably parked), so the 3 starvation/barging xfails become strict. Required before default ON. ✅ 2026-10-31, orchestrator `9e1155a10f809d9c63a818fd95b5e02276d0e43a`; `tests/unit/test_lock_fifo_queue.py` (24 passed; original fairness negative control fails exactly 3 FIFO-off assertions); artifact `artifacts/engineering/autokernel-rebuild-s-batch-20261031/fifo-control/receipt.json`. [belief: cc]
 - [ ] Flip `EPYC_LOCK_FIFO` default ON only after both live AK loops (DS41, Q38FN) have restarted on the new code (old clients barge).
 
 2026-10-07 Codex checkpoint: deterministic controls are prepared in orchestrator `56fabf52`

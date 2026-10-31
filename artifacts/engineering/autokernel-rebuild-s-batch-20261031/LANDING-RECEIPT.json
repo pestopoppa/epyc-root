@@ -1,0 +1,42 @@
+{
+  "status": "PUSHED_REMOTE_MAIN_VERIFIED",
+  "repo": "epyc-inference-research",
+  "commit": "37dcdcd53f4cfbb27dd80564d5fc4bf407a0c566",
+  "remote_main": "37dcdcd53f4cfbb27dd80564d5fc4bf407a0c566",
+  "source_files": {
+    "Makefile": {
+      "sha256": "afdb28542d566925b3dda62e1875b52cd505a5f98d430c622216c6c221aec208",
+      "git_blob": "fc709b20cc08652e3cef5f68c872270e6f7c2cb7"
+    },
+    "scripts/benchmark/boundary_20260901.sh": {
+      "sha256": "4909c8f77fbeb01d1bb1e750d83611c1d4ff0770024a2e8f5bcd173715b4e349",
+      "git_blob": "ffaab5260eccbab2e644fedf73161c21dfa2ba51"
+    },
+    "scripts/benchmark/test_boundary_20260901_drain.py": {
+      "sha256": "0546fd166831a68668f29eb4ceafd805e851dee908afa604db0f3ba871c4c5e1",
+      "git_blob": "a88eb585f25ea1a62c22a265025734614687def3"
+    },
+    "scripts/kernel_rnd/autokernel/loop/residency.py": {
+      "sha256": "c12c99e1fcce6d019c06befe80e0b293e2d3f3263d45d9cb05c6433a0cd70848",
+      "git_blob": "1bf17fc5fa6e61deb649d51accf06f2cb1cb42a0"
+    },
+    "scripts/kernel_rnd/autokernel/loop/test_serving_foreign_affinity.py": {
+      "sha256": "3257d2e271a1140b4b09c7552e60f007ad28b6ef77cb5a8c34d4109861422797",
+      "git_blob": "559272d05f8f68c2325a80398b8896fef62a64c0"
+    }
+  },
+  "tests": {
+    "result": "63 passed, 8 subtests passed in 2.00s",
+    "log": "/mnt/raid0/llm/tmp/codex-ni-code-s-rebuild-20261031/lane-validation.log",
+    "log_sha256": "36a56ea2d718b6615c8da17b7d73f9867020a77a49eb6188b9c21ff612fed1a7",
+    "admission_receipt": "/mnt/raid0/llm/tmp/codex-ni-code-s-rebuild-20261031/lane-validation-receipt.json",
+    "ruff": "All checks passed (two enrolled new modules)",
+    "shell_syntax": "bash -n passed",
+    "ci_enrollment": "both new modules in Makefile PYTEST_SMOKE; make -n test verified"
+  },
+  "lane": "/mnt/raid0/llm/worktrees/mains/codex-ni-research-code",
+  "branch": "codex-ni/code-20261031",
+  "owner": "codex-ni-01a16d6b / code_s_rebuild_batch_sol",
+  "allocated_bytes": 13766656,
+  "retention": "persistent sparse CODE lane; CH27 measurement lane untouched"
+}

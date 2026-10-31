@@ -572,7 +572,7 @@ Orchestrator and stack side (workspace-ec; items are linked here as they land):
     - [ ] **UFH14-DEPLOY-EC-2d — B4: one dispatched primitives-lane record carrying `request.prefix_fp`.** No
       primitives call ran in the block (`primitives-lane prefix_fp present: []`). The record's `long_prefill` field is
       KVU-15d.
-    - [x] **UFH14-DEPLOY-EC-2e — `deploy_ec2_lease.py`: the default lane B must send `x_session_id`.** ✅ 2026-10-30
+    - [x] **UFH14-DEPLOY-EC-2e — `deploy_ec2_lease.py`: the default lane B must send `x_session_id`.** ✅ 2026-10-30, orchestrator `a75f030c062530dae0e1f0f18f39ce25486b211a`; `tests/unit/test_deploy_ec2_lease.py` (four tests: default dry-run, input-file execution, missing-ID 422, overlapping mock stream). [no-belief: implementation/tooling; no new measurement]
       (filed 2026-10-04, workspace-ec) The durable runner is `epyc-orchestrator/scripts/research/deploy_ec2_lease.py`
       at commit `a75f030c062530dae0e1f0f18f39ce25486b211a`; lane B client requests carry a fresh valid ID, the
       runner preserves lane-A passthrough behavior, and its streaming lease order overlaps lane A with lane B before

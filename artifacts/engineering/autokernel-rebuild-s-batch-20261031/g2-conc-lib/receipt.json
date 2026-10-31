@@ -1,0 +1,12 @@
+{
+  "status": "ACCEPTED_RESEARCH_MAIN",
+  "repo": "epyc-inference-research",
+  "commit": "e95a9d2e25c3eeedc7a6f997e608d9bd338cbc31",
+  "test_module": "scripts/lib/coherence_gate/tests/test_g2conc_v21.py",
+  "result": "87 passing package tests",
+  "validation_log": "lane-validation.log",
+  "validation_log_sha256": "c52a630c04da144bd8cf7a4490a2bdae34d7984707b7b57113b59079d7f29ae8",
+  "scope": "shared full-text classify/paired-gate path; amendment-5 v2.1; original 19-case fixtures; stored-stat replay remains v2; v1 frozen",
+  "no_historical_regrading": true,
+  "no_live_reload": true
+}
