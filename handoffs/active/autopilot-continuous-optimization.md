@@ -198,9 +198,10 @@ First full smoke run of the trial loop. Four defects, three silent.
       (`src/registry/tool_registry.py`) (found 2026-09-14, noninf sweep).
       ✅2026-10-07 — explicit per-instance append/snapshot/clear lock; dispatch outside lock. MAIN accepts original14/14 and exact APP publication; [source/custody](../../artifacts/ni08/ap62-invocation-ring-source-20261007/README.md).
 
-- [ ] **`request.files` vision input still has no telemetry image reference.**
+- [x] **`request.files` vision input still has no telemetry image reference.** ✅ 2026-10-31 [no-belief: source and regression verification] APP `f92297de19b425887d1215ceee01e2c25cd30803`; [tests](../../artifacts/compute/codex3-ap-vision-telemetry-20261031/tests-upload.log).
       `vision_stage.py:76` treats `request.files` as vision input, but routing telemetry records
       neither a retained path nor displayable bytes for that form.
+      - The committed fix emits bounded path-only metadata for the first direct image, retains no image bytes, and preserves existing precedence; archives are not expanded. The receipt also records 90 routing tests and Ruff passing; no service deployment or model-quality result is claimed. [no-belief: source and regression verification]
 
 - [x] **Evidence-durability symlink guard covers the form that barely occurs.** ✅ 2026-10-30 [no-belief: source and regression verification]
       `check_evidence_durability.py:306` — `inside_repo = (not absolute) or ...` is unconditionally

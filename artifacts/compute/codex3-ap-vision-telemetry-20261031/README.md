@@ -1,0 +1,5 @@
+# Request-files vision telemetry — 2026-10-31
+
+Orchestrator commit `f92297de19b425887d1215ceee01e2c25cd30803` was fast-forwarded to and verified on remote main and branch `codex3/vision-file-telemetry-20261031`. Direct image files in `ChatRequest.files` now produce the existing bounded path-only image metadata, selecting the first recognized direct image. No raw image data is retained; documents are not called images. Existing image_path/base64 precedence and dashboard path allowlist are unchanged. Compressed archives are not expanded by telemetry; only one direct image is represented. This is source/test validation, not a service deployment or model-quality result.
+
+`tests-routing.log`: 90/90 routing tests passed on the final source (before the last fixture-only strengthening). `tests-upload.log`: 3/3 strengthened file-backed regressions passed. `ruff.log`: check passed. The focused test creates actual PNG/PDF files, submits their paths through ChatRequest and `_route_request`, checks the progress metadata and dashboard reference, and verifies image bytes and document path are not emitted. The private patch is `final-v2.patch`.
