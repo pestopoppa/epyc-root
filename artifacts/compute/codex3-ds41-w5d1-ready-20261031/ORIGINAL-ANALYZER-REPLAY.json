@@ -1,0 +1,6 @@
+{
+  "success": true,
+  "historical_tg128_cv_pct": 11.86802491980904,
+  "historical_verdict": "INVALID_NOISY",
+  "note": "historical replay control only, not successor measurement"
+}

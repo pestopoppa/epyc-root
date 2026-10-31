@@ -1,0 +1,15 @@
+{
+  "models": [
+    {
+      "path": "/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf",
+      "size": 29047086048,
+      "edge_sha256": "7fb575fe9cecac00633ef8d939a472037750d54399fef69e9d07e74a6b815134"
+    },
+    {
+      "path": "/mnt/raid0/llm/models/Qwen3.8-27B-DFlash2-Q8_0.gguf",
+      "size": 2056414752,
+      "edge_sha256": "828c9ed41c472e03fb9d30459dc97022372630d9928e817511563002276d4029"
+    }
+  ],
+  "at": "2026-10-31T02:16:31.158309+00:00"
+}

@@ -1,0 +1,63 @@
+{
+  "lexicon_sha256": "4f5f5a2dcdeb6ba1867a7a48d0ec8f4a6420c0ba33d05a34b446ae861089b774",
+  "lexicon_source_sha256": "3d05c7475221841aa8f6f15ba3fbe48ea8e37956e7ca276d4180fdf5339fe5bd",
+  "phrases": {
+    "en": [
+      "Autokernel",
+      "DFlash",
+      "Dflash",
+      "EPYC",
+      "Epyc",
+      "Gfx90a",
+      "KV cache",
+      "Kernel Store",
+      "Kv Cache",
+      "Llama.cpp",
+      "MI210",
+      "Mi210",
+      "Nemotron",
+      "Parakeet",
+      "Qwen",
+      "ROCm",
+      "Rocm",
+      "Speculative Decoding",
+      "Whisper.cpp",
+      "autokernel",
+      "dflash",
+      "epyc",
+      "gfx90a",
+      "kernel store",
+      "kv cache",
+      "llama.cpp",
+      "mi210",
+      "nemotron",
+      "parakeet",
+      "qwen",
+      "rocm",
+      "speculative decoding",
+      "whisper.cpp"
+    ]
+  },
+  "report": {
+    "n_dropped_short": 0,
+    "n_dropped_subword": 0,
+    "n_phrases_after_expansion": 33,
+    "n_phrases_before_expansion": 14,
+    "n_terms_in": 14,
+    "n_trie_nodes_after_expansion": 157,
+    "n_trie_nodes_before_expansion": 70,
+    "per_language": {
+      "en": {
+        "n_dropped_short": 0,
+        "n_dropped_subword": 0,
+        "n_phrases_after_expansion": 33,
+        "n_phrases_before_expansion": 14,
+        "n_terms_in": 14,
+        "n_trie_nodes_after_expansion": 157,
+        "n_trie_nodes_before_expansion": 70
+      }
+    }
+  },
+  "terms_sha256": "ec556ce9463a019d930b1fe92cbae3ee33e2213b6d95ef87f82a9153f8c582e7",
+  "tokenizer_sha256": "ce3895e40806f02a26c3a225161b96ef682d6c0054bae32a245dec4258d7d291"
+}

@@ -1,0 +1,7 @@
+rc=0 time=2026-10-31T03:11:04Z reason=complete
+job_id=codex-ni-gpu-zos23-c5-gate-r3-20261031
+owner=codex-ni
+step=job-run
+estimated_wall_s=8400
+started=2026-10-31T02:21:11Z
+regions=mi210_0,184-191

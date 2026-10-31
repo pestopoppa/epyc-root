@@ -1,0 +1,39 @@
+{
+  "arm": "F2",
+  "pid": 2372383,
+  "birth": 153781527,
+  "startup_flags": [
+    [
+      "0",
+      "1",
+      "0"
+    ]
+  ],
+  "mapped": {
+    "libggml-hip.so.0.16.0": {
+      "path": "/mnt/raid0/llm/tmp/codex-ni-gpu-zos-build-prep-20261031/successor/out/release/bin/libggml-hip.so.0.16.0",
+      "sha256": "23d39c91a82fad0a83743829dd59a10df91bfe0c4a933f0cce693fc7a831beb4"
+    },
+    "libllama.so.0.0.10419": {
+      "path": "/mnt/raid0/llm/tmp/codex-ni-gpu-zos-build-prep-20261031/successor/out/release/bin/libllama.so.0.0.10419",
+      "sha256": "d4975083d1ae78c70a8c18017e9149a94a6abe917035ac72fe30b8e0757ee01e"
+    },
+    "libllama-server-impl.so": {
+      "path": "/mnt/raid0/llm/tmp/codex-ni-gpu-zos-build-prep-20261031/successor/out/release/bin/libllama-server-impl.so",
+      "sha256": "aaaab39254a7ff21d0c3d987bd0ea3076b3e36bc3786584417f6b4aa0a6d79ae"
+    },
+    "libggml-base.so.0.16.0": {
+      "path": "/mnt/raid0/llm/tmp/codex-ni-gpu-zos-build-prep-20261031/successor/out/release/bin/libggml-base.so.0.16.0",
+      "sha256": "1c21cf133f35877a9d59c9d82bca08932bff8f29a77b30a8bb109a573eaf8a8c"
+    },
+    "libggml.so.0.16.0": {
+      "path": "/mnt/raid0/llm/tmp/codex-ni-gpu-zos-build-prep-20261031/successor/out/release/bin/libggml.so.0.16.0",
+      "sha256": "bb7e5a7a33787ddce1133d414d0f7d86f06dfb512d7f38a5e2e43b4aabe98b3a"
+    },
+    "libggml-cpu.so.0.16.0": {
+      "path": "/mnt/raid0/llm/tmp/codex-ni-gpu-zos-build-prep-20261031/successor/out/release/bin/libggml-cpu.so.0.16.0",
+      "sha256": "e2fb59ee4d34fd5cb726f89f4039cdc7c28dd01d7b9e9c217b01db086d6d605e"
+    }
+  },
+  "image_pins_sha256": "ad5fd19e714aefff90b2accd14a6a4188a3c3771d8e5dbf0f5bf1bd1d71fbf05"
+}

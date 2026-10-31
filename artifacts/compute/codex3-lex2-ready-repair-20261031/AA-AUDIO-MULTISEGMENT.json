@@ -1,0 +1,370 @@
+{
+  "membership_sha256": "c12a3df3fb697e172585f3016d4531ad0dd16884ba90640589f5656617d25931",
+  "results": [
+    {
+      "aa_file": "4471586_chunk_0.wav",
+      "aa_pcm_sha256": "cea2c4470fedacb9985282d99c323e28a97eebd1e296a7bbb72180bff2d488cd",
+      "file_id": "4471586_chunk1",
+      "intersection_s": [
+        15.0,
+        21.218
+      ],
+      "lag_samples": 0,
+      "normalized_correlation": 0.9999445904999361,
+      "segment_s": 2,
+      "status": "measured_not_identity_verdict"
+    },
+    {
+      "aa_file": "4471586_chunk_1.wav",
+      "aa_pcm_sha256": "2c512a57f8e3432b9209ea5f2ee272698efef07e9b062922b83fa9c1c7476cd3",
+      "file_id": "4471586_chunk1",
+      "intersection_s": [
+        21.218,
+        30.0
+      ],
+      "lag_samples": 0,
+      "normalized_correlation": 0.9999433134189206,
+      "segment_s": 2,
+      "status": "measured_not_identity_verdict"
+    },
+    {
+      "aa_file": "4471586_chunk_25.wav",
+      "aa_pcm_sha256": "0d952d57aba7dcd82ca41bf2928333d511549c131fc4e44322cb91a181e21b71",
+      "file_id": "4471586_chunk37",
+      "intersection_s": [
+        555.0,
+        564.5
+      ],
+      "lag_samples": 0,
+      "normalized_correlation": 0.9999429482597155,
+      "segment_s": 2,
+      "status": "measured_not_identity_verdict"
+    },
+    {
+      "aa_file": "4471586_chunk_26.wav",
+      "aa_pcm_sha256": "f432e6d6425fd225bd91a0eb0f57b49c45ad61c8ff485fe6ad64d7f43a6aa0f0",
+      "file_id": "4471586_chunk37",
+      "intersection_s": [
+        564.5,
+        570.0
+      ],
+      "lag_samples": 0,
+      "normalized_correlation": 0.9996686770558384,
+      "segment_s": 2,
+      "status": "measured_not_identity_verdict"
+    },
+    {
+      "aa_file": "4471586_chunk_30.wav",
+      "aa_pcm_sha256": "1d7f1188da44507127f46bc33c657f77e58d60a679c4edebb0beabdb4b957c21",
+      "file_id": "4471586_chunk45",
+      "intersection_s": [
+        675.0,
+        682.3
+      ],
+      "lag_samples": -5782,
+      "normalized_correlation": -0.0643786217262537,
+      "segment_s": 2,
+      "status": "measured_not_identity_verdict"
+    },
+    {
+      "aa_file": "4471586_chunk_31.wav",
+      "aa_pcm_sha256": "b53284a9f5bd4bb2cf873dbe5ebd9792d135087060e55a8866d4a8bdaa62959e",
+      "file_id": "4471586_chunk45",
+      "intersection_s": [
+        682.3,
+        688.194
+      ],
+      "lag_samples": 0,
+      "normalized_correlation": 0.9999438079083997,
+      "segment_s": 2,
+      "status": "measured_not_identity_verdict"
+    },
+    {
+      "aa_file": "4474955_chunk_25.wav",
+      "aa_pcm_sha256": "3934c46dd979cc0e94372b7143d20665bc5f68c7a2c2f2136f166cd470c65998",
+      "file_id": "4474955_chunk34",
+      "intersection_s": [
+        510.0,
+        516.098
+      ],
+      "lag_samples": 0,
+      "normalized_correlation": 0.9993222776361589,
+      "segment_s": 2,
+      "status": "measured_not_identity_verdict"
+    },
+    {
+      "aa_file": "4474955_chunk_26.wav",
+      "aa_pcm_sha256": "89a1128e651e43ce4bcb0b87d5f9f5962f6bbd1defd996fb096cdb3d40bc3c0d",
+      "file_id": "4474955_chunk34",
+      "intersection_s": [
+        516.098,
+        525.0
+      ],
+      "lag_samples": 0,
+      "normalized_correlation": 0.9992132555511131,
+      "segment_s": 2,
+      "status": "measured_not_identity_verdict"
+    },
+    {
+      "aa_file": "4474955_chunk_5.wav",
+      "aa_pcm_sha256": "a7a7cbd1dd12d4ef73e49f9c1e9fe644d7d2c2b8856b39126c24e9f7f040e8e5",
+      "file_id": "4474955_chunk7",
+      "intersection_s": [
+        105.0,
+        120.0
+      ],
+      "lag_samples": 0,
+      "normalized_correlation": 0.9985257382812164,
+      "segment_s": 2,
+      "status": "measured_not_identity_verdict"
+    },
+    {
+      "aa_file": "4475604_chunk_9.wav",
+      "aa_pcm_sha256": "9df298ff1fd14410e866cbc8966a46c37ebbd9b9f0fd4bc782832a35d31376aa",
+      "file_id": "4475604_chunk12",
+      "intersection_s": [
+        182.082,
+        195.0
+      ],
+      "lag_samples": 0,
+      "normalized_correlation": 0.9993971145451456,
+      "segment_s": 2,
+      "status": "measured_not_identity_verdict"
+    },
+    {
+      "aa_file": "4475604_chunk_10.wav",
+      "aa_pcm_sha256": "40802d151649c19d1feef73ee4e76a92a4c13bbab2fe16be65ca70fe6264cc9c",
+      "file_id": "4475604_chunk14",
+      "intersection_s": [
+        210.8,
+        216.002
+      ],
+      "lag_samples": 0,
+      "normalized_correlation": 0.9987168094477055,
+      "segment_s": 2,
+      "status": "measured_not_identity_verdict"
+    },
+    {
+      "aa_file": "4475604_chunk_11.wav",
+      "aa_pcm_sha256": "f367ab42efeae2e18e689d64ad2091dffe6ab45c8414c92238eb2c8f8c52846b",
+      "file_id": "4475604_chunk14",
+      "intersection_s": [
+        216.002,
+        225.0
+      ],
+      "lag_samples": 0,
+      "normalized_correlation": 0.9986279197278719,
+      "segment_s": 2,
+      "status": "measured_not_identity_verdict"
+    },
+    {
+      "aa_file": "4475604_chunk_11.wav",
+      "aa_pcm_sha256": "f367ab42efeae2e18e689d64ad2091dffe6ab45c8414c92238eb2c8f8c52846b",
+      "file_id": "4475604_chunk15",
+      "intersection_s": [
+        225.0,
+        238.274
+      ],
+      "lag_samples": 0,
+      "normalized_correlation": 0.9994126280312383,
+      "segment_s": 2,
+      "status": "measured_not_identity_verdict"
+    },
+    {
+      "aa_file": "4475604_chunk_12.wav",
+      "aa_pcm_sha256": "7d021e0267f6f177ca0fcc665c92ebb112739f0fa454bdb7eaef2b945b519c8a",
+      "file_id": "4475604_chunk17",
+      "intersection_s": [
+        255.0,
+        266.402
+      ],
+      "lag_samples": 0,
+      "normalized_correlation": 0.9994898225441821,
+      "segment_s": 2,
+      "status": "measured_not_identity_verdict"
+    },
+    {
+      "aa_file": "4475604_chunk_13.wav",
+      "aa_pcm_sha256": "c6a804545eb8f81a0718cff732eb4e9367d04a83d61eef03d6e69d7ea18aba75",
+      "file_id": "4475604_chunk17",
+      "intersection_s": [
+        266.402,
+        270.0
+      ],
+      "lag_samples": 0,
+      "normalized_correlation": 0.999082120579833,
+      "segment_s": 2,
+      "status": "measured_not_identity_verdict"
+    },
+    {
+      "aa_file": "4475604_chunk_15.wav",
+      "aa_pcm_sha256": "4ba7bd5d7f297bff457159007ce7c2398774461f78af23fbc560fabed3940e30",
+      "file_id": "4475604_chunk21",
+      "intersection_s": [
+        315.0,
+        328.258
+      ],
+      "lag_samples": 0,
+      "normalized_correlation": 0.9995032724936364,
+      "segment_s": 2,
+      "status": "measured_not_identity_verdict"
+    },
+    {
+      "aa_file": "4475604_chunk_18.wav",
+      "aa_pcm_sha256": "c8952da01063c515b4adb128a8bf9ec3b3668e45ab71e1c96a33f04e322dc6a5",
+      "file_id": "4475604_chunk24",
+      "intersection_s": [
+        360.93,
+        375.0
+      ],
+      "lag_samples": 0,
+      "normalized_correlation": 0.9991602034675925,
+      "segment_s": 2,
+      "status": "measured_not_identity_verdict"
+    },
+    {
+      "aa_file": "4475604_chunk_25.wav",
+      "aa_pcm_sha256": "c5888d19fe14949075b77a18f2731b5bae748ab84010b3d9b4cad98d7a4963aa",
+      "file_id": "4475604_chunk37",
+      "intersection_s": [
+        555.0,
+        566.9
+      ],
+      "lag_samples": 0,
+      "normalized_correlation": 0.9991332500061529,
+      "segment_s": 2,
+      "status": "measured_not_identity_verdict"
+    },
+    {
+      "aa_file": "4475604_chunk_26.wav",
+      "aa_pcm_sha256": "734b4e0f0d76f6dc35c1767a3ba7b344327611dd0643199f2758d28d117480de",
+      "file_id": "4475604_chunk37",
+      "intersection_s": [
+        566.9,
+        570.0
+      ],
+      "lag_samples": 0,
+      "normalized_correlation": 0.9993886222941512,
+      "segment_s": 2,
+      "status": "measured_not_identity_verdict"
+    },
+    {
+      "aa_file": "4475604_chunk_31.wav",
+      "aa_pcm_sha256": "e51aa838689b64e30ac3c70d9187747b778ed57d3d117ca433e25ce338b1a360",
+      "file_id": "4475604_chunk44",
+      "intersection_s": [
+        660.0,
+        675.0
+      ],
+      "lag_samples": 0,
+      "normalized_correlation": 0.9992667690939399,
+      "segment_s": 2,
+      "status": "measured_not_identity_verdict"
+    },
+    {
+      "aa_file": "4475604_chunk_35.wav",
+      "aa_pcm_sha256": "495d0e70ae1c50b69c319c6f554e7c68ff37da8ea2fb94148a7e79d00a33ff87",
+      "file_id": "4475604_chunk48",
+      "intersection_s": [
+        720.226,
+        735.0
+      ],
+      "lag_samples": 0,
+      "normalized_correlation": 0.9977688772722539,
+      "segment_s": 2,
+      "status": "measured_not_identity_verdict"
+    },
+    {
+      "aa_file": "4475604_chunk_42.wav",
+      "aa_pcm_sha256": "e9497cb384ab9ec5f153df1c9a5c05cbd475c35202358a0995d793db720f2924",
+      "file_id": "4475604_chunk58",
+      "intersection_s": [
+        870.0,
+        885.0
+      ],
+      "lag_samples": 0,
+      "normalized_correlation": 0.9987019070591366,
+      "segment_s": 2,
+      "status": "measured_not_identity_verdict"
+    },
+    {
+      "aa_file": "4475604_chunk_47.wav",
+      "aa_pcm_sha256": "7ce2ea9fbb3b12df0ebb2eaf388b7312d3e626cb8e54f97a6e23648920373284",
+      "file_id": "4475604_chunk65",
+      "intersection_s": [
+        975.0,
+        990.0
+      ],
+      "lag_samples": 0,
+      "normalized_correlation": 0.9987914472735694,
+      "segment_s": 2,
+      "status": "measured_not_identity_verdict"
+    },
+    {
+      "aa_file": "4475604_chunk_49.wav",
+      "aa_pcm_sha256": "d9a656ccc776124dcb4e6ed85cc8916e4c0be96dae32c85bd609b5042e9f6477",
+      "file_id": "4475604_chunk69",
+      "intersection_s": [
+        1035.0,
+        1044.0
+      ],
+      "lag_samples": 0,
+      "normalized_correlation": 0.9990350810324281,
+      "segment_s": 2,
+      "status": "measured_not_identity_verdict"
+    },
+    {
+      "aa_file": "4475604_chunk_50.wav",
+      "aa_pcm_sha256": "5eb5687dd3558737b37a7ced76151cae344a8711402274a7dfca70d0ed5f4090",
+      "file_id": "4475604_chunk69",
+      "intersection_s": [
+        1044.0,
+        1050.0
+      ],
+      "lag_samples": 0,
+      "normalized_correlation": 0.9988494072475598,
+      "segment_s": 2,
+      "status": "measured_not_identity_verdict"
+    },
+    {
+      "aa_file": "4475604_chunk_58.wav",
+      "aa_pcm_sha256": "eff3d3c78e1463731dd0bc80b4ea57da9627be59b8ba9afbb421ab83da568ef8",
+      "file_id": "4475604_chunk80",
+      "intersection_s": [
+        1200.0,
+        1215.0
+      ],
+      "lag_samples": 0,
+      "normalized_correlation": 0.9997439328241112,
+      "segment_s": 2,
+      "status": "measured_not_identity_verdict"
+    },
+    {
+      "aa_file": "4475604_chunk_6.wav",
+      "aa_pcm_sha256": "6b1192e395847e927aaa8895ef0856df7a28adef7c9e33f44a8890bfa9ac212e",
+      "file_id": "4475604_chunk9",
+      "intersection_s": [
+        135.0,
+        141.794
+      ],
+      "lag_samples": 0,
+      "normalized_correlation": 0.9997632306403741,
+      "segment_s": 2,
+      "status": "measured_not_identity_verdict"
+    },
+    {
+      "aa_file": "4475604_chunk_7.wav",
+      "aa_pcm_sha256": "dbd2056b18dd5bb0f7e2b091b0370d2749a4b74d1b880abfcaa20560e88ab93e",
+      "file_id": "4475604_chunk9",
+      "intersection_s": [
+        141.794,
+        150.0
+      ],
+      "lag_samples": 0,
+      "normalized_correlation": 0.9979811713733173,
+      "segment_s": 2,
+      "status": "measured_not_identity_verdict"
+    }
+  ],
+  "schema": "cs8.lex2.aa_audio_reconciliation.v1"
+}

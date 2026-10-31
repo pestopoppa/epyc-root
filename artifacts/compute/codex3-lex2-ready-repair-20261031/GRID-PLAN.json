@@ -1,0 +1,43 @@
+{
+  "aa_overlap_unknown": 19,
+  "dev_grid": {
+    "configured_alpha_input": "asr.decoder.boosting_tree_alpha",
+    "context_source_global": "DOMAIN-LEXICON-PROPOSAL.json",
+    "context_source_local": "per-item provided dictionary",
+    "nemo_alpha": [
+      0,
+      0.5,
+      1,
+      2,
+      3,
+      5
+    ],
+    "nemo_scope": [
+      "global",
+      "local"
+    ],
+    "no_context": "no positive-trie claim; retain row",
+    "request_boost": 1,
+    "stream": true,
+    "whisper_scope": [
+      "none",
+      "global",
+      "local"
+    ]
+  },
+  "dev_manifest_sha256": "bb5ddf90b39be061e9f88b7337a39fa7c65e688c7800b699506b97d426b7eaa6",
+  "dev_selection": "Choose the alpha and scope with the highest case-folded aligned keyword F on dev, including alpha 0; ties choose lower alpha, then global. Missing or interrupted attempts prevent selection until resolved without redraw or an outcome-independent bound is proven. Freeze selection and this plan digest before any held-out inference or scoring.",
+  "domain_lexicon_sha256": "4f5f5a2dcdeb6ba1867a7a48d0ec8f4a6420c0ba33d05a34b446ae861089b774",
+  "membership_sha256": "c12a3df3fb697e172585f3016d4531ad0dd16884ba90640589f5656617d25931",
+  "quality_verdict": "unrun",
+  "schema": "cs8.lex2.plan.proposal.v1",
+  "score": "CS-8.LEX1 aligned keyword P/R/F, case-folded and case-sensitive; term-masked WER and FLEURS insertions/hour; cluster bootstrap by call, 2000 resamples, seed 42, percentile 95% intervals. Score terminal engine errors/timeouts as full deletions and count them; interrupted exposed attempts are UNKNOWN and prevent definitive selection, never dropped or replaced. Estimate the WER noise floor from the paired dev alpha-zero global/local repeat as the larger absolute endpoint of its paired 95% bootstrap interval; freeze the number before test.",
+  "shared_audio_policy": "Preserve all 755 non-dev Contextual test items and all original 341 AA benchmark items; before any test score produce a separately named AA comparison view excluding only AA segments with corroborated shared audio, recording exact IDs and digest. The unresolved contextual 4471586_chunk45 remains UNKNOWN in cross-anchor overlap coverage; do not claim full decontamination or assign false zero.",
+  "source_task": "CS-8.LEX2",
+  "state": "PREDECLARED_DEV_RAW",
+  "test_dev_call_excluded": 17,
+  "test_heldout": 755,
+  "test_manifest_sha256": "bf5a32fb1a74d6cac4950f8973abc2583c08ad4e71a1169399aa8eb443188fd7",
+  "test_original": 772,
+  "warning": "This is a predeclared dev raw-only diagnostic. No test inference or score may start before actual dev selection and noise-floor digests are frozen. AA overlap remains unresolved; planning-context canary remains pending; no formal quality claim."
+}

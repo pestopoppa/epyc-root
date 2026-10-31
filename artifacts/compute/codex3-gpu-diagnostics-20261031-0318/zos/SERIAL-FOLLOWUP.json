@@ -1,0 +1,18 @@
+{
+  "status": "PREPARED",
+  "trigger": "G-DET A1/A2 tokens mismatch",
+  "m_AA": 24,
+  "within_tolerance": true,
+  "launcher": "/mnt/raid0/llm/tmp/codex-ni-gpu-zos-build-prep-20261031/successor/gpu/launch_gpu.sh",
+  "mode": "serial",
+  "required_arms": [
+    "SA1",
+    "SA2",
+    "SB",
+    "SO"
+  ],
+  "prompts": 8,
+  "max_tokens": 256,
+  "one_request_at_a_time": true,
+  "decision": "serial A/A identity then B and O exact tokens, content and equal draft counts; otherwise INCONCLUSIVE"
+}

@@ -1,0 +1,77 @@
+{
+  "status": "READY",
+  "id": "codex3-ds41-w5d1-r1-20261031",
+  "owner": "codex3",
+  "priority_rank": 999,
+  "priority_basis": "independent open DS41-W5d.1; no exact generated priority rank",
+  "regions": "0-95",
+  "class": "diagnostic",
+  "booking_class": "block-timing-quiet",
+  "min_window_s": 13500,
+  "window_s": 14400,
+  "gib": 739,
+  "launcher": {
+    "path": "/mnt/raid0/llm/tmp/codex3-wholehost-20261031-0310/launch.sh",
+    "sha256": "87b836e221f211cf4faa1bd3ccbef40f06896577c1efcf6de1ec4161f044694b"
+  },
+  "job": {
+    "path": "/mnt/raid0/llm/tmp/codex3-wholehost-20261031-0310/job.py",
+    "sha256": "75e7d978b0354d2453e5df382fe9e7449acae70815b85ce1390655a65340f562"
+  },
+  "result_path": "/mnt/raid0/llm/tmp/codex3-wholehost-20261031-0310/full/RESULT.json",
+  "launcher_log": "/mnt/raid0/llm/tmp/codex3-wholehost-20261031-0310/ws58-launcher.out",
+  "scratch_root": "/mnt/raid0/llm/tmp/codex3-wholehost-20261031-0310",
+  "est_output_GiB": 1,
+  "keep": [
+    "*.py",
+    "*.sh",
+    "*.sha256",
+    "*.md",
+    "NORMAL-ARG-ASSEMBLY.json",
+    "ORIGINAL-ANALYZER-REPLAY.json",
+    "control-finalv5/*.json",
+    "control-finalstopv5/*.json",
+    "full/*.json",
+    "full/*.jsonl",
+    "full/*.stderr",
+    "full/*.tmp",
+    "full/SUCCESS"
+  ],
+  "decision_rule": "Absolute 1017 baseline: warmup then six fixed processes, pp512/tg128 higher t/s better; original strict validity requires each process CV <=4% and at most one within-process CV >4% per metric; report requested tg128 process CV separately. No promotion or comparison.",
+  "min_effect": "n/a (absolute baseline diagnostic)",
+  "enrollment": "n/a: diagnostic",
+  "hold": null,
+  "predeclaration": {
+    "path": "/mnt/raid0/llm/tmp/codex3-wholehost-20261031-0310/PREDECLARED.md",
+    "sha256": "d0ac37b42ec188ba2ca4917343e624f2b9bf8e6547ac833ba760f045a3fce6ec"
+  },
+  "source_manifest": {
+    "path": "/mnt/raid0/llm/tmp/codex3-wholehost-20261031-0310/SOURCES.sha256",
+    "sha256": "819c5137cbe096ad46dbf31a4b235849c70c564928c500e665a3173d87555fcf"
+  },
+  "normal_argument_proof": "/mnt/raid0/llm/tmp/codex3-wholehost-20261031-0310/NORMAL-ARG-ASSEMBLY.json",
+  "feasibility": "Original per-process cap 1800s; warmup plus six units =12600s, plus 900s identity, admission, quiet and cleanup reserve =13500s <=14400s. Planning cap, not measured successor duration; interrupted unit partial= true rc75.",
+  "smoke": {
+    "ran_at": "2026-10-31T03:16:24.202441+00:00",
+    "regions": "R11 SMT 122-123; 26-27 mutex",
+    "model": "/mnt/raid0/llm/models/unsloth/Qwen3.5-0.8B-GGUF/Qwen3.5-0.8B-Q8_0.gguf",
+    "first_request_ok": true,
+    "result_writer_ok": true,
+    "exit_ok": true,
+    "children_drained": true,
+    "wall_s": 5.160518376,
+    "sampled_tree_peak_rss_bytes": 974184448,
+    "launcher_sha256": "87b836e221f211cf4faa1bd3ccbef40f06896577c1efcf6de1ec4161f044694b",
+    "source_manifest_sha256": "819c5137cbe096ad46dbf31a4b235849c70c564928c500e665a3173d87555fcf",
+    "log": "/mnt/raid0/llm/tmp/compute-flags/ready/codex3-ds41-w5d1-r1-20261031.smoke.log",
+    "scope": "same launcher and native llama-bench; pp128/tg32 public control only; no 1017 inference"
+  },
+  "stop_smoke": {
+    "rc": 75,
+    "partial": true,
+    "children_drained": true,
+    "sampled_tree_peak_rss_bytes": 974229504,
+    "log": "/mnt/raid0/llm/tmp/codex3-wholehost-20261031-0310/finalstopv5.log"
+  },
+  "belief_capture": "native write-side capture-start before units and full source records; successor adapter family extension and canary open"
+}

@@ -1,0 +1,324 @@
+{
+  "source_sha": "729599d69871181d67af715a4c2f9162d5153a2e",
+  "records": [
+    {
+      "name": "version-gpu-20261024-c72ec82f5-c5",
+      "argv": [
+        "/mnt/raid0/llm/kernels/builds/gpu-20261024-c72ec82f5-c5/bin/llama-server",
+        "--version"
+      ],
+      "image": "/mnt/raid0/llm/kernels/builds/gpu-20261024-c72ec82f5-c5",
+      "pid": 2655926,
+      "birth": 153878201,
+      "native_rc": 0,
+      "confirmed_dead": true,
+      "raw_log": "/mnt/raid0/llm/tmp/refactor-c6-gpu-runtime-prep-20261031/runs/20261031T031148Z-2655919/normal/version-gpu-20261024-c72ec82f5-c5.log",
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_log": "/mnt/raid0/llm/tmp/refactor-c6-gpu-runtime-prep-20261031/runs/20261031T031148Z-2655919/normal/version-gpu-20261024-c72ec82f5-c5.stderr.log",
+      "stderr_sha256": "56595a0d5d6f31a3c7890c02b0e4a1afd0187e02755336c57be31a3e1dd816f0",
+      "gpu_maps_during": {},
+      "sampler": null,
+      "env_selected": {
+        "LD_LIBRARY_PATH": "/mnt/raid0/llm/kernels/builds/gpu-20261024-c72ec82f5-c5/bin:/opt/rocm/lib",
+        "OMP_NUM_THREADS": "8",
+        "GGML_BACKEND_PATH": "/mnt/raid0/llm/kernels/builds/gpu-20261024-c72ec82f5-c5/bin",
+        "AUTOKERNEL_BACKEND_THREADS": "8",
+        "AUTOKERNEL_CPU_N_THREADS": "8",
+        "GGML_IQK": "1"
+      }
+    },
+    {
+      "name": "linkage-llama-server",
+      "argv": [
+        "bash",
+        "/mnt/raid0/llm/tmp/refactor-c6-gpu-runtime-prep-20261031/instruments/verify_ggml_linkage.sh",
+        "/mnt/raid0/llm/kernels/builds/gpu-20261024-c72ec82f5-c5/bin/llama-server",
+        "/mnt/raid0/llm/kernels/builds/gpu-20261024-c72ec82f5-c5"
+      ],
+      "image": "/mnt/raid0/llm/kernels/builds/gpu-20261024-c72ec82f5-c5",
+      "pid": 2655932,
+      "birth": 153878221,
+      "native_rc": 0,
+      "confirmed_dead": true,
+      "raw_log": "/mnt/raid0/llm/tmp/refactor-c6-gpu-runtime-prep-20261031/runs/20261031T031148Z-2655919/normal/linkage-llama-server.log",
+      "raw_sha256": "3745807e600cfb5148101b03dd4801b680055dbffc6732dc3af444a7e3fe9dbd",
+      "stderr_log": "/mnt/raid0/llm/tmp/refactor-c6-gpu-runtime-prep-20261031/runs/20261031T031148Z-2655919/normal/linkage-llama-server.stderr.log",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "gpu_maps_during": {},
+      "sampler": null,
+      "env_selected": {
+        "LD_LIBRARY_PATH": "/mnt/raid0/llm/kernels/builds/gpu-20261024-c72ec82f5-c5/bin:/opt/rocm/lib",
+        "OMP_NUM_THREADS": "8",
+        "GGML_BACKEND_PATH": "/mnt/raid0/llm/kernels/builds/gpu-20261024-c72ec82f5-c5/bin",
+        "AUTOKERNEL_BACKEND_THREADS": "8",
+        "AUTOKERNEL_CPU_N_THREADS": "8",
+        "GGML_IQK": "1"
+      }
+    },
+    {
+      "name": "linkage-llama-bench",
+      "argv": [
+        "bash",
+        "/mnt/raid0/llm/tmp/refactor-c6-gpu-runtime-prep-20261031/instruments/verify_ggml_linkage.sh",
+        "/mnt/raid0/llm/kernels/builds/gpu-20261024-c72ec82f5-c5/bin/llama-bench",
+        "/mnt/raid0/llm/kernels/builds/gpu-20261024-c72ec82f5-c5"
+      ],
+      "image": "/mnt/raid0/llm/kernels/builds/gpu-20261024-c72ec82f5-c5",
+      "pid": 2655965,
+      "birth": 153878231,
+      "native_rc": 0,
+      "confirmed_dead": true,
+      "raw_log": "/mnt/raid0/llm/tmp/refactor-c6-gpu-runtime-prep-20261031/runs/20261031T031148Z-2655919/normal/linkage-llama-bench.log",
+      "raw_sha256": "41ac7f22f4f64133c9a5ec3b2d12b98f9e5f5f1e881bb097dc9712d24d514e78",
+      "stderr_log": "/mnt/raid0/llm/tmp/refactor-c6-gpu-runtime-prep-20261031/runs/20261031T031148Z-2655919/normal/linkage-llama-bench.stderr.log",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "gpu_maps_during": {},
+      "sampler": null,
+      "env_selected": {
+        "LD_LIBRARY_PATH": "/mnt/raid0/llm/kernels/builds/gpu-20261024-c72ec82f5-c5/bin:/opt/rocm/lib",
+        "OMP_NUM_THREADS": "8",
+        "GGML_BACKEND_PATH": "/mnt/raid0/llm/kernels/builds/gpu-20261024-c72ec82f5-c5/bin",
+        "AUTOKERNEL_BACKEND_THREADS": "8",
+        "AUTOKERNEL_CPU_N_THREADS": "8",
+        "GGML_IQK": "1"
+      }
+    },
+    {
+      "name": "linkage-test-backend-ops",
+      "argv": [
+        "bash",
+        "/mnt/raid0/llm/tmp/refactor-c6-gpu-runtime-prep-20261031/instruments/verify_ggml_linkage.sh",
+        "/mnt/raid0/llm/kernels/builds/gpu-20261024-c72ec82f5-c5/bin/test-backend-ops",
+        "/mnt/raid0/llm/kernels/builds/gpu-20261024-c72ec82f5-c5"
+      ],
+      "image": "/mnt/raid0/llm/kernels/builds/gpu-20261024-c72ec82f5-c5",
+      "pid": 2655993,
+      "birth": 153878242,
+      "native_rc": 0,
+      "confirmed_dead": true,
+      "raw_log": "/mnt/raid0/llm/tmp/refactor-c6-gpu-runtime-prep-20261031/runs/20261031T031148Z-2655919/normal/linkage-test-backend-ops.log",
+      "raw_sha256": "239277d09abadba2ab847b4cec0035b5da3b4a3287321ce4047e49c0f53d9c4b",
+      "stderr_log": "/mnt/raid0/llm/tmp/refactor-c6-gpu-runtime-prep-20261031/runs/20261031T031148Z-2655919/normal/linkage-test-backend-ops.stderr.log",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "gpu_maps_during": {},
+      "sampler": null,
+      "env_selected": {
+        "LD_LIBRARY_PATH": "/mnt/raid0/llm/kernels/builds/gpu-20261024-c72ec82f5-c5/bin:/opt/rocm/lib",
+        "OMP_NUM_THREADS": "8",
+        "GGML_BACKEND_PATH": "/mnt/raid0/llm/kernels/builds/gpu-20261024-c72ec82f5-c5/bin",
+        "AUTOKERNEL_BACKEND_THREADS": "8",
+        "AUTOKERNEL_CPU_N_THREADS": "8",
+        "GGML_IQK": "1"
+      }
+    },
+    {
+      "name": "version-gpu-20261030-729599d69-c6",
+      "argv": [
+        "/mnt/raid0/llm/kernels/builds/gpu-20261030-729599d69-c6/bin/llama-server",
+        "--version"
+      ],
+      "image": "/mnt/raid0/llm/kernels/builds/gpu-20261030-729599d69-c6",
+      "pid": 2656015,
+      "birth": 153878252,
+      "native_rc": 0,
+      "confirmed_dead": true,
+      "raw_log": "/mnt/raid0/llm/tmp/refactor-c6-gpu-runtime-prep-20261031/runs/20261031T031148Z-2655919/normal/version-gpu-20261030-729599d69-c6.log",
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_log": "/mnt/raid0/llm/tmp/refactor-c6-gpu-runtime-prep-20261031/runs/20261031T031148Z-2655919/normal/version-gpu-20261030-729599d69-c6.stderr.log",
+      "stderr_sha256": "a369613da52d78e31c2859de6978653a21675cf3a97c46f82a3c486869980acc",
+      "gpu_maps_during": {},
+      "sampler": null,
+      "env_selected": {
+        "LD_LIBRARY_PATH": "/mnt/raid0/llm/kernels/builds/gpu-20261030-729599d69-c6/bin:/opt/rocm/lib",
+        "OMP_NUM_THREADS": "8",
+        "GGML_BACKEND_PATH": "/mnt/raid0/llm/kernels/builds/gpu-20261030-729599d69-c6/bin",
+        "AUTOKERNEL_BACKEND_THREADS": "8",
+        "AUTOKERNEL_CPU_N_THREADS": "8",
+        "GGML_IQK": "1"
+      }
+    },
+    {
+      "name": "linkage-llama-server",
+      "argv": [
+        "bash",
+        "/mnt/raid0/llm/tmp/refactor-c6-gpu-runtime-prep-20261031/instruments/verify_ggml_linkage.sh",
+        "/mnt/raid0/llm/kernels/builds/gpu-20261030-729599d69-c6/bin/llama-server",
+        "/mnt/raid0/llm/kernels/builds/gpu-20261030-729599d69-c6"
+      ],
+      "image": "/mnt/raid0/llm/kernels/builds/gpu-20261030-729599d69-c6",
+      "pid": 2656022,
+      "birth": 153878272,
+      "native_rc": 0,
+      "confirmed_dead": true,
+      "raw_log": "/mnt/raid0/llm/tmp/refactor-c6-gpu-runtime-prep-20261031/runs/20261031T031148Z-2655919/normal/linkage-llama-server.log",
+      "raw_sha256": "1b64b207aed84e275d4985a73705fdd39fc52881e82c787a9ebee6e67efe229e",
+      "stderr_log": "/mnt/raid0/llm/tmp/refactor-c6-gpu-runtime-prep-20261031/runs/20261031T031148Z-2655919/normal/linkage-llama-server.stderr.log",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "gpu_maps_during": {},
+      "sampler": null,
+      "env_selected": {
+        "LD_LIBRARY_PATH": "/mnt/raid0/llm/kernels/builds/gpu-20261030-729599d69-c6/bin:/opt/rocm/lib",
+        "OMP_NUM_THREADS": "8",
+        "GGML_BACKEND_PATH": "/mnt/raid0/llm/kernels/builds/gpu-20261030-729599d69-c6/bin",
+        "AUTOKERNEL_BACKEND_THREADS": "8",
+        "AUTOKERNEL_CPU_N_THREADS": "8",
+        "GGML_IQK": "1"
+      }
+    },
+    {
+      "name": "linkage-llama-bench",
+      "argv": [
+        "bash",
+        "/mnt/raid0/llm/tmp/refactor-c6-gpu-runtime-prep-20261031/instruments/verify_ggml_linkage.sh",
+        "/mnt/raid0/llm/kernels/builds/gpu-20261030-729599d69-c6/bin/llama-bench",
+        "/mnt/raid0/llm/kernels/builds/gpu-20261030-729599d69-c6"
+      ],
+      "image": "/mnt/raid0/llm/kernels/builds/gpu-20261030-729599d69-c6",
+      "pid": 2656052,
+      "birth": 153878282,
+      "native_rc": 0,
+      "confirmed_dead": true,
+      "raw_log": "/mnt/raid0/llm/tmp/refactor-c6-gpu-runtime-prep-20261031/runs/20261031T031148Z-2655919/normal/linkage-llama-bench.log",
+      "raw_sha256": "0986a013ae9cc8c84e56fa410eebba7f5208eb3ae0de03e6b83c10e51401c600",
+      "stderr_log": "/mnt/raid0/llm/tmp/refactor-c6-gpu-runtime-prep-20261031/runs/20261031T031148Z-2655919/normal/linkage-llama-bench.stderr.log",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "gpu_maps_during": {},
+      "sampler": null,
+      "env_selected": {
+        "LD_LIBRARY_PATH": "/mnt/raid0/llm/kernels/builds/gpu-20261030-729599d69-c6/bin:/opt/rocm/lib",
+        "OMP_NUM_THREADS": "8",
+        "GGML_BACKEND_PATH": "/mnt/raid0/llm/kernels/builds/gpu-20261030-729599d69-c6/bin",
+        "AUTOKERNEL_BACKEND_THREADS": "8",
+        "AUTOKERNEL_CPU_N_THREADS": "8",
+        "GGML_IQK": "1"
+      }
+    },
+    {
+      "name": "linkage-test-backend-ops",
+      "argv": [
+        "bash",
+        "/mnt/raid0/llm/tmp/refactor-c6-gpu-runtime-prep-20261031/instruments/verify_ggml_linkage.sh",
+        "/mnt/raid0/llm/kernels/builds/gpu-20261030-729599d69-c6/bin/test-backend-ops",
+        "/mnt/raid0/llm/kernels/builds/gpu-20261030-729599d69-c6"
+      ],
+      "image": "/mnt/raid0/llm/kernels/builds/gpu-20261030-729599d69-c6",
+      "pid": 2656080,
+      "birth": 153878292,
+      "native_rc": 0,
+      "confirmed_dead": true,
+      "raw_log": "/mnt/raid0/llm/tmp/refactor-c6-gpu-runtime-prep-20261031/runs/20261031T031148Z-2655919/normal/linkage-test-backend-ops.log",
+      "raw_sha256": "9432b7e8e0d41c3e452abd85772f6db5c7aa5e6f5e9418c5eb4d8348c2794a0d",
+      "stderr_log": "/mnt/raid0/llm/tmp/refactor-c6-gpu-runtime-prep-20261031/runs/20261031T031148Z-2655919/normal/linkage-test-backend-ops.stderr.log",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "gpu_maps_during": {},
+      "sampler": null,
+      "env_selected": {
+        "LD_LIBRARY_PATH": "/mnt/raid0/llm/kernels/builds/gpu-20261030-729599d69-c6/bin:/opt/rocm/lib",
+        "OMP_NUM_THREADS": "8",
+        "GGML_BACKEND_PATH": "/mnt/raid0/llm/kernels/builds/gpu-20261030-729599d69-c6/bin",
+        "AUTOKERNEL_BACKEND_THREADS": "8",
+        "AUTOKERNEL_CPU_N_THREADS": "8",
+        "GGML_IQK": "1"
+      }
+    },
+    {
+      "name": "qualification-first-native-case",
+      "argv": [
+        "/mnt/raid0/llm/kernels/builds/gpu-20261030-729599d69-c6/bin/test-backend-ops",
+        "test",
+        "-b",
+        "ROCm0",
+        "-o",
+        "MUL_MAT",
+        "-p",
+        "^type_a=f32,type_b=f32,m=16,n=1,k=256,bs=\\[1,1\\],nr=\\[1,1\\],per=\\[0,1,2,3\\],k_v=0,o=1$",
+        "-j",
+        "1",
+        "--suite-seed",
+        "71",
+        "--autokernel-properties"
+      ],
+      "image": "/mnt/raid0/llm/kernels/builds/gpu-20261030-729599d69-c6",
+      "pid": 2656104,
+      "birth": 153878302,
+      "native_rc": 0,
+      "confirmed_dead": true,
+      "raw_log": "/mnt/raid0/llm/tmp/refactor-c6-gpu-runtime-prep-20261031/runs/20261031T031148Z-2655919/normal/qualification-first-native-case.log",
+      "raw_sha256": "4f878f68d694cf9e5a881d35a425743cd1d95d0c437de524585bb3e365f9377d",
+      "stderr_log": "/mnt/raid0/llm/tmp/refactor-c6-gpu-runtime-prep-20261031/runs/20261031T031148Z-2655919/normal/qualification-first-native-case.stderr.log",
+      "stderr_sha256": "916177b2b0ffb44d541ed2093a540bcc581c414637a209580bf53a767d719091",
+      "gpu_maps_during": {
+        "/mnt/raid0/llm/kernels/builds/gpu-20261030-729599d69-c6/bin/libggml-hip.so.0.16.0": {
+          "resolved": "/mnt/raid0/llm/kernels/builds/gpu-20261030-729599d69-c6/bin/libggml-hip.so.0.16.0",
+          "sha256": "1647ba7d3afffd2f79a8adf6f1213c6fd0bd088779ea73f820df372a10057f54",
+          "mtime_ns": 1793411292770440504,
+          "inside_selected_image": true
+        }
+      },
+      "sampler": {
+        "own_pid": 2656104,
+        "own_pid_peak_vram_bytes": 341254144,
+        "own_pid_kfd_reads": 7,
+        "own_pid_peak_rss_bytes": 393142272,
+        "own_pid_rss_reads": 7,
+        "peak_vram_bytes": 354463744,
+        "median_vram_bytes": 289366016,
+        "vram_reads": 7,
+        "peak_kfd_processes": 1,
+        "sclk_min_mhz": 800,
+        "sclk_max_mhz": 1700,
+        "clock_stable": false,
+        "samples": 7,
+        "resident": false
+      },
+      "env_selected": {
+        "LD_LIBRARY_PATH": "/mnt/raid0/llm/kernels/builds/gpu-20261030-729599d69-c6/bin:/opt/rocm/lib",
+        "OMP_NUM_THREADS": "8",
+        "GGML_BACKEND_PATH": "/mnt/raid0/llm/kernels/builds/gpu-20261030-729599d69-c6/bin",
+        "AUTOKERNEL_BACKEND_THREADS": "8",
+        "AUTOKERNEL_CPU_N_THREADS": "8",
+        "GGML_IQK": "1",
+        "GGML_FA_VKQ_F32": "1"
+      },
+      "native_cases": [
+        {
+          "op": "MUL_MAT",
+          "params": "type_a=f32,type_b=f32,m=16,n=1,k=256,bs=[1,1],nr=[1,1],per=[0,1,2,3],k_v=0,o=1",
+          "status": "ok",
+          "interleaved": "",
+          "reference": {
+            "metric_id": "test_backend_ops_error/v1",
+            "observed": 8.002593211019927e-15,
+            "tolerance": 0.0005,
+            "comparisons": 7,
+            "oracle_id": "ggml_cpu_reference/v1"
+          },
+          "properties": [],
+          "layout": null,
+          "value_transforms": null,
+          "stateful": null
+        },
+        {
+          "op": "MUL_MAT",
+          "params": "type_a=f32,type_b=f32,m=16,n=1,k=256,bs=[1,1],nr=[1,1],per=[0,1,2,3],k_v=0,o=1",
+          "status": "ok",
+          "interleaved": "",
+          "reference": {
+            "metric_id": "test_backend_ops_error/v1",
+            "observed": 1.7899935239301448e-14,
+            "tolerance": 0.0005,
+            "comparisons": 7,
+            "oracle_id": "ggml_cpu_reference/v1"
+          },
+          "properties": [],
+          "layout": null,
+          "value_transforms": null,
+          "stateful": null
+        }
+      ],
+      "unsupported_count": 0,
+      "input_bytes_native_carrier": "not emitted for ordinary FA; do not invent input hashes"
+    }
+  ],
+  "aggregate_gate_pass": null
+}

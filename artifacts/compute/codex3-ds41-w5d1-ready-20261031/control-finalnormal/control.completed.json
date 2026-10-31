@@ -1,0 +1,1 @@
+{"elapsed_s": 2.002607822418213, "warmup": false, "argv": ["taskset", "-c", "122,123", "/mnt/raid0/llm/kernels/builds/cpu-20261023-141e4bcf5-lbh/bin/llama-bench", "-m", "/mnt/raid0/llm/models/unsloth/Qwen3.5-0.8B-GGUF/Qwen3.5-0.8B-Q8_0.gguf", "-t", "2", "-fa", "1", "-mmp", "0", "-p", "16", "-n", "8", "-r", "1", "-o", "json"]}

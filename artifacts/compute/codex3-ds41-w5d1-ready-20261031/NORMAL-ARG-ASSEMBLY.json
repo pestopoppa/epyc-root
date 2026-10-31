@@ -1,0 +1,29 @@
+{
+  "valid": true,
+  "static_only": true,
+  "synthetic_grant_used": false,
+  "engine": "/mnt/raid0/llm/tmp/codex3-kpf-item4-control-20261030/engine/filler_run13.sh",
+  "inside_env_i": "RUS3_DIAGNOSTIC=1",
+  "options_unexpanded": [
+    "--id",
+    "codex3-ds41-w5d1-r1-20261031",
+    "--class",
+    "cpu",
+    "--gpu-quiet",
+    "exclusive",
+    "--claim-cpus",
+    "0-95",
+    "--role",
+    "build",
+    "--min-window",
+    "13500",
+    "--stop",
+    "$D/STOP",
+    "--complete-cmd",
+    "/usr/bin/python3 -B $D/check_complete.py",
+    "--workdir",
+    "$D",
+    "--cmd",
+    "taskset -c \\${FILLER_CPUS} /bin/bash $D/launch.sh --job"
+  ]
+}
