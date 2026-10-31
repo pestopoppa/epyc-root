@@ -52,8 +52,6 @@ for try in $(seq 1 "$TRIES"); do
     bash "$H/evict_nodes_force.sh" "$EVICT_GIB" > "$OUT/$LABEL.evict.$try" 2>&1
   fi
   say "try $try evict done | free/node GiB: $(numactl -H | grep free | awk "{printf \"%d \", \$4/1024}")"
-  i=0; until awk "{exit !(\$1<10)}" /proc/loadavg || [ $i -ge 60 ]; do sleep 5; i=$((i+1)); done
-  say "gate waited $((i*5))s load=$(cut -d" " -f1-3 /proc/loadavg)"
   ss -ltn | grep -q ":$PORT " && { say "FATAL port busy"; die 64; }
   env LD_LIBRARY_PATH="$B:${LD_LIBRARY_PATH:-}" \
     OMP_PROC_BIND=spread OMP_PLACES=cores OMP_WAIT_POLICY=active OMP_DYNAMIC=false GGML_IQK=1 GGML_FUSED_DECODE_OFF=1 \
