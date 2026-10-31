@@ -2216,7 +2216,7 @@ production model at pairs=5, ~18% cadence overhead). Six operator decision items
           carries recipe_hash + n + CI, a floor produced by the loop's own harness is not an external
           constraint. (Residency half closed by R23-60 ✅ 2026-09-08.)
 
-      - [x] **R23-66 — give the unit vocabulary a leaf module so `FLOOR_UNIT` stops repeating the `"process"`
+      - [x] **R23-66 — give the unit vocabulary a leaf module so `FLOOR_UNIT` stops repeating the `"process"` <!-- evidence-integrity: Research `8cb1cfcc3d36ccf4bb5dd06a726e8af0d9f90f3c`; artifact: artifacts/compute/task-evidence-repair-20261031/r23-66/EVIDENCE.json; hygiene, not quota -->
         literal**, which it does only because `serving` → `loop` → `bench` is a real import cycle (hence
         `bench.py`'s lazy in-function `serving` imports); a test pins the two together for now
         (`scripts/kernel_rnd/autokernel/loop/bench.py:44`) (found 2026-09-14, noninf sweep).
@@ -2226,6 +2226,10 @@ production model at pairs=5, ~18% cadence overhead). Six operator decision items
         Integrated validation: 78 tests plus 13 subtests passed; no new lint defects. Graph indexing reached
         its unchanged 7 GiB stop twice; exact current caller/source audit supplemented the index.
         [no-belief: dependency and API compatibility repair]
+
+        <!-- task-evidence-integrity:start R23-66 -->
+        - Evidence metadata (hygiene, not new quota): Research `8cb1cfcc3d36ccf4bb5dd06a726e8af0d9f90f3c`; [test/artifact](../../artifacts/compute/task-evidence-repair-20261031/r23-66/EVIDENCE.json).
+        <!-- task-evidence-integrity:end R23-66 -->
           - [x] **R23-67 — state the `unit` in the D8 instrument-characterisation artifact behind
         `MEASURED_FLOOR_PCT`**, which carried none: the built-in table is labelled in code
         (`bench.FLOOR_UNIT`, `MEASURED_FLOOR_N = 20`) and the artifact now records that unit. ✅ 2026-10-30 [belief: cc]
