@@ -87,14 +87,15 @@ DAR-1 (offline regret, ✅ 2026-04-15), the DAR-1 current-traffic replays (✅ 2
   ```
   Q(prompt, model) = sigmoid(v_model^T W v_prompt + b)
   ```
-- [ ] Model features (already available in `ScoringConfig` L34-117):
+- [x] Model features (already available in `ScoringConfig` L34-117): ✅ 2026-10-31 [no-belief: prior source and fixture controls only] [implementation: APP 6f288fe483c2d9c8467ff3088740f9ec2e1efc83 and 10b3bceb52e20514cf729e545f388d5de9f560bf; test: epyc-orchestrator/tests/unit/test_bilinear_scorer.py; historical closure hygiene, not quota]
   - `baseline_tps` (from `baseline_tps_by_role`)
   - `baseline_quality` (from `baseline_quality_by_role`)
   - `memory_cost` (from `memory_cost_by_role`)
   - `param_count_log` (derivable from model registry)
   - `is_moe` (binary flag)
   - `quant_bits` (from model registry)
-- [ ] Create new `bilinear_scorer.py` module
+  - The existing model feature vector and stack-prior extraction provide these six fields, with additional explicit speed/quality-known masks; eight current-source feature controls passed. Fallback model specifications remain degraded defaults, not measurements. This reconciles only the feature-vector item; the fixed-reward retraining and DAR-4 adoption remain open. [Evidence](../../artifacts/engineering/dar4-model-features-20261031/dar4-model-features-audit-20261031.log). [no-belief: source and fixture controls]
+- [x] Create new `bilinear_scorer.py` module ✅ 2026-10-31 [no-belief: prior source and fixture controls only] [implementation: APP 6f288fe483c2d9c8467ff3088740f9ec2e1efc83; test: epyc-orchestrator/tests/unit/test_bilinear_scorer.py; historical closure hygiene, not quota]
 - [ ] Modify `retriever.py` selection logic to use bilinear scorer instead of per-action Q lookup
 - [ ] Test: add a simulated new model with known features, measure cold-start convergence vs current approach
 - [ ] Zero cold-start: when a new model joins the fleet, its features are known from specs — no routing history needed
