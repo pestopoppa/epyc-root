@@ -226,6 +226,10 @@ def battery(script: Path, row: dict, tmp: Path) -> list[str]:
     fixture and its failures asserted *positively* — a mutation test that is a real
     collected test, not an assertion inside a main() the reporter never counts.
     """
+    if row["sandbox"].get("kind") == "http_listener":
+        from hub_supervisor_contract import battery as http_battery
+        return http_battery(script, tmp)
+
     hb = Path(_expand(row["sandbox"]["heartbeat"], {"tmp": tmp}))
     hb.parent.mkdir(parents=True, exist_ok=True)
     argv = row["sandbox"].get("observe_argv", ["observe"])
