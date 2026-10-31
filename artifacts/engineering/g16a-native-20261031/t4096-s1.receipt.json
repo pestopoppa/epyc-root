@@ -1,0 +1,60 @@
+{
+  "tokens": 4096,
+  "seqs": 1,
+  "command": [
+    "/mnt/raid0/llm/tmp/codex-ni-g16a-build-prep-20261031/build-hip/bin/test-backend-ops",
+    "-o",
+    "GATED_DELTA_NET",
+    "-b",
+    "ROCm0",
+    "-p",
+    "^type=f32,head_count=32,head_size=128,n_seq_tokens=4096,n_seqs=1,v_repeat=1,permuted=0,kda=0,K=1$"
+  ],
+  "pid": 2440956,
+  "birth": 154921516,
+  "rc": 0,
+  "numerical_pass_unrelaxed_1e_7": true,
+  "required_chunked_trace": false,
+  "trace_pass": null,
+  "dispatch_events": [],
+  "loaded_images": {
+    "/mnt/raid0/llm/tmp/codex-ni-g16a-build-prep-20261031/build-hip/bin/libggml-hip.so.0.16.0": "2c944080746d671414d0cf80fa17e60aca3082e7706a26a973751395d7eb2b56",
+    "/mnt/raid0/llm/tmp/codex-ni-g16a-build-prep-20261031/build-hip/bin/libggml-cpu.so.0.16.0": "27b098a37a028bf189d0460992ac2b37effd80491fa0eeb12b9dfe14e67f00eb",
+    "/mnt/raid0/llm/tmp/codex-ni-g16a-build-prep-20261031/build-hip/bin/libggml-base.so.0.16.0": "4a48792a20b60ff4f3a585303bebb87c8be00de063115b8ba897095f21d3e387",
+    "/mnt/raid0/llm/tmp/codex-ni-g16a-build-prep-20261031/build-hip/bin/libggml.so.0.16.0": "d88f6535c3862b5d6c39549737c02613d7db286fb4e50332de7cf90368b2d06f"
+  },
+  "native_residency_witnessed": true,
+  "residency_samples": [
+    {
+      "monotonic": 1549215.383682102,
+      "pid": 2440956,
+      "birth": 154921516,
+      "kfd_pid_present": true,
+      "own_kfd_vram_bytes": {
+        "vram_57300": 683032576
+      },
+      "device_vram_bytes": {
+        "/sys/class/drm/card2/device/mem_info_vram_used": 696201216
+      }
+    },
+    {
+      "monotonic": 1549215.454354674,
+      "pid": 2440956,
+      "birth": 154921516,
+      "kfd_pid_present": true,
+      "own_kfd_vram_bytes": {
+        "vram_57300": 683032576
+      },
+      "device_vram_bytes": {
+        "/sys/class/drm/card2/device/mem_info_vram_used": 696201216
+      }
+    }
+  ],
+  "sample_count": 18,
+  "peak_tree_rss_bytes": 988700672,
+  "partial": false,
+  "live_after": [],
+  "raw_dir": "/mnt/raid0/llm/tmp/codex-ni-g16a-build-prep-20261031/native/run-20261031T060539Z",
+  "standalone_CPU_control_run": false,
+  "dispatch_proven_numerical_failure": false
+}

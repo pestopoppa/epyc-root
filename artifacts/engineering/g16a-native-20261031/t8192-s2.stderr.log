@@ -1,0 +1,4 @@
+ggml_cuda_init: found 1 ROCm devices (Total VRAM: 65520 MiB):
+  Device 0: AMD Instinct MI210, gfx90a:sramecc+:xnack- (0x90a), VMM: no, Wave Size: 64, VRAM: 65520 MiB
+load_backend: failed to load /mnt/raid0/llm/tmp/codex-ni-g16a-build-prep-20261031/build-hip/bin: /mnt/raid0/llm/tmp/codex-ni-g16a-build-prep-20261031/build-hip/bin: cannot read file data: Is a directory
+[gdn] chunked dispatch: H=32 S_v=128 n_tokens=8192 n_seqs=2 blocks=512 (floor 312), keep_rs=0 K=1

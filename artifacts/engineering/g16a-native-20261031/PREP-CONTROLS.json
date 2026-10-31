@@ -1,0 +1,9 @@
+{
+  "eight_cases_present_in_pinned_source": true,
+  "nmse_gate": 1e-07,
+  "exact_OK_required": true,
+  "missing_unsupported_rejected": true,
+  "wrong_case_missing_trace_and_impossible_floor_rejected": true,
+  "native_execution": false,
+  "pass": true
+}

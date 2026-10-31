@@ -1,0 +1,47 @@
+{
+  "checks": [
+    {
+      "pid": 2431089,
+      "birth": 154921272,
+      "matching_live_process": false
+    },
+    {
+      "pid": 2434373,
+      "birth": 154921334,
+      "matching_live_process": false
+    },
+    {
+      "pid": 2437655,
+      "birth": 154921400,
+      "matching_live_process": false
+    },
+    {
+      "pid": 2440956,
+      "birth": 154921516,
+      "matching_live_process": false
+    },
+    {
+      "pid": 2444284,
+      "birth": 154921693,
+      "matching_live_process": false
+    },
+    {
+      "pid": 2447625,
+      "birth": 154921968,
+      "matching_live_process": false
+    },
+    {
+      "pid": 2450970,
+      "birth": 154922135,
+      "matching_live_process": false
+    },
+    {
+      "pid": 2454327,
+      "birth": 154922421,
+      "matching_live_process": false
+    }
+  ],
+  "watcher_pid": 2431057,
+  "watcher_present": false,
+  "signals_sent": false
+}

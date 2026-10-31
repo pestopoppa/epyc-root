@@ -1,0 +1,12 @@
+{
+  "patch": "/mnt/raid0/llm/tmp/codex-ni-g16a-build-prep-20261031/CANDIDATE.patch",
+  "patch_sha256": "898d384872a8d97d582bf0fb7dc636668a73628ed813057edfe9e679a6374e53",
+  "private_provenance_git": "/mnt/raid0/llm/tmp/codex-ni-g16a-build-prep-20261031/provenance.git",
+  "branch": "llama.cpp-experimental-g16a-ni-20261031",
+  "commit": "af90102c7c3659c78b4e4c87698e258525c77000",
+  "parent": "ffc1bac82eeca6f9099e1ccd9ba49703c460a115",
+  "contents": "exact v10 plus original two-file G16a candidate only; does not claim full current champion closure",
+  "source_sha256": "9d177c6c9ca63a7d3f2e34a91bba5603e97cd4888956d5b014ec7c1e87904b6d",
+  "test_source_sha256": "fb6fc1b42e410db9ee21da3c9467b6a9d93a862b27b1e387ecbd0ae50382572a",
+  "integration": "hold for MAIN native review and coordinated full-champion candidate validation; no promotion performed"
+}
