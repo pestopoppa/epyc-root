@@ -1,0 +1,26 @@
+{
+  "c5": {
+    "path": "/mnt/raid0/llm/kernels/builds/gpu-20261024-c72ec82f5-c5",
+    "llama_server_sha256": "802a3e0c7bcfcb23c661dd879ec6b12d76048a4525ac8a2aa3b336f561bfa6f4",
+    "server_impl_sha256": "c28cebeb1df4046b9f69f07378cf105ba23d64500b1a1f80de0364400667622e",
+    "libggml_hip_sha256": "23d39c91a82fad0a83743829dd59a10df91bfe0c4a933f0cce693fc7a831beb4",
+    "libllama_sha256": "d4975083d1ae78c70a8c18017e9149a94a6abe917035ac72fe30b8e0757ee01e"
+  },
+  "release": {
+    "path": "/mnt/raid0/llm/tmp/codex-ni-gpu-zos-build-prep-20261031/successor/out/release",
+    "llama_server_sha256": "802a3e0c7bcfcb23c661dd879ec6b12d76048a4525ac8a2aa3b336f561bfa6f4",
+    "server_impl_sha256": "aaaab39254a7ff21d0c3d987bd0ea3076b3e36bc3786584417f6b4aa0a6d79ae",
+    "libggml_hip_sha256": "23d39c91a82fad0a83743829dd59a10df91bfe0c4a933f0cce693fc7a831beb4",
+    "libllama_sha256": "d4975083d1ae78c70a8c18017e9149a94a6abe917035ac72fe30b8e0757ee01e"
+  },
+  "debug": {
+    "path": "/mnt/raid0/llm/tmp/codex-ni-gpu-zos-build-prep-20261031/successor/out/debug",
+    "llama_server_sha256": "802a3e0c7bcfcb23c661dd879ec6b12d76048a4525ac8a2aa3b336f561bfa6f4",
+    "server_impl_sha256": "3e862df33612e237c4a115a3ce248bf93693667fa5ceb5ee07ea82964e2c4ae3",
+    "libggml_hip_sha256": "23d39c91a82fad0a83743829dd59a10df91bfe0c4a933f0cce693fc7a831beb4",
+    "libllama_sha256": "d4975083d1ae78c70a8c18017e9149a94a6abe917035ac72fe30b8e0757ee01e"
+  },
+  "source_pins_sha256": "187e7a953e151f208859cc93f7353d6ba7e43189fe58dc18f47b333184aea4dc",
+  "build_complete_sha256": "0fccf3b428970b972c31d3c0d29638db0667e8903608a724330adfc67535f532",
+  "at": "2026-10-31T02:15:16.707077+00:00"
+}
