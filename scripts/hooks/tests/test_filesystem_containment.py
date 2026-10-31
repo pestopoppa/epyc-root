@@ -218,6 +218,82 @@ class TestClassB(unittest.TestCase):
         """`cd /mnt/bigdisk && mkdir -p x` resolves x against the device."""
         self.assert_refused(run_scan("cd /mnt/bigdisk && mkdir -p x"))
 
+    def test_new_backup_restore_verbs_table(self):
+        """Parse only: tool commands are never executed by these controls."""
+        cases = (
+            # tool command, expected outcome, optional cwd
+            ("restic restore --target /mnt/bigdisk/out snapshot", "write_outside_containment_root", None),
+            ("restic --repo /mnt/raid0/llm/repo restore --target=/mnt/raid0/llm/out snapshot", "allowed", None),
+            ("restic restore snapshot", "unresolvable_target", None),
+            ("restic --target /mnt/raid0/llm/out restore snapshot", "allowed", None),
+            ("borg extract /mnt/bigdisk/repo::archive", "write_outside_containment_root", "/mnt/bigdisk"),
+            ("borg extract /mnt/bigdisk/repo::archive", "allowed", "/mnt/raid0/llm"),
+            ("borg --stats delete /mnt/bigdisk/repo::archive", "write_outside_containment_root", None),
+            ("borg delete --stats /mnt/bigdisk/repo", "write_outside_containment_root", None),
+            ("borg prune /mnt/bigdisk/repo", "write_outside_containment_root", None),
+            ("borg delete archive", "allowed", None),
+            ("borg prune", "unresolvable_target", None),
+            ("borg delete /mnt/raid0/llm/repo::archive", "allowed", None),
+            ("borg prune --keep-daily 7 /mnt/bigdisk/repo", "write_outside_containment_root", None),
+            ("borg delete user@host:repo::archive", "unresolvable_target", None),
+            ("borg prune ssh://host/repo", "unresolvable_target", None),
+            ("borg --unknown value delete /mnt/bigdisk/repo", "unresolvable_target", None),
+            ("borg --repo /mnt/raid0/llm/repo delete archive", "unresolvable_target", None),
+            ("borg extract --destination /mnt/bigdisk repo::archive", "unresolvable_target", None),
+            ("borg extract -C /mnt/bigdisk repo::archive", "unresolvable_target", None),
+            ("borg extract repo::archive", "allowed", None),
+            ("borg extract", "unresolvable_target", None),
+            ("restic restore latest --target", "unresolvable_target", None),
+            ("restic restore latest --target=", "unresolvable_target", None),
+            ("restic restore latest --target=remote:out", "unresolvable_target", None),
+            ("restic --cache-dir /mnt/bigdisk/cache restore latest --target /mnt/raid0/llm/out", "write_outside_containment_root", None),
+            ("restic --unknown value restore latest --target /mnt/bigdisk/out", "unresolvable_target", None),
+            ("restic restore latest -- --target /mnt/raid0/llm/out", "unresolvable_target", None),
+            ("restic restore latest --target /mnt/raid0/llm/out --target /mnt/bigdisk/out", "write_outside_containment_root", None),
+            ("restic restore latest --target out", "write_outside_containment_root", "/mnt/bigdisk"),
+
+            ("rclone --config /tmp/rclone.conf copyto /mnt/raid0/llm/in /mnt/bigdisk/out", "write_outside_containment_root", None),
+            ("rclone copyto --config /tmp/rclone.conf /mnt/bigdisk/in /mnt/raid0/llm/out", "allowed", None),
+            ("rclone copyto remote:in /mnt/raid0/llm/out", "allowed", None),
+            ("rclone copyto /mnt/raid0/llm/in /mnt/raid0/llm/out", "allowed", None),
+            ("rclone moveto /mnt/bigdisk/in /mnt/raid0/llm/out", "write_outside_containment_root", None),
+            ("rclone moveto /mnt/raid0/llm/in /mnt/bigdisk/out", "write_outside_containment_root", None),
+            ("rclone moveto remote:in /mnt/raid0/llm/out", "unresolvable_target", None),
+            ("rclone moveto --unknown-value-filter '*.tmp' /mnt/bigdisk/in /mnt/raid0/llm/out", "unresolvable_target", None),
+            ("rclone mkdir /mnt/bigdisk/newdir", "write_outside_containment_root", None),
+            ("rclone mkdir /mnt/raid0/llm/newdir", "allowed", None),
+            ("rclone mkdir remote:newdir", "unresolvable_target", None),
+            ("rclone mkdir :local:/mnt/bigdisk/out", "unresolvable_target", None),
+            ("rclone moveto :local:/mnt/bigdisk/in /mnt/raid0/llm/out", "unresolvable_target", None),
+            ("rclone copyto in remote:out", "unresolvable_target", None),
+            ("rclone copyto in /mnt/raid0/llm/out --log-file /mnt/bigdisk/log", "write_outside_containment_root", None),
+            ("rclone moveto /mnt/raid0/llm/in /mnt/raid0/llm/out --backup-dir remote:backup", "unresolvable_target", None),
+            ("rclone mkdir /mnt/raid0/llm/out --unknown /mnt/bigdisk/out", "unresolvable_target", None),
+            ("rclone --unknown=value mkdir /mnt/raid0/llm/out", "unresolvable_target", None),
+            ("rclone --unknown value mkdir /mnt/bigdisk/out", "unresolvable_target", None),
+            ("rclone mkdir", "unresolvable_target", None),
+            ("rclone copyto /mnt/raid0/llm/in", "unresolvable_target", None),
+            ("rclone moveto /mnt/raid0/llm/in", "unresolvable_target", None),
+            ("rclone mkdir out", "write_outside_containment_root", "/mnt/bigdisk"),
+
+        )
+        for command, expected, cwd in cases:
+            with self.subTest(command=command, cwd=cwd):
+                argv = ["--command", command]
+                if cwd is not None:
+                    argv = ["--cwd", cwd, *argv]
+                res = run_scan(command, argv=argv)
+                if expected == "allowed":
+                    self.assertEqual(res.returncode, 0, res.stderr)
+                else:
+                    self.assert_refused(res, expected)
+
+    def test_new_write_verbs_are_in_dump_rules(self):
+        rules = json.loads(run_scan("", argv=["--dump-rules"]).stdout)
+        self.assertIn("restore", rules["write_verbs"]["restic"])
+        self.assertTrue({"extract", "delete", "prune"}.issubset(rules["write_verbs"]["borg"]))
+        self.assertTrue({"copyto", "moveto", "mkdir"}.issubset(rules["write_verbs"]["rclone"]))
+
 
 class TestAllowed(unittest.TestCase):
     """The compliant path — a guard that forbids its own idiom is a defect."""
@@ -494,6 +570,21 @@ class TestClaudeWrapper(unittest.TestCase):
         self.assertEqual(res.returncode, 2)
         self.assertIn("BLOCKED", res.stderr)
         self.assertIn("mount", res.stderr)
+
+    def test_new_containment_verbs_are_checked_by_hook(self):
+        """Hook control sends text to the scanner; it never invokes these tools."""
+        for command in (
+            "restic restore --target /mnt/bigdisk/out snapshot",
+            "cd /mnt/bigdisk && borg extract /mnt/bigdisk/repo::archive",
+            "borg prune /mnt/bigdisk/repo",
+            "rclone moveto /mnt/raid0/llm/in /mnt/bigdisk/out",
+            "rclone mkdir remote:newdir",
+        ):
+            with self.subTest(command=command):
+                res = self.run_wrapper(json.dumps(
+                    {"tool_name": "Bash", "tool_input": {"command": command}}))
+                self.assertEqual(res.returncode, 2, res.stderr)
+                self.assertIn("BLOCKED", res.stderr)
 
     def test_allows_benign_command(self):
         res = self.run_wrapper(json.dumps(

@@ -1,0 +1,1 @@
+1160273 1160272 Sat Oct 31 12:50:58 2026  3648 bash -c ulimit -v 8388608; printf "%s\n" "$$" > "$1/test-pid"; ps -o pid=,ppid=,lstart=,rss=,args= -p "$$" > "$1/process-before-exec.txt"; exec python3 -m pytest -q scripts/hooks/tests/test_filesystem_containment.py _ /mnt/raid0/llm/tmp/codex-ni-containment-selected-20261031/proof/attempt-02

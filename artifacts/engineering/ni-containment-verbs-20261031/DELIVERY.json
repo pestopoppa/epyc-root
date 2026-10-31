@@ -1,0 +1,27 @@
+{
+  "base": "1103bccc540a04c535a5fa3baf7a81cdea512595",
+  "patch_sha256": "13fb3dfb6a678ed364dc9ca62b49c499dd82d33ebb97e989543ac946c81de548",
+  "metrics": {
+    "attempt-02": {
+      "rc": 0,
+      "ps_absence_rc": 1,
+      "max_rss_kib": 30856,
+      "pid": 1160273,
+      "birth": "1160273 1160272 Sat Oct 31 12:50:58 2026  3648 bash -c ulimit -v 8388608; printf \"%s\\n\" \"$$\" > \"$1/test-pid\"; ps -o pid=,ppid=,lstart=,rss=,args= -p \"$$\" > \"$1/process-before-exec.txt\"; exec python3 -m pytest -q scripts/hooks/tests/test_filesystem_containment.py _ /mnt/raid0/llm/tmp/codex-ni-containment-selected-20261031/proof/attempt-02"
+    },
+    "project-parity-final": {
+      "rc": 0,
+      "ps_absence_rc": 1,
+      "max_rss_kib": 29288,
+      "pid": 1178040,
+      "birth": "1178040 1178039 Sat Oct 31 12:51:42 2026  3584 bash -c ulimit -v 8388608; printf \"%s\\n\" \"$$\" > \"$1/test-pid\"; ps -o pid=,ppid=,lstart=,rss=,args= -p \"$$\" > \"$1/process-before-exec.txt\"; python3 \"$2/generate-project.py\" > \"$1/project-regeneration.txt\"; exec python3 -m pytest -q scripts/hooks/tests/test_harness_guard_parity.py -k \"not global and not generator_check_exits_zero and not codex_config_wires_the_bridge\" _ /mnt/raid0/llm/tmp/codex-ni-containment-selected-20261031/proof/project-parity-final /mnt/raid0/llm/tmp/codex-ni-containment-selected-20261031"
+    },
+    "negative-control": {
+      "rc": 0,
+      "ps_absence_rc": 1,
+      "max_rss_kib": 13956,
+      "pid": 1177998,
+      "birth": "1177998 1177997 Sat Oct 31 12:51:41 2026  3548 bash -c ulimit -v 8388608; printf \"%s\\n\" \"$$\" > \"$1/test-pid\"; ps -o pid=,ppid=,lstart=,rss=,args= -p \"$$\" > \"$1/process-before-exec.txt\"; exec python3 \"$2/negative-control.py\" _ /mnt/raid0/llm/tmp/codex-ni-containment-selected-20261031/proof/negative-control /mnt/raid0/llm/tmp/codex-ni-containment-selected-20261031"
+    }
+  }
+}
