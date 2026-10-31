@@ -1,0 +1,3 @@
+c90af9c9a2cf6f7d0404c3fb17e84391c59b240362284f702168f8d71cfeba5d  /mnt/raid0/llm/models/diffusion/ernie-image-turbo-gguf/ernie-image-turbo-Q8_0.gguf
+49a750a128863854eac7d85e1a277a7b44bf6ec3646405b84686dfeeca3708ca  /mnt/raid0/llm/models/diffusion/ernie-image-turbo-comfy/text_encoders/ministral-3-3b.safetensors
+d64f3a68e1cc4f9f4e29b6e0da38a0204fe9a49f2d4053f0ec1fa1ca02f9c4b5  /mnt/raid0/llm/models/diffusion/ernie-image-turbo-comfy/vae/flux2-vae.safetensors
