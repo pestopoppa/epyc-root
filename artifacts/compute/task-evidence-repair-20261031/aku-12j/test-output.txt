@@ -1,0 +1,9 @@
+Original retained test output: aku12j-producer-focused-20261029.log
+Original complete file SHA-256: 4a7fc057a610e1e75396e58c3ac9d1e3cc3930bdf65073d60e17e28e11b3eef4
+..                                                                       [100%]
+2 passed in 0.12s
+
+Original retained test output: aku12j-root-focused-20261029.log
+Original complete file SHA-256: c6387e2e8a9de7e845a562038c35935df1aa16c58de4cd3a053d750eea8984ce
+............................                                             [100%]
+28 passed in 0.56s

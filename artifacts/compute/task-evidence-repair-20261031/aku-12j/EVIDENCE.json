@@ -1,0 +1,71 @@
+{
+  "schema": "epyc.task_evidence_integrity.v1",
+  "task_id": "AKU-12j",
+  "original_task_first_line": "  - [x] **AKU-12j \u2014 retire the GLM-5.3 `active_campaign` pin** (found 2026-09-22): the research",
+  "decision": "keep_checked",
+  "reason": "Published producer null and published hub selected/none/unknown branches are tested together by retained2+28 controls. Full original21-point historical payload is preserved; source/hub rendering fixtures confirm no-selection and unknown states without claiming deployment/live reload or health improvement.",
+  "implementation": [
+    {
+      "repo": "epyc-inference-research",
+      "implementation_commit": "084deaf0ef76680c11f89ac3d7cf56de5e81253f",
+      "reachable_from_published_origin_main": true,
+      "files": [
+        {
+          "path": "scripts/kernel_rnd/autokernel/loop/historical_trajectory.py",
+          "sha256": "1f35219c06b07752a66bb37985b8bcd6af76a70834aba87c547b85d6a5372e25",
+          "git_url": "https://github.com/pestopoppa/epyc-inference-research/blob/084deaf0ef76680c11f89ac3d7cf56de5e81253f/scripts/kernel_rnd/autokernel/loop/historical_trajectory.py"
+        },
+        {
+          "path": "scripts/kernel_rnd/autokernel/loop/test_historical_trajectory.py",
+          "sha256": "c936d61f5926be1ba3b40730fc539016d14c18ce1cc63770a966a61328d4d7c8",
+          "git_url": "https://github.com/pestopoppa/epyc-inference-research/blob/084deaf0ef76680c11f89ac3d7cf56de5e81253f/scripts/kernel_rnd/autokernel/loop/test_historical_trajectory.py"
+        }
+      ]
+    },
+    {
+      "repo": "epyc-root",
+      "implementation_commit": "03b38117545d91d77a3784f0bee85e5922d0d33c",
+      "reachable_from_published_origin_main": true,
+      "files": [
+        {
+          "path": "dashboard/loop_status.py",
+          "sha256": "9ef231b32c5e62b6f3210071dfc2f8a40abba83f5da7b2a20f78a09d381d72d7"
+        },
+        {
+          "path": "dashboard/static/loop.html",
+          "sha256": "028efadf657049ae5feda6c9907cb9acc0915cfc0146089ff790d4531d050d52"
+        },
+        {
+          "path": "tests/test_dashboard_improvement_trajectory.py",
+          "sha256": "735128eddf00c997325753ff2638fa4ab78e68f60384a2dd8ad9cc7affea4999"
+        }
+      ]
+    }
+  ],
+  "original_dates_preserved": true,
+  "evidence_only_hygiene_not_new_code_or_today_quota": true,
+  "no_retest_or_redate": true,
+  "prior_artifacts": [
+    {
+      "path": "/mnt/raid0/llm/tmp/aku12j-producer-focused-20261029.log",
+      "sha256": "4a7fc057a610e1e75396e58c3ac9d1e3cc3930bdf65073d60e17e28e11b3eef4",
+      "bytes": 579
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/aku12j-root-focused-20261029.log",
+      "sha256": "c6387e2e8a9de7e845a562038c35935df1aa16c58de4cd3a053d750eea8984ce",
+      "bytes": 582
+    }
+  ],
+  "retained_test_output": {
+    "path": "artifacts/compute/task-evidence-repair-20261031/aku-12j/test-output.txt",
+    "sha256": "b4f93843d0d2e626867827fff58ff409830b2f3f09513831c3e458810ee0e73b",
+    "scope": "Original test stdout excerpt; supervisor metadata omitted and trailing whitespace removed; full original hash retained"
+  },
+  "task_text_and_dates_recovery": {
+    "first_line_metadata": "HTML comment only; reopened task changes checkbox only",
+    "visible_evidence": "separate delimited metadata sub-bullet after original paragraph",
+    "original_paragraph_sha256": "b74fab6352ce753405e2b3cd250432f3bb5973dc83dac2d7ad33a2d3bc9044ee",
+    "metadata_strip_restores_original_paragraph_byte_identically": true
+  }
+}
