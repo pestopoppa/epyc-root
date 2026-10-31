@@ -1,6 +1,7 @@
 # Agentic serving harness fixes — demonstrate on the 27B, generalize, then audit
 
-**Scratch**: `/mnt/raid0/llm/tmp/codex-ni-ufh14-lb51-residual-r1-20261030/` (active READY/native evidence; retain for keeper and task owner).
+**Scratch**: `/mnt/raid0/llm/tmp/codex-ni-ufh14-lb51-residual-r1-20261030/`
+Active READY/native evidence; retain for keeper and task owner.
 
 **Status**: active. Phase A: A1 (F12 run) done and graded 2026-10-03; A2 running inside the INF-80 X0 window; A3/A4 implemented and offline-tested, GPU test pending. Phase B: B2, B3, B5 live; B6, B4 (API part) and DIAG deployed 2026-10-03 ~14:50Z, live proofs pending the :8083 restore.
 **Created**: 2026-10-03, by operator directive in session ak-ds41-main:
@@ -203,6 +204,9 @@ Client and harness side (ak-ds41-main):
       14,400,000 ms for `qwen-local` and `qwen-gpu`; backup `/mnt/raid0/llm/tmp/ufh14-b1-20261003/opencode.jsonc.bak-20261004`.
       Codex half: the template `/mnt/raid0/llm/tmp/ufh14-b1-20261003/codex-local-provider-template.toml` was handed to
       workspace-89 for their CODEX_HOME. Not ticked until the codex half is applied.
+    - *(2026-10-31, codex-ni / UFH14-B1c audit.)* Current OpenCode user config still has both local providers at the
+      14,400,000 ms F1 fallback; active Codex config remains hosted-only (`gpt-6.1-sol`). Prepared the repo-owned,
+      opt-in Codex profile template in [`docs/reference/agent-config/codex-local-provider-f1.md`](../../docs/reference/agent-config/codex-local-provider-f1.md), with model-free CLI/resolver checks. Codex's supported timeout is SSE-idle only (no separate pre-header timeout); both local `/props` endpoints were unavailable and no first non-actor local Codex call was verified. This is profile preparation, not application or task completion; keep this box open. Next: install/select the opt-in profile and verify the first local Codex call against the live derived values.
   - [ ] **UFH14-B1d — STACKCHANGE: per-role request timeouts cannot cover a full-context prefill.** (filed 2026-10-04,
     workspace-ec, from the B1 review) Item: [`docs/design/ufh14-b1-timeout-stackchange-item-20261003.md`](../../docs/design/ufh14-b1-timeout-stackchange-item-20261003.md)
     (durable copy of `/mnt/raid0/llm/tmp/ufh14-b1-20261003/orch/STACKCHANGE-ITEM.md`). Recommendation: **Option A** —
