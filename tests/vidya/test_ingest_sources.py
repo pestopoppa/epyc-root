@@ -302,6 +302,7 @@ def test_every_source_has_an_end_to_end_fixture_or_a_named_exemption():
     # KVQ's exact producer pin and external-repo artifact path are exercised by
     # test_kv_quant_27b_v10_adapter.py, including its CLI source and ledger fold.
     assert set(ingest_sources.SOURCES) == set(BUILDERS) | {
+        "dev-harness-aggregate",  # Actual miners, publisher, CLI and planning: test_dev_harness_aggregate.py.
         "pip02-incremental-teds",  # Prospective writer, strict projection and private CLI: test_pip02_teds.py.
         "kpf261-plan-steps",  # Synthetic refusal: test_kpf261_plan_steps.py; native canary uses pinned external capture.
         # Prospective real native custody, 13 refusal controls and CLI reingest:
