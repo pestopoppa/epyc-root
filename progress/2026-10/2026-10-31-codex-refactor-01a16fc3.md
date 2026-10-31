@@ -55,3 +55,23 @@ This closes the single newly implemented CI task. Next: user-ordered21unsupporte
 ## Tick hygiene 17 — log retention reopened
 
 Reopened the original `(Z) Fix the llama-server log retention hole` box after the operator audit. Orch4cd6622f changes an uncalled legacy launcher; it does not diagnose/fix the production-path gap or supply a relevant retention test. The original task description is preserved, and the source checkpoint remains explicitly partial. Durable correction: `artifacts/engineering/tick-integrity-20261031/log-retention-reopen.json`. No rerun or reconstructed historical window; this is hygiene with zero new-code quota credit. [no-belief: correction of premature completion]
+
+## Prior-work evidence hygiene: REPL-EMB-2.13
+
+REPL-EMB-2.13 citation hygiene: cite implementing APP 23560c8e (2026-10-24), retain original2026-10-31 audit date and bounded 35-test scope, archive original subset log in Git. No new code/quota credit, no full-suite claim or retests. [no-belief: evidence-citation correction]
+
+### Prior-work evidence hygiene: Evidence-durability symlink guard
+
+- 2026-10-31 metadata audit for Evidence-durability symlink guard: the 2026-10-30 completion date remains unchanged. Implementing source `epyc-inference-research@a4da03e04331cf7bc2e9af2600d87f3ca4efdaca` is reachable from `origin/main`; `scripts/validate/test_check_evidence_durability.py` exists in the cited commit and covers TestRelativeCitationsGetTheSameGuard. The owning handoff receives only a first-line source/test reference; no test or measurement was rerun. This is prior-work hygiene and is excluded from today's throughput quota. Durable audit: `artifacts/compute/refactor-prior-work-evidence-20261031/13-Evidence-durability-symlink-guar/EVIDENCE.json`. [no-belief: evidence metadata only; no new measurement]
+
+### Prior-work evidence hygiene: ImportError: cannot import name
+
+- 2026-10-31 metadata audit for ImportError: cannot import name: the 2026-10-30 completion date remains unchanged. Implementing source `epyc-orchestrator@74c68a2a8e01a0f4a8c93a49fa32c0b85494f501` is reachable from `origin/main`; `tests/unit/test_config.py` exists in the cited commit and covers source regression; 28 focused tests recorded in refactor-c5-r2-and-code-audits-20261030.json. The owning handoff receives only a first-line source/test reference; no test or measurement was rerun. This is prior-work hygiene and is excluded from today's throughput quota. Durable audit: `artifacts/compute/refactor-prior-work-evidence-20261031/14-ImportError:-cannot-import-name/EVIDENCE.json`. [no-belief: evidence metadata only; no new measurement]
+
+### Prior-work evidence hygiene: SG-W3
+
+- 2026-10-31 metadata audit for SG-W3: the 2026-10-29 completion date remains unchanged. Implementing source `epyc-orchestrator@da31e38b6bafc1dbcd91739330d6ef0c4756c923` is reachable from `origin/main`; `tests/unit/test_module_identity.py` exists in the cited commit and covers test_retired_src_safety_gates_are_absent. The owning handoff receives only a first-line source/test reference; no test or measurement was rerun. This is prior-work hygiene and is excluded from today's throughput quota. Durable audit: `artifacts/compute/refactor-prior-work-evidence-20261031/15-SG-W3/EVIDENCE.json`. [no-belief: evidence metadata only; no new measurement]
+
+### Prior-work evidence hygiene: KVU-13c
+
+- 2026-10-31 metadata audit for KVU-13c: the 2026-10-30 completion date remains unchanged. Implementing source `epyc-orchestrator@5f72ca3f2687d26ad7d59ff828f08b696db2e7b1` is reachable from `origin/main`; `tests/unit/test_explicit_serving_capacity.py` exists in the cited commit and covers test_oversized_import_status_and_explicit_pipeline_check; test_oversized_actual_command_refuses_before_service_actions. The owning handoff receives only a first-line source/test reference; no test or measurement was rerun. This is prior-work hygiene and is excluded from today's throughput quota. Durable audit: `artifacts/compute/refactor-prior-work-evidence-20261031/18-KVU-13c/EVIDENCE.json`. [no-belief: evidence metadata only; no new measurement]

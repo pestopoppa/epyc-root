@@ -1,0 +1,51 @@
+Containment selected-source review delivery (2026-10-31)
+
+Task: handoffs/active/refactoring-multirepo-2026-10.md — "Containment scanner coverage for restic restore --target, borg extract/delete/prune, rclone copyto/moveto/mkdir (changes --dump-rules; regenerate opencode config in same change)".
+
+No checkout/worktree/source/index/handoff/publication was modified. All writes were restricted to this selected-source review directory. base/ and source/ contain 12 necessary files extracted from NI origin/main 1103bccc540a04c535a5fa3baf7a81cdea512595. FINAL.patch is the only proposed source delta; it applies cleanly to base/ via git apply --check. No source commit exists yet; MAIN must record its actual implementing SHA upon application.
+
+Changes: restic restore requires explicit nonempty --target (missing/ambiguous target refuses, never invents CWD); repository is a read source. Explicit cache-dir writes are checked. Borg 1.4.5 extract writes CWD; delete accepts a repository or repository::archive; prune accepts repository; --stats is boolean. Unknown/new-version options fail closed, including unsupported --destination/-C/--repo. Rclone copyto checks only destination; moveto and move check source deletion plus destination; mkdir checks its operand. Explicit log-file/backup-dir writes are checked. Remote/on-the-fly-remote writes and unknown options refuse. Supported CLI subset is conservative: unlisted flags require parser support rather than guessing their value arity. Existing Class A, containment roots, allowlist and env-ack logic remain unchanged. Rule dump exports the added verbs.
+
+The native project generator main(--write-project), with PROJECT_CONFIG pointed solely at source/opencode.json, ran on the final source. Regeneration is byte-identical (SHA256 3fc5203e438b31ef215351019fea543e45c099b4516c6a338e4a9d2da0a739ba), expected because only Class A/package-global denials produce globs. No broad Class B globs were added. The user's global config was not written.
+
+Validation: final filesystem scanner/CLI/hook suite: 75 passed + 57 subtests passed, 6.22s. Final project-only harness parity: 28 passed, 5 deselected, 1.14s. Deselections concern global config/plugin parity, generator --check (checks global as well), and actual Codex home wiring; none are claimed green. Negative controls exercise original and final scanner as CLIs for all seven added verbs: original allows each outside-write command; final refuses each. Commands remain input text; no backup/restore/delete executables ran. Original worker failed attempt remains untouched under prior-proof/; earlier selected-source run is under proof/attempt-01.
+
+Every test run held real nonblocking flocks on compute-flags/prep-locks/{32-33,34-35,36-37}.lock, affinity 32-37,128-133, OMP_NUM_THREADS=1, 8 GiB address-space limit and 900s timeout. Detailed captured PID/birth, max RSS and post-exit absence proofs are in each proof directory. No kernel/store/reload/inference/new tooling.
+
+GitNexus /workspace index impact: class_b_targets LOW, five upstream callers through class_b_verdict and scan_command to native main/Codex/m2. Selected checkout is unindexed; /workspace index is stale. Native wrapper refresh refused CPU admission ('cross-role global region locks are not enabled'); no bypass or reindex was performed. This limits graph freshness, not the native tests.
+
+Primary interface evidence consulted:
+https://restic.readthedocs.io/en/stable/050_restore.html
+https://borgbackup.readthedocs.io/en/stable/usage/extract.html
+https://borgbackup.readthedocs.io/en/stable/usage/delete.html
+https://borgbackup.readthedocs.io/en/stable/usage/prune.html
+https://rclone.org/commands/rclone_copyto/
+https://rclone.org/commands/rclone_moveto/
+https://rclone.org/commands/rclone_mkdir/
+
+Parser controls only: this introduces no new verified-measurement producer, adapter or grading ladder. MAIN owns durable progress/belief capture and source publication.
+
+Resource summary:
+{
+  "attempt-02": {
+    "rc": 0,
+    "ps_absence_rc": 1,
+    "max_rss_kib": 30856,
+    "pid": 1160273,
+    "birth": "1160273 1160272 Sat Oct 31 12:50:58 2026  3648 bash -c ulimit -v 8388608; printf \"%s\\n\" \"$$\" > \"$1/test-pid\"; ps -o pid=,ppid=,lstart=,rss=,args= -p \"$$\" > \"$1/process-before-exec.txt\"; exec python3 -m pytest -q scripts/hooks/tests/test_filesystem_containment.py _ /mnt/raid0/llm/tmp/codex-ni-containment-selected-20261031/proof/attempt-02"
+  },
+  "project-parity-final": {
+    "rc": 0,
+    "ps_absence_rc": 1,
+    "max_rss_kib": 29288,
+    "pid": 1178040,
+    "birth": "1178040 1178039 Sat Oct 31 12:51:42 2026  3584 bash -c ulimit -v 8388608; printf \"%s\\n\" \"$$\" > \"$1/test-pid\"; ps -o pid=,ppid=,lstart=,rss=,args= -p \"$$\" > \"$1/process-before-exec.txt\"; python3 \"$2/generate-project.py\" > \"$1/project-regeneration.txt\"; exec python3 -m pytest -q scripts/hooks/tests/test_harness_guard_parity.py -k \"not global and not generator_check_exits_zero and not codex_config_wires_the_bridge\" _ /mnt/raid0/llm/tmp/codex-ni-containment-selected-20261031/proof/project-parity-final /mnt/raid0/llm/tmp/codex-ni-containment-selected-20261031"
+  },
+  "negative-control": {
+    "rc": 0,
+    "ps_absence_rc": 1,
+    "max_rss_kib": 13956,
+    "pid": 1177998,
+    "birth": "1177998 1177997 Sat Oct 31 12:51:41 2026  3548 bash -c ulimit -v 8388608; printf \"%s\\n\" \"$$\" > \"$1/test-pid\"; ps -o pid=,ppid=,lstart=,rss=,args= -p \"$$\" > \"$1/process-before-exec.txt\"; exec python3 \"$2/negative-control.py\" _ /mnt/raid0/llm/tmp/codex-ni-containment-selected-20261031/proof/negative-control /mnt/raid0/llm/tmp/codex-ni-containment-selected-20261031"
+  }
+}

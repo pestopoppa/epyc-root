@@ -82640,12 +82640,57 @@
   - '[unverified] Record the correct baseline for the 15x figure wherever it is cited downstream; the chat-versus-single-agent distinction is the single most-misquoted number in this literature.'
   notes: 'Published 2025-06-13, retrieved 2026-08-12. A later and more conservative Anthropic post (claude.com, 2026-01-23, "Building multi-agent systems: When and how to use them") was surfaced by the same sweep and is NOT ingested this round — it is carried to the Stage-2 close-out as a dive-surfaced source. NOTE the coincidence of numbers: this post 3-5 subagents and our own OPERATING_CONSTRAINTS.md 3-5 subagents. Whether our doctrine derives from this post is unestablished and should not be assumed.'
   reader_should_conclude: 'Cite for the explicit non-fit conditions and for the correct baselines of the 15x and 90.2% figures. Do NOT cite either number as a fan-out cost or benefit without restating its baseline; do not use this post to gate a decision.'
-  verification: stage1-unverified
-  integration_disposition: awaiting_dive
+  verification: dive-verified
+  integration_disposition: knowledge_only
   disposition_evidence:
-  - 'Origin document for the 3-5 count our own doctrine mandates, and the only fan-out advocate source stating non-fit conditions.'
+  - 'Dived 2026-10-31; non-fit conditions already integrated via intake-1121. Stage-3 plan of intake-2535 proposes the effort-scaling and brief-field wording (pending operator approval; Stage 4 updates this disposition).'
   handoffs_updated: []
   handoffs_created: []
+  source_revision: 'https://www.anthropic.com/engineering/multi-agent-research-system -> 308 /research/multi-agent-research-system (HTML sha256-12 b9d9f3873f47), published 2025-06-13, retrieved 2026-10-31'
+  read_depth: FULL
+  claim_anchors:
+  - claim_index: 0
+    kind: heading-and-hash
+    locator: 'Prompt engineering and evaluations for research agents > Parallel tool calling'
+    quote: 'the lead agent spins up 3-5 subagents in parallel rather than serially'
+    quote_sha256: 6851b55b7f940f78c367427ea7206fb193899957545f369866d1af7136c82541
+    source_revision: 'https://www.anthropic.com/engineering/multi-agent-research-system -> 308 /research/multi-agent-research-system (HTML sha256-12 b9d9f3873f47), published 2025-06-13, retrieved 2026-10-31'
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: heading-and-hash
+    locator: 'Benefits of a multi-agent system'
+    quote: 'token usage by itself explains 80% of the variance, with the number of tool calls and the model choice as the two other explanatory factors'
+    quote_sha256: fbc91a29435682557c2e2982666e8455ce7b6815f18567958c72136d9b800083
+    source_revision: 'https://www.anthropic.com/engineering/multi-agent-research-system -> 308 /research/multi-agent-research-system (HTML sha256-12 b9d9f3873f47), published 2025-06-13, retrieved 2026-10-31'
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: heading-and-hash
+    locator: 'Benefits of a multi-agent system'
+    quote: 'most coding tasks involve fewer truly parallelizable tasks than research'
+    quote_sha256: fb218eb9d5bdba76ac8bba92ba8ba5e6ac50ae5c5625bb607a4a4b8ebf898a3c
+    source_revision: 'https://www.anthropic.com/engineering/multi-agent-research-system -> 308 /research/multi-agent-research-system (HTML sha256-12 b9d9f3873f47), published 2025-06-13, retrieved 2026-10-31'
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: heading-and-hash
+    locator: 'Prompt engineering and evaluations for research agents (opening)'
+    quote: 'spawning 50 subagents for simple queries'
+    quote_sha256: f4b14388ec1395c7b4618117f8d029a99806b29251c74326760ee4eae4c40079
+    source_revision: 'https://www.anthropic.com/engineering/multi-agent-research-system -> 308 /research/multi-agent-research-system (HTML sha256-12 b9d9f3873f47), published 2025-06-13, retrieved 2026-10-31'
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 0
+    effect: narrowed
+    note: '3-5 is the parallel-spawn mechanism; the effort-scaling rule is 1 agent (simple), 2-4 (comparisons), more than 10 (complex research).'
+  - claim_index: 1
+    effect: unaffected
+    note: 'Confirmed; BrowseComp only, no n or method; other factors are tool-call count and model choice.'
+  - claim_index: 2
+    effect: unaffected
+    note: Confirmed verbatim.
+  - claim_index: 3
+    effect: unaffected
+    note: 'Confirmed; fixed by prompting, per the post.'
+  dive_corrections: '2026-10-31 (Stage 2, wave 1, via the Spotify Portal intake intake-2535): FULL read from disk. URL now 308-redirects to /research/. 15x baseline confirmed as CHAT. 90.2% wording does not say relative and gives no n; the comparison is confounded by token spend. Additional anchored statements for policy: effort-scaling rule (1 / 2-4 / more than 10 subagents), the four-field delegation brief (objective, output format, tools and sources, task boundaries), subagent outputs to a filesystem with lightweight references, and model upgrade beating a doubled token budget (generation comparison, no numbers). Dive-surfaced sources DECLINED at Stage-2 close (two-wave cap): platform.claude.com/cookbook/patterns-agents-basic-workflows (would give verbatim prompts; the brief fields are already anchored here), extended-thinking docs, openai.com/index/browsecomp (benchmark definition).'
 - id: intake-1114
   arxiv_id: '2510.18893'
   url: https://arxiv.org/abs/2510.18893
@@ -366524,3 +366569,1235 @@
   integration_disposition: integrated
   disposition_evidence:
   - MPL-4 -> P2 / TOC-MP-2 (pruning+pointer arm, summary prompt)
+- id: intake-2535
+  arxiv_id: null
+  url: https://engineering.atspotify.com/2026/9/portal-by-spotify-cut-my-claude-code-token-usage-by-90
+  source_type: blog
+  title: Portal by Spotify cut my Claude Code token usage by 90% (AiKA modes + the shunt Claude Code plugin)
+  categories:
+  - agent_architecture
+  - cost_aware_routing
+  - context_management
+  - tool_implementation
+  novelty: medium
+  relevance: high
+  discovered_via: input
+  verdict: adopt_patterns
+  ingested_date: '2026-10-31'
+  authors:
+  - Dimitri Mazmanov (Spotify, Principal Product Manager)
+  key_claims:
+  - 'PreToolUse hooks enforce delegation: a full Read (no offset/limit) of a file over a line threshold (default 350) is blocked and
+    redirected to a bulk-reader skill; cat/head/tail/less/more on large files are blocked too.'
+  - Routing rules written in CLAUDE.md were advisory and Claude could ignore them; hook enforcement replaced them, with the skill as
+    the soft layer.
+  - Mean bulk-read saving ~90% is measured only as Claude-context tokens (file corpus vs the worker's summary), on a Java monorepo,
+    one run per scenario, with no accuracy or task-success measurement and the worker model's own tokens excluded.
+  - 'Editing cannot be delegated: the worker''s summaries carry no reliable line numbers, so targeted reads (offset/limit) stay allowed
+    for edits.'
+  - 'Reasoning cannot be delegated: the Gemini 2.5 Flash worker missed a subtle thread-safety bug that Claude found; routing excludes
+    debugging, architecture and safety-critical code.'
+  - Each delegation is a 10-30 s network round trip, so small reads are not worth delegating; that latency is why the threshold exists.
+  techniques:
+  - hook-enforced read routing (PreToolUse block + redirect)
+  - declarative worker modes (instructions, model, temperature, tools)
+  - one-shot stateless delegation with files re-sent per call
+  - write-to-disk code generation (main never sees output)
+  reported_results:
+  - 'README table (companion repo, intake-2536): 82% / 94% / 94% Claude-context token reduction on three read scenarios (4,014 / 7,408
+    / 1,281 lines); mean 90%; code-write unquantified. Token counts are chars/4 estimates.'
+  cross_references:
+    chapters: []
+    handoffs:
+    - fleet-fanout-measurement.md
+    - tool-output-compression.md
+    - delegation-context-preassembly.md
+    experiments: []
+    intake_entries:
+    - intake-2536
+    - intake-2537
+    - intake-2538
+    - intake-2541
+    - intake-2544
+    - intake-1113
+    - intake-1121
+    - intake-414
+  recommended_actions:
+  - Measure the read mass a main-thread read hook could address on OUR Claude Code journals before building it.
+  - If built, route blocked main-thread reads to a pointer-only explorer subagent, not to a summarizer.
+  credibility_score: 1
+  contradicting_evidence:
+  - 'Hacker News thread on this post (news.ycombinator.com/item?id=49571465, raw HTML sha256-12 aded153b09c2, retrieved 2026-10-31):
+    practitioner mrgaro reports, from their own logged Claude Code sessions with mostly Opus 4.8, an estimated 5-7% token saving, that
+    only 5.9% of unique reads qualified for bulk-read, and that 58% of reads were already targeted. One user, anecdotal, method unpublished;
+    independent of the vendor.'
+  - 'Same thread: commenters note the metric is input tokens only (output is priced higher), no correctness/task-success measurement,
+    and one commenter reports the pattern works only when the cheap model is restricted to returning file paths and line ranges (pointer-only),
+    never conclusions.'
+  referenced_arxiv_ids: []
+  notes: 'Final URL = submitted URL (200, no redirect). Feature image decorative; no benchmark table in the post itself (table is in
+    the companion README, intake-2536). The post''s 30 s invocation cap is superseded in the current repo (SHUNT_TIMEOUT_SECONDS default
+    180). Worker model in the post: gemini-2.5-flash at temperature 0.2. Gartner forecast cited in the post not ingested (market claim,
+    no bearing on policy).'
+  verification: dive-verified
+  handoffs_updated: []
+  handoffs_created: []
+  source_revision: engineering.atspotify.com/2026/9/portal-by-spotify-cut-my-claude-code-token-usage-by-90 raw HTML (sha256-12 8adf80cd5162;
+    extracted text sha256-12 372148a2be54), published 2026-09-03, retrieved 2026-10-31
+  read_depth: FULL
+  reader_should_conclude: 'Cite for the enforcement mechanism (hooks over prose) and for its stated limits (no line numbers, missed
+    bug). Do NOT cite 90% as a token or cost saving of a session: it is Claude-context tokens on hand-picked reads, chars/4, worker
+    tokens excluded, no accuracy measured.'
+  claim_anchors:
+  - claim_index: 0
+    kind: line-range
+    locator: 'portal.txt:L51 (Layer 1: Hooks)'
+    quote: 'If the file exceeds a configurable line threshold (default: 350), the hook blocks the read and tells Claude to use the /bulk-reader
+      skill instead.'
+    quote_sha256: 408f454d9b4f6b33fd48fe1449553b0a0761ba7af19e9d627a8300429b9d2f32
+    source_revision: engineering.atspotify.com/2026/9/portal-by-spotify-cut-my-claude-code-token-usage-by-90 raw HTML (sha256-12 8adf80cd5162;
+      extracted text sha256-12 372148a2be54), published 2026-09-03, retrieved 2026-10-31
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: line-range
+    locator: portal.txt:L47 (Routing)
+    quote: The rules were advisory, not enforced. Claude could ignore them.
+    quote_sha256: 7d7fe9ed9c52d34d17f7ca91235a45b91ccf5de3d773595a9082e7457cf018da
+    source_revision: engineering.atspotify.com/2026/9/portal-by-spotify-cut-my-claude-code-token-usage-by-90 raw HTML (sha256-12 8adf80cd5162;
+      extracted text sha256-12 372148a2be54), published 2026-09-03, retrieved 2026-10-31
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: line-range
+    locator: portal.txt:L84 (The benchmarks)
+    quote: measuring tokens Claude would consume reading files directly vs. consuming the bulk-reader's summary or writing code via
+      the code-writer. Mean bulk-read savings were around a whopping 90%.
+    quote_sha256: a484741e161ff165f73e630c2b515e565084a66f779fe2590a4eccfbe1bb1872
+    source_revision: engineering.atspotify.com/2026/9/portal-by-spotify-cut-my-claude-code-token-usage-by-90 raw HTML (sha256-12 8adf80cd5162;
+      extracted text sha256-12 372148a2be54), published 2026-09-03, retrieved 2026-10-31
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: line-range
+    locator: portal.txt:L87 (What doesn't work)
+    quote: You can't delegate editing. The worker model's summaries don't include reliable line numbers.
+    quote_sha256: 2832c43b98ad472cd86b37e73efb4a10d933496386ee3977cada529162ec814d
+    source_revision: engineering.atspotify.com/2026/9/portal-by-spotify-cut-my-claude-code-token-usage-by-90 raw HTML (sha256-12 8adf80cd5162;
+      extracted text sha256-12 372148a2be54), published 2026-09-03, retrieved 2026-10-31
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: line-range
+    locator: portal.txt:L88 (What doesn't work)
+    quote: The worker model found surface-level patterns but missed a subtle thread-safety bug in my testing.
+    quote_sha256: 5f5333ca201146ee7b94577b447dd95bbc75c015747dc2977dbd97d2bac01078
+    source_revision: engineering.atspotify.com/2026/9/portal-by-spotify-cut-my-claude-code-token-usage-by-90 raw HTML (sha256-12 8adf80cd5162;
+      extracted text sha256-12 372148a2be54), published 2026-09-03, retrieved 2026-10-31
+    verified_by: research-intake/stage2
+  - claim_index: 5
+    kind: line-range
+    locator: portal.txt:L89 (What doesn't work)
+    quote: Responses typically take 10–30 seconds, and Portal caps a single invocation at 30 seconds
+    quote_sha256: ef8d5629af5cde48ed9c12b0b51a89b2682f013a6ed3dded2285d001cfc29f7b
+    source_revision: engineering.atspotify.com/2026/9/portal-by-spotify-cut-my-claude-code-token-usage-by-90 raw HTML (sha256-12 8adf80cd5162;
+      extracted text sha256-12 372148a2be54), published 2026-09-03, retrieved 2026-10-31
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: Confirmed in hooks/check-file-size @ aa252eb (intake-2536).
+  - claim_index: 1
+    effect: unaffected
+    note: Confirmed as the author's account; no measurement of compliance.
+  - claim_index: 2
+    effect: narrowed
+    note: 'Headline narrowed: Claude-context tokens only, chars/4, worker tokens excluded, n=1 per scenario, no accuracy; independent
+      anecdote reports 5-7% realised.'
+  - claim_index: 3
+    effect: unaffected
+    note: Confirmed; the skill text also tells Claude to verify line numbers before edits.
+  - claim_index: 4
+    effect: unaffected
+    note: Single anecdote; consistent with intake-2541's measured -4 pp for Haiku subagents on coding.
+  - claim_index: 5
+    effect: narrowed
+    note: '30 s cap is stale: current repo default timeout is 180 s; latency figures unmeasured.'
+  dive_corrections: '2026-10-31 (Stage 2, wave 1): Read the post from disk (FULL) and the companion plugin source (intake-2536). Headline
+    90% narrowed to a Claude-context-token estimate with no accuracy measurement; HN practitioner replication (anecdotal) 5-7%. Dive-surfaced
+    sources selected and dived as Stage 2b: intake-2541 (Anthropic cost/intelligence doc), intake-2544 (SWE-Pruner). Declined: backstage.spotify.com
+    AiKA modes docs (product configuration of the worker; settles nothing about policy), Gartner 2026-06-24 press release (cost forecast;
+    no bearing on routing evidence).'
+  depends_on: []
+- id: intake-2536
+  arxiv_id: null
+  url: https://github.com/spotify/portal-ai-plugins
+  source_type: repo
+  title: spotify/portal-ai-plugins - shunt Claude Code plugin (hooks + delegation scripts + evals), Apache-2.0
+  categories:
+  - tool_implementation
+  - agent_architecture
+  - cost_aware_routing
+  novelty: medium
+  relevance: high
+  discovered_via: expansion
+  expanded_from: intake-2535
+  verdict: adopt_patterns
+  ingested_date: '2026-10-31'
+  authors:
+  - Spotify
+  key_claims:
+  - The Read hook allows any call with offset or limit, nonexistent files, and files at or under SHUNT_MIN_LINES (default 350); it blocks
+    the rest with a redirect message.
+  - The savings benchmark estimates tokens as characters/4 and scores the worker's response length against the corpus length; nothing
+    scores answer correctness.
+  - README reports 82%, 94% and 94% savings on three read scenarios in a 162K-line Java monorepo, mean 90%; the repo's runnable benchmark
+    uses different TypeScript fixtures.
+  - The code-write benchmark counts the no-shunt arm as input plus 5x output and the shunt arm as 0 Claude tokens.
+  - On Linux a request is capped at 120,000 bytes (argv limit), below the ~300 KB source+test scenario the README reports at 94%.
+  - The bulk-reader skill tells Claude to verify line numbers or exact values before using them in edits.
+  techniques:
+  - PreToolUse Read/Bash hooks with line threshold
+  - XML-wrapped multi-file one-shot worker call
+  - hook + transport eval suite (51 tests)
+  reported_results:
+  - 82% / 94% / 94% Claude-context token reduction (README, chars/4 estimate); code-write 833 lines to disk, unquantified.
+  cross_references:
+    chapters: []
+    handoffs:
+    - fleet-fanout-measurement.md
+    experiments: []
+    intake_entries:
+    - intake-2535
+    - intake-2540
+  recommended_actions:
+  - Reuse the hook shape (allow targeted reads, block full reads over N lines) but gate it on agent_id so only the main thread is blocked.
+  credibility_score: null
+  contradicting_evidence: null
+  referenced_arxiv_ids: []
+  notes: 'Companion artifact of intake-2535; distinct source. HEAD 2026-10-23. Hooks emit the legacy top-level {"decision": "block"|"allow"}
+    JSON; our own hooks use exit codes, so only the logic transfers. License Apache-2.0 (plugin.json). Transport needs portal-cli +
+    jq; fixtures and evals/run.sh not executed (no compute).'
+  verification: dive-verified
+  handoffs_updated: []
+  handoffs_created: []
+  source_revision: github.com/spotify/portal-ai-plugins plugins/shunt @ aa252eb21df5bbf32b0beb45f84a2c03341ccad8 (2026-10-23); fork
+    sorantis/portal-ai-plugins@add-shunt-claude d39ced2 diffed; retrieved 2026-10-31
+  read_depth: PARTIAL
+  reader_should_conclude: Cite for the hook logic and for how the 90% was computed. Do NOT cite its benchmark as evidence of accuracy
+    or of session-level savings.
+  claim_anchors:
+  - claim_index: 0
+    kind: line-range
+    locator: hooks/check-file-size:L5 @ aa252eb
+    quote: MIN_LINES="${SHUNT_MIN_LINES:-350}"
+    quote_sha256: 034360832dddb9ee90231b9687355b54f727f100bb1960a023e20b0a8dbabff7
+    source_revision: github.com/spotify/portal-ai-plugins plugins/shunt @ aa252eb21df5bbf32b0beb45f84a2c03341ccad8 (2026-10-23); fork
+      sorantis/portal-ai-plugins@add-shunt-claude d39ced2 diffed; retrieved 2026-10-31
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: line-range
+    locator: evals/benchmarks.json:L3 @ aa252eb
+    quote: '"token_estimate": "chars / 4 (conservative approximation for code)",'
+    quote_sha256: c6844d7c41ba5128b078b586613bacf2811d84ca5a03f0138193e9cdeaff4a34
+    source_revision: github.com/spotify/portal-ai-plugins plugins/shunt @ aa252eb21df5bbf32b0beb45f84a2c03341ccad8 (2026-10-23); fork
+      sorantis/portal-ai-plugins@add-shunt-claude d39ced2 diffed; retrieved 2026-10-31
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: line-range
+    locator: README.md:L186 @ aa252eb
+    quote: 'Mean bulk-read savings: **90%**'
+    quote_sha256: 713d6aff74f0ddee97030e35588d0cc3b7f583cf1411ecef6a0785c59397a3ef
+    source_revision: github.com/spotify/portal-ai-plugins plugins/shunt @ aa252eb21df5bbf32b0beb45f84a2c03341ccad8 (2026-10-23); fork
+      sorantis/portal-ai-plugins@add-shunt-claude d39ced2 diffed; retrieved 2026-10-31
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: line-range
+    locator: evals/run.sh:L212 @ aa252eb
+    quote: '# Output tokens cost ~5x input tokens, so we weight them accordingly'
+    quote_sha256: 415151b0f6e49367ff279d51bc4deb2c99346042c06e49786f205929619f9a29
+    source_revision: github.com/spotify/portal-ai-plugins plugins/shunt @ aa252eb21df5bbf32b0beb45f84a2c03341ccad8 (2026-10-23); fork
+      sorantis/portal-ai-plugins@add-shunt-claude d39ced2 diffed; retrieved 2026-10-31
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: line-range
+    locator: scripts/lib/aika.sh:L24 @ aa252eb
+    quote: Linux) SHUNT_MAX_PAYLOAD_BYTES=120000 ;;
+    quote_sha256: fa581ad0e3c5200774f6451bd65000ea2446475d484a11019c9b93ceed9f7727
+    source_revision: github.com/spotify/portal-ai-plugins plugins/shunt @ aa252eb21df5bbf32b0beb45f84a2c03341ccad8 (2026-10-23); fork
+      sorantis/portal-ai-plugins@add-shunt-claude d39ced2 diffed; retrieved 2026-10-31
+    verified_by: research-intake/stage2
+  - claim_index: 5
+    kind: line-range
+    locator: skills/bulk-reader/SKILL.md:L13 @ aa252eb
+    quote: Verify specific line numbers or exact values before using them in edits.
+    quote_sha256: 4687c124e0a2d3000bcbd2e4253a9d2f902d2697ed7425e2256da1d351136c98
+    source_revision: github.com/spotify/portal-ai-plugins plugins/shunt @ aa252eb21df5bbf32b0beb45f84a2c03341ccad8 (2026-10-23); fork
+      sorantis/portal-ai-plugins@add-shunt-claude d39ced2 diffed; retrieved 2026-10-31
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: Confirmed, hooks/check-file-size L14-31.
+  - claim_index: 1
+    effect: unaffected
+    note: Confirmed, evals/run.sh L155-180.
+  - claim_index: 2
+    effect: unaffected
+    note: Confirmed; fork README names the files (SpotifyUri.java etc.).
+  - claim_index: 3
+    effect: unaffected
+    note: Confirmed, run.sh L211-219.
+  - claim_index: 4
+    effect: unaffected
+    note: Confirmed; README Known limitations states the ARG_MAX constraint.
+  - claim_index: 5
+    effect: unaffected
+    note: Confirmed.
+  dive_corrections: '2026-10-31 (Stage 2, wave 1): Read plugins/shunt fully except evals/fixtures and the transport-eval bodies (PARTIAL).
+    No dive-surfaced sources.'
+  depends_on: []
+- id: intake-2537
+  arxiv_id: '2606.14066'
+  url: https://arxiv.org/abs/2606.14066
+  source_type: paper
+  title: 'FastContext: Training Efficient Repository Explorer for Coding Agents'
+  categories:
+  - agent_architecture
+  - context_management
+  - search_retrieval
+  - training_distillation
+  novelty: high
+  relevance: high
+  discovered_via: search
+  expanded_from: intake-2535
+  verdict: adopt_patterns
+  ingested_date: '2026-10-31'
+  authors:
+  - Shaoqiu Zhang
+  - Maoquan Wang
+  - Yuling Shi
+  - Yuhang Wang
+  - Xiaodong Gu
+  - et al. (Microsoft, SJTU; 15 authors)
+  key_claims:
+  - A read-only explorer subagent (Read/Glob/Grep, parallel calls) returns file paths and line ranges with optional short notes, not
+    summaries; the main agent reads the cited spans.
+  - The abstract's +5.5 pp and -60% come from the same-model explorer rows (GPT-5.4 exploring for itself), not from the trained 4B/30B
+    explorers.
+  - Table 1 tokens count the main agent only; the explorer's own tokens are excluded.
+  - Using the explorer's logged tokens, the 4B-RL explorer under GPT-5.4 on SWE-bench Multilingual changes total tokens by about -10%
+    (main -26%), at a 24% dollar saving with a cheap explorer (our arithmetic from Appx B).
+  - 'Failure case: broad citations made the main agent redo the exploration, raising its tokens; the main prompt tells it to trust the
+    listing and read narrow ranges.'
+  - v4 (2026-06-30) withdraws the paper for product-IP reasons; the code repository is not reachable.
+  techniques:
+  - pointer-only explorer subagent
+  - SFT on Sonnet 4.6 exploration traces + GRPO with citation-F1 reward
+  - path:start-end citation contract
+  reported_results:
+  - 'GPT-5.4 SWE-bench Multilingual: base 71.7 / 457k main tokens; same-model explorer 73.3 / 379k; 30B-SFT 75.0 / 356k; 4B-RL 74.7
+    / 338k (main-only).'
+  - Same-model explorer reduced main tokens in every cell (12-60%); single run per cell, no variance.
+  cross_references:
+    chapters: []
+    handoffs:
+    - delegation-context-preassembly.md
+    - fleet-fanout-measurement.md
+    experiments: []
+    intake_entries:
+    - intake-2535
+    - intake-2538
+    - intake-1358
+    - intake-1365
+  recommended_actions:
+  - Model a Haiku pointer-only explorer subagent on the FastContext output contract; report main AND explorer tokens.
+  credibility_score: 1
+  contradicting_evidence:
+  - Withdrawn by the authors at v4; single runs, no variance; headline attributed to non-trained rows.
+  referenced_arxiv_ids: []
+  notes: Previously referenced (not ingested) by intake-1358. Claims rest on v3 (latest readable). Same-model rows mean much of the
+    effect comes from the delegation interface and main-prompt discipline, which a Claude Code subagent definition can reproduce without
+    training.
+  verification: dive-verified
+  handoffs_updated: []
+  handoffs_created: []
+  source_revision: arXiv:2606.14066v3 HTML (sha256-12 2738cdf0c161); v4 is a withdrawal stub (abs sha256-12 612735095d08); retrieved
+    2026-10-31
+  read_depth: PARTIAL
+  reader_should_conclude: 'Cite claim-level (#00, #02, #03) for the pointer-only contract and the main-only accounting. Do NOT cite
+    ''+5.5%/-60%'' as a trained-explorer result or as total-token savings; the paper is withdrawn.'
+  claim_anchors:
+  - claim_index: 0
+    kind: line-range
+    locator: v3 §3.1
+    quote: The output contract is a compact final answer block containing file paths and line ranges, optionally followed by short relevance
+      notes
+    quote_sha256: db719573243117b208057ad039eaa693d371ff14d303862da370122abe57050a
+    source_revision: arXiv:2606.14066v3 HTML (sha256-12 2738cdf0c161); v4 is a withdrawal stub (abs sha256-12 612735095d08); retrieved
+      2026-10-31
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: line-range
+    locator: v3 §4.3
+    quote: For GPT-5.4 on SWE-bench Multilingual, same-model exploration reaches 73.3 with 379k tokens, while 30B-SFT reaches 75.0 with
+      356k tokens and 4B-RL reaches 74.7 with 338k tokens
+    quote_sha256: 9a57140e28426496e40d70f8f1089824f95126bada7e31bd4e9be9133f1fd901
+    source_revision: arXiv:2606.14066v3 HTML (sha256-12 2738cdf0c161); v4 is a withdrawal stub (abs sha256-12 612735095d08); retrieved
+      2026-10-31
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: line-range
+    locator: v3 Appendix B
+    quote: 'The token and turn numbers in Table 1 therefore measure the main-agent trajectory: all main-model calls, shell observations,
+      and solver turns, but not the subagent’s internal model calls.'
+    quote_sha256: e659b4d23828916fc57368c73a61ae74f51bd741adf65d6bc133e5fe49d1a4d6
+    source_revision: arXiv:2606.14066v3 HTML (sha256-12 2738cdf0c161); v4 is a withdrawal stub (abs sha256-12 612735095d08); retrieved
+      2026-10-31
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: line-range
+    locator: v3 Appendix B (cost audit)
+    quote: the main agent invoked the 4B-RL explorer 162 times. The subagent logs record 22.31M prompt tokens and 0.28M completion tokens,
+      or 22.58M total tokens
+    quote_sha256: 5d1abdd662cf54931b4093ff533d92671ebacf56bb2f76526b9be89565154089
+    source_revision: arXiv:2606.14066v3 HTML (sha256-12 2738cdf0c161); v4 is a withdrawal stub (abs sha256-12 612735095d08); retrieved
+      2026-10-31
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: line-range
+    locator: v3 Appendix C (hugo-12448)
+    quote: the main agent may redo much of the exploration inside its own trajectory
+    quote_sha256: 77fa0dc6ef065ccf5ae28fcd460b6816e8c648320704890f9eda8077a68b0e3b
+    source_revision: arXiv:2606.14066v3 HTML (sha256-12 2738cdf0c161); v4 is a withdrawal stub (abs sha256-12 612735095d08); retrieved
+      2026-10-31
+    verified_by: research-intake/stage2
+  - claim_index: 5
+    kind: line-range
+    locator: abs page, v4 comment
+    quote: involves some product IP issues and needs to be withdrawn and re-approved
+    quote_sha256: 1232bcfc224c55527d7be3c90e071e9f06d43499956004390fb39c2ece7e8d9e
+    source_revision: arXiv:2606.14066v3 HTML (sha256-12 2738cdf0c161); v4 is a withdrawal stub (abs sha256-12 612735095d08); retrieved
+      2026-10-31
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 0
+    effect: narrowed
+    note: Pointer-first; output may also carry up to ~50 words of notes and per-citation reasons.
+  - claim_index: 1
+    effect: unaffected
+    note: Dive finding; the abstract framing is what is overturned.
+  - claim_index: 2
+    effect: unaffected
+    note: Stated by the authors.
+  - claim_index: 3
+    effect: unaffected
+    note: Derived arithmetic (338k + ~75k vs 457k); labelled as ours.
+  - claim_index: 4
+    effect: unaffected
+    note: Single case study.
+  - claim_index: 5
+    effect: unaffected
+    note: Clone of github.com/microsoft/fastcontext returned not-found 2026-10-31.
+  dive_corrections: '2026-10-31 (Stage 2, wave 1): abstract headline OVERTURNED as a trained-explorer, total-token claim (same-model
+    rows, main-only tokens). Dive-surfaced sources DECLINED at Stage-2 close (two-wave cap, operator 2026-10-31): CodeScout arXiv:2603.17829
+    and SWE-Explore arXiv:2606.07297 (standalone localizer training/benchmarks; settle explorer training, not delegation policy), Cognition
+    SWE-grep blog (commercial analogue, no accuracy data seen), SWE-bench Pro arXiv:2601.22129 (benchmark definition only).'
+  depends_on: []
+- id: intake-2538
+  arxiv_id: '2605.03195'
+  url: https://arxiv.org/abs/2605.03195
+  source_type: paper
+  title: 'Terminus-4B: Can a Smaller Model Replace Frontier LLMs at Agentic Execution Tasks?'
+  categories:
+  - agent_architecture
+  - training_distillation
+  - context_management
+  - cost_aware_routing
+  novelty: high
+  relevance: high
+  discovered_via: search
+  expanded_from: intake-2535
+  verdict: adopt_patterns
+  ingested_date: '2026-10-31'
+  authors:
+  - Spandan Garg
+  - Vikram Nitin
+  - Yufan Huang (Microsoft)
+  key_claims:
+  - An execution subagent keeps verbose build/test output out of the main agent's context and returns a per-command summary block.
+  - The typical main-agent saving on SWE-Bench Pro (Opus 4.6 main) is ~13% (110k tokens per instance); the abstract's ~30% is the internal
+    C# benchmark best case.
+  - On C# with an Opus 4.6 main, Terminus-4B cut main tokens 31.4% (693k vs 1,010k), with its own tokens excluded from that figure.
+  - Resolve-rate differences between no-subagent, frontier-subagent and 4B-subagent configurations are 1-3 pp with no seeds or CIs;
+    the authors attribute one difference to agent fluctuation.
+  - SFT before RL was essential; RL without SFT plateaued.
+  techniques:
+  - execution subagent with <final_answer> per-command summaries
+  - rubric LLM-judge GRPO
+  - SubSub / fallback-after-subagent metrics
+  reported_results:
+  - Frontier subagents (Opus, Sonnet) cut main tokens about as much as Terminus-4B; a Sonnet subagent under an Opus main matched an
+    Opus subagent within noise (Tables 4-6).
+  - 'Vanilla Qwen3-4B subagent: main tokens +0.5% on Pro, re-invocations 1.51 per instance on C# (Table 6).'
+  cross_references:
+    chapters: []
+    handoffs:
+    - fleet-fanout-measurement.md
+    - tool-output-compression.md
+    experiments: []
+    intake_entries:
+    - intake-2535
+    - intake-2537
+    - intake-2543
+  recommended_actions:
+  - Adopt a per-command return contract for execution/test-running subagents; measure main, subagent and total tokens plus fallback
+    rate.
+  credibility_score: 2
+  contradicting_evidence:
+  - No seeds, CIs or latency; benchmark n=731/150; main agent instructed to prefer the subagent.
+  referenced_arxiv_ids:
+  - '2602.18571'
+  notes: Table 4 header names Sonnet 4.5 while text says 4.6. Haiku tier not tested. Total-token deltas in the dive are our sums of
+    main + subagent columns.
+  verification: dive-verified
+  handoffs_updated: []
+  handoffs_created: []
+  source_revision: arXiv:2605.03195v3 HTML (sha256-12 edbb9b7323a0), dated 2026-10-25; abs page sha256-12 ffd175c5be59; retrieved 2026-10-31
+  read_depth: FULL
+  reader_should_conclude: Cite for the execution-subagent return contract and for 'Sonnet-tier subagent ~ Opus-tier subagent' (within
+    noise). Do NOT cite 30% as typical or 'no impact' as established.
+  claim_anchors:
+  - claim_index: 0
+    kind: line-range
+    locator: v3 Abstract
+    quote: This architectural pattern keeps the main agent’s context window clean by isolating verbose outputs
+    quote_sha256: b2c3232567eb328b619a9dcd8c9a955bdfe2f70dd32b166451e6ee785c68b7fa
+    source_revision: arXiv:2605.03195v3 HTML (sha256-12 edbb9b7323a0), dated 2026-10-25; abs page sha256-12 ffd175c5be59; retrieved
+      2026-10-31
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: line-range
+    locator: v3 §6.2.1
+    quote: savings for both the SFT-4B and Terminus-4B models (13% or 110k tokens per instance for both)
+    quote_sha256: ea821881b9f715b71048efb4a902bdeb7aafa4696d321f292d55da21cef615db
+    source_revision: arXiv:2605.03195v3 HTML (sha256-12 edbb9b7323a0), dated 2026-10-25; abs page sha256-12 ffd175c5be59; retrieved
+      2026-10-31
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: page-and-quote
+    locator: v3 Table 5 (C#, Opus 4.6 main)
+    quote: Terminus-4B | 693k (-31.4%) | 25k |
+    quote_sha256: bd2feb06a7d50acee8e24fa4d05e1a1360007ce2049f3c6523ce32d02284a5a0
+    source_revision: arXiv:2605.03195v3 HTML (sha256-12 edbb9b7323a0), dated 2026-10-25; abs page sha256-12 ffd175c5be59; retrieved
+      2026-10-31
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: line-range
+    locator: v3 §6.2.5
+    quote: this could be attributed to some fluctuation in agent behavior
+    quote_sha256: b2ccc1aeb3e772b40d9b405bdee61807ed0fd50463f44611bb9cbf0a8694c171
+    source_revision: arXiv:2605.03195v3 HTML (sha256-12 edbb9b7323a0), dated 2026-10-25; abs page sha256-12 ffd175c5be59; retrieved
+      2026-10-31
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: line-range
+    locator: v3 §6.1
+    quote: These results confirm that SFT is not merely helpful, but essential to the training
+    quote_sha256: 031edab58deb1ef40fed1a63b62e5e706da2ed2f97f77a61ab7233c13c756c03
+    source_revision: arXiv:2605.03195v3 HTML (sha256-12 edbb9b7323a0), dated 2026-10-25; abs page sha256-12 ffd175c5be59; retrieved
+      2026-10-31
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: Confirmed; return format in §4.1.
+  - claim_index: 1
+    effect: narrowed
+    note: Abstract 'up to ~30%' narrowed to the C# best case; Pro typical ~13% main-only.
+  - claim_index: 2
+    effect: unaffected
+    note: Main-only; total with subagent ~-28.9% (our sum).
+  - claim_index: 3
+    effect: narrowed
+    note: '''No impact'' is not statistically supported.'
+  - claim_index: 4
+    effect: unaffected
+    note: Confirmed.
+  dive_corrections: '2026-10-31 (Stage 2, wave 1): headline narrowed (best case, main-only). Dive-surfaced: arXiv:2602.18571 Debug2Fix
+    ingested and dived as intake-2543. DECLINED at Stage-2 close (two-wave cap): arXiv:2506.02153 (position paper; its cost ratio is
+    argued, not measured), arXiv:2510.11967 (already intake entry; context folding), arXiv:2602.08316 dived as intake-2542, arXiv:2509.16941
+    / 2601.11868 / 2601.16443 (benchmark definitions).'
+  depends_on: []
+- id: intake-2539
+  arxiv_id: null
+  url: https://claude.com/resources/articles/the-advisor-strategy
+  source_type: blog
+  title: 'The advisor strategy: Give Sonnet an intelligence boost with Opus (Anthropic) + advisor tool API docs'
+  categories:
+  - cost_aware_routing
+  - agent_architecture
+  - routing_intelligence
+  novelty: medium
+  relevance: high
+  discovered_via: search
+  expanded_from: intake-2535
+  verdict: worth_investigating
+  ingested_date: '2026-10-31'
+  authors:
+  - Anthropic
+  key_claims:
+  - 'Sonnet 4.6 executor + Opus 4.6 advisor: +2.7 pp on SWE-bench Multilingual over Sonnet alone at 11.9% lower cost per task.'
+  - 'Haiku 4.5 + Opus advisor: 41.2% vs 19.7% solo on BrowseComp; 29% below Sonnet solo in score at 85% lower cost.'
+  - The cheap model drives and escalates; no decomposition, worker pool or orchestration logic.
+  - The advisor writes a short plan (typically 400-700 text tokens), so most generation is billed at executor rates.
+  - A mid-conversation nudge raised Haiku 4.5 executor pass rates ~7 pp; no effect on Sonnet; slightly negative on Opus.
+  techniques:
+  - advisor tool (executor-initiated escalation)
+  - max_uses cap
+  reported_results:
+  - SWE-bench Multilingual 5 trials x 300 problems; BrowseComp 1,266 problems x 1 attempt; Terminal-Bench 2.0 89 tasks x 5 (footnotes).
+  cross_references:
+    chapters: []
+    handoffs: []
+    experiments: []
+    intake_entries:
+    - intake-2541
+    - intake-2540
+    - intake-2535
+  recommended_actions:
+  - Do not switch our Opus main to Sonnet+advisor on these numbers; later 5.5-era measurements (intake-2541) show low consult rates.
+  credibility_score: 1
+  contradicting_evidence:
+  - 'intake-2541 (same vendor, 5.5-era models): advisor helped only when consulted; Sonnet 5.5 at high consulted 0/20; pairing ~2.1x
+    cost for +1.7 pts.'
+  referenced_arxiv_ids: []
+  notes: 4.6-era model results. Claude Code exposes the same server tool via /advisor, advisorModel and --advisor (intake-2540).
+  verification: dive-verified
+  handoffs_updated: []
+  handoffs_created: []
+  source_revision: claude.com/blog/the-advisor-strategy -> 301 claude.com/resources/articles/the-advisor-strategy (HTML sha256-12 d82f25e6899d;
+    text 5c7affb5095b), published 2026-04-09; platform.claude.com/docs/en/agents-and-tools/tool-use/advisor-tool.md (sha256-12 d19938a4a290);
+    retrieved 2026-10-31
+  read_depth: PARTIAL
+  reader_should_conclude: Cite the 4.6-era numbers only with their model versions; prefer intake-2541 for current-generation advisor
+    economics.
+  claim_anchors:
+  - claim_index: 0
+    kind: line-range
+    locator: article L81
+    quote: In our evaluations, Sonnet with Opus as an advisor showed a 2.7 percentage point increase on SWE-bench Multilingual1 over
+      Sonnet alone, while reducing cost per agentic task by 11.9%.
+    quote_sha256: a3f581502ee09abb280d898f73a24f272718ee682732f1bbe1e069d935f8e2fb
+    source_revision: claude.com/blog/the-advisor-strategy -> 301 claude.com/resources/articles/the-advisor-strategy (HTML sha256-12
+      d82f25e6899d; text 5c7affb5095b), published 2026-04-09; platform.claude.com/docs/en/agents-and-tools/tool-use/advisor-tool.md
+      (sha256-12 d19938a4a290); retrieved 2026-10-31
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: line-range
+    locator: article L85
+    quote: On BrowseComp, Haiku with an Opus advisor scored 41.2%, more than double its solo score of 19.7%. Haiku with an Opus advisor
+      trails Sonnet solo by 29% in score but costs 85% less per task.
+    quote_sha256: 9553f6d6e4a061b6a52322128409d4e4121db770fc88ea5b9e20c1a33b5a1f87
+    source_revision: claude.com/blog/the-advisor-strategy -> 301 claude.com/resources/articles/the-advisor-strategy (HTML sha256-12
+      d82f25e6899d; text 5c7affb5095b), published 2026-04-09; platform.claude.com/docs/en/agents-and-tools/tool-use/advisor-tool.md
+      (sha256-12 d19938a4a290); retrieved 2026-10-31
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: line-range
+    locator: article L80
+    quote: In the advisor strategy, a smaller, more cost-effective model drives and escalates without decomposition, a worker pool,
+      or orchestration logic.
+    quote_sha256: fe776b54fe1a12b6852aa47538589c3ed4e3c285fafec8344eb8dea433db458f
+    source_revision: claude.com/blog/the-advisor-strategy -> 301 claude.com/resources/articles/the-advisor-strategy (HTML sha256-12
+      d82f25e6899d; text 5c7affb5095b), published 2026-04-09; platform.claude.com/docs/en/agents-and-tools/tool-use/advisor-tool.md
+      (sha256-12 d19938a4a290); retrieved 2026-10-31
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: line-range
+    locator: article L103 (Pricing)
+    quote: Since the advisor only generates a short plan (typically 400-700 text tokens) while the executor handles the full output
+      at its lower rate
+    quote_sha256: 2fd0fc5721c6e1100ba61a041f5783e98f39c67438faf1774e41526f7d67209e
+    source_revision: claude.com/blog/the-advisor-strategy -> 301 claude.com/resources/articles/the-advisor-strategy (HTML sha256-12
+      d82f25e6899d; text 5c7affb5095b), published 2026-04-09; platform.claude.com/docs/en/agents-and-tools/tool-use/advisor-tool.md
+      (sha256-12 d19938a4a290); retrieved 2026-10-31
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: line-range
+    locator: advisor-tool.md:L757
+    quote: In Anthropic’s internal behavioral evaluation on Claude Haiku 4.5 executors, this raised task pass rates by roughly 7 percentage
+      points. On Sonnet executors, the plain-text nudge had no measurable effect in Anthropic’s testing.
+    quote_sha256: 26c2c31c3361060028b3047ff37e9334bb806f0d539aeef577ee11df1e1e2822
+    source_revision: claude.com/blog/the-advisor-strategy -> 301 claude.com/resources/articles/the-advisor-strategy (HTML sha256-12
+      d82f25e6899d; text 5c7affb5095b), published 2026-04-09; platform.claude.com/docs/en/agents-and-tools/tool-use/advisor-tool.md
+      (sha256-12 d19938a4a290); retrieved 2026-10-31
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: Confirmed as vendor-reported; no variance given.
+  - claim_index: 1
+    effect: unaffected
+    note: Confirmed as vendor-reported; no variance given.
+  - claim_index: 2
+    effect: unaffected
+    note: Confirmed as vendor-reported; no variance given.
+  - claim_index: 3
+    effect: unaffected
+    note: Confirmed as vendor-reported; no variance given.
+  - claim_index: 4
+    effect: unaffected
+    note: Confirmed as vendor-reported; no variance given.
+  dive_corrections: '2026-10-31 (Stage 2, wave 1): confirmed as vendor-reported. Dive-surfaced: platform.claude.com optimizing-for-cost-and-intelligence
+    (dived as intake-2541) and code.claude.com/docs/en/advisor (dived inside intake-2540).'
+  depends_on: []
+- id: intake-2540
+  arxiv_id: null
+  url: https://code.claude.com/docs/en/sub-agents
+  source_type: repo
+  title: Claude Code docs - custom subagents, hook agent fields, advisor, cost guidance (as of v2.1.314)
+  categories:
+  - agent_architecture
+  - tool_implementation
+  - cost_aware_routing
+  novelty: medium
+  relevance: high
+  discovered_via: search
+  expanded_from: intake-2535
+  verdict: adopt_component
+  ingested_date: '2026-10-31'
+  authors:
+  - Anthropic
+  key_claims:
+  - PreToolUse/PostToolUse hooks also fire inside subagents, and their input then carries agent_id and agent_type, so a hook can act
+    on the main thread only.
+  - 'Subagent model resolves as: per-invocation model, then the definition''s model frontmatter, then CLAUDE_CODE_SUBAGENT_MODEL, then
+    the main model.'
+  - 'Non-fork subagents load every CLAUDE.md level; a custom subagent with omitClaudeMd: true skips them (managed policy excepted).'
+  - Subagent effort is settable in frontmatter and per invocation (v2.1.292+).
+  - Subagents inherit the configured advisor; the advisor must rank at or above the session model; the advisor's read is not cached.
+  - Agent teams use about 7x more tokens than standard sessions in plan mode; the default concurrent subagent cap is 20.
+  techniques:
+  - .claude/agents/*.md definitions (model, effort, tools, disallowedTools, maxTurns, omitClaudeMd, hooks)
+  - agent_id-gated hooks
+  - advisorModel / --advisor
+  reported_results: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - fleet-fanout-measurement.md
+    experiments: []
+    intake_entries:
+    - intake-2227
+    - intake-2419
+    - intake-2536
+    - intake-2539
+  recommended_actions:
+  - Declare project subagent types in .claude/agents/ so model/effort/tools/report contract are configuration, not prose.
+  credibility_score: null
+  contradicting_evidence: null
+  referenced_arxiv_ids: []
+  notes: Our CLAUDE.md is 23,264 bytes (~5.8K tokens at chars/4), loaded by every non-fork subagent; AGENTS.md is a symlink to it and
+    is not double-loaded while CLAUDE.md exists (memory.md). An Opus 5.x main accepts only Opus 5+/Fable advisors (advisor.md table).
+    The repo has no .claude/agents/ directory at origin/main 1fda0ad84.
+  verification: dive-verified
+  handoffs_updated: []
+  handoffs_created: []
+  source_revision: code.claude.com/docs/en/{sub-agents,hooks,advisor,costs,memory,model-config}.md retrieved 2026-10-31 (sha256-12 0fc7d550f858,
+    8e4d5d8c03b5, 9de698b2d1d1, 9dc47964e99b, f19bb5aa909f, 7180ba5975ee); installed Claude Code 2.1.314
+  read_depth: PARTIAL
+  reader_should_conclude: Cite for harness mechanics only, at the stated version. Re-check on Claude Code upgrades; these docs change
+    weekly.
+  claim_anchors:
+  - claim_index: 0
+    kind: line-range
+    locator: hooks.md:L255
+    quote: When a subagent calls a tool, tool events such as `PreToolUse` and `PostToolUse` fire the same configured hooks as in the
+      main conversation, and the input carries the `agent_id` and `agent_type`
+    quote_sha256: c76cf3e9b58a700ecc7a0d4da27260123f77acd97e2cf53eadc70d7a91e67fc3
+    source_revision: code.claude.com/docs/en/{sub-agents,hooks,advisor,costs,memory,model-config}.md retrieved 2026-10-31 (sha256-12
+      0fc7d550f858, 8e4d5d8c03b5, 9de698b2d1d1, 9dc47964e99b, f19bb5aa909f, 7180ba5975ee); installed Claude Code 2.1.314
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: line-range
+    locator: sub-agents.md:L355 (Choose a model)
+    quote: 'Claude Code resolves the subagent''s model in this order:'
+    quote_sha256: 88784fa2c740c8879c6750b0dfcf38a7809e1f3bdb9267d7cd3590aa04af6a3b
+    source_revision: code.claude.com/docs/en/{sub-agents,hooks,advisor,costs,memory,model-config}.md retrieved 2026-10-31 (sha256-12
+      0fc7d550f858, 8e4d5d8c03b5, 9de698b2d1d1, 9dc47964e99b, f19bb5aa909f, 7180ba5975ee); installed Claude Code 2.1.314
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: line-range
+    locator: sub-agents.md:L1106 (What loads at startup)
+    quote: 'To launch one of your own subagents without the user, project, and local CLAUDE.md files, set [`omitClaudeMd: true`]'
+    quote_sha256: 32c9d938ed002531158f25c2cd3867420edb204f953d01c5715d2c2864c5a88f
+    source_revision: code.claude.com/docs/en/{sub-agents,hooks,advisor,costs,memory,model-config}.md retrieved 2026-10-31 (sha256-12
+      0fc7d550f858, 8e4d5d8c03b5, 9de698b2d1d1, 9dc47964e99b, f19bb5aa909f, 7180ba5975ee); installed Claude Code 2.1.314
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: line-range
+    locator: sub-agents.md:L417 (Choose an effort level)
+    quote: When you ask Claude to run a non-fork subagent at a specific effort level, it can also pass an `effort` parameter for that
+      invocation.
+    quote_sha256: 60e0cc09653ecd08405405090c7ac703efa56c1c1aa63d0dc7c5270d63802d72
+    source_revision: code.claude.com/docs/en/{sub-agents,hooks,advisor,costs,memory,model-config}.md retrieved 2026-10-31 (sha256-12
+      0fc7d550f858, 8e4d5d8c03b5, 9de698b2d1d1, 9dc47964e99b, f19bb5aa909f, 7180ba5975ee); installed Claude Code 2.1.314
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: line-range
+    locator: advisor.md:L108
+    quote: Subagents inherit the configured advisor and apply the same pairing check against their own model.
+    quote_sha256: 35f358b993b30e852a48844c0c56ffa12716dd4521d0939d5ca65a79c30e97f4
+    source_revision: code.claude.com/docs/en/{sub-agents,hooks,advisor,costs,memory,model-config}.md retrieved 2026-10-31 (sha256-12
+      0fc7d550f858, 8e4d5d8c03b5, 9de698b2d1d1, 9dc47964e99b, f19bb5aa909f, 7180ba5975ee); installed Claude Code 2.1.314
+    verified_by: research-intake/stage2
+  - claim_index: 5
+    kind: line-range
+    locator: costs.md:L361
+    quote: Agent teams use approximately 7x more tokens than standard sessions when teammates run in plan mode
+    quote_sha256: 5303d0afbbf513bffa856b33804e58ca75105e6270cd502c623565a0d0915426
+    source_revision: code.claude.com/docs/en/{sub-agents,hooks,advisor,costs,memory,model-config}.md retrieved 2026-10-31 (sha256-12
+      0fc7d550f858, 8e4d5d8c03b5, 9de698b2d1d1, 9dc47964e99b, f19bb5aa909f, 7180ba5975ee); installed Claude Code 2.1.314
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: Confirmed in the docs at retrieval; not exercised (no compute).
+  - claim_index: 1
+    effect: unaffected
+    note: Confirmed in the docs at retrieval; not exercised (no compute).
+  - claim_index: 2
+    effect: unaffected
+    note: Confirmed in the docs at retrieval; not exercised (no compute).
+  - claim_index: 3
+    effect: unaffected
+    note: Confirmed in the docs at retrieval; not exercised (no compute).
+  - claim_index: 4
+    effect: unaffected
+    note: Confirmed in the docs at retrieval; not exercised (no compute).
+  - claim_index: 5
+    effect: unaffected
+    note: Confirmed in the docs at retrieval; not exercised (no compute).
+  dive_corrections: '2026-10-31 (Stage 2, wave 1 + 2b): advisor.md read in full during wave 2. No further sources.'
+  depends_on: []
+- id: intake-2541
+  arxiv_id: null
+  url: https://platform.claude.com/docs/en/about-claude/models/optimizing-for-cost-and-intelligence
+  source_type: blog
+  title: Optimizing for cost and intelligence (Anthropic platform docs, measured 2026-08..10 results)
+  categories:
+  - cost_aware_routing
+  - agent_architecture
+  - benchmark_methodology
+  - context_management
+  novelty: high
+  relevance: high
+  discovered_via: expansion
+  expanded_from: intake-2539
+  verdict: adopt_patterns
+  ingested_date: '2026-10-31'
+  authors:
+  - Anthropic
+  key_claims:
+  - In an agent loop every earlier turn is resent, so task cost grows roughly with the square of turn count; caching cuts each resend
+    to a fraction.
+  - Output tokens cost 5x input on current models and every written token comes back as input on later turns.
+  - Delegating bulk work to cheaper workers saved money only for routine work with a long cost tail or work larger than one context
+    window; otherwise the single model at lower effort won in every case measured.
+  - 'Haiku 5.5 subagents under Opus 5.5 at medium on coding: -32% cost per attempt, about -4 pp pass rate (95% CI 1.3-7.1), about what
+    a low/medium effort mix gives at that cost.'
+  - 'Advisor pairing that consulted often: +1.7 pts at ~2.1x cost, at the edge of noise; where the executor rarely consulted, no measurable
+    gain.'
+  - 'Decision rule: sweep effort on the current model before adding a second model; build a pairing only if it beats the single model''s
+    whole score-vs-spend curve.'
+  - An Opus 5.5 team lead allowed to spawn same-model helpers rarely did (5 of 300 DRACO attempts).
+  techniques:
+  - effort sweep before model pairing
+  - re-run failures at higher effort
+  - cost-per-task by usage field
+  - price the hardest tenth
+  reported_results:
+  - 'Opus 5.5 internal coding (370 tasks): low/medium/high/xhigh 74.8/86.6/88.4/91.1% at $0.35/$0.84/$1.38/$4.11 per attempt.'
+  - 'Re-run failures at high after low: ~40% lower cost than all-high at the same pass rate (needs a checker).'
+  - 'Haiku-subagent arm: 72.1% / $4.78 (Opus medium alone) vs 67.9% / $3.27 (with subagents + prompt) vs 63.0% / $1.84 (Opus low).'
+  cross_references:
+    chapters: []
+    handoffs:
+    - delegation-context-preassembly.md
+    - fleet-fanout-measurement.md
+    experiments: []
+    intake_entries:
+    - intake-2539
+    - intake-2535
+    - intake-1107
+    - intake-1113
+  recommended_actions:
+  - Price our own Claude Code work per accepted task by tier before changing tiers; sweep subagent effort before adding tiers.
+  credibility_score: 1
+  contradicting_evidence: null
+  referenced_arxiv_ids:
+  - '2512.08296'
+  notes: Anthropic-internal, self-described as directional. Measurements are API/Managed Agents, not Claude Code. Several delegation
+    results use earlier-generation workers (Sonnet 5). arXiv:2512.08296 = intake-1107 (already in index).
+  verification: dive-verified
+  handoffs_updated: []
+  handoffs_created: []
+  source_revision: platform.claude.com/docs/en/about-claude/models/optimizing-for-cost-and-intelligence.md (1,173 lines, sha256-12 0f6c40ee0fb9),
+    retrieved 2026-10-31
+  read_depth: FULL
+  reader_should_conclude: Cite claim-level with the benchmark scope. The Haiku-subagent number is the only measured cheap-subagent accuracy
+    cost we hold; it is Managed Agents, not Claude Code.
+  claim_anchors:
+  - claim_index: 0
+    kind: line-range
+    locator: L54
+    quote: A 40-turn task sends its first turn 40 times, so task cost grows with roughly the square of turn count.
+    quote_sha256: b79065d3a13d6e2500cceb53c7519bb5ec16b918165efd746f8a74caa919d6cd
+    source_revision: platform.claude.com/docs/en/about-claude/models/optimizing-for-cost-and-intelligence.md (1,173 lines, sha256-12
+      0f6c40ee0fb9), retrieved 2026-10-31
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: line-range
+    locator: L542
+    quote: Output tokens cost five times input tokens on Claude Haiku 5.5, Claude Sonnet 5.5, Claude Opus 5.5, and Claude Fable 5.1,
+      and in an agent loop every token the model writes comes back as input on every later turn
+    quote_sha256: a07aefbe4062a4689f87ab43a8608fb1ce42a165afa3fe6326e88b48f1c2bcfd
+    source_revision: platform.claude.com/docs/en/about-claude/models/optimizing-for-cost-and-intelligence.md (1,173 lines, sha256-12
+      0f6c40ee0fb9), retrieved 2026-10-31
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: line-range
+    locator: L631
+    quote: When the work is one dependent chain, or fits in a single context without a long cost tail, the orchestrator’s model alone
+      at lower effort came out ahead in every case measured on earlier models
+    quote_sha256: 768d543567c22d546fdadb807763df3a267fbaa0203e9939df341973722dac9f
+    source_revision: platform.claude.com/docs/en/about-claude/models/optimizing-for-cost-and-intelligence.md (1,173 lines, sha256-12
+      0f6c40ee0fb9), retrieved 2026-10-31
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: line-range
+    locator: L649
+    quote: cut cost per attempt by 32% and the pass rate by about 4 percentage points (95% interval 1.3 to 7.1), about what a mix of
+      `low` and `medium` without subagents would give at that cost
+    quote_sha256: 4784931b5bd2496bf8f42f5d9cd0ca353deb51880595ef9e0ea078e03b238c7b
+    source_revision: platform.claude.com/docs/en/about-claude/models/optimizing-for-cost-and-intelligence.md (1,173 lines, sha256-12
+      0f6c40ee0fb9), retrieved 2026-10-31
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: line-range
+    locator: L589
+    quote: scored 1.7 points higher than the executor alone at the same effort, at the edge of run-to-run noise, for about 2.1 times
+      the cost.
+    quote_sha256: cd315b2c9810f87a59194376f8f1430f7cbf8058976ec847b62b0de5372dd7e8
+    source_revision: platform.claude.com/docs/en/about-claude/models/optimizing-for-cost-and-intelligence.md (1,173 lines, sha256-12
+      0f6c40ee0fb9), retrieved 2026-10-31
+    verified_by: research-intake/stage2
+  - claim_index: 5
+    kind: line-range
+    locator: L576
+    quote: 'Tune one model before you add a second: sweep effort on your current model first, because most workloads end there'
+    quote_sha256: 68ac6c1fbe40461391d8b1e0ac315899328bb27fa05a2f2a1eeda80ef30bfc25
+    source_revision: platform.claude.com/docs/en/about-claude/models/optimizing-for-cost-and-intelligence.md (1,173 lines, sha256-12
+      0f6c40ee0fb9), retrieved 2026-10-31
+    verified_by: research-intake/stage2
+  - claim_index: 6
+    kind: line-range
+    locator: L1062
+    quote: Results, team, helpers:** The team’s lead rarely started helpers. Without the changes, it started a helper in only 5 of 300
+      attempts on DRACO
+    quote_sha256: fa12f41069701381d73a4480fde9a9302021b6320afb3f51012bc13980f208dd
+    source_revision: platform.claude.com/docs/en/about-claude/models/optimizing-for-cost-and-intelligence.md (1,173 lines, sha256-12
+      0f6c40ee0fb9), retrieved 2026-10-31
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: Mechanism plus repriced runs.
+  - claim_index: 1
+    effect: unaffected
+    note: Confirmed.
+  - claim_index: 2
+    effect: unaffected
+    note: Workers were Sonnet 5; cost-tail case n=10 hand-picked problems.
+  - claim_index: 3
+    effect: unaffected
+    note: 134 tasks x 5 attempts x 3 runs, Managed Agents; part of the loss is voided attempts on subagent arms.
+  - claim_index: 4
+    effect: unaffected
+    note: Opus 5.5 high + Fable 5.1 advisor; 0/20 consults for Sonnet 5.5 at high.
+  - claim_index: 5
+    effect: unaffected
+    note: Decision rule, not a measurement.
+  - claim_index: 6
+    effect: unaffected
+    note: Confirmed.
+  dive_corrections: '2026-10-31 (Stage 2b, wave 2): FULL read. Note: the advisor-tool doc says this page shows the benefit shrinking
+    as the executor approaches the advisor; the page''s support is L609 and the L965 Opus-executor contrast, not a curve. Dive-surfaced
+    sources DECLINED at Stage-2 close (two-wave cap): prompt-caching, pricing, effort, cache-diagnostics and preserved-thinking docs
+    (multipliers already quoted here; would only re-confirm), Managed Agents multiagent docs (not our harness), Anthropic cookbooks
+    (runnable templates, no new evidence).'
+  depends_on: []
+- id: intake-2542
+  arxiv_id: '2602.08316'
+  url: https://arxiv.org/abs/2602.08316
+  source_type: paper
+  title: 'SWE Context Bench: A Benchmark for Context Learning in Coding'
+  categories:
+  - benchmark_methodology
+  - context_management
+  - memory_augmented
+  novelty: medium
+  relevance: medium
+  discovered_via: expansion
+  expanded_from: intake-2538
+  verdict: worth_investigating
+  ingested_date: '2026-10-31'
+  authors:
+  - Jiayuan Zhu
+  - Junde Wu
+  - Minhao Hu
+  - et al. (Oxford, Edinburgh, TUM, NUS, MBZUAI, CMU; 12 authors)
+  key_claims:
+  - With an oracle-selected 217-token summary of a related solved task, Sonnet 4.5 resolution rose from 26.26% to 34.34% on 99 SWE-Bench
+    Lite tasks; the raw trajectory gave 27.27%.
+  - 'A summary the agent selected itself scored 12.12 points below the oracle summary and below the no-context baseline: summaries help
+    when correct and mislead when not.'
+  - In the controlled setting, summary reuse did not reduce cost and self-directed retrieval increased token use.
+  techniques:
+  - oracle vs free context/summary reuse
+  reported_results:
+  - 'Table 4: No-Context 26.26% / $0.79; Oracle Summary 34.34% / $0.85; Free Summary 22.22% / $0.91; single run, no variance.'
+  cross_references:
+    chapters: []
+    handoffs:
+    - tool-output-compression.md
+    experiments: []
+    intake_entries:
+    - intake-2535
+    - intake-2538
+  recommended_actions:
+  - Treat summary-instead-of-source as unmeasured for our read-delegation case; prefer pointers plus excerpts.
+  credibility_score: 2
+  contradicting_evidence: null
+  referenced_arxiv_ids: []
+  notes: Measures cross-task memory reuse, NOT a worker summarizing a file the main agent cannot read. Indirect evidence only.
+  verification: dive-verified
+  handoffs_updated: []
+  handoffs_created: []
+  source_revision: arXiv:2602.08316v3 HTML (sha256-12 2732045e8c96), dated 2026-05-06, retrieved 2026-10-31
+  read_depth: PARTIAL
+  reader_should_conclude: Cite only for 'wrong summaries hurt more than they save'. Do NOT cite as evidence for or against Spotify-style
+    read summarization.
+  claim_anchors:
+  - claim_index: 0
+    kind: line-range
+    locator: v3 §3.3.1 Table 4
+    quote: Oracle Summary Learning achieves the best accuracy, improving resolution from 26.26% for the No-Context baseline to 34.34%,
+      while Oracle Context Learning provides a small gain to 27.27%
+    quote_sha256: ffa51404e16368771ca424ac5d8f7006665bd438bff63fa79c3fdf3761311229
+    source_revision: arXiv:2602.08316v3 HTML (sha256-12 2732045e8c96), dated 2026-05-06, retrieved 2026-10-31
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: line-range
+    locator: v3 §3.3.1
+    quote: concise summaries are highly effective when correctly selected, but misleading when irrelevant
+    quote_sha256: 35ec7e76bf9e6f42621a648e36ca75439b4e8b7484a43d199f2a11e5d8e6010a
+    source_revision: arXiv:2602.08316v3 HTML (sha256-12 2732045e8c96), dated 2026-05-06, retrieved 2026-10-31
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: line-range
+    locator: v3 §3.3.2
+    quote: in this setup, summary-based reuse does not reduce cost relative to the baseline, and autonomous retrieval tends to increase
+      repository access and overall token consumption
+    quote_sha256: d586ed5efba9d282523c70f3fc7c341565982d7d3a66423f67cf53206e7d7487
+    source_revision: arXiv:2602.08316v3 HTML (sha256-12 2732045e8c96), dated 2026-05-06, retrieved 2026-10-31
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 0
+    effect: narrowed
+    note: +8 of 99 tasks, single run, no CI.
+  - claim_index: 1
+    effect: unaffected
+    note: Confirmed.
+  - claim_index: 2
+    effect: unaffected
+    note: Contradicts the abstract's cost-reduction framing; Table 3 savings come from different subsets.
+  dive_corrections: '2026-10-31 (Stage 2b, wave 2): abstract''s ''reduce runtime and token cost'' OVERTURNED for the controlled setting.
+    Dive-surfaced sources DECLINED at the two-wave cap: Mem0/OpenViking/LangMem/Supermemory repos (memory infrastructure, not read delegation).'
+  depends_on: []
+- id: intake-2543
+  arxiv_id: '2602.18571'
+  url: https://arxiv.org/abs/2602.18571
+  source_type: paper
+  title: 'Debug2Fix: Can Interactive Debugging Help Coding Agents Fix More Bugs?'
+  categories:
+  - agent_architecture
+  - tool_implementation
+  novelty: medium
+  relevance: medium
+  discovered_via: expansion
+  expanded_from: intake-2538
+  verdict: worth_investigating
+  ingested_date: '2026-10-31'
+  authors:
+  - Spandan Garg
+  - Yufan Huang (Microsoft)
+  key_claims:
+  - Main agent and debug subagent always ran the same model; mixed-tier pairings were left untested.
+  - Most of the GitBug-Java gain comes from a lock that disables edit tools until the debug subagent has been called once.
+  - The debug subagent returns a structured answer with evidence (variable values, stack traces, source locations) and makes no edits.
+  - Main-agent tokens fell only for Sonnet 4.5; total tokens rose in every configuration (+13% to +187%, our sums).
+  techniques:
+  - debug subagent with Question/Answer/Evidence/Location return
+  - edit lock until debug call
+  reported_results:
+  - 'GitBug-Java n=186: Sonnet 4.5 75.7 -> 85.5 (lock); Haiku 4.5 71.0 -> 82.3; GPT-5 60.2 -> 73.1. Single runs.'
+  cross_references:
+    chapters: []
+    handoffs: []
+    experiments: []
+    intake_entries:
+    - intake-2538
+    - intake-2535
+  recommended_actions:
+  - Delegate runtime-observation questions only, with an evidence-only return; keep hypothesis and fix on the main.
+  credibility_score: 2
+  contradicting_evidence: null
+  referenced_arxiv_ids: []
+  notes: Not by the Terminus-4B author set as a group (overlapping authors only). Code closed.
+  verification: dive-verified
+  handoffs_updated: []
+  handoffs_created: []
+  source_revision: arXiv:2602.18571v2 HTML (sha256-12 9364c7083450), dated 2026-04-21; abs sha256-12 dff77289f1f6; retrieved 2026-10-31
+  read_depth: FULL
+  reader_should_conclude: Cite for the evidence-only debug-return contract. Do NOT cite as evidence that a cheaper tier can debug for
+    a stronger main.
+  claim_anchors:
+  - claim_index: 0
+    kind: line-range
+    locator: v2 §5.4
+    quote: For all our models, we use the same model for both our main agent and Debug Subagent
+    quote_sha256: e9a75eeeb6a43ca59fed7bdb58a12289369e59c5ec4fb57b3699ca75a3e05ea6
+    source_revision: arXiv:2602.18571v2 HTML (sha256-12 9364c7083450), dated 2026-04-21; abs sha256-12 dff77289f1f6; retrieved 2026-10-31
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: line-range
+    locator: v2 §4.3.1
+    quote: for bug-fixing tasks, we disable all file-editing tools until the debug tool has been called at least once
+    quote_sha256: 02d6a769dee0cbb3889014e6c270d358f43507212b32cfa1a10b862f5b9723a1
+    source_revision: arXiv:2602.18571v2 HTML (sha256-12 9364c7083450), dated 2026-04-21; abs sha256-12 dff77289f1f6; retrieved 2026-10-31
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: line-range
+    locator: v2 §4.1
+    quote: As it’s output, the Debug Subagent returns a structured response containing a final answer to the question asked by the main
+      agent and supporting evidence
+    quote_sha256: fd6a5ca102199ae017e1ade4ead8893d1fa534d67def2d91bf694e50931b5b4c
+    source_revision: arXiv:2602.18571v2 HTML (sha256-12 9364c7083450), dated 2026-04-21; abs sha256-12 dff77289f1f6; retrieved 2026-10-31
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: line-range
+    locator: v2 §6.2
+    quote: For Claude Sonnet 4.5, we can see that we actually reduce the main agents token usage and steps when using our best configuration,
+      while the subagent adds on average 33 steps and 400k tokens
+    quote_sha256: 8e12124cc5c2b9275149a9e0a0b04f2ff692f27c1e776e592475d5b6a48d0361
+    source_revision: arXiv:2602.18571v2 HTML (sha256-12 9364c7083450), dated 2026-04-21; abs sha256-12 dff77289f1f6; retrieved 2026-10-31
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: Confirmed; single run per cell.
+  - claim_index: 1
+    effect: unaffected
+    note: Confirmed; single run per cell.
+  - claim_index: 2
+    effect: unaffected
+    note: Confirmed; single run per cell.
+  - claim_index: 3
+    effect: unaffected
+    note: Confirmed; single run per cell.
+  dive_corrections: '2026-10-31 (Stage 2b, wave 2): abstract framing narrowed (lock does most of the work). Dive-surfaced sources DECLINED
+    at the two-wave cap: arXiv:2503.21557, 2304.02195, 2402.16906, 2404.17153, 2508.01780, 2510.08996 (single-agent debugging tools
+    and benchmark validity; none tests cross-tier delegation).'
+  depends_on: []
+- id: intake-2544
+  arxiv_id: '2601.16746'
+  url: https://arxiv.org/abs/2601.16746
+  source_type: paper
+  title: 'SWE-Pruner: Self-Adaptive Context Pruning for Coding Agents'
+  categories:
+  - context_management
+  - tool_implementation
+  - agent_architecture
+  novelty: medium
+  relevance: high
+  discovered_via: expansion
+  expanded_from: intake-2537
+  verdict: worth_investigating
+  ingested_date: '2026-10-31'
+  authors:
+  - Yuhang Wang
+  - Yuling Shi
+  - Xiaodong Gu
+  - et al. (SJTU; 10 authors)
+  key_claims:
+  - On Mini-SWE-Agent trajectories with Sonnet 4.5, read-type operations (cat, grep, head, directory inspection) took 76.1% of total
+    tokens; 67.5% with GLM-4.6.
+  - On a 50-instance subset, having the backbone model summarise files scored 56% vs 62% baseline and added latency; a goal-conditioned
+    0.6B line filter scored 64%.
+  - The pruner keeps exact lines and runs only when the main agent supplies a focus question; otherwise reads pass through unchanged.
+  techniques:
+  - goal-conditioned line-level observation pruning
+  - opt-in context_focus_question on read tools
+  reported_results:
+  - 'SWE-Bench Verified Sonnet 4.5: 70.6% -> 72.0%, 0.911M -> 0.701M tokens (-23.1%, Table 1); Fig. 7 reports -39.2% (unreconciled).'
+  cross_references:
+    chapters: []
+    handoffs:
+    - tool-output-compression.md
+    experiments: []
+    intake_entries:
+    - intake-2535
+    - intake-2537
+    - intake-2542
+  recommended_actions:
+  - Measure read-class token share on our own journals, split full-file vs targeted, before choosing delegate vs prune.
+  credibility_score: 2
+  contradicting_evidence:
+  - 'HN practitioner anecdote on intake-2535: only 5.9% of unique reads qualify for full-file delegation.'
+  referenced_arxiv_ids: []
+  notes: Read share mixes grep/search with full reads and does not split full-file vs targeted; n=50 comparison cannot separate arms
+    statistically.
+  verification: dive-verified
+  handoffs_updated: []
+  handoffs_created: []
+  source_revision: arXiv:2601.16746v4 HTML (sha256-12 98f5d7e7fb54), dated 2026-05-07, retrieved 2026-10-31
+  read_depth: PARTIAL
+  reader_should_conclude: Cite the 76% as a read-class ceiling for a bash-only agent, not as an addressable share for Claude Code.
+  claim_anchors:
+  - claim_index: 0
+    kind: line-range
+    locator: v4 §2 Motivation (Fig. 2)
+    quote: read-type operations consume an overwhelming 76.1% of total tokens, significantly exceeding execute (12.1%) and edit (11.8%)
+      operations combined
+    quote_sha256: e96548d392daadd67135c31669c7bd5080e6b12edc8c6de913f784e8f30c49fb
+    source_revision: arXiv:2601.16746v4 HTML (sha256-12 98f5d7e7fb54), dated 2026-05-07, retrieved 2026-10-31
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: line-range
+    locator: v4 Table 3 discussion
+    quote: LLM Summarize achieves moderate performance (56%) but incurs additional latency
+    quote_sha256: 5be3fb7d9eddf301e22e663476719ac4e9930ae712d7048cc0e0c4a2e62ed3c3
+    source_revision: arXiv:2601.16746v4 HTML (sha256-12 98f5d7e7fb54), dated 2026-05-07, retrieved 2026-10-31
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 0
+    effect: narrowed
+    note: Attribution method and n unstated; grep and search are counted as reads.
+  - claim_index: 1
+    effect: narrowed
+    note: n=50, single comparison; arms not statistically separable.
+  - claim_index: 2
+    effect: unaffected
+    note: Design description (§3.2-3.4).
+  dive_corrections: '2026-10-31 (Stage 2b, wave 2): headline token cut narrowed to Table 1 (-23.1%). Dive-surfaced sources DECLINED
+    at the two-wave cap: LongCodeZip, AgentDiet, ACON, observation masking (history/observation compression; owned by the tool-output-compression
+    lineage), github.com/Ayanami1314/swe-pruner (would only settle the opt-in rate).'
+  depends_on: []

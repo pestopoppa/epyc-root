@@ -1,0 +1,763 @@
+{
+  "claude": {
+    "A": {
+      "post": {
+        "A": 7.3e-05,
+        "A_compaction_bounded": 7.3e-05,
+        "denominator_tokens": 6564487910,
+        "main_requests": 13929,
+        "numerator_tokens": 480384.0,
+        "qualifying_items": 1,
+        "sessions": 5
+      },
+      "pre": {
+        "A": 0.015734,
+        "A_compaction_bounded": 0.000955,
+        "denominator_tokens": 4898170216,
+        "main_requests": 9244,
+        "numerator_tokens": 77069395.0,
+        "qualifying_items": 2,
+        "sessions": 2
+      }
+    },
+    "A_proxy_large_tool_output_main": {
+      "post": {
+        "A": 0.007973,
+        "A_compaction_bounded": 0.001807,
+        "denominator_tokens": 6564487910,
+        "main_requests": 13929,
+        "numerator_tokens": 52335825.5,
+        "qualifying_items": 10,
+        "sessions": 5
+      },
+      "pre": {
+        "A": 0.02278,
+        "A_compaction_bounded": 0.001962,
+        "denominator_tokens": 4898170216,
+        "main_requests": 9244,
+        "numerator_tokens": 111578844.0,
+        "qualifying_items": 4,
+        "sessions": 2
+      }
+    },
+    "denominator": {
+      "main_sessions": 7,
+      "main_sessions_without_main_file": 0,
+      "subagents": 2226
+    },
+    "fixed_overhead_all_subagents": {
+      "max": 56905.0,
+      "mean": 47866.774933,
+      "median": 49899.5,
+      "min": 9954.0,
+      "n": 2226,
+      "p90": 53266.0,
+      "sum": 106551441.0
+    },
+    "main_by_tier": {
+      "opus": {
+        "requests": 23168,
+        "threads": 6,
+        "tokens": {
+          "cache_creation": 93578097,
+          "cache_read": 11368622482,
+          "input": 58322,
+          "output": 15482731,
+          "total": 11477741632,
+          "total_input": 11462258901
+        }
+      },
+      "sonnet": {
+        "requests": 5,
+        "threads": 1,
+        "tokens": {
+          "cache_creation": 61939,
+          "cache_read": 337276,
+          "input": 10,
+          "output": 2885,
+          "total": 402110,
+          "total_input": 399225
+        }
+      }
+    },
+    "redispatch": {
+      "all": {
+        "by_basis": {
+          "description": 5
+        },
+        "cheap_dispatches": 1415,
+        "effort_only_redispatches": 0,
+        "higher_tier_redispatches": 5,
+        "rate": 0.003534
+      },
+      "last_30_days": {
+        "by_basis": {
+          "description": 5
+        },
+        "cheap_dispatches": 1343,
+        "effort_only_redispatches": 0,
+        "higher_tier_redispatches": 5,
+        "rate": 0.003723
+      },
+      "m2_trigger": "does-not-fire",
+      "post": {
+        "by_basis": {
+          "description": 5
+        },
+        "cheap_dispatches": 1184,
+        "effort_only_redispatches": 0,
+        "higher_tier_redispatches": 5,
+        "rate": 0.004223
+      },
+      "pre": {
+        "by_basis": {},
+        "cheap_dispatches": 231,
+        "effort_only_redispatches": 0,
+        "higher_tier_redispatches": 0,
+        "rate": 0.0
+      }
+    },
+    "spend_share": {
+      "by_subagent_tier_share": {
+        "fable": 0.006014,
+        "haiku": 0.006452,
+        "opus": 0.358511,
+        "sonnet": 0.236071
+      },
+      "main_total_tokens": 11478143742,
+      "subagent_share": 0.607048,
+      "subagent_total_tokens": 17731920829
+    },
+    "subagents_by_tier": {
+      "fable": {
+        "agents": 52,
+        "effort_mix": {
+          "high": 21,
+          "low": 7,
+          "medium": 24
+        },
+        "final_report_chars": {
+          "max": 1806.0,
+          "mean": 334.230769,
+          "median": 128.5,
+          "min": 0.0,
+          "n": 52,
+          "p90": 1105.0,
+          "sum": 17380.0
+        },
+        "final_report_output_tokens": {
+          "max": 1539.0,
+          "mean": 175.136364,
+          "median": 47.0,
+          "min": 2.0,
+          "n": 44,
+          "p90": 643.0,
+          "sum": 7706.0
+        },
+        "first_request_input": {
+          "max": 54164.0,
+          "mean": 49353.057692,
+          "median": 49906.5,
+          "min": 44912.0,
+          "n": 52,
+          "p90": 52061.0,
+          "sum": 2566359.0
+        },
+        "first_request_share_of_agent_input": {
+          "max": 0.311264,
+          "mean": 0.057482,
+          "median": 0.024989,
+          "min": 0.001755,
+          "n": 52,
+          "p90": 0.14027,
+          "sum": 2.989069
+        },
+        "requests": 1177,
+        "tokens": {
+          "cache_creation": 11541009,
+          "cache_read": 163979527,
+          "input": 32824,
+          "output": 101953,
+          "total": 175655313,
+          "total_input": 175553360
+        }
+      },
+      "haiku": {
+        "agents": 160,
+        "effort_mix": {
+          "None": 35,
+          "high": 7,
+          "low": 87,
+          "medium": 31
+        },
+        "final_report_chars": {
+          "max": 22462.0,
+          "mean": 348.975,
+          "median": 0.0,
+          "min": 0.0,
+          "n": 160,
+          "p90": 750.0,
+          "sum": 55836.0
+        },
+        "final_report_output_tokens": {
+          "max": 7160.0,
+          "mean": 371.830508,
+          "median": 163.0,
+          "min": 0.0,
+          "n": 59,
+          "p90": 624.0,
+          "sum": 21938.0
+        },
+        "first_request_input": {
+          "max": 50763.0,
+          "mean": 45183.275,
+          "median": 49351.0,
+          "min": 9954.0,
+          "n": 160,
+          "p90": 49813.0,
+          "sum": 7229324.0
+        },
+        "first_request_share_of_agent_input": {
+          "max": 1.0,
+          "mean": 0.097128,
+          "median": 0.072434,
+          "min": 0.003947,
+          "n": 160,
+          "p90": 0.175143,
+          "sum": 15.540402
+        },
+        "requests": 2334,
+        "tokens": {
+          "cache_creation": 13041785,
+          "cache_read": 175282415,
+          "input": 8916,
+          "output": 142579,
+          "total": 188475695,
+          "total_input": 188333116
+        }
+      },
+      "opus": {
+        "agents": 823,
+        "effort_mix": {
+          "high": 676,
+          "low": 53,
+          "medium": 92,
+          "xhigh": 2
+        },
+        "final_report_chars": {
+          "max": 12356.0,
+          "mean": 1019.827461,
+          "median": 81.0,
+          "min": 0.0,
+          "n": 823,
+          "p90": 3273.0,
+          "sum": 839318.0
+        },
+        "final_report_output_tokens": {
+          "max": 5137.0,
+          "mean": 474.732262,
+          "median": 52.0,
+          "min": 0.0,
+          "n": 747,
+          "p90": 1352.0,
+          "sum": 354625.0
+        },
+        "first_request_input": {
+          "max": 56110.0,
+          "mean": 44091.306197,
+          "median": 47546.0,
+          "min": 15216.0,
+          "n": 823,
+          "p90": 52652.0,
+          "sum": 36287145.0
+        },
+        "first_request_share_of_agent_input": {
+          "max": 0.222287,
+          "mean": 0.0111,
+          "median": 0.00574,
+          "min": 0.000206,
+          "n": 823,
+          "p90": 0.025668,
+          "sum": 9.134993
+        },
+        "requests": 56902,
+        "tokens": {
+          "cache_creation": 329423623,
+          "cache_read": 10139969883,
+          "input": 115531,
+          "output": 2633354,
+          "total": 10472142391,
+          "total_input": 10469509037
+        }
+      },
+      "sonnet": {
+        "agents": 1191,
+        "effort_mix": {
+          "high": 215,
+          "low": 278,
+          "medium": 670,
+          "xhigh": 28
+        },
+        "final_report_chars": {
+          "max": 17646.0,
+          "mean": 243.491184,
+          "median": 36.0,
+          "min": 0.0,
+          "n": 1191,
+          "p90": 135.0,
+          "sum": 289998.0
+        },
+        "final_report_output_tokens": {
+          "max": 7510.0,
+          "mean": 200.193772,
+          "median": 39.0,
+          "min": 0.0,
+          "n": 867,
+          "p90": 340.0,
+          "sum": 173568.0
+        },
+        "first_request_input": {
+          "max": 56905.0,
+          "mean": 50771.29555,
+          "median": 50638.0,
+          "min": 15771.0,
+          "n": 1191,
+          "p90": 54013.0,
+          "sum": 60468613.0
+        },
+        "first_request_share_of_agent_input": {
+          "max": 1.0,
+          "mean": 0.043927,
+          "median": 0.023382,
+          "min": 0.000254,
+          "n": 1191,
+          "p90": 0.108341,
+          "sum": 52.316952
+        },
+        "requests": 44455,
+        "tokens": {
+          "cache_creation": 264650120,
+          "cache_read": 6628155122,
+          "input": 90043,
+          "output": 2752145,
+          "total": 6895647430,
+          "total_input": 6892895285
+        }
+      }
+    },
+    "verdict": "M1 declined"
+  },
+  "codex": {
+    "A": null,
+    "A_not_computable": "Codex rollouts record no structured file-read event (no path/startLine/totalLines; reads are shell text inside exec)",
+    "A_proxy_large_tool_output_exec": {
+      "post": {
+        "A": 0.0,
+        "A_compaction_bounded": 0.0,
+        "denominator_tokens": 3627993,
+        "main_requests": 66,
+        "numerator_tokens": 0.0,
+        "qualifying_items": 0,
+        "sessions": 22
+      },
+      "pre": {
+        "A": 0.000901,
+        "A_compaction_bounded": 0.000901,
+        "denominator_tokens": 197474323,
+        "main_requests": 2854,
+        "numerator_tokens": 177837.5,
+        "qualifying_items": 7,
+        "sessions": 808
+      }
+    },
+    "A_proxy_large_tool_output_main": {
+      "post": {
+        "A": 0.183627,
+        "A_compaction_bounded": 0.003999,
+        "denominator_tokens": 15285818541,
+        "main_requests": 61513,
+        "numerator_tokens": 2806887257.0,
+        "qualifying_items": 32,
+        "sessions": 4
+      },
+      "pre": {
+        "A": 0.900489,
+        "A_compaction_bounded": 0.047055,
+        "denominator_tokens": 2722310323,
+        "main_requests": 21179,
+        "numerator_tokens": 2451411127.5,
+        "qualifying_items": 316,
+        "sessions": 24
+      }
+    },
+    "denominator": {
+      "exec_rollouts": 2217,
+      "main_rollouts": 32,
+      "subagent_rollouts": 1346
+    },
+    "fixed_overhead_all_subagents": {
+      "max": 243488.0,
+      "mean": 23360.606241,
+      "median": 21787.0,
+      "min": 19223.0,
+      "n": 1346,
+      "p90": 24354.0,
+      "sum": 31443376.0
+    },
+    "main_and_exec_by_tier": {
+      "astra": {
+        "requests": 242,
+        "threads": 120,
+        "tokens": {
+          "cache_creation": 0,
+          "cache_read": 9651200,
+          "input": 6471918,
+          "output": 78865,
+          "total": 16201983,
+          "total_input": 16123118
+        }
+      },
+      "luna": {
+        "requests": 1345,
+        "threads": 5,
+        "tokens": {
+          "cache_creation": 0,
+          "cache_read": 150575744,
+          "input": 3925378,
+          "output": 597081,
+          "total": 155098203,
+          "total_input": 154501122
+        }
+      },
+      "sol": {
+        "requests": 56289,
+        "threads": 731,
+        "tokens": {
+          "cache_creation": 0,
+          "cache_read": 8098349696,
+          "input": 191517505,
+          "output": 22041325,
+          "total": 8311908526,
+          "total_input": 8289867201
+        }
+      },
+      "terra": {
+        "requests": 54731,
+        "threads": 2,
+        "tokens": {
+          "cache_creation": 0,
+          "cache_read": 13593488512,
+          "input": 94736713,
+          "output": 17537138,
+          "total": 13705762363,
+          "total_input": 13688225225
+        }
+      },
+      "unknown": {
+        "requests": 0,
+        "threads": 1391,
+        "tokens": {
+          "cache_creation": 0,
+          "cache_read": 0,
+          "input": 0,
+          "output": 0,
+          "total": 0,
+          "total_input": 0
+        }
+      }
+    },
+    "redispatch": {
+      "all": {
+        "by_basis": {
+          "description": 1
+        },
+        "cheap_dispatches": 829,
+        "effort_only_redispatches": 3,
+        "higher_tier_redispatches": 1,
+        "rate": 0.001206
+      },
+      "last_30_days": {
+        "by_basis": {
+          "description": 1
+        },
+        "cheap_dispatches": 788,
+        "effort_only_redispatches": 3,
+        "higher_tier_redispatches": 1,
+        "rate": 0.001269
+      },
+      "m2_trigger": "does-not-fire",
+      "post": {
+        "by_basis": {},
+        "cheap_dispatches": 686,
+        "effort_only_redispatches": 3,
+        "higher_tier_redispatches": 0,
+        "rate": 0.0
+      },
+      "pre": {
+        "by_basis": {
+          "description": 1
+        },
+        "cheap_dispatches": 143,
+        "effort_only_redispatches": 0,
+        "higher_tier_redispatches": 1,
+        "rate": 0.006993
+      }
+    },
+    "request_source": {
+      "token_count": 1392,
+      "token_usage_record": 2203
+    },
+    "spend_share": {
+      "by_subagent_tier_share": {
+        "astra": 0.000642,
+        "luna": 0.216523,
+        "sol": 0.150457,
+        "terra": 0.312479
+      },
+      "main_total_tokens": 22188971075,
+      "subagent_share": 0.680101,
+      "subagent_total_tokens": 47173547288
+    },
+    "subagents_by_tier": {
+      "astra": {
+        "agents": 9,
+        "effort_mix": {
+          "high": 3,
+          "medium": 6
+        },
+        "final_report_chars": {
+          "max": 11436.0,
+          "mean": 5092.777778,
+          "median": 3553.0,
+          "min": 382.0,
+          "n": 9,
+          "p90": 9261.0,
+          "sum": 45835.0
+        },
+        "final_report_output_tokens": {
+          "max": 3215.0,
+          "mean": 1521.444444,
+          "median": 945.0,
+          "min": 93.0,
+          "n": 9,
+          "p90": 3140.0,
+          "sum": 13693.0
+        },
+        "first_request_input": {
+          "max": 24988.0,
+          "mean": 22875.333333,
+          "median": 21875.0,
+          "min": 21856.0,
+          "n": 9,
+          "p90": 24860.0,
+          "sum": 205878.0
+        },
+        "first_request_share_of_agent_input": {
+          "max": 0.037097,
+          "mean": 0.01985,
+          "median": 0.019234,
+          "min": 0.000806,
+          "n": 9,
+          "p90": 0.036971,
+          "sum": 0.178648
+        },
+        "requests": 392,
+        "tokens": {
+          "cache_creation": 0,
+          "cache_read": 42775168,
+          "input": 1633918,
+          "output": 147449,
+          "total": 44556535,
+          "total_input": 44409086
+        }
+      },
+      "luna": {
+        "agents": 435,
+        "effort_mix": {
+          "high": 206,
+          "low": 34,
+          "medium": 195
+        },
+        "final_report_chars": {
+          "max": 5572.0,
+          "mean": 663.025287,
+          "median": 565.0,
+          "min": 0.0,
+          "n": 435,
+          "p90": 1101.0,
+          "sum": 288416.0
+        },
+        "final_report_output_tokens": {
+          "max": 3414.0,
+          "mean": 342.583908,
+          "median": 215.0,
+          "min": 17.0,
+          "n": 435,
+          "p90": 716.0,
+          "sum": 149024.0
+        },
+        "first_request_input": {
+          "max": 50189.0,
+          "mean": 22207.974713,
+          "median": 21301.0,
+          "min": 19246.0,
+          "n": 435,
+          "p90": 24470.0,
+          "sum": 9660469.0
+        },
+        "first_request_share_of_agent_input": {
+          "max": 0.176962,
+          "mean": 0.012969,
+          "median": 0.003357,
+          "min": 7e-06,
+          "n": 435,
+          "p90": 0.035562,
+          "sum": 5.64166
+        },
+        "requests": 112714,
+        "tokens": {
+          "cache_creation": 0,
+          "cache_read": 14665339392,
+          "input": 283710250,
+          "output": 69560598,
+          "total": 15018610240,
+          "total_input": 14949049642
+        }
+      },
+      "sol": {
+        "agents": 559,
+        "effort_mix": {
+          "high": 159,
+          "low": 69,
+          "medium": 330,
+          "xhigh": 1
+        },
+        "final_report_chars": {
+          "max": 34958.0,
+          "mean": 1782.296959,
+          "median": 547.0,
+          "min": 0.0,
+          "n": 559,
+          "p90": 4042.0,
+          "sum": 996304.0
+        },
+        "final_report_output_tokens": {
+          "max": 11782.0,
+          "mean": 629.125224,
+          "median": 195.0,
+          "min": 26.0,
+          "n": 559,
+          "p90": 1541.0,
+          "sum": 351681.0
+        },
+        "first_request_input": {
+          "max": 243488.0,
+          "mean": 25193.892665,
+          "median": 21914.0,
+          "min": 19223.0,
+          "n": 559,
+          "p90": 34009.0,
+          "sum": 14083386.0
+        },
+        "first_request_share_of_agent_input": {
+          "max": 0.46248,
+          "mean": 0.014977,
+          "median": 0.004589,
+          "min": 2.7e-05,
+          "n": 559,
+          "p90": 0.037037,
+          "sum": 8.37225
+        },
+        "requests": 72133,
+        "tokens": {
+          "cache_creation": 0,
+          "cache_read": 10213728768,
+          "input": 183072632,
+          "output": 39258012,
+          "total": 10436059412,
+          "total_input": 10396801400
+        }
+      },
+      "terra": {
+        "agents": 343,
+        "effort_mix": {
+          "high": 67,
+          "low": 48,
+          "medium": 228
+        },
+        "final_report_chars": {
+          "max": 1743.0,
+          "mean": 604.819242,
+          "median": 576.0,
+          "min": 99.0,
+          "n": 343,
+          "p90": 941.0,
+          "sum": 207453.0
+        },
+        "final_report_output_tokens": {
+          "max": 900.0,
+          "mean": 181.536443,
+          "median": 162.0,
+          "min": 25.0,
+          "n": 343,
+          "p90": 309.0,
+          "sum": 62267.0
+        },
+        "first_request_input": {
+          "max": 23528.0,
+          "mean": 21847.355685,
+          "median": 21800.0,
+          "min": 21260.0,
+          "n": 343,
+          "p90": 22344.0,
+          "sum": 7493643.0
+        },
+        "first_request_share_of_agent_input": {
+          "max": 0.156566,
+          "mean": 0.009834,
+          "median": 0.002593,
+          "min": 1e-05,
+          "n": 343,
+          "p90": 0.031743,
+          "sum": 3.372931
+        },
+        "requests": 106481,
+        "tokens": {
+          "cache_creation": 0,
+          "cache_read": 21518375680,
+          "input": 126605907,
+          "output": 29339514,
+          "total": 21674321101,
+          "total_input": 21644981587
+        }
+      }
+    }
+  },
+  "decision_rule": {
+    "chars_per_token": 4,
+    "decline_below": 0.03,
+    "fire_at_or_above": 0.1,
+    "large_file_lines_gt": 350,
+    "split": "2026-10-15T00:00:00Z"
+  },
+  "integrity": {
+    "claude_unclassified_files": [],
+    "empty_threads": 1,
+    "files": 5829,
+    "files_with_unparsable_lines": 0,
+    "mismatch": [],
+    "missing": [],
+    "unparsable_lines": 0,
+    "verified": 5829
+  },
+  "manifest": {
+    "bytes": 13428921374,
+    "cutoff": "2026-10-31T13:03:52Z",
+    "files": 5829,
+    "path": "data/fanout_timing/delegation_manifest.v1.json",
+    "sha256": "ac041ae8c35ef638814ae878a7c614f3559ddf9755119a4152b7ebbc96b9184d",
+    "since": "2026-09-24T00:00:00Z",
+    "unreadable_at_manifest": 0
+  },
+  "schema": "delegation_accounting.v1"
+}

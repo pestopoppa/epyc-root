@@ -1,8 +1,9 @@
 # Capsule draft — AKX-ALL-11 C++ long-context patch regeneration
 
 - Original queue checkbox citation: `/workspace/handoffs/active/autokernel-all-devices-all-dimensions.md:276` — exact text: `- [ ] C++ follow-up: regenerate \`test-backend-ops-cpu-fa-longctx-v1.patch\`.`
-- Current research CODE SHA: `e95a9d2e25c3eeedc7a6f997e608d9bd338cbc31` (`codex-ni/code-20261031`, fetched `origin/main`).
-- Source file SHA-256: `ad028c93bccd49e227c2aa78466c7170421cd4e84d632d9d6af38f78591d55bf` (`scripts/kernel_rnd/autokernel/loop/cpu_fa_reference.py`).
+- The 2026-10-31 regeneration snapshot was research `e95a9d2e25c3eeedc7a6f997e608d9bd338cbc31`; that commit is a coherence-rule change and is not cited as implementation.
+- Implementing generator source: research `32a72fefcce62474df233958a445d7dd2a798f4d` (2026-10-07), `scripts/kernel_rnd/autokernel/loop/cpu_fa_reference.py`; `backend_ops_patch_block()` emits 35 cases with SHA-256 `04517e1afda4dcf59f7ab031660176bd7590a5971ddeed3dd3ecf0ffd6b1f9ca`.
+- Landed C++ case set: llama.cpp `4e0ebc987e354556fbc44a7df0ba26413ed26d95` (2026-10-07).
 - Generated block: `backend_ops_patch_block()`, `cpu_fa_longctx_v1`, 35 cases; source-generated block SHA-256 `04517e1afda4dcf59f7ab031660176bd7590a5971ddeed3dd3ecf0ffd6b1f9ca`.
 - Durable artifact target: `/mnt/raid0/llm/tmp/codex-ni-cpp-fa-patch-regen-20261031/test-backend-ops-cpu-fa-longctx-v1.patch`. Patch SHA-256 `395e5bbdd66f585dad4f233dfb2b57c1c0e882487244011d9d6ad39be24e0871`.
 - Declared base: kernel commit `4348de400191c0b4c5127047037bf9ad83da19b6`, `tests/test-backend-ops.cpp` blob `46b556039d27a3a6048d87a807d8c99e16d1049d`.

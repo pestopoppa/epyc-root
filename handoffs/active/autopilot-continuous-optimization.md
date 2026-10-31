@@ -203,7 +203,7 @@ First full smoke run of the trial loop. Four defects, three silent.
       neither a retained path nor displayable bytes for that form.
       - The committed fix emits bounded path-only metadata for the first direct image, retains no image bytes, and preserves existing precedence; archives are not expanded. The receipt also records 90 routing tests and Ruff passing; no service deployment or model-quality result is claimed. [no-belief: source and regression verification]
 
-- [x] **Evidence-durability symlink guard covers the form that barely occurs.** ✅ 2026-10-30 [no-belief: source and regression verification]
+- [x] **Evidence-durability symlink guard covers the form that barely occurs.** ✅ 2026-10-30 [no-belief: source and regression verification] [source: epyc-inference-research@a4da03e04331cf7bc2e9af2600d87f3ca4efdaca; test: epyc-inference-research/scripts/validate/test_check_evidence_durability.py]
       `check_evidence_durability.py:306` — `inside_repo = (not absolute) or ...` is unconditionally
       True for relative paths, so `_is_scratch()` is never consulted for them. **416 of 421** registry
       citations are relative, and the remediation playbook tells remediators to use relative paths.
@@ -299,7 +299,7 @@ First full smoke run of the trial loop. Four defects, three silent.
       - **Box left unchecked deliberately** — nothing is fixed, and the decision is per-module:
         wire BSV-3, or retire the ledger and correct its docstring. Same for the other 23.
 
-- [x] **The metric's NAME and its new tooltip both overstate what it counts.** `contention_gate.py:325` — orchestrator `b387c5dded66`; 33 orchestrator + 6 ROOT tests; artifact `/mnt/raid0/llm/tmp/codex-ni-ap-nway-metric-audit-20261030/compat-focused-rerun-20261030.log` (SHA-256 `dc6ab57893870bdcc3b791c582332eb4d1fd7ffd2eb48f771efe45f68ebf718d`).
+- [x] **The metric's NAME and its new tooltip both overstate what it counts.** `contention_gate.py:325` — orchestrator `b387c5dded66`; 33 orchestrator + 6 ROOT tests; replacement evidence in APP `artifacts/audit/ni-legacy-autopilot-evidence-replacement-20261031.md`, committed by `cdac2ce9a73e5b79551919b1ea98cbdccf3123bd` (fresh 2026-10-31 source controls; original tmp log absent; historical work excluded from today's quota).
   increments inside `if nway_decision != PairDecision.ALLOW:` — **not** inside the
   `if _prec[nway_decision] > _prec[worst]:` test one line above. So it counts *"the N-way check fired
   non-ALLOW"*, not *"N-way was the binding constraint"*: if pairwise already said BLOCK and N-way says
@@ -471,7 +471,7 @@ First full smoke run of the trial loop. Four defects, three silent.
   and `git apply --cached`, then commit from the index. *(Demonstrated live: the resume agent hit
   exactly this and used it to avoid sweeping 63 lines of another agent's in-flight work.)*
 
-- [x] **`ImportError: cannot import name 'LLAMA_SERVER' ... circular import` prints on every stack ✅ 2026-10-30 [no-belief: source import regression verification]
+- [x] **`ImportError: cannot import name 'LLAMA_SERVER' ... circular import` prints on every stack ✅ 2026-10-30 [no-belief: source import regression verification] <!--[source: epyc-orchestrator@74c68a2a8e01a0f4a8c93a49fa32c0b85494f501; test: epyc-orchestrator/tests/unit/test_config.py; artifact: epyc-root/artifacts/compute/refactor-c5-r2-and-code-audits-20261030.json] -->
       command.** Fail-open — `runtime-facts selected-servers read failed` and the
       `ORCHESTRATOR_STACK_NUMA_MODE=both env-filter branch failed ... falling through to
       stack-priors`. Both degrade silently to a fallback path, so a real defect there would be
@@ -479,6 +479,7 @@ First full smoke run of the trial loop. Four defects, three silent.
 
 
       - Already fixed by orchestrator `74c68a2a8` (ancestor of current main), with kernel-store resolution preserved by `42b926ff0`. Self-contained path initialization removes the cycle;28 focused tests and a fresh NUMA=both CLI help pass without the reported warning. No production stack operation or reload. [Evidence](../../artifacts/compute/refactor-c5-r2-and-code-audits-20261030.json).
+      - Git evidence: implementing APP `74c68a2a8e01a0f4a8c93a49fa32c0b85494f501`; committed `tests/unit/test_config.py`; retained ROOT `artifacts/compute/refactor-c5-r2-and-code-audits-20261030.json` (source-import regression summary).
 
 ### Scorer repair and an unprovable outage (2026-08-04)
 
@@ -680,12 +681,12 @@ its comparator on 2 of 4 tasks there, so no frontier API is required. Cite `inta
       [`eval-tower-verification.md`](eval-tower-verification.md).
       ✅ 2026-10-31 — APP `48ade72dc443d70294ce0e9db127b6f065bf9376` captures bounded explicit trial citations on action-local retention, resolves eligible journal negative evidence, and preserves unresolved/ineligible cases as UNKNOWN. The final trial verdict remains separate; this telemetry never gates acceptance. [Tests and journal round-trip](../../artifacts/compute/codex3-sg-w2-20261031/FINAL-v3.log). The known-null experiment and belief projection/canary remain open. [belief: cc]
 
-- [x] **SG-W3 — Dispose of `src/diversity_gate.py`: wire it or delete it.** ✅ 2026-10-29
+- [x] **SG-W3 — Dispose of `src/diversity_gate.py`: wire it or delete it.** ✅ 2026-10-29 [no-belief: retirement of unused code; no measurement claim] [source: epyc-orchestrator@da31e38b6bafc1dbcd91739330d6ef0c4756c923; test: epyc-orchestrator/tests/unit/test_module_identity.py]
       Removed in orchestrator main `da31e38b6bafc1dbcd91739330d6ef0c4756c923`, together with
       tests that exercised only this unused surface. The live autopilot safety gate remains;
       the module-identity guard now requires both retired source gate paths to stay absent.
       Four relevant suites passed all 46 tests after integration.
-      [no-belief: retirement of unused code; no measurement claim] Original rationale: zero production importers,
+      Original rationale: zero production importers,
       warn-only by default (`SAFETY_GATE_WARN_ONLY` defaults to `"1"`), renamed 2026-07-20 out of a
       bare-name collision with `scripts/autopilot/safety_gate.py` (the module the autopilot actually
       imports). Its `evaluate()` accepts on a raw `quality_delta > 0` with no resolution band, so it
@@ -813,7 +814,7 @@ its comparator on 2 of 4 tasks there, so no frontier API is required. Cite `inta
       (surface, param, value) proposals is measured ONCE, inside AP-53's zero-compute re-proposal
       count, not twice. intake-1372#02.
 
-- [x] **AP-69 (S3-AP-07) — label every planner-critic verdict kind=proposal_filter, never validation**, in the journal and any receipt/dashboard summarizing it. Orchestrator `e822e3788ec016be1f7ee06d13225179a6dc816e`; 271 tests; artifact `/mnt/raid0/llm/tmp/codex-ni-ap69-proposal-filter-20261030-orch2/VALIDATION-AP69-r3-20261030.log` (SHA-256 `736ab9a3a24f0cf778115c2d2a227e66883033457ad53dfc237e419ba936fb37`). The critic
+- [x] **AP-69 (S3-AP-07) — label every planner-critic verdict kind=proposal_filter, never validation**, in the journal and any receipt/dashboard summarizing it. Orchestrator `e822e3788ec016be1f7ee06d13225179a6dc816e`; 271 tests; replacement evidence in APP `artifacts/audit/ni-legacy-autopilot-evidence-replacement-20261031.md`, committed by `cdac2ce9a73e5b79551919b1ea98cbdccf3123bd` (fresh 2026-10-31 source controls; original tmp log absent; historical work excluded from today's quota). The critic
       (local_frontdoor) reads only the planner's prose draft, which is the manuscript-only review
       shape (intake-1373#01). This is the autopilot twin of S3-AKU-05, with the kind enum widened to
       script / oracle / proposal_filter / llm_judge. Eval tower + safety_gate stay the validation

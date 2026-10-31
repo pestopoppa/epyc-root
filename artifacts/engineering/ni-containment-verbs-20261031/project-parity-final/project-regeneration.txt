@@ -1,0 +1,4 @@
+native_identity /mnt/raid0/llm/tmp/codex-ni-containment-selected-20261031/source/opencode.json 203980448 3fc5203e438b31ef215351019fea543e45c099b4516c6a338e4a9d2da0a739ba
+project_regenerated_byte_identical True
+project_sha256 3fc5203e438b31ef215351019fea543e45c099b4516c6a338e4a9d2da0a739ba
+global_config_untouched /home/node/.config/opencode/opencode.jsonc

@@ -59,7 +59,9 @@ TWO REFUSAL CLASSES.
 
   CLASS B — writes OUTSIDE the containment root: ``mkdir`` ``touch`` ``cp`` ``mv``
   ``tee`` ``dd of=`` ``>``/``>>`` redirection ``rsync`` ``tar -C``/``--directory``
-  ``restic backup|init --repo`` ``borg create|init`` ``rclone`` (write verbs)
+  ``restic backup|init --repo`` / ``restore --target``
+  ``borg create|init|delete|prune`` (repository) / ``extract`` (CWD)
+  ``rclone`` (write verbs, including copyto/moveto/mkdir)
   ``chown`` ``chmod``, plus deliberate siblings ``ln`` ``install`` ``rm`` ``rmdir``
   (deletion of data outside the root is the same incident class) and
   ``git clone|init|worktree add``. Refused with ``write_outside_containment_root``
@@ -331,9 +333,44 @@ def _positionals(tokens: list[str], value_flags: frozenset[str]) -> list[str]:
     return out
 
 
-_RESTIC_WRITE_VERBS = frozenset("backup init".split())
-_BORG_WRITE_VERBS = frozenset("create init".split())
-_RCLONE_WRITE_VERBS = frozenset("copy sync move delete deletefile purge rcat".split())
+def _backup_arguments(tokens: list[str], value_flags: frozenset[str],
+                      bool_flags: frozenset[str]) -> tuple[list[str], dict[str, list[str]]] | None:
+    """Parse the supported backup CLI subset; unknown options fail closed.
+
+    Unlike the permissive legacy positional helper, never mistake an unknown
+    option's value for the command or destination. Respect the CLI's ``--``.
+    """
+    pos: list[str] = []
+    values: dict[str, list[str]] = {}
+    i = 0
+    while i < len(tokens):
+        token = tokens[i]
+        if token == "--":
+            pos.extend(tokens[i + 1:])
+            break
+        if not token.startswith("-") or token == "-":
+            pos.append(token)
+        else:
+            key, eq, value = token.partition("=")
+            if key in value_flags:
+                if not eq:
+                    i += 1
+                    if i >= len(tokens) or tokens[i].startswith("-"):
+                        return None
+                    value = tokens[i]
+                if not value:
+                    return None
+                values.setdefault(key, []).append(value)
+            elif key not in bool_flags or eq:
+                return None
+        i += 1
+    return pos, values
+
+
+_RESTIC_WRITE_VERBS = frozenset("backup init restore".split())
+_BORG_WRITE_VERBS = frozenset("create init extract delete prune".split())
+_RCLONE_WRITE_VERBS = frozenset(
+    "copy sync move copyto moveto mkdir delete deletefile purge rcat".split())
 _GIT_WRITE_VERBS = frozenset("clone init".split())
 
 
@@ -404,6 +441,20 @@ def class_b_targets(verb: str | None, tokens: list[str], verb_idx: int) -> list[
                 return [t.split("=", 1)[1]]
         return []
     if base == "restic":
+        if "restore" in rest:
+            parsed = _backup_arguments(rest, frozenset((
+                "-r", "--repo", "--repository-file", "--password-file", "--cache-dir",
+                "--target", "--host", "--path", "--include", "--exclude",
+                "--include-file", "--exclude-file", "--key-hint", "--option", "-o",
+            )), frozenset(("-v", "--verbose", "-q", "--quiet", "--json",
+                           "--verify", "--dry-run", "--no-cache", "--no-lock")))
+            if parsed is None or not parsed[0] or parsed[0][0] != "restore":
+                return ["<unresolvable target: unsupported restic restore arguments>"]
+            pos, values = parsed
+            targets = values.get("--target", [])
+            if len(pos) != 2 or not targets:
+                return ["<unresolvable target: restic restore requires snapshot and --target>"]
+            return [targets[-1]] + values.get("--cache-dir", [])
         pos = _positionals(rest, frozenset(("-r", "--repo", "--password-file", "--cache-dir")))
         if not pos or pos[0] not in _RESTIC_WRITE_VERBS:
             return []
@@ -417,6 +468,34 @@ def class_b_targets(verb: str | None, tokens: list[str], verb_idx: int) -> list[
             return ["<unresolvable repo: no --repo flag>"]
         return [repo]
     if base == "borg":
+        if any(t in ("extract", "delete", "prune") for t in rest):
+            # Borg 1.4.5: extract writes CWD; delete/prune take a positional
+            # repository (optionally ::archive for delete). No invented
+            # --destination/-C or Borg-2 --repo aliases.
+            parsed = _backup_arguments(rest, frozenset((
+                "--lock-wait", "--remote-path", "--remote-ratelimit", "--umask",
+                "--debug-topic", "--checkpoint-interval", "-c",
+                "--exclude", "-e", "--exclude-from", "--pattern", "--patterns-from",
+                "--strip-components", "--prefix", "-P", "--glob-archives", "-a",
+                "--sort-by", "--first", "--last", "--keep-within", "--keep-last",
+                "--keep-secondly", "--keep-minutely", "--keep-hourly", "-H",
+                "--keep-daily", "-d", "--keep-weekly", "-w", "--keep-monthly", "-m",
+                "--keep-13weekly", "--keep-3monthly", "--keep-yearly", "-y",
+            )), frozenset(("--stats", "-s", "--quick-stats", "--list", "--dry-run", "-n",
+                           "--force", "--save-space", "--cache-only", "--keep-security-info",
+                           "--numeric-owner", "--numeric-ids", "--nobsdflags", "--noflags",
+                           "--noacls", "--noxattrs", "--stdout", "--sparse",
+                           "--log-json", "--info", "--verbose", "-v", "--debug", "--warning", "--error",
+                           "--critical", "--show-rc", "--show-version", "--progress", "-p")))
+            if parsed is None or len(parsed[0]) < 2 or parsed[0][0] not in ("extract", "delete", "prune"):
+                return ["<unresolvable target: unsupported Borg arguments or missing repository>"]
+            pos, _ = parsed
+            if pos[0] == "extract":
+                return ["."]
+            if pos[0] == "prune" and len(pos) != 2:
+                return ["<unresolvable repo: ambiguous Borg prune arguments>"]
+            repo = pos[1].split("::", 1)[0]
+            return ["<unresolvable repo: remote Borg repository>"] if re.match(r"^[^/]*:", repo) else [repo]
         pos = _positionals(rest, frozenset(("--repo", "-r", "--stats")))
         if not pos or pos[0] not in _BORG_WRITE_VERBS:
             return []
@@ -424,6 +503,26 @@ def class_b_targets(verb: str | None, tokens: list[str], verb_idx: int) -> list[
             return ["<unresolvable repo: no repository argument>"]
         return [pos[1].split("::", 1)[0]]
     if base == "rclone":
+        if any(t in ("copyto", "moveto", "mkdir", "move") for t in rest):
+            parsed = _backup_arguments(rest, frozenset((
+                "--config", "--log-file", "--backup-dir", "--filter", "--filter-from",
+                "--include", "--exclude", "--include-from", "--exclude-from",
+                "--suffix", "--transfers", "--checkers", "--bwlimit", "--log-level",
+            )), frozenset(("--dry-run", "-n", "--verbose", "-v", "--quiet", "-q",
+                           "--progress", "-P", "--checksum", "-c", "--ignore-existing",
+                           "--ignore-times", "-I", "--update", "-u", "--no-traverse")))
+            if parsed is None or not parsed[0]:
+                return ["<unresolvable target: unsupported rclone arguments>"]
+            pos, values = parsed
+            sub = pos[0]
+            if sub not in ("copyto", "moveto", "mkdir", "move") or len(pos) != (2 if sub == "mkdir" else 3):
+                return ["<unresolvable target: missing or ambiguous rclone operands>"]
+            targets = pos[1:] if sub in ("move", "moveto", "mkdir") else pos[2:]
+            # These options create additional files, independently of the main
+            # destination. A remote source is read-only only for copyto.
+            targets += values.get("--log-file", []) + values.get("--backup-dir", [])
+            return ["<unresolvable target: remote rclone write>" if re.match(r"^[^/]*:", t)
+                    else t for t in targets]
         pos = _positionals(rest, frozenset(("--config", "--log-file", "--backup-dir")))
         if not pos or pos[0] not in _RCLONE_WRITE_VERBS:
             return []

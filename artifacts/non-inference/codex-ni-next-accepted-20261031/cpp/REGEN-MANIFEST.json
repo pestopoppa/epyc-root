@@ -40,5 +40,13 @@
     "handoff_named_location": "/mnt/raid0/llm/tmp/ak-cpu-fa-route-20261004/test-backend-ops-cpu-fa-longctx-v1.patch",
     "state": "absent at regeneration time",
     "replacement_artifact": "/mnt/raid0/llm/tmp/codex-ni-cpp-fa-patch-regen-20261031/test-backend-ops-cpu-fa-longctx-v1.patch"
+  },
+  "implementation_origin": {
+    "research_source_commit": "32a72fefcce62474df233958a445d7dd2a798f4d",
+    "research_source_date": "2026-10-07",
+    "generated_case_count": 35,
+    "generated_block_sha256": "04517e1afda4dcf59f7ab031660176bd7590a5971ddeed3dd3ecf0ffd6b1f9ca",
+    "landed_cpp_commit": "4e0ebc987e354556fbc44a7df0ba26413ed26d95",
+    "clarification": "The source.commit above records the 2026-10-31 regeneration snapshot. Its e95a9d2e coherence commit is not the implementing change; the exact generated block and C++ case set are already present in the 2026-10-07 source/target commits listed here."
   }
 }

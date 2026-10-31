@@ -1,0 +1,1 @@
+1177998 1177997 Sat Oct 31 12:51:41 2026  3548 bash -c ulimit -v 8388608; printf "%s\n" "$$" > "$1/test-pid"; ps -o pid=,ppid=,lstart=,rss=,args= -p "$$" > "$1/process-before-exec.txt"; exec python3 "$2/negative-control.py" _ /mnt/raid0/llm/tmp/codex-ni-containment-selected-20261031/proof/negative-control /mnt/raid0/llm/tmp/codex-ni-containment-selected-20261031
