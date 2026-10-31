@@ -1,0 +1,1 @@
+{"mode": "--apply", "targets": 24, "frames": ["sha256:a2ed1042d341cdbe360908c51e881ca3d34f1d0df965c7226d5fbecce094fc03", "sha256:9b91cc0fd185856745fd271615b0ebd8c32c68e6bec5cecb8ff5d4035608702f"], "receipt": "/mnt/raid0/llm/tmp/refactor-01a16fc3/prb-t4-scope-private-20261031/repo-runner-receipts/append-actual", "appended": true}
