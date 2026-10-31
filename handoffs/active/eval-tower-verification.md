@@ -855,12 +855,13 @@ justify best-of-N anywhere. Whether the instrument is worth using is decided by 
       the retained mass**, refusing the judgment below a stated floor. **Neither the paper nor its
       reference implementation specifies this fallback** — it is our gap to close, and the retained-mass
       field is what makes the hazard detectable instead of silent. [intake-1169]
-- [ ] **EV-15e — Pre-aggregation over both presentation orders is REQUIRED, not optional**, and must be
+- [x] **EV-15e — Pre-aggregation over both presentation orders is REQUIRED, not optional**, and must be ✅ 2026-10-31 [no-belief: offline software controls, no native judgment or measurement claim] [implementation: epyc-orchestrator e38774267ac25366ab05e56097bde0188b67a418; test: epyc-orchestrator/tests/unit/test_paired_distributional_readout.py]
       asserted in the implementation rather than requested in the prompt. It is the single largest
       effect in intake-1162 (56.7 → 73.1 on one arm) and it is one line. Pair it with an **order swap
       per comparison** — this is how we take the positional-bias-cancellation insight from the pivot
       tournament **without adopting the pivot tournament**, which is separately declined. [intake-1162]
       [intake-804]
+  - The offline CLI generates both presentation requests for each pair and refuses incomplete, duplicated or identity-mismatched captures; it aligns candidate distributions, averages them, then applies the unchanged readout. Forty-three focused tests and `make gates` passed. This closes the order implementation; native capture and EV-15a/c/d validation remain open.
 - [x] ✅ 2026-10-31 **EV-15f — Record the cheaper alternative before building the expensive one.** Evidence: orch `a844520f3cabefe2bbca6aff7231d9bc9eb2e5a0`; `scripts/autopilot/text_rating_readout.py`; `tests/unit/test_text_rating_readout.py` (24 pass). [no-belief: offline text-rating instrument; no judge deployment or comparative measurement claim]
       The standalone JSON-to-readout CLI implements text ratings, explicit preference/tie, confidence weighting and mandatory paired orders; missing/duplicate pairs refuse before aggregation. EV-15e's broader/logprob consumer and scientific comparison remain open. Original rationale: intake-1171 (V1)
       obtains the same graded, tie-free signal from **text ratings plus margin weighting**
