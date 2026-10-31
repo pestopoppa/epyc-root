@@ -30,4 +30,4 @@ The READY manifest is `/mnt/raid0/llm/tmp/compute-flags/ready/yarn-128k-mi210-so
 
 ## Prepared handoff insertion (MAIN applies)
 
-`handoff.patch` contains one scoped preparation sub-bullet under `YARN-128K-MI210`. It leaves the parent checkbox open and records the external keeper outage as the next-action dependency. The owning session applies it and refreshes the generated index state.
+`handoff.patch` is a valid unified diff for one scoped preparation sub-bullet under `YARN-128K-MI210`. It leaves the parent checkbox open and records the external keeper outage as the next-action dependency. `ARTIFACTS.sha256` covers the compact README and proposed patch; `EVIDENCE.sha256` remains the unchanged inventory of source-evidence hashes. The owning session applies it and refreshes the generated index state.
