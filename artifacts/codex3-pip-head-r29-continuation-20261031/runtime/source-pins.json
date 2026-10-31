@@ -1,0 +1,14 @@
+{
+  "/mnt/raid0/llm/tmp/codex3-pip-head-r29-repair-20261031/control-stop/parallel_entry.py": "05424103c598e9db008c2e271db98e841f1058fed899708c5842fd1406ff7b1d",
+  "/mnt/raid0/llm/tmp/codex3-pip-head-r29-repair-20261031/control-stop/parallel_owner.py": "a9fb786634bdf68d81f5bdd00173dd9e216bd3fa31a314102216f328fb6b07e7",
+  "/mnt/raid0/llm/tmp/codex3-pip-head-r29-repair-20261031/control-stop/parallel_worker.py": "fb18b3eceeb3bb5e37b7eb16d8d1e27f2d5576e50231610f2038268997c7f2f5",
+  "/mnt/raid0/llm/tmp/codex3-pip-head-r29-repair-20261031/control-stop/pool.py": "46afad3290e8cd5324fc6c5eda67d961f522d98a34585396c0366cbfdb6067d1",
+  "/mnt/raid0/llm/tmp/codex3-pip-head-r29-repair-20261031/control/parallel_entry.py": "436db843076b41fc75531be192a448abd342b4ff1eac554b880784a63c45caec",
+  "/mnt/raid0/llm/tmp/codex3-pip-head-r29-repair-20261031/control/parallel_owner.py": "e4baaee47cf332cf71d709ec874970042e1f11ffe583e340d5dcba973891c78c",
+  "/mnt/raid0/llm/tmp/codex3-pip-head-r29-repair-20261031/control/parallel_worker.py": "0d75dedfe4b274ac3ee93f7e8928919e0c2003851a38f8b4811a4e83b3cb595d",
+  "/mnt/raid0/llm/tmp/codex3-pip-head-r29-repair-20261031/control/pool.py": "cf494a99bca35ac695d2f06fc6495a543d7e93df325c16a126f1bd553a224de6",
+  "/mnt/raid0/llm/tmp/codex3-pip-head-r29-repair-20261031/parallel_entry.py": "b62199e25be32a3d0a6cec6bb2b29997cd754aeaadc6c7cd3293dddddce863b4",
+  "/mnt/raid0/llm/tmp/codex3-pip-head-r29-repair-20261031/parallel_owner.py": "7c18960960ec3ce681d435566f7f2a58636b8833cccf9303864429a4a4d9f6db",
+  "/mnt/raid0/llm/tmp/codex3-pip-head-r29-repair-20261031/parallel_worker.py": "46f50c63c985e534c87099930cfaaff796b232ce7e4b65a80db04e0055f15a14",
+  "/mnt/raid0/llm/tmp/codex3-pip-head-r29-repair-20261031/pool.py": "600eab7436e9a550ba2154a0b73af12ca69ef8944bfb240db844e7a4e51b0f85"
+}

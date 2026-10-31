@@ -1,0 +1,30 @@
+{
+  "scope": "native cached replay with R29 source-pins added; no network/no writes/no inference",
+  "replayed": [
+    {
+      "index": 39,
+      "response_sha256": "763ad8b7723ba00fd4e31bb8a898136b7efe377c03ba8f2efff1991439493a07",
+      "new_requests": 0
+    },
+    {
+      "index": 40,
+      "response_sha256": "bb0b33969a45d1f57f6ccddc7ee572a1829e3d5f58d7a6d0c545daa2fe95e793",
+      "new_requests": 0
+    },
+    {
+      "index": 44,
+      "response_sha256": "e9ae514a019ebbcdf49f0311a5197fc5c391dd6029232b78407db1ee2e56499f",
+      "new_requests": 0
+    },
+    {
+      "index": 46,
+      "response_sha256": "45a12ca59af1e34f5c1729fcdb21bc089e6f477c2e107cc0c0fb062373a9c2e0",
+      "new_requests": 0
+    },
+    {
+      "index": 48,
+      "response_sha256": "9fe2bdf2d58731d77ffb83a5d4e35a2b56cf3b7cbe4525d8f9455e71feef1d72",
+      "new_requests": 0
+    }
+  ]
+}

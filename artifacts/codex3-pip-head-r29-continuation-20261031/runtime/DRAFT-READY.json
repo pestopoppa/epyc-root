@@ -1,0 +1,93 @@
+{
+  "id": "codex3-pip02-paddle-relocatable-r29-head-20261031",
+  "owner": "codex3",
+  "priority_rank": 83,
+  "regions": "any-cpu-quarter",
+  "min_window_s": 1320,
+  "window_s": 32400,
+  "gib": 96,
+  "launcher": {
+    "path": "/mnt/raid0/llm/tmp/codex3-pip-head-r29-repair-20261031/launch-p0.sh",
+    "sha256": "dbe28a4f43d0890a14a80037a80ebc2b52d49ab8ac3fee13b960f62e1b20fbbd"
+  },
+  "job": {
+    "path": "/mnt/raid0/llm/tmp/codex3-pip-head-r29-repair-20261031/launch-p0.sh",
+    "sha256": "dbe28a4f43d0890a14a80037a80ebc2b52d49ab8ac3fee13b960f62e1b20fbbd"
+  },
+  "source_manifest": {
+    "path": "/mnt/raid0/llm/tmp/codex3-pip-head-r29-repair-20261031/source.sha256",
+    "sha256": "27adcfd36240e692a30392ba0d613fff7ccacb7a0256ed8913dc31f3c323c00f"
+  },
+  "result_path": "/mnt/micron/codex3-pip-head-r26-20261030/HEAD-DONE",
+  "decision_rule": "Continue original 25-page Paddle head, skipping completed pages and replaying durable prior region responses without redraw; exposed unknowns are never redrawn; no quality verdict.",
+  "class": "diagnostic",
+  "enrollment": "n/a: diagnostic",
+  "hold": null,
+  "scratch_root": "/mnt/raid0/llm/tmp/codex3-pip-head-r29-repair-20261031",
+  "keep": [
+    "launch-p0.sh",
+    "pool.py",
+    "parallel_entry.py",
+    "parallel_owner.py",
+    "parallel_worker.py",
+    "source-pins.json",
+    "source.sha256",
+    "SMOKE-normal.log",
+    "SMOKE-stop.log",
+    "SOURCE-SEMANTICS.json",
+    "repair.diff",
+    "DRAFT-READY.json",
+    "ws58-launcher.out"
+  ],
+  "est_output_GiB": 0.125,
+  "launcher_log": "/mnt/raid0/llm/tmp/codex3-pip-head-r29-repair-20261031/ws58-launcher.out",
+  "port": 25400,
+  "booking_class": "block-correctness",
+  "smoke": {
+    "ran_at": "2026-10-31T04:18:33Z",
+    "regions": "R11 q3 SMT168,169 OMP1 no CPU lock",
+    "model": "canonical PaddleOCR-VL1.6 GGUF/mmproj/layout; 8192 context/4096 output",
+    "first_request_ok": true,
+    "result_writer_ok": true,
+    "exit_ok": true,
+    "wall_s": 65.9095,
+    "sampled_peak_tree_rss_bytes": 4941336576,
+    "native_rc": 75,
+    "partial": true,
+    "cleanup_verified": true,
+    "matched_native_HTTP200": 5,
+    "log": "/mnt/raid0/llm/tmp/codex3-pip-head-r29-repair-20261031/SMOKE-normal.log",
+    "log_sha256": "49e461368e680fee07745004426ce709ddb05e415c1c3d424ced8f7af54b9568",
+    "stop_log": "/mnt/raid0/llm/tmp/codex3-pip-head-r29-repair-20261031/SMOKE-stop.log",
+    "stop_log_sha256": "0810d6f63630fb00421e01f3f35d53324f55a34016a6d6bacefc28c9f512f77f",
+    "stop_drained": true,
+    "scope": "public controls 807/836 only; no cohort inference; actual normal real-grant branch untested",
+    "replay_receipt": "/mnt/raid0/llm/tmp/codex3-pip-head-r28-audit-20261031/replay-r29-final.json"
+  },
+  "feasibility": "1320s minimum with native 1200s start margin and 90s engine drain; 9h requested, no minimum-window completion guarantee. RAID .125 GiB sampled reservation plus separate Micron 1 GiB reserve; both 150 GiB floors maintained; sampled overshoot is not a hard quota.",
+  "notes": "R29: one page worker serializes native predictor construction; native worker faults propagate rc1. Original source and checkpoints retained; five accepted region responses replay from bytes and only unstarted regions can request. HEAD-DONE requires all pages; prior R28 failure is preserved. Normal real-grant branch untested; quality verdict remains open. Layout is recomputed and must match original pixel geometry before VLM; cached requests replay and mismatches or unknown starts refuse. R28 page-level censored diagnostic is historical and superseded by checkpoint continuation clarification.",
+  "log_consumer": "/mnt/raid0/llm/tmp/pip02-pipeline-prep-20261029/cpu_projector_witness.py",
+  "runtime_dependencies": [
+    "/mnt/raid0/llm/tmp/codex3-pip-head-r26-20261030",
+    "/mnt/micron/codex3-pip-head-r26-20261030",
+    "/mnt/micron/codex3-pip-split-r22-20261030",
+    "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029",
+    "/mnt/raid0/llm/tmp/codex3-pip02-paddle-relocatable-r13-20261030",
+    "/mnt/raid0/llm/tmp/pip02-pipeline-prep-20261029"
+  ],
+  "protocol": {
+    "path": "/mnt/raid0/llm/tmp/codex3-pip-head-r26-20261030/PROTOCOL.md",
+    "sha256": "be9974933703d273f65cdb174f1bdb462a2fd39debb88bf71a520e8477fba595"
+  },
+  "status": "DRAFT",
+  "output_budget": {
+    "raid_est_GiB": 0.125,
+    "raid_soft_GiB": 0.0625,
+    "micron_est_GiB": 1.0,
+    "micron_soft_GiB": 0.5,
+    "kind": "sampled; overshoot possible",
+    "native_output_root": "/mnt/micron/codex3-pip-head-r26-20261030",
+    "raid_floor_GiB": 150,
+    "micron_floor_GiB": 150
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "at": "2026-10-31T04:22:46.739014+00:00",
+  "id": "codex3-pip02-paddle-relocatable-r29-head-20261031",
+  "manifest_sha256": "49b25a1932872e8ad0fa125d3e7de4b97246b2b33bebd6e222d11f857f9ba3b1",
+  "row_sha256": "fe054861697843c800d746ba3b3b402bbe275a479af1e4e78d3ecab1c3e859ab",
+  "launcher_sha256": "dbe28a4f43d0890a14a80037a80ebc2b52d49ab8ac3fee13b960f62e1b20fbbd",
+  "source_manifest_sha256": "27adcfd36240e692a30392ba0d613fff7ccacb7a0256ed8913dc31f3c323c00f"
+}

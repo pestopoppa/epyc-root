@@ -1,0 +1,25 @@
+{
+  "scope": "actual private source AST worker rc branches and serialized count",
+  "results": [
+    {
+      "worker_rc": -11,
+      "owner_rc": 1,
+      "error": "native worker failed rc=-11"
+    },
+    {
+      "worker_rc": 1,
+      "owner_rc": 1,
+      "error": "native worker failed rc=1"
+    },
+    {
+      "worker_rc": 75,
+      "owner_rc": 75,
+      "error": null
+    },
+    {
+      "worker_rc": 0,
+      "owner_rc": 0,
+      "error": null
+    }
+  ]
+}

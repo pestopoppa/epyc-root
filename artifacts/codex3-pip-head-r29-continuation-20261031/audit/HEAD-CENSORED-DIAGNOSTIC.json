@@ -1,0 +1,115 @@
+{
+  "at": "2026-10-31T04:21:08.101881+00:00",
+  "finish_proof_sha256": "899248e8959e4f947a833e2ed6ddff5ddc84b94b14bc1e818f3e88b6182628c7",
+  "group0_native_done": true,
+  "group3_native_done": false,
+  "inventory_sha256": "4cdd7d86e51186ecb2a996a0b71e4be98085c385a1fbbd1c1b2a872807ab42b5",
+  "journal_complete": 15,
+  "journal_complete_strict_finish_verified_in_selected_corpus": 13,
+  "matched_original_region_responses": 5,
+  "native_terminal_region_pending": 10,
+  "new_inference": false,
+  "outer_rc": 78,
+  "page_indices_censored": [
+    39,
+    40,
+    41,
+    42,
+    43,
+    44,
+    45,
+    46,
+    47,
+    48
+  ],
+  "page_missing": 0,
+  "page_start_censored": 10,
+  "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+  "policy": "Do not redraw any page-start censored unknown or completed page. Native region classifier remains pending; this is not a native collection terminal or HEAD-DONE.",
+  "quality_verdict": null,
+  "region_details": [
+    {
+      "boxes": 34,
+      "index": 39,
+      "layout_sha256": "6a8e28b3e5bb3e0a5e595fdcc5e64afc5fe0123e434dd3cfc5bfaff0dfc8cbb4",
+      "region_results": 1,
+      "region_starts": 1,
+      "sent": true
+    },
+    {
+      "boxes": 37,
+      "index": 40,
+      "layout_sha256": "380d186b76f274d83008b68dfd440d628f572b3f6a4332d4a2810ff5cf39ba36",
+      "region_results": 1,
+      "region_starts": 1,
+      "sent": true
+    },
+    {
+      "boxes": 40,
+      "index": 41,
+      "layout_sha256": "5d0fda4050004fe5208fb7b33eb3656f1c716c06467b6b819667238d35c4ffe6",
+      "region_results": 0,
+      "region_starts": 0,
+      "sent": false
+    },
+    {
+      "boxes": 44,
+      "index": 42,
+      "layout_sha256": "7fb41a6053cb2bd3fdfcb78127ac68cd6a0476f8f92560d828159a28dc7478e0",
+      "region_results": 0,
+      "region_starts": 0,
+      "sent": false
+    },
+    {
+      "boxes": 15,
+      "index": 43,
+      "layout_sha256": "a6d9c3aaa05c53b18975e7d955ab2a1543781a761ccfe6d1fa3c0095fea8372d",
+      "region_results": 0,
+      "region_starts": 0,
+      "sent": false
+    },
+    {
+      "boxes": 28,
+      "index": 44,
+      "layout_sha256": "795118fc67daa29f7c701276714b28f33a10cdda304554fd8f08cfab4bb5a69e",
+      "region_results": 1,
+      "region_starts": 1,
+      "sent": true
+    },
+    {
+      "boxes": 34,
+      "index": 45,
+      "layout_sha256": "6b03a65c52a445899537b7f5411c86ab1beb76d05906730114384506c139cfdd",
+      "region_results": 0,
+      "region_starts": 0,
+      "sent": false
+    },
+    {
+      "boxes": 38,
+      "index": 46,
+      "layout_sha256": "b131bafc9884ec41d44897a425292958e67b41bf3a1f8d058146110d8453ad45",
+      "region_results": 1,
+      "region_starts": 1,
+      "sent": true
+    },
+    {
+      "boxes": 55,
+      "index": 47,
+      "layout_sha256": "8ba165fed28c342c4d60543d6a5ec03d7247abb2eedb4a022c19e6ace0fe4ddb",
+      "region_results": 0,
+      "region_starts": 0,
+      "sent": false
+    },
+    {
+      "boxes": 16,
+      "index": 48,
+      "layout_sha256": "6c4e9edda619307f4984cae3319fe28fe16c5cc6bc705cc2f82d3372958399cd",
+      "region_results": 1,
+      "region_starts": 1,
+      "sent": true
+    }
+  ],
+  "region_provenance_sha256": "10b3adebaaf95c5277c8c4bf2751111a3984db536f838f7491c34b61c2707823",
+  "run_id": "codex3-pip02-paddle-relocatable-r28-head-20261031",
+  "schema": "pip02-head-censored-policy-snapshot/v1"
+}
