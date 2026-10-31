@@ -116,6 +116,7 @@ KVU-16b / KVU-19 tax). YaRN is a separate long-context *mode*.
     *(2026-10-05)* The CPU leg's `yarn_cpu_leg.py` hit the same missing-proof-line defect: no `--verbosity 4`, so the
     first launch of both arms refused, rc=3. It was fixed in that script only. Scope now includes moving the launch
     flags and proof preflight into one shared helper that `yarn_needle.py` and `yarn_cpu_leg.py` both import.
+    - 2026-10-31 source checkpoint: research `0e4321f24bae29355333fcf2cb712a41ce080e2f` publishes a provenance-pinned copy of both historical runners with a shared proof helper. The actual copied GPU preflight, given the original A1 log and stubs for unrelated live host checks, passes without force; the legacy matcher misses two proofs. Ten offline controls, launcher syntax and helper lint pass. Existing ec and NI packets were not changed; real host preflight and adoption remain unverified, so the parent stays open. [Evidence](https://github.com/pestopoppa/epyc-inference-research/blob/0e4321f24bae29355333fcf2cb712a41ce080e2f/artifacts/yarn-e1-proof-20261031/integrated-tests.log). [no-belief: offline source controls only]
   - [ ] **YARN-E1-A2 — run the A2 negative control at 400K in the next YaRN window.** (filed 2026-10-04, workspace-ec)
     C3 pre-registered "A2 must score clearly worse, or the test is not discriminating", and E1 ran A0 and A1 only.
     Ride it on the YARN-E1-MEM re-measure or the YARN-DCA-E1 window. Done when A2's 400K needle score is recorded
