@@ -1,0 +1,64 @@
+{
+  "arms": {
+    "SA1": {
+      "complete_sha256": "c14c2bbeefcaf4c392f036fcea311d1a8742967a2f004288073593fb269ffc75",
+      "waves_sha256": "57d374679d7d170388f2e58e19f0ca83eb5beaf850191ddbde673cbab42fa5a0",
+      "vram_peak_max": 52093657088,
+      "vram_sample_count": 69,
+      "env": {
+        "LD_LIBRARY_PATH": "/mnt/raid0/llm/kernels/builds/gpu-20261024-c72ec82f5-c5/bin:/opt/rocm/lib",
+        "HSA_OVERRIDE_CPU_AFFINITY_DEBUG": "0",
+        "GGML_CUDA_DISABLE_GRAPHS": null,
+        "LLAMA_SPEC_EXACT": null,
+        "LLAMA_ZOS2": null
+      }
+    },
+    "SA2": {
+      "complete_sha256": "a318962032fddd72b035ea1e2cb1b56bcd60eaefb2d4a4d754a2e8ff44696617",
+      "waves_sha256": "42a2c051d855fab3a537cd563767bde5f51792023b1ac5172f7232604cae2694",
+      "vram_peak_max": 52093657088,
+      "vram_sample_count": 73,
+      "env": {
+        "LD_LIBRARY_PATH": "/mnt/raid0/llm/kernels/builds/gpu-20261024-c72ec82f5-c5/bin:/opt/rocm/lib",
+        "HSA_OVERRIDE_CPU_AFFINITY_DEBUG": "0",
+        "GGML_CUDA_DISABLE_GRAPHS": null,
+        "LLAMA_SPEC_EXACT": null,
+        "LLAMA_ZOS2": null
+      }
+    },
+    "SB": {
+      "complete_sha256": "0c39eb44e84a656a49f9c3fa7de6148131163c55780ac24c23792e3792842930",
+      "waves_sha256": "e8cc2043184e26e7ccd7e1ee8a2c829045798bfddf5a25c258b79bccda3e5fd0",
+      "vram_peak_max": 52093657088,
+      "vram_sample_count": 68,
+      "env": {
+        "LD_LIBRARY_PATH": "/mnt/raid0/llm/tmp/codex-ni-gpu-zos-build-prep-20261031/successor/out/release/bin:/opt/rocm/lib",
+        "HSA_OVERRIDE_CPU_AFFINITY_DEBUG": "0",
+        "GGML_CUDA_DISABLE_GRAPHS": null,
+        "LLAMA_SPEC_EXACT": null,
+        "LLAMA_ZOS2": "all"
+      }
+    },
+    "SO": {
+      "complete_sha256": "4af76293de7af2267218c5fe6884af56ed9aa9cc8d87016be5db74112f2bc929",
+      "waves_sha256": "14904636b1d490961bfb0fb715074e3e9a4620ff5144b5b527e69562e1860cf5",
+      "vram_peak_max": 52093657088,
+      "vram_sample_count": 69,
+      "env": {
+        "LD_LIBRARY_PATH": "/mnt/raid0/llm/tmp/codex-ni-gpu-zos-build-prep-20261031/successor/out/release/bin:/opt/rocm/lib",
+        "HSA_OVERRIDE_CPU_AFFINITY_DEBUG": "0",
+        "GGML_CUDA_DISABLE_GRAPHS": null,
+        "LLAMA_SPEC_EXACT": null,
+        "LLAMA_ZOS2": null
+      }
+    }
+  },
+  "serial_prompts": 8,
+  "per_arm_responses": 8,
+  "all_serial_token_content_and_draft_match": true,
+  "original_core_m_AA": 24,
+  "core_within_tolerance": true,
+  "correctness": "PASS",
+  "ship_authorized": false,
+  "scope": "serial correctness only; no speed gate"
+}

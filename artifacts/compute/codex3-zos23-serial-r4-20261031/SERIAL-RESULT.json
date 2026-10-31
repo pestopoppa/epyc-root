@@ -1,0 +1,13 @@
+{
+  "schema": "ni.gpu_zos2_serial_fallback.v1",
+  "at": "2026-10-31T05:16:52.659939+00:00",
+  "core_sha256": "bf2a19f42ca984cb37d0c9467e26ec3e118620478e336222e11c1213912f9954",
+  "run_intent_sha256": "facfb5566e9c3e60772166e5da2848732d4cfe50d3e2687f1a90a598133a0412",
+  "m_AA": 24,
+  "np4_within_tolerance": true,
+  "serial_AA_identical": true,
+  "serial_B_O_identical": true,
+  "correctness": "PASS",
+  "ship_authorized": false,
+  "reason": "Serial tier resolves correctness only; original speed and all other gates remain required"
+}
