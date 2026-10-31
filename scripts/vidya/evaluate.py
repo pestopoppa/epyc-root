@@ -23,9 +23,9 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
-from fold import fold  # noqa: E402
+from fold import Belief, fold  # noqa: E402
 from gold_corpus import CORPUS, MUTATION_ROUNDS, corpus_frames  # noqa: E402
-from impact import frames_carrying_evidence, impact_of_retracting  # noqa: E402
+from impact import _hypothetical_refold, frames_carrying_evidence, impact_of_retracting  # noqa: E402
 
 __all__ = ["run_round", "run_all", "score_family"]
 
@@ -40,23 +40,16 @@ def score_family(family, frames_list: list[dict]) -> dict:
     targets = frames_carrying_evidence(frames_list, target_claim.evidence_id)
 
     report = impact_of_retracting(frames_list, targets, as_of=AS_OF)
-    after = fold(
-        frames_list + [{
-            "frame_type": "epyc.vidya/frame/retraction/v1",
-            "assertion": {"retracts": fid},
-            "provenance": {"method": "eval", "about": fid},
-            "pubinfo": {"actor": "eval", "authority_scope": "eval", "created_at": AS_OF},
-            "frame_id": f"eval-retraction-{fid[:16]}",
-        } for fid in targets],
-        as_of=AS_OF,
-    )
+    after = _hypothetical_refold(frames_list, targets, as_of=AS_OF)
     before = fold(frames_list, as_of=AS_OF)
     changed = {i.claim_id for i in report.affected}
 
     rows, points = [], []
     for claim in family.claims:
         b, a = before.beliefs.get(claim.claim_id), after.beliefs.get(claim.claim_id)
-        moved = bool(b and a and (b.pro != a.pro or b.con != a.con))
+        b = b or Belief(claim_id=claim.claim_id)
+        a = a or Belief(claim_id=claim.claim_id)
+        moved = b.pro != a.pro or b.con != a.con
         flagged = claim.claim_id in changed
 
         if claim.expect == "retracted":

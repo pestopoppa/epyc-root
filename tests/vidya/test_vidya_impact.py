@@ -123,7 +123,7 @@ class TestImpact:
             frame_type="epyc.vidya/frame/retraction/v1",
             assertion={"retracts": s1["frame_id"], "claim_id": "c"},
             provenance={"method": "operator", "about": s1["frame_id"]},
-            actor="operator", authority_scope="research-verification", created_at=NOW)
+            actor="test", authority_scope="research-verification", created_at=NOW)
         predicted = impact_of_retracting([s1, s2], [s1["frame_id"]], as_of=NOW)
         actual = fold([s1, s2, real], as_of=NOW).beliefs["c"]
         item = next(i for i in predicted.affected if i.claim_id == "c")

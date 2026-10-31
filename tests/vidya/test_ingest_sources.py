@@ -680,7 +680,8 @@ def test_only_new_refuses_to_revive_retracted_evidence(tmp_path, capsys):
     ledger = Ledger(target)
     support = ledger.read_all()[2].frame
     ledger.append({"frame_type": "epyc.vidya/frame/retraction/v1",
-                   "assertion": {"retracts": support["frame_id"]}})
+                   "assertion": {"retracts": support["frame_id"]},
+                   "pubinfo": {"actor": support["pubinfo"]["actor"]}})
     before = target.read_bytes()
     with pytest.raises(ValueError, match="historical claim.*no live evidence"):
         ingest_sources.ingest(ledger, "contention-gate", [path],

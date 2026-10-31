@@ -642,6 +642,17 @@ def _emit_warrant_correction(
                         "derived_from": assertion["source_id"]},
             actor=ADAPTER_ID, authority_scope=AUTHORITY, created_at=as_of,
         )
+        # A foreign or malformed retraction is not effective under the fold, but its
+        # presence still requires review before this correction can append anything.
+        for existing in frames:
+            existing_assertion = existing.get("assertion")
+            if (existing.get("frame_type") == FT_RETRACT
+                    and isinstance(existing_assertion, dict)
+                    and existing_assertion.get("retracts") == fid
+                    and existing != event):
+                raise ValueError({"code": "unexpected_target_retraction",
+                                  "target_frame_id": fid,
+                                  "retraction_frame_id": existing.get("frame_id")})
         if fid in retracted and by_id.get(event["frame_id"]) != event:
             raise ValueError("target already effectively retracted outside this frozen correction")
         if event["frame_id"] in by_id and fid not in retracted:
