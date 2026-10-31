@@ -1,0 +1,21 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.15, pytest-9.0.3, pluggy-1.6.0
+rootdir: /mnt/raid0/llm/worktrees/mains/codex-ni-orchestrator
+configfile: pyproject.toml
+collected 76 items
+
+../mnt/raid0/llm/worktrees/mains/codex-ni-orchestrator/tests/unit/test_colbert_native_contract.py . [  1%]
+..............                                                           [ 19%]
+../mnt/raid0/llm/worktrees/mains/codex-ni-orchestrator/tests/unit/test_colbert_lock_contract.py . [ 21%]
+.............                                                            [ 38%]
+../mnt/raid0/llm/worktrees/mains/codex-ni-orchestrator/tests/unit/test_colbert_reranker.py . [ 39%]
+..............................................                           [100%]
+
+=============================== warnings summary ===============================
+../mnt/raid0/llm/epyc-orchestrator/.venv/lib/python3.11/site-packages/_pytest/config/__init__.py:1434
+  /mnt/raid0/llm/epyc-orchestrator/.venv/lib/python3.11/site-packages/_pytest/config/__init__.py:1434: PytestConfigWarning: Unknown config option: asyncio_mode
+  
+    self._warn_or_fail_if_strict(f"Unknown config option: {key}\n")
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+======================== 76 passed, 1 warning in 0.67s =========================

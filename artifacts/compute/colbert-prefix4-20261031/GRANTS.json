@@ -1,0 +1,25 @@
+{
+  "at": "2026-10-31T09:27:03.115042+00:00",
+  "rows": [
+    {
+      "grant": "regions=mi210_0,184-191 start=2026-10-31T08:58Z end=2026-10-31T10:58Z\n",
+      "class": "block-correctness"
+    },
+    {
+      "grant": "regions=72-95 start=2026-10-31T08:03Z end=2026-10-31T17:33Z\n",
+      "class": "block-correctness"
+    },
+    {
+      "grant": "regions=24-47 start=2026-10-31T08:18Z end=2026-10-31T20:18Z\n",
+      "class": "block-correctness"
+    },
+    {
+      "grant": "regions=0-23 start=2026-10-31T08:25Z end=2026-10-31T12:25Z\n",
+      "class": "block-correctness"
+    },
+    {
+      "grant": "regions=48-71 start=2026-10-31T08:03Z end=2026-10-31T20:03Z\n",
+      "class": "block-correctness"
+    }
+  ]
+}

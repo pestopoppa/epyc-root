@@ -1,0 +1,38 @@
+{
+  "schema": "prefix4-full-public-encode/v1",
+  "status": "COMPLETE",
+  "partial": false,
+  "row_count": 44,
+  "banked_snippets": 20,
+  "caps": "first snippet32,64,128; remaining19 cap64",
+  "criterion": "exact full input IDs/masks and retained positions; all128 coordinates; per-token max abs(1-cos)<=original1e-2",
+  "candidate_only": false,
+  "unchanged_current_app": false,
+  "app_file_sha256": "ae9ae18481eb64e7c2bd022c86cb396524ef4ecd0946318be1e424107e212492",
+  "source_app": "7d92b1a8c198c2b3cd86e0920bc7f1c54364454f",
+  "summary": {
+    "reason-original-declared": {
+      "rows": 22,
+      "statuses": [
+        "NUMERIC_FAIL",
+        "PASS"
+      ],
+      "max_cosine_divergence": 0.012336671352386475
+    },
+    "lateon-original-declared": {
+      "rows": 22,
+      "statuses": [
+        "PASS"
+      ],
+      "max_cosine_divergence": 0.001204848289489746
+    }
+  },
+  "original_reason_parity_passed": false,
+  "original_reason_reason": "native-contract candidate; Reason quantization numeric failures retained against original threshold",
+  "models_unchanged_before_after": true,
+  "elapsed_s": 11.512453513918445,
+  "scope": "numerical fidelity only; no retrieval quality, deployment, adoption or calibration claim",
+  "landed_origin_main": true,
+  "threshold_unchanged": true,
+  "source_path": "src/retrieval/colbert_encoder.py"
+}

@@ -1,0 +1,35 @@
+{
+  "code_commit": "7d92b1a8c198c2b3cd86e0920bc7f1c54364454f",
+  "code_repo": "epyc-orchestrator",
+  "encoder_sha256": "ae9ae18481eb64e7c2bd022c86cb396524ef4ecd0946318be1e424107e212492",
+  "source_files": [
+    "src/retrieval/colbert_encoder.py",
+    "tests/unit/test_colbert_native_contract.py"
+  ],
+  "native_rows": 44,
+  "cosine_computable": 44,
+  "statuses": {
+    "lateon-original-declared": {
+      "PASS": 22
+    },
+    "reason-original-declared": {
+      "PASS": 19,
+      "NUMERIC_FAIL": 3
+    }
+  },
+  "unchanged_divergence_threshold": 0.01,
+  "original_models_unchanged": true,
+  "zero_or_nonfinite_vectors": 0,
+  "min_actual_norm": 0.9999998807907104,
+  "min_reference_norm": 0.9999998807907104,
+  "tracked_tests": 76,
+  "prior_model_free_tests": 14,
+  "make_gates": "PASS",
+  "ruff": "PASS",
+  "native_wall_s": 13.00882575684227,
+  "peak_rss_bytes": 2092527616,
+  "pid_absent": true,
+  "scope": "contract repair and numerical computability only; Reason3 numeric failures retained; no retrieval quality/adoption/deploy/index rebuild claim",
+  "source_family": "existing SC50; no new adapter/ladder/warrant",
+  "raw_packet_keep": "/mnt/raid0/llm/tmp/codex-ni-prefix4-contract-20261031"
+}

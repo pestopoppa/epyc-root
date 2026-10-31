@@ -10,7 +10,7 @@
 
 | ID | Track | Handoff | Next action | Deps |
 |----|-------|---------|-------------|------|
-| PIP-01 | colbert reranker web research | [colbert-reranker-web-research.md](colbert-reranker-web-research.md) | G14 — re-export Reason-mxbai-colbert-v0-32m with pylate-onnx-export 1.7.0 in a py3.10–3.12 venv, then PREFIX-3 parity | — |
+| PIP-01 | colbert reranker web research | [colbert-reranker-web-research.md](colbert-reranker-web-research.md) | G14 — re-export Reason with pylate-onnx-export 1.7.0 (py3.10–3.12); investigate PREFIX-3 Reason numeric failures | — |
 | PIP-02 | document parser table bench | [document-parser-table-bench.md](document-parser-table-bench.md) | Stage + arm PIP02-PHASEC-ENGLISH-RUN: 755 English pages, ODL + PaddleOCR-VL-1.6, gate on English table TEDS (approved 10-29) | — |
 | PIP-03 | ernie image turbo evaluation | [ernie-image-turbo-evaluation.md](ernie-image-turbo-evaluation.md) | Run matched-prompt Qwen-Image-2.1 vs ERNIE generation comparison and record admissible outputs | — |
 | PIP-04 | internal kb rag | [internal-kb-rag.md](internal-kb-rag.md) | Source-review remaining K2/web contracts and independent dependency consumers | — |
