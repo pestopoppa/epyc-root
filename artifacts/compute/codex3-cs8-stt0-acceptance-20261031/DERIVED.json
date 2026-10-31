@@ -1,0 +1,296 @@
+{
+  "co_tenant": "UNKNOWN/unobserved",
+  "comparison_rule": "same model, binary and corpus; exact UTF-8 stdout transcript equality including trailing newline; differences reported, not a failure; wall time descriptive only",
+  "count": 40,
+  "cpu_completion_sha256": "1f0166e73db49f657d9c72d799f9529d7929a0a279aa47de85317f61b5d54637",
+  "date": "2026-10-28",
+  "decided_proposition": "For the fixed 40 pinned FLEURS clips, the CPU and GPU legs produce identical raw UTF-8 transcript bytes using the same pinned model and binary.",
+  "differences": 0,
+  "gpu_completion_sha256": "a890a44836ea14116f69408505b1cbb6c68ed21769028377261956a52300856c",
+  "identical_count": 40,
+  "items": [
+    {
+      "clip_id": "en_us:12741024238657315067.wav",
+      "cpu_transcript": "Unfortunately, studying traffic flow is difficult because driver's behavior cannot be predicted with 100 percent certainty.\n",
+      "gpu_transcript": "Unfortunately, studying traffic flow is difficult because driver's behavior cannot be predicted with 100 percent certainty.\n",
+      "identical": true,
+      "pcm_sha256": "52e73f675998d0cf346920865d3abdd8a22ad4f9de8196bc190f00896ba8a260"
+    },
+    {
+      "clip_id": "en_us:9055240296608129734.wav",
+      "cpu_transcript": "Unfortunately, studying traffic flow is difficult because driver behavior cannot be predicted with 100 percent certainty.\n",
+      "gpu_transcript": "Unfortunately, studying traffic flow is difficult because driver behavior cannot be predicted with 100 percent certainty.\n",
+      "identical": true,
+      "pcm_sha256": "a07bbf4747676ad1fe6873a3d7ff46bd59535e4fc790bd4d83d2d10ff1a851df"
+    },
+    {
+      "clip_id": "en_us:621925716775998155.wav",
+      "cpu_transcript": "Twentieth-century research has shown that there are two pools of genetic variation: hidden and expressed.\n",
+      "gpu_transcript": "Twentieth-century research has shown that there are two pools of genetic variation: hidden and expressed.\n",
+      "identical": true,
+      "pcm_sha256": "219c0050feb1e9f8fd80a7317113a0fdbfed1a1e1b9a50ce5390dd085c7fb544"
+    },
+    {
+      "clip_id": "en_us:10335587906469246566.wav",
+      "cpu_transcript": "20th century research has shown that there are two pools of genetic variation hidden and expressed.\n",
+      "gpu_transcript": "20th century research has shown that there are two pools of genetic variation hidden and expressed.\n",
+      "identical": true,
+      "pcm_sha256": "f112c6d36e3349ce43279d592d8cc3d03acc0e237692900e6eb769267e9c8d7a"
+    },
+    {
+      "clip_id": "en_us:2589557553267364799.wav",
+      "cpu_transcript": "Remember that even though music on the main stages may have finished, there may be sections of the festival that will keep playing music until late into the night.\n",
+      "gpu_transcript": "Remember that even though music on the main stages may have finished, there may be sections of the festival that will keep playing music until late into the night.\n",
+      "identical": true,
+      "pcm_sha256": "88a38da40bb1e6ea6dd641935ee836e2b92f682b41764812787660bd205afe55"
+    },
+    {
+      "clip_id": "en_us:17824557748066874904.wav",
+      "cpu_transcript": "Remember that even though music on the main stages may have finished, there may be sections of the festival that will keep playing music until late into the night.\n",
+      "gpu_transcript": "Remember that even though music on the main stages may have finished, there may be sections of the festival that will keep playing music until late into the night.\n",
+      "identical": true,
+      "pcm_sha256": "1d63d47846c3501fe67178591dd02754a0134c00f0e55ad383836ff831615d8a"
+    },
+    {
+      "clip_id": "en_us:8173060820032255320.wav",
+      "cpu_transcript": "Police Superintendent Shandra Sankhar Salawski said the accused appeared in court with covered faces.\n",
+      "gpu_transcript": "Police Superintendent Shandra Sankhar Salawski said the accused appeared in court with covered faces.\n",
+      "identical": true,
+      "pcm_sha256": "7069e84c7cc02acb91d2e99c84cbe1d753f1300b89f70671770671ee01029dfb"
+    },
+    {
+      "clip_id": "en_us:15618717836108767541.wav",
+      "cpu_transcript": "Police Superintendent Chandra Shikar Sonaki said the accused appeared in court with covered faces.\n",
+      "gpu_transcript": "Police Superintendent Chandra Shikar Sonaki said the accused appeared in court with covered faces.\n",
+      "identical": true,
+      "pcm_sha256": "5b676478f2bbb4b88fd59b934b19c8314cff33fc98354c7bbe70ebb6561238ed"
+    },
+    {
+      "clip_id": "en_us:2652155470394119415.wav",
+      "cpu_transcript": "The term bug is used by entomologists in a formal sense for this group of insects.\n",
+      "gpu_transcript": "The term bug is used by entomologists in a formal sense for this group of insects.\n",
+      "identical": true,
+      "pcm_sha256": "246e955ca8b3e98a3a23149958068bf3f9fb1f18c7c11d1b05f89536f0fb6c5f"
+    },
+    {
+      "clip_id": "en_us:14585898865749103727.wav",
+      "cpu_transcript": "The term bug is used by entomologists in a formal sense for this group of insects.\n",
+      "gpu_transcript": "The term bug is used by entomologists in a formal sense for this group of insects.\n",
+      "identical": true,
+      "pcm_sha256": "b086e42ba26165a7cba95eb82dabe174007d0c872bf87dfca6315587e694029e"
+    },
+    {
+      "clip_id": "it_it:3299434526375775286.wav",
+      "cpu_transcript": "L'incidente è avvenuto in alta montagna e si ritiene sia stato causato da fuoco nemico.\n",
+      "gpu_transcript": "L'incidente è avvenuto in alta montagna e si ritiene sia stato causato da fuoco nemico.\n",
+      "identical": true,
+      "pcm_sha256": "32ff06bf637cc5f1066cee292a217e3830b53e15793b5b642b747496d8b4b665"
+    },
+    {
+      "clip_id": "it_it:1006729518827641482.wav",
+      "cpu_transcript": "L'incidente è avvenuto in alta montagna e si ritiene sia stato causato da fuoco nemico.\n",
+      "gpu_transcript": "L'incidente è avvenuto in alta montagna e si ritiene sia stato causato da fuoco nemico.\n",
+      "identical": true,
+      "pcm_sha256": "162e2e1b2b85fec6105f29dcb0476dd02a74f27721a9e3101b88b35eecbe549e"
+    },
+    {
+      "clip_id": "it_it:5761106912632880847.wav",
+      "cpu_transcript": "L'incidente è avvenuto in alta montagna e si ritiene sia stato causato da fuoco nemico.\n",
+      "gpu_transcript": "L'incidente è avvenuto in alta montagna e si ritiene sia stato causato da fuoco nemico.\n",
+      "identical": true,
+      "pcm_sha256": "ca94a8b1ef521430d3fe0d6f7503099f7644d7630f4320c7120c5c20d3d6711c"
+    },
+    {
+      "clip_id": "it_it:1815772323593604298.wav",
+      "cpu_transcript": "L'italiano è anche la lingua d'uso quotidiano parlata dalla maggior parte delle persone che lavorano all'interno dello Stato, mentre il latino è spesso usato nelle funzioni religiose.\n",
+      "gpu_transcript": "L'italiano è anche la lingua d'uso quotidiano parlata dalla maggior parte delle persone che lavorano all'interno dello Stato, mentre il latino è spesso usato nelle funzioni religiose.\n",
+      "identical": true,
+      "pcm_sha256": "663f4f07ce89d58a27730877cdfad3c792596b715e081f23d162bc2ed922d871"
+    },
+    {
+      "clip_id": "it_it:5520246528580221640.wav",
+      "cpu_transcript": "L'italiano è anche la lingua d'uso quotidiano parlato dalla maggior parte delle persone che lavorano all'interno dello Stato, mentre il latino è spesso usato nelle funzioni religiose.\n",
+      "gpu_transcript": "L'italiano è anche la lingua d'uso quotidiano parlato dalla maggior parte delle persone che lavorano all'interno dello Stato, mentre il latino è spesso usato nelle funzioni religiose.\n",
+      "identical": true,
+      "pcm_sha256": "64bdbbc33598dcce90f18b8658b1eb7cff484d6ffc1fb47996fb0e2f80eb6669"
+    },
+    {
+      "clip_id": "it_it:8800547400861953606.wav",
+      "cpu_transcript": "L'italiano è anche la lingua d'uso quotidiano parlata dalla maggior parte delle persone che lavorano all'interno dello Stato, mentre il latino è spesso usato nelle funzioni religiose.\n",
+      "gpu_transcript": "L'italiano è anche la lingua d'uso quotidiano parlata dalla maggior parte delle persone che lavorano all'interno dello Stato, mentre il latino è spesso usato nelle funzioni religiose.\n",
+      "identical": true,
+      "pcm_sha256": "fbe8cbd4395f79f36ee9f53614f82337845cd7705bc1d05eff19d59d32ac4ce7"
+    },
+    {
+      "clip_id": "it_it:325012546177289849.wav",
+      "cpu_transcript": "Se non si ha l'abitudine di guidare su strade di campagna, si consiglia di tenere gli occhi ben aperti in quanto predominano ripide pendenze, stradine anguste e curve strette.\n",
+      "gpu_transcript": "Se non si ha l'abitudine di guidare su strade di campagna, si consiglia di tenere gli occhi ben aperti in quanto predominano ripide pendenze, stradine anguste e curve strette.\n",
+      "identical": true,
+      "pcm_sha256": "5943fedae74ceeb8cce3e95ac7b809078bc816418e254ffd31b81560763d6e43"
+    },
+    {
+      "clip_id": "it_it:4625363240754311860.wav",
+      "cpu_transcript": "Se non si ha l'abitudine di guidare su strade di campagna, si consiglia di tenere gli occhi ben aperti, in quanto predominano ripide pendenze, stradine anguste e curve strette.\n",
+      "gpu_transcript": "Se non si ha l'abitudine di guidare su strade di campagna, si consiglia di tenere gli occhi ben aperti, in quanto predominano ripide pendenze, stradine anguste e curve strette.\n",
+      "identical": true,
+      "pcm_sha256": "970400f64e60abc919195372f129350dadb44a2d28e1b21378d6af1e53651ec9"
+    },
+    {
+      "clip_id": "it_it:13079120887552488011.wav",
+      "cpu_transcript": "Se non si ha l'abitudine di guidare su strade di campagna, si consiglia di tenere gli occhi ben aperti in quanto predominano ripide pendenze, stradine anguste e curve strette.\n",
+      "gpu_transcript": "Se non si ha l'abitudine di guidare su strade di campagna, si consiglia di tenere gli occhi ben aperti in quanto predominano ripide pendenze, stradine anguste e curve strette.\n",
+      "identical": true,
+      "pcm_sha256": "e8e318a736df3402ba44cbbeafab599aed82af9cd773a7e749b9823d6bdc3fab"
+    },
+    {
+      "clip_id": "it_it:17285555551155021824.wav",
+      "cpu_transcript": "Per la discesa a terra non sarà necessario un visto separato a partire dal 2009 utilizzando le escursioni di bordo.\n",
+      "gpu_transcript": "Per la discesa a terra non sarà necessario un visto separato a partire dal 2009 utilizzando le escursioni di bordo.\n",
+      "identical": true,
+      "pcm_sha256": "e77697f2f83481c202d08863b951a17ad7248a44a8af3b3052efb7175af535dc"
+    },
+    {
+      "clip_id": "de_de:17113436913741548046.wav",
+      "cpu_transcript": "Löwenrudel agieren ähnlich wie Wolfs- oder Hundenrudel. Tiere, die den Löwen, aber nicht anderen Großkatzen im Verhalten überraschend ähneln und ebenso tödlich gegenüber ihrer Beute sind.\n",
+      "gpu_transcript": "Löwenrudel agieren ähnlich wie Wolfs- oder Hundenrudel. Tiere, die den Löwen, aber nicht anderen Großkatzen im Verhalten überraschend ähneln und ebenso tödlich gegenüber ihrer Beute sind.\n",
+      "identical": true,
+      "pcm_sha256": "f9a318b39dbd02500da5d555d43cd1a919b26b4d3483af44e60d80264c1d50ca"
+    },
+    {
+      "clip_id": "de_de:10555751885736126606.wav",
+      "cpu_transcript": "Löwenrudel agieren ähnlich wie Wolfs- oder Hunderudel, Tiere, die den Löwen aber nicht anderen Großkatzen im Verhalten, überraschend ähneln und ebenso tödlich gegenüber ihrer Beute sind.\n",
+      "gpu_transcript": "Löwenrudel agieren ähnlich wie Wolfs- oder Hunderudel, Tiere, die den Löwen aber nicht anderen Großkatzen im Verhalten, überraschend ähneln und ebenso tödlich gegenüber ihrer Beute sind.\n",
+      "identical": true,
+      "pcm_sha256": "28031e83d6b70fe71d5a6bafe4861974a5e6d55060be1bb73da366ab42b32d0e"
+    },
+    {
+      "clip_id": "de_de:13734019592211926155.wav",
+      "cpu_transcript": "Löwenrudel agieren ähnlich wie Wolfs- oder Hunderudel Tiere, die den Löwen aber nicht anderen Großkarzen, dem Verhalten überraschend ähneln und ebenso tödlich gegenüber ihrer Beute sind.\n",
+      "gpu_transcript": "Löwenrudel agieren ähnlich wie Wolfs- oder Hunderudel Tiere, die den Löwen aber nicht anderen Großkarzen, dem Verhalten überraschend ähneln und ebenso tödlich gegenüber ihrer Beute sind.\n",
+      "identical": true,
+      "pcm_sha256": "d7a301d43a75ff0ad58aa7debe39d2cd2a4bba3fe82dc44044332c7ec2540716"
+    },
+    {
+      "clip_id": "de_de:4963712857525084701.wav",
+      "cpu_transcript": "Ziegen wurden anscheinend bereits vor ungefähr 10.000 Jahren in Zagreb-Gebirge im Iran domestiziert.\n",
+      "gpu_transcript": "Ziegen wurden anscheinend bereits vor ungefähr 10.000 Jahren in Zagreb-Gebirge im Iran domestiziert.\n",
+      "identical": true,
+      "pcm_sha256": "0824c8840d6fbb5dfdffd5bd383ef6352bf5de46030e97dd82e4edb073451289"
+    },
+    {
+      "clip_id": "de_de:3653977734852118277.wav",
+      "cpu_transcript": "Ziegen wurden anscheinend bereits vor ungefähr 10.000 Jahren im Zagros-Gebirge im Iran domestiziert.\n",
+      "gpu_transcript": "Ziegen wurden anscheinend bereits vor ungefähr 10.000 Jahren im Zagros-Gebirge im Iran domestiziert.\n",
+      "identical": true,
+      "pcm_sha256": "3159c2f1cf9a44c5b6f973a493408b2ab2cf0587b831ecaeba03fbcd3c6f8a0b"
+    },
+    {
+      "clip_id": "de_de:11725654714821576978.wav",
+      "cpu_transcript": "Ziegen wurden anscheinend bereits vor ungefähr 10.000 Jahren im Zagros-Gebirge im Iran domestiziert.\n",
+      "gpu_transcript": "Ziegen wurden anscheinend bereits vor ungefähr 10.000 Jahren im Zagros-Gebirge im Iran domestiziert.\n",
+      "identical": true,
+      "pcm_sha256": "c17549779d01f5b3aef74dca6dd37c54b517f06f6a66e6789b1b008e847e0a37"
+    },
+    {
+      "clip_id": "de_de:12482370299689904904.wav",
+      "cpu_transcript": "Leider fällt das Studium von Verkehrsflüssen schwer, da man Fahrerverhalten nicht mit hundertprozentiger Sicherheit voraussagen kann.\n",
+      "gpu_transcript": "Leider fällt das Studium von Verkehrsflüssen schwer, da man Fahrerverhalten nicht mit hundertprozentiger Sicherheit voraussagen kann.\n",
+      "identical": true,
+      "pcm_sha256": "28947fd2c54d3d0d6b23b621eefa92fc02f2f4e7fbbe6df598fd98b6ba58f97f"
+    },
+    {
+      "clip_id": "de_de:2561524221067958936.wav",
+      "cpu_transcript": "Leider fällt das Studium von Verkehrsflüssen schwer, da man Fahrerverhalten nicht mit hundertprozentiger Sicherheit voraussagen kann.\n",
+      "gpu_transcript": "Leider fällt das Studium von Verkehrsflüssen schwer, da man Fahrerverhalten nicht mit hundertprozentiger Sicherheit voraussagen kann.\n",
+      "identical": true,
+      "pcm_sha256": "6499e3c3c25413918dae45cd002f24f221b59baec57a87f9ed11a4871d1e4dcc"
+    },
+    {
+      "clip_id": "de_de:14996476656149482093.wav",
+      "cpu_transcript": "Es gibt Familienstrände, die manchmal überlaufen sind, mit einer schönen Einkaufspomenade entlang der Küste. Das Schwimmen ist hier sicher.\n",
+      "gpu_transcript": "Es gibt Familienstrände, die manchmal überlaufen sind, mit einer schönen Einkaufspomenade entlang der Küste. Das Schwimmen ist hier sicher.\n",
+      "identical": true,
+      "pcm_sha256": "903acb8a6ec447ae42671b5027ef7826ef1d4114c8bf725b8a0fd9ac5e753524"
+    },
+    {
+      "clip_id": "de_de:10347138311808731867.wav",
+      "cpu_transcript": "Es gibt Familienstrände, die manchmal überlaufen sind, mit einer schönen Einkaufstromenade entlang der Küste. Das Schwimmen ist hier sicher.\n",
+      "gpu_transcript": "Es gibt Familienstrände, die manchmal überlaufen sind, mit einer schönen Einkaufstromenade entlang der Küste. Das Schwimmen ist hier sicher.\n",
+      "identical": true,
+      "pcm_sha256": "02ebf4aba7f45a17f1824c53d1b159f3cd5f1a28e85e6e1311311ad296f74bf8"
+    },
+    {
+      "clip_id": "fr_fr:7105431834829365765.wav",
+      "cpu_transcript": "Les voyageurs à destination de pays où les taxes sont élevées peuvent parfois faire des économies considérables, en particulier sur des produits comme les boissons alcoolisées ou le tabac.\n",
+      "gpu_transcript": "Les voyageurs à destination de pays où les taxes sont élevées peuvent parfois faire des économies considérables, en particulier sur des produits comme les boissons alcoolisées ou le tabac.\n",
+      "identical": true,
+      "pcm_sha256": "4d05ca83d9901b1e5b1063039ac1be9887a982950559637ab56b1030cc0de63e"
+    },
+    {
+      "clip_id": "fr_fr:8412394508646602569.wav",
+      "cpu_transcript": "Les voyageurs à destination de pays où les taxes sont élevées peuvent parfois faire des économies considérables, en particulier sur des produits comme les bassons alcoolisés ou le tabac.\n",
+      "gpu_transcript": "Les voyageurs à destination de pays où les taxes sont élevées peuvent parfois faire des économies considérables, en particulier sur des produits comme les bassons alcoolisés ou le tabac.\n",
+      "identical": true,
+      "pcm_sha256": "bb7f35e17f46367f2c2e8bbf2e4e6bcd50edc229939237afc31aa66f3dc1db34"
+    },
+    {
+      "clip_id": "fr_fr:15519386366944716971.wav",
+      "cpu_transcript": "Les voyageurs à destination de pays où les taxes sont élevées peuvent parfois faire des économies considérables, en particulier sur des produits comme les boissons alcoolisées ou le tabac.\n",
+      "gpu_transcript": "Les voyageurs à destination de pays où les taxes sont élevées peuvent parfois faire des économies considérables, en particulier sur des produits comme les boissons alcoolisées ou le tabac.\n",
+      "identical": true,
+      "pcm_sha256": "818cc42dcc17573461a4a6218166355fc9b8f4dff126c3325d7650becd78bf97"
+    },
+    {
+      "clip_id": "fr_fr:17999210160761730950.wav",
+      "cpu_transcript": "Le groupe Aerosmith a annulé les derniers concerts de sa tournée.\n",
+      "gpu_transcript": "Le groupe Aerosmith a annulé les derniers concerts de sa tournée.\n",
+      "identical": true,
+      "pcm_sha256": "e6c4ce4fcabcd9877373473686468f0f2ffea3fd855c6d5efc7c45eb2dff6ed6"
+    },
+    {
+      "clip_id": "fr_fr:14682302550249108464.wav",
+      "cpu_transcript": "Le groupe Aerosmith a annulé les derniers concerts de sa tournée.\n",
+      "gpu_transcript": "Le groupe Aerosmith a annulé les derniers concerts de sa tournée.\n",
+      "identical": true,
+      "pcm_sha256": "8b9ff4d10d1ff9eb8085b775feac7c680348e7bd926c3d3ea8eef6ad7093f56f"
+    },
+    {
+      "clip_id": "fr_fr:17467158799788389101.wav",
+      "cpu_transcript": "Il s'agit de l'un des parcs d'attractions les plus connus en Afrique du Sud et considéré comme le fleuron des parcs nationaux sud-africains Sand Parc.\n",
+      "gpu_transcript": "Il s'agit de l'un des parcs d'attractions les plus connus en Afrique du Sud et considéré comme le fleuron des parcs nationaux sud-africains Sand Parc.\n",
+      "identical": true,
+      "pcm_sha256": "75f8f9338c75af7252932793f9f104d63f43ee7b123d2c527d826b21ac4ec052"
+    },
+    {
+      "clip_id": "fr_fr:3661632639400662062.wav",
+      "cpu_transcript": "Il s'agit de l'un des parcs d'attractions les plus connus en Afrique du Sud et considéré comme le fleuron des parcs nationaux sud-africains Samparks.\n",
+      "gpu_transcript": "Il s'agit de l'un des parcs d'attractions les plus connus en Afrique du Sud et considéré comme le fleuron des parcs nationaux sud-africains Samparks.\n",
+      "identical": true,
+      "pcm_sha256": "9796f6bed3f435897d7f25bebcb9e3e6cbb0ebc9ec31bae67d2f5fc4221873c2"
+    },
+    {
+      "clip_id": "fr_fr:9118106854415790987.wav",
+      "cpu_transcript": "Il s'agit de l'un des parcs d'attractions les plus connus en Afrique du Sud et considéré comme le fleuron des parcs nationaux sud-africains.\n",
+      "gpu_transcript": "Il s'agit de l'un des parcs d'attractions les plus connus en Afrique du Sud et considéré comme le fleuron des parcs nationaux sud-africains.\n",
+      "identical": true,
+      "pcm_sha256": "cc0d02291a40327e389186ef1d94be0ba4f454da0bb3ca926ed62fc81a5dff52"
+    },
+    {
+      "clip_id": "fr_fr:8969527857548188961.wav",
+      "cpu_transcript": "Tout comme la Lune exerce une traction sur la Terre provoquant des marées, la Voie lactée exerce une force sur la galaxie du Sagittaire.\n",
+      "gpu_transcript": "Tout comme la Lune exerce une traction sur la Terre provoquant des marées, la Voie lactée exerce une force sur la galaxie du Sagittaire.\n",
+      "identical": true,
+      "pcm_sha256": "1f0ddc8e86578ab05dcf547fe1583fb9129d81eb0a29106014c306129eee3fea"
+    },
+    {
+      "clip_id": "fr_fr:7989253100718399733.wav",
+      "cpu_transcript": "La surface de la lune est constituée de pierres et de poussière, sa couche extérieure est appelée la croûte.\n",
+      "gpu_transcript": "La surface de la lune est constituée de pierres et de poussière, sa couche extérieure est appelée la croûte.\n",
+      "identical": true,
+      "pcm_sha256": "2ca3a39d572deeb8816e86ec68c50c06520dfc19859c5dbf8deb4302cc324c8e"
+    }
+  ],
+  "protocol_id": "",
+  "result": true,
+  "schema": "epyc.parakeet-stt0.verifier.v1"
+}

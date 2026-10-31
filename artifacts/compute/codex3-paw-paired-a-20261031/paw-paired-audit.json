@@ -1,0 +1,16 @@
+{
+  "pairs": 64,
+  "declaration_sha256": [
+    "25dcf705fd8b8054b591eea20947b7d702bb2044a9757381ec01d428574ce302",
+    "9116940efb6793345a9bf16ce403f5267763538131605a13a459beaee7f7932c"
+  ],
+  "source_manifests_sha256": [
+    "9f34054366c11d68c5d3bf2838a3f026f5ade17b52bc7fa924a6f3c76fae8491",
+    "1c3d2e5e6fa4a1ac24ba1f22b8f10cb52f0135a274f770a78bedc477f1adce70"
+  ],
+  "both": 45,
+  "standard_only": 12,
+  "compact_only": 3,
+  "neither": 4,
+  "scope": "descriptive; standard original rc1 and offline finalization separate; no full PAW-3 gate"
+}

@@ -1,0 +1,671 @@
+{
+  "schema": "cs8-stt0.acceptance-bundle.v1",
+  "status": "prepared for owner review",
+  "record_scope": "Original fixed corpus 40 clips en/it/de/fr x10, CPU and GPU raw stdout including final newline; no new inference",
+  "binary": {
+    "sha256": "71e5dd39248017f158afb2fa78e8ffdb83d3889f6405fafbc30ff3422deea5b6",
+    "mtime_ns": 1785497661814257202,
+    "source": "each original native preload",
+    "mtime_note": "freeze commit records previously uncommitted build patch; mtime alone does not establish build provenance"
+  },
+  "model_sha256": "833bffc9513b2cae867ee9e51633cfd11e4d51aaa5597c8ac02159385a2b426f",
+  "model_revision": "35156454d1a39de06863303dd209fd2bed6ee079",
+  "manifest_sha256": "2ded1024e8ae191c7e98ca12a42660520184bcc6a9549ccc9edcb2db86255ce7",
+  "cpu_native_root": "/mnt/raid0/llm/tmp/codex-cs8-cpu-full-20261028/full-attempts/1793217501197626296",
+  "gpu_native_root": "/mnt/raid0/llm/tmp/refactor-01a16fc3/parakeet-reference-ready/reference-evidence/gpu/attempts/20261027T232209-2026845",
+  "linkage_log_sha256": {
+    "cpu": "21bbd84823cba7bff1246fed823af9809b9e179777e12cf7cd0a2a2a083562a0",
+    "gpu": "21bbd84823cba7bff1246fed823af9809b9e179777e12cf7cd0a2a2a083562a0"
+  },
+  "comparison_file": "DERIVED.json",
+  "comparison_sha256": "427588488d4d97a06dcf424e0d6778402613ed7bdb8dd7eff30684046e8d331f",
+  "comparison_reader": "/mnt/raid0/llm/tmp/codex-cs8-cpu-full-20261028/compare.py::derive",
+  "comparison": {
+    "count": 40,
+    "identical": 40,
+    "differences": 0
+  },
+  "transcripts": [
+    {
+      "leg": "cpu",
+      "index": 0,
+      "clip_id": "en_us:12741024238657315067.wav",
+      "pcm_sha256": "52e73f675998d0cf346920865d3abdd8a22ad4f9de8196bc190f00896ba8a260",
+      "stdout_file": "cpu/00.stdout.txt",
+      "stdout_sha256": "9e68b4e67e001aaefbd4f90e32ff01c55d9a1b59da8e8d6cc081d2eb469da8b4"
+    },
+    {
+      "leg": "cpu",
+      "index": 1,
+      "clip_id": "en_us:9055240296608129734.wav",
+      "pcm_sha256": "a07bbf4747676ad1fe6873a3d7ff46bd59535e4fc790bd4d83d2d10ff1a851df",
+      "stdout_file": "cpu/01.stdout.txt",
+      "stdout_sha256": "265233a7036daf3c2bc5b99c2163b5691b15d8fb69c59cee9d8490649769ba94"
+    },
+    {
+      "leg": "cpu",
+      "index": 2,
+      "clip_id": "en_us:621925716775998155.wav",
+      "pcm_sha256": "219c0050feb1e9f8fd80a7317113a0fdbfed1a1e1b9a50ce5390dd085c7fb544",
+      "stdout_file": "cpu/02.stdout.txt",
+      "stdout_sha256": "475fbd97049174a27d5a9351585694c2ef53815d413154f4dd96ea0551f8a420"
+    },
+    {
+      "leg": "cpu",
+      "index": 3,
+      "clip_id": "en_us:10335587906469246566.wav",
+      "pcm_sha256": "f112c6d36e3349ce43279d592d8cc3d03acc0e237692900e6eb769267e9c8d7a",
+      "stdout_file": "cpu/03.stdout.txt",
+      "stdout_sha256": "b54afb2d00b131af1e27233354595d26566e45a88f45105fbbdaefdecec8e557"
+    },
+    {
+      "leg": "cpu",
+      "index": 4,
+      "clip_id": "en_us:2589557553267364799.wav",
+      "pcm_sha256": "88a38da40bb1e6ea6dd641935ee836e2b92f682b41764812787660bd205afe55",
+      "stdout_file": "cpu/04.stdout.txt",
+      "stdout_sha256": "1c952d8625016542fb8e0537b194cfe07317708ebddb74b07ed8a9674852aa34"
+    },
+    {
+      "leg": "cpu",
+      "index": 5,
+      "clip_id": "en_us:17824557748066874904.wav",
+      "pcm_sha256": "1d63d47846c3501fe67178591dd02754a0134c00f0e55ad383836ff831615d8a",
+      "stdout_file": "cpu/05.stdout.txt",
+      "stdout_sha256": "1c952d8625016542fb8e0537b194cfe07317708ebddb74b07ed8a9674852aa34"
+    },
+    {
+      "leg": "cpu",
+      "index": 6,
+      "clip_id": "en_us:8173060820032255320.wav",
+      "pcm_sha256": "7069e84c7cc02acb91d2e99c84cbe1d753f1300b89f70671770671ee01029dfb",
+      "stdout_file": "cpu/06.stdout.txt",
+      "stdout_sha256": "2fd998a8c74c056ac7bedcce7ccc9f649358351e962112533d85b4654573992c"
+    },
+    {
+      "leg": "cpu",
+      "index": 7,
+      "clip_id": "en_us:15618717836108767541.wav",
+      "pcm_sha256": "5b676478f2bbb4b88fd59b934b19c8314cff33fc98354c7bbe70ebb6561238ed",
+      "stdout_file": "cpu/07.stdout.txt",
+      "stdout_sha256": "012c3b91b48aa4731f3647c53575707a34d28cb3800fe55d29e687b79ed07be6"
+    },
+    {
+      "leg": "cpu",
+      "index": 8,
+      "clip_id": "en_us:2652155470394119415.wav",
+      "pcm_sha256": "246e955ca8b3e98a3a23149958068bf3f9fb1f18c7c11d1b05f89536f0fb6c5f",
+      "stdout_file": "cpu/08.stdout.txt",
+      "stdout_sha256": "6157e0ebbb6b5b390bc3e20804a1d891e68a9b6f374b91da7bb340371ae28f61"
+    },
+    {
+      "leg": "cpu",
+      "index": 9,
+      "clip_id": "en_us:14585898865749103727.wav",
+      "pcm_sha256": "b086e42ba26165a7cba95eb82dabe174007d0c872bf87dfca6315587e694029e",
+      "stdout_file": "cpu/09.stdout.txt",
+      "stdout_sha256": "6157e0ebbb6b5b390bc3e20804a1d891e68a9b6f374b91da7bb340371ae28f61"
+    },
+    {
+      "leg": "cpu",
+      "index": 10,
+      "clip_id": "it_it:3299434526375775286.wav",
+      "pcm_sha256": "32ff06bf637cc5f1066cee292a217e3830b53e15793b5b642b747496d8b4b665",
+      "stdout_file": "cpu/10.stdout.txt",
+      "stdout_sha256": "11fa8ec3529a0b73edc4445c96f3052ff4090c3a341120d896c10298867f9b68"
+    },
+    {
+      "leg": "cpu",
+      "index": 11,
+      "clip_id": "it_it:1006729518827641482.wav",
+      "pcm_sha256": "162e2e1b2b85fec6105f29dcb0476dd02a74f27721a9e3101b88b35eecbe549e",
+      "stdout_file": "cpu/11.stdout.txt",
+      "stdout_sha256": "11fa8ec3529a0b73edc4445c96f3052ff4090c3a341120d896c10298867f9b68"
+    },
+    {
+      "leg": "cpu",
+      "index": 12,
+      "clip_id": "it_it:5761106912632880847.wav",
+      "pcm_sha256": "ca94a8b1ef521430d3fe0d6f7503099f7644d7630f4320c7120c5c20d3d6711c",
+      "stdout_file": "cpu/12.stdout.txt",
+      "stdout_sha256": "11fa8ec3529a0b73edc4445c96f3052ff4090c3a341120d896c10298867f9b68"
+    },
+    {
+      "leg": "cpu",
+      "index": 13,
+      "clip_id": "it_it:1815772323593604298.wav",
+      "pcm_sha256": "663f4f07ce89d58a27730877cdfad3c792596b715e081f23d162bc2ed922d871",
+      "stdout_file": "cpu/13.stdout.txt",
+      "stdout_sha256": "d22e5e023d8d8624618527d67d232985d7f7d4140dfdd409219b3a3eacaf49ed"
+    },
+    {
+      "leg": "cpu",
+      "index": 14,
+      "clip_id": "it_it:5520246528580221640.wav",
+      "pcm_sha256": "64bdbbc33598dcce90f18b8658b1eb7cff484d6ffc1fb47996fb0e2f80eb6669",
+      "stdout_file": "cpu/14.stdout.txt",
+      "stdout_sha256": "374821544155098bae374b86c87f0976cab61f425fbe317897f858b523761a8f"
+    },
+    {
+      "leg": "cpu",
+      "index": 15,
+      "clip_id": "it_it:8800547400861953606.wav",
+      "pcm_sha256": "fbe8cbd4395f79f36ee9f53614f82337845cd7705bc1d05eff19d59d32ac4ce7",
+      "stdout_file": "cpu/15.stdout.txt",
+      "stdout_sha256": "d22e5e023d8d8624618527d67d232985d7f7d4140dfdd409219b3a3eacaf49ed"
+    },
+    {
+      "leg": "cpu",
+      "index": 16,
+      "clip_id": "it_it:325012546177289849.wav",
+      "pcm_sha256": "5943fedae74ceeb8cce3e95ac7b809078bc816418e254ffd31b81560763d6e43",
+      "stdout_file": "cpu/16.stdout.txt",
+      "stdout_sha256": "d30c776fb67bafda46a15408c73abd75c785bf1b607e21fd42d424db0606f9a8"
+    },
+    {
+      "leg": "cpu",
+      "index": 17,
+      "clip_id": "it_it:4625363240754311860.wav",
+      "pcm_sha256": "970400f64e60abc919195372f129350dadb44a2d28e1b21378d6af1e53651ec9",
+      "stdout_file": "cpu/17.stdout.txt",
+      "stdout_sha256": "7654608a7aa24fffb4a0526be8827bd5b500cb3279c4ed95681e794c768f7362"
+    },
+    {
+      "leg": "cpu",
+      "index": 18,
+      "clip_id": "it_it:13079120887552488011.wav",
+      "pcm_sha256": "e8e318a736df3402ba44cbbeafab599aed82af9cd773a7e749b9823d6bdc3fab",
+      "stdout_file": "cpu/18.stdout.txt",
+      "stdout_sha256": "d30c776fb67bafda46a15408c73abd75c785bf1b607e21fd42d424db0606f9a8"
+    },
+    {
+      "leg": "cpu",
+      "index": 19,
+      "clip_id": "it_it:17285555551155021824.wav",
+      "pcm_sha256": "e77697f2f83481c202d08863b951a17ad7248a44a8af3b3052efb7175af535dc",
+      "stdout_file": "cpu/19.stdout.txt",
+      "stdout_sha256": "f04c57b09662950fd8786e273016b550ef6804c2e7b5276e71f5b6aad1571741"
+    },
+    {
+      "leg": "cpu",
+      "index": 20,
+      "clip_id": "de_de:17113436913741548046.wav",
+      "pcm_sha256": "f9a318b39dbd02500da5d555d43cd1a919b26b4d3483af44e60d80264c1d50ca",
+      "stdout_file": "cpu/20.stdout.txt",
+      "stdout_sha256": "3426e1f1183da83cf1c6b2dcd24d18c4a6bf31341262ddcf0b65524f939c90dc"
+    },
+    {
+      "leg": "cpu",
+      "index": 21,
+      "clip_id": "de_de:10555751885736126606.wav",
+      "pcm_sha256": "28031e83d6b70fe71d5a6bafe4861974a5e6d55060be1bb73da366ab42b32d0e",
+      "stdout_file": "cpu/21.stdout.txt",
+      "stdout_sha256": "52cdafaa80cc2227dc105687992367d01088fd75fa84e6146474c46d30c840da"
+    },
+    {
+      "leg": "cpu",
+      "index": 22,
+      "clip_id": "de_de:13734019592211926155.wav",
+      "pcm_sha256": "d7a301d43a75ff0ad58aa7debe39d2cd2a4bba3fe82dc44044332c7ec2540716",
+      "stdout_file": "cpu/22.stdout.txt",
+      "stdout_sha256": "8346f0ac0e7f5f708c234c6f9e3ea9ba8eaf08a211ae07f12707d863082800be"
+    },
+    {
+      "leg": "cpu",
+      "index": 23,
+      "clip_id": "de_de:4963712857525084701.wav",
+      "pcm_sha256": "0824c8840d6fbb5dfdffd5bd383ef6352bf5de46030e97dd82e4edb073451289",
+      "stdout_file": "cpu/23.stdout.txt",
+      "stdout_sha256": "4b6fa35d092245a0cc9d99a4582e344672e80e2d682eefbaa167746b4c01ad61"
+    },
+    {
+      "leg": "cpu",
+      "index": 24,
+      "clip_id": "de_de:3653977734852118277.wav",
+      "pcm_sha256": "3159c2f1cf9a44c5b6f973a493408b2ab2cf0587b831ecaeba03fbcd3c6f8a0b",
+      "stdout_file": "cpu/24.stdout.txt",
+      "stdout_sha256": "7bf7ea1ca96c30e90c3320b3c29712c720c0fe2afd359a34b5fb74df9bf0d7fb"
+    },
+    {
+      "leg": "cpu",
+      "index": 25,
+      "clip_id": "de_de:11725654714821576978.wav",
+      "pcm_sha256": "c17549779d01f5b3aef74dca6dd37c54b517f06f6a66e6789b1b008e847e0a37",
+      "stdout_file": "cpu/25.stdout.txt",
+      "stdout_sha256": "7bf7ea1ca96c30e90c3320b3c29712c720c0fe2afd359a34b5fb74df9bf0d7fb"
+    },
+    {
+      "leg": "cpu",
+      "index": 26,
+      "clip_id": "de_de:12482370299689904904.wav",
+      "pcm_sha256": "28947fd2c54d3d0d6b23b621eefa92fc02f2f4e7fbbe6df598fd98b6ba58f97f",
+      "stdout_file": "cpu/26.stdout.txt",
+      "stdout_sha256": "5fbe21c56a9d2bd13a64363bdac2f8e8a8cf5d64ae75844240bd26eaf4ff16e5"
+    },
+    {
+      "leg": "cpu",
+      "index": 27,
+      "clip_id": "de_de:2561524221067958936.wav",
+      "pcm_sha256": "6499e3c3c25413918dae45cd002f24f221b59baec57a87f9ed11a4871d1e4dcc",
+      "stdout_file": "cpu/27.stdout.txt",
+      "stdout_sha256": "5fbe21c56a9d2bd13a64363bdac2f8e8a8cf5d64ae75844240bd26eaf4ff16e5"
+    },
+    {
+      "leg": "cpu",
+      "index": 28,
+      "clip_id": "de_de:14996476656149482093.wav",
+      "pcm_sha256": "903acb8a6ec447ae42671b5027ef7826ef1d4114c8bf725b8a0fd9ac5e753524",
+      "stdout_file": "cpu/28.stdout.txt",
+      "stdout_sha256": "39f8d56eddcb7bc3494fd027c453d6e232ad8de1abc80b6c0b744e054a574f79"
+    },
+    {
+      "leg": "cpu",
+      "index": 29,
+      "clip_id": "de_de:10347138311808731867.wav",
+      "pcm_sha256": "02ebf4aba7f45a17f1824c53d1b159f3cd5f1a28e85e6e1311311ad296f74bf8",
+      "stdout_file": "cpu/29.stdout.txt",
+      "stdout_sha256": "2bb626391f3ed663515a781abb88dbf30cd1e07a3b33317800ed5c9adfda96a7"
+    },
+    {
+      "leg": "cpu",
+      "index": 30,
+      "clip_id": "fr_fr:7105431834829365765.wav",
+      "pcm_sha256": "4d05ca83d9901b1e5b1063039ac1be9887a982950559637ab56b1030cc0de63e",
+      "stdout_file": "cpu/30.stdout.txt",
+      "stdout_sha256": "2822eb5deef0bdc7f174b78b5a54b3b458e1c4c6d4459b67b44e6d11739ae99a"
+    },
+    {
+      "leg": "cpu",
+      "index": 31,
+      "clip_id": "fr_fr:8412394508646602569.wav",
+      "pcm_sha256": "bb7f35e17f46367f2c2e8bbf2e4e6bcd50edc229939237afc31aa66f3dc1db34",
+      "stdout_file": "cpu/31.stdout.txt",
+      "stdout_sha256": "a7265c130f0a845ddb329e52e6d81e594a76f7dc3741591317e9e28abce6e0ae"
+    },
+    {
+      "leg": "cpu",
+      "index": 32,
+      "clip_id": "fr_fr:15519386366944716971.wav",
+      "pcm_sha256": "818cc42dcc17573461a4a6218166355fc9b8f4dff126c3325d7650becd78bf97",
+      "stdout_file": "cpu/32.stdout.txt",
+      "stdout_sha256": "2822eb5deef0bdc7f174b78b5a54b3b458e1c4c6d4459b67b44e6d11739ae99a"
+    },
+    {
+      "leg": "cpu",
+      "index": 33,
+      "clip_id": "fr_fr:17999210160761730950.wav",
+      "pcm_sha256": "e6c4ce4fcabcd9877373473686468f0f2ffea3fd855c6d5efc7c45eb2dff6ed6",
+      "stdout_file": "cpu/33.stdout.txt",
+      "stdout_sha256": "448257297e5be45714c33a165fe2738fb791f9f1919daf62cee4640fd5f31414"
+    },
+    {
+      "leg": "cpu",
+      "index": 34,
+      "clip_id": "fr_fr:14682302550249108464.wav",
+      "pcm_sha256": "8b9ff4d10d1ff9eb8085b775feac7c680348e7bd926c3d3ea8eef6ad7093f56f",
+      "stdout_file": "cpu/34.stdout.txt",
+      "stdout_sha256": "448257297e5be45714c33a165fe2738fb791f9f1919daf62cee4640fd5f31414"
+    },
+    {
+      "leg": "cpu",
+      "index": 35,
+      "clip_id": "fr_fr:17467158799788389101.wav",
+      "pcm_sha256": "75f8f9338c75af7252932793f9f104d63f43ee7b123d2c527d826b21ac4ec052",
+      "stdout_file": "cpu/35.stdout.txt",
+      "stdout_sha256": "825d2196b893c36a69c906bcc1295bba56a09f273071dcdb722b460779702b8b"
+    },
+    {
+      "leg": "cpu",
+      "index": 36,
+      "clip_id": "fr_fr:3661632639400662062.wav",
+      "pcm_sha256": "9796f6bed3f435897d7f25bebcb9e3e6cbb0ebc9ec31bae67d2f5fc4221873c2",
+      "stdout_file": "cpu/36.stdout.txt",
+      "stdout_sha256": "b21cceb0c47bc7ec18cce4512af5e3bc96e52f829bc9fd66e70f38dab5f15d67"
+    },
+    {
+      "leg": "cpu",
+      "index": 37,
+      "clip_id": "fr_fr:9118106854415790987.wav",
+      "pcm_sha256": "cc0d02291a40327e389186ef1d94be0ba4f454da0bb3ca926ed62fc81a5dff52",
+      "stdout_file": "cpu/37.stdout.txt",
+      "stdout_sha256": "92ac19d3bf771a5e8a6ebce4807d52a0c472740cd6b55c911ee1567148eddf57"
+    },
+    {
+      "leg": "cpu",
+      "index": 38,
+      "clip_id": "fr_fr:8969527857548188961.wav",
+      "pcm_sha256": "1f0ddc8e86578ab05dcf547fe1583fb9129d81eb0a29106014c306129eee3fea",
+      "stdout_file": "cpu/38.stdout.txt",
+      "stdout_sha256": "ff0fa9b1368fdde5e632db1d25e45f1ecf280fa648955187c27b26fca1ea61e0"
+    },
+    {
+      "leg": "cpu",
+      "index": 39,
+      "clip_id": "fr_fr:7989253100718399733.wav",
+      "pcm_sha256": "2ca3a39d572deeb8816e86ec68c50c06520dfc19859c5dbf8deb4302cc324c8e",
+      "stdout_file": "cpu/39.stdout.txt",
+      "stdout_sha256": "51fcfe7eeced498665943ec70646169b19fbab88cee52f293d82b5c055d37961"
+    },
+    {
+      "leg": "gpu",
+      "index": 0,
+      "clip_id": "en_us:12741024238657315067.wav",
+      "pcm_sha256": "52e73f675998d0cf346920865d3abdd8a22ad4f9de8196bc190f00896ba8a260",
+      "stdout_file": "gpu/00.stdout.txt",
+      "stdout_sha256": "9e68b4e67e001aaefbd4f90e32ff01c55d9a1b59da8e8d6cc081d2eb469da8b4"
+    },
+    {
+      "leg": "gpu",
+      "index": 1,
+      "clip_id": "en_us:9055240296608129734.wav",
+      "pcm_sha256": "a07bbf4747676ad1fe6873a3d7ff46bd59535e4fc790bd4d83d2d10ff1a851df",
+      "stdout_file": "gpu/01.stdout.txt",
+      "stdout_sha256": "265233a7036daf3c2bc5b99c2163b5691b15d8fb69c59cee9d8490649769ba94"
+    },
+    {
+      "leg": "gpu",
+      "index": 2,
+      "clip_id": "en_us:621925716775998155.wav",
+      "pcm_sha256": "219c0050feb1e9f8fd80a7317113a0fdbfed1a1e1b9a50ce5390dd085c7fb544",
+      "stdout_file": "gpu/02.stdout.txt",
+      "stdout_sha256": "475fbd97049174a27d5a9351585694c2ef53815d413154f4dd96ea0551f8a420"
+    },
+    {
+      "leg": "gpu",
+      "index": 3,
+      "clip_id": "en_us:10335587906469246566.wav",
+      "pcm_sha256": "f112c6d36e3349ce43279d592d8cc3d03acc0e237692900e6eb769267e9c8d7a",
+      "stdout_file": "gpu/03.stdout.txt",
+      "stdout_sha256": "b54afb2d00b131af1e27233354595d26566e45a88f45105fbbdaefdecec8e557"
+    },
+    {
+      "leg": "gpu",
+      "index": 4,
+      "clip_id": "en_us:2589557553267364799.wav",
+      "pcm_sha256": "88a38da40bb1e6ea6dd641935ee836e2b92f682b41764812787660bd205afe55",
+      "stdout_file": "gpu/04.stdout.txt",
+      "stdout_sha256": "1c952d8625016542fb8e0537b194cfe07317708ebddb74b07ed8a9674852aa34"
+    },
+    {
+      "leg": "gpu",
+      "index": 5,
+      "clip_id": "en_us:17824557748066874904.wav",
+      "pcm_sha256": "1d63d47846c3501fe67178591dd02754a0134c00f0e55ad383836ff831615d8a",
+      "stdout_file": "gpu/05.stdout.txt",
+      "stdout_sha256": "1c952d8625016542fb8e0537b194cfe07317708ebddb74b07ed8a9674852aa34"
+    },
+    {
+      "leg": "gpu",
+      "index": 6,
+      "clip_id": "en_us:8173060820032255320.wav",
+      "pcm_sha256": "7069e84c7cc02acb91d2e99c84cbe1d753f1300b89f70671770671ee01029dfb",
+      "stdout_file": "gpu/06.stdout.txt",
+      "stdout_sha256": "2fd998a8c74c056ac7bedcce7ccc9f649358351e962112533d85b4654573992c"
+    },
+    {
+      "leg": "gpu",
+      "index": 7,
+      "clip_id": "en_us:15618717836108767541.wav",
+      "pcm_sha256": "5b676478f2bbb4b88fd59b934b19c8314cff33fc98354c7bbe70ebb6561238ed",
+      "stdout_file": "gpu/07.stdout.txt",
+      "stdout_sha256": "012c3b91b48aa4731f3647c53575707a34d28cb3800fe55d29e687b79ed07be6"
+    },
+    {
+      "leg": "gpu",
+      "index": 8,
+      "clip_id": "en_us:2652155470394119415.wav",
+      "pcm_sha256": "246e955ca8b3e98a3a23149958068bf3f9fb1f18c7c11d1b05f89536f0fb6c5f",
+      "stdout_file": "gpu/08.stdout.txt",
+      "stdout_sha256": "6157e0ebbb6b5b390bc3e20804a1d891e68a9b6f374b91da7bb340371ae28f61"
+    },
+    {
+      "leg": "gpu",
+      "index": 9,
+      "clip_id": "en_us:14585898865749103727.wav",
+      "pcm_sha256": "b086e42ba26165a7cba95eb82dabe174007d0c872bf87dfca6315587e694029e",
+      "stdout_file": "gpu/09.stdout.txt",
+      "stdout_sha256": "6157e0ebbb6b5b390bc3e20804a1d891e68a9b6f374b91da7bb340371ae28f61"
+    },
+    {
+      "leg": "gpu",
+      "index": 10,
+      "clip_id": "it_it:3299434526375775286.wav",
+      "pcm_sha256": "32ff06bf637cc5f1066cee292a217e3830b53e15793b5b642b747496d8b4b665",
+      "stdout_file": "gpu/10.stdout.txt",
+      "stdout_sha256": "11fa8ec3529a0b73edc4445c96f3052ff4090c3a341120d896c10298867f9b68"
+    },
+    {
+      "leg": "gpu",
+      "index": 11,
+      "clip_id": "it_it:1006729518827641482.wav",
+      "pcm_sha256": "162e2e1b2b85fec6105f29dcb0476dd02a74f27721a9e3101b88b35eecbe549e",
+      "stdout_file": "gpu/11.stdout.txt",
+      "stdout_sha256": "11fa8ec3529a0b73edc4445c96f3052ff4090c3a341120d896c10298867f9b68"
+    },
+    {
+      "leg": "gpu",
+      "index": 12,
+      "clip_id": "it_it:5761106912632880847.wav",
+      "pcm_sha256": "ca94a8b1ef521430d3fe0d6f7503099f7644d7630f4320c7120c5c20d3d6711c",
+      "stdout_file": "gpu/12.stdout.txt",
+      "stdout_sha256": "11fa8ec3529a0b73edc4445c96f3052ff4090c3a341120d896c10298867f9b68"
+    },
+    {
+      "leg": "gpu",
+      "index": 13,
+      "clip_id": "it_it:1815772323593604298.wav",
+      "pcm_sha256": "663f4f07ce89d58a27730877cdfad3c792596b715e081f23d162bc2ed922d871",
+      "stdout_file": "gpu/13.stdout.txt",
+      "stdout_sha256": "d22e5e023d8d8624618527d67d232985d7f7d4140dfdd409219b3a3eacaf49ed"
+    },
+    {
+      "leg": "gpu",
+      "index": 14,
+      "clip_id": "it_it:5520246528580221640.wav",
+      "pcm_sha256": "64bdbbc33598dcce90f18b8658b1eb7cff484d6ffc1fb47996fb0e2f80eb6669",
+      "stdout_file": "gpu/14.stdout.txt",
+      "stdout_sha256": "374821544155098bae374b86c87f0976cab61f425fbe317897f858b523761a8f"
+    },
+    {
+      "leg": "gpu",
+      "index": 15,
+      "clip_id": "it_it:8800547400861953606.wav",
+      "pcm_sha256": "fbe8cbd4395f79f36ee9f53614f82337845cd7705bc1d05eff19d59d32ac4ce7",
+      "stdout_file": "gpu/15.stdout.txt",
+      "stdout_sha256": "d22e5e023d8d8624618527d67d232985d7f7d4140dfdd409219b3a3eacaf49ed"
+    },
+    {
+      "leg": "gpu",
+      "index": 16,
+      "clip_id": "it_it:325012546177289849.wav",
+      "pcm_sha256": "5943fedae74ceeb8cce3e95ac7b809078bc816418e254ffd31b81560763d6e43",
+      "stdout_file": "gpu/16.stdout.txt",
+      "stdout_sha256": "d30c776fb67bafda46a15408c73abd75c785bf1b607e21fd42d424db0606f9a8"
+    },
+    {
+      "leg": "gpu",
+      "index": 17,
+      "clip_id": "it_it:4625363240754311860.wav",
+      "pcm_sha256": "970400f64e60abc919195372f129350dadb44a2d28e1b21378d6af1e53651ec9",
+      "stdout_file": "gpu/17.stdout.txt",
+      "stdout_sha256": "7654608a7aa24fffb4a0526be8827bd5b500cb3279c4ed95681e794c768f7362"
+    },
+    {
+      "leg": "gpu",
+      "index": 18,
+      "clip_id": "it_it:13079120887552488011.wav",
+      "pcm_sha256": "e8e318a736df3402ba44cbbeafab599aed82af9cd773a7e749b9823d6bdc3fab",
+      "stdout_file": "gpu/18.stdout.txt",
+      "stdout_sha256": "d30c776fb67bafda46a15408c73abd75c785bf1b607e21fd42d424db0606f9a8"
+    },
+    {
+      "leg": "gpu",
+      "index": 19,
+      "clip_id": "it_it:17285555551155021824.wav",
+      "pcm_sha256": "e77697f2f83481c202d08863b951a17ad7248a44a8af3b3052efb7175af535dc",
+      "stdout_file": "gpu/19.stdout.txt",
+      "stdout_sha256": "f04c57b09662950fd8786e273016b550ef6804c2e7b5276e71f5b6aad1571741"
+    },
+    {
+      "leg": "gpu",
+      "index": 20,
+      "clip_id": "de_de:17113436913741548046.wav",
+      "pcm_sha256": "f9a318b39dbd02500da5d555d43cd1a919b26b4d3483af44e60d80264c1d50ca",
+      "stdout_file": "gpu/20.stdout.txt",
+      "stdout_sha256": "3426e1f1183da83cf1c6b2dcd24d18c4a6bf31341262ddcf0b65524f939c90dc"
+    },
+    {
+      "leg": "gpu",
+      "index": 21,
+      "clip_id": "de_de:10555751885736126606.wav",
+      "pcm_sha256": "28031e83d6b70fe71d5a6bafe4861974a5e6d55060be1bb73da366ab42b32d0e",
+      "stdout_file": "gpu/21.stdout.txt",
+      "stdout_sha256": "52cdafaa80cc2227dc105687992367d01088fd75fa84e6146474c46d30c840da"
+    },
+    {
+      "leg": "gpu",
+      "index": 22,
+      "clip_id": "de_de:13734019592211926155.wav",
+      "pcm_sha256": "d7a301d43a75ff0ad58aa7debe39d2cd2a4bba3fe82dc44044332c7ec2540716",
+      "stdout_file": "gpu/22.stdout.txt",
+      "stdout_sha256": "8346f0ac0e7f5f708c234c6f9e3ea9ba8eaf08a211ae07f12707d863082800be"
+    },
+    {
+      "leg": "gpu",
+      "index": 23,
+      "clip_id": "de_de:4963712857525084701.wav",
+      "pcm_sha256": "0824c8840d6fbb5dfdffd5bd383ef6352bf5de46030e97dd82e4edb073451289",
+      "stdout_file": "gpu/23.stdout.txt",
+      "stdout_sha256": "4b6fa35d092245a0cc9d99a4582e344672e80e2d682eefbaa167746b4c01ad61"
+    },
+    {
+      "leg": "gpu",
+      "index": 24,
+      "clip_id": "de_de:3653977734852118277.wav",
+      "pcm_sha256": "3159c2f1cf9a44c5b6f973a493408b2ab2cf0587b831ecaeba03fbcd3c6f8a0b",
+      "stdout_file": "gpu/24.stdout.txt",
+      "stdout_sha256": "7bf7ea1ca96c30e90c3320b3c29712c720c0fe2afd359a34b5fb74df9bf0d7fb"
+    },
+    {
+      "leg": "gpu",
+      "index": 25,
+      "clip_id": "de_de:11725654714821576978.wav",
+      "pcm_sha256": "c17549779d01f5b3aef74dca6dd37c54b517f06f6a66e6789b1b008e847e0a37",
+      "stdout_file": "gpu/25.stdout.txt",
+      "stdout_sha256": "7bf7ea1ca96c30e90c3320b3c29712c720c0fe2afd359a34b5fb74df9bf0d7fb"
+    },
+    {
+      "leg": "gpu",
+      "index": 26,
+      "clip_id": "de_de:12482370299689904904.wav",
+      "pcm_sha256": "28947fd2c54d3d0d6b23b621eefa92fc02f2f4e7fbbe6df598fd98b6ba58f97f",
+      "stdout_file": "gpu/26.stdout.txt",
+      "stdout_sha256": "5fbe21c56a9d2bd13a64363bdac2f8e8a8cf5d64ae75844240bd26eaf4ff16e5"
+    },
+    {
+      "leg": "gpu",
+      "index": 27,
+      "clip_id": "de_de:2561524221067958936.wav",
+      "pcm_sha256": "6499e3c3c25413918dae45cd002f24f221b59baec57a87f9ed11a4871d1e4dcc",
+      "stdout_file": "gpu/27.stdout.txt",
+      "stdout_sha256": "5fbe21c56a9d2bd13a64363bdac2f8e8a8cf5d64ae75844240bd26eaf4ff16e5"
+    },
+    {
+      "leg": "gpu",
+      "index": 28,
+      "clip_id": "de_de:14996476656149482093.wav",
+      "pcm_sha256": "903acb8a6ec447ae42671b5027ef7826ef1d4114c8bf725b8a0fd9ac5e753524",
+      "stdout_file": "gpu/28.stdout.txt",
+      "stdout_sha256": "39f8d56eddcb7bc3494fd027c453d6e232ad8de1abc80b6c0b744e054a574f79"
+    },
+    {
+      "leg": "gpu",
+      "index": 29,
+      "clip_id": "de_de:10347138311808731867.wav",
+      "pcm_sha256": "02ebf4aba7f45a17f1824c53d1b159f3cd5f1a28e85e6e1311311ad296f74bf8",
+      "stdout_file": "gpu/29.stdout.txt",
+      "stdout_sha256": "2bb626391f3ed663515a781abb88dbf30cd1e07a3b33317800ed5c9adfda96a7"
+    },
+    {
+      "leg": "gpu",
+      "index": 30,
+      "clip_id": "fr_fr:7105431834829365765.wav",
+      "pcm_sha256": "4d05ca83d9901b1e5b1063039ac1be9887a982950559637ab56b1030cc0de63e",
+      "stdout_file": "gpu/30.stdout.txt",
+      "stdout_sha256": "2822eb5deef0bdc7f174b78b5a54b3b458e1c4c6d4459b67b44e6d11739ae99a"
+    },
+    {
+      "leg": "gpu",
+      "index": 31,
+      "clip_id": "fr_fr:8412394508646602569.wav",
+      "pcm_sha256": "bb7f35e17f46367f2c2e8bbf2e4e6bcd50edc229939237afc31aa66f3dc1db34",
+      "stdout_file": "gpu/31.stdout.txt",
+      "stdout_sha256": "a7265c130f0a845ddb329e52e6d81e594a76f7dc3741591317e9e28abce6e0ae"
+    },
+    {
+      "leg": "gpu",
+      "index": 32,
+      "clip_id": "fr_fr:15519386366944716971.wav",
+      "pcm_sha256": "818cc42dcc17573461a4a6218166355fc9b8f4dff126c3325d7650becd78bf97",
+      "stdout_file": "gpu/32.stdout.txt",
+      "stdout_sha256": "2822eb5deef0bdc7f174b78b5a54b3b458e1c4c6d4459b67b44e6d11739ae99a"
+    },
+    {
+      "leg": "gpu",
+      "index": 33,
+      "clip_id": "fr_fr:17999210160761730950.wav",
+      "pcm_sha256": "e6c4ce4fcabcd9877373473686468f0f2ffea3fd855c6d5efc7c45eb2dff6ed6",
+      "stdout_file": "gpu/33.stdout.txt",
+      "stdout_sha256": "448257297e5be45714c33a165fe2738fb791f9f1919daf62cee4640fd5f31414"
+    },
+    {
+      "leg": "gpu",
+      "index": 34,
+      "clip_id": "fr_fr:14682302550249108464.wav",
+      "pcm_sha256": "8b9ff4d10d1ff9eb8085b775feac7c680348e7bd926c3d3ea8eef6ad7093f56f",
+      "stdout_file": "gpu/34.stdout.txt",
+      "stdout_sha256": "448257297e5be45714c33a165fe2738fb791f9f1919daf62cee4640fd5f31414"
+    },
+    {
+      "leg": "gpu",
+      "index": 35,
+      "clip_id": "fr_fr:17467158799788389101.wav",
+      "pcm_sha256": "75f8f9338c75af7252932793f9f104d63f43ee7b123d2c527d826b21ac4ec052",
+      "stdout_file": "gpu/35.stdout.txt",
+      "stdout_sha256": "825d2196b893c36a69c906bcc1295bba56a09f273071dcdb722b460779702b8b"
+    },
+    {
+      "leg": "gpu",
+      "index": 36,
+      "clip_id": "fr_fr:3661632639400662062.wav",
+      "pcm_sha256": "9796f6bed3f435897d7f25bebcb9e3e6cbb0ebc9ec31bae67d2f5fc4221873c2",
+      "stdout_file": "gpu/36.stdout.txt",
+      "stdout_sha256": "b21cceb0c47bc7ec18cce4512af5e3bc96e52f829bc9fd66e70f38dab5f15d67"
+    },
+    {
+      "leg": "gpu",
+      "index": 37,
+      "clip_id": "fr_fr:9118106854415790987.wav",
+      "pcm_sha256": "cc0d02291a40327e389186ef1d94be0ba4f454da0bb3ca926ed62fc81a5dff52",
+      "stdout_file": "gpu/37.stdout.txt",
+      "stdout_sha256": "92ac19d3bf771a5e8a6ebce4807d52a0c472740cd6b55c911ee1567148eddf57"
+    },
+    {
+      "leg": "gpu",
+      "index": 38,
+      "clip_id": "fr_fr:8969527857548188961.wav",
+      "pcm_sha256": "1f0ddc8e86578ab05dcf547fe1583fb9129d81eb0a29106014c306129eee3fea",
+      "stdout_file": "gpu/38.stdout.txt",
+      "stdout_sha256": "ff0fa9b1368fdde5e632db1d25e45f1ecf280fa648955187c27b26fca1ea61e0"
+    },
+    {
+      "leg": "gpu",
+      "index": 39,
+      "clip_id": "fr_fr:7989253100718399733.wav",
+      "pcm_sha256": "2ca3a39d572deeb8816e86ec68c50c06520dfc19859c5dbf8deb4302cc324c8e",
+      "stdout_file": "gpu/39.stdout.txt",
+      "stdout_sha256": "51fcfe7eeced498665943ec70646169b19fbab88cee52f293d82b5c055d37961"
+    }
+  ],
+  "limitations": "GPU evidence has active KFD/VRAM/HIP samples; CPU absence is sampled, not continuous. Co-tenancy unknown. Not a quality, throughput, performance or general equivalence claim."
+}

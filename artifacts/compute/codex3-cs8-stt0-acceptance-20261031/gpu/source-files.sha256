@@ -1,0 +1,15 @@
+a395ce5f909e45e30719dacc7f8f26cdd1abf5f275e477c9cf1eb9a45f12c3bf  /mnt/raid0/llm/tmp/refactor-01a16fc3/parakeet-reference-ready/reference-gpu/launch.sh
+226aea8cb532c9a76de365113667ec3680cf5d5c50f8e348f2d5fe2ad1253e6c  /mnt/raid0/llm/tmp/refactor-01a16fc3/parakeet-reference-ready/reference-gpu/job.sh
+731ec2bb8debfbec70d55491617a25b7642469b8d8a590bb768b6f22dd61aca6  /mnt/raid0/llm/tmp/refactor-01a16fc3/parakeet-reference-ready/reference.py
+cc9360d541b688a218febb89e65a97a426089035a74cd8751710085fb8fc90c2  /mnt/raid0/llm/tmp/refactor-01a16fc3/parakeet-reference-ready/compare.py
+eabb4c54e496eec448e6ea2c2e0b6c35bfd7a385eef23e2239052863088844d5  /mnt/raid0/llm/tmp/refactor-01a16fc3/parakeet-reference-ready/verifier_capture.py
+4d454215224e2b9bbb44ffe17ab91561dba596b20a47fa772c9d628a38ec8ff0  /mnt/raid0/llm/tmp/refactor-01a16fc3/parakeet-reference-ready/test_reference.py
+6ae969f7029c1a6356593fd2432eca2320931f22aa4a8c4e3a388a72b81944e7  /mnt/raid0/llm/epyc-root/scripts/vidya/claim_tuple.py
+5602e0de1c49ccdb4b5ea82adb8d45b16dc32ebb4111bed9ccdf2c55ec7d8306  /mnt/raid0/llm/tmp/refactor-01a16fc3/compute-coordination-20261026/launch-contract-85c442b3d/filler_run12.sh
+aa9ed900be5fb7f3efca043bfddb2ac8963964710db0b702c7491729a74f8542  /mnt/raid0/llm/tmp/refactor-01a16fc3/compute-coordination-20261026/launch-contract-85c442b3d/dryrun_check.py
+e8999706e9be782c40c631b08fe3baa182d82589de1eb4e4976910c21cdc1c2a  /mnt/raid0/llm/tmp/refactor-01a16fc3/parakeet-reference-ready/reference-gpu/region-lock-preflight-shim.sh
+57585b405f2d7c6062db2db7786c594d4c428f6952bd27db5a86c0d999cffe33  /mnt/raid0/llm/epyc-inference-research/scripts/utils/verify_ggml_linkage.sh
+71e5dd39248017f158afb2fa78e8ffdb83d3889f6405fafbc30ff3422deea5b6  /mnt/raid0/llm/whisper.cpp/build/bin/parakeet-cli
+2ded1024e8ae191c7e98ca12a42660520184bcc6a9549ccc9edcb2db86255ce7  /mnt/raid0/llm/tmp/refactor-01a16fc3/inf79-speech-inference-ready/fleurs-select-q2/evidence/manifest.json
+95162d4075bee1d03a0b65b071c6c1c74eed084bae0d20fb0b895ac3f8b3261c  /mnt/raid0/llm/tmp/refactor-01a16fc3/parakeet-reference-ready/weight-identity-2.json
+95162d4075bee1d03a0b65b071c6c1c74eed084bae0d20fb0b895ac3f8b3261c  /mnt/raid0/llm/tmp/refactor-01a16fc3/parakeet-reference-ready/weight-identity-2.json
