@@ -1,0 +1,46 @@
+{
+  "timestamp": "2026-10-31T04:51:09.312642+00:00",
+  "id": "codex3-paw-standard-a-t1-20261030",
+  "end_line": "rc=1 time=2026-10-31T04:45:26Z reason=job-rc-1:exited",
+  "class": "admission",
+  "underlying_predicate": "UNKNOWN: generic guard conflates captured grant bytes, window, STOP/HOLD and ancestor lock; grant deletion logged after terminal and is not evidence of earlier loss",
+  "declaration_sha256": "25dcf705fd8b8054b591eea20947b7d702bb2044a9757381ec01d428574ce302",
+  "scheduled_end": "2026-10-31T06:00Z",
+  "native_wall_s": 2414.8588246142026,
+  "native_sampled_peak_rss_bytes": 6408986624,
+  "native_rss_samples": 12572,
+  "children_drained_reported": true,
+  "program_checkpoint_count": 7,
+  "programs_expected": 8,
+  "case_dispositions": {
+    "not_exposed": 64
+  },
+  "quality_scores": null,
+  "raw_inputs": [
+    {
+      "path": "/mnt/raid0/llm/tmp/compute-flags/ready/codex3-paw-standard-a-t1-20261030.launcher.out",
+      "sha256": "2275cc8d60220f1363a743c2414ccc172b588fbfa8c383ca64e2bba70a4a86f1"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/codex3-paw-hsf-t1-20261030/A/PAW3-PREDECLARATION.json",
+      "sha256": "25dcf705fd8b8054b591eea20947b7d702bb2044a9757381ec01d428574ce302"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/compute-flags/ready/armed/codex3-paw-standard-a-t1-20261030.json",
+      "sha256": "2c7b25637703fd8e5139960f42add739f81bf4a13cd7d456f75290f2d76bacb1"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/compute-flags/grants/codex3-paw-standard-a-t1-20261030.ended",
+      "sha256": "8bdaac791e5e7c44bda3a37fc35870a0e3bce7384ca2a0c5ebfd508806361809"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/codex3-paw-hsf-t1-20261030/A/results/real-1793419509204324996/job-result.json",
+      "sha256": "4be4abc81e074f2d17e055c50c285c8b8c00d8e3f93508a747925460fe4f22f6"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/codex3-paw-hsf-t1-20261030/A/epoch/state.json",
+      "sha256": "473a87778c5780082996e386ad5c2a4bed1617f28563515bd3e00f198b80fc57"
+    }
+  ],
+  "owner_action": "Preserve original seven program bundles and all original cases/source bindings; diagnose and record exact admission predicates before a qualified continuation. No case redraw or score invention."
+}

@@ -1,0 +1,53 @@
+{
+  "checkpoint_path": "/mnt/raid0/llm/tmp/codex3-paw-hsf-t1-20261030/A/epoch/state.json",
+  "checkpoint_sha256": "473a87778c5780082996e386ad5c2a4bed1617f28563515bd3e00f198b80fc57",
+  "declaration_sha256": "25dcf705fd8b8054b591eea20947b7d702bb2044a9757381ec01d428574ce302",
+  "source_manifest_sha256": "a517870b0e45a0187a9aa9149f1c1c50dea50c2fcc6653adfc003c16ad2cbcbd",
+  "programs": {
+    "0": {
+      "path": "/mnt/raid0/llm/models/PAW-programs/codex3-paw3-real-1793419509205138714/programs/85a47ebcf6bddf7eea51/bundle.paw",
+      "recorded_sha256": "d4197696c41d50f457fae7f923581c25d709d50106d946794fd52a1f97f5dd9f",
+      "exists": true
+    },
+    "1": {
+      "path": "/mnt/raid0/llm/models/PAW-programs/codex3-paw3-real-1793419509205138714/programs/4dc2d59475df5874e426/bundle.paw",
+      "recorded_sha256": "dc1dbc3ddaad64e7b3a2a94fa4bf75383dde86d847b4f7cdb66681b8a2a60f85",
+      "exists": true
+    },
+    "2": {
+      "path": "/mnt/raid0/llm/models/PAW-programs/codex3-paw3-real-1793419509205138714/programs/e5dd37a28613132e7ac4/bundle.paw",
+      "recorded_sha256": "e357e6b7ad9b42b685a4afa5eea6b1e3b1754c18861359a0ebdec68e98eec387",
+      "exists": true
+    },
+    "3": {
+      "path": "/mnt/raid0/llm/models/PAW-programs/codex3-paw3-real-1793419509205138714/programs/e80005a7bb0f4cf54b53/bundle.paw",
+      "recorded_sha256": "4cc1f8cfc8a83bacb4deb065681039a0890d2f8963a4fe9ea85324b0fce4698b",
+      "exists": true
+    },
+    "7": {
+      "path": "/mnt/raid0/llm/models/PAW-programs/codex3-paw3-real-1793419509205138714/programs/7ff8d39fad6752bdd743/bundle.paw",
+      "recorded_sha256": "637ba6be9c2cc1b1a36ad743f6a011a55f52a84e1d0a3c3d32e931bdc3fa8dc6",
+      "exists": true
+    },
+    "8": {
+      "path": "/mnt/raid0/llm/models/PAW-programs/codex3-paw3-real-1793419509205138714/programs/3b58f1aa6a5d26667cd6/bundle.paw",
+      "recorded_sha256": "e425df2e0cb6ec1ff35ba27aa75927d33aac19ef1dbd34da1f1894fcb2cccd64",
+      "exists": true
+    },
+    "9": {
+      "path": "/mnt/raid0/llm/models/PAW-programs/codex3-paw3-real-1793419509205138714/programs/02582c19d364555f3859/bundle.paw",
+      "recorded_sha256": "f15ac72ed9a038cb9c4461fa4e6c388acee7bc531e983f7d2eafbe43308facb5",
+      "exists": true
+    }
+  },
+  "case_disposition_counts": {
+    "not_exposed": 64
+  },
+  "reason": "RuntimeError('admission lost')",
+  "wall_s": 2414.8588246142026,
+  "children_drained": true,
+  "grant_writer_record": "2026-10-31T04:03:56Z granted 48-71 start=04:03Z end=06:00Z",
+  "launcher_end": "2026-10-31T04:45:26Z rc=1; grant deleted after terminal",
+  "predicate": "UNKNOWN: guard did not record individual predicate outcomes",
+  "prior_check": "All seven program paths individually SHA256-verified equal to recorded digests during 2026-10-31 04:49 UTC audit; script defaults to no rehash."
+}

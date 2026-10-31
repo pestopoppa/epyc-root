@@ -78,3 +78,12 @@ FuzzyBench training set remains unavailable; 1477's recipe is the closest self-h
 ### 2026-10-31 PAW superlative control — launcher failure
 
 **FAILED-RUN, class harness:** `codex3-paw-superlative-control-20261030` ended rc127 before its inner job when the host could not execute `/workspace/repos/epyc-orchestrator/scripts/region-lock`. The predeclared eight paired cases have no native result files or DONE; arm/category correct, incorrect, UNSURE, invalid and missing outcomes are unknown. Selected cases were not exposed by this attempt. Owner action: qualify a host-visible lock path, preserving the failed attempt and original declaration before any safe successor; no efficacy or superiority conclusion follows. [Bounded receipt and declaration hash](../../artifacts/compute/codex3-filing-hpr-paw-stt3-20261031-0439/). [belief: cc]
+
+
+### 2026-10-31 standard A — admission loss after seven program checkpoints
+
+**FAILED-RUN, class admission:** `codex3-paw-standard-a-t1-20261030` ended rc1 at 04:45:26 UTC after 2,414.86 seconds with `RuntimeError('admission lost')`; the declared window ended at 06:00 UTC. The native state retains seven of eight program checkpoints, whose files exist and whose recorded hashes were individually verified by the owner audit. All 64 selected cases are explicitly `not_exposed`, with no case exposure/completion files or DONE. Sampled process-tree RSS peaked at 6,408,986,624 bytes over 12,572 samples, and native cleanup reports children drained. No task exact-match scores or standard-versus-compact verdict exist. [Bounded native result, checkpoint and audit](../../artifacts/compute/codex3-paw-standard-a-filing-20261031-0450/). [belief: cc]
+
+The exact failed admission predicate is **UNKNOWN**: the guard combines captured grant bytes, the time window, STOP/HOLD files and the witnessed ancestor region lock but logs only a generic failure. The launcher log explicitly deletes the grant after the terminal result; its later absence does not identify the earlier failure. Preserve the seven original program bundles and all declaration/source bindings for a qualified continuation; do not redraw any exposed or unknown case. PAW-3 remains open.
+
+- [ ] **PAW standard A admission continuation:** retain the seven source-bound compiled programs, capture the individual admission predicates and complete the original 64-case standard-A diagnostic under a qualified successor. Keep the interrupted eighth compilation and all native attempts visible; no new efficacy or adoption threshold.
