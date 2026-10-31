@@ -1,0 +1,9 @@
+Traceback (most recent call last):
+  File "/mnt/raid0/llm/tmp/codex3-kpf183-postbuild-repair-20261031/candidate-one-attempt.py", line 233, in <module>
+    else:run()
+         ~~~^^
+  File "/mnt/raid0/llm/tmp/codex3-kpf183-postbuild-repair-20261031/candidate-one-attempt.py", line 111, in run
+    if not (B/'BUILD-SUCCESS').is_file() or not (B/'BUILD-DIGESTS.txt').is_file():raise RuntimeError('actual build success and digests required')
+                                                                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+RuntimeError: actual build success and digests required
+exit=1

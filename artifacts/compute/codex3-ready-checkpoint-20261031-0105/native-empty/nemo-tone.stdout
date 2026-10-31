@@ -1,0 +1,23 @@
+audio: /mnt/raid0/llm/tmp/codex3-ultra-torch-reference/control-tone.wav
+  samples:    16000
+  duration:   1.000 s
+  sample rate 16000 Hz mono float32
+model: /mnt/raid0/llm/models/nemotron-3.5-asr-streaming-0.6b-Q8_0.gguf -> ok
+  backend:    CPU
+  name:       Nemotron Streaming 3.5
+  license:    other
+  max audio:  unbounded (whole clip in one pass)
+stream: chunk=320 ms (5120 samples)
+stream: att_context_right=3
+  feed[ 0]: input=320 ms buffered=70 ms
+  feed[ 1]: input=640 ms buffered=70 ms
+  feed[ 2]: input=960 ms buffered=70 ms
+  feed[ 3]: input=1000 ms buffered=110 ms
+  finalize: status=ok revision=1 input=1000 ms committed=1000 ms
+run: ok
+text: (empty)
+tokens: 0
+CS8_NEMO_TOKENS 0
+CS8_NEMO_TOKENS_END
+CS8_NEMO_COMPLETED raw_count=0
+  realtime:   3x (313.1 ms for 1.0 s)

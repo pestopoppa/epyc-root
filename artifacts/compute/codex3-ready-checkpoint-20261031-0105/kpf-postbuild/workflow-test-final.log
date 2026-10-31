@@ -1,0 +1,2 @@
+archive, durable status, STOP ownership, live tree discovery, subreaper drain: PASS
+{"schema": "hil15-r11-smoke-supervisor/v1", "elapsed_s": 0.4921497928444296, "sampled_peak_tree_rss_bytes": 46739456, "samples": 5, "verified_exited_processes": 0, "verified_exited_threads": 0, "per_process_address_space_limit_bytes": 17179869184, "rss_scope": "sum of sampled resident pages across owned process tree; sampling may miss transients and double-count shared pages", "leader_pid": 375239, "leader_birth": 152998581, "child_rc": 0, "children_drained": true, "failure": null}

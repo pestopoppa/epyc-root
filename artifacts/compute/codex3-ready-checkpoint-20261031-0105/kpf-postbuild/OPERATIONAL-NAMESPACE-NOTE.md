@@ -1,0 +1,5 @@
+# KPF postbuild namespace correction
+
+The existing observation watcher reports that /mnt/micron is a directory in keeper mount namespace mnt:[4026535339]. That observation does not establish that the host Micron filesystem or its e332 source/build paths are visible there: the keeper view is overlayfs and /mnt/micron/codex3-lanes/kpf-e332-src is absent. No claim of backend visibility follows from its micron_exists field. The watcher remains unchanged and observation-only.
+
+The qualification candidate runs in the keeper namespace, checks the /workspace validator and packet pins there, and uses the already qualified sudo/chroot /proc/1/root/setpriv host bridge for bounded R11 source/build preflight, admission and control hashing. The actual smoke launcher already uses that bridge. Host source path, canonical control-model digest and real host-supervised fixture were verified. No mount or production tree was changed. Build success and digests remain prerequisites, and the driver never publishes.

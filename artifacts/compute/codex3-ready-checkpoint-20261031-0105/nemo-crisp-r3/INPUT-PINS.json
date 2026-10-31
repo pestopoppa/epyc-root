@@ -1,0 +1,55 @@
+{
+  "models": {
+    "r0": "b94545b313b3223fda7b2857a52681da813935c2127643d1e9ff0c23d988089c",
+    "r13": "b94545b313b3223fda7b2857a52681da813935c2127643d1e9ff0c23d988089c",
+    "r3": "b94545b313b3223fda7b2857a52681da813935c2127643d1e9ff0c23d988089c",
+    "r6": "b94545b313b3223fda7b2857a52681da813935c2127643d1e9ff0c23d988089c"
+  },
+  "plan_sha256": "61722f4fa38bd4e50c1fc33a94e82f1ed3af414cbaaa1feb27dc12ababc71533",
+  "research_plan_commit": "d1c7a8ffb",
+  "runner_binary_sha256": {
+    "r0": "44696f6eb3341d46063eab91b47138a4e6d7a10f71d822eb8a757df21eefed98",
+    "r13": "44696f6eb3341d46063eab91b47138a4e6d7a10f71d822eb8a757df21eefed98",
+    "r3": "44696f6eb3341d46063eab91b47138a4e6d7a10f71d822eb8a757df21eefed98",
+    "r6": "44696f6eb3341d46063eab91b47138a4e6d7a10f71d822eb8a757df21eefed98"
+  },
+  "runner_libraries": {
+    "r0": {
+      "/mnt/micron/codex3-cs8-stt2-crisp-20261030/install/lib/libggml-base.so.0.26.0": "a219e1fbde274dc29933c75b06519a2f56e45b45b0f21f8cbe72e8189b4d13c9",
+      "/mnt/micron/codex3-cs8-stt2-crisp-20261030/install/lib/libggml-cpu.so.0.26.0": "6d32fbd5188e6c324a7d91068f8ffe8d733c03ed3cc460818011884a50cbc958",
+      "/mnt/micron/codex3-cs8-stt2-crisp-20261030/install/lib/libggml.so.0.26.0": "f321d8bd17b3c49b4fe4d99feefbc1a87210d59c09bbb59864d3ec3acf06caf4",
+      "/mnt/raid0/llm/tmp/codex3-cs8-stt5-accuracy-20261030/ultra-adapter/nemo-crisp/tc-adapter/libcrispasr.so.0.8.44": "e2f4f84907b84a15f1e19226a5e068adf2866b16d752055cb7e999534a28f0a2",
+      "/usr/lib/x86_64-linux-gnu/libopenblas.so.0": "bfc7492adbf84a8f567720a9e1fae2afc18f3d817da233e7f4d453683485308e"
+    },
+    "r13": {
+      "/mnt/micron/codex3-cs8-stt2-crisp-20261030/install/lib/libggml-base.so.0.26.0": "a219e1fbde274dc29933c75b06519a2f56e45b45b0f21f8cbe72e8189b4d13c9",
+      "/mnt/micron/codex3-cs8-stt2-crisp-20261030/install/lib/libggml-cpu.so.0.26.0": "6d32fbd5188e6c324a7d91068f8ffe8d733c03ed3cc460818011884a50cbc958",
+      "/mnt/micron/codex3-cs8-stt2-crisp-20261030/install/lib/libggml.so.0.26.0": "f321d8bd17b3c49b4fe4d99feefbc1a87210d59c09bbb59864d3ec3acf06caf4",
+      "/mnt/raid0/llm/tmp/codex3-cs8-stt5-accuracy-20261030/ultra-adapter/nemo-crisp/tc-adapter/libcrispasr.so.0.8.44": "e2f4f84907b84a15f1e19226a5e068adf2866b16d752055cb7e999534a28f0a2",
+      "/usr/lib/x86_64-linux-gnu/libopenblas.so.0": "bfc7492adbf84a8f567720a9e1fae2afc18f3d817da233e7f4d453683485308e"
+    },
+    "r3": {
+      "/mnt/micron/codex3-cs8-stt2-crisp-20261030/install/lib/libggml-base.so.0.26.0": "a219e1fbde274dc29933c75b06519a2f56e45b45b0f21f8cbe72e8189b4d13c9",
+      "/mnt/micron/codex3-cs8-stt2-crisp-20261030/install/lib/libggml-cpu.so.0.26.0": "6d32fbd5188e6c324a7d91068f8ffe8d733c03ed3cc460818011884a50cbc958",
+      "/mnt/micron/codex3-cs8-stt2-crisp-20261030/install/lib/libggml.so.0.26.0": "f321d8bd17b3c49b4fe4d99feefbc1a87210d59c09bbb59864d3ec3acf06caf4",
+      "/mnt/raid0/llm/tmp/codex3-cs8-stt5-accuracy-20261030/ultra-adapter/nemo-crisp/tc-adapter/libcrispasr.so.0.8.44": "e2f4f84907b84a15f1e19226a5e068adf2866b16d752055cb7e999534a28f0a2",
+      "/usr/lib/x86_64-linux-gnu/libopenblas.so.0": "bfc7492adbf84a8f567720a9e1fae2afc18f3d817da233e7f4d453683485308e"
+    },
+    "r6": {
+      "/mnt/micron/codex3-cs8-stt2-crisp-20261030/install/lib/libggml-base.so.0.26.0": "a219e1fbde274dc29933c75b06519a2f56e45b45b0f21f8cbe72e8189b4d13c9",
+      "/mnt/micron/codex3-cs8-stt2-crisp-20261030/install/lib/libggml-cpu.so.0.26.0": "6d32fbd5188e6c324a7d91068f8ffe8d733c03ed3cc460818011884a50cbc958",
+      "/mnt/micron/codex3-cs8-stt2-crisp-20261030/install/lib/libggml.so.0.26.0": "f321d8bd17b3c49b4fe4d99feefbc1a87210d59c09bbb59864d3ec3acf06caf4",
+      "/mnt/raid0/llm/tmp/codex3-cs8-stt5-accuracy-20261030/ultra-adapter/nemo-crisp/tc-adapter/libcrispasr.so.0.8.44": "e2f4f84907b84a15f1e19226a5e068adf2866b16d752055cb7e999534a28f0a2",
+      "/usr/lib/x86_64-linux-gnu/libopenblas.so.0": "bfc7492adbf84a8f567720a9e1fae2afc18f3d817da233e7f4d453683485308e"
+    }
+  },
+  "runner_library_set_sha256": {
+    "r0": "4a56a097929e6100176953721cfa9e8eb206418807938a0c39152dbf90244f41",
+    "r13": "4a56a097929e6100176953721cfa9e8eb206418807938a0c39152dbf90244f41",
+    "r3": "4a56a097929e6100176953721cfa9e8eb206418807938a0c39152dbf90244f41",
+    "r6": "4a56a097929e6100176953721cfa9e8eb206418807938a0c39152dbf90244f41"
+  },
+  "vad_binary_sha256": "ee509ce5347c4333e19fd28ab5fa9eb3bd97f35fc23292509461de4e88e22d9d",
+  "vad_model_sha256": "2aa269b785eeb53a82983a20501ddf7c1d9c48e33ab63a41391ac6c9f7fb6987",
+  "validation_sha256": "1bf2544d1d02d8f72b1a57d293c1e0869953aae31c3c526220b7965df09b536e"
+}

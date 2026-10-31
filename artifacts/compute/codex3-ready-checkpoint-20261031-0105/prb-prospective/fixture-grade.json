@@ -1,0 +1,227 @@
+{
+  "verdict": "INCOMPLETE",
+  "planned_questions": 1600,
+  "planned_arm_rows": 4800,
+  "valid_arm_rows": 0,
+  "invalid_count": 6399,
+  "invalid_examples": [
+    [
+      0,
+      "baseline",
+      "identity_or_oracle_unknown"
+    ],
+    [
+      0,
+      "static",
+      "identity_or_oracle_unknown"
+    ],
+    [
+      0,
+      "tale",
+      "identity_or_oracle_unknown"
+    ],
+    [
+      1,
+      "estimate",
+      "missing"
+    ],
+    [
+      1,
+      "baseline",
+      "missing"
+    ],
+    [
+      1,
+      "static",
+      "missing"
+    ],
+    [
+      1,
+      "tale",
+      "missing"
+    ],
+    [
+      2,
+      "estimate",
+      "missing"
+    ],
+    [
+      2,
+      "baseline",
+      "missing"
+    ],
+    [
+      2,
+      "static",
+      "missing"
+    ],
+    [
+      2,
+      "tale",
+      "missing"
+    ],
+    [
+      3,
+      "estimate",
+      "missing"
+    ],
+    [
+      3,
+      "baseline",
+      "missing"
+    ],
+    [
+      3,
+      "static",
+      "missing"
+    ],
+    [
+      3,
+      "tale",
+      "missing"
+    ],
+    [
+      4,
+      "estimate",
+      "missing"
+    ],
+    [
+      4,
+      "baseline",
+      "missing"
+    ],
+    [
+      4,
+      "static",
+      "missing"
+    ],
+    [
+      4,
+      "tale",
+      "missing"
+    ],
+    [
+      5,
+      "estimate",
+      "missing"
+    ],
+    [
+      5,
+      "baseline",
+      "missing"
+    ],
+    [
+      5,
+      "static",
+      "missing"
+    ],
+    [
+      5,
+      "tale",
+      "missing"
+    ],
+    [
+      6,
+      "estimate",
+      "missing"
+    ],
+    [
+      6,
+      "baseline",
+      "missing"
+    ],
+    [
+      6,
+      "static",
+      "missing"
+    ],
+    [
+      6,
+      "tale",
+      "missing"
+    ],
+    [
+      7,
+      "estimate",
+      "missing"
+    ],
+    [
+      7,
+      "baseline",
+      "missing"
+    ],
+    [
+      7,
+      "static",
+      "missing"
+    ],
+    [
+      7,
+      "tale",
+      "missing"
+    ],
+    [
+      8,
+      "estimate",
+      "missing"
+    ],
+    [
+      8,
+      "baseline",
+      "missing"
+    ],
+    [
+      8,
+      "static",
+      "missing"
+    ],
+    [
+      8,
+      "tale",
+      "missing"
+    ],
+    [
+      9,
+      "estimate",
+      "missing"
+    ],
+    [
+      9,
+      "baseline",
+      "missing"
+    ],
+    [
+      9,
+      "static",
+      "missing"
+    ],
+    [
+      9,
+      "tale",
+      "missing"
+    ],
+    [
+      10,
+      "estimate",
+      "missing"
+    ]
+  ],
+  "counts": {
+    "math/estimate": 400,
+    "math/baseline": 400,
+    "math/static": 400,
+    "math/tale": 400,
+    "olympiadbench/estimate": 400,
+    "olympiadbench/baseline": 400,
+    "olympiadbench/static": 400,
+    "olympiadbench/tale": 400,
+    "mmlu_pro/estimate": 400,
+    "mmlu_pro/baseline": 400,
+    "mmlu_pro/static": 400,
+    "mmlu_pro/tale": 400,
+    "livecodebench/estimate": 400,
+    "livecodebench/baseline": 400,
+    "livecodebench/static": 400,
+    "livecodebench/tale": 400
+  }
+}

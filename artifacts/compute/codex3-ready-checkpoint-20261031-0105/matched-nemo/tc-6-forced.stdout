@@ -1,0 +1,135 @@
+audio: /mnt/raid0/llm/whisper.cpp/samples/jfk.wav
+  samples:    176000
+  duration:   11.000 s
+  sample rate 16000 Hz mono float32
+model: /mnt/raid0/llm/models/nemotron-3.5-asr-streaming-0.6b-Q8_0.gguf -> ok
+  backend:    CPU
+  name:       Nemotron Streaming 3.5
+  license:    other
+  max audio:  unbounded (whole clip in one pass)
+stream: chunk=560 ms (8960 samples)
+stream: att_context_right=6
+  feed[ 0]: input=560 ms buffered=70 ms
+  feed[ 1]: input=1120 ms buffered=70 ms  partial="And"
+  feed[ 2]: input=1680 ms buffered=70 ms  partial="And so my"
+  feed[ 3]: input=2240 ms buffered=70 ms  partial="And so my fellow Ameri"
+  feed[ 4]: input=2800 ms buffered=70 ms  partial="And so my fellow Americans"
+  feed[ 5]: input=3360 ms buffered=70 ms
+  feed[ 6]: input=3920 ms buffered=70 ms
+  feed[ 7]: input=4480 ms buffered=70 ms  partial="And so my fellow Americans ask"
+  feed[ 8]: input=5040 ms buffered=70 ms  partial="And so my fellow Americans ask not"
+  feed[ 9]: input=5600 ms buffered=70 ms
+  feed[10]: input=6160 ms buffered=70 ms  partial="And so my fellow Americans ask not what"
+  feed[11]: input=6720 ms buffered=70 ms  partial="And so my fellow Americans ask not what your country"
+  feed[12]: input=7280 ms buffered=70 ms  partial="And so my fellow Americans ask not what your country can do for"
+  feed[13]: input=7840 ms buffered=70 ms  partial="And so my fellow Americans ask not what your country can do for you"
+  feed[14]: input=8400 ms buffered=70 ms
+  feed[15]: input=8960 ms buffered=70 ms  partial="And so my fellow Americans ask not what your country can do for you. <en-US> Ask"
+  feed[16]: input=9520 ms buffered=70 ms  partial="And so my fellow Americans ask not what your country can do for you. <en-US> Ask what you can"
+  feed[17]: input=10080 ms buffered=70 ms  partial="And so my fellow Americans ask not what your country can do for you. <en-US> Ask what you can do for your"
+  feed[18]: input=10640 ms buffered=70 ms  partial="And so my fellow Americans ask not what your country can do for you. <en-US> Ask what you can do for your country"
+  feed[19]: input=11000 ms buffered=430 ms
+  finalize: status=ok revision=15 input=11000 ms committed=11000 ms
+run: ok
+text: And so my fellow Americans ask not what your country can do for you. <en-US> Ask what you can do for your country. <en-US>
+words: 0
+tokens: 48
+CS8_NEMO_TOKENS 48
+CS8_NEMO_TOKEN 0 2860
+  [   0.72 ->    0.80] p=0.923  And
+CS8_NEMO_TOKEN 1 2
+  [   1.20 ->    1.28] p=0.999  
+CS8_NEMO_TOKEN 2 1290
+  [   1.20 ->    1.28] p=0.996 so
+CS8_NEMO_TOKEN 3 2
+  [   1.52 ->    1.60] p=0.918  
+CS8_NEMO_TOKEN 4 1731
+  [   1.52 ->    1.60] p=0.991 my
+CS8_NEMO_TOKEN 5 1179
+  [   1.76 ->    1.84] p=0.987  fel
+CS8_NEMO_TOKEN 6 290
+  [   1.92 ->    2.00] p=1.000 lo
+CS8_NEMO_TOKEN 7 133
+  [   1.92 ->    2.00] p=1.000 w
+CS8_NEMO_TOKEN 8 309
+  [   2.00 ->    2.08] p=0.933  A
+CS8_NEMO_TOKEN 9 271
+  [   2.08 ->    2.16] p=0.985 me
+CS8_NEMO_TOKEN 10 581
+  [   2.16 ->    2.24] p=0.971 ri
+CS8_NEMO_TOKEN 11 1257
+  [   2.32 ->    2.40] p=1.000 ca
+CS8_NEMO_TOKEN 12 113
+  [   2.32 ->    2.40] p=0.971 n
+CS8_NEMO_TOKEN 13 40
+  [   2.40 ->    2.48] p=0.945 s
+CS8_NEMO_TOKEN 14 2900
+  [   4.00 ->    4.08] p=0.972  ask
+CS8_NEMO_TOKEN 15 2847
+  [   4.56 ->    4.64] p=0.920  not
+CS8_NEMO_TOKEN 16 2831
+  [   5.68 ->    5.76] p=0.921  what
+CS8_NEMO_TOKEN 17 2815
+  [   6.16 ->    6.24] p=0.987  your
+CS8_NEMO_TOKEN 18 995
+  [   6.32 ->    6.40] p=1.000  c
+CS8_NEMO_TOKEN 19 313
+  [   6.32 ->    6.40] p=1.000 ou
+CS8_NEMO_TOKEN 20 113
+  [   6.32 ->    6.40] p=1.000 n
+CS8_NEMO_TOKEN 21 34
+  [   6.40 ->    6.48] p=1.000 t
+CS8_NEMO_TOKEN 22 1752
+  [   6.40 ->    6.48] p=1.000 ry
+CS8_NEMO_TOKEN 23 2813
+  [   6.72 ->    6.80] p=1.000  can
+CS8_NEMO_TOKEN 24 2
+  [   6.88 ->    6.96] p=1.000  
+CS8_NEMO_TOKEN 25 1288
+  [   6.88 ->    6.96] p=1.000 do
+CS8_NEMO_TOKEN 26 398
+  [   7.12 ->    7.20] p=0.936  for
+CS8_NEMO_TOKEN 27 2810
+  [   7.36 ->    7.44] p=0.977  you
+CS8_NEMO_TOKEN 28 4
+  [   8.48 ->    8.56] p=0.848 .
+CS8_NEMO_TOKEN 29 2
+  [   8.48 ->    8.56] p=0.999  
+CS8_NEMO_TOKEN 30 2947
+  [   8.48 ->    8.56] p=1.000 <en-US>
+CS8_NEMO_TOKEN 31 309
+  [   8.64 ->    8.72] p=0.989  A
+CS8_NEMO_TOKEN 32 2127
+  [   8.72 ->    8.80] p=0.998 sk
+CS8_NEMO_TOKEN 33 2831
+  [   8.96 ->    9.04] p=0.960  what
+CS8_NEMO_TOKEN 34 2810
+  [   9.12 ->    9.20] p=0.983  you
+CS8_NEMO_TOKEN 35 2813
+  [   9.36 ->    9.44] p=0.941  can
+CS8_NEMO_TOKEN 36 2
+  [   9.60 ->    9.68] p=1.000  
+CS8_NEMO_TOKEN 37 1288
+  [   9.60 ->    9.68] p=1.000 do
+CS8_NEMO_TOKEN 38 398
+  [   9.76 ->    9.84] p=0.996  for
+CS8_NEMO_TOKEN 39 2815
+  [  10.00 ->   10.08] p=0.928  your
+CS8_NEMO_TOKEN 40 995
+  [  10.16 ->   10.24] p=1.000  c
+CS8_NEMO_TOKEN 41 313
+  [  10.16 ->   10.24] p=1.000 ou
+CS8_NEMO_TOKEN 42 113
+  [  10.16 ->   10.24] p=1.000 n
+CS8_NEMO_TOKEN 43 34
+  [  10.24 ->   10.32] p=0.996 t
+CS8_NEMO_TOKEN 44 1752
+  [  10.24 ->   10.32] p=0.997 ry
+CS8_NEMO_TOKEN 45 4
+  [  10.72 ->   10.80] p=0.921 .
+CS8_NEMO_TOKEN 46 2
+  [  10.72 ->   10.80] p=1.000  
+CS8_NEMO_TOKEN 47 2947
+  [  10.72 ->   10.80] p=1.000 <en-US>
+CS8_NEMO_TOKENS_END
+  realtime:   4x (2729.3 ms for 11.0 s)

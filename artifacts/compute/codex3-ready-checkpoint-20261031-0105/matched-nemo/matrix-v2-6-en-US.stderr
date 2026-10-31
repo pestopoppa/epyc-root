@@ -1,0 +1,13 @@
+nemotron: backend = CPU
+nemotron: vocab=13087  d_model=1024  n_layers=24  n_heads=8  ff=4096  pred=640  joint=640
+nemotron: streaming: 4 presets, causal_ds=1, conv_norm=layer_norm, conv_ln=loaded, prompt_kernel=loaded
+nemotron: running streaming chunked encoder path
+nemotron: pre-encode T=139 d=1024 min=-1172.19 max=1107.54 mean=-0.6843
+nemotron: chunked encoder (streaming) L=56 R=6 chunk=7 T_enc=139 layers=24
+  chunk 1/20 (frames 0-6, graphs=24)
+  chunk 6/20 (frames 35-41, graphs=144)
+  chunk 11/20 (frames 70-76, graphs=216)
+  chunk 16/20 (frames 105-111, graphs=216)
+  chunk 20/20 (frames 133-138, graphs=240)
+nemotron: chunked encoder done
+nemotron: prompt kernel applied (prompt_id=0)

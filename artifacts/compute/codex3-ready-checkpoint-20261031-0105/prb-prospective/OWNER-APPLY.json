@@ -1,0 +1,9 @@
+{
+  "owner": "codex3 parent session",
+  "patch_sha256": "2dcb2001c16d3d80825daa995e17eaaace4ba147f9d4ed57a963e3e3a02ab554",
+  "parent_reported_git_apply_check_rc": 0,
+  "parent_reported_git_apply_rc": 0,
+  "source_family": "existing TALE",
+  "reader_canary": "unproven; task open",
+  "evidence": "Parent OWNERAPPLYDONE plus presence check of the two exact source/task additions."
+}

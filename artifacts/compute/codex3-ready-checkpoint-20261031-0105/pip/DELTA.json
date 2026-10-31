@@ -1,0 +1,111 @@
+{
+  "prior": {
+    "rows": 82,
+    "pages": 294,
+    "tables": 82
+  },
+  "current": {
+    "rows": 85,
+    "pages": 309,
+    "tables": 82
+  },
+  "unique_new_positions": [
+    580,
+    581,
+    582,
+    583,
+    584,
+    585,
+    586,
+    587,
+    588,
+    589,
+    590,
+    591,
+    592,
+    593,
+    594
+  ],
+  "new_completed_shards": [
+    {
+      "shard": 116,
+      "coverage": {
+        "pages_complete": 5,
+        "pages_total": 5,
+        "gt_tables_scored": 0,
+        "gt_tables_total": 0
+      },
+      "positions": [
+        580,
+        581,
+        582,
+        583,
+        584
+      ],
+      "result_sha256": "684242a5c01af482a999aaf71aab107c769a869988dc1005fe71af0eabed79de",
+      "receipt_sha256": "eccc57ae6e7240e09de3ad9fa81afd1ac363788d1979d28e2faf6ee2c1071225",
+      "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+      "gt_sha256": "a45cd84b04ad8b793e775089640e6b681209abea33ead54c1828ddca35fae496",
+      "scoring_sources_sha256": {
+        "pip02_records.py": "2d364d7a7ef1d47b21fb8f3352ff4ffe98e93c682da3996f6e1270c8193c81cd",
+        "pip02_lineage.py": "766eee7148f5cafdf3833f3d329521218fd416ffca53016e396d6dbb710ba7c0",
+        "pip02_compare.py": "37e9d673ba46ac16c5f8169db97290933b3c63fb48ef133b825d5db3a9ba995e",
+        "pip02_native_score.py": "27f0b630b6812aecad35d1c65329841a5011e421326e81f9f14c8c66a6fdbe5e"
+      }
+    },
+    {
+      "shard": 117,
+      "coverage": {
+        "pages_complete": 5,
+        "pages_total": 5,
+        "gt_tables_scored": 0,
+        "gt_tables_total": 0
+      },
+      "positions": [
+        585,
+        586,
+        587,
+        588,
+        589
+      ],
+      "result_sha256": "9898f3a28b5f1ca67008d949d44c1e781418d6e46926187fae9df7821d19ed53",
+      "receipt_sha256": "1f65bf3c0baebacbcd23875285dd0f97c15de3e0804390ae3f32e533f073c04e",
+      "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+      "gt_sha256": "a45cd84b04ad8b793e775089640e6b681209abea33ead54c1828ddca35fae496",
+      "scoring_sources_sha256": {
+        "pip02_records.py": "2d364d7a7ef1d47b21fb8f3352ff4ffe98e93c682da3996f6e1270c8193c81cd",
+        "pip02_lineage.py": "766eee7148f5cafdf3833f3d329521218fd416ffca53016e396d6dbb710ba7c0",
+        "pip02_compare.py": "37e9d673ba46ac16c5f8169db97290933b3c63fb48ef133b825d5db3a9ba995e",
+        "pip02_native_score.py": "27f0b630b6812aecad35d1c65329841a5011e421326e81f9f14c8c66a6fdbe5e"
+      }
+    },
+    {
+      "shard": 118,
+      "coverage": {
+        "pages_complete": 5,
+        "pages_total": 5,
+        "gt_tables_scored": 0,
+        "gt_tables_total": 0
+      },
+      "positions": [
+        590,
+        591,
+        592,
+        593,
+        594
+      ],
+      "result_sha256": "ee9d20e1d5be7125ffa5e98177a1b363747f19fc30d0e6a7d0fb84af367b5916",
+      "receipt_sha256": "d8985558da9afd4bb83c64afaa13f6fb66e09699aff9da94d934ebf11fbf1519",
+      "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+      "gt_sha256": "a45cd84b04ad8b793e775089640e6b681209abea33ead54c1828ddca35fae496",
+      "scoring_sources_sha256": {
+        "pip02_records.py": "2d364d7a7ef1d47b21fb8f3352ff4ffe98e93c682da3996f6e1270c8193c81cd",
+        "pip02_lineage.py": "766eee7148f5cafdf3833f3d329521218fd416ffca53016e396d6dbb710ba7c0",
+        "pip02_compare.py": "37e9d673ba46ac16c5f8169db97290933b3c63fb48ef133b825d5db3a9ba995e",
+        "pip02_native_score.py": "27f0b630b6812aecad35d1c65329841a5011e421326e81f9f14c8c66a6fdbe5e"
+      }
+    }
+  ],
+  "means": "No new GT tables; existing 82-table means unchanged. Zero-table shards have no TEDS mean.",
+  "scope": "English fresh cohort; existing Phase C scorer and GT; no full or paired gate."
+}

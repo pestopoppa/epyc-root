@@ -1,0 +1,85 @@
+{
+ "id": "codex3-kvu-lb1d-t96-quiet-r1-20261031",
+ "owner": "codex3",
+ "priority_rank": 6,
+ "regions": "0-95,mi210_0",
+ "min_window_s": 5100,
+ "window_s": 5700,
+ "gib": 110,
+ "booking_class": "block-timing-pairable",
+ "class": "diagnostic",
+ "launcher": {
+  "path": "/mnt/raid0/llm/tmp/codex3-next-wholehost-prep-20261031/packet/launch.sh",
+  "sha256": "7d4a3c9cb0bde8e5383c07d095de3ca4bd54b27469b351326ca0d1fa23540852"
+ },
+ "job": {
+  "path": "/mnt/raid0/llm/tmp/codex3-next-wholehost-prep-20261031/packet/job.py",
+  "sha256": "9177f77f01a42799b532e533ce887e0e58783c5618117afa7139c1f74d73e56d"
+ },
+ "source_manifest": {
+  "path": "/mnt/raid0/llm/tmp/codex3-next-wholehost-prep-20261031/packet/SOURCES.sha256",
+  "sha256": "16ffd3b28bf8f0f6480c59daaf6c2dbd5b97684bad1867b09758a2489e7cf44d"
+ },
+ "result_path": "/mnt/raid0/llm/tmp/codex3-next-wholehost-prep-20261031/packet/COMPLETE",
+ "decision_rule": "C5 T96 HYBRID/F32 ABBAAB six launches x four cells; (F32-HYBRID)/HYBRID throughput higher better; historical -1% indicative cost threshold, separate correctness required. No adoption claim.",
+ "enrollment": "n/a: diagnostic",
+ "scratch_root": "/mnt/raid0/llm/tmp/codex3-next-wholehost-prep-20261031/packet",
+ "keep": [
+  "*.py",
+  "*.sh",
+  "*.sha256",
+  "*.md",
+  "*.log",
+  "run-*/out/*.jsonl",
+  "run-*/out/*.json",
+  "run-*/out/*.err",
+  "run-*/out/*.maps",
+  "run-*/out/*.numa",
+  "run-*/native.log",
+  "control-*/out/*.json",
+  "control-*/out/*.jsonl",
+  "control-*/out/*.err",
+  "control-*/result.json",
+  "control-*/watch-result.json",
+  "engine/*.sh",
+  "deps/*.py",
+  "research/scripts/lib/*.py",
+  "research/scripts/utils/*.sh",
+  "research/scripts/utils/*.py"
+ ],
+ "raw_globs": [
+  "run-*/out/*.jsonl",
+  "run-*/out/*.err",
+  "run-*/native.log",
+  "ws58-launcher.out"
+ ],
+ "log_consumer": "/mnt/raid0/llm/tmp/codex3-next-wholehost-prep-20261031/packet/driver.py",
+ "est_output_GiB": 4,
+ "feasibility": "Original measured full 6-arm native run 2494s; 5700s includes admission, up to 600s full model hash, setup and margin; full atomic restart on cutoff. 110 GiB, quiet host + GPU exclusive.",
+ "smoke": {
+  "ran_at": "2026-10-31T00:58:30.540528+00:00",
+  "regions": "R11 CPU 124,125",
+  "model": "Qwen3.5-0.8B-Q4_0 control; Q38FN target load untested",
+  "first_request_ok": true,
+  "result_writer_ok": true,
+  "exit_ok": true,
+  "wall_s": 23.801,
+  "peak_sampled_tree_rss_bytes": 693288960,
+  "launcher_sha256": "7d4a3c9cb0bde8e5383c07d095de3ca4bd54b27469b351326ca0d1fa23540852",
+  "log": "/mnt/raid0/llm/tmp/codex3-next-wholehost-prep-20261031/packet/smoke-final.log",
+  "log_sha256": "d776bf4eab6042fecd8eaa7a75767286c90750362bc85322d2a1834402fc4183",
+  "stop_log": "/mnt/raid0/llm/tmp/codex3-next-wholehost-prep-20261031/packet/stop-final.log",
+  "stop_rc": 75,
+  "stop_cleanup_verified": true
+ },
+ "hold": null,
+ "target_model": "Qwen3.8-Flash-Next UD-IQ4_XS, original canonical 3 shards; no target smoke performed",
+ "prior_row": "/mnt/raid0/llm/tmp/compute-flags/ready/rtg57-c5-vkq-t96-repair-20261028.row.md",
+ "keeper_log": [
+  {
+   "ts": "2026-10-31T01:00:23Z",
+   "state": "armed",
+   "reason": "QUEUED codex3-kvu-lb1d-t96-quiet-r1-20261031 1066939 | OK: 1 row(s) checked, 0 refusal(s), 0 warning(s) | admit: validator OK; admit: MemAvailable 992 GiB, need 110 GiB; class=block-timing-pairable launcher=filler_ru"
+  }
+ ]
+}

@@ -1,0 +1,37 @@
+nemotron: backend = CPU
+nemotron: vocab=13087  d_model=1024  n_layers=24  n_heads=8  ff=4096  pred=640  joint=640
+nemotron: streaming: 4 presets, causal_ds=1, conv_norm=layer_norm, conv_ln=loaded, prompt_kernel=loaded
+nemotron: running streaming chunked encoder path
+nemotron: pre-encode T=139 d=1024 min=-1172.19 max=1107.54 mean=-0.6843
+nemotron: chunked encoder (streaming) L=56 R=0 chunk=1 T_enc=139 layers=24
+  chunk 1/139 (frames 0-0, graphs=24)
+  chunk 6/139 (frames 5-5, graphs=144)
+  chunk 11/139 (frames 10-10, graphs=264)
+  chunk 16/139 (frames 15-15, graphs=384)
+  chunk 21/139 (frames 20-20, graphs=504)
+  chunk 26/139 (frames 25-25, graphs=624)
+  chunk 31/139 (frames 30-30, graphs=744)
+  chunk 36/139 (frames 35-35, graphs=864)
+  chunk 41/139 (frames 40-40, graphs=984)
+  chunk 46/139 (frames 45-45, graphs=1104)
+  chunk 51/139 (frames 50-50, graphs=1224)
+  chunk 56/139 (frames 55-55, graphs=1344)
+  chunk 61/139 (frames 60-60, graphs=1368)
+  chunk 66/139 (frames 65-65, graphs=1368)
+  chunk 71/139 (frames 70-70, graphs=1368)
+  chunk 76/139 (frames 75-75, graphs=1368)
+  chunk 81/139 (frames 80-80, graphs=1368)
+  chunk 86/139 (frames 85-85, graphs=1368)
+  chunk 91/139 (frames 90-90, graphs=1368)
+  chunk 96/139 (frames 95-95, graphs=1368)
+  chunk 101/139 (frames 100-100, graphs=1368)
+  chunk 106/139 (frames 105-105, graphs=1368)
+  chunk 111/139 (frames 110-110, graphs=1368)
+  chunk 116/139 (frames 115-115, graphs=1368)
+  chunk 121/139 (frames 120-120, graphs=1368)
+  chunk 126/139 (frames 125-125, graphs=1368)
+  chunk 131/139 (frames 130-130, graphs=1368)
+  chunk 136/139 (frames 135-135, graphs=1368)
+  chunk 139/139 (frames 138-138, graphs=1368)
+nemotron: chunked encoder done
+nemotron: prompt kernel applied (prompt_id=101)

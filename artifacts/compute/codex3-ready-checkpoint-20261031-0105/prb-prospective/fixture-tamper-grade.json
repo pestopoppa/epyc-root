@@ -1,0 +1,33 @@
+{
+  "status": "INCOMPLETE",
+  "decision": null,
+  "planned_questions": 1600,
+  "planned_arm_rows": 4800,
+  "valid_arm_rows": 4799,
+  "invalid_count": 1,
+  "invalid_examples": [
+    [
+      1,
+      "static",
+      "record_digest_mismatch"
+    ]
+  ],
+  "counts": {
+    "math/estimate": 400,
+    "math/baseline": 400,
+    "math/static": 400,
+    "math/tale": 400,
+    "olympiadbench/estimate": 400,
+    "olympiadbench/baseline": 400,
+    "olympiadbench/static": 400,
+    "olympiadbench/tale": 400,
+    "mmlu_pro/estimate": 400,
+    "mmlu_pro/baseline": 400,
+    "mmlu_pro/static": 400,
+    "mmlu_pro/tale": 400,
+    "livecodebench/estimate": 400,
+    "livecodebench/baseline": 400,
+    "livecodebench/static": 400,
+    "livecodebench/tale": 400
+  }
+}

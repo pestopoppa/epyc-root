@@ -1,0 +1,1835 @@
+{
+  "snapshot_utc": "2026-10-31T01:10:57.799561+00:00",
+  "packets": [
+    {
+      "label": "nemo-crisp-r3",
+      "id": "codex3-cs8-stt5-validation-nemotron-crisp-r3-20261030",
+      "metadata_path": "/mnt/raid0/llm/tmp/compute-flags/ready/codex3-cs8-stt5-validation-nemotron-crisp-r3-20261030.json",
+      "state": "READY",
+      "checks": {
+        "launcher": "8a7a86d4fda6a556dfc5405a525a4a4137317ced9556d949c1d78527190ce467",
+        "job": "4c930a4f46ab605f21a1040c2ef64e3bc18722e0937cac42e7753c4dbef31edf",
+        "source_manifest": "2c54822aa94002d9f8163a00ca1c4ea413188680fb26c73b21ff3354a61d0a70"
+      },
+      "smoke_sha256": "396715cdb6e76690b179cfb0e63de9e46786454a8296c51724de2d132de7ae65",
+      "smoke_wall_s": 64.74120093486272,
+      "peak_sampled_tree_rss_bytes": 2214907904,
+      "target_model_loaded_by_smoke": true
+    },
+    {
+      "label": "nemo-tc-r2",
+      "id": "codex3-cs8-stt5-validation-nemotron-tc-r2-20261030",
+      "metadata_path": "/mnt/raid0/llm/tmp/compute-flags/ready/codex3-cs8-stt5-validation-nemotron-tc-r2-20261030.json",
+      "state": "READY",
+      "checks": {
+        "launcher": "04eb8d108e40486ecc77320b918e8fac9aeede6dc4162490020ec178921bbc93",
+        "job": "eeeb9dc65dc161211db7c6ccd2e08ef78543f0ba0a531469d22eddd5d004c92c",
+        "source_manifest": "38ff90db7666e67d09a7192cd16c13941ddad2373f98f755be95bf42ff2f429c"
+      },
+      "smoke_sha256": "87a92f1c96fb508b8ee58770941cd2f979ccb2b4d36c474904e7267fdf0410fe",
+      "smoke_wall_s": 25.969351237174124,
+      "peak_sampled_tree_rss_bytes": 2524110848,
+      "target_model_loaded_by_smoke": true
+    },
+    {
+      "label": "parakeet-tc",
+      "id": "codex3-cs8-stt5-validation-v3-tc-20261030",
+      "metadata_path": "/mnt/raid0/llm/tmp/compute-flags/ready/codex3-cs8-stt5-validation-v3-tc-20261030.json",
+      "state": "READY",
+      "checks": {
+        "launcher": "a7d68bb9dcff3286024e7b83cfd9c77097871553a4beb369c58c95543f8ff4e5",
+        "job": "42c88257b75beb606b22ede1861e200c485ee902e702fa4b34b3931f4efc4254",
+        "source_manifest": "8792c7003b9d3fc9ebee711e7f6f5f4e8108a1d05949ef2dbed2df98a2fab44d"
+      },
+      "smoke_sha256": "57205943bc634384fa15e61544cf863f56104abaf973e58b023ea2e674684995",
+      "smoke_wall_s": 5.938186794053763,
+      "peak_sampled_tree_rss_bytes": 3490627584,
+      "target_model_loaded_by_smoke": true
+    },
+    {
+      "label": "nemo-en",
+      "id": "codex3-cs8-stt5-validation-nemo-en-20261031",
+      "metadata_path": "/mnt/raid0/llm/tmp/compute-flags/ready/codex3-cs8-stt5-validation-nemo-en-20261031.json",
+      "state": "READY",
+      "checks": {
+        "launcher": "91902c069ed0ded43a124c795c0e1cd99c808cb60525424bf37812be39cc5700",
+        "job": "7ae85757b187ec8e49edb50e276e45ec069206db8e707776ccc06128126e4b75",
+        "source_manifest": "449f9a1856520970b857e9a2ef91d5aefe9b5e5ac326376c6df39c1b997998db"
+      },
+      "smoke_sha256": "17cf2fb9229d67143d9757e69a23b62da27202e730b1ffad7c05035edad62ba5",
+      "smoke_wall_s": 43.28934882301837,
+      "peak_sampled_tree_rss_bytes": 2387357696,
+      "target_model_loaded_by_smoke": true
+    },
+    {
+      "label": "unified-en",
+      "id": "codex3-cs8-stt5-validation-unified-en-20261031",
+      "metadata_path": "/mnt/raid0/llm/tmp/compute-flags/ready/codex3-cs8-stt5-validation-unified-en-20261031.json",
+      "state": "READY",
+      "checks": {
+        "launcher": "d32305886f2ba4626fdf210190098d2dde61defc09afaa7e99faf851b1bce9c7",
+        "job": "ceace158156b94ab6df0bba6b36f64ed0c0f1eb7952ea162239af51aa643f4b3",
+        "source_manifest": "3bf5d3ee509b461530216475792414aa54a978178f5cc87ef43636a101097617"
+      },
+      "smoke_sha256": "ede4e8ac88143c4efd35db272132d82d06bb212b2f47a224b76160bb6b49bbca",
+      "smoke_wall_s": 142.4769949009642,
+      "peak_sampled_tree_rss_bytes": 2380718080,
+      "target_model_loaded_by_smoke": true
+    },
+    {
+      "label": "kvu-t96",
+      "id": "codex3-kvu-lb1d-t96-quiet-r1-20261031",
+      "metadata_path": "/mnt/raid0/llm/tmp/compute-flags/ready/armed/codex3-kvu-lb1d-t96-quiet-r1-20261031.json",
+      "state": "ARMED",
+      "checks": {
+        "launcher": "7d4a3c9cb0bde8e5383c07d095de3ca4bd54b27469b351326ca0d1fa23540852",
+        "job": "9177f77f01a42799b532e533ce887e0e58783c5618117afa7139c1f74d73e56d",
+        "source_manifest": "16ffd3b28bf8f0f6480c59daaf6c2dbd5b97684bad1867b09758a2489e7cf44d"
+      },
+      "smoke_sha256": "d776bf4eab6042fecd8eaa7a75767286c90750362bc85322d2a1834402fc4183",
+      "smoke_wall_s": 23.801,
+      "peak_sampled_tree_rss_bytes": 693288960,
+      "target_model_loaded_by_smoke": false
+    }
+  ],
+  "copies": [
+    {
+      "source": "/mnt/raid0/llm/tmp/compute-flags/ready/codex3-cs8-stt5-validation-nemotron-crisp-r3-20261030.json",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/nemo-crisp-r3/READY.json",
+      "bytes": 3699,
+      "sha256": "5d3c2629188fc9ed8309b28fa3211adc8e3d182bdd2d655531c74d626928abb8"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/compute-flags/ready/codex3-cs8-stt5-validation-nemotron-crisp-r3-20261030.smoke.log",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/nemo-crisp-r3/qualified-smoke.log",
+      "bytes": 566,
+      "sha256": "396715cdb6e76690b179cfb0e63de9e46786454a8296c51724de2d132de7ae65"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/compute-flags/ready/codex3-cs8-stt5-validation-nemotron-crisp-r3-20261030.row.md",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/nemo-crisp-r3/READY-row.md",
+      "bytes": 2522,
+      "sha256": "37daec4c2de2368e69ff1411866848aced222eae648f362eb89f1b46f8f34a1b"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-validation-nemotron-crisp-r3-20261030/score_validation.py",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/nemo-crisp-r3/score_validation.py",
+      "bytes": 7548,
+      "sha256": "44749aeffa15cb4118ed691c8502921d825d47058bbada1947b2fdb80f18184e"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-validation-nemotron-crisp-r3-20261030/PLAN.md",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/nemo-crisp-r3/PLAN.md",
+      "bytes": 5607,
+      "sha256": "61722f4fa38bd4e50c1fc33a94e82f1ed3af414cbaaa1feb27dc12ababc71533"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-validation-nemotron-crisp-r3-20261030/run-build-catalog.sh",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/nemo-crisp-r3/run-build-catalog.sh",
+      "bytes": 841,
+      "sha256": "fdb9a03ae872154feb70bb77742b7ee91edab16426c6e28966f3541d01d5db35"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-validation-nemotron-crisp-r3-20261030/nemo_crisp_job.py",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/nemo-crisp-r3/nemo_crisp_job.py",
+      "bytes": 10802,
+      "sha256": "4c930a4f46ab605f21a1040c2ef64e3bc18722e0937cac42e7753c4dbef31edf"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-validation-nemotron-crisp-r3-20261030/smoke_admission.py",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/nemo-crisp-r3/smoke_admission.py",
+      "bytes": 2793,
+      "sha256": "b172e30909b67ecfc17d43a4a46f4b97648bea865b9d7de44c6555cebabc0a58"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-validation-nemotron-crisp-r3-20261030/vocab.json",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/nemo-crisp-r3/vocab.json",
+      "bytes": 116493,
+      "sha256": "4ce7a892764ce7433ef772f7d661f0ff2866ea63a3af3c1ccc4e4d7777b851d2"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-validation-nemotron-crisp-r3-20261030/build_launch.py",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/nemo-crisp-r3/build_launch.py",
+      "bytes": 2350,
+      "sha256": "3c544736456954afddcc8e67780727d637db6bce591b38172cc6a271ba3695f6"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-validation-nemotron-crisp-r3-20261030/chunk_materialize.py",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/nemo-crisp-r3/chunk_materialize.py",
+      "bytes": 3121,
+      "sha256": "b166946334b7c769cc4a4417f082441a84ba66b527549fd6f77fd89ced83ff0c"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-validation-nemotron-crisp-r3-20261030/materialize_dev.py",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/nemo-crisp-r3/materialize_dev.py",
+      "bytes": 2816,
+      "sha256": "09054371108e03968814f97ba300fc2aedc5b4f194109c4d699ac950fd80c20d"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-validation-nemotron-crisp-r3-20261030/vad_splice.py",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/nemo-crisp-r3/vad_splice.py",
+      "bytes": 1897,
+      "sha256": "d51cc94a598b635dbbfb33c577bc999db29be9d5a5aa8d21d8dca31bd022aab6"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-validation-nemotron-crisp-r3-20261030/matched_tokens.py",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/nemo-crisp-r3/matched_tokens.py",
+      "bytes": 1790,
+      "sha256": "cdbce4a9883d18bb30b29516fc251d8b4dbd712f67b5b8d29ce5334825569706"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-validation-nemotron-crisp-r3-20261030/build_vocab.py",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/nemo-crisp-r3/build_vocab.py",
+      "bytes": 902,
+      "sha256": "f9b47a51246d133b236c65db667a239954d57485965bea2780644d97f8acde26"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-validation-nemotron-crisp-r3-20261030/PROFILE.md",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/nemo-crisp-r3/PROFILE.md",
+      "bytes": 1572,
+      "sha256": "cf257ebe0d67db5b4d132facf41f8d7ca1a8a1e0f6138be8880f60ac15589dce"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-validation-nemotron-crisp-r3-20261030/validator-fixture.md",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/nemo-crisp-r3/validator-fixture.md",
+      "bytes": 2744,
+      "sha256": "64f4b671074117f5c567870e97c7f4a58bb9fde7615b3ebfdfda7eb1c04b00c6"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-validation-nemotron-crisp-r3-20261030/long_chunk_plan.py",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/nemo-crisp-r3/long_chunk_plan.py",
+      "bytes": 1695,
+      "sha256": "64efda82d1aed15a49d26f60b8b7e854d2e8444127f653bb22510508025a82f4"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-validation-nemotron-crisp-r3-20261030/make_ready.py",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/nemo-crisp-r3/make_ready.py",
+      "bytes": 4502,
+      "sha256": "0adeff62a981f742ebd8a868bbf5ec8ba696748eee4b069ff49d0ec8a6f977a8"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-validation-nemotron-crisp-r3-20261030/SOURCE-SHA256SUMS",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/nemo-crisp-r3/SOURCE-SHA256SUMS",
+      "bytes": 15393,
+      "sha256": "2c54822aa94002d9f8163a00ca1c4ea413188680fb26c73b21ff3354a61d0a70"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-validation-nemotron-crisp-r3-20261030/smoke-final2.log",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/nemo-crisp-r3/smoke-final2.log",
+      "bytes": 566,
+      "sha256": "396715cdb6e76690b179cfb0e63de9e46786454a8296c51724de2d132de7ae65"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-validation-nemotron-crisp-r3-20261030/validator.log",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/nemo-crisp-r3/validator.log",
+      "bytes": 49,
+      "sha256": "da3e45b73abf6bd920ac617756fa57601da9834abf118afce5fef2fc6bf2070a"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-validation-nemotron-crisp-r3-20261030/smoke-supervisor.py",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/nemo-crisp-r3/smoke-supervisor.py",
+      "bytes": 7859,
+      "sha256": "d8b6b7923c5728939efb2e6e75d276051c4bf2135b4b3056579614ea151f929d"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-validation-nemotron-crisp-r3-20261030/smoke-cutoff-final2.log",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/nemo-crisp-r3/smoke-cutoff-final2.log",
+      "bytes": 565,
+      "sha256": "ba2735779aefa9e23c53d1033d1a44b7efe7170b4c52b5ad671e101b276a46cf"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-validation-nemotron-crisp-r3-20261030/INPUT-PINS.json",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/nemo-crisp-r3/INPUT-PINS.json",
+      "bytes": 4594,
+      "sha256": "04f1871e8991baad4ce49b2c5c331ec1ae84cc6e861b38591a1ee7a4e85c02bd"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-validation-nemotron-crisp-r3-20261030/log_consumer.py",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/nemo-crisp-r3/log_consumer.py",
+      "bytes": 428,
+      "sha256": "b13918bf5f102a7a8b71ec2ac87c2b6080b2b778d72ac7e331f30e9d1c09020e"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-validation-nemotron-crisp-r3-20261030/launch.sh",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/nemo-crisp-r3/launch.sh",
+      "bytes": 2093,
+      "sha256": "8a7a86d4fda6a556dfc5405a525a4a4137317ced9556d949c1d78527190ce467"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-validation-nemotron-crisp-r3-20261030/stop-smoke.py",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/nemo-crisp-r3/stop-smoke.py",
+      "bytes": 846,
+      "sha256": "eeff34fc24001de42000e14e92326cf68ebf3ca184e56d87c9a562b4974664e2"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-validation-nemotron-crisp-r3-20261030/build_source_catalog.py",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/nemo-crisp-r3/build_source_catalog.py",
+      "bytes": 4277,
+      "sha256": "c43828dd0f5dae424c55d80a03bfe45b2fa127e7c2f465fe37ba78003bdcb9e3"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/compute-flags/ready/codex3-cs8-stt5-validation-nemotron-tc-r2-20261030.json",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/nemo-tc-r2/READY.json",
+      "bytes": 3489,
+      "sha256": "685217a051786b6aa251d78712c49d359c81cc2d318c136091829d489a0e421e"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/compute-flags/ready/codex3-cs8-stt5-validation-nemotron-tc-r2-20261030.smoke.log",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/nemo-tc-r2/qualified-smoke.log",
+      "bytes": 567,
+      "sha256": "87a92f1c96fb508b8ee58770941cd2f979ccb2b4d36c474904e7267fdf0410fe"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/compute-flags/ready/codex3-cs8-stt5-validation-nemotron-tc-r2-20261030.row.md",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/nemo-tc-r2/READY-row.md",
+      "bytes": 2435,
+      "sha256": "13f92d411e4d70d4a981f01e6469d14167b4b833e7e8062f68b19600ec80ba4c"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-validation-nemotron-tc-r2-20261030/score_validation.py",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/nemo-tc-r2/score_validation.py",
+      "bytes": 7456,
+      "sha256": "b9f6beacc7efcf5273e4f77fff63b7d97ae33db5dbec19b721bc515ed30a467e"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-validation-nemotron-tc-r2-20261030/PLAN.md",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/nemo-tc-r2/PLAN.md",
+      "bytes": 5607,
+      "sha256": "61722f4fa38bd4e50c1fc33a94e82f1ed3af414cbaaa1feb27dc12ababc71533"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-validation-nemotron-tc-r2-20261030/run-build-catalog.sh",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/nemo-tc-r2/run-build-catalog.sh",
+      "bytes": 838,
+      "sha256": "f38410c4c6b9cf36d78a10ee9fb74cb5d0f2b8bc5e5decbe2400fd1dece76ef5"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-validation-nemotron-tc-r2-20261030/smoke_admission.py",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/nemo-tc-r2/smoke_admission.py",
+      "bytes": 2793,
+      "sha256": "b172e30909b67ecfc17d43a4a46f4b97648bea865b9d7de44c6555cebabc0a58"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-validation-nemotron-tc-r2-20261030/vocab.json",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/nemo-tc-r2/vocab.json",
+      "bytes": 116493,
+      "sha256": "4ce7a892764ce7433ef772f7d661f0ff2866ea63a3af3c1ccc4e4d7777b851d2"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-validation-nemotron-tc-r2-20261030/build_launch.py",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/nemo-tc-r2/build_launch.py",
+      "bytes": 2137,
+      "sha256": "13d69a7532a86fdf7dbce49216d964e1ac51414b8151a532732106be948adf8a"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-validation-nemotron-tc-r2-20261030/chunk_materialize.py",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/nemo-tc-r2/chunk_materialize.py",
+      "bytes": 3121,
+      "sha256": "b166946334b7c769cc4a4417f082441a84ba66b527549fd6f77fd89ced83ff0c"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-validation-nemotron-tc-r2-20261030/materialize_dev.py",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/nemo-tc-r2/materialize_dev.py",
+      "bytes": 2816,
+      "sha256": "09054371108e03968814f97ba300fc2aedc5b4f194109c4d699ac950fd80c20d"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-validation-nemotron-tc-r2-20261030/nemo_tokens.py",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/nemo-tc-r2/nemo_tokens.py",
+      "bytes": 2408,
+      "sha256": "867904523398ccaa8db4a9cf757b18df936650f5f4e4c4f3f1daad9d1be41485"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-validation-nemotron-tc-r2-20261030/vad_splice.py",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/nemo-tc-r2/vad_splice.py",
+      "bytes": 1897,
+      "sha256": "d51cc94a598b635dbbfb33c577bc999db29be9d5a5aa8d21d8dca31bd022aab6"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-validation-nemotron-tc-r2-20261030/build_vocab.py",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/nemo-tc-r2/build_vocab.py",
+      "bytes": 902,
+      "sha256": "f9b47a51246d133b236c65db667a239954d57485965bea2780644d97f8acde26"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-validation-nemotron-tc-r2-20261030/PROFILE.md",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/nemo-tc-r2/PROFILE.md",
+      "bytes": 1394,
+      "sha256": "d0a9097ebecc9ac018f9c9103853d9c30a5b0fcf83a7fa52754c23015328b73b"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-validation-nemotron-tc-r2-20261030/smoke-cutoff-final5.log",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/nemo-tc-r2/smoke-cutoff-final5.log",
+      "bytes": 568,
+      "sha256": "82f42ff1567cc23f665ca330a6ab2120452948a4570ef4eb363acf4128a44ee3"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-validation-nemotron-tc-r2-20261030/smoke-final5.log",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/nemo-tc-r2/smoke-final5.log",
+      "bytes": 567,
+      "sha256": "87a92f1c96fb508b8ee58770941cd2f979ccb2b4d36c474904e7267fdf0410fe"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-validation-nemotron-tc-r2-20261030/validator-fixture.md",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/nemo-tc-r2/validator-fixture.md",
+      "bytes": 2658,
+      "sha256": "ad6dae9f957ab365dc6f84e7bb726d29790b6eeb7221a1af350f1b19458979ff"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-validation-nemotron-tc-r2-20261030/long_chunk_plan.py",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/nemo-tc-r2/long_chunk_plan.py",
+      "bytes": 1695,
+      "sha256": "64efda82d1aed15a49d26f60b8b7e854d2e8444127f653bb22510508025a82f4"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-validation-nemotron-tc-r2-20261030/make_ready.py",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/nemo-tc-r2/make_ready.py",
+      "bytes": 4208,
+      "sha256": "db9a3462ea49d3f2c125f17ebb302821a37caf420572607155c51d3d4c4724e8"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-validation-nemotron-tc-r2-20261030/SOURCE-SHA256SUMS",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/nemo-tc-r2/SOURCE-SHA256SUMS",
+      "bytes": 13981,
+      "sha256": "38ff90db7666e67d09a7192cd16c13941ddad2373f98f755be95bf42ff2f429c"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-validation-nemotron-tc-r2-20261030/nemo_job.py",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/nemo-tc-r2/nemo_job.py",
+      "bytes": 11178,
+      "sha256": "eeeb9dc65dc161211db7c6ccd2e08ef78543f0ba0a531469d22eddd5d004c92c"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-validation-nemotron-tc-r2-20261030/smoke-supervisor.py",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/nemo-tc-r2/smoke-supervisor.py",
+      "bytes": 7859,
+      "sha256": "d8b6b7923c5728939efb2e6e75d276051c4bf2135b4b3056579614ea151f929d"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-validation-nemotron-tc-r2-20261030/INPUT-PINS.json",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/nemo-tc-r2/INPUT-PINS.json",
+      "bytes": 4174,
+      "sha256": "5d0780e07d00d45eee978be3e5b229c720ba3bcc2d4de2a2108d24b0b51f5639"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-validation-nemotron-tc-r2-20261030/log_consumer.py",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/nemo-tc-r2/log_consumer.py",
+      "bytes": 428,
+      "sha256": "b13918bf5f102a7a8b71ec2ac87c2b6080b2b778d72ac7e331f30e9d1c09020e"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-validation-nemotron-tc-r2-20261030/launch.sh",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/nemo-tc-r2/launch.sh",
+      "bytes": 1880,
+      "sha256": "04eb8d108e40486ecc77320b918e8fac9aeede6dc4162490020ec178921bbc93"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-validation-nemotron-tc-r2-20261030/stop-smoke.py",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/nemo-tc-r2/stop-smoke.py",
+      "bytes": 846,
+      "sha256": "d26d4e3fc8f6fbf7040dfbff669a00a3d43b455ae19fb32a74c32dec0c9b6254"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-validation-nemotron-tc-r2-20261030/build_source_catalog.py",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/nemo-tc-r2/build_source_catalog.py",
+      "bytes": 4042,
+      "sha256": "5c3f5f30f2e7f9f89678dc95c419fbc63caecfb4827cb42f785ac4cccf6d2d60"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/compute-flags/ready/codex3-cs8-stt5-validation-v3-tc-20261030.json",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/parakeet-tc/READY.json",
+      "bytes": 3418,
+      "sha256": "8ebe8c475320d7e09c9179e66927823a44455c66959b79676eb8a357774e8ea5"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/compute-flags/ready/codex3-cs8-stt5-validation-v3-tc-20261030.smoke.log",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/parakeet-tc/qualified-smoke.log",
+      "bytes": 567,
+      "sha256": "57205943bc634384fa15e61544cf863f56104abaf973e58b023ea2e674684995"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/compute-flags/ready/codex3-cs8-stt5-validation-v3-tc-20261030.row.md",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/parakeet-tc/READY-row.md",
+      "bytes": 2301,
+      "sha256": "4c47c21f856a1c065fbd73d4791171d14091f379f790e2dbaa2689cbe601b51e"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-validation-v3-tc-20261030/score_validation.py",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/parakeet-tc/score_validation.py",
+      "bytes": 7294,
+      "sha256": "16b02027b992653018ad47318226dd41552addd36b49c411d253ecf084d7ea8b"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-validation-v3-tc-20261030/PLAN.md",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/parakeet-tc/PLAN.md",
+      "bytes": 5607,
+      "sha256": "61722f4fa38bd4e50c1fc33a94e82f1ed3af414cbaaa1feb27dc12ababc71533"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-validation-v3-tc-20261030/run-build-catalog.sh",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/parakeet-tc/run-build-catalog.sh",
+      "bytes": 829,
+      "sha256": "4b430a3e230b53f68c22c5d543adeff5dae6113a7e2cd3f74f032ca586e03dd6"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-validation-v3-tc-20261030/smoke-cutoff-final6.log",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/parakeet-tc/smoke-cutoff-final6.log",
+      "bytes": 568,
+      "sha256": "06a78e309870c343d30a5b2fb359c933c1df80b4c3163433fff43874deaa6c55"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-validation-v3-tc-20261030/smoke_admission.py",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/parakeet-tc/smoke_admission.py",
+      "bytes": 2793,
+      "sha256": "b172e30909b67ecfc17d43a4a46f4b97648bea865b9d7de44c6555cebabc0a58"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-validation-v3-tc-20261030/vocab.json",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/parakeet-tc/vocab.json",
+      "bytes": 87058,
+      "sha256": "89bdeab029b83ff67ca3f5a39e32ea6a06f91bd4a6213e02dbff92537f4af03d"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-validation-v3-tc-20261030/build_launch.py",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/parakeet-tc/build_launch.py",
+      "bytes": 2110,
+      "sha256": "1ceeac69b22bd6fdc38917dba9ac1b7d41c39fc017264e3f2e80c8fc43ba4520"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-validation-v3-tc-20261030/chunk_materialize.py",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/parakeet-tc/chunk_materialize.py",
+      "bytes": 3121,
+      "sha256": "b166946334b7c769cc4a4417f082441a84ba66b527549fd6f77fd89ced83ff0c"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-validation-v3-tc-20261030/materialize_dev.py",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/parakeet-tc/materialize_dev.py",
+      "bytes": 2816,
+      "sha256": "09054371108e03968814f97ba300fc2aedc5b4f194109c4d699ac950fd80c20d"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-validation-v3-tc-20261030/nemo_tokens.py",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/parakeet-tc/nemo_tokens.py",
+      "bytes": 2408,
+      "sha256": "867904523398ccaa8db4a9cf757b18df936650f5f4e4c4f3f1daad9d1be41485"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-validation-v3-tc-20261030/vad_splice.py",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/parakeet-tc/vad_splice.py",
+      "bytes": 1897,
+      "sha256": "d51cc94a598b635dbbfb33c577bc999db29be9d5a5aa8d21d8dca31bd022aab6"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-validation-v3-tc-20261030/build_vocab.py",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/parakeet-tc/build_vocab.py",
+      "bytes": 1245,
+      "sha256": "36a22a5aea8bba86f921617888da9d43a96765cd4f300f8408214672dc335737"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-validation-v3-tc-20261030/PROFILE.md",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/parakeet-tc/PROFILE.md",
+      "bytes": 945,
+      "sha256": "e4c93da51e739b344caaae099bad1d41b9ee55fe0ef41a7b8a183a2c6c700acb"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-validation-v3-tc-20261030/smoke-final5.log",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/parakeet-tc/smoke-final5.log",
+      "bytes": 565,
+      "sha256": "47dc373fb9858d15e02c716b4ae095b2d55031efe376467aeea18dd04610d73a"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-validation-v3-tc-20261030/validator-fixture.md",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/parakeet-tc/validator-fixture.md",
+      "bytes": 2524,
+      "sha256": "6f4e2b9680bd01989c18a5d130c3576d6e552eed790197845d12d5f8e40f5959"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-validation-v3-tc-20261030/long_chunk_plan.py",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/parakeet-tc/long_chunk_plan.py",
+      "bytes": 1695,
+      "sha256": "64efda82d1aed15a49d26f60b8b7e854d2e8444127f653bb22510508025a82f4"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-validation-v3-tc-20261030/make_ready.py",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/parakeet-tc/make_ready.py",
+      "bytes": 4164,
+      "sha256": "8f2db9a92e289e7501802254fada3e97a29793f2241085d8e0034ff287c9c6f1"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-validation-v3-tc-20261030/SOURCE-SHA256SUMS",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/parakeet-tc/SOURCE-SHA256SUMS",
+      "bytes": 11989,
+      "sha256": "8792c7003b9d3fc9ebee711e7f6f5f4e8108a1d05949ef2dbed2df98a2fab44d"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-validation-v3-tc-20261030/run-build-vocab.sh",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/parakeet-tc/run-build-vocab.sh",
+      "bytes": 634,
+      "sha256": "e02ae2b207f1db9c38587a3b6092e17cd1aa6da30fa4c80afe597bb6002635ae"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-validation-v3-tc-20261030/smoke-final6.log",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/parakeet-tc/smoke-final6.log",
+      "bytes": 567,
+      "sha256": "57205943bc634384fa15e61544cf863f56104abaf973e58b023ea2e674684995"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-validation-v3-tc-20261030/nemo_job.py",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/parakeet-tc/nemo_job.py",
+      "bytes": 10921,
+      "sha256": "42c88257b75beb606b22ede1861e200c485ee902e702fa4b34b3931f4efc4254"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-validation-v3-tc-20261030/smoke-supervisor.py",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/parakeet-tc/smoke-supervisor.py",
+      "bytes": 7859,
+      "sha256": "d8b6b7923c5728939efb2e6e75d276051c4bf2135b4b3056579614ea151f929d"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-validation-v3-tc-20261030/INPUT-PINS.json",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/parakeet-tc/INPUT-PINS.json",
+      "bytes": 2362,
+      "sha256": "54da8e6bfe0af6ae3411783a4b5eaf4fdee1f2184d7a06f7f427b5e1173c41bb"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-validation-v3-tc-20261030/log_consumer.py",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/parakeet-tc/log_consumer.py",
+      "bytes": 428,
+      "sha256": "b13918bf5f102a7a8b71ec2ac87c2b6080b2b778d72ac7e331f30e9d1c09020e"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-validation-v3-tc-20261030/launch.sh",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/parakeet-tc/launch.sh",
+      "bytes": 1853,
+      "sha256": "a7d68bb9dcff3286024e7b83cfd9c77097871553a4beb369c58c95543f8ff4e5"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-validation-v3-tc-20261030/stop-smoke.py",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/parakeet-tc/stop-smoke.py",
+      "bytes": 846,
+      "sha256": "0127d1c5995eac6a9aae9f60e5f8abff401a040b2fc621b1ec9c038a61904b5b"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-validation-v3-tc-20261030/build_source_catalog.py",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/parakeet-tc/build_source_catalog.py",
+      "bytes": 4183,
+      "sha256": "3109e719c85e3a06198df209d78f330aefa77ec48f47089152e4be268b968bc5"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/compute-flags/ready/codex3-cs8-stt5-validation-nemo-en-20261031.json",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/nemo-en/READY.json",
+      "bytes": 3514,
+      "sha256": "5b9dad38cec949885becf4c7f2322ef083441140898ef5b38b8a20ee1d956363"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/compute-flags/ready/codex3-cs8-stt5-validation-nemo-en-20261031.smoke.log",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/nemo-en/qualified-smoke.log",
+      "bytes": 568,
+      "sha256": "17cf2fb9229d67143d9757e69a23b62da27202e730b1ffad7c05035edad62ba5"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/compute-flags/ready/codex3-cs8-stt5-validation-nemo-en-20261031.row.md",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/nemo-en/READY-row.md",
+      "bytes": 2340,
+      "sha256": "9f2e8154a5e057d156dcc4cde1673428d58cb06ddf4a7ea28c9607bb73237fd7"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-validation-nemo-en-20261031/score_validation.py",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/nemo-en/score_validation.py",
+      "bytes": 7367,
+      "sha256": "f1de4b8b797ca5ef1d7d4db7c16739f02942ae428233a365b3192095e9c87e69"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-validation-nemo-en-20261031/PLAN.md",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/nemo-en/PLAN.md",
+      "bytes": 5607,
+      "sha256": "61722f4fa38bd4e50c1fc33a94e82f1ed3af414cbaaa1feb27dc12ababc71533"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-validation-nemo-en-20261031/run-build-catalog.sh",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/nemo-en/run-build-catalog.sh",
+      "bytes": 831,
+      "sha256": "fc27de135f4f593350e4bfe641e40ad39568f0d3958ce1245b039eb0cd556479"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-validation-nemo-en-20261031/smoke-cutoff-final6.log",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/nemo-en/smoke-cutoff-final6.log",
+      "bytes": 567,
+      "sha256": "e5594eb918ad2ff307d92a1f66bd9a2dfb0bb2bb3bc556e689d49db24e901d06"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-validation-nemo-en-20261031/smoke_admission.py",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/nemo-en/smoke_admission.py",
+      "bytes": 2793,
+      "sha256": "b172e30909b67ecfc17d43a4a46f4b97648bea865b9d7de44c6555cebabc0a58"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-validation-nemo-en-20261031/vocab.json",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/nemo-en/vocab.json",
+      "bytes": 9156,
+      "sha256": "12fbac0daa801b35464b33d8975ee7260cb75fe1a8eae615c1d1ae72329f31aa"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-validation-nemo-en-20261031/build_launch.py",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/nemo-en/build_launch.py",
+      "bytes": 2116,
+      "sha256": "5e2df6c9109a8a34bd192de42c69d5adf288de6f5d5509c45f9d1ad20ffc6154"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-validation-nemo-en-20261031/chunk_materialize.py",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/nemo-en/chunk_materialize.py",
+      "bytes": 3121,
+      "sha256": "b166946334b7c769cc4a4417f082441a84ba66b527549fd6f77fd89ced83ff0c"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-validation-nemo-en-20261031/materialize_dev.py",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/nemo-en/materialize_dev.py",
+      "bytes": 2816,
+      "sha256": "09054371108e03968814f97ba300fc2aedc5b4f194109c4d699ac950fd80c20d"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-validation-nemo-en-20261031/nemo_tokens.py",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/nemo-en/nemo_tokens.py",
+      "bytes": 2408,
+      "sha256": "867904523398ccaa8db4a9cf757b18df936650f5f4e4c4f3f1daad9d1be41485"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-validation-nemo-en-20261031/vad_splice.py",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/nemo-en/vad_splice.py",
+      "bytes": 1897,
+      "sha256": "d51cc94a598b635dbbfb33c577bc999db29be9d5a5aa8d21d8dca31bd022aab6"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-validation-nemo-en-20261031/build_vocab.py",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/nemo-en/build_vocab.py",
+      "bytes": 946,
+      "sha256": "c7c47846b86cbe093eb4fd1833eaff151e26cbe16646c920fd39986ef9e55a46"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-validation-nemo-en-20261031/PROFILE.md",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/nemo-en/PROFILE.md",
+      "bytes": 471,
+      "sha256": "326dd42674f650d01779510297918b6140122b57d357317435e88fbfb4ac1961"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-validation-nemo-en-20261031/validator-fixture.md",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/nemo-en/validator-fixture.md",
+      "bytes": 2563,
+      "sha256": "b1a960332ba590f508b552d0f929a1bbe90d8bc7f8d2a9379984717a1c37f4a0"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-validation-nemo-en-20261031/long_chunk_plan.py",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/nemo-en/long_chunk_plan.py",
+      "bytes": 1695,
+      "sha256": "64efda82d1aed15a49d26f60b8b7e854d2e8444127f653bb22510508025a82f4"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-validation-nemo-en-20261031/make_ready.py",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/nemo-en/make_ready.py",
+      "bytes": 4247,
+      "sha256": "041574a78396c6a380ef97b3e8b99f3ceeb3a26119534f86362b0eb594fef05b"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-validation-nemo-en-20261031/SOURCE-SHA256SUMS",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/nemo-en/SOURCE-SHA256SUMS",
+      "bytes": 14232,
+      "sha256": "449f9a1856520970b857e9a2ef91d5aefe9b5e5ac326376c6df39c1b997998db"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-validation-nemo-en-20261031/run-build-vocab.sh",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/nemo-en/run-build-vocab.sh",
+      "bytes": 636,
+      "sha256": "5e88f7680cba9503d5b0cd676008cbf4e2eace9628897cc76c863d47e204d7be"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-validation-nemo-en-20261031/smoke-final6.log",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/nemo-en/smoke-final6.log",
+      "bytes": 568,
+      "sha256": "17cf2fb9229d67143d9757e69a23b62da27202e730b1ffad7c05035edad62ba5"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-validation-nemo-en-20261031/nemo_job.py",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/nemo-en/nemo_job.py",
+      "bytes": 11057,
+      "sha256": "7ae85757b187ec8e49edb50e276e45ec069206db8e707776ccc06128126e4b75"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-validation-nemo-en-20261031/smoke-supervisor.py",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/nemo-en/smoke-supervisor.py",
+      "bytes": 7859,
+      "sha256": "d8b6b7923c5728939efb2e6e75d276051c4bf2135b4b3056579614ea151f929d"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-validation-nemo-en-20261031/INPUT-PINS.json",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/nemo-en/INPUT-PINS.json",
+      "bytes": 4174,
+      "sha256": "fa20d83bff5b5df643c55fae44f5895383d9fe2548d11ae2024e98fa74b50ce4"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-validation-nemo-en-20261031/log_consumer.py",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/nemo-en/log_consumer.py",
+      "bytes": 428,
+      "sha256": "b13918bf5f102a7a8b71ec2ac87c2b6080b2b778d72ac7e331f30e9d1c09020e"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-validation-nemo-en-20261031/launch.sh",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/nemo-en/launch.sh",
+      "bytes": 1859,
+      "sha256": "91902c069ed0ded43a124c795c0e1cd99c808cb60525424bf37812be39cc5700"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-validation-nemo-en-20261031/stop-smoke.py",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/nemo-en/stop-smoke.py",
+      "bytes": 846,
+      "sha256": "0127d1c5995eac6a9aae9f60e5f8abff401a040b2fc621b1ec9c038a61904b5b"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-validation-nemo-en-20261031/build_source_catalog.py",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/nemo-en/build_source_catalog.py",
+      "bytes": 4237,
+      "sha256": "e833f257512d54648b374a9f5ffe2ce4d97b6a3fc49fbd4b2d64d57c86b68bc2"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/compute-flags/ready/codex3-cs8-stt5-validation-unified-en-20261031.json",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/unified-en/READY.json",
+      "bytes": 3531,
+      "sha256": "34598188cf4ccae3d297662ffb0e1f6134c17181a6f14d7d27e04b166b078b33"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/compute-flags/ready/codex3-cs8-stt5-validation-unified-en-20261031.smoke.log",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/unified-en/qualified-smoke.log",
+      "bytes": 569,
+      "sha256": "ede4e8ac88143c4efd35db272132d82d06bb212b2f47a224b76160bb6b49bbca"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/compute-flags/ready/codex3-cs8-stt5-validation-unified-en-20261031.row.md",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/unified-en/READY-row.md",
+      "bytes": 2380,
+      "sha256": "7c519ef7c0354ac2354ebad19bd07d858dd1680a1fb7e975e89de1a0a6bfdd21"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-validation-unified-en-20261031/score_validation.py",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/unified-en/score_validation.py",
+      "bytes": 7378,
+      "sha256": "46507bcb06fc1d85c0eb963e48cbabec846fb4662190f82c76e1225bc343992e"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-validation-unified-en-20261031/PLAN.md",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/unified-en/PLAN.md",
+      "bytes": 5607,
+      "sha256": "61722f4fa38bd4e50c1fc33a94e82f1ed3af414cbaaa1feb27dc12ababc71533"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-validation-unified-en-20261031/run-build-catalog.sh",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/unified-en/run-build-catalog.sh",
+      "bytes": 834,
+      "sha256": "2637a28b82b027ddb70bf9dfb7bad44cbde7ad6ce8020f46e650a11c9a537c78"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-validation-unified-en-20261031/smoke-cutoff-final6.log",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/unified-en/smoke-cutoff-final6.log",
+      "bytes": 567,
+      "sha256": "b88ded63c4a519af1ac13d15d4b8daa11c3099d059a3adf8bac88962f4d73d13"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-validation-unified-en-20261031/smoke_admission.py",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/unified-en/smoke_admission.py",
+      "bytes": 2793,
+      "sha256": "b172e30909b67ecfc17d43a4a46f4b97648bea865b9d7de44c6555cebabc0a58"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-validation-unified-en-20261031/vocab.json",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/unified-en/vocab.json",
+      "bytes": 9156,
+      "sha256": "5274f6e1bdec59f3e41d75dfd98794d0429e020127e84ff0b58c06774c180228"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-validation-unified-en-20261031/build_launch.py",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/unified-en/build_launch.py",
+      "bytes": 2125,
+      "sha256": "f2b656253eb621aff468368350e3a1f9d4de47770c14d82e5429d16eea549c9e"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-validation-unified-en-20261031/chunk_materialize.py",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/unified-en/chunk_materialize.py",
+      "bytes": 3121,
+      "sha256": "b166946334b7c769cc4a4417f082441a84ba66b527549fd6f77fd89ced83ff0c"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-validation-unified-en-20261031/materialize_dev.py",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/unified-en/materialize_dev.py",
+      "bytes": 2816,
+      "sha256": "09054371108e03968814f97ba300fc2aedc5b4f194109c4d699ac950fd80c20d"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-validation-unified-en-20261031/nemo_tokens.py",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/unified-en/nemo_tokens.py",
+      "bytes": 2408,
+      "sha256": "867904523398ccaa8db4a9cf757b18df936650f5f4e4c4f3f1daad9d1be41485"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-validation-unified-en-20261031/vad_splice.py",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/unified-en/vad_splice.py",
+      "bytes": 1897,
+      "sha256": "d51cc94a598b635dbbfb33c577bc999db29be9d5a5aa8d21d8dca31bd022aab6"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-validation-unified-en-20261031/build_vocab.py",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/unified-en/build_vocab.py",
+      "bytes": 928,
+      "sha256": "97da3cce24c3153472e43420333c9ad99ea401861e5e50d549534bf5494d194b"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-validation-unified-en-20261031/PROFILE.md",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/unified-en/PROFILE.md",
+      "bytes": 556,
+      "sha256": "a134605b6cb2ee7e8dbdd8c58f2f2170edb3146e446153c39f17ebb57e5dadd0"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-validation-unified-en-20261031/validator-fixture.md",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/unified-en/validator-fixture.md",
+      "bytes": 2603,
+      "sha256": "3b863e06d2521afca62ecfdd076c0cc15df8838b5e3c3265b29cf716c2d82421"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-validation-unified-en-20261031/long_chunk_plan.py",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/unified-en/long_chunk_plan.py",
+      "bytes": 1695,
+      "sha256": "64efda82d1aed15a49d26f60b8b7e854d2e8444127f653bb22510508025a82f4"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-validation-unified-en-20261031/make_ready.py",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/unified-en/make_ready.py",
+      "bytes": 4249,
+      "sha256": "d22a8d4c3747fe0b3a07ec40b19b1a582a787a91833b4c8f82c0ba647d4f90bf"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-validation-unified-en-20261031/SOURCE-SHA256SUMS",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/unified-en/SOURCE-SHA256SUMS",
+      "bytes": 16100,
+      "sha256": "3bf5d3ee509b461530216475792414aa54a978178f5cc87ef43636a101097617"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-validation-unified-en-20261031/run-build-vocab.sh",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/unified-en/run-build-vocab.sh",
+      "bytes": 639,
+      "sha256": "7de051571aefade2cbf3283de562ddba5ddab5a6c671a21db818b694e46c3bff"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-validation-unified-en-20261031/smoke-final6.log",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/unified-en/smoke-final6.log",
+      "bytes": 569,
+      "sha256": "ede4e8ac88143c4efd35db272132d82d06bb212b2f47a224b76160bb6b49bbca"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-validation-unified-en-20261031/nemo_job.py",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/unified-en/nemo_job.py",
+      "bytes": 11270,
+      "sha256": "ceace158156b94ab6df0bba6b36f64ed0c0f1eb7952ea162239af51aa643f4b3"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-validation-unified-en-20261031/smoke-supervisor.py",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/unified-en/smoke-supervisor.py",
+      "bytes": 7859,
+      "sha256": "d8b6b7923c5728939efb2e6e75d276051c4bf2135b4b3056579614ea151f929d"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-validation-unified-en-20261031/INPUT-PINS.json",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/unified-en/INPUT-PINS.json",
+      "bytes": 6054,
+      "sha256": "708230955dd8d6cdccb31e0b92368b8531907adb1e3bcff6915a897bd29db614"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-validation-unified-en-20261031/log_consumer.py",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/unified-en/log_consumer.py",
+      "bytes": 428,
+      "sha256": "b13918bf5f102a7a8b71ec2ac87c2b6080b2b778d72ac7e331f30e9d1c09020e"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-validation-unified-en-20261031/launch.sh",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/unified-en/launch.sh",
+      "bytes": 1868,
+      "sha256": "d32305886f2ba4626fdf210190098d2dde61defc09afaa7e99faf851b1bce9c7"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-validation-unified-en-20261031/stop-smoke.py",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/unified-en/stop-smoke.py",
+      "bytes": 846,
+      "sha256": "0127d1c5995eac6a9aae9f60e5f8abff401a040b2fc621b1ec9c038a61904b5b"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-validation-unified-en-20261031/build_source_catalog.py",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/unified-en/build_source_catalog.py",
+      "bytes": 4253,
+      "sha256": "d1472dccf2994720b3154f92fc9c5c0b7dd40fb7dd686482626f28dd7738eeb2"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/compute-flags/ready/armed/codex3-kvu-lb1d-t96-quiet-r1-20261031.json",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/kvu-t96/READY.json",
+      "bytes": 3347,
+      "sha256": "c6181480cd0e63e6d24fd5081792bd2e2e4efef4302c60cede14bf3d6dc3f2f5"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-next-wholehost-prep-20261031/packet/smoke-final.log",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/kvu-t96/qualified-smoke.log",
+      "bytes": 951,
+      "sha256": "d776bf4eab6042fecd8eaa7a75767286c90750362bc85322d2a1834402fc4183"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/compute-flags/ready/codex3-kvu-lb1d-t96-quiet-r1-20261031.row.md",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/kvu-t96/READY-row.md",
+      "bytes": 1811,
+      "sha256": "e7620010c7354a1eb9500fb75b95adfea84fcd03b6b894c71ff48d48f2cb7cb6"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-next-wholehost-prep-20261031/packet/smoke.log",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/kvu-t96/smoke.log",
+      "bytes": 950,
+      "sha256": "1308fad5567a7e08b183bbf43ac3fceac14fb0f022508d8d1ba37ee3313459bf"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-next-wholehost-prep-20261031/packet/pidfd_custody_v2.py",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/kvu-t96/pidfd_custody_v2.py",
+      "bytes": 1419,
+      "sha256": "775fc851871f17724417e355e34e7c0dab14fa2f2d2a66e562d473f169cf1291"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-next-wholehost-prep-20261031/packet/arch_recipe.py",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/kvu-t96/arch_recipe.py",
+      "bytes": 2571,
+      "sha256": "ab9c1e32398afb5d379c6c4224f4ad37f8dfa07893fcffc3cbef4c8ecbc72ef1"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-next-wholehost-prep-20261031/packet/control.py",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/kvu-t96/control.py",
+      "bytes": 1913,
+      "sha256": "dbd3b615a53577e959d80f24dbd1a5c7d87ff298ee91e337df4e272b8f0c19e7"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-next-wholehost-prep-20261031/packet/PROTOCOL.md",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/kvu-t96/PROTOCOL.md",
+      "bytes": 3738,
+      "sha256": "7f3626128eba7848bc037f929d04e2db4951b6f4bac501e5d76a77518b583499"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-next-wholehost-prep-20261031/packet/resource_watch.py",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/kvu-t96/resource_watch.py",
+      "bytes": 6817,
+      "sha256": "440bca5ed63a5dfb29847a62c3ce89d0a447135c98978175e748a9acaa53af5f"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-next-wholehost-prep-20261031/packet/row.md",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/kvu-t96/row.md",
+      "bytes": 1811,
+      "sha256": "e7620010c7354a1eb9500fb75b95adfea84fcd03b6b894c71ff48d48f2cb7cb6"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-next-wholehost-prep-20261031/packet/smoke_admission.py",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/kvu-t96/smoke_admission.py",
+      "bytes": 3683,
+      "sha256": "94f69a7731b32e35a1156173c826fe935fa1217f5967972b4bc66bf2e203ed1e"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-next-wholehost-prep-20261031/packet/pf1_graceful.py",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/kvu-t96/pf1_graceful.py",
+      "bytes": 1791,
+      "sha256": "ec0c52a3c760a736462392c22a32d85283d3ad9bb3ec5027cbc40646e149d5ac"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-next-wholehost-prep-20261031/packet/r11_supervisor.py",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/kvu-t96/r11_supervisor.py",
+      "bytes": 8596,
+      "sha256": "6564ca7f0c134f4beeb074a4e32996bb196300ef02ca5ef2e201ddc82f2990a9"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-next-wholehost-prep-20261031/packet/projector.py",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/kvu-t96/projector.py",
+      "bytes": 4925,
+      "sha256": "35fb9be99a40b8bc7003af4f586eed2a4b30e8f6c8f9adbd06c696b4801c8dbe"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-next-wholehost-prep-20261031/packet/SOURCES.sha256",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/kvu-t96/SOURCES.sha256",
+      "bytes": 1909,
+      "sha256": "16ffd3b28bf8f0f6480c59daaf6c2dbd5b97684bad1867b09758a2489e7cf44d"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-next-wholehost-prep-20261031/packet/stop-smoke.log",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/kvu-t96/stop-smoke.log",
+      "bytes": 972,
+      "sha256": "1840d80fc19f4fcde5791369007a647ff5e62a8ab7ddacc466a95a956fedccff"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-next-wholehost-prep-20261031/packet/pidfd_subreaper_v3.py",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/kvu-t96/pidfd_subreaper_v3.py",
+      "bytes": 1538,
+      "sha256": "7714cc37ad0738812910ec4d60227cc2b7d4f3927dc97ab8d59ba2e74d0be44f"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-next-wholehost-prep-20261031/packet/job.py",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/kvu-t96/job.py",
+      "bytes": 1132,
+      "sha256": "9177f77f01a42799b532e533ce887e0e58783c5618117afa7139c1f74d73e56d"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-next-wholehost-prep-20261031/packet/smoke-final.log",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/kvu-t96/smoke-final.log",
+      "bytes": 951,
+      "sha256": "d776bf4eab6042fecd8eaa7a75767286c90750362bc85322d2a1834402fc4183"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-next-wholehost-prep-20261031/packet/driver.py",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/kvu-t96/driver.py",
+      "bytes": 12279,
+      "sha256": "994526ea2a7c0957587e3a9caaf51e722b234f1532bdab3aa2e3b45f23152587"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-next-wholehost-prep-20261031/packet/launch.sh",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/kvu-t96/launch.sh",
+      "bytes": 1788,
+      "sha256": "7d4a3c9cb0bde8e5383c07d095de3ca4bd54b27469b351326ca0d1fa23540852"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-next-wholehost-prep-20261031/packet/stop-final.log",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/kvu-t96/stop-final.log",
+      "bytes": 972,
+      "sha256": "54da52471a5735c8383bf9406f0b14efb32eba4637cac1c131573867ac61ff35"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-next-wholehost-prep-20261031/packet/validator-row.md",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/kvu-t96/validator-row.md",
+      "bytes": 1815,
+      "sha256": "8efbf40712c4c5ce33549902f7bd603ce5dc1cc8f0b3a19950db628fd9ee16db"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-next-wholehost-prep-20261031/packet/claim_tuple.py",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/kvu-t96/claim_tuple.py",
+      "bytes": 51271,
+      "sha256": "6ae969f7029c1a6356593fd2432eca2320931f22aa4a8c4e3a388a72b81944e7"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-accuracy-20261030/nemo-traced-v2/asr.original.cpp",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/native-empty/asr.original.cpp",
+      "bytes": 43393,
+      "sha256": "edb99e30f5f8270a0f09a21cf33035d8d13fd7a59ae95b0c7dd2b3a3dd3a771c"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-accuracy-20261030/nemo-traced-v2/v3-tone.stdout",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/native-empty/v3-tone.stdout",
+      "bytes": 480,
+      "sha256": "7edc08bf8a344b2d6cb28959bf6551b593c699ca8b1920ab565a023d36b21ba1"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-accuracy-20261030/nemo-traced-v2/v3-tone.stderr",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/native-empty/v3-tone.stderr",
+      "bytes": 549,
+      "sha256": "20c5403604ed8ccb4cdb9d2215b6379abbc1f6c102f293772e8ab63909b50cb2"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-accuracy-20261030/nemo-traced-v2/nemo-tone.txt",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/native-empty/nemo-tone.txt",
+      "bytes": 1,
+      "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-accuracy-20261030/nemo-traced-v2/nemo-tone.stdout",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/native-empty/nemo-tone.stdout",
+      "bytes": 781,
+      "sha256": "6cf240600b206aec5372d454845e4d21d0f89c4cf4486b089e88eb0e4bfc7dc6"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-accuracy-20261030/nemo-traced-v2/v3-tone.txt",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/native-empty/v3-tone.txt",
+      "bytes": 1,
+      "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-accuracy-20261030/nemo-traced-v2/build.log",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/native-empty/build.log",
+      "bytes": 492,
+      "sha256": "47402542cf8d7671ad59af06530e9b15114813158af6cebf2ed6dd1079f48852"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-accuracy-20261030/nemo-traced-v2/build-v2.log",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/native-empty/build-v2.log",
+      "bytes": 493,
+      "sha256": "a2733620cf2c18705eade310449aeebd54f2df970c36cffd008dcd71e1d37196"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-accuracy-20261030/nemo-traced-v2/build.sh",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/native-empty/build.sh",
+      "bytes": 874,
+      "sha256": "9c5b52f41d52157b1a8c4ba66c77d552a38dfd617f35bf389330d3c6dd0d0e77"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-accuracy-20261030/nemo-traced-v2/run-build.sh",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/native-empty/run-build.sh",
+      "bytes": 627,
+      "sha256": "da161c03efcf9c3ed5123feda0de9a750a60b4bfda3b03a97fec8e5ec28f782f"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-accuracy-20261030/nemo-traced-v2/empty-fixture.log",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/native-empty/empty-fixture.log",
+      "bytes": 566,
+      "sha256": "81fc382d6f8f5b5dc1ec836a2a209f3d58fe6297304b259a453899c1dfd50c46"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-accuracy-20261030/nemo-traced-v2/asr.traced.cpp",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/native-empty/asr.traced.cpp",
+      "bytes": 43947,
+      "sha256": "1152949ae685cc93c797479e31bd6c1ab7c7b3c27c816f578c30afacc45cbea4"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-accuracy-20261030/nemo-traced-v2/nemo-tone.stderr",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/native-empty/nemo-tone.stderr",
+      "bytes": 373,
+      "sha256": "3ae40226904c331a0cfc28a921e609be5ff9a24cdbf506bf767c83f6703649f6"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-accuracy-20261030/nemo-traced-v2/empty-fixture.sh",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/native-empty/empty-fixture.sh",
+      "bytes": 819,
+      "sha256": "4bc8267e340a6d59b52094306a6dba5c1425a7bb302d434184cdeae0331d4e06"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-accuracy-20261030/ultra-adapter/nemo-crisp/tc-adapter/matrix-v2-3-en-US.stderr",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/matched-nemo/matrix-v2-3-en-US.stderr",
+      "bytes": 820,
+      "sha256": "f6cda82782371f3b8c6ea2fe7d1eda14083f7551ae7738d2b214fe1598ecb753"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-accuracy-20261030/ultra-adapter/nemo-crisp/tc-adapter/matrix-v2-0-en-US.stdout",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/matched-nemo/matrix-v2-0-en-US.stdout",
+      "bytes": 1616,
+      "sha256": "84e8f8b4585ffe78835990d61052de8e81705d267c37d9634933cde244ec9ba2"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-accuracy-20261030/ultra-adapter/nemo-crisp/tc-adapter/matrix-v2-0-en-US.stderr",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/matched-nemo/matrix-v2-0-en-US.stderr",
+      "bytes": 1749,
+      "sha256": "091f8b30d32b4d2586f5ee1d7d771cc90c337f7062e1a08dcc6f5e797531d3b7"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-accuracy-20261030/ultra-adapter/nemo-crisp/tc-adapter/matrix-v2-3-en-US.txt",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/matched-nemo/matrix-v2-3-en-US.txt",
+      "bytes": 123,
+      "sha256": "8a50bd72a8b1eb0c3194592ac87629af127af730a9b5946d108cf2cb6a1397d0"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-accuracy-20261030/ultra-adapter/nemo-crisp/tc-adapter/matrix-v2-6-auto.txt",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/matched-nemo/matrix-v2-6-auto.txt",
+      "bytes": 123,
+      "sha256": "8a50bd72a8b1eb0c3194592ac87629af127af730a9b5946d108cf2cb6a1397d0"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-accuracy-20261030/ultra-adapter/nemo-crisp/tc-adapter/matrix-v2-13-auto.stdout",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/matched-nemo/matrix-v2-13-auto.stdout",
+      "bytes": 1490,
+      "sha256": "6db84ed1f51442299daa1749496e2a362c0d3a52cffde71d371377eb031156c9"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-accuracy-20261030/ultra-adapter/nemo-crisp/tc-adapter/matrix-v2-3-en-US.stdout",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/matched-nemo/matrix-v2-3-en-US.stdout",
+      "bytes": 1616,
+      "sha256": "84e8f8b4585ffe78835990d61052de8e81705d267c37d9634933cde244ec9ba2"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-accuracy-20261030/ultra-adapter/nemo-crisp/tc-adapter/matrix-v2-3-auto.stderr",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/matched-nemo/matrix-v2-3-auto.stderr",
+      "bytes": 822,
+      "sha256": "40a1a0af29b8bc67af90a560f5c77e1530a1a02715a73ce8044b17e747b0a24f"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-accuracy-20261030/ultra-adapter/nemo-crisp/tc-adapter/matrix-v2-13-auto.txt",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/matched-nemo/matrix-v2-13-auto.txt",
+      "bytes": 114,
+      "sha256": "e472c1ec68ad536ecc032d3eb7ca4bb0b338d6b1ebc303ce64c8866d500818b0"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-accuracy-20261030/ultra-adapter/nemo-crisp/tc-adapter/probe-matrix-v2.log",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/matched-nemo/probe-matrix-v2.log",
+      "bytes": 566,
+      "sha256": "d5accf4534ad3fc637012466604752b582b03bfb8f6b52b8a4ee08a260698bd5"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-accuracy-20261030/ultra-adapter/nemo-crisp/tc-adapter/matrix-v2-0-auto.txt",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/matched-nemo/matrix-v2-0-auto.txt",
+      "bytes": 123,
+      "sha256": "8a50bd72a8b1eb0c3194592ac87629af127af730a9b5946d108cf2cb6a1397d0"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-accuracy-20261030/ultra-adapter/nemo-crisp/tc-adapter/matrix-v2-13-en-US.stderr",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/matched-nemo/matrix-v2-13-en-US.stderr",
+      "bytes": 614,
+      "sha256": "215ffe3df36075a0fea008d7ee4cac39162f4b02e0e32a5b420a36f5c11761a6"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-accuracy-20261030/ultra-adapter/nemo-crisp/tc-adapter/matrix-v2-0-en-US.txt",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/matched-nemo/matrix-v2-0-en-US.txt",
+      "bytes": 123,
+      "sha256": "8a50bd72a8b1eb0c3194592ac87629af127af730a9b5946d108cf2cb6a1397d0"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-accuracy-20261030/ultra-adapter/nemo-crisp/tc-adapter/make_adapter.py",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/matched-nemo/make_adapter.py",
+      "bytes": 4409,
+      "sha256": "e7b6b70461e2e222da588c570ba50f9a185052de116e49e21adf4ffc953ea811"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-accuracy-20261030/ultra-adapter/nemo-crisp/tc-adapter/matrix-v2-13-auto.stderr",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/matched-nemo/matrix-v2-13-auto.stderr",
+      "bytes": 616,
+      "sha256": "04db89cb05f47413ae5506c7fd7e99e654fb2331508b00eb1d01d32e18b41033"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-accuracy-20261030/ultra-adapter/nemo-crisp/tc-adapter/matrix-v2-3-auto.stdout",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/matched-nemo/matrix-v2-3-auto.stdout",
+      "bytes": 1616,
+      "sha256": "84e8f8b4585ffe78835990d61052de8e81705d267c37d9634933cde244ec9ba2"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-accuracy-20261030/ultra-adapter/nemo-crisp/tc-adapter/matrix-v2-13-en-US.stdout",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/matched-nemo/matrix-v2-13-en-US.stdout",
+      "bytes": 1490,
+      "sha256": "6db84ed1f51442299daa1749496e2a362c0d3a52cffde71d371377eb031156c9"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-accuracy-20261030/ultra-adapter/nemo-crisp/tc-adapter/matrix-v2-3-auto.txt",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/matched-nemo/matrix-v2-3-auto.txt",
+      "bytes": 123,
+      "sha256": "8a50bd72a8b1eb0c3194592ac87629af127af730a9b5946d108cf2cb6a1397d0"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-accuracy-20261030/ultra-adapter/nemo-crisp/tc-adapter/matrix-v2-6-en-US.txt",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/matched-nemo/matrix-v2-6-en-US.txt",
+      "bytes": 123,
+      "sha256": "8a50bd72a8b1eb0c3194592ac87629af127af730a9b5946d108cf2cb6a1397d0"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-accuracy-20261030/ultra-adapter/nemo-crisp/tc-adapter/probe-no-repack.log",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/matched-nemo/probe-no-repack.log",
+      "bytes": 1144,
+      "sha256": "6eb7552b2e23a0322ffc406c245fd32d9cbad0a051a2bc8a40608a696d8cff36"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-accuracy-20261030/ultra-adapter/nemo-crisp/tc-adapter/matrix-v2-6-en-US.stderr",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/matched-nemo/matrix-v2-6-en-US.stderr",
+      "bytes": 695,
+      "sha256": "9a91520d2de92921ce87bbefd05ede1cfa26aadc4e704cf92f462c4d45310907"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-accuracy-20261030/ultra-adapter/nemo-crisp/tc-adapter/nemotron.tc.cpp",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/matched-nemo/nemotron.tc.cpp",
+      "bytes": 174561,
+      "sha256": "8323e9b1943ef322d4210194591bb0a471481b93e6af2d575b3f78e763345849"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-accuracy-20261030/ultra-adapter/nemo-crisp/tc-adapter/matrix-v2-0-auto.stdout",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/matched-nemo/matrix-v2-0-auto.stdout",
+      "bytes": 1616,
+      "sha256": "84e8f8b4585ffe78835990d61052de8e81705d267c37d9634933cde244ec9ba2"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-accuracy-20261030/ultra-adapter/nemo-crisp/tc-adapter/matrix-v2-6-auto.stdout",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/matched-nemo/matrix-v2-6-auto.stdout",
+      "bytes": 1616,
+      "sha256": "84e8f8b4585ffe78835990d61052de8e81705d267c37d9634933cde244ec9ba2"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-accuracy-20261030/ultra-adapter/nemo-crisp/tc-adapter/probe-matrix-v2.sh",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/matched-nemo/probe-matrix-v2.sh",
+      "bytes": 719,
+      "sha256": "27ddf525b374a66a817d8af3d2e9d55b4b510704afd84388e64090f88e9b30c5"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-accuracy-20261030/ultra-adapter/nemo-crisp/tc-adapter/matrix-v2-6-en-US.stdout",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/matched-nemo/matrix-v2-6-en-US.stdout",
+      "bytes": 1616,
+      "sha256": "84e8f8b4585ffe78835990d61052de8e81705d267c37d9634933cde244ec9ba2"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-accuracy-20261030/ultra-adapter/nemo-crisp/tc-adapter/matrix-v2-0-auto.stderr",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/matched-nemo/matrix-v2-0-auto.stderr",
+      "bytes": 1751,
+      "sha256": "f182b39843584d2b724501c368e74ea4e4adf0e5b1a1593b100f7965eb9b9a6c"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-accuracy-20261030/ultra-adapter/nemo-crisp/tc-adapter/matrix-v2-6-auto.stderr",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/matched-nemo/matrix-v2-6-auto.stderr",
+      "bytes": 697,
+      "sha256": "efd45c78dc0110473bf579c5e3f4419680a0301180261c97f3fe84cc215796ce"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-accuracy-20261030/ultra-adapter/nemo-crisp/tc-adapter/matrix-v2-13-en-US.txt",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/matched-nemo/matrix-v2-13-en-US.txt",
+      "bytes": 114,
+      "sha256": "e472c1ec68ad536ecc032d3eb7ca4bb0b338d6b1ebc303ce64c8866d500818b0"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-kpf183-postbuild-repair-20261031/no-build-test.log",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/kpf-postbuild/no-build-test.log",
+      "bytes": 647,
+      "sha256": "6d675d5ea04e52ee1e4fcc3de32af41e6dd8ca4bc3d2151d689b409a879cdc2d"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-kpf183-postbuild-repair-20261031/classifier.py",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/kpf-postbuild/classifier.py",
+      "bytes": 1015,
+      "sha256": "335c89dbf133b850130491a01314ae5b4578f6a96fdddf3f15fc0b72c10e71c0"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-kpf183-postbuild-repair-20261031/workflow-test.log",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/kpf-postbuild/workflow-test.log",
+      "bytes": 572,
+      "sha256": "a0d22ba0a5fe87e31c55cb13dcbaacc98815222381c67a3f621890e4d624b235"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-kpf183-postbuild-repair-20261031/test_workflow.py",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/kpf-postbuild/test_workflow.py",
+      "bytes": 2112,
+      "sha256": "c0af5c86a4e5ebf73f98dfb04eac545fd8fac2129dd41ef0bf5faffc17adf1d1"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-kpf183-postbuild-repair-20261031/control-identity.log",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/kpf-postbuild/control-identity.log",
+      "bytes": 624,
+      "sha256": "0d8b50a27fc26b401ac681f96b90e691866de337d5f6e4b97897ffaae501fea4"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-kpf183-postbuild-repair-20261031/EVENT-LIVE.json",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/kpf-postbuild/EVENT-LIVE.json",
+      "bytes": 1537,
+      "sha256": "3b17dcb2ecf8f66a0e6840ba59024e659ec35eafab27c21676f983185d16f936"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-kpf183-postbuild-repair-20261031/EVENT-SELF-TEST.json",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/kpf-postbuild/EVENT-SELF-TEST.json",
+      "bytes": 1340,
+      "sha256": "1992fcf7b1728d66dc230f7d558fd5d113dc364f398422bc58df21276c020536"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-kpf183-postbuild-repair-20261031/EVENT.log",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/kpf-postbuild/EVENT.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-kpf183-postbuild-repair-20261031/event-driver.py",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/kpf-postbuild/event-driver.py",
+      "bytes": 8049,
+      "sha256": "6b0651cb36fc69e1897e28861cc792b42625116623c5ac86e1941cf666d7b13e"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-kpf183-postbuild-repair-20261031/OPERATIONAL-NAMESPACE-NOTE.md",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/kpf-postbuild/OPERATIONAL-NAMESPACE-NOTE.md",
+      "bytes": 1007,
+      "sha256": "1f562c54f664af0c40f2e428f57f5fe4062f570d59427b7c6207c997ce5e4371"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-kpf183-postbuild-repair-20261031/REVIEW.md",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/kpf-postbuild/REVIEW.md",
+      "bytes": 2782,
+      "sha256": "e5772251093531847a9a0df78c858b8d3207bb0a2eebdc0f969e3b8a0370b04a"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-kpf183-postbuild-repair-20261031/candidate-one-attempt.py",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/kpf-postbuild/candidate-one-attempt.py",
+      "bytes": 17395,
+      "sha256": "bf1e088db919dd22c469700e4f109ebee98c23885d0dd865419187f2e3b3918b"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-kpf183-postbuild-repair-20261031/workflow-hostbridge-test.log",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/kpf-postbuild/workflow-hostbridge-test.log",
+      "bytes": 572,
+      "sha256": "8e53ffb2a20c16645b4438bc2f9272ec166402ab19361d67bfc996f9abd8ffc3"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-kpf183-postbuild-repair-20261031/candidate.diff",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/kpf-postbuild/candidate.diff",
+      "bytes": 25512,
+      "sha256": "97b5800fadf47e5375f25bb7b843f424e4282139eabca587a56b871a39cbbacf"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-kpf183-postbuild-repair-20261031/workflow-test-final.log",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/kpf-postbuild/workflow-test-final.log",
+      "bytes": 571,
+      "sha256": "7beb9819b3b058d8fe9e4a0b1af73a85c152efa13b751b090f9e28f86aa5cc4c"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-kpf183-postbuild-repair-20261031/classifier-test.log",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/kpf-postbuild/classifier-test.log",
+      "bytes": 102,
+      "sha256": "e6ec182765cd965f2837d8eeaef5a64af48a104f245cd1a0b7281559194c57c1"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-kpf183-postbuild-repair-20261031/test_classifier.py",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/kpf-postbuild/test_classifier.py",
+      "bytes": 1593,
+      "sha256": "223d7adf83db89558ff7e71cf6d2cd66efabfebfd6b38e0fe8934311cb9ced87"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-watch/epochs/s116/1186f7fc78f619b7275f889d17b95cfa1e3bdc17b49b0dcf8f99b7b4a403e5cf/s116.json",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/pip/paddle-watch/epochs/s116/1186f7fc78f619b7275f889d17b95cfa1e3bdc17b49b0dcf8f99b7b4a403e5cf/s116.json",
+      "bytes": 1714544,
+      "sha256": "684242a5c01af482a999aaf71aab107c769a869988dc1005fe71af0eabed79de"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-watch/epochs/s116/1186f7fc78f619b7275f889d17b95cfa1e3bdc17b49b0dcf8f99b7b4a403e5cf/s116.score-receipt.json",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/pip/paddle-watch/epochs/s116/1186f7fc78f619b7275f889d17b95cfa1e3bdc17b49b0dcf8f99b7b4a403e5cf/s116.score-receipt.json",
+      "bytes": 90868,
+      "sha256": "eccc57ae6e7240e09de3ad9fa81afd1ac363788d1979d28e2faf6ee2c1071225"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-watch/epochs/s117/a0b356330985e7b58e0e1ce98c38741c9a3350381bb5f00215b807381d3aa600/s117.json",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/pip/paddle-watch/epochs/s117/a0b356330985e7b58e0e1ce98c38741c9a3350381bb5f00215b807381d3aa600/s117.json",
+      "bytes": 1712655,
+      "sha256": "9898f3a28b5f1ca67008d949d44c1e781418d6e46926187fae9df7821d19ed53"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-watch/epochs/s117/a0b356330985e7b58e0e1ce98c38741c9a3350381bb5f00215b807381d3aa600/s117.score-receipt.json",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/pip/paddle-watch/epochs/s117/a0b356330985e7b58e0e1ce98c38741c9a3350381bb5f00215b807381d3aa600/s117.score-receipt.json",
+      "bytes": 87963,
+      "sha256": "1f65bf3c0baebacbcd23875285dd0f97c15de3e0804390ae3f32e533f073c04e"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-watch/epochs/s118/f9dc75498b8e42b7e41a4a98e698f4e30ca060fb0b8988f2c784ab5e8dac0785/s118.json",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/pip/paddle-watch/epochs/s118/f9dc75498b8e42b7e41a4a98e698f4e30ca060fb0b8988f2c784ab5e8dac0785/s118.json",
+      "bytes": 2086451,
+      "sha256": "ee9d20e1d5be7125ffa5e98177a1b363747f19fc30d0e6a7d0fb84af367b5916"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-watch/epochs/s118/f9dc75498b8e42b7e41a4a98e698f4e30ca060fb0b8988f2c784ab5e8dac0785/s118.score-receipt.json",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/pip/paddle-watch/epochs/s118/f9dc75498b8e42b7e41a4a98e698f4e30ca060fb0b8988f2c784ab5e8dac0785/s118.score-receipt.json",
+      "bytes": 98339,
+      "sha256": "d8985558da9afd4bb83c64afaa13f6fb66e09699aff9da94d934ebf11fbf1519"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-running-table.md",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/pip/paddle-running-table.md",
+      "bytes": 7810,
+      "sha256": "9c77c4844e0fcbd65248d56724bb126c68a2158cedd29106fcc77f0587526cd4"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-running-refusals.json",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/pip/paddle-running-refusals.json",
+      "bytes": 270591,
+      "sha256": "ac0e339b2fd9691030604af9a8bdbec4411b74d92947afbcbd2fd09053f1d817"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-next-gpu-prep-20261031/PREDECLARED.md",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/prb-prospective/PREDECLARED.md",
+      "bytes": 4429,
+      "sha256": "ff21fc1bc1f252973ed685554ffe6a2e8ccf42aecec7511cea4de5959ff95dac"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-next-gpu-prep-20261031/SOURCES.sha256",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/prb-prospective/SOURCES.sha256",
+      "bytes": 8291,
+      "sha256": "b296f629c4b5a1135d00701e6878ab61f4210751a8532dfb11c1c191c8bcf4c4"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-next-gpu-prep-20261031/BELIEF-WIRING-DRAFT.md",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/prb-prospective/BELIEF-WIRING-DRAFT.md",
+      "bytes": 1813,
+      "sha256": "491e5d512d97e412dc05700a1e1b021611e9dfe6e635fe929f2d5b2641f3f111"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-next-gpu-prep-20261031/fixture-grade.json",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/prb-prospective/fixture-grade.json",
+      "bytes": 2899,
+      "sha256": "8138a9e4230ba09848eabf5a896f9bfb9d81bf6056285585700f7386eb5dcb63"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-next-gpu-prep-20261031/fixture-tamper-grade.json",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/prb-prospective/fixture-tamper-grade.json",
+      "bytes": 749,
+      "sha256": "cbf5464168cb74f37efa074f6737157878c2de82ab370a57dc927b919096bf80"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-next-gpu-prep-20261031/fixture-envelope.json",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/prb-prospective/fixture-envelope.json",
+      "bytes": 85,
+      "sha256": "b8a213815e014b8f5600bbf83d1b51f3357c57ebce3b83c5f25d3d997e43b2e2"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-accuracy-20261030/nemo-traced/0-auto.stdout",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/matched-nemo/tc-0-auto.stdout",
+      "bytes": 11155,
+      "sha256": "eb7aa4357bf9ff6d3c52e9a74bc5f024a14603b8b1768d39f19fd6ec6f1c1bf3"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-accuracy-20261030/nemo-traced/0-auto.stderr",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/matched-nemo/tc-0-auto.stderr",
+      "bytes": 324,
+      "sha256": "ab9b9f2e6b8d6b10b4ce142ab2c2f65228fb37531bb30416a8fb85f637c9de49"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-accuracy-20261030/nemo-traced/0-auto.txt",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/matched-nemo/tc-0-auto.txt",
+      "bytes": 123,
+      "sha256": "8a50bd72a8b1eb0c3194592ac87629af127af730a9b5946d108cf2cb6a1397d0"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-accuracy-20261030/nemo-traced/0-forced.stdout",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/matched-nemo/tc-0-forced.stdout",
+      "bytes": 11155,
+      "sha256": "aafec9752363cf35aed7ab972b2472fcd78837466fc5ccf2a5fd8f6de9458610"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-accuracy-20261030/nemo-traced/0-forced.stderr",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/matched-nemo/tc-0-forced.stderr",
+      "bytes": 324,
+      "sha256": "ec876ab4144e758bcd69df7c9ec23a26a717e120d3d084e6d12f813848aac900"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-accuracy-20261030/nemo-traced/0-forced.txt",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/matched-nemo/tc-0-forced.txt",
+      "bytes": 123,
+      "sha256": "8a50bd72a8b1eb0c3194592ac87629af127af730a9b5946d108cf2cb6a1397d0"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-accuracy-20261030/nemo-traced/3-auto.stdout",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/matched-nemo/tc-3-auto.stdout",
+      "bytes": 6094,
+      "sha256": "e70bccb2b38c518d74dee1045a2f6ae250fba34acad59b569e0b89e5709baaa3"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-accuracy-20261030/nemo-traced/3-auto.stderr",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/matched-nemo/tc-3-auto.stderr",
+      "bytes": 375,
+      "sha256": "54cd8a72fea568c5372254e7e099994984fd43dffeec740b084da8a042edbf70"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-accuracy-20261030/nemo-traced/3-auto.txt",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/matched-nemo/tc-3-auto.txt",
+      "bytes": 123,
+      "sha256": "8a50bd72a8b1eb0c3194592ac87629af127af730a9b5946d108cf2cb6a1397d0"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-accuracy-20261030/nemo-traced/3-forced.stdout",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/matched-nemo/tc-3-forced.stdout",
+      "bytes": 6094,
+      "sha256": "8e89127b954a01e46d8ad41c0cbf9bce73b93cfa0f7c58c20526b7213042b9d2"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-accuracy-20261030/nemo-traced/3-forced.stderr",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/matched-nemo/tc-3-forced.stderr",
+      "bytes": 375,
+      "sha256": "3260771c54876efa7ea98cea7adec999f53a2b662d67da36d0446909036c352a"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-accuracy-20261030/nemo-traced/3-forced.txt",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/matched-nemo/tc-3-forced.txt",
+      "bytes": 123,
+      "sha256": "8a50bd72a8b1eb0c3194592ac87629af127af730a9b5946d108cf2cb6a1397d0"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-accuracy-20261030/nemo-traced/6-auto.stdout",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/matched-nemo/tc-6-auto.stdout",
+      "bytes": 5134,
+      "sha256": "2f00f44c4bddcb1efe8ef77f11b90c9bd64b0d9b416ba0acefd8c6aa9a92040d"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-accuracy-20261030/nemo-traced/6-auto.stderr",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/matched-nemo/tc-6-auto.stderr",
+      "bytes": 375,
+      "sha256": "4c5ccd7a556ea03cfd0ebabc77f8089c9283c981fecc30e3b029d67a38dc6b95"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-accuracy-20261030/nemo-traced/6-auto.txt",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/matched-nemo/tc-6-auto.txt",
+      "bytes": 123,
+      "sha256": "8a50bd72a8b1eb0c3194592ac87629af127af730a9b5946d108cf2cb6a1397d0"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-accuracy-20261030/nemo-traced/6-forced.stdout",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/matched-nemo/tc-6-forced.stdout",
+      "bytes": 5134,
+      "sha256": "8128f095274053e4d15996e06cfed41be91c8ce81d270e751eae0750d34f4a8c"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-accuracy-20261030/nemo-traced/6-forced.stderr",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/matched-nemo/tc-6-forced.stderr",
+      "bytes": 375,
+      "sha256": "42aa274241ba95b71023959b324b82a2c974ca2f9bb29484a0530e1ce993aa1d"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-accuracy-20261030/nemo-traced/6-forced.txt",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/matched-nemo/tc-6-forced.txt",
+      "bytes": 123,
+      "sha256": "8a50bd72a8b1eb0c3194592ac87629af127af730a9b5946d108cf2cb6a1397d0"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-accuracy-20261030/nemo-traced/13-auto.stdout",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/matched-nemo/tc-13-auto.stdout",
+      "bytes": 4106,
+      "sha256": "e73d14583927391e5fc3bbb77ea560a69b053d921a98db03d06abd34e1d9c3c3"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-accuracy-20261030/nemo-traced/13-auto.stderr",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/matched-nemo/tc-13-auto.stderr",
+      "bytes": 375,
+      "sha256": "5b18ceb94275c8d68ebd1e1417e6e41271fc7aaa0951dad30b0e9c75548cda77"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-accuracy-20261030/nemo-traced/13-auto.txt",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/matched-nemo/tc-13-auto.txt",
+      "bytes": 114,
+      "sha256": "e472c1ec68ad536ecc032d3eb7ca4bb0b338d6b1ebc303ce64c8866d500818b0"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-accuracy-20261030/nemo-traced/13-forced.stdout",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/matched-nemo/tc-13-forced.stdout",
+      "bytes": 4106,
+      "sha256": "9cdb2a815e3b60e5ed34dd0b4ca3d7209644611253cbb2327ae985794baa1429"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-accuracy-20261030/nemo-traced/13-forced.stderr",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/matched-nemo/tc-13-forced.stderr",
+      "bytes": 374,
+      "sha256": "f85c3499ba5d3a044b04db357d5cd914e761f0564f4f8a671b8a1a9a35f65686"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-accuracy-20261030/nemo-traced/13-forced.txt",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/matched-nemo/tc-13-forced.txt",
+      "bytes": 114,
+      "sha256": "e472c1ec68ad536ecc032d3eb7ca4bb0b338d6b1ebc303ce64c8866d500818b0"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-accuracy-20261030/nemo-traced/asr.traced.cpp",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/matched-nemo/tc-asr.traced.cpp",
+      "bytes": 43565,
+      "sha256": "aef6be7286cd5290d2cdc3e4cc082c94a223fa2ad30e592c72c44d5b79d5ea93"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-accuracy-20261030/nemo-traced/probe.sh",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/matched-nemo/tc-probe.sh",
+      "bytes": 764,
+      "sha256": "291c8f2a03d7589f9f2b128fcc5249a0e881f91aa9bc8c4a5895cfb3cd8867f4"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-accuracy-20261030/nemo-traced/probe.log",
+      "snapshot": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/matched-nemo/tc-probe.log",
+      "bytes": 568,
+      "sha256": "b3148bf864c7ac7e664d1e15d5d9c9ea5e8a953d90bfe4719198643d92a2287a"
+    }
+  ],
+  "copied_bytes": 7470758,
+  "pip_delta": {
+    "prior": {
+      "rows": 82,
+      "pages": 294,
+      "tables": 82
+    },
+    "current": {
+      "rows": 85,
+      "pages": 309,
+      "tables": 82
+    },
+    "unique_new_positions": [
+      580,
+      581,
+      582,
+      583,
+      584,
+      585,
+      586,
+      587,
+      588,
+      589,
+      590,
+      591,
+      592,
+      593,
+      594
+    ],
+    "new_completed_shards": [
+      {
+        "shard": 116,
+        "coverage": {
+          "pages_complete": 5,
+          "pages_total": 5,
+          "gt_tables_scored": 0,
+          "gt_tables_total": 0
+        },
+        "positions": [
+          580,
+          581,
+          582,
+          583,
+          584
+        ],
+        "result_sha256": "684242a5c01af482a999aaf71aab107c769a869988dc1005fe71af0eabed79de",
+        "receipt_sha256": "eccc57ae6e7240e09de3ad9fa81afd1ac363788d1979d28e2faf6ee2c1071225",
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "gt_sha256": "a45cd84b04ad8b793e775089640e6b681209abea33ead54c1828ddca35fae496",
+        "scoring_sources_sha256": {
+          "pip02_records.py": "2d364d7a7ef1d47b21fb8f3352ff4ffe98e93c682da3996f6e1270c8193c81cd",
+          "pip02_lineage.py": "766eee7148f5cafdf3833f3d329521218fd416ffca53016e396d6dbb710ba7c0",
+          "pip02_compare.py": "37e9d673ba46ac16c5f8169db97290933b3c63fb48ef133b825d5db3a9ba995e",
+          "pip02_native_score.py": "27f0b630b6812aecad35d1c65329841a5011e421326e81f9f14c8c66a6fdbe5e"
+        }
+      },
+      {
+        "shard": 117,
+        "coverage": {
+          "pages_complete": 5,
+          "pages_total": 5,
+          "gt_tables_scored": 0,
+          "gt_tables_total": 0
+        },
+        "positions": [
+          585,
+          586,
+          587,
+          588,
+          589
+        ],
+        "result_sha256": "9898f3a28b5f1ca67008d949d44c1e781418d6e46926187fae9df7821d19ed53",
+        "receipt_sha256": "1f65bf3c0baebacbcd23875285dd0f97c15de3e0804390ae3f32e533f073c04e",
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "gt_sha256": "a45cd84b04ad8b793e775089640e6b681209abea33ead54c1828ddca35fae496",
+        "scoring_sources_sha256": {
+          "pip02_records.py": "2d364d7a7ef1d47b21fb8f3352ff4ffe98e93c682da3996f6e1270c8193c81cd",
+          "pip02_lineage.py": "766eee7148f5cafdf3833f3d329521218fd416ffca53016e396d6dbb710ba7c0",
+          "pip02_compare.py": "37e9d673ba46ac16c5f8169db97290933b3c63fb48ef133b825d5db3a9ba995e",
+          "pip02_native_score.py": "27f0b630b6812aecad35d1c65329841a5011e421326e81f9f14c8c66a6fdbe5e"
+        }
+      },
+      {
+        "shard": 118,
+        "coverage": {
+          "pages_complete": 5,
+          "pages_total": 5,
+          "gt_tables_scored": 0,
+          "gt_tables_total": 0
+        },
+        "positions": [
+          590,
+          591,
+          592,
+          593,
+          594
+        ],
+        "result_sha256": "ee9d20e1d5be7125ffa5e98177a1b363747f19fc30d0e6a7d0fb84af367b5916",
+        "receipt_sha256": "d8985558da9afd4bb83c64afaa13f6fb66e09699aff9da94d934ebf11fbf1519",
+        "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+        "gt_sha256": "a45cd84b04ad8b793e775089640e6b681209abea33ead54c1828ddca35fae496",
+        "scoring_sources_sha256": {
+          "pip02_records.py": "2d364d7a7ef1d47b21fb8f3352ff4ffe98e93c682da3996f6e1270c8193c81cd",
+          "pip02_lineage.py": "766eee7148f5cafdf3833f3d329521218fd416ffca53016e396d6dbb710ba7c0",
+          "pip02_compare.py": "37e9d673ba46ac16c5f8169db97290933b3c63fb48ef133b825d5db3a9ba995e",
+          "pip02_native_score.py": "27f0b630b6812aecad35d1c65329841a5011e421326e81f9f14c8c66a6fdbe5e"
+        }
+      }
+    ],
+    "means": "No new GT tables; existing 82-table means unchanged. Zero-table shards have no TEDS mean.",
+    "scope": "English fresh cohort; existing Phase C scorer and GT; no full or paired gate."
+  },
+  "claim_limits": [
+    "Source/control checkpoint only.",
+    "Native target run, corpus validation and scientific gates remain unproven.",
+    "Canonical weights/binaries are referenced, never copied."
+  ],
+  "native_eight_control_ids_verified": true
+}

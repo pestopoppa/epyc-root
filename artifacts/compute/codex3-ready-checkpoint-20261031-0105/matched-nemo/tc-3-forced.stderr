@@ -1,0 +1,6 @@
+[info] parakeet: using cpu backend (strict)
+[info] parakeet: weights memory-mapped: 716.0 MiB in CPU_Mapped
+[info] parakeet: promoted 48 conv pointwise weights from F16 → F32 for CPU backend
+[debug] parakeet@2588: sched buffer CPU -> 13.3 MB
+[debug] parakeet@2588: sched buffer CPU -> 13.7 MB
+[info] timings: load=300.65 ms  mel=18.72 ms  encode=3527.45 ms  decode=0.00 ms

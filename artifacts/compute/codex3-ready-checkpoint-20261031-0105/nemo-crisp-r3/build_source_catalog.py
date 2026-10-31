@@ -1,0 +1,39 @@
+#!/usr/bin/env python3
+import hashlib,json,pathlib
+D=pathlib.Path(__file__).parent;W=pathlib.Path('/mnt/raid0/llm/whisper.cpp/build/bin');T=pathlib.Path('/mnt/raid0/llm/tmp/codex3-cs8-stt3-transcribe-20261030');M=pathlib.Path('/mnt/raid0/llm/data/stt-cs8-public-20261030/fleurs-validation-pcm/manifest.json');V=pathlib.Path('/mnt/raid0/llm/models/silero-vad-cs22-v0-20261029/ggml-silero-v6.2.0.bin')
+def sha(p):
+ h=hashlib.sha256()
+ with p.open('rb') as f:
+  for b in iter(lambda:f.read(4*1024*1024),b''):h.update(b)
+ return h.hexdigest()
+A=pathlib.Path('/mnt/raid0/llm/tmp/codex3-cs8-stt5-accuracy-20261030/ultra-adapter/nemo-crisp/tc-adapter')
+SRC=pathlib.Path('/mnt/micron/codex3-cs8-stt2-crisp-20261030/src')
+S=pathlib.Path('/mnt/micron/codex3-cs8-stt2-crisp-20261030/install/lib')
+keys=('r0','r3','r6','r13')
+models={k:pathlib.Path('/mnt/raid0/llm/models/nemotron-3.5-asr-streaming-0.6b-Q8_0.gguf') for k in keys}
+binaries={k:A/'runner' for k in keys}
+common=[A/'libcrispasr.so.0.8.44']+[S/x for x in ('libggml.so.0.26.0','libggml-base.so.0.26.0','libggml-cpu.so.0.26.0')]+[pathlib.Path('/usr/lib/x86_64-linux-gnu/libopenblas.so.0')]
+libsets={k:common for k in keys}
+libhashes={k:{str(p):sha(p) for p in v} for k,v in libsets.items()};fingerprints={k:hashlib.sha256(json.dumps(v,sort_keys=True).encode()).hexdigest() for k,v in libhashes.items()}
+source_root=pathlib.Path('/mnt/raid0/llm/data/stt-cs8-public-20261030/google/fleurs/70bb2e84b976b7e960aa89f1c648e09c59f894dd/data')
+source_files=[]
+for lang,tree_name in [('en_us','fleurs-tree.json'),('it_it','it_it-tree.json'),('de_de','de_de-tree.json'),('fr_fr','fr_fr-tree.json')]:
+ tree=D/'source-probe'/tree_name; entries={x['path']:x for x in json.loads(tree.read_text())};source_files.append(tree)
+ for rel in (f'data/{lang}/dev.tsv',f'data/{lang}/audio/dev.tar.gz'):
+  e=entries[rel];p=source_root/lang/rel.split(f'data/{lang}/',1)[1];blob=p.read_bytes() if p.suffix=='.tsv' else None
+  expected=e.get('lfs',{}).get('oid') or e['oid'];actual=hashlib.sha1(f'blob {len(blob)}\0'.encode()+blob).hexdigest() if blob is not None else sha(p)
+  if p.stat().st_size!=e['size'] or actual!=expected:raise RuntimeError('FLEURS upstream source mismatch '+str(p))
+  source_files.append(p)
+pins={'validation_sha256':sha(M),'plan_sha256':sha(D/'PLAN.md'),'models':{k:sha(v) for k,v in models.items()},'runner_binary_sha256':{k:sha(v) for k,v in binaries.items()},'runner_libraries':libhashes,'runner_library_set_sha256':fingerprints,'vad_model_sha256':sha(V),'vad_binary_sha256':sha(T/'build/bin/transcribe-cli'),'research_plan_commit':'d1c7a8ffb'}
+if any(x!='b94545b313b3223fda7b2857a52681da813935c2127643d1e9ff0c23d988089c' for x in pins['models'].values()):raise RuntimeError('model drift')
+(D/'INPUT-PINS.json').write_text(json.dumps(pins,sort_keys=True,indent=2)+'\n')
+files=[D/x for x in ('PLAN.md','PROFILE.md','INPUT-PINS.json','nemo_crisp_job.py','matched_tokens.py','vocab.json','build_vocab.py','chunk_materialize.py','long_chunk_plan.py','vad_splice.py','smoke-supervisor.py','smoke_admission.py','materialize_dev.py','log_consumer.py','score_validation.py')]+[M,V,T/'build/bin/transcribe-cli']+list(models.values())+list(binaries.values())+[p for libs in libsets.values() for p in libs]
+files += [A/x for x in ('nemotron.tc.cpp','aliases.h','core/rnnt_ggml.h','make_adapter.py','link.py','runner.cpp','build-runner.sh')]+[A.parent/'nemotron.original.cpp']+[SRC/x for x in ('src/nemotron.cpp','src/core/fastconformer.h','src/core/nemotron_text.h')]
+score_catalog=T/'SCORER-SHA256SUMS'
+if sha(score_catalog)!='74f4c45bacf0ea2da83d9869e5b0f0e33fa8a5a2d3043081c0da7d2f4c18b8a2':raise RuntimeError('scorer catalog drift')
+files += [score_catalog]+[T/line.split('  ',1)[1] for line in score_catalog.read_text().splitlines()]
+files+=source_files
+files+=sorted((D/'engine').glob('*.sh'))+sorted((D/'engine').glob('*.py'))+sorted((D/'engine').glob('*.json'))
+files += [T/'install/lib'/x for x in ('libtranscribe.so.0.4.0','libggml.so.0.26.0','libggml-base.so.0.26.0','libggml-cpu.so.0.26.0')]
+raw=''.join(sha(p)+'  '+str(p)+'\n' for p in files);(D/'SOURCE-SHA256SUMS').write_text(raw)
+print(json.dumps({'input':sha(M),'plan':sha(D/'PLAN.md'),'catalog':sha(D/'SOURCE-SHA256SUMS'),'files':len(files)},sort_keys=True),flush=True)

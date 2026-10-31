@@ -1,0 +1,13 @@
+# Codex3 READY and source checkpoint — 2026-10-31 01:05 UTC
+
+Five final speech validation packets and one armed whole-host repair are preserved with exact code/catalog/smoke bindings in [the transfer audit](../../artifacts/compute/codex3-ready-checkpoint-20261031-0105/TRANSFER-AUDIT.json). Matched Nemotron removes a weight-conversion confound and repairs short-chunk cache loss; native empty-count evidence prevents a completed empty hypothesis being mislabeled unobserved. English Nemotron and Unified EN preserve their distinct four/six-geometry full 394-case selection scopes. No validation score or full test exposure, WER, CPU/HIP parity or scientific parent completion is claimed.
+
+The T96 repair is genuinely armed with a live validated poller, original six-arm/four-cell full-host design and indicative −1% rule. Its small-model smoke exercises the final real C5 wrapper; it does not claim Q38FN load success or target performance. KPF's one-shot postbuild qualifier now uses host preflight for actual Micron paths and stays waiting for build success; the earlier directory-only keeper probe was insufficient. No unclassified native retry or automatic publication remains in this path.
+
+The existing Phase C receipt reader verified fifteen newly completed Paddle pages in three zero-table shards, yielding 309 unique completed pages and 82 GT tables; the table means are unchanged. Full 755-page and paired-parser gates remain open. [belief: cc]
+
+The refactor owner's pushed commits 345d4e7df/9e0f7c194 and six-path authored patch were preserved, but fresh-base git apply --check failed in two authored documents on main36984e16. No portion was applied and no conflict was automatically resolved; the owner/parent is preparing a current patch independently. This checkpoint does not claim those source commits were promoted.
+
+PRB's full 1,600-question × estimator plus three answer arms remains in preparation, with the original 10,000-pair bootstrap/OAA/fixed-rule experimental readout and existing TALE observation carrier. The owning parent applied the exact existing-TALE source-row extension and open VB-PRB-T4-RESUME-WIRE task (patch SHA-256 `2dcb2001c16d3d80825daa995e17eaaace4ba147f9d4ed57a963e3e3a02ab554`); no new ladder, wired/canary or actual scientific run is asserted. All filing-due IDs were already filed at initial inspection.
+
+Only the existing ROOT lane, bounded snapshots and handoff/progress bodies changed. No index row, pruning, wiki sweep, checkout, production/kernel/store modification, inference, grant/queue/FILLERS write or shared venv change occurred. The host lane lacks the GitNexus CLI; no execution symbol was edited and no heavy index rebuild was attempted.

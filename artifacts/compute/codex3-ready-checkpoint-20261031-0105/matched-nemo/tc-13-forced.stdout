@@ -1,0 +1,117 @@
+audio: /mnt/raid0/llm/whisper.cpp/samples/jfk.wav
+  samples:    176000
+  duration:   11.000 s
+  sample rate 16000 Hz mono float32
+model: /mnt/raid0/llm/models/nemotron-3.5-asr-streaming-0.6b-Q8_0.gguf -> ok
+  backend:    CPU
+  name:       Nemotron Streaming 3.5
+  license:    other
+  max audio:  unbounded (whole clip in one pass)
+stream: chunk=1120 ms (17920 samples)
+stream: att_context_right=13
+  feed[ 0]: input=1120 ms buffered=70 ms  partial="And"
+  feed[ 1]: input=2240 ms buffered=70 ms  partial="And so my fellow Ameri"
+  feed[ 2]: input=3360 ms buffered=70 ms  partial="And so my fellow Americans"
+  feed[ 3]: input=4480 ms buffered=70 ms  partial="And so my fellow Americans ask"
+  feed[ 4]: input=5600 ms buffered=70 ms  partial="And so my fellow Americans ask not"
+  feed[ 5]: input=6720 ms buffered=70 ms  partial="And so my fellow Americans ask not what your country"
+  feed[ 6]: input=7840 ms buffered=70 ms  partial="And so my fellow Americans ask not what your country can do for you"
+  feed[ 7]: input=8960 ms buffered=70 ms  partial="And so my fellow Americans ask not what your country can do for you ask what"
+  feed[ 8]: input=10080 ms buffered=70 ms  partial="And so my fellow Americans ask not what your country can do for you ask what you can do for your"
+  feed[ 9]: input=11000 ms buffered=990 ms
+  finalize: status=ok revision=10 input=11000 ms committed=11000 ms
+run: ok
+text: And so my fellow Americans ask not what your country can do for you ask what you can do for your country. <en-US>
+words: 0
+tokens: 44
+CS8_NEMO_TOKENS 44
+CS8_NEMO_TOKEN 0 2860
+  [   0.56 ->    0.64] p=0.923  And
+CS8_NEMO_TOKEN 1 2
+  [   1.12 ->    1.20] p=0.969  
+CS8_NEMO_TOKEN 2 1290
+  [   1.12 ->    1.20] p=0.988 so
+CS8_NEMO_TOKEN 3 2
+  [   1.44 ->    1.52] p=0.971  
+CS8_NEMO_TOKEN 4 1731
+  [   1.44 ->    1.52] p=0.999 my
+CS8_NEMO_TOKEN 5 1179
+  [   1.60 ->    1.68] p=0.983  fel
+CS8_NEMO_TOKEN 6 290
+  [   1.76 ->    1.84] p=1.000 lo
+CS8_NEMO_TOKEN 7 133
+  [   1.76 ->    1.84] p=0.999 w
+CS8_NEMO_TOKEN 8 309
+  [   1.92 ->    2.00] p=0.931  A
+CS8_NEMO_TOKEN 9 271
+  [   2.00 ->    2.08] p=0.973 me
+CS8_NEMO_TOKEN 10 581
+  [   2.08 ->    2.16] p=0.985 ri
+CS8_NEMO_TOKEN 11 1257
+  [   2.32 ->    2.40] p=1.000 ca
+CS8_NEMO_TOKEN 12 113
+  [   2.32 ->    2.40] p=0.983 n
+CS8_NEMO_TOKEN 13 40
+  [   2.40 ->    2.48] p=0.947 s
+CS8_NEMO_TOKEN 14 2900
+  [   3.68 ->    3.76] p=0.915  ask
+CS8_NEMO_TOKEN 15 2847
+  [   4.56 ->    4.64] p=0.946  not
+CS8_NEMO_TOKEN 16 2831
+  [   5.68 ->    5.76] p=0.958  what
+CS8_NEMO_TOKEN 17 2815
+  [   5.92 ->    6.00] p=0.984  your
+CS8_NEMO_TOKEN 18 995
+  [   6.08 ->    6.16] p=1.000  c
+CS8_NEMO_TOKEN 19 313
+  [   6.08 ->    6.16] p=1.000 ou
+CS8_NEMO_TOKEN 20 113
+  [   6.08 ->    6.16] p=1.000 n
+CS8_NEMO_TOKEN 21 34
+  [   6.16 ->    6.24] p=0.974 t
+CS8_NEMO_TOKEN 22 1752
+  [   6.16 ->    6.24] p=0.927 ry
+CS8_NEMO_TOKEN 23 2813
+  [   6.72 ->    6.80] p=1.000  can
+CS8_NEMO_TOKEN 24 2
+  [   6.80 ->    6.88] p=0.999  
+CS8_NEMO_TOKEN 25 1288
+  [   6.80 ->    6.88] p=1.000 do
+CS8_NEMO_TOKEN 26 398
+  [   7.04 ->    7.12] p=1.000  for
+CS8_NEMO_TOKEN 27 2810
+  [   7.28 ->    7.36] p=0.962  you
+CS8_NEMO_TOKEN 28 2900
+  [   8.48 ->    8.56] p=0.932  ask
+CS8_NEMO_TOKEN 29 2831
+  [   8.88 ->    8.96] p=0.920  what
+CS8_NEMO_TOKEN 30 2810
+  [   9.04 ->    9.12] p=0.999  you
+CS8_NEMO_TOKEN 31 2813
+  [   9.20 ->    9.28] p=0.996  can
+CS8_NEMO_TOKEN 32 2
+  [   9.44 ->    9.52] p=1.000  
+CS8_NEMO_TOKEN 33 1288
+  [   9.44 ->    9.52] p=1.000 do
+CS8_NEMO_TOKEN 34 398
+  [   9.68 ->    9.76] p=1.000  for
+CS8_NEMO_TOKEN 35 2815
+  [   9.92 ->   10.00] p=0.942  your
+CS8_NEMO_TOKEN 36 995
+  [  10.16 ->   10.24] p=1.000  c
+CS8_NEMO_TOKEN 37 313
+  [  10.16 ->   10.24] p=1.000 ou
+CS8_NEMO_TOKEN 38 113
+  [  10.16 ->   10.24] p=1.000 n
+CS8_NEMO_TOKEN 39 34
+  [  10.24 ->   10.32] p=0.999 t
+CS8_NEMO_TOKEN 40 1752
+  [  10.24 ->   10.32] p=1.000 ry
+CS8_NEMO_TOKEN 41 4
+  [  11.04 ->   11.12] p=0.939 .
+CS8_NEMO_TOKEN 42 2
+  [  11.04 ->   11.12] p=1.000  
+CS8_NEMO_TOKEN 43 2947
+  [  11.04 ->   11.12] p=1.000 <en-US>
+CS8_NEMO_TOKENS_END
+  realtime:   6x (1902.3 ms for 11.0 s)

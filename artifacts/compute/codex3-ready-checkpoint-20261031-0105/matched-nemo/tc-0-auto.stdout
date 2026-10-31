@@ -1,0 +1,253 @@
+audio: /mnt/raid0/llm/whisper.cpp/samples/jfk.wav
+  samples:    176000
+  duration:   11.000 s
+  sample rate 16000 Hz mono float32
+model: /mnt/raid0/llm/models/nemotron-3.5-asr-streaming-0.6b-Q8_0.gguf -> ok
+  backend:    CPU
+  name:       Nemotron Streaming 3.5
+  license:    other
+  max audio:  unbounded (whole clip in one pass)
+stream: chunk=80 ms (1280 samples)
+stream: att_context_right=0
+  feed[ 0]: input=80 ms buffered=70 ms
+  feed[ 1]: input=160 ms buffered=70 ms
+  feed[ 2]: input=240 ms buffered=70 ms
+  feed[ 3]: input=320 ms buffered=70 ms
+  feed[ 4]: input=400 ms buffered=70 ms
+  feed[ 5]: input=480 ms buffered=70 ms
+  feed[ 6]: input=560 ms buffered=70 ms
+  feed[ 7]: input=640 ms buffered=70 ms
+  feed[ 8]: input=720 ms buffered=70 ms
+  feed[ 9]: input=800 ms buffered=70 ms
+  feed[10]: input=880 ms buffered=70 ms
+  feed[11]: input=960 ms buffered=70 ms
+  feed[12]: input=1040 ms buffered=70 ms
+  feed[13]: input=1120 ms buffered=70 ms
+  feed[14]: input=1200 ms buffered=70 ms
+  feed[15]: input=1280 ms buffered=70 ms  partial="And"
+  feed[16]: input=1360 ms buffered=70 ms  partial="And so"
+  feed[17]: input=1440 ms buffered=70 ms
+  feed[18]: input=1520 ms buffered=70 ms
+  feed[19]: input=1600 ms buffered=70 ms
+  feed[20]: input=1680 ms buffered=70 ms
+  feed[21]: input=1760 ms buffered=70 ms  partial="And so my"
+  feed[22]: input=1840 ms buffered=70 ms
+  feed[23]: input=1920 ms buffered=70 ms
+  feed[24]: input=2000 ms buffered=70 ms  partial="And so my fel"
+  feed[25]: input=2080 ms buffered=70 ms  partial="And so my fellow"
+  feed[26]: input=2160 ms buffered=70 ms
+  feed[27]: input=2240 ms buffered=70 ms
+  feed[28]: input=2320 ms buffered=70 ms  partial="And so my fellow A"
+  feed[29]: input=2400 ms buffered=70 ms  partial="And so my fellow Ameri"
+  feed[30]: input=2480 ms buffered=70 ms  partial="And so my fellow America"
+  feed[31]: input=2560 ms buffered=70 ms  partial="And so my fellow American"
+  feed[32]: input=2640 ms buffered=70 ms  partial="And so my fellow Americans"
+  feed[33]: input=2720 ms buffered=70 ms
+  feed[34]: input=2800 ms buffered=70 ms
+  feed[35]: input=2880 ms buffered=70 ms
+  feed[36]: input=2960 ms buffered=70 ms
+  feed[37]: input=3040 ms buffered=70 ms
+  feed[38]: input=3120 ms buffered=70 ms
+  feed[39]: input=3200 ms buffered=70 ms
+  feed[40]: input=3280 ms buffered=70 ms
+  feed[41]: input=3360 ms buffered=70 ms
+  feed[42]: input=3440 ms buffered=70 ms
+  feed[43]: input=3520 ms buffered=70 ms
+  feed[44]: input=3600 ms buffered=70 ms
+  feed[45]: input=3680 ms buffered=70 ms
+  feed[46]: input=3760 ms buffered=70 ms
+  feed[47]: input=3840 ms buffered=70 ms
+  feed[48]: input=3920 ms buffered=70 ms
+  feed[49]: input=4000 ms buffered=70 ms
+  feed[50]: input=4080 ms buffered=70 ms
+  feed[51]: input=4160 ms buffered=70 ms  partial="And so my fellow Americans ask"
+  feed[52]: input=4240 ms buffered=70 ms
+  feed[53]: input=4320 ms buffered=70 ms
+  feed[54]: input=4400 ms buffered=70 ms
+  feed[55]: input=4480 ms buffered=70 ms
+  feed[56]: input=4560 ms buffered=70 ms
+  feed[57]: input=4640 ms buffered=70 ms
+  feed[58]: input=4720 ms buffered=70 ms
+  feed[59]: input=4800 ms buffered=70 ms  partial="And so my fellow Americans ask not"
+  feed[60]: input=4880 ms buffered=70 ms
+  feed[61]: input=4960 ms buffered=70 ms
+  feed[62]: input=5040 ms buffered=70 ms
+  feed[63]: input=5120 ms buffered=70 ms
+  feed[64]: input=5200 ms buffered=70 ms
+  feed[65]: input=5280 ms buffered=70 ms
+  feed[66]: input=5360 ms buffered=70 ms
+  feed[67]: input=5440 ms buffered=70 ms
+  feed[68]: input=5520 ms buffered=70 ms
+  feed[69]: input=5600 ms buffered=70 ms
+  feed[70]: input=5680 ms buffered=70 ms
+  feed[71]: input=5760 ms buffered=70 ms
+  feed[72]: input=5840 ms buffered=70 ms
+  feed[73]: input=5920 ms buffered=70 ms
+  feed[74]: input=6000 ms buffered=70 ms  partial="And so my fellow Americans ask not what"
+  feed[75]: input=6080 ms buffered=70 ms
+  feed[76]: input=6160 ms buffered=70 ms
+  feed[77]: input=6240 ms buffered=70 ms
+  feed[78]: input=6320 ms buffered=70 ms  partial="And so my fellow Americans ask not what your"
+  feed[79]: input=6400 ms buffered=70 ms
+  feed[80]: input=6480 ms buffered=70 ms  partial="And so my fellow Americans ask not what your coun"
+  feed[81]: input=6560 ms buffered=70 ms
+  feed[82]: input=6640 ms buffered=70 ms  partial="And so my fellow Americans ask not what your country"
+  feed[83]: input=6720 ms buffered=70 ms
+  feed[84]: input=6800 ms buffered=70 ms
+  feed[85]: input=6880 ms buffered=70 ms  partial="And so my fellow Americans ask not what your country can"
+  feed[86]: input=6960 ms buffered=70 ms
+  feed[87]: input=7040 ms buffered=70 ms
+  feed[88]: input=7120 ms buffered=70 ms  partial="And so my fellow Americans ask not what your country can do"
+  feed[89]: input=7200 ms buffered=70 ms
+  feed[90]: input=7280 ms buffered=70 ms
+  feed[91]: input=7360 ms buffered=70 ms  partial="And so my fellow Americans ask not what your country can do for"
+  feed[92]: input=7440 ms buffered=70 ms
+  feed[93]: input=7520 ms buffered=70 ms
+  feed[94]: input=7600 ms buffered=70 ms  partial="And so my fellow Americans ask not what your country can do for you"
+  feed[95]: input=7680 ms buffered=70 ms
+  feed[96]: input=7760 ms buffered=70 ms
+  feed[97]: input=7840 ms buffered=70 ms
+  feed[98]: input=7920 ms buffered=70 ms
+  feed[99]: input=8000 ms buffered=70 ms
+  feed[100]: input=8080 ms buffered=70 ms
+  feed[101]: input=8160 ms buffered=70 ms
+  feed[102]: input=8240 ms buffered=70 ms
+  feed[103]: input=8320 ms buffered=70 ms
+  feed[104]: input=8400 ms buffered=70 ms
+  feed[105]: input=8480 ms buffered=70 ms
+  feed[106]: input=8560 ms buffered=70 ms
+  feed[107]: input=8640 ms buffered=70 ms
+  feed[108]: input=8720 ms buffered=70 ms
+  feed[109]: input=8800 ms buffered=70 ms
+  feed[110]: input=8880 ms buffered=70 ms  partial="And so my fellow Americans ask not what your country can do for you. <en-US>"
+  feed[111]: input=8960 ms buffered=70 ms  partial="And so my fellow Americans ask not what your country can do for you. <en-US> A"
+  feed[112]: input=9040 ms buffered=70 ms  partial="And so my fellow Americans ask not what your country can do for you. <en-US> Ask"
+  feed[113]: input=9120 ms buffered=70 ms
+  feed[114]: input=9200 ms buffered=70 ms  partial="And so my fellow Americans ask not what your country can do for you. <en-US> Ask what"
+  feed[115]: input=9280 ms buffered=70 ms
+  feed[116]: input=9360 ms buffered=70 ms  partial="And so my fellow Americans ask not what your country can do for you. <en-US> Ask what you"
+  feed[117]: input=9440 ms buffered=70 ms
+  feed[118]: input=9520 ms buffered=70 ms
+  feed[119]: input=9600 ms buffered=70 ms  partial="And so my fellow Americans ask not what your country can do for you. <en-US> Ask what you can"
+  feed[120]: input=9680 ms buffered=70 ms
+  feed[121]: input=9760 ms buffered=70 ms  partial="And so my fellow Americans ask not what your country can do for you. <en-US> Ask what you can do"
+  feed[122]: input=9840 ms buffered=70 ms
+  feed[123]: input=9920 ms buffered=70 ms
+  feed[124]: input=10000 ms buffered=70 ms  partial="And so my fellow Americans ask not what your country can do for you. <en-US> Ask what you can do for"
+  feed[125]: input=10080 ms buffered=70 ms
+  feed[126]: input=10160 ms buffered=70 ms  partial="And so my fellow Americans ask not what your country can do for you. <en-US> Ask what you can do for your"
+  feed[127]: input=10240 ms buffered=70 ms
+  feed[128]: input=10320 ms buffered=70 ms
+  feed[129]: input=10400 ms buffered=70 ms  partial="And so my fellow Americans ask not what your country can do for you. <en-US> Ask what you can do for your coun"
+  feed[130]: input=10480 ms buffered=70 ms
+  feed[131]: input=10560 ms buffered=70 ms  partial="And so my fellow Americans ask not what your country can do for you. <en-US> Ask what you can do for your country"
+  feed[132]: input=10640 ms buffered=70 ms
+  feed[133]: input=10720 ms buffered=70 ms
+  feed[134]: input=10800 ms buffered=70 ms
+  feed[135]: input=10880 ms buffered=70 ms
+  feed[136]: input=10960 ms buffered=70 ms
+  feed[137]: input=11000 ms buffered=30 ms
+  finalize: status=ok revision=32 input=11000 ms committed=11000 ms
+run: ok
+text: And so my fellow Americans ask not what your country can do for you. <en-US> Ask what you can do for your country. <en-US>
+words: 0
+tokens: 48
+CS8_NEMO_TOKENS 48
+CS8_NEMO_TOKEN 0 2860
+  [   1.20 ->    1.28] p=0.998  And
+CS8_NEMO_TOKEN 1 2
+  [   1.28 ->    1.36] p=0.939  
+CS8_NEMO_TOKEN 2 1290
+  [   1.28 ->    1.36] p=0.980 so
+CS8_NEMO_TOKEN 3 2
+  [   1.68 ->    1.76] p=0.893  
+CS8_NEMO_TOKEN 4 1731
+  [   1.68 ->    1.76] p=0.993 my
+CS8_NEMO_TOKEN 5 1179
+  [   1.92 ->    2.00] p=1.000  fel
+CS8_NEMO_TOKEN 6 290
+  [   2.00 ->    2.08] p=1.000 lo
+CS8_NEMO_TOKEN 7 133
+  [   2.00 ->    2.08] p=0.995 w
+CS8_NEMO_TOKEN 8 309
+  [   2.24 ->    2.32] p=1.000  A
+CS8_NEMO_TOKEN 9 271
+  [   2.32 ->    2.40] p=1.000 me
+CS8_NEMO_TOKEN 10 581
+  [   2.32 ->    2.40] p=0.987 ri
+CS8_NEMO_TOKEN 11 1257
+  [   2.40 ->    2.48] p=0.992 ca
+CS8_NEMO_TOKEN 12 113
+  [   2.48 ->    2.56] p=0.993 n
+CS8_NEMO_TOKEN 13 40
+  [   2.56 ->    2.64] p=0.960 s
+CS8_NEMO_TOKEN 14 2900
+  [   4.08 ->    4.16] p=0.906  ask
+CS8_NEMO_TOKEN 15 2847
+  [   4.72 ->    4.80] p=0.929  not
+CS8_NEMO_TOKEN 16 2831
+  [   5.92 ->    6.00] p=0.926  what
+CS8_NEMO_TOKEN 17 2815
+  [   6.24 ->    6.32] p=0.932  your
+CS8_NEMO_TOKEN 18 995
+  [   6.40 ->    6.48] p=1.000  c
+CS8_NEMO_TOKEN 19 313
+  [   6.40 ->    6.48] p=1.000 ou
+CS8_NEMO_TOKEN 20 113
+  [   6.40 ->    6.48] p=1.000 n
+CS8_NEMO_TOKEN 21 34
+  [   6.56 ->    6.64] p=1.000 t
+CS8_NEMO_TOKEN 22 1752
+  [   6.56 ->    6.64] p=1.000 ry
+CS8_NEMO_TOKEN 23 2813
+  [   6.80 ->    6.88] p=0.953  can
+CS8_NEMO_TOKEN 24 2
+  [   7.04 ->    7.12] p=1.000  
+CS8_NEMO_TOKEN 25 1288
+  [   7.04 ->    7.12] p=1.000 do
+CS8_NEMO_TOKEN 26 398
+  [   7.28 ->    7.36] p=0.966  for
+CS8_NEMO_TOKEN 27 2810
+  [   7.52 ->    7.60] p=0.952  you
+CS8_NEMO_TOKEN 28 4
+  [   8.80 ->    8.88] p=0.890 .
+CS8_NEMO_TOKEN 29 2
+  [   8.80 ->    8.88] p=0.998  
+CS8_NEMO_TOKEN 30 2947
+  [   8.80 ->    8.88] p=1.000 <en-US>
+CS8_NEMO_TOKEN 31 309
+  [   8.88 ->    8.96] p=0.992  A
+CS8_NEMO_TOKEN 32 2127
+  [   8.96 ->    9.04] p=0.996 sk
+CS8_NEMO_TOKEN 33 2831
+  [   9.12 ->    9.20] p=0.937  what
+CS8_NEMO_TOKEN 34 2810
+  [   9.28 ->    9.36] p=0.932  you
+CS8_NEMO_TOKEN 35 2813
+  [   9.52 ->    9.60] p=1.000  can
+CS8_NEMO_TOKEN 36 2
+  [   9.68 ->    9.76] p=0.999  
+CS8_NEMO_TOKEN 37 1288
+  [   9.68 ->    9.76] p=1.000 do
+CS8_NEMO_TOKEN 38 398
+  [   9.92 ->   10.00] p=0.975  for
+CS8_NEMO_TOKEN 39 2815
+  [  10.08 ->   10.16] p=0.941  your
+CS8_NEMO_TOKEN 40 995
+  [  10.32 ->   10.40] p=0.971  c
+CS8_NEMO_TOKEN 41 313
+  [  10.32 ->   10.40] p=1.000 ou
+CS8_NEMO_TOKEN 42 113
+  [  10.32 ->   10.40] p=0.999 n
+CS8_NEMO_TOKEN 43 34
+  [  10.48 ->   10.56] p=0.997 t
+CS8_NEMO_TOKEN 44 1752
+  [  10.48 ->   10.56] p=0.995 ry
+CS8_NEMO_TOKEN 45 4
+  [  11.04 ->   11.12] p=0.980 .
+CS8_NEMO_TOKEN 46 2
+  [  11.04 ->   11.12] p=1.000  
+CS8_NEMO_TOKEN 47 2947
+  [  11.04 ->   11.12] p=1.000 <en-US>
+CS8_NEMO_TOKENS_END
+  realtime:   2x (6478.1 ms for 11.0 s)

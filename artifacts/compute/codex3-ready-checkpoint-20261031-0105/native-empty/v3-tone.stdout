@@ -1,0 +1,16 @@
+audio: /mnt/raid0/llm/tmp/codex3-ultra-torch-reference/control-tone.wav
+  samples:    16000
+  duration:   1.000 s
+  sample rate 16000 Hz mono float32
+model: /mnt/raid0/llm/models/parakeet-tdt-0.6b-v3-F16.gguf -> ok
+  backend:    CPU
+  name:       Parakeet TDT 0.6B v3
+  license:    cc-by-4.0
+  max audio:  unbounded (whole clip in one pass)
+run: ok
+text: (empty)
+tokens: 0
+CS8_NEMO_TOKENS 0
+CS8_NEMO_TOKENS_END
+CS8_NEMO_COMPLETED raw_count=0
+  realtime:   7x (141.3 ms for 1.0 s)
