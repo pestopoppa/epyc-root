@@ -1,0 +1,45 @@
+{
+  "schema": "independent-zos-r5-audit/v1",
+  "intent_sha256": "75d0b28b9650891c53554122626005cfa4f346d6e9f877aafe453b54a800cbac",
+  "arms": {
+    "A1": 24,
+    "B1": 24,
+    "A2": 24,
+    "B2": 24,
+    "O": 24,
+    "F1": 8,
+    "F2": 8,
+    "F3": 8
+  },
+  "mismatches": {
+    "AA_tokens": 0,
+    "OFF": 0,
+    "B1": 0,
+    "B2": 0,
+    "F1": 0,
+    "F2": 0,
+    "F3": 0
+  },
+  "S": 0.007249354083311843,
+  "NF": 0.025754953899584154,
+  "alternation_effects": [
+    0.01973317407537456,
+    0.021219833773167718,
+    -0.005081635967001175
+  ],
+  "graph_proofs_including_warmup": {
+    "A1": 28,
+    "B1": 28,
+    "A2": 28,
+    "B2": 28,
+    "O": 28,
+    "F1": 12,
+    "F2": 12,
+    "F3": 12
+  },
+  "all_positive_vram": true,
+  "errors": [],
+  "paired_denominator": 24,
+  "threshold_band": "UNDERPOWERED",
+  "source_result_sha256": "844b91a86938927b1fddacc11bd11fa719a13edb812e6523c4134fa055553355"
+}

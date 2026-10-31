@@ -1,0 +1,73 @@
+{
+  "run_intent_sha256": "75d0b28b9650891c53554122626005cfa4f346d6e9f877aafe453b54a800cbac",
+  "schema": "ni.gpu_zos2_gate.v1",
+  "at": "2026-10-31T08:57:57.117691+00:00",
+  "unit": "percent paired geometric mean predicted decode tok/s, np4 spec ON",
+  "higher_is_better": true,
+  "a_a_mismatch_count": 0,
+  "a_a_first_divergence": [
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null
+  ],
+  "knob_off_mismatch": [],
+  "knob_on_mismatch": [],
+  "feature_mismatch": {
+    "F1": [],
+    "F2": [],
+    "F3": []
+  },
+  "excluded_prompts": [],
+  "paired_n": 24,
+  "S": 0.007249354083311843,
+  "NF": 0.025754953899584154,
+  "alternation_effects": [
+    0.01973317407537456,
+    0.021219833773167718,
+    -0.005081635967001175
+  ],
+  "alternation_same_sign": false,
+  "min_ship_effect": 0.05150990779916831,
+  "plausibility_upper": 0.0886099077991683,
+  "AA_ratios_p10_p90": [
+    0.9862213227025277,
+    1.005565641696501
+  ],
+  "reason": "one A3/B3 extension allowed",
+  "request_graph_proofs": {
+    "A1": 28,
+    "B1": 28,
+    "A2": 28,
+    "B2": 28,
+    "O": 28,
+    "F1": 12,
+    "F2": 12,
+    "F3": 12
+  },
+  "threshold_band": "UNDERPOWERED",
+  "verdict": "ATOMIC_DIAGNOSTIC_UNDERPOWERED",
+  "ship_authorized": false,
+  "original_parent_complete": false,
+  "scope": "Atomic four-task native completion entry; does not complete original four independent chat request adoption gate"
+}
