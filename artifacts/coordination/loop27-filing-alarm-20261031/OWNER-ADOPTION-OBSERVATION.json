@@ -1,0 +1,40 @@
+{
+  "observed_at": "2026-10-31T14:07:46.584212+00:00",
+  "scope": "read-only process/source observation; no live nudge/delivery proof",
+  "owner_report_via_parent": "Owner replaced old1650389 with2062051 at14:04:20 using b1555bf66; no later unknown reported; dispatcher/supervisor remain down",
+  "old_pid_present": false,
+  "published_source": "d098483afb9390f0a61217ec1d3108eb82419bfc",
+  "published_main": "b1555bf66600de1ad79aac0c47d0898277496126",
+  "successor": {
+    "pid": 2062051,
+    "birth_ticks": "157793407",
+    "uid": 1000,
+    "argv": [
+      "/bin/bash",
+      "/mnt/raid0/llm/worktrees/ws58-loop27/scripts/coordination/filing_watch.sh"
+    ]
+  },
+  "owner_checkout": "/mnt/raid0/llm/worktrees/ws58-loop27",
+  "owner_checkout_head": "b1555bf66600de1ad79aac0c47d0898277496126",
+  "source_files": [
+    {
+      "path": "scripts/coordination/filing_watch.sh",
+      "sha256": "afb7e6ffc8844d1200abbfa461787d9ba1669eca815d2408eb74d313da013934",
+      "mtime": 1793455443.3109226
+    },
+    {
+      "path": "scripts/coordination/filing_takeover_alarm.py",
+      "sha256": "34dca337c8cfba18343ab28a33c2db9948558ff290f79305330ff27e7d568fdd",
+      "mtime": 1793454955.8987577
+    }
+  ],
+  "runtime_config_sha256": "05f05d110821e657cb8988f99a78ff292d33a441f7d2ed0a0e338c052913d1ac",
+  "actual_filing_watch_log_tail": "2026-10-28T19:50:24Z filing-watch start pid=1650389\n2026-10-31T14:04:20Z filing-watch start pid=2062051\n",
+  "correction_notice": {
+    "message_id": "e12f94e6-c7da-42cc-8cd8-a40f35621ad4",
+    "target_pid": 547521,
+    "target_uid": 1000,
+    "transport": "authenticated peer credentials verified; socket flush/EOF",
+    "notice": "DO NOT START coordinator-daemon or bus_supervisor; standing operator stop; prior activation guidance superseded"
+  }
+}
