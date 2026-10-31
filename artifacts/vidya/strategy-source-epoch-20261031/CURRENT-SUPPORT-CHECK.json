@@ -1,0 +1,22 @@
+[
+  {
+    "path": "tests/conftest.py",
+    "unchanged": true,
+    "current_sha256": "e600504b4edfec57fce0a4c1e2fd6d217e2726c6261d502bad30afc8dd17eb7a"
+  },
+  {
+    "path": "tests/vidya/test_producer_pins.py",
+    "unchanged": true,
+    "current_sha256": "f4dae96999863c71948dc0cd7bf828feca672c86fafca9f8743583a5007c8af2"
+  },
+  {
+    "path": "scripts/vidya/claim_tuple.py",
+    "unchanged": true,
+    "current_sha256": "6ae969f7029c1a6356593fd2432eca2320931f22aa4a8c4e3a388a72b81944e7"
+  },
+  {
+    "path": "scripts/vidya/producer_pins.py",
+    "unchanged": true,
+    "current_sha256": "06819dea444ec2f05b05ef57e75b722ae129995fc3e46322f5c0dd25aa3e2a76"
+  }
+]

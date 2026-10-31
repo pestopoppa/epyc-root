@@ -1,0 +1,1271 @@
+{
+  "baseline": {
+    "returncode": 1,
+    "diagnostics": [
+      {
+        "cell": null,
+        "code": "EXE001",
+        "end_location": {
+          "column": 23,
+          "row": 1
+        },
+        "filename": "/mnt/raid0/llm/tmp/refactor-01a16fc3/strategy-source-epoch-20261031/lint-baseline/scripts/harness/strategy_projection_report_capture.py",
+        "fix": null,
+        "location": {
+          "column": 1,
+          "row": 1
+        },
+        "message": "Shebang is present but file is not executable",
+        "name": "shebang-not-executable",
+        "noqa_row": 8,
+        "severity": "error",
+        "url": "https://docs.astral.sh/ruff/rules/shebang-not-executable"
+      },
+      {
+        "cell": null,
+        "code": "I001",
+        "end_location": {
+          "column": 12,
+          "row": 23
+        },
+        "filename": "/mnt/raid0/llm/tmp/refactor-01a16fc3/strategy-source-epoch-20261031/lint-baseline/scripts/harness/strategy_projection_report_capture.py",
+        "fix": {
+          "applicability": "safe",
+          "edits": [
+            {
+              "content": "from __future__ import annotations\n\nimport hashlib\nimport importlib\nimport io\nimport json\nimport os\nimport re\nimport stat\nimport sys\nimport uuid\nfrom contextlib import redirect_stderr, redirect_stdout\nfrom datetime import datetime, timezone\nfrom pathlib import Path\nfrom typing import Any\n\n",
+              "end_location": {
+                "column": 1,
+                "row": 25
+              },
+              "location": {
+                "column": 1,
+                "row": 9
+              }
+            }
+          ],
+          "message": "Organize imports"
+        },
+        "location": {
+          "column": 1,
+          "row": 9
+        },
+        "message": "Import block is un-sorted or un-formatted",
+        "name": "unsorted-imports",
+        "noqa_row": 9,
+        "severity": "error",
+        "url": "https://docs.astral.sh/ruff/rules/unsorted-imports"
+      },
+      {
+        "cell": null,
+        "code": "BLE001",
+        "end_location": {
+          "column": 21,
+          "row": 366
+        },
+        "filename": "/mnt/raid0/llm/tmp/refactor-01a16fc3/strategy-source-epoch-20261031/lint-baseline/scripts/harness/strategy_projection_report_capture.py",
+        "fix": null,
+        "location": {
+          "column": 12,
+          "row": 366
+        },
+        "message": "Do not catch blind exception: `Exception`",
+        "name": "blind-except",
+        "noqa_row": 366,
+        "severity": "error",
+        "url": "https://docs.astral.sh/ruff/rules/blind-except"
+      },
+      {
+        "cell": null,
+        "code": "BLE001",
+        "end_location": {
+          "column": 25,
+          "row": 383
+        },
+        "filename": "/mnt/raid0/llm/tmp/refactor-01a16fc3/strategy-source-epoch-20261031/lint-baseline/scripts/harness/strategy_projection_report_capture.py",
+        "fix": null,
+        "location": {
+          "column": 16,
+          "row": 383
+        },
+        "message": "Do not catch blind exception: `Exception`",
+        "name": "blind-except",
+        "noqa_row": 383,
+        "severity": "error",
+        "url": "https://docs.astral.sh/ruff/rules/blind-except"
+      },
+      {
+        "cell": null,
+        "code": "I001",
+        "end_location": {
+          "column": 23,
+          "row": 13
+        },
+        "filename": "/mnt/raid0/llm/tmp/refactor-01a16fc3/strategy-source-epoch-20261031/lint-baseline/scripts/vidya/adapters/strategy_projection_report.py",
+        "fix": {
+          "applicability": "safe",
+          "edits": [
+            {
+              "content": "from __future__ import annotations\n\nimport hashlib\nimport json\nimport os\nimport re\nimport stat\nimport sys\nimport uuid\nfrom datetime import datetime\nfrom pathlib import Path\nfrom typing import Any\n\n",
+              "end_location": {
+                "column": 1,
+                "row": 15
+              },
+              "location": {
+                "column": 1,
+                "row": 2
+              }
+            }
+          ],
+          "message": "Organize imports"
+        },
+        "location": {
+          "column": 1,
+          "row": 2
+        },
+        "message": "Import block is un-sorted or un-formatted",
+        "name": "unsorted-imports",
+        "noqa_row": 2,
+        "severity": "error",
+        "url": "https://docs.astral.sh/ruff/rules/unsorted-imports"
+      },
+      {
+        "cell": null,
+        "code": "RUF100",
+        "end_location": {
+          "column": 76,
+          "row": 18
+        },
+        "filename": "/mnt/raid0/llm/tmp/refactor-01a16fc3/strategy-source-epoch-20261031/lint-baseline/scripts/vidya/adapters/strategy_projection_report.py",
+        "fix": {
+          "applicability": "safe",
+          "edits": [
+            {
+              "content": "",
+              "end_location": {
+                "column": 76,
+                "row": 18
+              },
+              "location": {
+                "column": 62,
+                "row": 18
+              }
+            }
+          ],
+          "message": "Remove unused `noqa` directive"
+        },
+        "location": {
+          "column": 64,
+          "row": 18
+        },
+        "message": "Unused `noqa` directive (non-enabled: `E402`)",
+        "name": "unused-noqa",
+        "noqa_row": 18,
+        "severity": "error",
+        "url": "https://docs.astral.sh/ruff/rules/unused-noqa"
+      },
+      {
+        "cell": null,
+        "code": "TRY004",
+        "end_location": {
+          "column": 73,
+          "row": 160
+        },
+        "filename": "/mnt/raid0/llm/tmp/refactor-01a16fc3/strategy-source-epoch-20261031/lint-baseline/scripts/vidya/adapters/strategy_projection_report.py",
+        "fix": null,
+        "location": {
+          "column": 13,
+          "row": 160
+        },
+        "message": "Prefer `TypeError` exception for invalid type",
+        "name": "type-check-without-type-error",
+        "noqa_row": 160,
+        "severity": "error",
+        "url": "https://docs.astral.sh/ruff/rules/type-check-without-type-error"
+      },
+      {
+        "cell": null,
+        "code": "SIM102",
+        "end_location": {
+          "column": 58,
+          "row": 189
+        },
+        "filename": "/mnt/raid0/llm/tmp/refactor-01a16fc3/strategy-source-epoch-20261031/lint-baseline/scripts/vidya/adapters/strategy_projection_report.py",
+        "fix": {
+          "applicability": "unsafe",
+          "edits": [
+            {
+              "content": "        if row[\"state\"] == \"present\" and (not isinstance(row[\"sha256\"], str)\n                or not re.fullmatch(r\"[0-9a-f]{64}\", row[\"sha256\"])\n                or type(row[\"size\"]) is not int or row[\"size\"] < 0\n                or type(row[\"device\"]) is not int or type(row[\"inode\"]) is not int\n                or type(row[\"mtime_ns\"]) is not int):\n            raise ValueError(\"present input identity has invalid metadata\")",
+              "end_location": {
+                "column": 80,
+                "row": 190
+              },
+              "location": {
+                "column": 1,
+                "row": 184
+              }
+            }
+          ],
+          "message": "Combine `if` statements using `and`"
+        },
+        "location": {
+          "column": 9,
+          "row": 184
+        },
+        "message": "Use a single `if` statement instead of nested `if` statements",
+        "name": "collapsible-if",
+        "noqa_row": 184,
+        "severity": "error",
+        "url": "https://docs.astral.sh/ruff/rules/collapsible-if"
+      },
+      {
+        "cell": null,
+        "code": "F841",
+        "end_location": {
+          "column": 11,
+          "row": 357
+        },
+        "filename": "/mnt/raid0/llm/tmp/refactor-01a16fc3/strategy-source-epoch-20261031/lint-baseline/scripts/vidya/adapters/strategy_projection_report.py",
+        "fix": {
+          "applicability": "unsafe",
+          "edits": [
+            {
+              "content": "",
+              "end_location": {
+                "column": 14,
+                "row": 357
+              },
+              "location": {
+                "column": 5,
+                "row": 357
+              }
+            }
+          ],
+          "message": "Remove assignment to unused variable `stderr`"
+        },
+        "location": {
+          "column": 5,
+          "row": 357
+        },
+        "message": "Local variable `stderr` is assigned to but never used",
+        "name": "unused-variable",
+        "noqa_row": 357,
+        "severity": "error",
+        "url": "https://docs.astral.sh/ruff/rules/unused-variable"
+      },
+      {
+        "cell": null,
+        "code": "EXE001",
+        "end_location": {
+          "column": 23,
+          "row": 1
+        },
+        "filename": "/mnt/raid0/llm/tmp/refactor-01a16fc3/strategy-source-epoch-20261031/lint-baseline/scripts/vidya/producer_pins.py",
+        "fix": null,
+        "location": {
+          "column": 1,
+          "row": 1
+        },
+        "message": "Shebang is present but file is not executable",
+        "name": "shebang-not-executable",
+        "noqa_row": 27,
+        "severity": "error",
+        "url": "https://docs.astral.sh/ruff/rules/shebang-not-executable"
+      },
+      {
+        "cell": null,
+        "code": "FURB167",
+        "end_location": {
+          "column": 107,
+          "row": 257
+        },
+        "filename": "/mnt/raid0/llm/tmp/refactor-01a16fc3/strategy-source-epoch-20261031/lint-baseline/scripts/vidya/producer_pins.py",
+        "fix": {
+          "applicability": "safe",
+          "edits": [
+            {
+              "content": "import re",
+              "end_location": {
+                "column": 10,
+                "row": 35
+              },
+              "location": {
+                "column": 1,
+                "row": 35
+              }
+            },
+            {
+              "content": "re.MULTILINE",
+              "end_location": {
+                "column": 107,
+                "row": 257
+              },
+              "location": {
+                "column": 103,
+                "row": 257
+              }
+            }
+          ],
+          "message": "Replace with `re.MULTILINE`"
+        },
+        "location": {
+          "column": 103,
+          "row": 257
+        },
+        "message": "Use of regular expression alias `re.M`",
+        "name": "regex-flag-alias",
+        "noqa_row": 257,
+        "severity": "error",
+        "url": "https://docs.astral.sh/ruff/rules/regex-flag-alias"
+      },
+      {
+        "cell": null,
+        "code": "FURB167",
+        "end_location": {
+          "column": 68,
+          "row": 262
+        },
+        "filename": "/mnt/raid0/llm/tmp/refactor-01a16fc3/strategy-source-epoch-20261031/lint-baseline/scripts/vidya/producer_pins.py",
+        "fix": {
+          "applicability": "safe",
+          "edits": [
+            {
+              "content": "import re",
+              "end_location": {
+                "column": 10,
+                "row": 35
+              },
+              "location": {
+                "column": 1,
+                "row": 35
+              }
+            },
+            {
+              "content": "re.MULTILINE",
+              "end_location": {
+                "column": 68,
+                "row": 262
+              },
+              "location": {
+                "column": 64,
+                "row": 262
+              }
+            }
+          ],
+          "message": "Replace with `re.MULTILINE`"
+        },
+        "location": {
+          "column": 64,
+          "row": 262
+        },
+        "message": "Use of regular expression alias `re.M`",
+        "name": "regex-flag-alias",
+        "noqa_row": 262,
+        "severity": "error",
+        "url": "https://docs.astral.sh/ruff/rules/regex-flag-alias"
+      },
+      {
+        "cell": null,
+        "code": "FURB167",
+        "end_location": {
+          "column": 125,
+          "row": 324
+        },
+        "filename": "/mnt/raid0/llm/tmp/refactor-01a16fc3/strategy-source-epoch-20261031/lint-baseline/scripts/vidya/producer_pins.py",
+        "fix": {
+          "applicability": "safe",
+          "edits": [
+            {
+              "content": "import re",
+              "end_location": {
+                "column": 10,
+                "row": 35
+              },
+              "location": {
+                "column": 1,
+                "row": 35
+              }
+            },
+            {
+              "content": "re.DOTALL",
+              "end_location": {
+                "column": 125,
+                "row": 324
+              },
+              "location": {
+                "column": 121,
+                "row": 324
+              }
+            }
+          ],
+          "message": "Replace with `re.DOTALL`"
+        },
+        "location": {
+          "column": 121,
+          "row": 324
+        },
+        "message": "Use of regular expression alias `re.S`",
+        "name": "regex-flag-alias",
+        "noqa_row": 324,
+        "severity": "error",
+        "url": "https://docs.astral.sh/ruff/rules/regex-flag-alias"
+      },
+      {
+        "cell": null,
+        "code": "I001",
+        "end_location": {
+          "column": 14,
+          "row": 12
+        },
+        "filename": "/mnt/raid0/llm/tmp/refactor-01a16fc3/strategy-source-epoch-20261031/lint-baseline/tests/vidya/test_strategy_projection_report.py",
+        "fix": {
+          "applicability": "safe",
+          "edits": [
+            {
+              "content": "from __future__ import annotations\n\nimport hashlib\nimport json\nimport os\nimport stat\nimport sys\nimport uuid\nfrom pathlib import Path\n\nimport pytest\n\n",
+              "end_location": {
+                "column": 1,
+                "row": 14
+              },
+              "location": {
+                "column": 1,
+                "row": 2
+              }
+            }
+          ],
+          "message": "Organize imports"
+        },
+        "location": {
+          "column": 1,
+          "row": 2
+        },
+        "message": "Import block is un-sorted or un-formatted",
+        "name": "unsorted-imports",
+        "noqa_row": 2,
+        "severity": "error",
+        "url": "https://docs.astral.sh/ruff/rules/unsorted-imports"
+      },
+      {
+        "cell": null,
+        "code": "I001",
+        "end_location": {
+          "column": 54,
+          "row": 20
+        },
+        "filename": "/mnt/raid0/llm/tmp/refactor-01a16fc3/strategy-source-epoch-20261031/lint-baseline/tests/vidya/test_strategy_projection_report.py",
+        "fix": {
+          "applicability": "safe",
+          "edits": [
+            {
+              "content": "import cli  # noqa: E402\nimport strategy_projection_report_capture as producer  # noqa: E402\nfrom adapters import strategy_projection_report as adapter  # noqa: E402\nfrom claim_tuple import grade  # noqa: E402\n\n",
+              "end_location": {
+                "column": 1,
+                "row": 22
+              },
+              "location": {
+                "column": 1,
+                "row": 17
+              }
+            }
+          ],
+          "message": "Organize imports"
+        },
+        "location": {
+          "column": 1,
+          "row": 17
+        },
+        "message": "Import block is un-sorted or un-formatted",
+        "name": "unsorted-imports",
+        "noqa_row": 17,
+        "severity": "error",
+        "url": "https://docs.astral.sh/ruff/rules/unsorted-imports"
+      },
+      {
+        "cell": null,
+        "code": "RUF100",
+        "end_location": {
+          "column": 25,
+          "row": 17
+        },
+        "filename": "/mnt/raid0/llm/tmp/refactor-01a16fc3/strategy-source-epoch-20261031/lint-baseline/tests/vidya/test_strategy_projection_report.py",
+        "fix": {
+          "applicability": "safe",
+          "edits": [
+            {
+              "content": "",
+              "end_location": {
+                "column": 25,
+                "row": 17
+              },
+              "location": {
+                "column": 11,
+                "row": 17
+              }
+            }
+          ],
+          "message": "Remove unused `noqa` directive"
+        },
+        "location": {
+          "column": 13,
+          "row": 17
+        },
+        "message": "Unused `noqa` directive (non-enabled: `E402`)",
+        "name": "unused-noqa",
+        "noqa_row": 17,
+        "severity": "error",
+        "url": "https://docs.astral.sh/ruff/rules/unused-noqa"
+      },
+      {
+        "cell": null,
+        "code": "RUF100",
+        "end_location": {
+          "column": 73,
+          "row": 18
+        },
+        "filename": "/mnt/raid0/llm/tmp/refactor-01a16fc3/strategy-source-epoch-20261031/lint-baseline/tests/vidya/test_strategy_projection_report.py",
+        "fix": {
+          "applicability": "safe",
+          "edits": [
+            {
+              "content": "",
+              "end_location": {
+                "column": 73,
+                "row": 18
+              },
+              "location": {
+                "column": 59,
+                "row": 18
+              }
+            }
+          ],
+          "message": "Remove unused `noqa` directive"
+        },
+        "location": {
+          "column": 61,
+          "row": 18
+        },
+        "message": "Unused `noqa` directive (non-enabled: `E402`)",
+        "name": "unused-noqa",
+        "noqa_row": 18,
+        "severity": "error",
+        "url": "https://docs.astral.sh/ruff/rules/unused-noqa"
+      },
+      {
+        "cell": null,
+        "code": "RUF100",
+        "end_location": {
+          "column": 44,
+          "row": 19
+        },
+        "filename": "/mnt/raid0/llm/tmp/refactor-01a16fc3/strategy-source-epoch-20261031/lint-baseline/tests/vidya/test_strategy_projection_report.py",
+        "fix": {
+          "applicability": "safe",
+          "edits": [
+            {
+              "content": "",
+              "end_location": {
+                "column": 44,
+                "row": 19
+              },
+              "location": {
+                "column": 30,
+                "row": 19
+              }
+            }
+          ],
+          "message": "Remove unused `noqa` directive"
+        },
+        "location": {
+          "column": 32,
+          "row": 19
+        },
+        "message": "Unused `noqa` directive (non-enabled: `E402`)",
+        "name": "unused-noqa",
+        "noqa_row": 19,
+        "severity": "error",
+        "url": "https://docs.astral.sh/ruff/rules/unused-noqa"
+      },
+      {
+        "cell": null,
+        "code": "RUF100",
+        "end_location": {
+          "column": 68,
+          "row": 20
+        },
+        "filename": "/mnt/raid0/llm/tmp/refactor-01a16fc3/strategy-source-epoch-20261031/lint-baseline/tests/vidya/test_strategy_projection_report.py",
+        "fix": {
+          "applicability": "safe",
+          "edits": [
+            {
+              "content": "",
+              "end_location": {
+                "column": 68,
+                "row": 20
+              },
+              "location": {
+                "column": 54,
+                "row": 20
+              }
+            }
+          ],
+          "message": "Remove unused `noqa` directive"
+        },
+        "location": {
+          "column": 56,
+          "row": 20
+        },
+        "message": "Unused `noqa` directive (non-enabled: `E402`)",
+        "name": "unused-noqa",
+        "noqa_row": 20,
+        "severity": "error",
+        "url": "https://docs.astral.sh/ruff/rules/unused-noqa"
+      }
+    ],
+    "counts": {
+      "EXE001:Shebang is present but file is not executable": 2,
+      "I001:Import block is un-sorted or un-formatted": 4,
+      "BLE001:Do not catch blind exception: `Exception`": 2,
+      "RUF100:Unused `noqa` directive (non-enabled: `E402`)": 5,
+      "TRY004:Prefer `TypeError` exception for invalid type": 1,
+      "SIM102:Use a single `if` statement instead of nested `if` statements": 1,
+      "F841:Local variable `stderr` is assigned to but never used": 1,
+      "FURB167:Use of regular expression alias `re.M`": 2,
+      "FURB167:Use of regular expression alias `re.S`": 1
+    }
+  },
+  "candidate": {
+    "returncode": 1,
+    "diagnostics": [
+      {
+        "cell": null,
+        "code": "EXE001",
+        "end_location": {
+          "column": 23,
+          "row": 1
+        },
+        "filename": "/mnt/raid0/llm/tmp/refactor-01a16fc3/strategy-source-epoch-20261031/root/scripts/harness/strategy_projection_report_capture.py",
+        "fix": null,
+        "location": {
+          "column": 1,
+          "row": 1
+        },
+        "message": "Shebang is present but file is not executable",
+        "name": "shebang-not-executable",
+        "noqa_row": 8,
+        "severity": "error",
+        "url": "https://docs.astral.sh/ruff/rules/shebang-not-executable"
+      },
+      {
+        "cell": null,
+        "code": "I001",
+        "end_location": {
+          "column": 12,
+          "row": 23
+        },
+        "filename": "/mnt/raid0/llm/tmp/refactor-01a16fc3/strategy-source-epoch-20261031/root/scripts/harness/strategy_projection_report_capture.py",
+        "fix": {
+          "applicability": "safe",
+          "edits": [
+            {
+              "content": "from __future__ import annotations\n\nimport hashlib\nimport importlib\nimport io\nimport json\nimport os\nimport re\nimport stat\nimport sys\nimport uuid\nfrom contextlib import redirect_stderr, redirect_stdout\nfrom datetime import datetime, timezone\nfrom pathlib import Path\nfrom typing import Any\n\n",
+              "end_location": {
+                "column": 1,
+                "row": 25
+              },
+              "location": {
+                "column": 1,
+                "row": 9
+              }
+            }
+          ],
+          "message": "Organize imports"
+        },
+        "location": {
+          "column": 1,
+          "row": 9
+        },
+        "message": "Import block is un-sorted or un-formatted",
+        "name": "unsorted-imports",
+        "noqa_row": 9,
+        "severity": "error",
+        "url": "https://docs.astral.sh/ruff/rules/unsorted-imports"
+      },
+      {
+        "cell": null,
+        "code": "BLE001",
+        "end_location": {
+          "column": 21,
+          "row": 366
+        },
+        "filename": "/mnt/raid0/llm/tmp/refactor-01a16fc3/strategy-source-epoch-20261031/root/scripts/harness/strategy_projection_report_capture.py",
+        "fix": null,
+        "location": {
+          "column": 12,
+          "row": 366
+        },
+        "message": "Do not catch blind exception: `Exception`",
+        "name": "blind-except",
+        "noqa_row": 366,
+        "severity": "error",
+        "url": "https://docs.astral.sh/ruff/rules/blind-except"
+      },
+      {
+        "cell": null,
+        "code": "BLE001",
+        "end_location": {
+          "column": 25,
+          "row": 383
+        },
+        "filename": "/mnt/raid0/llm/tmp/refactor-01a16fc3/strategy-source-epoch-20261031/root/scripts/harness/strategy_projection_report_capture.py",
+        "fix": null,
+        "location": {
+          "column": 16,
+          "row": 383
+        },
+        "message": "Do not catch blind exception: `Exception`",
+        "name": "blind-except",
+        "noqa_row": 383,
+        "severity": "error",
+        "url": "https://docs.astral.sh/ruff/rules/blind-except"
+      },
+      {
+        "cell": null,
+        "code": "I001",
+        "end_location": {
+          "column": 23,
+          "row": 13
+        },
+        "filename": "/mnt/raid0/llm/tmp/refactor-01a16fc3/strategy-source-epoch-20261031/root/scripts/vidya/adapters/strategy_projection_report.py",
+        "fix": {
+          "applicability": "safe",
+          "edits": [
+            {
+              "content": "from __future__ import annotations\n\nimport hashlib\nimport json\nimport os\nimport re\nimport stat\nimport sys\nimport uuid\nfrom datetime import datetime\nfrom pathlib import Path\nfrom typing import Any\n\n",
+              "end_location": {
+                "column": 1,
+                "row": 15
+              },
+              "location": {
+                "column": 1,
+                "row": 2
+              }
+            }
+          ],
+          "message": "Organize imports"
+        },
+        "location": {
+          "column": 1,
+          "row": 2
+        },
+        "message": "Import block is un-sorted or un-formatted",
+        "name": "unsorted-imports",
+        "noqa_row": 2,
+        "severity": "error",
+        "url": "https://docs.astral.sh/ruff/rules/unsorted-imports"
+      },
+      {
+        "cell": null,
+        "code": "RUF100",
+        "end_location": {
+          "column": 76,
+          "row": 18
+        },
+        "filename": "/mnt/raid0/llm/tmp/refactor-01a16fc3/strategy-source-epoch-20261031/root/scripts/vidya/adapters/strategy_projection_report.py",
+        "fix": {
+          "applicability": "safe",
+          "edits": [
+            {
+              "content": "",
+              "end_location": {
+                "column": 76,
+                "row": 18
+              },
+              "location": {
+                "column": 62,
+                "row": 18
+              }
+            }
+          ],
+          "message": "Remove unused `noqa` directive"
+        },
+        "location": {
+          "column": 64,
+          "row": 18
+        },
+        "message": "Unused `noqa` directive (non-enabled: `E402`)",
+        "name": "unused-noqa",
+        "noqa_row": 18,
+        "severity": "error",
+        "url": "https://docs.astral.sh/ruff/rules/unused-noqa"
+      },
+      {
+        "cell": null,
+        "code": "TRY004",
+        "end_location": {
+          "column": 73,
+          "row": 180
+        },
+        "filename": "/mnt/raid0/llm/tmp/refactor-01a16fc3/strategy-source-epoch-20261031/root/scripts/vidya/adapters/strategy_projection_report.py",
+        "fix": null,
+        "location": {
+          "column": 13,
+          "row": 180
+        },
+        "message": "Prefer `TypeError` exception for invalid type",
+        "name": "type-check-without-type-error",
+        "noqa_row": 180,
+        "severity": "error",
+        "url": "https://docs.astral.sh/ruff/rules/type-check-without-type-error"
+      },
+      {
+        "cell": null,
+        "code": "SIM102",
+        "end_location": {
+          "column": 58,
+          "row": 209
+        },
+        "filename": "/mnt/raid0/llm/tmp/refactor-01a16fc3/strategy-source-epoch-20261031/root/scripts/vidya/adapters/strategy_projection_report.py",
+        "fix": {
+          "applicability": "unsafe",
+          "edits": [
+            {
+              "content": "        if row[\"state\"] == \"present\" and (not isinstance(row[\"sha256\"], str)\n                or not re.fullmatch(r\"[0-9a-f]{64}\", row[\"sha256\"])\n                or type(row[\"size\"]) is not int or row[\"size\"] < 0\n                or type(row[\"device\"]) is not int or type(row[\"inode\"]) is not int\n                or type(row[\"mtime_ns\"]) is not int):\n            raise ValueError(\"present input identity has invalid metadata\")",
+              "end_location": {
+                "column": 80,
+                "row": 210
+              },
+              "location": {
+                "column": 1,
+                "row": 204
+              }
+            }
+          ],
+          "message": "Combine `if` statements using `and`"
+        },
+        "location": {
+          "column": 9,
+          "row": 204
+        },
+        "message": "Use a single `if` statement instead of nested `if` statements",
+        "name": "collapsible-if",
+        "noqa_row": 204,
+        "severity": "error",
+        "url": "https://docs.astral.sh/ruff/rules/collapsible-if"
+      },
+      {
+        "cell": null,
+        "code": "F841",
+        "end_location": {
+          "column": 11,
+          "row": 384
+        },
+        "filename": "/mnt/raid0/llm/tmp/refactor-01a16fc3/strategy-source-epoch-20261031/root/scripts/vidya/adapters/strategy_projection_report.py",
+        "fix": {
+          "applicability": "unsafe",
+          "edits": [
+            {
+              "content": "",
+              "end_location": {
+                "column": 14,
+                "row": 384
+              },
+              "location": {
+                "column": 5,
+                "row": 384
+              }
+            }
+          ],
+          "message": "Remove assignment to unused variable `stderr`"
+        },
+        "location": {
+          "column": 5,
+          "row": 384
+        },
+        "message": "Local variable `stderr` is assigned to but never used",
+        "name": "unused-variable",
+        "noqa_row": 384,
+        "severity": "error",
+        "url": "https://docs.astral.sh/ruff/rules/unused-variable"
+      },
+      {
+        "cell": null,
+        "code": "EXE001",
+        "end_location": {
+          "column": 23,
+          "row": 1
+        },
+        "filename": "/mnt/raid0/llm/tmp/refactor-01a16fc3/strategy-source-epoch-20261031/root/scripts/vidya/producer_pins.py",
+        "fix": null,
+        "location": {
+          "column": 1,
+          "row": 1
+        },
+        "message": "Shebang is present but file is not executable",
+        "name": "shebang-not-executable",
+        "noqa_row": 27,
+        "severity": "error",
+        "url": "https://docs.astral.sh/ruff/rules/shebang-not-executable"
+      },
+      {
+        "cell": null,
+        "code": "FURB167",
+        "end_location": {
+          "column": 107,
+          "row": 258
+        },
+        "filename": "/mnt/raid0/llm/tmp/refactor-01a16fc3/strategy-source-epoch-20261031/root/scripts/vidya/producer_pins.py",
+        "fix": {
+          "applicability": "safe",
+          "edits": [
+            {
+              "content": "import re",
+              "end_location": {
+                "column": 10,
+                "row": 35
+              },
+              "location": {
+                "column": 1,
+                "row": 35
+              }
+            },
+            {
+              "content": "re.MULTILINE",
+              "end_location": {
+                "column": 107,
+                "row": 258
+              },
+              "location": {
+                "column": 103,
+                "row": 258
+              }
+            }
+          ],
+          "message": "Replace with `re.MULTILINE`"
+        },
+        "location": {
+          "column": 103,
+          "row": 258
+        },
+        "message": "Use of regular expression alias `re.M`",
+        "name": "regex-flag-alias",
+        "noqa_row": 258,
+        "severity": "error",
+        "url": "https://docs.astral.sh/ruff/rules/regex-flag-alias"
+      },
+      {
+        "cell": null,
+        "code": "FURB167",
+        "end_location": {
+          "column": 68,
+          "row": 263
+        },
+        "filename": "/mnt/raid0/llm/tmp/refactor-01a16fc3/strategy-source-epoch-20261031/root/scripts/vidya/producer_pins.py",
+        "fix": {
+          "applicability": "safe",
+          "edits": [
+            {
+              "content": "import re",
+              "end_location": {
+                "column": 10,
+                "row": 35
+              },
+              "location": {
+                "column": 1,
+                "row": 35
+              }
+            },
+            {
+              "content": "re.MULTILINE",
+              "end_location": {
+                "column": 68,
+                "row": 263
+              },
+              "location": {
+                "column": 64,
+                "row": 263
+              }
+            }
+          ],
+          "message": "Replace with `re.MULTILINE`"
+        },
+        "location": {
+          "column": 64,
+          "row": 263
+        },
+        "message": "Use of regular expression alias `re.M`",
+        "name": "regex-flag-alias",
+        "noqa_row": 263,
+        "severity": "error",
+        "url": "https://docs.astral.sh/ruff/rules/regex-flag-alias"
+      },
+      {
+        "cell": null,
+        "code": "FURB167",
+        "end_location": {
+          "column": 125,
+          "row": 325
+        },
+        "filename": "/mnt/raid0/llm/tmp/refactor-01a16fc3/strategy-source-epoch-20261031/root/scripts/vidya/producer_pins.py",
+        "fix": {
+          "applicability": "safe",
+          "edits": [
+            {
+              "content": "import re",
+              "end_location": {
+                "column": 10,
+                "row": 35
+              },
+              "location": {
+                "column": 1,
+                "row": 35
+              }
+            },
+            {
+              "content": "re.DOTALL",
+              "end_location": {
+                "column": 125,
+                "row": 325
+              },
+              "location": {
+                "column": 121,
+                "row": 325
+              }
+            }
+          ],
+          "message": "Replace with `re.DOTALL`"
+        },
+        "location": {
+          "column": 121,
+          "row": 325
+        },
+        "message": "Use of regular expression alias `re.S`",
+        "name": "regex-flag-alias",
+        "noqa_row": 325,
+        "severity": "error",
+        "url": "https://docs.astral.sh/ruff/rules/regex-flag-alias"
+      },
+      {
+        "cell": null,
+        "code": "I001",
+        "end_location": {
+          "column": 14,
+          "row": 12
+        },
+        "filename": "/mnt/raid0/llm/tmp/refactor-01a16fc3/strategy-source-epoch-20261031/root/tests/vidya/test_strategy_projection_report.py",
+        "fix": {
+          "applicability": "safe",
+          "edits": [
+            {
+              "content": "from __future__ import annotations\n\nimport hashlib\nimport json\nimport os\nimport stat\nimport sys\nimport uuid\nfrom pathlib import Path\n\nimport pytest\n\n",
+              "end_location": {
+                "column": 1,
+                "row": 14
+              },
+              "location": {
+                "column": 1,
+                "row": 2
+              }
+            }
+          ],
+          "message": "Organize imports"
+        },
+        "location": {
+          "column": 1,
+          "row": 2
+        },
+        "message": "Import block is un-sorted or un-formatted",
+        "name": "unsorted-imports",
+        "noqa_row": 2,
+        "severity": "error",
+        "url": "https://docs.astral.sh/ruff/rules/unsorted-imports"
+      },
+      {
+        "cell": null,
+        "code": "I001",
+        "end_location": {
+          "column": 54,
+          "row": 20
+        },
+        "filename": "/mnt/raid0/llm/tmp/refactor-01a16fc3/strategy-source-epoch-20261031/root/tests/vidya/test_strategy_projection_report.py",
+        "fix": {
+          "applicability": "safe",
+          "edits": [
+            {
+              "content": "import cli  # noqa: E402\nimport strategy_projection_report_capture as producer  # noqa: E402\nfrom adapters import strategy_projection_report as adapter  # noqa: E402\nfrom claim_tuple import grade  # noqa: E402\n\n",
+              "end_location": {
+                "column": 1,
+                "row": 22
+              },
+              "location": {
+                "column": 1,
+                "row": 17
+              }
+            }
+          ],
+          "message": "Organize imports"
+        },
+        "location": {
+          "column": 1,
+          "row": 17
+        },
+        "message": "Import block is un-sorted or un-formatted",
+        "name": "unsorted-imports",
+        "noqa_row": 17,
+        "severity": "error",
+        "url": "https://docs.astral.sh/ruff/rules/unsorted-imports"
+      },
+      {
+        "cell": null,
+        "code": "RUF100",
+        "end_location": {
+          "column": 25,
+          "row": 17
+        },
+        "filename": "/mnt/raid0/llm/tmp/refactor-01a16fc3/strategy-source-epoch-20261031/root/tests/vidya/test_strategy_projection_report.py",
+        "fix": {
+          "applicability": "safe",
+          "edits": [
+            {
+              "content": "",
+              "end_location": {
+                "column": 25,
+                "row": 17
+              },
+              "location": {
+                "column": 11,
+                "row": 17
+              }
+            }
+          ],
+          "message": "Remove unused `noqa` directive"
+        },
+        "location": {
+          "column": 13,
+          "row": 17
+        },
+        "message": "Unused `noqa` directive (non-enabled: `E402`)",
+        "name": "unused-noqa",
+        "noqa_row": 17,
+        "severity": "error",
+        "url": "https://docs.astral.sh/ruff/rules/unused-noqa"
+      },
+      {
+        "cell": null,
+        "code": "RUF100",
+        "end_location": {
+          "column": 73,
+          "row": 18
+        },
+        "filename": "/mnt/raid0/llm/tmp/refactor-01a16fc3/strategy-source-epoch-20261031/root/tests/vidya/test_strategy_projection_report.py",
+        "fix": {
+          "applicability": "safe",
+          "edits": [
+            {
+              "content": "",
+              "end_location": {
+                "column": 73,
+                "row": 18
+              },
+              "location": {
+                "column": 59,
+                "row": 18
+              }
+            }
+          ],
+          "message": "Remove unused `noqa` directive"
+        },
+        "location": {
+          "column": 61,
+          "row": 18
+        },
+        "message": "Unused `noqa` directive (non-enabled: `E402`)",
+        "name": "unused-noqa",
+        "noqa_row": 18,
+        "severity": "error",
+        "url": "https://docs.astral.sh/ruff/rules/unused-noqa"
+      },
+      {
+        "cell": null,
+        "code": "RUF100",
+        "end_location": {
+          "column": 44,
+          "row": 19
+        },
+        "filename": "/mnt/raid0/llm/tmp/refactor-01a16fc3/strategy-source-epoch-20261031/root/tests/vidya/test_strategy_projection_report.py",
+        "fix": {
+          "applicability": "safe",
+          "edits": [
+            {
+              "content": "",
+              "end_location": {
+                "column": 44,
+                "row": 19
+              },
+              "location": {
+                "column": 30,
+                "row": 19
+              }
+            }
+          ],
+          "message": "Remove unused `noqa` directive"
+        },
+        "location": {
+          "column": 32,
+          "row": 19
+        },
+        "message": "Unused `noqa` directive (non-enabled: `E402`)",
+        "name": "unused-noqa",
+        "noqa_row": 19,
+        "severity": "error",
+        "url": "https://docs.astral.sh/ruff/rules/unused-noqa"
+      },
+      {
+        "cell": null,
+        "code": "RUF100",
+        "end_location": {
+          "column": 68,
+          "row": 20
+        },
+        "filename": "/mnt/raid0/llm/tmp/refactor-01a16fc3/strategy-source-epoch-20261031/root/tests/vidya/test_strategy_projection_report.py",
+        "fix": {
+          "applicability": "safe",
+          "edits": [
+            {
+              "content": "",
+              "end_location": {
+                "column": 68,
+                "row": 20
+              },
+              "location": {
+                "column": 54,
+                "row": 20
+              }
+            }
+          ],
+          "message": "Remove unused `noqa` directive"
+        },
+        "location": {
+          "column": 56,
+          "row": 20
+        },
+        "message": "Unused `noqa` directive (non-enabled: `E402`)",
+        "name": "unused-noqa",
+        "noqa_row": 20,
+        "severity": "error",
+        "url": "https://docs.astral.sh/ruff/rules/unused-noqa"
+      }
+    ],
+    "counts": {
+      "EXE001:Shebang is present but file is not executable": 2,
+      "I001:Import block is un-sorted or un-formatted": 4,
+      "BLE001:Do not catch blind exception: `Exception`": 2,
+      "RUF100:Unused `noqa` directive (non-enabled: `E402`)": 5,
+      "TRY004:Prefer `TypeError` exception for invalid type": 1,
+      "SIM102:Use a single `if` statement instead of nested `if` statements": 1,
+      "F841:Local variable `stderr` is assigned to but never used": 1,
+      "FURB167:Use of regular expression alias `re.M`": 2,
+      "FURB167:Use of regular expression alias `re.S`": 1
+    }
+  },
+  "new_diagnostic_counts": {}
+}
