@@ -1,0 +1,53 @@
+{
+  "schema": "epyc.task_evidence_integrity.v1",
+  "task_id": "SERVING-RECIPE-CPU",
+  "original_task_first_line": "- [x] `serving.Recipe` CPU variant (device, cpu_list, numa, threads) \u2014 the CPU session's canonical recipe codified \u2705 2026-10-30 [no-belief: source identity/launch validation]",
+  "decision": "keep_checked",
+  "reason": "Published CPU recipe source/test contains explicit device/cpu-list/threads/NUMA policy, validation, resolved canonical launch binding and mismatch refusal. Existing published artifact binds actual source promotion; original source record73 tests is retained without a rerun. No new NUMA placement or floor claim.",
+  "implementation": [
+    {
+      "repo": "epyc-inference-research",
+      "implementation_commit": "6cf25cfab8e45e760cbe4291134b58730ae1eb70",
+      "reachable_from_published_origin_main": true,
+      "files": [
+        {
+          "path": "scripts/kernel_rnd/autokernel/loop/resolved_recipe.py",
+          "sha256": "4f841f1f01c7d8329ffe5c1be2199922d8878a7d02b1224964679309f784984a",
+          "git_url": "https://github.com/pestopoppa/epyc-inference-research/blob/6cf25cfab8e45e760cbe4291134b58730ae1eb70/scripts/kernel_rnd/autokernel/loop/resolved_recipe.py"
+        },
+        {
+          "path": "scripts/kernel_rnd/autokernel/loop/serving.py",
+          "sha256": "772177dd47012ba18b1b05621305eccb0bd15ad49d2605ed5da07b3679f6c462",
+          "git_url": "https://github.com/pestopoppa/epyc-inference-research/blob/6cf25cfab8e45e760cbe4291134b58730ae1eb70/scripts/kernel_rnd/autokernel/loop/serving.py"
+        },
+        {
+          "path": "scripts/kernel_rnd/autokernel/loop/test_cpu_serving_recipe.py",
+          "sha256": "725ff547d4787c3cdf776a7579c69b3d0126e05a3bdf543813b25f80fba89b50",
+          "git_url": "https://github.com/pestopoppa/epyc-inference-research/blob/6cf25cfab8e45e760cbe4291134b58730ae1eb70/scripts/kernel_rnd/autokernel/loop/test_cpu_serving_recipe.py"
+        }
+      ]
+    }
+  ],
+  "original_dates_preserved": true,
+  "evidence_only_hygiene_not_new_code_or_today_quota": true,
+  "no_retest_or_redate": true,
+  "prior_artifacts": [
+    {
+      "path": "/mnt/raid0/llm/worktrees/mains/codex-refactor-01a16fc3/artifacts/compute/refactor-c5-r3-and-source-closures-20261030.json",
+      "sha256": "c206646825f9e45b8c22828ee66f522ce16a1ae486dd7d0baf0f8fa5d7c95ff4",
+      "bytes": 8073
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/cpu-recipe-numa-proposal-20261030/SOURCE-PROMOTED.json",
+      "sha256": "26d4005d34678c2d4ec270676d92312c380fd026c8cad6d37c501d3230440af0",
+      "bytes": 549
+    }
+  ],
+  "test_evidence_scope": "The implementation commit includes the actual canonical CPU/NUMA validation tests. Existing source-closure artifact records73 tests; no raw log was discovered and no new execution is claimed.",
+  "task_text_and_dates_recovery": {
+    "first_line_metadata": "HTML comment only; reopened task changes checkbox only",
+    "visible_evidence": "separate delimited metadata sub-bullet after original paragraph",
+    "original_paragraph_sha256": "c1a3c5b75c5f7e6f30e5f9fe719db21e20b68b944f9596367bb4125812fc8ba0",
+    "metadata_strip_restores_original_paragraph_byte_identically": true
+  }
+}
