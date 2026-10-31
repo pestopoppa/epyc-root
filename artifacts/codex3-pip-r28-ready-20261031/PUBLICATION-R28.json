@@ -1,0 +1,15 @@
+{
+  "at": "2026-10-31T02:37:23.902371+00:00",
+  "published": {
+    "codex3-pip02-paddle-relocatable-r28-head-20261031": {
+      "manifest_sha256": "9dbb9dfb15ed7bdaf9272376e5fdd495a5766e3424293ae6fcb83051789ea098",
+      "row_sha256": "ec906092df8809c4edfb6c07c7bc045f2e79cb34ab2266bd4523c0ca5fb36b1f",
+      "launcher_sha256": "ae394dd5e671ff82ef472218c527675810f0d586b2a8ae6a68c3133a9e8e6e2f"
+    },
+    "codex3-pip02-paddle-relocatable-r28-pool0-20261031": {
+      "manifest_sha256": "a9de3bb9dd55a3f39187ab8e3708033ab7b6059bd3b93d42bc5eab83686e9d3f",
+      "row_sha256": "c822e33a0f4860debfdfcccda6a1e5dc2433140c2095a3a1e729803f9bac6d46",
+      "launcher_sha256": "828e1b9847b297550c8df2a7e9cfe23120afba2b36aed00733de736c4c57d8de"
+    }
+  }
+}

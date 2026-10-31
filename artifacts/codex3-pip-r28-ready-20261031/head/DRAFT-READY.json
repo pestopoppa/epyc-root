@@ -1,0 +1,88 @@
+{
+  "id": "codex3-pip02-paddle-relocatable-r28-head-20261031",
+  "owner": "codex3",
+  "priority_rank": 83,
+  "regions": "any-cpu-quarter",
+  "min_window_s": 1320,
+  "window_s": 32400,
+  "gib": 96,
+  "launcher": {
+    "path": "/mnt/raid0/llm/tmp/codex3-filing-pip-dtap-c6-20261031-0230/repair/head/launch-p0.sh",
+    "sha256": "ae394dd5e671ff82ef472218c527675810f0d586b2a8ae6a68c3133a9e8e6e2f"
+  },
+  "job": {
+    "path": "/mnt/raid0/llm/tmp/codex3-filing-pip-dtap-c6-20261031-0230/repair/head/launch-p0.sh",
+    "sha256": "ae394dd5e671ff82ef472218c527675810f0d586b2a8ae6a68c3133a9e8e6e2f"
+  },
+  "source_manifest": {
+    "path": "/mnt/micron/codex3-pip-head-r26-20261030/source.sha256",
+    "sha256": "1b71bee9b7cd01a7a01ddf9a3b5f8a6bce2091ce1d1327a5d189c5597c8cd465"
+  },
+  "result_path": "/mnt/micron/codex3-pip-head-r26-20261030/HEAD-DONE",
+  "decision_rule": "Continue original English head 25 pages: group starts 0 and 3 cover shards 0\u20134. Preserve original checkpoint provenance and unknown exposures; no quality verdict.",
+  "class": "diagnostic",
+  "enrollment": "n/a: diagnostic",
+  "hold": null,
+  "scratch_root": "/mnt/raid0/llm/tmp/codex3-filing-pip-dtap-c6-20261031-0230/repair/head",
+  "keep": [
+    "launch-p0.sh",
+    "pool.py",
+    "pool.diff",
+    "DRAFT-READY.json",
+    "SMOKE-q3.log",
+    "ws58-launcher.out"
+  ],
+  "est_output_GiB": 0.125,
+  "launcher_log": "/mnt/raid0/llm/tmp/codex3-filing-pip-dtap-c6-20261031-0230/repair/head/ws58-launcher.out",
+  "port": 25400,
+  "booking_class": "block-correctness",
+  "smoke": {
+    "ran_at": "2026-10-31T02:36:27.767942+00:00",
+    "regions": "R11 q3 SMT168,169 OMP1 no CPU lock",
+    "model": "canonical PaddleOCR-VL1.6 GGUF/mmproj/layout, native 8192 context/4096 output",
+    "first_request_ok": true,
+    "result_writer_ok": true,
+    "exit_ok": true,
+    "wall_s": 79.642,
+    "sampled_peak_tree_rss_bytes": 5874995200,
+    "native_rc": 75,
+    "partial": true,
+    "cleanup_verified": true,
+    "matched_native_HTTP200": 5,
+    "log": "/mnt/raid0/llm/tmp/codex3-filing-pip-dtap-c6-20261031-0230/repair/head/SMOKE-q3.log",
+    "log_sha256": "e51b1ff1de7cec2ec99920f931dcb99b62f0df0ed62546dadecb2f5d2e81691d",
+    "scope": "isolated smoke controls 807/836 only, no cohort coverage; actual normal real-grant branch untested",
+    "source_parity": "/mnt/raid0/llm/tmp/codex3-filing-pip-dtap-c6-20261031-0230/repair/CONTROL-SOURCE-PARITY.json",
+    "guard_fixture": "/mnt/raid0/llm/tmp/codex3-filing-pip-dtap-c6-20261031-0230/repair/GUARD-FIXTURE.json",
+    "stop_log": "/mnt/raid0/llm/tmp/codex3-filing-pip-dtap-c6-20261031-0230/repair/head-stop/STOP-control.log",
+    "stop_log_sha256": "a46f7a2fbf795f6dc3f339001ff0431cd6e3d8b5a301198b5faafcd2049cd7e4",
+    "stop_drained": true
+  },
+  "feasibility": "1320s minimum with native 1200s start margin and 90s engine drain; 9h requested, no minimum-window completion guarantee. RAID .125 GiB sampled reservation plus separate Micron 1 GiB reserve; both 150 GiB floors maintained; sampled overshoot is not a hard quota.",
+  "notes": "Pinned legacy binary 10125 is not production-store binary 10303; read-only original RAID and R22 checkpoint layers; capture does not add historical finish warrants.; private runtime pool identity guard bound by launcher SHA256, original full cohort and checkpoint roots retained; full normal real-grant branch remains untested; controls are not coverage.",
+  "log_consumer": "/mnt/raid0/llm/tmp/pip02-pipeline-prep-20261029/cpu_projector_witness.py",
+  "runtime_dependencies": [
+    "/mnt/raid0/llm/tmp/codex3-pip-head-r26-20261030",
+    "/mnt/micron/codex3-pip-head-r26-20261030",
+    "/mnt/micron/codex3-pip-split-r22-20261030",
+    "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029",
+    "/mnt/raid0/llm/tmp/codex3-pip02-paddle-relocatable-r13-20261030",
+    "/mnt/raid0/llm/tmp/pip02-pipeline-prep-20261029",
+    "/mnt/raid0/llm/tmp/codex3-filing-pip-dtap-c6-20261031-0230/repair/CONTROL-SOURCE-PARITY.json"
+  ],
+  "protocol": {
+    "path": "/mnt/raid0/llm/tmp/codex3-pip-head-r26-20261030/PROTOCOL.md",
+    "sha256": "be9974933703d273f65cdb174f1bdb462a2fd39debb88bf71a520e8477fba595"
+  },
+  "status": "DRAFT",
+  "output_budget": {
+    "raid_est_GiB": 0.125,
+    "raid_soft_GiB": 0.0625,
+    "micron_est_GiB": 1.0,
+    "micron_soft_GiB": 0.5,
+    "kind": "sampled; overshoot possible",
+    "native_output_root": "/mnt/micron/codex3-pip-head-r26-20261030",
+    "raid_floor_GiB": 150,
+    "micron_floor_GiB": 150
+  }
+}
