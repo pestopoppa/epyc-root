@@ -1,0 +1,16 @@
+{
+  "purpose": "noncohort synthetic fork trace engineering only",
+  "model": "Qwen3.5-0.8B-Q8_0",
+  "model_sha256": "0ad885ffd4bb022fc4f0d33a3308fa108ef8613159d3b3a67e23abca056b7a6c",
+  "model_architecture": "qwen35",
+  "regions": "q1; CPUs126,127",
+  "limit": "2 SMT, 300 seconds, 8GiB virtual per process and sampled RSS guard",
+  "arms": [
+    "trace-off",
+    "trace-on"
+  ],
+  "requests": "source plus two sibling requests per fresh server, no original cohort",
+  "rule": "record actual fork events, raw token/content parity and own library mappings; unknown if missing; no scientific gate",
+  "script_sha256": "3789eea2b58c3b1870801385ed6796b480c43f67744113e3aea9411597660a11",
+  "source_catalog_sha256": "71dc27574ea093e6748641da7135e0b9dfa1826f3c7b35eda666d0a4d47eea70"
+}

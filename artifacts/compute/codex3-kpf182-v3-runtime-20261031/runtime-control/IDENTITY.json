@@ -1,0 +1,6 @@
+{
+  "llama-server": "b582b8ba26d41fbfb4e4d2a7b2bedc76d834f05135b03d1db4e40a727cd57b4d",
+  "libllama-server-impl.so": "d10355d451f46311f27fe62dd3d231cd6ffef02aa6c1a0897de730657fd84f73",
+  "libllama.so": "5b3dbe5777e0704b7658be4f3eeefbf6d6442fffb6a2693261e2cb45c384daec",
+  "model_sha256": "0ad885ffd4bb022fc4f0d33a3308fa108ef8613159d3b3a67e23abca056b7a6c"
+}

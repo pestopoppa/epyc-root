@@ -1,0 +1,1 @@
+{"counts": {"length_finish": 1, "ok": 1, "unknown": 0}, "expected": 1, "full_task": "UNRUN", "official_scorer_fixture": "two synthetic positive/negative examples passed, kernel network denied", "partial": false, "state": "complete_engineering_only"}

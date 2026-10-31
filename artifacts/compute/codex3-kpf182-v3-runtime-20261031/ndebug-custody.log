@@ -1,0 +1,3 @@
+/mnt/raid0/llm/tmp/codex3-kpf182-component-proof-20261031/src/tests/test-kpf182-custody.cpp:2:2: error: #error KPF182 fixtures require active assertions
+    2 | #error KPF182 fixtures require active assertions
+      |  ^~~~~
