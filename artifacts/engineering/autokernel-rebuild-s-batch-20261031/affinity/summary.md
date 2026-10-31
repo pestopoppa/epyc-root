@@ -1,0 +1,15 @@
+PROPOSED — sibling-expanded INF70 serving-affinity reuse
+
+Scope: scripts/kernel_rnd/autokernel/loop/residency.py plus test_serving_foreign_affinity.py. Fresh origin/main source saved in residency.current.py. Patch affinity.patch. GitNexus actual symbols Sampler and CpuLifecycleSampler risk LOW, four upstream import edges; _non_target_activity LOW, two method edges.
+
+Uses the existing native topology reader and physical_footprint (kernel sibling partitions, no assumed +96 topology). The existing bounded identity-stable live /proc CPU-tick census gains executable locator, target observed task footprint and potential overlap. Topology/task absence stays unknown/incomplete. watch_pid on the already-existing GPU serving path attaches the same bounded collector; starts only inside the sampling window and closes with it; source evidence travels in actual serving residency export. No load threshold, classification rule, health verdict or measurement protocol changed. CPU tick activity and permissions are diagnostic potential interference, never proof of inference or placement. Contention remains unproven.
+
+Tests: actual serving._measure_once export with synthetic proc data retains 184–191 overlap against a full96core/192thread0–95 topology. Independent disjoint/idle/reuse/missingtopology/missingtarget and capture/snapshot/shutdown error controls. Existing42 CPU lifecycle/residency/HIP tests pass. Combined R23 + affinity + existing targeted suites: 63 passed,8 subtests. combined-test.log. Original source fails nine original new affinity fixtures; tenth missing-target control added after baseline.
+
+Handoff draft MAIN applies only after code push:
+Original Reuse INF-70 sibling-expanded affinity box: [x] ✅ 2026-10-31, research COMMIT plus scripts/kernel_rnd/autokernel/loop/test_serving_foreign_affinity.py (10 passed) and scratch combined-test.log. Reuses native topology/delta sampler on GPU serving residency; retains explicit unknown on incomplete capture; no new interference grading. [no-belief: software-contract-fix]
+
+Belief source update draft MAIN applies:
+Existing source row AutoKernel direct legacy serving comparisons and CPU lifecycle facts should note the additive GPU residency cpu_affinity_observation (same native facts producer); native sibling partitions, observed task permissions, /proc exe and interval tick deltas. No independent measurement reps/warrant. Add scoped follow-up under existing VB-AK-LEGACY-SERVING capture: preserve the prospective additive GPU cpu_affinity_observation as diagnostic dependency, strict reader tamper/unknown controls and planning-context canary before claiming reader wired. Do not invent another adapter/ladder. This follow-up is open, not part of closing software wiring.
+
+Progress draft: GPU serving residency now carries original bounded SMT-aware CPU activity facts, preserving unknown capture and lifecycle cleanup. Full 96-core synthetic overlap and actual serving-export fixture pass alongside42 existing tests. Research COMMIT pending. [no-belief: software-contract-fix]

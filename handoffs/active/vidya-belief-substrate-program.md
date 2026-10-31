@@ -984,6 +984,7 @@ between plan and apply, so this wave takes the next free block, SC65–SC68.*
     its explicit corpus ingestion at the owning run boundary.** Do not reload the current
     trial or invent historical carriers as a documentation action. Retain the real source
     reference, import report and observation-only grade; this does not qualify hardware gates.
+    Extend the existing reader coverage for prospective GPU serving residency `cpu_affinity_observation`: preserve the original native topology, observed target task permissions, `/proc` executable locator, identity-stable interval CPU ticks, potential physical overlap, and explicit unknown/incomplete outcomes; exercise tamper/unknown controls and the planning-context canary before calling the read side wired. Keep this in the existing legacy-serving family and `ClaimTuple.grade()` ladder; no new grade or historical warrant. Producer: research `37dcdcd53f4cfbb27dd80564d5fc4bf407a0c566`.
   - [x] **VB-AK-LEGACY-SERVING-FEEDBACK — connect original direct-serving observation rows
     to an appropriate planner read-feedback path.** ✅ 2026-09-10 — Research source
     `8360d3e1` / main `ba5abca4` installs one synchronous bridge in the existing loop.
