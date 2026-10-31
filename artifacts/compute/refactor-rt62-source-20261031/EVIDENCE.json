@@ -1,0 +1,28 @@
+{
+  "task": "RT-6.2",
+  "root_base": "d735d5d2deae8fcfeb26b13346cf2be3b65c8cf1",
+  "original_task_paragraph_sha256": "d9d0ef49f03e0c15c0bf6ad2d139bf5acc3412a3938421567dc0c19d69a1d013",
+  "original_task_text_recovery_byte_identical": true,
+  "research_source_commit": "d5e400c9010a671a0ab4ca912e4e6f9abc1ac1d3",
+  "research_main_commit": "3bbeac0a1d916b6ee703abebdb48297cd77c1e2f",
+  "published_tests": "scripts/benchmark/moe_routing/test_calibration_lag_replay.py",
+  "published_artifacts": [
+    "data/moe-routing-rt62-lag-20261031/SOURCE-AUDIT-AND-READOUT.json",
+    "data/moe-routing-rt62-lag-20261031/UPSTREAM-DIFFERENCE.json",
+    "data/moe-routing-rt62-lag-20261031/TESTS.log"
+  ],
+  "source_publication_receipt_sha256": "30f2748dc10bb3499bd7121205c01748d544190387a4b253c14b6a339cb5059d",
+  "raw_recorded_report_sha256": "ecfc56bb4651b4c4b7d41cc4b42e4dc62688cef3ca1afec7eade4ba06358cbf6",
+  "qualification": {
+    "numpy_controls": 9,
+    "separate_upstream_CPU_controls": 11,
+    "ruff": 0,
+    "full_recorded_sweep": "48layers,3domains,T1,B4,H1/4/16,lag0/1/8,8pairedtargets/cell"
+  },
+  "scope": "source diagnostic/audit only; no exact fidelity, causal workload effect, inference or grade",
+  "open_parents": [
+    "RT-6",
+    "RT-10"
+  ],
+  "belief_projection": "VB-RT62-LAG-PROJECTION remains pending, no new ladder/historical warrant"
+}
