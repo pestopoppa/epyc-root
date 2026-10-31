@@ -1,0 +1,3 @@
+[
+  {"task_key":"qualification-arith-1","prompt":"Compute 17 * 23 and give only the number.","expect":"\\b391\\b"}
+]

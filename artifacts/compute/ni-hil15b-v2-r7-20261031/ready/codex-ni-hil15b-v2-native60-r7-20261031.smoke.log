@@ -1,0 +1,128 @@
+R7 original native single-process entry qualification; noncohort arithmetic only.
+
+[entry]
+server 1282968 dead verified
+
+[native]
+Lock hold watchdog: force-releasing after 130s (role=frontdoor, mode=exclusive, request=n/a, lock=/mnt/raid0/llm/tmp/codex-ni-hil15b-v2-inference-prep-20261031/qualification-native-r7/native/tmp/heavy_model.lock, pid=1283577)
+Inference lock was force-released by watchdog after 231.9s (role=frontdoor, request=n/a)
+{
+ "verdict": "OK",
+ "join": {
+  "step_bearing_runs": 1,
+  "joined_outcome": 1,
+  "task_runs": 1
+ },
+ "label_classes": [
+  "True"
+ ]
+}
+
+[client feature]
+content_cache=False
+
+[linkage]
+binary : /mnt/raid0/llm/kernels/production/cpu/llama-server
+expect : libraries under /mnt/raid0/llm/kernels/production/cpu
+         (resolves to /mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin)
+
+  OK   libllama-server-impl.so      -> /mnt/raid0/llm/kernels/production/cpu/libllama-server-impl.so
+  OK   libllama-common.so.0         -> /mnt/raid0/llm/kernels/production/cpu/libllama-common.so.0
+  OK   libmtmd.so.0                 -> /mnt/raid0/llm/kernels/production/cpu/libmtmd.so.0
+  OK   libllama.so.0                -> /mnt/raid0/llm/kernels/production/cpu/libllama.so.0
+  OK   libggml.so.0                 -> /mnt/raid0/llm/kernels/production/cpu/libggml.so.0
+  OK   libggml-base.so.0            -> /mnt/raid0/llm/kernels/production/cpu/libggml-base.so.0
+  OK   libggml-cpu.so.0             -> /mnt/raid0/llm/kernels/production/cpu/libggml-cpu.so.0
+
+LD_LIBRARY_PATH order as the loader sees it:
+         1	/mnt/raid0/llm/kernels/production/cpu
+
+PASS: all linked ggml libraries resolve inside /mnt/raid0/llm/kernels/production/cpu
+NOTE: ggml backends (ggml-hip, ggml-cpu-<arch>) are dlopened at RUNTIME and
+      are not covered by ldd. Confirm the intended device appears in the
+      program's own startup log (e.g. 'Device 0: AMD Instinct MI210') and
+      do not trust a 'use gpu = 1' flag alone — that flag reports what was
+      REQUESTED, not what was loaded.
+
+[native argv]
+[
+  "/workspace/repos/epyc-orchestrator/.venv/bin/python",
+  "/mnt/raid0/llm/tmp/codex-ni-hil15b-v2-inference-prep-20261031/native_driver_entry.py",
+  "qualification",
+  "/mnt/raid0/llm/tmp/codex-ni-hil15b-v2-inference-prep-20261031/qualification-native-r7/native-attempts.jsonl",
+  "--",
+  "--out-dir",
+  "/mnt/raid0/llm/tmp/codex-ni-hil15b-v2-inference-prep-20261031/qualification-native-r7/native",
+  "--tasks",
+  "/mnt/raid0/llm/tmp/codex-ni-hil15b-v2-inference-prep-20261031/qualification_tasks.json",
+  "--repeats",
+  "1",
+  "--max-wall-s",
+  "240",
+  "--min-task-keys",
+  "1",
+  "--min-dep-task-keys",
+  "1",
+  "--server-url",
+  "http://127.0.0.1:18983",
+  "--server-pid",
+  "1282968",
+  "--served-model",
+  "/mnt/raid0/llm/models/Qwen3.6-35B-A3B-MTP-Q8_0.gguf",
+  "--epyc-root",
+  "/mnt/raid0/llm/tmp/codex-ni-ap-legacy-status-wrap-20261030",
+  "--belief-sidecar",
+  "--run-id",
+  "hil15b-v2-qualification"
+]
+
+[native result]
+{
+  "schema": "hil15b_v2_qualification/v1",
+  "scope": "noncohort; no HIL15b quality claim",
+  "entry_rc": 0,
+  "native_verdict": "OK",
+  "first_request_ok": true,
+  "result_writer_ok": true,
+  "exit_ok": true,
+  "wall_s": 236.71927666664124,
+  "reason": "native exited",
+  "partial": false
+}
+
+[native attempt ledger]
+{"at_epoch": 1793469484.633453, "event": "intent", "run_id": "qualification-arith-1-r0"}
+{"at_epoch": 1793469717.2550688, "event": "returned", "run_id": "qualification-arith-1-r0"}
+
+[native summary]
+{
+  "verdict": "OK",
+  "mock": false,
+  "join": {
+    "step_bearing_runs": 1,
+    "joined_outcome": 1,
+    "task_runs": 1
+  },
+  "runs": [
+    {
+      "run_id": "qualification-arith-1-r0",
+      "task_key": "qualification-arith-1",
+      "pass": true,
+      "answer": "391",
+      "error": null,
+      "wall_s": 232.631
+    }
+  ],
+  "l2_scan": {
+    "rc": 0,
+    "stderr": "step-bearing runs: 1 (1 with a joined outcome)\n",
+    "sidecar": "/mnt/raid0/llm/tmp/codex-ni-hil15b-v2-inference-prep-20261031/qualification-native-r7/native/l2_report.json.beliefs.jsonl",
+    "sidecar_skipped": null
+  },
+  "replay_verify": {
+    "qualification-arith-1-r0": {
+      "rc": 0,
+      "tail": "clean"
+    }
+  }
+}

@@ -1,0 +1,38 @@
+HIL-15b v2 frozen candidate inputs, 2026-10-25. UNMEASURED empirical difficulty.
+20 tasks; 16 calibration and four heldout. These are the accepted generation-a bytes,
+not regenerated to a new output directory. The deliberate operational file-I/O asset
+root embedded in prompts is:
+/mnt/raid0/llm/tmp/codex-ni-20261025-ufh08/generation-a/task-files/
+This is the owning Codex session's future scratch I/O directory; file_write_safe creates
+parents and writes task JSON, peek reads it. Do not delete/reuse this directory for
+unrelated tasks before the sole future live rerun. Repository copies here are durable
+frozen task/input/answer-warrant assets; deployed taskset can be read from this tracked
+location while retaining exact prompt bytes and digest. Relocating prompt paths or
+changing any task contract requires new hashes and review before live use.
+
+Taskset sha256 0089c2a840bc40367433de754424b17ad9a5edca954b312513e6ecaa0abd4312
+Heldout sha256 a3f25ec7514fbd0d851bf5cf0818c885b6dcdff13fe8e5e76b1e66277bfc9849
+Calibration sha256 28ca4ff22f76bd3388d51a13fafea7556f7d12bd51b5f1c0496cc5476e8a42d6
+Generator approved source sha256 be0907a29cf26b7b66b0553c07e5eb8a9bf5788dd25cedb487cd911b4a158970
+Independent verifier sha256 1b6cc6968fa29b562f5461077f81d6a7fd1fa416256804f2ec19f2b1cca1bd4e
+Native driver is canonical orchestrator main49c1f749014d5290367413f2898d4e37e2bd1016,
+repository scripts/trace/hil15a_flagon_run.py, SHA256
+75abff0842a550051b3a25f3bf079a505044120a9ee57e80cc08ef2661bb4c63.
+No driver, grading rules, prior tasksets, model serving or detector definitions change.
+Answer grading follows declared exact-final-only regex; tool conformance is separate.
+
+Already passed TMP model-free validation (not empirical/model efficacy):
+20 answers independently recomputed from exact prompt inputs; twice-generation
+path-normalized equality; disjoint16/4; five semantic fixtures; native loader/grade
+positive and negative cases; actual no-registry REPL file_write_safe/peek I/O;
+40/40 mock trace/outcome joins and40 clean replay verifications. Frozen warrants'
+UNVALIDATED_NOT_EMPIRICAL field is generator-time state, not a model-run verdict.
+Source receipts are preserved in the owning scratch directory, with exact log hashes
+in PREFLIGHT-RECEIPTS.txt. No re-generation or mock rerun needed for publication.
+
+Exactly ONE future live rerun:20 frozen tasks x3 repeats=60 attempts. Heldout labels
+are never used for task selection/tuning. Report calibration, heldout and total;
+n=3 per-task estimates are coarse (1/3 or2/3 inside30-70%). A band miss or too few
+variance tasks stays a miss. No adaptive rerun, empirical hardness assertion,
+protocol-as-answer-success conflation, or retrospective regrade is authorized.
+Existing hil15a_auc/L2/replay/spectrum write-side adapters and grading ladder only.

@@ -1,0 +1,21 @@
+{
+  "scope": "model-free fake native child; no request",
+  "rc": 75,
+  "state": {
+    "frozen_total": 60,
+    "complete": 0,
+    "exposed_incomplete_unknown": 1,
+    "unexposed": 59,
+    "full_result": false,
+    "terminal_exposure_complete": false,
+    "partial": true,
+    "state": "resumable_window_partial"
+  },
+  "declared_result_path_exists": true,
+  "kills": [
+    [
+      99999991,
+      15
+    ]
+  ]
+}

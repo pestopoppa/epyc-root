@@ -1,0 +1,7 @@
+{
+  "native_driver_sha256": "75abff0842a550051b3a25f3bf079a505044120a9ee57e80cc08ef2661bb4c63",
+  "main_live_deps_call_sites": 1,
+  "main_run_all_call_sites": 1,
+  "live_deps_LLMPrimitives_call_sites": 1,
+  "run_all_loop_source": "for i in range(repeats):"
+}

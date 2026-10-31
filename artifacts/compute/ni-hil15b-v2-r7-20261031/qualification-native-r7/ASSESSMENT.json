@@ -1,0 +1,12 @@
+{
+  "schema": "hil15b_v2_qualification/v1",
+  "scope": "noncohort; no HIL15b quality claim",
+  "entry_rc": 0,
+  "native_verdict": "OK",
+  "first_request_ok": true,
+  "result_writer_ok": true,
+  "exit_ok": true,
+  "wall_s": 236.71927666664124,
+  "reason": "native exited",
+  "partial": false
+}

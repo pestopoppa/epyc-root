@@ -1,0 +1,20 @@
+{
+  "repo": "/mnt/raid0/llm/worktrees/mains/codex-ni-orchestrator",
+  "origin_commit": "0d01dc94c2942fb3f9f60bde319a1557df67ee33",
+  "functional_git_trees": {
+    "src/graph": "779d9f109ad86072c877730a3588b72ab6aa5f55",
+    "src/trace": "190283a902b1034c5152175b6fe387a48bfd3151",
+    "src/repl_environment": "a814ba9c2e08d763ce262d4a27dba809a2bd603e",
+    "src/llm_primitives": "422e71eeff1c91f9c9e286d548af59c3987c3960",
+    "src/config": "48ddae1d8c2ecea77dda23ce668fda88da0d35b3",
+    "src/tools": "b689fd2343f9a9b8853334ebb0a3016acd3696fb",
+    "scripts/trace": "18f5b91e66e44d7ab61a6f7ecd172745e1bda704",
+    "scripts/lib": "6f77bfd3beb71797e19b5db44e38908c6c58662c",
+    "orchestration": "af6209a4c477c303de593d0226386df0736fbd48",
+    "config": "3da19b256eb3272aed01de8ddc9eeab5fdcd1423",
+    "src/features.py": "ed872b6c7e86c6117c3efb606bb77f47fc44f3ab",
+    "src/runtime_flag_spec.py": "aa4018961a68f3dec43d85b05a2dd832db62684b",
+    "src/backends": "6bc14f7bd6c571b997bf75b380288a7bf239734c",
+    "src/llm_cache.py": "d3991077c08fc859d807e108b47ccfcfd7235ac4"
+  }
+}

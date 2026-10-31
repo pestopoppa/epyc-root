@@ -1,0 +1,2 @@
+{"event_type": "task_started", "task_id": "qualification-arith-1-r0"}
+{"event_type": "task_completed", "task_id": "qualification-arith-1-r0", "outcome_details": "232.631s", "data": {"producer_role": "frontdoor"}}

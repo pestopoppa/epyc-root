@@ -1,0 +1,71 @@
+{
+ "schema": "hil15a_flagon_run/v1",
+ "mock": false,
+ "hashseed": "pinned",
+ "flags": [
+  "ORCHESTRATOR_OBSERVED_DEPENDENCY_LOGGING",
+  "ORCHESTRATOR_STEP_EVENT_LOGGING",
+  "ORCHESTRATOR_REPLAY_RECORDING"
+ ],
+ "reasoning_retry": "disabled via ORCHESTRATOR_REASONING_LENGTH_ALARM",
+ "started": "2026-10-31T17:58:03Z",
+ "served_model": "/mnt/raid0/llm/models/Qwen3.6-35B-A3B-MTP-Q8_0.gguf",
+ "server_port": 18983,
+ "server_pid": 1282968,
+ "paths": {
+  "tmp_dir": "/mnt/raid0/llm/tmp/codex-ni-hil15b-v2-inference-prep-20261031/qualification-native-r7/native/tmp",
+  "spill_dir": "/mnt/raid0/llm/tmp/codex-ni-hil15b-v2-inference-prep-20261031/qualification-native-r7/native/spill",
+  "cas_dir": "/mnt/raid0/llm/tmp/codex-ni-hil15b-v2-inference-prep-20261031/qualification-native-r7/native/cas",
+  "db": "/mnt/raid0/llm/tmp/codex-ni-hil15b-v2-inference-prep-20261031/qualification-native-r7/native/events.sqlite"
+ },
+ "runs": [
+  {
+   "run_id": "qualification-arith-1-r0",
+   "task_key": "qualification-arith-1",
+   "pass": true,
+   "answer": "391",
+   "error": null,
+   "wall_s": 232.631
+  }
+ ],
+ "label_classes": [
+  "True"
+ ],
+ "warnings": [
+  "single-class labels: auc_table will be 'insufficient'; use a harder --tasks set so some runs fail",
+  "dependency coverage too thin for the AUC: {'runs_with_dependency': 0, 'task_keys': 0, 'label_classes': 0} (need >= 1 task keys and 2 label classes among tool-using runs; use tool-requiring --tasks)"
+ ],
+ "join": {
+  "step_bearing_runs": 1,
+  "joined_outcome": 1,
+  "task_runs": 1
+ },
+ "l2_scan": {
+  "rc": 0,
+  "stderr": "step-bearing runs: 1 (1 with a joined outcome)\n",
+  "sidecar": "/mnt/raid0/llm/tmp/codex-ni-hil15b-v2-inference-prep-20261031/qualification-native-r7/native/l2_report.json.beliefs.jsonl",
+  "sidecar_skipped": null
+ },
+ "auc_table": {
+  "status": "insufficient",
+  "n_runs": 0,
+  "n_tasks": 0
+ },
+ "auc_sidecar": {
+  "path": null,
+  "skipped": "CaptureError: refusing: auc_table has no AUCs (status='insufficient')"
+ },
+ "dep_coverage": {
+  "runs_with_dependency": 0,
+  "task_keys": 0,
+  "label_classes": 0
+ },
+ "replay_verify": {
+  "qualification-arith-1-r0": {
+   "rc": 0,
+   "tail": "clean"
+  }
+ },
+ "verdict": "OK",
+ "finished": "2026-10-31T18:01:59Z"
+}

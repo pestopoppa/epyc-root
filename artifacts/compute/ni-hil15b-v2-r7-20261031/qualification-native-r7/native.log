@@ -1,0 +1,13 @@
+Lock hold watchdog: force-releasing after 130s (role=frontdoor, mode=exclusive, request=n/a, lock=/mnt/raid0/llm/tmp/codex-ni-hil15b-v2-inference-prep-20261031/qualification-native-r7/native/tmp/heavy_model.lock, pid=1283577)
+Inference lock was force-released by watchdog after 231.9s (role=frontdoor, request=n/a)
+{
+ "verdict": "OK",
+ "join": {
+  "step_bearing_runs": 1,
+  "joined_outcome": 1,
+  "task_runs": 1
+ },
+ "label_classes": [
+  "True"
+ ]
+}
