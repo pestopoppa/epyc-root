@@ -1,0 +1,11 @@
+# HPR R5 continuation audit — 2026-10-31
+
+Status: native six-cell attempt remains PARTIAL; no READY successor is justified from this packet.
+
+The original handoff (`handoffs/active/kv-unified-stack-rollout.md`, 2026-10-31 R5 bounded partial) requires the exposed last request to retain its custody and any continuation to follow the original no-redraw policy. The host Micron run `results/run-20261030T180907Z-1945028` has five OK cell rows and 35 complete request, native-capture and wire rows. `WORK-RESULT.json` records 36 attempted / 35 completed, rc1 with no policy verdict. The outer `result.json` records rc75/partial and verified captured-process cleanup after `FILLER_DEADLINE_EXCEEDED`; `watch-result.json` reports native rc -9. The last coarse w2 server log shows task 116 still processing a prompt (progress 0.87) before shutdown. Its cell directory has log, PID and ownership/readiness/cleanup records, but no saved KV or slot state or final response for task 116. That request's result is UNKNOWN.
+
+Current `full_run.py` requires a fresh output directory and exactly six complete cell rows. `driver/kvu_ckpt_arms.py:done_keys()` skips only whole OK cells; it cannot restore the server state inside coarse w2. A fresh attempt would expose task 116 again and replay the five preceding coarse w2 requests. Such work is a new attempt, not continuation of the original 36th request; its results cannot be silently appended to the original cohort. Do not rearm the old R5 launcher or turn this partial into a six-cell decision.
+
+The keeper's R5 rearm separately refused because the FILLERS notes declare directory-wide `keep_globs` such as `driver/**`, `engine/**`, `smoke/**`, `state/**`, `review-evidence/**`, `agent-logs/**` and `entry-refusals/**`; `scripts/coordination/validate_fillers.py:290` requires evidence-file globs. Correcting that row syntax is source/queue hygiene only. It cannot recover the missing native response or server state, so a validator-only repair must not be published as a READY inference successor.
+
+Read-only host access used `sudo -n chroot /proc/1/root` to inspect the original Micron files. No file in the native run was changed and no new HPR request was launched.

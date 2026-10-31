@@ -478,6 +478,8 @@ YaRN 128K MI210 R1's original 05:26:22Z grant ended rc1 at `live grant/GPU/disk 
 
 ### JetLong paired diagnostic — 2026-10-31 08:05 UTC
 
+2026-10-31 source/binary audit correction: the unchanged 130000-token request received HTTP 400 with a 32768-token slot cap; no completed long-context inference occurred and J was not attempted. The manifest claims source `e6ea79421`, but the server reported version 10308 (`ebbf9ad0c`) and server/implementation mtimes at 21:24Z predate the source commit at 21:40Z. This mismatch leaves source identity UNKNOWN/unverified; it does not prove that a fix was absent from the invoked binary. No source/build/model edit or READY publication occurred. [Durable audit and experimental repair proposal](../../artifacts/ni/cpu-prep-audit-20261031/README.md); original proposal SHA-256 `12ee6e5b4c00bd9439d2acc80448e396310d748599800d2681f6cf9e6d316e32`. The prior report is retained as history with this dated correction. [belief: cc]
+
 `codex-ni-jetlong-small4x-paired-20261030` ended rc 1: **FAILED-RUN, class harness**. The Y server requested 131072 context but capped its slot at 32768, and rejected the 130000-token prompt with HTTP 400. Its slot reported zero processed tokens; J was not attempted. Cleanup was verified. This is an operational failure, not zero recall or a historical comparison. Owner action: repair and validate the native context setup before a source-bound successor, preserving exposure and original fixture custody. [Native result and server evidence](../../artifacts/compute/codex3-allowner-native-0805-20261031/jetlong/). [belief: cc]
 
 

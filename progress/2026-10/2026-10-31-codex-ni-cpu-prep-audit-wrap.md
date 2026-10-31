@@ -1,0 +1,13 @@
+# NI CPU preparation audit wrap — 2026-10-31
+
+Filed six bounded CPU-preparation audit outcomes in [`artifacts/ni/cpu-prep-audit-20261031/README.md`](../../artifacts/ni/cpu-prep-audit-20261031/README.md), preserving the small HPR/JetLong audit inputs and INF-12 watcher custody receipt with their original source paths and SHA-256 values.
+
+INF-50 r14's native-graph audit and GNX's MAIN-accepted required 37/37 raw native proof remain scoped; GNX's separate R4 outer harness failure does not revoke the accepted raw proof. DF2 recovery r3 completed its retained-artifact/native CPU diagnostic, not DF2-20 or kernel promotion. Parakeet CS-8.STT0 is the accepted 40/40 fixed-corpus transcript identity result, not a quality or performance claim. Existing source records remain authoritative; no completion checkbox was changed here.
+
+HPR R5 attempted 36 requests and completed 35. Request 116 was still in prefill at observed progress 0.87 before server SIGKILL; there is no saved KV/slot state or final response. It remains UNKNOWN. Whole-cell replay would expose it again and repeat five preceding coarse-w2 requests, violating original no-redraw. This wrap authorizes no continuation or new attempt; no READY was published.
+
+JetLong small4x returned HTTP 400 at a 32768 slot cap for the unchanged 130000-token request. There was no completed long-context inference and J was not attempted. The `e6ea79421` manifest source claim conflicts with reported version 10308 (`ebbf9ad0c`) and binary/DSO timestamps preceding the claimed commit; source identity is UNKNOWN/unverified, not proof that a fix was absent. No source/build/model edit or READY publication occurred.
+
+The INF-12 r13 refresh watcher's expected status/log were absent at 15:55Z and no matching watcher process was live; its outcome was UNKNOWN/unavailable at that check. The later detached-custody receipt records PID 4100975, start ticks 158485921, source SHA-256 `93fb734a6231c6caf23eab1f3970641f44e63a9350d512a2fc9ce09cabb3a439`, and deadline 16:59:45Z, with no smoke outcome claimed. I neither touched nor reran the watcher. The coordinator daemon PID 3327121 was absent at bus drain; 0 owed rows were reported. README freshness emitted no warnings; Vidya sync check was fresh through intake-2544 with lag 0. [belief: cc]
+
+In this reporting cut, MAIN separately applied the original per-instance-slots completion in `handoffs/active/autopilot-continuous-optimization.md`: APP source `eda654775ddac4a7bec41b36563d7e4860cd895d`, 502 corrected-suite tests passed, default cache covered 16 roles with 0 differences, evidence capsule `artifacts/audit/ni-instance-slots-20261031/verification.md`. This is one MAIN-owned completion tick; the CPU preparation audit adds zero ticks and zero READY publications.
