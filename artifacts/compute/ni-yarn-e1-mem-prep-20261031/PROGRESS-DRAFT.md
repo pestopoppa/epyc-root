@@ -1,0 +1,3 @@
+### NI GPU readiness: YARN-E1-MEM (2026-10-31 16:50Z)
+
+Audited S-tier GPU candidates before prep: PB-QCOST confirm-q already ARMED; GPU-LEAK-1e and YARN-DCA-XDEV attribution GPU complete; GPS-PIN-2a rides another run; INF-12 refresh owned by its watcher; AK and ZOS owned/excluded. Claimed the still-open YARN-E1-MEM instrumentation parent, prepared the exact historical E1/W GPU phase-replay path, and passed a real 27B GPU smoke after fixing the slot-save directory preflight. READY and ARMED as `codex-ni-yarn-e1-mem-phase-r1-20261031` at 16:49:48Z, validator 0 refusals/0 row warnings, poller PID 484062. Evidence and handoff draft: `/mnt/raid0/llm/tmp/codex-ni-next-gpu-prep-20261031/`. No full memory attribution or adoption claim. [no-belief: admission smoke only]

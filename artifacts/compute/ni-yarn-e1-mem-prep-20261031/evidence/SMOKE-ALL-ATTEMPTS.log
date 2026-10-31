@@ -1,0 +1,16 @@
+[2026-10-31T16:48:05Z] exclusive attempt
+[region-lock] acquiring gpu-quiet exclusive as role='bench' (timeout_s=1.0) …
+[region-lock] held gpu-quiet exclusive + regions [] after 0.0s wait; running: taskset -c 184,185 /bin/bash /mnt/raid0/llm/tmp/codex-ni-next-gpu-prep-20261031/launch.sh --smoke
+Traceback (most recent call last):
+  File "/mnt/raid0/llm/tmp/codex-ni-next-gpu-prep-20261031/run.py", line 266, in <module>
+    raise SystemExit(main())
+                     ~~~~^^
+  File "/mnt/raid0/llm/tmp/codex-ni-next-gpu-prep-20261031/run.py", line 227, in main
+    return run_step('E1', 'A0', 'low', 'smoke', min(a.deadline, time.time() + 270))
+  File "/mnt/raid0/llm/tmp/codex-ni-next-gpu-prep-20261031/run.py", line 154, in run_step
+    assert health() and (KFD / str(p.pid)).is_dir(), 'native GPU load/residency failed'
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: native GPU load/residency failed
+[2026-10-31T16:48:27Z] exclusive attempt
+[region-lock] acquiring gpu-quiet exclusive as role='bench' (timeout_s=1.0) …
+[region-lock] held gpu-quiet exclusive + regions [] after 0.0s wait; running: taskset -c 184,185 /bin/bash /mnt/raid0/llm/tmp/codex-ni-next-gpu-prep-20261031/launch.sh --smoke

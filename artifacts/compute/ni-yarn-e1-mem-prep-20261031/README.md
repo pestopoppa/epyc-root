@@ -1,0 +1,9 @@
+# NI YARN-E1-MEM GPU readiness transfer (2026-10-31)
+
+This directory is a small archival copy for the ROOT owning session to add under `artifacts/compute/ni-yarn-e1-mem-prep-20261031/`. The live launcher, poller, scratch outputs, and READY manifest remain at their absolute paths; this copy is not a runnable checkout. No weights are included.
+
+The operator loop accepted the native GPU-only diagnostic after a real first `/completion` request. `evidence/ARMED-MANIFEST.json` and `evidence/ARMED-ROW.md` snapshot the keeper-armed row. `evidence/SMOKE-PASS.log`, `SMOKE-RECEIPT.json`, `out/E1-A0-low/{runtime-proof.json,smoke-result.json,launch.json}`, and `evidence/KFD-SMOKE-SUMMARY.json` show the successful 27B load, image-local ggml libraries, own-PID KFD VRAM, writer, and verified cleanup. `evidence/LOG-HASHES.txt` pins retained live logs without copying large traces. `evidence/VALIDATOR.txt` records row validation. `SMOKE-RECEIPT-r1.json`, `WATCHER-RECEIPT-r1.json`, `FAILED-r1.flag`, and `evidence/SMOKE-ALL-ATTEMPTS.log` retain the first slot-directory refusal. `CUTOFF-TEST-PARTIAL.json` retains the model-free rc75/partial writer check.
+
+`SOURCE.sha256` validates copied launcher, runner, analyzer, helper, shim, and original E1 input manifest bytes. `inputs/manifest.json` is copied; the original E1 inputs remain at `/mnt/raid0/llm/tmp/yarn-e1-20261004/inputs/`. The model stays at `/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf`; its first/last 64 MiB plus size edge hash is in `out/E1-A0-low/launch.json`. The two historical GPU images remain in the kernel store. No production kernel or source tree was changed.
+
+`HANDOFF-DRAFT.md`, `PROGRESS-DRAFT.md`, and `BELIEF-WIRING-DRAFT.md` are proposed semantic text for the owning ROOT session. The full experiment has not run or produced a verdict. The live `out/RESULT.json` is absent until a keeper grant executes the native job; the task remains open.

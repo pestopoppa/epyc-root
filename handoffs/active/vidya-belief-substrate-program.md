@@ -72,6 +72,9 @@ Nothing was deleted: the siblings are the evidence record for every gate this pr
 
 ### Open work — start here
 
+- [ ] **VB-YARN-E1-MEM-PHASE-WIRE — prospectively wire the historical E1/W phase-replay producer.** Preserve native image/model/input pins, exact arm/phase, own-PID KFD and HIP allocation records, process/source identity and incomplete attempts at record creation, and project through the existing measurement ClaimTuple contract without a new grade. Original records lacking native claim context stay ungraded; admission smoke cannot mint a measurement tuple. Prove the planning-context canary before calling this source wired. Producer: `/mnt/raid0/llm/tmp/codex-ni-next-gpu-prep-20261031/run.py`; retained preparation source: `artifacts/compute/ni-yarn-e1-mem-prep-20261031/`.
+- [ ] **VB-LOOP25-DISK-FORECAST-WIRE — wire prospective disk-forecast measurements if LOOP-25 is adopted.** Preserve native UTC capture, target/device identity, free bytes, deduplicated READY/ARMED reservations, selected history/window/rate, projection, floor and UNKNOWN reasons with source/input digests. Use the existing measurement ClaimTuple contract and planning-context canary; no historical backfill, new class, new grading rule or invented warrant. This follow-up is separate from and not a prerequisite for owner deployment or the alarm. Candidate: `artifacts/ni/loop25-disk-forecast-20261031/`.
+
 - [ ] **USAGE-PROV-1 write-side enrollment** — project prospective `epyc.request_call_usage.v1`
       begin/settled records from the configured `usage_provenance.jsonl` stream through the existing
       ClaimTuple contract. Verify self-hashes, request/call/parent and backend-record joins, process

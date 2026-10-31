@@ -1,0 +1,5 @@
+# YARN-E1-MEM belief wiring draft for owning session
+
+Source-table row for `scripts/vidya/adapters/README.md`: YARN-E1-MEM phase replay (`codex-ni-yarn-e1-mem-phase-r1-20261031`) is a GPU diagnostic source. Native records: `out/<image>-<arm>-<phase>/native/<arm>/<timestamp>/report.json` and `calls.jsonl`, own-PID `kfd.jsonl`, `hipmalloc.jsonl`, `runtime-proof.json`, image/edge pins. A future adapter projects the observed per-phase own-PID peak and allocated-byte deltas with the original run's provenance as an OBSERVATION; no decision grade from the admission smoke or historical comparison alone.
+
+Task for `handoffs/active/vidya-belief-substrate-program.md`: Wire the YARN-E1-MEM native phase-replay writer at record creation, preserve image SHA, model edge/size pin, arm, phase, own-PID KFD samples, shim trace, launch identity, and original E1 input hash; prove the planning-context canary before calling the loop wired. The diagnostic smoke is qualification only and may not mint a measurement tuple.

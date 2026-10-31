@@ -627,3 +627,10 @@ The HIL-15b difficulty/pass-band, dependency efficacy, HIL-16a and HIL-18a paren
 ### Retained launcher qualification checkpoints — 2026-10-31
 
 - [x] **HIL15 S2 real engine dispatch repair** — R13 PID-handshake qualification preceded its retained actual rc64 dispatch failure; R14 fixes the real `--job` entry and passed native normal/activeSTOP75, writer/consumer and drain before publication. Preserve18known/2unknown/25unexposed of45; original collection/quality parents remain open. ✅ 2026-10-31 [Proof](../../artifacts/compute/refactor-hil15-s2-r14-dispatch-20261031.json). [no-belief: launcher repair and preparation only]
+
+
+### 2026-10-31 HIL15b v2 source publication
+
+- [x] **UFH08-HIL15B-V2-SOURCE — preserve immutable receipt bytes in trackable txt fixture names and publish reviewed source.** ✅ 2026-10-31 — orchestrator implementation `fe7a0b7bb1cb7423905f90e1aa72eb152d3b43d8`, proof/progress `0c4833bc3b0a38275e0b41433f9be68d6cf9b11f`; evidence: orchestrator `artifacts/hil/hil15b-v2-20261025/`, `tests/unit/test_hil15b_v2_assets.py`, and `progress/2026-10/2026-10-31-hil15b-v2-source-publication.md`. All 13 reviewed paths are on main; three `.log.txt` receipts retain original bytes. Current native loader/grader tests: 3 passed; independent validator: 20 comparisons plus 5 semantic fixtures; normal gates passed. Frozen taskset SHA `0089c2a840bc40367433de754424b17ad9a5edca954b312513e6ecaa0abd4312`. The source assets/old mock receipts date from October 25; this records publication, not a new model run or today's audited code-quota credit. [no-belief: source and fixture publication only]
+
+The single future 20-task × 3-replay live cohort, empirical difficulty band and parent HIL15b acceptance remain open. Calibration and heldout partitions remain frozen; no adaptive redraw or difficulty claim follows from offline validation.

@@ -1,0 +1,13 @@
+{
+  "pid": 475319,
+  "ggml_paths": [
+    "/mnt/raid0/llm/kernels/builds/gpu-20261004-9a3f1392a/bin/libggml-base.so.0.16.0",
+    "/mnt/raid0/llm/kernels/builds/gpu-20261004-9a3f1392a/bin/libggml-cpu.so.0.16.0",
+    "/mnt/raid0/llm/kernels/builds/gpu-20261004-9a3f1392a/bin/libggml-hip.so.0.16.0",
+    "/mnt/raid0/llm/kernels/builds/gpu-20261004-9a3f1392a/bin/libggml.so.0.16.0"
+  ],
+  "kfd": "/sys/class/kfd/kfd/proc/475319",
+  "binary_mtime": 1791130356.1140013,
+  "source_commit_time": 1791122979,
+  "shim_knob_compiled": true
+}

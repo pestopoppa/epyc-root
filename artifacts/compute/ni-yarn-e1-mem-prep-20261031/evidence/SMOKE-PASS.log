@@ -1,0 +1,3 @@
+[2026-10-31T16:48:27Z] exclusive attempt
+[region-lock] acquiring gpu-quiet exclusive as role='bench' (timeout_s=1.0) …
+[region-lock] held gpu-quiet exclusive + regions [] after 0.0s wait; running: taskset -c 184,185 /bin/bash /mnt/raid0/llm/tmp/codex-ni-next-gpu-prep-20261031/launch.sh --smoke

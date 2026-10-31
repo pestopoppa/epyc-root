@@ -1,0 +1,17 @@
+{
+ "built_at": "2026-10-04T04:57:32Z",
+ "builder": "/mnt/raid0/llm/tmp/yarn-e1-20261004/yarn_needle.py",
+ "builder_sha256": "e9ba78b68b6ca9b80e7b373f1c839593c23d486c8a59d2eadb0ee82bc65f1a05",
+ "files": {
+  "haystack_meta.json": "972146b8fb5049a7f46347f19c8d0f97ae7480b53a7b04ef62f3a484162191db",
+  "needles.jsonl": "28cfb8971194aacab188376bd6a396ca5059522527eb4ae1a8d078eb9cab9963",
+  "segment_128k.txt": "7a3c9b1a185a02b7c456f0ab382a5f979b865f542a6e8bb2f857bacb34c3a89d",
+  "segment_240k.txt": "beb8c7092ff52d188c0c31533f88d0fb22cdea8cab56db5129e3aef2594ff7bb",
+  "segment_400k.txt": "9019d47fd0b54f57deb848cc929e77e7d3d7194375807b34d4a4f23fc419ef3c",
+  "segment_500k.txt": "f4538c050046c4a6f1a69abdee2fd506fad3411291e137300215c29e8f7c9a49",
+  "segment_s1.txt": "e50f16b609492fb89aab17f7e54874b4edbc3a0537b6d5e13f959a974a3ac722",
+  "segment_s2.txt": "83e987bf715d6c1a938b3ebcf11e546d6474f4b2025e521d9077d83b2b437612",
+  "short_items.jsonl": "7140e33f191199f01fd8523657696acd11dfca8f5d1e838f107e0bd2a329d8ba",
+  "short_truth.jsonl": "1b10de1acea67dd35640fff67b5cdc2848d8745db046c82a34eca64d4fd2b9cc"
+ }
+}

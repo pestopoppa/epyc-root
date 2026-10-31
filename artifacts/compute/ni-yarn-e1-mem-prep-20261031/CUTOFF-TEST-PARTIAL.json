@@ -1,0 +1,8 @@
+{
+  "status": "PARTIAL",
+  "partial": true,
+  "reason": "stop-file-or-window-end-before-step",
+  "completed_steps": [],
+  "active_step": null,
+  "at": 1793465241.037312
+}

@@ -1,0 +1,12 @@
+{
+  "owner": "codex-ni",
+  "worker": "ni_gpu_next_launcher_sol",
+  "state": "RELEASED_READY",
+  "task_id": "YARN-E1-MEM",
+  "task_text": "YARN-E1-MEM \u2014 attribute the +15 GiB KFD overshoot seen in both E1 arms (long prefill). Reuse the KVU-16h allocator shim and phase-replay runner on the A0 and A1 launch lines, and compare the E1 build (champion 9a3f1392a) against W b0ba1d427, which carries the arena fix.",
+  "source": "/workspace/handoffs/active/yarn-context-extension-research.md",
+  "started_at": 1793464948.5888975,
+  "scratch": "/mnt/raid0/llm/tmp/codex-ni-next-gpu-prep-20261031",
+  "released_at": 1793465372.3664715,
+  "ready_manifest": "/mnt/raid0/llm/tmp/compute-flags/ready/codex-ni-yarn-e1-mem-phase-r1-20261031.json"
+}
