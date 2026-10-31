@@ -602,7 +602,7 @@ _FILE_SOURCES = (
     "ak-width-dimension", "ak-width-cells-cpu",
     "moe-routing",
     "gpu-cpu-noise", "launch-affinity", "q38-serving-gate", "fused-decode-div", "champion-fold-gate", "calendar-overrun", "floor-registry", "weight-handoff",
-    "hsf5p-microbench", "m4-cpu-recipe-speed",
+    "hsf5p-microbench", "m4-cpu-recipe-speed", "c6-q4-microbench",
 )
 
 

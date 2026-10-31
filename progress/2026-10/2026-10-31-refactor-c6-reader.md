@@ -1,0 +1,5 @@
+## C6 Q4 microbench reader and truthful canary status — 2026-10-31
+
+The captured R2 run projects 22 native per-case CPU component observations (candidate/control; exact 27B Q4_K cases plus separately labeled synthetic DS41 shapes) through the existing `ClaimTuple.grade()` carrier. Native internal repeats remain descriptive; each projected process observation has `reps=1`. The reader verifies raw case/image data and archived byte-preserved original keeper/log/completion evidence. The selected adapter/ingest suite passed 110 tests; one known unrelated S4 baseline test was deselected.
+
+The current Q38FN planner context returns zero C6 claims and preserves row 337 plus its do-not-repeat history. This is a truthful non-match, not a failed measurement or a live-wiring result. Publisher GGUF header/name is provenance only; input-byte identity, protocol/noise floor and independent co-tenancy remain unknown. No full-model/serving or G-AK/named-cell claim follows. `VB-C6-Q4-MICROBENCH-WIRE` remains open for a source-matching component-context canary after reader publication; no grading tier/rule is added.

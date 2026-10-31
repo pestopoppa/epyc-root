@@ -547,6 +547,11 @@ SOURCES: dict[str, Source] = {s.name: s for s in (
                 "each EXPLAINED-UI policy exception; gate verdict, code-identity flags, propositions and store "
                 "SHA256SUMS attestations are re-derived; text-only legacy output and pre-hook folds decline",
            task="VB-FOLDGATE-WRITE"),
+    Source("c6-q4-microbench", "c6_q4_microbench",
+           lambda p: importlib.import_module("adapters.c6_q4_microbench").units(p),
+           default=Path("/mnt/raid0/llm/tmp/c6-35186-q4-microbench-r2-20261031/runs"),
+           note="C6 Q4 diagnostic component timing native run bundles only; exact Q4_K 27B cases plus synthetic DS41 shape reference; strict input/image/run-seal rehash and raw timing re-derivation; unknown generated-input byte identity and co-tenancy remain explicit; empty protocol means observations only, no keep/serving grade",
+           task="VB-C6-Q4-MICROBENCH-WIRE"),
     Source("hsf5p-microbench", "hsf5p_microbench",
            lambda p: importlib.import_module("adapters.hsf5p_microbench").units(p),
            default=Path("/mnt/raid0/llm/tmp/f8-launchers-20261024/hsf-5p"),
