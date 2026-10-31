@@ -1,0 +1,8 @@
+{
+  "status": "NATIVE_WINDOW_TERMINAL",
+  "rc": 0,
+  "attempts": 1,
+  "native_result": "/mnt/raid0/llm/tmp/codex-ni-g16a-build-prep-20261031/native/LATEST-RESULT.json",
+  "idle_gpu_lock_held": false,
+  "note": "Immediate arbiter admission only; one actual <=300s window; no retries after native result or entry failure. Both successes and failures terminate."
+}

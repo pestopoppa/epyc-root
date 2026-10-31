@@ -1,0 +1,185 @@
+{
+  "tokens": 4096,
+  "seqs": 2,
+  "command": [
+    "/mnt/raid0/llm/tmp/codex-ni-g16a-build-prep-20261031/build-hip/bin/test-backend-ops",
+    "-o",
+    "GATED_DELTA_NET",
+    "-b",
+    "ROCm0",
+    "-p",
+    "^type=f32,head_count=32,head_size=128,n_seq_tokens=4096,n_seqs=2,v_repeat=1,permuted=0,kda=0,K=1$"
+  ],
+  "pid": 2450970,
+  "birth": 154922135,
+  "rc": 0,
+  "numerical_pass_unrelaxed_1e_7": true,
+  "required_chunked_trace": true,
+  "trace_pass": true,
+  "dispatch_events": [
+    {
+      "monotonic": 1549223.233448189,
+      "line": "[gdn] chunked dispatch: H=32 S_v=128 n_tokens=4096 n_seqs=2 blocks=512 (floor 312), keep_rs=0 K=1"
+    }
+  ],
+  "loaded_images": {
+    "/mnt/raid0/llm/tmp/codex-ni-g16a-build-prep-20261031/build-hip/bin/libggml-hip.so.0.16.0": "2c944080746d671414d0cf80fa17e60aca3082e7706a26a973751395d7eb2b56",
+    "/mnt/raid0/llm/tmp/codex-ni-g16a-build-prep-20261031/build-hip/bin/libggml-base.so.0.16.0": "4a48792a20b60ff4f3a585303bebb87c8be00de063115b8ba897095f21d3e387",
+    "/mnt/raid0/llm/tmp/codex-ni-g16a-build-prep-20261031/build-hip/bin/libggml-cpu.so.0.16.0": "27b098a37a028bf189d0460992ac2b37effd80491fa0eeb12b9dfe14e67f00eb",
+    "/mnt/raid0/llm/tmp/codex-ni-g16a-build-prep-20261031/build-hip/bin/libggml.so.0.16.0": "d88f6535c3862b5d6c39549737c02613d7db286fb4e50332de7cf90368b2d06f"
+  },
+  "native_residency_witnessed": true,
+  "residency_samples": [
+    {
+      "monotonic": 1549221.577442301,
+      "pid": 2450970,
+      "birth": 154922135,
+      "kfd_pid_present": true,
+      "own_kfd_vram_bytes": {
+        "vram_57300": 1091977216
+      },
+      "device_vram_bytes": {
+        "/sys/class/drm/card2/device/mem_info_vram_used": 1105149952
+      }
+    },
+    {
+      "monotonic": 1549221.648682298,
+      "pid": 2450970,
+      "birth": 154922135,
+      "kfd_pid_present": true,
+      "own_kfd_vram_bytes": {
+        "vram_57300": 1091977216
+      },
+      "device_vram_bytes": {
+        "/sys/class/drm/card2/device/mem_info_vram_used": 1105149952
+      }
+    },
+    {
+      "monotonic": 1549223.345698175,
+      "pid": 2450970,
+      "birth": 154922135,
+      "kfd_pid_present": true,
+      "own_kfd_vram_bytes": {
+        "vram_57300": 1155940352
+      },
+      "device_vram_bytes": {
+        "/sys/class/drm/card2/device/mem_info_vram_used": 1170751488
+      }
+    },
+    {
+      "monotonic": 1549223.488894535,
+      "pid": 2450970,
+      "birth": 154922135,
+      "kfd_pid_present": true,
+      "own_kfd_vram_bytes": {
+        "vram_57300": 1155940352
+      },
+      "device_vram_bytes": {
+        "/sys/class/drm/card2/device/mem_info_vram_used": 1170751488
+      }
+    },
+    {
+      "monotonic": 1549223.627117713,
+      "pid": 2450970,
+      "birth": 154922135,
+      "kfd_pid_present": true,
+      "own_kfd_vram_bytes": {
+        "vram_57300": 1155940352
+      },
+      "device_vram_bytes": {
+        "/sys/class/drm/card2/device/mem_info_vram_used": 1170751488
+      }
+    },
+    {
+      "monotonic": 1549223.70315696,
+      "pid": 2450970,
+      "birth": 154922135,
+      "kfd_pid_present": true,
+      "own_kfd_vram_bytes": {
+        "vram_57300": 1155940352
+      },
+      "device_vram_bytes": {
+        "/sys/class/drm/card2/device/mem_info_vram_used": 1170751488
+      }
+    },
+    {
+      "monotonic": 1549223.792158519,
+      "pid": 2450970,
+      "birth": 154922135,
+      "kfd_pid_present": true,
+      "own_kfd_vram_bytes": {
+        "vram_57300": 1155940352
+      },
+      "device_vram_bytes": {
+        "/sys/class/drm/card2/device/mem_info_vram_used": 1170759680
+      }
+    },
+    {
+      "monotonic": 1549223.869936651,
+      "pid": 2450970,
+      "birth": 154922135,
+      "kfd_pid_present": true,
+      "own_kfd_vram_bytes": {
+        "vram_57300": 1155940352
+      },
+      "device_vram_bytes": {
+        "/sys/class/drm/card2/device/mem_info_vram_used": 1170759680
+      }
+    },
+    {
+      "monotonic": 1549223.941650942,
+      "pid": 2450970,
+      "birth": 154922135,
+      "kfd_pid_present": true,
+      "own_kfd_vram_bytes": {
+        "vram_57300": 1155940352
+      },
+      "device_vram_bytes": {
+        "/sys/class/drm/card2/device/mem_info_vram_used": 1170759680
+      }
+    },
+    {
+      "monotonic": 1549224.017611769,
+      "pid": 2450970,
+      "birth": 154922135,
+      "kfd_pid_present": true,
+      "own_kfd_vram_bytes": {
+        "vram_57300": 1155940352
+      },
+      "device_vram_bytes": {
+        "/sys/class/drm/card2/device/mem_info_vram_used": 1170759680
+      }
+    },
+    {
+      "monotonic": 1549224.0998402,
+      "pid": 2450970,
+      "birth": 154922135,
+      "kfd_pid_present": true,
+      "own_kfd_vram_bytes": {
+        "vram_57300": 338051072
+      },
+      "device_vram_bytes": {
+        "/sys/class/drm/card2/device/mem_info_vram_used": 1170759680
+      }
+    },
+    {
+      "monotonic": 1549224.17150946,
+      "pid": 2450970,
+      "birth": 154922135,
+      "kfd_pid_present": true,
+      "own_kfd_vram_bytes": {
+        "vram_57300": 337776640
+      },
+      "device_vram_bytes": {
+        "/sys/class/drm/card2/device/mem_info_vram_used": 352595968
+      }
+    }
+  ],
+  "sample_count": 29,
+  "peak_tree_rss_bytes": 1599184896,
+  "partial": false,
+  "live_after": [],
+  "raw_dir": "/mnt/raid0/llm/tmp/codex-ni-g16a-build-prep-20261031/native/run-20261031T060539Z",
+  "standalone_CPU_control_run": false,
+  "dispatch_proven_numerical_failure": false
+}

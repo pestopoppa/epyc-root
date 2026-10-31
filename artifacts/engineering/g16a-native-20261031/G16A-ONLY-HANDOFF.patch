@@ -1,0 +1,28 @@
+--- a/handoffs/active/log-linear-gated-deltanet-readiness.md
++++ b/handoffs/active/log-linear-gated-deltanet-readiness.md
+@@ -469,7 +469,7 @@
+       [mi210-big-model-and-acceleration-roadmap.md](mi210-big-model-and-acceleration-roadmap.md);
+       neither may proceed on a chunked kernel this row has not cleared.
+       Both compute planes were held by other sessions through this wave — **filed, not run**.
+-- [ ] **G16a — make G16 fire the chunked kernel on MI210, or it is vacuous.** The H=32/d=128 long-prompt eval
++- [x] **G16a — make G16 fire the chunked kernel on MI210, or it is vacuous.** The H=32/d=128 long-prompt eval
+       cases in `719a8529d` use `n_seqs=1`. That gives 256 blocks, below 3×nsm = 312, so on MI210 they assert the
+       RECURRENT kernel against CPU. Fix it either way:
+       - add `n_seqs=2` variants of the 2048/4096/8192 cases (512 blocks, which fire unmodified); or
+@@ -483,6 +483,16 @@
+       the original eight shapes and unrelaxed `1e-7` NMSE threshold are unchanged. This is build-only:
+       native dispatch trace/numerical qualification, greedy comparison, keep and production promotion
+       remain open. Evidence: `artifacts/engineering/g16a-build-prep-20261031/`.
++    - **Native G16a complete (2026-10-31):** MAIN accepted all eight exact H=32/d=128 F32
++      eval cases on MI210/gfx90a at the unchanged `1e-7` source gate (each raw operation `OK`,
++      `1/1 tests passed`, rc0). T=2048/4096/8192 at `n_seqs=2` each emitted its own
++      `[gdn] chunked dispatch`, 512 blocks against floor 312, `keep_rs=0 K=1`; five one-sequence
++      controls also passed. All eight loaded the exact candidate HIP image and retained live
++      PID/birth-bound per-process KFD/VRAM samples; none skipped or remained partial. Evidence:
++      `artifacts/engineering/g16a-native-20261031/`. [belief: cc]
++      This closes G16a only. G16 greedy A/B, keep-rs and champion integration/promotion remain open;
++      no dispatch-proven numerical failure occurred, so G16b was not triggered. Raw logs do not
++      expose NMSE magnitudes; no numerical value, deterministic replay or measurement warrant is invented.
+ - [ ] **G16b — diagnostic arm if a dispatch-proven G16 fails 1e-7.** Rerun the failing shapes on a test build that
+       forces the chunked kernel's scalar f32 path: `FGDN_TILE_MMA` undefined, with the host arch gate still admitting
+       it (`gated_delta_net.cu:252-267, 305-321, 406-416`). This separates f16-operand GEMM error from pure

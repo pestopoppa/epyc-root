@@ -1,0 +1,7 @@
+{
+  "launcher_rc": 0,
+  "timestamp": "2026-10-31T06:05:55.811716+00:00",
+  "native_result": "/mnt/raid0/llm/tmp/codex-ni-g16a-build-prep-20261031/native/LATEST-RESULT.json",
+  "scope": "G16a eight shapes only; no greedy/keep/promotion",
+  "note": "rc75 can be admission unavailable or partial; consult native result timestamp and native-launcher.out"
+}
