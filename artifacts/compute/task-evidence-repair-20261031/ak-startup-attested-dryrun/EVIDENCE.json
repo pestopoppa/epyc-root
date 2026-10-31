@@ -1,0 +1,57 @@
+{
+  "schema": "epyc.task_evidence_integrity.v1",
+  "task_id": "AK-STARTUP-ATTESTED-DRYRUN",
+  "original_task_first_line": "    - [x] `run.py` startup prints \"UNATTESTED \u2026 --allow-unverified-anchor was given\" for a store-image anchor that IS attested (misleading log line, found in CH-27 prep); and its `--dry-run` appends to `<store>/floor-registry-lookups.jsonl` (a dry run should write nothing to the store).",
+  "decision": "reopen",
+  "reason": "The retained 18-test run proves read-only store handling and ordinary attestation, but its committed attested fixture omits --allow-unverified-anchor. The later private exact-flag test proposal has review prose reporting two passes, without a retained execution log in that packet. Full original message-condition acceptance lacks direct retained control evidence; source fix/date are preserved, not re-counted.",
+  "implementation": [
+    {
+      "repo": "epyc-inference-research",
+      "implementation_commit": "834bef12afab17ba6bbc3f6e240f72867d47a024",
+      "reachable_from_published_origin_main": true,
+      "files": [
+        {
+          "path": "scripts/kernel_rnd/autokernel/loop/run.py",
+          "sha256": "56a2a9411faf847e13fc7520a852fd1a852f49ebb6a43f21f789a07862db3819",
+          "git_url": "https://github.com/pestopoppa/epyc-inference-research/blob/834bef12afab17ba6bbc3f6e240f72867d47a024/scripts/kernel_rnd/autokernel/loop/run.py"
+        },
+        {
+          "path": "scripts/kernel_rnd/autokernel/loop/test_store_anchor_dry_run.py",
+          "sha256": "07a74cadbd47a31135b17eae7e099baee6774d9b59014c47dd6a99cee4d732ff",
+          "git_url": "https://github.com/pestopoppa/epyc-inference-research/blob/834bef12afab17ba6bbc3f6e240f72867d47a024/scripts/kernel_rnd/autokernel/loop/test_store_anchor_dry_run.py"
+        }
+      ]
+    }
+  ],
+  "original_dates_preserved": true,
+  "evidence_only_hygiene_not_new_code_or_today_quota": true,
+  "no_retest_or_redate": true,
+  "prior_artifacts": [
+    {
+      "path": "/mnt/raid0/llm/tmp/ak-startup-dryrun-controls-20261029/integrated-tests.log",
+      "sha256": "f5b1e3d132ba5dedac5949e0a722536a68be7d68b912c6a8f269f42344e1eb92",
+      "bytes": 115
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/ak-startup-dryrun-controls-20261029/push-receipt.json",
+      "sha256": "33b7f6e185def4dcfd4c6a9a9f84c2fcf648935e23d89ad226462929109d654e",
+      "bytes": 548
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/refactor-01a16fc3/ak-startup-attestation-fix-20261030/REVIEW.md",
+      "sha256": "07ddd9024f933d7c8ec7d2fc5c2953ce6591f5c5c344246698cf71ba27311d89",
+      "bytes": 2406
+    }
+  ],
+  "retained_test_output": {
+    "path": "artifacts/compute/task-evidence-repair-20261031/ak-startup-attested-dryrun/test-output.txt",
+    "sha256": "cef1c5ac7a4ed80c8b5b154a742f6ff1cd024f1b225279f5a677625c236ff25d",
+    "scope": "original test stdout, supervisor metadata omitted; complete original hash retained"
+  },
+  "task_text_and_dates_recovery": {
+    "first_line_metadata": "HTML comment only; reopened task changes checkbox only",
+    "visible_evidence": "separate delimited metadata sub-bullet after original paragraph",
+    "original_paragraph_sha256": "23d9548191f87d43c6dea85e02054bba2a8fe04886c051fc5cf087aecce58d0e",
+    "metadata_strip_restores_original_paragraph_byte_identically": true
+  }
+}
