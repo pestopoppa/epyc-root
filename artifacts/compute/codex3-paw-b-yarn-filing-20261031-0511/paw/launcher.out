@@ -1,0 +1,8 @@
+2026-10-31T04:05:19Z [codex3-paw-standard-b-t1-20261030] launcher up pid=3469470 class=cpu poll=45s grants=/mnt/raid0/llm/tmp/compute-flags/grants stop=/mnt/raid0/llm/tmp/codex3-paw-hsf-t1-20261030/B/STOP minwin=2400s ports=19955
+2026-10-31T04:06:04Z [codex3-paw-standard-b-t1-20261030] START regions=0-23 cpus=0-23 threads=24 gpu=0 end=2026-10-31T06:00Z
+[region-lock] acquiring regions ['q0'] as role='bench' (timeout_s=6836.0) …
+[region-lock] held ['q0'] after 0.0s wait; running: /bin/bash /mnt/raid0/llm/tmp/codex3-paw-hsf-t1-20261030/B/engine/filler_run13.sh --inner --id codex3-paw-standard-b-t1-20261030 --class cpu --cmd taskset -c "$FILLER_CPUS" /mnt/raid0/llm/tmp/codex3-paw-hsf-t1-20261030/B/.venv/bin/python /mnt/raid0/llm/tmp/codex3-paw-hsf-t1-20261030/B/job.py real --epyc-root "$EPYC_ROOT" --min-window 2400 --stop /mnt/raid0/llm/tmp/codex3-paw-hsf-t1-20261030/B/STOP --port 19955 --workdir /mnt/raid0/llm/tmp/codex3-paw-hsf-t1-20261030/B --gpu-threads 184-191
+{"partial": false, "status": "finalized", "run": "/mnt/raid0/llm/tmp/codex3-paw-hsf-t1-20261030/B/results/real-1793419627938697268", "wall_s": 3662.121638857061, "sampled_peak_rss_bytes": 6621548544, "rss_samples": 18587, "children_drained": true}
+job rc=0
+2026-10-31T05:08:10Z [codex3-paw-standard-b-t1-20261030] ended rc=0 reason=complete (grant deleted)
+2026-10-31T05:08:10Z [codex3-paw-standard-b-t1-20261030] ALL DONE: wrote /mnt/raid0/llm/tmp/compute-flags/grants/codex3-paw-standard-b-t1-20261030.complete; row status remains scheduler-owned

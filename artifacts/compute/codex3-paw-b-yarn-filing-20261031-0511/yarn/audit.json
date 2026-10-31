@@ -1,0 +1,38 @@
+{
+  "A0": {
+    "records": 29,
+    "sha256": "c4417bf2d674d5fc935a9e773a06751c39ab7aeb857b2e1e84e88dfcbd779925",
+    "statuses": {
+      "ok": 29
+    }
+  },
+  "A1": {
+    "records": 30,
+    "sha256": "74b0c30ba4818d5a73ef3d6048a56d6be4b2cf2fc40037ebe0725127eb116a6b",
+    "statuses": {
+      "ok": 30
+    }
+  },
+  "joint": {
+    "matched_pairs": 29,
+    "native_pairs": 29,
+    "b": 1,
+    "c": 6,
+    "p": 0.9921875,
+    "mean_a1_minus_a0": 0.21767241379310345
+  },
+  "original120_subset": {
+    "matched_pairs": 25,
+    "native_pairs": 25,
+    "b": 0,
+    "c": 5,
+    "p": 1.0,
+    "mean_a1_minus_a0": 0.2525
+  },
+  "original120_size": 120,
+  "original120_matched_in_joint_plan": 120,
+  "pair_binding_errors": 0,
+  "paired_ids_sha256": "d2f6ccf5d56c773e93c47e64168a7adbd7df29113aada9a4a3a911664e478950",
+  "scope": "snapshot not complete gate",
+  "results": "/mnt/raid0/llm/tmp/codex-ni-yarn-agg1g-prep-20261031/run/results"
+}
