@@ -166,6 +166,8 @@ correction first) is dispatchable now.
       24/24 tests; E2E: real V27-shaped output projects Witnessed/Attested. The V27 screen is
       RUNNING NOW (llama-bench in flight) — NEW TRIGGER: screen completes → adapter projects
       the first tuples → close**
+- [ ] **VB-SC42-CPU-MATCHED18-WIRE** — capture the prospective Unlimited-OCR CPU default/canonical matched 18-page attempts, native response and stripped prediction identities, complete-denominator scorer outputs/errors, GT/image/model/mmproj/binary/source/runtime/argv and actual grant/window evidence; retain failed, interrupted and missing requests as UNKNOWN. Verify the canonical media-marker form against the pinned native test. Distinguish this private producer from the existing `odl_bench` writer until a matching attested writer/projector and real planning-context canary pass; use `ClaimTuple.grade()` only, with no new ladder, historical warrant, GPU or promotion claim.
+
 - [ ] **SC42 — Wire the ODL-P2 model-gated arm (`odl_bench` Unlimited-OCR) on the write side,
       prospectively before its next run.** *(Filed as "SC37" on lane/mainD 2026-08-13 by `mainD`,
       the author of the run, at the run; renumbered on forward-port because SC37 was independently

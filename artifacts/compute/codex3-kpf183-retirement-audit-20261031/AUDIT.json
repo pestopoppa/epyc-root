@@ -1,0 +1,29 @@
+{
+  "at": "2026-10-31T06:28:00.475526+00:00",
+  "operator_notice": "Qwen3.6-35B UD-IQ3_XXS retired and deleted; never publish a dependency on it",
+  "findings": "Current multiturn predeclaration and both executable jobs use canonical Qwen3.6-35B-A3B-MTP-Q8_0. IQ3 packet already withdrawn before full-target inference. No current kpf183 JSON in ready/armed. Archived evidence retained; no model substituted or new publication made during this audit.",
+  "active_kpf183_manifests": {
+    "ready": [],
+    "armed": []
+  },
+  "files": [
+    {
+      "path": "/mnt/raid0/llm/tmp/codex3-kpf183-multiturn-20261030/PREDECLARED.md",
+      "sha256": "5cb568962eb95eaa7de9454f4c5f02ca1ce255f015c11cb2c91856b4e2511354"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/codex3-kpf183-multiturn-20261030/job.py",
+      "sha256": "21707c7102e8d857c18b63bc81b0ac6ae4d6dbf990b26f600b3cac0c93ec6163"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/codex3-kpf183-chat-full-20261031/PREDECLARED.json",
+      "sha256": "0ab013c8c7057ed2987589e98cf47295e01e4c16dd784f966e92be84c24f3f89"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/codex3-kpf183-chat-full-20261031/job.py",
+      "sha256": "3cdfec3b9d69ae1a75f8d30fbb96b95811ea35e222f032bc0be1c0d5cf8d4923"
+    }
+  ],
+  "withdrawn_archive": "/mnt/raid0/llm/tmp/codex3-kpf183-multiturn-20261030/withdrawn-ud-iq3-20261030",
+  "action": "Keep retired IQ3 packet withdrawn. Ask ws58 before any future task requiring exact retired weights; current Q8 packet does not require them."
+}
