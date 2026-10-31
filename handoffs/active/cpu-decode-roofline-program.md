@@ -3516,8 +3516,7 @@ iqk-supported, so B12's arms are not confounded by scheduling; but the finding g
       a hook whose parser is wrong about which text is a command. Low severity, trivially reproducible.
       **✅ COMPLETE 2026-09-07 — fix committed at `29d340ad` with a MUTATION-PROVEN regression test** (the
       mutation was made visible AND counted, not merely asserted absent).
-- [ ] **★ HYG-2b — THE COMMIT-HYGIENE HOOK DOES NOT SEGMENT A COMPOUND SHELL COMMAND, AND IT BLOCKS ITS OWN
-      PRESCRIBED IDIOM.** Found and **reproduced deliberately** at the 2026-09-07 operator wrap-up, with
+- [x] **★ HYG-2b — THE COMMIT-HYGIENE HOOK DOES NOT SEGMENT A COMPOUND SHELL COMMAND, AND IT BLOCKS ITS OWN PRESCRIBED IDIOM.** ✅ 2026-10-31 — existing HYG-4 segmentation ROOT `bd9ffccec2f5277cdebc2b369929cd6491f024bb`; exact original and paired pathspec regression ROOT `60afbb48cf9d3dc359d584add612ee076865bb88`; [3 tests](../../artifacts/compute/codex3-hyg-2b-20261031/TEST.log). [no-belief: hook regression tests] Found and **reproduced deliberately** at the 2026-09-07 operator wrap-up, with
       `29d340ad` (HYG-2's fix) present in the tree — so this is a **second, residual defect, not a
       regression of the first.**
       **Repro (2 arms, one variable):** `git diff --stat -- <file> && git commit --dry-run -m "probe"` is
