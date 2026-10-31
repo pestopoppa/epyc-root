@@ -292,3 +292,82 @@ def test_shared_source_enrollment_names_adapter_and_public_locator():
 
 if __name__ == "__main__":
     raise SystemExit("Run this suite through pytest; direct execution is refused.")
+
+
+@pytest.mark.parametrize("legacy", [False, True])
+def test_exact_reviewed_source_epoch_is_accepted_as_one_bundle(legacy):
+    producer_sha = (adapter.LEGACY_TRUSTED_PRODUCER_SHA256 if legacy
+                    else adapter.TRUSTED_PRODUCER_SHA256)
+    source_hashes = (adapter.LEGACY_TRUSTED_APP_SOURCES if legacy
+                     else adapter.TRUSTED_APP_SOURCES)
+    adapter._trusted_source_epoch(producer_sha, dict(source_hashes))
+
+
+@pytest.mark.parametrize("name", [name for name in adapter.APP_ARTIFACTS
+    if adapter.TRUSTED_APP_SOURCES[name] != adapter.LEGACY_TRUSTED_APP_SOURCES[name]])
+@pytest.mark.parametrize("legacy_producer", [False, True])
+def test_individually_reviewed_source_from_other_epoch_cannot_be_mixed(name, legacy_producer):
+    producer_sha = (adapter.LEGACY_TRUSTED_PRODUCER_SHA256 if legacy_producer
+                    else adapter.TRUSTED_PRODUCER_SHA256)
+    expected = (adapter.LEGACY_TRUSTED_APP_SOURCES if legacy_producer
+                else adapter.TRUSTED_APP_SOURCES)
+    other = (adapter.TRUSTED_APP_SOURCES if legacy_producer
+             else adapter.LEGACY_TRUSTED_APP_SOURCES)
+    mixed = dict(expected)
+    mixed[name] = other[name]
+    with pytest.raises(ValueError, match="reviewed producer epoch"):
+        adapter._trusted_source_epoch(producer_sha, mixed)
+
+
+def _replace_and_reseal(receipt, name, raw):
+    # Deliberately adversarial fixture: repair every affected checksum, so only
+    # the reviewed epoch binding can detect the source substitution.
+    def replace(artifact, data):
+        path = receipt.parent / artifact
+        path.chmod(0o600)
+        path.write_bytes(data)
+        path.chmod(0o400)
+        return {"name": artifact, "sha256": producer.sha256(data), "size": len(data)}
+    record = json.loads(receipt.read_bytes())
+    request = json.loads((receipt.parent / record["request"]["name"]).read_bytes())
+    if name == "producer-source.bin":
+        request["producer_source"] = replace(name, raw)
+    else:
+        request["application_sources"][name] = replace(name, raw)
+        post = json.loads((receipt.parent / record["post_input_identity"]["name"]).read_bytes())
+        post["application_source_sha256"][name] = producer.sha256(raw)
+        record["post_input_identity"] = replace(
+            record["post_input_identity"]["name"], producer.canonical(post) + b"\n")
+    record["request"] = replace(record["request"]["name"], producer.canonical(request) + b"\n")
+    unsigned = dict(record)
+    unsigned.pop("receipt_sha256")
+    record["receipt_sha256"] = producer.sha256(producer.canonical(unsigned))
+    replace("receipt.json", producer.canonical(record) + b"\n")
+
+
+@pytest.mark.parametrize("name", ["producer-source.bin", "tier-spec-source.bin"])
+def test_resealed_source_substitution_is_refused_by_real_receipt_reader(tmp_path, name):
+    receipt = _capsule(tmp_path, ok=True)
+    raw = (receipt.parent / name).read_bytes() + b"\n# unreviewed source mutation\n"
+    _replace_and_reseal(receipt, name, raw)
+    with pytest.raises(ValueError, match="reviewed implementation|reviewed producer epoch"):
+        adapter.read_receipt(receipt)
+    with pytest.raises(adapter.ProjectionError, match="custody refused"):
+        adapter.native_rows(receipt)
+
+
+def test_current_writer_refuses_source_drift_before_creating_a_capture(tmp_path):
+    import shutil
+    app = tmp_path / "declared-app"
+    for relative in producer.SOURCE_FILES.values():
+        target = app / relative
+        target.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copyfile(_app_root() / relative, target)
+    target.write_bytes(target.read_bytes() + b"\n# unreviewed source drift\n")
+    journal, store, output = [tmp_path / name for name in ("journal", "store", "captures")]
+    for directory in (journal, store, output):
+        directory.mkdir(mode=0o700)
+    with pytest.raises(ValueError, match="reviewed source pin"):
+        producer.capture_report(app_root=app, journal_dir=journal, strategy_path=store,
+                                output_root=output, capture=True)
+    assert not list(output.iterdir())

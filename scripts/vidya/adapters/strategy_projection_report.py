@@ -26,8 +26,24 @@ PROPOSITION = (
     "result of its journal-derived projection comparison; counts are descriptive only."
 )
 # Set to the source hash of the reviewed, immutable native producer before source publication.
-TRUSTED_PRODUCER_SHA256 = "c379d8ed152085ece779b78943ca06d6e55db3e106e162d1349fd25590721d4c"
+TRUSTED_PRODUCER_SHA256 = "d692234dbdd44ccbf5af0ece8e35d8b4b39dd4d4f80b1ecfecfc40e494859fb2"
 TRUSTED_APP_SOURCES = {
+    "report-source.bin": "bcf481d92791c620f7822057150b90a62515d1423c135da5ed034441d19da482",
+    "journal-source.bin": "534439520f61e0def6126f6ccf2defc846f500a412eec9c5f8921c1d807e1121",
+    "shards-source.bin": "d7ed426ccc3972b6950f23a1af0e26ae6ed5e3e9dde7e6401f963cd63923adda",
+    "store-source.bin": "22dff48765c297fc8a2650e4e063e960bc69b275259296fea8172c4caa1e2207",
+    "faiss-source.bin": "38f24c3d3759fc74a506b1be91f911876c506b4c06b07b30e24a4d5f18d91676",
+    "embedder-source.bin": "e541765522564c373153dbef4d5be2e352b402a09495c00422ada500d3bf0b0e",
+    "memory-record-source.bin": "463ae4aa74ef7ecc0b7acc5dca14af091fd4ae0c0a1a75ed57123de644930702",
+    "src-package-source.bin": "16e20bce77e6470646b90def0e3d653a3bd9fb024b484f7cd034f96ff8a0a5f8",
+    "lock-source.bin": "642b6a902a8c45949402d23aaf3237327619d338ee80f27f141ecb0dbb49f2c0",
+    "lock-runtime-source.bin": "659a51c1f1bd1c8db0e07d4092c5e9ddbf05f989be0ac84cb251a23be0ca9a36",
+    "tier-spec-source.bin": "3ff7a55425ac6770f1e6b9818152f953007b06dce711f5b12f7ffcd893dbe9d7"
+}
+# Historical NI53 source remains readable under its own exact producer/bundle.
+# Never combine independently accepted hashes from different source epochs.
+LEGACY_TRUSTED_PRODUCER_SHA256 = "c379d8ed152085ece779b78943ca06d6e55db3e106e162d1349fd25590721d4c"
+LEGACY_TRUSTED_APP_SOURCES = {
     "report-source.bin": "08286a31d98404758b7d09eecc5a2ab90181bf63484f66566361906c0e7d1f1b",
     "journal-source.bin": "f5f29d0d99311e45b4f0aa50f812622993fe714f7652218e86c2906c1135d756",
     "shards-source.bin": "d7ed426ccc3972b6950f23a1af0e26ae6ed5e3e9dde7e6401f963cd63923adda",
@@ -38,7 +54,11 @@ TRUSTED_APP_SOURCES = {
     "src-package-source.bin": "16e20bce77e6470646b90def0e3d653a3bd9fb024b484f7cd034f96ff8a0a5f8",
     "lock-source.bin": "642b6a902a8c45949402d23aaf3237327619d338ee80f27f141ecb0dbb49f2c0",
     "lock-runtime-source.bin": "659a51c1f1bd1c8db0e07d4092c5e9ddbf05f989be0ac84cb251a23be0ca9a36",
-    "tier-spec-source.bin": "89ee24c066c8bed1b18a4c6c577fef530a447abd3db9fbf0fd308974ea18d095",
+    "tier-spec-source.bin": "89ee24c066c8bed1b18a4c6c577fef530a447abd3db9fbf0fd308974ea18d095"
+}
+TRUSTED_SOURCE_EPOCHS = {
+    LEGACY_TRUSTED_PRODUCER_SHA256: LEGACY_TRUSTED_APP_SOURCES,
+    TRUSTED_PRODUCER_SHA256: TRUSTED_APP_SOURCES,
 }
 APP_ARTIFACTS = set(TRUSTED_APP_SOURCES)
 ARTIFACT_LIMITS = {
@@ -258,6 +278,15 @@ def _validate_post_identity(raw: bytes, record: dict, request: dict) -> bool:
     return journal_stable and source_stable
 
 
+def _trusted_source_epoch(producer_sha256: str, application_sha256: dict[str, str]) -> None:
+    """Accept a complete reviewed bundle, never a per-file union across epochs."""
+    expected = TRUSTED_SOURCE_EPOCHS.get(producer_sha256)
+    if expected is None:
+        raise ValueError("native producer is not pinned to a reviewed implementation")
+    if application_sha256 != expected:
+        raise ValueError("application source snapshot differs from its reviewed producer epoch")
+
+
 def read_receipt(path: str | Path) -> tuple[dict, str]:
     receipt_path = Path(os.path.abspath(path))
     if receipt_path.name != "receipt.json":
@@ -342,17 +371,15 @@ def read_receipt(path: str | Path) -> tuple[dict, str]:
     source_refs = request["application_sources"]
     if not isinstance(source_refs, dict) or set(source_refs) != APP_ARTIFACTS:
         raise ValueError("trusted application source set is incomplete")
+    producer_bytes = _artifact(run_dir, request["producer_source"])
+    if request["producer_source"]["name"] != "producer-source.bin":
+        raise ValueError("native producer is not pinned to a reviewed implementation")
     for name, ref in source_refs.items():
         if not isinstance(ref, dict) or ref.get("name") != name:
             raise ValueError("application source snapshot reference is invalid")
         _artifact(run_dir, ref)
-        if ref["sha256"] != TRUSTED_APP_SOURCES[name]:
-            raise ValueError("application source snapshot differs from trusted reviewed identity")
-    producer_bytes = _artifact(run_dir, request["producer_source"])
-    if (request["producer_source"]["name"] != "producer-source.bin"
-            or TRUSTED_PRODUCER_SHA256 == "PENDING"
-            or _sha(producer_bytes) != TRUSTED_PRODUCER_SHA256):
-        raise ValueError("native producer is not pinned to a reviewed implementation")
+    _trusted_source_epoch(_sha(producer_bytes),
+                          {name: ref["sha256"] for name, ref in source_refs.items()})
     stdout = _artifact(run_dir, record["stdout"])
     stderr = _artifact(run_dir, record["stderr"])
     if record["stdout"]["name"] != "stdout.bin" or record["stderr"]["name"] != "stderr.bin":

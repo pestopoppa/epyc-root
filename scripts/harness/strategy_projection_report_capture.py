@@ -45,17 +45,17 @@ SOURCE_FILES = {
     "tier-spec-source.bin": "src/autopilot_core/tier_specs.py",
 }
 TRUSTED_APP_SOURCES = {
-    "report-source.bin": "08286a31d98404758b7d09eecc5a2ab90181bf63484f66566361906c0e7d1f1b",
-    "journal-source.bin": "f5f29d0d99311e45b4f0aa50f812622993fe714f7652218e86c2906c1135d756",
+    "report-source.bin": "bcf481d92791c620f7822057150b90a62515d1423c135da5ed034441d19da482",
+    "journal-source.bin": "534439520f61e0def6126f6ccf2defc846f500a412eec9c5f8921c1d807e1121",
     "shards-source.bin": "d7ed426ccc3972b6950f23a1af0e26ae6ed5e3e9dde7e6401f963cd63923adda",
-    "store-source.bin": "8a5cd857d9723827ec2f5346057aa89d5ec358a2fdceeaf7a4566e2ae7889f64",
-    "faiss-source.bin": "ac73aade178f0a13430c3ea01cd50d7c971e6059817673d3976fd13347f6f39d",
-    "embedder-source.bin": "4697fd6f877fd1a1d9792c78300319c4bae96b75309e5a71b9f921354bb4bf75",
-    "memory-record-source.bin": "7a41ca1bc46febe0efbaaa1a6b96f84e40b4338d6a690dae0ca09b9e7d85fe2b",
+    "store-source.bin": "22dff48765c297fc8a2650e4e063e960bc69b275259296fea8172c4caa1e2207",
+    "faiss-source.bin": "38f24c3d3759fc74a506b1be91f911876c506b4c06b07b30e24a4d5f18d91676",
+    "embedder-source.bin": "e541765522564c373153dbef4d5be2e352b402a09495c00422ada500d3bf0b0e",
+    "memory-record-source.bin": "463ae4aa74ef7ecc0b7acc5dca14af091fd4ae0c0a1a75ed57123de644930702",
     "src-package-source.bin": "16e20bce77e6470646b90def0e3d653a3bd9fb024b484f7cd034f96ff8a0a5f8",
     "lock-source.bin": "642b6a902a8c45949402d23aaf3237327619d338ee80f27f141ecb0dbb49f2c0",
     "lock-runtime-source.bin": "659a51c1f1bd1c8db0e07d4092c5e9ddbf05f989be0ac84cb251a23be0ca9a36",
-    "tier-spec-source.bin": "89ee24c066c8bed1b18a4c6c577fef530a447abd3db9fbf0fd308974ea18d095",
+    "tier-spec-source.bin": "3ff7a55425ac6770f1e6b9818152f953007b06dce711f5b12f7ffcd893dbe9d7"
 }
 ARTIFACT_LIMITS = {
     "execution-request.json": 2 * 1024 * 1024,
