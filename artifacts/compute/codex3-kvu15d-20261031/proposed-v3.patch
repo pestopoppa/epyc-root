@@ -1,0 +1,166 @@
+diff --git a/src/scheduling/kv_pool_admission.py b/src/scheduling/kv_pool_admission.py
+index d798a28c..c9e691fc 100644
+--- a/src/scheduling/kv_pool_admission.py
++++ b/src/scheduling/kv_pool_admission.py
+@@ -724,6 +724,7 @@ class SharedKVPoolAdmission:
+             self._waiting[ticket] = (want, is_long)
+         logged = False
+         waited_on_lease = False
++        lease_wait_observed_s = 0.0
+         admitted = False
+         try:
+             while True:
+@@ -802,9 +803,18 @@ class SharedKVPoolAdmission:
+                             stat[f"cache_credit_{source}"] = stat.get(f"cache_credit_{source}", 0) + 1
+                         else:
+                             stat["cache_credit_unavailable"] += 1
++                        lease_holder = (self._prefill_lease.get(url) or (None,))[0]
+                         self._admission_info[ticket] = dict(
+                             credit,
+                             long_prefill=bool(is_long),
++                            # Captured under the admission mutex; classification alone
++                            # does not prove that this ticket actually held the lease.
++                            admission_ticket=ticket,
++                            lease_held_at_admission=lease_holder == ticket,
++                            lease_holder_ticket=lease_holder if lease_holder == ticket else None,
++                            # Condition waits whose observed verdict was "lease";
++                            # other queue predicates can overlap and polling is bounded.
++                            lease_wait_observed_ms=round(lease_wait_observed_s * 1000.0, 3),
+                             cache_credited=bool(cache_credited),
+                             long_prefill_threshold=self.long_prefill_threshold(),
+                             queue_wait_ms=round(waited * 1000.0, 3),
+@@ -844,7 +854,10 @@ class SharedKVPoolAdmission:
+                             " — another long prefill is in flight" if verdict == "lease" else "",
+                         )
+                         logged = True
++                    lease_wait_start = time.perf_counter() if verdict == "lease" else None
+                     self._cond.wait(timeout=poll_s)
++                    if lease_wait_start is not None:
++                        lease_wait_observed_s += time.perf_counter() - lease_wait_start
+             if pidx is not None and pview is not None:
+                 # The tree walk runs once, after admission and outside the gate's
+                 # lock (review D4); the record is completed under a brief lock.
+diff --git a/tests/unit/test_kv_pool_long_prefill.py b/tests/unit/test_kv_pool_long_prefill.py
+index 5227ffdb..bea7bb71 100644
+--- a/tests/unit/test_kv_pool_long_prefill.py
++++ b/tests/unit/test_kv_pool_long_prefill.py
+@@ -678,3 +678,73 @@ class TestInferencePrefillDone:
+         assert seen.holder_before is not None, "a 20k-token prompt took the long-prefill lease"
+         assert seen.holder_after is None, "the first chunk handed it on"
+         assert fresh_pool.in_flight_tokens(URL) == 0
++
++
++def test_admission_records_actual_holder_and_observed_lease_wait(monkeypatch):
++    pool = SharedKVPoolAdmission(occupancy=lambda _: None, cross_process=False)
++    first = pool.acquire(URL, 40_000, POOL, timeout_s=0)
++    assert first is not None
++    first_info = pool.admission_record(first)
++    assert first_info["long_prefill"] is True
++    assert first_info["lease_held_at_admission"] is True
++    assert first_info["admission_ticket"] == first_info["lease_holder_ticket"] == first
++    assert first_info["lease_wait_observed_ms"] == 0
++
++    observed_lease = threading.Event()
++    original = pool._admissible
++
++    def observe(*args, **kwargs):
++        verdict = original(*args, **kwargs)
++        if verdict == "lease":
++            observed_lease.set()
++        return verdict
++
++    monkeypatch.setattr(pool, "_admissible", observe)
++    admitted = []
++    thread = threading.Thread(target=lambda: admitted.append(
++        pool.acquire(URL, 30_000, POOL, timeout_s=5, poll_s=0.02)
++    ))
++    thread.start()
++    try:
++        assert observed_lease.wait(5)
++        # Leave the waiter in at least one observed lease-verdict condition wait.
++        time.sleep(0.05)
++        pool.prefill_done(URL, first)
++        thread.join(timeout=5)
++        assert not thread.is_alive() and admitted[0] is not None
++        info = pool.admission_record(admitted[0])
++        assert info["lease_held_at_admission"] is True
++        assert 0 < info["lease_wait_observed_ms"] <= info["queue_wait_ms"]
++    finally:
++        pool.prefill_done(URL, first)
++        thread.join(timeout=5)
++        if admitted and admitted[0] is not None:
++            pool.release(URL, admitted[0])
++        pool.release(URL, first)
++
++
++def test_admission_does_not_confuse_long_class_with_lease_ownership(monkeypatch):
++    pool = SharedKVPoolAdmission(occupancy=lambda _: None, cross_process=False)
++    short = pool.acquire(URL, 100, POOL, timeout_s=0)
++    assert short is not None
++    info = pool.admission_record(short)
++    assert info["long_prefill"] is False
++    assert info["lease_held_at_admission"] is False
++    assert info["lease_wait_observed_ms"] == 0
++    assert pool.admission_record(None) is None
++    assert pool.admission_record(short + 100) is None
++    pool.release(URL, short)
++
++
++def test_long_class_without_lease_is_not_reported_as_holder(monkeypatch):
++    pool = SharedKVPoolAdmission(occupancy=lambda _: None, cross_process=False)
++    # Exercise an alternate admit verdict; unlike head it does not take a lease.
++    monkeypatch.setattr(pool, "_admissible", lambda *args, **kwargs: "lpm")
++    ticket = pool.acquire(URL, 40_000, POOL, timeout_s=0)
++    assert ticket is not None
++    info = pool.admission_record(ticket)
++    assert info["long_prefill"] is True
++    assert info["lease_held_at_admission"] is False
++    assert info["admission_ticket"] == ticket and info["lease_holder_ticket"] is None
++    assert info["lease_wait_observed_ms"] == 0
++    pool.release(URL, ticket)
+diff --git a/tests/unit/test_prefix_index_wiring.py b/tests/unit/test_prefix_index_wiring.py
+index b163b832..f0d080d4 100644
+--- a/tests/unit/test_prefix_index_wiring.py
++++ b/tests/unit/test_prefix_index_wiring.py
+@@ -234,3 +234,19 @@ def test_pin_policy_ignores_chat_lane_and_explicit_slots(monkeypatch):
+     assert inner.infer.call_args[0][1].slot_id is None          # tool payloads: never
+     cb.infer(MagicMock(), req())
+     assert inner.infer.call_args[0][1].slot_id == 3
++
++
++def test_primitives_serving_record_captures_real_lease_admission(monkeypatch, tmp_path):
++    monkeypatch.setenv(kpa.KV_POOL_LONG_PREFILL_ENV, "1")
++    slots = Slots()
++    prims, _, log = _primitives(monkeypatch, tmp_path, slots)
++    try:
++        assert prims.llm_call("A sufficiently long prompt", role="coder_escalation", n_tokens=8) == "ok"
++    finally:
++        set_context_limit_resolver(None)
++    record = _records(log)[0]
++    assert record["caller"]["source"] == "primitives"
++    info = record["kv_admission"]
++    assert info["long_prefill"] is True
++    assert info["lease_held_at_admission"] is True
++    assert info["lease_wait_observed_ms"] == 0
+diff --git a/tests/unit/test_serving_calls.py b/tests/unit/test_serving_calls.py
+index 8743a2fc..bbc25a8a 100644
+--- a/tests/unit/test_serving_calls.py
++++ b/tests/unit/test_serving_calls.py
+@@ -418,3 +418,17 @@ def test_native_enqueue_is_optional_and_never_inherited_by_another_call(log_file
+     assert first["queue"]["enqueue_ts_epoch"] == 1234.125
+     assert "enqueue_ts_epoch" not in first["caller"]
+     assert "enqueue_ts_epoch" not in second["queue"]
++
++
++def test_legacy_and_unstaged_lease_metadata_remains_unknown(log_file):
++    sc.stage_caller(role="frontdoor", task_id="legacy")
++    sc.annotate_staged(kv_admission={"long_prefill": True})
++    _Backend(_server_ok).infer(_role_config(), InferenceRequest(role="frontdoor", prompt="x"))
++    sc.stage_caller(role="frontdoor", task_id="unstaged-admission")
++    _Backend(_server_ok).infer(_role_config(), InferenceRequest(role="frontdoor", prompt="y"))
++    legacy, missing = _records(log_file)
++    for record in (legacy, missing):
++        info = record.get("kv_admission") or {}
++        assert info.get("lease_held_at_admission") is None
++        assert info.get("lease_wait_observed_ms") is None
++        assert info.get("lease_holder_ticket") is None

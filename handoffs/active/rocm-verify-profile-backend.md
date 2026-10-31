@@ -935,13 +935,14 @@ the end are deliberate and recorded so they are not re-derived._
   seeds is cacheable and therefore unscoreable. Complements RVP-C2-7. The durable research reducer
   now emits this axis separately from transform variation; closure still requires an operator-approved
   experimental producer commit and a fresh durable-identity replay.
-- [ ] **RVP-C2-12 — A hard error on non-contiguous input must be a FAIL, never a skip.** The reference
+- [x] **RVP-C2-12 — A hard error on non-contiguous input must be a FAIL, never a skip.** ✅ 2026-10-31 producer `f744cc220e722d1bda93783959471d44f8e118b0`; Research `1403462340acb89c5652a157a9aacb1ebbb5dd6c`; [fixture tests](../../artifacts/compute/codex3-rvp-c2-12-20261031/TEST.log). [no-belief: source and regression verification] The reference
   suite converts these to skips in half its files; a kernel that cannot accept a strided ggml view is
   not correct for llama.cpp, and a skip records that as neither pass nor fail. **2026-08-11 static
   implementation:** under the separate `--autokernel-layouts` flag, the experimental tool marks an
   unsupported selected layout as a hard failure; both console and CSV parsers preserve FAIL instead
   of `not_supported`. Research commit `14034623` covers the consumer. This row remains open until the
   producer is committed.
+  - 2026-10-31: producer `f744cc220e722d1bda93783959471d44f8e118b0` is committed and an ancestor of frozen `ffc1bac82eeca6f9099e1ccd9ba49703c460a115`; selected unsupported layouts set `hard_failure` and return FAIL. Existing console and CSV parser fixtures pass on Research `93c217ec5d743da8f81b430630a03ad3638d106a`. [Source and test evidence](../../artifacts/compute/codex3-rvp-c2-12-20261031/README.md). No new native backend run or production edit/build. [no-belief: source and regression verification]
 - [x] **RVP-C6-9 — Build the two unbuilt detectors behind `AntiRewardHackingEvidence`**
   (`timing_dependent_branch_findings`, `environment_probe_findings`). Until they exist, an empty list
   must read **UNKNOWN, not PASS** — an empty result from a detector that was never built is exactly the

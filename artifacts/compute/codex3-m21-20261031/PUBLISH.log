@@ -1,0 +1,18 @@
+acquired push lock for /mnt/raid0/llm/epyc-orchestrator (key 2431-96371138) as 'codex3'
+operation token: /mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/m21/orch-push.token (mode 0600; keep it for release)
+Hold it while you review, then --push (or --release to give it up).
+From https://github.com/pestopoppa/epyc-orchestrator
+ * branch              main       -> FETCH_HEAD
+   48ade72d..38c00ecc  main       -> origin/main
+BASE 38c00ecc8cfa057d3279ab5f27649a5d39209d73 DIFF_SHA b12382d96af7e2081a3771cd84284a869c5898ee63bb8cf0d0cb0e6942034afc
+remote: 
+remote: Create a pull request for 'codex3/m21-probe-optout-final-20261031' on GitHub by visiting:        
+remote:      https://github.com/pestopoppa/epyc-orchestrator/pull/new/codex3/m21-probe-optout-final-20261031        
+remote: 
+To https://github.com/pestopoppa/epyc-orchestrator.git
+ * [new branch]        6de0e31dce409d3b974be3b78979f02dadcdc473 -> codex3/m21-probe-optout-final-20261031
+To https://github.com/pestopoppa/epyc-orchestrator.git
+   38c00ecc..6de0e31d  6de0e31dce409d3b974be3b78979f02dadcdc473 -> main
+6de0e31dce409d3b974be3b78979f02dadcdc473	refs/heads/codex3/m21-probe-optout-final-20261031
+6de0e31dce409d3b974be3b78979f02dadcdc473	refs/heads/main
+released push lock for /mnt/raid0/llm/epyc-orchestrator (key 2431-96371138)

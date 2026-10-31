@@ -293,9 +293,12 @@ def test_ak_refuses_untimed_trial_unknown_field_and_missing_budget_axis(tmp_path
         ak_write(tmp_path, [ak_trial(stage_seconds=none)])
     with pytest.raises(ns.CaptureError, match="closed carrier"):
         ak_write(tmp_path, [dict(ak_trial(), attempt_id="x")])
-    with pytest.raises(ns.CaptureError, match="budget axis"):
-        ak_write(tmp_path, [ak_trial(cumulative_tokens=None)])
-    assert not (tmp_path / ak_history.SIDECAR_NAME).exists()
+    # Hosted actors report no token counts: the budget axis stays unknown,
+    # while the timed stage remains a valid prospective measurement.
+    path = ak_write(tmp_path, [ak_trial(cumulative_tokens=None)])
+    assert ak_history.native_rows(path)[0]["row"]["extra"]["fields"]["cumulative_tokens"] is None
+    with pytest.raises(ns.CaptureError, match="trial_ordinal is required"):
+        ak_write(tmp_path, [ak_trial(trial_ordinal=None)])
 
 
 def test_ak_duplicate_trial_id_refused(tmp_path):
