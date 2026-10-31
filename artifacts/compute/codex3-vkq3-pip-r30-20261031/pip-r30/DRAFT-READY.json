@@ -1,0 +1,94 @@
+{
+  "id": "codex3-pip02-paddle-relocatable-r30-pool2-20261031",
+  "owner": "codex3",
+  "priority_rank": 83,
+  "regions": "any-cpu-quarter",
+  "min_window_s": 1320,
+  "window_s": 32400,
+  "gib": 96,
+  "launcher": {
+    "path": "/mnt/raid0/llm/tmp/codex3-pip-pool2-r30-v2-20261031/launch-p2.sh",
+    "sha256": "2dbe8265199aabaae505f17520e4a84b2cae67fc7b7f218392d201353061160c"
+  },
+  "job": {
+    "path": "/mnt/raid0/llm/tmp/codex3-pip-pool2-r30-v2-20261031/launch-p2.sh",
+    "sha256": "2dbe8265199aabaae505f17520e4a84b2cae67fc7b7f218392d201353061160c"
+  },
+  "source_manifest": {
+    "path": "/mnt/raid0/llm/tmp/codex3-pip-pool2-r30-v2-20261031/source.sha256",
+    "sha256": "506ac72c24355d36a0e098ec19f52917698eb0a76cf4b50bbdd4bcfadc2dd70b"
+  },
+  "result_path": "/mnt/micron/codex3-pip-pool2-r30-v2-20261031/DONE-2",
+  "decision_rule": "Continue original 12 pool2 groups; audited no-layout pages may resume only before any region attempt; every unmatched exposed region remains protected; no quality verdict.",
+  "class": "diagnostic",
+  "enrollment": "n/a: diagnostic",
+  "hold": null,
+  "scratch_root": "/mnt/raid0/llm/tmp/codex3-pip-pool2-r30-v2-20261031",
+  "keep": [
+    "launch-p2.sh",
+    "source.sha256",
+    "AUDIT.json",
+    "audit.py",
+    "test-safe.py",
+    "QUALIFICATION.json",
+    "SMOKE-normal.log",
+    "SMOKE-stop.log",
+    "DRAFT-READY.json",
+    "ws58-launcher.out",
+    "qualify.py",
+    "test-retirement.py",
+    "scorer-deployed-tests.log",
+    "scorer-final-s001.log"
+  ],
+  "est_output_GiB": 0.125,
+  "launcher_log": "/mnt/raid0/llm/tmp/codex3-pip-pool2-r30-v2-20261031/ws58-launcher.out",
+  "port": 25602,
+  "booking_class": "block-correctness",
+  "smoke": {
+    "ran_at": "2026-10-31T05:20:28.981644+00:00",
+    "regions": "R11 q1 SMT122,123 OMP1 under 26-27 prep lock",
+    "model": "canonical PaddleOCR-VL1.6 GGUF/mmproj/layout; 8192 context/4096 output",
+    "first_request_ok": true,
+    "result_writer_ok": true,
+    "exit_ok": true,
+    "wall_s": 66.53853828692809,
+    "sampled_peak_tree_rss_bytes": 4956082176,
+    "native_rc": 75,
+    "partial": true,
+    "cleanup_verified": true,
+    "matched_native_HTTP200": 5,
+    "log": "/mnt/raid0/llm/tmp/codex3-pip-pool2-r30-v2-20261031/SMOKE-normal.log",
+    "log_sha256": "41852dbb5c9c12d1d4e1c705b53025397171a6794650053729ec01f325e1d97c",
+    "stop_log": "/mnt/raid0/llm/tmp/codex3-pip-pool2-r30-v2-20261031/SMOKE-stop.log",
+    "stop_log_sha256": "20ff92b2c394b0f3c6583f15c2c7620c9018a5500046170068b2ec02a52d7799",
+    "stop_drained": true,
+    "scope": "isolated public controls 807/836; exact byte-matching native pool and writer; no cohort inference; normal real-grant branch untested",
+    "verification": "/mnt/raid0/llm/tmp/codex3-pip-pool2-r30-v2-20261031/QUALIFICATION.json"
+  },
+  "feasibility": "1320s minimum with native 1200s start margin and 90s engine drain; 9h requested, no minimum-window completion guarantee. RAID .125 GiB sampled reservation plus separate Micron 1 GiB reserve; both 150 GiB floors maintained; sampled overshoot is not a hard quota.",
+  "notes": "R30 private serial worker: original 16 no-layout page starts are capture-correlated and source-bound, with no intrinsic PID birth on historic page records; exact evidence pinned. Existing region starts without matching responses refuse redraw; prior successes are replayed byte-identically. Original 24 unmatched starts remain protected. Public controls exercise same pinned native pool; normal real-grant branch untested. Exact R22 stale armed metadata is ignored only after terminal, grant, queue, latest captured launcher, process and listener checks under the new per-pool writer lock.",
+  "log_consumer": "/mnt/raid0/llm/tmp/pip02-pipeline-prep-20261029/cpu_projector_witness.py",
+  "runtime_dependencies": [
+    "/mnt/raid0/llm/tmp/codex3-pip-pool2-r30-v2-20261031",
+    "/mnt/micron/codex3-pip-pool2-r30-v2-20261031",
+    "/mnt/micron/codex3-pip-split-r22-20261030",
+    "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029",
+    "/mnt/raid0/llm/tmp/codex3-pip02-paddle-relocatable-r13-20261030",
+    "/mnt/raid0/llm/tmp/pip02-pipeline-prep-20261029"
+  ],
+  "protocol": {
+    "path": "/mnt/raid0/llm/tmp/codex3-pip-relocatable-r25-20261030/PROTOCOL.md",
+    "sha256": "6dc0b9cae7a1240c46abac3603e44a7635aa7b613aa1cca4a9e2af4703cf3d4a"
+  },
+  "status": "DRAFT",
+  "output_budget": {
+    "raid_est_GiB": 0.125,
+    "raid_soft_GiB": 0.0625,
+    "micron_est_GiB": 1.0,
+    "micron_soft_GiB": 0.5,
+    "kind": "sampled; overshoot possible",
+    "native_output_root": "/mnt/micron/codex3-pip-pool2-r30-v2-20261031",
+    "raid_floor_GiB": 150,
+    "micron_floor_GiB": 150
+  }
+}

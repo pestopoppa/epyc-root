@@ -1,0 +1,8 @@
+{
+  "pid": 81719,
+  "birth": 154594621,
+  "started": 1793423473.0292103,
+  "max_wait_s": 7200,
+  "launcher_sha256": "b717421f7205e92406671aefb887ee7f2ab37b5c6c846322c4c9d60171bc0726",
+  "source_sha256": "96ca5e50911a1dc0838ecef538986904e0ff077d741f40e0b5100f7083855dee"
+}

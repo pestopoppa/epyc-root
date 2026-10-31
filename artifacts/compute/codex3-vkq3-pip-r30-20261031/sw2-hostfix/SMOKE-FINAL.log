@@ -1,0 +1,2 @@
+{"leader_pid": 153341, "leader_birth": 154642072, "event": "leader_started"}
+{"schema": "hil15-r11-smoke-supervisor/v1", "elapsed_s": 0.6190038949716836, "sampled_peak_tree_rss_bytes": 232501248, "samples": 7, "verified_exited_processes": 0, "verified_exited_threads": 0, "per_process_address_space_limit_bytes": 8589934592, "rss_scope": "sum of sampled resident pages across owned process tree; sampling may miss transients and double-count shared pages", "leader_pid": 153341, "leader_birth": 154642072, "child_rc": 0, "children_drained": true, "failure": null}

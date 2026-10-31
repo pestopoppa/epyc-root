@@ -1,0 +1,30 @@
+{
+  "at": "2026-10-31T05:26:22.459951+00:00",
+  "reason": "keeper reap-gate requires launcher inside scratch_root",
+  "entries": [
+    {
+      "id": "codex3-cs26-f1-independent-hostfix-20261031",
+      "armed": false,
+      "grant": false,
+      "action": "withdrawn"
+    },
+    {
+      "id": "codex3-cs8-lex2-dev-grid-hostfix-20261031",
+      "armed": false,
+      "grant": false,
+      "action": "withdrawn"
+    },
+    {
+      "id": "codex3-dsc-25592-replay-hostfix-20261031",
+      "armed": false,
+      "grant": false,
+      "action": "withdrawn"
+    },
+    {
+      "id": "codex3-sw2-v9-clamp-hostfix-20261031",
+      "armed": false,
+      "grant": false,
+      "action": "withdrawn"
+    }
+  ]
+}

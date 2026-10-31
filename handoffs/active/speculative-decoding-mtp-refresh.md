@@ -570,3 +570,9 @@ The earlier unarmed `codex3-cafe1-pmin-20261031` READY was withdrawn at 05:10: i
 ### 2026-10-31 SW-2 HOST lock supersession
 
 At 05:17 the owner withdrew the unarmed `codex3-sw2-v9-clamp-20261031` READY after host preflight found its canonical region-lock interpreter absent. Earlier small-model controls remain historical but do not qualify that host branch; no grant or target exposure occurred. A corrected successor is in preparation; no current-production, v10 or SW-2 conclusion follows. [Retraction receipt](../../artifacts/compute/codex3-fu03-r3-kpf-gpu-draft-20261031/host-lock-retractions.json). [belief: cc]
+
+### 2026-10-31 SW-2 HOST-fix qualification limit
+
+The replacement `codex3-sw2-v9-clamp-hostfix-20261031` publication manifest `839e87ac9dea648a8f655a4d6bf979b820361c479f95c6a17a4bc56f6f8f6325` has HOST startup/lock proof, four private-v9 tiny-model responses and STOP/drain; cap-zero draft count remains UNKNOWN. The keeper reap gate skipped it because its replacement launcher lies outside its declared original scratch root; no arm or grant. A corrected in-scratch successor remains in preparation; no full-prompt, current-production or SW-2 conclusion follows. [Historical HOST controls](../../artifacts/compute/codex3-vkq3-pip-r30-20261031/). [belief: cc]
+
+At 05:29 the in-scratch HOST-fix2 successor is READY, manifest `684516c6d8f72f85c631f9bcc5434374f5a4e7316862d084b999adf3e1b81821`; its actual launcher resides inside its declared scratch root. Final same-entry tiny private-v9 control and STOP/drain do not establish full-prompt or current-production behavior. [Final and historical controls](../../artifacts/compute/codex3-vkq3-pip-r30-20261031/). [belief: cc]

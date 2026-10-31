@@ -1,0 +1,11 @@
+{
+  "at": "2026-10-31T05:30:06.070745+00:00",
+  "status": "cold HOST import verified actual immutable package modules",
+  "modules": {
+    "/mnt/raid0/llm/artifacts/pip02-scorer/261f7804a037/pkg/vidya_snapshot/adapters/pip02_teds.py": "7e52f1e294b887b4a552db0703c95bf1c4ef5d971e85f3b0b6fd2903ae7c46b8",
+    "/mnt/raid0/llm/artifacts/pip02-scorer/261f7804a037/pkg/vidya_snapshot/claim_tuple.py": "6ae969f7029c1a6356593fd2432eca2320931f22aa4a8c4e3a388a72b81944e7"
+  },
+  "source": "/mnt/raid0/llm/artifacts/pip02-scorer/261f7804a037/pkg/epoch_watch.py",
+  "watch_source_sha256": "48b038e23ea7169eff385f9833d3c3bd4455b502cd1715c37e731cb583c2ef46",
+  "prior_d2_limitation": "epoch_watch.py still imports ROOT lane and omits r29 baseline epochs; retain old paths; old strict receipts and 344/82 independent union remain valid"
+}

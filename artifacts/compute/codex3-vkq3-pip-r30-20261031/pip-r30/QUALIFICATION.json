@@ -1,0 +1,28 @@
+{
+  "schema": "pip02-pool2-r30-v2-qual/v1",
+  "scope": "exact-byte native pool path on isolated public controls; normal real grant branch untested",
+  "source_manifest_sha256": "506ac72c24355d36a0e098ec19f52917698eb0a76cf4b50bbdd4bcfadc2dd70b",
+  "source_pins_sha256": "da1b844dfe244a93a0ffcfe8f85303a2a3d3afe24021d228c698526720583e36",
+  "launcher_sha256": "2dbe8265199aabaae505f17520e4a84b2cae67fc7b7f218392d201353061160c",
+  "original_evidence_sha256": "ffc63bedd6d7d5feee82a83bf849c17521bd43201d4dda44430e29ba0ef1516c",
+  "guard_controls": "16 original positives, 16 stray region negatives; old owner live evidence plus lock/grant/queue/terminal/generation fail-closed controls",
+  "control_source_matches_normal": true,
+  "normal": {
+    "log": "/mnt/raid0/llm/tmp/codex3-pip-pool2-r30-v2-20261031/SMOKE-normal.log",
+    "sha256": "41852dbb5c9c12d1d4e1c705b53025397171a6794650053729ec01f325e1d97c",
+    "http_200_durable": 5,
+    "wall_s": 66.53853828692809,
+    "peak_bytes": 4956082176,
+    "rc": 75,
+    "drained": true
+  },
+  "stop": {
+    "log": "/mnt/raid0/llm/tmp/codex3-pip-pool2-r30-v2-20261031/SMOKE-stop.log",
+    "sha256": "20ff92b2c394b0f3c6583f15c2c7620c9018a5500046170068b2ec02a52d7799",
+    "wall_s": 20.73525685397908,
+    "peak_bytes": 4962979840,
+    "rc": 75,
+    "drained": true
+  },
+  "created_utc": "2026-10-31T05:20:28.981644+00:00"
+}

@@ -1,0 +1,33 @@
+{
+  "normal_terminal": {
+    "counts": {
+      "failure": 0,
+      "ok": 1,
+      "unknown": 0
+    },
+    "mode": "smoke",
+    "partial": false,
+    "sequence_count": 1,
+    "state": "complete_raw",
+    "unfilled_predeclared_sequences": null,
+    "verdict": null
+  },
+  "stop_controls": {
+    "dsc": {
+      "partial": true,
+      "reason": "exposed request interrupted"
+    }
+  },
+  "controls": [
+    {
+      "status": "ok",
+      "expected_token_count_match": true,
+      "cache_n": 0
+    },
+    {
+      "status": "ok",
+      "expected_token_count_match": true,
+      "cache_n": 18
+    }
+  ]
+}

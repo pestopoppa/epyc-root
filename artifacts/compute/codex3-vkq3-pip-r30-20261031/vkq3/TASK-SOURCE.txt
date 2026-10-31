@@ -1,0 +1,7 @@
+  - [ ] **CPU-FA-VKQ-3 (optional) — MTP acceptance at > 64k on the architect, fix vs legacy.** (filed 2026-10-04,
+    workspace-ec) The dense F16 MTP head is the one consumer whose visible window is not bounded by the indexer. Replay
+    a > 64k architect conversation with MTP on a scratch port in a CPU window, `GGML_FA_VKQ_F16=1` vs default, and
+    compare acceptance and the first-divergence token. Done when the acceptance delta is recorded, or the probe shows
+    `acc_peak` stays far below FP16 range at that length.
+    - *(2026-10-21 triage)* open (no evidence found).
+    - *(2026-10-22, KVU-LB1.c, intake-2455)* moved to the top of this open list: production v10 has no fix and the architect declares 262144 context.

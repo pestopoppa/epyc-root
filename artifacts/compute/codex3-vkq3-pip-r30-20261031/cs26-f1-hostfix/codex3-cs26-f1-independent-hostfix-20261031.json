@@ -1,0 +1,66 @@
+{
+  "id": "codex3-cs26-f1-independent-hostfix-20261031",
+  "owner": "codex3",
+  "priority_rank": 100,
+  "regions": "any-cpu-quarter",
+  "min_window_s": 2100,
+  "window_s": 36000,
+  "gib": 8,
+  "booking_class": "block-timing-quiet",
+  "class": "diagnostic",
+  "decision_rule": "n/a (first-window independent-arm raw capture; higher neighbour tok/s and lower speech RTF are descriptive, no F1 candidate verdict)",
+  "enrollment": "n/a: diagnostic",
+  "launcher": {
+    "path": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/cs26-f1-hostfix/launch.sh",
+    "sha256": "fdef7f2866192f37b80535aed95028affffc2ab9f65e50a22391d12636a46254"
+  },
+  "job": {
+    "path": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/cs26-f1/independent_capture.py",
+    "sha256": "9bcc7ca16997759c88dc2202ebf31b8ba27444e38b4cf75be4c96f993b164fbe"
+  },
+  "source_manifest": {
+    "path": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/cs26-f1-hostfix/SOURCE-SHA256SUMS",
+    "sha256": "56c9df67de124fc1432fb9c75d1fa549994de8493a9f068d93553a9474feb53a"
+  },
+  "scratch_root": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/cs26-f1",
+  "keep": [
+    "INDEPENDENT-PLAN.json",
+    "CLIPS.json",
+    "INPUTS.sha256",
+    "RUNTIME.sha256",
+    "SOURCE-SHA256SUMS",
+    "WHISPER-BUILD-SHA256SUMS",
+    "WHISPER-BUILD.log",
+    "WHISPER-LINKAGE.log",
+    "*.py",
+    "*.sh",
+    "*.json",
+    "*.log",
+    "engine/*",
+    "run/*",
+    "smoke-real8/*",
+    "smoke-stop12/*",
+    "whisper-build/bin/*"
+  ],
+  "result_path": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/cs26-f1/run/TERMINAL.json",
+  "est_output_GiB": 4,
+  "feasibility": "HOST final wrapper requalification took 17.831s for same noncohort control; original full-target feasibility, scope and unknowns remain as previously stated. Small-model same-launcher solo/co-run A/B/A control took 6.768s, but the actual large-v3-turbo, Nemo, Parakeet and 1.7B neighbour arms and 528 paired cases are not yet timed; 36000s is prospective. Segments resume only at pair boundaries, preserving original unknowns; no full-F1 conclusion.",
+  "smoke": {
+    "ran_at": "2026-10-31T05:19:25.944020+00:00",
+    "regions": "R11 122,123",
+    "model": "Whisper tiny + Qwen3 0.6B; neighbor uses one-token test repetitions, not full-target tg32",
+    "first_request_ok": true,
+    "result_writer_ok": true,
+    "exit_ok": true,
+    "wall_s": 17.83124897722155,
+    "peak_sampled_tree_rss_bytes": 1254920192,
+    "launcher_sha256": "fdef7f2866192f37b80535aed95028affffc2ab9f65e50a22391d12636a46254",
+    "log": "/mnt/raid0/llm/tmp/compute-flags/ready/codex3-cs26-f1-independent-hostfix-20261031.smoke.log",
+    "log_sha256": "07366f79edda0f634f61ef08f7c34191d9c27bb845b7dc70bc5505b83e0222f3"
+  },
+  "hold": null,
+  "log_consumer": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/cs26-f1/log_consumer.py",
+  "completion": "Paired solo/co-run cells, native A/B/A timestamps, speech thread CPU ticks and original identities. Exposed interruption remains unknown, never redrawn; rc75 partial and drained. Best STT2 runner arms, second timing window and actual STT5 WER remain open. HOST lock shim verified; R13 startup and same-final-wrapper normal/STOP proof preserved; no full-plan exposure.",
+  "repair_of": "codex3-cs26-f1-independent-20261031",
+  "launcher_log": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/cs26-f1-hostfix/ws58-launcher.out"
+}

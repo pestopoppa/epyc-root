@@ -1,0 +1,190 @@
+{
+  "launcher_sha256": "b717421f7205e92406671aefb887ee7f2ab37b5c6c846322c4c9d60171bc0726",
+  "source_sha256": "96ca5e50911a1dc0838ecef538986904e0ff077d741f40e0b5100f7083855dee",
+  "proof": {
+    "normal": {
+      "tag": "normal1",
+      "rc": 0,
+      "log": "/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/gpu-leg-v3/QUALIFIER-normal1.log",
+      "records": [
+        "/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/gpu-leg-v3/control-normal1/records/kpf18-20261031T051705Z-1.json",
+        "/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/gpu-leg-v3/control-normal1/records/kpf18-20261031T051717Z-3.json",
+        "/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/gpu-leg-v3/control-normal1/records/kpf18-20261031T051718Z-4.json",
+        "/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/gpu-leg-v3/control-normal1/records/kpf18-20261031T051707Z-2.json"
+      ],
+      "comparator_records": [
+        "/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/gpu-leg-v3/control-normal1/comparator/records/kpf18-20261031T051741Z-1.json",
+        "/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/gpu-leg-v3/control-normal1/comparator/records/kpf18-20261031T051751Z-2.json"
+      ],
+      "consumer_result": "/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/gpu-leg-v3/control-normal1/CONTROL-RESULT.json",
+      "active_sample": {
+        "source": "active_slots",
+        "path": "/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/gpu-leg-v3/control-normal1/active_slots/kpf18-20261031T051705Z-1-ed795e74dbf281259c48.jsonl",
+        "final_task_id": 16,
+        "final_slot_id": 1,
+        "matched_active_samples": 2,
+        "matched_values": [
+          512,
+          512
+        ],
+        "matched_slot": {
+          "id": 1,
+          "n_ctx": 8192,
+          "speculative": false,
+          "is_processing": true,
+          "id_task": 16,
+          "n_prompt_tokens": 761,
+          "n_prompt_tokens_processed": 32,
+          "n_prompt_tokens_cache": 512,
+          "params": {
+            "seed": 42,
+            "temperature": 0.0,
+            "dynatemp_range": 0.0,
+            "dynatemp_exponent": 1.0,
+            "top_k": 40,
+            "top_p": 0.949999988079071,
+            "min_p": 0.05000000074505806,
+            "top_n_sigma": -1.0,
+            "xtc_probability": 0.0,
+            "xtc_threshold": 0.10000000149011612,
+            "typical_p": 1.0,
+            "repeat_last_n": 64,
+            "repeat_penalty": 1.0,
+            "presence_penalty": 0.0,
+            "frequency_penalty": 0.0,
+            "dry_multiplier": 0.0,
+            "dry_base": 1.75,
+            "dry_allowed_length": 2,
+            "dry_penalty_last_n": 8192,
+            "mirostat": 0,
+            "mirostat_tau": 5.0,
+            "mirostat_eta": 0.10000000149011612,
+            "max_tokens": 256,
+            "n_predict": 256,
+            "n_keep": 0,
+            "n_discard": 0,
+            "kv_streaming_sink": 0,
+            "kv_streaming_window": 0,
+            "ignore_eos": true,
+            "stream": false,
+            "n_probs": 0,
+            "min_keep": 0,
+            "chat_format": "Content-only",
+            "reasoning_format": "deepseek",
+            "reasoning_in_content": false,
+            "generation_prompt": "",
+            "samplers": [
+              "penalties",
+              "dry",
+              "top_n_sigma",
+              "top_k",
+              "typ_p",
+              "top_p",
+              "min_p",
+              "xtc",
+              "temperature"
+            ],
+            "speculative.types": "none",
+            "speculative.n_max": 3,
+            "timings_per_token": false,
+            "post_sampling_probs": false,
+            "backend_sampling": false,
+            "lora": []
+          },
+          "next_token": [
+            {
+              "has_next_token": true,
+              "has_new_line": true,
+              "n_remain": 38,
+              "n_decoded": 218
+            }
+          ],
+          "kv_cells": {
+            "private": 249,
+            "shared": 512
+          },
+          "kv_pool": {
+            "size": 8192,
+            "used": 825,
+            "shared": 512
+          },
+          "fork": {
+            "n_fork_tokens": 512,
+            "src_slot": 0,
+            "src_kind": "checkpoint"
+          },
+          "content_epoch": 3,
+          "prefix_hash": "2336e0bc15ae983f",
+          "checkpoints": [
+            {
+              "n_tokens": 64,
+              "pos_min": 63,
+              "pos_max": 63,
+              "pinned": false,
+              "size_mib": 19.266063690185547,
+              "prefix_hash": "e9e5f7153dd10485"
+            },
+            {
+              "n_tokens": 512,
+              "pos_min": 511,
+              "pos_max": 511,
+              "pinned": true,
+              "size_mib": 19.266063690185547,
+              "prefix_hash": "0d8d23f233187247"
+            },
+            {
+              "n_tokens": 540,
+              "pos_min": 539,
+              "pos_max": 539,
+              "pinned": false,
+              "size_mib": 19.266063690185547,
+              "prefix_hash": "843ec22a533a4c2f"
+            }
+          ]
+        },
+        "n_fork_tokens": 512,
+        "status": "observed",
+        "sampler_drained": true,
+        "sample_errors": 0,
+        "sha256": "ce14035f7ad58b2fd6a0863bde79cc57fd0f38625f8db5a7fb3521bbaa24b2a7"
+      },
+      "supervisor": {
+        "schema": "kpf181-r7-smoke-supervisor/v1",
+        "elapsed_s": 55.77883821981959,
+        "sampled_peak_tree_rss_bytes": 1187409920,
+        "samples": 548,
+        "verified_exited_processes": 0,
+        "verified_exited_threads": 0,
+        "per_process_address_space_limit_bytes": null,
+        "rss_scope": "sum of sampled resident pages across owned process tree; sampling may miss transients and double-count shared pages",
+        "leader_pid": 129519,
+        "leader_birth": 154629162,
+        "child_rc": 0,
+        "children_drained": true,
+        "failure": null
+      }
+    },
+    "stop": {
+      "tag": "stop1",
+      "rc": 75,
+      "log": "/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/gpu-leg-v3/QUALIFIER-stop1.log",
+      "partial": "/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/gpu-leg-v3/control-stop1/PARTIAL.json",
+      "supervisor": {
+        "schema": "kpf181-r7-smoke-supervisor/v1",
+        "elapsed_s": 9.922154041938484,
+        "sampled_peak_tree_rss_bytes": 1113251840,
+        "samples": 98,
+        "verified_exited_processes": 0,
+        "verified_exited_threads": 0,
+        "per_process_address_space_limit_bytes": null,
+        "rss_scope": "sum of sampled resident pages across owned process tree; sampling may miss transients and double-count shared pages",
+        "leader_pid": 143418,
+        "leader_birth": 154634750,
+        "child_rc": 75,
+        "children_drained": true,
+        "failure": null
+      }
+    }
+  },
+  "note": "small public-control qualification only; target 27B not loaded; no READY implied"
+}

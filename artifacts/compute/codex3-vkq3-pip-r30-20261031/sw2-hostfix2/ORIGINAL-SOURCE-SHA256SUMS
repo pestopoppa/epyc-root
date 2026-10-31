@@ -1,0 +1,12 @@
+824f2ad5bd66fae498f35d3f2cb559b5a6f382035300b7056da05b30f67f5cf6  /mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/sw2/ORIGINAL-INPUT-SHA256SUMS
+9823282ceee515f0269f299fd89146ef9a960540d851cda145c6f8f18beb4223  /mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/sw2/PLAN.json
+a897188e61d931657076b88c8fbf5db6427e072d418dddfcf4a58dd38f25cbc5  /mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/sw2/RUNTIME-LIBS.sha256
+aa9ed900be5fb7f3efca043bfddb2ac8963964710db0b702c7491729a74f8542  /mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/sw2/engine/dryrun_check.py
+a271e93a7a9ac54386352d254e5ad2ab57a5f39fc40daad99106afa919bfa157  /mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/sw2/engine/dryrun_disk_policy.json
+241e522f4a7d7208e7485834c90d77676434a9bc88fd253575e034ad2934237c  /mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/sw2/engine/filler_lib.sh
+e940173f539fcae2e814ab4022e3b3cb48eff1fc3d3a7ccdb5de898be5168aeb  /mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/sw2/engine/filler_run13.sh
+4769ffaae2d5fcb04ab023d06370ee0481f03857de88356f565a85792de39d76  /mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/sw2/runtime-libs/libcrypto.so.3
+e2f779425f91a9bbb2a5817d975b6ddb8f9fec40ad4c060ddae350c4e4986c5d  /mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/sw2/runtime-libs/libssl.so.3
+d8b6b7923c5728939efb2e6e75d276051c4bf2135b4b3056579614ea151f929d  /mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/sw2/smoke-supervisor.py
+b172e30909b67ecfc17d43a4a46f4b97648bea865b9d7de44c6555cebabc0a58  /mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/sw2/smoke_admission.py
+714b078a1f0a35efe8714abfacaf0d651479f5e5cb95559731d7485597d6fc2f  /mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/sw2/worker.py

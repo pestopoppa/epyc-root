@@ -1,0 +1,76 @@
+{
+  "id": "codex3-cpu-fa-vkq3-mtp-20261031",
+  "owner": "codex3",
+  "priority_rank": 30,
+  "regions": "0-95",
+  "min_window_s": 9000,
+  "window_s": 14400,
+  "gib": 256,
+  "booking_class": "block-correctness",
+  "class": "diagnostic",
+  "decision_rule": "Diagnostic compare native MTP acceptance and first token divergence: positive draft counts must be actually reported in both arms; missing counts, interrupted attempts or missing tokens remain UNKNOWN. No fixed acceptance threshold or adoption decision.",
+  "enrollment": "dcb7467273bea434c2939f92433fc0ed09b725cd",
+  "launcher": {
+    "path": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/vkq3/launch.sh",
+    "sha256": "e80ab106e67ae91fd8e2e6fdd28cbc684f027b29f910391586cdc6c5b2be6bd0"
+  },
+  "job": {
+    "path": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/vkq3/worker.py",
+    "sha256": "c7b49096035e09597ab3ef5559a67c3f6d8f480386d3f83afba638a9ca57e1e8"
+  },
+  "source_manifest": {
+    "path": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/vkq3/SOURCE-SHA256SUMS",
+    "sha256": "bd2b482955a7b3149c944cddeac29c982996928ab42d271216c3efbb3b00d00e"
+  },
+  "scratch_root": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/vkq3",
+  "keep": [
+    "TASK-SOURCE.txt",
+    "SOURCE-INPUTS.sha256",
+    "SOURCE-SHA256SUMS",
+    "RUNTIME-INPUTS.sha256",
+    "FULL-MODELS.sha256",
+    "EARLY.sha256",
+    "REGION-LOCK-INPUTS.sha256",
+    "REGION-LOCK-PYTHON-ALLOW.txt",
+    "region-lock",
+    "PLAN.json",
+    "CONTEXT-METADATA.json",
+    "*.py",
+    "*.sh",
+    "*.log",
+    "*.out",
+    "engine/*.sh",
+    "engine/*.py",
+    "engine/*.json",
+    "run/*.json",
+    "run/*.log",
+    "smoke-final/*.json",
+    "smoke-final/*.log",
+    "smoke-stop-final/*.json",
+    "smoke-stop-final/*.log"
+  ],
+  "result_path": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/vkq3/run/TERMINAL.json",
+  "est_output_GiB": 1,
+  "feasibility": "Full-target 70,014-token MTP and total run time are UNTESTED. A historic 18,940-token probe on a different configuration took 352.4s; linear extrapolation 2 x 70014/18940 x 352.4 = 2606s excludes loads and long-context effects and is not a completion guarantee. Budget 14400s and 9000s minimum; incomplete request is UNKNOWN, never redraw.",
+  "smoke": {
+    "ran_at": "2026-10-31T05:15:33.133935+00:00",
+    "regions": "R11 128,129",
+    "model": "public Qwen3 0.6B, spec-type none; no target MTP or >64k claim",
+    "first_request_ok": true,
+    "result_writer_ok": true,
+    "exit_ok": true,
+    "wall_s": 2.071645261021331,
+    "peak_sampled_tree_rss_bytes": 1165844480,
+    "launcher_sha256": "e80ab106e67ae91fd8e2e6fdd28cbc684f027b29f910391586cdc6c5b2be6bd0",
+    "log": "/mnt/raid0/llm/tmp/compute-flags/ready/codex3-cpu-fa-vkq3-mtp-20261031.smoke.log",
+    "log_sha256": "6672323fde9ece85de994deea671560a0e0f7304b6831c52160b38b11ad47d3e"
+  },
+  "hold": null,
+  "log_consumer": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/vkq3/log_consumer.py",
+  "context": {
+    "sha256": "b2f5d3cebd4aecc6f4f9d49b70021ecd7c139a4327bcd651ca15a3b351e541a0",
+    "native_architect_token_count": 70014,
+    "scope": "Original agentic conversation replayed to architect model; not claimed to be historical architect traffic; no truncation"
+  },
+  "completion": "Same HOST final launcher, normal R13 --complete-cmd, explicit RUS3_DIAGNOSTIC in env-i; real small model arm requests and STOP75/partial/drained. Each full arm preserves grant, exact source, ELF/model/head/knob, original prompt identity and native response; no exposed replay."
+}

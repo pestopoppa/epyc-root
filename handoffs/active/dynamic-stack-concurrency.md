@@ -366,3 +366,9 @@ Private multi-turn replay is READY (publication manifest SHA-256 `40370fc8a7f084
 ### 2026-10-31 #25592 HOST lock supersession
 
 At 05:17 the owner withdrew the unarmed `codex3-dsc-25592-replay-20261031` READY after host preflight found its canonical region-lock interpreter absent. Earlier public controls remain historical, but did not qualify the real host branch; no grant or target exposure occurred. A corrected successor is in preparation; five selected sequences and seven unknown slots do not constitute a result. [Retraction receipt](../../artifacts/compute/codex3-fu03-r3-kpf-gpu-draft-20261031/host-lock-retractions.json). [belief: cc]
+
+### 2026-10-31 #25592 HOST-fix qualification limit
+
+The replacement `codex3-dsc-25592-replay-hostfix-20261031` publication manifest `b7ffd693395738b9d6e044a563b440b97ed8399508f8bb13816b3470fde62f1b` has HOST startup/lock proof and one public three-turn control plus STOP/drain. The keeper reap gate skipped it because its replacement launcher lies outside its declared original scratch root; no arm or grant; the owner withdrew it at 05:26. A corrected in-scratch successor remains in preparation. Original five selected sequences and seven unfilled slots remain as predeclared; no full-size replay, rate or gate result follows. [Historical HOST controls](../../artifacts/compute/codex3-vkq3-pip-r30-20261031/). [belief: cc]
+
+At 05:29 the in-scratch HOST-fix2 successor is READY, manifest `69b4e9f5fafc50eb21a5976ad6684595e64a445798ae0cd66490b4588cbd7627`; its actual launcher resides inside its declared scratch root. Final same-entry public control remains one short raw sequence plus STOP/drain; five original sequences and seven unfilled slots retain their predeclared status, with no full-size result. [Final and historical controls](../../artifacts/compute/codex3-vkq3-pip-r30-20261031/). [belief: cc]

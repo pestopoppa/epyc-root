@@ -1,0 +1,4 @@
+uid=1000(daniele) gid=1000(daniele) groups=1000(daniele),992(render)
+e50d468e8b0adfb05733f5b87b3cff34829c4a8c1aea50c865aa8bdfe4bb150f  /usr/bin/python3
+usage: region-lock [-h] {run,status} ...
+

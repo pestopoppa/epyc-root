@@ -1,0 +1,15 @@
+test_actual_r28_and_fresh_positive (__main__.NativeCatalog.test_actual_r28_and_fresh_positive) ... ok
+test_actual_r29_region_and_bad_catalog_refuse (__main__.NativeCatalog.test_actual_r29_region_and_bad_catalog_refuse) ... ok
+test_changed_capture_id_or_group_or_launcher_refuse (__main__.NativeCatalog.test_changed_capture_id_or_group_or_launcher_refuse) ... ok
+test_fresh_manifest_and_source_map_refuse (__main__.NativeCatalog.test_fresh_manifest_and_source_map_refuse) ... ok
+test_wrong_launcher_and_pool_refuse (__main__.NativeCatalog.test_wrong_launcher_and_pool_refuse) ... ok
+test_wrong_region_capture_hash_refuses (__main__.NativeCatalog.test_wrong_region_capture_hash_refuses) ... ok
+
+----------------------------------------------------------------------
+Ran 6 tests in 5.503s
+
+OK
+synthetic R30 control: exact capture/finish positive and wrong ID/group/launcher/protocol/grant/source/smoke negatives passed; not production evidence
+replayed existing baseline 1 5 r29 2
+replayed existing baseline 3 4 r29 1
+replayed existing baseline 128 2 r29 0

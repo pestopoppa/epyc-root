@@ -1,0 +1,40 @@
+{
+  "schema": "vkq3.predecl.v1",
+  "task": "CPU-FA-VKQ-3",
+  "source_catalog_sha256": "499896cf72b537750f0590ffb3e45db1de3f3dba237c9b2d22e89fcb52f3a81d",
+  "context_metadata_sha256": "f6de113a3fc36e17a0faae386aabf351ee66abcf9c62495d44ad6d855f5a9478",
+  "context": {
+    "session": "opencode-07",
+    "turn": 16,
+    "sha256": "b2f5d3cebd4aecc6f4f9d49b70021ecd7c139a4327bcd651ca15a3b351e541a0",
+    "architect_token_count": 70014,
+    "selection_tokenizer_count": 70014
+  },
+  "context_scope": "Original agentic conversation replayed to architect model; not claimed to be historical architect traffic; no truncation",
+  "arms": [
+    {
+      "id": "hybrid",
+      "GGML_FA_VKQ_F16": null
+    },
+    {
+      "id": "legacy",
+      "GGML_FA_VKQ_F16": "1"
+    }
+  ],
+  "request": {
+    "temperature": 0,
+    "top_k": 1,
+    "seed": 42,
+    "n_predict": 128,
+    "cache_prompt": false,
+    "return_tokens": true
+  },
+  "mtp": {
+    "spec_type": "draft-mtp",
+    "draft_n_max": 4,
+    "cache_k": "f16",
+    "cache_v": "f16"
+  },
+  "decision": "Report each native accepted/drafted rate only with positive actual native counts and per-token first divergence if both native requests complete. No fixed acceptance threshold; missing counts, partial requests, or failure remain UNKNOWN. Preserve original attempts, no redraw.",
+  "timing_note": "Actual >64k MTP prefill and full target are untested. 18,940-token old probe took 352.4s on different setup; extrapolation cannot establish 70,014-token wall feasibility."
+}

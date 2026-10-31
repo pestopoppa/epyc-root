@@ -1,0 +1,23 @@
+{
+  "normal_terminal": {
+    "cells": 2,
+    "counts": {
+      "failure": 0,
+      "ok": 2,
+      "unknown": 0
+    },
+    "mode": "smoke",
+    "original_clips": 1,
+    "partial": false,
+    "scored": false,
+    "state": "complete_raw"
+  },
+  "stop_controls": {
+    "lex": {
+      "partial": true,
+      "reason": "interrupted exposed attempt",
+      "at": 1793424484.1307602
+    }
+  },
+  "positive_rnnt_stop_trace_files": 1
+}

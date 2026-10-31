@@ -1,0 +1,8 @@
+{
+  "id": "codex3-kpf181-27b-gpu-r3-20261031",
+  "manifest": "/mnt/raid0/llm/tmp/compute-flags/ready/codex3-kpf181-27b-gpu-r3-20261031.json",
+  "launcher_sha256": "b717421f7205e92406671aefb887ee7f2ab37b5c6c846322c4c9d60171bc0726",
+  "source_sha256": "96ca5e50911a1dc0838ecef538986904e0ff077d741f40e0b5100f7083855dee",
+  "proof": "/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/gpu-leg-v3/QUALIFIER-QUALIFIED.json",
+  "published": "2026-10-31T05:18:08.120907+00:00"
+}

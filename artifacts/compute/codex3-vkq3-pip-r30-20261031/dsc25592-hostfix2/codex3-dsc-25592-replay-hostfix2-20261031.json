@@ -1,0 +1,70 @@
+{
+  "id": "codex3-dsc-25592-replay-hostfix2-20261031",
+  "owner": "codex3",
+  "priority_rank": 100,
+  "regions": "any-cpu-quarter",
+  "min_window_s": 5700,
+  "window_s": 36000,
+  "gib": 128,
+  "booking_class": "block-correctness",
+  "class": "diagnostic",
+  "decision_rule": "n/a (descriptive forced-reprefill and native cache_n counts; no numerical non-trivial-rate threshold or kernel promotion decision is invented)",
+  "enrollment": "n/a: diagnostic",
+  "launcher": {
+    "path": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/dsc25592/hostfix2/launch.sh",
+    "sha256": "a37de78aa92300839b7f07f0761f93b33262ea287669a73c0118694d831c4494"
+  },
+  "job": {
+    "path": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/dsc25592/worker.py",
+    "sha256": "cc2439c412f8233bc4d56e9fe9b9faa9bd71e9a33f8857f207b3370b2254cb5c"
+  },
+  "source_manifest": {
+    "path": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/dsc25592/hostfix2/SOURCE-SHA256SUMS",
+    "sha256": "4cae48392559572894e9c14221d7c1e6dad6fc576645885beb132825f78df0ad"
+  },
+  "scratch_root": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/dsc25592",
+  "keep": [
+    "PREDECLARED.json",
+    "CASE-PLAN.json",
+    "TOKEN-INDEX.json",
+    "PRIVATE-SESSION-SHA256SUMS",
+    "ADAPTER-SOURCE-SHA256SUMS",
+    "TOKENIZER-SOURCE-SHA256SUMS",
+    "RUNTIME-INPUTS.sha256",
+    "SOURCE-SHA256SUMS",
+    "*.py",
+    "*.sh",
+    "*.log",
+    "engine/*",
+    "run/*",
+    "private-sessions/*.json",
+    "smoke-real4/*",
+    "smoke-stop4/*",
+    "hostfix2/*.sh",
+    "hostfix2/*.sha256",
+    "hostfix2/*.log",
+    "hostfix2/region-lock"
+  ],
+  "result_path": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/dsc25592/run/TERMINAL.json",
+  "est_output_GiB": 8,
+  "feasibility": "HOST final wrapper requalification took 1.642s for same noncohort control; original full-target feasibility, scope and unknowns remain as previously stated. Five predeclared three-request sequences have at most five \u00d7 (1800s server startup + three \u00d7 1200s native request + 60s cleanup) = 27300s before scheduling overhead within requested 36000s; this is timeout-budget arithmetic, not measured 35B throughput. Actual full-size model, 16K/64K workload, memory and completion time remain untested. Seven predeclared per-store sequence slots are unfilled and remain UNKNOWN.",
+  "smoke": {
+    "ran_at": "2026-10-31T05:27:28.716511+00:00",
+    "regions": "R11 126,127",
+    "model": "public Qwen3 0.6B, spec-type none; full 35B, MTP and long contexts untested",
+    "first_request_ok": true,
+    "result_writer_ok": true,
+    "exit_ok": true,
+    "wall_s": 1.6424491030629724,
+    "peak_sampled_tree_rss_bytes": 1052106752,
+    "launcher_sha256": "a37de78aa92300839b7f07f0761f93b33262ea287669a73c0118694d831c4494",
+    "log": "/mnt/raid0/llm/tmp/compute-flags/ready/codex3-dsc-25592-replay-hostfix2-20261031.smoke.log",
+    "log_sha256": "5158cd14b74e322e3ad89d301f86e0c01e1e4eb77988ded2e880d804099b8cda"
+  },
+  "hold": null,
+  "log_consumer": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/dsc25592/log_consumer.py",
+  "completion": "Each native request preserves original timing, token-count validation, output/raw hash, grant, process and logs; stderr event arrival times are retained without pretending outside-window events belong to a request. STOP rc75 partial and drained, exposed interrupted sequence becomes UNKNOWN and is never redrawn. Seven unfilled source-store slots remain UNKNOWN. HOST lock shim verified; R13 startup and same-final-wrapper normal/STOP proof preserved; no full-plan exposure.",
+  "privacy": "Raw real trace session text, server logs and native response bodies stay permission-restricted in scratch, excluded from public capsules; reports use hashes and counts. Reference-history prompts omit live system/tool-schema rendering, so avoid generalizing to all production traffic.",
+  "repair_of": "codex3-dsc-25592-replay-20261031",
+  "launcher_log": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/dsc25592/hostfix2/ws58-launcher.out"
+}

@@ -1,0 +1,73 @@
+{
+  "id": "codex3-sw2-v9-clamp-hostfix2-20261031",
+  "owner": "codex3",
+  "priority_rank": 100,
+  "regions": "any-cpu-quarter",
+  "min_window_s": 900,
+  "window_s": 1200,
+  "gib": 4,
+  "booking_class": "block-correctness",
+  "class": "diagnostic",
+  "decision_rule": "n/a (private v9 tiny-model behavioral diagnostic; no current production or throughput conclusion)",
+  "enrollment": "n/a: diagnostic",
+  "launcher": {
+    "path": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/sw2/hostfix2/launch.sh",
+    "sha256": "51d49043450ca5c5d13e839a1033e3b5979de65e75d103fd22b60095e2f1845a"
+  },
+  "job": {
+    "path": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/sw2/worker.py",
+    "sha256": "714b078a1f0a35efe8714abfacaf0d651479f5e5cb95559731d7485597d6fc2f"
+  },
+  "source_manifest": {
+    "path": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/sw2/hostfix2/SOURCE-SHA256SUMS",
+    "sha256": "e07457b8e0c4e9db19f87f007135a324d011a32c3bf6e2693caff660e554fa92"
+  },
+  "scratch_root": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/sw2",
+  "keep": [
+    "KEEP",
+    "PLAN.json",
+    "SOURCE-SHA256SUMS",
+    "ORIGINAL-INPUT-SHA256SUMS",
+    "RUNTIME-LIBS.sha256",
+    "runtime-libs/*",
+    "*.py",
+    "*.sh",
+    "*.json",
+    "*.log",
+    "*.txt",
+    "*.out",
+    "engine/*.sh",
+    "engine/*.py",
+    "engine/*.json",
+    "run/*.json",
+    "run/*.log",
+    "run/.tmp-*",
+    "smoke-real3/*",
+    "smoke-stop2/*",
+    "hostfix2/*.sh",
+    "hostfix2/*.sha256",
+    "hostfix2/*.log",
+    "hostfix2/region-lock"
+  ],
+  "result_path": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/sw2/run/TERMINAL.json",
+  "est_output_GiB": 0.1,
+  "feasibility": "HOST final wrapper requalification took 0.519s for same noncohort control; original full-target feasibility, scope and unknowns remain as previously stated. Four distinct 16-token requests on one tiny target/drafter server; all four real control requests, writer and drain took 1.223 s on two R11 CPUs. A 1200 s window permits startup and full atomic slot sequence; an exposed interruption is terminally incomplete and never redrawn.",
+  "smoke": {
+    "ran_at": "2026-10-31T05:27:27.240497+00:00",
+    "regions": "R11 128,129",
+    "model": "pinned stories15M MoE F16 + stories15M Q4_0 draft",
+    "first_request_ok": true,
+    "result_writer_ok": true,
+    "exit_ok": true,
+    "wall_s": 0.5191575239878148,
+    "peak_sampled_tree_rss_bytes": 227192832,
+    "launcher_sha256": "51d49043450ca5c5d13e839a1033e3b5979de65e75d103fd22b60095e2f1845a",
+    "log": "/mnt/raid0/llm/tmp/compute-flags/ready/codex3-sw2-v9-clamp-hostfix2-20261031.smoke.log",
+    "log_sha256": "9029d7b14ef03565ff71fff00e71c51ff1ea5198f10f4c68065e1869fc149a2f"
+  },
+  "hold": null,
+  "log_consumer": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/sw2/log_consumer.py",
+  "completion": "Terminal records response count and raw native data; absent draft count stays absent/unknown, never invented zero. An exposed interrupted sequence is incomplete because fresh-server slot continuity cannot be substituted; rc75 STOP partial and drain. HOST lock shim verified; R13 startup and same-final-wrapper normal/STOP proof preserved; no full-plan exposure.",
+  "repair_of": "codex3-sw2-v9-clamp-20261031",
+  "launcher_log": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/sw2/hostfix2/ws58-launcher.out"
+}

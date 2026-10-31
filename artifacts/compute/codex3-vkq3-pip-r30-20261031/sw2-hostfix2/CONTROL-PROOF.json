@@ -1,0 +1,34 @@
+{
+  "normal_terminal": {
+    "mode": "smoke",
+    "partial": false,
+    "responses": 4,
+    "scope": "private v9 tiny model; no current production claim",
+    "unknown": 0,
+    "verdict": null
+  },
+  "stop_controls": {
+    "sw": {
+      "partial": true,
+      "reason": "interrupted exposed request"
+    }
+  },
+  "controls": [
+    {
+      "cap": 0,
+      "draft_n": null
+    },
+    {
+      "cap": 7,
+      "draft_n": 27
+    },
+    {
+      "cap": 8,
+      "draft_n": 36
+    },
+    {
+      "cap": 8,
+      "draft_n": 14
+    }
+  ]
+}

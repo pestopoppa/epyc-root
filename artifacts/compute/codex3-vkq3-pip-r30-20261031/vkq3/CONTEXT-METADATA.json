@@ -1,0 +1,20 @@
+{
+  "selection": "first original conversation ordered by existing metadata token count, then session/turn, with following turn and actual architect native tokenizer count >65536; no truncation or score used",
+  "selected": {
+    "session": "opencode-07",
+    "turn": 16,
+    "sha256": "b2f5d3cebd4aecc6f4f9d49b70021ecd7c139a4327bcd651ca15a3b351e541a0",
+    "architect_token_count": 70014,
+    "selection_tokenizer_count": 70014
+  },
+  "attempts": [
+    {
+      "session": "opencode-07",
+      "turn": 16,
+      "sha256": "b2f5d3cebd4aecc6f4f9d49b70021ecd7c139a4327bcd651ca15a3b351e541a0",
+      "architect_token_count": 70014,
+      "selection_tokenizer_count": 70014
+    }
+  ],
+  "tokens_include_added_specials": "native tokenizer default; exact setting pinned"
+}

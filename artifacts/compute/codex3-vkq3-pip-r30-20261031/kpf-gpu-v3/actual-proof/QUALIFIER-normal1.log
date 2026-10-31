@@ -1,0 +1,105 @@
+[region-lock] acquiring gpu-quiet exclusive as role='bench' (timeout_s=300.0) …
+[region-lock] held gpu-quiet exclusive + regions [] after 0.0s wait; running: /usr/bin/taskset -c 184-185 /usr/bin/env -i PATH=/opt/rocm/bin:/usr/bin:/bin HOME=/home/node LANG=C LC_ALL=C PYTHONDONTWRITEBYTECODE=1 OMP_NUM_THREADS=1 /bin/bash /mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/gpu-leg-v3/smoke_entry.sh normal1
+====================================================================================================
+KPF-18 gate plan (EXECUTE)  host Beelzebub  2026-10-31T05:16:59Z
+  out /mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/gpu-leg-v3/control-normal1 | port 19639 | fork-min 128 | n_predict 1 | n_probs 20 | window-id kpf18-20261031T051659Z | gpu-window-id kpf181-public-normal1
+  launch prefix: taskset -c 184,185
+  gate argv (/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/gpu-leg-v3/control-argv.txt): -m /mnt/raid0/llm/models/unsloth/Qwen3.5-0.8B-GGUF/Qwen3.5-0.8B-Q8_0.gguf --host 127.0.0.1 -np 4 -c 8192 -t 2 -tb 2 -b 512 -ub 512 --flash-attn on --jinja -ctk q8_0 -ctv q8_0 --no-mmap --cache-ram 0 --device ROCm0 -ngl all --kv-unified --no-cache-idle-slots
+  - --fork-bin /mnt/raid0/llm/kernels/builds/gpu-20261020-a1f0c8cf9/bin/llama-server (bin dir /mnt/raid0/llm/kernels/builds/gpu-20261020-a1f0c8cf9/bin; LD_LIBRARY_PATH /mnt/raid0/llm/kernels/builds/gpu-20261020-a1f0c8cf9/bin:/opt/rocm/lib:/usr/lib/llvm-20/lib:/opt/AMD/aocc-compiler-5.0.0/lib)
+  - card /sys/class/drm/card2/device: VRAM used 0.01 GiB of 63.98; KFD processes holding VRAM now: 0
+  - VRAM sampler: KFD sysfs per-pid at 1 Hz + rocm-smi (rocm-smi --showmeminfo vram --json) every 5 s
+  - GPU window file: {"file": "/mnt/raid0/llm/tmp/gpu-window/mi210.json", "exists": true, "holder": "production", "parked_ports": [], "parked_roles": [], "expected_end": null, "preempt_requested_at": null}
+  - device claim mi210_0 (advisory read): state free, holder -
+  - 181 drafter configurations: ['nodraft']; fork-off baseline launch added for arms A/B
+  - shape drift ALLOWED and recorded: ["-c = '8192', gate shape expects '393216'", "--spec-type = None, gate shape expects 'draft-dflash'", "--spec-draft-n-max = None, gate shape expects '7'", "--cache-ram = '0', gate shape expects '65536'", "-md '' is not the DFlash2 drafter"]
+  - prompt set /mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/gpu-leg-v3/public-control-prompts.jsonl sha256 30d66fdb3cf9e03891e526d675bf64f206338833c2cfa70779aa696cc5aa3b68: 16 pairs
+  rate model: prefill ms/tok = (1.15 + 0.0235 x occupied_k) x 1.1; decode DFlash2 37.0-0.09/k tok/s, no-draft 30.8-0.15/k; 4-stream agg x1.3; load 90s, stop 45s
+----------------------------------------------------------------------------------------------------
+ITEM 181: 8 steps, est 4m57s
+      1m35s  [kpf181-on-nodraft-20261031T051659Z] linkage + launch + healthy + read-back: taskset -c 184,185 /mnt/raid0/llm/kernels/builds/gpu-20261020-a1f0c8cf9/bin/llama-server -m /mnt/raid0/llm/models/unsloth/Qwen3.5-0.8B-GGUF/Qwen3.5-0.8B-Q8_0.gguf --host 127.0.0.1 -np 4 -c 8192 -t 2 -tb 2 -b 512 -ub 512 --flash-attn on --jinja -ctk q8_0 -ctv q8_0 --no-mmap --cache-ram 0 --device ROCm0 -ngl all --kv-unified --no-cache-idle-slots --slot-save-path /mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/gpu-leg-v3/control-normal1/slot-save/kpf181-on-nodraft-20261031T051659Z --port 19639 --metrics --slot-fork-min-tokens 128
+      0m04s  181 A [checkpoint_at=[T]] groups [0]: source slot 0 trunk+tail, 1 siblings on slot 1, fork on (rule A)
+      0m04s  181 A [tail only, no checkpoint_at] groups [0]: source slot 0 trunk+tail, 1 siblings on slot 1, fork on (rule A)
+      0m45s  [kpf181-on-nodraft-20261031T051659Z] SIGTERM own pid, verify dead, then finalize its records
+      1m35s  [kpf181-off-nodraft-20261031T051659Z] linkage + launch + healthy + read-back: taskset -c 184,185 /mnt/raid0/llm/kernels/builds/gpu-20261020-a1f0c8cf9/bin/llama-server -m /mnt/raid0/llm/models/unsloth/Qwen3.5-0.8B-GGUF/Qwen3.5-0.8B-Q8_0.gguf --host 127.0.0.1 -np 4 -c 8192 -t 2 -tb 2 -b 512 -ub 512 --flash-attn on --jinja -ctk q8_0 -ctv q8_0 --no-mmap --cache-ram 0 --device ROCm0 -ngl all --kv-unified --no-cache-idle-slots --slot-save-path /mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/gpu-leg-v3/control-normal1/slot-save/kpf181-off-nodraft-20261031T051659Z --port 19639 --metrics --slot-fork-min-tokens 0
+      0m04s  181 A fork-OFF baseline [ckpt]: every sibling must report n_fork_tokens 0
+      0m04s  181 A fork-OFF baseline [tail only]: every sibling must report n_fork_tokens 0
+      0m45s  [kpf181-off-nodraft-20261031T051659Z] SIGTERM own pid, verify dead, then finalize its records
+====================================================================================================
+TOTAL estimate: 4m57s (5 min) for items [181]; budget --budget-min 240
+PREFLIGHT: inputs PASS (live-only checks run at execute: linkage, read-back, residency, claim)
+[kpf18 05:16:59Z] item 181: [kpf181-on-nodraft-20261031T051659Z] linkage + launch + healthy + read-back: taskset -c 184,185 /mnt/raid0/llm/kernels/builds/gpu-20261020-a1f0c8cf9/bin/llama-server -m /mnt/raid0/llm/models/unsloth/Qwen3.5-0.8B-GGUF/Qwen3.5-0.8B-Q8_0.gguf --host 127.0.0.1 -np 4 -c 8192 -t 2 -tb 2 -b 512 -ub 512 --flash-attn on --jinja -ctk q8_0 -ctv q8_0 --no-mmap --cache-ram 0 --device ROCm0 -ngl all --kv-unified --no-cache-idle-slots --slot-save-path /mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/gpu-leg-v3/control-normal1/slot-save/kpf181-on-nodraft-20261031T051659Z --port 19639 --metrics --slot-fork-min-tokens 128 (est 1m35s)
+[kpf18] launch kpf181-on-nodraft-20261031T051659Z: taskset -c 184,185 /mnt/raid0/llm/kernels/builds/gpu-20261020-a1f0c8cf9/bin/llama-server -m /mnt/raid0/llm/models/unsloth/Qwen3.5-0.8B-GGUF/Qwen3.5-0.8B-Q8_0.gguf --host 127.0.0.1 -np 4 -c 8192 -t 2 -tb 2 -b 512 -ub 512 --flash-attn on --jinja -ctk q8_0 -ctv q8_0 --no-mmap --cache-ram 0 --device ROCm0 -ngl all --kv-unified --no-cache-idle-slots --slot-save-path /mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/gpu-leg-v3/control-normal1/slot-save/kpf181-on-nodraft-20261031T051659Z --port 19639 --metrics --slot-fork-min-tokens 128
+[kpf18]   done in 0m07s
+[kpf18 05:17:05Z] item 181: 181 A [checkpoint_at=[T]] groups [0]: source slot 0 trunk+tail, 1 siblings on slot 1, fork on (rule A) (est 0m04s)
+[kpf18]   done in 0m01s
+[kpf18 05:17:07Z] item 181: 181 A [tail only, no checkpoint_at] groups [0]: source slot 0 trunk+tail, 1 siblings on slot 1, fork on (rule A) (est 0m04s)
+[kpf18]   done in 0m01s
+[kpf18 05:17:08Z] item 181: [kpf181-on-nodraft-20261031T051659Z] SIGTERM own pid, verify dead, then finalize its records (est 0m45s)
+[kpf18] stopped kpf181-on-nodraft-20261031T051659Z pid 129632: {'pid': 129632, 'sent': ['TERM'], 'at': '2026-10-31T05:17:08Z', 'returncode': 0, 'verified_dead': True}
+[kpf18] record kpf18-20261031T051705Z-1 item 181 arm A_ckpt: {"control_floor": [0, 0], "vs_fresh": [0, 0], "bit_exact_ckpt": [0, 0], "source_invariance": [0, 0], "off_equals_champion": [0, 0]}
+[kpf18] record kpf18-20261031T051707Z-2 item 181 arm A_tailonly: {"control_floor": [0, 0], "vs_fresh": [0, 0], "bit_exact_ckpt": [0, 0], "source_invariance": [0, 0], "off_equals_champion": [0, 0]}
+[kpf18]   done in 0m02s
+[kpf18 05:17:10Z] item 181: [kpf181-off-nodraft-20261031T051659Z] linkage + launch + healthy + read-back: taskset -c 184,185 /mnt/raid0/llm/kernels/builds/gpu-20261020-a1f0c8cf9/bin/llama-server -m /mnt/raid0/llm/models/unsloth/Qwen3.5-0.8B-GGUF/Qwen3.5-0.8B-Q8_0.gguf --host 127.0.0.1 -np 4 -c 8192 -t 2 -tb 2 -b 512 -ub 512 --flash-attn on --jinja -ctk q8_0 -ctv q8_0 --no-mmap --cache-ram 0 --device ROCm0 -ngl all --kv-unified --no-cache-idle-slots --slot-save-path /mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/gpu-leg-v3/control-normal1/slot-save/kpf181-off-nodraft-20261031T051659Z --port 19639 --metrics --slot-fork-min-tokens 0 (est 1m35s)
+[kpf18] launch kpf181-off-nodraft-20261031T051659Z: taskset -c 184,185 /mnt/raid0/llm/kernels/builds/gpu-20261020-a1f0c8cf9/bin/llama-server -m /mnt/raid0/llm/models/unsloth/Qwen3.5-0.8B-GGUF/Qwen3.5-0.8B-Q8_0.gguf --host 127.0.0.1 -np 4 -c 8192 -t 2 -tb 2 -b 512 -ub 512 --flash-attn on --jinja -ctk q8_0 -ctv q8_0 --no-mmap --cache-ram 0 --device ROCm0 -ngl all --kv-unified --no-cache-idle-slots --slot-save-path /mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/gpu-leg-v3/control-normal1/slot-save/kpf181-off-nodraft-20261031T051659Z --port 19639 --metrics --slot-fork-min-tokens 0
+[kpf18]   done in 0m07s
+[kpf18 05:17:17Z] item 181: 181 A fork-OFF baseline [ckpt]: every sibling must report n_fork_tokens 0 (est 0m04s)
+[kpf18]   done in 0m01s
+[kpf18 05:17:18Z] item 181: 181 A fork-OFF baseline [tail only]: every sibling must report n_fork_tokens 0 (est 0m04s)
+[kpf18]   done in 0m01s
+[kpf18 05:17:20Z] item 181: [kpf181-off-nodraft-20261031T051659Z] SIGTERM own pid, verify dead, then finalize its records (est 0m45s)
+[kpf18] stopped kpf181-off-nodraft-20261031T051659Z pid 131363: {'pid': 131363, 'sent': ['TERM'], 'at': '2026-10-31T05:17:20Z', 'returncode': 0, 'verified_dead': True}
+[kpf18] record kpf18-20261031T051717Z-3 item 181 arm A_ckpt_forkoff: {"control_floor": [0, 0], "vs_fresh": [0, 0], "bit_exact_ckpt": [0, 0], "source_invariance": [0, 0], "off_equals_champion": [0, 0]}
+[kpf18] record kpf18-20261031T051718Z-4 item 181 arm A_tailonly_forkoff: {"control_floor": [0, 0], "vs_fresh": [0, 0], "bit_exact_ckpt": [0, 0], "source_invariance": [0, 0], "off_equals_champion": [0, 0]}
+[kpf18]   done in 0m02s
+[kpf18] exit rc=0 (0 ok, 2 refused, 3 abort, 4 error, 75 partial or claim held)
+====================================================================================================
+KPF-18 gate plan (EXECUTE)  host Beelzebub  2026-10-31T05:17:35Z
+  out /mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/gpu-leg-v3/control-normal1/comparator | port 19639 | fork-min 1024 | n_predict 8 | n_probs 20 | window-id kpf18-20261031T051735Z | gpu-window-id kpf181-public-normal1
+  launch prefix: taskset -c 184,185
+  gate argv (/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/gpu-leg-v3/control-argv.txt): -m /mnt/raid0/llm/models/unsloth/Qwen3.5-0.8B-GGUF/Qwen3.5-0.8B-Q8_0.gguf --host 127.0.0.1 -np 4 -c 8192 -t 2 -tb 2 -b 512 -ub 512 --flash-attn on --jinja -ctk q8_0 -ctv q8_0 --no-mmap --cache-ram 0 --device ROCm0 -ngl all --kv-unified --no-cache-idle-slots
+  - --fork-bin /mnt/raid0/llm/kernels/builds/gpu-20261020-a1f0c8cf9/bin/llama-server (bin dir /mnt/raid0/llm/kernels/builds/gpu-20261020-a1f0c8cf9/bin; LD_LIBRARY_PATH /mnt/raid0/llm/kernels/builds/gpu-20261020-a1f0c8cf9/bin:/opt/rocm/lib:/usr/lib/llvm-20/lib:/opt/AMD/aocc-compiler-5.0.0/lib)
+  - --champion-bin /mnt/micron/codex3-lanes/kpf181-e332-hip-build/bin/llama-server (bin dir /mnt/micron/codex3-lanes/kpf181-e332-hip-build/bin; LD_LIBRARY_PATH /mnt/micron/codex3-lanes/kpf181-e332-hip-build/bin:/opt/rocm/lib:/usr/lib/llvm-20/lib:/opt/AMD/aocc-compiler-5.0.0/lib)
+  - card /sys/class/drm/card2/device: VRAM used 0.01 GiB of 63.98; KFD processes holding VRAM now: 0
+  - VRAM sampler: KFD sysfs per-pid at 1 Hz + rocm-smi (rocm-smi --showmeminfo vram --json) every 5 s
+  - GPU window file: {"file": "/mnt/raid0/llm/tmp/gpu-window/mi210.json", "exists": true, "holder": "production", "parked_ports": [], "parked_roles": [], "expected_end": null, "preempt_requested_at": null}
+  - device claim mi210_0 (advisory read): state free, holder -
+  - shape drift ALLOWED and recorded: ["-c = '8192', gate shape expects '393216'", "--spec-type = None, gate shape expects 'draft-dflash'", "--spec-draft-n-max = None, gate shape expects '7'", "--cache-ram = '0', gate shape expects '65536'", "-md '' is not the DFlash2 drafter"]
+  - prompt set /mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/gpu-leg-v3/public-control-prompts.jsonl sha256 30d66fdb3cf9e03891e526d675bf64f206338833c2cfa70779aa696cc5aa3b68: 16 pairs
+  rate model: prefill ms/tok = (1.15 + 0.0235 x occupied_k) x 1.1; decode DFlash2 37.0-0.09/k tok/s, no-draft 30.8-0.15/k; 4-stream agg x1.3; load 90s, stop 45s
+----------------------------------------------------------------------------------------------------
+ITEM 6: 8 steps, est 4m48s
+      1m35s  [item6-champion-20261031T051735Z] linkage + launch + healthy + read-back: taskset -c 184,185 /mnt/micron/codex3-lanes/kpf181-e332-hip-build/bin/llama-server -m /mnt/raid0/llm/models/unsloth/Qwen3.5-0.8B-GGUF/Qwen3.5-0.8B-Q8_0.gguf --host 127.0.0.1 -np 4 -c 8192 -t 2 -tb 2 -b 512 -ub 512 --flash-attn on --jinja -ctk q8_0 -ctv q8_0 --no-mmap --cache-ram 0 --device ROCm0 -ngl all --kv-unified --no-cache-idle-slots --slot-save-path /mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/gpu-leg-v3/control-normal1/comparator/slot-save/item6-champion-20261031T051735Z --port 19639 --metrics
+      0m00s  open item-6 record (champion)
+      0m04s  item6 [champion] groups [0]: per group erase, trunk+s0 then trunk+s1 on slot 0 (own-cache reuse), 8 tok, no fork-specific request fields
+      0m45s  [item6-champion-20261031T051735Z] SIGTERM own pid, verify dead, then finalize its records
+      1m35s  [item6-fork_off-20261031T051735Z] linkage + launch + healthy + read-back: taskset -c 184,185 /mnt/raid0/llm/kernels/builds/gpu-20261020-a1f0c8cf9/bin/llama-server -m /mnt/raid0/llm/models/unsloth/Qwen3.5-0.8B-GGUF/Qwen3.5-0.8B-Q8_0.gguf --host 127.0.0.1 -np 4 -c 8192 -t 2 -tb 2 -b 512 -ub 512 --flash-attn on --jinja -ctk q8_0 -ctv q8_0 --no-mmap --cache-ram 0 --device ROCm0 -ngl all --kv-unified --no-cache-idle-slots --slot-save-path /mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/gpu-leg-v3/control-normal1/comparator/slot-save/item6-fork_off-20261031T051735Z --port 19639 --metrics --slot-fork-min-tokens 0
+      0m00s  open item-6 record (fork_off)
+      0m04s  item6 [fork_off] groups [0]: per group erase, trunk+s0 then trunk+s1 on slot 0 (own-cache reuse), 8 tok, no fork-specific request fields
+      0m45s  [item6-fork_off-20261031T051735Z] SIGTERM own pid, verify dead, then finalize its records
+====================================================================================================
+TOTAL estimate: 4m48s (5 min) for items [6]; budget --budget-min 240
+PREFLIGHT: inputs PASS (live-only checks run at execute: linkage, read-back, residency, claim)
+[kpf18 05:17:35Z] item 6: [item6-champion-20261031T051735Z] linkage + launch + healthy + read-back: taskset -c 184,185 /mnt/micron/codex3-lanes/kpf181-e332-hip-build/bin/llama-server -m /mnt/raid0/llm/models/unsloth/Qwen3.5-0.8B-GGUF/Qwen3.5-0.8B-Q8_0.gguf --host 127.0.0.1 -np 4 -c 8192 -t 2 -tb 2 -b 512 -ub 512 --flash-attn on --jinja -ctk q8_0 -ctv q8_0 --no-mmap --cache-ram 0 --device ROCm0 -ngl all --kv-unified --no-cache-idle-slots --slot-save-path /mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/gpu-leg-v3/control-normal1/comparator/slot-save/item6-champion-20261031T051735Z --port 19639 --metrics (est 1m35s)
+[kpf18] launch item6-champion-20261031T051735Z: taskset -c 184,185 /mnt/micron/codex3-lanes/kpf181-e332-hip-build/bin/llama-server -m /mnt/raid0/llm/models/unsloth/Qwen3.5-0.8B-GGUF/Qwen3.5-0.8B-Q8_0.gguf --host 127.0.0.1 -np 4 -c 8192 -t 2 -tb 2 -b 512 -ub 512 --flash-attn on --jinja -ctk q8_0 -ctv q8_0 --no-mmap --cache-ram 0 --device ROCm0 -ngl all --kv-unified --no-cache-idle-slots --slot-save-path /mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/gpu-leg-v3/control-normal1/comparator/slot-save/item6-champion-20261031T051735Z --port 19639 --metrics
+[kpf18]   done in 0m07s
+[kpf18 05:17:41Z] item 6: open item-6 record (champion) (est 0m00s)
+[kpf18]   done in 0m00s
+[kpf18 05:17:41Z] item 6: item6 [champion] groups [0]: per group erase, trunk+s0 then trunk+s1 on slot 0 (own-cache reuse), 8 tok, no fork-specific request fields (est 0m04s)
+[kpf18]   done in 0m00s
+[kpf18 05:17:42Z] item 6: [item6-champion-20261031T051735Z] SIGTERM own pid, verify dead, then finalize its records (est 0m45s)
+[kpf18] stopped item6-champion-20261031T051735Z pid 135317: {'pid': 135317, 'sent': ['TERM'], 'at': '2026-10-31T05:17:42Z', 'returncode': 0, 'verified_dead': True}
+[kpf18] record kpf18-20261031T051741Z-1 item 6 arm champion: {"control_floor": [0, 0], "vs_fresh": [0, 0], "bit_exact_ckpt": [0, 0], "source_invariance": [0, 0], "off_equals_champion": [0, 0]}
+[kpf18]   done in 0m02s
+[kpf18 05:17:44Z] item 6: [item6-fork_off-20261031T051735Z] linkage + launch + healthy + read-back: taskset -c 184,185 /mnt/raid0/llm/kernels/builds/gpu-20261020-a1f0c8cf9/bin/llama-server -m /mnt/raid0/llm/models/unsloth/Qwen3.5-0.8B-GGUF/Qwen3.5-0.8B-Q8_0.gguf --host 127.0.0.1 -np 4 -c 8192 -t 2 -tb 2 -b 512 -ub 512 --flash-attn on --jinja -ctk q8_0 -ctv q8_0 --no-mmap --cache-ram 0 --device ROCm0 -ngl all --kv-unified --no-cache-idle-slots --slot-save-path /mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/gpu-leg-v3/control-normal1/comparator/slot-save/item6-fork_off-20261031T051735Z --port 19639 --metrics --slot-fork-min-tokens 0 (est 1m35s)
+[kpf18] launch item6-fork_off-20261031T051735Z: taskset -c 184,185 /mnt/raid0/llm/kernels/builds/gpu-20261020-a1f0c8cf9/bin/llama-server -m /mnt/raid0/llm/models/unsloth/Qwen3.5-0.8B-GGUF/Qwen3.5-0.8B-Q8_0.gguf --host 127.0.0.1 -np 4 -c 8192 -t 2 -tb 2 -b 512 -ub 512 --flash-attn on --jinja -ctk q8_0 -ctv q8_0 --no-mmap --cache-ram 0 --device ROCm0 -ngl all --kv-unified --no-cache-idle-slots --slot-save-path /mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/gpu-leg-v3/control-normal1/comparator/slot-save/item6-fork_off-20261031T051735Z --port 19639 --metrics --slot-fork-min-tokens 0
+[kpf18]   done in 0m07s
+[kpf18 05:17:51Z] item 6: open item-6 record (fork_off) (est 0m00s)
+[kpf18]   done in 0m00s
+[kpf18 05:17:51Z] item 6: item6 [fork_off] groups [0]: per group erase, trunk+s0 then trunk+s1 on slot 0 (own-cache reuse), 8 tok, no fork-specific request fields (est 0m04s)
+[kpf18]   done in 0m01s
+[kpf18 05:17:51Z] item 6: [item6-fork_off-20261031T051735Z] SIGTERM own pid, verify dead, then finalize its records (est 0m45s)
+[kpf18] stopped item6-fork_off-20261031T051735Z pid 142773: {'pid': 142773, 'sent': ['TERM'], 'at': '2026-10-31T05:17:51Z', 'returncode': 0, 'verified_dead': True}
+[kpf18] record kpf18-20261031T051751Z-2 item 6 arm fork_off: {"control_floor": [0, 0], "vs_fresh": [0, 0], "bit_exact_ckpt": [0, 0], "source_invariance": [0, 0], "off_equals_champion": [2, 2]}
+[kpf18]   done in 0m02s
+[kpf18] exit rc=0 (0 ok, 2 refused, 3 abort, 4 error, 75 partial or claim held)
+{"schema": "kpf181-r7-smoke-supervisor/v1", "elapsed_s": 55.77883821981959, "sampled_peak_tree_rss_bytes": 1187409920, "samples": 548, "verified_exited_processes": 0, "verified_exited_threads": 0, "per_process_address_space_limit_bytes": null, "rss_scope": "sum of sampled resident pages across owned process tree; sampling may miss transients and double-count shared pages", "leader_pid": 129519, "leader_birth": 154629162, "child_rc": 0, "children_drained": true, "failure": null}

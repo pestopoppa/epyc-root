@@ -1,0 +1,8 @@
+{
+ "partial": true,
+ "rc": 75,
+ "unknown_started_units": [
+  "/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/gpu-leg-v3/control-stop1/done/181-001-ed2a60b7.started"
+ ],
+ "message": "interrupted units are not replayed"
+}

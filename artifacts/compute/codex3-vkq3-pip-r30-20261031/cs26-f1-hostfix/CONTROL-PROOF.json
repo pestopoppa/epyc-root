@@ -1,0 +1,26 @@
+{
+  "normal_terminal": {
+    "counts": {
+      "failure": 0,
+      "ok": 1,
+      "unknown": 0
+    },
+    "expected_pairs": 1,
+    "partial": false,
+    "quality_verdict": null,
+    "scope": "independent arms only",
+    "state": "complete_raw"
+  },
+  "stop_controls": {
+    "f1-solo2": {
+      "partial": true,
+      "reason": "interrupted exposed solo"
+    },
+    "f1-corun2": {
+      "partial": true,
+      "reason": "interrupted exposed pair"
+    }
+  },
+  "corun_stop_neighbor_progress_overlapping_speech": 10,
+  "corun_stop_speech_duration_s": 0.5448935031890869
+}

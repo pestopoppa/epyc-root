@@ -1,0 +1,8 @@
+#!/bin/bash
+set -euo pipefail
+D="$(cd "$(dirname "$0")" && pwd)"
+sha256sum -c --quiet "$D/REGION-LOCK-INPUTS.sha256"
+read -r actual _ < <(sha256sum /usr/bin/python3)
+if ! /usr/bin/grep -Fxq "$actual" "$D/REGION-LOCK-PYTHON-ALLOW.txt"; then echo "region-lock interpreter pin mismatch" >&2; exit 1; fi
+cd /mnt/raid0/llm/epyc-orchestrator
+exec /usr/bin/python3 -m src.runtime.region_lock_cli "$@"
