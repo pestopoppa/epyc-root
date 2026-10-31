@@ -2778,7 +2778,8 @@ R24-1/2/3/5/8/9 must trim to fit or raise the budget with a reason. Code citatio
       **Landed:** three identical seeded hardened executions must carry one output-hash record;
       otherwise the gate refuses. It is wired into the non-serving candidate gate. Research
       `13f8e63a` / main `81fbd472`. Combined verification: 455 tests and 31 subtests passed.
-- [ ] **R24-6 — anti-gaming clause in the planner/author prompt.** Neither `actors.py:407-422` nor `program.md`
+- [x] **R24-6 — anti-gaming clause in the planner/author prompt.** Neither `actors.py:407-422` nor `program.md` ✅ 2026-10-31 — Research `57f6db044ba4b512bbc89b0025edeec52fe740cf`; [planner/author prompt source](https://github.com/pestopoppa/epyc-inference-research/blob/57f6db044ba4b512bbc89b0025edeec52fe740cf/scripts/kernel_rnd/autokernel/loop/actors.py) and [program advisory](https://github.com/pestopoppa/epyc-inference-research/blob/57f6db044ba4b512bbc89b0025edeec52fe740cf/scripts/kernel_rnd/autokernel/loop/program.md). [no-belief: advisory prompt implementation]
+      - The actual `AgentPlanner.propose` and `author` prompts append the shared clause after concise processing, and the loaded program carries the same text. The clause forbids input/pointer-keyed output caching, cross-repetition reuse and workload-specific shortcuts, requires declared cold/warm cache effects, and remains advisory alongside R24-1/2. Syntax and diff validation passed; the source commit records the current caller/program readset. No model call, performance gain, compliance guarantee or runtime deployment is claimed.
       carries one. The clause should forbid:
       - input-identity or pointer-keyed caching of outputs;
       - cross-rep buffer reuse;
