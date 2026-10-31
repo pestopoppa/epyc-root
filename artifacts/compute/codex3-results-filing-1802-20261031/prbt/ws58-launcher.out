@@ -1,0 +1,7 @@
+model_edge_ok /mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf
+2026-10-31T01:30:33Z [codex3-prbt4-r1-20261031] launcher up pid=1466261 class=gpu poll=45s grants=/mnt/raid0/llm/tmp/compute-flags/grants stop=/mnt/raid0/llm/tmp/codex3-next-gpu-prep-20261031/STOP minwin=1800s ports=18979
+2026-10-31T17:37:24Z [codex3-prbt4-r1-20261031] diagnostic admission: legacy T1 proof receipt not required
+2026-10-31T17:37:24Z [codex3-prbt4-r1-20261031] START regions=mi210_0,184-191 cpus=184-191 threads=8 gpu=1 end=2026-10-31T23:36Z
+/mnt/raid0/llm/tmp/codex3-next-gpu-prep-20261031/region-lock.sh: line 3: cd: /mnt/micron/codex3-lanes/orchestrator: No such file or directory
+2026-10-31T17:37:24Z [codex3-prbt4-r1-20261031] WARN: 1016094 is not a group leader
+2026-10-31T17:37:24Z [codex3-prbt4-r1-20261031] ended rc=1 reason=job-rc-1:exited (grant deleted)

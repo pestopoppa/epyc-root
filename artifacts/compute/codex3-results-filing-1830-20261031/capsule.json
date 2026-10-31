@@ -1,0 +1,86 @@
+{
+  "base_origin_main": "ac84f7995ca07cc7d220fcc802d8107fdc9201e1",
+  "published": false,
+  "terminal_cut": "Only native terminal records and ended receipts for the three named IDs; no subsequent continuation",
+  "runs": [
+    {
+      "id": "codex-ni-g16-greedy-ab-aligned-r2-20261031",
+      "classification": "reject: greedy exact-byte branch only",
+      "decision_rule": "first sampled ID and full output bytes equal at each of four lengths and both slots",
+      "source": "/mnt/raid0/llm/tmp/codex-ni-g16a-build-prep-20261031/prod-recipe-variant/dispatch/FULL-RESULT.json",
+      "sha256": "5a3bfc6e7cfc01470e4d714d38110d688192d0ce17311885b2a987440fa85472",
+      "execution_status": "COMPLETE_VALID",
+      "decision_verdict": "FAIL",
+      "cases": [
+        {
+          "tokens": 2048,
+          "first_token_ids_equal": true,
+          "full_utf8_output_bytes_equal": false,
+          "dispatch_and_residency_valid": true
+        },
+        {
+          "tokens": 8192,
+          "first_token_ids_equal": true,
+          "full_utf8_output_bytes_equal": false,
+          "dispatch_and_residency_valid": true
+        },
+        {
+          "tokens": 16384,
+          "first_token_ids_equal": true,
+          "full_utf8_output_bytes_equal": false,
+          "dispatch_and_residency_valid": true
+        },
+        {
+          "tokens": 24576,
+          "first_token_ids_equal": true,
+          "full_utf8_output_bytes_equal": false,
+          "dispatch_and_residency_valid": true
+        }
+      ],
+      "provenance": "2048 reused pinned original; 8192/16384/24576 captured in this execution",
+      "limits": "Neither overall G16 OR gate nor keep/promotion cleared; no unique causality inferred."
+    },
+    {
+      "id": "codex3-cs8-lex2-dev-grid-hostfix2-20261031",
+      "classification": "correctness-only: raw capture",
+      "decision_rule": "complete_raw iff every native attempt succeeds; no quality or promotion verdict",
+      "source": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/lex2/run/TERMINAL.json",
+      "sha256": "de38c1b4a87aab8bb095034e8e963e5dd47b5b3be02ee0bc453b208dd084cc15",
+      "terminal": {
+        "cells": 15,
+        "counts": {
+          "failure": 0,
+          "ok": 1500,
+          "unknown": 0
+        },
+        "mode": "full",
+        "original_clips": 100,
+        "partial": false,
+        "scored": false,
+        "state": "complete_raw"
+      },
+      "limits": "15 cells x 100 original clips; dev only; no scoring or selection; separate held-out decision."
+    },
+    {
+      "id": "refactor-ufh12-r1-irt-r2-20261031",
+      "classification": "FAILED-RUN admission",
+      "decision_rule": "both held-out Spearman EG2 >= matched BGE; higher is better; fixed 408 training / 102 held-out",
+      "source": "/mnt/raid0/llm/tmp/compute-flags/ready/refactor-ufh12-r1-irt-r2-20261031.launcher.out",
+      "sha256": "3d8f354164a0ebcd89098e77df30d28b6e478f1fd0fda07487a4df9b8ef07dbe",
+      "rc": 70,
+      "reason": "in-claim affinity proof rejected: assigned 72-95 vs declared 24-47",
+      "done_exists_at_review": false,
+      "completed_official_cases": 0,
+      "outcomes": "unknown; no native paired result",
+      "owner_action": "refactor owner reconcile claimed CPUs with actual scheduler assignment, requalify and requeue the original run"
+    }
+  ],
+  "additional_source_sha256": {
+    "/mnt/raid0/llm/tmp/compute-flags/ready/armed/codex-ni-g16-greedy-ab-aligned-r2-20261031.json": "c02791742c6121124ee20f1f6dd6e3b14f847fca982fec6018a3278b12626fdd",
+    "/mnt/raid0/llm/tmp/compute-flags/grants/codex-ni-g16-greedy-ab-aligned-r2-20261031.ended": "db1d14669b8ee504330d1aec6a69a761c8f8821b880ea9e9a5ae1180eca96822",
+    "/mnt/raid0/llm/tmp/compute-flags/ready/armed/codex3-cs8-lex2-dev-grid-hostfix2-20261031.json": "60ba07e00a43ad5b897c523d1ae6dc37393aeaa8897f1c319c81d0372de43d8e",
+    "/mnt/raid0/llm/tmp/compute-flags/grants/codex3-cs8-lex2-dev-grid-hostfix2-20261031.ended": "b6b03c3dd432e66720b6d1b02933608530a9bebfd5250c61f0deffe8e0619da9",
+    "/mnt/raid0/llm/tmp/compute-flags/ready/armed/refactor-ufh12-r1-irt-r2-20261031.json": "7c740ce771febe37171d5b2286fa8d7c3853dbbee7ff4afa13579d47eae3c115",
+    "/mnt/raid0/llm/tmp/compute-flags/grants/refactor-ufh12-r1-irt-r2-20261031.ended": "95d3be539aec899dcc54fcdb2df722b6e3672beeb02ef74f098b0fab008fdeed"
+  }
+}

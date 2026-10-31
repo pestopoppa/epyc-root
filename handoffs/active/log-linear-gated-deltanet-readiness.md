@@ -485,6 +485,7 @@ What is new here, and what determines what G16 must actually add, is the 50-case
       with drained descendants; current validator/grant_ok actual-PID checks passed. Source/build/raw
       custody has KEEP through greedy and coordinated champion integration. G16/keep/promotion remain
       open, and G16b was not triggered. [Preparation capsule](../../artifacts/compute/codex-ni-g16-greedy-aligned-r2-20261031/README.md).
+    - **Greedy comparison (2026-10-31):** Native result reports valid execution and FAIL on the predeclared exact-byte branch: first IDs match at 2K, 8K, 16K and 24K; full UTF8 bytes differ at all four. Dispatch/residency valid for all four; 2K is the pinned original, three longer lengths are new. This alone does not resolve the separate NMSE alternative of the G16 OR gate, nor establish causality, keep or promotion. [Terminal evidence](../../artifacts/compute/codex3-results-filing-1830-20261031/capsule.json). [belief: cc]
 - [x] **G16a — make G16 fire the chunked kernel on MI210, or it is vacuous.** The H=32/d=128 long-prompt eval
       cases in `719a8529d` use `n_seqs=1`. That gives 256 blocks, below 3×nsm = 312, so on MI210 they assert the
       RECURRENT kernel against CPU. Fix it either way:

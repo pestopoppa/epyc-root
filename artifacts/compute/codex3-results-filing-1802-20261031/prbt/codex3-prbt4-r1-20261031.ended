@@ -1,0 +1,7 @@
+rc=1 time=2026-10-31T17:37:24Z reason=job-rc-1:exited
+job_id=codex3-prbt4-r1-20261031
+owner=codex3
+step=job-run
+estimated_wall_s=21600
+started=2026-10-31T17:37:24Z
+regions=mi210_0,184-191

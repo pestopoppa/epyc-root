@@ -1,0 +1,121 @@
+{
+  "captured_at": "2026-10-31T18:03:22.805557+00:00",
+  "terminal_time": "2026-10-31T17:56:59Z",
+  "row_id": "yarn-oolong-s3-host256-eligible27-v30-20261031",
+  "scope": "TERMINAL segment only, excludes any continuation under reused row ID",
+  "projected_records": [
+    {
+      "item_id": "oolong_synth@131072#817080233",
+      "arm": "A0",
+      "status": "ok",
+      "score": 0.0,
+      "right": false,
+      "answered": false,
+      "attempted": true,
+      "failure_class": "no_answer_budget",
+      "finish_reason": "length",
+      "no_answer": true,
+      "real_n": 114906,
+      "real_n_offline": 114677,
+      "plan_sha256": "022ba34ca80ac0d8fa734d7fdf3d9b5e484f4ad2265fba81f31021d87619ff04",
+      "prompt_sha256": "01aec898a86f184adf74db6a56b7e55f39124a698f19076ad60e5f7ec2a2034a",
+      "time": "2026-10-31T17:56:55Z",
+      "t_start": 1793433947.4144711,
+      "t_end": 1793469415.5737412,
+      "usage": {
+        "completion_tokens": 1024,
+        "prompt_tokens": 114906,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        },
+        "total_tokens": 115930
+      },
+      "timings": {
+        "cache_n": 0,
+        "predicted_ms": 936547.191,
+        "predicted_n": 1024,
+        "predicted_per_second": 1.0933778989893954,
+        "predicted_per_token_ms": 914.5968662109375,
+        "prompt_ms": 34531517.449,
+        "prompt_n": 114906,
+        "prompt_per_second": 3.327568797684782,
+        "prompt_per_token_ms": 300.5197069691748
+      },
+      "scorer": "oolong_synth",
+      "schema": "epyc.yarn_gate.arm_result.v1"
+    }
+  ],
+  "n_A0": 1,
+  "n_A1": 0,
+  "n_matched_pairs": 0,
+  "original_campaign_denominator": 120,
+  "S3_nominal": 30,
+  "S3_eligible": 27,
+  "predecessor_A0_unknown": 3,
+  "source_hashes": [
+    {
+      "source": "/mnt/micron/refactor-yarn-s3-v30-20261031/cohort/exposures/02484327125fc70775b1076c5d2affc8c181b30f6badd99c505d624e9589b202.native.json",
+      "sha256": "fddf6ed7851e60f1ef79664eec5cae31864e41f7dd63c615ba860d8452233717",
+      "size": 3727,
+      "mtime": 1793469415.5722933,
+      "mtime_after_terminal": false
+    },
+    {
+      "source": "/mnt/micron/refactor-yarn-s3-v30-20261031/cohort/exposures/02484327125fc70775b1076c5d2affc8c181b30f6badd99c505d624e9589b202.response",
+      "sha256": "deaf876b682862018d4304772272708a41c2ff778b4f84e9cdab547c00bb93a7",
+      "size": 123,
+      "mtime": 1793469415.5732932,
+      "mtime_after_terminal": false
+    },
+    {
+      "source": "/mnt/micron/refactor-yarn-s3-v30-20261031/cohort/exposures/02484327125fc70775b1076c5d2affc8c181b30f6badd99c505d624e9589b202.start",
+      "sha256": "22ccaaba4fe61ce57bf6d2d898a473f585fbddb43b252dacd815c4ca8f7da6a8",
+      "size": 285,
+      "mtime": 1793433947.4143672,
+      "mtime_after_terminal": false
+    },
+    {
+      "source": "/mnt/micron/refactor-yarn-s3-v30-20261031/cohort/results/A0.jsonl",
+      "sha256": "562b7a35b8bd057fa3f66ee6ba78fad47d94a1924166835a2d5715d61382a2e0",
+      "size": 5228,
+      "mtime": 1793469415.6241808,
+      "mtime_after_terminal": false
+    },
+    {
+      "source": "/mnt/micron/refactor-yarn-s3-v30-20261031/cohort/window-000/server.argv",
+      "sha256": "d933ee6aa1094ff6ca7eebd71ac7c6d1eaf620019b44a0d90da3fe6ce500d2bf",
+      "size": 333,
+      "mtime": 1793433947.2382503,
+      "mtime_after_terminal": false
+    },
+    {
+      "source": "/mnt/micron/refactor-yarn-s3-v30-20261031/cohort/window-000/server.log",
+      "sha256": "d3032b464ea4719d6d42ff1c28a1636a29656303dc7052081495e192ef937f04",
+      "size": 63190,
+      "mtime": 1793469418.1993241,
+      "mtime_after_terminal": false
+    },
+    {
+      "source": "/mnt/micron/refactor-yarn-s3-v30-20261031/cohort/window-000/worker.log",
+      "sha256": "ec1b6bc25a1bad6636c419e1e9fa9ccfb021c550fed86dab729b4e7865d33e71",
+      "size": 29297,
+      "mtime": 1793469415.6362941,
+      "mtime_after_terminal": false
+    }
+  ],
+  "raw_prompt_or_output_published": false,
+  "projection_note": "Selected native fields only. Raw response/gold and logs stay at native paths; hashes retain byte identity. Projection does not create measurement warrant.",
+  "terminal_accounting": {
+    "ok": 1,
+    "unknown": 3,
+    "unexposed": 56,
+    "error": 0,
+    "planned_cells": 60
+  },
+  "terminal_accounting_source": "yarns3/terminal-launcher.log.txt",
+  "manifest_custody": {
+    "source": "/mnt/raid0/llm/tmp/codex3-filing-prbt-yarns3-20261031/yarns3/yarn-oolong-s3-host256-eligible27-v30-20261031.json",
+    "sha256": "7f7f1582bc37211a99158f91dba7e8f93208c1521e1cda1cf022239e6267f074",
+    "publication_scope": "original manifest retained privately; digest only"
+  }
+}
