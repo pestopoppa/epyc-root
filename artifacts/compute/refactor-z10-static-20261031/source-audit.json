@@ -1,0 +1,190 @@
+{
+  "schema": "epyc.source_audit.z10.v1",
+  "scope": "static source read only, no kernel/model/native execution",
+  "task": "Z10 (Z) \u2014 static read for the fp16-denorm bug class that #27413 fixed in Vulkan",
+  "refs": {
+    "production_v10": "ffc1bac82eeca6f9099e1ccd9ba49703c460a115",
+    "historical_v9": "0db32c06e3e550065b78311a6031ef3dd2c4f27c",
+    "g10_candidate": "933666a9db27b9a668ef74378331329524fc39aa",
+    "upstream_fix": "78ec4c378031811671d1c76a067acbee4f4c56ce"
+  },
+  "source_identity": {
+    "production_v10": {
+      "ggml/src/ggml-cuda/fattn-common.cuh": {
+        "sha256": "47537d7980d81f7dc9daa18698f5fdbb990ef6b916fa75fed4bc0bbfd1aa08cb",
+        "git_blob": "e67cc7fdf784c18bc4ce93918005cbf048148c26",
+        "bytes": 47668
+      },
+      "ggml/src/ggml-cuda/fattn-vec.cuh": {
+        "sha256": "50905515f7775686ee4194b010a4361de2241a1db34627675f3328b909ac27a4",
+        "git_blob": "e06fdf7a14ea6e531760e574ce100f81f24ff105",
+        "bytes": 31408
+      },
+      "ggml/src/ggml-cuda/fattn.cu": {
+        "sha256": "2029cf6741771619544d31df024bef74634373b033b42399ba77612e279a3d54",
+        "git_blob": "f0661dc65131db25cf836a7f6cab3b621e39ce8e",
+        "bytes": 26561
+      },
+      "ggml/src/ggml-cuda/vecdotq.cuh": {
+        "sha256": "68395a6e448a00afad2a1fb9ebff6aed8b7b18d67c0d54ffecde4be121311e08",
+        "git_blob": "f9c802737ed6b6f7961206b7134df563889ad221",
+        "bytes": 49434
+      },
+      "ggml/src/ggml-cuda/quantize.cu": {
+        "sha256": "375a233bdb803243dde1e39b1f02045ed991c2a20e11a26d8ccbc40e3b84eaf9",
+        "git_blob": "e2ca3991535cba26de9534ed282f58617cf36a22",
+        "bytes": 25527
+      },
+      "ggml/src/ggml-cuda/fattn-tile.cuh": {
+        "sha256": "eaa043031cb9574ec4a0018fc0bea25d3cd7d43230bb23b37e63241e3101d9f0",
+        "git_blob": "330bc4557c438c061c5191d996089e4f35bcfdc8",
+        "bytes": 63333
+      },
+      "ggml/src/ggml-cuda/fattn-mma-f16.cuh": {
+        "sha256": "fa7d7d77ebc0a9008630f72d676f2c32ad4059bf716b910b55b8191bfc8f41be",
+        "git_blob": "17bb58932a6ef6db481e5765083ed3ec7eb67c1b",
+        "bytes": 101217
+      },
+      "ggml/src/ggml-hip/CMakeLists.txt": {
+        "sha256": "65177e997fc3b296b9088f684de1e811ba7807a619e68e877caf6ebd459474e3",
+        "git_blob": "e1eef9678c96ad5f6f36078d0898619003a82459",
+        "bytes": 4939
+      },
+      "ggml/src/ggml-vulkan/vulkan-shaders/flash_attn.comp": {
+        "sha256": "f3f54356759553d711f786cb09b53250eb596a0a79b42e88d616f143eb2e5a59",
+        "git_blob": "3192130ccf57ae1f3c9a7954f94763f00066d22b",
+        "bytes": 31572
+      },
+      "ggml/src/ggml-vulkan/vulkan-shaders/vulkan-shaders-gen.cpp": {
+        "sha256": "1018a9efbb2e64ffe643c7676ce1e8e2a3bae534917cfe67d63c54fc7742ac68",
+        "git_blob": "bf3eeb22f60b11dbd28dea8cb7f3813855cf0464",
+        "bytes": 74291
+      },
+      "ggml/src/ggml-vulkan/vulkan-shaders/flash_attn_base.glsl": {
+        "sha256": "eee70b707e0e45cafcc8585f0e4fc7ce0445df9f09e40b06f4d64ccab09d97ee",
+        "git_blob": "66dcf61021900e8025f22193f2f4406fa9034798",
+        "bytes": 8891
+      }
+    },
+    "historical_v9": {
+      "ggml/src/ggml-cuda/fattn-common.cuh": {
+        "sha256": "47537d7980d81f7dc9daa18698f5fdbb990ef6b916fa75fed4bc0bbfd1aa08cb",
+        "git_blob": "e67cc7fdf784c18bc4ce93918005cbf048148c26",
+        "bytes": 47668
+      },
+      "ggml/src/ggml-cuda/fattn-vec.cuh": {
+        "sha256": "f6305c9a667f438565ee0afff0e854cce335ddbd67e30fbee466cbc5672a9577",
+        "git_blob": "69dd9368624301117ebed35b09c008a51c65b705",
+        "bytes": 24989
+      }
+    },
+    "g10_candidate": {
+      "ggml/src/ggml-cuda/fattn-common.cuh": {
+        "sha256": "47537d7980d81f7dc9daa18698f5fdbb990ef6b916fa75fed4bc0bbfd1aa08cb",
+        "git_blob": "e67cc7fdf784c18bc4ce93918005cbf048148c26",
+        "bytes": 47668
+      },
+      "ggml/src/ggml-cuda/fattn-vec.cuh": {
+        "sha256": "50905515f7775686ee4194b010a4361de2241a1db34627675f3328b909ac27a4",
+        "git_blob": "e06fdf7a14ea6e531760e574ce100f81f24ff105",
+        "bytes": 31408
+      },
+      "ggml/src/ggml-cuda/fattn.cu": {
+        "sha256": "2029cf6741771619544d31df024bef74634373b033b42399ba77612e279a3d54",
+        "git_blob": "f0661dc65131db25cf836a7f6cab3b621e39ce8e",
+        "bytes": 26561
+      },
+      "ggml/src/ggml-cuda/vecdotq.cuh": {
+        "sha256": "68395a6e448a00afad2a1fb9ebff6aed8b7b18d67c0d54ffecde4be121311e08",
+        "git_blob": "f9c802737ed6b6f7961206b7134df563889ad221",
+        "bytes": 49434
+      },
+      "ggml/src/ggml-cuda/quantize.cu": {
+        "sha256": "375a233bdb803243dde1e39b1f02045ed991c2a20e11a26d8ccbc40e3b84eaf9",
+        "git_blob": "e2ca3991535cba26de9534ed282f58617cf36a22",
+        "bytes": 25527
+      },
+      "ggml/src/ggml-cuda/fattn-tile.cuh": {
+        "sha256": "eaa043031cb9574ec4a0018fc0bea25d3cd7d43230bb23b37e63241e3101d9f0",
+        "git_blob": "330bc4557c438c061c5191d996089e4f35bcfdc8",
+        "bytes": 63333
+      },
+      "ggml/src/ggml-cuda/fattn-mma-f16.cuh": {
+        "sha256": "fa7d7d77ebc0a9008630f72d676f2c32ad4059bf716b910b55b8191bfc8f41be",
+        "git_blob": "17bb58932a6ef6db481e5765083ed3ec7eb67c1b",
+        "bytes": 101217
+      },
+      "ggml/src/ggml-hip/CMakeLists.txt": {
+        "sha256": "65177e997fc3b296b9088f684de1e811ba7807a619e68e877caf6ebd459474e3",
+        "git_blob": "e1eef9678c96ad5f6f36078d0898619003a82459",
+        "bytes": 4939
+      },
+      "ggml/src/ggml-vulkan/vulkan-shaders/flash_attn.comp": {
+        "sha256": "f3f54356759553d711f786cb09b53250eb596a0a79b42e88d616f143eb2e5a59",
+        "git_blob": "3192130ccf57ae1f3c9a7954f94763f00066d22b",
+        "bytes": 31572
+      },
+      "ggml/src/ggml-vulkan/vulkan-shaders/vulkan-shaders-gen.cpp": {
+        "sha256": "1018a9efbb2e64ffe643c7676ce1e8e2a3bae534917cfe67d63c54fc7742ac68",
+        "git_blob": "bf3eeb22f60b11dbd28dea8cb7f3813855cf0464",
+        "bytes": 74291
+      },
+      "ggml/src/ggml-vulkan/vulkan-shaders/flash_attn_base.glsl": {
+        "sha256": "eee70b707e0e45cafcc8585f0e4fc7ce0445df9f09e40b06f4d64ccab09d97ee",
+        "git_blob": "66dcf61021900e8025f22193f2f4406fa9034798",
+        "bytes": 8891
+      }
+    },
+    "upstream_fix": {
+      "ggml/src/ggml-vulkan/vulkan-shaders/flash_attn.comp": {
+        "sha256": "b06c7347c7d089963850293a1589be115e822b48edc4c5a8ce8a91596d164e5b",
+        "git_blob": "0c1b6d0673e9213f52286e303f39a0da6ac9ecb8",
+        "bytes": 31543
+      }
+    }
+  },
+  "upstream_primary": "https://github.com/ggml-org/llama.cpp/pull/27413",
+  "upstream_commit": "https://github.com/ggml-org/llama.cpp/commit/78ec4c378031811671d1c76a067acbee4f4c56ce",
+  "whole_tree_symbol_search": {
+    "production_v10": [
+      "ffc1bac82eeca6f9099e1ccd9ba49703c460a115:ggml/src/ggml-cuda/fattn-common.cuh:332:static __device__ __forceinline__ void quantize_q8_1_to_shared(",
+      "ffc1bac82eeca6f9099e1ccd9ba49703c460a115:ggml/src/ggml-cuda/fattn-vec.cuh:188:                    quantize_q8_1_to_shared<float2, nthreads_quantize>",
+      "ffc1bac82eeca6f9099e1ccd9ba49703c460a115:ggml/src/ggml-sycl/fattn-common.hpp:297:static __dpct_inline__ void quantize_q8_1_to_shared(const float * __restrict__ x,",
+      "ffc1bac82eeca6f9099e1ccd9ba49703c460a115:ggml/src/ggml-sycl/fattn-vec.hpp:214:                    quantize_q8_1_to_shared<sycl::float2, nthreads_quantize, warp_size>"
+    ],
+    "historical_v9": [
+      "0db32c06e3e550065b78311a6031ef3dd2c4f27c:ggml/src/ggml-cuda/fattn-common.cuh:332:static __device__ __forceinline__ void quantize_q8_1_to_shared(",
+      "0db32c06e3e550065b78311a6031ef3dd2c4f27c:ggml/src/ggml-cuda/fattn-vec.cuh:181:                    quantize_q8_1_to_shared<float2, nthreads_quantize>",
+      "0db32c06e3e550065b78311a6031ef3dd2c4f27c:ggml/src/ggml-sycl/fattn-common.hpp:297:static __dpct_inline__ void quantize_q8_1_to_shared(const float * __restrict__ x,",
+      "0db32c06e3e550065b78311a6031ef3dd2c4f27c:ggml/src/ggml-sycl/fattn-vec.hpp:214:                    quantize_q8_1_to_shared<sycl::float2, nthreads_quantize, warp_size>"
+    ],
+    "g10_candidate": [
+      "933666a9db27b9a668ef74378331329524fc39aa:ggml/src/ggml-cuda/fattn-common.cuh:332:static __device__ __forceinline__ void quantize_q8_1_to_shared(",
+      "933666a9db27b9a668ef74378331329524fc39aa:ggml/src/ggml-cuda/fattn-vec.cuh:188:                    quantize_q8_1_to_shared<float2, nthreads_quantize>",
+      "933666a9db27b9a668ef74378331329524fc39aa:ggml/src/ggml-sycl/fattn-common.hpp:297:static __dpct_inline__ void quantize_q8_1_to_shared(const float * __restrict__ x,",
+      "933666a9db27b9a668ef74378331329524fc39aa:ggml/src/ggml-sycl/fattn-vec.hpp:214:                    quantize_q8_1_to_shared<sycl::float2, nthreads_quantize, warp_size>"
+    ]
+  },
+  "candidate_changed_paths": [
+    "tests/test-backend-ops.cpp"
+  ],
+  "verdict": {
+    "HIP_CUDA_FA_Q_scale": "named fp16 reciprocal overflow class absent at source; float calculation/storage and multiplicative consumers",
+    "Vulkan_source": "old FLOAT_TYPE qd reciprocal pattern remains, including conditional fp16 MMQ generator route; not a built/running Vulkan claim",
+    "general_FA_correctness": "not assessed",
+    "fp32_subnormal_compiler_or_flush_semantics": "not assessed; outside the fp16 reciprocal hypothesis",
+    "G10_parent": "existing numerical/residency findings unchanged; no new native run requested or performed"
+  },
+  "source_only_checks": {
+    "returncode": 0,
+    "scope": "MODEL_FREE_R6_ONLY",
+    "kernel_childset_empty": true,
+    "production_tracked_state_unchanged": true
+  },
+  "private_evidence": {
+    "directory": "/mnt/raid0/llm/tmp/refactor-01a16fc3/z10-fp16-denorm-static-20261031",
+    "source_audit_sha256": "78aeeefdbbbcdd49c5b2a9e26f1157b2bb7c446464aa4257246da18c1d278323",
+    "static_log_sha256": "9f04ca67543d46625fd517325724c9c4baf194d1f986a4f28768555d033d7363",
+    "resource_receipt_sha256": "aa04fa1f95741a04b4f7be73bc7c80fa972653013aa2a112134c4f464946d97e"
+  }
+}
