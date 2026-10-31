@@ -1,0 +1,133 @@
+{
+  "task": "LOOP-27 \u2014 filing-backlog takeover alarm",
+  "state": "source checkpoint; original task OPEN pending actual owner adoption",
+  "source_files": [
+    {
+      "path": "coordination/session-bus/config.yaml",
+      "sha256": "05f05d110821e657cb8988f99a78ff292d33a441f7d2ed0a0e338c052913d1ac"
+    },
+    {
+      "path": "scripts/coordination/filing_takeover_alarm.py",
+      "sha256": "34dca337c8cfba18343ab28a33c2db9948558ff290f79305330ff27e7d568fdd"
+    },
+    {
+      "path": "scripts/coordination/filing_watch.sh",
+      "sha256": "84f54051211b1127a3a8932ee652e6d40b959ea001a62ce5dc43155f23242f7c"
+    },
+    {
+      "path": "tests/coordination/test_filing_takeover_alarm.py",
+      "sha256": "fed8abe05bcfe27c145d9304398fb2798e5833b65e9137303dce90b0ddb766da"
+    }
+  ],
+  "unchanged_bus_dispatcher_sources": [
+    {
+      "path": "scripts/coordination/session_bus.py",
+      "sha256": "d3f2cec9380ccfd8036448fdcb1bccbd24f82c8f4632abca1ab1478348d1a8a0"
+    },
+    {
+      "path": "scripts/coordination/session_bus_coordinator.py",
+      "sha256": "522e1499390841930103479627106e5c7338d122191072caacbed09048d3f355"
+    },
+    {
+      "path": "scripts/coordination/row_intake.py",
+      "sha256": "ec9ebd70dc9e5cfee05b6ce1227028c5efbed3b2fdd240983117f43f6a0cd543"
+    },
+    {
+      "path": "coordination/session-bus/session_bus.schema.json",
+      "sha256": "280060ce7d9d1393a33bfc7bcffe29b75740901d2591937e7d2202023fe6426d"
+    }
+  ],
+  "tests": {
+    "command": "project venv python -m pytest -q -p no:cacheprovider tests/coordination/test_filing_takeover_alarm.py",
+    "result": "20 passed",
+    "log": "artifacts/coordination/loop27-filing-alarm-20261031/CURRENT-MAIN-CONTROLS.log",
+    "ruff": "artifacts/coordination/loop27-filing-alarm-20261031/RUNTIME-RUFF.log"
+  },
+  "standing_control": {
+    "scope": "MODEL_FREE_R6_ONLY",
+    "family": "28-29",
+    "actual_cpus": [
+      124,
+      125
+    ],
+    "grant_snapshot": [
+      {
+        "id": "yarn-agg-1g-power-20261031",
+        "class": "block-correctness",
+        "regions": "mi210_0,184-191"
+      },
+      {
+        "id": "codex3-cs22-a1-native-long-v2-cpu-20261030",
+        "class": "block-correctness",
+        "regions": "72-95"
+      },
+      {
+        "id": "yarn-oolong-s2-host256-eligible26-v32-20261031",
+        "class": "block-correctness",
+        "regions": "24-47"
+      },
+      {
+        "id": "codex3-pareval120-k20-gen-20261031",
+        "class": "block-correctness",
+        "regions": "0-23"
+      },
+      {
+        "id": "yarn-oolong-s3-host256-eligible27-v30-20261031",
+        "class": "block-correctness",
+        "regions": "48-71"
+      }
+    ],
+    "returncode": 0,
+    "failure": null,
+    "elapsed_s": 1.4220204839948565,
+    "sampled_peak_tree_rss_bytes": 100245504,
+    "kernel_childset_empty": true,
+    "captured": [
+      {
+        "pid": 1949000,
+        "birth": 157729185,
+        "ppid": 1948997,
+        "uid": 1000
+      },
+      {
+        "pid": 1949010,
+        "birth": 157729239,
+        "ppid": 1949000,
+        "uid": 1000
+      },
+      {
+        "pid": 1949016,
+        "birth": 157729240,
+        "ppid": 1949010,
+        "uid": 1000
+      },
+      {
+        "pid": 1949020,
+        "birth": 157729243,
+        "ppid": 1949010,
+        "uid": 1000
+      },
+      {
+        "pid": 1949023,
+        "birth": 157729256,
+        "ppid": 1949000,
+        "uid": 1000
+      },
+      {
+        "pid": 1949031,
+        "birth": 157729258,
+        "ppid": 1949023,
+        "uid": 1000
+      }
+    ],
+    "native_or_GPU_execution": false
+  },
+  "adoption": "artifacts/coordination/loop27-filing-alarm-20261031/ADOPTION.md",
+  "native_or_live_bus_actions": false,
+  "quota_credit": 0,
+  "original_failed_baseline": {
+    "sha256": "2377f099de518cfe1f5d08c6312f36057b99b5570f9aa18fa40ac4815545b55d",
+    "path": "/mnt/raid0/llm/tmp/refactor-01a16fc3/loop27-filing-alarm-20261031/TESTS.log",
+    "result": "4 failed/11 passed before corrected _read_jsonl return contract"
+  }
+}
