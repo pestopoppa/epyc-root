@@ -1,0 +1,9 @@
+2026-10-31T11:16:53Z
+    PID                  STARTED COMMAND
+3725365 Sat Oct 31 11:03:10 2026 bash /mnt/raid0/llm/tmp/compute-flags/ws58-calendar-keeper-v7e.sh
+current=ws58-calendar-keeper-v7e.sh
+pidfile=3725365
+5d3646d3982a001c379b3da6f200efcead93de3e147656dbb62fb0f8cd87a11e  /mnt/raid0/llm/tmp/compute-flags/ws58-calendar-keeper-v7e.sh
+5d3646d3982a001c379b3da6f200efcead93de3e147656dbb62fb0f8cd87a11e  /mnt/raid0/llm/tmp/codex3-loop23-reap-20261031/candidate.sh
+453:REAP_DAYS=${REAP_DAYS:-1}; REAP_EVERY_S=${REAP_EVERY_S:-1800}
+REAP_DAYS absent from keeper environment
