@@ -1,0 +1,42 @@
+{
+  "task": "CS-18 cancellation source race repair",
+  "base_sha": "00c1b789aa30de3cc6801879af22a9a4cf4c3515",
+  "original_source_sha": "4f21a66fa763ba14a39bdfe56f747480c194d210",
+  "implementation": "Make SSE retirement/Event reset atomic; bind cancel Event and active-response snapshot under the same state lock. HTTP close remains outside the lock.",
+  "controls": {
+    "RED-NATIVE311.log.txt": "two expected failures against original source using final formatted controls; buffered tail delivered after typed cancellation and cancellation closed replacement response",
+    "GREEN-NATIVE311.log.txt": "two races pass on candidate source, native project Python 3.11",
+    "ADJACENT-NATIVE311.log.txt": "45 pass: new races and existing voice HTTP/controller/Cascade suites, no live endpoints",
+    "LINT.log.txt": "Ruff touched-file check passes using exact project configuration"
+  },
+  "source_sha256": "a6694f08ac35050d8e7e533c802d9aa6608335bf4a1a9e0ea9beab9e6179ae7c",
+  "test_sha256": "8bc72af03676cf2d7d9901969ceabaf61c408ebe413a3885a601b2656965d368",
+  "prior_source_sha256": "fd2f4486b05917e867ac3610a94707664994c3b6b9c635b849241e0c35d8efb1",
+  "resource": {
+    "original_mutex": "30-31.lock",
+    "actual_cpus": [
+      126,
+      127
+    ],
+    "omp_threads": 1,
+    "fresh_admission": "corrected supervisor validates all grants at launch and every two seconds; SMT fallback permitted only when all physical quarters granted",
+    "max_seconds": 120,
+    "max_sampled_owned_tree_stop_GiB": 7,
+    "required_limit_GiB": 8,
+    "children_drained": true
+  },
+  "limits": [
+    "Software fixture controls; no native inference measurement or runtime warrant.",
+    "No live endpoint, microphone, audio, latency, deployment or backend-persistence acceptance.",
+    "Thread drain refers only to fixture workers and supervised process tree.",
+    "CS-19 latency and CS-23 full audio cancellation remain separate.",
+    "Existing typed decision/cancellation implementation predates this repair; this artifact claims only the demonstrated races.",
+    "HOST Python 3.12 supplemental controls and failed HOST interpreter/pytest attempts stay private; native project Python 3.11 is the baseline."
+  ],
+  "log_sha256": {
+    "RED-NATIVE311.log.txt": "fd2fbbbb03090d8f5ae7b600ea4835d5d9147cbee72991df73f434b3d6d88547",
+    "LINT.log.txt": "c6f62102cef674bbf1a2b440621d48d42f249b6fc07f088e4a21c364b8e56199",
+    "ADJACENT-NATIVE311.log.txt": "dfce0b4187b83efe5f5557a35fadc644f6690b146c561c6ee724428c7170d5d7",
+    "GREEN-NATIVE311.log.txt": "9a26b0e55ca335ab53bf504f339ebbbb07746210455ccba51317b1bcb3dbea71"
+  }
+}

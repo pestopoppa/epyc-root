@@ -1,0 +1,361 @@
+{
+  "root_source": "2a2421e5d63a6bd05377a9fb542790a36726897a",
+  "id": "refactor-c6-gpu-27b-identity-729599d69-20261031",
+  "actual_started": "2026-10-31T18:09:41Z",
+  "actual_ended": "2026-10-31T18:47:27Z",
+  "seen_at": "2026-10-31T18:47:31Z",
+  "outer_result": {
+    "error": "RuntimeError('original pair order changed')",
+    "full_gate_pass": null,
+    "identity_pass": null,
+    "partial": false,
+    "protocol_pass": null,
+    "reason": "unexpected_failure",
+    "recorded_at": 1793472446.3343215,
+    "schema": "c6.gpu27b_identity_result.v1",
+    "status": "REFUSED"
+  },
+  "native_written_at": "2026-10-31T18:47:26Z",
+  "native_checks": {
+    "affinity_ok": true,
+    "arms_P_and_C_with_ok_probe": true,
+    "gpu_device_evidence": true,
+    "gpu_resident_during_run": true,
+    "identity_C_equals_P": true,
+    "no_failed_probe": true,
+    "own_ggml_mapped": true,
+    "speed_no_regression": true,
+    "sw9_champion_probs_on_every_token": true
+  },
+  "native_failed_checks": [],
+  "native_identity": {
+    "C_equals_P": true,
+    "P_self_deterministic": true,
+    "n_digests_per_arm": 2,
+    "per_arm_digests": {
+      "10C": [
+        "bd6f455f08767f27bc1d5dd31e6d4117404d4d3c3505de199159f7ccf776ee87",
+        "200b45ba82a7cce51b70dd2f6c830d4e0cddd53907ac2651cb07c3a8341feb1b"
+      ],
+      "11P": [
+        "bd6f455f08767f27bc1d5dd31e6d4117404d4d3c3505de199159f7ccf776ee87",
+        "200b45ba82a7cce51b70dd2f6c830d4e0cddd53907ac2651cb07c3a8341feb1b"
+      ],
+      "12C": [
+        "bd6f455f08767f27bc1d5dd31e6d4117404d4d3c3505de199159f7ccf776ee87",
+        "200b45ba82a7cce51b70dd2f6c830d4e0cddd53907ac2651cb07c3a8341feb1b"
+      ],
+      "13P": [
+        "bd6f455f08767f27bc1d5dd31e6d4117404d4d3c3505de199159f7ccf776ee87",
+        "200b45ba82a7cce51b70dd2f6c830d4e0cddd53907ac2651cb07c3a8341feb1b"
+      ],
+      "14C": [
+        "bd6f455f08767f27bc1d5dd31e6d4117404d4d3c3505de199159f7ccf776ee87",
+        "200b45ba82a7cce51b70dd2f6c830d4e0cddd53907ac2651cb07c3a8341feb1b"
+      ],
+      "15P": [
+        "bd6f455f08767f27bc1d5dd31e6d4117404d4d3c3505de199159f7ccf776ee87",
+        "200b45ba82a7cce51b70dd2f6c830d4e0cddd53907ac2651cb07c3a8341feb1b"
+      ],
+      "16C": [
+        "bd6f455f08767f27bc1d5dd31e6d4117404d4d3c3505de199159f7ccf776ee87",
+        "200b45ba82a7cce51b70dd2f6c830d4e0cddd53907ac2651cb07c3a8341feb1b"
+      ],
+      "17P": [
+        "bd6f455f08767f27bc1d5dd31e6d4117404d4d3c3505de199159f7ccf776ee87",
+        "200b45ba82a7cce51b70dd2f6c830d4e0cddd53907ac2651cb07c3a8341feb1b"
+      ],
+      "18C": [
+        "bd6f455f08767f27bc1d5dd31e6d4117404d4d3c3505de199159f7ccf776ee87",
+        "200b45ba82a7cce51b70dd2f6c830d4e0cddd53907ac2651cb07c3a8341feb1b"
+      ],
+      "19P": [
+        "bd6f455f08767f27bc1d5dd31e6d4117404d4d3c3505de199159f7ccf776ee87",
+        "200b45ba82a7cce51b70dd2f6c830d4e0cddd53907ac2651cb07c3a8341feb1b"
+      ],
+      "1P": [
+        "bd6f455f08767f27bc1d5dd31e6d4117404d4d3c3505de199159f7ccf776ee87",
+        "200b45ba82a7cce51b70dd2f6c830d4e0cddd53907ac2651cb07c3a8341feb1b"
+      ],
+      "20C": [
+        "bd6f455f08767f27bc1d5dd31e6d4117404d4d3c3505de199159f7ccf776ee87",
+        "200b45ba82a7cce51b70dd2f6c830d4e0cddd53907ac2651cb07c3a8341feb1b"
+      ],
+      "21P": [
+        "bd6f455f08767f27bc1d5dd31e6d4117404d4d3c3505de199159f7ccf776ee87",
+        "200b45ba82a7cce51b70dd2f6c830d4e0cddd53907ac2651cb07c3a8341feb1b"
+      ],
+      "22C": [
+        "bd6f455f08767f27bc1d5dd31e6d4117404d4d3c3505de199159f7ccf776ee87",
+        "200b45ba82a7cce51b70dd2f6c830d4e0cddd53907ac2651cb07c3a8341feb1b"
+      ],
+      "23P": [
+        "bd6f455f08767f27bc1d5dd31e6d4117404d4d3c3505de199159f7ccf776ee87",
+        "200b45ba82a7cce51b70dd2f6c830d4e0cddd53907ac2651cb07c3a8341feb1b"
+      ],
+      "24C": [
+        "bd6f455f08767f27bc1d5dd31e6d4117404d4d3c3505de199159f7ccf776ee87",
+        "200b45ba82a7cce51b70dd2f6c830d4e0cddd53907ac2651cb07c3a8341feb1b"
+      ],
+      "25P": [
+        "bd6f455f08767f27bc1d5dd31e6d4117404d4d3c3505de199159f7ccf776ee87",
+        "200b45ba82a7cce51b70dd2f6c830d4e0cddd53907ac2651cb07c3a8341feb1b"
+      ],
+      "26C": [
+        "bd6f455f08767f27bc1d5dd31e6d4117404d4d3c3505de199159f7ccf776ee87",
+        "200b45ba82a7cce51b70dd2f6c830d4e0cddd53907ac2651cb07c3a8341feb1b"
+      ],
+      "27P": [
+        "bd6f455f08767f27bc1d5dd31e6d4117404d4d3c3505de199159f7ccf776ee87",
+        "200b45ba82a7cce51b70dd2f6c830d4e0cddd53907ac2651cb07c3a8341feb1b"
+      ],
+      "28C": [
+        "bd6f455f08767f27bc1d5dd31e6d4117404d4d3c3505de199159f7ccf776ee87",
+        "200b45ba82a7cce51b70dd2f6c830d4e0cddd53907ac2651cb07c3a8341feb1b"
+      ],
+      "29P": [
+        "bd6f455f08767f27bc1d5dd31e6d4117404d4d3c3505de199159f7ccf776ee87",
+        "200b45ba82a7cce51b70dd2f6c830d4e0cddd53907ac2651cb07c3a8341feb1b"
+      ],
+      "2C": [
+        "bd6f455f08767f27bc1d5dd31e6d4117404d4d3c3505de199159f7ccf776ee87",
+        "200b45ba82a7cce51b70dd2f6c830d4e0cddd53907ac2651cb07c3a8341feb1b"
+      ],
+      "30C": [
+        "bd6f455f08767f27bc1d5dd31e6d4117404d4d3c3505de199159f7ccf776ee87",
+        "200b45ba82a7cce51b70dd2f6c830d4e0cddd53907ac2651cb07c3a8341feb1b"
+      ],
+      "3P": [
+        "bd6f455f08767f27bc1d5dd31e6d4117404d4d3c3505de199159f7ccf776ee87",
+        "200b45ba82a7cce51b70dd2f6c830d4e0cddd53907ac2651cb07c3a8341feb1b"
+      ],
+      "4C": [
+        "bd6f455f08767f27bc1d5dd31e6d4117404d4d3c3505de199159f7ccf776ee87",
+        "200b45ba82a7cce51b70dd2f6c830d4e0cddd53907ac2651cb07c3a8341feb1b"
+      ],
+      "5P": [
+        "bd6f455f08767f27bc1d5dd31e6d4117404d4d3c3505de199159f7ccf776ee87",
+        "200b45ba82a7cce51b70dd2f6c830d4e0cddd53907ac2651cb07c3a8341feb1b"
+      ],
+      "6C": [
+        "bd6f455f08767f27bc1d5dd31e6d4117404d4d3c3505de199159f7ccf776ee87",
+        "200b45ba82a7cce51b70dd2f6c830d4e0cddd53907ac2651cb07c3a8341feb1b"
+      ],
+      "7P": [
+        "bd6f455f08767f27bc1d5dd31e6d4117404d4d3c3505de199159f7ccf776ee87",
+        "200b45ba82a7cce51b70dd2f6c830d4e0cddd53907ac2651cb07c3a8341feb1b"
+      ],
+      "8C": [
+        "bd6f455f08767f27bc1d5dd31e6d4117404d4d3c3505de199159f7ccf776ee87",
+        "200b45ba82a7cce51b70dd2f6c830d4e0cddd53907ac2651cb07c3a8341feb1b"
+      ],
+      "9P": [
+        "bd6f455f08767f27bc1d5dd31e6d4117404d4d3c3505de199159f7ccf776ee87",
+        "200b45ba82a7cce51b70dd2f6c830d4e0cddd53907ac2651cb07c3a8341feb1b"
+      ]
+    },
+    "reference": "11P"
+  },
+  "native_speed": {
+    "pp_tps_median": {
+      "C": [
+        562.6592300152664,
+        625.512999523851,
+        491.2666472435981,
+        525.5433671962367,
+        527.0787692045268,
+        498.3233148489868,
+        553.5665836645203,
+        542.138728888725,
+        493.8592389879865,
+        603.8702855458962,
+        470.3158714149154,
+        583.7768074157312,
+        457.76826374500797,
+        540.6842688129822,
+        545.9462419074937
+      ],
+      "C_mean": 534.8207078943816,
+      "C_over_P_pct": 0.429,
+      "P": [
+        582.070900900474,
+        561.7635193476638,
+        448.04847636054313,
+        547.7853109911433,
+        549.858973589235,
+        441.6279154994626,
+        540.1570890749687,
+        601.185613393051,
+        619.8593270620928,
+        492.74295099280505,
+        631.105874663127,
+        501.0936924241986,
+        445.0820257861495,
+        546.2491129036805,
+        479.37637766767625
+      ],
+      "P_mean": 532.533810710418,
+      "P_spread_pct": 35.58,
+      "noise_floor_pct": 35.58,
+      "regression": false,
+      "unit": "tok/s (server timings)",
+      "within_noise": true
+    },
+    "tg_tps_median": {
+      "C": [
+        40.110396673908795,
+        39.25866745754776,
+        39.507743638926826,
+        39.89203107342904,
+        39.64370793239436,
+        39.0187088397297,
+        38.960999253621864,
+        39.87131149644442,
+        38.9061987724608,
+        39.15393619845182,
+        38.91570337298524,
+        39.807254790368475,
+        38.726728533321634,
+        39.86423017805775,
+        38.777695391946324
+      ],
+      "C_mean": 39.36102090690632,
+      "C_over_P_pct": 0.54,
+      "P": [
+        38.97397603286879,
+        38.570914561678116,
+        38.731072395297716,
+        39.87972295064733,
+        39.06437394389068,
+        39.719969181479755,
+        38.94811814789442,
+        39.76251613562347,
+        38.90780217214688,
+        39.062590700623005,
+        38.99883927017052,
+        38.60764438314139,
+        39.54967163148403,
+        39.28356373207363,
+        39.18344946552372
+      ],
+      "P_mean": 39.1496149803029,
+      "P_spread_pct": 3.343,
+      "noise_floor_pct": 3.343,
+      "regression": false,
+      "unit": "tok/s (server timings)",
+      "within_noise": true
+    }
+  },
+  "serialized_tag_order": [
+    "10C",
+    "11P",
+    "12C",
+    "13P",
+    "14C",
+    "15P",
+    "16C",
+    "17P",
+    "18C",
+    "19P",
+    "1P",
+    "20C",
+    "21P",
+    "22C",
+    "23P",
+    "24C",
+    "25P",
+    "26C",
+    "27P",
+    "28C",
+    "29P",
+    "2C",
+    "30C",
+    "3P",
+    "4C",
+    "5P",
+    "6C",
+    "7P",
+    "8C",
+    "9P"
+  ],
+  "numerical_tag_order": [
+    "1P",
+    "2C",
+    "3P",
+    "4C",
+    "5P",
+    "6C",
+    "7P",
+    "8C",
+    "9P",
+    "10C",
+    "11P",
+    "12C",
+    "13P",
+    "14C",
+    "15P",
+    "16C",
+    "17P",
+    "18C",
+    "19P",
+    "20C",
+    "21P",
+    "22C",
+    "23P",
+    "24C",
+    "25P",
+    "26C",
+    "27P",
+    "28C",
+    "29P",
+    "30C"
+  ],
+  "counts": {
+    "arms": 30,
+    "resident": 30,
+    "own_maps": 30,
+    "affinity_pre_post": 30
+  },
+  "source_p": "c72ec82f5417bb2937310326120f149b665e8400",
+  "source_c": "729599d69871181d67af715a4c2f9162d5153a2e",
+  "model_partial_identity": [
+    {
+      "edge_bytes": 67108864,
+      "first_edge_sha256": "82496310a88af24bcecac133737e30ac723fb6346a3757aeae3620b3e74900fc",
+      "last_edge_sha256": "ff2d3c1de7bd6659549fdc83687f4e4a9e4514dede54121bce4a15b3c0b909ee",
+      "mtime_ns": 1786727071030792493,
+      "path": "/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf",
+      "role": "-m",
+      "size": 29047086048
+    },
+    {
+      "edge_bytes": 67108864,
+      "first_edge_sha256": "f3628003ac6423b17b8eaf7a89517b7193bfc8cbfefe53a7ad40e4ec8251fae0",
+      "last_edge_sha256": "8e4b1f51df1eb5287093f5d46970c495d75bd45c9ff92e8d7418c65bd38bb88f",
+      "mtime_ns": 1787172135435655139,
+      "path": "/mnt/raid0/llm/models/Qwen3.8-27B-DFlash2-Q8_0.gguf",
+      "role": "-md",
+      "size": 2056414752
+    },
+    {
+      "mtime_ns": 1787403897152108556,
+      "path": "/mnt/raid0/llm/models/chat-templates/epyc-qwen3x-v1-terse.jinja",
+      "role": "--chat-template-file",
+      "size": 25808,
+      "whole_file_sha256": "1443ea9ab4bb0a2663b1002a5d4baad970e9f0b2f42ca4ec12b4683838284551"
+    }
+  ],
+  "evidence_sha256": {
+    "/mnt/raid0/llm/tmp/refactor-c6-gpu-27b-identity-prep-20261031/runs/20261031T180941Z-1410498/PRE-RUN.json": "252019272f9ecb3252131094f93a50fb8b0b0ac6599cf136ce90052eafbfac6f",
+    "/mnt/raid0/llm/tmp/refactor-c6-gpu-27b-identity-prep-20261031/runs/20261031T180941Z-1410498/RESULT.json": "461f28b7ffbb03939f44047817ce97875a9a60ebfb997d481144d3a192622f0d",
+    "/mnt/raid0/llm/tmp/refactor-c6-gpu-27b-identity-prep-20261031/runs/20261031T180941Z-1410498/ab/result.json": "bb75877259a5bfc0ccb09743472043d406b04faf90b312e7f108da31c3847b0f",
+    "/mnt/raid0/llm/tmp/refactor-c6-gpu-27b-identity-prep-20261031/runs/20261031T180941Z-1410498/ab/ab_arms.log": "b2cd56652434e6ca59c53d0749409801ed8f0f6e51cc77dd948eec1ffcb03050",
+    "/mnt/raid0/llm/tmp/refactor-c6-gpu-27b-identity-prep-20261031/gpu_identity_job.py": "b388ba9d3305a0a2c3f4f5614d63d44c851c81b057c2c9ea20e1ddb8c5a06916",
+    "/mnt/raid0/llm/tmp/refactor-c6-gpu-27b-identity-prep-20261031/original/ab_probe.py": "bd195fa6fe3575d50ef4e23a68dd5aad9e61f5201497118cf20abb646489182b",
+    "/mnt/raid0/llm/tmp/refactor-c6-gpu-27b-identity-prep-20261031/PACKAGE-SHA256SUMS": "5f93ef187c432752d2f67a1dc434d1ef2269f7351f97853947bae861940e309b",
+    "/mnt/raid0/llm/tmp/refactor-c6-gpu-27b-identity-prep-20261031/ORIGINAL-SHA256SUMS": "019b67bc485b11785ac2aca2d316518804eef7e3681653d15a27195c8756db22",
+    "/mnt/raid0/llm/tmp/refactor-c6-gpu-27b-identity-prep-20261031/PROTOCOL-PINS.json": "c82fb70390cfd194cc6d72f90ab80325c6acba02a06b1172eba664639065d6b1",
+    "/mnt/raid0/llm/tmp/compute-flags/grants/refactor-c6-gpu-27b-identity-729599d69-20261031.ended": "3941a77ae258e4a87f84fe9f9ab41fc3249efc59dd36acc3da675614ffa6d9a8"
+  },
+  "limitations": "Native PASS is subordinate to outer refusal; numerical tags and log corroborate sequence but do not replace strict acceptance. Residency is not graph execution or activity overlap. CPU control transport only; no adoption claim."
+}

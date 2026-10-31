@@ -221,7 +221,7 @@ Client and harness side (ak-ds41-main):
     "JSON-first and last-complete": a non-terminal primitive storing `state.provisional_answers`; at max turns
     (`repl_executor.py:771`) the answer is the last provisional that validates against `output_schema`. Done when it
     lands flagged off with tests, and an A/B task for enabling it is filed.
-  - [x] **UFH14-B1f — wire the per-turn thinking budget behind its own flag, default off.** ✅ 2026-10-30 [belief: cc]
+  - [x] **UFH14-B1f — wire the per-turn thinking budget behind its own flag, default off.** ✅ 2026-10-30 [belief: cc] Evidence: APP `6ed745fa1dde7e7c7fea4e5443a8fbd729449c3f`; `tests/unit/test_repl_thinking_budget.py`; `artifacts/compute/refactor-ufh14-b1f-thinking-budget-source-closure-20261030.json`. [historical hygiene: implemented 2026-10-30; zero new quota]
     (filed 2026-10-04, workspace-ec; not ported in B1b) Landed on orchestrator main as
     `6ed745fa1dde7e7c7fea4e5443a8fbd729449c3f`. The dedicated `repl_thinking_budget` flag remains OFF in test
     and production defaults. Request-local scopes carry `ChatRequest.thinking_budget` through graph worker threads

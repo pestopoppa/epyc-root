@@ -1,0 +1,9 @@
+# R4 physical prep admission correction — 2026-10-31
+
+The old local guard applied the R6 SMT fallback timing pause to every physical prep pair. Existing LOOP-CONTRACT R4 permits relocating to an ungranted physical pair; R6's timing restriction governs SMT fallback when all physical quarters are granted. Refactor and NI independently use physical relocation under that existing reading. No contract, measurement policy, model-smoke rule or trust boundary is amended.
+
+The corrected guard rejects every overlap after mapping CPUs96–191 to their physical siblings0–95. A free physical74–75 pair can therefore coexist with GPU timing184–191 (physical88–95), while overlapping physical/sibling and whole-host timing refuse. SMT fallback still refuses any timing grant and requires all quarters granted. Unknown/malformed grants and wrong pair size still refuse.
+
+The retained native control exercised11 cases plus the old/new R4 differential under original26–27 mutex, taskset74–75, OMP1 and the byte-identical sampled-RSS supervisor: exit0,0.118s,17,588,224B sampled owned-tree peak, children drained. RSS is sampled, not a kernel-enforced peak. Source hashes matched before and after. The unchanged supervisor SHA256 is d0351bfc8577f3fa094d5d8f11061ec7c10f2805226c6ddb543a508886f18509; corrected admission SHA256 is5215ca929cbc320b998a48c9e91c837417bc3c2314c34783ce992387a3499abe.
+
+`fixtures.py` is the exact executed source and records its historical absolute baseline import locator. The baseline bytes are also retained under `baseline/prep_admission.py` for future independent replay with that locator mapped explicitly. No portable replay or performance/model measurement is claimed. Live local controllers adopt only the pinned guard and unchanged supervisor; the old helper remains unchanged. R11 model smokes and GPU claims retain their original restrictions. [no-belief: local admission implementation and deterministic software controls]

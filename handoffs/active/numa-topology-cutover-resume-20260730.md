@@ -1312,8 +1312,7 @@ now trustworthy, where before they were not. Verified against the live registry 
       both stale files still exist on disk so it returns clean. Derive from
       `stack_priors.roles.*.serving.launch.requirements`.
       ✅ 2026-10-30 — orchestrator main `47d4fc1a8be6479a81fe24426883c43e30238dd2` validates active generated model/draft/projector files, deduplicates checks, and retains real embedding/aux/tool inputs. Missing/malformed active requirements fail closed; optional null external drafters and remote backends remain valid. Non-dev start validates before host prerequisites. The old function returned no errors when the active critic drafter was missing in the controlled fixture; the new function reports that exact canonical path.186 focused tests, red/green control and Ruff pass; no model/config or live service changes. [no-belief: source implementation and deterministic preflight controls]
-- [x] **`autopilot.py:5589` `_MODEL_SIGNATURES_PATH` names a deleted file.** Harmless today (the
-      arg is ignored) but should be removed with its call-site arg. ✅ 2026-10-29 — orchestrator main `5e1e9bcd2530` removes the retired constant and passes only `descriptors_path` to the existing loader. Descriptor-only fail-closed behavior is unchanged; 38 state-store regression tests and Ruff pass. No autopilot process was reloaded. [no-belief: source cleanup and regression tests]
+- [x] **`autopilot.py:5589` `_MODEL_SIGNATURES_PATH` names a deleted file.** Harmless today (the arg is ignored) but should be removed with its call-site arg. ✅ 2026-10-29 — orchestrator main `5e1e9bcd2530` removes the retired constant and passes only `descriptors_path` to the existing loader. Descriptor-only fail-closed behavior is unchanged; 38 state-store regression tests and Ruff pass. No autopilot process was reloaded. [no-belief: source cleanup and regression tests] Evidence: APP `5e1e9bcd2530247653c1f913b3ba3653315184d6`; `tests/unit/test_autopilot_state_store.py`. [historical hygiene: implemented 2026-10-29; zero new quota]
 - [ ] **`NON_QUARTERABLE` still names `architect_general`** in `contention_matrix.py` — now inert
       (one instance either way); comment corrected, set not changed.
 
@@ -1626,7 +1625,7 @@ was in flight and several items touch the shared clone.
   (`orchestrator_stack`, `stack_numa`, `stack_topology`) are stale at HEAD, which is why
   `orchestrator_stack.py start` refuses to launch. Deliberately out of scope for the P1-10 fix (separate
   act, separate file set).
-- [x] **The `backend:` → `verify_ggml_linkage` invariant is enforced by ONE TEST, not the loader.** ✅ 2026-10-29
+- [x] **The `backend:` → `verify_ggml_linkage` invariant is enforced by ONE TEST, not the loader.** ✅ 2026-10-29 Evidence: APP `e91305c14da8c218ef3e8b57f45c18b580bca9ca`; `tests/unit/test_aux_service_env.py`. [historical hygiene: implemented 2026-10-29; zero new quota]
   `stack_manifest.py:318` forces only `ld_library_path_mode`; `:338` defaults the flag to `False`. Delete
   a flag line from `launch_manifest.yaml` and the loader says nothing —
   `tests/unit/test_aux_service_env.py:128` is the only thing that would notice.

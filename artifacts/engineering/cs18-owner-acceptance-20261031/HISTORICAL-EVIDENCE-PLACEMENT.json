@@ -1,0 +1,49 @@
+{
+  "base": "2c3f9d9f03bec4b3cf0611e623fddecd3248af7d",
+  "new_checkbox_flips": 0,
+  "new_tests": 0,
+  "new_implementation": false,
+  "new_quota": 0,
+  "changes": [
+    {
+      "path": "handoffs/active/eval-tower-verification.md",
+      "original_text_lines": [
+        "- [x] Cross-family verification: enforce that ThinkPRM model family differs from evaluated models \u2705 2026-10-30 \u2014 orchestrator `de6c56e34f5f23c2155d2b7dc839554ae692f771` classifies ThinkPRM as Qwen and rejects Qwen or unknown generators before verifier loading. [no-belief: fail-closed software guard]\n"
+      ],
+      "only_evidence_annotation": " Evidence: APP `de6c56e34f5f23c2155d2b7dc839554ae692f771`; `tests/unit/test_eval_verifier_mode.py` and `tests/unit/test_process_verification.py`. [historical hygiene: implemented 2026-10-30; zero new quota]"
+    },
+    {
+      "path": "handoffs/active/kv-unified-stack-rollout.md",
+      "original_text_lines": [
+        "- [x] **KVU-13a \u2014 ambient `LLAMA_ARG_*` env is invisible to the cmdline attestation.** `-kvu` on argv wins, but an\n",
+        "  ambient `LLAMA_ARG_N_PARALLEL` would not be seen. Extend `_live_kv_unified()` (patch 3) to read\n",
+        "  `/proc/<pid>/environ`, or scrub `LLAMA_ARG_*` from the launch env. Same class (package revision 3 \u00a79): an\n",
+        "  ambient `LD_PRELOAD` / `SHIM_NPROCS` in the launcher's parent env would reach every aux service, because\n",
+        "  `build_service_env` starts from `os.environ`; scrub both unless the service entry declares them. \u2705 2026-10-29 \u2014 orchestrator main `61c4763b3655` scrubs inherited `LLAMA_ARG_*` in llama and aux environment builders and drops undeclared aux `LD_PRELOAD` / `SHIM_NPROCS`; declared service shims remain explicit. Ninety-nine focused/regression tests pass, including seven hostile-parent controls; Ruff and diff checks pass. `make gates` reached shellcheck and stopped because shellcheck is absent. This closes the source repair; no running service was reloaded. [no-belief: source implementation and regression tests]\n"
+      ],
+      "only_evidence_annotation": " Evidence: APP `61c4763b36559cbc46f0c994412d5aa10c1f31c4`; `tests/unit/test_launch_env_ambient_flags.py`. [historical hygiene: implemented 2026-10-29; zero new quota]"
+    },
+    {
+      "path": "handoffs/active/numa-topology-cutover-resume-20260730.md",
+      "original_text_lines": [
+        "- [x] **`autopilot.py:5589` `_MODEL_SIGNATURES_PATH` names a deleted file.** Harmless today (the\n",
+        "      arg is ignored) but should be removed with its call-site arg. \u2705 2026-10-29 \u2014 orchestrator main `5e1e9bcd2530` removes the retired constant and passes only `descriptors_path` to the existing loader. Descriptor-only fail-closed behavior is unchanged; 38 state-store regression tests and Ruff pass. No autopilot process was reloaded. [no-belief: source cleanup and regression tests]\n"
+      ],
+      "only_evidence_annotation": " Evidence: APP `5e1e9bcd2530247653c1f913b3ba3653315184d6`; `tests/unit/test_autopilot_state_store.py`. [historical hygiene: implemented 2026-10-29; zero new quota]"
+    },
+    {
+      "path": "handoffs/active/numa-topology-cutover-resume-20260730.md",
+      "original_text_lines": [
+        "- [x] **The `backend:` \u2192 `verify_ggml_linkage` invariant is enforced by ONE TEST, not the loader.** \u2705 2026-10-29\n"
+      ],
+      "only_evidence_annotation": " Evidence: APP `e91305c14da8c218ef3e8b57f45c18b580bca9ca`; `tests/unit/test_aux_service_env.py`. [historical hygiene: implemented 2026-10-29; zero new quota]"
+    },
+    {
+      "path": "handoffs/active/agentic-serving-harness-fixes.md",
+      "original_text_lines": [
+        "  - [x] **UFH14-B1f \u2014 wire the per-turn thinking budget behind its own flag, default off.** \u2705 2026-10-30 [belief: cc]\n"
+      ],
+      "only_evidence_annotation": " Evidence: APP `6ed745fa1dde7e7c7fea4e5443a8fbd729449c3f`; `tests/unit/test_repl_thinking_budget.py`; `artifacts/compute/refactor-ufh14-b1f-thinking-budget-source-closure-20261030.json`. [historical hygiene: implemented 2026-10-30; zero new quota]"
+    }
+  ]
+}
