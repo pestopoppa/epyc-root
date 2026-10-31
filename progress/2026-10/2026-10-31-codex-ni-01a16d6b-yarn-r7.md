@@ -17,3 +17,5 @@ The C5 counter-gate progress note is copied byte-for-byte at `progress/2026-10/2
 ## Verification
 
 Artifact file manifests were regenerated and checked against each staged file. Both YaRN native output streams match the original source manifest after decompression; all 14 source-manifest entries checked. R7 capsule files match its capsule SHA manifest. The PII hook rejected the original expanded 141-item file due to a digit run inside a valid 64-hex tokenizer hash; that file was excluded without bypassing or modifying the hook. Commit-scoped validation also reported existing grep-under-pipefail findings in preserved R7 `job.sh`; this artifact is evidence/source, not an executed code change.
+
+A post-publication audit compared every capsule manifest row to the Git blob, not only the sparse checkout. It found and corrected one stale YaRN README hash/size row; all other files already matched. The final published manifest was regenerated from committed blobs and checked for every file, including decompressed native A0/A1 stream hashes.
