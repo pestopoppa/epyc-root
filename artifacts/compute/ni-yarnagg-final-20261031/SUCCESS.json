@@ -1,0 +1,11 @@
+{
+  "status": "SUCCESS",
+  "task": "repair and recompute YARN aggregate power analysis from immutable native artifacts",
+  "analysis_packet": "/mnt/raid0/llm/tmp/codex-ni-yarnagg-final-analysis-repair-20261031",
+  "original_packet_untouched": true,
+  "native_integrity": "141 complete A0/A1 pairs; native decision recomputed exactly",
+  "original_120": "120 complete paired items; exact prospective identity and native McNemar verdict recomputed",
+  "negative_controls": "missing pair, prompt hash mismatch, and served prompt/cache mismatch rejected",
+  "duplicate_r11": "exact cohort supersession established; watcher stopped; no rerun required",
+  "source_immutability": "PASS; 14 original source artifacts rehashed without change"
+}

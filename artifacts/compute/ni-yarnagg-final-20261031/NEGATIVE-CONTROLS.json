@@ -1,0 +1,14 @@
+{
+  "missing_pair": {
+    "rejected": true,
+    "reason": "AssertionError: incomplete A0: 119/120"
+  },
+  "prompt_hash_mismatch": {
+    "rejected": true,
+    "reason": "AssertionError: "
+  },
+  "served_count_mismatch": {
+    "rejected": true,
+    "reason": "AssertionError: "
+  }
+}

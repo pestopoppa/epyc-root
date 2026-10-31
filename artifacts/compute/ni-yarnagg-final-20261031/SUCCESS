@@ -1,0 +1,3 @@
+SUCCESS: YARN aggregate analysis repaired and recomputed from immutable native outputs.
+Original packet hashes verified unchanged. Exact 120-pair r11 duplicate identity confirmed; do not rerun.
+See SUCCESS.json, POWER-RESULT.json, and R11-SUPERSESSION-EQUALITY.json.

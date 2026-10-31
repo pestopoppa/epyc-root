@@ -1,0 +1,163 @@
+{
+ "schema": "epyc.yarn_gate.plan.v1",
+ "plan": "native-gate-power-1g",
+ "frozen_at": "2026-10-31T00:52:06Z",
+ "plan_sha256": "dc8fa414b5e50328d294fe6d4b9a32fe5bea97b98a727808c37ceb5c4f4ade68",
+ "spec_sha256": "2d0e53ac2b142971d030183970dfd3691610d5b0f850801869b83cb7a7717a3e",
+ "n_items": 141,
+ "segments": [
+  {
+   "segment": "new_oolong",
+   "builder": "frozen",
+   "args": {
+    "source_plan_sha256": "022ba34ca80ac0d8fa734d7fdf3d9b5e484f4ad2265fba81f31021d87619ff04"
+   },
+   "arms": [
+    "A0",
+    "A1"
+   ],
+   "gate": "native_mcnemar",
+   "n_items": 120,
+   "n_contexts": 8,
+   "build_s": 0.3,
+   "pins": {
+    "dataset": "oolongbench/oolong-synth@81d2f8d9349f6ff329d695f9be494051e9f05cb9",
+    "data_file": "/mnt/raid0/llm/tmp/yarn-agg-oolong-subset/oolong_synth_test_131072.jsonl",
+    "upstream_sha": "0bb7eabe8",
+    "vendored_sha256": "247583a3b653b91c39fb88a102460802f1493175b23d05a7217aead0d685c64c",
+    "task_groups": [
+     "counting",
+     "user"
+    ],
+    "max_tokens_policy": "fixed cap 1024 (thinking_off)"
+   }
+  },
+  {
+   "segment": "repeat_extension_discordants",
+   "builder": "frozen",
+   "args": {
+    "source_plan_sha256": "d94cd4aef8bbadf491ec7111fb445f0dc5291d1b1ea972f8b7974020e38a9c1e"
+   },
+   "arms": [
+    "A0",
+    "A1"
+   ],
+   "gate": "native_mcnemar",
+   "n_items": 3,
+   "n_contexts": 2,
+   "build_s": 0.02,
+   "pins": {
+    "dataset": "oolongbench/oolong-synth@81d2f8d9349f6ff329d695f9be494051e9f05cb9",
+    "data_file": "/mnt/raid0/llm/tmp/yarn-agg-oolong-subset/oolong_synth_test_262144.jsonl",
+    "upstream_sha": "0bb7eabe8",
+    "vendored_sha256": "247583a3b653b91c39fb88a102460802f1493175b23d05a7217aead0d685c64c",
+    "task_groups": [
+     "counting",
+     "user"
+    ],
+    "max_tokens_policy": "fixed cap 1024 (thinking_off)"
+   }
+  },
+  {
+   "segment": "helmet_nq_128k",
+   "builder": "frozen",
+   "args": {
+    "source_plan_sha256": "c65106842f5c3ec5e05362ec6afefba7e5700f5a1b0d4ccde74faf10feb894f9"
+   },
+   "arms": [
+    "A0",
+    "A1"
+   ],
+   "gate": "native_mcnemar",
+   "n_items": 12,
+   "n_contexts": 12,
+   "build_s": 0.04,
+   "pins": {
+    "helmet_repo": "https://github.com/princeton-nlp/HELMET",
+    "helmet_sha": "aeadacc6593e9a222a84b0660b186a4e23d2efda",
+    "config": {
+     "path": "/mnt/raid0/llm/data/eval/helmet/repo/configs/rag.yaml",
+     "sha256": "9d7378b56785c4b3bf7910252c4dd5a3160f593c1d36acee95b9a575b8bdcee2",
+     "max_test_samples": 2,
+     "pin": "aeadacc6593e9a222a84b0660b186a4e23d2efda",
+     "kind": "pinned_yaml",
+     "yaml_max_test_samples": 100
+    },
+    "max_test_samples": 2,
+    "seed": 20261022,
+    "tokenizer_sha256": "0997f410c57a1f4e53b09e4be8f4a172d90edd9564368fb0847030937229b9f3",
+    "deviations": [
+     "paper numbers non-comparable (different model / tokenizer-sized lengths)",
+     "chat-endpoint prompt: user_template only; system_template answer prefix not appended (HELMET OpenAIModel path)",
+     "lengths are real tokens of the served tokenizer.json over message content (chat-template tokens excluded)",
+     "max_test_samples subset drawn with a seeded RNG (HELMET uses unseeded random.sample)",
+     "demos: 2 deterministic per-question draws from the k3 demo file (sha256 seed; HELMET's datasets.shuffle permutation not reproduced)",
+     "passage list cut at passage granularity to fit the real-token target (HELMET truncates the text tail)",
+     "stop_new_line=true applied in the scorer (first line only), not as a server stop sequence"
+    ],
+    "stop_new_line": true,
+    "source_file": "/mnt/raid0/llm/tmp/codex-ni-20261027-ready-cpu-batch/helmet-data/data/kilt/nq-dev-multikilt_1000_k1000_dep6.jsonl",
+    "demo_file": "/mnt/raid0/llm/tmp/codex-ni-20261027-ready-cpu-batch/helmet-data/data/kilt/nq-train-multikilt_1000_k3_dep6.jsonl",
+    "padded_passages": 0,
+    "skipped_unfillable_or_goldless": 0
+   }
+  },
+  {
+   "segment": "helmet_hotpotqa_128k",
+   "builder": "frozen",
+   "args": {
+    "source_plan_sha256": "0b2cc5de4feadec0aa3e03139c894ef8b7fb68de56b26de4f2cdd49808ce91e9"
+   },
+   "arms": [
+    "A0",
+    "A1"
+   ],
+   "gate": "native_mcnemar",
+   "n_items": 6,
+   "n_contexts": 6,
+   "build_s": 0.02,
+   "pins": {
+    "helmet_repo": "https://github.com/princeton-nlp/HELMET",
+    "helmet_sha": "aeadacc6593e9a222a84b0660b186a4e23d2efda",
+    "config": {
+     "path": "/mnt/raid0/llm/data/eval/helmet/repo/configs/rag.yaml",
+     "sha256": "9d7378b56785c4b3bf7910252c4dd5a3160f593c1d36acee95b9a575b8bdcee2",
+     "max_test_samples": 2,
+     "pin": "aeadacc6593e9a222a84b0660b186a4e23d2efda",
+     "kind": "pinned_yaml",
+     "yaml_max_test_samples": 100
+    },
+    "max_test_samples": 2,
+    "seed": 20261022,
+    "tokenizer_sha256": "0997f410c57a1f4e53b09e4be8f4a172d90edd9564368fb0847030937229b9f3",
+    "deviations": [
+     "paper numbers non-comparable (different model / tokenizer-sized lengths)",
+     "chat-endpoint prompt: user_template only; system_template answer prefix not appended (HELMET OpenAIModel path)",
+     "lengths are real tokens of the served tokenizer.json over message content (chat-template tokens excluded)",
+     "max_test_samples subset drawn with a seeded RNG (HELMET uses unseeded random.sample)",
+     "demos: 2 deterministic per-question draws from the k3 demo file (sha256 seed; HELMET's datasets.shuffle permutation not reproduced)",
+     "passage list cut at passage granularity to fit the real-token target (HELMET truncates the text tail)",
+     "stop_new_line=true applied in the scorer (first line only), not as a server stop sequence"
+    ],
+    "stop_new_line": true,
+    "source_file": "/mnt/raid0/llm/tmp/codex-ni-20261027-ready-cpu-batch/helmet-data/data/kilt/hotpotqa-dev-multikilt_1000_k1000_dep3.jsonl",
+    "demo_file": "/mnt/raid0/llm/tmp/codex-ni-20261027-ready-cpu-batch/helmet-data/data/kilt/hotpotqa-train-multikilt_1000_k3_dep3.jsonl",
+    "padded_passages": 0,
+    "skipped_unfillable_or_goldless": 0
+   }
+  }
+ ],
+ "dropped": [],
+ "margins": {
+  "in_native_rule": "Net, paired: inside the native window A1 FAILS iff a one-sided exact McNemar test on the paired discordant items (A0 right / A1 wrong = b, versus A0 wrong / A1 right = c) is significant at alpha = 0.05, i.e. P(X >= b | n = b + c, p = 0.5) <= 0.05; otherwise NOT-FAIL. The point estimate (mean paired score difference, b, c) is always reported beside the verdict.",
+  "alpha": 0.05,
+  "right_threshold": "an item is RIGHT iff its score >= 1.0 (fully correct); partial-credit scores count as wrong",
+  "needle_cells_keep": "A1 >= A0 - 1 correct of 10 (E1 rule, unchanged)",
+  "bins": "REAL prompt_n, step 32768; zone from retokenize.label_zone only"
+ },
+ "arm_ctx": {
+  "A0": 262144,
+  "A1": 524288
+ },
+ "protocol_id": "YARN-AGG-1/native-gate/net-paired-mcnemar/v1"
+}

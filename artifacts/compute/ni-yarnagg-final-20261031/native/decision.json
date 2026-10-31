@@ -1,0 +1,474 @@
+{
+ "schema": "epyc.yarn_gate.decision.v1",
+ "status": "FINAL",
+ "written": "2026-10-31T17:07:28Z",
+ "plan": "native-gate-power-1g",
+ "plan_sha256": "dc8fa414b5e50328d294fe6d4b9a32fe5bea97b98a727808c37ceb5c4f4ade68",
+ "protocol_id": "YARN-AGG-1/native-gate/net-paired-mcnemar/v1",
+ "rule": "Net, paired: inside the native window A1 FAILS iff a one-sided exact McNemar test on the paired discordant items (A0 right / A1 wrong = b, versus A0 wrong / A1 right = c) is significant at alpha = 0.05, i.e. P(X >= b | n = b + c, p = 0.5) <= 0.05; otherwise NOT-FAIL. The point estimate (mean paired score difference, b, c) is always reported beside the verdict.",
+ "alpha": 0.05,
+ "verdict": "NOT-FAIL",
+ "pooled_native": {
+  "verdict": "NOT-FAIL",
+  "n_pairs": 141,
+  "b_a0right_a1wrong": 7,
+  "c_a0wrong_a1right": 11,
+  "p_one_sided": 0.8810577392578125,
+  "alpha": 0.05,
+  "mean_score_diff_a1_minus_a0": 0.03667996453900709,
+  "rule": "Net, paired (one-sided exact McNemar), no absolute slack",
+  "n_discordant": 18,
+  "min_losses_to_fail_given_discordant": 13,
+  "min_losses_to_fail_with_zero_wins": 5,
+  "power_note": "NOT-FAIL = no harm detected at this sample size; this is NOT an equivalence or safety claim (n_discordant=18)",
+  "interpretation": "NOT-FAIL"
+ },
+ "per_cell_native": {
+  "helmet_hotpotqa@128k": {
+   "verdict": "NOT-FAIL",
+   "n_pairs": 6,
+   "b_a0right_a1wrong": 0,
+   "c_a0wrong_a1right": 0,
+   "p_one_sided": 1.0,
+   "alpha": 0.05,
+   "mean_score_diff_a1_minus_a0": 0.0,
+   "rule": "Net, paired (one-sided exact McNemar), no absolute slack",
+   "n_discordant": 0,
+   "min_losses_to_fail_given_discordant": null,
+   "min_losses_to_fail_with_zero_wins": 5,
+   "power_note": "NOT-FAIL = no harm detected at this sample size; this is NOT an equivalence or safety claim (n_discordant=0); underpowered: few disagreements",
+   "interpretation": "NOT-FAIL-underpowered"
+  },
+  "helmet_nq@128k": {
+   "verdict": "NOT-FAIL",
+   "n_pairs": 12,
+   "b_a0right_a1wrong": 0,
+   "c_a0wrong_a1right": 0,
+   "p_one_sided": 1.0,
+   "alpha": 0.05,
+   "mean_score_diff_a1_minus_a0": 0.0,
+   "rule": "Net, paired (one-sided exact McNemar), no absolute slack",
+   "n_discordant": 0,
+   "min_losses_to_fail_given_discordant": null,
+   "min_losses_to_fail_with_zero_wins": 5,
+   "power_note": "NOT-FAIL = no harm detected at this sample size; this is NOT an equivalence or safety claim (n_discordant=0); underpowered: few disagreements",
+   "interpretation": "NOT-FAIL-underpowered"
+  },
+  "oolong_synth@131072": {
+   "verdict": "NOT-FAIL",
+   "n_pairs": 120,
+   "b_a0right_a1wrong": 5,
+   "c_a0wrong_a1right": 10,
+   "p_one_sided": 0.940765380859375,
+   "alpha": 0.05,
+   "mean_score_diff_a1_minus_a0": 0.051432291666666664,
+   "rule": "Net, paired (one-sided exact McNemar), no absolute slack",
+   "n_discordant": 15,
+   "min_losses_to_fail_given_discordant": 12,
+   "min_losses_to_fail_with_zero_wins": 5,
+   "power_note": "NOT-FAIL = no harm detected at this sample size; this is NOT an equivalence or safety claim (n_discordant=15)",
+   "interpretation": "NOT-FAIL"
+  },
+  "oolong_synth@240k": {
+   "verdict": "NOT-FAIL",
+   "n_pairs": 2,
+   "b_a0right_a1wrong": 1,
+   "c_a0wrong_a1right": 1,
+   "p_one_sided": 0.75,
+   "alpha": 0.05,
+   "mean_score_diff_a1_minus_a0": 0.0,
+   "rule": "Net, paired (one-sided exact McNemar), no absolute slack",
+   "n_discordant": 2,
+   "min_losses_to_fail_given_discordant": null,
+   "min_losses_to_fail_with_zero_wins": 5,
+   "power_note": "NOT-FAIL = no harm detected at this sample size; this is NOT an equivalence or safety claim (n_discordant=2); underpowered: few disagreements",
+   "interpretation": "NOT-FAIL-underpowered"
+  },
+  "ruler_mk_2@240k": {
+   "verdict": "NOT-FAIL",
+   "n_pairs": 1,
+   "b_a0right_a1wrong": 1,
+   "c_a0wrong_a1right": 0,
+   "p_one_sided": 0.5,
+   "alpha": 0.05,
+   "mean_score_diff_a1_minus_a0": -1.0,
+   "rule": "Net, paired (one-sided exact McNemar), no absolute slack",
+   "n_discordant": 1,
+   "min_losses_to_fail_given_discordant": null,
+   "min_losses_to_fail_with_zero_wins": 5,
+   "power_note": "NOT-FAIL = no harm detected at this sample size; this is NOT an equivalence or safety claim (n_discordant=1); underpowered: few disagreements",
+   "interpretation": "NOT-FAIL-underpowered"
+  }
+ },
+ "excluded_from_gate": [],
+ "per_arm_cells": {
+  "A0": {
+   "helmet_hotpotqa@128k": {
+    "n": 6,
+    "attempted_rate": 1.0,
+    "no_answer_rate": 0.0,
+    "ci": {
+     "n_items": 6,
+     "n_contexts": 6,
+     "mean": 1.0,
+     "lo": 1.0,
+     "hi": 1.0
+    },
+    "zones": [
+     "native"
+    ],
+    "real_n_median": 131098,
+    "failure_classes": {
+     "wrong": 0,
+     "no_answer_budget": 0,
+     "refusal": 0,
+     "unparsable": 0
+    }
+   },
+   "helmet_nq@128k": {
+    "n": 12,
+    "attempted_rate": 1.0,
+    "no_answer_rate": 0.0,
+    "ci": {
+     "n_items": 12,
+     "n_contexts": 12,
+     "mean": 0.5,
+     "lo": 0.25,
+     "hi": 0.75
+    },
+    "zones": [
+     "native"
+    ],
+    "real_n_median": 131131,
+    "failure_classes": {
+     "wrong": 6,
+     "no_answer_budget": 0,
+     "refusal": 0,
+     "unparsable": 0
+    }
+   },
+   "oolong_synth@131072": {
+    "n": 120,
+    "attempted_rate": 1.0,
+    "no_answer_rate": 0.8083333333333333,
+    "ci": {
+     "n_items": 120,
+     "n_contexts": 8,
+     "mean": 0.11826171875,
+     "lo": 0.047520661157024795,
+     "hi": 0.18906890368852458
+    },
+    "zones": [
+     "native"
+    ],
+    "real_n_median": 114872,
+    "failure_classes": {
+     "wrong": 12,
+     "no_answer_budget": 97,
+     "refusal": 0,
+     "unparsable": 0
+    }
+   },
+   "oolong_synth@240k": {
+    "n": 2,
+    "attempted_rate": 1.0,
+    "no_answer_rate": 0.5,
+    "ci": {
+     "n_items": 2,
+     "n_contexts": 1,
+     "mean": 0.5,
+     "lo": 0.5,
+     "hi": 0.5
+    },
+    "zones": [
+     "native"
+    ],
+    "real_n_median": 222434,
+    "failure_classes": {
+     "wrong": 0,
+     "no_answer_budget": 1,
+     "refusal": 0,
+     "unparsable": 0
+    }
+   },
+   "ruler_mk_2@240k": {
+    "n": 1,
+    "attempted_rate": 1.0,
+    "no_answer_rate": 0.0,
+    "ci": {
+     "n_items": 1,
+     "n_contexts": 1,
+     "mean": 1.0,
+     "lo": 1.0,
+     "hi": 1.0
+    },
+    "zones": [
+     "native"
+    ],
+    "real_n_median": 244752,
+    "failure_classes": {
+     "wrong": 0,
+     "no_answer_budget": 0,
+     "refusal": 0,
+     "unparsable": 0
+    }
+   }
+  },
+  "A1": {
+   "helmet_hotpotqa@128k": {
+    "n": 6,
+    "attempted_rate": 1.0,
+    "no_answer_rate": 0.0,
+    "ci": {
+     "n_items": 6,
+     "n_contexts": 6,
+     "mean": 1.0,
+     "lo": 1.0,
+     "hi": 1.0
+    },
+    "zones": [
+     "native"
+    ],
+    "real_n_median": 131098,
+    "failure_classes": {
+     "wrong": 0,
+     "no_answer_budget": 0,
+     "refusal": 0,
+     "unparsable": 0
+    }
+   },
+   "helmet_nq@128k": {
+    "n": 12,
+    "attempted_rate": 1.0,
+    "no_answer_rate": 0.0,
+    "ci": {
+     "n_items": 12,
+     "n_contexts": 12,
+     "mean": 0.5,
+     "lo": 0.25,
+     "hi": 0.75
+    },
+    "zones": [
+     "native"
+    ],
+    "real_n_median": 131131,
+    "failure_classes": {
+     "wrong": 6,
+     "no_answer_budget": 0,
+     "refusal": 0,
+     "unparsable": 0
+    }
+   },
+   "oolong_synth@131072": {
+    "n": 120,
+    "attempted_rate": 1.0,
+    "no_answer_rate": 0.6416666666666667,
+    "ci": {
+     "n_items": 120,
+     "n_contexts": 8,
+     "mean": 0.16969401041666668,
+     "lo": 0.08793604651162791,
+     "hi": 0.27241694819819817
+    },
+    "zones": [
+     "native"
+    ],
+    "real_n_median": 114872,
+    "failure_classes": {
+     "wrong": 26,
+     "no_answer_budget": 77,
+     "refusal": 0,
+     "unparsable": 0
+    }
+   },
+   "oolong_synth@240k": {
+    "n": 2,
+    "attempted_rate": 1.0,
+    "no_answer_rate": 0.5,
+    "ci": {
+     "n_items": 2,
+     "n_contexts": 1,
+     "mean": 0.5,
+     "lo": 0.5,
+     "hi": 0.5
+    },
+    "zones": [
+     "native"
+    ],
+    "real_n_median": 222434,
+    "failure_classes": {
+     "wrong": 0,
+     "no_answer_budget": 1,
+     "refusal": 0,
+     "unparsable": 0
+    }
+   },
+   "ruler_mk_2@240k": {
+    "n": 1,
+    "attempted_rate": 1.0,
+    "no_answer_rate": 0.0,
+    "ci": {
+     "n_items": 1,
+     "n_contexts": 1,
+     "mean": 0.0,
+     "lo": 0.0,
+     "hi": 0.0
+    },
+    "zones": [
+     "native"
+    ],
+    "real_n_median": 244752,
+    "failure_classes": {
+     "wrong": 1,
+     "no_answer_budget": 0,
+     "refusal": 0,
+     "unparsable": 0
+    }
+   }
+  }
+ },
+ "progress": {
+  "plan": "native-gate-power-1g",
+  "plan_sha256": "dc8fa414b5e50328d294fe6d4b9a32fe5bea97b98a727808c37ceb5c4f4ade68",
+  "arms": {
+   "A0": {
+    "planned": 141,
+    "done": 141,
+    "pending": 0,
+    "est_pending_s": 0
+   },
+   "A1": {
+    "planned": 141,
+    "done": 141,
+    "pending": 0,
+    "est_pending_s": 0
+   }
+  },
+  "complete": true,
+  "order": [
+   "A0",
+   "A1"
+  ]
+ },
+ "dropped_segments": [],
+ "results_sha256": {
+  "A0": "7b213c4e00034afa2cfd3f6e9fbce12eab9086841aae3e9b6dc4801b52f51a3c",
+  "A1": "db84ef665a618e8cc253a9d16cd668d8cf5ecca276b91eddd6c49ef72158884f"
+ },
+ "identity": {
+  "model": "/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf",
+  "model_size": 29047086048,
+  "model_mtime": 1786727071,
+  "model_head16m_sha256": "1b7305964206168f2d4d0c3c039c4c54134438753f25bec341a43d6def8cece5",
+  "binary": "/mnt/raid0/llm/tmp/codex-ni-gpu-anchor-custody-20261030/private-v10-view/bin/llama-server",
+  "binary_sha256": "2b49713f0e3c022132393bf302dab954a1e2c1974b91c28d01ce2d192abdfa7b",
+  "build_dir": "/mnt/raid0/llm/tmp/codex-ni-gpu-anchor-custody-20261030/private-v10-view/bin",
+  "version": "version: 10303 (ffc1bac82)\nbuilt with GNU 15.2.0 for Linux x86_64",
+  "research_sha": "7e7d5ef7f28f0c0ec45c16b7a90a51750006671f",
+  "schema": "epyc.yarn_agg_1g.identity.v1",
+  "plan_sha256": "dc8fa414b5e50328d294fe6d4b9a32fe5bea97b98a727808c37ceb5c4f4ade68",
+  "model_sha256": "a680f44a06920e5d689774823782006aa3acc8db95750323373b24139b67e348",
+  "binary_path": "/mnt/raid0/llm/tmp/codex-ni-gpu-anchor-custody-20261030/private-v10-view/bin/llama-server",
+  "template_sha256": "1443ea9ab4bb0a2663b1002a5d4baad970e9f0b2f42ca4ec12b4683838284551",
+  "ggml_dso_sha256": "f26a166b8ea3089d19a395ae00afa22e917df8eba71ca6ef4be5235d65ea8079",
+  "source_manifest_sha256": "2bf30b145eacd9b74d18410578b5cac8531ae9b115513aceb6c1641298109ef6",
+  "paired_recipe_sha256": "b0efd84941c27f3e426b8a0714d5dfd9108af3c1f349b654f305ae1be8cfddcd",
+  "archive_root": "/mnt/raid0/llm/tmp/codex-ni-yarn-agg1g-prep-20261031/archive",
+  "source_tree_commit": "7e7d5ef7f28f0c0ec45c16b7a90a51750006671f"
+ },
+ "n_pairs": 141,
+ "b_a0right_a1wrong": 7,
+ "c_a0wrong_a1right": 11,
+ "n_discordant": 18,
+ "min_losses_to_fail_given_discordant": 13,
+ "min_losses_to_fail_with_zero_wins": 5,
+ "power_note": "NOT-FAIL = no harm detected at this sample size; this is NOT an equivalence or safety claim (n_discordant=18)",
+ "interpretation": "NOT-FAIL",
+ "claim_tuple": {
+  "measurement_id": "yarn-gate:native-gate-power-1g:dc8fa414b5e5",
+  "metric": "mean paired score difference A1 - A0 inside the native window (net-paired McNemar gate)",
+  "value": 0.03667996453900709,
+  "unit": "score fraction per item (0-1)",
+  "metric_direction": "higher_better",
+  "category": "quality",
+  "date": "2026-10-31T17:07:28Z",
+  "claim": "A1 (YaRN f2) vs A0 (native RoPE) inside the native window on native-gate-power-1g: NOT-FAIL under the net-paired one-sided McNemar rule (b=7, c=11, p=0.8811, n_pairs=141); NOT-FAIL means no significant net loss, not equivalence",
+  "protocol_id": "YARN-AGG-1/native-gate/net-paired-mcnemar/v1",
+  "reps": 141,
+  "reps_basis": "scored (paired, native zone)",
+  "attestation_path": "/mnt/raid0/llm/tmp/codex-ni-yarn-agg1g-prep-20261031/run/decision.json",
+  "attestation_locator": "pooled_native",
+  "status": "FINAL",
+  "verdict": "NOT-FAIL",
+  "extra": {
+   "b": 7,
+   "c": 11,
+   "p_one_sided": 0.8810577392578125,
+   "alpha": 0.05,
+   "n_discordant": 18,
+   "interpretation": "NOT-FAIL",
+   "plan_sha256": "dc8fa414b5e50328d294fe6d4b9a32fe5bea97b98a727808c37ceb5c4f4ade68",
+   "results_sha256": {
+    "A0": "7b213c4e00034afa2cfd3f6e9fbce12eab9086841aae3e9b6dc4801b52f51a3c",
+    "A1": "db84ef665a618e8cc253a9d16cd668d8cf5ecca276b91eddd6c49ef72158884f"
+   },
+   "identity": {
+    "model": "/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf",
+    "model_size": 29047086048,
+    "model_mtime": 1786727071,
+    "model_head16m_sha256": "1b7305964206168f2d4d0c3c039c4c54134438753f25bec341a43d6def8cece5",
+    "binary": "/mnt/raid0/llm/tmp/codex-ni-gpu-anchor-custody-20261030/private-v10-view/bin/llama-server",
+    "binary_sha256": "2b49713f0e3c022132393bf302dab954a1e2c1974b91c28d01ce2d192abdfa7b",
+    "build_dir": "/mnt/raid0/llm/tmp/codex-ni-gpu-anchor-custody-20261030/private-v10-view/bin",
+    "version": "version: 10303 (ffc1bac82)\nbuilt with GNU 15.2.0 for Linux x86_64",
+    "research_sha": "7e7d5ef7f28f0c0ec45c16b7a90a51750006671f",
+    "schema": "epyc.yarn_agg_1g.identity.v1",
+    "plan_sha256": "dc8fa414b5e50328d294fe6d4b9a32fe5bea97b98a727808c37ceb5c4f4ade68",
+    "model_sha256": "a680f44a06920e5d689774823782006aa3acc8db95750323373b24139b67e348",
+    "binary_path": "/mnt/raid0/llm/tmp/codex-ni-gpu-anchor-custody-20261030/private-v10-view/bin/llama-server",
+    "template_sha256": "1443ea9ab4bb0a2663b1002a5d4baad970e9f0b2f42ca4ec12b4683838284551",
+    "ggml_dso_sha256": "f26a166b8ea3089d19a395ae00afa22e917df8eba71ca6ef4be5235d65ea8079",
+    "source_manifest_sha256": "2bf30b145eacd9b74d18410578b5cac8531ae9b115513aceb6c1641298109ef6",
+    "paired_recipe_sha256": "b0efd84941c27f3e426b8a0714d5dfd9108af3c1f349b654f305ae1be8cfddcd",
+    "archive_root": "/mnt/raid0/llm/tmp/codex-ni-yarn-agg1g-prep-20261031/archive",
+    "source_tree_commit": "7e7d5ef7f28f0c0ec45c16b7a90a51750006671f"
+   }
+  }
+ },
+ "belief_emit": {
+  "status": "written",
+  "sidecar": "/mnt/raid0/llm/tmp/codex-ni-yarn-agg1g-prep-20261031/run/yarn_gate_agg.beliefs.jsonl",
+  "n_records": 35,
+  "excluded": [
+   {
+    "arm": "A0",
+    "group": [
+     "ruler",
+     "niah_multikey_2",
+     "229376-262144",
+     "native"
+    ],
+    "reason": "source pins absent or not uniform in the group"
+   },
+   {
+    "arm": "A1",
+    "group": [
+     "ruler",
+     "niah_multikey_2",
+     "229376-262144",
+     "native"
+    ],
+    "reason": "source pins absent or not uniform in the group"
+   },
+   {
+    "group": [
+     "ruler",
+     "niah_multikey_2",
+     "229376-262144",
+     "native"
+    ],
+    "reason": "paired cell record missing or excluded: no verdict row"
+   }
+  ]
+ }
+}

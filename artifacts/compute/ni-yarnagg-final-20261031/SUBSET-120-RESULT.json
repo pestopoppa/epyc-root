@@ -1,0 +1,30 @@
+{
+  "schema": "epyc.yarn_agg_1g.original_120_result.v1",
+  "status": "FINAL",
+  "whole_plan_sha256": "dc8fa414b5e50328d294fe6d4b9a32fe5bea97b98a727808c37ceb5c4f4ade68",
+  "source_plan_sha256": "022ba34ca80ac0d8fa734d7fdf3d9b5e484f4ad2265fba81f31021d87619ff04",
+  "subset_id_prompt_sha256": "536a5af4058aa512c4217daf9d9c0408cfc8404713fc1f1c73003a1d7ba1bf4d",
+  "cell": "oolong_synth@131072",
+  "result": {
+    "verdict": "NOT-FAIL",
+    "n_pairs": 120,
+    "b_a0right_a1wrong": 5,
+    "c_a0wrong_a1right": 10,
+    "p_one_sided": 0.940765380859375,
+    "alpha": 0.05,
+    "mean_score_diff_a1_minus_a0": 0.051432291666666664,
+    "rule": "Net, paired (one-sided exact McNemar), no absolute slack",
+    "n_discordant": 15,
+    "min_losses_to_fail_given_discordant": 12,
+    "min_losses_to_fail_with_zero_wins": 5,
+    "power_note": "NOT-FAIL = no harm detected at this sample size; this is NOT an equivalence or safety claim (n_discordant=15)",
+    "interpretation": "NOT-FAIL"
+  },
+  "power_target_reached": true,
+  "attempted_a0": 120,
+  "attempted_a1": 120,
+  "attempted_both": 120,
+  "denominator": "all 120 exact paired native scored items, including no-answer as wrong",
+  "interpretation": "harm detection only; NOT-FAIL is no equivalence claim",
+  "scope": "one prospectively declared subset of the same new 141-item run; prior R6 scores not pooled"
+}

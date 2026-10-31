@@ -1,0 +1,83 @@
+{
+  "schema": "epyc.yarn_agg_1g.power_result.v1",
+  "status": "FINAL",
+  "plan_sha256": "dc8fa414b5e50328d294fe6d4b9a32fe5bea97b98a727808c37ceb5c4f4ade68",
+  "rule": {
+    "method": "native paired one-sided exact McNemar",
+    "alpha": 0.05,
+    "right_if": "score >= 1.0",
+    "fail_if": "p_one_sided <= 0.05",
+    "power_target": "at least 10 new discordant pairs",
+    "equivalence_claim": false
+  },
+  "fresh_full_141": {
+    "verdict": "NOT-FAIL",
+    "n_pairs": 141,
+    "b_a0right_a1wrong": 7,
+    "c_a0wrong_a1right": 11,
+    "p_one_sided": 0.8810577392578125,
+    "alpha": 0.05,
+    "mean_score_diff_a1_minus_a0": 0.03667996453900709,
+    "rule": "Net, paired (one-sided exact McNemar), no absolute slack",
+    "n_discordant": 18,
+    "min_losses_to_fail_given_discordant": 13,
+    "min_losses_to_fail_with_zero_wins": 5,
+    "power_note": "NOT-FAIL = no harm detected at this sample size; this is NOT an equivalence or safety claim (n_discordant=18)",
+    "interpretation": "harm detection only; NOT-FAIL is not equivalence or safety",
+    "power_target_reached": true
+  },
+  "original_registered_120": {
+    "verdict": "NOT-FAIL",
+    "n_pairs": 120,
+    "b_a0right_a1wrong": 5,
+    "c_a0wrong_a1right": 10,
+    "p_one_sided": 0.940765380859375,
+    "alpha": 0.05,
+    "mean_score_diff_a1_minus_a0": 0.051432291666666664,
+    "rule": "Net, paired (one-sided exact McNemar), no absolute slack",
+    "n_discordant": 15,
+    "min_losses_to_fail_given_discordant": 12,
+    "min_losses_to_fail_with_zero_wins": 5,
+    "power_note": "NOT-FAIL = no harm detected at this sample size; this is NOT an equivalence or safety claim (n_discordant=15)",
+    "interpretation": "NOT-FAIL",
+    "power_target_reached": true,
+    "attempted_a0": 120,
+    "attempted_a1": 120,
+    "attempted_both": 120,
+    "scope": "exact prospectively declared source-120 subset; prior scores not pooled"
+  },
+  "historical_extension": {
+    "b": 2,
+    "c": 1,
+    "n_discordant": 3,
+    "status": "separate historical observation; excluded from both fresh decisions"
+  },
+  "integrity": {
+    "full_pairs_per_arm": 141,
+    "original_120_pairs_per_arm": 120,
+    "result_hashes_match_native_decision": true,
+    "recomputed_full_equals_native_decision": true,
+    "recomputed_subset_equals_native_per_cell": true,
+    "negative_controls": {
+      "missing_pair": {
+        "rejected": true,
+        "reason": "AssertionError: incomplete A0: 119/120"
+      },
+      "prompt_hash_mismatch": {
+        "rejected": true,
+        "reason": "AssertionError: "
+      },
+      "served_count_mismatch": {
+        "rejected": true,
+        "reason": "AssertionError: "
+      }
+    }
+  },
+  "analysis_failure_repaired": {
+    "original_status": "INCOMPLETE; original analyzer exit 2",
+    "cause": "subset extractor incorrectly asserted real_n == timings.prompt_n; native real_n is prompt_n + cache_n (cached-prefix tokens are part of served context)",
+    "repair": "enforce exact native equation real_n == timings.prompt_n + timings.cache_n, then retain all existing plan/pin/hash/pairing/zone/status checks"
+  },
+  "source_artifact_manifest": "SOURCE-ARTIFACTS.sha256.json",
+  "original_failure_copy": "ORIGINAL-SUBSET-120-FAILURE.json"
+}

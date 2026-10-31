@@ -1,0 +1,8 @@
+{
+  "schema": "epyc.yarn_agg_1g.original_120_result.v1",
+  "status": "INCOMPLETE",
+  "reason": "AssertionError: ",
+  "whole_plan_sha256": "dc8fa414b5e50328d294fe6d4b9a32fe5bea97b98a727808c37ceb5c4f4ade68",
+  "source_plan_sha256": "022ba34ca80ac0d8fa734d7fdf3d9b5e484f4ad2265fba81f31021d87619ff04",
+  "subset_id_prompt_sha256": "536a5af4058aa512c4217daf9d9c0408cfc8404713fc1f1c73003a1d7ba1bf4d"
+}
