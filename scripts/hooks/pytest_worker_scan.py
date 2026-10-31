@@ -11,8 +11,9 @@ separators and quotes, so it blocked a pytest run piped into a ``sed`` line-rang
 reported that bug, because the payload quoted the pattern. It was matching TEXT;
 what matters is INVOCATIONS.
 
-Two boundaries fix that, and nothing else changes:
+Three boundaries fix that, and nothing else changes:
   * quoted runs are blanked — their contents are data, not a command line;
+  * comments are blanked — they are not invocations;
   * the command is split on shell separators — a later pipeline stage is a
     different program and its flags are not pytest's.
 
@@ -28,12 +29,11 @@ import re
 import sys
 
 MAX_WORKERS = 16
-# Shell-text scanning moved to shell_scan.py on 2026-08-18 — the same strippers were
+# Shell-text scanning moved to shell_scan.py on 2026-08-18 — the same helpers were
 # needed by four guards and this module was an odd home for them (the name implies
-# pytest scope). Re-exported here because process_pattern_kill_scan.py and
-# operator_apply_copy_scan.py imported them from this module by name.
+# pytest scope). Keep these compatibility exports for existing callers.
 from shell_scan import (  # noqa: E402,F401
-    SEPARATORS as _SEPARATORS, segments, strip_comments, strip_heredocs, strip_quoted)
+    SEPARATORS as _SEPARATORS, lex, segments, strip_comments, strip_heredocs, strip_quoted)
 
 _PYTEST = re.compile(r"(?:^|[\s/])pytest\b")
 _AUTO = re.compile(r"(?:^|\s)-n[\s=]*auto\b")
@@ -41,7 +41,7 @@ _COUNT = re.compile(r"(?:^|\s)-n[\s=]*([0-9]+)")
 
 
 def unsafe_worker_verdict(command: str) -> str:
-    for segment in _SEPARATORS.split(strip_quoted(strip_heredocs(command))):
+    for segment in lex(command):
         found = _PYTEST.search(segment)
         if not found:
             continue

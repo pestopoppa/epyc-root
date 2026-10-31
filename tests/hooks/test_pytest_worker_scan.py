@@ -18,6 +18,9 @@ generous about position so wrappers (`timeout`, `python -m`, `xargs`) stay caugh
 from __future__ import annotations
 
 import importlib.util
+import json
+import shutil
+import subprocess
 import sys
 from pathlib import Path
 
@@ -80,3 +83,18 @@ def test_heredoc_stripping_runs_before_quote_stripping() -> None:
     command = "cat <<'EOF'\npytest -n auto\nEOF"
     assert not scan.unsafe_worker_verdict(command)
     assert "pytest" not in scan.strip_heredocs(command)
+
+
+@pytest.mark.skipif(shutil.which("jq") is None, reason="hook needs jq")
+def test_hook_blocks_real_unsafe_pytest_after_heredoc_but_allows_comment_mention() -> None:
+    hook = SCANNER.parent / "check_pytest_safety.sh"
+    unsafe = "cat <<'EOF'\npytest -n auto\nEOF\npytest -n 32 tests/"
+    payload = json.dumps({"tool_input": {"command": unsafe}})
+    blocked = subprocess.run(["bash", str(hook)], input=payload, capture_output=True, text=True)
+    assert blocked.returncode == 2, blocked.stdout + blocked.stderr
+    assert "Use -n 8" in blocked.stderr or "Use -n 8" in blocked.stdout
+
+    mention = "pytest -q tests/ # pytest -n auto"
+    payload = json.dumps({"tool_input": {"command": mention}})
+    allowed = subprocess.run(["bash", str(hook)], input=payload, capture_output=True, text=True)
+    assert allowed.returncode == 0, allowed.stdout + allowed.stderr

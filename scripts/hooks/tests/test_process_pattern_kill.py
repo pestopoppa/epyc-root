@@ -23,6 +23,7 @@ BLOCKED = [
     ("/usr/bin/pkill -f waiter", "kill-pattern"),
     ("sleep 1 && pkill -f my-waiter", "kill-pattern"),
     ("timeout 5 pgrep -f llama", "grep-pattern"),
+    ("cat <<'EOF'\nnotes\nEOF\npkill -f llama-server", "kill-pattern"),
     # The canonical dangerous pipeline. Verdict is grep-pattern, not kill-pattern —
     # there is no `pkill` here — and it BLOCKS either way, which is the property that
     # matters. Kept because selection is the dangerous step: `xargs kill` is only as
@@ -70,6 +71,13 @@ def test_the_hook_blocks_end_to_end_and_names_the_alternative() -> None:
                        input=payload, capture_output=True, text=True)
     assert r.returncode == 2, r.stdout + r.stderr
     assert "TaskStop" in r.stderr and "captured yourself" in r.stderr
+
+    after_heredoc = json.dumps({"tool_input": {
+        "command": "cat <<'EOF'\nnotes\nEOF\npkill -f llama-server"}})
+    r3 = subprocess.run(["bash", str(HOOKS / "check_process_pattern_kill.sh")],
+                        input=after_heredoc, capture_output=True, text=True)
+    assert r3.returncode == 2, r3.stdout + r3.stderr
+    assert "BLOCKED: pkill against a NAME PATTERN" in r3.stderr
 
     ok = json.dumps({"tool_input": {"command": "kill 12345"}})
     r2 = subprocess.run(["bash", str(HOOKS / "check_process_pattern_kill.sh")],

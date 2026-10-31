@@ -319,6 +319,10 @@ def test_hook_blocks_the_copy_and_allows_the_original(tmp_path: Path) -> None:
     assert "DERIVED COPY" in blocked.stderr
     assert str(copy) in blocked.stderr and "reproduces" in blocked.stderr
 
+    after_heredoc = _run_hook(f"cat <<'EOF'\nexample only\nEOF\npython3 {copy} --attest TOK")
+    assert after_heredoc.returncode == 2, after_heredoc.stderr
+    assert "DERIVED COPY" in after_heredoc.stderr
+
     allowed = _run_hook(f"python3 {ORIGINAL} --plan")
     assert allowed.returncode == 0, allowed.stderr
 

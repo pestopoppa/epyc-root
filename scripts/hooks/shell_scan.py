@@ -25,10 +25,11 @@ MEASURED, four times, in four independently written guards:
                                   heredoc and a grep both matched — latently, firing only
                                   under a held region, i.e. only mid-bench
 
-Three of those wrote or needed their own copy of this logic while a correct one already
-existed in `pytest_worker_scan`. This module exists so the fifth guard does not.
+Several guards independently copied this logic before `pytest_worker_scan` first carried
+the shared helpers. The reusable scanner now lives here; `lex()` gives each guard the same
+ordered data stripping and command framing.
 
-USE `segments()` unless you need the pieces. Order matters and is easy to get wrong:
+USE `lex()` unless you need the pieces. Order matters and is easy to get wrong:
 heredocs MUST be stripped before quotes, because a quoted heredoc marker (``<<'EOF'``)
 would otherwise have its name blanked as a quoted run, leaving ``<<''`` — no detectable
 terminator, and the body scanned as commands again.
@@ -44,7 +45,14 @@ from __future__ import annotations
 
 import re
 
-__all__ = ["SEPARATORS", "strip_quoted", "strip_heredocs", "strip_comments", "segments"]
+__all__ = [
+    "SEPARATORS",
+    "strip_quoted",
+    "strip_heredocs",
+    "strip_comments",
+    "lex",
+    "segments",
+]
 
 # A shell separator ends a command: a later pipeline stage is a different invocation.
 _SEPARATORS = re.compile(r"(?:\|\||&&|[;|\n])")
@@ -113,9 +121,14 @@ def strip_comments(text: str) -> str:
     return _COMMENT.sub(" ", text)
 
 
-def segments(command: str) -> list[str]:
+def lex(command: str) -> list[str]:
     """The command's invocations, with data removed. The normal entry point.
 
     Applies the three strippers in the one order that works, then splits on separators.
     """
     return SEPARATORS.split(strip_comments(strip_quoted(strip_heredocs(command))))
+
+
+def segments(command: str) -> list[str]:
+    """Compatibility alias for :func:`lex`; existing consumers keep their API."""
+    return lex(command)

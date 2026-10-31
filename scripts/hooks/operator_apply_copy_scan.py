@@ -22,8 +22,8 @@ to remember to add a row. A literal restated at N sites is a rename hazard this 
 already paid for (the de-FABLE rename shipped three dead operator commands).
 
 SCOPED TO INVOCATIONS, NOT TEXT. Quoted runs, heredoc bodies and shell comments are
-stripped before scanning, reusing ``pytest_worker_scan``'s helpers rather than
-reimplementing them. Writing *about* copying an apply script — in a bus message, in an
+stripped before scanning by the shared ``shell_scan.lex()`` rather than being
+reimplemented here. Writing *about* copying an apply script — in a bus message, in an
 incident report, in this docstring — must never be blocked. A guard that forbids its
 own documentation is a failure this repo has paid for twice (C21, C47).
 
@@ -49,8 +49,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from shell_scan import SEPARATORS as _SEPARATORS  # noqa: E402
-from shell_scan import strip_comments, strip_heredocs, strip_quoted  # noqa: E402
+from shell_scan import lex  # noqa: E402
 
 REPO_ROOT = Path(__file__).resolve().parent.parent.parent
 
@@ -183,10 +182,9 @@ def derived_copies(
             "operator-apply-copy guard was handed an EMPTY corpus of protected "
             "originals; refusing to report a verdict it never had the data to reach"
         )
-    text = strip_comments(strip_quoted(strip_heredocs(command)))
     tokens = []
     seen: set[str] = set()
-    for segment in _SEPARATORS.split(text):
+    for segment in lex(command):
         for token in candidate_scripts(segment):
             if token not in seen:
                 seen.add(token)

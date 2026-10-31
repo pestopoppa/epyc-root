@@ -9,9 +9,10 @@ processes. Measured then: `llama-server -m` killed another agent's server twice,
 — a guard process's argv necessarily contains the names it guards.
 
 SCOPED TO INVOCATIONS, NOT TEXT — the lesson C21 already paid for in
-`pytest_worker_scan.py`, whose `strip_quoted`/`strip_heredocs` this reuses rather
-than reimplementing. The guard must not block the bus message REPORTING a pkill
-incident, the CLAUDE.md rule that forbids it, or this docstring. Quoted text is data;
+`pytest_worker_scan.py`; this guard uses the shared `shell_scan.lex()` rather than
+reimplementing its quote, heredoc, comment, and separator handling. It must not block
+the bus message REPORTING a pkill incident, the CLAUDE.md rule that forbids it, or this
+docstring. Quoted text is data;
 a heredoc is data; only an unquoted command word counts.
 
 Verdicts: `kill-pattern`, `grep-pattern`, `clean`.
@@ -23,8 +24,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from shell_scan import SEPARATORS as _SEPARATORS  # noqa: E402
-from shell_scan import strip_comments, strip_heredocs, strip_quoted  # noqa: E402
+from shell_scan import lex  # noqa: E402
 
 # A shell COMMENT is documentation, not an invocation — and this guard exists in a
 # repo whose agents write about the banned command constantly. C47 (2026-08-12): the
@@ -65,9 +65,8 @@ def _verdict_for_segment(seg: str) -> str | None:
 
 def pattern_kill_verdict(command: str) -> str:
     """`kill-pattern` | `grep-pattern` | `clean` for a whole Bash command string."""
-    text = strip_comments(strip_quoted(strip_heredocs(command)))
     worst = None
-    for seg in _SEPARATORS.split(text):
+    for seg in lex(command):
         v = _verdict_for_segment(seg)
         if v == "kill-pattern":
             return v                     # killing outranks grepping

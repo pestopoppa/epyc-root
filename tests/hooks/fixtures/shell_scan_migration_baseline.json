@@ -1,0 +1,95 @@
+{
+  "baseline_commit": "12ffc57a5b3e38d7a63d0a3e666e435c99fa97cb",
+  "cases": [
+    {
+      "before": {
+        "operator_apply_copy": "clean",
+        "process_pattern_kill": "clean",
+        "pytest": ""
+      },
+      "command": "pytest -q tests/ | sed -n 1,20p",
+      "id": "safe_pipeline"
+    },
+    {
+      "before": {
+        "operator_apply_copy": "clean",
+        "process_pattern_kill": "clean",
+        "pytest": "32"
+      },
+      "command": "timeout 900 python -m pytest -n 32 tests/",
+      "id": "worker_32"
+    },
+    {
+      "before": {
+        "operator_apply_copy": "clean",
+        "process_pattern_kill": "clean",
+        "pytest": ""
+      },
+      "command": "cat <<'EOF'\npytest -n auto\nEOF\npytest -n 8 tests/",
+      "id": "quoted_heredoc_then_safe_worker"
+    },
+    {
+      "before": {
+        "operator_apply_copy": "clean",
+        "process_pattern_kill": "clean",
+        "pytest": "auto"
+      },
+      "command": "pytest -q tests/ # pytest -n auto",
+      "id": "pytest_only_in_comment"
+    },
+    {
+      "before": {
+        "operator_apply_copy": "clean",
+        "process_pattern_kill": "kill-pattern",
+        "pytest": ""
+      },
+      "command": "echo 'pkill -f llama-server' && pkill -f llama-server",
+      "id": "kill_after_quoted_mention"
+    },
+    {
+      "before": {
+        "operator_apply_copy": "clean",
+        "process_pattern_kill": "clean",
+        "pytest": ""
+      },
+      "command": "cat <<'EOF'\npkill -f llama-server\nEOF\nkill 1234",
+      "id": "quoted_heredoc_then_safe_kill"
+    },
+    {
+      "before": {
+        "operator_apply_copy": "clean",
+        "process_pattern_kill": "grep-pattern",
+        "pytest": ""
+      },
+      "command": "pgrep -f sd-server | xargs kill",
+      "id": "pgrep_selector_pipeline"
+    },
+    {
+      "before": {
+        "operator_apply_copy": "clean",
+        "process_pattern_kill": "clean",
+        "pytest": ""
+      },
+      "command": "python3 /tmp/ni-shell-scan-parity-nonexistent.py",
+      "id": "copy_path_missing"
+    },
+    {
+      "before": {
+        "operator_apply_copy": "clean",
+        "process_pattern_kill": "kill-pattern",
+        "pytest": ""
+      },
+      "command": "cat <<'EOF'\nnotes only\nEOF\npkill -f llama-server",
+      "id": "heredoc_then_real_kill"
+    },
+    {
+      "before": {
+        "operator_apply_copy": "clean",
+        "process_pattern_kill": "clean",
+        "pytest": "32"
+      },
+      "command": "cat <<'EOF'\npytest -n auto\nEOF\npytest -n 32 tests/",
+      "id": "heredoc_then_real_worker"
+    }
+  ]
+}
