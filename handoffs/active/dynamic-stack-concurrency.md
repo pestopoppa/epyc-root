@@ -358,3 +358,7 @@ the completions route, or any non-OpenAI ingress.
   slot-record fields instead (heterogeneous-slot-fabric-residency.md, 2026-09-26).
 
 **DECLINED 2026-09-26 — deploying upstream ThunderAgent or Dynamo's thunderagent plugin in front of llama-server (2b-thunderagent-A5; intake-1816#6).** Upstream supports only vLLM/SGLang backends; Dynamo's plugin reads published GPU KV-block capacity and runs only inside dynamo.frontend. The orchestrator is already the single scheduler; the pattern transfers as kv-unified-stack-rollout.md KVU-14, the component does not.
+
+### 2026-10-31 #25592 replay preparation
+
+Private multi-turn replay is READY (publication manifest SHA-256 `40370fc8a7f084795cf9f8efa4fb5a5bac2214a5f02f08875b1d4e630c4c790e`). Five actual three-turn sequences are selected and seven predeclared per-store slots remain UNKNOWN. The real launcher public 0.6B control does not exercise the full model, MTP or long contexts; no full-run, rate or gate conclusion follows. The capsule retains only hashes and count metadata for private sessions. [Plan and controls](../../artifacts/compute/codex3-prep-and-kpf-audit-20261031-0443/). [belief: cc]

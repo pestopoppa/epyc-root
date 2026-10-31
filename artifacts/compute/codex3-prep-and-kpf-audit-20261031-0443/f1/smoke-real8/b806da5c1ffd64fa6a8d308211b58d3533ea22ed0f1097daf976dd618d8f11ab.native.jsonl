@@ -1,0 +1,61 @@
+{"argv": ["taskset", "-c", "122,123", "/mnt/raid0/llm/kernels/builds/stt-20260731-b30737922/bin/whisper-cli", "-m", "/mnt/raid0/llm/models/whisper-ggml/ggml-tiny.bin", "-f", "/mnt/raid0/llm/whisper.cpp/samples/jfk.wav", "-ng", "-nfa", "-t", "1", "-bo", "1", "-bs", "1", "-tp", "0", "-nf", "-l", "en", "-nt"], "birth": "154177009", "epoch": 1793419296.8666801, "kind": "solo_start", "pid": 3432671}
+{"epoch": 1793419296.8673933, "kind": "solo_thread_ticks", "threads": [{"stime_ticks": 0, "tid": 3432671, "utime_ticks": 0}]}
+{"epoch": 1793419297.3681226, "kind": "solo_thread_ticks", "threads": [{"stime_ticks": 8, "tid": 3432671, "utime_ticks": 41}]}
+{"epoch": 1793419297.869256, "kind": "solo_thread_ticks", "threads": [{"stime_ticks": 8, "tid": 3432671, "utime_ticks": 92}]}
+{"epoch": 1793419298.3704562, "kind": "solo_thread_ticks", "threads": [{"stime_ticks": 8, "tid": 3432671, "utime_ticks": 142}]}
+{"elapsed_s": 1.8671031889971346, "epoch": 1793419298.7334235, "kind": "solo_end", "rc": 0}
+{"argv": ["taskset", "-c", "122,123", "/mnt/raid0/llm/kernels/production/cpu/llama-bench", "-m", "/mnt/raid0/llm/models/Qwen_Qwen3-0.6B-Q8_0.gguf", "-p", "0", "-n", "1", "-t", "2", "-r", "400", "--progress", "-o", "jsonl", "-ngl", "0"], "birth": "154177210", "epoch": 1793419298.8727288, "kind": "neighbor_start", "label": "A-before", "pid": 3432947}
+{"epoch": 1793419298.8806806, "kind": "neighbor_stderr", "label": "A-before", "pid": 3432947, "text": "llama-bench: benchmark 1/1: starting"}
+{"epoch": 1793419299.1020873, "kind": "progress", "label": "A-before", "pid": 3432947, "text": "llama-bench: benchmark 1/1: warmup generation run"}
+{"epoch": 1793419299.1195796, "kind": "progress", "label": "A-before", "pid": 3432947, "text": "llama-bench: benchmark 1/1: generation run 1/400"}
+{"epoch": 1793419299.138263, "kind": "progress", "label": "A-before", "pid": 3432947, "text": "llama-bench: benchmark 1/1: generation run 2/400"}
+{"epoch": 1793419299.2383406, "kind": "drain", "label": "A-before", "pid": 3432947, "rc": -15}
+{"argv": ["taskset", "-c", "122,123", "/mnt/raid0/llm/kernels/production/cpu/llama-bench", "-m", "/mnt/raid0/llm/models/Qwen_Qwen3-0.6B-Q8_0.gguf", "-p", "0", "-n", "1", "-t", "2", "-r", "400", "--progress", "-o", "jsonl", "-ngl", "0"], "birth": "154177247", "epoch": 1793419299.2397487, "kind": "neighbor_start", "label": "B", "pid": 3433309}
+{"epoch": 1793419299.251256, "kind": "neighbor_stderr", "label": "B", "pid": 3433309, "text": "llama-bench: benchmark 1/1: starting"}
+{"epoch": 1793419299.6395183, "kind": "progress", "label": "B", "pid": 3433309, "text": "llama-bench: benchmark 1/1: warmup generation run"}
+{"epoch": 1793419299.6725614, "kind": "progress", "label": "B", "pid": 3433309, "text": "llama-bench: benchmark 1/1: generation run 1/400"}
+{"epoch": 1793419299.700613, "kind": "progress", "label": "B", "pid": 3433309, "text": "llama-bench: benchmark 1/1: generation run 2/400"}
+{"epoch": 1793419299.7289217, "kind": "progress", "label": "B", "pid": 3433309, "text": "llama-bench: benchmark 1/1: generation run 3/400"}
+{"argv": ["taskset", "-c", "122,123", "/mnt/raid0/llm/kernels/builds/stt-20260731-b30737922/bin/whisper-cli", "-m", "/mnt/raid0/llm/models/whisper-ggml/ggml-tiny.bin", "-f", "/mnt/raid0/llm/whisper.cpp/samples/jfk.wav", "-ng", "-nfa", "-t", "1", "-bo", "1", "-bs", "1", "-tp", "0", "-nf", "-l", "en", "-nt"], "birth": "154177297", "epoch": 1793419299.7427225, "kind": "speech_start", "pid": 3433729}
+{"epoch": 1793419299.747331, "kind": "thread_ticks", "threads": [{"stime_ticks": 0, "tid": 3433729, "utime_ticks": 0}]}
+{"epoch": 1793419299.7685554, "kind": "progress", "label": "B", "pid": 3433309, "text": "llama-bench: benchmark 1/1: generation run 4/400"}
+{"epoch": 1793419299.8188388, "kind": "progress", "label": "B", "pid": 3433309, "text": "llama-bench: benchmark 1/1: generation run 5/400"}
+{"epoch": 1793419299.8815565, "kind": "progress", "label": "B", "pid": 3433309, "text": "llama-bench: benchmark 1/1: generation run 6/400"}
+{"epoch": 1793419299.9340823, "kind": "progress", "label": "B", "pid": 3433309, "text": "llama-bench: benchmark 1/1: generation run 7/400"}
+{"epoch": 1793419299.9831548, "kind": "progress", "label": "B", "pid": 3433309, "text": "llama-bench: benchmark 1/1: generation run 8/400"}
+{"epoch": 1793419300.056669, "kind": "progress", "label": "B", "pid": 3433309, "text": "llama-bench: benchmark 1/1: generation run 9/400"}
+{"epoch": 1793419300.2507703, "kind": "thread_ticks", "threads": [{"stime_ticks": 7, "tid": 3433729, "utime_ticks": 27}]}
+{"epoch": 1793419300.7519276, "kind": "thread_ticks", "threads": [{"stime_ticks": 8, "tid": 3433729, "utime_ticks": 77}]}
+{"epoch": 1793419301.253171, "kind": "thread_ticks", "threads": [{"stime_ticks": 8, "tid": 3433729, "utime_ticks": 126}]}
+{"epoch": 1793419301.754574, "kind": "thread_ticks", "threads": [{"stime_ticks": 8, "tid": 3433729, "utime_ticks": 176}]}
+{"epoch": 1793419302.2571845, "kind": "progress", "label": "B", "pid": 3433309, "text": "llama-bench: benchmark 1/1: generation run 10/400"}
+{"epoch": 1793419302.2600067, "kind": "thread_ticks", "threads": [{"stime_ticks": 9, "tid": 3433729, "utime_ticks": 225}]}
+{"epoch": 1793419302.2893422, "kind": "progress", "label": "B", "pid": 3433309, "text": "llama-bench: benchmark 1/1: generation run 11/400"}
+{"epoch": 1793419302.3163455, "kind": "progress", "label": "B", "pid": 3433309, "text": "llama-bench: benchmark 1/1: generation run 12/400"}
+{"epoch": 1793419302.3422906, "kind": "progress", "label": "B", "pid": 3433309, "text": "llama-bench: benchmark 1/1: generation run 13/400"}
+{"epoch": 1793419302.3680918, "kind": "progress", "label": "B", "pid": 3433309, "text": "llama-bench: benchmark 1/1: generation run 14/400"}
+{"epoch": 1793419302.3944492, "kind": "progress", "label": "B", "pid": 3433309, "text": "llama-bench: benchmark 1/1: generation run 15/400"}
+{"epoch": 1793419302.4208422, "kind": "progress", "label": "B", "pid": 3433309, "text": "llama-bench: benchmark 1/1: generation run 16/400"}
+{"epoch": 1793419302.4463704, "kind": "progress", "label": "B", "pid": 3433309, "text": "llama-bench: benchmark 1/1: generation run 17/400"}
+{"epoch": 1793419302.4729996, "kind": "progress", "label": "B", "pid": 3433309, "text": "llama-bench: benchmark 1/1: generation run 18/400"}
+{"epoch": 1793419302.5007234, "kind": "progress", "label": "B", "pid": 3433309, "text": "llama-bench: benchmark 1/1: generation run 19/400"}
+{"epoch": 1793419302.5259218, "kind": "progress", "label": "B", "pid": 3433309, "text": "llama-bench: benchmark 1/1: generation run 20/400"}
+{"epoch": 1793419302.5512235, "kind": "progress", "label": "B", "pid": 3433309, "text": "llama-bench: benchmark 1/1: generation run 21/400"}
+{"epoch": 1793419302.5780394, "kind": "progress", "label": "B", "pid": 3433309, "text": "llama-bench: benchmark 1/1: generation run 22/400"}
+{"epoch": 1793419302.6037703, "kind": "progress", "label": "B", "pid": 3433309, "text": "llama-bench: benchmark 1/1: generation run 23/400"}
+{"epoch": 1793419302.6293244, "kind": "progress", "label": "B", "pid": 3433309, "text": "llama-bench: benchmark 1/1: generation run 24/400"}
+{"epoch": 1793419302.6551383, "kind": "progress", "label": "B", "pid": 3433309, "text": "llama-bench: benchmark 1/1: generation run 25/400"}
+{"epoch": 1793419302.6821792, "kind": "progress", "label": "B", "pid": 3433309, "text": "llama-bench: benchmark 1/1: generation run 26/400"}
+{"epoch": 1793419302.7090707, "kind": "progress", "label": "B", "pid": 3433309, "text": "llama-bench: benchmark 1/1: generation run 27/400"}
+{"epoch": 1793419302.7357996, "kind": "progress", "label": "B", "pid": 3433309, "text": "llama-bench: benchmark 1/1: generation run 28/400"}
+{"elapsed_s": 2.5199454380199313, "epoch": 1793419302.2668214, "kind": "speech_end", "rc": 0}
+{"epoch": 1793419302.825903, "kind": "drain", "label": "B", "pid": 3433309, "rc": -15}
+{"argv": ["taskset", "-c", "122,123", "/mnt/raid0/llm/kernels/production/cpu/llama-bench", "-m", "/mnt/raid0/llm/models/Qwen_Qwen3-0.6B-Q8_0.gguf", "-p", "0", "-n", "1", "-t", "2", "-r", "400", "--progress", "-o", "jsonl", "-ngl", "0"], "birth": "154177606", "epoch": 1793419302.8276412, "kind": "neighbor_start", "label": "A-after", "pid": 3435273}
+{"epoch": 1793419302.839979, "kind": "neighbor_stderr", "label": "A-after", "pid": 3435273, "text": "llama-bench: benchmark 1/1: starting"}
+{"epoch": 1793419303.2782042, "kind": "progress", "label": "A-after", "pid": 3435273, "text": "llama-bench: benchmark 1/1: warmup generation run"}
+{"epoch": 1793419303.3055704, "kind": "progress", "label": "A-after", "pid": 3435273, "text": "llama-bench: benchmark 1/1: generation run 1/400"}
+{"epoch": 1793419303.331026, "kind": "progress", "label": "A-after", "pid": 3435273, "text": "llama-bench: benchmark 1/1: generation run 2/400"}
+{"epoch": 1793419303.3563488, "kind": "progress", "label": "A-after", "pid": 3435273, "text": "llama-bench: benchmark 1/1: generation run 3/400"}
+{"epoch": 1793419303.3812315, "kind": "progress", "label": "A-after", "pid": 3435273, "text": "llama-bench: benchmark 1/1: generation run 4/400"}
+{"epoch": 1793419303.40777, "kind": "progress", "label": "A-after", "pid": 3435273, "text": "llama-bench: benchmark 1/1: generation run 5/400"}
+{"epoch": 1793419303.4945843, "kind": "drain", "label": "A-after", "pid": 3435273, "rc": -15}

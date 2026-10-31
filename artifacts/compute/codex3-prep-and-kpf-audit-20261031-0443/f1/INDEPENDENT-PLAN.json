@@ -1,0 +1,51 @@
+{
+  "arms": [
+    {
+      "id": "whisper-production-1",
+      "threads": 1
+    },
+    {
+      "id": "whisper-production-8",
+      "threads": 8
+    },
+    {
+      "id": "whisper-champion-fa532-1",
+      "threads": 1
+    },
+    {
+      "id": "whisper-champion-fa532-8",
+      "threads": 8
+    },
+    {
+      "id": "in-tree-parakeet-1",
+      "threads": 1
+    },
+    {
+      "id": "nemo35-1",
+      "threads": 1
+    },
+    {
+      "id": "nemo35-2",
+      "threads": 2
+    },
+    {
+      "id": "nemo35-4",
+      "threads": 4
+    }
+  ],
+  "baseline": "production whisper large-v3-turbo at CS-12 launch thread count; record 1 and 8 explicitly",
+  "blocks": 3,
+  "clips_sha256": "9613de424ee69af7eb54ca7cd139690ac7ac946da49a147128f5098bdcdca4a1",
+  "decision": "report distributions and p95, no F1 candidate verdict until selected runner arms, second window holdout, and actual STT5 WER comparison complete",
+  "input_hash_catalog_sha256": "03e5553747ba4754277e48648a329672c13ba4e3f943f3ab643c2ccc6966e8c7",
+  "metric": "speech RTF = measured monotonic wall seconds / actual audio seconds (lower is better), timeout counted above cap; neighbour tok/s higher is better; per-thread CPU ticks sampled while speech PID alive",
+  "neighbor_control": "A/B/A: neighbor alone before, speech co-run, neighbor alone after; record raw progress and timings separately for each pairing",
+  "neighbour": "own Qwen3-1.7B Q8 llama-bench tg32 on same eight CPUs, eight threads; --progress timestamps each generation-run start, calculate speed only on complete adjacent generation intervals within the actual speech interval; no overlap proof means UNKNOWN",
+  "per_arm_clip": "solo and co-run paired, all 22 clips, three repetitions; retain every attempt and failure",
+  "schema": "cs26.f1.independent-predecl.v1",
+  "scope": "independent first-window capture for production/champion Whisper, in-tree Parakeet and Nemotron only; selected STT2 Parakeet arms remain outstanding; never declare full F1 verdict",
+  "source_task": "CS-26.F1, conversation-stack.md fresh origin/main",
+  "tested_full_target": false,
+  "unknowns": "missing overlaps, process failures, missing per-thread samples or timing provenance remain UNKNOWN; do not redraw an exposed attempt",
+  "window": "exclusive one CPU quarter, no GPU co-run; per-pair A/B/A must fit wholly within one grant; continuation preserves original attempts; independent first window only"
+}

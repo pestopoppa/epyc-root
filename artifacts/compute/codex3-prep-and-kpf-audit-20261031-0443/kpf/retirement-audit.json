@@ -1,0 +1,43 @@
+{
+  "timestamp": "2026-10-31T04:37:19.561262+00:00",
+  "operator_notice": "UD-IQ3_XXS candidate retired; weights deleted; do not publish dependent row",
+  "active_deleted_model_references": [],
+  "nonactive_historical_references": [
+    "/mnt/raid0/llm/tmp/compute-flags/ready/dropped/codex-ni-qwen36-iq3xxs-candidate-r1-20261030.json"
+  ],
+  "kpf183_current_full_model": "/mnt/raid0/llm/models/Qwen3.6-35B-A3B-MTP-Q8_0.gguf",
+  "full_model_sha256_declared": "c1283d8b80c3e38b2735ddbc9766d3b3126f44d6c484be419d4e101d09a76131",
+  "current_declared_size": 37801097504,
+  "prior_packet": "withdrawn-ud-iq3-20261030; WITHDRAWN.txt predates full target; preserve historical bytes",
+  "action": "No reacquisition, no dependent publication or substituted grading. No active packet edits required. Existing current Q8 packet already prospectively revised before target exposure.",
+  "files": [
+    {
+      "path": "/mnt/raid0/llm/tmp/codex3-kpf183-multiturn-20261030/PREDECLARED.md",
+      "sha256": "5cb568962eb95eaa7de9454f4c5f02ca1ce255f015c11cb2c91856b4e2511354"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/codex3-kpf183-multiturn-20261030/job.py",
+      "sha256": "21707c7102e8d857c18b63bc81b0ac6ae4d6dbf990b26f600b3cac0c93ec6163"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/codex3-kpf183-multiturn-20261030/SOURCES.sha256",
+      "sha256": "e47b35b1ac190797796c85a0573658ec6f3315028fe2ed244e70f60ae02f0b5a"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/codex3-kpf183-multiturn-20261030/withdrawn-ud-iq3-20261030/WITHDRAWN.txt",
+      "sha256": "cf448d98e2e2c038310f6f731722db79075c8cc99aaf9c681b5fb5951aadfe94"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/codex3-kpf183-chat-full-20261031/PREDECLARED.json",
+      "sha256": "0ab013c8c7057ed2987589e98cf47295e01e4c16dd784f966e92be84c24f3f89"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/codex3-kpf183-chat-full-20261031/job.py",
+      "sha256": "3cdfec3b9d69ae1a75f8d30fbb96b95811ea35e222f032bc0be1c0d5cf8d4923"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/codex3-kpf183-chat-full-20261031/SOURCES.sha256",
+      "sha256": "15d55f7e71d17a705a7a20dfda174034e83e9f10bfd3570ff797daee494c3e0f"
+    }
+  ]
+}

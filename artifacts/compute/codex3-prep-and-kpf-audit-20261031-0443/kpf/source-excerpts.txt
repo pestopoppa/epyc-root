@@ -1,0 +1,120 @@
+390:     // [KPF-16] cross-slot prefix fork telemetry for the current task (set at launch, cleared in reset())
+391:     bool         fork_enabled  = false; // --slot-fork-min-tokens > 0 and the memory supports it
+392:     int32_t      fork_n_tokens = 0;     // prompt tokens taken from the fork (0 = no fork)
+393:     int32_t      fork_src_slot = -1;
+394:     const char * fork_src_kind = "none"; // none | checkpoint | end | kv
+395:     bool         fork_src_busy = false;  // the source was processing a task when the fork was taken
+396: 
+397:     // [KPF-11] the cached cells no longer equal a fresh prefill of prompt.tokens (context shift, KV compression
+398:     // eviction): never a fork source. Cleared when the cells are rebuilt from position 0.
+399:     bool kv_altered = false;
+400: 
+401:     // [P2] content epoch: bumped whenever tokens this slot already holds may stop being a prefix of its
+402:     // content (clear, truncation below the cached length, --cache-ram load, fork-into, copy from a parent,
+403:     // context shift, KV compression, slot restore). Pure appends (prompt chunks, generated tokens) and the
+404:     // within-step speculative tail never bump it. Starts at 0; only increases.
+405:     uint64_t content_epoch = 0;
+406: 
+407:     void content_changed() {
+408:         content_epoch++;
+409:     }
+410: 
+411:     void fork_reset() {
+412:         fork_n_tokens = 0;
+413:         fork_src_slot = -1;
+414:         fork_src_kind = "none";
+
+440: 
+441:         // clear speculative decoding stats
+442:         n_draft_total = 0;
+443:         n_draft_accepted = 0;
+444:         n_draft_verif_steps = 0;
+445:         n_spec_exact_extra = 0;
+446:         n_accepted_per_pos.clear();
+447: 
+448:         fork_reset();
+449: 
+450:         task_prev = std::move(task);
+451:         task.reset();
+452: 
+453:         llama_set_sampler(ctx_tgt, id, nullptr);
+
+612:     void release() {
+613:         if (is_processing()) {
+614:             GGML_ASSERT(task);
+615: 
+616:             SLT_INF(*this, "stop processing: n_tokens = %d, truncated = %d\n", prompt.n_tokens(), truncated);
+617: 
+618:             t_last_used        =  ggml_time_us();
+619:             t_token_generation = (ggml_time_us() - t_start_generation) / 1e3;
+620: 
+621:             state = SLOT_STATE_IDLE;
+622: 
+623:             // do not keep context of the child slots - the parent's context is enough
+624:             if (task->is_child()) {
+625:                 prompt_clear();
+626:             }
+627: 
+628:             reset();
+629: 
+630:             callback_on_release(id);
+631:         }
+632:     }
+
+646:         timings.predicted_per_second   = 1e3 / t_token_generation * n_decoded;
+647: 
+648:         // Add speculative metrics
+649:         if (n_draft_total > 0) {
+650:             timings.draft_n          = n_draft_total;
+651:             timings.draft_n_accepted = n_draft_accepted;
+652:         }
+653: 
+654:         if (fork_enabled) {
+655:             timings.fork_enabled  = true;
+656:             timings.n_fork_tokens = fork_n_tokens;
+657:             timings.fork_src_slot = fork_src_slot;
+658:             timings.fork_src_kind = fork_src_kind;
+659:             timings.fork_src_busy = fork_src_busy;
+660:             timings.id_slot       = id;
+661:             timings.id_task       = task ? task->id : -1;
+
+2660:     void send_final_response(server_slot & slot) {
+2661:         auto res = std::make_unique<server_task_result_cmpl_final>();
+2662: 
+2663:         res->id      = slot.task->id;
+2664:         res->id_slot = slot.id;
+2665: 
+2666:         res->index = slot.task->index;
+2667: 
+2668:         // keep copy of last generated text for debugging purposes
+2669:         if (slots_debug) {
+2670:             slot.debug_generated_text = slot.generated_text;
+2671:         }
+2672: 
+2673:         // in stream mode, content and tokens are already in last partial chunk
+2674:         if (slot.task->params.stream) {
+2675:             res->content     = "";
+2676:             res->tokens      = llama_tokens{};
+2677:         } else {
+2678:             res->content     = std::move(slot.generated_text);
+2679:             res->tokens      = std::move(slot.generated_tokens);
+2680:         }
+2681:         res->timings         = slot.get_timings();
+2682:         res->prompt          = slot.task->tokens.detokenize(ctx_tgt, true);
+2683:         res->response_fields = std::move(slot.task->params.response_fields);
+2684: 
+2685:         res->truncated             = slot.truncated;
+2686:         res->n_decoded             = slot.n_decoded;
+
+5197: 
+5198:             if (!process_token(result, slot)) {
+5199:                 // release slot because of stop condition
+5200:                 slot.print_timings();
+5201:                 send_final_response(slot);
+5202:                 metrics.on_prediction(slot);
+5203:                 slot.release();
+5204: 
+5205:                 return;
+5206:             }
+5207: 
+5208:             slot.print_timings_tg();

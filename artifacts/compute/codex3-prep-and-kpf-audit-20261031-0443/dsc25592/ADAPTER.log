@@ -1,0 +1,1 @@
+adapter: FAILED (zero sessions): store 'claude' has no sessions under /home/node (pass allow_empty_store / --allow-empty-store only if the study really excludes it)

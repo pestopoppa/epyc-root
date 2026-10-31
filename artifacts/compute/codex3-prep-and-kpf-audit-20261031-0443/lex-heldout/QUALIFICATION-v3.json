@@ -1,0 +1,19 @@
+{
+  "launcher_sha256": "26185624a9d832d53cd866a68cf724f05b489cb2753590ecd4c85e5550f6e94f",
+  "normal_engines": [
+    "nemo Q8 positive native trie",
+    "frozen production whisper fixed-language",
+    "frozen production whisper auto-language"
+  ],
+  "normal_log_sha256": "8bd1bab9784127d76093ef57ad927d167f23a32cf9f861d12e9f537cac3672b0",
+  "ran_at": "2026-10-31T04:19:07.981627+00:00",
+  "ready": false,
+  "remaining": "actual dev selection, frozen heldout base and instance plans, full code/source review and test-capture READY; future native scorer and source report",
+  "sampled_peak_tree_rss_bytes": 2194509824,
+  "schema": "cs8.lex2.heldout-engineering-qualification.v3",
+  "scope": "engineering JFK only; no dev selection, held-out test row, test score, quality or promotion claim",
+  "source_catalog_sha256": "f90e194bb493314f7351570ee67722e9e67dabfea70c64c1e4003a0527b49c3e",
+  "stop": "rc75 partial and drained",
+  "stop_log_sha256": "cc8195a248004c4beef18e54d080c9cd1a9940fbeb17ee878496f1367c2a6381",
+  "wall_s": 58.856824547983706
+}

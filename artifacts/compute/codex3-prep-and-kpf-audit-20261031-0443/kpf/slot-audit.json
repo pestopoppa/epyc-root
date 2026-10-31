@@ -1,0 +1,1174 @@
+{
+  "timestamp": "2026-10-31T04:39:34.627303+00:00",
+  "status": "OFFLINE_COLLECTOR_PHASE_AUDIT; ORIGINAL_RUN_CHECKS_UNCHANGED",
+  "captured_source_sha256": "6676a39bb424712619132b63a05e1b7c7a91f0a2d1b8888c08a7e6fc36942e20",
+  "source_capture_manifest": "/mnt/raid0/llm/tmp/codex3-kpf183-chat-impl-20261031/SOURCE-FILES.sha256",
+  "source_excerpt": "source-excerpts.txt",
+  "collector_sha256": "2c89cd1f9d1866506c32091bb7f967d0656c2727b4bbf224e84dbfeaf5c3159f",
+  "findings": "send_final_response snapshots get_timings before release; release sets IDLE then reset clears fork task counters; send() issues /slots only after complete() returns. Thus post-completion slot counters are a different observation phase and cannot validate active-request fork telemetry. Native counts and checks remain unchanged. No sampled in-request slot snapshots are recovered or invented.",
+  "counts": {
+    "records": 40,
+    "mismatching_cells": 60,
+    "records_with_mismatch": 37,
+    "counter_slot_forks_equal_requests_with_fork_all_ok": 37,
+    "counter_fork_tokens_equal_sum_n_fork_all_ok": 37
+  },
+  "pairs": [
+    {
+      "timings": 2048,
+      "post_completion_slot": 0,
+      "cells": 2
+    },
+    {
+      "timings": 2176,
+      "post_completion_slot": 0,
+      "cells": 2
+    },
+    {
+      "timings": 2304,
+      "post_completion_slot": 0,
+      "cells": 3
+    },
+    {
+      "timings": 2432,
+      "post_completion_slot": 0,
+      "cells": 2
+    },
+    {
+      "timings": 2560,
+      "post_completion_slot": 0,
+      "cells": 5
+    },
+    {
+      "timings": 2688,
+      "post_completion_slot": 0,
+      "cells": 2
+    },
+    {
+      "timings": 2816,
+      "post_completion_slot": 0,
+      "cells": 2
+    },
+    {
+      "timings": 2944,
+      "post_completion_slot": 0,
+      "cells": 2
+    },
+    {
+      "timings": 3072,
+      "post_completion_slot": 0,
+      "cells": 2
+    },
+    {
+      "timings": 3200,
+      "post_completion_slot": 0,
+      "cells": 2
+    },
+    {
+      "timings": 3328,
+      "post_completion_slot": 0,
+      "cells": 2
+    },
+    {
+      "timings": 3456,
+      "post_completion_slot": 0,
+      "cells": 2
+    },
+    {
+      "timings": 3584,
+      "post_completion_slot": 0,
+      "cells": 2
+    },
+    {
+      "timings": 3712,
+      "post_completion_slot": 0,
+      "cells": 2
+    },
+    {
+      "timings": 3840,
+      "post_completion_slot": 0,
+      "cells": 2
+    },
+    {
+      "timings": 3968,
+      "post_completion_slot": 0,
+      "cells": 2
+    },
+    {
+      "timings": 4092,
+      "post_completion_slot": 0,
+      "cells": 1
+    },
+    {
+      "timings": 4096,
+      "post_completion_slot": 0,
+      "cells": 15
+    },
+    {
+      "timings": 4348,
+      "post_completion_slot": 0,
+      "cells": 2
+    },
+    {
+      "timings": 6144,
+      "post_completion_slot": 0,
+      "cells": 2
+    },
+    {
+      "timings": 8188,
+      "post_completion_slot": 0,
+      "cells": 4
+    }
+  ],
+  "records": [
+    {
+      "record": "/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/full/records/kpf18-20261031T025409Z-1.json",
+      "sha256": "2ce744b4d837c8dfc4de3f289fe7b61e5838175d652d466ea96d301d333f93d8",
+      "rows_sha256": "089f810040047fdfdc391ad02b3f531ea0811acbc38086c8668e4322068632ea",
+      "arm": "A_ckpt",
+      "observability_check": {
+        "ok": 0,
+        "n": 1,
+        "failed": [
+          [
+            "g0.s0",
+            "g0.s1",
+            "g0.s2"
+          ]
+        ]
+      },
+      "mismatches": [
+        {
+          "cell": "g0.s0",
+          "slot": 1,
+          "response_timings": 4096,
+          "slots_after_completion": 0
+        },
+        {
+          "cell": "g0.s1",
+          "slot": 1,
+          "response_timings": 4096,
+          "slots_after_completion": 0
+        },
+        {
+          "cell": "g0.s2",
+          "slot": 1,
+          "response_timings": 4096,
+          "slots_after_completion": 0
+        }
+      ]
+    },
+    {
+      "record": "/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/full/records/kpf18-20261031T025454Z-2.json",
+      "sha256": "43da68cfd485770f9f3d806f84cebc0be3540e1912ec87682c14352fe3c1b9d5",
+      "rows_sha256": "1b274833148af835c91f5315288754babfaa43ec2a7665ffeff1b02e3b5706b7",
+      "arm": "A_tailonly",
+      "observability_check": {
+        "ok": 0,
+        "n": 1,
+        "failed": [
+          [
+            "g0.s0",
+            "g0.s1",
+            "g0.s2"
+          ]
+        ]
+      },
+      "mismatches": [
+        {
+          "cell": "g0.s0",
+          "slot": 1,
+          "response_timings": 2560,
+          "slots_after_completion": 0
+        },
+        {
+          "cell": "g0.s1",
+          "slot": 1,
+          "response_timings": 2560,
+          "slots_after_completion": 0
+        },
+        {
+          "cell": "g0.s2",
+          "slot": 1,
+          "response_timings": 2560,
+          "slots_after_completion": 0
+        }
+      ]
+    },
+    {
+      "record": "/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/full/records/kpf18-20261031T025608Z-3.json",
+      "sha256": "116e4704b79a11d4bc4e5b8b58d0cac38f3f2a0e4fdc185ced19aa1dedbaaaae",
+      "rows_sha256": "21dc6fbce6183ce85f70bb914bfa5f9e86473c5fc0f05c75c7a6b3b51bb8ff44",
+      "arm": "B_identical_resend_and_child_eq_trunk",
+      "observability_check": {
+        "ok": 0,
+        "n": 1,
+        "failed": [
+          [
+            "B1_resend_no_ckpt",
+            "B2_resend_ckpt_end",
+            "B3_child_eq_trunk_junction",
+            "B4_child_eq_trunk_trunk_source"
+          ]
+        ]
+      },
+      "mismatches": [
+        {
+          "cell": "B1_resend_no_ckpt",
+          "slot": 1,
+          "response_timings": 4348,
+          "slots_after_completion": 0
+        },
+        {
+          "cell": "B2_resend_ckpt_end",
+          "slot": 1,
+          "response_timings": 4348,
+          "slots_after_completion": 0
+        },
+        {
+          "cell": "B3_child_eq_trunk_junction",
+          "slot": 1,
+          "response_timings": 2304,
+          "slots_after_completion": 0
+        },
+        {
+          "cell": "B4_child_eq_trunk_trunk_source",
+          "slot": 1,
+          "response_timings": 4092,
+          "slots_after_completion": 0
+        }
+      ]
+    },
+    {
+      "record": "/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/full/records/kpf18-20261031T025950Z-4.json",
+      "sha256": "4955ebccbb36ff9cf46acbb7e371d483faefa01e92b0fa1bb5605edbbf3a3987",
+      "rows_sha256": "8ac29bf284d1f91c385996a3589b3e03169fa4be7ebd27103b3fd78eb9feddc4",
+      "arm": "C_length_sweep_drafter_on",
+      "observability_check": {
+        "ok": 0,
+        "n": 1,
+        "failed": [
+          [
+            "L2048"
+          ]
+        ]
+      },
+      "mismatches": [
+        {
+          "cell": "L2048",
+          "slot": 1,
+          "response_timings": 2048,
+          "slots_after_completion": 0
+        }
+      ]
+    },
+    {
+      "record": "/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/full/records/kpf18-20261031T030032Z-5.json",
+      "sha256": "01c4dc5e94dab9072f5aa2408526809ffadfa0b08715637888b561dc6d35f79f",
+      "rows_sha256": "4312373a87adc37e1ea505063a359fd54c9a72175ef31aa1a1aa90e1a29e152a",
+      "arm": "C_length_sweep_drafter_on",
+      "observability_check": {
+        "ok": 0,
+        "n": 1,
+        "failed": [
+          [
+            "L2176"
+          ]
+        ]
+      },
+      "mismatches": [
+        {
+          "cell": "L2176",
+          "slot": 1,
+          "response_timings": 2176,
+          "slots_after_completion": 0
+        }
+      ]
+    },
+    {
+      "record": "/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/full/records/kpf18-20261031T030112Z-6.json",
+      "sha256": "cca088949b1d216f9795220a3183736fd172dd39dba77e596092336295d198d3",
+      "rows_sha256": "337e355910997503d68cf27a9c42173b5b7dcf49d12f7f437ace0b6d169057ec",
+      "arm": "C_length_sweep_drafter_on",
+      "observability_check": {
+        "ok": 0,
+        "n": 1,
+        "failed": [
+          [
+            "L2304"
+          ]
+        ]
+      },
+      "mismatches": [
+        {
+          "cell": "L2304",
+          "slot": 1,
+          "response_timings": 2304,
+          "slots_after_completion": 0
+        }
+      ]
+    },
+    {
+      "record": "/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/full/records/kpf18-20261031T030157Z-7.json",
+      "sha256": "04e5538d8e4bcdf6faef4f574ff67b0e07d85541caeae5b9c29cb28223e51946",
+      "rows_sha256": "ed1722a1f9e6d5e1c565a3940de37484b88baf0d8ce174c84b39f6be4e2d00d9",
+      "arm": "C_length_sweep_drafter_on",
+      "observability_check": {
+        "ok": 0,
+        "n": 1,
+        "failed": [
+          [
+            "L2432"
+          ]
+        ]
+      },
+      "mismatches": [
+        {
+          "cell": "L2432",
+          "slot": 1,
+          "response_timings": 2432,
+          "slots_after_completion": 0
+        }
+      ]
+    },
+    {
+      "record": "/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/full/records/kpf18-20261031T030243Z-8.json",
+      "sha256": "458745977f00c9b72405f45d8602ad0ae516b785310d08ff8b73188aafd85fff",
+      "rows_sha256": "ee37ffaf9e54ffae770b6227884a4886c2b2ce6128cfd98c379a3267b111983c",
+      "arm": "C_length_sweep_drafter_on",
+      "observability_check": {
+        "ok": 0,
+        "n": 1,
+        "failed": [
+          [
+            "L2560"
+          ]
+        ]
+      },
+      "mismatches": [
+        {
+          "cell": "L2560",
+          "slot": 1,
+          "response_timings": 2560,
+          "slots_after_completion": 0
+        }
+      ]
+    },
+    {
+      "record": "/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/full/records/kpf18-20261031T030331Z-9.json",
+      "sha256": "d4977c037236cdb20b6874eccdd3ac4bafb751412c06eabdaf27af8d78f1a51b",
+      "rows_sha256": "4b419de082e7983a9eb9dffe36210043153d3bc31f07f97250c4399d02c80db0",
+      "arm": "C_length_sweep_drafter_on",
+      "observability_check": {
+        "ok": 0,
+        "n": 1,
+        "failed": [
+          [
+            "L2688"
+          ]
+        ]
+      },
+      "mismatches": [
+        {
+          "cell": "L2688",
+          "slot": 1,
+          "response_timings": 2688,
+          "slots_after_completion": 0
+        }
+      ]
+    },
+    {
+      "record": "/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/full/records/kpf18-20261031T030423Z-10.json",
+      "sha256": "25bf218e10b245ed00698b95c9ad70319a2e6612eeb6e65a1fffdf88ee7aff9c",
+      "rows_sha256": "64520ba8c5c744d3da1b3432acf2b4c67350cd9279069b9b8350e11354286166",
+      "arm": "C_length_sweep_drafter_on",
+      "observability_check": {
+        "ok": 0,
+        "n": 1,
+        "failed": [
+          [
+            "L2816"
+          ]
+        ]
+      },
+      "mismatches": [
+        {
+          "cell": "L2816",
+          "slot": 1,
+          "response_timings": 2816,
+          "slots_after_completion": 0
+        }
+      ]
+    },
+    {
+      "record": "/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/full/records/kpf18-20261031T030519Z-11.json",
+      "sha256": "a13be87c9096a56e4683372ac6487ea35317b244d9b0146dd513ac0a240b40aa",
+      "rows_sha256": "70b86bc87d7486c8d0c4234816237fd571c105d56d9408aaa149ff6163961d03",
+      "arm": "C_length_sweep_drafter_on",
+      "observability_check": {
+        "ok": 0,
+        "n": 1,
+        "failed": [
+          [
+            "L2944"
+          ]
+        ]
+      },
+      "mismatches": [
+        {
+          "cell": "L2944",
+          "slot": 1,
+          "response_timings": 2944,
+          "slots_after_completion": 0
+        }
+      ]
+    },
+    {
+      "record": "/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/full/records/kpf18-20261031T030619Z-12.json",
+      "sha256": "0e8a980dc3e7991a3de9aa34ef3a864c7284d02717ea90dd3a739cc17c9ed30c",
+      "rows_sha256": "0b326fe9042b0f0bc2f490565a17b22c247452d7af1668da1f077558ae1c2ff4",
+      "arm": "C_length_sweep_drafter_on",
+      "observability_check": {
+        "ok": 0,
+        "n": 1,
+        "failed": [
+          [
+            "L3072"
+          ]
+        ]
+      },
+      "mismatches": [
+        {
+          "cell": "L3072",
+          "slot": 1,
+          "response_timings": 3072,
+          "slots_after_completion": 0
+        }
+      ]
+    },
+    {
+      "record": "/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/full/records/kpf18-20261031T030723Z-13.json",
+      "sha256": "28a63560cd22d5e4208ac77497aabe2893dd1dd7e1dd841b92ec5f2169a0aa92",
+      "rows_sha256": "2e00b1c0ba59ccd6073fe7ddb0649daafbff3e2f23e9f3ef5123dd76debf0167",
+      "arm": "C_length_sweep_drafter_on",
+      "observability_check": {
+        "ok": 0,
+        "n": 1,
+        "failed": [
+          [
+            "L3200"
+          ]
+        ]
+      },
+      "mismatches": [
+        {
+          "cell": "L3200",
+          "slot": 1,
+          "response_timings": 3200,
+          "slots_after_completion": 0
+        }
+      ]
+    },
+    {
+      "record": "/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/full/records/kpf18-20261031T030828Z-14.json",
+      "sha256": "caaa6a6daad3cbe95f9cc657f828858bc07ad0fae4eea43af79bd19e3c9ecf0d",
+      "rows_sha256": "35d3ed32ffa0f52d224240e674145270e1fd4c5098ca3a8fedf37bcc2849cdb3",
+      "arm": "C_length_sweep_drafter_on",
+      "observability_check": {
+        "ok": 0,
+        "n": 1,
+        "failed": [
+          [
+            "L3328"
+          ]
+        ]
+      },
+      "mismatches": [
+        {
+          "cell": "L3328",
+          "slot": 1,
+          "response_timings": 3328,
+          "slots_after_completion": 0
+        }
+      ]
+    },
+    {
+      "record": "/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/full/records/kpf18-20261031T030936Z-15.json",
+      "sha256": "c06be25b5fd64dea696fadb27904c4041d51113e04f7d0d8794f2355f755e46f",
+      "rows_sha256": "74e47c4a5f4a9bad958bd8b0f464504358f3e4efc40cd3eb63f5029706f4dcbd",
+      "arm": "C_length_sweep_drafter_on",
+      "observability_check": {
+        "ok": 0,
+        "n": 1,
+        "failed": [
+          [
+            "L3456"
+          ]
+        ]
+      },
+      "mismatches": [
+        {
+          "cell": "L3456",
+          "slot": 1,
+          "response_timings": 3456,
+          "slots_after_completion": 0
+        }
+      ]
+    },
+    {
+      "record": "/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/full/records/kpf18-20261031T031046Z-16.json",
+      "sha256": "b7485d8b1860251b433c9f21e0acfb3afa33b52b01ee36375fed55adb2e2307a",
+      "rows_sha256": "7069b9c69f8af6a42545e91ac2aefe1fe10f4730f9bc4c1f2ec57db6a2fc8df1",
+      "arm": "C_length_sweep_drafter_on",
+      "observability_check": {
+        "ok": 0,
+        "n": 1,
+        "failed": [
+          [
+            "L3584"
+          ]
+        ]
+      },
+      "mismatches": [
+        {
+          "cell": "L3584",
+          "slot": 1,
+          "response_timings": 3584,
+          "slots_after_completion": 0
+        }
+      ]
+    },
+    {
+      "record": "/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/full/records/kpf18-20261031T031157Z-17.json",
+      "sha256": "58dac83e8f1d1cd52aa4f61760dfa9dedad052b12378921da774bb6bab3ec68a",
+      "rows_sha256": "5921f90088350c3616d3872590fa0a9c185d3565815c7e325bdd64e0bd9162b5",
+      "arm": "C_length_sweep_drafter_on",
+      "observability_check": {
+        "ok": 0,
+        "n": 1,
+        "failed": [
+          [
+            "L3712"
+          ]
+        ]
+      },
+      "mismatches": [
+        {
+          "cell": "L3712",
+          "slot": 1,
+          "response_timings": 3712,
+          "slots_after_completion": 0
+        }
+      ]
+    },
+    {
+      "record": "/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/full/records/kpf18-20261031T031309Z-18.json",
+      "sha256": "cb31b7353a1328142b5f80106ab207a28f5304415281bf984ea3b3c5530af45d",
+      "rows_sha256": "3d29a790cc0402b3d76716b93a5a8701692a3945bacb44f78aac77b7212548e3",
+      "arm": "C_length_sweep_drafter_on",
+      "observability_check": {
+        "ok": 0,
+        "n": 1,
+        "failed": [
+          [
+            "L3840"
+          ]
+        ]
+      },
+      "mismatches": [
+        {
+          "cell": "L3840",
+          "slot": 1,
+          "response_timings": 3840,
+          "slots_after_completion": 0
+        }
+      ]
+    },
+    {
+      "record": "/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/full/records/kpf18-20261031T031424Z-19.json",
+      "sha256": "0b3fe0a43d076fafd898068ca48cf6d80eced3f5143a39515a53782dbfc67924",
+      "rows_sha256": "fc006d1e53a71218911ac9655b9f54aaf9c710e9d6febd95189a477c5b91ad1c",
+      "arm": "C_length_sweep_drafter_on",
+      "observability_check": {
+        "ok": 0,
+        "n": 1,
+        "failed": [
+          [
+            "L3968"
+          ]
+        ]
+      },
+      "mismatches": [
+        {
+          "cell": "L3968",
+          "slot": 1,
+          "response_timings": 3968,
+          "slots_after_completion": 0
+        }
+      ]
+    },
+    {
+      "record": "/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/full/records/kpf18-20261031T031543Z-20.json",
+      "sha256": "2ff3289d133af46f6a119f363d1b6632442b76a93f2cd5fba09c06803123679d",
+      "rows_sha256": "20675f429aef221cdfa3d6e23d258934fbbf479732bc9819b12175b9e8d004a8",
+      "arm": "C_length_sweep_drafter_off",
+      "observability_check": {
+        "ok": 0,
+        "n": 1,
+        "failed": [
+          [
+            "L2048"
+          ]
+        ]
+      },
+      "mismatches": [
+        {
+          "cell": "L2048",
+          "slot": 1,
+          "response_timings": 2048,
+          "slots_after_completion": 0
+        }
+      ]
+    },
+    {
+      "record": "/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/full/records/kpf18-20261031T031622Z-21.json",
+      "sha256": "166a36696556b314bd5ef24c569c2d5bdb168a647897affcdc80dc42701788c9",
+      "rows_sha256": "6bd27fc9aea65b70f5600ed2bf47855d18474574a479e6a1b43e3f5d566d9e00",
+      "arm": "C_length_sweep_drafter_off",
+      "observability_check": {
+        "ok": 0,
+        "n": 1,
+        "failed": [
+          [
+            "L2176"
+          ]
+        ]
+      },
+      "mismatches": [
+        {
+          "cell": "L2176",
+          "slot": 1,
+          "response_timings": 2176,
+          "slots_after_completion": 0
+        }
+      ]
+    },
+    {
+      "record": "/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/full/records/kpf18-20261031T031705Z-22.json",
+      "sha256": "4d31bfd03d62b31b3302f4d20ba9880637fb3e07928efc35beba23c85ed5be78",
+      "rows_sha256": "8b3f50f65455d5354303e93e5d059a4c59d75672505e163bc4ca79f0c36506df",
+      "arm": "C_length_sweep_drafter_off",
+      "observability_check": {
+        "ok": 0,
+        "n": 1,
+        "failed": [
+          [
+            "L2304"
+          ]
+        ]
+      },
+      "mismatches": [
+        {
+          "cell": "L2304",
+          "slot": 1,
+          "response_timings": 2304,
+          "slots_after_completion": 0
+        }
+      ]
+    },
+    {
+      "record": "/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/full/records/kpf18-20261031T031748Z-23.json",
+      "sha256": "04f8a7fbc4d29c1740791f5af23c0ce5961ae69b5a3ea6711ebcf4d8a793ad3c",
+      "rows_sha256": "49a977bad43ba87c60d7d3957156a565622d1c700afb42b8e40099be8a1e91cf",
+      "arm": "C_length_sweep_drafter_off",
+      "observability_check": {
+        "ok": 0,
+        "n": 1,
+        "failed": [
+          [
+            "L2432"
+          ]
+        ]
+      },
+      "mismatches": [
+        {
+          "cell": "L2432",
+          "slot": 1,
+          "response_timings": 2432,
+          "slots_after_completion": 0
+        }
+      ]
+    },
+    {
+      "record": "/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/full/records/kpf18-20261031T031835Z-24.json",
+      "sha256": "adfc7484aeeb8219ad4d28849a1679e6fa08ad3f6592bb6bfd7493b7e9c8beae",
+      "rows_sha256": "a48568e0ceb46578597f4b13cdb1c695a83372b1d19fb855ba90b381aa557e16",
+      "arm": "C_length_sweep_drafter_off",
+      "observability_check": {
+        "ok": 0,
+        "n": 1,
+        "failed": [
+          [
+            "L2560"
+          ]
+        ]
+      },
+      "mismatches": [
+        {
+          "cell": "L2560",
+          "slot": 1,
+          "response_timings": 2560,
+          "slots_after_completion": 0
+        }
+      ]
+    },
+    {
+      "record": "/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/full/records/kpf18-20261031T031925Z-25.json",
+      "sha256": "f73ab636e9a8b080448d500f7bc9417a9f19b12626e5dee92158568129994d25",
+      "rows_sha256": "747ff127aa76356f5f6d6e3dd835450cdee5cd25f42173bb6cd2c34f6a409ab8",
+      "arm": "C_length_sweep_drafter_off",
+      "observability_check": {
+        "ok": 0,
+        "n": 1,
+        "failed": [
+          [
+            "L2688"
+          ]
+        ]
+      },
+      "mismatches": [
+        {
+          "cell": "L2688",
+          "slot": 1,
+          "response_timings": 2688,
+          "slots_after_completion": 0
+        }
+      ]
+    },
+    {
+      "record": "/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/full/records/kpf18-20261031T032015Z-26.json",
+      "sha256": "af0c49561c8a8f597f4e4a2670bfb2b2bb73b49db748a696708766e0c0f5add3",
+      "rows_sha256": "a718b1eb462aa62a412cece634854d3df7b0262315affdee42037733b7e32123",
+      "arm": "C_length_sweep_drafter_off",
+      "observability_check": {
+        "ok": 0,
+        "n": 1,
+        "failed": [
+          [
+            "L2816"
+          ]
+        ]
+      },
+      "mismatches": [
+        {
+          "cell": "L2816",
+          "slot": 1,
+          "response_timings": 2816,
+          "slots_after_completion": 0
+        }
+      ]
+    },
+    {
+      "record": "/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/full/records/kpf18-20261031T032110Z-27.json",
+      "sha256": "78f949ab1974e8f3e421c39ce29179e64b3bb766157c1efbf478bd95ff282e57",
+      "rows_sha256": "f8077e2f19b55f5aa5487f997bcffcb17ed82410a91e4842c83ed23e77c49501",
+      "arm": "C_length_sweep_drafter_off",
+      "observability_check": {
+        "ok": 0,
+        "n": 1,
+        "failed": [
+          [
+            "L2944"
+          ]
+        ]
+      },
+      "mismatches": [
+        {
+          "cell": "L2944",
+          "slot": 1,
+          "response_timings": 2944,
+          "slots_after_completion": 0
+        }
+      ]
+    },
+    {
+      "record": "/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/full/records/kpf18-20261031T032209Z-28.json",
+      "sha256": "860954be621c296051c5349e060a05e8dd68e252f2d76a4009a3902f54272378",
+      "rows_sha256": "c05ca809b731cad25726790d8d567d935e05d535aa06ce9454c2765c082f69ca",
+      "arm": "C_length_sweep_drafter_off",
+      "observability_check": {
+        "ok": 0,
+        "n": 1,
+        "failed": [
+          [
+            "L3072"
+          ]
+        ]
+      },
+      "mismatches": [
+        {
+          "cell": "L3072",
+          "slot": 1,
+          "response_timings": 3072,
+          "slots_after_completion": 0
+        }
+      ]
+    },
+    {
+      "record": "/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/full/records/kpf18-20261031T032309Z-29.json",
+      "sha256": "3f1357ed81b75e064816b3c8665cf842c7492797b2d460854a14f9ed431a6c4a",
+      "rows_sha256": "e48645bbbc7ad99a5106258394c05d251b32a2ff334036dfce64848dec01884b",
+      "arm": "C_length_sweep_drafter_off",
+      "observability_check": {
+        "ok": 0,
+        "n": 1,
+        "failed": [
+          [
+            "L3200"
+          ]
+        ]
+      },
+      "mismatches": [
+        {
+          "cell": "L3200",
+          "slot": 1,
+          "response_timings": 3200,
+          "slots_after_completion": 0
+        }
+      ]
+    },
+    {
+      "record": "/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/full/records/kpf18-20261031T032411Z-30.json",
+      "sha256": "a6f9120c9aaa8a0a888b8d592cb873abefcbd8127870198967dc7e27e0e5bb64",
+      "rows_sha256": "17a65bb58491f6c6ae9e4e2182dd3f4318128c228c47dab16bf11828ddb6219a",
+      "arm": "C_length_sweep_drafter_off",
+      "observability_check": {
+        "ok": 0,
+        "n": 1,
+        "failed": [
+          [
+            "L3328"
+          ]
+        ]
+      },
+      "mismatches": [
+        {
+          "cell": "L3328",
+          "slot": 1,
+          "response_timings": 3328,
+          "slots_after_completion": 0
+        }
+      ]
+    },
+    {
+      "record": "/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/full/records/kpf18-20261031T032515Z-31.json",
+      "sha256": "a913a00eb00166c2bcf7bee10c9e66826808ef8a3c8f802d34e627d13652510c",
+      "rows_sha256": "728dbc874e79cbccc5bbf59dc93fa78c7cfe6d141d376827a6f3ca2bab535891",
+      "arm": "C_length_sweep_drafter_off",
+      "observability_check": {
+        "ok": 0,
+        "n": 1,
+        "failed": [
+          [
+            "L3456"
+          ]
+        ]
+      },
+      "mismatches": [
+        {
+          "cell": "L3456",
+          "slot": 1,
+          "response_timings": 3456,
+          "slots_after_completion": 0
+        }
+      ]
+    },
+    {
+      "record": "/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/full/records/kpf18-20261031T032623Z-32.json",
+      "sha256": "347528b3c66325ce5eb8d55d4485bfb96dff9e049f4fbe31303f71e0f966110a",
+      "rows_sha256": "4add3105fb5512717215c373fdb31157fa76d17075afbe08838418c4ab6538d9",
+      "arm": "C_length_sweep_drafter_off",
+      "observability_check": {
+        "ok": 0,
+        "n": 1,
+        "failed": [
+          [
+            "L3584"
+          ]
+        ]
+      },
+      "mismatches": [
+        {
+          "cell": "L3584",
+          "slot": 1,
+          "response_timings": 3584,
+          "slots_after_completion": 0
+        }
+      ]
+    },
+    {
+      "record": "/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/full/records/kpf18-20261031T032732Z-33.json",
+      "sha256": "b0c03923e9b4a55ab4884aabe897c4f915b956f2a3f69fa60ea911354e655976",
+      "rows_sha256": "8d070692eed0caa39de3163baff04b81f65cad38f5042462aab84c632df0978f",
+      "arm": "C_length_sweep_drafter_off",
+      "observability_check": {
+        "ok": 0,
+        "n": 1,
+        "failed": [
+          [
+            "L3712"
+          ]
+        ]
+      },
+      "mismatches": [
+        {
+          "cell": "L3712",
+          "slot": 1,
+          "response_timings": 3712,
+          "slots_after_completion": 0
+        }
+      ]
+    },
+    {
+      "record": "/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/full/records/kpf18-20261031T032844Z-34.json",
+      "sha256": "06d8823c5ffd6e675e2d8e73969d5c32205b17b3eac8fb2c468b94b2251e21b1",
+      "rows_sha256": "604cf88329a0733208fff8fcb4e619a31669315319d046d4ca344a4f09a22f92",
+      "arm": "C_length_sweep_drafter_off",
+      "observability_check": {
+        "ok": 0,
+        "n": 1,
+        "failed": [
+          [
+            "L3840"
+          ]
+        ]
+      },
+      "mismatches": [
+        {
+          "cell": "L3840",
+          "slot": 1,
+          "response_timings": 3840,
+          "slots_after_completion": 0
+        }
+      ]
+    },
+    {
+      "record": "/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/full/records/kpf18-20261031T033000Z-35.json",
+      "sha256": "e31cdf7e8a3e3b96659633cb7f88f6d33a99deeaf9316c5e81515c065e9cdc7b",
+      "rows_sha256": "b54b39444abc2efc85edb8068f94911cdd3326bbd7c6df66171457a2652ef960",
+      "arm": "C_length_sweep_drafter_off",
+      "observability_check": {
+        "ok": 0,
+        "n": 1,
+        "failed": [
+          [
+            "L3968"
+          ]
+        ]
+      },
+      "mismatches": [
+        {
+          "cell": "L3968",
+          "slot": 1,
+          "response_timings": 3968,
+          "slots_after_completion": 0
+        }
+      ]
+    },
+    {
+      "record": "/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/full/records/kpf18-20261031T033119Z-36.json",
+      "sha256": "d5bf8044c7668d203e940adbb3740765ce029f8584dc0bbdd725a90e0a3e139d",
+      "rows_sha256": "4ec4f5677e83ece21223b7a56af69bc833a59844c7f6e0210f2f24f2dd36e18c",
+      "arm": "D_hit_count_prediction_mtp",
+      "observability_check": {
+        "ok": 0,
+        "n": 1,
+        "failed": [
+          [
+            "junction+0",
+            "junction+1",
+            "n_minus_4_minus_ub-1",
+            "n_minus_4_minus_ub+0",
+            "n_minus_4_minus_ub+1",
+            "n_minus_4-1",
+            "n_minus_4+0",
+            "n_minus_4+1",
+            "holdout5131"
+          ]
+        ]
+      },
+      "mismatches": [
+        {
+          "cell": "junction+0",
+          "slot": 1,
+          "response_timings": 4096,
+          "slots_after_completion": 0
+        },
+        {
+          "cell": "junction+1",
+          "slot": 1,
+          "response_timings": 4096,
+          "slots_after_completion": 0
+        },
+        {
+          "cell": "n_minus_4_minus_ub-1",
+          "slot": 1,
+          "response_timings": 4096,
+          "slots_after_completion": 0
+        },
+        {
+          "cell": "n_minus_4_minus_ub+0",
+          "slot": 1,
+          "response_timings": 4096,
+          "slots_after_completion": 0
+        },
+        {
+          "cell": "n_minus_4_minus_ub+1",
+          "slot": 1,
+          "response_timings": 4096,
+          "slots_after_completion": 0
+        },
+        {
+          "cell": "n_minus_4-1",
+          "slot": 1,
+          "response_timings": 6144,
+          "slots_after_completion": 0
+        },
+        {
+          "cell": "n_minus_4+0",
+          "slot": 1,
+          "response_timings": 8188,
+          "slots_after_completion": 0
+        },
+        {
+          "cell": "n_minus_4+1",
+          "slot": 1,
+          "response_timings": 8188,
+          "slots_after_completion": 0
+        },
+        {
+          "cell": "holdout5131",
+          "slot": 1,
+          "response_timings": 4096,
+          "slots_after_completion": 0
+        }
+      ]
+    },
+    {
+      "record": "/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/full/records/kpf18-20261031T033509Z-37.json",
+      "sha256": "0a8ee740f7955f3a8b341c9b3d81d589b60efa6f7e0011c100f7aa07f771ef8a",
+      "rows_sha256": "f7c71d873b1350f8675e0b6815c219e30b3ed05cbb3656853812751e227e90e3",
+      "arm": "A_ckpt_forkoff",
+      "observability_check": {
+        "ok": 1,
+        "n": 1,
+        "failed": []
+      },
+      "mismatches": []
+    },
+    {
+      "record": "/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/full/records/kpf18-20261031T033657Z-38.json",
+      "sha256": "6b25a97aa9ce11176a7e09148c96707c70fd6154b23528e03f72f3567edf6a70",
+      "rows_sha256": "b4f4872a6b8c1d8930b8ab0f53e76866d28a821d9dd4c9ac4ad71bb20f664afe",
+      "arm": "A_tailonly_forkoff",
+      "observability_check": {
+        "ok": 1,
+        "n": 1,
+        "failed": []
+      },
+      "mismatches": []
+    },
+    {
+      "record": "/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/full/records/kpf18-20261031T033842Z-39.json",
+      "sha256": "3f78148da20db86b9dd54de5609520871bba251a2ba15a9f3c55ef9c7b5abda3",
+      "rows_sha256": "6b30c8108d2de0cf7fd18b931b4b0009b1acbfe762f06105b1a8e7fb0fcefdc3",
+      "arm": "B_identical_resend_and_child_eq_trunk_forkoff",
+      "observability_check": {
+        "ok": 1,
+        "n": 1,
+        "failed": []
+      },
+      "mismatches": []
+    },
+    {
+      "record": "/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/full/records/kpf18-20261031T034204Z-40.json",
+      "sha256": "db72abb59e01180d31dbf9def47c154a214e1ca5dd40ff4457e4b3fc02ac1b45",
+      "rows_sha256": "ae7212ad007bac503ecc158a3c8d266d15e50b4c07fb0719d35d75a931e06e2d",
+      "arm": "D_hit_count_prediction_nodraft",
+      "observability_check": {
+        "ok": 0,
+        "n": 1,
+        "failed": [
+          [
+            "junction+0",
+            "junction+1",
+            "n_minus_4_minus_ub-1",
+            "n_minus_4_minus_ub+0",
+            "n_minus_4_minus_ub+1",
+            "n_minus_4-1",
+            "n_minus_4+0",
+            "n_minus_4+1",
+            "holdout5131"
+          ]
+        ]
+      },
+      "mismatches": [
+        {
+          "cell": "junction+0",
+          "slot": 1,
+          "response_timings": 4096,
+          "slots_after_completion": 0
+        },
+        {
+          "cell": "junction+1",
+          "slot": 1,
+          "response_timings": 4096,
+          "slots_after_completion": 0
+        },
+        {
+          "cell": "n_minus_4_minus_ub-1",
+          "slot": 1,
+          "response_timings": 4096,
+          "slots_after_completion": 0
+        },
+        {
+          "cell": "n_minus_4_minus_ub+0",
+          "slot": 1,
+          "response_timings": 4096,
+          "slots_after_completion": 0
+        },
+        {
+          "cell": "n_minus_4_minus_ub+1",
+          "slot": 1,
+          "response_timings": 4096,
+          "slots_after_completion": 0
+        },
+        {
+          "cell": "n_minus_4-1",
+          "slot": 1,
+          "response_timings": 6144,
+          "slots_after_completion": 0
+        },
+        {
+          "cell": "n_minus_4+0",
+          "slot": 1,
+          "response_timings": 8188,
+          "slots_after_completion": 0
+        },
+        {
+          "cell": "n_minus_4+1",
+          "slot": 1,
+          "response_timings": 8188,
+          "slots_after_completion": 0
+        },
+        {
+          "cell": "holdout5131",
+          "slot": 1,
+          "response_timings": 4096,
+          "slots_after_completion": 0
+        }
+      ]
+    }
+  ],
+  "limitations": "Source/binary already pinned in original run; no native rerun, no new quality grade or full KPF gate closure. Per-request response timings and aggregate metrics remain distinct evidence. Future collector needs an in-request sample or explicit task-identified retained field, never replace missing samples with synthetic slot counts."
+}

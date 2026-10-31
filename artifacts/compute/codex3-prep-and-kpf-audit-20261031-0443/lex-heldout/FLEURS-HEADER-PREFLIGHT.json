@@ -1,0 +1,14 @@
+{
+  "access": "WAV headers and pinned manifest frames only; no inference, test text or scoring",
+  "counts": [
+    {
+      "channels": 1,
+      "n": 3050,
+      "sample_rate": 16000,
+      "sample_width_bytes": 2
+    }
+  ],
+  "missing_or_frame_mismatch_ids": [],
+  "policy_sha256": "5c84f8c3ce7524ba5d1ca5d0d99dd803a39fb6d44a2f7fe16bc612baca6743f1",
+  "schema": "cs8.lex2.fleurs-header-preflight.v1"
+}

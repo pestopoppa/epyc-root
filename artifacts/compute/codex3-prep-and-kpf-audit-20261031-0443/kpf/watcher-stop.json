@@ -1,0 +1,16 @@
+{
+  "timestamp": "2026-10-31T04:41:42.222580+00:00",
+  "captured_pids": [
+    3133293,
+    3133666
+  ],
+  "verified_dead": true,
+  "owned_children_before_stop": [],
+  "native_control_started": false,
+  "reason": "Offline captured-source audit proves post-completion slot reads observe reset counters; fix collector before future GPU capture. Exact e332 HIP comparator is now built and should join final packet. Original pending private draft and prior watcher receipts preserved. No READY published, grants/queues/FILLERS untouched.",
+  "source_audit": "/mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/slot-observation-audit/AUDIT.json",
+  "units": [
+    "codex3-kpf181-r7-qualifier-20261031-0342.service",
+    "codex3-kpf181-r7-publisher-20261031-0342.service"
+  ]
+}

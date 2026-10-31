@@ -1,0 +1,25 @@
+{
+  "context_strata_tokens": {
+    "16K": [
+      15360,
+      17408
+    ],
+    "64K": [
+      61440,
+      65000
+    ]
+  },
+  "gate": "source says non-trivial rate makes #25592 a v10 candidate; no quantitative threshold supplied, so report raw evidence without inventing a threshold or declaring a deployment",
+  "measures": "retain all three raw native timings, prompt_n, cache_n, matched source identity, server log and every forcing full prompt re-processing event; compute per-stratum occurrence counts/rates and every denominator, count failed or interrupted requests as UNKNOWN not zero",
+  "model": "/mnt/raid0/llm/models/Qwen3.6-35B-A3B-MTP-Q8_0.gguf",
+  "model_sha256": "c1283d8b80c3e38b2735ddbc9766d3b3126f44d6c484be419d4e101d09a76131",
+  "prior_evidence": "KPF64 pass1-D 397 prompt-counted turns, 13 >=16K, none >=64K, max 30657; 16 aggregate forced-reprocessing events. Keep as historical, not the requested 64K cohort.",
+  "privacy": "original transcript text stays in permission-restricted scratch and does not enter capsules or logs; reports carry hashes and counts",
+  "replay": "for each selected point, a fresh private server and original consecutive previous/selected/following prompts; exact original reference history, no dropped turns within a three-call sequence, cache_prompt true, deterministic single-token completion and native response plus source hashes; one single-slot sequential sequence at a time",
+  "schema": "dsc25592.predeclared.v1",
+  "scope": "descriptive private-server measurement; no production server, deployment or threshold selection",
+  "selection_before_inference": "For each of claude, codex, opencode and each stratum, take the first two distinct sessions in lexicographic sample order whose first qualifying turn has an immediately preceding and following turn in the same non-reset lineage. If fewer than two exist, retain the shortfall as UNKNOWN and do not invent sessions or reselect based on outcomes. A three-turn sequence is eligible only when each of its actual prompts is below the per-slot context limit with room for output; over-limit cases are counted as ineligible, never silently truncated.",
+  "source_task": "dynamic-stack-concurrency.md unchecked #25592 live-checkpoint exposure measurement",
+  "tokenization": "exact frozen production 35B vocabulary-only tokenizer over original raw reference-history prompt; actual per-turn token count is retained, ranges honestly labeled",
+  "trace_source": "frozen 20-session seed-64 sample from KPF64 real-session adapter, uncapped to 500000 chars; preserve all 675 turn index rows and source failures"
+}
