@@ -1,0 +1,630 @@
+entries:
+- id: intake-2597
+  verification: dive-verified
+  read_depth: FULL
+  source_revision: GitHub REST API (issue/PR, comments, files) JSON rendered to all.txt, retrieved 2026-10-31 (https://github.com/ggml-org/llama.cpp/issues/26695)
+  source_text_path: scratch:dive-ws58-20261031/dive/w4up/all.txt
+  key_claims: &id001
+  - 'Reporter (natemacfadden, Vulkan, Qwen3.5-4B) shows that with n_rs_seq=1, decoding one token and calling llama_memory_seq_rm(seq 0, WARM, -1) returns true but leaves the recurrent state modified: next-token
+    prediction differs (no undo 828 vs undone 264).'
+  - 'Maintainer am17an: n_rs_seq is only used for speculative decoding, where the anchor token (the first token of the batch) is never removed; low priority because n_rs_seq is marked experimental.'
+  - 'Reporter notes a ~5% decode-time-cost fix (when n_rs_seq>0); am17an declines it: about 5% is too much for a bug that does not exist when the feature is used as intended.'
+  - The issue is single-sequence; it makes no claim about cross-slot contamination. Issue closed (state=closed) with no code change; first bad commit is the original MTP commit 255582687 (#22673), which
+    IS an ancestor of our frozen tree.
+  reported_results: &id002
+  - no undo -> 828 / undone -> 264 (seq_rm returned true) / MISMATCH, Qwen_Qwen3.5-4B-Q4_K_M, n_rs_seq=1, WARM=12, Vulkan Strix Halo (issue body log)
+  claim_verdicts:
+  - claim_index: 0
+    verdict: CONFIRMED
+    evidence: issue body repro log
+  - claim_index: 1
+    verdict: CONFIRMED
+    evidence: am17an 2026-08-08 comment
+  - claim_index: 2
+    verdict: CONFIRMED
+    evidence: comment thread 08-08
+  - claim_index: 3
+    verdict: CONFIRMED
+    evidence: no linked fix; 255582687 ancestor of HEAD ffc1bac82 (git merge-base --is-ancestor exit 0)
+  claim_anchors:
+  - claim_index: 0
+    locator: issue body, log
+    quote: 'no undo -> 828
+
+      undone  -> 264   (seq_rm returned true)'
+  - claim_index: 1
+    locator: am17an comment 2026-08-08T15:16:21Z
+    quote: The `n_rs_seq` stuff is only used for speculative decoding, where we never have to remove the anchor token i.e the first token.
+  - claim_index: 2
+    locator: am17an comment 2026-08-08T15:58:43Z
+    quote: ~5% is ~5% too much for a bug that doesn't exist when using this feature.
+  - claim_index: 3
+    locator: issue body, First Bad Commit
+    quote: Comes at first writing of the code
+  claim_corrections:
+  - claim_index: 1
+    effect: narrowed
+    note: 'Maintainer statement is an assertion about the speculative server path, not a measurement; our frozen tree seq_rm (src/llama-memory-recurrent.cpp:190-200) shows the mechanism: rollback = cell.pos-(p0-1)
+      selects snapshot group idx; groups beyond what the last batch wrote ("trailing slots are left unwritten", src/models/delta-net-base.cpp:593) are stale, which only bites when rollback >= batch length,
+      i.e. the anchor itself is removed.'
+  depends_on: []
+  dive_corrections: 'Stage 1 had no primary text for the mechanism. Dive adds: the defect needs a rollback as long as the whole decode batch (anchor removed); spec verification batches are anchor+drafts
+    so rollback <= n_draft < batch length, hence not reachable from MTP/DFlash2 rejection. No cross-slot element exists in the thread (rs_idx is per-seq: llama-memory-recurrent.cpp:407).'
+  reader_should_conclude: 'Cite as: upstream-acknowledged single-seq limitation of seq_rm on whole-batch rollback under n_rs_seq>0; maintainer rationale that spec decoding never removes the anchor. Do NOT
+    cite as evidence for or against np>1 cross-slot contamination, and do not call the 5% fix available (declined, not merged).'
+  not_read: 'linked PR #25004/#26499/#22746/vLLM threads and the unmerged local patch bodies were not fetched; only the assigned thread plus its files/review comments'
+- id: intake-2598
+  verification: dive-verified
+  read_depth: FULL
+  source_revision: GitHub REST API (issue/PR, comments, files) JSON rendered to all.txt, retrieved 2026-10-31 (https://github.com/ggml-org/llama.cpp/issues/28019)
+  source_text_path: scratch:dive-ws58-20261031/dive/w4up/all.txt
+  key_claims: &id003
+  - Issue (netmana808, 2026-08-30, closed stale 2026-10-26) force-enabled LLM_ARCH_QWEN4EXP in llm_arch_supports_rs_rollback on cc231cb0d; test-recurrent-state-rollback failed test_multi_seq_split_replay
+    with logits max diff 9.25491 (first at seq 0 pos 16), single-seq checkpoint restore passed.
+  - 'Root cause guessed in the issue (PLE conv history in the same recurrent row, snapshot planes not widened) is the mechanism landed by upstream 0eadefeb (#28123, 2026-09-01): build_conv_state_at now
+    writes one conv snapshot per slot for delta-net QKV and PLE conv. Our tree ports this as 0771238438 (src/models/qwen4exp.cpp:1263).'
+  - 'Follow-up comment: on master 95ef7fc (arch natively enabled) test-recurrent-state-rollback now fails the dirty-ctx subtest (diffs 8.23 vs 5.62 at position 6, CPU-only too); reporter reads it as incompleteness
+    in the restore path of #28123 and states the exposed population is MTP users reusing a slot across unrelated conversations. Unresolved: no maintainer reply visible, closed stale.'
+  - need_n_rs_seq() arms n_rs_seq only for DRAFT_MTP/EAGLE3/DFLASH/DSPARK; ngram-* types and no-spec leave n_rs_seq==0 so the rollback path is unreachable. Our common/common.h:390-394 is identical.
+  - 'Aggregate numbers are GB10 reporter measurements: ngram-map-k4v --parallel 3 ~50 tok/s vs ~66-70 with speculation disabled (spec inverts under concurrency without batched rollback).'
+  reported_results: &id004
+  - test_multi_seq_split_replay max diff 9.25491 at seq 0 pos 16 (issue body)
+  - dirty-ctx diffs 8.23 vs 5.62 at pos 6 on master 95ef7fc (comment 2026-09-10); GB10 ngram spec np3 ~50 vs ~66-70 tok/s spec-off (issue body)
+  claim_verdicts:
+  - claim_index: 0
+    verdict: CONFIRMED
+    evidence: issue body step 3 output
+  - claim_index: 1
+    verdict: CONFIRMED
+    evidence: comment quotes 0eadefeb text; our git log shows port 0771238438
+  - claim_index: 2
+    verdict: PARTIAL
+    evidence: reporter quotes numbers and an interpretation; the maintainer exchange it answers is not in the fetched comments, so the dirty-ctx failure is reporter-asserted
+  - claim_index: 3
+    verdict: CONFIRMED
+    evidence: quoted need_n_rs_seq matches common/common.h:390-394
+  - claim_index: 4
+    verdict: CONFIRMED
+    evidence: issue body
+  claim_anchors:
+  - claim_index: 0
+    locator: issue body, step 3
+    quote: multi-seq split replay logits mismatch (max diff 9.25491, first at seq 0 pos 16)
+  - claim_index: 1
+    locator: comment 2026-09-10
+    quote: '`build_conv_state_at` wrote a single plane, so a rollback restored a convolution history that was never captured.'
+  - claim_index: 2
+    locator: comment 2026-09-10
+    quote: the exposed population is MTP users with more than one conversation per slot
+  - claim_index: 3
+    locator: comment 2026-09-10
+    quote: '`ngram-*` type:** `n_rs_seq == 0`, so the rollback planes are never allocated'
+  - claim_index: 4
+    locator: issue body
+    quote: three concurrent streams reach only ~50 tok/s aggregate on rewrite-style workloads vs ~66
+  claim_corrections:
+  - claim_index: 2
+    effect: narrowed
+    note: Only the reporter documents the dirty-ctx failure on 95ef7fc; verify on OUR binary (tests/test-recurrent-state-rollback.cpp:212 has the dirty-ctx check; our file is the older layout) before treating
+      as live defect.
+  depends_on: []
+  dive_corrections: Stage 1 unknown. The dive shows the multi-seq failure the issue opened with was a pre-#28123 artifact (conv history never captured), but a different, later failure (dirty-ctx, slot reuse
+    across conversations) is alleged on post-#28123 master and was never adjudicated upstream. It is exactly the np>1 MTP condition.
+  reader_should_conclude: 'Cite: qwen4exp rollback needs #28123 (ported locally as 0771238438); slot reuse across unrelated conversations under MTP/DFlash is the suspect condition and is UNTESTED on our
+    binary. Do not cite the 9.25 diff as a current defect (pre-fix), and do not cite the dirty-ctx numbers as ours.'
+  not_read: 'linked PR #25004/#26499/#22746/vLLM threads and the unmerged local patch bodies were not fetched; only the assigned thread plus its files/review comments'
+- id: intake-2599
+  verification: dive-verified
+  read_depth: FULL
+  source_revision: GitHub REST API (issue/PR, comments, files) JSON rendered to all.txt, retrieved 2026-10-31 (https://github.com/ggml-org/llama.cpp/pull/30408)
+  source_text_path: scratch:dive-ws58-20261031/dive/w4up/all.txt
+  key_claims: &id005
+  - 'Merged 2026-10-12 as cbe28bb3 (5 files, +7/-7): embd_all = output_all || !cparams.causal_attn in llama_context::decode; llama_kv_cache and llama_kv_cache_iswa init_batch now honor embd_all (previously
+    GGML_UNUSED) and use split_seq instead of split_equal when n_stream>1 (unified-stream path still split_simple).'
+  - Scope is non-causal attention OR embeddings/output_all; causal LMs with embeddings off see embd_all==false, so their ubatching is unchanged. Hybrid/recurrent memories already did split_seq on embd_all
+    (our src/llama-memory-hybrid.cpp:77-79, llama-memory-recurrent.cpp:426-428).
+  - Not an ancestor of our frozen HEAD ffc1bac82 (merge-base a8dc0e326, 2026-07-16 per local graph); sha is present locally on remote branches only. Author is "not 100% sure" of the diagnosis ("seems like
+    there is a problem with the case non-causal + hybrid + multi seq").
+  reported_results: &id006
+  - 5 files, +7/-7; merged 2026-10-12T22:23:02Z, sha cbe28bb3cb0758f0c566a9a3561766821aeb0748
+  claim_verdicts:
+  - claim_index: 0
+    verdict: CONFIRMED
+    evidence: patch hunks
+  - claim_index: 1
+    verdict: CONFIRMED
+    evidence: code diff; our hybrid.cpp:77 already has embd_all branch
+  - claim_index: 2
+    verdict: CONFIRMED
+    evidence: git merge-base --is-ancestor exit 1; git branch -a --contains lists only remotes/origin/* branches
+  claim_anchors:
+  - claim_index: 0
+    locator: src/llama-context.cpp hunk
+    quote: const bool embd_all     = output_all || !cparams.causal_attn;
+  - claim_index: 1
+    locator: src/llama-memory.h hunk
+    quote: 'embd_all: keep all the tokens of a sequence in one ubatch (all tokens are output, or the attention is non-causal)'
+  - claim_index: 2
+    locator: PR body
+    quote: 'Not 100% sure but seems like there is a problem with the case: non-causal + hybrid + multi seq'
+  claim_corrections:
+  - claim_index: 1
+    effect: narrowed
+    note: Causal LMs are unaffected only when embeddings are off; in embedding mode with n_stream>1 the plain KV cache now splits per sequence (new behaviour). Speculative servers do not run embedding mode.
+  depends_on: []
+  dive_corrections: 'Stage 1 had only a title. Dive fixes scope: ubatch-split rule for non-causal and output_all batches; not a causal-LM or speculative change.'
+  reader_should_conclude: Cite as the ubatching fix for non-causal/embedding multi-seq batches. Do NOT carry as a requirement for MTP/DFlash2 np>1 identity (causal, embd_all false). Required only if the
+    d1 screen build serves a non-causal or embedding-mode decision model at np>1.
+  not_read: 'linked PR #25004/#26499/#22746/vLLM threads and the unmerged local patch bodies were not fetched; only the assigned thread plus its files/review comments'
+- id: intake-2600
+  verification: dive-verified
+  read_depth: FULL
+  source_revision: GitHub REST API (issue/PR, comments, files) JSON rendered to all.txt, retrieved 2026-10-31 (https://github.com/ggml-org/llama.cpp/pull/30100)
+  source_text_path: scratch:dive-ws58-20261031/dive/w4up/all.txt
+  key_claims: &id007
+  - 'Metal-only fix (merged 2026-10-07, 7e8324f5): the fused MUL_MAT+ADD encoder picked the residual as "the ADD operand whose op is not MUL_MAT"; when both operands are mat-mul outputs it resolved to the
+    fused op own output. Fix selects by identity (dst->src[0]==op).'
+  - Diff touches only ggml/src/ggml-metal/ggml-metal-ops.cpp (+2/-1) and tests/test-backend-ops.cpp (+9/-1, new mode mm2+mm); no CPU or HIP source changes.
+  - 'Trigger: clef decision-model head options = proj_option_context@opt_ctx + proj_option_lexical@lexical. Reported: Metal default billing 0.284 vs CPU 0.977 (technical 0.431 vs 0.009); with fix 0.977/0.008
+    on M1 Max; the BF16-keep-decision workaround was hiding this bug, not quantization.'
+  - Not an ancestor of our HEAD; irrelevant to EPYC CPU/HIP serving, but the new backend-ops test mode is a free CPU/HIP check of the same graph pattern.
+  reported_results: &id008
+  - Metal default 0.284/0.431 vs CPU, fix and fusion-disabled 0.977/0.008-0.009 (billing/technical, Cloudflare_clef-flash-Q8_0); 27 of 28 mm2+mm cases failed pre-fix, 168/168 pass post-fix (PR body)
+  claim_verdicts:
+  - claim_index: 0
+    verdict: CONFIRMED
+    evidence: patch hunk
+  - claim_index: 1
+    verdict: CONFIRMED
+    evidence: 'files list: 2 files'
+  - claim_index: 2
+    verdict: CONFIRMED
+    evidence: PR body table
+  - claim_index: 3
+    verdict: CONFIRMED
+    evidence: ancestor check exit 1
+  claim_anchors:
+  - claim_index: 0
+    locator: ggml-metal-ops.cpp hunk
+    quote: 'res = dst->src[0] == op ? dst->src[1] : dst->src[0];'
+  - claim_index: 2
+    locator: PR body table
+    quote: Metal, default | 0.284 | 0.431
+  - claim_index: 2
+    locator: PR body
+    quote: 'so the "keep `decision.*` at BF16" workaround in the issue is working around this
+
+      bug.'
+  - claim_index: 3
+    locator: PR body
+    quote: New `MUL_MAT_ADD` mode `mm2+mm` in `test-backend-ops`
+  claim_corrections:
+  - claim_index: 3
+    effect: unaffected
+    note: Metal-only confirmed from the file list.
+  depends_on: []
+  dive_corrections: Confirms Metal-only. No CPU/HIP code path change; CPU was the reference in the PR own table.
+  reader_should_conclude: 'Cite as a Metal-specific defect; no action for EPYC kernels. Do not infer anything about HIP fusion from it. Optional: run mm2+mm test-backend-ops on the HIP experimental build
+    as a correctness-only check.'
+  not_read: 'linked PR #25004/#26499/#22746/vLLM threads and the unmerged local patch bodies were not fetched; only the assigned thread plus its files/review comments'
+- id: intake-2601
+  verification: dive-verified
+  read_depth: FULL
+  source_revision: GitHub REST API (issue/PR, comments, files) JSON rendered to all.txt, retrieved 2026-10-31 (https://github.com/ggml-org/llama.cpp/pull/29832)
+  source_text_path: scratch:dive-ws58-20261031/dive/w4up/all.txt
+  key_claims: &id009
+  - 'Draft PR by ngxson (base branch xsn/decision, state open, not merged, author "no intents to merge this (yet)") shows /v1/systemone can run on ordinary chat models without fine-tuning: COMMON_DECISION_TYPE_GENERIC,
+    server-built user template, answer read as the next token after an open marker U+22B2 so a single-letter label is never merged with markers; thinking disabled.'
+  - 'Reported on Gemma 4 E4B and Qwen3.5-4B (image/audio/video accepted as the model supports): invoice image invoice 1.0/pay 1.0 vs 0.999/0.996; cat image animal 1.0/pay 0.002 vs 0.995/0.234; newspaper
+    1.0 and 0.95 vs 0.998 and 0.985; audio rows only for Gemma.'
+  - 'Stated gaps: always-thinking models corrupt the logits readout; shared prompt prefix does not work yet on hybrid/SWA models; calibration not accepted. n_variants()==2 for non-score generic questions
+    (option-order permutation); score questions single-variant.'
+  - 'Stage-1-era neighbours: the real systemone API merged as a4cb4c61fd (#29818) and H2O-Lightning-4B decision model as 7e3eeee048 (#30361), both present in the local object store but NOT in our HEAD (no
+    server-decision files, grep systemone in tools/server/server-context.cpp = 0). c78113ad6c (merge-commit sha of this open PR) is absent locally; the branch head is f30811c80b (present on a remote branch).'
+  reported_results: &id010
+  - Gemma 4 E4B / Qwen3.5-4B probabilities per image/audio test (PR body table); 4 files, +126/-17 across common.h, server-context.cpp, server-decision.cpp/.h
+  claim_verdicts:
+  - claim_index: 0
+    verdict: CONFIRMED
+    evidence: PR body + patch
+  - claim_index: 1
+    verdict: CONFIRMED
+    evidence: PR body table
+  - claim_index: 2
+    verdict: CONFIRMED
+    evidence: PR body
+  - claim_index: 3
+    verdict: PARTIAL
+    evidence: local git log --all finds a4cb4c61fd and 7e3eeee048 on remote branches; ancestry vs HEAD not asserted for 29832 (open); merge shas of the two neighbours not individually ancestry-tested beyond
+      absence of server-decision files
+  claim_anchors:
+  - claim_index: 0
+    locator: PR body
+    quote: we can absolutely use any normal chat models to run a `/v1/systemone` API (no fine-tuning required)
+  - claim_index: 1
+    locator: PR body table
+    quote: invoice image | invoice 1.0, pay 1.0 | invoice 0.999, pay 0.996
+  - claim_index: 2
+    locator: PR body
+    quote: Shared prompt prefix doesn't work yet, it's a bit tricky on hybrid/swa models
+  - claim_index: 0
+    locator: server-decision.cpp hunk
+    quote: Respond with only the label of the best option, written as " DECISION_GENERIC_OPEN "label" DECISION_GENERIC_CLOSE ".";
+  claim_corrections:
+  - claim_index: 3
+    effect: narrowed
+    note: 'Do not state it is in or out of the production tree beyond: no server-decision.* files exist in our checkout.'
+  depends_on: []
+  dive_corrections: 'Adds the decision-model-agnostic route: any in-lineup chat model can be scored through the same typed-decision endpoint, giving a constrained-readout comparator without a dedicated
+    decision GGUF. It is a demo, not mergeable (no calibration, no hybrid prefix sharing).'
+  reader_should_conclude: Cite as an open draft demonstrating GENERIC typed decisions (next-token label readout with U+22B2 delimiters). Do not cite its probabilities as accuracy evidence (a handful of
+    hand-picked examples, no baseline). Needs the systemone base (a4cb4c61fd) which our tree lacks.
+  not_read: 'linked PR #25004/#26499/#22746/vLLM threads and the unmerged local patch bodies were not fetched; only the assigned thread plus its files/review comments'
+- id: intake-2602
+  verification: dive-verified
+  read_depth: FULL
+  source_revision: GitHub REST API (issue/PR, comments, files) JSON rendered to all.txt, retrieved 2026-10-31 (https://github.com/ggml-org/llama.cpp/issues/31475)
+  source_text_path: scratch:dive-ws58-20261031/dive/w4up/all.txt
+  key_claims: &id011
+  - 'Open, bug-unconfirmed issue (egehazar, filed 2026-10-31, 0 comments, no linked PR): with a hybrid decision model (tinyopenjev-for-testing Q8_0, Kev) at --parallel 4, 16 questions re-process the shared
+    prefix once per slot group because decision tasks get no checkpoint (server-context.cpp line 4286 on c6fb3b5, "make checkpoints only for completion tasks"), so recurrent state cannot be restored.'
+  - 'Reporter local fix (not submitted): checkpoints only for group parents at the end of the shared prefix, ~19 MiB (Kev-0.8B) / ~50 MiB (Kev-4B) each, needs enough --cache-ram under concurrency. Repro:
+    1254 tokens stock vs 827 with fix; sequential throughput 0.061 -> 0.234 decisions/s at 4 slots on Kev-4B (3.8x; medians of three runs, variable background load).'
+  - 'Numerical caveat: "bitwise equality is not guaranteed because different batch cuts changed one synthetic probability by about 0.007" - the ~0.007 shift is a local-fix side effect on one synthetic probability
+    in the reporter test, not an upstream stock-build defect, and no condition beyond differing batch cuts is given.'
+  - AI-assisted report; reporter offers a PR with a regression test; unconfirmed by maintainers.
+  reported_results: &id012
+  - 1254 vs 827 prompt tokens; 0.061 vs 0.234 decisions/s; checkpoint ~19 MiB (Kev-0.8B), ~50 MiB (Kev-4B); probability delta ~0.007 (issue body)
+  claim_verdicts:
+  - claim_index: 0
+    verdict: CONFIRMED
+    evidence: issue body
+  - claim_index: 1
+    verdict: CONFIRMED
+    evidence: issue body
+  - claim_index: 2
+    verdict: CONFIRMED
+    evidence: issue body sentence; scope narrowed (see correction)
+  - claim_index: 3
+    verdict: CONFIRMED
+    evidence: issue body note
+  claim_anchors:
+  - claim_index: 0
+    locator: issue body
+    quote: Decision tasks don't get a checkpoint saved, so it can't restore the hybrid model's recurrent state.
+  - claim_index: 1
+    locator: issue body
+    quote: Stock version processes 1,254 tokens, but with the local fix it processes 827.
+  - claim_index: 2
+    locator: issue body
+    quote: different batch cuts changed one synthetic probability by about `0.007`
+  - claim_index: 1
+    locator: issue body
+    quote: sequential throughput went from `0.061` to `0.234` decisions/s at 4 slots
+  claim_corrections:
+  - claim_index: 2
+    effect: narrowed
+    note: The 0.007 is attributed to the reporter fix (checkpoint-restored vs recomputed prefix => different ubatch cuts), single synthetic probability; not shown for stock. Stage-1 framing as an upstream
+      defect is wrong.
+  depends_on: []
+  dive_corrections: 'Dive corrects the task framing: the 0.007 shift is a one-probability observation under a checkpointed-prefix variant; the actual finding is the missing hybrid-state checkpoint for decision
+    tasks (throughput loss, not correctness). Same recurrent-state class as DF2-13 checkpoint/prompt-reuse.'
+  reader_should_conclude: Cite as an open, unconfirmed perf defect for hybrid decision models at np>1, with an unmerged local fix. Do not carry 0.007 as a general noise floor; carry only "batch cuts can
+    move a decision probability; measure the shift on OUR model before setting abstain thresholds".
+  not_read: 'linked PR #25004/#26499/#22746/vLLM threads and the unmerged local patch bodies were not fetched; only the assigned thread plus its files/review comments'
+new_entries:
+- id: intake-2597
+  arxiv_id: null
+  url: https://github.com/ggml-org/llama.cpp/issues/26695
+  source_type: repo
+  title: 'llama.cpp issue 26695: llama_memory_seq_rm returns true but does not restore recurrent state when rolling back an entire last decode (n_rs_seq>0)'
+  categories:
+  - speculative_decoding
+  - ssm_hybrid
+  - inference_serving
+  novelty: medium
+  relevance: high
+  discovered_via: expansion
+  expanded_from: intake-2591
+  verdict: worth_investigating
+  ingested_date: '2026-10-31'
+  authors:
+  - natemacfadden
+  key_claims: *id001
+  techniques:
+  - recurrent snapshot rollback
+  - n_rs_seq
+  reported_results: *id002
+  cross_references:
+    chapters: []
+    handoffs:
+    - handoffs/active/dflash2-block-drafter-experimental-build.md
+    - handoffs/active/speculative-decoding-mtp-refresh.md
+    experiments: []
+    intake_entries:
+    - intake-2591
+  recommended_actions:
+  - 'Add to temp-0 np>1 probe: log per verification round whether any seq_rm reached rollback >= batch length (must be zero); treat any as out-of-contract, not as contamination.'
+  credibility_score: null
+  contradicting_evidence: null
+  referenced_arxiv_ids: []
+  notes: GitHub issue; 3 comments, all read. Hardware Vulkan/Strix Halo, not our HIP/CPU paths; logic is backend-independent graph/cache code.
+  verification: stage1-unverified
+  handoffs_updated: []
+  handoffs_created: []
+  source_revision: GitHub REST API (issue/PR, comments, files) JSON rendered to all.txt, retrieved 2026-10-31
+  reader_should_conclude: 'Stage-1 unverified: do not cite.'
+- id: intake-2598
+  arxiv_id: null
+  url: https://github.com/ggml-org/llama.cpp/issues/28019
+  source_type: repo
+  title: 'llama.cpp issue 28019: qwen4exp multi-seq split replay corrupts recurrent state when rs rollback is enabled'
+  categories:
+  - speculative_decoding
+  - ssm_hybrid
+  - inference_serving
+  novelty: medium
+  relevance: high
+  discovered_via: expansion
+  expanded_from: intake-2591
+  verdict: worth_investigating
+  ingested_date: '2026-10-31'
+  authors:
+  - netmana808
+  key_claims: *id003
+  techniques:
+  - multi-seq split replay
+  - PLE conv snapshot
+  reported_results: *id004
+  cross_references:
+    chapters: []
+    handoffs:
+    - handoffs/active/dflash2-block-drafter-experimental-build.md
+    - handoffs/active/cpu-decode-roofline-program.md
+    experiments: []
+    intake_entries:
+    - intake-2591
+  recommended_actions:
+  - Run tests/test-recurrent-state-rollback (CPU, correctness-only) against our v10/experimental qwen4exp build incl. dirty-ctx subtest on the frontdoor GGUF; then slot-reuse arm of the np4 identity probe.
+  credibility_score: null
+  contradicting_evidence: null
+  referenced_arxiv_ids: []
+  notes: GitHub issue, 2 human-visible comments + stale bot, read in full. Maintainer replies referenced by the reporter are absent from the API listing.
+  verification: stage1-unverified
+  handoffs_updated: []
+  handoffs_created: []
+  source_revision: GitHub REST API (issue/PR, comments, files) JSON rendered to all.txt, retrieved 2026-10-31
+  reader_should_conclude: 'Stage-1 unverified: do not cite.'
+- id: intake-2599
+  arxiv_id: null
+  url: https://github.com/ggml-org/llama.cpp/pull/30408
+  source_type: repo
+  title: 'llama.cpp PR 30408: model: fix vllm d3 multi seq case (keep non-causal sequences whole in one ubatch)'
+  categories:
+  - inference_serving
+  - ssm_hybrid
+  novelty: low
+  relevance: medium
+  discovered_via: expansion
+  expanded_from: intake-2595
+  verdict: worth_investigating
+  ingested_date: '2026-10-31'
+  authors:
+  - ngxson
+  key_claims: *id005
+  techniques:
+  - split_seq vs split_equal
+  reported_results: *id006
+  cross_references:
+    chapters: []
+    handoffs:
+    - handoffs/active/typed-decision-plane.md
+    experiments: []
+    intake_entries:
+    - intake-2595
+  recommended_actions:
+  - 'd1 screen build: include cbe28bb3 only if the screened decision model is non-causal/embedding at np>1 (state the rule; check model attention in GGUF).'
+  credibility_score: null
+  contradicting_evidence: null
+  referenced_arxiv_ids: []
+  notes: PR files, patch, bodies, comments (none) read in full.
+  verification: stage1-unverified
+  handoffs_updated: []
+  handoffs_created: []
+  source_revision: GitHub REST API (issue/PR, comments, files) JSON rendered to all.txt, retrieved 2026-10-31
+  reader_should_conclude: 'Stage-1 unverified: do not cite.'
+- id: intake-2600
+  arxiv_id: null
+  url: https://github.com/ggml-org/llama.cpp/pull/30100
+  source_type: repo
+  title: 'llama.cpp PR 30100: metal: fix MUL_MAT+ADD fusion when the residual is itself a MUL_MAT'
+  categories:
+  - inference_serving
+  - hardware_optimization
+  novelty: low
+  relevance: low
+  discovered_via: expansion
+  expanded_from: intake-2594
+  verdict: already_integrated
+  ingested_date: '2026-10-31'
+  authors:
+  - nyo16
+  key_claims: *id007
+  techniques:
+  - Metal fusion residual selection
+  reported_results: *id008
+  cross_references:
+    chapters: []
+    handoffs:
+    - handoffs/active/typed-decision-plane.md
+    experiments: []
+    intake_entries:
+    - intake-2594
+  recommended_actions:
+  - 'Optional cheap correctness check: test-backend-ops -o MUL_MAT_ADD (mm2+mm) on CPU and HIP after import; skip otherwise.'
+  credibility_score: null
+  contradicting_evidence: null
+  referenced_arxiv_ids: []
+  notes: PR comments and review comment read (style nit only).
+  verification: stage1-unverified
+  handoffs_updated: []
+  handoffs_created: []
+  source_revision: GitHub REST API (issue/PR, comments, files) JSON rendered to all.txt, retrieved 2026-10-31
+  reader_should_conclude: 'Stage-1 unverified: do not cite.'
+- id: intake-2601
+  arxiv_id: null
+  url: https://github.com/ggml-org/llama.cpp/pull/29832
+  source_type: repo
+  title: 'llama.cpp PR 29832 (draft): server: model-agnostic implementation of the systemone/decision API'
+  categories:
+  - routing_intelligence
+  - inference_serving
+  novelty: high
+  relevance: high
+  discovered_via: expansion
+  expanded_from: intake-2593
+  verdict: worth_investigating
+  ingested_date: '2026-10-31'
+  authors:
+  - ngxson
+  key_claims: *id009
+  techniques:
+  - next-token label readout
+  - option-order permutation variants
+  reported_results: *id010
+  cross_references:
+    chapters: []
+    handoffs:
+    - handoffs/active/typed-decision-plane.md
+    experiments: []
+    intake_entries:
+    - intake-2593
+  recommended_actions:
+  - 'TD-23: add a GENERIC-readout arm (worker/frontdoor chat model, enable_thinking off, ⊲label⊳ readout) beside the dedicated decision backends once the base is imported.'
+  credibility_score: null
+  contradicting_evidence: null
+  referenced_arxiv_ids: []
+  notes: Full diff, body read; no comments and no review comments exist.
+  verification: stage1-unverified
+  handoffs_updated: []
+  handoffs_created: []
+  source_revision: GitHub REST API (issue/PR, comments, files) JSON rendered to all.txt, retrieved 2026-10-31
+  reader_should_conclude: 'Stage-1 unverified: do not cite.'
+- id: intake-2602
+  arxiv_id: null
+  url: https://github.com/ggml-org/llama.cpp/issues/31475
+  source_type: repo
+  title: 'llama.cpp issue 31475: systemone reads shared prefix again for each question group (np>1, hybrid decision model)'
+  categories:
+  - inference_serving
+  - ssm_hybrid
+  - routing_intelligence
+  novelty: medium
+  relevance: high
+  discovered_via: expansion
+  expanded_from: intake-2595
+  verdict: new_opportunity
+  ingested_date: '2026-10-31'
+  authors:
+  - egehazar
+  key_claims: *id011
+  techniques:
+  - group-parent recurrent checkpoint
+  reported_results: *id012
+  cross_references:
+    chapters: []
+    handoffs:
+    - handoffs/active/typed-decision-plane.md
+    - handoffs/active/dflash2-block-drafter-experimental-build.md
+    experiments: []
+    intake_entries:
+    - intake-2595
+  recommended_actions:
+  - 'd1 screen: run decision models at np=1 (or accept prefix recompute) until an upstream fix lands; or port the group-parent checkpoint fix; pin n_ubatch/n_batch/np in the decision receipt and measure
+    probability delta across two batch cuts.'
+  credibility_score: null
+  contradicting_evidence: null
+  referenced_arxiv_ids: []
+  notes: Issue body only (0 comments at fetch time).
+  verification: stage1-unverified
+  handoffs_updated: []
+  handoffs_created: []
+  source_revision: GitHub REST API (issue/PR, comments, files) JSON rendered to all.txt, retrieved 2026-10-31
+  reader_should_conclude: 'Stage-1 unverified: do not cite.'
+ledger:
+- row: W4UP-1
+  entries:
+  - intake-2597
+  - intake-2598
+  action: 'Temp-0 np>1 token-identity probe on :8070 (MTP np4) and :8083 (DFlash2 np4): per slot compare against an np=1 cold run of the same prompt AND the same np4 server with speculation off; include
+    (i) mixed spec/non-spec interleaving, (ii) slot reuse: slot k serves conversation A, then unrelated B (dirty-ctx), B vs cold B, (iii) log per round draft_n, accepted, rollback length vs batch length.
+    Classify first divergence near-tie (top-2 margin small) vs degenerative; zero tolerance only for degenerative.'
+  grounding: dflash2-block-drafter-experimental-build.md DF2-12 (np>1 GDN parity arm, ~line 551); common/common.h:390-394 (need_n_rs_seq arms n_rs_seq=draft.n_max for MTP/EAGLE3/DFLASH/DSPARK); src/llama-memory-hybrid.cpp:80-87
+    (trailing n_rs_seq+1 tokens per seq kept in one ubatch); src/llama-memory-recurrent.cpp:190-200
+  owner: handoffs/active/dflash2-block-drafter-experimental-build.md
+  posture: cheap-screen-now
+  benefit: correctness of np>1 speculative serving; token identity must stay except near-ties
+  decision_rule: 'PASS if 0 degenerative divergences over >=N mixed prompts per server and dirty-ctx arm identical to cold; any degenerative divergence in slot-reuse arm only => file as #28019-class defect
+    and run test-recurrent-state-rollback; any in the interleave arm => escalate as contamination'
+  reason: '#26695 rules out anchor-token rollback as a cause (spec never removes the anchor); #28019 leaves slot-reuse under MTP on qwen4exp un-adjudicated'
+- row: W4UP-2
+  entries:
+  - intake-2598
+  action: Run tests/test-recurrent-state-rollback (CPU, correctness only, no quiet host needed) on our qwen4exp-capable experimental binary with the frontdoor GGUF; require dirty-ctx and multi-seq split
+    replay both pass. Prove binary freshness vs commit 0771238438 mtime first.
+  grounding: tests/test-recurrent-state-rollback.cpp:212 (dirty-ctx check); src/models/qwen4exp.cpp:1263 build_conv_state_at; git log 0771238438 (port of 0eadefebd)
+  owner: handoffs/active/dflash2-block-drafter-experimental-build.md
+  posture: primitive-now
+  benefit: rules in/out the allegation that post-#28123 restore is incomplete
+  decision_rule: fail => treat MTP np>1 slot reuse on qwen4exp as unsafe and block the np4 probe from being read as a pass
+  reason: cheap, deterministic, unit-level
+- row: W4UP-3
+  entries:
+  - intake-2602
+  - intake-2601
+  - intake-2599
+  - intake-2600
+  action: 'd1 decision-model screen build must include a4cb4c61fd (#29818 systemone API) and 7e3eeee048 (#30361) if H2O-Lightning-4B is screened; cbe28bb3 (#30408) only for non-causal/embedding-mode decision
+    models at np>1; 7e8324f5 (#30100) is Metal-only and NOT needed (optionally run its mm2+mm backend-op on HIP/CPU); #29832 and the #31475 local fix are unmerged: do not depend on them. Build on llama.cpp-experimental
+    from fresh production tip; none of these shas are ancestors of v10 ffc1bac82.'
+  grounding: 'typed-decision-plane.md TD-23 (~line 599); local check: no tools/server/server-decision.* in /mnt/raid0/llm/llama.cpp; merge-base --is-ancestor exit 1 for cbe28bb3 and 7e8324f5'
+  owner: handoffs/active/typed-decision-plane.md
+  posture: cheap-screen-now
+  benefit: decision screen runs on supported endpoint; candidate validated as a whole
+  decision_rule: 'screen uses np=1 per decision server unless #31475 fix imported; receipt pins np, n_batch, n_ubatch and records probability delta across two batch cuts; abstain thresholds not set closer
+    than the measured delta'
+  reason: batch-cut sensitivity is the only correctness-relevant finding; the rest are inclusion constraints
+- row: W4UP-4
+  entries:
+  - intake-2601
+  action: Add a GENERIC-readout arm to TD-23 (any lineup chat model, thinking off, U+22B2 label readout) as a comparator to dedicated decision backends after the systemone base is in the screen build.
+  grounding: typed-decision-plane.md TD-23; PR 29832 server-decision.cpp init_generic
+  owner: handoffs/active/typed-decision-plane.md
+  posture: monitor
+  benefit: no dedicated GGUF needed; compare against constrained incumbent readout
+  decision_rule: promote only if held-out calibration (not these demo rows) beats incumbent; PR is draft and lacks calibration/hybrid prefix sharing
+  reason: open draft, no baseline
+- row: W4UP-5
+  entries:
+  - intake-2602
+  action: Offer/track the group-parent checkpoint fix for hybrid decision models; evaluate by prompt-token count (1254 vs 827 shape) on our model before adopting.
+  grounding: server-context.cpp line cited in issue (c6fb3b5, not our tree); DF2-13 checkpoint/prompt-reuse test
+  owner: handoffs/active/typed-decision-plane.md
+  posture: monitor
+  benefit: up to ~3.8x decisions/s at np4 on reporter hardware (Kev-4B)
+  decision_rule: adopt only after upstream maintainer acceptance or our own identical-answer + delta measurement
+  reason: unconfirmed single-reporter result
+dive_surfaced_sources:
+- source: https://github.com/ggml-org/llama.cpp/pull/25004
+  settles: 'incidental fix of the whole-batch rollback state (referenced by #26695)'
+  bears_on: intake-2597
+  recommend: 'decline: low value, anchor never removed by spec'
+- source: https://github.com/ggml-org/llama.cpp/pull/28123
+  settles: qwen4exp per-slot conv snapshots (already ported as 0771238438)
+  bears_on: intake-2598
+  recommend: ingest-and-dive
+- source: https://github.com/ggml-org/llama.cpp/pull/30361
+  settles: H2O-Lightning-4B decision model support (sha 7e3eeee048)
+  bears_on: intake-2602
+  recommend: ingest-and-dive
+artifact_audit: clean

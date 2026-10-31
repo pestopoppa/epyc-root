@@ -820,3 +820,9 @@ Orchestrator and stack side (workspace-ec; items are linked here as they land):
 ### Retained launcher qualification checkpoints — 2026-10-31
 
 - [x] **UFH14-A4a exact middle-truncated task restoration launcher** — Exact opt-in restoration with ambiguity refusals passed two-arm reduced same-entry normal/activeSTOP75, writer/consumer/drain and admission before publication; C5 successor identity is explicit. No original27B cache/performance result or historical-image equivalence. ✅ 2026-10-31 Evidence: `/mnt/raid0/llm/tmp/refactor-a4a-prefix-20261031/R11-QUALIFICATION.json`. [no-belief: launcher qualification only; scientific parent remains open]
+
+### Research intake 2026-10-31 — ws58 batch (intake-2545..2602)
+
+Operator-approved 2026-10-31 (plan revision 2, `research/intake-stage3-plan-2026-10-31-ws58.md`, sha256 `043e502133cae214175ea3f2a395f575e6ca13b9f3ee058525ed020264ab5012`; relayed by the ws58 coordinator; budget approved: about 13 MI210-hours for the drafter pilot, 6-9 engineer-weeks for the race checker, the 95.5 GB ThinkingCap download; D1 confirmed: in-weights calculator declined, GPU reason recorded on intake-2550/2574; D2 approved: scratch upstream builds are measurement instruments only). Trigger records below are prose with no checkbox until a reviewed session confirms their condition.
+
+- [ ] **UFH14-TOOLS-1 — Count and cap the model-visible tool surface per role (intake-2565#record).** Enumerate what each role's prompt actually advertises (about 55 REPL globals plus about 55 registry tools behind TOOL/CALL) and log the count per role and per turn. Frontdoor turns called a tool in only 3.8-4.9% of turns (this handoff, line 670), so a large advertised surface costs prompt tokens for little use. Propose a per-role allowlist with deferred loading for the rest, behind a flag, for a later A/B.

@@ -725,3 +725,9 @@ Each one turns a practice that was missing on 2026-09-23 into a standing gate.
   - land it between DS41-C95 arm pairs, never inside one;
   - update the field-off golden test (`5cae6c6b`) in the same commit.
   - Acceptance: the root block names the default form, and the golden test pins the new bytes.
+
+### Research intake 2026-10-31 — ws58 batch (intake-2545..2602)
+
+Operator-approved 2026-10-31 (plan revision 2, `research/intake-stage3-plan-2026-10-31-ws58.md`, sha256 `043e502133cae214175ea3f2a395f575e6ca13b9f3ee058525ed020264ab5012`; relayed by the ws58 coordinator; budget approved: about 13 MI210-hours for the drafter pilot, 6-9 engineer-weeks for the race checker, the 95.5 GB ThinkingCap download; D1 confirmed: in-weights calculator declined, GPU reason recorded on intake-2550/2574; D2 approved: scratch upstream builds are measurement instruments only). Trigger records below are prose with no checkbox until a reviewed session confirms their condition.
+
+- *Intake knowledge note, K5, row W2KERN-2 (intake-2588#record):* Compare AK candidate generation as plain multi-turn refinement vs agent-harness mode on token cost per accepted keep (PTXBench: agent harness cost 3.3-5.1x tokens and was worse on attention). Use existing AK run logs only; no new compute.

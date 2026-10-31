@@ -367838,11 +367838,15 @@
   referenced_arxiv_ids: []
   notes: Landing page is a JS app shell; only static text read. Relevance provisional pending the repo check.
   verification: stage1-unverified
-  handoffs_updated: []
+  handoffs_updated:
+  - conversation-stack.md
   handoffs_created: []
   source_revision: page sha256-12 bf1c17a96957, retrieved 2026-10-31
   reader_should_conclude: 'Stage-1 unverified: do not cite any figure, metric or mechanism from this entry until a Stage-2 dive promotes
     it.'
+  integration_disposition: knowledge_only
+  disposition_evidence:
+  - PRE-2545 -> K4
 - id: intake-2546
   arxiv_id: null
   url: https://hazyresearch.stanford.edu/blog/2026-10-12-ncm
@@ -367893,7 +367897,8 @@
   notes: 'Blog only; paper linked from the page (2610.14162, observed in page HTML) is an expansion seed. Not read in dive: Blog interactive
     figures (images).'
   verification: dive-verified
-  handoffs_updated: []
+  handoffs_updated:
+  - dflash2-block-drafter-experimental-build.md
   handoffs_created: []
   source_revision: hazyresearch.stanford.edu/blog/2026-10-12-ncm HTML sha256-12 a551de131a57 of converted text, retrieved 2026-10-31;
     code github.com/HazyResearch/ncm @ c702742
@@ -367926,6 +367931,11 @@
     why: Blog speedups restate the paper numbers; if the paper timing setup changes, these change.
   dive_corrections: '2026-10-31 (Stage 2, wave 1): Blog is a restatement of intake-2568 with the same numbers; no independent corroboration.
     Confirms filing; adds hardware and baseline class.'
+  integration_disposition: monitor
+  disposition_evidence:
+  - LOOP-6 -> M1
+  - PRE-2546 -> M1
+  - 'W5GPU-8 -> decline: no NCM checkpoint shares a served vocabulary and no acceptance number exists; reopen on such a releas'
 - id: intake-2547
   arxiv_id: '2610.40325'
   url: https://arxiv.org/abs/2610.40325
@@ -367987,7 +367997,10 @@
   notes: 'Meta authors; v1 only at fetch time. Not read in dive: Appendices E-I per-dataset tables/figure data (numeric values are in
     figures; only prose read); reference list.'
   verification: dive-verified
-  handoffs_updated: []
+  handoffs_updated:
+  - autokernel-champion-aggregate.md
+  - gpu-acceleration-path.md
+  - gpu-serving-tie-in-program.md
   handoffs_created: []
   source_revision: arXiv:2610.40325v1 HTML (latest; abs page lists v1 only) sha256-12 9121a6abc5b0 of converted text, retrieved 2026-10-31
   reader_should_conclude: Cite for design guidance (full-loop vs middle-block, PLT needs normalized current-token re-injection) and
@@ -368037,6 +368050,15 @@
   dive_corrections: '2026-10-31 (Stage 2, wave 1): Confirms the stage-1 filing. Adds the scope limits (dense, <=1B, no MoE) that bound
     any transfer to our MoE/large served models, and the authors own statement that PLT+speculative decoding is untested. reported_results
     was empty at stage 1; the paper is a likelihood/BPB study, with no serving numbers.'
+  integration_disposition: integrated
+  disposition_evidence:
+  - LOOP-1 -> P10 / GPU-LOOP-1
+  - LOOP-2 -> P10 / GPU-PLT-1
+  - LOOP-3 -> P9 / CH-34
+  - LOOP-4 -> P10 / GPU-LOOP-1 / GPU-LOOP-2
+  - PRE-2547 -> P10 / GPU-LOOP-1
+  - W5GPU-1 -> P10 / GPU-LOOP-1
+  - W5GPU-3 -> P10 / GPU-LOOP-2
 - id: intake-2548
   arxiv_id: '2610.38331'
   url: https://arxiv.org/abs/2610.38331
@@ -368118,7 +368140,8 @@
   notes: 'Single author; companion code intake-2549. Not read in dive: Figures (image-only in HTML: Fig. 1 loss curve, 3-7 plots); Algorithm
     1 body (App. A) read only via the repo''s equivalent loss.py; reference list beyond what §2/§7 cite.'
   verification: dive-verified
-  handoffs_updated: []
+  handoffs_updated:
+  - dflash2-block-drafter-experimental-build.md
   handoffs_created: []
   source_revision: arXiv:2610.38331v1 HTML sha256-12 60d4b7009aa0, retrieved 2026-10-31 (abs page lists v1 only)
   reader_should_conclude: 'Cite intake-2548#03 (Table 2 text/table consistency), #05 (KL-MTP ~= Soft-MTP on spec decoding, so the gain
@@ -368231,6 +368254,19 @@
     trick that gets the exact KL gradient through hard-label fused CE kernels from a d-wide teacher hidden, without V-wide teacher logits.
     2026-10-31 (Stage-2 close-out): dive-surfaced sources DECLINED: arXiv 2603.23911 and arXiv 2602.06019 (MTP self-distillation; same
     axis as the MTP-2 probe arm C, no stack decision depends on them).'
+  integration_disposition: integrated
+  disposition_evidence:
+  - MTP-1 -> P2 / DF2-FT-1
+  - MTP-2 -> P2 / DF2-FT-1
+  - MTP-3 -> K1
+  - MTP-4 -> P2 / DF2-FT-1
+  - 'MTP-5 -> decline: Soft-MTP as a pretraining objective needs trunk training, which this stack does not do.'
+  - PRE-2548 -> P2 / DF2-FT-1
+  - W5FT-1 -> P2 / DF2-FT-1
+  - W5FT-2 -> P2 / DF2-FT-1
+  - W5FT-3 -> P2 / DF2-FT-1
+  - W5FT-4 -> P2 / DF2-FT-1
+  - W5FT-5 -> P2 / DF2-FT-1
 - id: intake-2549
   arxiv_id: null
   url: https://github.com/JaydenTeoh/Soft-MTP
@@ -368283,7 +368319,8 @@
     beyond lines 240-300; src/train.py beyond 380-460; data/, eval/ (except acceptance.py, eval_spec.py headers), decoding/sequential.py
     body; requirements; HF checkpoints not fetched; tests not executed (no-compute rule).'
   verification: dive-verified
-  handoffs_updated: []
+  handoffs_updated:
+  - dflash2-block-drafter-experimental-build.md
   handoffs_created: []
   source_revision: github.com/JaydenTeoh/Soft-MTP @ 4e1cf66 (git clone --depth 1, 2026-10-31)
   reader_should_conclude: Use loss.py:145-180 as the reference implementation if we ever train a head or drafter that projects through
@@ -368343,6 +368380,13 @@
     (1) There is a freeze_backbone mode, the exact setting we would use. (2) A fp64 test proves soft_mtp == direct_kl at heads and trunk
     and differs only at W, so with W frozen the two objectives coincide. (3) Acc. Len. excludes the bonus token and is measured under
     speculative sampling. The bf16 cast of s_k slightly breaks fp64-exactness in mixed-precision training (<=0.15% at T=2048).'
+  integration_disposition: integrated
+  disposition_evidence:
+  - MTP-1 -> P2 / DF2-FT-1
+  - MTP-2 -> P2 / DF2-FT-1
+  - PRE-2549 -> P2 / DF2-FT-1
+  - W5FT-1 -> P2 / DF2-FT-1
+  - W5FT-4 -> P2 / DF2-FT-1
 - id: intake-2550
   arxiv_id: null
   url: https://divagr.com/blog/qwenputer
@@ -368405,7 +368449,8 @@
     in dive: Blog images/charts (alt text only); Hugging Face model cards; rv-store and npu branches; the two follow-up blogs (hidden
     reasoning, oversight tools).'
   verification: dive-verified
-  handoffs_updated: []
+  handoffs_updated:
+  - autokernel-all-devices-all-dimensions.md
   handoffs_created: []
   source_revision: blog divagr.com/blog/qwenputer (22 Oct 2026) raw HTML sha256-12 57800c9c1fa1, retrieved 2026-10-31; cross-read against
     repo divagr18/qwenputer @ bec1a0c
@@ -368469,7 +368514,15 @@
     as text; the visible inconsistency is the NUPA row attribution. In the v2 re-run the Python-tool arm is the firmware on a reference
     bridge, not a Python interpreter, so the DeepMind comparison shows equal-tool-semantics parity, not an in-weights advantage over
     an external tool. 2026-10-31 (Stage-2 close-out): dive-surfaced sources DECLINED: arXiv 2102.11174 Schlag et al. (fast-weight background
-    theory; no actionable beyond MEM-1).'
+    theory; no actionable beyond MEM-1). 2026-10-31 (Stage 4, operator D1): the in-weights calculator stays declined for serving on
+    the GPU as well as the CPU: chip tokens run serially (0.5-1 s per call, median 242 s per long division on an L4), text tokens cost
+    about twice the weight bytes, and accuracy only ties a tool call.'
+  integration_disposition: integrated
+  disposition_evidence:
+  - MEM-1 -> P3 / AKX-ALL-31.GDN
+  - 'MEM-3 -> decline: re-priced on the GPU, the in-weights calculator still loses: chip tokens are serial (0.5-1 s per call'
+  - PRE-2550 -> P3 / AKX-ALL-31.GDN
+  - 'W5GPU-7 -> decline: same GPU re-pricing as the calculator row; serial chip tokens dominate on any device.'
 - id: intake-2551
   arxiv_id: '2609.40316'
   url: https://arxiv.org/abs/2609.40316
@@ -368523,7 +368576,9 @@
   referenced_arxiv_ids: []
   notes: 'Meta authors. Not read in dive: Appendices B-D numeric fitting tables; bootstrap results.'
   verification: dive-verified
-  handoffs_updated: []
+  handoffs_updated:
+  - cpu-decode-roofline-program.md
+  - gpu-acceleration-path.md
   handoffs_created: []
   source_revision: arXiv:2609.40316v1 HTML sha256-12 d5d0e3668de7 of converted text, retrieved 2026-10-31
   reader_should_conclude: Cite for the scaling-law form and the sparsity-x-recurrence interaction. Do NOT cite for any deployment-efficiency
@@ -368567,6 +368622,13 @@
     the paper says nothing about decode bandwidth. My arithmetic (not in paper): with independent per-pass routing, a LoopMoE at R=5
     can touch up to R x the active-expert bytes of one pass, so bytes per token rise while total stored bytes fall (1.3B vs 2.9B); whether
     this wins on EPYC depends on route overlap across passes, which the paper does not measure.'
+  integration_disposition: integrated
+  disposition_evidence:
+  - LOOP-4 -> P10 / GPU-LOOP-1 / GPU-LOOP-2
+  - 'LOOP-5 -> decline: no looped-MoE checkpoint or code is released, and on the GPU looping a MoE multiplies expert byte rea'
+  - PRE-2551 -> K2
+  - W5GPU-1 -> P10 / GPU-LOOP-1
+  - 'W5GPU-6 -> decline: no looped-MoE checkpoint or code is released; reopen on a weights release.'
 - id: intake-2552
   arxiv_id: null
   url: https://huggingface.co/LiquidAI/LFM3-Audio-2B
@@ -368622,7 +368684,8 @@
   referenced_arxiv_ids: []
   notes: 'All numbers vendor-measured. Not read in dive: Fine-tuning notebooks; liquid.ai/blog/lfm3 (not fetched); weights (forbidden).'
   verification: dive-verified
-  handoffs_updated: []
+  handoffs_updated:
+  - conversation-stack.md
   handoffs_created: []
   source_revision: HF LiquidAI/LFM3-Audio-2B @0295e413 (lastModified 2026-10-31T00:51Z), raw README sha256-12 90a0abb9e3e4, retrieved
     2026-10-31
@@ -368675,6 +368738,11 @@
   dive_corrections: '2026-10-31 (Stage 2, wave 1): Stage 1 filing confirmed. Added: English-only voice chat/LiveASR, concrete table
     numbers showing the model is not the ASR or tool-call leader, TTFT 50 ms is unqualified by hardware. The WER metric is ESB average,
     not comparable with our FLEURS-based whisper anchor (3.37 percent, n=1870 words).'
+  integration_disposition: integrated
+  disposition_evidence:
+  - SPEECH-1 -> P4 / CS-8.STT8
+  - SPEECH-2 -> M4
+  - PRE-2552 -> P4 / CS-8.STT8
 - id: intake-2553
   arxiv_id: null
   url: https://huggingface.co/LiquidAI/d1-Omni-2B
@@ -368735,7 +368803,9 @@
   notes: 'Vendor-run boards. Not read in dive: Open d1 blog post and LFM3 blog (HTTP 200 for blog only; not read), LFM Open License
     text, d1-2B and d1-3B cards (existence/updated date via API only), .eval_results yaml.'
   verification: dive-overturned
-  handoffs_updated: []
+  handoffs_updated:
+  - conversation-stack.md
+  - typed-decision-plane.md
   handoffs_created: []
   source_revision: HF LiquidAI/d1-Omni-2B model card HTML sha256-12 6e403497c50c plus LiquidAI/d1-Omni-2B-GGUF card (lastModified 2026-10-28),
     retrieved 2026-10-31
@@ -368810,6 +368880,12 @@
     d1-2B and d1-3B that are not in the index and beat Omni on text. All scores are vendor-reported, none independently replicated here.
     2026-10-31 (second reader): main dropped anchors judged not to support their claim, or narrowed the claim wording to what the anchor
     supports.'
+  integration_disposition: integrated
+  disposition_evidence:
+  - AGENT-12 -> P5 / TD-23.D1
+  - AGENT-13 -> M4
+  - AGENT-14 -> P5 / TD-23.D1
+  - PRE-2553 -> P5 / TD-23.D1
 - id: intake-2554
   arxiv_id: null
   url: https://huggingface.co/LiquidAI/LFM3-Omni-2B
@@ -368862,7 +368938,8 @@
   referenced_arxiv_ids: []
   notes: 'All numbers vendor-measured. Not read in dive: Vision/video usage code samples in the card body (skimmed); weights.'
   verification: dive-verified
-  handoffs_updated: []
+  handoffs_updated:
+  - conversation-stack.md
   handoffs_created: []
   source_revision: HF LiquidAI/LFM3-Omni-2B @5797d07c (lastModified 2026-10-28T23:16Z), raw README sha256-12 2574663e12ee, retrieved
     2026-10-31
@@ -368909,6 +368986,11 @@
   depends_on: []
   dive_corrections: '2026-10-31 (Stage 2, wave 1): Confirmed. Added exact rows and the cross-card finding that Omni underperforms Audio
     on VoiceBench/tool calling.'
+  integration_disposition: integrated
+  disposition_evidence:
+  - SPEECH-1 -> P4 / CS-8.STT8
+  - SPEECH-2 -> M4
+  - PRE-2554 -> M4
 - id: intake-2555
   arxiv_id: '2609.36800'
   url: https://arxiv.org/abs/2609.36800
@@ -368994,7 +369076,10 @@
     HTML, dropped. Not read in dive: Figures 4/5 per-kernel Pareto data (image-only), App. A beyond the six examples (all prose read),
     PTX Gym per-kernel files other than matvec/silu/adversarial, and the bundled CharlyCst/volta submodule.'
   verification: dive-verified
-  handoffs_updated: []
+  handoffs_updated:
+  - agentic-rocm-kernel-authoring.md
+  - autokernel-all-devices-all-dimensions.md
+  - rocm-verify-profile-backend.md
   handoffs_created: []
   source_revision: arXiv:2609.36800v1 HTML sha256-12 4a3bd2eee5d9 (abs page lists v1 only), retrieved 2026-10-31
   reader_should_conclude: Cite Table 2 for "a formal gate restricted to verifier-supported features costs 1.4-4x on tensor-core kernels".
@@ -369095,6 +369180,15 @@
     (TCB 42 to 60 kLoC). The paper''s stress-input differential tester is not visible in the released PTX Gym, which uses plain randn/rand
     with fixed seed 42 and rtol=atol up to 1e-1 per kernel. 2026-10-31 (Stage-2 close-out): dive-surfaced sources DECLINED: arXiv 2608.12004
     RealisticTritonBench (already cited as adjacent contradicting evidence; title verified).'
+  integration_disposition: integrated
+  disposition_evidence:
+  - KERN-1 -> P11 / RVP-RACE-1
+  - KERN-3 -> P3 / AKX-ALL-31.EDGE
+  - KERN-4 -> P3 / AKX-ALL-31.QDEC
+  - KERN-6 -> P3 / RVP-CTR-1
+  - KERN-7 -> P11 / C5-ISA-1
+  - KERN-8 -> P11 / C5-ISA-2
+  - PRE-2555 -> P3 / AKX-ALL-31.EDGE
 - id: intake-2556
   arxiv_id: null
   url: https://github.com/francois141/triton_ai_compiler
@@ -369154,7 +369248,10 @@
     utils/traces.py, utils/cost.py, providers.py, skills submodules (ptx_skill, ncu-report-skill), per-kernel files beyond matvec/silu/adversarial,
     ptx_gym sanitizer.py/ncu.py, CharlyCst/volta.'
   verification: dive-verified
-  handoffs_updated: []
+  handoffs_updated:
+  - agentic-rocm-kernel-authoring.md
+  - autokernel-all-devices-all-dimensions.md
+  - rocm-verify-profile-backend.md
   handoffs_created: []
   source_revision: github.com/francois141/triton_ai_compiler @6a00d12 (README sha256-12 e1af8dfdd2a9, matches stage-1); ptx_gym submodule
     francois141/triton_ptx @aa634db (pinned by gitlink); retrieved 2026-10-31
@@ -369276,6 +369373,14 @@
     elements of CTA 0 and pattern-matches "EQUIVALENT", so it is not a full proof in the released harness. The repo has no license in
     its tree (not checked beyond the file list). 2026-10-31 (Stage-2 close-out): dive-surfaced sources DECLINED: github.com/CharlyCst/volta
     (PTX Gym''s bundled Volta fork; bears only on an NVIDIA-side claim we do not cite).'
+  integration_disposition: integrated
+  disposition_evidence:
+  - KERN-5 -> P3 / AKX-ALL-31.EDGE
+  - KERN-6 -> P3 / RVP-CTR-1
+  - KERN-7 -> P11 / C5-ISA-1
+  - KERN-8 -> P11 / C5-ISA-2
+  - KERN-9 -> K5
+  - PRE-2556 -> P3 / RVP-CTR-1
 - id: intake-2557
   arxiv_id: null
   url: https://github.com/francois141/ptx_verifier
@@ -369328,7 +369433,8 @@
     the volta_pipeline equivalence.rs excerpt and the volta_amd_analysis lower/README; ai_compiler_kernels contents; tests; volta_trainium_analysis
     beyond its README.'
   verification: dive-verified
-  handoffs_updated: []
+  handoffs_updated:
+  - rocm-verify-profile-backend.md
   handoffs_created: []
   source_revision: github.com/francois141/ptx_verifier @a39292a (README sha256-12 a22f14e5f2a4, matches stage-1), retrieved 2026-10-31
   reader_should_conclude: Cite as a best-effort, not sound, race/deadlock/equivalence checker for PTX, and as an MIT scaffold for an
@@ -369391,6 +369497,13 @@
     ACCEPT). The PTX Gym wrapper in intake-2556 nonetheless passes --sample 4 and matches "EQUIVALENT" lines, and it bundles a different
     fork (CharlyCst/volta). Also added the existence and tiny scope of the AMDGCN (gfx950) and Trainium frontends. This is the only
     public starting point found for a Volta-class AMD checker, and it is a scaffold, not a tool.'
+  integration_disposition: integrated
+  disposition_evidence:
+  - KERN-2 -> P11 / RVP-RACE-2
+  - KERN-11 -> P11 / RVP-RACE-2
+  - PRE-2557 -> P11 / RVP-RACE-1
+  - W5VERIF-1 -> P11 / RVP-RACE-2
+  - W5VERIF-4 -> P11 / RVP-RACE-2
 - id: intake-2558
   arxiv_id: null
   url: https://github.com/fabio-rovai/open-ontologies
@@ -369444,7 +369557,8 @@
     in dive: Lean sources (lean/OOCert/*.lean, 13,970 lines), Rust reasoner source, benchmark/, aeneas/rocq/isabelle dirs, the ~25 decision
     records beyond 0002, the Python port, case studies.'
   verification: dive-verified
-  handoffs_updated: []
+  handoffs_updated:
+  - vidya-belief-substrate-program.md
   handoffs_created: []
   source_revision: github.com/fabio-rovai/open-ontologies @ cefe5997d04553ac495873e8aa1046c1d6b85f7d (main, 2026-10-30); depth-1 clone;
     MIT
@@ -369535,6 +369649,12 @@
     files it is handed; five named blind spots; completeness unchecked) and that the checker has no code shared with the engine but
     a large trusted base underneath (Lean kernel, oxrdf/oxiri escaping, interner), which the repo itself lists as trusted. The author
     also states the headline numbers are not the part that survives examination: the forged-proof refusal is.'
+  integration_disposition: integrated
+  disposition_evidence:
+  - MEM-4 -> P7 / VB-CERT-1
+  - 'MEM-5 -> decline: the handoff index check already re-derives and compares on every run, so a certificate layer adds not'
+  - MEM-6 -> P7 / VB-CERT-1
+  - PRE-2558 -> P7 / VB-CERT-1
 - id: intake-2559
   arxiv_id: '2510.03215'
   url: https://arxiv.org/abs/2510.03215
@@ -369599,7 +369719,8 @@
   notes: 'A Stage-1 subagent attached arXiv 2610.14162 as a reference; impossible for a 2026-03 revision and absent from the HTML, dropped.
     Not read in dive: Appendix A.4.4 example outputs, Tables 5-7 and 9-14 individual cell values (read via prose), reference list.'
   verification: dive-verified
-  handoffs_updated: []
+  handoffs_updated:
+  - kv-prefix-fork-and-paged-attention.md
   handoffs_created: []
   source_revision: arXiv:2510.03215v2 HTML sha256-12 3a7631811962, retrieved 2026-10-31 (v2 last revised 2 Mar 2026)
   reader_should_conclude: 'Cite C2C as a trained, per-pair, small-scale research result: +3-5 points over text handoff on MC QA at 0.6B
@@ -369685,6 +369806,12 @@
     the Sharer DECODE of the handoff text (80 tokens/1312 ms in Table 3); (2) assumes standard per-token K/V in every layer (Qwen/Llama
     dense); no hybrid-recurrent-state treatment; (3) accuracy tables are small-model MC QA (MMLU-Redux, OpenBook, ARC-C, C-Eval, LongBench),
     no agentic/coding/tool tasks except one GSM8K two-agent flow in the appendix.'
+  integration_disposition: knowledge_only
+  disposition_evidence:
+  - AGENT-5 -> M3
+  - AGENT-6 -> K3
+  - AGENT-7 -> M3
+  - PRE-2559 -> M3
 - id: intake-2560
   arxiv_id: null
   url: https://github.com/two-delta/DCOCO
@@ -369735,7 +369862,8 @@
     data/*.jsonl, overlay dflash/speculator.py beyond lines 25-60 and 330-370, config/vllm.py beyond the candidate-draft checks, registry.py,
     eagle.py beyond L60-85; upstream LiLiCorrSpeculator (not in repo).'
   verification: dive-verified
-  handoffs_updated: []
+  handoffs_updated:
+  - dflash2-block-drafter-experimental-build.md
   handoffs_created: []
   source_revision: github.com/two-delta/DCOCO @ 7a39cf1 (README sha256-12 90eeb4c3ebb9, same as stage 1), cloned 2026-10-31
   reader_should_conclude: Use this repo only as the reference for DCOCOHead tensor shapes and math (dcoco.py:29-187) when sizing a llama.cpp
@@ -369794,6 +369922,12 @@
     vLLM''s existing LiLiCorr candidate-head speculator, which ties DCOCO to the LiLiCorr family that the paper never cites. vLLM''s
     stock speculator dispatch also lists DFlash2DraftModel among the "candidate-head drafts", which corroborates that DFlash2 is a selector-lattice
     drafter. The paper''s Domino/DSpark comparison arms are absent.'
+  integration_disposition: integrated
+  disposition_evidence:
+  - SPEC-1 -> P2 / DF2-LAT
+  - SPEC-3 -> M1
+  - SPEC-4 -> K1
+  - PRE-2560 -> P2 / DF2-LAT
 - id: intake-2561
   arxiv_id: '2610.12570'
   url: https://arxiv.org/abs/2610.12570
@@ -369889,7 +370023,8 @@
   notes: 'Code and drafters in intake-2560. Not read in dive: Bibliography (empty in HTML render); Figures 1-10 as images (captions
     read); App D per-dataset tables for thinking-on/4B/Coder/Llama read only at spot-checked cells (Tab.10 AIME-25 row).'
   verification: dive-verified
-  handoffs_updated: []
+  handoffs_updated:
+  - dflash2-block-drafter-experimental-build.md
   handoffs_created: []
   source_revision: arXiv:2610.12570v1 HTML sha256-12 abfd23396695, retrieved 2026-10-31 (v1 is latest on abs page; HTML bibliography
     section renders empty)
@@ -370049,6 +370184,14 @@
     LiLiCorr and DFlash2, and our production DFlash2 drafter ALREADY carries a learned top-16 candidate-lattice selector (rank-256 bilinear
     transition score + prefix-first walk). So "port the corrector" means replacing an existing selector, not adding a missing one. 2026-10-31
     (Stage-2 close-out): dive-surfaced sources DECLINED: aiweekly.co DCOCO alert (press restatement of the abstract, not corroboration).'
+  integration_disposition: integrated
+  disposition_evidence:
+  - SPEC-1 -> P2 / DF2-LAT
+  - SPEC-2 -> P2 / DF2-PM
+  - SPEC-3 -> M1
+  - SPEC-4 -> K1
+  - SPEC-6 -> K1
+  - PRE-2561 -> P2 / DF2-LAT
 - id: intake-2562
   arxiv_id: null
   url: https://github.com/ekzhang/resin
@@ -370099,7 +370242,9 @@
   notes: 'Charts external; no numbers in text. Not read in dive: docs/kernel-boundary.md, scheduler.md, cuda-graphs.md, distributed.md,
     metrics.md, models/ trees, lessons cases 1-8 and 10-13 (skimmed headings only), add-resin-model sections 3-6 (headings only).'
   verification: dive-verified
-  handoffs_updated: []
+  handoffs_updated:
+  - autokernel-research-loop.md
+  - kv-prefix-fork-and-paged-attention.md
   handoffs_created: []
   source_revision: github.com/ekzhang/resin @ 37ae556 (depth 1), retrieved 2026-10-31
   reader_should_conclude: Cite Resin as (a) a design reference for a unified pool with recurrent-state prefix snapshots at LCM-aligned
@@ -370172,6 +370317,15 @@
     the real value: the two skills are a documented measurement discipline (paired A/B on one allocation, spread before calling a win,
     locate limiting interval via trace before touching kernels, matched-batch parity, approximate algorithms stay labelled, separate
     startup from warm). No part is usable as code for us: Rust+Python+CUDA/Blackwell, no CPU or ROCm path.'
+  integration_disposition: integrated
+  disposition_evidence:
+  - AGENT-9 -> P3 / AK-WIN-CNT-1 / AK-PROF-ATTR-1
+  - AGENT-10 -> K3
+  - 'AGENT-11 -> decline: the Resin engine/runner split has no CPU or ROCm runner and production serving is llama.cpp.'
+  - PRE-2562 -> P3 / AK-WIN-CNT-1
+  - W5META-9 -> P3 / AK-WIN-CNT-1
+  - W5META-10 -> P3 / AK-PROF-ATTR-1
+  - W5META-11 -> P3 / AK-WIN-CNT-1 / AK-PROF-ATTR-1
 - id: intake-2563
   arxiv_id: null
   url: https://github.com/miuuyy/Octopus-SI-OS
@@ -370222,7 +370376,8 @@
     and no stack touchpoint). Not read in dive: schemas/*.json bodies, crates/ Rust source, docs/contracts/{INTERFACES,WORKER_TYPES,ENVIRONMENTS,TOOL_REGISTRY,MEMORY_AND_SKILLS,EXTENSION_SURFACES}.md,
     client.md, UX.md, scenarios.md, tests.'
   verification: dive-verified
-  handoffs_updated: []
+  handoffs_updated:
+  - intake-derived-work-2026-07-25.md
   handoffs_created: []
   source_revision: miuuyy/Octopus-SI-OS @ 6bb43c8 (depth-1 clone, retrieved 2026-10-31)
   reader_should_conclude: 'Cite only the design mechanisms (claims 3-7) as analogies for intake-skill gates, never as evidence that
@@ -370341,6 +370496,17 @@
     descriptors, self-modification limits) because they are the transferable parts; none carries a measured benefit, and the authors
     report none. Relevance for the intake skill is as a design analogy only; per mechanism dispositions are in the w5 ledger rows (two
     tasks-worthy: anchor mark with cross-paste check, stage write grant; decline: durable run records, policy-gated self-modification).'
+  integration_disposition: integrated
+  disposition_evidence:
+  - PRE-2563 -> P12 / ID-RI-ANCHOR-GATE
+  - W5META-1 -> P12 / ID-RI-ANCHOR-GATE
+  - W5META-2 -> P12 / ID-RI-LANE-HEAD
+  - W5META-3 -> P12 / ID-RI-STAGE-GUARD
+  - W5META-4 -> P12 / ID-RI-DECLINE-VOCAB
+  - 'W5META-5 -> decline: the dive return schema plus the per-claim second reader already give typed, checked outputs.'
+  - 'W5META-6 -> decline: session resume already exists in the skill and the plan checkpoint carries the durable record.'
+  - 'W5META-7 -> decline: Octopus gates on path coverage only and itself says on-contract behaviour is not proven, so it adds n'
+  - 'W5META-8 -> decline: the intake id resolver and the vidya citation gate already catch dangling ids.'
 - id: intake-2564
   arxiv_id: null
   url: https://block.xyz/dessa
@@ -370384,7 +370550,8 @@
   referenced_arxiv_ids: []
   notes: 'Marketing page. Not read in dive: Audio clips; linked X posts.'
   verification: dive-verified
-  handoffs_updated: []
+  handoffs_updated:
+  - conversation-stack.md
   handoffs_created: []
   source_revision: block.xyz/dessa raw HTML retrieved 2026-10-31, text extract sha256-12 over dessa.txt
   reader_should_conclude: Cite only as a monitor-trigger source for audio-only full-duplex models. No numbers or architecture to carry.
@@ -370417,6 +370584,10 @@
     note: Training hardware (one GB200 NVL72) added.
   depends_on: []
   dive_corrections: '2026-10-31 (Stage 2, wave 1): Filing confirmed; the page has no technical spec at all. Availability: waitlist only.'
+  integration_disposition: monitor
+  disposition_evidence:
+  - SPEECH-7 -> M4
+  - PRE-2564 -> M4
 - id: intake-2565
   arxiv_id: null
   url: https://claude.com/resources/articles/building-agents-when-to-fold-subagents-into-your-main-agent-loop
@@ -370472,7 +370643,11 @@
   notes: 'Vendor guidance; anecdotal numbers only. Not read in dive: Linked migration kit and /claude-api skills (not fetched); related-article
     cards.'
   verification: dive-verified
-  handoffs_updated: []
+  handoffs_updated:
+  - agentic-serving-harness-fixes.md
+  - kv-prefix-fork-and-paged-attention.md
+  - routing-intelligence.md
+  - tool-use-eval-contract.md
   handoffs_created: []
   source_revision: 'claude.com article "Building agents: When to fold subagents into your main agent loop" (Diane Sarkis, dated October
     22, 2026) HTML sha256-12 caf62ef7b78f, retrieved 2026-10-31'
@@ -370558,6 +370733,13 @@
     not evidence. Dive added the three explicit subagent-justification conditions, the flipped-task and repeat-run eval rules, and the
     fact that it is written for cloud-frontier models whose thinking cannot be turned off (the "models are more capable" premise does
     not transfer unmeasured to our local Qwen3.x roles).'
+  integration_disposition: integrated
+  disposition_evidence:
+  - AGENT-1 -> P6 / RI-25
+  - AGENT-2 -> P6 / UFH14-TOOLS-1
+  - AGENT-3 -> M3
+  - AGENT-4 -> K3
+  - PRE-2565 -> P6 / RI-25
 - id: intake-2566
   arxiv_id: '2509.09691'
   url: https://arxiv.org/abs/2509.09691
@@ -370601,6 +370783,9 @@
   source_revision: arXiv:2509.09691v1 HTML sha256-12 184937b681d1, retrieved 2026-10-31
   reader_should_conclude: 'Stage-1 unverified: do not cite any figure, metric or mechanism from this entry until a Stage-2 dive promotes
     it.'
+  integration_disposition: declined
+  disposition_evidence:
+  - 'PRE-2566 -> decline: synthetic single-machine retrieval evidence, and KB retrieval uses ColBERT MaxSim, not cosine stores.'
 - id: intake-2567
   arxiv_id: null
   url: https://bottlecapai.com/post/thinkingcap-qwen3-8-flash-next/
@@ -370662,7 +370847,8 @@
   notes: 'Fourth ThinkingCap release; intake-892 covered the Qwen3.6-27B one. Not read in dive: LICENSE; vendor video; chart images
     (accuracy-vs-budget curve is only described in prose).'
   verification: dive-verified
-  handoffs_updated: []
+  handoffs_updated:
+  - architect-model-selection-bench.md
   handoffs_created: []
   source_revision: blog bottlecapai.com/post/thinkingcap-qwen3-8-flash-next/ (dated Oct 22 2026), html 103016 B -> text, retrieved 2026-10-31
   reader_should_conclude: Cite the table as vendor-run, single-source, BF16/vLLM/xhigh. Do NOT carry a "no quality loss" claim (all
@@ -370722,6 +370908,11 @@
   depends_on: []
   dive_corrections: '2026-10-31 (Stage 2, wave 1): Stage 1 had empty reported_results and no numbers; dive fills the full table. Stage
     1 implied a method; none is disclosed. Added the weighting caveat and the xhigh/BF16/vLLM context. No stage-1 claim falsified.'
+  integration_disposition: integrated
+  disposition_evidence:
+  - TCAP-1 -> P8 / AMS-TCAP-1
+  - 'TCAP-4 -> decline: the vendor PRO tier is closed and no method is disclosed.'
+  - PRE-2567 -> P8 / AMS-TCAP-1
 - id: intake-2568
   arxiv_id: '2610.14162'
   url: https://arxiv.org/abs/2610.14162
@@ -370778,7 +370969,8 @@
   notes: 'Observed linked from the intake-2546 blog page; abs title matched. Paper body not read in Stage 1. Not read in dive: Appendices
     F-I sample outputs and ablation tables beyond skim.'
   verification: dive-verified
-  handoffs_updated: []
+  handoffs_updated:
+  - dflash2-block-drafter-experimental-build.md
   handoffs_created: []
   source_revision: arXiv:2610.14162v1 HTML sha256-12 734f5b3628c7 of converted text, retrieved 2026-10-31; code/weights github.com/HazyResearch/ncm
     @ c70274273f489abc73832b2b98584a8483b6b203 (MIT)
@@ -370837,6 +371029,11 @@
   dive_corrections: '2026-10-31 (Stage 2, wave 1): Confirms filing; reported_results was empty. Releases checkpoints (HF collection
     hazyresearch/ncm: tokenizer + generator per dataset: LM1B small/medium/large, OWT, XSum, WMT14, TinyStories, Sudoku). These are
     task-specific research models, not general LMs.'
+  integration_disposition: monitor
+  disposition_evidence:
+  - LOOP-6 -> M1
+  - PRE-2568 -> M1
+  - 'W5GPU-8 -> decline: no NCM checkpoint shares a served vocabulary and no acceptance number exists; reopen on such a releas'
 - id: intake-2569
   arxiv_id: '2605.29707'
   url: https://arxiv.org/abs/2605.29707
@@ -370900,7 +371097,8 @@
     abs title matched. Previously named only in a declined-intake note near intake-1773. Not read in dive: Appendix A beyond section
     headings (Tab.5 checkpoint list, Tab.6 full head-ablation table); Figures as images (captions read).'
   verification: dive-verified
-  handoffs_updated: []
+  handoffs_updated:
+  - dflash2-block-drafter-experimental-build.md
   handoffs_created: []
   source_revision: arXiv:2605.29707v1 HTML sha256-12 781c533a049e, retrieved 2026-10-31 (v1 is latest on abs page)
   reader_should_conclude: 'Cite Domino as a sequential causal-correction head that needs drafter co-training: +16.6% tau / +12.3% speedup
@@ -370990,6 +371188,12 @@
     SGLang serving keeps it above DFlash to 32 streams, DCOCO does not say whether its vLLM Domino arm used Domino''s fused Triton/CUDA-graph
     head (which halves head latency), and that arm is not released. B200 vs A100 (a faster verify inflates the head''s share) is a plausible
     partial cause, not a test of it.'
+  integration_disposition: integrated
+  disposition_evidence:
+  - SPEC-4 -> K1
+  - SPEC-5 -> M1
+  - SPEC-6 -> K1
+  - PRE-2569 -> P2 / DF2-LAT
 - id: intake-2570
   arxiv_id: '2511.12638'
   url: https://arxiv.org/abs/2511.12638
@@ -371056,7 +371260,9 @@
     example detail, §4.2 checked-dynamics rules, proofs of Lemmas 1-10 and Thm 13, §6 per-table timing values, §6.4-6.5 baseline comparisons
     (headings and captions only), references.'
   verification: dive-verified
-  handoffs_updated: []
+  handoffs_updated:
+  - autokernel-all-devices-all-dimensions.md
+  - rocm-verify-profile-backend.md
   handoffs_created: []
   source_revision: arXiv:2511.12638v3 HTML sha256-12 2f5db0a1eaa6 (abs page lists v1-v3; v3 latest), retrieved 2026-10-31
   reader_should_conclude: 'Cite for: formal equivalence over reals is feasible for structured-CTA ML kernels in minutes, and its race
@@ -371143,6 +371349,18 @@
     so stream-k MMQ is out. Branches must be static, so FA KV_max derived from the mask is out unless specialized. No async primitives.
     Its race checker is sound with true positives, runs in linear time and supports warp-level barriers. That part transfers best, because
     it reasons about addresses rather than values.'
+  integration_disposition: integrated
+  disposition_evidence:
+  - KERN-1 -> P11 / RVP-RACE-1
+  - KERN-2 -> P11 / RVP-RACE-2
+  - KERN-4 -> P3 / AKX-ALL-31.QDEC
+  - KERN-10 -> P11 / RVP-RACE-1
+  - KERN-11 -> P11 / RVP-RACE-2
+  - PRE-2570 -> P11 / RVP-RACE-1
+  - W5VERIF-1 -> P11 / RVP-RACE-2
+  - W5VERIF-2 -> P11 / RVP-EQV-1
+  - W5VERIF-3 -> P11 / RVP-RACE-1
+  - W5VERIF-4 -> P11 / RVP-RACE-2
 - id: intake-2571
   arxiv_id: '2510.24824'
   url: https://arxiv.org/abs/2510.24824
@@ -371198,7 +371416,9 @@
   notes: 'Cited in the intake-2547 bibliography as arXiv:2510.24824; abs title matched. Not read in dive: Appendix A.3 ablations and
     Table 5/6 numeric cells; related-work body beyond skim.'
   verification: dive-verified
-  handoffs_updated: []
+  handoffs_updated:
+  - gpu-acceleration-path.md
+  - gpu-serving-tie-in-program.md
   handoffs_created: []
   source_revision: arXiv:2510.24824v1 HTML sha256-12 22126ba84e28 of converted text, retrieved 2026-10-31
   reader_should_conclude: Cite as the only primary wall-clock decode evidence in this group, and only for GPU memory-bound serving of
@@ -371250,6 +371470,14 @@
     is Bohong Wu, ByteDance Seed. Adds the actual latency/accuracy numbers (stage-1 had none), the hardware (single GPU; H800 for open-source
     runs), and the key mechanism for our purposes: PLT cuts the SEQUENTIAL weight pass count from L to 1 by batching displaced loop
     positions.'
+  integration_disposition: integrated
+  disposition_evidence:
+  - LOOP-1 -> P10 / GPU-LOOP-1
+  - LOOP-2 -> P10 / GPU-PLT-1
+  - PRE-2571 -> P10 / GPU-LOOP-1
+  - W5GPU-1 -> P10 / GPU-LOOP-1
+  - W5GPU-4 -> P10 / GPU-PLT-1
+  - W5GPU-5 -> P10 / GPU-PLT-2
 - id: intake-2572
   arxiv_id: null
   url: https://huggingface.co/bottlecapai/ThinkingCap-Qwen3.8-Flash-Next
@@ -371305,7 +371533,9 @@
   notes: 'Card notes an open vLLM issue on MTP acceptance collapse during in-thinking repetition (vendor says not reproduced). Not read
     in dive: vLLM issue #55357 itself; FP8/NVFP4 repos; GGUF binary headers (tensor names unknown).'
   verification: dive-verified
-  handoffs_updated: []
+  handoffs_updated:
+  - architect-model-selection-bench.md
+  - cpu-decode-roofline-program.md
   handoffs_created: []
   source_revision: HF bottlecapai/ThinkingCap-Qwen3.8-Flash-Next README.md + config.json; bottlecapai/ThinkingCap-Qwen3.8-Flash-Next-GGUF
     README.md + api tree/main (file list, sizes); retrieved 2026-10-31; weights NOT downloaded
@@ -371363,6 +371593,12 @@
     already has the Flash-Next MTP head from unsloth (no FP8 re-download needed), so the Axis-E motivation in the stage-1 recommended
     action is already met; ThinkingCap offers no new MTP capability, only an MTP-compatible finetuned trunk. 2026-10-31 (Stage-2 close-out):
     dive-surfaced sources DECLINED: bottlecapai/ThinkingCap-Qwen3.8-Flash-Next-GGUF card (already read inside this dive).'
+  integration_disposition: integrated
+  disposition_evidence:
+  - TCAP-1 -> P8 / AMS-TCAP-1
+  - TCAP-2 -> K1
+  - TCAP-3 -> P8 / AMS-TCAP-1
+  - PRE-2572 -> P8 / AMS-TCAP-1
 - id: intake-2573
   arxiv_id: null
   url: https://github.com/anomalyco/hex
@@ -371414,7 +371650,8 @@
   notes: 'Read README, Cargo.toml and AGENTS.md only. Not read in dive: transcribe.cpp fork source itself (not cloned); most of the
     6k lines of src; macOS/iOS code.'
   verification: dive-verified
-  handoffs_updated: []
+  handoffs_updated:
+  - conversation-stack.md
   handoffs_created: []
   source_revision: github.com/anomalyco/hex @eef51da7 (commit date 2026-10-31), clone depth 1; pinned transcribe.cpp fork rev 7045d1c0
     (Cargo.toml)
@@ -371446,6 +371683,11 @@
   dive_corrections: '2026-10-31 (Stage 2, wave 1): The STT path is a thin Rust wrapper over transcribe.cpp; it adds no new runner for
     us because transcribe.cpp is already built and under test in conversation-stack CS-8.STT2/STT3/STT4. Hex is a UX reference for vocabulary
     biasing and chunked meeting transcripts only.'
+  integration_disposition: knowledge_only
+  disposition_evidence:
+  - SPEECH-5 -> K4
+  - SPEECH-6 -> K4
+  - PRE-2573 -> K4
 - id: intake-2574
   arxiv_id: null
   url: https://github.com/divagr18/qwenputer
@@ -371503,7 +371745,9 @@
   notes: 'License NOASSERTION; README read to about 60%. Not read in dive: core.py/ref.py/ir.py in full (read only the emission and
     memory tables); rv-store and npu branches; chat.py/tritonexec.py bodies; tests; Hugging Face cards; QwenPU repo.'
   verification: dive-verified
-  handoffs_updated: []
+  handoffs_updated:
+  - autokernel-all-devices-all-dimensions.md
+  - kv-prefix-fork-and-paged-attention.md
   handoffs_created: []
   source_revision: github.com/divagr18/qwenputer @ bec1a0c9654ac8151b6f36ed0154a19c53141384 (main, 2026-10-31); depth-1 clone
   reader_should_conclude: Cite experimental/riscv/docs/rv32.md for RISC-V numbers and README Version 1 for CHIP-8 numbers. The GDN-as-RAM
@@ -371604,7 +371848,17 @@
     runs. The repo HEAD holds both generations (CHIP-8 at top level, RISC-V under experimental/riscv with its own copy of the package),
     so a reader must not mix their benchmark tables. 2026-10-31 (Stage-2 close-out): dive-surfaced sources DECLINED: github.com/divagr18/QwenPU
     (vector-unit demo; no use case without a tool channel, MEM-3 declines in-weights compute on a bandwidth-bound host). 2026-10-31
-    (second reader): main dropped anchors judged not to support their claim, or narrowed the claim wording to what the anchor supports.'
+    (second reader): main dropped anchors judged not to support their claim, or narrowed the claim wording to what the anchor supports.
+    2026-10-31 (Stage 4, operator D1): the in-weights calculator stays declined for serving on the GPU as well as the CPU: chip tokens
+    run serially (0.5-1 s per call, median 242 s per long division on an L4), text tokens cost about twice the weight bytes, and accuracy
+    only ties a tool call.'
+  integration_disposition: integrated
+  disposition_evidence:
+  - MEM-1 -> P3 / AKX-ALL-31.GDN
+  - MEM-2 -> P1 / KPF-RS-1
+  - 'MEM-3 -> decline: re-priced on the GPU, the in-weights calculator still loses: chip tokens are serial (0.5-1 s per call'
+  - PRE-2574 -> P3 / AKX-ALL-31.GDN
+  - 'W5GPU-7 -> decline: same GPU re-pricing as the calculator row; serial chip tokens dominate on any device.'
 - id: intake-2575
   arxiv_id: null
   url: https://huggingface.co/LiquidAI/LFM3-Audio-2B-GGUF
@@ -371658,7 +371912,9 @@
   notes: 'Support claim rests on the vendor card only (restatement). Not read in dive: Full diffs of the PRs (bodies and file lists
     only); docs.liquid.ai llama.cpp guide.'
   verification: dive-verified
-  handoffs_updated: []
+  handoffs_updated:
+  - autokernel-champion-aggregate.md
+  - conversation-stack.md
   handoffs_created: []
   source_revision: 'HF LiquidAI/LFM3-Audio-2B-GGUF @02355c1a (2026-10-29) + LFM3-Omni-2B-GGUF @3d29af2a; upstream ggml-org/llama.cpp
     PRs #31257 (19ff817fb), #31269 (8ca4060b7), #31287 (d1eb0deba), #30629 (2851b3bcb), #30636 (1242be66f), #31386, #31283 read via
@@ -371695,6 +371951,15 @@
   dive_corrections: '2026-10-31 (Stage 2, wave 1): Resolved the open question: implementing PRs located, release b11960, distance 1657
     builds, and the realtime path has only been smoke-tested on Mac and CUDA. LiveASR for LFM3-Audio is in #31269 ("Supports live ASR")
     though #31257 table said follow up.'
+  integration_disposition: integrated
+  disposition_evidence:
+  - SPEECH-1 -> P4 / CS-8.STT8
+  - SPEECH-2 -> M4
+  - SPEECH-3 -> P9 / CH-32
+  - SPEECH-4 -> M4
+  - W2SP-1 -> P4 / CS-8.RT1
+  - PRE-2575 -> P9 / CH-35
+  - W5FOLD-4 -> P9 / CH-32
 - id: intake-2576
   arxiv_id: null
   url: https://github.com/thu-nics/C2C
@@ -371742,7 +372007,8 @@
   notes: 'Companion artifact of intake-2559; arxiv_id deliberately null. Not read in dive: Training scripts, recipe configs, AKV repo
     (only existence/licence checked via API).'
   verification: dive-verified
-  handoffs_updated: []
+  handoffs_updated:
+  - kv-prefix-fork-and-paged-attention.md
   handoffs_created: []
   source_revision: github.com/thu-nics/C2C @ 5eac72b (depth 1), retrieved 2026-10-31
   reader_should_conclude: Use as the executable reference for the offline probe (released Qwen3-8B + Qwen2.5-7B-Instruct fuser at nics-efc/C2C_Fuser).
@@ -371782,6 +372048,12 @@
     path exists; there is no llama.cpp, GGUF, or recurrent-layer support. Repo is a research harness (rosetta package, 3.4k lines in
     model/) not a serving library. 2026-10-31 (second reader): main dropped anchors judged not to support their claim, or narrowed the
     claim wording to what the anchor supports.'
+  integration_disposition: knowledge_only
+  disposition_evidence:
+  - AGENT-5 -> M3
+  - AGENT-6 -> K3
+  - AGENT-8 -> K3
+  - PRE-2576 -> M3
 - id: intake-2577
   arxiv_id: null
   url: https://github.com/vllm-project/vllm/issues/55357
@@ -371854,7 +372126,9 @@
     issues #47194/#52475/#53180/#50837/#39273, llama.cpp #28158/#28286, reporter raw state dump (not provided), jschmied determinism-investigation
     notes.'
   verification: dive-verified
-  handoffs_updated: []
+  handoffs_updated:
+  - cpu-decode-roofline-program.md
+  - speculative-decoding-mtp-refresh.md
   handoffs_created: []
   source_revision: vllm-project/vllm issue 55357 via GitHub API, issue.json sha256-12 0c7bd11c8a93, comments.json sha256-12 ed5a6ffd104e,
     retrieved 2026-10-31
@@ -371941,6 +372215,11 @@
     dive-surfaced sources DECLINED: vllm-project/vllm PR #55375 (fix diff; root cause and merge already settled from the issue thread,
     and the code is vLLM-specific) and github.com/jschmied/qwen38-flash-next-gb10 (GB10/vLLM reproducer notes; no llama.cpp bearing).
     Main recommendation at the wave-2 close-out under the operator pre-approval.'
+  integration_disposition: integrated
+  disposition_evidence:
+  - SPEC2-1 -> P1 / SPEC-CANARY.1
+  - SPEC2-2 -> P1 / G2-CONC.MP
+  - SPEC2-3 -> M1
 - id: intake-2578
   arxiv_id: '2606.15007'
   url: https://arxiv.org/abs/2606.15007
@@ -372002,7 +372281,8 @@
     read in dive: Everything outside Sec 3.4 and Table 6 except scattered MTP mentions (RL rollout MTP k sweep, deployment sections);
     SPEED-Bench reference not read.'
   verification: dive-verified
-  handoffs_updated: []
+  handoffs_updated:
+  - dflash2-block-drafter-experimental-build.md
   handoffs_created: []
   source_revision: arXiv:2606.15007v1 HTML sha256-12 e351966ed0be, retrieved 2026-10-31
   reader_should_conclude: Cite Sec 3.4 as one vendor-reported recipe (frozen backbone, forward-KL T=2, sampled MTP hidden states, 12K
@@ -372043,6 +372323,12 @@
   dive_corrections: '2026-10-31 (Stage 2, wave 2 (Stage 2b)): Stage-1 record created in the same pass; abs page title matched the expected
     Nemotron 3 Ultra paper. Section 3.4 verified as scoped. Note the speedup percentages are acceptance-length-derived relative figures
     (3.15-5.82%), much smaller than the headline impression of boosting; the AL gain is +0.2 on average at draft length 7.'
+  integration_disposition: integrated
+  disposition_evidence:
+  - SPEC2-4 -> K1
+  - W5FT-2 -> P2 / DF2-FT-1
+  - W5FT-3 -> P2 / DF2-FT-1
+  - W5FT-6 -> P2 / DF2-FT-1
 - id: intake-2579
   arxiv_id: null
   url: https://github.com/ggml-org/llama.cpp/pull/31269
@@ -372107,7 +372393,9 @@
     Credibility note: Vendor/author PR; read the PR body, issue comments (4, none carry measurements), the 10-file diff metadata and
     the README/server-realtime/client patches. Not read: full diff of server-context.cpp/server-task.cpp.'
   verification: dive-verified
-  handoffs_updated: []
+  handoffs_updated:
+  - autokernel-champion-aggregate.md
+  - conversation-stack.md
   handoffs_created: []
   source_revision: ggml-org/llama.cpp PR 31269 merge commit 8ca4060b7e30e76baaa5670ee1ec1b760b7f8552, GitHub API 2026-10-31
   reader_should_conclude: Cite for the /v1/realtime event contract and for the fact that llama-server provides no turn detection, so
@@ -372163,6 +372451,11 @@
     only), no VAD (client-driven turns), no latency number in the PR, tool calls out of scope. One evidence-gap: the "tool calls" statement
     is an absence read from the diff. 2026-10-31 (Stage-2 close-out): dive-surfaced sources DECLINED: llama.cpp PR 31287 (realtime tool
     calls; already summarized inside intake-2575).'
+  integration_disposition: integrated
+  disposition_evidence:
+  - W2SP-1 -> P4 / CS-8.RT1
+  - W2SP-2 -> K4
+  - W5FOLD-4 -> P9 / CH-32
 - id: intake-2580
   arxiv_id: null
   url: https://github.com/ggml-org/llama.cpp/pull/30629
@@ -372221,7 +372514,9 @@
     list, and the mtmd.h, mtmd-cli.cpp, mistral3.py, voxtral-rt.cpp patches; issue comments none relevant. Not read: clip.cpp / mtmd.cpp
     / llama-model.cpp diffs.'
   verification: dive-verified
-  handoffs_updated: []
+  handoffs_updated:
+  - autokernel-champion-aggregate.md
+  - conversation-stack.md
   handoffs_created: []
   source_revision: ggml-org/llama.cpp PR 30629 merge commit 2851b3bcbf8d993a2243ae751c0a7dfa8e944a40, GitHub API 2026-10-31
   reader_should_conclude: Cite for the mtmd_audio_stream signatures and the Voxtral Realtime GGUF/arch path. Do not attribute WER or
@@ -372271,6 +372566,10 @@
   dive_corrections: '2026-10-31 (Stage 2, wave 2 (Stage 2b)): New entry. Confirms the API surface and that Voxtral Realtime has a native
     llama.cpp streaming path; adds that the PR is infrastructure only and reports no latency or WER, so every performance claim on the
     Voxtral path still comes from the vendor paper/card recorded in intake-2383.'
+  integration_disposition: integrated
+  disposition_evidence:
+  - W2SP-6 -> P4 / CS-8.STT8
+  - W5FOLD-4 -> P9 / CH-32
 - id: intake-2581
   arxiv_id: null
   url: https://huggingface.co/LiquidAI/d1-Omni-2B-GGUF
@@ -372329,7 +372628,9 @@
   notes: ' Not read in dive: LICENSE file; mmproj conversion details. Credibility note: Vendor model-card repo; the card is a short
     README. Not read: LICENSE text, the original d1-Omni-2B card (intake-2553 covers it), convert logs.'
   verification: dive-verified
-  handoffs_updated: []
+  handoffs_updated:
+  - conversation-stack.md
+  - typed-decision-plane.md
   handoffs_created: []
   source_revision: HF LiquidAI/d1-Omni-2B-GGUF @c53ae0b1 (lastModified 2026-10-28), README + HF API, retrieved 2026-10-31; sha256-12
     3bd98c1af0d5
@@ -372374,6 +372675,11 @@
   dive_corrections: '2026-10-31 (Stage 2, wave 2 (Stage 2b)): Adds beyond intake-2553: the exact serve command and batch flags, the
     supported type subset, file sizes (no Q4_K_M for Omni), and that /v1/systemone is an older upstream endpoint (PR 29818) independent
     of the d1 models. Nothing overturned.'
+  integration_disposition: integrated
+  disposition_evidence:
+  - W2SP-3 -> P5 / TD-23.D1
+  - W2SP-5 -> M4
+  - W3DEC-3 -> P5 / TD-23.D1
 - id: intake-2582
   arxiv_id: null
   url: https://huggingface.co/LiquidAI/d1-2B-GGUF
@@ -372447,7 +372753,8 @@
     READMEs, d1-2B and d1-3B model cards (text), HF API metadata. Not read: LICENSE text, vision benchmark rows beyond the table header,
     issue 30402 repro scripts in full.'
   verification: dive-verified
-  handoffs_updated: []
+  handoffs_updated:
+  - typed-decision-plane.md
   handoffs_created: []
   source_revision: HF LiquidAI/d1-2B-GGUF @e968f657 (2026-10-28) + d1-2B @10e7671d (2026-10-29) + d1-3B-GGUF @bb1e436e (2026-10-07)
     + d1-3B @051bcc46; cards and HF API, retrieved 2026-10-31
@@ -372497,6 +372804,12 @@
     quant sizes, the nine-row board comparison (d1-2B above d1-Omni on 8 of 9; the earlier intake-2553 count of 7 of 9 is not reproduced
     from this card), and the Q8_0 head-quantization risk from upstream issue 30064. 2026-10-31 (second reader): main dropped an anchor
     judged not to support its claim.'
+  integration_disposition: integrated
+  disposition_evidence:
+  - W2SP-3 -> P5 / TD-23.D1
+  - W2SP-4 -> K4
+  - W3DEC-3 -> P5 / TD-23.D1
+  - W3DEC-4 -> P5 / TD-18.1
 - id: intake-2583
   arxiv_id: null
   url: https://www.liquid.ai/blog/open-d1
@@ -372554,7 +372867,8 @@
   notes: ' Not read in dive: Figures 2-3, Jetson AI Lab pages, playground demos. Credibility note: Vendor blog, curl HTML to disk and
     stripped (JS-light page, text present). Figures 2-3 (architecture diagrams) not viewable as text.'
   verification: dive-verified
-  handoffs_updated: []
+  handoffs_updated:
+  - typed-decision-plane.md
   handoffs_created: []
   source_revision: liquid.ai/blog/open-d1 HTML sha256-12 555ce078e6cf, retrieved 2026-10-31
   reader_should_conclude: Cite only for d1-3B / d1-omni-600M vendor figures and the licence-wording mismatch. Do not use its numbers
@@ -372594,6 +372908,9 @@
   dive_corrections: '2026-10-31 (Stage 2, wave 2 (Stage 2b)): New entry. Dates the post (2026-10-07) and narrows it to d1-3B / d1-omni-600M;
     the 2B and Omni-2B models in intake-2553/2581/2582 are later and not in it. Records the licence-wording mismatch and the absent
     audio and calibration evidence.'
+  integration_disposition: integrated
+  disposition_evidence:
+  - W2SP-3 -> P5 / TD-23.D1
 - id: intake-2584
   arxiv_id: '2606.18023'
   url: https://arxiv.org/abs/2606.18023
@@ -372657,7 +372974,9 @@
   notes: 'Dive-verified; see entries record. Not read in dive: Per-loop interpretability figures (§3.2/§4.2 detail), related work, Table
     6.'
   verification: dive-verified
-  handoffs_updated: []
+  handoffs_updated:
+  - gpu-acceleration-path.md
+  - gpu-serving-tie-in-program.md
   handoffs_created: []
   source_revision: arXiv:2606.18023v1 HTML (sole version, 16 Jun 2026) + HF API Multilingual-Multimodal-NLP/LoopCoder-V2 sha b87cf3a,
     retrieved 2026-10-31
@@ -372718,6 +373037,11 @@
     The paper has no latency/throughput measurement and does not name the SWE-bench harness. Gain is real in-paper but single-seed and
     highly non-monotonic (R=3 below baseline), which undercuts the loop count as a free dial. 2026-10-31 (Stage-2 close-out): dive-surfaced
     sources DECLINED: github.com/huskydoge/Awesome-Loop-Models (curated list, no claims of its own; would settle nothing).'
+  integration_disposition: integrated
+  disposition_evidence:
+  - W2LOOP-2 -> P10 / GPU-PLT-2
+  - W5GPU-4 -> P10 / GPU-PLT-1
+  - W5GPU-5 -> P10 / GPU-PLT-2
 - id: intake-2585
   arxiv_id: null
   url: https://github.com/ggml-org/llama.cpp/pull/29823
@@ -372777,7 +373101,9 @@
   notes: 'Companion repo BrandeisPatrick/loop-transformer (Apache-2.0) @ 599eed9. Not read in dive: Full 18.7 KB diff line by line (graph
     structure read through #25994 which it reuses); results/REPORT.md.'
   verification: dive-verified
-  handoffs_updated: []
+  handoffs_updated:
+  - gpu-acceleration-path.md
+  - gpu-serving-tie-in-program.md
   handoffs_created: []
   source_revision: 'ggml-org/llama.cpp PR #29823 (open, head e79d8cab5 per comments, created 2026-10-01) body + issue comments; BrandeisPatrick/loop-transformer
     @ 599eed9 README/NOTES; retrieved 2026-10-31'
@@ -372845,6 +373171,12 @@
     and that post-training washes out looped advantage. 2026-10-31 (Stage-2 close-out): dive-surfaced sources DECLINED: arXiv 2604.21106
     (iso-depth scaling theory, id taken from repo notes; no EPYC decision depends on it) and github.com/Thrillcrazyer/LoopUS (looped
     retrofit; the W2LOOP-1 measure-first probe on Ouro answers the same CPU question first).'
+  integration_disposition: integrated
+  disposition_evidence:
+  - W2LOOP-1 -> P10 / GPU-LOOP-1
+  - W2LOOP-4 -> K2
+  - W5GPU-2 -> P10 / GPU-LOOP-3
+  - W5GPU-3 -> P10 / GPU-LOOP-2
 - id: intake-2586
   arxiv_id: null
   url: https://github.com/ggml-org/llama.cpp/pull/25994
@@ -372891,7 +373223,8 @@
   referenced_arxiv_ids: []
   notes: 'Merge sha b77d646. Not read in dive: conversion/nanbeige.py body beyond key names; ggml-gh-bot nits 4+ (tail of review).'
   verification: dive-verified
-  handoffs_updated: []
+  handoffs_updated:
+  - gpu-acceleration-path.md
   handoffs_created: []
   source_revision: 'ggml-org/llama.cpp PR #25994 merged 2026-07-27T15:04:19Z (merge sha b77d646), diff + comments; frozen tree /mnt/raid0/llm/llama.cpp
     @ ffc1bac82; retrieved 2026-10-31'
@@ -372941,6 +373274,11 @@
   dive_corrections: '2026-10-31 (Stage 2, wave 2 (Stage 2b)): Confirms merge and mechanism. Looping is a pure graph unroll with weight
     sharing; each loop re-streams the full weight set (no weight-reuse scheduling), so decode weight bytes scale R x. Adds the quantified
     absence from v10.'
+  integration_disposition: integrated
+  disposition_evidence:
+  - W2LOOP-1 -> P10 / GPU-LOOP-1
+  - W2LOOP-4 -> K2
+  - W5GPU-2 -> P10 / GPU-LOOP-3
 - id: intake-2587
   arxiv_id: null
   url: https://divagr.com/blog/hybrid-models-can-hide-reasoning-in-their-rnn-state
@@ -372994,7 +373332,8 @@
   notes: 'Companion repo github.com/divagr18/qwenputer @ bec1a0c. Not read in dive: results/ raw jsonl, hcot code, the monitoring-tools
     follow-up post.'
   verification: dive-verified
-  handoffs_updated: []
+  handoffs_updated:
+  - cpu-decode-roofline-program.md
   handoffs_created: []
   source_revision: divagr.com blog 2026-10-22 (update 2026-10-23) HTML sha n/a, + github.com/divagr18/qwenputer @ bec1a0c research/hidden-reasoning/README.md;
     retrieved 2026-10-31
@@ -373044,6 +373383,10 @@
   dive_corrections: '2026-10-31 (Stage 2, wave 2 (Stage 2b)): Self-published single-author blog, not peer reviewed, no independent replication
     found. Direction for our stack is reassuring: Qwen-family GDN (sigmoid beta, confirmed in our tree at src/models/qwen3next.cpp:417)
     did not learn generalising silent tracking even under direct pressure.'
+  integration_disposition: knowledge_only
+  disposition_evidence:
+  - W2LOOP-3 -> K2
+  - 'W5GPU-9 -> decline: a single-task, few-seed result with no performance lever on either device.'
 - id: intake-2588
   arxiv_id: '2608.17379'
   url: https://arxiv.org/abs/2608.17379
@@ -373130,7 +373473,10 @@
     Venue unknown (preprint, v3). Not read in dive: Appendix tables 9/10, A.3 profiling-service detail, A.5-A.7 prompt text, Fig 14,
     Sec 5.1-5.2 recipe-ablation detail beyond the sentences quoted.'
   verification: dive-verified
-  handoffs_updated: []
+  handoffs_updated:
+  - agentic-rocm-kernel-authoring.md
+  - autokernel-all-devices-all-dimensions.md
+  - autokernel-orchestrator-actor-backend.md
   handoffs_created: []
   source_revision: arXiv:2608.17379v3 HTML sha256-12 e4ff90e61063, retrieved 2026-10-31 (v3 dated 28 Sep 2026)
   reader_should_conclude: Cite as evidence that frontier LLMs do not reliably match vendor libraries when forced to hand-write architecture-specific
@@ -373200,6 +373546,11 @@
     harness on attention at 1/3-1/5 the tokens. NVIDIA-only (H100/B200, nvcc, NCU, CUPTI); nothing was run on AMD. 2026-10-31 (Stage-2
     close-out): dive-surfaced sources DECLINED: github.com/zhang677/PTXBench code (NVIDIA-only harness; the paper''s findings are already
     dived).'
+  integration_disposition: integrated
+  disposition_evidence:
+  - W2KERN-1 -> P11 / C5-ISA-1
+  - W2KERN-2 -> K5
+  - W2KERN-3 -> P3 / AKX-ALL-31.EDGE
 - id: intake-2589
   arxiv_id: '2608.12629'
   url: https://arxiv.org/abs/2608.12629
@@ -373278,7 +373629,9 @@
     dive: Appendices A-D (IR catalog, Table 3 architecture coverage, D.x per-kernel evolution), Sec 6 dispatcher detail, Sec 5 reproduction-of-known-kernels
     tables.'
   verification: dive-verified
-  handoffs_updated: []
+  handoffs_updated:
+  - autokernel-all-devices-all-dimensions.md
+  - autokernel-rebuild-program.md
   handoffs_created: []
   source_revision: arXiv:2608.12629v1 HTML sha256-12 18aca4f8c7fe, retrieved 2026-10-31 (submitted 12 Aug 2026)
   reader_should_conclude: 'Cite for the design pattern: give the kernel agent a typed representation plus cheap static verifier gates
@@ -373318,6 +373671,10 @@
     public repo link found in the text read (only FlashInfer PRs for generated CUDA). All baselines and hardware are NVIDIA B200; no
     AMD result. 2026-10-31 (Stage-2 close-out): dive-surfaced sources DECLINED: FlashInfer PRs 4262/4279/4274/4287 (CAKE-generated NVIDIA-only
     kernels).'
+  integration_disposition: integrated
+  disposition_evidence:
+  - W2KERN-3 -> P3 / AKX-ALL-31.EDGE
+  - W2KERN-4 -> P3 / AK-FAILRULE-1
 - id: intake-2590
   arxiv_id: null
   url: https://github.com/thu-nics/AKV
@@ -373404,7 +373761,9 @@
     A.4 cost breakdowns, A.5 concurrent work, Table 1 per-cell numbers, repo code beyond file listing and README (akv/system/sglang/srt/context_system/*
     not read).'
   verification: dive-verified
-  handoffs_updated: []
+  handoffs_updated:
+  - context-folding-progressive.md
+  - kv-prefix-fork-and-paged-attention.md
   handoffs_created: []
   source_revision: github.com/thu-nics/AKV @ c567a42 (2026-10-21); paper arXiv:2610.28577v1 HTML sha256-12 720743b692be, retrieved 2026-10-31
     (submitted 20 Oct 2026)
@@ -373464,6 +373823,14 @@
     but the mechanism needs mid-sequence KV removal plus RoPE position shift, which llama.cpp already has as llama_memory_seq_rm and
     seq_add for full-attention models and which is unsafe for recurrent/hybrid GDN memory. Gains are measured on SGLang with A800 BF16
     and price-table costs; nothing was measured on llama.cpp.'
+  integration_disposition: integrated
+  disposition_evidence:
+  - W2KERN-5 -> M3
+  - W2KERN-6 -> K3
+  - 'W2KERN-7 -> decline: the AKV server is SGLang and softmax-only; it stays a design reference.'
+  - W3DEC-6 -> K3
+  - W3DEC-7 -> P6 / CF-AKV-0
+  - W3DEC-8 -> M3
 - id: intake-2591
   arxiv_id: null
   url: https://github.com/ggml-org/llama.cpp/issues/28286
@@ -373516,7 +373883,9 @@
   notes: 'GitHub issue; read via API (issue, comments, timeline). Not read in dive: PR #28019 thread read only for context (rs-rollback
     ask resolved by #28123); linked issue text of #27836 not read.'
   verification: dive-verified
-  handoffs_updated: []
+  handoffs_updated:
+  - autokernel-champion-aggregate.md
+  - dflash2-block-drafter-experimental-build.md
   handoffs_created: []
   source_revision: 'GitHub API ggml-org/llama.cpp issues/28286 (+comments, timeline, PR #29454) retrieved 2026-10-31; state closed(stale)
     2026-10-18'
@@ -373557,6 +373926,11 @@
     snapshot slot, PR 29454) was declined by a contributor because the server never rolls back the anchor token (cites #26695), so the
     mechanism is UNCONFIRMED and un-merged. 2026-10-31 (Stage-2 close-out): dive-surfaced sources DECLINED: llama.cpp PR #29454 (closed
     unmerged; its content is captured in this entry and it matters only as a patch template under the trigger-gated follow-on).'
+  integration_disposition: integrated
+  disposition_evidence:
+  - W3SPEC-1 -> P1 / DF2-12.1
+  - W3SPEC-2 -> P1 / DF2-12.1
+  - W3SPEC-3 -> P9 / CH-37
 - id: intake-2592
   arxiv_id: null
   url: https://github.com/ggml-org/llama.cpp/issues/28158
@@ -373608,7 +373982,8 @@
   notes: 'GitHub issue; read via API (issue, comments, timeline). Not read in dive: Full thread read; the linked #27812, #28097 not
     read.'
   verification: dive-verified
-  handoffs_updated: []
+  handoffs_updated:
+  - qwen-mtp-llamacpp-port.md
   handoffs_created: []
   source_revision: 'GitHub API ggml-org/llama.cpp issues/28158 (+10 comments, timeline, PR #28206) retrieved 2026-10-31; state open'
   reader_should_conclude: Cite as an OPEN Vulkan-only report; no fix exists. Do NOT carry 'off-by-one in draft sampling' (OP hypothesis,
@@ -373642,6 +374017,9 @@
   dive_corrections: '2026-10-31 (Stage 2, wave 3 (Stage 2b)): Stage-1 record created from the API; issue verified. Stage-2 correction
     to the title framing: this is not a confirmed ''MTP/DFlash emits out-of-bounds id'' logic bug; evidence points to a Vulkan-backend
     NaN-logits producer plus a sentinel n_vocab fill, and CPU is clean. No relevance to HIP/CPU serving was found.'
+  integration_disposition: knowledge_only
+  disposition_evidence:
+  - W3SPEC-4 -> K1
 - id: intake-2593
   arxiv_id: null
   url: https://github.com/ggml-org/llama.cpp/pull/29818
@@ -373715,7 +374093,8 @@
   notes: 'Upstream PR record; GitHub API incl. all comments. Not read: full diff. Not read in dive: Full diff of the 35 files (read
     file list, README, server-decision.cpp L40-66 and head only); later model PRs (d1/LFM3, vllm-d3, Granite switch) read by title only.'
   verification: dive-verified
-  handoffs_updated: []
+  handoffs_updated:
+  - typed-decision-plane.md
   handoffs_created: []
   source_revision: github.com/ggml-org/llama.cpp PR 29818 (merge a4cb4c61fd9d, 2026-10-02) via GitHub API incl. 6 comments, 6 review
     comments, tools/server/README.md and server-decision.cpp @a4cb4c6, retrieved 2026-10-31; frozen tree ffc1bac82 checked by git
@@ -373830,6 +374209,13 @@
     per-model option limits, the parity table, the build mapping (b11361 for the endpoint) and a git check that the frozen tree has
     none of it (merge commit not an ancestor of ffc1bac82; no systemone string; no decision source file). Commands: git merge-base --is-ancestor
     a4cb4c61 ffc1bac82 returned non-ancestor; git grep -i systemone ffc1bac82 empty.'
+  integration_disposition: integrated
+  disposition_evidence:
+  - W3DEC-1 -> P5 / TD-23.D1
+  - W3DEC-2 -> P5 / TD-23.D1
+  - W3DEC-3 -> P5 / TD-23.D1
+  - W3DEC-4 -> P5 / TD-18.1
+  - W3DEC-5 -> K4
 - id: intake-2594
   arxiv_id: null
   url: https://github.com/ggml-org/llama.cpp/issues/30064
@@ -373888,7 +374274,8 @@
   notes: 'Issue closed; cause is Metal fusion not quantization. Not read in dive: Issue 30064 cross-referenced repos (oboete) not read;
     Clef model card not read.'
   verification: dive-overturned
-  handoffs_updated: []
+  handoffs_updated:
+  - typed-decision-plane.md
   handoffs_created: []
   source_revision: github.com/ggml-org/llama.cpp issue 30064 (closed 2026-10-07) + comment + timeline, fix PR 30100 (merge 7e8324f5feba),
     retrieved 2026-10-31 via GitHub API
@@ -373985,6 +374372,9 @@
     quantized and that BF16-vs-Q8 parity must be checked per file. The first half is overturned: the cause is a Metal backend bug fixed
     in PR 30100 on 2026-10-07 and the same Q8_0 file is correct on CPU. The recommendation (check parity per file and backend) survives
     but for a different reason: backend fusion paths can silently corrupt a head.'
+  integration_disposition: integrated
+  disposition_evidence:
+  - W3DEC-1 -> P5 / TD-23.D1
 - id: intake-2595
   arxiv_id: null
   url: https://github.com/ggml-org/llama.cpp/issues/30402
@@ -374048,7 +374438,8 @@
   notes: 'Open issue; fix PR 30408 likely but unconfirmed. Not read in dive: Reporter''s linked claude.ai artifact fix; commit comment
     204575113 on efe3626b1; source of llama-batch.cpp split_equal/split_seq.'
   verification: dive-verified
-  handoffs_updated: []
+  handoffs_updated:
+  - typed-decision-plane.md
   handoffs_created: []
   source_revision: github.com/ggml-org/llama.cpp issue 30402 (open, 0 comments, build 11572/efe3626b1) + PR 30408 (merge cbe28bb3cb07)
     + issues 30482/31475/31150/29902/30073 + PR 30710/30567, retrieved 2026-10-31 via GitHub API; sha256 of paper not applicable
@@ -374164,6 +374555,10 @@
     artifact with the reporter''s proposed fix was not readable. Not asserted: that d1 (LFM3 conv/attention hybrid) or Kev are batch-sensitive.
     2026-10-31 (Stage-2 close-out): dive-surfaced sources DECLINED: llama.cpp issue #31150 (reported on an old build; superseded by
     the batch-split fixes being ingested).'
+  integration_disposition: integrated
+  disposition_evidence:
+  - W3DEC-2 -> P5 / TD-23.D1
+  - W3DEC-5 -> K4
 - id: intake-2596
   arxiv_id: '2610.28577'
   url: https://arxiv.org/abs/2610.28577
@@ -374256,7 +374651,9 @@
     yet, price-table cost. Not read in dive: Appendix A.1.1 kernel details, A.3, A.4 cost breakdowns, A.5 concurrent work, Figures (images),
     reference list, repo code.'
   verification: dive-verified
-  handoffs_updated: []
+  handoffs_updated:
+  - context-folding-progressive.md
+  - kv-prefix-fork-and-paged-attention.md
   handoffs_created: []
   source_revision: arXiv:2610.28577v1 HTML sha256-12 720743b692be, retrieved 2026-10-31 (submitted 20 Oct 2026)
   reader_should_conclude: Cite for the history-dependence hazard and the drop/repos semantics. Cost numbers are price-table estimates
@@ -374373,6 +374770,11 @@
     and the linear-attention limitation. Intake-2590 numbers recompute from the tables. Nothing overturned. 2026-10-31 (second reader):
     main dropped an anchor judged not to support its claim. 2026-10-31 (second reader): main dropped an anchor judged not to support
     its claim.'
+  integration_disposition: integrated
+  disposition_evidence:
+  - W3DEC-6 -> K3
+  - W3DEC-7 -> P6 / CF-AKV-0
+  - W3DEC-8 -> M3
 - id: intake-2597
   arxiv_id: null
   url: https://github.com/ggml-org/llama.cpp/issues/26695
@@ -374424,7 +374826,8 @@
     code. Not read in dive: linked PR #25004/#26499/#22746/vLLM threads and the unmerged local patch bodies were not fetched; only the
     assigned thread plus its files/review comments'
   verification: dive-verified
-  handoffs_updated: []
+  handoffs_updated:
+  - dflash2-block-drafter-experimental-build.md
   handoffs_created: []
   source_revision: GitHub REST API (issue/PR, comments, files) JSON rendered to all.txt, retrieved 2026-10-31 (https://github.com/ggml-org/llama.cpp/issues/26695)
   reader_should_conclude: 'Cite as: upstream-acknowledged single-seq limitation of seq_rm on whole-batch rollback under n_rs_seq>0;
@@ -374472,6 +374875,9 @@
   dive_corrections: '2026-10-31 (Stage 2, wave 4 (Stage 2b)): Stage 1 had no primary text for the mechanism. Dive adds: the defect needs
     a rollback as long as the whole decode batch (anchor removed); spec verification batches are anchor+drafts so rollback <= n_draft
     < batch length, hence not reachable from MTP/DFlash2 rejection. No cross-slot element exists in the thread (rs_idx is per-seq: llama-memory-recurrent.cpp:407).'
+  integration_disposition: integrated
+  disposition_evidence:
+  - W4UP-1 -> P1 / DF2-12.1
 - id: intake-2598
   arxiv_id: null
   url: https://github.com/ggml-org/llama.cpp/issues/28019
@@ -374529,7 +374935,8 @@
     from the API listing. Not read in dive: linked PR #25004/#26499/#22746/vLLM threads and the unmerged local patch bodies were not
     fetched; only the assigned thread plus its files/review comments'
   verification: dive-verified
-  handoffs_updated: []
+  handoffs_updated:
+  - dflash2-block-drafter-experimental-build.md
   handoffs_created: []
   source_revision: GitHub REST API (issue/PR, comments, files) JSON rendered to all.txt, retrieved 2026-10-31 (https://github.com/ggml-org/llama.cpp/issues/28019)
   reader_should_conclude: 'Cite: qwen4exp rollback needs #28123 (ported locally as 0771238438); slot reuse across unrelated conversations
@@ -374584,6 +374991,10 @@
     dive-surfaced sources DECLINED: llama.cpp PR #28123 (conv-state snapshot fix; our tree already carries it as local commit 0771238438,
     and the proposed recurrent-state hash test checks its effect directly) and llama.cpp #25004 (older related thread; nothing load-bearing
     beyond what this entry records).'
+  integration_disposition: integrated
+  disposition_evidence:
+  - W4UP-1 -> P1 / DF2-12.1
+  - W4UP-2 -> P1 / DF2-12.1
 - id: intake-2599
   arxiv_id: null
   url: https://github.com/ggml-org/llama.cpp/pull/30408
@@ -374629,7 +375040,9 @@
   notes: 'PR files, patch, bodies, comments (none) read in full. Not read in dive: linked PR #25004/#26499/#22746/vLLM threads and the
     unmerged local patch bodies were not fetched; only the assigned thread plus its files/review comments'
   verification: dive-verified
-  handoffs_updated: []
+  handoffs_updated:
+  - autokernel-champion-aggregate.md
+  - typed-decision-plane.md
   handoffs_created: []
   source_revision: GitHub REST API (issue/PR, comments, files) JSON rendered to all.txt, retrieved 2026-10-31 (https://github.com/ggml-org/llama.cpp/pull/30408)
   reader_should_conclude: Cite as the ubatching fix for non-causal/embedding multi-seq batches. Do NOT carry as a requirement for MTP/DFlash2
@@ -374666,6 +375079,10 @@
   depends_on: []
   dive_corrections: '2026-10-31 (Stage 2, wave 4 (Stage 2b)): Stage 1 had only a title. Dive fixes scope: ubatch-split rule for non-causal
     and output_all batches; not a causal-LM or speculative change.'
+  integration_disposition: integrated
+  disposition_evidence:
+  - W4UP-3 -> P5 / TD-23.D1
+  - W5FOLD-1 -> P9 / CH-33
 - id: intake-2600
   arxiv_id: null
   url: https://github.com/ggml-org/llama.cpp/pull/30100
@@ -374713,7 +375130,8 @@
   notes: 'PR comments and review comment read (style nit only). Not read in dive: linked PR #25004/#26499/#22746/vLLM threads and the
     unmerged local patch bodies were not fetched; only the assigned thread plus its files/review comments'
   verification: dive-verified
-  handoffs_updated: []
+  handoffs_updated:
+  - typed-decision-plane.md
   handoffs_created: []
   source_revision: GitHub REST API (issue/PR, comments, files) JSON rendered to all.txt, retrieved 2026-10-31 (https://github.com/ggml-org/llama.cpp/pull/30100)
   reader_should_conclude: 'Cite as a Metal-specific defect; no action for EPYC kernels. Do not infer anything about HIP fusion from
@@ -374755,6 +375173,10 @@
   depends_on: []
   dive_corrections: '2026-10-31 (Stage 2, wave 4 (Stage 2b)): Confirms Metal-only. No CPU/HIP code path change; CPU was the reference
     in the PR own table.'
+  integration_disposition: integrated
+  disposition_evidence:
+  - W4UP-3 -> P5 / TD-23.D1
+  - 'W5FOLD-2 -> decline: the fix touches only the Metal backend; no CPU or HIP code path in our stack changes.'
 - id: intake-2601
   arxiv_id: null
   url: https://github.com/ggml-org/llama.cpp/pull/29832
@@ -374804,7 +375226,9 @@
   notes: 'Full diff, body read; no comments and no review comments exist. Not read in dive: linked PR #25004/#26499/#22746/vLLM threads
     and the unmerged local patch bodies were not fetched; only the assigned thread plus its files/review comments'
   verification: dive-verified
-  handoffs_updated: []
+  handoffs_updated:
+  - autokernel-champion-aggregate.md
+  - typed-decision-plane.md
   handoffs_created: []
   source_revision: GitHub REST API (issue/PR, comments, files) JSON rendered to all.txt, retrieved 2026-10-31 (https://github.com/ggml-org/llama.cpp/pull/29832)
   reader_should_conclude: Cite as an open draft demonstrating GENERIC typed decisions (next-token label readout with U+22B2 delimiters).
@@ -374851,6 +375275,11 @@
     llama.cpp PR #30361 (H2O-Lightning-4B decision-model support; adding a second decision family is a candidate-list choice for the
     decision-screen owner, not something the PR thread settles). Wave cap reached by choice after wave 4: remaining surfaced items are
     build-inclusion facts.'
+  integration_disposition: integrated
+  disposition_evidence:
+  - W4UP-3 -> P5 / TD-23.D1
+  - W4UP-4 -> M4
+  - W5FOLD-3 -> P9 / CH-36
 - id: intake-2602
   arxiv_id: null
   url: https://github.com/ggml-org/llama.cpp/issues/31475
@@ -374902,7 +375331,8 @@
   notes: 'Issue body only (0 comments at fetch time). Not read in dive: linked PR #25004/#26499/#22746/vLLM threads and the unmerged
     local patch bodies were not fetched; only the assigned thread plus its files/review comments'
   verification: dive-verified
-  handoffs_updated: []
+  handoffs_updated:
+  - typed-decision-plane.md
   handoffs_created: []
   source_revision: GitHub REST API (issue/PR, comments, files) JSON rendered to all.txt, retrieved 2026-10-31 (https://github.com/ggml-org/llama.cpp/issues/31475)
   reader_should_conclude: Cite as an open, unconfirmed perf defect for hybrid decision models at np>1, with an unmerged local fix. Do
@@ -374947,3 +375377,7 @@
   dive_corrections: '2026-10-31 (Stage 2, wave 4 (Stage 2b)): Dive corrects the task framing: the 0.007 shift is a one-probability observation
     under a checkpointed-prefix variant; the actual finding is the missing hybrid-state checkpoint for decision tasks (throughput loss,
     not correctness). Same recurrent-state class as DF2-13 checkpoint/prompt-reuse.'
+  integration_disposition: integrated
+  disposition_evidence:
+  - W4UP-3 -> P5 / TD-23.D1
+  - W4UP-5 -> M4

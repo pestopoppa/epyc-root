@@ -1,0 +1,845 @@
+[
+ {
+  "entry": "intake-2577",
+  "claim_index": 0,
+  "locator": "issue body Summary",
+  "verdict": "partial",
+  "reason": "Quote gives tok/s and healthy range only; not zero-acceptance windows or lifetime 20%."
+ },
+ {
+  "entry": "intake-2577",
+  "claim_index": 1,
+  "locator": "comment ZJY0516 2026-09-05T01:51Z",
+  "verdict": "yes"
+ },
+ {
+  "entry": "intake-2577",
+  "claim_index": 1,
+  "locator": "comment jschmied 2026-09-05T13:00Z",
+  "verdict": "yes"
+ },
+ {
+  "entry": "intake-2577",
+  "claim_index": 2,
+  "locator": "comment jschmied 2026-09-05T11:08Z",
+  "verdict": "partial",
+  "reason": "Quote states trigger only; not the root-cause mechanism."
+ },
+ {
+  "entry": "intake-2577",
+  "claim_index": 2,
+  "locator": "comment jschmied 2026-09-05T13:00Z",
+  "verdict": "partial",
+  "reason": "Quote covers one kernel detail; not the full mechanism."
+ },
+ {
+  "entry": "intake-2577",
+  "claim_index": 2,
+  "locator": "comment jschmied 2026-09-05T13:00Z",
+  "verdict": "partial",
+  "reason": "Quote covers contiguity only; not the rest of the mechanism."
+ },
+ {
+  "entry": "intake-2577",
+  "claim_index": 3,
+  "locator": "issue body Related upstream",
+  "verdict": "partial",
+  "reason": "Quote cites llama.cpp issues; does not show specificity claim."
+ },
+ {
+  "entry": "intake-2578",
+  "claim_index": 0,
+  "locator": "v1 Sec 3.4 Training Procedure",
+  "verdict": "yes"
+ },
+ {
+  "entry": "intake-2578",
+  "claim_index": 2,
+  "locator": "v1 Sec 3.4 Loss",
+  "verdict": "partial",
+  "reason": "Quote covers loss type only; not T, N_mtp or data."
+ },
+ {
+  "entry": "intake-2578",
+  "claim_index": 2,
+  "locator": "v1 Sec 3.4 Data",
+  "verdict": "partial",
+  "reason": "Quote covers steps, batch and length; not loss or temperature."
+ },
+ {
+  "entry": "intake-2578",
+  "claim_index": 3,
+  "locator": "v1 Table 6 caption",
+  "verdict": "partial",
+  "reason": "Quote covers speedup percentages; not acceptance lengths."
+ },
+ {
+  "entry": "intake-2579",
+  "claim_index": 0,
+  "locator": "pr31269 body Overview",
+  "verdict": "partial",
+  "reason": "Quote covers streaming only; not PR size or merge date."
+ },
+ {
+  "entry": "intake-2579",
+  "claim_index": 1,
+  "locator": "pr31269 body Additional information",
+  "verdict": "partial",
+  "reason": "Quote covers quant smoke tests; not the no-HIP or no-latency limits."
+ },
+ {
+  "entry": "intake-2579",
+  "claim_index": 2,
+  "locator": "tools/server/README.md @8ca4060b7",
+  "verdict": "partial",
+  "reason": "Quote covers response.cancel only; not the full protocol list."
+ },
+ {
+  "entry": "intake-2579",
+  "claim_index": 3,
+  "locator": "tools/server/server-realtime.cpp @8ca4060b7",
+  "verdict": "yes"
+ },
+ {
+  "entry": "intake-2579",
+  "claim_index": 3,
+  "locator": "tools/server/README.md @8ca4060b7",
+  "verdict": "yes"
+ },
+ {
+  "entry": "intake-2579",
+  "claim_index": 5,
+  "locator": "tools/server/README.md @8ca4060b7",
+  "verdict": "partial",
+  "reason": "Quote covers context restart only; not 0.96s or intent gating."
+ },
+ {
+  "entry": "intake-2580",
+  "claim_index": 0,
+  "locator": "PR body Overview",
+  "verdict": "yes"
+ },
+ {
+  "entry": "intake-2580",
+  "claim_index": 1,
+  "locator": "tools/mtmd/mtmd.h @2851b3bcb",
+  "verdict": "partial",
+  "reason": "Quote gives step signature only; not full API shape."
+ },
+ {
+  "entry": "intake-2580",
+  "claim_index": 1,
+  "locator": "tools/mtmd/mtmd.h @2851b3bcb",
+  "verdict": "yes"
+ },
+ {
+  "entry": "intake-2580",
+  "claim_index": 2,
+  "locator": "conversion/mistral3.py @2851b3bcb",
+  "verdict": "partial",
+  "reason": "Quote names example model only; not conversion or encoder graph."
+ },
+ {
+  "entry": "intake-2580",
+  "claim_index": 3,
+  "locator": "tools/mtmd/mtmd-cli.cpp @2851b3bcb",
+  "verdict": "partial",
+  "reason": "Quote supports streaming CLI; not the CPU-only scope limit."
+ },
+ {
+  "entry": "intake-2581",
+  "claim_index": 0,
+  "locator": "GGUF card Use with llama.cpp",
+  "verdict": "yes"
+ },
+ {
+  "entry": "intake-2581",
+  "claim_index": 1,
+  "locator": "GGUF card Use with llama.cpp",
+  "verdict": "partial",
+  "reason": "Quote covers unsupported types; not the served-type list."
+ },
+ {
+  "entry": "intake-2581",
+  "claim_index": 1,
+  "locator": "GGUF card Use with llama.cpp",
+  "verdict": "partial",
+  "reason": "Quote covers batch sizing; not the answer-type limits."
+ },
+ {
+  "entry": "intake-2581",
+  "claim_index": 2,
+  "locator": "GGUF card Spoken question",
+  "verdict": "yes"
+ },
+ {
+  "entry": "intake-2582",
+  "claim_index": 0,
+  "locator": "d1-2B card, intro",
+  "verdict": "partial",
+  "reason": "Quote covers model family only; not layer, license or audio details."
+ },
+ {
+  "entry": "intake-2582",
+  "claim_index": 2,
+  "locator": "d1-2B card, Benchmarks",
+  "verdict": "no",
+  "reason": "Quote is a section heading, carries no benchmark evidence."
+ },
+ {
+  "entry": "intake-2582",
+  "claim_index": 3,
+  "locator": "d1-2B card, Speed",
+  "verdict": "partial",
+  "reason": "Quote gives methodology only; not the specific latency numbers."
+ },
+ {
+  "entry": "intake-2582",
+  "claim_index": 4,
+  "locator": "d1-2B card, Question types",
+  "verdict": "partial",
+  "reason": "Quote covers calibrate-on-own-data only; not the ECE absence."
+ },
+ {
+  "entry": "intake-2582",
+  "claim_index": 4,
+  "locator": "d1-2B card, Model details",
+  "verdict": "partial",
+  "reason": "Quote covers the 64K limit only; not the calibration claims."
+ },
+ {
+  "entry": "intake-2583",
+  "claim_index": 0,
+  "locator": "Intro",
+  "verdict": "yes"
+ },
+ {
+  "entry": "intake-2583",
+  "claim_index": 1,
+  "locator": "Vision and audio performance",
+  "verdict": "partial",
+  "reason": "Quote covers audio open problem only; not the scores."
+ },
+ {
+  "entry": "intake-2583",
+  "claim_index": 2,
+  "locator": "Fast Inference Everywhere",
+  "verdict": "partial",
+  "reason": "Quote asserts stack; does not support latency numbers."
+ },
+ {
+  "entry": "intake-2583",
+  "claim_index": 3,
+  "locator": "Get Started",
+  "verdict": "partial",
+  "reason": "Quote gives open-weight wording only; not the licence conflict."
+ },
+ {
+  "entry": "intake-2584",
+  "claim_index": 0,
+  "locator": "v1 Abstract",
+  "verdict": "partial",
+  "reason": "Quote gives PLT definition only; not architecture or training."
+ },
+ {
+  "entry": "intake-2584",
+  "claim_index": 1,
+  "locator": "v1 §1",
+  "verdict": "partial",
+  "reason": "Quote covers SWE-bench R=2 only; not averages or R=3/R=4."
+ },
+ {
+  "entry": "intake-2584",
+  "claim_index": 2,
+  "locator": "v1 §2.2",
+  "verdict": "partial",
+  "reason": "Quote asserts latency benefit; does not show architectural-only status."
+ },
+ {
+  "entry": "intake-2584",
+  "claim_index": 3,
+  "locator": "HF API model json",
+  "verdict": "partial",
+  "reason": "Quote gives license only; not release or architecture details."
+ },
+ {
+  "entry": "intake-2584",
+  "claim_index": 4,
+  "locator": "v1 §3.1 Evaluation Protocol",
+  "verdict": "partial",
+  "reason": "Quote covers checkpoint reporting; not single-run or harness claims."
+ },
+ {
+  "entry": "intake-2585",
+  "claim_index": 1,
+  "locator": "PR #29823 body Overview",
+  "verdict": "partial",
+  "reason": "Quote covers 4-loop application; not gate or early-exit facts."
+ },
+ {
+  "entry": "intake-2585",
+  "claim_index": 1,
+  "locator": "PR #29823 body Overview",
+  "verdict": "partial",
+  "reason": "Quote gives override flag; not the load-time constant claims."
+ },
+ {
+  "entry": "intake-2585",
+  "claim_index": 2,
+  "locator": "PR #29823 body",
+  "verdict": "partial",
+  "reason": "Quote gives setup only; not top-1 or GSM8K/PPL numbers."
+ },
+ {
+  "entry": "intake-2585",
+  "claim_index": 3,
+  "locator": "loop-transformer NOTES.md L1504-L1505",
+  "verdict": "partial",
+  "reason": "Quote gives 9.5 tok/s only; not the full speed series."
+ },
+ {
+  "entry": "intake-2585",
+  "claim_index": 3,
+  "locator": "PR #29823 body Also",
+  "verdict": "partial",
+  "reason": "Quote gives KV and ~4x claim; not the measured tok/s pairs."
+ },
+ {
+  "entry": "intake-2585",
+  "claim_index": 4,
+  "locator": "loop-transformer README",
+  "verdict": "partial",
+  "reason": "Quote covers Nanbeige degradation only; not Ouro or regex bug."
+ },
+ {
+  "entry": "intake-2586",
+  "claim_index": 1,
+  "locator": "PR #25994 body Runtime",
+  "verdict": "yes"
+ },
+ {
+  "entry": "intake-2586",
+  "claim_index": 1,
+  "locator": "PR #25994 diff src/models/nanbeige.cpp load_arch_tensors",
+  "verdict": "yes"
+ },
+ {
+  "entry": "intake-2586",
+  "claim_index": 1,
+  "locator": "PR #25994 diff nanbeige.cpp load_arch_hparams",
+  "verdict": "partial",
+  "reason": "Quote shows num_loops key read; not the expansion mechanics."
+ },
+ {
+  "entry": "intake-2586",
+  "claim_index": 0,
+  "locator": "GitHub API pulls/25994",
+  "verdict": "partial",
+  "reason": "Quote gives merge date only; not additions or file count."
+ },
+ {
+  "entry": "intake-2587",
+  "claim_index": 0,
+  "locator": "blog Result 1",
+  "verdict": "yes"
+ },
+ {
+  "entry": "intake-2587",
+  "claim_index": 1,
+  "locator": "blog Result 1",
+  "verdict": "partial",
+  "reason": "Quote gives 0.55 only; not seed counts or comparison arms."
+ },
+ {
+  "entry": "intake-2587",
+  "claim_index": 2,
+  "locator": "blog Result 2",
+  "verdict": "partial",
+  "reason": "Quote gives perplexity cost only; not the chance-level result."
+ },
+ {
+  "entry": "intake-2587",
+  "claim_index": 3,
+  "locator": "blog Limits",
+  "verdict": "partial",
+  "reason": "Quote gives seed counts only; not negatives or Steifer scope."
+ },
+ {
+  "entry": "intake-2588",
+  "claim_index": 1,
+  "locator": "v3 abstract",
+  "verdict": "partial",
+  "reason": "Quote gives general claim only; not the library-relative figures."
+ },
+ {
+  "entry": "intake-2588",
+  "claim_index": 2,
+  "locator": "v3 Sec 4.3",
+  "verdict": "partial",
+  "reason": "Quote is generic; not the Triton-vs-PTX comparison details."
+ },
+ {
+  "entry": "intake-2588",
+  "claim_index": 3,
+  "locator": "v3 Sec 4.4",
+  "verdict": "partial",
+  "reason": "Quote gives GEMM and attention medians only; not token multipliers."
+ },
+ {
+  "entry": "intake-2588",
+  "claim_index": 4,
+  "locator": "v3 Sec 2.2",
+  "verdict": "partial",
+  "reason": "Quote gives allclose tolerance only; not timing or sanitizer details."
+ },
+ {
+  "entry": "intake-2588",
+  "claim_index": 4,
+  "locator": "v3 App A.1",
+  "verdict": "partial",
+  "reason": "Quote covers skipped racecheck only; not other method details."
+ },
+ {
+  "entry": "intake-2588",
+  "claim_index": 5,
+  "locator": "v3 Sec 5.3",
+  "verdict": "partial",
+  "reason": "Quote on failure shift; not the no-pack ablation numbers."
+ },
+ {
+  "entry": "intake-2588",
+  "claim_index": 5,
+  "locator": "v3 Sec 2.1",
+  "verdict": "partial",
+  "reason": "Quote covers PTX use only; not the ablation numbers."
+ },
+ {
+  "entry": "intake-2589",
+  "claim_index": 1,
+  "locator": "v1 Sec 4",
+  "verdict": "partial",
+  "reason": "Quote names Cake IR only; not the harness stage list."
+ },
+ {
+  "entry": "intake-2589",
+  "claim_index": 2,
+  "locator": "v1 Sec 5 trajectory",
+  "verdict": "partial",
+  "reason": "Quote gives evolve time only; not the best-speedup results."
+ },
+ {
+  "entry": "intake-2589",
+  "claim_index": 4,
+  "locator": "v1 Sec 3.2",
+  "verdict": "yes"
+ },
+ {
+  "entry": "intake-2590",
+  "claim_index": 0,
+  "locator": "arXiv:2610.28577v1 abstract",
+  "verdict": "partial",
+  "reason": "Quote is a fragment about proactive KV use; not mechanisms."
+ },
+ {
+  "entry": "intake-2590",
+  "claim_index": 2,
+  "locator": "v1 Sec 1",
+  "verdict": "partial",
+  "reason": "Quote supports history-dependence only; not AKV serving design."
+ },
+ {
+  "entry": "intake-2590",
+  "claim_index": 3,
+  "locator": "v1 Sec 5.2",
+  "verdict": "partial",
+  "reason": "Quote gives cost reductions only; not success gains per model."
+ },
+ {
+  "entry": "intake-2590",
+  "claim_index": 4,
+  "locator": "v1 Sec 5.2",
+  "verdict": "partial",
+  "reason": "Quote gives throughput only; not latency or RSI figures."
+ },
+ {
+  "entry": "intake-2590",
+  "claim_index": 5,
+  "locator": "v1 Limitations",
+  "verdict": "partial",
+  "reason": "Quote supports linear-attention future work only; not the limits list."
+ },
+ {
+  "entry": "intake-2591",
+  "claim_index": 0,
+  "locator": "issue28286 body, Summary",
+  "verdict": "partial",
+  "reason": "Quote gives symptom setup; not temp-0 or HIP-graph details."
+ },
+ {
+  "entry": "intake-2591",
+  "claim_index": 1,
+  "locator": "issue28286 body, Notes on isolation",
+  "verdict": "partial",
+  "reason": "Quote gives non-reproduction only; not the prompt-complexity point."
+ },
+ {
+  "entry": "intake-2591",
+  "claim_index": 3,
+  "locator": "issue28286 body, Environment",
+  "verdict": "partial",
+  "reason": "Quote gives model line only; not fork or hardware details."
+ },
+ {
+  "entry": "intake-2592",
+  "claim_index": 0,
+  "locator": "issue28158 OP + comment 2",
+  "verdict": "partial",
+  "reason": "Quote gives error line only; not Vulkan-only or CPU control."
+ },
+ {
+  "entry": "intake-2592",
+  "claim_index": 1,
+  "locator": "issue28158 tczank 2026-09-22",
+  "verdict": "partial",
+  "reason": "Quote supports determinism only; not the injected-bug mechanism."
+ },
+ {
+  "entry": "intake-2592",
+  "claim_index": 3,
+  "locator": "issue28158 tczank 2026-10-22",
+  "verdict": "partial",
+  "reason": "Quote gives counter-datapoint only; not absence of HIP/CUDA reports."
+ },
+ {
+  "entry": "intake-2593",
+  "claim_index": 0,
+  "locator": "PR 29818 header",
+  "verdict": "partial",
+  "reason": "Quote gives merge date only; not commit, size or model list."
+ },
+ {
+  "entry": "intake-2593",
+  "claim_index": 0,
+  "locator": "PR 29818 body",
+  "verdict": "yes"
+ },
+ {
+  "entry": "intake-2593",
+  "claim_index": 0,
+  "locator": "PR 29818 body (Additional information)",
+  "verdict": "yes"
+ },
+ {
+  "entry": "intake-2593",
+  "claim_index": 1,
+  "locator": "tools/server/README.md @a4cb4c6 L1670-1700",
+  "verdict": "yes"
+ },
+ {
+  "entry": "intake-2593",
+  "claim_index": 1,
+  "locator": "tools/server/README.md @a4cb4c6",
+  "verdict": "yes"
+ },
+ {
+  "entry": "intake-2593",
+  "claim_index": 1,
+  "locator": "tools/server/README.md @a4cb4c6",
+  "verdict": "yes"
+ },
+ {
+  "entry": "intake-2593",
+  "claim_index": 1,
+  "locator": "tools/server/README.md @a4cb4c6",
+  "verdict": "partial",
+  "reason": "Quote gives limit wording only; not the option-count numbers."
+ },
+ {
+  "entry": "intake-2593",
+  "claim_index": 2,
+  "locator": "tools/server/README.md @a4cb4c6",
+  "verdict": "partial",
+  "reason": "Quote gives calibration caveat; not temperature refusal or override."
+ },
+ {
+  "entry": "intake-2593",
+  "claim_index": 2,
+  "locator": "tools/server/server-decision.cpp @a4cb4c6 L49-63",
+  "verdict": "partial",
+  "reason": "Quote shows temperature key prefix only; not the refusal rule."
+ },
+ {
+  "entry": "intake-2593",
+  "claim_index": 3,
+  "locator": "PR 29818 body, parity table",
+  "verdict": "partial",
+  "reason": "Table values match; quote lacks the one-request and reference caveats."
+ },
+ {
+  "entry": "intake-2593",
+  "claim_index": 4,
+  "locator": "PR 29818 body TODO list",
+  "verdict": "partial",
+  "reason": "Quote covers Clef deferral only; not later model PRs."
+ },
+ {
+  "entry": "intake-2593",
+  "claim_index": 4,
+  "locator": "PR 29818 issue comment ServeurpersoCom 2026-10-03",
+  "verdict": "partial",
+  "reason": "Quote covers build mapping only; not the Clef deferral."
+ },
+ {
+  "entry": "intake-2594",
+  "claim_index": 0,
+  "locator": "issue 30064 title",
+  "verdict": "partial",
+  "reason": "Quote gives title only; not dates, probabilities or hardware."
+ },
+ {
+  "entry": "intake-2594",
+  "claim_index": 0,
+  "locator": "issue 30064 body, Hardware",
+  "verdict": "partial",
+  "reason": "Quote gives hardware only; not the collapse or closure."
+ },
+ {
+  "entry": "intake-2594",
+  "claim_index": 0,
+  "locator": "issue 30064 body, Possible Fix",
+  "verdict": "partial",
+  "reason": "Quote states the hypothesis only; not the rest of the claim."
+ },
+ {
+  "entry": "intake-2594",
+  "claim_index": 1,
+  "locator": "PR 30100 body Overview",
+  "verdict": "yes"
+ },
+ {
+  "entry": "intake-2594",
+  "claim_index": 1,
+  "locator": "PR 30100 body",
+  "verdict": "yes"
+ },
+ {
+  "entry": "intake-2594",
+  "claim_index": 1,
+  "locator": "PR 30100 body table",
+  "verdict": "partial",
+  "reason": "Table row without context; does not show the cause."
+ },
+ {
+  "entry": "intake-2594",
+  "claim_index": 1,
+  "locator": "PR 30100 body table",
+  "verdict": "partial",
+  "reason": "Table row without context; does not show the cause."
+ },
+ {
+  "entry": "intake-2594",
+  "claim_index": 1,
+  "locator": "PR 30100 header",
+  "verdict": "partial",
+  "reason": "Quote gives merge date only; not the cause."
+ },
+ {
+  "entry": "intake-2594",
+  "claim_index": 2,
+  "locator": "PR 30100 body Test",
+  "verdict": "partial",
+  "reason": "Quote supports Metal failure; not the CPU/CUDA/HIP boundary."
+ },
+ {
+  "entry": "intake-2594",
+  "claim_index": 3,
+  "locator": "PR 30100 body",
+  "verdict": "partial",
+  "reason": "Quote gives Fixes link only; not workaround or lesson."
+ },
+ {
+  "entry": "intake-2595",
+  "claim_index": 0,
+  "locator": "issue 30402 title",
+  "verdict": "partial",
+  "reason": "Quote states symptom; not the batch-size numbers or model identity."
+ },
+ {
+  "entry": "intake-2595",
+  "claim_index": 0,
+  "locator": "issue 30402 body",
+  "verdict": "yes"
+ },
+ {
+  "entry": "intake-2595",
+  "claim_index": 0,
+  "locator": "issue 30402 body, serve.sh",
+  "verdict": "partial",
+  "reason": "Quote gives launch flags only; not the symptom."
+ },
+ {
+  "entry": "intake-2595",
+  "claim_index": 0,
+  "locator": "issue 30402 body",
+  "verdict": "partial",
+  "reason": "Quote gives version only; not the symptom."
+ },
+ {
+  "entry": "intake-2595",
+  "claim_index": 1,
+  "locator": "PR 30408 patch src/llama-context.cpp",
+  "verdict": "yes"
+ },
+ {
+  "entry": "intake-2595",
+  "claim_index": 1,
+  "locator": "PR 30408 body",
+  "verdict": "partial",
+  "reason": "Quote is reporter's uncertain suspicion; not the confirmed cause."
+ },
+ {
+  "entry": "intake-2595",
+  "claim_index": 1,
+  "locator": "PR 30408 header",
+  "verdict": "partial",
+  "reason": "Quote gives merge date only; not the cause."
+ },
+ {
+  "entry": "intake-2595",
+  "claim_index": 1,
+  "locator": "issue 29902 body",
+  "verdict": "partial",
+  "reason": "Quote supports single-ubatch constraint; not the full cause."
+ },
+ {
+  "entry": "intake-2595",
+  "claim_index": 2,
+  "locator": "issue 30402 header",
+  "verdict": "partial",
+  "reason": "Quote gives state and comment count only; not the conditions."
+ },
+ {
+  "entry": "intake-2595",
+  "claim_index": 3,
+  "locator": "issue 31475 body",
+  "verdict": "partial",
+  "reason": "Quote gives bitwise caveat; not the julia-1 parity claim."
+ },
+ {
+  "entry": "intake-2595",
+  "claim_index": 4,
+  "locator": "issue 30482 body",
+  "verdict": "partial",
+  "reason": "Quote gives error text only; not the fix PR or other defects."
+ },
+ {
+  "entry": "intake-2595",
+  "claim_index": 4,
+  "locator": "PR 30710 body",
+  "verdict": "partial",
+  "reason": "Quote is a mitigation; does not support the defect list."
+ },
+ {
+  "entry": "intake-2596",
+  "claim_index": 0,
+  "locator": "v1 abstract",
+  "verdict": "partial",
+  "reason": "Quote gives history-dependence finding; not paper metadata."
+ },
+ {
+  "entry": "intake-2596",
+  "claim_index": 0,
+  "locator": "v1 §3.3 Drop",
+  "verdict": "partial",
+  "reason": "Quote supports drop semantics; not repos or authorship."
+ },
+ {
+  "entry": "intake-2596",
+  "claim_index": 1,
+  "locator": "v1 §1",
+  "verdict": "partial",
+  "reason": "Quote supports retained-KV mechanism; not policy or re-prefill contrast."
+ },
+ {
+  "entry": "intake-2596",
+  "claim_index": 1,
+  "locator": "v1 §5.1 Baselines",
+  "verdict": "partial",
+  "reason": "Quote gives baseline policy only; not repos or other claims."
+ },
+ {
+  "entry": "intake-2596",
+  "claim_index": 2,
+  "locator": "v1 §4.2.1",
+  "verdict": "yes"
+ },
+ {
+  "entry": "intake-2596",
+  "claim_index": 2,
+  "locator": "v1 §4.2.2",
+  "verdict": "no",
+  "reason": "Quote covers attention segmentation; not prefix-matching or radix keying."
+ },
+ {
+  "entry": "intake-2596",
+  "claim_index": 2,
+  "locator": "v1 §4.2.3",
+  "verdict": "yes"
+ },
+ {
+  "entry": "intake-2596",
+  "claim_index": 3,
+  "locator": "v1 §5.2",
+  "verdict": "partial",
+  "reason": "Quote gives cost reductions only; not the score or cost table."
+ },
+ {
+  "entry": "intake-2596",
+  "claim_index": 3,
+  "locator": "v1 §5.1 Metrics",
+  "verdict": "partial",
+  "reason": "Quote covers cost conservatism only; not the score results."
+ },
+ {
+  "entry": "intake-2596",
+  "claim_index": 4,
+  "locator": "v1 §5.1 Serving configuration",
+  "verdict": "partial",
+  "reason": "Quote gives GPU config only; not throughput or latency results."
+ },
+ {
+  "entry": "intake-2596",
+  "claim_index": 4,
+  "locator": "v1 App A.1.4",
+  "verdict": "partial",
+  "reason": "Quote gives decoding settings only; not results."
+ },
+ {
+  "entry": "intake-2596",
+  "claim_index": 4,
+  "locator": "v1 App A.1.4",
+  "verdict": "partial",
+  "reason": "Quote gives run window only; not the results."
+ },
+ {
+  "entry": "intake-2596",
+  "claim_index": 5,
+  "locator": "v1 §5.4",
+  "verdict": "partial",
+  "reason": "Quote gives RSI cost cuts only; not repos or ablation claims."
+ },
+ {
+  "entry": "intake-2596",
+  "claim_index": 5,
+  "locator": "v1 §1",
+  "verdict": "no",
+  "reason": "Quote gives unrelated KV cost share; not ablations or limits."
+ },
+ {
+  "entry": "intake-2596",
+  "claim_index": 5,
+  "locator": "v1 §6 Limitations",
+  "verdict": "partial",
+  "reason": "Quote supports future-work limit only; not ablation results."
+ }
+]

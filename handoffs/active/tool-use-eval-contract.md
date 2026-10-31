@@ -479,3 +479,9 @@ Design only; no run. Purpose: price the A7 arm of CF-AB-1 (externalised lossless
 **Gate for A7.** A7 is priced as worth running at a role only if that role's R3 beats R2 on the paired delta with the interval excluding zero, and its R3 code-execution rate is reported (the existing A7 trigger already requires a local probe showing the role writes working search code; this ladder is that probe, widened to four rungs). Absence of a gain at R3 prices A7 at that role as not worth its window.
 
 **Cost.** Zero compute for this design. The run needs a window per role; harness work is the four tool surfaces over one log format, all of which exist in the REPL/tool stack or are thin wrappers. Acceptance: this section filed.
+
+### Research intake 2026-10-31 — ws58 batch (intake-2545..2602)
+
+Operator-approved 2026-10-31 (plan revision 2, `research/intake-stage3-plan-2026-10-31-ws58.md`, sha256 `043e502133cae214175ea3f2a395f575e6ca13b9f3ee058525ed020264ab5012`; relayed by the ws58 coordinator; budget approved: about 13 MI210-hours for the drafter pilot, 6-9 engineer-weeks for the race checker, the 95.5 GB ThinkingCap download; D1 confirmed: in-weights calculator declined, GPU reason recorded on intake-2550/2574; D2 approved: scratch upstream builds are measurement instruments only). Trigger records below are prose with no checkbox until a reviewed session confirms their condition.
+
+- *Intake trigger record (no checkbox until it fires), M3, row AGENT-3 (intake-2565#record):* Add a per-fold eval: before folding any worker role into skills, require a frozen end-to-end set covering every production chain (architect -> coder_escalation, frontdoor -> worker_*) and every must-not-break rule, repeated >=2 times, reporting flipped tasks. ...

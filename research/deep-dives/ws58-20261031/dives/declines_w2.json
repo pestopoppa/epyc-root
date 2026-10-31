@@ -1,0 +1,6 @@
+{"intake-2577": "vllm-project/vllm PR #55375 (fix diff; root cause and merge already settled from the issue thread, and the code is vLLM-specific) and github.com/jschmied/qwen38-flash-next-gb10 (GB10/vLLM reproducer notes; no llama.cpp bearing). Main recommendation at the wave-2 close-out under the operator pre-approval.",
+ "intake-2584": "github.com/huskydoge/Awesome-Loop-Models (curated list, no claims of its own; would settle nothing).",
+ "intake-2585": "arXiv 2604.21106 (iso-depth scaling theory, id taken from repo notes; no EPYC decision depends on it) and github.com/Thrillcrazyer/LoopUS (looped retrofit; the W2LOOP-1 measure-first probe on Ouro answers the same CPU question first).",
+ "intake-2588": "github.com/zhang677/PTXBench code (NVIDIA-only harness; the paper's findings are already dived).",
+ "intake-2589": "FlashInfer PRs 4262/4279/4274/4287 (CAKE-generated NVIDIA-only kernels).",
+ "intake-2579": "llama.cpp PR 31287 (realtime tool calls; already summarized inside intake-2575)."}

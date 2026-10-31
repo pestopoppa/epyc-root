@@ -108,3 +108,9 @@ Our fork's speculative subsystem is an **older API generation** than PR #22673's
 - Build: `cmake -B build && cmake --build build -j$(nproc)` (add `-DGGML_CUDA=OFF` for CPU-only)
 - Upstream PR diffs: `git show 255582687` / `git show 4e732e0a6` (origin = ggml-org)
 - Verify: `/workspace/scripts/session/verify_llama_cpp.sh`
+
+### Research intake 2026-10-31 — ws58 batch (intake-2545..2602)
+
+Operator-approved 2026-10-31 (plan revision 2, `research/intake-stage3-plan-2026-10-31-ws58.md`, sha256 `043e502133cae214175ea3f2a395f575e6ca13b9f3ee058525ed020264ab5012`; relayed by the ws58 coordinator; budget approved: about 13 MI210-hours for the drafter pilot, 6-9 engineer-weeks for the race checker, the 95.5 GB ThinkingCap download; D1 confirmed: in-weights calculator declined, GPU reason recorded on intake-2550/2574; D2 approved: scratch upstream builds are measurement instruments only). Trigger records below are prose with no checkbox until a reviewed session confirms their condition.
+
+- *Intake knowledge note, K1, row W3SPEC-4 (intake-2592#record):* No action on our CPU/HIP stack; note in the speculative handoff that the n_vocab-sentinel failure is Vulkan-specific and fails loudly at src/llama-batch.cpp:52 (token validation), which our tree retains.
