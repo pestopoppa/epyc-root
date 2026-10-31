@@ -14,7 +14,8 @@ sys.path.insert(0, str(ROOT / 'scripts/vidya'))
 import claim_tuple as ct
 from adapters import dev_harness_aggregate as a
 
-ORCH = pathlib.Path('/mnt/raid0/llm/epyc-orchestrator')
+# CI supplies the pinned producer checkout; local runs retain the production default.
+ORCH = pathlib.Path(os.environ.get('EPYC_ORCHESTRATOR_SOURCE_ROOT', '/mnt/raid0/llm/epyc-orchestrator'))
 
 
 @pytest.fixture

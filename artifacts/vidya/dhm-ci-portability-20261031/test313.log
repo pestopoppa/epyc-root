@@ -1,0 +1,255 @@
+F.F....FFFF                                                              [100%]
+=================================== FAILURES ===================================
+_____________ test_real_miners_publisher_cli_and_planning_control ______________
+
+produced = (PosixPath('/mnt/raid0/llm/tmp/codex3-dhm-ci-root-20261031/pytest313/test_real_miners_publisher_cli0'), PosixPath('/mn...[{'pointer': '/counts/dhm4/sheet_items', 'metric': 'sheet_items', 'unit': 'items', 'direction': 'lower_better', ...}]})
+
+    def test_real_miners_publisher_cli_and_planning_control(produced):
+        import loop_beliefs as lb
+        class Sync:
+            def status(self, *args):
+                return {'fresh': True, 'lag_entries': 0, 'index_max_id': 1, 'synced_max_id': 1, 'last_sync': '2026-10-31T00:00:00Z'}
+            def sync(self, *args):
+                raise AssertionError('unexpected sync')
+        tmp = produced[0]
+>       side = publish(produced)
+               ^^^^^^^^^^^^^^^^^
+
+tests/vidya/test_dev_harness_aggregate.py:70: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+produced = (PosixPath('/mnt/raid0/llm/tmp/codex3-dhm-ci-root-20261031/pytest313/test_real_miners_publisher_cli0'), PosixPath('/mn...[{'pointer': '/counts/dhm4/sheet_items', 'metric': 'sheet_items', 'unit': 'items', 'direction': 'lower_better', ...}]})
+
+    def publish(produced):
+        tmp, run, declarations, env, _ = produced
+        dest = tmp / 'control.aggregate.json'
+        result = subprocess.run([sys.executable, str(ROOT / 'scripts/dev_harness/publish_mining_results.py'),
+                                 str(run), str(dest), '--belief-declarations', str(declarations)],
+                                env=env, capture_output=True, text=True, check=False)
+>       assert result.returncode == 0, result.stderr
+E       AssertionError: Traceback (most recent call last):
+E           File "/mnt/raid0/llm/tmp/codex3-dhm-ci-root-20261031/root/scripts/dev_harness/publish_mining_results.py", line 54, in <module>
+E             out = publish_with_beliefs(doc, args.dest, metadata=declarations["metadata"],
+E                                        metrics=declarations["metrics"], private_root=p.PRIVATE_ROOT,
+E                                        orchestrator_root=p.ORCHESTRATOR_ROOT,
+E                                        run_dir=args.run_dir, declarations_path=args.belief_declarations)
+E           File "/mnt/raid0/llm/tmp/codex3-dhm-ci-root-20261031/root/scripts/vidya/adapters/dev_harness_aggregate.py", line 175, in publish_with_beliefs
+E             _fail('capture privacy preflight refused')
+E             ~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           File "/mnt/raid0/llm/tmp/codex3-dhm-ci-root-20261031/root/scripts/vidya/adapters/dev_harness_aggregate.py", line 34, in _fail
+E             raise ProjectionError(message)
+E         claim_tuple.ProjectionError: capture privacy preflight refused
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['/mnt/raid0/llm/tmp/codex3-dhm-ci-root-20261031/venv313/bin/python', '/mnt/raid0/llm/tmp/codex3...ne 34, in _fail\n    raise ProjectionError(message)\nclaim_tuple.ProjectionError: capture privacy preflight refused\n').returncode
+
+tests/vidya/test_dev_harness_aggregate.py:58: AssertionError
+___________________ test_tamper_namespace_and_partial_refuse ___________________
+
+produced = (PosixPath('/mnt/raid0/llm/tmp/codex3-dhm-ci-root-20261031/pytest313/test_tamper_namespace_and_part0'), PosixPath('/mn...[{'pointer': '/counts/dhm4/sheet_items', 'metric': 'sheet_items', 'unit': 'items', 'direction': 'lower_better', ...}]})
+
+    def test_tamper_namespace_and_partial_refuse(produced):
+        tmp, _, _, _, _ = produced
+>       side = publish(produced)
+               ^^^^^^^^^^^^^^^^^
+
+tests/vidya/test_dev_harness_aggregate.py:124: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+produced = (PosixPath('/mnt/raid0/llm/tmp/codex3-dhm-ci-root-20261031/pytest313/test_tamper_namespace_and_part0'), PosixPath('/mn...[{'pointer': '/counts/dhm4/sheet_items', 'metric': 'sheet_items', 'unit': 'items', 'direction': 'lower_better', ...}]})
+
+    def publish(produced):
+        tmp, run, declarations, env, _ = produced
+        dest = tmp / 'control.aggregate.json'
+        result = subprocess.run([sys.executable, str(ROOT / 'scripts/dev_harness/publish_mining_results.py'),
+                                 str(run), str(dest), '--belief-declarations', str(declarations)],
+                                env=env, capture_output=True, text=True, check=False)
+>       assert result.returncode == 0, result.stderr
+E       AssertionError: Traceback (most recent call last):
+E           File "/mnt/raid0/llm/tmp/codex3-dhm-ci-root-20261031/root/scripts/dev_harness/publish_mining_results.py", line 54, in <module>
+E             out = publish_with_beliefs(doc, args.dest, metadata=declarations["metadata"],
+E                                        metrics=declarations["metrics"], private_root=p.PRIVATE_ROOT,
+E                                        orchestrator_root=p.ORCHESTRATOR_ROOT,
+E                                        run_dir=args.run_dir, declarations_path=args.belief_declarations)
+E           File "/mnt/raid0/llm/tmp/codex3-dhm-ci-root-20261031/root/scripts/vidya/adapters/dev_harness_aggregate.py", line 175, in publish_with_beliefs
+E             _fail('capture privacy preflight refused')
+E             ~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           File "/mnt/raid0/llm/tmp/codex3-dhm-ci-root-20261031/root/scripts/vidya/adapters/dev_harness_aggregate.py", line 34, in _fail
+E             raise ProjectionError(message)
+E         claim_tuple.ProjectionError: capture privacy preflight refused
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['/mnt/raid0/llm/tmp/codex3-dhm-ci-root-20261031/venv313/bin/python', '/mnt/raid0/llm/tmp/codex3...ne 34, in _fail\n    raise ProjectionError(message)\nclaim_tuple.ProjectionError: capture privacy preflight refused\n').returncode
+
+tests/vidya/test_dev_harness_aggregate.py:58: AssertionError
+____________ test_absent_scope_stays_unknown_and_nonfinite_refused _____________
+
+produced = (PosixPath('/mnt/raid0/llm/tmp/codex3-dhm-ci-root-20261031/pytest313/test_absent_scope_stays_unknow0'), PosixPath('/mn...[{'pointer': '/counts/dhm4/sheet_items', 'metric': 'sheet_items', 'unit': 'items', 'direction': 'lower_better', ...}]})
+
+    def test_absent_scope_stays_unknown_and_nonfinite_refused(produced):
+        import copy
+>       side = publish(produced)
+               ^^^^^^^^^^^^^^^^^
+
+tests/vidya/test_dev_harness_aggregate.py:187: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+produced = (PosixPath('/mnt/raid0/llm/tmp/codex3-dhm-ci-root-20261031/pytest313/test_absent_scope_stays_unknow0'), PosixPath('/mn...[{'pointer': '/counts/dhm4/sheet_items', 'metric': 'sheet_items', 'unit': 'items', 'direction': 'lower_better', ...}]})
+
+    def publish(produced):
+        tmp, run, declarations, env, _ = produced
+        dest = tmp / 'control.aggregate.json'
+        result = subprocess.run([sys.executable, str(ROOT / 'scripts/dev_harness/publish_mining_results.py'),
+                                 str(run), str(dest), '--belief-declarations', str(declarations)],
+                                env=env, capture_output=True, text=True, check=False)
+>       assert result.returncode == 0, result.stderr
+E       AssertionError: Traceback (most recent call last):
+E           File "/mnt/raid0/llm/tmp/codex3-dhm-ci-root-20261031/root/scripts/dev_harness/publish_mining_results.py", line 54, in <module>
+E             out = publish_with_beliefs(doc, args.dest, metadata=declarations["metadata"],
+E                                        metrics=declarations["metrics"], private_root=p.PRIVATE_ROOT,
+E                                        orchestrator_root=p.ORCHESTRATOR_ROOT,
+E                                        run_dir=args.run_dir, declarations_path=args.belief_declarations)
+E           File "/mnt/raid0/llm/tmp/codex3-dhm-ci-root-20261031/root/scripts/vidya/adapters/dev_harness_aggregate.py", line 175, in publish_with_beliefs
+E             _fail('capture privacy preflight refused')
+E             ~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           File "/mnt/raid0/llm/tmp/codex3-dhm-ci-root-20261031/root/scripts/vidya/adapters/dev_harness_aggregate.py", line 34, in _fail
+E             raise ProjectionError(message)
+E         claim_tuple.ProjectionError: capture privacy preflight refused
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['/mnt/raid0/llm/tmp/codex3-dhm-ci-root-20261031/venv313/bin/python', '/mnt/raid0/llm/tmp/codex3...ne 34, in _fail\n    raise ProjectionError(message)\nclaim_tuple.ProjectionError: capture privacy preflight refused\n').returncode
+
+tests/vidya/test_dev_harness_aggregate.py:58: AssertionError
+___________________ test_privacy_and_invalid_metric_refused ____________________
+
+produced = (PosixPath('/mnt/raid0/llm/tmp/codex3-dhm-ci-root-20261031/pytest313/test_privacy_and_invalid_metri0'), PosixPath('/mn...[{'pointer': '/counts/dhm4/sheet_items', 'metric': 'sheet_items', 'unit': 'items', 'direction': 'lower_better', ...}]})
+
+    def test_privacy_and_invalid_metric_refused(produced):
+        import copy
+>       side = publish(produced)
+               ^^^^^^^^^^^^^^^^^
+
+tests/vidya/test_dev_harness_aggregate.py:201: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+produced = (PosixPath('/mnt/raid0/llm/tmp/codex3-dhm-ci-root-20261031/pytest313/test_privacy_and_invalid_metri0'), PosixPath('/mn...[{'pointer': '/counts/dhm4/sheet_items', 'metric': 'sheet_items', 'unit': 'items', 'direction': 'lower_better', ...}]})
+
+    def publish(produced):
+        tmp, run, declarations, env, _ = produced
+        dest = tmp / 'control.aggregate.json'
+        result = subprocess.run([sys.executable, str(ROOT / 'scripts/dev_harness/publish_mining_results.py'),
+                                 str(run), str(dest), '--belief-declarations', str(declarations)],
+                                env=env, capture_output=True, text=True, check=False)
+>       assert result.returncode == 0, result.stderr
+E       AssertionError: Traceback (most recent call last):
+E           File "/mnt/raid0/llm/tmp/codex3-dhm-ci-root-20261031/root/scripts/dev_harness/publish_mining_results.py", line 54, in <module>
+E             out = publish_with_beliefs(doc, args.dest, metadata=declarations["metadata"],
+E                                        metrics=declarations["metrics"], private_root=p.PRIVATE_ROOT,
+E                                        orchestrator_root=p.ORCHESTRATOR_ROOT,
+E                                        run_dir=args.run_dir, declarations_path=args.belief_declarations)
+E           File "/mnt/raid0/llm/tmp/codex3-dhm-ci-root-20261031/root/scripts/vidya/adapters/dev_harness_aggregate.py", line 175, in publish_with_beliefs
+E             _fail('capture privacy preflight refused')
+E             ~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           File "/mnt/raid0/llm/tmp/codex3-dhm-ci-root-20261031/root/scripts/vidya/adapters/dev_harness_aggregate.py", line 34, in _fail
+E             raise ProjectionError(message)
+E         claim_tuple.ProjectionError: capture privacy preflight refused
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['/mnt/raid0/llm/tmp/codex3-dhm-ci-root-20261031/venv313/bin/python', '/mnt/raid0/llm/tmp/codex3...ne 34, in _fail\n    raise ProjectionError(message)\nclaim_tuple.ProjectionError: capture privacy preflight refused\n').returncode
+
+tests/vidya/test_dev_harness_aggregate.py:58: AssertionError
+___________________ test_completed_run_cannot_publish_again ____________________
+
+produced = (PosixPath('/mnt/raid0/llm/tmp/codex3-dhm-ci-root-20261031/pytest313/test_completed_run_cannot_publ0'), PosixPath('/mn...[{'pointer': '/counts/dhm4/sheet_items', 'metric': 'sheet_items', 'unit': 'items', 'direction': 'lower_better', ...}]})
+
+    def test_completed_run_cannot_publish_again(produced):
+        from publish_mining_results import build
+        tmp, run, declarations, _, supplied = produced
+>       publish(produced)
+
+tests/vidya/test_dev_harness_aggregate.py:218: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+produced = (PosixPath('/mnt/raid0/llm/tmp/codex3-dhm-ci-root-20261031/pytest313/test_completed_run_cannot_publ0'), PosixPath('/mn...[{'pointer': '/counts/dhm4/sheet_items', 'metric': 'sheet_items', 'unit': 'items', 'direction': 'lower_better', ...}]})
+
+    def publish(produced):
+        tmp, run, declarations, env, _ = produced
+        dest = tmp / 'control.aggregate.json'
+        result = subprocess.run([sys.executable, str(ROOT / 'scripts/dev_harness/publish_mining_results.py'),
+                                 str(run), str(dest), '--belief-declarations', str(declarations)],
+                                env=env, capture_output=True, text=True, check=False)
+>       assert result.returncode == 0, result.stderr
+E       AssertionError: Traceback (most recent call last):
+E           File "/mnt/raid0/llm/tmp/codex3-dhm-ci-root-20261031/root/scripts/dev_harness/publish_mining_results.py", line 54, in <module>
+E             out = publish_with_beliefs(doc, args.dest, metadata=declarations["metadata"],
+E                                        metrics=declarations["metrics"], private_root=p.PRIVATE_ROOT,
+E                                        orchestrator_root=p.ORCHESTRATOR_ROOT,
+E                                        run_dir=args.run_dir, declarations_path=args.belief_declarations)
+E           File "/mnt/raid0/llm/tmp/codex3-dhm-ci-root-20261031/root/scripts/vidya/adapters/dev_harness_aggregate.py", line 175, in publish_with_beliefs
+E             _fail('capture privacy preflight refused')
+E             ~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           File "/mnt/raid0/llm/tmp/codex3-dhm-ci-root-20261031/root/scripts/vidya/adapters/dev_harness_aggregate.py", line 34, in _fail
+E             raise ProjectionError(message)
+E         claim_tuple.ProjectionError: capture privacy preflight refused
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['/mnt/raid0/llm/tmp/codex3-dhm-ci-root-20261031/venv313/bin/python', '/mnt/raid0/llm/tmp/codex3...ne 34, in _fail\n    raise ProjectionError(message)\nclaim_tuple.ProjectionError: capture privacy preflight refused\n').returncode
+
+tests/vidya/test_dev_harness_aggregate.py:58: AssertionError
+____________ test_default_publisher_preserves_legacy_bytes_and_gate ____________
+
+produced = (PosixPath('/mnt/raid0/llm/tmp/codex3-dhm-ci-root-20261031/pytest313/test_default_publisher_preserv0'), PosixPath('/mn...[{'pointer': '/counts/dhm4/sheet_items', 'metric': 'sheet_items', 'unit': 'items', 'direction': 'lower_better', ...}]})
+
+    def test_default_publisher_preserves_legacy_bytes_and_gate(produced):
+        from m2_lessons import ITSPilot, load_registry
+        from publish_mining_results import build
+    
+        tmp, run, _, env, _ = produced
+        m1 = run / 'm1/aggregates'
+        for name in ('dhm1_history', 'oab_lb1', 'ufh14_lb8'):
+            (m1 / f'{name}.aggregate.json').write_text(json.dumps({'counts': {'units': 1}, 'rules': []}))
+        aggregate = run / 'aggregate.json'
+        m2 = json.loads(aggregate.read_text())
+        default_rules = ITSPilot(load_registry()).meta_rules()
+        m2['rules'] = default_rules
+        aggregate.write_text(json.dumps(m2))
+    
+        # Independent copy of the old reducer: default output is byte-for-byte identical.
+        counts = dict(m2['counts'])
+        for cluster in counts['dhm72']['clusters'].values():
+            cluster.pop('top_terms', None)
+        for name in ('dhm1', 'dhm1_history', 'dhm5', 'oab_lb1', 'ufh14_lb8'):
+            counts[name] = json.loads((m1 / f'{name}.aggregate.json').read_text())['counts']
+        run_record = json.loads((run / 'run.json').read_text())
+        counts['run'] = {k: run_record[k] for k in ('units', 'interrupt_candidates', 'cluster_docs',
+            'clusters_reported', 'planted_recovered', 'sheet_items', 'would_fire_total')}
+        legacy = {'schema': 'dev-harness-aggregate.v1', 'generated_at': m2['generated_at'],
+            'source': 'dev-harness mining full run ' + run_record['run_id'] + ' (M1 + M2), reduced; top_terms dropped',
+            'spec': 'scripts/dev_harness/mining_m2_aggregate.schema.json', 'notes': m2['notes'],
+            'rules': [], 'counts': counts}
+        expected = json.dumps(legacy, indent=2, sort_keys=True) + '\n'
+        assert json.dumps(build(run), indent=2, sort_keys=True) + '\n' == expected
+        dest = tmp / 'default.aggregate.json'
+        result = subprocess.run([sys.executable, str(ROOT / 'scripts/dev_harness/publish_mining_results.py'),
+                                 str(run), str(dest)], env=env, capture_output=True, text=True, check=False)
+>       assert result.returncode == 0, result.stderr
+E       AssertionError: Traceback (most recent call last):
+E           File "/mnt/raid0/llm/tmp/codex3-dhm-ci-root-20261031/root/scripts/dev_harness/publish_mining_results.py", line 59, in <module>
+E             out = p.publish_aggregate(doc, args.dest)
+E           File "/mnt/raid0/llm/tmp/codex3-dhm-ci-root-20261031/root/scripts/dev_harness/dh_privacy.py", line 180, in publish_aggregate
+E             raise PrivacyError(f"raw_trace_publish_preflight refused the aggregate (rc={rc}); report {report}")
+E         dh_privacy.PrivacyError: raw_trace_publish_preflight refused the aggregate (rc=1); report /mnt/raid0/llm/tmp/codex3-dhm-ci-root-20261031/pytest313/test_default_publisher_preserv0/private/publish-staging/preflight-3689436.json
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['/mnt/raid0/llm/tmp/codex3-dhm-ci-root-20261031/venv313/bin/python', '/mnt/raid0/llm/tmp/codex3...odex3-dhm-ci-root-20261031/pytest313/test_default_publisher_preserv0/private/publish-staging/preflight-3689436.json\n').returncode
+
+tests/vidya/test_dev_harness_aggregate.py:258: AssertionError
+=========================== short test summary info ============================
+FAILED tests/vidya/test_dev_harness_aggregate.py::test_real_miners_publisher_cli_and_planning_control
+FAILED tests/vidya/test_dev_harness_aggregate.py::test_tamper_namespace_and_partial_refuse
+FAILED tests/vidya/test_dev_harness_aggregate.py::test_absent_scope_stays_unknown_and_nonfinite_refused
+FAILED tests/vidya/test_dev_harness_aggregate.py::test_privacy_and_invalid_metric_refused
+FAILED tests/vidya/test_dev_harness_aggregate.py::test_completed_run_cannot_publish_again
+FAILED tests/vidya/test_dev_harness_aggregate.py::test_default_publisher_preserves_legacy_bytes_and_gate
+6 failed, 5 passed in 4.77s
+{"schema": "bounded-r11-native-profile-supervisor/v1", "elapsed_s": 5.077385389013216, "sampled_peak_tree_rss_bytes": 133500928, "samples": 51, "verified_exited_processes": 0, "verified_exited_threads": 0, "per_process_address_space_limit_bytes": null, "rss_scope": "sum of sampled resident pages across owned process tree; sampling may miss transients and double-count shared pages", "leader_pid": 3689068, "leader_birth": 158256691, "child_rc": 1, "children_drained": true, "failure": null}

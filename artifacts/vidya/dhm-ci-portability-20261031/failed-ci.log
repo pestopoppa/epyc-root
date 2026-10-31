@@ -1,0 +1,628 @@
+hermetic	Belief substrate	﻿2026-10-31T15:03:42.2851495Z ##[group]Run python -m pytest -q tests/vidya/
+hermetic	Belief substrate	2026-10-31T15:03:42.2851828Z [36;1mpython -m pytest -q tests/vidya/[0m
+hermetic	Belief substrate	2026-10-31T15:03:42.2879431Z shell: /usr/bin/bash -e {0}
+hermetic	Belief substrate	2026-10-31T15:03:42.2879672Z env:
+hermetic	Belief substrate	2026-10-31T15:03:42.2879886Z   pythonLocation: /opt/hostedtoolcache/Python/3.13.16/x64
+hermetic	Belief substrate	2026-10-31T15:03:42.2880205Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.13.16/x64/lib/pkgconfig
+hermetic	Belief substrate	2026-10-31T15:03:42.2880517Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.13.16/x64
+hermetic	Belief substrate	2026-10-31T15:03:42.2880805Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.13.16/x64
+hermetic	Belief substrate	2026-10-31T15:03:42.2881081Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.13.16/x64
+hermetic	Belief substrate	2026-10-31T15:03:42.2881358Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.13.16/x64/lib
+hermetic	Belief substrate	2026-10-31T15:03:42.2881712Z   KV_QUANT_TEST_RESEARCH_ROOT: /home/runner/work/epyc-root/epyc-root/.ci-research-producers
+hermetic	Belief substrate	2026-10-31T15:03:42.2882232Z   EXL3_TEST_PRODUCER: /home/runner/work/epyc-root/epyc-root/.ci-research-producers/scripts/kernel_rnd/exl3/evidence.py
+hermetic	Belief substrate	2026-10-31T15:03:42.2882890Z   EVIDENCE_DURABILITY_PRODUCER: /home/runner/work/epyc-root/epyc-root/.ci-research-producers/scripts/validate/check_evidence_durability.py
+hermetic	Belief substrate	2026-10-31T15:03:42.2883448Z   EPYC_ORCHESTRATOR_SOURCE_ROOT: /home/runner/work/epyc-root/epyc-root/.ci-orchestrator-producer
+hermetic	Belief substrate	2026-10-31T15:03:42.2883919Z   EPYC_MF_ORCHESTRATOR_SOURCE_ROOT: /home/runner/work/epyc-root/epyc-root/.ci-orchestrator-analysis-producer
+hermetic	Belief substrate	2026-10-31T15:03:42.2884423Z   EPYC_EVAL_ORCHESTRATOR_SOURCE_ROOT: /home/runner/work/epyc-root/epyc-root/.ci-orchestrator-analysis-producer
+hermetic	Belief substrate	2026-10-31T15:03:42.2884962Z   PYTHONPATH: /home/runner/work/epyc-root/epyc-root/.ci-orchestrator-producer:/home/runner/work/epyc-root/epyc-root
+hermetic	Belief substrate	2026-10-31T15:03:42.2885328Z ##[endgroup]
+hermetic	Belief substrate	2026-10-31T15:03:48.6705475Z ................................................s....................... [  1%]
+hermetic	Belief substrate	2026-10-31T15:03:48.8021127Z ........................................................................ [  3%]
+hermetic	Belief substrate	2026-10-31T15:03:48.9032048Z ........................................................................ [  5%]
+hermetic	Belief substrate	2026-10-31T15:03:49.2826168Z .............................................................sssssssssss [  7%]
+hermetic	Belief substrate	2026-10-31T15:03:49.3493990Z sssssssssss............................................................. [  8%]
+hermetic	Belief substrate	2026-10-31T15:03:49.4283562Z ....s.ssssssss.s...........ssss........sssssssssssssssssssssssssssssssss [ 10%]
+hermetic	Belief substrate	2026-10-31T15:03:49.4501844Z ssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss [ 12%]
+hermetic	Belief substrate	2026-10-31T15:03:49.4739589Z ssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss [ 14%]
+hermetic	Belief substrate	2026-10-31T15:03:50.2834026Z sssssssssssssssssssssssssssssssss....................................... [ 16%]
+hermetic	Belief substrate	2026-10-31T15:03:50.4144089Z ............................sssssssssssss............................... [ 17%]
+hermetic	Belief substrate	2026-10-31T15:03:50.6163925Z .............................................s...........s.............. [ 19%]
+hermetic	Belief substrate	2026-10-31T15:03:50.7591794Z ............s.s......s..........................s....................... [ 21%]
+hermetic	Belief substrate	2026-10-31T15:03:50.9491528Z .....s...................ssssssss....................................... [ 23%]
+hermetic	Belief substrate	2026-10-31T15:03:51.8961057Z .........s..........s................................................... [ 24%]
+hermetic	Belief substrate	2026-10-31T15:08:59.7576684Z ........................................................................ [ 26%]
+hermetic	Belief substrate	2026-10-31T15:08:59.8037114Z ........................................................................ [ 28%]
+hermetic	Belief substrate	2026-10-31T15:08:59.8483767Z ........................................................................ [ 30%]
+hermetic	Belief substrate	2026-10-31T15:09:00.0080614Z ........................................................................ [ 32%]
+hermetic	Belief substrate	2026-10-31T15:09:00.1803213Z .........................ss............................................. [ 33%]
+hermetic	Belief substrate	2026-10-31T15:09:00.4039007Z ........................................................................ [ 35%]
+hermetic	Belief substrate	2026-10-31T15:09:00.6308956Z ........................................................................ [ 37%]
+hermetic	Belief substrate	2026-10-31T15:09:00.8564676Z ........................................................................ [ 39%]
+hermetic	Belief substrate	2026-10-31T15:09:01.0402717Z ...............................sss.sssss.........................ss..... [ 41%]
+hermetic	Belief substrate	2026-10-31T15:09:03.4931679Z .........F.F....FFFF......sss.....ssssssssss......ssssssssssssssssssssss [ 42%]
+hermetic	Belief substrate	2026-10-31T15:09:03.7243062Z ssssssssssss.ss......................................................... [ 44%]
+hermetic	Belief substrate	2026-10-31T15:09:03.9369235Z .....................s...............s........ss...sssssssssss.sssssssss [ 46%]
+hermetic	Belief substrate	2026-10-31T15:09:04.1712595Z .sssssssss..........s................................................... [ 48%]
+hermetic	Belief substrate	2026-10-31T15:09:06.6988636Z ........................................................................ [ 49%]
+hermetic	Belief substrate	2026-10-31T15:09:07.4961757Z ........................................................................ [ 51%]
+hermetic	Belief substrate	2026-10-31T15:09:07.6381832Z ..............s...................................................s..... [ 53%]
+hermetic	Belief substrate	2026-10-31T15:09:09.8315433Z ..................................................................s..... [ 55%]
+hermetic	Belief substrate	2026-10-31T15:09:10.0364310Z ..................................................................s..... [ 57%]
+hermetic	Belief substrate	2026-10-31T15:09:10.3843054Z ......................................s................................. [ 58%]
+hermetic	Belief substrate	2026-10-31T15:09:10.5740847Z ..............................................s....ssssssssssssss....... [ 60%]
+hermetic	Belief substrate	2026-10-31T15:09:16.0054375Z ........................................................................ [ 62%]
+hermetic	Belief substrate	2026-10-31T15:09:16.2707540Z .........................sssssssssssssssssssssssssssssssssssssssssssssss [ 64%]
+hermetic	Belief substrate	2026-10-31T15:09:34.0634329Z sssssssssssss.............................................s............. [ 66%]
+hermetic	Belief substrate	2026-10-31T15:09:35.5387605Z .................ss.........................................s.........ss [ 67%]
+hermetic	Belief substrate	2026-10-31T15:09:35.7836077Z sss..................................................................... [ 69%]
+hermetic	Belief substrate	2026-10-31T15:09:36.1043744Z ........................................................................ [ 71%]
+hermetic	Belief substrate	2026-10-31T15:09:39.2477834Z ............................................................ss.......... [ 73%]
+hermetic	Belief substrate	2026-10-31T15:09:39.7974399Z .ssssssssssss.......s................................................... [ 74%]
+hermetic	Belief substrate	2026-10-31T15:09:40.1072090Z ...........s..............................................s........sss.s [ 76%]
+hermetic	Belief substrate	2026-10-31T15:09:40.1907784Z ssssssssssssss.................................. [ 77%]
+hermetic	Belief substrate	2026-10-31T15:09:40.2829286Z ........................................................................ [ 79%]
+hermetic	Belief substrate	2026-10-31T15:09:41.2423804Z ..s..................................................................... [ 81%]
+hermetic	Belief substrate	2026-10-31T15:09:43.6105932Z ........................................................s............... [ 83%]
+hermetic	Belief substrate	2026-10-31T15:09:45.4565608Z ..............................s............sssssss..s................... [ 85%]
+hermetic	Belief substrate	2026-10-31T15:09:45.4933774Z .................................................................sssssss [ 86%]
+hermetic	Belief substrate	2026-10-31T15:09:45.5767399Z s.................sss................................................... [ 88%]
+hermetic	Belief substrate	2026-10-31T15:09:46.3011042Z ..........s...............................ssssssssssssssssssssssssss...s [ 90%]
+hermetic	Belief substrate	2026-10-31T15:09:51.2439799Z ........................................................................ [ 92%]
+hermetic	Belief substrate	2026-10-31T15:09:51.2849487Z ........................................................................ [ 93%]
+hermetic	Belief substrate	2026-10-31T15:09:52.9213950Z ........................................................................ [ 95%]
+hermetic	Belief substrate	2026-10-31T15:09:52.9643724Z ........................................................................ [ 97%]
+hermetic	Belief substrate	2026-10-31T15:10:27.7926566Z ........................................................................ [ 99%]
+hermetic	Belief substrate	2026-10-31T15:10:30.2303628Z ............................                                             [100%]
+hermetic	Belief substrate	2026-10-31T15:10:30.2304890Z =================================== FAILURES ===================================
+hermetic	Belief substrate	2026-10-31T15:10:30.2305723Z _____________ test_real_miners_publisher_cli_and_planning_control ______________
+hermetic	Belief substrate	2026-10-31T15:10:30.2306470Z 
+hermetic	Belief substrate	2026-10-31T15:10:30.2307226Z produced = (PosixPath('/tmp/pytest-of-runner/pytest-0/test_real_miners_publisher_cli0'), PosixPath('/tmp/pytest-of-runner/pytest-...[{'pointer': '/counts/dhm4/sheet_items', 'metric': 'sheet_items', 'unit': 'items', 'direction': 'lower_better', ...}]})
+hermetic	Belief substrate	2026-10-31T15:10:30.2308351Z 
+hermetic	Belief substrate	2026-10-31T15:10:30.2308547Z     def test_real_miners_publisher_cli_and_planning_control(produced):
+hermetic	Belief substrate	2026-10-31T15:10:30.2308901Z         import loop_beliefs as lb
+hermetic	Belief substrate	2026-10-31T15:10:30.2309138Z         class Sync:
+hermetic	Belief substrate	2026-10-31T15:10:30.2309346Z             def status(self, *args):
+hermetic	Belief substrate	2026-10-31T15:10:30.2309799Z                 return {'fresh': True, 'lag_entries': 0, 'index_max_id': 1, 'synced_max_id': 1, 'last_sync': '2026-10-31T00:00:00Z'}
+hermetic	Belief substrate	2026-10-31T15:10:30.2310252Z             def sync(self, *args):
+hermetic	Belief substrate	2026-10-31T15:10:30.2310545Z                 raise AssertionError('unexpected sync')
+hermetic	Belief substrate	2026-10-31T15:10:30.2310831Z         tmp = produced[0]
+hermetic	Belief substrate	2026-10-31T15:10:30.2311061Z >       side = publish(produced)
+hermetic	Belief substrate	2026-10-31T15:10:30.2311300Z                ^^^^^^^^^^^^^^^^^
+hermetic	Belief substrate	2026-10-31T15:10:30.2311434Z 
+hermetic	Belief substrate	2026-10-31T15:10:30.2311560Z tests/vidya/test_dev_harness_aggregate.py:69: 
+hermetic	Belief substrate	2026-10-31T15:10:30.2311893Z _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+hermetic	Belief substrate	2026-10-31T15:10:30.2312115Z 
+hermetic	Belief substrate	2026-10-31T15:10:30.2312808Z produced = (PosixPath('/tmp/pytest-of-runner/pytest-0/test_real_miners_publisher_cli0'), PosixPath('/tmp/pytest-of-runner/pytest-...[{'pointer': '/counts/dhm4/sheet_items', 'metric': 'sheet_items', 'unit': 'items', 'direction': 'lower_better', ...}]})
+hermetic	Belief substrate	2026-10-31T15:10:30.2313575Z 
+hermetic	Belief substrate	2026-10-31T15:10:30.2313679Z     def publish(produced):
+hermetic	Belief substrate	2026-10-31T15:10:30.2313947Z         tmp, run, declarations, env, _ = produced
+hermetic	Belief substrate	2026-10-31T15:10:30.2314294Z         dest = tmp / 'control.aggregate.json'
+hermetic	Belief substrate	2026-10-31T15:10:30.2314840Z         result = subprocess.run([sys.executable, str(ROOT / 'scripts/dev_harness/publish_mining_results.py'),
+hermetic	Belief substrate	2026-10-31T15:10:30.2315482Z                                  str(run), str(dest), '--belief-declarations', str(declarations)],
+hermetic	Belief substrate	2026-10-31T15:10:30.2315981Z                                 env=env, capture_output=True, text=True, check=False)
+hermetic	Belief substrate	2026-10-31T15:10:30.2316401Z >       assert result.returncode == 0, result.stderr
+hermetic	Belief substrate	2026-10-31T15:10:30.2316781Z E       AssertionError: Traceback (most recent call last):
+hermetic	Belief substrate	2026-10-31T15:10:30.2317426Z E           File "/home/runner/work/epyc-root/epyc-root/scripts/dev_harness/publish_mining_results.py", line 54, in <module>
+hermetic	Belief substrate	2026-10-31T15:10:30.2318345Z E             out = publish_with_beliefs(doc, args.dest, metadata=declarations["metadata"],
+hermetic	Belief substrate	2026-10-31T15:10:30.2318970Z E                                        metrics=declarations["metrics"], private_root=p.PRIVATE_ROOT,
+hermetic	Belief substrate	2026-10-31T15:10:30.2319460Z E                                        orchestrator_root=p.ORCHESTRATOR_ROOT,
+hermetic	Belief substrate	2026-10-31T15:10:30.2319973Z E                                        run_dir=args.run_dir, declarations_path=args.belief_declarations)
+hermetic	Belief substrate	2026-10-31T15:10:30.2320696Z E           File "/home/runner/work/epyc-root/epyc-root/scripts/vidya/adapters/dev_harness_aggregate.py", line 174, in publish_with_beliefs
+hermetic	Belief substrate	2026-10-31T15:10:30.2321494Z E             if privacy.run_preflight(candidate, report, Path(orchestrator_root)) != 0:
+hermetic	Belief substrate	2026-10-31T15:10:30.2321968Z E                ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+hermetic	Belief substrate	2026-10-31T15:10:30.2322541Z E           File "/home/runner/work/epyc-root/epyc-root/scripts/dev_harness/dh_privacy.py", line 161, in run_preflight
+hermetic	Belief substrate	2026-10-31T15:10:30.2323065Z E             proc = subprocess.run(
+hermetic	Belief substrate	2026-10-31T15:10:30.2323459Z E                 [exe, PREFLIGHT_REL, str(path), "--output", str(report_path)],
+hermetic	Belief substrate	2026-10-31T15:10:30.2323983Z E                 cwd=orchestrator_root, capture_output=True, text=True, timeout=300, check=False,
+hermetic	Belief substrate	2026-10-31T15:10:30.2324603Z E             )
+hermetic	Belief substrate	2026-10-31T15:10:30.2325031Z E           File "/opt/hostedtoolcache/Python/3.13.16/x64/lib/python3.13/subprocess.py", line 555, in run
+hermetic	Belief substrate	2026-10-31T15:10:30.2325648Z E             with Popen(*popenargs, **kwargs) as process:
+hermetic	Belief substrate	2026-10-31T15:10:30.2325974Z E                  ~~~~~^^^^^^^^^^^^^^^^^^^^^^
+hermetic	Belief substrate	2026-10-31T15:10:30.2326457Z E           File "/opt/hostedtoolcache/Python/3.13.16/x64/lib/python3.13/subprocess.py", line 1040, in __init__
+hermetic	Belief substrate	2026-10-31T15:10:30.2327022Z E             self._execute_child(args, executable, preexec_fn, close_fds,
+hermetic	Belief substrate	2026-10-31T15:10:30.2327417Z E             ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+hermetic	Belief substrate	2026-10-31T15:10:30.2327751Z E                                 pass_fds, cwd, env,
+hermetic	Belief substrate	2026-10-31T15:10:30.2328054Z E                                 ^^^^^^^^^^^^^^^^^^^
+hermetic	Belief substrate	2026-10-31T15:10:30.2328524Z E             ...<5 lines>...
+hermetic	Belief substrate	2026-10-31T15:10:30.2328811Z E                                 gid, gids, uid, umask,
+hermetic	Belief substrate	2026-10-31T15:10:30.2329100Z E                                 ^^^^^^^^^^^^^^^^^^^^^^
+hermetic	Belief substrate	2026-10-31T15:10:30.2329408Z E                                 start_new_session, process_group)
+hermetic	Belief substrate	2026-10-31T15:10:30.2329765Z E                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+hermetic	Belief substrate	2026-10-31T15:10:30.2330320Z E           File "/opt/hostedtoolcache/Python/3.13.16/x64/lib/python3.13/subprocess.py", line 1992, in _execute_child
+hermetic	Belief substrate	2026-10-31T15:10:30.2331046Z E             raise child_exception_type(errno_num, err_msg, err_filename)
+hermetic	Belief substrate	2026-10-31T15:10:30.2331681Z E         FileNotFoundError: [Errno 2] No such file or directory: PosixPath('/mnt/raid0/llm/epyc-orchestrator')
+hermetic	Belief substrate	2026-10-31T15:10:30.2332212Z E         
+hermetic	Belief substrate	2026-10-31T15:10:30.2332438Z E       assert 1 == 0
+hermetic	Belief substrate	2026-10-31T15:10:30.2333534Z E        +  where 1 = CompletedProcess(args=['/opt/hostedtoolcache/Python/3.13.16/x64/bin/python', '/home/runner/work/epyc-root/epyc-root/sc..._filename)\nFileNotFoundError: [Errno 2] No such file or directory: PosixPath(\'/mnt/raid0/llm/epyc-orchestrator\')\n').returncode
+hermetic	Belief substrate	2026-10-31T15:10:30.2334587Z 
+hermetic	Belief substrate	2026-10-31T15:10:30.2334772Z tests/vidya/test_dev_harness_aggregate.py:57: AssertionError
+hermetic	Belief substrate	2026-10-31T15:10:30.2335254Z ___________________ test_tamper_namespace_and_partial_refuse ___________________
+hermetic	Belief substrate	2026-10-31T15:10:30.2335563Z 
+hermetic	Belief substrate	2026-10-31T15:10:30.2336350Z produced = (PosixPath('/tmp/pytest-of-runner/pytest-0/test_tamper_namespace_and_part0'), PosixPath('/tmp/pytest-of-runner/pytest-...[{'pointer': '/counts/dhm4/sheet_items', 'metric': 'sheet_items', 'unit': 'items', 'direction': 'lower_better', ...}]})
+hermetic	Belief substrate	2026-10-31T15:10:30.2337232Z 
+hermetic	Belief substrate	2026-10-31T15:10:30.2337394Z     def test_tamper_namespace_and_partial_refuse(produced):
+hermetic	Belief substrate	2026-10-31T15:10:30.2337732Z         tmp, _, _, _, _ = produced
+hermetic	Belief substrate	2026-10-31T15:10:30.2338006Z >       side = publish(produced)
+hermetic	Belief substrate	2026-10-31T15:10:30.2338476Z                ^^^^^^^^^^^^^^^^^
+hermetic	Belief substrate	2026-10-31T15:10:30.2338639Z 
+hermetic	Belief substrate	2026-10-31T15:10:30.2338777Z tests/vidya/test_dev_harness_aggregate.py:123: 
+hermetic	Belief substrate	2026-10-31T15:10:30.2339137Z _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+hermetic	Belief substrate	2026-10-31T15:10:30.2339379Z 
+hermetic	Belief substrate	2026-10-31T15:10:30.2340156Z produced = (PosixPath('/tmp/pytest-of-runner/pytest-0/test_tamper_namespace_and_part0'), PosixPath('/tmp/pytest-of-runner/pytest-...[{'pointer': '/counts/dhm4/sheet_items', 'metric': 'sheet_items', 'unit': 'items', 'direction': 'lower_better', ...}]})
+hermetic	Belief substrate	2026-10-31T15:10:30.2341031Z 
+hermetic	Belief substrate	2026-10-31T15:10:30.2341134Z     def publish(produced):
+hermetic	Belief substrate	2026-10-31T15:10:30.2341406Z         tmp, run, declarations, env, _ = produced
+hermetic	Belief substrate	2026-10-31T15:10:30.2341741Z         dest = tmp / 'control.aggregate.json'
+hermetic	Belief substrate	2026-10-31T15:10:30.2342255Z         result = subprocess.run([sys.executable, str(ROOT / 'scripts/dev_harness/publish_mining_results.py'),
+hermetic	Belief substrate	2026-10-31T15:10:30.2342857Z                                  str(run), str(dest), '--belief-declarations', str(declarations)],
+hermetic	Belief substrate	2026-10-31T15:10:30.2343323Z                                 env=env, capture_output=True, text=True, check=False)
+hermetic	Belief substrate	2026-10-31T15:10:30.2343903Z >       assert result.returncode == 0, result.stderr
+hermetic	Belief substrate	2026-10-31T15:10:30.2344249Z E       AssertionError: Traceback (most recent call last):
+hermetic	Belief substrate	2026-10-31T15:10:30.2344918Z E           File "/home/runner/work/epyc-root/epyc-root/scripts/dev_harness/publish_mining_results.py", line 54, in <module>
+hermetic	Belief substrate	2026-10-31T15:10:30.2345631Z E             out = publish_with_beliefs(doc, args.dest, metadata=declarations["metadata"],
+hermetic	Belief substrate	2026-10-31T15:10:30.2346209Z E                                        metrics=declarations["metrics"], private_root=p.PRIVATE_ROOT,
+hermetic	Belief substrate	2026-10-31T15:10:30.2346690Z E                                        orchestrator_root=p.ORCHESTRATOR_ROOT,
+hermetic	Belief substrate	2026-10-31T15:10:30.2347171Z E                                        run_dir=args.run_dir, declarations_path=args.belief_declarations)
+hermetic	Belief substrate	2026-10-31T15:10:30.2347944Z E           File "/home/runner/work/epyc-root/epyc-root/scripts/vidya/adapters/dev_harness_aggregate.py", line 174, in publish_with_beliefs
+hermetic	Belief substrate	2026-10-31T15:10:30.2348925Z E             if privacy.run_preflight(candidate, report, Path(orchestrator_root)) != 0:
+hermetic	Belief substrate	2026-10-31T15:10:30.2349445Z E                ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+hermetic	Belief substrate	2026-10-31T15:10:30.2350061Z E           File "/home/runner/work/epyc-root/epyc-root/scripts/dev_harness/dh_privacy.py", line 161, in run_preflight
+hermetic	Belief substrate	2026-10-31T15:10:30.2350618Z E             proc = subprocess.run(
+hermetic	Belief substrate	2026-10-31T15:10:30.2350985Z E                 [exe, PREFLIGHT_REL, str(path), "--output", str(report_path)],
+hermetic	Belief substrate	2026-10-31T15:10:30.2351504Z E                 cwd=orchestrator_root, capture_output=True, text=True, timeout=300, check=False,
+hermetic	Belief substrate	2026-10-31T15:10:30.2351944Z E             )
+hermetic	Belief substrate	2026-10-31T15:10:30.2352346Z E           File "/opt/hostedtoolcache/Python/3.13.16/x64/lib/python3.13/subprocess.py", line 555, in run
+hermetic	Belief substrate	2026-10-31T15:10:30.2352853Z E             with Popen(*popenargs, **kwargs) as process:
+hermetic	Belief substrate	2026-10-31T15:10:30.2353193Z E                  ~~~~~^^^^^^^^^^^^^^^^^^^^^^
+hermetic	Belief substrate	2026-10-31T15:10:30.2353689Z E           File "/opt/hostedtoolcache/Python/3.13.16/x64/lib/python3.13/subprocess.py", line 1040, in __init__
+hermetic	Belief substrate	2026-10-31T15:10:30.2354254Z E             self._execute_child(args, executable, preexec_fn, close_fds,
+hermetic	Belief substrate	2026-10-31T15:10:30.2354653Z E             ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+hermetic	Belief substrate	2026-10-31T15:10:30.2354995Z E                                 pass_fds, cwd, env,
+hermetic	Belief substrate	2026-10-31T15:10:30.2355295Z E                                 ^^^^^^^^^^^^^^^^^^^
+hermetic	Belief substrate	2026-10-31T15:10:30.2355571Z E             ...<5 lines>...
+hermetic	Belief substrate	2026-10-31T15:10:30.2355837Z E                                 gid, gids, uid, umask,
+hermetic	Belief substrate	2026-10-31T15:10:30.2356146Z E                                 ^^^^^^^^^^^^^^^^^^^^^^
+hermetic	Belief substrate	2026-10-31T15:10:30.2356465Z E                                 start_new_session, process_group)
+hermetic	Belief substrate	2026-10-31T15:10:30.2356802Z E                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+hermetic	Belief substrate	2026-10-31T15:10:30.2357323Z E           File "/opt/hostedtoolcache/Python/3.13.16/x64/lib/python3.13/subprocess.py", line 1992, in _execute_child
+hermetic	Belief substrate	2026-10-31T15:10:30.2357912Z E             raise child_exception_type(errno_num, err_msg, err_filename)
+hermetic	Belief substrate	2026-10-31T15:10:30.2358756Z E         FileNotFoundError: [Errno 2] No such file or directory: PosixPath('/mnt/raid0/llm/epyc-orchestrator')
+hermetic	Belief substrate	2026-10-31T15:10:30.2359259Z E         
+hermetic	Belief substrate	2026-10-31T15:10:30.2359445Z E       assert 1 == 0
+hermetic	Belief substrate	2026-10-31T15:10:30.2360324Z E        +  where 1 = CompletedProcess(args=['/opt/hostedtoolcache/Python/3.13.16/x64/bin/python', '/home/runner/work/epyc-root/epyc-root/sc..._filename)\nFileNotFoundError: [Errno 2] No such file or directory: PosixPath(\'/mnt/raid0/llm/epyc-orchestrator\')\n').returncode
+hermetic	Belief substrate	2026-10-31T15:10:30.2361338Z 
+hermetic	Belief substrate	2026-10-31T15:10:30.2361522Z tests/vidya/test_dev_harness_aggregate.py:57: AssertionError
+hermetic	Belief substrate	2026-10-31T15:10:30.2362011Z ____________ test_absent_scope_stays_unknown_and_nonfinite_refused _____________
+hermetic	Belief substrate	2026-10-31T15:10:30.2362331Z 
+hermetic	Belief substrate	2026-10-31T15:10:30.2363165Z produced = (PosixPath('/tmp/pytest-of-runner/pytest-0/test_absent_scope_stays_unknow0'), PosixPath('/tmp/pytest-of-runner/pytest-...[{'pointer': '/counts/dhm4/sheet_items', 'metric': 'sheet_items', 'unit': 'items', 'direction': 'lower_better', ...}]})
+hermetic	Belief substrate	2026-10-31T15:10:30.2364381Z 
+hermetic	Belief substrate	2026-10-31T15:10:30.2364593Z     def test_absent_scope_stays_unknown_and_nonfinite_refused(produced):
+hermetic	Belief substrate	2026-10-31T15:10:30.2364993Z         import copy
+hermetic	Belief substrate	2026-10-31T15:10:30.2365232Z >       side = publish(produced)
+hermetic	Belief substrate	2026-10-31T15:10:30.2365495Z                ^^^^^^^^^^^^^^^^^
+hermetic	Belief substrate	2026-10-31T15:10:30.2365660Z 
+hermetic	Belief substrate	2026-10-31T15:10:30.2365798Z tests/vidya/test_dev_harness_aggregate.py:186: 
+hermetic	Belief substrate	2026-10-31T15:10:30.2366153Z _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+hermetic	Belief substrate	2026-10-31T15:10:30.2366399Z 
+hermetic	Belief substrate	2026-10-31T15:10:30.2367163Z produced = (PosixPath('/tmp/pytest-of-runner/pytest-0/test_absent_scope_stays_unknow0'), PosixPath('/tmp/pytest-of-runner/pytest-...[{'pointer': '/counts/dhm4/sheet_items', 'metric': 'sheet_items', 'unit': 'items', 'direction': 'lower_better', ...}]})
+hermetic	Belief substrate	2026-10-31T15:10:30.2368031Z 
+hermetic	Belief substrate	2026-10-31T15:10:30.2368332Z     def publish(produced):
+hermetic	Belief substrate	2026-10-31T15:10:30.2368636Z         tmp, run, declarations, env, _ = produced
+hermetic	Belief substrate	2026-10-31T15:10:30.2368964Z         dest = tmp / 'control.aggregate.json'
+hermetic	Belief substrate	2026-10-31T15:10:30.2369476Z         result = subprocess.run([sys.executable, str(ROOT / 'scripts/dev_harness/publish_mining_results.py'),
+hermetic	Belief substrate	2026-10-31T15:10:30.2370070Z                                  str(run), str(dest), '--belief-declarations', str(declarations)],
+hermetic	Belief substrate	2026-10-31T15:10:30.2370608Z                                 env=env, capture_output=True, text=True, check=False)
+hermetic	Belief substrate	2026-10-31T15:10:30.2371031Z >       assert result.returncode == 0, result.stderr
+hermetic	Belief substrate	2026-10-31T15:10:30.2371402Z E       AssertionError: Traceback (most recent call last):
+hermetic	Belief substrate	2026-10-31T15:10:30.2372003Z E           File "/home/runner/work/epyc-root/epyc-root/scripts/dev_harness/publish_mining_results.py", line 54, in <module>
+hermetic	Belief substrate	2026-10-31T15:10:30.2372697Z E             out = publish_with_beliefs(doc, args.dest, metadata=declarations["metadata"],
+hermetic	Belief substrate	2026-10-31T15:10:30.2373257Z E                                        metrics=declarations["metrics"], private_root=p.PRIVATE_ROOT,
+hermetic	Belief substrate	2026-10-31T15:10:30.2373716Z E                                        orchestrator_root=p.ORCHESTRATOR_ROOT,
+hermetic	Belief substrate	2026-10-31T15:10:30.2374172Z E                                        run_dir=args.run_dir, declarations_path=args.belief_declarations)
+hermetic	Belief substrate	2026-10-31T15:10:30.2374866Z E           File "/home/runner/work/epyc-root/epyc-root/scripts/vidya/adapters/dev_harness_aggregate.py", line 174, in publish_with_beliefs
+hermetic	Belief substrate	2026-10-31T15:10:30.2375527Z E             if privacy.run_preflight(candidate, report, Path(orchestrator_root)) != 0:
+hermetic	Belief substrate	2026-10-31T15:10:30.2375969Z E                ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+hermetic	Belief substrate	2026-10-31T15:10:30.2376500Z E           File "/home/runner/work/epyc-root/epyc-root/scripts/dev_harness/dh_privacy.py", line 161, in run_preflight
+hermetic	Belief substrate	2026-10-31T15:10:30.2376996Z E             proc = subprocess.run(
+hermetic	Belief substrate	2026-10-31T15:10:30.2377433Z E                 [exe, PREFLIGHT_REL, str(path), "--output", str(report_path)],
+hermetic	Belief substrate	2026-10-31T15:10:30.2377993Z E                 cwd=orchestrator_root, capture_output=True, text=True, timeout=300, check=False,
+hermetic	Belief substrate	2026-10-31T15:10:30.2378620Z E             )
+hermetic	Belief substrate	2026-10-31T15:10:30.2379032Z E           File "/opt/hostedtoolcache/Python/3.13.16/x64/lib/python3.13/subprocess.py", line 555, in run
+hermetic	Belief substrate	2026-10-31T15:10:30.2379524Z E             with Popen(*popenargs, **kwargs) as process:
+hermetic	Belief substrate	2026-10-31T15:10:30.2379841Z E                  ~~~~~^^^^^^^^^^^^^^^^^^^^^^
+hermetic	Belief substrate	2026-10-31T15:10:30.2380345Z E           File "/opt/hostedtoolcache/Python/3.13.16/x64/lib/python3.13/subprocess.py", line 1040, in __init__
+hermetic	Belief substrate	2026-10-31T15:10:30.2380938Z E             self._execute_child(args, executable, preexec_fn, close_fds,
+hermetic	Belief substrate	2026-10-31T15:10:30.2381332Z E             ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+hermetic	Belief substrate	2026-10-31T15:10:30.2381672Z E                                 pass_fds, cwd, env,
+hermetic	Belief substrate	2026-10-31T15:10:30.2382165Z E                                 ^^^^^^^^^^^^^^^^^^^
+hermetic	Belief substrate	2026-10-31T15:10:30.2382475Z E             ...<5 lines>...
+hermetic	Belief substrate	2026-10-31T15:10:30.2382751Z E                                 gid, gids, uid, umask,
+hermetic	Belief substrate	2026-10-31T15:10:30.2383151Z E                                 ^^^^^^^^^^^^^^^^^^^^^^
+hermetic	Belief substrate	2026-10-31T15:10:30.2383570Z E                                 start_new_session, process_group)
+hermetic	Belief substrate	2026-10-31T15:10:30.2383882Z E                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+hermetic	Belief substrate	2026-10-31T15:10:30.2384346Z E           File "/opt/hostedtoolcache/Python/3.13.16/x64/lib/python3.13/subprocess.py", line 1992, in _execute_child
+hermetic	Belief substrate	2026-10-31T15:10:30.2384886Z E             raise child_exception_type(errno_num, err_msg, err_filename)
+hermetic	Belief substrate	2026-10-31T15:10:30.2385401Z E         FileNotFoundError: [Errno 2] No such file or directory: PosixPath('/mnt/raid0/llm/epyc-orchestrator')
+hermetic	Belief substrate	2026-10-31T15:10:30.2386211Z E         
+hermetic	Belief substrate	2026-10-31T15:10:30.2386518Z E       assert 1 == 0
+hermetic	Belief substrate	2026-10-31T15:10:30.2388407Z E        +  where 1 = CompletedProcess(args=['/opt/hostedtoolcache/Python/3.13.16/x64/bin/python', '/home/runner/work/epyc-root/epyc-root/sc..._filename)\nFileNotFoundError: [Errno 2] No such file or directory: PosixPath(\'/mnt/raid0/llm/epyc-orchestrator\')\n').returncode
+hermetic	Belief substrate	2026-10-31T15:10:30.2390088Z 
+hermetic	Belief substrate	2026-10-31T15:10:30.2390371Z tests/vidya/test_dev_harness_aggregate.py:57: AssertionError
+hermetic	Belief substrate	2026-10-31T15:10:30.2391113Z ___________________ test_privacy_and_invalid_metric_refused ____________________
+hermetic	Belief substrate	2026-10-31T15:10:30.2391616Z 
+hermetic	Belief substrate	2026-10-31T15:10:30.2392966Z produced = (PosixPath('/tmp/pytest-of-runner/pytest-0/test_privacy_and_invalid_metri0'), PosixPath('/tmp/pytest-of-runner/pytest-...[{'pointer': '/counts/dhm4/sheet_items', 'metric': 'sheet_items', 'unit': 'items', 'direction': 'lower_better', ...}]})
+hermetic	Belief substrate	2026-10-31T15:10:30.2394492Z 
+hermetic	Belief substrate	2026-10-31T15:10:30.2394735Z     def test_privacy_and_invalid_metric_refused(produced):
+hermetic	Belief substrate	2026-10-31T15:10:30.2395270Z         import copy
+hermetic	Belief substrate	2026-10-31T15:10:30.2395628Z >       side = publish(produced)
+hermetic	Belief substrate	2026-10-31T15:10:30.2396038Z                ^^^^^^^^^^^^^^^^^
+hermetic	Belief substrate	2026-10-31T15:10:30.2396291Z 
+hermetic	Belief substrate	2026-10-31T15:10:30.2396503Z tests/vidya/test_dev_harness_aggregate.py:200: 
+hermetic	Belief substrate	2026-10-31T15:10:30.2397094Z _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+hermetic	Belief substrate	2026-10-31T15:10:30.2397503Z 
+hermetic	Belief substrate	2026-10-31T15:10:30.2399097Z produced = (PosixPath('/tmp/pytest-of-runner/pytest-0/test_privacy_and_invalid_metri0'), PosixPath('/tmp/pytest-of-runner/pytest-...[{'pointer': '/counts/dhm4/sheet_items', 'metric': 'sheet_items', 'unit': 'items', 'direction': 'lower_better', ...}]})
+hermetic	Belief substrate	2026-10-31T15:10:30.2400657Z 
+hermetic	Belief substrate	2026-10-31T15:10:30.2400821Z     def publish(produced):
+hermetic	Belief substrate	2026-10-31T15:10:30.2401251Z         tmp, run, declarations, env, _ = produced
+hermetic	Belief substrate	2026-10-31T15:10:30.2401770Z         dest = tmp / 'control.aggregate.json'
+hermetic	Belief substrate	2026-10-31T15:10:30.2402608Z         result = subprocess.run([sys.executable, str(ROOT / 'scripts/dev_harness/publish_mining_results.py'),
+hermetic	Belief substrate	2026-10-31T15:10:30.2403617Z                                  str(run), str(dest), '--belief-declarations', str(declarations)],
+hermetic	Belief substrate	2026-10-31T15:10:30.2404394Z                                 env=env, capture_output=True, text=True, check=False)
+hermetic	Belief substrate	2026-10-31T15:10:30.2405046Z >       assert result.returncode == 0, result.stderr
+hermetic	Belief substrate	2026-10-31T15:10:30.2405636Z E       AssertionError: Traceback (most recent call last):
+hermetic	Belief substrate	2026-10-31T15:10:30.2406637Z E           File "/home/runner/work/epyc-root/epyc-root/scripts/dev_harness/publish_mining_results.py", line 54, in <module>
+hermetic	Belief substrate	2026-10-31T15:10:30.2407789Z E             out = publish_with_beliefs(doc, args.dest, metadata=declarations["metadata"],
+hermetic	Belief substrate	2026-10-31T15:10:30.2408881Z E                                        metrics=declarations["metrics"], private_root=p.PRIVATE_ROOT,
+hermetic	Belief substrate	2026-10-31T15:10:30.2409654Z E                                        orchestrator_root=p.ORCHESTRATOR_ROOT,
+hermetic	Belief substrate	2026-10-31T15:10:30.2410426Z E                                        run_dir=args.run_dir, declarations_path=args.belief_declarations)
+hermetic	Belief substrate	2026-10-31T15:10:30.2411994Z E           File "/home/runner/work/epyc-root/epyc-root/scripts/vidya/adapters/dev_harness_aggregate.py", line 174, in publish_with_beliefs
+hermetic	Belief substrate	2026-10-31T15:10:30.2413360Z E             if privacy.run_preflight(candidate, report, Path(orchestrator_root)) != 0:
+hermetic	Belief substrate	2026-10-31T15:10:30.2414140Z E                ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+hermetic	Belief substrate	2026-10-31T15:10:30.2415094Z E           File "/home/runner/work/epyc-root/epyc-root/scripts/dev_harness/dh_privacy.py", line 161, in run_preflight
+hermetic	Belief substrate	2026-10-31T15:10:30.2415984Z E             proc = subprocess.run(
+hermetic	Belief substrate	2026-10-31T15:10:30.2416562Z E                 [exe, PREFLIGHT_REL, str(path), "--output", str(report_path)],
+hermetic	Belief substrate	2026-10-31T15:10:30.2417431Z E                 cwd=orchestrator_root, capture_output=True, text=True, timeout=300, check=False,
+hermetic	Belief substrate	2026-10-31T15:10:30.2418302Z E             )
+hermetic	Belief substrate	2026-10-31T15:10:30.2418974Z E           File "/opt/hostedtoolcache/Python/3.13.16/x64/lib/python3.13/subprocess.py", line 555, in run
+hermetic	Belief substrate	2026-10-31T15:10:30.2419843Z E             with Popen(*popenargs, **kwargs) as process:
+hermetic	Belief substrate	2026-10-31T15:10:30.2420366Z E                  ~~~~~^^^^^^^^^^^^^^^^^^^^^^
+hermetic	Belief substrate	2026-10-31T15:10:30.2421172Z E           File "/opt/hostedtoolcache/Python/3.13.16/x64/lib/python3.13/subprocess.py", line 1040, in __init__
+hermetic	Belief substrate	2026-10-31T15:10:30.2422131Z E             self._execute_child(args, executable, preexec_fn, close_fds,
+hermetic	Belief substrate	2026-10-31T15:10:30.2422787Z E             ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+hermetic	Belief substrate	2026-10-31T15:10:30.2423336Z E                                 pass_fds, cwd, env,
+hermetic	Belief substrate	2026-10-31T15:10:30.2423827Z E                                 ^^^^^^^^^^^^^^^^^^^
+hermetic	Belief substrate	2026-10-31T15:10:30.2424287Z E             ...<5 lines>...
+hermetic	Belief substrate	2026-10-31T15:10:30.2424727Z E                                 gid, gids, uid, umask,
+hermetic	Belief substrate	2026-10-31T15:10:30.2425231Z E                                 ^^^^^^^^^^^^^^^^^^^^^^
+hermetic	Belief substrate	2026-10-31T15:10:30.2425759Z E                                 start_new_session, process_group)
+hermetic	Belief substrate	2026-10-31T15:10:30.2426313Z E                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+hermetic	Belief substrate	2026-10-31T15:10:30.2427194Z E           File "/opt/hostedtoolcache/Python/3.13.16/x64/lib/python3.13/subprocess.py", line 1992, in _execute_child
+hermetic	Belief substrate	2026-10-31T15:10:30.2428353Z E             raise child_exception_type(errno_num, err_msg, err_filename)
+hermetic	Belief substrate	2026-10-31T15:10:30.2429419Z E         FileNotFoundError: [Errno 2] No such file or directory: PosixPath('/mnt/raid0/llm/epyc-orchestrator')
+hermetic	Belief substrate	2026-10-31T15:10:30.2430237Z E         
+hermetic	Belief substrate	2026-10-31T15:10:30.2430543Z E       assert 1 == 0
+hermetic	Belief substrate	2026-10-31T15:10:30.2432224Z E        +  where 1 = CompletedProcess(args=['/opt/hostedtoolcache/Python/3.13.16/x64/bin/python', '/home/runner/work/epyc-root/epyc-root/sc..._filename)\nFileNotFoundError: [Errno 2] No such file or directory: PosixPath(\'/mnt/raid0/llm/epyc-orchestrator\')\n').returncode
+hermetic	Belief substrate	2026-10-31T15:10:30.2433887Z 
+hermetic	Belief substrate	2026-10-31T15:10:30.2434152Z tests/vidya/test_dev_harness_aggregate.py:57: AssertionError
+hermetic	Belief substrate	2026-10-31T15:10:30.2434922Z ___________________ test_completed_run_cannot_publish_again ____________________
+hermetic	Belief substrate	2026-10-31T15:10:30.2435415Z 
+hermetic	Belief substrate	2026-10-31T15:10:30.2436784Z produced = (PosixPath('/tmp/pytest-of-runner/pytest-0/test_completed_run_cannot_publ0'), PosixPath('/tmp/pytest-of-runner/pytest-...[{'pointer': '/counts/dhm4/sheet_items', 'metric': 'sheet_items', 'unit': 'items', 'direction': 'lower_better', ...}]})
+hermetic	Belief substrate	2026-10-31T15:10:30.2438525Z 
+hermetic	Belief substrate	2026-10-31T15:10:30.2438788Z     def test_completed_run_cannot_publish_again(produced):
+hermetic	Belief substrate	2026-10-31T15:10:30.2439385Z         from publish_mining_results import build
+hermetic	Belief substrate	2026-10-31T15:10:30.2439941Z         tmp, run, declarations, _, supplied = produced
+hermetic	Belief substrate	2026-10-31T15:10:30.2440457Z >       publish(produced)
+hermetic	Belief substrate	2026-10-31T15:10:30.2440710Z 
+hermetic	Belief substrate	2026-10-31T15:10:30.2440921Z tests/vidya/test_dev_harness_aggregate.py:217: 
+hermetic	Belief substrate	2026-10-31T15:10:30.2441507Z _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+hermetic	Belief substrate	2026-10-31T15:10:30.2441911Z 
+hermetic	Belief substrate	2026-10-31T15:10:30.2443269Z produced = (PosixPath('/tmp/pytest-of-runner/pytest-0/test_completed_run_cannot_publ0'), PosixPath('/tmp/pytest-of-runner/pytest-...[{'pointer': '/counts/dhm4/sheet_items', 'metric': 'sheet_items', 'unit': 'items', 'direction': 'lower_better', ...}]})
+hermetic	Belief substrate	2026-10-31T15:10:30.2445055Z 
+hermetic	Belief substrate	2026-10-31T15:10:30.2445208Z     def publish(produced):
+hermetic	Belief substrate	2026-10-31T15:10:30.2445637Z         tmp, run, declarations, env, _ = produced
+hermetic	Belief substrate	2026-10-31T15:10:30.2446160Z         dest = tmp / 'control.aggregate.json'
+hermetic	Belief substrate	2026-10-31T15:10:30.2446998Z         result = subprocess.run([sys.executable, str(ROOT / 'scripts/dev_harness/publish_mining_results.py'),
+hermetic	Belief substrate	2026-10-31T15:10:30.2448014Z                                  str(run), str(dest), '--belief-declarations', str(declarations)],
+hermetic	Belief substrate	2026-10-31T15:10:30.2448945Z                                 env=env, capture_output=True, text=True, check=False)
+hermetic	Belief substrate	2026-10-31T15:10:30.2449594Z >       assert result.returncode == 0, result.stderr
+hermetic	Belief substrate	2026-10-31T15:10:30.2450180Z E       AssertionError: Traceback (most recent call last):
+hermetic	Belief substrate	2026-10-31T15:10:30.2451280Z E           File "/home/runner/work/epyc-root/epyc-root/scripts/dev_harness/publish_mining_results.py", line 54, in <module>
+hermetic	Belief substrate	2026-10-31T15:10:30.2452473Z E             out = publish_with_beliefs(doc, args.dest, metadata=declarations["metadata"],
+hermetic	Belief substrate	2026-10-31T15:10:30.2453390Z E                                        metrics=declarations["metrics"], private_root=p.PRIVATE_ROOT,
+hermetic	Belief substrate	2026-10-31T15:10:30.2454165Z E                                        orchestrator_root=p.ORCHESTRATOR_ROOT,
+hermetic	Belief substrate	2026-10-31T15:10:30.2454935Z E                                        run_dir=args.run_dir, declarations_path=args.belief_declarations)
+hermetic	Belief substrate	2026-10-31T15:10:30.2456172Z E           File "/home/runner/work/epyc-root/epyc-root/scripts/vidya/adapters/dev_harness_aggregate.py", line 174, in publish_with_beliefs
+hermetic	Belief substrate	2026-10-31T15:10:30.2457415Z E             if privacy.run_preflight(candidate, report, Path(orchestrator_root)) != 0:
+hermetic	Belief substrate	2026-10-31T15:10:30.2458336Z E                ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+hermetic	Belief substrate	2026-10-31T15:10:30.2459313Z E           File "/home/runner/work/epyc-root/epyc-root/scripts/dev_harness/dh_privacy.py", line 161, in run_preflight
+hermetic	Belief substrate	2026-10-31T15:10:30.2460212Z E             proc = subprocess.run(
+hermetic	Belief substrate	2026-10-31T15:10:30.2460799Z E                 [exe, PREFLIGHT_REL, str(path), "--output", str(report_path)],
+hermetic	Belief substrate	2026-10-31T15:10:30.2461682Z E                 cwd=orchestrator_root, capture_output=True, text=True, timeout=300, check=False,
+hermetic	Belief substrate	2026-10-31T15:10:30.2462402Z E             )
+hermetic	Belief substrate	2026-10-31T15:10:30.2463058Z E           File "/opt/hostedtoolcache/Python/3.13.16/x64/lib/python3.13/subprocess.py", line 555, in run
+hermetic	Belief substrate	2026-10-31T15:10:30.2463917Z E             with Popen(*popenargs, **kwargs) as process:
+hermetic	Belief substrate	2026-10-31T15:10:30.2464444Z E                  ~~~~~^^^^^^^^^^^^^^^^^^^^^^
+hermetic	Belief substrate	2026-10-31T15:10:30.2465249Z E           File "/opt/hostedtoolcache/Python/3.13.16/x64/lib/python3.13/subprocess.py", line 1040, in __init__
+hermetic	Belief substrate	2026-10-31T15:10:30.2466211Z E             self._execute_child(args, executable, preexec_fn, close_fds,
+hermetic	Belief substrate	2026-10-31T15:10:30.2466887Z E             ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+hermetic	Belief substrate	2026-10-31T15:10:30.2467446Z E                                 pass_fds, cwd, env,
+hermetic	Belief substrate	2026-10-31T15:10:30.2467937Z E                                 ^^^^^^^^^^^^^^^^^^^
+hermetic	Belief substrate	2026-10-31T15:10:30.2468556Z E             ...<5 lines>...
+hermetic	Belief substrate	2026-10-31T15:10:30.2468994Z E                                 gid, gids, uid, umask,
+hermetic	Belief substrate	2026-10-31T15:10:30.2469492Z E                                 ^^^^^^^^^^^^^^^^^^^^^^
+hermetic	Belief substrate	2026-10-31T15:10:30.2470019Z E                                 start_new_session, process_group)
+hermetic	Belief substrate	2026-10-31T15:10:30.2470570Z E                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+hermetic	Belief substrate	2026-10-31T15:10:30.2471451Z E           File "/opt/hostedtoolcache/Python/3.13.16/x64/lib/python3.13/subprocess.py", line 1992, in _execute_child
+hermetic	Belief substrate	2026-10-31T15:10:30.2472456Z E             raise child_exception_type(errno_num, err_msg, err_filename)
+hermetic	Belief substrate	2026-10-31T15:10:30.2473674Z E         FileNotFoundError: [Errno 2] No such file or directory: PosixPath('/mnt/raid0/llm/epyc-orchestrator')
+hermetic	Belief substrate	2026-10-31T15:10:30.2474501Z E         
+hermetic	Belief substrate	2026-10-31T15:10:30.2474820Z E       assert 1 == 0
+hermetic	Belief substrate	2026-10-31T15:10:30.2476600Z E        +  where 1 = CompletedProcess(args=['/opt/hostedtoolcache/Python/3.13.16/x64/bin/python', '/home/runner/work/epyc-root/epyc-root/sc..._filename)\nFileNotFoundError: [Errno 2] No such file or directory: PosixPath(\'/mnt/raid0/llm/epyc-orchestrator\')\n').returncode
+hermetic	Belief substrate	2026-10-31T15:10:30.2478414Z 
+hermetic	Belief substrate	2026-10-31T15:10:30.2478689Z tests/vidya/test_dev_harness_aggregate.py:57: AssertionError
+hermetic	Belief substrate	2026-10-31T15:10:30.2479466Z ____________ test_default_publisher_preserves_legacy_bytes_and_gate ____________
+hermetic	Belief substrate	2026-10-31T15:10:30.2479990Z 
+hermetic	Belief substrate	2026-10-31T15:10:30.2481359Z produced = (PosixPath('/tmp/pytest-of-runner/pytest-0/test_default_publisher_preserv0'), PosixPath('/tmp/pytest-of-runner/pytest-...[{'pointer': '/counts/dhm4/sheet_items', 'metric': 'sheet_items', 'unit': 'items', 'direction': 'lower_better', ...}]})
+hermetic	Belief substrate	2026-10-31T15:10:30.2482897Z 
+hermetic	Belief substrate	2026-10-31T15:10:30.2483222Z     def test_default_publisher_preserves_legacy_bytes_and_gate(produced):
+hermetic	Belief substrate	2026-10-31T15:10:30.2483919Z         from m2_lessons import ITSPilot, load_registry
+hermetic	Belief substrate	2026-10-31T15:10:30.2484469Z         from publish_mining_results import build
+hermetic	Belief substrate	2026-10-31T15:10:30.2484937Z     
+hermetic	Belief substrate	2026-10-31T15:10:30.2485258Z         tmp, run, _, env, _ = produced
+hermetic	Belief substrate	2026-10-31T15:10:30.2485705Z         m1 = run / 'm1/aggregates'
+hermetic	Belief substrate	2026-10-31T15:10:30.2486203Z         for name in ('dhm1_history', 'oab_lb1', 'ufh14_lb8'):
+hermetic	Belief substrate	2026-10-31T15:10:30.2487012Z             (m1 / f'{name}.aggregate.json').write_text(json.dumps({'counts': {'units': 1}, 'rules': []}))
+hermetic	Belief substrate	2026-10-31T15:10:30.2487786Z         aggregate = run / 'aggregate.json'
+hermetic	Belief substrate	2026-10-31T15:10:30.2488417Z         m2 = json.loads(aggregate.read_text())
+hermetic	Belief substrate	2026-10-31T15:10:30.2488995Z         default_rules = ITSPilot(load_registry()).meta_rules()
+hermetic	Belief substrate	2026-10-31T15:10:30.2489556Z         m2['rules'] = default_rules
+hermetic	Belief substrate	2026-10-31T15:10:30.2490017Z         aggregate.write_text(json.dumps(m2))
+hermetic	Belief substrate	2026-10-31T15:10:30.2490466Z     
+hermetic	Belief substrate	2026-10-31T15:10:30.2491086Z         # Independent copy of the old reducer: default output is byte-for-byte identical.
+hermetic	Belief substrate	2026-10-31T15:10:30.2491838Z         counts = dict(m2['counts'])
+hermetic	Belief substrate	2026-10-31T15:10:30.2492359Z         for cluster in counts['dhm72']['clusters'].values():
+hermetic	Belief substrate	2026-10-31T15:10:30.2492926Z             cluster.pop('top_terms', None)
+hermetic	Belief substrate	2026-10-31T15:10:30.2493536Z         for name in ('dhm1', 'dhm1_history', 'dhm5', 'oab_lb1', 'ufh14_lb8'):
+hermetic	Belief substrate	2026-10-31T15:10:30.2494341Z             counts[name] = json.loads((m1 / f'{name}.aggregate.json').read_text())['counts']
+hermetic	Belief substrate	2026-10-31T15:10:30.2495112Z         run_record = json.loads((run / 'run.json').read_text())
+hermetic	Belief substrate	2026-10-31T15:10:30.2495901Z         counts['run'] = {k: run_record[k] for k in ('units', 'interrupt_candidates', 'cluster_docs',
+hermetic	Belief substrate	2026-10-31T15:10:30.2496843Z             'clusters_reported', 'planted_recovered', 'sheet_items', 'would_fire_total')}
+hermetic	Belief substrate	2026-10-31T15:10:30.2497789Z         legacy = {'schema': 'dev-harness-aggregate.v1', 'generated_at': m2['generated_at'],
+hermetic	Belief substrate	2026-10-31T15:10:30.2499003Z             'source': 'dev-harness mining full run ' + run_record['run_id'] + ' (M1 + M2), reduced; top_terms dropped',
+hermetic	Belief substrate	2026-10-31T15:10:30.2500099Z             'spec': 'scripts/dev_harness/mining_m2_aggregate.schema.json', 'notes': m2['notes'],
+hermetic	Belief substrate	2026-10-31T15:10:30.2500845Z             'rules': [], 'counts': counts}
+hermetic	Belief substrate	2026-10-31T15:10:30.2501428Z         expected = json.dumps(legacy, indent=2, sort_keys=True) + '\n'
+hermetic	Belief substrate	2026-10-31T15:10:30.2502209Z         assert json.dumps(build(run), indent=2, sort_keys=True) + '\n' == expected
+hermetic	Belief substrate	2026-10-31T15:10:30.2502895Z         dest = tmp / 'default.aggregate.json'
+hermetic	Belief substrate	2026-10-31T15:10:30.2503730Z         result = subprocess.run([sys.executable, str(ROOT / 'scripts/dev_harness/publish_mining_results.py'),
+hermetic	Belief substrate	2026-10-31T15:10:30.2504795Z                                  str(run), str(dest)], env=env, capture_output=True, text=True, check=False)
+hermetic	Belief substrate	2026-10-31T15:10:30.2505711Z >       assert result.returncode == 0, result.stderr
+hermetic	Belief substrate	2026-10-31T15:10:30.2506297Z E       AssertionError: Traceback (most recent call last):
+hermetic	Belief substrate	2026-10-31T15:10:30.2507293Z E           File "/home/runner/work/epyc-root/epyc-root/scripts/dev_harness/publish_mining_results.py", line 59, in <module>
+hermetic	Belief substrate	2026-10-31T15:10:30.2508503Z E             out = p.publish_aggregate(doc, args.dest)
+hermetic	Belief substrate	2026-10-31T15:10:30.2509785Z E           File "/home/runner/work/epyc-root/epyc-root/scripts/dev_harness/dh_privacy.py", line 178, in publish_aggregate
+hermetic	Belief substrate	2026-10-31T15:10:30.2510352Z E             rc = run_preflight(cand, report, orchestrator_root)
+hermetic	Belief substrate	2026-10-31T15:10:30.2510765Z E           File "/home/runner/work/epyc-root/epyc-root/scripts/dev_harness/dh_privacy.py", line 161, in run_preflight
+hermetic	Belief substrate	2026-10-31T15:10:30.2511126Z E             proc = subprocess.run(
+hermetic	Belief substrate	2026-10-31T15:10:30.2511390Z E                 [exe, PREFLIGHT_REL, str(path), "--output", str(report_path)],
+hermetic	Belief substrate	2026-10-31T15:10:30.2511758Z E                 cwd=orchestrator_root, capture_output=True, text=True, timeout=300, check=False,
+hermetic	Belief substrate	2026-10-31T15:10:30.2512069Z E             )
+hermetic	Belief substrate	2026-10-31T15:10:30.2512356Z E           File "/opt/hostedtoolcache/Python/3.13.16/x64/lib/python3.13/subprocess.py", line 555, in run
+hermetic	Belief substrate	2026-10-31T15:10:30.2512722Z E             with Popen(*popenargs, **kwargs) as process:
+hermetic	Belief substrate	2026-10-31T15:10:30.2512956Z E                  ~~~~~^^^^^^^^^^^^^^^^^^^^^^
+hermetic	Belief substrate	2026-10-31T15:10:30.2513303Z E           File "/opt/hostedtoolcache/Python/3.13.16/x64/lib/python3.13/subprocess.py", line 1040, in __init__
+hermetic	Belief substrate	2026-10-31T15:10:30.2513694Z E             self._execute_child(args, executable, preexec_fn, close_fds,
+hermetic	Belief substrate	2026-10-31T15:10:30.2513975Z E             ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+hermetic	Belief substrate	2026-10-31T15:10:30.2514216Z E                                 pass_fds, cwd, env,
+hermetic	Belief substrate	2026-10-31T15:10:30.2514431Z E                                 ^^^^^^^^^^^^^^^^^^^
+hermetic	Belief substrate	2026-10-31T15:10:30.2514630Z E             ...<5 lines>...
+hermetic	Belief substrate	2026-10-31T15:10:30.2514831Z E                                 gid, gids, uid, umask,
+hermetic	Belief substrate	2026-10-31T15:10:30.2515047Z E                                 ^^^^^^^^^^^^^^^^^^^^^^
+hermetic	Belief substrate	2026-10-31T15:10:30.2515284Z E                                 start_new_session, process_group)
+hermetic	Belief substrate	2026-10-31T15:10:30.2515525Z E                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+hermetic	Belief substrate	2026-10-31T15:10:30.2515878Z E           File "/opt/hostedtoolcache/Python/3.13.16/x64/lib/python3.13/subprocess.py", line 1992, in _execute_child
+hermetic	Belief substrate	2026-10-31T15:10:30.2516279Z E             raise child_exception_type(errno_num, err_msg, err_filename)
+hermetic	Belief substrate	2026-10-31T15:10:30.2516673Z E         FileNotFoundError: [Errno 2] No such file or directory: PosixPath('/mnt/raid0/llm/epyc-orchestrator')
+hermetic	Belief substrate	2026-10-31T15:10:30.2517001Z E         
+hermetic	Belief substrate	2026-10-31T15:10:30.2517146Z E       assert 1 == 0
+hermetic	Belief substrate	2026-10-31T15:10:30.2517820Z E        +  where 1 = CompletedProcess(args=['/opt/hostedtoolcache/Python/3.13.16/x64/bin/python', '/home/runner/work/epyc-root/epyc-root/sc..._filename)\nFileNotFoundError: [Errno 2] No such file or directory: PosixPath(\'/mnt/raid0/llm/epyc-orchestrator\')\n').returncode
+hermetic	Belief substrate	2026-10-31T15:10:30.2518684Z 
+hermetic	Belief substrate	2026-10-31T15:10:30.2518835Z tests/vidya/test_dev_harness_aggregate.py:257: AssertionError
+hermetic	Belief substrate	2026-10-31T15:10:30.2519271Z P1-A carrier invariants: 7393 tuples from 113 source kinds checked (byte identity / grade invariance), 0 violation(s)
+hermetic	Belief substrate	2026-10-31T15:10:30.2519678Z =========================== short test summary info ============================
+hermetic	Belief substrate	2026-10-31T15:10:30.2520269Z FAILED tests/vidya/test_dev_harness_aggregate.py::test_real_miners_publisher_cli_and_planning_control - AssertionError: Traceback (most recent call last):
+hermetic	Belief substrate	2026-10-31T15:10:30.2525252Z     File "/home/runner/work/epyc-root/epyc-root/scripts/dev_harness/publish_mining_results.py", line 54, in <module>
+hermetic	Belief substrate	2026-10-31T15:10:30.2525770Z       out = publish_with_beliefs(doc, args.dest, metadata=declarations["metadata"],
+hermetic	Belief substrate	2026-10-31T15:10:30.2526138Z                                  metrics=declarations["metrics"], private_root=p.PRIVATE_ROOT,
+hermetic	Belief substrate	2026-10-31T15:10:30.2526600Z                                  orchestrator_root=p.ORCHESTRATOR_ROOT,
+hermetic	Belief substrate	2026-10-31T15:10:30.2526911Z                                  run_dir=args.run_dir, declarations_path=args.belief_declarations)
+hermetic	Belief substrate	2026-10-31T15:10:30.2527502Z     File "/home/runner/work/epyc-root/epyc-root/scripts/vidya/adapters/dev_harness_aggregate.py", line 174, in publish_with_beliefs
+hermetic	Belief substrate	2026-10-31T15:10:30.2528000Z       if privacy.run_preflight(candidate, report, Path(orchestrator_root)) != 0:
+hermetic	Belief substrate	2026-10-31T15:10:30.2528483Z          ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+hermetic	Belief substrate	2026-10-31T15:10:30.2528997Z     File "/home/runner/work/epyc-root/epyc-root/scripts/dev_harness/dh_privacy.py", line 161, in run_preflight
+hermetic	Belief substrate	2026-10-31T15:10:30.2529372Z       proc = subprocess.run(
+hermetic	Belief substrate	2026-10-31T15:10:30.2529610Z           [exe, PREFLIGHT_REL, str(path), "--output", str(report_path)],
+hermetic	Belief substrate	2026-10-31T15:10:30.2529954Z           cwd=orchestrator_root, capture_output=True, text=True, timeout=300, check=False,
+hermetic	Belief substrate	2026-10-31T15:10:30.2530236Z       )
+hermetic	Belief substrate	2026-10-31T15:10:30.2530606Z     File "/opt/hostedtoolcache/Python/3.13.16/x64/lib/python3.13/subprocess.py", line 555, in run
+hermetic	Belief substrate	2026-10-31T15:10:30.2531033Z       with Popen(*popenargs, **kwargs) as process:
+hermetic	Belief substrate	2026-10-31T15:10:30.2531264Z            ~~~~~^^^^^^^^^^^^^^^^^^^^^^
+hermetic	Belief substrate	2026-10-31T15:10:30.2531631Z     File "/opt/hostedtoolcache/Python/3.13.16/x64/lib/python3.13/subprocess.py", line 1040, in __init__
+hermetic	Belief substrate	2026-10-31T15:10:30.2532030Z       self._execute_child(args, executable, preexec_fn, close_fds,
+hermetic	Belief substrate	2026-10-31T15:10:30.2532300Z       ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+hermetic	Belief substrate	2026-10-31T15:10:30.2532536Z                           pass_fds, cwd, env,
+hermetic	Belief substrate	2026-10-31T15:10:30.2532758Z                           ^^^^^^^^^^^^^^^^^^^
+hermetic	Belief substrate	2026-10-31T15:10:30.2532942Z       ...<5 lines>...
+hermetic	Belief substrate	2026-10-31T15:10:30.2533118Z                           gid, gids, uid, umask,
+hermetic	Belief substrate	2026-10-31T15:10:30.2533322Z                           ^^^^^^^^^^^^^^^^^^^^^^
+hermetic	Belief substrate	2026-10-31T15:10:30.2533538Z                           start_new_session, process_group)
+hermetic	Belief substrate	2026-10-31T15:10:30.2533769Z                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+hermetic	Belief substrate	2026-10-31T15:10:30.2534134Z     File "/opt/hostedtoolcache/Python/3.13.16/x64/lib/python3.13/subprocess.py", line 1992, in _execute_child
+hermetic	Belief substrate	2026-10-31T15:10:30.2534540Z       raise child_exception_type(errno_num, err_msg, err_filename)
+hermetic	Belief substrate	2026-10-31T15:10:30.2534922Z   FileNotFoundError: [Errno 2] No such file or directory: PosixPath('/mnt/raid0/llm/epyc-orchestrator')
+hermetic	Belief substrate	2026-10-31T15:10:30.2535247Z   
+hermetic	Belief substrate	2026-10-31T15:10:30.2535385Z assert 1 == 0
+hermetic	Belief substrate	2026-10-31T15:10:30.2536021Z  +  where 1 = CompletedProcess(args=['/opt/hostedtoolcache/Python/3.13.16/x64/bin/python', '/home/runner/work/epyc-root/epyc-root/sc..._filename)\nFileNotFoundError: [Errno 2] No such file or directory: PosixPath(\'/mnt/raid0/llm/epyc-orchestrator\')\n').returncode
+hermetic	Belief substrate	2026-10-31T15:10:30.2537042Z FAILED tests/vidya/test_dev_harness_aggregate.py::test_tamper_namespace_and_partial_refuse - AssertionError: Traceback (most recent call last):
+hermetic	Belief substrate	2026-10-31T15:10:30.2537665Z     File "/home/runner/work/epyc-root/epyc-root/scripts/dev_harness/publish_mining_results.py", line 54, in <module>
+hermetic	Belief substrate	2026-10-31T15:10:30.2538265Z       out = publish_with_beliefs(doc, args.dest, metadata=declarations["metadata"],
+hermetic	Belief substrate	2026-10-31T15:10:30.2538638Z                                  metrics=declarations["metrics"], private_root=p.PRIVATE_ROOT,
+hermetic	Belief substrate	2026-10-31T15:10:30.2538948Z                                  orchestrator_root=p.ORCHESTRATOR_ROOT,
+hermetic	Belief substrate	2026-10-31T15:10:30.2539249Z                                  run_dir=args.run_dir, declarations_path=args.belief_declarations)
+hermetic	Belief substrate	2026-10-31T15:10:30.2539738Z     File "/home/runner/work/epyc-root/epyc-root/scripts/vidya/adapters/dev_harness_aggregate.py", line 174, in publish_with_beliefs
+hermetic	Belief substrate	2026-10-31T15:10:30.2540223Z       if privacy.run_preflight(candidate, report, Path(orchestrator_root)) != 0:
+hermetic	Belief substrate	2026-10-31T15:10:30.2540550Z          ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+hermetic	Belief substrate	2026-10-31T15:10:30.2541023Z     File "/home/runner/work/epyc-root/epyc-root/scripts/dev_harness/dh_privacy.py", line 161, in run_preflight
+hermetic	Belief substrate	2026-10-31T15:10:30.2541423Z       proc = subprocess.run(
+hermetic	Belief substrate	2026-10-31T15:10:30.2541715Z           [exe, PREFLIGHT_REL, str(path), "--output", str(report_path)],
+hermetic	Belief substrate	2026-10-31T15:10:30.2542065Z           cwd=orchestrator_root, capture_output=True, text=True, timeout=300, check=False,
+hermetic	Belief substrate	2026-10-31T15:10:30.2542354Z       )
+hermetic	Belief substrate	2026-10-31T15:10:30.2542630Z     File "/opt/hostedtoolcache/Python/3.13.16/x64/lib/python3.13/subprocess.py", line 555, in run
+hermetic	Belief substrate	2026-10-31T15:10:30.2542984Z       with Popen(*popenargs, **kwargs) as process:
+hermetic	Belief substrate	2026-10-31T15:10:30.2543206Z            ~~~~~^^^^^^^^^^^^^^^^^^^^^^
+hermetic	Belief substrate	2026-10-31T15:10:30.2543535Z     File "/opt/hostedtoolcache/Python/3.13.16/x64/lib/python3.13/subprocess.py", line 1040, in __init__
+hermetic	Belief substrate	2026-10-31T15:10:30.2543914Z       self._execute_child(args, executable, preexec_fn, close_fds,
+hermetic	Belief substrate	2026-10-31T15:10:30.2544177Z       ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+hermetic	Belief substrate	2026-10-31T15:10:30.2544399Z                           pass_fds, cwd, env,
+hermetic	Belief substrate	2026-10-31T15:10:30.2544605Z                           ^^^^^^^^^^^^^^^^^^^
+hermetic	Belief substrate	2026-10-31T15:10:30.2544803Z       ...<5 lines>...
+hermetic	Belief substrate	2026-10-31T15:10:30.2544976Z                           gid, gids, uid, umask,
+hermetic	Belief substrate	2026-10-31T15:10:30.2545185Z                           ^^^^^^^^^^^^^^^^^^^^^^
+hermetic	Belief substrate	2026-10-31T15:10:30.2545410Z                           start_new_session, process_group)
+hermetic	Belief substrate	2026-10-31T15:10:30.2545638Z                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+hermetic	Belief substrate	2026-10-31T15:10:30.2546003Z     File "/opt/hostedtoolcache/Python/3.13.16/x64/lib/python3.13/subprocess.py", line 1992, in _execute_child
+hermetic	Belief substrate	2026-10-31T15:10:30.2546417Z       raise child_exception_type(errno_num, err_msg, err_filename)
+hermetic	Belief substrate	2026-10-31T15:10:30.2546807Z   FileNotFoundError: [Errno 2] No such file or directory: PosixPath('/mnt/raid0/llm/epyc-orchestrator')
+hermetic	Belief substrate	2026-10-31T15:10:30.2547137Z   
+hermetic	Belief substrate	2026-10-31T15:10:30.2547277Z assert 1 == 0
+hermetic	Belief substrate	2026-10-31T15:10:30.2547916Z  +  where 1 = CompletedProcess(args=['/opt/hostedtoolcache/Python/3.13.16/x64/bin/python', '/home/runner/work/epyc-root/epyc-root/sc..._filename)\nFileNotFoundError: [Errno 2] No such file or directory: PosixPath(\'/mnt/raid0/llm/epyc-orchestrator\')\n').returncode
+hermetic	Belief substrate	2026-10-31T15:10:30.2548994Z FAILED tests/vidya/test_dev_harness_aggregate.py::test_absent_scope_stays_unknown_and_nonfinite_refused - AssertionError: Traceback (most recent call last):
+hermetic	Belief substrate	2026-10-31T15:10:30.2549635Z     File "/home/runner/work/epyc-root/epyc-root/scripts/dev_harness/publish_mining_results.py", line 54, in <module>
+hermetic	Belief substrate	2026-10-31T15:10:30.2550090Z       out = publish_with_beliefs(doc, args.dest, metadata=declarations["metadata"],
+hermetic	Belief substrate	2026-10-31T15:10:30.2550448Z                                  metrics=declarations["metrics"], private_root=p.PRIVATE_ROOT,
+hermetic	Belief substrate	2026-10-31T15:10:30.2550760Z                                  orchestrator_root=p.ORCHESTRATOR_ROOT,
+hermetic	Belief substrate	2026-10-31T15:10:30.2551070Z                                  run_dir=args.run_dir, declarations_path=args.belief_declarations)
+hermetic	Belief substrate	2026-10-31T15:10:30.2551574Z     File "/home/runner/work/epyc-root/epyc-root/scripts/vidya/adapters/dev_harness_aggregate.py", line 174, in publish_with_beliefs
+hermetic	Belief substrate	2026-10-31T15:10:30.2552102Z       if privacy.run_preflight(candidate, report, Path(orchestrator_root)) != 0:
+hermetic	Belief substrate	2026-10-31T15:10:30.2552414Z          ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+hermetic	Belief substrate	2026-10-31T15:10:30.2552808Z     File "/home/runner/work/epyc-root/epyc-root/scripts/dev_harness/dh_privacy.py", line 161, in run_preflight
+hermetic	Belief substrate	2026-10-31T15:10:30.2553161Z       proc = subprocess.run(
+hermetic	Belief substrate	2026-10-31T15:10:30.2553403Z           [exe, PREFLIGHT_REL, str(path), "--output", str(report_path)],
+hermetic	Belief substrate	2026-10-31T15:10:30.2553746Z           cwd=orchestrator_root, capture_output=True, text=True, timeout=300, check=False,
+hermetic	Belief substrate	2026-10-31T15:10:30.2554036Z       )
+hermetic	Belief substrate	2026-10-31T15:10:30.2554314Z     File "/opt/hostedtoolcache/Python/3.13.16/x64/lib/python3.13/subprocess.py", line 555, in run
+hermetic	Belief substrate	2026-10-31T15:10:30.2554716Z       with Popen(*popenargs, **kwargs) as process:
+hermetic	Belief substrate	2026-10-31T15:10:30.2554938Z            ~~~~~^^^^^^^^^^^^^^^^^^^^^^
+hermetic	Belief substrate	2026-10-31T15:10:30.2555266Z     File "/opt/hostedtoolcache/Python/3.13.16/x64/lib/python3.13/subprocess.py", line 1040, in __init__
+hermetic	Belief substrate	2026-10-31T15:10:30.2555673Z       self._execute_child(args, executable, preexec_fn, close_fds,
+hermetic	Belief substrate	2026-10-31T15:10:30.2555935Z       ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+hermetic	Belief substrate	2026-10-31T15:10:30.2556158Z                           pass_fds, cwd, env,
+hermetic	Belief substrate	2026-10-31T15:10:30.2556360Z                           ^^^^^^^^^^^^^^^^^^^
+hermetic	Belief substrate	2026-10-31T15:10:30.2556544Z       ...<5 lines>...
+hermetic	Belief substrate	2026-10-31T15:10:30.2556726Z                           gid, gids, uid, umask,
+hermetic	Belief substrate	2026-10-31T15:10:30.2556926Z                           ^^^^^^^^^^^^^^^^^^^^^^
+hermetic	Belief substrate	2026-10-31T15:10:30.2557141Z                           start_new_session, process_group)
+hermetic	Belief substrate	2026-10-31T15:10:30.2557363Z                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+hermetic	Belief substrate	2026-10-31T15:10:30.2557715Z     File "/opt/hostedtoolcache/Python/3.13.16/x64/lib/python3.13/subprocess.py", line 1992, in _execute_child
+hermetic	Belief substrate	2026-10-31T15:10:30.2558217Z       raise child_exception_type(errno_num, err_msg, err_filename)
+hermetic	Belief substrate	2026-10-31T15:10:30.2558606Z   FileNotFoundError: [Errno 2] No such file or directory: PosixPath('/mnt/raid0/llm/epyc-orchestrator')
+hermetic	Belief substrate	2026-10-31T15:10:30.2558931Z   
+hermetic	Belief substrate	2026-10-31T15:10:30.2559066Z assert 1 == 0
+hermetic	Belief substrate	2026-10-31T15:10:30.3596015Z  +  where 1 = CompletedProcess(args=['/opt/hostedtoolcache/Python/3.13.16/x64/bin/python', '/home/runner/work/epyc-root/epyc-root/sc..._filename)\nFileNotFoundError: [Errno 2] No such file or directory: PosixPath(\'/mnt/raid0/llm/epyc-orchestrator\')\n').returncode
+hermetic	Belief substrate	2026-10-31T15:10:30.3597096Z FAILED tests/vidya/test_dev_harness_aggregate.py::test_privacy_and_invalid_metric_refused - AssertionError: Traceback (most recent call last):
+hermetic	Belief substrate	2026-10-31T15:10:30.3597854Z     File "/home/runner/work/epyc-root/epyc-root/scripts/dev_harness/publish_mining_results.py", line 54, in <module>
+hermetic	Belief substrate	2026-10-31T15:10:30.3598612Z       out = publish_with_beliefs(doc, args.dest, metadata=declarations["metadata"],
+hermetic	Belief substrate	2026-10-31T15:10:30.3598989Z                                  metrics=declarations["metrics"], private_root=p.PRIVATE_ROOT,
+hermetic	Belief substrate	2026-10-31T15:10:30.3599340Z                                  orchestrator_root=p.ORCHESTRATOR_ROOT,
+hermetic	Belief substrate	2026-10-31T15:10:30.3599653Z                                  run_dir=args.run_dir, declarations_path=args.belief_declarations)
+hermetic	Belief substrate	2026-10-31T15:10:30.3600186Z     File "/home/runner/work/epyc-root/epyc-root/scripts/vidya/adapters/dev_harness_aggregate.py", line 174, in publish_with_beliefs
+hermetic	Belief substrate	2026-10-31T15:10:30.3600671Z       if privacy.run_preflight(candidate, report, Path(orchestrator_root)) != 0:
+hermetic	Belief substrate	2026-10-31T15:10:30.3600982Z          ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+hermetic	Belief substrate	2026-10-31T15:10:30.3601370Z     File "/home/runner/work/epyc-root/epyc-root/scripts/dev_harness/dh_privacy.py", line 161, in run_preflight
+hermetic	Belief substrate	2026-10-31T15:10:30.3601733Z       proc = subprocess.run(
+hermetic	Belief substrate	2026-10-31T15:10:30.3601981Z           [exe, PREFLIGHT_REL, str(path), "--output", str(report_path)],
+hermetic	Belief substrate	2026-10-31T15:10:30.3602333Z           cwd=orchestrator_root, capture_output=True, text=True, timeout=300, check=False,
+hermetic	Belief substrate	2026-10-31T15:10:30.3602617Z       )
+hermetic	Belief substrate	2026-10-31T15:10:30.3602893Z     File "/opt/hostedtoolcache/Python/3.13.16/x64/lib/python3.13/subprocess.py", line 555, in run
+hermetic	Belief substrate	2026-10-31T15:10:30.3603240Z       with Popen(*popenargs, **kwargs) as process:
+hermetic	Belief substrate	2026-10-31T15:10:30.3603465Z            ~~~~~^^^^^^^^^^^^^^^^^^^^^^
+hermetic	Belief substrate	2026-10-31T15:10:30.3603797Z     File "/opt/hostedtoolcache/Python/3.13.16/x64/lib/python3.13/subprocess.py", line 1040, in __init__
+hermetic	Belief substrate	2026-10-31T15:10:30.3604194Z       self._execute_child(args, executable, preexec_fn, close_fds,
+hermetic	Belief substrate	2026-10-31T15:10:30.3604462Z       ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+hermetic	Belief substrate	2026-10-31T15:10:30.3604694Z                           pass_fds, cwd, env,
+hermetic	Belief substrate	2026-10-31T15:10:30.3604898Z                           ^^^^^^^^^^^^^^^^^^^
+hermetic	Belief substrate	2026-10-31T15:10:30.3605431Z       ...<5 lines>...
+hermetic	Belief substrate	2026-10-31T15:10:30.3605607Z                           gid, gids, uid, umask,
+hermetic	Belief substrate	2026-10-31T15:10:30.3605812Z                           ^^^^^^^^^^^^^^^^^^^^^^
+hermetic	Belief substrate	2026-10-31T15:10:30.3606115Z                           start_new_session, process_group)
+hermetic	Belief substrate	2026-10-31T15:10:30.3606347Z                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+hermetic	Belief substrate	2026-10-31T15:10:30.3606719Z     File "/opt/hostedtoolcache/Python/3.13.16/x64/lib/python3.13/subprocess.py", line 1992, in _execute_child
+hermetic	Belief substrate	2026-10-31T15:10:30.3607129Z       raise child_exception_type(errno_num, err_msg, err_filename)
+hermetic	Belief substrate	2026-10-31T15:10:30.3607508Z   FileNotFoundError: [Errno 2] No such file or directory: PosixPath('/mnt/raid0/llm/epyc-orchestrator')
+hermetic	Belief substrate	2026-10-31T15:10:30.3607878Z   
+hermetic	Belief substrate	2026-10-31T15:10:30.3608018Z assert 1 == 0
+hermetic	Belief substrate	2026-10-31T15:10:30.3608822Z  +  where 1 = CompletedProcess(args=['/opt/hostedtoolcache/Python/3.13.16/x64/bin/python', '/home/runner/work/epyc-root/epyc-root/sc..._filename)\nFileNotFoundError: [Errno 2] No such file or directory: PosixPath(\'/mnt/raid0/llm/epyc-orchestrator\')\n').returncode
+hermetic	Belief substrate	2026-10-31T15:10:30.3609772Z FAILED tests/vidya/test_dev_harness_aggregate.py::test_completed_run_cannot_publish_again - AssertionError: Traceback (most recent call last):
+hermetic	Belief substrate	2026-10-31T15:10:30.3610396Z     File "/home/runner/work/epyc-root/epyc-root/scripts/dev_harness/publish_mining_results.py", line 54, in <module>
+hermetic	Belief substrate	2026-10-31T15:10:30.3610935Z       out = publish_with_beliefs(doc, args.dest, metadata=declarations["metadata"],
+hermetic	Belief substrate	2026-10-31T15:10:30.3611308Z                                  metrics=declarations["metrics"], private_root=p.PRIVATE_ROOT,
+hermetic	Belief substrate	2026-10-31T15:10:30.3611625Z                                  orchestrator_root=p.ORCHESTRATOR_ROOT,
+hermetic	Belief substrate	2026-10-31T15:10:30.3611941Z                                  run_dir=args.run_dir, declarations_path=args.belief_declarations)
+hermetic	Belief substrate	2026-10-31T15:10:30.3612473Z     File "/home/runner/work/epyc-root/epyc-root/scripts/vidya/adapters/dev_harness_aggregate.py", line 174, in publish_with_beliefs
+hermetic	Belief substrate	2026-10-31T15:10:30.3612946Z       if privacy.run_preflight(candidate, report, Path(orchestrator_root)) != 0:
+hermetic	Belief substrate	2026-10-31T15:10:30.3613251Z          ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+hermetic	Belief substrate	2026-10-31T15:10:30.3613632Z     File "/home/runner/work/epyc-root/epyc-root/scripts/dev_harness/dh_privacy.py", line 161, in run_preflight
+hermetic	Belief substrate	2026-10-31T15:10:30.3613976Z       proc = subprocess.run(
+hermetic	Belief substrate	2026-10-31T15:10:30.3614211Z           [exe, PREFLIGHT_REL, str(path), "--output", str(report_path)],
+hermetic	Belief substrate	2026-10-31T15:10:30.3614558Z           cwd=orchestrator_root, capture_output=True, text=True, timeout=300, check=False,
+hermetic	Belief substrate	2026-10-31T15:10:30.3614836Z       )
+hermetic	Belief substrate	2026-10-31T15:10:30.3615106Z     File "/opt/hostedtoolcache/Python/3.13.16/x64/lib/python3.13/subprocess.py", line 555, in run
+hermetic	Belief substrate	2026-10-31T15:10:30.3615448Z       with Popen(*popenargs, **kwargs) as process:
+hermetic	Belief substrate	2026-10-31T15:10:30.3615667Z            ~~~~~^^^^^^^^^^^^^^^^^^^^^^
+hermetic	Belief substrate	2026-10-31T15:10:30.3615986Z     File "/opt/hostedtoolcache/Python/3.13.16/x64/lib/python3.13/subprocess.py", line 1040, in __init__
+hermetic	Belief substrate	2026-10-31T15:10:30.3616344Z       self._execute_child(args, executable, preexec_fn, close_fds,
+hermetic	Belief substrate	2026-10-31T15:10:30.3616615Z       ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+hermetic	Belief substrate	2026-10-31T15:10:30.3616836Z                           pass_fds, cwd, env,
+hermetic	Belief substrate	2026-10-31T15:10:30.3617035Z                           ^^^^^^^^^^^^^^^^^^^
+hermetic	Belief substrate	2026-10-31T15:10:30.3617215Z       ...<5 lines>...
+hermetic	Belief substrate	2026-10-31T15:10:30.3617386Z                           gid, gids, uid, umask,
+hermetic	Belief substrate	2026-10-31T15:10:30.3617587Z                           ^^^^^^^^^^^^^^^^^^^^^^
+hermetic	Belief substrate	2026-10-31T15:10:30.3617802Z                           start_new_session, process_group)
+hermetic	Belief substrate	2026-10-31T15:10:30.3618207Z                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+hermetic	Belief substrate	2026-10-31T15:10:30.3618625Z     File "/opt/hostedtoolcache/Python/3.13.16/x64/lib/python3.13/subprocess.py", line 1992, in _execute_child
+hermetic	Belief substrate	2026-10-31T15:10:30.3619050Z       raise child_exception_type(errno_num, err_msg, err_filename)
+hermetic	Belief substrate	2026-10-31T15:10:30.3619513Z   FileNotFoundError: [Errno 2] No such file or directory: PosixPath('/mnt/raid0/llm/epyc-orchestrator')
+hermetic	Belief substrate	2026-10-31T15:10:30.3619908Z   
+hermetic	Belief substrate	2026-10-31T15:10:30.3620063Z assert 1 == 0
+hermetic	Belief substrate	2026-10-31T15:10:30.3620731Z  +  where 1 = CompletedProcess(args=['/opt/hostedtoolcache/Python/3.13.16/x64/bin/python', '/home/runner/work/epyc-root/epyc-root/sc..._filename)\nFileNotFoundError: [Errno 2] No such file or directory: PosixPath(\'/mnt/raid0/llm/epyc-orchestrator\')\n').returncode
+hermetic	Belief substrate	2026-10-31T15:10:30.3621691Z FAILED tests/vidya/test_dev_harness_aggregate.py::test_default_publisher_preserves_legacy_bytes_and_gate - AssertionError: Traceback (most recent call last):
+hermetic	Belief substrate	2026-10-31T15:10:30.3622360Z     File "/home/runner/work/epyc-root/epyc-root/scripts/dev_harness/publish_mining_results.py", line 59, in <module>
+hermetic	Belief substrate	2026-10-31T15:10:30.3622772Z       out = p.publish_aggregate(doc, args.dest)
+hermetic	Belief substrate	2026-10-31T15:10:30.3623174Z     File "/home/runner/work/epyc-root/epyc-root/scripts/dev_harness/dh_privacy.py", line 178, in publish_aggregate
+hermetic	Belief substrate	2026-10-31T15:10:30.3623584Z       rc = run_preflight(cand, report, orchestrator_root)
+hermetic	Belief substrate	2026-10-31T15:10:30.3623990Z     File "/home/runner/work/epyc-root/epyc-root/scripts/dev_harness/dh_privacy.py", line 161, in run_preflight
+hermetic	Belief substrate	2026-10-31T15:10:30.3624370Z       proc = subprocess.run(
+hermetic	Belief substrate	2026-10-31T15:10:30.3624624Z           [exe, PREFLIGHT_REL, str(path), "--output", str(report_path)],
+hermetic	Belief substrate	2026-10-31T15:10:30.3624985Z           cwd=orchestrator_root, capture_output=True, text=True, timeout=300, check=False,
+hermetic	Belief substrate	2026-10-31T15:10:30.3625284Z       )
+hermetic	Belief substrate	2026-10-31T15:10:30.3625578Z     File "/opt/hostedtoolcache/Python/3.13.16/x64/lib/python3.13/subprocess.py", line 555, in run
+hermetic	Belief substrate	2026-10-31T15:10:30.3625932Z       with Popen(*popenargs, **kwargs) as process:
+hermetic	Belief substrate	2026-10-31T15:10:30.3626166Z            ~~~~~^^^^^^^^^^^^^^^^^^^^^^
+hermetic	Belief substrate	2026-10-31T15:10:30.3626519Z     File "/opt/hostedtoolcache/Python/3.13.16/x64/lib/python3.13/subprocess.py", line 1040, in __init__
+hermetic	Belief substrate	2026-10-31T15:10:30.3626910Z       self._execute_child(args, executable, preexec_fn, close_fds,
+hermetic	Belief substrate	2026-10-31T15:10:30.3627186Z       ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+hermetic	Belief substrate	2026-10-31T15:10:30.3627430Z                           pass_fds, cwd, env,
+hermetic	Belief substrate	2026-10-31T15:10:30.3627787Z                           ^^^^^^^^^^^^^^^^^^^
+hermetic	Belief substrate	2026-10-31T15:10:30.3628010Z       ...<5 lines>...
+hermetic	Belief substrate	2026-10-31T15:10:30.3628359Z                           gid, gids, uid, umask,
+hermetic	Belief substrate	2026-10-31T15:10:30.3628567Z                           ^^^^^^^^^^^^^^^^^^^^^^
+hermetic	Belief substrate	2026-10-31T15:10:30.3628793Z                           start_new_session, process_group)
+hermetic	Belief substrate	2026-10-31T15:10:30.3629019Z                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+hermetic	Belief substrate	2026-10-31T15:10:30.3629657Z     File "/opt/hostedtoolcache/Python/3.13.16/x64/lib/python3.13/subprocess.py", line 1992, in _execute_child
+hermetic	Belief substrate	2026-10-31T15:10:30.3630064Z       raise child_exception_type(errno_num, err_msg, err_filename)
+hermetic	Belief substrate	2026-10-31T15:10:30.3630439Z   FileNotFoundError: [Errno 2] No such file or directory: PosixPath('/mnt/raid0/llm/epyc-orchestrator')
+hermetic	Belief substrate	2026-10-31T15:10:30.3630760Z   
+hermetic	Belief substrate	2026-10-31T15:10:30.3630896Z assert 1 == 0
+hermetic	Belief substrate	2026-10-31T15:10:30.3631535Z  +  where 1 = CompletedProcess(args=['/opt/hostedtoolcache/Python/3.13.16/x64/bin/python', '/home/runner/work/epyc-root/epyc-root/sc..._filename)\nFileNotFoundError: [Errno 2] No such file or directory: PosixPath(\'/mnt/raid0/llm/epyc-orchestrator\')\n').returncode
+hermetic	Belief substrate	2026-10-31T15:10:30.3632293Z 6 failed, 3484 passed, 546 skipped, 24 subtests passed in 406.67s (0:06:46)
+hermetic	Belief substrate	2026-10-31T15:10:30.6235759Z ##[error]Process completed with exit code 1.
