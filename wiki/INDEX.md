@@ -325,6 +325,8 @@ These categories have intake entries but insufficient depth for a compiled artic
 **2026-07-20 single-source stubs (not promoted to their own section this pass):**
 - `cost_aware_routing` / `agent_architecture` — the [scaffold CoT cost-lever autopilot deployment](../handoffs/active/scaffold-autopilot-cost-lever-deployment.md) is a DESIGN handoff (episodic-memory-gated composite scaffold-then-nothink route; caps a beneficiary's CPU-decode tokens ~20-50×, quality benefit is headroom-conditional). All numbers are OBSERVATION-grade; nothing implemented. Its findings are already reflected in [Cost-Aware Routing](cost-aware-routing.md) (CoT scaffold-transplant falsified as a capability transplant, deployed only as a gated cost lever).
 
+- `benchmark_methodology` — the [Codex3 diagnostic custody wrap](../progress/2026-10/2026-10-31-codex3.md) records source-bounded operational findings, preserved unknowns and distinctions between native results and transport completion; it does not add new performance or quality gates.
+
 ---
 
 ## How to Use This Wiki
