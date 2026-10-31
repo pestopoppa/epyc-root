@@ -1,0 +1,167 @@
+{"leader_pid": 2559334, "leader_birth": 156065898, "event": "leader_started"}
+============================= test session starts ==============================
+platform linux -- Python 3.11.17, pytest-9.0.3, pluggy-1.6.0
+cachedir: /mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/ufh14-b6a1/pytest-cache
+rootdir: /mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/ufh14-b6a1/private
+configfile: pyproject.toml
+asyncio: mode=Mode.AUTO, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collected 3 items
+
+tests/unit/test_passthrough_route.py EE.                                 [100%]
+
+==================================== ERRORS ====================================
+_____________ ERROR at setup of test_request_semaphore_full_is_503 _____________
+tests/unit/test_passthrough_route.py:191: in client
+    with TestClient(app, raise_server_exceptions=False, client=("127.0.0.1", 50000)) as c:
+../../../../epyc-orchestrator/.venv/lib/python3.11/site-packages/starlette/testclient.py:688: in __enter__
+    portal.call(self.wait_startup)
+../../../../epyc-orchestrator/.venv/lib/python3.11/site-packages/anyio/from_thread.py:334: in call
+    return cast(T_Retval, self.start_task_soon(func, *args).result())
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/home/node/.local/share/uv/python/cpython-3.11.17-linux-x86_64-gnu/lib/python3.11/concurrent/futures/_base.py:456: in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+/home/node/.local/share/uv/python/cpython-3.11.17-linux-x86_64-gnu/lib/python3.11/concurrent/futures/_base.py:401: in __get_result
+    raise self._exception
+../../../../epyc-orchestrator/.venv/lib/python3.11/site-packages/anyio/from_thread.py:259: in _call_func
+    retval = await retval_or_awaitable
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../../epyc-orchestrator/.venv/lib/python3.11/site-packages/starlette/testclient.py:723: in wait_startup
+    await receive()
+../../../../epyc-orchestrator/.venv/lib/python3.11/site-packages/starlette/testclient.py:714: in receive
+    self.task.result()
+/home/node/.local/share/uv/python/cpython-3.11.17-linux-x86_64-gnu/lib/python3.11/concurrent/futures/_base.py:449: in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+/home/node/.local/share/uv/python/cpython-3.11.17-linux-x86_64-gnu/lib/python3.11/concurrent/futures/_base.py:401: in __get_result
+    raise self._exception
+../../../../epyc-orchestrator/.venv/lib/python3.11/site-packages/anyio/from_thread.py:259: in _call_func
+    retval = await retval_or_awaitable
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../../epyc-orchestrator/.venv/lib/python3.11/site-packages/starlette/testclient.py:704: in lifespan
+    await self.app(scope, self.stream_receive.receive, self.stream_send.send)
+../../../../epyc-orchestrator/.venv/lib/python3.11/site-packages/fastapi/applications.py:1163: in __call__
+    await super().__call__(scope, receive, send)
+../../../../epyc-orchestrator/.venv/lib/python3.11/site-packages/starlette/applications.py:90: in __call__
+    await self.middleware_stack(scope, receive, send)
+../../../../epyc-orchestrator/.venv/lib/python3.11/site-packages/starlette/middleware/errors.py:151: in __call__
+    await self.app(scope, receive, send)
+src/api/dashboard_cors.py:101: in __call__
+    await self.app(scope, receive, send)
+src/api/rate_limit.py:138: in __call__
+    await self.app(scope, receive, send)
+../../../../epyc-orchestrator/.venv/lib/python3.11/site-packages/starlette/middleware/cors.py:80: in __call__
+    await self.app(scope, receive, send)
+../../../../epyc-orchestrator/.venv/lib/python3.11/site-packages/starlette/middleware/exceptions.py:49: in __call__
+    await self.app(scope, receive, send)
+../../../../epyc-orchestrator/.venv/lib/python3.11/site-packages/fastapi/middleware/asyncexitstack.py:18: in __call__
+    await self.app(scope, receive, send)
+../../../../epyc-orchestrator/.venv/lib/python3.11/site-packages/starlette/routing.py:660: in __call__
+    await self.middleware_stack(scope, receive, send)
+../../../../epyc-orchestrator/.venv/lib/python3.11/site-packages/starlette/routing.py:669: in app
+    await self.lifespan(scope, receive, send)
+../../../../epyc-orchestrator/.venv/lib/python3.11/site-packages/starlette/routing.py:638: in lifespan
+    async with self.lifespan_context(app) as maybe_state:
+/home/node/.local/share/uv/python/cpython-3.11.17-linux-x86_64-gnu/lib/python3.11/contextlib.py:210: in __aenter__
+    return await anext(self.gen)
+           ^^^^^^^^^^^^^^^^^^^^^
+../../../../epyc-orchestrator/.venv/lib/python3.11/site-packages/fastapi/routing.py:216: in merged_lifespan
+    async with original_context(app) as maybe_original_state:
+/home/node/.local/share/uv/python/cpython-3.11.17-linux-x86_64-gnu/lib/python3.11/contextlib.py:210: in __aenter__
+    return await anext(self.gen)
+           ^^^^^^^^^^^^^^^^^^^^^
+src/api/__init__.py:86: in lifespan
+    from src.gate_runner import GateRunner
+src/gate_runner.py:43: in <module>
+    _GVV_SPEC.loader.exec_module(gate_verdict_vocab)
+<frozen importlib._bootstrap_external>:936: in exec_module
+    ???
+<frozen importlib._bootstrap_external>:1073: in get_code
+    ???
+<frozen importlib._bootstrap_external>:1130: in get_data
+    ???
+E   FileNotFoundError: [Errno 2] No such file or directory: '/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/ufh14-b6a1/private/scripts/benchmark/gate_verdict_vocab.py'
+------------------------------ Captured log setup ------------------------------
+WARNING  src.api.admission:admission.py:111 Falling back to stack-manifest admission limits; no stack-prior limits found
+_____ ERROR at setup of test_lock_refusal_reports_actual_blockers_and_wait _____
+tests/unit/test_passthrough_route.py:191: in client
+    with TestClient(app, raise_server_exceptions=False, client=("127.0.0.1", 50000)) as c:
+../../../../epyc-orchestrator/.venv/lib/python3.11/site-packages/starlette/testclient.py:688: in __enter__
+    portal.call(self.wait_startup)
+../../../../epyc-orchestrator/.venv/lib/python3.11/site-packages/anyio/from_thread.py:334: in call
+    return cast(T_Retval, self.start_task_soon(func, *args).result())
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/home/node/.local/share/uv/python/cpython-3.11.17-linux-x86_64-gnu/lib/python3.11/concurrent/futures/_base.py:456: in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+/home/node/.local/share/uv/python/cpython-3.11.17-linux-x86_64-gnu/lib/python3.11/concurrent/futures/_base.py:401: in __get_result
+    raise self._exception
+../../../../epyc-orchestrator/.venv/lib/python3.11/site-packages/anyio/from_thread.py:259: in _call_func
+    retval = await retval_or_awaitable
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../../epyc-orchestrator/.venv/lib/python3.11/site-packages/starlette/testclient.py:723: in wait_startup
+    await receive()
+../../../../epyc-orchestrator/.venv/lib/python3.11/site-packages/starlette/testclient.py:714: in receive
+    self.task.result()
+/home/node/.local/share/uv/python/cpython-3.11.17-linux-x86_64-gnu/lib/python3.11/concurrent/futures/_base.py:449: in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+/home/node/.local/share/uv/python/cpython-3.11.17-linux-x86_64-gnu/lib/python3.11/concurrent/futures/_base.py:401: in __get_result
+    raise self._exception
+../../../../epyc-orchestrator/.venv/lib/python3.11/site-packages/anyio/from_thread.py:259: in _call_func
+    retval = await retval_or_awaitable
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../../epyc-orchestrator/.venv/lib/python3.11/site-packages/starlette/testclient.py:704: in lifespan
+    await self.app(scope, self.stream_receive.receive, self.stream_send.send)
+../../../../epyc-orchestrator/.venv/lib/python3.11/site-packages/fastapi/applications.py:1163: in __call__
+    await super().__call__(scope, receive, send)
+../../../../epyc-orchestrator/.venv/lib/python3.11/site-packages/starlette/applications.py:90: in __call__
+    await self.middleware_stack(scope, receive, send)
+../../../../epyc-orchestrator/.venv/lib/python3.11/site-packages/starlette/middleware/errors.py:151: in __call__
+    await self.app(scope, receive, send)
+src/api/dashboard_cors.py:101: in __call__
+    await self.app(scope, receive, send)
+src/api/rate_limit.py:138: in __call__
+    await self.app(scope, receive, send)
+../../../../epyc-orchestrator/.venv/lib/python3.11/site-packages/starlette/middleware/cors.py:80: in __call__
+    await self.app(scope, receive, send)
+../../../../epyc-orchestrator/.venv/lib/python3.11/site-packages/starlette/middleware/exceptions.py:49: in __call__
+    await self.app(scope, receive, send)
+../../../../epyc-orchestrator/.venv/lib/python3.11/site-packages/fastapi/middleware/asyncexitstack.py:18: in __call__
+    await self.app(scope, receive, send)
+../../../../epyc-orchestrator/.venv/lib/python3.11/site-packages/starlette/routing.py:660: in __call__
+    await self.middleware_stack(scope, receive, send)
+../../../../epyc-orchestrator/.venv/lib/python3.11/site-packages/starlette/routing.py:669: in app
+    await self.lifespan(scope, receive, send)
+../../../../epyc-orchestrator/.venv/lib/python3.11/site-packages/starlette/routing.py:638: in lifespan
+    async with self.lifespan_context(app) as maybe_state:
+/home/node/.local/share/uv/python/cpython-3.11.17-linux-x86_64-gnu/lib/python3.11/contextlib.py:210: in __aenter__
+    return await anext(self.gen)
+           ^^^^^^^^^^^^^^^^^^^^^
+../../../../epyc-orchestrator/.venv/lib/python3.11/site-packages/fastapi/routing.py:216: in merged_lifespan
+    async with original_context(app) as maybe_original_state:
+/home/node/.local/share/uv/python/cpython-3.11.17-linux-x86_64-gnu/lib/python3.11/contextlib.py:210: in __aenter__
+    return await anext(self.gen)
+           ^^^^^^^^^^^^^^^^^^^^^
+src/api/__init__.py:86: in lifespan
+    from src.gate_runner import GateRunner
+src/gate_runner.py:43: in <module>
+    _GVV_SPEC.loader.exec_module(gate_verdict_vocab)
+<frozen importlib._bootstrap_external>:936: in exec_module
+    ???
+<frozen importlib._bootstrap_external>:1073: in get_code
+    ???
+<frozen importlib._bootstrap_external>:1130: in get_data
+    ???
+E   FileNotFoundError: [Errno 2] No such file or directory: '/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/ufh14-b6a1/private/scripts/benchmark/gate_verdict_vocab.py'
+=============================== warnings summary ===============================
+../../../../epyc-orchestrator/.venv/lib/python3.11/site-packages/opentelemetry/util/_importlib_metadata.py:32
+  /mnt/raid0/llm/epyc-orchestrator/.venv/lib/python3.11/site-packages/opentelemetry/util/_importlib_metadata.py:32: DeprecationWarning: SelectableGroups dict interface is deprecated. Use select.
+    return EntryPoints(ep for group_eps in eps.values() for ep in group_eps)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+ERROR tests/unit/test_passthrough_route.py::test_request_semaphore_full_is_503 - FileNotFoundError: [Errno 2] No such file or directory: '/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/ufh14-b6a1/private/scripts/benchmark/gate_verdict_vocab.py'
+ERROR tests/unit/test_passthrough_route.py::test_lock_refusal_reports_actual_blockers_and_wait - FileNotFoundError: [Errno 2] No such file or directory: '/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/ufh14-b6a1/private/scripts/benchmark/gate_verdict_vocab.py'
+==================== 1 passed, 1 warning, 2 errors in 1.63s ====================
+{"schema": "f1-r6-build-supervisor/v1", "elapsed_s": 5.023320354986936, "sampled_peak_tree_rss_bytes": 186941440, "samples": 50, "verified_exited_processes": 0, "verified_exited_threads": 0, "per_process_address_space_limit_bytes": null, "rss_scope": "sum of sampled resident pages across owned process tree; sampling may miss transients and double-count shared pages", "leader_pid": 2559334, "leader_birth": 156065898, "child_rc": 1, "children_drained": true, "failure": null}

@@ -469,7 +469,7 @@ Orchestrator and stack side (workspace-ec; items are linked here as they land):
       `test_passthrough_returns_503_role_parked_with_refusal_gate` (`tests/unit/test_gpu_window_parked_role.py`).
       The done-when (gate name + client status on every refusal record) holds by construction. Two parts of the
       original spec did not land; they are filed as B6a-1.
-    - [ ] **UFH14-B6a-1 — structured `blockers` and `wait_ms` on refusal records, and a test per gate.** (filed
+    - [x] **UFH14-B6a-1 — structured `blockers` and `wait_ms` on refusal records, and a test per gate.** ✅ 2026-10-31 — ORCH `ac5a0bfb8e0221d91bc51d6eac7434ddb9766719`; [52 related tests and ruff](../../artifacts/compute/codex3-ufh14-b6a1-20261031/FINAL2.log). [belief: cc] (filed
       2026-10-03, workspace-ec, from the B6a landing) The B6a spec asked for `refusal: {gate, blockers, wait_ms}`.
       52fa84d8 ships `gate`, `http_status` and `retry_after_s` only. For `lock_unavailable` the blockers (e.g.
       `['autokernel-cpu']`) are still only inside `detail`, and the wait before refusal is not recorded. Thread the
