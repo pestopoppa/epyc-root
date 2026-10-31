@@ -1,0 +1,23 @@
+KERNEL_NETWORK_DENY_CONFIRMED
+I1031 08:27:53.912921 127669340004480 run_eval.py:57] Generating eval_results_strict...
+I1031 08:27:53.913060 127669340004480 run_eval.py:63] Accuracy: 0.500000
+I1031 08:27:53.913174 127669340004480 run_eval.py:77] Generated: /mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/ifbench/control/out/responses-eval_results_strict.jsonl
+I1031 08:27:53.913216 127669340004480 run_eval.py:57] Generating eval_results_loose...
+I1031 08:27:53.913249 127669340004480 run_eval.py:63] Accuracy: 0.500000
+I1031 08:27:53.913308 127669340004480 run_eval.py:77] Generated: /mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/ifbench/control/out/responses-eval_results_loose.jsonl
+================================================================
+/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/ifbench/control/out/responses-eval_results_strict.jsonl Accuracy Scores:
+prompt-level: 0.5
+instruction-level: 0.5
+
+keywords 0.5
+
+keywords:existence 0.5
+================================================================
+/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/ifbench/control/out/responses-eval_results_loose.jsonl Accuracy Scores:
+prompt-level: 0.5
+instruction-level: 0.5
+
+keywords 0.5
+
+keywords:existence 0.5

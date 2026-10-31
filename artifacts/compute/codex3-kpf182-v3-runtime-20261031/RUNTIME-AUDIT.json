@@ -1,0 +1,46 @@
+{
+  "modes": {
+    "trace-off": {
+      "pid": 2744160,
+      "peak_bytes": 1265684480,
+      "forks": [
+        [
+          "0",
+          "302"
+        ],
+        [
+          "1",
+          "310"
+        ]
+      ],
+      "native_events": 0,
+      "custody_events": 0,
+      "log_sha256": "1bcb81ccdbfe564f202761a2b4e9cc769018324511554c3c9122eca8260fd426",
+      "maps_sha256": "ba6c9e1727260f4c979456c18d53a55fe53952538f19d639a11a1de819ddc20d"
+    },
+    "trace-on": {
+      "pid": 2744430,
+      "peak_bytes": 1265750016,
+      "forks": [
+        [
+          "0",
+          "302"
+        ],
+        [
+          "1",
+          "310"
+        ]
+      ],
+      "native_events": 2,
+      "custody_events": 2,
+      "log_sha256": "e20061cbfa4e6f68e4aa96efdc082850b67d0bb149aaa973e7058ba46b18176e",
+      "maps_sha256": "9dbb341e43d1489114810a078168f7a8ef3a233a4f31887076eac1d241601909"
+    }
+  },
+  "paired_responses": 3,
+  "on_tasks": [
+    6,
+    16
+  ],
+  "scope": "one public noncohort CPU control; no spec, component minimum, full cohort or GPU verdict"
+}

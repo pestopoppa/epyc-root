@@ -1,0 +1,19 @@
+{
+  "scope": "single-arm original 300-prompt IFBench generation and official offline score; no comparative delta or adoption",
+  "model": "/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf",
+  "model_sha256": "a680f44a06920e5d689774823782006aa3acc8db95750323373b24139b67e348",
+  "prompt_source_commit": "1c40f0c10d9b5c5c2f10a175a28007ebb64f7f4d",
+  "corpus_sha256": "d2ada7da94a38cfe406351614c4e686846ed2da6d1b339db95fa5ead19554a4a",
+  "sampling": {
+    "temperature": 0,
+    "seed": 20261031,
+    "max_tokens": 4096,
+    "n": 1,
+    "reasoning": "off"
+  },
+  "ctx": 8192,
+  "requests": 300,
+  "unknown_policy": "any exposed incomplete attempt remains UNKNOWN and is never redrawn; official 300-prompt score requires all 300 valid responses",
+  "score": "pinned official strict and loose under syscall-level network deny; no paired delta until another actual matched arm",
+  "full_target": "UNRUN"
+}

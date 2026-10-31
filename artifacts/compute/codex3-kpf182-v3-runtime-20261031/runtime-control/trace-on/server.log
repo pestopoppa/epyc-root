@@ -1,0 +1,51 @@
+warning: no usable GPU found, --gpu-layers option will be ignored
+warning: one possible reason is that llama.cpp was compiled without GPU support
+warning: consult docs/build.md for compilation instructions
+0.00.001.482 I cmn  common_param: common_params_print_info: verbosity = 3 (adjust with the `-lv N` CLI arg)
+0.00.001.766 W srv  llama_server: -----------------
+0.00.001.767 W srv  llama_server: CORS is set to allow all origins ('*') and no API key is set
+0.00.001.767 W srv  llama_server: this can be a security risk (cross-origin attacks)
+0.00.001.767 W srv  llama_server: more info: https://github.com/ggml-org/llama.cpp/pull/25655
+0.00.001.767 W srv  llama_server: -----------------
+0.00.002.936 I srv    load_model: loading model '/mnt/raid0/llm/models/unsloth/Qwen3.5-0.8B-GGUF/Qwen3.5-0.8B-Q8_0.gguf'
+0.00.788.400 I srv    load_model: initializing, n_slots = 3, n_ctx_slot = 4096, kv_unified = 'true'
+0.00.788.460 I srv  init_slot_fo: cross-slot prefix fork enabled: mode = checkpoint, min tokens = 16, cache_idle_slots = 1
+0.00.788.479 W srv          init: --cache-idle-slots requires --cache-ram, disabling
+0.00.798.982 I srv  llama_server: model loaded
+0.00.798.988 I srv  llama_server: listening on http://127.0.0.1:19767
+0.00.907.456 I slot get_availabl: id  0 | task -1 | selected slot by id (0)
+0.00.907.497 I slot launch_slot_: id  0 | task 0 | processing task, is_child = 0
+0.01.332.274 I srv  prefill_budg: prefill-budget: iter 1: decode_rows = 0 (slots 0), prompt = 128 (slots 1), budget = 0, t_iter = 424.7 ms, kv_pos = 128, ms/tok = 3.318
+0.01.537.202 I srv  prefill_budg: prefill-budget: iter 2: decode_rows = 0 (slots 0), prompt = 58 (slots 1), budget = 0, t_iter = 204.9 ms, kv_pos = 186, ms/tok = 3.318
+0.01.927.354 I srv  prefill_budg: prefill-budget: iter 3: decode_rows = 0 (slots 0), prompt = 116 (slots 1), budget = 0, t_iter = 388.1 ms, kv_pos = 302, ms/tok = 3.332
+0.01.975.009 I srv  prefill_budg: prefill-budget: iter 4: decode_rows = 0 (slots 0), prompt = 8 (slots 1), budget = 0, t_iter = 45.3 ms, kv_pos = 310, ms/tok = 3.332
+0.02.007.199 I slot print_timing: id  0 | task 0 | prompt eval time =    1099.66 ms /   314 tokens (    3.50 ms per token,   285.54 tokens per second)
+0.02.007.233 I slot print_timing: id  0 | task 0 |        eval time =       0.00 ms /     1 tokens (    0.00 ms per token, 1000000.00 tokens per second)
+0.02.007.239 I slot print_timing: id  0 | task 0 |       total time =    1099.66 ms /   315 tokens
+0.02.007.248 I slot print_timing: id  0 | task 0 |    graphs reused =          1
+0.02.008.349 I slot      release: id  0 | task 0 | stop processing: n_tokens = 314, truncated = 0
+0.02.008.361 I srv  prefill_budg: prefill-budget: iter 5: decode_rows = 0 (slots 0), prompt = 4 (slots 1), budget = 0, t_iter = 31.4 ms, kv_pos = 314, ms/tok = 3.332
+0.02.008.612 I slot get_availabl: id  1 | task -1 | selected slot by id (1)
+0.02.009.801 I srv  do_slot_fork: KPF182_NATIVE {"schema":"kpf182.native-fork.v1","task_id":6,"dst_slot":1,"src_slot":0,"kind":"checkpoint","fork_position":302,"minimum_hit":null,"target_hit":null,"recurrent_hit":null,"drafter_hit":null,"target_hit_reason":"not independently measured","recurrent_hit_reason":"not independently measured","drafter_hit_reason":"not independently measured; absent draft context does not exclude MTP","source_token_lcp":302,"src_target_pos_min":313,"src_target_pos_max":313,"draft_context_present":false,"checkpoint_present":true,"src_draft_pos_min":null,"src_draft_pos_max":null,"checkpoint_n_tokens":302,"checkpoint_pos_min":301,"checkpoint_pos_max":301,"checkpoint_target_bytes":20201932,"checkpoint_draft_bytes":0,"checkpoint_spec_bytes":0,"dst_target_pos_min_after":301,"dst_target_pos_max_after":301,"dst_draft_pos_min_after":null,"dst_draft_pos_max_after":null}
+0.02.054.637 I srv  do_slot_fork: KPF182_CUSTODY {"schema":"kpf182.spec-custody.v2","task_id":6,"src_slot":0,"dst_slot":1,"fork_position":302,"spec_object_present":false,"source_before":[],"before":[],"after":[],"restore_invoked":true,"restore_success":null,"component_hit":null,"memory_before":{"source_target":{"attention":[{"status":"full_cells","cache":"ordinary","intervals":[[0,314]],"duplicate_positions":false,"interior_holes":false}],"recurrent":{"status":"observed","positions":[313]}},"destination_target":{"attention":[{"status":"full_cells","cache":"ordinary","intervals":[],"duplicate_positions":false,"interior_holes":false}],"recurrent":{"status":"observed","positions":[]}},"source_draft":null,"destination_draft":null},"memory_after":{"destination_target":{"attention":[{"status":"full_cells","cache":"ordinary","intervals":[[0,302]],"duplicate_positions":false,"interior_holes":false}],"recurrent":{"status":"observed","positions":[301]}},"destination_draft":null},"checkpoint":{"task_id":0,"n_tokens":302,"pos_min":301,"pos_max":301,"target_bytes":20201932,"draft_bytes":0,"speculative_bytes":0,"pinned":true,"target_sha256":"9a7fd8ed0203e92a750f7f5532cf25c02833f389df76103f4e91a5f78ea1ad5e","draft_sha256":null,"speculative_sha256":null}}
+0.02.058.286 I slot do_slot_fork: id  1 | task -1 | slot fork: src = 0 (idle), kind = checkpoint, n_fork_tokens = 302, task.n_tokens = 314, t = 49.64 ms
+0.02.058.303 I slot launch_slot_: id  1 | task 6 | processing task, is_child = 0
+0.02.103.249 I srv  prefill_budg: prefill-budget: iter 6: decode_rows = 0 (slots 0), prompt = 8 (slots 1), budget = 0, t_iter = 44.9 ms, kv_pos = 624, ms/tok = 3.332
+0.02.135.063 I srv  prefill_budg: prefill-budget: iter 7: decode_rows = 0 (slots 0), prompt = 4 (slots 1), budget = 0, t_iter = 29.9 ms, kv_pos = 628, ms/tok = 3.332
+0.02.380.353 I slot print_timing: id  1 | task 6 | prompt eval time =      76.72 ms /    12 tokens (    6.39 ms per token,   156.40 tokens per second)
+0.02.380.399 I slot print_timing: id  1 | task 6 |        eval time =     245.30 ms /     8 tokens (   30.66 ms per token,    32.61 tokens per second)
+0.02.380.404 I slot print_timing: id  1 | task 6 |       total time =     322.03 ms /    20 tokens
+0.02.380.411 I slot print_timing: id  1 | task 6 |    graphs reused =          7
+0.02.381.581 I slot      release: id  1 | task 6 | stop processing: n_tokens = 321, truncated = 0
+0.02.381.869 I slot get_availabl: id  2 | task -1 | selected slot by id (2)
+0.02.383.019 I srv  do_slot_fork: KPF182_NATIVE {"schema":"kpf182.native-fork.v1","task_id":16,"dst_slot":2,"src_slot":1,"kind":"checkpoint","fork_position":310,"minimum_hit":null,"target_hit":null,"recurrent_hit":null,"drafter_hit":null,"target_hit_reason":"not independently measured","recurrent_hit_reason":"not independently measured","drafter_hit_reason":"not independently measured; absent draft context does not exclude MTP","source_token_lcp":314,"src_target_pos_min":320,"src_target_pos_max":320,"draft_context_present":false,"checkpoint_present":true,"src_draft_pos_min":null,"src_draft_pos_max":null,"checkpoint_n_tokens":310,"checkpoint_pos_min":309,"checkpoint_pos_max":309,"checkpoint_target_bytes":20201932,"checkpoint_draft_bytes":0,"checkpoint_spec_bytes":0,"dst_target_pos_min_after":309,"dst_target_pos_max_after":309,"dst_draft_pos_min_after":null,"dst_draft_pos_max_after":null}
+0.02.427.830 I srv  do_slot_fork: KPF182_CUSTODY {"schema":"kpf182.spec-custody.v2","task_id":16,"src_slot":1,"dst_slot":2,"fork_position":310,"spec_object_present":false,"source_before":[],"before":[],"after":[],"restore_invoked":true,"restore_success":null,"component_hit":null,"memory_before":{"source_target":{"attention":[{"status":"full_cells","cache":"ordinary","intervals":[[0,321]],"duplicate_positions":false,"interior_holes":false}],"recurrent":{"status":"observed","positions":[320]}},"destination_target":{"attention":[{"status":"full_cells","cache":"ordinary","intervals":[],"duplicate_positions":false,"interior_holes":false}],"recurrent":{"status":"observed","positions":[]}},"source_draft":null,"destination_draft":null},"memory_after":{"destination_target":{"attention":[{"status":"full_cells","cache":"ordinary","intervals":[[0,310]],"duplicate_positions":false,"interior_holes":false}],"recurrent":{"status":"observed","positions":[309]}},"destination_draft":null},"checkpoint":{"task_id":6,"n_tokens":310,"pos_min":309,"pos_max":309,"target_bytes":20201932,"draft_bytes":0,"speculative_bytes":0,"pinned":false,"target_sha256":"21705ffba105040ebe170584bf2deb7d8f9537d6b0844a72a971dca698ba48c5","draft_sha256":null,"speculative_sha256":null}}
+0.02.433.070 I slot do_slot_fork: id  2 | task -1 | slot fork: src = 1 (idle), kind = checkpoint, n_fork_tokens = 310, task.n_tokens = 314, t = 51.16 ms
+0.02.433.085 I slot launch_slot_: id  2 | task 16 | processing task, is_child = 0
+0.02.467.264 I srv  prefill_budg: prefill-budget: iter 8: decode_rows = 0 (slots 0), prompt = 4 (slots 1), budget = 0, t_iter = 32.4 ms, kv_pos = 949, ms/tok = 3.332
+0.02.638.676 I slot print_timing: id  2 | task 16 | prompt eval time =      34.14 ms /     4 tokens (    8.54 ms per token,   117.15 tokens per second)
+0.02.638.728 I slot print_timing: id  2 | task 16 |        eval time =     171.42 ms /     8 tokens (   21.43 ms per token,    46.67 tokens per second)
+0.02.638.734 I slot print_timing: id  2 | task 16 |       total time =     205.57 ms /    12 tokens
+0.02.638.740 I slot print_timing: id  2 | task 16 |    graphs reused =         13
+0.02.638.771 I slot      release: id  2 | task 16 | stop processing: n_tokens = 321, truncated = 0
+0.02.639.574 I srv    operator(): operator(): cleaning up before exit...

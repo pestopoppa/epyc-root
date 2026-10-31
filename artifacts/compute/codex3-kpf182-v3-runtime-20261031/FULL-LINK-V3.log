@@ -1,0 +1,62 @@
+[region-lock] --cpu-list '126,127' includes SMT siblings: claiming ['q1'] (their physical cores) instead of the primary-only []; --no-fold-siblings for the legacy mapping
+[region-lock] acquiring regions ['q1'] as role='build' (timeout_s=3.0) …
+[region-lock] held ['q1'] after 0.0s wait; running: /usr/bin/timeout 240 /usr/bin/taskset -c 126,127 /bin/bash /mnt/raid0/llm/tmp/codex3-kpf182-component-proof-20261031/link-server-v2.sh
+ninja: Entering directory `/mnt/raid0/llm/tmp/codex3-kpf182-component-proof-20261031/build-cpu'
+[0/1] Re-running CMake...
+CMAKE_BUILD_TYPE=Release
+fatal: not a git repository (or any parent up to mount point /mnt)
+Stopping at filesystem boundary (GIT_DISCOVERY_ACROSS_FILESYSTEM not set).
+fatal: not a git repository (or any parent up to mount point /mnt)
+Stopping at filesystem boundary (GIT_DISCOVERY_ACROSS_FILESYSTEM not set).
+-- ccache found, compilation results will be cached. Disable with GGML_CCACHE=OFF.
+-- CMAKE_SYSTEM_PROCESSOR: x86_64
+-- GGML_SYSTEM_ARCH: x86
+-- Including CPU backend
+-- x86 detected
+-- Adding CPU backend variant ggml-cpu: -march=native 
+-- ggml version: 0.16.0
+-- ggml commit:  unknown
+CMake Warning at common/CMakeLists.txt:33 (message):
+  Git repository not found; to enable automatic generation of build info,
+  make sure Git is installed and the project is a Git repository.
+
+
+-- OpenSSL found: 3.0.13
+-- Generating embedded license file for target: llama-app
+-- Configuring done (0.0s)
+-- Generating done (0.0s)
+-- Build files have been written to: /mnt/raid0/llm/tmp/codex3-kpf182-component-proof-20261031/build-cpu
+[1/16] Provisioning UI assets
+-- UI: running npm install
+-- UI: npm install failed (1)
+--   stderr: npm ERR! code EBADENGINE
+npm ERR! engine Unsupported engine
+npm ERR! engine Not compatible with your version of node/npm: @chromatic-com/storybook@5.0.0
+npm ERR! notsup Not compatible with your version of node/npm: @chromatic-com/storybook@5.0.0
+npm ERR! notsup Required: {"node":">=20.0.0","yarn":">=1.22.18"}
+npm ERR! notsup Actual:   {"npm":"9.2.0"}
+
+npm ERR! Log files were not written due to an error writing to the directory: /home/node/.npm/_logs
+npm ERR! You can rerun the command with `--loglevel=verbose` to see the logs in your terminal
+
+-- UI: downloading from b0: https://huggingface.co/buckets/ggml-org/llama-ui/resolve/b0/dist.tar.gz
+-- UI: download dist.tar.gz from b0 failed: "HTTP response code said error"
+-- UI: downloading from latest: https://huggingface.co/buckets/ggml-org/llama-ui/resolve/latest/dist.tar.gz
+-- UI: archive verified and extracted
+-- UI: HF download succeeded, stamp updated (latest)
+-- UI: gzip compression applied (/mnt/raid0/llm/tmp/codex3-kpf182-component-proof-20261031/build-cpu/tools/ui/dist/_gzip)
+embed: write output file /mnt/raid0/llm/tmp/codex3-kpf182-component-proof-20261031/build-cpu/tools/ui/ui.cpp
+[2/15] Building CXX object tools/server/CMakeFiles/server-context.dir/server-chat.cpp.o
+[3/15] Building CXX object tools/ui/CMakeFiles/llama-ui.dir/ui.cpp.o
+[4/15] Linking CXX static library tools/ui/libllama-ui.a
+[5/15] Building CXX object tools/server/CMakeFiles/server-context.dir/server-queue.cpp.o
+[6/15] Building CXX object tools/server/CMakeFiles/server-context.dir/server-task.cpp.o
+[7/15] Building CXX object tools/server/CMakeFiles/server-context.dir/server-common.cpp.o
+[8/15] Building C object tools/server/CMakeFiles/server-context.dir/kpf182-sha256.c.o
+[9/15] Building CXX object tools/server/CMakeFiles/server-context.dir/server-stream.cpp.o
+[10/15] Building CXX object tools/server/CMakeFiles/server-context.dir/server-context.cpp.o
+[11/15] Building CXX object tools/server/CMakeFiles/server-context.dir/server-tools.cpp.o
+[12/15] Building CXX object tools/server/CMakeFiles/server-context.dir/server-schema.cpp.o
+[13/15] Linking CXX static library tools/server/libserver-context.a
+[14/15] Linking CXX shared library bin/libllama-server-impl.so
+[15/15] Linking CXX executable bin/llama-server

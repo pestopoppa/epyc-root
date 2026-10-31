@@ -1,0 +1,625 @@
+--- a/common/common.h
++++ b/common/common.h
+@@ -1162,3 +1162,20 @@
+     void clear_tgt();
+     void clear_dft();
+ };
++
++// Caller must pass an initialized, selected checkpoint. These are raw custody
++// fields only; blob identity and successful restore require separate evidence.
++struct kpf182_checkpoint_observation {
++    int task_id;
++    int64_t n_tokens;
++    llama_pos pos_min;
++    llama_pos pos_max;
++    size_t target_bytes;
++    size_t draft_bytes;
++    size_t speculative_bytes;
++    bool pinned;
++};
++inline kpf182_checkpoint_observation kpf182_checkpoint_inspect(const common_prompt_checkpoint & c) {
++    return { c.id_task, c.n_tokens, c.pos_min, c.pos_max,
++             c.data_tgt.size(), c.data_dft.size(), c.data_spec.size(), c.pinned };
++}
+--- a/common/speculative.cpp
++++ b/common/speculative.cpp
+@@ -194,6 +194,10 @@
+     // (optional) serialize/restore per-seq internal state (e.g. eagle3's deferred boundary).
+     virtual bool get_state(llama_seq_id /*seq_id*/, std::vector<uint8_t> & /*data*/) const { return false; }
+     virtual void set_state(llama_seq_id /*seq_id*/, const std::vector<uint8_t> & /*data*/) {}
++
++    virtual kpf182_spec_observation kpf182_observe(llama_seq_id /*seq_id*/) const {
++        return { type, kpf182_spec_status::unsupported, -1, 0 };
++    }
+ 
+     // true if this implementation requires the target context to extract post-norm embeddings
+     virtual bool need_embd() const = 0;
+@@ -1261,6 +1265,14 @@
+         return llama_model_is_recurrent(model_tgt) || llama_model_is_hybrid(model_tgt);
+     }
+ 
++    kpf182_spec_observation kpf182_observe(llama_seq_id seq_id) const override {
++        if (seq_id < 0 || seq_id >= (llama_seq_id) n_seq) {
++            return { type, kpf182_spec_status::invalid_sequence, -1, 0 };
++        }
++        return kpf182_eagle_observe(type, seq_id, n_seq, need_boundary_stash(), pending_pos_last[seq_id],
++                                    pending_g_last[seq_id].size(), n_embd_dec);
++    }
++
+     bool get_state(llama_seq_id seq_id, std::vector<uint8_t> & data) const override {
+         if (!need_boundary_stash()) {
+             return false;
+@@ -3404,6 +3416,14 @@
+     }
+ }
+ 
++std::vector<kpf182_spec_observation> common_speculative_kpf182_observe(const common_speculative * spec, llama_seq_id seq_id) {
++    std::vector<kpf182_spec_observation> result;
++    if (!spec) return result; // absent observer is not evidence that a drafter is absent
++    result.reserve(spec->impls.size());
++    for (const auto & impl : spec->impls) result.push_back(impl->kpf182_observe(seq_id));
++    return result;
++}
++
+ void common_speculative_print_stats(const common_speculative * spec) {
+     if (spec == nullptr) {
+         return;
+--- a/common/speculative.h
++++ b/common/speculative.h
+@@ -85,6 +85,21 @@
+ bool common_speculative_get_state(common_speculative * spec, llama_seq_id seq_id, std::vector<uint8_t> & data);
+ void common_speculative_set_state(common_speculative * spec, llama_seq_id seq_id, const std::vector<uint8_t> & data);
+ 
++// Private diagnostic observation; no prefix or success verdict is implied.
++enum class kpf182_spec_status { unsupported, unavailable, boundary_observed, invalid_sequence };
++struct kpf182_spec_observation {
++    common_speculative_type type;
++    kpf182_spec_status status = kpf182_spec_status::unsupported;
++    llama_pos boundary = -1;
++    size_t payload_bytes = 0;
++};
++inline kpf182_spec_observation kpf182_eagle_observe(common_speculative_type type, llama_seq_id seq, uint32_t n_seq, bool required, llama_pos pos, size_t values, int32_t n_embd) {
++    if (seq < 0 || (uint32_t) seq >= n_seq) return { type, kpf182_spec_status::invalid_sequence, -1, 0 };
++    if (!required || pos < 0 || n_embd <= 0 || values != (size_t) n_embd) return { type, kpf182_spec_status::unavailable, -1, 0 };
++    return { type, kpf182_spec_status::boundary_observed, pos, sizeof(llama_pos) + values * sizeof(float) };
++}
++std::vector<kpf182_spec_observation> common_speculative_kpf182_observe(const common_speculative * spec, llama_seq_id seq_id);
++
+ // print statistics about the speculative decoding
+ void common_speculative_print_stats(const common_speculative * spec);
+ 
+--- /dev/null
++++ b/src/llama-kpf182-coverage.h
+@@ -0,0 +1,73 @@
++#pragma once
++
++// Internal, read-only diagnostic. Intervals describe metadata membership only:
++// they are not tensor validity, a prefix-hit count, or a clause-2 minimum.
++#include "llama-kv-cells.h"
++#include <algorithm>
++#include <cstdint>
++#include <vector>
++
++enum class kpf182_coverage_status { unsupported, invalid_sequence, pending_shift, full_cells, windowed_cells };
++enum class kpf182_cache_kind { unknown, ordinary, base, swa };
++struct kpf182_interval { int64_t begin; int64_t end; }; // half-open
++struct kpf182_coverage {
++    kpf182_coverage_status status = kpf182_coverage_status::unsupported;
++    kpf182_cache_kind cache = kpf182_cache_kind::unknown;
++    std::vector<kpf182_interval> intervals;
++    bool duplicate_positions = false;
++    bool interior_holes = false;
++};
++
++inline kpf182_coverage kpf182_inspect_cells(const llama_kv_cells & cells, llama_seq_id seq, bool windowed) {
++    kpf182_coverage result;
++    if (seq < 0 || seq >= LLAMA_MAX_SEQ) {
++        result.status = kpf182_coverage_status::invalid_sequence;
++        return result;
++    }
++    if (cells.get_has_shift()) {
++        result.status = kpf182_coverage_status::pending_shift;
++        return result;
++    }
++    std::vector<llama_pos> positions;
++    for (uint32_t i = 0; i < cells.size(); ++i) {
++        if (cells.seq_has(i, seq)) {
++            if (cells.is_empty(i) || cells.pos_get(i) < 0) return result;
++            positions.push_back(cells.pos_get(i));
++        }
++    }
++    std::sort(positions.begin(), positions.end());
++    for (auto pos : positions) {
++        const int64_t p = pos;
++        if (!result.intervals.empty() && p < result.intervals.back().end) {
++            result.duplicate_positions = true;
++        } else if (!result.intervals.empty() && p == result.intervals.back().end) {
++            ++result.intervals.back().end;
++        } else {
++            result.intervals.push_back({p, p + 1});
++        }
++    }
++    result.interior_holes = result.intervals.size() > 1;
++    result.status = windowed ? kpf182_coverage_status::windowed_cells : kpf182_coverage_status::full_cells;
++    return result;
++}
++
++// Recurrent cell positions are boundary metadata, not evidence of token-prefix coverage.
++enum class kpf182_recurrent_status { unsupported, invalid_sequence, observed, inconsistent };
++struct kpf182_recurrent_observation {
++    kpf182_recurrent_status status = kpf182_recurrent_status::unsupported;
++    std::vector<llama_pos> positions;
++};
++template<class Cell>
++kpf182_recurrent_observation kpf182_inspect_recurrent(const std::vector<Cell> & cells, llama_seq_id seq) {
++    kpf182_recurrent_observation result;
++    if (seq < 0 || seq >= LLAMA_MAX_SEQ) { result.status = kpf182_recurrent_status::invalid_sequence; return result; }
++    for (const auto & cell : cells) {
++        if (cell.has_seq_id(seq)) {
++            if (cell.pos < 0) { result.positions.clear(); result.status = kpf182_recurrent_status::inconsistent; return result; }
++            result.positions.push_back(cell.pos);
++        }
++    }
++    std::sort(result.positions.begin(), result.positions.end());
++    result.status = kpf182_recurrent_status::observed;
++    return result;
++}
+--- a/src/llama-kv-cache-iswa.cpp
++++ b/src/llama-kv-cache-iswa.cpp
+@@ -153,6 +153,15 @@
+     kv_swa ->seq_div(seq_id, p0, p1, d);
+ }
+ 
++std::vector<kpf182_coverage> llama_kv_cache_iswa::kpf182_attention_coverage(llama_seq_id seq_id) const {
++    auto base = kv_base->kpf182_attention_coverage(seq_id);
++    auto swa = kv_swa->kpf182_attention_coverage(seq_id);
++    for (auto & entry : base) entry.cache = kpf182_cache_kind::base;
++    for (auto & entry : swa) entry.cache = kpf182_cache_kind::swa;
++    base.insert(base.end(), swa.begin(), swa.end());
++    return base;
++}
++
+ llama_pos llama_kv_cache_iswa::seq_pos_min(llama_seq_id seq_id) const {
+     // the base cache is a superset of the SWA cache, so we can just check the SWA cache
+     return kv_swa->seq_pos_min(seq_id);
+--- a/src/llama-kv-cache-iswa.h
++++ b/src/llama-kv-cache-iswa.h
+@@ -75,6 +75,8 @@
+     void seq_keep(llama_seq_id seq_id)                                                          override;
+     void seq_add (llama_seq_id seq_id,                              llama_pos p0, llama_pos p1, llama_pos shift) override;
+     void seq_div (llama_seq_id seq_id,                              llama_pos p0, llama_pos p1, int d) override;
++
++    std::vector<kpf182_coverage> kpf182_attention_coverage(llama_seq_id seq_id) const override;
+ 
+     llama_pos seq_pos_min(llama_seq_id seq_id) const override;
+     llama_pos seq_pos_max(llama_seq_id seq_id) const override;
+--- a/src/llama-kv-cache.cpp
++++ b/src/llama-kv-cache.cpp
+@@ -735,6 +735,23 @@
+     }
+ }
+ 
++std::vector<kpf182_coverage> llama_kv_cache::kpf182_attention_coverage(llama_seq_id seq_id) const {
++    // Shared-cell aliases may have a different layer topology; refuse inference.
++    if (other) return { kpf182_coverage{} };
++    if (seq_id < 0 || seq_id >= LLAMA_MAX_SEQ || (size_t) seq_id >= seq_to_stream.size()) {
++        kpf182_coverage invalid;
++        invalid.status = kpf182_coverage_status::invalid_sequence;
++        return { invalid };
++    }
++    // A cache with no layers is not evidence of an empty attention component.
++    if (layers.empty()) return { kpf182_coverage{} };
++    const auto stream = seq_to_stream[seq_id];
++    if (stream >= v_cells.size()) return { kpf182_coverage{} };
++    auto result = kpf182_inspect_cells(v_cells[stream], seq_id, n_swa != 0);
++    result.cache = kpf182_cache_kind::ordinary;
++    return { result };
++}
++
+ llama_pos llama_kv_cache::seq_pos_min(llama_seq_id seq_id) const {
+     // TODO: refactor [TAG_KV_CACHE_SHARE_CELLS]
+     if (other) {
+--- a/src/llama-kv-cache.h
++++ b/src/llama-kv-cache.h
+@@ -144,6 +144,8 @@
+     void seq_add (llama_seq_id seq_id,                              llama_pos p0, llama_pos p1, llama_pos shift) override;
+     void seq_div (llama_seq_id seq_id,                              llama_pos p0, llama_pos p1, int d) override;
+ 
++    std::vector<kpf182_coverage> kpf182_attention_coverage(llama_seq_id seq_id) const override;
++
+     llama_pos seq_pos_min(llama_seq_id seq_id) const override;
+     llama_pos seq_pos_max(llama_seq_id seq_id) const override;
+ 
+--- a/src/llama-memory-hybrid-iswa.cpp
++++ b/src/llama-memory-hybrid-iswa.cpp
+@@ -174,6 +174,14 @@
+     mem_recr->seq_div(seq_id, p0, p1, d);
+ }
+ 
++std::vector<kpf182_coverage> llama_memory_hybrid_iswa::kpf182_attention_coverage(llama_seq_id seq_id) const {
++    return mem_attn->kpf182_attention_coverage(seq_id);
++}
++
++kpf182_recurrent_observation llama_memory_hybrid_iswa::kpf182_recurrent_boundary(llama_seq_id seq_id) const {
++    return mem_recr->kpf182_recurrent_boundary(seq_id);
++}
++
+ llama_pos llama_memory_hybrid_iswa::seq_pos_min(llama_seq_id seq_id) const {
+     // the min of the total cache is the max of the two caches' min values
+     return std::max(mem_attn->seq_pos_min(seq_id), mem_recr->seq_pos_min(seq_id));
+--- a/src/llama-memory-hybrid-iswa.h
++++ b/src/llama-memory-hybrid-iswa.h
+@@ -65,6 +65,10 @@
+     void seq_keep(llama_seq_id seq_id)                                                          override;
+     void seq_add (llama_seq_id seq_id,                              llama_pos p0, llama_pos p1, llama_pos shift) override;
+     void seq_div (llama_seq_id seq_id,                              llama_pos p0, llama_pos p1, int d) override;
++
++    std::vector<kpf182_coverage> kpf182_attention_coverage(llama_seq_id seq_id) const override;
++
++    kpf182_recurrent_observation kpf182_recurrent_boundary(llama_seq_id seq_id) const override;
+ 
+     llama_pos seq_pos_min(llama_seq_id seq_id) const override;
+     llama_pos seq_pos_max(llama_seq_id seq_id) const override;
+--- a/src/llama-memory-hybrid.cpp
++++ b/src/llama-memory-hybrid.cpp
+@@ -181,6 +181,14 @@
+     mem_recr->seq_div(seq_id, p0, p1, d);
+ }
+ 
++std::vector<kpf182_coverage> llama_memory_hybrid::kpf182_attention_coverage(llama_seq_id seq_id) const {
++    return mem_attn->kpf182_attention_coverage(seq_id);
++}
++
++kpf182_recurrent_observation llama_memory_hybrid::kpf182_recurrent_boundary(llama_seq_id seq_id) const {
++    return mem_recr->kpf182_recurrent_boundary(seq_id);
++}
++
+ llama_pos llama_memory_hybrid::seq_pos_min(llama_seq_id seq_id) const {
+     // the min of the total cache is the max of the two caches' min values
+     return std::max(mem_attn->seq_pos_min(seq_id), mem_recr->seq_pos_min(seq_id));
+--- a/src/llama-memory-hybrid.h
++++ b/src/llama-memory-hybrid.h
+@@ -68,6 +68,10 @@
+     void seq_keep(llama_seq_id seq_id)                                                          override;
+     void seq_add (llama_seq_id seq_id,                              llama_pos p0, llama_pos p1, llama_pos shift) override;
+     void seq_div (llama_seq_id seq_id,                              llama_pos p0, llama_pos p1, int d) override;
++
++    std::vector<kpf182_coverage> kpf182_attention_coverage(llama_seq_id seq_id) const override;
++
++    kpf182_recurrent_observation kpf182_recurrent_boundary(llama_seq_id seq_id) const override;
+ 
+     llama_pos seq_pos_min(llama_seq_id seq_id) const override;
+     llama_pos seq_pos_max(llama_seq_id seq_id) const override;
+--- a/src/llama-memory-recurrent.cpp
++++ b/src/llama-memory-recurrent.cpp
+@@ -370,6 +370,16 @@
+             }
+         }
+     }
++}
++
++kpf182_recurrent_observation llama_memory_recurrent::kpf182_recurrent_boundary(llama_seq_id seq_id) const {
++    if (seq_id < 0 || seq_id >= LLAMA_MAX_SEQ || (uint32_t) seq_id >= n_seq_max) {
++        kpf182_recurrent_observation invalid;
++        invalid.status = kpf182_recurrent_status::invalid_sequence;
++        return invalid;
++    }
++    if (cells.size() != size || (r_l.empty() && s_l.empty() && p_l.empty())) return {};
++    return kpf182_inspect_recurrent(cells, seq_id);
+ }
+ 
+ llama_pos llama_memory_recurrent::seq_pos_min(llama_seq_id seq_id) const {
+--- a/src/llama-memory-recurrent.h
++++ b/src/llama-memory-recurrent.h
+@@ -48,6 +48,8 @@
+     void seq_keep(llama_seq_id seq_id)                                                          override;
+     void seq_add (llama_seq_id seq_id,                              llama_pos p0, llama_pos p1, llama_pos shift) override;
+     void seq_div (llama_seq_id seq_id,                              llama_pos p0, llama_pos p1, int d) override;
++
++    kpf182_recurrent_observation kpf182_recurrent_boundary(llama_seq_id seq_id) const override;
+ 
+     llama_pos seq_pos_min(llama_seq_id seq_id) const override;
+     llama_pos seq_pos_max(llama_seq_id seq_id) const override;
+--- a/src/llama-memory.h
++++ b/src/llama-memory.h
+@@ -2,6 +2,7 @@
+ 
+ #include "llama.h"
+ #include "llama-graph.h"
++#include "llama-kpf182-coverage.h"
+ 
+ #include <map>
+ #include <memory>
+@@ -122,6 +123,15 @@
+         return false;
+     }
+ 
++    // Diagnostic only; unsupported is explicit and never interpreted as zero.
++    virtual std::vector<kpf182_coverage> kpf182_attention_coverage(llama_seq_id /*seq_id*/) const {
++        return { kpf182_coverage{} };
++    }
++
++    virtual kpf182_recurrent_observation kpf182_recurrent_boundary(llama_seq_id /*seq_id*/) const {
++        return {};
++    }
++
+     virtual void seq_keep(llama_seq_id seq_id) = 0;
+     virtual void seq_add (llama_seq_id seq_id,                              llama_pos p0, llama_pos p1, llama_pos shift) = 0;
+     virtual void seq_div (llama_seq_id seq_id,                              llama_pos p0, llama_pos p1, int d) = 0;
+--- /dev/null
++++ b/tests/test-kpf182-cells.cpp
+@@ -0,0 +1,43 @@
++#ifdef NDEBUG
++#error KPF182 fixtures require active assertions
++#endif
++#include "../src/llama-kpf182-coverage.h"
++#include <cassert>
++
++static void add(llama_kv_cells & c, unsigned slot, llama_pos pos, llama_seq_id seq) {
++    c.pos_set(slot, pos);
++    c.seq_add(slot, seq);
++}
++int main() {
++    llama_kv_cells cells;
++    cells.resize(12);
++    add(cells, 0, 0, 1);
++    add(cells, 1, 1, 1);
++    add(cells, 2, 3, 1);
++    add(cells, 3, 2, 2); // another sequence must not fill the hole
++    cells.seq_add(1, 2); // actual shared membership
++    auto a = kpf182_inspect_cells(cells, 1, false);
++    assert(a.status == kpf182_coverage_status::full_cells && a.interior_holes && !a.duplicate_positions);
++    assert(a.intervals.size() == 2 && a.intervals[0].begin == 0 && a.intervals[0].end == 2);
++    assert(a.intervals[1].begin == 3 && a.intervals[1].end == 4);
++    auto b = kpf182_inspect_cells(cells, 2, false);
++    assert(b.intervals.size() == 1 && b.intervals[0].begin == 1 && b.intervals[0].end == 3);
++    // The actual native membership operation can attach a destination to source cells.
++    cells.seq_add(0, 4); cells.seq_add(1, 4); cells.seq_add(2, 4);
++    auto copied = kpf182_inspect_cells(cells, 4, false);
++    assert(copied.intervals.size() == a.intervals.size() && copied.interior_holes);
++    assert(copied.intervals[0].end == a.intervals[0].end && copied.intervals[1].begin == 3);
++    auto empty = kpf182_inspect_cells(cells, 3, false);
++    assert(empty.status == kpf182_coverage_status::full_cells && empty.intervals.empty());
++    auto win = kpf182_inspect_cells(cells, 1, true);
++    assert(win.status == kpf182_coverage_status::windowed_cells && win.interior_holes);
++    assert(kpf182_inspect_cells(cells, -1, false).status == kpf182_coverage_status::invalid_sequence);
++    assert(kpf182_inspect_cells(cells, LLAMA_MAX_SEQ, false).status == kpf182_coverage_status::invalid_sequence);
++    assert(kpf182_coverage{}.status == kpf182_coverage_status::unsupported);
++    add(cells, 4, 1, 1);
++    auto dup = kpf182_inspect_cells(cells, 1, false);
++    assert(dup.duplicate_positions && dup.intervals.size() == 2);
++    cells.pos_add(2, 1);
++    auto shifted = kpf182_inspect_cells(cells, 1, false);
++    assert(shifted.status == kpf182_coverage_status::pending_shift && shifted.intervals.empty());
++}
+--- /dev/null
++++ b/tests/test-kpf182-custody.cpp
+@@ -0,0 +1,31 @@
++#ifdef NDEBUG
++#error KPF182 fixtures require active assertions
++#endif
++#include "../src/llama-memory-recurrent.h"
++#include "../common/speculative.h"
++#include <cassert>
++int main() {
++    std::vector<llama_memory_recurrent::mem_cell> cells(4);
++    cells[0].pos=41; cells[0].seq_id.insert(1);
++    cells[1].pos=21; cells[1].seq_id.insert(2);
++    cells[2].pos=42; cells[2].seq_id.insert(1); cells[2].seq_id.insert(2);
++    auto a=kpf182_inspect_recurrent(cells,1);
++    assert(a.status==kpf182_recurrent_status::observed && a.positions.size()==2 && a.positions[0]==41 && a.positions[1]==42);
++    auto b=kpf182_inspect_recurrent(cells,2);
++    assert(b.positions.size()==2 && b.positions[0]==21 && b.positions[1]==42);
++    assert(kpf182_inspect_recurrent(cells,-1).status==kpf182_recurrent_status::invalid_sequence);
++    cells[3].seq_id.insert(1); // no valid boundary position
++    auto bad=kpf182_inspect_recurrent(cells,1);
++    assert(bad.status==kpf182_recurrent_status::inconsistent && bad.positions.empty());
++    assert(kpf182_recurrent_observation{}.status==kpf182_recurrent_status::unsupported);
++    common_prompt_checkpoint ck{}; ck.id_task=12; ck.n_tokens=42; ck.pos_min=0; ck.pos_max=41;
++    ck.data_tgt.resize(10); ck.data_dft.resize(3); ck.data_spec.resize(7); ck.pinned=true;
++    auto x=kpf182_checkpoint_inspect(ck);
++    assert(x.task_id==12 && x.n_tokens==42 && x.pos_max==41 && x.target_bytes==10 && x.draft_bytes==3 && x.speculative_bytes==7 && x.pinned);
++    const auto typ=static_cast<common_speculative_type>(0);
++    assert(kpf182_eagle_observe(typ,-1,2,true,41,8,8).status==kpf182_spec_status::invalid_sequence);
++    assert(kpf182_eagle_observe(typ,0,2,false,41,8,8).status==kpf182_spec_status::unavailable);
++    assert(kpf182_eagle_observe(typ,0,2,true,41,7,8).status==kpf182_spec_status::unavailable);
++    auto state=kpf182_eagle_observe(typ,0,2,true,41,8,8);
++    assert(state.status==kpf182_spec_status::boundary_observed && state.boundary==41 && state.payload_bytes==sizeof(llama_pos)+8*sizeof(float));
++}
+--- /dev/null
++++ b/tests/test-kpf182-digest.cpp
+@@ -0,0 +1,16 @@
++#ifdef NDEBUG
++#error KPF182 fixtures require active assertions
++#endif
++#include "../tools/server/kpf182-digest.h"
++#include <cassert>
++int main() {
++    std::vector<uint8_t> a{'a','b','c'};
++    assert(kpf182_digest(a)=="ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad");
++    a[2]='d';
++    assert(kpf182_digest(a)=="a52d159f262b2c6ddb724a61840befc36eb30c88877a4030b65cbe86298449c9");
++    a.clear();
++    for (unsigned i=0; i<200; ++i) a.push_back(static_cast<uint8_t>(i));
++    assert(kpf182_digest(a)=="1901da1c9f699b48f6b2636e65cbf73abf99d0441ef67f5c540a42f7051dec6f");
++    a.clear();
++    assert(kpf182_digest(a)=="e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855");
++}
+--- a/tools/server/CMakeLists.txt
++++ b/tools/server/CMakeLists.txt
+@@ -15,6 +15,8 @@
+     server-common.h
+     server-context.cpp
+     server-context.h
++    kpf182-sha256.c
++    kpf182-digest.h
+     server-stream.cpp
+     server-stream.h
+     server-tools.cpp
+@@ -27,7 +29,7 @@
+     set_target_properties(${TARGET} PROPERTIES POSITION_INDEPENDENT_CODE ON)
+ endif()
+ 
+-target_include_directories(${TARGET} PRIVATE ../mtmd)
++target_include_directories(${TARGET} PRIVATE ../mtmd ../../examples/gguf-hash/deps)
+ target_include_directories(${TARGET} PRIVATE ${CMAKE_SOURCE_DIR})
+ target_link_libraries(${TARGET} PUBLIC llama-common mtmd ${CMAKE_THREAD_LIBS_INIT})
+ 
+--- /dev/null
++++ b/tools/server/kpf182-digest.h
+@@ -0,0 +1,14 @@
++#pragma once
++#include <cstddef>
++#include <cstdint>
++#include <string>
++#include <vector>
++extern "C" void kpf182_sha256_hash(unsigned char * out, const unsigned char * data, size_t size);
++inline std::string kpf182_digest(const std::vector<uint8_t> & bytes) {
++    unsigned char digest[32];
++    kpf182_sha256_hash(digest, bytes.data(), bytes.size());
++    static constexpr char hex[] = "0123456789abcdef";
++    std::string out(64, '0');
++    for (size_t i = 0; i < 32; ++i) { out[2*i] = hex[digest[i] >> 4]; out[2*i+1] = hex[digest[i] & 15]; }
++    return out;
++}
+--- /dev/null
++++ b/tools/server/kpf182-sha256.c
+@@ -0,0 +1,6 @@
++// Private diagnostic-only names to avoid exporting generic SHA symbols.
++#define sha256_init kpf182_sha256_init
++#define sha256_update kpf182_sha256_update
++#define sha256_final kpf182_sha256_final
++#define sha256_hash kpf182_sha256_hash
++#include "../../examples/gguf-hash/deps/sha256/sha256.c"
+--- a/tools/server/server-context.cpp
++++ b/tools/server/server-context.cpp
+@@ -1,4 +1,5 @@
+ #include "server-context.h"
++#include "kpf182-digest.h"
+ #include "server-chat.h"
+ #include "server-common.h"
+ #include "server-http.h"
+@@ -12,6 +13,7 @@
+ #include "fit.h"
+ #include "llama.h"
+ #include "../../src/llama-kv-compress.h"
++#include "../../src/llama-memory.h"
+ #include "log.h"
+ #include "sampling.h"
+ #include "speculative.h"
+@@ -1877,7 +1879,7 @@
+                 {"target_hit", nullptr}, {"recurrent_hit", nullptr}, {"drafter_hit", nullptr},
+                 {"target_hit_reason", "not independently measured"},
+                 {"recurrent_hit_reason", "not independently measured"},
+-                {"drafter_hit_reason", ctx_dft ? "not independently measured" : "no draft context"},
++                {"drafter_hit_reason", "not independently measured; absent draft context does not exclude MTP"},
+                 {"source_token_lcp", src.prompt.tokens.get_common_prefix(task.tokens)},
+                 {"src_target_pos_min", llama_memory_seq_pos_min(llama_get_memory(ctx_tgt), src.id)},
+                 {"src_target_pos_max", llama_memory_seq_pos_max(llama_get_memory(ctx_tgt), src.id)},
+@@ -1901,6 +1903,72 @@
+             }
+         }
+ 
++        // Raw per-implementation observations, not a restore success or hit verdict.
++        json kpf182_spec_before = json::array();
++        json kpf182_spec_source = json::array();
++        auto kpf182_spec_json = [](const std::vector<kpf182_spec_observation> & rows) {
++            json out = json::array();
++            for (const auto & row : rows) {
++                const char * status = "unsupported";
++                switch (row.status) {
++                    case kpf182_spec_status::unsupported: break;
++                    case kpf182_spec_status::unavailable: status = "unavailable"; break;
++                    case kpf182_spec_status::boundary_observed: status = "boundary_observed"; break;
++                    case kpf182_spec_status::invalid_sequence: status = "invalid_sequence"; break;
++                }
++                json item = { {"type", (int) row.type}, {"status", status} };
++                item["boundary"] = row.status == kpf182_spec_status::boundary_observed ? json(row.boundary) : json(nullptr);
++                item["payload_bytes"] = row.status == kpf182_spec_status::boundary_observed ? json(row.payload_bytes) : json(nullptr);
++                out.push_back(item);
++            }
++            return out;
++        };
++        // These are cache metadata observations, never independent prefix hits.
++        auto kpf182_memory_json = [](llama_context * ctx, llama_seq_id seq) -> json {
++            if (!ctx || !llama_get_memory(ctx)) return nullptr;
++            const auto * mem = llama_get_memory(ctx);
++            json attn = json::array();
++            for (const auto & coverage : mem->kpf182_attention_coverage(seq)) {
++                const char * status = "unsupported";
++                switch (coverage.status) {
++                    case kpf182_coverage_status::unsupported: break;
++                    case kpf182_coverage_status::invalid_sequence: status = "invalid_sequence"; break;
++                    case kpf182_coverage_status::pending_shift: status = "pending_shift"; break;
++                    case kpf182_coverage_status::full_cells: status = "full_cells"; break;
++                    case kpf182_coverage_status::windowed_cells: status = "windowed_cells"; break;
++                }
++                const char * kind = "unknown";
++                switch (coverage.cache) {
++                    case kpf182_cache_kind::unknown: break;
++                    case kpf182_cache_kind::ordinary: kind = "ordinary"; break;
++                    case kpf182_cache_kind::base: kind = "base"; break;
++                    case kpf182_cache_kind::swa: kind = "swa"; break;
++                }
++                json ranges = json::array();
++                for (const auto & range : coverage.intervals) ranges.push_back({range.begin, range.end});
++                attn.push_back({ {"status", status}, {"cache", kind}, {"intervals", ranges},
++                    {"duplicate_positions", coverage.duplicate_positions}, {"interior_holes", coverage.interior_holes} });
++            }
++            const auto rec = mem->kpf182_recurrent_boundary(seq);
++            const char * rec_status = "unsupported";
++            switch (rec.status) {
++                case kpf182_recurrent_status::unsupported: break;
++                case kpf182_recurrent_status::invalid_sequence: rec_status = "invalid_sequence"; break;
++                case kpf182_recurrent_status::observed: rec_status = "observed"; break;
++                case kpf182_recurrent_status::inconsistent: rec_status = "inconsistent"; break;
++            }
++            return { {"attention", attn}, {"recurrent", {{"status", rec_status}, {"positions", rec.positions}}} };
++        };
++        json kpf182_memory_before;
++        if (kpf182_trace) {
++            kpf182_spec_before = kpf182_spec_json(common_speculative_kpf182_observe(spec.get(), dst.id));
++            kpf182_spec_source = kpf182_spec_json(common_speculative_kpf182_observe(spec.get(), src.id));
++            kpf182_memory_before = { {"source_target", kpf182_memory_json(ctx_tgt, src.id)},
++                {"destination_target", kpf182_memory_json(ctx_tgt, dst.id)},
++                {"source_draft", kpf182_memory_json(ctx_dft, src.id)},
++                {"destination_draft", kpf182_memory_json(ctx_dft, dst.id)} };
++        }
++
+         // target
+         common_context_seq_rm(ctx_tgt, dst.id, -1, -1);
+         if (slot_fork_mode == SLOT_FORK_KV) {
+@@ -1941,6 +2009,33 @@
+         if (slot_fork_mode == SLOT_FORK_CKPT) {
+             // the drafter's stashed boundary state (e.g. eagle3 g_embd), as the slot's own restore does
+             common_speculative_set_state(spec.get(), dst.id, ckpt->data_spec);
++        }
++
++        if (kpf182_trace) {
++            json custody = {
++                {"schema", "kpf182.spec-custody.v2"}, {"task_id", task.id},
++                {"src_slot", src.id}, {"dst_slot", dst.id}, {"fork_position", p},
++                {"spec_object_present", spec != nullptr}, {"source_before", kpf182_spec_source}, {"before", kpf182_spec_before},
++                {"after", kpf182_spec_json(common_speculative_kpf182_observe(spec.get(), dst.id))},
++                {"restore_invoked", slot_fork_mode == SLOT_FORK_CKPT},
++                {"restore_success", nullptr}, {"component_hit", nullptr},
++                {"memory_before", kpf182_memory_before},
++                {"memory_after", {{"destination_target", kpf182_memory_json(ctx_tgt, dst.id)},
++                    {"destination_draft", kpf182_memory_json(ctx_dft, dst.id)}}}
++            };
++            if (ckpt) {
++                const auto fields = kpf182_checkpoint_inspect(*ckpt);
++                custody["checkpoint"] = {
++                    {"task_id", fields.task_id}, {"n_tokens", fields.n_tokens},
++                    {"pos_min", fields.pos_min}, {"pos_max", fields.pos_max},
++                    {"target_bytes", fields.target_bytes}, {"draft_bytes", fields.draft_bytes},
++                    {"speculative_bytes", fields.speculative_bytes}, {"pinned", fields.pinned},
++                    {"target_sha256", ckpt->data_tgt.empty() ? json(nullptr) : json(kpf182_digest(ckpt->data_tgt))},
++                    {"draft_sha256", ckpt->data_dft.empty() ? json(nullptr) : json(kpf182_digest(ckpt->data_dft))},
++                    {"speculative_sha256", ckpt->data_spec.empty() ? json(nullptr) : json(kpf182_digest(ckpt->data_spec))}
++                };
++            } else custody["checkpoint"] = nullptr;
++            SRV_INF("KPF182_CUSTODY %s\n", custody.dump().c_str());
+         }
+ 
+         // prompt: tokens [0, p) and the source checkpoints that lie inside them

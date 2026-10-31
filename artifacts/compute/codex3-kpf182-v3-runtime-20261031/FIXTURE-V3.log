@@ -1,0 +1,4 @@
+[region-lock] --cpu-list '126,127' includes SMT siblings: claiming ['q1'] (their physical cores) instead of the primary-only []; --no-fold-siblings for the legacy mapping
+[region-lock] acquiring regions ['q1'] as role='build' (timeout_s=3.0) …
+[region-lock] held ['q1'] after 0.0s wait; running: /usr/bin/timeout 90 /usr/bin/taskset -c 126,127 /bin/bash /mnt/raid0/llm/tmp/codex3-kpf182-component-proof-20261031/fixture.sh
+native cell, custody and digest fixtures PASS; NDEBUG rejected
