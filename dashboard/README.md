@@ -1137,3 +1137,14 @@ the evasion the predicate exists to close (`ghost_payload = partial(kernel_paylo
 became invisible to the totality test) on the interpreter `uv run` actually uses.
 It is now `isfunction`/`isclass`, which are true only of Python-level `def`s and
 classes; anything else is *counted*, so the registry has to account for it.
+
+### Champion workload cells and compatibility scalars
+
+The champion and operator-gated API blocks expose `workload_vector` as separate
+source-attributed cells. A missing workload or producer-bound recipe is `null`
+(UNKNOWN); the hub does not reconstruct a historical recipe. Their existing
+`effect_fraction` and `headline` fields remain compatibility reference values,
+not whole-champion standing. `legacy_scalar_scope` binds each to its recorded
+cell, workload, metric and recipe where available and explicitly sets
+`whole_champion: false`. Freshness and subject/baseline checks remain on their
+original source blocks. Operator-gated observations carry no promotion authority.

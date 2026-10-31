@@ -1321,6 +1321,47 @@ def _bundle_capabilities(body: Optional[Mapping[str, Any]], *,
     return out
 
 
+def _champion_workload_vector(body: object) -> list[dict]:
+    """Project native cells; missing workload or recipe stays unknown."""
+    if not isinstance(body, Mapping):
+        return []
+    metrics = body.get("metrics")
+    protocols = body.get("protocols")
+    protocols = protocols if isinstance(protocols, Mapping) else {}
+    result = []
+    if isinstance(metrics, Mapping):
+        for name, row in metrics.items():
+            if not isinstance(name, str) or not isinstance(row, Mapping):
+                continue
+            recipe = protocols.get(name)
+            recipe = dict(recipe) if isinstance(recipe, Mapping) and recipe else None
+            result.append({"scope": "workload_cell", "whole_champion": False,
+                           "cell": name, "workload": row.get("surface"),
+                           "model": recipe.get("model") if recipe else None,
+                           "recipe": recipe, "effect_fraction": row.get("effect_fraction"),
+                           "metric": row.get("metric"), "evidence": body.get("evidence")})
+    elif body.get("effect_fraction") is not None:
+        # A legacy scalar is a reference cell, never a whole-champion vector.
+        recipe = body.get("protocol")
+        result.append({"scope": "workload_cell", "whole_champion": False,
+                       "cell": "legacy_primary", "workload": body.get("surface"),
+                       "model": body.get("model"),
+                       "recipe": dict(recipe) if isinstance(recipe, Mapping) and recipe else None,
+                       "effect_fraction": body.get("effect_fraction"),
+                       "metric": body.get("metric"), "evidence": body.get("evidence")})
+    return result
+
+
+def _champion_legacy_reference(body: object) -> dict:
+    """Scope the backwards-compatible scalar to its own recorded cell."""
+    body = body if isinstance(body, Mapping) else {}
+    recipe = body.get("protocol")
+    return {"scope": "reference_cell_only", "whole_champion": False,
+            "cell": "legacy_primary", "workload": body.get("surface"),
+            "model": body.get("model"), "metric": body.get("metric"),
+            "recipe": dict(recipe) if isinstance(recipe, Mapping) and recipe else None}
+
+
 def champion_snapshot(root: Optional[Path] = None, *,
                       now: Optional[float] = None,
                       champion_head: Optional[str] = None,
@@ -1486,6 +1527,8 @@ def champion_snapshot(root: Optional[Path] = None, *,
                      "tip_error": tip.get("error")},
         "supersession": supersession,
         "effect_fraction": effect,
+        "workload_vector": _champion_workload_vector(body),
+        "legacy_scalar_scope": _champion_legacy_reference(body),
         "metric": (body or {}).get("metric"),
         "metric_direction": (body or {}).get("metric_direction"),
         "surface": (body or {}).get("surface"),

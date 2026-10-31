@@ -1,0 +1,122 @@
+.......ssssss.s.s.ss.sss.s.ss.s...s...........s....F.F....... [ 96%]
+..                                                                       [100%]
+=================================== FAILURES ===================================
+_______ test_explicit_experimental_scope_reaches_reader_and_page[False] ________
+
+tmp_path = PosixPath('/tmp/pytest-of-node/pytest-10886/test_explicit_experimental_sco0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x71afc0ccc640>
+experimental = False
+
+    @pytest.mark.parametrize("experimental", [False, True])
+    def test_explicit_experimental_scope_reaches_reader_and_page(tmp_path, monkeypatch, experimental):
+        from dashboard import loop_status
+    
+        payload = _payload()
+        body = json.loads((REPO / "tests/fixtures/autokernel_loop_status_sample.json").read_text())
+        if experimental:
+            body["baseline_scope"] = "experimental_candidate_not_champion"
+        else:
+            body.pop("baseline_scope", None)
+        (tmp_path / "loop-status.json").write_text(json.dumps(body))
+        original = loop_status.champion_snapshot
+        forwarded = []
+    
+        def capture(*args, **kwargs):
+            forwarded.append(kwargs["champion_head"])
+            return original(*args, **kwargs)
+    
+        monkeypatch.setattr(loop_status, "champion_snapshot", capture)
+        observed = loop_status.snapshot(tmp_path)[0]
+        assert forwarded == [None if experimental else body["champion_head"]]
+        # Keep the actual canonical panels from the hub. Compare the exact same
+        # selected run with/without its subject label: numbers must not disappear.
+        payload["loop"] = {k: v for k, v in observed["loop"].items() if k != "baseline_scope"}
+        baseline = _run(_page_js(), payload, tmp_path,
+                        ["renderChampion", "renderOperatorGate"])
+        payload["loop"] = observed["loop"]
+        rendered = _run(_page_js(), payload, tmp_path,
+                        ["renderChampion", "renderOperatorGate", "renderIdentity"])
+        assert rendered["threw"] == []
+        ident = rendered["by_id"]["ident"]
+        if experimental:
+            assert "<dt>experimental candidate head</dt>" in ident
+            assert "<dt>champion head</dt>" not in ident
+            assert "not measurements of the selected live experiment" in rendered["text_by_id"]["opgate-scope"]
+        else:
+>           assert "<dt>champion head</dt>" in ident
+E           AssertionError: assert '<dt>champion head</dt>' in '<dt>freshness</dt><dd>stale · 3.6d old · envelope 3.0 min</dd><dt>run notice</dt><dd>finished · declared state comple...><dd>tg128 · 20 pairs</dd><dt>noise floor</dt><dd>1.188%</dd><dt>generated at</dt><dd>2026-08-30T14:19:52.439876Z</dd>'
+
+tests/test_dashboard_runtime_js.py:124: AssertionError
+_____ test_live_store_override_does_not_relocate_canonical_history[False] ______
+
+tmp_path = PosixPath('/tmp/pytest-of-node/pytest-10886/test_live_store_override_does_0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x71afbfd3fbf0>
+explicit_root = False
+
+    @pytest.mark.parametrize("explicit_root", [False, True])
+    def test_live_store_override_does_not_relocate_canonical_history(tmp_path, monkeypatch, explicit_root):
+        from dashboard import loop_status
+    
+        canonical, trial = tmp_path / "canonical", tmp_path / "trial"
+        original = json.loads((REPO / "tests/fixtures/autokernel_loop_status_sample.json").read_text())
+        selected = {**original, "champion_head": "c" * 40, "epoch_sha256": "d" * 64,
+                    "baseline_scope": "experimental_candidate_not_champion"}
+        for path, body in ((canonical, original), (trial, selected)):
+            path.mkdir()
+            (path / "loop-status.json").write_text(json.dumps(body))
+        monkeypatch.setattr(loop_status, "DEFAULT_STORE_ROOT", canonical)
+        monkeypatch.setenv(loop_status.STORE_ROOT_ENV, str(trial))
+        captured = {}
+    
+        def champion(root, **kwargs):
+            captured["champion"] = (root, kwargs["champion_head"])
+            return {"evidence": str(root / "champion-vs-production.json")}
+    
+        def knowledge(root, **kwargs):
+            captured["knowledge"] = (root, kwargs["status_body"])
+            return {"evidence": str(root / "memory.sqlite")}
+    
+        monkeypatch.setattr(loop_status, "champion_snapshot", champion)
+        monkeypatch.setattr(loop_status, "knowledge_snapshot", knowledge)
+        payload = loop_status.snapshot(trial if explicit_root else None)[0]
+>       assert payload["loop"] == selected
+E       AssertionError: assert {'abstain_rat...mit': '', ...} == {'anchor_comm... 8, ...}, ...}
+E         
+E         Omitting 2 identical items, use -vv to show
+E         Differing items:
+E         {'step': 'serial routing only; detailed original status stays in target store'} != {'step': '[lane0] building and gating'}
+E         {'iterations_done': 0} != {'iterations_done': 87}
+E         {'surface': 'serial_targets'} != {'surface': 'tg128'}
+E         {'anchor_commit': ''} != {'anchor_commit': '8fd1b23acf2be83d2916518671a77493a8a3f045'}...
+E         
+E         ...Full output truncated (46 lines hidden), use '-vv' to show
+
+tests/test_dashboard_runtime_js.py:161: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_dashboard_runtime_js.py::test_explicit_experimental_scope_reaches_reader_and_page[False]
+FAILED tests/test_dashboard_runtime_js.py::test_live_store_override_does_not_relocate_canonical_history[False]
+2 failed, 42 passed, 21 skipped, 9 subtests passed in 2.17s
+Command exited with non-zero status 1
+	Command being timed: "python3 -m pytest -q tests/test_dashboard_operator_gates.py tests/test_dashboard_champion_headline.py tests/test_dashboard_runtime_js.py tests/test_dashboard_workload_vector.py"
+	User time (seconds): 1.40
+	System time (seconds): 1.02
+	Percent of CPU this job got: 100%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:02.40
+	Average shared text size (kbytes): 0
+	Average unshared data size (kbytes): 0
+	Average stack size (kbytes): 0
+	Average total size (kbytes): 0
+	Maximum resident set size (kbytes): 68028
+	Average resident set size (kbytes): 0
+	Major (requiring I/O) page faults: 0
+	Minor (reclaiming a frame) page faults: 148890
+	Voluntary context switches: 1933
+	Involuntary context switches: 163
+	Swaps: 0
+	File system inputs: 0
+	File system outputs: 52992
+	Socket messages sent: 0
+	Socket messages received: 0
+	Signals delivered: 0
+	Page size (bytes): 4096
+	Exit status: 1

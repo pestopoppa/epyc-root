@@ -204,6 +204,42 @@ OPERATOR_GATE_BUNDLE_STATES = (
     loop_status.OPGATE_UNVERIFIABLE, "absent", "malformed")
 
 
+def _operator_workload_vector(gates: list) -> list:
+    """Project only identities carried by each sealed manual-research gate."""
+    rows = []
+    for gate in gates:
+        if not isinstance(gate, dict):
+            continue
+        for group in ("surfaces", "points"):
+            cells = gate.get(group)
+            if not isinstance(cells, list):
+                continue
+            for cell in cells:
+                if not isinstance(cell, dict):
+                    continue
+                rows.append({"scope": "workload_cell", "whole_champion": False,
+                             "gate": gate.get("gate"), "workload": cell.get("surface")
+                             if group == "surfaces" else cell.get("workload"),
+                             "model": cell.get("model"), "models": cell.get("models"),
+                             "workloads": cell.get("workloads"), "recipe": cell.get("recipe"),
+                             "in_flight": cell.get("in_flight"),
+                             "delta_pct": cell.get("delta_pct"),
+                             "anchor": cell.get("anchor") if group == "surfaces" else cell.get("production_ceiling_tps"),
+                             "champion": cell.get("champion") if group == "surfaces" else cell.get("champion_tps"),
+                             "artifact": gate.get("artifact"),
+                             "artifact_sha256": gate.get("artifact_sha256")})
+    return rows
+
+
+def _operator_legacy_reference(headline: object) -> dict:
+    """The compatibility headline is one selected manual-research cell."""
+    headline = headline if isinstance(headline, dict) else {}
+    return {"scope": "reference_cell_only", "whole_champion": False,
+            "cell": "operator_selected", "workload": headline.get("workload"),
+            "model": headline.get("model"), "recipe": headline.get("recipe"), "metric": headline.get("metric"),
+            "in_flight": headline.get("at_in_flight")}
+
+
 def _read_operator_gate_bundle() -> dict:
     """Read the operator-gated bundle, or say why it is unavailable.
 
@@ -425,6 +461,8 @@ def _read_operator_gate_bundle() -> dict:
         "production_anchor_commit": anchor.get("commit"),
         "not_campaign_sealed": value.get("not_campaign_sealed"),
         "headline": headline,
+        "legacy_scalar_scope": _operator_legacy_reference(headline),
+        "workload_vector": _operator_workload_vector(gates),
         # Per-gate measured points, each carrying BOTH arms. `delta_pct` alone
         # is a percentage with no anchor — the defect one level down from the
         # headline's — so the arm values ride with it and the page prints them.

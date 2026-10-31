@@ -1,0 +1,298 @@
+--- a/dashboard/loop_status.py
++++ b/dashboard/loop_status.py
+@@ -1321,6 +1321,47 @@
+     return out
+ 
+ 
++def _champion_workload_vector(body: object) -> list[dict]:
++    """Project native cells; missing workload or recipe stays unknown."""
++    if not isinstance(body, Mapping):
++        return []
++    metrics = body.get("metrics")
++    protocols = body.get("protocols")
++    protocols = protocols if isinstance(protocols, Mapping) else {}
++    result = []
++    if isinstance(metrics, Mapping):
++        for name, row in metrics.items():
++            if not isinstance(name, str) or not isinstance(row, Mapping):
++                continue
++            recipe = protocols.get(name)
++            recipe = dict(recipe) if isinstance(recipe, Mapping) and recipe else None
++            result.append({"scope": "workload_cell", "whole_champion": False,
++                           "cell": name, "workload": row.get("surface"),
++                           "model": recipe.get("model") if recipe else None,
++                           "recipe": recipe, "effect_fraction": row.get("effect_fraction"),
++                           "metric": row.get("metric"), "evidence": body.get("evidence")})
++    elif body.get("effect_fraction") is not None:
++        # A legacy scalar is a reference cell, never a whole-champion vector.
++        recipe = body.get("protocol")
++        result.append({"scope": "workload_cell", "whole_champion": False,
++                       "cell": "legacy_primary", "workload": body.get("surface"),
++                       "model": body.get("model"),
++                       "recipe": dict(recipe) if isinstance(recipe, Mapping) and recipe else None,
++                       "effect_fraction": body.get("effect_fraction"),
++                       "metric": body.get("metric"), "evidence": body.get("evidence")})
++    return result
++
++
++def _champion_legacy_reference(body: object) -> dict:
++    """Scope the backwards-compatible scalar to its own recorded cell."""
++    body = body if isinstance(body, Mapping) else {}
++    recipe = body.get("protocol")
++    return {"scope": "reference_cell_only", "whole_champion": False,
++            "cell": "legacy_primary", "workload": body.get("surface"),
++            "model": body.get("model"), "metric": body.get("metric"),
++            "recipe": dict(recipe) if isinstance(recipe, Mapping) and recipe else None}
++
++
+ def champion_snapshot(root: Optional[Path] = None, *,
+                       now: Optional[float] = None,
+                       champion_head: Optional[str] = None,
+@@ -1486,6 +1527,8 @@
+                      "tip_error": tip.get("error")},
+         "supersession": supersession,
+         "effect_fraction": effect,
++        "workload_vector": _champion_workload_vector(body),
++        "legacy_scalar_scope": _champion_legacy_reference(body),
+         "metric": (body or {}).get("metric"),
+         "metric_direction": (body or {}).get("metric_direction"),
+         "surface": (body or {}).get("surface"),
+--- a/dashboard/server.py
++++ b/dashboard/server.py
+@@ -204,6 +204,42 @@
+     loop_status.OPGATE_UNVERIFIABLE, "absent", "malformed")
+ 
+ 
++def _operator_workload_vector(gates: list) -> list:
++    """Project only identities carried by each sealed manual-research gate."""
++    rows = []
++    for gate in gates:
++        if not isinstance(gate, dict):
++            continue
++        for group in ("surfaces", "points"):
++            cells = gate.get(group)
++            if not isinstance(cells, list):
++                continue
++            for cell in cells:
++                if not isinstance(cell, dict):
++                    continue
++                rows.append({"scope": "workload_cell", "whole_champion": False,
++                             "gate": gate.get("gate"), "workload": cell.get("surface")
++                             if group == "surfaces" else cell.get("workload"),
++                             "model": cell.get("model"), "models": cell.get("models"),
++                             "workloads": cell.get("workloads"), "recipe": cell.get("recipe"),
++                             "in_flight": cell.get("in_flight"),
++                             "delta_pct": cell.get("delta_pct"),
++                             "anchor": cell.get("anchor") if group == "surfaces" else cell.get("production_ceiling_tps"),
++                             "champion": cell.get("champion") if group == "surfaces" else cell.get("champion_tps"),
++                             "artifact": gate.get("artifact"),
++                             "artifact_sha256": gate.get("artifact_sha256")})
++    return rows
++
++
++def _operator_legacy_reference(headline: object) -> dict:
++    """The compatibility headline is one selected manual-research cell."""
++    headline = headline if isinstance(headline, dict) else {}
++    return {"scope": "reference_cell_only", "whole_champion": False,
++            "cell": "operator_selected", "workload": headline.get("workload"),
++            "model": headline.get("model"), "recipe": headline.get("recipe"), "metric": headline.get("metric"),
++            "in_flight": headline.get("at_in_flight")}
++
++
+ def _read_operator_gate_bundle() -> dict:
+     """Read the operator-gated bundle, or say why it is unavailable.
+ 
+@@ -425,6 +461,8 @@
+         "production_anchor_commit": anchor.get("commit"),
+         "not_campaign_sealed": value.get("not_campaign_sealed"),
+         "headline": headline,
++        "legacy_scalar_scope": _operator_legacy_reference(headline),
++        "workload_vector": _operator_workload_vector(gates),
+         # Per-gate measured points, each carrying BOTH arms. `delta_pct` alone
+         # is a percentage with no anchor — the defect one level down from the
+         # headline's — so the arm values ride with it and the page prints them.
+--- a/dashboard/static/loop.html
++++ b/dashboard/static/loop.html
+@@ -1629,7 +1629,10 @@
+   const capsHost=document.getElementById("champion-capabilities");
+   const c=d.champion_vs_production||{};
+   const caps = c.capabilities || {};
+-  let capHtml = `<div class="ch-caps">`;
++  const cells=Array.isArray(c.workload_vector)?c.workload_vector:[];
++  let capHtml = `<div class="ch-caps"><b>Champion workload vector</b>` +
++    (cells.length ? cells.map(v => `<div>workload: ${esc(v.workload || "UNKNOWN")} · model: ${esc(v.model || "UNKNOWN")} · recipe: ${esc(v.recipe ? JSON.stringify(v.recipe) : "UNKNOWN")} · reference ${esc(v.metric || v.cell || "UNKNOWN")} · ${num(v.effect_fraction) ? esc((v.effect_fraction*100).toFixed(2)+"%") : "UNKNOWN"}</div>`).join("") : `<div>UNKNOWN — no workload cells in the measured bundle</div>`) +
++    `<div class="muted">Source: ${esc(c.measurement_evidence || c.evidence || "UNKNOWN")} · measured champion: ${esc((c.champion || {}).measured_commit || "UNKNOWN")} · anchor: ${esc((c.baseline || {}).commit || "UNKNOWN")} · freshness: ${esc((c.freshness || {}).state || "UNKNOWN")} · baseline: ${esc(c.baseline_check || "UNKNOWN")}</div>`;
+   if(caps.known && (caps.items || []).length){
+     capHtml += `<span class="muted">${esc((caps.items || []).length)} capabilities · source: ${esc(caps.source || "—")}</span><ul>` +
+       caps.items.map(it => `<li>${esc(it.name)}` +
+@@ -2447,48 +2450,13 @@
+   // the evidence footer — collapses into the accordion below. Collapsed is
+   // not removed: nothing leaves the DOM.
+   const hd = og.headline || {};
+-  const e = hd.effect_fraction;
+-  const pct = num(e) ? `${e * 100 >= 0 ? "+" : ""}${(e * 100).toFixed(1)}%` : "—";
+-  // A superseded or unverifiable figure is amber, never the green/red of a
+-  // live gain or regression. A RELEVANT figure keeps its live colour however
+-  // old it is — age alone never ambers this number; only the subject verdict
+-  // can take its colour away.
+-  const cls = !num(e) ? "" : !current ? "dated" : (hd.positive ? "pos" : "neg");
+-  // The emitter's summary sentence often BEGINS with the very figure the
+-  // og-num span already shows; the duplicate is trimmed for display only —
+-  // the payload is untouched, and a summary that does not start with this
+-  // exact figure renders verbatim.
+-  let sumTxt = hd.summary || hdMetricPhrase(og) ||
+-      "no headline summary in this bundle";
+-  if(sumTxt.trim().startsWith(pct))
+-    sumTxt = sumTxt.trim().slice(pct.length).trim();
+-  h += `<div class="og-head">` +
+-       `<span class="og-num ${cls}">${esc(pct)}</span>` +
+-       `<span class="og-sum">${esc(sumTxt)}` +
+-       `${hd.metric ? ` · ${esc(hd.metric)}` : ""}` +
+-       `${hd.metric_direction ? ` (${esc(hd.metric_direction)})` : ""}` +
+-       ` · vs ` +
+-       (og.production_anchor_commit
+-         ? `the frozen production kernel <span class="mono">` +
+-           `${esc(short(og.production_anchor_commit))}</span>`
+-         : `an anchor this bundle does not name — treat the figure as ` +
+-           `uninterpretable`) +
+-       ` · measured <span class="mono">${esc(short(og.champion_commit))}</span>` +
+-       ` (${esc(relShort)})` +
+-       // Age is INFORMATIONAL here. On the calm verdict it reads as a plain
+-       // fact plus the single-slot guarantee; it never turns anything amber.
+-       // The server's advisory sentence ("consider re-measuring") rides along
+-       // as text when the age is extreme — advice, not an alarm.
+-       (num(f.age_s)
+-         ? (current
+-             ? ` · measured ${esc(age(f.age_s))} ago · no newer serving ` +
+-               `measurement exists`
+-             : ` · measured ${esc(age(f.age_s))} ago`) +
+-           (f.advisory ? ` · ${esc(f.advisory)}` : "")
+-         : "") +
+-       `</span>` +
+-       `<span class="og-auth" title="operator_gated_manual_research">operator-gated · ` +
+-       `no promotion authority</span></div>`;
++  // The source already carries each surface and concurrency point.  A point
++  // without a producer-bound recipe remains UNKNOWN rather than inheriting a
++  // current default or the recipe of another measurement.
++  const vector = (og.workload_vector || []).map(v => ({...v, label:`${v.gate || "UNKNOWN"}${v.in_flight == null ? "" : ` · in-flight ${v.in_flight}`}`, value:v.delta_pct}));
++  h += `<div class="og-head"><span class="og-sum"><b>Workload vector</b> · operator-gated · no promotion authority · measured champion: ${esc(og.champion_commit || "UNKNOWN")} · anchor: ${esc(og.production_anchor_commit || "UNKNOWN")} · subject: ${esc(state)}` +
++       (vector.length ? vector.map(v => `<div>${esc(v.label || "UNKNOWN")} · workload: ${esc(v.workload || "UNKNOWN")} · model: ${esc(v.model || "UNKNOWN")} · recipe: ${esc(v.recipe ? JSON.stringify(v.recipe) : "UNKNOWN")} · anchor: ${num(v.anchor) ? esc(v.anchor) : "UNKNOWN"} · champion: ${num(v.champion) ? esc(v.champion) : "UNKNOWN"} · reference ${num(v.value) ? esc(v.value.toFixed(3)+"%") : "UNKNOWN"}</div>`).join("") : `<div>UNKNOWN — no workload cells in this bundle</div>`) +
++       `</span></div>`;
+ 
+   // The evidence accordion. A <details> with no `open` attribute IS the
+   // collapsed state; the freshness verdict above never collapses.
+@@ -2496,9 +2464,8 @@
+ 
+   h += `<div class="og-scope"><b>This is not the champion headline.</b> ` +
+     `It is a separate producer answering a different question against a ` +
+-    `different anchor. The panel at the top of this page is the champion ` +
+-    `tree's cumulative gain over the frozen production kernel on the loop's ` +
+-    `own single-stream surface; this card is manual research into a ` +
++    `different anchor. Champion and manual-research cells remain separate; ` +
++    `this card is manual research into a ` +
+     `<em>serving path</em>` +
+     (hdMetricPhrase(og) ? ` (${esc(hdMetricPhrase(og))})` : "") + `. ` +
+     `Measured champion <span class="mono">${esc(short(og.champion_commit))}</span>` +
+--- a/dashboard/README.md
++++ b/dashboard/README.md
+@@ -1137,3 +1137,14 @@
+ became invisible to the totality test) on the interpreter `uv run` actually uses.
+ It is now `isfunction`/`isclass`, which are true only of Python-level `def`s and
+ classes; anything else is *counted*, so the registry has to account for it.
++
++### Champion workload cells and compatibility scalars
++
++The champion and operator-gated API blocks expose `workload_vector` as separate
++source-attributed cells. A missing workload or producer-bound recipe is `null`
++(UNKNOWN); the hub does not reconstruct a historical recipe. Their existing
++`effect_fraction` and `headline` fields remain compatibility reference values,
++not whole-champion standing. `legacy_scalar_scope` binds each to its recorded
++cell, workload, metric and recipe where available and explicitly sets
++`whole_champion: false`. Freshness and subject/baseline checks remain on their
++original source blocks. Operator-gated observations carry no promotion authority.
+--- /dev/null
++++ b/tests/test_dashboard_workload_vector.py
+@@ -0,0 +1,83 @@
++"""Workload identities travel with each source cell; legacy gaps stay unknown."""
++import json
++import re
++import shutil
++import subprocess
++
++import pytest
++from pathlib import Path
++
++from dashboard.loop_status import _champion_workload_vector, _champion_legacy_reference
++from dashboard.server import _operator_workload_vector, _operator_legacy_reference
++
++ROOT = Path(__file__).resolve().parents[1]
++
++
++def test_champion_per_leg_protocol_and_legacy_unknown():
++    body = {'metrics': {'tg': {'surface': 'decode', 'effect_fraction': .1},
++                        'pp': {'surface': 'prefill', 'effect_fraction': -.02}},
++            'protocols': {'tg': {'model': 'M', 'argv': ['tg']}}, 'evidence': 'e'}
++    rows = _champion_workload_vector(body)
++    assert [r['workload'] for r in rows] == ['decode', 'prefill']
++    assert all(r['scope'] == 'workload_cell' and r['whole_champion'] is False for r in rows)
++    assert rows[0]['recipe'] == body['protocols']['tg']
++    assert rows[1]['recipe'] is None
++    legacy = _champion_workload_vector({'effect_fraction': 0.0, 'surface': 'tg128'})
++    assert legacy[0]['effect_fraction'] == 0 and legacy[0]['recipe'] is None
++    assert _champion_workload_vector(None) == []
++
++
++def test_operator_cells_preserve_artifact_and_unknowns():
++    rows = _operator_workload_vector([
++        {'gate': 'anchor', 'artifact': 'a', 'artifact_sha256': 'h',
++         'surfaces': [{'surface': 'pp', 'delta_pct': 1, 'anchor': 20, 'champion': 21}]},
++        {'gate': 'spec', 'points': [{'in_flight': 2, 'delta_pct': 3}]}, None])
++    assert rows[0]['workload'] == 'pp' and rows[0]['artifact_sha256'] == 'h'
++    assert rows[0]['recipe'] is None
++    assert all(r['scope'] == 'workload_cell' and r['whole_champion'] is False for r in rows)
++    assert rows[0]['anchor'] == 20 and rows[0]['champion'] == 21
++    assert rows[1]['workload'] is None and rows[1]['recipe'] is None
++    assert rows[1]['in_flight'] == 2
++
++
++@pytest.mark.skipif(shutil.which("node") is None, reason="node is unavailable")
++def test_vector_render_keeps_subject_freshness_and_escapes(tmp_path):
++    page = (ROOT / 'dashboard/static/loop.html').read_text()
++    (tmp_path / 'page.js').write_text('\n'.join(re.findall(r'<script[^>]*>(.*?)</script>', page, re.S)))
++    payload = {'champion_vs_production': {'workload_vector': [
++        {'workload': '<img onerror=x>', 'recipe': None, 'effect_fraction': .1}],
++        'freshness': {'state': 'stale'}, 'baseline_check': 'superseded', 'capabilities': {}},
++        'operator_gates': {'available': True, 'freshness': {'state': 'relevant', 'age_s': 2},
++        'headline': {}, 'gates': [], 'workload_vector': [
++            {'gate': 'spec', 'in_flight': 2, 'delta_pct': 12.3}]}}
++    (tmp_path / 'payload.json').write_text(json.dumps(payload))
++    result = subprocess.run(['node', str(ROOT / 'tests/js/render_harness.js'),
++        str(tmp_path / 'page.js'), str(tmp_path / 'payload.json'),
++        'renderChampion', 'renderOperatorGate'], capture_output=True, text=True,
++        timeout=20, check=True)
++    out = json.loads(result.stdout)
++    assert out['threw'] == []
++    champion = out['by_id']['champion-capabilities']
++    assert '&lt;img onerror=x&gt;' in champion and '<img' not in champion
++    assert 'recipe: UNKNOWN' in champion and 'baseline: superseded' in champion
++    assert 'freshness: stale' in champion
++    assert 'in-flight 2' in out['by_id']['opgate']
++    assert 'workload: UNKNOWN' in out['by_id']['opgate']
++    assert out['class_by_id']['opgate-badge'] == 'badge relevant'
++
++
++def test_legacy_scalars_are_scoped_references():
++    c = _champion_legacy_reference({'surface': 'tg128', 'model': 'M',
++                                    'protocol': {'argv': ['recorded']}})
++    assert c['scope'] == 'reference_cell_only' and c['whole_champion'] is False
++    assert c['workload'] == 'tg128' and c['recipe'] == {'argv': ['recorded']}
++    o = _operator_legacy_reference({'at_in_flight': 2, 'metric': 'tok_s'})
++    assert o['whole_champion'] is False and o['in_flight'] == 2
++    assert o['workload'] is None and o['recipe'] is None
++
++
++def test_operator_projection_keeps_native_identity_and_two_recipes():
++    recipe = {'anchor': {'server_argv': ['base']}, 'champion': {'server_argv': ['candidate']}}
++    row = _operator_workload_vector([{'gate': 'spec', 'points': [{'in_flight': 1,
++        'workload': 'W', 'model': 'M', 'recipe': recipe, 'delta_pct': 1}]}])[0]
++    assert row['workload'] == 'W' and row['model'] == 'M' and row['recipe'] == recipe

@@ -1,0 +1,1838 @@
+I001 [*] Import block is un-sorted or un-formatted
+  --> dashboard/loop_status.py:50:1
+   |
+48 |   freshness envelope that is the entire point of the envelope.
+49 |   """
+50 | / from __future__ import annotations
+51 | |
+52 | | from datetime import datetime, timezone
+53 | | import hashlib
+54 | | import json
+55 | | import os
+56 | | from pathlib import Path
+57 | | import re
+58 | | import sqlite3
+59 | | import stat
+60 | | import subprocess
+61 | | import time
+62 | | from typing import Any, Iterable, Mapping, Optional
+63 | |
+64 | | from dashboard import campaign_status, panels
+   | |_____________________________________________^
+65 |
+66 |   #: The producer's schema string. A body carrying anything else is not this
+   |
+help: Organize imports
+   |
+51 |
+   - from datetime import datetime, timezone
+52 | import hashlib
+53 | import json
+54 | import os
+   - from pathlib import Path
+55 | import re
+--------------------------------------------------------------------------------
+59 | import time
+60 + from datetime import datetime, timezone
+61 + from pathlib import Path
+62 | from typing import Any, Iterable, Mapping, Optional
+   |
+
+UP035 [*] Import from `collections.abc` instead: `Iterable`, `Mapping`
+  --> dashboard/loop_status.py:62:1
+   |
+60 | import subprocess
+61 | import time
+62 | from typing import Any, Iterable, Mapping, Optional
+   | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+63 |
+64 | from dashboard import campaign_status, panels
+   |
+help: Import from `collections.abc`
+   |
+61 | import time
+   - from typing import Any, Iterable, Mapping, Optional
+62 + from typing import Any, Optional
+63 + from collections.abc import Iterable, Mapping
+64 |
+   |
+
+UP045 [*] Use `X | None` for type annotations
+   --> dashboard/loop_status.py:205:23
+    |
+205 | def status_path(root: Optional[Path] = None) -> Path:
+    |                       ^^^^^^^^^^^^^^
+206 |     return (store_root() if root is None else Path(root)) / STATUS_FILENAME
+    |
+help: Convert to `X | None`
+    |
+204 |
+    - def status_path(root: Optional[Path] = None) -> Path:
+205 + def status_path(root: Path | None = None) -> Path:
+206 |     return (store_root() if root is None else Path(root)) / STATUS_FILENAME
+    |
+
+UP045 [*] Use `X | None` for type annotations
+   --> dashboard/loop_status.py:209:16
+    |
+209 | def read(root: Optional[Path] = None) -> dict:
+    |                ^^^^^^^^^^^^^^
+210 |     """``{artifact_present, body, reader_error}`` for the status file.
+    |
+help: Convert to `X | None`
+    |
+208 |
+    - def read(root: Optional[Path] = None) -> dict:
+209 + def read(root: Path | None = None) -> dict:
+210 |     """``{artifact_present, body, reader_error}`` for the status file.
+    |
+
+UP045 [*] Use `X | None` for type annotations
+   --> dashboard/loop_status.py:253:33
+    |
+253 | def _stamp_epoch(value: Any) -> Optional[float]:
+    |                                 ^^^^^^^^^^^^^^^
+254 |     try:
+255 |         return datetime.fromisoformat(
+    |
+help: Convert to `X | None`
+    |
+252 |
+    - def _stamp_epoch(value: Any) -> Optional[float]:
+253 + def _stamp_epoch(value: Any) -> float | None:
+254 |     try:
+    |
+
+PLR0124 Name compared with itself, consider replacing `value != value`
+   --> dashboard/loop_status.py:275:8
+    |
+273 |     except (TypeError, ValueError):
+274 |         return DEFAULT_STALE_AFTER_S
+275 |     if value != value or value in (float("inf"), float("-inf")):  # NaN/inf
+    |        ^^^^^
+276 |         return DEFAULT_STALE_AFTER_S
+277 |     return max(MIN_STALE_AFTER_S, min(value, float(panels.MAX_STALE_S)))
+    |
+
+UP045 [*] Use `X | None` for type annotations
+   --> dashboard/loop_status.py:280:50
+    |
+280 | def freshness(report: Mapping[str, Any], *, now: Optional[float] = None) -> dict:
+    |                                                  ^^^^^^^^^^^^^^^
+281 |     """Fold one :func:`read` result into the four-valued freshness verdict."""
+282 |     now = time.time() if now is None else float(now)
+    |
+help: Convert to `X | None`
+    |
+279 |
+    - def freshness(report: Mapping[str, Any], *, now: Optional[float] = None) -> dict:
+280 + def freshness(report: Mapping[str, Any], *, now: float | None = None) -> dict:
+281 |     """Fold one :func:`read` result into the four-valued freshness verdict."""
+    |
+
+PLR0124 Name compared with itself, consider replacing `value != value`
+   --> dashboard/loop_status.py:408:16
+    |
+406 |             if isinstance(value, bool) or not isinstance(value, (int, float)):
+407 |                 continue
+408 |             if value != value:  # NaN
+    |                ^^^^^
+409 |                 continue
+410 |             return float(value)
+    |
+
+PLW1510 `subprocess.run` without explicit `check` argument
+   --> dashboard/loop_status.py:652:12
+    |
+650 |     out by this hub.
+651 |     """
+652 |     proc = subprocess.run(["git", "-C", str(tree), *args],
+    |            ^^^^^^^^^^^^^^
+653 |                           capture_output=True, text=True, timeout=10)
+654 |     if proc.returncode != 0:
+    |
+help: Add explicit `check=False`
+
+UP045 [*] Use `X | None` for type annotations
+   --> dashboard/loop_status.py:662:30
+    |
+662 | def resolve_production(tree: Optional[Path] = None) -> dict:
+    |                              ^^^^^^^^^^^^^^
+663 |     """``{resolved, commit, branch, label, tree, error}`` for the frozen tree.
+    |
+help: Convert to `X | None`
+    |
+661 |
+    - def resolve_production(tree: Optional[Path] = None) -> dict:
+662 + def resolve_production(tree: Path | None = None) -> dict:
+663 |     """``{resolved, commit, branch, label, tree, error}`` for the frozen tree.
+    |
+
+UP045 [*] Use `X | None` for type annotations
+   --> dashboard/loop_status.py:728:28
+    |
+728 | def resolve_champion(tree: Optional[Path] = None) -> dict:
+    |                            ^^^^^^^^^^^^^^
+729 |     """``{resolved, commit, branch, error}`` for the champion branch tip.
+    |
+help: Convert to `X | None`
+    |
+727 |
+    - def resolve_champion(tree: Optional[Path] = None) -> dict:
+728 + def resolve_champion(tree: Path | None = None) -> dict:
+729 |     """``{resolved, commit, branch, error}`` for the champion branch tip.
+    |
+
+UP045 [*] Use `X | None` for type annotations
+   --> dashboard/loop_status.py:773:37
+    |
+773 | def champion_relationship(measured: Optional[str],
+    |                                     ^^^^^^^^^^^^^
+774 |                           tree: Optional[Path] = None) -> dict:
+775 |     """How ``measured`` relates to the CURRENT champion — computed, never worded.
+    |
+help: Convert to `X | None`
+    |
+772 |
+    - def champion_relationship(measured: Optional[str],
+773 + def champion_relationship(measured: str | None,
+774 |                           tree: Optional[Path] = None) -> dict:
+    |
+
+UP045 [*] Use `X | None` for type annotations
+   --> dashboard/loop_status.py:774:33
+    |
+773 | def champion_relationship(measured: Optional[str],
+774 |                           tree: Optional[Path] = None) -> dict:
+    |                                 ^^^^^^^^^^^^^^
+775 |     """How ``measured`` relates to the CURRENT champion — computed, never worded.
+    |
+help: Convert to `X | None`
+    |
+773 | def champion_relationship(measured: Optional[str],
+    -                           tree: Optional[Path] = None) -> dict:
+774 +                           tree: Path | None = None) -> dict:
+775 |     """How ``measured`` relates to the CURRENT champion — computed, never worded.
+    |
+
+PLW1510 `subprocess.run` without explicit `check` argument
+   --> dashboard/loop_status.py:822:16
+    |
+820 |     # (e.g. a commit this tree has never seen) is no verdict at all.
+821 |     try:
+822 |         proc = subprocess.run(
+    |                ^^^^^^^^^^^^^^
+823 |             ["git", "-C", str(champion_tree() if tree is None else Path(tree)),
+824 |              "merge-base", "--is-ancestor", str(measured), tip["commit"]],
+    |
+help: Add explicit `check=False`
+
+UP045 [*] Use `X | None` for type annotations
+   --> dashboard/loop_status.py:887:38
+    |
+887 | def opgate_subject_verdict(measured: Optional[str], anchor: Optional[str],
+    |                                      ^^^^^^^^^^^^^
+888 |                            tree: Optional[Path] = None,
+889 |                            frozen: Optional[Path] = None) -> dict:
+    |
+help: Convert to `X | None`
+    |
+886 |
+    - def opgate_subject_verdict(measured: Optional[str], anchor: Optional[str],
+887 + def opgate_subject_verdict(measured: str | None, anchor: Optional[str],
+888 |                            tree: Optional[Path] = None,
+    |
+
+UP045 [*] Use `X | None` for type annotations
+   --> dashboard/loop_status.py:887:61
+    |
+887 | def opgate_subject_verdict(measured: Optional[str], anchor: Optional[str],
+    |                                                             ^^^^^^^^^^^^^
+888 |                            tree: Optional[Path] = None,
+889 |                            frozen: Optional[Path] = None) -> dict:
+    |
+help: Convert to `X | None`
+    |
+886 |
+    - def opgate_subject_verdict(measured: Optional[str], anchor: Optional[str],
+887 + def opgate_subject_verdict(measured: Optional[str], anchor: str | None,
+888 |                            tree: Optional[Path] = None,
+    |
+
+UP045 [*] Use `X | None` for type annotations
+   --> dashboard/loop_status.py:888:34
+    |
+887 | def opgate_subject_verdict(measured: Optional[str], anchor: Optional[str],
+888 |                            tree: Optional[Path] = None,
+    |                                  ^^^^^^^^^^^^^^
+889 |                            frozen: Optional[Path] = None) -> dict:
+890 |     """Relevance-anchored verdict for one operator-gated bundle reading.
+    |
+help: Convert to `X | None`
+    |
+887 | def opgate_subject_verdict(measured: Optional[str], anchor: Optional[str],
+    -                            tree: Optional[Path] = None,
+888 +                            tree: Path | None = None,
+889 |                            frozen: Optional[Path] = None) -> dict:
+    |
+
+UP045 [*] Use `X | None` for type annotations
+   --> dashboard/loop_status.py:889:36
+    |
+887 | def opgate_subject_verdict(measured: Optional[str], anchor: Optional[str],
+888 |                            tree: Optional[Path] = None,
+889 |                            frozen: Optional[Path] = None) -> dict:
+    |                                    ^^^^^^^^^^^^^^
+890 |     """Relevance-anchored verdict for one operator-gated bundle reading.
+    |
+help: Convert to `X | None`
+    |
+888 |                            tree: Optional[Path] = None,
+    -                            frozen: Optional[Path] = None) -> dict:
+889 +                            frozen: Path | None = None) -> dict:
+890 |     """Relevance-anchored verdict for one operator-gated bundle reading.
+    |
+
+UP045 [*] Use `X | None` for type annotations
+    --> dashboard/loop_status.py:1047:25
+     |
+1047 | def champion_path(root: Optional[Path] = None) -> Path:
+     |                         ^^^^^^^^^^^^^^
+1048 |     return (store_root() if root is None else Path(root)) / CHAMPION_FILENAME
+     |
+help: Convert to `X | None`
+     |
+1046 |
+     - def champion_path(root: Optional[Path] = None) -> Path:
+1047 + def champion_path(root: Path | None = None) -> Path:
+1048 |     return (store_root() if root is None else Path(root)) / CHAMPION_FILENAME
+     |
+
+UP045 [*] Use `X | None` for type annotations
+    --> dashboard/loop_status.py:1051:25
+     |
+1051 | def read_champion(root: Optional[Path] = None) -> dict:
+     |                         ^^^^^^^^^^^^^^
+1052 |     """``{artifact_present, body, reader_error}`` for the champion A/B bundle.
+     |
+help: Convert to `X | None`
+     |
+1050 |
+     - def read_champion(root: Optional[Path] = None) -> dict:
+1051 + def read_champion(root: Path | None = None) -> dict:
+1052 |     """``{artifact_present, body, reader_error}`` for the champion A/B bundle.
+     |
+
+PLR0124 Name compared with itself, consider replacing `value != value`
+    --> dashboard/loop_status.py:1123:33
+     |
+1121 |     except (TypeError, ValueError):
+1122 |         return CHAMPION_DEFAULT_STALE_AFTER_S
+1123 |     if isinstance(raw, bool) or value != value or value in (
+     |                                 ^^^^^
+1124 |             float("inf"), float("-inf")) or value <= 0:
+1125 |         return CHAMPION_DEFAULT_STALE_AFTER_S
+     |
+
+UP045 [*] Use `X | None` for type annotations
+    --> dashboard/loop_status.py:1130:29
+     |
+1129 | def champion_freshness(report: Mapping[str, Any], *,
+1130 |                        now: Optional[float] = None) -> dict:
+     |                             ^^^^^^^^^^^^^^^
+1131 |     """The same four-valued verdict as the loop's, over the champion bundle.
+     |
+help: Convert to `X | None`
+     |
+1129 | def champion_freshness(report: Mapping[str, Any], *,
+     -                        now: Optional[float] = None) -> dict:
+1130 +                        now: float | None = None) -> dict:
+1131 |     """The same four-valued verdict as the loop's, over the champion bundle.
+     |
+
+UP045 [*] Use `X | None` for type annotations
+    --> dashboard/loop_status.py:1180:60
+     |
+1180 | def _read_champion_capability_record(path: Path, champion: Optional[Mapping[str, Any]], *,
+     |                                                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+1181 |                                      schema: str = CHAMPION_SCHEMA) -> Optional[dict]:
+1182 |     """Read bounded attributed evidence; lineage never substitutes for a build check."""
+     |
+help: Convert to `X | None`
+     |
+1179 |
+     - def _read_champion_capability_record(path: Path, champion: Optional[Mapping[str, Any]], *,
+1180 + def _read_champion_capability_record(path: Path, champion: Mapping[str, Any] | None, *,
+1181 |                                      schema: str = CHAMPION_SCHEMA) -> Optional[dict]:
+     |
+
+UP045 [*] Use `X | None` for type annotations
+    --> dashboard/loop_status.py:1181:72
+     |
+1180 | def _read_champion_capability_record(path: Path, champion: Optional[Mapping[str, Any]], *,
+1181 |                                      schema: str = CHAMPION_SCHEMA) -> Optional[dict]:
+     |                                                                        ^^^^^^^^^^^^^^
+1182 |     """Read bounded attributed evidence; lineage never substitutes for a build check."""
+1183 |     try:
+     |
+help: Convert to `X | None`
+     |
+1180 | def _read_champion_capability_record(path: Path, champion: Optional[Mapping[str, Any]], *,
+     -                                      schema: str = CHAMPION_SCHEMA) -> Optional[dict]:
+1181 +                                      schema: str = CHAMPION_SCHEMA) -> dict | None:
+1182 |     """Read bounded attributed evidence; lineage never substitutes for a build check."""
+     |
+
+UP045 [*] Use `X | None` for type annotations
+    --> dashboard/loop_status.py:1244:45
+     |
+1244 | def _historical_champion_capabilities(root: Optional[Path],
+     |                                             ^^^^^^^^^^^^^^
+1245 |                                      champion: Optional[Mapping[str, Any]]) -> Optional[dict]:
+1246 |     path = (store_root() if root is None else Path(root)) / (CHAMPION_FILENAME + ".pre-reconcile")
+     |
+help: Convert to `X | None`
+     |
+1243 |
+     - def _historical_champion_capabilities(root: Optional[Path],
+1244 + def _historical_champion_capabilities(root: Path | None,
+1245 |                                      champion: Optional[Mapping[str, Any]]) -> Optional[dict]:
+     |
+
+UP045 [*] Use `X | None` for type annotations
+    --> dashboard/loop_status.py:1245:48
+     |
+1244 | def _historical_champion_capabilities(root: Optional[Path],
+1245 |                                      champion: Optional[Mapping[str, Any]]) -> Optional[dict]:
+     |                                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+1246 |     path = (store_root() if root is None else Path(root)) / (CHAMPION_FILENAME + ".pre-reconcile")
+1247 |     return _read_champion_capability_record(path, champion)
+     |
+help: Convert to `X | None`
+     |
+1244 | def _historical_champion_capabilities(root: Optional[Path],
+     -                                      champion: Optional[Mapping[str, Any]]) -> Optional[dict]:
+1245 +                                      champion: Mapping[str, Any] | None) -> Optional[dict]:
+1246 |     path = (store_root() if root is None else Path(root)) / (CHAMPION_FILENAME + ".pre-reconcile")
+     |
+
+UP045 [*] Use `X | None` for type annotations
+    --> dashboard/loop_status.py:1245:80
+     |
+1244 | def _historical_champion_capabilities(root: Optional[Path],
+1245 |                                      champion: Optional[Mapping[str, Any]]) -> Optional[dict]:
+     |                                                                                ^^^^^^^^^^^^^^
+1246 |     path = (store_root() if root is None else Path(root)) / (CHAMPION_FILENAME + ".pre-reconcile")
+1247 |     return _read_champion_capability_record(path, champion)
+     |
+help: Convert to `X | None`
+     |
+1244 | def _historical_champion_capabilities(root: Optional[Path],
+     -                                      champion: Optional[Mapping[str, Any]]) -> Optional[dict]:
+1245 +                                      champion: Optional[Mapping[str, Any]]) -> dict | None:
+1246 |     path = (store_root() if root is None else Path(root)) / (CHAMPION_FILENAME + ".pre-reconcile")
+     |
+
+UP045 [*] Use `X | None` for type annotations
+    --> dashboard/loop_status.py:1250:34
+     |
+1250 | def _champion_capabilities(body: Optional[Mapping[str, Any]], *,
+     |                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+1251 |                            root: Optional[Path] = None,
+1252 |                            champion: Optional[Mapping[str, Any]] = None) -> dict:
+     |
+help: Convert to `X | None`
+     |
+1249 |
+     - def _champion_capabilities(body: Optional[Mapping[str, Any]], *,
+1250 + def _champion_capabilities(body: Mapping[str, Any] | None, *,
+1251 |                            root: Optional[Path] = None,
+     |
+
+UP045 [*] Use `X | None` for type annotations
+    --> dashboard/loop_status.py:1251:34
+     |
+1250 | def _champion_capabilities(body: Optional[Mapping[str, Any]], *,
+1251 |                            root: Optional[Path] = None,
+     |                                  ^^^^^^^^^^^^^^
+1252 |                            champion: Optional[Mapping[str, Any]] = None) -> dict:
+1253 |     """Merge independently attributed capabilities without modifying the numeric A/B."""
+     |
+help: Convert to `X | None`
+     |
+1250 | def _champion_capabilities(body: Optional[Mapping[str, Any]], *,
+     -                            root: Optional[Path] = None,
+1251 +                            root: Path | None = None,
+1252 |                            champion: Optional[Mapping[str, Any]] = None) -> dict:
+     |
+
+UP045 [*] Use `X | None` for type annotations
+    --> dashboard/loop_status.py:1252:38
+     |
+1250 | def _champion_capabilities(body: Optional[Mapping[str, Any]], *,
+1251 |                            root: Optional[Path] = None,
+1252 |                            champion: Optional[Mapping[str, Any]] = None) -> dict:
+     |                                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+1253 |     """Merge independently attributed capabilities without modifying the numeric A/B."""
+1254 |     existing = _bundle_capabilities(body, root=root, champion=champion)
+     |
+help: Convert to `X | None`
+     |
+1251 |                            root: Optional[Path] = None,
+     -                            champion: Optional[Mapping[str, Any]] = None) -> dict:
+1252 +                            champion: Mapping[str, Any] | None = None) -> dict:
+1253 |     """Merge independently attributed capabilities without modifying the numeric A/B."""
+     |
+
+UP045 [*] Use `X | None` for type annotations
+    --> dashboard/loop_status.py:1272:32
+     |
+1272 | def _bundle_capabilities(body: Optional[Mapping[str, Any]], *,
+     |                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+1273 |                            root: Optional[Path] = None,
+1274 |                            champion: Optional[Mapping[str, Any]] = None) -> dict:
+     |
+help: Convert to `X | None`
+     |
+1271 |
+     - def _bundle_capabilities(body: Optional[Mapping[str, Any]], *,
+1272 + def _bundle_capabilities(body: Mapping[str, Any] | None, *,
+1273 |                            root: Optional[Path] = None,
+     |
+
+UP045 [*] Use `X | None` for type annotations
+    --> dashboard/loop_status.py:1273:34
+     |
+1272 | def _bundle_capabilities(body: Optional[Mapping[str, Any]], *,
+1273 |                            root: Optional[Path] = None,
+     |                                  ^^^^^^^^^^^^^^
+1274 |                            champion: Optional[Mapping[str, Any]] = None) -> dict:
+1275 |     """The capability list, or an honest "nobody has said" with the reason.
+     |
+help: Convert to `X | None`
+     |
+1272 | def _bundle_capabilities(body: Optional[Mapping[str, Any]], *,
+     -                            root: Optional[Path] = None,
+1273 +                            root: Path | None = None,
+1274 |                            champion: Optional[Mapping[str, Any]] = None) -> dict:
+     |
+
+UP045 [*] Use `X | None` for type annotations
+    --> dashboard/loop_status.py:1274:38
+     |
+1272 | def _bundle_capabilities(body: Optional[Mapping[str, Any]], *,
+1273 |                            root: Optional[Path] = None,
+1274 |                            champion: Optional[Mapping[str, Any]] = None) -> dict:
+     |                                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+1275 |     """The capability list, or an honest "nobody has said" with the reason.
+     |
+help: Convert to `X | None`
+     |
+1273 |                            root: Optional[Path] = None,
+     -                            champion: Optional[Mapping[str, Any]] = None) -> dict:
+1274 +                            champion: Mapping[str, Any] | None = None) -> dict:
+1275 |     """The capability list, or an honest "nobody has said" with the reason.
+     |
+
+UP045 [*] Use `X | None` for type annotations
+    --> dashboard/loop_status.py:1365:29
+     |
+1365 | def champion_snapshot(root: Optional[Path] = None, *,
+     |                             ^^^^^^^^^^^^^^
+1366 |                       now: Optional[float] = None,
+1367 |                       champion_head: Optional[str] = None,
+     |
+help: Convert to `X | None`
+     |
+1364 |
+     - def champion_snapshot(root: Optional[Path] = None, *,
+1365 + def champion_snapshot(root: Path | None = None, *,
+1366 |                       now: Optional[float] = None,
+     |
+
+UP045 [*] Use `X | None` for type annotations
+    --> dashboard/loop_status.py:1366:28
+     |
+1365 | def champion_snapshot(root: Optional[Path] = None, *,
+1366 |                       now: Optional[float] = None,
+     |                            ^^^^^^^^^^^^^^^
+1367 |                       champion_head: Optional[str] = None,
+1368 |                       production: Optional[Mapping[str, Any]] = None,
+     |
+help: Convert to `X | None`
+     |
+1365 | def champion_snapshot(root: Optional[Path] = None, *,
+     -                       now: Optional[float] = None,
+1366 +                       now: float | None = None,
+1367 |                       champion_head: Optional[str] = None,
+     |
+
+UP045 [*] Use `X | None` for type annotations
+    --> dashboard/loop_status.py:1367:38
+     |
+1365 | def champion_snapshot(root: Optional[Path] = None, *,
+1366 |                       now: Optional[float] = None,
+1367 |                       champion_head: Optional[str] = None,
+     |                                      ^^^^^^^^^^^^^
+1368 |                       production: Optional[Mapping[str, Any]] = None,
+1369 |                       champion: Optional[Mapping[str, Any]] = None) -> dict:
+     |
+help: Convert to `X | None`
+     |
+1366 |                       now: Optional[float] = None,
+     -                       champion_head: Optional[str] = None,
+1367 +                       champion_head: str | None = None,
+1368 |                       production: Optional[Mapping[str, Any]] = None,
+     |
+
+UP045 [*] Use `X | None` for type annotations
+    --> dashboard/loop_status.py:1368:35
+     |
+1366 |                       now: Optional[float] = None,
+1367 |                       champion_head: Optional[str] = None,
+1368 |                       production: Optional[Mapping[str, Any]] = None,
+     |                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+1369 |                       champion: Optional[Mapping[str, Any]] = None) -> dict:
+1370 |     """The wire block for the champion headline.
+     |
+help: Convert to `X | None`
+     |
+1367 |                       champion_head: Optional[str] = None,
+     -                       production: Optional[Mapping[str, Any]] = None,
+1368 +                       production: Mapping[str, Any] | None = None,
+1369 |                       champion: Optional[Mapping[str, Any]] = None) -> dict:
+     |
+
+UP045 [*] Use `X | None` for type annotations
+    --> dashboard/loop_status.py:1369:33
+     |
+1367 |                       champion_head: Optional[str] = None,
+1368 |                       production: Optional[Mapping[str, Any]] = None,
+1369 |                       champion: Optional[Mapping[str, Any]] = None) -> dict:
+     |                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+1370 |     """The wire block for the champion headline.
+     |
+help: Convert to `X | None`
+     |
+1368 |                       production: Optional[Mapping[str, Any]] = None,
+     -                       champion: Optional[Mapping[str, Any]] = None) -> dict:
+1369 +                       champion: Mapping[str, Any] | None = None) -> dict:
+1370 |     """The wire block for the champion headline.
+     |
+
+PLR0124 Name compared with itself, consider replacing `raw == raw`
+    --> dashboard/loop_status.py:1398:21
+     |
+1396 |         raw = body.get("effect_fraction")
+1397 |         if isinstance(raw, (int, float)) and not isinstance(raw, bool) \
+1398 |                 and raw == raw and raw not in (float("inf"), float("-inf")):
+     |                     ^^^
+1399 |             effect = float(raw)
+     |
+
+UP045 [*] Use `X | None` for type annotations
+    --> dashboard/loop_status.py:1677:32
+     |
+1677 | def _kernel_base(name: Any) -> Optional[str]:
+     |                                ^^^^^^^^^^^^^
+1678 |     """Normalize a profiled signature OR a target symbol to a base kernel name."""
+1679 |     text = str(name or "").strip()
+     |
+help: Convert to `X | None`
+     |
+1676 |
+     - def _kernel_base(name: Any) -> Optional[str]:
+1677 + def _kernel_base(name: Any) -> str | None:
+1678 |     """Normalize a profiled signature OR a target symbol to a base kernel name."""
+     |
+
+FURB188 [*] Prefer `str.removeprefix()` over conditionally replacing with slice.
+    --> dashboard/loop_status.py:1682:5
+     |
+1680 |       if not text:
+1681 |           return None
+1682 | /     if text.startswith("void "):
+1683 | |         text = text[5:]
+     | |_______________________^
+1684 |       cut = len(text)
+1685 |       for ch in "<(":
+     |
+help: Use removeprefix instead of assignment conditional upon startswith.
+     |
+1681 |         return None
+     -     if text.startswith("void "):
+     -         text = text[5:]
+1682 +     text = text.removeprefix("void ")
+1683 |     cut = len(text)
+     |
+
+UP045 [*] Use `X | None` for type annotations
+    --> dashboard/loop_status.py:1695:31
+     |
+1695 | def _bases_match(symbol_base: Optional[str], signature_base: Optional[str]
+     |                               ^^^^^^^^^^^^^
+1696 |                  ) -> bool:
+1697 |     if not symbol_base or not signature_base:
+     |
+help: Convert to `X | None`
+     |
+1694 |
+     - def _bases_match(symbol_base: Optional[str], signature_base: Optional[str]
+1695 + def _bases_match(symbol_base: str | None, signature_base: Optional[str]
+1696 |                  ) -> bool:
+     |
+
+UP045 [*] Use `X | None` for type annotations
+    --> dashboard/loop_status.py:1695:62
+     |
+1695 | def _bases_match(symbol_base: Optional[str], signature_base: Optional[str]
+     |                                                              ^^^^^^^^^^^^^
+1696 |                  ) -> bool:
+1697 |     if not symbol_base or not signature_base:
+     |
+help: Convert to `X | None`
+     |
+1694 |
+     - def _bases_match(symbol_base: Optional[str], signature_base: Optional[str]
+1695 + def _bases_match(symbol_base: Optional[str], signature_base: str | None
+1696 |                  ) -> bool:
+     |
+
+SIM103 Return the condition directly
+    --> dashboard/loop_status.py:1704:5
+     |
+1702 |               and signature_base in symbol_base:
+1703 |           return True
+1704 | /     if len(symbol_base) >= _KERNEL_BASE_MIN_MATCH \
+1705 | |             and symbol_base in signature_base:
+1706 | |         return True
+1707 | |     return False
+     | |________________^
+help: Inline condition
+
+PLR0124 Name compared with itself, consider replacing `share == share`
+    --> dashboard/loop_status.py:1729:49
+     |
+1727 |         share = row.get("share_of_device_time")
+1728 |         share = float(share) if isinstance(share, (int, float)) \
+1729 |             and not isinstance(share, bool) and share == share else 0.0
+     |                                                 ^^^^^
+1730 |         calls = row.get("calls")
+1731 |         calls = int(calls) if isinstance(calls, (int, float)) \
+     |
+
+UP045 [*] Use `X | None` for type annotations
+    --> dashboard/loop_status.py:1752:35
+     |
+1752 | def _clip(text: Any, cap: int) -> Optional[str]:
+     |                                   ^^^^^^^^^^^^^
+1753 |     if text is None:
+1754 |         return None
+     |
+help: Convert to `X | None`
+     |
+1751 |
+     - def _clip(text: Any, cap: int) -> Optional[str]:
+1752 + def _clip(text: Any, cap: int) -> str | None:
+1753 |     if text is None:
+     |
+
+UP045 [*] Use `X | None` for type annotations
+    --> dashboard/loop_status.py:1759:51
+     |
+1759 | def _mechanism_entries(rows: list, current_epoch: Optional[str]) -> tuple:
+     |                                                   ^^^^^^^^^^^^^
+1760 |     """Fold the store's rows (newest first) into per-mechanism ledger entries.
+     |
+help: Convert to `X | None`
+     |
+1758 |
+     - def _mechanism_entries(rows: list, current_epoch: Optional[str]) -> tuple:
+1759 + def _mechanism_entries(rows: list, current_epoch: str | None) -> tuple:
+1760 |     """Fold the store's rows (newest first) into per-mechanism ledger entries.
+     |
+
+PLR0124 Name compared with itself, consider replacing `effect == effect`
+    --> dashboard/loop_status.py:1812:54
+     |
+1810 |         effect = row.get("effect_fraction")
+1811 |         if status == "kept" and isinstance(effect, (int, float)) \
+1812 |                 and not isinstance(effect, bool) and effect == effect:
+     |                                                      ^^^^^^
+1813 |             best = entry["best_effect"]
+1814 |             if best is None or float(effect) > best["fraction"]:
+     |
+
+UP045 [*] Use `X | None` for type annotations
+    --> dashboard/loop_status.py:1824:27
+     |
+1824 | def knowledge_inbox(root: Optional[Path] = None) -> dict:
+     |                           ^^^^^^^^^^^^^^
+1825 |     """The store's queued seed hypotheses — read-only, posture not measurement."""
+1826 |     path = (store_root() if root is None else Path(root)) / KNOWLEDGE_INBOX_DIRNAME
+     |
+help: Convert to `X | None`
+     |
+1823 |
+     - def knowledge_inbox(root: Optional[Path] = None) -> dict:
+1824 + def knowledge_inbox(root: Path | None = None) -> dict:
+1825 |     """The store's queued seed hypotheses — read-only, posture not measurement."""
+     |
+
+UP045 [*] Use `X | None` for type annotations
+    --> dashboard/loop_status.py:1856:47
+     |
+1856 | def knowledge_ledger(rows: list, status_body: Optional[Mapping[str, Any]],
+     |                                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+1857 |                      root: Optional[Path] = None) -> dict:
+1858 |     """The hotspot-first ledger: the profile as the planner's agenda.
+     |
+help: Convert to `X | None`
+     |
+1855 |
+     - def knowledge_ledger(rows: list, status_body: Optional[Mapping[str, Any]],
+1856 + def knowledge_ledger(rows: list, status_body: Mapping[str, Any] | None,
+1857 |                      root: Optional[Path] = None) -> dict:
+     |
+
+UP045 [*] Use `X | None` for type annotations
+    --> dashboard/loop_status.py:1857:28
+     |
+1856 | def knowledge_ledger(rows: list, status_body: Optional[Mapping[str, Any]],
+1857 |                      root: Optional[Path] = None) -> dict:
+     |                            ^^^^^^^^^^^^^^
+1858 |     """The hotspot-first ledger: the profile as the planner's agenda.
+     |
+help: Convert to `X | None`
+     |
+1856 | def knowledge_ledger(rows: list, status_body: Optional[Mapping[str, Any]],
+     -                      root: Optional[Path] = None) -> dict:
+1857 +                      root: Path | None = None) -> dict:
+1858 |     """The hotspot-first ledger: the profile as the planner's agenda.
+     |
+
+UP045 [*] Use `X | None` for type annotations
+    --> dashboard/loop_status.py:1994:26
+     |
+1994 | def knowledge_path(root: Optional[Path] = None) -> Path:
+     |                          ^^^^^^^^^^^^^^
+1995 |     return (store_root() if root is None else Path(root)) / KNOWLEDGE_DB_FILENAME
+     |
+help: Convert to `X | None`
+     |
+1993 |
+     - def knowledge_path(root: Optional[Path] = None) -> Path:
+1994 + def knowledge_path(root: Path | None = None) -> Path:
+1995 |     return (store_root() if root is None else Path(root)) / KNOWLEDGE_DB_FILENAME
+     |
+
+UP045 [*] Use `X | None` for type annotations
+    --> dashboard/loop_status.py:1998:26
+     |
+1998 | def read_knowledge(root: Optional[Path] = None) -> dict:
+     |                          ^^^^^^^^^^^^^^
+1999 |     """Folds over the memory store — ``{artifact_present, body, reader_error}``.
+     |
+help: Convert to `X | None`
+     |
+1997 |
+     - def read_knowledge(root: Optional[Path] = None) -> dict:
+1998 + def read_knowledge(root: Path | None = None) -> dict:
+1999 |     """Folds over the memory store — ``{artifact_present, body, reader_error}``.
+     |
+
+UP045 [*] Use `X | None` for type annotations
+    --> dashboard/loop_status.py:2138:30
+     |
+2137 | def knowledge_freshness(report: Mapping[str, Any], *,
+2138 |                         now: Optional[float] = None) -> dict:
+     |                              ^^^^^^^^^^^^^^^
+2139 |     """Four-valued verdict over the store, dated by the db file's mtime.
+     |
+help: Convert to `X | None`
+     |
+2137 | def knowledge_freshness(report: Mapping[str, Any], *,
+     -                         now: Optional[float] = None) -> dict:
+2138 +                         now: float | None = None) -> dict:
+2139 |     """Four-valued verdict over the store, dated by the db file's mtime.
+     |
+
+UP045 [*] Use `X | None` for type annotations
+    --> dashboard/loop_status.py:2319:36
+     |
+2318 | def _retained_keep_history(root: Path, headline: Mapping[str, Any],
+2319 |                            active: Optional[Mapping[str, Any]]) -> dict:
+     |                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2320 |     """Merge exact global keeps with the active campaign's retained bundle."""
+2321 |     commit_models = {}
+     |
+help: Convert to `X | None`
+     |
+2318 | def _retained_keep_history(root: Path, headline: Mapping[str, Any],
+     -                            active: Optional[Mapping[str, Any]]) -> dict:
+2319 +                            active: Mapping[str, Any] | None) -> dict:
+2320 |     """Merge exact global keeps with the active campaign's retained bundle."""
+     |
+
+UP045 [*] Use `X | None` for type annotations
+    --> dashboard/loop_status.py:2330:30
+     |
+2329 |     def event(row: Mapping[str, Any], source_id: str,
+2330 |               default_model: Optional[str] = None) -> dict:
+     |                              ^^^^^^^^^^^^^
+2331 |         payload = {}
+2332 |         if int(row.get("payload_bytes") or 0) <= TRAJECTORY_RAW_MAX_BYTES:
+     |
+help: Convert to `X | None`
+     |
+2329 |     def event(row: Mapping[str, Any], source_id: str,
+     -               default_model: Optional[str] = None) -> dict:
+2330 +               default_model: str | None = None) -> dict:
+2331 |         payload = {}
+     |
+
+UP045 [*] Use `X | None` for type annotations
+    --> dashboard/loop_status.py:2600:42
+     |
+2599 | def _live_production_history(root: Path, rows: list[Mapping[str, Any]],
+2600 |                              production: Optional[Mapping[str, Any]] = None) -> dict:
+     |                                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2601 |     """Join producer receipts into direct, never-composed production curves."""
+2602 |     prod = dict(production) if production is not None else resolve_production()
+     |
+help: Convert to `X | None`
+     |
+2599 | def _live_production_history(root: Path, rows: list[Mapping[str, Any]],
+     -                              production: Optional[Mapping[str, Any]] = None) -> dict:
+2600 +                              production: Mapping[str, Any] | None = None) -> dict:
+2601 |     """Join producer receipts into direct, never-composed production curves."""
+     |
+
+UP045 [*] Use `X | None` for type annotations
+    --> dashboard/loop_status.py:2708:37
+     |
+2707 | def _production_history(root: Path, rows: list[Mapping[str, Any]],
+2708 |                         production: Optional[Mapping[str, Any]] = None) -> dict:
+     |                                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2709 |     """Join normalized history with current producer receipts, without composition."""
+2710 |     live = _live_production_history(root, rows, production)
+     |
+help: Convert to `X | None`
+     |
+2707 | def _production_history(root: Path, rows: list[Mapping[str, Any]],
+     -                         production: Optional[Mapping[str, Any]] = None) -> dict:
+2708 +                         production: Mapping[str, Any] | None = None) -> dict:
+2709 |     """Join normalized history with current producer receipts, without composition."""
+     |
+
+TRY004 Prefer `TypeError` exception for invalid type
+    --> dashboard/loop_status.py:2730:17
+     |
+2728 |         for point in points:
+2729 |             if not isinstance(point, dict):
+2730 |                 raise ValueError("historical point is not an object")
+     |                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2731 |             baseline = point.get("baseline")
+2732 |             source = point.get("evidence")
+     |
+
+UP045 [*] Use `X | None` for type annotations
+    --> dashboard/loop_status.py:2819:40
+     |
+2818 | def improvement_trajectory(root: Path, rows: list[Mapping[str, Any]],
+2819 |                            production: Optional[Mapping[str, Any]] = None) -> dict:
+     |                                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2820 |     """Headline production history plus secondary campaign-local drill-down."""
+2821 |     root = Path(root)
+     |
+help: Convert to `X | None`
+     |
+2818 | def improvement_trajectory(root: Path, rows: list[Mapping[str, Any]],
+     -                            production: Optional[Mapping[str, Any]] = None) -> dict:
+2819 +                            production: Mapping[str, Any] | None = None) -> dict:
+2820 |     """Headline production history plus secondary campaign-local drill-down."""
+     |
+
+UP045 [*] Use `X | None` for type annotations
+    --> dashboard/loop_status.py:3004:30
+     |
+3004 | def knowledge_snapshot(root: Optional[Path] = None, *,
+     |                              ^^^^^^^^^^^^^^
+3005 |                        now: Optional[float] = None,
+3006 |                        status_body: Any = "unread") -> dict:
+     |
+help: Convert to `X | None`
+     |
+3003 |
+     - def knowledge_snapshot(root: Optional[Path] = None, *,
+3004 + def knowledge_snapshot(root: Path | None = None, *,
+3005 |                        now: Optional[float] = None,
+     |
+
+UP045 [*] Use `X | None` for type annotations
+    --> dashboard/loop_status.py:3005:29
+     |
+3004 | def knowledge_snapshot(root: Optional[Path] = None, *,
+3005 |                        now: Optional[float] = None,
+     |                             ^^^^^^^^^^^^^^^
+3006 |                        status_body: Any = "unread") -> dict:
+3007 |     """The wire block for the accumulated-knowledge card.
+     |
+help: Convert to `X | None`
+     |
+3004 | def knowledge_snapshot(root: Optional[Path] = None, *,
+     -                        now: Optional[float] = None,
+3005 +                        now: float | None = None,
+3006 |                        status_body: Any = "unread") -> dict:
+     |
+
+UP045 [*] Use `X | None` for type annotations
+    --> dashboard/loop_status.py:3049:19
+     |
+3049 | def payload(root: Optional[Path] = None, *, now: Optional[float] = None) -> dict:
+     |                   ^^^^^^^^^^^^^^
+3050 |     """The wire payload for ``/api/loop``, minus the panel envelope.
+     |
+help: Convert to `X | None`
+     |
+3048 |
+     - def payload(root: Optional[Path] = None, *, now: Optional[float] = None) -> dict:
+3049 + def payload(root: Path | None = None, *, now: Optional[float] = None) -> dict:
+3050 |     """The wire payload for ``/api/loop``, minus the panel envelope.
+     |
+
+UP045 [*] Use `X | None` for type annotations
+    --> dashboard/loop_status.py:3049:50
+     |
+3049 | def payload(root: Optional[Path] = None, *, now: Optional[float] = None) -> dict:
+     |                                                  ^^^^^^^^^^^^^^^
+3050 |     """The wire payload for ``/api/loop``, minus the panel envelope.
+     |
+help: Convert to `X | None`
+     |
+3048 |
+     - def payload(root: Optional[Path] = None, *, now: Optional[float] = None) -> dict:
+3049 + def payload(root: Optional[Path] = None, *, now: float | None = None) -> dict:
+3050 |     """The wire payload for ``/api/loop``, minus the panel envelope.
+     |
+
+B023 Function definition does not bind loop variable `argv`
+    --> dashboard/loop_status.py:3145:82
+     |
+3143 |                 raise ValueError("retained continuation input identity differs")
+3144 |             def option(name):
+3145 |                 values = [arg[len(name) + 1:] if arg.startswith(name + "=") else argv[i + 1]
+     |                                                                                  ^^^^
+3146 |                           for i, arg in enumerate(argv) if arg == name or arg.startswith(name + "=")]
+3147 |                 return values[-1] if values else None
+     |
+
+B023 Function definition does not bind loop variable `argv`
+    --> dashboard/loop_status.py:3146:51
+     |
+3144 |             def option(name):
+3145 |                 values = [arg[len(name) + 1:] if arg.startswith(name + "=") else argv[i + 1]
+3146 |                           for i, arg in enumerate(argv) if arg == name or arg.startswith(name + "=")]
+     |                                                   ^^^^
+3147 |                 return values[-1] if values else None
+3148 |             selected = row["selected_target"]
+     |
+
+UP045 [*] Use `X | None` for type annotations
+    --> dashboard/loop_status.py:3407:20
+     |
+3407 | def snapshot(root: Optional[Path] = None, *, now: Optional[float] = None
+     |                    ^^^^^^^^^^^^^^
+3408 |              ) -> tuple:
+3409 |     """``(payload, observation)`` from ONE read of the file.
+     |
+help: Convert to `X | None`
+     |
+3406 |
+     - def snapshot(root: Optional[Path] = None, *, now: Optional[float] = None
+3407 + def snapshot(root: Path | None = None, *, now: Optional[float] = None
+3408 |              ) -> tuple:
+     |
+
+UP045 [*] Use `X | None` for type annotations
+    --> dashboard/loop_status.py:3407:51
+     |
+3407 | def snapshot(root: Optional[Path] = None, *, now: Optional[float] = None
+     |                                                   ^^^^^^^^^^^^^^^
+3408 |              ) -> tuple:
+3409 |     """``(payload, observation)`` from ONE read of the file.
+     |
+help: Convert to `X | None`
+     |
+3406 |
+     - def snapshot(root: Optional[Path] = None, *, now: Optional[float] = None
+3407 + def snapshot(root: Optional[Path] = None, *, now: float | None = None
+3408 |              ) -> tuple:
+     |
+
+RUF022 [*] `__all__` is not sorted
+    --> dashboard/loop_status.py:3486:11
+     |
+3486 |   __all__ = ["ABSENCE_MEANS", "BUSY_KEYS", "CHAMPION_ABSENCE_MEANS",
+     |  ___________^
+3487 | |            "CHAMPION_CAPABILITIES_UNKNOWN",
+3488 | |            "CHAMPION_CAPABILITIES_WOULD_POPULATE",
+3489 | |            "CHAMPION_DEFAULT_STALE_AFTER_S", "CHAMPION_FILENAME",
+3490 | |            "CHAMPION_NOT_COMPOSABLE", "CHAMPION_SCHEMA",
+3491 | |            "DEFAULT_STALE_AFTER_S",
+3492 | |            "DEFAULT_STORE_ROOT", "DEFAULT_FROZEN_TREE", "FROZEN_TREE_ENV",
+3493 | |            "HELD_KEYS",
+3494 | |            "KNOWLEDGE_ABSENCE_MEANS", "KNOWLEDGE_AGENDA_GROUPS",
+3495 | |            "KNOWLEDGE_DB_FILENAME", "KNOWLEDGE_INBOX_DIRNAME",
+3496 | |            "KNOWLEDGE_MATCH_RULE",
+3497 | |            "KNOWLEDGE_PRIMARY_DISPOSITIONS", "KNOWLEDGE_RECENT_KEPT",
+3498 | |            "KNOWLEDGE_STALE_AFTER_S", "KNOWLEDGE_STATEMENT_CAP",
+3499 | |            "KNOWLEDGE_UNMAPPED_CAP",
+3500 | |            "RELATIONS", "REL_ANCESTOR", "REL_DIVERGENT", "REL_TIP",
+3501 | |            "REL_UNRESOLVABLE",
+3502 | |            "MEASURED_DISPOSITIONS", "MIN_STALE_AFTER_S",
+3503 | |            "NOTICES", "NOTICE_ABSENT", "NOTICE_FAILED", "NOTICE_FINISHED",
+3504 | |            "NOTICE_MALFORMED", "NOTICE_NONE", "NOTICE_STALE",
+3505 | |            "PRODUCTION_BRANCH_PREFIX", "PRODUCTION_UNRESOLVED_MEANS",
+3506 | |            "RUN_COMPLETE", "RUN_FAILED", "RUN_RUNNING", "RUN_STARTING",
+3507 | |            "RUN_STATES", "STATES",
+3508 | |            "STATE_ABSENT", "STATE_FRESH", "STATE_MALFORMED", "STATE_STALE",
+3509 | |            "STATUS_FILENAME", "STATUS_SCHEMA", "STORE_ROOT_ENV",
+3510 | |            "champion_freshness", "champion_path", "champion_relationship",
+3511 | |            "champion_snapshot",
+3512 | |            "campaign_observation",
+3513 | |            "freshness", "frozen_tree", "knowledge_freshness", "knowledge_inbox",
+3514 | |            "knowledge_ledger", "knowledge_path",
+3515 | |            "knowledge_snapshot", "notice",
+3516 | |            "observation", "payload", "read", "read_champion", "read_knowledge",
+3517 | |            "resolve_champion", "resolve_production", "snapshot",
+3518 | |            "status_path", "store_root", "summarize"]
+     | |____________________________________________________^
+help: Apply an isort-style sorting to `__all__`
+     |
+3485 |
+     - __all__ = ["ABSENCE_MEANS", "BUSY_KEYS", "CHAMPION_ABSENCE_MEANS",
+     -            "CHAMPION_CAPABILITIES_UNKNOWN",
+     -            "CHAMPION_CAPABILITIES_WOULD_POPULATE",
+     -            "CHAMPION_DEFAULT_STALE_AFTER_S", "CHAMPION_FILENAME",
+     -            "CHAMPION_NOT_COMPOSABLE", "CHAMPION_SCHEMA",
+     -            "DEFAULT_STALE_AFTER_S",
+     -            "DEFAULT_STORE_ROOT", "DEFAULT_FROZEN_TREE", "FROZEN_TREE_ENV",
+     -            "HELD_KEYS",
+     -            "KNOWLEDGE_ABSENCE_MEANS", "KNOWLEDGE_AGENDA_GROUPS",
+     -            "KNOWLEDGE_DB_FILENAME", "KNOWLEDGE_INBOX_DIRNAME",
+     -            "KNOWLEDGE_MATCH_RULE",
+     -            "KNOWLEDGE_PRIMARY_DISPOSITIONS", "KNOWLEDGE_RECENT_KEPT",
+     -            "KNOWLEDGE_STALE_AFTER_S", "KNOWLEDGE_STATEMENT_CAP",
+     -            "KNOWLEDGE_UNMAPPED_CAP",
+     -            "RELATIONS", "REL_ANCESTOR", "REL_DIVERGENT", "REL_TIP",
+     -            "REL_UNRESOLVABLE",
+     -            "MEASURED_DISPOSITIONS", "MIN_STALE_AFTER_S",
+     -            "NOTICES", "NOTICE_ABSENT", "NOTICE_FAILED", "NOTICE_FINISHED",
+     -            "NOTICE_MALFORMED", "NOTICE_NONE", "NOTICE_STALE",
+     -            "PRODUCTION_BRANCH_PREFIX", "PRODUCTION_UNRESOLVED_MEANS",
+     -            "RUN_COMPLETE", "RUN_FAILED", "RUN_RUNNING", "RUN_STARTING",
+     -            "RUN_STATES", "STATES",
+     -            "STATE_ABSENT", "STATE_FRESH", "STATE_MALFORMED", "STATE_STALE",
+     -            "STATUS_FILENAME", "STATUS_SCHEMA", "STORE_ROOT_ENV",
+     -            "champion_freshness", "champion_path", "champion_relationship",
+     -            "champion_snapshot",
+     -            "campaign_observation",
+     -            "freshness", "frozen_tree", "knowledge_freshness", "knowledge_inbox",
+     -            "knowledge_ledger", "knowledge_path",
+     -            "knowledge_snapshot", "notice",
+     -            "observation", "payload", "read", "read_champion", "read_knowledge",
+     -            "resolve_champion", "resolve_production", "snapshot",
+     -            "status_path", "store_root", "summarize"]
+3486 + __all__ = [
+3487 +     "ABSENCE_MEANS",
+3488 +     "BUSY_KEYS",
+3489 +     "CHAMPION_ABSENCE_MEANS",
+3490 +     "CHAMPION_CAPABILITIES_UNKNOWN",
+3491 +     "CHAMPION_CAPABILITIES_WOULD_POPULATE",
+3492 +     "CHAMPION_DEFAULT_STALE_AFTER_S",
+3493 +     "CHAMPION_FILENAME",
+3494 +     "CHAMPION_NOT_COMPOSABLE",
+3495 +     "CHAMPION_SCHEMA",
+3496 +     "DEFAULT_FROZEN_TREE",
+3497 +     "DEFAULT_STALE_AFTER_S",
+3498 +     "DEFAULT_STORE_ROOT",
+3499 +     "FROZEN_TREE_ENV",
+3500 +     "HELD_KEYS",
+3501 +     "KNOWLEDGE_ABSENCE_MEANS",
+3502 +     "KNOWLEDGE_AGENDA_GROUPS",
+3503 +     "KNOWLEDGE_DB_FILENAME",
+3504 +     "KNOWLEDGE_INBOX_DIRNAME",
+3505 +     "KNOWLEDGE_MATCH_RULE",
+3506 +     "KNOWLEDGE_PRIMARY_DISPOSITIONS",
+3507 +     "KNOWLEDGE_RECENT_KEPT",
+3508 +     "KNOWLEDGE_STALE_AFTER_S",
+3509 +     "KNOWLEDGE_STATEMENT_CAP",
+3510 +     "KNOWLEDGE_UNMAPPED_CAP",
+3511 +     "MEASURED_DISPOSITIONS",
+3512 +     "MIN_STALE_AFTER_S",
+3513 +     "NOTICES",
+3514 +     "NOTICE_ABSENT",
+3515 +     "NOTICE_FAILED",
+3516 +     "NOTICE_FINISHED",
+3517 +     "NOTICE_MALFORMED",
+3518 +     "NOTICE_NONE",
+3519 +     "NOTICE_STALE",
+3520 +     "PRODUCTION_BRANCH_PREFIX",
+3521 +     "PRODUCTION_UNRESOLVED_MEANS",
+3522 +     "RELATIONS",
+3523 +     "REL_ANCESTOR",
+3524 +     "REL_DIVERGENT",
+3525 +     "REL_TIP",
+3526 +     "REL_UNRESOLVABLE",
+3527 +     "RUN_COMPLETE",
+3528 +     "RUN_FAILED",
+3529 +     "RUN_RUNNING",
+3530 +     "RUN_STARTING",
+3531 +     "RUN_STATES",
+3532 +     "STATES",
+3533 +     "STATE_ABSENT",
+3534 +     "STATE_FRESH",
+3535 +     "STATE_MALFORMED",
+3536 +     "STATE_STALE",
+3537 +     "STATUS_FILENAME",
+3538 +     "STATUS_SCHEMA",
+3539 +     "STORE_ROOT_ENV",
+3540 +     "campaign_observation",
+3541 +     "champion_freshness",
+3542 +     "champion_path",
+3543 +     "champion_relationship",
+3544 +     "champion_snapshot",
+3545 +     "freshness",
+3546 +     "frozen_tree",
+3547 +     "knowledge_freshness",
+3548 +     "knowledge_inbox",
+3549 +     "knowledge_ledger",
+3550 +     "knowledge_path",
+3551 +     "knowledge_snapshot",
+3552 +     "notice",
+3553 +     "observation",
+3554 +     "payload",
+3555 +     "read",
+3556 +     "read_champion",
+3557 +     "read_knowledge",
+3558 +     "resolve_champion",
+3559 +     "resolve_production",
+3560 +     "snapshot",
+3561 +     "status_path",
+3562 +     "store_root",
+3563 +     "summarize",
+3564 + ]
+     |
+
+EXE001 Shebang is present but file is not executable
+ --> dashboard/server.py:1:1
+  |
+1 | #!/usr/bin/env python3
+  | ^^^^^^^^^^^^^^^^^^^^^^
+2 | """EPYC project dashboard hub — handoff progress board.
+  |
+
+UP037 [*] Remove quotes from type annotation
+   --> dashboard/server.py:697:38
+    |
+697 | def _panel_envelope(panel: str, obs: "panels.Observation", *,
+    |                                      ^^^^^^^^^^^^^^^^^^^^
+698 |                     now: float | None = None) -> dict:
+699 |     """Classify one panel's observation, updating the watchdog's memory first."""
+    |
+help: Remove quotes
+    |
+696 |
+    - def _panel_envelope(panel: str, obs: "panels.Observation", *,
+697 + def _panel_envelope(panel: str, obs: panels.Observation, *,
+698 |                     now: float | None = None) -> dict:
+    |
+
+DTZ005 `datetime.datetime.now()` called without a `tz` argument
+   --> dashboard/server.py:810:13
+    |
+808 |     on any git failure rather than 500ing the board.
+809 |     """
+810 |     today = datetime.now().date().isoformat()
+    |             ^^^^^^^^^^^^^^
+811 |     empty = {"window_days": days, "today": today, "per_day": [],
+812 |              "rollups": {f"{n}d": {"days": n, "since": today, "commits": 0,
+    |
+help: Pass a `datetime.timezone` object to the `tz` parameter
+
+TRY004 Prefer `TypeError` exception for invalid type
+    --> dashboard/server.py:3617:9
+     |
+3615 |         return None
+3616 |     if not isinstance(value, dict):
+3617 |         raise ValueError("result is not an object")
+     |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+3618 |     allowed = {"returncode", "stdout_sha256", "stderr_sha256", "decision",
+3619 |                "refusal_type", "refusal_reason_sha256"}
+     |
+
+RUF007 Prefer `itertools.pairwise()` over `zip()` when iterating over successive pairs
+     --> dashboard/server.py:10138:53
+      |
+10136 |     times = [_parse_semantic_timestamp(event.get("ts")) for event in successors]
+10137 |     if (any(value is None or value > now + 5.0 for value in times)
+10138 |             or any(right <= left for left, right in zip(times, times[1:]))):
+      |                                                     ^^^
+10139 |         return None
+10140 |     planner_operation = successors[0].get("operation_key")
+      |
+help: Replace `zip()` with `itertools.pairwise()`
+
+SIM114 [*] Combine `if` branches using logical `or` operator
+     --> dashboard/server.py:11603:5
+      |
+11601 |           or isinstance(latest_iteration, dict)
+11602 |           and isinstance(latest_iteration.get("replication_of"), str))
+11603 | /     if (iteration_decision and iteration_repetition == 2
+11604 | |             or pending_confirmation or inflight_confirmation
+11605 | |             or latest_is_replication):
+11606 | |         pipeline["replication_s1"]["state"] = "complete"
+11607 | |     elif iteration_decision and iteration_repetition == 1:
+11608 | |         pipeline["replication_s1"]["state"] = "complete"
+      | |________________________________________________________^
+11609 |       elif inflight_decision and permit_repetition == 1:
+11610 |           pipeline["replication_s1"]["state"] = (
+      |
+help: Combine `if` branches
+      |
+11604 |             or pending_confirmation or inflight_confirmation
+      -             or latest_is_replication):
+      -         pipeline["replication_s1"]["state"] = "complete"
+      -     elif iteration_decision and iteration_repetition == 1:
+11605 +             or latest_is_replication) or iteration_decision and iteration_repetition == 1:
+11606 |         pipeline["replication_s1"]["state"] = "complete"
+      |
+
+RUF059 Unpacked variable `launch_spec` is never used
+     --> dashboard/server.py:13102:9
+      |
+13100 |         if spec_result is None:
+13101 |             return None
+13102 |         launch_spec, spec_sha256 = spec_result
+      |         ^^^^^^^^^^^
+13103 |         session_name = "ak-" + spec_sha256[:24]
+13104 |         ledger = _supervisor_ledger(
+      |
+help: Prefix it with an underscore or any other dummy variable pattern
+
+RUF100 [*] Unused `noqa` directive (non-enabled: `PLC0415`)
+     --> dashboard/server.py:13878:22
+      |
+13876 |     path = _BUS_ROOT / "config.yaml"
+13877 |     try:
+13878 |         import yaml  # noqa: PLC0415 — optional dependency, deliberately local
+      |                      ^^^^^^^^^^^^^^^
+13879 |     except ImportError:
+13880 |         return {"_error": "PyYAML unavailable — bus config not parsed "
+      |
+help: Remove unused `noqa` directive
+      |
+13877 |     try:
+      -         import yaml  # noqa: PLC0415 — optional dependency, deliberately local
+13878 +         import yaml
+13879 |     except ImportError:
+      |
+
+BLE001 Do not catch blind exception: `Exception`
+     --> dashboard/server.py:13886:22
+      |
+13884 |     except FileNotFoundError:
+13885 |         return {"_error": f"bus config not found at {path}"}
+13886 |     except (OSError, Exception) as exc:  # yaml.YAMLError included
+      |                      ^^^^^^^^^
+13887 |         return {"_error": f"bus config unreadable: {exc}"}
+13888 |     return data if isinstance(data, dict) else {"_error": "bus config malformed (not a mapping)"}
+      |
+
+BLE001 Do not catch blind exception: `Exception`
+     --> dashboard/server.py:14411:12
+      |
+14409 |         return {"ok": False, "status_code": int(exc.code), "latency_ms": _ms(),
+14410 |                 "error": f"HTTP {exc.code}"}
+14411 |     except Exception as exc:  # URLError, socket.timeout, OSError, …
+      |            ^^^^^^^^^
+14412 |         return {"ok": False, "status_code": None, "latency_ms": _ms(),
+14413 |                 "error": f"{type(exc).__name__}: {exc}"}
+      |
+
+SIM114 [*] Combine `if` branches using logical `or` operator
+     --> dashboard/server.py:14794:9
+      |
+14792 |           if payload["freshness_state"] == loop_status.STATE_ABSENT:
+14793 |               _raise(panels.STATUS_ABSENT)
+14794 | /         elif payload["freshness_state"] == loop_status.STATE_MALFORMED:
+14795 | |             _raise(panels.STATUS_DEGRADED)
+14796 | |         elif (payload["freshness_state"] == loop_status.STATE_STALE
+14797 | |               and legacy_state != "complete"):
+14798 | |             _raise(panels.STATUS_DEGRADED)
+      | |__________________________________________^
+14799 |           if legacy_state == "failed":
+14800 |               _raise(panels.STATUS_DEGRADED)
+      |
+help: Combine `if` branches
+      |
+14793 |             _raise(panels.STATUS_ABSENT)
+      -         elif payload["freshness_state"] == loop_status.STATE_MALFORMED:
+      -             _raise(panels.STATUS_DEGRADED)
+      -         elif (payload["freshness_state"] == loop_status.STATE_STALE
+14794 +         elif payload["freshness_state"] == loop_status.STATE_MALFORMED or (payload["freshness_state"] == loop_status.STATE_STALE
+14795 |               and legacy_state != "complete"):
+      |
+
+UP012 [*] Unnecessary UTF-8 `encoding` argument to `encode`
+     --> dashboard/server.py:15172:16
+      |
+15170 |         response here.
+15171 |         """
+15172 |         body = (f"moved permanently to {location}\n").encode("utf-8")
+      |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+15173 |         self.send_response(301)
+15174 |         self.send_header("Location", location)
+      |
+help: Remove unnecessary `encoding` argument
+      |
+15171 |         """
+      -         body = (f"moved permanently to {location}\n").encode("utf-8")
+15172 +         body = (f"moved permanently to {location}\n").encode()
+15173 |         self.send_response(301)
+      |
+
+RUF100 [*] Unused `noqa` directive (non-enabled: `N802`)
+     --> dashboard/server.py:15191:32
+      |
+15189 |             self.wfile.write(body)
+15190 |
+15191 |     def do_GET(self) -> None:  # noqa: N802 (stdlib naming)
+      |                                ^^^^^^^^^^^^
+15192 |         parsed = urlparse(self.path)
+15193 |         route = parsed.path.rstrip("/") or "/"
+      |
+help: Remove unused `noqa` directive
+      |
+15190 |
+      -     def do_GET(self) -> None:  # noqa: N802 (stdlib naming)
+15191 +     def do_GET(self) -> None:
+15192 |         parsed = urlparse(self.path)
+      |
+
+BLE001 Do not catch blind exception: `Exception`
+     --> dashboard/server.py:15217:16
+      |
+15215 |         except BrokenPipeError:
+15216 |             pass  # client hung up mid-response; nothing to do
+15217 |         except Exception as exc:  # never let one bad request kill the thread
+      |                ^^^^^^^^^
+15218 |             try:
+15219 |                 self._send_json({"error": "internal", "detail": str(exc)}, status=500)
+      |
+
+EXE001 Shebang is present but file is not executable
+ --> scripts/benchmark/boundary_20260831_helper.py:1:1
+  |
+1 | #!/usr/bin/env python3
+  | ^^^^^^^^^^^^^^^^^^^^^^
+2 | """Helper for boundary_20260831.sh — the run-21→22 overnight boundary driver.
+  |
+
+I001 [*] Import block is un-sorted or un-formatted
+  --> scripts/benchmark/boundary_20260831_helper.py:19:1
+   |
+17 |                      are operator-gated; NOTHING in this file launches run 22.
+18 |   """
+19 | / from __future__ import annotations
+20 | |
+21 | | import argparse
+22 | | import json
+23 | | from pathlib import Path
+24 | | import subprocess
+25 | | import sys
+26 | | import time
+   | |___________^
+27 |
+28 |   HERE = Path(__file__).resolve().parent
+   |
+help: Organize imports
+   |
+22 | import json
+   - from pathlib import Path
+23 | import subprocess
+24 | import sys
+25 | import time
+26 + from pathlib import Path
+27 |
+   |
+
+PLW1510 `subprocess.run` without explicit `check` argument
+  --> scripts/benchmark/boundary_20260831_helper.py:32:12
+   |
+31 | def _git(tree: Path, *args: str) -> subprocess.CompletedProcess:
+32 |     return subprocess.run(["git", "-C", str(tree), *args],
+   |            ^^^^^^^^^^^^^^
+33 |                           capture_output=True, text=True, timeout=600)
+   |
+help: Add explicit `check=False`
+
+BLE001 Do not catch blind exception: `Exception`
+  --> scripts/benchmark/boundary_20260831_helper.py:49:12
+   |
+47 |         report = json.loads(Path(args.json_path).read_text(encoding="utf-8"))
+48 |         diverged = int(report["divergent_prompts"])
+49 |     except Exception:
+   |            ^^^^^^^^^
+50 |         print("UNREADABLE")
+51 |         return 0
+   |
+
+PLW1510 `subprocess.run` without explicit `check` argument
+   --> scripts/benchmark/boundary_20260831_helper.py:100:13
+    |
+ 98 |     # Rebuild on the build cores (96-183, per the loop's own serial-build policy);
+ 99 |     # no claim needed to compile (run 9's idle-while-claimed defect).
+100 |     build = subprocess.run(["taskset", "-c", "96-183", "cmake", "--build",
+    |             ^^^^^^^^^^^^^^
+101 |                             str(build_dir), "-j", str(args.build_jobs)],
+102 |                            capture_output=True, text=True)
+    |
+help: Add explicit `check=False`
+
+RUF100 [*] Unused `noqa` directive (non-enabled: `PLC0415`)
+   --> scripts/benchmark/boundary_20260831_helper.py:111:47
+    |
+109 |     # correctness via gates.op_correctness — the same oracle the loop trusts.
+110 |     sys.path.insert(0, str(HERE.parent / "kernel_rnd"))
+111 |     from autokernel.loop import claim, gates  # noqa: PLC0415
+    |                                               ^^^^^^^^^^^^^^^
+112 |     try:
+113 |         with claim.hold() as receipt:
+    |
+help: Remove unused `noqa` directive
+    |
+110 |     sys.path.insert(0, str(HERE.parent / "kernel_rnd"))
+    -     from autokernel.loop import claim, gates  # noqa: PLC0415
+111 +     from autokernel.loop import claim, gates
+112 |     try:
+    |
+
+BLE001 Do not catch blind exception: `Exception`
+   --> scripts/benchmark/boundary_20260831_helper.py:116:12
+    |
+114 |             print(f"claim     held on {receipt['device_id']}")
+115 |             verdict = gates.op_correctness(build_dir)
+116 |     except Exception as exc:  # claim refused, oracle crashed — either way: rollback
+    |            ^^^^^^^^^
+117 |         return rollback(f"oracle could not run: {exc}")
+118 |     if not verdict.passed:
+    |
+
+F541 [*] f-string without any placeholders
+   --> scripts/benchmark/boundary_20260831_helper.py:120:11
+    |
+118 |     if not verdict.passed:
+119 |         return rollback(f"MUL_MAT oracle failed: {verdict.reason}")
+120 |     print(f"oracle    MUL_MAT passed on merged build")
+    |           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+121 |     print(f"MERGED    {args.branch} @ {merged}")
+122 |     return 0
+    |
+help: Remove extraneous `f` prefix
+    |
+119 |         return rollback(f"MUL_MAT oracle failed: {verdict.reason}")
+    -     print(f"oracle    MUL_MAT passed on merged build")
+120 +     print("oracle    MUL_MAT passed on merged build")
+121 |     print(f"MERGED    {args.branch} @ {merged}")
+    |
+
+BLE001 Do not catch blind exception: `Exception`
+   --> scripts/benchmark/boundary_20260831_helper.py:154:20
+    |
+152 |                                            for k, v in sorted(floor.items(), key=lambda kv: int(kv[0])))
+153 |                                  + f"  ({path})")
+154 |             except Exception as exc:
+    |                    ^^^^^^^^^
+155 |                 rows[surface] = f"UNREADABLE ({path}: {exc})"
+156 |         else:
+    |
+
+BLE001 Do not catch blind exception: `Exception`
+   --> scripts/benchmark/boundary_20260831_helper.py:196:16
+    |
+194 |             cells = _workload_cells(bundle)
+195 |             workload_cells = json.dumps(cells, sort_keys=True) if cells else "UNKNOWN (no cells)"
+196 |         except Exception as exc:
+    |                ^^^^^^^^^
+197 |             workload_cells = f"UNREADABLE ({exc})"
+    |
+
+EXE001 Shebang is present but file is not executable
+ --> scripts/benchmark/champion_anchor_validation.py:1:1
+  |
+1 | #!/usr/bin/env python3
+  | ^^^^^^^^^^^^^^^^^^^^^^
+2 | """CH-4: validate the composed champion against the sealed production anchor.
+  |
+
+I001 [*] Import block is un-sorted or un-formatted
+  --> scripts/benchmark/champion_anchor_validation.py:37:1
+   |
+35 |   neither the binary nor `ldd` can tell you a HIP run happened.
+36 |   """
+37 | / from __future__ import annotations
+38 | |
+39 | | import argparse
+40 | | import json
+41 | | import os
+42 | | from pathlib import Path
+43 | | import statistics as st
+44 | | import subprocess
+45 | | import sys
+46 | | import time
+   | |___________^
+47 |
+48 |   MODEL = Path("/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf")
+   |
+help: Organize imports
+   |
+41 | import os
+   - from pathlib import Path
+42 | import statistics as st
+43 | import subprocess
+44 | import sys
+45 | import time
+46 + from pathlib import Path
+47 |
+   |
+
+RUF100 [*] Unused `noqa` directive (non-enabled: `E402`)
+  --> scripts/benchmark/champion_anchor_validation.py:53:71
+   |
+52 | sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
+53 | from scripts.kernel_rnd.autokernel.loop import launch_affinity as la  # noqa: E402
+   |                                                                       ^^^^^^^^^^^^
+54 |
+55 | PIN_CPUS = "184-191"
+   |
+help: Remove unused `noqa` directive
+   |
+52 | sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
+   - from scripts.kernel_rnd.autokernel.loop import launch_affinity as la  # noqa: E402
+53 + from scripts.kernel_rnd.autokernel.loop import launch_affinity as la
+54 |
+   |
+
+EXE001 Shebang is present but file is not executable
+ --> scripts/benchmark/emit_operator_gate_bundle.py:1:1
+  |
+1 | #!/usr/bin/env python3
+  | ^^^^^^^^^^^^^^^^^^^^^^
+2 | """Seal operator-run gate evidence into a bundle the champion surface can read.
+  |
+
+I001 [*] Import block is un-sorted or un-formatted
+  --> scripts/benchmark/emit_operator_gate_bundle.py:39:1
+   |
+37 |   a bundle that quietly omits a failed or absent gate would be worse than none.
+38 |   """
+39 | / from __future__ import annotations
+40 | |
+41 | | import argparse
+42 | | import hashlib
+43 | | import json
+44 | | from pathlib import Path
+45 | | import subprocess
+46 | | import sys
+47 | | import time
+   | |___________^
+48 |
+49 |   SCHEMA = "epyc.autokernel.operator_gate_bundle.v1"
+   |
+help: Organize imports
+   |
+43 | import json
+   - from pathlib import Path
+44 | import subprocess
+45 | import sys
+46 | import time
+47 + from pathlib import Path
+48 |
+   |
+
+EXE001 Shebang is present but file is not executable
+ --> scripts/benchmark/g2_df25_concurrency_grid.py:1:1
+  |
+1 | #!/usr/bin/env python3
+  | ^^^^^^^^^^^^^^^^^^^^^^
+2 | """DF2-5 concurrency grid — the G2 runner for `epyc.g2_df25_draft_grid.v1`.
+  |
+
+I001 [*] Import block is un-sorted or un-formatted
+  --> scripts/benchmark/g2_df25_concurrency_grid.py:40:1
+   |
+38 |   produces plausible-looking numbers roughly 20x too slow.
+39 |   """
+40 | / from __future__ import annotations
+41 | |
+42 | | import argparse
+43 | | import json
+44 | | import os
+45 | | from pathlib import Path
+46 | | import re
+47 | | import shutil
+48 | | import signal
+49 | | import subprocess
+50 | | import sys
+51 | | import time
+52 | | import urllib.request
+   | |_____________________^
+53 |
+54 |   G2_SCHEMA = "epyc.g2_df25_draft_grid.v1"
+   |
+help: Organize imports
+   |
+44 | import os
+   - from pathlib import Path
+45 | import re
+--------------------------------------------------------------------------------
+51 | import urllib.request
+52 + from pathlib import Path
+53 |
+   |
+
+F401 [*] `shutil` imported but unused
+  --> scripts/benchmark/g2_df25_concurrency_grid.py:47:8
+   |
+45 | from pathlib import Path
+46 | import re
+47 | import shutil
+   |        ^^^^^^
+48 | import signal
+49 | import subprocess
+   |
+help: Remove unused import: `shutil`
+   |
+46 | import re
+   - import shutil
+47 | import signal
+   |
+
+BLE001 Do not catch blind exception: `Exception`
+   --> scripts/benchmark/g2_df25_concurrency_grid.py:157:16
+    |
+155 |                 if r.status == 200:
+156 |                     return
+157 |         except Exception:
+    |                ^^^^^^^^^
+158 |             time.sleep(3)
+159 |     raise CellRefused(f"server not ready within {timeout_s}s; see {log}")
+    |
+
+PLW1510 `subprocess.run` without explicit `check` argument
+   --> scripts/benchmark/g2_df25_concurrency_grid.py:237:18
+    |
+235 |             (cell_dir / "cell_recipe.json").write_text(json.dumps(identity, indent=2), encoding="utf-8")
+236 |             vram_mid = read_vram()
+237 |             rc = subprocess.run(run_argv, capture_output=True, text=True, timeout=14400)
+    |                  ^^^^^^^^^^^^^^
+238 |             (cell_dir / "runner.stdout").write_text(rc.stdout or "", encoding="utf-8")
+239 |             (cell_dir / "runner.stderr").write_text(rc.stderr or "", encoding="utf-8")
+    |
+help: Add explicit `check=False`
+
+I001 [*] Import block is un-sorted or un-formatted
+  --> scripts/benchmark/test_emit_operator_workload_vector.py:67:5
+   |
+66 |   def test_grid_captures_exact_commands_before_request(tmp_path, monkeypatch):
+67 | /     import g2_df25_concurrency_grid as grid
+68 | |     from types import SimpleNamespace
+   | |_____________________________________^
+69 |       seen={}
+70 |       class FakeProcess:
+   |
+help: Organize imports
+   |
+66 | def test_grid_captures_exact_commands_before_request(tmp_path, monkeypatch):
+   -     import g2_df25_concurrency_grid as grid
+67 |     from types import SimpleNamespace
+68 +
+69 +     import g2_df25_concurrency_grid as grid
+70 |     seen={}
+   |
+
+I001 [*] Import block is un-sorted or un-formatted
+  --> scripts/benchmark/test_emit_operator_workload_vector.py:93:5
+   |
+92 |   def test_anchor_records_both_actual_argv_before_bench(tmp_path, monkeypatch):
+93 | /     import champion_anchor_validation as anchor
+94 | |     from types import SimpleNamespace
+   | |_____________________________________^
+95 |       baseline=tmp_path/'baseline'; candidate=tmp_path/'candidate'; out=tmp_path/'out'
+96 |       baseline.mkdir(); candidate.mkdir()
+   |
+help: Organize imports
+   |
+92 | def test_anchor_records_both_actual_argv_before_bench(tmp_path, monkeypatch):
+   -     import champion_anchor_validation as anchor
+93 |     from types import SimpleNamespace
+94 +
+95 +     import champion_anchor_validation as anchor
+96 |     baseline=tmp_path/'baseline'; candidate=tmp_path/'candidate'; out=tmp_path/'out'
+   |
+
+I001 [*] Import block is un-sorted or un-formatted
+  --> tests/test_dashboard_workload_vector.py:2:1
+   |
+ 1 |   """Workload identities travel with each source cell; legacy gaps stay unknown."""
+ 2 | / import json
+ 3 | | import re
+ 4 | | import shutil
+ 5 | | import subprocess
+ 6 | |
+ 7 | | import pytest
+ 8 | | from pathlib import Path
+ 9 | |
+10 | | from dashboard.loop_status import _champion_workload_vector, _champion_legacy_reference
+11 | | from dashboard.server import _operator_workload_vector, _operator_legacy_reference
+   | |__________________________________________________________________________________^
+12 |
+13 |   ROOT = Path(__file__).resolve().parents[1]
+   |
+help: Organize imports
+   |
+5  | import subprocess
+6  + from pathlib import Path
+7  |
+8  | import pytest
+   - from pathlib import Path
+9  |
+   - from dashboard.loop_status import _champion_workload_vector, _champion_legacy_reference
+   - from dashboard.server import _operator_workload_vector, _operator_legacy_reference
+10 + from dashboard.loop_status import _champion_legacy_reference, _champion_workload_vector
+11 + from dashboard.server import _operator_legacy_reference, _operator_workload_vector
+12 |
+   |
+
+FURB167 [*] Use of regular expression alias `re.S`
+  --> tests/test_dashboard_workload_vector.py:46:98
+   |
+44 | def test_vector_render_keeps_subject_freshness_and_escapes(tmp_path):
+45 |     page = (ROOT / 'dashboard/static/loop.html').read_text()
+46 |     (tmp_path / 'page.js').write_text('\n'.join(re.findall(r'<script[^>]*>(.*?)</script>', page, re.S)))
+   |                                                                                                  ^^^^
+47 |     payload = {'champion_vs_production': {'workload_vector': [
+48 |         {'workload': '<img onerror=x>', 'recipe': None, 'effect_fraction': .1}],
+   |
+help: Replace with `re.DOTALL`
+   |
+45 |     page = (ROOT / 'dashboard/static/loop.html').read_text()
+   -     (tmp_path / 'page.js').write_text('\n'.join(re.findall(r'<script[^>]*>(.*?)</script>', page, re.S)))
+46 +     (tmp_path / 'page.js').write_text('\n'.join(re.findall(r'<script[^>]*>(.*?)</script>', page, re.DOTALL)))
+47 |     payload = {'champion_vs_production': {'workload_vector': [
+   |
+
+Found 107 errors.
+[*] 75 fixable with the `--fix` option (3 hidden fixes can be enabled with the `--unsafe-fixes` option).
