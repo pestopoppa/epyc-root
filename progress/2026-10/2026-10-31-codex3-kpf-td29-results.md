@@ -1,0 +1,7 @@
+# KPF-18.3 successor and TD29 R4 — 2026-10-31
+
+The owner accepted the KPF-18.3 CPU item-3 attribution criterion for the disjoint two-case 35B Q8 successor: 12 HTTP 200 responses across champion, fork-off and fork-on; six nonempty non-reasoning assistant messages were resent identically. Eight candidate requests each have native delimiter/span and checkpoint events joined by task ID; all 28 joined events matched raw traces. Champion internal trace is unknown for four requests by design. Of 20 candidate checkpoint decisions, eight are user-start: four first-turn (start 0, no checkpoint) and four continuation (start 32, checkpoint), all unpinned; 20 near-end and 16 checkpoint decisions in total. Historical cohort unknowns and CPU item 2's prior disposition remain unchanged; KPF-18.3 parent and GPU items 1/4 remain open. No quality, performance or calibrated-floor claim. [belief: cc]
+
+TD29 M4 R4 is FAILED-RUN rc1, class=unknown. Normal resource admission passed; 18 rows / 36 calls were captured but 6 ticket pairs failed schema/dispatch validation, leaving 12 valid. The declared all-18-valid rule remains INCOMPLETE; 17 rendered common bytes / 3 tokens and typed cache_n=0 in the 12 valid rows are scoped observations, not a full-run no-cache conclusion. Owner to inspect mismatch, preserve all records/exposures, and use a newly identified immutable qualified successor only if needed. [belief: cc]
+
+[Raw evidence and hashes](../../artifacts/compute/codex3-kpf-td29-filing-20261031-0240/SHA256SUMS).

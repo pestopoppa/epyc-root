@@ -1,0 +1,572 @@
+[
+  {
+    "event": "spans",
+    "task_id": 0,
+    "input_message_delimiters_present": true,
+    "input_message_delimiters": [
+      {
+        "role": "assistant",
+        "delimiter": "<|im_start|>assistant"
+      },
+      {
+        "role": "user",
+        "delimiter": "<|im_start|>user"
+      }
+    ],
+    "tokenized_delimiters": [
+      {
+        "role": "assistant",
+        "delimiter": "<|im_start|>assistant",
+        "token_ids": [
+          248045,
+          74455
+        ]
+      },
+      {
+        "role": "user",
+        "delimiter": "<|im_start|>user",
+        "token_ids": [
+          248045,
+          846
+        ]
+      }
+    ],
+    "spans": [
+      {
+        "role": "user",
+        "pos": 0,
+        "len": 21
+      },
+      {
+        "role": "assistant",
+        "pos": 21,
+        "len": 7
+      }
+    ],
+    "task_tokens": 28
+  },
+  {
+    "event": "checkpoint_decision",
+    "task_id": 0,
+    "slot_id": 0,
+    "n_tokens_start": 0,
+    "n_tokens_cur": 24,
+    "is_user_start": true,
+    "is_last_user_message": true,
+    "near_prompt_end": true,
+    "ckpt_pinned": false,
+    "do_checkpoint": false,
+    "pos_min": -1,
+    "pos_max": -1,
+    "before": [],
+    "after": []
+  },
+  {
+    "event": "checkpoint_decision",
+    "task_id": 0,
+    "slot_id": 0,
+    "n_tokens_start": 24,
+    "n_tokens_cur": 4,
+    "is_user_start": false,
+    "is_last_user_message": false,
+    "near_prompt_end": true,
+    "ckpt_pinned": false,
+    "do_checkpoint": true,
+    "pos_min": 23,
+    "pos_max": 23,
+    "before": [],
+    "after": [
+      {
+        "n_tokens": 24,
+        "pos_min": 23,
+        "pos_max": 23,
+        "pinned": false
+      }
+    ]
+  },
+  {
+    "event": "spans",
+    "task_id": 10,
+    "input_message_delimiters_present": true,
+    "input_message_delimiters": [
+      {
+        "role": "assistant",
+        "delimiter": "<|im_start|>assistant"
+      },
+      {
+        "role": "user",
+        "delimiter": "<|im_start|>user"
+      }
+    ],
+    "tokenized_delimiters": [
+      {
+        "role": "assistant",
+        "delimiter": "<|im_start|>assistant",
+        "token_ids": [
+          248045,
+          74455
+        ]
+      },
+      {
+        "role": "user",
+        "delimiter": "<|im_start|>user",
+        "token_ids": [
+          248045,
+          846
+        ]
+      }
+    ],
+    "spans": [
+      {
+        "role": "user",
+        "pos": 0,
+        "len": 21
+      },
+      {
+        "role": "assistant",
+        "pos": 21,
+        "len": 11
+      },
+      {
+        "role": "user",
+        "pos": 32,
+        "len": 21
+      },
+      {
+        "role": "assistant",
+        "pos": 53,
+        "len": 7
+      }
+    ],
+    "task_tokens": 60
+  },
+  {
+    "event": "checkpoint_decision",
+    "task_id": 10,
+    "slot_id": 0,
+    "n_tokens_start": 24,
+    "n_tokens_cur": 8,
+    "is_user_start": false,
+    "is_last_user_message": false,
+    "near_prompt_end": true,
+    "ckpt_pinned": false,
+    "do_checkpoint": true,
+    "pos_min": 23,
+    "pos_max": 23,
+    "before": [
+      {
+        "n_tokens": 24,
+        "pos_min": 23,
+        "pos_max": 23,
+        "pinned": false
+      }
+    ],
+    "after": [
+      {
+        "n_tokens": 24,
+        "pos_min": 23,
+        "pos_max": 23,
+        "pinned": false
+      },
+      {
+        "n_tokens": 24,
+        "pos_min": 23,
+        "pos_max": 23,
+        "pinned": false
+      }
+    ]
+  },
+  {
+    "event": "checkpoint_decision",
+    "task_id": 10,
+    "slot_id": 0,
+    "n_tokens_start": 32,
+    "n_tokens_cur": 24,
+    "is_user_start": true,
+    "is_last_user_message": true,
+    "near_prompt_end": true,
+    "ckpt_pinned": false,
+    "do_checkpoint": true,
+    "pos_min": 31,
+    "pos_max": 31,
+    "before": [
+      {
+        "n_tokens": 24,
+        "pos_min": 23,
+        "pos_max": 23,
+        "pinned": false
+      },
+      {
+        "n_tokens": 24,
+        "pos_min": 23,
+        "pos_max": 23,
+        "pinned": false
+      }
+    ],
+    "after": [
+      {
+        "n_tokens": 24,
+        "pos_min": 23,
+        "pos_max": 23,
+        "pinned": false
+      },
+      {
+        "n_tokens": 24,
+        "pos_min": 23,
+        "pos_max": 23,
+        "pinned": false
+      },
+      {
+        "n_tokens": 32,
+        "pos_min": 31,
+        "pos_max": 31,
+        "pinned": false
+      }
+    ]
+  },
+  {
+    "event": "checkpoint_decision",
+    "task_id": 10,
+    "slot_id": 0,
+    "n_tokens_start": 56,
+    "n_tokens_cur": 4,
+    "is_user_start": false,
+    "is_last_user_message": false,
+    "near_prompt_end": true,
+    "ckpt_pinned": false,
+    "do_checkpoint": true,
+    "pos_min": 55,
+    "pos_max": 55,
+    "before": [
+      {
+        "n_tokens": 24,
+        "pos_min": 23,
+        "pos_max": 23,
+        "pinned": false
+      },
+      {
+        "n_tokens": 24,
+        "pos_min": 23,
+        "pos_max": 23,
+        "pinned": false
+      },
+      {
+        "n_tokens": 32,
+        "pos_min": 31,
+        "pos_max": 31,
+        "pinned": false
+      }
+    ],
+    "after": [
+      {
+        "n_tokens": 24,
+        "pos_min": 23,
+        "pos_max": 23,
+        "pinned": false
+      },
+      {
+        "n_tokens": 24,
+        "pos_min": 23,
+        "pos_max": 23,
+        "pinned": false
+      },
+      {
+        "n_tokens": 32,
+        "pos_min": 31,
+        "pos_max": 31,
+        "pinned": false
+      },
+      {
+        "n_tokens": 56,
+        "pos_min": 55,
+        "pos_max": 55,
+        "pinned": false
+      }
+    ]
+  },
+  {
+    "event": "spans",
+    "task_id": 17,
+    "input_message_delimiters_present": true,
+    "input_message_delimiters": [
+      {
+        "role": "assistant",
+        "delimiter": "<|im_start|>assistant"
+      },
+      {
+        "role": "user",
+        "delimiter": "<|im_start|>user"
+      }
+    ],
+    "tokenized_delimiters": [
+      {
+        "role": "assistant",
+        "delimiter": "<|im_start|>assistant",
+        "token_ids": [
+          248045,
+          74455
+        ]
+      },
+      {
+        "role": "user",
+        "delimiter": "<|im_start|>user",
+        "token_ids": [
+          248045,
+          846
+        ]
+      }
+    ],
+    "spans": [
+      {
+        "role": "user",
+        "pos": 0,
+        "len": 21
+      },
+      {
+        "role": "assistant",
+        "pos": 21,
+        "len": 7
+      }
+    ],
+    "task_tokens": 28
+  },
+  {
+    "event": "checkpoint_decision",
+    "task_id": 17,
+    "slot_id": 0,
+    "n_tokens_start": 0,
+    "n_tokens_cur": 24,
+    "is_user_start": true,
+    "is_last_user_message": true,
+    "near_prompt_end": true,
+    "ckpt_pinned": false,
+    "do_checkpoint": false,
+    "pos_min": -1,
+    "pos_max": -1,
+    "before": [],
+    "after": []
+  },
+  {
+    "event": "checkpoint_decision",
+    "task_id": 17,
+    "slot_id": 0,
+    "n_tokens_start": 24,
+    "n_tokens_cur": 4,
+    "is_user_start": false,
+    "is_last_user_message": false,
+    "near_prompt_end": true,
+    "ckpt_pinned": false,
+    "do_checkpoint": true,
+    "pos_min": 23,
+    "pos_max": 23,
+    "before": [],
+    "after": [
+      {
+        "n_tokens": 24,
+        "pos_min": 23,
+        "pos_max": 23,
+        "pinned": false
+      }
+    ]
+  },
+  {
+    "event": "spans",
+    "task_id": 27,
+    "input_message_delimiters_present": true,
+    "input_message_delimiters": [
+      {
+        "role": "assistant",
+        "delimiter": "<|im_start|>assistant"
+      },
+      {
+        "role": "user",
+        "delimiter": "<|im_start|>user"
+      }
+    ],
+    "tokenized_delimiters": [
+      {
+        "role": "assistant",
+        "delimiter": "<|im_start|>assistant",
+        "token_ids": [
+          248045,
+          74455
+        ]
+      },
+      {
+        "role": "user",
+        "delimiter": "<|im_start|>user",
+        "token_ids": [
+          248045,
+          846
+        ]
+      }
+    ],
+    "spans": [
+      {
+        "role": "user",
+        "pos": 0,
+        "len": 21
+      },
+      {
+        "role": "assistant",
+        "pos": 21,
+        "len": 11
+      },
+      {
+        "role": "user",
+        "pos": 32,
+        "len": 21
+      },
+      {
+        "role": "assistant",
+        "pos": 53,
+        "len": 7
+      }
+    ],
+    "task_tokens": 60
+  },
+  {
+    "event": "checkpoint_decision",
+    "task_id": 27,
+    "slot_id": 0,
+    "n_tokens_start": 24,
+    "n_tokens_cur": 8,
+    "is_user_start": false,
+    "is_last_user_message": false,
+    "near_prompt_end": true,
+    "ckpt_pinned": false,
+    "do_checkpoint": true,
+    "pos_min": 23,
+    "pos_max": 23,
+    "before": [
+      {
+        "n_tokens": 24,
+        "pos_min": 23,
+        "pos_max": 23,
+        "pinned": false
+      }
+    ],
+    "after": [
+      {
+        "n_tokens": 24,
+        "pos_min": 23,
+        "pos_max": 23,
+        "pinned": false
+      },
+      {
+        "n_tokens": 24,
+        "pos_min": 23,
+        "pos_max": 23,
+        "pinned": false
+      }
+    ]
+  },
+  {
+    "event": "checkpoint_decision",
+    "task_id": 27,
+    "slot_id": 0,
+    "n_tokens_start": 32,
+    "n_tokens_cur": 24,
+    "is_user_start": true,
+    "is_last_user_message": true,
+    "near_prompt_end": true,
+    "ckpt_pinned": false,
+    "do_checkpoint": true,
+    "pos_min": 31,
+    "pos_max": 31,
+    "before": [
+      {
+        "n_tokens": 24,
+        "pos_min": 23,
+        "pos_max": 23,
+        "pinned": false
+      },
+      {
+        "n_tokens": 24,
+        "pos_min": 23,
+        "pos_max": 23,
+        "pinned": false
+      }
+    ],
+    "after": [
+      {
+        "n_tokens": 24,
+        "pos_min": 23,
+        "pos_max": 23,
+        "pinned": false
+      },
+      {
+        "n_tokens": 24,
+        "pos_min": 23,
+        "pos_max": 23,
+        "pinned": false
+      },
+      {
+        "n_tokens": 32,
+        "pos_min": 31,
+        "pos_max": 31,
+        "pinned": false
+      }
+    ]
+  },
+  {
+    "event": "checkpoint_decision",
+    "task_id": 27,
+    "slot_id": 0,
+    "n_tokens_start": 56,
+    "n_tokens_cur": 4,
+    "is_user_start": false,
+    "is_last_user_message": false,
+    "near_prompt_end": true,
+    "ckpt_pinned": false,
+    "do_checkpoint": true,
+    "pos_min": 55,
+    "pos_max": 55,
+    "before": [
+      {
+        "n_tokens": 24,
+        "pos_min": 23,
+        "pos_max": 23,
+        "pinned": false
+      },
+      {
+        "n_tokens": 24,
+        "pos_min": 23,
+        "pos_max": 23,
+        "pinned": false
+      },
+      {
+        "n_tokens": 32,
+        "pos_min": 31,
+        "pos_max": 31,
+        "pinned": false
+      }
+    ],
+    "after": [
+      {
+        "n_tokens": 24,
+        "pos_min": 23,
+        "pos_max": 23,
+        "pinned": false
+      },
+      {
+        "n_tokens": 24,
+        "pos_min": 23,
+        "pos_max": 23,
+        "pinned": false
+      },
+      {
+        "n_tokens": 32,
+        "pos_min": 31,
+        "pos_max": 31,
+        "pinned": false
+      },
+      {
+        "n_tokens": 56,
+        "pos_min": 55,
+        "pos_max": 55,
+        "pinned": false
+      }
+    ]
+  }
+]

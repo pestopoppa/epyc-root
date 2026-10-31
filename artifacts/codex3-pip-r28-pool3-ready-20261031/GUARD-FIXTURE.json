@@ -1,0 +1,13 @@
+{
+  "scope": "synthetic isolated grant, pre-set STOP; no real grant, no model, no READY",
+  "results": [
+    {
+      "id": "codex3-pip02-paddle-relocatable-r28-pool3-20261031",
+      "rc": 75
+    },
+    {
+      "id": "codex3-pip02-paddle-relocatable-r25-pool3-20261030",
+      "rc": 1
+    }
+  ]
+}

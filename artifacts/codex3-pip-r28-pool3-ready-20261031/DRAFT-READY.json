@@ -1,0 +1,86 @@
+{
+  "id": "codex3-pip02-paddle-relocatable-r28-pool3-20261031",
+  "owner": "codex3",
+  "priority_rank": 83,
+  "regions": "any-cpu-quarter",
+  "min_window_s": 1320,
+  "window_s": 32400,
+  "gib": 96,
+  "launcher": {
+    "path": "/mnt/raid0/llm/tmp/codex3-filing-pip-dtap-c6-20261031-0230/repair/pool-3/launch-p3.sh",
+    "sha256": "09190aafb6de6a3a3ed47b2b32307951426f488d0eab55783282554aaa080010"
+  },
+  "job": {
+    "path": "/mnt/raid0/llm/tmp/codex3-filing-pip-dtap-c6-20261031-0230/repair/pool-3/launch-p3.sh",
+    "sha256": "09190aafb6de6a3a3ed47b2b32307951426f488d0eab55783282554aaa080010"
+  },
+  "source_manifest": {
+    "path": "/mnt/micron/codex3-pip-relocatable-r25-20261030/source.sha256",
+    "sha256": "6a6455a599014722cc7d92f828c346ceba696520691327ecfd403aa6e9d6df09"
+  },
+  "result_path": "/mnt/micron/codex3-pip-relocatable-r25-20261030/DONE-3",
+  "decision_rule": "Continue original fresh Paddle groups [14, 26, 38, 50, 62, 74, 86, 98, 110, 122, 134, 146]; preserve legacy checkpoints and unknown exposures; no quality verdict.",
+  "class": "diagnostic",
+  "enrollment": "n/a: diagnostic",
+  "hold": null,
+  "scratch_root": "/mnt/raid0/llm/tmp/codex3-filing-pip-dtap-c6-20261031-0230/repair/pool-3",
+  "keep": [
+    "launch-p3.sh",
+    "pool.py",
+    "DRAFT-READY.json",
+    "SMOKE-final.log",
+    "ws58-launcher.out"
+  ],
+  "est_output_GiB": 0.125,
+  "launcher_log": "/mnt/raid0/llm/tmp/codex3-filing-pip-dtap-c6-20261031-0230/repair/pool-3/ws58-launcher.out",
+  "port": 25303,
+  "booking_class": "block-correctness",
+  "smoke": {
+    "ran_at": "2026-10-31T02:41:37.822898+00:00",
+    "regions": "R11 q3 SMT168,169 OMP1 no CPU lock",
+    "model": "canonical PaddleOCR-VL1.6 GGUF/mmproj/layout, native 8192 context/4096 output",
+    "first_request_ok": true,
+    "result_writer_ok": true,
+    "exit_ok": true,
+    "wall_s": 85.059,
+    "sampled_peak_tree_rss_bytes": 5478076416,
+    "native_rc": 75,
+    "partial": true,
+    "cleanup_verified": true,
+    "matched_native_HTTP200": 5,
+    "log": "/mnt/raid0/llm/tmp/codex3-filing-pip-dtap-c6-20261031-0230/repair/pool-3/SMOKE-final.log",
+    "log_sha256": "b4323335792f311c73ac0b856f53e3ced19c8b959c7f266d85409671aefaf9f8",
+    "stop_log": "/mnt/raid0/llm/tmp/codex3-filing-pip-dtap-c6-20261031-0230/repair/pool3-stop/STOP-control.log",
+    "stop_log_sha256": "b80dbada733c3aa94424f74577e434cca0a0bf9cc3627a4a224597219f677ae7",
+    "stop_drained": true,
+    "scope": "isolated smoke controls 807/836 only, no cohort coverage; actual normal real-grant branch untested; STOP control used equivalent launcher with prior runtime path",
+    "source_parity": "/mnt/raid0/llm/tmp/codex3-filing-pip-dtap-c6-20261031-0230/repair/pool-3/CONTROL-SOURCE-PARITY.json",
+    "guard_fixture": "/mnt/raid0/llm/tmp/codex3-filing-pip-dtap-c6-20261031-0230/repair/pool-3/guard-fixture/RESULT.json"
+  },
+  "feasibility": "1320s minimum with native 1200s start margin and 90s engine drain; 9h requested, no minimum-window completion guarantee. RAID .125 GiB sampled reservation plus separate Micron 1 GiB reserve; both 150 GiB floors maintained; sampled overshoot is not a hard quota.",
+  "notes": "Persistent Micron new checkpoint custody and readonly RAID and R22 Micron prior inputs; missing canonical shard lock metadata initialized safely. Original warrants preserved.; original pool groups/checkpoints/unknowns retained; normal real-grant branch untested; controls not cohort coverage.",
+  "log_consumer": "/mnt/raid0/llm/tmp/pip02-pipeline-prep-20261029/cpu_projector_witness.py",
+  "runtime_dependencies": [
+    "/mnt/raid0/llm/tmp/codex3-pip-relocatable-r25-20261030",
+    "/mnt/micron/codex3-pip-relocatable-r25-20261030",
+    "/mnt/micron/codex3-pip-split-r22-20261030",
+    "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029",
+    "/mnt/raid0/llm/tmp/codex3-pip02-paddle-relocatable-r13-20261030",
+    "/mnt/raid0/llm/tmp/pip02-pipeline-prep-20261029"
+  ],
+  "protocol": {
+    "path": "/mnt/raid0/llm/tmp/codex3-pip-relocatable-r25-20261030/PROTOCOL.md",
+    "sha256": "6dc0b9cae7a1240c46abac3603e44a7635aa7b613aa1cca4a9e2af4703cf3d4a"
+  },
+  "status": "DRAFT",
+  "output_budget": {
+    "raid_est_GiB": 0.125,
+    "raid_soft_GiB": 0.0625,
+    "micron_est_GiB": 1.0,
+    "micron_soft_GiB": 0.5,
+    "kind": "sampled; overshoot possible",
+    "native_output_root": "/mnt/micron/codex3-pip-relocatable-r25-20261030",
+    "raid_floor_GiB": 150,
+    "micron_floor_GiB": 150
+  }
+}

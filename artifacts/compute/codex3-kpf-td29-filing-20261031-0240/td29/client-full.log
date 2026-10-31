@@ -1,0 +1,37 @@
+llama POST /v1/chat/completions start role=frontdoor prompt_chars=1123 max_tokens=17 timeout=90
+llama POST /v1/chat/completions done role=frontdoor elapsed_ms=2348 status=200
+llama POST /v1/chat/completions start role=frontdoor prompt_chars=1127 max_tokens=17 timeout=90
+llama POST /v1/chat/completions done role=frontdoor elapsed_ms=2634 status=200
+llama POST /v1/chat/completions start role=frontdoor prompt_chars=1122 max_tokens=17 timeout=90
+llama POST /v1/chat/completions done role=frontdoor elapsed_ms=2544 status=200
+llama POST /v1/chat/completions start role=frontdoor prompt_chars=1128 max_tokens=17 timeout=90
+llama POST /v1/chat/completions done role=frontdoor elapsed_ms=2622 status=200
+llama POST /v1/chat/completions start role=frontdoor prompt_chars=1130 max_tokens=17 timeout=90
+llama POST /v1/chat/completions done role=frontdoor elapsed_ms=2636 status=200
+llama POST /v1/chat/completions start role=frontdoor prompt_chars=1120 max_tokens=17 timeout=90
+llama POST /v1/chat/completions done role=frontdoor elapsed_ms=2660 status=200
+llama POST /v1/chat/completions start role=frontdoor prompt_chars=1656 max_tokens=38 timeout=90
+llama POST /v1/chat/completions done role=frontdoor elapsed_ms=3538 status=200
+llama POST /v1/chat/completions start role=frontdoor prompt_chars=1647 max_tokens=38 timeout=90
+llama POST /v1/chat/completions done role=frontdoor elapsed_ms=3476 status=200
+llama POST /v1/chat/completions start role=frontdoor prompt_chars=1656 max_tokens=38 timeout=90
+llama POST /v1/chat/completions done role=frontdoor elapsed_ms=3422 status=200
+llama POST /v1/chat/completions start role=frontdoor prompt_chars=1646 max_tokens=38 timeout=90
+llama POST /v1/chat/completions done role=frontdoor elapsed_ms=3535 status=200
+llama POST /v1/chat/completions start role=frontdoor prompt_chars=1654 max_tokens=38 timeout=90
+llama POST /v1/chat/completions done role=frontdoor elapsed_ms=3630 status=200
+llama POST /v1/chat/completions start role=frontdoor prompt_chars=1653 max_tokens=38 timeout=90
+llama POST /v1/chat/completions done role=frontdoor elapsed_ms=3807 status=200
+llama POST /v1/chat/completions start role=frontdoor prompt_chars=1692 max_tokens=39 timeout=90
+llama POST /v1/chat/completions done role=frontdoor elapsed_ms=3840 status=200
+llama POST /v1/chat/completions start role=frontdoor prompt_chars=1685 max_tokens=39 timeout=90
+llama POST /v1/chat/completions done role=frontdoor elapsed_ms=3752 status=200
+llama POST /v1/chat/completions start role=frontdoor prompt_chars=1690 max_tokens=39 timeout=90
+llama POST /v1/chat/completions done role=frontdoor elapsed_ms=3689 status=200
+llama POST /v1/chat/completions start role=frontdoor prompt_chars=1686 max_tokens=39 timeout=90
+llama POST /v1/chat/completions done role=frontdoor elapsed_ms=3746 status=200
+llama POST /v1/chat/completions start role=frontdoor prompt_chars=1693 max_tokens=39 timeout=90
+llama POST /v1/chat/completions done role=frontdoor elapsed_ms=3795 status=200
+llama POST /v1/chat/completions start role=frontdoor prompt_chars=1685 max_tokens=39 timeout=90
+llama POST /v1/chat/completions done role=frontdoor elapsed_ms=3934 status=200
+{"completed": 18, "expected": 18, "invalid_pairs": 6, "missing_pairs": 0, "output": "/mnt/raid0/llm/tmp/codex-ni-td29-m4-cache-20261030/results/pairs.jsonl", "partial": false, "smoke_only": false}

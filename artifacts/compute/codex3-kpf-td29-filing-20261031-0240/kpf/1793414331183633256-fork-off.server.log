@@ -1,0 +1,84 @@
+0.00.001.890 I cmn  common_param: common_params_print_info: verbosity = 3 (adjust with the `-lv N` CLI arg)
+0.00.002.207 W srv  llama_server: -----------------
+0.00.002.209 W srv  llama_server: CORS is set to allow all origins ('*') and no API key is set
+0.00.002.209 W srv  llama_server: this can be a security risk (cross-origin attacks)
+0.00.002.209 W srv  llama_server: more info: https://github.com/ggml-org/llama.cpp/pull/25655
+0.00.002.209 W srv  llama_server: -----------------
+0.00.003.410 I srv    load_model: loading model '/mnt/raid0/llm/models/Qwen3.6-35B-A3B-MTP-Q8_0.gguf'
+0.00.746.428 W model has unused tensor blk.40.attn_norm.weight (size = 8192 bytes) -- ignoring
+0.00.746.436 W model has unused tensor blk.40.post_attention_norm.weight (size = 8192 bytes) -- ignoring
+0.00.746.440 W model has unused tensor blk.40.attn_q.weight (size = 17825792 bytes) -- ignoring
+0.00.746.442 W model has unused tensor blk.40.attn_k.weight (size = 1114112 bytes) -- ignoring
+0.00.746.444 W model has unused tensor blk.40.attn_v.weight (size = 1114112 bytes) -- ignoring
+0.00.746.450 W model has unused tensor blk.40.attn_output.weight (size = 8912896 bytes) -- ignoring
+0.00.746.452 W model has unused tensor blk.40.attn_q_norm.weight (size = 1024 bytes) -- ignoring
+0.00.746.454 W model has unused tensor blk.40.attn_k_norm.weight (size = 1024 bytes) -- ignoring
+0.00.746.456 W model has unused tensor blk.40.ffn_gate_inp.weight (size = 1048576 bytes) -- ignoring
+0.00.746.458 W model has unused tensor blk.40.ffn_down_exps.weight (size = 285212672 bytes) -- ignoring
+0.00.746.462 W model has unused tensor blk.40.ffn_gate_exps.weight (size = 285212672 bytes) -- ignoring
+0.00.746.464 W model has unused tensor blk.40.ffn_up_exps.weight (size = 285212672 bytes) -- ignoring
+0.00.746.466 W model has unused tensor blk.40.ffn_gate_inp_shexp.weight (size = 4096 bytes) -- ignoring
+0.00.746.468 W model has unused tensor blk.40.ffn_gate_shexp.weight (size = 1114112 bytes) -- ignoring
+0.00.746.470 W model has unused tensor blk.40.ffn_up_shexp.weight (size = 1114112 bytes) -- ignoring
+0.00.746.472 W model has unused tensor blk.40.ffn_down_shexp.weight (size = 1114112 bytes) -- ignoring
+0.00.746.476 W model has unused tensor blk.40.nextn.eh_proj.weight (size = 8912896 bytes) -- ignoring
+0.00.746.478 W model has unused tensor blk.40.nextn.enorm.weight (size = 8192 bytes) -- ignoring
+0.00.746.480 W model has unused tensor blk.40.nextn.hnorm.weight (size = 8192 bytes) -- ignoring
+0.00.746.487 W model has unused tensor blk.40.nextn.shared_head_norm.weight (size = 8192 bytes) -- ignoring
+0.02.637.222 I srv    load_model: initializing, n_slots = 4, n_ctx_slot = 4096, kv_unified = 'true'
+0.02.650.372 I srv          init: chat template supports preserving reasoning, consider enabling it via --reasoning-preserve
+0.02.650.422 I srv  llama_server: model loaded
+0.02.650.426 I srv  llama_server: listening on http://127.0.0.1:19584
+0.02.870.869 I srv  handle_compl: KPF183_TRACE {"event":"spans","task_id":0,"input_message_delimiters_present":true,"input_message_delimiters":[{"role":"assistant","delimiter":"<|im_start|>assistant"},{"role":"user","delimiter":"<|im_start|>user"}],"tokenized_delimiters":[{"role":"assistant","delimiter":"<|im_start|>assistant","token_ids":[248045,74455]},{"role":"user","delimiter":"<|im_start|>user","token_ids":[248045,846]}],"spans":[{"role":"user","pos":0,"len":21},{"role":"assistant","pos":21,"len":7}],"task_tokens":28}
+0.02.870.942 I slot get_availabl: id  0 | task -1 | selected slot by id (0)
+0.02.870.995 I slot launch_slot_: id  0 | task 0 | processing task, is_child = 0
+0.02.871.043 I srv    operator(): KPF183_TRACE {"event":"checkpoint_decision","task_id":0,"slot_id":0,"n_tokens_start":0,"n_tokens_cur":24,"is_user_start":true,"is_last_user_message":true,"near_prompt_end":true,"ckpt_pinned":false,"do_checkpoint":false,"pos_min":-1,"pos_max":-1,"before":[],"after":[]}
+0.03.034.185 I srv  prefill_budg: prefill-budget: iter 1: decode_rows = 0 (slots 0), prompt = 24 (slots 1), budget = 0, t_iter = 163.1 ms, kv_pos = 24, ms/tok = 0.000
+0.03.041.611 I srv    operator(): KPF183_TRACE {"event":"checkpoint_decision","task_id":0,"slot_id":0,"n_tokens_start":24,"n_tokens_cur":4,"is_user_start":false,"is_last_user_message":false,"near_prompt_end":true,"ckpt_pinned":false,"do_checkpoint":true,"pos_min":23,"pos_max":23,"before":[],"after":[{"n_tokens":24,"pos_min":23,"pos_max":23,"pinned":false}]}
+0.03.101.521 I srv  prefill_budg: prefill-budget: iter 2: decode_rows = 0 (slots 0), prompt = 4 (slots 1), budget = 0, t_iter = 59.9 ms, kv_pos = 28, ms/tok = 0.000
+0.03.322.745 I slot print_timing: id  0 | task 0 | prompt eval time =     228.62 ms /    28 tokens (    8.17 ms per token,   122.47 tokens per second)
+0.03.322.756 I slot print_timing: id  0 | task 0 |        eval time =     221.97 ms /     7 tokens (   31.71 ms per token,    31.54 tokens per second)
+0.03.322.757 I slot print_timing: id  0 | task 0 |       total time =     450.60 ms /    35 tokens
+0.03.322.763 I slot print_timing: id  0 | task 0 |    graphs reused =          5
+0.03.322.812 I slot      release: id  0 | task 0 | stop processing: n_tokens = 34, truncated = 0
+0.03.336.472 I srv  handle_compl: KPF183_TRACE {"event":"spans","task_id":10,"input_message_delimiters_present":true,"input_message_delimiters":[{"role":"assistant","delimiter":"<|im_start|>assistant"},{"role":"user","delimiter":"<|im_start|>user"}],"tokenized_delimiters":[{"role":"assistant","delimiter":"<|im_start|>assistant","token_ids":[248045,74455]},{"role":"user","delimiter":"<|im_start|>user","token_ids":[248045,846]}],"spans":[{"role":"user","pos":0,"len":21},{"role":"assistant","pos":21,"len":11},{"role":"user","pos":32,"len":21},{"role":"assistant","pos":53,"len":7}],"task_tokens":60}
+0.03.336.510 I slot get_availabl: id  0 | task -1 | selected slot by id (0)
+0.03.336.562 I slot launch_slot_: id  0 | task 10 | processing task, is_child = 0
+0.03.347.795 I srv    operator(): KPF183_TRACE {"event":"checkpoint_decision","task_id":10,"slot_id":0,"n_tokens_start":24,"n_tokens_cur":8,"is_user_start":false,"is_last_user_message":false,"near_prompt_end":true,"ckpt_pinned":false,"do_checkpoint":true,"pos_min":23,"pos_max":23,"before":[{"n_tokens":24,"pos_min":23,"pos_max":23,"pinned":false}],"after":[{"n_tokens":24,"pos_min":23,"pos_max":23,"pinned":false},{"n_tokens":24,"pos_min":23,"pos_max":23,"pinned":false}]}
+0.03.421.436 I srv  prefill_budg: prefill-budget: iter 3: decode_rows = 0 (slots 0), prompt = 8 (slots 1), budget = 0, t_iter = 73.6 ms, kv_pos = 32, ms/tok = 0.000
+0.03.428.904 I srv    operator(): KPF183_TRACE {"event":"checkpoint_decision","task_id":10,"slot_id":0,"n_tokens_start":32,"n_tokens_cur":24,"is_user_start":true,"is_last_user_message":true,"near_prompt_end":true,"ckpt_pinned":false,"do_checkpoint":true,"pos_min":31,"pos_max":31,"before":[{"n_tokens":24,"pos_min":23,"pos_max":23,"pinned":false},{"n_tokens":24,"pos_min":23,"pos_max":23,"pinned":false}],"after":[{"n_tokens":24,"pos_min":23,"pos_max":23,"pinned":false},{"n_tokens":24,"pos_min":23,"pos_max":23,"pinned":false},{"n_tokens":32,"pos_min":31,"pos_max":31,"pinned":false}]}
+0.03.578.047 I srv  prefill_budg: prefill-budget: iter 4: decode_rows = 0 (slots 0), prompt = 24 (slots 1), budget = 0, t_iter = 149.1 ms, kv_pos = 56, ms/tok = 0.000
+0.03.586.066 I srv    operator(): KPF183_TRACE {"event":"checkpoint_decision","task_id":10,"slot_id":0,"n_tokens_start":56,"n_tokens_cur":4,"is_user_start":false,"is_last_user_message":false,"near_prompt_end":true,"ckpt_pinned":false,"do_checkpoint":true,"pos_min":55,"pos_max":55,"before":[{"n_tokens":24,"pos_min":23,"pos_max":23,"pinned":false},{"n_tokens":24,"pos_min":23,"pos_max":23,"pinned":false},{"n_tokens":32,"pos_min":31,"pos_max":31,"pinned":false}],"after":[{"n_tokens":24,"pos_min":23,"pos_max":23,"pinned":false},{"n_tokens":24,"pos_min":23,"pos_max":23,"pinned":false},{"n_tokens":32,"pos_min":31,"pos_max":31,"pinned":false},{"n_tokens":56,"pos_min":55,"pos_max":55,"pinned":false}]}
+0.03.646.493 I srv  prefill_budg: prefill-budget: iter 5: decode_rows = 0 (slots 0), prompt = 4 (slots 1), budget = 0, t_iter = 60.4 ms, kv_pos = 60, ms/tok = 0.000
+0.03.717.942 I slot print_timing: id  0 | task 10 | prompt eval time =     308.73 ms /    36 tokens (    8.58 ms per token,   116.61 tokens per second)
+0.03.717.952 I slot print_timing: id  0 | task 10 |        eval time =      71.46 ms /     3 tokens (   23.82 ms per token,    41.98 tokens per second)
+0.03.717.953 I slot print_timing: id  0 | task 10 |       total time =     380.18 ms /    39 tokens
+0.03.717.954 I slot print_timing: id  0 | task 10 |    graphs reused =          6
+0.03.717.984 I slot      release: id  0 | task 10 | stop processing: n_tokens = 62, truncated = 0
+0.03.734.398 I srv  handle_compl: KPF183_TRACE {"event":"spans","task_id":17,"input_message_delimiters_present":true,"input_message_delimiters":[{"role":"assistant","delimiter":"<|im_start|>assistant"},{"role":"user","delimiter":"<|im_start|>user"}],"tokenized_delimiters":[{"role":"assistant","delimiter":"<|im_start|>assistant","token_ids":[248045,74455]},{"role":"user","delimiter":"<|im_start|>user","token_ids":[248045,846]}],"spans":[{"role":"user","pos":0,"len":21},{"role":"assistant","pos":21,"len":7}],"task_tokens":28}
+0.03.734.433 I slot get_availabl: id  0 | task -1 | selected slot by id (0)
+0.03.772.997 I slot launch_slot_: id  0 | task 17 | processing task, is_child = 0
+0.03.774.045 I srv    operator(): KPF183_TRACE {"event":"checkpoint_decision","task_id":17,"slot_id":0,"n_tokens_start":0,"n_tokens_cur":24,"is_user_start":true,"is_last_user_message":true,"near_prompt_end":true,"ckpt_pinned":false,"do_checkpoint":false,"pos_min":-1,"pos_max":-1,"before":[],"after":[]}
+0.03.935.948 I srv  prefill_budg: prefill-budget: iter 6: decode_rows = 0 (slots 0), prompt = 24 (slots 1), budget = 0, t_iter = 161.9 ms, kv_pos = 24, ms/tok = 0.000
+0.03.943.148 I srv    operator(): KPF183_TRACE {"event":"checkpoint_decision","task_id":17,"slot_id":0,"n_tokens_start":24,"n_tokens_cur":4,"is_user_start":false,"is_last_user_message":false,"near_prompt_end":true,"ckpt_pinned":false,"do_checkpoint":true,"pos_min":23,"pos_max":23,"before":[],"after":[{"n_tokens":24,"pos_min":23,"pos_max":23,"pinned":false}]}
+0.04.000.987 I srv  prefill_budg: prefill-budget: iter 7: decode_rows = 0 (slots 0), prompt = 4 (slots 1), budget = 0, t_iter = 57.8 ms, kv_pos = 28, ms/tok = 0.000
+0.04.206.978 I slot print_timing: id  0 | task 17 | prompt eval time =     226.85 ms /    28 tokens (    8.10 ms per token,   123.43 tokens per second)
+0.04.206.990 I slot print_timing: id  0 | task 17 |        eval time =     206.04 ms /     7 tokens (   29.43 ms per token,    33.97 tokens per second)
+0.04.206.990 I slot print_timing: id  0 | task 17 |       total time =     432.90 ms /    35 tokens
+0.04.206.992 I slot print_timing: id  0 | task 17 |    graphs reused =         11
+0.04.207.018 I slot      release: id  0 | task 17 | stop processing: n_tokens = 34, truncated = 0
+0.04.219.666 I srv  handle_compl: KPF183_TRACE {"event":"spans","task_id":27,"input_message_delimiters_present":true,"input_message_delimiters":[{"role":"assistant","delimiter":"<|im_start|>assistant"},{"role":"user","delimiter":"<|im_start|>user"}],"tokenized_delimiters":[{"role":"assistant","delimiter":"<|im_start|>assistant","token_ids":[248045,74455]},{"role":"user","delimiter":"<|im_start|>user","token_ids":[248045,846]}],"spans":[{"role":"user","pos":0,"len":21},{"role":"assistant","pos":21,"len":11},{"role":"user","pos":32,"len":21},{"role":"assistant","pos":53,"len":7}],"task_tokens":60}
+0.04.219.705 I slot get_availabl: id  0 | task -1 | selected slot by id (0)
+0.04.219.759 I slot launch_slot_: id  0 | task 27 | processing task, is_child = 0
+0.04.240.019 I srv    operator(): KPF183_TRACE {"event":"checkpoint_decision","task_id":27,"slot_id":0,"n_tokens_start":24,"n_tokens_cur":8,"is_user_start":false,"is_last_user_message":false,"near_prompt_end":true,"ckpt_pinned":false,"do_checkpoint":true,"pos_min":23,"pos_max":23,"before":[{"n_tokens":24,"pos_min":23,"pos_max":23,"pinned":false}],"after":[{"n_tokens":24,"pos_min":23,"pos_max":23,"pinned":false},{"n_tokens":24,"pos_min":23,"pos_max":23,"pinned":false}]}
+0.04.316.041 I srv  prefill_budg: prefill-budget: iter 8: decode_rows = 0 (slots 0), prompt = 8 (slots 1), budget = 0, t_iter = 76.0 ms, kv_pos = 32, ms/tok = 0.000
+0.04.323.404 I srv    operator(): KPF183_TRACE {"event":"checkpoint_decision","task_id":27,"slot_id":0,"n_tokens_start":32,"n_tokens_cur":24,"is_user_start":true,"is_last_user_message":true,"near_prompt_end":true,"ckpt_pinned":false,"do_checkpoint":true,"pos_min":31,"pos_max":31,"before":[{"n_tokens":24,"pos_min":23,"pos_max":23,"pinned":false},{"n_tokens":24,"pos_min":23,"pos_max":23,"pinned":false}],"after":[{"n_tokens":24,"pos_min":23,"pos_max":23,"pinned":false},{"n_tokens":24,"pos_min":23,"pos_max":23,"pinned":false},{"n_tokens":32,"pos_min":31,"pos_max":31,"pinned":false}]}
+0.04.477.266 I srv  prefill_budg: prefill-budget: iter 9: decode_rows = 0 (slots 0), prompt = 24 (slots 1), budget = 0, t_iter = 153.8 ms, kv_pos = 56, ms/tok = 0.000
+0.04.485.634 I srv    operator(): KPF183_TRACE {"event":"checkpoint_decision","task_id":27,"slot_id":0,"n_tokens_start":56,"n_tokens_cur":4,"is_user_start":false,"is_last_user_message":false,"near_prompt_end":true,"ckpt_pinned":false,"do_checkpoint":true,"pos_min":55,"pos_max":55,"before":[{"n_tokens":24,"pos_min":23,"pos_max":23,"pinned":false},{"n_tokens":24,"pos_min":23,"pos_max":23,"pinned":false},{"n_tokens":32,"pos_min":31,"pos_max":31,"pinned":false}],"after":[{"n_tokens":24,"pos_min":23,"pos_max":23,"pinned":false},{"n_tokens":24,"pos_min":23,"pos_max":23,"pinned":false},{"n_tokens":32,"pos_min":31,"pos_max":31,"pinned":false},{"n_tokens":56,"pos_min":55,"pos_max":55,"pinned":false}]}
+0.04.545.365 I srv  prefill_budg: prefill-budget: iter 10: decode_rows = 0 (slots 0), prompt = 4 (slots 1), budget = 0, t_iter = 59.7 ms, kv_pos = 60, ms/tok = 0.000
+0.04.580.532 I slot print_timing: id  0 | task 27 | prompt eval time =     324.48 ms /    36 tokens (    9.01 ms per token,   110.95 tokens per second)
+0.04.580.546 I slot print_timing: id  0 | task 27 |        eval time =      35.19 ms /     2 tokens (   17.60 ms per token,    56.83 tokens per second)
+0.04.580.547 I slot print_timing: id  0 | task 27 |       total time =     359.68 ms /    38 tokens
+0.04.580.548 I slot print_timing: id  0 | task 27 |    graphs reused =         11
+0.04.580.577 I slot      release: id  0 | task 27 | stop processing: n_tokens = 61, truncated = 0
+0.04.586.173 I srv    operator(): operator(): cleaning up before exit...

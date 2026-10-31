@@ -1,0 +1,11 @@
+2026-10-31T02:33:57Z [codex-ni-td29-m4-cache-r4-20261031] launcher up pid=2070239 class=cpu poll=45s grants=/mnt/raid0/llm/tmp/compute-flags/grants stop=/mnt/raid0/llm/tmp/codex-ni-td29-m4-cache-20261030/STOP minwin=600s ports=18869
+2026-10-31T02:34:42Z [codex-ni-td29-m4-cache-r4-20261031] diagnostic admission: legacy T1 proof receipt not required
+2026-10-31T02:34:42Z [codex-ni-td29-m4-cache-r4-20261031] START regions=48-71 cpus=48-71 threads=24 gpu=0 end=2026-10-31T03:04Z
+[region-lock] acquiring regions ['q2'] as role='build' (timeout_s=1758.0) …
+[region-lock] held ['q2'] after 0.0s wait; running: /bin/bash /mnt/raid0/llm/tmp/codex-ni-td29-m4-cache-20261030/r4/engine/filler_run13.sh --inner --id codex-ni-td29-m4-cache-r4-20261031 --class cpu --cmd /bin/bash /mnt/raid0/llm/tmp/codex-ni-td29-m4-cache-20261030/r4/launch.sh --job --min-window 600 --stop /mnt/raid0/llm/tmp/codex-ni-td29-m4-cache-20261030/STOP --port 18869 --workdir /mnt/raid0/llm/tmp/codex-ni-td29-m4-cache-20261030 --gpu-threads 184-191
+DRYRUN_RESOURCES {"affinity": [48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71], "cgroup": "0::/", "cgroup_memory_max": "max", "process_limit_gib": 48.0, "reserved_ram_gib": 48.0, "rlimits": {"AS": [-1, -1], "DATA": [-1, -1], "NOFILE": [524288, 524288], "RSS": [-1, -1]}}
+RESOURCE_PASS id=codex-ni-td29-m4-cache-r4-20261031 scope=normal-grant
+version: 10308 (90c12df42)
+built with GNU 15.2.0 for Linux x86_64
+job rc=1
+2026-10-31T02:36:57Z [codex-ni-td29-m4-cache-r4-20261031] ended rc=1 reason=job-rc-1:exited (grant deleted)
