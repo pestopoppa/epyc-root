@@ -1,9 +1,9 @@
 {
   "session_id": "intake-mainplane-20261030",
   "started_at": "2026-10-30T23:00:00Z",
-  "last_checkpoint": "2026-10-31T00:45:00Z",
-  "stage": 3,
-  "phase": "stage3-plan-proposed",
+  "last_checkpoint": "2026-10-31T01:30:00Z",
+  "stage": 4,
+  "phase": "stage4-complete",
   "lane": "/mnt/raid0/llm/tmp/intake-mainplane-20261030/root",
   "branch": "intake/mainplane-20261030",
   "topic": "Mainplane \"retrieval over compaction\" (X posts 2115842962521509968 / 2115131891766657357, github mainplane-ai/mainplane, docs/self-hosting.md, Sutton Bitter Lesson)",
@@ -57,8 +57,8 @@
       "stage": 1,
       "verbatim": "The operator's question is whether these techniques are genuinely NEW, and whether they can be integrated with our orchestrator's REPL stack (epyc-orchestrator, /workspace/repos/epyc-orchestrator).",
       "disposition": "planned",
-      "plan_ref": null,
-      "reason": "Answered by the Stage-3 novelty verdict and REPL integration map; plan_ref bound at Stage 3."
+      "plan_ref": "K1",
+      "reason": "Novelty answered in K1; REPL integration answered by P1-P4 (pointer reachability, arm set, metrics, needle screen)."
     },
     {
       "seq": 3,
@@ -83,98 +83,132 @@
       "disposition": "context-only",
       "plan_ref": null,
       "reason": "Ruling (b): owning session applies index rows; Stage 4 not run by this lane."
+    },
+    {
+      "seq": 6,
+      "stage": 3,
+      "verbatim": "When citing intake entries, use `#record` form wherever an entry has a refuted claim, so the cite-check gate passes.",
+      "disposition": "context-only",
+      "plan_ref": null,
+      "reason": "Applied: intake-2528 (one overturned claim) is cited as intake-2528#record in all proposed text."
+    },
+    {
+      "seq": 7,
+      "stage": 3,
+      "verbatim": "Use a worktree off origin/main. No `git add -A`. Push with scripts/coordination/serialized_push.py.",
+      "disposition": "context-only",
+      "plan_ref": null,
+      "reason": "Followed for the Stage-1/2 commits (369b29318, d0be7dce4)."
     }
   ],
   "actionable_ledger": [
     {
       "ledger_id": "MPL-1",
       "source": "Stage-1 prelim / intake-2522,2523 dive + orchestrator compaction.py/session_summary.py read",
-      "action": "Add a pointer-only (no summary) continuation arm to the filed verbatim-log vs summarize A/B."
+      "action": "Add a pointer-only (no summary) continuation arm to the filed verbatim-log vs summarize A/B.",
+      "terminal_mapping": "P2 / TOC-MP-2"
     },
     {
       "ledger_id": "MPL-2",
       "source": "orchestrator environment.py _validate_file_path read (main, 2026-10-30)",
-      "action": "Prove every context pointer the REPL emits (session-log peek, compaction read_file, spill peek) is readable under default, task_root and request-scope modes; fix any denial."
+      "action": "Prove every context pointer the REPL emits (session-log peek, compaction read_file, spill peek) is readable under default, task_root and request-scope modes; fix any denial.",
+      "terminal_mapping": "P1 / TOC-MP-1"
     },
     {
       "ledger_id": "MPL-3",
       "source": "intake-2524/2530/2534 dives",
-      "action": "Keep summary+pointer (current production shape) and summary-only as A/B arms; add full-history-in-context while it fits; equal context budget."
+      "action": "Keep summary+pointer (current production shape) and summary-only as A/B arms; add full-history-in-context while it fits; equal context budget.",
+      "terminal_mapping": "P2 / TOC-MP-2"
     },
     {
       "ledger_id": "MPL-4",
       "source": "intake-2534 dive",
-      "action": "Add a no-summary pruning arm modeled on OpenClaw client-side pruning, with a pointer in the placeholder; use OpenClaw sectioned summary prompt for the summary arm."
+      "action": "Add a no-summary pruning arm modeled on OpenClaw client-side pruning, with a pointer in the placeholder; use OpenClaw sectioned summary prompt for the summary arm.",
+      "terminal_mapping": "P2 / TOC-MP-2"
     },
     {
       "ledger_id": "MPL-5",
       "source": "intake-2527/2532/2533 dives",
-      "action": "Report pass^k/pass@k per arm with the per-task estimator (n>=2, prefer 4) and post-boundary blocked actions counted separately from re-reads."
+      "action": "Report pass^k/pass@k per arm with the per-task estimator (n>=2, prefer 4) and post-boundary blocked actions counted separately from re-reads.",
+      "terminal_mapping": "P3 / TOC-MP-3"
     },
     {
       "ledger_id": "MPL-6",
       "source": "intake-2522 trade-off + intake-2530 claim 4 + intake-2526 claim 3",
-      "action": "Log retrieval-miss rate (needed fact never searched), re-fetch tokens and wall time per arm."
+      "action": "Log retrieval-miss rate (needed fact never searched), re-fetch tokens and wall time per arm.",
+      "terminal_mapping": "P3 / TOC-MP-3"
     },
     {
       "ledger_id": "MPL-7",
       "source": "intake-2531 dive",
-      "action": "Stratify A/B probes by literal recoverability (direct / paraphrase / two-hop)."
+      "action": "Stratify A/B probes by literal recoverability (direct / paraphrase / two-hop).",
+      "terminal_mapping": "P3 / TOC-MP-3"
     },
     {
       "ledger_id": "MPL-8",
       "source": "intake-2528 dive",
-      "action": "Report compaction wall time as a fraction of end-to-end wall time per arm."
+      "action": "Report compaction wall time as a fraction of end-to-end wall time per arm.",
+      "terminal_mapping": "P3 / TOC-MP-3"
     },
     {
       "ledger_id": "MPL-9",
       "source": "intake-2525 dive (Appendix B fixture)",
-      "action": "Run an exact-value needle correctness screen across summary-only / summary+pointer / pointer-only before the full A/B."
+      "action": "Run an exact-value needle correctness screen across summary-only / summary+pointer / pointer-only before the full A/B.",
+      "terminal_mapping": "P4 / TOC-MP-4"
     },
     {
       "ledger_id": "MPL-10",
       "source": "intake-2525 dive",
-      "action": "Content-addressed spill stubs (head/tail preview + id + length) and recall guards as pointer-arm refinements."
+      "action": "Content-addressed spill stubs (head/tail preview + id + length) and recall guards as pointer-arm refinements.",
+      "terminal_mapping": "M2 monitor"
     },
     {
       "ledger_id": "MPL-11",
       "source": "intake-2530 dive",
-      "action": "MemGPT-style memory-pressure warning before eviction as a pointer-arm refinement."
+      "action": "MemGPT-style memory-pressure warning before eviction as a pointer-arm refinement.",
+      "terminal_mapping": "M2 monitor"
     },
     {
       "ledger_id": "MPL-12",
       "source": "intake-2528/2527 dives",
-      "action": "Parallel or async compaction and verifier-optimised summary prompts."
+      "action": "Parallel or async compaction and verifier-optimised summary prompts.",
+      "terminal_mapping": "M3 monitor"
     },
     {
       "ledger_id": "MPL-13",
       "source": "intake-2523 dive",
-      "action": "Agent-visible context meter in every tool result."
+      "action": "Agent-visible context meter in every tool result.",
+      "terminal_mapping": "decline: REPL prompt is rebuilt every turn, so a meter informs no decision"
     },
     {
       "ledger_id": "MPL-14",
       "source": "intake-2523 dive",
-      "action": "Agent-writable AGENTS.md as persistent standing context."
+      "action": "Agent-writable AGENTS.md as persistent standing context.",
+      "terminal_mapping": "decline: standing role prompts stay human-governed"
     },
     {
       "ledger_id": "MPL-15",
       "source": "intake-2523 dive + orchestrator sqlite_store.py read",
-      "action": "Cross-session continuation: expose past-session transcript search to the REPL and a pointer-only resume."
+      "action": "Cross-session continuation: expose past-session transcript search to the REPL and a pointer-only resume.",
+      "terminal_mapping": "M1 monitor"
     },
     {
       "ledger_id": "MPL-16",
       "source": "intake-2526 dive",
-      "action": "Agent-authored episode annotation for eviction (CWL)."
+      "action": "Agent-authored episode annotation for eviction (CWL).",
+      "terminal_mapping": "decline: needs model-emitted bookkeeping our small workers do not do reliably"
     },
     {
       "ledger_id": "MPL-17",
       "source": "intake-2525 dive",
-      "action": "Adopt ARC HBM roofline serving-cost model."
+      "action": "Adopt ARC HBM roofline serving-cost model.",
+      "terminal_mapping": "decline: wall time is measured directly"
     },
     {
       "ledger_id": "MPL-18",
       "source": "Stage-1 prelim (operator question)",
-      "action": "Record the novelty verdict and prior-art chain in the context-management wiki."
+      "action": "Record the novelty verdict and prior-art chain in the context-management wiki.",
+      "terminal_mapping": "K1 knowledge-only"
     }
   ],
   "prior_sessions": [
@@ -65171,8 +65205,735 @@
   "stage3_plan_draft": {
     "path": "/mnt/raid0/llm/tmp/intake-mainplane-20261030/stage3/STAGE3_PLAN.md",
     "sha256": "525849605518c57ce866f299b686116b6686df9efb457f4af9fc5f0866ffe097",
-    "status": "proposed; awaiting operator approval (returned to caller as final report)",
+    "status": "approved by the operator 2026-10-31 (relayed by the coordinator); applied in Stage 4",
     "builder": "/mnt/raid0/llm/tmp/intake-mainplane-20261030/scripts/gen_plan.py",
     "validator": "validate_intake.sh --plan-file/--session-file exit 0 (2026-10-31)"
+  },
+  "stage3_filing": {
+    "format_version": 2,
+    "entry_updates": [
+      {
+        "id": "intake-2522",
+        "integration_disposition": "integrated",
+        "handoffs_updated": [
+          "handoffs/active/tool-output-compression.md"
+        ],
+        "handoffs_created": [],
+        "disposition_evidence": [
+          "MPL-1 -> P2 / TOC-MP-2 (pointer-only arm)",
+          "K1 wiki prior-art paragraph"
+        ]
+      },
+      {
+        "id": "intake-2523",
+        "integration_disposition": "integrated",
+        "handoffs_updated": [
+          "handoffs/active/tool-output-compression.md",
+          "handoffs/active/repl-session-memory-maturity.md"
+        ],
+        "handoffs_created": [],
+        "disposition_evidence": [
+          "MPL-2 -> P1 / TOC-MP-1",
+          "MPL-15 -> M1 trigger prose"
+        ]
+      },
+      {
+        "id": "intake-2524",
+        "integration_disposition": "integrated",
+        "handoffs_updated": [
+          "handoffs/active/tool-output-compression.md"
+        ],
+        "handoffs_created": [],
+        "disposition_evidence": [
+          "MPL-3 -> P2 / TOC-MP-2 (summary+pointer control arm)"
+        ]
+      },
+      {
+        "id": "intake-2525",
+        "integration_disposition": "integrated",
+        "handoffs_updated": [
+          "handoffs/active/tool-output-compression.md"
+        ],
+        "handoffs_created": [],
+        "disposition_evidence": [
+          "MPL-9 -> P4 / TOC-MP-4 (needle design)",
+          "MPL-10 -> M2"
+        ]
+      },
+      {
+        "id": "intake-2526",
+        "integration_disposition": "integrated",
+        "handoffs_updated": [
+          "handoffs/active/tool-output-compression.md"
+        ],
+        "handoffs_created": [],
+        "disposition_evidence": [
+          "MPL-6 -> P3 / TOC-MP-3 (re-fetch cost)"
+        ]
+      },
+      {
+        "id": "intake-2527",
+        "integration_disposition": "integrated",
+        "handoffs_updated": [
+          "handoffs/active/tool-output-compression.md"
+        ],
+        "handoffs_created": [],
+        "disposition_evidence": [
+          "MPL-5 -> P3 / TOC-MP-3",
+          "MPL-12 -> M3"
+        ]
+      },
+      {
+        "id": "intake-2528",
+        "integration_disposition": "integrated",
+        "handoffs_updated": [
+          "handoffs/active/tool-output-compression.md"
+        ],
+        "handoffs_created": [],
+        "disposition_evidence": [
+          "MPL-8 -> P3 / TOC-MP-3 (wall-time share)",
+          "MPL-12 -> M3"
+        ]
+      },
+      {
+        "id": "intake-2529",
+        "integration_disposition": "knowledge_only",
+        "handoffs_updated": [],
+        "handoffs_created": [],
+        "disposition_evidence": [
+          "Framing essay; no consumer behavior (dive: no agent-memory claim)"
+        ]
+      },
+      {
+        "id": "intake-2530",
+        "integration_disposition": "integrated",
+        "handoffs_updated": [
+          "handoffs/active/tool-output-compression.md"
+        ],
+        "handoffs_created": [],
+        "disposition_evidence": [
+          "MPL-3 -> P2 / TOC-MP-2 (summary-only arm)",
+          "MPL-11 -> M2"
+        ]
+      },
+      {
+        "id": "intake-2531",
+        "integration_disposition": "integrated",
+        "handoffs_updated": [
+          "handoffs/active/tool-output-compression.md"
+        ],
+        "handoffs_created": [],
+        "disposition_evidence": [
+          "MPL-7 -> P3 / TOC-MP-3 (literal strata)"
+        ]
+      },
+      {
+        "id": "intake-2532",
+        "integration_disposition": "integrated",
+        "handoffs_updated": [
+          "handoffs/active/tool-output-compression.md"
+        ],
+        "handoffs_created": [],
+        "disposition_evidence": [
+          "MPL-5 -> P3 / TOC-MP-3 (n=4 protocol)"
+        ]
+      },
+      {
+        "id": "intake-2533",
+        "integration_disposition": "integrated",
+        "handoffs_updated": [
+          "handoffs/active/tool-output-compression.md"
+        ],
+        "handoffs_created": [],
+        "disposition_evidence": [
+          "MPL-5 -> P3 / TOC-MP-3 (pass^k estimator)"
+        ]
+      },
+      {
+        "id": "intake-2534",
+        "integration_disposition": "integrated",
+        "handoffs_updated": [
+          "handoffs/active/tool-output-compression.md"
+        ],
+        "handoffs_created": [],
+        "disposition_evidence": [
+          "MPL-4 -> P2 / TOC-MP-2 (pruning+pointer arm, summary prompt)"
+        ]
+      }
+    ],
+    "opportunity_reviews": {
+      "P1": {
+        "project_objective": "Decide whether the REPL can follow its own context pointers in every request mode, before any A/B depends on them.",
+        "implementation_ref": "epyc-orchestrator origin/main b0f8613d: src/repl_environment/environment.py _validate_file_path:570-625; src/graph/session_summary.py:351-362; src/graph/compaction.py:278-291; src/graph/file_artifacts.py:100-139",
+        "gap": "Pointers are written under tmp_dir; under task_root_active() or request_scope() only the task root (+read_roots) is readable, and no test covers pointer reachability.",
+        "operational_change": "Unit test per pointer kind and request mode; fix any denial.",
+        "benefit_direction": "Pointers become usable in every mode; a dead pointer makes the pointer arms of the A/B measure nothing.",
+        "owner": "handoffs/active/tool-output-compression.md",
+        "execution_conditions": "Zero inference; code + unit test in epyc-orchestrator by the owning session; no host window needed.",
+        "closure_basis": "Immediate; closes when the test passes in all three modes."
+      },
+      "P2": {
+        "project_objective": "Decide whether the REPL default should keep the summary, keep summary+pointer, or drop to pointer-only at context pressure.",
+        "implementation_ref": "handoffs/active/tool-output-compression.md first-party A/B box (2026-07-29 section); epyc-orchestrator origin/main b0f8613d src/graph/session_summary.py _session_log_prompt_block",
+        "gap": "The filed A/B has no pointer-only arm, no pruning+pointer arm and no published-prompt summary arm, so it cannot test the Mainplane variant.",
+        "operational_change": "Write the five-arm table with config recipes under the A/B box.",
+        "benefit_direction": "The A/B can separate summary value from pointer value at equal budget.",
+        "owner": "handoffs/active/tool-output-compression.md",
+        "execution_conditions": "Design text only; the A/B runs remain compute-gated in their owner.",
+        "closure_basis": "Immediate design text; activation stays with the A/B."
+      },
+      "P3": {
+        "project_objective": "Make the A/B able to show the failure Mainplane admits (agent never searches) and reliability loss, not only mean accuracy.",
+        "implementation_ref": "handoffs/active/tool-output-compression.md A/B-COST/TRIG/STRAT children; src/graph/trajectory_artifact.py schema",
+        "gap": "No pass^k, no retrieval-miss count, no post-boundary blocked-action count, no literal-recoverability strata, no compaction wall-time share.",
+        "operational_change": "Add requirements (a)-(e) under the A/B box and any missing schema fields.",
+        "benefit_direction": "Arm differences in reliability and retrieval misses become visible.",
+        "owner": "handoffs/active/tool-output-compression.md",
+        "execution_conditions": "Design text only, zero inference.",
+        "closure_basis": "Immediate design text."
+      },
+      "P4": {
+        "project_objective": "Cheaply decide whether pointer-only continuation recovers exact values on our models before spending full-A/B compute.",
+        "implementation_ref": "handoffs/active/tool-output-compression.md A/B box; epyc-orchestrator origin/main b0f8613d src/graph/compaction.py force path; trajectory_artifact.py",
+        "gap": "No measurement of exact-value recovery across summary-only / summary+pointer / pointer-only on any EPYC model.",
+        "operational_change": "Run the 20-task needle screen at n=2 across arms 1-3.",
+        "benefit_direction": "Pointer-only should be >= summary+pointer on exact recall; a loss fires M-MP2.",
+        "owner": "handoffs/active/tool-output-compression.md",
+        "execution_conditions": "Correctness-class inference on the frontdoor model by the owning session (no quiet host needed); after TOC-MP-1 and TOC-MP-2. Intake runs nothing.",
+        "closure_basis": "Immediate screen with a pre-declared decision rule; the full A/B is the broader step."
+      },
+      "K1": {
+        "project_objective": "Answer the operator question (is it new?) durably where context-management readers look.",
+        "implementation_ref": "wiki/context-management.md (lines 87-128 file-mode result; 419-420 A/B requirements; 706-708 Claude Code mapping)",
+        "gap": "The wiki has no statement placing Mainplane against MemGPT/Cursor/Claude Code/OpenClaw and our own pointer machinery.",
+        "operational_change": "Add one paragraph (text in the plan).",
+        "benefit_direction": "Prevents a later session re-filing this as new.",
+        "owner": "handoffs/active/tool-output-compression.md",
+        "execution_conditions": "Doc edit to wiki/context-management.md at Stage 4; the handoff that owns the deciding A/B is the owner of record.",
+        "closure_basis": "Knowledge-only: no consumer behavior changes; the deciding experiment is owned by P2-P4."
+      },
+      "M1": {
+        "project_objective": "Cross-session continuation without a summary.",
+        "implementation_ref": "epyc-orchestrator origin/main b0f8613d src/api/routes/sessions.py:171 build_resume_context; src/session/sqlite_store.py:1449,1572; handoffs/active/repl-session-memory-maturity.md D-c/D-c1",
+        "gap": "Resume returns summary+findings; past-session search is API/CLI only.",
+        "operational_change": "Trigger prose under D-c; no checkbox.",
+        "benefit_direction": "Only worth building if TOC-MP-4 shows pointer-only recovers as well as summary+pointer.",
+        "owner": "handoffs/active/repl-session-memory-maturity.md",
+        "execution_conditions": "Trigger: D-c1 numbers exist AND TOC-MP-4 favours pointer-only. The operator said not to design D-c yet (2026-07-27).",
+        "closure_basis": "Monitor: unfired trigger; the operator gate on D-c design stands and no cheaper probe than TOC-MP-4 answers it."
+      },
+      "M2": {
+        "project_objective": "Improve pointer-arm recall if it misses.",
+        "implementation_ref": "intake-2525 ARC mechanism; intake-2530 MemGPT memory pressure; epyc-orchestrator origin/main b0f8613d src/graph/file_artifacts.py stub format",
+        "gap": "Spill stubs are path pointers without content hash or recall guards; no pre-externalization notice.",
+        "operational_change": "Trigger prose; no checkbox.",
+        "benefit_direction": "Lower retrieval misses for the pointer arms.",
+        "owner": "handoffs/active/tool-output-compression.md",
+        "execution_conditions": "Trigger: TOC-MP-4 or the A/B records pointer-only retrieval misses.",
+        "closure_basis": "Monitor: no observed miss yet; TOC-MP-4 is the cheaper probe that fires it."
+      },
+      "M3": {
+        "project_objective": "Improve the summary arm only if it is the winner.",
+        "implementation_ref": "intake-2528 Table 2/7 (PCC), intake-2527 TRACE; handoffs/active/tool-output-compression.md M7 monitor",
+        "gap": "Summary-arm speed and prompt quality untuned.",
+        "operational_change": "Extend M7 prose; no checkbox.",
+        "benefit_direction": "Faster or more faithful summaries if they are kept.",
+        "owner": "handoffs/active/tool-output-compression.md",
+        "execution_conditions": "Trigger: a summary arm wins the full A/B.",
+        "closure_basis": "Monitor: PCC speedups are non-uniform (slower on MoE models) and TRACE prompts are AppWorld-specific; no value unless summaries win."
+      }
+    },
+    "opportunity_scan": [
+      {
+        "scan_id": "S1",
+        "source_ref": "intake-2523 claim_anchors 2/5 (tools.go rg recipe; commands.go /continue)",
+        "implementation_ref": "epyc-orchestrator origin/main b0f8613d src/graph/session_summary.py:351-362",
+        "mechanism": "Continue from the full log with no summary",
+        "consumer": "REPL session-log block",
+        "application": "pointer-only arm in the A/B",
+        "disposition": "actionable",
+        "ledger_ids": [
+          "MPL-1"
+        ],
+        "basis": "Read the Mainplane continuation path and our session-log block; ours always prepends a summary."
+      },
+      {
+        "scan_id": "S2",
+        "source_ref": "intake-2523 claim_anchor 2 (log copied to a readable path)",
+        "implementation_ref": "epyc-orchestrator origin/main b0f8613d src/repl_environment/environment.py:570-625",
+        "mechanism": "The continuing agent can read the old log",
+        "consumer": "REPL file-path validation",
+        "application": "pointer reachability test",
+        "disposition": "actionable",
+        "ledger_ids": [
+          "MPL-2"
+        ],
+        "basis": "Pointers target tmp_dir; validation restricts reads in task-root and request-scope modes."
+      },
+      {
+        "scan_id": "S3",
+        "source_ref": "intake-2524 claim_anchor 1; intake-2530 claim_anchor 3; intake-2534 claim_anchor 3",
+        "implementation_ref": "handoffs/active/tool-output-compression.md A/B box",
+        "mechanism": "Summary + transcript pointer (incumbent) and summary-only (MemGPT baseline)",
+        "consumer": "filed A/B",
+        "application": "control arms",
+        "disposition": "actionable",
+        "ledger_ids": [
+          "MPL-3"
+        ],
+        "basis": "Incumbent shapes read in three sources; the A/B lacks them as named arms."
+      },
+      {
+        "scan_id": "S4",
+        "source_ref": "intake-2534 claim_anchors 0-2, 4",
+        "implementation_ref": "handoffs/active/tool-output-compression.md A/B box",
+        "mechanism": "Tool-result pruning without summary; sectioned summary prompt",
+        "consumer": "filed A/B",
+        "application": "pruning+pointer arm; fair summary prompt",
+        "disposition": "actionable",
+        "ledger_ids": [
+          "MPL-4"
+        ],
+        "basis": "OpenClaw pruning has no pointer; adding one is the retrieval hypothesis."
+      },
+      {
+        "scan_id": "S5",
+        "source_ref": "intake-2533 claim_anchor 0; intake-2527 claim_anchors 2-3",
+        "implementation_ref": "src/graph/trajectory_artifact.py",
+        "mechanism": "pass^k reliability; post-boundary blocked actions",
+        "consumer": "A/B metrics",
+        "application": "reliability reporting",
+        "disposition": "actionable",
+        "ledger_ids": [
+          "MPL-5"
+        ],
+        "basis": "A/B-STRAT reports accuracy per stratum but no repeat-trial reliability."
+      },
+      {
+        "scan_id": "S6",
+        "source_ref": "intake-2522 claim_anchor 3 (agent must search); intake-2530 claim_anchor 4; intake-2526 claim_anchor 3",
+        "implementation_ref": "trajectory_artifact.py spill_pointer_follows",
+        "mechanism": "Retrieval misses and re-fetch cost",
+        "consumer": "A/B metrics",
+        "application": "retrieval-miss and re-fetch logging",
+        "disposition": "actionable",
+        "ledger_ids": [
+          "MPL-6"
+        ],
+        "basis": "spill_pointer_follows counts follows, not misses."
+      },
+      {
+        "scan_id": "S7",
+        "source_ref": "intake-2531 claim_anchors 0-1",
+        "implementation_ref": "handoffs/active/tool-output-compression.md A/B box",
+        "mechanism": "Literal overlap governs long-context recall",
+        "consumer": "A/B probe design",
+        "application": "literal-recoverability strata",
+        "disposition": "actionable",
+        "ledger_ids": [
+          "MPL-7"
+        ],
+        "basis": "Grep favours literal queries; strata expose that."
+      },
+      {
+        "scan_id": "S8",
+        "source_ref": "intake-2528 claim_anchor 0 (Table 2)",
+        "implementation_ref": "handoffs/active/tool-output-compression.md A/B-COST",
+        "mechanism": "Compaction share of wall time",
+        "consumer": "A/B metrics",
+        "application": "wall-time share",
+        "disposition": "actionable",
+        "ledger_ids": [
+          "MPL-8"
+        ],
+        "basis": "A/B-COST has compressor wall time per episode, not share of E2E."
+      },
+      {
+        "scan_id": "S9",
+        "source_ref": "intake-2525 claim_anchor 1 (Appendix B fixture)",
+        "implementation_ref": "epyc-orchestrator origin/main b0f8613d src/graph/compaction.py force path",
+        "mechanism": "Unforgeable needle with forced compaction",
+        "consumer": "pre-A/B screen",
+        "application": "exact-value needle screen",
+        "disposition": "actionable",
+        "ledger_ids": [
+          "MPL-9"
+        ],
+        "basis": "Cheapest probe that decides pointer-only viability."
+      },
+      {
+        "scan_id": "S10",
+        "source_ref": "intake-2525 claim_anchor 0; intake-2530 claim_anchor 2",
+        "implementation_ref": "epyc-orchestrator origin/main b0f8613d src/graph/file_artifacts.py:100-139",
+        "mechanism": "Content-addressed stubs, recall guards, pressure notice",
+        "consumer": "spill stub format",
+        "application": "pointer-arm refinements",
+        "disposition": "actionable",
+        "ledger_ids": [
+          "MPL-10",
+          "MPL-11"
+        ],
+        "basis": "Useful only after a measured miss."
+      },
+      {
+        "scan_id": "S11",
+        "source_ref": "intake-2528 claim_corrections 4; intake-2527 claim_anchor 4",
+        "implementation_ref": "handoffs/active/tool-output-compression.md M7",
+        "mechanism": "Parallel/async compaction; optimised summary prompt",
+        "consumer": "summary arm",
+        "application": "summary refinements",
+        "disposition": "actionable",
+        "ledger_ids": [
+          "MPL-12"
+        ],
+        "basis": "Useful only if summaries win."
+      },
+      {
+        "scan_id": "S12",
+        "source_ref": "intake-2523 claim_anchor 6 (context meter)",
+        "implementation_ref": "epyc-orchestrator origin/main b0f8613d src/graph/helpers.py build_root_lm_prompt",
+        "mechanism": "Agent-visible context size",
+        "consumer": "REPL prompt",
+        "application": "context meter",
+        "disposition": "declined",
+        "ledger_ids": [
+          "MPL-13"
+        ],
+        "basis": "Prompt is rebuilt per turn; bounded by construction."
+      },
+      {
+        "scan_id": "S13",
+        "source_ref": "intake-2523 claim_anchor 3 (AGENTS.md)",
+        "implementation_ref": "orchestration/prompts/roles/*.md via resolver.py",
+        "mechanism": "Agent-writable standing context",
+        "consumer": "role prompts",
+        "application": "agent-writable rules",
+        "disposition": "declined",
+        "ledger_ids": [
+          "MPL-14"
+        ],
+        "basis": "Human-only trust boundary."
+      },
+      {
+        "scan_id": "S14",
+        "source_ref": "intake-2523 claim_anchor 5 (/continue)",
+        "implementation_ref": "epyc-orchestrator origin/main b0f8613d src/session/sqlite_store.py:1449,1572; src/api/routes/sessions.py:171",
+        "mechanism": "Resume a past session from its log",
+        "consumer": "session resume",
+        "application": "cross-session pointer resume",
+        "disposition": "actionable",
+        "ledger_ids": [
+          "MPL-15"
+        ],
+        "basis": "Operator gate on D-c design; trigger-gated."
+      },
+      {
+        "scan_id": "S15",
+        "source_ref": "intake-2526 claim_anchor 0",
+        "implementation_ref": "handoffs/active/tool-output-compression.md A/B arms",
+        "mechanism": "Agent-annotated eviction",
+        "consumer": "REPL eviction",
+        "application": "CWL episodes",
+        "disposition": "declined",
+        "ledger_ids": [
+          "MPL-16"
+        ],
+        "basis": "Small-model tier; paper reports looping."
+      },
+      {
+        "scan_id": "S16",
+        "source_ref": "intake-2525 claim_corrections 1",
+        "implementation_ref": "handoffs/active/tool-output-compression.md A/B-COST",
+        "mechanism": "Roofline serving-cost model",
+        "consumer": "A/B cost metrics",
+        "application": "HBM model",
+        "disposition": "declined",
+        "ledger_ids": [
+          "MPL-17"
+        ],
+        "basis": "Direct measurement preferred."
+      },
+      {
+        "scan_id": "S17",
+        "source_ref": "intake-2530 claim_anchors 0-3; intake-2524 claim_anchor 1",
+        "implementation_ref": "wiki/context-management.md",
+        "mechanism": "Prior-art chain",
+        "consumer": "wiki readers",
+        "application": "novelty record",
+        "disposition": "actionable",
+        "ledger_ids": [
+          "MPL-18"
+        ],
+        "basis": "Operator question answered durably."
+      }
+    ],
+    "actionable_additions": [],
+    "steering_reconciliation": [
+      {
+        "seq": 1,
+        "stage": 1,
+        "verbatim": "Accept ALL recommended deep dives and literature expansions, for up to FOUR Stage-2 waves (hard maximum).",
+        "disposition": "context-only",
+        "plan_ref": null,
+        "reason": "Pre-approval of Stage-2 dive scope; governs wave count, not filing."
+      },
+      {
+        "seq": 2,
+        "stage": 1,
+        "verbatim": "The operator's question is whether these techniques are genuinely NEW, and whether they can be integrated with our orchestrator's REPL stack (epyc-orchestrator, /workspace/repos/epyc-orchestrator).",
+        "disposition": "planned",
+        "plan_ref": "K1",
+        "reason": "Novelty answered in K1; REPL integration answered by P1-P4 (pointer reachability, arm set, metrics, needle screen)."
+      },
+      {
+        "seq": 3,
+        "stage": 1,
+        "verbatim": "Search the handoffs and wiki for prior work before judging novelty: REPL memory, episodic FAISS, context compaction, session transcripts, the REPL embedding retrieval plan.",
+        "disposition": "context-only",
+        "plan_ref": null,
+        "reason": "Done in Stage 1 Phase 2 (prior-art sweep of handoffs/wiki/index at origin/main 00c0e894e)."
+      },
+      {
+        "seq": 4,
+        "stage": 1,
+        "verbatim": "Intake never takes compute. No benchmarks and no model runs.",
+        "disposition": "context-only",
+        "plan_ref": null,
+        "reason": "Constraint on intake; any empirical arm is filed for its owning session, not run here."
+      },
+      {
+        "seq": 5,
+        "stage": 1,
+        "verbatim": "Stop at the Stage-3 plan and hand it back to me as your final report, with the exact proposed handoff and index edits. Do NOT apply index rows yourself.",
+        "disposition": "context-only",
+        "plan_ref": null,
+        "reason": "Ruling (b): owning session applies index rows; Stage 4 not run by this lane."
+      },
+      {
+        "seq": 6,
+        "stage": 3,
+        "verbatim": "When citing intake entries, use `#record` form wherever an entry has a refuted claim, so the cite-check gate passes.",
+        "disposition": "context-only",
+        "plan_ref": null,
+        "reason": "Applied: intake-2528 (one overturned claim) is cited as intake-2528#record in all proposed text."
+      },
+      {
+        "seq": 7,
+        "stage": 3,
+        "verbatim": "Use a worktree off origin/main. No `git add -A`. Push with scripts/coordination/serialized_push.py.",
+        "disposition": "context-only",
+        "plan_ref": null,
+        "reason": "Followed for the Stage-1/2 commits (369b29318, d0be7dce4)."
+      }
+    ],
+    "outcome_reviews": {
+      "MPL-1": {
+        "required_outcome": "Add a pointer-only (no summary) continuation arm to the filed verbatim-log vs summarize A/B.",
+        "review_status": "preserved",
+        "review_basis": "Main reviewed TOC-MP-2 against the source passage and current consumer; the task text carries the required behavior and its acceptance.",
+        "task_refs": [
+          {
+            "owner": "handoffs/active/tool-output-compression.md",
+            "task_id": "TOC-MP-2",
+            "task_text": "- [ ] **TOC-MP-2 — A/B-ARMS: fix the arm set of the first-party verbatim-log A/B (design text, zero inference).** Arms at one recorded context budget C: (1) summary-only, the MemGPT DMR baseline shape (intake-2530); (2) summary + full-log pointer, today's production shape (`_session_log_prompt_block`) and the Cursor / Claude Code / OpenClaw shape (intake-2524, intake-2534); (3) pointer-only: recent verbatim tail + full-log pointer + one continuation sentence, no summary (Mainplane, intake-2522, intake-2523); (4) no-summary tool-result pruning (OpenClaw client path: soft-trim, then placeholder) with a pointer written into each placeholder (intake-2534); (5) full history in context while it fits, as reference. Arms 1-2 use OpenClaw's published sectioned summary prompt (`compaction.ts` @ 0e7b5c3) so the summary arm is not a straw man; A/B-CTRL still decides how the summary is produced on the live path. Acceptance: an arm table under the A/B box giving each arm's flag/config recipe and C.",
+            "acceptance": "an arm table under the A/B box giving each arm's flag/config recipe and C."
+          }
+        ]
+      },
+      "MPL-2": {
+        "required_outcome": "Prove every context pointer the REPL emits (session-log peek, compaction read_file, spill peek) is readable under default, task_root and request-scope modes; fix any denial.",
+        "review_status": "preserved",
+        "review_basis": "Main reviewed TOC-MP-1 against the source passage and current consumer; the task text carries the required behavior and its acceptance.",
+        "task_refs": [
+          {
+            "owner": "handoffs/active/tool-output-compression.md",
+            "task_id": "TOC-MP-1",
+            "task_text": "- [ ] **TOC-MP-1 — Prove every REPL context pointer is readable by the REPL that receives it, and fix any denial (zero inference).** The orchestrator emits three pointer kinds, all under `tmp_dir`: the session-log block `Full log: peek(99999, file_path=...)` (`src/graph/session_summary.py:351-362`), compaction's `read_file(\"<tmp_dir>/session_<task>_ctx_<n>.md\")` (`src/graph/compaction.py:278-291`) and spill `peek(n, file_path=..., offset=k)` (`src/graph/file_artifacts.py:100-139`). `_validate_file_path` (`src/repl_environment/environment.py:570-625 @ b0f8613d`) admits only the scratch task root when `task_root_active()` and only root + read_roots under `request_scope()`, so a pointer can be dead in those modes. Add a unit test that emits each pointer kind under default, task-root and request-scope modes and calls the pointed tool; where a read is denied, admit the request's own session artifacts or write them under the task root. Acceptance: the test passes in all three modes, with the fix commit named here (intake-2523, intake-2524).",
+            "acceptance": "the test passes in all three modes, with the fix commit named here (intake-2523, intake-2524)."
+          }
+        ]
+      },
+      "MPL-3": {
+        "required_outcome": "Keep summary+pointer (current production shape) and summary-only as A/B arms; add full-history-in-context while it fits; equal context budget.",
+        "review_status": "preserved",
+        "review_basis": "Main reviewed TOC-MP-2 against the source passage and current consumer; the task text carries the required behavior and its acceptance.",
+        "task_refs": [
+          {
+            "owner": "handoffs/active/tool-output-compression.md",
+            "task_id": "TOC-MP-2",
+            "task_text": "- [ ] **TOC-MP-2 — A/B-ARMS: fix the arm set of the first-party verbatim-log A/B (design text, zero inference).** Arms at one recorded context budget C: (1) summary-only, the MemGPT DMR baseline shape (intake-2530); (2) summary + full-log pointer, today's production shape (`_session_log_prompt_block`) and the Cursor / Claude Code / OpenClaw shape (intake-2524, intake-2534); (3) pointer-only: recent verbatim tail + full-log pointer + one continuation sentence, no summary (Mainplane, intake-2522, intake-2523); (4) no-summary tool-result pruning (OpenClaw client path: soft-trim, then placeholder) with a pointer written into each placeholder (intake-2534); (5) full history in context while it fits, as reference. Arms 1-2 use OpenClaw's published sectioned summary prompt (`compaction.ts` @ 0e7b5c3) so the summary arm is not a straw man; A/B-CTRL still decides how the summary is produced on the live path. Acceptance: an arm table under the A/B box giving each arm's flag/config recipe and C.",
+            "acceptance": "an arm table under the A/B box giving each arm's flag/config recipe and C."
+          }
+        ]
+      },
+      "MPL-4": {
+        "required_outcome": "Add a no-summary pruning arm modeled on OpenClaw client-side pruning, with a pointer in the placeholder; use OpenClaw sectioned summary prompt for the summary arm.",
+        "review_status": "preserved",
+        "review_basis": "Main reviewed TOC-MP-2 against the source passage and current consumer; the task text carries the required behavior and its acceptance.",
+        "task_refs": [
+          {
+            "owner": "handoffs/active/tool-output-compression.md",
+            "task_id": "TOC-MP-2",
+            "task_text": "- [ ] **TOC-MP-2 — A/B-ARMS: fix the arm set of the first-party verbatim-log A/B (design text, zero inference).** Arms at one recorded context budget C: (1) summary-only, the MemGPT DMR baseline shape (intake-2530); (2) summary + full-log pointer, today's production shape (`_session_log_prompt_block`) and the Cursor / Claude Code / OpenClaw shape (intake-2524, intake-2534); (3) pointer-only: recent verbatim tail + full-log pointer + one continuation sentence, no summary (Mainplane, intake-2522, intake-2523); (4) no-summary tool-result pruning (OpenClaw client path: soft-trim, then placeholder) with a pointer written into each placeholder (intake-2534); (5) full history in context while it fits, as reference. Arms 1-2 use OpenClaw's published sectioned summary prompt (`compaction.ts` @ 0e7b5c3) so the summary arm is not a straw man; A/B-CTRL still decides how the summary is produced on the live path. Acceptance: an arm table under the A/B box giving each arm's flag/config recipe and C.",
+            "acceptance": "an arm table under the A/B box giving each arm's flag/config recipe and C."
+          }
+        ]
+      },
+      "MPL-5": {
+        "required_outcome": "Report pass^k/pass@k per arm with the per-task estimator (n>=2, prefer 4) and post-boundary blocked actions counted separately from re-reads.",
+        "review_status": "preserved",
+        "review_basis": "Main reviewed TOC-MP-3 against the source passage and current consumer; the task text carries the required behavior and its acceptance.",
+        "task_refs": [
+          {
+            "owner": "handoffs/active/tool-output-compression.md",
+            "task_id": "TOC-MP-3",
+            "task_text": "- [ ] **TOC-MP-3 — A/B-REL: add reliability, retrieval-miss, literal-recoverability and wall-time requirements to the A/B (design text, zero inference).** (a) n >= 2 trials per task (prefer 4, the tau2 protocol, intake-2532) and pass^k / pass@k per arm with the per-task estimator mean_task C(c,k)/C(n,k) (intake-2533), never p^k of the mean success; (b) post-boundary blocked/error actions over the first 5 actions, counted separately from deliberate re-reads (intake-2527); (c) retrieval misses: tasks whose needed fact sits only in the externalized log and is never read, plus re-fetch tokens and wall time per arm (intake-2522, intake-2526); (d) probes stratified by literal recoverability: direct (literal in the query), paraphrase, two-hop (intake-2531); (e) compaction wall time as a share of end-to-end time (intake-2528#record). Acceptance: the requirements sit under the A/B box and every field they need is in the trajectory-artifact schema or filed as a schema addition.",
+            "acceptance": "the requirements sit under the A/B box and every field they need is in the trajectory-artifact schema or filed as a schema addition."
+          }
+        ]
+      },
+      "MPL-6": {
+        "required_outcome": "Log retrieval-miss rate (needed fact never searched), re-fetch tokens and wall time per arm.",
+        "review_status": "preserved",
+        "review_basis": "Main reviewed TOC-MP-3 against the source passage and current consumer; the task text carries the required behavior and its acceptance.",
+        "task_refs": [
+          {
+            "owner": "handoffs/active/tool-output-compression.md",
+            "task_id": "TOC-MP-3",
+            "task_text": "- [ ] **TOC-MP-3 — A/B-REL: add reliability, retrieval-miss, literal-recoverability and wall-time requirements to the A/B (design text, zero inference).** (a) n >= 2 trials per task (prefer 4, the tau2 protocol, intake-2532) and pass^k / pass@k per arm with the per-task estimator mean_task C(c,k)/C(n,k) (intake-2533), never p^k of the mean success; (b) post-boundary blocked/error actions over the first 5 actions, counted separately from deliberate re-reads (intake-2527); (c) retrieval misses: tasks whose needed fact sits only in the externalized log and is never read, plus re-fetch tokens and wall time per arm (intake-2522, intake-2526); (d) probes stratified by literal recoverability: direct (literal in the query), paraphrase, two-hop (intake-2531); (e) compaction wall time as a share of end-to-end time (intake-2528#record). Acceptance: the requirements sit under the A/B box and every field they need is in the trajectory-artifact schema or filed as a schema addition.",
+            "acceptance": "the requirements sit under the A/B box and every field they need is in the trajectory-artifact schema or filed as a schema addition."
+          }
+        ]
+      },
+      "MPL-7": {
+        "required_outcome": "Stratify A/B probes by literal recoverability (direct / paraphrase / two-hop).",
+        "review_status": "preserved",
+        "review_basis": "Main reviewed TOC-MP-3 against the source passage and current consumer; the task text carries the required behavior and its acceptance.",
+        "task_refs": [
+          {
+            "owner": "handoffs/active/tool-output-compression.md",
+            "task_id": "TOC-MP-3",
+            "task_text": "- [ ] **TOC-MP-3 — A/B-REL: add reliability, retrieval-miss, literal-recoverability and wall-time requirements to the A/B (design text, zero inference).** (a) n >= 2 trials per task (prefer 4, the tau2 protocol, intake-2532) and pass^k / pass@k per arm with the per-task estimator mean_task C(c,k)/C(n,k) (intake-2533), never p^k of the mean success; (b) post-boundary blocked/error actions over the first 5 actions, counted separately from deliberate re-reads (intake-2527); (c) retrieval misses: tasks whose needed fact sits only in the externalized log and is never read, plus re-fetch tokens and wall time per arm (intake-2522, intake-2526); (d) probes stratified by literal recoverability: direct (literal in the query), paraphrase, two-hop (intake-2531); (e) compaction wall time as a share of end-to-end time (intake-2528#record). Acceptance: the requirements sit under the A/B box and every field they need is in the trajectory-artifact schema or filed as a schema addition.",
+            "acceptance": "the requirements sit under the A/B box and every field they need is in the trajectory-artifact schema or filed as a schema addition."
+          }
+        ]
+      },
+      "MPL-8": {
+        "required_outcome": "Report compaction wall time as a fraction of end-to-end wall time per arm.",
+        "review_status": "preserved",
+        "review_basis": "Main reviewed TOC-MP-3 against the source passage and current consumer; the task text carries the required behavior and its acceptance.",
+        "task_refs": [
+          {
+            "owner": "handoffs/active/tool-output-compression.md",
+            "task_id": "TOC-MP-3",
+            "task_text": "- [ ] **TOC-MP-3 — A/B-REL: add reliability, retrieval-miss, literal-recoverability and wall-time requirements to the A/B (design text, zero inference).** (a) n >= 2 trials per task (prefer 4, the tau2 protocol, intake-2532) and pass^k / pass@k per arm with the per-task estimator mean_task C(c,k)/C(n,k) (intake-2533), never p^k of the mean success; (b) post-boundary blocked/error actions over the first 5 actions, counted separately from deliberate re-reads (intake-2527); (c) retrieval misses: tasks whose needed fact sits only in the externalized log and is never read, plus re-fetch tokens and wall time per arm (intake-2522, intake-2526); (d) probes stratified by literal recoverability: direct (literal in the query), paraphrase, two-hop (intake-2531); (e) compaction wall time as a share of end-to-end time (intake-2528#record). Acceptance: the requirements sit under the A/B box and every field they need is in the trajectory-artifact schema or filed as a schema addition.",
+            "acceptance": "the requirements sit under the A/B box and every field they need is in the trajectory-artifact schema or filed as a schema addition."
+          }
+        ]
+      },
+      "MPL-9": {
+        "required_outcome": "Run an exact-value needle correctness screen across summary-only / summary+pointer / pointer-only before the full A/B.",
+        "review_status": "preserved",
+        "review_basis": "Main reviewed TOC-MP-4 against the source passage and current consumer; the task text carries the required behavior and its acceptance.",
+        "task_refs": [
+          {
+            "owner": "handoffs/active/tool-output-compression.md",
+            "task_id": "TOC-MP-4",
+            "task_text": "- [ ] **TOC-MP-4 — Exact-value needle screen across arms 1-3 before the full A/B (correctness-class inference; after TOC-MP-1 and TOC-MP-2).** Fixture: 20 REPL tasks whose answer is an unforgeable 24-character value printed once by an early tool call inside a >4,000-character output, with externalization forced at fixed turn indices (ARC Appendix B design, intake-2525). Arms 1-3 of TOC-MP-2 at one recorded C; frontdoor model; n = 2 runs per task; score only the exact submitted value. Record orchestrator commit, flags, model/quant, C and the trajectory artifacts. Decision rule, fixed in advance: pointer-only exact recall >= summary+pointer keeps arm 3 in the full A/B as the candidate default; otherwise record the miss pattern here and fire M-MP2. Acceptance: result table, artifact path and the decision line.",
+            "acceptance": "result table, artifact path and the decision line."
+          }
+        ]
+      },
+      "MPL-10": {
+        "required_outcome": "Content-addressed spill stubs (head/tail preview + id + length) and recall guards as pointer-arm refinements.",
+        "review_status": "closed-with-basis",
+        "review_basis": "Monitor: no observed miss yet; TOC-MP-4 is the cheaper probe that fires it.",
+        "task_refs": []
+      },
+      "MPL-11": {
+        "required_outcome": "MemGPT-style memory-pressure warning before eviction as a pointer-arm refinement.",
+        "review_status": "closed-with-basis",
+        "review_basis": "Monitor: no observed miss yet; TOC-MP-4 is the cheaper probe that fires it.",
+        "task_refs": []
+      },
+      "MPL-12": {
+        "required_outcome": "Parallel or async compaction and verifier-optimised summary prompts.",
+        "review_status": "closed-with-basis",
+        "review_basis": "Monitor: PCC speedups are non-uniform (slower on MoE models) and TRACE prompts are AppWorld-specific; no value unless summaries win.",
+        "task_refs": []
+      },
+      "MPL-13": {
+        "required_outcome": "Agent-visible context meter in every tool result.",
+        "review_status": "closed-with-basis",
+        "review_basis": "Our REPL rebuilds its prompt every turn from task + REPL state + last output (src/graph/helpers.py build_root_lm_prompt), so prompt size is bounded by construction and a meter would inform no model decision; per-turn prompt tokens are already logged in the trajectory artifact. Reopen if a persistent-history REPL mode is adopted.",
+        "task_refs": []
+      },
+      "MPL-14": {
+        "required_outcome": "Agent-writable AGENTS.md as persistent standing context.",
+        "review_status": "closed-with-basis",
+        "review_basis": "Role prompts (orchestration/prompts/roles/*.md) are operator-governed standing rules; letting the served model rewrite its own system prompt crosses the human-only trust boundary in agents/shared/INVARIANTS.md. Agent-written facts already have the remember()/findings path.",
+        "task_refs": []
+      },
+      "MPL-15": {
+        "required_outcome": "Cross-session continuation: expose past-session transcript search to the REPL and a pointer-only resume.",
+        "review_status": "closed-with-basis",
+        "review_basis": "Monitor: unfired trigger; the operator gate on D-c design stands and no cheaper probe than TOC-MP-4 answers it.",
+        "task_refs": []
+      },
+      "MPL-16": {
+        "required_outcome": "Agent-authored episode annotation for eviction (CWL).",
+        "review_status": "closed-with-basis",
+        "review_basis": "CWL needs the model to emit typed episode and dependency bookkeeping; the paper itself reports looping and confusion from the protocol, and our workers are the small-model tier. Eviction without recall is also covered by the pruning arm.",
+        "task_refs": []
+      },
+      "MPL-17": {
+        "required_outcome": "Adopt ARC HBM roofline serving-cost model.",
+        "review_status": "closed-with-basis",
+        "review_basis": "We measure wall time and tokens directly on our hardware in the A/B; a modeled H200 roofline replay of successful runs adds nothing a direct measurement does not.",
+        "task_refs": []
+      },
+      "MPL-18": {
+        "required_outcome": "Record the novelty verdict and prior-art chain in the context-management wiki.",
+        "review_status": "closed-with-basis",
+        "review_basis": "Knowledge-only: no consumer behavior changes; the deciding experiment is owned by P2-P4.",
+        "task_refs": []
+      }
+    },
+    "proposed_tasks": [
+      {
+        "owner": "handoffs/active/tool-output-compression.md",
+        "task_text": "- [ ] **TOC-MP-1 — Prove every REPL context pointer is readable by the REPL that receives it, and fix any denial (zero inference).** The orchestrator emits three pointer kinds, all under `tmp_dir`: the session-log block `Full log: peek(99999, file_path=...)` (`src/graph/session_summary.py:351-362`), compaction's `read_file(\"<tmp_dir>/session_<task>_ctx_<n>.md\")` (`src/graph/compaction.py:278-291`) and spill `peek(n, file_path=..., offset=k)` (`src/graph/file_artifacts.py:100-139`). `_validate_file_path` (`src/repl_environment/environment.py:570-625 @ b0f8613d`) admits only the scratch task root when `task_root_active()` and only root + read_roots under `request_scope()`, so a pointer can be dead in those modes. Add a unit test that emits each pointer kind under default, task-root and request-scope modes and calls the pointed tool; where a read is denied, admit the request's own session artifacts or write them under the task root. Acceptance: the test passes in all three modes, with the fix commit named here (intake-2523, intake-2524)."
+      },
+      {
+        "owner": "handoffs/active/tool-output-compression.md",
+        "task_text": "- [ ] **TOC-MP-2 — A/B-ARMS: fix the arm set of the first-party verbatim-log A/B (design text, zero inference).** Arms at one recorded context budget C: (1) summary-only, the MemGPT DMR baseline shape (intake-2530); (2) summary + full-log pointer, today's production shape (`_session_log_prompt_block`) and the Cursor / Claude Code / OpenClaw shape (intake-2524, intake-2534); (3) pointer-only: recent verbatim tail + full-log pointer + one continuation sentence, no summary (Mainplane, intake-2522, intake-2523); (4) no-summary tool-result pruning (OpenClaw client path: soft-trim, then placeholder) with a pointer written into each placeholder (intake-2534); (5) full history in context while it fits, as reference. Arms 1-2 use OpenClaw's published sectioned summary prompt (`compaction.ts` @ 0e7b5c3) so the summary arm is not a straw man; A/B-CTRL still decides how the summary is produced on the live path. Acceptance: an arm table under the A/B box giving each arm's flag/config recipe and C."
+      },
+      {
+        "owner": "handoffs/active/tool-output-compression.md",
+        "task_text": "- [ ] **TOC-MP-3 — A/B-REL: add reliability, retrieval-miss, literal-recoverability and wall-time requirements to the A/B (design text, zero inference).** (a) n >= 2 trials per task (prefer 4, the tau2 protocol, intake-2532) and pass^k / pass@k per arm with the per-task estimator mean_task C(c,k)/C(n,k) (intake-2533), never p^k of the mean success; (b) post-boundary blocked/error actions over the first 5 actions, counted separately from deliberate re-reads (intake-2527); (c) retrieval misses: tasks whose needed fact sits only in the externalized log and is never read, plus re-fetch tokens and wall time per arm (intake-2522, intake-2526); (d) probes stratified by literal recoverability: direct (literal in the query), paraphrase, two-hop (intake-2531); (e) compaction wall time as a share of end-to-end time (intake-2528#record). Acceptance: the requirements sit under the A/B box and every field they need is in the trajectory-artifact schema or filed as a schema addition."
+      },
+      {
+        "owner": "handoffs/active/tool-output-compression.md",
+        "task_text": "- [ ] **TOC-MP-4 — Exact-value needle screen across arms 1-3 before the full A/B (correctness-class inference; after TOC-MP-1 and TOC-MP-2).** Fixture: 20 REPL tasks whose answer is an unforgeable 24-character value printed once by an early tool call inside a >4,000-character output, with externalization forced at fixed turn indices (ARC Appendix B design, intake-2525). Arms 1-3 of TOC-MP-2 at one recorded C; frontdoor model; n = 2 runs per task; score only the exact submitted value. Record orchestrator commit, flags, model/quant, C and the trajectory artifacts. Decision rule, fixed in advance: pointer-only exact recall >= summary+pointer keeps arm 3 in the full A/B as the candidate default; otherwise record the miss pattern here and fire M-MP2. Acceptance: result table, artifact path and the decision line."
+      }
+    ],
+    "plan_sha256": "525849605518c57ce866f299b686116b6686df9efb457f4af9fc5f0866ffe097"
+  },
+  "stage4": {
+    "status": "complete",
+    "reconciled": true,
+    "date": "2026-10-31",
+    "files": [
+      "handoffs/active/tool-output-compression.md",
+      "handoffs/active/repl-session-memory-maturity.md",
+      "wiki/context-management.md",
+      "research/intake_index.yaml",
+      ".research-session.json"
+    ],
+    "new_tasks": 4,
+    "checkbox_flips": 0,
+    "monitor_notes": 3,
+    "declines": 4,
+    "index_row": "UFH-07 Next action change prepared for the coordinator (ruling (b)); not applied by this lane"
   }
 }

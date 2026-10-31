@@ -365126,7 +365126,8 @@
     mistake") carries only a 56.7 s video, not read; recorded here rather than as its own entry. Commercial author (vendor
     bias -1).'
   verification: dive-verified
-  handoffs_updated: []
+  handoffs_updated:
+  - tool-output-compression.md
   handoffs_created: []
   read_depth: PARTIAL
   source_revision: api.fxtwitter.com JSON for status 2115842962521509968, retrieved 2026-10-30 (sha256-12 981ca7905b31)
@@ -365203,6 +365204,10 @@
     (src/graph/compaction.py) and injects "Full log: peek(...)" (src/graph/session_summary.py). The only distinct element
     is dropping the summary entirely (pointer-only continuation). Predecessor post 2115131891766657357 is a 56.7 s video,
     not read (read_depth PARTIAL).'
+  integration_disposition: integrated
+  disposition_evidence:
+  - MPL-1 -> P2 / TOC-MP-2 (pointer-only arm)
+  - K1 wiki prior-art paragraph
 - id: intake-2523
   arxiv_id: null
   url: https://github.com/mainplane-ai/mainplane
@@ -365270,7 +365275,9 @@
     (max 4 waves); stop at Stage-3 plan; no compute. Includes https://github.com/mainplane-ai/mainplane/blob/main/docs/self-hosting.md
     (operator-listed URL; same repo, read at the same commit). curl -sIL: 200, no redirect. Shallow clone at /mnt/raid0/llm/tmp/dive-mainplane-20261030/repo.'
   verification: dive-verified
-  handoffs_updated: []
+  handoffs_updated:
+  - tool-output-compression.md
+  - repl-session-memory-maturity.md
   handoffs_created: []
   read_depth: PARTIAL
   source_revision: mainplane-ai/mainplane @ 47a7f690d5ae97ffee3b767e9daff775f68e296f (shallow clone 2026-10-30)
@@ -365364,6 +365371,10 @@
     tool plus a system-prompt recipe for the .log record format, not a purpose-built search tool; continuation is user-issued
     (/continue, alias /compact), not automatic; past context_limit the session fails. Read: README, AGENTS.md, pkg/harness/{tools,harness,info}.go,
     pkg/connector/tui/commands.go (continuation), docs/self-hosting.md (grep). Not read: providers, mesh, worker, e2e.'
+  integration_disposition: integrated
+  disposition_evidence:
+  - MPL-2 -> P1 / TOC-MP-1
+  - MPL-15 -> M1 trigger prose
 - id: intake-2524
   arxiv_id: null
   url: https://cursor.com/blog/dynamic-context-discovery
@@ -365415,7 +365426,8 @@
     (max 4 waves); stop at Stage-3 plan; no compute. Expansion (Tier 2 search) from intake-2522: operator note says Cursor
     lets a post-compaction agent re-read the transcript.'
   verification: dive-verified
-  handoffs_updated: []
+  handoffs_updated:
+  - tool-output-compression.md
   handoffs_created: []
   read_depth: FULL
   source_revision: cursor.com/blog/dynamic-context-discovery (dated Jan 6, 2026) retrieved 2026-10-30 (html sha256-12 fd257f756d0c)
@@ -365459,6 +365471,9 @@
     published 2026-01-06. Our orchestrator already implements the same hybrid: _session_log_prompt_block injects the summary
     plus "Full log: peek(...)" (src/graph/session_summary.py) and output spill writes long outputs to files with peek pointers
     (src/graph/file_artifacts.py). Verdict -> already_integrated.'
+  integration_disposition: integrated
+  disposition_evidence:
+  - MPL-3 -> P2 / TOC-MP-2 (summary+pointer control arm)
 - id: intake-2525
   arxiv_id: '2607.25066'
   url: https://arxiv.org/abs/2607.25066
@@ -365509,7 +365524,8 @@
   notes: 'Stage 1 (main, 2026-10-30, session intake-mainplane-20261030): operator pre-approved all recommended Stage-2 dives
     (max 4 waves); stop at Stage-3 plan; no compute. Tier 2 search hit; abs title resolved 2026-10-30 (v1, 2026-07-27).'
   verification: dive-verified
-  handoffs_updated: []
+  handoffs_updated:
+  - tool-output-compression.md
   handoffs_created: []
   read_depth: PARTIAL
   source_revision: arXiv 2607.25066v1 HTML (sha256-12 bf8ee3b6a268)
@@ -365580,6 +365596,10 @@
     NIAH-for-memory (needle design taken from ARC Appendix B); 2602.14337 LongCLI-Bench, Recovery-Bench, U-NIAH (suite choice
     belongs to the A/B-INSTR owner); github.com/Kiz8-Team/pi-cwl (CWL agent-annotated eviction declined for our small workers).
     Already indexed, not re-ingested: 2510.11967, 2510.00615, 2509.13313, 2601.11868. Ingested in wave 2: 2310.08560 (intake-2530).'
+  integration_disposition: integrated
+  disposition_evidence:
+  - MPL-9 -> P4 / TOC-MP-4 (needle design)
+  - MPL-10 -> M2
 - id: intake-2526
   arxiv_id: '2606.11213'
   url: https://arxiv.org/abs/2606.11213
@@ -365625,7 +365645,8 @@
   notes: 'Stage 1 (main, 2026-10-30, session intake-mainplane-20261030): operator pre-approved all recommended Stage-2 dives
     (max 4 waves); stop at Stage-3 plan; no compute. Tier 2 search hit; abs title resolved 2026-10-30 (v1, 2026-05-01).'
   verification: dive-verified
-  handoffs_updated: []
+  handoffs_updated:
+  - tool-output-compression.md
   handoffs_created: []
   read_depth: FULL
   source_revision: arXiv 2606.11213v1 HTML (sha256-12 7812efdaa7af)
@@ -365688,6 +365709,9 @@
   dive_corrections: '2026-10-30 (Stage 2, wave 1): Evidence about eviction under a budget, not retrieval. Useful for our A/B:
     re-fetch/re-exploration cost must be logged per arm, and prefix-cache invalidation matters for CPU prefill. Agent-authored
     episode annotation declined for our small workers. Code: github.com/Kiz8-Team/pi-cwl (not fetched).'
+  integration_disposition: integrated
+  disposition_evidence:
+  - MPL-6 -> P3 / TOC-MP-3 (re-fetch cost)
 - id: intake-2527
   arxiv_id: '2608.06503'
   url: https://arxiv.org/abs/2608.06503
@@ -365731,7 +365755,8 @@
   notes: 'Stage 1 (main, 2026-10-30, session intake-mainplane-20261030): operator pre-approved all recommended Stage-2 dives
     (max 4 waves); stop at Stage-3 plan; no compute. Tier 2b cheap contradiction-pass hit; abs title resolved 2026-10-30 (v2).'
   verification: dive-verified
-  handoffs_updated: []
+  handoffs_updated:
+  - tool-output-compression.md
   handoffs_created: []
   read_depth: PARTIAL
   source_revision: arXiv 2608.06503v2 HTML (sha256-12 edda8896fbaf)
@@ -365799,6 +365824,10 @@
     published sectioned prompt chosen as the fair summary arm); 2602.03784 ComprExIT (latent compression, not session-level
     retrieval). Already indexed: 2510.00615, 2510.05381, 2509.13313, 2602.16284, 2506.16411. Ingested in wave 2: 2502.05167
     (intake-2531), 2506.07982 (intake-2532), OpenClaw (intake-2534); tau-bench 2406.12045 read as the metric source (intake-2533).'
+  integration_disposition: integrated
+  disposition_evidence:
+  - MPL-5 -> P3 / TOC-MP-3
+  - MPL-12 -> M3
 - id: intake-2528
   arxiv_id: '2605.23296'
   url: https://arxiv.org/abs/2605.23296
@@ -365843,7 +365872,8 @@
   notes: 'Stage 1 (main, 2026-10-30, session intake-mainplane-20261030): operator pre-approved all recommended Stage-2 dives
     (max 4 waves); stop at Stage-3 plan; no compute. Tier 2 search hit; abs title resolved 2026-10-30 (v1, 2026-05-22).'
   verification: dive-verified
-  handoffs_updated: []
+  handoffs_updated:
+  - tool-output-compression.md
   handoffs_created: []
   read_depth: PARTIAL
   source_revision: arXiv 2605.23296v1 HTML (sha256-12 eb20259c9741)
@@ -365907,6 +365937,10 @@
     own Fig 4a; parallel speedup narrowed. Best quantified evidence in this batch that summaries are unstable run to run and
     that compaction can dominate wall time on small models. No retrieval arm. Parallel/async compaction declined until a summary
     arm wins our A/B. Figures other than 4a not viewed.'
+  integration_disposition: integrated
+  disposition_evidence:
+  - MPL-8 -> P3 / TOC-MP-3 (wall-time share)
+  - MPL-12 -> M3
 - id: intake-2529
   arxiv_id: null
   url: http://www.incompleteideas.net/IncIdeas/BitterLesson.html
@@ -365960,6 +365994,9 @@
     note: Confirmed; 2019-03-13 essay. Says nothing about agent memory or context management.
   dive_corrections: '2026-10-30 (Stage 2, wave 1): Confirmed. Framing only; intake-2522 extends it to agent memory without
     evidence.'
+  integration_disposition: knowledge_only
+  disposition_evidence:
+  - 'Framing essay; no consumer behavior (dive: no agent-memory claim)'
 - id: intake-2530
   arxiv_id: '2310.08560'
   url: https://arxiv.org/abs/2310.08560
@@ -366016,7 +366053,8 @@
   notes: Surfaced by the ARC/CWL (intake-2525/2526) and TRACE/PCC (intake-2527/2528) dives; previously only a referenced id
     in the index. Read by a Stage-2b subagent from disk; quotes re-found mechanically by main.
   verification: dive-verified
-  handoffs_updated: []
+  handoffs_updated:
+  - tool-output-compression.md
   handoffs_created: []
   source_revision: arXiv 2310.08560v2 HTML (sha256-12 454a01f49921)
   read_depth: FULL
@@ -366083,6 +366121,10 @@
     novelty verdict below LOW, already set by this entry); LoCoMo (ACL 2024; conversational-memory QA, not REPL agent trajectories;
     suite choice belongs to A/B-INSTR); RULER and BABILong (long-context reading benchmarks, no retrieval arm). Already indexed:
     2307.03172 Lost in the Middle.'
+  integration_disposition: integrated
+  disposition_evidence:
+  - MPL-3 -> P2 / TOC-MP-2 (summary-only arm)
+  - MPL-11 -> M2
 - id: intake-2531
   arxiv_id: '2502.05167'
   url: https://arxiv.org/abs/2502.05167
@@ -366128,7 +366170,8 @@
   notes: Surfaced by the wave-1 dives as evidence on literal (grep) retrieval. Read by a Stage-2b subagent; quotes re-found
     mechanically by main.
   verification: dive-verified
-  handoffs_updated: []
+  handoffs_updated:
+  - tool-output-compression.md
   handoffs_created: []
   source_revision: arXiv 2502.05167v3 HTML (sha256-12 fb44902732ec)
   read_depth: PARTIAL
@@ -366179,6 +366222,9 @@
   dive_corrections: '2026-10-30 (Stage 2b, wave 2; surfaced by the wave-1 dives of intake-2525..2528): Confirmed. In-context
     reading only; no tool/search arm, synthetic single needle. The extrapolation to grep over agent transcripts is ours. Appendices
     A-D and figures not read.'
+  integration_disposition: integrated
+  disposition_evidence:
+  - MPL-7 -> P3 / TOC-MP-3 (literal strata)
 - id: intake-2532
   arxiv_id: '2506.07982'
   url: https://arxiv.org/abs/2506.07982
@@ -366219,7 +366265,8 @@
   referenced_arxiv_ids: []
   notes: Surfaced by the TRACE dive (Pass^k metric family). Read by a Stage-2b subagent; quotes re-found mechanically by main.
   verification: dive-verified
-  handoffs_updated: []
+  handoffs_updated:
+  - tool-output-compression.md
   handoffs_created: []
   source_revision: arXiv 2506.07982v1 HTML (sha256-12 53a884b733a4)
   read_depth: PARTIAL
@@ -366258,6 +366305,9 @@
     note: No formula in tau2; the estimator is in tau-bench (intake-2533).
   dive_corrections: '2026-10-30 (Stage 2b, wave 2; surfaced by the wave-1 dives of intake-2525..2528): Confirmed. Appendix
     policies and figures not read.'
+  integration_disposition: integrated
+  disposition_evidence:
+  - MPL-5 -> P3 / TOC-MP-3 (n=4 protocol)
 - id: intake-2533
   arxiv_id: '2406.12045'
   url: https://arxiv.org/abs/2406.12045
@@ -366303,7 +366353,8 @@
   notes: Fetched by the wave-2 tau2 dive as the metric source (previously only a referenced id). Quotes re-found mechanically
     by main.
   verification: dive-verified
-  handoffs_updated: []
+  handoffs_updated:
+  - tool-output-compression.md
   handoffs_created: []
   source_revision: arXiv 2406.12045v1 HTML (sha256-12 ff6267f05194)
   read_depth: PARTIAL
@@ -366342,6 +366393,9 @@
     note: Confirmed.
   dive_corrections: '2026-10-30 (Stage 2b, wave 2; surfaced by the wave-1 dives of intake-2525..2528): Confirmed. Appendices
     not read.'
+  integration_disposition: integrated
+  disposition_evidence:
+  - MPL-5 -> P3 / TOC-MP-3 (pass^k estimator)
 - id: intake-2534
   arxiv_id: null
   url: https://docs.openclaw.ai/concepts/session-pruning
@@ -366390,7 +366444,8 @@
     200, no redirect; openclaw.ai/docs/... 308 -> docs.openclaw.ai. Repo license MIT (GitHub API). Read by a Stage-2b subagent;
     quotes re-found mechanically by main.
   verification: dive-verified
-  handoffs_updated: []
+  handoffs_updated:
+  - tool-output-compression.md
   handoffs_created: []
   source_revision: docs.openclaw.ai/concepts/session-pruning.md (sha256-12 2978740c3da2) + /concepts/compaction.md (sha256-12
     89a211734955), live docs retrieved 2026-10-30; openclaw/openclaw packages/agent-core/src/harness/compaction/compaction.ts
@@ -366466,3 +366521,6 @@
     context-editing doc (clear_tool_uses; its trigger and keep parameters are already recorded via the OpenClaw docs and it
     adds no decision-bearing mechanism); OpenClaw /concepts/context-engine, /reference/transcript-hygiene, /concepts/memory
     (compaction and pruning pages read; these do not bear on the A/B arms).'
+  integration_disposition: integrated
+  disposition_evidence:
+  - MPL-4 -> P2 / TOC-MP-2 (pruning+pointer arm, summary prompt)
