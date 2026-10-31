@@ -109,26 +109,23 @@
     {
       "id": "champion_bundle_c3_preflight",
       "script": "scripts/champion/fold_gates/bundle_gate_c3.sh",
-      "contract": "unadopted",
-      "owning_handoff": "handoffs/active/autokernel-champion-aggregate.md",
-      "task_marker": "CH-OBS-BUNDLE",
-      "notes": "Runnable one-shot bundle gate. Its exclusion preflight identifies DS41/Q38FN AutoKernel loops by ps/argv, refuses a positive match, and otherwise permits the remaining guards to run. A failed or unreadable ps channel and argv drift currently collapse to no match; no observer_guard adoption or v1 behaviour is claimed. The owning task requires independent identity corroboration and unknown-to-refuse before next operational use. Publication's synthetic verdict regressions do not execute this preflight or establish its observation correctness."
+      "contract": "v1",
+      "notes": "Tracked C3 one-shot bundle gate. `observe` folds checked ps/argv and the native loop process_identity from every enumerated DS41/Q38FN campaign store through observer_guard; legacy, missing or unreadable identity is unobservable. CPU and GPU preflight refuses unless both channels establish absence. Synthetic shell battery exercises its actual dry-run preflight and instrument boundary.",
+      "sandbox": {"kind": "bundle_gate", "battery": "scripts/champion/fold_gates/regression/test_bundle_gate_observer.sh", "observe_argv": ["observe"]}
     },
     {
       "id": "champion_bundle_c4_preflight",
       "script": "scripts/champion/fold_gates/bundle_gate_c4.sh",
-      "contract": "unadopted",
-      "owning_handoff": "handoffs/active/autokernel-champion-aggregate.md",
-      "task_marker": "CH-OBS-BUNDLE",
-      "notes": "Runnable one-shot bundle gate carrying the same ps/argv exclusion check as C3. Failed or unreadable ps and argv drift can read as no loop; this is a recorded observation gap, not an exemption or adoption. Preserve exact reviewed template bytes in this durability publication; the owning task migrates tracked runnable copies before next operational use and proves unknown refuses launch."
+      "contract": "v1",
+      "notes": "Tracked C4 one-shot bundle gate. `observe` folds checked ps/argv and the native loop process_identity from every enumerated DS41/Q38FN campaign store through observer_guard; legacy, missing or unreadable identity is unobservable. Preflight refuses unless both channels establish absence. Synthetic shell battery exercises its actual dry-run preflight and instrument boundary.",
+      "sandbox": {"kind": "bundle_gate", "battery": "scripts/champion/fold_gates/regression/test_bundle_gate_observer.sh", "observe_argv": ["observe"]}
     },
     {
       "id": "champion_bundle_c5_preflight",
       "script": "scripts/champion/fold_gates/bundle_gate_c5.sh",
-      "contract": "unadopted",
-      "owning_handoff": "handoffs/active/autokernel-champion-aggregate.md",
-      "task_marker": "CH-OBS-BUNDLE",
-      "notes": "Runnable one-shot bundle gate. Item b uses the same ps/argv AutoKernel exclusion preflight as C3/C4, with the same unknown-to-no-match gap; items c/s do not use that pattern check. C5 R2's validated structured verdict helper is separate from liveness observation. No v1 claim: migrate the tracked preflight with two independent channels and blind/disagreement refusal before operational reuse, under the owning task."
+      "contract": "v1",
+      "notes": "Tracked C5 one-shot bundle gate. Item b's `observe` folds checked ps/argv and native loop process_identity from every enumerated DS41/Q38FN campaign store through observer_guard; legacy, missing or unreadable identity is unobservable. Its preflight refuses unless both channels establish absence. C5's reviewed structured verdict helper and Q38FN sign-only semantics are preserved. Synthetic shell battery exercises the actual dry-run preflight and instrument boundary.",
+      "sandbox": {"kind": "bundle_gate", "battery": "scripts/champion/fold_gates/regression/test_bundle_gate_observer.sh", "observe_argv": ["observe"]}
     },
     {
       "id": "champion_bundle_c5_original_fixture",

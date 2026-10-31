@@ -20,22 +20,26 @@
 #         b must run alone; c,s may run together.  Never --apply; own children only; no pkill/pgrep by name.
 # usage: bundle_gate_c5.sh --dry-run | --execute [--items b | --items c,s | --items c | --items s] [--lock-timeout-s N]
 set -uo pipefail
-D=/mnt/raid0/llm/tmp/c5-fold-prep
+D=${C5_GATE_DIR:-/mnt/raid0/llm/tmp/c5-fold-prep}
+SELF=$(readlink -f -- "${BASH_SOURCE[0]}")
 CSHA=c72ec82f5; CBN=cpu-20261024-c72ec82f5-c5; CBUILDNO=10419
 G=/mnt/raid0/llm/tmp/fold-allkeeps-20261004          # gate_compare.py lives here (unchanged instrument)
 GC=$D/greedy_compare_c5.py                           # greedy_compare.py + per-arm env ops (the original cannot strip OFF)
 K=/mnt/raid0/llm/kernels/builds
-LOCK=/mnt/raid0/llm/epyc-orchestrator/scripts/region-lock
+LOCK=${C5_REGION_LOCK:-/mnt/raid0/llm/epyc-orchestrator/scripts/region-lock}
 CHAMP=${C5_CHAMP_IMAGE:-$K/cpu-20261023-dcc853b55-c3}
 CAND=$K/$CBN
 WATCH=/tmp/qwen4exp-builds
 CS_PORT=18763
-MODE=""; ITEMS="c,s"; LOCK_TIMEOUT=1800; INSIDE=0; RUN=""
+source "$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)/../../coordination/observer_guard.sh"
+MODE=""; ITEMS="c,s"; LOCK_TIMEOUT=1800; INSIDE=0; RUN=""; OBSERVE=0
 while [ $# -gt 0 ]; do case "$1" in
     --dry-run) MODE=dry; shift;; --execute) MODE=exec; shift;;
+    observe) OBSERVE=1; shift;; --observe) OBSERVE=1; shift;;
     --items) ITEMS=$2; shift 2;; --lock-timeout-s) LOCK_TIMEOUT=$2; shift 2;;
     --inside) INSIDE=1; RUN=$2; shift 2;;
     *) sed -n '2,22p' "$0"; exit 64;; esac; done
+if [ "$OBSERVE" -eq 1 ]; then og_bundle_observe bundle_gate_c5; exit $?; fi
 [ -n "$MODE" ] || { sed -n '2,22p' "$0"; exit 64; }
 for _i in ${ITEMS//,/ }; do case $_i in b|c|s) ;; *) echo "REFUSE: item $_i is not part of the C5 gate set (b | c,s)" >&2; exit 64;; esac; done
 case ",$ITEMS," in *",b,"*) [ "$ITEMS" = b ] || { echo "REFUSE: item b (whole-host quiet timing) must run alone: --items b" >&2; exit 64; };; esac
@@ -49,13 +53,14 @@ print(n)' "$1"; }
 CS_CPUS=${FILLER_CPUS:-${C5_CS_CPULIST:-72-95}}
 preflight() {
     local bad=0 b
+    BUNDLE_OBSERVER_REFUSED=0
     for b in "$CHAMP" "$CAND"; do [ -x "$b/bin/llama-server" ] || { say "REFUSE: no llama-server in $b"; bad=1; }; done
     grep "$CSHA" "$CAND/VERSION.txt" >/dev/null 2>&1 || { say "REFUSE: $CAND VERSION does not name $CSHA"; bad=1; }
     grep 'PASS' "$CAND/LINKAGE.txt" >/dev/null 2>&1 || say "WARN: $CAND LINKAGE.txt has no PASS line"
     [ -e "$D/DONE" ] || { say "REFUSE: $D/DONE absent (the build + gate_c5 row has not passed)"; bad=1; }
     local free; free=$(awk '/MemAvailable/ {printf "%d", $2/1048576}' /proc/meminfo)
     if [ "$ITEMS" = b ]; then
-        if ps -eo args= | awk '/autokernel[.]loop[.]run/ && /ak-(ds41|q38fn)-cpu-decode/ {f=1} END {exit !f}'; then say "REFUSE: a DS41/Q38FN AutoKernel loop process is alive"; bad=1; fi
+        og_bundle_require_absent bundle_gate_c5 || { say "REFUSE: DS41/Q38FN loop presence is busy or unobservable"; BUNDLE_OBSERVER_REFUSED=1; return 1; }
         for p in 18641 18651 18761; do (exec 3<>"/dev/tcp/127.0.0.1/$p") 2>/dev/null && { say "REFUSE: port $p busy"; bad=1; }; done
         local busy; busy=$(top -bn2 -d 2 | awk '/^%Cpu/ {u=$2+$4} END {printf "%d", u*192}')
         say "host busy ~${busy}% of one CPU (192 threads) over 2 s"; [ "${busy:-0}" -le 1200 ] || { say "REFUSE: host busy ${busy}% > 1200%"; bad=1; }
@@ -238,16 +243,17 @@ if [ "$MODE" = dry ]; then
     mkdir -p "$D/dry"; : > "$D/dry/bundle_gate.log"
     say "DRY RUN items=$ITEMS (no claim taken, nothing launched)"
     preflight; p=$?; say "preflight (outside the claim, informational) rc=$p"
+    [ "${BUNDLE_OBSERVER_REFUSED:-0}" -eq 0 ] || { say "REFUSED by observer preflight -- no child invoked"; exit 3; }
     steps dry; rc=$?; say "dry-run steps rc=$rc"; exit $rc
 fi
 TS=$(date -u +%Y%m%dT%H%M%SZ)
 if [ "$ITEMS" != b ] && [ -n "${FILLER_CPUS:-}" ]; then
     # already inside the filler's own build-role claim over FILLER_CPUS: a second claim on the same CPUs would self-deadlock
-    exec "$0" --execute --items "$ITEMS" --inside "$D/runs/$TS"
+    exec /bin/bash "$SELF" --execute --items "$ITEMS" --inside "$D/runs/$TS"
 fi
 if [ "$ITEMS" = b ]; then
     exec "$LOCK" run --cpu-list 0-95 --role bench --gpu-quiet shared --timeout-s "$LOCK_TIMEOUT" --tag c5-bundle-gate-b -- \
-        "$0" --execute --items "$ITEMS" --inside "$D/runs/$TS"
+        /bin/bash "$SELF" --execute --items "$ITEMS" --inside "$D/runs/$TS"
 fi
 exec "$LOCK" run --cpu-list "$CS_CPUS" --role build --timeout-s "$LOCK_TIMEOUT" --tag c5-bundle-gate-cs -- \
-    "$0" --execute --items "$ITEMS" --inside "$D/runs/$TS"
+    /bin/bash "$SELF" --execute --items "$ITEMS" --inside "$D/runs/$TS"

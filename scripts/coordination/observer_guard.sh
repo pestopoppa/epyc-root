@@ -324,6 +324,188 @@ og_tool_channel() {
   og_present_if_any "$(og_proc_scan "$want")"
 }
 
+# AutoKernel bundle-gate exclusion channels. The status channel reads only the
+# DS41/Q38FN stores enumerated under the campaign root. It does not use freshness
+# or terminal state as proof: native process_identity binds PID to start ticks,
+# boot ID, writer source and exact store path. Legacy/missing records are UNKNOWN.
+og_bundle_ps_channel() {
+  command -v ps >/dev/null 2>&1 || { printf 'unavailable\n'; return 0; }
+  local rows rc=0
+  rows="$(ps -eo pid=,args= 2>/dev/null)" || { printf 'unavailable\n'; return 0; }
+  [[ -n "$rows" ]] || { printf 'unavailable\n'; return 0; }
+  printf '%s\n' "$rows" | awk '
+    $1 ~ /^[0-9]+$/ && NF >= 2 {
+      seen++
+      if ($0 ~ /autokernel[.]loop[.]run/ &&
+          $0 ~ /ak-(ds41|q38fn)-cpu-decode/) found=1
+      next
+    }
+    { bad=1 }
+    END {
+      if (bad || !seen) exit 2
+      if (found) exit 0
+      exit 1
+    }
+  ' || rc=$?
+  case "$rc" in
+    0) printf 'present\n' ;;
+    1) printf 'absent\n' ;;
+    *) printf 'unavailable\n' ;;
+  esac
+}
+
+og_bundle_loop_status_channel() {
+  local campaigns_root="${OG_LOOP_CAMPAIGNS_ROOT:-/mnt/raid0/llm/autokernel/campaigns}"
+  /usr/bin/python3 -I - "$campaigns_root" "${OG_PROC_ROOT:-/proc}" \
+      "${OG_BOOT_ID_PATH:-/proc/sys/kernel/random/boot_id}" <<'PY_EOF'
+import json
+import os
+from pathlib import Path
+import sys
+
+IDENTITY_SCHEMA = "epyc.autokernel.loop_process_identity.v1"
+SOURCE_ID = "scripts.kernel_rnd.autokernel.loop.run"
+
+def unique_object(pairs):
+    value = {}
+    for key, item in pairs:
+        if key in value:
+            raise ValueError("duplicate JSON key")
+        value[key] = item
+    return value
+
+def reject_constant(value):
+    raise ValueError("non-JSON constant")
+
+def stat_identity(path, expected_pid):
+    try:
+        raw = path.read_text(encoding="ascii")
+    except FileNotFoundError:
+        return "absent", None
+    except OSError:
+        return "unavailable", None
+    try:
+        head, tail = raw.rsplit(")", 1)
+        pid = int(head.split("(", 1)[0].strip())
+        fields = tail.split()
+        start_ticks = int(fields[19])
+        if pid != expected_pid or start_ticks <= 0:
+            return "unavailable", None
+        return "present", (pid, start_ticks)
+    except (ValueError, IndexError):
+        return "unavailable", None
+
+def main(root, proc_root, boot_id_path):
+    root = Path(root)
+    try:
+        if root.is_symlink() or not root.is_dir():
+            return "unavailable"
+        campaigns = []
+        with os.scandir(root) as entries:
+            for entry in entries:
+                if not entry.name.startswith(("ak-ds41", "ak-q38fn")):
+                    continue
+                if entry.is_symlink():
+                    return "unavailable"
+                if entry.is_dir(follow_symlinks=False):
+                    campaigns.append(Path(entry.path))
+        stores = []
+        for campaign in campaigns:
+            with os.scandir(campaign) as entries:
+                for entry in entries:
+                    if not entry.name.startswith("store"):
+                        continue
+                    if entry.is_symlink():
+                        return "unavailable"
+                    if entry.is_dir(follow_symlinks=False):
+                        stores.append(Path(entry.path))
+        if not stores:
+            return "unavailable"
+        boot_id = Path(boot_id_path).read_text(encoding="ascii").strip()
+        if not boot_id:
+            return "unavailable"
+        proc_root = Path(proc_root)
+        if proc_root.is_symlink() or not proc_root.is_dir():
+            return "unavailable"
+        with os.scandir(proc_root) as entries:
+            next(entries, None)
+        has_present = False
+        has_unknown = False
+        for store in stores:
+            try:
+                canonical_store = str(store.resolve(strict=True))
+                status_path = store / "loop-status.json"
+                if status_path.is_symlink():
+                    raise OSError("loop-status.json is a symlink")
+                with status_path.open(encoding="utf-8") as stream:
+                    document = json.load(stream, object_pairs_hook=unique_object,
+                                         parse_constant=reject_constant)
+            except (OSError, ValueError, TypeError):
+                has_unknown = True
+                continue
+            identity = document.get("process_identity") if type(document) is dict else None
+            required = {"schema", "pid", "start_ticks", "boot_id",
+                        "source_identity", "store_path"}
+            if (type(identity) is not dict or set(identity) != required
+                    or identity.get("schema") != IDENTITY_SCHEMA
+                    or type(identity.get("pid")) is not int or identity["pid"] <= 0
+                    or type(identity.get("start_ticks")) is not int
+                    or identity["start_ticks"] <= 0
+                    or not isinstance(identity.get("boot_id"), str)
+                    or not identity["boot_id"]
+                    or identity.get("source_identity") != SOURCE_ID
+                    or identity.get("store_path") != canonical_store):
+                has_unknown = True
+                continue
+            pid = identity["pid"]
+            if identity["boot_id"] != boot_id:
+                continue
+            proc_state, current = stat_identity(proc_root / str(pid) / "stat", pid)
+            if proc_state == "unavailable":
+                has_unknown = True
+            elif proc_state == "present" and current[1] == identity["start_ticks"]:
+                has_present = True
+        if has_present:
+            return "present"
+        return "unavailable" if has_unknown else "absent"
+    except OSError:
+        return "unavailable"
+
+try:
+    print(main(sys.argv[1], sys.argv[2], sys.argv[3]))
+except Exception:
+    print("unavailable")
+PY_EOF
+}
+
+og_bundle_observe() {
+  local observer_name="${1:?observer name required}" ps_state status_state verdict rc=0
+  og_init "$observer_name"
+  og_round_begin
+  ps_state="$(og_bundle_ps_channel)"
+  status_state="$(og_bundle_loop_status_channel)"
+  og_channel ps_args "$ps_state" "ps -eo pid=,args="
+  og_channel loop_status "$status_state" "native DS41/Q38FN process identity"
+  verdict="$(og_verdict)" || rc=$?
+  printf 'state=%s\n' "$verdict"
+  printf 'channels: ps_args=%s loop_status=%s\n' "$ps_state" "$status_state" >&2
+  printf 'reason: %s\n' "$(og_why)" >&2
+  if [[ "$verdict" == unobservable ]]; then
+    og_alarm "$(og_why)"
+  fi
+  return "$rc"
+}
+
+og_bundle_require_absent() {
+  local observer_name="${1:?observer name required}" result rc=0
+  result="$(og_bundle_observe "$observer_name")" || rc=$?
+  if [[ "$result" != 'state=absent' ]]; then
+    printf 'REFUSE: AutoKernel exclusion observer returned %s\n' "${result#state=}" >&2
+    return 1
+  fi
+  return 0
+}
+
 # --------------------------------------------------------------------------- #
 # The blind streak (detector B)
 # --------------------------------------------------------------------------- #

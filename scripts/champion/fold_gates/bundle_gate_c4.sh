@@ -24,12 +24,13 @@
 #       ALONE (--items e) under its own claim (--gpu-quiet exclusive); mixing e with a-d is refused.
 # usage: bundle_gate.sh --dry-run | --execute [--items a,b,c | --items e] [--lock-timeout-s N]
 set -uo pipefail
-D=/mnt/raid0/llm/tmp/c4-fold-prep
+D=${C4_GATE_DIR:-/mnt/raid0/llm/tmp/c4-fold-prep}
+SELF=$(readlink -f -- "${BASH_SOURCE[0]}")
 SRC=/mnt/raid0/llm/tmp/champ-consolidation-20261020   # server_args.27b-dflash2-20261004.bin lives here
 CSHA=cdb4d8c77; CBN=cpu-20261024-cdb4d8c77-c4; GBN=gpu-20261024-cdb4d8c77-c4; CBUILDNO=10417   # verify CBUILDNO against the C4 llama-server --version
 G=/mnt/raid0/llm/tmp/fold-allkeeps-20261004          # gate_compare.py / greedy_compare.py live here (unchanged instruments)
 K=/mnt/raid0/llm/kernels/builds
-LOCK=/mnt/raid0/llm/epyc-orchestrator/scripts/region-lock
+LOCK=${C4_REGION_LOCK:-/mnt/raid0/llm/epyc-orchestrator/scripts/region-lock}
 CHAMP=$K/cpu-20261023-dcc853b55-c3
 CAND=$K/$CBN
 GAB=/mnt/raid0/llm/epyc-inference-research/scripts/benchmark/gpu_champion_ab.sh   # committed in research main (3c428ac00)
@@ -37,22 +38,26 @@ GAB=/mnt/raid0/llm/epyc-inference-research/scripts/benchmark/gpu_champion_ab.sh 
 CHAMP_GPU=$K/gpu-20261023-dcc853b55-c3; CAND_GPU=$K/$GBN
 B0=$K/cpu-20261004-b0ba1d427   # last LEDGERED champion (W fold); dd3d9721c carries ten unledgered AK keeps past it
 COR_A=/mnt/raid0/llm/autokernel/campaigns/ak-ds41-cpu-decode-20260923/store/anchor-gen-007
-MODE=""; ITEMS="b,c"; LOCK_TIMEOUT=1800; INSIDE=0; RUN=""
+source "$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)/../../coordination/observer_guard.sh"
+MODE=""; ITEMS="b,c"; LOCK_TIMEOUT=1800; INSIDE=0; RUN=""; OBSERVE=0
 while [ $# -gt 0 ]; do case "$1" in
     --dry-run) MODE=dry; shift;; --execute) MODE=exec; shift;;
+    observe) OBSERVE=1; shift;; --observe) OBSERVE=1; shift;;
     --items) ITEMS=$2; shift 2;; --lock-timeout-s) LOCK_TIMEOUT=$2; shift 2;;
     --inside) INSIDE=1; RUN=$2; shift 2;;
     *) sed -n '2,12p' "$0"; exit 64;; esac; done
+if [ "$OBSERVE" -eq 1 ]; then og_bundle_observe bundle_gate_c4; exit $?; fi
 [ -n "$MODE" ] || { sed -n '2,12p' "$0"; exit 64; }
 say() { echo "[$(date -u +%H:%M:%S)] $*" | tee -a "${RUN:-$D}/bundle_gate.log"; }
 has() { case ",$ITEMS," in *",$1,"*) return 0;; esac; return 1; }
 preflight() {
     local bad=0 b
+    BUNDLE_OBSERVER_REFUSED=0
     for b in "$CHAMP" "$CAND"; do [ -x "$b/bin/llama-server" ] || { say "REFUSE: no llama-server in $b"; bad=1; }; done
     grep -q "@CANDSHA""@" "$0" && { say "REFUSE: candidate sha placeholder not filled"; bad=1; }
     grep -q "$CSHA" "$CAND/VERSION.txt" 2>/dev/null || { say "REFUSE: $CAND VERSION does not name its sha"; bad=1; }
     grep -q 'PASS' "$CAND/LINKAGE.txt" 2>/dev/null || say "WARN: $CAND LINKAGE.txt has no PASS line"
-    if ps -eo args= | awk '/autokernel[.]loop[.]run/ && /ak-(ds41|q38fn)-cpu-decode/ {f=1} END {exit !f}'; then say "REFUSE: a DS41/Q38FN AutoKernel loop process is alive"; bad=1; fi
+    og_bundle_require_absent bundle_gate_c4 || { say "REFUSE: DS41/Q38FN loop presence is busy or unobservable"; BUNDLE_OBSERVER_REFUSED=1; return 1; }
     for p in 18641 18651 18761; do (exec 3<>"/dev/tcp/127.0.0.1/$p") 2>/dev/null && { say "REFUSE: port $p busy"; bad=1; }; done
     local busy; busy=$(top -bn2 -d 2 | awk '/^%Cpu/ {u=$2+$4} END {printf "%d", u*192}')
     local free; free=$(awk '/MemAvailable/ {printf "%d", $2/1048576}' /proc/meminfo)
@@ -177,9 +182,10 @@ if [ "$MODE" = dry ]; then
     mkdir -p "$D/dry"; : > "$D/dry/bundle_gate.log"
     say "DRY RUN items=$ITEMS (no claim taken, nothing launched)"
     preflight; p=$?; say "preflight (outside the claim, informational) rc=$p"
+    [ "${BUNDLE_OBSERVER_REFUSED:-0}" -eq 0 ] || { say "REFUSED by observer preflight -- no child invoked"; exit 3; }
     steps dry; rc=$?; say "dry-run steps rc=$rc"; exit $rc
 fi
 TS=$(date -u +%Y%m%dT%H%M%SZ)
 GPUQ=shared; CPUL=0-95; [ "$ITEMS" = e ] && { GPUQ=exclusive; CPUL=${C2_E_CPULIST:-72-79}; }   # e: the probe only needs its 8 host threads (72-79, membind 3); CPU timing stays free for others
 exec "$LOCK" run --cpu-list "$CPUL" --role bench --gpu-quiet "$GPUQ" --timeout-s "$LOCK_TIMEOUT" --tag c4-regate-bundle-gate -- \
-    "$D/bundle_gate_c4.sh" --execute --items "$ITEMS" --inside "$D/runs/$TS"
+    /bin/bash "$SELF" --execute --items "$ITEMS" --inside "$D/runs/$TS"

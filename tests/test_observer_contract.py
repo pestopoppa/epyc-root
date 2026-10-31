@@ -226,6 +226,16 @@ def battery(script: Path, row: dict, tmp: Path) -> list[str]:
     fixture and its failures asserted *positively* — a mutation test that is a real
     collected test, not an assertion inside a main() the reporter never counts.
     """
+    if row["sandbox"].get("kind") == "bundle_gate":
+        runner = REPO / row["sandbox"]["battery"]
+        result = subprocess.run(
+            ["/bin/bash", str(runner), row["script"]],
+            capture_output=True, text=True, timeout=120,
+        )
+        if result.returncode == 0:
+            return []
+        return [f"bundle gate synthetic battery rc={result.returncode}: "
+                f"{result.stdout[-1200:]} {result.stderr[-1200:]}"]
     if row["sandbox"].get("kind") == "http_listener":
         from hub_supervisor_contract import battery as http_battery
         return http_battery(script, tmp)
