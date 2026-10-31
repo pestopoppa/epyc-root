@@ -1,7 +1,8 @@
 """Hosted-only, synthetic APP-writer -> ROOT-adapter source-bound round trips.
 
-The capture recipe sets EPYC_ORCHESTRATOR_SOURCE_ROOT to the separately pinned APP source
-checkout. This fixture copies and hash-checks the exact producer/dependency bytes into a temporary
+The capture recipe selects each separately pinned APP source checkout with
+EPYC_MF_ORCHESTRATOR_SOURCE_ROOT or EPYC_EVAL_ORCHESTRATOR_SOURCE_ROOT, falling back to
+EPYC_ORCHESTRATOR_SOURCE_ROOT. This fixture copies and hash-checks the exact bytes into a temporary
 project tree, then uses the actual producer normalization/summarization/sealing functions over
 synthetic bytes. It never reads the live BEP corpus or a real evaluation run.
 """
@@ -94,8 +95,33 @@ def _load_module(path: Path, name: str):
     return module
 
 
-def _app_tree(tmp_path: Path) -> tuple[Path, object, object]:
-    configured = os.environ.get("EPYC_ORCHESTRATOR_SOURCE_ROOT")
+
+@pytest.fixture(autouse=True)
+def _isolate_pinned_app_imports():
+    """Keep historical producer imports separate from other APP source epochs."""
+    original_path = sys.path[:]
+    def belongs_to_app(name):
+        return name == "src" or name.startswith("src.") or name in {
+            "captured_mf_vbs1_producer", "captured_eval_discriminability_producer",
+        }
+    original_modules = {name: module for name, module in sys.modules.copy().items()
+                        if belongs_to_app(name)}
+    for name in original_modules:
+        del sys.modules[name]
+    try:
+        yield
+    finally:
+        for name in list(sys.modules):
+            if belongs_to_app(name):
+                del sys.modules[name]
+        sys.modules.update(original_modules)
+        sys.path[:] = original_path
+
+
+def _app_tree(
+    tmp_path: Path, *, producer_source_env: str = "EPYC_ORCHESTRATOR_SOURCE_ROOT"
+) -> tuple[Path, object, object]:
+    configured = os.environ.get(producer_source_env) or os.environ.get("EPYC_ORCHESTRATOR_SOURCE_ROOT")
     if not configured:
         pytest.skip("hosted source-bound integration recipe must provide APP source root")
     app_root = Path(configured).resolve()
@@ -174,7 +200,7 @@ def _capture_synthetic_bundle(kind, report_path, input_paths):
 
 def test_actual_mf_producer_snapshot_round_trips_through_root_adapter(tmp_path, monkeypatch,
                                                                        capsys):
-    app_root, producer, _ = _app_tree(tmp_path)
+    app_root, producer, _ = _app_tree(tmp_path, producer_source_env="EPYC_MF_ORCHESTRATOR_SOURCE_ROOT")
     results = app_root / "data/bep_sandbox/synthetic/results.jsonl"
     trace_a = app_root / "data/bep_sandbox/synthetic/traces/a.jsonl"
     trace_b = app_root / "data/bep_sandbox/synthetic/traces/b.jsonl"
@@ -211,7 +237,7 @@ def test_actual_mf_producer_snapshot_round_trips_through_root_adapter(tmp_path, 
 
 def test_actual_eval_producer_snapshot_round_trips_with_native_reps(tmp_path, monkeypatch,
                                                                     capsys):
-    app_root, _, producer = _app_tree(tmp_path)
+    app_root, _, producer = _app_tree(tmp_path, producer_source_env="EPYC_EVAL_ORCHESTRATOR_SOURCE_ROOT")
     source = tmp_path / "external-fixture/question_ledger.jsonl"
     # MDE is intentionally unknown below two unique qids; q2 stays false in both runs.
     _jsonl(source, [

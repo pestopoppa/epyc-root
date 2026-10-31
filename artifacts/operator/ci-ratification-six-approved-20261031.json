@@ -1,0 +1,61 @@
+{
+  "schema": "epyc.operator_approved_ci_false_positive_exemptions.v1",
+  "approval_source": "ws58 operator message: AskUserQuestion approval, 2026-10-31",
+  "approved_patch_sha256": "de2bd2dfcfe51eba58ce263216fe824dae137e9a794fce7042592722d4cb7db7",
+  "protected_path": "scripts/validate/ratification_receipt_exemptions.json",
+  "before_sha256": "6be4c31be3ca90f68488b3a34b521d8a000163367a8fb93e44dd0ef6e49ab2ad",
+  "after_sha256": "a2306bbb077dc2768af7a18760ae5e6836c271b3ab362a72145b3a972fb8897c",
+  "entries": [
+    {
+      "script": "artifacts/compute/codex3-ready-checkpoint-20261031-0105/kvu-t96/claim_tuple.py",
+      "kind": "not-a-boundary-write",
+      "script_sha256": "6ae969f7029c1a6356593fd2432eca2320931f22aa4a8c4e3a388a72b81944e7",
+      "evidence": "operator review package ratification-six-operator-review-20261031/REVIEW.md and ANALYSIS.json; text-only classification, AST and output-target review",
+      "reason": "Archived pure ClaimTuple validation/grading/serialization module: boundary names occur in explanatory text; the text heuristic mistakes Python greater-than comparisons and prose angle-bracket placeholders for shell redirects. AST contains no filesystem writer or process-execution call."
+    },
+    {
+      "script": "artifacts/compute/codex3-runtime-checkpoint-20261031-0135/prb/tale_budget_capture.py",
+      "kind": "not-a-boundary-write",
+      "script_sha256": "cc8f570198c9b83cb8afe4f2fc5d14fdd86549e6b249d89dd7f81d596f463cdb",
+      "evidence": "operator review package ratification-six-operator-review-20261031/REVIEW.md and ANALYSIS.json; text-only classification, AST and output-target review",
+      "reason": "Archived TALE measurement-sidecar capture module: protocol path appears only in validation/observation explanations. Its file writes are the results-derived .beliefs.jsonl sidecar and adjacent .tmp, followed by atomic replacement; it does not write a trust-boundary path."
+    },
+    {
+      "script": "artifacts/engineering/inf75-w5s-census-prep-20261027/builder/stack_numa.py",
+      "kind": "not-a-boundary-write",
+      "script_sha256": "edfdb41035ec638d3eab60631024ebece56a5e2d9b577851bf02e05a446e0c32",
+      "evidence": "operator review package ratification-six-operator-review-20261031/REVIEW.md and ANALYSIS.json; text-only classification, AST and output-target review",
+      "reason": "Archived NUMA configuration/launch-prefix builder: boundary names occur in policy docstrings; the text heuristic mistakes Python greater-than comparisons and prose angle-bracket placeholders for shell redirects. AST contains no filesystem writer or process-execution call."
+    },
+    {
+      "script": "artifacts/engineering/inf75-w5s-census-prep-20261027/runtime/vidya/claim_tuple.py",
+      "kind": "not-a-boundary-write",
+      "script_sha256": "6ae969f7029c1a6356593fd2432eca2320931f22aa4a8c4e3a388a72b81944e7",
+      "evidence": "operator review package ratification-six-operator-review-20261031/REVIEW.md and ANALYSIS.json; text-only classification, AST and output-target review",
+      "reason": "Archived pure ClaimTuple validation/grading/serialization module: boundary names occur in explanatory text; the text heuristic mistakes Python greater-than comparisons and prose angle-bracket placeholders for shell redirects. AST contains no filesystem writer or process-execution call."
+    },
+    {
+      "script": "artifacts/operator/rtg57-f32-prep/t48/claim_tuple.py",
+      "kind": "not-a-boundary-write",
+      "script_sha256": "6ae969f7029c1a6356593fd2432eca2320931f22aa4a8c4e3a388a72b81944e7",
+      "evidence": "operator review package ratification-six-operator-review-20261031/REVIEW.md and ANALYSIS.json; text-only classification, AST and output-target review",
+      "reason": "Archived pure ClaimTuple validation/grading/serialization module: boundary names occur in explanatory text; the text heuristic mistakes Python greater-than comparisons and prose angle-bracket placeholders for shell redirects. AST contains no filesystem writer or process-execution call."
+    },
+    {
+      "script": "artifacts/operator/rtg57-f32-prep/t96/claim_tuple.py",
+      "kind": "not-a-boundary-write",
+      "script_sha256": "6ae969f7029c1a6356593fd2432eca2320931f22aa4a8c4e3a388a72b81944e7",
+      "evidence": "operator review package ratification-six-operator-review-20261031/REVIEW.md and ANALYSIS.json; text-only classification, AST and output-target review",
+      "reason": "Archived pure ClaimTuple validation/grading/serialization module: boundary names occur in explanatory text; the text heuristic mistakes Python greater-than comparisons and prose angle-bracket placeholders for shell redirects. AST contains no filesystem writer or process-execution call."
+    }
+  ],
+  "scope": "six exact-hash text-only false positives; source snapshots and broad checker unchanged",
+  "validation": {
+    "unchanged_ratification_test_module_passed": 41,
+    "test_skips_added": false,
+    "default_checker_exit_code": 0,
+    "default_checker_errors": []
+  },
+  "review_manifest_sha256": "94425fc30164bede8083413208dc58efe553b3ca2ef7b5a49e938663d795f75e",
+  "not_a_scientific_protocol_or_historical_warrant_amendment": true
+}

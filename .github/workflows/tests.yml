@@ -63,6 +63,14 @@ jobs:
           path: .ci-orchestrator-producer
           persist-credentials: false
 
+      - name: Checkout pinned orchestrator analysis producers
+        uses: actions/checkout@v4
+        with:
+          repository: pestopoppa/epyc-orchestrator
+          ref: cfcf3768716de888a971bf66489397f5b91241df
+          path: .ci-orchestrator-analysis-producer
+          persist-credentials: false
+
       - uses: actions/setup-python@v5
         with:
           python-version: '3.13'
@@ -79,6 +87,8 @@ jobs:
           EXL3_TEST_PRODUCER: ${{ github.workspace }}/.ci-research-producers/scripts/kernel_rnd/exl3/evidence.py
           EVIDENCE_DURABILITY_PRODUCER: ${{ github.workspace }}/.ci-research-producers/scripts/validate/check_evidence_durability.py
           EPYC_ORCHESTRATOR_SOURCE_ROOT: ${{ github.workspace }}/.ci-orchestrator-producer
+          EPYC_MF_ORCHESTRATOR_SOURCE_ROOT: ${{ github.workspace }}/.ci-orchestrator-analysis-producer
+          EPYC_EVAL_ORCHESTRATOR_SOURCE_ROOT: ${{ github.workspace }}/.ci-orchestrator-analysis-producer
           PYTHONPATH: ${{ github.workspace }}/.ci-orchestrator-producer:${{ github.workspace }}
         run: python -m pytest -q tests/vidya/
 
