@@ -1,0 +1,15 @@
+{
+  "state": "QUALIFIED-CONTROL",
+  "detail": {
+    "normal_result": "/mnt/raid0/llm/tmp/codex3-kpf183-chat-impl-20261031/control-attempt-1793412835083142855/RESULT.json",
+    "stop_partial": "/mnt/raid0/llm/tmp/codex3-kpf183-chat-impl-20261031/control-attempt-1793412843557040214/PARTIAL.json",
+    "normal_log": "/mnt/raid0/llm/tmp/codex3-kpf183-chat-impl-20261031/CONTROL-NORMAL-r2.log",
+    "stop_log": "/mnt/raid0/llm/tmp/codex3-kpf183-chat-impl-20261031/CONTROL-STOP-r2.log",
+    "no_full_model_inference": true,
+    "no_full_packet_published": true
+  },
+  "at": "2026-10-31T02:14:06.452436+00:00",
+  "pid": 181903,
+  "birth": 153530813,
+  "no_publication": true
+}

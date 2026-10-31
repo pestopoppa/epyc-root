@@ -1,0 +1,11 @@
+{
+  "marker": "/mnt/raid0/llm/tmp/codex3-kpf183-e332-build-r2-20261030/KEEP",
+  "created": true,
+  "marker_content": "Retain champion build metadata for live KPF-18.3 chat attribution dependency: /mnt/raid0/llm/tmp/codex3-kpf183-chat-full-20261031\n",
+  "dependency": "/mnt/raid0/llm/tmp/codex3-kpf183-chat-full-20261031",
+  "keep_absent_from_packet_catalog": true,
+  "keep_absent_from_source_catalog": true,
+  "all_five_native_digests_verified": true,
+  "build_success": "/mnt/micron/codex3-lanes/kpf-e332-build/bin/llama-server",
+  "digest_catalog_sha256": "2663270480b493df3e6f7e9e4d326f1b1b0216a1bbe11ff4fdd365ac4c5762ca"
+}

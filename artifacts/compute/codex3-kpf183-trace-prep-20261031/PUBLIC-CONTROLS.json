@@ -1,0 +1,14 @@
+{
+  "cases": [
+    {
+      "id": "control-azure",
+      "turn1": "For this public control, say the word blue. /no_think",
+      "turn2": "Repeat that colour. /no_think"
+    },
+    {
+      "id": "control-orange",
+      "turn1": "For this public control, say the word orange. /no_think",
+      "turn2": "Repeat that colour. /no_think"
+    }
+  ]
+}

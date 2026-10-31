@@ -1,0 +1,27 @@
+{
+  "status": "PROPOSAL_NOT_EXPOSED",
+  "purpose": "KPF-18.3 CPU item 3 runtime delimiter, user-start span and checkpoint attribution",
+  "original_cohort": "codex3-kpf183-multiturn-r1-20261030 remains exposed; no redraw or modification",
+  "cases": [
+    {
+      "id": "chat-attribution-c1",
+      "turn1": "Reply with exactly this sentence: The island beacon is amber. /no_think",
+      "turn2": "What color was the island beacon? Answer in one word. /no_think"
+    },
+    {
+      "id": "chat-attribution-c2",
+      "turn1": "Reply with exactly this sentence: The museum bell is silver. /no_think",
+      "turn2": "What color was the museum bell? Answer in one word. /no_think"
+    }
+  ],
+  "arms": [
+    "champion-e332",
+    "experimental-fork-off",
+    "experimental-fork-on"
+  ],
+  "request_rule": "For each arm/case perform one first chat request then one continuation containing exact returned assistant content followed by the fixed second user message. Log every attempted request and response, preserve exposure markers, no redraw after ambiguous exposure. Do not use 0.8B qualification cases or previously exposed prompts.",
+  "assistant_preservation": "Use chat_template_kwargs.enable_thinking=false. Preserve full raw assistant message including content and reasoning_content. Continue only when content is nonempty and reasoning_content is absent or empty; otherwise record incomplete/unavailable without inventing or omitting generated material or redrawing. Exact JSON serialization and rendered token stream must be retained.",
+  "native_capture_rule": "For each request record actual internal message_delimiters JSON, parsed role/span token positions and checkpoint creation/retention event including task, slot, positions, user-start and reason; correlate with live /slots snapshots and full response. Empty or missing instrumentation event means unknown, never infer from route, prompt text, cache_n or source alone. Report counts and missing cases, not a performance/quality pass.",
+  "model": "Qwen3.6-35B-A3B-MTP-Q8_0; same canonical full SHA as original",
+  "window_scope": "Future reviewed full correctness grant only; R11 0.8B independent public controls for qualification. No inference authorized by this proposal."
+}

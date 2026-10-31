@@ -1,0 +1,5 @@
+# Proposed narrow correction to KPF-18.0d item 4
+
+Fresh root main 76586093bae76102376e1d62d4e5c208e7b567f7. In the existing 2026-10-21 item-4 note, replace `max first-token KL 0.0017 (max |Δlogit| 0.0051)` with `max first-token coarse-grained KL 0.0017 (top-k probability-union max |Δp| upper bound 0.0051)`. Keep checkbox open; this does not establish a placement floor or adjudicate equivalence.
+
+Evidence: native `/mnt/raid0/llm/tmp/overnight-20261020/kpf18-run-item4/records/kpf18-20261021T130205Z-1.json`, SHA256 `00065517e44d19321971d46415afb5601294d5db714a3628c0323b4d936408ac`, explicitly says `logit_maxabs` represents union top-k probabilities and is an upper bound, and KL is coarse-grained with imputation. Raw rows SHA256 `2e10afcf034287055006d26f3507ad7babf93a6305bee0454ff36b2f3fe5f865`. Native first-token top-1 2/2, fork-vs-fresh full greedy 0/2 (prefixes 35 and 77), A/A 2/2. No independent placement-varied floor is evidenced; preserve native verdict and all open gates. Existing item4 control predeclaration draft SHA256 `e4ee11b98d3061c2edf874d576d3a7715b0a6849e038e856ed31d6267d3976ca` is design only, not measured control.

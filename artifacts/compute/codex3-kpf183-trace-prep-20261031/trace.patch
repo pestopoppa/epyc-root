@@ -1,0 +1,84 @@
+--- a/tools/server/server-context.cpp
++++ b/tools/server/server-context.cpp
+@@ -28,6 +28,12 @@
+ #include <utility>
+ #include <fstream>
+ 
++// KPF-18.3 diagnostic trace. Strictly opt-in; no scheduling or KV policy changes.
++static bool kpf183_trace_enabled() {
++    const char * value = getenv("KPF183_TRACE");
++    return value != nullptr && strcmp(value, "1") == 0;
++}
++
+ // INF-70 E2a: exactness modes for greedy speculative verification, read once from LLAMA_SPEC_EXACT.
+ // On a target whose multi-token forward is not row-exact against its single-token forward (qwen4exp:
+ // the 36 GDN layers run the chunked kernel for n_seq_tokens > 1 and the autoregressive kernel for
+@@ -4783,9 +4789,35 @@
+ 
+                     // note: we create the checkpoint before calling llama_decode(), so the current batch is not
+                     //       yet processed and therefore it is not part of the checkpoint.
++                    json kpf183_before;
++                    if (kpf183_trace_enabled()) {
++                        kpf183_before = json::array();
++                        for (const auto & cp : slot.prompt.checkpoints) {
++                            kpf183_before.push_back({{"n_tokens", cp.n_tokens},
++                                                     {"pos_min", cp.pos_min}, {"pos_max", cp.pos_max},
++                                                     {"pinned", cp.pinned}});
++                        }
++                    }
+                     if (do_checkpoint) {
+                         create_checkpoint(slot, n_tokens_cur, pos_min, pos_max, ckpt_pinned);
+                     }
++                    if (kpf183_trace_enabled()) {
++                        json kpf183_after = json::array();
++                        for (const auto & cp : slot.prompt.checkpoints) {
++                            kpf183_after.push_back({{"n_tokens", cp.n_tokens},
++                                                    {"pos_min", cp.pos_min}, {"pos_max", cp.pos_max},
++                                                    {"pinned", cp.pinned}});
++                        }
++                        json trace = {
++                            {"event", "checkpoint_decision"}, {"task_id", slot.task->id},
++                            {"slot_id", slot.id}, {"n_tokens_start", n_tokens_start}, {"n_tokens_cur", n_tokens_cur},
++                            {"is_user_start", is_user_start}, {"is_last_user_message", is_last_user_message},
++                            {"near_prompt_end", near_prompt_end}, {"ckpt_pinned", ckpt_pinned},
++                            {"do_checkpoint", do_checkpoint}, {"pos_min", pos_min}, {"pos_max", pos_max},
++                            {"before", kpf183_before}, {"after", kpf183_after},
++                        };
++                        SRV_INF("KPF183_TRACE %s\n", trace.dump().c_str());
++                    }
+                 }
+ 
+                 if (!slot_batched) {
+@@ -5589,6 +5621,32 @@
+ 
+             task.params.message_spans = task.tokens.find_message_spans(delimiters);
+ 
++            if (kpf183_trace_enabled()) {
++                json trace_delimiters = json::array();
++                for (const auto & delimiter : delimiters.delimiters) {
++                    trace_delimiters.push_back({
++                        {"role", common_chat_role_to_string(delimiter.role)},
++                        {"delimiter", delimiter.delimiter},
++                        {"token_ids", delimiter.tokens},
++                    });
++                }
++                json trace_spans = json::array();
++                for (const auto & span : task.params.message_spans.spans) {
++                    trace_spans.push_back({
++                        {"role", common_chat_role_to_string(span.role)},
++                        {"pos", span.pos}, {"len", span.len},
++                    });
++                }
++                json trace = {
++                    {"event", "spans"}, {"task_id", task.id},
++                    {"input_message_delimiters_present", data.contains("message_delimiters")},
++                    {"input_message_delimiters", json_value(data, "message_delimiters", json::array())},
++                    {"tokenized_delimiters", trace_delimiters}, {"spans", trace_spans},
++                    {"task_tokens", task.tokens.size()},
++                };
++                SRV_INF("KPF183_TRACE %s\n", trace.dump().c_str());
++            }
++
+             // [P2] checkpoint_at {"message": k}, chat endpoints: rendered message prefixes, verified at token level
+             if (!task.params.checkpoint_at_msg.empty() && data.contains("checkpoint_at_prefix_text") && !task.tokens.has_mtmd) {
+                 const int32_t n_tok = (int32_t) task.tokens.size();

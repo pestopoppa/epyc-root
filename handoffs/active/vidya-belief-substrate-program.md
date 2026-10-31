@@ -2590,6 +2590,8 @@ RI-16's routing `stage_ms` is covered by VB-ROUTE-LAT above, not by a new task.
 
 ## VB-KVU-PF — KV prefix-fork program measurement sources (filed 2026-10-04, ak-ds41-main)
 
+- [ ] **VB-KVU-PF-CHAT-TRACE-WIRE** — capture the prospective KPF-18.3 chat attribution raw events and identities at write time; project only complete attested observations via existing `ClaimTuple.grade()`, refuse missing/tampered/mismatched inputs, preserve unknowns and pass the real planning-context canary before calling it wired. No new grading rule or historical backfill.
+
 - [ ] **VB-KVU-PF — write side + projection for RTG-58's measurement records** (CLAUDE.md *Belief Kernel*). Producers:
   [`kv-prefix-fork-and-paged-attention.md`](kv-prefix-fork-and-paged-attention.md) KPF-18 (fork-vs-fresh equivalence + TTFT),
   KPF-26 (trunk-first dispatch), KPF-33 (sequence-affine allocation), KPF-42 (`kv_rows` A/B vs KVU-19b), KPF-53 (cascade).
@@ -3956,3 +3958,7 @@ Unused NI Research/Orchestrator linked checkouts were retired through `scripts/s
 
 
 - [ ] **VB-PRB-T4-RESUME-WIRE — validate the prospective segmented TALE rerun through the existing TALE adapter and planning-context canary.** Verify original request/response/finish, start/end/cost and contemporaneous source/model/kernel/process/admission envelope for every attempted cell; preserve interrupted, capped, policy-limited and unknown cases and their original 400-per-suite denominator. Exercise missing/tampered/mixed-warrant and partial-resume controls, verify the unchanged `tale_budget_capture.py` output projects only eligible completed records through existing `ClaimTuple.grade()`, and require a real planning-context canary before calling the new source wired. No historical measurement warrant, new protocol or second grading ladder. Full observational rerun keeps all 1,600 questions, estimator plus three answer arms, original fixed-rule interpretation, 10,000 paired bootstrap draws and OAA; the reference ADOPT label is an experimental readout, not a production adoption gate. [Prospective source and rule snapshot](../../artifacts/compute/codex3-ready-checkpoint-20261031-0105/prb-prospective/PREDECLARED.md); native qualification remains separate.
+
+## C6 served-shape Q4_K microbench source — 2026-10-31
+
+- [ ] **VB-C6-Q4-MICROBENCH-WIRE — project prospective C6 Q4_K native microbench captures through the existing measurement carrier/ladder and pass its planning-context canary.** Producer is `/mnt/raid0/llm/tmp/c6-35186-q4-microbench-prep-20261031/`: actual pinned 27B Q4_K tensor shapes plus a separately labeled synthetic Q4_K reference on the existing DS41 MXFP4 expert dimensions. Before each full calendar run, preserve instrument/model-header/case/recipe/source/image/seed/thread/grant/affinity identities; retain per-case native latency units and repeat coordinates plus raw hashes afterwards. Project observations only, using shared `claim_tuple.grade()`; do not invent a grading rule, missing input-byte identity, protocol/noise-floor, or historical warrant for R11 component controls. Acceptance: strict raw reread, incomplete/tampered/mismatched inputs refuse, source registry/reader coverage and planning-context canary. Existing G-AK op correctness and named serving-cell predicates remain separate. Source table: `scripts/vidya/adapters/README.md`.

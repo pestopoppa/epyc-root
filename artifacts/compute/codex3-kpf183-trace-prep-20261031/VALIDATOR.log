@@ -1,0 +1,4 @@
+live_pid=228586 birth=153553024
+/bin/bash /mnt/raid0/llm/tmp/codex3-kpf-item4-control-20261030/engine/filler_run13.sh --id codex3-kpf183-chat-attribution-full-r1-20261031 --class cpu --claim-cpus 0-23 --role build --min-window 1800 --stop /mnt/raid0/llm/tmp/codex3-kpf183-chat-full-20261031/STOP --port 19584 --workdir /mnt/raid0/llm/tmp/codex3-kpf183-chat-full-20261031 --cmd taskset -c ${FILLER_CPUS} /bin/bash /mnt/raid0/llm/tmp/codex3-kpf183-chat-full-20261031/launch.sh --job --complete-cmd test -s /mnt/raid0/llm/tmp/codex3-kpf183-chat-full-20261031/run/RESULT.json 
+OK: 1 row(s) checked, 0 refusal(s), 0 warning(s)
+rc=0

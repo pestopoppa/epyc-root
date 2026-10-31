@@ -1,0 +1,29 @@
+Traceback (most recent call last):
+  File "/mnt/raid0/llm/tmp/codex3-kpf183-chat-impl-20261031/trace-control.py", line 81, in <module>
+    a,off=execute(0);b,on=execute(1)
+          ^^^^^^^^^^
+  File "/mnt/raid0/llm/tmp/codex3-kpf183-chat-impl-20261031/trace-control.py", line 58, in execute
+    call('/slots/0?action=erase',{});check()
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/raid0/llm/tmp/codex3-kpf183-chat-impl-20261031/trace-control.py", line 31, in call
+    with urllib.request.urlopen(req,timeout=60) as r:return json.load(r)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/urllib/request.py", line 215, in urlopen
+    return opener.open(url, data, timeout)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/urllib/request.py", line 521, in open
+    response = meth(req, response)
+               ^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/urllib/request.py", line 630, in http_response
+    response = self.parent.error(
+               ^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/urllib/request.py", line 559, in error
+    return self._call_chain(*args)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/urllib/request.py", line 492, in _call_chain
+    result = func(*args)
+             ^^^^^^^^^^^
+  File "/usr/lib/python3.12/urllib/request.py", line 639, in http_error_default
+    raise HTTPError(req.full_url, code, msg, hdrs, fp)
+urllib.error.HTTPError: HTTP Error 501: Not Implemented
+{"schema": "hil15-r11-smoke-supervisor/v1", "elapsed_s": 3.4971046349965036, "sampled_peak_tree_rss_bytes": 1103884288, "samples": 34, "verified_exited_processes": 0, "verified_exited_threads": 0, "per_process_address_space_limit_bytes": 17179869184, "rss_scope": "sum of sampled resident pages across owned process tree; sampling may miss transients and double-count shared pages", "leader_pid": 172736, "leader_birth": 153525842, "child_rc": 1, "children_drained": true, "failure": null}

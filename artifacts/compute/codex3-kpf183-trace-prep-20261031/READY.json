@@ -1,0 +1,101 @@
+{
+  "status": "READY",
+  "id": "codex3-kpf183-chat-attribution-full-r1-20261031",
+  "owner": "codex3",
+  "priority_rank": 2,
+  "regions": "any-cpu-quarter",
+  "class": "diagnostic",
+  "booking_class": "block-correctness",
+  "min_window_s": 1800,
+  "window_s": 10800,
+  "gib": 64,
+  "launcher": {
+    "path": "/mnt/raid0/llm/tmp/codex3-kpf183-chat-full-20261031/launch.sh",
+    "sha256": "f6c137ddaabad47c94c034b65349e1f1eeb42296447aa09b0edbe6edc5f50b38"
+  },
+  "job": {
+    "path": "/mnt/raid0/llm/tmp/codex3-kpf183-chat-full-20261031/job.py",
+    "sha256": "3cdfec3b9d69ae1a75f8d30fbb96b95811ea35e222f032bc0be1c0d5cf8d4923"
+  },
+  "result_path": "/mnt/raid0/llm/tmp/codex3-kpf183-chat-full-20261031/run/RESULT.json",
+  "launcher_log": "/mnt/raid0/llm/tmp/codex3-kpf183-chat-full-20261031/ws58-launcher.out",
+  "scratch_root": "/mnt/raid0/llm/tmp/codex3-kpf183-chat-full-20261031",
+  "est_output_GiB": 0.125,
+  "keep": [
+    "*.sh",
+    "*.py",
+    "*.json",
+    "*.sha256",
+    "*.md",
+    "*.log",
+    "run/*.json",
+    "run/*.log",
+    "smoke-qualified-*/*.json",
+    "smoke-qualified-*/*.log",
+    "smoke-stop-*/*.json",
+    "smoke-stop-*/*.log",
+    "state/*.json",
+    "state/*.log"
+  ],
+  "decision_rule": "KPF-18.3 item 3 attribution: record actual internal chat delimiter JSON and tokenized roles, role spans, user-start/near-end/pinned checkpoint decisions and resulting inventories per two new fixed cases, across e332 champion, candidate fork-off and candidate fork-on. Preserve actual assistant response; continue only if content nonempty and reasoning absent/empty, otherwise record unknown without redraw. Per-request missing event/task ID is unknown. Counts and evidence only, no quality/performance or GPU claim.",
+  "min_effect": "n/a (correctness diagnostic)",
+  "enrollment": "n/a: diagnostic",
+  "hold": null,
+  "predeclaration": {
+    "path": "/mnt/raid0/llm/tmp/codex3-kpf183-chat-full-20261031/PREDECLARED.json",
+    "sha256": "0ab013c8c7057ed2987589e98cf47295e01e4c16dd784f966e92be84c24f3f89"
+  },
+  "source_manifest": {
+    "path": "/mnt/raid0/llm/tmp/codex3-kpf183-chat-full-20261031/SOURCES.sha256",
+    "sha256": "15d55f7e71d17a705a7a20dfda174034e83e9f10bfd3570ff797daee494c3e0f"
+  },
+  "full_model": "/mnt/raid0/llm/models/Qwen3.6-35B-A3B-MTP-Q8_0.gguf",
+  "full_model_size": 37801097504,
+  "full_model_sha256_expected": "c1283d8b80c3e38b2735ddbc9766d3b3126f44d6c484be419d4e101d09a76131",
+  "full_model_identity": "prior full SHA verified; launch checks size and first/last 64 MiB; no 35B smoke",
+  "builds": {
+    "experimental": {
+      "catalog": "/mnt/raid0/llm/tmp/codex3-kpf183-chat-impl-20261031/BUILD-DIGESTS.txt",
+      "sha256": "e7aeb3936c63064ccb1a67dafc5b20e1067e616eb9d97bd6662f3cd31004b2c8",
+      "trace_patch": "/mnt/raid0/llm/tmp/codex3-kpf183-chat-impl-20261031/trace.patch",
+      "trace_patch_sha256": "030729da4b44eff00f59013ee9e8b0f5ca449f8ada87a119632214cc1eb4c7da"
+    },
+    "champion": {
+      "catalog": "/mnt/raid0/llm/tmp/codex3-kpf183-e332-build-r2-20261030/BUILD-DIGESTS.txt",
+      "sha256": "2663270480b493df3e6f7e9e4d326f1b1b0216a1bbe11ff4fdd365ac4c5762ca"
+    }
+  },
+  "feasibility": "Prospective planning estimate, not a bound: 12 requests x up to 4096 assumed input tokens / 26.675 tok/s plus 384 output tokens / 0.08 tok/s plus three 60-second assumed loads = 6822.62s within 10800s; rates are half of selected prior different-binary Q8 log measurements, startup and other overhead not guaranteed. rc75 preserves partial and pending cases are never redrawn.",
+  "log_consumer": "/mnt/raid0/llm/tmp/codex3-kpf183-chat-full-20261031/job.py",
+  "log_consumer_sha256": "3cdfec3b9d69ae1a75f8d30fbb96b95811ea35e222f032bc0be1c0d5cf8d4923",
+  "smoke": {
+    "ran_at": "2026-10-31T02:17:21.405896+00:00",
+    "regions": "R11 SMT 126,127; 30-31 mutex",
+    "model": "public Qwen3.5-0.8B Q8 only",
+    "first_request_ok": true,
+    "result_writer_ok": true,
+    "exit_ok": true,
+    "wall_s": 38.412407130002975,
+    "sampled_peak_tree_rss_bytes": 1497772032,
+    "children_drained": true,
+    "log": "/mnt/raid0/llm/tmp/compute-flags/ready/codex3-kpf183-chat-attribution-full-r1-20261031.smoke.log",
+    "result": "/mnt/raid0/llm/tmp/codex3-kpf183-chat-full-20261031/smoke-qualified-20261031/RESULT.json",
+    "qualification": "8 public case/arm records: champion/fork-off/fork-on/trace-off; exact trace-on/off response+checkpoint equality; native delimiter/span and user-start events per fork-on/off request; no 35B inference"
+  },
+  "interrupt_tests": {
+    "stop": {
+      "log": "/mnt/raid0/llm/tmp/codex3-kpf183-chat-full-20261031/STOP-TEST.log",
+      "sha256": "4af6f1b1861aa9a3ab509ef7f58020240f90bae6ad03a66f00dfe9f2d5db1a17",
+      "evidence": "/mnt/raid0/llm/tmp/codex3-kpf183-chat-full-20261031/STOP-EVIDENCE.json",
+      "exit_code": 75,
+      "partial": true,
+      "children_drained": true
+    }
+  },
+  "validator": {
+    "log": "/mnt/raid0/llm/tmp/codex3-kpf183-chat-full-20261031/VALIDATOR.log",
+    "sha256": "8bf220896308aadee6d0c9e7bf4547651f3d616c4f072e179237879e7f8ec6af",
+    "fixture": "/mnt/raid0/llm/tmp/codex3-kpf183-chat-full-20261031/VALIDATOR-FIXTURE.md"
+  },
+  "exposure": "No full case pending, record or result exists at publication; preserve any later pending case and never redraw."
+}
