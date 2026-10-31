@@ -1,0 +1,9 @@
+{
+  "keeper_source": "/mnt/raid0/llm/tmp/compute-flags/ws58-calendar-keeper-v7c.sh",
+  "keeper_source_sha256": "1b8f00bec637c5a057b0e00560a475469225eb8d93fd5dca08156d982d4c76c0",
+  "scope": "read-only exact ready_scan function extracted verbatim; R points only at exact private proposed packet; no full keeper/source and no startup functions run",
+  "rc": 0,
+  "stdout": "ok\t36\tcodex-ni-s18-qwenvl-cpu-r1-20261031\t0-47,96-143\t/mnt/raid0/llm/tmp/codex-ni-next-ranked-cpu-prep-20261031/run_full.sh\t86400\t48\n",
+  "stderr": "",
+  "manifest_sha256": "b15927014bdd7eb366985cce390cf834a23b6f327a3f6c3f436f88474de9b0ea"
+}

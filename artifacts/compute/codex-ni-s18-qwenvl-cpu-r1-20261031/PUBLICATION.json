@@ -1,0 +1,17 @@
+{
+  "id": "codex-ni-s18-qwenvl-cpu-r1-20261031",
+  "owner": "codex-ni",
+  "at": "2026-10-31T08:13:04.986327+00:00",
+  "approved_manifest_sha256": "b15927014bdd7eb366985cce390cf834a23b6f327a3f6c3f436f88474de9b0ea",
+  "status": "READY_PUBLISHED",
+  "published_paths": [
+    "/mnt/raid0/llm/tmp/compute-flags/ready/codex-ni-s18-qwenvl-cpu-r1-20261031.row.md",
+    "/mnt/raid0/llm/tmp/compute-flags/ready/codex-ni-s18-qwenvl-cpu-r1-20261031.smoke.log",
+    "/mnt/raid0/llm/tmp/compute-flags/ready/codex-ni-s18-qwenvl-cpu-r1-20261031.json"
+  ],
+  "scope": "diagnostic READY prep only; actual t48/60-item/512-token measurement and required VB-SERVING-DF2 projection/canary remain open",
+  "manifest_bytes_verified_before_publish": true,
+  "released_claim_sha256": "da2a932afd4504163e13cbde9897279acc6d3bac8294de7a9f8e68e16e5394f5",
+  "own_claim_released": true,
+  "post_publish_manifest_sha256": "b15927014bdd7eb366985cce390cf834a23b6f327a3f6c3f436f88474de9b0ea"
+}

@@ -1,0 +1,28 @@
+{
+  "checked_at": "2026-10-31T08:10:31.124800+00:00",
+  "existing_bounded_packet_files_checked": 162,
+  "unretained_existing_files": [],
+  "matched_image_files": 60,
+  "future_native_outputs_and_attempt_witnesses": [
+    "run/run.json",
+    "run/results.jsonl",
+    "run/server.log",
+    "run/server.identity.json",
+    "run/server.process-maps",
+    "run/process-witness.json",
+    "run/mapped-closure.json",
+    "run/runtime-samples.jsonl",
+    "run/active-request.json",
+    "run/error.txt",
+    "run/drain-error.txt",
+    "run/pre-evict.log",
+    "failedsmoke/attempt-next/server.process-maps",
+    "attempt-next/server.identity.json"
+  ],
+  "unretained_future_paths": [],
+  "historical_harness": "/mnt/raid0/llm/tmp/codex-ni-next-ranked-cpu-prep-20261031/source_custody/historical-harness.py",
+  "historical_mi210_baseline": "/mnt/raid0/llm/tmp/codex-ni-next-ranked-cpu-prep-20261031/source_custody/historical-mi210-results.json",
+  "source_manifest_unchanged": true,
+  "scope": "bounded scratch evidence/source/images plus every future writer path and known attempt suffix; ready-proposal artifacts separately published to ready; no recursive whole-root keep",
+  "ephemeral_engine_lock_and_pidfile_scope": "state/*.lock and state/*.pids retained narrowly"
+}
