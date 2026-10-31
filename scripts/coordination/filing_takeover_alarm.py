@@ -11,6 +11,7 @@ from __future__ import annotations
 import argparse
 import fcntl
 import json
+import os
 import re
 import sys
 from datetime import datetime, timezone
@@ -41,52 +42,46 @@ def scan_once(
     now: datetime | None = None,
     recipient: str = "coordinator-agent",
 ) -> dict:
-    """Use existing schema validation/single-writer rules; keep unknown input unknown."""
-    bus._require_roster_id(bus_root, SERVICE)
-    bus._require_roster_id(bus_root, recipient)
+    """Own alerts remain available when native bus authoring is unavailable."""
     now = now or datetime.now(timezone.utc)
     if now.tzinfo is None:
         raise ValueError("the observation clock requires a timezone")
-    report = {"nudged": [], "unknown": [], "observed_at": now.isoformat()}
-    # One lock covers scan/append/checkpoint. Reconcile the current own outbox
-    # before appending; a persistent sent checkpoint also survives outbox rotation.
+    report = {
+        "nudged": [],
+        "alerted": [],
+        "unknown": [],
+        "observed_at": now.isoformat(),
+        "bus_status": "not_needed",
+    }
     with (flags_root / "filing-takeover-alarm.lock").open("a") as lock:
         fcntl.flock(lock, fcntl.LOCK_EX)
-        try:
-            messages, _end_offset = bus._read_jsonl(
-                bus_root / "outbox" / f"{SERVICE}.jsonl"
-            )
-        except bus.BusError as exc:
-            raise ValueError("cannot establish prior nudge identity") from exc
-        if any(not isinstance(message, dict) for message in messages):
-            raise ValueError("cannot establish prior nudge identity")
-        state_path = flags_root / "filing-alarm.sent.json"
-        state = (
-            json.loads(state_path.read_text()) if state_path.exists() else {"sent": []}
-        )
-        if (
-            not isinstance(state, dict)
-            or not isinstance(state.get("sent"), list)
-            or any(
-                not isinstance(x, str) or not RUN_ID.fullmatch(x) for x in state["sent"]
-            )
-        ):
-            raise ValueError(
-                "invalid sent checkpoint; refusing to guess prior delivery"
-            )
-        sent = set(state["sent"])
-        sent.update(
-            m["payload"]["run_id"]
-            for m in messages
-            if m.get("from") == SERVICE
-            and m.get("kind") == "nudge"
-            and isinstance(m.get("payload"), dict)
-            and m["payload"].get("alarm") == "LOOP-27"
-            and isinstance(m["payload"].get("run_id"), str)
-        )
-        if sent != set(state["sent"]):
-            bus._write_atomic(state_path, {"sent": sorted(sent)})
+        alert_path = flags_root / "filing-alarm.jsonl"
+        alerted = set()
+        if alert_path.exists():
+            for line in alert_path.read_text(encoding="utf-8").splitlines(
+                keepends=True
+            ):
+                if not line.strip():
+                    continue
+                if not line.endswith("\n"):
+                    raise ValueError(
+                        "unterminated own alert stream; refusing to guess prior delivery"
+                    )
+                record = json.loads(line)
+                if (
+                    not isinstance(record, dict)
+                    or record.get("schema_version") != "epyc.filing-alarm.v1"
+                    or record.get("kind") != "filing-overdue"
+                    or not isinstance(record.get("id"), str)
+                    or not RUN_ID.fullmatch(record["id"])
+                ):
+                    raise ValueError(
+                        "invalid own alert stream; refusing to guess prior delivery"
+                    )
+                alerted.add(record["id"])
+
         due = flags_root / "filing-due.jsonl"
+        eligible = {}
         for number, line in enumerate(
             due.read_text(encoding="utf-8").splitlines(keepends=True), 1
         ):
@@ -108,47 +103,115 @@ def scan_once(
             except (ValueError, TypeError) as exc:
                 report["unknown"].append({"line": number, "reason": str(exc)})
                 continue
-            if (
-                run_id in sent
-                or (flags_root / "filing-done" / f"{run_id}.FILED").is_file()
-            ):
+            if (flags_root / "filing-done" / f"{run_id}.FILED").is_file():
                 continue
             age = (now - seen).total_seconds()
             if age <= 3600:
                 continue
-            message = {
-                "to": recipient,
-                "kind": "nudge",
-                "action_required": True,
-                "assignee": recipient,
-                "payload": {
-                    "alarm": "LOOP-27",
-                    "subject": "Unfiled compute result exceeds the filing window",
-                    "run_id": run_id,
+            eligible.setdefault(run_id, (row, age))
+            if run_id not in alerted:
+                record = {
+                    "schema_version": "epyc.filing-alarm.v1",
+                    "kind": "filing-overdue",
+                    "id": run_id,
                     "seen_at": row["seen_at"],
+                    "observed_at": now.isoformat(),
                     "age_seconds": int(age),
+                    "action": "filing-takeover",
+                    "bus_sender": SERVICE,
+                    "bus_recipient": recipient,
                     "filing_due": str(due),
-                    "detail": "Arrange filing or takeover per compute-owner-takeover.md; this alarm performs no filing or ownership transfer.",
-                },
-            }
-            rc = bus.main(
-                [
-                    "--bus-root",
-                    str(bus_root),
-                    "append",
-                    "--agent",
-                    SERVICE,
-                    "--target",
-                    "outbox",
-                    "--json",
-                    json.dumps(message),
-                ]
+                }
+                with alert_path.open("a", encoding="utf-8") as out:
+                    out.write(json.dumps(record, sort_keys=True) + "\n")
+                    out.flush()
+                    os.fsync(out.fileno())
+                alerted.add(run_id)
+                report["alerted"].append(run_id)
+        if not eligible:
+            return report
+        # This separate phase cannot prevent the durable owner alert above.
+        try:
+            bus._require_roster_id(bus_root, SERVICE)
+            bus._require_roster_id(bus_root, recipient)
+            messages, _end_offset = bus._read_jsonl(
+                bus_root / "outbox" / f"{SERVICE}.jsonl"
             )
-            if rc:
-                raise RuntimeError(f"bus append refused for {run_id}: rc={rc}")
-            sent.add(run_id)
-            bus._write_atomic(state_path, {"sent": sorted(sent)})
-            report["nudged"].append(run_id)
+            if any(not isinstance(message, dict) for message in messages):
+                raise ValueError("cannot establish prior nudge identity")
+            state_path = flags_root / "filing-alarm.sent.json"
+            state = (
+                json.loads(state_path.read_text())
+                if state_path.exists()
+                else {"sent": []}
+            )
+            if (
+                not isinstance(state, dict)
+                or not isinstance(state.get("sent"), list)
+                or any(
+                    not isinstance(x, str) or not RUN_ID.fullmatch(x)
+                    for x in state["sent"]
+                )
+            ):
+                raise ValueError(
+                    "invalid sent checkpoint; refusing to guess prior delivery"
+                )
+            sent = set(state["sent"])
+            sent.update(
+                m["payload"]["run_id"]
+                for m in messages
+                if m.get("from") == SERVICE
+                and m.get("kind") == "nudge"
+                and isinstance(m.get("payload"), dict)
+                and m["payload"].get("alarm") == "LOOP-27"
+                and isinstance(m["payload"].get("run_id"), str)
+            )
+
+            def bus_checkpoint():
+                bus._write_atomic(state_path, {"sent": sorted(sent)})
+
+            if sent != set(state["sent"]):
+                bus_checkpoint()
+            for run_id, (row, age) in eligible.items():
+                if run_id in sent:
+                    continue
+                message = {
+                    "to": recipient,
+                    "kind": "nudge",
+                    "action_required": True,
+                    "assignee": recipient,
+                    "payload": {
+                        "alarm": "LOOP-27",
+                        "subject": "Unfiled compute result exceeds the filing window",
+                        "run_id": run_id,
+                        "seen_at": row["seen_at"],
+                        "age_seconds": int(age),
+                        "filing_due": str(due),
+                        "detail": "Arrange filing or takeover per compute-owner-takeover.md; this alarm performs no filing or ownership transfer.",
+                    },
+                }
+                rc = bus.main(
+                    [
+                        "--bus-root",
+                        str(bus_root),
+                        "append",
+                        "--agent",
+                        SERVICE,
+                        "--target",
+                        "outbox",
+                        "--json",
+                        json.dumps(message),
+                    ]
+                )
+                if rc:
+                    raise RuntimeError(f"bus append refused for {run_id}: rc={rc}")
+                sent.add(run_id)
+                bus_checkpoint()
+                report["nudged"].append(run_id)
+            report["bus_status"] = "observed"
+        except (OSError, ValueError, RuntimeError, bus.BusError) as exc:
+            report["bus_status"] = "unknown"
+            report["unknown"].append({"component": "bus", "reason": str(exc)})
     return report
 
 

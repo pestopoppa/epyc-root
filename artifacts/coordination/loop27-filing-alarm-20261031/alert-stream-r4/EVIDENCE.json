@@ -1,0 +1,91 @@
+{
+  "task": "LOOP-27 independent owner alert stream",
+  "state": "task OPEN pending owner-armed approved stream monitor and actual session notification verification; daemon stays down",
+  "source_files": [
+    {
+      "path": "scripts/coordination/filing_takeover_alarm.py",
+      "sha256": "aa971fc857330e5bb5ed3ade730769a1b0c4003ae13937dc00584ac908770618"
+    },
+    {
+      "path": "tests/coordination/test_filing_takeover_alarm.py",
+      "sha256": "b2eaba5c96441e8b5e5c61b037e137edf137009f91d480d2d056a2029bc16cc0"
+    }
+  ],
+  "support_sources": [
+    {
+      "path": "scripts/coordination/session_bus.py",
+      "sha256": "d3f2cec9380ccfd8036448fdcb1bccbd24f82c8f4632abca1ab1478348d1a8a0"
+    },
+    {
+      "path": "scripts/coordination/session_bus_coordinator.py",
+      "sha256": "522e1499390841930103479627106e5c7338d122191072caacbed09048d3f355"
+    },
+    {
+      "path": "scripts/coordination/row_intake.py",
+      "sha256": "ec9ebd70dc9e5cfee05b6ce1227028c5efbed3b2fdd240983117f43f6a0cd543"
+    },
+    {
+      "path": "coordination/session-bus/session_bus.schema.json",
+      "sha256": "280060ce7d9d1393a33bfc7bcffe29b75740901d2591937e7d2202023fe6426d"
+    }
+  ],
+  "qualification": {
+    "task": "LOOP-27 append-only own alert stream",
+    "state": "PRIVATE_REVIEW_READY_NO_LIVE_ADOPTION_NO_MONITOR_ARMED",
+    "base": "b1555bf66600de1ad79aac0c47d0898277496126",
+    "patch_sha256": "ae90843b448fc71de21cc626a77a570994904429b3cd4dee39156ff67ea0e725",
+    "source_files": [
+      {
+        "path": "scripts/coordination/filing_takeover_alarm.py",
+        "sha256": "aa971fc857330e5bb5ed3ade730769a1b0c4003ae13937dc00584ac908770618"
+      },
+      {
+        "path": "tests/coordination/test_filing_takeover_alarm.py",
+        "sha256": "b2eaba5c96441e8b5e5c61b037e137edf137009f91d480d2d056a2029bc16cc0"
+      }
+    ],
+    "semantics": "under existing lock: independently reconcile owner stream/alerted checkpoint, append+flush/fsync owner alert once per stale id, then independently reconcile/attempt native bus nudge; bus faults return explicit component UNKNOWN/nonzero without blocking owner alert",
+    "owner_state": "filing-alarm.alerted.json; native bus state filing-alarm.sent.json preserved independently",
+    "qualification": {
+      "interpreter": "actual /usr/bin/python3 3.13.7 normal user-site",
+      "log": "ALERT-R4-HOST-FINAL.log",
+      "result": "36 passed in1.37s",
+      "custody": "ALERT-R4-HOST-FINAL.json",
+      "ruff": "RUFF.log"
+    },
+    "tests_include": [
+      "duplicate/restart and durable once-per-id",
+      "partial/malformed due and own stream preserved/refused",
+      "bus checkpoint interruption recovery without duplicate",
+      "owner append/fsync interruption recovery without duplicate",
+      "missing runtime roster/config, malformed config/outbox/sent-state, failed bus append still produce exactly one owner alert",
+      "native host watcher --once twice with bus missing/corrupt; owner alert one, nonzero/UNKNOWN and no bus or peer write",
+      "native bus/dispatcher fixture relay; no live relay claim"
+    ],
+    "remaining_acceptance": "source publication, owner-armed approved zero-token consumer and actual delivery/session takeover verification; original task stays unchecked",
+    "owner_facts": "workspace58 Claude has no roster/scheduled bus drain; coordinator-agent endpoint absent/unowned; owner/user authoritative report",
+    "live_changes": false,
+    "quota_credit": 0,
+    "unchanged_support_files": [
+      {
+        "path": "scripts/coordination/session_bus.py",
+        "sha256": "d3f2cec9380ccfd8036448fdcb1bccbd24f82c8f4632abca1ab1478348d1a8a0"
+      },
+      {
+        "path": "scripts/coordination/session_bus_coordinator.py",
+        "sha256": "522e1499390841930103479627106e5c7338d122191072caacbed09048d3f355"
+      },
+      {
+        "path": "scripts/coordination/row_intake.py",
+        "sha256": "ec9ebd70dc9e5cfee05b6ce1227028c5efbed3b2fdd240983117f43f6a0cd543"
+      },
+      {
+        "path": "coordination/session-bus/session_bus.schema.json",
+        "sha256": "280060ce7d9d1393a33bfc7bcffe29b75740901d2591937e7d2202023fe6426d"
+      }
+    ]
+  },
+  "applied_host_tests": "APPLIED-HOST-CONTROLS.log",
+  "native_bus_or_live_process_changes": false,
+  "quota_credit": 0
+}
