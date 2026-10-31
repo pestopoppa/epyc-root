@@ -240,7 +240,7 @@ First full smoke run of the trial loop. Four defects, three silent.
         self-announcing; it does not resolve it. The fix is still a decision: wire a producer, or
         retire the column and its machinery on purpose.
 
-- [ ] **`binding_router` is a parameter nobody passes, gating a whole feature.** `src/api/state.py:97`
+- [x] **`binding_router` is a parameter nobody passes, gating a whole feature.** `src/api/state.py:97` ✅ 2026-10-31 — orchestrator implementation `053c4858466fff785b7d745e2dc752210904915b`; `tests/unit/test_binding_router_routing.py` and Git capsule `artifacts/audit/binding-router-wiring-20261031/verification.md`; 135 routing tests pass. [no-belief: native software lifecycle/routing regression controls]
       declares `binding_router: Any | None = None`, never assigned anywhere;
       `chat_routing.py:230`'s `if binding_router is not None:` guards the entire override block;
       `_classify_and_route_proactive` has zero callers. Flipping `features().binding_routing` does
@@ -264,6 +264,7 @@ First full smoke run of the trial loop. Four defects, three silent.
         not a line number, precisely because this row's own anchors rotted.
       - **Box left unchecked deliberately** — nothing is fixed. The decision is still open: wire the
         whole chain, or retire `binding_routing` and its machinery on purpose.
+      - **2026-10-31 decision resolved: wire the existing chain.** The API lifespan constructs the router when the existing default-off flag is enabled, the actual heuristic routing caller passes that state instance to the classifier, and shutdown clears it. Native lifespan→registration→public-route tests prove a rule registered through the existing `RoutingBinding` API overrides the heuristic, while forced and explicit routes retain precedence. An enabled startup creates an empty registry until rules are explicitly registered; no configuration loader, default override, per-session isolation, live flag activation, or runtime reload is claimed. The old tripwire is replaced by behavioral tests. This supersedes the historical unchecked/no-fix annotation above.
 
 - [ ] **Ten fully-built, fully-tested, zero-production-importer modules** (1-3 test importers, 0
       production importers), incl. `src/mutation_ledger.py`, whose docstring asserts "the autopilot
