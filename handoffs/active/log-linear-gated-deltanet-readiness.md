@@ -1,6 +1,7 @@
 # Log-Linear Gated DeltaNet — Readiness Tracker
 
 **Status**: **GATES FIRED 2026-08-12** — all three activation gates are satisfied; this is no longer a monitoring-only tracker. See [§ Activation Evidence — 2026-08-12](#activation-evidence--2026-08-12).
+**Scratch**: `/mnt/raid0/llm/tmp/codex-ni-g16a-build-prep-20261031/` (retain with `KEEP` through G16 greedy A and B and coordinated champion integration) · `/mnt/raid0/llm/tmp/codex-ni-g16a-build-checkpoint-20261031/` (checkpoint patch and notification; clean after commit).
 **Created**: 2026-04-14 (via research intake deep dive)
 **Updated**: 2026-08-12 (gates re-checked against the live sources; all three fired)
 **Categories**: ssm_hybrid, context_extension, inference_serving
