@@ -1,4 +1,4 @@
-91aa4d118d14ce1a5a3a94668e1e0be77b5a763fa13ab74409ee9d4b7c408710  artifacts/compute/r24-8-alarms-20261031/README.md
+854d23d8925fe5a7ebbc0ae78d0cdd14b48abcc96635ead2fcc4b4aa6d9881db  artifacts/compute/r24-8-alarms-20261031/README.md
 67b5a28d907f5b069e6b75b16832c729058aeaa3b1df4550a8eba6ed1d08b9fd  artifacts/compute/r24-8-alarms-20261031/retrodiction-projection.json
 f1fda4d511d94e8ec4a26e669ddd7f2579c70a34c97ae62f905fd55303e8e29b  artifacts/compute/r24-8-alarms-20261031/source-inputs/run9-loop-run.json
 b5a6944fe1e65f3f94170dee646327b3501d7f5ba2dc79223e64c819ca75ae22  artifacts/compute/r24-8-alarms-20261031/source-inputs/run18-loop-run.json
@@ -12,4 +12,8 @@ daafa6cccfc1c0a34e5837b93762c73cbd6f96c21b136c61cc54b752cb60bb27  artifacts/comp
 fb348ded8832a8cb6a95661992d3a9c3c9478be23875ace911344de1d2783f50  tests/test_dashboard_loop_surface.py
 0937c8c55a7a719519e3e42c9af0b3ca57bbd2ca6e08631597b3e05b1783f6cf  handoffs/active/harness-improvement-loop.md
 ed37d3c04764cdbfc8f46b8eb002a8b622acfc0b3a09227591e2a396fdaf64b9  handoffs/active/autopilot-continuous-optimization.md
-a58693ce225fdcf9e163e1f36327c8fcbc07318cf380152258b7b2db06fd7bf8  progress/2026-10/2026-10-31-r24-8-alarms.md
+cb60498e6df33caa6e183c945e67b16faa4b88f25391008f9cd90f2a2a8d2a50  progress/2026-10/2026-10-31-r24-8-alarms.md
+5e79853287556c18ea9a141edf5f4c299917315cfaa88345ff282ab9e2555575  Research/scripts/kernel_rnd/autokernel/loop/status.py
+ad520bec3363fd382b90d66453f61fcab1d5a45bc910974ba2def34ab4047f19  Research/scripts/kernel_rnd/autokernel/loop/loop.py
+fc620f49e7f30209a670fe38ab843c0cdb66e82b316af0a7835f54067302ef46  Research/scripts/kernel_rnd/autokernel/loop/run.py
+a52568c214f33c6d94d0faa21c3e0aac881713946de11720c11494c345101ae9  Research/scripts/kernel_rnd/autokernel/loop/actors.py

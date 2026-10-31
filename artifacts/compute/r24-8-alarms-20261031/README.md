@@ -1,6 +1,6 @@
 # R24-8 pool health alarms — implementation evidence capsule
 
-Implementation-only publication. The source and existing `/loop` surface are implemented, but the original R24-8 handoff remains OPEN: the requested run-5–9 retrodiction is not fully executable because August per-run native outcome rows for runs 5–8 were not found. This capsule claims no quota completion and does not authorize a checkbox change.
+Implementation-only publication. Research implementation commit: `991033729e9479249909ea3ae5ddc5d2e18772c2`. ROOT implementation/capsule commit: `844689e0a75dbc9d5b5f0a9c701ebb4af9b65024`; current-main integration merge: `1d2e0a5a1955228308d8745e3e663267b96230d2`. The source and existing `/loop` surface are implemented, but the original R24-8 handoff remains OPEN: the requested run-5–9 retrodiction is not fully executable because August per-run native outcome rows for runs 5–8 were not found. This capsule claims no quota completion and does not authorize a checkbox change.
 
 ## Code and visibility
 
