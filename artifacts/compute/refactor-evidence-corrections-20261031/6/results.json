@@ -1,0 +1,645 @@
+{
+ "predeclared_sha256": "48897be2e4c38c88427056faa208328629f515b36889626cbdd0870ee5c31f62",
+ "manifest": {
+  "item": "086",
+  "started": "2026-10-26T23:50:15Z",
+  "mode": "execute",
+  "driver_sha256": "148038b69e45de35675320c08b48f812c956de1221495e6af3e6fe0cf756a8a9",
+  "filler_id": "v11-086-cpu"
+ },
+ "builds": {
+  "C": "/mnt/raid0/llm/tmp/codex-ni-v11-086-slow2-20261025/store-candidates-v3/C",
+  "B": "/mnt/raid0/llm/tmp/codex-ni-v11-086-slow2-20261025/store-candidates-v3/B",
+  "knob_strings_proof": true,
+  "linkage": [
+   {
+    "build": "/mnt/raid0/llm/tmp/codex-ni-v11-086-slow2-20261025/store-candidates-v3/C",
+    "exe": "llama-bench",
+    "rc": 0,
+    "tail": [
+     "      program's own startup log (e.g. 'Device 0: AMD Instinct MI210') and",
+     "      do not trust a 'use gpu = 1' flag alone \u2014 that flag reports what was",
+     "      REQUESTED, not what was loaded."
+    ]
+   },
+   {
+    "build": "/mnt/raid0/llm/tmp/codex-ni-v11-086-slow2-20261025/store-candidates-v3/B",
+    "exe": "llama-bench",
+    "rc": 0,
+    "tail": [
+     "      program's own startup log (e.g. 'Device 0: AMD Instinct MI210') and",
+     "      do not trust a 'use gpu = 1' flag alone \u2014 that flag reports what was",
+     "      REQUESTED, not what was loaded."
+    ]
+   }
+  ]
+ },
+ "integrity": {
+  "tbo_fa_100": true,
+  "fa_unset_bit_identical": true,
+  "finite_all_dumps": true,
+  "knob_strings_proof": true,
+  "linkage_ok": true,
+  "source": "/mnt/raid0/llm/tmp/v11-runs/086v2/correctness/INTEGRITY.json"
+ },
+ "plan": {
+  "bench_argv": [
+   "taskset",
+   "-c",
+   "0-95",
+   "numactl",
+   "--interleave=all",
+   "--",
+   "<build>/bin/llama-bench",
+   "-m",
+   "/mnt/raid0/llm/models/unsloth/Qwen3.8-Flash-Next-GGUF/UD-IQ4_XS/Qwen3.8-Flash-Next-UD-IQ4_XS-00001-of-00003.gguf",
+   "-t",
+   "48",
+   "-fa",
+   "1",
+   "-ctk",
+   "f16",
+   "-ctv",
+   "f16",
+   "-mmp",
+   "0",
+   "-p",
+   "5",
+   "-n",
+   "32",
+   "-d",
+   "0,32768",
+   "-r",
+   "3",
+   "-o",
+   "json"
+  ],
+  "bench_env": {
+   "GGML_IQK": "1",
+   "GGML_FUSED_DECODE_OFF": "1",
+   "GGML_FA_SPLIT_KV": "0",
+   "GGML_NOHUGEPAGE_PROCESS": "1"
+  },
+  "launch_order": [
+   [
+    "C",
+    "Bunset",
+    "Bauto"
+   ],
+   [
+    "Bunset",
+    "Bauto",
+    "C"
+   ],
+   [
+    "Bauto",
+    "C",
+    "Bunset"
+   ]
+  ],
+  "gate_cmd": [
+   "/usr/bin/python3",
+   "/mnt/raid0/llm/tmp/codex-ni-v11-086-slow2-20261025/night-repin-prep/tools/gate_compare_env.py",
+   "q38fn",
+   "--anchor-build",
+   "/mnt/raid0/llm/tmp/codex-ni-v11-086-slow2-20261025/store-candidates-v3/C",
+   "--cand-build",
+   "/mnt/raid0/llm/tmp/codex-ni-v11-086-slow2-20261025/store-candidates-v3/B",
+   "--cand-env",
+   "GGML_FA_VKQ_REG=auto",
+   "--pairs",
+   "5",
+   "--out",
+   "/mnt/raid0/llm/tmp/codex-ni-v11-086-slow2-20261025/night-repin-prep/results/run/gate_q38fn_auto",
+   "--execute"
+  ],
+  "integrity_now": {
+   "tbo_fa_100": true,
+   "fa_unset_bit_identical": true,
+   "finite_all_dumps": true,
+   "knob_strings_proof": true,
+   "linkage_ok": true,
+   "source": "/mnt/raid0/llm/tmp/v11-runs/086v2/correctness/INTEGRITY.json"
+  },
+  "preflight_would_refuse": []
+ },
+ "bench": {
+  "cells": {
+   "pp5": {
+    "C": [
+     81.467521,
+     77.407624,
+     82.184339
+    ],
+    "Bunset": [
+     81.630064,
+     77.13136,
+     68.571782
+    ],
+    "Bauto": [
+     81.658563,
+     81.191754,
+     77.628078
+    ]
+   },
+   "tg32": {
+    "C": [
+     32.635717,
+     32.020493,
+     32.798111
+    ],
+    "Bunset": [
+     31.964853,
+     32.100906,
+     26.65798
+    ],
+    "Bauto": [
+     32.027607,
+     31.668923,
+     32.022572
+    ]
+   },
+   "pp5@d32768": {
+    "C": [
+     56.087248,
+     56.252139,
+     55.114911
+    ],
+    "Bunset": [
+     56.297502,
+     56.509493,
+     48.611553
+    ],
+    "Bauto": [
+     56.190106,
+     55.493117,
+     56.094149
+    ]
+   },
+   "tg32@d32768": {
+    "C": [
+     17.180782,
+     17.2745,
+     15.841284
+    ],
+    "Bunset": [
+     17.565427,
+     17.671038,
+     15.36465
+    ],
+    "Bauto": [
+     17.489403,
+     17.049312,
+     17.250508
+    ]
+   }
+  },
+  "launches": [
+   {
+    "arm": "C",
+    "i": 0,
+    "protocol": {
+     "requested_hardened": false,
+     "autokernel_hardened": false,
+     "n_rows": 4
+    },
+    "own_lib": {
+     "n_samples": 43,
+     "libggml_cpu": [
+      "/mnt/raid0/llm/tmp/codex-ni-v11-086-slow2-20261025/store-candidates-v3/C/bin/libggml-cpu.so.0.16.0"
+     ],
+     "own": true
+    },
+    "argv": [
+     "taskset",
+     "-c",
+     "0-95",
+     "numactl",
+     "--interleave=all",
+     "--",
+     "/mnt/raid0/llm/tmp/codex-ni-v11-086-slow2-20261025/store-candidates-v3/C/bin/llama-bench",
+     "-m",
+     "/mnt/raid0/llm/models/unsloth/Qwen3.8-Flash-Next-GGUF/UD-IQ4_XS/Qwen3.8-Flash-Next-UD-IQ4_XS-00001-of-00003.gguf",
+     "-t",
+     "48",
+     "-fa",
+     "1",
+     "-ctk",
+     "f16",
+     "-ctv",
+     "f16",
+     "-mmp",
+     "0",
+     "-p",
+     "5",
+     "-n",
+     "32",
+     "-d",
+     "0,32768",
+     "-r",
+     "3",
+     "-o",
+     "json"
+    ],
+    "env_extra": {}
+   },
+   {
+    "arm": "Bunset",
+    "i": 0,
+    "protocol": {
+     "requested_hardened": false,
+     "autokernel_hardened": false,
+     "n_rows": 4
+    },
+    "own_lib": {
+     "n_samples": 41,
+     "libggml_cpu": [
+      "/mnt/raid0/llm/tmp/codex-ni-v11-086-slow2-20261025/store-candidates-v3/B/bin/libggml-cpu.so.0.16.0"
+     ],
+     "own": true
+    },
+    "argv": [
+     "taskset",
+     "-c",
+     "0-95",
+     "numactl",
+     "--interleave=all",
+     "--",
+     "/mnt/raid0/llm/tmp/codex-ni-v11-086-slow2-20261025/store-candidates-v3/B/bin/llama-bench",
+     "-m",
+     "/mnt/raid0/llm/models/unsloth/Qwen3.8-Flash-Next-GGUF/UD-IQ4_XS/Qwen3.8-Flash-Next-UD-IQ4_XS-00001-of-00003.gguf",
+     "-t",
+     "48",
+     "-fa",
+     "1",
+     "-ctk",
+     "f16",
+     "-ctv",
+     "f16",
+     "-mmp",
+     "0",
+     "-p",
+     "5",
+     "-n",
+     "32",
+     "-d",
+     "0,32768",
+     "-r",
+     "3",
+     "-o",
+     "json"
+    ],
+    "env_extra": {}
+   },
+   {
+    "arm": "Bauto",
+    "i": 0,
+    "protocol": {
+     "requested_hardened": false,
+     "autokernel_hardened": false,
+     "n_rows": 4
+    },
+    "own_lib": {
+     "n_samples": 41,
+     "libggml_cpu": [
+      "/mnt/raid0/llm/tmp/codex-ni-v11-086-slow2-20261025/store-candidates-v3/B/bin/libggml-cpu.so.0.16.0"
+     ],
+     "own": true
+    },
+    "argv": [
+     "taskset",
+     "-c",
+     "0-95",
+     "numactl",
+     "--interleave=all",
+     "--",
+     "/mnt/raid0/llm/tmp/codex-ni-v11-086-slow2-20261025/store-candidates-v3/B/bin/llama-bench",
+     "-m",
+     "/mnt/raid0/llm/models/unsloth/Qwen3.8-Flash-Next-GGUF/UD-IQ4_XS/Qwen3.8-Flash-Next-UD-IQ4_XS-00001-of-00003.gguf",
+     "-t",
+     "48",
+     "-fa",
+     "1",
+     "-ctk",
+     "f16",
+     "-ctv",
+     "f16",
+     "-mmp",
+     "0",
+     "-p",
+     "5",
+     "-n",
+     "32",
+     "-d",
+     "0,32768",
+     "-r",
+     "3",
+     "-o",
+     "json"
+    ],
+    "env_extra": {
+     "GGML_FA_VKQ_REG": "auto"
+    }
+   },
+   {
+    "arm": "Bunset",
+    "i": 1,
+    "protocol": {
+     "requested_hardened": false,
+     "autokernel_hardened": false,
+     "n_rows": 4
+    },
+    "own_lib": {
+     "n_samples": 41,
+     "libggml_cpu": [
+      "/mnt/raid0/llm/tmp/codex-ni-v11-086-slow2-20261025/store-candidates-v3/B/bin/libggml-cpu.so.0.16.0"
+     ],
+     "own": true
+    },
+    "argv": [
+     "taskset",
+     "-c",
+     "0-95",
+     "numactl",
+     "--interleave=all",
+     "--",
+     "/mnt/raid0/llm/tmp/codex-ni-v11-086-slow2-20261025/store-candidates-v3/B/bin/llama-bench",
+     "-m",
+     "/mnt/raid0/llm/models/unsloth/Qwen3.8-Flash-Next-GGUF/UD-IQ4_XS/Qwen3.8-Flash-Next-UD-IQ4_XS-00001-of-00003.gguf",
+     "-t",
+     "48",
+     "-fa",
+     "1",
+     "-ctk",
+     "f16",
+     "-ctv",
+     "f16",
+     "-mmp",
+     "0",
+     "-p",
+     "5",
+     "-n",
+     "32",
+     "-d",
+     "0,32768",
+     "-r",
+     "3",
+     "-o",
+     "json"
+    ],
+    "env_extra": {}
+   },
+   {
+    "arm": "Bauto",
+    "i": 1,
+    "protocol": {
+     "requested_hardened": false,
+     "autokernel_hardened": false,
+     "n_rows": 4
+    },
+    "own_lib": {
+     "n_samples": 41,
+     "libggml_cpu": [
+      "/mnt/raid0/llm/tmp/codex-ni-v11-086-slow2-20261025/store-candidates-v3/B/bin/libggml-cpu.so.0.16.0"
+     ],
+     "own": true
+    },
+    "argv": [
+     "taskset",
+     "-c",
+     "0-95",
+     "numactl",
+     "--interleave=all",
+     "--",
+     "/mnt/raid0/llm/tmp/codex-ni-v11-086-slow2-20261025/store-candidates-v3/B/bin/llama-bench",
+     "-m",
+     "/mnt/raid0/llm/models/unsloth/Qwen3.8-Flash-Next-GGUF/UD-IQ4_XS/Qwen3.8-Flash-Next-UD-IQ4_XS-00001-of-00003.gguf",
+     "-t",
+     "48",
+     "-fa",
+     "1",
+     "-ctk",
+     "f16",
+     "-ctv",
+     "f16",
+     "-mmp",
+     "0",
+     "-p",
+     "5",
+     "-n",
+     "32",
+     "-d",
+     "0,32768",
+     "-r",
+     "3",
+     "-o",
+     "json"
+    ],
+    "env_extra": {
+     "GGML_FA_VKQ_REG": "auto"
+    }
+   },
+   {
+    "arm": "C",
+    "i": 1,
+    "protocol": {
+     "requested_hardened": false,
+     "autokernel_hardened": false,
+     "n_rows": 4
+    },
+    "own_lib": {
+     "n_samples": 41,
+     "libggml_cpu": [
+      "/mnt/raid0/llm/tmp/codex-ni-v11-086-slow2-20261025/store-candidates-v3/C/bin/libggml-cpu.so.0.16.0"
+     ],
+     "own": true
+    },
+    "argv": [
+     "taskset",
+     "-c",
+     "0-95",
+     "numactl",
+     "--interleave=all",
+     "--",
+     "/mnt/raid0/llm/tmp/codex-ni-v11-086-slow2-20261025/store-candidates-v3/C/bin/llama-bench",
+     "-m",
+     "/mnt/raid0/llm/models/unsloth/Qwen3.8-Flash-Next-GGUF/UD-IQ4_XS/Qwen3.8-Flash-Next-UD-IQ4_XS-00001-of-00003.gguf",
+     "-t",
+     "48",
+     "-fa",
+     "1",
+     "-ctk",
+     "f16",
+     "-ctv",
+     "f16",
+     "-mmp",
+     "0",
+     "-p",
+     "5",
+     "-n",
+     "32",
+     "-d",
+     "0,32768",
+     "-r",
+     "3",
+     "-o",
+     "json"
+    ],
+    "env_extra": {}
+   },
+   {
+    "arm": "Bauto",
+    "i": 2,
+    "protocol": {
+     "requested_hardened": false,
+     "autokernel_hardened": false,
+     "n_rows": 4
+    },
+    "own_lib": {
+     "n_samples": 42,
+     "libggml_cpu": [
+      "/mnt/raid0/llm/tmp/codex-ni-v11-086-slow2-20261025/store-candidates-v3/B/bin/libggml-cpu.so.0.16.0"
+     ],
+     "own": true
+    },
+    "argv": [
+     "taskset",
+     "-c",
+     "0-95",
+     "numactl",
+     "--interleave=all",
+     "--",
+     "/mnt/raid0/llm/tmp/codex-ni-v11-086-slow2-20261025/store-candidates-v3/B/bin/llama-bench",
+     "-m",
+     "/mnt/raid0/llm/models/unsloth/Qwen3.8-Flash-Next-GGUF/UD-IQ4_XS/Qwen3.8-Flash-Next-UD-IQ4_XS-00001-of-00003.gguf",
+     "-t",
+     "48",
+     "-fa",
+     "1",
+     "-ctk",
+     "f16",
+     "-ctv",
+     "f16",
+     "-mmp",
+     "0",
+     "-p",
+     "5",
+     "-n",
+     "32",
+     "-d",
+     "0,32768",
+     "-r",
+     "3",
+     "-o",
+     "json"
+    ],
+    "env_extra": {
+     "GGML_FA_VKQ_REG": "auto"
+    }
+   },
+   {
+    "arm": "C",
+    "i": 2,
+    "protocol": {
+     "requested_hardened": false,
+     "autokernel_hardened": false,
+     "n_rows": 4
+    },
+    "own_lib": {
+     "n_samples": 41,
+     "libggml_cpu": [
+      "/mnt/raid0/llm/tmp/codex-ni-v11-086-slow2-20261025/store-candidates-v3/C/bin/libggml-cpu.so.0.16.0"
+     ],
+     "own": true
+    },
+    "argv": [
+     "taskset",
+     "-c",
+     "0-95",
+     "numactl",
+     "--interleave=all",
+     "--",
+     "/mnt/raid0/llm/tmp/codex-ni-v11-086-slow2-20261025/store-candidates-v3/C/bin/llama-bench",
+     "-m",
+     "/mnt/raid0/llm/models/unsloth/Qwen3.8-Flash-Next-GGUF/UD-IQ4_XS/Qwen3.8-Flash-Next-UD-IQ4_XS-00001-of-00003.gguf",
+     "-t",
+     "48",
+     "-fa",
+     "1",
+     "-ctk",
+     "f16",
+     "-ctv",
+     "f16",
+     "-mmp",
+     "0",
+     "-p",
+     "5",
+     "-n",
+     "32",
+     "-d",
+     "0,32768",
+     "-r",
+     "3",
+     "-o",
+     "json"
+    ],
+    "env_extra": {}
+   },
+   {
+    "arm": "Bunset",
+    "i": 2,
+    "protocol": {
+     "requested_hardened": false,
+     "autokernel_hardened": false,
+     "n_rows": 4
+    },
+    "own_lib": {
+     "n_samples": 43,
+     "libggml_cpu": [
+      "/mnt/raid0/llm/tmp/codex-ni-v11-086-slow2-20261025/store-candidates-v3/B/bin/libggml-cpu.so.0.16.0"
+     ],
+     "own": true
+    },
+    "argv": [
+     "taskset",
+     "-c",
+     "0-95",
+     "numactl",
+     "--interleave=all",
+     "--",
+     "/mnt/raid0/llm/tmp/codex-ni-v11-086-slow2-20261025/store-candidates-v3/B/bin/llama-bench",
+     "-m",
+     "/mnt/raid0/llm/models/unsloth/Qwen3.8-Flash-Next-GGUF/UD-IQ4_XS/Qwen3.8-Flash-Next-UD-IQ4_XS-00001-of-00003.gguf",
+     "-t",
+     "48",
+     "-fa",
+     "1",
+     "-ctk",
+     "f16",
+     "-ctv",
+     "f16",
+     "-mmp",
+     "0",
+     "-p",
+     "5",
+     "-n",
+     "32",
+     "-d",
+     "0,32768",
+     "-r",
+     "3",
+     "-o",
+     "json"
+    ],
+    "env_extra": {}
+   }
+  ],
+  "complete": true
+ },
+ "serving": {
+  "effect_pct": -0.613680299994368,
+  "anchor_tok_s": 43.66877033007279,
+  "candidate_tok_s": 43.400783689307346,
+  "unit": "process (matched_process_v2, 5 pairs), sign claim; no calibrated floor"
+ }
+}
