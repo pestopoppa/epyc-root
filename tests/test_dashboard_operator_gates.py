@@ -21,6 +21,10 @@ import tempfile
 import unittest
 
 from dashboard import server
+from tests.autokernel_no_live_reads import NoLiveAutokernelReads
+
+REPO = Path(__file__).resolve().parents[1]
+RECORDED_BUNDLE = REPO / "tests/fixtures/autokernel_producers/operator_gate_bundle.json"
 
 CHAMP = "270b48ed64d617db9128054f3bd0620bbb9371f5"
 
@@ -45,9 +49,10 @@ def _bundle(**over) -> dict:
     return base
 
 
-class OperatorGateBundleTests(unittest.TestCase):
+class OperatorGateBundleTests(NoLiveAutokernelReads, unittest.TestCase):
 
     def setUp(self) -> None:
+        super().setUp()
         self._old = server.OPERATOR_GATE_BUNDLE_JSON
         self.temp = tempfile.TemporaryDirectory()
         self.path = Path(self.temp.name) / "operator_gate_bundle.json"
@@ -96,12 +101,10 @@ class OperatorGateBundleTests(unittest.TestCase):
         self.assertFalse(server._read_operator_gate_bundle()["available"])
         self.assertFalse(self._read("{not json")["available"])
 
-    def test_the_real_emitted_bundle_is_accepted(self):
-        """End-to-end against the bundle the emitter actually produced."""
-        real = Path("/mnt/raid0/llm/autokernel/surface/operator_gate_bundle.json")
-        if not real.is_file():
-            self.skipTest("no emitted bundle on this host")
-        server.OPERATOR_GATE_BUNDLE_JSON = real
+    def test_the_recorded_emitted_bundle_is_accepted(self):
+        """End-to-end against a source-bound bundle, independent of loop uptime."""
+        self.assertTrue(RECORDED_BUNDLE.is_file())
+        server.OPERATOR_GATE_BUNDLE_JSON = RECORDED_BUNDLE
         got = server._read_operator_gate_bundle()
         self.assertTrue(got["available"], got.get("error"))
         self.assertTrue((got.get("headline") or {}).get("summary"))

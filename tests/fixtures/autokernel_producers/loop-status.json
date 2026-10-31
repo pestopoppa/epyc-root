@@ -1,0 +1,265 @@
+{
+  "accumulator": {
+    "accumulator_tip": "bff30cebee0de4440dd7a6ef3607e59b970268ce",
+    "champion_of_record": "fe881991f4652fdcd97b825583730e263fa7de0e",
+    "compounded_bench_pct": 2.453,
+    "fire_multiple": 2.5,
+    "fire_threshold_pct": 8.84,
+    "fires_next": false,
+    "keeps": [
+      "akm-cdna2-q8-single-x4-load"
+    ],
+    "n_keeps": 1,
+    "progress_fraction": 0.2775,
+    "serving_floor_pct": 3.536
+  },
+  "anchor_commit": "bff30cebee0de4440dd7a6ef3607e59b970268ce",
+  "anchor_guard": {
+    "anchor": "/mnt/raid0/llm/autokernel/loop-memory/anchor-gen-021",
+    "anchor_digest": "949d41dfe8e0f62a809ce8a82dc34659a3214a62bf1b1f3d97a1440b1a56ff5b",
+    "champion_commit": "bff30cebee0de4440dd7a6ef3607e59b970268ce",
+    "check": "anchor-aa-guard",
+    "comparison": {
+      "anchor_drift_pct": -0.15899350665255835,
+      "anchor_samples": [
+        32.285652,
+        31.344674,
+        31.253107,
+        31.240031,
+        31.44687,
+        30.852954,
+        30.957735,
+        31.484037,
+        31.127579,
+        31.213055,
+        30.938709,
+        31.339808,
+        31.341493,
+        31.041763,
+        31.167149,
+        31.344782,
+        30.961671,
+        31.226671,
+        31.093536,
+        31.401679
+      ],
+      "anchor_trend_rho": -0.21804511278195488,
+      "calibrated": true,
+      "candidate_drift_pct": -0.11826922127970278,
+      "candidate_samples": [
+        31.525759,
+        31.307944,
+        31.21029,
+        31.57213,
+        30.849333,
+        30.948428,
+        31.404913,
+        31.450567,
+        30.904122,
+        31.230901,
+        31.420991,
+        31.395557,
+        30.908763,
+        31.177427,
+        31.645356,
+        31.10432,
+        31.007111,
+        31.104732,
+        31.287478,
+        31.415644
+      ],
+      "candidate_trend_rho": -0.12030075187969924,
+      "decisive": false,
+      "device_seconds": 1679.3059853496961,
+      "drifting": false,
+      "effect": 0.0008272727444453842,
+      "effect_pct": 0.08272727444453842,
+      "estimator": "median_over_median",
+      "model": "/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf",
+      "noise_floor_pct": 0.638,
+      "pairs": 20,
+      "residency": {
+        "clock_stable": false,
+        "invocations": 40,
+        "peak_kfd_processes": 1,
+        "peak_vram_bytes": 28089856000,
+        "resident": 40,
+        "sclk_max_mhz": 1700,
+        "sclk_min_mhz": 1695
+      },
+      "surface": "tg128"
+    },
+    "detail": "anchor guard: a fresh build of champion bff30cebee0d measured +0.083% against promoted anchor anchor-gen-021 over 20 tg128 pairs, floor 0.638% \u2014 inside the floor: the anchor slot holds the champion",
+    "effect_pct": 0.08272727444453842,
+    "excursion": false,
+    "floor_pct": 0.638,
+    "fresh_digest": "949d41dfe8e0f62a809ce8a82dc34659a3214a62bf1b1f3d97a1440b1a56ff5b",
+    "pairs": 20,
+    "passed": true,
+    "surface": "tg128"
+  },
+  "campaign_id": "ak-loop",
+  "champion_head": "bff30cebee0de4440dd7a6ef3607e59b970268ce",
+  "dispositions": {
+    "kept": 1,
+    "measured_null": 16,
+    "planner_transient": 138,
+    "refused_at_formation": 5,
+    "superseded": 6
+  },
+  "epoch_sha256": "28fa1568cb2ba303522d9217547832c717cf9e546d5852732b66092401c496b5",
+  "generated_at": "2026-09-08T09:32:23.351737Z",
+  "gpu": {
+    "claim_held_s": 61283.6,
+    "device_seconds_under_load": 35443.6,
+    "gpu_seconds_idle_while_claimed": 25840.0,
+    "idle_fraction_while_claimed": 0.4216
+  },
+  "hotspots": [
+    {
+      "calls": 18576,
+      "share_of_device_time": 0.49762126090136133,
+      "signature": "void mul_mat_vec_q<(ggml_type)8, 1, true, true, 0, false, false, true>(void const*, void const*, int const*, ggml_cuda_mm_fusion_args_device, float*, unsigned int, HIP_vector_type<unsigned int, 3u>, unsigned int, unsigned int, unsigned int, HIP_vector_type<unsigned int, 3u>, unsigned int, unsigned int, unsigned int, HIP_vector_type<unsigned int, 3u>, unsigned int, unsigned int, unsigned int, unsigned int)",
+      "total_duration_ns": 2032664296
+    },
+    {
+      "calls": 37281,
+      "share_of_device_time": 0.2577113138106576,
+      "signature": "void mul_mat_vec_q<(ggml_type)8, 1, false, true, 0, false, false, true>(void const*, void const*, int const*, ggml_cuda_mm_fusion_args_device, float*, unsigned int, HIP_vector_type<unsigned int, 3u>, unsigned int, unsigned int, unsigned int, HIP_vector_type<unsigned int, 3u>, unsigned int, unsigned int, unsigned int, HIP_vector_type<unsigned int, 3u>, unsigned int, unsigned int, unsigned int, unsigned int)",
+      "total_duration_ns": 1052689319
+    },
+    {
+      "calls": 33505,
+      "share_of_device_time": 0.03708204811221258,
+      "signature": "quantize_q8_1_1d(float const*, void*, long, long)",
+      "total_duration_ns": 151471332
+    },
+    {
+      "calls": 2064,
+      "share_of_device_time": 0.031722981096251,
+      "signature": "void flash_attn_ext_vec<256, 1, (ggml_type)1, (ggml_type)1, false, false>(char const*, char const*, char const*, char const*, char const*, int const*, float*, HIP_vector_type<float, 2u>*, float, float, float, float, unsigned int, float, int, HIP_vector_type<unsigned int, 3u>, int, int, int, int, int, int, int, int, int, int, int, long, int, int, long, int, int, int, int, int, long)",
+      "total_duration_ns": 129580820
+    },
+    {
+      "calls": 16641,
+      "share_of_device_time": 0.030110461348015406,
+      "signature": "void rms_norm_f32<1024, true, false, false>(float const*, float*, int, long, long, long, float, float const*, long, long, long, HIP_vector_type<unsigned int, 3u>, HIP_vector_type<unsigned int, 3u>, HIP_vector_type<unsigned int, 3u>, HIP_vector_type<unsigned int, 3u>, float const*, long, long, long, HIP_vector_type<unsigned int, 3u>, HIP_vector_type<unsigned int, 3u>, HIP_vector_type<unsigned int, 3u>, HIP_vector_type<unsigned int, 3u>)",
+      "total_duration_ns": 122994061
+    },
+    {
+      "calls": 12513,
+      "share_of_device_time": 0.02300908047793398,
+      "signature": "void k_get_rows_float<float, float>(float const*, int const*, float*, long, long, HIP_vector_type<unsigned int, 3u>, unsigned long, unsigned long, unsigned long, unsigned long, unsigned long, unsigned long, unsigned long, unsigned long, unsigned long)",
+      "total_duration_ns": 93986612
+    },
+    {
+      "calls": 6192,
+      "share_of_device_time": 0.015312827459963903,
+      "signature": "void gated_delta_net_cuda<128, false, false, float>(float const*, float const*, float const*, float const*, float const*, float const*, float*, float*, long, long, long, long, long, long, long, long, long, long, long, long, HIP_vector_type<unsigned int, 3u>, HIP_vector_type<unsigned int, 3u>, float, long, int)",
+      "total_duration_ns": 62549252
+    },
+    {
+      "calls": 12384,
+      "share_of_device_time": 0.013780923918887933,
+      "signature": "void k_bin_bcast<&(op_add(float, float)), float, float, float, float const*>(float const*, float const*, float*, unsigned int, unsigned int, unsigned int, HIP_vector_type<unsigned int, 3u>, HIP_vector_type<unsigned int, 3u>, HIP_vector_type<unsigned int, 3u>, HIP_vector_type<unsigned int, 3u>, HIP_vector_type<unsigned int, 3u>, unsigned int, unsigned int, unsigned int, unsigned int, unsigned int, unsigned int, unsigned int, unsigned int, unsigned int, unsigned int, unsigned int, float const*)",
+      "total_duration_ns": 56291791
+    },
+    {
+      "calls": 12384,
+      "share_of_device_time": 0.013471987174208163,
+      "signature": "void l2_norm_f32<32>(float const*, float*, int, long, long, long, float)",
+      "total_duration_ns": 55029858
+    },
+    {
+      "calls": 10320,
+      "share_of_device_time": 0.011325220356052212,
+      "signature": "void rms_norm_f32<256, true, false, false>(float const*, float*, int, long, long, long, float, float const*, long, long, long, HIP_vector_type<unsigned int, 3u>, HIP_vector_type<unsigned int, 3u>, HIP_vector_type<unsigned int, 3u>, HIP_vector_type<unsigned int, 3u>, float const*, long, long, long, HIP_vector_type<unsigned int, 3u>, HIP_vector_type<unsigned int, 3u>, HIP_vector_type<unsigned int, 3u>, HIP_vector_type<unsigned int, 3u>)",
+      "total_duration_ns": 46260827
+    },
+    {
+      "calls": 6192,
+      "share_of_device_time": 0.010227675807140103,
+      "signature": "__amd_rocclr_copyBuffer",
+      "total_duration_ns": 41777619
+    },
+    {
+      "calls": 8256,
+      "share_of_device_time": 0.009516495039982328,
+      "signature": "void cpy_scalar<&(void cpy_1_scalar<float, float>(char const*, char*))>(char const*, char*, long, long, long, long, long, long, long, long, long, long, long, long, long, long, long)",
+      "total_duration_ns": 38872615
+    }
+  ],
+  "iterations_done": 166,
+  "iterations_planned": 0,
+  "measurements_reached": 17,
+  "model": "/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf",
+  "noise_floor_pct": 0.638,
+  "pairs": 20,
+  "recent": [
+    {
+      "effect_fraction": -0.1685853435073451,
+      "mechanism_id": "akm-q8-f16-activation-mmvq",
+      "reason": "effect -16.859% did not clear the 0.638% noise floor",
+      "status": "measured_null"
+    },
+    {
+      "effect_fraction": -0.8300654098723593,
+      "mechanism_id": "akm-q8-b1-direct-f16-act",
+      "reason": "effect -83.007% did not clear the 0.638% noise floor",
+      "status": "measured_null"
+    },
+    {
+      "effect_fraction": null,
+      "mechanism_id": "akm-q8-actquant-no-sum",
+      "reason": "Already measured, and the dispatch-only change as stated is incorrect on the target instantiation. (1) Already measured: `akm-q8-0-static-gate-swiglu` (2026-09-07, epoch a6fdc513) implemented exactly this mechanism \u2014 'enables the existing g",
+      "status": "refused_at_formation"
+    },
+    {
+      "effect_fraction": -0.42056348009017985,
+      "mechanism_id": "akm-cdna2-q8-f32-lds-dot2",
+      "reason": "effect -42.056% did not clear the 0.638% noise floor",
+      "status": "measured_null"
+    },
+    {
+      "effect_fraction": -0.1288204214840476,
+      "mechanism_id": "akm-q8-f16-act-direct-mmvq",
+      "reason": "effect -12.882% did not clear the 0.638% noise floor",
+      "status": "measured_null"
+    },
+    {
+      "effect_fraction": null,
+      "mechanism_id": "akm-cdna2-q8-f16-act-direct",
+      "reason": "Correctness defect in the new direct_f32_act branch (mmvq.cu ~1404-1413): it only accumulates the gate under `has_fusion && !bias_only` + runtime `use_gate`, but in the gate_only_swiglu instantiation `use_gate` is never set (mmvq.cu:1249-12",
+      "status": "refused_at_formation"
+    },
+    {
+      "effect_fraction": -0.8097470942238754,
+      "mechanism_id": "akm-q8-fp16-act-direct-mmvq",
+      "reason": "effect -80.975% did not clear the 0.638% noise floor",
+      "status": "measured_null"
+    },
+    {
+      "effect_fraction": -0.021481417755960353,
+      "mechanism_id": "akm-cdna2-q8-b1-five-wave-exact-cover",
+      "reason": "effect -2.148% did not clear the 0.638% noise floor",
+      "status": "measured_null"
+    },
+    {
+      "effect_fraction": -0.008096060820991124,
+      "mechanism_id": "akm-cdna2-q8-1-eightlane-float4-rerun",
+      "reason": "effect -0.810% did not clear the 0.638% noise floor",
+      "status": "measured_null"
+    },
+    {
+      "effect_fraction": -0.010930452831329651,
+      "mechanism_id": "akm-cdna2-q8-1-eightlane-float4",
+      "reason": "effect -1.093% did not clear the 0.638% noise floor",
+      "status": "measured_null"
+    }
+  ],
+  "schema": "epyc.autokernel.loop_status.v1",
+  "stale_after_s": 1800,
+  "state": "running",
+  "step": null,
+  "surface": "tg128"
+}

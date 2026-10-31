@@ -1,0 +1,7 @@
+# R21-4 recorded AutoKernel producer fixtures
+
+These are copied producer outputs used by the four dashboard test modules. The tests run against these files while the live loop is unavailable and explicitly reject reads below `/mnt/raid0/llm/autokernel`. The fixture set contains no generated observations.
+
+`SOURCE-MANIFEST.json` pins the root source revision, source paths and git blob ids for the reader/test contracts, raw SHA-256 values for each external producer file, and SHA-256 values for each committed fixture. `experiments-sample.db` preserves the exact `sqlite_master.sql` schema and, for each observed `status`, the three rows selected by `SELECT * FROM experiments WHERE status = ? ORDER BY recorded_at DESC LIMIT 3`. This is the extraction used by the tests before the change, captured once instead of recaptured from the live database on every run.
+
+The census records SHA-256, schema, and complete top-level key set for all 32 scanned controller states. The fixture set keeps one byte-exact state for each distinct `(schema, sorted top-level key set)`: the smallest source file, breaking ties by source path. This preserves all observed schema/key coverage while reducing duplicate states. `loop-status.json` and `operator_gate_bundle.json` are copied byte-for-byte. `champion-vs-production.published.json` is copied byte-for-byte from research `origin/main` at the commit recorded in the manifest.

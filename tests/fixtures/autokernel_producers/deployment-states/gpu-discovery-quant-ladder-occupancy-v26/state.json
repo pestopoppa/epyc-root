@@ -1,0 +1,594 @@
+{
+  "admission_corpus_sha256": "954b14d5b1efb9156ee6a4c2639fae6a83605478a7eff61f2b0db2ed0d505c01",
+  "admission_corpus_version": "mi210-discovery-fallback-only-v1",
+  "attempted_candidate_identities": {
+    "06973eb2e4f643b76de198d6cae5e2e9f1b915773dafdf5efd08682bf0df2b63": {
+      "attempts": [
+        {
+          "disposition": "attribution_route_falsified",
+          "operation_key": "fdfbf8434c361a32cd07d86ac247f61c62f9f840bc3ed8b437053f089e33f837",
+          "repetition": 1,
+          "result_sha256": "40707008b6fceae9749dfca56253836e07ce51b19eb7fb003377c3340503eb86"
+        }
+      ],
+      "hypothesis_id": "akh-v2-q5-onewave-preauthored"
+    }
+  },
+  "authority": "nonpromotable_candidate_only_discovery",
+  "candidate_semantic_registry_schema": "epyc.autokernel.candidate_semantic_registry.v1",
+  "carry_forward_sha256": "ea8c49ad3227628aafdbba333f1faf6927cd4c111d792f6afaa5551963807d5d",
+  "complete": false,
+  "deployment_identity_sha256": "03fc1b1230487a35f8aefd843a546da9324361ee462d945bc076ef89263d2b89",
+  "experiment_template_registry_sha256": "cadf98858ff5c5b59d3622790ba936237df9a2d1f81c9e85602f617879562238",
+  "hypothesis_portfolio_sha256": "7ba7dd1c3c246fb22a247d6e24facb5fbe0eaebec8b2eb21635fde20043e8303",
+  "inflight": {
+    "authorization": {
+      "authorized_at": "2026-08-21T13:46:09.896770Z",
+      "authorized_by": "discovery_controller",
+      "campaign_id": "ak-discovery",
+      "do_not_repeat_outcome": "PASS",
+      "do_not_repeat_reasons": [],
+      "entry_evidence_grade": "design_prior",
+      "falsifier": "Any Q4_K correctness mismatch falsifies the candidate",
+      "falsifier_source": "stated_with_the_hypothesis",
+      "hypothesis_id": "akh-v26-q4k-branchless-sixbit-scale",
+      "ledger_seq": 4,
+      "origin": "planner",
+      "purpose": "candidate_only_discovery"
+    },
+    "candidate": {
+      "experiment_intent": {
+        "correctness_id": "backend-ops-hip-v1",
+        "dispatch_id": "decode-tg128-rocprof-v3",
+        "expected_dispatch": [
+          {
+            "calls": 1548,
+            "grid": 114688,
+            "kernel_name": "void mul_mat_vec_q<(ggml_type)12, 1, true, false>(void const*, void const*, int const*, ggml_cuda_mm_fusion_args_device, float*, unsigned int, HIP_vector_type<unsigned int, 3u>, unsigned int, unsigned int, unsigned int, HIP_vector_type<unsigned int, 3u>, unsigned int, unsigned int, unsigned int, HIP_vector_type<unsigned int, 3u>, unsigned int, unsigned int, unsigned int, unsigned int)",
+            "lds_bytes": 512,
+            "route_id": "cuda-vecdotq-q4k-v1.anchor.0",
+            "workgroup": 128
+          }
+        ],
+        "load_mode_recommendation": {
+          "example_ids": [],
+          "mode": "cold_serialized",
+          "rationale": "The fallback-only admission bundle provides no fresh headroom authority, so serialize cold loads."
+        },
+        "target_surface": "gpu_decode",
+        "target_symbol": "vec_dot_q4_K_q8_1",
+        "template_id": "cuda-vecdotq-q4k-v1"
+      },
+      "falsifier": "Any Q4_K correctness mismatch falsifies the candidate",
+      "hypothesis_id": "akh-v26-q4k-branchless-sixbit-scale",
+      "manifest": {
+        "campaign_id": "ak-discovery-03fc1b1230487a35",
+        "candidate_id": "akc-discovery-2",
+        "change_class": "arithmetic",
+        "declared_files": [
+          "ggml/src/ggml-cuda/vecdotq.cuh"
+        ],
+        "declared_symbols": {
+          "ggml/src/ggml-cuda/vecdotq.cuh": [
+            "vec_dot_q4_K_q8_1",
+            "vec_dot_q4_K_q8_1_impl_vmmq"
+          ]
+        },
+        "instrument_commit": "5bbcc5498e4732162356953b7be96a53073a6706",
+        "mechanism_id": "92c84de1257c3ea41d2c3e02f209db404e43ba5323316fd0d2dff511b4b6513b",
+        "patch_base64": "ZGlmZiAtLWdpdCBhL2dnbWwvc3JjL2dnbWwtY3VkYS92ZWNkb3RxLmN1aCBiL2dnbWwvc3JjL2dnbWwtY3VkYS92ZWNkb3RxLmN1aAotLS0gYS9nZ21sL3NyYy9nZ21sLWN1ZGEvdmVjZG90cS5jdWgKKysrIGIvZ2dtbC9zcmMvZ2dtbC1jdWRhL3ZlY2RvdHEuY3VoCkBAIC01MDUsMTggKzUwNSwyMCBAQCB2ZWNfZG90X3E0X0tfcThfMV9pbXBsX3ZtbXEKIHN0YXRpYyBfX2RldmljZV9fIF9fZm9yY2VpbmxpbmVfXyBmbG9hdCB2ZWNfZG90X3E0X0tfcThfMV9pbXBsX3ZtbXEoCi0gICAgY29uc3QgaW50ICogX19yZXN0cmljdF9fIHYsIGNvbnN0IGludCAqIF9fcmVzdHJpY3RfXyB1LCBjb25zdCB1aW50OF90ICogX19yZXN0cmljdF9fIHNjLAotICAgIGNvbnN0IHVpbnQ4X3QgKiBfX3Jlc3RyaWN0X18gbSwgY29uc3QgaGFsZjIgJiBkbTQsIGNvbnN0IGZsb2F0ICogX19yZXN0cmljdF9fIGQ4KSB7CisgICAgY29uc3QgaW50ICogX19yZXN0cmljdF9fIHYsIGNvbnN0IGludCAqIF9fcmVzdHJpY3RfXyB1LCBjb25zdCB1aW50MzJfdCBzY2FsZV9taW4sCisgICAgY29uc3QgaGFsZjIgJiBkbTQsIGNvbnN0IGZsb2F0ICogX19yZXN0cmljdF9fIGQ4KSB7CiAKICAgICBmbG9hdCBzdW1mX2QgPSAwLjBmOwogICAgIGZsb2F0IHN1bWZfbSA9IDAuMGY7CiAKICNwcmFnbWEgdW5yb2xsCiAgICAgZm9yIChpbnQgaSA9IDA7IGkgPCBRUjRfSzsgKytpKSB7CiAgICAgICAgIGNvbnN0IGludCB2MGkgPSAodlswXSA+PiAoNCppKSkgJiAweDBGMEYwRjBGOwogICAgICAgICBjb25zdCBpbnQgdjFpID0gKHZbMV0gPj4gKDQqaSkpICYgMHgwRjBGMEYwRjsKKyAgICAgICAgY29uc3QgaW50IHNjID0gKHNjYWxlX21pbiA+PiAoOCppKSkgJiAweDNGOworICAgICAgICBjb25zdCBpbnQgbSAgPSAoc2NhbGVfbWluID4+ICgxNiArIDgqaSkpICYgMHgzRjsKIAogICAgICAgICBjb25zdCBpbnQgZG90MSA9IGdnbWxfY3VkYV9kcDRhKHYxaSwgdVsyKmkrMV0sIGdnbWxfY3VkYV9kcDRhKHYwaSwgdVsyKmkrMF0sIDApKTsgLy8gU0lNRCBkb3QgcHJvZHVjdAogICAgICAgICBjb25zdCBpbnQgZG90MiA9IGdnbWxfY3VkYV9kcDRhKDB4MDEwMTAxMDEsIHVbMippKzFdLCBnZ21sX2N1ZGFfZHA0YSgweDAxMDEwMTAxLCB1WzIqaSswXSwgMCkpOyAvLyBzdW0gb2YgdQogCi0gICAgICAgIHN1bWZfZCArPSBkOFtpXSAqIChkb3QxICogc2NbaV0pOwotICAgICAgICBzdW1mX20gKz0gZDhbaV0gKiAoZG90MiAqIG1baV0pOyAgLy8gbXVsdGlwbHkgY29uc3RhbnQgcGFydCBvZiBxNF9LIHdpdGggc3VtIG9mIHE4XzEgdmFsdWVzCisgICAgICAgIHN1bWZfZCArPSBkOFtpXSAqIChkb3QxICogc2MpOworICAgICAgICBzdW1mX20gKz0gZDhbaV0gKiAoZG90MiAqIG0pOyAgLy8gbXVsdGlwbHkgY29uc3RhbnQgcGFydCBvZiBxNF9LIHdpdGggc3VtIG9mIHE4XzEgdmFsdWVzCiAgICAgfQpAQCAtODkwLDI0ICs4OTIsMjYgQEAgdmVjX2RvdF9xNF9LX3E4XzEKICAgICBjb25zdCB1aW50MTZfdCAqIHNjYWxlcyA9IChjb25zdCB1aW50MTZfdCAqKWJxNF9LLT5zY2FsZXM7Ci0gICAgdWludDE2X3QgYXV4WzJdOwogICAgIGNvbnN0IGludCBqID0gYnE4X29mZnNldC8yOwotICAgIGlmIChqIDwgMikgewotICAgICAgICBhdXhbMF0gPSBzY2FsZXNbaiswXSAmIDB4M2YzZjsKLSAgICAgICAgYXV4WzFdID0gc2NhbGVzW2orMl0gJiAweDNmM2Y7Ci0gICAgfSBlbHNlIHsKLSAgICAgICAgYXV4WzBdID0gKChzY2FsZXNbaisyXSA+PiAwKSAmIDB4MGYwZikgfCAoKHNjYWxlc1tqLTJdICYgMHhjMGMwKSA+PiAyKTsKLSAgICAgICAgYXV4WzFdID0gKChzY2FsZXNbaisyXSA+PiA0KSAmIDB4MGYwZikgfCAoKHNjYWxlc1tqLTBdICYgMHhjMGMwKSA+PiAyKTsKLSAgICB9Ci0gICAgY29uc3QgdWludDhfdCAqIHNjID0gKGNvbnN0IHVpbnQ4X3QgKilhdXg7Ci0gICAgY29uc3QgdWludDhfdCAqIG0gID0gc2MgKyAyOworICAgIGNvbnN0IGludCBrID0gaiAmIDE7CisgICAgY29uc3QgdWludDMyX3Qgc2NhbGVzXzAgPSBzY2FsZXNbayswXTsKKyAgICBjb25zdCB1aW50MzJfdCBzY2FsZXNfMSA9IHNjYWxlc1trKzJdOworICAgIGNvbnN0IHVpbnQzMl90IHNjYWxlc18yID0gc2NhbGVzW2srNF07CisKKyAgICBjb25zdCB1aW50MzJfdCBzY2FsZV9taW5fbG8gPQorICAgICAgICAoc2NhbGVzXzAgJiAweDNmM2ZVKSB8ICgoc2NhbGVzXzEgJiAweDNmM2ZVKSA8PCAxNik7CisgICAgY29uc3QgdWludDMyX3Qgc2NhbGVfbWluX2hpID0KKyAgICAgICAgKChzY2FsZXNfMiA+PiAwKSAmIDB4MGYwZlUpIHwgKChzY2FsZXNfMCAmIDB4YzBjMFUpID4+IDIpIHwKKyAgICAgICAgKCgoc2NhbGVzXzIgPj4gNCkgJiAweDBmMGZVKSA8PCAxNikgfCAoKChzY2FsZXNfMSAmIDB4YzBjMFUpID4+IDIpIDw8IDE2KTsKKyAgICBjb25zdCB1aW50MzJfdCBoaWdoX21hc2sgPSAwVSAtIHVpbnQzMl90KGogPj4gMSk7CisgICAgY29uc3QgdWludDMyX3Qgc2NhbGVfbWluID0gKHNjYWxlX21pbl9sbyAmIH5oaWdoX21hc2spIHwgKHNjYWxlX21pbl9oaSAmIGhpZ2hfbWFzayk7CiAKICAgICBmb3IgKGludCBpID0gMDsgaSA8IFFSNF9LOyArK2kpIHsKICAgICAgICAgY29uc3QgYmxvY2tfcThfMSAqIGJxOGkgPSBicThfMSArIGJxOF9vZmZzZXQgKyBpOwogICAgICAgICBkOFtpXSA9IF9fbG93MmZsb2F0KGJxOGktPmRzKTsKIAogICAgICAgICBjb25zdCBpbnQgKiBxOCA9IChjb25zdCBpbnQgKilicThpLT5xcyArICgoaXFzLzIpJTQpOwogICAgICAgICB1WzIqaSswXSA9IHE4WzBdOwogICAgICAgICB1WzIqaSsxXSA9IHE4WzRdOwogICAgIH0KIAotICAgIHJldHVybiB2ZWNfZG90X3E0X0tfcThfMV9pbXBsX3ZtbXEodiwgdSwgc2MsIG0sIGJxNF9LLT5kbSwgZDgpOworICAgIHJldHVybiB2ZWNfZG90X3E0X0tfcThfMV9pbXBsX3ZtbXEodiwgdSwgc2NhbGVfbWluLCBicTRfSy0+ZG0sIGQ4KTsKIH0K",
+        "patch_sha256": "4abd52aee326c2d957eb736798bad09182197295a7dae731736776e3f807948a",
+        "production_base_commit": "0db32c06e3e550065b78311a6031ef3dd2c4f27c",
+        "proposal_id": "akp-discovery-2",
+        "source_tree": "llama.cpp"
+      },
+      "manifest_file_sha256": "281bca09cca4ba8a6724cd4e72a7ec86ab6938483bc37e9c7dcb9757ae518975",
+      "manifest_raw_base64": "eyJjYW1wYWlnbl9pZCI6ImFrLWRpc2NvdmVyeS0wM2ZjMWIxMjMwNDg3YTM1IiwiY2FuZGlkYXRlX2lkIjoiYWtjLWRpc2NvdmVyeS0yIiwiY2hhbmdlX2NsYXNzIjoiYXJpdGhtZXRpYyIsImRlY2xhcmVkX2ZpbGVzIjpbImdnbWwvc3JjL2dnbWwtY3VkYS92ZWNkb3RxLmN1aCJdLCJkZWNsYXJlZF9zeW1ib2xzIjp7ImdnbWwvc3JjL2dnbWwtY3VkYS92ZWNkb3RxLmN1aCI6WyJ2ZWNfZG90X3E0X0tfcThfMSIsInZlY19kb3RfcTRfS19xOF8xX2ltcGxfdm1tcSJdfSwiaW5zdHJ1bWVudF9jb21taXQiOiI1YmJjYzU0OThlNDczMjE2MjM1Njk1M2I3YmU5NmE1MzA3M2E2NzA2IiwibWVjaGFuaXNtX2lkIjoiOTJjODRkZTEyNTdjM2VhNDFkMmMzZTAyZjIwOWRiNDA0ZTQzYmE1MzIzMzE2ZmQwZDJkZmY1MTFiNGI2NTEzYiIsInBhdGNoX2Jhc2U2NCI6IlpHbG1aaUF0TFdkcGRDQmhMMmRuYld3dmMzSmpMMmRuYld3dFkzVmtZUzkyWldOa2IzUnhMbU4xYUNCaUwyZG5iV3d2YzNKakwyZG5iV3d0WTNWa1lTOTJaV05rYjNSeExtTjFhQW90TFMwZ1lTOW5aMjFzTDNOeVl5OW5aMjFzTFdOMVpHRXZkbVZqWkc5MGNTNWpkV2dLS3lzcklHSXZaMmR0YkM5emNtTXZaMmR0YkMxamRXUmhMM1psWTJSdmRIRXVZM1ZvQ2tCQUlDMDFNRFVzTVRnZ0t6VXdOU3d5TUNCQVFDQjJaV05mWkc5MFgzRTBYMHRmY1RoZk1WOXBiWEJzWDNadGJYRUtJSE4wWVhScFl5QmZYMlJsZG1salpWOWZJRjlmWm05eVkyVnBibXhwYm1WZlh5Qm1iRzloZENCMlpXTmZaRzkwWDNFMFgwdGZjVGhmTVY5cGJYQnNYM1p0YlhFb0NpMGdJQ0FnWTI5dWMzUWdhVzUwSUNvZ1gxOXlaWE4wY21samRGOWZJSFlzSUdOdmJuTjBJR2x1ZENBcUlGOWZjbVZ6ZEhKcFkzUmZYeUIxTENCamIyNXpkQ0IxYVc1ME9GOTBJQ29nWDE5eVpYTjBjbWxqZEY5ZklITmpMQW90SUNBZ0lHTnZibk4wSUhWcGJuUTRYM1FnS2lCZlgzSmxjM1J5YVdOMFgxOGdiU3dnWTI5dWMzUWdhR0ZzWmpJZ0ppQmtiVFFzSUdOdmJuTjBJR1pzYjJGMElDb2dYMTl5WlhOMGNtbGpkRjlmSUdRNEtTQjdDaXNnSUNBZ1kyOXVjM1FnYVc1MElDb2dYMTl5WlhOMGNtbGpkRjlmSUhZc0lHTnZibk4wSUdsdWRDQXFJRjlmY21WemRISnBZM1JmWHlCMUxDQmpiMjV6ZENCMWFXNTBNekpmZENCelkyRnNaVjl0YVc0c0Npc2dJQ0FnWTI5dWMzUWdhR0ZzWmpJZ0ppQmtiVFFzSUdOdmJuTjBJR1pzYjJGMElDb2dYMTl5WlhOMGNtbGpkRjlmSUdRNEtTQjdDaUFLSUNBZ0lDQm1iRzloZENCemRXMW1YMlFnUFNBd0xqQm1Pd29nSUNBZ0lHWnNiMkYwSUhOMWJXWmZiU0E5SURBdU1HWTdDaUFLSUNOd2NtRm5iV0VnZFc1eWIyeHNDaUFnSUNBZ1ptOXlJQ2hwYm5RZ2FTQTlJREE3SUdrZ1BDQlJValJmU3pzZ0t5dHBLU0I3Q2lBZ0lDQWdJQ0FnSUdOdmJuTjBJR2x1ZENCMk1Ha2dQU0FvZGxzd1hTQStQaUFvTkNwcEtTa2dKaUF3ZURCR01FWXdSakJHT3dvZ0lDQWdJQ0FnSUNCamIyNXpkQ0JwYm5RZ2RqRnBJRDBnS0haYk1WMGdQajRnS0RRcWFTa3BJQ1lnTUhnd1JqQkdNRVl3UmpzS0t5QWdJQ0FnSUNBZ1kyOXVjM1FnYVc1MElITmpJRDBnS0hOallXeGxYMjFwYmlBK1BpQW9PQ3BwS1NrZ0ppQXdlRE5HT3dvcklDQWdJQ0FnSUNCamIyNXpkQ0JwYm5RZ2JTQWdQU0FvYzJOaGJHVmZiV2x1SUQ0K0lDZ3hOaUFySURncWFTa3BJQ1lnTUhnelJqc0tJQW9nSUNBZ0lDQWdJQ0JqYjI1emRDQnBiblFnWkc5ME1TQTlJR2RuYld4ZlkzVmtZVjlrY0RSaEtIWXhhU3dnZFZzeUtta3JNVjBzSUdkbmJXeGZZM1ZrWVY5a2NEUmhLSFl3YVN3Z2RWc3lLbWtyTUYwc0lEQXBLVHNnTHk4Z1UwbE5SQ0JrYjNRZ2NISnZaSFZqZEFvZ0lDQWdJQ0FnSUNCamIyNXpkQ0JwYm5RZ1pHOTBNaUE5SUdkbmJXeGZZM1ZrWVY5a2NEUmhLREI0TURFd01UQXhNREVzSUhWYk1pcHBLekZkTENCbloyMXNYMk4xWkdGZlpIQTBZU2d3ZURBeE1ERXdNVEF4TENCMVd6SXFhU3N3WFN3Z01Da3BPeUF2THlCemRXMGdiMllnZFFvZ0NpMGdJQ0FnSUNBZ0lITjFiV1pmWkNBclBTQmtPRnRwWFNBcUlDaGtiM1F4SUNvZ2MyTmJhVjBwT3dvdElDQWdJQ0FnSUNCemRXMW1YMjBnS3owZ1pEaGJhVjBnS2lBb1pHOTBNaUFxSUcxYmFWMHBPeUFnTHk4Z2JYVnNkR2x3YkhrZ1kyOXVjM1JoYm5RZ2NHRnlkQ0J2WmlCeE5GOUxJSGRwZEdnZ2MzVnRJRzltSUhFNFh6RWdkbUZzZFdWekNpc2dJQ0FnSUNBZ0lITjFiV1pmWkNBclBTQmtPRnRwWFNBcUlDaGtiM1F4SUNvZ2MyTXBPd29ySUNBZ0lDQWdJQ0J6ZFcxbVgyMGdLejBnWkRoYmFWMGdLaUFvWkc5ME1pQXFJRzBwT3lBZ0x5OGdiWFZzZEdsd2JIa2dZMjl1YzNSaGJuUWdjR0Z5ZENCdlppQnhORjlMSUhkcGRHZ2djM1Z0SUc5bUlIRTRYekVnZG1Gc2RXVnpDaUFnSUNBZ2ZRcEFRQ0F0T0Rrd0xESTBJQ3M0T1RJc01qWWdRRUFnZG1WalgyUnZkRjl4TkY5TFgzRTRYekVLSUNBZ0lDQmpiMjV6ZENCMWFXNTBNVFpmZENBcUlITmpZV3hsY3lBOUlDaGpiMjV6ZENCMWFXNTBNVFpmZENBcUtXSnhORjlMTFQ1elkyRnNaWE03Q2kwZ0lDQWdkV2x1ZERFMlgzUWdZWFY0V3pKZE93b2dJQ0FnSUdOdmJuTjBJR2x1ZENCcUlEMGdZbkU0WDI5bVpuTmxkQzh5T3dvdElDQWdJR2xtSUNocUlEd2dNaWtnZXdvdElDQWdJQ0FnSUNCaGRYaGJNRjBnUFNCelkyRnNaWE5iYWlzd1hTQW1JREI0TTJZelpqc0tMU0FnSUNBZ0lDQWdZWFY0V3pGZElEMGdjMk5oYkdWelcyb3JNbDBnSmlBd2VETm1NMlk3Q2kwZ0lDQWdmU0JsYkhObElIc0tMU0FnSUNBZ0lDQWdZWFY0V3pCZElEMGdLQ2h6WTJGc1pYTmJhaXN5WFNBK1BpQXdLU0FtSURCNE1HWXdaaWtnZkNBb0tITmpZV3hsYzF0cUxUSmRJQ1lnTUhoak1HTXdLU0ErUGlBeUtUc0tMU0FnSUNBZ0lDQWdZWFY0V3pGZElEMGdLQ2h6WTJGc1pYTmJhaXN5WFNBK1BpQTBLU0FtSURCNE1HWXdaaWtnZkNBb0tITmpZV3hsYzF0cUxUQmRJQ1lnTUhoak1HTXdLU0ErUGlBeUtUc0tMU0FnSUNCOUNpMGdJQ0FnWTI5dWMzUWdkV2x1ZERoZmRDQXFJSE5qSUQwZ0tHTnZibk4wSUhWcGJuUTRYM1FnS2lsaGRYZzdDaTBnSUNBZ1kyOXVjM1FnZFdsdWREaGZkQ0FxSUcwZ0lEMGdjMk1nS3lBeU93b3JJQ0FnSUdOdmJuTjBJR2x1ZENCcklEMGdhaUFtSURFN0Npc2dJQ0FnWTI5dWMzUWdkV2x1ZERNeVgzUWdjMk5oYkdWelh6QWdQU0J6WTJGc1pYTmJheXN3WFRzS0t5QWdJQ0JqYjI1emRDQjFhVzUwTXpKZmRDQnpZMkZzWlhOZk1TQTlJSE5qWVd4bGMxdHJLekpkT3dvcklDQWdJR052Ym5OMElIVnBiblF6TWw5MElITmpZV3hsYzE4eUlEMGdjMk5oYkdWelcyc3JORjA3Q2lzS0t5QWdJQ0JqYjI1emRDQjFhVzUwTXpKZmRDQnpZMkZzWlY5dGFXNWZiRzhnUFFvcklDQWdJQ0FnSUNBb2MyTmhiR1Z6WHpBZ0ppQXdlRE5tTTJaVktTQjhJQ2dvYzJOaGJHVnpYekVnSmlBd2VETm1NMlpWS1NBOFBDQXhOaWs3Q2lzZ0lDQWdZMjl1YzNRZ2RXbHVkRE15WDNRZ2MyTmhiR1ZmYldsdVgyaHBJRDBLS3lBZ0lDQWdJQ0FnS0NoelkyRnNaWE5mTWlBK1BpQXdLU0FtSURCNE1HWXdabFVwSUh3Z0tDaHpZMkZzWlhOZk1DQW1JREI0WXpCak1GVXBJRDQrSURJcElId0tLeUFnSUNBZ0lDQWdLQ2dvYzJOaGJHVnpYeklnUGo0Z05Da2dKaUF3ZURCbU1HWlZLU0E4UENBeE5pa2dmQ0FvS0NoelkyRnNaWE5mTVNBbUlEQjRZekJqTUZVcElENCtJRElwSUR3OElERTJLVHNLS3lBZ0lDQmpiMjV6ZENCMWFXNTBNekpmZENCb2FXZG9YMjFoYzJzZ1BTQXdWU0F0SUhWcGJuUXpNbDkwS0dvZ1BqNGdNU2s3Q2lzZ0lDQWdZMjl1YzNRZ2RXbHVkRE15WDNRZ2MyTmhiR1ZmYldsdUlEMGdLSE5qWVd4bFgyMXBibDlzYnlBbUlINW9hV2RvWDIxaGMyc3BJSHdnS0hOallXeGxYMjFwYmw5b2FTQW1JR2hwWjJoZmJXRnpheWs3Q2lBS0lDQWdJQ0JtYjNJZ0tHbHVkQ0JwSUQwZ01Ec2dhU0E4SUZGU05GOUxPeUFySzJrcElIc0tJQ0FnSUNBZ0lDQWdZMjl1YzNRZ1lteHZZMnRmY1RoZk1TQXFJR0p4T0drZ1BTQmljVGhmTVNBcklHSnhPRjl2Wm1aelpYUWdLeUJwT3dvZ0lDQWdJQ0FnSUNCa09GdHBYU0E5SUY5ZmJHOTNNbVpzYjJGMEtHSnhPR2t0UG1SektUc0tJQW9nSUNBZ0lDQWdJQ0JqYjI1emRDQnBiblFnS2lCeE9DQTlJQ2hqYjI1emRDQnBiblFnS2lsaWNUaHBMVDV4Y3lBcklDZ29hWEZ6THpJcEpUUXBPd29nSUNBZ0lDQWdJQ0IxV3pJcWFTc3dYU0E5SUhFNFd6QmRPd29nSUNBZ0lDQWdJQ0IxV3pJcWFTc3hYU0E5SUhFNFd6UmRPd29nSUNBZ0lIMEtJQW90SUNBZ0lISmxkSFZ5YmlCMlpXTmZaRzkwWDNFMFgwdGZjVGhmTVY5cGJYQnNYM1p0YlhFb2Rpd2dkU3dnYzJNc0lHMHNJR0p4TkY5TExUNWtiU3dnWkRncE93b3JJQ0FnSUhKbGRIVnliaUIyWldOZlpHOTBYM0UwWDB0ZmNUaGZNVjlwYlhCc1gzWnRiWEVvZGl3Z2RTd2djMk5oYkdWZmJXbHVMQ0JpY1RSZlN5MCtaRzBzSUdRNEtUc0tJSDBLIiwicGF0Y2hfZW5jb2RpbmciOiJiYXNlNjQiLCJwYXRjaF9zaGEyNTYiOiI0YWJkNTJhZWUzMjZjMmQ5NTdlYjczNjc5OGJhZDA5MTgyMTk3Mjk1YTdkYWU3MzE3MzY3NzZlM2Y4MDc5NDhhIiwicHJvZHVjdGlvbl9iYXNlX2NvbW1pdCI6IjBkYjMyYzA2ZTNlNTUwMDY1Yjc4MzExYTYwMzFlZjNkZDJjNGYyN2MiLCJwcm9wb3NhbF9pZCI6ImFrcC1kaXNjb3ZlcnktMiIsInNjaGVtYSI6ImVweWMuYXV0b2tlcm5lbC5zb3VyY2UtcGF0Y2gudjEiLCJzb3VyY2VfdHJlZSI6ImxsYW1hLmNwcCJ9",
+      "patch_bundle_sha256": "281bca09cca4ba8a6724cd4e72a7ec86ab6938483bc37e9c7dcb9757ae518975",
+      "proposal": {
+        "change": {
+          "estimated_diff_size": 34,
+          "files_and_symbols": [
+            "ggml/src/ggml-cuda/vecdotq.cuh:vec_dot_q4_K_q8_1",
+            "ggml/src/ggml-cuda/vecdotq.cuh:vec_dot_q4_K_q8_1_impl_vmmq"
+          ]
+        },
+        "change_class": "arithmetic",
+        "proposal_id": "akp-discovery-2"
+      },
+      "regime": {
+        "architecture": "gfx90a",
+        "backend": "hip",
+        "batch": 1,
+        "measurement_graphs": false,
+        "model_or_frame": "frame-current-qwen05b-q4km-tg128",
+        "phase": "decode",
+        "quant": "Q4_K_M",
+        "shape": "type12-mmvq",
+        "target_runtime_graphs": true
+      },
+      "source_manifest_sha256": "281bca09cca4ba8a6724cd4e72a7ec86ab6938483bc37e9c7dcb9757ae518975",
+      "statement": "Packed selection can remove the lane-uniform j<2 scale/min branch while preserving dp4a and exact launch geometry."
+    },
+    "confirmation": false,
+    "infrastructure_retry_epoch": 0,
+    "lease": {
+      "admitted": true,
+      "device_claim_probe_open": {
+        "acquired_at": "2026-08-21T13:46:10.321656+00:00",
+        "campaign_id": "ak-discovery-03fc1b1230487a35",
+        "claim_id": "akd-2adeb3833fda475c",
+        "device_id": "mi210_0",
+        "expires_at": "2026-08-21T13:46:40.321669+00:00",
+        "holder_boot_id": "ffa56b5e-1da4-42e7-ac5d-d233ff830b65",
+        "holder_label": "autokernel-discovery-controller",
+        "holder_pid": 1427509,
+        "holder_start_ticks": 70259706,
+        "host": "Beelzebub",
+        "lock_path": "/mnt/raid0/llm/tmp/gpu_device.mi210_0.lock",
+        "purpose": "AutoKernel GPU discovery admission probe",
+        "reclaimed_from": null,
+        "released_at": null,
+        "schema": "epyc.autokernel.device_claim_receipt.v1",
+        "state": "held"
+      },
+      "device_claim_probe_released": {
+        "acquired_at": "2026-08-21T13:46:10.321656+00:00",
+        "campaign_id": "ak-discovery-03fc1b1230487a35",
+        "claim_id": "akd-2adeb3833fda475c",
+        "device_id": "mi210_0",
+        "expires_at": "2026-08-21T13:46:40.321669+00:00",
+        "holder_boot_id": "ffa56b5e-1da4-42e7-ac5d-d233ff830b65",
+        "holder_label": "autokernel-discovery-controller",
+        "holder_pid": 1427509,
+        "holder_start_ticks": 70259706,
+        "host": "Beelzebub",
+        "lock_path": "/mnt/raid0/llm/tmp/gpu_device.mi210_0.lock",
+        "purpose": "AutoKernel GPU discovery admission probe",
+        "reclaimed_from": null,
+        "released_at": "2026-08-21T13:46:10.324416+00:00",
+        "schema": "epyc.autokernel.device_claim_receipt.v1",
+        "state": "held"
+      },
+      "device_id": "mi210_0",
+      "inference_window_lock": "/mnt/raid0/llm/tmp/model-call.lock",
+      "load_admission": {
+        "actor_recommendation": "cold_serialized",
+        "decision_sha256": "209a9bfe3a6a234084ac8870029542f6d4851fa96c25e59fbe957b0c6501bf2c",
+        "disqualifiers": [
+          "telemetry_missing"
+        ],
+        "effective_context_sha256": "d0aff28214d5d32ebac248002d8ce5616bf916246f873ad58c77bcf0512c355f",
+        "mode": "cold_serialized",
+        "policy_file_sha256": "0d87adf3450c75c646f4b3c4a064d5a2940814473d803eee0559eaa45ea9230c",
+        "policy_sha256": "954b14d5b1efb9156ee6a4c2639fae6a83605478a7eff61f2b0db2ed0d505c01",
+        "policy_version": "mi210-discovery-fallback-only-v1",
+        "profile": {
+          "calls_per_arm": 9,
+          "cold_load_host_bytes": 397807840,
+          "device_id": "mi210_0",
+          "evidence_sha256": "6cc206ca06c53db0388f072eb4757156fc3195ad1e92e1294bf8496b093b2843",
+          "minimum_headroom_bytes_per_s": 1152921504606846976,
+          "model_bytes": 397807840,
+          "model_path": "/mnt/raid0/llm/models/lmstudio-community/Qwen2.5-Coder-0.5B-GGUF/Qwen2.5-Coder-0.5B-Q4_K_M.gguf",
+          "model_sha256": "f175ecace8c24336cbf9e22bd71ea032a16492bd264a3caab6dfa4cafe80ddd3",
+          "profile_id": "mi210-qwen05b-tg128-fallback-only-v1",
+          "telemetry_max_age_ms": 5000,
+          "workload": "decode_tg128",
+          "worst_case_loads_per_interval": 18
+        },
+        "promotion_claim": false,
+        "reason": "reviewed profile lacked complete safe overlap observations",
+        "request": {
+          "calls_per_arm": 9,
+          "cold_load_host_bytes": 397807840,
+          "device_id": "mi210_0",
+          "effective_context_sha256": "d0aff28214d5d32ebac248002d8ce5616bf916246f873ad58c77bcf0512c355f",
+          "expected_hot_identity_sha256": null,
+          "foreign_kfd_pids": [],
+          "hot_residency_identity_sha256": null,
+          "hot_revalidation_identity_sha256": null,
+          "model_bytes": 397807840,
+          "model_path": "/mnt/raid0/llm/models/lmstudio-community/Qwen2.5-Coder-0.5B-GGUF/Qwen2.5-Coder-0.5B-Q4_K_M.gguf",
+          "model_sha256": "f175ecace8c24336cbf9e22bd71ea032a16492bd264a3caab6dfa4cafe80ddd3",
+          "observed_headroom_bytes_per_s": null,
+          "runtime_arm": null,
+          "runtime_manifest_sha256": null,
+          "telemetry_age_ms": null,
+          "telemetry_observed": false,
+          "telemetry_receipt_sha256": null,
+          "workload": "decode_tg128",
+          "worst_case_loads_per_interval": 18
+        },
+        "schema": "epyc.autokernel.gpu_load_admission_decision.v1"
+      },
+      "mode": "cold_serialized",
+      "model_sha256": "f175ecace8c24336cbf9e22bd71ea032a16492bd264a3caab6dfa4cafe80ddd3",
+      "operation_key": "77141af28ec26788f01d33a4f4c1c1b6fb5d6dbae08600630578380e558ae180",
+      "phase": "prebuild_probe",
+      "promotion_claim": false,
+      "repetition": 1
+    },
+    "operation_key": "77141af28ec26788f01d33a4f4c1c1b6fb5d6dbae08600630578380e558ae180",
+    "parent_authorization": null,
+    "row": {
+      "campaign_ledger_dnr_outcome": "PASS",
+      "campaign_ledger_dnr_reasons": [],
+      "candidate_semantic_sha256": "a7ef5b0f9b2b74f21b396c8953232944abf6fce35b4a1e9ba404779db9673f7e",
+      "context_sha256": "312b3451f9bea1c2f20f9577d55d082896592e43ea095d7fc76d85bc2bbb69f0",
+      "critic": {
+        "decision": "accept",
+        "reason": "Verified exhaustively over all reachable j = bq8_offset/2 in {0,1,2,3} that the packed uint32 scale_min reproduces the original aux[2] byte layout exactly: for j<2, k=j gives scale_min_lo = (scales[j]&0x3f3f) | ((scales[j+2]&0x3f3f)<<16), identical to aux[0]/aux[1]; for j>=2, k=j-2 maps scales_0/scales_1/scales_2 to scales[j-2]/scales[j]/scales[j+2], so scale_min_hi reproduces the else-branch aux terms exactly, and high_mask = 0U - uint32_t(j>>1) is a well-defined all-ones/all-zeros selector. The 0x3F extraction masks are lossless because every byte both original branches produce is <= 0x3F (0x3f3f mask, or 0x0f0f | (0xc0c0>>2)). The unconditional scales[k+4] read (index 4 or 5) stays within the 6-element uint16 view of the 12-byte K-scale array, so no out-of-bounds access is introduced. Integer promotion in dot1*sc and dot2*m matches the original uint8 reads, and dp4a usage, loop structure, launch geometry, and 512-byte LDS are untouched, consistent with the expected type-12 anchor (1548 calls, grid 114688, workgroup 128). Scope check: edits are confined to vec_dot_q4_K_q8_1 and vec_dot_q4_K_q8_1_impl_vmmq in ggml/src/ggml-cuda/vecdotq.cuh, exactly the declared files/symbols under cuda-vecdotq-q4k-v1 authority; the impl's only caller is the modified wrapper, so the signature change is safe. Governance check: hypothesis akh-v26-q4k-branchless-sixbit-scale is portfolio-eligible; the mechanism (lane-uniform sixbit scale select) does not match the DNR'd q4k stored-aggregate-sum fingerprint or any other hard refusal; cold_serialized load mode is correct under the fallback-only admission bundle. Diff context for the removed branch matches the sealed source preimage. The change is an arithmetic-preserving branch removal that the governed correctness stage (1139 MUL_MAT cases) can falsify per the stated falsifier; no correctness or authority defect found."
+      },
+      "experiment_intent": {
+        "correctness_id": "backend-ops-hip-v1",
+        "dispatch_id": "decode-tg128-rocprof-v3",
+        "expected_dispatch": [
+          {
+            "calls": 1548,
+            "grid": 114688,
+            "kernel_name": "void mul_mat_vec_q<(ggml_type)12, 1, true, false>(void const*, void const*, int const*, ggml_cuda_mm_fusion_args_device, float*, unsigned int, HIP_vector_type<unsigned int, 3u>, unsigned int, unsigned int, unsigned int, HIP_vector_type<unsigned int, 3u>, unsigned int, unsigned int, unsigned int, HIP_vector_type<unsigned int, 3u>, unsigned int, unsigned int, unsigned int, unsigned int)",
+            "lds_bytes": 512,
+            "route_id": "cuda-vecdotq-q4k-v1.anchor.0",
+            "workgroup": 128
+          }
+        ],
+        "load_mode_recommendation": {
+          "example_ids": [],
+          "mode": "cold_serialized",
+          "rationale": "The fallback-only admission bundle provides no fresh headroom authority, so serialize cold loads."
+        },
+        "target_surface": "gpu_decode",
+        "target_symbol": "vec_dot_q4_K_q8_1",
+        "template_id": "cuda-vecdotq-q4k-v1"
+      },
+      "falsifier": "Any Q4_K correctness mismatch falsifies the candidate",
+      "hypothesis_id": "akh-v26-q4k-branchless-sixbit-scale",
+      "mechanism_id": "92c84de1257c3ea41d2c3e02f209db404e43ba5323316fd0d2dff511b4b6513b",
+      "operation_key": "77141af28ec26788f01d33a4f4c1c1b6fb5d6dbae08600630578380e558ae180",
+      "portfolio_binding": {
+        "change_class": "arithmetic",
+        "decision_policy": {
+          "conflict_policy": "retain_inconclusive",
+          "continuation_floor_pct": 0.2,
+          "effect_unit": "relative_percent",
+          "frame_id": "frame-current-qwen05b-q4km-tg128",
+          "max_distinct_candidates": 2,
+          "max_replication_spread_pct": 1,
+          "metric": "decode_tokens_per_s",
+          "min_replication_effect_pct": 0.1,
+          "nomination_floor_pct": 0.5,
+          "required_replications": 2,
+          "sign_policy": "all_positive",
+          "terminal_rule": "retire"
+        },
+        "expected_dispatch": [
+          {
+            "calls": 1548,
+            "grid": 114688,
+            "kernel_name": "void mul_mat_vec_q<(ggml_type)12, 1, true, false>(void const*, void const*, int const*, ggml_cuda_mm_fusion_args_device, float*, unsigned int, HIP_vector_type<unsigned int, 3u>, unsigned int, unsigned int, unsigned int, HIP_vector_type<unsigned int, 3u>, unsigned int, unsigned int, unsigned int, HIP_vector_type<unsigned int, 3u>, unsigned int, unsigned int, unsigned int, unsigned int)",
+            "lds_bytes": 512,
+            "route_id": "cuda-vecdotq-q4k-v1.anchor.0",
+            "workgroup": 128
+          }
+        ],
+        "falsifier": "Any Q4_K correctness mismatch falsifies the candidate",
+        "hypothesis_id": "akh-v26-q4k-branchless-sixbit-scale",
+        "mechanism_id": "92c84de1257c3ea41d2c3e02f209db404e43ba5323316fd0d2dff511b4b6513b",
+        "portfolio_sha256": "7ba7dd1c3c246fb22a247d6e24facb5fbe0eaebec8b2eb21635fde20043e8303",
+        "record_sha256": "795ea3efa91e703772c999ed7892b4b8203061397ab02331d1de06cee364f224",
+        "regime": {
+          "architecture": "gfx90a",
+          "backend": "hip",
+          "batch": 1,
+          "measurement_graphs": false,
+          "model_or_frame": "frame-current-qwen05b-q4km-tg128",
+          "phase": "decode",
+          "quant": "Q4_K_M",
+          "shape": "type12-mmvq",
+          "target_runtime_graphs": true
+        },
+        "statement": "Packed selection can remove the lane-uniform j<2 scale/min branch while preserving dp4a and exact launch geometry.",
+        "target_files": [
+          "ggml/src/ggml-cuda/vecdotq.cuh"
+        ],
+        "target_symbols": [
+          "vec_dot_q4_K_q8_1",
+          "vec_dot_q4_K_q8_1_impl_vmmq"
+        ],
+        "target_symbols_by_file": {
+          "ggml/src/ggml-cuda/vecdotq.cuh": [
+            "vec_dot_q4_K_q8_1",
+            "vec_dot_q4_K_q8_1_impl_vmmq"
+          ]
+        },
+        "template_id": "cuda-vecdotq-q4k-v1"
+      },
+      "portfolio_decision_policy": {
+        "conflict_policy": "retain_inconclusive",
+        "continuation_floor_pct": 0.2,
+        "effect_unit": "relative_percent",
+        "frame_id": "frame-current-qwen05b-q4km-tg128",
+        "max_distinct_candidates": 2,
+        "max_replication_spread_pct": 1,
+        "metric": "decode_tokens_per_s",
+        "min_replication_effect_pct": 0.1,
+        "nomination_floor_pct": 0.5,
+        "required_replications": 2,
+        "sign_policy": "all_positive",
+        "terminal_rule": "retire"
+      },
+      "portfolio_exact_dnr_check": {
+        "candidate_mechanism_id": "92c84de1257c3ea41d2c3e02f209db404e43ba5323316fd0d2dff511b4b6513b",
+        "candidate_source_manifest_sha256": "281bca09cca4ba8a6724cd4e72a7ec86ab6938483bc37e9c7dcb9757ae518975",
+        "canonical_regime_sha256": "10eef98e6c4d7551cb374ae3fd0d37adb3562f1fd748a6e352bb9d56f0713099",
+        "matched_dnr_ids": [],
+        "outcome": "PASS",
+        "portfolio_hypothesis_id": "akh-v26-q4k-branchless-sixbit-scale",
+        "portfolio_semantic_sha256": "7ba7dd1c3c246fb22a247d6e24facb5fbe0eaebec8b2eb21635fde20043e8303",
+        "receipt_sha256": "d65c67771be364d292c17dc40eb93966dc0b4440a9a4dad73559cfdca7479494",
+        "schema": "epyc.autokernel.portfolio_exact_dnr_check.v1"
+      },
+      "portfolio_hypothesis_id": "akh-v26-q4k-branchless-sixbit-scale",
+      "portfolio_record_sha256": "795ea3efa91e703772c999ed7892b4b8203061397ab02331d1de06cee364f224",
+      "proposal_sha256": "e6756944e2aac8b5e76c60a4bd9ba09210619ad3dfe4a2a3159718d70ff29536",
+      "regime": {
+        "architecture": "gfx90a",
+        "backend": "hip",
+        "batch": 1,
+        "measurement_graphs": false,
+        "model_or_frame": "frame-current-qwen05b-q4km-tg128",
+        "phase": "decode",
+        "quant": "Q4_K_M",
+        "shape": "type12-mmvq",
+        "target_runtime_graphs": true
+      },
+      "source_manifest_sha256": "281bca09cca4ba8a6724cd4e72a7ec86ab6938483bc37e9c7dcb9757ae518975",
+      "statement": "Packed selection can remove the lane-uniform j<2 scale/min branch while preserving dp4a and exact launch geometry.",
+      "target_surface": "gpu_decode",
+      "target_symbol": "vec_dot_q4_K_q8_1",
+      "turn": 2
+    }
+  },
+  "iterations": [
+    {
+      "authoring_turn": 1,
+      "campaign_ledger_dnr_outcome": "PASS",
+      "campaign_ledger_dnr_reasons": [],
+      "candidate_semantic_sha256": "06973eb2e4f643b76de198d6cae5e2e9f1b915773dafdf5efd08682bf0df2b63",
+      "classification": "screened_out",
+      "context_sha256": "91b7af32b0a2a2647a6c24e4fc97a9f4452e8227ab221e86c8f308809a22f354",
+      "evidence": {
+        "dispatch_attribution": "40707008b6fceae9749dfca56253836e07ce51b19eb7fb003377c3340503eb86"
+      },
+      "experiment_intent": {
+        "correctness_id": "backend-ops-hip-v1",
+        "dispatch_id": "decode-tg128-rocprof-v3",
+        "expected_dispatch": [
+          {
+            "calls": 6063,
+            "grid": 57344,
+            "kernel_name": "void mul_mat_vec_q<(ggml_type)6, 1, true, true>(void const*, void const*, int const*, ggml_cuda_mm_fusion_args_device, float*, unsigned int, HIP_vector_type<unsigned int, 3u>, unsigned int, unsigned int, unsigned int, HIP_vector_type<unsigned int, 3u>, unsigned int, unsigned int, unsigned int, HIP_vector_type<unsigned int, 3u>, unsigned int, unsigned int, unsigned int, unsigned int)",
+            "lds_bytes": 1024,
+            "route_id": "cuda-mmvq-q5-onewave-continuation-v1.anchor.0",
+            "workgroup": 128
+          },
+          {
+            "calls": 4644,
+            "grid": 8192,
+            "kernel_name": "void mul_mat_vec_q<(ggml_type)6, 1, true, true>(void const*, void const*, int const*, ggml_cuda_mm_fusion_args_device, float*, unsigned int, HIP_vector_type<unsigned int, 3u>, unsigned int, unsigned int, unsigned int, HIP_vector_type<unsigned int, 3u>, unsigned int, unsigned int, unsigned int, HIP_vector_type<unsigned int, 3u>, unsigned int, unsigned int, unsigned int, unsigned int)",
+            "lds_bytes": 1024,
+            "route_id": "cuda-mmvq-q5-onewave-continuation-v1.anchor.1",
+            "workgroup": 128
+          },
+          {
+            "calls": 3096,
+            "grid": 311296,
+            "kernel_name": "void mul_mat_vec_q<(ggml_type)6, 1, true, true>(void const*, void const*, int const*, ggml_cuda_mm_fusion_args_device, float*, unsigned int, HIP_vector_type<unsigned int, 3u>, unsigned int, unsigned int, unsigned int, HIP_vector_type<unsigned int, 3u>, unsigned int, unsigned int, unsigned int, HIP_vector_type<unsigned int, 3u>, unsigned int, unsigned int, unsigned int, unsigned int)",
+            "lds_bytes": 1024,
+            "route_id": "cuda-mmvq-q5-onewave-continuation-v1.anchor.2",
+            "workgroup": 128
+          }
+        ],
+        "load_mode_recommendation": null,
+        "target_surface": "gpu_decode",
+        "target_symbol": "calc_nwarps",
+        "template_id": "cuda-mmvq-q5-onewave-continuation-v1"
+      },
+      "falsifier": "Current governed correctness fails after the modern instrument build",
+      "historical_correctness_authority": "provenance_only",
+      "hypothesis_author": "reviewed-eb26918-continuation",
+      "hypothesis_id": "akh-v2-q5-onewave-preauthored",
+      "hypothesis_origin": "import",
+      "mechanism_id": "q5_0_one_wave_per_output_block",
+      "modern_governed_correctness_required": true,
+      "operation_key": "fdfbf8434c361a32cd07d86ac247f61c62f9f840bc3ed8b437053f089e33f837",
+      "portfolio_binding": {
+        "change_class": "dispatcher",
+        "decision_policy": {
+          "conflict_policy": "retain_inconclusive",
+          "continuation_floor_pct": 0.2,
+          "effect_unit": "relative_percent",
+          "frame_id": "frame-current-qwen05b-q4km-tg128",
+          "max_distinct_candidates": 1,
+          "max_replication_spread_pct": 1,
+          "metric": "decode_tokens_per_s",
+          "min_replication_effect_pct": 0.1,
+          "nomination_floor_pct": 0.5,
+          "required_replications": 2,
+          "sign_policy": "all_positive",
+          "terminal_rule": "retire"
+        },
+        "expected_dispatch": [
+          {
+            "calls": 6063,
+            "grid": 57344,
+            "kernel_name": "void mul_mat_vec_q<(ggml_type)6, 1, true, true>(void const*, void const*, int const*, ggml_cuda_mm_fusion_args_device, float*, unsigned int, HIP_vector_type<unsigned int, 3u>, unsigned int, unsigned int, unsigned int, HIP_vector_type<unsigned int, 3u>, unsigned int, unsigned int, unsigned int, HIP_vector_type<unsigned int, 3u>, unsigned int, unsigned int, unsigned int, unsigned int)",
+            "lds_bytes": 1024,
+            "route_id": "cuda-mmvq-q5-onewave-continuation-v1.anchor.0",
+            "workgroup": 128
+          },
+          {
+            "calls": 4644,
+            "grid": 8192,
+            "kernel_name": "void mul_mat_vec_q<(ggml_type)6, 1, true, true>(void const*, void const*, int const*, ggml_cuda_mm_fusion_args_device, float*, unsigned int, HIP_vector_type<unsigned int, 3u>, unsigned int, unsigned int, unsigned int, HIP_vector_type<unsigned int, 3u>, unsigned int, unsigned int, unsigned int, HIP_vector_type<unsigned int, 3u>, unsigned int, unsigned int, unsigned int, unsigned int)",
+            "lds_bytes": 1024,
+            "route_id": "cuda-mmvq-q5-onewave-continuation-v1.anchor.1",
+            "workgroup": 128
+          },
+          {
+            "calls": 3096,
+            "grid": 311296,
+            "kernel_name": "void mul_mat_vec_q<(ggml_type)6, 1, true, true>(void const*, void const*, int const*, ggml_cuda_mm_fusion_args_device, float*, unsigned int, HIP_vector_type<unsigned int, 3u>, unsigned int, unsigned int, unsigned int, HIP_vector_type<unsigned int, 3u>, unsigned int, unsigned int, unsigned int, HIP_vector_type<unsigned int, 3u>, unsigned int, unsigned int, unsigned int, unsigned int)",
+            "lds_bytes": 1024,
+            "route_id": "cuda-mmvq-q5-onewave-continuation-v1.anchor.2",
+            "workgroup": 128
+          }
+        ],
+        "falsifier": "Current governed correctness fails after the modern instrument build",
+        "hypothesis_id": "akh-v2-q5-onewave-preauthored",
+        "mechanism_id": "7d88a2725aab2276202324ecef22f2414a1d893f9081061314622c82a7c28919",
+        "portfolio_sha256": "7ba7dd1c3c246fb22a247d6e24facb5fbe0eaebec8b2eb21635fde20043e8303",
+        "record_sha256": "c14b7d7d06db1e215e2da6e74330eaecf4b535811faf3a7566ab33079cf8a346",
+        "regime": {
+          "architecture": "gfx90a",
+          "backend": "hip",
+          "batch": 1,
+          "measurement_graphs": false,
+          "model_or_frame": "frame-current-qwen05b-q4km-tg128",
+          "phase": "decode",
+          "quant": "Q5_0",
+          "shape": "type6-mmvq",
+          "target_runtime_graphs": true
+        },
+        "statement": "The exact eb26918 Q5_0 CDNA2 one-wave patch can be rebuilt against the byte-identical current MMVQ preimage and evaluated without another planner, critic, or source-authoring call.",
+        "target_files": [
+          "ggml/src/ggml-cuda/mmvq.cu"
+        ],
+        "target_symbols": [
+          "calc_nwarps",
+          "calc_rows_per_block",
+          "get_device_table_id",
+          "mmvq_parameter_table_id"
+        ],
+        "target_symbols_by_file": {
+          "ggml/src/ggml-cuda/mmvq.cu": [
+            "calc_nwarps",
+            "calc_rows_per_block",
+            "get_device_table_id",
+            "mmvq_parameter_table_id"
+          ]
+        },
+        "template_id": "cuda-mmvq-q5-onewave-continuation-v1"
+      },
+      "portfolio_decision_policy": {
+        "conflict_policy": "retain_inconclusive",
+        "continuation_floor_pct": 0.2,
+        "effect_unit": "relative_percent",
+        "frame_id": "frame-current-qwen05b-q4km-tg128",
+        "max_distinct_candidates": 1,
+        "max_replication_spread_pct": 1,
+        "metric": "decode_tokens_per_s",
+        "min_replication_effect_pct": 0.1,
+        "nomination_floor_pct": 0.5,
+        "required_replications": 2,
+        "sign_policy": "all_positive",
+        "terminal_rule": "retire"
+      },
+      "portfolio_exact_dnr_check": {
+        "candidate_mechanism_id": "7d88a2725aab2276202324ecef22f2414a1d893f9081061314622c82a7c28919",
+        "candidate_source_manifest_sha256": "cb93f92256a828b82a1a780bc5895f317b5ad9b8ffe8e17e3dd03d9d73474d1c",
+        "canonical_regime_sha256": "d3a85f93fed7dd2d1c48addc39be930a7330fdaf0e6ee1378fc79b28b0cae239",
+        "matched_dnr_ids": [],
+        "outcome": "PASS",
+        "portfolio_hypothesis_id": "akh-v2-q5-onewave-preauthored",
+        "portfolio_semantic_sha256": "7ba7dd1c3c246fb22a247d6e24facb5fbe0eaebec8b2eb21635fde20043e8303",
+        "receipt_sha256": "c362ae16029acd1f8bc594933e0aabe633eb3ba9183587da3fea60fbb4a0eb90",
+        "schema": "epyc.autokernel.portfolio_exact_dnr_check.v1"
+      },
+      "portfolio_hypothesis_id": "akh-v2-q5-onewave-preauthored",
+      "portfolio_record_sha256": "c14b7d7d06db1e215e2da6e74330eaecf4b535811faf3a7566ab33079cf8a346",
+      "preauthored_continuation": {
+        "author": "reviewed-eb26918-continuation",
+        "authoring_turn": 1,
+        "candidate_semantic_sha256": "06973eb2e4f643b76de198d6cae5e2e9f1b915773dafdf5efd08682bf0df2b63",
+        "carrier_sha256": "819d16c0903d71649c4674080d2718159d12ea1769e1f4f943d04dc7e2974889",
+        "cross_campaign_candidate_sha256": "d5671a1dc197e5d0d53f34f9c4d25f640e0e410d6917b3099459bc40064581b2",
+        "historical_commit": "eb26918fa82f8aef3ab72f1e3263bd8fecde62e7",
+        "hypothesis_id": "akh-v2-q5-onewave-preauthored",
+        "modern_governed_correctness_required": true,
+        "origin": "import",
+        "receipt_sha256": "1db721c0f12b12d3b5a356bc2e368e96f6ad982e8321723da3da84254d3edd68",
+        "schema": "epyc.autokernel.preauthored_checkpoint.v1",
+        "source_backed_diff_sha256": "2adf93c7af423debf39307a3e4d6fa675d5061c565f36682d0b22295df4339c9",
+        "source_manifest_sha256": "cb93f92256a828b82a1a780bc5895f317b5ad9b8ffe8e17e3dd03d9d73474d1c"
+      },
+      "proposal_sha256": "68afb91fabadf1c0129cee75045cdfd8a45707fe08be3890f3b96e306a2c6626",
+      "reason": "exact dispatch cuda-mmvq-q5-onewave-continuation-v1.anchor.0.candidate-onewave count/geometry mismatch",
+      "regime": {
+        "architecture": "gfx90a",
+        "backend": "hip",
+        "batch": 1,
+        "measurement_graphs": false,
+        "model_or_frame": "frame-current-qwen05b-q4km-tg128",
+        "phase": "decode",
+        "quant": "Q5_0",
+        "shape": "type6-mmvq",
+        "target_runtime_graphs": true
+      },
+      "result_sha256": "40707008b6fceae9749dfca56253836e07ce51b19eb7fb003377c3340503eb86",
+      "scientific_budget_spent": true,
+      "source_manifest_sha256": "cb93f92256a828b82a1a780bc5895f317b5ad9b8ffe8e17e3dd03d9d73474d1c",
+      "stage": "dispatch_attribution",
+      "stage_receipt_path": "/mnt/raid0/llm/autokernel/deployments/gpu-discovery-quant-ladder-occupancy-v26/operations/fdfbf8434c361a32cd07d86ac247f61c62f9f840bc3ed8b437053f089e33f837/proof/attribution-candidate/refusal.json",
+      "stage_receipt_sha256": "40707008b6fceae9749dfca56253836e07ce51b19eb7fb003377c3340503eb86",
+      "statement": "The exact eb26918 Q5_0 CDNA2 one-wave patch can be rebuilt against the byte-identical current MMVQ preimage and evaluated without another planner, critic, or source-authoring call.",
+      "status": "attribution_route_falsified",
+      "target_surface": "gpu_decode",
+      "target_symbol": "calc_nwarps",
+      "turn": 1
+    }
+  ],
+  "next": 2,
+  "planner_context_sha256": "5e62e34d5fb8d4e0f57b15f5663de2c430b1871c58ea2887e68f2b73a8260e5c",
+  "portfolio_attribution_failures": {
+    "akh-v2-q5-onewave-preauthored": [
+      "cb93f92256a828b82a1a780bc5895f317b5ad9b8ffe8e17e3dd03d9d73474d1c"
+    ]
+  },
+  "portfolio_skips": {
+    "akh-v2-q5-onewave-preauthored": {
+      "disposition": "bounded_attribution_falsified",
+      "distinct_candidate_count": 1,
+      "scientific_terminal": false,
+      "stage_receipt_path": "/mnt/raid0/llm/autokernel/deployments/gpu-discovery-quant-ladder-occupancy-v26/operations/fdfbf8434c361a32cd07d86ac247f61c62f9f840bc3ed8b437053f089e33f837/proof/attribution-candidate/refusal.json",
+      "stage_receipt_sha256": "40707008b6fceae9749dfca56253836e07ce51b19eb7fb003377c3340503eb86"
+    }
+  },
+  "portfolio_terminals": {},
+  "preauthored_continuation_sha256": "819d16c0903d71649c4674080d2718159d12ea1769e1f4f943d04dc7e2974889",
+  "preauthored_source_backed_diff_sha256": "2adf93c7af423debf39307a3e4d6fa675d5061c565f36682d0b22295df4339c9",
+  "roster": {
+    "claude_members": 1,
+    "member_count": 2,
+    "members": [
+      {
+        "effort": "high",
+        "model": "gpt-5.6-sol",
+        "provider": "codex",
+        "role": "planner"
+      },
+      {
+        "effort": "high",
+        "model": "claude-fable-5",
+        "provider": "claude",
+        "role": "critic"
+      }
+    ],
+    "schema": "epyc.autokernel.discovery_roster.v3"
+  },
+  "schema": "epyc.autokernel.discovery_controller.v7",
+  "scientific_attempts": 1,
+  "state_sha256": "b5518170b50eabd13d68cd1c0864d91b0e27c05c72340ff0b802c392d4fe9592",
+  "updated_at": "2026-08-21T13:46:10.325134Z"
+}

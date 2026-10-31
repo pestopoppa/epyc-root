@@ -1,0 +1,106 @@
+{
+  "authority": "operator_gated_manual_research",
+  "bundle_sha256": "2afce6b51a9f5c1bc59b5fdb5142a9775bc0fdbe150cfb8dc1e129f84b87f0e8",
+  "caveat": "Operator-gated manual research. Measured and attributable, but it carries NO promotion authority and is not a campaign-sealed cumulative receipt.",
+  "champion": {
+    "branch": "ak/champion/llama-cpp-0db32c06e3e5",
+    "commit": "14ba02627f56d84d14b16f2b2e9c848b31c6d579"
+  },
+  "gates": [
+    {
+      "artifact": "/mnt/raid0/llm/artifacts-df25/champion_anchor_20260831/champion_anchor_validation.json",
+      "artifact_sha256": "24976cafd1c220644a57bdb1391430395c55ce8572b28fc52dfdac45793bdab1",
+      "claim": "champion default path does not regress the frozen anchor",
+      "gate": "no_regression_vs_production_anchor",
+      "kind": "throughput",
+      "status": "PASS",
+      "surfaces": [
+        {
+          "anchor": 836.0204605,
+          "champion": 836.089862,
+          "delta_pct": 0.008301411661437719,
+          "surface": "Qwen3.8-27B-Q8_0 pp512 (prefill)"
+        },
+        {
+          "anchor": 30.4120355,
+          "champion": 30.6680275,
+          "delta_pct": 0.8417456963707659,
+          "surface": "Qwen3.8-27B-Q8_0 tg128 (decode)"
+        }
+      ]
+    },
+    {
+      "artifact": "/mnt/raid0/llm/artifacts-df25/dflash2_concurrency_20260831/cells.json",
+      "artifact_sha256": "b390ec711e57e84f13a7ea5b0651b259a49d235b19dd8bf1163c0efdd1a94843",
+      "claim": "DFlash2 exceeds production's ceiling for Qwen3.8-27B; frozen v9 cannot load the DFlash2 drafter at all",
+      "gate": "dflash2_vs_production_serving_path",
+      "kind": "throughput",
+      "points": [
+        {
+          "champion_tps": 70.4,
+          "delta_pct": 27.536231884057983,
+          "in_flight": 1,
+          "production_ceiling_tps": 55.2
+        },
+        {
+          "champion_tps": 115.5,
+          "delta_pct": 46.57360406091371,
+          "in_flight": 2,
+          "production_ceiling_tps": 78.8
+        },
+        {
+          "champion_tps": 151.9,
+          "delta_pct": 41.43389199255121,
+          "in_flight": 4,
+          "production_ceiling_tps": 107.4
+        },
+        {
+          "champion_tps": 145.7,
+          "delta_pct": 31.8552036199095,
+          "in_flight": 8,
+          "production_ceiling_tps": 110.5
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "arms": {
+        "dflash2": {
+          "fail": 5,
+          "pass": 7
+        },
+        "draft_simple": {
+          "fail": 5,
+          "pass": 7
+        },
+        "ngram_simple": {
+          "fail": 1,
+          "pass": 11
+        }
+      },
+      "artifact": "/mnt/raid0/llm/artifacts-df25/dflash2_greedy_parity_20260831/parity_report.json",
+      "artifact_sha256": "1d0987646ca78bece47f89fc455dc0194c23835e0d9df898ababefde00a086d7",
+      "baseline_negative_control_ok": true,
+      "claim": "not bit-exact, but NOT attributable to DFlash2 -- draft_simple diverges identically with no DFlash code involved",
+      "gate": "greedy_parity",
+      "kind": "correctness",
+      "status": "NOT_BIT_EXACT"
+    }
+  ],
+  "gates_missing": [],
+  "generated_at": "2026-09-01T00:57:34Z",
+  "headline": {
+    "at_in_flight": 2,
+    "effect_fraction": 0.4657360406091371,
+    "metric": "aggregate_decode_tok_s",
+    "metric_direction": "higher_better",
+    "positive": true,
+    "summary": "+46.6% at 2 in-flight vs production's ceiling for this model"
+  },
+  "not_campaign_sealed": true,
+  "production_anchor": {
+    "commit": "0db32c06e3e550065b78311a6031ef3dd2c4f27c"
+  },
+  "promotion_claim": false,
+  "schema": "epyc.autokernel.operator_gate_bundle.v1"
+}

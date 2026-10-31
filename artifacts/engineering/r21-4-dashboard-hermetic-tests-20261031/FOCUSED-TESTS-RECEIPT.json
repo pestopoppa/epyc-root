@@ -1,0 +1,32 @@
+{
+  "pid": 750801,
+  "pid_birth_start_ticks": "157154586",
+  "pid_absent_after_wait": true,
+  "returncode": 0,
+  "elapsed_s": 4.4164067530073225,
+  "samples": 87,
+  "peak_tree_rss_bytes": 104747008,
+  "affinity_cpus_last_sample": [
+    34,
+    35,
+    130,
+    131
+  ],
+  "physical_cpus": "34-35",
+  "smt_cpus": "130-131",
+  "omp_num_threads": "1",
+  "mutex": "/mnt/raid0/llm/tmp/compute-flags/prep-locks/34-35.lock",
+  "classification": "R6 model-free dashboard fixture/control tests; no live producer access, inference, or service operations",
+  "command": [
+    "python3",
+    "-m",
+    "pytest",
+    "-q",
+    "tests/test_dashboard_controller_state_contract.py",
+    "tests/test_dashboard_knowledge_card.py",
+    "tests/test_dashboard_champion_headline.py",
+    "tests/test_dashboard_operator_gates.py",
+    "tests/test_dashboard_r21_4_fixtures.py"
+  ],
+  "log": "root-validation-r2-20261031T121749Z.log"
+}

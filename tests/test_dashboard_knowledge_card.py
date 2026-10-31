@@ -6,7 +6,9 @@ WHY THIS FILE EXISTS (operator, 2026-08-31)
 and hypotheses tested/confirmed/falsified." The loop's memory store
 (`experiments.db`, sqlite) is that record; `dashboard/loop_status.py` reads it
 READ-ONLY and folds it into `/api/loop`'s `knowledge` block, with its own
-four-valued envelope from the db's mtime.
+four-valued envelope from the db's mtime. These tests use a compact,
+source-bound snapshot of the producer's schema and rows so they run with the
+loop stopped.
 
 TWO STANDING RULES, BOTH EXECUTED HERE RATHER THAN REASONED ABOUT:
 
@@ -17,14 +19,13 @@ TWO STANDING RULES, BOTH EXECUTED HERE RATHER THAN REASONED ABOUT:
 
 WHERE THE FIXTURE COMES FROM, AND WHY IT MATTERS
 ------------------------------------------------
-The fixture db is built from the REAL store's own schema (`sqlite_master.sql`,
-read from the host db) and populated with ROWS COPIED from the real store —
-never hand-invented columns. A fixture written from the reader's expectations
-proves only that the reader is self-consistent; the fixture-invented-the-
-spelling defect is the most-repeated one in this repo's history (the GPU panel
-stayed dark through 41 passing tests exactly that way). Where the real store is
-absent these tests SKIP rather than invent it. Every expected count below is
-RECOMPUTED from the copied rows, not typed.
+The fixture db is built from the producer's recorded schema (`sqlite_master.sql`)
+and rows copied verbatim from the producer store; it includes the three most
+recent rows for every observed status. No column names or row values are
+hand-invented. A fixture written from the reader's expectations proves only
+that the reader is self-consistent; every expected count below is RECOMPUTED
+from the copied rows, not typed. Provenance and the extraction query are in
+`tests/fixtures/autokernel_producers/SOURCE-MANIFEST.json`.
 """
 from __future__ import annotations
 
@@ -46,31 +47,29 @@ sys.path.insert(0, str(REPO))
 
 from dashboard import loop_status  # noqa: E402
 from dashboard import server as S  # noqa: E402
+from tests.autokernel_no_live_reads import NoLiveAutokernelReads  # noqa: E402
 
 PAGE = REPO / "dashboard/static/loop.html"
 HARNESS = Path(__file__).resolve().parent / "js" / "render_harness.js"
 SAMPLE = REPO / "tests/fixtures/autokernel_loop_status_sample.json"
 
-#: The real memory store on this host — the READ-ONLY source of the fixture's
-#: schema and rows. Never written, never invented.
-REAL_DB = Path("/mnt/raid0/llm/autokernel/loop-memory/experiments.db")
+#: Compact, producer-recorded schema and row snapshot; never written by tests.
+FIXTURE_DIR = Path(__file__).resolve().parent / "fixtures/autokernel_producers"
+RECORDED_DB = FIXTURE_DIR / "experiments-sample.db"
 
 #: How many rows per status to copy into the fixture. Small on purpose: the
 #: expectations are recomputed from whatever was actually copied.
 ROWS_PER_STATUS = 3
 
 
-def _real_connection() -> sqlite3.Connection:
-    if not REAL_DB.is_file():
-        raise unittest.SkipTest(
-            f"{REAL_DB} is not on this host; refusing to hand-invent the "
-            "producer's schema — that defect class is the reason this fixture "
-            "is built from the real store")
-    return sqlite3.connect(f"file:{REAL_DB}?mode=ro", uri=True)
+def _recorded_connection() -> sqlite3.Connection:
+    if not RECORDED_DB.is_file():
+        raise AssertionError(f"missing producer-recorded database fixture: {RECORDED_DB}")
+    return sqlite3.connect(f"file:{RECORDED_DB}?mode=ro", uri=True)
 
 
-def real_schema_sql() -> list[str]:
-    con = _real_connection()
+def recorded_schema_sql() -> list[str]:
+    con = _recorded_connection()
     try:
         return [row[0] for row in con.execute(
             "SELECT sql FROM sqlite_master WHERE sql IS NOT NULL")]
@@ -79,9 +78,8 @@ def real_schema_sql() -> list[str]:
 
 
 def copy_rows() -> tuple[list[str], list[tuple]]:
-    """(column names, rows) copied verbatim from the real store — a spread of
-    every status the producer has ever written, newest first."""
-    con = _real_connection()
+    """(column names, rows) copied verbatim from the recorded producer fixture."""
+    con = _recorded_connection()
     try:
         columns = [r[1] for r in con.execute("PRAGMA table_info(experiments)")]
         statuses = [r[0] for r in con.execute(
@@ -98,13 +96,13 @@ def copy_rows() -> tuple[list[str], list[tuple]]:
 
 
 def build_fixture(path: Path, rows: list[tuple] | None = None) -> list[tuple]:
-    """A fixture db carrying the REAL schema and (by default) copied real rows."""
+    """A fixture db carrying the recorded producer schema and rows."""
     columns, copied = copy_rows()
     if rows is None:
         rows = copied
     con = sqlite3.connect(path)
     try:
-        for sql in real_schema_sql():
+        for sql in recorded_schema_sql():
             con.execute(sql)
         con.executemany(
             f"INSERT INTO experiments VALUES ({', '.join('?' * len(columns))})",
@@ -115,10 +113,14 @@ def build_fixture(path: Path, rows: list[tuple] | None = None) -> list[tuple]:
     return rows
 
 
-class _Store(unittest.TestCase):
+class _Store(NoLiveAutokernelReads, unittest.TestCase):
     def setUp(self) -> None:
+        super().setUp()
         self.root = Path(tempfile.mkdtemp(prefix="knowledge-card-"))
         self.addCleanup(shutil.rmtree, self.root, ignore_errors=True)
+        prior_gate = S.OPERATOR_GATE_BUNDLE_JSON
+        S.OPERATOR_GATE_BUNDLE_JSON = FIXTURE_DIR / "operator_gate_bundle.json"
+        self.addCleanup(setattr, S, "OPERATOR_GATE_BUNDLE_JSON", prior_gate)
         prior = os.environ.get(loop_status.STORE_ROOT_ENV)
         os.environ[loop_status.STORE_ROOT_ENV] = str(self.root)
         self.addCleanup(self._restore, loop_status.STORE_ROOT_ENV, prior)
@@ -199,7 +201,7 @@ class Fixture(_Store):
                 "SELECT sql FROM sqlite_master WHERE sql IS NOT NULL"))
         finally:
             con.close()
-        self.assertEqual(got, sorted(real_schema_sql()))
+        self.assertEqual(got, sorted(recorded_schema_sql()))
 
     def test_the_fixture_actually_holds_rows_of_more_than_one_status(self):
         rows = build_fixture(self.db)
@@ -347,11 +349,13 @@ class Reader(_Store):
         self.assertEqual(payload["knowledge"]["attempts"], len(rows))
         self.assertEqual(payload["knowledge"]["evidence"], str(self.db))
 
-    def test_the_real_store_reads_clean_end_to_end(self):
-        """THE integration test, read-only against the host store."""
-        if not REAL_DB.is_file():
-            self.skipTest(f"{REAL_DB} is not on this host")
-        got = loop_status.knowledge_snapshot(REAL_DB.parent)
+    def test_the_recorded_store_fixture_reads_clean_end_to_end(self):
+        """End-to-end reader coverage against recorded producer data."""
+        self.assertTrue(RECORDED_DB.is_file())
+        self.db.write_bytes(RECORDED_DB.read_bytes())
+        (self.root / loop_status.STATUS_FILENAME).write_bytes(
+            RECORDED_STATUS.read_bytes())
+        got = loop_status.knowledge_snapshot(self.root)
         self.assertIsNone(got["reader_error"], got["reader_error"])
         self.assertIn(got["freshness"]["state"],
                       (loop_status.STATE_FRESH, loop_status.STATE_STALE))
@@ -367,10 +371,8 @@ class Reader(_Store):
 # "this doesn't tell me how the planner is thinking about tackling these
 # profiling bottlenecks" — the profile is the agenda and the card walks it)
 # --------------------------------------------------------------------------- #
-#: The live status file — the source of REAL profiled signatures for the
-#: match-rule tests. The matching rule was tuned against these exact strings;
-#: a test that invents its own signatures proves only self-consistency.
-REAL_STATUS = Path("/mnt/raid0/llm/autokernel/loop-memory/loop-status.json")
+#: Producer-recorded hotspot signatures used by the match-rule tests.
+RECORDED_STATUS = FIXTURE_DIR / "loop-status.json"
 
 
 class Ledger(_Store):
@@ -438,18 +440,16 @@ class Ledger(_Store):
                           "to check on this store")
         self.assertGreater(checked, 0)
 
-    def test_the_match_rule_holds_on_the_live_profiles_own_signatures(self):
-        """The rule, exercised against REAL signatures from the live status
-        file (skips where absent): the dispatcher and wrapper symbols the
+    def test_the_match_rule_holds_on_the_recorded_profiles_own_signatures(self):
+        """The rule, exercised against producer-recorded signatures: the
+        dispatcher and wrapper symbols the
         planner actually writes must join the mul_mat_vec_q variants, exact
         names must join exactly, and inlined work that shares no name must
         honestly FAIL to join."""
-        if not REAL_STATUS.is_file():
-            self.skipTest(f"{REAL_STATUS} is not on this host")
-        body = json.loads(REAL_STATUS.read_text(encoding="utf-8"))
+        self.assertTrue(RECORDED_STATUS.is_file())
+        body = json.loads(RECORDED_STATUS.read_text(encoding="utf-8"))
         sigs = [h.get("signature") for h in body.get("hotspots") or []]
-        if not sigs:
-            self.skipTest("the live status carries no hotspot table right now")
+        self.assertTrue(sigs, "producer-recorded loop status must carry hotspot signatures")
         bases = {loop_status._kernel_base(s) for s in sigs}
         if "mul_mat_vec_q" in bases:
             for symbol in ("mul_mat_vec_q_switch_ncols_dst",

@@ -1,0 +1,1027 @@
+{
+  "admission_corpus_sha256": "954b14d5b1efb9156ee6a4c2639fae6a83605478a7eff61f2b0db2ed0d505c01",
+  "admission_corpus_version": "mi210-discovery-fallback-only-v1",
+  "authority": "nonpromotable_candidate_only_discovery",
+  "champion_seed_anchor_commit": "0db32c06e3e550065b78311a6031ef3dd2c4f27c",
+  "champion_seeded_at": "2026-08-28T12:02:05.869019Z",
+  "complete": false,
+  "deployment_identity_sha256": "1b65134d63ace85022ec4741a8d33f88c46145e44e71ebbfa94903f09f4cb069",
+  "experiment_template_registry_sha256": "318ad4b0111998885c2949e0ce44bf5bdb2cbc7d26ecdca704476d07ffeecdcb",
+  "hypothesis_portfolio_sha256": "c894690f56041ae355a50fffe23688abed1fa3eea9df4b7201faee2e565b4e78",
+  "inflight": {
+    "authorization": {
+      "authorized_at": "2026-08-28T12:40:37.453411Z",
+      "authorized_by": "discovery_controller",
+      "campaign_id": "ak-discovery",
+      "do_not_repeat_outcome": "PASS",
+      "do_not_repeat_reasons": [],
+      "entry_evidence_grade": "design_prior",
+      "falsifier": "Exact quantizer duration does not improve",
+      "falsifier_source": "stated_with_the_hypothesis",
+      "hypothesis_id": "akh-v2-q8-quantizer-new-mechanism",
+      "ledger_seq": 6,
+      "origin": "planner",
+      "purpose": "candidate_only_discovery"
+    },
+    "candidate": {
+      "experiment_intent": {
+        "correctness_id": "backend-ops-hip-v1",
+        "dispatch_id": "decode-tg128-rocprof-v3",
+        "expected_dispatch": [
+          {
+            "calls": 15609,
+            "grid": 1024,
+            "kernel_name": "quantize_q8_1(float const*, void*, long, long, long, long, long, unsigned int, HIP_vector_type<unsigned int, 3u>)",
+            "lds_bytes": 0,
+            "route_id": "cuda-quantize-q8-v1.anchor.0",
+            "workgroup": 256
+          },
+          {
+            "calls": 3096,
+            "grid": 5120,
+            "kernel_name": "quantize_q8_1(float const*, void*, long, long, long, long, long, unsigned int, HIP_vector_type<unsigned int, 3u>)",
+            "lds_bytes": 0,
+            "route_id": "cuda-quantize-q8-v1.anchor.1",
+            "workgroup": 256
+          }
+        ],
+        "load_mode_recommendation": null,
+        "target_surface": "gpu_decode",
+        "target_symbol": "quantize_q8_1",
+        "template_id": "cuda-quantize-q8-v1"
+      },
+      "falsifier": "Exact quantizer duration does not improve",
+      "hypothesis_id": "akh-v2-q8-quantizer-new-mechanism",
+      "manifest": {
+        "campaign_id": "ak-discovery-1b65134d63ace850",
+        "candidate_id": "akc-discovery-5",
+        "change_class": "arithmetic",
+        "declared_files": [
+          "ggml/src/ggml-cuda/quantize.cu"
+        ],
+        "declared_symbols": {
+          "ggml/src/ggml-cuda/quantize.cu": [
+            "quantize_q8_1"
+          ]
+        },
+        "instrument_commit": "270b48ed64d617db9128054f3bd0620bbb9371f5",
+        "mechanism_id": "c635f1702880b81d7ae462f82b7175d44b101daecd6f19afc7de9d854df32851",
+        "patch_base64": "ZGlmZiAtLWdpdCBhL2dnbWwvc3JjL2dnbWwtY3VkYS9xdWFudGl6ZS5jdSBiL2dnbWwvc3JjL2dnbWwtY3VkYS9xdWFudGl6ZS5jdQotLS0gYS9nZ21sL3NyYy9nZ21sLWN1ZGEvcXVhbnRpemUuY3UKKysrIGIvZ2dtbC9zcmMvZ2dtbC1jdWRhL3F1YW50aXplLmN1CkBAIC0zOSw5ICszOSwxMCBAQCBxdWFudGl6ZV9xOF8xCiAgICAgYW1heCA9IHdhcnBfcmVkdWNlX21heDxRSzhfMT4oYW1heCk7CiAgICAgc3VtICA9IHdhcnBfcmVkdWNlX3N1bTxRSzhfMT4oc3VtKTsKIAogICAgIGNvbnN0IGZsb2F0ICBkID0gYW1heCAvIDEyNy4wZjsKLSAgICBjb25zdCBpbnQ4X3QgcSA9IGFtYXggPT0gMC4wZiA/IDAgOiByb3VuZGYoeGkgLyBkKTsKKyAgICBjb25zdCBmbG9hdCBpZCA9IGFtYXggPT0gMC4wZiA/IDAuMGYgOiAxMjcuMGYgLyBhbWF4OworICAgIGNvbnN0IGludDhfdCBxID0gcm91bmRmKHhpICogaWQpOwogCiAgICAgeVtpYl0ucXNbaXFzXSA9IHE7CiAKICAgICBpZiAoaXFzID4gMCkgewo=",
+        "patch_sha256": "46fd67b263a9ea9c27752272707d61a8ebda574fb622d026cd793d10dfc15eec",
+        "production_base_commit": "0db32c06e3e550065b78311a6031ef3dd2c4f27c",
+        "proposal_id": "akp-discovery-5",
+        "source_tree": "llama.cpp"
+      },
+      "manifest_file_sha256": "5ec9e2eca05afebf193311e64d650aa0eabea775658030627d8e38ed37ebca1d",
+      "manifest_raw_base64": "eyJjYW1wYWlnbl9pZCI6ImFrLWRpc2NvdmVyeS0xYjY1MTM0ZDYzYWNlODUwIiwiY2FuZGlkYXRlX2lkIjoiYWtjLWRpc2NvdmVyeS01IiwiY2hhbmdlX2NsYXNzIjoiYXJpdGhtZXRpYyIsImRlY2xhcmVkX2ZpbGVzIjpbImdnbWwvc3JjL2dnbWwtY3VkYS9xdWFudGl6ZS5jdSJdLCJkZWNsYXJlZF9zeW1ib2xzIjp7ImdnbWwvc3JjL2dnbWwtY3VkYS9xdWFudGl6ZS5jdSI6WyJxdWFudGl6ZV9xOF8xIl19LCJpbnN0cnVtZW50X2NvbW1pdCI6IjI3MGI0OGVkNjRkNjE3ZGI5MTI4MDU0ZjNiZDA2MjBiYmI5MzcxZjUiLCJtZWNoYW5pc21faWQiOiJjNjM1ZjE3MDI4ODBiODFkN2FlNDYyZjgyYjcxNzVkNDRiMTAxZGFlY2Q2ZjE5YWZjN2RlOWQ4NTRkZjMyODUxIiwicGF0Y2hfYmFzZTY0IjoiWkdsbVppQXRMV2RwZENCaEwyZG5iV3d2YzNKakwyZG5iV3d0WTNWa1lTOXhkV0Z1ZEdsNlpTNWpkU0JpTDJkbmJXd3ZjM0pqTDJkbmJXd3RZM1ZrWVM5eGRXRnVkR2w2WlM1amRRb3RMUzBnWVM5bloyMXNMM055WXk5bloyMXNMV04xWkdFdmNYVmhiblJwZW1VdVkzVUtLeXNySUdJdloyZHRiQzl6Y21NdloyZHRiQzFqZFdSaEwzRjFZVzUwYVhwbExtTjFDa0JBSUMwek9TdzVJQ3N6T1N3eE1DQkFRQ0J4ZFdGdWRHbDZaVjl4T0Y4eENpQWdJQ0FnWVcxaGVDQTlJSGRoY25CZmNtVmtkV05sWDIxaGVEeFJTemhmTVQ0b1lXMWhlQ2s3Q2lBZ0lDQWdjM1Z0SUNBOUlIZGhjbkJmY21Wa2RXTmxYM04xYlR4UlN6aGZNVDRvYzNWdEtUc0tJQW9nSUNBZ0lHTnZibk4wSUdac2IyRjBJQ0JrSUQwZ1lXMWhlQ0F2SURFeU55NHdaanNLTFNBZ0lDQmpiMjV6ZENCcGJuUTRYM1FnY1NBOUlHRnRZWGdnUFQwZ01DNHdaaUEvSURBZ09pQnliM1Z1WkdZb2VHa2dMeUJrS1RzS0t5QWdJQ0JqYjI1emRDQm1iRzloZENCcFpDQTlJR0Z0WVhnZ1BUMGdNQzR3WmlBL0lEQXVNR1lnT2lBeE1qY3VNR1lnTHlCaGJXRjRPd29ySUNBZ0lHTnZibk4wSUdsdWREaGZkQ0J4SUQwZ2NtOTFibVJtS0hocElDb2dhV1FwT3dvZ0NpQWdJQ0FnZVZ0cFlsMHVjWE5iYVhGelhTQTlJSEU3Q2lBS0lDQWdJQ0JwWmlBb2FYRnpJRDRnTUNrZ2V3bz0iLCJwYXRjaF9lbmNvZGluZyI6ImJhc2U2NCIsInBhdGNoX3NoYTI1NiI6IjQ2ZmQ2N2IyNjNhOWVhOWMyNzc1MjI3MjcwN2Q2MWE4ZWJkYTU3NGZiNjIyZDAyNmNkNzkzZDEwZGZjMTVlZWMiLCJwcm9kdWN0aW9uX2Jhc2VfY29tbWl0IjoiMGRiMzJjMDZlM2U1NTAwNjViNzgzMTFhNjAzMWVmM2RkMmM0ZjI3YyIsInByb3Bvc2FsX2lkIjoiYWtwLWRpc2NvdmVyeS01Iiwic2NoZW1hIjoiZXB5Yy5hdXRva2VybmVsLnNvdXJjZS1wYXRjaC52MSIsInNvdXJjZV90cmVlIjoibGxhbWEuY3BwIn0=",
+      "patch_bundle_sha256": "5ec9e2eca05afebf193311e64d650aa0eabea775658030627d8e38ed37ebca1d",
+      "proposal": {
+        "change": {
+          "estimated_diff_size": 3,
+          "files_and_symbols": [
+            "ggml/src/ggml-cuda/quantize.cu:quantize_q8_1"
+          ]
+        },
+        "change_class": "arithmetic",
+        "proposal_id": "akp-discovery-5"
+      },
+      "regime": {
+        "architecture": "gfx90a",
+        "backend": "hip",
+        "batch": 1,
+        "measurement_graphs": false,
+        "model_or_frame": "frame-current-qwen05b-q4km-tg128",
+        "phase": "decode",
+        "quant": "Q4_K_M",
+        "shape": "q8_1-activation-quantization",
+        "target_runtime_graphs": true
+      },
+      "source_manifest_sha256": "5ec9e2eca05afebf193311e64d650aa0eabea775658030627d8e38ed37ebca1d",
+      "statement": "A mechanism other than the retired vec4 rewrite or exact workgroup-128 replay can reduce activation quantization cost across current and large decode frames."
+    },
+    "confirmation": false,
+    "exception": {
+      "message": "shared source-discovery reward requires the exact sealed 81bf32f11 timed-output instrument",
+      "type": "RuntimeError"
+    },
+    "infrastructure_retry_epoch": 0,
+    "lease": {
+      "admitted": true,
+      "device_claim_probe_open": {
+        "acquired_at": "2026-08-28T12:40:43.784781+00:00",
+        "campaign_id": "ak-discovery-1b65134d63ace850",
+        "claim_id": "akd-e59c9c3948b84106",
+        "device_id": "mi210_0",
+        "expires_at": "2026-08-28T12:41:13.784800+00:00",
+        "holder_boot_id": "ffa56b5e-1da4-42e7-ac5d-d233ff830b65",
+        "holder_label": "autokernel-discovery-controller",
+        "holder_pid": 246093,
+        "holder_start_ticks": 130384684,
+        "host": "Beelzebub",
+        "lock_path": "/mnt/raid0/llm/tmp/gpu_device.mi210_0.lock",
+        "purpose": "AutoKernel GPU discovery admission probe",
+        "reclaimed_from": null,
+        "released_at": null,
+        "schema": "epyc.autokernel.device_claim_receipt.v1",
+        "state": "held"
+      },
+      "device_claim_probe_released": {
+        "acquired_at": "2026-08-28T12:40:43.784781+00:00",
+        "campaign_id": "ak-discovery-1b65134d63ace850",
+        "claim_id": "akd-e59c9c3948b84106",
+        "device_id": "mi210_0",
+        "expires_at": "2026-08-28T12:41:13.784800+00:00",
+        "holder_boot_id": "ffa56b5e-1da4-42e7-ac5d-d233ff830b65",
+        "holder_label": "autokernel-discovery-controller",
+        "holder_pid": 246093,
+        "holder_start_ticks": 130384684,
+        "host": "Beelzebub",
+        "lock_path": "/mnt/raid0/llm/tmp/gpu_device.mi210_0.lock",
+        "purpose": "AutoKernel GPU discovery admission probe",
+        "reclaimed_from": null,
+        "released_at": "2026-08-28T12:40:43.786162+00:00",
+        "schema": "epyc.autokernel.device_claim_receipt.v1",
+        "state": "held"
+      },
+      "device_id": "mi210_0",
+      "inference_window_lock": "/mnt/raid0/llm/tmp/model-call.lock",
+      "load_admission": {
+        "actor_recommendation": null,
+        "decision_sha256": "4765505ccea13675653ac324780a1da5aa6924363c1ce6f8e5e5a12d76aecee6",
+        "disqualifiers": [
+          "telemetry_missing"
+        ],
+        "effective_context_sha256": "438b969827bda745a05977b8e93199ea72fe8c5b775cb2a2a60d2a16ee6b3548",
+        "mode": "cold_serialized",
+        "policy_file_sha256": "0d87adf3450c75c646f4b3c4a064d5a2940814473d803eee0559eaa45ea9230c",
+        "policy_sha256": "954b14d5b1efb9156ee6a4c2639fae6a83605478a7eff61f2b0db2ed0d505c01",
+        "policy_version": "mi210-discovery-fallback-only-v1",
+        "profile": {
+          "calls_per_arm": 9,
+          "cold_load_host_bytes": 397807840,
+          "device_id": "mi210_0",
+          "evidence_sha256": "6cc206ca06c53db0388f072eb4757156fc3195ad1e92e1294bf8496b093b2843",
+          "minimum_headroom_bytes_per_s": 1152921504606846976,
+          "model_bytes": 397807840,
+          "model_path": "/mnt/raid0/llm/models/lmstudio-community/Qwen2.5-Coder-0.5B-GGUF/Qwen2.5-Coder-0.5B-Q4_K_M.gguf",
+          "model_sha256": "f175ecace8c24336cbf9e22bd71ea032a16492bd264a3caab6dfa4cafe80ddd3",
+          "profile_id": "mi210-qwen05b-tg128-fallback-only-v1",
+          "telemetry_max_age_ms": 5000,
+          "workload": "decode_tg128",
+          "worst_case_loads_per_interval": 18
+        },
+        "promotion_claim": false,
+        "reason": "reviewed profile lacked complete safe overlap observations",
+        "request": {
+          "calls_per_arm": 9,
+          "cold_load_host_bytes": 397807840,
+          "device_id": "mi210_0",
+          "effective_context_sha256": "438b969827bda745a05977b8e93199ea72fe8c5b775cb2a2a60d2a16ee6b3548",
+          "expected_hot_identity_sha256": null,
+          "foreign_kfd_pids": [],
+          "hot_residency_identity_sha256": null,
+          "hot_revalidation_identity_sha256": null,
+          "model_bytes": 397807840,
+          "model_path": "/mnt/raid0/llm/models/lmstudio-community/Qwen2.5-Coder-0.5B-GGUF/Qwen2.5-Coder-0.5B-Q4_K_M.gguf",
+          "model_sha256": "f175ecace8c24336cbf9e22bd71ea032a16492bd264a3caab6dfa4cafe80ddd3",
+          "observed_headroom_bytes_per_s": null,
+          "runtime_arm": null,
+          "runtime_manifest_sha256": null,
+          "telemetry_age_ms": null,
+          "telemetry_observed": false,
+          "telemetry_receipt_sha256": null,
+          "workload": "decode_tg128",
+          "worst_case_loads_per_interval": 18
+        },
+        "schema": "epyc.autokernel.gpu_load_admission_decision.v1"
+      },
+      "mode": "cold_serialized",
+      "model_sha256": "f175ecace8c24336cbf9e22bd71ea032a16492bd264a3caab6dfa4cafe80ddd3",
+      "operation_key": "51ed40adea19578bb191e1175b3e0f272bd7ac9a97722cc477a4740bd6d2d06f",
+      "phase": "prebuild_probe",
+      "promotion_claim": false,
+      "repetition": 1
+    },
+    "operation_key": "51ed40adea19578bb191e1175b3e0f272bd7ac9a97722cc477a4740bd6d2d06f",
+    "parent_authorization": null,
+    "row": {
+      "campaign_ledger_dnr_outcome": "PASS",
+      "campaign_ledger_dnr_reasons": [],
+      "candidate_semantic_sha256": "8eeec79995409f8396d2921f799e2247ce1a0f0e44e44c7315ed473a553ceab3",
+      "context_sha256": "3f1bbf19b5458ff50aab019f7a000b035644f9045a014e31336b2bcf2659aa3c",
+      "critic": {
+        "decision": "accept",
+        "reason": "Distinct arithmetic mechanism (per-thread FP32 division replaced by reciprocal multiply) that matches neither the dnr-q8-vec4-quantizer vectorization fingerprint nor the dnr-q8-workgroup128 launch-geometry fingerprint, satisfying the hypothesis stop rule. Scope is exactly the declared file/symbol (ggml/src/ggml-cuda/quantize.cu:quantize_q8_1) within cuda-quantize-q8-v1 authority; the preimage source SHA matches the template's production instrument target and the hunk is internally consistent. No launch-geometry change, so the sealed anchor dispatch (grid 1024 and 5120, workgroup 256) should replay exactly. Semantics preserved: the amax==0 guard yields q=0 as before, and the stored scale d=amax/127 in y[ib].ds is unchanged, so consumers dequantize identically; the reciprocal idiom mirrors existing prior art in quantize_row_q8_1 on the CPU path. Known caveats: +/-1 rounding differences at ULP boundaries and reciprocal overflow for subnormal-range amax (below ~4e-37, where the baseline division path has a comparable flush-to-zero degeneracy); both are adjudicated by the 1139-case MUL_MAT correctness gate. Expected effect may be small since the anchor kernels are tiny (4 and 20 blocks/call) and likely launch-bound, but the stated falsifier (exact quantizer duration does not improve) and the retire rule make this a cheap, well-governed probe."
+      },
+      "experiment_intent": {
+        "correctness_id": "backend-ops-hip-v1",
+        "dispatch_id": "decode-tg128-rocprof-v3",
+        "expected_dispatch": [
+          {
+            "calls": 15609,
+            "grid": 1024,
+            "kernel_name": "quantize_q8_1(float const*, void*, long, long, long, long, long, unsigned int, HIP_vector_type<unsigned int, 3u>)",
+            "lds_bytes": 0,
+            "route_id": "cuda-quantize-q8-v1.anchor.0",
+            "workgroup": 256
+          },
+          {
+            "calls": 3096,
+            "grid": 5120,
+            "kernel_name": "quantize_q8_1(float const*, void*, long, long, long, long, long, unsigned int, HIP_vector_type<unsigned int, 3u>)",
+            "lds_bytes": 0,
+            "route_id": "cuda-quantize-q8-v1.anchor.1",
+            "workgroup": 256
+          }
+        ],
+        "load_mode_recommendation": null,
+        "target_surface": "gpu_decode",
+        "target_symbol": "quantize_q8_1",
+        "template_id": "cuda-quantize-q8-v1"
+      },
+      "falsifier": "Exact quantizer duration does not improve",
+      "hypothesis_id": "akh-v2-q8-quantizer-new-mechanism",
+      "mechanism_id": "c635f1702880b81d7ae462f82b7175d44b101daecd6f19afc7de9d854df32851",
+      "operation_key": "51ed40adea19578bb191e1175b3e0f272bd7ac9a97722cc477a4740bd6d2d06f",
+      "portfolio_binding": {
+        "change_class": "arithmetic",
+        "decision_policy": {
+          "conflict_policy": "retain_inconclusive",
+          "continuation_floor_pct": 0.25,
+          "effect_unit": "relative_percent",
+          "frame_id": "frame-current-qwen05b-q4km-tg128",
+          "max_distinct_candidates": 3,
+          "max_replication_spread_pct": 1,
+          "metric": "decode_tokens_per_s",
+          "min_replication_effect_pct": 0.125,
+          "nomination_floor_pct": 0.5,
+          "required_replications": 2,
+          "sign_policy": "all_positive",
+          "terminal_rule": "retire"
+        },
+        "expected_dispatch": [
+          {
+            "calls": 15609,
+            "grid": 1024,
+            "kernel_name": "quantize_q8_1(float const*, void*, long, long, long, long, long, unsigned int, HIP_vector_type<unsigned int, 3u>)",
+            "lds_bytes": 0,
+            "route_id": "cuda-quantize-q8-v1.anchor.0",
+            "workgroup": 256
+          },
+          {
+            "calls": 3096,
+            "grid": 5120,
+            "kernel_name": "quantize_q8_1(float const*, void*, long, long, long, long, long, unsigned int, HIP_vector_type<unsigned int, 3u>)",
+            "lds_bytes": 0,
+            "route_id": "cuda-quantize-q8-v1.anchor.1",
+            "workgroup": 256
+          }
+        ],
+        "falsifier": "Exact quantizer duration does not improve",
+        "hypothesis_id": "akh-v2-q8-quantizer-new-mechanism",
+        "mechanism_id": "c635f1702880b81d7ae462f82b7175d44b101daecd6f19afc7de9d854df32851",
+        "portfolio_sha256": "c894690f56041ae355a50fffe23688abed1fa3eea9df4b7201faee2e565b4e78",
+        "record_sha256": "7da52f02a20c63784e7b62b8da5f9513e516f89a383228ac4bb73707721e926d",
+        "regime": {
+          "architecture": "gfx90a",
+          "backend": "hip",
+          "batch": 1,
+          "measurement_graphs": false,
+          "model_or_frame": "frame-current-qwen05b-q4km-tg128",
+          "phase": "decode",
+          "quant": "Q4_K_M",
+          "shape": "q8_1-activation-quantization",
+          "target_runtime_graphs": true
+        },
+        "statement": "A mechanism other than the retired vec4 rewrite or exact workgroup-128 replay can reduce activation quantization cost across current and large decode frames.",
+        "target_file": "ggml/src/ggml-cuda/quantize.cu",
+        "target_symbols": [
+          "quantize_q8_1"
+        ],
+        "template_id": "cuda-quantize-q8-v1"
+      },
+      "portfolio_decision_policy": {
+        "conflict_policy": "retain_inconclusive",
+        "continuation_floor_pct": 0.25,
+        "effect_unit": "relative_percent",
+        "frame_id": "frame-current-qwen05b-q4km-tg128",
+        "max_distinct_candidates": 3,
+        "max_replication_spread_pct": 1,
+        "metric": "decode_tokens_per_s",
+        "min_replication_effect_pct": 0.125,
+        "nomination_floor_pct": 0.5,
+        "required_replications": 2,
+        "sign_policy": "all_positive",
+        "terminal_rule": "retire"
+      },
+      "portfolio_exact_dnr_check": {
+        "candidate_mechanism_id": "c635f1702880b81d7ae462f82b7175d44b101daecd6f19afc7de9d854df32851",
+        "candidate_source_manifest_sha256": "5ec9e2eca05afebf193311e64d650aa0eabea775658030627d8e38ed37ebca1d",
+        "canonical_regime_sha256": "27d50b8d05b41eee7cb97ac3e7fc8208d66901659594f9ee9922df855a944ff2",
+        "matched_dnr_ids": [],
+        "outcome": "PASS",
+        "portfolio_hypothesis_id": "akh-v2-q8-quantizer-new-mechanism",
+        "portfolio_semantic_sha256": "c894690f56041ae355a50fffe23688abed1fa3eea9df4b7201faee2e565b4e78",
+        "receipt_sha256": "3b44ae28fd1b1caadb67fd4012def80dabd2b82c25f78888b1b447ff66bc2c71",
+        "schema": "epyc.autokernel.portfolio_exact_dnr_check.v1"
+      },
+      "portfolio_hypothesis_id": "akh-v2-q8-quantizer-new-mechanism",
+      "portfolio_record_sha256": "7da52f02a20c63784e7b62b8da5f9513e516f89a383228ac4bb73707721e926d",
+      "proposal_sha256": "e89a88c4cdfe2cd3be824c9b42bd5f38da3e061511f4677aa3a652a89cb44186",
+      "regime": {
+        "architecture": "gfx90a",
+        "backend": "hip",
+        "batch": 1,
+        "measurement_graphs": false,
+        "model_or_frame": "frame-current-qwen05b-q4km-tg128",
+        "phase": "decode",
+        "quant": "Q4_K_M",
+        "shape": "q8_1-activation-quantization",
+        "target_runtime_graphs": true
+      },
+      "source_manifest_sha256": "5ec9e2eca05afebf193311e64d650aa0eabea775658030627d8e38ed37ebca1d",
+      "statement": "A mechanism other than the retired vec4 rewrite or exact workgroup-128 replay can reduce activation quantization cost across current and large decode frames.",
+      "target_surface": "gpu_decode",
+      "target_symbol": "quantize_q8_1",
+      "turn": 5
+    }
+  },
+  "iterations": [
+    {
+      "campaign_ledger_dnr_outcome": "PASS",
+      "campaign_ledger_dnr_reasons": [],
+      "candidate_semantic_sha256": "3cb271c115b0b7ad62202c2985b73c95092c64fdbd56f77d178ea4650848ec76",
+      "context_sha256": "69cfb9999e7a024a30ca031d687ab040ec1ca492ae120c2375102503d7b83802",
+      "critic": {
+        "decision": "accept",
+        "reason": "Bit-exact equivalence verified for both hunks. (1) Impl: for h = vh[i] & 0xF, h * 0x02040810 = (h<<4)+(h<<11)+(h<<18)+(h<<25); the four partial products occupy disjoint bit ranges 4-7, 11-14, 18-21, 25-28, so no carries occur and the & 0x10101010 mask deposits source bits 0/1/2/3 into positions 4/12/20/28 exactly as the replaced four shift/mask ORs did. The vi1 path reads (vh[i]>>16)&0xF, i.e. precisely source bits 16-19 used by the original, with sign extension neutralized by the mask. Max product 0x1E3C78F0 < INT_MAX, so no signed-overflow UB. (2) Wrapper: (qh >> 4*iqs) >> 4*i == qh >> 4*(iqs+i) for all in-range iqs/i here (total shift <= 28), including arithmetic-shift sign behavior, so hoisting the get_int_b2(bq5_0->qh, 0) load is exact and removes a redundant per-iteration load. Authority and governance: patch touches only ggml/src/ggml-cuda/vecdotq.cuh symbols vec_dot_q5_0_q8_1 and vec_dot_q5_0_q8_1_impl, matching the manifest declarations and the cuda-vecdotq-v1 allowed-symbol list; change class is arithmetic per the eligible hypothesis akh-v2-q5-type-specific-dequant; no wave count, launch geometry, dispatch topology, or selector is altered, so expected_dispatch correctly remains the three sealed type-6 true/true anchors with the 129-call false/true tail excluded. No DNR fingerprint matches: dnr-q5-four-wave is a launch-geometry mechanism in mmvq.cu, and no retired arithmetic mechanism covers this Q5_0 unpack rewrite. The shared impl template also serves the MMQ vdr=4 instantiation; the per-iteration equivalence proof covers it and the 1139-case MUL_MAT correctness suite exercises both paths. Performance rationale is plausible for the falsifier to adjudicate: per iteration the change collapses ~24 dependent shift/and/or ops into two and+mul+and+or sequences; even with v_mul_lo_u32 at reduced VALU rate on gfx90a this shortens the dependent chain and shrinks code size, and the governed exact-kernel attribution plus graphs-on screen will falsify it if the compiler already achieves parity. Stop rules are respected (no generic wave-count change; correctness gates precede timing)."
+      },
+      "experiment_intent": {
+        "correctness_id": "backend-ops-hip-v1",
+        "dispatch_id": "decode-tg128-rocprof-v3",
+        "expected_dispatch": [
+          {
+            "calls": 6063,
+            "grid": 57344,
+            "kernel_name": "void mul_mat_vec_q<(ggml_type)6, 1, true, true>(void const*, void const*, int const*, ggml_cuda_mm_fusion_args_device, float*, unsigned int, HIP_vector_type<unsigned int, 3u>, unsigned int, unsigned int, unsigned int, HIP_vector_type<unsigned int, 3u>, unsigned int, unsigned int, unsigned int, HIP_vector_type<unsigned int, 3u>, unsigned int, unsigned int, unsigned int, unsigned int)",
+            "lds_bytes": 1024,
+            "route_id": "cuda-vecdotq-v1.anchor.0",
+            "workgroup": 128
+          },
+          {
+            "calls": 4644,
+            "grid": 8192,
+            "kernel_name": "void mul_mat_vec_q<(ggml_type)6, 1, true, true>(void const*, void const*, int const*, ggml_cuda_mm_fusion_args_device, float*, unsigned int, HIP_vector_type<unsigned int, 3u>, unsigned int, unsigned int, unsigned int, HIP_vector_type<unsigned int, 3u>, unsigned int, unsigned int, unsigned int, HIP_vector_type<unsigned int, 3u>, unsigned int, unsigned int, unsigned int, unsigned int)",
+            "lds_bytes": 1024,
+            "route_id": "cuda-vecdotq-v1.anchor.1",
+            "workgroup": 128
+          },
+          {
+            "calls": 3096,
+            "grid": 311296,
+            "kernel_name": "void mul_mat_vec_q<(ggml_type)6, 1, true, true>(void const*, void const*, int const*, ggml_cuda_mm_fusion_args_device, float*, unsigned int, HIP_vector_type<unsigned int, 3u>, unsigned int, unsigned int, unsigned int, HIP_vector_type<unsigned int, 3u>, unsigned int, unsigned int, unsigned int, HIP_vector_type<unsigned int, 3u>, unsigned int, unsigned int, unsigned int, unsigned int)",
+            "lds_bytes": 1024,
+            "route_id": "cuda-vecdotq-v1.anchor.2",
+            "workgroup": 128
+          }
+        ],
+        "load_mode_recommendation": null,
+        "target_surface": "gpu_decode",
+        "target_symbol": "vec_dot_q5_0_q8_1",
+        "template_id": "cuda-vecdotq-v1"
+      },
+      "falsifier": "Exact type-6 kernel duration does not improve under correctness-preserving replay",
+      "hypothesis_id": "akh-v2-q5-type-specific-dequant",
+      "mechanism_id": "de29841bf1a6f628b0b49e14960f1d048eaa6a9718692f1154033f8f8bf9e162",
+      "operation_key": "3b03b800090a248688a40764f2676d5f62bb2530f4530cfabefb1cf9d33eeb01",
+      "portfolio_binding": {
+        "change_class": "arithmetic",
+        "decision_policy": {
+          "conflict_policy": "retain_inconclusive",
+          "continuation_floor_pct": 0.25,
+          "effect_unit": "relative_percent",
+          "frame_id": "frame-current-qwen05b-q4km-tg128",
+          "max_distinct_candidates": 3,
+          "max_replication_spread_pct": 1,
+          "metric": "decode_tokens_per_s",
+          "min_replication_effect_pct": 0.125,
+          "nomination_floor_pct": 0.5,
+          "required_replications": 2,
+          "sign_policy": "all_positive",
+          "terminal_rule": "retire"
+        },
+        "expected_dispatch": [
+          {
+            "calls": 6063,
+            "grid": 57344,
+            "kernel_name": "void mul_mat_vec_q<(ggml_type)6, 1, true, true>(void const*, void const*, int const*, ggml_cuda_mm_fusion_args_device, float*, unsigned int, HIP_vector_type<unsigned int, 3u>, unsigned int, unsigned int, unsigned int, HIP_vector_type<unsigned int, 3u>, unsigned int, unsigned int, unsigned int, HIP_vector_type<unsigned int, 3u>, unsigned int, unsigned int, unsigned int, unsigned int)",
+            "lds_bytes": 1024,
+            "route_id": "cuda-vecdotq-v1.anchor.0",
+            "workgroup": 128
+          },
+          {
+            "calls": 4644,
+            "grid": 8192,
+            "kernel_name": "void mul_mat_vec_q<(ggml_type)6, 1, true, true>(void const*, void const*, int const*, ggml_cuda_mm_fusion_args_device, float*, unsigned int, HIP_vector_type<unsigned int, 3u>, unsigned int, unsigned int, unsigned int, HIP_vector_type<unsigned int, 3u>, unsigned int, unsigned int, unsigned int, HIP_vector_type<unsigned int, 3u>, unsigned int, unsigned int, unsigned int, unsigned int)",
+            "lds_bytes": 1024,
+            "route_id": "cuda-vecdotq-v1.anchor.1",
+            "workgroup": 128
+          },
+          {
+            "calls": 3096,
+            "grid": 311296,
+            "kernel_name": "void mul_mat_vec_q<(ggml_type)6, 1, true, true>(void const*, void const*, int const*, ggml_cuda_mm_fusion_args_device, float*, unsigned int, HIP_vector_type<unsigned int, 3u>, unsigned int, unsigned int, unsigned int, HIP_vector_type<unsigned int, 3u>, unsigned int, unsigned int, unsigned int, HIP_vector_type<unsigned int, 3u>, unsigned int, unsigned int, unsigned int, unsigned int)",
+            "lds_bytes": 1024,
+            "route_id": "cuda-vecdotq-v1.anchor.2",
+            "workgroup": 128
+          }
+        ],
+        "falsifier": "Exact type-6 kernel duration does not improve under correctness-preserving replay",
+        "hypothesis_id": "akh-v2-q5-type-specific-dequant",
+        "mechanism_id": "de29841bf1a6f628b0b49e14960f1d048eaa6a9718692f1154033f8f8bf9e162",
+        "portfolio_sha256": "c894690f56041ae355a50fffe23688abed1fa3eea9df4b7201faee2e565b4e78",
+        "record_sha256": "ca1d5ee5b7514edbec8bb5d270489de55333f609f00d1a3751efd1f397580e07",
+        "regime": {
+          "architecture": "gfx90a",
+          "backend": "hip",
+          "batch": 1,
+          "measurement_graphs": false,
+          "model_or_frame": "frame-current-qwen05b-q4km-tg128",
+          "phase": "decode",
+          "quant": "Q5_0",
+          "shape": "type6-mmvq",
+          "target_runtime_graphs": true
+        },
+        "statement": "A Q5_0-specific packed-load, scale/unpack, control-flow, or data-reuse mechanism can reduce the current frame type-6 MMVQ band without changing wave count.",
+        "target_file": "ggml/src/ggml-cuda/vecdotq.cuh",
+        "target_symbols": [
+          "vec_dot_q5_0_q8_1",
+          "vec_dot_q5_0_q8_1_impl"
+        ],
+        "template_id": "cuda-vecdotq-v1"
+      },
+      "portfolio_decision_policy": {
+        "conflict_policy": "retain_inconclusive",
+        "continuation_floor_pct": 0.25,
+        "effect_unit": "relative_percent",
+        "frame_id": "frame-current-qwen05b-q4km-tg128",
+        "max_distinct_candidates": 3,
+        "max_replication_spread_pct": 1,
+        "metric": "decode_tokens_per_s",
+        "min_replication_effect_pct": 0.125,
+        "nomination_floor_pct": 0.5,
+        "required_replications": 2,
+        "sign_policy": "all_positive",
+        "terminal_rule": "retire"
+      },
+      "portfolio_exact_dnr_check": {
+        "candidate_mechanism_id": "de29841bf1a6f628b0b49e14960f1d048eaa6a9718692f1154033f8f8bf9e162",
+        "candidate_source_manifest_sha256": "f8b2a11b3d967ecf1625eef38747a998b4687949468290d06ff5c75d284c5540",
+        "canonical_regime_sha256": "d3a85f93fed7dd2d1c48addc39be930a7330fdaf0e6ee1378fc79b28b0cae239",
+        "matched_dnr_ids": [],
+        "outcome": "PASS",
+        "portfolio_hypothesis_id": "akh-v2-q5-type-specific-dequant",
+        "portfolio_semantic_sha256": "c894690f56041ae355a50fffe23688abed1fa3eea9df4b7201faee2e565b4e78",
+        "receipt_sha256": "a3ba926580be858405801177528cc4105c593b1efa3b5350d6073dcb72d52255",
+        "schema": "epyc.autokernel.portfolio_exact_dnr_check.v1"
+      },
+      "portfolio_hypothesis_id": "akh-v2-q5-type-specific-dequant",
+      "portfolio_record_sha256": "ca1d5ee5b7514edbec8bb5d270489de55333f609f00d1a3751efd1f397580e07",
+      "proposal_sha256": "f75062669937aaa71a8aa79984f30bafc09fca668e8039427fda5d1bd61803c7",
+      "reason": "committed diff in 'ggml/src/ggml-cuda/vecdotq.cuh' derives undeclared symbols ['<file-scope>']",
+      "regime": {
+        "architecture": "gfx90a",
+        "backend": "hip",
+        "batch": 1,
+        "measurement_graphs": false,
+        "model_or_frame": "frame-current-qwen05b-q4km-tg128",
+        "phase": "decode",
+        "quant": "Q5_0",
+        "shape": "type6-mmvq",
+        "target_runtime_graphs": true
+      },
+      "scientific_budget_spent": false,
+      "source_manifest_sha256": "f8b2a11b3d967ecf1625eef38747a998b4687949468290d06ff5c75d284c5540",
+      "stage": "source_apply",
+      "stage_receipt_path": "/mnt/raid0/llm/autokernel/deployments/gpu-discovery-champion-v36/operations/build-cache/entries/040bf38b5882fc06649b1cc2b73a7b96a61deb7ba53035d217a8f72522d3c3c9/terminal.json",
+      "stage_receipt_sha256": "4e57f9759d463015697bd154e3896e5f4f77defe101b16aaff9e758706ba766e",
+      "statement": "A Q5_0-specific packed-load, scale/unpack, control-flow, or data-reuse mechanism can reduce the current frame type-6 MMVQ band without changing wave count.",
+      "status": "authoring_refused",
+      "target_surface": "gpu_decode",
+      "target_symbol": "vec_dot_q5_0_q8_1",
+      "turn": 1
+    },
+    {
+      "campaign_ledger_dnr_outcome": "PASS",
+      "campaign_ledger_dnr_reasons": [],
+      "candidate_semantic_sha256": "e4089a74dfed7a6107016b6ff1b044766ad7534f5087d75f71214b76d7a9db5e",
+      "context_sha256": "731e9a4655ba1ecee8b80589a5ec90e8cd10eff41c89b371df864827f63655a8",
+      "critic": {
+        "decision": "accept",
+        "reason": "Bitwise-equivalent Q5_0-specific unpack optimization within declared symbol authority. Hunk 1 (vec_dot_q5_0_q8_1_impl) replaces eight shift/AND/OR ops per loop iteration with two multiply-based bit-scatters: 0x02040810 has set bits at positions 4/11/18/25, so multiplying the 4-bit nibble (vh[i]&0xF, or (vh[i]>>16)&0xF for the upper half) places source bits 0-3 exactly at destinations 4/12/20/28, matching the original per-bit shifts; the mask 0x10101010 selects precisely those lanes. Shifted partial products occupy disjoint bit ranges (4-7, 11-14, 18-21, 25-28), so no multiplication carries can contaminate the masked bits, and the maximum product 15*0x02040810 is below 2^31 so no signed overflow. Both original and patched code consume only bits 0-3 and 16-19 of vh[i], so equivalence holds for every caller including the vdr=4 MMQ instantiation. Hunk 2 (vec_dot_q5_0_q8_1) hoists the loop-invariant get_int_b2(bq5_0->qh, 0) load; identical semantics and identical arithmetic-shift behavior. Governance: both hunks are confined to the two declared symbols, curing the turn-1 refusal (undeclared file-scope derivation); change_class arithmetic is permitted by cuda-vecdotq-v1; the mechanism is a type-specific dequant/unpack change with no wave-count, launch-geometry, or dispatcher mutation, so it does not match dnr-q5-four-wave (mmvq.cu launch geometry) or any other DNR fingerprint, and it satisfies the hypothesis stop rules. expected_dispatch reproduces the three sealed true/true anchor signatures verbatim with the 129-call false/true tail excluded, as required. Residual risk is performance-only: v_mul_lo_u32 throughput on gfx90a may not beat the removed dependent OR chain, but that is exactly what the stated falsifier (exact type-6 kernel duration under correctness-preserving replay) measures, and correctness is additionally gated by the 1139-case MUL_MAT suite before timing. Accept for correctness-gated measurement."
+      },
+      "experiment_intent": {
+        "correctness_id": "backend-ops-hip-v1",
+        "dispatch_id": "decode-tg128-rocprof-v3",
+        "expected_dispatch": [
+          {
+            "calls": 6063,
+            "grid": 57344,
+            "kernel_name": "void mul_mat_vec_q<(ggml_type)6, 1, true, true>(void const*, void const*, int const*, ggml_cuda_mm_fusion_args_device, float*, unsigned int, HIP_vector_type<unsigned int, 3u>, unsigned int, unsigned int, unsigned int, HIP_vector_type<unsigned int, 3u>, unsigned int, unsigned int, unsigned int, HIP_vector_type<unsigned int, 3u>, unsigned int, unsigned int, unsigned int, unsigned int)",
+            "lds_bytes": 1024,
+            "route_id": "cuda-vecdotq-v1.anchor.0",
+            "workgroup": 128
+          },
+          {
+            "calls": 4644,
+            "grid": 8192,
+            "kernel_name": "void mul_mat_vec_q<(ggml_type)6, 1, true, true>(void const*, void const*, int const*, ggml_cuda_mm_fusion_args_device, float*, unsigned int, HIP_vector_type<unsigned int, 3u>, unsigned int, unsigned int, unsigned int, HIP_vector_type<unsigned int, 3u>, unsigned int, unsigned int, unsigned int, HIP_vector_type<unsigned int, 3u>, unsigned int, unsigned int, unsigned int, unsigned int)",
+            "lds_bytes": 1024,
+            "route_id": "cuda-vecdotq-v1.anchor.1",
+            "workgroup": 128
+          },
+          {
+            "calls": 3096,
+            "grid": 311296,
+            "kernel_name": "void mul_mat_vec_q<(ggml_type)6, 1, true, true>(void const*, void const*, int const*, ggml_cuda_mm_fusion_args_device, float*, unsigned int, HIP_vector_type<unsigned int, 3u>, unsigned int, unsigned int, unsigned int, HIP_vector_type<unsigned int, 3u>, unsigned int, unsigned int, unsigned int, HIP_vector_type<unsigned int, 3u>, unsigned int, unsigned int, unsigned int, unsigned int)",
+            "lds_bytes": 1024,
+            "route_id": "cuda-vecdotq-v1.anchor.2",
+            "workgroup": 128
+          }
+        ],
+        "load_mode_recommendation": null,
+        "target_surface": "gpu_decode",
+        "target_symbol": "vec_dot_q5_0_q8_1",
+        "template_id": "cuda-vecdotq-v1"
+      },
+      "falsifier": "Exact type-6 kernel duration does not improve under correctness-preserving replay",
+      "hypothesis_id": "akh-v2-q5-type-specific-dequant",
+      "mechanism_id": "de29841bf1a6f628b0b49e14960f1d048eaa6a9718692f1154033f8f8bf9e162",
+      "operation_key": "5f249d5dcc3689040f3593ae8eea3eb7f6bd522eb8fd8843e662625007969693",
+      "portfolio_binding": {
+        "change_class": "arithmetic",
+        "decision_policy": {
+          "conflict_policy": "retain_inconclusive",
+          "continuation_floor_pct": 0.25,
+          "effect_unit": "relative_percent",
+          "frame_id": "frame-current-qwen05b-q4km-tg128",
+          "max_distinct_candidates": 3,
+          "max_replication_spread_pct": 1,
+          "metric": "decode_tokens_per_s",
+          "min_replication_effect_pct": 0.125,
+          "nomination_floor_pct": 0.5,
+          "required_replications": 2,
+          "sign_policy": "all_positive",
+          "terminal_rule": "retire"
+        },
+        "expected_dispatch": [
+          {
+            "calls": 6063,
+            "grid": 57344,
+            "kernel_name": "void mul_mat_vec_q<(ggml_type)6, 1, true, true>(void const*, void const*, int const*, ggml_cuda_mm_fusion_args_device, float*, unsigned int, HIP_vector_type<unsigned int, 3u>, unsigned int, unsigned int, unsigned int, HIP_vector_type<unsigned int, 3u>, unsigned int, unsigned int, unsigned int, HIP_vector_type<unsigned int, 3u>, unsigned int, unsigned int, unsigned int, unsigned int)",
+            "lds_bytes": 1024,
+            "route_id": "cuda-vecdotq-v1.anchor.0",
+            "workgroup": 128
+          },
+          {
+            "calls": 4644,
+            "grid": 8192,
+            "kernel_name": "void mul_mat_vec_q<(ggml_type)6, 1, true, true>(void const*, void const*, int const*, ggml_cuda_mm_fusion_args_device, float*, unsigned int, HIP_vector_type<unsigned int, 3u>, unsigned int, unsigned int, unsigned int, HIP_vector_type<unsigned int, 3u>, unsigned int, unsigned int, unsigned int, HIP_vector_type<unsigned int, 3u>, unsigned int, unsigned int, unsigned int, unsigned int)",
+            "lds_bytes": 1024,
+            "route_id": "cuda-vecdotq-v1.anchor.1",
+            "workgroup": 128
+          },
+          {
+            "calls": 3096,
+            "grid": 311296,
+            "kernel_name": "void mul_mat_vec_q<(ggml_type)6, 1, true, true>(void const*, void const*, int const*, ggml_cuda_mm_fusion_args_device, float*, unsigned int, HIP_vector_type<unsigned int, 3u>, unsigned int, unsigned int, unsigned int, HIP_vector_type<unsigned int, 3u>, unsigned int, unsigned int, unsigned int, HIP_vector_type<unsigned int, 3u>, unsigned int, unsigned int, unsigned int, unsigned int)",
+            "lds_bytes": 1024,
+            "route_id": "cuda-vecdotq-v1.anchor.2",
+            "workgroup": 128
+          }
+        ],
+        "falsifier": "Exact type-6 kernel duration does not improve under correctness-preserving replay",
+        "hypothesis_id": "akh-v2-q5-type-specific-dequant",
+        "mechanism_id": "de29841bf1a6f628b0b49e14960f1d048eaa6a9718692f1154033f8f8bf9e162",
+        "portfolio_sha256": "c894690f56041ae355a50fffe23688abed1fa3eea9df4b7201faee2e565b4e78",
+        "record_sha256": "ca1d5ee5b7514edbec8bb5d270489de55333f609f00d1a3751efd1f397580e07",
+        "regime": {
+          "architecture": "gfx90a",
+          "backend": "hip",
+          "batch": 1,
+          "measurement_graphs": false,
+          "model_or_frame": "frame-current-qwen05b-q4km-tg128",
+          "phase": "decode",
+          "quant": "Q5_0",
+          "shape": "type6-mmvq",
+          "target_runtime_graphs": true
+        },
+        "statement": "A Q5_0-specific packed-load, scale/unpack, control-flow, or data-reuse mechanism can reduce the current frame type-6 MMVQ band without changing wave count.",
+        "target_file": "ggml/src/ggml-cuda/vecdotq.cuh",
+        "target_symbols": [
+          "vec_dot_q5_0_q8_1",
+          "vec_dot_q5_0_q8_1_impl"
+        ],
+        "template_id": "cuda-vecdotq-v1"
+      },
+      "portfolio_decision_policy": {
+        "conflict_policy": "retain_inconclusive",
+        "continuation_floor_pct": 0.25,
+        "effect_unit": "relative_percent",
+        "frame_id": "frame-current-qwen05b-q4km-tg128",
+        "max_distinct_candidates": 3,
+        "max_replication_spread_pct": 1,
+        "metric": "decode_tokens_per_s",
+        "min_replication_effect_pct": 0.125,
+        "nomination_floor_pct": 0.5,
+        "required_replications": 2,
+        "sign_policy": "all_positive",
+        "terminal_rule": "retire"
+      },
+      "portfolio_exact_dnr_check": {
+        "candidate_mechanism_id": "de29841bf1a6f628b0b49e14960f1d048eaa6a9718692f1154033f8f8bf9e162",
+        "candidate_source_manifest_sha256": "2a3c4f426d04303331ae1acce5125d44f216e1a4670842ba6d9a431400808a44",
+        "canonical_regime_sha256": "d3a85f93fed7dd2d1c48addc39be930a7330fdaf0e6ee1378fc79b28b0cae239",
+        "matched_dnr_ids": [],
+        "outcome": "PASS",
+        "portfolio_hypothesis_id": "akh-v2-q5-type-specific-dequant",
+        "portfolio_semantic_sha256": "c894690f56041ae355a50fffe23688abed1fa3eea9df4b7201faee2e565b4e78",
+        "receipt_sha256": "3ee9de45f45f77f10ce48fe3d49950ba5e29123d1cb8cf65653cf31eb77f8849",
+        "schema": "epyc.autokernel.portfolio_exact_dnr_check.v1"
+      },
+      "portfolio_hypothesis_id": "akh-v2-q5-type-specific-dequant",
+      "portfolio_record_sha256": "ca1d5ee5b7514edbec8bb5d270489de55333f609f00d1a3751efd1f397580e07",
+      "proposal_sha256": "d9d9df5bab7e4da768d2c11191eecf9ab70fdbccf77d6f407090b2745a85d49d",
+      "reason": "committed diff in 'ggml/src/ggml-cuda/vecdotq.cuh' derives undeclared symbols ['<file-scope>']",
+      "regime": {
+        "architecture": "gfx90a",
+        "backend": "hip",
+        "batch": 1,
+        "measurement_graphs": false,
+        "model_or_frame": "frame-current-qwen05b-q4km-tg128",
+        "phase": "decode",
+        "quant": "Q5_0",
+        "shape": "type6-mmvq",
+        "target_runtime_graphs": true
+      },
+      "scientific_budget_spent": false,
+      "source_manifest_sha256": "2a3c4f426d04303331ae1acce5125d44f216e1a4670842ba6d9a431400808a44",
+      "stage": "source_apply",
+      "stage_receipt_path": "/mnt/raid0/llm/autokernel/deployments/gpu-discovery-champion-v36/operations/build-cache/entries/7a8c326ee883d11bbe042c51bc164e12b94c09b4d305dc9240ce4f3658a7d905/terminal.json",
+      "stage_receipt_sha256": "59407aa3c335771ea475d1279855240daf3819edd811be5b9b5c3c7d7e075111",
+      "statement": "A Q5_0-specific packed-load, scale/unpack, control-flow, or data-reuse mechanism can reduce the current frame type-6 MMVQ band without changing wave count.",
+      "status": "authoring_refused",
+      "target_surface": "gpu_decode",
+      "target_symbol": "vec_dot_q5_0_q8_1",
+      "turn": 2
+    },
+    {
+      "campaign_ledger_dnr_outcome": "PASS",
+      "campaign_ledger_dnr_reasons": [],
+      "candidate_semantic_sha256": "0ba8bd37791444c7a9b48896b4a1f6a0b94d3d596dcbe7465e1d694f2b8409a5",
+      "context_sha256": "9d9bee44334407fb2f785af0ceec2e335502aeeb2f60d1040aa1db6f0838567c",
+      "critic": {
+        "decision": "accept",
+        "reason": "Bit-exact transformation verified: 0x02040810 deposits qh bits 0-3 at positions {4,11,18,25},{5,12,19,26},{6,13,20,27},{7,14,21,28}; all 16 destinations are distinct so the multiply carries nothing, and masking with 0x10101010 keeps positions 4/12/20/28, exactly reproducing the original scatter for vi0. The vi1 path selects qh bits 16-19 via (vh>>16)&0xF with the identical mapping (16->4, 17->12, 18->20, 19->28); arithmetic-shift sign fill is masked off, and max product 15*0x02040810 < 2^31 rules out signed overflow. The wrapper change only hoists the loop-invariant get_int_b2(bq5_0->qh, 0) load. dp4a inputs are bit-identical to baseline for all vdr, so correctness is exactly preserved. Governance: the diff stays inside the two declared symbols (vec_dot_q5_0_q8_1, vec_dot_q5_0_q8_1_impl) with no file-scope additions, fixing the cause of the turn-1/2 authoring refusals; change class is arithmetic under cuda-vecdotq-v1 authority; no wave-count or launch-geometry change, so the q5 four-wave DNR and stop rules are respected and no other DNR fingerprint matches; expected_dispatch matches the three sealed true/true anchors and excludes the 129-call tail; cold_serialized load mode matches the fallback-only admission bundle; the stated falsifier matches the open hypothesis akh-v2-q5-type-specific-dequant, which has claims available. Performance mechanism is plausible: roughly 13 VALU ops per sub-word reduce to about 4 (and, mul_lo, and, or) in a VALU-heavy dequant path, a legitimate Q5_0-specific unpack mechanism; the governed exact-kernel attribution and graphs-on screen remain the deciding evidence."
+      },
+      "experiment_intent": {
+        "correctness_id": "backend-ops-hip-v1",
+        "dispatch_id": "decode-tg128-rocprof-v3",
+        "expected_dispatch": [
+          {
+            "calls": 6063,
+            "grid": 57344,
+            "kernel_name": "void mul_mat_vec_q<(ggml_type)6, 1, true, true>(void const*, void const*, int const*, ggml_cuda_mm_fusion_args_device, float*, unsigned int, HIP_vector_type<unsigned int, 3u>, unsigned int, unsigned int, unsigned int, HIP_vector_type<unsigned int, 3u>, unsigned int, unsigned int, unsigned int, HIP_vector_type<unsigned int, 3u>, unsigned int, unsigned int, unsigned int, unsigned int)",
+            "lds_bytes": 1024,
+            "route_id": "cuda-vecdotq-v1.anchor.0",
+            "workgroup": 128
+          },
+          {
+            "calls": 4644,
+            "grid": 8192,
+            "kernel_name": "void mul_mat_vec_q<(ggml_type)6, 1, true, true>(void const*, void const*, int const*, ggml_cuda_mm_fusion_args_device, float*, unsigned int, HIP_vector_type<unsigned int, 3u>, unsigned int, unsigned int, unsigned int, HIP_vector_type<unsigned int, 3u>, unsigned int, unsigned int, unsigned int, HIP_vector_type<unsigned int, 3u>, unsigned int, unsigned int, unsigned int, unsigned int)",
+            "lds_bytes": 1024,
+            "route_id": "cuda-vecdotq-v1.anchor.1",
+            "workgroup": 128
+          },
+          {
+            "calls": 3096,
+            "grid": 311296,
+            "kernel_name": "void mul_mat_vec_q<(ggml_type)6, 1, true, true>(void const*, void const*, int const*, ggml_cuda_mm_fusion_args_device, float*, unsigned int, HIP_vector_type<unsigned int, 3u>, unsigned int, unsigned int, unsigned int, HIP_vector_type<unsigned int, 3u>, unsigned int, unsigned int, unsigned int, HIP_vector_type<unsigned int, 3u>, unsigned int, unsigned int, unsigned int, unsigned int)",
+            "lds_bytes": 1024,
+            "route_id": "cuda-vecdotq-v1.anchor.2",
+            "workgroup": 128
+          }
+        ],
+        "load_mode_recommendation": {
+          "example_ids": [],
+          "mode": "cold_serialized",
+          "rationale": "The fallback-only admission bundle supplies no fresh headroom telemetry, so cold loads should be serialized."
+        },
+        "target_surface": "gpu_decode",
+        "target_symbol": "vec_dot_q5_0_q8_1",
+        "template_id": "cuda-vecdotq-v1"
+      },
+      "falsifier": "Exact type-6 kernel duration does not improve under correctness-preserving replay",
+      "hypothesis_id": "akh-v2-q5-type-specific-dequant",
+      "mechanism_id": "de29841bf1a6f628b0b49e14960f1d048eaa6a9718692f1154033f8f8bf9e162",
+      "operation_key": "956fd60360cff439321ab3a7fc4318db034945b5e19cc98839e176203da035d4",
+      "portfolio_binding": {
+        "change_class": "arithmetic",
+        "decision_policy": {
+          "conflict_policy": "retain_inconclusive",
+          "continuation_floor_pct": 0.25,
+          "effect_unit": "relative_percent",
+          "frame_id": "frame-current-qwen05b-q4km-tg128",
+          "max_distinct_candidates": 3,
+          "max_replication_spread_pct": 1,
+          "metric": "decode_tokens_per_s",
+          "min_replication_effect_pct": 0.125,
+          "nomination_floor_pct": 0.5,
+          "required_replications": 2,
+          "sign_policy": "all_positive",
+          "terminal_rule": "retire"
+        },
+        "expected_dispatch": [
+          {
+            "calls": 6063,
+            "grid": 57344,
+            "kernel_name": "void mul_mat_vec_q<(ggml_type)6, 1, true, true>(void const*, void const*, int const*, ggml_cuda_mm_fusion_args_device, float*, unsigned int, HIP_vector_type<unsigned int, 3u>, unsigned int, unsigned int, unsigned int, HIP_vector_type<unsigned int, 3u>, unsigned int, unsigned int, unsigned int, HIP_vector_type<unsigned int, 3u>, unsigned int, unsigned int, unsigned int, unsigned int)",
+            "lds_bytes": 1024,
+            "route_id": "cuda-vecdotq-v1.anchor.0",
+            "workgroup": 128
+          },
+          {
+            "calls": 4644,
+            "grid": 8192,
+            "kernel_name": "void mul_mat_vec_q<(ggml_type)6, 1, true, true>(void const*, void const*, int const*, ggml_cuda_mm_fusion_args_device, float*, unsigned int, HIP_vector_type<unsigned int, 3u>, unsigned int, unsigned int, unsigned int, HIP_vector_type<unsigned int, 3u>, unsigned int, unsigned int, unsigned int, HIP_vector_type<unsigned int, 3u>, unsigned int, unsigned int, unsigned int, unsigned int)",
+            "lds_bytes": 1024,
+            "route_id": "cuda-vecdotq-v1.anchor.1",
+            "workgroup": 128
+          },
+          {
+            "calls": 3096,
+            "grid": 311296,
+            "kernel_name": "void mul_mat_vec_q<(ggml_type)6, 1, true, true>(void const*, void const*, int const*, ggml_cuda_mm_fusion_args_device, float*, unsigned int, HIP_vector_type<unsigned int, 3u>, unsigned int, unsigned int, unsigned int, HIP_vector_type<unsigned int, 3u>, unsigned int, unsigned int, unsigned int, HIP_vector_type<unsigned int, 3u>, unsigned int, unsigned int, unsigned int, unsigned int)",
+            "lds_bytes": 1024,
+            "route_id": "cuda-vecdotq-v1.anchor.2",
+            "workgroup": 128
+          }
+        ],
+        "falsifier": "Exact type-6 kernel duration does not improve under correctness-preserving replay",
+        "hypothesis_id": "akh-v2-q5-type-specific-dequant",
+        "mechanism_id": "de29841bf1a6f628b0b49e14960f1d048eaa6a9718692f1154033f8f8bf9e162",
+        "portfolio_sha256": "c894690f56041ae355a50fffe23688abed1fa3eea9df4b7201faee2e565b4e78",
+        "record_sha256": "ca1d5ee5b7514edbec8bb5d270489de55333f609f00d1a3751efd1f397580e07",
+        "regime": {
+          "architecture": "gfx90a",
+          "backend": "hip",
+          "batch": 1,
+          "measurement_graphs": false,
+          "model_or_frame": "frame-current-qwen05b-q4km-tg128",
+          "phase": "decode",
+          "quant": "Q5_0",
+          "shape": "type6-mmvq",
+          "target_runtime_graphs": true
+        },
+        "statement": "A Q5_0-specific packed-load, scale/unpack, control-flow, or data-reuse mechanism can reduce the current frame type-6 MMVQ band without changing wave count.",
+        "target_file": "ggml/src/ggml-cuda/vecdotq.cuh",
+        "target_symbols": [
+          "vec_dot_q5_0_q8_1",
+          "vec_dot_q5_0_q8_1_impl"
+        ],
+        "template_id": "cuda-vecdotq-v1"
+      },
+      "portfolio_decision_policy": {
+        "conflict_policy": "retain_inconclusive",
+        "continuation_floor_pct": 0.25,
+        "effect_unit": "relative_percent",
+        "frame_id": "frame-current-qwen05b-q4km-tg128",
+        "max_distinct_candidates": 3,
+        "max_replication_spread_pct": 1,
+        "metric": "decode_tokens_per_s",
+        "min_replication_effect_pct": 0.125,
+        "nomination_floor_pct": 0.5,
+        "required_replications": 2,
+        "sign_policy": "all_positive",
+        "terminal_rule": "retire"
+      },
+      "portfolio_exact_dnr_check": {
+        "candidate_mechanism_id": "de29841bf1a6f628b0b49e14960f1d048eaa6a9718692f1154033f8f8bf9e162",
+        "candidate_source_manifest_sha256": "a6c1fc60e6f4056b4c88c28f334a2dfdb734c91243d5aa089908f7602b808dec",
+        "canonical_regime_sha256": "d3a85f93fed7dd2d1c48addc39be930a7330fdaf0e6ee1378fc79b28b0cae239",
+        "matched_dnr_ids": [],
+        "outcome": "PASS",
+        "portfolio_hypothesis_id": "akh-v2-q5-type-specific-dequant",
+        "portfolio_semantic_sha256": "c894690f56041ae355a50fffe23688abed1fa3eea9df4b7201faee2e565b4e78",
+        "receipt_sha256": "90fc5f2361caacb8209dadbaa11109c74b8ce54fc0b8f9e33fa56c608295b2a4",
+        "schema": "epyc.autokernel.portfolio_exact_dnr_check.v1"
+      },
+      "portfolio_hypothesis_id": "akh-v2-q5-type-specific-dequant",
+      "portfolio_record_sha256": "ca1d5ee5b7514edbec8bb5d270489de55333f609f00d1a3751efd1f397580e07",
+      "proposal_sha256": "fb48efbae232bc713f547692f081df4348ff6de0090c7f7248ef5089622b705d",
+      "reason": "committed diff in 'ggml/src/ggml-cuda/vecdotq.cuh' derives undeclared symbols ['<file-scope>']",
+      "regime": {
+        "architecture": "gfx90a",
+        "backend": "hip",
+        "batch": 1,
+        "measurement_graphs": false,
+        "model_or_frame": "frame-current-qwen05b-q4km-tg128",
+        "phase": "decode",
+        "quant": "Q5_0",
+        "shape": "type6-mmvq",
+        "target_runtime_graphs": true
+      },
+      "scientific_budget_spent": false,
+      "source_manifest_sha256": "a6c1fc60e6f4056b4c88c28f334a2dfdb734c91243d5aa089908f7602b808dec",
+      "stage": "source_apply",
+      "stage_receipt_path": "/mnt/raid0/llm/autokernel/deployments/gpu-discovery-champion-v36/operations/build-cache/entries/44fc3e5fbb3f92575a89b3d86289f92c64ac918820a68645a968de1553b8a247/terminal.json",
+      "stage_receipt_sha256": "db74b3af7b150c63f616b55134f38dede6260492e3da9bc1bfa12115a4d148b9",
+      "statement": "A Q5_0-specific packed-load, scale/unpack, control-flow, or data-reuse mechanism can reduce the current frame type-6 MMVQ band without changing wave count.",
+      "status": "authoring_refused",
+      "target_surface": "gpu_decode",
+      "target_symbol": "vec_dot_q5_0_q8_1",
+      "turn": 3
+    },
+    {
+      "candidate_semantic_sha256": "b2ddd0c77649b467ac0edf3d3c82e2444bb594740c4ec9ce61e6da4cc2029afd",
+      "context_sha256": "59683164f873b8dcd48e59a6eb4c056954dae50f348d74d997ffa4e58499de3e",
+      "critic": {
+        "decision": "reject",
+        "reason": "The patch is a codegen no-op, not a new mechanism. It replaces warp_reduce_max<QK8_1>(amax) and warp_reduce_sum<QK8_1>(sum) with a hand-unrolled shfl_xor butterfly at width QK8_1=32 using fmaxf and add \u2014 which is exactly what those ggml helpers already expand to (same five shuffle stages, same width, same combine ops, same HIP intrinsic lowering on gfx90a). Interleaving the two reductions in one loop is immaterial: the chains are independent and the compiler scheduler already interleaves them. There is no change to reduction order, arithmetic, launch geometry, memory access, or concurrency, hence no causal path to improving exact quantizer duration.\n\nAuthority and safety are not the issue: the diff stays within cuda-quantize-q8-v1's declared file/symbol scope (quantize.cu:quantize_q8_1), preserves semantics, keeps workgroup 256, and does not match the dnr-q8-vec4-quantizer or dnr-q8-workgroup128-exact-replay fingerprints. The rejection is on experimental value under the binding decision policy: hypothesis akh-v2-q8-quantizer-new-mechanism permits at most 3 distinct candidates with a 0.5% nomination floor and primary falsifier \"exact quantizer duration does not improve.\" A near-ISA-identical rewrite is guaranteed to sit inside noise, trivially fire the falsifier, and consume a scarce candidate slot while providing zero discrimination about whether a genuine alternative quantizer mechanism exists. It can neither support nor meaningfully falsify the hypothesis because it instantiates no mechanism.\n\nA resubmission should embody a real behavioral delta (e.g., a different reduction topology/data path or schedule change with a stated reason it reduces duration), not an inlined restatement of existing helpers."
+      },
+      "experiment_intent": {
+        "correctness_id": "backend-ops-hip-v1",
+        "dispatch_id": "decode-tg128-rocprof-v3",
+        "expected_dispatch": [
+          {
+            "calls": 15609,
+            "grid": 1024,
+            "kernel_name": "quantize_q8_1(float const*, void*, long, long, long, long, long, unsigned int, HIP_vector_type<unsigned int, 3u>)",
+            "lds_bytes": 0,
+            "route_id": "cuda-quantize-q8-v1.anchor.0",
+            "workgroup": 256
+          },
+          {
+            "calls": 3096,
+            "grid": 5120,
+            "kernel_name": "quantize_q8_1(float const*, void*, long, long, long, long, long, unsigned int, HIP_vector_type<unsigned int, 3u>)",
+            "lds_bytes": 0,
+            "route_id": "cuda-quantize-q8-v1.anchor.1",
+            "workgroup": 256
+          }
+        ],
+        "load_mode_recommendation": {
+          "example_ids": [],
+          "mode": "cold_serialized",
+          "rationale": "Use serialized cold loading as the safer fallback for this candidate."
+        },
+        "target_surface": "gpu_decode",
+        "target_symbol": "quantize_q8_1",
+        "template_id": "cuda-quantize-q8-v1"
+      },
+      "falsifier": "Exact quantizer duration does not improve",
+      "hypothesis_id": "akh-v2-q8-quantizer-new-mechanism",
+      "mechanism_id": "c635f1702880b81d7ae462f82b7175d44b101daecd6f19afc7de9d854df32851",
+      "portfolio_binding": {
+        "change_class": "arithmetic",
+        "decision_policy": {
+          "conflict_policy": "retain_inconclusive",
+          "continuation_floor_pct": 0.25,
+          "effect_unit": "relative_percent",
+          "frame_id": "frame-current-qwen05b-q4km-tg128",
+          "max_distinct_candidates": 3,
+          "max_replication_spread_pct": 1,
+          "metric": "decode_tokens_per_s",
+          "min_replication_effect_pct": 0.125,
+          "nomination_floor_pct": 0.5,
+          "required_replications": 2,
+          "sign_policy": "all_positive",
+          "terminal_rule": "retire"
+        },
+        "expected_dispatch": [
+          {
+            "calls": 15609,
+            "grid": 1024,
+            "kernel_name": "quantize_q8_1(float const*, void*, long, long, long, long, long, unsigned int, HIP_vector_type<unsigned int, 3u>)",
+            "lds_bytes": 0,
+            "route_id": "cuda-quantize-q8-v1.anchor.0",
+            "workgroup": 256
+          },
+          {
+            "calls": 3096,
+            "grid": 5120,
+            "kernel_name": "quantize_q8_1(float const*, void*, long, long, long, long, long, unsigned int, HIP_vector_type<unsigned int, 3u>)",
+            "lds_bytes": 0,
+            "route_id": "cuda-quantize-q8-v1.anchor.1",
+            "workgroup": 256
+          }
+        ],
+        "falsifier": "Exact quantizer duration does not improve",
+        "hypothesis_id": "akh-v2-q8-quantizer-new-mechanism",
+        "mechanism_id": "c635f1702880b81d7ae462f82b7175d44b101daecd6f19afc7de9d854df32851",
+        "portfolio_sha256": "c894690f56041ae355a50fffe23688abed1fa3eea9df4b7201faee2e565b4e78",
+        "record_sha256": "7da52f02a20c63784e7b62b8da5f9513e516f89a383228ac4bb73707721e926d",
+        "regime": {
+          "architecture": "gfx90a",
+          "backend": "hip",
+          "batch": 1,
+          "measurement_graphs": false,
+          "model_or_frame": "frame-current-qwen05b-q4km-tg128",
+          "phase": "decode",
+          "quant": "Q4_K_M",
+          "shape": "q8_1-activation-quantization",
+          "target_runtime_graphs": true
+        },
+        "statement": "A mechanism other than the retired vec4 rewrite or exact workgroup-128 replay can reduce activation quantization cost across current and large decode frames.",
+        "target_file": "ggml/src/ggml-cuda/quantize.cu",
+        "target_symbols": [
+          "quantize_q8_1"
+        ],
+        "template_id": "cuda-quantize-q8-v1"
+      },
+      "portfolio_decision_policy": {
+        "conflict_policy": "retain_inconclusive",
+        "continuation_floor_pct": 0.25,
+        "effect_unit": "relative_percent",
+        "frame_id": "frame-current-qwen05b-q4km-tg128",
+        "max_distinct_candidates": 3,
+        "max_replication_spread_pct": 1,
+        "metric": "decode_tokens_per_s",
+        "min_replication_effect_pct": 0.125,
+        "nomination_floor_pct": 0.5,
+        "required_replications": 2,
+        "sign_policy": "all_positive",
+        "terminal_rule": "retire"
+      },
+      "portfolio_exact_dnr_check": {
+        "candidate_mechanism_id": "c635f1702880b81d7ae462f82b7175d44b101daecd6f19afc7de9d854df32851",
+        "candidate_source_manifest_sha256": "02b3e4822e85052a3927b50d73f21e924884fad06a588b0bcbb5ca3caa43bebb",
+        "canonical_regime_sha256": "27d50b8d05b41eee7cb97ac3e7fc8208d66901659594f9ee9922df855a944ff2",
+        "matched_dnr_ids": [],
+        "outcome": "PASS",
+        "portfolio_hypothesis_id": "akh-v2-q8-quantizer-new-mechanism",
+        "portfolio_semantic_sha256": "c894690f56041ae355a50fffe23688abed1fa3eea9df4b7201faee2e565b4e78",
+        "receipt_sha256": "b07544916adba0360099b4b39da31dd4687b9c188b60547873fc2d2de21030b6",
+        "schema": "epyc.autokernel.portfolio_exact_dnr_check.v1"
+      },
+      "portfolio_hypothesis_id": "akh-v2-q8-quantizer-new-mechanism",
+      "portfolio_record_sha256": "7da52f02a20c63784e7b62b8da5f9513e516f89a383228ac4bb73707721e926d",
+      "proposal_sha256": "e4cc40c1bdd7b7ae5498e98cc0cbf2d953dfb4cf2496d169022adf81326ed2b4",
+      "regime": {
+        "architecture": "gfx90a",
+        "backend": "hip",
+        "batch": 1,
+        "measurement_graphs": false,
+        "model_or_frame": "frame-current-qwen05b-q4km-tg128",
+        "phase": "decode",
+        "quant": "Q4_K_M",
+        "shape": "q8_1-activation-quantization",
+        "target_runtime_graphs": true
+      },
+      "source_manifest_sha256": "02b3e4822e85052a3927b50d73f21e924884fad06a588b0bcbb5ca3caa43bebb",
+      "statement": "A mechanism other than the retired vec4 rewrite or exact workgroup-128 replay can reduce activation quantization cost across current and large decode frames.",
+      "status": "critic_reject",
+      "target_surface": "gpu_decode",
+      "target_symbol": "quantize_q8_1",
+      "turn": 4
+    }
+  ],
+  "next": 5,
+  "planner_context_sha256": "f2f319a83768ebc33bc1f0c3d778f7f2a910137fc51a8f54f1080b852179a27c",
+  "portfolio_authoring_failures": {
+    "akh-v2-q5-type-specific-dequant": 3,
+    "akh-v2-q8-quantizer-new-mechanism": 1
+  },
+  "portfolio_skips": {
+    "akh-v2-q5-type-specific-dequant": {
+      "disposition": "bounded_authoring_skip",
+      "failure_count": 3,
+      "scientific_terminal": false
+    }
+  },
+  "portfolio_terminals": {},
+  "roster": {
+    "claude_members": 1,
+    "member_count": 2,
+    "members": [
+      {
+        "effort": "high",
+        "model": "gpt-5.6-sol",
+        "provider": "codex",
+        "role": "planner"
+      },
+      {
+        "effort": "high",
+        "model": "claude-fable-5",
+        "provider": "claude",
+        "role": "critic"
+      }
+    ],
+    "schema": "epyc.autokernel.discovery_roster.v3"
+  },
+  "schema": "epyc.autokernel.discovery_controller.v5",
+  "scientific_attempts": 0,
+  "state_sha256": "cc319bf4731de0c583136caf428c5e21ec92e464fdf40055d44faf5f98634a7b",
+  "updated_at": "2026-08-28T13:58:46.899993Z"
+}
