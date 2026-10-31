@@ -1,0 +1,109 @@
+{
+  "schema": "prb-t4-scope-correction-intent/v1",
+  "mode": "--dry-run",
+  "created_at": "2026-10-31T19:32:24Z",
+  "before_sha256": "3ab95f93b0dcde59f86e26d6b4d55a1e4fe75a9912066e7a7d87b104a6b20115",
+  "before_count": 38959,
+  "before_frontier": "sha256:5d07b14996126be458ebfcad7d2b0fe5f7871fb4f78940d84d379b077e901fc6",
+  "changed_claims": [
+    "clm_tale_04493dcf4e7cd28ac13d80f4",
+    "clm_tale_145d2eee8f5dbc6400ed2c19",
+    "clm_tale_25627bebb7313f148d4584d5",
+    "clm_tale_3215ee195747785b23406876",
+    "clm_tale_3385993bbf3188394cd537f6",
+    "clm_tale_641037c7fe93553e102a7884",
+    "clm_tale_68ae8a048751bc0370912bb9",
+    "clm_tale_72a90a1a7afa7692046e9b03",
+    "clm_tale_72da12c0028b99f27247acf7",
+    "clm_tale_75aef6171d3dfde495455f6d",
+    "clm_tale_764f74ec587dcfc9c138b27f",
+    "clm_tale_8109c2687f613513ef214c74",
+    "clm_tale_93e124008981a1981e2dafdc",
+    "clm_tale_93e7e0129e026fab67c0d509",
+    "clm_tale_9e461228ba11a0e2cb20f586",
+    "clm_tale_a12598cb28be0adcd8a389ae",
+    "clm_tale_a1bff625c11d34df85e31227",
+    "clm_tale_a416380f2de1a1e9533c5205",
+    "clm_tale_b0d32ebfd0856be32cc71bd2",
+    "clm_tale_b7f9ca52056fba1042bdc688",
+    "clm_tale_c28636a9f5d11d6842d555b2",
+    "clm_tale_d6577b3ae51602f2661a1506",
+    "clm_tale_effebb197c761d10d3ea5d31",
+    "clm_tale_fc1cb9c78e8f7c5d4223a5c0"
+  ],
+  "frames": [
+    {
+      "frame_type": "epyc.vidya/frame/correction_recorded/v1",
+      "assertion": {
+        "entry_id": "prb-t4-sample-scope-math",
+        "claim_ids": [
+          "clm_tale_145d2eee8f5dbc6400ed2c19",
+          "clm_tale_3215ee195747785b23406876",
+          "clm_tale_641037c7fe93553e102a7884",
+          "clm_tale_68ae8a048751bc0370912bb9",
+          "clm_tale_72a90a1a7afa7692046e9b03",
+          "clm_tale_75aef6171d3dfde495455f6d",
+          "clm_tale_93e124008981a1981e2dafdc",
+          "clm_tale_a12598cb28be0adcd8a389ae",
+          "clm_tale_a1bff625c11d34df85e31227",
+          "clm_tale_a416380f2de1a1e9533c5205",
+          "clm_tale_c28636a9f5d11d6842d555b2",
+          "clm_tale_d6577b3ae51602f2661a1506"
+        ],
+        "correction_text": "Scope correction: these historical math-labelled observations describe the GSM8K-only sampled subset, not the full mixed math suite. The committed handoff reports 150/150 gsm8k_* questions and excludes the suite's 500 MATH-500 rows. Historical result locators are currently unavailable; these counts are attributed to that handoff, not remeasured here.",
+        "classification": null
+      },
+      "provenance": {
+        "method": "prb-t4-scope-correction/v1",
+        "about": "VB-PRB-T4-CAVEAT",
+        "source_handoff": "handoffs/active/vidya-belief-substrate-program.md",
+        "historical_raw_unavailable": true
+      },
+      "pubinfo": {
+        "actor": "codex-refactor-01a16fc3",
+        "authority_scope": "research-verification",
+        "created_at": "2026-10-31T19:32:24Z"
+      },
+      "frame_id": "sha256:b18e350205843efd68d521b9c685f76e39d9547f827bc8250a13df583d731bf4",
+      "signatures": []
+    },
+    {
+      "frame_type": "epyc.vidya/frame/correction_recorded/v1",
+      "assertion": {
+        "entry_id": "prb-t4-sample-scope-olympiadbench",
+        "claim_ids": [
+          "clm_tale_04493dcf4e7cd28ac13d80f4",
+          "clm_tale_25627bebb7313f148d4584d5",
+          "clm_tale_3385993bbf3188394cd537f6",
+          "clm_tale_72da12c0028b99f27247acf7",
+          "clm_tale_764f74ec587dcfc9c138b27f",
+          "clm_tale_8109c2687f613513ef214c74",
+          "clm_tale_93e7e0129e026fab67c0d509",
+          "clm_tale_9e461228ba11a0e2cb20f586",
+          "clm_tale_b0d32ebfd0856be32cc71bd2",
+          "clm_tale_b7f9ca52056fba1042bdc688",
+          "clm_tale_effebb197c761d10d3ea5d31",
+          "clm_tale_fc1cb9c78e8f7c5d4223a5c0"
+        ],
+        "correction_text": "Scope correction: these historical olympiadbench observations describe the subject-skewed sampled subset, not representative suite performance. The committed handoff reports geometry 15/300 trials against a 19% population share. Historical result locators are currently unavailable; these counts are attributed to that handoff, not remeasured here.",
+        "classification": null
+      },
+      "provenance": {
+        "method": "prb-t4-scope-correction/v1",
+        "about": "VB-PRB-T4-CAVEAT",
+        "source_handoff": "handoffs/active/vidya-belief-substrate-program.md",
+        "historical_raw_unavailable": true
+      },
+      "pubinfo": {
+        "actor": "codex-refactor-01a16fc3",
+        "authority_scope": "research-verification",
+        "created_at": "2026-10-31T19:32:24Z"
+      },
+      "frame_id": "sha256:d8c7058e9c635e94d437b49a0174384ee8077c2c167e8b91a82c6920d25f43d0",
+      "signatures": []
+    }
+  ],
+  "values_grades_unchanged": true,
+  "raw_results_unavailable": true,
+  "review_required": true
+}

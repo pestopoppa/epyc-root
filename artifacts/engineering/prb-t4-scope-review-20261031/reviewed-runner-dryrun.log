@@ -1,0 +1,1 @@
+{"mode": "--dry-run", "targets": 24, "frames": ["sha256:b18e350205843efd68d521b9c685f76e39d9547f827bc8250a13df583d731bf4", "sha256:d8c7058e9c635e94d437b49a0174384ee8077c2c167e8b91a82c6920d25f43d0"], "receipt": "/mnt/raid0/llm/tmp/refactor-01a16fc3/prb-t4-scope-private-20261031/repo-runner-receipts/append-dry-run", "appended": false}

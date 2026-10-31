@@ -1,0 +1,595 @@
+{
+  "status": "PRIVATE_REVIEW_ONLY_NOT_APPENDED",
+  "canonical_frontier": "sha256:5d07b14996126be458ebfcad7d2b0fe5f7871fb4f78940d84d379b077e901fc6",
+  "canonical_sha256": "3ab95f93b0dcde59f86e26d6b4d55a1e4fe75a9912066e7a7d87b104a6b20115",
+  "canonical_record_count": 38959,
+  "scope_identity": {
+    "math": [
+      {
+        "claim_id": "clm_tale_d6577b3ae51602f2661a1506",
+        "source_frame_id": "sha256:cd390d6f917bc0820df42bb6a76abe6e877c95d237918b14a92b3d47bfe52a34",
+        "claim_frame_id": "sha256:bce1909c5a8e16f1e63e1036ff090732fdceab1314f7805ccbbdec5df16dbdad",
+        "support_frame_id": "sha256:835c38f890d711c124df1c99b77ab846478e02f08bf4aed63434b7dd6a4d672b",
+        "original_display_text": "TALE-EP prb_t4_gpu_20260916_191049_math: baseline arm on math -> tale_suite_accuracy = 0.9733 fraction_correct (n=150)",
+        "original_support_assertion": {
+          "category": "BASELINE",
+          "claim_id": "clm_tale_d6577b3ae51602f2661a1506",
+          "evidence_id": "evd_tale_d6577b3ae51602f2661a1506",
+          "grade": {
+            "Q": "Judged",
+            "T": "Located"
+          },
+          "metric_direction": "higher_better",
+          "protocol_id": "",
+          "reps": 150,
+          "source_id": "src_tale_d6577b3ae51602f2661a1506"
+        },
+        "raw_result_present": false
+      },
+      {
+        "claim_id": "clm_tale_a416380f2de1a1e9533c5205",
+        "source_frame_id": "sha256:d736fe8ec7ffcb8266f11ce8bfdf854210f4a3e5787a4be04b986a8e0e11662d",
+        "claim_frame_id": "sha256:1f0e99ca276ecd44e7a3b4903e881ddcc5548c1c47842758a513a3a34a211302",
+        "support_frame_id": "sha256:222ac1a23f8c3ad49f997154ff25e78a272762f1eac9d3f4faa7fcf4b6291bd0",
+        "original_display_text": "TALE-EP prb_t4_gpu_20260916_191049_math: baseline arm on math -> tale_mean_answer_tokens = 266.0333 tokens (n=150)",
+        "original_support_assertion": {
+          "category": "BASELINE",
+          "claim_id": "clm_tale_a416380f2de1a1e9533c5205",
+          "evidence_id": "evd_tale_a416380f2de1a1e9533c5205",
+          "grade": {
+            "Q": "Judged",
+            "T": "Located"
+          },
+          "metric_direction": "lower_better",
+          "protocol_id": "",
+          "reps": 150,
+          "source_id": "src_tale_a416380f2de1a1e9533c5205"
+        },
+        "raw_result_present": false
+      },
+      {
+        "claim_id": "clm_tale_3215ee195747785b23406876",
+        "source_frame_id": "sha256:d9b49f5056858450933c34b9cba3c7592f7e1694eb13e7e5a1f72abb8206429b",
+        "claim_frame_id": "sha256:6cfae1594e81ba1ab586d6471d88ac833e91d4d9620ee4099d18076054c06a88",
+        "support_frame_id": "sha256:478d1371ad07d87acb087b16f761736132c5d103b8a2cc5b3ca849e4922a184d",
+        "original_display_text": "TALE-EP prb_t4_gpu_20260916_191049_math: baseline arm on math -> tale_mean_tokens_incl_estimator = 266.0333 tokens (n=150)",
+        "original_support_assertion": {
+          "category": "BASELINE",
+          "claim_id": "clm_tale_3215ee195747785b23406876",
+          "evidence_id": "evd_tale_3215ee195747785b23406876",
+          "grade": {
+            "Q": "Judged",
+            "T": "Located"
+          },
+          "metric_direction": "lower_better",
+          "protocol_id": "",
+          "reps": 150,
+          "source_id": "src_tale_3215ee195747785b23406876"
+        },
+        "raw_result_present": false
+      },
+      {
+        "claim_id": "clm_tale_72a90a1a7afa7692046e9b03",
+        "source_frame_id": "sha256:7761f072d8f4726f907441202f53b95f3a0c7d75225ed70e0de5e9a3c2908b1f",
+        "claim_frame_id": "sha256:70b28771ae7560d8551f0db77f1f2dff809a2a87379fc4314ce1a0ab477de72e",
+        "support_frame_id": "sha256:5e7d89467c12b2cd0f0a2359e6022abbc722eaef942bf52f16ad39e7d030f341",
+        "original_display_text": "TALE-EP prb_t4_gpu_20260916_191049_math: baseline arm on math -> tale_mean_latency_s_incl_estimator = 4.3714 seconds (n=150)",
+        "original_support_assertion": {
+          "category": "BASELINE",
+          "claim_id": "clm_tale_72a90a1a7afa7692046e9b03",
+          "evidence_id": "evd_tale_72a90a1a7afa7692046e9b03",
+          "grade": {
+            "Q": "Judged",
+            "T": "Located"
+          },
+          "metric_direction": "lower_better",
+          "protocol_id": "",
+          "reps": 150,
+          "source_id": "src_tale_72a90a1a7afa7692046e9b03"
+        },
+        "raw_result_present": false
+      },
+      {
+        "claim_id": "clm_tale_a1bff625c11d34df85e31227",
+        "source_frame_id": "sha256:1fdd7ab89ea367d2f51f4590fd9f25009f283e073f4d89bac630ee38193e2568",
+        "claim_frame_id": "sha256:fea8a98e414426a9a8126d1248f8511dd342d17e667b70da9def8975a60b9f76",
+        "support_frame_id": "sha256:1832d93154228a2d2cc545f37e503c21ffa7a077116aba0cd141718bb5838a4a",
+        "original_display_text": "TALE-EP prb_t4_gpu_20260916_191049_math: static arm on math -> tale_suite_accuracy = 0.9667 fraction_correct (n=150)",
+        "original_support_assertion": {
+          "category": "CANDIDATE",
+          "claim_id": "clm_tale_a1bff625c11d34df85e31227",
+          "evidence_id": "evd_tale_a1bff625c11d34df85e31227",
+          "grade": {
+            "Q": "Judged",
+            "T": "Located"
+          },
+          "metric_direction": "higher_better",
+          "protocol_id": "",
+          "reps": 150,
+          "source_id": "src_tale_a1bff625c11d34df85e31227"
+        },
+        "raw_result_present": false
+      },
+      {
+        "claim_id": "clm_tale_145d2eee8f5dbc6400ed2c19",
+        "source_frame_id": "sha256:e95343563a0c575eebde6c4653fa67fc91fa77b91b10f7d14acb0318116e4597",
+        "claim_frame_id": "sha256:be907231b134af57769cdbf04f0e851733951e5a51fd6af16138eaee079cc98d",
+        "support_frame_id": "sha256:d87799a8f8a882f75cfd0c13fef73636cafe2006358dcfaca8d86d8443a737ff",
+        "original_display_text": "TALE-EP prb_t4_gpu_20260916_191049_math: static arm on math -> tale_mean_answer_tokens = 73.9267 tokens (n=150)",
+        "original_support_assertion": {
+          "category": "CANDIDATE",
+          "claim_id": "clm_tale_145d2eee8f5dbc6400ed2c19",
+          "evidence_id": "evd_tale_145d2eee8f5dbc6400ed2c19",
+          "grade": {
+            "Q": "Judged",
+            "T": "Located"
+          },
+          "metric_direction": "lower_better",
+          "protocol_id": "",
+          "reps": 150,
+          "source_id": "src_tale_145d2eee8f5dbc6400ed2c19"
+        },
+        "raw_result_present": false
+      },
+      {
+        "claim_id": "clm_tale_68ae8a048751bc0370912bb9",
+        "source_frame_id": "sha256:5d8c88534ef1574c5a296aa23f7aeacc973817f3e8064f524ab00e7792d0539f",
+        "claim_frame_id": "sha256:4e39952b68ddaa6e551d01ff44251dec8c9bf23f7265fc38a29848791fbbdd09",
+        "support_frame_id": "sha256:2da1142d8b8f179149e54e76e68b18bb62ef254d7aca97b4dfbf45591232682d",
+        "original_display_text": "TALE-EP prb_t4_gpu_20260916_191049_math: static arm on math -> tale_mean_tokens_incl_estimator = 73.9267 tokens (n=150)",
+        "original_support_assertion": {
+          "category": "CANDIDATE",
+          "claim_id": "clm_tale_68ae8a048751bc0370912bb9",
+          "evidence_id": "evd_tale_68ae8a048751bc0370912bb9",
+          "grade": {
+            "Q": "Judged",
+            "T": "Located"
+          },
+          "metric_direction": "lower_better",
+          "protocol_id": "",
+          "reps": 150,
+          "source_id": "src_tale_68ae8a048751bc0370912bb9"
+        },
+        "raw_result_present": false
+      },
+      {
+        "claim_id": "clm_tale_641037c7fe93553e102a7884",
+        "source_frame_id": "sha256:550075ba0606f2e76b3d17544a2d894a6c2b7f016f0a277e1d9be91e165fbbbb",
+        "claim_frame_id": "sha256:86517938af7f6e4f2bd12eb16193874e54dfb64a8ebf1658016425a827524443",
+        "support_frame_id": "sha256:b54580f21beca57a3815435ca9555565761a242c7c6de2fb81c2c46945bbc34f",
+        "original_display_text": "TALE-EP prb_t4_gpu_20260916_191049_math: static arm on math -> tale_mean_latency_s_incl_estimator = 1.6945 seconds (n=150)",
+        "original_support_assertion": {
+          "category": "CANDIDATE",
+          "claim_id": "clm_tale_641037c7fe93553e102a7884",
+          "evidence_id": "evd_tale_641037c7fe93553e102a7884",
+          "grade": {
+            "Q": "Judged",
+            "T": "Located"
+          },
+          "metric_direction": "lower_better",
+          "protocol_id": "",
+          "reps": 150,
+          "source_id": "src_tale_641037c7fe93553e102a7884"
+        },
+        "raw_result_present": false
+      },
+      {
+        "claim_id": "clm_tale_93e124008981a1981e2dafdc",
+        "source_frame_id": "sha256:49435d0385a0ce98cec50e3dc3bca279089f277230db17ffb7e67eca79a7dc47",
+        "claim_frame_id": "sha256:67d9cc71905bc89640405122e5a933211da82708cf1a2b3f3d2158612349093f",
+        "support_frame_id": "sha256:9affa6aff175c7ba926c4299b027a75efa04ebf74e6d85b00080d6737b08fe21",
+        "original_display_text": "TALE-EP prb_t4_gpu_20260916_191049_math: tale arm on math -> tale_suite_accuracy = 0.9800 fraction_correct (n=150)",
+        "original_support_assertion": {
+          "category": "CANDIDATE",
+          "claim_id": "clm_tale_93e124008981a1981e2dafdc",
+          "evidence_id": "evd_tale_93e124008981a1981e2dafdc",
+          "grade": {
+            "Q": "Judged",
+            "T": "Located"
+          },
+          "metric_direction": "higher_better",
+          "protocol_id": "",
+          "reps": 150,
+          "source_id": "src_tale_93e124008981a1981e2dafdc"
+        },
+        "raw_result_present": false
+      },
+      {
+        "claim_id": "clm_tale_75aef6171d3dfde495455f6d",
+        "source_frame_id": "sha256:514846594ba3c3bd665471699a015495714baa5a359f8d37e8c4340f26f5117c",
+        "claim_frame_id": "sha256:72d156aace5b20cea88cc9fca2a418e7fdf80477787adde865ae8026c35cc5f1",
+        "support_frame_id": "sha256:f57d41fe9c0585372d8a54dbc8921561b43d02510c088db04bfe7cfe58833f99",
+        "original_display_text": "TALE-EP prb_t4_gpu_20260916_191049_math: tale arm on math -> tale_mean_answer_tokens = 103.0467 tokens (n=150)",
+        "original_support_assertion": {
+          "category": "CANDIDATE",
+          "claim_id": "clm_tale_75aef6171d3dfde495455f6d",
+          "evidence_id": "evd_tale_75aef6171d3dfde495455f6d",
+          "grade": {
+            "Q": "Judged",
+            "T": "Located"
+          },
+          "metric_direction": "lower_better",
+          "protocol_id": "",
+          "reps": 150,
+          "source_id": "src_tale_75aef6171d3dfde495455f6d"
+        },
+        "raw_result_present": false
+      },
+      {
+        "claim_id": "clm_tale_a12598cb28be0adcd8a389ae",
+        "source_frame_id": "sha256:5de8b84d5967bcc481ad10cbc226421036865eaa53498960efaa490950a8f09a",
+        "claim_frame_id": "sha256:5e082bce1883de633ee364d61920fb8e4bbdab968965f1adf76f144cb70596a6",
+        "support_frame_id": "sha256:0bcd8df3b4a984cd2322e2fb8559924ac140f4cca71343ed067e2fdba985649b",
+        "original_display_text": "TALE-EP prb_t4_gpu_20260916_191049_math: tale arm on math -> tale_mean_tokens_incl_estimator = 110.5667 tokens (n=150)",
+        "original_support_assertion": {
+          "category": "CANDIDATE",
+          "claim_id": "clm_tale_a12598cb28be0adcd8a389ae",
+          "evidence_id": "evd_tale_a12598cb28be0adcd8a389ae",
+          "grade": {
+            "Q": "Judged",
+            "T": "Located"
+          },
+          "metric_direction": "lower_better",
+          "protocol_id": "",
+          "reps": 150,
+          "source_id": "src_tale_a12598cb28be0adcd8a389ae"
+        },
+        "raw_result_present": false
+      },
+      {
+        "claim_id": "clm_tale_c28636a9f5d11d6842d555b2",
+        "source_frame_id": "sha256:81d32be058a33273a91b1a5b86a3f2b04d7f0a2915b620581aa705451aa07727",
+        "claim_frame_id": "sha256:37039162684585e7a5ff6e0278ff6452e2fea66de7517ed64a5d3535b80eeeb0",
+        "support_frame_id": "sha256:cdca5380ade93515fdf24c3fc20f81c46945884d0ee2a33a4595f2d1e9a76326",
+        "original_display_text": "TALE-EP prb_t4_gpu_20260916_191049_math: tale arm on math -> tale_mean_latency_s_incl_estimator = 2.9483 seconds (n=150)",
+        "original_support_assertion": {
+          "category": "CANDIDATE",
+          "claim_id": "clm_tale_c28636a9f5d11d6842d555b2",
+          "evidence_id": "evd_tale_c28636a9f5d11d6842d555b2",
+          "grade": {
+            "Q": "Judged",
+            "T": "Located"
+          },
+          "metric_direction": "lower_better",
+          "protocol_id": "",
+          "reps": 150,
+          "source_id": "src_tale_c28636a9f5d11d6842d555b2"
+        },
+        "raw_result_present": false
+      }
+    ],
+    "olympiadbench": [
+      {
+        "claim_id": "clm_tale_3385993bbf3188394cd537f6",
+        "source_frame_id": "sha256:27c378f9489cb0ba89306d050b2e5db55c63d0e5cb7aa5ec35b313fcbefc9183",
+        "claim_frame_id": "sha256:d2321e2e10a679cbf89eeb418632d7db55998013622f68dfe25e45e5fe22c8e2",
+        "support_frame_id": "sha256:1b63ecd28d98e610c1c44d37777dad6c49227a6bddad71e108f2ad7133922934",
+        "original_display_text": "TALE-EP prb_t4_gpu_20260916_191049_olympiadbench: baseline arm on olympiadbench -> tale_suite_accuracy = 0.3200 fraction_correct (n=100)",
+        "original_support_assertion": {
+          "category": "BASELINE",
+          "claim_id": "clm_tale_3385993bbf3188394cd537f6",
+          "evidence_id": "evd_tale_3385993bbf3188394cd537f6",
+          "grade": {
+            "Q": "Judged",
+            "T": "Located"
+          },
+          "metric_direction": "higher_better",
+          "protocol_id": "",
+          "reps": 100,
+          "source_id": "src_tale_3385993bbf3188394cd537f6"
+        },
+        "raw_result_present": false
+      },
+      {
+        "claim_id": "clm_tale_b7f9ca52056fba1042bdc688",
+        "source_frame_id": "sha256:373e8a15c298cc548cbd9189ffdbdf25b9bd8b32abda81fcf64d85882358eac3",
+        "claim_frame_id": "sha256:f228dd9e03f91e808a062dec4dc68c0b60d9cbb151290b6175793a33dcdb8e9f",
+        "support_frame_id": "sha256:c7107d0c811a8f595d0796f36afa347d1f7d7c94829b831be912c5b96c2f664d",
+        "original_display_text": "TALE-EP prb_t4_gpu_20260916_191049_olympiadbench: baseline arm on olympiadbench -> tale_mean_answer_tokens = 6688.0700 tokens (n=100)",
+        "original_support_assertion": {
+          "category": "BASELINE",
+          "claim_id": "clm_tale_b7f9ca52056fba1042bdc688",
+          "evidence_id": "evd_tale_b7f9ca52056fba1042bdc688",
+          "grade": {
+            "Q": "Judged",
+            "T": "Located"
+          },
+          "metric_direction": "lower_better",
+          "protocol_id": "",
+          "reps": 100,
+          "source_id": "src_tale_b7f9ca52056fba1042bdc688"
+        },
+        "raw_result_present": false
+      },
+      {
+        "claim_id": "clm_tale_93e7e0129e026fab67c0d509",
+        "source_frame_id": "sha256:03d951267c9eb60cfc13c8e2a7a2120dea83f3dd20da717a976a5959c22afda3",
+        "claim_frame_id": "sha256:22a78a27fbd328cb928d1034b592c9f7f5679939eb7bfadba35b28d883b145eb",
+        "support_frame_id": "sha256:ea0812c1f3388dec3f5b759ed5ea051e85d7f1cbde95a64090907324d6c7ae0d",
+        "original_display_text": "TALE-EP prb_t4_gpu_20260916_191049_olympiadbench: baseline arm on olympiadbench -> tale_mean_tokens_incl_estimator = 6688.0700 tokens (n=100)",
+        "original_support_assertion": {
+          "category": "BASELINE",
+          "claim_id": "clm_tale_93e7e0129e026fab67c0d509",
+          "evidence_id": "evd_tale_93e7e0129e026fab67c0d509",
+          "grade": {
+            "Q": "Judged",
+            "T": "Located"
+          },
+          "metric_direction": "lower_better",
+          "protocol_id": "",
+          "reps": 100,
+          "source_id": "src_tale_93e7e0129e026fab67c0d509"
+        },
+        "raw_result_present": false
+      },
+      {
+        "claim_id": "clm_tale_fc1cb9c78e8f7c5d4223a5c0",
+        "source_frame_id": "sha256:5a10d6acb7e3d7bde92968b5df345d2690284ff15201c045d3ed03f0a17dee57",
+        "claim_frame_id": "sha256:748a2252f113e91ab115005bcb218f2571f4f89666ff410f2fccf17458b41a26",
+        "support_frame_id": "sha256:9df916a2f0ada1c6f1e5d504e036feeb74a20fcf3f2b85a34df6ba2e561d4907",
+        "original_display_text": "TALE-EP prb_t4_gpu_20260916_191049_olympiadbench: baseline arm on olympiadbench -> tale_mean_latency_s_incl_estimator = 117.6872 seconds (n=100)",
+        "original_support_assertion": {
+          "category": "BASELINE",
+          "claim_id": "clm_tale_fc1cb9c78e8f7c5d4223a5c0",
+          "evidence_id": "evd_tale_fc1cb9c78e8f7c5d4223a5c0",
+          "grade": {
+            "Q": "Judged",
+            "T": "Located"
+          },
+          "metric_direction": "lower_better",
+          "protocol_id": "",
+          "reps": 100,
+          "source_id": "src_tale_fc1cb9c78e8f7c5d4223a5c0"
+        },
+        "raw_result_present": false
+      },
+      {
+        "claim_id": "clm_tale_b0d32ebfd0856be32cc71bd2",
+        "source_frame_id": "sha256:c3cbffe7c56d15e02913245c5fbac6adaad081f128f148d3e187853b1682ab3f",
+        "claim_frame_id": "sha256:fbf92502e8774ace14c98282050f0e83bf226239d5f52240e86ee69ae091fd41",
+        "support_frame_id": "sha256:289b5b3cbf7042c55877f48e3d26fb98e582bdc2904ce92ed821e1564b80ba74",
+        "original_display_text": "TALE-EP prb_t4_gpu_20260916_191049_olympiadbench: static arm on olympiadbench -> tale_suite_accuracy = 0.2000 fraction_correct (n=100)",
+        "original_support_assertion": {
+          "category": "CANDIDATE",
+          "claim_id": "clm_tale_b0d32ebfd0856be32cc71bd2",
+          "evidence_id": "evd_tale_b0d32ebfd0856be32cc71bd2",
+          "grade": {
+            "Q": "Judged",
+            "T": "Located"
+          },
+          "metric_direction": "higher_better",
+          "protocol_id": "",
+          "reps": 100,
+          "source_id": "src_tale_b0d32ebfd0856be32cc71bd2"
+        },
+        "raw_result_present": false
+      },
+      {
+        "claim_id": "clm_tale_72da12c0028b99f27247acf7",
+        "source_frame_id": "sha256:35d350cb9722785d3805a89f0da165057d02f46ef705a21f3524bd6b83ff0224",
+        "claim_frame_id": "sha256:2b92eebbe01ab3330a4d9d16e9df45d1b5d747b725658d15b2f1e5301e804988",
+        "support_frame_id": "sha256:d64bb6fed5453f10ff4d8a6f63f60294bc4f4d650c94a0697bb92028bfef7295",
+        "original_display_text": "TALE-EP prb_t4_gpu_20260916_191049_olympiadbench: static arm on olympiadbench -> tale_mean_answer_tokens = 1494.2400 tokens (n=100)",
+        "original_support_assertion": {
+          "category": "CANDIDATE",
+          "claim_id": "clm_tale_72da12c0028b99f27247acf7",
+          "evidence_id": "evd_tale_72da12c0028b99f27247acf7",
+          "grade": {
+            "Q": "Judged",
+            "T": "Located"
+          },
+          "metric_direction": "lower_better",
+          "protocol_id": "",
+          "reps": 100,
+          "source_id": "src_tale_72da12c0028b99f27247acf7"
+        },
+        "raw_result_present": false
+      },
+      {
+        "claim_id": "clm_tale_764f74ec587dcfc9c138b27f",
+        "source_frame_id": "sha256:ae6531db0d94952fa4a68c336652f34afd650852c2ab258df9d7b7b7bec3bb47",
+        "claim_frame_id": "sha256:6bdd1a9384722445ccd65e8268b617e9faf7590f849ca4944b7701cdfa7ccffe",
+        "support_frame_id": "sha256:75f9b6b06f058c656e457d87b0fa0a9ea31d9b7ca13f15840a76457a8581a8a7",
+        "original_display_text": "TALE-EP prb_t4_gpu_20260916_191049_olympiadbench: static arm on olympiadbench -> tale_mean_tokens_incl_estimator = 1494.2400 tokens (n=100)",
+        "original_support_assertion": {
+          "category": "CANDIDATE",
+          "claim_id": "clm_tale_764f74ec587dcfc9c138b27f",
+          "evidence_id": "evd_tale_764f74ec587dcfc9c138b27f",
+          "grade": {
+            "Q": "Judged",
+            "T": "Located"
+          },
+          "metric_direction": "lower_better",
+          "protocol_id": "",
+          "reps": 100,
+          "source_id": "src_tale_764f74ec587dcfc9c138b27f"
+        },
+        "raw_result_present": false
+      },
+      {
+        "claim_id": "clm_tale_25627bebb7313f148d4584d5",
+        "source_frame_id": "sha256:d6fe465dda09e74e800c35927f5beb881ffd78441ba93a6f7fcbf3f1f369e5d5",
+        "claim_frame_id": "sha256:1a2ccd7858e8f1d39b300b79d1da06c912b75c700d8d0f98e2b00d604f1d203b",
+        "support_frame_id": "sha256:c7b31f87780d443eab10d3051aed4e7e4d364982c30806259a825af720ab0bdd",
+        "original_display_text": "TALE-EP prb_t4_gpu_20260916_191049_olympiadbench: static arm on olympiadbench -> tale_mean_latency_s_incl_estimator = 27.8014 seconds (n=100)",
+        "original_support_assertion": {
+          "category": "CANDIDATE",
+          "claim_id": "clm_tale_25627bebb7313f148d4584d5",
+          "evidence_id": "evd_tale_25627bebb7313f148d4584d5",
+          "grade": {
+            "Q": "Judged",
+            "T": "Located"
+          },
+          "metric_direction": "lower_better",
+          "protocol_id": "",
+          "reps": 100,
+          "source_id": "src_tale_25627bebb7313f148d4584d5"
+        },
+        "raw_result_present": false
+      },
+      {
+        "claim_id": "clm_tale_04493dcf4e7cd28ac13d80f4",
+        "source_frame_id": "sha256:438adb237268d4ddfd2f010a9c8878055f3383c613e0bb712f9ece631320e848",
+        "claim_frame_id": "sha256:d3ad8696d1bdeb9442e172d626c9b519e9b2a8331f6bede74f9685f4f3d38fe6",
+        "support_frame_id": "sha256:babb79a8605003e1097aa352eba7854d302429e92a1292d241b00efeb2777bb1",
+        "original_display_text": "TALE-EP prb_t4_gpu_20260916_191049_olympiadbench: tale arm on olympiadbench -> tale_suite_accuracy = 0.3100 fraction_correct (n=100)",
+        "original_support_assertion": {
+          "category": "CANDIDATE",
+          "claim_id": "clm_tale_04493dcf4e7cd28ac13d80f4",
+          "evidence_id": "evd_tale_04493dcf4e7cd28ac13d80f4",
+          "grade": {
+            "Q": "Judged",
+            "T": "Located"
+          },
+          "metric_direction": "higher_better",
+          "protocol_id": "",
+          "reps": 100,
+          "source_id": "src_tale_04493dcf4e7cd28ac13d80f4"
+        },
+        "raw_result_present": false
+      },
+      {
+        "claim_id": "clm_tale_9e461228ba11a0e2cb20f586",
+        "source_frame_id": "sha256:67da20475b603dad889187ae01d27cff809e537d5959c68f5604dad5bbf4e7be",
+        "claim_frame_id": "sha256:9bc49df87093a908a5a6dacba087ae8e8f40856b2c654c27e9171aa40ea33b9b",
+        "support_frame_id": "sha256:30d164e16758c1737d3a2d6a782d6cf2ed11ac2a6f60b3acc9ede9a0a1260472",
+        "original_display_text": "TALE-EP prb_t4_gpu_20260916_191049_olympiadbench: tale arm on olympiadbench -> tale_mean_answer_tokens = 4900.8900 tokens (n=100)",
+        "original_support_assertion": {
+          "category": "CANDIDATE",
+          "claim_id": "clm_tale_9e461228ba11a0e2cb20f586",
+          "evidence_id": "evd_tale_9e461228ba11a0e2cb20f586",
+          "grade": {
+            "Q": "Judged",
+            "T": "Located"
+          },
+          "metric_direction": "lower_better",
+          "protocol_id": "",
+          "reps": 100,
+          "source_id": "src_tale_9e461228ba11a0e2cb20f586"
+        },
+        "raw_result_present": false
+      },
+      {
+        "claim_id": "clm_tale_8109c2687f613513ef214c74",
+        "source_frame_id": "sha256:1dcd69d7977e05205fc8ad89b43241a99f3a3457586f93bbeb602d379f3f1dff",
+        "claim_frame_id": "sha256:b59d4cae3ec50cdd9dc411489239de2df90766aa40436a67d79d3ebc8d3fe761",
+        "support_frame_id": "sha256:96b37cc5ad9b1f5e755c1d0667c6bdf4aab8f687713d0b9bf3823ee1b3c86992",
+        "original_display_text": "TALE-EP prb_t4_gpu_20260916_191049_olympiadbench: tale arm on olympiadbench -> tale_mean_tokens_incl_estimator = 4908.2600 tokens (n=100)",
+        "original_support_assertion": {
+          "category": "CANDIDATE",
+          "claim_id": "clm_tale_8109c2687f613513ef214c74",
+          "evidence_id": "evd_tale_8109c2687f613513ef214c74",
+          "grade": {
+            "Q": "Judged",
+            "T": "Located"
+          },
+          "metric_direction": "lower_better",
+          "protocol_id": "",
+          "reps": 100,
+          "source_id": "src_tale_8109c2687f613513ef214c74"
+        },
+        "raw_result_present": false
+      },
+      {
+        "claim_id": "clm_tale_effebb197c761d10d3ea5d31",
+        "source_frame_id": "sha256:05472e29a9038937e0ac0c15bb3c4ab116530df396c96fcd1493bf58e3e58427",
+        "claim_frame_id": "sha256:7baa270834e8f4d61556656bdcfb21df9f4216baca7eff1c5196ec819534ab6e",
+        "support_frame_id": "sha256:922c9c58ca5e601e2fdaeae961d19cdef154ff8a802fcd6f58016696fbb1a08f",
+        "original_display_text": "TALE-EP prb_t4_gpu_20260916_191049_olympiadbench: tale arm on olympiadbench -> tale_mean_latency_s_incl_estimator = 89.5289 seconds (n=100)",
+        "original_support_assertion": {
+          "category": "CANDIDATE",
+          "claim_id": "clm_tale_effebb197c761d10d3ea5d31",
+          "evidence_id": "evd_tale_effebb197c761d10d3ea5d31",
+          "grade": {
+            "Q": "Judged",
+            "T": "Located"
+          },
+          "metric_direction": "lower_better",
+          "protocol_id": "",
+          "reps": 100,
+          "source_id": "src_tale_effebb197c761d10d3ea5d31"
+        },
+        "raw_result_present": false
+      }
+    ]
+  },
+  "proposed_frames": [
+    {
+      "frame_type": "epyc.vidya/frame/correction_recorded/v1",
+      "assertion": {
+        "entry_id": "prb-t4-sample-scope-math",
+        "claim_ids": [
+          "clm_tale_145d2eee8f5dbc6400ed2c19",
+          "clm_tale_3215ee195747785b23406876",
+          "clm_tale_641037c7fe93553e102a7884",
+          "clm_tale_68ae8a048751bc0370912bb9",
+          "clm_tale_72a90a1a7afa7692046e9b03",
+          "clm_tale_75aef6171d3dfde495455f6d",
+          "clm_tale_93e124008981a1981e2dafdc",
+          "clm_tale_a12598cb28be0adcd8a389ae",
+          "clm_tale_a1bff625c11d34df85e31227",
+          "clm_tale_a416380f2de1a1e9533c5205",
+          "clm_tale_c28636a9f5d11d6842d555b2",
+          "clm_tale_d6577b3ae51602f2661a1506"
+        ],
+        "correction_text": "Scope correction: these historical math-labelled observations describe the GSM8K-only sampled subset, not the full mixed math suite. The committed handoff reports 150/150 gsm8k_* questions and excludes the suite's 500 MATH-500 rows. Historical result locators are currently unavailable; these counts are attributed to that handoff, not remeasured here.",
+        "classification": null
+      },
+      "provenance": {
+        "method": "private-review/prb-t4-scope-correction/v1",
+        "about": "VB-PRB-T4-CAVEAT",
+        "source_handoff": "handoffs/active/vidya-belief-substrate-program.md",
+        "historical_raw_unavailable": true
+      },
+      "pubinfo": {
+        "actor": "codex-refactor-01a16fc3",
+        "authority_scope": "research-verification",
+        "created_at": "2026-10-31T19:30:00Z"
+      },
+      "frame_id": "sha256:af3643721e0fd86c10d3da450f7e4f419fe9ad8197fc994d18807b7559e08b35",
+      "signatures": []
+    },
+    {
+      "frame_type": "epyc.vidya/frame/correction_recorded/v1",
+      "assertion": {
+        "entry_id": "prb-t4-sample-scope-olympiadbench",
+        "claim_ids": [
+          "clm_tale_04493dcf4e7cd28ac13d80f4",
+          "clm_tale_25627bebb7313f148d4584d5",
+          "clm_tale_3385993bbf3188394cd537f6",
+          "clm_tale_72da12c0028b99f27247acf7",
+          "clm_tale_764f74ec587dcfc9c138b27f",
+          "clm_tale_8109c2687f613513ef214c74",
+          "clm_tale_93e7e0129e026fab67c0d509",
+          "clm_tale_9e461228ba11a0e2cb20f586",
+          "clm_tale_b0d32ebfd0856be32cc71bd2",
+          "clm_tale_b7f9ca52056fba1042bdc688",
+          "clm_tale_effebb197c761d10d3ea5d31",
+          "clm_tale_fc1cb9c78e8f7c5d4223a5c0"
+        ],
+        "correction_text": "Scope correction: these historical olympiadbench observations describe the subject-skewed sampled subset, not representative suite performance. The committed handoff reports geometry 15/300 trials against a 19% population share. Historical result locators are currently unavailable; these counts are attributed to that handoff, not remeasured here.",
+        "classification": null
+      },
+      "provenance": {
+        "method": "private-review/prb-t4-scope-correction/v1",
+        "about": "VB-PRB-T4-CAVEAT",
+        "source_handoff": "handoffs/active/vidya-belief-substrate-program.md",
+        "historical_raw_unavailable": true
+      },
+      "pubinfo": {
+        "actor": "codex-refactor-01a16fc3",
+        "authority_scope": "research-verification",
+        "created_at": "2026-10-31T19:30:00Z"
+      },
+      "frame_id": "sha256:8b0d6c1a64bf066f9a00884807ea4f21fa4e21082ce9453d64d82d8b68d4c3a4",
+      "signatures": []
+    }
+  ],
+  "native_fold_target_controls": "24 targets: original grades and all other state unchanged; correction review required",
+  "limitation": "Target-only fold; full-ledger dependency effects require separate review. No correction_reviewed frames or canonical writes.",
+  "negative_controls": [
+    "missing target refused",
+    "duplicate target refused"
+  ],
+  "implementation_sha256": "1c36cfc4dfe75625349bd51b3379e417588b725ef17be28fb7044dbc385e6614"
+}
