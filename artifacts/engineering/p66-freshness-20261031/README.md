@@ -1,0 +1,7 @@
+# P6.6 freshness controls — 2026-10-31
+
+Candidate fixes the shared panel verdict so that stale observations degrade even when a producer reports idle. Missing sections remain named in the stale verdict. The idle kernel optional-section exception applies only before stale; non-gating panels retain their policy. Reporting absent and unknown age remain unchanged. The operator-gate bundle continues to use its independent subject-based health contract, including HOLD and age as non-health signals.
+
+The existing terminal unified-campaign observation sets a 180-second dynamic silence budget, which also supplies its freshness threshold. A terminal campaign with a heartbeat older than 180 seconds therefore now degrades its health-gating panel. This is an existing producer envelope, not a new threshold. No service was reloaded.
+
+Fixture based on ROOT 5aac848bbbab9065e3d52f8ac9a52c64ebf6637a. Focused controls: 31 passed, 7 subtests passed. See stdout.log for selected controls, audited imports and supervisor receipt; terminal.json records the admitted CPU pair and captured identities. Execution used original 30-31 mutex with admitted SMT pair 126-127, OMP=1, supervisor limit 900s. Sampled whole-owned-tree peak RSS was 165330944 bytes across 8 samples; sampling is not a kernel-enforced peak. Guard and fixture hashes before and after match. No inference or production kernel activity was performed.

@@ -1109,16 +1109,17 @@ def panel_verdict(env: Mapping) -> tuple:
                     f"[{env.get('absence_means')}]")
         return (STATUS_ABSENT,
                 f"{panel}: no producer reported — {env.get('absence_means')}")
+    if env.get("staleness_class") == CLASS_STALE:
+        missing = (f"; section(s) {sorted(env['unreported'])} have no producer"
+                   if env.get("unreported") else "")
+        return (STATUS_DEGRADED,
+                f"{panel}: {env.get('source')} is {env.get('age_s')}s old "
+                f"(stale beyond {(env.get('thresholds') or {}).get('stale_s')}s)"
+                f"{missing}")
     if env.get("unreported"):
         return (STATUS_ABSENT,
                 f"{panel}: reported, but section(s) {sorted(env['unreported'])} "
                 f"have no producer — {env.get('absence_means')}")
-    if env.get("staleness_class") == CLASS_STALE:
-        if wd_state == WATCHDOG_IDLE:
-            return STATUS_OK, f"{panel}: stale but its producer declares it idle"
-        return (STATUS_DEGRADED,
-                f"{panel}: {env.get('source')} is {env.get('age_s')}s old "
-                f"(stale beyond {(env.get('thresholds') or {}).get('stale_s')}s)")
     return STATUS_OK, f"{panel}: reporting"
 
 
@@ -1145,6 +1146,7 @@ def verdict_gates_status(env: Mapping, panel: str,
     if wd_state in WATCHDOG_ALARMS or wd_state in WATCHDOG_DEFECTS:
         return True
     if (panel == "kernel" and wd_state == WATCHDOG_IDLE
+            and env.get("staleness_class") != CLASS_STALE
             and env.get("unreported")):
         # The terminal-contract producer explicitly declares both facts: this
         # campaign has stopped, and some optional owners never reported (for
@@ -1170,8 +1172,8 @@ def fold(envelopes: Mapping, *, registry: Optional[Mapping] = None) -> dict:
     1. A **watchdog alarm** is ``degraded``, on any panel. That is the trial-1302
        case and it is the reason this function exists; see
        :func:`verdict_gates_status` for why ``gates_health`` does not excuse it.
-    2. A **stale** health-gating panel is ``degraded`` (the hub's pre-AK6
-       behaviour, preserved) unless its producer declared itself idle.
+    2. A **stale** health-gating panel is ``degraded``, even if its producer
+       declared itself idle: expected silence does not make old data current.
     3. **Absence** is ``absent``, not ``ok`` and not ``degraded`` — but only when
        the registry declares the absence anomalous. Absence is ALWAYS listed
        under ``absent`` and named in ``attention`` regardless, so the fold can

@@ -33,7 +33,7 @@ from unittest import mock
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
-from dashboard import freshness, panels, server
+from dashboard import freshness, loop_status, panels, server
 
 
 def _iso(dt: datetime) -> str:
@@ -509,7 +509,9 @@ class WatchdogTest(unittest.TestCase):
             populated=True, producer_idle=True, watermark="ak-demo:17"), now=_NOW)
         self.assertEqual(env["watchdog"]["state"], panels.WATCHDOG_IDLE)
         self.assertEqual(env["reporting"], panels.REPORTING_OBSERVED)
-        self.assertEqual(panels.panel_verdict(env)[0], panels.STATUS_OK)
+        self.assertEqual(env["age_s"], 30 * _DAY)
+        self.assertEqual(env["staleness_class"], panels.CLASS_STALE)
+        self.assertEqual(panels.panel_verdict(env)[0], panels.STATUS_DEGRADED)
 
     def test_the_same_silence_without_the_idle_declaration_is_an_alarm(self):
         """Bite for the control above: idleness must be DECLARED, never assumed."""
@@ -1353,8 +1355,8 @@ class FoldTest(unittest.TestCase):
         self.assertEqual(out["status"], panels.STATUS_OK)
         self.assertIsNone(out["status_set_by"])
 
-    def test_a_stopped_partial_kernel_contract_is_loud_but_not_global_health(self):
-        """Terminal optional sections remain visible without implying live loss."""
+    def test_a_stale_stopped_partial_kernel_contract_gates_global_health(self):
+        """Optional sections do not excuse a stale terminal export."""
         envs = self._all_fine()
         envs["kernel"] = _env(
             "kernel", timestamp=_NOW - 30 * _DAY, source="produced_at",
@@ -1364,10 +1366,70 @@ class FoldTest(unittest.TestCase):
         self.assertEqual(envs["kernel"]["watchdog"]["state"],
                          panels.WATCHDOG_IDLE)
         self.assertEqual(panels.panel_verdict(envs["kernel"])[0],
-                         panels.STATUS_ABSENT)
+                         panels.STATUS_DEGRADED)
+        self.assertEqual(out["status"], panels.STATUS_DEGRADED)
+        self.assertEqual(out["status_set_by"]["panel"], "kernel")
+        self.assertIn("champion", out["status_set_by"]["why"])
+
+    def test_an_aging_stopped_partial_kernel_contract_remains_non_gating(self):
+        envs = self._all_fine()
+        envs["kernel"] = _env(
+            "kernel", timestamp=_NOW - 4 * _DAY, source="produced_at",
+            populated=True, producer_idle=True, unreported=("champion",))
+        out = panels.fold(envs)
+        self.assertEqual(panels.panel_verdict(envs["kernel"])[0], panels.STATUS_ABSENT)
         self.assertEqual(out["status"], panels.STATUS_OK)
         self.assertIn("kernel", [entry["panel"] for entry in out["attention"]])
-        self.assertIsNone(out["status_set_by"])
+
+    def test_completed_kernel_ages_through_its_declared_envelope(self):
+        source = panels.source("kernel")
+        timestamp = 1_700_000_000.0
+        obs = panels.Observation(artifact_present=True, timestamp=timestamp,
+                                 source="produced_at", populated=True,
+                                 producer_idle=True)
+        for age, cls, verdict in (
+                (0, panels.CLASS_FRESH, panels.STATUS_OK),
+                (source.warn_s + 1, panels.CLASS_AGING, panels.STATUS_OK),
+                (source.stale_s, panels.CLASS_AGING, panels.STATUS_OK),
+                (source.stale_s + 1, panels.CLASS_STALE, panels.STATUS_DEGRADED)):
+            with self.subTest(age=age):
+                env = panels.envelope(source, obs, now=timestamp + age)
+                self.assertEqual(env["age_s"], age)
+                self.assertEqual(env["staleness_class"], cls)
+                self.assertEqual(panels.panel_verdict(env)[0], verdict)
+
+    def test_fresh_partial_kernel_keeps_existing_absent_verdict(self):
+        env = _env("kernel", timestamp=_NOW, source="produced_at",
+                   populated=True, producer_idle=True, unreported=("champion",))
+        self.assertEqual(panels.panel_verdict(env)[0], panels.STATUS_ABSENT)
+        self.assertTrue(panels.verdict_gates_status(env, "kernel"))
+
+    def test_terminal_campaign_uses_its_existing_dynamic_envelope(self):
+        timestamp = 1_700_000_000.0
+        campaign = {"configured": True, "state": "history", "campaign": {
+            "observed_state": "drained", "producer_heartbeat_at": _iso(
+                datetime.fromtimestamp(timestamp, timezone.utc))}}
+        obs = loop_status.campaign_observation(campaign, panels.absent(
+            panels.source("autokernel_loop"), "unused"))
+        source = panels.source("autokernel_loop")
+        for elapsed, expected in ((0, panels.STATUS_OK), (180, panels.STATUS_OK),
+                                  (181, panels.STATUS_DEGRADED)):
+            with self.subTest(elapsed=elapsed):
+                env = panels.envelope(source, obs, now=timestamp + elapsed)
+                self.assertEqual(env["age_s"], elapsed)
+                self.assertEqual(env["thresholds"]["stale_s"], 180)
+                self.assertEqual(panels.panel_verdict(env)[0], expected)
+                if elapsed > 180:
+                    self.assertEqual(env["watchdog"]["state"], panels.WATCHDOG_IDLE)
+
+    def test_idle_unknown_timestamp_stays_absent_and_undated(self):
+        env = panels.envelope(panels.source("kernel"), panels.Observation(
+            artifact_present=True, timestamp=None, source="produced_at",
+            populated=True, producer_idle=True), now=1_700_000_000.0)
+        self.assertIsNone(env["age_s"])
+        self.assertEqual(env["staleness_class"], panels.CLASS_MISSING)
+        self.assertEqual(env["reporting"], panels.REPORTING_ABSENT)
+        self.assertEqual(panels.panel_verdict(env)[0], panels.STATUS_ABSENT)
 
     def test_a_running_partial_kernel_contract_still_gates_global_health(self):
         """The idle exception must not hide a current producer's missing owner."""

@@ -1,0 +1,8 @@
+import dashboard.panels: /mnt/raid0/llm/tmp/codex3-p66-freshness-20261031/fixture/dashboard/panels.py
+import dashboard.loop_status: /mnt/raid0/llm/tmp/codex3-p66-freshness-20261031/fixture/dashboard/loop_status.py
+import dashboard.server: /mnt/raid0/llm/tmp/codex3-p66-freshness-20261031/fixture/dashboard/server.py
+import pytest: /mnt/raid0/llm/epyc-orchestrator/.venv/lib/python3.11/site-packages/pytest/__init__.py
+argv: ['/home/daniele/.local/share/uv/python/cpython-3.11-linux-x86_64-gnu/bin/python3.11', '-m', 'pytest', '-q', '-p', 'no:cacheprovider', '--basetemp', '/mnt/raid0/llm/tmp/codex3-p66-freshness-20261031/attempt-20261031T152049Z-3681209/pytest-tmp', 'tests/test_dashboard_panels.py::AbsentVsEmptyTest', 'tests/test_dashboard_panels.py::WatchdogTest', 'tests/test_dashboard_panels.py::FoldTest', 'tests/test_dashboard_kernel_rnd_merge.py::TestTheOneLiveProducerMoved::test_loop_probe_folds_bundle_without_merging_source_envelopes', 'tests/test_dashboard_kernel_rnd_merge.py::TestTheOneLiveProducerMoved::test_stale_idle_loop_degrades_while_relevant_hold_remains_ok']
+...............................                                   [100%]
+31 passed, 7 subtests passed in 0.23s
+{"schema": "bounded-r11-native-profile-supervisor/v1", "elapsed_s": 0.715107198106125, "sampled_peak_tree_rss_bytes": 165330944, "samples": 8, "verified_exited_processes": 0, "verified_exited_threads": 0, "per_process_address_space_limit_bytes": null, "rss_scope": "sum of sampled resident pages across owned process tree; sampling may miss transients and double-count shared pages", "leader_pid": 3681212, "leader_birth": 158252262, "child_rc": 0, "children_drained": true, "failure": null}

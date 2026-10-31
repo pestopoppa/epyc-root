@@ -412,6 +412,25 @@ class TestTheOneLiveProducerMoved(unittest.TestCase):
         self.assertIn("HOLD", json.dumps(body["operator_gates"]))
         self.assertIsNot(body["freshness"], body["operator_gates"]["freshness"])
 
+    def test_stale_idle_loop_degrades_while_relevant_hold_remains_ok(self):
+        bundle = {"available": True, "freshness": {
+            "state": loop_status.OPGATE_RELEVANT, "age_s": 40 * 86400},
+            "gates": [{"status": "HOLD"}], "evidence": "/tmp/operator-gates.json"}
+        env = panels.envelope(panels.source("autokernel_loop"), panels.Observation(
+            artifact_present=True, timestamp=1_700_000_000.0, source="complete",
+            populated=True, producer_idle=True, silence_budget_s=180),
+            now=1_700_000_181.0)
+        with _clean_loop_probe(), patch.object(S, "_panel_envelope", return_value=env), \
+                patch.object(S, "_read_operator_gate_bundle", return_value=bundle):
+            code, body = S.loop_data_health()
+        self.assertEqual(code, 503)
+        self.assertEqual(body["status"], panels.STATUS_DEGRADED)
+        self.assertEqual(body["constituents"]["autokernel_loop"]["status"],
+                         panels.STATUS_DEGRADED)
+        self.assertEqual(body["constituents"]["operator_gates"]["status"],
+                         panels.STATUS_OK)
+        self.assertIn("HOLD", json.dumps(body["operator_gates"]))
+
     def test_missing_bundle_is_absent_even_when_loop_is_fresh(self):
         import tempfile
 
