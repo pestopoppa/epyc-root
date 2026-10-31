@@ -1,0 +1,20 @@
+wrote handoffs/active/.index-state.json
+wrote handoffs/active/.index-graph.json (178 nodes, 668 edges, 82 dep) — 132 ready, 41 blocked, 5 no-open
+master index block: updated
+<!-- BEGIN GENERATED index_state -->
+| Domain | Handoffs | Open | Blocked | Oldest advance |
+|--------|----------|------|---------|----------------|
+| inference-research | 59 | 1033 | 55 | 2026-07-29 |
+| pipeline-integration | 5 | 69 | 1 | 2026-08-25 |
+| research-evaluation | 41 | 665 | 15 | 2026-07-29 |
+| reviewer-control-plane | 6 | 26 | 12 | 2026-07-29 |
+| routing-and-optimization | 53 | 680 | 17 | 2026-07-29 |
+| user-facing-harness | 14 | 130 | 17 | 2026-08-12 |
+<!-- END GENERATED index_state -->
+cite-check: clean — 9 citation(s) across 2 document(s)    ok=4  record=5
+SCRATCH (warning): kv-unified-stack-rollout.md: /native: scratch must live under /mnt/raid0/llm/tmp/ or /mnt/raid0/llm/worktrees/
+SCRATCH (warning): multimodal-pipeline.md: /data/runtime: scratch must live under /mnt/raid0/llm/tmp/ or /mnt/raid0/llm/worktrees/; /canary: scratch must live under /mnt/raid0/llm/tmp/ or /mnt/raid0/llm/worktrees/
+SCRATCH (warning): qwen-chat-template-evaluation.md: /running: scratch must live under /mnt/raid0/llm/tmp/ or /mnt/raid0/llm/worktrees/
+SCRATCH (warning): 116 handoff(s) declare no **Scratch** field (e.g. agent-file-prose-compression.md, agent-world-env-synthesis.md, amd-ai-lab-website-publication.md) — add one when you next touch the handoff; docs/guides/agent-workflows/handoff-index-authoring.md § Scratch roots
+
+0 problem(s)

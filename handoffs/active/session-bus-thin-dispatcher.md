@@ -2047,12 +2047,17 @@ slate, it produces a fleet of stale artifacts that every liveness predicate read
     message is simply not listed — inventing an age would be a claim the record does not support.
   - [x] **Silent when everything is current.** ✅ A banner on every drain trains the reader to skip
     it, which is how the real one gets missed.
-  - [ ] **Not done, and deliberately not guessed: the spawn mark.** The filing also proposed
-    labelling mail that predates the current session, which is sharper than any age threshold — a
-    2h-old assignment to a session spawned 10 minutes ago is also suspect. The spawn timestamp lives
-    in `adapter-ledger.jsonl`, which `session_bus.py` does not read today; wiring it couples the two
-    modules and wants its own think. The 24h threshold already covers the measured incident (12
-    days), so this is a refinement, not a gap.
+  - [x] **Not done, and deliberately not guessed: the spawn mark.** ✅ 2026-10-31 — completed without guessing. Source `9801975d0623f79c09c755e4d35c5503111eca26`; tests `artifacts/engineering/session-spawn-mark-20261031/lane-validation-20261031T110339Z.log` (15 passed after MAIN's quiet-legacy delta; 188 prior accepted cases). [no-belief: deterministic engineering contract, no scientific result]
+    <!-- ni-spawn-mark-20261031 -->
+    The original “Not done, and deliberately not guessed: the spawn mark” refinement is now
+    native to drain and triage. The adapter binds a unique spawn_id receipt to the launched
+    process through SESSION_BUS_SPAWN_ID; only that exact generation, agent, successful kind
+    and usable aware timestamp can supply the canonical event. Legacy, missing, malformed,
+    conflicting and tombstoned evidence never supplies a guessed birth. Unbound legacy sessions
+    stay silent; an explicit unusable token reports UNKNOWN. Prebirth mail is labelled on stderr
+    or the triage via line, preserving payloads, cursors, dispatch and acknowledgements.
+    MAIN accepted the disclosed unchanged broader live-suite C36 host-rollout diagnostic failure;
+    raw evidence and all source hashes are retained in the same engineering capsule.
 
 - [x] **C41 — `backlog_row_check.section_is_guarded` answers a SECTION question about a BOX,
   and is wrong in both directions.** ✅ 2026-08-11 — `mainD`. Filed by `auditor`, corroborated
