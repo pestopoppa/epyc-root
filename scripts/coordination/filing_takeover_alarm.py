@@ -56,24 +56,7 @@ def scan_once(
     with (flags_root / "filing-takeover-alarm.lock").open("a") as lock:
         fcntl.flock(lock, fcntl.LOCK_EX)
         alert_path = flags_root / "filing-alarm.jsonl"
-        alert_state_path = flags_root / "filing-alarm.alerted.json"
-        owner_state = (
-            json.loads(alert_state_path.read_text())
-            if alert_state_path.exists()
-            else {"alerted": []}
-        )
-        if (
-            not isinstance(owner_state, dict)
-            or not isinstance(owner_state.get("alerted"), list)
-            or any(
-                not isinstance(x, str) or not RUN_ID.fullmatch(x)
-                for x in owner_state["alerted"]
-            )
-        ):
-            raise ValueError(
-                "invalid own alert checkpoint; refusing to guess prior delivery"
-            )
-        alerted = set(owner_state["alerted"])
+        alerted = set()
         if alert_path.exists():
             for line in alert_path.read_text(encoding="utf-8").splitlines(
                 keepends=True
@@ -97,11 +80,6 @@ def scan_once(
                     )
                 alerted.add(record["id"])
 
-        def owner_checkpoint():
-            bus._write_atomic(alert_state_path, {"alerted": sorted(alerted)})
-
-        if alerted != set(owner_state["alerted"]):
-            owner_checkpoint()
         due = flags_root / "filing-due.jsonl"
         eligible = {}
         for number, line in enumerate(
@@ -149,7 +127,6 @@ def scan_once(
                     out.flush()
                     os.fsync(out.fileno())
                 alerted.add(run_id)
-                owner_checkpoint()
                 report["alerted"].append(run_id)
         if not eligible:
             return report
