@@ -458,13 +458,14 @@ class Probe(_Fixture):
         # ...and freshness alone would indeed have said fresh.
         self.assertEqual(S.loop_payload()["freshness_state"], "fresh")
 
-    def test_a_declared_completion_is_allowed_to_be_silent(self):
-        """The compliant path: the hub never INFERS idleness, but it honours a
-        producer that DECLARES it."""
+    def test_stale_declared_completion_is_idle_but_degraded(self):
+        """Declared silence is not a watchdog alarm, but old data is stale."""
         self.write(body(age_s=9000, state="complete"))
         code, out = S.loop_data_health()
-        self.assertEqual((code, out["status"]), (200, panels.STATUS_OK))
+        self.assertEqual((code, out["status"]), (503, panels.STATUS_DEGRADED))
         self.assertEqual(out["freshness"]["watchdog"]["state"], panels.WATCHDOG_IDLE)
+        self.assertGreaterEqual(out["freshness"]["age_s"], 9000)
+        self.assertEqual(out["freshness"]["staleness_class"], panels.CLASS_STALE)
 
     def test_the_probe_is_not_the_transport_probe(self):
         """/health stays green over a dead loop; that is why it may not be this

@@ -1,0 +1,26 @@
+{
+  "argv": [
+    "/usr/bin/taskset",
+    "-c",
+    "126,127",
+    "/usr/bin/python3",
+    "/mnt/raid0/llm/tmp/codex3-ap66-20261031/supervisor-esrch-fix/prep_supervisor.py",
+    "900",
+    "--",
+    "/home/daniele/.local/share/uv/python/cpython-3.11-linux-x86_64-gnu/bin/python3.11",
+    "/mnt/raid0/llm/tmp/codex3-p66-freshness-20261031/run_controls_2.py"
+  ],
+  "cpus": [
+    126,
+    127
+  ],
+  "finished_utc": "2026-10-31T15:27:27Z",
+  "returncode": 0,
+  "schema": "p66-admission-attempt-v1",
+  "started_utc": "2026-10-31T15:27:25Z",
+  "state": "SUCCESS",
+  "supervisor_birth": 158291912,
+  "supervisor_pid": 3770552,
+  "watcher_birth": 158291907,
+  "watcher_pid": 3770551
+}

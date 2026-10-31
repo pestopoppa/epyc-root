@@ -1,0 +1,8 @@
+import dashboard.panels: /mnt/raid0/llm/tmp/codex3-p66-freshness-20261031/fixture/dashboard/panels.py
+import dashboard.loop_status: /mnt/raid0/llm/tmp/codex3-p66-freshness-20261031/fixture/dashboard/loop_status.py
+import dashboard.server: /mnt/raid0/llm/tmp/codex3-p66-freshness-20261031/fixture/dashboard/server.py
+import pytest: /mnt/raid0/llm/epyc-orchestrator/.venv/lib/python3.11/site-packages/pytest/__init__.py
+argv: ['/home/daniele/.local/share/uv/python/cpython-3.11-linux-x86_64-gnu/bin/python3.11', '-m', 'pytest', '-q', '-p', 'no:cacheprovider', '--basetemp', '/mnt/raid0/llm/tmp/codex3-p66-freshness-20261031/attempt-20261031T152725Z-3770551/pytest-tmp', 'tests/test_dashboard_loop_surface.py::Probe', 'tests/test_dashboard_panels_redteam.py::NonGatingAlarmTest::test_a_declared_pause_stays_green']
+..........                                                               [100%]
+10 passed in 0.86s
+{"schema": "bounded-r11-native-profile-supervisor/v1", "elapsed_s": 1.2161484330426902, "sampled_peak_tree_rss_bytes": 172552192, "samples": 13, "verified_exited_processes": 1, "verified_exited_threads": 0, "per_process_address_space_limit_bytes": null, "rss_scope": "sum of sampled resident pages across owned process tree; sampling may miss transients and double-count shared pages", "leader_pid": 3770553, "leader_birth": 158291915, "child_rc": 0, "children_drained": true, "failure": null}
