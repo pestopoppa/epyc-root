@@ -277,6 +277,54 @@ def test_boolean_counter_is_not_zero_or_a_valid_native_count(tmp_path):
         reader.native_rows(usage_path)
 
 
+def test_multirrow_projection_reads_each_whole_snapshot_once(tmp_path, monkeypatch):
+    usage_path = tmp_path / "usage_provenance.jsonl"
+    serving_path = tmp_path / "serving_calls.jsonl"
+    usage_lines = []
+    serving_lines = []
+    for index in range(250):
+        one = tmp_path / f"fixture-{index:03d}"
+        usage_one, _, _ = _native_fixtures(one)
+        usage_lines.extend(usage_one.read_text().splitlines())
+        serving_lines.extend((one / "serving_calls.jsonl").read_text().splitlines())
+    usage_path.write_text("\n".join(usage_lines) + "\n")
+    serving_path.write_text("\n".join(serving_lines) + "\n")
+
+    original_read = reader._read_stable
+    full_reads = []
+
+    def counted_read(path):
+        full_reads.append(Path(path))
+        return original_read(path)
+
+    monkeypatch.setattr(reader, "_read_stable", counted_read)
+    rows = reader.native_rows(usage_path)
+    assert len(rows) == 250
+    for row in rows:
+        assert reader.project(row).value == 0
+    assert full_reads == [usage_path, serving_path]
+
+
+@pytest.mark.parametrize("mutation", ["append", "replace", "symlink"])
+def test_snapshot_reuse_refuses_append_replacement_and_symlink(tmp_path, mutation):
+    usage_path, _, _ = _native_fixtures(tmp_path)
+    row = reader.native_rows(usage_path)[0]
+    original = usage_path.read_bytes()
+    if mutation == "append":
+        with usage_path.open("ab") as handle:
+            handle.write(b"external append\n")
+    elif mutation == "replace":
+        replacement = usage_path.with_suffix(".replacement")
+        replacement.write_bytes(original)
+        os.replace(replacement, usage_path)
+    else:
+        target = usage_path.with_suffix(".target")
+        usage_path.rename(target)
+        usage_path.symlink_to(target)
+    with pytest.raises(claim_tuple.ProjectionError, match="snapshot|regular file"):
+        reader.project(row)
+
+
 @pytest.mark.parametrize("field,value", [
     ("metric_direction", "neutral"),
     ("category", {"unexpected": "object"}),

@@ -11,6 +11,8 @@ import json
 import os
 import re
 import stat
+import threading
+from collections import OrderedDict
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
@@ -37,6 +39,11 @@ HEX64 = re.compile(r"^[0-9a-f]{64}$")
 GIT_SHA = re.compile(r"^[0-9a-f]{7,64}$")
 MAX_FILE_BYTES = 64 * 1024 * 1024
 MAX_LINE_BYTES = 32768
+MAX_SNAPSHOT_FILES = 32
+MAX_SNAPSHOT_INDEX_ROWS = 250_000
+_snapshot_lock = threading.Lock()
+_snapshot_indexes: OrderedDict[tuple, dict[int, str]] = OrderedDict()
+_snapshot_index_rows = 0
 
 
 def _reject(reason: str) -> None:
@@ -56,7 +63,11 @@ def _no_constant(value):
     _reject("nonfinite JSON number " + value)
 
 
-def _read_stable(path: Path) -> tuple[bytes, str]:
+def _file_identity(value: os.stat_result) -> tuple[int, int, int, int, int]:
+    return value.st_dev, value.st_ino, value.st_size, value.st_mtime_ns, value.st_ctime_ns
+
+
+def _read_stable(path: Path) -> tuple[bytes, str, tuple[int, int, int, int, int]]:
     try:
         flags = os.O_RDONLY | os.O_CLOEXEC | os.O_NOFOLLOW | os.O_NONBLOCK
         fd = os.open(path, flags)
@@ -78,12 +89,11 @@ def _read_stable(path: Path) -> tuple[bytes, str]:
             chunks.append(chunk)
         after = os.fstat(fd)
         named = os.lstat(path)
-        if ((before.st_dev, before.st_ino, before.st_size, before.st_mtime_ns, before.st_ctime_ns) !=
-                (after.st_dev, after.st_ino, after.st_size, after.st_mtime_ns, after.st_ctime_ns) or
-                (after.st_dev, after.st_ino) != (named.st_dev, named.st_ino)):
+        if (not stat.S_ISREG(named.st_mode) or _file_identity(before) != _file_identity(after) or
+                _file_identity(after) != _file_identity(named)):
             _reject("native file changed during read")
         raw = b"".join(chunks)
-        return raw, hashlib.sha256(raw).hexdigest()
+        return raw, hashlib.sha256(raw).hexdigest(), _file_identity(after)
     finally:
         os.close(fd)
 
@@ -93,12 +103,79 @@ def _files(base: Path, rotations: int) -> list[Path]:
     return [path for path in paths if path.exists()]
 
 
-def _read_records(path: Path, rotations: int) -> tuple[list[dict], dict[str, str]]:
+def _cache_key(path: Path, identity: tuple[int, int, int, int, int], digest: str) -> tuple:
+    return os.path.abspath(path), *identity, digest
+
+
+def _register_snapshot(path: Path, digest: str, identity: tuple[int, int, int, int, int],
+                       line_hashes: dict[int, str]) -> None:
+    global _snapshot_index_rows
+    if len(line_hashes) > MAX_SNAPSHOT_INDEX_ROWS:
+        _reject("native snapshot has too many rows for the bounded integrity index")
+    key = _cache_key(path, identity, digest)
+    with _snapshot_lock:
+        previous = _snapshot_indexes.pop(key, None)
+        if previous is not None:
+            _snapshot_index_rows -= len(previous)
+        while (_snapshot_indexes and
+               (len(_snapshot_indexes) >= MAX_SNAPSHOT_FILES or
+                _snapshot_index_rows + len(line_hashes) > MAX_SNAPSHOT_INDEX_ROWS)):
+            _, evicted = _snapshot_indexes.popitem(last=False)
+            _snapshot_index_rows -= len(evicted)
+        _snapshot_indexes[key] = dict(line_hashes)
+        _snapshot_index_rows += len(line_hashes)
+
+
+def _current_file_identity(path: Path) -> tuple[int, int, int, int, int]:
+    try:
+        named_before = os.lstat(path)
+        if not stat.S_ISREG(named_before.st_mode):
+            _reject("native snapshot path was replaced or is not a regular file")
+        fd = os.open(path, os.O_RDONLY | os.O_CLOEXEC | os.O_NOFOLLOW | os.O_NONBLOCK)
+    except OSError as exc:
+        _reject("native snapshot path unavailable on reuse: " + type(exc).__name__)
+    try:
+        before = os.fstat(fd)
+        after = os.fstat(fd)
+        named_after = os.lstat(path)
+        if (not stat.S_ISREG(before.st_mode) or
+                _file_identity(named_before) != _file_identity(before) or
+                _file_identity(before) != _file_identity(after) or
+                _file_identity(after) != _file_identity(named_after)):
+            _reject("native snapshot changed or was replaced on reuse")
+        return _file_identity(after)
+    finally:
+        os.close(fd)
+
+
+def _verify_cached_record(path: Path, expected_digest: str, line: int, record: dict) -> None:
+    if not HEX64.fullmatch(expected_digest):
+        _reject("native log digest absent")
+    absolute = os.path.abspath(path)
+    with _snapshot_lock:
+        key = next((candidate for candidate in reversed(_snapshot_indexes)
+                    if candidate[0] == absolute and candidate[-1] == expected_digest), None)
+        if key is None:
+            _reject("native file has no retained hash-bound snapshot index")
+        line_hashes = _snapshot_indexes[key]
+        _snapshot_indexes.move_to_end(key)
+    if _current_file_identity(path) != key[1:6]:
+        _reject("native file identity or metadata changed after snapshot")
+    expected_record_hash = line_hashes.get(line)
+    if (not isinstance(expected_record_hash, str) or
+            record.get("record_sha256") != expected_record_hash or
+            _digest_record(record) != expected_record_hash):
+        _reject("projected native record differs from its hash-bound source line")
+
+
+def _read_records(path: Path, rotations: int) -> tuple[list[dict], dict[str, str], dict[str, dict]]:
     records = []
     file_hashes = {}
+    snapshots = {}
     for item in _files(path, rotations):
-        raw, digest = _read_stable(item)
+        raw, digest, identity = _read_stable(item)
         file_hashes[str(item)] = digest
+        line_hashes = {}
         for number, line in enumerate(raw.splitlines(), start=1):
             if not line:
                 continue
@@ -111,7 +188,11 @@ def _read_records(path: Path, rotations: int) -> tuple[list[dict], dict[str, str
             if type(record) is not dict:
                 _reject("JSONL row is not an object")
             records.append((record, str(item), number))
-    return records, file_hashes
+            record_hash = record.get("record_sha256")
+            if isinstance(record_hash, str):
+                line_hashes[number] = record_hash
+        snapshots[str(item)] = {"identity": identity, "line_hashes": line_hashes}
+    return records, file_hashes, snapshots
 
 
 def _digest_record(record: dict) -> str:
@@ -141,35 +222,20 @@ def _process_identity(value: Any) -> tuple[int, str, str, str, str] | None:
     return pid, run_id, host, started_at, commit
 
 
-def _verify_file_record(path: Path, expected_file_sha: str, record: dict, *, line: int | None = None) -> None:
-    raw, digest = _read_stable(path)
-    if digest != expected_file_sha:
-        _reject("native file changed after projection")
-    matches = []
-    for number, encoded in enumerate(raw.splitlines(), start=1):
-        if line is not None and number != line:
-            continue
-        try:
-            parsed = json.loads(encoded, object_pairs_hook=_pairs, parse_constant=_no_constant)
-        except (json.JSONDecodeError, UnicodeDecodeError) as exc:
-            _reject("native record no longer parses: " + type(exc).__name__)
-        if parsed == record:
-            matches.append(parsed)
-    if len(matches) != 1 or record.get("record_sha256") != _digest_record(record):
-        _reject("projected native record does not match its self-hashed source line")
-
-
 def _read_serving(path: Path) -> tuple[dict[str, dict], dict[str, str]]:
-    records, hashes = _read_records(path, 8)
+    records, hashes, snapshots = _read_records(path, 8)
     by_id = {}
-    for record, source_path, _ in records:
+    for record, source_path, line_number in records:
         if record.get("schema") != SERVING_SCHEMA or record.get("record_sha256") != _digest_record(record):
             _reject("serving-call schema or self-hash differs")
         record_id = record.get("record_id")
         if not isinstance(record_id, str) or not record_id or record_id in by_id:
             _reject("serving record id absent or duplicated across retained log")
         by_id[record_id] = {"record": record, "path": source_path,
-                            "file_sha256": hashes[source_path]}
+                            "file_sha256": hashes[source_path], "line": line_number}
+    for source_path, snapshot in snapshots.items():
+        _register_snapshot(Path(source_path), hashes[source_path], snapshot["identity"],
+                           snapshot["line_hashes"])
     return by_id, hashes
 
 
@@ -219,7 +285,7 @@ def _declared_metrics(call: dict) -> list[dict]:
 def _events(path: Path) -> tuple[list[dict], dict[str, str], dict[str, dict], dict[str, str]]:
     if path.name != "usage_provenance.jsonl":
         _reject("explicit path must name usage_provenance.jsonl")
-    usage, usage_hashes = _read_records(path, 3)
+    usage, usage_hashes, usage_snapshots = _read_records(path, 3)
     serving_path = path.with_name("serving_calls.jsonl")
     serving, serving_hashes = _read_serving(serving_path)
     groups: dict[tuple[int, str, str], dict[str, Any]] = {}
@@ -241,6 +307,9 @@ def _events(path: Path) -> tuple[list[dict], dict[str, str], dict[str, dict], di
         group[event] = record
         group[event + "_path"] = source_path
         group[event + "_line"] = line_number
+    for source_path, snapshot in usage_snapshots.items():
+        _register_snapshot(Path(source_path), usage_hashes[source_path], snapshot["identity"],
+                           snapshot["line_hashes"])
     return list(groups.values()), usage_hashes, serving, serving_hashes
 
 
@@ -337,6 +406,7 @@ def native_rows(path) -> list[dict]:
                 "record": settled, "usage_path": group["settled_path"],
                 "usage_line": group["settled_line"], "usage_file_sha256": usage_hashes[group["settled_path"]],
                 "serving_path": joined["path"], "serving_file_sha256": joined["file_sha256"],
+                "serving_line": joined["line"],
                 "serving_record": native, "metric": metric, "value": value,
                 "logical_replays": [], "read_report": report,
                 "measurement_id": f"usage:{record['process'].get('run_id')}:{record['request_id']}:{final['call_id']}:{field_name}",
@@ -379,11 +449,13 @@ def native_rows(path) -> list[dict]:
 def project(native: dict) -> ClaimTuple:
     if type(native) is not dict or set(native) != {
         "record", "usage_path", "usage_line", "usage_file_sha256", "serving_file_sha256",
-        "serving_record", "serving_path", "metric", "value", "logical_replays", "read_report", "measurement_id",
+        "serving_record", "serving_path", "serving_line", "metric", "value",
+        "logical_replays", "read_report", "measurement_id",
     }:
         _reject("projection row shape differs")
-    if type(native["usage_line"]) is not int or native["usage_line"] <= 0:
-        _reject("usage source line is invalid")
+    if (type(native["usage_line"]) is not int or native["usage_line"] <= 0 or
+            type(native["serving_line"]) is not int or native["serving_line"] <= 0):
+        _reject("native source line is invalid")
     metric = native["metric"]
     if type(metric) is not dict:
         _reject("metric declaration absent")
@@ -410,9 +482,10 @@ def project(native: dict) -> ClaimTuple:
     physical_count = (serving_record.get("result") or {}).get(COUNTERS[source_field])
     if not _valid_count(physical_count) or value != physical_count:
         _reject("projected value differs from the joined physical counter")
-    _verify_file_record(Path(native["usage_path"]), native["usage_file_sha256"], record,
-                        line=native["usage_line"])
-    _verify_file_record(Path(native["serving_path"]), native["serving_file_sha256"], serving_record)
+    _verify_cached_record(Path(native["usage_path"]), native["usage_file_sha256"],
+                          native["usage_line"], record)
+    _verify_cached_record(Path(native["serving_path"]), native["serving_file_sha256"],
+                          native["serving_line"], serving_record)
     if not HEX64.fullmatch(native["usage_file_sha256"]) or not HEX64.fullmatch(native["serving_file_sha256"]):
         _reject("native log digest absent")
     if not GIT_SHA.fullmatch(str(record["process"].get("orch_commit") or "")):
