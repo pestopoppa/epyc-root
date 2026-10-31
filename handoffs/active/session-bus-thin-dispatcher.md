@@ -2018,9 +2018,10 @@ slate, it produces a fleet of stale artifacts that every liveness predicate read
     strictly worse than the defect. Present the block as now, and add a line naming the receipt, its
     path and its status, so the operator sees "this looks already signed" and decides. Suppression
     only becomes safe once the keyed-receipt contract above is real.
-  - [ ] **Same shape, same fix:** the C33 pre-validation notice re-fires every tick against
+  - [x] **Same shape, same fix:** the C33 pre-validation notice re-fires every tick against ✅ 2026-10-31 [source: 0b0f89efd84799ef881317771003c15f9794b66a; test: tests/test_c33_receipt_context.py; artifact: artifacts/engineering/c33-receipt-context-20261031/README.md] [no-belief: deterministic source controls; no live delivery claim]
     `mainA`'s 12-day-old `E5-THROTTLE-SCOPE-ERA-ROW-20260729`. Deduped per `gate_id` against durable
     evidence, but "the gate is stale/spent" is not among the states it can represent.
+    - 2026-10-31: source adds a deduplicated receipt-context notice without validating, re-signing or re-presenting the request. The integrated retained runner passed 19 controls; the prior noncompliant fixture deletions are disclosed in the linked artifact. No daemon reload or live delivery is claimed.
 - [x] **C40 (NEW) — a relayed backlog carries no age, so a fresh session cannot tell 12-day-old mail ✅ 2026-10-29 (audit: fix present: session_bus.py:1928 _print_staleness with --stale-after-h (text: FIXED, 5 tests)) [no-belief: audit-reconciliation]
   from this minute's.** Observed 2026-08-11 by `coordinator-agent`, filed by `mainD`. When the daemon
   came back after the 243h outage it relayed **703 messages** in one burst. `mainA` and `mainB`,
