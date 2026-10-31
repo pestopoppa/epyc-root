@@ -211,6 +211,7 @@ def _s4_omega_ab(tmp: Path) -> Path:
 
 
 BUILDERS = {
+    "inf34-a2-raw-prefill": lambda tmp: _helpers("test_inf34_a2_raw").write_fixture(tmp),
     "session-intercall-gap": lambda tmp: _helpers("test_session_gap_adapter").write_fixture(tmp),
     "orchestrator-serving-call": lambda tmp: _helpers("test_serving_call_adapter").write_fixture(tmp),
     "research-screen": _research_screen,

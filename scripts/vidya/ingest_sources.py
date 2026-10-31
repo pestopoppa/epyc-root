@@ -157,6 +157,8 @@ INF70_AGENT_RUNS = Path("/mnt/raid0/llm/tmp/inf70/agents")
 ORCHESTRATOR = Path("/mnt/raid0/llm/epyc-orchestrator")
 
 SOURCES: dict[str, Source] = {s.name: s for s in (
+    Source("inf34-a2-raw-prefill", "inf34_a2_raw", _files("raw-a2.observation.json"),
+           task="VB-INF34-A2-DIAG-WIRE", note="prospective exact original A2 observation; paired producer/source/view epoch; controls/partials decline; no crossover or protocol claim"),
     Source("ufh12-gs-coverage", "ufh12_gs_coverage", _files("*.belief_measurements.jsonl"), task="VB-UFH12-GS", note="prospective proxy-query and stored-token record coverage; explicit --path only"),
     Source("rtg57-vkq-comparison", "rtg57_vkq_comparison", _files("native-receipt.json"), task="VB-RTG57-VKQ-WIRE", note="prospective scoped T48/T96 timing; no adoption"),
     Source("rtg57-vkq-oracle", "rtg57_vkq_oracle", _files("native-receipt.json"), task="VB-RTG57-VKQ-WIRE", note="one model-free C5 numerical shape; no serving or adoption warrant"),
