@@ -368227,7 +368227,9 @@
     direct forward-KL self-distillation (the repo test proves it and has a freeze_backbone mode), but the paper has no frozen-trunk
     result. So the paper''s trunk-side benefits do not transfer to restoring or training heads on fixed served weights. What transfers
     is (a) the case for the verifier''s own distribution over hard labels as the drafter target, as a variance argument, and (b) a memory
-    trick that gets the exact KL gradient through hard-label fused CE kernels from a d-wide teacher hidden, without V-wide teacher logits.'
+    trick that gets the exact KL gradient through hard-label fused CE kernels from a d-wide teacher hidden, without V-wide teacher logits.
+    2026-10-31 (Stage-2 close-out): dive-surfaced sources DECLINED: arXiv 2603.23911 and arXiv 2602.06019 (MTP self-distillation; same
+    axis as the MTP-2 probe arm C, no stack decision depends on them).'
 - id: intake-2549
   arxiv_id: null
   url: https://github.com/JaydenTeoh/Soft-MTP
@@ -368464,7 +368466,8 @@
     NUPA 48.6 -> 100 is the CHIP-8 model. The "one internally inconsistent blog figure" noted at stage 1 is an image and was not readable
     as text; the visible inconsistency is the NUPA row attribution. In the v2 re-run the Python-tool arm is the firmware on a reference
     bridge, not a Python interpreter, so the DeepMind comparison shows equal-tool-semantics parity, not an in-weights advantage over
-    an external tool.'
+    an external tool. 2026-10-31 (Stage-2 close-out): dive-surfaced sources DECLINED: arXiv 2102.11174 Schlag et al. (fast-weight background
+    theory; no actionable beyond MEM-1).'
 - id: intake-2551
   arxiv_id: '2609.40316'
   url: https://arxiv.org/abs/2609.40316
@@ -368783,22 +368786,6 @@
   - claim_index: 3
     kind: heading-and-hash
     locator: card Model details
-    quote: 'Without audio, use d1-2B: it is stronger on text and single boxes, reports missing values more often, and is better calibrated.'
-    quote_sha256: 992f7a984ba6b7237ef2aeae8b6d2de682452ae70e483b5ae01a4832a8c754de
-    source_revision: HF LiquidAI/d1-Omni-2B model card HTML sha256-12 6e403497c50c plus LiquidAI/d1-Omni-2B-GGUF card (lastModified
-      2026-10-28), retrieved 2026-10-31
-    verified_by: research-intake/stage2
-  - claim_index: 3
-    kind: heading-and-hash
-    locator: card Model details
-    quote: Long spoken passages lose much of their accuracy, most of all outside Latin-script languages.
-    quote_sha256: a38eac701cb0aae63a3d3b94be3712704626138b98a49a935feb13a97f6ebf3b
-    source_revision: HF LiquidAI/d1-Omni-2B model card HTML sha256-12 6e403497c50c plus LiquidAI/d1-Omni-2B-GGUF card (lastModified
-      2026-10-28), retrieved 2026-10-31
-    verified_by: research-intake/stage2
-  - claim_index: 3
-    kind: heading-and-hash
-    locator: card Model details
     quote: LFM Open License v1.0
     quote_sha256: 7030313f0d4d0fe63c692584a6f52e521c4257fc8d2e47ec5a31e86f6d49f3e4
     source_revision: HF LiquidAI/d1-Omni-2B model card HTML sha256-12 6e403497c50c plus LiquidAI/d1-Omni-2B-GGUF card (lastModified
@@ -368817,7 +368804,9 @@
   dive_corrections: '2026-10-31 (Stage 2, wave 1): Overturned the "no GGUF/llama.cpp path" load-bearing claim: LiquidAI publishes d1-Omni-2B-GGUF
     and d1-2B-GGUF (HF API, updated 2026-10-28) with upstream llama.cpp support and a /v1/systemone endpoint covering noul/choice/score.
     Also: license is LFM Open License v1.0 (to be read before use), audio hurts on long/non-Latin speech, and the lineup includes text-only
-    d1-2B and d1-3B that are not in the index and beat Omni on text. All scores are vendor-reported, none independently replicated here.'
+    d1-2B and d1-3B that are not in the index and beat Omni on text. All scores are vendor-reported, none independently replicated here.
+    2026-10-31 (second reader): main dropped anchors judged not to support their claim, or narrowed the claim wording to what the anchor
+    supports.'
 - id: intake-2554
   arxiv_id: null
   url: https://huggingface.co/LiquidAI/LFM3-Omni-2B
@@ -369099,7 +369088,8 @@
     from verifier coverage, not arithmetic. Original Volta cannot model async copies, async tensor-core ops, shuffles, packed formats
     and similar features, so the agent is pushed back into a slower subset. The extended verifier is explicitly unsound or unproven
     (TCB 42 to 60 kLoC). The paper''s stress-input differential tester is not visible in the released PTX Gym, which uses plain randn/rand
-    with fixed seed 42 and rtol=atol up to 1e-1 per kernel.'
+    with fixed seed 42 and rtol=atol up to 1e-1 per kernel. 2026-10-31 (Stage-2 close-out): dive-surfaced sources DECLINED: arXiv 2608.12004
+    RealisticTritonBench (already cited as adjacent contradicting evidence; title verified).'
 - id: intake-2556
   arxiv_id: null
   url: https://github.com/francois141/triton_ai_compiler
@@ -369278,7 +369268,8 @@
     with a fixed seed and per-kernel tolerance up to 1e-1. Prompts embed per-kernel human optimization hints (GEMM epilogue, conv gather
     offsets, FA semantics), which the paper does not disclose. The in-loop Volta check is off by default and, when on, samples 4 output
     elements of CTA 0 and pattern-matches "EQUIVALENT", so it is not a full proof in the released harness. The repo has no license in
-    its tree (not checked beyond the file list).'
+    its tree (not checked beyond the file list). 2026-10-31 (Stage-2 close-out): dive-surfaced sources DECLINED: github.com/CharlyCst/volta
+    (PTX Gym''s bundled Volta fork; bears only on an NVIDIA-side claim we do not cite).'
 - id: intake-2557
   arxiv_id: null
   url: https://github.com/francois141/ptx_verifier
@@ -370047,7 +370038,8 @@
     C, which has no cycle timing (derived ratio ~4%). The concurrency claim is narrowed: the Domino/DSpark arms are unreleased reimplementations,
     DSpark beats DFlash in some Llama cells, and Domino''s own SGLang data contradicts the inversion. Most important for us: DCOCO omits
     LiLiCorr and DFlash2, and our production DFlash2 drafter ALREADY carries a learned top-16 candidate-lattice selector (rank-256 bilinear
-    transition score + prefix-first walk). So "port the corrector" means replacing an existing selector, not adding a missing one.'
+    transition score + prefix-first walk). So "port the corrector" means replacing an existing selector, not adding a missing one. 2026-10-31
+    (Stage-2 close-out): dive-surfaced sources DECLINED: aiweekly.co DCOCO alert (press restatement of the abstract, not corroboration).'
 - id: intake-2562
   arxiv_id: null
   url: https://github.com/ekzhang/resin
@@ -371228,7 +371220,8 @@
     why: the thinking-reduction numbers motivating any use of this checkpoint
   dive_corrections: '2026-10-31 (Stage 2, wave 1): Stage 1 said GGUF list is BF16 to IQ4_XS: confirmed, with exact sizes. New: our stack
     already has the Flash-Next MTP head from unsloth (no FP8 re-download needed), so the Axis-E motivation in the stage-1 recommended
-    action is already met; ThinkingCap offers no new MTP capability, only an MTP-compatible finetuned trunk.'
+    action is already met; ThinkingCap offers no new MTP capability, only an MTP-compatible finetuned trunk. 2026-10-31 (Stage-2 close-out):
+    dive-surfaced sources DECLINED: bottlecapai/ThinkingCap-Qwen3.8-Flash-Next-GGUF card (already read inside this dive).'
 - id: intake-2573
   arxiv_id: null
   url: https://github.com/anomalyco/hex
@@ -371339,8 +371332,9 @@
     keys/queries; ROM is 2-hot reads; RAM 16 key heads x 2 value heads x 128 rows.'
   - 'Numerics: bf16 is bit-exact against the IR on the fla chunk (prefill) and fused-recurrent (decode) kernels, 18 runs on an L4; fp32
     gives 0 wrong tokens but 70-400 dims per run are not bit-exact (needs power-of-2 q scales the kernels lack).'
-  - README benchmark rows for the RISC-V model are n=40 per set; the Python-tool arm in the v2 re-run is the firmware on a reference
-    bridge, not a Python interpreter; NUPA/MMLU rows belong to the CHIP-8 model.
+  - 'README benchmark rows for the RISC-V model are n=40 per set; NUPA/MMLU rows belong to the CHIP-8 model. Sources disagree on the
+    Python-tool arm: the README describes base Qwen calling a real Python interpreter, while rv32.md describes the v2 re-run arm as
+    the firmware on a reference bridge.'
   - README reports multi-session recall (83.3 vs 78.9) and changed-facts (90.0 vs 83.3) for the filesystem model (rv-store branch, not
     read).
   techniques:
@@ -371467,7 +371461,9 @@
     locations (alpha and beta are saturated by weights, not constants; the "one-hot key" is built from the t-1 token through the short
     conv); the bf16-exact / fp32-not-bit-exact finding; and that the README Python-tool arm label conflicts with rv32.md for the v2
     runs. The repo HEAD holds both generations (CHIP-8 at top level, RISC-V under experimental/riscv with its own copy of the package),
-    so a reader must not mix their benchmark tables.'
+    so a reader must not mix their benchmark tables. 2026-10-31 (Stage-2 close-out): dive-surfaced sources DECLINED: github.com/divagr18/QwenPU
+    (vector-unit demo; no use case without a tool channel, MEM-3 declines in-weights compute on a bandwidth-bound host). 2026-10-31
+    (second reader): main dropped anchors judged not to support their claim, or narrowed the claim wording to what the anchor supports.'
 - id: intake-2575
   arxiv_id: null
   url: https://huggingface.co/LiquidAI/LFM3-Audio-2B-GGUF
@@ -371633,13 +371629,6 @@
     quote_sha256: b72e795b0e27ba1e8dd7fc8087cab2955e8340c573c44457dbae10115ff8b3dc
     source_revision: github.com/thu-nics/C2C @ 5eac72b (depth 1), retrieved 2026-10-31
     verified_by: research-intake/stage2
-  - claim_index: 0
-    kind: line-range
-    locator: README.md intro @ 5eac72b
-    quote: with 2.0× speedup in latency.
-    quote_sha256: a969b88bf0fc25b1bc8b96322ea506ab06c2244f4078b2f64c42fef8f10b0890
-    source_revision: github.com/thu-nics/C2C @ 5eac72b (depth 1), retrieved 2026-10-31
-    verified_by: research-intake/stage2
   claim_corrections:
   - claim_index: 0
     effect: unaffected
@@ -371650,4 +371639,1686 @@
     why: repo headline numbers duplicate the paper claims and are stale relative to v2
   dive_corrections: '2026-10-31 (Stage 2, wave 1): Confirmed. Added: README numbers disagree with paper v2; only HF transformers/CUDA
     path exists; there is no llama.cpp, GGUF, or recurrent-layer support. Repo is a research harness (rosetta package, 3.4k lines in
-    model/) not a serving library.'
+    model/) not a serving library. 2026-10-31 (second reader): main dropped anchors judged not to support their claim, or narrowed the
+    claim wording to what the anchor supports.'
+- id: intake-2577
+  arxiv_id: null
+  url: https://github.com/vllm-project/vllm/issues/55357
+  source_type: repo
+  title: 'vLLM #55357: Qwen3.8-Flash-Next (qwen4_exp) + MTP episodic 0% draft acceptance and repetition collapse in thinking block'
+  categories:
+  - speculative_decoding
+  - inference_serving
+  - ssm_hybrid
+  novelty: medium
+  relevance: high
+  discovered_via: expansion
+  expanded_from: intake-2572
+  verdict: adopt_patterns
+  ingested_date: '2026-10-31'
+  authors:
+  - vLLM issue reporter (NVFP4 SM120 pod)
+  - tgmerritt
+  - ZJY0516
+  - jschmied
+  key_claims:
+  - 'Reporter: vLLM nightly 73029d4 serving Qwen3.8-Flash-Next NVFP4 with MTP n=3 shows episodic windows of exactly 0 draft acceptance
+    (~2,000 drafted, 0 accepted), generation pinned at 64-70 tok/s vs 95-135 healthy, and endless repetition inside the thinking block
+    ending only at finish_reason=length; lifetime acceptance 20% (5.35M drafted / 1.09M accepted) over 2,923 ten-second windows.'
+  - 'Reporter attribution (generic engine-level MTP/spec-decode state bug, supported by a Gemma 4 26B failure with the same signature)
+    is NOT established: a commenter notes Gemma is not mamba, and the later root-cause comment says the Gemma observation is a different
+    mechanism.'
+  - 'Root cause found in-thread by jschmied (GB10 reproducer): with speculation configured the Mamba block table has 1+num_speculative_blocks
+    columns, the prefill state slots are passed as a strided column view, the PLE short-conv Triton kernels load the slot with unit
+    stride, so prefill rows r>=1 write conv state into request 0 speculative checkpoint blocks; trigger = two or more prompts prefilled
+    in the same scheduler step. Acceptance collapse is downstream of corrupted target output, not a drafter fault. Fix is vLLM PR #55375
+    (API: closed, merged 2026-09-05T14:02Z); jschmied reports 0 of 20 corrupted cells after the fix vs 30-50% before.'
+  - 'Architecture specificity: the fixed mechanism is specific to the vLLM qwen4_exp PLE short-conv kernels plus the vLLM Mamba block-table
+    layout; it does not transfer by code to llama.cpp, but the failure class (per-request recurrent-state corruption visible only under
+    batch-composition conditions with speculation configured) is the relevant risk for any hybrid-model spec-decode path.'
+  techniques:
+  - MTP speculative decoding
+  - per-request acceptance telemetry
+  - multi-prefill-step reproducer
+  - strided state-index bug
+  reported_results:
+  - 'Issue body Fingerprint table: lifetime draft acceptance 20% (5.35M drafted / 1.09M accepted); healthy 50-85% at 95-135 tok/s; collapse
+    windows 0.000 per position at 64-70 tok/s; worst request 4h57m to the 1M window.'
+  - 'jschmied comment 2026-09-05T11:08Z table: dev401 MTP n=3 cache on, batches with >=1 corrupted request 0/10, 3/10, 4/10, 4/10, 4/10,
+    5/10 for c=1/2/3/4/5/8; dev352 no speculation 0/46; cache off c=4 1/3.'
+  - 'jschmied comment 13:00Z: fix takes corrupted-cell rate from 30-50% to 0 of 20 cells.'
+  cross_references:
+    chapters: []
+    handoffs:
+    - cpu-decode-roofline-program.md
+    - qwen-mtp-llamacpp-port.md
+    - speculative-decoding-mtp-refresh.md
+    experiments: []
+    intake_entries:
+    - intake-2572
+  recommended_actions:
+  - Add a per-request acceptance-collapse plus repetition canary to the Flash-Next MTP serving gate (SPEC2-1).
+  - Add a simultaneous-multi-prefill equal-length concurrency probe, MTP on vs off, to G2-CONC (SPEC2-2).
+  credibility_score: 2
+  contradicting_evidence:
+  - 'Reporter generic-engine-bug attribution is contradicted by the thread: ZJY0516 (Gemma not mamba) and jschmied (Gemma is a different
+    mechanism, no PLE layer).'
+  referenced_arxiv_ids: []
+  notes: 'Primary text = GitHub REST API issue JSON + comments JSON (5 comments), retrieved 2026-10-31. Issue state open at retrieval.
+    Reporter hours-long single-pod episodes were not explicitly tied to the multi-prefill trigger by the reporter; jschmied explains
+    episodic behaviour by the need for two prompts landing in one prefill-only step. Related issue numbers listed by the reporter (#47194,
+    #52475, #53180, #52244, #54713, llama.cpp #28158/#28286) were NOT read. Not read in dive: PR #55375 diff, PRs #52244/#54713/#55467,
+    issues #47194/#52475/#53180/#50837/#39273, llama.cpp #28158/#28286, reporter raw state dump (not provided), jschmied determinism-investigation
+    notes.'
+  verification: dive-verified
+  handoffs_updated: []
+  handoffs_created: []
+  source_revision: vllm-project/vllm issue 55357 via GitHub API, issue.json sha256-12 0c7bd11c8a93, comments.json sha256-12 ed5a6ffd104e,
+    retrieved 2026-10-31
+  reader_should_conclude: 'Cite as: an episodic Flash-Next MTP acceptance collapse in vLLM was root-caused by a commenter to a strided
+    Mamba state-index bug in the qwen4_exp PLE short-conv kernels, triggered by multi-prefill scheduler steps, fixed by merged PR #55375.
+    Do NOT carry: the generic engine-bug framing, the Gemma cross-model inference, or any claim that llama.cpp MTP shares the defect.
+    Use as justification for a per-request acceptance/repetition canary and a simultaneous-prefill concurrency probe.'
+  read_depth: FULL
+  claim_anchors:
+  - claim_index: 0
+    kind: heading-and-hash
+    locator: issue body Summary
+    quote: generation pins to the 1-token/step spec-decode floor (~66 tok/s vs 95–135 tok/s healthy at 50–85% acceptance on the same
+      pod)
+    quote_sha256: 671bea0edcc888c75bbbf1a6a611f8ed6c96d0bf691d79b489fd34ee3fa43836
+    source_revision: vllm-project/vllm issue 55357 via GitHub API, issue.json sha256-12 0c7bd11c8a93, comments.json sha256-12 ed5a6ffd104e,
+      retrieved 2026-10-31
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: heading-and-hash
+    locator: comment ZJY0516 2026-09-05T01:51Z
+    quote: Gemma is not mamba, so the bug is not specific to mamba
+    quote_sha256: 6ffd217a4aaf2cbea2f79868b64528513e55cd9e101fd0b8a344d416d36b8eea
+    source_revision: vllm-project/vllm issue 55357 via GitHub API, issue.json sha256-12 0c7bd11c8a93, comments.json sha256-12 ed5a6ffd104e,
+      retrieved 2026-10-31
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: heading-and-hash
+    locator: comment jschmied 2026-09-05T13:00Z
+    quote: Your Gemma 4 observation would be a different mechanism (no PLE layer there)
+    quote_sha256: 0b6a99689988b9b7b38c91887674941536cd851a67fa0fcb45afa49e4fa50d17
+    source_revision: vllm-project/vllm issue 55357 via GitHub API, issue.json sha256-12 0c7bd11c8a93, comments.json sha256-12 ed5a6ffd104e,
+      retrieved 2026-10-31
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: heading-and-hash
+    locator: comment jschmied 2026-09-05T11:08Z
+    quote: the corruption starts when two or more prompts are prefilled in the same scheduler step with MTP enabled.
+    quote_sha256: a297b95c4998766a2dd6112e88ff65f8dd94cd916b42bf8ded82aba90f06a7cf
+    source_revision: vllm-project/vllm issue 55357 via GitHub API, issue.json sha256-12 0c7bd11c8a93, comments.json sha256-12 ed5a6ffd104e,
+      retrieved 2026-10-31
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: heading-and-hash
+    locator: comment jschmied 2026-09-05T13:00Z
+    quote: The PLE short-conv kernels load the slot with a unit stride
+    quote_sha256: 6db14aae121337c17e8fa2b9b9344b0ff8e25ecc9424cff311539cfaa6dd8d95
+    source_revision: vllm-project/vllm issue 55357 via GitHub API, issue.json sha256-12 0c7bd11c8a93, comments.json sha256-12 ed5a6ffd104e,
+      retrieved 2026-10-31
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: heading-and-hash
+    locator: comment jschmied 2026-09-05T13:00Z
+    quote: Without speculation the view is contiguous (one column)
+    quote_sha256: 943d9c19a67c112e7f82a254b19d55f8a6773b4cb17067d93d0fee0e3df041b3
+    source_revision: vllm-project/vllm issue 55357 via GitHub API, issue.json sha256-12 0c7bd11c8a93, comments.json sha256-12 ed5a6ffd104e,
+      retrieved 2026-10-31
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: heading-and-hash
+    locator: issue body Related upstream
+    quote: 'llama.cpp side, same model family: ggml-org/llama.cpp#28158 (MTP/DFlash emits OOB token id), #28286 (draft-MTP cross-slot
+      contamination under --parallel>1)'
+    quote_sha256: 9f268bb4e1ef0253930757060a58abb86ad27b07600824a8326437c8dfc62774
+    source_revision: vllm-project/vllm issue 55357 via GitHub API, issue.json sha256-12 0c7bd11c8a93, comments.json sha256-12 ed5a6ffd104e,
+      retrieved 2026-10-31
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 1
+    effect: narrowed
+    note: Issue title/body headline implies a generic engine MTP bug; the thread root-causes the Qwen-family trigger to a qwen4_exp-specific
+      kernel stride bug.
+  - claim_index: 3
+    effect: narrowed
+    note: Do not cite as a llama.cpp defect; cite only as a risk class that motivates a canary.
+  depends_on: []
+  dive_corrections: '2026-10-31 (Stage 2, wave 2 (Stage 2b)): Stage-1 record created in the same pass. The issue headline reads as a
+    generic MTP acceptance collapse and attributes it to engine-level draft-group state divergence; the in-thread comments overturn
+    that framing: the Qwen-family cause is a strided state-slot index passed to PLE short-conv kernels under speculation configured,
+    hit when two or more prompts prefill in one scheduler step, fixed by PR #55375 merged 2026-09-05. The repetition loop and 0% acceptance
+    are downstream symptoms of corrupted target conv state, not a drafter-vs-thinking-text phenomenon, so the premise that acceptance
+    collapses because in-thinking text is repetitive (a healthy drafter predicts loops trivially) is wrong direction: the collapse causes
+    the loop. Architecture-specific (vLLM + qwen4_exp PLE conv), mechanism does not map onto llama.cpp code. 2026-10-31 (Stage-2 close-out):
+    dive-surfaced sources DECLINED: vllm-project/vllm PR #55375 (fix diff; root cause and merge already settled from the issue thread,
+    and the code is vLLM-specific) and github.com/jschmied/qwen38-flash-next-gb10 (GB10/vLLM reproducer notes; no llama.cpp bearing).
+    Main recommendation at the wave-2 close-out under the operator pre-approval.'
+- id: intake-2578
+  arxiv_id: '2606.15007'
+  url: https://arxiv.org/abs/2606.15007
+  source_type: paper
+  title: 'Nemotron 3 Ultra: Open, Efficient Mixture-of-Experts Hybrid Mamba-Transformer Model for Agentic Reasoning'
+  categories:
+  - speculative_decoding
+  - training_distillation
+  - ssm_hybrid
+  - moe_optimization
+  novelty: medium
+  relevance: medium
+  discovered_via: expansion
+  expanded_from: intake-2548
+  verdict: adopt_patterns
+  ingested_date: '2026-10-31'
+  authors:
+  - NVIDIA
+  key_claims:
+  - Sec 3.4 MTP Boosting continues training the MTP head from the MOPD checkpoint with the backbone frozen for the whole phase; only
+    the MTP head receives gradient updates.
+  - 'Train/inference mismatch fix: the hidden states fed to MTP step k are sampled from the set produced at MTP steps 1..k-1, instead
+    of only the previous step outputs, to mimic the noisy mixed backbone/MTP hidden-state context at inference.'
+  - 'Loss: temperature-scaled forward KL against the backbone logits (T=2, T^2 factor, N_mtp=7 steps), gold-token cross-entropy disabled;
+    data = on-policy rollouts from the MOPD checkpoint at temp 1 over Nemotron-Post-Training-Dataset-v2 and Nemotron-RL-Super-Training-Blends
+    prompts; 12K steps, global batch 64, sequences capped at 8K tokens.'
+  - 'Result (SPEED-Bench qualitative split, draft length 7, Table 6): average acceptance length 4.387 -> 4.584 greedy and 4.165 -> 4.331
+    at temp 1; every listed category improves; authors state relative speculative-decoding speedup gains of 3.15% (summarization) to
+    5.82% (coding). No ablation separates the sampled-hidden-state change from the KL loss within Sec 3.4.'
+  techniques:
+  - MTP boosting
+  - frozen-backbone head fine-tuning
+  - forward-KL self-distillation
+  - hidden-state sampling over MTP steps
+  reported_results:
+  - 'Table 6 Average (greedy; temp1 in parens): Nemotron 3 Ultra 4.387 (4.165); +MTP-Boosting 4.584 (4.331); Qwen3.5-397B-A17B 4.580
+    (4.423); DeepSeek-V4-Flash 2.667 (2.500).'
+  - Table 6 Coding 5.152 (4.739) -> 5.452 (4.872); Math 5.127 (4.661) -> 5.343 (4.733); Roleplay 2.801 (2.767) -> 2.940 (2.856).
+  - 'Table 6 caption: relative speedup improvements from 3.15% on summarization to 5.82% on coding (derived from acceptance length by
+    the authors; no wall-clock setup given in the section).'
+  cross_references:
+    chapters: []
+    handoffs:
+    - dflash2-block-drafter-experimental-build.md
+    - speculative-decoding-mtp-refresh.md
+    - cpu-decode-roofline-program.md
+    experiments: []
+    intake_entries:
+    - intake-2548
+  recommended_actions:
+  - Record the recipe as a training option under DF2-DRAFTER-CAPABILITY / any future Flash-Next head refresh (SPEC2-4); no probe until
+    a trainable head exists.
+  credibility_score: 2
+  contradicting_evidence: null
+  referenced_arxiv_ids: []
+  notes: 'Only Sec 3.4 settled (as scoped). Source = arxiv.org/html/2606.15007 (v1 only; submitted 12 Jun 2026). Abs-page title matched.
+    Table 6 reached via HTML-to-text; the Average, Coding, Math, Roleplay rows read cleanly, other category rows present in nem.txt
+    lines ~1136-1196. Hardware/serving setup for the SPEED-Bench AL measurement not stated in Sec 3.4 and not hunted elsewhere. Not
+    read in dive: Everything outside Sec 3.4 and Table 6 except scattered MTP mentions (RL rollout MTP k sweep, deployment sections);
+    SPEED-Bench reference not read.'
+  verification: dive-verified
+  handoffs_updated: []
+  handoffs_created: []
+  source_revision: arXiv:2606.15007v1 HTML sha256-12 e351966ed0be, retrieved 2026-10-31
+  reader_should_conclude: Cite Sec 3.4 as one vendor-reported recipe (frozen backbone, forward-KL T=2, sampled MTP hidden states, 12K
+    steps bs64) giving +0.2 average acceptance length at draft length 7 on SPEED-Bench. Do NOT carry it as a wall-clock speedup, as
+    a CPU/llama.cpp result, or as evidence the sampled-hidden-state trick vs the KL loss is responsible (no ablation).
+  read_depth: PARTIAL
+  claim_anchors:
+  - claim_index: 0
+    kind: heading-and-hash
+    locator: v1 Sec 3.4 Training Procedure
+    quote: The backbone is fixed for the entire training phase, and only the MTP head receives gradient updates.
+    quote_sha256: 34cf19ca2a62d1cf46528f2d72df55eb17d83eb6ea9747b3e369a93b0f6867c6
+    source_revision: arXiv:2606.15007v1 HTML sha256-12 e351966ed0be, retrieved 2026-10-31
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: heading-and-hash
+    locator: v1 Sec 3.4 Loss
+    quote: We use a temperature-scaled forward-KL loss against the backbone’s logits.
+    quote_sha256: a3eaccbd2de6c1430fa4ff1af9c3801943a1859023c87bb35f0673c11517b84b
+    source_revision: arXiv:2606.15007v1 HTML sha256-12 e351966ed0be, retrieved 2026-10-31
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: heading-and-hash
+    locator: v1 Sec 3.4 Data
+    quote: The MTP head was trained on these rollouts for 12K steps at a global batch size of 64, with sequences capped at 8K tokens.
+    quote_sha256: b81958ef5e2fa66cc4a4292b0fe2a82aefbcc0a578c0cf1a1359760ce21905bc
+    source_revision: arXiv:2606.15007v1 HTML sha256-12 e351966ed0be, retrieved 2026-10-31
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: heading-and-hash
+    locator: v1 Table 6 caption
+    quote: yielding relative speculative-decoding speedup improvements from 3.15% on summarization tasks to 5.82% on coding tasks.
+    quote_sha256: cac9c0a61230574651bb34364fcafbd87e83b520194d9fcec963b7296bcc240e
+    source_revision: arXiv:2606.15007v1 HTML sha256-12 e351966ed0be, retrieved 2026-10-31
+    verified_by: research-intake/stage2
+  claim_corrections: []
+  depends_on: []
+  dive_corrections: '2026-10-31 (Stage 2, wave 2 (Stage 2b)): Stage-1 record created in the same pass; abs page title matched the expected
+    Nemotron 3 Ultra paper. Section 3.4 verified as scoped. Note the speedup percentages are acceptance-length-derived relative figures
+    (3.15-5.82%), much smaller than the headline impression of boosting; the AL gain is +0.2 on average at draft length 7.'
+- id: intake-2579
+  arxiv_id: null
+  url: https://github.com/ggml-org/llama.cpp/pull/31269
+  source_type: repo
+  title: 'llama.cpp PR 31269: server realtime conversation and live transcription on /v1/realtime (LFM3-Audio / LFM3-Omni)'
+  categories:
+  - multimodal
+  - inference_serving
+  - local_inference
+  novelty: medium
+  relevance: high
+  discovered_via: expansion
+  expanded_from: intake-2575
+  verdict: worth_investigating
+  ingested_date: '2026-10-31'
+  authors:
+  - tdakhran (PR author)
+  - ngxson (contributor/reviewer)
+  key_claims:
+  - PR 31269 (merged 2026-10-28, commit 8ca4060b7, +1423/-14 in 10 files; server-realtime.cpp is 949 new lines) extends the llama-server
+    /v1/realtime WebSocket endpoint from transcription-only to a realtime conversation with streaming audio input and audio output plus
+    live ASR, for LFM3-Audio-2B-GGUF and LFM3-Omni-2B-GGUF.
+  - 'Testing stated in the PR body: correctness checked against the reference HF implementations; F32/Q8_0/Q4_0 quantizations smoke-tested
+    on Mac and CUDA. No HIP/ROCm, no CPU-only x86 result, and no latency number appears in the PR body.'
+  - 'Protocol: OpenAI-realtime-shaped. Client events session.update, input_audio_buffer.append/commit, conversation.item.create, response.create,
+    response.cancel; server events response.output_text.delta and response.output_audio.delta (base64 PCM16 mono) plus transcription
+    deltas; session.type is realtime (conversation, default) or transcription; output_modalities text/audio/interleaved.'
+  - 'There is NO server-side VAD or turn detection: session.created advertises turn_detection null, so the client decides when the user
+    turn ends (commit / response.create) and barge-in is a client-sent response.cancel. The audio is prefilled as it arrives so the
+    response starts right after the last chunk.'
+  - 'Tool calls are NOT in this PR (no tool handling in its 10 files; the index records them in follow-up PR 31287). Dependencies: builds
+    on the earlier /v1/realtime transcription endpoint (PR 30636), the mtmd streaming-audio infrastructure (PR 30629) and the LFM3 audio
+    architecture (PR 31257); the README diff edits an existing realtime section.'
+  - 'Live ASR (LFM3-Audio checkpoints, template asr): text for every 0.96 s of audio; context restarts at a pause after 15 s and always
+    after 30 s; live transcription only in sessions opened with ?intent=transcription.'
+  techniques:
+  - stateful streaming audio prefill
+  - OpenAI-realtime-compatible WebSocket events
+  - interleaved text+audio output modalities
+  reported_results:
+  - 'PR body: F32/Q8_0/Q4_0 smoke-tested on Mac and CUDA (no timing figures)'
+  - examples/realtime_client.py prints "first output N ms after the end of the input" per run; the PR reports no value (277 ms is quoted
+    by PR 31287, recorded in intake-2575)
+  cross_references:
+    chapters: []
+    handoffs:
+    - conversation-stack.md
+    experiments: []
+    intake_entries:
+    - intake-2575
+    - intake-2554
+    - intake-2383
+  recommended_actions:
+  - 'Do not port for ASR alone: the realtime server needs the LFM3 audio arch (PR 31257) which is outside frozen v10 (10303). If the
+    interlocutor bake-off (CS-8 D1) is opened, a scratch upstream build of this PR is the cheapest native-duplex arm; the CS-22 controller
+    keeps owning turn detection because the server provides none.'
+  credibility_score: null
+  contradicting_evidence: null
+  referenced_arxiv_ids: []
+  notes: ' Not read in dive: Full diffs of server-context.cpp, server-task.cpp, server-chat.cpp; the three gists/demos in comments.
+    Credibility note: Vendor/author PR; read the PR body, issue comments (4, none carry measurements), the 10-file diff metadata and
+    the README/server-realtime/client patches. Not read: full diff of server-context.cpp/server-task.cpp.'
+  verification: dive-verified
+  handoffs_updated: []
+  handoffs_created: []
+  source_revision: ggml-org/llama.cpp PR 31269 merge commit 8ca4060b7e30e76baaa5670ee1ec1b760b7f8552, GitHub API 2026-10-31
+  reader_should_conclude: Cite for the /v1/realtime event contract and for the fact that llama-server provides no turn detection, so
+    CS-22 (VAD / endpointing) stays our job. Do not claim ROCm or EPYC CPU support or any latency from this PR.
+  read_depth: FULL
+  claim_anchors:
+  - claim_index: 0
+    kind: heading-and-hash
+    locator: pr31269 body Overview
+    quote: Supports streaming audio input and audio output.
+    quote_sha256: c800ac803304f030d0fe8c12ab47fb7d46098cdac622a292c61df72897b0218f
+    source_revision: ggml-org/llama.cpp PR 31269 merge commit 8ca4060b7e30e76baaa5670ee1ec1b760b7f8552, GitHub API 2026-10-31
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: heading-and-hash
+    locator: pr31269 body Additional information
+    quote: F32/Q8_0/Q4_0 quantization smoke-tested on Mac and CUDA.
+    quote_sha256: 13753f7f0776e983518391e9d70039468bea5a2be682e858ec48bbcea2c4fc29
+    source_revision: ggml-org/llama.cpp PR 31269 merge commit 8ca4060b7e30e76baaa5670ee1ec1b760b7f8552, GitHub API 2026-10-31
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: line-range
+    locator: tools/server/README.md @8ca4060b7
+    quote: '`response.cancel`: stops the response being generated'
+    quote_sha256: 432805eb9f60c39c4935d9a2bbc176ccd856a7b3354d0172862f8bee2c58f330
+    source_revision: ggml-org/llama.cpp PR 31269 merge commit 8ca4060b7e30e76baaa5670ee1ec1b760b7f8552, GitHub API 2026-10-31
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: line-range
+    locator: tools/server/server-realtime.cpp @8ca4060b7
+    quote: '{"turn_detection", nullptr}'
+    quote_sha256: bd9b3c42257f56a95af7a6e768f1da00d614687d94dbc857c1608ad76deba38c
+    source_revision: ggml-org/llama.cpp PR 31269 merge commit 8ca4060b7e30e76baaa5670ee1ec1b760b7f8552, GitHub API 2026-10-31
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: line-range
+    locator: tools/server/README.md @8ca4060b7
+    quote: The audio is prefilled as it arrives, so the response starts right after the last chunk.
+    quote_sha256: c87f5e24a5f6c997c0d7074bf37a1281ac7e4adebbf27ff1608d0ce05703a3ae
+    source_revision: ggml-org/llama.cpp PR 31269 merge commit 8ca4060b7e30e76baaa5670ee1ec1b760b7f8552, GitHub API 2026-10-31
+    verified_by: research-intake/stage2
+  - claim_index: 5
+    kind: line-range
+    locator: tools/server/README.md @8ca4060b7
+    quote: the text of every 0.96 s of audio follows it). A live ASR model restarts its context at a pause after 15 s and always after
+      30 s
+    quote_sha256: b2d5cb01ead70fee181a1ce81e090b4e405ecec377f5d1dfe40b1134ae4a4276
+    source_revision: ggml-org/llama.cpp PR 31269 merge commit 8ca4060b7e30e76baaa5670ee1ec1b760b7f8552, GitHub API 2026-10-31
+    verified_by: research-intake/stage2
+  claim_corrections: []
+  depends_on: []
+  dive_corrections: '2026-10-31 (Stage 2, wave 2 (Stage 2b)): New entry. Settles protocol (events and modalities), tested backends (Mac/CUDA
+    only), no VAD (client-driven turns), no latency number in the PR, tool calls out of scope. One evidence-gap: the "tool calls" statement
+    is an absence read from the diff. 2026-10-31 (Stage-2 close-out): dive-surfaced sources DECLINED: llama.cpp PR 31287 (realtime tool
+    calls; already summarized inside intake-2575).'
+- id: intake-2580
+  arxiv_id: null
+  url: https://github.com/ggml-org/llama.cpp/pull/30629
+  source_type: repo
+  title: 'llama.cpp PR 30629: mtmd_audio_stream streaming-audio API and Voxtral Realtime support'
+  categories:
+  - multimodal
+  - inference_serving
+  - local_inference
+  novelty: medium
+  relevance: high
+  discovered_via: expansion
+  expanded_from: intake-2575
+  verdict: worth_investigating
+  ingested_date: '2026-10-31'
+  authors:
+  - ngxson (PR author)
+  key_claims:
+  - PR 30629 (merged 2026-10-15, 2851b3bcb, +998/-20 in 27 files) adds an EXPERIMENTAL stateful C API mtmd_audio_stream that turns PCM
+    pushed in small chunks into decoder-ready embedding rows, keeping encoder state between calls; the PR says it adds only internal
+    infrastructure and CLI/server are a follow-up.
+  - 'API shape: mtmd_support_audio_stream, mtmd_audio_stream_init (params.step_ms, default 320 ms, rounded up to the model step), push
+    (PCM F32 at the model sample rate), flush(end) (end=false on a pause for a partial transcript), step(last_token) (rows ready / need
+    more audio / end / error), get_output_embd.'
+  - 'Model support added in the same PR: Voxtral Realtime (conversion class VoxtralRealtimeModel for mistralai/Voxtral-Mini-4B-Realtime-2602
+    on the MISTRAL3 arch, with the trained delay-token count stored as a GGUF key) and a causal conv + sliding-window ring-KV audio
+    encoder graph (tools/mtmd/models/voxtral-rt.cpp, 111 lines).'
+  - 'Streaming STT path: yes, in llama.cpp itself. The PR also adds a mtmd-cli mode that feeds an audio file chunk by chunk and prints
+    tokens as they are produced (run_audio_stream), timing mel+encoder and decoder separately; the PR body carries no WER, latency or
+    hardware numbers, and only the CPU-side C API was added, no GPU backend claim.'
+  - 'The index already carries the Voxtral Realtime model facts (delay setting, vendor WER by language, GGUFs, MI210 fit): reuse intake-2383
+    rather than restating them. This entry adds only the llama.cpp API and the follow-up server wiring (PR 30636, per intake-2575).'
+  techniques:
+  - stateful streaming audio encoder
+  - sliding-window ring KV cache for the audio encoder
+  - embedding-row feeding into the text decoder
+  reported_results:
+  - 'PR body: no benchmark numbers'
+  - 'pulls API: additions 998, deletions 20, changed_files 27'
+  cross_references:
+    chapters: []
+    handoffs:
+    - conversation-stack.md
+    experiments: []
+    intake_entries:
+    - intake-2575
+    - intake-2383
+  recommended_actions:
+  - 'Add a CS-8.STT cell: Voxtral-Mini-4B-Realtime GGUF (ggml-org) through the mtmd-cli run_audio_stream mode on a scratch upstream
+    build, scored by the CS-8.STT1 scorer on the CS-45 clips, against Nemotron streaming and whisper.cpp. Screen only; promotes nothing.'
+  credibility_score: null
+  contradicting_evidence: null
+  referenced_arxiv_ids: []
+  notes: ' Not read in dive: clip.cpp, mtmd.cpp, llama-model.cpp, mtmd-audio.cpp diffs. Credibility note: Author PR. Read PR body, 27-file
+    list, and the mtmd.h, mtmd-cli.cpp, mistral3.py, voxtral-rt.cpp patches; issue comments none relevant. Not read: clip.cpp / mtmd.cpp
+    / llama-model.cpp diffs.'
+  verification: dive-verified
+  handoffs_updated: []
+  handoffs_created: []
+  source_revision: ggml-org/llama.cpp PR 30629 merge commit 2851b3bcbf8d993a2243ae751c0a7dfa8e944a40, GitHub API 2026-10-31
+  reader_should_conclude: Cite for the mtmd_audio_stream signatures and the Voxtral Realtime GGUF/arch path. Do not attribute WER or
+    latency to this PR; they live in intake-2383. EXPERIMENTAL API, subject to breaking change per the header.
+  read_depth: FULL
+  claim_anchors:
+  - claim_index: 0
+    kind: heading-and-hash
+    locator: PR body Overview
+    quote: 'Note: this PR only adds the internal infrastructure, the user-facing part (CLI and server) is a follow-up PR'
+    quote_sha256: 7273bec1b55ecab4292f9ca1cbc5460595379f131aeb01c7b4d19fc85ddd5a90
+    source_revision: ggml-org/llama.cpp PR 30629 merge commit 2851b3bcbf8d993a2243ae751c0a7dfa8e944a40, GitHub API 2026-10-31
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: line-range
+    locator: tools/mtmd/mtmd.h @2851b3bcb
+    quote: int32_t mtmd_audio_stream_step(mtmd_audio_stream * stream, llama_token last_token);
+    quote_sha256: c302d8c6fd2710f78c38bf98b91d0b4f4f6dc56a5fccb443f56c93954212c5bd
+    source_revision: ggml-org/llama.cpp PR 30629 merge commit 2851b3bcbf8d993a2243ae751c0a7dfa8e944a40, GitHub API 2026-10-31
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: line-range
+    locator: tools/mtmd/mtmd.h @2851b3bcb
+    quote: 'audio encoded per encoder call, rounded up to the model step (default: 320)'
+    quote_sha256: de84949c247f5ef40a36832cb65f72dfbe5000bdf6896ce073bb650816ba7fdf
+    source_revision: ggml-org/llama.cpp PR 30629 merge commit 2851b3bcbf8d993a2243ae751c0a7dfa8e944a40, GitHub API 2026-10-31
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: line-range
+    locator: conversion/mistral3.py @2851b3bcb
+    quote: '@ModelBase.example("mistralai/Voxtral-Mini-4B-Realtime-2602")'
+    quote_sha256: 5a3c608b7663689f8dc12805d6796681222a15d132ddb9b76ccaa1bee09bd4d0
+    source_revision: ggml-org/llama.cpp PR 30629 merge commit 2851b3bcbf8d993a2243ae751c0a7dfa8e944a40, GitHub API 2026-10-31
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: line-range
+    locator: tools/mtmd/mtmd-cli.cpp @2851b3bcb
+    quote: feed an audio file to a realtime model chunk by chunk, printing the transcript as it is produced
+    quote_sha256: 3aaac50e1508d29f355ddefa3bb622adb431a935c49a1ed2a99fcd6a2cf25e4d
+    source_revision: ggml-org/llama.cpp PR 30629 merge commit 2851b3bcbf8d993a2243ae751c0a7dfa8e944a40, GitHub API 2026-10-31
+    verified_by: research-intake/stage2
+  claim_corrections: []
+  depends_on:
+  - entry: intake-2383
+    claim_index: 0
+    why: model-level quality and delay facts are carried there, not here
+  dive_corrections: '2026-10-31 (Stage 2, wave 2 (Stage 2b)): New entry. Confirms the API surface and that Voxtral Realtime has a native
+    llama.cpp streaming path; adds that the PR is infrastructure only and reports no latency or WER, so every performance claim on the
+    Voxtral path still comes from the vendor paper/card recorded in intake-2383.'
+- id: intake-2581
+  arxiv_id: null
+  url: https://huggingface.co/LiquidAI/d1-Omni-2B-GGUF
+  source_type: repo
+  title: 'd1-Omni-2B-GGUF (Liquid AI): llama.cpp /v1/systemone serving of the audio+vision+text decision model'
+  categories:
+  - routing_intelligence
+  - multimodal
+  - local_inference
+  - inference_serving
+  novelty: medium
+  relevance: high
+  discovered_via: expansion
+  expanded_from: intake-2553
+  verdict: worth_investigating
+  ingested_date: '2026-10-31'
+  authors:
+  - Liquid AI
+  key_claims:
+  - 'Serving contract: llama-server -hf LiquidAI/d1-Omni-2B-GGUF:Q8_0 -b 8192 -ub 8192, then POST /v1/systemone with state, optional
+    images, files (audio/video as data URIs) and named questions; "supported in llama.cpp b11960 (v0.8.0) and newer".'
+  - Answer types served by llama.cpp are noul, choice and score only; multiple choice, extraction, estimates and boxes are not supported
+    yet (the Transformers path supports them). A question is read in one batch, so -b and -ub must hold its state and media.
+  - Questions can themselves be spoken (instructions as an input_audio part) and audio clips can be the state; videos are read as frames
+    and need ffmpeg in PATH.
+  - 'Files in the repo: d1-Omni-2B BF16/F16 3.47 GB, Q8_0 1.85 GB; mmproj BF16/F16 0.61 GB, Q8_0 0.33 GB. There is NO Q4_K_M for Omni
+    (the text d1-2B and d1-3B have one). Licence tag is lfm1.0 (LFM Open License v1.0), not an OSI licence.'
+  - 'The upstream /v1/systemone endpoint itself predates b11960: it was added by PR 29818 (merged 2026-10-02) for laya, julia-1, lev,
+    openjev and kev; b11960 adds the LFM3 architecture the d1 2B models need.'
+  techniques:
+  - one-forward-pass typed decisions served through llama-server
+  - batched named questions
+  - audio mmproj for spoken state and spoken questions
+  reported_results:
+  - GGUF sizes from HF API blobs listing (see key_claims)
+  - no latency or accuracy numbers on this card; those are on the d1-Omni-2B / d1-2B cards (see intake-2553)
+  cross_references:
+    chapters: []
+    handoffs:
+    - typed-decision-plane.md
+    - routing-intelligence.md
+    - conversation-stack.md
+    experiments: []
+    intake_entries:
+    - intake-2553
+    - intake-2575
+    - intake-1498
+    - intake-1514
+  recommended_actions:
+  - Do not use Omni for text-only routing (d1-2B text path beats it on 8 of 9 decision rows per the d1-2B card); reserve it for a spoken-state
+    decision probe (turn completeness, intent) only after human-recorded CS-45 strata exist.
+  credibility_score: null
+  contradicting_evidence: null
+  referenced_arxiv_ids: []
+  notes: ' Not read in dive: LICENSE file; mmproj conversion details. Credibility note: Vendor model-card repo; the card is a short
+    README. Not read: LICENSE text, the original d1-Omni-2B card (intake-2553 covers it), convert logs.'
+  verification: dive-verified
+  handoffs_updated: []
+  handoffs_created: []
+  source_revision: HF LiquidAI/d1-Omni-2B-GGUF @c53ae0b1 (lastModified 2026-10-28), README + HF API, retrieved 2026-10-31; sha256-12
+    3bd98c1af0d5
+  reader_should_conclude: Cite for the serve contract and the noul/choice/score-only limit. Do not assume the Transformers capabilities
+    (boxes, extraction) exist on the llama.cpp path. No quality, calibration or latency number comes from this card.
+  read_depth: FULL
+  claim_anchors:
+  - claim_index: 0
+    kind: heading-and-hash
+    locator: GGUF card Use with llama.cpp
+    quote: llama-server -hf LiquidAI/d1-Omni-2B-GGUF:Q8_0 -b 8192 -ub 8192
+    quote_sha256: 57ca4f0f3f8cb741130a1e722dfdadfdb2d8ed38871ccee9be62d9dd45d548fb
+    source_revision: HF LiquidAI/d1-Omni-2B-GGUF @c53ae0b1 (lastModified 2026-10-28), README + HF API, retrieved 2026-10-31; sha256-12
+      3bd98c1af0d5
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: heading-and-hash
+    locator: GGUF card Use with llama.cpp
+    quote: 'Multiple choice (`"multiple": true`), extraction, estimates and boxes are not supported yet.'
+    quote_sha256: 58f53232a77427410cd64d08f84498a6813ad17e30da2c0b58c464e45d5a6d34
+    source_revision: HF LiquidAI/d1-Omni-2B-GGUF @c53ae0b1 (lastModified 2026-10-28), README + HF API, retrieved 2026-10-31; sha256-12
+      3bd98c1af0d5
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: heading-and-hash
+    locator: GGUF card Use with llama.cpp
+    quote: A question is read in one batch, so `-b` and `-ub` must hold its state and media.
+    quote_sha256: ee71761c98212eaeef0a43b5ae3e0abab0001d63060f11ad95432cbcec93ee2b
+    source_revision: HF LiquidAI/d1-Omni-2B-GGUF @c53ae0b1 (lastModified 2026-10-28), README + HF API, retrieved 2026-10-31; sha256-12
+      3bd98c1af0d5
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: heading-and-hash
+    locator: GGUF card Spoken question
+    quote: 'A question can be spoken: its `instructions` are an `input_audio` part.'
+    quote_sha256: 55cded97f54059a54f1e4f373132b8f6ee242466bbf401f68b72e700c05eadac
+    source_revision: HF LiquidAI/d1-Omni-2B-GGUF @c53ae0b1 (lastModified 2026-10-28), README + HF API, retrieved 2026-10-31; sha256-12
+      3bd98c1af0d5
+    verified_by: research-intake/stage2
+  claim_corrections: []
+  depends_on: []
+  dive_corrections: '2026-10-31 (Stage 2, wave 2 (Stage 2b)): Adds beyond intake-2553: the exact serve command and batch flags, the
+    supported type subset, file sizes (no Q4_K_M for Omni), and that /v1/systemone is an older upstream endpoint (PR 29818) independent
+    of the d1 models. Nothing overturned.'
+- id: intake-2582
+  arxiv_id: null
+  url: https://huggingface.co/LiquidAI/d1-2B-GGUF
+  source_type: repo
+  title: 'd1-2B-GGUF and d1-3B-GGUF (Liquid AI): text, picture and video decision models served by llama.cpp /v1/systemone'
+  categories:
+  - routing_intelligence
+  - cost_aware_routing
+  - local_inference
+  - inference_serving
+  novelty: medium
+  relevance: high
+  discovered_via: expansion
+  expanded_from: intake-2553
+  verdict: worth_investigating
+  ingested_date: '2026-10-31'
+  authors:
+  - Liquid AI
+  key_claims:
+  - 'd1-2B (1.92B, built on LFM3-VL-2B, 24 layers: 13 gated short conv, 5 sliding-window attention, 6 global attention) takes text/JSON
+    state, pictures and video, NOT audio; d1-3B (3.1B) is built on LFM2.5-VL-3B. Neither is text-only: both have vision towers (mmproj
+    files). Both carry the LFM Open License v1.0 (license tag "other", lfm1.0).'
+  - 'Quant files: d1-2B BF16/F16 3.47 GB, Q8_0 1.85 GB, Q4_K_M 1.10 GB, mmproj Q8_0 0.20 GB; d1-3B BF16/F16 5.40 GB, Q8_0 2.87 GB, Q4_K_M
+    1.67 GB, mmproj Q8_0 0.58 GB. Serve: llama-server -hf LiquidAI/d1-2B-GGUF:Q8_0 -b 8192 -ub 8192 then POST /v1/systemone; the llama.cpp
+    path answers noul, choice and score only (multiple choice, extraction, estimates, boxes not yet). d1-2B-GGUF states b11960 (v0.8.0)
+    or newer; the d1-3B-GGUF card gives no build and is dated 2026-10-07, so its minimum build is unverified (the endpoint itself exists
+    since PR 29818, merged 2026-10-02).'
+  - 'Decision-board results on the d1-2B card (vendor-run; columns d1-2B / d1-omni-600M / d1-Omni-2B / d1-3B): Decision Index public
+    v0.3 51.1 / 18.3 / 49.0 / 49.0; DecisionBench v1 77.1 / 58.7 / 76.4 / 73.1; Decision Bench v4 85.2 / 57.9 / 84.7 / 83.6; Fast Decisions
+    58.8 / - / 56.8 / 59.3; JevBench 77.9 / 58.0 / 75.3 / 76.2; ImajevBench 75.5 / 21.7 / 72.3 / 64.0; WorkflowEvals 81.6 / 48.8 / 77.1
+    / 74.4; Typed Decisions 61.3 / 57.5 / 63.1 / 65.0; their board 63.2 / - / 61.8 / 58.8. So the text+vision d1-2B beats d1-Omni-2B
+    on 8 of these 9 rows (Omni wins Typed Decisions) and beats d1-3B on 7 of 9 (d1-3B wins Fast Decisions and Typed Decisions); the
+    card itself says to use d1-2B when there is no audio.'
+  - 'Speed on the d1-2B card (bf16, warm after model.compile(), Transformers, median of 20): one question 5.7 ms H100 PCIe, 3.8 ms MI325X,
+    18.6 ms Apple M5 Pro; 5K-token state 52 / 44 / 753 ms; 64 states in one call 1,132 / 1,699 / 109 per s. There is no x86 CPU row
+    and no MI210 row, and none of these timings is from llama.cpp.'
+  - 'Calibration: the cards call the answers "calibrated" but report no ECE/Brier/reliability figure; the d1-2B card says "Calibrate
+    any decision threshold on data from your own use". Limits stated: answers get less reliable past about 64K tokens of state; knowledge-heavy
+    questions favour larger models. Related upstream risk: issue 30064 (closed) found Q8_0 GGUF of a different decision model (Clef)
+    collapsing /v1/systemone probabilities toward uniform because decision-head tensors were quantized, while BF16 and a Kev Q8_0 were
+    fine, so BF16-versus-Q8_0 probability parity must be checked per d1 file before any calibration claim.'
+  techniques:
+  - one-pass typed decisions
+  - multi-question batching with shared state prefix
+  - LFM3 hybrid conv/attention backbone
+  reported_results:
+  - 'see key_claims: board table and speed table of the d1-2B card; sizes from HF API'
+  cross_references:
+    chapters: []
+    handoffs:
+    - typed-decision-plane.md
+    - routing-intelligence.md
+    - learned-routing-controller.md
+    experiments: []
+    intake_entries:
+    - intake-2553
+    - intake-2581
+    - intake-2583
+    - intake-1498
+    - intake-1514
+    - intake-1502
+    - intake-1517
+  recommended_actions:
+  - 'TD-23 candidate: d1-2B-GGUF Q8_0 (1.85 GB) via /v1/systemone on a scratch upstream build as the "one available local compact decision
+    backend" against the constrained incumbent on the TD-11/CJ-15 sealed routing set (see ledger W2SP-3).'
+  credibility_score: null
+  contradicting_evidence: null
+  referenced_arxiv_ids: []
+  notes: ' Not read in dive: LICENSE; the d1-3B card vision benchmark rows. Credibility note: Vendor cards. Read: d1-2B-GGUF and d1-3B-GGUF
+    READMEs, d1-2B and d1-3B model cards (text), HF API metadata. Not read: LICENSE text, vision benchmark rows beyond the table header,
+    issue 30402 repro scripts in full.'
+  verification: dive-verified
+  handoffs_updated: []
+  handoffs_created: []
+  source_revision: HF LiquidAI/d1-2B-GGUF @e968f657 (2026-10-28) + d1-2B @10e7671d (2026-10-29) + d1-3B-GGUF @bb1e436e (2026-10-07)
+    + d1-3B @051bcc46; cards and HF API, retrieved 2026-10-31
+  reader_should_conclude: Cite for sizes, board rows and the Transformers-only speed table. Do not present any speed as llama.cpp, EPYC
+    or MI210. Do not call the answers calibrated for our data; no ECE is reported and quantized heads have a documented failure in a
+    sibling model.
+  read_depth: FULL
+  claim_anchors:
+  - claim_index: 0
+    kind: heading-and-hash
+    locator: d1-2B card, intro
+    quote: d1-2B is a **decision model for text, pictures, and video**, built on [LFM3-VL-2B](https://huggingface.co/LiquidAI/LFM3-VL-2B).
+    quote_sha256: 1e3a7ac6d16ad4df52171ffc2b639255eeca4169505bd204671ca9cd81ce8e3c
+    source_revision: HF LiquidAI/d1-2B-GGUF @e968f657 (2026-10-28) + d1-2B @10e7671d (2026-10-29) + d1-3B-GGUF @bb1e436e (2026-10-07)
+      + d1-3B @051bcc46; cards and HF API, retrieved 2026-10-31
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: heading-and-hash
+    locator: d1-2B card, Benchmarks
+    quote: Evaluation details
+    quote_sha256: 3bf5c5892c5f0542b740569df74c210db595c43c0e2800ac5f379e1ab16f7c7b
+    source_revision: HF LiquidAI/d1-2B-GGUF @e968f657 (2026-10-28) + d1-2B @10e7671d (2026-10-29) + d1-3B-GGUF @bb1e436e (2026-10-07)
+      + d1-3B @051bcc46; cards and HF API, retrieved 2026-10-31
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: heading-and-hash
+    locator: d1-2B card, Speed
+    quote: Warm calls after `model.compile()` in bf16, median of 20 calls, and best of three runs on the H100 and the M5 Pro.
+    quote_sha256: 3161ac6d70ce84e9d37fdd1e848f7ec562ba7368177fbd7ae551bcb8adbfc17f
+    source_revision: HF LiquidAI/d1-2B-GGUF @e968f657 (2026-10-28) + d1-2B @10e7671d (2026-10-29) + d1-3B-GGUF @bb1e436e (2026-10-07)
+      + d1-3B @051bcc46; cards and HF API, retrieved 2026-10-31
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: heading-and-hash
+    locator: d1-2B card, Question types
+    quote: Calibrate any decision threshold on data from your own use.
+    quote_sha256: 4fe89317478333778166f7f3c297f6492450ed0f7d0fc9492ec52def7116655a
+    source_revision: HF LiquidAI/d1-2B-GGUF @e968f657 (2026-10-28) + d1-2B @10e7671d (2026-10-29) + d1-3B-GGUF @bb1e436e (2026-10-07)
+      + d1-3B @051bcc46; cards and HF API, retrieved 2026-10-31
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: heading-and-hash
+    locator: d1-2B card, Model details
+    quote: answers get less reliable past about 64K tokens of state.
+    quote_sha256: f0d735de9fb0b66ecee69cc2e2de5dfcd883cd41f8e9fa2d4d2b0e7029764a4f
+    source_revision: HF LiquidAI/d1-2B-GGUF @e968f657 (2026-10-28) + d1-2B @10e7671d (2026-10-29) + d1-3B-GGUF @bb1e436e (2026-10-07)
+      + d1-3B @051bcc46; cards and HF API, retrieved 2026-10-31
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 0
+    effect: reattributed
+    note: The brief calls d1-2B/3B text-only; both are vision-language decision models (text works without media).
+  depends_on: []
+  dive_corrections: '2026-10-31 (Stage 2, wave 2 (Stage 2b)): New entry. Corrects "text-only" (d1-2B and d1-3B are VL models), supplies
+    quant sizes, the nine-row board comparison (d1-2B above d1-Omni on 8 of 9; the earlier intake-2553 count of 7 of 9 is not reproduced
+    from this card), and the Q8_0 head-quantization risk from upstream issue 30064.'
+- id: intake-2583
+  arxiv_id: null
+  url: https://www.liquid.ai/blog/open-d1
+  source_type: repo
+  title: 'Open d1: Edge decision models for text, vision, and audio (Liquid AI blog, 2026-10-07)'
+  categories:
+  - routing_intelligence
+  - local_inference
+  - multimodal
+  - benchmark_methodology
+  novelty: medium
+  relevance: medium
+  discovered_via: expansion
+  expanded_from: intake-2553
+  verdict: worth_investigating
+  ingested_date: '2026-10-31'
+  authors:
+  - Liquid AI
+  key_claims:
+  - The post (dated OCT 7, 2026) releases d1-3B and d1-omni-600M, NOT the later LFM3-based d1-2B / d1-Omni-2B. d1-3B is trained from
+    LFM2.5-VL-3B (text+image); d1-omni-600M from the bidirectional LFM2.5-Encoder-350M with vision and audio encoders added.
+  - 'Vendor-reported: d1-3B 48.57 on Decision Index v0.2.1 (public split), "ahead of every model under 10B and on par with Decider 35B-A3B";
+    d1-omni-600M 15.95. Text means over seven public benchmarks: d1-3B 82.9, d1-omni-600M 78.4, Decider 2B 77.1, Decider 4B 81.1. The
+    post says dedicated audio decision benchmarks are "currently an open problem" and reports no audio result.'
+  - 'Latency table for d1-3B, one request at a time (one question / 3 questions / 3.4K-token state / 384px image / 64 states packed):
+    RTX 4090 8 / 21 / 102 / 17 ms, 475 per s; MI325X 9 / 14 / 44 / 18 ms, 1,106 per s; Apple M5 Pro 30 / 41 / 640 / 62 ms, 78 per s;
+    Jetson AGX Thor 16 ms, AGX Orin 26 ms, Orin Nano 50 ms for one question. Stack and precision of these timings are not stated in
+    the text read; the post says "day-one support for llama.cpp". No x86 server CPU and no MI210.'
+  - 'Licence wording conflict: the post says "Open-weight - Download, fine-tune, and deploy without restrictions" while the model cards
+    carry the LFM Open License v1.0 (license: other, lfm1.0); read the licence text before any commercial reliance.'
+  - The post reports no calibration metric (ECE/Brier) although the models are described as calibrated; the quality evidence is accuracy-style
+    benchmark means and an index run by the vendor.
+  techniques:
+  - model merging (weight averaging of LFM2.5-2.6B and the VL text backbone)
+  - answer-option shuffling and shortcut removal in training
+  - one-pass decision heads
+  reported_results:
+  - Table 1 text benchmark means; Tables 2 and 3 latency (see key_claims)
+  cross_references:
+    chapters: []
+    handoffs:
+    - typed-decision-plane.md
+    - routing-intelligence.md
+    experiments: []
+    intake_entries:
+    - intake-2553
+    - intake-2581
+    - intake-2582
+  recommended_actions:
+  - 'Use only as vendor context: the actionable artefacts are the GGUFs (intake-2581 / intake-2582). Treat its latency table as the
+    only llama.cpp-era timing and predeclare our own.'
+  credibility_score: null
+  contradicting_evidence: null
+  referenced_arxiv_ids: []
+  notes: ' Not read in dive: Figures 2-3, Jetson AI Lab pages, playground demos. Credibility note: Vendor blog, curl HTML to disk and
+    stripped (JS-light page, text present). Figures 2-3 (architecture diagrams) not viewable as text.'
+  verification: dive-verified
+  handoffs_updated: []
+  handoffs_created: []
+  source_revision: liquid.ai/blog/open-d1 HTML sha256-12 555ce078e6cf, retrieved 2026-10-31
+  reader_should_conclude: Cite only for d1-3B / d1-omni-600M vendor figures and the licence-wording mismatch. Do not use its numbers
+    for the 2B models. All figures are vendor-reported.
+  read_depth: FULL
+  claim_anchors:
+  - claim_index: 0
+    kind: heading-and-hash
+    locator: Intro
+    quote: Today, we release d1-3B and d1-omni-600M, two open-weight models in our d1 decision model family.
+    quote_sha256: 98c493198897e45d422239bef4b8144f0b68492ce0a94203100cf338f1252955
+    source_revision: liquid.ai/blog/open-d1 HTML sha256-12 555ce078e6cf, retrieved 2026-10-31
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: heading-and-hash
+    locator: Vision and audio performance
+    quote: Dedicated audio decision benchmarks are currently an open problem.
+    quote_sha256: 498c21b260c956765e8d1b272ec225a8047e802fa89037bb50f745fb021a6266
+    source_revision: liquid.ai/blog/open-d1 HTML sha256-12 555ce078e6cf, retrieved 2026-10-31
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: heading-and-hash
+    locator: Fast Inference Everywhere
+    quote: d1-3B and d1-omni-600M run the full NVIDIA stack
+    quote_sha256: 1fc405bb185470aa61ec2e362bbec16bec33ef9bfdfbaea5d799471d0400f902
+    source_revision: liquid.ai/blog/open-d1 HTML sha256-12 555ce078e6cf, retrieved 2026-10-31
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: heading-and-hash
+    locator: Get Started
+    quote: Open-weight — Download, fine-tune, and deploy without restrictions
+    quote_sha256: 8f380fe5a681645d692c0fc5c040b502d72fc4d7703159f05fdccb04bf4ae523
+    source_revision: liquid.ai/blog/open-d1 HTML sha256-12 555ce078e6cf, retrieved 2026-10-31
+    verified_by: research-intake/stage2
+  claim_corrections: []
+  depends_on: []
+  dive_corrections: '2026-10-31 (Stage 2, wave 2 (Stage 2b)): New entry. Dates the post (2026-10-07) and narrows it to d1-3B / d1-omni-600M;
+    the 2B and Omni-2B models in intake-2553/2581/2582 are later and not in it. Records the licence-wording mismatch and the absent
+    audio and calibration evidence.'
+- id: intake-2584
+  arxiv_id: '2606.18023'
+  url: https://arxiv.org/abs/2606.18023
+  source_type: paper
+  title: 'LoopCoder-v2: Only Loop Once for Efficient Test-Time Computation Scaling'
+  categories:
+  - local_inference
+  - training_distillation
+  - agent_architecture
+  - inference_serving
+  novelty: medium
+  relevance: medium
+  discovered_via: expansion
+  expanded_from: intake-2571
+  verdict: worth_investigating
+  ingested_date: '2026-10-31'
+  authors:
+  - Jian Yang
+  - Shawn Guo
+  - Wei Zhang
+  - Mingjie Tang
+  - Weifeng Lv
+  - Ming Zhou
+  - Bryan Dai
+  key_claims:
+  - LoopCoder-v2 is a family of 7B Parallel Loop Transformer (PLT) coders (14 shared layers, hidden 5120, 40 heads / 8 KV groups, FFN
+    27648) trained from scratch on 18T tokens at loop counts R=1..4; PLT = cross-loop position offset (CLP) plus shared-KV gated sliding-window
+    attention (G-SWA, w=64).
+  - Under matched SFT (6M examples) and evaluation, R=2 lifts SWE-bench Verified 43.0 -> 64.4 and the 10-benchmark average 38.0 -> 46.5;
+    R=3 collapses to 27.6 (avg 36.9) and R=4 to 22.4 (avg 34.3). Non-monotonic in loop count.
+  - 'Latency/KV claim is architectural only: Table 1 gives sequential looping O(R*C_block) latency and O(RLSd) KV versus PLT ~C_block
+    and O(LSd). No measured tokens/s, latency or memory number appears anywhere in the paper.'
+  - A checkpoint is released (HF Multilingual-Multimodal-NLP/LoopCoder-V2, license apache-2.0, custom_code architecture IQuestPLTCoderForCausalLM,
+    362 downloads at retrieval). It is a transformers custom-code model, not a GGUF/llama.cpp architecture.
+  - The SWE-bench harness/scaffold is NOT named in the paper text; evaluation is stated only as each benchmark standard protocol and
+    metric. All gains are single-run, single-seed, vendor-authored (IQuest Research / Beihang), no independent replication found.
+  techniques:
+  - parallel loop transformer
+  - cross-loop parallelism offset
+  - gated sliding-window attention with shared KV
+  reported_results:
+  - 'Table 2 (Ours 7B rows; columns HE+/MultiPL-E/BCB/LCB/SWE/SWE-M/TB-v1/TB-v2/M2W/BFCL/Avg): R=1 81.1/69.5/40.1/27.4/43.0/14.0/26.3/11.2/35.3/32.2/38.0;
+    R=2 84.1/73.9/46.1/35.4/64.4/31.0/34.2/21.0/34.5/40.1/46.5; R=3 75.0/69.8/43.3/28.6/27.6/11.0/30.0/12.2/35.1/36.3/36.9; R=4 76.8/67.3/40.8/24.5/22.4/9.3/26.3/9.0/41.4/39.5/34.3'
+  - '§4.1: R=2 reaches 33.4% on agentic SWE-bench-CC. Training cost 1M GPU hours total (§3.1).'
+  cross_references:
+    chapters: []
+    handoffs:
+    - cpu-decode-roofline-program.md
+    - gpu-acceleration-path.md
+    experiments: []
+    intake_entries:
+    - intake-2571
+    - intake-332
+  recommended_actions:
+  - 'Monitor: llama.cpp PR for iquestpltcoder or independent replication; PLT decode equals batch-2 weight reuse, the one looped form
+    that is roofline-favourable.'
+  credibility_score: 2
+  contradicting_evidence:
+  - R=3 and R=4 regress below the non-looped baseline in the same paper.
+  referenced_arxiv_ids: []
+  notes: 'Dive-verified; see entries record. Not read in dive: Per-loop interpretability figures (§3.2/§4.2 detail), related work, Table
+    6.'
+  verification: dive-verified
+  handoffs_updated: []
+  handoffs_created: []
+  source_revision: arXiv:2606.18023v1 HTML (sole version, 16 Jun 2026) + HF API Multilingual-Multimodal-NLP/LoopCoder-V2 sha b87cf3a,
+    retrieved 2026-10-31
+  reader_should_conclude: 'Cite only as: a vendor 7B PLT coder reports 43.0 -> 64.4 SWE-bench Verified at R=2 with R=3/4 regressing,
+    harness unnamed, no timings. Do NOT carry a speed or near-constant-latency claim as measured, and do not treat loop count as a runtime
+    dial (each R is a separately trained model).'
+  read_depth: FULL
+  claim_anchors:
+  - claim_index: 0
+    kind: heading-and-hash
+    locator: v1 Abstract
+    quote: Parallel loop Transformers (PLT) alleviate this cost through cross-loop position offsets (CLP) and shared-KV gated sliding-window
+      attention
+    quote_sha256: 005792591e8ae97eac046247631909813fa21f074d4d5c8eb0ae1b1c3c638397
+    source_revision: arXiv:2606.18023v1 HTML (sole version, 16 Jun 2026) + HF API Multilingual-Multimodal-NLP/LoopCoder-V2 sha b87cf3a,
+      retrieved 2026-10-31
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: heading-and-hash
+    locator: v1 §1
+    quote: including a gain on SWE-bench Verified from 43.0% to 64.4%
+    quote_sha256: 86eaeeb8b6c8f2f744bdec31f8deec08180905aec299802f324f0d8603bc637a
+    source_revision: arXiv:2606.18023v1 HTML (sole version, 16 Jun 2026) + HF API Multilingual-Multimodal-NLP/LoopCoder-V2 sha b87cf3a,
+      retrieved 2026-10-31
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: heading-and-hash
+    locator: v1 §2.2
+    quote: yielding near-single-pass wall-clock latency
+    quote_sha256: 4c3df07a33cc5e0bd5578aa58ea35e95b574702a7d7d8be4086b1125ed49c2c0
+    source_revision: arXiv:2606.18023v1 HTML (sole version, 16 Jun 2026) + HF API Multilingual-Multimodal-NLP/LoopCoder-V2 sha b87cf3a,
+      retrieved 2026-10-31
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: heading-and-hash
+    locator: HF API model json
+    quote: license:apache-2.0
+    quote_sha256: 4beed031426c99ee6062c953b17b90a3589fe90b3421b090992281b96fd2add7
+    source_revision: arXiv:2606.18023v1 HTML (sole version, 16 Jun 2026) + HF API Multilingual-Multimodal-NLP/LoopCoder-V2 sha b87cf3a,
+      retrieved 2026-10-31
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: heading-and-hash
+    locator: v1 §3.1 Evaluation Protocol
+    quote: We report the final supervised fine-tuning checkpoint for every model.
+    quote_sha256: 29708d1c043585e35b2fc668c558bdb04d01287b41a1bfdb6f4748c9ff2bf3af
+    source_revision: arXiv:2606.18023v1 HTML (sole version, 16 Jun 2026) + HF API Multilingual-Multimodal-NLP/LoopCoder-V2 sha b87cf3a,
+      retrieved 2026-10-31
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 2
+    effect: narrowed
+    note: Index line ~112502 and any reading of the title as a speed result must not be cited as measured latency; it is a design property
+      of PLT with no timing evidence.
+  depends_on: []
+  dive_corrections: '2026-10-31 (Stage 2, wave 2 (Stage 2b)): Filed as a new entry (the index mention at ~112502 is prose only, no prior
+    entry). Architecture is PLT (not plain sequential looping), checkpoint exists under Apache-2.0 but only as transformers custom code.
+    The paper has no latency/throughput measurement and does not name the SWE-bench harness. Gain is real in-paper but single-seed and
+    highly non-monotonic (R=3 below baseline), which undercuts the loop count as a free dial. 2026-10-31 (Stage-2 close-out): dive-surfaced
+    sources DECLINED: github.com/huskydoge/Awesome-Loop-Models (curated list, no claims of its own; would settle nothing).'
+- id: intake-2585
+  arxiv_id: null
+  url: https://github.com/ggml-org/llama.cpp/pull/29823
+  source_type: repo
+  title: 'model : add support for Ouro (ByteDance looped LM) - llama.cpp PR #29823'
+  categories:
+  - local_inference
+  - inference_serving
+  novelty: medium
+  relevance: medium
+  discovered_via: expansion
+  expanded_from: intake-2547
+  verdict: worth_investigating
+  ingested_date: '2026-10-31'
+  authors:
+  - BrandeisPatrick
+  key_claims:
+  - 'PR #29823 (BrandeisPatrick, 324 additions, 9 files) adds a native ouro architecture to llama.cpp for ByteDance Ouro 1.4B/2.6B (+Thinking)
+    and is NOT merged: state open at 2026-10-31.'
+  - 'Loop mechanics: the whole decoder stack is applied 4 times per token with shared weights by reusing the Nanbeige4.2 machinery of
+    #25994 (logical layers = physical x num_loops, one KV entry per loop and layer); adds sandwich norms; loop count is a LOAD-TIME
+    constant set by --override-kv ouro.num_loops=int:N. There is NO per-token adaptive loop count and NO early exit: the early_exit_gate
+    tensor is not converted.'
+  - 'Correctness evidence is Apple M4 Metal: top-1 identical 829/829 vs HF at loops 1/2/4; GSM8K llama.cpp F16 26.0/67.0/80.5 at loops
+    1/2/4; PPL F16 104.4/16.43/9.53 at loops 1/2/4.'
+  - 'Speed evidence: M4 llama-cli Ouro-1.4B F16 36.5 tok/s at 1 loop vs 9.5 tok/s at 4 loops (loop-transformer NOTES.md); third-party
+    RTX 4080 Laptop CUDA Ouro-2.6B F16 64.2/33.5/22.8/17.4 tok/s at 1/2/3/4 loops. Decode scales ~1/R. No x86 CPU measurement exists
+    anywhere in the sources.'
+  - 'Looping only works at trained depth for some models: loop-transformer reports Nanbeige4.2 forced to 1 loop is degenerate (0.0 GSM8K,
+    repetition) whereas Ouro (exit-gate trained at every step) degrades gracefully; and a lm-eval regex bug shrank the Ouro-vs-Qwen3-1.7B
+    GSM8K margin from +12 to +1.5 under the verbatim rule.'
+  techniques:
+  - weight-shared layer unrolling
+  - sandwich norms
+  - --override-kv num_loops
+  reported_results:
+  - 'PR body: logit parity table (829/829, max abs diff 0.21/0.11/0.34 at loops 1/2/4); GSM8K F16 26.0/67.0/80.5, transformers bf16
+    23.0/64.0/80.0; PPL Q8_0 9.54, Q4_K_M 9.84 at 4 loops; Ouro-2.6B Q8_0 90.0 on same GSM8K subset.'
+  - 'Comment (Muuzzziiy): Ouro-1.4B tg128 F16/Q8_0/Q4_K_M 34.8/56.2/74.8 tok/s, Ouro-2.6B 17.9/28.1/39.5; loop scaling 2.6B F16 64.2/33.5/22.8/17.4;
+    GSM8K 4-shot 79% F16, 77% Q4_K_M; -ngl counts logical layers (192) so -ngl 99 spilled to 1.6 tok/s.'
+  cross_references:
+    chapters: []
+    handoffs:
+    - gpu-acceleration-path.md
+    - cpu-decode-roofline-program.md
+    experiments: []
+    intake_entries:
+    - intake-2547
+    - intake-332
+    - intake-2586
+  recommended_actions:
+  - Bounded CPU loops=1/2/4 probe on an experimental branch (ledger W2LOOP-1).
+  credibility_score: null
+  contradicting_evidence: null
+  referenced_arxiv_ids: []
+  notes: 'Companion repo BrandeisPatrick/loop-transformer (Apache-2.0) @ 599eed9. Not read in dive: Full 18.7 KB diff line by line (graph
+    structure read through #25994 which it reuses); results/REPORT.md.'
+  verification: dive-verified
+  handoffs_updated: []
+  handoffs_created: []
+  source_revision: 'ggml-org/llama.cpp PR #29823 (open, head e79d8cab5 per comments, created 2026-10-01) body + issue comments; BrandeisPatrick/loop-transformer
+    @ 599eed9 README/NOTES; retrieved 2026-10-31'
+  reader_should_conclude: 'Cite as: unmerged community port, correctness-validated on Metal, decode cost ~R x, KV cost R x, no CPU-x86
+    number. Do not claim llama.cpp supports Ouro or adaptive-depth inference.'
+  read_depth: FULL
+  claim_anchors:
+  - claim_index: 1
+    kind: heading-and-hash
+    locator: 'PR #29823 body Overview'
+    quote: Ouro applies its whole decoder stack 4 times per token with shared weights
+    quote_sha256: 9c9bc3d96a89620dbf783044492889045aa0ca4a8ce98b1cdec9ef18fc5524d9
+    source_revision: 'ggml-org/llama.cpp PR #29823 (open, head e79d8cab5 per comments, created 2026-10-01) body + issue comments; BrandeisPatrick/loop-transformer
+      @ 599eed9 README/NOTES; retrieved 2026-10-31'
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: heading-and-hash
+    locator: 'PR #29823 body Overview'
+    quote: 'Loop count override: `--override-kv ouro.num_loops=int:N`.'
+    quote_sha256: 9ffe286712437b8f267da6da13185edbddff4865ec37b38586798306d6fcdf45
+    source_revision: 'ggml-org/llama.cpp PR #29823 (open, head e79d8cab5 per comments, created 2026-10-01) body + issue comments; BrandeisPatrick/loop-transformer
+      @ 599eed9 README/NOTES; retrieved 2026-10-31'
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: heading-and-hash
+    locator: 'PR #29823 body'
+    quote: Checked against the HF reference on Ouro-1.4B (F16, Apple M4, Metal).
+    quote_sha256: a577e7440f74219d29487457d7790750badfe908379e1b1204cebb501d7dc382
+    source_revision: 'ggml-org/llama.cpp PR #29823 (open, head e79d8cab5 per comments, created 2026-10-01) body + issue comments; BrandeisPatrick/loop-transformer
+      @ 599eed9 README/NOTES; retrieved 2026-10-31'
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: heading-and-hash
+    locator: loop-transformer NOTES.md L1504-L1505
+    quote: 'llama-cli -m Ouro-1.4B-F16.gguf --override-kv ouro.num_loops=int:4 # 96 layers, 9.5 tok/s'
+    quote_sha256: 40bf440764f890bd5f8adcccff9cb09ff5810be135a34418232008059f598153
+    source_revision: 'ggml-org/llama.cpp PR #29823 (open, head e79d8cab5 per comments, created 2026-10-01) body + issue comments; BrandeisPatrick/loop-transformer
+      @ 599eed9 README/NOTES; retrieved 2026-10-31'
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: heading-and-hash
+    locator: 'PR #29823 body Also'
+    quote: KV cache is one entry per loop and layer (96 logical layers for 1.4B), so decode is about 4x slower than a single pass
+    quote_sha256: 6f3d4c0db1f690d71fbb3dd3deec2b9c3397aef0ae00d15c2f493fff169e2ae0
+    source_revision: 'ggml-org/llama.cpp PR #29823 (open, head e79d8cab5 per comments, created 2026-10-01) body + issue comments; BrandeisPatrick/loop-transformer
+      @ 599eed9 README/NOTES; retrieved 2026-10-31'
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: heading-and-hash
+    locator: loop-transformer README
+    quote: Forcing Nanbeige below its trained two loops does not give a shallower
+    quote_sha256: 4ecc34e0c6f6756951adab73491c6216096660a84f987fd449e865970acb9e99
+    source_revision: 'ggml-org/llama.cpp PR #29823 (open, head e79d8cab5 per comments, created 2026-10-01) body + issue comments; BrandeisPatrick/loop-transformer
+      @ 599eed9 README/NOTES; retrieved 2026-10-31'
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 3
+    effect: narrowed
+    note: 'Stage-1 hope of a measured CPU speed is unmet: only Metal (M4) and CUDA numbers exist; the PR explicitly says decode is ~4x
+      slower at 4 loops.'
+  depends_on: []
+  dive_corrections: '2026-10-31 (Stage 2, wave 2 (Stage 2b)): Not merged (open). Looping is static and load-time; no early exit and
+    no per-token loop count despite Ouro being trained with a learned exit gate. KV is NOT shared across loops (one KV per loop x layer),
+    so KV memory grows Rx. Both speed sources are non-EPYC. The sibling repo shows the headline Ouro advantage is fragile (scoring rule)
+    and that post-training washes out looped advantage. 2026-10-31 (Stage-2 close-out): dive-surfaced sources DECLINED: arXiv 2604.21106
+    (iso-depth scaling theory, id taken from repo notes; no EPYC decision depends on it) and github.com/Thrillcrazyer/LoopUS (looped
+    retrofit; the W2LOOP-1 measure-first probe on Ouro answers the same CPU question first).'
+- id: intake-2586
+  arxiv_id: null
+  url: https://github.com/ggml-org/llama.cpp/pull/25994
+  source_type: repo
+  title: '[Model] Add support for Nanbeige4.2 - llama.cpp PR #25994'
+  categories:
+  - local_inference
+  - inference_serving
+  novelty: medium
+  relevance: medium
+  discovered_via: expansion
+  expanded_from: intake-2547
+  verdict: worth_investigating
+  ingested_date: '2026-10-31'
+  authors:
+  - zqlcode
+  key_claims:
+  - 'PR #25994 (zqlcode, 265 additions, 10 files) adds architecture nanbeige for Nanbeige4.2-3B (22 layers x num_loops=2) and was MERGED
+    2026-07-27 (created 2026-07-22).'
+  - 'Graph implementation: load_arch_hparams expands logical layers to n_layer_phys x n_loops by copying per-layer head/ff arrays; load_arch_tensors
+    creates only physical layer tensors and assigns layers[i + j*n_phys] = layers[i] (shared weights); each logical slot keeps its own
+    KV index; num_loops is an optional GGUF key defaulting to 1; optional skip_loop_final_norm. Loop count is static per file.'
+  - Review caught a signed-overflow bypass of the LLAMA_MAX_LAYERS guard (fixed by size_t bound) and noted num_loops should arguably
+    be mandatory because silently falling back to 1 loop yields degraded output.
+  - 'Our frozen v10 tree (ffc1bac82, 2026-09-21) does NOT contain it: zero nanbeige matches in src/, gguf-py, convert_hf_to_gguf.py,
+    no num_loops key in src/*.h, and #25994 merge sha b77d646 is not an ancestor of HEAD.'
+  techniques:
+  - weight-shared layer unrolling
+  reported_results:
+  - 'PR body reports no benchmark numbers (only a screenshot). Third-party (loop-transformer NOTES L1123): rewriting nanbeige.num_loops
+    to 1 doubles decode speed (~40 tok/s on M4) but output degenerates.'
+  cross_references:
+    chapters: []
+    handoffs:
+    - cpu-decode-roofline-program.md
+    experiments: []
+    intake_entries:
+    - intake-2547
+    - intake-2585
+  recommended_actions:
+  - Use as base for experimental-branch looped probe (W2LOOP-1).
+  credibility_score: null
+  contradicting_evidence: null
+  referenced_arxiv_ids: []
+  notes: 'Merge sha b77d646. Not read in dive: conversion/nanbeige.py body beyond key names; ggml-gh-bot nits 4+ (tail of review).'
+  verification: dive-verified
+  handoffs_updated: []
+  handoffs_created: []
+  source_revision: 'ggml-org/llama.cpp PR #25994 merged 2026-07-27T15:04:19Z (merge sha b77d646), diff + comments; frozen tree /mnt/raid0/llm/llama.cpp
+    @ ffc1bac82; retrieved 2026-10-31'
+  reader_should_conclude: 'Cite: upstream has had a looped-arch path since 2026-07-27 (nanbeige, static num_loops=2), absent from v10;
+    porting to an experimental branch is a cherry of ~265 lines, not a research problem. Do not cite quality or speed from the PR itself
+    (none given).'
+  read_depth: FULL
+  claim_anchors:
+  - claim_index: 1
+    kind: heading-and-hash
+    locator: 'PR #25994 body Runtime'
+    quote: share physical weights across loops (separate KV slots)
+    quote_sha256: 76ea8043d5f061078d33344e5b16776c519a1ab983004a3265ce39b1c01cefb7
+    source_revision: 'ggml-org/llama.cpp PR #25994 merged 2026-07-27T15:04:19Z (merge sha b77d646), diff + comments; frozen tree /mnt/raid0/llm/llama.cpp
+      @ ffc1bac82; retrieved 2026-10-31'
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: heading-and-hash
+    locator: 'PR #25994 diff src/models/nanbeige.cpp load_arch_tensors'
+    quote: layers[i + j * n_phys] = layers[i];
+    quote_sha256: 70e9e56f9c5c0f6a99c689e13b04fb93456453369a11965ea7e0ab0b5e3983e2
+    source_revision: 'ggml-org/llama.cpp PR #25994 merged 2026-07-27T15:04:19Z (merge sha b77d646), diff + comments; frozen tree /mnt/raid0/llm/llama.cpp
+      @ ffc1bac82; retrieved 2026-10-31'
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: heading-and-hash
+    locator: 'PR #25994 diff nanbeige.cpp load_arch_hparams'
+    quote: ml.get_key(LLM_KV_NUM_LOOPS, n_loops_u, false);
+    quote_sha256: 76002034359c366771a9eb07e6a334f97129079cc15c23b8cd738b77d896fa20
+    source_revision: 'ggml-org/llama.cpp PR #25994 merged 2026-07-27T15:04:19Z (merge sha b77d646), diff + comments; frozen tree /mnt/raid0/llm/llama.cpp
+      @ ffc1bac82; retrieved 2026-10-31'
+    verified_by: research-intake/stage2
+  - claim_index: 0
+    kind: heading-and-hash
+    locator: GitHub API pulls/25994
+    quote: merged_at 2026-07-27T15:04:19Z
+    quote_sha256: b4a250e3be24bc3eb46ddcf60532dbbc0a981ff4bb33d69e453f7efe05d629ae
+    source_revision: 'ggml-org/llama.cpp PR #25994 merged 2026-07-27T15:04:19Z (merge sha b77d646), diff + comments; frozen tree /mnt/raid0/llm/llama.cpp
+      @ ffc1bac82; retrieved 2026-10-31'
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 3
+    effect: unaffected
+    note: Absence is structural in the frozen tree; the frozen tree is a fork carrying few upstream commits in the merge window (9 commits
+      07-20..07-30), so absence is expected, not a regression.
+  depends_on: []
+  dive_corrections: '2026-10-31 (Stage 2, wave 2 (Stage 2b)): Confirms merge and mechanism. Looping is a pure graph unroll with weight
+    sharing; each loop re-streams the full weight set (no weight-reuse scheduling), so decode weight bytes scale R x. Adds the quantified
+    absence from v10.'
+- id: intake-2587
+  arxiv_id: null
+  url: https://divagr.com/blog/hybrid-models-can-hide-reasoning-in-their-rnn-state
+  source_type: blog
+  title: Hybrid models can hide reasoning in their RNN state
+  categories:
+  - ssm_hybrid
+  - benchmark_methodology
+  novelty: medium
+  relevance: low
+  discovered_via: expansion
+  expanded_from: intake-2550
+  verdict: new_opportunity
+  ingested_date: '2026-10-31'
+  authors:
+  - Divyansh Agrawal
+  key_claims:
+  - 'Claim: under answer-only fine-tuning (LoRA plus unfrozen beta/decay projections, curriculum to 64 flips) on parity (light-switch
+    flips), OLMo-Hybrid-7B (GDN beta up to 2) learns silent state tracking that generalises: 0.89 at 128 flips over 6 seeds (5 of 6
+    held, one never learned 64).'
+  - 'Qwen3.5-4B (beta sigmoid-capped at 1) does NOT generalise: 0.55 at 128 flips (3 seeds; 2 of 3 learned 64, 0 of 2 held), i.e. coin
+    flip, same as dense OLMo-3-7B 0.54 and as OLMo-Hybrid with beta capped at 1 (0.52, 6 seeds). So the headline is NOT Qwen3.5-4B parity;
+    it is a failure case.'
+  - 'Causal evidence for beta: capping OLMo-Hybrid beta at 1 (nothing else changed) drops it to chance; cap costs ~3.5% perplexity.
+    Mechanism: bit lives in RNN state heads (L16 H2, L17 H4) but attention keeps a backup copy, so state-swap alone shows 0.00 effect
+    while swap plus attention knockout shows 1.00.'
+  - 'Scope limits stated by author: one task (parity), 3-6 seeds, artificial answer-only pressure not RL, a 3-cup shell game and 4-switch
+    version at 64 flips were negative; Steifer 2026 shows a Qwen-style hybrid can still solve parity in one pass using attention, so
+    possibility != what training finds.'
+  techniques:
+  - GDN write strength beta
+  - state-swap plus attention knockout
+  - compiled weights
+  reported_results:
+  - 'README table: accuracy at 128 flips OLMo-Hybrid-7B 0.89 (0.53-1.00); capped 0.52 (0.49-0.56); Qwen3.5-4B 0.55; OLMo-3-7B 0.54.
+    5 of 6 vs 0 of 6 runs, one-sided Fisher p ~ 0.008.'
+  - Planted compiled tracker inside Qwen3.5-4B ranked 1st of 864 heads by a blind detector (compiled beta=2 trackers track parity exactly
+    over 100k tokens).
+  cross_references:
+    chapters: []
+    handoffs: []
+    experiments: []
+    intake_entries:
+    - intake-2550
+  recommended_actions:
+  - 'Knowledge only; one-line structural check of GDN beta in our tree (done: sigmoid at qwen3next.cpp:417).'
+  credibility_score: 1
+  contradicting_evidence: null
+  referenced_arxiv_ids: []
+  notes: 'Companion repo github.com/divagr18/qwenputer @ bec1a0c. Not read in dive: results/ raw jsonl, hcot code, the monitoring-tools
+    follow-up post.'
+  verification: dive-verified
+  handoffs_updated: []
+  handoffs_created: []
+  source_revision: divagr.com blog 2026-10-22 (update 2026-10-23) HTML sha n/a, + github.com/divagr18/qwenputer @ bec1a0c research/hidden-reasoning/README.md;
+    retrieved 2026-10-31
+  reader_should_conclude: Cite as a single-task, small-seed result that beta<=1 GDN hybrids (Qwen3.5/3.8 family) failed to generalise
+    hidden state tracking under artificial pressure; it is a CoT-monitorability research note with no performance lever for the serving
+    stack. Do not cite as evidence that our hybrids can or cannot hide reasoning in general.
+  read_depth: FULL
+  claim_anchors:
+  - claim_index: 0
+    kind: heading-and-hash
+    locator: blog Result 1
+    quote: 0.89 at 128 flips, averaged over 6 seeds
+    quote_sha256: 6ccfab6149d9aeaea54717f47721ab145b308365b4eaa1afca800008e6bfc695
+    source_revision: divagr.com blog 2026-10-22 (update 2026-10-23) HTML sha n/a, + github.com/divagr18/qwenputer @ bec1a0c research/hidden-reasoning/README.md;
+      retrieved 2026-10-31
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: heading-and-hash
+    locator: blog Result 1
+    quote: Qwen 3.5 answered well till the training range and then essentially fell to a coin flip, scoring 0.55 at 128 flips
+    quote_sha256: c70a68dcd2ef346b946a8ef0f76794a04b9881f3550084efbd6726b8180fb243
+    source_revision: divagr.com blog 2026-10-22 (update 2026-10-23) HTML sha n/a, + github.com/divagr18/qwenputer @ bec1a0c research/hidden-reasoning/README.md;
+      retrieved 2026-10-31
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: heading-and-hash
+    locator: blog Result 2
+    quote: Capping β barely costs anything on normal text, perplexity goes up by about 3.5%.
+    quote_sha256: 8be9469885787550edbe5a7629c9bacec19c8aadbb072b0f969776d9ff97920a
+    source_revision: divagr.com blog 2026-10-22 (update 2026-10-23) HTML sha n/a, + github.com/divagr18/qwenputer @ bec1a0c research/hidden-reasoning/README.md;
+      retrieved 2026-10-31
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: heading-and-hash
+    locator: blog Limits
+    quote: 'It''s 6 seeds per arm for the main OLMo-Hybrid comparison and 3 for the rest, and one task: parity.'
+    quote_sha256: 062024027b56f8d597e03e5043fe6dee572e1daccaf2ca92b1106f192f9090d6
+    source_revision: divagr.com blog 2026-10-22 (update 2026-10-23) HTML sha n/a, + github.com/divagr18/qwenputer @ bec1a0c research/hidden-reasoning/README.md;
+      retrieved 2026-10-31
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 1
+    effect: reattributed
+    note: 'Any reading that Qwen3.5-4B reaches parity/hidden-tracking at 128 flips is wrong: it is the control that fails; hidden tracking
+      is an OLMo-Hybrid (beta<=2) result.'
+  depends_on: []
+  dive_corrections: '2026-10-31 (Stage 2, wave 2 (Stage 2b)): Self-published single-author blog, not peer reviewed, no independent replication
+    found. Direction for our stack is reassuring: Qwen-family GDN (sigmoid beta, confirmed in our tree at src/models/qwen3next.cpp:417)
+    did not learn generalising silent tracking even under direct pressure.'
+- id: intake-2588
+  arxiv_id: '2608.17379'
+  url: https://arxiv.org/abs/2608.17379
+  source_type: paper
+  title: 'PTXBench: Evaluating and Adapting LLMs for GPU Kernel Optimization with Architecture-specific PTX'
+  categories:
+  - hardware_optimization
+  - benchmark_methodology
+  - autonomous_research
+  - tool_implementation
+  novelty: medium
+  relevance: medium
+  discovered_via: expansion
+  expanded_from: intake-2555
+  verdict: adopt_patterns
+  ingested_date: '2026-10-31'
+  authors:
+  - Genghan Zhang
+  - Yixin Dong
+  - Chengze Fan
+  - Zhichen Zeng
+  - Yueming Yuan
+  - Shaowei Zhu
+  - Kunle Olukotun
+  key_claims:
+  - 'PTXBench scores LLM-written CUDA kernels with inline PTX (CUDA-PTX) on BF16 GEMM and attention (MHA fwd/bwd, causal) on H100 and
+    B200 along three separate axes: functional correctness, runtime execution of the required PTX instruction family (via Nsight Compute
+    SASS counts), and speedup vs frontier libraries (cuBLAS/cuDNN/FlashInfer). Kernels are written from scratch in an 8-call multi-turn
+    loop (MiniPTXAgent).'
+  - 'No evaluated model (Gemini 3.1 Pro, Claude Opus 4.8, GPT-5.6 xhigh, GLM-5.2, Qwen3.6-27B) consistently matches frontier libraries.
+    Best library-relative figures in the text: GEMM on Blackwell 1.012x cuBLAS (Claude Opus 4.8) and 0.892x (Gemini 3.1 Pro). Attention
+    backward success rates are low and executing the target instruction does not imply competitive speed. Qwen3.6-27B (the open model
+    closest to our stack) produces no correct Hopper kernel.'
+  - 'CORRECTED (stage-1 framing "Triton vs PTX token efficiency" is NOT in the paper): the paper compares Triton vs CUDA-PTX on Fast_p/peak
+    speedup, not tokens. Triton is more reliable on attention, especially B200 (Gemini: Triton 0.514x on MHA-Bwd vs 0.198x CUDA-PTX;
+    no correct CUDA-PTX MHA-Bwd-Causal kernel vs 0.437x Triton). On H100 GEMM peaks are close (0.991x vs 0.962x). With GPT-5.6 Sol some
+    CUDA-PTX single-kernel peaks exceed Triton. Conclusion: high-level DSLs stay useful on new architectures.'
+  - 'The only token-cost number is agent-harness vs plain refinement: Antigravity (Gemini 3.1 Pro) uses 3.32-5.06x the median total
+    tokens of multi-turn refinement and is WORSE on all four attention workloads (e.g. MHA-Bwd 0.053x vs 0.240x; MHA-Bwd-Causal 0.000x
+    vs 0.166x), better only on GEMM (0.583x vs 0.505x). Same direction for Codex/GPT-5.6 Sol (appendix, not read in full).'
+  - 'Correctness method: shape+dtype check then torch.allclose with atol=rtol=1e-2; CUPTI latency (median of 50 iterations after 10
+    warmup); a memory-safety/sanitizer step inside an isolated profiling service; including cuBLAS/cuDNN headers is auto-fail. They
+    explicitly did NOT run Compute Sanitizer racecheck (cost >1000x native; false negatives remain). Runtime-instruction check uses
+    NCU predicate-enabled thread-execution counts; static SASS presence is not accepted; NCU failures count as unknown (conservative).'
+  - 'Failure modes: without the 20k-30k-token architecture knowledge pack (parameters, PTX wrappers, layout/sync/memory-consistency
+    contracts) the model rarely uses the requested PTX (Table 4 ablation: params alone gives 26.0% correct turns and zero target-instruction
+    successes; adding the contract adds 18.7 points of target-instruction correctness over templates alone). Fixit SFT (Qwen3.6-27B
+    LoRA, Gemini 3.1 Pro repair teacher) shifts failures from compilation to runtime/numerical errors and generalises unevenly; weaker
+    reasoning teacher (Qwen itself) solves only GEMM vs all five problems with GLM-5.2 rationales.'
+  techniques:
+  - instruction-executed verification via NCU SASS counts
+  - architecture knowledge pack in prompt
+  - multi-turn refinement vs coding-agent harness
+  - repair-conditioned SFT (Fixit)
+  - Fast_p with target-instruction restriction
+  reported_results:
+  - 'Abstract / Sec 4.2: GEMM Blackwell 1.012x cuBLAS (Opus 4.8), 0.892x (Gemini 3.1 Pro)'
+  - 'Sec 4.3: Gemini H100 GEMM peak Triton 0.991x vs CUDA-PTX 0.962x; B200 MHA-Bwd 0.514x Triton vs 0.198x CUDA-PTX; MHA-Bwd-Causal
+    0.437x Triton vs no correct CUDA-PTX'
+  - 'Table 3 (H100, 8 evaluator requests, median of 4): refinement 0.505/0.584/0.560/0.240/0.166x vs Antigravity 0.583/0.425/0.413/0.053/0.000x
+    (GEMM/MHA-Fwd/Fwd-Causal/Bwd/Bwd-Causal); token ratio 3.32/5.06/3.90/3.73/3.52x'
+  - 'Sec 4.5 Table 4: params-only 26.0% turn correctness, 0 target-instruction; contract adds 38.5% target-inst correctness (18.7 points
+    over templates alone)'
+  - 'Sec 5.3: s1 Triton transfer MHA-Fwd-Causal 0.238x to 0.632x, MHA-Bwd-Causal 0.043x to 0.331x while turn correctness falls on every
+    workload'
+  - 'Sec 5.4 / Table 5: retrieved repair notes alone give zero correct MHA kernels; correctness appears only when the fixed kernel is
+    also in the prompt'
+  - 'Sampling scale: four 8-turn trajectories x 3 prompt variants per cell (N=32 per cell in the main plots); single seed family, no
+    error bars on Table 1'
+  cross_references:
+    chapters: []
+    handoffs:
+    - agentic-rocm-kernel-authoring.md
+    - autokernel-research-loop.md
+    experiments: []
+    intake_entries:
+    - intake-2555
+  recommended_actions:
+  - see ledger rows KERN-1, KERN-2
+  credibility_score: 4
+  contradicting_evidence: null
+  referenced_arxiv_ids: []
+  notes: 'NVIDIA-only (H100/B200). Authors from Stanford/CMU/RadixArk. Code announced at github.com/zhang677/PTXBench (not cloned).
+    Venue unknown (preprint, v3). Not read in dive: Appendix tables 9/10, A.3 profiling-service detail, A.5-A.7 prompt text, Fig 14,
+    Sec 5.1-5.2 recipe-ablation detail beyond the sentences quoted.'
+  verification: dive-verified
+  handoffs_updated: []
+  handoffs_created: []
+  source_revision: arXiv:2608.17379v3 HTML sha256-12 e4ff90e61063, retrieved 2026-10-31 (v3 dated 28 Sep 2026)
+  reader_should_conclude: Cite as evidence that frontier LLMs do not reliably match vendor libraries when forced to hand-write architecture-specific
+    kernels, that instruction-executed verification is a separate gate from correctness, and that knowledge-pack context is the dominant
+    lever. Do NOT cite for Triton-vs-PTX token efficiency, and do not carry NVIDIA speedup numbers to gfx90a.
+  read_depth: PARTIAL
+  claim_anchors:
+  - claim_index: 1
+    kind: heading-and-hash
+    locator: v3 abstract
+    quote: No evaluated model consistently matches frontier libraries across the suite.
+    quote_sha256: 5abf347d1fb9a86537335f6412bac00756f229809d2ac4405c70c2e5e049c8cc
+    source_revision: arXiv:2608.17379v3 HTML sha256-12 e4ff90e61063, retrieved 2026-10-31 (v3 dated 28 Sep 2026)
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: heading-and-hash
+    locator: v3 Sec 4.3
+    quote: high-level kernel languages remain useful for producing correct kernels on new architectures
+    quote_sha256: a0a42661fb12ead61822553023e299f7ad92770717e463158395112edc3c58f6
+    source_revision: arXiv:2608.17379v3 HTML sha256-12 e4ff90e61063, retrieved 2026-10-31 (v3 dated 28 Sep 2026)
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: heading-and-hash
+    locator: v3 Sec 4.4
+    quote: Antigravity has a higher median on GEMM, while multi-turn refinement has a higher median on all four attention workloads.
+    quote_sha256: 6fb406337e205a5ddf61152f885935b4b3eda53d39dbe5889cffcb2434e26c92
+    source_revision: arXiv:2608.17379v3 HTML sha256-12 e4ff90e61063, retrieved 2026-10-31 (v3 dated 28 Sep 2026)
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: heading-and-hash
+    locator: v3 Sec 2.2
+    quote: compares values using torch.allclose with atol=rtol=1e-2
+    quote_sha256: 82b8d9a53a39b35d6a32e138f4ddd2c1838c144c1f30307e4730480e80f8d55b
+    source_revision: arXiv:2608.17379v3 HTML sha256-12 e4ff90e61063, retrieved 2026-10-31 (v3 dated 28 Sep 2026)
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: heading-and-hash
+    locator: v3 App A.1
+    quote: We did not apply NVIDIA Compute Sanitizer’s racecheck because it is too slow
+    quote_sha256: 6d6277a05d64bc2f402daa752f51cda76f2201d7099f01a72ee334e1c32be2eb
+    source_revision: arXiv:2608.17379v3 HTML sha256-12 e4ff90e61063, retrieved 2026-10-31 (v3 dated 28 Sep 2026)
+    verified_by: research-intake/stage2
+  - claim_index: 5
+    kind: heading-and-hash
+    locator: v3 Sec 5.3
+    quote: It also shifts failures from compilation toward runtime and numerical errors
+    quote_sha256: 3535b8480a88694a8c3c4cbe7fe18c74f9a96a75f0c308bdbd458520499932d2
+    source_revision: arXiv:2608.17379v3 HTML sha256-12 e4ff90e61063, retrieved 2026-10-31 (v3 dated 28 Sep 2026)
+    verified_by: research-intake/stage2
+  - claim_index: 5
+    kind: heading-and-hash
+    locator: v3 Sec 2.1
+    quote: without this context, the model rarely uses the requested PTX
+    quote_sha256: 41bf9e069b53e1e12addd9f45408ab26c95f18facd24cc60644f19977fa0143f
+    source_revision: arXiv:2608.17379v3 HTML sha256-12 e4ff90e61063, retrieved 2026-10-31 (v3 dated 28 Sep 2026)
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 2
+    effect: narrowed
+    note: Brief asked about Triton vs PTX token efficiency; paper measures correctness/speed distributions only. The only token figure
+      is agent-harness vs refinement (3.32-5.06x).
+  depends_on: []
+  dive_corrections: '2026-10-31 (Stage 2, wave 2 (Stage 2b)): Stage-1 framing about token efficiency of Triton vs PTX is not in the
+    source. Real result: Triton wins on reliability for attention on new hardware, direct PTX occasionally wins single-kernel peak.
+    The strongest transferable facts for AK are (a) the three-axis separation (correct vs mechanism-executed vs fast), (b) allclose
+    at 1e-2 is the only value gate and racecheck was consciously skipped, (c) a plain multi-turn refinement loop beat a general coding-agent
+    harness on attention at 1/3-1/5 the tokens. NVIDIA-only (H100/B200, nvcc, NCU, CUPTI); nothing was run on AMD. 2026-10-31 (Stage-2
+    close-out): dive-surfaced sources DECLINED: github.com/zhang677/PTXBench code (NVIDIA-only harness; the paper''s findings are already
+    dived).'
+- id: intake-2589
+  arxiv_id: '2608.12629'
+  url: https://arxiv.org/abs/2608.12629
+  source_type: paper
+  title: 'CAKE: Compiler-Agent Co-Design for Frontier Kernel Evolution'
+  categories:
+  - hardware_optimization
+  - autonomous_research
+  - tool_implementation
+  - agent_architecture
+  novelty: high
+  relevance: high
+  discovered_via: expansion
+  expanded_from: intake-2555
+  verdict: adopt_patterns
+  ingested_date: '2026-10-31'
+  authors:
+  - Zihao Ye
+  - Yingyi Huang
+  - Hongyi Jin
+  - Bohan Hou
+  - Junru Shao
+  - Zhongming Yu
+  - Jinqi Chen
+  - Meghan Cowan
+  - Shiyi Cao
+  - Shanli Xing
+  - Hanfeng Chen
+  - Vinod Grover
+  - Tianqi Chen
+  - Luis Ceze
+  key_claims:
+  - CAKE ("Compiler-Agent co-design for Frontier Kernel Evolution", NVIDIA/CMU, Ye, Chen, Ceze et al.) is an NVIDIA-GPU (Ampere-Blackwell)
+    kernel-agent harness whose agents author a typed, hardware-explicit schedule IR (Cake IR; roles, declared resources, barriers, pipelines)
+    instead of raw CUDA/PTX; lowering derives barrier addresses, phase bits, descriptors; the compiler returns localized diagnostics
+    instead of a pass/fail bit.
+  - 'Harness stages: generate structurally distinct candidates, filter by IR construction checks, verifier hard gates (program safety
+    = synchronization/ordering/memory hazards; hardware conformance; data consistency; schedule semantics) and a calibrated cost model
+    BEFORE GPU time, then evaluate survivors against an external oracle with on-GPU correctness and CUPTI timing (L2 flushed); evidence
+    is routed to candidate, verifier, cost model, or IR vocabulary.'
+  - 'Matched clean-start Flash-KMeans on B200, 3 runs per arm, GPT-5.6-sol xhigh, 80M-token budget: Cake IR median best 1.144x [1.041,1.205]
+    of tuned FlashML vs direct CUDA/PTX 0.928x [0.852,1.151]; plateau reached 3/3 vs 0/3; median active evolve time 1.89 h vs 3.73 h.'
+  - 'Beyond the benchmark: agent-generated Kimi Delta Attention prefill reaches 2.05x geomean over official FlashKDA on six B200 BF16
+    shapes (bitwise correct on its validation contract, verified in Kimi-K3 serving under SGLang, FlashInfer PR #4262); dispatcher-backed
+    KNN/KMeans families improve 1.42x-2.12x across more than 400 shapes; four kernel changes are upstream PRs.'
+  - 'The harness is itself evolved: recurring failures (sanitizer reports, correctness mismatches, debugging logs) become verifier rules,
+    IR primitives, cost-model calibrations, gated by corpus tests because an un-validated verifier rule can reject valid kernels. Numerical
+    check compares outputs across different shapes and input distributions; final acceptance is end-to-end in the target framework.'
+  techniques:
+  - typed hardware-explicit schedule IR
+  - pre-compile verifier hard gates
+  - calibrated cost model for candidate filtering
+  - failure-to-verifier-rule compiler evolution
+  - dispatcher-backed shape generalisation
+  reported_results:
+  - 'Abstract / Table 2: Flash-KMeans 1.144x [1.041,1.205] (Cake IR) vs 0.928x [0.852,1.151] (CUDA/PTX); plateau 3/3 vs 0/3; active
+    evolve 1.89 [1.02,2.33] h vs 3.73 [3.59,4.34] h; Cake IR mean crosses baseline by 55M tokens (Fig 5)'
+  - 'Sec 5.1: KDA prefill 2.05x geomean vs FlashKDA (6 B200 shapes); KDA decode 1.14x geomean vs upstream FlashInfer over 30 shapes'
+  - 'Abstract: KNN/KMeans dispatcher families 1.42x-2.12x across more than 400 shapes'
+  - n = 3 runs per arm, one model, one workload for the controlled comparison; ranges overlap (CUDA/PTX max 1.151 > Cake IR min 1.041)
+  cross_references:
+    chapters: []
+    handoffs:
+    - autokernel-research-loop.md
+    - agentic-rocm-kernel-authoring.md
+    - autokernel-rebuild-program.md
+    experiments: []
+    intake_entries:
+    - intake-2555
+  recommended_actions:
+  - see ledger rows KERN-3, KERN-4
+  credibility_score: 3
+  contradicting_evidence: null
+  referenced_arxiv_ids: []
+  notes: 'NVIDIA authors, NVIDIA-only targets, controlled comparison n=3. No repository link seen in the sections read. Not read in
+    dive: Appendices A-D (IR catalog, Table 3 architecture coverage, D.x per-kernel evolution), Sec 6 dispatcher detail, Sec 5 reproduction-of-known-kernels
+    tables.'
+  verification: dive-verified
+  handoffs_updated: []
+  handoffs_created: []
+  source_revision: arXiv:2608.12629v1 HTML sha256-12 18aca4f8c7fe, retrieved 2026-10-31 (submitted 12 Aug 2026)
+  reader_should_conclude: 'Cite for the design pattern: give the kernel agent a typed representation plus cheap static verifier gates
+    (synchronization/memory hazards) and a cost model that filter candidates before GPU time, and turn recurring failures into permanent
+    checks under corpus tests. Do not cite the 1.144x/2.05x numbers as portable; do not claim code availability.'
+  read_depth: PARTIAL
+  claim_anchors:
+  - claim_index: 1
+    kind: heading-and-hash
+    locator: v1 Sec 4
+    quote: generate structurally distinct Cake IR
+    quote_sha256: 0057c73880ee5c9bd00434815e2e1f9d293915247c2ebe9fe530bb5e6e97958c
+    source_revision: arXiv:2608.12629v1 HTML sha256-12 18aca4f8c7fe, retrieved 2026-10-31 (submitted 12 Aug 2026)
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: heading-and-hash
+    locator: v1 Sec 5 trajectory
+    quote: with median active evolve time of 1.89 versus 3.73 hours.
+    quote_sha256: 84bd117286ba38944c94e923866b744de4848c70484fe0acffe0b2cf8733b367
+    source_revision: arXiv:2608.12629v1 HTML sha256-12 18aca4f8c7fe, retrieved 2026-10-31 (submitted 12 Aug 2026)
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: heading-and-hash
+    locator: v1 Sec 3.2
+    quote: verifier rule without corpus validation can reject valid kernels.
+    quote_sha256: 8e8c774a9c7af9baeabda4be5c62bfb83e79a2579081a1ecfc99535cdd1ec4d1
+    source_revision: arXiv:2608.12629v1 HTML sha256-12 18aca4f8c7fe, retrieved 2026-10-31 (submitted 12 Aug 2026)
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 2
+    effect: narrowed
+    note: Headline 1.144x vs 0.928x is a median of 3 runs on one workload with overlapping min/max; supports "typed IR + pre-compile
+      verifier helps the agent", not a general speedup.
+  depends_on: []
+  dive_corrections: '2026-10-31 (Stage 2, wave 2 (Stage 2b)): Brief did not know what CAKE is: it is an NVIDIA agent+compiler co-design
+    paper, not a cache or caching technique. It is referenced in the index only as an id inside another entry (index line 100117). No
+    public repo link found in the text read (only FlashInfer PRs for generated CUDA). All baselines and hardware are NVIDIA B200; no
+    AMD result. 2026-10-31 (Stage-2 close-out): dive-surfaced sources DECLINED: FlashInfer PRs 4262/4279/4274/4287 (CAKE-generated NVIDIA-only
+    kernels).'
+- id: intake-2590
+  arxiv_id: null
+  url: https://github.com/thu-nics/AKV
+  source_type: repo
+  title: 'AKV: Cache Engineering for Agents (thu-nics/AKV)'
+  categories:
+  - kv_cache
+  - agent_architecture
+  - inference_serving
+  - context_management
+  novelty: medium
+  relevance: medium
+  discovered_via: expansion
+  expanded_from: intake-2559
+  verdict: worth_investigating
+  ingested_date: '2026-10-31'
+  authors:
+  - Tianyu Fu
+  - Ruoxi Wang
+  - Zihan Min
+  - Zhongqi Ren
+  - Zhihao Li
+  - Tengxuan Liu
+  - Shengxu Mu
+  - Hanling Zhang
+  - Yu Wang
+  key_claims:
+  - 'AKV / "Cache Engineering for Agents" (Tsinghua NICS; Tianyu Fu is also the C2C first author) lets the agent harness directly control
+    the ACTIVE KV cache of a long agent loop with two extra cache operations beyond append: drop (exclude selected messages KV, typically
+    old tool responses, from future attention) and repos (re-rotate retained keys with RoPE so positions are compacted), without editing
+    the text trajectory and without re-prefilling retained context.'
+  - 'CORRECTED: it is NOT cross-agent KV transfer and not C2C-style semantic communication; it is single-agent cache editing. The README/paper
+    tie to C2C is only shared authorship/lab (README Related Projects).'
+  - 'Serving challenge: cache state is history-dependent (same token prefix can have different KV under different drop/append orders),
+    so plain prefix matching is insufficient. AKV (built on SGLang) uses a stateless OpenAI-compatible request with drop_message and
+    reposition fields, an extended radix tree keyed by token plus operation history, drop-aware eviction, and segment-batch attention
+    to restore evicted segments in one prefill pass.'
+  - 'Agent results (3 models: MiniMax-M2.7, GPT-OSS-120B, MiroThinker-1.7-Mini; 4 benchmarks BCP, xbench-DS, GAIA-Text, SWE-Verified):
+    rolling-drop of tool-response KV (keep latest 12) lowers cost 27.7% vs threshold-triggered summarization (Standard) and 21.9% vs
+    lower-threshold Text Engineering, and raises average success 1.3-2.1% over Standard per model; cost is an API-price-table estimate
+    from active tokens (Groq / MiniMax / Qwen3-30B-A3B rates), with repos charged at cache-hit rate, not measured spend.'
+  - 'Serving results (GPT-OSS-120B, Top-80 SWE-Verified, 8x A800 80GB BF16, 4 prefill + 4 decode GPUs, TP4): at peak-throughput settings
+    AKV (C=14) vs Standard (C=12) gives 1.18x output and 1.53x input throughput and 1.36x mean / 1.51x P95 request latency speedups.
+    RSI-searched policies cut cost a further 7.1% (held-out; iterations 3 and 6 are 15.6% and 17.8% below Standard on 100 held-out BCP
+    tasks). repos lifts BCP pass rate 55% to 62% by removing a position limit.'
+  - 'Limits stated by the authors: supported architectures are softmax-attention text models (Qwen, Qwen2/2.5, Qwen3 incl MoE, GPT-OSS,
+    MiniMax-M2 family); extending to linear-attention models is future work. Dropping reasoning KV hurts pass rate vs tool-response-only
+    drop.'
+  techniques:
+  - KV drop of old tool responses
+  - RoPE reposition of retained keys
+  - history-aware radix tree
+  - drop-aware eviction
+  - segment-batch attention restore
+  - cache-as-tool
+  - recursive self-improvement of cache policies
+  reported_results:
+  - 'Abstract / Sec 1: -27.7% cost, +1.7 points avg score vs threshold summarization; 1.2x output throughput, 1.5x P95 latency; RSI
+    -7.1%'
+  - 'Sec 5.2: cost -27.7% vs Standard, -21.9% vs Text Engineering; success +1.3-2.1% and +0.9-8.7% vs the two baselines'
+  - 'Table 2 (Sec 5.2): 1.36x mean, 1.51x P95 latency; 1.53x input, 1.18x output throughput at respective peak settings'
+  - 'Sec 5.3 ablation: repos raises BCP 55% to 62%; dropping reasoning cache lowers pass rates'
+  - 'Fig 14 (introduction): KV cache reads are 82.4% of total API cost in their accounting'
+  - 'Table 7 (GPT-OSS-20B): AKV avg pass rate 45.2%, avg cost 4.8 cents'
+  cross_references:
+    chapters: []
+    handoffs:
+    - kv-prefix-fork-and-paged-attention.md
+    - context-folding-progressive.md
+    - tool-output-compression.md
+    - streaming-llm-baseline.md
+    experiments: []
+    intake_entries:
+    - intake-2559
+  recommended_actions:
+  - see ledger rows KERN-5, KERN-6
+  credibility_score: 3
+  contradicting_evidence: null
+  referenced_arxiv_ids:
+  - '2610.28577'
+  notes: 'Companion paper arXiv:2610.28577 (title-checked on abs page: "Cache Engineering for Agents"); the paper is the same artifact
+    family, filed here as the repo entry because the assigned source was the repo. Apache/other license not checked (LICENSE file present).
+    SGLang-based; Rust build step. Not read in dive: Appendices A.1.1 kernel details, A.3 (segment-batch attention math beyond summary),
+    A.4 cost breakdowns, A.5 concurrent work, Table 1 per-cell numbers, repo code beyond file listing and README (akv/system/sglang/srt/context_system/*
+    not read).'
+  verification: dive-verified
+  handoffs_updated: []
+  handoffs_created: []
+  source_revision: github.com/thu-nics/AKV @ c567a42 (2026-10-21); paper arXiv:2610.28577v1 HTML sha256-12 720743b692be, retrieved 2026-10-31
+    (submitted 20 Oct 2026)
+  reader_should_conclude: Cite for the idea and for the history-dependence correctness hazard (prefix match is not enough once KV is
+    edited). The 27.7%/1.5x numbers are SGLang + API-price accounting versus summarization baselines; they are not a predicted gain
+    for llama-server and not for hybrid/linear-attention models.
+  read_depth: PARTIAL
+  claim_anchors:
+  - claim_index: 0
+    kind: heading-and-hash
+    locator: arXiv:2610.28577v1 abstract
+    quote: agents can proactively use
+    quote_sha256: 0f8287db0bc39dfc0fa895c6d60abeb2c114c760c20700f3cad452d2c2176998
+    source_revision: github.com/thu-nics/AKV @ c567a42 (2026-10-21); paper arXiv:2610.28577v1 HTML sha256-12 720743b692be, retrieved
+      2026-10-31 (submitted 20 Oct 2026)
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: heading-and-hash
+    locator: v1 Sec 1
+    quote: the same token prefix and retained positions can result in different cache states under different cache operation histories.
+    quote_sha256: b13c78e789bc2be10ee77be6cb7285d18901752233cd4e216288f4fd21ea0362
+    source_revision: github.com/thu-nics/AKV @ c567a42 (2026-10-21); paper arXiv:2610.28577v1 HTML sha256-12 720743b692be, retrieved
+      2026-10-31 (submitted 20 Oct 2026)
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: heading-and-hash
+    locator: v1 Sec 5.2
+    quote: AKV also reduces inference cost by 27.7% relative to Standard and 21.9% relative to Text Engineering
+    quote_sha256: 7f33c322289909c80e8b06243390c45fb5ac91b665699b280d32225139c2a180
+    source_revision: github.com/thu-nics/AKV @ c567a42 (2026-10-21); paper arXiv:2610.28577v1 HTML sha256-12 720743b692be, retrieved
+      2026-10-31 (submitted 20 Oct 2026)
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: heading-and-hash
+    locator: v1 Sec 5.2
+    quote: Input and output throughput are 1.53
+    quote_sha256: f77e3d0c69a714e89c8649355648d98532a8c6000657211f3f286744c9c2853e
+    source_revision: github.com/thu-nics/AKV @ c567a42 (2026-10-21); paper arXiv:2610.28577v1 HTML sha256-12 720743b692be, retrieved
+      2026-10-31 (submitted 20 Oct 2026)
+    verified_by: research-intake/stage2
+  - claim_index: 5
+    kind: heading-and-hash
+    locator: v1 Limitations
+    quote: extending serving support to linear attention models remain future work.
+    quote_sha256: b5d6caece7fa7502ab515d9e9e61eca59dc893c6fea835afc487329467250bfa
+    source_revision: github.com/thu-nics/AKV @ c567a42 (2026-10-21); paper arXiv:2610.28577v1 HTML sha256-12 720743b692be, retrieved
+      2026-10-31 (submitted 20 Oct 2026)
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 1
+    effect: reattributed
+    note: AKV is single-agent KV drop/reposition cache editing in a serving engine; no cross-model or cross-agent KV transfer. Do not
+      cite as C2C evidence.
+  depends_on: []
+  dive_corrections: '2026-10-31 (Stage 2, wave 2 (Stage 2b)): Stage-1 expansion premise (cross-agent KV) overturned. Substance is more
+    relevant than expected for the orchestrator agent loop (tool outputs dominate context; summarization/trim invalidates the prefix),
+    but the mechanism needs mid-sequence KV removal plus RoPE position shift, which llama.cpp already has as llama_memory_seq_rm and
+    seq_add for full-attention models and which is unsafe for recurrent/hybrid GDN memory. Gains are measured on SGLang with A800 BF16
+    and price-table costs; nothing was measured on llama.cpp.'
