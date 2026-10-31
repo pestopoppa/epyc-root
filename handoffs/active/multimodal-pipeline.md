@@ -979,9 +979,11 @@ capability against the resident VL server.
   **Scope: `vision_chat` (images), `ocr`, `grounding` — images only.** `transcribe_audio` is explicitly
   out of scope (different modality, different server). Report per-tool: works / works-degraded /
   cloud-bound, with the failing call for each.
-- [ ] **MM-4 — Run the `dry_run` payload preview FIRST.** It renders the request the tool would send
+- [x] **MM-4 — Run the `dry_run` payload preview FIRST.** It renders the request the tool would send <!-- completion: ✅ 2026-10-31 [belief: cc]; implementation: QwenLM/Qwen-MM-Plugins@c459594b80a9f156faaf4e92f2601eb74eba07de; artifact: artifacts/engineering/mm4-payload-preview-20261031/PREVIEW.json -->
   without issuing it — a zero-inference verification primitive, and therefore the correct first step of
   MM-1 rather than a follow-up. It settles the base-URL and auth plumbing before any model time.
+  - Executed 2026-10-31 through the actual upstream MCP argument wrapper and `vision_chat.handle(dry_run=True)` at pinned implementation `c459594b80a9f156faaf4e92f2601eb74eba07de`: requested local base URL `http://127.0.0.1:8087/v1`, no supplied API key (`EMPTY` sentinel), isolated empty configuration and a synthetic 1x1 image. The payload preview passed under a pre-verified socket/subprocess refusal guard, with zero prohibited attempts during preview and no model/HTTP request. [Git preview and source pins](../../artifacts/engineering/mm4-payload-preview-20261031/PREVIEW.json); [qualification](../../artifacts/engineering/mm4-payload-preview-20261031/EVIDENCE.json). No plugin/skill installation, live registration, configuration change or external message. Current upstream moved model API tools from core to the api capability. OCR and grounding have no dry-run argument and were not invoked. MM-1 remains open: no endpoint availability, real authentication, server-model identity or three-tool compatibility was established. [belief: cc]
+
 - [ ] **MM-2 — Use a local checkout + manifest flip, not the `QMP_REF` env var.** **Verified: `QMP_REF`
   is inert for our harness** — the checked-in manifests hardcode `@main`, so the variable is read but
   cannot change what resolves. The repo's own `scripts/dev-plugin.sh` already performs a `file://`
