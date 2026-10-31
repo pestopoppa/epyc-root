@@ -1,0 +1,52 @@
+{
+  "asof": "2026-10-31T02:44:01.953033+00:00",
+  "root_origin_main": "e58ddb42b97418a75a3b9c21e28a1b111e0e47ba",
+  "research_origin_main": "d1c7a8ffb9389b71d88b453d26c6c506346311e2",
+  "champion": "c72ec82f5417bb2937310326120f149b665e8400",
+  "c6_candidate": "729599d69871181d67af715a4c2f9162d5153a2e",
+  "historical_libraries_only": true,
+  "records": [
+    {
+      "path": "/mnt/raid0/llm/tmp/lb49-fu-diverge-05-r2-20261029/capture.cpp",
+      "resolved": "/mnt/raid0/llm/tmp/lb49-fu-diverge-05-r2-20261029/capture.cpp",
+      "sha256": "64252520d5299317cbc377de40741f9694dc138580d898486a4881bcff4a48d7",
+      "mtime": 1793233225.7332556
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/lb49-codex-deterministic-20261028/ggml/src/ggml-backend.cpp",
+      "resolved": "/mnt/raid0/llm/tmp/lb49-codex-deterministic-20261028/ggml/src/ggml-backend.cpp",
+      "sha256": "63d227a17377e8efd1aaa2bca04448488c51f54d257e8f3d5e63680a92bbdb6c",
+      "mtime": 1793197891.2245083
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/lb49-codex-deterministic-20261028/ggml/src/ggml-alloc.c",
+      "resolved": "/mnt/raid0/llm/tmp/lb49-codex-deterministic-20261028/ggml/src/ggml-alloc.c",
+      "sha256": "b22a6a79632c4423cf9982f91ba06f5a19136c4a39a1e570fb3f080b05495715",
+      "mtime": 1793197891.2244275
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/lb49-codex-evidence-20261028/build-deterministic-feature/bin/libllama.so",
+      "resolved": "/mnt/raid0/llm/tmp/lb49-codex-evidence-20261028/build-deterministic-feature/bin/libllama.so.0.0.10419",
+      "sha256": "51c2d70ff924a8ea3addd0f1cc771b92774f53fc35bd6feafafcff0c23acecab",
+      "mtime": 1793303770.5773005
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/lb49-codex-evidence-20261028/build-deterministic-feature/bin/libggml.so",
+      "resolved": "/mnt/raid0/llm/tmp/lb49-codex-evidence-20261028/build-deterministic-feature/bin/libggml.so.0.16.0",
+      "sha256": "b718d77a47b205cb223ad8201144c79994a1c983224a40170ab57c15b358d0ff",
+      "mtime": 1793201193.326896
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/lb49-codex-evidence-20261028/build-deterministic-feature/bin/libggml-base.so",
+      "resolved": "/mnt/raid0/llm/tmp/lb49-codex-evidence-20261028/build-deterministic-feature/bin/libggml-base.so.0.16.0",
+      "sha256": "4c94f70611205c77023ba6ed848f84cd96b9d80070be36c9dd89a07a1ac80df3",
+      "mtime": 1793199232.1492414
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/lb49-codex-evidence-20261028/build-deterministic-feature/bin/libggml-cpu.so",
+      "resolved": "/mnt/raid0/llm/tmp/lb49-codex-evidence-20261028/build-deterministic-feature/bin/libggml-cpu.so.0.16.0",
+      "sha256": "a166d833dbf1e34d46dec85500ec3bf820a3e85f4bab691710ac093e78076e78",
+      "mtime": 1793201193.247895
+    }
+  ]
+}

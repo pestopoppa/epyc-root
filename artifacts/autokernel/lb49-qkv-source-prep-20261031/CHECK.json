@@ -1,0 +1,9 @@
+{
+  "rc": 0,
+  "wall_s": 3.968647266039625,
+  "sampled_tree_rss_max_bytes": 181510144,
+  "samples": 47,
+  "cpus": "128-129",
+  "kind": "model-free source helper build/fixture only",
+  "model_loaded": false
+}

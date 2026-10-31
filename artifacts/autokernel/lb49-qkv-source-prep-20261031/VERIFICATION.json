@@ -1,0 +1,133 @@
+{
+  "schema": "epyc.lb49.qkv_source_prep.v1",
+  "scope": "engineering-only generated-fixture capture/replay; no DS41 execution or scientific checkbox completion",
+  "check": {
+    "rc": 0,
+    "wall_s": 3.968647266039625,
+    "sampled_tree_rss_max_bytes": 181510144,
+    "samples": 47,
+    "cpus": "128-129",
+    "kind": "model-free source helper build/fixture only",
+    "model_loaded": false
+  },
+  "source_metadata_contract": {
+    "schema": "1",
+    "phase": "after_backend_synchronize",
+    "binary": [
+      "present0..4",
+      "iqk_on"
+    ],
+    "source_threads": [
+      1,
+      96
+    ],
+    "alias": "-1 or present prior input"
+  },
+  "storage_contract": {
+    "tensor_cap_bytes": 268435456,
+    "short_magic": "refuse before comparison",
+    "shape_stride_validation": "overflow-safe canonical and strided spans before ggml construction"
+  },
+  "comparisons": 15,
+  "captured_output_bitwise_roundtrips": 5,
+  "negative_controls": [
+    {
+      "name": "truncated-buffer",
+      "exit": 2,
+      "diagnostic": "REFUSED raw length"
+    },
+    {
+      "name": "changed-Q-after-capture",
+      "exit": 2,
+      "diagnostic": "REFUSED native captured-output roundtrip mismatch"
+    },
+    {
+      "name": "broken-KV-alias",
+      "exit": 2,
+      "diagnostic": "REFUSED alias mismatch"
+    },
+    {
+      "name": "missing-input-presence",
+      "exit": 2,
+      "diagnostic": "REFUSED map::at"
+    },
+    {
+      "name": "short-magic",
+      "exit": 2,
+      "diagnostic": "REFUSED truncated magic"
+    },
+    {
+      "name": "oversized-stride",
+      "exit": 2,
+      "diagnostic": "REFUSED stride limit"
+    },
+    {
+      "name": "oversized-contiguous-shape",
+      "exit": 2,
+      "diagnostic": "REFUSED bounded span overflow"
+    },
+    {
+      "name": "missing-phase",
+      "exit": 2,
+      "diagnostic": "REFUSED map::at"
+    },
+    {
+      "name": "ask-time-phase",
+      "exit": 2,
+      "diagnostic": "REFUSED unknown schema or unsynchronized capture phase"
+    },
+    {
+      "name": "missing-schema",
+      "exit": 2,
+      "diagnostic": "REFUSED map::at"
+    },
+    {
+      "name": "unknown-schema",
+      "exit": 2,
+      "diagnostic": "REFUSED unknown schema or unsynchronized capture phase"
+    },
+    {
+      "name": "nonbinary-present",
+      "exit": 2,
+      "diagnostic": "REFUSED nonbinary source presence"
+    },
+    {
+      "name": "nonbinary-iqk",
+      "exit": 2,
+      "diagnostic": "REFUSED invalid source threads/iqk"
+    },
+    {
+      "name": "zero-source-threads",
+      "exit": 2,
+      "diagnostic": "REFUSED invalid source threads/iqk"
+    },
+    {
+      "name": "oversized-source-threads",
+      "exit": 2,
+      "diagnostic": "REFUSED invalid source threads/iqk"
+    },
+    {
+      "name": "negative-alias",
+      "exit": 2,
+      "diagnostic": "REFUSED invalid source alias"
+    },
+    {
+      "name": "self-alias",
+      "exit": 2,
+      "diagnostic": "REFUSED invalid source alias"
+    },
+    {
+      "name": "alias-to-absent-input",
+      "exit": 2,
+      "diagnostic": "REFUSED invalid source alias"
+    }
+  ],
+  "no_scientific_claims": [
+    "DS41 behavior",
+    "FU-DIVERGE-05a completion",
+    "implied logit propagation",
+    "current champion qualification",
+    "performance",
+    "promotion"
+  ]
+}

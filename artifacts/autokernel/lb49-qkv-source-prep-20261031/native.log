@@ -1,0 +1,22 @@
+PASS prior-op-derived QKV/mask/sinks; noncontiguous Q; K=V alias; ask-time poisoned negative control; synchronized output exact
+ROUNDTRIP captured_output_bitwise_equal=1 source_threads=1 source_iqk=0
+RESULT sinks=original nth=1 nmse=7.8399086837e-06 max_abs=3.37166711688e-05 mean_abs=6.12543270506e-06 threshold=0.0005 verdict=PASS
+RESULT sinks=zero-present nth=1 nmse=7.84160472983e-06 max_abs=3.35238873959e-05 mean_abs=6.08920575473e-06 threshold=0.0005 verdict=PASS
+RESULT sinks=null nth=1 nmse=7.84191590949e-06 max_abs=3.45702283084e-05 mean_abs=6.27930013763e-06 threshold=0.0005 verdict=PASS
+ROUNDTRIP captured_output_bitwise_equal=1 source_threads=1 source_iqk=0
+RESULT sinks=original nth=16 nmse=7.8399086837e-06 max_abs=3.37166711688e-05 mean_abs=6.12543270506e-06 threshold=0.0005 verdict=PASS
+RESULT sinks=zero-present nth=16 nmse=7.84160472983e-06 max_abs=3.35238873959e-05 mean_abs=6.08920575473e-06 threshold=0.0005 verdict=PASS
+RESULT sinks=null nth=16 nmse=7.84191590949e-06 max_abs=3.45702283084e-05 mean_abs=6.27930013763e-06 threshold=0.0005 verdict=PASS
+ROUNDTRIP captured_output_bitwise_equal=1 source_threads=1 source_iqk=0
+RESULT sinks=original nth=32 nmse=7.8399086837e-06 max_abs=3.37166711688e-05 mean_abs=6.12543270506e-06 threshold=0.0005 verdict=PASS
+RESULT sinks=zero-present nth=32 nmse=7.84160472983e-06 max_abs=3.35238873959e-05 mean_abs=6.08920575473e-06 threshold=0.0005 verdict=PASS
+RESULT sinks=null nth=32 nmse=7.84191590949e-06 max_abs=3.45702283084e-05 mean_abs=6.27930013763e-06 threshold=0.0005 verdict=PASS
+ROUNDTRIP captured_output_bitwise_equal=1 source_threads=1 source_iqk=0
+RESULT sinks=original nth=64 nmse=7.8399086837e-06 max_abs=3.37166711688e-05 mean_abs=6.12543270506e-06 threshold=0.0005 verdict=PASS
+RESULT sinks=zero-present nth=64 nmse=7.84160472983e-06 max_abs=3.35238873959e-05 mean_abs=6.08920575473e-06 threshold=0.0005 verdict=PASS
+RESULT sinks=null nth=64 nmse=7.84191590949e-06 max_abs=3.45702283084e-05 mean_abs=6.27930013763e-06 threshold=0.0005 verdict=PASS
+ROUNDTRIP captured_output_bitwise_equal=1 source_threads=1 source_iqk=0
+RESULT sinks=original nth=96 nmse=7.8399086837e-06 max_abs=3.37166711688e-05 mean_abs=6.12543270506e-06 threshold=0.0005 verdict=PASS
+RESULT sinks=zero-present nth=96 nmse=7.84160472983e-06 max_abs=3.35238873959e-05 mean_abs=6.08920575473e-06 threshold=0.0005 verdict=PASS
+RESULT sinks=null nth=96 nmse=7.84191590949e-06 max_abs=3.45702283084e-05 mean_abs=6.27930013763e-06 threshold=0.0005 verdict=PASS
+PASS 18 strict negative controls
