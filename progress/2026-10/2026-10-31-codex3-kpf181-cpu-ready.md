@@ -1,0 +1,7 @@
+# KPF-18.1 CPU subset preparation — 2026-10-31
+
+  - *(2026-10-31, CPU subset READY preparation.)* `codex3-kpf181-cpu-r1-20261031` prepares A/B/C/D on 35B Q8, same-binary fork-off and e332 comparison; C predeclares 16 fixed-stride lengths with MTP on/off, D no-drafter and MTP plus held-out position. Native missing values, interruptions and historical S1 exposures remain distinct and unknown where absent. Exact final launcher SHA-256 `b2311fba73a5322ab61d28a331a4083519c8d5c161b8687b3711cfed08936834`, source catalog `c4eab78384a9ce0511f16502cc08da68250b1e6d4221890c12de78571bba0639`. Same-entry public 0.8B control produced four A/fork-off records with one observed 512-token fork sibling, rc0 in 46.08s; active STOP returned rc75 partial, unknown-start marker retained, children drained. Source baseline audit reports 83 passing tests. This smoke does not run the 16-length grid or the full 35B cohort. Full CPU result, 27B GPU/DFlash2 leg and KPF-18.1 scientific gate remain open. [Evidence](../../artifacts/compute/codex3-kpf181-cpu-ready-20261031/SHA256SUMS). [belief: cc]
+
+Rates and 86,400-second window are planning estimates from prior different-binary logs, not this run. Same-binary fork-off and e332 comparisons remain required; CPU and GPU models are not pooled. Existing VB-KVU-PF-KPF181-WIRE remains open.
+
+The capsule AUDIT.md is an earlier preparation snapshot; its NOT READY language predates the final READY receipt and remains preserved as history.
