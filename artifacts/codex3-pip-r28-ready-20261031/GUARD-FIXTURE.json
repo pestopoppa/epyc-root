@@ -1,0 +1,29 @@
+{
+  "scope": "synthetic isolated grant, pre-set STOP; no real grant, no model, no READY",
+  "results": [
+    {
+      "name": "head",
+      "id": "codex3-pip02-paddle-relocatable-r28-head-20261031",
+      "rc": 75,
+      "stderr": ""
+    },
+    {
+      "name": "head",
+      "id": "codex3-pip02-paddle-relocatable-r26-head-20261030",
+      "rc": 1,
+      "stderr": "                       ^^^^^^\n  File \"/mnt/raid0/llm/tmp/codex3-filing-pip-dtap-c6-20261031-0230/repair/head/guard-fixture/synthetic.py\", line 124, in main\n    if ident!='codex3-pip02-paddle-relocatable-r28-head-20261031' or not grant.is_file():raise RuntimeError('pool identity or real grant missing')\n                                                                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nRuntimeError: pool identity or real grant missing\n"
+    },
+    {
+      "name": "pool-0",
+      "id": "codex3-pip02-paddle-relocatable-r28-pool0-20261031",
+      "rc": 75,
+      "stderr": ""
+    },
+    {
+      "name": "pool-0",
+      "id": "codex3-pip02-paddle-relocatable-r25-pool0-20261030",
+      "rc": 1,
+      "stderr": "   ^^^^^^\n  File \"/mnt/raid0/llm/tmp/codex3-filing-pip-dtap-c6-20261031-0230/repair/pool-0/guard-fixture/synthetic.py\", line 111, in main\n    if ident!=f'codex3-pip02-paddle-relocatable-r28-pool{x.pool}-20261031' or not grant.is_file():raise RuntimeError('pool identity or real grant missing')\n                                                                                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nRuntimeError: pool identity or real grant missing\n"
+    }
+  ]
+}

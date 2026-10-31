@@ -1,0 +1,24 @@
+{
+  "head": {
+    "same_python_files": 25,
+    "all_match": true,
+    "critical": {
+      "parallel_entry.py": "e95032162b46530f6329e8905a1d671ec09a9508d420001bf8796430168df424",
+      "parallel_owner.py": "1d0a85f45e3c8793d0a72f539ceddbb04bd3c8bfc03de716b62fafb0a388ad8d",
+      "parallel_worker.py": "123dd5016d21b1b5f13816dd676391ff49b2748d09557e9d039c7a1fbfc34ba7",
+      "layered_writer.py": "02dd225dd0722cca12f226005a7bc4ebc2ab6d51932f580483ba5a6b50fd02cf",
+      "journal_layered.py": "0ca29b4bb7fb1e337f6e02f3c411c2ae03ffd3ab3289d0835751359d724bec98"
+    }
+  },
+  "pool-0": {
+    "same_python_files": 22,
+    "all_match": true,
+    "critical": {
+      "parallel_entry.py": "0e44703087449a2e7773efaf29de241d8089e6ae8add0b80b84db19018dc65a0",
+      "parallel_owner.py": "5746c65d15f340f0850fcb90541888b0b241e9023e16d29af12bf56a92090228",
+      "parallel_worker.py": "2b05eecc7f4fda9163226f578213e91103d4d38e2e66e30e66ea51a73c86356e",
+      "layered_writer.py": "02dd225dd0722cca12f226005a7bc4ebc2ab6d51932f580483ba5a6b50fd02cf",
+      "journal_layered.py": "0ca29b4bb7fb1e337f6e02f3c411c2ae03ffd3ab3289d0835751359d724bec98"
+    }
+  }
+}

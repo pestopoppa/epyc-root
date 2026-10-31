@@ -1,0 +1,20 @@
+--- /mnt/micron/codex3-pip-head-r26-20261030/pool.py
++++ /mnt/raid0/llm/tmp/codex3-filing-pip-dtap-c6-20261031-0230/repair/head/pool.py
+@@ -3,7 +3,7 @@
+ import argparse, datetime, hashlib, json, os, pathlib, re, signal, subprocess, time, stat, sys, shutil
+ sys.path.insert(0,"/mnt/raid0/llm/tmp/rtg56-td29-m0a-raw-v5-20261029")
+ import pidfd_subreaper_v3 as subreaper
+-H=pathlib.Path(__file__).resolve().parent
++H=pathlib.Path('/mnt/micron/codex3-pip-head-r26-20261030')
+ R=pathlib.Path('/mnt/raid0/llm/tmp/codex3-pip02-paddle-relocatable-r13-20261030')
+ F=pathlib.Path('/mnt/raid0/llm/tmp/compute-flags')
+ RAID_META=pathlib.Path('/mnt/raid0/llm/tmp/codex3-pip-head-r26-20261030')
+@@ -121,7 +121,7 @@
+   print(json.dumps({'event':'smoke-credit','events':events,'cutoff':cutoff,'native_rc':rc},sort_keys=True),flush=True)
+   return 75 if cutoff else rc
+  grant=F/'grants'/f'{ident}.grant';stop=pathlib.Path(os.environ['FILLER_STOPFILE']);deadline=float(os.environ['FILLER_DEADLINE'])
+- if ident!='codex3-pip02-paddle-relocatable-r26-head-20261030' or not grant.is_file():raise RuntimeError('pool identity or real grant missing')
++ if ident!='codex3-pip02-paddle-relocatable-r28-head-20261031' or not grant.is_file():raise RuntimeError('pool identity or real grant missing')
+  rawgrant=grant.read_bytes(); match=re.search(r'(?:^|\s)regions=([^\s]+)',rawgrant.decode())
+  cpus=cpu_set(os.environ['FILLER_CPUS']);lo,hi=map(int,x.regions.split('-'))
+  if not match or match[1]!=x.regions or not cpus or any(not lo<=n%96<=hi for n in cpus) or os.sched_getaffinity(0)!=cpus:raise RuntimeError('grant, CPU affinity and assigned quarter differ')

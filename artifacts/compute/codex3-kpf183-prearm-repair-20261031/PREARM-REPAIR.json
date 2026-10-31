@@ -1,0 +1,13 @@
+{
+  "at": "2026-10-31T02:36:14.357934+00:00",
+  "id": "codex3-kpf183-chat-attribution-full-r1-20261031",
+  "refusal_backup": "/mnt/raid0/llm/tmp/codex3-kpf183-chat-full-20261031/PREARM-REFUSAL-20261031T023153Z.json",
+  "refusal_sha256": "e491bdb3bd73803f3e6cfc7542187b2ac90cd7297dc6ac276ca51f86ba08430e",
+  "refusal_reason": "PRE-ARM REFUSED codex3-kpf183-chat-attribution-full-r1-20261031: conditional=False blockers=[] missing=['/mnt/raid0/llm/tmp/codex3-kpf183-chat-full-20261031/run/RESULT.json']",
+  "restored_manifest": "/mnt/raid0/llm/tmp/compute-flags/ready/codex3-kpf183-chat-attribution-full-r1-20261031.json",
+  "restored_sha256": "6b4f1d141f45fdb7b28428678a95b6c2a376f97f4b007e8368fe11fda29a09d8",
+  "manifest_byte_identical_to_original": true,
+  "run_directory_created_empty": true,
+  "same_id_no_new_smoke": true,
+  "no_full_target_native_exposure": true
+}
