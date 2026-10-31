@@ -1,0 +1,26 @@
+{
+  "DS41_qualified": false,
+  "READY_to_ARMED_source_identity_proved": true,
+  "active_native_cutoff": {
+    "partial_output_drained": true,
+    "rc": 75,
+    "wall_s": 2.1952145099639893
+  },
+  "contract_checks_all_passed": true,
+  "contract_checks_total": 30,
+  "current_keeper_validator": "7dd",
+  "engine_pid_birth_and_dual_stdout_scratch_log_proved": true,
+  "independent_raw_reader": true,
+  "model_profile_status": "UNTESTED",
+  "model_run_by_publication": false,
+  "normal": {
+    "rc": 0,
+    "wall_s": 3.6267333030700684
+  },
+  "original_cpu_capture_images": 4,
+  "retained_referenced_files": 216,
+  "scientific_checkbox_flip_count": 0,
+  "scope": "CONTROL_ONLY final-entry generated-native launcher qualification",
+  "sink_modes": 3,
+  "thread_replays": 5
+}
