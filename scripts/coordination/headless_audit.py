@@ -376,7 +376,9 @@ def candidate_paths(text: str) -> list[str]:
     """
     out: list[str] = []
     for raw in _PATH_TOKEN_RE.findall(text or ""):
-        tok = raw.strip().strip("`'\"(),;:").lstrip("./")
+        tok = raw.strip().strip("`'\"(),;:")
+        if tok.startswith("./"):
+            tok = tok[2:]
         if not tok or len(tok) < 4:
             continue
         if _PATHY_RE.match(tok) or ("/" in tok and "." in tok.rsplit("/", 1)[-1]):
@@ -390,19 +392,58 @@ def choose_probe_target(task_rows: list[dict], facts: dict,
                         worktree: Optional[Path] = None) -> dict:
     """Name ONE file the diff should have touched, and say where the name came from.
 
-    The name comes from the TASK TEXT — the thing that was asked for — never from
-    the diff and never from the report. Choosing the target from the diff would
-    make the probe a tautology ("the diff touched a file the diff touched"), which
-    is precisely the vacuity the anti-vacuity test exists to rule out.
+    The dispatch may identify deliverable paths named in the task text. Every
+    declared path is validated and the first is used for this single probe.
+    Legacy task text with exactly one named path remains supported; ambiguous
+    or invalid inputs are undetermined. The target never comes from the diff or
+    worker report, which would make the probe tautological.
 
     Returns {target, source_quote, task_id} or {target: None, reason: ...}.
     """
     for row in task_rows:
         text = str(row.get("task_text") or "")
-        for cand in candidate_paths(text):
-            quote = _quote_around(text, cand)
-            return {"target": cand, "task_id": row.get("task_id"), "source_quote": quote,
-                    "derived_from": "task_text"}
+        named = candidate_paths(text)
+        if "deliverable_paths" in row:
+            paths = row["deliverable_paths"]
+            if not isinstance(paths, list) or not paths or any(
+                not isinstance(path, str) or not path for path in paths
+            ):
+                return {"target": None, "task_id": row.get("task_id"),
+                        "reason": "invalid explicit deliverable_paths declaration"}
+            for cand in paths:
+                path = Path(cand)
+                if (path.is_absolute() or ".." in path.parts or str(path) != cand
+                        or cand not in named):
+                    return {"target": None, "task_id": row.get("task_id"),
+                            "reason": "deliverable must be a normalized relative path "
+                                      "named in task text"}
+                if worktree is not None:
+                    try:
+                        (worktree / path).resolve().relative_to(worktree.resolve())
+                    except (ValueError, OSError, RuntimeError):
+                        return {"target": None, "task_id": row.get("task_id"),
+                                "reason": "deliverable resolves outside the worktree"}
+            cand = paths[0]
+            return {"target": cand, "task_id": row.get("task_id"),
+                    "source_quote": _quote_around(text, cand),
+                    "derived_from": "dispatch_deliverable_paths"}
+        if len(named) == 1:
+            cand = named[0]
+            path = Path(cand)
+            if path.is_absolute() or ".." in path.parts or str(path) != cand:
+                return {"target": None, "task_id": row.get("task_id"),
+                        "reason": "task path is not normalized and relative"}
+            if worktree is not None:
+                try:
+                    (worktree / path).resolve().relative_to(worktree.resolve())
+                except (ValueError, OSError, RuntimeError):
+                    return {"target": None, "task_id": row.get("task_id"),
+                            "reason": "task path resolves outside the worktree"}
+            return {"target": cand, "task_id": row.get("task_id"),
+                    "source_quote": _quote_around(text, cand), "derived_from": "task_text"}
+        if len(named) > 1:
+            return {"target": None, "task_id": row.get("task_id"),
+                    "reason": "multiple task paths; no explicit deliverable_paths"}
     return {"target": None, "task_id": (task_rows[0].get("task_id") if task_rows else None),
             "reason": "no file path is named in any task text, so no file can be asserted "
                       "as one the diff SHOULD have touched"}

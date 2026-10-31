@@ -151,6 +151,29 @@ consumes `task_id`, `task_text`, `row_ref`, `screened_by`, `source_handoff`, `ex
 prose in disguise. A bare string is accepted but stamped `source: "unsourced"` so the defect is
 visible in the brief rather than indistinguishable from a sourced one.
 
+When the task text names both a deliverable and supporting files, the dispatcher can state the
+expected deliverable paths explicitly in the assignment, for example:
+
+```json
+{
+  "rows": [{
+    "task_id": "T-1",
+    "task_text": "Fix src/widget.py using docs/reference.md",
+    "source_handoff": "handoffs/active/example.md",
+    "deliverable_paths": ["src/widget.py"]
+  }]
+}
+```
+
+`load_assignment` accepts this JSON row and the runner carries `deliverable_paths` into the brief.
+Each listed path must be a normalized relative path named in `task_text` and resolve inside the
+worktree, including through symlinks. The auditor validates every declared path, then uses the
+**first** as its single mutation-probe target; it never selects a target from the diff. An invalid
+or escaping declaration is undetermined and blocks the audit. A legacy task with one path keeps
+its existing target; one with multiple paths and no declaration is ambiguous, so the probe is
+undetermined and blocks rather than treating a reference as a failed deliverable. Supply the field
+in the assignment file; the one-row `--row-text` shortcut does not provide it.
+
 `--pilot-override` prints a warning to stderr, does **not** touch the daemon's gate (the daemon reads
 the config, not this flag), and does **not** bypass the rule-8 ack — a runner may not kill without
 the amendment, override or no override.

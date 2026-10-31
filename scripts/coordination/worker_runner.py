@@ -490,7 +490,12 @@ def build_brief(rows: list[dict], *, batch_id: str, lane: str, worktree: Path,
             "constraints": normalize_constraints(row.get("constraints")),
             "source_handoff": row.get("source_handoff"),
         }
-        brief_rows.append({k: v for k, v in entry.items() if v not in (None, [], {})})
+        entry = {k: v for k, v in entry.items() if v not in (None, [], {})}
+        # Preserve even malformed declarations for the independent auditor to
+        # refuse; silently dropping one could fall back to an inferred target.
+        if "deliverable_paths" in row:
+            entry["deliverable_paths"] = row["deliverable_paths"]
+        brief_rows.append(entry)
 
     brief = {
         "schema_version": BRIEF_SCHEMA_VERSION,
