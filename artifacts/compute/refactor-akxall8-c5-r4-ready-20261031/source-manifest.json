@@ -1,0 +1,36 @@
+{
+  "build_dir": "/mnt/micron/refactor-lanes/llama.cpp-experimental/build-cpu-akx8-r4-20261031",
+  "build_identity_after_full_link_only": true,
+  "created_at": "2026-10-31T04:04:37.030782+00:00",
+  "engine_state": "/mnt/raid0/llm/tmp/refactor-01a16fc3/ufh14-next-source-20261030/build-packet-r4/state",
+  "engine_state_owner": "effective keeper uid1000; actual launcher lock open/flock passed",
+  "head": "c72ec82f5417bb2937310326120f149b665e8400",
+  "inherited_r3_manifest": {
+    "path": "/mnt/raid0/llm/tmp/refactor-01a16fc3/ufh14-next-source-20261030/build-packet-r3/source-manifest.json",
+    "sha256": "3656f0c567494f460c8af975565bbe15ebb22e6391500f0a9cd74ae72334fca1"
+  },
+  "original_target_preserved": "existing t48/ub512 target retained separately; r4 prepares declared :8074 t96/effective ub2048 successor, no recipe substitution",
+  "packet_files": {
+    "build-job.sh": "0c5649002c910577112ed1acbd429a410213abf4705076ef574f3b24b6746c28",
+    "build-launch.sh": "629bfa00b92e47295ed455d19ef1fe55d878cd052c2a7ca121caa1c40a004ac8",
+    "check_complete.py": "abb620a4fd827553f166103877646933694ff0ed560ad7699ad7c1b90b0771f7",
+    "compile_witness.py": "38c3764c43e4fca743ca8830b8d6ed20cc4bc52600e8d98b44033932e9277b50",
+    "disk_gate.py": "b5e55a4edc8e3875d75e85267b8f29bb9d7214874a748a02ad1757845b2cf40d",
+    "dryrun_check.py": "aa9ed900be5fb7f3efca043bfddb2ac8963964710db0b702c7491729a74f8542",
+    "filler_lib.sh": "241e522f4a7d7208e7485834c90d77676434a9bc88fd253575e034ad2934237c",
+    "filler_run13.sh": "29b88da445634de88b33a7a8d74ebdc21e4a011fac12417c02b25e5beec1c10d",
+    "frontdoor.sh": "9bd153d52090ae7afc7a131ed18fe3687a7ee7a77cb392a6e6e906e1436fd698",
+    "rebind_after_build.py": "f95e109b3bf6eaa59ed13077b8fd1a392f4da3f82cbdef7bb1616ec3ca1ca8e6",
+    "resource_gate.py": "bbf26966a270a84b98a6b2f31a43dd2e54055c23fbddb0010db5bf9d0ca9e9f5",
+    "write_build_identity.py": "63a37e0a8d096b4de6949e2f4d4bcee00ca9033f3f1d9dee36f4ba239b46bd12"
+  },
+  "production_ancestor": "ffc1bac82eeca6f9099e1ccd9ba49703c460a115",
+  "schema": "epyc.akxall8.c5_build_source.r4.v1",
+  "source_lane": "/mnt/micron/refactor-lanes/llama.cpp-experimental",
+  "source_sha256sums": "bce0afd564e1d8a8604ee071e65e47d698d3529bcb708871e3f89fdcc5e37a60",
+  "target_card": {
+    "path": "/mnt/raid0/llm/tmp/refactor-01a16fc3/ufh14-next-source-20261030/candidate/q38fn-akxall8-declared8074-t96-ub2048-mtp-d4-20261030.target-card.json",
+    "sha256": "9666643678dc91b27449de64a8ec0b0185c06700cf24b92f7f05b2a35a5561e2"
+  },
+  "task": "AKX-ALL-8 C5 production-declaration target build; no timing or serving claim"
+}
