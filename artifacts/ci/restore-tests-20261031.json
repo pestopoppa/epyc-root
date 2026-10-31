@@ -1,0 +1,62 @@
+{
+  "schema": "epyc.ci_green_repair.v1",
+  "task": "CI-20261031-GREEN",
+  "root": {
+    "repository": "pestopoppa/epyc-root",
+    "workflow": ".github/workflows/tests.yml",
+    "branch": "main",
+    "head_sha": "1fda0ad840c1a91ea39a9a5f52bf1a59edf0beec",
+    "run_url": "https://github.com/pestopoppa/epyc-root/actions/runs/41200383604",
+    "conclusion": "success",
+    "belief_suite": {
+      "passed": 3438,
+      "existing_conditional_skips": 543,
+      "subtests_passed": 24,
+      "test_selection_not_disabled": true
+    },
+    "index_problems": 0,
+    "ratification_tests_passed": 41,
+    "ratification_checker_failures": 0,
+    "carrier_invariants": {
+      "tuples": 7344,
+      "source_kinds": 113,
+      "violations": 0
+    },
+    "implementation_commits": [
+      "561e6ae9b7e684b54e101affb2c48a61983f9d76",
+      "34a955f9ca9c59663f4f0f0a2980aa8aee4d13c9",
+      "c78940ada89614eaa68455776e2ff7d4332ec7bc",
+      "6309ecb04261bdc7208f4ec4c20871290bdcb393"
+    ]
+  },
+  "research": {
+    "repository": "pestopoppa/epyc-inference-research",
+    "workflow": ".github/workflows/actor-wire.yml",
+    "branch": "main",
+    "head_sha": "8b5af68ac9e6e12cfbdfbe398037842a6054127f",
+    "implementation_commit": "f115236f7b8fa768e4172e50326ea9f384b0de53",
+    "run_url": "https://github.com/pestopoppa/epyc-inference-research/actions/runs/41196682393",
+    "conclusion": "success",
+    "admission_tests_passed": 78,
+    "admission_tests_skipped": 0,
+    "provider_matrix": "PASS"
+  },
+  "source_epochs": {
+    "S4_APP": "5775730ccd2bb69805f5843ab1b001b002930fbd",
+    "MF_EVAL_APP": "cfcf3768716de888a971bf66489397f5b91241df",
+    "MF_EVAL_unchanged_source_hash_count": 44,
+    "paired_import_order_tests_passed_each": 9
+  },
+  "operator_approval": {
+    "exact_patch_sha256": "de2bd2dfcfe51eba58ce263216fe824dae137e9a794fce7042592722d4cb7db7",
+    "record": "artifacts/operator/ci-ratification-six-approved-20261031.json",
+    "six_original_artifacts_unchanged": true,
+    "checker_classification_rules_unchanged": true
+  },
+  "ws58_report": {
+    "native_message_id": "48d4dd08-d7ad-4cc5-a6a9-1c50ce483299",
+    "delivery": "authenticated socket flush and peer EOF; not a human read acknowledgement"
+  },
+  "raw_log_sha256": "9ad2c01c3775268d5e731ba7168a8948bdd3358ffa266c06036ffbf72f7286cd",
+  "claim_scope": "CI/source validation only; no model or production deployment claim"
+}
