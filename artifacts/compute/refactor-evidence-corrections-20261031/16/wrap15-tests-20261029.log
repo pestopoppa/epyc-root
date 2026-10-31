@@ -1,0 +1,5 @@
+prep_cpus 54 55
+.............................s.......................................... [ 74%]
+.........................                                                [100%]
+96 passed, 1 skipped in 0.39s
+{"schema": "bounded-r6-prep-supervisor/v1", "elapsed_s": 0.6071554000955075, "sampled_peak_tree_rss_bytes": 73871360, "samples": 7, "verified_exited_processes": 0, "verified_exited_threads": 0, "per_process_address_space_limit_bytes": null, "rss_scope": "sum of sampled resident pages across owned process tree; sampling may miss transients and double-count shared pages", "leader_pid": 1287303, "leader_birth": 143842281, "child_rc": 0, "children_drained": true, "failure": null}
