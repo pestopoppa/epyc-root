@@ -1,0 +1,65 @@
+{
+  "scope": "R22 plus all original R11 g119 captures; native unknown-region proof, no inference",
+  "rows": [
+    {
+      "group": 47,
+      "index": 581,
+      "state": "unknown",
+      "unknown_regions": 2
+    },
+    {
+      "group": 47,
+      "index": 601,
+      "state": "unknown",
+      "unknown_regions": 1
+    },
+    {
+      "group": 47,
+      "index": 605,
+      "state": "unknown",
+      "unknown_regions": 3
+    },
+    {
+      "group": 47,
+      "index": 623,
+      "state": "unknown",
+      "unknown_regions": 3
+    },
+    {
+      "group": 47,
+      "index": 624,
+      "state": "unknown",
+      "unknown_regions": 3
+    },
+    {
+      "group": 119,
+      "index": 1475,
+      "state": "unknown",
+      "unknown_regions": 3
+    },
+    {
+      "group": 119,
+      "index": 1477,
+      "state": "unknown",
+      "unknown_regions": 3
+    },
+    {
+      "group": 119,
+      "index": 1480,
+      "state": "unknown",
+      "unknown_regions": 2
+    },
+    {
+      "group": 119,
+      "index": 1481,
+      "state": "unknown",
+      "unknown_regions": 2
+    },
+    {
+      "group": 119,
+      "index": 1489,
+      "state": "unknown",
+      "unknown_regions": 2
+    }
+  ]
+}

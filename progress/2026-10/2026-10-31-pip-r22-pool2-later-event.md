@@ -1,0 +1,7 @@
+# PIP R22 pool2 later event — 2026-10-31
+
+### 2026-10-31 01:28 R22 pool2 later terminal event
+
+**FAILED-RUN, class unknown:** the distinct later `codex3-pip02-paddle-relocatable-r22-pool2-20261030` event ended rc78 at 01:28:55 UTC. The existing FILED receipt describes the separate 2026-10-30 06:17 rc75 event and is preserved. Groups 23, 47, 71 and 119 ended rc78; groups 131 and 143 subsequently returned rc0, and six other groups were already marked complete. The layered inventory reports group 23 with 14 completed page journals and one page-start pending without layout or region start; group 71 has 15 such pending starts. Groups 47 and 119 each have ten complete page journals and five unknown pages. Original R11 and R22 capture proofs verify all 24 unmatched region starts across those ten unknown pages; preserve them without redraw. For the 16 no-layout starts, original producer-window correlation is corroboration only, not per-page proof of exposure or later history. An earlier unmatched ordinal and later different-ordinal starts in group 119 are a custody discrepancy, not proof of same-ordinal redraw. A group 47 worker recorded connection errors, but the overall failure cause remains unknown. Owner action: preserve all original captures and unmatched requests, investigate custody and safe continuation using the original policy. No quality or 755-page verdict follows. [Bounded event receipts](../../artifacts/codex3-pip-pool2-r22-0128-v2-20261031/). [belief: cc]
+
+No scientific checkbox changed.

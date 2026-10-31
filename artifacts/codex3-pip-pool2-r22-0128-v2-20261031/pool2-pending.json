@@ -1,0 +1,117 @@
+{
+  "scope": "read-only pending page state",
+  "pages": [
+    {
+      "group": 23,
+      "index": 301,
+      "layout": false,
+      "starts": 0,
+      "sent": false
+    },
+    {
+      "group": 71,
+      "index": 1085,
+      "layout": false,
+      "starts": 0,
+      "sent": false
+    },
+    {
+      "group": 71,
+      "index": 1086,
+      "layout": false,
+      "starts": 0,
+      "sent": false
+    },
+    {
+      "group": 71,
+      "index": 1088,
+      "layout": false,
+      "starts": 0,
+      "sent": false
+    },
+    {
+      "group": 71,
+      "index": 1089,
+      "layout": false,
+      "starts": 0,
+      "sent": false
+    },
+    {
+      "group": 71,
+      "index": 1097,
+      "layout": false,
+      "starts": 0,
+      "sent": false
+    },
+    {
+      "group": 71,
+      "index": 1099,
+      "layout": false,
+      "starts": 0,
+      "sent": false
+    },
+    {
+      "group": 71,
+      "index": 1100,
+      "layout": false,
+      "starts": 0,
+      "sent": false
+    },
+    {
+      "group": 71,
+      "index": 1107,
+      "layout": false,
+      "starts": 0,
+      "sent": false
+    },
+    {
+      "group": 71,
+      "index": 1116,
+      "layout": false,
+      "starts": 0,
+      "sent": false
+    },
+    {
+      "group": 71,
+      "index": 1117,
+      "layout": false,
+      "starts": 0,
+      "sent": false
+    },
+    {
+      "group": 71,
+      "index": 1118,
+      "layout": false,
+      "starts": 0,
+      "sent": false
+    },
+    {
+      "group": 71,
+      "index": 1119,
+      "layout": false,
+      "starts": 0,
+      "sent": false
+    },
+    {
+      "group": 71,
+      "index": 1120,
+      "layout": false,
+      "starts": 0,
+      "sent": false
+    },
+    {
+      "group": 71,
+      "index": 1200,
+      "layout": false,
+      "starts": 0,
+      "sent": false
+    },
+    {
+      "group": 71,
+      "index": 1201,
+      "layout": false,
+      "starts": 0,
+      "sent": false
+    }
+  ]
+}
