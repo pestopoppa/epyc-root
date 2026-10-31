@@ -1,0 +1,18 @@
+{
+  "files": {
+    "/mnt/raid0/llm/tmp/codex-ni-gpu-floor-next-prep-20261031/EXTENSION-SCOPE.md": "20cc8be2614d88a01eb1819a732ed07e53b6e5cfbfbd63c5ad4e649bd1db0819",
+    "/mnt/raid0/llm/tmp/codex-ni-gpu-floor-next-prep-20261031/GPU-GATE-PREDECLARATION.md": "05f53f1b5823446d05e9c625a1dd03ca3026a2e53b620cf558b9305735f8b0ed",
+    "/mnt/raid0/llm/tmp/codex-ni-gpu-floor-next-prep-20261031/HISTORICAL-C5-BINDING.json": "0d60289cc0796c76838beb13bc8b4b2c3721b1a6cd19336c003a49b4648983bc",
+    "/mnt/raid0/llm/tmp/codex-ni-gpu-floor-next-prep-20261031/RETAINED-SHA256SUMS": "6a194a924356e8a475589b3200510f5b1e8f36bff28d746992584fa1066cde41",
+    "/mnt/raid0/llm/tmp/codex-ni-gpu-floor-next-prep-20261031/analyze_extension.py": "740eb47989333fd3a1d722e2ab4063af2a223e29cf94dbff3b361e56b2a60729",
+    "/mnt/raid0/llm/tmp/codex-ni-gpu-floor-next-prep-20261031/cutoff_supervisor.py": "fe23588f6921f5f06e686f643cf9285dc795e1508e2cb0a5fb99d5a0463cf4a4",
+    "/mnt/raid0/llm/tmp/codex-ni-gpu-floor-next-prep-20261031/enroll.py": "1752d7202cc639c3009a53b0047a7a66fd52d6e56887ff42a394fbdc09e8c283",
+    "/mnt/raid0/llm/tmp/codex-ni-gpu-floor-next-prep-20261031/fixture.py": "b64c905f7a7b0d12510715297208dd2848fdad2e956fa5dc43e6026916644684",
+    "/mnt/raid0/llm/tmp/codex-ni-gpu-floor-next-prep-20261031/gpu_gate.py": "dcae89247e66e09702ae9ae6edb4976ed62dad5073b6bafcc089863d834ee018",
+    "/mnt/raid0/llm/tmp/codex-ni-gpu-floor-next-prep-20261031/launch.sh": "3cb9a2429fca6d3cc16cbee12c98d0424ed6122cd70ca3a1bc2faba1b1a2d0ff",
+    "/mnt/raid0/llm/tmp/codex-ni-gpu-floor-next-prep-20261031/process_custody.py": "6e17c9b796a0efeac7016d50e7ff12deb2f2c6aead758dc8bb5626cec7c2b478",
+    "/mnt/raid0/llm/tmp/codex-ni-gpu-floor-next-prep-20261031/prompts.json": "5b2c9febc28cc0c6cb1ea7e998696f927449c687feeb44ed8b3f0c341e079bf6",
+    "/mnt/raid0/llm/tmp/codex-ni-gpu-floor-next-prep-20261031/scheduled_r7.py": "45d6559b4d2a0066bed5619f7a524527a7a4e808504223225ad1be8afcad80e4",
+    "/mnt/raid0/llm/tmp/codex-ni-gpu-floor-next-prep-20261031/full_complete.py": "0fa4c745d22344715e251bda59dc402c78ddc8c36d59e16a1197f8f96706263b"
+  }
+}

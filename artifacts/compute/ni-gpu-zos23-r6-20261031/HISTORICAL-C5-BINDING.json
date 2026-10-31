@@ -1,0 +1,10 @@
+{
+  "scope": "HISTORICAL_C5_DIAGNOSTIC_ONLY",
+  "base_commit": "c72ec82f5417bb2937310326120f149b665e8400",
+  "source_pins_sha256": "187e7a953e151f208859cc93f7353d6ba7e43189fe58dc18f47b333184aea4dc",
+  "image_pins_sha256": "ad5fd19e714aefff90b2accd14a6a4188a3c3771d8e5dbf0f5bf1bd1d71fbf05",
+  "active_c6_lane_commit": "729599d69871181d67af715a4c2f9162d5153a2e",
+  "local_mutable_champion_ref_observed": "c72ec82f5417bb2937310326120f149b665e8400",
+  "observed_at": "2026-10-31T10:10:03.308353+00:00",
+  "meaning": "Continuation of immutable retained C5 atomic diagnostic only, independent of active C6 or mutable champion ref. No adoption, promotion, rebase or store modification."
+}

@@ -1,0 +1,96 @@
+{
+  "schema": "ni.gpu_zos23_r6_capsule_manifest.v1",
+  "manifest_excludes_self": true,
+  "files": [
+    {
+      "path": "A3-COMPLETE.json",
+      "sha256": "c10941984a86fd6ebeea4b47f343a739c428bdc17216446109f6c21d27778e41",
+      "bytes": 2469
+    },
+    {
+      "path": "B3-COMPLETE.json",
+      "sha256": "6a418ec07e6b1ba7a9fa9853125e28b5c1815fec1c02946ca2a8b13d6927434d",
+      "bytes": 2514
+    },
+    {
+      "path": "EXTENSION-SCOPE.md",
+      "sha256": "20cc8be2614d88a01eb1819a732ed07e53b6e5cfbfbd63c5ad4e649bd1db0819",
+      "bytes": 1790
+    },
+    {
+      "path": "GOVERNING-RULE.md",
+      "sha256": "1c8affb83b80a046a88488f9443457cce7defac88705ac6ba3740c862aa8989a",
+      "bytes": 2337
+    },
+    {
+      "path": "GPU-GATE-PREDECLARATION.md",
+      "sha256": "05f53f1b5823446d05e9c625a1dd03ca3026a2e53b620cf558b9305735f8b0ed",
+      "bytes": 4458
+    },
+    {
+      "path": "HISTORICAL-C5-BINDING.json",
+      "sha256": "0d60289cc0796c76838beb13bc8b4b2c3721b1a6cd19336c003a49b4648983bc",
+      "bytes": 682
+    },
+    {
+      "path": "IMAGE-PINS.json",
+      "sha256": "ad5fd19e714aefff90b2accd14a6a4188a3c3771d8e5dbf0f5bf1bd1d71fbf05",
+      "bytes": 1661
+    },
+    {
+      "path": "MODEL-PINS.json",
+      "sha256": "9f94e6d3f3354036dceff543a518550c98396bc41814c7198b35af2f3735786b",
+      "bytes": 450
+    },
+    {
+      "path": "RESPONSE-PROJECTIONS.json",
+      "sha256": "af3cd8cee10a5bbc3af4ff23a4b0478ad95e7c5ec5f1f69923cc9240adfa69be",
+      "bytes": 138454
+    },
+    {
+      "path": "RESULT-SUMMARY.json",
+      "sha256": "945dc30eb4cd3fab870b7ab8fcde70bd39dee41e71f353718f861e094b4b7a48",
+      "bytes": 34066
+    },
+    {
+      "path": "RETAINED-SHA256SUMS",
+      "sha256": "6a194a924356e8a475589b3200510f5b1e8f36bff28d746992584fa1066cde41",
+      "bytes": 14793
+    },
+    {
+      "path": "RUN-INTENT-extension.json",
+      "sha256": "870de1fcd1c29a13d65dcd5539e97c32e8950723f27747f687a67b5c4e7d5149",
+      "bytes": 1547
+    },
+    {
+      "path": "RUNTIME-PINS.json",
+      "sha256": "cd3f48bbc57e53b71b4cdc5a349c1ded5bf80355ec90a8bf8e7020dcf155ed1b",
+      "bytes": 2111
+    },
+    {
+      "path": "analysis-sources/SOURCES.json",
+      "sha256": "f7e0e48fb52c1ab762c89d57f56447feb7734c2aa337c2c9d9411fdda956a790",
+      "bytes": 1086
+    },
+    {
+      "path": "analysis-sources/analyze_extension.py",
+      "sha256": "740eb47989333fd3a1d722e2ab4063af2a223e29cf94dbff3b361e56b2a60729",
+      "bytes": 2203
+    },
+    {
+      "path": "analysis-sources/analyze_gate-original.py",
+      "sha256": "7ca60898e91059e4dad744f08b420961e8e2101d514fe4bfd51ff4a654eebe13",
+      "bytes": 7206
+    },
+    {
+      "path": "analysis-sources/analyze_gate-successor.py",
+      "sha256": "15c91a90179eb2a1031badfe7252d3ed15a8a7ba4d8bb04df4982bd70a65bc18",
+      "bytes": 6985
+    },
+    {
+      "path": "analysis-sources/full_complete.py",
+      "sha256": "0fa4c745d22344715e251bda59dc402c78ddc8c36d59e16a1197f8f96706263b",
+      "bytes": 1606
+    }
+  ]
+}

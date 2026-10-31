@@ -1,0 +1,896 @@
+{
+  "schema": "ni.gpu_zos23_r6_filing_capsule.v1",
+  "id": "codex-ni-gpu-zos23-c5-extension-r6-20261031",
+  "event": {
+    "grant_ended": "rc=0 time=2026-10-31T15:17:17Z reason=complete\njob_id=codex-ni-gpu-zos23-c5-extension-r6-20261031\nowner=codex-ni\nstep=job-run\nestimated_wall_s=2700\nstarted=2026-10-31T15:04:25Z\nregions=mi210_0,184-191",
+    "grant_complete": "complete time=2026-10-31T15:17:17Z id=codex-ni-gpu-zos23-c5-extension-r6-20261031",
+    "result_path": "/mnt/raid0/llm/tmp/codex-ni-gpu-floor-next-prep-20261031/out/RESULT.json",
+    "result_sha256": "1830905041bed101c072f0873a97793bae1294d05fca184733f3bd7f132c1369",
+    "result_bytes": 4818884,
+    "result_at": "2026-10-31T16:20:10.580438+00:00",
+    "capture_complete": true,
+    "partial": false,
+    "qualification_only": false,
+    "native_verdict": "ATOMIC_DIAGNOSTIC_EXTENSION_CAPTURED",
+    "ship_authorized": false,
+    "original_parent_complete": false,
+    "full_capture_checker": "python3 full_complete.py -> FULL_CAPTURE_COMPLETE (capture structure only)",
+    "native_run_terminal_at": "2026-10-31T15:17:17Z (grant .ended/.complete; B3 COMPLETE seal at 15:17:17.128006Z)",
+    "result_container_at": "2026-10-31T16:20:10.580438+00:00",
+    "result_container_mtime_utc": "2026-10-31T16:20:10.593378782Z",
+    "timestamp_note": "Top-level RESULT container metadata is later than the native grant and arm completion seals; report grant/arm terminal time as run end and distinguish the later container metadata time. No actor/source attribution is asserted."
+  },
+  "original_rule_and_native_scope": {
+    "predeclared_extension_rule": "Append A3 and B3 and recompute S and NF over all 6 passes with the same rule. If still underpowered, result is INCONCLUSIVE.",
+    "native_analysis_scope": "Native six-pass records retained. No new six-pass NF or alternation semantics introduced; original predeclared analysis remains authoritative.",
+    "original_result": {
+      "run_intent_sha256": "75d0b28b9650891c53554122626005cfa4f346d6e9f877aafe453b54a800cbac",
+      "schema": "ni.gpu_zos2_gate.v1",
+      "at": "2026-10-31T08:57:57.117691+00:00",
+      "unit": "percent paired geometric mean predicted decode tok/s, np4 spec ON",
+      "higher_is_better": true,
+      "a_a_mismatch_count": 0,
+      "a_a_first_divergence": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "knob_off_mismatch": [],
+      "knob_on_mismatch": [],
+      "feature_mismatch": {
+        "F1": [],
+        "F2": [],
+        "F3": []
+      },
+      "excluded_prompts": [],
+      "paired_n": 24,
+      "S": 0.007249354083311843,
+      "NF": 0.025754953899584154,
+      "alternation_effects": [
+        0.01973317407537456,
+        0.021219833773167718,
+        -0.005081635967001175
+      ],
+      "alternation_same_sign": false,
+      "min_ship_effect": 0.05150990779916831,
+      "plausibility_upper": 0.0886099077991683,
+      "AA_ratios_p10_p90": [
+        0.9862213227025277,
+        1.005565641696501
+      ],
+      "reason": "one A3/B3 extension allowed",
+      "request_graph_proofs": {
+        "A1": 28,
+        "B1": 28,
+        "A2": 28,
+        "B2": 28,
+        "O": 28,
+        "F1": 12,
+        "F2": 12,
+        "F3": 12
+      },
+      "threshold_band": "UNDERPOWERED",
+      "verdict": "ATOMIC_DIAGNOSTIC_UNDERPOWERED",
+      "ship_authorized": false,
+      "original_parent_complete": false,
+      "scope": "Atomic four-task native completion entry; does not complete original four independent chat request adoption gate"
+    },
+    "interpretation": "A3/B3 capture completed. Native payload retains all six pass records but reports no recomputed six-pass S/NF or alternation semantics; the original adoption parent remains open and no ship decision follows from capture completion."
+  },
+  "arms": {
+    "A1": {
+      "source_waves_path": "/mnt/raid0/llm/tmp/codex-ni-zos23-concurrent-successor-20261031/out/A1/waves.jsonl",
+      "waves_sha256": "61c5a91a53ed918670a94c4e8b7bff33db79ed1231dca04287e1ece36ae9cbb0",
+      "response_count": 24,
+      "waves": [
+        {
+          "wave": 0,
+          "max_tokens": 64,
+          "started": 1793434352.818224,
+          "ended": 1793434358.2519562,
+          "vram_inside_count": 5,
+          "vram_peak": 52135411712,
+          "guard_tripped": false
+        },
+        {
+          "wave": 1,
+          "max_tokens": 1024,
+          "started": 1793434358.394617,
+          "ended": 1793434410.220569,
+          "vram_inside_count": 51,
+          "vram_peak": 52147994624,
+          "guard_tripped": false
+        },
+        {
+          "wave": 2,
+          "max_tokens": 1024,
+          "started": 1793434410.3777843,
+          "ended": 1793434463.0627663,
+          "vram_inside_count": 52,
+          "vram_peak": 52147994624,
+          "guard_tripped": false
+        },
+        {
+          "wave": 3,
+          "max_tokens": 1024,
+          "started": 1793434463.2873688,
+          "ended": 1793434523.367739,
+          "vram_inside_count": 60,
+          "vram_peak": 52147994624,
+          "guard_tripped": false
+        },
+        {
+          "wave": 4,
+          "max_tokens": 1024,
+          "started": 1793434523.5384538,
+          "ended": 1793434577.193982,
+          "vram_inside_count": 53,
+          "vram_peak": 52147994624,
+          "guard_tripped": false
+        },
+        {
+          "wave": 5,
+          "max_tokens": 1024,
+          "started": 1793434577.3453255,
+          "ended": 1793434629.2021585,
+          "vram_inside_count": 51,
+          "vram_peak": 52147994624,
+          "guard_tripped": false
+        },
+        {
+          "wave": 6,
+          "max_tokens": 1024,
+          "started": 1793434629.373873,
+          "ended": 1793434691.3607476,
+          "vram_inside_count": 62,
+          "vram_peak": 52147994624,
+          "guard_tripped": false
+        }
+      ]
+    },
+    "B1": {
+      "source_waves_path": "/mnt/raid0/llm/tmp/codex-ni-zos23-concurrent-successor-20261031/out/B1/waves.jsonl",
+      "waves_sha256": "593022a44eedae0981911f58f999e67ff731a8b5e865c68bcc6da19c3ff23072",
+      "response_count": 24,
+      "waves": [
+        {
+          "wave": 0,
+          "max_tokens": 64,
+          "started": 1793434710.1806333,
+          "ended": 1793434715.3798685,
+          "vram_inside_count": 5,
+          "vram_peak": 52135411712,
+          "guard_tripped": false
+        },
+        {
+          "wave": 1,
+          "max_tokens": 1024,
+          "started": 1793434715.5434856,
+          "ended": 1793434766.7712014,
+          "vram_inside_count": 51,
+          "vram_peak": 52147994624,
+          "guard_tripped": false
+        },
+        {
+          "wave": 2,
+          "max_tokens": 1024,
+          "started": 1793434766.9496756,
+          "ended": 1793434818.7171664,
+          "vram_inside_count": 51,
+          "vram_peak": 52147994624,
+          "guard_tripped": false
+        },
+        {
+          "wave": 3,
+          "max_tokens": 1024,
+          "started": 1793434818.876555,
+          "ended": 1793434873.1063497,
+          "vram_inside_count": 54,
+          "vram_peak": 52147994624,
+          "guard_tripped": false
+        },
+        {
+          "wave": 4,
+          "max_tokens": 1024,
+          "started": 1793434873.2726855,
+          "ended": 1793434923.835578,
+          "vram_inside_count": 50,
+          "vram_peak": 52147994624,
+          "guard_tripped": false
+        },
+        {
+          "wave": 5,
+          "max_tokens": 1024,
+          "started": 1793434924.0790925,
+          "ended": 1793434975.3241882,
+          "vram_inside_count": 51,
+          "vram_peak": 52147994624,
+          "guard_tripped": false
+        },
+        {
+          "wave": 6,
+          "max_tokens": 1024,
+          "started": 1793434975.5068116,
+          "ended": 1793435031.2664523,
+          "vram_inside_count": 55,
+          "vram_peak": 52147994624,
+          "guard_tripped": false
+        }
+      ]
+    },
+    "A2": {
+      "source_waves_path": "/mnt/raid0/llm/tmp/codex-ni-zos23-concurrent-successor-20261031/out/A2/waves.jsonl",
+      "waves_sha256": "a99a300d2d743d728905228a705aac84a3ea2b4657373dd26c2bd660c8e1b8f7",
+      "response_count": 24,
+      "waves": [
+        {
+          "wave": 0,
+          "max_tokens": 64,
+          "started": 1793435048.063349,
+          "ended": 1793435053.354007,
+          "vram_inside_count": 5,
+          "vram_peak": 52135411712,
+          "guard_tripped": false
+        },
+        {
+          "wave": 1,
+          "max_tokens": 1024,
+          "started": 1793435053.5207436,
+          "ended": 1793435105.2568245,
+          "vram_inside_count": 51,
+          "vram_peak": 52147994624,
+          "guard_tripped": false
+        },
+        {
+          "wave": 2,
+          "max_tokens": 1024,
+          "started": 1793435105.4222076,
+          "ended": 1793435158.2719905,
+          "vram_inside_count": 52,
+          "vram_peak": 52147994624,
+          "guard_tripped": false
+        },
+        {
+          "wave": 3,
+          "max_tokens": 1024,
+          "started": 1793435158.4161816,
+          "ended": 1793435213.7567272,
+          "vram_inside_count": 55,
+          "vram_peak": 52147994624,
+          "guard_tripped": false
+        },
+        {
+          "wave": 4,
+          "max_tokens": 1024,
+          "started": 1793435213.9196084,
+          "ended": 1793435265.314283,
+          "vram_inside_count": 51,
+          "vram_peak": 52147994624,
+          "guard_tripped": false
+        },
+        {
+          "wave": 5,
+          "max_tokens": 1024,
+          "started": 1793435265.469961,
+          "ended": 1793435318.168502,
+          "vram_inside_count": 52,
+          "vram_peak": 52147994624,
+          "guard_tripped": false
+        },
+        {
+          "wave": 6,
+          "max_tokens": 1024,
+          "started": 1793435318.3363633,
+          "ended": 1793435375.239405,
+          "vram_inside_count": 57,
+          "vram_peak": 52147994624,
+          "guard_tripped": false
+        }
+      ]
+    },
+    "B2": {
+      "source_waves_path": "/mnt/raid0/llm/tmp/codex-ni-zos23-concurrent-successor-20261031/out/B2/waves.jsonl",
+      "waves_sha256": "1ec56bc7444689049982a01622432ee4a87be23ef8d4c3af7ab1421e7e440726",
+      "response_count": 24,
+      "waves": [
+        {
+          "wave": 0,
+          "max_tokens": 64,
+          "started": 1793435390.9189835,
+          "ended": 1793435396.1889694,
+          "vram_inside_count": 5,
+          "vram_peak": 52135411712,
+          "guard_tripped": false
+        },
+        {
+          "wave": 1,
+          "max_tokens": 1024,
+          "started": 1793435396.3398266,
+          "ended": 1793435447.448997,
+          "vram_inside_count": 51,
+          "vram_peak": 52147994624,
+          "guard_tripped": false
+        },
+        {
+          "wave": 2,
+          "max_tokens": 1024,
+          "started": 1793435447.602565,
+          "ended": 1793435500.3579924,
+          "vram_inside_count": 52,
+          "vram_peak": 52147994624,
+          "guard_tripped": false
+        },
+        {
+          "wave": 3,
+          "max_tokens": 1024,
+          "started": 1793435500.508766,
+          "ended": 1793435556.1896694,
+          "vram_inside_count": 55,
+          "vram_peak": 52147994624,
+          "guard_tripped": false
+        },
+        {
+          "wave": 4,
+          "max_tokens": 1024,
+          "started": 1793435556.3566122,
+          "ended": 1793435607.665881,
+          "vram_inside_count": 51,
+          "vram_peak": 52147994624,
+          "guard_tripped": false
+        },
+        {
+          "wave": 5,
+          "max_tokens": 1024,
+          "started": 1793435607.8072371,
+          "ended": 1793435662.2721734,
+          "vram_inside_count": 54,
+          "vram_peak": 52147994624,
+          "guard_tripped": false
+        },
+        {
+          "wave": 6,
+          "max_tokens": 1024,
+          "started": 1793435662.4531455,
+          "ended": 1793435720.1507163,
+          "vram_inside_count": 57,
+          "vram_peak": 52147994624,
+          "guard_tripped": false
+        }
+      ]
+    },
+    "A3": {
+      "source_waves_path": "/mnt/raid0/llm/tmp/codex-ni-gpu-floor-next-prep-20261031/out/A3/waves.jsonl",
+      "waves_sha256": "f4aa558cd1e02d8ca19e49b521bcd9fe0576aa2d98508468bb1222aab79d0f8c",
+      "response_count": 24,
+      "waves": [
+        {
+          "wave": 0,
+          "max_tokens": 64,
+          "started": 1793459076.0038335,
+          "ended": 1793459081.4886627,
+          "vram_inside_count": 5,
+          "vram_peak": 52135411712,
+          "guard_tripped": false
+        },
+        {
+          "wave": 1,
+          "max_tokens": 1024,
+          "started": 1793459081.6407647,
+          "ended": 1793459134.3672686,
+          "vram_inside_count": 52,
+          "vram_peak": 52147994624,
+          "guard_tripped": false
+        },
+        {
+          "wave": 2,
+          "max_tokens": 1024,
+          "started": 1793459134.5103106,
+          "ended": 1793459193.7682998,
+          "vram_inside_count": 59,
+          "vram_peak": 52147994624,
+          "guard_tripped": false
+        },
+        {
+          "wave": 3,
+          "max_tokens": 1024,
+          "started": 1793459193.9102826,
+          "ended": 1793459257.9966695,
+          "vram_inside_count": 64,
+          "vram_peak": 52147994624,
+          "guard_tripped": false
+        },
+        {
+          "wave": 4,
+          "max_tokens": 1024,
+          "started": 1793459258.1398108,
+          "ended": 1793459318.2168927,
+          "vram_inside_count": 60,
+          "vram_peak": 52147994624,
+          "guard_tripped": false
+        },
+        {
+          "wave": 5,
+          "max_tokens": 1024,
+          "started": 1793459318.3600273,
+          "ended": 1793459379.8752217,
+          "vram_inside_count": 61,
+          "vram_peak": 52147994624,
+          "guard_tripped": false
+        },
+        {
+          "wave": 6,
+          "max_tokens": 1024,
+          "started": 1793459380.0185168,
+          "ended": 1793459449.056413,
+          "vram_inside_count": 69,
+          "vram_peak": 52147994624,
+          "guard_tripped": false
+        }
+      ],
+      "complete": {
+        "arm": "A3",
+        "waves": 6,
+        "run_intent_sha256": "870de1fcd1c29a13d65dcd5539e97c32e8950723f27747f687a67b5c4e7d5149",
+        "source_pins_sha256": "187e7a953e151f208859cc93f7353d6ba7e43189fe58dc18f47b333184aea4dc",
+        "image_pins_sha256": "ad5fd19e714aefff90b2accd14a6a4188a3c3771d8e5dbf0f5bf1bd1d71fbf05",
+        "model_pins_sha256": "9f94e6d3f3354036dceff543a518550c98396bc41814c7198b35af2f3735786b",
+        "prompt_sha256": "5b2c9febc28cc0c6cb1ea7e998696f927449c687feeb44ed8b3f0c341e079bf6",
+        "launch_record_sha256": "612323d93632856a923b2d163b7486b9e48e87645f41b16e0602260667c33149",
+        "argv": [
+          "numactl",
+          "--membind=3",
+          "--",
+          "taskset",
+          "-c",
+          "184-191",
+          "/mnt/raid0/llm/kernels/builds/gpu-20261024-c72ec82f5-c5/bin/llama-server",
+          "-m",
+          "/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf",
+          "--host",
+          "127.0.0.1",
+          "--port",
+          "18449",
+          "-np",
+          "4",
+          "-c",
+          "393216",
+          "-t",
+          "8",
+          "-b",
+          "512",
+          "-ub",
+          "512",
+          "--flash-attn",
+          "on",
+          "--jinja",
+          "-ctk",
+          "q8_0",
+          "-ctv",
+          "q8_0",
+          "--kv-unified",
+          "--no-mmap",
+          "-ngl",
+          "all",
+          "--cache-ram",
+          "65536",
+          "--ctx-checkpoints",
+          "32",
+          "--chat-template-file",
+          "/mnt/raid0/llm/models/chat-templates/sha256/1443ea9ab4bb0a2663b1002a5d4baad970e9f0b2f42ca4ec12b4683838284551.jinja",
+          "--no-cache-idle-slots",
+          "-md",
+          "/mnt/raid0/llm/models/Qwen3.8-27B-DFlash2-Q8_0.gguf",
+          "-ngld",
+          "99",
+          "--spec-type",
+          "draft-dflash",
+          "--spec-draft-n-max",
+          "7",
+          "--device",
+          "ROCm0",
+          "--slot-save-path",
+          "/mnt/raid0/llm/tmp/codex-ni-gpu-floor-next-prep-20261031/out/A3/slots",
+          "--device-draft",
+          "ROCm0"
+        ],
+        "environ": {
+          "LD_LIBRARY_PATH": "/mnt/raid0/llm/kernels/builds/gpu-20261024-c72ec82f5-c5/bin:/opt/rocm/lib",
+          "HSA_OVERRIDE_CPU_AFFINITY_DEBUG": "0",
+          "GGML_CUDA_DISABLE_GRAPHS": null,
+          "LLAMA_SPEC_EXACT": null,
+          "LLAMA_ZOS2": null
+        },
+        "files": {
+          "launch.json": "e156468e92d4bb657b8a0c76b9b880a4b9254fab72e65386a5397f8fcc321d3f",
+          "loader-proof.json": "7229cd4d8d89f1dfaa6385f3abf3bab9c74bdc6260a7d72ae47d691a63768d32",
+          "server.log": "18737ccbab832e879637b898239b27e3827c785ecc1d4ecfc34a4c3cef8e0fb9",
+          "waves.jsonl": "f4aa558cd1e02d8ca19e49b521bcd9fe0576aa2d98508468bb1222aab79d0f8c",
+          "vram.jsonl": "829f919a5d9bc1f1e73bf46ff74929c4cfa49346dfdb98a7b8fe7e095faa8778"
+        },
+        "at": "2026-10-31T15:10:49.625664+00:00"
+      },
+      "launch": {
+        "pid": 3454087,
+        "birth": 158154389,
+        "image": "/mnt/raid0/llm/kernels/builds/gpu-20261024-c72ec82f5-c5",
+        "image_server_sha256": "802a3e0c7bcfcb23c661dd879ec6b12d76048a4525ac8a2aa3b336f561bfa6f4",
+        "image_impl_sha256": "c28cebeb1df4046b9f69f07378cf105ba23d64500b1a1f80de0364400667622e",
+        "launch_record_sha256": "612323d93632856a923b2d163b7486b9e48e87645f41b16e0602260667c33149",
+        "environ": {
+          "LD_LIBRARY_PATH": "/mnt/raid0/llm/kernels/builds/gpu-20261024-c72ec82f5-c5/bin:/opt/rocm/lib",
+          "HSA_OVERRIDE_CPU_AFFINITY_DEBUG": "0",
+          "GGML_CUDA_DISABLE_GRAPHS": null,
+          "LLAMA_SPEC_EXACT": null,
+          "LLAMA_ZOS2": null
+        }
+      },
+      "loader_proof": {
+        "arm": "A3",
+        "pid": 3454087,
+        "birth": 158154389,
+        "startup_flags": [],
+        "mapped": {
+          "libggml-hip.so.0.16.0": {
+            "path": "/mnt/raid0/llm/kernels/builds/gpu-20261024-c72ec82f5-c5/bin/libggml-hip.so.0.16.0",
+            "sha256": "23d39c91a82fad0a83743829dd59a10df91bfe0c4a933f0cce693fc7a831beb4"
+          },
+          "libllama.so.0.0.10419": {
+            "path": "/mnt/raid0/llm/kernels/builds/gpu-20261024-c72ec82f5-c5/bin/libllama.so.0.0.10419",
+            "sha256": "d4975083d1ae78c70a8c18017e9149a94a6abe917035ac72fe30b8e0757ee01e"
+          },
+          "libllama-server-impl.so": {
+            "path": "/mnt/raid0/llm/kernels/builds/gpu-20261024-c72ec82f5-c5/bin/libllama-server-impl.so",
+            "sha256": "c28cebeb1df4046b9f69f07378cf105ba23d64500b1a1f80de0364400667622e"
+          },
+          "libggml-cpu.so.0.16.0": {
+            "path": "/mnt/raid0/llm/kernels/builds/gpu-20261024-c72ec82f5-c5/bin/libggml-cpu.so.0.16.0",
+            "sha256": "e2fb59ee4d34fd5cb726f89f4039cdc7c28dd01d7b9e9c217b01db086d6d605e"
+          },
+          "libggml-base.so.0.16.0": {
+            "path": "/mnt/raid0/llm/kernels/builds/gpu-20261024-c72ec82f5-c5/bin/libggml-base.so.0.16.0",
+            "sha256": "1c21cf133f35877a9d59c9d82bca08932bff8f29a77b30a8bb109a573eaf8a8c"
+          },
+          "libggml.so.0.16.0": {
+            "path": "/mnt/raid0/llm/kernels/builds/gpu-20261024-c72ec82f5-c5/bin/libggml.so.0.16.0",
+            "sha256": "bb7e5a7a33787ddce1133d414d0f7d86f06dfb512d7f38a5e2e43b4aabe98b3a"
+          }
+        },
+        "image_pins_sha256": "ad5fd19e714aefff90b2accd14a6a4188a3c3771d8e5dbf0f5bf1bd1d71fbf05"
+      },
+      "vram_path": "/mnt/raid0/llm/tmp/codex-ni-gpu-floor-next-prep-20261031/out/A3/vram.jsonl",
+      "vram_sha256": "829f919a5d9bc1f1e73bf46ff74929c4cfa49346dfdb98a7b8fe7e095faa8778",
+      "vram_sample_count": 377,
+      "vram_pid": 3454087
+    },
+    "B3": {
+      "source_waves_path": "/mnt/raid0/llm/tmp/codex-ni-gpu-floor-next-prep-20261031/out/B3/waves.jsonl",
+      "waves_sha256": "65e1e8da390d22b308be7f78d4dd44dc989228acb824f97d211efe9dc25fe41f",
+      "response_count": 24,
+      "waves": [
+        {
+          "wave": 0,
+          "max_tokens": 64,
+          "started": 1793459464.9650583,
+          "ended": 1793459470.4662833,
+          "vram_inside_count": 5,
+          "vram_peak": 52135411712,
+          "guard_tripped": false
+        },
+        {
+          "wave": 1,
+          "max_tokens": 1024,
+          "started": 1793459470.6348658,
+          "ended": 1793459521.861686,
+          "vram_inside_count": 51,
+          "vram_peak": 52147994624,
+          "guard_tripped": false
+        },
+        {
+          "wave": 2,
+          "max_tokens": 1024,
+          "started": 1793459522.0029237,
+          "ended": 1793459576.4289508,
+          "vram_inside_count": 54,
+          "vram_peak": 52147994624,
+          "guard_tripped": false
+        },
+        {
+          "wave": 3,
+          "max_tokens": 1024,
+          "started": 1793459576.571033,
+          "ended": 1793459643.5748165,
+          "vram_inside_count": 67,
+          "vram_peak": 52147994624,
+          "guard_tripped": false
+        },
+        {
+          "wave": 4,
+          "max_tokens": 1024,
+          "started": 1793459643.717046,
+          "ended": 1793459704.533541,
+          "vram_inside_count": 60,
+          "vram_peak": 52147994624,
+          "guard_tripped": false
+        },
+        {
+          "wave": 5,
+          "max_tokens": 1024,
+          "started": 1793459704.684795,
+          "ended": 1793459768.7096798,
+          "vram_inside_count": 64,
+          "vram_peak": 52147994624,
+          "guard_tripped": false
+        },
+        {
+          "wave": 6,
+          "max_tokens": 1024,
+          "started": 1793459768.8593082,
+          "ended": 1793459835.4746163,
+          "vram_inside_count": 66,
+          "vram_peak": 52147994624,
+          "guard_tripped": false
+        }
+      ],
+      "complete": {
+        "arm": "B3",
+        "waves": 6,
+        "run_intent_sha256": "870de1fcd1c29a13d65dcd5539e97c32e8950723f27747f687a67b5c4e7d5149",
+        "source_pins_sha256": "187e7a953e151f208859cc93f7353d6ba7e43189fe58dc18f47b333184aea4dc",
+        "image_pins_sha256": "ad5fd19e714aefff90b2accd14a6a4188a3c3771d8e5dbf0f5bf1bd1d71fbf05",
+        "model_pins_sha256": "9f94e6d3f3354036dceff543a518550c98396bc41814c7198b35af2f3735786b",
+        "prompt_sha256": "5b2c9febc28cc0c6cb1ea7e998696f927449c687feeb44ed8b3f0c341e079bf6",
+        "launch_record_sha256": "612323d93632856a923b2d163b7486b9e48e87645f41b16e0602260667c33149",
+        "argv": [
+          "numactl",
+          "--membind=3",
+          "--",
+          "taskset",
+          "-c",
+          "184-191",
+          "/mnt/raid0/llm/tmp/codex-ni-gpu-zos-build-prep-20261031/successor/out/release/bin/llama-server",
+          "-m",
+          "/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf",
+          "--host",
+          "127.0.0.1",
+          "--port",
+          "18449",
+          "-np",
+          "4",
+          "-c",
+          "393216",
+          "-t",
+          "8",
+          "-b",
+          "512",
+          "-ub",
+          "512",
+          "--flash-attn",
+          "on",
+          "--jinja",
+          "-ctk",
+          "q8_0",
+          "-ctv",
+          "q8_0",
+          "--kv-unified",
+          "--no-mmap",
+          "-ngl",
+          "all",
+          "--cache-ram",
+          "65536",
+          "--ctx-checkpoints",
+          "32",
+          "--chat-template-file",
+          "/mnt/raid0/llm/models/chat-templates/sha256/1443ea9ab4bb0a2663b1002a5d4baad970e9f0b2f42ca4ec12b4683838284551.jinja",
+          "--no-cache-idle-slots",
+          "-md",
+          "/mnt/raid0/llm/models/Qwen3.8-27B-DFlash2-Q8_0.gguf",
+          "-ngld",
+          "99",
+          "--spec-type",
+          "draft-dflash",
+          "--spec-draft-n-max",
+          "7",
+          "--device",
+          "ROCm0",
+          "--slot-save-path",
+          "/mnt/raid0/llm/tmp/codex-ni-gpu-floor-next-prep-20261031/out/B3/slots",
+          "--device-draft",
+          "ROCm0"
+        ],
+        "environ": {
+          "LD_LIBRARY_PATH": "/mnt/raid0/llm/tmp/codex-ni-gpu-zos-build-prep-20261031/successor/out/release/bin:/opt/rocm/lib",
+          "HSA_OVERRIDE_CPU_AFFINITY_DEBUG": "0",
+          "GGML_CUDA_DISABLE_GRAPHS": null,
+          "LLAMA_SPEC_EXACT": null,
+          "LLAMA_ZOS2": "all"
+        },
+        "files": {
+          "launch.json": "afe5f5e5360dc0587ceaf0e84d9352bf96426dedfdd45386fb9e870c21a5007e",
+          "loader-proof.json": "f633fa5588c46d4c0d5b77a3372047cafd15a2d74b31dfbf0dab5df397a4bb0f",
+          "server.log": "47ea395872abf6f29dfa8fd8594a20d413210ac27d2b0ff35a3b4dbd0de6162a",
+          "waves.jsonl": "65e1e8da390d22b308be7f78d4dd44dc989228acb824f97d211efe9dc25fe41f",
+          "vram.jsonl": "d9dacb7bd4340ddb21ab6d29e6b14a8e7180fa5160664bb2b8cbd18317dc830e"
+        },
+        "at": "2026-10-31T15:17:17.127881+00:00"
+      },
+      "launch": {
+        "pid": 3575058,
+        "birth": 158193286,
+        "image": "/mnt/raid0/llm/tmp/codex-ni-gpu-zos-build-prep-20261031/successor/out/release",
+        "image_server_sha256": "802a3e0c7bcfcb23c661dd879ec6b12d76048a4525ac8a2aa3b336f561bfa6f4",
+        "image_impl_sha256": "aaaab39254a7ff21d0c3d987bd0ea3076b3e36bc3786584417f6b4aa0a6d79ae",
+        "launch_record_sha256": "612323d93632856a923b2d163b7486b9e48e87645f41b16e0602260667c33149",
+        "environ": {
+          "LD_LIBRARY_PATH": "/mnt/raid0/llm/tmp/codex-ni-gpu-zos-build-prep-20261031/successor/out/release/bin:/opt/rocm/lib",
+          "HSA_OVERRIDE_CPU_AFFINITY_DEBUG": "0",
+          "GGML_CUDA_DISABLE_GRAPHS": null,
+          "LLAMA_SPEC_EXACT": null,
+          "LLAMA_ZOS2": "all"
+        }
+      },
+      "loader_proof": {
+        "arm": "B3",
+        "pid": 3575058,
+        "birth": 158193286,
+        "startup_flags": [
+          [
+            "1",
+            "1",
+            "1"
+          ]
+        ],
+        "mapped": {
+          "libggml-hip.so.0.16.0": {
+            "path": "/mnt/raid0/llm/tmp/codex-ni-gpu-zos-build-prep-20261031/successor/out/release/bin/libggml-hip.so.0.16.0",
+            "sha256": "23d39c91a82fad0a83743829dd59a10df91bfe0c4a933f0cce693fc7a831beb4"
+          },
+          "libllama.so.0.0.10419": {
+            "path": "/mnt/raid0/llm/tmp/codex-ni-gpu-zos-build-prep-20261031/successor/out/release/bin/libllama.so.0.0.10419",
+            "sha256": "d4975083d1ae78c70a8c18017e9149a94a6abe917035ac72fe30b8e0757ee01e"
+          },
+          "libllama-server-impl.so": {
+            "path": "/mnt/raid0/llm/tmp/codex-ni-gpu-zos-build-prep-20261031/successor/out/release/bin/libllama-server-impl.so",
+            "sha256": "aaaab39254a7ff21d0c3d987bd0ea3076b3e36bc3786584417f6b4aa0a6d79ae"
+          },
+          "libggml-base.so.0.16.0": {
+            "path": "/mnt/raid0/llm/tmp/codex-ni-gpu-zos-build-prep-20261031/successor/out/release/bin/libggml-base.so.0.16.0",
+            "sha256": "1c21cf133f35877a9d59c9d82bca08932bff8f29a77b30a8bb109a573eaf8a8c"
+          },
+          "libggml-cpu.so.0.16.0": {
+            "path": "/mnt/raid0/llm/tmp/codex-ni-gpu-zos-build-prep-20261031/successor/out/release/bin/libggml-cpu.so.0.16.0",
+            "sha256": "e2fb59ee4d34fd5cb726f89f4039cdc7c28dd01d7b9e9c217b01db086d6d605e"
+          },
+          "libggml.so.0.16.0": {
+            "path": "/mnt/raid0/llm/tmp/codex-ni-gpu-zos-build-prep-20261031/successor/out/release/bin/libggml.so.0.16.0",
+            "sha256": "bb7e5a7a33787ddce1133d414d0f7d86f06dfb512d7f38a5e2e43b4aabe98b3a"
+          }
+        },
+        "image_pins_sha256": "ad5fd19e714aefff90b2accd14a6a4188a3c3771d8e5dbf0f5bf1bd1d71fbf05"
+      },
+      "vram_path": "/mnt/raid0/llm/tmp/codex-ni-gpu-floor-next-prep-20261031/out/B3/vram.jsonl",
+      "vram_sha256": "d9dacb7bd4340ddb21ab6d29e6b14a8e7180fa5160664bb2b8cbd18317dc830e",
+      "vram_sample_count": 374,
+      "vram_pid": 3575058
+    }
+  },
+  "identity": {
+    "historical_binding": {
+      "scope": "HISTORICAL_C5_DIAGNOSTIC_ONLY",
+      "base_commit": "c72ec82f5417bb2937310326120f149b665e8400",
+      "source_pins_sha256": "187e7a953e151f208859cc93f7353d6ba7e43189fe58dc18f47b333184aea4dc",
+      "image_pins_sha256": "ad5fd19e714aefff90b2accd14a6a4188a3c3771d8e5dbf0f5bf1bd1d71fbf05",
+      "active_c6_lane_commit": "729599d69871181d67af715a4c2f9162d5153a2e",
+      "local_mutable_champion_ref_observed": "c72ec82f5417bb2937310326120f149b665e8400",
+      "observed_at": "2026-10-31T10:10:03.308353+00:00",
+      "meaning": "Continuation of immutable retained C5 atomic diagnostic only, independent of active C6 or mutable champion ref. No adoption, promotion, rebase or store modification."
+    },
+    "image_pins": {
+      "c5": {
+        "path": "/mnt/raid0/llm/kernels/builds/gpu-20261024-c72ec82f5-c5",
+        "llama_server_sha256": "802a3e0c7bcfcb23c661dd879ec6b12d76048a4525ac8a2aa3b336f561bfa6f4",
+        "server_impl_sha256": "c28cebeb1df4046b9f69f07378cf105ba23d64500b1a1f80de0364400667622e",
+        "libggml_hip_sha256": "23d39c91a82fad0a83743829dd59a10df91bfe0c4a933f0cce693fc7a831beb4",
+        "libllama_sha256": "d4975083d1ae78c70a8c18017e9149a94a6abe917035ac72fe30b8e0757ee01e"
+      },
+      "release": {
+        "path": "/mnt/raid0/llm/tmp/codex-ni-gpu-zos-build-prep-20261031/successor/out/release",
+        "llama_server_sha256": "802a3e0c7bcfcb23c661dd879ec6b12d76048a4525ac8a2aa3b336f561bfa6f4",
+        "server_impl_sha256": "aaaab39254a7ff21d0c3d987bd0ea3076b3e36bc3786584417f6b4aa0a6d79ae",
+        "libggml_hip_sha256": "23d39c91a82fad0a83743829dd59a10df91bfe0c4a933f0cce693fc7a831beb4",
+        "libllama_sha256": "d4975083d1ae78c70a8c18017e9149a94a6abe917035ac72fe30b8e0757ee01e"
+      },
+      "debug": {
+        "path": "/mnt/raid0/llm/tmp/codex-ni-gpu-zos-build-prep-20261031/successor/out/debug",
+        "llama_server_sha256": "802a3e0c7bcfcb23c661dd879ec6b12d76048a4525ac8a2aa3b336f561bfa6f4",
+        "server_impl_sha256": "3e862df33612e237c4a115a3ce248bf93693667fa5ceb5ee07ea82964e2c4ae3",
+        "libggml_hip_sha256": "23d39c91a82fad0a83743829dd59a10df91bfe0c4a933f0cce693fc7a831beb4",
+        "libllama_sha256": "d4975083d1ae78c70a8c18017e9149a94a6abe917035ac72fe30b8e0757ee01e"
+      },
+      "source_pins_sha256": "187e7a953e151f208859cc93f7353d6ba7e43189fe58dc18f47b333184aea4dc",
+      "build_complete_sha256": "0fccf3b428970b972c31d3c0d29638db0667e8903608a724330adfc67535f532",
+      "at": "2026-10-31T02:15:16.707077+00:00"
+    },
+    "model_pins": {
+      "models": [
+        {
+          "path": "/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf",
+          "size": 29047086048,
+          "edge_sha256": "7fb575fe9cecac00633ef8d939a472037750d54399fef69e9d07e74a6b815134"
+        },
+        {
+          "path": "/mnt/raid0/llm/models/Qwen3.8-27B-DFlash2-Q8_0.gguf",
+          "size": 2056414752,
+          "edge_sha256": "828c9ed41c472e03fb9d30459dc97022372630d9928e817511563002276d4029"
+        }
+      ],
+      "at": "2026-10-31T15:04:25.587779+00:00"
+    },
+    "run_intent": {
+      "schema": "ni.gpu_zos2_run_intent.v1",
+      "source_pins_sha256": "187e7a953e151f208859cc93f7353d6ba7e43189fe58dc18f47b333184aea4dc",
+      "image_pins_sha256": "ad5fd19e714aefff90b2accd14a6a4188a3c3771d8e5dbf0f5bf1bd1d71fbf05",
+      "model_pins_sha256": "9f94e6d3f3354036dceff543a518550c98396bc41814c7198b35af2f3735786b",
+      "predeclaration_sha256": "05f53f1b5823446d05e9c625a1dd03ca3026a2e53b620cf558b9305735f8b0ed",
+      "prompt_sha256": "5b2c9febc28cc0c6cb1ea7e998696f927449c687feeb44ed8b3f0c341e079bf6",
+      "launch_record_sha256": "612323d93632856a923b2d163b7486b9e48e87645f41b16e0602260667c33149",
+      "routing_repair": "atomic /completion token-array task vector; same server /apply-template chat parser; token-count parity; unchanged numerical request fields",
+      "arm_order": [
+        "A3",
+        "B3"
+      ],
+      "metric": "predicted_per_second",
+      "metric_direction": "higher_is_better",
+      "metric_unit": "decode tokens_per_second",
+      "min_effect_rel": 0.01,
+      "noise_rule": "max absolute same-window A2/A1 and B2/B1 geometric-mean ratios; SHIP requires 2x NF",
+      "validity": "original GPU-ZOS-2.3 \u00a79, including own-PID KFD, graphs, exact tokens and conditional serial/A3B3 tiers",
+      "scope": "HISTORICAL_C5_DIAGNOSTIC_ONLY",
+      "historical_binding_sha256": "0d60289cc0796c76838beb13bc8b4b2c3721b1a6cd19336c003a49b4648983bc",
+      "qualification_only": false,
+      "mode": "extension",
+      "host_cpus": "184-191",
+      "retained_source_manifest_sha256": "6a194a924356e8a475589b3200510f5b1e8f36bff28d746992584fa1066cde41",
+      "at": "2026-10-31T15:04:25.588138+00:00"
+    }
+  },
+  "device_and_timing": {
+    "grant_region": "mi210_0,184-191",
+    "exclusive_lock": "gpu-quiet exclusive held from 2026-10-31T15:04:25Z until rc0 completion at 15:17:17Z; no foreign GPU timing overlap recorded",
+    "active_other_GPU_grant_note": "yarn-agg-1g-power was earlier, ended before this window; no timing overlap",
+    "device_evidence": "Each counted wave records contemporaneous own-PID VRAM sample count and peak; per-arm vram.jsonl sampled only the arm server PID. Raw series remain at the source paths below."
+  },
+  "retained_evidence": {
+    "source_scratch": "/mnt/raid0/llm/tmp/codex-ni-gpu-floor-next-prep-20261031",
+    "predeclaration_sha256": "05f53f1b5823446d05e9c625a1dd03ca3026a2e53b620cf558b9305735f8b0ed",
+    "extension_scope_sha256": "20cc8be2614d88a01eb1819a732ed07e53b6e5cfbfbd63c5ad4e649bd1db0819",
+    "retained_sha256sums_sha256": "6a194a924356e8a475589b3200510f5b1e8f36bff28d746992584fa1066cde41",
+    "raw_paths_are_pinned_in_retained_sha256sums": true,
+    "no_raw_waves_or_server_logs_copied": true
+  },
+  "analysis_sources": {
+    "manifest": "analysis-sources/SOURCES.json",
+    "governing_rule": "GOVERNING-RULE.md",
+    "response_projection": "RESPONSE-PROJECTIONS.json"
+  }
+}
