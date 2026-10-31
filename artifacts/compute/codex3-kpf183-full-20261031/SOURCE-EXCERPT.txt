@@ -1,0 +1,50 @@
+    void maybe_create_end_checkpoint(server_slot & slot) {
+        const auto & ckpt_at = slot.task->params.checkpoint_at;
+        if (ckpt_at.empty()) {
+            return;
+        }
+
+        const int32_t n_task = slot.task->n_tokens();
+        const bool want = std::binary_search(ckpt_at.begin(), ckpt_at.end(), -1) ||
+                          std::binary_search(ckpt_at.begin(), ckpt_at.end(), n_task);
+        if (!want) {
+            return;
+        }
+
+        const bool need_ckpt =
+            params_base.n_ctx_checkpoints > 0 &&
+            slot.task->type == SERVER_TASK_TYPE_COMPLETION &&
+            (ctx_tgt_seq_rm_type == COMMON_CONTEXT_SEQ_RM_TYPE_FULL ||
+             ctx_tgt_seq_rm_type == COMMON_CONTEXT_SEQ_RM_TYPE_RS ||
+             n_swa > 0);
+        if (!need_ckpt || slot.prompt.n_tokens() != n_task || slot.prompt.tokens.has_mtmd) {
+            return;
+        }
+
+        const auto pos_min = llama_memory_seq_pos_min(llama_get_memory(ctx_tgt), slot.id);
+        const auto pos_max = llama_memory_seq_pos_max(llama_get_memory(ctx_tgt), slot.id);
+        if (pos_min < 0) {
+            return;
+        }
+
+        create_checkpoint(slot, 0, pos_min, pos_max, true);
+    }
+
+    // checkpoints are appended to the slot save file, after the llama state payload
+    // they cannot be recreated from the final state alone (a recurrent state cannot be rewound)
+                    send_rerank(slot, batch_view);
+                    slot.release();
+                    slot.i_batch = -1;
+                    return;
+                }
+
+                GGML_ASSERT(slot.task->need_sampling());
+
+                // [KPF-15] `checkpoint_at: [-1]` (or the prompt length): the state after the whole prompt exists
+                // only now, after its last chunk is decoded
+                maybe_create_end_checkpoint(slot);
+
+                // prompt evaluated for next-token prediction
+                slot.state = SLOT_STATE_GENERATING;
+
+                if (slot.can_speculate()) {
