@@ -2507,7 +2507,9 @@ They are filed here rather than described in prose so the dashboard can see them
       capacity, so **SYNC-1's 10.66 ms MTP "imbalance" column cannot be read as available** until each node
       is classified. Until this exists, the ranked envelope's second-largest line is uninterpretable. Zero
       compute (the per-(node,thread) census already carries the inputs).
-- [ ] **WRAP-4 — fix the co-residency sampler's "disjoint-from-0-95" label AND re-open every conclusion that
+- [x] ✅ 2026-10-31 **WRAP-4 — fix the co-residency sampler's "disjoint-from-0-95" label AND re-open every conclusion that** rested on it. Evidence: ROOT `6c7b2bf07e7d894f95b1ca5ab6cd2ec01de424ce`; `docs/reviews/inf70-wrap4-physical-cores-20261031.md`; corrected sampler `scripts/inf70/harness1/tools/cpuoverlap.py --selftest` (six cases pass). [belief: cc]
+      Dated correction: the linked audit supersedes the affected clean-window and contention interpretations in speed-claim, champion1/3, B12, INSTR-B7 and SYNC16/17. Historical rates remain observations; 23.16 t/s / 1.876× claim-grade and +0.7% clean-window labels are withdrawn. GPU lock nonviolation does not establish absence of SMT contention. No replacement performance grade is asserted.
+      Original scope:
       rested on it.** Cores **184-191 are the SMT siblings of physical cores 88-95**, which are inside the
       0-95 bench region. The label is inherited from `champion1/arm.sh` and is wrong in **every report that
       used it** — including a contention escalation retracted on its authority. The relabel was routed to

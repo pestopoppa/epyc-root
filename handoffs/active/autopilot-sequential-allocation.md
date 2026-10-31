@@ -273,7 +273,8 @@ outcome.
       source and test searches found no callers or tests binding it. The existing attribution
       and refutation suites passed all 23 tests after integration. Canonical `axis_refuted`
       and report logic remain unchanged. [no-belief: unused-code removal; no measurement claim]
-- [ ] SEQ-B4 — Decide explicitly whether the refutation record should carry `k_rate` alongside the QUALITY
+- [x] ✅ 2026-10-31 SEQ-B4 — Decide explicitly whether the refutation record should carry `k_rate` alongside the QUALITY axis. Evidence: orch `bd2f7105a6b04fc9f9cffba0dff861c6e79c1c8d`; `tests/unit/test_seq_refutation_capture.py`; `/mnt/raid0/llm/tmp/refactor-seq-b4-20261031/TESTS.log` (36 pass). [no-belief: journal capture/reconstruction correction; policy thresholds unchanged]
+      New live records and reconstruction use observed `k_rate`; legacy absent counts retain the prior fallback without invented history. Original gap: the QUALITY
       axis's `k`, which it currently reuses for both axes (matching the journal's single `k` and the reader)
       even though the two can differ when the rate axis was skipped on earlier trials
       (`scripts/autopilot/safety_gate.py:1780`) (found 2026-09-14, noninf sweep).
