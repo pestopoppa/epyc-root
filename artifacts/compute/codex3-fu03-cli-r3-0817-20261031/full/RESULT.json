@@ -1,0 +1,162 @@
+{
+  "partial": false,
+  "diagnostic_only": true,
+  "full_target_tested": true,
+  "arms": [
+    {
+      "arm": "baseline-1",
+      "argv": [
+        "/mnt/raid0/llm/tmp/lb49-codex-evidence-20261028/build-deterministic-off/bin/llama-cli",
+        "-m",
+        "/mnt/raid0/llm/models/antirez/deepseek-v4.1-flash-gguf/DeepSeek-V4.1-Flash-1017-MXFP4-experts-00001-of-00009.gguf",
+        "--device",
+        "none",
+        "-ngl",
+        "0",
+        "-fa",
+        "on",
+        "--perf",
+        "-t",
+        "24",
+        "-tb",
+        "24",
+        "-c",
+        "512",
+        "-n",
+        "8",
+        "--temp",
+        "0",
+        "--seed",
+        "42",
+        "--single-turn",
+        "--no-display-prompt",
+        "-p",
+        "The capital of France is"
+      ],
+      "rc": 0,
+      "wall_s": 168.494013129035,
+      "log": "/mnt/raid0/llm/tmp/codex3-next-backlog-20261031-0255/r3/full/baseline-1.log",
+      "sha256": "a4940c593e4ad3ccefe6e693c345ea096e2a762093fdb8473fd928fea5566d47"
+    },
+    {
+      "arm": "baseline-2",
+      "argv": [
+        "/mnt/raid0/llm/tmp/lb49-codex-evidence-20261028/build-deterministic-off/bin/llama-cli",
+        "-m",
+        "/mnt/raid0/llm/models/antirez/deepseek-v4.1-flash-gguf/DeepSeek-V4.1-Flash-1017-MXFP4-experts-00001-of-00009.gguf",
+        "--device",
+        "none",
+        "-ngl",
+        "0",
+        "-fa",
+        "on",
+        "--perf",
+        "-t",
+        "24",
+        "-tb",
+        "24",
+        "-c",
+        "512",
+        "-n",
+        "8",
+        "--temp",
+        "0",
+        "--seed",
+        "42",
+        "--single-turn",
+        "--no-display-prompt",
+        "-p",
+        "The capital of France is"
+      ],
+      "rc": 0,
+      "wall_s": 145.39607173204422,
+      "log": "/mnt/raid0/llm/tmp/codex3-next-backlog-20261031-0255/r3/full/baseline-2.log",
+      "sha256": "2c8cfe40e011e58b88870627f21f851cc1ce672401af9a6f9dec4d07e99136b7"
+    },
+    {
+      "arm": "candidate",
+      "argv": [
+        "/mnt/raid0/llm/tmp/lb49-codex-evidence-20261028/build-deterministic-feature/bin/llama-cli",
+        "-m",
+        "/mnt/raid0/llm/models/antirez/deepseek-v4.1-flash-gguf/DeepSeek-V4.1-Flash-1017-MXFP4-experts-00001-of-00009.gguf",
+        "--device",
+        "none",
+        "-ngl",
+        "0",
+        "-fa",
+        "on",
+        "--perf",
+        "-t",
+        "24",
+        "-tb",
+        "24",
+        "-c",
+        "512",
+        "-n",
+        "8",
+        "--temp",
+        "0",
+        "--seed",
+        "42",
+        "--single-turn",
+        "--no-display-prompt",
+        "-p",
+        "The capital of France is",
+        "--cpu-iqk-fa",
+        "on"
+      ],
+      "rc": 0,
+      "wall_s": 133.41770547698252,
+      "log": "/mnt/raid0/llm/tmp/codex3-next-backlog-20261031-0255/r3/full/candidate.log",
+      "sha256": "3290ae2c02b456ac12af045b83fc3b3294df06da3e61f613d5ec05e909ec9de2"
+    }
+  ],
+  "models_verified": [
+    {
+      "path": "/mnt/raid0/llm/models/antirez/deepseek-v4.1-flash-gguf/DeepSeek-V4.1-Flash-1017-MXFP4-experts-00001-of-00009.gguf",
+      "sha256": "636918b09de6253bf41af29f06aac3ceeda220e46379d8a2058ef92c4e433ed8",
+      "size": 49353784544
+    },
+    {
+      "path": "/mnt/raid0/llm/models/antirez/deepseek-v4.1-flash-gguf/DeepSeek-V4.1-Flash-1017-MXFP4-experts-00002-of-00009.gguf",
+      "sha256": "b26d3fc1e6ae1be6c52665542f3c1fee6a33791478f26e6cd90b5a75940a9f96",
+      "size": 49412635712
+    },
+    {
+      "path": "/mnt/raid0/llm/models/antirez/deepseek-v4.1-flash-gguf/DeepSeek-V4.1-Flash-1017-MXFP4-experts-00003-of-00009.gguf",
+      "sha256": "20c7fe7adb0578336d8a5e5f9eed521aeb88e8c119ba46e0916cdaab28931c80",
+      "size": 49582960352
+    },
+    {
+      "path": "/mnt/raid0/llm/models/antirez/deepseek-v4.1-flash-gguf/DeepSeek-V4.1-Flash-1017-MXFP4-experts-00004-of-00009.gguf",
+      "sha256": "67592ba15870c4292a615666adcc2736b53cc345b2cccb1c36710a0a6caf15b4",
+      "size": 49418206432
+    },
+    {
+      "path": "/mnt/raid0/llm/models/antirez/deepseek-v4.1-flash-gguf/DeepSeek-V4.1-Flash-1017-MXFP4-experts-00005-of-00009.gguf",
+      "sha256": "ecd04e0aa71bfab8cfe79ea7fef7f35b6be0b6772455139e2081d6ce1dcc18ed",
+      "size": 49412829632
+    },
+    {
+      "path": "/mnt/raid0/llm/models/antirez/deepseek-v4.1-flash-gguf/DeepSeek-V4.1-Flash-1017-MXFP4-experts-00006-of-00009.gguf",
+      "sha256": "88214e0cc80fbae578b80c114527e6ce725199684e0b6849475c7d00b3d0f54c",
+      "size": 49257603776
+    },
+    {
+      "path": "/mnt/raid0/llm/models/antirez/deepseek-v4.1-flash-gguf/DeepSeek-V4.1-Flash-1017-MXFP4-experts-00007-of-00009.gguf",
+      "sha256": "38939faf3e4258f3ae333f0fa1954ce89515b75ceee90d37bf4ebe5fafe285e6",
+      "size": 2406482112
+    },
+    {
+      "path": "/mnt/raid0/llm/models/antirez/deepseek-v4.1-flash-gguf/DeepSeek-V4.1-Flash-1017-MXFP4-experts-00008-of-00009.gguf",
+      "sha256": "a9d1634da2ac57459a64b10b69ddedfadda7dcde0e71ca6e55bea7c293c4a9f0",
+      "size": 101377628544
+    },
+    {
+      "path": "/mnt/raid0/llm/models/antirez/deepseek-v4.1-flash-gguf/DeepSeek-V4.1-Flash-1017-MXFP4-experts-00009-of-00009.gguf",
+      "sha256": "b9832b355288c005da6ef444d02424464dd27f6ebdefeadbec2244264eb65285",
+      "size": 101380404256
+    }
+  ],
+  "pins_sha256": "6c4e01faedc0ccf2f34db2829917261a4f3e2736be28809c73e65ef3a27fd02a"
+}

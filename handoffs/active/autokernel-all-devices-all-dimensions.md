@@ -861,3 +861,8 @@ The earlier R1 admission failure remains filed. R3 is a successor for the origin
 ### LB-49 first-native admission — 2026-10-31 08:07 UTC
 
 The `codex-ni-lb49-ds41-first-native-qkv-v3-20261031` 08:07:31 segment ended rc 75, **PARTIAL, class admission**: the recorded coexisting reservation ledger exceeded physical capacity plus the 64 GiB margin. Actual-model qualification and profile remained untested; no model result or scientific gate follows. The launcher later rearmed, so this records only that segment. Owner action: reconcile capacity and existing reservations before a fresh legitimate grant, retaining the original source and cohort. [Partial native receipt](../../artifacts/compute/codex3-allowner-native-0805-20261031/ds41/PARTIAL.json). [belief: cc]
+
+
+### FU-DIVERGE-03 CLI repeat — 2026-10-31 08:17 UTC
+
+`codex3-lb49-fu03-cli-r3-20261031` completed rc 0 on the original nine-shard DS41 target: baseline twice and candidate IQK-FA ON once, all three arm rc 0. Current source manifest and all three retained log hashes rechecked. Following the explicit displayed `> The capital of France is` prompt, both baseline log response regions were exactly `The capital of France is Paris.<|`; the candidate response region was `Paris<|im_end|>` followed by a newline and `<`. This compares text regions in the retained merged CLI logs; it does not establish generated token identities or uniquely isolate the template from the kernel. FU-DIVERGE-03 remains open for its original attribution question; no numeric tolerance, sink-fold, performance or promotion conclusion follows. [Arguments, linkage and raw logs](../../artifacts/compute/codex3-fu03-cli-r3-0817-20261031/SHA256SUMS). [belief: cc]
