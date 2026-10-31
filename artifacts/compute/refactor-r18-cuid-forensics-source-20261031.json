@@ -1,0 +1,144 @@
+{
+  "schema": "epyc.r18_cuid_forensics_source.v1",
+  "date": "2026-10-31",
+  "task_text": "- [ ] **R18-A-CUID-FORENSICS** \u2014 determine the source of the 141 host CUID changes and resolve against the unchanged three-set identity rule; retain the original invalid run and this valid negative separately. Do not filter symbols or modify the frozen store.",
+  "root_proposal_base": "becd6fe147c0a5db94eb354acda3d92a098dce49",
+  "source_publication": {
+    "repo": "epyc-inference-research",
+    "commit": "14500b874eafda67839a3019330f3a08592036ac",
+    "promoted_main": "49e776408693c5d676f2d6292e48fa15398c13a3",
+    "utility_path": "scripts/kernel_rnd/replay_hip_cuid.py",
+    "utility_sha256": "7544154cc8dbefd2b09de6b14a9a12efa7569407d1ad43f0df430fcd66673d01",
+    "default": "opt-in only; existing builds unchanged"
+  },
+  "causal_finding": {
+    "TUs": 141,
+    "independently_derived_anchor_names": 141,
+    "independently_derived_candidate_names": 141,
+    "source_bytes_equal": true,
+    "path_and_include_root_relocation_alone_reproduces_all_changed_hash_inputs": true,
+    "default_driver_mode": "deterministic -fuse-cuid=hash, not random",
+    "driver_input": "real input path, expanded pinned ROCm config, implicit driver-mode and rendered argument strings",
+    "exported_host_suffix": "ASTContext MD5 low64 of literal driver-CUID string; CodeGen exports __hip_cuid_ plus this second hash",
+    "plan_caveat": "-### itself changes driver input; driver CUID is not the exported suffix",
+    "expected_ELF_names_used_as_derivation_input": false,
+    "per_TU_recipe_manifest": {
+      "path": "/mnt/raid0/llm/tmp/refactor-r18-cuid-forensics-20261031/CUID-RECIPES.json",
+      "sha256": "89cdaffdd58b9a8a624c5e79b7d477b82b626640876694f5fa5654a73d874aa4"
+    }
+  },
+  "qualification": {
+    "retained_actual_argv_prepare": {
+      "baseline": 282,
+      "repaired": 282,
+      "retained_dependency_flags": 0
+    },
+    "wrapper_tests": 18,
+    "prior_unchanged_producer_function_tests": 4,
+    "real_compiler_controls": [
+      "original acc TU compiled in two private directories: unfiltered host-symbol names equal anchor object; generated objects byte-identical to each other",
+      "actual utility compiles two distinct fixture TUs through CMake in two new directories with -MD/-MT/-MQ/-MF; four dependency files and expected distinct per-TU CUIDs"
+    ],
+    "dependency_parser": "-MT/-MQ values are labels; separated/joined -MF outputs must resolve within private build root; missing/escaped/symlink/stdout output refuses",
+    "last_native_R6_rounded": {
+      "wall_seconds": 9,
+      "sampled_peak_RSS_MB": 258,
+      "children_drained": true
+    },
+    "Ninja_control": "unavailable configure preserved; successful native positive uses installed Makefiles with explicit per-TU dependency flags"
+  },
+  "original_identity_rule": {
+    "comparator_changed": false,
+    "symbol_filtering_or_normalization": false,
+    "verified_anchor_comparison": {
+      "path": "/mnt/raid0/llm/tmp/refactor-01a16fc3/r18a-verified-anchor-20261031/compare.stdout.json",
+      "sha256": "ecefb13aa8f8761a2026f0bd5d526818283cfb01a4666be5713da25e4f1d89b4"
+    },
+    "verified_anchor_closure": {
+      "path": "/mnt/raid0/llm/tmp/refactor-01a16fc3/r18a-verified-anchor-20261031/CLOSURE-EVIDENCE.json",
+      "sha256": "550450842b21e19124988dcf4e165640a22b2070763900d1ba93ba58efaad1f2"
+    },
+    "CPU_exports": 590,
+    "HIP_device_exports": 6141,
+    "HIP_code_objects": 135,
+    "HIP_host_exports": 1332,
+    "HIP_host_added": 141,
+    "HIP_host_removed": 141,
+    "full_three_set_symbol_identity_pass": false,
+    "PRODUCTION_RECIPE_IS_VERIFIABLE": false,
+    "remaining": "fresh complete experimental image through reviewed producer, then unchanged full comparator; this artifact does not supply that result"
+  },
+  "custody": {
+    "raw_private_evidence": [
+      {
+        "path": "/mnt/raid0/llm/tmp/refactor-r18-cuid-forensics-20261031/ALL141-CAUSAL-PROOF.json",
+        "sha256": "73b9620921f7f94cd294264b7a318f1f2eac5f54ea2910e11f18bb19f0e43263"
+      },
+      {
+        "path": "/mnt/raid0/llm/tmp/refactor-r18-cuid-forensics-20261031/CUID-RECIPES.json",
+        "sha256": "89cdaffdd58b9a8a624c5e79b7d477b82b626640876694f5fa5654a73d874aa4"
+      },
+      {
+        "path": "/mnt/raid0/llm/tmp/refactor-r18-cuid-forensics-20261031/COMPILER-SOURCE.json",
+        "sha256": "f9cbc3b3a0db1ec9adaac6297027545f068acaa75590529ca625175bdd4e81c9"
+      },
+      {
+        "path": "/mnt/raid0/llm/tmp/refactor-r18-cuid-forensics-20261031/NATIVE-MD5-INPUTS.log",
+        "sha256": "4f004a46f460e8b81d6f12ed2688679f8044aa3487e8ed368be03773363acc27"
+      },
+      {
+        "path": "/mnt/raid0/llm/tmp/refactor-r18-cuid-forensics-20261031/NATIVE-PROBE.json",
+        "sha256": "c1ec26a06392b7f22fa9f72dc4985735b342b73265ada8cf622d82f245632254"
+      },
+      {
+        "path": "/mnt/raid0/llm/tmp/refactor-r18-cuid-forensics-20261031/NATIVE-PROBE.log",
+        "sha256": "3e2eb4548da0f4e46b245cbb8b6b66959d2a0bb44d0b7c4832cb24263ca22dd5"
+      },
+      {
+        "path": "/mnt/raid0/llm/tmp/refactor-r18-cuid-forensics-20261031/DRIVER-OVERRIDE-GUARD.json",
+        "sha256": "e1cac6c38121e5ee229ef5dedbde0502acd938cfdee9183108b4328c805cb1fd"
+      },
+      {
+        "path": "/mnt/raid0/llm/tmp/refactor-r18-cuid-forensics-20261031/ACTUAL-FORWARDED-PRECEDENCE.log",
+        "sha256": "4d2f66f11011176be58e551555bd9b3aa7c1ce9d31506c1b95fee7667bf2e749"
+      },
+      {
+        "path": "/mnt/raid0/llm/tmp/refactor-r18-cuid-forensics-20261031/RETAINED-ARGV-PREPARE-BASELINE.json",
+        "sha256": "7ab21b940631878140de86b45d16e62b55784481a642626d20c19285ccb84790"
+      },
+      {
+        "path": "/mnt/raid0/llm/tmp/refactor-r18-cuid-forensics-20261031/RETAINED-ARGV-PREPARE-FINAL.json",
+        "sha256": "c8bd67272ec820879b780d65f3a82527f2df3c4a8077f54455cf26e5db8e7e73"
+      },
+      {
+        "path": "/mnt/raid0/llm/tmp/refactor-r18-cuid-forensics-20261031/DEPENDENCY-NATIVE-PROOF.json",
+        "sha256": "7f6a59362af39d4e6d7add660fc06ba10b990682b3cc3f755f050bbd15a762ba"
+      },
+      {
+        "path": "/mnt/raid0/llm/tmp/refactor-r18-cuid-forensics-20261031/DEPENDENCY-COMPATIBILITY.json",
+        "sha256": "ded9aea05a2aa0ecb556cfa1e94c8ae7dab2eb25618917844c92f7c4ce1daeed"
+      },
+      {
+        "path": "/mnt/raid0/llm/tmp/refactor-r18-cuid-forensics-20261031/DEP-UNIT-TESTS.log",
+        "sha256": "dbd817b25051c6c1dc7c3c59efcc444bf891232f52c51457beb109aba9c7bc09"
+      },
+      {
+        "path": "/mnt/raid0/llm/tmp/refactor-r18-cuid-forensics-20261031/DEP-RESEARCH-PATH-TESTS.log",
+        "sha256": "3b1f73150770b955e49e9bdf24f3a29ee03e2fdad206130d2b7ac5a0f92a909d"
+      },
+      {
+        "path": "/mnt/raid0/llm/tmp/refactor-r18-cuid-forensics-20261031/DEP-LINT-FINAL.log",
+        "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18"
+      },
+      {
+        "path": "/mnt/raid0/llm/tmp/refactor-r18-cuid-forensics-20261031/PUBLICATION.json",
+        "sha256": "de41786a7bdd7cc6bc30c2ec3e0f966504c47e2eee32d673b33eb286fac9438a"
+      }
+    ],
+    "original_invalid_run_and_valid_negative_retained_separately": true,
+    "frozen_store_and_production_unchanged": true,
+    "GPU_or_model_execution": false,
+    "rule_amendment": false
+  },
+  "claim_scope": "causal source reconstruction, published optional build utility and bounded compiler controls; no full rebuild, parent completion or production adoption"
+}
