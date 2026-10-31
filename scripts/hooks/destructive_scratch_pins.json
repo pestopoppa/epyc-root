@@ -14,5 +14,9 @@
   "/mnt/raid0/llm/tmp/compute-flags/ws58-calendar-keeper-v7c.sh": {
     "sha256": "1b8f00bec637c5a057b0e00560a475469225eb8d93fd5dca08156d982d4c76c0",
     "approval": "operator 2026-10-31: 'recover calendar immediately' - keeper v7c = v7b with STOP_AT 2026-11-03T06:00Z only"
+  },
+  "/mnt/raid0/llm/tmp/compute-flags/ws58-calendar-keeper-v7d.sh": {
+    "sha256": "72f5b8b1a56d05450908a46c0318123302106e2b4b91e4f985ab10fea16e8dce",
+    "approval": "operator 2026-10-31: 'Approve: pin + deploy' - keeper v7d = v7c + no expiry + GPU succession from a dead writer + main-loop pid file"
   }
 }
