@@ -1,0 +1,82 @@
+{
+  "run_id": "yarn-128k-mi210-sol-r10-20261031",
+  "terminal_cutoff": "2026-10-31T17:08:21Z",
+  "filing_due_exact_record": {
+    "id": "yarn-128k-mi210-sol-r10-20261031",
+    "ended_file": "/mnt/raid0/llm/tmp/compute-flags/grants/yarn-128k-mi210-sol-r10-20261031.ended",
+    "end_line": "rc=1 time=2026-10-31T17:08:21Z reason=job-rc-1:exited",
+    "seen_at": "2026-10-31T17:08:51Z",
+    "result_path": "/mnt/micron/codex-ni-yarn-128k-mi210-sol-r10-20261031/full-runs/decision.json",
+    "scratch_root": "/mnt/raid0/llm/tmp/codex-ni-yarn128-cutoff-sol-20261031/packet-r10",
+    "decision_rule": "Unchanged frozen full120 paired Oolong items. RIGHT iff score>=1.0. b=A0right/A1wrong,c=A0wrong/A1right; A1 fails iff one-sided exact McNemar P(X>=b|n=b+c,p=.5)<=.05. Report paired mean score A1-A0,b,c,p. Higher score is better. NOT-FAIL does not establish equivalence.",
+    "class": "decision",
+    "owner": "codex-ni"
+  },
+  "filing_due_selected_line_sha256": "dd85fa496789993b4bf30def3a902dd42cc58bcf939e904b803e9c03a620c46f",
+  "sources": [
+    {
+      "path": "/mnt/raid0/llm/tmp/compute-flags/grants/yarn-128k-mi210-sol-r10-20261031.ended",
+      "bytes": 198,
+      "sha256": "f9387fd40cb5fd7e25eed79ed76a1cb490823b17e31389e5952cd7b0341d3fd3",
+      "mtime_utc": "2026-10-31T17:08:21.857069+00:00",
+      "scope": "observed read-time bytes, not a reconstructed original measurement warrant"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/compute-flags/ready/armed/yarn-128k-mi210-sol-r10-20261031.json",
+      "bytes": 21740,
+      "sha256": "2832b4bd994d1024f1c0db443bc4017a0859050cd911fc940d761d942525ef90",
+      "mtime_utc": "2026-10-31T07:58:12.856964+00:00",
+      "scope": "observed read-time bytes, not a reconstructed original measurement warrant"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/compute-flags/ready/yarn-128k-mi210-sol-r10-20261031.launcher.out",
+      "bytes": 5222,
+      "sha256": "91c913f6de702d7f8dc74afcf8333fc23dc4c7e884c528d983470a16831ef888",
+      "mtime_utc": "2026-10-31T17:08:21.861069+00:00",
+      "scope": "observed read-time bytes, not a reconstructed original measurement warrant"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/codex-ni-yarn128-cutoff-sol-20261031/packet-r10/ws58-launcher.out",
+      "bytes": 5222,
+      "sha256": "91c913f6de702d7f8dc74afcf8333fc23dc4c7e884c528d983470a16831ef888",
+      "mtime_utc": "2026-10-31T17:08:21.861069+00:00",
+      "scope": "observed read-time bytes, not a reconstructed original measurement warrant"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/codex-ni-yarn128-cutoff-sol-20261031/packet-r10/normal_entry.py",
+      "bytes": 23694,
+      "sha256": "7cb7df6b6d170318e569d8b51be0fcf570955f3bdd7130b8a1a969aa828192aa",
+      "mtime_utc": "2026-10-31T06:09:30.299544+00:00",
+      "scope": "observed read-time bytes, not a reconstructed original measurement warrant"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/codex-ni-yarn128-cutoff-sol-20261031/packet-r10/SOURCE-FREEZE.json",
+      "bytes": 3177,
+      "sha256": "f79a8c38fccb76c8badd296b60a7f728f698546e4d120f422975037b1aef5bce",
+      "mtime_utc": "2026-10-31T06:09:52.145696+00:00",
+      "scope": "observed read-time bytes, not a reconstructed original measurement warrant"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/codex-ni-yarn128-cutoff-sol-20261031/packet-r10/LOCAL-PINS.sha256",
+      "bytes": 5898,
+      "sha256": "4075cf8bde308ef64ef32a28f15e5d385cbe24eccb0db30c85de9538f2f09ae1",
+      "mtime_utc": "2026-10-31T06:09:52.145453+00:00",
+      "scope": "observed read-time bytes, not a reconstructed original measurement warrant"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/codex-ni-yarn128-cutoff-sol-20261031/packet-r10/frozen_plan.py",
+      "bytes": 1059,
+      "sha256": "0dd398d8bd3077729cb443e766a94005d4ee19340c6f2fd69553f1f6897c4f4d",
+      "mtime_utc": "2026-10-31T06:09:30.299795+00:00",
+      "scope": "observed read-time bytes, not a reconstructed original measurement warrant"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/codex3-results-filing-1717-20261031/HOST-OBSERVATION.json",
+      "bytes": 644,
+      "sha256": "64a94fc908c0886e9a156440acaec1c184dd8a1e77f1e69401fcf7d71cc5c65f",
+      "mtime_utc": "2026-10-31T17:18:19.876915+00:00",
+      "scope": "observed read-time bytes, not a reconstructed original measurement warrant"
+    }
+  ],
+  "custody_note": "Raw prompt blobs/results are not copied. This capsule contains aggregate failure classification, locators and hashes only. Qualification smoke output is separate and excluded."
+}

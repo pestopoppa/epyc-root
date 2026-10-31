@@ -1,0 +1,18 @@
+{
+  "fixture_only": true,
+  "base_main": "b5d9f418d89fdcc4eda757b760c27b24e01d58a8",
+  "git_apply_check_rc": 0,
+  "git_apply_rc": 0,
+  "checkbox_preservation": {
+    "handoffs/active/yarn-context-extension-research.md": {
+      "checkbox_lines_unchanged": true
+    },
+    "handoffs/active/vidya-belief-substrate-program.md": {
+      "checkbox_lines_unchanged": true
+    },
+    "progress/2026-10/2026-10-31.md": {
+      "checkbox_lines_unchanged": true
+    }
+  },
+  "main_note": "Index-state check remains parent publication gate; no shared workspace files or shared index/HEAD/config modified."
+}

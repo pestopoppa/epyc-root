@@ -332,10 +332,19 @@ Machine harness 25→48→59→81 checks, 0 fail (independently rerun); 4 quiet 
 
 ### Phase 2 additions from buildout findings (rows, not yet started)
 
-- [ ] **Trimmed machine-frame endpoint**: the snapshot document is ~3.9 MB/frame
-      (`live_frame.lifecycle` ≈ 2 MB, duplicated under `region_locks.live_frame`) — ~8 MB/s per
-      open tab at nominal 2 Hz. A slim frame for `/machine` is a data-plane change (belongs with
-      the D3 revisit).
+- [x] **Trimmed machine-frame endpoint**: the snapshot document is ~3.9 MB/frame (`live_frame.lifecycle` ≈ 2 MB, duplicated under `region_locks.live_frame`) — ~8 MB/s per open tab at nominal 2 Hz. A slim frame for `/machine` is a data-plane change (belongs with the D3 revisit). ✅ 2026-10-31 — APP implements `ec6f81769020d695b046895d654e36a39595ac81`; ROOT implements `8318ce329242afe3293ba930bda0c7540114a148`; tests `tests/unit/test_dashboard_machine_frame.py` (APP) and `tests/test_dashboard_machine_frame.py` (ROOT); Git proof `artifacts/audit/machine-frame-transport-20261031/README.md` in both repos. [no-belief: source implementation and native regression controls]
+      ✅ 2026-10-31 — Implemented in epyc-orchestrator `ec6f81769020d695b046895d654e36a39595ac81`
+      and epyc-root `8318ce329242afe3293ba930bda0c7540114a148`. Opt-in `?view=machine` uses the
+      existing JSON/SSE routes and both hub callers request it. Only the equal
+      `region_locks.live_frame` alias is removed; canonical full `live_frame`, lifecycle data, all IDs
+      and UNKNOWN freshness remain, while divergent aliases retain type and signed-zero checks. An
+      iterative JSON walk handles the native 650-level recursion case. Default legacy full-frame bytes
+      remain stable. Final controls: 143 API + 15 page controls pass; lint 0. The make-gate candidate
+      and pristine ShellCheck warning outputs are byte-identical; this is not a full-green claim.
+      Fixture-only frame bytes: 47,524→24,580 local and 91,652→46,835 host; no live payload, bandwidth,
+      producer-work or deployment result is claimed. Normal full publication hooks and exact PII plus
+      serialized-push checks passed in both repos; leases were released. Evidence in both repos:
+      `artifacts/audit/machine-frame-transport-20261031/README.md`. [no-belief: source implementation and native regression controls]
 - [ ] **/slots fan-out answered 0/19 during buildout** — machine-state truth issue (RTG-03
       territory), surfaced loudly by the new page rather than rendered as zeros; confirm against
       RTG-03's manifest/realized work before treating as a page-side bug.

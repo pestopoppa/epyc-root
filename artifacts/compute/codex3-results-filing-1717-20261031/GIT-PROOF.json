@@ -1,0 +1,15 @@
+{
+  "base_main": "b5d9f418d89fdcc4eda757b760c27b24e01d58a8",
+  "required_ancestor": "8318ce329242afe3293ba930bda0c7540114a148",
+  "required_ancestor_verified": true,
+  "remote_main_observed": "b5d9f418d89fdcc4eda757b760c27b24e01d58a8",
+  "method": "git ls-remote origin refs/heads/main; git fetch --no-write-fetch-head --no-tags origin <exact SHA>; merge-base --is-ancestor",
+  "note": "No shared HEAD, index or config mutation. This is a preparation base, not evidence-publication proof. Parent must verify pushed main and record actual receipt timestamp after publication.",
+  "patch_scope": [
+    "handoffs/active/yarn-context-extension-research.md",
+    "handoffs/active/vidya-belief-substrate-program.md",
+    "progress/2026-10/2026-10-31.md"
+  ],
+  "checkbox_edits": 0,
+  "index_row_edits": 0
+}

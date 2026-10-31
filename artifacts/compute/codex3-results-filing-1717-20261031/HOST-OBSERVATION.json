@@ -1,0 +1,12 @@
+{
+  "observed_at": "2026-10-31T17:18:19.876652+00:00",
+  "host_uid": 1000,
+  "native_output_root": "/mnt/micron/codex-ni-yarn-128k-mi210-sol-r10-20261031",
+  "native_output_root_exists": false,
+  "decision_exists": false,
+  "normal_complete_exists": false,
+  "packet_plan_resolved": "/mnt/raid0/llm/tmp/codex-ni-yarn128-cutoff-sol-20261031/packet-r10/cohort/plan",
+  "hardcoded_expected_plan_resolved": "/mnt/raid0/llm/tmp/codex-ni-20261027-ready-cpu-batch/prospective-power-input/plan",
+  "samefile": false,
+  "scope": "read-only terminal observation; source guard fails before native output creation; earlier qualification smokes excluded"
+}
