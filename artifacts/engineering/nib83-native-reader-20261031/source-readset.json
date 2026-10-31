@@ -1,0 +1,42 @@
+[
+  {
+    "fixture_path": "fixture/scripts/ci/nib83_native/postE17_histogram.py",
+    "repo": "/workspace",
+    "commit": "887ca4928bbf5771514bda34724a043d8c7c98fd",
+    "source_path": "scripts/ci/nib83_native/postE17_histogram.py",
+    "sha256": "cf94c699f3f9912defb622534177415ef8c628241489ea88d425add638780a79",
+    "bytes": 4047
+  },
+  {
+    "fixture_path": "native_source/eval_tower.py",
+    "repo": "/workspace/repos/epyc-orchestrator",
+    "commit": "0c4833bc3b0a38275e0b41433f9be68d6cf9b11f",
+    "source_path": "scripts/autopilot/eval_tower.py",
+    "sha256": "289b2bc2a7a0f2380df8efdbfa45c3266e8ca0dde5db7eb0c441674b43d652d6",
+    "bytes": 368227
+  },
+  {
+    "fixture_path": "native_source/measurement_guards.py",
+    "repo": "/workspace/repos/epyc-orchestrator",
+    "commit": "0c4833bc3b0a38275e0b41433f9be68d6cf9b11f",
+    "source_path": "src/autopilot_core/measurement_guards.py",
+    "sha256": "b101d4c108c24ca9c24d0b443f32c11200236c61af1dc82c41a956d8929bd470",
+    "bytes": 19542
+  },
+  {
+    "fixture_path": "native_source/behavior_signature.py",
+    "repo": "/workspace/repos/epyc-orchestrator",
+    "commit": "0c4833bc3b0a38275e0b41433f9be68d6cf9b11f",
+    "source_path": "src/behavior_signature.py",
+    "sha256": "5666e929ef58785751ce094b0b38575f06361dc42dbd246e697d5b35cd8336ef",
+    "bytes": 9675
+  },
+  {
+    "fixture_path": "native_source/instrument_eras.yaml",
+    "repo": "/workspace/repos/epyc-orchestrator",
+    "commit": "0c4833bc3b0a38275e0b41433f9be68d6cf9b11f",
+    "source_path": "orchestration/instrument_eras.yaml",
+    "sha256": "e329abef42d9f57980f21311e93b22d250bedc9c961b03aa3dd6f537e777a962",
+    "bytes": 37880
+  }
+]

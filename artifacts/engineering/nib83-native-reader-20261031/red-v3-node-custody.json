@@ -1,0 +1,158 @@
+{
+  "app_commit": "0c4833bc3b0a38275e0b41433f9be68d6cf9b11f",
+  "synthetic_only": true,
+  "native_runtime": "stdlib-only AST slice",
+  "sources": [
+    {
+      "path": "measurement_guards.py",
+      "sha256": "b101d4c108c24ca9c24d0b443f32c11200236c61af1dc82c41a956d8929bd470",
+      "nodes": [
+        {
+          "names": [
+            "DISPOSITION_SCORED"
+          ],
+          "line": 141,
+          "source_sha256": "a7c2861e897a1676d03a17fb3cfaaf16dee0c4f0d927384b77e614d1094cdecc",
+          "ast_sha256": "8aee871281901946126c53507c5496175dee61d0c7409f5f244e0015ac2cfa22"
+        }
+      ]
+    },
+    {
+      "path": "behavior_signature.py",
+      "sha256": "5666e929ef58785751ce094b0b38575f06361dc42dbd246e697d5b35cd8336ef",
+      "nodes": [
+        {
+          "names": [
+            "normalize_answer_text"
+          ],
+          "line": 76,
+          "source_sha256": "612fa7f6e119cb87b4907e7362290494e6e7510011d7be62cdcd2697e7e539da",
+          "ast_sha256": "484c1ce356b03a5ab28633961d57499ea93d73e0a9c294e7c63e01afcb551696"
+        },
+        {
+          "names": [
+            "normalized_answer_hash"
+          ],
+          "line": 83,
+          "source_sha256": "655cb67b245302f029c4ac2fd9cf2999d7795bb105e1154cdb370ec00992c524",
+          "ast_sha256": "37ea01b296f05bc37c2e21329e7690460b016974d90db9b25e3affaea70f6a14"
+        }
+      ]
+    },
+    {
+      "path": "eval_tower.py",
+      "sha256": "289b2bc2a7a0f2380df8efdbfa45c3266e8ca0dde5db7eb0c441674b43d652d6",
+      "nodes": [
+        {
+          "names": [
+            "_HOST_COVARIATE_COMPACT_KEYS"
+          ],
+          "line": 92,
+          "source_sha256": "e9b1803fa2108231e1efeb01bbe2443667cd1e5231ad459db08cf524e5c4aab1",
+          "ast_sha256": "0ce753c233b09c957f80322b69b0172649c38d07ebdf83526f235acb4a3e3373"
+        },
+        {
+          "names": [
+            "_EVAL_QUESTION_JSONL_SCHEMA_VERSION"
+          ],
+          "line": 305,
+          "source_sha256": "07247f4e567c1493cdacb01751298ac8bafd99aba1afe0bd61de7bc0d5a7ca3d",
+          "ast_sha256": "f5c9369b1965756928c0d2a5c2407357a5ad0664432e9b3e26cd6817d5555b56"
+        },
+        {
+          "names": [
+            "EVAL_FENCE_ABSENT"
+          ],
+          "line": 1056,
+          "source_sha256": "9f20442d907ac85e7169cc656e413e34a9fc4963a8ca232a79126b76b8c76d56",
+          "ast_sha256": "b04e48c14b34cafd2d4ef8dd80baabae4ecdb02829a73e81a0905259b2625a4a"
+        },
+        {
+          "names": [
+            "MAX_RECORDED_TOUCHED_PATHS"
+          ],
+          "line": 1058,
+          "source_sha256": "0e5d57aa79d2d96f03ab85c4293833f4783f8cf3834de031993dcee4f2b65fe2",
+          "ast_sha256": "29bb7613a4f9b515847391846e488abc67da714cf51e5f1851c23b5ba18811c2"
+        },
+        {
+          "names": [
+            "_MAX_RECORDED_PATH_CHARS"
+          ],
+          "line": 1059,
+          "source_sha256": "d68f44bcc0dda4da043e2b0fd34199483aa3bd1114050dbca43b9d832df87d82",
+          "ast_sha256": "c40893c2370a7b45db9e6b2c2b425bb0ba03f9f3b84a70bb2076dd3e21adef4d"
+        },
+        {
+          "names": [
+            "_stable_question_qid"
+          ],
+          "line": 1137,
+          "source_sha256": "7f52ad048020d449a26a8be2979a1bd3ffdde0346ebb70bb2438ab5943eefeb1",
+          "ast_sha256": "397f9f7da179f80833149f032bdd12f1f60053a67b79babd3f8812a685e8d145"
+        },
+        {
+          "names": [
+            "QUALITY_DENOMINATOR_POLICY"
+          ],
+          "line": 1255,
+          "source_sha256": "b537b530d5b588c1502095f4d14c46e5b2bf626d26d4ec8a3c554e02a8a5fe41",
+          "ast_sha256": "83bc5bf9ccf6965454974f41a39d5bdafaec0d4a295edb7473d1a75ba47302a8"
+        },
+        {
+          "names": [
+            "_compact_host_covariates"
+          ],
+          "line": 1394,
+          "source_sha256": "987de8a3bbd6852b7bec7ec35a243dd703564ee14068ed47ac4d220e1bd9e2c8",
+          "ast_sha256": "087f9e9d5969cc73e0e06faf248f78d9baa651a93417f7e7189e646162c7c90d"
+        },
+        {
+          "names": [
+            "_compact_question_result"
+          ],
+          "line": 1495,
+          "source_sha256": "db5a99761bae77d6bc7837e8abd41d292591acf612aa9050f8e8055ada204a70",
+          "ast_sha256": "5cf2f56b2fbb3907f7ca99ff71df395e2f375ca484e52c1ce930436902135f23"
+        },
+        {
+          "names": [
+            "_safe_artifact_name"
+          ],
+          "line": 2923,
+          "source_sha256": "82921e4d0d56e433b0178fb70a9d1c30b15f36b9a07b18cb0c1e84df47ab188f",
+          "ast_sha256": "b7c9961a881cb0042aeccb28d66d4a78a7790d20db7eb3dd812635c1ae105f19"
+        },
+        {
+          "names": [
+            "_EvalQuestionJsonlWriter"
+          ],
+          "line": 2949,
+          "source_sha256": "b2e6bcede654a0f9d5d08697b6ade60169b126f0b2f2338a75cf8c831e3b450d",
+          "ast_sha256": "e08fbd54707b364391bfd161db889918b44385ae25cd69c8a58eff57bf2d8663"
+        },
+        {
+          "names": [
+            "EvalReconnectCost"
+          ],
+          "line": 3186,
+          "source_sha256": "cd50a1c41b38820fd792855fd4ac13b9006fc6f2744d78c960dc93a9df25e18a",
+          "ast_sha256": "bbab4fea9d1d4de114a6367a82b2b8a87da469bd04ff16102211496e67c38a22"
+        },
+        {
+          "names": [
+            "QuestionResult"
+          ],
+          "line": 3232,
+          "source_sha256": "aa0cd61951046ed22b243af0e2df15ad3230b51ddcd941ec719b83c8e0df6578",
+          "ast_sha256": "1181d9a84ac1bd7c4c31236473cb3cb3f3a48312f284916ddc6b88a1464fadb0"
+        }
+      ]
+    },
+    {
+      "path": "instrument_eras.yaml",
+      "sha256": "e329abef42d9f57980f21311e93b22d250bedc9c961b03aa3dd6f537e777a962",
+      "nodes": []
+    }
+  ]
+}

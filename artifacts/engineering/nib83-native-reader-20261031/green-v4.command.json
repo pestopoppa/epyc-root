@@ -1,0 +1,27 @@
+{
+  "argv": [
+    "/usr/bin/taskset",
+    "-c",
+    "124,125",
+    "/usr/bin/python3",
+    "/mnt/raid0/llm/tmp/codex3-ap66-20261031/supervisor-esrch-fix/prep_supervisor.py",
+    "120",
+    "--",
+    "/usr/bin/python3",
+    "/mnt/raid0/llm/tmp/codex3-nib83-20261031/fixture/scripts/ci/nib83_native/test_native_writer_integration.py",
+    "--source-root",
+    "/mnt/raid0/llm/tmp/codex3-nib83-20261031/native_source",
+    "--reader",
+    "/mnt/raid0/llm/tmp/codex3-nib83-20261031/fixture/scripts/ci/nib83_native/postE17_histogram.py",
+    "--custody-output",
+    "/mnt/raid0/llm/tmp/codex3-nib83-20261031/green-v4-node-custody.json"
+  ],
+  "cpus": [
+    124,
+    125
+  ],
+  "original_mutex": "/mnt/raid0/llm/tmp/compute-flags/prep-locks/28-29.lock",
+  "rc": 0,
+  "reader_sha256": "5f329ce5c34c55b41f24aed3887ae70834a3898e4b504871b318f4079e9d6fb1",
+  "integration_test_sha256": "3d80fb221f254b628385718ea4e0a97fd8a27c5514c9356a7abdb6bad1d2f399"
+}

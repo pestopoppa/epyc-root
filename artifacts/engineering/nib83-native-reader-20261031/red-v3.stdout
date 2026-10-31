@@ -1,0 +1,69 @@
+{"schema": "bounded-r11-native-profile-supervisor/v1", "elapsed_s": 0.3102185840252787, "sampled_peak_tree_rss_bytes": 70291456, "samples": 4, "verified_exited_processes": 0, "verified_exited_threads": 0, "per_process_address_space_limit_bytes": null, "rss_scope": "sum of sampled resident pages across owned process tree; sampling may miss transients and double-count shared pages", "leader_pid": 783528, "leader_birth": 158948774, "child_rc": 1, "children_drained": true, "failure": null}
+test_actual_bool_error_and_native_full_era (__main__.NativeWriterCompatibility.test_actual_bool_error_and_native_full_era) ... FAIL
+test_clean_wrong_answer_is_scored_but_incomplete_row_is_unknown (__main__.NativeWriterCompatibility.test_clean_wrong_answer_is_scored_but_incomplete_row_is_unknown) ... FAIL
+test_later_registered_era_requires_actual_native_policy (__main__.NativeWriterCompatibility.test_later_registered_era_requires_actual_native_policy) ... FAIL
+test_native_failure_classes_and_error_status_remain_distinct (__main__.NativeWriterCompatibility.test_native_failure_classes_and_error_status_remain_distinct) ... FAIL
+test_native_generation_time_does_not_choose_quality_policy (__main__.NativeWriterCompatibility.test_native_generation_time_does_not_choose_quality_policy) ... ERROR
+test_truncated_error_is_native_detail_and_public_output_has_only_hash (__main__.NativeWriterCompatibility.test_truncated_error_is_native_detail_and_public_output_has_only_hash) ... FAIL
+
+======================================================================
+ERROR: test_native_generation_time_does_not_choose_quality_policy (__main__.NativeWriterCompatibility.test_native_generation_time_does_not_choose_quality_policy)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/mnt/raid0/llm/tmp/codex3-nib83-20261031/fixture/scripts/ci/nib83_native/test_native_writer_integration.py", line 272, in test_native_generation_time_does_not_choose_quality_policy
+    self.assertEqual(result["native_shape_counts"], {"task_failed": 1})
+                     ~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+KeyError: 'native_shape_counts'
+
+======================================================================
+FAIL: test_actual_bool_error_and_native_full_era (__main__.NativeWriterCompatibility.test_actual_bool_error_and_native_full_era)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/mnt/raid0/llm/tmp/codex3-nib83-20261031/fixture/scripts/ci/nib83_native/test_native_writer_integration.py", line 233, in test_actual_bool_error_and_native_full_era
+    self.assertEqual(result["error_histogram"], {"synthetic agent error line": 1})
+AssertionError: {'<missing native error>': 1} != {'synthetic agent error line': 1}
+- {'<missing native error>': 1}
++ {'synthetic agent error line': 1}
+
+======================================================================
+FAIL: test_clean_wrong_answer_is_scored_but_incomplete_row_is_unknown (__main__.NativeWriterCompatibility.test_clean_wrong_answer_is_scored_but_incomplete_row_is_unknown)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/mnt/raid0/llm/tmp/codex3-nib83-20261031/fixture/scripts/ci/nib83_native/test_native_writer_integration.py", line 246, in test_clean_wrong_answer_is_scored_but_incomplete_row_is_unknown
+    self.assertEqual(result["class_counts"], {"scored": 1})
+AssertionError: {} != {'scored': 1}
+- {}
++ {'scored': 1}
+
+======================================================================
+FAIL: test_later_registered_era_requires_actual_native_policy (__main__.NativeWriterCompatibility.test_later_registered_era_requires_actual_native_policy)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/mnt/raid0/llm/tmp/codex3-nib83-20261031/fixture/scripts/ci/nib83_native/test_native_writer_integration.py", line 262, in test_later_registered_era_requires_actual_native_policy
+    self.assertEqual(result["residual_count"], 1)
+AssertionError: 0 != 1
+
+======================================================================
+FAIL: test_native_failure_classes_and_error_status_remain_distinct (__main__.NativeWriterCompatibility.test_native_failure_classes_and_error_status_remain_distinct)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/mnt/raid0/llm/tmp/codex3-nib83-20261031/fixture/scripts/ci/nib83_native/test_native_writer_integration.py", line 303, in test_native_failure_classes_and_error_status_remain_distinct
+    self.assertEqual(
+AssertionError: {} != {'task_failed': 1, 'infra_failed': 1, 'scoring_failed': 1}
+- {}
++ {'infra_failed': 1, 'scoring_failed': 1, 'task_failed': 1}
+
+======================================================================
+FAIL: test_truncated_error_is_native_detail_and_public_output_has_only_hash (__main__.NativeWriterCompatibility.test_truncated_error_is_native_detail_and_public_output_has_only_hash)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/mnt/raid0/llm/tmp/codex3-nib83-20261031/fixture/scripts/ci/nib83_native/test_native_writer_integration.py", line 319, in test_truncated_error_is_native_detail_and_public_output_has_only_hash
+    self.assertEqual(result["error_histogram"], {"x" * 200: 1})
+AssertionError: {} != {'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx[160 chars]': 1}
+- {}
++ {'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx': 1}
+
+----------------------------------------------------------------------
+Ran 6 tests in 0.151s
+
+FAILED (failures=5, errors=1)
