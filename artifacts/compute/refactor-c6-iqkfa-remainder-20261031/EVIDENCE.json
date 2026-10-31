@@ -1,0 +1,69 @@
+{
+  "schema": "c6.iqkfa_missing_cells.preparation.v1",
+  "date": "2026-10-31",
+  "row_id": "refactor-c6-iqkfa-remainder-729599d69-20261031",
+  "state": "READY_published",
+  "source_sha": "729599d69871181d67af715a4c2f9162d5153a2e",
+  "source_tree": "51b0a4fda906ffd3d029fd21bf41204675f08167",
+  "ON_store": "/mnt/raid0/llm/kernels/builds/cpu-20261031-729599d69-c6-iqkfa-on",
+  "OFF_store": "/mnt/raid0/llm/kernels/builds/cpu-20261030-729599d69-c6",
+  "source_manifest_sha256": "d459b86d5998d78c4b6ace73f245e50f986bc4fc9355db4cafda8fba581c3ffe",
+  "launcher_sha256": "2f039486fdbbbd151ec3fd516f278216e767c4dd343eccf2a8c4d95e2a770508",
+  "ready_manifest_sha256": "81ff27ebad1610a739bbb2a8dd3bee231d8d35aa5ea91719ad11f56537206342",
+  "ready_row_sha256": "f08a679ea1b5b6f36e06b14c34ae30dff6a5c7eed2f17e5a1a1594ee5ca96383",
+  "qualification_sha256": "1100d91f192115f3fd6fb58b57a7804520e6fc86bc33eedd0a4511d48d36aa8e",
+  "prearm_sha256": "67a9fb2f30ca969e212cadc066a7f8975f53933b69012da84cc86fa3c763a6a5",
+  "scope": "Operational preparation only: full28missingONcohortcells UNTESTED. No performance, G-AK, keep, CAS, deployment or default-option adoption. No model/GPU/build/configure action.",
+  "missing_native_invocations": 28,
+  "prior_control_reuse": "Four source729 controls (worksize +three30rowLB4.5) bind unchanged ON/OFF store manifests and raw hashes; not rerun or credited as new measurements.",
+  "full_recipe": "Existing FU3 argv/checker functions, twoFA cohorts,20mask/threadcells at1/4/8/16/96,stale/env control and4bench-switch checks. Thread96 deliberately oversubscribes assignedquarter as correctness, not timing. Native/checkerFAIL staysFAIL; aggregateGAKnull.",
+  "resources": {
+    "regions": "any-cpu-quarter",
+    "GiB": 8,
+    "window_s": 7200,
+    "min_window_s": 1080,
+    "estimated_output_GiB": 0.25,
+    "output_cap_GiB": 0.5,
+    "RAID_floor_GiB": 150
+  },
+  "controls": {
+    "normal": {
+      "native_rc": 0,
+      "wall_s": 2.146591150900349,
+      "sampled_peak_tree_rss_bytes": 111677440,
+      "children_drained": true,
+      "raw_log": "/mnt/raid0/llm/tmp/refactor-c6-iqkfa-remainder-20261031/NORMAL-R11-03.log",
+      "raw_sha256": "b53fc8c847b79d2895326bd524ded52af3653e2ceada0166bd7300a747018b10",
+      "raw_result_sha256": "d9ce48fbcc78cb82328cad24c46006a274121218b9eec34092970d8bc9fc2d2e",
+      "raw_result_locator": {
+        "log": "/mnt/raid0/llm/tmp/refactor-c6-iqkfa-remainder-20261031/NORMAL-R11-03.log",
+        "json_field": "result"
+      }
+    },
+    "cutoff": {
+      "native_rc": 75,
+      "wall_s": 1.5371260130777955,
+      "sampled_peak_tree_rss_bytes": 114995200,
+      "children_drained": true,
+      "raw_log": "/mnt/raid0/llm/tmp/refactor-c6-iqkfa-remainder-20261031/CUTOFF-R11-01.log",
+      "raw_sha256": "59d5c28ce22c4674ceb45c5521876ee740c668f01829c0c8803edc6853db2494",
+      "raw_result_sha256": "ac34ed34f32a6201bb1a51b2e331f22218d0d2576ad6ed60e45155620082aada",
+      "raw_result_locator": {
+        "log": "/mnt/raid0/llm/tmp/refactor-c6-iqkfa-remainder-20261031/CUTOFF-R11-01.log",
+        "json_field": "result"
+      }
+    }
+  },
+  "active_STOP": "Two in-window samePID/birth running native samples; ownedSTOP, reap/drain, partial writer and independent consumer75. Raw PID/birth integers retained only in protected packet.",
+  "normal": "Actual ON rowexact8192/deadrow+emptytg/t2:4supportedPASSlines; bothimages actual version/linkage and allrawhashes revalidated.",
+  "frontdoor": "InheritedFILLER_LEGACY_T1 unset in actual R13poller; hardcoded4engineSHAcheck beforeouterexec; actual corruptionnegative refused beforebanner. Actual bannerPID matchedengine. All own prearmprocesses reaped.",
+  "namespace": "Existing whole-entry epyc-root/GCC15.2 container transport; namedcontainer/image identity independently observed; realDockerexec metadata probe preserved FILLER_CPUS/STOP/R11 and85signedinputchecks. HOSTbootstraprefusals retained, not native results.",
+  "prearm": "Current v7e ready_scan accepted rank0.32; current ws58_arm-v2 metadata/R9 prefix passed; actualARMEDvalidator0refusals0warnings; actualgrant_ok observedrealPROC/RAM withprivate table only. No sharedFILLERS/grant mutation.",
+  "unarmed_warning": "One legacy missing-blocker warning on bareBACKLOGtable; no blockerfield added perownerorder; actualARMED/prearm0warnings.",
+  "published_ready_manifest": "/mnt/raid0/llm/tmp/compute-flags/ready/refactor-c6-iqkfa-remainder-729599d69-20261031.json",
+  "protected_packet": "/mnt/raid0/llm/tmp/refactor-c6-iqkfa-remainder-20261031",
+  "keeper_scan_log_sha256": "746fd6715d692cf67bd38318e62e803eed48d0d00d21bc065d3d5c1f0f84ee93",
+  "retention": "Runtime/source/native evidence protected by published manifestkeep list; reused external R11admission/control roots and canonicalCLI pins must remain available.",
+  "belief_scope": "Launcher qualification/source conformance only; no fullgate measurement or captured decision-grade claim tuple.",
+  "quota_credit": 0
+}
