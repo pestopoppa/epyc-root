@@ -1,0 +1,11 @@
+{
+  "class": "diagnostic",
+  "decision_rule": "Capture all 120 pinned ParEval serial/OpenMP prompts with 20 independently seeded samples each, preserving all 2400 original attempts and native response/finish/unknowns. Generation only: native correctness, local sequential baseline, 1-96-thread timing, pass@k, efficiency@k and SC45 measured records remain for the later separate quiet-host contained evaluation.",
+  "end_line": "rc=75 time=2026-10-31T12:16:21Z reason=job-rc-75:exited",
+  "ended_file": "/mnt/raid0/llm/tmp/compute-flags/grants/codex3-pareval120-k20-gen-20261031.ended",
+  "id": "codex3-pareval120-k20-gen-20261031",
+  "owner": "codex3",
+  "result_path": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/pareval/run/TERMINAL.json",
+  "scratch_root": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/pareval",
+  "seen_at": "2026-10-31T12:16:39Z"
+}

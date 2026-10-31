@@ -1,0 +1,20 @@
+{
+  "schema": "rvp-c5-6.pareval-generation.v1",
+  "revision": "9e2a9afafa2c9686fdd3310defde0f9a8c3731c1",
+  "cohort_sha256": "658444b7a684b90305a18f44b929213ca4f98d9d2bac174aa97b3779c878eb77",
+  "case_count": 120,
+  "arms": {
+    "serial": 60,
+    "omp": 60
+  },
+  "samples_per_prompt": 20,
+  "attempts": 2400,
+  "generator_defaults": {
+    "temperature": 0.2,
+    "top_p": 0.95,
+    "max_new_tokens": 1024
+  },
+  "target": "Qwen3.8-27B-Q8_0 direct scratch server; no production server changes",
+  "methodology": "Pinned ParEval generate-openai.py exact system/user wrapper and upstream postprocess, twenty independently seeded n=1 samples per prompt; full native responses and failures retained, no exposed retry or unseen redraw. This generation-only prerequisite is not correctness, pass@k, timing, tuple, or C5-6 completion.",
+  "later_phase": "Run all 120 generated cases in a properly contained CPU execution environment with native g++/OpenMP, true local best-sequential baselines, live affinity and original n=1,2,4,8,16,32,64 plus 96 thread sweep under a quiet whole-host grant; invoke existing SC45 collect-time derive writer; preserve all missing/failed cells and the O0 caveat."
+}

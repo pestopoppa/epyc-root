@@ -1,0 +1,30 @@
+{
+  "schema": "ap54-focused-r6-guard/v1",
+  "started_at_utc": "2026-10-31T12:24:25.405688+00:00",
+  "finished_at_utc": "2026-10-31T12:24:41.851080+00:00",
+  "cwd": "/mnt/raid0/llm/tmp/codex3-m21-ap54-fixture-20261031/base-snapshot",
+  "base_commit": "1fc5eb1ac21aa400bdc6425a06e4cf8dbc0d6806",
+  "selected_tests": [
+    "-q",
+    "tests/unit/test_ap54_eval_knowledge_fence.py::test_chat_route_arms_echoes_and_clears",
+    "tests/unit/test_m21_probe_writeback.py"
+  ],
+  "cpus": [
+    76,
+    77
+  ],
+  "relocation": "R6 pair 28-29 shifted +48 to q3 CPUs 76-77 because live grants named ranges 0-71; pair 26-27 mutex was occupied",
+  "mutex": "/mnt/raid0/llm/tmp/compute-flags/prep-locks/28-29.lock",
+  "omp_num_threads": "1",
+  "per_process_address_space_limit_bytes": 8589934592,
+  "sampled_aggregate_rss_limit_bytes": 8589934592,
+  "sampled_peak_aggregate_rss_bytes": 160358400,
+  "rss_samples": 53,
+  "elapsed_s": 16.444412912009284,
+  "wall_limit_s": 900,
+  "returncode": 0,
+  "guard_failure": null,
+  "log": "/mnt/raid0/llm/tmp/codex3-ap54-checkpoint-20261031/after-focused-fetched-base-1fc5eb1.log",
+  "source_edits": false,
+  "runtime_change": false
+}

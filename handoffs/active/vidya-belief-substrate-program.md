@@ -768,6 +768,7 @@ findings to docs, move to `completed/`, delete the master-index row.
       tree). C5-6 runbook staged (serial+omp, 96-thread sweep, CPU-only); the ONE remaining
       prerequisite is LLM-generated outputs for the 60+60 prompt subset (the repo's generate
       scripts need a base_url shim). NEW TRIGGER: RVP-C5-6 executes → first tuple → close**
+      - 2026-10-31: generation-only prerequisite first segment is partial (52/2,400 native result records, 5 `ok`, 47 retained `UNKNOWN`); no ParEval evaluation metric or SC45 tuple exists. Automatic generation continuation is active. Existing projection remains enrolled, and this parent stays open until the actual separately contained evaluation emits its first measured tuple. [First-segment scope and native hash manifest](../../artifacts/compute/codex3-pareval-segment1-20261031/README.md). [belief: cc]
 
 ## SC49 — write-side hook for the research-intake compute-gated sweeps (filed 2026-08-21)
 

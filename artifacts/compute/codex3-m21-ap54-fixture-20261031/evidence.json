@@ -1,0 +1,25 @@
+{
+  "task": "AP54 fake request headers fixture regression repair",
+  "base": "2f5c05013ccc80d549635878f260bddf0c172452",
+  "published_commit": "1fc5eb1ac21aa400bdc6425a06e4cf8dbc0d6806",
+  "remote_main_verified": "1fc5eb1ac21aa400bdc6425a06e4cf8dbc0d6806",
+  "scope": "tests/unit/test_ap54_eval_knowledge_fence.py only; class-level headers: dict[str, str] = {} on _FakeHttpRequest",
+  "patch_sha256": "4c542aebd5ae84a3708f4d4c7aa81be0f1a27a319d3bbc56a85e2ad89784ca1e",
+  "diff_stat": "1 file changed, 2 insertions(+)",
+  "before_failure": "before-old-fixture.log: test_chat_route_arms_echoes_and_clears[True-active] fails at src/api/routes/chat.py:218 with AttributeError: '_FakeHttpRequest' object has no attribute 'headers'",
+  "after_focused": "after-focused-fetched-base-1fc5eb1.log: 12 passed (3 AP54 route variants + 9 M21 writeback controls), 16.44 s; guarded run record in after-focused-fetched-base-1fc5eb1.guard.json",
+  "broader_ap54_partial_snapshot": "snapshot run: 123 passed, 1 skipped, 2 failures due partial snapshot path/import conditions; not claimed green",
+  "adjacent_unpinned_checkout": "tests/unit/test_request_source_labels.py + tests/unit/test_chat_routes.py: 83 passed; current canonical checkout, not asserted as fetched-base evidence",
+  "production_change": false,
+  "runtime_reload_or_deploy": false,
+  "full_suite_green_claim": false,
+  "evidence_dir": "/mnt/raid0/llm/tmp/codex3-m21-ap54-fixture-20261031",
+  "validation_command": "cd base-snapshot && .venv/bin/python -m pytest -q tests/unit/test_ap54_eval_knowledge_fence.py::test_chat_route_arms_echoes_and_clears tests/unit/test_m21_probe_writeback.py",
+  "validation_base": "APP 1fc5eb1ac21aa400bdc6425a06e4cf8dbc0d6806 (parent 2f5c05013ccc80d549635878f260bddf0c172452); fixture file, M21 test file, and prompt_layout module SHA-256 match commit tree",
+  "validation_guard": "R6 pair 28-29 mutex, relocated +48 to CPUs 76-77 because live grants occupied ranges 0-71; OMP_NUM_THREADS=1; sampled aggregate RSS peak 160358400 bytes across 53 samples; 16.444 s wall; no source edits/runtime changes",
+  "superseded_focused_attempt": "after-focused-snapshot-import-error.log is the earlier mismatched partial snapshot run; collection failed because prompt_layout lacked current_request_source. It is preserved and not used as the passing result.",
+  "failed_wrapper_diagnostics": [
+    "after-focused-system-python-missing-fastapi.log: system interpreter lacked fastapi before test collection",
+    "after-focused-plugin-autoload-disabled.log: pytest plugin autoload was disabled by an env var, causing 3 async tests to fail; corrected run removed that env var and passed"
+  ]
+}

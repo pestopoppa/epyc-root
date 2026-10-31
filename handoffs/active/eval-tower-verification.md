@@ -833,7 +833,7 @@ justify best-of-N anywhere. Whether the instrument is worth using is decided by 
       sign. Fix the four defects the dive reproduced by execution while porting (hardcoded `dim=1`
       breaking batched input, hardcoded `.float()` breaking float64, in-place mutation of the caller's
       tensor, no sum-to-one validation). [intake-1162] [intake-1169]
-- [x] **EV-15b — Pin the read-out spec.** ✅ 2026-10-31 ROOT `b60a0de57f426fd0c155f06c65245b58b28144c9`; [spec](../../docs/design/ev15b-readout-spec-20261031.md), [tests](../../tests/test_ev15b_readout_spec.py). [no-belief: design specification and deterministic math] Force an assistant prefix, read completion **position 0**,
+- [x] **EV-15b — Pin the read-out spec.** Force an assistant prefix, read completion **position 0**, ✅ 2026-10-31 ROOT `b60a0de57f426fd0c155f06c65245b58b28144c9`; [spec](../../docs/design/ev15b-readout-spec-20261031.md), [tests](../../tests/test_ev15b_readout_spec.py). [no-belief: design specification and deterministic math]
       restrict to the K score-token ids, `exp` then renormalize **over those K only**. Temperature
       **1.0 exactly**: softmaxing the K judgment logits at T=1 is mathematically identical to
       exponentiating the K score-token logprobs and renormalizing, because the full-vocab denominator
