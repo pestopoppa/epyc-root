@@ -1,0 +1,91 @@
+{
+  "claim_limits": [
+    "Gemma 1B CPU canary only; no full 27B READY or A5 efficacy/P(keep)/wall/prefill finding.",
+    "The earlier post-request rc75 control remains historical; this separately executed final control is the in-flight interruption proof.",
+    "No normal-policy, run3, grading-rule, or claim-ladder change; no new grader or invented measurement ClaimTuple."
+  ],
+  "controls": {
+    "active_cutoff": {
+      "children_drained": true,
+      "client_birth": 151924023,
+      "client_dead": true,
+      "client_pid": 1593665,
+      "cutoff_sequence": [
+        "request",
+        "progress_two_nonterminal_content_events",
+        "source_owned_STOP",
+        "client_ack"
+      ],
+      "done_observed": false,
+      "exit_code": 75,
+      "finish_observed": false,
+      "monotonic_ns": {
+        "ack": 1519241363795454,
+        "progress": 1519241359316136,
+        "request": 1519240769400851,
+        "stop": 1519241363474205
+      },
+      "native_result": "/mnt/raid0/llm/tmp/codex3-a6-cutoff-r2-20261030/controls/cutoff-20261030T214603Z-6d39c9d3/cutoff/result.json",
+      "native_result_sha256": "1ba2cb87bda7119f620b96fe402368ae62297d016fce111281fe97f5d50e5bd1",
+      "partial": true,
+      "peak_sampled_rss_bytes": 1250660352,
+      "proxy_dead": true,
+      "request_id": "chatcmpl-H2HvMqhyIzUBHFWhq6VgVnga8ml5uJFv",
+      "server_dead": true,
+      "started": "2026-10-30T21:46:03Z",
+      "supervisor": "/mnt/raid0/llm/tmp/codex3-a6-cutoff-r2-20261030/controls/cutoff-20261030T214603Z-6d39c9d3/SUPERVISOR.json",
+      "supervisor_sha256": "ef5e8e9acf95111a67cee0a069a3a51685204629d479849c93994252a1ea9a09",
+      "wire_rows": 1
+    },
+    "normal": {
+      "checks": {
+        "model_http": true,
+        "model_text": "READY\n",
+        "own_anchor_read": true,
+        "own_result_write": true,
+        "own_workspace_write": true,
+        "planted_future_read_denied": true,
+        "planted_live_read_denied": true,
+        "proxy_reached": true
+      },
+      "children_drained": true,
+      "exit_code": 0,
+      "native_result": "/mnt/raid0/llm/tmp/codex3-a6-cutoff-r2-20261030/controls/normal-20261030T214556Z-ef5dede4/normal/result.json",
+      "native_result_sha256": "4efc85a08ddc69fd89fe185d6c18d8f212e4e867ee612bc7d321f9b075ba8c7b",
+      "partial": false,
+      "peak_sampled_rss_bytes": 1249435648,
+      "started": "2026-10-30T21:45:56Z",
+      "supervisor": "/mnt/raid0/llm/tmp/codex3-a6-cutoff-r2-20261030/controls/normal-20261030T214556Z-ef5dede4/SUPERVISOR.json",
+      "supervisor_sha256": "7d3dd04d8b56917f0561f4fb5c6d1198ea66c5e5521fd3fae5ad7c9b94f9a88c",
+      "wire_rows": 1
+    }
+  },
+  "research_source": {
+    "base": "5d92b1bea7ff4e3274a28a2d797c62d4f93099e8",
+    "changed_files": [
+      "scripts/harness/ds41_c95/native_canary.py",
+      "scripts/harness/ds41_c95/native_client.py"
+    ],
+    "commit": "618201db9e9acebd4fba2622149ddd506f5f70f3",
+    "publication_receipt": {
+      "path": "/mnt/raid0/llm/tmp/codex3-a6-cutoff-r2-20261030/publication-receipt.json",
+      "sha256": "97e29df68f5020a001874e3e8008b0f44bdfb67df3e9fca804faf56fef2f53c6"
+    },
+    "remote_main": "618201db9e9acebd4fba2622149ddd506f5f70f3",
+    "source_anchor": "276d75fab38b5c541624daba29affb7bc8dbbd4b",
+    "unchanged_policy_and_study_files": [
+      "scripts/harness/ds41_c95/sandbox3.py",
+      "scripts/harness/ds41_c95/proxy3.py",
+      "scripts/harness/ds41_c95/run3.py"
+    ]
+  },
+  "schema": "epyc.refactor.a6_native_cutoff_canary_source_qualification.v1",
+  "scope": "UFH14-A6a source/canary qualification only; does not close parent UFH14-A6 or UFH14-A5",
+  "source_manifest": {
+    "canary_qualification_path": "/mnt/raid0/llm/tmp/codex3-a6-cutoff-r2-20261030/CANARY-QUALIFICATION.json",
+    "canary_qualification_sha256": "0436d721ea296781c5c4a89e07c11c72286a552a8d96f85f2858557cb7634610",
+    "path": "/mnt/raid0/llm/tmp/codex3-a6-cutoff-r2-20261030/SOURCE.sha256",
+    "sha256": "9465f4ef6784e9496a77d17d0c76f432ec8653cd56ad43512098a8716323e94c"
+  },
+  "status": "CANARY_QUALIFIED_FULL_27B_STUDY_NOT_READY"
+}
