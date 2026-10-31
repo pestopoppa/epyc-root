@@ -121,7 +121,7 @@ writing any new arch handler.
 
 ### Tasks
 
-- [x] **Z9 (Z, prerequisite for G18) — write the ~30-line pure-PyTorch constant-decay simple-GLA
+- [x] **Z9 (Z, prerequisite for G18) — write the ~30-line pure-PyTorch constant-decay simple-GLA <!-- evidence-integrity: Research `d2d485598807f8fe5ab9badbfe539e3857ff1f51`; artifact: artifacts/compute/refactor-evidence-corrections-20261031/19/public-oracle-tests-final.log; hygiene, not quota -->
       recurrence** to stand in for the `fla` Triton call, **so that an HF CPU numerical oracle exists
       at all**. ✅ 2026-10-29 — Research `d2d485598807` ships `scripts/benchmark/sala_cpu_oracle.py`:
       float32 CPU recurrence, original ALiBi slopes, initial/final state, native chunk/fused interfaces,
@@ -160,3 +160,7 @@ writing any new arch handler.
       Adopting SALA as a production model is a separate standing **decline**: 9B dense against our
       35B-A3B, no evidence it wins on any axis we serve, and no reproduced number from anyone in six
       months.
+
+  <!-- task-evidence-integrity:start Z9 -->
+  - Evidence metadata (hygiene, not new quota): Research `d2d485598807f8fe5ab9badbfe539e3857ff1f51`; [original test/artifact](../../artifacts/compute/refactor-evidence-corrections-20261031/19/public-oracle-tests-final.log). Full Z9 primitive exists with native HF import and11 original numerical/interface controls; this is not G18 model/GGUF parity. No tests rerun or historical redating.
+  <!-- task-evidence-integrity:end Z9 -->
