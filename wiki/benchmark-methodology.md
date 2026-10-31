@@ -5810,10 +5810,12 @@ Two published INF-70 results were overturned on 2026-09-04 as cross-window artef
 magnitude:
 
 - The **23.623 t/s MTP headline** did not reproduce. A 3-round ABA gave **23.16 t/s (sd 0.14, spread 1.1%),
-  ratio 1.876×**, with the old figure sitting 2.0% above the mean and **2.6 round-sd out**. Notably the
+  ratio 1.876×** as historical observations, with the old figure sitting 2.0% above the mean and
+  **2.6 round-sd out**. The legacy sampler incorrectly called 184-191 disjoint, so this ABA does not
+  establish an uncontended or equal-sibling-load window; its old “claim-grade” label is withdrawn. The
   *mechanism* reproduced exactly — α 0.8274 and drafted/token 0.8900, identical to 4 dp across all seven
-  n-max-4 arms — so the configuration was confirmed and only the magnitude was noise. **A stable mechanism
-  with an unstable number means you picked the right config and quoted the wrong figure.**
+  n-max-4 arms — but the timing magnitude cannot be isolated from co-residency and drift. See the
+  [WRAP-4 physical-core audit](../docs/reviews/inf70-wrap4-physical-cores-20261031.md).
 - **"Depth beyond n-max 4 pays ~3%"** was false. A same-window alternating n4-vs-n5 test returned ratio
   **0.9987**, 12/20 and 10/20 prompts — coin flips.
 
@@ -5822,8 +5824,9 @@ uncertainty of a cross-window comparison**; quoting the former as the error bar 
 roughly threefold.
 
 Corollary on attribution: `ps %CPU` is cumulative and read idle peer processes at 40–50%. A delta-based
-sampler plus `Cpus_allowed_list` separated a GPU-pinned peer (cores 184-191 — not contention) from a real
-one (`test-backend-ops` at `0-191` taking 1.7–3.3 live cores, which landed on a control arm).
+sampler plus `Cpus_allowed_list` identified a GPU-pinned peer on 184-191. That peer contended
+with bench cores 88-95 as their SMT sibling, although its GPU work was not a CPU-lock violation.
+Another peer, `test-backend-ops` at `0-191`, consumed 1.7–3.3 live cores during a control arm.
 
 ### Source References (2026-09-04, host drift)
 
