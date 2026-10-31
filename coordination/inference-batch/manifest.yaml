@@ -3072,9 +3072,8 @@ entries:
       \ port_open 8098 || started_roles+=(embedder_bge_m3); cleanup() {\n  if ((${#started_roles[@]}));\
       \ then\n    cd /mnt/raid0/llm/epyc-orchestrator &&\n    python3 scripts/server/orchestrator_stack.py\
       \ stop \"${started_roles[@]}\" || true;\n  fi;\n}; trap cleanup EXIT; cd /mnt/raid0/llm/epyc-orchestrator\
-      \ && python3 scripts/server/orchestrator_stack.py start --only embedder_granite_97m_r2\
-      \ embedder_multilingual_e5_base embedder_bge_m3 --numa-mode full --skip-stack-change-gate\
-      \ --no-compile-registry; cd /mnt/raid0/llm/epyc-inference-research; mkdir -p\
+      \ && env -u ORCHESTRATOR_SKIP_STACK_CHANGE_GATE -u ORCHESTRATOR_REGISTRY_NO_COMPILE python3 scripts/server/orchestrator_stack.py start --only embedder_granite_97m_r2\
+      \ embedder_multilingual_e5_base embedder_bge_m3 --numa-mode full; cd /mnt/raid0/llm/epyc-inference-research; mkdir -p\
       \ data/embedder_bench; .venv/bin/python scripts/benchmark/embedder_recall_bench.py\
       \ --corpus /mnt/raid0/llm/epyc-root/data/benchmarks/eval-corpus-v0.jsonl --models\
       \ granite-embedding-97m-r2/Q8_0 multilingual-e5-base/Q8_0 bge-m3/Q8_0 bge-large-en-v1.5/reference\
@@ -3139,7 +3138,7 @@ entries:
 
       '
     era_stamp: E5-cpu-kernel
-  entry_hash: sha256:a894d1bad0a8db495b6a81bfb0a382b9fc72db48d10a74a15201fe7f40005184
+  entry_hash: sha256:1a8be5c7db3f3153d4c055b3f08481f7fab2216dd02236b31de4f923128ac29c
 - schema_version: inference_batch.entry.v1
   task_id: BULK-K-ROPE-cells
   title: K-ROPE-1 — remaining RoPE long-context cells (exact-boundary + worker path)

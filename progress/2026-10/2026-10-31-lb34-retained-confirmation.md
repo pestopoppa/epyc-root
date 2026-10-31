@@ -1,0 +1,5 @@
+# UFH14-LB3.4 retained confirmation and live-watch audit — 2026-10-31
+
+The retained confirmation run `ufh14-lb3-4-confirm` completed 2026-10-25 rc 0: 31 tasks × 3 repetitions × off/legacy (186 runs). Its predeclared task-cluster bootstrap verdict is CONFIRMED, off 66.67% versus legacy 45.16%, difference +21.51 percentage points, 95% CI +11.83 to +32.26. This is the original confirmation result; no repeat inference was run. [belief: cc]
+
+The separate post-reload live malformed-turn watch is UNKNOWN. Of the retained parse events after the 2026-10-23 14:59:25 UTC reload, four are `review_service.review_plan` and none are `graph.helpers`. The 29 post-reload serving records have `turn_index` null. These files do not establish a joinable first-turn malformed numerator and denominator or a comparable before/after rate. The task remains open until such actual post-reload first-turn parse and serving observations and a comparable baseline are available. No absence-of-malformed or no-rise conclusion follows. [Evidence](../../artifacts/compute/codex3-lb34-watch-audit-20261031/SHA256SUMS). [belief: cc]

@@ -294,7 +294,7 @@
       };
       trap cleanup EXIT;
       cd /mnt/raid0/llm/epyc-orchestrator &&
-      python3 scripts/server/orchestrator_stack.py start --only embedder_granite_97m_r2 embedder_multilingual_e5_base embedder_bge_m3 --numa-mode full --skip-stack-change-gate --no-compile-registry;
+      env -u ORCHESTRATOR_SKIP_STACK_CHANGE_GATE -u ORCHESTRATOR_REGISTRY_NO_COMPILE python3 scripts/server/orchestrator_stack.py start --only embedder_granite_97m_r2 embedder_multilingual_e5_base embedder_bge_m3 --numa-mode full;
       cd /mnt/raid0/llm/epyc-inference-research;
       mkdir -p data/embedder_bench;
       .venv/bin/python scripts/benchmark/embedder_recall_bench.py

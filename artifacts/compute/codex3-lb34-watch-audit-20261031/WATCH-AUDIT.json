@@ -1,0 +1,25 @@
+{
+  "schema": "lb34-live-watch-audit/v1",
+  "as_of": "2026-10-31T09:23:47.499172+00:00",
+  "reload_cutoff_utc": "2026-10-23T14:59:25Z",
+  "parse_log_sha256": "db343c1b542727a3dcb1715de91fa38e43a9a86973261943424209e934253dc8",
+  "serving_log_sha256": "3b6627275bb1abec5f945320167557a579de8422d98f71b471f2a65a99cfea9f",
+  "parse_post_count": 4,
+  "parse_post_sites": {
+    "review_service.review_plan": 4
+  },
+  "parse_post_graph_helpers": 0,
+  "serving_pre_count": 101,
+  "serving_post_count": 29,
+  "serving_post_turn_index": {
+    "None": 29
+  },
+  "serving_post_start_range": [
+    "2026-10-29T09:19:06.847+00:00",
+    "2026-10-29T17:34:25.848+00:00"
+  ],
+  "watch_verdict": "UNKNOWN",
+  "reason": "post-reload parser records are review-service only and post-reload serving records have no turn index; matched first-turn malformed outcome numerator/denominator not established",
+  "external_dependency": "post-reload first-turn serving and parse observations with joinable turn identity and malformed classification, plus comparable baseline",
+  "no_synthetic_denominator": true
+}

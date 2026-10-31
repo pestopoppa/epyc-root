@@ -1,0 +1,183 @@
+{
+ "schema": "ufh14_lb3_4_confirm_verdict/v1",
+ "arms": [
+  "legacy",
+  "off"
+ ],
+ "mock": false,
+ "taskset_sha256": "200624b9086b267ecfdee3f8975db709962598c3df1e929cf4da5bdd17185a02",
+ "orch_head": "fc0c0be5d403ebabefbfdfdc12e6f3f97960763a",
+ "cells_total": 93,
+ "cells_complete": 93,
+ "tasks_complete": 31,
+ "per_arm": {
+  "off": {
+   "n": 93,
+   "pass_pct": 66.67,
+   "turns_mean": 1.505,
+   "errors": 0,
+   "head_classes": {
+    "tool-call": 19,
+    "code-line": 74
+   },
+   "span_kinds": {
+    "tool-call": 20,
+    "final-call": 56,
+    "none": 17
+   },
+   "t1_ms_per_token_median": 17.871,
+   "grammar_on_wire": 0,
+   "shape_recorded": {
+    "": 93
+   },
+   "turn1_grammar_error_runs": 0,
+   "loadavg1_median": 93.01,
+   "loadavg1_max": 96.99
+  },
+  "legacy": {
+   "n": 93,
+   "pass_pct": 45.16,
+   "turns_mean": 2.882,
+   "errors": 0,
+   "head_classes": {
+    "code-line": 77,
+    "tool-call": 3,
+    "empty": 13
+   },
+   "span_kinds": {
+    "none": 90,
+    "tool-call": 3
+   },
+   "t1_ms_per_token_median": 28.229,
+   "grammar_on_wire": 93,
+   "shape_recorded": {
+    "legacy": 93
+   },
+   "turn1_grammar_error_runs": 0,
+   "loadavg1_median": 93.33,
+   "loadavg1_max": 97.08
+  }
+ },
+ "integrity": {
+  "legacy_without_grammar": [],
+  "off_with_grammar": []
+ },
+ "host_load_cells": {
+  "n": 93,
+  "median": 93.33,
+  "p90": 96.27,
+  "max": 97.08,
+  "cells_ge_48": 91
+ },
+ "primary_all_tasks": {
+  "n_cells": 93,
+  "n_tasks": 31,
+  "pass_pct": {
+   "off": 66.67,
+   "legacy": 45.16
+  },
+  "pass_diff_pp": {
+   "point": 21.51,
+   "lo95": 11.83,
+   "hi95": 32.26,
+   "method": "task-cluster percentile bootstrap"
+  },
+  "pass_diff_pp_pairlevel": {
+   "point": 21.51,
+   "lo95": 12.9,
+   "hi95": 30.11
+  },
+  "turns_diff": {
+   "point": -1.376,
+   "lo95": -1.742,
+   "hi95": -1.011
+  },
+  "t1_ms_per_token_paired_median_ratio": 0.6655,
+  "label": "CONFIRMED"
+ },
+ "verdict": "CONFIRMED",
+ "report_only": {
+  "new_only": {
+   "n_cells": 63,
+   "n_tasks": 21,
+   "pass_pct": {
+    "off": 63.49,
+    "legacy": 46.03
+   },
+   "pass_diff_pp": {
+    "point": 17.46,
+    "lo95": 6.35,
+    "hi95": 31.75,
+    "method": "task-cluster percentile bootstrap"
+   },
+   "pass_diff_pp_pairlevel": {
+    "point": 17.46,
+    "lo95": 7.94,
+    "hi95": 26.98
+   },
+   "turns_diff": {
+    "point": -1.508,
+    "lo95": -2.048,
+    "hi95": -0.968
+   },
+   "t1_ms_per_token_paired_median_ratio": 0.654,
+   "label": "CONFIRMED",
+   "note": "report-only; the label is descriptive, not a verdict"
+  },
+  "old_only": {
+   "n_cells": 30,
+   "n_tasks": 10,
+   "pass_pct": {
+    "off": 73.33,
+    "legacy": 43.33
+   },
+   "pass_diff_pp": {
+    "point": 30.0,
+    "lo95": 13.33,
+    "hi95": 46.67,
+    "method": "task-cluster percentile bootstrap"
+   },
+   "pass_diff_pp_pairlevel": {
+    "point": 30.0,
+    "lo95": 10.0,
+    "hi95": 50.0
+   },
+   "turns_diff": {
+    "point": -1.1,
+    "lo95": -1.333,
+    "hi95": -0.833
+   },
+   "t1_ms_per_token_paired_median_ratio": 0.7677,
+   "label": "CONFIRMED",
+   "note": "report-only; the label is descriptive, not a verdict"
+  },
+  "quiet_cells_timing": {
+   "n_cells": 2,
+   "n_tasks": 2,
+   "pass_pct": {
+    "off": 100.0,
+    "legacy": 50.0
+   },
+   "pass_diff_pp": {
+    "point": 50.0,
+    "lo95": 0.0,
+    "hi95": 100.0,
+    "method": "task-cluster percentile bootstrap"
+   },
+   "pass_diff_pp_pairlevel": {
+    "point": 50.0,
+    "lo95": 0.0,
+    "hi95": 100.0
+   },
+   "turns_diff": {
+    "point": -1.0,
+    "lo95": -1.0,
+    "hi95": -1.0
+   },
+   "t1_ms_per_token_paired_median_ratio": 0.7796,
+   "label": "NOT_CONFIRMED",
+   "note": "report-only; the label is descriptive, not a verdict"
+  }
+ },
+ "consequence": "off stays default; cite this confirmation in the next champion bundle"
+}
