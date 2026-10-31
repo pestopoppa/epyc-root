@@ -1,0 +1,27 @@
+{
+  "at": 1793419573.5383785,
+  "compiler_after": {
+    "argv": "/usr/libexec/gcc/x86_64-linux-gnu/13/cc1plus -quiet -I /mnt/micron/refactor-lanes/llama.cpp-experimental/src/. -I /mnt/micron/refactor-lanes/llama.cpp-experimental/src/../include -I /mnt/micron/refactor-lanes/llama.cpp-experimental/ggml/src/../include -imultiarch x86_64-linux-gnu -MD src/CMakeFiles/llama.dir/llama-grammar.cpp.d -MF src/CMakeFiles/llama.dir/llama-grammar.cpp.o.d -MT src/CMakeFiles/llama.dir/llama-grammar.cpp.o -D_GNU_SOURCE -D GGML_BACKEND_SHARED -D GGML_SHARED -D GGML_USE_CPU -D LLAMA_BUILD -D LLAMA_SHARED -D llama_EXPORTS -D NDEBUG /mnt/micron/refactor-lanes/llama.cpp-experimental/src/llama-grammar.cpp -D_FORTIFY_SOURCE=3 -quiet -dumpdir src/CMakeFiles/llama.dir/ -dumpbase llama-grammar.cpp.cpp -dumpbase-ext .cpp -mtune=generic -march=x86-64 -O3 -Wmissing-declarations -Wsuggest-attribute=noreturn -Wall -Wextra -Wpedantic -Wcast-qual -Wno-unused-function -Warray-bounds=0 -Wextra-semi -fPIC -fasynchronous-unwind-tables -fstack-protector-strong -Wformat-security -fstack-clash-protection -fcf-protection -o /tmp/ccSMYh7j.s ",
+    "birth": 154204616,
+    "pid": 3474150,
+    "ppid": 3474149,
+    "ticks": 39,
+    "uid": 1000
+  },
+  "compiler_before": {
+    "argv": "/usr/libexec/gcc/x86_64-linux-gnu/13/cc1plus -quiet -I /mnt/micron/refactor-lanes/llama.cpp-experimental/src/. -I /mnt/micron/refactor-lanes/llama.cpp-experimental/src/../include -I /mnt/micron/refactor-lanes/llama.cpp-experimental/ggml/src/../include -imultiarch x86_64-linux-gnu -MD src/CMakeFiles/llama.dir/llama-grammar.cpp.d -MF src/CMakeFiles/llama.dir/llama-grammar.cpp.o.d -MT src/CMakeFiles/llama.dir/llama-grammar.cpp.o -D_GNU_SOURCE -D GGML_BACKEND_SHARED -D GGML_SHARED -D GGML_USE_CPU -D LLAMA_BUILD -D LLAMA_SHARED -D llama_EXPORTS -D NDEBUG /mnt/micron/refactor-lanes/llama.cpp-experimental/src/llama-grammar.cpp -D_FORTIFY_SOURCE=3 -quiet -dumpdir src/CMakeFiles/llama.dir/ -dumpbase llama-grammar.cpp.cpp -dumpbase-ext .cpp -mtune=generic -march=x86-64 -O3 -Wmissing-declarations -Wsuggest-attribute=noreturn -Wall -Wextra -Wpedantic -Wcast-qual -Wno-unused-function -Warray-bounds=0 -Wextra-semi -fPIC -fasynchronous-unwind-tables -fstack-protector-strong -Wformat-security -fstack-clash-protection -fcf-protection -o /tmp/ccSMYh7j.s ",
+    "birth": 154204616,
+    "pid": 3474150,
+    "ppid": 3474149,
+    "ticks": 36,
+    "uid": 1000
+  },
+  "launcher_pid": 3461038,
+  "schema": "akxall8.r4.active_compiler_cutoff.v1",
+  "signal": "SIGTERM pidfd to captured own timeout during progressing compiler",
+  "target_argv": "timeout --signal=TERM --kill-after=10s 199s cmake --build /mnt/micron/refactor-lanes/llama.cpp-experimental/build-akx8-r4-r11-cutoff-20261031 --target llama-server -j 2 ",
+  "target_timeout_pid_birth": {
+    "birth": 154192474,
+    "pid": 3461381
+  }
+}

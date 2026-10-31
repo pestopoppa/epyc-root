@@ -1,0 +1,24 @@
+{
+  "schema": "akx8.r5.active_cutoff_witness.v1",
+  "captured_at": "2026-10-31T04:23:00.847332+00:00",
+  "launcher_pid": 3594511,
+  "launcher_birth": 154288695,
+  "timeout_pid": 3594813,
+  "timeout_birth": 154288773,
+  "compiler_progress": [
+    {
+      "pid": 3620558,
+      "birth": 154305205,
+      "ticks_before": 79,
+      "ticks_after": 161
+    },
+    {
+      "pid": 3620403,
+      "birth": 154304727,
+      "ticks_before": 441,
+      "ticks_after": 518
+    }
+  ],
+  "signal": "SIGTERM",
+  "target_scope": "own timeout child of exact R5 launcher"
+}

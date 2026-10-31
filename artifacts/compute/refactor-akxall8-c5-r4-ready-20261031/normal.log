@@ -1,0 +1,66 @@
+2026-10-31T04:03:23Z [refactor-akxall8-c5-cpu-build-r4-20261031] launcher up pid=3456263 class=cpu poll=1s grants=/mnt/raid0/llm/tmp/refactor-01a16fc3/ufh14-next-source-20261030/build-packet-r4/fixture-r11-normal4/grants stop=/mnt/raid0/llm/tmp/refactor-01a16fc3/ufh14-next-source-20261030/build-packet-r4/STOP minwin=0s ports=none
+2026-10-31T04:03:23Z [refactor-akxall8-c5-cpu-build-r4-20261031] legacy T1 skipped (LOOP-CONTRACT)
+2026-10-31T04:03:23Z [refactor-akxall8-c5-cpu-build-r4-20261031] START regions=126-127 cpus=126-127 threads=2 gpu=0 end=2026-10-31T04:09Z
+DRYRUN_RESOURCES {"affinity": [126, 127], "cgroup": "0::/", "cgroup_memory_max": "unavailable", "process_limit_gib": 32.0, "reserved_ram_gib": 32.0, "rlimits": {"AS": [-1, -1], "DATA": [-1, -1], "NOFILE": [524288, 524288], "RSS": [-1, -1]}}
+RESOURCE_PASS id=refactor-akxall8-c5-cpu-build-r4-20261031 scope=normal-grant
+source=c72ec82f5417bb2937310326120f149b665e8400
+compiler=g++ (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0
+cpus=126-127
+DISK_PASS free_gib=311.186 output_estimate_gib=0.125
+-- The C compiler identification is GNU 13.3.0
+-- The CXX compiler identification is GNU 13.3.0
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Check for working C compiler: /usr/bin/cc - skipped
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /usr/bin/c++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+CMAKE_BUILD_TYPE=Release
+-- Found Git: /usr/bin/git (found version "2.55.0") 
+-- The ASM compiler identification is GNU
+-- Found assembler: /usr/bin/cc
+-- Performing Test CMAKE_HAVE_LIBC_PTHREAD
+-- Performing Test CMAKE_HAVE_LIBC_PTHREAD - Success
+-- Found Threads: TRUE  
+-- CMAKE_SYSTEM_PROCESSOR: x86_64
+-- GGML_SYSTEM_ARCH: x86
+-- Found OpenMP_C: -fopenmp (found version "4.5") 
+-- Found OpenMP_CXX: -fopenmp (found version "4.5") 
+-- Found OpenMP: TRUE (found version "4.5")  
+-- Including CPU backend
+-- x86 detected
+-- Adding CPU backend variant ggml-cpu: -march=native 
+-- ggml version: 0.16.0
+-- ggml commit:  c72ec82f5
+-- Found OpenSSL: /usr/lib/x86_64-linux-gnu/libcrypto.so (found version "3.0.13")  
+-- Performing Test OPENSSL_VERSION_SUPPORTED
+-- Performing Test OPENSSL_VERSION_SUPPORTED - Success
+-- OpenSSL found: 3.0.13
+-- Generating embedded license file for target: llama-app
+-- Configuring done (1.1s)
+-- Generating done (0.1s)
+-- Build files have been written to: /mnt/micron/refactor-lanes/llama.cpp-experimental/build-akx8-r4-r11-normal4-20261031
+[1/11] Building CXX object ggml/src/CMakeFiles/ggml-base.dir/ggml.cpp.o
+[2/11] Building C object ggml/src/CMakeFiles/ggml-base.dir/ggml-alloc.c.o
+/mnt/micron/refactor-lanes/llama.cpp-experimental/ggml/src/ggml-alloc.c:19: warning: "AT_PRINTF" redefined
+   19 | #define AT_PRINTF(...)
+      | 
+/mnt/micron/refactor-lanes/llama.cpp-experimental/ggml/src/ggml-alloc.c:18: note: this is the location of the previous definition
+   18 | #define AT_PRINTF(...) GGML_LOG_DEBUG(__VA_ARGS__)
+      | 
+[3/11] Building CXX object ggml/src/CMakeFiles/ggml-base.dir/ggml-backend.cpp.o
+[4/11] Building C object ggml/src/CMakeFiles/ggml-base.dir/ggml.c.o
+[5/11] Building CXX object ggml/src/CMakeFiles/ggml-base.dir/ggml-opt.cpp.o
+[6/11] Building CXX object ggml/src/CMakeFiles/ggml-base.dir/ggml-threading.cpp.o
+[7/11] Building CXX object ggml/src/CMakeFiles/ggml-base.dir/ggml-backend-meta.cpp.o
+[8/11] Building C object ggml/src/CMakeFiles/ggml-base.dir/ggml-quants.c.o
+[9/11] Building CXX object ggml/src/CMakeFiles/ggml-base.dir/gguf.cpp.o
+[10/11] Linking CXX shared library bin/libggml-base.so.0.16.0
+[11/11] Creating library symlink bin/libggml-base.so.0 bin/libggml-base.so
+job rc=0
+2026-10-31T04:03:44Z [refactor-akxall8-c5-cpu-build-r4-20261031] ended rc=0 reason=complete (grant deleted)
+2026-10-31T04:03:44Z [refactor-akxall8-c5-cpu-build-r4-20261031] ALL DONE: wrote /mnt/raid0/llm/tmp/refactor-01a16fc3/ufh14-next-source-20261030/build-packet-r4/fixture-r11-normal4/grants/refactor-akxall8-c5-cpu-build-r4-20261031.complete, row marked COMPLETE; exiting for good

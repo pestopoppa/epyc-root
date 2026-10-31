@@ -866,3 +866,11 @@ The `codex-ni-lb49-ds41-first-native-qkv-v3-20261031` 08:07:31 segment ended rc 
 ### FU-DIVERGE-03 CLI repeat — 2026-10-31 08:17 UTC
 
 `codex3-lb49-fu03-cli-r3-20261031` completed rc 0 on the original nine-shard DS41 target: baseline twice and candidate IQK-FA ON once, all three arm rc 0. Current source manifest and all three retained log hashes rechecked. Following the explicit displayed `> The capital of France is` prompt, both baseline log response regions were exactly `The capital of France is Paris.<|`; the candidate response region was `Paris<|im_end|>` followed by a newline and `<`. This compares text regions in the retained merged CLI logs; it does not establish generated token identities or uniquely isolate the template from the kernel. FU-DIVERGE-03 remains open for its original attribution question; no numeric tolerance, sink-fold, performance or promotion conclusion follows. [Arguments, linkage and raw logs](../../artifacts/compute/codex3-fu03-cli-r3-0817-20261031/SHA256SUMS). [belief: cc]
+
+### Refactor launcher checkpoint — 2026-10-31
+
+- [x] **AKX-ALL-8-FLOOR-R4-PREP:** qualified/published `refactor-akxall8-c5-declared-floor-r4-20261031`. Real canonical Python-module transport under both registered aliases and actual private FLOCK controls passed; same-frontdoor normal0/7.31s and STOP75/10.76s/drained. Superseded r2 failed module ancestry; r3 withdrawn before arm. Actual24+24-pair floors, production8074 applicability and original parent acceptance remain unproved. ✅ 2026-10-31 [no-belief: launcher repair and qualification]
+
+### Retained launcher qualification checkpoints — 2026-10-31
+
+- [x] **AKX-ALL-8 R6 host postlink completion launcher repair** — Qualified same-entry postlink normal and active compilerSTOP75/drain before publication, preserving R4 pre-arm self-prerequisite and R5 host-`rg` failures. The later actual R6 model-free build completion is filed separately above; current floorR4 supersedes the prepared floorR2 module-ancestry failure and withdrawnR3. No serving equivalence, floor or parent gate claimed. ✅ 2026-10-31 Evidence: `/mnt/raid0/llm/tmp/refactor-01a16fc3/ufh14-next-source-20261030/build-packet-r6/R6-QUALIFICATION.json`; [retained floorR2 preparation](../../artifacts/compute/refactor-akxall8-declared-floor-r2-preparation-20261031.json). [no-belief: historical build/launcher preparation only]

@@ -1,0 +1,38 @@
+{
+  "archived_evidence": {
+    "active-cutoff-witness.json": {
+      "original": "/mnt/raid0/llm/tmp/refactor-01a16fc3/ufh14-next-source-20261030/build-packet-r5/ACTIVE-CUTOFF-WITNESS.json",
+      "path": "artifacts/compute/refactor-akxall8-c5-r5-ready-20261031/active-cutoff-witness.json",
+      "sha256": "4b1c05d54521456a9297d7ebc95d242b1c911bf1d06632499517651daa87e0ff"
+    },
+    "native-qualification.json": {
+      "original": "/mnt/raid0/llm/tmp/refactor-01a16fc3/ufh14-next-source-20261030/build-packet-r5/final-smoke-controls.json",
+      "path": "artifacts/compute/refactor-akxall8-c5-r5-ready-20261031/native-qualification.json",
+      "sha256": "ceae1f6a458a2fb0aa8bf64ea71ab8f3b3c7a696245334effbff32751bf5938b"
+    },
+    "prearm.json": {
+      "original": "/mnt/raid0/llm/tmp/refactor-01a16fc3/ufh14-next-source-20261030/build-packet-r5/PREARM.json",
+      "path": "artifacts/compute/refactor-akxall8-c5-r5-ready-20261031/prearm.json",
+      "sha256": "e9e9e1b4c0974c4dcb6dde92021584990ec7d6f9c1d6b7efd78ecfe016f06f05"
+    },
+    "ready-publication.json": {
+      "original": "/mnt/raid0/llm/tmp/refactor-01a16fc3/ufh14-next-source-20261030/build-packet-r5/READY-PUBLISHED.json",
+      "path": "artifacts/compute/refactor-akxall8-c5-r5-ready-20261031/ready-publication.json",
+      "sha256": "079e941c7f94c1dc320e2adced1730649628afccfc1473e20415f68efc0e4dc1"
+    }
+  },
+  "controls_sha256": "ceae1f6a458a2fb0aa8bf64ea71ab8f3b3c7a696245334effbff32751bf5938b",
+  "created_at": "2026-10-31T04:33:13.183744+00:00",
+  "full_build_complete": false,
+  "id": "refactor-akxall8-c5-cpu-build-r5-20261031",
+  "packet": "/mnt/raid0/llm/tmp/refactor-01a16fc3/ufh14-next-source-20261030/build-packet-r5",
+  "prearm_sha256": "e9e9e1b4c0974c4dcb6dde92021584990ec7d6f9c1d6b7efd78ecfe016f06f05",
+  "r4_launcher_absent": true,
+  "r4_launcher_pid": 3569297,
+  "r4_no_exact_grant": true,
+  "r4_refusal": "PRE-ARM REFUSED blocker=build self-prerequisite",
+  "r5_manifest_sha256": "bb6fce83464abe8458bde9a4e3f81345585e9ae12717fc9321bdeb8d3e7345d3",
+  "r5_row_sha256": "e3e597a8cef13df9881dcaba87db1f410165cf8f01fe3d4bf386cd147c6d0bf4",
+  "ready_receipt_sha256": "079e941c7f94c1dc320e2adced1730649628afccfc1473e20415f68efc0e4dc1",
+  "schema": "akxall8.r5.owner_apply_delta.v1"
+}

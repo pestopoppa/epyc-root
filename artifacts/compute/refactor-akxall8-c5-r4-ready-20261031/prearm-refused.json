@@ -1,0 +1,103 @@
+{
+ "booking_class": "block-correctness",
+ "class": "diagnostic",
+ "cutoff_proof": {
+  "active_compiler_witness": "/mnt/raid0/llm/tmp/refactor-01a16fc3/ufh14-next-source-20261030/build-packet-r4/ACTIVE-CUTOFF-WITNESS.json",
+  "children_drained": true,
+  "partial": true,
+  "rc": 75,
+  "sampled_peak_bytes": 848699392,
+  "witness_sha256": "ad37c2061a518c5a7d3da9b0fb34dbb819df3d65a906c714736245665d59c483"
+ },
+ "decision_rule": "Clean C5 full CPU llama-server build on approved Micron lane. Completion requires source c72ec82f5, actual linked server+DSOs/knobs, factual IDENTITY.json and built-c5-r4 unenrolled target card from the existing declared :8074 inputs. Original t48/ub512 target remains separate; no timing, serving-equivalence or keep claim. Partial/window end returns rc75.",
+ "enrollment": "n/a: C5 source build and unenrolled target preparation",
+ "est_output_GiB": 0.125,
+ "full_build_complete": false,
+ "gib": 32,
+ "hold": null,
+ "id": "refactor-akxall8-c5-cpu-build-r4-20261031",
+ "input_protocol": "existing AKX-ALL-8 declaration 96 threads effective ubatch2048 plus original t48/ub512 target separate",
+ "job": {
+  "path": "/mnt/raid0/llm/tmp/refactor-01a16fc3/ufh14-next-source-20261030/build-packet-r4/build-job.sh",
+  "sha256": "0c5649002c910577112ed1acbd429a410213abf4705076ef574f3b24b6746c28"
+ },
+ "keep": [
+  "build-packet-r4/SOURCE-SHA256SUMS",
+  "build-packet-r4/source-manifest.json",
+  "build-packet-r4/*.py",
+  "build-packet-r4/*.sh",
+  "build-packet-r4/final-smoke-controls.json",
+  "build-packet-r4/ACTIVE-CUTOFF-WITNESS.json",
+  "build-packet-r4/build-result.json",
+  "build-packet-r4/smoke-job-result.json",
+  "build-packet-r4/ws58-launcher.out",
+  "build-packet-r4/logs/*.log",
+  "build-packet-r4/compile-witness-*.jsonl",
+  "build-packet-r4/fixture-r11-normal4/outer.log",
+  "build-packet-r4/fixture-r11-normal4/grants/*.ended",
+  "build-packet-r4/fixture-r11-normal4/grants/*.complete",
+  "build-packet-r4/fixture-r11-normal4/rss-samples.tsv",
+  "build-packet-r4/fixture-r11-cutoff/outer.log",
+  "build-packet-r4/fixture-r11-cutoff/grants/*.ended",
+  "build-packet-r4/fixture-r11-cutoff/rss-samples.tsv",
+  "build-packet-r4/fixture-r11-normal/outer.log",
+  "build-packet-r4/fixture-r11-normal2/outer.log",
+  "build-packet-r4/fixture-r11-normal3/outer.log",
+  "candidate/built-c5-r4.*.json",
+  "build-packet-r4/PREARM.json"
+ ],
+ "keep_globs": "build-packet-r4/SOURCE-SHA256SUMS,build-packet-r4/source-manifest.json,build-packet-r4/*.py,build-packet-r4/*.sh,build-packet-r4/final-smoke-controls.json,build-packet-r4/ACTIVE-CUTOFF-WITNESS.json,build-packet-r4/build-result.json,build-packet-r4/smoke-job-result.json,build-packet-r4/ws58-launcher.out,build-packet-r4/logs/*.log,build-packet-r4/compile-witness-*.jsonl,build-packet-r4/fixture-r11-normal4/outer.log,build-packet-r4/fixture-r11-normal4/grants/*.ended,build-packet-r4/fixture-r11-normal4/grants/*.complete,build-packet-r4/fixture-r11-normal4/rss-samples.tsv,build-packet-r4/fixture-r11-cutoff/outer.log,build-packet-r4/fixture-r11-cutoff/grants/*.ended,build-packet-r4/fixture-r11-cutoff/rss-samples.tsv,build-packet-r4/fixture-r11-normal/outer.log,build-packet-r4/fixture-r11-normal2/outer.log,build-packet-r4/fixture-r11-normal3/outer.log,candidate/built-c5-r4.*.json,build-packet-r4/PREARM.json",
+ "launcher": {
+  "path": "/mnt/raid0/llm/tmp/refactor-01a16fc3/ufh14-next-source-20261030/build-packet-r4/frontdoor.sh",
+  "sha256": "9bd153d52090ae7afc7a131ed18fe3687a7ee7a77cb392a6e6e906e1436fd698"
+ },
+ "launcher_log_path": "/mnt/raid0/llm/tmp/compute-flags/ready/refactor-akxall8-c5-cpu-build-r4-20261031.launcher.out",
+ "log_consumer": "/mnt/raid0/llm/tmp/refactor-01a16fc3/ufh14-next-source-20261030/build-packet-r4/read_launcher_logs.py",
+ "log_consumer_sha256": "9d1ef452310fdc8b952f2731703980cfc132953f8e440a8be8e3dc58b8c19ea6",
+ "min_effect": "n/a (source/build correctness)",
+ "min_window_s": 1080,
+ "original_r3_refusal_preserved": true,
+ "output_build_dir": "/mnt/micron/refactor-lanes/llama.cpp-experimental/build-cpu-akx8-r4-20261031",
+ "owner": "codex-refactor-01a16fc3",
+ "preferred_regions": "any-cpu-quarter",
+ "priority_rank": 8,
+ "production_base": "ffc1bac82eeca6f9099e1ccd9ba49703c460a115",
+ "raw_globs": "build-packet-r4/fixture-r11-normal4/*.tmp,build-packet-r4/fixture-r11-cutoff/*.tmp",
+ "regions": "any-cpu-quarter",
+ "result_path": "/mnt/raid0/llm/tmp/refactor-01a16fc3/ufh14-next-source-20261030/build-packet-r4/build-result.json",
+ "retention_v2": 1,
+ "schema": "akxall8.c5_cpu_build_r4.ready.v1",
+ "scratch_launcher_log": "/mnt/raid0/llm/tmp/refactor-01a16fc3/ufh14-next-source-20261030/build-packet-r4/ws58-launcher.out",
+ "scratch_root": "/mnt/raid0/llm/tmp/refactor-01a16fc3/ufh14-next-source-20261030",
+ "smoke": {
+  "exit_ok": true,
+  "first_request_ok": true,
+  "gpu_execution": false,
+  "log": "/mnt/raid0/llm/tmp/refactor-01a16fc3/ufh14-next-source-20261030/build-packet-r4/fixture-r11-normal4/outer.log",
+  "log_sha256": "ee2020087bff4931195a541c64b0b9c93fa82e02aa22c35df0ba5cbee980513c",
+  "model": "none: model-free C5 source build",
+  "ran_at": "2026-10-31T04:03:42.222837+00:00",
+  "receipt": "/mnt/raid0/llm/tmp/refactor-01a16fc3/ufh14-next-source-20261030/build-packet-r4/final-smoke-controls.json",
+  "receipt_sha256": "5ecf2f1c7cdf1a1b600bbbd81c41d8c6d72f86d2dfdb915f886b58fc2d5fed88",
+  "regions": "R11 SMT126,127",
+  "result_writer_ok": true,
+  "wall_s": 21.516469958005473
+ },
+ "source_edit": "none",
+ "source_head": "c72ec82f5417bb2937310326120f149b665e8400",
+ "source_manifest": {
+  "path": "/mnt/raid0/llm/tmp/refactor-01a16fc3/ufh14-next-source-20261030/build-packet-r4/source-manifest.json",
+  "sha256": "da17bd761b8c44b60713f7205b11bae179c86fe353f54aec4bbac0fc32b6fc57"
+ },
+ "source_sha256sums_sha256": "bce0afd564e1d8a8604ee071e65e47d698d3529bcb708871e3f89fdcc5e37a60",
+ "status": "READY",
+ "window_s": 2400,
+ "keeper_log": [
+  {
+   "ts": "2026-10-31T04:17:45Z",
+   "state": "refused",
+   "reason": "PRE-ARM REFUSED refactor-akxall8-c5-cpu-build-r4-20261031: conditional=False blockers=['build: awaiting keeper integration and full C5 link '] missing=[]"
+  }
+ ],
+ "refused_reason": "PRE-ARM REFUSED refactor-akxall8-c5-cpu-build-r4-20261031: conditional=False blockers=['build: awaiting keeper integration and full C5 link '] missing=[]"
+}

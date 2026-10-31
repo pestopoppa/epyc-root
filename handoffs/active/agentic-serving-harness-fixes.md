@@ -813,3 +813,7 @@ Orchestrator and stack side (workspace-ec; items are linked here as they land):
     - *(2026-10-23.)* Implemented on orchestrator main f3ab78b2, flag-off: counter `diag_counters["turn_ended_in_unclosed_think"]` + parse_event `think_fence_cut` always on; option (b) one bounded continuation of a fence-cut turn behind `repl_think_fence_continue` (env `REPL_THINK_FENCE_CONTINUE`, default OFF = byte-identical). Option (a) (drop the fence stop) rejected for now: reintroduces the repetition loops the stop prevents. Structural alternative (c): flip `thinking_roles_chat_lane` for architect_critic/coder_escalation/ingest_long_context after the RI-23b A/B. Next: read the counter on live traffic after the reload, then A/B the flag vs (c) on "Max nudges" rate.
     - *(2026-10-23 15:45Z, f8 late-afternoon wrap-up.)* The counter and the `think_fence_cut` parse_event are live since the 14:59:25Z API reload; `REPL_THINK_FENCE_CONTINUE=0` in the env. Next step: read the counter on live traffic.
 
+
+### Retained launcher qualification checkpoints — 2026-10-31
+
+- [x] **UFH14-A4a exact middle-truncated task restoration launcher** — Exact opt-in restoration with ambiguity refusals passed two-arm reduced same-entry normal/activeSTOP75, writer/consumer/drain and admission before publication; C5 successor identity is explicit. No original27B cache/performance result or historical-image equivalence. ✅ 2026-10-31 Evidence: `/mnt/raid0/llm/tmp/refactor-a4a-prefix-20261031/R11-QUALIFICATION.json`. [no-belief: launcher qualification only; scientific parent remains open]
