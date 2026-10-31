@@ -1,0 +1,22 @@
+{
+  "source": "c72ec82f5417bb2937310326120f149b665e8400",
+  "identity_sha256": "b09dcd4f9151e03b5f4027baaa8b630c9126496698e70f6ff49f8b153b70da26",
+  "identity_files_verified": 8,
+  "target_card_sha256": "9b1a7842223030776c7f03e0506f9fc7b57bff40a2b0a6daf6c7f1bf1c6a8c22",
+  "target_card_status": "built_unenrolled",
+  "declared_fresh_store_exists": false,
+  "knobs": [
+    "GGML_FA_SPLIT_KV",
+    "GGML_FUSED_DECODE_OFF",
+    "GGML_FUSED_DECODE_ON"
+  ],
+  "ldd": [
+    "\tlibllama-server-impl.so => /mnt/micron/refactor-lanes/llama.cpp-experimental/build-cpu-akx8-r5-20261031/bin/libllama-server-impl.so (0x00007db56be00000)",
+    "\tlibllama-common.so.0 => /mnt/micron/refactor-lanes/llama.cpp-experimental/build-cpu-akx8-r5-20261031/bin/libllama-common.so.0 (0x00007db56b000000)",
+    "\tlibllama.so.0 => /mnt/micron/refactor-lanes/llama.cpp-experimental/build-cpu-akx8-r5-20261031/bin/libllama.so.0 (0x00007db56ac00000)",
+    "\tlibggml.so.0 => /mnt/micron/refactor-lanes/llama.cpp-experimental/build-cpu-akx8-r5-20261031/bin/libggml.so.0 (0x00007db56c536000)",
+    "\tlibggml-base.so.0 => /mnt/micron/refactor-lanes/llama.cpp-experimental/build-cpu-akx8-r5-20261031/bin/libggml-base.so.0 (0x00007db56c467000)",
+    "\tlibggml-cpu.so.0 => /mnt/micron/refactor-lanes/llama.cpp-experimental/build-cpu-akx8-r5-20261031/bin/libggml-cpu.so.0 (0x00007db56a200000)"
+  ],
+  "scope": "postlink build identity only; no model, timing or serving gate"
+}

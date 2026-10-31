@@ -1,0 +1,41 @@
+2026-10-31T05:28:45Z [refactor-akxall8-c5-cpu-build-r6-20261031] launcher up pid=2109664 class=cpu poll=45s grants=/mnt/raid0/llm/tmp/compute-flags/grants stop=/mnt/raid0/llm/tmp/refactor-01a16fc3/ufh14-next-source-20261030/build-packet-r6/STOP minwin=1080s ports=none
+2026-10-31T05:29:30Z [refactor-akxall8-c5-cpu-build-r6-20261031] legacy T1 skipped (LOOP-CONTRACT)
+2026-10-31T05:29:30Z [refactor-akxall8-c5-cpu-build-r6-20261031] START regions=24-47 cpus=24-47 threads=24 gpu=0 end=2026-10-31T06:00Z
+[region-lock] acquiring regions ['q1'] as role='build' (timeout_s=1830.0) …
+[region-lock] held ['q1'] after 0.0s wait; running: /bin/bash /mnt/raid0/llm/tmp/refactor-01a16fc3/ufh14-next-source-20261030/build-packet-r6/filler_run13.sh --inner --id refactor-akxall8-c5-cpu-build-r6-20261031 --class cpu --cmd bash /mnt/raid0/llm/tmp/refactor-01a16fc3/ufh14-next-source-20261030/build-packet-r6/build-job.sh --min-window 1080 --stop /mnt/raid0/llm/tmp/refactor-01a16fc3/ufh14-next-source-20261030/build-packet-r6/STOP --port  --workdir /mnt/raid0/llm/tmp/refactor-01a16fc3/ufh14-next-source-20261030/build-packet-r6 --gpu-threads 184-191
+DRYRUN_RESOURCES {"affinity": [24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47], "cgroup": "0::/", "cgroup_memory_max": "max", "process_limit_gib": 32.0, "reserved_ram_gib": 32.0, "rlimits": {"AS": [-1, -1], "DATA": [-1, -1], "NOFILE": [524288, 524288], "RSS": [-1, -1]}}
+RESOURCE_PASS id=refactor-akxall8-c5-cpu-build-r6-20261031 scope=normal-grant
+source=c72ec82f5417bb2937310326120f149b665e8400
+compiler=g++ (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0
+cpus=24-47
+DISK_PASS free_gib=308.064 output_estimate_gib=0.125
+[1/6] Provisioning UI assets
+-- UI: running npm install
+-- UI: npm install failed (1)
+--   stderr: npm ERR! code EBADENGINE
+npm ERR! engine Unsupported engine
+npm ERR! engine Not compatible with your version of node/npm: @chromatic-com/storybook@5.0.0
+npm ERR! notsup Not compatible with your version of node/npm: @chromatic-com/storybook@5.0.0
+npm ERR! notsup Required: {"node":">=20.0.0","yarn":">=1.22.18"}
+npm ERR! notsup Actual:   {"npm":"9.2.0"}
+
+npm ERR! Log files were not written due to an error writing to the directory: /home/node/.npm/_logs
+npm ERR! You can rerun the command with `--loglevel=verbose` to see the logs in your terminal
+
+-- UI: HF stamp 'b10419' matches version, skipping HF fetch
+-- UI: gzip compression applied (/mnt/micron/refactor-lanes/llama.cpp-experimental/build-cpu-akx8-r5-20261031/tools/ui/dist/_gzip)
+	libllama-server-impl.so => /mnt/micron/refactor-lanes/llama.cpp-experimental/build-cpu-akx8-r5-20261031/bin/libllama-server-impl.so (0x0000720c7a800000)
+	libllama-common.so.0 => /mnt/micron/refactor-lanes/llama.cpp-experimental/build-cpu-akx8-r5-20261031/bin/libllama-common.so.0 (0x0000720c79a00000)
+	libllama.so.0 => /mnt/micron/refactor-lanes/llama.cpp-experimental/build-cpu-akx8-r5-20261031/bin/libllama.so.0 (0x0000720c79600000)
+	libggml.so.0 => /mnt/micron/refactor-lanes/llama.cpp-experimental/build-cpu-akx8-r5-20261031/bin/libggml.so.0 (0x0000720c7a6b2000)
+	libggml-base.so.0 => /mnt/micron/refactor-lanes/llama.cpp-experimental/build-cpu-akx8-r5-20261031/bin/libggml-base.so.0 (0x0000720c7a331000)
+	libggml-cpu.so.0 => /mnt/micron/refactor-lanes/llama.cpp-experimental/build-cpu-akx8-r5-20261031/bin/libggml-cpu.so.0 (0x0000720c78c00000)
+version: 10419 (c72ec82f5)
+built with GNU 13.3.0 for Linux x86_64
+POSTLINK_COHERENT_DSO_PATHS
+{"identity": "/mnt/micron/refactor-lanes/llama.cpp-experimental/build-cpu-akx8-r5-20261031/IDENTITY.json", "files": 8, "head": "c72ec82f5417bb2937310326120f149b665e8400"}
+{"launch_execution_digest": "ee9a5bc3827f24c81bdeef861d7da84c5a88aba3e09516c8ac0c0f1b36a9d36f", "longctx_execution_digest": "cee99485e71078409b7daa8d6e30904198d15a6035f9c26e727060d96761244f", "model_loaded": false, "port": 18999}
+BUILD COMPLETE result=/mnt/raid0/llm/tmp/refactor-01a16fc3/ufh14-next-source-20261030/build-packet-r6/build-result.json
+job rc=0
+2026-10-31T05:29:33Z [refactor-akxall8-c5-cpu-build-r6-20261031] ended rc=0 reason=complete (grant deleted)
+2026-10-31T05:29:33Z [refactor-akxall8-c5-cpu-build-r6-20261031] ALL DONE: wrote /mnt/raid0/llm/tmp/compute-flags/grants/refactor-akxall8-c5-cpu-build-r6-20261031.complete, row marked COMPLETE; exiting for good

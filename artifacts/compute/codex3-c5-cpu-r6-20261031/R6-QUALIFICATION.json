@@ -1,0 +1,38 @@
+{
+  "cutoff": {
+    "children_drained": true,
+    "outer_log": "/mnt/raid0/llm/tmp/refactor-01a16fc3/ufh14-next-source-20261030/build-packet-r6/fixture-r11-cutoff-r6c/outer.log",
+    "outer_log_sha256": "b0b0c7a74a8fc10996c710f4bc15d9e4763c0b52a2dac0a3cf1a941f8e610e0b",
+    "partial": true,
+    "peak_bytes": 210112512,
+    "rc": 75,
+    "samples": 13,
+    "scope": "same frontdoor fresh ggml-base compiler fixture; exact own timeout/cc1plus progress STOP+SIGTERM",
+    "smoke_partial_sha256": "5ad6284094d63bcd72027773255bf8024432397ee3e5489ae0ba3eab4956c493",
+    "wall_s": 3.304,
+    "witness": "/mnt/raid0/llm/tmp/refactor-01a16fc3/ufh14-next-source-20261030/build-packet-r6/R11-CUTOFF-WITNESS.json",
+    "witness_sha256": "e5d2b54f59658aa0479539db867524f3f425c05f0654b6b006d111886495844d"
+  },
+  "full_calendar_job_complete": false,
+  "model_loaded": false,
+  "normal": {
+    "build_identity_sha256": "b09dcd4f9151e03b5f4027baaa8b630c9126496698e70f6ff49f8b153b70da26",
+    "build_result_sha256": "f51fe0a0c532090903d19d1b456c67d79e7abcbc1735e60c42a1eb98cb9d7346",
+    "children_drained": true,
+    "outer_log": "/mnt/raid0/llm/tmp/refactor-01a16fc3/ufh14-next-source-20261030/build-packet-r6/fixture-r11-postlink-normal3/outer.log",
+    "outer_log_sha256": "aff04f3ba44b5729390db382454a507408e509c1f7e1dfc0a59d38f172fc5ed4",
+    "peak_bytes": 189661184,
+    "rc": 0,
+    "samples": 14,
+    "scope": "same frontdoor, real host completed R5 B; knobs/linkage/version/IDENTITY/card and strict completion",
+    "target_card_sha256": "9b1a7842223030776c7f03e0506f9fc7b57bff40a2b0a6daf6c7f1bf1c6a8c22",
+    "wall_s": 3.34
+  },
+  "qualified_at": "2026-10-31T05:13:36.735457+00:00",
+  "r5_original_failure": "actual keeper job rc127 after 315/315 link; `rg` unavailable on host",
+  "r6_first_private_failure": "postlink passed, but container completion reader could not see host /mnt/micron; preserved fixture-r11-postlink-normal",
+  "schema": "akx8.r6.host_postlink_qualification.v1",
+  "source_head": "c72ec82f5417bb2937310326120f149b665e8400",
+  "source_seal_sha256": "4787d8dce9518f3ab6cfb2adf62e1a0798be28f72345475c9d0e2223cd7b8845",
+  "ui_asset_warning": "CMake nonfatal npm EBADENGINE fallback during no-op/server target; source/B link and server version verified, no UI behavior claim"
+}

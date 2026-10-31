@@ -1,0 +1,51 @@
+{
+  "build": "cmake --build target llama-server; fresh C5 CPU profile; see packet source-manifest and build-result",
+  "build_dir": "/mnt/micron/refactor-lanes/llama.cpp-experimental/build-cpu-akx8-r5-20261031",
+  "files": [
+    {
+      "path": "/mnt/micron/refactor-lanes/llama.cpp-experimental/build-cpu-akx8-r5-20261031/bin/libggml-base.so.0.16.0",
+      "sha256": "cc76a381f83da24ab27f0b2dd1bd70c13dd2f58d85cc040178ffa552a31f393b",
+      "size": 922648
+    },
+    {
+      "path": "/mnt/micron/refactor-lanes/llama.cpp-experimental/build-cpu-akx8-r5-20261031/bin/libggml-cpu.so.0.16.0",
+      "sha256": "4b6db300d19c3dcf17fa6cc97d97f00fd17ad37b414daad33adeb0be030e38c2",
+      "size": 3510192
+    },
+    {
+      "path": "/mnt/micron/refactor-lanes/llama.cpp-experimental/build-cpu-akx8-r5-20261031/bin/libggml.so.0.16.0",
+      "sha256": "fb70f7f62ebc8d5cbafe858f11f781e59f156c0d792250437d705676180a2466",
+      "size": 56376
+    },
+    {
+      "path": "/mnt/micron/refactor-lanes/llama.cpp-experimental/build-cpu-akx8-r5-20261031/bin/libllama-common.so.0.0.10419",
+      "sha256": "c7b38bd2fcfb42c2689cd22b0c0f55ce43aebcd771efb43b195c774a819d305f",
+      "size": 6057800
+    },
+    {
+      "path": "/mnt/micron/refactor-lanes/llama.cpp-experimental/build-cpu-akx8-r5-20261031/bin/libllama-server-impl.so",
+      "sha256": "7d963813eb2941fa56d444207580846633b0131c4b4f6d6b885076b3503f3d7b",
+      "size": 7478688
+    },
+    {
+      "path": "/mnt/micron/refactor-lanes/llama.cpp-experimental/build-cpu-akx8-r5-20261031/bin/libllama.so.0.0.10419",
+      "sha256": "6179217cfeabd164c00d2e53ef6a3bd2cc7625165550a145aa633e6f7c550b7a",
+      "size": 4668424
+    },
+    {
+      "path": "/mnt/micron/refactor-lanes/llama.cpp-experimental/build-cpu-akx8-r5-20261031/bin/libmtmd.so.0.0.10419",
+      "sha256": "3598396fe0f8c1e85dea315342beb127a3e4163258bd390fd4ae10933408234f",
+      "size": 1437144
+    },
+    {
+      "path": "/mnt/micron/refactor-lanes/llama.cpp-experimental/build-cpu-akx8-r5-20261031/bin/llama-server",
+      "sha256": "80941e4992f37293813247fb9686c891d1dca38bdc1cbbd01ecddd850c07cde0",
+      "size": 17920
+    }
+  ],
+  "head": "c72ec82f5417bb2937310326120f149b665e8400",
+  "kind": "serving",
+  "schema": "epyc.champion-candidate-build.v1",
+  "source": "/mnt/micron/refactor-lanes/llama.cpp-experimental",
+  "source_status": "clean"
+}

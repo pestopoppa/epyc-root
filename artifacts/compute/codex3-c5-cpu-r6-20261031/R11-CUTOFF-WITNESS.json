@@ -1,0 +1,16 @@
+{
+  "at": "2026-10-31T05:13:18.021985+00:00",
+  "children_drained": true,
+  "compiler_birth": 154607081,
+  "compiler_pid": 95385,
+  "compiler_ticks_after": 20,
+  "compiler_ticks_before": 8,
+  "launcher_birth": 154606943,
+  "launcher_pid": 95059,
+  "launcher_rc": 75,
+  "schema": "akx8.r6.active_native_cutoff.v1",
+  "signal": "SIGTERM to exact captured own timeout child",
+  "stop_file": "/mnt/raid0/llm/tmp/refactor-01a16fc3/ufh14-next-source-20261030/build-packet-r6/STOP",
+  "timeout_birth": 154607029,
+  "timeout_pid": 95357
+}

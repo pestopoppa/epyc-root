@@ -1,0 +1,42 @@
+{
+  "floor_policy": "new recipe hash, spec digest and execution digest; recalibrate; never reuse old floor",
+  "fresh_store": "/mnt/raid0/llm/tmp/refactor-01a16fc3/ufh14-next-source-20261030/candidate/built-c5-r6-fresh-store",
+  "justified_deltas": {
+    "GGML_FA_SPLIT_KV=0": "INF-70 be2-fa speculative-decode row exactness",
+    "batch=-b2048": "effective production n_batch=2048 default; candidate declares it explicitly",
+    "context-and-slot-save": "long-context surface changes -c and adds --slot-save-path",
+    "remaining_env": "legacy campaign CPU affinity/OpenMP/IQK/THP values retained for reproducibility; compare live process before a production-equivalence claim"
+  },
+  "launch": "/mnt/raid0/llm/tmp/refactor-01a16fc3/ufh14-next-source-20261030/candidate/built-c5-r6.launch.json",
+  "launch_execution_digest": "ee9a5bc3827f24c81bdeef861d7da84c5a88aba3e09516c8ac0c0f1b36a9d36f",
+  "launch_snapshot_digest": "23cc0f5c00856b077b9743de7132cb1a8285ef3b1b5bb1c88439b98ee7b807c9",
+  "longctx_execution_digest": "cee99485e71078409b7daa8d6e30904198d15a6035f9c26e727060d96761244f",
+  "longctx_launch": "/mnt/raid0/llm/tmp/refactor-01a16fc3/ufh14-next-source-20261030/candidate/built-c5-r6.longctx-launch.json",
+  "longctx_spec": "/mnt/raid0/llm/tmp/refactor-01a16fc3/ufh14-next-source-20261030/candidate/q38fn-akxall8-declared8074-t96-ub2048-mtp-d4-20261030.longctx.json",
+  "longctx_spec_digest": "6c2709f6f2f54ae5c9e3df69482aa7ed1e0efc1b2751743169b0d3aaeb5a0300",
+  "measurements": "none; new matched floor required",
+  "parent_target_id": "q38fn-802bf9ac6-cpu-t48-mtp-d4",
+  "port": 18999,
+  "recipe": "/mnt/raid0/llm/tmp/refactor-01a16fc3/ufh14-next-source-20261030/candidate/q38fn-akxall8-declared8074-t96-ub2048-mtp-d4-20261030.recipe.json",
+  "recipe_hash": "5acb2eaf90c4584ce5f7d5daa9c86523d3c7bc7f58a96a18f73027cd71f4b08b",
+  "recipe_sha256": "0d991bc5725bdc5a8102a139d8b30e666af09cdab87c8eb263925349e0aeeb56",
+  "revision": 1,
+  "schema": "epyc.akxall8.target_candidate.v1",
+  "source_head": "c72ec82f5417bb2937310326120f149b665e8400",
+  "source_shape": {
+    "evidence_kind": "declared-configuration; not live process",
+    "model": "/mnt/raid0/llm/models/unsloth/Qwen3.8-Flash-Next-GGUF/UD-IQ4_XS/Qwen3.8-Flash-Next-UD-IQ4_XS-00001-of-00003.gguf",
+    "port": 8074,
+    "role": "architect_general",
+    "source_commit": "74a313d6c172438a309b9e4f62115bd020169917",
+    "source_sha256": {
+      "launch_manifest.yaml": "323567eb6f2fe5d78d957dc93541d49c2f3748801fad728d41ea8efef77486de",
+      "model_registry.yaml": "9714750da5e17a538d5ce6ff3bb9dd1fa3735584a88aae8b1144e9b0b7f41781",
+      "stack_topology.yaml": "15d7cfa5a2ca4abc373f44d41313b1abb9468b35f1d85c87ac244d9dad1b8de1"
+    },
+    "threads": 96,
+    "ubatch": 2048
+  },
+  "status": "built_unenrolled",
+  "target_id": "q38fn-akxall8-declared8074-t96-ub2048-mtp-d4-20261030"
+}
