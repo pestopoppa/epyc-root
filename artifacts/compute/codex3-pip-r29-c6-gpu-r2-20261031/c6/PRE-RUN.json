@@ -1,0 +1,24 @@
+{
+  "cpu_manifest_sha256": "f751b659d2ac30cb1169c72c2be7f8965b6d342530c7c06382717bb5e1e71191",
+  "cpus": [
+    184,
+    185,
+    186,
+    187,
+    188,
+    189,
+    190,
+    191
+  ],
+  "deadline": "1793426310",
+  "filler_id": "refactor-c6-gpu-gak-diag-r2-729599d69-20261031",
+  "full_gate_pass": null,
+  "gpu_closure_sha256": "c66ee1a904e607015cab68955b2e30c62b8c6edcc488d5dcbadd667d5cd34bf4",
+  "gpu_manifest_sha256": "64c34e61d12e5170acc77d69d4edcbab296754d2e3a48679ceb916fde3bb3704",
+  "grant_sha256": "a51a9823ec9e7c2486f0a4564e0a37cd3853341249e9d2eac8f8cb1a09e2638e",
+  "recorded_at": 1793423458.287749,
+  "regions": "mi210_0,184-191",
+  "runtime_closure_sha256": "9c9a9309f9d0e2e10880fe1469307b7503688ef7256c6d1b9c093f6803e5adfb",
+  "schema": "c6.gpu_diag_pre.v1",
+  "source": "729599d69871181d67af715a4c2f9162d5153a2e"
+}

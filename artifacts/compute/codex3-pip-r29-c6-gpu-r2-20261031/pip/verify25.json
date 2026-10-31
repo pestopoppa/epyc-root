@@ -1,0 +1,130 @@
+{
+  "scope": "25 native page journal/capture checks",
+  "pages": [
+    {
+      "index": 0,
+      "journal_complete": true,
+      "native_finish_proof": false
+    },
+    {
+      "index": 1,
+      "journal_complete": true,
+      "native_finish_proof": true
+    },
+    {
+      "index": 8,
+      "journal_complete": true,
+      "native_finish_proof": true
+    },
+    {
+      "index": 10,
+      "journal_complete": true,
+      "native_finish_proof": true
+    },
+    {
+      "index": 11,
+      "journal_complete": true,
+      "native_finish_proof": true
+    },
+    {
+      "index": 19,
+      "journal_complete": true,
+      "native_finish_proof": true
+    },
+    {
+      "index": 20,
+      "journal_complete": true,
+      "native_finish_proof": true
+    },
+    {
+      "index": 21,
+      "journal_complete": true,
+      "native_finish_proof": true
+    },
+    {
+      "index": 22,
+      "journal_complete": true,
+      "native_finish_proof": true
+    },
+    {
+      "index": 32,
+      "journal_complete": true,
+      "native_finish_proof": true
+    },
+    {
+      "index": 34,
+      "journal_complete": true,
+      "native_finish_proof": false
+    },
+    {
+      "index": 35,
+      "journal_complete": true,
+      "native_finish_proof": true
+    },
+    {
+      "index": 36,
+      "journal_complete": true,
+      "native_finish_proof": true
+    },
+    {
+      "index": 37,
+      "journal_complete": true,
+      "native_finish_proof": true
+    },
+    {
+      "index": 38,
+      "journal_complete": true,
+      "native_finish_proof": true
+    },
+    {
+      "index": 39,
+      "journal_complete": true,
+      "native_finish_proof": true
+    },
+    {
+      "index": 40,
+      "journal_complete": true,
+      "native_finish_proof": true
+    },
+    {
+      "index": 41,
+      "journal_complete": true,
+      "native_finish_proof": true
+    },
+    {
+      "index": 42,
+      "journal_complete": true,
+      "native_finish_proof": true
+    },
+    {
+      "index": 43,
+      "journal_complete": true,
+      "native_finish_proof": true
+    },
+    {
+      "index": 44,
+      "journal_complete": true,
+      "native_finish_proof": true
+    },
+    {
+      "index": 45,
+      "journal_complete": true,
+      "native_finish_proof": true
+    },
+    {
+      "index": 46,
+      "journal_complete": true,
+      "native_finish_proof": true
+    },
+    {
+      "index": 47,
+      "journal_complete": true,
+      "native_finish_proof": true
+    },
+    {
+      "index": 48,
+      "journal_complete": true,
+      "native_finish_proof": true
+    }
+  ]
+}

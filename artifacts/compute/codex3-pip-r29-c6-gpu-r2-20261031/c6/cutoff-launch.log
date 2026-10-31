@@ -1,0 +1,1 @@
+DRYRUN_RESOURCES {"affinity": [184, 185, 186, 187, 188, 189, 190, 191], "cgroup": "0::/", "cgroup_memory_max": "max", "process_limit_gib": 32, "reserved_ram_gib": 32, "rlimits": {"AS": [-1, -1], "DATA": [-1, -1], "NOFILE": [524288, 524288], "RSS": [-1, -1]}}
