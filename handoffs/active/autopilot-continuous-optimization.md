@@ -471,7 +471,7 @@ First full smoke run of the trial loop. Four defects, three silent.
   and `git apply --cached`, then commit from the index. *(Demonstrated live: the resume agent hit
   exactly this and used it to avoid sweeping 63 lines of another agent's in-flight work.)*
 
-- [x] **`ImportError: cannot import name 'LLAMA_SERVER' ... circular import` prints on every stack ✅ 2026-10-30 [no-belief: source import regression verification]
+- [x] **`ImportError: cannot import name 'LLAMA_SERVER' ... circular import` prints on every stack ✅ 2026-10-30 [no-belief: source import regression verification] <!--[source: epyc-orchestrator@74c68a2a8e01a0f4a8c93a49fa32c0b85494f501; test: epyc-orchestrator/tests/unit/test_config.py; artifact: epyc-root/artifacts/compute/refactor-c5-r2-and-code-audits-20261030.json] -->
       command.** Fail-open — `runtime-facts selected-servers read failed` and the
       `ORCHESTRATOR_STACK_NUMA_MODE=both env-filter branch failed ... falling through to
       stack-priors`. Both degrade silently to a fallback path, so a real defect there would be
@@ -479,6 +479,7 @@ First full smoke run of the trial loop. Four defects, three silent.
 
 
       - Already fixed by orchestrator `74c68a2a8` (ancestor of current main), with kernel-store resolution preserved by `42b926ff0`. Self-contained path initialization removes the cycle;28 focused tests and a fresh NUMA=both CLI help pass without the reported warning. No production stack operation or reload. [Evidence](../../artifacts/compute/refactor-c5-r2-and-code-audits-20261030.json).
+      - Git evidence: implementing APP `74c68a2a8e01a0f4a8c93a49fa32c0b85494f501`; committed `tests/unit/test_config.py`; retained ROOT `artifacts/compute/refactor-c5-r2-and-code-audits-20261030.json` (source-import regression summary).
 
 ### Scorer repair and an unprovable outage (2026-08-04)
 
