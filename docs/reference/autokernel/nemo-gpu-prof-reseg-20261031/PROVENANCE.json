@@ -1,0 +1,22 @@
+{
+  "schema": "nemo-gpu-prof.reseg.provenance.v1",
+  "source_job": "nemo-gpu-prof 2026-10-25",
+  "source_record": "epyc-inference-research/data/nemo-gpu-prof/ on origin/main",
+  "retained_raw_dir": "/mnt/raid0/llm/epyc-inference-research/data/nemo-gpu-prof/retained-raw-20261025",
+  "retained_sha256s_sha256": "20b4c478ad02a1cbc427f067d7122d03e20878cf15f19453ead6d78db092c37f",
+  "original_raw_dir": "/mnt/raid0/llm/tmp/cal-1025/nemo-gpu-prof/out",
+  "pass_sha256": {
+    "L": {
+      "run_json": "e746d105ccfa01e7542d918a9aaf6ed3073b0171775f341979895b988a278a4d",
+      "kernel_trace_csv": "c1bebdff0cfb35e98df39ba3fb729f9114b0f676cf3bf6ef4ba76ce267d8ca94"
+    },
+    "B": {
+      "run_json": "3520876cae4b58156ff55f4772dd5c0acf55b3ee8a4019199c532eac05b00b95",
+      "kernel_trace_csv": "4bfb3cdd73c7ff8cda2c8bab783ee9bbd21f46d19fec540b6add518a25e000ad"
+    }
+  },
+  "analyzer_sha256": "a8637e01f301c2ed9d76fe85e73e006657ab245f67249ae961c9f2e2b3aecd77",
+  "result_sha256": "9ef3c4cb0c6fdd830e77032500684ff645b596396844ca9db9eceb5036e48f7e",
+  "original_predeclaration_sha256": "914fd9b116a7d9c84fb10842165069db428d7ab26992c2e281bb9be89cd692ca",
+  "claim_scope": "historical observational resegmentation only; no new run, no throughput comparison, no low-bit adoption"
+}

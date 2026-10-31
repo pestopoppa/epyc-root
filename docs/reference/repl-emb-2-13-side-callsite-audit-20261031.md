@@ -1,0 +1,9 @@
+# REPL-EMB-2.13 side call-site audit — 2026-10-31
+
+The original task in `handoffs/active/repl-embedding-retrieval.md` is complete in orchestrator `origin/main` `5c1dfea76467cc82edc57192667677dcb1308af3` (root task text at `4915c24d8f214b4a1e361848a45c7115d93fe50c`). No source edit or runtime flag flip was needed.
+
+The eight named `retriever.py` lookups, three `hybrid_router.py` lookups, and `src/repl_environment/routing.py` lookup pass `side="query"`. Named writes in `q_scorer.py`, `seed_loader.py`, `strategy_store.py`, `distillation/pipeline.py`, and `routing_graph.py` pass `side="document"`. `q_scorer.py` embeds the lookup with query side and re-embeds newly stored rows with document side under EG2 in its routing, escalation, and external-result paths. `research_context.py` also uses query then document embeddings under EG2. Direct AST inspection of `orchestration/repl_memory` and `src` found no untagged production `TaskEmbedder` call.
+
+Fresh `origin/main` source and tests were archived without a checkout. The bounded selection of `tests/unit/test_eg2_adoption_seam.py`, `test_q_td_write_path.py::test_external_q_score_preserves_precomputed_and_splits_new_row_sides`, and `test_research_context.py::TestSemanticRefsWithMock::test_eg2_uses_query_for_lookup_and_document_for_stored_nodes` passed **35/35** in 32.07 s with the seam on where specified. The fake HTTP embedder asserts distinct `task: search result | query:` and `title: none | text:` prefixes; the Q scorer fake asserts separate query and document vectors. An initial archive omitted the shared `repl_emb_arms.py` test dependency and produced six fixture errors; the corrected archive passed all 30 EG2 tests. The full raw receipt is retained at `/mnt/raid0/llm/tmp/codex-ni-repl-emb213-audit-20261031/test-focused.log`.
+
+This is code-prerequisite closure. The v11 flag flip and production reload are separate decisions and were not performed.
