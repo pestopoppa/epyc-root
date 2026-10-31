@@ -40,7 +40,7 @@ A read-only `bundle_gate_c3.sh observe` returned `state=unobservable` (exit 3): 
 
 ## Belief and source-registration boundary
 
-No measurement or verified scientific finding was produced, and no belief checkbox/result tick is claimed. The new tuple is an existing document/artifact dependency identity only. It must not project to `ClaimTuple`, introduce a grading ladder, or claim that the canonical planning-context loop is wired. A concise MAIN-only source-table row draft and the existing-task search result are in `SOURCE-REGISTRATION-DRAFT.md`.
+No measurement or verified scientific finding was produced, and no belief checkbox/result tick is claimed. The new tuple is an existing document/artifact dependency identity only. It must not project to `ClaimTuple`, introduce a grading ladder, or claim that the canonical planning-context loop is wired. MAIN applied the dependency-only source-table row and added the prospective `VB-AK-LOOP-PROCESS-ID-LIVE` task; its genuine owner-run capture and planning-context canary remain open. The original draft and its source-task search record are in `SOURCE-REGISTRATION-DRAFT.md`.
 
 ## Exact task text
 
