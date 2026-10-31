@@ -1,0 +1,235 @@
+diff --git a/docs/guides/worker-pool-runbook.md b/docs/guides/worker-pool-runbook.md
+index ff9da6816..d8ef80adf 100644
+--- a/docs/guides/worker-pool-runbook.md
++++ b/docs/guides/worker-pool-runbook.md
+@@ -151,6 +151,29 @@ consumes `task_id`, `task_text`, `row_ref`, `screened_by`, `source_handoff`, `ex
+ prose in disguise. A bare string is accepted but stamped `source: "unsourced"` so the defect is
+ visible in the brief rather than indistinguishable from a sourced one.
+ 
++When the task text names both a deliverable and supporting files, the dispatcher can state the
++expected deliverable paths explicitly in the assignment, for example:
++
++```json
++{
++  "rows": [{
++    "task_id": "T-1",
++    "task_text": "Fix src/widget.py using docs/reference.md",
++    "source_handoff": "handoffs/active/example.md",
++    "deliverable_paths": ["src/widget.py"]
++  }]
++}
++```
++
++`load_assignment` accepts this JSON row and the runner carries `deliverable_paths` into the brief.
++Each listed path must be a normalized relative path named in `task_text` and resolve inside the
++worktree, including through symlinks. The auditor validates every declared path, then uses the
++**first** as its single mutation-probe target; it never selects a target from the diff. An invalid
++or escaping declaration is undetermined and blocks the audit. A legacy task with one path keeps
++its existing target; one with multiple paths and no declaration is ambiguous, so the probe is
++undetermined and blocks rather than treating a reference as a failed deliverable. Supply the field
++in the assignment file; the one-row `--row-text` shortcut does not provide it.
++
+ `--pilot-override` prints a warning to stderr, does **not** touch the daemon's gate (the daemon reads
+ the config, not this flag), and does **not** bypass the rule-8 ack — a runner may not kill without
+ the amendment, override or no override.
+diff --git a/scripts/coordination/headless_audit.py b/scripts/coordination/headless_audit.py
+index e9c2d8102..502c8f893 100755
+--- a/scripts/coordination/headless_audit.py
++++ b/scripts/coordination/headless_audit.py
+@@ -376,7 +376,9 @@ def candidate_paths(text: str) -> list[str]:
+     """
+     out: list[str] = []
+     for raw in _PATH_TOKEN_RE.findall(text or ""):
+-        tok = raw.strip().strip("`'\"(),;:").lstrip("./")
++        tok = raw.strip().strip("`'\"(),;:")
++        if tok.startswith("./"):
++            tok = tok[2:]
+         if not tok or len(tok) < 4:
+             continue
+         if _PATHY_RE.match(tok) or ("/" in tok and "." in tok.rsplit("/", 1)[-1]):
+@@ -390,19 +392,58 @@ def choose_probe_target(task_rows: list[dict], facts: dict,
+                         worktree: Optional[Path] = None) -> dict:
+     """Name ONE file the diff should have touched, and say where the name came from.
+ 
+-    The name comes from the TASK TEXT — the thing that was asked for — never from
+-    the diff and never from the report. Choosing the target from the diff would
+-    make the probe a tautology ("the diff touched a file the diff touched"), which
+-    is precisely the vacuity the anti-vacuity test exists to rule out.
++    The dispatch may identify deliverable paths named in the task text. Every
++    declared path is validated and the first is used for this single probe.
++    Legacy task text with exactly one named path remains supported; ambiguous
++    or invalid inputs are undetermined. The target never comes from the diff or
++    worker report, which would make the probe tautological.
+ 
+     Returns {target, source_quote, task_id} or {target: None, reason: ...}.
+     """
+     for row in task_rows:
+         text = str(row.get("task_text") or "")
+-        for cand in candidate_paths(text):
+-            quote = _quote_around(text, cand)
+-            return {"target": cand, "task_id": row.get("task_id"), "source_quote": quote,
+-                    "derived_from": "task_text"}
++        named = candidate_paths(text)
++        if "deliverable_paths" in row:
++            paths = row["deliverable_paths"]
++            if not isinstance(paths, list) or not paths or any(
++                not isinstance(path, str) or not path for path in paths
++            ):
++                return {"target": None, "task_id": row.get("task_id"),
++                        "reason": "invalid explicit deliverable_paths declaration"}
++            for cand in paths:
++                path = Path(cand)
++                if (path.is_absolute() or ".." in path.parts or str(path) != cand
++                        or cand not in named):
++                    return {"target": None, "task_id": row.get("task_id"),
++                            "reason": "deliverable must be a normalized relative path "
++                                      "named in task text"}
++                if worktree is not None:
++                    try:
++                        (worktree / path).resolve().relative_to(worktree.resolve())
++                    except (ValueError, OSError, RuntimeError):
++                        return {"target": None, "task_id": row.get("task_id"),
++                                "reason": "deliverable resolves outside the worktree"}
++            cand = paths[0]
++            return {"target": cand, "task_id": row.get("task_id"),
++                    "source_quote": _quote_around(text, cand),
++                    "derived_from": "dispatch_deliverable_paths"}
++        if len(named) == 1:
++            cand = named[0]
++            path = Path(cand)
++            if path.is_absolute() or ".." in path.parts or str(path) != cand:
++                return {"target": None, "task_id": row.get("task_id"),
++                        "reason": "task path is not normalized and relative"}
++            if worktree is not None:
++                try:
++                    (worktree / path).resolve().relative_to(worktree.resolve())
++                except (ValueError, OSError, RuntimeError):
++                    return {"target": None, "task_id": row.get("task_id"),
++                            "reason": "task path resolves outside the worktree"}
++            return {"target": cand, "task_id": row.get("task_id"),
++                    "source_quote": _quote_around(text, cand), "derived_from": "task_text"}
++        if len(named) > 1:
++            return {"target": None, "task_id": row.get("task_id"),
++                    "reason": "multiple task paths; no explicit deliverable_paths"}
+     return {"target": None, "task_id": (task_rows[0].get("task_id") if task_rows else None),
+             "reason": "no file path is named in any task text, so no file can be asserted "
+                       "as one the diff SHOULD have touched"}
+diff --git a/scripts/coordination/tests/test_headless_audit_deliverables.py b/scripts/coordination/tests/test_headless_audit_deliverables.py
+new file mode 100644
+index 000000000..561e398f3
+--- /dev/null
++++ b/scripts/coordination/tests/test_headless_audit_deliverables.py
+@@ -0,0 +1,95 @@
++"""Dispatch-owned deliverables for the headless mutation probe; no model calls."""
++import argparse
++import json
++
++import pytest
++
++from scripts.coordination import headless_audit as ha
++from scripts.coordination import worker_runner as wr
++
++
++def test_assignment_to_brief_to_probe_uses_declared_deliverable(tmp_path):
++    assignment = tmp_path / "assignment.json"
++    assignment.write_text(json.dumps({"rows": [{
++        "task_id": "T1", "task_text": "Fix src/widget.py using docs/reference.md",
++        "deliverable_paths": ["src/widget.py"],
++    }]}))
++    loaded = wr.load_assignment(argparse.Namespace(assignment=str(assignment)))
++    brief = wr.build_brief(loaded["rows"], batch_id="B", lane="lane0", worktree=tmp_path,
++                           report_path=tmp_path / "report.json", cfg=dict(wr.DEFAULTS),
++                           lease_expires_ts="t")
++    target = ha.choose_probe_target(brief["rows"], {"changed_paths": ["docs/reference.md"]}, tmp_path)
++    assert target["target"] == "src/widget.py"
++    assert target["derived_from"] == "dispatch_deliverable_paths"
++    probe = ha.mutation_probe(tmp_path, {"changed_paths": ["docs/reference.md"]}, target)
++    assert probe["passed"] is False and probe["checks"][0]["check"] == "present"
++
++
++def test_ambiguous_legacy_is_unknown_and_single_target_is_unchanged(tmp_path):
++    row = {"task_id": "T", "task_text": "Fix src/widget.py using docs/reference.md"}
++    target = ha.choose_probe_target([row], {"changed_paths": ["docs/reference.md"]}, tmp_path)
++    assert target["target"] is None
++    assert ha.mutation_probe(tmp_path, {}, target)["undetermined"] is True
++    row["task_text"] = "Fix src/widget.py"
++    assert ha.choose_probe_target([row], {}, tmp_path)["target"] == "src/widget.py"
++
++
++@pytest.mark.parametrize("paths", [[], None, "src/widget.py", ["src/other.py"],
++                                  ["../outside.py"], ["/tmp/outside.py"],
++                                  ["src/widget.py", "../outside.py"]])
++def test_invalid_declared_deliverable_fails_closed(tmp_path, paths):
++    row = {"task_id": "T", "task_text": "Fix src/widget.py; see ../outside.py and /tmp/outside.py",
++           "deliverable_paths": paths}
++    target = ha.choose_probe_target([row], {}, tmp_path)
++    assert target["target"] is None
++    assert ha.mutation_probe(tmp_path, {}, target)["undetermined"] is True
++
++
++def test_symlink_escape_refused_for_any_declared_target(tmp_path):
++    repo = tmp_path / "repo"
++    repo.mkdir()
++    outside = tmp_path / "outside"
++    outside.mkdir()
++    (repo / "escape").symlink_to(outside, target_is_directory=True)
++    row = {"task_id": "T", "task_text": "Edit src/widget.py and escape/file.py",
++           "deliverable_paths": ["src/widget.py", "escape/file.py"]}
++    assert ha.choose_probe_target([row], {}, repo)["target"] is None
++
++
++def test_malformed_declaration_is_not_dropped_by_brief(tmp_path):
++    row = {"task_id": "T", "task_text": "Fix src/widget.py", "deliverable_paths": []}
++    brief = wr.build_brief([row], batch_id="B", lane="lane0", worktree=tmp_path,
++                           report_path=tmp_path / "report.json", cfg=dict(wr.DEFAULTS),
++                           lease_expires_ts="t")
++    assert brief["rows"][0]["deliverable_paths"] == []
++    assert ha.choose_probe_target(brief["rows"], {}, tmp_path)["target"] is None
++
++
++def test_explicit_deliverable_passes_real_mutation_probe(tmp_path):
++    import subprocess
++
++    def git(*args):
++        return subprocess.run(["git", "-C", str(tmp_path), *args], check=True,
++                              capture_output=True, text=True).stdout.strip()
++
++    git("init", "-q")
++    git("config", "user.name", "Test")
++    git("config", "user.email", "test@example.invalid")
++    (tmp_path / "src").mkdir()
++    (tmp_path / "docs").mkdir()
++    (tmp_path / "src/widget.py").write_text("value = 1\n")
++    (tmp_path / "docs/reference.md").write_text("reference\n")
++    git("add", ".")
++    git("commit", "-qm", "base")
++    base = git("rev-parse", "HEAD")
++    (tmp_path / "src/widget.py").write_text("value = 2\n")
++    git("add", "src/widget.py")
++    git("commit", "-qm", "deliverable")
++    facts = ha.git_facts(tmp_path, f"{base}..HEAD")
++    row = {"task_id": "T", "task_text": "Fix src/widget.py using docs/reference.md",
++           "deliverable_paths": ["src/widget.py"]}
++    probe = ha.mutation_probe(tmp_path, facts, ha.choose_probe_target([row], facts, tmp_path))
++    assert probe["passed"] is True
++    assert [item["check"] for item in probe["checks"]] == [
++        "present", "nonempty-net-patch", "revertible"
++    ]
+diff --git a/scripts/coordination/worker_runner.py b/scripts/coordination/worker_runner.py
+index 6b868d1bb..3f7630493 100644
+--- a/scripts/coordination/worker_runner.py
++++ b/scripts/coordination/worker_runner.py
+@@ -490,7 +490,12 @@ def build_brief(rows: list[dict], *, batch_id: str, lane: str, worktree: Path,
+             "constraints": normalize_constraints(row.get("constraints")),
+             "source_handoff": row.get("source_handoff"),
+         }
+-        brief_rows.append({k: v for k, v in entry.items() if v not in (None, [], {})})
++        entry = {k: v for k, v in entry.items() if v not in (None, [], {})}
++        # Preserve even malformed declarations for the independent auditor to
++        # refuse; silently dropping one could fall back to an inferred target.
++        if "deliverable_paths" in row:
++            entry["deliverable_paths"] = row["deliverable_paths"]
++        brief_rows.append(entry)
+ 
+     brief = {
+         "schema_version": BRIEF_SCHEMA_VERSION,

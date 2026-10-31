@@ -589,7 +589,7 @@ Zero were bulk-acked. What survived as live work:
   `test_sparse_worktree_fallback_allows_a_clean_commit_too`). Confirmed **pre-existing** on 2026-08-18
   by stashing the guard-sweep work and re-running: identical 2 failed / 6 passed. Untouched by that
   sweep and filed here rather than left in prose. Not blocked on anything.
-- [ ] **The probe over-match above is itself a defect worth one line of code**: the mutation
+- [x] **The probe over-match above is itself a defect worth one line of code** ✅ 2026-10-31 — ROOT `752a7a6ec2a121b5f5492ee2e218b71bfe57e756`; [43 tests plus 12 subtests and 3 runner tests](../../artifacts/compute/codex3-loop-probe-20261031/README.md). [no-belief: software fix and regression tests only]: the mutation
   probe should resolve expected-touched files from the row's stated deliverable, not from every
   path-shaped token in the task text — two of four pilot audits FAIL-noised on it.
 - [x] **`monitor:file` service identities are structurally invisible to the fleet-health plane.**

@@ -1,0 +1,9 @@
+{
+  "source_path": "/mnt/raid0/llm/backups/preserve-20260916/gdn2-low-rank-static-analysis-2026-08-25.md",
+  "source_sha256": "5c3f5a42ac34aa9c76a3ff9bed604969fc82cddc696a968e4e29f67bc369d792",
+  "committed_blob_sha256": "5c3f5a42ac34aa9c76a3ff9bed604969fc82cddc696a968e4e29f67bc369d792",
+  "encoding": "utf-8",
+  "byte_length": 11145,
+  "checks": "preserved original bytes; git diff --check passed",
+  "scientific_revalidation": "not performed"
+}

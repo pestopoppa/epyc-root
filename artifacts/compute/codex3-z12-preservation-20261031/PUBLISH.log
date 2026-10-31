@@ -1,0 +1,18 @@
+acquired push lock for /mnt/raid0/llm/epyc-inference-research (key 2431-96371209) as 'codex3'
+operation token: /mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/z12/research-push.token (mode 0600; keep it for release)
+Hold it while you review, then --push (or --release to give it up).
+From https://github.com/pestopoppa/epyc-inference-research
+ * branch                main       -> FETCH_HEAD
+   93c217ec5..e95a9d2e2  main       -> origin/main
+BASE e95a9d2e25c3eeedc7a6f997e608d9bd338cbc31 DIFF_SHA 02eb28cef519407d3198cb38e2c921b80b06fa5931369bd8d0165e02efb6b955
+remote: 
+remote: Create a pull request for 'codex3/z12-preserve-note-final-20261031' on GitHub by visiting:        
+remote:      https://github.com/pestopoppa/epyc-inference-research/pull/new/codex3/z12-preserve-note-final-20261031        
+remote: 
+To https://github.com/pestopoppa/epyc-inference-research.git
+ * [new branch]          f0d7449f827171be6f0e5f02ce92467b724a09e1 -> codex3/z12-preserve-note-final-20261031
+To https://github.com/pestopoppa/epyc-inference-research.git
+   e95a9d2e2..f0d7449f8  f0d7449f827171be6f0e5f02ce92467b724a09e1 -> main
+f0d7449f827171be6f0e5f02ce92467b724a09e1	refs/heads/codex3/z12-preserve-note-final-20261031
+f0d7449f827171be6f0e5f02ce92467b724a09e1	refs/heads/main
+released push lock for /mnt/raid0/llm/epyc-inference-research (key 2431-96371209)
