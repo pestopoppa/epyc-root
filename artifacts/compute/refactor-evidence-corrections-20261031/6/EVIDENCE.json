@@ -1,0 +1,109 @@
+{
+  "index": 6,
+  "task": "V11-086-SLOW-2",
+  "root_base": "72b592361654bc365d91f988a8d546f599bd28fb",
+  "disposition": "RETAIN_X",
+  "implementation_commit": "141e4bcf5ae023bd3b871edcd32ad493e6c4d58e",
+  "reason": "Two original real launches use exactly -p0/-n32/-d32768/-r1, both rc0 and boolean unhardened, with during-run own-library witnesses; the later9-launch cohort is supplemental protocol evidence, not the basis for substituting the exact done clause.",
+  "evidence": [
+    {
+      "git_path": "artifacts/compute/refactor-evidence-corrections-20261031/6/COMPLETE",
+      "sha256": "18859a145dbff6118b8c50abb9b1be059c99475111f0ffc0b120e36a690c9df4",
+      "bytes": 21,
+      "source": "/mnt/raid0/llm/tmp/refactor-unsupported-seven-v2-20261031/6/files/artifacts/compute/refactor-evidence-corrections-20261031/6/COMPLETE"
+    },
+    {
+      "git_path": "artifacts/compute/refactor-evidence-corrections-20261031/6/DECISION.json",
+      "sha256": "85249da8e6ef914421be067f0b29f254af27195ae5b14c0e1823c215c8273152",
+      "bytes": 1280,
+      "source": "/mnt/raid0/llm/tmp/refactor-unsupported-seven-v2-20261031/6/files/artifacts/compute/refactor-evidence-corrections-20261031/6/DECISION.json"
+    },
+    {
+      "git_path": "artifacts/compute/refactor-evidence-corrections-20261031/6/bench_Bauto0.json",
+      "sha256": "4874753c5004a38bf291e7fe340de584a10c6fd7e05bf1d0b087e510f0832ab3",
+      "bytes": 7264,
+      "source": "/mnt/raid0/llm/tmp/refactor-unsupported-seven-v2-20261031/6/files/artifacts/compute/refactor-evidence-corrections-20261031/6/bench_Bauto0.json"
+    },
+    {
+      "git_path": "artifacts/compute/refactor-evidence-corrections-20261031/6/bench_Bauto1.json",
+      "sha256": "4a671289d0ff8c70b373af461d190d5b0fb4515e939202e22e7d94a00334bdc4",
+      "bytes": 7260,
+      "source": "/mnt/raid0/llm/tmp/refactor-unsupported-seven-v2-20261031/6/files/artifacts/compute/refactor-evidence-corrections-20261031/6/bench_Bauto1.json"
+    },
+    {
+      "git_path": "artifacts/compute/refactor-evidence-corrections-20261031/6/bench_Bauto2.json",
+      "sha256": "c886287461753ef3487f874c9134079e0519b772f2d56d01ad1e7f262e794217",
+      "bytes": 7265,
+      "source": "/mnt/raid0/llm/tmp/refactor-unsupported-seven-v2-20261031/6/files/artifacts/compute/refactor-evidence-corrections-20261031/6/bench_Bauto2.json"
+    },
+    {
+      "git_path": "artifacts/compute/refactor-evidence-corrections-20261031/6/bench_Bunset0.json",
+      "sha256": "dee06dd30277b5893324aa94e43400d66ba3137b8c8a3d2270bab850d4e727b4",
+      "bytes": 7262,
+      "source": "/mnt/raid0/llm/tmp/refactor-unsupported-seven-v2-20261031/6/files/artifacts/compute/refactor-evidence-corrections-20261031/6/bench_Bunset0.json"
+    },
+    {
+      "git_path": "artifacts/compute/refactor-evidence-corrections-20261031/6/bench_Bunset1.json",
+      "sha256": "662da6705bf5c8261b52377fb9757aa673f01141f3a9511587b4523eca2996d6",
+      "bytes": 7261,
+      "source": "/mnt/raid0/llm/tmp/refactor-unsupported-seven-v2-20261031/6/files/artifacts/compute/refactor-evidence-corrections-20261031/6/bench_Bunset1.json"
+    },
+    {
+      "git_path": "artifacts/compute/refactor-evidence-corrections-20261031/6/bench_Bunset2.json",
+      "sha256": "759b37719e6a89e7ac89db21d7e59aa31175c76148774a58821063795d47269f",
+      "bytes": 7269,
+      "source": "/mnt/raid0/llm/tmp/refactor-unsupported-seven-v2-20261031/6/files/artifacts/compute/refactor-evidence-corrections-20261031/6/bench_Bunset2.json"
+    },
+    {
+      "git_path": "artifacts/compute/refactor-evidence-corrections-20261031/6/bench_C0.json",
+      "sha256": "7f3ecd04a61229e4701ddc4856209fb289f181195d14295d0609a03e05ce3cd5",
+      "bytes": 7260,
+      "source": "/mnt/raid0/llm/tmp/refactor-unsupported-seven-v2-20261031/6/files/artifacts/compute/refactor-evidence-corrections-20261031/6/bench_C0.json"
+    },
+    {
+      "git_path": "artifacts/compute/refactor-evidence-corrections-20261031/6/bench_C1.json",
+      "sha256": "3e2003780e4445642ba0b2f1f691c234d514127b50d8bf54750b678862dc4a37",
+      "bytes": 7264,
+      "source": "/mnt/raid0/llm/tmp/refactor-unsupported-seven-v2-20261031/6/files/artifacts/compute/refactor-evidence-corrections-20261031/6/bench_C1.json"
+    },
+    {
+      "git_path": "artifacts/compute/refactor-evidence-corrections-20261031/6/bench_C2.json",
+      "sha256": "0c8f3bac13f208aa16e8070b8f3dddaecb450f8a02cce7a3fe3e185eed99ea54",
+      "bytes": 7260,
+      "source": "/mnt/raid0/llm/tmp/refactor-unsupported-seven-v2-20261031/6/files/artifacts/compute/refactor-evidence-corrections-20261031/6/bench_C2.json"
+    },
+    {
+      "git_path": "artifacts/compute/refactor-evidence-corrections-20261031/6/results.json",
+      "sha256": "9eb6cfafcd757fabbb58fad8e5da0317d451c58bd14cf275b5066ee0e6ab45f9",
+      "bytes": 12906,
+      "source": "/mnt/raid0/llm/tmp/refactor-unsupported-seven-v2-20261031/6/files/artifacts/compute/refactor-evidence-corrections-20261031/6/results.json"
+    },
+    {
+      "git_path": "artifacts/compute/refactor-evidence-corrections-20261031/6/exact-depth/acceptance.json",
+      "sha256": "4daa3c76880f256132cca53b091cf64ab01984e3e17b68ec493d4c8464c56a1c",
+      "bytes": 5194,
+      "source": "/mnt/raid0/llm/tmp/codex-ni-v11-086-slow2-20261025/night-repin-prep/receipts/acceptance.json"
+    },
+    {
+      "git_path": "artifacts/compute/refactor-evidence-corrections-20261031/6/exact-depth/B-raw.json",
+      "sha256": "0bd3c1fd02756f30b480b4d0c97acbc913538ed06d4747e452382f2a172a8cf9",
+      "bytes": 1775,
+      "source": "/mnt/raid0/llm/tmp/codex-ni-v11-086-slow2-20261025/depth-acceptance-prep/results/B-raw.json"
+    },
+    {
+      "git_path": "artifacts/compute/refactor-evidence-corrections-20261031/6/exact-depth/C-raw.json",
+      "sha256": "c5fc5018d43af2a945dd7f2074b625829c3d66f22b96e4361d20949abd8f298d",
+      "bytes": 1775,
+      "source": "/mnt/raid0/llm/tmp/codex-ni-v11-086-slow2-20261025/depth-acceptance-prep/results/C-raw.json"
+    }
+  ],
+  "task_prose_and_dates_unchanged": true,
+  "tests_rerun": false,
+  "new_code_quota_credit": false,
+  "recovery": {
+    "index": 6,
+    "original_paragraph_sha256": "ff5c0cc390e5714526bb0e417a12e5d26c39f3fe71d98528e218d9e7e4fd7957",
+    "whole_handoff_recovery_byte_identical": true,
+    "original_prose_and_dates_unchanged": true
+  }
+}

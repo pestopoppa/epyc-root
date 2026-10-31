@@ -1,0 +1,53 @@
+{
+ "complete": true,
+ "item": "V11-086",
+ "rule_version": "086v2",
+ "decision": "fold_opt_in_default_off",
+ "cells": {
+  "pp5": {
+   "floor_pct": 5.863,
+   "C_spread_pct": 5.863,
+   "identity_control_pct": 5.323,
+   "effect_pct": -0.338,
+   "gain": false,
+   "regression": false
+  },
+  "tg32": {
+   "floor_pct": 2.383,
+   "C_spread_pct": 2.383,
+   "identity_control_pct": 2.056,
+   "effect_pct": -1.879,
+   "gain": false,
+   "regression": false
+  },
+  "pp5@d32768": {
+   "floor_pct": 2.028,
+   "C_spread_pct": 2.028,
+   "identity_control_pct": 0.375,
+   "effect_pct": 0.012,
+   "gain": false,
+   "regression": false
+  },
+  "tg32@d32768": {
+   "floor_pct": 8.342,
+   "C_spread_pct": 8.342,
+   "identity_control_pct": 2.239,
+   "effect_pct": 0.406,
+   "gain": false,
+   "regression": false
+  }
+ },
+ "long_ctx_gain": false,
+ "any_regression": false,
+ "serving": {
+  "effect_pct": -0.613680299994368,
+  "anchor_tok_s": 43.66877033007279,
+  "candidate_tok_s": 43.400783689307346,
+  "unit": "process (matched_process_v2, 5 pairs), sign claim; no calibrated floor"
+ },
+ "serving_ok": true,
+ "reasons": [],
+ "decided_at": "2026-10-27T00:25:44Z",
+ "rule": "predeclared/086v2/PREDECLARED_086v2.md",
+ "predeclared_sha256": "48897be2e4c38c88427056faa208328629f515b36889626cbdd0870ee5c31f62"
+}
