@@ -1,0 +1,96 @@
+{
+  "schema": "epyc.refactor.yarn_cpu_host_preparation.v1",
+  "root_base": "3195c05f75f84e4af6b732a74f814dd4a2c9756a",
+  "id": "yarn-oolong-s1-host256-eligible29-v31-20261031",
+  "stage": "qualified launcher published; full27B scientific measurement remains OPEN",
+  "published_at": "2026-10-31T05:07:00.399969+00:00",
+  "READY_manifest_sha256": "bf18de4fb58e9e82d9c1d5cce517a1032757b1c3777b9034f4f4348578faeda2",
+  "native_source_manifest_sha256": "438c7738539d5cbd9cdff38f2034bdb632269a6092591dfab3d87595586f2b1a",
+  "scope": {
+    "shard": 1,
+    "official_original_denominator": 120,
+    "eligible_A0": 29,
+    "immutable_unknown_A0": 1,
+    "eligible_A1": 0,
+    "A1_gate": "successful matching A0 required",
+    "new_official_exposures": 0,
+    "RAM_GiB": 180,
+    "minimum_window_s": 42000,
+    "requested_window_s": 43200,
+    "study_grade": null,
+    "full_CPU_recipe": "same FFC CPU image, t24, ngl0, NUMA interleaveall; archived model/template/DSO/recipes unchanged"
+  },
+  "controls": {
+    "normal": {
+      "wall_s": 29.932,
+      "rc": 0,
+      "sampled_tree_RSS_GiB": 1.372,
+      "owned_children_drained": true,
+      "native_control_records": 1,
+      "control_unknown": 0,
+      "native_slot_active_near_cutoff": false,
+      "pass": true
+    },
+    "cutoff": {
+      "wall_s": 36.257,
+      "rc": 75,
+      "sampled_tree_RSS_GiB": 1.382,
+      "owned_children_drained": true,
+      "native_control_records": 16,
+      "control_unknown": 1,
+      "native_slot_active_near_cutoff": true,
+      "pass": true
+    }
+  },
+  "control_geometry": "0.6B canonical model;4000char prompt prefixes;max8 response tokens;five actual-constructor cases keep full/characterization1024",
+  "preserved_negative_controls": "uncapped/max64 normal timeouts;60s cutoff exhausted30canaries;earlier source epochs independently reconstructed to observed source-manifest SHAs",
+  "admission": "actual validator0refusals/0warnings; current keeper scan and read-only prearm metadata prefix; host source/storage checks; cross-filesystem pause negative",
+  "CPU_vs_NI141": "Same model/template/original120 prompt plan, distinct CPU binary4483bcfc/CPU DSO3f4edd2f/t24/ngl0/archived source versus NI141 GPU binary2b49713f/HIPf26a166b/ROCm0/nglall/fresh source7e7d; no pooling, replacement or retirement inferred",
+  "protected_raw_evidence": {
+    "PUBLICATION.json": {
+      "path": "/mnt/raid0/llm/tmp/yarn-oolong-s1-host-v31-20261031/PUBLICATION.json",
+      "sha256": "9ddeae2ea76c630a18984f68ffe20ff1b890c6073d5232fd284449d301069c15"
+    },
+    "QUALIFICATION.json": {
+      "path": "/mnt/raid0/llm/tmp/yarn-oolong-s1-host-v31-20261031/QUALIFICATION.json",
+      "sha256": "5a9efa257efd1a43df4b4c56ee380fe8436569c20add6f8cf49a902f88561129"
+    },
+    "HOST-MANIFEST.json": {
+      "path": "/mnt/raid0/llm/tmp/yarn-oolong-s1-host-v31-20261031/HOST-MANIFEST.json",
+      "sha256": "1371ca4bd18a4441507f184d0bfe513b421eacafc1d0bef36a2ebb0ff75a64f4"
+    },
+    "SCOPE-AND-SOURCE-CONTROLS.json": {
+      "path": "/mnt/raid0/llm/tmp/yarn-oolong-s1-host-v31-20261031/SCOPE-AND-SOURCE-CONTROLS.json",
+      "sha256": "e0824cb20b7ff58a937b6c382a7afbf070876b9a06123b60715dbb3812c5e614"
+    },
+    "SCOPE-CONTROLS.log": {
+      "path": "/mnt/raid0/llm/tmp/yarn-oolong-s1-host-v31-20261031/SCOPE-CONTROLS.log",
+      "sha256": "ec90bb0512ae1e012bb0575866a89c66888c948657c8c1090bed51bcaad56b3a"
+    },
+    "VALIDATOR.log": {
+      "path": "/mnt/raid0/llm/tmp/yarn-oolong-s1-host-v31-20261031/VALIDATOR.log",
+      "sha256": "da3e45b73abf6bd920ac617756fa57601da9834abf118afce5fef2fc6bf2070a"
+    },
+    "PREARM-FINAL.log": {
+      "path": "/mnt/raid0/llm/tmp/yarn-oolong-s1-host-v31-20261031/PREARM-FINAL.log",
+      "sha256": "fda7ebe315c9ab63f24de836488145406446d2ce660c5efbd7debe195ad79f81"
+    },
+    "READY-SCAN.log": {
+      "path": "/mnt/raid0/llm/tmp/yarn-oolong-s1-host-v31-20261031/READY-SCAN.log",
+      "sha256": "2137e633bae5990dcd25d09e3a18cb8e717792992d71402c50ec476061dd1b77"
+    },
+    "CPU-VS-NI141-IDENTITY.json": {
+      "path": "/mnt/raid0/llm/tmp/yarn-oolong-s1-host-v31-20261031/CPU-VS-NI141-IDENTITY.json",
+      "sha256": "de74f4c6b15e54aec153157d80c706bd8d2bf5c78c9a1e8d08f717f0cd2cbbc8"
+    },
+    "CONTROL-GEOMETRY-CASES.json": {
+      "path": "/mnt/raid0/llm/tmp/yarn-oolong-s1-host-v31-20261031/CONTROL-GEOMETRY-CASES.json",
+      "sha256": "4d811d281f92ff4dcfabfcbd0962eff47b6a6ed9df3b7693bebd435532e6b775"
+    },
+    "SOURCE-HISTORY-RECONSTRUCTION.json": {
+      "path": "/mnt/raid0/llm/tmp/yarn-oolong-s1-host-v31-20261031/SOURCE-HISTORY-RECONSTRUCTION.json",
+      "sha256": "de64f04a4cd85a94525d81a9672e5fcb9201881fa88ba8bdb05585d65dc9e276"
+    }
+  },
+  "belief": "no-belief: preparation and cutoff controls only; no full scientific result or scientific parent task tick"
+}

@@ -1,0 +1,82 @@
+"""Exercise production main control flow; replace external IO/service adapters only."""
+import contextlib,hashlib,importlib.util,io,json,os,sys,tempfile,types,unittest
+from pathlib import Path
+from unittest.mock import patch
+D=Path(__file__).parent/'v12-packet-r2/source'
+for name in ('official_guard_v10_r8','hil15_multi_service','s0_grant_contract_v1','verify_replay','s0_retained_r6_epoch','verify_prior_epoch','multi_real_replay_v6'):
+ sys.modules[name]=types.ModuleType(name)
+sys.modules['s0_grant_contract_v1'].WindowMarginReached=RuntimeError
+sys.modules['verify_replay'].verify=lambda *a,**kw:None
+sys.modules['s0_retained_r6_epoch'].verify_retained=lambda:None
+sys.modules['verify_prior_epoch'].verify_prior=lambda:{f'{i:02d}':{} for i in range(1,10)}
+sys.modules['multi_real_replay_v6'].listener=lambda *a:True
+spec=importlib.util.spec_from_file_location('official_under_test',D/'official_s0_v14_r8.py');m=importlib.util.module_from_spec(spec);spec.loader.exec_module(m)
+class ActualMain(unittest.TestCase):
+ def setUp(self):
+  self.tmp=tempfile.TemporaryDirectory();self.addCleanup(self.tmp.cleanup);self.h=Path(self.tmp.name);self.root=self.h/'s0-v12-official-results';self.model=self.h/'model';self.model.write_bytes(b'model')
+  (self.h/'ENABLE_OFFICIAL_AFTER_SMOKES').touch();self.events=[];self.changed=False;self.calls=0;self.mode='cutoff'
+  self.readset={'slot':'unit15/slot1','status':'preserved_unknown_incomplete','directory_count':0,'file_count':0,'readset_sha256':'a'*64}
+  origprior=m.prior
+  def prior(root,unit,i,source):
+   if root==self.root:return origprior(root,unit,i,source)
+   return True
+  def retained():
+   self.events.append('old-check')
+   if self.changed:raise RuntimeError('old readset changed')
+   return self.readset.copy()
+  guard=types.SimpleNamespace(check=lambda *a:self.events.append('guard'),peak=0,samples=0,CAP=8000000,resources=types.SimpleNamespace(peak_detail={}))
+  def service_run(server,**kw):
+   self.calls+=1;self.events.append('service')
+   if self.mode=='before':return {'rc':75,'reason':'cutoff','descendants_drained':True}
+   cycle=kw['next_cycle'](123,{});self.events.append('exposed');self.assertIsNotNone(cycle)
+   argv,log,finish=cycle
+   self.assertTrue((self.root/'unit-15/slot-2').is_dir())
+   if self.mode=='terminal':
+    log.write('actual external driver output\n');log.close();finish();self.assertIsNone(kw['next_cycle'](123,{}))
+   else:log.close()
+   if self.mode=='old-after':self.changed=True
+   if self.mode=='nodrain':return {'rc':75,'reason':'cutoff','descendants_drained':False}
+   return {'rc':0 if self.mode=='terminal' else 75,'reason':'complete' if self.mode=='terminal' else 'cutoff','descendants_drained':True,'children':[{'pid':123,'identity':{},'exit':0}]}
+  changes={'H':self.h,'MODEL':self.model,'MODEL_SHA':hashlib.sha256(b'model').hexdigest(),'guard':guard,'source_check':lambda boundary:{},'checkout_check':lambda:None,'verify_retained':lambda:None,'verify_prior':lambda:{f'{i:02d}':{} for i in range(1,10)},'validate_existing_unit':lambda *a:None,'check_v11_incomplete_slot':retained,'prior':prior,'service':types.SimpleNamespace(run=service_run)}
+  for key,val in changes.items():p=patch.object(m,key,val);p.start();self.addCleanup(p.stop)
+  p=patch.object(m.runpy,'run_path',lambda *a,**kw:{});p.start();self.addCleanup(p.stop)
+  p=patch.dict(os.environ,{'FILLER_DEADLINE':'9999999999','HIL15_MANIFEST_SHA':'b'*64});p.start();self.addCleanup(p.stop)
+ def runmain(self):
+  with contextlib.redirect_stdout(io.StringIO()) as out:rc=m.main()
+  return rc,out.getvalue()
+ def test_before_exposure_cutoff(self):
+  self.mode='before';rc,_=self.runmain();self.assertEqual(rc,75);self.assertEqual(m.classify_v12_slot2(),{'known':40,'unknown':4,'unexposed':1,'slot15_2':'unexposed'});self.assertFalse((self.root/'COLLECTION-EXHAUSTED.json').exists())
+ def test_terminal_normal(self):
+  self.mode='terminal';rc,out=self.runmain();self.assertEqual(rc,0);data=json.loads(out);self.assertEqual((data['known'],data['unknown'],data['unexposed']),(41,4,0));self.assertIsNone(data['native_grade']);self.assertFalse(data['full_complete']);self.assertLess(self.events.index('old-check'),self.events.index('service'))
+ def test_cutoff_then_rearm_no_redraw(self):
+  rc,_=self.runmain();self.assertEqual(rc,75);record=json.loads((self.root/'COLLECTION-EXHAUSTED.json').read_text());self.assertEqual(record['result_rc'],75)
+  inventory=m.tree_inventory(self.root/'unit-15/slot-2');rc,out=self.runmain();self.assertEqual(rc,0);self.assertEqual(self.calls,1);self.assertEqual(inventory,m.tree_inventory(self.root/'unit-15/slot-2'));data=json.loads(out);self.assertEqual((data['known'],data['unknown'],data['unexposed']),(40,5,0));self.assertEqual(data['original_denominator'],45);self.assertIsNone(data['native_grade']);self.assertFalse(data['full_complete'])
+ def test_old_tamper_before_service(self):
+  self.changed=True
+  with self.assertRaisesRegex(RuntimeError,'old readset'):self.runmain()
+  self.assertEqual(self.calls,0)
+ def test_old_tamper_after_drain(self):
+  self.mode='old-after'
+  with self.assertRaisesRegex(RuntimeError,'old readset'):self.runmain()
+  self.assertFalse((self.root/'COLLECTION-EXHAUSTED.json').exists())
+ def test_no_drain_refuses_seal(self):
+  self.mode='nodrain'
+  with self.assertRaisesRegex(RuntimeError,'custody not drained'):self.runmain()
+  self.assertFalse((self.root/'COLLECTION-EXHAUSTED.json').exists())
+ def test_changed_partial_refuses(self):
+  self.runmain();(self.root/'unit-15/slot-2/driver.log').write_text('tamper')
+  with self.assertRaisesRegex(RuntimeError,'changed after drain'):self.runmain()
+  self.assertEqual(self.calls,1)
+ def test_invalid_seal_refuses(self):
+  self.runmain();(self.root/'COLLECTION-EXHAUSTED.json').write_text('{}')
+  with self.assertRaisesRegex(RuntimeError,'receipt seal'):self.runmain()
+  self.assertEqual(self.calls,1)
+ def test_unsealed_partial_refuses(self):
+  (self.root/'unit-15/slot-2').mkdir(parents=True)
+  with self.assertRaisesRegex(RuntimeError,'without captured custody'):self.runmain()
+  self.assertEqual(self.calls,0)
+ def test_invalid_terminal_refuses(self):
+  (self.root/'unit-15/slot-2').mkdir(parents=True);(self.root/'unit-15/slot-2.sha256').write_text('wrong')
+  with self.assertRaisesRegex(RuntimeError,'source binding'):self.runmain()
+  self.assertEqual(self.calls,0)
+if __name__=='__main__':unittest.main(verbosity=2)

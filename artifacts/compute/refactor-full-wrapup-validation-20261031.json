@@ -1,0 +1,24 @@
+{
+  "index_check": 0,
+  "wiki_lint": 0,
+  "scopes": [
+    "docs/reference/speech/silero-runtime-parity-20261031.md",
+    "handoffs/active/agentic-serving-harness-fixes.md",
+    "handoffs/active/autokernel-all-devices-all-dimensions.md",
+    "handoffs/active/autokernel-champion-aggregate.md",
+    "handoffs/active/autokernel-rebuild-program.md",
+    "handoffs/active/conversation-stack.md",
+    "handoffs/active/cpu-decode-roofline-program.md",
+    "handoffs/active/harness-improvement-loop.md",
+    "handoffs/active/mi210-big-model-and-acceleration-roadmap.md",
+    "handoffs/active/repl-embedding-retrieval.md",
+    "handoffs/active/reviewer-latency-and-sampling-budget.md",
+    "handoffs/active/speculative-decoding-mtp-refresh.md",
+    "handoffs/active/vidya-belief-substrate-program.md",
+    "handoffs/active/yarn-context-extension-research.md",
+    "progress/2026-10/2026-10-31-codex-refactor-01a16fc3.md"
+  ],
+  "wiki_review": "SolA source review; clarified custody/serialization pass versus property failures; all local links exist",
+  "wiki_draft_sha256": "df6f961627012806b391acb94ee621847bbe09385cdfca8cd65259631555cf4f",
+  "main_base": "d8e85d6ca101090c06bef7c60c2c24c4ce9e25af"
+}

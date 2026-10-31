@@ -1,0 +1,21 @@
+{
+  "cutoff": {
+    "active_compiler_witness_sha256": "4b1c05d54521456a9297d7ebc95d242b1c911bf1d06632499517651daa87e0ff",
+    "children_drained": true,
+    "outer_log_sha256": "822bb8fbf0f11e3389918e1f87816417ab353bdf8f809f9709c36345dd6d8ff0",
+    "rc": 75,
+    "sampled_peak_bytes": 1274961920,
+    "wall_s": 168.49680530303158
+  },
+  "full_build_complete": false,
+  "gpu_execution": false,
+  "normal": {
+    "children_drained": true,
+    "outer_log_sha256": "93204d818b7142f28de478773eefd5a039249cd15d0a47e3102e6f18c5cc3ba9",
+    "rc": 0,
+    "sampled_peak_bytes": 568901632,
+    "wall_s": 9.20804218086414
+  },
+  "schema": "akxall8.r5.same_entry_controls.v1",
+  "source_head": "c72ec82f5417bb2937310326120f149b665e8400"
+}

@@ -1,6 +1,6 @@
 # AutoKernel — the standing aggregate candidate (champion)
 
-**Scratch**: `/mnt/raid0/llm/tmp/codex-ni-nemo-accepted-wrap-20261031/` · retained evidence: `/mnt/raid0/llm/tmp/codex-ni-next-gpu-backlog-20261030/` · C6 fold: `/mnt/raid0/llm/tmp/refactor-champion-c6-fold-20261030/` · C6 build evidence: `/mnt/raid0/llm/tmp/refactor-c6-store-build-prep-20261030/`
+**Scratch**: `/mnt/raid0/llm/tmp/codex-ni-nemo-accepted-wrap-20261031/` · retained evidence: `/mnt/raid0/llm/tmp/codex-ni-next-gpu-backlog-20261030/` · C6 fold: `/mnt/raid0/llm/tmp/refactor-champion-c6-fold-20261030/` · C6 build evidence: `/mnt/raid0/llm/tmp/refactor-c6-store-build-prep-20261030/` · refactor 2026-10-31: `/mnt/raid0/llm/tmp/refactor-01a16fc3/full-wrapup-20261031/`, `/mnt/raid0/llm/tmp/refactor-v11053-c5-control-build-v2-20261031/`, `/mnt/raid0/llm/tmp/refactor-c6-serving-gates-r3-20261031/`
 
 **Owner:** operator audit session, 2026-08-27. **Depends on:** INF-06 (campaign), INF-64 (repair track).
 ### C6 preparation checkpoint — 2026-10-30/31 (refactor)
@@ -1088,3 +1088,10 @@ FAILED-RUN rc=1 reason=nested-device-claim; class=harness; owner action=make the
 ### C6 GPU property diagnostic — 2026-10-31 08:08 UTC
 
 `refactor-c6-gpu-property-diagnostic-729599d69-20261031` ended rc 2: **FAILED-RUN, class harness**. Native transport completed rc 0, but strict replay rejected its native cases because `diag_validate.py:47` compares tuple-valued parsed properties with JSON list-valued retained properties. Read-only replay with JSON normalization alone passed the original remaining validator; the original refusal is retained. Each C5/C6 MUL_MAT cohort had 1080 OK, 65 explicit FAIL and 326 unsupported; each MUL_MAT_ID had 815 OK; each FLASH_ATTN_EXT had 2978 OK and 2229 unsupported. C6 G10 had 24 OK and one unsupported. These are native diagnostic counts, not a paired causal comparison: input-byte identity is unknown. Full G-AK remains null. Owner action: repair serialization comparison and revalidate the retained native evidence without rerunning or weakening the original criteria. [Raw and descriptive records](../../artifacts/compute/codex3-allowner-native-0805-20261031/c6/). [belief: cc]
+
+### C6 owner wrap-up — 2026-10-31
+
+- [x] **C6-DIAG-JSON-REPLAY:** reproduce original tuple/list validator refusal, correct only JSON representation in an isolated replay and revalidate all15 retained native records/7 cohorts; parsed-field corruption still refuses and original files remain unchanged. C5/C6 each MUL_MAT1080OK/65FAIL/326unsupported, MUL_MAT_ID815OK, FLASH_ATTN_EXT2978OK/2229unsupported; C6G10 24OK/1unsupported. Original wrapper failure remains; input-byte pairing unknown and G-AK null. No GPU rerun. ✅ 2026-10-31 [belief: cc]
+- [x] **C6-SERVING-RESERVATION-SUCCESSOR:** qualify and publish all three fresh r3 combined-reservation launchers matching actual GPU-quiet claim; original greedy r2 refusal remains preserved. Same-source greedy/named/port-control normal0 and active native STOP75/drain passed, actual noarg PID visible and real read-only grant checker/validator/prearm passed. Original t48/NUMA/128GiB numeric recipe unchanged; full gates remain unrun and CAS blocked. ✅ 2026-10-31 [no-belief: launcher repair and qualification]
+
+Source729599d69 and both same-source stores/custody are complete. Boundary audit found only own counterfactual `c4ac3c3849ce293f4652f4f0ef2d259e0acb1197`, EXCL test/control-only (deliberate reverse of d40927c4), no new fold-eligible commits. Champion remains C5c72ec82f5. The CAS draft remains NOT_READY; no ref update, deployment or frozen-kernel change.

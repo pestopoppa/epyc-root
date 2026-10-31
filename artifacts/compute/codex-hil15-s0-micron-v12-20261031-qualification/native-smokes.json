@@ -1,0 +1,132 @@
+{
+  "schema": "hil15-native-smoke-qualification/v1",
+  "at": "2026-10-31T04:30:16.028184+00:00",
+  "launcher_sha256": "d14e685e78989b7c109b1c43ea8b24bab14f8df6c5083745752426ed1b5088f7",
+  "source_manifest_sha256": "0f29d73acfd4ac5761f3b5c026c05a9816fdcb2bb0aca8cbb2d6cb66fd6cceca",
+  "uid": 1000,
+  "regions": "122,123",
+  "normal_and_cutoff": {
+    "normal": {
+      "root": "/mnt/micron/refactor-hil15-s0-v12-slot2-20261031/real-unit-smoke-normal-i7d4qtqy",
+      "log": "/mnt/micron/refactor-hil15-s0-v12-slot2-20261031/real-unit-smoke-normal-i7d4qtqy/ws58-launcher.out",
+      "log_sha256": "44fbb13662e8e6c137ea043ad51a188ad1fa479bc4ae09d5cbee6dd8708f016f",
+      "outer_exit_code": 0,
+      "diagnostics": [
+        {
+          "result": {
+            "rc": 0,
+            "reason": "driver exit",
+            "descendants_drained": true,
+            "children": [
+              {
+                "pid": 3666467,
+                "identity": {
+                  "state": "R",
+                  "ppid": 3666384,
+                  "birth": 154338042
+                },
+                "exit": 0
+              },
+              {
+                "pid": 3666700,
+                "identity": {
+                  "state": "R",
+                  "ppid": 3666384,
+                  "birth": 154338123
+                },
+                "exit": 0
+              }
+            ]
+          },
+          "elapsed_s": 16.52308445610106,
+          "peak_rss_bytes": 1526247424,
+          "samples": 258
+        }
+      ]
+    },
+    "cutoff": {
+      "root": "/mnt/micron/refactor-hil15-s0-v12-slot2-20261031/real-unit-smoke-cutoff-41vtx21l",
+      "log": "/mnt/micron/refactor-hil15-s0-v12-slot2-20261031/real-unit-smoke-cutoff-41vtx21l/ws58-launcher.out",
+      "log_sha256": "113cc73d5e3fa83086a242e54099f68b408adcb2dd68b370c8059703024586c7",
+      "outer_exit_code": 75,
+      "diagnostics": [
+        {
+          "result": {
+            "rc": 0,
+            "reason": "driver exit",
+            "descendants_drained": true,
+            "children": [
+              {
+                "pid": 3671277,
+                "identity": {
+                  "state": "R",
+                  "ppid": 3671177,
+                  "birth": 154342053
+                },
+                "exit": 0
+              },
+              {
+                "pid": 3671506,
+                "identity": {
+                  "state": "R",
+                  "ppid": 3671177,
+                  "birth": 154342149
+                },
+                "exit": 0
+              }
+            ]
+          },
+          "elapsed_s": 16.370844268007204,
+          "peak_rss_bytes": 1526173696,
+          "samples": 252
+        },
+        {
+          "result": {
+            "rc": 75,
+            "reason": "cutoff",
+            "descendants_drained": true,
+            "children": [
+              {
+                "pid": 3672651,
+                "identity": {
+                  "state": "R",
+                  "ppid": 3671177,
+                  "birth": 154343691
+                },
+                "exit": 0
+              },
+              {
+                "pid": 3672864,
+                "identity": {
+                  "state": "R",
+                  "ppid": 3671177,
+                  "birth": 154343768
+                },
+                "exit": -15
+              }
+            ]
+          },
+          "elapsed_s": 33.7736970258411,
+          "peak_rss_bytes": 1526173696,
+          "samples": 520
+        }
+      ],
+      "partial": "/mnt/micron/refactor-hil15-s0-v12-slot2-20261031/real-unit-smoke-cutoff-41vtx21l/slot-1/partial.json",
+      "partial_sha256": "e171d2117a91b68f63bdb898a15afb1a339e6a7e2bdbce58d5eb4d8322392235",
+      "active_decode": {
+        "task": "90",
+        "tokens": 100
+      }
+    }
+  },
+  "captured_pid_identities_drained": [
+    3666467,
+    3666700,
+    3671277,
+    3671506,
+    3672651,
+    3672864
+  ],
+  "grade": null,
+  "full_complete": false
+}

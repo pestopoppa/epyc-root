@@ -1,0 +1,483 @@
+{
+  "base_origin_main": "809d8adacc1c08dcd2d33ee3af2a07832be23d8a",
+  "old_lane_head": "cc8ab8584763b91ecbc233b6b3e1ed342503e02d",
+  "old_range_exclusive_base": "81a94bbbebca754c9310457f7a9e2e6ff9f76908",
+  "commits": [
+    "cc8ab8584763b91ecbc233b6b3e1ed342503e02d\tdocs: close CS22 native parity table with scoped negative result",
+    "0e04f7ed4fd5b10db7e052ad01f91a1797777006\tfeat: register strict prospective INF34 raw A2 observations",
+    "adc72ac3693b66ca9307a4f609ee19abc4fb68cf\tdocs: checkpoint admitted AKX C5 floor launcher successor",
+    "1153a1e8fd79083e92b151179444263e4d10d5cf\tdocs: checkpoint XGrammar paired profiling launcher readiness",
+    "cf94053935082a173c4fc4f4f34735f6432bdf7a\tdocs: checkpoint actual HIL15 S2 dispatch qualification",
+    "40e6fa702b6ee42d2c270f5454eecff175478627\tdocs: checkpoint qualified A4a AKX and YaRN S2 launchers",
+    "27fac05da41076150c33b54cd12f3248b5ee707d\tdocs: enroll prospective C6 GPU property diagnostic",
+    "9fa12151192f826d44a08b57f48653240f58cb58\tCheckpoint qualified YaRN CPU S1 and S3 continuation launchers",
+    "e94836b53327aa363d35a517a9b60bf41ee5b32f\tQualify S0 and S2 continuations and repair C5 build admission",
+    "f75c6d3c4469ea5386be2f1906ccf53b286b1031\tCheckpoint qualified AKX ALL 8 build launcher repair and READY successor",
+    "609317b1d6629be3ce072dbc0cd15436ff7de096\tAdd strict C6 Q4 component observation reader and captured custody",
+    "fa4ce242cf8472eaadd231a81e6e540838e3f08d\tEnroll prospective C6 served-shape microbench captures",
+    "9e0f7c1940175aba2a9ed5033376dfafbe12c4f4\tAlign residual-run reference with current handoff",
+    "345d4e7dfabea374217c68af732dab3bc9abc751\tCheckpoint C5 custody and completed source-preparation repairs"
+  ],
+  "artifact_status_counts": {
+    "MISSING": 40,
+    "IDENTICAL": 3
+  },
+  "paths": [
+    {
+      "path": "artifacts/compute/c6-q4-microbench-r2-20261031/outer-custody/CUSTODY-MANIFEST.json",
+      "status": "MISSING",
+      "old_git_blob": "ee2bb47aa6f9626920e0b1b4ef9c6fc0e9a16f96",
+      "old_mode": "100644",
+      "old_sha256": "e247342ce786b5fabbf77ceb5834295dc9f9fc2dd1fb78147d604973c2a72b7b",
+      "old_bytes": 1100,
+      "main": null,
+      "main_sha256": null
+    },
+    {
+      "path": "artifacts/compute/c6-q4-microbench-r2-20261031/outer-custody/CUSTODY-SHA256SUMS",
+      "status": "MISSING",
+      "old_git_blob": "b51abf5a27c50c569de0cc1e643908acc499ca58",
+      "old_mode": "100644",
+      "old_sha256": "cac55d7329c1fd157272a5f061f474844cb1a061b67a2125bc71e89a288d779b",
+      "old_bytes": 350,
+      "main": null,
+      "main_sha256": null
+    },
+    {
+      "path": "artifacts/compute/c6-q4-microbench-r2-20261031/outer-custody/complete-marker.txt",
+      "status": "MISSING",
+      "old_git_blob": "675b5b2699e9286200709001da03465ed95d2291",
+      "old_mode": "100644",
+      "old_sha256": "2b0200190296496ea40572dc60e42d0f929bb067ddf5f9ef255f137f0bcdaf86",
+      "old_bytes": 86,
+      "main": null,
+      "main_sha256": null
+    },
+    {
+      "path": "artifacts/compute/c6-q4-microbench-r2-20261031/outer-custody/keeper-launcher.out",
+      "status": "MISSING",
+      "old_git_blob": "6540829e1c5df7fe0cbd8f8f336bab557b95b18d",
+      "old_mode": "100644",
+      "old_sha256": "1a5b0325287b6cd8a26ef443366789e1c8c810f3bd2ed19b4238390aa2cba7b5",
+      "old_bytes": 2473,
+      "main": null,
+      "main_sha256": null
+    },
+    {
+      "path": "artifacts/compute/c6-q4-microbench-r2-20261031/outer-custody/keeper-ready-armed.json",
+      "status": "MISSING",
+      "old_git_blob": "e791133446b21d2e509473798bda2c383267d474",
+      "old_mode": "100644",
+      "old_sha256": "ff26a324094d6937c1a0e509518d3f45fe128cdf99d257eca231a765ee68f670",
+      "old_bytes": 6334,
+      "main": null,
+      "main_sha256": null
+    },
+    {
+      "path": "artifacts/compute/codex-hil15-s0-micron-v12-20261031-qualification.json",
+      "status": "MISSING",
+      "old_git_blob": "b7ea195f5d5157b0f1b296e1d399792a4a662112",
+      "old_mode": "100644",
+      "old_sha256": "d027494dc2bf7735eabd8c9e457c0497553bd53ab34e47c674529b78dedd1734",
+      "old_bytes": 5201,
+      "main": null,
+      "main_sha256": null
+    },
+    {
+      "path": "artifacts/compute/codex-hil15-s0-micron-v12-20261031-qualification/actual-main-controls-source.txt",
+      "status": "MISSING",
+      "old_git_blob": "05b43a0384f4ac0f99e9e1bbdea57baf92e290d1",
+      "old_mode": "100644",
+      "old_sha256": "46ad8640ff4f4641df30b345ccde42aea5c30f899fb6eb294bbe6c90bcb682cb",
+      "old_bytes": 6388,
+      "main": null,
+      "main_sha256": null
+    },
+    {
+      "path": "artifacts/compute/codex-hil15-s0-micron-v12-20261031-qualification/admission-gates.log",
+      "status": "MISSING",
+      "old_git_blob": "23f829f127c5474801891f1db6bebe5d4fec6ca2",
+      "old_mode": "100644",
+      "old_sha256": "91b1df262a85a91ffeb869ca525dc3d62fc6a2979e562f981007db01ff9defe5",
+      "old_bytes": 372,
+      "main": null,
+      "main_sha256": null
+    },
+    {
+      "path": "artifacts/compute/codex-hil15-s0-micron-v12-20261031-qualification/native-smokes.json",
+      "status": "MISSING",
+      "old_git_blob": "a557d49d733c58abcdef11b8ea731496422c9811",
+      "old_mode": "100644",
+      "old_sha256": "573b2224755fbb8217d0b369d3205bf44cc1df6a72eb19c6005e39841da1137c",
+      "old_bytes": 3936,
+      "main": null,
+      "main_sha256": null
+    },
+    {
+      "path": "artifacts/compute/codex-hil15-s0-micron-v12-20261031-qualification/official-main-source.txt",
+      "status": "MISSING",
+      "old_git_blob": "b7663b66614a004b88e9e7dda3fa3d115cc3aaca",
+      "old_mode": "100644",
+      "old_sha256": "de01e8fdaf2aa21544040f50a666c7499d688e94966dcdbf99e0df020d0554fe",
+      "old_bytes": 22102,
+      "main": null,
+      "main_sha256": null
+    },
+    {
+      "path": "artifacts/compute/codex-hil15-s0-micron-v12-20261031-qualification/owner-actual-main-controls.log",
+      "status": "MISSING",
+      "old_git_blob": "0898e4cefc6a1d19662b86df5f12e72576ff8a9a",
+      "old_mode": "100644",
+      "old_sha256": "abe3410fab970b634c764905244b263f859551b1fc17c97142106b52845a2316",
+      "old_bytes": 1477,
+      "main": null,
+      "main_sha256": null
+    },
+    {
+      "path": "artifacts/compute/codex-hil15-s0-micron-v12-20261031-qualification/preflight.log",
+      "status": "MISSING",
+      "old_git_blob": "6f20fe26330d506d76922135e9a34c3322b99645",
+      "old_mode": "100644",
+      "old_sha256": "cb54da1a8197944c8b5c4cf2b94ea1146454183d2c47ac9a0af4e708ce5eb0e0",
+      "old_bytes": 434,
+      "main": null,
+      "main_sha256": null
+    },
+    {
+      "path": "artifacts/compute/codex-hil15-s0-micron-v12-20261031-qualification/published-manifest.json",
+      "status": "MISSING",
+      "old_git_blob": "35bead87e8f3de9093f4ad261eb3bdc195e3df8b",
+      "old_mode": "100644",
+      "old_sha256": "b494765decc1150135a504e8569dbae0ba1be07d6b64633394d84714f36f4a1b",
+      "old_bytes": 3635,
+      "main": null,
+      "main_sha256": null
+    },
+    {
+      "path": "artifacts/compute/codex-hil15-s2-r13-pid-20261031-qualification.json",
+      "status": "MISSING",
+      "old_git_blob": "6495f2fb6f20f072adfc4ca0ab4578025634ba9f",
+      "old_mode": "100644",
+      "old_sha256": "09eaa186cb17f8c0995f72f7eb6af39a91e84b41e16f591fa47faeb1ebf70fe3",
+      "old_bytes": 4777,
+      "main": null,
+      "main_sha256": null
+    },
+    {
+      "path": "artifacts/compute/codex-hil15-s2-r13-pid-20261031-qualification/admission-gates.log",
+      "status": "MISSING",
+      "old_git_blob": "184864a6f7cb79c569a36de3b152ad9c6e468ba5",
+      "old_mode": "100644",
+      "old_sha256": "fb50d25d276277f116427a1d609c571249a9ad4e78642edcf47adac03fe8e3c1",
+      "old_bytes": 390,
+      "main": null,
+      "main_sha256": null
+    },
+    {
+      "path": "artifacts/compute/codex-hil15-s2-r13-pid-20261031-qualification/native-smokes.json",
+      "status": "MISSING",
+      "old_git_blob": "d56989e1a8b1024346e7a064034509f0de85a2ad",
+      "old_mode": "100644",
+      "old_sha256": "522502157cb011773ea1035eaa834925ad789d8992bfa8fc214df63dcdb2c177",
+      "old_bytes": 3955,
+      "main": null,
+      "main_sha256": null
+    },
+    {
+      "path": "artifacts/compute/codex-hil15-s2-r13-pid-20261031-qualification/pid-handshake.json",
+      "status": "MISSING",
+      "old_git_blob": "8176a742fe971b6b4a9f46ec10bf064f6d24759e",
+      "old_mode": "100644",
+      "old_sha256": "a408976f527070b15494f928da8dcb5bd35cbaaa6a12d8c8322eec7fa995fa8a",
+      "old_bytes": 1579,
+      "main": null,
+      "main_sha256": null
+    },
+    {
+      "path": "artifacts/compute/codex-hil15-s2-r13-pid-20261031-qualification/preflight.log",
+      "status": "MISSING",
+      "old_git_blob": "d2bb0f93273bec7218d62e325cf254b42454bd1a",
+      "old_mode": "100644",
+      "old_sha256": "c1aa91874af782c830a94dc8d66b8ee325a1b28bb25eb6d9f3bfbab3075c9f30",
+      "old_bytes": 70,
+      "main": null,
+      "main_sha256": null
+    },
+    {
+      "path": "artifacts/compute/codex-hil15-s2-r13-pid-20261031-qualification/published-manifest.json",
+      "status": "MISSING",
+      "old_git_blob": "d47d99301d4782ca6ce15d60156ea6a92151934b",
+      "old_mode": "100644",
+      "old_sha256": "57336c3a6093f55ef773170902a288d71f88aa205b21c19265a5785d1f09c983",
+      "old_bytes": 4749,
+      "main": null,
+      "main_sha256": null
+    },
+    {
+      "path": "artifacts/compute/refactor-a6-native-cutoff-canary-source-20261030.json",
+      "status": "IDENTICAL",
+      "old_git_blob": "8bed666a6d276e25e136391f626ca76a1d63139e",
+      "old_mode": "100644",
+      "old_sha256": "22a9e85c86c3ae17fcef6db3c8430a06dcdb832f281e47f05f747c282d43afca",
+      "old_bytes": 4068,
+      "main": {
+        "mode": "100644",
+        "kind": "blob",
+        "blob": "8bed666a6d276e25e136391f626ca76a1d63139e"
+      },
+      "main_sha256": "22a9e85c86c3ae17fcef6db3c8430a06dcdb832f281e47f05f747c282d43afca"
+    },
+    {
+      "path": "artifacts/compute/refactor-akxall8-c5-r4-ready-20261031.json",
+      "status": "MISSING",
+      "old_git_blob": "ad29d6deb42d6b22714f41300250f3b36af9303d",
+      "old_mode": "100644",
+      "old_sha256": "61e089139c04deca59641f534e497acb694a5082f5a42f64c498e8c9fac28d0d",
+      "old_bytes": 5581,
+      "main": null,
+      "main_sha256": null
+    },
+    {
+      "path": "artifacts/compute/refactor-akxall8-c5-r4-ready-20261031/active-cutoff-witness.json",
+      "status": "MISSING",
+      "old_git_blob": "b83469918f61c0fd7e9609d57dc79009a9606889",
+      "old_mode": "100644",
+      "old_sha256": "ad37c2061a518c5a7d3da9b0fb34dbb819df3d65a906c714736245665d59c483",
+      "old_bytes": 2848,
+      "main": null,
+      "main_sha256": null
+    },
+    {
+      "path": "artifacts/compute/refactor-akxall8-c5-r4-ready-20261031/cutoff.log",
+      "status": "MISSING",
+      "old_git_blob": "68b8e0ce068f44e8c198a64d21dc1c37998a7d01",
+      "old_mode": "100644",
+      "old_sha256": "72c5fe50d82f288ace493851e187c152c398b2e5e6937a91ef124de2358c65fb",
+      "old_bytes": 16750,
+      "main": null,
+      "main_sha256": null
+    },
+    {
+      "path": "artifacts/compute/refactor-akxall8-c5-r4-ready-20261031/native-qualification.json",
+      "status": "MISSING",
+      "old_git_blob": "eb5f2440486f761decbbc16dc6c0d7ea35f3298f",
+      "old_mode": "100644",
+      "old_sha256": "5ecf2f1c7cdf1a1b600bbbd81c41d8c6d72f86d2dfdb915f886b58fc2d5fed88",
+      "old_bytes": 1594,
+      "main": null,
+      "main_sha256": null
+    },
+    {
+      "path": "artifacts/compute/refactor-akxall8-c5-r4-ready-20261031/normal.log",
+      "status": "MISSING",
+      "old_git_blob": "95445f4f3dcd4e0e22dd6364718173fae2eff144",
+      "old_mode": "100644",
+      "old_sha256": "ee2020087bff4931195a541c64b0b9c93fa82e02aa22c35df0ba5cbee980513c",
+      "old_bytes": 4192,
+      "main": null,
+      "main_sha256": null
+    },
+    {
+      "path": "artifacts/compute/refactor-akxall8-c5-r4-ready-20261031/prearm-refused.json",
+      "status": "MISSING",
+      "old_git_blob": "9dfcdb840c19f8bd441d16f5cf6e162a286ed77f",
+      "old_mode": "100644",
+      "old_sha256": "72c289a3cb863362a9c183fc4ef295fb671f35a545a9614a80b3748f7848c9f2",
+      "old_bytes": 6292,
+      "main": null,
+      "main_sha256": null
+    },
+    {
+      "path": "artifacts/compute/refactor-akxall8-c5-r4-ready-20261031/ready-publication.json",
+      "status": "MISSING",
+      "old_git_blob": "9bac5a342765c3f9bce26a44a660a4e579173532",
+      "old_mode": "100644",
+      "old_sha256": "eb0dcfb9ac36feb4fdff7f3d9bd9de272795162f56651cf8c648e12acc6bb5cd",
+      "old_bytes": 657,
+      "main": null,
+      "main_sha256": null
+    },
+    {
+      "path": "artifacts/compute/refactor-akxall8-c5-r4-ready-20261031/source-manifest.json",
+      "status": "MISSING",
+      "old_git_blob": "093a7df8397217c517d14a22c431dedbc858f638",
+      "old_mode": "100644",
+      "old_sha256": "da17bd761b8c44b60713f7205b11bae179c86fe353f54aec4bbac0fc32b6fc57",
+      "old_bytes": 2604,
+      "main": null,
+      "main_sha256": null
+    },
+    {
+      "path": "artifacts/compute/refactor-akxall8-c5-r5-ready-20261031.json",
+      "status": "MISSING",
+      "old_git_blob": "e1c41a7181b1042e9929309f3ff5a96a3a859e83",
+      "old_mode": "100644",
+      "old_sha256": "3342037771c72670c0610eebcff54e8f20a323033c4017f2dd680947a2dfd702",
+      "old_bytes": 2270,
+      "main": null,
+      "main_sha256": null
+    },
+    {
+      "path": "artifacts/compute/refactor-akxall8-c5-r5-ready-20261031/active-cutoff-witness.json",
+      "status": "MISSING",
+      "old_git_blob": "2473905196d5b1989e8cbcb350b3bcd1ae0c9ec4",
+      "old_mode": "100644",
+      "old_sha256": "4b1c05d54521456a9297d7ebc95d242b1c911bf1d06632499517651daa87e0ff",
+      "old_bytes": 555,
+      "main": null,
+      "main_sha256": null
+    },
+    {
+      "path": "artifacts/compute/refactor-akxall8-c5-r5-ready-20261031/native-qualification.json",
+      "status": "MISSING",
+      "old_git_blob": "a3e28126535d44f48cb679fd5639061eec30ef59",
+      "old_mode": "100644",
+      "old_sha256": "ceae1f6a458a2fb0aa8bf64ea71ab8f3b3c7a696245334effbff32751bf5938b",
+      "old_bytes": 725,
+      "main": null,
+      "main_sha256": null
+    },
+    {
+      "path": "artifacts/compute/refactor-akxall8-c5-r5-ready-20261031/prearm.json",
+      "status": "MISSING",
+      "old_git_blob": "b200138657a82eb02991ed392ceed5a66b44265f",
+      "old_mode": "100644",
+      "old_sha256": "e9e9e1b4c0974c4dcb6dde92021584990ec7d6f9c1d6b7efd78ecfe016f06f05",
+      "old_bytes": 1035,
+      "main": null,
+      "main_sha256": null
+    },
+    {
+      "path": "artifacts/compute/refactor-akxall8-c5-r5-ready-20261031/ready-publication.json",
+      "status": "MISSING",
+      "old_git_blob": "64a925e67e285c0b7b5bb1ffe4650a70de1c6a97",
+      "old_mode": "100644",
+      "old_sha256": "079e941c7f94c1dc320e2adced1730649628afccfc1473e20415f68efc0e4dc1",
+      "old_bytes": 664,
+      "main": null,
+      "main_sha256": null
+    },
+    {
+      "path": "artifacts/compute/refactor-akxall8-declared-floor-r2-preparation-20261031.json",
+      "status": "MISSING",
+      "old_git_blob": "3df2eadeedd876ac3572ba7a2627d33c51fe13ea",
+      "old_mode": "100644",
+      "old_sha256": "785b883e3f0a9f568e7b849e0bb5ce732a92b9c18771c70be42dc4e462bccb45",
+      "old_bytes": 1892,
+      "main": null,
+      "main_sha256": null
+    },
+    {
+      "path": "artifacts/compute/refactor-c5-custody-20261030.json",
+      "status": "IDENTICAL",
+      "old_git_blob": "bf7be78877bc9f3a8350b11e4be6939f88147ce6",
+      "old_mode": "100644",
+      "old_sha256": "319982f05174621ff588751158d58e8e0bd67b47166c6fa1271b9acea16dd3b5",
+      "old_bytes": 12583,
+      "main": {
+        "mode": "100644",
+        "kind": "blob",
+        "blob": "bf7be78877bc9f3a8350b11e4be6939f88147ce6"
+      },
+      "main_sha256": "319982f05174621ff588751158d58e8e0bd67b47166c6fa1271b9acea16dd3b5"
+    },
+    {
+      "path": "artifacts/compute/refactor-cs22v0-parity-filing-20261031.json",
+      "status": "MISSING",
+      "old_git_blob": "49486b6ef50424b9be1b9d2e3cc54001546fe5da",
+      "old_mode": "100644",
+      "old_sha256": "c83fc007b2379ee2894a44254d6837e1258238a952ddbd9bd9279699d95b067e",
+      "old_bytes": 3647,
+      "main": null,
+      "main_sha256": null
+    },
+    {
+      "path": "artifacts/compute/refactor-hil15-s2-r14-dispatch-20261031.json",
+      "status": "MISSING",
+      "old_git_blob": "d642d9f392dce51cc1c29492e93a7f393c55ac7a",
+      "old_mode": "100644",
+      "old_sha256": "8985c8fe809d12ad55cf486ae9a1c93d934d7b4136ab17fcfe7542516741ee73",
+      "old_bytes": 2516,
+      "main": null,
+      "main_sha256": null
+    },
+    {
+      "path": "artifacts/compute/refactor-inf34-a2-gpu-qualification-ready-20261031.json",
+      "status": "MISSING",
+      "old_git_blob": "9e30df81581282c4c2a201c84df53445df3a73a9",
+      "old_mode": "100644",
+      "old_sha256": "d182e90675c7776d934b00065cc482a9a1b9c878c64c4c492d80b52e6d0cec20",
+      "old_bytes": 1129,
+      "main": null,
+      "main_sha256": null
+    },
+    {
+      "path": "artifacts/compute/refactor-ufh14-b1f-thinking-budget-source-closure-20261030.json",
+      "status": "IDENTICAL",
+      "old_git_blob": "6c2f464c89785f5de9e67efd31c4cd3716270db5",
+      "old_mode": "100644",
+      "old_sha256": "da984b549275c7bab4df1a0aaca8cc851da2c85f5c83022f9c69285f447c8c87",
+      "old_bytes": 7748,
+      "main": {
+        "mode": "100644",
+        "kind": "blob",
+        "blob": "6c2f464c89785f5de9e67efd31c4cd3716270db5"
+      },
+      "main_sha256": "da984b549275c7bab4df1a0aaca8cc851da2c85f5c83022f9c69285f447c8c87"
+    },
+    {
+      "path": "artifacts/compute/refactor-xgrammar-a2-r2-preparation-20261031.json",
+      "status": "MISSING",
+      "old_git_blob": "cd3cf8cbccf73a2d7926ff3165a4f00891c9ca86",
+      "old_mode": "100644",
+      "old_sha256": "bbd3ac844626ea6a724c0999e841cb38b307b7aece1c13ee45878c9912d9ba3e",
+      "old_bytes": 2793,
+      "main": null,
+      "main_sha256": null
+    },
+    {
+      "path": "artifacts/compute/refactor-yarn-s1-host-retention-20261031.json",
+      "status": "MISSING",
+      "old_git_blob": "e9c56436663759993ff7964dec2616612558cac3",
+      "old_mode": "100644",
+      "old_sha256": "b5407eb4dadd082a17f9d394a9ae066d60b7c887b8e61f93e395d9f2b77a3268",
+      "old_bytes": 4786,
+      "main": null,
+      "main_sha256": null
+    },
+    {
+      "path": "artifacts/compute/refactor-yarn-s2-host-retention-20261031.json",
+      "status": "MISSING",
+      "old_git_blob": "437326dd7e385dd40507d32b5a76bba77efcd735",
+      "old_mode": "100644",
+      "old_sha256": "a6124c2413dbd007d951525f6e52438f87670c832cb3f855071e8c86584dc63c",
+      "old_bytes": 5240,
+      "main": null,
+      "main_sha256": null
+    },
+    {
+      "path": "artifacts/compute/refactor-yarn-s3-host-retention-20261031.json",
+      "status": "MISSING",
+      "old_git_blob": "3542b55e9af00e5d7bf03641cb5c46bc048d64b1",
+      "old_mode": "100644",
+      "old_sha256": "bda477175b83e3d29fd2d13bc6bdd8c6a54cab09334f04cd07ebb99faf9cdd19",
+      "old_bytes": 4581,
+      "main": null,
+      "main_sha256": null
+    }
+  ],
+  "adoption_rule": "Add only paths missing in fresh main; identical omitted; differing existing main paths never overwritten. All bytes/modes from immutable old Git blobs. No source/docs/progress/generated master copied.",
+  "patch": {
+    "path": "/mnt/raid0/llm/tmp/refactor-old14-artifact-adoption-20261031/ARTIFACTS-ONLY.patch",
+    "sha256": "a8bc9a3dcda5918add0c4c7c0462e7abd71600894f25021e01d93b040a55d194",
+    "added_paths": 40,
+    "bytes": 157700
+  },
+  "retained_hashes": {
+    "path": "/mnt/raid0/llm/tmp/refactor-old14-artifact-adoption-20261031/RETAINED-HASHES.json",
+    "sha256": "ee595aeb3fd96492cdd541f35e9793d1d2c2284821839effe7ebe11150ecc1bf"
+  },
+  "q4_outer_dependency": "All five archive files retained; CUSTODY manifest and SHA256SUMS match strict reader pins, each inner retained raw blob independently rehashed.",
+  "scope": "historical immutable qualification/custody artifacts only; no current READY/scientific completion or new warrant implied",
+  "adoption_scope": "Immutable missing artifacts adopted; source readers ported separately, historical preparation summarized in current handoffs; original branch retained, no blind merge."
+}

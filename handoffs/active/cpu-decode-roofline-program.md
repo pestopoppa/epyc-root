@@ -5056,3 +5056,9 @@ Knowledge retentions (no task): compare external Q38FN numbers only with model v
 ## Research intake 2026-10-21 — open-model backdoors, control-vector projection, Qwen3.8 post-train (research intake entries 2191–2213, see research/intake_index.yaml)
 
 - Trigger (no checkbox): the first Q38FN MTP acceptance measurement on our harness. Then record it next to the vendor four-step mean accepted length (intake-2205#05) with the prompt mix noted; vendor numbers are never an EPYC baseline.
+
+### Refactor wrap-up — 2026-10-31
+
+V11-053 current C5 control build prerequisite COMPLETE_BUILD_ONLY: exact d409 reverse, SUM_ROWS preserved, baseline TU/DSO byte-identical,447 pins, compileSTOP75 and two-image custody. Original t48/NUMAall/5AB+24AA+greedy timing remains future; no per-op C1 or keep claim. [no-belief: build preparation only]
+
+- [x] **V11053-C5-OFF-CONTROL-BUILD:** complete the exact single-keep reverse control from C5 while preserving SUM_ROWS. Baseline object and DSO reproduced byte-identically;447 source/header/toolchain inputs pinned, variant ABI unchanged. The frontend still identifies C5; only the backend is modified. No measurement or READY inference packet follows from this build. ✅ 2026-10-31 [no-belief: experimental build only]

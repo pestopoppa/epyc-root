@@ -2,7 +2,7 @@
 
 **Status:** active — Phase 0 signed, applied and proven 2026-09-26 (embedder pool 0.95× → 4.96×). Narrowed 2026-09-27: the Phase-2 kill criterion is PRE-REGISTERED (REPL-EMB-2.1 ✅); next is the offline eval (2.2); REPL-EMB-0.3 and 1.4 are frozen. 2026-10-01: `context.search` landed as an opt-in experiment arm (orch `b384cdbb`); defaults unchanged; the 2.1 kill rule governs any default.
 **Created:** 2026-09-26
-**Scratch**: `/mnt/raid0/llm/tmp/codex-ni-20261027-ufh12-snapshot-gate/` · worktrees: none
+**Scratch**: `/mnt/raid0/llm/tmp/codex-ni-20261027-ufh12-snapshot-gate/` · worktrees: none · refactor 2026-10-31: `/mnt/raid0/llm/tmp/refactor-01a16fc3/ufh12-r1-successor-20261031/`
 **Owner index:** [user-facing-harness-index.md](user-facing-harness-index.md) (UFH-12).
 **Depends on:** UFH-07 (tool-output-compression, TOC-SP-3 + trajectory artifact), INF-78 (OAB-8 scouts),
 EVL-37 (repl-turn-efficiency S4 gate, waived for retrieval — D2 below), UFH-01 (HS-TD-3 context selection
@@ -394,3 +394,8 @@ REPL-EMB has no inlining path (search returns pointers; reads go through `get`/`
 ### REPL-EMB-2.14 native parity — 2026-10-31 08:21 UTC
 
 `codex3-repl-emb214-parity-20261031` completed rc 0 on the fixed 200-text sample. Independent replay verified each of 400 exposure/result/vector SHA bindings, 1024 dimensions and rc 0, and recomputed all 200 native v9/v10 cosines: 200 meet the original >=0.9999 rule, minimum and maximum 1.0 at retained precision, zero unknown. The two recorded binary identities are distinct; each retained vector file was byte-identical to its paired vector. This establishes the parity prerequisite only; it does not claim an application-default change or complete the original task's default-switch requirement. Raw vectors remain in the native run directory; [bounded audit and pins](../../artifacts/compute/codex3-emb214-native-0821-20261031/AUDIT.json) retain per-item hashes and recomputed values. [belief: cc]
+
+### Refactor R1 operational repair — 2026-10-31
+
+- [x] **REPL-EMB-R1-LAUNCHER-R2:** publish `refactor-ufh12-r1-irt-r2-20261031` after exact510-prompt token audit and same-entry32-case CONTROL_ONLY fit/capture/reader smoke. Slot capacity16384 exceeds audit maximum2373; native normal31.86s/3.77GB and active STOP75/13.21s/drained. Original510,408+102 split, model, mean/norm2 and scientific acceptance unchanged; official fit/correlation task remains open. ✅ 2026-10-31 [no-belief: launcher qualification only]
+- [ ] **REPL-EMB-R1-HTTP-TIMEOUT-INTEGRATE:** land the prepared one-line client correction honoring configured timeout(default30 versus hardcoded10) and its two regressions. Private launcher contains the correction; canonical APP integration remains separate. Patch/test/evidence under `/mnt/raid0/llm/tmp/refactor-01a16fc3/ufh12-r1-successor-20261031/`.

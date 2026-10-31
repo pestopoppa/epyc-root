@@ -1,0 +1,125 @@
+{
+  "scope": "NATIVE_SHAPED_UNIT_FIXTURE_ONLY; paths are opaque identities; no image/model files are opened",
+  "gpu": {
+    "private_frontend": "/mnt/raid0/llm/tmp/refactor-inf34-a2-calendar-v12-20261031/views/gpu/bin/llama-bench",
+    "frontend_sha256": "9b8109dd02ff71fd03d6f63a810165284ebf13fc840bb1903b7387c259d347a5",
+    "aliases": {
+      "libggml-base.so": {
+        "target": "/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libggml-base.so.0.16.0",
+        "sha256": "92cc3dfd7e1119b7bcc83c18f758099c47363073013a896ee76efcd6ad19145a"
+      },
+      "libggml-base.so.0": {
+        "target": "/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libggml-base.so.0.16.0",
+        "sha256": "92cc3dfd7e1119b7bcc83c18f758099c47363073013a896ee76efcd6ad19145a"
+      },
+      "libggml-base.so.0.16.0": {
+        "target": "/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libggml-base.so.0.16.0",
+        "sha256": "92cc3dfd7e1119b7bcc83c18f758099c47363073013a896ee76efcd6ad19145a"
+      },
+      "libggml-cpu.so": {
+        "target": "/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libggml-cpu.so.0.16.0",
+        "sha256": "3f4edd2fc0f1e78003735be59db987d43c4bc0e6a8f821bc419d7b6f492346c0"
+      },
+      "libggml-cpu.so.0": {
+        "target": "/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libggml-cpu.so.0.16.0",
+        "sha256": "3f4edd2fc0f1e78003735be59db987d43c4bc0e6a8f821bc419d7b6f492346c0"
+      },
+      "libggml-cpu.so.0.16.0": {
+        "target": "/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libggml-cpu.so.0.16.0",
+        "sha256": "3f4edd2fc0f1e78003735be59db987d43c4bc0e6a8f821bc419d7b6f492346c0"
+      },
+      "libggml-hip.so": {
+        "target": "/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libggml-hip.so.0.16.0",
+        "sha256": "f26a166b8ea3089d19a395ae00afa22e917df8eba71ca6ef4be5235d65ea8079"
+      },
+      "libggml-hip.so.0": {
+        "target": "/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libggml-hip.so.0.16.0",
+        "sha256": "f26a166b8ea3089d19a395ae00afa22e917df8eba71ca6ef4be5235d65ea8079"
+      },
+      "libggml-hip.so.0.16.0": {
+        "target": "/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libggml-hip.so.0.16.0",
+        "sha256": "f26a166b8ea3089d19a395ae00afa22e917df8eba71ca6ef4be5235d65ea8079"
+      },
+      "libggml.so": {
+        "target": "/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libggml.so.0.16.0",
+        "sha256": "8709bbacc79b0d4faf43d66370a5db73d9ab378995f1f0964c03df8af6422639"
+      },
+      "libggml.so.0": {
+        "target": "/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libggml.so.0.16.0",
+        "sha256": "8709bbacc79b0d4faf43d66370a5db73d9ab378995f1f0964c03df8af6422639"
+      },
+      "libggml.so.0.16.0": {
+        "target": "/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libggml.so.0.16.0",
+        "sha256": "8709bbacc79b0d4faf43d66370a5db73d9ab378995f1f0964c03df8af6422639"
+      },
+      "libllama-batched-bench-impl.so": {
+        "target": "/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libllama-batched-bench-impl.so",
+        "sha256": "7c9cdc42f62c89aaab2793c2b42bffeebeb80ec33eccb0ba249a9fb9b8f35850"
+      },
+      "libllama-bench-impl.so": {
+        "target": "/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libllama-bench-impl.so",
+        "sha256": "0b7d16945e7d1d4379100751130d7374a2272a9632772caa2b522558b9a5af24"
+      },
+      "libllama-cli-impl.so": {
+        "target": "/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libllama-cli-impl.so",
+        "sha256": "37aef2003cce81fdccc703e135514c2fa0be6bda9643698fb45ec0ee849321b4"
+      },
+      "libllama-common.so": {
+        "target": "/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libllama-common.so.0.0.10303",
+        "sha256": "0f33ec5cc9967c14c8eeb2d560d6d827301c50cf42dfd701cc1752cc4a7bf9cb"
+      },
+      "libllama-common.so.0": {
+        "target": "/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libllama-common.so.0.0.10303",
+        "sha256": "0f33ec5cc9967c14c8eeb2d560d6d827301c50cf42dfd701cc1752cc4a7bf9cb"
+      },
+      "libllama-common.so.0.0.10303": {
+        "target": "/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libllama-common.so.0.0.10303",
+        "sha256": "0f33ec5cc9967c14c8eeb2d560d6d827301c50cf42dfd701cc1752cc4a7bf9cb"
+      },
+      "libllama-completion-impl.so": {
+        "target": "/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libllama-completion-impl.so",
+        "sha256": "a2c30ac9f85857cee0032894999fb0d4ffef55fdb70a574594a61521bd804fc4"
+      },
+      "libllama-fit-params-impl.so": {
+        "target": "/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libllama-fit-params-impl.so",
+        "sha256": "4b2da5ccd953a2eea7ca30cbf379433a0a112aace97d7614e5e0efe953f922c3"
+      },
+      "libllama-perplexity-impl.so": {
+        "target": "/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libllama-perplexity-impl.so",
+        "sha256": "faa780af6275c74aa3e87ee45482ee4a2f1d2da7e7c9701226cee81708425b47"
+      },
+      "libllama-quantize-impl.so": {
+        "target": "/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libllama-quantize-impl.so",
+        "sha256": "c3311e0f4dc436268c56c9120b536249d7ee4b4c93ccd8cbd86d152c7414846b"
+      },
+      "libllama-server-impl.so": {
+        "target": "/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libllama-server-impl.so",
+        "sha256": "d9f143d7b056c0bc24a1822fb309ddd01c96df2b63b1b1bc61791e97f519e96f"
+      },
+      "libllama.so": {
+        "target": "/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libllama.so.0.0.10303",
+        "sha256": "808a4de5ad3f9754f1c3c70bdd87da3418aa73b3b39d26e4dc38ba4c75b5c60a"
+      },
+      "libllama.so.0": {
+        "target": "/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libllama.so.0.0.10303",
+        "sha256": "808a4de5ad3f9754f1c3c70bdd87da3418aa73b3b39d26e4dc38ba4c75b5c60a"
+      },
+      "libllama.so.0.0.10303": {
+        "target": "/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libllama.so.0.0.10303",
+        "sha256": "808a4de5ad3f9754f1c3c70bdd87da3418aa73b3b39d26e4dc38ba4c75b5c60a"
+      },
+      "libmtmd.so": {
+        "target": "/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libmtmd.so.0.0.10303",
+        "sha256": "e244e0054e255698a57da7ffab2c4b4d42f98716f543c2388c4e923464743b05"
+      },
+      "libmtmd.so.0": {
+        "target": "/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libmtmd.so.0.0.10303",
+        "sha256": "e244e0054e255698a57da7ffab2c4b4d42f98716f543c2388c4e923464743b05"
+      },
+      "libmtmd.so.0.0.10303": {
+        "target": "/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libmtmd.so.0.0.10303",
+        "sha256": "e244e0054e255698a57da7ffab2c4b4d42f98716f543c2388c4e923464743b05"
+      }
+    }
+  }
+}

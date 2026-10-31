@@ -1,0 +1,107 @@
+{
+  "schema": "epyc.refactor.full_wrapup.v1",
+  "owner": "codex-refactor-01a16fc3",
+  "evidence": [
+    {
+      "path": "/mnt/raid0/llm/tmp/refactor-cs22v0-align-20261031/F32FINAL-VERIFIED.json",
+      "sha256": "a749e23b1fe61e4c21b12d61c731a5c8d8fd3e63244c44910fe68e25c1706d17"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/refactor-cs8-stt7-predictions-20261031/READY-PUBLICATION.json",
+      "sha256": "586c945be559e8ef08638e24dc4ecec3b347c7076ff0f9453bca93fa70aaefa9"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/refactor-akxall8-successor-r4-20261031/PUBLICATION-R4.terminal.json",
+      "sha256": "a55191b6fdddca950b53a5508ae26d38092d30843040b1fa3583e46d6b8dcf20"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/refactor-01a16fc3/r18a-verified-anchor-20261031/CLOSURE-EVIDENCE.json",
+      "sha256": "550450842b21e19124988dcf4e165640a22b2070763900d1ba93ba58efaad1f2"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/refactor-01a16fc3/ufh12-r1-successor-20261031/QUALIFICATION-PUBLICATION.json",
+      "sha256": "ca0d41f1e9905d61f34a8cf30976334cff7afaf55115b67a0c530d1cb53596bc"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/refactor-inf34-a2-calendar-v13-20261031/PUBLICATION.json",
+      "sha256": "1095c415abe69ffa2856663130227af53eaae0a47c95c0bb86a66cf17c163e10"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/refactor-01a16fc3/full-wrapup-20261031/c6-retained-replay/REPLAY-RESULT.json",
+      "sha256": "e7aeb8d93b369dc5509a88675367ef08d5a9078f5937900548e6b506f83e9b50"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/refactor-01a16fc3/WRAPUP-S0-WORKER-INVENTORY-20261031.json",
+      "sha256": "31516b49ce8877c1e3913800347ecbfc7705786849e08eccb8a1f56693506c9a"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/refactor-c6-serving-gates-r3-20261031/PUBLICATION-R3.json",
+      "sha256": "84ef27273915b530b1b44e03722d68f38c37ce6ec601b44ec137b18c1f8736c4"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/refactor-01a16fc3/old14-code-integration-20261031/REVIEW-AND-TEST-EVIDENCE.json",
+      "sha256": "e1b7f0aee17d123ecde08f9f8d2f832ea63b3147655b91cd21e60fd715f03271"
+    }
+  ],
+  "terminal_filing_audit": {
+    "matching_ids": 105,
+    "without_FILED": 0
+  },
+  "no_cas": true,
+  "no_production_edit": true,
+  "cleanup": {
+    "worktrees_in_old_owner_report": 60,
+    "already_absent": 58,
+    "remaining_gate_refusals": [
+      "REFERENCED qb2-kpf64",
+      "UNVERIFIABLE prep-inf22"
+    ],
+    "safe_private_index_bytes_trashed": 372489,
+    "GiB_freed_by_this_wrap": 0,
+    "pruning": "No completed parent handoffs eligible; no rows removed"
+  },
+  "old_lane_adoption": {
+    "original_head": "cc8ab8584763b91ecbc233b6b3e1ed342503e02d",
+    "original_commits": 14,
+    "missing_artifacts_adopted": 40,
+    "already_identical_artifacts": 3,
+    "raw_log_whitespace_preserved": true
+  },
+  "belief_freshness": "FRESH: intake2534,2515entries,lag0",
+  "owner_reader_validation": {
+    "command": "pytest -q tests/vidya/test_c6_q4_microbench_adapter.py tests/vidya/test_inf34_a2_raw.py tests/vidya/test_ingest_sources.py -k \"not s4-omega-ab\"",
+    "passed": 132,
+    "deselected": 1,
+    "deselection_reason": "S4 separately pinned orchestrator producer fixture; unrelated to changed readers",
+    "carrier_tuples": 1238,
+    "source_kinds": 59,
+    "carrier_violations": 0,
+    "r6_elapsed_s": 3.9,
+    "rss_MB": 128,
+    "children_drained": true
+  },
+  "worker_reader_validation": {
+    "targeted_passed": 39,
+    "skipped": 0,
+    "carrier_tuples": 48,
+    "source_kinds": 2,
+    "violations": 0
+  },
+  "checkbox_audit": {
+    "completed": 19,
+    "committed_conclusions": 5,
+    "declined_preparation_or_build": 14
+  },
+  "fleet_worktree_gate": {
+    "total": 342,
+    "referenced": 86,
+    "dirty": 76,
+    "protected": 59,
+    "unlanded": 47,
+    "unverifiable": 37,
+    "recent": 24,
+    "missing": 13,
+    "removable": 0,
+    "elapsed_s": 23.5
+  }
+}

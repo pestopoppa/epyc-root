@@ -1,30 +1,30 @@
 {
   "by_type": {
-    "docs": 239,
+    "docs": 240,
     "handoff-active": 179,
     "handoff-blocked": 2,
     "handoff-completed": 221,
-    "progress": 1078,
+    "progress": 1079,
     "research": 140
   },
   "kind": "project-wiki-source-manifest",
   "last_compile": "2026-10-29T23:19:19Z",
   "last_touch": {
     "advanced": {
-      "added": 1,
-      "changed": 0,
+      "added": 0,
+      "changed": 1,
       "removed": 0
     },
-    "at": "2026-10-31T08:43:01Z",
+    "at": "2026-10-31T09:02:39Z",
     "scope_paths": [
-      "progress/2026-10/2026-10-31-codex3.md"
+      "handoffs/active/harness-improvement-loop.md"
     ],
     "scope_types": []
   },
   "mode": "touch:scoped",
-  "scan_time": "2026-10-31T08:43:01Z",
+  "scan_time": "2026-10-31T09:02:39Z",
   "schema_version": 1,
-  "source_set_hash": "1e5302d9790a91282402bd2c7ec67fa98daa1d25440ea62362bee7d8032e6277",
+  "source_set_hash": "ef2c3357f4c6cb1008581af97ea705d2c973760324bcf3d10acbdae322b7d6aa",
   "sources": [
     {
       "content_hash": "79865b0c101f4b6a9b14665950a430467345202b33986b3ba348bc3df428170a",
@@ -67,10 +67,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "9c9c91d41245ade6f0b3ec8fa6d3eef6880743cdc8fc3f98284885cc99a90c8c",
-      "modified": "2026-10-31T08:33:07Z",
+      "content_hash": "c9b31c6ac29d76ebc8f2436dbb09245717f247c6d555143619302d4a0ac90c72",
+      "modified": "2026-10-31T08:51:11Z",
       "path": "handoffs/active/agentic-serving-harness-fixes.md",
-      "size": 143555,
+      "size": 144133,
       "title": "Agentic serving harness fixes \u2014 demonstrate on the 27B, generalize, then audit",
       "type": "handoff-active"
     },
@@ -107,18 +107,18 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "78a18dd2c19e8527ea6572ce7e29465e1591cb1370875fd6baebfdb8b1915cf8",
-      "modified": "2026-10-31T08:33:07Z",
+      "content_hash": "79489dcd50419415eb9c0aeec32e1bd40fec7c946dc52038394821f23f441d27",
+      "modified": "2026-10-31T08:51:11Z",
       "path": "handoffs/active/autokernel-all-devices-all-dimensions.md",
-      "size": 226286,
+      "size": 227646,
       "title": "AutoKernel on every device and every dimension: long-context surfaces, attention routes, GPU serving, profilers as planner inputs",
       "type": "handoff-active"
     },
     {
-      "content_hash": "f824d6256220c1ceafb4455f07e71b0277a861229ba5b2e70b191993425cdf68",
-      "modified": "2026-10-31T08:33:07Z",
+      "content_hash": "b8fcfa622cfc00486b731ea8ae5c314b71e4fabfe7243807266ddd72a27734bc",
+      "modified": "2026-10-31T08:47:38Z",
       "path": "handoffs/active/autokernel-champion-aggregate.md",
-      "size": 227650,
+      "size": 229286,
       "title": "AutoKernel \u2014 the standing aggregate candidate (champion)",
       "type": "handoff-active"
     },
@@ -147,10 +147,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "5d016ff0de840d822cf8ebda9ccc11a26318875d33904dbd12aae1ef40dda14a",
-      "modified": "2026-10-31T08:33:07Z",
+      "content_hash": "259fb824d6e57b4fbab5440f10a497e1df4f5c79fb5cf53b206b9568251b214f",
+      "modified": "2026-10-31T08:39:25Z",
       "path": "handoffs/active/autokernel-rebuild-program.md",
-      "size": 292042,
+      "size": 292842,
       "title": "AutoKernel \u2014 teardown and rebuild program",
       "type": "handoff-active"
     },
@@ -291,10 +291,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "b088ae85e10fef5f0e0685dfd47be4c8e4747904d711b942c23c59c79a7350cd",
-      "modified": "2026-10-31T08:33:07Z",
+      "content_hash": "75186a54424b318a218a82664b3c490d1477f05f06ac4e9073a7b0eded15b07d",
+      "modified": "2026-10-31T08:39:25Z",
       "path": "handoffs/active/conversation-stack.md",
-      "size": 253726,
+      "size": 255396,
       "title": "Conversation stack: speech-native interlocutor, orchestrator voice-turn contract, cascade fallback",
       "type": "handoff-active"
     },
@@ -307,10 +307,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "4cb1f8017a51a0d04c381460de6de63323c4db260b272fbc8186e26952a63ba6",
-      "modified": "2026-10-31T08:33:07Z",
+      "content_hash": "b262265ea68d1efdd268fc0ccdaa47ff14cfc26eb130ada431abd404e2e74e25",
+      "modified": "2026-10-31T08:41:44Z",
       "path": "handoffs/active/cpu-decode-roofline-program.md",
-      "size": 490117,
+      "size": 490886,
       "title": "CPU Decode Roofline Program \u2014 Qwen3.8-Flash-Next (qwen4exp) at the machine ceiling",
       "type": "handoff-active"
     },
@@ -643,10 +643,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "eae96241a90dac9a416719c8af9e658b632a1b9b80448107386723ed915cfe6a",
-      "modified": "2026-10-31T08:33:07Z",
+      "content_hash": "d3f6285929faf71d3dbb4608eb1e7cba7c15cabfb79c7024ef0a934bccd3c03c",
+      "modified": "2026-10-31T09:01:58Z",
       "path": "handoffs/active/harness-improvement-loop.md",
-      "size": 197208,
+      "size": 198107,
       "title": "Harness Improvement Loop \u2014 self-improvement for orchestrator-side harness features",
       "type": "handoff-active"
     },
@@ -819,10 +819,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "d5c14e116029dbb2fbecce14220a48a53859c5cdcb736a0e8966559f73997611",
-      "modified": "2026-10-29T23:14:21Z",
+      "content_hash": "3e4bfe4660ff6214418d559baf62b1c8b29a799ec045ded1fe2870d8b115e16e",
+      "modified": "2026-10-31T08:39:25Z",
       "path": "handoffs/active/mi210-big-model-and-acceleration-roadmap.md",
-      "size": 50518,
+      "size": 51247,
       "title": "MI210 big-model residency + acceleration roadmap",
       "type": "handoff-active"
     },
@@ -1107,10 +1107,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "59b12ef1e09e6ed044774a5df388f714e91a21d36a62910d5d8f22a3f717377d",
-      "modified": "2026-10-31T08:33:07Z",
+      "content_hash": "b5edb96dbb7f74e49a9f3a05a1482be8d10971303e990f6b71007262b8f31042",
+      "modified": "2026-10-31T08:39:25Z",
       "path": "handoffs/active/repl-embedding-retrieval.md",
-      "size": 100460,
+      "size": 101422,
       "title": "REPL Embedding Retrieval \u2014 hybrid search that returns pointers",
       "type": "handoff-active"
     },
@@ -1163,10 +1163,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "3dd9826ec6e67ca9bb29fdebdfacb0176e37004966cdb39d6994145503ff060b",
-      "modified": "2026-10-29T23:14:21Z",
+      "content_hash": "d27dcc34ada1511df5cd309ee0cb793761d4c027e815b4fc5f060953affb7331",
+      "modified": "2026-10-31T08:39:25Z",
       "path": "handoffs/active/reviewer-latency-and-sampling-budget.md",
-      "size": 13043,
+      "size": 13324,
       "title": "Reviewer Control Plane \u2014 Latency & Sampling Budget (H-LB)",
       "type": "handoff-active"
     },
@@ -1267,10 +1267,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "4df000b4928b42cf44d0cbfb386b23a3dde17bca0ab4bf2aa8a8d8b62fa7e097",
-      "modified": "2026-10-31T08:33:07Z",
+      "content_hash": "c8be07d33bc6efae594a7547f215a0ee907f7f1e4a5a496fb04aadda4e107f64",
+      "modified": "2026-10-31T08:51:11Z",
       "path": "handoffs/active/speculative-decoding-mtp-refresh.md",
-      "size": 143269,
+      "size": 143786,
       "title": "Speculative-Decoding / MTP Refresh",
       "type": "handoff-active"
     },
@@ -1411,10 +1411,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "8dc3be0661b4228a72e4c5d8be369be4fbbacf2c8f2b2c21496872f46f9d7e59",
-      "modified": "2026-10-31T08:33:07Z",
+      "content_hash": "854a2014e0164db2aa7c7fcef5ac8d1d582fcdc068894cc92b0f0cb1b9909743",
+      "modified": "2026-10-31T08:55:13Z",
       "path": "handoffs/active/vidya-belief-substrate-program.md",
-      "size": 761659,
+      "size": 764104,
       "title": "Vidya Belief-Substrate Program",
       "type": "handoff-active"
     },
@@ -1451,10 +1451,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "09e926ff95f9f927feeb2d12ab3187665a5109ab285d7ee3826bbc16cabbefef",
-      "modified": "2026-10-31T08:33:07Z",
+      "content_hash": "97666967124ee9171e43c0b862b436dd85e493f248a6fba1c277d5b8189e6f2e",
+      "modified": "2026-10-31T08:51:11Z",
       "path": "handoffs/active/yarn-context-extension-research.md",
-      "size": 93793,
+      "size": 96504,
       "title": "YaRN Context Extension Research",
       "type": "handoff-active"
     },
@@ -12555,6 +12555,14 @@
       "type": "progress"
     },
     {
+      "content_hash": "8f3d22134e5bdafdb610604e171ef9ea145fff9b48777abcf98d4ca69de8ac2f",
+      "modified": "2026-10-31T08:53:45Z",
+      "path": "progress/2026-10/2026-10-31-codex-refactor-01a16fc3.md",
+      "size": 3506,
+      "title": "Refactor \u2014 2026-10-31",
+      "type": "progress"
+    },
+    {
       "content_hash": "a7156b31c6c16892f596274d89570350f6d6801cb87b438e59cf95fb052ddac8",
       "modified": "2026-10-31T08:33:07Z",
       "path": "progress/2026-10/2026-10-31-codex3-c6-dtap-pip.md",
@@ -14435,6 +14443,14 @@
       "type": "docs"
     },
     {
+      "content_hash": "28cae479abd0c7c6dbe3ee7505faab03d0449280f5fc484837e593843258fda0",
+      "modified": "2026-10-31T08:42:30Z",
+      "path": "docs/reference/speech/silero-runtime-parity-20261031.md",
+      "size": 4434,
+      "title": "Silero serving-runtime parity",
+      "type": "docs"
+    },
+    {
       "content_hash": "75d0cf41a4df72ea4b060c6e63e726306dfe1710180d32dc055f35c97e0bf26b",
       "modified": "2026-10-29T23:14:21Z",
       "path": "docs/reference/speech/speech-native-interlocutor-operator-draft-20260924.md",
@@ -14899,7 +14915,7 @@
       "type": "docs"
     }
   ],
-  "total_new": 1859,
+  "total_new": 1861,
   "writer_evidence_policy": {
     "applies_to": "generated-wiki-article-writes",
     "minimum_confidence": "verified",

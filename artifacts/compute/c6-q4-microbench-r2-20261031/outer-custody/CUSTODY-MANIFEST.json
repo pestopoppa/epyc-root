@@ -1,0 +1,22 @@
+{
+  "captured_at": "2026-10-31T03:04:40Z",
+  "items": [
+    {
+      "archive_path": "keeper-ready-armed.json",
+      "original_path": "/mnt/raid0/llm/tmp/compute-flags/ready/armed/refactor-c6-35186-q4-two-cohort-cpu-r2-20261031.json",
+      "sha256": "ff26a324094d6937c1a0e509518d3f45fe128cdf99d257eca231a765ee68f670"
+    },
+    {
+      "archive_path": "keeper-launcher.out",
+      "original_path": "/mnt/raid0/llm/tmp/compute-flags/ready/refactor-c6-35186-q4-two-cohort-cpu-r2-20261031.launcher.out",
+      "sha256": "1a5b0325287b6cd8a26ef443366789e1c8c810f3bd2ed19b4238390aa2cba7b5"
+    },
+    {
+      "archive_path": "complete-marker.txt",
+      "original_path": "/mnt/raid0/llm/tmp/compute-flags/grants/refactor-c6-35186-q4-two-cohort-cpu-r2-20261031.complete",
+      "sha256": "2b0200190296496ea40572dc60e42d0f929bb067ddf5f9ef255f137f0bcdaf86"
+    }
+  ],
+  "purpose": "byte-preserving archive of the accepted keeper row, terminal launcher log, and completion marker for the already captured R2 run; not a measurement or reconstructed warrant",
+  "schema": "c6.q4.r2.outer-custody-snapshot.v1"
+}

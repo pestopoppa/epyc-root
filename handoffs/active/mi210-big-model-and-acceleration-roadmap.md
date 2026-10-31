@@ -1,6 +1,6 @@
 # MI210 big-model residency + acceleration roadmap
 
-**Scratch**: `/mnt/raid0/llm/tmp/refactor-01a16fc3/inf34-prefill-crossover-ready/`, `/mnt/raid0/llm/tmp/refactor-01a16fc3/pf1-six-hour-row/` · worktrees: none for these launcher packets
+**Scratch**: `/mnt/raid0/llm/tmp/refactor-01a16fc3/inf34-prefill-crossover-ready/`, `/mnt/raid0/llm/tmp/refactor-01a16fc3/pf1-six-hour-row/` · worktrees: none for these launcher packets · refactor 2026-10-31: `/mnt/raid0/llm/tmp/refactor-inf34-a2-calendar-v13-20261031/`
 
 **Status**: STRATEGIC THREAD (operator-developed 2026-07-04/05). All numbers OBSERVATION; every step is **experimental-HOLD** — operator-only authorizes any production push, CPU-correctness-gated first. Distilled from the MI210 speed campaign ([summary](../completed/mi210-speed-campaign-summary.md), findings-05b/05c) as the "what do we do with this card next" thread.
 
@@ -263,3 +263,7 @@ Verified: the ROCm 10.1.0 release notes cite no gfx90a performance gain (LLVM 24
 ## Research intake 2026-10-21 — open-model backdoors, control-vector projection, Qwen3.8 post-train (research intake entries 2191–2213, see research/intake_index.yaml)
 
 - Trigger (no checkbox): G15 is dispatched for execution. Then read FlashQLA kkt_solve and the fused forward kernel (QwenLM/FlashQLA @ 5538c35f) as the structural reference for a fused chunked HIP GDN kernel: WY/UT inversion in LDS, state carry fused with the output, fp32 accumulation (intake-2213#01).
+
+### Raw A2 actual calendar transport repair — 2026-10-31
+
+- [x] **INF34-A2-V13-TRANSPORT:** qualified/published `refactor-inf34-a2-gpu-qual-v13-20261031` with real engine PID visible to keeper stdout and retained tee; canonical exec-Python module/executable/cwd/source identity authenticated through actual container and HOST-I paths. Final CPU normal0/3.57s and active STOP75/3.96s/drained. Source9059f5b6aef65e4741c74cbf3b7a35de3c7b1a30b0a2664b67a33fc4763d044e. v12 actual no-PID refusal remains preserved. Original GPU/full16384 experiment untested; no official inference verdict. ✅ 2026-10-31 [no-belief: launcher qualification only]

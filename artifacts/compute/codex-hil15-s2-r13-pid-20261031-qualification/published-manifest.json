@@ -1,0 +1,147 @@
+{
+  "id": "codex-hil15-s2-r13-pid-20261031",
+  "owner": "codex-refactor-01a16fc3",
+  "priority_rank": 21,
+  "regions": "any-cpu-quarter",
+  "min_window_s": 1800,
+  "window_s": 28800,
+  "gib": 64,
+  "launcher": {
+    "path": "/mnt/raid0/llm/tmp/hil15-s3-t1-repair-20261030/s2-r13-pid-20261031/launch.sh",
+    "sha256": "95dc67d2ea5b9ed26ff0110aed7e70284c65d21b36e57703eb217e906ccd39d7"
+  },
+  "job": {
+    "path": "/mnt/raid0/llm/tmp/hil15-s3-t1-repair-20261030/s2-r13-pid-20261031/launch.sh",
+    "sha256": "95dc67d2ea5b9ed26ff0110aed7e70284c65d21b36e57703eb217e906ccd39d7"
+  },
+  "result_path": "/mnt/micron/refactor-hil15-s2-r13-pid-20261031/s2-official-results/collection-status.json",
+  "decision_rule": "Preserve the original 45 denominator: 18 accepted, 2 immutable unknown (unit06/slot2 and unit07/slot1), and 25 unexposed. Run only unit07/slot2 and units08-15 slots0/1/2. Unknowns retain native_grade=null; no redraw, no full-unit07 grading. Collection exhaustion at 43 known plus 2 unknown is not full native completion or promotion evidence.",
+  "class": "diagnostic",
+  "enrollment": "n/a: diagnostic",
+  "smoke": {
+    "ran_at": "2026-10-31T04:35:12.913457+00:00",
+    "regions": "154,155",
+    "model": "/mnt/raid0/llm/models/gemma-3-1b-it-Q8_0.gguf",
+    "first_request_ok": true,
+    "result_writer_ok": true,
+    "exit_ok": true,
+    "wall_s": 70.71828366094269,
+    "normal_exit_code": 0,
+    "cutoff_exit_code": 75,
+    "log": "/mnt/raid0/llm/tmp/hil15-s3-t1-repair-20261030/s2-r13-pid-20261031/SMOKE-EVIDENCE.json",
+    "launcher_sha256": "95dc67d2ea5b9ed26ff0110aed7e70284c65d21b36e57703eb217e906ccd39d7",
+    "source_manifest_sha256": "fb651765ff14ecf02607775467b31e779156d8d33c78fbbdd3fcd50771ffc396"
+  },
+  "hold": null,
+  "scratch_root": "/mnt/raid0/llm/tmp/hil15-s3-t1-repair-20261030/s2-r13-pid-20261031",
+  "keep": [
+    "KEEP",
+    "*.py",
+    "*.sh",
+    "*.json",
+    "*.md",
+    "*.sha256",
+    "*.log",
+    "ws58-launcher.out",
+    "engine/**",
+    "scheduler-state/**"
+  ],
+  "est_output_GiB": 0.0078125,
+  "min_effect": "n/a (diagnostic original-cohort collection)",
+  "source_manifest": {
+    "path": "/mnt/micron/refactor-hil15-s2-r13-pid-20261031/SOURCE.sha256",
+    "sha256": "fb651765ff14ecf02607775467b31e779156d8d33c78fbbdd3fcd50771ffc396"
+  },
+  "log_consumer": "/mnt/micron/refactor-hil15-s2-r13-pid-20261031/read_logs.py",
+  "feasibility": "25 x 990s + 1200s startup + 90s cleanup = 26040s <= 28800s nominal; resumable windows >= 1800s; no guaranteed completion. Qualification uses reduced Gemma1B diagnostic controls; it is not measured35B campaign throughput.",
+  "accounting": {
+    "accepted": 18,
+    "full_complete": false,
+    "future": {
+      "07": [
+        2
+      ],
+      "08": [
+        0,
+        1,
+        2
+      ],
+      "09": [
+        0,
+        1,
+        2
+      ],
+      "10": [
+        0,
+        1,
+        2
+      ],
+      "11": [
+        0,
+        1,
+        2
+      ],
+      "12": [
+        0,
+        1,
+        2
+      ],
+      "13": [
+        0,
+        1,
+        2
+      ],
+      "14": [
+        0,
+        1,
+        2
+      ],
+      "15": [
+        0,
+        1,
+        2
+      ]
+    },
+    "native_grade": null,
+    "original": 45,
+    "terminal_known": 43,
+    "terminal_status": "collection-exhausted-with-two-unknown",
+    "unexposed": 25,
+    "unknown": 2,
+    "unknown_slots": [
+      {
+        "slot": 2,
+        "unit": "06"
+      },
+      {
+        "slot": 1,
+        "unit": "07"
+      }
+    ]
+  },
+  "model": {
+    "path": "/mnt/raid0/llm/models/Qwen3.6-35B-A3B-MTP-Q8_0.gguf",
+    "sha256": "c1283d8b80c3e38b2735ddbc9766d3b3126f44d6c484be419d4e101d09a76131"
+  },
+  "native_grade": null,
+  "full_complete": false,
+  "launcher_log": "/mnt/raid0/llm/tmp/hil15-s3-t1-repair-20261030/s2-r13-pid-20261031/ws58-launcher.out",
+  "noarg_pid_handshake": "/mnt/raid0/llm/tmp/hil15-s3-t1-repair-20261030/s2-r13-pid-20261031/NOARG-PID-HANDSHAKE.json",
+  "actual_history": {
+    "path": "/mnt/raid0/llm/tmp/hil15-s3-t1-repair-20261030/s2-r13-pid-20261031/ACTUAL-HISTORY.json",
+    "sha256": "985efbf884923b948fc62c7c7ad25c55d6ee516e7c74e6b37cb617738e663ec3"
+  },
+  "predecessor": {
+    "id": "codex-hil15-s2-r12-inner-t1-20261030",
+    "source_manifest_sha256": "ed1220fdb2b75e883e840a995d9147b55a0e37e29609b4ea3dbc2ddaaeb43ea7",
+    "zero_new_exposure": true,
+    "change": "Emit stable wrapperPID to original keeper stdout before capped logging; samePID execs actual filler. Old capsules preserved."
+  },
+  "resource_limits": {
+    "ram_GiB": 64,
+    "native_output_sampled_cap_GiB": 1,
+    "raid_metadata_sampled_cap_MiB": 8,
+    "raid_free_floor_GiB": 150,
+    "stop": "rc75 partial after owned child drain; exposed incomplete remains unknown, never redrawn"
+  }
+}

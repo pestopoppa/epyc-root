@@ -97,3 +97,7 @@ Enforce-mode for a reviewer configuration requires **BOTH**: (1) `G ≥ threshol
 | **T-liberal** | `G > 0` | net ΔP(success) > 0 (any real gain) **and** throughput reduction ≤ 50% | maximizes quality capture where correctness matters more than throughput; only viable if spare capacity / off-peak review windows exist. |
 
 Each threshold pairs a **rate** (`G`) with an **absolute floor** (net ΔP) and an **absolute cost ceiling** (max throughput reduction) so a tiny quality gain bought at ruinous cost cannot pass on the ratio alone. The operator picks one (or a variant) → §A00 decision queue (OP-5b). Standing floor cross-ref: whichever threshold is chosen, the plane must still clear **LB-7** (beat a single augmented LLM on the same tasks) — the go/no-go the whole series answers to.
+
+### Refactor wrap-up — 2026-10-31
+
+REV06v2 reduced controls passed and reader proposal prepared; row is explicitly owner-held before arm for logging repair, not runnable READY. No official full50q/122B exposure, July attribution or LB1 completion. [no-belief: preparation only]

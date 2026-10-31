@@ -1,0 +1,35 @@
+calendar.sh: OK
+frontdoor.sh: OK
+launch_calendar_job.py: OK
+consume_merged.py: OK
+launch_merged.py: OK
+launch-q4.sh: OK
+validate_perf.py: OK
+CASE-MANIFEST.json: OK
+Q4-K-27B-EXACT.testfile: OK
+Q4-K-27B-SMOKE.testfile: OK
+Q4-GGUF-HEADER.bin: OK
+Q4-GGUF-HEADER.json: OK
+PUBLISHER-PROVENANCE.json: OK
+Q8-CROSSCHECK.json: OK
+ds41/launch_ds41.py: OK
+ds41/src/mb_mmid.cpp: OK
+ds41/src/ds41-1017-expert-shapes.json: OK
+ds41/bin/mb_mmid: OK
+ds41/bin/mb_mmid-control: OK
+ds41/PREDECLARED.md: OK
+engine/dryrun_check.py: OK
+engine/filler_lib.sh: OK
+engine/filler_run13.sh: OK
+engine/resource_gate.py: OK
+2026-10-31T02:40:11Z [refactor-c6-35186-q4-two-cohort-cpu-r2-20261031] launcher up pid=2144016 class=cpu poll=45s grants=/mnt/raid0/llm/tmp/compute-flags/grants stop=/mnt/raid0/llm/tmp/c6-35186-q4-microbench-r2-20261031/STOP minwin=1080s ports=none
+2026-10-31T02:40:56Z [refactor-c6-35186-q4-two-cohort-cpu-r2-20261031] legacy T1 skipped (LOOP-CONTRACT)
+2026-10-31T02:40:56Z [refactor-c6-35186-q4-two-cohort-cpu-r2-20261031] START regions=48-71 cpus=48-71 threads=24 gpu=0 end=2026-10-31T04:40Z
+[region-lock] acquiring regions ['q2'] as role='bench' (timeout_s=7144.0) …
+[region-lock] held ['q2'] after 0.0s wait; running: /bin/bash /mnt/raid0/llm/tmp/refactor-c6-store-build-prep-20261030/engine/filler_run13.sh --inner --id refactor-c6-35186-q4-two-cohort-cpu-r2-20261031 --class cpu --cmd taskset -c "$FILLER_CPUS" /usr/bin/python3 -B /mnt/raid0/llm/tmp/c6-35186-q4-microbench-r2-20261031/launch_calendar_job.py  --min-window 1080 --stop /mnt/raid0/llm/tmp/c6-35186-q4-microbench-r2-20261031/STOP --port  --workdir /mnt/raid0/llm/tmp/c6-35186-q4-microbench-r2-20261031 --gpu-threads 184-191
+DRYRUN_RESOURCES {"affinity": [48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71], "cgroup": "0::/", "cgroup_memory_max": "max", "process_limit_gib": 32.0, "reserved_ram_gib": 32.0, "rlimits": {"AS": [-1, -1], "DATA": [-1, -1], "NOFILE": [524288, 524288], "RSS": [-1, -1]}}
+RESOURCE_PASS id=refactor-c6-35186-q4-two-cohort-cpu-r2-20261031 scope=normal-grant
+C6_Q4_TWO_COHORT_COMPONENT_COMPLETE
+job rc=0
+2026-10-31T02:41:35Z [refactor-c6-35186-q4-two-cohort-cpu-r2-20261031] ended rc=0 reason=complete (grant deleted)
+2026-10-31T02:41:35Z [refactor-c6-35186-q4-two-cohort-cpu-r2-20261031] ALL DONE: wrote /mnt/raid0/llm/tmp/compute-flags/grants/refactor-c6-35186-q4-two-cohort-cpu-r2-20261031.complete, row marked COMPLETE; exiting for good

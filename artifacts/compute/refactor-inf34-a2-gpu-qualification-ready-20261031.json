@@ -1,0 +1,15 @@
+{
+  "scope": "qualification launcher/source preparation only; no task or measurement completion",
+  "runtime_source_sha256": "11fa583bb0160cc2babce6fd035014322cbbe22ac861fe5811812d1c2aec5ec7",
+  "publication": {
+    "path": "/mnt/raid0/llm/tmp/refactor-inf34-a2-calendar-v12-20261031/PUBLICATION.json",
+    "sha256": "92bebf96be2d812a939584242e476b83a6006f1df5f96eba62021b5ff3e37ff3"
+  },
+  "qualification": {
+    "path": "/mnt/raid0/llm/tmp/refactor-inf34-a2-calendar-v12-20261031/QUALIFICATION.json",
+    "sha256": "f132076454790ea909f020cf8570b0cbcb105c3ad3788f34f9bab67fc359608e"
+  },
+  "recipe": "Original official single16384/reps1/t8/ub512/ngl99/expertCPU unchanged; 200GiB physical combinedR13, actual affinity184-191",
+  "validation": "31 model-free boundary tests; host-I import/ancestry refusal; real R11 CPU normal0 and activeSTOP75; raw writer/readback/EXECUTION/drain; actual keeper/prearm/validator0refusals0warnings",
+  "claim_limits": "CPU controls only; GPU qualification and original official full run UNTESTED. No new official observations, no grid/crossover, no scientific checkbox or native wired claim."
+}

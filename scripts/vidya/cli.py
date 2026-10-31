@@ -556,6 +556,7 @@ INF70_CORPUS_ROOT = Path("/mnt/raid0/llm/tmp/inf70")
 # Kept literal (not imported) so `cli.py --help` stays cheap; test_ingest_sources pins it
 # equal to ingest_sources.SOURCES.
 _FILE_SOURCES = (
+    "inf34-a2-raw-prefill",
     "lb49-combined-diagnostic",
     "ufh12-irt-paired",
     "ufh12-gs-coverage",
@@ -602,7 +603,7 @@ _FILE_SOURCES = (
     "ak-width-dimension", "ak-width-cells-cpu",
     "moe-routing",
     "gpu-cpu-noise", "launch-affinity", "q38-serving-gate", "fused-decode-div", "champion-fold-gate", "calendar-overrun", "floor-registry", "weight-handoff",
-    "hsf5p-microbench", "m4-cpu-recipe-speed",
+    "hsf5p-microbench", "m4-cpu-recipe-speed", "c6-q4-microbench",
 )
 
 
