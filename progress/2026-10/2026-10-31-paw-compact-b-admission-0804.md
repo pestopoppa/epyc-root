@@ -1,0 +1,3 @@
+# PAW compact B admission loss — 2026-10-31
+
+The 08:04:22 continuation ended rc 1: **FAILED-RUN, class admission**. Native `admission lost` does not identify which grant, time, HOLD, STOP, ancestor or lock predicate failed. Seven retained program bundle hashes verify; task 18 generation has an unresolved outcome. All 72 evaluator cases were reported unexposed, so accuracy is unknown. Children drained. Owner action is to inspect admission and preserve existing bundles and the unresolved generation exposure before any continuation. The prior 05:58:33 rc 75 cutoff is a separate event; PAW-3 stays open. [Bounded audit](../../artifacts/compute/codex3-paw-compact-b-0804-20261031/AUDIT.json). [belief: cc]

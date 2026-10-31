@@ -1,0 +1,23 @@
+{
+  "event": "2026-10-31T08:04:22Z",
+  "outer_rc": 1,
+  "classification": "admission",
+  "cause": "admission predicate returned false; specific condition unknown",
+  "program_bundles": {
+    "11": "10254b6dbd31521f3f12f475d5ff081cee69727265766adbd6d4b489bef07c40",
+    "12": "9506311b9d3dd5bef74831d0c3c32fc577cdbc0b4c631d1071a840f50dd9db22",
+    "13": "0a5829a3bcb98686746f79f65c515a9ed27830cb3aaa21308fa2252e5689f97b",
+    "14": "247ba6574403e52fec7cf60b486bdf32e9c12a46a369d116a1630ea6f69b3fe6",
+    "15": "b084635eda01b6340fc863eeac0e73bf69e91adc826964c1284ef14fdb8aa27d",
+    "16": "3b9127977ca95e57c78693f80de6a46eb36bde938fcfd999f3ea31e005e152b2",
+    "17": "4892a318376bcb790b4b8ba642fb096e2d9d0ebec1c343998cca3376dfbad53d"
+  },
+  "bundle_hashes_reverified_on_host": true,
+  "task_18_generation": "started; no saved bundle; outcome unknown",
+  "case_dispositions": {
+    "not_exposed": 72
+  },
+  "children_drained": true,
+  "no_accuracy_result": true,
+  "prior_event": "2026-10-31T05:58:33Z rc75 cutoff, separate segment"
+}
