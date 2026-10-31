@@ -374,11 +374,12 @@ First full smoke run of the trial loop. Four defects, three silent.
       replacement-map candidates — inherits both errors. Rerun with real tokenization against the
       current shape before anyone acts on that decision.
 
-- [ ] **Per-instance `-np` cannot be declared.** `slots_by_shape` is keyed by shape CLASS (`full` /
+- [x] **Per-instance `-np` cannot be declared.** `slots_by_shape` is keyed by shape CLASS (`full` / ✅ 2026-10-31 — orchestrator implementation `eda654775ddac4a7bec41b36563d7e4860cd895d`; tests `tests/unit/test_stack_priors_compiler.py`, `tests/unit/test_orchestrator_stack_reload.py`, and Git capsule `artifacts/audit/ni-instance-slots-20261031/verification.md`; 502 caller/admission/attestation tests pass, default runtime caches unchanged across 16 roles. [no-belief: declaration/compiler/runtime consistency controls]
       `half`), so two `full` instances of one role cannot differ. The compiled artifact is already
       per-PORT (`slots_by_port`) and `_resolve_parallel_slots` is explicitly "for the instance being
       launched, not for the role" — so this is a declaration-schema gap, not a plumbing migration.
       Same shape as the registry's own `kv_quant_by_shape` future-proofing note.
+      - Optional `server_mode.<role>.serving_shape.slots_by_instance` maps declared ports to positive slot counts before shape/scalar/fallback resolution. The compiler reads its handed registry and retains the existing per-port artifact; native instance lookup, server argv, admission/attestation, capacity reporting, and local batch certification agree. Explicit topology and owner-registry data remain authoritative; heterogeneous URL pools use conservative per-member limits. The critical base resolver's behavior and independent eval-batch fallback remain unchanged. Four stale usage fixtures were corrected to the native attribution protocol after exact base/candidate controls; no production declaration, live capacity, reload, or inference changed.
 
 - [ ] **Routing is not context-length aware.** Nothing inspects prompt length before choosing an
       instance, so a long prompt landing on a narrow slot gets a hard 400 rather than being routed to

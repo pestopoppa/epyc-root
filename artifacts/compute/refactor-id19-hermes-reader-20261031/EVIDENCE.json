@@ -1,0 +1,54 @@
+{
+  "schema": "epyc.id19.root_source_closure.v1",
+  "task": "ID-19",
+  "root_base": "82cea0af02f98989646fee71024f663c777a21f2",
+  "APP_implementation_commit": "0ffc55ece5fa64e3481eeb2520a94ec0feebed1a",
+  "APP_main_commit": "3f9ac2715720958c1eacd033b53fb01cd2b336da",
+  "APP_main_contains_exact_11_paths": true,
+  "published_tests": "tests/unit/test_hermes_reader.py",
+  "published_artifacts": [
+    "docs/reference/trace/hermes-read-projection.md",
+    "docs/reference/trace/id19-hermes-reader-parity-20261031.json"
+  ],
+  "published_parity_artifact_sha256": "3d9dc68a3208b9e0a3e0a44d73756d668913ebf311e3b07e1a6aedc247ad2840",
+  "original_task_block_sha256": "befcf255b4afb957ef04a4c2e76f89d51c0ebbcb88f441205e61f230ea4ece0e",
+  "original_task_prose_byte_identical_after_metadata_strip": true,
+  "acceptance": {
+    "minimum_imports": "stdlib reader/exporter; pinned upstream client is Node-backed, package not adopted",
+    "reference_commit": "b8c508fd1e05d1eeb1e2c7e13f41b8c2f3f09773",
+    "reference_bundle_sha256": "1b1643f9d060a592b326dd690338ea885b5ebf69c6f7fcc569fb0c7dd1c7e1ca",
+    "private_sessions": 5,
+    "native_rows": 10,
+    "projected_rows": 10,
+    "eligible_sessions": 3,
+    "eligible_normalized_records_equal": 14,
+    "matching_refused_sessions": 2,
+    "matching_refusal_codes": [
+      "missing_user_records",
+      "missing_user_records"
+    ],
+    "public_fixture_pairs_equal": 2,
+    "actual_reference_loss_negative_detected": true,
+    "actual_fresh_lane_tests": 12,
+    "actual_make_gates_rc": 0,
+    "Ruff_lint_and_format_rc": 0,
+    "staged_privacy_rc": 0,
+    "credential_shape_negative_expected_and_observed_rc": 1,
+    "canonical_APP_preserved": true
+  },
+  "source_formatting": {
+    "approved_patch_sha256": "5bd58b71554098c48a9221d4eb551887a70d3456f1009565756aead4fdfb8f71",
+    "format_only_patch_sha256": "0c8e5bf6ec0630942071625d4da67e55d25a326cdea1870721b5c96644576fb4",
+    "all_Python_AST_equal": true,
+    "private_reference_qualification": "before formatting; executable AST identical; fresh-lane unit/privacy/mandatory gates after formatting"
+  },
+  "scope": "Python SQLite Hermes input-envelope port, not full normalization; no larger-corpus parity, measurement-grade capture or runtime deployment",
+  "privacy": "No raw session IDs/content/normalized private outputs in Git. Raw protected evidence remains in the owned capsule.",
+  "publication_receipt": {
+    "protected_path": "/mnt/raid0/llm/tmp/refactor-id19-hermes-reader-20261031/PUBLICATION.json",
+    "sha256": "83bf953b06c619fe8c77fb28b06dccd3731754bfeae86b35aaa47f013db76364"
+  },
+  "private_proof_receipt_sha256": "adb90640b3a41903105dac52d766a0c808ceb2381b1ec9035543330587d10322",
+  "integration_validation_log_sha256": "26713ca74af6b09cb1d53f9509f9cccb6d2c172e58d88e6f1b2a57d0ba716811",
+  "belief_boundary": "Agent-readable projection intentionally lacks measurement-warrant fields; no measurement-grade claim tuple is asserted."
+}

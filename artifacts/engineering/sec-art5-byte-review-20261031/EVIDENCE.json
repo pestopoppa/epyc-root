@@ -1,0 +1,74 @@
+{
+  "schema": "sec-art5-byte-review-source-checkpoint/v1",
+  "date": "2026-10-31",
+  "source_repository": "epyc-orchestrator",
+  "implementation_commit": "afb87d5d4b056232cc804c6333fd8e0420988a9c",
+  "verified_main": "4408254125460317a262c3774fa1850890cb41fd",
+  "source_base": "2de4e338247c2e7b4589f1b258044d9f3c3e5736",
+  "published_paths": {
+    "scripts/validate/template_provenance.py": "f781b30d616324c6a88fe8aedb59c17869bdf9499af01bf9dba267eec6d9f992",
+    "tests/unit/test_template_provenance_bytes.py": "42a5de7fbf099e97213263feec87550f149879cdaf77f9715edd672c9e9340d5"
+  },
+  "approved_patch_sha256": "566d7872f02756d0a84833d9579c3f20ab9c490e4306588a051a7d880aca55f9",
+  "format_only_AST_equal": true,
+  "format_only_patch_sha256": "1fe39e7063ada831f849dc24e7730c6abc6defbde6f8ab2a3db591cd4238cd5e",
+  "task_completion": false,
+  "scope": "Byte-accurate human review artifact only; SEC-ART-5 remains open. No signing/admission/schema/production or runtime change.",
+  "root_cause": "UTF-8 replacement collapsed unequal invalid byte sequences into the same review text; the old diff incorrectly declared identical despite unequal digests. Unterminated lines were concatenated.",
+  "implementation": "Readable valid UTF-8 unified diffs; offset-labelled reversible hex for both inputs when either is invalid; equality note requires equal bytes; missing-final-newline markers.",
+  "validation": {
+    "gitnexus_risk": "LOW",
+    "gitnexus_upstream_count": 2,
+    "stale_graph": "84f6f6f; manual current caller closure confirms CLI main and unit tests",
+    "baseline": "6 new failures,4 passes on untouched base",
+    "actual_lane_focused": "19 passed,0 skipped (11 new +8 existing);2 existing pytest configuration warnings",
+    "make_gates": 0,
+    "focused_ruff": 0,
+    "pinned_ruff_test_format": 0,
+    "staged_privacy": 0,
+    "format_delta": "test-only AST-identical",
+    "lane_r6_elapsed_s": 3.5773228539619595,
+    "lane_r6_sampled_peak_rss_bytes": 185077760,
+    "lane_r6_children_drained": true,
+    "first_lane_chain_rc": 1,
+    "first_lane_chain_reason": "Pinned Ruff requested test formatting after focused tests, make gates and lint had passed; corrected formatting + lint passed separately with identical AST"
+  },
+  "raw_evidence": {
+    "BASELINE.log": {
+      "private_path": "/mnt/raid0/llm/tmp/refactor-sec-art5-byte-diff-20261031/BASELINE.log",
+      "sha256": "590a2c6aaba79cb9b9461b250338397801e6fc5daa292c092483d0595cf7e384"
+    },
+    "FINAL.log": {
+      "private_path": "/mnt/raid0/llm/tmp/refactor-sec-art5-byte-diff-20261031/FINAL.log",
+      "sha256": "058845da0829a381d18cea41371f94e090089a968c61e18294923a66f139c9e2"
+    },
+    "IMPACT.log": {
+      "private_path": "/mnt/raid0/llm/tmp/refactor-sec-art5-byte-diff-20261031/IMPACT.log",
+      "sha256": "715dd78385ffd0e5b68abe9ae27abf5f2b752ed049c6124ff9bb48bdcd793d0c"
+    },
+    "LANE-R6.log": {
+      "private_path": "/mnt/raid0/llm/tmp/refactor-sec-art5-byte-diff-20261031/LANE-R6.log",
+      "sha256": "153e7b51d09faf656d93a04618347c5349a3d4af0cf6674579bf510dad6cac3e"
+    },
+    "LANE-FOCUSED.log": {
+      "private_path": "/mnt/raid0/llm/tmp/refactor-sec-art5-byte-diff-20261031/LANE-FOCUSED.log",
+      "sha256": "57be62b49f18ae43d074b0cb5a2dfd96a84e321b3faeee4e6db12fae325291f7"
+    },
+    "LANE-MAKE-GATES.log": {
+      "private_path": "/mnt/raid0/llm/tmp/refactor-sec-art5-byte-diff-20261031/LANE-MAKE-GATES.log",
+      "sha256": "01ac9119d5704b4139fe7cbfad98165fff0f00c1faa306a0e2a351f8ba25a215"
+    },
+    "LANE-FORMAT-R6.log": {
+      "private_path": "/mnt/raid0/llm/tmp/refactor-sec-art5-byte-diff-20261031/LANE-FORMAT-R6.log",
+      "sha256": "d1ac3c82353380a8fc97c5f74e093ab3a32c6d6c6fb99ca0359ac326f781343c"
+    },
+    "PUBLICATION.json": {
+      "private_path": "/mnt/raid0/llm/tmp/refactor-sec-art5-byte-diff-20261031/PUBLICATION.json",
+      "sha256": "9e27e3d0486bd789ee32f88d5d4d95da651e1ec420572671cd82120df998ec49"
+    }
+  },
+  "committed_test_path": "tests/unit/test_template_provenance_bytes.py",
+  "committed_existing_tests": "tests/unit/test_apply_registry_integrity_pins.py",
+  "remaining_acceptance": "Actual new-role onboarding staging/order: Step1.5 requires existing server_mode.<role>; later Step4 creates only roles.<role>. Existing lineup review signoffs/coverage were already closed by POST-b/c.",
+  "belief_scope": "Source/code conformance checkpoint; no new measurement-grade claim tuple or runtime adoption."
+}
