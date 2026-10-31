@@ -565,10 +565,14 @@ Not measured:
   re-deriving the Q4_K bit-unpack formulas ("wait" ×56, "hmm" ×46): 97% of the step comes before any JSON, the
   final JSON is 4%, and visible answers also carry 1.2-1.9k chars of preamble. MTP acceptance is ~0.45-0.53 on
   that prose vs 0.6-0.97 on terse turns, which compounds the cost. The author prompt shows the same pattern.
-- [x] **OAB-21 — fix reasoning-token accounting in `actor_call_metrics`.** ✅ 2026-10-30 [belief: cc] `tokens.reasoning` reads 0 while the
+- [x] **OAB-21 — fix reasoning-token accounting in `actor_call_metrics`.** ✅ 2026-10-30 [belief: cc] `tokens.reasoning` reads 0 while the <!-- evidence-integrity: Research `3e9c00e534ae29f138d13ec8962fe0d44fd86b41`; artifact: artifacts/compute/task-evidence-repair-20261031/oab-21/EVIDENCE.json; hygiene, not quota -->
   export carries `reasoning` parts. Count them (tokens from the server's usage when present, else chars with the
   estimator flagged), and keep "decoded includes reasoning" explicit. Acceptance: the step-6 call re-exported shows
   a non-zero reasoning count consistent with its 82k chars. Also feeds VB-AK-METRICS-1.
+
+  <!-- task-evidence-integrity:start OAB-21 -->
+  - Evidence metadata (hygiene, not new quota): Research `3e9c00e534ae29f138d13ec8962fe0d44fd86b41`; [test/artifact](../../artifacts/compute/task-evidence-repair-20261031/oab-21/EVIDENCE.json).
+  <!-- task-evidence-integrity:end OAB-21 -->
   - [x] **OAB-21 source implementation.** ✅ 2026-10-29 Research `3e9c00e534ae29f138d13ec8962fe0d44fd86b41`
     counts captured reasoning characters and informative server usage, otherwise explicitly flagged
     `ceil(reasoning_chars/4)` estimates; missing evidence stays unknown. Per-step/session/call provenance
@@ -577,7 +581,7 @@ Not measured:
     [no-belief: parser implementation and fixture correctness]
   - [x] **OAB-21 retained-source acceptance:** ✅ 2026-10-30 [belief: cc] locate and parse the exact original OAB-10/11 six-step
     export with roughly82k reasoning characters at step6; record path/digest, message identity, count and
-    usage/estimate source. Exact retained OpenCode session `ses_f280614e1ffe39X6ka8Mym7IgV` was exported to private scratch (`opencode-export.json`, SHA-256 `a53b40d1a530c1a7ed8798dff29385bd56311f85862d6f1edafcecb62c1d21`) and parsed with research `276d75fab`: step 6 `msg_0d803594d001Hdyg1RPVFZEdTU` has 82,482 reasoning characters and a flagged `ceil(chars/4)` estimate of 20,621 tokens (native usage was zero); six steps total 116,002 chars and 29,003 estimated reasoning tokens. Decoded output stays 42,547 with `decoded_includes_reasoning=true`. Export changed the local OpenCode project row `time_updated`; the 38 session/message/part rows were digest-identical before and after. Evidence: `/mnt/raid0/llm/tmp/refactor-01a16fc3/oab21-reasoning-accounting-20261030/original-session/validation.md` and `metrics.json`.
+    usage/estimate source. Exact retained OpenCode session `ses_f280614e1ffe39X6ka8Mym7IgV` was exported to private scratch (`opencode-export.json`, SHA-256 `a53b40d1a530c1a7ed8798dff29385dfbd56311f85862d6f1edafcecb62c1d21`) and parsed with research `276d75fab`: step 6 `msg_0d803594d001Hdyg1RPVFZEdTU` has 82,482 reasoning characters and a flagged `ceil(chars/4)` estimate of 20,621 tokens (native usage was zero); six steps total 116,002 chars and 29,003 estimated reasoning tokens. Decoded output stays 42,547 with `decoded_includes_reasoning=true`. Export changed the local OpenCode project row `time_updated`; the 38 session/message/part rows were digest-identical before and after. Evidence: `/mnt/raid0/llm/tmp/refactor-01a16fc3/oab21-reasoning-accounting-20261030/original-session/validation.md` and `metrics.json`.
 - [x] **OAB-22 — planner concision rule plus an 8k per-turn cap, together.** ✅ 2026-09-26 — first run-10h planner call: 15 steps, max turn 9,801 decoded (cap 16384, 0 capped steps), schema-valid, 31.4 min vs 32.8. Note: step 1 at 9.8k exceeds the rule's ~4k analysis aim (below the cap that replaced 8k). Add to `actors.py`
   `_HYPOTHESIS_TASK` (~L1961-1965): derive a formula once, keep analysis under ~4k tokens, then emit JSON only; set
   `max_tokens` 8000 per turn as a circuit breaker. The cap alone would have truncated 5 of the 6 giant turns, so it
