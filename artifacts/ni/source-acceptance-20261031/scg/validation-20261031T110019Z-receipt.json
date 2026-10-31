@@ -1,0 +1,13 @@
+{
+  "pid": 3689790,
+  "birth_ticks": "156689321",
+  "pid_absent_after_wait": true,
+  "rc": 1,
+  "samples": 860,
+  "peak_tree_rss_bytes": 653086720,
+  "elapsed_s": 43.84363570786081,
+  "cpus": "130-131",
+  "physical_cpus": "34-35",
+  "mutex": "/mnt/raid0/llm/tmp/compute-flags/prep-locks/34-35.lock",
+  "classification": "R6 q1 block-correctness; disjoint q0 block-timing-pairable; no whole-host timing"
+}

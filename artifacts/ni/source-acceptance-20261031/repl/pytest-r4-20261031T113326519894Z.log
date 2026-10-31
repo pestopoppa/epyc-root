@@ -1,0 +1,117 @@
+============================= test session starts ==============================
+platform linux -- Python 3.11.17, pytest-9.0.3, pluggy-1.6.0
+rootdir: /mnt/raid0/llm/worktrees/mains/codex-ni-orchestrator
+configfile: pyproject.toml
+plugins: asyncio-1.3.0, timeout-2.4.0, langsmith-0.7.30, cov-7.1.0, xdist-3.8.0, hypothesis-6.151.13, anyio-4.13.0
+asyncio: mode=Mode.AUTO, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collected 141 items
+
+tests/unit/test_repl_trace_capture.py .....F..FFFFF.FF                   [ 11%]
+tests/unit/test_exploration_core.py ............                         [ 19%]
+tests/unit/test_repl_file_exploration.py ........................        [ 36%]
+tests/unit/test_repl_spill_output.py ...............                     [ 47%]
+tests/unit/test_repl_emb_eval.py ....................................... [ 75%]
+...................................                                      [100%]
+
+=================================== FAILURES ===================================
+___________ test_spill_grep_and_peek_export_harness_real_trace_rows ____________
+tests/unit/test_repl_trace_capture.py:132: in test_spill_grep_and_peek_export_harness_real_trace_rows
+    assert env._grep(secret, file_path=str(spill))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/repl_environment/file_exploration.py:320: in _grep
+    is_valid, error = self._validate_file_path(file_path)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/unit/test_repl_trace_capture.py:120: in <lambda>
+    self._validate_file_path = lambda path: (os.path.isfile(path), None)
+                                             ^^
+E   NameError: name 'os' is not defined
+________________ test_arbitrary_or_changed_file_is_not_captured ________________
+tests/unit/test_repl_trace_capture.py:200: in test_arbitrary_or_changed_file_is_not_captured
+    env._grep("violet", file_path=str(other))
+src/repl_environment/file_exploration.py:320: in _grep
+    is_valid, error = self._validate_file_path(file_path)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/unit/test_repl_trace_capture.py:120: in <lambda>
+    self._validate_file_path = lambda path: (os.path.isfile(path), None)
+                                             ^^
+E   NameError: name 'os' is not defined
+_ test_original_unicode_newline_spans_and_negative_peek[\u03b1\r\nviolet \u96ea handler\r\nafter\r\n] _
+tests/unit/test_repl_trace_capture.py:213: in test_original_unicode_newline_spans_and_negative_peek
+    assert env._grep("violet", file_path=str(spill)) == ["violet 雪 handler"]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/repl_environment/file_exploration.py:320: in _grep
+    is_valid, error = self._validate_file_path(file_path)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/unit/test_repl_trace_capture.py:120: in <lambda>
+    self._validate_file_path = lambda path: (os.path.isfile(path), None)
+                                             ^^
+E   NameError: name 'os' is not defined
+_ test_original_unicode_newline_spans_and_negative_peek[\u03b1\rviolet \u96ea handler\rafter] _
+tests/unit/test_repl_trace_capture.py:213: in test_original_unicode_newline_spans_and_negative_peek
+    assert env._grep("violet", file_path=str(spill)) == ["violet 雪 handler"]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/repl_environment/file_exploration.py:320: in _grep
+    is_valid, error = self._validate_file_path(file_path)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/unit/test_repl_trace_capture.py:120: in <lambda>
+    self._validate_file_path = lambda path: (os.path.isfile(path), None)
+                                             ^^
+E   NameError: name 'os' is not defined
+_ test_original_unicode_newline_spans_and_negative_peek[\u03b1\nviolet \u96ea handler\nafter] _
+tests/unit/test_repl_trace_capture.py:213: in test_original_unicode_newline_spans_and_negative_peek
+    assert env._grep("violet", file_path=str(spill)) == ["violet 雪 handler"]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/repl_environment/file_exploration.py:320: in _grep
+    is_valid, error = self._validate_file_path(file_path)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/unit/test_repl_trace_capture.py:120: in <lambda>
+    self._validate_file_path = lambda path: (os.path.isfile(path), None)
+                                             ^^
+E   NameError: name 'os' is not defined
+_______________ test_export_refuses_query_or_corpus_substitution _______________
+tests/unit/test_repl_trace_capture.py:227: in test_export_refuses_query_or_corpus_substitution
+    env._grep("violet", file_path=str(spill))
+src/repl_environment/file_exploration.py:320: in _grep
+    is_valid, error = self._validate_file_path(file_path)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/unit/test_repl_trace_capture.py:120: in <lambda>
+    self._validate_file_path = lambda path: (os.path.isfile(path), None)
+                                             ^^
+E   NameError: name 'os' is not defined
+___________________ test_only_later_same_version_opens_count ___________________
+tests/unit/test_repl_trace_capture.py:258: in test_only_later_same_version_opens_count
+    env._peek(-1, file_path=str(spill))  # before query; never a follow
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/repl_environment/file_exploration.py:211: in _peek
+    is_valid, error = self._validate_file_path(file_path)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/unit/test_repl_trace_capture.py:120: in <lambda>
+    self._validate_file_path = lambda path: (os.path.isfile(path), None)
+                                             ^^
+E   NameError: name 'os' is not defined
+_______________ test_source_control_export_through_actual_freeze _______________
+tests/unit/test_repl_trace_capture.py:276: in test_source_control_export_through_actual_freeze
+    env._grep("violet", file_path=str(spill))
+src/repl_environment/file_exploration.py:320: in _grep
+    is_valid, error = self._validate_file_path(file_path)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/unit/test_repl_trace_capture.py:120: in <lambda>
+    self._validate_file_path = lambda path: (os.path.isfile(path), None)
+                                             ^^
+E   NameError: name 'os' is not defined
+=============================== warnings summary ===============================
+../../../epyc-orchestrator/.venv/lib/python3.11/site-packages/opentelemetry/util/_importlib_metadata.py:32
+  /mnt/raid0/llm/epyc-orchestrator/.venv/lib/python3.11/site-packages/opentelemetry/util/_importlib_metadata.py:32: DeprecationWarning: SelectableGroups dict interface is deprecated. Use select.
+    return EntryPoints(ep for group_eps in eps.values() for ep in group_eps)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/unit/test_repl_trace_capture.py::test_spill_grep_and_peek_export_harness_real_trace_rows
+FAILED tests/unit/test_repl_trace_capture.py::test_arbitrary_or_changed_file_is_not_captured
+FAILED tests/unit/test_repl_trace_capture.py::test_original_unicode_newline_spans_and_negative_peek[\u03b1\r\nviolet \u96ea handler\r\nafter\r\n]
+FAILED tests/unit/test_repl_trace_capture.py::test_original_unicode_newline_spans_and_negative_peek[\u03b1\rviolet \u96ea handler\rafter]
+FAILED tests/unit/test_repl_trace_capture.py::test_original_unicode_newline_spans_and_negative_peek[\u03b1\nviolet \u96ea handler\nafter]
+FAILED tests/unit/test_repl_trace_capture.py::test_export_refuses_query_or_corpus_substitution
+FAILED tests/unit/test_repl_trace_capture.py::test_only_later_same_version_opens_count
+FAILED tests/unit/test_repl_trace_capture.py::test_source_control_export_through_actual_freeze
+=================== 8 failed, 133 passed, 1 warning in 8.85s ===================

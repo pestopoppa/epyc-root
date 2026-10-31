@@ -1,0 +1,1 @@
+{"pid": 3661015, "birth_ticks": "156672156", "command": ["-p", "scg_trace", "--confcutdir=tests/unit", "tests/unit/test_autopilot_sequential_wiring.py::test_run_loop_inner_fresh_eval_exclusion_consumes_pending_promotion", "tests/unit/test_safety_gate_baseline_eligibility.py::test_reproduced_promotion_uses_representative_median_and_refreshes_frontdoor_speed", "--maxfail=1"]}

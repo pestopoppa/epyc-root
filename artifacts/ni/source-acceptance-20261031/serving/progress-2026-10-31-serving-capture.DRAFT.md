@@ -1,0 +1,3 @@
+### Prospective serving diagnostic capture repair (source only)
+
+Research `037e08ff31165f3f0861476ea989e57c15b1f223` publishes the main-reviewed three-producer append-only capture boundary. Original seals are verified before metadata; unchanged native inputs/windows/samples/reps remain bound. Missing/invalid seals retain visible nonfatal refusal, never reconstruction. ROOT reader/grade unchanged; no live activation or historical rewrite. Final affected122passed/1existing skip, original4serial regressionspassed, noROOToriginal5passed; all source hashes stable. Evidence: `/mnt/raid0/llm/tmp/codex-ni-serving-capture-tripwire-fix-20261031`. Original LIVE/HR3/R24-9 parents remain open; no checkbox or quota credit. [belief: cc]

@@ -1,0 +1,33 @@
+{
+  "pid": 3594108,
+  "birth_stat": "3594108 (taskset) R 3594075 3594108 3594108 0 -1 4194560 191 0 0 0 0 0 0 0 20 0 1 0 156632064 2854912 0 18446744073709551615 <machine-int:0x6371373d1000> <machine-int:0x6371373d3561> <machine-int:0x7fff48661690> 0 0 0 0 0 0 0 0 0 17 172 0 0 0 0 0 <machine-int:0x6371373d5b50> <machine-int:0x6371373d6010> <machine-int:0x637144427000> <machine-int:0x7fff48663476> <machine-int:0x7fff48663728> <machine-int:0x7fff48663728> <machine-int:0x7fff48663fe7> 0\n",
+  "pid_absent_after_wait": true,
+  "rc": 1,
+  "samples": 118,
+  "peak_tree_rss_bytes": 164093952,
+  "elapsed_s": 6.061010773992166,
+  "cpus": "128-129",
+  "physical_cpus": "32-33",
+  "mutex": "/mnt/raid0/llm/tmp/compute-flags/prep-locks/32-33.lock",
+  "cmd": [
+    "taskset",
+    "-c",
+    "128,129",
+    "/mnt/raid0/llm/epyc-inference-research/.venv/bin/python",
+    "-m",
+    "pytest",
+    "-q",
+    "--tb=short",
+    "--junitxml=/mnt/raid0/llm/tmp/codex-ni-research-root-paths-finish-20261031/20261031T105047.265820Z-integrated.xml",
+    "scripts/benchmark/test_belief_capture.py",
+    "scripts/benchmark/tests/test_run_batch_entry.py",
+    "scripts/benchmark/test_laguna_pgpu1_dflash_runner.py",
+    "scripts/benchmark/test_op2_quiet_window_prep.py",
+    "scripts/validate/test_check_evidence_durability.py",
+    "scripts/kernel_rnd/autokernel/loop/test_belief_context.py",
+    "scripts/kernel_rnd/autokernel/loop/test_serving_beliefs.py",
+    "scripts/kernel_rnd/autokernel/loop/test_claim_bootstrap.py",
+    "scripts/kernel_rnd/autokernel/history_replay/test_export.py"
+  ],
+  "log": "/mnt/raid0/llm/tmp/codex-ni-research-root-paths-finish-20261031/20261031T105047.265820Z-integrated.log"
+}

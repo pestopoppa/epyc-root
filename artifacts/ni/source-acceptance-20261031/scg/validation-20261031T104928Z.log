@@ -1,0 +1,32 @@
+============================= test session starts ==============================
+platform linux -- Python 3.11.17, pytest-9.0.3, pluggy-1.6.0
+rootdir: /mnt/raid0/llm/worktrees/mains/codex-ni-orchestrator
+configfile: pyproject.toml
+plugins: asyncio-1.3.0, timeout-2.4.0, langsmith-0.7.30, cov-7.1.0, xdist-3.8.0, hypothesis-6.151.13, anyio-4.13.0
+asyncio: mode=Mode.AUTO, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collected 19818 items / 6 skipped
+
+tests/unit/test_accepted_warrant_telemetry.py ....                       [  0%]
+tests/unit/test_action_outcome_scorer.py ...............                 [  0%]
+tests/unit/test_active_model_path_preflight.py ...................       [  0%]
+tests/unit/test_admission.py ...............                             [  0%]
+tests/unit/test_admit_set.py ...............                             [  0%]
+tests/unit/test_affinity_preflight.py ......                             [  0%]
+tests/unit/test_affinity_preflight_cell_manifest.py .................... [  0%]
+.....                                                                    [  0%]
+tests/unit/test_allowed_callers.py ..                                    [  0%]
+tests/unit/test_analyze_routing_policy.py ..                             [  0%]
+tests/unit/test_anomaly_signals.py ..................................... [  0%]
+........................................................................ [  1%]
+......                                                                   [  1%]
+tests/unit/test_answer_equivalence_review.py .......                     [  1%]
+tests/unit/test_answer_equivalence_targets.py ....                       [  1%]
+tests/unit/test_answer_resolution.py ................................... [  1%]
+....................                                                     [  1%]
+tests/unit/test_answer_scoring_drift.py ..................               [  1%]
+tests/unit/test_answer_without_generation.py ..........                  [  1%]
+tests/unit/test_anthropic_backend.py ............ss                      [  1%]
+tests/unit/test_ap3_prewarm_registry_contract.py ...                     [  1%]
+tests/unit/test_ap53_rejected_mutation_ledger.py .............           [  1%]
+tests/unit/test_ap54_eval_knowledge_fence.py ........................... [  1%]
+.......FFF.........F.s.........................................

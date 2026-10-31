@@ -1,0 +1,1 @@
+{"pid": 3598888, "birth_ticks": "156634602", "command": ["--confcutdir=tests/unit", "tests/unit/test_safety_gate_baseline_eligibility.py", "tests/unit/test_gate_frontier_live_scope.py", "tests/unit/test_gate_frontier_c_and_b.py", "tests/unit/test_multitier_mutation_candidates.py", "tests/unit/test_safety_gate_baseline_eligibility.py"]}

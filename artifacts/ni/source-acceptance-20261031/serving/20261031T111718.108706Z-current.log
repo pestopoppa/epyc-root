@@ -1,0 +1,19 @@
+...s...............F.................................................... [ 40%]
+........................................................................ [ 80%]
+............F......................                                      [100%]
+=================================== FAILURES ===================================
+_______ test_tripwire_final_boundary_exports_and_ingests_original_values _______
+scripts/kernel_rnd/autokernel/loop/test_serving_beliefs.py:208: in test_tripwire_final_boundary_exports_and_ingests_original_values
+    assert feedback.ingest(path) == 6
+E   AssertionError: assert 0 == 6
+E    +  where 0 = ingest(PosixPath('/tmp/pytest-of-node/pytest-11037/test_tripwire_final_boundary_e0/serving-beliefs/2b2af049896411dd16e86ac0b30f219a18fffd84cb2bf1ce38cc9701c5aa0e21.json'))
+E    +    where ingest = <adapters.autokernel_legacy_serving.PlannerFeedback object at 0x77b78e5f4c20>.ingest
+___ test_run_py_records_a_candidate_profile_after_timing_and_orders_the_tail ___
+scripts/kernel_rnd/autokernel/loop/test_gpu_serving_profile.py:514: in test_run_py_records_a_candidate_profile_after_timing_and_orders_the_tail
+    body = body[:body.index("return compared")]
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   ValueError: substring not found
+=========================== short test summary info ============================
+FAILED scripts/kernel_rnd/autokernel/loop/test_serving_beliefs.py::test_tripwire_final_boundary_exports_and_ingests_original_values
+FAILED scripts/kernel_rnd/autokernel/loop/test_gpu_serving_profile.py::test_run_py_records_a_candidate_profile_after_timing_and_orders_the_tail
+2 failed, 176 passed, 1 skipped in 168.35s (0:02:48)

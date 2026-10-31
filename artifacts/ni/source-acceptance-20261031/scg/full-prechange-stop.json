@@ -1,0 +1,7 @@
+{
+  "pid": 3582890,
+  "birth_ticks": "156624206",
+  "reason": "unrelated ap54 failures reached; bounded full suite stopped for narrower reproduction",
+  "term_sent": true,
+  "kill_sent": true
+}

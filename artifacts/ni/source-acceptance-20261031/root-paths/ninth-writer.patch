@@ -1,0 +1,116 @@
+diff --git a/scripts/kernel_rnd/autokernel/history_replay/test_export.py b/scripts/kernel_rnd/autokernel/history_replay/test_export.py
+index 82fa555a7..60529b56f 100644
+--- a/scripts/kernel_rnd/autokernel/history_replay/test_export.py
++++ b/scripts/kernel_rnd/autokernel/history_replay/test_export.py
+@@ -80,7 +80,8 @@ class ExportTests(unittest.TestCase):
+         from autokernel.loop.test_loop import _Critic, _Planner, _run
+         from unittest.mock import patch
+         with (
+-            patch.object(archive, "_VIDYA_ROOT", Path(os.environ.get("AK_HISTORY_ROOT", "/workspace"))),
++            patch.object(archive, "_VIDYA_ROOT", (Path(os.environ["AK_HISTORY_ROOT"])
++                                                   if os.environ.get("AK_HISTORY_ROOT") else None)),
+             tempfile.TemporaryDirectory() as t,
+         ):
+             t = Path(t)
+diff --git a/scripts/kernel_rnd/autokernel/loop/archive.py b/scripts/kernel_rnd/autokernel/loop/archive.py
+index 514ff664a..7d6be741c 100644
+--- a/scripts/kernel_rnd/autokernel/loop/archive.py
++++ b/scripts/kernel_rnd/autokernel/loop/archive.py
+@@ -473,7 +473,7 @@ def _with_trial_counters(store, attempt: Mapping[str, Any], epoch: str) -> Mappi
+     return {**attempt, "trial_ordinal": ordinal, "cumulative_tokens": cumulative}
+ 
+ 
+-_VIDYA_ROOT = Path("/workspace")
++_VIDYA_ROOT = None  # Explicit embedding/test override; otherwise resolve the named ROOT lazily.
+ 
+ 
+ def _publish_ak_history(store_root: Path, attempt: Mapping[str, Any], *,
+@@ -481,7 +481,11 @@ def _publish_ak_history(store_root: Path, attempt: Mapping[str, Any], *,
+     """Write the prospective AK-HR-3 receipt for a committed loop trial only."""
+     if "trial_id" not in attempt:
+         return None
+-    expected = (_VIDYA_ROOT / "scripts/vidya/adapters/ak_history.py").resolve()
++    from . import belief_context
++
++    explicit_root = _VIDYA_ROOT if _VIDYA_ROOT is not None else os.environ.get("AK_HISTORY_ROOT")
++    root = belief_context.resolve_root_repo(explicit_root)
++    expected = (root / "scripts/vidya/adapters/ak_history.py").resolve()
+     if not expected.is_file():
+         raise RuntimeError(f"AK history adapter absent: {expected}")
+     vidya_path = str(expected.parents[1])
+
+--- /dev/null
++++ b/scripts/kernel_rnd/autokernel/loop/test_archive_root.py
+@@ -0,0 +1,72 @@
++"""ROOT selection at the existing diagnostic archive writer boundary; no inference."""
++import sqlite3
++import sys
++from pathlib import Path
++from types import ModuleType
++
++import pytest
++
++from . import archive
++
++
++@pytest.mark.parametrize("value", [None, "invalid"])
++def test_missing_or_invalid_root_warns_after_experiment_commits(tmp_path, monkeypatch, capsys, value):
++    for key in ("AK_HISTORY_ROOT", "EPYC_ROOT_REPO", "EPYC_ROOT"):
++        monkeypatch.delenv(key, raising=False)
++    monkeypatch.setattr(archive, "_VIDYA_ROOT", None)
++    if value:
++        monkeypatch.setenv("AK_HISTORY_ROOT", str(tmp_path / value))
++        # An invalid explicit override must not fall back to this valid ROOT.
++        (tmp_path / "valid/scripts/vidya/adapters").mkdir(parents=True)
++        monkeypatch.setenv("EPYC_ROOT", str(tmp_path / "valid"))
++    store = tmp_path / "store"
++    assert archive.record(store, {"status": "abstained", "mechanism_id": "fixture",
++                                  "trial_id": "trial-fixture"}, epoch="fixture",
++                          recorded_at="2026-10-31T00:00:00Z", campaign_id="fixture")
++    stderr = capsys.readouterr().err
++    assert "AK history capture failed after durable archive: CaptureUnavailable" in stderr
++    assert ("has no scripts/vidya/adapters" if value else "EPYC_ROOT is not set") in stderr
++    with sqlite3.connect(store / "experiments.db") as db:
++        assert db.execute("SELECT count(*) FROM experiments").fetchone()[0] == 1
++    assert not (store / "beliefs").exists()
++
++
++def test_explicit_history_root_wins_and_foreign_cached_adapter_refuses(tmp_path, monkeypatch):
++    adapters = ModuleType("adapters")
++    adapters.__path__ = []
++    monkeypatch.setitem(sys.modules, "adapters", adapters)
++    chosen = tmp_path / "chosen"
++    other = tmp_path / "other"
++    for root in (chosen, other):
++        (root / "scripts/vidya/adapters").mkdir(parents=True)
++    expected = chosen / "scripts/vidya/adapters/ak_history.py"
++    expected.write_text("# selected adapter stand-in\n")
++    monkeypatch.setattr(archive, "_VIDYA_ROOT", None)
++    monkeypatch.setenv("AK_HISTORY_ROOT", str(chosen))
++    monkeypatch.setenv("EPYC_ROOT_REPO", str(other))
++    monkeypatch.setenv("EPYC_ROOT", str(other))
++    adapter = ModuleType("adapters.ak_history")
++    adapter.__file__ = str(expected)
++    adapter.FIELDS = ("trial_id", "trial_tokens")
++    seen = []
++    def append(path, **kwargs):
++        seen.append((path, kwargs))
++        return path / "receipt.jsonl"
++    adapter.append_belief_measurement = append
++    monkeypatch.setitem(sys.modules, "adapters.ak_history", adapter)
++    monkeypatch.setattr(adapters, "ak_history", adapter, raising=False)
++    attempt = {"trial_id": "t", "trial_tokens": 17, "unrelated": "omitted"}
++    store = tmp_path / "store"
++    result = archive._publish_ak_history(store, attempt, campaign_id="campaign", epoch="epoch",
++                                        recorded_at="2026-10-31T00:00:00Z")
++    assert result == store / "beliefs/receipt.jsonl"
++    assert seen == [(store / "beliefs", {"campaign_id": "campaign",
++        "store_id": str(store.resolve()), "epoch": "epoch",
++        "producer": "autokernel.loop.archive/akhr3-v1",
++        "trial": {"trial_id": "t", "trial_tokens": 17},
++        "emitted_at": "2026-10-31T00:00:00Z"})]
++    adapter.__file__ = str(other / "scripts/vidya/adapters/ak_history.py")
++    with pytest.raises(RuntimeError, match="differs from selected ROOT"):
++        archive._publish_ak_history(store, attempt, campaign_id="campaign", epoch="epoch",
++                                    recorded_at="2026-10-31T00:00:00Z")
++    assert len(seen) == 1

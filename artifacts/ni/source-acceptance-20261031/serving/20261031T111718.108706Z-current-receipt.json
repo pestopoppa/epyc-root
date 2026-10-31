@@ -1,0 +1,31 @@
+{
+  "pid": 47654,
+  "birth_stat": "47654 (taskset) R 47414 47654 47654 0 -1 4194560 211 0 0 0 0 0 0 0 20 0 1 0 156791148 2867200 0 18446744073709551615 <machine-int:0x612342d4a000> <machine-int:0x612342d4c561> <machine-int:0x7ffed89d4a40> 0 0 0 0 0 0 0 0 0 17 83 0 0 0 0 0 <machine-int:0x612342d4eb50> <machine-int:0x612342d4f010> <machine-int:0x6123768c4000> <machine-int:0x7ffed89d5489> <machine-int:0x7ffed89d5703> <machine-int:0x7ffed89d5703> <machine-int:0x7ffed89d5fe7> 0\n",
+  "pid_absent_after_wait": true,
+  "rc": 1,
+  "samples": 3335,
+  "peak_tree_rss_bytes": 252657664,
+  "elapsed_s": 169.00308364909142,
+  "cpus": "128-129",
+  "physical_cpus": "32-33",
+  "mutex": "/mnt/raid0/llm/tmp/compute-flags/prep-locks/32-33.lock",
+  "cmd": [
+    "taskset",
+    "-c",
+    "128,129",
+    "/mnt/raid0/llm/epyc-inference-research/.venv/bin/python",
+    "-m",
+    "pytest",
+    "-q",
+    "--tb=short",
+    "--junitxml=/mnt/raid0/llm/tmp/codex-ni-serving-capture-tripwire-fix-20261031/20261031T111718.108706Z-current.xml",
+    "scripts/kernel_rnd/autokernel/loop/test_same_code_tripwire.py",
+    "scripts/kernel_rnd/autokernel/loop/test_serving_beliefs.py",
+    "scripts/kernel_rnd/autokernel/loop/test_serial_run.py",
+    "scripts/kernel_rnd/autokernel/loop/test_run_paired_serving_ab.py",
+    "scripts/kernel_rnd/autokernel/loop/test_longctx.py",
+    "scripts/kernel_rnd/autokernel/loop/test_gpu_serving_profile.py",
+    "scripts/kernel_rnd/autokernel/loop/test_existing_gpu_serving_run.py"
+  ],
+  "log": "/mnt/raid0/llm/tmp/codex-ni-serving-capture-tripwire-fix-20261031/20261031T111718.108706Z-current.log"
+}

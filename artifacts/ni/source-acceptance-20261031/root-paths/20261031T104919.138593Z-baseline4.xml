@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="4" skipped="0" tests="4" time="8.977" timestamp="2026-10-31T10:49:19.651963+00:00" hostname="Beelzebub"><testcase classname="scripts.kernel_rnd.autokernel.loop.test_serial_run" name="test_actual_cpu_keep_cross_target_then_older_history_uses_latest_source[False-False]" time="1.781"><failure message="AssertionError: assert False&#10; +  where False = is_file()&#10; +    where is_file = PosixPath('/tmp/tmpsxztpa8c/store/serving-beliefs/2672849764b47add584545d59e44134ce31051a49fd3e158ffc500d4d9b81407.json').is_file">scripts/kernel_rnd/autokernel/loop/test_serial_run.py:1401: in test_actual_cpu_keep_cross_target_then_older_history_uses_latest_source
+    cpu_fixture.test_existing_main_cpu_five_iterations_preserves_canonical_champion(
+scripts/kernel_rnd/autokernel/loop/test_existing_cpu_run.py:266: in test_existing_main_cpu_five_iterations_preserves_canonical_champion
+    rc, _calls, _planners, _scratch, log = fixture._run_one_keep()
+                                           ^^^^^^^^^^^^^^^^^^^^^^^
+scripts/kernel_rnd/autokernel/loop/test_promotion_targets.py:368: in _run_one_keep
+    rc = run_mod.main(argv)
+         ^^^^^^^^^^^^^^^^^^
+scripts/kernel_rnd/autokernel/loop/test_existing_cpu_run.py:263: in cpu_main
+    return real_main(argv)
+           ^^^^^^^^^^^^^^^
+scripts/kernel_rnd/autokernel/loop/test_serial_run.py:1087: in exercise
+    assert origin_export.is_file()
+E   AssertionError: assert False
+E    +  where False = is_file()
+E    +    where is_file = PosixPath('/tmp/tmpsxztpa8c/store/serving-beliefs/2672849764b47add584545d59e44134ce31051a49fd3e158ffc500d4d9b81407.json').is_file</failure></testcase><testcase classname="scripts.kernel_rnd.autokernel.loop.test_serial_run" name="test_actual_cpu_keep_cross_target_then_older_history_uses_latest_source[True-False]" time="1.785"><failure message="AssertionError: assert False&#10; +  where False = is_file()&#10; +    where is_file = PosixPath('/tmp/tmpwspg4wib/store/serving-beliefs/8ce348abb802b31b990629f008329320d95fa1ef727d1f2ec20fbc0264b0765a.json').is_file">scripts/kernel_rnd/autokernel/loop/test_serial_run.py:1401: in test_actual_cpu_keep_cross_target_then_older_history_uses_latest_source
+    cpu_fixture.test_existing_main_cpu_five_iterations_preserves_canonical_champion(
+scripts/kernel_rnd/autokernel/loop/test_existing_cpu_run.py:266: in test_existing_main_cpu_five_iterations_preserves_canonical_champion
+    rc, _calls, _planners, _scratch, log = fixture._run_one_keep()
+                                           ^^^^^^^^^^^^^^^^^^^^^^^
+scripts/kernel_rnd/autokernel/loop/test_promotion_targets.py:368: in _run_one_keep
+    rc = run_mod.main(argv)
+         ^^^^^^^^^^^^^^^^^^
+scripts/kernel_rnd/autokernel/loop/test_existing_cpu_run.py:263: in cpu_main
+    return real_main(argv)
+           ^^^^^^^^^^^^^^^
+scripts/kernel_rnd/autokernel/loop/test_serial_run.py:1087: in exercise
+    assert origin_export.is_file()
+E   AssertionError: assert False
+E    +  where False = is_file()
+E    +    where is_file = PosixPath('/tmp/tmpwspg4wib/store/serving-beliefs/8ce348abb802b31b990629f008329320d95fa1ef727d1f2ec20fbc0264b0765a.json').is_file</failure></testcase><testcase classname="scripts.kernel_rnd.autokernel.loop.test_serial_run" name="test_actual_cpu_keep_cross_target_then_older_history_uses_latest_source[False-True]" time="1.862"><failure message="AssertionError: assert False&#10; +  where False = is_file()&#10; +    where is_file = PosixPath('/tmp/tmpqymqujz5/store/serving-beliefs/feb9a91cb595b4bba4effb1cfad7afe1d4c2d0feedb77503f43fe7a4b66409e0.json').is_file">scripts/kernel_rnd/autokernel/loop/test_serial_run.py:1401: in test_actual_cpu_keep_cross_target_then_older_history_uses_latest_source
+    cpu_fixture.test_existing_main_cpu_five_iterations_preserves_canonical_champion(
+scripts/kernel_rnd/autokernel/loop/test_existing_cpu_run.py:266: in test_existing_main_cpu_five_iterations_preserves_canonical_champion
+    rc, _calls, _planners, _scratch, log = fixture._run_one_keep()
+                                           ^^^^^^^^^^^^^^^^^^^^^^^
+scripts/kernel_rnd/autokernel/loop/test_promotion_targets.py:368: in _run_one_keep
+    rc = run_mod.main(argv)
+         ^^^^^^^^^^^^^^^^^^
+scripts/kernel_rnd/autokernel/loop/test_existing_cpu_run.py:263: in cpu_main
+    return real_main(argv)
+           ^^^^^^^^^^^^^^^
+scripts/kernel_rnd/autokernel/loop/test_serial_run.py:1087: in exercise
+    assert origin_export.is_file()
+E   AssertionError: assert False
+E    +  where False = is_file()
+E    +    where is_file = PosixPath('/tmp/tmpqymqujz5/store/serving-beliefs/feb9a91cb595b4bba4effb1cfad7afe1d4c2d0feedb77503f43fe7a4b66409e0.json').is_file</failure></testcase><testcase classname="scripts.kernel_rnd.autokernel.loop.test_serial_run" name="test_actual_cpu_keep_cross_target_then_older_history_uses_latest_source[gate-True]" time="1.846"><failure message="AssertionError: assert False&#10; +  where False = is_file()&#10; +    where is_file = PosixPath('/tmp/tmpkuluziz7/store/serving-beliefs/0e069d80bb220940b1617467bcb2f08b3bb20ed877d4a80d573907242add9457.json').is_file">scripts/kernel_rnd/autokernel/loop/test_serial_run.py:1401: in test_actual_cpu_keep_cross_target_then_older_history_uses_latest_source
+    cpu_fixture.test_existing_main_cpu_five_iterations_preserves_canonical_champion(
+scripts/kernel_rnd/autokernel/loop/test_existing_cpu_run.py:266: in test_existing_main_cpu_five_iterations_preserves_canonical_champion
+    rc, _calls, _planners, _scratch, log = fixture._run_one_keep()
+                                           ^^^^^^^^^^^^^^^^^^^^^^^
+scripts/kernel_rnd/autokernel/loop/test_promotion_targets.py:368: in _run_one_keep
+    rc = run_mod.main(argv)
+         ^^^^^^^^^^^^^^^^^^
+scripts/kernel_rnd/autokernel/loop/test_existing_cpu_run.py:263: in cpu_main
+    return real_main(argv)
+           ^^^^^^^^^^^^^^^
+scripts/kernel_rnd/autokernel/loop/test_serial_run.py:1087: in exercise
+    assert origin_export.is_file()
+E   AssertionError: assert False
+E    +  where False = is_file()
+E    +    where is_file = PosixPath('/tmp/tmpkuluziz7/store/serving-beliefs/0e069d80bb220940b1617467bcb2f08b3bb20ed877d4a80d573907242add9457.json').is_file</failure></testcase></testsuite></testsuites>

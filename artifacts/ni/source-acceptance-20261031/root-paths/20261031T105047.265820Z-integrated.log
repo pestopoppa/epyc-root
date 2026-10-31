@@ -1,0 +1,15 @@
+........................................................................ [ 28%]
+........................................................................ [ 57%]
+........................................................................ [ 85%]
+..................................F.                                     [100%]
+=================================== FAILURES ===================================
+_ ExportTests.test_reads_ak_hr3_fields_from_rows_written_by_the_real_code_path _
+scripts/kernel_rnd/autokernel/history_replay/test_export.py:119: in test_reads_ak_hr3_fields_from_rows_written_by_the_real_code_path
+    self.assertEqual(len(captures), 2)
+E   AssertionError: 0 != 2
+----------------------------- Captured stderr call -----------------------------
+warning: AK history capture failed after durable archive: AttributeError: module 'adapters.ak_history' has no attribute 'append_belief_measurement'
+warning: AK history capture failed after durable archive: AttributeError: module 'adapters.ak_history' has no attribute 'append_belief_measurement'
+=========================== short test summary info ============================
+FAILED scripts/kernel_rnd/autokernel/history_replay/test_export.py::ExportTests::test_reads_ak_hr3_fields_from_rows_written_by_the_real_code_path
+1 failed, 251 passed in 5.46s

@@ -1,0 +1,25 @@
+{
+  "pid": 3607768,
+  "birth_stat": "3607768 (taskset) R 3607735 3607768 3607768 0 -1 4194560 192 0 0 0 0 0 0 0 20 0 1 0 156640699 2854912 0 18446744073709551615 <machine-int:0x5e9a9036c000> <machine-int:0x5e9a9036e561> <machine-int:0x7ffd16a930f0> 0 0 0 0 0 0 0 0 0 17 81 0 0 0 0 0 <machine-int:0x5e9a90370b50> <machine-int:0x5e9a90371010> <machine-int:0x5e9ac9810000> <machine-int:0x7ffd16a945ea> <machine-int:0x7ffd16a946f4> <machine-int:0x7ffd16a946f4> <machine-int:0x7ffd16a94fe7> 0\n",
+  "pid_absent_after_wait": true,
+  "rc": 0,
+  "samples": 36,
+  "peak_tree_rss_bytes": 68362240,
+  "elapsed_s": 1.809199299896136,
+  "cpus": "128-129",
+  "physical_cpus": "32-33",
+  "mutex": "/mnt/raid0/llm/tmp/compute-flags/prep-locks/32-33.lock",
+  "cmd": [
+    "taskset",
+    "-c",
+    "128,129",
+    "/mnt/raid0/llm/epyc-inference-research/.venv/bin/python",
+    "-m",
+    "pytest",
+    "-q",
+    "--tb=short",
+    "--junitxml=/mnt/raid0/llm/tmp/codex-ni-research-root-paths-finish-20261031/20261031T105213.612670Z-hr3.xml",
+    "scripts/kernel_rnd/autokernel/history_replay/test_export.py"
+  ],
+  "log": "/mnt/raid0/llm/tmp/codex-ni-research-root-paths-finish-20261031/20261031T105213.612670Z-hr3.log"
+}

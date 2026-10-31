@@ -1,0 +1,12 @@
+{
+  "scripts/kernel_rnd/autokernel/loop/longctx.py": "0ea35e744ac2cdee7dcdcc8ac242848081f9497af079385e21ebb8a493d243e6",
+  "scripts/kernel_rnd/autokernel/loop/run.py": "94ac4e23f895d33996bb09a31ce994978e20b8f2fce69186bab4817cc3d70c32",
+  "scripts/kernel_rnd/autokernel/loop/same_code_tripwire.py": "018230363471300d63cf6a810024af2d49af7baf3f5237835c7e9d23ae834eb9",
+  "scripts/kernel_rnd/autokernel/loop/serving_beliefs.py": "933c27036473bc35a3877c1797f48fcdc7743ace31b2bdd0850bc5d934f781d8",
+  "scripts/kernel_rnd/autokernel/loop/test_aggregate_feedback.py": "0ae930329d4f4170349d1ca8c327e3721dd1360f1ff4eefaa4a716fe03085258",
+  "scripts/kernel_rnd/autokernel/loop/test_existing_gpu_serving_run.py": "7a38eca81e6d8a03e48328bd6c9ce9d366a846d0f6ed8ebbdebd1f961a6a6c68",
+  "scripts/kernel_rnd/autokernel/loop/test_gpu_serving_profile.py": "3f225a3a8d4e87fdecb928d56c4d3617adef9867d9ca5eea6e90498fdff29cd9",
+  "scripts/kernel_rnd/autokernel/loop/test_longctx.py": "652fc9a49b293492b1d98f2223816395bd81d518247ac8ac4c8468c7e7450dca",
+  "scripts/kernel_rnd/autokernel/loop/test_serving_beliefs.py": "ef9ab614f6a356b6aedceacdcd95ffc79ba7b1dafb826c8f4a28f54999f7b376",
+  "scripts/kernel_rnd/autokernel/loop/test_same_code_tripwire.py": "bb06dffda410111e1407d6ebe8d96c0dc290a9bbd6c5e2fccba711a0e41b2b46"
+}

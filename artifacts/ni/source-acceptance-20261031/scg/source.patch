@@ -1,0 +1,42 @@
+commit 2f5c05013ccc80d549635878f260bddf0c172452
+Author:     pestopoppa <72076821+pestopoppa@users.noreply.github.com>
+AuthorDate: Sat Oct 31 11:03:40 2026 +0000
+Commit:     pestopoppa <72076821+pestopoppa@users.noreply.github.com>
+CommitDate: Sat Oct 31 11:03:40 2026 +0000
+
+    Restore promotion guard provider after loop startup tests
+
+diff --git a/tests/unit/test_autopilot_sequential_wiring.py b/tests/unit/test_autopilot_sequential_wiring.py
+index 78f7ecab..b20e6f17 100644
+--- a/tests/unit/test_autopilot_sequential_wiring.py
++++ b/tests/unit/test_autopilot_sequential_wiring.py
+@@ -24,6 +24,29 @@ from src.autopilot_core.authority_consent import (  # noqa: E402
+ )
+ 
+ 
++@pytest.fixture(autouse=True)
++def _restore_promotion_guard_provider():
++    """Loop-startup tests must not leave their fake journal installed in other tests.
++
++    _run_loop_inner installs a process-global provider through the real startup path.
++    Its closure outlives this module's fake journal/authority monkeypatches otherwise,
++    changing subsequent baseline promotions from representative medians into seeds.
++    Preserve the incoming provider, including its warning state, rather than clearing
++    a provider another fixture may own. A private context restores after the test's
++    own monkeypatch teardown without sharing its undo stack (SCG-TEST-ORDER).
++    """
++    import safety_gate
++
++    with pytest.MonkeyPatch.context() as patch:
++        patch.setattr(
++            safety_gate, "_PROMOTION_GUARD_PROVIDER", safety_gate._PROMOTION_GUARD_PROVIDER
++        )
++        patch.setattr(
++            safety_gate, "_LEGACY_GUARD_FALLBACK_WARNED", safety_gate._LEGACY_GUARD_FALLBACK_WARNED
++        )
++        yield
++
++
+ def _enable_seq_p0_2_bridge(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+     grant = tmp_path / "authority_consent.json"
+     grant.write_text(json.dumps({SEQ_P0_2_BRIDGE_CONSENT: "allow"}), encoding="utf-8")

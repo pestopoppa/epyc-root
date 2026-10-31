@@ -1,0 +1,25 @@
+{
+  "pid": 27793,
+  "birth_stat": "27793 (taskset) R 27719 27793 27793 0 -1 4194560 196 0 0 0 0 0 0 0 20 0 1 0 156773618 2867200 0 18446744073709551615 <machine-int:0x587586038000> <machine-int:0x58758603a561> <machine-int:0x7fff1ec10190> 0 0 0 0 0 0 0 0 0 17 188 0 0 0 0 0 <machine-int:0x58758603cb50> <machine-int:0x58758603d010> <machine-int:0x5875a518d000> <machine-int:0x7fff1ec115ae> <machine-int:0x7fff1ec11703> <machine-int:0x7fff1ec11703> <machine-int:0x7fff1ec11fe7> 0\n",
+  "pid_absent_after_wait": true,
+  "rc": 1,
+  "samples": 187,
+  "peak_tree_rss_bytes": 97996800,
+  "elapsed_s": 9.454034365946427,
+  "cpus": "128-129",
+  "physical_cpus": "32-33",
+  "mutex": "/mnt/raid0/llm/tmp/compute-flags/prep-locks/32-33.lock",
+  "cmd": [
+    "taskset",
+    "-c",
+    "128,129",
+    "/mnt/raid0/llm/epyc-inference-research/.venv/bin/python",
+    "-m",
+    "pytest",
+    "-q",
+    "--tb=short",
+    "--junitxml=/mnt/raid0/llm/tmp/codex-ni-serving-capture-tripwire-fix-20261031/20261031T111422.804439Z-baseline4.xml",
+    "scripts/kernel_rnd/autokernel/loop/test_serial_run.py::test_actual_cpu_keep_cross_target_then_older_history_uses_latest_source"
+  ],
+  "log": "/mnt/raid0/llm/tmp/codex-ni-serving-capture-tripwire-fix-20261031/20261031T111422.804439Z-baseline4.log"
+}

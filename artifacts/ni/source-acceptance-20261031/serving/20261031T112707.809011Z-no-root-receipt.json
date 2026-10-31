@@ -1,0 +1,39 @@
+{
+  "source_hashes_stable": true,
+  "source_hashes_end": {
+    "scripts/kernel_rnd/autokernel/loop/longctx.py": "0ea35e744ac2cdee7dcdcc8ac242848081f9497af079385e21ebb8a493d243e6",
+    "scripts/kernel_rnd/autokernel/loop/run.py": "94ac4e23f895d33996bb09a31ce994978e20b8f2fce69186bab4817cc3d70c32",
+    "scripts/kernel_rnd/autokernel/loop/same_code_tripwire.py": "2f36c48939e973841d98e51a768c6ab7efadbfca91f90e1f7cf7724352398090",
+    "scripts/kernel_rnd/autokernel/loop/serving_beliefs.py": "933c27036473bc35a3877c1797f48fcdc7743ace31b2bdd0850bc5d934f781d8",
+    "scripts/kernel_rnd/autokernel/loop/test_aggregate_feedback.py": "0ae930329d4f4170349d1ca8c327e3721dd1360f1ff4eefaa4a716fe03085258",
+    "scripts/kernel_rnd/autokernel/loop/test_existing_gpu_serving_run.py": "9712718ddfd9ab27873bfe7a2e3c5c2828d104524cb17b9fcbe8c8f5026a86ad",
+    "scripts/kernel_rnd/autokernel/loop/test_gpu_serving_profile.py": "3f225a3a8d4e87fdecb928d56c4d3617adef9867d9ca5eea6e90498fdff29cd9",
+    "scripts/kernel_rnd/autokernel/loop/test_longctx.py": "b3814e70b795b27b8ddf3f9ff80a1133c612c73ab6f20c06a044337419031295",
+    "scripts/kernel_rnd/autokernel/loop/test_same_code_tripwire.py": "3b7b988e3cb60bc871677bc14d6d93d0c4dc14df9e74a8579b43855866b09b1e",
+    "scripts/kernel_rnd/autokernel/loop/test_serving_beliefs.py": "b202cf6f2625695b1f52fa368c7069dacfb7d3cdc19837fecd92991b0c24fd53"
+  },
+  "pid": 161420,
+  "birth_stat": "161420 (taskset) R 161358 161420 161420 0 -1 4194560 190 0 0 0 0 0 0 0 20 0 1 0 156850119 2854912 0 18446744073709551615 <machine-int:0x5e16dba69000> <machine-int:0x5e16dba6b561> <machine-int:0x7ffddb782360> 0 0 0 0 0 0 0 0 0 17 138 0 0 0 0 0 <machine-int:0x5e16dba6db50> <machine-int:0x5e16dba6e010> <machine-int:0x5e17063f9000> <machine-int:0x7ffddb7845c3> <machine-int:0x7ffddb784798> <machine-int:0x7ffddb784798> <machine-int:0x7ffddb784fe7> 0\n",
+  "pid_absent_after_wait": true,
+  "rc": 0,
+  "samples": 247,
+  "peak_tree_rss_bytes": 88449024,
+  "elapsed_s": 12.624203738989308,
+  "cpus": "128-129",
+  "physical_cpus": "32-33",
+  "mutex": "/mnt/raid0/llm/tmp/compute-flags/prep-locks/32-33.lock",
+  "cmd": [
+    "taskset",
+    "-c",
+    "128,129",
+    "/mnt/raid0/llm/epyc-inference-research/.venv/bin/python",
+    "-m",
+    "pytest",
+    "-q",
+    "--tb=short",
+    "--junitxml=/mnt/raid0/llm/tmp/codex-ni-serving-capture-tripwire-fix-20261031/20261031T112707.809011Z-no-root.xml",
+    "scripts/kernel_rnd/autokernel/loop/test_longctx.py::test_surface_compare_calibrates_the_target_floor_once_then_gates",
+    "scripts/kernel_rnd/autokernel/loop/test_existing_gpu_serving_run.py::test_existing_gpu_pool_uses_selected_requests_and_original_keep_owners"
+  ],
+  "log": "/mnt/raid0/llm/tmp/codex-ni-serving-capture-tripwire-fix-20261031/20261031T112707.809011Z-no-root.log"
+}

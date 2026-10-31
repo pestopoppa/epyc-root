@@ -1,0 +1,8 @@
+{
+  "time": "2026-10-31T11:26:01.508359+00:00",
+  "root": "/mnt/raid0/llm/views/epyc-root-main",
+  "commit": "169a8a510d0f83a129978f0fc1aa90753060b890",
+  "adapter_sha256": "9ef676dc004da9d1673a3c8172b2176a76169e749ddf6d7bfcb093e212de4cac",
+  "tracked_adapter_sha256": "9ef676dc004da9d1673a3c8172b2176a76169e749ddf6d7bfcb093e212de4cac",
+  "tracked_bytes_equal": true
+}

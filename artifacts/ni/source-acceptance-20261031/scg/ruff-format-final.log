@@ -1,0 +1,25 @@
+--- tests/unit/test_autopilot_sequential_wiring.py
++++ tests/unit/test_autopilot_sequential_wiring.py
+@@ -353,9 +353,7 @@
+     with caplog.at_level(logging.INFO, logger="autopilot"):
+         autopilot._log_baseline_update_result(
+             7,
+-            SimpleNamespace(
+-                updated=True, reason="", tier=2, previous_quality=2.0, new_quality=2.5
+-            ),
++            SimpleNamespace(updated=True, reason="", tier=2, previous_quality=2.0, new_quality=2.5),
+         )
+     assert "baseline auto-raised" in caplog.text
+ 
+@@ -1496,8 +1494,7 @@
+     assert rationale["seq_baseline_reference_draw"] is True
+     assert rationale["seq_baseline_reference_retryable_blacklist"] is True
+     assert (
+-        rationale["p0_3_blacklist_reexploration_target"]
+-        == "seed_batch_n50_t1317_no_progress_infra"
++        rationale["p0_3_blacklist_reexploration_target"] == "seed_batch_n50_t1317_no_progress_infra"
+     )
+     assert state["seq_baseline_draw_blocked"] is None
+     assert state["seq_baseline_draw_forced"]["action"] == forced
+
+1 file would be reformatted

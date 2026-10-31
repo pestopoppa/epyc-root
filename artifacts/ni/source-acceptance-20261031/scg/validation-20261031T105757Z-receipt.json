@@ -1,0 +1,14 @@
+{
+  "pid": 3665423,
+  "birth_ticks": "156675078",
+  "pid_absent_after_wait": true,
+  "rc": 0,
+  "samples": 445,
+  "peak_tree_rss_bytes": 1253642240,
+  "elapsed_s": 22.508445099927485,
+  "cpus": "130-131",
+  "physical_cpus": "34-35",
+  "mutex": "/mnt/raid0/llm/tmp/compute-flags/prep-locks/34-35.lock",
+  "classification": "R6 q1 block-correctness; disjoint q0 block-timing-pairable; no whole-host timing",
+  "manifest_class_mismatch": "q0 manifest says block-correctness; authoritative validate_fillers.py --print-class says block-timing-pairable; no mutation"
+}

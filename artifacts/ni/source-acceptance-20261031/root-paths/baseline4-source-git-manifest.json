@@ -1,0 +1,21 @@
+{
+  "baseline_commit": "e95a9d2e25c3eeedc7a6f997e608d9bd338cbc31",
+  "method": "SHA256 of git show e95:path, exact source temporarily restored for baseline4; separate retrospective source manifest, not original runtime instrumentation",
+  "sha256": {
+    "scripts/benchmark/k35_vision_matrix_runner.py": "4ac343da48451d26fc82d857ebffd2ca174a4b022b8c58dacd3b508346bfbc8c",
+    "scripts/benchmark/laguna_pgpu1_dflash_runner.py": "5ee8265d2416799c5e41724cf02cb45dc0404a8b26730da3e8f0b7b7e402f6e5",
+    "scripts/benchmark/op2_quiet_window_prep.py": "e41fcf32fc03b201397fac2c149027610ca83f705fc7c2ff51483face22e30ec",
+    "scripts/benchmark/run_batch_entry.py": "8b6deda62167a2da1de48c2706ab0e49f4f4ee4b66d2417f38d36fdf5d6ee369",
+    "scripts/benchmark/test_laguna_pgpu1_dflash_runner.py": "4ba87bc9147b298c73b7379bbc75e2546d26854a92943cf676d0217836380f67",
+    "scripts/benchmark/test_op2_quiet_window_prep.py": "37f1c3d0d2910cefbe7fe9fa74ec760e9a2c26588b5df0882253244eb4b7727a",
+    "scripts/benchmark/tests/test_run_batch_entry.py": "8fd918754a5d7edac90b551bbe4597e5353f3a85149f9e8f5ea9ed9616581940",
+    "scripts/kernel_rnd/autokernel/loop/actors.py": "315e84aaa878b862d4c1b0ea5c55838a590144c4e27190cb9f12360e9985b4ae",
+    "scripts/kernel_rnd/autokernel/loop/belief_context.py": "ca0d9cccd8fb6b5dc3e80ff448303862ee764ca22f1e8e5355e06ee5d5a5502b",
+    "scripts/kernel_rnd/autokernel/loop/run.py": "69562418f7df6a7e2858567168efb093fcfdc1d28bc4a99aed8f28c76fadd3d7",
+    "scripts/kernel_rnd/autokernel/loop/serving_beliefs.py": "fa72a2331e8438c2aec1fdcda272d7efdb42d54725fb001e9c449768e1f331d1",
+    "scripts/kernel_rnd/autokernel/loop/test_belief_context.py": "88ee901fdf443e62e1a9610a3ec5a88710bb2b8f51a116388393326511ad0c35",
+    "scripts/kernel_rnd/autokernel/loop/test_serving_beliefs.py": "c4dfa4421ced2033a0561477b8baffcf2344380d7bd94738705c7db8eacd1018",
+    "scripts/validate/check_evidence_durability.py": "c46aa7f76064782f03b0db388bef220f301f6ff6d7d397c2e2274eac84eadc10",
+    "scripts/validate/test_check_evidence_durability.py": "cc18dfd37613f3fbba5565947cdb40b460952e3ecac9fc8d2ec80fb61e72775f"
+  }
+}

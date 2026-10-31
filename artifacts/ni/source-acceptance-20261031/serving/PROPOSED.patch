@@ -1,0 +1,492 @@
+diff --git a/scripts/kernel_rnd/autokernel/loop/longctx.py b/scripts/kernel_rnd/autokernel/loop/longctx.py
+index e0dfaeb32..71804faf6 100644
+--- a/scripts/kernel_rnd/autokernel/loop/longctx.py
++++ b/scripts/kernel_rnd/autokernel/loop/longctx.py
+@@ -834,8 +834,8 @@ class Surface:
+             floor_request_digest=reading.request_digest,
+             instrument=serving.MATCHED_INSTRUMENT, floor_record=reading.row,
+             longctx=launch))
+-        row["longctx"] = verdict(row, reading.row, pairs)
+-        return row
++        from . import serving_beliefs
++        return serving_beliefs.annotate(row, {"longctx": verdict(row, reading.row, pairs)})
+ 
+     def identity_targets(self, anchor_arm, candidate_arm) -> list[tuple]:
+         """The `long_identity` route target (gates.check_model_identity_targets 6-tuple):
+diff --git a/scripts/kernel_rnd/autokernel/loop/run.py b/scripts/kernel_rnd/autokernel/loop/run.py
+index c7beea14e..a753be5a2 100644
+--- a/scripts/kernel_rnd/autokernel/loop/run.py
++++ b/scripts/kernel_rnd/autokernel/loop/run.py
+@@ -4553,6 +4553,8 @@ def main(argv: list[str] | None = None) -> int:
+         row = getattr(compared, "row", None)
+         if not isinstance(row, dict):
+             return
++        def retain_profile(profile):
++            row.update(serving_beliefs.annotate(row, {"candidate_serving_profile": profile}))
+         from . import gpu_serving_profile as gsp
+         try:
+             diff = archive._git(worker.worktree, "diff", "HEAD")
+@@ -4564,16 +4566,14 @@ def main(argv: list[str] | None = None) -> int:
+                     store=args.store, anchor_commit=identity,
+                     long_context=gpu_long_context_hook[0])
+         except loop.MeasurementInvalid as exc:
+-            row["candidate_serving_profile"] = {"status": "measurement_invalid",
+-                                                "reason": str(exc)[:512]}
++            retain_profile({"status": "measurement_invalid", "reason": str(exc)[:512]})
+             return
+         except (hotspots.ProfileFailed, OSError, ValueError, RuntimeError, ImportError,
+                 subprocess.SubprocessError) as exc:
+-            row["candidate_serving_profile"] = {"status": "unavailable",
+-                                                "reason": f"{type(exc).__name__}: {exc}"[:512]}
++            retain_profile({"status": "unavailable", "reason": f"{type(exc).__name__}: {exc}"[:512]})
+             return
+         table = view.get("launch_weighted") or {}
+-        row["candidate_serving_profile"] = {
++        retain_profile({
+             "status": "observed", "record": view.get("record"), "key": view.get("key"),
+             "cached": view.get("cached"), "candidate_identity": identity,
+             "launch_weighted_status": table.get("status"),
+@@ -4582,7 +4582,7 @@ def main(argv: list[str] | None = None) -> int:
+                 gpu_profile_observation, hypothesis.target_symbol),
+             "top_kernels": [{"kernel": k["kernel"],
+                              "weighted_ns_per_token": k["weighted_ns_per_token"]}
+-                            for k in (table.get("kernels") or [])[:8]]}
++                            for k in (table.get("kernels") or [])[:8]]})
+ 
+     def ensure_source_floor(anchor_recipe, a_build) -> None:
+         nonlocal floor, floor_request_digest, floor_record, calibrated
+diff --git a/scripts/kernel_rnd/autokernel/loop/same_code_tripwire.py b/scripts/kernel_rnd/autokernel/loop/same_code_tripwire.py
+index cb27caddc..a08172bf3 100644
+--- a/scripts/kernel_rnd/autokernel/loop/same_code_tripwire.py
++++ b/scripts/kernel_rnd/autokernel/loop/same_code_tripwire.py
+@@ -9,6 +9,7 @@ from __future__ import annotations
+ import hashlib
+ import json
+ import math
++from copy import deepcopy
+ from pathlib import Path
+ from typing import Any
+ 
+@@ -30,12 +31,21 @@ class ObservedComparison:
+ 
+     def __init__(self, original: Any, evidence: dict):
+         self.original, self.evidence = original, evidence
++        native = original.to_dict()
++        if str(native.get("schema", "")).startswith("epyc.autokernel.serving_"):
++            from . import serving_beliefs
++            native = serving_beliefs.annotate(native, {"same_code_tripwire": evidence})
++        else:
++            native = {**native, "same_code_tripwire": evidence}
++        # Own a detached snapshot without imposing JSON types/finite-number rules
++        # on legacy bench diagnostics. Serialization never reseals or exposes it.
++        self._snapshot = deepcopy(native)
+ 
+     def __getattr__(self, name: str) -> Any:
+         return getattr(self.original, name)
+ 
+     def to_dict(self) -> dict:
+-        return {**self.original.to_dict(), "same_code_tripwire": self.evidence}
++        return deepcopy(self._snapshot)
+ 
+ 
+ def inspect(store_root: Path, comparison: Any, *, anchor_build: Path,
+diff --git a/scripts/kernel_rnd/autokernel/loop/serving_beliefs.py b/scripts/kernel_rnd/autokernel/loop/serving_beliefs.py
+index 683fcd7e7..96f3adfc7 100644
+--- a/scripts/kernel_rnd/autokernel/loop/serving_beliefs.py
++++ b/scripts/kernel_rnd/autokernel/loop/serving_beliefs.py
+@@ -7,6 +7,7 @@ from __future__ import annotations
+ 
+ import hashlib
+ import json
++from copy import deepcopy
+ from datetime import datetime, timezone
+ from pathlib import Path
+ 
+@@ -110,6 +111,35 @@ def finish(comparison, inputs):
+     return capture
+ 
+ 
++def annotate(comparison, annotations):
++    """Seal append-only diagnostics at their prospective producer boundary.
++
++    The original seal must still rederive BEFORE adding anything. This is never
++    called by export or a reader, and cannot repair a missing or invalid warrant.
++    Capture faults remain diagnostic: retain the numeric result and original
++    capture so the strict export/reader refuses it rather than inventing one.
++    """
++    body = deepcopy(comparison)
++    additions = {}
++    try:
++        pending = json.loads(json.dumps(annotations, allow_nan=False))
++        if not isinstance(pending, dict) or not pending or set(pending) - {
++                "same_code_tripwire", "candidate_serving_profile", "longctx"}:
++            raise ValueError("unsupported serving diagnostic annotation")
++        if set(pending) & set(body):
++            raise ValueError("serving diagnostics cannot overwrite original fields")
++        additions = pending
++        capture = body["belief_capture"]
++        if capture != finish(body, capture["inputs"]):
++            raise ValueError("original prospective serving capture does not rederive")
++        body.update(additions)
++        body["belief_capture"] = finish(body, capture["inputs"])
++    except Exception as exc:
++        body.update(additions)
++        body["belief_capture_error"] = f"diagnostic annotation refused: {type(exc).__name__}: {exc}"[:256]
++    return body
++
++
+ def _write_exact(root: Path, name: str, body):
+     from . import archive
+ 
+diff --git a/scripts/kernel_rnd/autokernel/loop/test_aggregate_feedback.py b/scripts/kernel_rnd/autokernel/loop/test_aggregate_feedback.py
+index 725b6c543..b9e06b536 100644
+--- a/scripts/kernel_rnd/autokernel/loop/test_aggregate_feedback.py
++++ b/scripts/kernel_rnd/autokernel/loop/test_aggregate_feedback.py
+@@ -27,12 +27,15 @@ def test_actual_aggregate_dispositions_export_original_capture_once(monkeypatch,
+ 
+         def observe(*args, evidence, **kwargs):
+             started = time.time()
++            before = len(evidence)
+             result = measure(*args, evidence=evidence, **kwargs)
+-            evidence.append({"schema": serving.RESIDENCY_SCHEMA, "backend": "gpu",
+-                             "status": "unproven", "samples": 0,
+-                             "window_start": started, "window_end": time.time(),
+-                             "cpu_placement": "unproven", "contention": "unproven",
+-                             "scope": "synthetic measurement; no hardware observed"})
++            if len(evidence) == before:
++                evidence.append({"schema": serving.RESIDENCY_SCHEMA, "backend": "gpu",
++                                 "status": "unproven", "samples": 0,
++                                 "window_start": started, "window_end": time.time(),
++                                 "cpu_placement": "unproven", "contention": "unproven",
++                                 "scope": "synthetic measurement; no hardware observed"})
++            assert len(evidence) == before + 1  # one original observation per launch
+             return result
+ 
+         with patch.object(serving, "_measure_once", observe):
+diff --git a/scripts/kernel_rnd/autokernel/loop/test_existing_gpu_serving_run.py b/scripts/kernel_rnd/autokernel/loop/test_existing_gpu_serving_run.py
+index 8cafed2cc..a7e0c289e 100644
+--- a/scripts/kernel_rnd/autokernel/loop/test_existing_gpu_serving_run.py
++++ b/scripts/kernel_rnd/autokernel/loop/test_existing_gpu_serving_run.py
+@@ -122,6 +122,9 @@ def test_existing_gpu_pool_uses_selected_requests_and_original_keep_owners(
+             assert resolved_recipe.executable.sha256 == hashlib.sha256(
+                 (Path(build) / "bin/llama-server").read_bytes()).hexdigest()
+             measured.append((Path(build), resolved_recipe))
++            evidence.append({"schema": serving.RESIDENCY_SCHEMA, "backend": "gpu",
++                             "status": "unavailable", "window_start": 1.0, "window_end": 2.0,
++                             "reason": "synthetic observation boundary; no hardware sampled"})
+             # These are explicitly synthetic rates, not invented GPU residency.
+             if Path(build) == fixture.startup_anchor:
+                 return 10.0
+@@ -226,6 +229,18 @@ def test_existing_gpu_pool_uses_selected_requests_and_original_keep_owners(
+         outcome = result["iterations"][0]
+         assert outcome["status"] == "kept"
+         row = outcome["comparison"]
++        assert "candidate_serving_profile" in row
++        capture = row["belief_capture"]
++        assert run.serving_beliefs.finish(row, capture["inputs"]) == capture
++        assert "belief_capture_error" not in row
++        export = fixture.store / "serving-beliefs" / f"{capture['capture_id']}.json"
++        assert export.is_file()
++        from .test_serving_beliefs import _strict_reader, _read_final
++        with pytest.MonkeyPatch.context() as integration_patch:
++            reader = _strict_reader(integration_patch, required=False)
++            if reader is not None:
++                projected, = _read_final(reader, export)
++                assert reader.project_v2(projected).value == row["candidate_tok_s"]
+         assert row["request_digest"] == serving.request_digest(selected.template, requests)
+         assert row["noise_floor_pct"] == 0.0  # never bench's 99%
+         assert row["pairs"] == result["pairs"] == 2
+@@ -446,3 +461,32 @@ def test_gpu_serving_without_fixture_actor_override_refuses_before_execution(cap
+         assert not (fixture.store / "loop-run.json").exists()
+     finally:
+         fixture.doCleanups()
++
++
++@pytest.mark.parametrize("profile_status", ["observed", "measurement_invalid"])
++def test_gpu_profile_diagnostics_preserve_capture_and_numeric_outcome(monkeypatch, profile_status):
++    original = run.serving_beliefs.annotate
++    retained = []
++
++    def profile(*args, **kwargs):
++        if not str(kwargs.get("anchor_commit", "")).startswith("candidate:"):
++            raise run.hotspots.ProfileFailed("synthetic startup profile unavailable")
++        if profile_status == "measurement_invalid":
++            raise run.loop.MeasurementInvalid("synthetic invalid profile", {"fixture": True})
++        return {"record": "synthetic-trace", "key": "fixture",
++                "launch_weighted": {"status": "fixture", "kernels": []}}, []
++
++    def annotate(row, fields):
++        result = original(row, fields)
++        if "candidate_serving_profile" in fields:
++            retained.append(result)
++            assert result["candidate_serving_profile"]["status"] == profile_status
++            assert result["belief_capture"]["inputs"] == row["belief_capture"]["inputs"]
++            assert {k: result[k] for k in row if k != "belief_capture"} == {
++                k: v for k, v in row.items() if k != "belief_capture"}
++        return result
++
++    monkeypatch.setattr(run.hotspots, "serving_profile", profile)
++    monkeypatch.setattr(run.serving_beliefs, "annotate", annotate)
++    test_existing_gpu_pool_uses_selected_requests_and_original_keep_owners(True, False, False)
++    assert retained
+diff --git a/scripts/kernel_rnd/autokernel/loop/test_gpu_serving_profile.py b/scripts/kernel_rnd/autokernel/loop/test_gpu_serving_profile.py
+index 20bbb0513..ad624602d 100644
+--- a/scripts/kernel_rnd/autokernel/loop/test_gpu_serving_profile.py
++++ b/scripts/kernel_rnd/autokernel/loop/test_gpu_serving_profile.py
+@@ -511,11 +511,11 @@ def test_run_py_records_a_candidate_profile_after_timing_and_orders_the_tail():
+     code path (`commit_pooled`) is not touched by either."""
+     source = (Path(__file__).parent / "run.py").read_text()
+     body = source[source.index("            if direct_launch:\n                compared = cpu_compare("):]
+-    body = body[:body.index("return compared")]
++    body = body[:body.index("return _tripwire(compared)")]
+     assert body.index("cpu_compare(") < body.index("record_candidate_serving_profile(")
+     assert "if not cpu_launch:" in body
+     helper = source[source.index("    def record_candidate_serving_profile("):]
+     helper = helper[:helper.index("    def ensure_source_floor(")]
+-    assert 'row["candidate_serving_profile"]' in helper
++    assert 'serving_beliefs.annotate(row, {"candidate_serving_profile": profile})' in helper
+     assert "raise" not in helper.replace("raise loop", "")   # never refuses the comparison
+     assert '"tail_priority": lambda hypothesis: gpu_serving_profile_mod.kernel_weight(' in source
+diff --git a/scripts/kernel_rnd/autokernel/loop/test_longctx.py b/scripts/kernel_rnd/autokernel/loop/test_longctx.py
+index 1cb4f8691..3de0e2a48 100644
+--- a/scripts/kernel_rnd/autokernel/loop/test_longctx.py
++++ b/scripts/kernel_rnd/autokernel/loop/test_longctx.py
+@@ -251,6 +251,18 @@ def test_surface_compare_calibrates_the_target_floor_once_then_gates(tmp_path, m
+     assert len(launches) == 1 + 48 + 10
+     assert row["recipe"] == anchor.template.name and row["decisive"] is True
+     assert row["longctx"]["passed"] is True and row["longctx"]["prefill_floor_pct"] > 0
++    from . import serving_beliefs
++    capture = row["belief_capture"]
++    assert serving_beliefs.finish(row, capture["inputs"]) == capture
++    assert "belief_capture_error" not in row
++    receipt = serving_beliefs.export(tmp_path / "exports", {"comparison": row},
++        campaign_id="synthetic-longctx", epoch="fixture", recorded_at="2026-10-31T01:00:00Z")
++    assert receipt.is_file()
++    from .test_serving_beliefs import _strict_reader, _read_final
++    reader = _strict_reader(monkeypatch, required=False)
++    if reader is not None:
++        projected, = _read_final(reader, receipt)
++        assert reader.project_v2(projected).value == row["candidate_tok_s"]
+     # CH-27: sealed under the anchor's execution digest, never the flat per-target file
+     assert list(surface.anchor_floor_store(anchor).glob("serving-floor.*.json"))
+     assert not list(surface.floor_store.glob("serving-floor.*.json"))
+diff --git a/scripts/kernel_rnd/autokernel/loop/test_same_code_tripwire.py b/scripts/kernel_rnd/autokernel/loop/test_same_code_tripwire.py
+index 6449b20b0..bccbb0a7b 100644
+--- a/scripts/kernel_rnd/autokernel/loop/test_same_code_tripwire.py
++++ b/scripts/kernel_rnd/autokernel/loop/test_same_code_tripwire.py
+@@ -204,3 +204,23 @@ class Tripwire(unittest.TestCase):
+ 
+ if __name__ == '__main__':
+     unittest.main()
++
++
++def test_snapshot_keeps_native_bench_unknowns_and_python_types():
++    import math
++    native = {"effect": float("nan"), "noise_floor_pct": float("inf"),
++              "optional": None, "identity": (Path("native-build"), None),
++              "nested": {"samples": [1.0]}}
++    original = type("Native", (), {"to_dict": lambda self: native})()
++    evidence = {"status": "unavailable", "reason": "valid native effect unavailable"}
++    observed = st.ObservedComparison(original, evidence)
++    native["nested"]["samples"].append(999.0)
++    evidence["status"] = "modified"
++    first = observed.to_dict()
++    assert math.isnan(first["effect"]) and math.isinf(first["noise_floor_pct"])
++    assert first["optional"] is None and first["identity"] == (Path("native-build"), None)
++    assert isinstance(first["identity"], tuple)
++    assert first["nested"]["samples"] == [1.0]
++    assert first["same_code_tripwire"]["status"] == "unavailable"
++    first["nested"]["samples"].clear()
++    assert observed.to_dict()["nested"]["samples"] == [1.0]
+diff --git a/scripts/kernel_rnd/autokernel/loop/test_serving_beliefs.py b/scripts/kernel_rnd/autokernel/loop/test_serving_beliefs.py
+index e23cd2db6..6852e7a78 100644
+--- a/scripts/kernel_rnd/autokernel/loop/test_serving_beliefs.py
++++ b/scripts/kernel_rnd/autokernel/loop/test_serving_beliefs.py
+@@ -149,3 +149,187 @@ def test_compact_export_still_refuses_a_true_over_budget_body(tmp_path, monkeypa
+         beliefs._write_exact(tmp_path / "beliefs", "capture.json", body)
+ 
+     assert not (tmp_path / "beliefs").exists()
++
++
++def _strict_reader(monkeypatch, *, required=True):
++    import importlib
++    import os
++    from pathlib import Path
++    root = os.environ.get("EPYC_ROOT_REPO") or os.environ.get("EPYC_ROOT")
++    if not root:
++        if not required:
++            return None
++        pytest.skip("named ROOT required for producer/strict-reader integration")
++    expected = Path(root).resolve() / "scripts/vidya/adapters/autokernel_legacy_serving.py"
++    monkeypatch.syspath_prepend(str(expected.parents[1]))
++    reader = importlib.import_module("adapters.autokernel_legacy_serving")
++    assert Path(reader.__file__).resolve() == expected
++    return reader
++
++
++def _read_final(reader, path):
++    raw = path.read_bytes()
++    return reader.native_rows_v2(json.loads(raw), receipt_locator=f"autokernel:{path}",
++                                 receipt_sha256=hashlib.sha256(raw).hexdigest())
++
++
++def test_tripwire_final_boundary_exports_and_ingests_original_values(tmp_path, monkeypatch):
++    from . import run, same_code_tripwire
++    reader = _strict_reader(monkeypatch)
++    row, calls = comparison(monkeypatch)
++    original = copy.deepcopy(row)
++    observed = same_code_tripwire.inspect(tmp_path, run.ServingComparison(row),
++        anchor_build=tmp_path / "missing-a", candidate_build=tmp_path / "missing-c",
++        library="libggml-cpu.so", measurement_epoch="original-epoch", launch_identity={})
++    final = observed.to_dict()
++    assert final["same_code_tripwire"]["status"] == "unavailable"
++    assert row == original and len(calls) == 4
++    assert {k: final[k] for k in original if k != "belief_capture"} == {
++        k: v for k, v in original.items() if k != "belief_capture"}
++    capture = final["belief_capture"]
++    assert capture["inputs"] == original["belief_capture"]["inputs"]
++    assert capture["capture_id"] != original["belief_capture"]["capture_id"]
++    # Snapshot owns evidence and native bytes; to_dict cannot reseal or expose them.
++    observed.evidence["status"] = "changed-after-construction"
++    row["anchor_samples"][0] = 999.0
++    exposed = observed.to_dict()
++    exposed["same_code_tripwire"]["status"] = "changed-by-caller"
++    with monkeypatch.context() as patch:
++        patch.setattr(beliefs, "finish", lambda *a: pytest.fail("serialization resealed"))
++        assert observed.to_dict() == final
++    assert archive.record(tmp_path, {"status": "measured_null", "comparison": final},
++        epoch="original-epoch", recorded_at="2026-10-31T01:00:00Z", campaign_id="original-campaign")
++    path = tmp_path / "serving-beliefs" / f"{capture['capture_id']}.json"
++    projected, = _read_final(reader, path)
++    claim = reader.project_v2(projected)
++    from claim_tuple import grade
++    assert claim.value == 19.0 and claim.observation["anchor_value"] == 11.0
++    assert grade(claim)[:2] == ("Judged", "Located")
++    assert claim.measurement_id == f"legacy-serving-v2:{capture['capture_id']}"
++    feedback = reader.PlannerFeedback(tmp_path)
++    assert feedback.notes == []
++    frames = list(feedback.ledger.read_all())
++    assert len(frames) == 6
++    assert feedback.ingest(path) == 0
++    assert [x.frame for x in feedback.ledger.read_all()] == [x.frame for x in frames]
++    assert not (path.parent / f"{original['belief_capture']['capture_id']}.json").exists()
++
++
++@pytest.mark.parametrize("field", ["same_code_tripwire", "candidate_serving_profile", "longctx"])
++@pytest.mark.parametrize("fault", ["value", "input", "capture", "missing"])
++def test_diagnostic_boundary_never_repairs_bad_original(tmp_path, monkeypatch, capsys, field, fault):
++    row, calls = comparison(monkeypatch)
++    if fault == "value":
++        row["candidate_tok_s"] += 1
++    elif fault == "input":
++        row["belief_capture"]["inputs"]["recipe"]["model"] = "/tampered"
++    elif fault == "capture":
++        row["belief_capture"] = {"malformed": True}
++    else:
++        del row["belief_capture"]
++    original = copy.deepcopy(row)
++    final = beliefs.annotate(row, {field: {"status": "unavailable"}})
++    assert row == original and len(calls) == 4
++    assert final.get("belief_capture") == original.get("belief_capture")
++    assert "diagnostic annotation refused" in final["belief_capture_error"]
++    assert final["candidate_tok_s"] == original["candidate_tok_s"]
++    assert archive.record(tmp_path, {"status": "measured_null", "comparison": final},
++                          epoch="e", recorded_at="2026-10-31T01:00:00Z", campaign_id="c")
++    if fault != "missing":
++        assert "serving belief export failed after durable archive" in capsys.readouterr().err
++    assert not (tmp_path / "serving-beliefs").exists()
++
++
++@pytest.mark.parametrize("diagnostic", ["same_code_tripwire", "candidate_serving_profile", "longctx"])
++@pytest.mark.parametrize("field", ["candidate_tok_s", "recipe_hash", "diagnostic"])
++def test_final_native_and_diagnostic_tamper_refused_even_with_rehashed_file_reference(
++        tmp_path, monkeypatch, field, diagnostic):
++    reader = _strict_reader(monkeypatch)
++    row, _ = comparison(monkeypatch)
++    final = beliefs.annotate(row, {diagnostic: {"status": "unavailable"}})
++    path = beliefs.export(tmp_path, {"comparison": final}, campaign_id="c", epoch="e",
++                          recorded_at="2026-10-31T01:00:00Z")
++    assert len(_read_final(reader, path)) == 1
++    receipt = json.loads(path.read_bytes())
++    source_path = path.parent / receipt["native_reference"]["path"]
++    source = json.loads(source_path.read_bytes())
++    source["comparison"][diagnostic if field == "diagnostic" else field] = (20.0 if field == "candidate_tok_s" else
++                                    "changed" if field == "recipe_hash" else {"status": "within_floor"})
++    raw = json.dumps(source, sort_keys=True, separators=(",", ":")).encode()
++    source_path.write_bytes(raw)
++    receipt["native_reference"].update(size=len(raw), sha256=hashlib.sha256(raw).hexdigest())
++    path.write_text(json.dumps(receipt))
++    from claim_tuple import ProjectionError
++    with pytest.raises(ProjectionError, match="native/input binding differs"):
++        _read_final(reader, path)
++    with pytest.raises(ValueError, match="does not rederive"):
++        beliefs.export(tmp_path / "tampered", {"comparison": source["comparison"]},
++                       campaign_id="c", epoch="e", recorded_at="2026-10-31T01:00:00Z")
++
++
++@pytest.mark.parametrize("annotations", [{"candidate_tok_s": 999.0},
++    {"longctx": float("nan")}, {"belief_capture": {}}, {}])
++def test_diagnostic_fault_cannot_overwrite_or_mint_a_capture(monkeypatch, annotations):
++    row, _ = comparison(monkeypatch)
++    original = copy.deepcopy(row)
++    final = beliefs.annotate(row, annotations)
++    assert row == original
++    assert final["belief_capture"] == original["belief_capture"]
++    assert {k: v for k, v in final.items() if k != "belief_capture_error"} == original
++    assert "diagnostic annotation refused" in final["belief_capture_error"]
++    with pytest.raises(ValueError, match="does not rederive"):
++        beliefs.export(None, {"comparison": final}, campaign_id="c", epoch="e", recorded_at="date")
++
++
++def test_nonwrapped_capture_keeps_original_id_and_strict_reader_contract(tmp_path, monkeypatch):
++    reader = _strict_reader(monkeypatch)
++    row, _ = comparison(monkeypatch)
++    original = copy.deepcopy(row)
++    path = beliefs.export(tmp_path, {"comparison": row}, campaign_id="c", epoch="e",
++                          recorded_at="2026-10-31T01:00:00Z")
++    projected, = _read_final(reader, path)
++    assert reader.project_v2(projected).measurement_id == (
++        "legacy-serving-v2:" + original["belief_capture"]["capture_id"])
++    assert row == original
++    assert beliefs.finish(row, row["belief_capture"]["inputs"]) == original["belief_capture"]
++
++
++def test_actual_tripwire_retains_tampered_capture_as_nonfatal_refusal(tmp_path, monkeypatch):
++    from . import run, same_code_tripwire
++    row, calls = comparison(monkeypatch)
++    row["candidate_samples"][0] = 500.0
++    original = copy.deepcopy(row)
++    observed = same_code_tripwire.inspect(tmp_path, run.ServingComparison(row),
++        anchor_build=tmp_path / "missing-a", candidate_build=tmp_path / "missing-c",
++        library="libggml-cpu.so", measurement_epoch="original-epoch", launch_identity={})
++    final = observed.to_dict()
++    assert final["belief_capture"] == original["belief_capture"]
++    assert "diagnostic annotation refused" in final["belief_capture_error"]
++    assert observed.effect == original["effect"] and observed.decisive == original["decisive"]
++    assert len(calls) == 4
++    with pytest.raises(ValueError, match="does not rederive"):
++        beliefs.export(tmp_path, {"comparison": final}, campaign_id="c", epoch="e", recorded_at="date")
++
++
++def test_final_annotation_seal_fault_keeps_original_warrant_and_numeric_result(monkeypatch):
++    row, _ = comparison(monkeypatch)
++    original = copy.deepcopy(row)
++    finish = beliefs.finish
++    calls = []
++
++    def fail_final(body, inputs):
++        calls.append(body)
++        if len(calls) == 2:
++            raise OSError("synthetic final seal fault")
++        return finish(body, inputs)
++
++    monkeypatch.setattr(beliefs, "finish", fail_final)
++    final = beliefs.annotate(row, {"longctx": {"passed": False}})
++    assert len(calls) == 2
++    assert row == original and final["belief_capture"] == original["belief_capture"]
++    assert final["candidate_tok_s"] == original["candidate_tok_s"]
++    assert final["longctx"] == {"passed": False}
++    assert "synthetic final seal fault" in final["belief_capture_error"]
++    monkeypatch.setattr(beliefs, "finish", finish)
++    with pytest.raises(ValueError, match="does not rederive"):
++        beliefs.export(None, {"comparison": final}, campaign_id="c", epoch="e", recorded_at="date")

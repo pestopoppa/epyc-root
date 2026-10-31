@@ -1,0 +1,29 @@
+{
+  "completed_at": "2026-10-31T11:44:32.607569+00:00",
+  "status": "PUBLISHED_SOURCE_PARTIAL_ACCEPTANCE_OPEN",
+  "repo": "epyc-orchestrator",
+  "proposal_commit": "24c87ea8e588dcfde9d843ca3e3d4fbe4b3f3b66",
+  "custody_fix_commit": "4df95b4c8ff1e8ac47c4a86cd27a461702bc345f",
+  "rebased_over": "782ac3bfae4255c7839b6bf045f70219c86daa99",
+  "remote_observation": "4df95b4c8ff1e8ac47c4a86cd27a461702bc345f\trefs/heads/main",
+  "head_is_ancestor_of_origin_main": true,
+  "lane_clean": true,
+  "main_diff_review": "approved by MAIN after actual combined diff review",
+  "tests": {
+    "passed": 144,
+    "log": "/mnt/raid0/llm/tmp/codex-ni-repl-trace-finish-20261031/pytest-final-r2-20261031T113704942254Z.log",
+    "sha256": "1d36afc09b2c58a71059cf1df687b2b17acf6f8adc06112c60cbad70ffaff5fd"
+  },
+  "gates": "make gates PASS; scoped Ruff lint PASS; git diff --check PASS",
+  "rebase_changed_reviewed_source": false,
+  "source_diff_sha256": "4b9ffd1011ca5d3abbd1a15f9db8e8a35a8059193d2e30340754562add2d1a53",
+  "publish_log": "/mnt/raid0/llm/tmp/codex-ni-repl-trace-finish-20261031/publish-20261031T1140Z.log",
+  "real_user_sessions": 0,
+  "real_traces_claimed": 0,
+  "api_reload": false,
+  "runtime_flags_changed": false,
+  "repl_2_8a_complete": false,
+  "repl_2_8_complete": false,
+  "VB_loop_wired_claim": false,
+  "new_code_quota_claim": false
+}

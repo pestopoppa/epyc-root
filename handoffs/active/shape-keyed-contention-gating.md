@@ -582,7 +582,7 @@ verdict is the current production shape.
       shadow lane (:18100) is deliberately NOT lineup. Tests: contention suite 164 passed; a mutation
       restoring the whole-class waiver fails 5 new tests. Live relevance: a read-only `ps` on
       2026-09-16 showed a llama-server on `--port 18361`, which the old waiver would have hidden.
-- [ ] **Retire the stale `q*` nomenclature on half-sized instances** — a reader seeing `q0` on a
+- [x] **Retire the stale `q*` nomenclature on half-sized instances** ✅ 2026-10-31 — reconciliation: APP `7ef445baffe0fd261c7daeffc0dfe1d42eaf2de1`; `tests/unit/test_contention_matrix_shape_labels.py`; durable artifact `artifacts/ni/source-acceptance-20261031/README.md` (actual topology CLI proof). [no-belief: audit-reconciliation] — a reader seeing `q0` on a
       48-thread instance infers a quarter. It already caused one agent to describe this live defect as
       a legacy one.
 - [ ] **Look at this together with `contention_nway_non_allow_count`** (`contention_gate.py:325`

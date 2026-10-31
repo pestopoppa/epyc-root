@@ -136,6 +136,7 @@ consumer, and refuse launch or CI if any model-specific quantity remains stale.
   - 2026-10-03: the full `tests/unit` run on `integ/api-reload-2-ec` passed it, 15979 passed / 0 failed
     (`/mnt/raid0/llm/tmp/integ2-ec/full_unit3.log`). That is one order, not a fix: the leaked state is unfound, so
     the task stays open.
+  - 2026-10-31 partial source repair: APP `2f5c05013ccc80d549635878f260bddf0c172452` isolates the incoming promotion provider and warning state with private `MonkeyPatch.context()`. Original predecessor pair failed 2.95 != 2.8; both orders, root-conftest pairs and both modules (71 PASS) now pass; provider identity/warnings and gates preserved. Full unit acceptance remains open: 19,818 collected; early stop at 374 PASS / 8 skipped / 1 AP54 missing-headers failure. C3 subsequently repaired that fixture at `1fc5eb1ac21aa400bdc6425a06e4cf8dbc0d6806` with 12 controls; broader full suite has not been rerun or established green. Evidence: `artifacts/ni/source-acceptance-20261031/README.md`. No new checkbox/quota or deployment claim. [no-belief: source correctness controls; full-suite acceptance incomplete]
 - [x] **SCG-STALE-FIXTURES — fix the 19 orch `tests/unit` failures on main.** ✅ 2026-10-03 (workspace-ec) All 19 were
   stale fixtures from STACKCHG-DFLASH2 5265e09d, not production defects: orch `fix/main-test-failures-ec` d97004f6
   (enrollment compiles a master view of the lean, DRAFT-SEL-1) and 9d40c30b (vision expectations: VL-30B on cold CPU,

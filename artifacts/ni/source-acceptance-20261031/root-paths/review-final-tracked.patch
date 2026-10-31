@@ -1,0 +1,827 @@
+diff --git a/scripts/benchmark/k35_vision_matrix_runner.py b/scripts/benchmark/k35_vision_matrix_runner.py
+index e147740a9..fe896a200 100644
+--- a/scripts/benchmark/k35_vision_matrix_runner.py
++++ b/scripts/benchmark/k35_vision_matrix_runner.py
+@@ -27,7 +27,6 @@ import k35_stack_context_matrix_runner as k35
+ 
+ 
+ RESEARCH_ROOT = Path(__file__).resolve().parent.parent.parent
+-EPYC_ROOT = Path("/mnt/raid0/llm/epyc-root")
+ ORCHESTRATOR_ROOT = Path("/mnt/raid0/llm/epyc-orchestrator")
+ EXPERIMENTAL_BIN_DIR = Path("/mnt/raid0/llm/llama.cpp-experimental/build-hip/bin")
+ DEFAULT_BINARY = EXPERIMENTAL_BIN_DIR / "llama-server"
+diff --git a/scripts/benchmark/laguna_pgpu1_dflash_runner.py b/scripts/benchmark/laguna_pgpu1_dflash_runner.py
+index 77e8a84c8..8250128de 100644
+--- a/scripts/benchmark/laguna_pgpu1_dflash_runner.py
++++ b/scripts/benchmark/laguna_pgpu1_dflash_runner.py
+@@ -29,6 +29,8 @@ from datetime import datetime, timezone
+ from pathlib import Path
+ from typing import Any
+ 
++import belief_capture
++
+ 
+ RESEARCH_ROOT = Path(__file__).resolve().parents[2]
+ DEFAULT_BINARY = Path("/mnt/raid0/llm/llama.cpp/build-hip/bin/llama-server")
+@@ -66,9 +68,9 @@ BASE_ENVIRONMENT = {"PATH": SAFE_PATH, "LANG": "C", "LC_ALL": "C"}
+ PINNED_VISIBLE_DEVICE_ENVIRONMENT = {"HIP_VISIBLE_DEVICES": "0", "ROCR_VISIBLE_DEVICES": "0"}
+ SCRUBBED_ENV_PREFIXES = ("GGML_", "HSA_", "HIP_", "ROCR_")
+ SCRUBBED_ENV_NAMES = ("LD_PRELOAD",)
+-GOVERNANCE_REPO = Path("/mnt/raid0/llm/epyc-root")
++GOVERNANCE_REPO = None
+ PROMOTION_ATTESTATION_RELATIVE_PATH = Path("handoffs/active/v9-kernel-promotion-attestation.json")
+-PROMOTION_ATTESTATION_PATH = GOVERNANCE_REPO / PROMOTION_ATTESTATION_RELATIVE_PATH
++PROMOTION_ATTESTATION_PATH = None
+ TARGET_MODEL_BYTES = 29_047_084_160
+ TARGET_MODEL_SHA256 = "9408dcb356cc061a05c139e5647cbde0698ff980c6a69f7fc214e9989f86cfa8"
+ DRAFTER_MODEL_BYTES = 3_471_497_600
+@@ -537,8 +539,15 @@ def git_ref_commit(repo: Path, ref: str) -> str | None:
+ 
+ 
+ def verified_governance_attestation(path: Path) -> tuple[bytes | None, dict[str, Any] | None, str]:
+-    if path != PROMOTION_ATTESTATION_PATH:
+-        return None, None, f"attestation must use the exact canonical governance path: {PROMOTION_ATTESTATION_PATH}"
++    try:
++        governance_repo = (Path(GOVERNANCE_REPO) if GOVERNANCE_REPO is not None
++                           else belief_capture.root_checkout())
++    except belief_capture.CaptureUnavailable as exc:
++        return None, None, str(exc)
++    canonical_path = (Path(PROMOTION_ATTESTATION_PATH) if PROMOTION_ATTESTATION_PATH is not None
++                      else governance_repo / PROMOTION_ATTESTATION_RELATIVE_PATH)
++    if path != canonical_path:
++        return None, None, f"attestation must use the exact canonical governance path: {canonical_path}"
+     try:
+         leaf = path.lstat()
+         if not stat.S_ISREG(leaf.st_mode) or stat.S_ISLNK(leaf.st_mode):
+@@ -552,10 +561,10 @@ def verified_governance_attestation(path: Path) -> tuple[bytes | None, dict[str,
+     except OSError as exc:
+         return None, None, f"attestation governance provenance cannot be read: {exc}"
+     relative = str(PROMOTION_ATTESTATION_RELATIVE_PATH)
+-    tracked = run_capture(["git", "-C", str(GOVERNANCE_REPO), "ls-files", "--error-unmatch", "--", relative])
+-    worktree = run_capture(["git", "-C", str(GOVERNANCE_REPO), "diff", "--quiet", "HEAD", "--", relative])
+-    index = run_capture(["git", "-C", str(GOVERNANCE_REPO), "diff", "--cached", "--quiet", "--", relative])
+-    head_blob = run_capture(["git", "-C", str(GOVERNANCE_REPO), "rev-parse", f"HEAD:{relative}"])
++    tracked = run_capture(["git", "-C", str(governance_repo), "ls-files", "--error-unmatch", "--", relative])
++    worktree = run_capture(["git", "-C", str(governance_repo), "diff", "--quiet", "HEAD", "--", relative])
++    index = run_capture(["git", "-C", str(governance_repo), "diff", "--cached", "--quiet", "--", relative])
++    head_blob = run_capture(["git", "-C", str(governance_repo), "rev-parse", f"HEAD:{relative}"])
+     if any(command.get("returncode") != 0 or command.get("exec_error") for command in (tracked, worktree, index, head_blob)):
+         return None, None, "attestation must be tracked, unstaged, unmodified, and present in governance HEAD"
+     blob_header = f"blob {len(raw)}\0".encode()
+diff --git a/scripts/benchmark/op2_quiet_window_prep.py b/scripts/benchmark/op2_quiet_window_prep.py
+index 2b4c40542..935d31df1 100644
+--- a/scripts/benchmark/op2_quiet_window_prep.py
++++ b/scripts/benchmark/op2_quiet_window_prep.py
+@@ -19,6 +19,8 @@ from datetime import UTC, datetime
+ from pathlib import Path
+ from typing import Any, Callable
+ 
++import belief_capture
++
+ 
+ SCHEMA = "epyc.op2_quiet_window_prep.v1"
+ PGPU1_CERTIFICATION_NOTE = (
+@@ -27,7 +29,6 @@ PGPU1_CERTIFICATION_NOTE = (
+     "production-named kernel or strict retro-certification applies."
+ )
+ 
+-DEFAULT_ROOT = Path("/mnt/raid0/llm/epyc-root")
+ DEFAULT_RESEARCH = Path("/mnt/raid0/llm/epyc-inference-research")
+ DEFAULT_ORCHESTRATOR = Path("/mnt/raid0/llm/epyc-orchestrator")
+ DEFAULT_PROD_LLAMA = Path("/mnt/raid0/llm/llama.cpp")
+@@ -618,14 +619,20 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
+         ),
+     )
+     parser.add_argument("--frontdoor-model", default=str(DEFAULT_FRONTDOOR_Q8))
+-    parser.add_argument("--measurement-path", default="/workspace/MEASUREMENT.md")
+-    parser.add_argument("--root-repo", default=str(DEFAULT_ROOT))
++    parser.add_argument("--measurement-path", default=None)
++    parser.add_argument("--root-repo", default=None)
+     parser.add_argument("--research-repo", default=str(DEFAULT_RESEARCH))
+     parser.add_argument("--orchestrator-repo", default=str(DEFAULT_ORCHESTRATOR))
+     parser.add_argument("--production-llama-repo", default=str(DEFAULT_PROD_LLAMA))
+     parser.add_argument("--experimental-llama-repo", default=str(DEFAULT_EXP_LLAMA))
+     parser.add_argument("--print-summary", action="store_true")
+-    return parser.parse_args(argv)
++    args = parser.parse_args(argv)
++    root = (belief_capture.root_checkout({"EPYC_ROOT": args.root_repo})
++            if args.root_repo else belief_capture.root_checkout())
++    args.root_repo = str(root)
++    if args.measurement_path is None:
++        args.measurement_path = str(root / "MEASUREMENT.md")
++    return args
+ 
+ 
+ def main(argv: list[str] | None = None) -> int:
+diff --git a/scripts/benchmark/run_batch_entry.py b/scripts/benchmark/run_batch_entry.py
+index bd79778b1..95f079700 100644
+--- a/scripts/benchmark/run_batch_entry.py
++++ b/scripts/benchmark/run_batch_entry.py
+@@ -83,8 +83,6 @@ RESEARCH_ROOT = BENCHMARK_DIR.parents[1]
+ SCRIPTS_DIR = RESEARCH_ROOT / "scripts"
+ ORCHESTRATOR_ROOT = Path("/mnt/raid0/llm/epyc-orchestrator")
+ ORCHESTRATOR_PYTHON = ORCHESTRATOR_ROOT / ".venv" / "bin" / "python"
+-EPYC_ROOT = Path("/mnt/raid0/llm/epyc-root")
+-EPYC_ROOT_COORDINATION = EPYC_ROOT / "scripts" / "coordination"
+ 
+ # clean_window_manifest.py performs its own sys.path.insert for dataset_adapters /
+ # lib.registry / suites at import time, so it must be importable first.
+@@ -93,6 +91,7 @@ for _p in (str(RESEARCH_ROOT), str(SCRIPTS_DIR), str(BENCHMARK_DIR)):
+         sys.path.insert(0, _p)
+ 
+ import clean_window_manifest as cwm  # noqa: E402  (path set up above)
++import belief_capture  # noqa: E402  (uses the shared EPYC_ROOT resolver)
+ 
+ # ---------------------------------------------------------------------------
+ # Constants
+@@ -107,9 +106,17 @@ RUN_BENCHMARK_PY = BENCHMARK_DIR / "run_benchmark.py"
+ # detector shares the same coordination tree. If the directory is absent or holds
+ # no matching attestation, the topology is treated as UNVERIFIED and execute is
+ # refused (dry-run/preflight still proceeds — it runs no inference).
+-DEFAULT_ATTESTATION_DIR = Path(
+-    "/mnt/raid0/llm/epyc-root/coordination/inference-batch/attestations"
+-)
++DEFAULT_ATTESTATION_DIR = None
++
++
++def _root_coordination_dir() -> Path:
++    return belief_capture.root_checkout() / "scripts" / "coordination"
++
++
++def _attestation_dir(value: Path | None) -> Path:
++    if value is not None:
++        return Path(value)
++    return belief_capture.root_checkout() / "coordination" / "inference-batch" / "attestations"
+ 
+ DEFAULT_DRY_RUN_TIMEOUT_S = 180
+ DEFAULT_EXECUTE_TIMEOUT_S = 4 * 3600  # 4h ceiling for a single clean-window task
+@@ -627,7 +634,7 @@ def load_attestation(
+ def topology_gate(
+     resolved: ResolvedEntry,
+     *,
+-    attestation_dir: Path = DEFAULT_ATTESTATION_DIR,
++    attestation_dir: Path | None = DEFAULT_ATTESTATION_DIR,
+     hasher: Callable[[Path], Optional[str]] = cwm._file_sha256,
+     live_hash_override: Optional[str] = None,
+ ) -> TopologyGateResult:
+@@ -664,6 +671,24 @@ def topology_gate(
+             verified=True,
+             reasons=[],
+         )
++    try:
++        attestation_dir = _attestation_dir(attestation_dir)
++    except belief_capture.CaptureUnavailable as exc:
++        reasons.append(str(exc))
++        hash_match = live is None or required == live
++        if artifact is not None and live is None:
++            reasons.append(
++                f"could not compute live topology hash from {artifact} (missing/unreadable registry)"
++            )
++        return TopologyGateResult(
++            required_hash=required,
++            live_hash=live,
++            topology_artifact=artifact,
++            hash_match=hash_match,
++            attestation_path=None,
++            verified=False,
++            reasons=reasons,
++        )
+     if artifact is not None and live is None:
+         reasons.append(
+             f"could not compute live topology hash from {artifact} (missing/unreadable registry)"
+@@ -859,10 +884,22 @@ def autopilot_precondition_gate(
+             reason="precondition 'any' imposes no autopilot constraint",
+         )
+ 
+-    if str(EPYC_ROOT_COORDINATION) not in sys.path:
+-        sys.path.insert(0, str(EPYC_ROOT_COORDINATION))
+     try:
+-        from autopilot_precondition_gate import check_autopilot_precondition
++        root_coordination = _root_coordination_dir()
++    except belief_capture.CaptureUnavailable as exc:
++        return AutopilotPreconditionGateResult(
++            required=required,
++            ok=False,
++            reason=f"autopilot precondition checker unavailable: {exc}",
++        )
++    if str(root_coordination) not in sys.path:
++        sys.path.insert(0, str(root_coordination))
++    try:
++        import autopilot_precondition_gate as checker
++        expected = (root_coordination / "autopilot_precondition_gate.py").resolve()
++        if Path(checker.__file__).resolve() != expected:
++            raise ValueError("loaded autopilot checker differs from the selected ROOT")
++        check_autopilot_precondition = checker.check_autopilot_precondition
+     except Exception as exc:  # noqa: BLE001
+         return AutopilotPreconditionGateResult(
+             required=required,
+@@ -874,6 +911,8 @@ def autopilot_precondition_gate(
+         try:
+             import inference_load_check as ic  # type: ignore[import-not-found]
+ 
++            if Path(ic.__file__).resolve() != (root_coordination / "inference_load_check.py").resolve():
++                raise ValueError("loaded state signal reader differs from the selected ROOT")
+             load_signals = ic.classify_load()
+         except Exception as exc:  # noqa: BLE001
+             return AutopilotPreconditionGateResult(
+@@ -1042,7 +1081,7 @@ def _blank_result(resolved: ResolvedEntry) -> dict[str, Any]:
+ def run_preflight(
+     resolved: ResolvedEntry,
+     *,
+-    attestation_dir: Path = DEFAULT_ATTESTATION_DIR,
++    attestation_dir: Path | None = DEFAULT_ATTESTATION_DIR,
+     dry_run_timeout_s: float = DEFAULT_DRY_RUN_TIMEOUT_S,
+     runner: Callable[..., tuple[int, str, str]] = _default_runner,
+     stack_contract_checker: Callable[..., StackContractGateResult] = live_stack_contract_gate,
+@@ -1154,7 +1193,7 @@ def run_batch_entry(
+     manifest_json: Optional[Path] = None,
+     regenerate: bool = True,
+     builder: Callable[[], dict[str, Any]] = cwm.build_manifest,
+-    attestation_dir: Path = DEFAULT_ATTESTATION_DIR,
++    attestation_dir: Path | None = DEFAULT_ATTESTATION_DIR,
+     dry_run_timeout_s: float = DEFAULT_DRY_RUN_TIMEOUT_S,
+     execute_timeout_s: float = DEFAULT_EXECUTE_TIMEOUT_S,
+     execute: bool = False,               # DEFAULT OFF — never set by tests
+@@ -1260,7 +1299,7 @@ def build_parser() -> argparse.ArgumentParser:
+                    help="Pre-generated clean-window manifest JSON (else regenerate)")
+     p.add_argument("--no-regenerate", dest="regenerate", action="store_false", default=True,
+                    help="Do not regenerate the clean-window manifest if --manifest-json is absent")
+-    p.add_argument("--attestation-dir", type=Path, default=DEFAULT_ATTESTATION_DIR,
++    p.add_argument("--attestation-dir", type=Path, default=None,
+                    help="Directory of B4 attestation JSONs (topology/affinity verification)")
+     p.add_argument("--dry-run-timeout-s", type=float, default=DEFAULT_DRY_RUN_TIMEOUT_S)
+     p.add_argument("--execute-timeout-s", type=float, default=DEFAULT_EXECUTE_TIMEOUT_S)
+diff --git a/scripts/benchmark/test_laguna_pgpu1_dflash_runner.py b/scripts/benchmark/test_laguna_pgpu1_dflash_runner.py
+index 9f6f28f90..7f1117ce1 100644
+--- a/scripts/benchmark/test_laguna_pgpu1_dflash_runner.py
++++ b/scripts/benchmark/test_laguna_pgpu1_dflash_runner.py
+@@ -1128,3 +1128,15 @@ def test_response_sanity_and_artifact_auditor_negative_path() -> None:
+         root = Path(tmp)
+         (root / "summary.json").write_text(json.dumps({"status": "ok"}), encoding="utf-8")
+         assert audit_artifact(root)["status"] == "incomplete"
++
++
++def test_named_governance_root_is_required_and_canonical(tmp_path, monkeypatch):
++    monkeypatch.setattr(runner, "GOVERNANCE_REPO", None)
++    monkeypatch.setattr(runner, "PROMOTION_ATTESTATION_PATH", None)
++    monkeypatch.delenv("EPYC_ROOT", raising=False)
++    assert "EPYC_ROOT is not set" in runner.verified_governance_attestation(tmp_path / "proof.json")[2]
++    (tmp_path / "scripts/vidya/adapters").mkdir(parents=True)
++    monkeypatch.setenv("EPYC_ROOT", str(tmp_path))
++    raw, proof, reason = runner.verified_governance_attestation(tmp_path / "wrong.json")
++    assert raw is None and proof is None
++    assert str(tmp_path / runner.PROMOTION_ATTESTATION_RELATIVE_PATH) in reason
+diff --git a/scripts/benchmark/test_op2_quiet_window_prep.py b/scripts/benchmark/test_op2_quiet_window_prep.py
+index a169c2e34..ec1d9611f 100644
+--- a/scripts/benchmark/test_op2_quiet_window_prep.py
++++ b/scripts/benchmark/test_op2_quiet_window_prep.py
+@@ -64,6 +64,7 @@ class OP2QuietWindowPrepTests(unittest.TestCase):
+             tmp_path = Path(tmp)
+             measurement = tmp_path / "MEASUREMENT.md"
+             measurement.write_text("### P-GPU-1 — GPU canonical (DEFERRED — hardware not acquired)\n")
++            (tmp_path / "scripts/vidya/adapters").mkdir(parents=True)
+             args = op2.parse_args(
+                 [
+                     "--run-id",
+@@ -154,6 +155,7 @@ class OP2QuietWindowPrepTests(unittest.TestCase):
+             tmp_path = Path(tmp)
+             measurement = tmp_path / "MEASUREMENT.md"
+             measurement.write_text("### P-GPU-1 — GPU canonical (DEFERRED — hardware not acquired)\n")
++            (tmp_path / "scripts/vidya/adapters").mkdir(parents=True)
+             execution_dir = tmp_path / "execution"
+             args = op2.parse_args(
+                 [
+@@ -187,3 +189,19 @@ class OP2QuietWindowPrepTests(unittest.TestCase):
+ 
+ if __name__ == "__main__":
+     unittest.main()
++
++
++def test_named_root_owns_measurement_default_and_cli_wins(tmp_path, monkeypatch):
++    named = tmp_path / "named"
++    explicit = tmp_path / "explicit"
++    for root in (named, explicit):
++        (root / "scripts/vidya/adapters").mkdir(parents=True)
++    monkeypatch.setenv("EPYC_ROOT", str(named))
++    base = ["--run-id", "fixture", "--output-dir", str(tmp_path / "out")]
++    args = op2.parse_args(base)
++    assert Path(args.root_repo) == named
++    assert Path(args.measurement_path) == named / "MEASUREMENT.md"
++    args = op2.parse_args(base + ["--root-repo", str(explicit),
++                                  "--measurement-path", str(tmp_path / "policy.md")])
++    assert Path(args.root_repo) == explicit
++    assert Path(args.measurement_path) == tmp_path / "policy.md"
+diff --git a/scripts/benchmark/tests/test_run_batch_entry.py b/scripts/benchmark/tests/test_run_batch_entry.py
+index d6baca2ab..fbb994c2c 100644
+--- a/scripts/benchmark/tests/test_run_batch_entry.py
++++ b/scripts/benchmark/tests/test_run_batch_entry.py
+@@ -894,3 +894,33 @@ def _run_all() -> int:
+ 
+ if __name__ == "__main__":
+     raise SystemExit(_run_all())
++
++
++def test_default_attestation_and_autopilot_refuse_missing_root(monkeypatch):
++    monkeypatch.delenv("EPYC_ROOT", raising=False)
++    topology = rbe.topology_gate(_resolved_for_topology(), live_hash_override="HASH_A")
++    assert topology.hash_match is True
++    assert topology.verified is False
++    assert any("EPYC_ROOT is not set" in reason for reason in topology.reasons)
++    resolved = rbe.resolve_entry({"preconditions": {"autopilot": "stopped"},
++        "execution": {"command": "python probe.py", "concurrency_mode": "serial_noninference"}})
++    gate = rbe.autopilot_precondition_gate(resolved, load_signals={})
++    assert gate.ok is False
++    assert "EPYC_ROOT is not set" in gate.reason
++
++
++def test_named_root_controls_attestation_and_rejects_cached_foreign_checker(tmp_path, monkeypatch):
++    from types import SimpleNamespace
++    (tmp_path / "scripts/vidya/adapters").mkdir(parents=True)
++    monkeypatch.setenv("EPYC_ROOT", str(tmp_path))
++    assert rbe._attestation_dir(None) == tmp_path / "coordination/inference-batch/attestations"
++    explicit = tmp_path / "explicit"
++    assert rbe._attestation_dir(explicit) == explicit
++    monkeypatch.setitem(sys.modules, "autopilot_precondition_gate", SimpleNamespace(
++        __file__="/foreign/autopilot_precondition_gate.py",
++        check_autopilot_precondition=lambda *a: (True, "wrong checkout")))
++    resolved = rbe.resolve_entry({"preconditions": {"autopilot": "stopped"},
++        "execution": {"command": "python probe.py", "concurrency_mode": "serial_noninference"}})
++    gate = rbe.autopilot_precondition_gate(resolved, load_signals={})
++    assert gate.ok is False
++    assert "differs from the selected ROOT" in gate.reason
+diff --git a/scripts/kernel_rnd/autokernel/history_replay/test_export.py b/scripts/kernel_rnd/autokernel/history_replay/test_export.py
+index 82fa555a7..60529b56f 100644
+--- a/scripts/kernel_rnd/autokernel/history_replay/test_export.py
++++ b/scripts/kernel_rnd/autokernel/history_replay/test_export.py
+@@ -80,7 +80,8 @@ class ExportTests(unittest.TestCase):
+         from autokernel.loop.test_loop import _Critic, _Planner, _run
+         from unittest.mock import patch
+         with (
+-            patch.object(archive, "_VIDYA_ROOT", Path(os.environ.get("AK_HISTORY_ROOT", "/workspace"))),
++            patch.object(archive, "_VIDYA_ROOT", (Path(os.environ["AK_HISTORY_ROOT"])
++                                                   if os.environ.get("AK_HISTORY_ROOT") else None)),
+             tempfile.TemporaryDirectory() as t,
+         ):
+             t = Path(t)
+diff --git a/scripts/kernel_rnd/autokernel/loop/actors.py b/scripts/kernel_rnd/autokernel/loop/actors.py
+index 467a086b4..a8eb14304 100644
+--- a/scripts/kernel_rnd/autokernel/loop/actors.py
++++ b/scripts/kernel_rnd/autokernel/loop/actors.py
+@@ -3494,9 +3494,9 @@ class AgentPlanner:
+     #: (`belief_context.prepare`, a child process) and records a receipt; a refusal raises
+     #: `belief_context.BeliefContextRefused` before any prompt is built or backend called.
+     belief_context: str = "required"
+-    #: ROOT owning the shared reader (see `belief_context.resolve_root_repo`: env, else
+-    #: /workspace if it has the reader, else the hub view); folded into `belief` when that
+-    #: names no root.
++    #: ROOT owning the shared reader (see `belief_context.resolve_root_repo`: explicit,
++    #: EPYC_ROOT_REPO, then EPYC_ROOT; no checkout is guessed); folded into `belief`
++    #: when that names no root.
+     belief_root: Path | None = None
+     #: The reader's argv-derived config (ledger, known-good snapshot, timeouts, escalation).
+     belief: belief_context.BeliefConfig | None = None
+diff --git a/scripts/kernel_rnd/autokernel/loop/archive.py b/scripts/kernel_rnd/autokernel/loop/archive.py
+index 514ff664a..7d6be741c 100644
+--- a/scripts/kernel_rnd/autokernel/loop/archive.py
++++ b/scripts/kernel_rnd/autokernel/loop/archive.py
+@@ -473,7 +473,7 @@ def _with_trial_counters(store, attempt: Mapping[str, Any], epoch: str) -> Mappi
+     return {**attempt, "trial_ordinal": ordinal, "cumulative_tokens": cumulative}
+ 
+ 
+-_VIDYA_ROOT = Path("/workspace")
++_VIDYA_ROOT = None  # Explicit embedding/test override; otherwise resolve the named ROOT lazily.
+ 
+ 
+ def _publish_ak_history(store_root: Path, attempt: Mapping[str, Any], *,
+@@ -481,7 +481,11 @@ def _publish_ak_history(store_root: Path, attempt: Mapping[str, Any], *,
+     """Write the prospective AK-HR-3 receipt for a committed loop trial only."""
+     if "trial_id" not in attempt:
+         return None
+-    expected = (_VIDYA_ROOT / "scripts/vidya/adapters/ak_history.py").resolve()
++    from . import belief_context
++
++    explicit_root = _VIDYA_ROOT if _VIDYA_ROOT is not None else os.environ.get("AK_HISTORY_ROOT")
++    root = belief_context.resolve_root_repo(explicit_root)
++    expected = (root / "scripts/vidya/adapters/ak_history.py").resolve()
+     if not expected.is_file():
+         raise RuntimeError(f"AK history adapter absent: {expected}")
+     vidya_path = str(expected.parents[1])
+diff --git a/scripts/kernel_rnd/autokernel/loop/belief_context.py b/scripts/kernel_rnd/autokernel/loop/belief_context.py
+index 6f80f8cf1..5582a8755 100644
+--- a/scripts/kernel_rnd/autokernel/loop/belief_context.py
++++ b/scripts/kernel_rnd/autokernel/loop/belief_context.py
+@@ -52,11 +52,14 @@ from datetime import datetime, timezone
+ from pathlib import Path
+ from typing import Any, Callable, Iterable, Iterator, Mapping
+ 
++# AutoKernel is also invoked as `autokernel` with only scripts/kernel_rnd on
++# PYTHONPATH. Locate the shared research helper from this source checkout.
++_RESEARCH_ROOT = Path(__file__).resolve().parents[4]
++if str(_RESEARCH_ROOT) not in sys.path:
++    sys.path.insert(0, str(_RESEARCH_ROOT))
++from scripts.benchmark.belief_capture import CaptureUnavailable, root_checkout
++
+ ROOT_REPO_ENV = "EPYC_ROOT_REPO"
+-DEFAULT_ROOT = Path("/workspace")
+-#: The hub-maintained view of ROOT origin/main, used when /workspace (a shared, possibly
+-#: diverged clone nobody here may move) does not contain the reader.
+-FALLBACK_ROOT = Path("/mnt/raid0/llm/views/epyc-root-main")
+ READER_RELPATH = Path("scripts") / "vidya" / "loop_beliefs.py"
+ CONSUMER = "autokernel.planner"
+ #: The only planning mode. `--actor-belief-context` accepts nothing else.
+@@ -100,22 +103,21 @@ def _now() -> str:
+ 
+ def resolve_root_repo(explicit: str | Path | None = None, *,
+                       env: Mapping[str, str] | None = None) -> Path:
+-    """The ROOT checkout the belief reader (and the serving-receipt adapter) is read from.
+-
+-    1. `--belief-root-repo` (`explicit`), verbatim; 2. env `EPYC_ROOT_REPO`, verbatim;
+-    3. `/workspace`, IF it contains scripts/vidya/loop_beliefs.py; 4. else `FALLBACK_ROOT`
+-    (the hub's view of origin/main), if it has the reader; 5. else `/workspace`, so a missing
+-    reader stays what it is today: reader-missing, refused, critical alarm."""
+-    if explicit:
+-        return Path(explicit)
++    """Resolve the named ROOT checkout through the shared, fail-closed resolver.
++
++    `--belief-root-repo` and `EPYC_ROOT_REPO` remain accepted for AutoKernel callers;
++    `belief_capture.root_checkout` owns the actual checkout validation and refuses when
++    neither is named. The older `/workspace` and hub-view guesses could silently select a
++    different ledger than the operator intended.
++    """
+     environ = os.environ if env is None else env
+-    named = environ.get(ROOT_REPO_ENV)
+-    if named:
+-        return Path(named)
+-    for candidate in (DEFAULT_ROOT, FALLBACK_ROOT):
+-        if (candidate / READER_RELPATH).is_file():
+-            return candidate
+-    return DEFAULT_ROOT
++    named = explicit if explicit is not None else environ.get(ROOT_REPO_ENV)
++    if named is None:
++        named = environ.get("EPYC_ROOT")
++    if isinstance(named, str):
++        named = named.strip()
++    selected_env = {} if named is None else {"EPYC_ROOT": str(named)}
++    return root_checkout(selected_env)
+ 
+ 
+ def root_repo(root: str | Path | None = None) -> Path:
+@@ -373,8 +375,14 @@ def raise_alarm(config: BeliefConfig, reason: str, detail: str, *,
+             result = {"invoked": True, "returncode": getattr(done, "returncode", None)}
+     except Exception as exc:  # noqa: BLE001 -- the refusal stands even if the alarm fails
+         result = {"invoked": False, "error": f"{type(exc).__name__}: {exc}"[:300]}
+-    if not config.reader().is_file():
+-        result["fallback"] = _fallback_alarm(config, reason, detail, runner=runner)
++    try:
++        if not config.reader().is_file():
++            result["fallback"] = _fallback_alarm(config, reason, detail, runner=runner)
++    except CaptureUnavailable as exc:
++        # No named ROOT means no trustworthy alarm locator either. Keep the refusal
++        # and report the undeliverable critical alarm without guessing a checkout.
++        result["fallback"] = {"invoked": False, "error": str(exc)}
++        print(f"BELIEF LEDGER ALARM UNDELIVERABLE ({reason}): {exc}", file=sys.stderr)
+     return result
+ 
+ 
+@@ -569,6 +577,12 @@ def seal_receipt(belief: ReadyAnswer | None, *, prompt: str | None, workspace: s
+                                                            or {})
+     evidence = belief.evidence if belief is not None else {}
+     state = belief.ledger_state if belief is not None else None
++    root_reader = None
++    root_reader_error = None
++    try:
++        root_reader = str(config.reader())
++    except CaptureUnavailable as exc:
++        root_reader_error = str(exc)
+     body = {
+         "schema": RECEIPT_SCHEMA, "ts": _now(), "consumer": config.consumer, "mode": "required",
+         "call": {"prompt_sha256": (hashlib.sha256(prompt.encode("utf-8")).hexdigest()
+@@ -578,7 +592,8 @@ def seal_receipt(belief: ReadyAnswer | None, *, prompt: str | None, workspace: s
+         "target": (belief.target if belief is not None
+                    else (refusal.target if refusal is not None else None)),
+         "reader": {"module": "scripts/kernel_rnd/autokernel/loop/belief_context.py",
+-                   "module_sha256": _module_sha256(), "root_reader": str(config.reader()),
++                   "module_sha256": _module_sha256(), "root_reader": root_reader,
++                   "root_reader_error": root_reader_error,
+                    "consumer": config.consumer, "policy": answer.get("policy"),
+                    "elapsed_s": (belief.elapsed_s if belief is not None
+                                  else (refusal.elapsed_s if refusal is not None else None))},
+diff --git a/scripts/kernel_rnd/autokernel/loop/run.py b/scripts/kernel_rnd/autokernel/loop/run.py
+index 39bf437ad..c7beea14e 100644
+--- a/scripts/kernel_rnd/autokernel/loop/run.py
++++ b/scripts/kernel_rnd/autokernel/loop/run.py
+@@ -2162,8 +2162,8 @@ def main(argv: list[str] | None = None) -> int:
+     parser.add_argument("--belief-root-repo", type=Path,
+                         help="ROOT owning serving-observation reader AND the shared belief "
+                              "reader scripts/vidya/loop_beliefs.py the planner calls before "
+-                             "every proposal (default: EPYC_ROOT_REPO; else /workspace if it has "
+-                             "the reader; else /mnt/raid0/llm/views/epyc-root-main)")
++                             "every proposal (default: EPYC_ROOT_REPO, then EPYC_ROOT; if both "
++                             "are unset, the shared root_checkout resolver refuses to guess)")
+     parser.add_argument("--belief-ledger", type=Path, default=None,
+                         help="belief reader: the Vidya ledger (default: ROOT's canonical "
+                              "ledger, loop_beliefs.resolve_ledger)")
+@@ -3789,8 +3789,7 @@ def main(argv: list[str] | None = None) -> int:
+     if source_authoring:
+         source_validation_reference = dict(resumed["source_validation"])
+     runtime_env_keys = _runtime_env_keys(direct_launch, cpu_launch)
+-    feedback = serving_beliefs.PlannerFeedback(
+-        args.store, belief_context.resolve_root_repo(args.belief_root_repo))
++    feedback = serving_beliefs.PlannerFeedback(args.store, args.belief_root_repo)
+     shared_history = archive.SharedHistory(args.shared_history_root, current_store=args.store,
+                                            batch_directory=args.out)
+     feedback_anchor = [direct_launch]
+diff --git a/scripts/kernel_rnd/autokernel/loop/serving_beliefs.py b/scripts/kernel_rnd/autokernel/loop/serving_beliefs.py
+index 3b5140653..683fcd7e7 100644
+--- a/scripts/kernel_rnd/autokernel/loop/serving_beliefs.py
++++ b/scripts/kernel_rnd/autokernel/loop/serving_beliefs.py
+@@ -152,11 +152,10 @@ class PlannerFeedback:
+     """Lazy synchronous bridge; diagnostic faults never change loop outcomes."""
+ 
+     def __init__(self, store_root, root_repo=None):
+-        import os
+         import threading
+ 
+         self.store_root = Path(store_root)
+-        self.root_repo = Path(root_repo or os.environ.get("EPYC_ROOT_REPO", "/workspace"))
++        self.root_repo = root_repo
+         self._lock = threading.Lock()
+         self._reader = None
+         self._failure = None
+@@ -164,7 +163,9 @@ class PlannerFeedback:
+     def _load(self):
+         import importlib
+         import sys
++        from . import belief_context
+ 
++        self.root_repo = belief_context.resolve_root_repo(self.root_repo)
+         expected = (self.root_repo / "scripts/vidya/adapters/autokernel_legacy_serving.py").resolve()
+         if not expected.is_file():
+             raise ValueError(f"serving belief reader is unavailable: {expected}")
+diff --git a/scripts/kernel_rnd/autokernel/loop/test_belief_context.py b/scripts/kernel_rnd/autokernel/loop/test_belief_context.py
+index 0132af11d..e667549f6 100644
+--- a/scripts/kernel_rnd/autokernel/loop/test_belief_context.py
++++ b/scripts/kernel_rnd/autokernel/loop/test_belief_context.py
+@@ -23,6 +23,7 @@ import pytest
+ from autokernel.conftest import belief_ready_answer
+ from autokernel.loop import actors, belief_context as bc, bench, gates, loop, pipeline, resume
+ from autokernel.loop.loop import Abstain, Hypothesis, Outcome
++from scripts.benchmark.belief_capture import CaptureUnavailable
+ 
+ GPU_27B_REGIME = {"model": {"path": "/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf"},
+                   "quant": "Q8_0", "backend": "gpu", "measurement_surface": "pp512"}
+@@ -104,6 +105,7 @@ def _refused(reason="chain_broken", detail="frame 7: hash mismatch"):
+ 
+ 
+ def _config(tmp_path, **kw):
++    (tmp_path / "root" / "scripts/vidya/adapters").mkdir(parents=True, exist_ok=True)
+     return bc.BeliefConfig(root=tmp_path / "root", known_good=tmp_path / "kg.json",
+                            alarm_state=tmp_path / "alarm-state.json",
+                            alarm_config=tmp_path / "alarm.yaml", **kw)
+@@ -616,31 +618,53 @@ def test_hypothesis_schema_accepts_optional_reliance_only():
+ def _roots(tmp_path, monkeypatch, *, workspace_has, view_has, env=None):
+     workspace, view = tmp_path / "workspace", tmp_path / "view"
+     for root, has in ((workspace, workspace_has), (view, view_has)):
+-        (root / "scripts" / "vidya").mkdir(parents=True)
++        (root / "scripts" / "vidya" / "adapters").mkdir(parents=True)
+         if has:
+             (root / bc.READER_RELPATH).write_text("# reader\n")
+-    monkeypatch.setattr(bc, "DEFAULT_ROOT", workspace)
+-    monkeypatch.setattr(bc, "FALLBACK_ROOT", view)
+-    monkeypatch.delenv(bc.ROOT_REPO_ENV, raising=False)
+     if env is not None:
+-        monkeypatch.setenv(bc.ROOT_REPO_ENV, str(env))
++        (Path(env) / "scripts/vidya/adapters").mkdir(parents=True, exist_ok=True)
++    monkeypatch.delenv(bc.ROOT_REPO_ENV, raising=False)
++    monkeypatch.setenv(bc.ROOT_REPO_ENV, str(env if env is not None else workspace))
+     return workspace, view
+ 
+ 
+-def test_root_prefers_workspace_when_it_has_the_reader(tmp_path, monkeypatch):
++def test_root_uses_the_named_checkout_when_it_has_the_reader(tmp_path, monkeypatch):
+     workspace, _ = _roots(tmp_path, monkeypatch, workspace_has=True, view_has=True)
+     assert bc.resolve_root_repo() == workspace == bc.root_repo()
+     assert bc.BeliefConfig().reader() == workspace / bc.READER_RELPATH
+ 
+ 
+-def test_root_falls_back_to_the_hub_view_when_workspace_lacks_the_reader(tmp_path, monkeypatch):
++def test_root_does_not_guess_a_fallback_checkout(tmp_path, monkeypatch):
+     _, view = _roots(tmp_path, monkeypatch, workspace_has=False, view_has=True)
+-    assert bc.resolve_root_repo() == view
+-    assert bc.BeliefConfig().reader().is_file()
++    selected = bc.resolve_root_repo()
++    assert selected != view
++    assert not bc.BeliefConfig().reader().is_file()
++
++
++def test_root_refuses_when_no_checkout_is_named(tmp_path, monkeypatch):
++    _roots(tmp_path, monkeypatch, workspace_has=True, view_has=True)
++    monkeypatch.delenv(bc.ROOT_REPO_ENV, raising=False)
++    monkeypatch.delenv("EPYC_ROOT", raising=False)
++    with pytest.raises(CaptureUnavailable, match="EPYC_ROOT is not set"):
++        bc.resolve_root_repo()
++
++
++def test_reader_root_env_precedence_and_validation(tmp_path, monkeypatch):
++    preferred, fallback = _roots(
++        tmp_path, monkeypatch, workspace_has=True, view_has=True, env=tmp_path / "view")
++    monkeypatch.setenv("EPYC_ROOT", str(preferred))
++    assert bc.resolve_root_repo() == fallback
++    monkeypatch.setenv(bc.ROOT_REPO_ENV, "   ")
++    with pytest.raises(CaptureUnavailable, match="EPYC_ROOT is not set"):
++        bc.resolve_root_repo()
++    monkeypatch.setenv(bc.ROOT_REPO_ENV, str(tmp_path / "invalid"))
++    with pytest.raises(CaptureUnavailable, match="has no scripts/vidya/adapters"):
++        bc.resolve_root_repo()
+ 
+ 
+ def test_explicit_root_wins_over_env_and_both_are_verbatim(tmp_path, monkeypatch):
+-    elsewhere = tmp_path / "elsewhere"          # no reader there: still taken verbatim
++    elsewhere = tmp_path / "elsewhere"
++    (elsewhere / "scripts/vidya/adapters").mkdir(parents=True)
+     _roots(tmp_path, monkeypatch, workspace_has=True, view_has=True, env=tmp_path / "env-root")
+     assert bc.resolve_root_repo(elsewhere) == elsewhere
+     assert bc.resolve_root_repo() == tmp_path / "env-root"
+@@ -649,7 +673,7 @@ def test_explicit_root_wins_over_env_and_both_are_verbatim(tmp_path, monkeypatch
+ 
+ def test_neither_root_has_the_reader_stays_missing_refused_and_alarmed(tmp_path, monkeypatch):
+     workspace, _ = _roots(tmp_path, monkeypatch, workspace_has=False, view_has=False)
+-    assert bc.resolve_root_repo() == workspace          # today's behaviour, unchanged
++    assert bc.resolve_root_repo() == workspace
+     config = bc.BeliefConfig()
+     assert not config.reader().is_file()
+ 
+@@ -664,7 +688,7 @@ def test_neither_root_has_the_reader_stays_missing_refused_and_alarmed(tmp_path,
+ def test_serial_run_resolves_the_same_root(tmp_path, monkeypatch):
+     from . import serial_run
+     assert serial_run.belief_context.resolve_root_repo is bc.resolve_root_repo
+-    _, view = _roots(tmp_path, monkeypatch, workspace_has=False, view_has=True)
++    _, view = _roots(tmp_path, monkeypatch, workspace_has=False, view_has=True, env=tmp_path / "view")
+     assert serial_run.belief_context.resolve_root_repo(None) == view
+ 
+ 
+@@ -723,6 +747,7 @@ def test_integration_real_root_child_ready_then_recheck_after_a_retraction(tmp_p
+     fake_root = tmp_path / "root"
+     vidya = fake_root / "scripts" / "vidya"
+     vidya.mkdir(parents=True)
++    (vidya / "adapters").mkdir()
+     for source in VIDYA.glob("*.py"):
+         shutil.copyfile(source, vidya / source.name)
+     (vidya / "sync.py").write_text(FAKE_SYNC)         # never the real plumbing sync
+@@ -783,6 +808,7 @@ def test_integration_real_root_child_ready_then_recheck_after_a_retraction(tmp_p
+ 
+ 
+ def test_missing_reader_alarm_falls_back_to_the_root_alarm_channel(tmp_path):
++    (tmp_path / "root" / "scripts" / "vidya" / "adapters").mkdir(parents=True)
+     channel = tmp_path / "root" / "scripts" / "coordination" / "alarm_channel.py"
+     channel.parent.mkdir(parents=True)
+     channel.write_text("# stand-in; the runner below never executes it\n")
+@@ -807,6 +833,7 @@ def test_missing_reader_alarm_falls_back_to_the_root_alarm_channel(tmp_path):
+ 
+ 
+ def test_missing_reader_and_channel_is_recorded_not_raised(tmp_path):
++    (tmp_path / "nowhere" / "scripts" / "vidya" / "adapters").mkdir(parents=True)
+     out = bc.raise_alarm(bc.BeliefConfig(root=tmp_path / "nowhere"), "reader_crash", "x",
+                          runner=lambda *a, **k: (_ for _ in ()).throw(FileNotFoundError("x")))
+     assert out["invoked"] is False
+@@ -815,6 +842,7 @@ def test_missing_reader_and_channel_is_recorded_not_raised(tmp_path):
+ 
+ def test_the_loop_store_is_ingested_by_the_reader_before_planning(tmp_path):
+     seen = []
++    (tmp_path / "scripts" / "vidya" / "adapters").mkdir(parents=True)
+ 
+     def runner(argv, **kw):
+         seen.append(argv)
+@@ -909,3 +937,48 @@ def test_belief_section_sits_directly_after_already_tried_not_at_the_tail(tmp_pa
+     tried, belief, inbox = (prompt.index("## Already tried"), prompt.index(V2_SECTION),
+                             prompt.index("## Operator suggestions"))
+     assert tried < belief < inbox
++
++
++@pytest.mark.parametrize("named", [None, "missing-checkout"])
++def test_missing_root_preserves_prepare_refusal_and_receipt(tmp_path, monkeypatch, capsys, named):
++    monkeypatch.delenv("EPYC_ROOT_REPO", raising=False)
++    monkeypatch.delenv("EPYC_ROOT", raising=False)
++    if named is not None:
++        monkeypatch.setenv("EPYC_ROOT", str(tmp_path / named))
++    calls = []
++    def runner(*args, **kwargs):
++        calls.append(args)
++        raise AssertionError("no child may run without a validated ROOT")
++    config = bc.BeliefConfig()
++    with pytest.raises(bc.BeliefContextRefused) as caught:
++        bc.prepare({}, config, runner=runner)
++    refusal = caught.value
++    assert refusal.reason == "reader_crash"
++    assert "CaptureUnavailable" in refusal.detail
++    assert refusal.alarm["invoked"] is False
++    assert refusal.alarm["fallback"]["invoked"] is False
++    assert "ALARM UNDELIVERABLE" in capsys.readouterr().err
++    receipt = bc.seal_receipt(None, prompt=None, workspace=tmp_path, seat_arm=None,
++                              outcome={}, refusal=refusal, config=config)
++    assert receipt["status"] == "refused"
++    assert receipt["reader"]["root_reader"] is None
++    assert receipt["reader"]["root_reader_error"]
++    assert receipt["refusal"]["reason"] == "reader_crash"
++    assert receipt["ledger_state"] is None
++    assert calls == []
++
++
++def test_standalone_autokernel_import_keeps_missing_root_diagnostic(tmp_path):
++    import os
++    import subprocess
++    import sys
++    research = Path(bc.__file__).resolve().parents[4]
++    env = {k: v for k, v in os.environ.items() if k not in {"EPYC_ROOT", "EPYC_ROOT_REPO"}}
++    env["PYTHONPATH"] = str(research / "scripts/kernel_rnd")
++    child = subprocess.run([sys.executable, "-c",
++        "from autokernel.loop import belief_context as bc; "
++        "from autokernel.loop.serving_beliefs import PlannerFeedback; "
++        "assert PlannerFeedback('.').context({})['status'] == 'unavailable'"],
++        cwd=tmp_path, env=env, capture_output=True, text=True, timeout=10)
++    assert child.returncode == 0, child.stderr
++    assert "EPYC_ROOT is not set" in child.stderr
+diff --git a/scripts/kernel_rnd/autokernel/loop/test_serving_beliefs.py b/scripts/kernel_rnd/autokernel/loop/test_serving_beliefs.py
+index b2faac421..e23cd2db6 100644
+--- a/scripts/kernel_rnd/autokernel/loop/test_serving_beliefs.py
++++ b/scripts/kernel_rnd/autokernel/loop/test_serving_beliefs.py
+@@ -12,6 +12,15 @@ from ..controller import experiment_capture
+ from .test_resolved_recipe import BUILD, _resolve
+ 
+ 
++def test_missing_root_is_a_lazy_diagnostic_failure(tmp_path, monkeypatch):
++    monkeypatch.delenv("EPYC_ROOT_REPO", raising=False)
++    monkeypatch.delenv("EPYC_ROOT", raising=False)
++    bridge = beliefs.PlannerFeedback(tmp_path)
++    result = bridge.context({"epoch": "fixture"})
++    assert result["status"] == "unavailable"
++    assert result["errors"] and "EPYC_ROOT is not set" in result["errors"][0]
++
++
+ def comparison(monkeypatch, *, resolved=True, floor_pct=5.0):
+     recipe = serving.Recipe(name="fixture", model="/fixture-model", device="none", ngl=0, np=1)
+     launch = _resolve(recipe, backend="cpu") if resolved else None
+diff --git a/scripts/validate/check_evidence_durability.py b/scripts/validate/check_evidence_durability.py
+index 767f6f79e..db00d4d39 100755
+--- a/scripts/validate/check_evidence_durability.py
++++ b/scripts/validate/check_evidence_durability.py
+@@ -197,6 +197,11 @@ from datetime import datetime, timezone
+ from pathlib import Path
+ from urllib.parse import unquote
+ 
++RESEARCH_ROOT = Path(__file__).resolve().parents[2]
++if str(RESEARCH_ROOT) not in sys.path:
++    sys.path.insert(0, str(RESEARCH_ROOT))
++from scripts.benchmark.belief_capture import CaptureUnavailable, root_checkout
++
+ # --------------------------------------------------------------------------- config
+ 
+ REPO_ROOT = Path(__file__).resolve().parents[2]
+@@ -219,11 +224,18 @@ EPHEMERAL_ROOTS = (
+ # evidence citation only if its repo-relative portion starts with an artifact
+ # tree, the same test applied to this repo.
+ SIBLING_REPO_ROOTS = (
+-    "/mnt/raid0/llm/epyc-root",
+     "/mnt/raid0/llm/epyc-orchestrator",
+-    "/workspace",
+ )
+ 
++
++def _sibling_repo_roots() -> tuple[str, ...]:
++    try:
++        return SIBLING_REPO_ROOTS + (str(root_checkout()),)
++    except CaptureUnavailable:
++        # With no named ROOT checkout there is no safe path to guess here. Artifact-tree
++        # paths remain in scope through the absolute-path rule below.
++        return SIBLING_REPO_ROOTS
++
+ # The ARTIFACT TREES. A path is an evidence citation only if its repo-relative portion
+ # starts with one of these -- the same test for relative and absolute paths, so a
+ # citation cannot change category by being spelled differently.
+@@ -333,7 +345,7 @@ def _in_scope(path: str, repo: Path) -> bool:
+         return True
+     if path.startswith(ARTIFACT_TREES):          # repo-relative
+         return True
+-    for root in (str(repo),) + SIBLING_REPO_ROOTS:
++    for root in (str(repo),) + _sibling_repo_roots():
+         if path.startswith(root + "/"):
+             return path[len(root) + 1:].startswith(ARTIFACT_TREES)
+     # An absolute path in no known repo can still be an evidence tree somebody parked on
+diff --git a/scripts/validate/test_check_evidence_durability.py b/scripts/validate/test_check_evidence_durability.py
+index 09bb4a13b..35c6f5635 100644
+--- a/scripts/validate/test_check_evidence_durability.py
++++ b/scripts/validate/test_check_evidence_durability.py
+@@ -435,6 +435,13 @@ class TestRelativeCitationsGetTheSameGuard:
+ 
+ class TestRetargetedRule:
+ 
++    def test_selected_root_checkout_is_the_root_candidate(self, tmp_path, monkeypatch):
++        import check_evidence_durability as m
++        root = tmp_path / "selected-root"
++        (root / "scripts/vidya/adapters").mkdir(parents=True)
++        monkeypatch.setenv("EPYC_ROOT", str(root))
++        assert str(root.resolve()) in m._sibling_repo_roots()
++
+     def test_absolute_path_inside_the_repo_is_ok(self, repo):
+         reg = write_registry(
+             repo, f"evidence: {repo}/data/good_campaign_20260801/summary.json\n")

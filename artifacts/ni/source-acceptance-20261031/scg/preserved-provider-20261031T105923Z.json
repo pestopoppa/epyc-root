@@ -1,0 +1,5 @@
+{
+  "nodeid": "tests/unit/test_autopilot_sequential_wiring.py::test_run_loop_inner_fresh_eval_exclusion_consumes_pending_promotion",
+  "provider_identity_preserved": true,
+  "warning_state_preserved": true
+}

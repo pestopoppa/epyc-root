@@ -1,0 +1,112 @@
+........................................................................ [ 22%]
+........................................................................ [ 45%]
+........................................................................ [ 68%]
+....................................................................FFFF [ 90%]
+.............................                                            [100%]
+=================================== FAILURES ===================================
+_ test_actual_cpu_keep_cross_target_then_older_history_uses_latest_source[False-False] _
+scripts/kernel_rnd/autokernel/loop/test_serial_run.py:1401: in test_actual_cpu_keep_cross_target_then_older_history_uses_latest_source
+    cpu_fixture.test_existing_main_cpu_five_iterations_preserves_canonical_champion(
+scripts/kernel_rnd/autokernel/loop/test_existing_cpu_run.py:266: in test_existing_main_cpu_five_iterations_preserves_canonical_champion
+    rc, _calls, _planners, _scratch, log = fixture._run_one_keep()
+                                           ^^^^^^^^^^^^^^^^^^^^^^^
+scripts/kernel_rnd/autokernel/loop/test_promotion_targets.py:368: in _run_one_keep
+    rc = run_mod.main(argv)
+         ^^^^^^^^^^^^^^^^^^
+scripts/kernel_rnd/autokernel/loop/test_existing_cpu_run.py:263: in cpu_main
+    return real_main(argv)
+           ^^^^^^^^^^^^^^^
+scripts/kernel_rnd/autokernel/loop/test_serial_run.py:1087: in exercise
+    assert origin_export.is_file()
+E   AssertionError: assert False
+E    +  where False = is_file()
+E    +    where is_file = PosixPath('/tmp/tmp4mbu8mao/store/serving-beliefs/f98bff2327d3162cb78b56777c9a051cbe03a780b647405ada46b51085315696.json').is_file
+----------------------------- Captured stderr call -----------------------------
+warning: serving belief export failed after durable archive: ValueError: prospective serving capture does not rederive
+warning: serving belief export failed after durable archive: ValueError: prospective serving capture does not rederive
+warning: serving belief export failed after durable archive: ValueError: prospective serving capture does not rederive
+warning: serving belief export failed after durable archive: ValueError: prospective serving capture does not rederive
+resume    anchor advanced 436a5aefe558 -> 9589e87fb07b during the run: 0 queued checkpoint(s) carried forward
+warning: serving belief export failed after durable archive: ValueError: prospective serving capture does not rederive
+warning: last outcome serving reference unavailable: [Errno 2] No such file or directory: '/tmp/tmp4mbu8mao/store/serving-beliefs/98b1047108675822afdd1a4b03fe681781cb8a81040a970613f9b0c0fca60e1b.json'
+_ test_actual_cpu_keep_cross_target_then_older_history_uses_latest_source[True-False] _
+scripts/kernel_rnd/autokernel/loop/test_serial_run.py:1401: in test_actual_cpu_keep_cross_target_then_older_history_uses_latest_source
+    cpu_fixture.test_existing_main_cpu_five_iterations_preserves_canonical_champion(
+scripts/kernel_rnd/autokernel/loop/test_existing_cpu_run.py:266: in test_existing_main_cpu_five_iterations_preserves_canonical_champion
+    rc, _calls, _planners, _scratch, log = fixture._run_one_keep()
+                                           ^^^^^^^^^^^^^^^^^^^^^^^
+scripts/kernel_rnd/autokernel/loop/test_promotion_targets.py:368: in _run_one_keep
+    rc = run_mod.main(argv)
+         ^^^^^^^^^^^^^^^^^^
+scripts/kernel_rnd/autokernel/loop/test_existing_cpu_run.py:263: in cpu_main
+    return real_main(argv)
+           ^^^^^^^^^^^^^^^
+scripts/kernel_rnd/autokernel/loop/test_serial_run.py:1087: in exercise
+    assert origin_export.is_file()
+E   AssertionError: assert False
+E    +  where False = is_file()
+E    +    where is_file = PosixPath('/tmp/tmpfrzhkhx9/store/serving-beliefs/47be7bbc9c6e598e885a0a30f5bb4844627e0abd9c5b1ab1d91b92386245a20f.json').is_file
+----------------------------- Captured stderr call -----------------------------
+warning: serving belief export failed after durable archive: ValueError: prospective serving capture does not rederive
+warning: serving belief export failed after durable archive: ValueError: prospective serving capture does not rederive
+warning: serving belief export failed after durable archive: ValueError: prospective serving capture does not rederive
+warning: serving belief export failed after durable archive: ValueError: prospective serving capture does not rederive
+resume    anchor advanced e68238517a18 -> 7a2d5cc99e9d during the run: 0 queued checkpoint(s) carried forward
+warning: serving belief export failed after durable archive: ValueError: prospective serving capture does not rederive
+warning: last outcome serving reference unavailable: [Errno 2] No such file or directory: '/tmp/tmpfrzhkhx9/store/serving-beliefs/c8e86c8df11dd82c15f94ff00252e802ccc6ce923d109f0e3a12bbe3ee78e57c.json'
+_ test_actual_cpu_keep_cross_target_then_older_history_uses_latest_source[False-True] _
+scripts/kernel_rnd/autokernel/loop/test_serial_run.py:1401: in test_actual_cpu_keep_cross_target_then_older_history_uses_latest_source
+    cpu_fixture.test_existing_main_cpu_five_iterations_preserves_canonical_champion(
+scripts/kernel_rnd/autokernel/loop/test_existing_cpu_run.py:266: in test_existing_main_cpu_five_iterations_preserves_canonical_champion
+    rc, _calls, _planners, _scratch, log = fixture._run_one_keep()
+                                           ^^^^^^^^^^^^^^^^^^^^^^^
+scripts/kernel_rnd/autokernel/loop/test_promotion_targets.py:368: in _run_one_keep
+    rc = run_mod.main(argv)
+         ^^^^^^^^^^^^^^^^^^
+scripts/kernel_rnd/autokernel/loop/test_existing_cpu_run.py:263: in cpu_main
+    return real_main(argv)
+           ^^^^^^^^^^^^^^^
+scripts/kernel_rnd/autokernel/loop/test_serial_run.py:1087: in exercise
+    assert origin_export.is_file()
+E   AssertionError: assert False
+E    +  where False = is_file()
+E    +    where is_file = PosixPath('/tmp/tmpxxgabyes/store/serving-beliefs/0b87e57206d008935b347d4e8252bf42c9228cf977cc895770703b956ff6b35c.json').is_file
+----------------------------- Captured stderr call -----------------------------
+warning: serving belief export failed after durable archive: ValueError: prospective serving capture does not rederive
+warning: serving belief export failed after durable archive: ValueError: prospective serving capture does not rederive
+warning: serving belief export failed after durable archive: ValueError: prospective serving capture does not rederive
+warning: serving belief export failed after durable archive: ValueError: prospective serving capture does not rederive
+resume    anchor advanced bfbd0cc41c86 -> d1c154edd872 during the run: 0 queued checkpoint(s) carried forward
+warning: serving belief export failed after durable archive: ValueError: prospective serving capture does not rederive
+warning: last outcome serving reference unavailable: [Errno 2] No such file or directory: '/tmp/tmpxxgabyes/store/serving-beliefs/03e86d7708577dfc3c97159b8eee601e067059c86884d42ff6afb339c05c941f.json'
+_ test_actual_cpu_keep_cross_target_then_older_history_uses_latest_source[gate-True] _
+scripts/kernel_rnd/autokernel/loop/test_serial_run.py:1401: in test_actual_cpu_keep_cross_target_then_older_history_uses_latest_source
+    cpu_fixture.test_existing_main_cpu_five_iterations_preserves_canonical_champion(
+scripts/kernel_rnd/autokernel/loop/test_existing_cpu_run.py:266: in test_existing_main_cpu_five_iterations_preserves_canonical_champion
+    rc, _calls, _planners, _scratch, log = fixture._run_one_keep()
+                                           ^^^^^^^^^^^^^^^^^^^^^^^
+scripts/kernel_rnd/autokernel/loop/test_promotion_targets.py:368: in _run_one_keep
+    rc = run_mod.main(argv)
+         ^^^^^^^^^^^^^^^^^^
+scripts/kernel_rnd/autokernel/loop/test_existing_cpu_run.py:263: in cpu_main
+    return real_main(argv)
+           ^^^^^^^^^^^^^^^
+scripts/kernel_rnd/autokernel/loop/test_serial_run.py:1087: in exercise
+    assert origin_export.is_file()
+E   AssertionError: assert False
+E    +  where False = is_file()
+E    +    where is_file = PosixPath('/tmp/tmpk14vv6gh/store/serving-beliefs/443fa51a46fcabe817e6649f6d007e6dff54fad1b26d859bd4c5106c976ef471.json').is_file
+----------------------------- Captured stderr call -----------------------------
+warning: serving belief export failed after durable archive: ValueError: prospective serving capture does not rederive
+warning: serving belief export failed after durable archive: ValueError: prospective serving capture does not rederive
+warning: serving belief export failed after durable archive: ValueError: prospective serving capture does not rederive
+warning: serving belief export failed after durable archive: ValueError: prospective serving capture does not rederive
+resume    anchor advanced 7fc81a967bb3 -> 4d5684fde678 during the run: 0 queued checkpoint(s) carried forward
+warning: serving belief export failed after durable archive: ValueError: prospective serving capture does not rederive
+warning: last outcome serving reference unavailable: [Errno 2] No such file or directory: '/tmp/tmpk14vv6gh/store/serving-beliefs/3ed554b61b4a4eafb0989a098ac219426660b854808929b8904737cfce30652f.json'
+=========================== short test summary info ============================
+FAILED scripts/kernel_rnd/autokernel/loop/test_serial_run.py::test_actual_cpu_keep_cross_target_then_older_history_uses_latest_source[False-False]
+FAILED scripts/kernel_rnd/autokernel/loop/test_serial_run.py::test_actual_cpu_keep_cross_target_then_older_history_uses_latest_source[True-False]
+FAILED scripts/kernel_rnd/autokernel/loop/test_serial_run.py::test_actual_cpu_keep_cross_target_then_older_history_uses_latest_source[False-True]
+FAILED scripts/kernel_rnd/autokernel/loop/test_serial_run.py::test_actual_cpu_keep_cross_target_then_older_history_uses_latest_source[gate-True]
+4 failed, 313 passed in 112.18s (0:01:52)

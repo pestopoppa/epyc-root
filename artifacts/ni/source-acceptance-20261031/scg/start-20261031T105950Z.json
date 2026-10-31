@@ -1,0 +1,1 @@
+{"pid": 3685489, "birth_ticks": "156686410", "command": ["--command", "make", "gates", "PY=/mnt/raid0/llm/epyc-orchestrator/.venv/bin/python"]}

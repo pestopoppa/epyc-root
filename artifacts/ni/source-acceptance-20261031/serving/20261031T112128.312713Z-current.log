@@ -1,0 +1,45 @@
+...s.................................................................... [ 36%]
+........................................................................ [ 73%]
+...............................................FF..                      [100%]
+=================================== FAILURES ===================================
+_ test_gpu_profile_diagnostics_preserve_capture_and_numeric_outcome[observed] __
+scripts/kernel_rnd/autokernel/loop/test_existing_gpu_serving_run.py:488: in test_gpu_profile_diagnostics_preserve_capture_and_numeric_outcome
+    test_existing_gpu_pool_uses_selected_requests_and_original_keep_owners(True, False, False)
+scripts/kernel_rnd/autokernel/loop/test_existing_gpu_serving_run.py:218: in test_existing_gpu_pool_uses_selected_requests_and_original_keep_owners
+    rc, builds, planners, _, log = fixture._run_one_keep()
+                                   ^^^^^^^^^^^^^^^^^^^^^^^
+scripts/kernel_rnd/autokernel/loop/test_promotion_targets.py:368: in _run_one_keep
+    rc = run_mod.main(argv)
+         ^^^^^^^^^^^^^^^^^^
+scripts/kernel_rnd/autokernel/loop/test_existing_gpu_serving_run.py:202: in gpu_main
+    rc = original_main(argv)
+         ^^^^^^^^^^^^^^^^^^^
+scripts/kernel_rnd/autokernel/loop/run.py:7532: in main
+    reprofile()
+scripts/kernel_rnd/autokernel/loop/run.py:5077: in reprofile
+    f"primary {view['primary_window']}; {len(rows)} kernels; record {view['record']}")
+               ^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: 'primary_window'
+_ test_gpu_profile_diagnostics_preserve_capture_and_numeric_outcome[measurement_invalid] _
+scripts/kernel_rnd/autokernel/loop/test_existing_gpu_serving_run.py:488: in test_gpu_profile_diagnostics_preserve_capture_and_numeric_outcome
+    test_existing_gpu_pool_uses_selected_requests_and_original_keep_owners(True, False, False)
+scripts/kernel_rnd/autokernel/loop/test_existing_gpu_serving_run.py:218: in test_existing_gpu_pool_uses_selected_requests_and_original_keep_owners
+    rc, builds, planners, _, log = fixture._run_one_keep()
+                                   ^^^^^^^^^^^^^^^^^^^^^^^
+scripts/kernel_rnd/autokernel/loop/test_promotion_targets.py:368: in _run_one_keep
+    rc = run_mod.main(argv)
+         ^^^^^^^^^^^^^^^^^^
+scripts/kernel_rnd/autokernel/loop/test_existing_gpu_serving_run.py:202: in gpu_main
+    rc = original_main(argv)
+         ^^^^^^^^^^^^^^^^^^^
+scripts/kernel_rnd/autokernel/loop/run.py:7532: in main
+    reprofile()
+scripts/kernel_rnd/autokernel/loop/run.py:5062: in reprofile
+    view, rows = hotspots.serving_profile(
+scripts/kernel_rnd/autokernel/loop/test_existing_gpu_serving_run.py:472: in profile
+    raise run.loop.MeasurementInvalid("synthetic invalid profile", {"fixture": True})
+E   autokernel.loop.loop.MeasurementInvalid: synthetic invalid profile
+=========================== short test summary info ============================
+FAILED scripts/kernel_rnd/autokernel/loop/test_existing_gpu_serving_run.py::test_gpu_profile_diagnostics_preserve_capture_and_numeric_outcome[observed]
+FAILED scripts/kernel_rnd/autokernel/loop/test_existing_gpu_serving_run.py::test_gpu_profile_diagnostics_preserve_capture_and_numeric_outcome[measurement_invalid]
+2 failed, 192 passed, 1 skipped in 170.22s (0:02:50)

@@ -1,0 +1,52 @@
+[
+  {
+    "grant": "yarn-agg-1g-power-20261031.grant",
+    "fields": {
+      "regions": "mi210_0,184-191",
+      "start": "2026-10-31T11:05Z",
+      "end": "2026-10-31T13:05Z"
+    },
+    "class": "block-correctness",
+    "rc": 0
+  },
+  {
+    "grant": "codex3-cs22-a1-native-long-v2-cpu-20261030.grant",
+    "fields": {
+      "regions": "72-95",
+      "start": "2026-10-31T08:03Z",
+      "end": "2026-10-31T17:33Z"
+    },
+    "class": "block-correctness",
+    "rc": 0
+  },
+  {
+    "grant": "yarn-oolong-s2-host256-eligible26-v32-20261031.grant",
+    "fields": {
+      "regions": "24-47",
+      "start": "2026-10-31T08:18Z",
+      "end": "2026-10-31T20:18Z"
+    },
+    "class": "block-correctness",
+    "rc": 0
+  },
+  {
+    "grant": "codex3-pareval120-k20-gen-20261031.grant",
+    "fields": {
+      "regions": "0-23",
+      "start": "2026-10-31T08:25Z",
+      "end": "2026-10-31T12:25Z"
+    },
+    "class": "block-timing-pairable",
+    "rc": 0
+  },
+  {
+    "grant": "yarn-oolong-s3-host256-eligible27-v30-20261031.grant",
+    "fields": {
+      "regions": "48-71",
+      "start": "2026-10-31T08:03Z",
+      "end": "2026-10-31T20:03Z"
+    },
+    "class": "block-correctness",
+    "rc": 0
+  }
+]

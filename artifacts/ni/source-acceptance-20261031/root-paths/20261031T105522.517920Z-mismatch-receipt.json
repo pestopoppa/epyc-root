@@ -1,0 +1,27 @@
+{
+  "pid": 3639443,
+  "birth_stat": "3639443 (taskset) R 3639413 3639443 3639443 0 -1 4194560 190 0 0 0 0 0 0 0 20 0 1 0 156659587 2854912 0 18446744073709551615 <machine-int:0x5fe297d89000> <machine-int:0x5fe297d8b561> <machine-int:0x7ffdd7df55c0> 0 0 0 0 0 0 0 0 0 17 76 0 0 0 0 0 <machine-int:0x5fe297d8db50> <machine-int:0x5fe297d8e010> <machine-int:0x5fe2d2296000> <machine-int:0x7ffdd7df6584> <machine-int:0x7ffdd7df66e8> <machine-int:0x7ffdd7df66e8> <machine-int:0x7ffdd7df6fe7> 0\n",
+  "pid_absent_after_wait": true,
+  "rc": 1,
+  "samples": 183,
+  "peak_tree_rss_bytes": 101785600,
+  "elapsed_s": 9.301311886869371,
+  "cpus": "128-129",
+  "physical_cpus": "32-33",
+  "mutex": "/mnt/raid0/llm/tmp/compute-flags/prep-locks/32-33.lock",
+  "cmd": [
+    "taskset",
+    "-c",
+    "128,129",
+    "/mnt/raid0/llm/epyc-inference-research/.venv/bin/python",
+    "-m",
+    "pytest",
+    "-q",
+    "--tb=short",
+    "--junitxml=/mnt/raid0/llm/tmp/codex-ni-research-root-paths-finish-20261031/20261031T105522.517920Z-mismatch.xml",
+    "scripts/kernel_rnd/autokernel/loop/test_serial_run.py::test_actual_cpu_keep_cross_target_then_older_history_uses_latest_source",
+    "-p",
+    "mismatch_probe"
+  ],
+  "log": "/mnt/raid0/llm/tmp/codex-ni-research-root-paths-finish-20261031/20261031T105522.517920Z-mismatch.log"
+}

@@ -985,6 +985,7 @@ between plan and apply, so this wave takes the next free block, SC65–SC68.*
     trial or invent historical carriers as a documentation action. Retain the real source
     reference, import report and observation-only grade; this does not qualify hardware gates.
     Extend the existing reader coverage for prospective GPU serving residency `cpu_affinity_observation`: preserve the original native topology, observed target task permissions, `/proc` executable locator, identity-stable interval CPU ticks, potential physical overlap, and explicit unknown/incomplete outcomes; exercise tamper/unknown controls and the planning-context canary before calling the read side wired. Keep this in the existing legacy-serving family and `ClaimTuple.grade()` ladder; no new grade or historical warrant. Producer: research `37dcdcd53f4cfbb27dd80564d5fc4bf407a0c566`.
+  - 2026-10-31 source-only partial: research `037e08ff31165f3f0861476ea989e57c15b1f223` verifies the original serving capture before append-only tripwire/GPU-profile/long-context diagnostics and seals the final body with original inputs/windows/vectors/repetitions unchanged; tripwire owns an immutable snapshot. Invalid old capture is visibly refused nonfatally; ROOT reader and shared ladder unchanged. 122 PASS / 1 existing skip, original four serial regressions PASS, five no-ROOT controls PASS. Evidence: `artifacts/ni/source-acceptance-20261031/README.md`. LIVE remains unchecked; no reload, corpus ingestion, hardware warrant or historical rewrite. [no-belief: source correctness controls; no live capture]
   - [x] **VB-AK-LEGACY-SERVING-FEEDBACK — connect original direct-serving observation rows
     to an appropriate planner read-feedback path.** ✅ 2026-09-10 — Research source
     `8360d3e1` / main `ba5abca4` installs one synchronous bridge in the existing loop.
@@ -1295,7 +1296,7 @@ are left to that still-running agent.
       the old code.
       - With `EPYC_ROOT` unset: 118 passed, 11 skipped.
       - With `EPYC_ROOT` set to root origin/main: 124 passed, 5 skipped (pyarrow).
-    - [ ] **VB-RUNNER-PATHS-3 — audit the other hard-coded root defaults in research** (filed
+    - [x] **VB-RUNNER-PATHS-3 — audit the other hard-coded root defaults in research** ✅ 2026-10-31 — research `4ede8b2fa8233984705c550c0e7fdc36a9e98433`; 272 qualified tests PASS; durable artifact `artifacts/ni/source-acceptance-20261031/README.md` (retained raw logs). [no-belief: source routing correction; no measurement or live activation] (filed
       2026-09-17).
       - **Belief write paths:** `scripts/kernel_rnd/autokernel/loop/serving_beliefs.py:148`,
         `claim.py:40` and `serial_run.py:393` default `EPYC_ROOT_REPO` to `/workspace`.
@@ -4029,3 +4030,8 @@ Unused NI Research/Orchestrator linked checkouts were retired through `scripts/s
 ## Retained reflection diagnostic source — 2026-10-31
 
 - [ ] **VB-RRR-READOUT — bind passive reflection-redundancy reports to their genuine retained input and producer identity before planning use.** Preserve ordered reflection-array bytes/hash, producer source path/hash, Python/SequenceMatcher identity, M and redundant/eligible counts. Retain original-run warrant absence and insufficient/missing histories as UNKNOWN; ordinary assistant text is not relabeled as reflection. Conclusions may enter the existing committed-conclusion observation register; any later native projection uses its existing carrier/class and shared `claim_tuple.grade()`, never a new ladder, adopted/frozen-memory cutoff or historical measurement backfill. A genuine retained-input readout and planning-context canary are required before calling this source wired. Producer source is prepared privately; no usable sequence was found in the inspected canonical trace/episodic stores. [no-belief: prospective source-wiring task]
+
+
+## REPL native trace source custody — 2026-10-31
+
+- [ ] **VB-UFH12-REPL-TRACE-CUSTODY — project native REPL context-search/spill-follow facts as a separate observation source.** Preserve producer commit/schema, source JSONL digest, session/query/source-content digests, timestamp, spans and trace provenance; preserve v1's unknown content custody. Discover and pin a real session's native records, verify the separately authorized original query/corpus join, and pass the planning-context canary before calling the loop wired. Opt-in producer code emits native v2 content-bound facts in source controls; no real session is captured or deployed. The existing `repl_retrieval_capture.py` explicitly accepts only `offline_recall` / `offline_speed`, so never forge these passive trace facts into its measurement rows or weaken its closed instrument boundary. Project into the shared carrier and use the existing source-class ladder / `ClaimTuple.grade()`; no new grading rule. 2.8a requires one genuine session; 2.8 separately requires >=75 real traces and the authorized frozen-rule rerun. No test fixtures count.

@@ -1,0 +1,28 @@
+{
+  "pid": 83089,
+  "birth_stat": "83089 (taskset) R 83046 83089 83089 0 -1 4194560 199 0 0 0 0 0 0 0 20 0 1 0 156809716 2867200 0 18446744073709551615 <machine-int:0x5c6eb09a4000> <machine-int:0x5c6eb09a6561> <machine-int:0x7fffca07c820> 0 0 0 0 0 0 0 0 0 17 46 0 0 0 0 0 <machine-int:0x5c6eb09a8b50> <machine-int:0x5c6eb09a9010> <machine-int:0x5c6ec0490000> <machine-int:0x7fffca07d4b5> <machine-int:0x7fffca07d703> <machine-int:0x7fffca07d703> <machine-int:0x7fffca07dfe7> 0\n",
+  "pid_absent_after_wait": true,
+  "rc": 0,
+  "samples": 304,
+  "peak_tree_rss_bytes": 86732800,
+  "elapsed_s": 15.38839960587211,
+  "cpus": "128-129",
+  "physical_cpus": "32-33",
+  "mutex": "/mnt/raid0/llm/tmp/compute-flags/prep-locks/32-33.lock",
+  "cmd": [
+    "taskset",
+    "-c",
+    "128,129",
+    "/mnt/raid0/llm/epyc-inference-research/.venv/bin/python",
+    "-m",
+    "pytest",
+    "-q",
+    "--tb=short",
+    "--junitxml=/mnt/raid0/llm/tmp/codex-ni-serving-capture-tripwire-fix-20261031/20261031T112023.784968Z-focused.xml",
+    "scripts/kernel_rnd/autokernel/loop/test_serving_beliefs.py",
+    "scripts/kernel_rnd/autokernel/loop/test_same_code_tripwire.py",
+    "scripts/kernel_rnd/autokernel/loop/test_longctx.py::test_surface_compare_calibrates_the_target_floor_once_then_gates",
+    "scripts/kernel_rnd/autokernel/loop/test_existing_gpu_serving_run.py::test_existing_gpu_pool_uses_selected_requests_and_original_keep_owners"
+  ],
+  "log": "/mnt/raid0/llm/tmp/codex-ni-serving-capture-tripwire-fix-20261031/20261031T112023.784968Z-focused.log"
+}

@@ -1,0 +1,4 @@
+{"ts":"2026-10-31T11:44:07+00:00","session":"ses_20261031_114407_359982","level":"INFO","cat":"SESSION_START","msg":"REPL-EMB-2.8a reviewed source continuation publication","details":"new_session=ses_20261031_114407_359982"}
+{"ts":"2026-10-31T11:44:07+00:00","session":"ses_20261031_114407_359982","level":"INFO","cat":"TASK_START","msg":"Publish reviewed content-bound spill capture source","details":"MAIN actual diff approved; native controls only; real-session acceptance remains open"}
+{"ts":"2026-10-31T11:44:07+00:00","session":"ses_20261031_114407_359982","level":"INFO","cat":"TASK_END","msg":"Publish reviewed content-bound spill capture source","details":"outcome=success"}
+{"ts":"2026-10-31T11:44:07+00:00","session":"ses_20261031_114407_359982","level":"INFO","cat":"SESSION_END","msg":"Session complete","details":""}

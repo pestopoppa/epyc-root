@@ -1,0 +1,55 @@
+============================= test session starts ==============================
+platform linux -- Python 3.11.17, pytest-9.0.3, pluggy-1.6.0
+rootdir: /mnt/raid0/llm/worktrees/mains/codex-ni-orchestrator
+configfile: pyproject.toml
+plugins: asyncio-1.3.0, timeout-2.4.0, langsmith-0.7.30, cov-7.1.0, xdist-3.8.0, hypothesis-6.151.13, anyio-4.13.0
+asyncio: mode=Mode.AUTO, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collected 19818 items / 6 skipped
+
+tests/unit/test_accepted_warrant_telemetry.py ....                       [  0%]
+tests/unit/test_action_outcome_scorer.py ...............                 [  0%]
+tests/unit/test_active_model_path_preflight.py ...................       [  0%]
+tests/unit/test_admission.py ...............                             [  0%]
+tests/unit/test_admit_set.py ...............                             [  0%]
+tests/unit/test_affinity_preflight.py ......                             [  0%]
+tests/unit/test_affinity_preflight_cell_manifest.py .................... [  0%]
+.....                                                                    [  0%]
+tests/unit/test_allowed_callers.py ..                                    [  0%]
+tests/unit/test_analyze_routing_policy.py ..                             [  0%]
+tests/unit/test_anomaly_signals.py ..................................... [  0%]
+........................................................................ [  1%]
+......                                                                   [  1%]
+tests/unit/test_answer_equivalence_review.py .......                     [  1%]
+tests/unit/test_answer_equivalence_targets.py ....                       [  1%]
+tests/unit/test_answer_resolution.py ................................... [  1%]
+....................                                                     [  1%]
+tests/unit/test_answer_scoring_drift.py ..................               [  1%]
+tests/unit/test_answer_without_generation.py ..........                  [  1%]
+tests/unit/test_anthropic_backend.py ............ss                      [  1%]
+tests/unit/test_ap3_prewarm_registry_contract.py ...                     [  1%]
+tests/unit/test_ap53_rejected_mutation_ledger.py .............           [  1%]
+tests/unit/test_ap54_eval_knowledge_fence.py ........................... [  1%]
+.......F
+
+=================================== FAILURES ===================================
+_____________ test_chat_route_arms_echoes_and_clears[True-active] ______________
+tests/unit/test_ap54_eval_knowledge_fence.py:386: in test_chat_route_arms_echoes_and_clears
+    response = await chat(request, _FakeHttpRequest(), MagicMock())
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/api/routes/chat.py:240: in chat
+    request = _request_with_source_header(request, http_request)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/api/routes/chat.py:218: in _request_with_source_header
+    source = normalize_source(http_request.headers.get("x-request-source"))
+                              ^^^^^^^^^^^^^^^^^^^^
+E   AttributeError: '_FakeHttpRequest' object has no attribute 'headers'
+=============================== warnings summary ===============================
+../../../epyc-orchestrator/.venv/lib/python3.11/site-packages/opentelemetry/util/_importlib_metadata.py:32
+  /mnt/raid0/llm/epyc-orchestrator/.venv/lib/python3.11/site-packages/opentelemetry/util/_importlib_metadata.py:32: DeprecationWarning: SelectableGroups dict interface is deprecated. Use select.
+    return EntryPoints(ep for group_eps in eps.values() for ep in group_eps)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/unit/test_ap54_eval_knowledge_fence.py::test_chat_route_arms_echoes_and_clears[True-active]
+!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!!
+============= 1 failed, 374 passed, 8 skipped, 1 warning in 35.99s =============

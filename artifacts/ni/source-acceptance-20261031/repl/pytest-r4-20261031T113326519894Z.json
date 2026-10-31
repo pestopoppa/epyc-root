@@ -1,0 +1,23 @@
+{
+  "command": [
+    "/mnt/raid0/llm/epyc-orchestrator/.venv/bin/python",
+    "-m",
+    "pytest",
+    "-q",
+    "--confcutdir=tests/unit",
+    "tests/unit/test_repl_trace_capture.py",
+    "tests/unit/test_exploration_core.py",
+    "tests/unit/test_repl_file_exploration.py",
+    "tests/unit/test_repl_spill_output.py",
+    "tests/unit/test_repl_emb_eval.py"
+  ],
+  "pair": "34-35",
+  "pid": 222103,
+  "birth_ticks": "156887975",
+  "exit_code": 1,
+  "peak_sampled_rss_bytes": 158543872,
+  "elapsed_s": 10.513092994689941,
+  "absent": true,
+  "termination": null,
+  "log": "/mnt/raid0/llm/tmp/codex-ni-repl-trace-finish-20261031/pytest-r4-20261031T113326519894Z.log"
+}

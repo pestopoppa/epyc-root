@@ -1,0 +1,36 @@
+{
+  "checked_utc": "2026-10-31T11:00:39.655994+00:00",
+  "validator_source_sha256": "7ddfaa6b65de45a37d5f90bb9a6d186a071756977fac91d71aced55c053cd30e",
+  "grants": [
+    {
+      "id": "codex3-cs22-a1-native-long-v2-cpu-20261030",
+      "grant": "regions=72-95 start=2026-10-31T08:03Z end=2026-10-31T17:33Z\n",
+      "sha256": "df58fe70dcef0011e2545db5f6877e076883ef226646f843d35df70dcde291e9",
+      "derived_class": "block-correctness",
+      "validator_rc": 0
+    },
+    {
+      "id": "codex3-pareval120-k20-gen-20261031",
+      "grant": "regions=0-23 start=2026-10-31T08:25Z end=2026-10-31T12:25Z\n",
+      "sha256": "34698a40d8bc3ec71af61a3345ad6da801465a2cdbcceefca6436b34bef706a1",
+      "derived_class": "block-timing-pairable",
+      "validator_rc": 0
+    },
+    {
+      "id": "yarn-oolong-s2-host256-eligible26-v32-20261031",
+      "grant": "regions=24-47 start=2026-10-31T08:18Z end=2026-10-31T20:18Z\n",
+      "sha256": "775524f8b3bd5bd4100d3a832664c8a5afc508276219c4bf87eebfa1d5376a9e",
+      "derived_class": "block-correctness",
+      "validator_rc": 0
+    },
+    {
+      "id": "yarn-oolong-s3-host256-eligible27-v30-20261031",
+      "grant": "regions=48-71 start=2026-10-31T08:03Z end=2026-10-31T20:03Z\n",
+      "sha256": "31bc882796e2d379a26b06b283c9a4c99caeca8ae36aece8a366d0d9f84e211a",
+      "derived_class": "block-correctness",
+      "validator_rc": 0
+    }
+  ],
+  "admission": "physical34-35 mutex; SMT130-131 alongside q1 block-correctness; q0 timing is disjoint; GPU184-191 disjoint; max8GiB900s OMP1",
+  "scope": "model-free native pytest fixtures and local verification; no inference or live reload"
+}

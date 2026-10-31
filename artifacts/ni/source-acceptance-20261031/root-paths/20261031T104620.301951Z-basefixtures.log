@@ -1,0 +1,642 @@
+........................................................................ [ 30%]
+.............................FF......................................... [ 61%]
+.....................................FFFFFFFF.FFFFFFFF..FFFFFF...F..F.FF [ 91%]
+FFFFF.F.FF.F........                                                     [100%]
+=================================== FAILURES ===================================
+_____ OP2QuietWindowPrepTests.test_static_execution_output_dir_is_explicit _____
+scripts/benchmark/test_op2_quiet_window_prep.py:158: in test_static_execution_output_dir_is_explicit
+    args = op2.parse_args(
+scripts/benchmark/op2_quiet_window_prep.py:630: in parse_args
+    root = (belief_capture.root_checkout({"EPYC_ROOT": args.root_repo})
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+scripts/benchmark/belief_capture.py:46: in root_checkout
+    raise CaptureUnavailable(f"{ENV_VAR}={raw} has no {ADAPTERS_REL} (resolved {root})")
+E   belief_capture.CaptureUnavailable: EPYC_ROOT=/tmp/tmp7lhwly9e has no scripts/vidya/adapters (resolved /tmp/tmp7lhwly9e)
+_ OP2QuietWindowPrepTests.test_write_bundle_is_no_inference_and_records_measurement_status _
+scripts/benchmark/test_op2_quiet_window_prep.py:67: in test_write_bundle_is_no_inference_and_records_measurement_status
+    args = op2.parse_args(
+scripts/benchmark/op2_quiet_window_prep.py:630: in parse_args
+    root = (belief_capture.root_checkout({"EPYC_ROOT": args.root_repo})
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+scripts/benchmark/belief_capture.py:46: in root_checkout
+    raise CaptureUnavailable(f"{ENV_VAR}={raw} has no {ADAPTERS_REL} (resolved {root})")
+E   belief_capture.CaptureUnavailable: EPYC_ROOT=/tmp/tmp051li9t0 has no scripts/vidya/adapters (resolved /tmp/tmp051li9t0)
+_ test_stale_ledger_ingested_then_ready_calls_planner_and_receipt_names_the_state _
+scripts/kernel_rnd/autokernel/loop/belief_context.py:412: in prepare
+    done = _child(config, args, timeout_s=config.reader_timeout_s, runner=runner)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+scripts/kernel_rnd/autokernel/loop/belief_context.py:317: in _child
+    argv = [config.python, str(config.reader()), *args]
+                               ^^^^^^^^^^^^^^^
+scripts/kernel_rnd/autokernel/loop/belief_context.py:198: in reader
+    return root_repo(self.root) / READER_RELPATH
+           ^^^^^^^^^^^^^^^^^^^^
+scripts/kernel_rnd/autokernel/loop/belief_context.py:119: in root_repo
+    return resolve_root_repo(root)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+scripts/kernel_rnd/autokernel/loop/belief_context.py:115: in resolve_root_repo
+    return root_checkout(selected_env)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+scripts/benchmark/belief_capture.py:46: in root_checkout
+    raise CaptureUnavailable(f"{ENV_VAR}={raw} has no {ADAPTERS_REL} (resolved {root})")
+E   scripts.benchmark.belief_capture.CaptureUnavailable: EPYC_ROOT=/tmp/pytest-of-node/pytest-10980/test_stale_ledger_ingested_the0/root has no scripts/vidya/adapters (resolved /tmp/pytest-of-node/pytest-10980/test_stale_ledger_ingested_the0/root)
+
+The above exception was the direct cause of the following exception:
+scripts/kernel_rnd/autokernel/loop/test_belief_context.py:146: in test_stale_ledger_ingested_then_ready_calls_planner_and_receipt_names_the_state
+    hyp = _planner(tmp_path, child).propose({"current_regime": GPU_27B_REGIME})
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+scripts/kernel_rnd/autokernel/loop/actors.py:813: in inner
+    return method(self, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+scripts/kernel_rnd/autokernel/loop/actors.py:3745: in propose
+    belief = self._belief_ready(context)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+scripts/kernel_rnd/autokernel/loop/actors.py:3545: in _belief_ready
+    ready = belief_context.prepare(context, self._belief_config(),
+scripts/kernel_rnd/autokernel/loop/belief_context.py:418: in prepare
+    raise consumer_failure("reader_crash", f"{type(exc).__name__}: {exc}"[:300]) from exc
+E   autokernel.loop.belief_context.BeliefContextRefused: belief context refused (reader_crash): CaptureUnavailable: EPYC_ROOT=/tmp/pytest-of-node/pytest-10980/test_stale_ledger_ingested_the0/root has no scripts/vidya/adapters (resolved /tmp/pytest-of-node/pytest-10980/test_stale_ledger_ingested_the0/root)
+----------------------------- Captured stderr call -----------------------------
+BELIEF LEDGER ALARM UNDELIVERABLE (reader_crash): EPYC_ROOT=/tmp/pytest-of-node/pytest-10980/test_stale_ledger_ingested_the0/root has no scripts/vidya/adapters (resolved /tmp/pytest-of-node/pytest-10980/test_stale_ledger_ingested_the0/root)
+actor belief context: REFUSED (reader_crash: CaptureUnavailable: EPYC_ROOT=/tmp/pytest-of-node/pytest-10980/test_stale_ledger_ingested_the0/root has no scripts/vidya/adapters (resolved /tmp/pytest-of-node/pytest-10980/test_stale_ledger_ingested_); no planner call, degraded mode
+____ test_an_inapplicable_target_is_still_a_plan_with_verified_ledger_state ____
+scripts/kernel_rnd/autokernel/loop/belief_context.py:412: in prepare
+    done = _child(config, args, timeout_s=config.reader_timeout_s, runner=runner)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+scripts/kernel_rnd/autokernel/loop/belief_context.py:317: in _child
+    argv = [config.python, str(config.reader()), *args]
+                               ^^^^^^^^^^^^^^^
+scripts/kernel_rnd/autokernel/loop/belief_context.py:198: in reader
+    return root_repo(self.root) / READER_RELPATH
+           ^^^^^^^^^^^^^^^^^^^^
+scripts/kernel_rnd/autokernel/loop/belief_context.py:119: in root_repo
+    return resolve_root_repo(root)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+scripts/kernel_rnd/autokernel/loop/belief_context.py:115: in resolve_root_repo
+    return root_checkout(selected_env)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+scripts/benchmark/belief_capture.py:46: in root_checkout
+    raise CaptureUnavailable(f"{ENV_VAR}={raw} has no {ADAPTERS_REL} (resolved {root})")
+E   scripts.benchmark.belief_capture.CaptureUnavailable: EPYC_ROOT=/tmp/pytest-of-node/pytest-10980/test_an_inapplicable_target_is0/root has no scripts/vidya/adapters (resolved /tmp/pytest-of-node/pytest-10980/test_an_inapplicable_target_is0/root)
+
+The above exception was the direct cause of the following exception:
+scripts/kernel_rnd/autokernel/loop/test_belief_context.py:177: in test_an_inapplicable_target_is_still_a_plan_with_verified_ledger_state
+    out = _planner(tmp_path, Child(belief_ready_answer())).propose(
+scripts/kernel_rnd/autokernel/loop/actors.py:813: in inner
+    return method(self, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+scripts/kernel_rnd/autokernel/loop/actors.py:3745: in propose
+    belief = self._belief_ready(context)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+scripts/kernel_rnd/autokernel/loop/actors.py:3545: in _belief_ready
+    ready = belief_context.prepare(context, self._belief_config(),
+scripts/kernel_rnd/autokernel/loop/belief_context.py:418: in prepare
+    raise consumer_failure("reader_crash", f"{type(exc).__name__}: {exc}"[:300]) from exc
+E   autokernel.loop.belief_context.BeliefContextRefused: belief context refused (reader_crash): CaptureUnavailable: EPYC_ROOT=/tmp/pytest-of-node/pytest-10980/test_an_inapplicable_target_is0/root has no scripts/vidya/adapters (resolved /tmp/pytest-of-node/pytest-10980/test_an_inapplicable_target_is0/root)
+----------------------------- Captured stderr call -----------------------------
+BELIEF LEDGER ALARM UNDELIVERABLE (reader_crash): EPYC_ROOT=/tmp/pytest-of-node/pytest-10980/test_an_inapplicable_target_is0/root has no scripts/vidya/adapters (resolved /tmp/pytest-of-node/pytest-10980/test_an_inapplicable_target_is0/root)
+actor belief context: REFUSED (reader_crash: CaptureUnavailable: EPYC_ROOT=/tmp/pytest-of-node/pytest-10980/test_an_inapplicable_target_is0/root has no scripts/vidya/adapters (resolved /tmp/pytest-of-node/pytest-10980/test_an_inapplicable_target); no planner call, degraded mode
+_______________ test_a_failed_call_still_leaves_an_error_receipt _______________
+scripts/kernel_rnd/autokernel/loop/belief_context.py:412: in prepare
+    done = _child(config, args, timeout_s=config.reader_timeout_s, runner=runner)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+scripts/kernel_rnd/autokernel/loop/belief_context.py:317: in _child
+    argv = [config.python, str(config.reader()), *args]
+                               ^^^^^^^^^^^^^^^
+scripts/kernel_rnd/autokernel/loop/belief_context.py:198: in reader
+    return root_repo(self.root) / READER_RELPATH
+           ^^^^^^^^^^^^^^^^^^^^
+scripts/kernel_rnd/autokernel/loop/belief_context.py:119: in root_repo
+    return resolve_root_repo(root)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+scripts/kernel_rnd/autokernel/loop/belief_context.py:115: in resolve_root_repo
+    return root_checkout(selected_env)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+scripts/benchmark/belief_capture.py:46: in root_checkout
+    raise CaptureUnavailable(f"{ENV_VAR}={raw} has no {ADAPTERS_REL} (resolved {root})")
+E   scripts.benchmark.belief_capture.CaptureUnavailable: EPYC_ROOT=/tmp/pytest-of-node/pytest-10980/test_a_failed_call_still_leave0/root has no scripts/vidya/adapters (resolved /tmp/pytest-of-node/pytest-10980/test_a_failed_call_still_leave0/root)
+
+The above exception was the direct cause of the following exception:
+scripts/kernel_rnd/autokernel/loop/test_belief_context.py:190: in test_a_failed_call_still_leaves_an_error_receipt
+    _planner(tmp_path, Child(belief_ready_answer())).propose(
+scripts/kernel_rnd/autokernel/loop/actors.py:813: in inner
+    return method(self, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+scripts/kernel_rnd/autokernel/loop/actors.py:3745: in propose
+    belief = self._belief_ready(context)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+scripts/kernel_rnd/autokernel/loop/actors.py:3545: in _belief_ready
+    ready = belief_context.prepare(context, self._belief_config(),
+scripts/kernel_rnd/autokernel/loop/belief_context.py:418: in prepare
+    raise consumer_failure("reader_crash", f"{type(exc).__name__}: {exc}"[:300]) from exc
+E   autokernel.loop.belief_context.BeliefContextRefused: belief context refused (reader_crash): CaptureUnavailable: EPYC_ROOT=/tmp/pytest-of-node/pytest-10980/test_a_failed_call_still_leave0/root has no scripts/vidya/adapters (resolved /tmp/pytest-of-node/pytest-10980/test_a_failed_call_still_leave0/root)
+----------------------------- Captured stderr call -----------------------------
+BELIEF LEDGER ALARM UNDELIVERABLE (reader_crash): EPYC_ROOT=/tmp/pytest-of-node/pytest-10980/test_a_failed_call_still_leave0/root has no scripts/vidya/adapters (resolved /tmp/pytest-of-node/pytest-10980/test_a_failed_call_still_leave0/root)
+actor belief context: REFUSED (reader_crash: CaptureUnavailable: EPYC_ROOT=/tmp/pytest-of-node/pytest-10980/test_a_failed_call_still_leave0/root has no scripts/vidya/adapters (resolved /tmp/pytest-of-node/pytest-10980/test_a_failed_call_still_le); no planner call, degraded mode
+_ test_refused_chain_broken_never_calls_the_planner_and_leaves_a_refusal_receipt _
+scripts/kernel_rnd/autokernel/loop/test_belief_context.py:208: in test_refused_chain_broken_never_calls_the_planner_and_leaves_a_refusal_receipt
+    assert (refused.reason, refused.last_known_good) == ("chain_broken", LAST_KNOWN_GOOD)
+E   AssertionError: assert ('reader_crash', None) == ('chain_broke...11111111111'})
+E     
+E     At index 0 diff: 'reader_crash' != 'chain_broken'
+E     Use -v to get more diff
+----------------------------- Captured stderr call -----------------------------
+BELIEF LEDGER ALARM UNDELIVERABLE (reader_crash): EPYC_ROOT=/tmp/pytest-of-node/pytest-10980/test_refused_chain_broken_neve0/root has no scripts/vidya/adapters (resolved /tmp/pytest-of-node/pytest-10980/test_refused_chain_broken_neve0/root)
+actor belief context: REFUSED (reader_crash: CaptureUnavailable: EPYC_ROOT=/tmp/pytest-of-node/pytest-10980/test_refused_chain_broken_neve0/root has no scripts/vidya/adapters (resolved /tmp/pytest-of-node/pytest-10980/test_refused_chain_broken_n); no planner call, degraded mode
+_ test_timeout_crash_or_garbage_refuses_and_raises_the_alarm[failure0-reader_timeout] _
+scripts/kernel_rnd/autokernel/loop/test_belief_context.py:234: in test_timeout_crash_or_garbage_refuses_and_raises_the_alarm
+    assert run.call_count == 0 and caught.value.reason == reason
+E   AssertionError: assert (0 == 0 and 'reader_crash' == 'reader_timeout'
+E    +  where 0 = <MagicMock name='_run_agent' id='<machine-int:0x720a9bd75160>'>.call_count
+E     
+E     - reader_timeout
+E     + reader_crash)
+----------------------------- Captured stderr call -----------------------------
+BELIEF LEDGER ALARM UNDELIVERABLE (reader_crash): EPYC_ROOT=/tmp/pytest-of-node/pytest-10980/test_timeout_crash_or_garbage_0/root has no scripts/vidya/adapters (resolved /tmp/pytest-of-node/pytest-10980/test_timeout_crash_or_garbage_0/root)
+actor belief context: REFUSED (reader_crash: CaptureUnavailable: EPYC_ROOT=/tmp/pytest-of-node/pytest-10980/test_timeout_crash_or_garbage_0/root has no scripts/vidya/adapters (resolved /tmp/pytest-of-node/pytest-10980/test_timeout_crash_or_garba); no planner call, degraded mode
+_ test_timeout_crash_or_garbage_refuses_and_raises_the_alarm[failure1-reader_crash] _
+scripts/kernel_rnd/autokernel/loop/test_belief_context.py:235: in test_timeout_crash_or_garbage_refuses_and_raises_the_alarm
+    assert child.commands() == ["prepare", "alarm"]
+E   AssertionError: assert [] == ['prepare', 'alarm']
+E     
+E     Right contains 2 more items, first extra item: 'prepare'
+E     Use -v to get more diff
+----------------------------- Captured stderr call -----------------------------
+BELIEF LEDGER ALARM UNDELIVERABLE (reader_crash): EPYC_ROOT=/tmp/pytest-of-node/pytest-10980/test_timeout_crash_or_garbage_1/root has no scripts/vidya/adapters (resolved /tmp/pytest-of-node/pytest-10980/test_timeout_crash_or_garbage_1/root)
+actor belief context: REFUSED (reader_crash: CaptureUnavailable: EPYC_ROOT=/tmp/pytest-of-node/pytest-10980/test_timeout_crash_or_garbage_1/root has no scripts/vidya/adapters (resolved /tmp/pytest-of-node/pytest-10980/test_timeout_crash_or_garba); no planner call, degraded mode
+_ test_timeout_crash_or_garbage_refuses_and_raises_the_alarm[Traceback (most recent call last):\n  boom-reader_crash] _
+scripts/kernel_rnd/autokernel/loop/test_belief_context.py:235: in test_timeout_crash_or_garbage_refuses_and_raises_the_alarm
+    assert child.commands() == ["prepare", "alarm"]
+E   AssertionError: assert [] == ['prepare', 'alarm']
+E     
+E     Right contains 2 more items, first extra item: 'prepare'
+E     Use -v to get more diff
+----------------------------- Captured stderr call -----------------------------
+BELIEF LEDGER ALARM UNDELIVERABLE (reader_crash): EPYC_ROOT=/tmp/pytest-of-node/pytest-10980/test_timeout_crash_or_garbage_2/root has no scripts/vidya/adapters (resolved /tmp/pytest-of-node/pytest-10980/test_timeout_crash_or_garbage_2/root)
+actor belief context: REFUSED (reader_crash: CaptureUnavailable: EPYC_ROOT=/tmp/pytest-of-node/pytest-10980/test_timeout_crash_or_garbage_2/root has no scripts/vidya/adapters (resolved /tmp/pytest-of-node/pytest-10980/test_timeout_crash_or_garba); no planner call, degraded mode
+__ test_timeout_crash_or_garbage_refuses_and_raises_the_alarm[-reader_crash] ___
+scripts/kernel_rnd/autokernel/loop/test_belief_context.py:235: in test_timeout_crash_or_garbage_refuses_and_raises_the_alarm
+    assert child.commands() == ["prepare", "alarm"]
+E   AssertionError: assert [] == ['prepare', 'alarm']
+E     
+E     Right contains 2 more items, first extra item: 'prepare'
+E     Use -v to get more diff
+----------------------------- Captured stderr call -----------------------------
+BELIEF LEDGER ALARM UNDELIVERABLE (reader_crash): EPYC_ROOT=/tmp/pytest-of-node/pytest-10980/test_timeout_crash_or_garbage_3/root has no scripts/vidya/adapters (resolved /tmp/pytest-of-node/pytest-10980/test_timeout_crash_or_garbage_3/root)
+actor belief context: REFUSED (reader_crash: CaptureUnavailable: EPYC_ROOT=/tmp/pytest-of-node/pytest-10980/test_timeout_crash_or_garbage_3/root has no scripts/vidya/adapters (resolved /tmp/pytest-of-node/pytest-10980/test_timeout_crash_or_garba); no planner call, degraded mode
+___ test_a_forged_ready_answer_is_refused_before_any_planner_call[<lambda>0] ___
+scripts/kernel_rnd/autokernel/loop/test_belief_context.py:277: in test_a_forged_ready_answer_is_refused_before_any_planner_call
+    assert run.call_count == 0 and caught.value.reason == "invalid_answer"
+E   AssertionError: assert (0 == 0 and 'reader_crash' == 'invalid_answer'
+E    +  where 0 = <MagicMock name='_run_agent' id='<machine-int:0x720a9bd75010>'>.call_count
+E     
+E     - invalid_answer
+E     + reader_crash)
+----------------------------- Captured stderr call -----------------------------
+BELIEF LEDGER ALARM UNDELIVERABLE (reader_crash): EPYC_ROOT=/tmp/pytest-of-node/pytest-10980/test_a_forged_ready_answer_is_0/root has no scripts/vidya/adapters (resolved /tmp/pytest-of-node/pytest-10980/test_a_forged_ready_answer_is_0/root)
+actor belief context: REFUSED (reader_crash: CaptureUnavailable: EPYC_ROOT=/tmp/pytest-of-node/pytest-10980/test_a_forged_ready_answer_is_0/root has no scripts/vidya/adapters (resolved /tmp/pytest-of-node/pytest-10980/test_a_forged_ready_answer_); no planner call, degraded mode
+___ test_a_forged_ready_answer_is_refused_before_any_planner_call[<lambda>1] ___
+scripts/kernel_rnd/autokernel/loop/test_belief_context.py:277: in test_a_forged_ready_answer_is_refused_before_any_planner_call
+    assert run.call_count == 0 and caught.value.reason == "invalid_answer"
+E   AssertionError: assert (0 == 0 and 'reader_crash' == 'invalid_answer'
+E    +  where 0 = <MagicMock name='_run_agent' id='<machine-int:0x720a9bd757f0>'>.call_count
+E     
+E     - invalid_answer
+E     + reader_crash)
+----------------------------- Captured stderr call -----------------------------
+BELIEF LEDGER ALARM UNDELIVERABLE (reader_crash): EPYC_ROOT=/tmp/pytest-of-node/pytest-10980/test_a_forged_ready_answer_is_1/root has no scripts/vidya/adapters (resolved /tmp/pytest-of-node/pytest-10980/test_a_forged_ready_answer_is_1/root)
+actor belief context: REFUSED (reader_crash: CaptureUnavailable: EPYC_ROOT=/tmp/pytest-of-node/pytest-10980/test_a_forged_ready_answer_is_1/root has no scripts/vidya/adapters (resolved /tmp/pytest-of-node/pytest-10980/test_a_forged_ready_answer_); no planner call, degraded mode
+___ test_a_forged_ready_answer_is_refused_before_any_planner_call[<lambda>2] ___
+scripts/kernel_rnd/autokernel/loop/test_belief_context.py:277: in test_a_forged_ready_answer_is_refused_before_any_planner_call
+    assert run.call_count == 0 and caught.value.reason == "invalid_answer"
+E   AssertionError: assert (0 == 0 and 'reader_crash' == 'invalid_answer'
+E    +  where 0 = <MagicMock name='_run_agent' id='<machine-int:0x720a9bd75fd0>'>.call_count
+E     
+E     - invalid_answer
+E     + reader_crash)
+----------------------------- Captured stderr call -----------------------------
+BELIEF LEDGER ALARM UNDELIVERABLE (reader_crash): EPYC_ROOT=/tmp/pytest-of-node/pytest-10980/test_a_forged_ready_answer_is_2/root has no scripts/vidya/adapters (resolved /tmp/pytest-of-node/pytest-10980/test_a_forged_ready_answer_is_2/root)
+actor belief context: REFUSED (reader_crash: CaptureUnavailable: EPYC_ROOT=/tmp/pytest-of-node/pytest-10980/test_a_forged_ready_answer_is_2/root has no scripts/vidya/adapters (resolved /tmp/pytest-of-node/pytest-10980/test_a_forged_ready_answer_); no planner call, degraded mode
+___ test_a_forged_ready_answer_is_refused_before_any_planner_call[<lambda>3] ___
+scripts/kernel_rnd/autokernel/loop/test_belief_context.py:277: in test_a_forged_ready_answer_is_refused_before_any_planner_call
+    assert run.call_count == 0 and caught.value.reason == "invalid_answer"
+E   AssertionError: assert (0 == 0 and 'reader_crash' == 'invalid_answer'
+E    +  where 0 = <MagicMock name='_run_agent' id='<machine-int:0x720a9bd76660>'>.call_count
+E     
+E     - invalid_answer
+E     + reader_crash)
+----------------------------- Captured stderr call -----------------------------
+BELIEF LEDGER ALARM UNDELIVERABLE (reader_crash): EPYC_ROOT=/tmp/pytest-of-node/pytest-10980/test_a_forged_ready_answer_is_3/root has no scripts/vidya/adapters (resolved /tmp/pytest-of-node/pytest-10980/test_a_forged_ready_answer_is_3/root)
+actor belief context: REFUSED (reader_crash: CaptureUnavailable: EPYC_ROOT=/tmp/pytest-of-node/pytest-10980/test_a_forged_ready_answer_is_3/root has no scripts/vidya/adapters (resolved /tmp/pytest-of-node/pytest-10980/test_a_forged_ready_answer_); no planner call, degraded mode
+___ test_a_forged_ready_answer_is_refused_before_any_planner_call[<lambda>4] ___
+scripts/kernel_rnd/autokernel/loop/test_belief_context.py:277: in test_a_forged_ready_answer_is_refused_before_any_planner_call
+    assert run.call_count == 0 and caught.value.reason == "invalid_answer"
+E   AssertionError: assert (0 == 0 and 'reader_crash' == 'invalid_answer'
+E    +  where 0 = <MagicMock name='_run_agent' id='<machine-int:0x720a9bd76900>'>.call_count
+E     
+E     - invalid_answer
+E     + reader_crash)
+----------------------------- Captured stderr call -----------------------------
+BELIEF LEDGER ALARM UNDELIVERABLE (reader_crash): EPYC_ROOT=/tmp/pytest-of-node/pytest-10980/test_a_forged_ready_answer_is_4/root has no scripts/vidya/adapters (resolved /tmp/pytest-of-node/pytest-10980/test_a_forged_ready_answer_is_4/root)
+actor belief context: REFUSED (reader_crash: CaptureUnavailable: EPYC_ROOT=/tmp/pytest-of-node/pytest-10980/test_a_forged_ready_answer_is_4/root has no scripts/vidya/adapters (resolved /tmp/pytest-of-node/pytest-10980/test_a_forged_ready_answer_); no planner call, degraded mode
+___ test_a_forged_ready_answer_is_refused_before_any_planner_call[<lambda>5] ___
+scripts/kernel_rnd/autokernel/loop/test_belief_context.py:277: in test_a_forged_ready_answer_is_refused_before_any_planner_call
+    assert run.call_count == 0 and caught.value.reason == "invalid_answer"
+E   AssertionError: assert (0 == 0 and 'reader_crash' == 'invalid_answer'
+E    +  where 0 = <MagicMock name='_run_agent' id='<machine-int:0x720a9bd76ba0>'>.call_count
+E     
+E     - invalid_answer
+E     + reader_crash)
+----------------------------- Captured stderr call -----------------------------
+BELIEF LEDGER ALARM UNDELIVERABLE (reader_crash): EPYC_ROOT=/tmp/pytest-of-node/pytest-10980/test_a_forged_ready_answer_is_5/root has no scripts/vidya/adapters (resolved /tmp/pytest-of-node/pytest-10980/test_a_forged_ready_answer_is_5/root)
+actor belief context: REFUSED (reader_crash: CaptureUnavailable: EPYC_ROOT=/tmp/pytest-of-node/pytest-10980/test_a_forged_ready_answer_is_5/root has no scripts/vidya/adapters (resolved /tmp/pytest-of-node/pytest-10980/test_a_forged_ready_answer_); no planner call, degraded mode
+__________ test_a_ready_answer_with_a_failing_exit_code_is_not_ready ___________
+scripts/kernel_rnd/autokernel/loop/test_belief_context.py:285: in test_a_ready_answer_with_a_failing_exit_code_is_not_ready
+    assert caught.value.reason == "invalid_answer"
+E   AssertionError: assert 'reader_crash' == 'invalid_answer'
+E     
+E     - invalid_answer
+E     + reader_crash
+----------------------------- Captured stderr call -----------------------------
+BELIEF LEDGER ALARM UNDELIVERABLE (reader_crash): EPYC_ROOT=/tmp/pytest-of-node/pytest-10980/test_a_ready_answer_with_a_fai0/root has no scripts/vidya/adapters (resolved /tmp/pytest-of-node/pytest-10980/test_a_ready_answer_with_a_fai0/root)
+___ test_the_backend_call_itself_refuses_anything_but_a_sealed_ready_answer ____
+scripts/kernel_rnd/autokernel/loop/belief_context.py:412: in prepare
+    done = _child(config, args, timeout_s=config.reader_timeout_s, runner=runner)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+scripts/kernel_rnd/autokernel/loop/belief_context.py:317: in _child
+    argv = [config.python, str(config.reader()), *args]
+                               ^^^^^^^^^^^^^^^
+scripts/kernel_rnd/autokernel/loop/belief_context.py:198: in reader
+    return root_repo(self.root) / READER_RELPATH
+           ^^^^^^^^^^^^^^^^^^^^
+scripts/kernel_rnd/autokernel/loop/belief_context.py:119: in root_repo
+    return resolve_root_repo(root)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+scripts/kernel_rnd/autokernel/loop/belief_context.py:115: in resolve_root_repo
+    return root_checkout(selected_env)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+scripts/benchmark/belief_capture.py:46: in root_checkout
+    raise CaptureUnavailable(f"{ENV_VAR}={raw} has no {ADAPTERS_REL} (resolved {root})")
+E   scripts.benchmark.belief_capture.CaptureUnavailable: EPYC_ROOT=/tmp/pytest-of-node/pytest-10980/test_the_backend_call_itself_r0/root has no scripts/vidya/adapters (resolved /tmp/pytest-of-node/pytest-10980/test_the_backend_call_itself_r0/root)
+
+The above exception was the direct cause of the following exception:
+scripts/kernel_rnd/autokernel/loop/test_belief_context.py:297: in test_the_backend_call_itself_refuses_anything_but_a_sealed_ready_answer
+    ready = bc.prepare({"current_regime": GPU_27B_REGIME}, _config(tmp_path),
+scripts/kernel_rnd/autokernel/loop/belief_context.py:418: in prepare
+    raise consumer_failure("reader_crash", f"{type(exc).__name__}: {exc}"[:300]) from exc
+E   autokernel.loop.belief_context.BeliefContextRefused: belief context refused (reader_crash): CaptureUnavailable: EPYC_ROOT=/tmp/pytest-of-node/pytest-10980/test_the_backend_call_itself_r0/root has no scripts/vidya/adapters (resolved /tmp/pytest-of-node/pytest-10980/test_the_backend_call_itself_r0/root)
+----------------------------- Captured stderr call -----------------------------
+BELIEF LEDGER ALARM UNDELIVERABLE (reader_crash): EPYC_ROOT=/tmp/pytest-of-node/pytest-10980/test_the_backend_call_itself_r0/root has no scripts/vidya/adapters (resolved /tmp/pytest-of-node/pytest-10980/test_the_backend_call_itself_r0/root)
+___________ test_focus_symbols_reach_the_root_target_only_when_given ___________
+scripts/kernel_rnd/autokernel/loop/belief_context.py:412: in prepare
+    done = _child(config, args, timeout_s=config.reader_timeout_s, runner=runner)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+scripts/kernel_rnd/autokernel/loop/belief_context.py:317: in _child
+    argv = [config.python, str(config.reader()), *args]
+                               ^^^^^^^^^^^^^^^
+scripts/kernel_rnd/autokernel/loop/belief_context.py:198: in reader
+    return root_repo(self.root) / READER_RELPATH
+           ^^^^^^^^^^^^^^^^^^^^
+scripts/kernel_rnd/autokernel/loop/belief_context.py:119: in root_repo
+    return resolve_root_repo(root)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+scripts/kernel_rnd/autokernel/loop/belief_context.py:115: in resolve_root_repo
+    return root_checkout(selected_env)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+scripts/benchmark/belief_capture.py:46: in root_checkout
+    raise CaptureUnavailable(f"{ENV_VAR}={raw} has no {ADAPTERS_REL} (resolved {root})")
+E   scripts.benchmark.belief_capture.CaptureUnavailable: EPYC_ROOT=/tmp/pytest-of-node/pytest-10980/test_focus_symbols_reach_the_r0/root has no scripts/vidya/adapters (resolved /tmp/pytest-of-node/pytest-10980/test_focus_symbols_reach_the_r0/root)
+
+The above exception was the direct cause of the following exception:
+scripts/kernel_rnd/autokernel/loop/test_belief_context.py:338: in test_focus_symbols_reach_the_root_target_only_when_given
+    bc.prepare({"current_regime": GPU_27B_REGIME}, _config(tmp_path), runner=plain)
+scripts/kernel_rnd/autokernel/loop/belief_context.py:418: in prepare
+    raise consumer_failure("reader_crash", f"{type(exc).__name__}: {exc}"[:300]) from exc
+E   autokernel.loop.belief_context.BeliefContextRefused: belief context refused (reader_crash): CaptureUnavailable: EPYC_ROOT=/tmp/pytest-of-node/pytest-10980/test_focus_symbols_reach_the_r0/root has no scripts/vidya/adapters (resolved /tmp/pytest-of-node/pytest-10980/test_focus_symbols_reach_the_r0/root)
+----------------------------- Captured stderr call -----------------------------
+BELIEF LEDGER ALARM UNDELIVERABLE (reader_crash): EPYC_ROOT=/tmp/pytest-of-node/pytest-10980/test_focus_symbols_reach_the_r0/root has no scripts/vidya/adapters (resolved /tmp/pytest-of-node/pytest-10980/test_focus_symbols_reach_the_r0/root)
+_ test_degraded_mode_runs_an_already_planned_resume_point_reviewed_never_planned _
+scripts/kernel_rnd/autokernel/loop/test_belief_context.py:444: in test_degraded_mode_runs_an_already_planned_resume_point_reviewed_never_planned
+    assert logged["reasons"] == ["no_seeded_against_state"]
+E   AssertionError: assert ['check_seeds_failed'] == ['no_seeded_against_state']
+E     
+E     At index 0 diff: 'check_seeds_failed' != 'no_seeded_against_state'
+E     Use -v to get more diff
+_ test_degraded_mode_skips_a_resume_point_whose_premise_is_flagged_before_it_runs _
+scripts/kernel_rnd/autokernel/loop/test_belief_context.py:454: in test_degraded_mode_skips_a_resume_point_whose_premise_is_flagged_before_it_runs
+    assert critic.reviewed == ["akm-clean"] and outcome.hypothesis.mechanism_id == "akm-clean"
+E   AssertionError: assert (['akm-flagged'] == ['akm-clean']
+E     
+E     At index 0 diff: 'akm-flagged' != 'akm-clean'
+E     Use -v to get more diff)
+__ test_degraded_mode_runs_an_admissible_seed_and_skips_the_rest_with_reasons __
+scripts/kernel_rnd/autokernel/loop/test_belief_context.py:471: in test_degraded_mode_runs_an_admissible_seed_and_skips_the_rest_with_reasons
+    assert planner.proposals == 1 and critic.reviewed == ["akm-good"]    # still reviewed
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: assert (1 == 1 and [] == ['akm-good']
+E    +  where 1 = <autokernel.loop.test_belief_context._RefusingPlanner object at 0x720a9ac39950>.proposals
+E     
+E     Right contains one more item: 'akm-good'
+E     Use -v to get more diff)
+_______________ test_without_a_known_good_snapshot_no_seed_runs ________________
+scripts/kernel_rnd/autokernel/loop/test_belief_context.py:501: in test_without_a_known_good_snapshot_no_seed_runs
+    assert "no_known_good_state" in skip["reasons"]
+E   AssertionError: assert 'no_known_good_state' in ['check_seeds_failed']
+____________________ test_a_failed_seed_check_runs_nothing _____________________
+scripts/kernel_rnd/autokernel/loop/test_belief_context.py:511: in test_a_failed_seed_check_runs_nothing
+    assert skip["reasons"] == ["check_seeds_failed"] and "TimeoutExpired" in skip["check_error"]
+E   AssertionError: assert (['check_seeds_failed'] == ['check_seeds_failed']
+E     
+E     Use -v to get more diff and 'TimeoutExpired' in 'CaptureUnavailable: EPYC_ROOT=/tmp/pytest-of-node/pytest-10980/test_a_failed_seed_check_runs_0/root has no scripts/vidya/adapters (resolved /tmp/pytest-of-node/pytest-10980/test_a_failed_seed_check_runs_0/root)')
+_ test_recovery_recheck_flags_a_degraded_result_whose_premise_is_now_withdrawn _
+scripts/kernel_rnd/autokernel/loop/test_belief_context.py:548: in test_recovery_recheck_flags_a_degraded_result_whose_premise_is_now_withdrawn
+    assert degraded.next_seed({"reason": "chain_broken"})["id"] == "good"
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   TypeError: 'NoneType' object is not subscriptable
+_________________ test_metrics_row_carries_the_presented_half __________________
+scripts/kernel_rnd/autokernel/loop/belief_context.py:412: in prepare
+    done = _child(config, args, timeout_s=config.reader_timeout_s, runner=runner)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+scripts/kernel_rnd/autokernel/loop/belief_context.py:317: in _child
+    argv = [config.python, str(config.reader()), *args]
+                               ^^^^^^^^^^^^^^^
+scripts/kernel_rnd/autokernel/loop/belief_context.py:198: in reader
+    return root_repo(self.root) / READER_RELPATH
+           ^^^^^^^^^^^^^^^^^^^^
+scripts/kernel_rnd/autokernel/loop/belief_context.py:119: in root_repo
+    return resolve_root_repo(root)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+scripts/kernel_rnd/autokernel/loop/belief_context.py:115: in resolve_root_repo
+    return root_checkout(selected_env)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+scripts/benchmark/belief_capture.py:46: in root_checkout
+    raise CaptureUnavailable(f"{ENV_VAR}={raw} has no {ADAPTERS_REL} (resolved {root})")
+E   scripts.benchmark.belief_capture.CaptureUnavailable: EPYC_ROOT=/tmp/pytest-of-node/pytest-10980/test_metrics_row_carries_the_p0/root has no scripts/vidya/adapters (resolved /tmp/pytest-of-node/pytest-10980/test_metrics_row_carries_the_p0/root)
+
+The above exception was the direct cause of the following exception:
+scripts/kernel_rnd/autokernel/loop/test_belief_context.py:589: in test_metrics_row_carries_the_presented_half
+    ready = bc.prepare({"current_regime": GPU_27B_REGIME}, _config(tmp_path), runner=Child(
+scripts/kernel_rnd/autokernel/loop/belief_context.py:418: in prepare
+    raise consumer_failure("reader_crash", f"{type(exc).__name__}: {exc}"[:300]) from exc
+E   autokernel.loop.belief_context.BeliefContextRefused: belief context refused (reader_crash): CaptureUnavailable: EPYC_ROOT=/tmp/pytest-of-node/pytest-10980/test_metrics_row_carries_the_p0/root has no scripts/vidya/adapters (resolved /tmp/pytest-of-node/pytest-10980/test_metrics_row_carries_the_p0/root)
+----------------------------- Captured stderr call -----------------------------
+BELIEF LEDGER ALARM UNDELIVERABLE (reader_crash): EPYC_ROOT=/tmp/pytest-of-node/pytest-10980/test_metrics_row_carries_the_p0/root has no scripts/vidya/adapters (resolved /tmp/pytest-of-node/pytest-10980/test_metrics_row_carries_the_p0/root)
+______________ test_root_prefers_workspace_when_it_has_the_reader ______________
+scripts/kernel_rnd/autokernel/loop/test_belief_context.py:631: in test_root_prefers_workspace_when_it_has_the_reader
+    workspace, _ = _roots(tmp_path, monkeypatch, workspace_has=True, view_has=True)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+scripts/kernel_rnd/autokernel/loop/test_belief_context.py:622: in _roots
+    monkeypatch.setattr(bc, "DEFAULT_ROOT", workspace)
+E   AttributeError: <module 'autokernel.loop.belief_context' from '/mnt/raid0/llm/worktrees/mains/codex-ni-research-code/scripts/kernel_rnd/autokernel/loop/belief_context.py'> has no attribute 'DEFAULT_ROOT'
+_____ test_root_falls_back_to_the_hub_view_when_workspace_lacks_the_reader _____
+scripts/kernel_rnd/autokernel/loop/test_belief_context.py:637: in test_root_falls_back_to_the_hub_view_when_workspace_lacks_the_reader
+    _, view = _roots(tmp_path, monkeypatch, workspace_has=False, view_has=True)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+scripts/kernel_rnd/autokernel/loop/test_belief_context.py:622: in _roots
+    monkeypatch.setattr(bc, "DEFAULT_ROOT", workspace)
+E   AttributeError: <module 'autokernel.loop.belief_context' from '/mnt/raid0/llm/worktrees/mains/codex-ni-research-code/scripts/kernel_rnd/autokernel/loop/belief_context.py'> has no attribute 'DEFAULT_ROOT'
+____________ test_explicit_root_wins_over_env_and_both_are_verbatim ____________
+scripts/kernel_rnd/autokernel/loop/test_belief_context.py:644: in test_explicit_root_wins_over_env_and_both_are_verbatim
+    _roots(tmp_path, monkeypatch, workspace_has=True, view_has=True, env=tmp_path / "env-root")
+scripts/kernel_rnd/autokernel/loop/test_belief_context.py:622: in _roots
+    monkeypatch.setattr(bc, "DEFAULT_ROOT", workspace)
+E   AttributeError: <module 'autokernel.loop.belief_context' from '/mnt/raid0/llm/worktrees/mains/codex-ni-research-code/scripts/kernel_rnd/autokernel/loop/belief_context.py'> has no attribute 'DEFAULT_ROOT'
+______ test_neither_root_has_the_reader_stays_missing_refused_and_alarmed ______
+scripts/kernel_rnd/autokernel/loop/test_belief_context.py:651: in test_neither_root_has_the_reader_stays_missing_refused_and_alarmed
+    workspace, _ = _roots(tmp_path, monkeypatch, workspace_has=False, view_has=False)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+scripts/kernel_rnd/autokernel/loop/test_belief_context.py:622: in _roots
+    monkeypatch.setattr(bc, "DEFAULT_ROOT", workspace)
+E   AttributeError: <module 'autokernel.loop.belief_context' from '/mnt/raid0/llm/worktrees/mains/codex-ni-research-code/scripts/kernel_rnd/autokernel/loop/belief_context.py'> has no attribute 'DEFAULT_ROOT'
+____________________ test_serial_run_resolves_the_same_root ____________________
+scripts/kernel_rnd/autokernel/loop/test_belief_context.py:667: in test_serial_run_resolves_the_same_root
+    _, view = _roots(tmp_path, monkeypatch, workspace_has=False, view_has=True)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+scripts/kernel_rnd/autokernel/loop/test_belief_context.py:622: in _roots
+    monkeypatch.setattr(bc, "DEFAULT_ROOT", workspace)
+E   AttributeError: <module 'autokernel.loop.belief_context' from '/mnt/raid0/llm/worktrees/mains/codex-ni-research-code/scripts/kernel_rnd/autokernel/loop/belief_context.py'> has no attribute 'DEFAULT_ROOT'
+____ test_integration_real_root_child_ready_then_recheck_after_a_retraction ____
+scripts/kernel_rnd/autokernel/loop/belief_context.py:412: in prepare
+    done = _child(config, args, timeout_s=config.reader_timeout_s, runner=runner)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+scripts/kernel_rnd/autokernel/loop/belief_context.py:317: in _child
+    argv = [config.python, str(config.reader()), *args]
+                               ^^^^^^^^^^^^^^^
+scripts/kernel_rnd/autokernel/loop/belief_context.py:198: in reader
+    return root_repo(self.root) / READER_RELPATH
+           ^^^^^^^^^^^^^^^^^^^^
+scripts/kernel_rnd/autokernel/loop/belief_context.py:119: in root_repo
+    return resolve_root_repo(root)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+scripts/kernel_rnd/autokernel/loop/belief_context.py:115: in resolve_root_repo
+    return root_checkout(selected_env)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+scripts/benchmark/belief_capture.py:46: in root_checkout
+    raise CaptureUnavailable(f"{ENV_VAR}={raw} has no {ADAPTERS_REL} (resolved {root})")
+E   scripts.benchmark.belief_capture.CaptureUnavailable: EPYC_ROOT=/tmp/pytest-of-node/pytest-10980/test_integration_real_root_chi0/root has no scripts/vidya/adapters (resolved /tmp/pytest-of-node/pytest-10980/test_integration_real_root_chi0/root)
+
+The above exception was the direct cause of the following exception:
+scripts/kernel_rnd/autokernel/loop/test_belief_context.py:750: in test_integration_real_root_child_ready_then_recheck_after_a_retraction
+    hyp = planner.propose({"current_regime": GPU_27B_REGIME})
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+scripts/kernel_rnd/autokernel/loop/actors.py:813: in inner
+    return method(self, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+scripts/kernel_rnd/autokernel/loop/actors.py:3745: in propose
+    belief = self._belief_ready(context)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+scripts/kernel_rnd/autokernel/loop/actors.py:3545: in _belief_ready
+    ready = belief_context.prepare(context, self._belief_config(),
+scripts/kernel_rnd/autokernel/loop/belief_context.py:418: in prepare
+    raise consumer_failure("reader_crash", f"{type(exc).__name__}: {exc}"[:300]) from exc
+E   autokernel.loop.belief_context.BeliefContextRefused: belief context refused (reader_crash): CaptureUnavailable: EPYC_ROOT=/tmp/pytest-of-node/pytest-10980/test_integration_real_root_chi0/root has no scripts/vidya/adapters (resolved /tmp/pytest-of-node/pytest-10980/test_integration_real_root_chi0/root)
+----------------------------- Captured stderr call -----------------------------
+BELIEF LEDGER ALARM UNDELIVERABLE (reader_crash): EPYC_ROOT=/tmp/pytest-of-node/pytest-10980/test_integration_real_root_chi0/root has no scripts/vidya/adapters (resolved /tmp/pytest-of-node/pytest-10980/test_integration_real_root_chi0/root)
+actor belief context: REFUSED (reader_crash: CaptureUnavailable: EPYC_ROOT=/tmp/pytest-of-node/pytest-10980/test_integration_real_root_chi0/root has no scripts/vidya/adapters (resolved /tmp/pytest-of-node/pytest-10980/test_integration_real_root_); no planner call, degraded mode
+________ test_missing_reader_alarm_falls_back_to_the_root_alarm_channel ________
+scripts/kernel_rnd/autokernel/loop/test_belief_context.py:801: in test_missing_reader_alarm_falls_back_to_the_root_alarm_channel
+    assert fb["fallback"] is True and fb["invoked"] is True and len(calls) == 2
+           ^^^^^^^^^^^^^^
+E   KeyError: 'fallback'
+----------------------------- Captured stderr call -----------------------------
+BELIEF LEDGER ALARM UNDELIVERABLE (reader_crash): EPYC_ROOT=/tmp/pytest-of-node/pytest-10980/test_missing_reader_alarm_fall0/root has no scripts/vidya/adapters (resolved /tmp/pytest-of-node/pytest-10980/test_missing_reader_alarm_fall0/root)
+________ test_the_loop_store_is_ingested_by_the_reader_before_planning _________
+scripts/kernel_rnd/autokernel/loop/belief_context.py:412: in prepare
+    done = _child(config, args, timeout_s=config.reader_timeout_s, runner=runner)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+scripts/kernel_rnd/autokernel/loop/belief_context.py:317: in _child
+    argv = [config.python, str(config.reader()), *args]
+                               ^^^^^^^^^^^^^^^
+scripts/kernel_rnd/autokernel/loop/belief_context.py:198: in reader
+    return root_repo(self.root) / READER_RELPATH
+           ^^^^^^^^^^^^^^^^^^^^
+scripts/kernel_rnd/autokernel/loop/belief_context.py:119: in root_repo
+    return resolve_root_repo(root)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+scripts/kernel_rnd/autokernel/loop/belief_context.py:115: in resolve_root_repo
+    return root_checkout(selected_env)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+scripts/benchmark/belief_capture.py:46: in root_checkout
+    raise CaptureUnavailable(f"{ENV_VAR}={raw} has no {ADAPTERS_REL} (resolved {root})")
+E   scripts.benchmark.belief_capture.CaptureUnavailable: EPYC_ROOT=/tmp/pytest-of-node/pytest-10980/test_the_loop_store_is_ingeste0 has no scripts/vidya/adapters (resolved /tmp/pytest-of-node/pytest-10980/test_the_loop_store_is_ingeste0)
+
+The above exception was the direct cause of the following exception:
+scripts/kernel_rnd/autokernel/loop/test_belief_context.py:825: in test_the_loop_store_is_ingested_by_the_reader_before_planning
+    bc.prepare({"current_regime": GPU_27B_REGIME}, config, runner=runner)
+scripts/kernel_rnd/autokernel/loop/belief_context.py:418: in prepare
+    raise consumer_failure("reader_crash", f"{type(exc).__name__}: {exc}"[:300]) from exc
+E   autokernel.loop.belief_context.BeliefContextRefused: belief context refused (reader_crash): CaptureUnavailable: EPYC_ROOT=/tmp/pytest-of-node/pytest-10980/test_the_loop_store_is_ingeste0 has no scripts/vidya/adapters (resolved /tmp/pytest-of-node/pytest-10980/test_the_loop_store_is_ingeste0)
+----------------------------- Captured stderr call -----------------------------
+BELIEF LEDGER ALARM UNDELIVERABLE (reader_crash): EPYC_ROOT=/tmp/pytest-of-node/pytest-10980/test_the_loop_store_is_ingeste0 has no scripts/vidya/adapters (resolved /tmp/pytest-of-node/pytest-10980/test_the_loop_store_is_ingeste0)
+___ test_v2_answer_keys_are_accepted_recorded_and_host_ids_are_not_reliance ____
+scripts/kernel_rnd/autokernel/loop/belief_context.py:412: in prepare
+    done = _child(config, args, timeout_s=config.reader_timeout_s, runner=runner)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+scripts/kernel_rnd/autokernel/loop/belief_context.py:317: in _child
+    argv = [config.python, str(config.reader()), *args]
+                               ^^^^^^^^^^^^^^^
+scripts/kernel_rnd/autokernel/loop/belief_context.py:198: in reader
+    return root_repo(self.root) / READER_RELPATH
+           ^^^^^^^^^^^^^^^^^^^^
+scripts/kernel_rnd/autokernel/loop/belief_context.py:119: in root_repo
+    return resolve_root_repo(root)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+scripts/kernel_rnd/autokernel/loop/belief_context.py:115: in resolve_root_repo
+    return root_checkout(selected_env)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+scripts/benchmark/belief_capture.py:46: in root_checkout
+    raise CaptureUnavailable(f"{ENV_VAR}={raw} has no {ADAPTERS_REL} (resolved {root})")
+E   scripts.benchmark.belief_capture.CaptureUnavailable: EPYC_ROOT=/tmp/pytest-of-node/pytest-10980/test_v2_answer_keys_are_accept0/root has no scripts/vidya/adapters (resolved /tmp/pytest-of-node/pytest-10980/test_v2_answer_keys_are_accept0/root)
+
+The above exception was the direct cause of the following exception:
+scripts/kernel_rnd/autokernel/loop/test_belief_context.py:863: in test_v2_answer_keys_are_accepted_recorded_and_host_ids_are_not_reliance
+    hyp = _planner(tmp_path, Child(_v2_answer())).propose({"current_regime": DS41_CPU_REGIME})
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+scripts/kernel_rnd/autokernel/loop/actors.py:813: in inner
+    return method(self, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+scripts/kernel_rnd/autokernel/loop/actors.py:3745: in propose
+    belief = self._belief_ready(context)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+scripts/kernel_rnd/autokernel/loop/actors.py:3545: in _belief_ready
+    ready = belief_context.prepare(context, self._belief_config(),
+scripts/kernel_rnd/autokernel/loop/belief_context.py:418: in prepare
+    raise consumer_failure("reader_crash", f"{type(exc).__name__}: {exc}"[:300]) from exc
+E   autokernel.loop.belief_context.BeliefContextRefused: belief context refused (reader_crash): CaptureUnavailable: EPYC_ROOT=/tmp/pytest-of-node/pytest-10980/test_v2_answer_keys_are_accept0/root has no scripts/vidya/adapters (resolved /tmp/pytest-of-node/pytest-10980/test_v2_answer_keys_are_accept0/root)
+----------------------------- Captured stderr call -----------------------------
+BELIEF LEDGER ALARM UNDELIVERABLE (reader_crash): EPYC_ROOT=/tmp/pytest-of-node/pytest-10980/test_v2_answer_keys_are_accept0/root has no scripts/vidya/adapters (resolved /tmp/pytest-of-node/pytest-10980/test_v2_answer_keys_are_accept0/root)
+actor belief context: REFUSED (reader_crash: CaptureUnavailable: EPYC_ROOT=/tmp/pytest-of-node/pytest-10980/test_v2_answer_keys_are_accept0/root has no scripts/vidya/adapters (resolved /tmp/pytest-of-node/pytest-10980/test_v2_answer_keys_are_acc); no planner call, degraded mode
+_______________ test_an_older_answer_without_v2_keys_still_works _______________
+scripts/kernel_rnd/autokernel/loop/belief_context.py:412: in prepare
+    done = _child(config, args, timeout_s=config.reader_timeout_s, runner=runner)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+scripts/kernel_rnd/autokernel/loop/belief_context.py:317: in _child
+    argv = [config.python, str(config.reader()), *args]
+                               ^^^^^^^^^^^^^^^
+scripts/kernel_rnd/autokernel/loop/belief_context.py:198: in reader
+    return root_repo(self.root) / READER_RELPATH
+           ^^^^^^^^^^^^^^^^^^^^
+scripts/kernel_rnd/autokernel/loop/belief_context.py:119: in root_repo
+    return resolve_root_repo(root)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+scripts/kernel_rnd/autokernel/loop/belief_context.py:115: in resolve_root_repo
+    return root_checkout(selected_env)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+scripts/benchmark/belief_capture.py:46: in root_checkout
+    raise CaptureUnavailable(f"{ENV_VAR}={raw} has no {ADAPTERS_REL} (resolved {root})")
+E   scripts.benchmark.belief_capture.CaptureUnavailable: EPYC_ROOT=/tmp/pytest-of-node/pytest-10980/test_an_older_answer_without_v0/root has no scripts/vidya/adapters (resolved /tmp/pytest-of-node/pytest-10980/test_an_older_answer_without_v0/root)
+
+The above exception was the direct cause of the following exception:
+scripts/kernel_rnd/autokernel/loop/test_belief_context.py:885: in test_an_older_answer_without_v2_keys_still_works
+    hyp = _planner(tmp_path, Child(answer)).propose({"current_regime": GPU_27B_REGIME})
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+scripts/kernel_rnd/autokernel/loop/actors.py:813: in inner
+    return method(self, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+scripts/kernel_rnd/autokernel/loop/actors.py:3745: in propose
+    belief = self._belief_ready(context)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+scripts/kernel_rnd/autokernel/loop/actors.py:3545: in _belief_ready
+    ready = belief_context.prepare(context, self._belief_config(),
+scripts/kernel_rnd/autokernel/loop/belief_context.py:418: in prepare
+    raise consumer_failure("reader_crash", f"{type(exc).__name__}: {exc}"[:300]) from exc
+E   autokernel.loop.belief_context.BeliefContextRefused: belief context refused (reader_crash): CaptureUnavailable: EPYC_ROOT=/tmp/pytest-of-node/pytest-10980/test_an_older_answer_without_v0/root has no scripts/vidya/adapters (resolved /tmp/pytest-of-node/pytest-10980/test_an_older_answer_without_v0/root)
+----------------------------- Captured stderr call -----------------------------
+BELIEF LEDGER ALARM UNDELIVERABLE (reader_crash): EPYC_ROOT=/tmp/pytest-of-node/pytest-10980/test_an_older_answer_without_v0/root has no scripts/vidya/adapters (resolved /tmp/pytest-of-node/pytest-10980/test_an_older_answer_without_v0/root)
+actor belief context: REFUSED (reader_crash: CaptureUnavailable: EPYC_ROOT=/tmp/pytest-of-node/pytest-10980/test_an_older_answer_without_v0/root has no scripts/vidya/adapters (resolved /tmp/pytest-of-node/pytest-10980/test_an_older_answer_withou); no planner call, degraded mode
+____ test_belief_section_sits_directly_after_already_tried_not_at_the_tail _____
+scripts/kernel_rnd/autokernel/loop/belief_context.py:412: in prepare
+    done = _child(config, args, timeout_s=config.reader_timeout_s, runner=runner)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+scripts/kernel_rnd/autokernel/loop/belief_context.py:317: in _child
+    argv = [config.python, str(config.reader()), *args]
+                               ^^^^^^^^^^^^^^^
+scripts/kernel_rnd/autokernel/loop/belief_context.py:198: in reader
+    return root_repo(self.root) / READER_RELPATH
+           ^^^^^^^^^^^^^^^^^^^^
+scripts/kernel_rnd/autokernel/loop/belief_context.py:119: in root_repo
+    return resolve_root_repo(root)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+scripts/kernel_rnd/autokernel/loop/belief_context.py:115: in resolve_root_repo
+    return root_checkout(selected_env)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+scripts/benchmark/belief_capture.py:46: in root_checkout
+    raise CaptureUnavailable(f"{ENV_VAR}={raw} has no {ADAPTERS_REL} (resolved {root})")
+E   scripts.benchmark.belief_capture.CaptureUnavailable: EPYC_ROOT=/tmp/pytest-of-node/pytest-10980/test_belief_section_sits_direc0/root has no scripts/vidya/adapters (resolved /tmp/pytest-of-node/pytest-10980/test_belief_section_sits_direc0/root)
+
+The above exception was the direct cause of the following exception:
+scripts/kernel_rnd/autokernel/loop/test_belief_context.py:906: in test_belief_section_sits_directly_after_already_tried_not_at_the_tail
+    _planner(tmp_path, Child(_v2_answer())).propose(context)
+scripts/kernel_rnd/autokernel/loop/actors.py:813: in inner
+    return method(self, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+scripts/kernel_rnd/autokernel/loop/actors.py:3745: in propose
+    belief = self._belief_ready(context)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+scripts/kernel_rnd/autokernel/loop/actors.py:3545: in _belief_ready
+    ready = belief_context.prepare(context, self._belief_config(),
+scripts/kernel_rnd/autokernel/loop/belief_context.py:418: in prepare
+    raise consumer_failure("reader_crash", f"{type(exc).__name__}: {exc}"[:300]) from exc
+E   autokernel.loop.belief_context.BeliefContextRefused: belief context refused (reader_crash): CaptureUnavailable: EPYC_ROOT=/tmp/pytest-of-node/pytest-10980/test_belief_section_sits_direc0/root has no scripts/vidya/adapters (resolved /tmp/pytest-of-node/pytest-10980/test_belief_section_sits_direc0/root)
+----------------------------- Captured stderr call -----------------------------
+BELIEF LEDGER ALARM UNDELIVERABLE (reader_crash): EPYC_ROOT=/tmp/pytest-of-node/pytest-10980/test_belief_section_sits_direc0/root has no scripts/vidya/adapters (resolved /tmp/pytest-of-node/pytest-10980/test_belief_section_sits_direc0/root)
+actor belief context: REFUSED (reader_crash: CaptureUnavailable: EPYC_ROOT=/tmp/pytest-of-node/pytest-10980/test_belief_section_sits_direc0/root has no scripts/vidya/adapters (resolved /tmp/pytest-of-node/pytest-10980/test_belief_section_sits_di); no planner call, degraded mode
+=========================== short test summary info ============================
+FAILED scripts/benchmark/test_op2_quiet_window_prep.py::OP2QuietWindowPrepTests::test_static_execution_output_dir_is_explicit
+FAILED scripts/benchmark/test_op2_quiet_window_prep.py::OP2QuietWindowPrepTests::test_write_bundle_is_no_inference_and_records_measurement_status
+FAILED scripts/kernel_rnd/autokernel/loop/test_belief_context.py::test_stale_ledger_ingested_then_ready_calls_planner_and_receipt_names_the_state
+FAILED scripts/kernel_rnd/autokernel/loop/test_belief_context.py::test_an_inapplicable_target_is_still_a_plan_with_verified_ledger_state
+FAILED scripts/kernel_rnd/autokernel/loop/test_belief_context.py::test_a_failed_call_still_leaves_an_error_receipt
+FAILED scripts/kernel_rnd/autokernel/loop/test_belief_context.py::test_refused_chain_broken_never_calls_the_planner_and_leaves_a_refusal_receipt
+FAILED scripts/kernel_rnd/autokernel/loop/test_belief_context.py::test_timeout_crash_or_garbage_refuses_and_raises_the_alarm[failure0-reader_timeout]
+FAILED scripts/kernel_rnd/autokernel/loop/test_belief_context.py::test_timeout_crash_or_garbage_refuses_and_raises_the_alarm[failure1-reader_crash]
+FAILED scripts/kernel_rnd/autokernel/loop/test_belief_context.py::test_timeout_crash_or_garbage_refuses_and_raises_the_alarm[Traceback (most recent call last):\n  boom-reader_crash]
+FAILED scripts/kernel_rnd/autokernel/loop/test_belief_context.py::test_timeout_crash_or_garbage_refuses_and_raises_the_alarm[-reader_crash]
+FAILED scripts/kernel_rnd/autokernel/loop/test_belief_context.py::test_a_forged_ready_answer_is_refused_before_any_planner_call[<lambda>0]
+FAILED scripts/kernel_rnd/autokernel/loop/test_belief_context.py::test_a_forged_ready_answer_is_refused_before_any_planner_call[<lambda>1]
+FAILED scripts/kernel_rnd/autokernel/loop/test_belief_context.py::test_a_forged_ready_answer_is_refused_before_any_planner_call[<lambda>2]
+FAILED scripts/kernel_rnd/autokernel/loop/test_belief_context.py::test_a_forged_ready_answer_is_refused_before_any_planner_call[<lambda>3]
+FAILED scripts/kernel_rnd/autokernel/loop/test_belief_context.py::test_a_forged_ready_answer_is_refused_before_any_planner_call[<lambda>4]
+FAILED scripts/kernel_rnd/autokernel/loop/test_belief_context.py::test_a_forged_ready_answer_is_refused_before_any_planner_call[<lambda>5]
+FAILED scripts/kernel_rnd/autokernel/loop/test_belief_context.py::test_a_ready_answer_with_a_failing_exit_code_is_not_ready
+FAILED scripts/kernel_rnd/autokernel/loop/test_belief_context.py::test_the_backend_call_itself_refuses_anything_but_a_sealed_ready_answer
+FAILED scripts/kernel_rnd/autokernel/loop/test_belief_context.py::test_focus_symbols_reach_the_root_target_only_when_given
+FAILED scripts/kernel_rnd/autokernel/loop/test_belief_context.py::test_degraded_mode_runs_an_already_planned_resume_point_reviewed_never_planned
+FAILED scripts/kernel_rnd/autokernel/loop/test_belief_context.py::test_degraded_mode_skips_a_resume_point_whose_premise_is_flagged_before_it_runs
+FAILED scripts/kernel_rnd/autokernel/loop/test_belief_context.py::test_degraded_mode_runs_an_admissible_seed_and_skips_the_rest_with_reasons
+FAILED scripts/kernel_rnd/autokernel/loop/test_belief_context.py::test_without_a_known_good_snapshot_no_seed_runs
+FAILED scripts/kernel_rnd/autokernel/loop/test_belief_context.py::test_a_failed_seed_check_runs_nothing
+FAILED scripts/kernel_rnd/autokernel/loop/test_belief_context.py::test_recovery_recheck_flags_a_degraded_result_whose_premise_is_now_withdrawn
+FAILED scripts/kernel_rnd/autokernel/loop/test_belief_context.py::test_metrics_row_carries_the_presented_half
+FAILED scripts/kernel_rnd/autokernel/loop/test_belief_context.py::test_root_prefers_workspace_when_it_has_the_reader
+FAILED scripts/kernel_rnd/autokernel/loop/test_belief_context.py::test_root_falls_back_to_the_hub_view_when_workspace_lacks_the_reader
+FAILED scripts/kernel_rnd/autokernel/loop/test_belief_context.py::test_explicit_root_wins_over_env_and_both_are_verbatim
+FAILED scripts/kernel_rnd/autokernel/loop/test_belief_context.py::test_neither_root_has_the_reader_stays_missing_refused_and_alarmed
+FAILED scripts/kernel_rnd/autokernel/loop/test_belief_context.py::test_serial_run_resolves_the_same_root
+FAILED scripts/kernel_rnd/autokernel/loop/test_belief_context.py::test_integration_real_root_child_ready_then_recheck_after_a_retraction
+FAILED scripts/kernel_rnd/autokernel/loop/test_belief_context.py::test_missing_reader_alarm_falls_back_to_the_root_alarm_channel
+FAILED scripts/kernel_rnd/autokernel/loop/test_belief_context.py::test_the_loop_store_is_ingested_by_the_reader_before_planning
+FAILED scripts/kernel_rnd/autokernel/loop/test_belief_context.py::test_v2_answer_keys_are_accepted_recorded_and_host_ids_are_not_reliance
+FAILED scripts/kernel_rnd/autokernel/loop/test_belief_context.py::test_an_older_answer_without_v2_keys_still_works
+FAILED scripts/kernel_rnd/autokernel/loop/test_belief_context.py::test_belief_section_sits_directly_after_already_tried_not_at_the_tail
+37 failed, 199 passed in 4.95s

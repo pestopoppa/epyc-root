@@ -1,0 +1,1 @@
+{"pid": 3669668, "birth_ticks": "156678315", "command": ["--confcutdir=tests/unit", "tests/unit/test_autopilot_sequential_wiring.py", "tests/unit/test_safety_gate_baseline_eligibility.py", "--maxfail=1"]}

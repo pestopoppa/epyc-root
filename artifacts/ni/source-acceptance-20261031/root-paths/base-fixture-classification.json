@@ -1,0 +1,187 @@
+[
+  {
+    "test": "scripts.benchmark.test_op2_quiet_window_prep.OP2QuietWindowPrepTests::test_static_execution_output_dir_is_explicit",
+    "classification": "synthetic ROOT lacks required scripts/vidya/adapters; add directory while preserving semantic assertions and child response mocks",
+    "observed_failure": "belief_capture.CaptureUnavailable: EPYC_ROOT=/tmp/tmp7lhwly9e has no scripts/vidya/adapters (resolved /tmp/tmp7lhwly9e)"
+  },
+  {
+    "test": "scripts.benchmark.test_op2_quiet_window_prep.OP2QuietWindowPrepTests::test_write_bundle_is_no_inference_and_records_measurement_status",
+    "classification": "synthetic ROOT lacks required scripts/vidya/adapters; add directory while preserving semantic assertions and child response mocks",
+    "observed_failure": "belief_capture.CaptureUnavailable: EPYC_ROOT=/tmp/tmp051li9t0 has no scripts/vidya/adapters (resolved /tmp/tmp051li9t0)"
+  },
+  {
+    "test": "scripts.kernel_rnd.autokernel.loop.test_belief_context::test_stale_ledger_ingested_then_ready_calls_planner_and_receipt_names_the_state",
+    "classification": "synthetic ROOT lacks required scripts/vidya/adapters; add directory while preserving semantic assertions and child response mocks",
+    "observed_failure": "autokernel.loop.belief_context.BeliefContextRefused: belief context refused (reader_crash): CaptureUnavailable: EPYC_ROOT=/tmp/pytest-of-node/pytest-10980/test_stale_ledger_ingested_the0/root has no scripts/vidya/adapters (resolved /tmp/pytest-of-node/pytest-10980/test_stale_ledger_ingested_the0/root)"
+  },
+  {
+    "test": "scripts.kernel_rnd.autokernel.loop.test_belief_context::test_an_inapplicable_target_is_still_a_plan_with_verified_ledger_state",
+    "classification": "synthetic ROOT lacks required scripts/vidya/adapters; add directory while preserving semantic assertions and child response mocks",
+    "observed_failure": "autokernel.loop.belief_context.BeliefContextRefused: belief context refused (reader_crash): CaptureUnavailable: EPYC_ROOT=/tmp/pytest-of-node/pytest-10980/test_an_inapplicable_target_is0/root has no scripts/vidya/adapters (resolved /tmp/pytest-of-node/pytest-10980/test_an_inapplicable_target_is0/root)"
+  },
+  {
+    "test": "scripts.kernel_rnd.autokernel.loop.test_belief_context::test_a_failed_call_still_leaves_an_error_receipt",
+    "classification": "synthetic ROOT lacks required scripts/vidya/adapters; add directory while preserving semantic assertions and child response mocks",
+    "observed_failure": "autokernel.loop.belief_context.BeliefContextRefused: belief context refused (reader_crash): CaptureUnavailable: EPYC_ROOT=/tmp/pytest-of-node/pytest-10980/test_a_failed_call_still_leave0/root has no scripts/vidya/adapters (resolved /tmp/pytest-of-node/pytest-10980/test_a_failed_call_still_leave0/root)"
+  },
+  {
+    "test": "scripts.kernel_rnd.autokernel.loop.test_belief_context::test_refused_chain_broken_never_calls_the_planner_and_leaves_a_refusal_receipt",
+    "classification": "synthetic ROOT lacks required scripts/vidya/adapters; add directory while preserving semantic assertions and child response mocks",
+    "observed_failure": "AssertionError: assert ('reader_crash', None) == ('chain_broke...11111111111'})\n  \n  At index 0 diff: 'reader_crash' != 'chain_broken'\n  Use -v to get more diff"
+  },
+  {
+    "test": "scripts.kernel_rnd.autokernel.loop.test_belief_context::test_timeout_crash_or_garbage_refuses_and_raises_the_alarm[failure0-reader_timeout]",
+    "classification": "synthetic ROOT lacks required scripts/vidya/adapters; add directory while preserving semantic assertions and child response mocks",
+    "observed_failure": "AssertionError: assert (0 == 0 and 'reader_crash' == 'reader_timeout'\n +  where 0 = <MagicMock name='_run_agent' id='<machine-int:0x720a9bd75160>'>.call_count\n  \n  - reader_timeout\n  + reader_crash)"
+  },
+  {
+    "test": "scripts.kernel_rnd.autokernel.loop.test_belief_context::test_timeout_crash_or_garbage_refuses_and_raises_the_alarm[failure1-reader_crash]",
+    "classification": "synthetic ROOT lacks required scripts/vidya/adapters; add directory while preserving semantic assertions and child response mocks",
+    "observed_failure": "AssertionError: assert [] == ['prepare', 'alarm']\n  \n  Right contains 2 more items, first extra item: 'prepare'\n  Use -v to get more diff"
+  },
+  {
+    "test": "scripts.kernel_rnd.autokernel.loop.test_belief_context::test_timeout_crash_or_garbage_refuses_and_raises_the_alarm[Traceback (most recent call last):\\n  boom-reader_crash]",
+    "classification": "synthetic ROOT lacks required scripts/vidya/adapters; add directory while preserving semantic assertions and child response mocks",
+    "observed_failure": "AssertionError: assert [] == ['prepare', 'alarm']\n  \n  Right contains 2 more items, first extra item: 'prepare'\n  Use -v to get more diff"
+  },
+  {
+    "test": "scripts.kernel_rnd.autokernel.loop.test_belief_context::test_timeout_crash_or_garbage_refuses_and_raises_the_alarm[-reader_crash]",
+    "classification": "synthetic ROOT lacks required scripts/vidya/adapters; add directory while preserving semantic assertions and child response mocks",
+    "observed_failure": "AssertionError: assert [] == ['prepare', 'alarm']\n  \n  Right contains 2 more items, first extra item: 'prepare'\n  Use -v to get more diff"
+  },
+  {
+    "test": "scripts.kernel_rnd.autokernel.loop.test_belief_context::test_a_forged_ready_answer_is_refused_before_any_planner_call[<lambda>0]",
+    "classification": "synthetic ROOT lacks required scripts/vidya/adapters; add directory while preserving semantic assertions and child response mocks",
+    "observed_failure": "AssertionError: assert (0 == 0 and 'reader_crash' == 'invalid_answer'\n +  where 0 = <MagicMock name='_run_agent' id='<machine-int:0x720a9bd75010>'>.call_count\n  \n  - invalid_answer\n  + reader_crash)"
+  },
+  {
+    "test": "scripts.kernel_rnd.autokernel.loop.test_belief_context::test_a_forged_ready_answer_is_refused_before_any_planner_call[<lambda>1]",
+    "classification": "synthetic ROOT lacks required scripts/vidya/adapters; add directory while preserving semantic assertions and child response mocks",
+    "observed_failure": "AssertionError: assert (0 == 0 and 'reader_crash' == 'invalid_answer'\n +  where 0 = <MagicMock name='_run_agent' id='<machine-int:0x720a9bd757f0>'>.call_count\n  \n  - invalid_answer\n  + reader_crash)"
+  },
+  {
+    "test": "scripts.kernel_rnd.autokernel.loop.test_belief_context::test_a_forged_ready_answer_is_refused_before_any_planner_call[<lambda>2]",
+    "classification": "synthetic ROOT lacks required scripts/vidya/adapters; add directory while preserving semantic assertions and child response mocks",
+    "observed_failure": "AssertionError: assert (0 == 0 and 'reader_crash' == 'invalid_answer'\n +  where 0 = <MagicMock name='_run_agent' id='<machine-int:0x720a9bd75fd0>'>.call_count\n  \n  - invalid_answer\n  + reader_crash)"
+  },
+  {
+    "test": "scripts.kernel_rnd.autokernel.loop.test_belief_context::test_a_forged_ready_answer_is_refused_before_any_planner_call[<lambda>3]",
+    "classification": "synthetic ROOT lacks required scripts/vidya/adapters; add directory while preserving semantic assertions and child response mocks",
+    "observed_failure": "AssertionError: assert (0 == 0 and 'reader_crash' == 'invalid_answer'\n +  where 0 = <MagicMock name='_run_agent' id='<machine-int:0x720a9bd76660>'>.call_count\n  \n  - invalid_answer\n  + reader_crash)"
+  },
+  {
+    "test": "scripts.kernel_rnd.autokernel.loop.test_belief_context::test_a_forged_ready_answer_is_refused_before_any_planner_call[<lambda>4]",
+    "classification": "synthetic ROOT lacks required scripts/vidya/adapters; add directory while preserving semantic assertions and child response mocks",
+    "observed_failure": "AssertionError: assert (0 == 0 and 'reader_crash' == 'invalid_answer'\n +  where 0 = <MagicMock name='_run_agent' id='<machine-int:0x720a9bd76900>'>.call_count\n  \n  - invalid_answer\n  + reader_crash)"
+  },
+  {
+    "test": "scripts.kernel_rnd.autokernel.loop.test_belief_context::test_a_forged_ready_answer_is_refused_before_any_planner_call[<lambda>5]",
+    "classification": "synthetic ROOT lacks required scripts/vidya/adapters; add directory while preserving semantic assertions and child response mocks",
+    "observed_failure": "AssertionError: assert (0 == 0 and 'reader_crash' == 'invalid_answer'\n +  where 0 = <MagicMock name='_run_agent' id='<machine-int:0x720a9bd76ba0>'>.call_count\n  \n  - invalid_answer\n  + reader_crash)"
+  },
+  {
+    "test": "scripts.kernel_rnd.autokernel.loop.test_belief_context::test_a_ready_answer_with_a_failing_exit_code_is_not_ready",
+    "classification": "synthetic ROOT lacks required scripts/vidya/adapters; add directory while preserving semantic assertions and child response mocks",
+    "observed_failure": "AssertionError: assert 'reader_crash' == 'invalid_answer'\n  \n  - invalid_answer\n  + reader_crash"
+  },
+  {
+    "test": "scripts.kernel_rnd.autokernel.loop.test_belief_context::test_the_backend_call_itself_refuses_anything_but_a_sealed_ready_answer",
+    "classification": "synthetic ROOT lacks required scripts/vidya/adapters; add directory while preserving semantic assertions and child response mocks",
+    "observed_failure": "autokernel.loop.belief_context.BeliefContextRefused: belief context refused (reader_crash): CaptureUnavailable: EPYC_ROOT=/tmp/pytest-of-node/pytest-10980/test_the_backend_call_itself_r0/root has no scripts/vidya/adapters (resolved /tmp/pytest-of-node/pytest-10980/test_the_backend_call_itself_r0/root)"
+  },
+  {
+    "test": "scripts.kernel_rnd.autokernel.loop.test_belief_context::test_focus_symbols_reach_the_root_target_only_when_given",
+    "classification": "synthetic ROOT lacks required scripts/vidya/adapters; add directory while preserving semantic assertions and child response mocks",
+    "observed_failure": "autokernel.loop.belief_context.BeliefContextRefused: belief context refused (reader_crash): CaptureUnavailable: EPYC_ROOT=/tmp/pytest-of-node/pytest-10980/test_focus_symbols_reach_the_r0/root has no scripts/vidya/adapters (resolved /tmp/pytest-of-node/pytest-10980/test_focus_symbols_reach_the_r0/root)"
+  },
+  {
+    "test": "scripts.kernel_rnd.autokernel.loop.test_belief_context::test_degraded_mode_runs_an_already_planned_resume_point_reviewed_never_planned",
+    "classification": "synthetic ROOT lacks required scripts/vidya/adapters; add directory while preserving semantic assertions and child response mocks",
+    "observed_failure": "AssertionError: assert ['check_seeds_failed'] == ['no_seeded_against_state']\n  \n  At index 0 diff: 'check_seeds_failed' != 'no_seeded_against_state'\n  Use -v to get more diff"
+  },
+  {
+    "test": "scripts.kernel_rnd.autokernel.loop.test_belief_context::test_degraded_mode_skips_a_resume_point_whose_premise_is_flagged_before_it_runs",
+    "classification": "synthetic ROOT lacks required scripts/vidya/adapters; add directory while preserving semantic assertions and child response mocks",
+    "observed_failure": "AssertionError: assert (['akm-flagged'] == ['akm-clean']\n  \n  At index 0 diff: 'akm-flagged' != 'akm-clean'\n  Use -v to get more diff)"
+  },
+  {
+    "test": "scripts.kernel_rnd.autokernel.loop.test_belief_context::test_degraded_mode_runs_an_admissible_seed_and_skips_the_rest_with_reasons",
+    "classification": "synthetic ROOT lacks required scripts/vidya/adapters; add directory while preserving semantic assertions and child response mocks",
+    "observed_failure": "AssertionError: assert (1 == 1 and [] == ['akm-good']\n +  where 1 = <autokernel.loop.test_belief_context._RefusingPlanner object at 0x720a9ac39950>.proposals\n  \n  Right contains one more item: 'akm-good'\n  Use -v to get more diff)"
+  },
+  {
+    "test": "scripts.kernel_rnd.autokernel.loop.test_belief_context::test_without_a_known_good_snapshot_no_seed_runs",
+    "classification": "synthetic ROOT lacks required scripts/vidya/adapters; add directory while preserving semantic assertions and child response mocks",
+    "observed_failure": "AssertionError: assert 'no_known_good_state' in ['check_seeds_failed']"
+  },
+  {
+    "test": "scripts.kernel_rnd.autokernel.loop.test_belief_context::test_a_failed_seed_check_runs_nothing",
+    "classification": "synthetic ROOT lacks required scripts/vidya/adapters; add directory while preserving semantic assertions and child response mocks",
+    "observed_failure": "AssertionError: assert (['check_seeds_failed'] == ['check_seeds_failed']\n  \n  Use -v to get more diff and 'TimeoutExpired' in 'CaptureUnavailable: EPYC_ROOT=/tmp/pytest-of-node/pytest-10980/test_a_failed_seed_check_runs_0/root has no scripts/vidya/adapters (resolved /tmp/pytest-of-node/pytest-10980/test_a_failed_seed_check_runs_0/root)')"
+  },
+  {
+    "test": "scripts.kernel_rnd.autokernel.loop.test_belief_context::test_recovery_recheck_flags_a_degraded_result_whose_premise_is_now_withdrawn",
+    "classification": "synthetic ROOT lacks required scripts/vidya/adapters; add directory while preserving semantic assertions and child response mocks",
+    "observed_failure": "TypeError: 'NoneType' object is not subscriptable"
+  },
+  {
+    "test": "scripts.kernel_rnd.autokernel.loop.test_belief_context::test_metrics_row_carries_the_presented_half",
+    "classification": "synthetic ROOT lacks required scripts/vidya/adapters; add directory while preserving semantic assertions and child response mocks",
+    "observed_failure": "autokernel.loop.belief_context.BeliefContextRefused: belief context refused (reader_crash): CaptureUnavailable: EPYC_ROOT=/tmp/pytest-of-node/pytest-10980/test_metrics_row_carries_the_p0/root has no scripts/vidya/adapters (resolved /tmp/pytest-of-node/pytest-10980/test_metrics_row_carries_the_p0/root)"
+  },
+  {
+    "test": "scripts.kernel_rnd.autokernel.loop.test_belief_context::test_root_prefers_workspace_when_it_has_the_reader",
+    "classification": "obsolete fallback constant patched by fixture; replacement tests name ROOT explicitly and assert no guessed fallback",
+    "observed_failure": "AttributeError: <module 'autokernel.loop.belief_context' from '/mnt/raid0/llm/worktrees/mains/codex-ni-research-code/scripts/kernel_rnd/autokernel/loop/belief_context.py'> has no attribute 'DEFAULT_ROOT'"
+  },
+  {
+    "test": "scripts.kernel_rnd.autokernel.loop.test_belief_context::test_root_falls_back_to_the_hub_view_when_workspace_lacks_the_reader",
+    "classification": "obsolete fallback constant patched by fixture; replacement tests name ROOT explicitly and assert no guessed fallback",
+    "observed_failure": "AttributeError: <module 'autokernel.loop.belief_context' from '/mnt/raid0/llm/worktrees/mains/codex-ni-research-code/scripts/kernel_rnd/autokernel/loop/belief_context.py'> has no attribute 'DEFAULT_ROOT'"
+  },
+  {
+    "test": "scripts.kernel_rnd.autokernel.loop.test_belief_context::test_explicit_root_wins_over_env_and_both_are_verbatim",
+    "classification": "obsolete fallback constant patched by fixture; replacement tests name ROOT explicitly and assert no guessed fallback",
+    "observed_failure": "AttributeError: <module 'autokernel.loop.belief_context' from '/mnt/raid0/llm/worktrees/mains/codex-ni-research-code/scripts/kernel_rnd/autokernel/loop/belief_context.py'> has no attribute 'DEFAULT_ROOT'"
+  },
+  {
+    "test": "scripts.kernel_rnd.autokernel.loop.test_belief_context::test_neither_root_has_the_reader_stays_missing_refused_and_alarmed",
+    "classification": "obsolete fallback constant patched by fixture; replacement tests name ROOT explicitly and assert no guessed fallback",
+    "observed_failure": "AttributeError: <module 'autokernel.loop.belief_context' from '/mnt/raid0/llm/worktrees/mains/codex-ni-research-code/scripts/kernel_rnd/autokernel/loop/belief_context.py'> has no attribute 'DEFAULT_ROOT'"
+  },
+  {
+    "test": "scripts.kernel_rnd.autokernel.loop.test_belief_context::test_serial_run_resolves_the_same_root",
+    "classification": "obsolete fallback constant patched by fixture; replacement tests name ROOT explicitly and assert no guessed fallback",
+    "observed_failure": "AttributeError: <module 'autokernel.loop.belief_context' from '/mnt/raid0/llm/worktrees/mains/codex-ni-research-code/scripts/kernel_rnd/autokernel/loop/belief_context.py'> has no attribute 'DEFAULT_ROOT'"
+  },
+  {
+    "test": "scripts.kernel_rnd.autokernel.loop.test_belief_context::test_integration_real_root_child_ready_then_recheck_after_a_retraction",
+    "classification": "synthetic ROOT lacks required scripts/vidya/adapters; add directory while preserving semantic assertions and child response mocks",
+    "observed_failure": "autokernel.loop.belief_context.BeliefContextRefused: belief context refused (reader_crash): CaptureUnavailable: EPYC_ROOT=/tmp/pytest-of-node/pytest-10980/test_integration_real_root_chi0/root has no scripts/vidya/adapters (resolved /tmp/pytest-of-node/pytest-10980/test_integration_real_root_chi0/root)"
+  },
+  {
+    "test": "scripts.kernel_rnd.autokernel.loop.test_belief_context::test_missing_reader_alarm_falls_back_to_the_root_alarm_channel",
+    "classification": "synthetic ROOT lacks required scripts/vidya/adapters; add directory while preserving semantic assertions and child response mocks",
+    "observed_failure": "KeyError: 'fallback'"
+  },
+  {
+    "test": "scripts.kernel_rnd.autokernel.loop.test_belief_context::test_the_loop_store_is_ingested_by_the_reader_before_planning",
+    "classification": "synthetic ROOT lacks required scripts/vidya/adapters; add directory while preserving semantic assertions and child response mocks",
+    "observed_failure": "autokernel.loop.belief_context.BeliefContextRefused: belief context refused (reader_crash): CaptureUnavailable: EPYC_ROOT=/tmp/pytest-of-node/pytest-10980/test_the_loop_store_is_ingeste0 has no scripts/vidya/adapters (resolved /tmp/pytest-of-node/pytest-10980/test_the_loop_store_is_ingeste0)"
+  },
+  {
+    "test": "scripts.kernel_rnd.autokernel.loop.test_belief_context::test_v2_answer_keys_are_accepted_recorded_and_host_ids_are_not_reliance",
+    "classification": "synthetic ROOT lacks required scripts/vidya/adapters; add directory while preserving semantic assertions and child response mocks",
+    "observed_failure": "autokernel.loop.belief_context.BeliefContextRefused: belief context refused (reader_crash): CaptureUnavailable: EPYC_ROOT=/tmp/pytest-of-node/pytest-10980/test_v2_answer_keys_are_accept0/root has no scripts/vidya/adapters (resolved /tmp/pytest-of-node/pytest-10980/test_v2_answer_keys_are_accept0/root)"
+  },
+  {
+    "test": "scripts.kernel_rnd.autokernel.loop.test_belief_context::test_an_older_answer_without_v2_keys_still_works",
+    "classification": "synthetic ROOT lacks required scripts/vidya/adapters; add directory while preserving semantic assertions and child response mocks",
+    "observed_failure": "autokernel.loop.belief_context.BeliefContextRefused: belief context refused (reader_crash): CaptureUnavailable: EPYC_ROOT=/tmp/pytest-of-node/pytest-10980/test_an_older_answer_without_v0/root has no scripts/vidya/adapters (resolved /tmp/pytest-of-node/pytest-10980/test_an_older_answer_without_v0/root)"
+  },
+  {
+    "test": "scripts.kernel_rnd.autokernel.loop.test_belief_context::test_belief_section_sits_directly_after_already_tried_not_at_the_tail",
+    "classification": "synthetic ROOT lacks required scripts/vidya/adapters; add directory while preserving semantic assertions and child response mocks",
+    "observed_failure": "autokernel.loop.belief_context.BeliefContextRefused: belief context refused (reader_crash): CaptureUnavailable: EPYC_ROOT=/tmp/pytest-of-node/pytest-10980/test_belief_section_sits_direc0/root has no scripts/vidya/adapters (resolved /tmp/pytest-of-node/pytest-10980/test_belief_section_sits_direc0/root)"
+  }
+]

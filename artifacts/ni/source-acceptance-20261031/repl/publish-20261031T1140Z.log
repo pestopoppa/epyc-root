@@ -1,0 +1,35 @@
+==============================================================================
+PUBLISH MANIFEST — what a push WOULD publish
+==============================================================================
+repo        : /mnt/raid0/llm/worktrees/mains/codex-ni-orchestrator
+branch      : codex/td29-m4-cache-20261030  ->  origin/main
+range       : refs/remotes/origin/main..HEAD
+commits     : 2
+files       : 8 changed
+
+-- SHARED-BRANCH WARNING ------------------------------------------------
+A push publishes the WHOLE branch. You are about to publish 2 commit(s)
+from a clone shared by several sessions. Any of these may be work you have
+never reviewed and cannot vouch for.
+AUTHORSHIP IS NOT RECOVERABLE FROM GIT ON THIS HOST: all 2 commit(s)
+carry the same git identity ('pestopoppa'), so `git log --format=%an` cannot tell
+you which commits are yours. The groupings below are the real signal.
+
+-- by changed top-level path --------------------------------------------
+      4  src
+      3  tests
+      1  scripts
+
+-- by commit subject prefix ---------------------------------------------
+      1  feat
+      1  fix
+
+-- commits ---------------------------------------------------------------
+  4df95b4c8ff1  2026-10-31T11:43:07  fix(repl): bind spill traces to original query and corpus custody
+  24c87ea8e588  2026-10-31T11:43:06  feat(repl): capture spill-follow retrieval traces
+
+PUSHING as 'codex-ni-01a16d6b' under the push lock ...
+To https://github.com/pestopoppa/epyc-orchestrator.git
+   782ac3bf..4df95b4c  HEAD -> main
+published 2 commit(s) to origin/main
+PUSH VERIFIED — `git cherry refs/remotes/origin/main HEAD` is empty; origin/main carries HEAD

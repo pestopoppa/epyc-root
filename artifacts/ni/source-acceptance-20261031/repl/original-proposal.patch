@@ -1,0 +1,307 @@
+commit 91a770f70759f3b3681c99644f6dc84dcce69a96
+Author: pestopoppa <72076821+pestopoppa@users.noreply.github.com>
+Date:   Sat Oct 31 11:18:51 2026 +0000
+
+    feat(repl): capture spill-follow retrieval traces
+
+diff --git a/scripts/benchmark/repl_emb_eval.py b/scripts/benchmark/repl_emb_eval.py
+index b8a27914..60da2306 100644
+--- a/scripts/benchmark/repl_emb_eval.py
++++ b/scripts/benchmark/repl_emb_eval.py
+@@ -77,7 +77,7 @@ OFFLINE_INDEX_TIMEOUT_S = 1e9
+ W_DENSE, W_BM25, W_RRF_K = 0.75, 0.25, 60
+ 
+ #: Trace strata the miners produce; a trace row's own ``stratum`` drives its group.
+-TRACE_STRATA = ("agent_nav", "synthetic_spill", "spill_follow")
++TRACE_STRATA = ("agent_nav", "synthetic_spill", "spill_follow", "real_trace")
+ SYNTHETIC_GROUP = "synthetic_spill"
+ #: Decision groups, in report order. Every scored group except trivial_head is in the decision set.
+ DECISION_GROUPS = ("probe45", *TRACE_STRATA)
+diff --git a/src/repl_environment/environment.py b/src/repl_environment/environment.py
+index b98706b1..d8e2c97f 100644
+--- a/src/repl_environment/environment.py
++++ b/src/repl_environment/environment.py
+@@ -932,6 +932,11 @@ class REPLEnvironment(
+         spill_dir.mkdir(parents=True, exist_ok=True)
+         spill_path = spill_dir / f"turn_{self._turn_counter}.txt"
+         spill_path.write_text(output)
++        # REPL-EMB-2.8a: remember only this environment's output spills so the
++        # opt-in trace tap can capture later peek/grep follows without observing
++        # arbitrary files explored by the same session.
++        self._repl_trace_spill_paths = getattr(self, "_repl_trace_spill_paths", set())
++        self._repl_trace_spill_paths.add(os.path.abspath(spill_path))
+ 
+         lines = output.splitlines()
+         n_lines = len(lines)
+diff --git a/src/repl_environment/exploration_core.py b/src/repl_environment/exploration_core.py
+index 84c895c4..739ffa48 100644
+--- a/src/repl_environment/exploration_core.py
++++ b/src/repl_environment/exploration_core.py
+@@ -30,6 +30,8 @@ class Match:
+     line: str
+     context: str
+     context_lines: tuple[str, ...] = ()
++    start_char: int = 0
++    end_char: int = 0
+ 
+ 
+ @dataclass(frozen=True)
+@@ -150,7 +152,21 @@ def grep_file(
+             compiled = re.compile(pattern, re.IGNORECASE if ignore_case else 0)
+         except re.error as exc:
+             raise ExplorationError(f"invalid regex pattern: {exc}") from exc
+-    lines = text.splitlines() if splitlines else text.split("\n")
++    if splitlines:
++        lines = text.splitlines()
++        line_spans = []
++        cursor = 0
++        for raw_line in text.splitlines(keepends=True):
++            visible = raw_line.rstrip("\r\n\v\f\x1c\x1d\x1e\x85\u2028\u2029")
++            line_spans.append((cursor, cursor + len(visible)))
++            cursor += len(raw_line)
++    else:
++        lines = text.split("\n")
++        line_spans = []
++        cursor = 0
++        for index, line in enumerate(lines):
++            line_spans.append((cursor, cursor + len(line)))
++            cursor += len(line) + (1 if index < len(lines) - 1 else 0)
+     matches: list[Match] = []
+     total = 0
+     for index, line in enumerate(lines):
+@@ -172,6 +188,8 @@ def grep_file(
+                 line=line if max_line_chars is None else line[:max_line_chars],
+                 context=shown_context,
+                 context_lines=shown_context_lines,
++                start_char=line_spans[index][0],
++                end_char=line_spans[index][1],
+             ))
+     return GrepResult(tuple(matches), total, total > len(matches))
+ 
+diff --git a/src/repl_environment/file_exploration.py b/src/repl_environment/file_exploration.py
+index 04ee5a25..c990260c 100644
+--- a/src/repl_environment/file_exploration.py
++++ b/src/repl_environment/file_exploration.py
+@@ -91,6 +91,20 @@ class _FileExplorationMixin:
+             except Exception:
+                 pass  # Silently ignore research tracking failures
+ 
++    def _is_repl_trace_spill(self, file_path: str) -> bool:
++        """Whether this exact file was emitted as an output spill by this REPL."""
++        return os.path.abspath(file_path) in getattr(self, "_repl_trace_spill_paths", set())
++
++    def _record_repl_spill_open(self, file_path: str, start: int, end: int) -> None:
++        if not self._is_repl_trace_spill(file_path):
++            return
++        try:
++            from src.repl_environment import trace_capture
++
++            trace_capture.record_open(self, file_path, start, end)
++        except Exception:
++            pass
++
+     @staticmethod
+     def _page_text(text: str, n: int, offset: int) -> str:
+         """Slice ``n`` characters of ``text`` starting at ``offset`` (negative = from the end).
+@@ -186,7 +200,7 @@ class _FileExplorationMixin:
+             return f"[ERROR: peek(n, file_path=None, offset=0) needs integer n/offset, got n={n!r}, offset={offset!r}]"
+ 
+         if file_path is not None:
+-            if os.path.abspath(file_path) in self._session_read_artifacts:
++            if os.path.abspath(file_path) in getattr(self, "_session_read_artifacts", {}):
+                 try:
+                     result = self._read_registered_artifact(file_path, n, offset)
+                 except (OSError, ValueError) as exc:
+@@ -208,6 +222,8 @@ class _FileExplorationMixin:
+ 
+                 root, resolved = _explicit_exploration_root(self, file_path)
+                 result = read_file_page(root, resolved, n, offset, max_bytes=None)
++                if offset >= 0:
++                    self._record_repl_spill_open(file_path, offset, offset + len(result))
+                 event = {"n": n, "file_path": file_path}
+                 if offset:
+                     event["offset"] = offset
+@@ -276,7 +292,7 @@ class _FileExplorationMixin:
+             return lines
+         from src.features import features
+         if (features().context_arm_ab is True and file_path is not None
+-                and os.path.abspath(file_path) in self._session_read_artifacts):
++                and os.path.abspath(file_path) in getattr(self, "_session_read_artifacts", {})):
+             try:
+                 text = self._read_registered_artifact(file_path, -1, 0)
+             except (OSError, ValueError) as exc:
+@@ -326,6 +342,22 @@ class _FileExplorationMixin:
+ 
+         if file_path is not None:
+             matches = [item.line for item in result.matches]
++            if self._is_repl_trace_spill(file_path):
++                try:
++                    from src.repl_environment import trace_capture
++
++                    trace_capture.record_spill_search(
++                        self,
++                        file_path,
++                        pattern,
++                        self.config.max_grep_results,
++                        [
++                            {"section": file_path, "start": item.start_char, "end": item.end_char}
++                            for item in result.matches
++                        ],
++                    )
++                except Exception:
++                    pass
+             match_details = [
+                 {"line_num": item.line_num, "match": item.line[:500], "context": item.context[:1000]}
+                 for item in result.matches
+diff --git a/src/repl_environment/trace_capture.py b/src/repl_environment/trace_capture.py
+index efd27dab..cbdbe3d7 100644
+--- a/src/repl_environment/trace_capture.py
++++ b/src/repl_environment/trace_capture.py
+@@ -1,7 +1,8 @@
+ """REPL-EMB-2.8a: passive, hash-and-span-only capture of REPL context-search traces.
+ 
+ REPL-EMB-2.8 (re-check the 2.2 verdict) needs >= 75 real traces and none were persisted. This
+-module is a zero-stack-change tap on ``ContextBundle.search`` / ``ContextBundle.get``.
++module is a zero-stack-change tap on ``ContextBundle.search`` / ``ContextBundle.get`` and on
++``peek`` / ``grep`` follows of files created by ``REPLEnvironment._spill_output``.
+ 
+ OFF BY DEFAULT. ``EPYC_REPL_TRACE_CAPTURE`` unset / "" / "0" => every function here returns
+ immediately: no file, no directory, no state. Set it to ``1`` to enable.
+@@ -51,7 +52,7 @@ _HEX64 = re.compile(r"^[0-9a-f]{64}$")
+ _SAFE_ID = re.compile(r"^[A-Za-z][A-Za-z0-9_.\-]{0,47}$")
+ _HASHED_ID = re.compile(r"^h:[0-9a-f]{12}$")
+ _TS = re.compile(r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d+)?\+00:00$")
+-_MODE = re.compile(r"^(hybrid|lexical|lexical_fallback:[a-z_]{1,32})$")
++_MODE = re.compile(r"^(hybrid|lexical|grep|lexical_fallback:[a-z_]{1,32})$")
+ _PII = re.compile(
+     r"(@[A-Za-z0-9-]+\.[A-Za-z]{2,}|\b\d{3}[-. ]?\d{3}[-. ]?\d{4}\b|\b(?:sk|ghp|hf|xox[a-z])[-_][A-Za-z0-9]{8,}"
+     r"|\b\d{13,19}\b|\b\d{1,3}(?:\.\d{1,3}){3}\b|-----BEGIN)"
+@@ -191,6 +192,11 @@ def record_open(bundle: Any, section: str, start: int, end: int) -> None:
+         return
+ 
+ 
++def record_spill_search(env: Any, path: str, query: str, k: int, hits: Iterable[Mapping]) -> None:
++    """Capture a grep query over a spill file using the same hash-and-span schema."""
++    record_search(env, query, k, path, "grep", hits)
++
++
+ def load_records(path_or_dir: str | Path | None = None) -> list[dict]:
+     """All well-formed records (malformed / PII-failing lines are skipped)."""
+     p = Path(path_or_dir) if path_or_dir else trace_dir()
+@@ -212,6 +218,7 @@ def load_records(path_or_dir: str | Path | None = None) -> list[dict]:
+ def load_real_trace_rows(
+     path_or_dir: str | Path | None = None,
+     text_resolver: Callable[[str], str | None] | None = None,
++    bundle_resolver: Callable[[str], str | None] | None = None,
+ ) -> list[dict]:
+     """Records -> harness query rows with ``stratum='real_trace'`` (one per distinct
+     (session, query_digest) search that returned hits). ``gold`` = the opened hit spans
+@@ -234,6 +241,7 @@ def load_real_trace_rows(
+         opened = [h for h in r["hits"]
+                   if any(o[0] == h[0] and o[1] < h[2] and h[1] < o[2] for o in sess_opens)]
+         text = text_resolver(r["query_digest"]) if text_resolver else None
++        bundle = bundle_resolver(r["session"]) if bundle_resolver else None
+         gold = None
+         if opened:
+             path = opened[0][0]
+@@ -244,7 +252,32 @@ def load_real_trace_rows(
+             "stratum": STRATUM, "provenance": "trace",
+             "text": text, "needs_text": text is None, "query_digest": r["query_digest"],
+             "code_intent": None, "gold": gold, "opened": bool(opened),
+-            "session": r["session"], "ts": r["ts"], "mode": r["mode"],
++            "bundle": bundle, "session": r["session"], "ts": r["ts"], "mode": r["mode"],
+             "hits": r["hits"],
+         })
+     return rows
++
++
++def write_real_trace_queries(
++    output: str | Path,
++    path_or_dir: str | Path | None = None,
++    *,
++    text_resolver: Callable[[str], str | None],
++    bundle_resolver: Callable[[str], str | None],
++) -> int:
++    """Write rows accepted by ``repl_emb_eval.py freeze --trace-queries``.
++
++    Query text and the corresponding bundle id are supplied by the evaluator; neither is
++    reconstructed from the hash-only trace. Rows with unresolved query text or bundle ids are
++    refused so they cannot silently enter the frozen query set as unusable evidence.
++    """
++    rows = load_real_trace_rows(path_or_dir, text_resolver, bundle_resolver)
++    unresolved = [r["id"] for r in rows if not r["text"] or not r["bundle"]]
++    if unresolved:
++        raise ValueError(f"real-trace rows need text and bundle resolution: {unresolved[:5]}")
++    target = Path(output)
++    target.parent.mkdir(parents=True, exist_ok=True)
++    with target.open("w", encoding="utf-8") as stream:
++        for row in rows:
++            stream.write(json.dumps(row, sort_keys=True, separators=(",", ":")) + "\n")
++    return len(rows)
+diff --git a/tests/unit/test_repl_trace_capture.py b/tests/unit/test_repl_trace_capture.py
+index 0b4ac8a8..999c0f4e 100644
+--- a/tests/unit/test_repl_trace_capture.py
++++ b/tests/unit/test_repl_trace_capture.py
+@@ -3,11 +3,12 @@
+ from __future__ import annotations
+ 
+ import json
+-
+-import pytest
++import os
++from types import SimpleNamespace
+ 
+ from src.repl_environment import trace_capture as tc
+ from src.repl_environment.context_bundle import ContextBundle, Section
++from src.repl_environment.file_exploration import _FileExplorationMixin
+ 
+ SECRET_Q = "where is the zebra-quartz-7731 handler defined"
+ BODY = "alpha beta zebra-quartz-7731 handler\n" * 40
+@@ -102,3 +103,47 @@ def test_unsafe_section_name_is_hashed(tmp_path, monkeypatch):
+     raw = "".join(f.read_text() for f in tmp_path.glob("traces-*.jsonl"))
+     assert "jane" not in raw and '"h:' in raw
+     assert tc.load_real_trace_rows(tmp_path)
++
++
++class _TraceFileEnv(_FileExplorationMixin):
++    def __init__(self, spill_path: str):
++        self._repl_trace_spill_paths = {os.path.abspath(spill_path)}
++        self._state_lock = None
++        self._exploration_calls = 0
++        self.config = SimpleNamespace(max_grep_results=80)
++        self._session_read_artifacts = {}
++        self._grep_hits_buffer = []
++        self._exploration_log = SimpleNamespace(add_event=lambda *args: None)
++        self._validate_file_path = lambda path: (os.path.isfile(path), None)
++
++
++def test_spill_grep_and_peek_export_harness_real_trace_rows(tmp_path, monkeypatch):
++    monkeypatch.setenv(tc.ENV_FLAG, "1")
++    capture_dir = tmp_path / "capture"
++    monkeypatch.setenv(tc.ENV_DIR, str(capture_dir))
++    secret = "violet-otter-5193"
++    spill = tmp_path / "turn_1.txt"
++    spill.write_text(f"before\n{secret} handler here\nafter\n", encoding="utf-8")
++    env = _TraceFileEnv(str(spill))
++
++    assert env._grep(secret, file_path=str(spill))
++    assert env._peek(30, file_path=str(spill), offset=7) == f"{secret} handler here"
++    raw = "".join(p.read_text(encoding="utf-8") for p in capture_dir.glob("traces-*.jsonl"))
++    assert secret not in raw
++
++    out = tmp_path / "queries-real-trace.jsonl"
++    count = tc.write_real_trace_queries(
++        out,
++        capture_dir,
++        text_resolver=lambda digest: secret if digest == tc.digest(secret) else None,
++        bundle_resolver=lambda _session: "spill-session-1",
++    )
++    assert count == 1
++    from scripts.benchmark import repl_emb_eval
++
++    rows = [json.loads(line) for line in out.read_text(encoding="utf-8").splitlines()]
++    labelled, summary = repl_emb_eval.label_queries([], rows)
++    assert summary["by_group"]["real_trace"]["n"] == 1
++    assert labelled[0]["group"] == "real_trace"
++    assert labelled[0]["bundle"] == "spill-session-1"
++    assert labelled[0]["scored"] and labelled[0]["gold_spans"] == [["h:" + tc.digest(str(spill))[:12], 7, 37]]

@@ -1,0 +1,53 @@
+{
+  "task": "SCG-TEST-ORDER",
+  "original_handoff": "handoffs/active/stack-change-governance-pipeline.md",
+  "status": "MAIN accepted; normal hooks committed and serialized_push verified on origin/main; original SCG checkbox stays open",
+  "base": "5775730ccd2bb69805f5843ab1b001b002930fbd",
+  "source_file": "tests/unit/test_autopilot_sequential_wiring.py",
+  "root_cause": "real _run_loop_inner_seq_harness startup leaves safety_gate._PROMOTION_GUARD_PROVIDER holding its FakeJournal after function monkeypatch teardown; live empty frontier makes later median test seed raw2.95 instead of reproduced2.8",
+  "metric_direction": "quality higher is better; existing median2.8 and speed77t/s are expected fixture outputs, unchanged",
+  "old_failing_log": "validation-20261031T105601Z.log",
+  "old_reverse_log": "validation-20261031T105651Z.log",
+  "new_pair_log": "validation-20261031T105728Z.log",
+  "new_reverse_log": "validation-20261031T105757Z.log",
+  "new_modules_log": "validation-20261031T105829Z.log",
+  "new_modules_result": "71 passed",
+  "incoming_provider_control": "preserved-provider-20261031T105923Z.json",
+  "impact": "test-only fixture; GNX stale97 commits saysLOW0upstream but context finds8 harness callers, manually verified; guarded wrapper refused64 cross-role global locks disabled",
+  "source_patch_sha256": "bef15027964c51d4a2177c1d2c9615a22098b6f3cf4fa6f15c96402cc85a7bc2",
+  "full_unit_limit": "original full-unit collected19818 then reached unrelatedAP54 failures; stopped101s ownPID3582890 drained; no all-unit success claimed",
+  "excluded_claims": [
+    "no production semantics changed",
+    "no deployment or live efficacy",
+    "no loader completion re-audit or secondtick",
+    "no new grading rule or measurement warrant"
+  ],
+  "gates_log": "validation-20261031T105950Z.log",
+  "gates_result": "PASS",
+  "full_unit_after_log": "validation-20261031T110019Z.log",
+  "full_unit_after_result": "19818 collected; 374passed/8skipped/1failed --maxfail1; AP54 fake request has no headers at chat.py218",
+  "full_unit_failure_scope": "AP54 failure precedes producer fixture execution; not changed or waived; full-suite green not claimed",
+  "root_conftest_new_bad_order_log": "validation-20261031T110129Z.log",
+  "root_conftest_bad_order_result": "2passed",
+  "admission": "ADMISSION.json",
+  "provider_control_result": "incoming native provider identity and warning state True both restored",
+  "code_sha": "2f5c05013ccc80d549635878f260bddf0c172452",
+  "root_conftest_reverse_log": "validation-20261031T110226Z.log",
+  "root_conftest_reverse_result": "2passed",
+  "publication_log": "validation-20261031T110402Z.log",
+  "scope": "single23line test fixture; removed both unrelated formatter-only hunks as MAIN directed",
+  "format_note": "MAIN directed removal of2unrelated formatter-only hunks. Both original and final retain exactly2preexistingruffformatdifferences; insertedfixture adds none. Normalcommit hooks pass.",
+  "format_controls": [
+    {
+      "source": "base",
+      "rc": 1,
+      "hunks": 2
+    },
+    {
+      "source": "final",
+      "rc": 1,
+      "hunks": 2
+    }
+  ],
+  "ruff_check_final_rc": 0
+}

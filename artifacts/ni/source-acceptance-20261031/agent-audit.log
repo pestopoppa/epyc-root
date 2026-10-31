@@ -1,0 +1,3 @@
+{"ts":"2026-10-31T11:48:06+00:00","session":"ses_20261031_114806_386746","level":"INFO","cat":"SESSION_START","msg":"Accepted source batch documentation","details":"new_session=ses_20261031_114806_386746"}
+{"ts":"2026-10-31T11:48:06+00:00","session":"ses_20261031_114806_386746","level":"INFO","cat":"TASK_START","msg":"Source batch wrap","details":"Preserve published-source evidence and partial acceptance boundaries"}
+{"ts":"2026-10-31T11:48:06+00:00","session":"ses_20261031_114806_386746","level":"INFO","cat":"TASK_END","msg":"Source batch wrap","details":"outcome=success"}

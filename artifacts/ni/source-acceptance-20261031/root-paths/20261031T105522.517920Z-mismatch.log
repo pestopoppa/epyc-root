@@ -1,0 +1,128 @@
+FFFF                                                                     [100%]
+=================================== FAILURES ===================================
+_ test_actual_cpu_keep_cross_target_then_older_history_uses_latest_source[False-False] _
+scripts/kernel_rnd/autokernel/loop/test_serial_run.py:1401: in test_actual_cpu_keep_cross_target_then_older_history_uses_latest_source
+    cpu_fixture.test_existing_main_cpu_five_iterations_preserves_canonical_champion(
+scripts/kernel_rnd/autokernel/loop/test_existing_cpu_run.py:266: in test_existing_main_cpu_five_iterations_preserves_canonical_champion
+    rc, _calls, _planners, _scratch, log = fixture._run_one_keep()
+                                           ^^^^^^^^^^^^^^^^^^^^^^^
+scripts/kernel_rnd/autokernel/loop/test_promotion_targets.py:368: in _run_one_keep
+    rc = run_mod.main(argv)
+         ^^^^^^^^^^^^^^^^^^
+scripts/kernel_rnd/autokernel/loop/test_existing_cpu_run.py:263: in cpu_main
+    return real_main(argv)
+           ^^^^^^^^^^^^^^^
+scripts/kernel_rnd/autokernel/loop/test_serial_run.py:1087: in exercise
+    assert origin_export.is_file()
+E   AssertionError: assert False
+E    +  where False = is_file()
+E    +    where is_file = PosixPath('/tmp/tmpzgzt5g0c/store/serving-beliefs/fc073268b7467866d9efe998f0520d3217ef9933106464eeee6a37460f6af111.json').is_file
+----------------------------- Captured stderr call -----------------------------
+warning: AK history capture failed after durable archive: AttributeError: module 'adapters.ak_history' has no attribute 'append_belief_measurement'
+warning: serving belief export failed after durable archive: ValueError: prospective serving capture does not rederive
+warning: AK history capture failed after durable archive: AttributeError: module 'adapters.ak_history' has no attribute 'append_belief_measurement'
+warning: serving belief export failed after durable archive: ValueError: prospective serving capture does not rederive
+warning: AK history capture failed after durable archive: AttributeError: module 'adapters.ak_history' has no attribute 'append_belief_measurement'
+warning: serving belief export failed after durable archive: ValueError: prospective serving capture does not rederive
+warning: AK history capture failed after durable archive: AttributeError: module 'adapters.ak_history' has no attribute 'append_belief_measurement'
+warning: serving belief export failed after durable archive: ValueError: prospective serving capture does not rederive
+resume    anchor advanced ba9a2b840a9e -> bdf1baeaba21 during the run: 0 queued checkpoint(s) carried forward
+warning: AK history capture failed after durable archive: AttributeError: module 'adapters.ak_history' has no attribute 'append_belief_measurement'
+warning: serving belief export failed after durable archive: ValueError: prospective serving capture does not rederive
+warning: last outcome serving reference unavailable: [Errno 2] No such file or directory: '/tmp/tmpzgzt5g0c/store/serving-beliefs/2d9222dd0f15ae81ad46a5ed8c73172b8b1893243f7ff2f91eb670f9eb3cc5c8.json'
+_ test_actual_cpu_keep_cross_target_then_older_history_uses_latest_source[True-False] _
+scripts/kernel_rnd/autokernel/loop/test_serial_run.py:1401: in test_actual_cpu_keep_cross_target_then_older_history_uses_latest_source
+    cpu_fixture.test_existing_main_cpu_five_iterations_preserves_canonical_champion(
+scripts/kernel_rnd/autokernel/loop/test_existing_cpu_run.py:266: in test_existing_main_cpu_five_iterations_preserves_canonical_champion
+    rc, _calls, _planners, _scratch, log = fixture._run_one_keep()
+                                           ^^^^^^^^^^^^^^^^^^^^^^^
+scripts/kernel_rnd/autokernel/loop/test_promotion_targets.py:368: in _run_one_keep
+    rc = run_mod.main(argv)
+         ^^^^^^^^^^^^^^^^^^
+scripts/kernel_rnd/autokernel/loop/test_existing_cpu_run.py:263: in cpu_main
+    return real_main(argv)
+           ^^^^^^^^^^^^^^^
+scripts/kernel_rnd/autokernel/loop/test_serial_run.py:1087: in exercise
+    assert origin_export.is_file()
+E   AssertionError: assert False
+E    +  where False = is_file()
+E    +    where is_file = PosixPath('/tmp/tmpsjydns4u/store/serving-beliefs/8431b85251bf4a3d42973c44866c17f5c41edf3b2e4633665ab630f2110776c3.json').is_file
+----------------------------- Captured stderr call -----------------------------
+warning: AK history capture failed after durable archive: AttributeError: module 'adapters.ak_history' has no attribute 'append_belief_measurement'
+warning: serving belief export failed after durable archive: ValueError: prospective serving capture does not rederive
+warning: AK history capture failed after durable archive: AttributeError: module 'adapters.ak_history' has no attribute 'append_belief_measurement'
+warning: serving belief export failed after durable archive: ValueError: prospective serving capture does not rederive
+warning: AK history capture failed after durable archive: AttributeError: module 'adapters.ak_history' has no attribute 'append_belief_measurement'
+warning: serving belief export failed after durable archive: ValueError: prospective serving capture does not rederive
+warning: AK history capture failed after durable archive: AttributeError: module 'adapters.ak_history' has no attribute 'append_belief_measurement'
+warning: serving belief export failed after durable archive: ValueError: prospective serving capture does not rederive
+resume    anchor advanced b2ff6e931e8d -> d860c33337fa during the run: 0 queued checkpoint(s) carried forward
+warning: AK history capture failed after durable archive: AttributeError: module 'adapters.ak_history' has no attribute 'append_belief_measurement'
+warning: serving belief export failed after durable archive: ValueError: prospective serving capture does not rederive
+warning: last outcome serving reference unavailable: [Errno 2] No such file or directory: '/tmp/tmpsjydns4u/store/serving-beliefs/8bd58100f7fc482f67440fbe710bd9c5318e965e3b93826dd9db549c8ba6a383.json'
+_ test_actual_cpu_keep_cross_target_then_older_history_uses_latest_source[False-True] _
+scripts/kernel_rnd/autokernel/loop/test_serial_run.py:1401: in test_actual_cpu_keep_cross_target_then_older_history_uses_latest_source
+    cpu_fixture.test_existing_main_cpu_five_iterations_preserves_canonical_champion(
+scripts/kernel_rnd/autokernel/loop/test_existing_cpu_run.py:266: in test_existing_main_cpu_five_iterations_preserves_canonical_champion
+    rc, _calls, _planners, _scratch, log = fixture._run_one_keep()
+                                           ^^^^^^^^^^^^^^^^^^^^^^^
+scripts/kernel_rnd/autokernel/loop/test_promotion_targets.py:368: in _run_one_keep
+    rc = run_mod.main(argv)
+         ^^^^^^^^^^^^^^^^^^
+scripts/kernel_rnd/autokernel/loop/test_existing_cpu_run.py:263: in cpu_main
+    return real_main(argv)
+           ^^^^^^^^^^^^^^^
+scripts/kernel_rnd/autokernel/loop/test_serial_run.py:1087: in exercise
+    assert origin_export.is_file()
+E   AssertionError: assert False
+E    +  where False = is_file()
+E    +    where is_file = PosixPath('/tmp/tmpb9tcs4xa/store/serving-beliefs/7b410c40fc27750bfee6d954f261160ef34254fa227e59f800bb1bc2dfe0f016.json').is_file
+----------------------------- Captured stderr call -----------------------------
+warning: AK history capture failed after durable archive: AttributeError: module 'adapters.ak_history' has no attribute 'append_belief_measurement'
+warning: serving belief export failed after durable archive: ValueError: prospective serving capture does not rederive
+warning: AK history capture failed after durable archive: AttributeError: module 'adapters.ak_history' has no attribute 'append_belief_measurement'
+warning: serving belief export failed after durable archive: ValueError: prospective serving capture does not rederive
+warning: AK history capture failed after durable archive: AttributeError: module 'adapters.ak_history' has no attribute 'append_belief_measurement'
+warning: serving belief export failed after durable archive: ValueError: prospective serving capture does not rederive
+warning: AK history capture failed after durable archive: AttributeError: module 'adapters.ak_history' has no attribute 'append_belief_measurement'
+warning: serving belief export failed after durable archive: ValueError: prospective serving capture does not rederive
+resume    anchor advanced 917bc02ccbd5 -> 1d1759d00d91 during the run: 0 queued checkpoint(s) carried forward
+warning: AK history capture failed after durable archive: AttributeError: module 'adapters.ak_history' has no attribute 'append_belief_measurement'
+warning: serving belief export failed after durable archive: ValueError: prospective serving capture does not rederive
+warning: last outcome serving reference unavailable: [Errno 2] No such file or directory: '/tmp/tmpb9tcs4xa/store/serving-beliefs/cbf4bb1365002a795982c72c89097554f663dc31ad3c17fdedff732372c06084.json'
+_ test_actual_cpu_keep_cross_target_then_older_history_uses_latest_source[gate-True] _
+scripts/kernel_rnd/autokernel/loop/test_serial_run.py:1401: in test_actual_cpu_keep_cross_target_then_older_history_uses_latest_source
+    cpu_fixture.test_existing_main_cpu_five_iterations_preserves_canonical_champion(
+scripts/kernel_rnd/autokernel/loop/test_existing_cpu_run.py:266: in test_existing_main_cpu_five_iterations_preserves_canonical_champion
+    rc, _calls, _planners, _scratch, log = fixture._run_one_keep()
+                                           ^^^^^^^^^^^^^^^^^^^^^^^
+scripts/kernel_rnd/autokernel/loop/test_promotion_targets.py:368: in _run_one_keep
+    rc = run_mod.main(argv)
+         ^^^^^^^^^^^^^^^^^^
+scripts/kernel_rnd/autokernel/loop/test_existing_cpu_run.py:263: in cpu_main
+    return real_main(argv)
+           ^^^^^^^^^^^^^^^
+scripts/kernel_rnd/autokernel/loop/test_serial_run.py:1087: in exercise
+    assert origin_export.is_file()
+E   AssertionError: assert False
+E    +  where False = is_file()
+E    +    where is_file = PosixPath('/tmp/tmpnz6m_vi9/store/serving-beliefs/98d4da69baec9077becd91924c397dc369b3b9729729b055e3322c76a981d018.json').is_file
+----------------------------- Captured stderr call -----------------------------
+warning: AK history capture failed after durable archive: AttributeError: module 'adapters.ak_history' has no attribute 'append_belief_measurement'
+warning: serving belief export failed after durable archive: ValueError: prospective serving capture does not rederive
+warning: AK history capture failed after durable archive: AttributeError: module 'adapters.ak_history' has no attribute 'append_belief_measurement'
+warning: serving belief export failed after durable archive: ValueError: prospective serving capture does not rederive
+warning: AK history capture failed after durable archive: AttributeError: module 'adapters.ak_history' has no attribute 'append_belief_measurement'
+warning: serving belief export failed after durable archive: ValueError: prospective serving capture does not rederive
+warning: AK history capture failed after durable archive: AttributeError: module 'adapters.ak_history' has no attribute 'append_belief_measurement'
+warning: serving belief export failed after durable archive: ValueError: prospective serving capture does not rederive
+resume    anchor advanced 9b967900bbfb -> 9e14fb6258dc during the run: 0 queued checkpoint(s) carried forward
+warning: AK history capture failed after durable archive: AttributeError: module 'adapters.ak_history' has no attribute 'append_belief_measurement'
+warning: serving belief export failed after durable archive: ValueError: prospective serving capture does not rederive
+warning: last outcome serving reference unavailable: [Errno 2] No such file or directory: '/tmp/tmpnz6m_vi9/store/serving-beliefs/00a40d78bdaf00ae65105bc0ee7af9e0b91bb43da5a8fd401a6cccbf196ae643.json'
+=========================== short test summary info ============================
+FAILED scripts/kernel_rnd/autokernel/loop/test_serial_run.py::test_actual_cpu_keep_cross_target_then_older_history_uses_latest_source[False-False]
+FAILED scripts/kernel_rnd/autokernel/loop/test_serial_run.py::test_actual_cpu_keep_cross_target_then_older_history_uses_latest_source[True-False]
+FAILED scripts/kernel_rnd/autokernel/loop/test_serial_run.py::test_actual_cpu_keep_cross_target_then_older_history_uses_latest_source[False-True]
+FAILED scripts/kernel_rnd/autokernel/loop/test_serial_run.py::test_actual_cpu_keep_cross_target_then_older_history_uses_latest_source[gate-True]
+4 failed in 8.79s

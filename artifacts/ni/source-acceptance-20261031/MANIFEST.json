@@ -1,0 +1,1217 @@
+[
+  {
+    "path": "root-paths/20261031T104620.301951Z-basefixtures-admission.json",
+    "original": "/mnt/raid0/llm/tmp/codex-ni-research-root-paths-finish-20261031/20261031T104620.301951Z-basefixtures-admission.json",
+    "sha256": "87dcdf9bffa107af8566486cfa18ba2510777179d5eb133dd46c756c29ab4c89",
+    "bytes": 1189
+  },
+  {
+    "path": "root-paths/20261031T104620.301951Z-basefixtures-receipt.json",
+    "original": "/mnt/raid0/llm/tmp/codex-ni-research-root-paths-finish-20261031/20261031T104620.301951Z-basefixtures-receipt.json",
+    "sha256": "07920b068c171fdab6d1b5de9d3efac528d3f72e633acab97eedf52967ee1a88",
+    "bytes": 1627,
+    "original_sha256": "d6dd8d48a4bedfbdb8ba96d57a9a4b7445c71c8ce06ccd4c81d15c277609ae2e",
+    "original_bytes": 1492,
+    "representation": "Readable derivative: machine-only decimal integer strings rendered as exact reversible <machine-int:0x...>; original retained at original source and private publication scratch."
+  },
+  {
+    "path": "root-paths/20261031T104620.301951Z-basefixtures-source-hashes.json",
+    "original": "/mnt/raid0/llm/tmp/codex-ni-research-root-paths-finish-20261031/20261031T104620.301951Z-basefixtures-source-hashes.json",
+    "sha256": "ec8dc7b97f0f42ce53fc1064e7daa3dae510c39239c4dba57e366330d1869103",
+    "bytes": 1956
+  },
+  {
+    "path": "root-paths/20261031T104620.301951Z-basefixtures.log",
+    "original": "/mnt/raid0/llm/tmp/codex-ni-research-root-paths-finish-20261031/20261031T104620.301951Z-basefixtures.log",
+    "sha256": "48f55d64c60ede9c5bb74a834b3da4990bb66e7b519242a33ad763af7cb33c0d",
+    "bytes": 58014,
+    "original_sha256": "65aea801c0eb21b25a3a5df7844737c5df5fdd2957e9fb050ec4bff47e8d04bb",
+    "original_bytes": 57923,
+    "representation": "Readable derivative: machine-only decimal integer strings rendered as exact reversible <machine-int:0x...>; original retained at original source and private publication scratch."
+  },
+  {
+    "path": "root-paths/20261031T104620.301951Z-basefixtures.xml",
+    "original": "/mnt/raid0/llm/tmp/codex-ni-research-root-paths-finish-20261031/20261031T104620.301951Z-basefixtures.xml",
+    "sha256": "7b6dd87efa26eb1d5d9cbfeb2220276e565f358a54da72886dc4aad7f41fe7fa",
+    "bytes": 82892,
+    "original_sha256": "3a3278c13790a06875673706439309db81fb2a25da3e7aa511491c277381b276",
+    "original_bytes": 82710,
+    "representation": "Readable derivative: machine-only decimal integer strings rendered as exact reversible <machine-int:0x...>; original retained at original source and private publication scratch."
+  },
+  {
+    "path": "root-paths/20261031T104645.874770Z-extended-admission.json",
+    "original": "/mnt/raid0/llm/tmp/codex-ni-research-root-paths-finish-20261031/20261031T104645.874770Z-extended-admission.json",
+    "sha256": "87dcdf9bffa107af8566486cfa18ba2510777179d5eb133dd46c756c29ab4c89",
+    "bytes": 1189
+  },
+  {
+    "path": "root-paths/20261031T104645.874770Z-extended-receipt.json",
+    "original": "/mnt/raid0/llm/tmp/codex-ni-research-root-paths-finish-20261031/20261031T104645.874770Z-extended-receipt.json",
+    "sha256": "11a19b225849361bf32cc709617c5f1a3c3b27c4732a181e9228d262c9fe4246",
+    "bytes": 1754,
+    "original_sha256": "5d8681683b51d53a1143919bc345be8ff070bffa8e2160abf342a55253768818",
+    "original_bytes": 1624,
+    "representation": "Readable derivative: machine-only decimal integer strings rendered as exact reversible <machine-int:0x...>; original retained at original source and private publication scratch."
+  },
+  {
+    "path": "root-paths/20261031T104645.874770Z-extended-source-hashes.json",
+    "original": "/mnt/raid0/llm/tmp/codex-ni-research-root-paths-finish-20261031/20261031T104645.874770Z-extended-source-hashes.json",
+    "sha256": "a8c501b9f0454063ccc6e2e5d39591929e701dbb3af92e9c5c32be87752279cb",
+    "bytes": 2221
+  },
+  {
+    "path": "root-paths/20261031T104645.874770Z-extended.log",
+    "original": "/mnt/raid0/llm/tmp/codex-ni-research-root-paths-finish-20261031/20261031T104645.874770Z-extended.log",
+    "sha256": "17e82025e2cc38a6ad7a2a5c8cf29057553b20ee839492b9a703ce9525d34aaf",
+    "bytes": 9840
+  },
+  {
+    "path": "root-paths/20261031T104645.874770Z-extended.xml",
+    "original": "/mnt/raid0/llm/tmp/codex-ni-research-root-paths-finish-20261031/20261031T104645.874770Z-extended.xml",
+    "sha256": "e5f7775ad534827b4f505cf05afedb424af389321380c34713b7427e838cb573",
+    "bytes": 55130
+  },
+  {
+    "path": "root-paths/20261031T104919.138593Z-baseline4-admission.json",
+    "original": "/mnt/raid0/llm/tmp/codex-ni-research-root-paths-finish-20261031/20261031T104919.138593Z-baseline4-admission.json",
+    "sha256": "87dcdf9bffa107af8566486cfa18ba2510777179d5eb133dd46c756c29ab4c89",
+    "bytes": 1189
+  },
+  {
+    "path": "root-paths/20261031T104919.138593Z-baseline4-receipt.json",
+    "original": "/mnt/raid0/llm/tmp/codex-ni-research-root-paths-finish-20261031/20261031T104919.138593Z-baseline4-receipt.json",
+    "sha256": "0b7a9436248779f54c60969d5caff4375f8ee3f6e743112dd6a268692b606716",
+    "bytes": 1281,
+    "original_sha256": "f2137663b324859a3a2a662199a3100bc03751b261e461ee448d1df5e30cd34f",
+    "original_bytes": 1151,
+    "representation": "Readable derivative: machine-only decimal integer strings rendered as exact reversible <machine-int:0x...>; original retained at original source and private publication scratch."
+  },
+  {
+    "path": "root-paths/20261031T104919.138593Z-baseline4-source-hashes.json",
+    "original": "/mnt/raid0/llm/tmp/codex-ni-research-root-paths-finish-20261031/20261031T104919.138593Z-baseline4-source-hashes.json",
+    "sha256": "5281735f1d89822c74fc46f6807b1003a1e84709b3cb5765d93e5e1078d492af",
+    "bytes": 129
+  },
+  {
+    "path": "root-paths/20261031T104919.138593Z-baseline4.log",
+    "original": "/mnt/raid0/llm/tmp/codex-ni-research-root-paths-finish-20261031/20261031T104919.138593Z-baseline4.log",
+    "sha256": "d0eafb362c2eea5804e50e08c6b675ba27440c657c2f407920dc58f90360e23b",
+    "bytes": 9496
+  },
+  {
+    "path": "root-paths/20261031T104919.138593Z-baseline4.xml",
+    "original": "/mnt/raid0/llm/tmp/codex-ni-research-root-paths-finish-20261031/20261031T104919.138593Z-baseline4.xml",
+    "sha256": "bbbe0a33777f592044f44cbeb0f4d5697465f876e9a11758221bf1721492eec2",
+    "bytes": 6329
+  },
+  {
+    "path": "root-paths/20261031T105013.792605Z-current-admission.json",
+    "original": "/mnt/raid0/llm/tmp/codex-ni-research-root-paths-finish-20261031/20261031T105013.792605Z-current-admission.json",
+    "sha256": "87dcdf9bffa107af8566486cfa18ba2510777179d5eb133dd46c756c29ab4c89",
+    "bytes": 1189
+  },
+  {
+    "path": "root-paths/20261031T105013.792605Z-current-receipt.json",
+    "original": "/mnt/raid0/llm/tmp/codex-ni-research-root-paths-finish-20261031/20261031T105013.792605Z-current-receipt.json",
+    "sha256": "2c64c6cb2a31feeaf2db3362238c12f2ab213969c0aabbd74db6a0c5cc15c65b",
+    "bytes": 1616,
+    "original_sha256": "13b368573591b3b8340c981b5d1a562e39013224b5a21160d10247f1edfa203a",
+    "original_bytes": 1481,
+    "representation": "Readable derivative: machine-only decimal integer strings rendered as exact reversible <machine-int:0x...>; original retained at original source and private publication scratch."
+  },
+  {
+    "path": "root-paths/20261031T105013.792605Z-current-source-hashes.json",
+    "original": "/mnt/raid0/llm/tmp/codex-ni-research-root-paths-finish-20261031/20261031T105013.792605Z-current-source-hashes.json",
+    "sha256": "cfd9cf8d14e8cb6af5db73810e77fb5c409b3d6ee1188842afe48d07d5bbc65c",
+    "bytes": 2074
+  },
+  {
+    "path": "root-paths/20261031T105013.792605Z-current.log",
+    "original": "/mnt/raid0/llm/tmp/codex-ni-research-root-paths-finish-20261031/20261031T105013.792605Z-current.log",
+    "sha256": "70cb6b996c151e2747c5864fdfcc55a6532b928eb63ea4f162a58b6d7e3c04e2",
+    "bytes": 340
+  },
+  {
+    "path": "root-paths/20261031T105013.792605Z-current.xml",
+    "original": "/mnt/raid0/llm/tmp/codex-ni-research-root-paths-finish-20261031/20261031T105013.792605Z-current.xml",
+    "sha256": "1501db3581eb5ca019365e7d520bb7c870d08db5ec5940e82d6fb3af00c51a5a",
+    "bytes": 38410
+  },
+  {
+    "path": "root-paths/20261031T105047.265820Z-integrated-admission.json",
+    "original": "/mnt/raid0/llm/tmp/codex-ni-research-root-paths-finish-20261031/20261031T105047.265820Z-integrated-admission.json",
+    "sha256": "87dcdf9bffa107af8566486cfa18ba2510777179d5eb133dd46c756c29ab4c89",
+    "bytes": 1189
+  },
+  {
+    "path": "root-paths/20261031T105047.265820Z-integrated-receipt.json",
+    "original": "/mnt/raid0/llm/tmp/codex-ni-research-root-paths-finish-20261031/20261031T105047.265820Z-integrated-receipt.json",
+    "sha256": "7e80d73f6a34a098e0e1688b0674f48e0cc94a4ed44a5a92defbac2abdc5d012",
+    "bytes": 1690,
+    "original_sha256": "57a90a7d58171a726121e3083797a74fd4fd42bac4b9418c602bca594508cf8b",
+    "original_bytes": 1560,
+    "representation": "Readable derivative: machine-only decimal integer strings rendered as exact reversible <machine-int:0x...>; original retained at original source and private publication scratch."
+  },
+  {
+    "path": "root-paths/20261031T105047.265820Z-integrated-source-hashes.json",
+    "original": "/mnt/raid0/llm/tmp/codex-ni-research-root-paths-finish-20261031/20261031T105047.265820Z-integrated-source-hashes.json",
+    "sha256": "99ec89a2e8847d1e09eebf4e227daae9fd47ea3aaafde65b4aca3de6884dedfe",
+    "bytes": 2207
+  },
+  {
+    "path": "root-paths/20261031T105047.265820Z-integrated.log",
+    "original": "/mnt/raid0/llm/tmp/codex-ni-research-root-paths-finish-20261031/20261031T105047.265820Z-integrated.log",
+    "sha256": "bcbf9e437134b70beee88edbda3998ccd5eecbf8b37a71da453b0aca5efa7489",
+    "bytes": 1315
+  },
+  {
+    "path": "root-paths/20261031T105047.265820Z-integrated.xml",
+    "original": "/mnt/raid0/llm/tmp/codex-ni-research-root-paths-finish-20261031/20261031T105047.265820Z-integrated.xml",
+    "sha256": "db39aa99c1b553c45494b701631c0d67aca831b5ec652a4cad940f423288dd16",
+    "bytes": 39457
+  },
+  {
+    "path": "root-paths/20261031T105213.612670Z-hr3-admission.json",
+    "original": "/mnt/raid0/llm/tmp/codex-ni-research-root-paths-finish-20261031/20261031T105213.612670Z-hr3-admission.json",
+    "sha256": "87dcdf9bffa107af8566486cfa18ba2510777179d5eb133dd46c756c29ab4c89",
+    "bytes": 1189
+  },
+  {
+    "path": "root-paths/20261031T105213.612670Z-hr3-receipt.json",
+    "original": "/mnt/raid0/llm/tmp/codex-ni-research-root-paths-finish-20261031/20261031T105213.612670Z-hr3-receipt.json",
+    "sha256": "bc5f75848567e0af7834556c195c7f434c7bd2a8c8271a2ff4a3e446f9957935",
+    "bytes": 1200,
+    "original_sha256": "be3ba1563d7f62b17c3ba832679d9670ecc05d97f2fd7e191b807db7727cb5b9",
+    "original_bytes": 1070,
+    "representation": "Readable derivative: machine-only decimal integer strings rendered as exact reversible <machine-int:0x...>; original retained at original source and private publication scratch."
+  },
+  {
+    "path": "root-paths/20261031T105213.612670Z-hr3-source-hashes.json",
+    "original": "/mnt/raid0/llm/tmp/codex-ni-research-root-paths-finish-20261031/20261031T105213.612670Z-hr3-source-hashes.json",
+    "sha256": "33f2a184f40064f5c816a7230c9ebaa72bf325dcee07c6ec908409e5c898cfb8",
+    "bytes": 1961
+  },
+  {
+    "path": "root-paths/20261031T105213.612670Z-hr3.log",
+    "original": "/mnt/raid0/llm/tmp/codex-ni-research-root-paths-finish-20261031/20261031T105213.612670Z-hr3.log",
+    "sha256": "b14105e52a33e85c4332e00bc0afcb2ab5fb2ef863d6432f949c34111f64251d",
+    "bytes": 98
+  },
+  {
+    "path": "root-paths/20261031T105213.612670Z-hr3.xml",
+    "original": "/mnt/raid0/llm/tmp/codex-ni-research-root-paths-finish-20261031/20261031T105213.612670Z-hr3.xml",
+    "sha256": "12ef8db56a58ee3e45d856b5f072148e77c1cd3acbae0797b1a727389c39b965",
+    "bytes": 1033
+  },
+  {
+    "path": "root-paths/20261031T105454.963428Z-ninth-admission.json",
+    "original": "/mnt/raid0/llm/tmp/codex-ni-research-root-paths-finish-20261031/20261031T105454.963428Z-ninth-admission.json",
+    "sha256": "b41b8647f920edc92cad82eec92725a0fd81edfd7fd3d8a36f9a22db6ec995d1",
+    "bytes": 957
+  },
+  {
+    "path": "root-paths/20261031T105454.963428Z-ninth-receipt.json",
+    "original": "/mnt/raid0/llm/tmp/codex-ni-research-root-paths-finish-20261031/20261031T105454.963428Z-ninth-receipt.json",
+    "sha256": "4b6b771434d37d8c789497a6809696f48280325ed3978caeb5a8066228e7df8e",
+    "bytes": 1807,
+    "original_sha256": "5ee0540579cb318a83b73b2de3c3991147127c0a56e01d3e9ab528d2ea8a4a54",
+    "original_bytes": 1677,
+    "representation": "Readable derivative: machine-only decimal integer strings rendered as exact reversible <machine-int:0x...>; original retained at original source and private publication scratch."
+  },
+  {
+    "path": "root-paths/20261031T105454.963428Z-ninth-source-hashes.json",
+    "original": "/mnt/raid0/llm/tmp/codex-ni-research-root-paths-finish-20261031/20261031T105454.963428Z-ninth-source-hashes.json",
+    "sha256": "e5c883ff3142b520d366042d93c23b3854911256c62f10e558d1291317dc5138",
+    "bytes": 2586
+  },
+  {
+    "path": "root-paths/20261031T105454.963428Z-ninth.log",
+    "original": "/mnt/raid0/llm/tmp/codex-ni-research-root-paths-finish-20261031/20261031T105454.963428Z-ninth.log",
+    "sha256": "7201085b0e95f2f72fac454d669b5ad7797adad0f3192e00564ad582a1bf8416",
+    "bytes": 340
+  },
+  {
+    "path": "root-paths/20261031T105454.963428Z-ninth.xml",
+    "original": "/mnt/raid0/llm/tmp/codex-ni-research-root-paths-finish-20261031/20261031T105454.963428Z-ninth.xml",
+    "sha256": "6f40a6ffa591c115ef01b0d52dcd83e1f3c806059079133adff2c004a3e82d82",
+    "bytes": 42525
+  },
+  {
+    "path": "root-paths/20261031T105522.517920Z-mismatch-admission.json",
+    "original": "/mnt/raid0/llm/tmp/codex-ni-research-root-paths-finish-20261031/20261031T105522.517920Z-mismatch-admission.json",
+    "sha256": "b41b8647f920edc92cad82eec92725a0fd81edfd7fd3d8a36f9a22db6ec995d1",
+    "bytes": 957
+  },
+  {
+    "path": "root-paths/20261031T105522.517920Z-mismatch-receipt.json",
+    "original": "/mnt/raid0/llm/tmp/codex-ni-research-root-paths-finish-20261031/20261031T105522.517920Z-mismatch-receipt.json",
+    "sha256": "79a596d0da4168d7dfc9a501a3544502ee3912318c76bb19dd7c28a654fa5a6b",
+    "bytes": 1311,
+    "original_sha256": "ebf874f973dd87c4186e559d4e856d925fea6083b3a50b1550b9ca878a100c0e",
+    "original_bytes": 1181,
+    "representation": "Readable derivative: machine-only decimal integer strings rendered as exact reversible <machine-int:0x...>; original retained at original source and private publication scratch."
+  },
+  {
+    "path": "root-paths/20261031T105522.517920Z-mismatch-source-hashes.json",
+    "original": "/mnt/raid0/llm/tmp/codex-ni-research-root-paths-finish-20261031/20261031T105522.517920Z-mismatch-source-hashes.json",
+    "sha256": "fccd1798f80c300b0c527a92d2e6471f7184ee8d520d45927fc4a4c3e2b15f37",
+    "bytes": 2207
+  },
+  {
+    "path": "root-paths/20261031T105522.517920Z-mismatch.log",
+    "original": "/mnt/raid0/llm/tmp/codex-ni-research-root-paths-finish-20261031/20261031T105522.517920Z-mismatch.log",
+    "sha256": "4a846f2cd1d442afdc66c69105e562f1c10ef5f282b6088f0feca07791c8fd48",
+    "bytes": 12456
+  },
+  {
+    "path": "root-paths/20261031T105522.517920Z-mismatch.xml",
+    "original": "/mnt/raid0/llm/tmp/codex-ni-research-root-paths-finish-20261031/20261031T105522.517920Z-mismatch.xml",
+    "sha256": "5115a764a7c323c30633035f224fb14b629dac0e1b58f741862d95c7c0538c45",
+    "bytes": 6329
+  },
+  {
+    "path": "root-paths/20261031T105610.473823Z-mismatchone-admission.json",
+    "original": "/mnt/raid0/llm/tmp/codex-ni-research-root-paths-finish-20261031/20261031T105610.473823Z-mismatchone-admission.json",
+    "sha256": "b41b8647f920edc92cad82eec92725a0fd81edfd7fd3d8a36f9a22db6ec995d1",
+    "bytes": 957
+  },
+  {
+    "path": "root-paths/20261031T105610.473823Z-mismatchone-receipt.json",
+    "original": "/mnt/raid0/llm/tmp/codex-ni-research-root-paths-finish-20261031/20261031T105610.473823Z-mismatchone-receipt.json",
+    "sha256": "cca3432aa28e1fd97ddc40064e9fcc7c0397cbfe04717b2a3f9ba5f3674888fb",
+    "bytes": 1316,
+    "original_sha256": "40449eb8b913a2825ae41606f63e8c83fb8079f59a7ee3d9b8f76bfb2c0fbe15",
+    "original_bytes": 1181,
+    "representation": "Readable derivative: machine-only decimal integer strings rendered as exact reversible <machine-int:0x...>; original retained at original source and private publication scratch."
+  },
+  {
+    "path": "root-paths/20261031T105610.473823Z-mismatchone-source-hashes.json",
+    "original": "/mnt/raid0/llm/tmp/codex-ni-research-root-paths-finish-20261031/20261031T105610.473823Z-mismatchone-source-hashes.json",
+    "sha256": "fccd1798f80c300b0c527a92d2e6471f7184ee8d520d45927fc4a4c3e2b15f37",
+    "bytes": 2207
+  },
+  {
+    "path": "root-paths/20261031T105610.473823Z-mismatchone.log",
+    "original": "/mnt/raid0/llm/tmp/codex-ni-research-root-paths-finish-20261031/20261031T105610.473823Z-mismatchone.log",
+    "sha256": "f7cb824c16947a360581dabfd921d44438387ab56eb78b34a3e62a2e7f2d8ecf",
+    "bytes": 12456
+  },
+  {
+    "path": "root-paths/20261031T105610.473823Z-mismatchone.xml",
+    "original": "/mnt/raid0/llm/tmp/codex-ni-research-root-paths-finish-20261031/20261031T105610.473823Z-mismatchone.xml",
+    "sha256": "532f81a5392bad7e0657d0dc37e706911d6675db4b327616d8bf6bc996d9b0d4",
+    "bytes": 6329
+  },
+  {
+    "path": "root-paths/CLOSEOUT.md",
+    "original": "/mnt/raid0/llm/tmp/codex-ni-research-root-paths-finish-20261031/CLOSEOUT.md",
+    "sha256": "c3ed76fe73ef84413dbba04c0cf31d9be722cf9a4f48b52abb2ee2cf43320014",
+    "bytes": 1334
+  },
+  {
+    "path": "root-paths/REVIEW.md",
+    "original": "/mnt/raid0/llm/tmp/codex-ni-research-root-paths-finish-20261031/REVIEW.md",
+    "sha256": "0bc70ddf324a1abf2f29cd149446aa180173ddb4433786346b358e42ca3aafd3",
+    "bytes": 10813
+  },
+  {
+    "path": "root-paths/ROOT-CAPSULE-DRAFT.md",
+    "original": "/mnt/raid0/llm/tmp/codex-ni-research-root-paths-finish-20261031/ROOT-CAPSULE-DRAFT.md",
+    "sha256": "2cea5f87dbc4f320d6fb889ec333a21059de43c019930102d80e55f68cb908c7",
+    "bytes": 2050
+  },
+  {
+    "path": "root-paths/base-fixture-classification.json",
+    "original": "/mnt/raid0/llm/tmp/codex-ni-research-root-paths-finish-20261031/base-fixture-classification.json",
+    "sha256": "0155c634f426646524890e28d281a5ea50aabbb1e7bb156b52ff21dc43eda7bf",
+    "bytes": 19829,
+    "original_sha256": "73bf4d0f60de667104916888794482bd072bc2e63978da5bf1d952d6194fa6fe",
+    "original_bytes": 19738,
+    "representation": "Readable derivative: machine-only decimal integer strings rendered as exact reversible <machine-int:0x...>; original retained at original source and private publication scratch."
+  },
+  {
+    "path": "root-paths/baseline4-source-git-manifest.json",
+    "original": "/mnt/raid0/llm/tmp/codex-ni-research-root-paths-finish-20261031/baseline4-source-git-manifest.json",
+    "sha256": "d2e50662e66ea145908b5729f4eed3d8a7673651b8b3deb3720cf0576360f231",
+    "bytes": 2112
+  },
+  {
+    "path": "root-paths/logs/agent_audit-codex-ni-01a16d6b.log",
+    "original": "/mnt/raid0/llm/tmp/codex-ni-research-root-paths-finish-20261031/logs/agent_audit-codex-ni-01a16d6b.log",
+    "sha256": "88ee7065c56f5de04f4a31b788176542fdc385ab998640f8fbd44384dc61ed92",
+    "bytes": 995
+  },
+  {
+    "path": "root-paths/native-capture-mismatches.jsonl",
+    "original": "/mnt/raid0/llm/tmp/codex-ni-research-root-paths-finish-20261031/native-capture-mismatches.jsonl",
+    "sha256": "e047ec812c26de283dc3452682ce86c6c1d46b6ded2c3d6fd831fc6022a400f6",
+    "bytes": 464300
+  },
+  {
+    "path": "root-paths/ninth-writer.patch",
+    "original": "/mnt/raid0/llm/tmp/codex-ni-research-root-paths-finish-20261031/ninth-writer.patch",
+    "sha256": "ccb52bdfa036f7f50ccfe792abddbeb1db92bcb7d7aa3163c8e931862b83874f",
+    "bytes": 6026
+  },
+  {
+    "path": "root-paths/publication-receipt.json",
+    "original": "/mnt/raid0/llm/tmp/codex-ni-research-root-paths-finish-20261031/publication-receipt.json",
+    "sha256": "ef3a24635412864ac118464ecd29230ab6d8f6a4d9f41af6dd813ee8cc8a8b7b",
+    "bytes": 322
+  },
+  {
+    "path": "root-paths/review-20261031T1050.patch",
+    "original": "/mnt/raid0/llm/tmp/codex-ni-research-root-paths-finish-20261031/review-20261031T1050.patch",
+    "sha256": "7a5daade2b4d96d902d10103ba2e6994c8a1f741243111d227cf30b997dc29fb",
+    "bytes": 41972
+  },
+  {
+    "path": "root-paths/review-final-tracked.patch",
+    "original": "/mnt/raid0/llm/tmp/codex-ni-research-root-paths-finish-20261031/review-final-tracked.patch",
+    "sha256": "78062f7b26ed8295319e254fab9c3495993f114dc7a0f1acabee895c1a3fd293",
+    "bytes": 44208
+  },
+  {
+    "path": "root-paths/review-integrated.patch",
+    "original": "/mnt/raid0/llm/tmp/codex-ni-research-root-paths-finish-20261031/review-integrated.patch",
+    "sha256": "7a5daade2b4d96d902d10103ba2e6994c8a1f741243111d227cf30b997dc29fb",
+    "bytes": 41972
+  },
+  {
+    "path": "scg/ADMISSION.json",
+    "original": "/mnt/raid0/llm/tmp/codex-ni-scoring-live-quality-20261031/ADMISSION.json",
+    "sha256": "f8ba88d21eca72ecb0c1b1cd721c1ddbbe2f6c63d460fe6aeab193360286dfd3",
+    "bytes": 1629
+  },
+  {
+    "path": "scg/README.md",
+    "original": "/mnt/raid0/llm/tmp/codex-ni-scoring-live-quality-20261031/README.md",
+    "sha256": "962d88181193b97fcac3863448ca03634a4d6596ff7e7efb65536d8d8502df22",
+    "bytes": 2564
+  },
+  {
+    "path": "scg/REVIEW.json",
+    "original": "/mnt/raid0/llm/tmp/codex-ni-scoring-live-quality-20261031/REVIEW.json",
+    "sha256": "07ca636863933845f2dcec141edaccb0d5b13f105d8d1ebf4a57d3f6def8edfe",
+    "bytes": 3145
+  },
+  {
+    "path": "scg/ROOT-FILING-DRAFT.md",
+    "original": "/mnt/raid0/llm/tmp/codex-ni-scoring-live-quality-20261031/ROOT-FILING-DRAFT.md",
+    "sha256": "d7a8dc16704a97f58a20d9b64bbe2488262f0c151e229c65ad41d98858667c46",
+    "bytes": 2093
+  },
+  {
+    "path": "scg/full-prechange-stop.json",
+    "original": "/mnt/raid0/llm/tmp/codex-ni-scoring-live-quality-20261031/full-prechange-stop.json",
+    "sha256": "8c3221d0a74b4187d160312f7cc2cce9b92654c2ce542078b395d7850d00674b",
+    "bytes": 194
+  },
+  {
+    "path": "scg/preserved-provider-20261031T105923Z.json",
+    "original": "/mnt/raid0/llm/tmp/codex-ni-scoring-live-quality-20261031/preserved-provider-20261031T105923Z.json",
+    "sha256": "6f6dbdd778f4b54b484b0c7cb5c72f9a3058647dbc9c815b3748cd3765abe4b8",
+    "bytes": 208
+  },
+  {
+    "path": "scg/provider-trace-20261031T105652Z.jsonl",
+    "original": "/mnt/raid0/llm/tmp/codex-ni-scoring-live-quality-20261031/provider-trace-20261031T105652Z.jsonl",
+    "sha256": "52b049900a36436b68a19819021841eb69e3d0d717f567a7b40e0908edd82475",
+    "bytes": 890
+  },
+  {
+    "path": "scg/provider-trace-20261031T105728Z.jsonl",
+    "original": "/mnt/raid0/llm/tmp/codex-ni-scoring-live-quality-20261031/provider-trace-20261031T105728Z.jsonl",
+    "sha256": "16b908aea29fd2291afa47f0a6dbdeb1b2343c37a364e52546757176f2bcaa88",
+    "bytes": 524
+  },
+  {
+    "path": "scg/provider-trace-20261031T105757Z.jsonl",
+    "original": "/mnt/raid0/llm/tmp/codex-ni-scoring-live-quality-20261031/provider-trace-20261031T105757Z.jsonl",
+    "sha256": "cf358684cbbd6aaca9e2edba39428d1e7ddb2e75b7ebe3f223ed7ce1314f1310",
+    "bytes": 524
+  },
+  {
+    "path": "scg/ruff-check-final.log",
+    "original": "/mnt/raid0/llm/tmp/codex-ni-scoring-live-quality-20261031/ruff-check-final.log",
+    "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+    "bytes": 19
+  },
+  {
+    "path": "scg/ruff-format-base.log",
+    "original": "/mnt/raid0/llm/tmp/codex-ni-scoring-live-quality-20261031/ruff-format-base.log",
+    "sha256": "c87005e3a3bff8bdd3f5a6de48132dfc685a860021f793f45c438330ab8449bf",
+    "bytes": 1171
+  },
+  {
+    "path": "scg/ruff-format-final.log",
+    "original": "/mnt/raid0/llm/tmp/codex-ni-scoring-live-quality-20261031/ruff-format-final.log",
+    "sha256": "9339bfa672344d4cf5dac39a4896b38a40f28f3a36d4d44c474c8d7f8cf36df9",
+    "bytes": 1089
+  },
+  {
+    "path": "scg/shard-stop.json",
+    "original": "/mnt/raid0/llm/tmp/codex-ni-scoring-live-quality-20261031/shard-stop.json",
+    "sha256": "019ea57d9a4b683a1787d24ed9c806dd4777ee48ab492d70113a9c878cb30b3f",
+    "bytes": 323
+  },
+  {
+    "path": "scg/source.patch",
+    "original": "/mnt/raid0/llm/tmp/codex-ni-scoring-live-quality-20261031/source.patch",
+    "sha256": "bef15027964c51d4a2177c1d2c9615a22098b6f3cf4fa6f15c96402cc85a7bc2",
+    "bytes": 1940
+  },
+  {
+    "path": "scg/start-20261031T105112Z.json",
+    "original": "/mnt/raid0/llm/tmp/codex-ni-scoring-live-quality-20261031/start-20261031T105112Z.json",
+    "sha256": "deece19140bd7e1e756aa31b7d120db2f2f8c9f5705d201d9beec676a00ebe8a",
+    "bytes": 337
+  },
+  {
+    "path": "scg/start-20261031T105220Z.json",
+    "original": "/mnt/raid0/llm/tmp/codex-ni-scoring-live-quality-20261031/start-20261031T105220Z.json",
+    "sha256": "1af0ef93ea2c6bab32d0c30d75b49298a3f38e37af25b85bc930ae8fb844d1ff",
+    "bytes": 128
+  },
+  {
+    "path": "scg/start-20261031T105302Z.json",
+    "original": "/mnt/raid0/llm/tmp/codex-ni-scoring-live-quality-20261031/start-20261031T105302Z.json",
+    "sha256": "6c367e617f1df0656c2b46389998ced3f0b5d4e54296cc1cfdda7cdaf5458a66",
+    "bytes": 189
+  },
+  {
+    "path": "scg/start-20261031T105601Z.json",
+    "original": "/mnt/raid0/llm/tmp/codex-ni-scoring-live-quality-20261031/start-20261031T105601Z.json",
+    "sha256": "390b8de48e46af41505ad9a34f0de131fa3a6b1088a9ccb629906276dddcf0bc",
+    "bytes": 357
+  },
+  {
+    "path": "scg/start-20261031T105651Z.json",
+    "original": "/mnt/raid0/llm/tmp/codex-ni-scoring-live-quality-20261031/start-20261031T105651Z.json",
+    "sha256": "b549e8c4fc16c5629edd1e9f3d09fb00b2322a3b7d2dbb8c85ef161c887791f2",
+    "bytes": 376
+  },
+  {
+    "path": "scg/start-20261031T105728Z.json",
+    "original": "/mnt/raid0/llm/tmp/codex-ni-scoring-live-quality-20261031/start-20261031T105728Z.json",
+    "sha256": "aa12524f4f77dbaeb4f5e73aaac1542291a4c9d64a6d2207ec11b6e09d3f9095",
+    "bytes": 376
+  },
+  {
+    "path": "scg/start-20261031T105757Z.json",
+    "original": "/mnt/raid0/llm/tmp/codex-ni-scoring-live-quality-20261031/start-20261031T105757Z.json",
+    "sha256": "5754ffe7890f93159b66a2f2870a279f011a0c3069720ed22c94c9bdb9c232a1",
+    "bytes": 376
+  },
+  {
+    "path": "scg/start-20261031T105829Z.json",
+    "original": "/mnt/raid0/llm/tmp/codex-ni-scoring-live-quality-20261031/start-20261031T105829Z.json",
+    "sha256": "f6f2c5fcf705de0e18d4598b1cb3be666455238b06fdca754ac3a5176711ac61",
+    "bytes": 204
+  },
+  {
+    "path": "scg/start-20261031T105923Z.json",
+    "original": "/mnt/raid0/llm/tmp/codex-ni-scoring-live-quality-20261031/start-20261031T105923Z.json",
+    "sha256": "8866a3b0c4c1051421bc5486802dab385625b815a2b4a7542cacd075d362f479",
+    "bytes": 240
+  },
+  {
+    "path": "scg/start-20261031T105950Z.json",
+    "original": "/mnt/raid0/llm/tmp/codex-ni-scoring-live-quality-20261031/start-20261031T105950Z.json",
+    "sha256": "6b3b1fccf263498356e9a39dc63a7964eda356a1f594a956f16f9e61a42d96e2",
+    "bytes": 143
+  },
+  {
+    "path": "scg/start-20261031T110019Z.json",
+    "original": "/mnt/raid0/llm/tmp/codex-ni-scoring-live-quality-20261031/start-20261031T110019Z.json",
+    "sha256": "303ccfdb83c971fc3872c079505c7666818dd4598d8b5fead4abf29fef542f66",
+    "bytes": 86
+  },
+  {
+    "path": "scg/start-20261031T110129Z.json",
+    "original": "/mnt/raid0/llm/tmp/codex-ni-scoring-live-quality-20261031/start-20261031T110129Z.json",
+    "sha256": "158f20990be5650be74825a3cbac0c6f6c466fc3914c1eb90f54d6fcd4550b50",
+    "bytes": 330
+  },
+  {
+    "path": "scg/start-20261031T110226Z.json",
+    "original": "/mnt/raid0/llm/tmp/codex-ni-scoring-live-quality-20261031/start-20261031T110226Z.json",
+    "sha256": "c6299082aeb50f2dc6c0880761122712b2154e17cf682c565cbc6a353060f7e9",
+    "bytes": 330
+  },
+  {
+    "path": "scg/start-20261031T110340Z.json",
+    "original": "/mnt/raid0/llm/tmp/codex-ni-scoring-live-quality-20261031/start-20261031T110340Z.json",
+    "sha256": "d4a8df0e0ea045d37bbb34cb4ad829a93cd22397562e7d432860c692296e97ae",
+    "bytes": 154
+  },
+  {
+    "path": "scg/start-20261031T110402Z.json",
+    "original": "/mnt/raid0/llm/tmp/codex-ni-scoring-live-quality-20261031/start-20261031T110402Z.json",
+    "sha256": "d220754d2ead2c3c7a4dd172844b57d238b43d8881faa625ff1ca43a92371aaf",
+    "bytes": 243
+  },
+  {
+    "path": "scg/validation-20261031T104752Z-receipt.json",
+    "original": "/mnt/raid0/llm/tmp/codex-ni-scoring-live-quality-20261031/validation-20261031T104752Z-receipt.json",
+    "sha256": "1d43043048ac62a59bfefa504298470d6390ed49a1a4dd80a245483ee814cdf2",
+    "bytes": 559
+  },
+  {
+    "path": "scg/validation-20261031T104752Z.log",
+    "original": "/mnt/raid0/llm/tmp/codex-ni-scoring-live-quality-20261031/validation-20261031T104752Z.log",
+    "sha256": "5256a7a061b29b30cb2f86aa8b9c88c047f622e2465faaca92063f17814d6571",
+    "bytes": 648
+  },
+  {
+    "path": "scg/validation-20261031T104803Z-receipt.json",
+    "original": "/mnt/raid0/llm/tmp/codex-ni-scoring-live-quality-20261031/validation-20261031T104803Z-receipt.json",
+    "sha256": "1ff7662f93f3a38d6d49b74dabe5b63fc3a04ec1ed0c6bf6e8b9c55c46f9c8f3",
+    "bytes": 562
+  },
+  {
+    "path": "scg/validation-20261031T104803Z.log",
+    "original": "/mnt/raid0/llm/tmp/codex-ni-scoring-live-quality-20261031/validation-20261031T104803Z.log",
+    "sha256": "d1aeda21ab41202918a9e60492fc702c2d16aa72146343ee0c5ab6feb658c9a0",
+    "bytes": 2141
+  },
+  {
+    "path": "scg/validation-20261031T104928Z-receipt.json",
+    "original": "/mnt/raid0/llm/tmp/codex-ni-scoring-live-quality-20261031/validation-20261031T104928Z-receipt.json",
+    "sha256": "1a7c38a90a450a364364a3698c97aae4076ddd81d11f5662c323e4d38fca681e",
+    "bytes": 565
+  },
+  {
+    "path": "scg/validation-20261031T104928Z.log",
+    "original": "/mnt/raid0/llm/tmp/codex-ni-scoring-live-quality-20261031/validation-20261031T104928Z.log",
+    "sha256": "eb606a07c5f03d44d365882608b48d167cbdacdd0b8d6862941d4b259c1683b1",
+    "bytes": 2404
+  },
+  {
+    "path": "scg/validation-20261031T105112Z-receipt.json",
+    "original": "/mnt/raid0/llm/tmp/codex-ni-scoring-live-quality-20261031/validation-20261031T105112Z-receipt.json",
+    "sha256": "5cce86528d27a3f39428479cd08b0ab9e588a3aa6bf065a88c42837c7ad75509",
+    "bytes": 562
+  },
+  {
+    "path": "scg/validation-20261031T105112Z.log",
+    "original": "/mnt/raid0/llm/tmp/codex-ni-scoring-live-quality-20261031/validation-20261031T105112Z.log",
+    "sha256": "fb5ae6f2a7dc4c72ece336daaf79e4f432dd2b01e231cb770d7e92cf7da99ce4",
+    "bytes": 1129
+  },
+  {
+    "path": "scg/validation-20261031T105220Z-receipt.json",
+    "original": "/mnt/raid0/llm/tmp/codex-ni-scoring-live-quality-20261031/validation-20261031T105220Z-receipt.json",
+    "sha256": "21a2fd2f0a14ba36a4ae0bf70d4a0778cb66a1a7be6811facee9ba5f7fc9c0f4",
+    "bytes": 562
+  },
+  {
+    "path": "scg/validation-20261031T105220Z.log",
+    "original": "/mnt/raid0/llm/tmp/codex-ni-scoring-live-quality-20261031/validation-20261031T105220Z.log",
+    "sha256": "c2bea17749144eb0ce174128ac4d20512ed38086ada66946918245a53848afeb",
+    "bytes": 1229
+  },
+  {
+    "path": "scg/validation-20261031T105302Z-receipt.json",
+    "original": "/mnt/raid0/llm/tmp/codex-ni-scoring-live-quality-20261031/validation-20261031T105302Z-receipt.json",
+    "sha256": "a9033178677bab4f33da62c842b0d9f6d7aa752683d3522b0353b2fcf1784cd9",
+    "bytes": 564
+  },
+  {
+    "path": "scg/validation-20261031T105302Z.log",
+    "original": "/mnt/raid0/llm/tmp/codex-ni-scoring-live-quality-20261031/validation-20261031T105302Z.log",
+    "sha256": "0de783b5a5dec15437a9574b8ddee71a15e3dc4d1f22336969155577df4f381f",
+    "bytes": 6974
+  },
+  {
+    "path": "scg/validation-20261031T105601Z-receipt.json",
+    "original": "/mnt/raid0/llm/tmp/codex-ni-scoring-live-quality-20261031/validation-20261031T105601Z-receipt.json",
+    "sha256": "b443ecd9f8bb475777aab3e2f3a908d523aa4346e85a4acf41d23d9b8b5a44cd",
+    "bytes": 562
+  },
+  {
+    "path": "scg/validation-20261031T105601Z.log",
+    "original": "/mnt/raid0/llm/tmp/codex-ni-scoring-live-quality-20261031/validation-20261031T105601Z.log",
+    "sha256": "09ace85d3339af7a36c199a70fffc58b792e509125fbcecfa985d811fa911e32",
+    "bytes": 1874
+  },
+  {
+    "path": "scg/validation-20261031T105651Z-receipt.json",
+    "original": "/mnt/raid0/llm/tmp/codex-ni-scoring-live-quality-20261031/validation-20261031T105651Z-receipt.json",
+    "sha256": "c4f040a34cd2889e7c3ea58394ab46d73daf74b25c02c1bcde7250e3786e3036",
+    "bytes": 563
+  },
+  {
+    "path": "scg/validation-20261031T105651Z.log",
+    "original": "/mnt/raid0/llm/tmp/codex-ni-scoring-live-quality-20261031/validation-20261031T105651Z.log",
+    "sha256": "5702be04f5d4c95d3354a9f4b5cdfbcf3fc2001090f24d1955914927857dda90",
+    "bytes": 727
+  },
+  {
+    "path": "scg/validation-20261031T105728Z-receipt.json",
+    "original": "/mnt/raid0/llm/tmp/codex-ni-scoring-live-quality-20261031/validation-20261031T105728Z-receipt.json",
+    "sha256": "8ab3cc7c360dc477aa438585e67da03ff3c2911bce06a4078557f139381697f7",
+    "bytes": 563
+  },
+  {
+    "path": "scg/validation-20261031T105728Z.log",
+    "original": "/mnt/raid0/llm/tmp/codex-ni-scoring-live-quality-20261031/validation-20261031T105728Z.log",
+    "sha256": "1370faffdab77bb7b7461c9d86706273d2d0fc1e43e277e0e50e2b8196a40d49",
+    "bytes": 727
+  },
+  {
+    "path": "scg/validation-20261031T105757Z-receipt.json",
+    "original": "/mnt/raid0/llm/tmp/codex-ni-scoring-live-quality-20261031/validation-20261031T105757Z-receipt.json",
+    "sha256": "1a0f0a8f4c5afd1e2a1a60ea4d495b0c4784296bdc498a3dcb1fe444d98d6c71",
+    "bytes": 563
+  },
+  {
+    "path": "scg/validation-20261031T105757Z.log",
+    "original": "/mnt/raid0/llm/tmp/codex-ni-scoring-live-quality-20261031/validation-20261031T105757Z.log",
+    "sha256": "7ece9f52e89ca43b8e109cee1af24f3756b4dfb52d48f534ca4d832ba373fe7f",
+    "bytes": 727
+  },
+  {
+    "path": "scg/validation-20261031T105829Z-receipt.json",
+    "original": "/mnt/raid0/llm/tmp/codex-ni-scoring-live-quality-20261031/validation-20261031T105829Z-receipt.json",
+    "sha256": "fcf1608db5809bff8fe8439b05aff4fe1d512f709872a6b4193e48a3562ed686",
+    "bytes": 563
+  },
+  {
+    "path": "scg/validation-20261031T105829Z.log",
+    "original": "/mnt/raid0/llm/tmp/codex-ni-scoring-live-quality-20261031/validation-20261031T105829Z.log",
+    "sha256": "ba2164086fcdcd01d519f4e6500f2b441c323e27cbd2d545f17a1ef605557d7e",
+    "bytes": 808
+  },
+  {
+    "path": "scg/validation-20261031T105923Z-receipt.json",
+    "original": "/mnt/raid0/llm/tmp/codex-ni-scoring-live-quality-20261031/validation-20261031T105923Z-receipt.json",
+    "sha256": "e1c64638c0f4d724972bb02e0ac646aa3050bf1b3d67d39d38c84c8bc2714b36",
+    "bytes": 407
+  },
+  {
+    "path": "scg/validation-20261031T105923Z.log",
+    "original": "/mnt/raid0/llm/tmp/codex-ni-scoring-live-quality-20261031/validation-20261031T105923Z.log",
+    "sha256": "413db8eb4cf65c159069b0b588d31c45282424e6f3d3861a04243fa703fffeb2",
+    "bytes": 646
+  },
+  {
+    "path": "scg/validation-20261031T105950Z-receipt.json",
+    "original": "/mnt/raid0/llm/tmp/codex-ni-scoring-live-quality-20261031/validation-20261031T105950Z-receipt.json",
+    "sha256": "43d2a6c103b83fe4009e79f688ca9728ae669a655facd6dba0058e37daa7371c",
+    "bytes": 404
+  },
+  {
+    "path": "scg/validation-20261031T105950Z.log",
+    "original": "/mnt/raid0/llm/tmp/codex-ni-scoring-live-quality-20261031/validation-20261031T105950Z.log",
+    "sha256": "01ac9119d5704b4139fe7cbfad98165fff0f00c1faa306a0e2a351f8ba25a215",
+    "bytes": 248
+  },
+  {
+    "path": "scg/validation-20261031T110019Z-receipt.json",
+    "original": "/mnt/raid0/llm/tmp/codex-ni-scoring-live-quality-20261031/validation-20261031T110019Z-receipt.json",
+    "sha256": "5906b46db0cf68da959660408f817564d12c7677226badee4dcb17493a481a49",
+    "bytes": 405
+  },
+  {
+    "path": "scg/validation-20261031T110019Z.log",
+    "original": "/mnt/raid0/llm/tmp/codex-ni-scoring-live-quality-20261031/validation-20261031T110019Z.log",
+    "sha256": "4e84ad8960c64ec14ffe0cc53282014d505a02c8593b1e3515daa007f28265db",
+    "bytes": 4047
+  },
+  {
+    "path": "scg/validation-20261031T110129Z-receipt.json",
+    "original": "/mnt/raid0/llm/tmp/codex-ni-scoring-live-quality-20261031/validation-20261031T110129Z-receipt.json",
+    "sha256": "54a49f5e4d072e8ab36325d6eb7e1d05d75978dca8c65ed9e608c7962a6901ed",
+    "bytes": 406
+  },
+  {
+    "path": "scg/validation-20261031T110129Z.log",
+    "original": "/mnt/raid0/llm/tmp/codex-ni-scoring-live-quality-20261031/validation-20261031T110129Z.log",
+    "sha256": "831aae9c9afcbf81805fe9713d457d095e83d9eb82eca03de678ebd502edc0cb",
+    "bytes": 1260
+  },
+  {
+    "path": "scg/validation-20261031T110226Z-receipt.json",
+    "original": "/mnt/raid0/llm/tmp/codex-ni-scoring-live-quality-20261031/validation-20261031T110226Z-receipt.json",
+    "sha256": "a5807304ec308d5b6aef7a830b69c6afafa56b48659aefb0a398e5e0324911ca",
+    "bytes": 406
+  },
+  {
+    "path": "scg/validation-20261031T110226Z.log",
+    "original": "/mnt/raid0/llm/tmp/codex-ni-scoring-live-quality-20261031/validation-20261031T110226Z.log",
+    "sha256": "cf7c6b00973d48cf60e441bc0fa045960c5b8c85f41cac9141dacf088b87536b",
+    "bytes": 1260
+  },
+  {
+    "path": "scg/validation-20261031T110340Z-receipt.json",
+    "original": "/mnt/raid0/llm/tmp/codex-ni-scoring-live-quality-20261031/validation-20261031T110340Z-receipt.json",
+    "sha256": "3d8b190900a4387a5a11ac3e2e9669946bd0dd4df646e3cbfcce6e529a2898c7",
+    "bytes": 403
+  },
+  {
+    "path": "scg/validation-20261031T110340Z.log",
+    "original": "/mnt/raid0/llm/tmp/codex-ni-scoring-live-quality-20261031/validation-20261031T110340Z.log",
+    "sha256": "65d503507f585fb36a486f99c262c45ba6b4f283832be0bea444a124fb044d3a",
+    "bytes": 132
+  },
+  {
+    "path": "scg/validation-20261031T110402Z-receipt.json",
+    "original": "/mnt/raid0/llm/tmp/codex-ni-scoring-live-quality-20261031/validation-20261031T110402Z-receipt.json",
+    "sha256": "f0c10ed9275859cf77812c305fe2af4aeba53afd0d598b04f7ecd70f6c270905",
+    "bytes": 404
+  },
+  {
+    "path": "scg/validation-20261031T110402Z.log",
+    "original": "/mnt/raid0/llm/tmp/codex-ni-scoring-live-quality-20261031/validation-20261031T110402Z.log",
+    "sha256": "4f303dcabe0999746a0232a3b578b58075087b6062efd666ae68edff26d46186",
+    "bytes": 1534
+  },
+  {
+    "path": "serving/20261031T111422.804439Z-baseline4-admission.json",
+    "original": "/mnt/raid0/llm/tmp/codex-ni-serving-capture-tripwire-fix-20261031/20261031T111422.804439Z-baseline4-admission.json",
+    "sha256": "98b8311c39175ddfd5fccf11177a28fa8b648090d4a6710fdb221e5df39773fe",
+    "bytes": 1189
+  },
+  {
+    "path": "serving/20261031T111422.804439Z-baseline4-receipt.json",
+    "original": "/mnt/raid0/llm/tmp/codex-ni-serving-capture-tripwire-fix-20261031/20261031T111422.804439Z-baseline4-receipt.json",
+    "sha256": "69ae76d6d39b21c41387e55bdb18cc180007276107dee39f8d37eeff91e6152f",
+    "bytes": 1275,
+    "original_sha256": "9fe021c962dee2bb3d0606689c992e7373ed9e21c15ba82025f65c1a839bcfa8",
+    "original_bytes": 1140,
+    "representation": "Readable derivative: machine-only decimal integer strings rendered as exact reversible <machine-int:0x...>; original retained at original source and private publication scratch."
+  },
+  {
+    "path": "serving/20261031T111422.804439Z-baseline4-source-hashes.json",
+    "original": "/mnt/raid0/llm/tmp/codex-ni-serving-capture-tripwire-fix-20261031/20261031T111422.804439Z-baseline4-source-hashes.json",
+    "sha256": "5281735f1d89822c74fc46f6807b1003a1e84709b3cb5765d93e5e1078d492af",
+    "bytes": 129
+  },
+  {
+    "path": "serving/20261031T111422.804439Z-baseline4.log",
+    "original": "/mnt/raid0/llm/tmp/codex-ni-serving-capture-tripwire-fix-20261031/20261031T111422.804439Z-baseline4.log",
+    "sha256": "14435307dc827407215425f94e8669859e23ca70ba905d7ca7816734212d4bca",
+    "bytes": 9496
+  },
+  {
+    "path": "serving/20261031T111422.804439Z-baseline4.xml",
+    "original": "/mnt/raid0/llm/tmp/codex-ni-serving-capture-tripwire-fix-20261031/20261031T111422.804439Z-baseline4.xml",
+    "sha256": "490953946bc97a96e134165e633fec738bb51ec25c2b3afcda9118c323b26838",
+    "bytes": 6329
+  },
+  {
+    "path": "serving/20261031T111718.108706Z-current-admission.json",
+    "original": "/mnt/raid0/llm/tmp/codex-ni-serving-capture-tripwire-fix-20261031/20261031T111718.108706Z-current-admission.json",
+    "sha256": "98b8311c39175ddfd5fccf11177a28fa8b648090d4a6710fdb221e5df39773fe",
+    "bytes": 1189
+  },
+  {
+    "path": "serving/20261031T111718.108706Z-current-receipt.json",
+    "original": "/mnt/raid0/llm/tmp/codex-ni-serving-capture-tripwire-fix-20261031/20261031T111718.108706Z-current-receipt.json",
+    "sha256": "6862410fa024f4ffd21178c7b1b16c0ec3d29f79d621ee2a3b33fbfaa775c207",
+    "bytes": 1610,
+    "original_sha256": "509b886912840e80d6b5aa2a28a06a9f7515e33107d803b50d36801542da52cb",
+    "original_bytes": 1480,
+    "representation": "Readable derivative: machine-only decimal integer strings rendered as exact reversible <machine-int:0x...>; original retained at original source and private publication scratch."
+  },
+  {
+    "path": "serving/20261031T111718.108706Z-current-source-hashes.json",
+    "original": "/mnt/raid0/llm/tmp/codex-ni-serving-capture-tripwire-fix-20261031/20261031T111718.108706Z-current-source-hashes.json",
+    "sha256": "8e8eb0ddc398fde198ea257840c8a38cf7928103e782e5af012bed00ee7678f5",
+    "bytes": 1426
+  },
+  {
+    "path": "serving/20261031T111718.108706Z-current.log",
+    "original": "/mnt/raid0/llm/tmp/codex-ni-serving-capture-tripwire-fix-20261031/20261031T111718.108706Z-current.log",
+    "sha256": "1a952190e1a21f7036595e12cd7e15650b7ca3830b62e88db3bbd905f16d5214",
+    "bytes": 1672
+  },
+  {
+    "path": "serving/20261031T111718.108706Z-current.xml",
+    "original": "/mnt/raid0/llm/tmp/codex-ni-serving-capture-tripwire-fix-20261031/20261031T111718.108706Z-current.xml",
+    "sha256": "edea165cf851aec1800a177008d87a795493c036dca74b69d097075417ec843e",
+    "bytes": 31271
+  },
+  {
+    "path": "serving/20261031T112023.784968Z-focused-admission.json",
+    "original": "/mnt/raid0/llm/tmp/codex-ni-serving-capture-tripwire-fix-20261031/20261031T112023.784968Z-focused-admission.json",
+    "sha256": "98b8311c39175ddfd5fccf11177a28fa8b648090d4a6710fdb221e5df39773fe",
+    "bytes": 1189
+  },
+  {
+    "path": "serving/20261031T112023.784968Z-focused-receipt.json",
+    "original": "/mnt/raid0/llm/tmp/codex-ni-serving-capture-tripwire-fix-20261031/20261031T112023.784968Z-focused-receipt.json",
+    "sha256": "b6d94db265b28796955770382463025e040886bda7ec1dfbaec95c13e5356e8e",
+    "bytes": 1542,
+    "original_sha256": "4bc0cb7813ac84e9a9ac7b89dec510f5e40053456a7bac297a4579cc57bf80d4",
+    "original_bytes": 1412,
+    "representation": "Readable derivative: machine-only decimal integer strings rendered as exact reversible <machine-int:0x...>; original retained at original source and private publication scratch."
+  },
+  {
+    "path": "serving/20261031T112023.784968Z-focused-source-hashes.json",
+    "original": "/mnt/raid0/llm/tmp/codex-ni-serving-capture-tripwire-fix-20261031/20261031T112023.784968Z-focused-source-hashes.json",
+    "sha256": "37a85b62bf3ab80e87ed53a4477840f2cd8a64098c6c5942a6cea210976928b6",
+    "bytes": 1296
+  },
+  {
+    "path": "serving/20261031T112023.784968Z-focused.log",
+    "original": "/mnt/raid0/llm/tmp/codex-ni-serving-capture-tripwire-fix-20261031/20261031T112023.784968Z-focused.log",
+    "sha256": "b70fa0f28b5b41d25602aac9e702263f507ad636f28b28c3033d3b1721ef76be",
+    "bytes": 111
+  },
+  {
+    "path": "serving/20261031T112023.784968Z-focused.xml",
+    "original": "/mnt/raid0/llm/tmp/codex-ni-serving-capture-tripwire-fix-20261031/20261031T112023.784968Z-focused.xml",
+    "sha256": "8990ba2fe89906cb9a163462554f05433e48a5fd9c68e3249045991f91debeac",
+    "bytes": 8431
+  },
+  {
+    "path": "serving/20261031T112128.312713Z-current-admission.json",
+    "original": "/mnt/raid0/llm/tmp/codex-ni-serving-capture-tripwire-fix-20261031/20261031T112128.312713Z-current-admission.json",
+    "sha256": "98b8311c39175ddfd5fccf11177a28fa8b648090d4a6710fdb221e5df39773fe",
+    "bytes": 1189
+  },
+  {
+    "path": "serving/20261031T112128.312713Z-current-receipt.json",
+    "original": "/mnt/raid0/llm/tmp/codex-ni-serving-capture-tripwire-fix-20261031/20261031T112128.312713Z-current-receipt.json",
+    "sha256": "4a48625c9eab6cc3f54683372c85783e223444630d3483dc7ff089b42c67bc64",
+    "bytes": 3322,
+    "original_sha256": "7dce6dbcdcd36df089d38e63c194b91955d6938e646abac34ee0f4e674c1031d",
+    "original_bytes": 3187,
+    "representation": "Readable derivative: machine-only decimal integer strings rendered as exact reversible <machine-int:0x...>; original retained at original source and private publication scratch."
+  },
+  {
+    "path": "serving/20261031T112128.312713Z-current-source-hashes.json",
+    "original": "/mnt/raid0/llm/tmp/codex-ni-serving-capture-tripwire-fix-20261031/20261031T112128.312713Z-current-source-hashes.json",
+    "sha256": "2b9e89d85cd802374a95844cbdd6fcab71f3258cdea949c367871d3654625934",
+    "bytes": 1561
+  },
+  {
+    "path": "serving/20261031T112128.312713Z-current.log",
+    "original": "/mnt/raid0/llm/tmp/codex-ni-serving-capture-tripwire-fix-20261031/20261031T112128.312713Z-current.log",
+    "sha256": "00eb3b4e5aa0f043f3fba58357d73183a3a783b5d11f93ad01ea254340bbe895",
+    "bytes": 3216
+  },
+  {
+    "path": "serving/20261031T112128.312713Z-current.xml",
+    "original": "/mnt/raid0/llm/tmp/codex-ni-serving-capture-tripwire-fix-20261031/20261031T112128.312713Z-current.xml",
+    "sha256": "26f242a0fcff3e3525a104562ccad1ec3b4d83f4bfa7cbc05d86a3a9fb5b789f",
+    "bytes": 35560
+  },
+  {
+    "path": "serving/20261031T112501.609442Z-producer-admission.json",
+    "original": "/mnt/raid0/llm/tmp/codex-ni-serving-capture-tripwire-fix-20261031/20261031T112501.609442Z-producer-admission.json",
+    "sha256": "98b8311c39175ddfd5fccf11177a28fa8b648090d4a6710fdb221e5df39773fe",
+    "bytes": 1189
+  },
+  {
+    "path": "serving/20261031T112501.609442Z-producer-receipt.json",
+    "original": "/mnt/raid0/llm/tmp/codex-ni-serving-capture-tripwire-fix-20261031/20261031T112501.609442Z-producer-receipt.json",
+    "sha256": "3a28f1b7ea0d30f0850b50da7fc49b295ecad4259bd978dccbc108c436d06ce2",
+    "bytes": 3138,
+    "original_sha256": "eacfff6d53b6f27281031f4d4b1e2b8924bb12c66ac0b00e6091beb4282838c6",
+    "original_bytes": 3008,
+    "representation": "Readable derivative: machine-only decimal integer strings rendered as exact reversible <machine-int:0x...>; original retained at original source and private publication scratch."
+  },
+  {
+    "path": "serving/20261031T112501.609442Z-producer-source-hashes.json",
+    "original": "/mnt/raid0/llm/tmp/codex-ni-serving-capture-tripwire-fix-20261031/20261031T112501.609442Z-producer-source-hashes.json",
+    "sha256": "94e611d7597dafedc27876fe552a95f60736d71dad40f5ea38da70b9db28be6c",
+    "bytes": 1434
+  },
+  {
+    "path": "serving/20261031T112501.609442Z-producer.log",
+    "original": "/mnt/raid0/llm/tmp/codex-ni-serving-capture-tripwire-fix-20261031/20261031T112501.609442Z-producer.log",
+    "sha256": "c1fc13f11e43e20509da5e25fbd73a4f0c16352d774453ff7d3bb9575fa93345",
+    "bytes": 192
+  },
+  {
+    "path": "serving/20261031T112501.609442Z-producer.xml",
+    "original": "/mnt/raid0/llm/tmp/codex-ni-serving-capture-tripwire-fix-20261031/20261031T112501.609442Z-producer.xml",
+    "sha256": "7c271ed1021b9913e9375eb005d092b26460d25c7df30c0e83fe0b5464157a8d",
+    "bytes": 21507
+  },
+  {
+    "path": "serving/20261031T112612.872331Z-baseline4-admission.json",
+    "original": "/mnt/raid0/llm/tmp/codex-ni-serving-capture-tripwire-fix-20261031/20261031T112612.872331Z-baseline4-admission.json",
+    "sha256": "98b8311c39175ddfd5fccf11177a28fa8b648090d4a6710fdb221e5df39773fe",
+    "bytes": 1189
+  },
+  {
+    "path": "serving/20261031T112612.872331Z-baseline4-receipt.json",
+    "original": "/mnt/raid0/llm/tmp/codex-ni-serving-capture-tripwire-fix-20261031/20261031T112612.872331Z-baseline4-receipt.json",
+    "sha256": "8ef1e6d8a72d780652dc1c6ecf7414105f29383bf1ce49c09a89f637b0e8bb17",
+    "bytes": 2784,
+    "original_sha256": "b860ec93dc0b6a4e38e8fe37dc802419c6ce43f9b9ca0bff5ac9f3e8f00f6580",
+    "original_bytes": 2654,
+    "representation": "Readable derivative: machine-only decimal integer strings rendered as exact reversible <machine-int:0x...>; original retained at original source and private publication scratch."
+  },
+  {
+    "path": "serving/20261031T112612.872331Z-baseline4-source-hashes.json",
+    "original": "/mnt/raid0/llm/tmp/codex-ni-serving-capture-tripwire-fix-20261031/20261031T112612.872331Z-baseline4-source-hashes.json",
+    "sha256": "d6cfffe4b298a55effbb56680e07c9824d1392e57160135068a753c46177295f",
+    "bytes": 1423
+  },
+  {
+    "path": "serving/20261031T112612.872331Z-baseline4.log",
+    "original": "/mnt/raid0/llm/tmp/codex-ni-serving-capture-tripwire-fix-20261031/20261031T112612.872331Z-baseline4.log",
+    "sha256": "91efdc1c0348e63d419d0739da1550ef716e06257904d5875a6a024a74360611",
+    "bytes": 99
+  },
+  {
+    "path": "serving/20261031T112612.872331Z-baseline4.xml",
+    "original": "/mnt/raid0/llm/tmp/codex-ni-serving-capture-tripwire-fix-20261031/20261031T112612.872331Z-baseline4.xml",
+    "sha256": "125c52a36c4c52c59a2a12f050a91496008a0254adc790dd0fb1f2c926427d29",
+    "bytes": 963
+  },
+  {
+    "path": "serving/20261031T112707.809011Z-no-root-admission.json",
+    "original": "/mnt/raid0/llm/tmp/codex-ni-serving-capture-tripwire-fix-20261031/20261031T112707.809011Z-no-root-admission.json",
+    "sha256": "98b8311c39175ddfd5fccf11177a28fa8b648090d4a6710fdb221e5df39773fe",
+    "bytes": 1189
+  },
+  {
+    "path": "serving/20261031T112707.809011Z-no-root-receipt.json",
+    "original": "/mnt/raid0/llm/tmp/codex-ni-serving-capture-tripwire-fix-20261031/20261031T112707.809011Z-no-root-receipt.json",
+    "sha256": "7c0ec8832a2054539de32ddd0c34240998d872c5d815c9b34222d06835dd6f10",
+    "bytes": 2789,
+    "original_sha256": "baa0f68cebf27d0a93d1e319602d16575d0ab1eee135b44915e24e9e09fc862d",
+    "original_bytes": 2659,
+    "representation": "Readable derivative: machine-only decimal integer strings rendered as exact reversible <machine-int:0x...>; original retained at original source and private publication scratch."
+  },
+  {
+    "path": "serving/20261031T112707.809011Z-no-root-source-hashes.json",
+    "original": "/mnt/raid0/llm/tmp/codex-ni-serving-capture-tripwire-fix-20261031/20261031T112707.809011Z-no-root-source-hashes.json",
+    "sha256": "4820498fbf6fab15dd376d192d87a23845371a356f278b2f13c3df838a80f0ea",
+    "bytes": 1296
+  },
+  {
+    "path": "serving/20261031T112707.809011Z-no-root.log",
+    "original": "/mnt/raid0/llm/tmp/codex-ni-serving-capture-tripwire-fix-20261031/20261031T112707.809011Z-no-root.log",
+    "sha256": "64c67af744c80177602aef9a196bd3eb6414c89bd67e7da4619eba72ebb313dc",
+    "bytes": 99
+  },
+  {
+    "path": "serving/20261031T112707.809011Z-no-root.xml",
+    "original": "/mnt/raid0/llm/tmp/codex-ni-serving-capture-tripwire-fix-20261031/20261031T112707.809011Z-no-root.xml",
+    "sha256": "d6e7c6a5851fdc5f25ee3032d25d468ef3e366627df9cbcd64f39beffec552ff",
+    "bytes": 1192
+  },
+  {
+    "path": "serving/DESIGN.md",
+    "original": "/mnt/raid0/llm/tmp/codex-ni-serving-capture-tripwire-fix-20261031/DESIGN.md",
+    "sha256": "06b5575a84baca16fda2287b7bcfe4cf03d7033f8053af31518c63630de8901c",
+    "bytes": 2753
+  },
+  {
+    "path": "serving/PROPOSED.patch",
+    "original": "/mnt/raid0/llm/tmp/codex-ni-serving-capture-tripwire-fix-20261031/PROPOSED.patch",
+    "sha256": "6be9cacfb01402668089269ba93c016ae57fb44eb56c2440a236b6ac4d8f649d",
+    "bytes": 27217
+  },
+  {
+    "path": "serving/REVIEW.md",
+    "original": "/mnt/raid0/llm/tmp/codex-ni-serving-capture-tripwire-fix-20261031/REVIEW.md",
+    "sha256": "f6d42bb51b750b5aa71ec0a5418c83b846b29d3eafd96b519cc2ba11d8efa053",
+    "bytes": 7268
+  },
+  {
+    "path": "serving/ROOT-CAPSULE-DRAFT.md",
+    "original": "/mnt/raid0/llm/tmp/codex-ni-serving-capture-tripwire-fix-20261031/ROOT-CAPSULE-DRAFT.md",
+    "sha256": "96a6a21ec7e47b81ea14aea277989a6088c9fcf559baee2f5c1ba5b97f00cefd",
+    "bytes": 2025
+  },
+  {
+    "path": "serving/ROOT-README-CUSTODY-PREPARED.patch",
+    "original": "/mnt/raid0/llm/tmp/codex-ni-serving-capture-tripwire-fix-20261031/ROOT-README-CUSTODY-PREPARED.patch",
+    "sha256": "cf65a0634fae59ba9f33f5f7653dcca68a8c8de80b5f0776d9b58ad27f58fafd",
+    "bytes": 13428
+  },
+  {
+    "path": "serving/agent_audit-serving-capture.DRAFT.jsonl",
+    "original": "/mnt/raid0/llm/tmp/codex-ni-serving-capture-tripwire-fix-20261031/agent_audit-serving-capture.DRAFT.jsonl",
+    "sha256": "944c482b4a2ba5e8bc947440554d9289f517eab4b463c663140f3f222fd42723",
+    "bytes": 385
+  },
+  {
+    "path": "serving/progress-2026-10-31-serving-capture.DRAFT.md",
+    "original": "/mnt/raid0/llm/tmp/codex-ni-serving-capture-tripwire-fix-20261031/progress-2026-10-31-serving-capture.DRAFT.md",
+    "sha256": "ac9dc4d4252fcdc01b5d07a69eb12a189fc2f992e723c5a9a5574e05ca2e7a6a",
+    "bytes": 732
+  },
+  {
+    "path": "serving/publication-receipt.json",
+    "original": "/mnt/raid0/llm/tmp/codex-ni-serving-capture-tripwire-fix-20261031/publication-receipt.json",
+    "sha256": "16cb5f44eba59454d229ae67b0e50a3c0c84f4f442b4cef78cc9f84dcc0a33b7",
+    "bytes": 407
+  },
+  {
+    "path": "serving/root-reader-source-proof.json",
+    "original": "/mnt/raid0/llm/tmp/codex-ni-serving-capture-tripwire-fix-20261031/root-reader-source-proof.json",
+    "sha256": "90a75e946c5e09209c98f324c5007d4efff9e44214620c0997a533fb9c5b3035",
+    "bytes": 369
+  },
+  {
+    "path": "repl/PROGRESS-DRAFT.md",
+    "original": "/mnt/raid0/llm/tmp/codex-ni-repl-trace-finish-20261031/PROGRESS-DRAFT.md",
+    "sha256": "8c8559bfba95390a34f4c368a12497ea67e985b2b16bd0ce67b4e6d032719e65",
+    "bytes": 7919
+  },
+  {
+    "path": "repl/ROOT-DRAFT.md",
+    "original": "/mnt/raid0/llm/tmp/codex-ni-repl-trace-finish-20261031/ROOT-DRAFT.md",
+    "sha256": "8c8559bfba95390a34f4c368a12497ea67e985b2b16bd0ce67b4e6d032719e65",
+    "bytes": 7919
+  },
+  {
+    "path": "repl/agent-logs/agent_audit-codex-ni-01a16d6b.log",
+    "original": "/mnt/raid0/llm/tmp/codex-ni-repl-trace-finish-20261031/agent-logs/agent_audit-codex-ni-01a16d6b.log",
+    "sha256": "ec802f516f570e1bcf7195058c2ab57c2f2e8754aa11579e87ade04e5a642b7e",
+    "bytes": 832
+  },
+  {
+    "path": "repl/gates-20261031T113354569272Z.json",
+    "original": "/mnt/raid0/llm/tmp/codex-ni-repl-trace-finish-20261031/gates-20261031T113354569272Z.json",
+    "sha256": "6e3c9c5ce7a77d57bc290e429484c90e1e54db63c4b3224442a1c5630052d5c2",
+    "bytes": 404
+  },
+  {
+    "path": "repl/gates-20261031T113354569272Z.log",
+    "original": "/mnt/raid0/llm/tmp/codex-ni-repl-trace-finish-20261031/gates-20261031T113354569272Z.log",
+    "sha256": "01ac9119d5704b4139fe7cbfad98165fff0f00c1faa306a0e2a351f8ba25a215",
+    "bytes": 248
+  },
+  {
+    "path": "repl/original-evidence/pytest.log",
+    "original": "/mnt/raid0/llm/tmp/codex-ni-repl-trace-finish-20261031/original-evidence/pytest.log",
+    "sha256": "06bca519e55a9eae92be8ae580f97e212f0a56d8ff565f99239e577fc26da878",
+    "bytes": 1341
+  },
+  {
+    "path": "repl/original-evidence/ruff-check.log",
+    "original": "/mnt/raid0/llm/tmp/codex-ni-repl-trace-finish-20261031/original-evidence/ruff-check.log",
+    "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+    "bytes": 19
+  },
+  {
+    "path": "repl/original-evidence/source-wiring-draft.md",
+    "original": "/mnt/raid0/llm/tmp/codex-ni-repl-trace-finish-20261031/original-evidence/source-wiring-draft.md",
+    "sha256": "3606202311365590018fc56a3d5c352bc9cd1bc9f2be6dd47d03b8e158ecfa88",
+    "bytes": 3630
+  },
+  {
+    "path": "repl/original-proposal.patch",
+    "original": "/mnt/raid0/llm/tmp/codex-ni-repl-trace-finish-20261031/original-proposal.patch",
+    "sha256": "2e80b5528b6fc1cb2def9c80e424ea636baf8513a91d42d9ee9284dce8ead123",
+    "bytes": 14596
+  },
+  {
+    "path": "repl/publication-receipt.json",
+    "original": "/mnt/raid0/llm/tmp/codex-ni-repl-trace-finish-20261031/publication-receipt.json",
+    "sha256": "0e91992e172990e0e99096391567c3fee8e35bf3be59925066601100466f2b3e",
+    "bytes": 1346
+  },
+  {
+    "path": "repl/publish-20261031T1140Z.log",
+    "original": "/mnt/raid0/llm/tmp/codex-ni-repl-trace-finish-20261031/publish-20261031T1140Z.log",
+    "sha256": "03a790656d699202e1e2c5b69349aa64e87a20eb8053b005f7ef3b96f3fe9367",
+    "bytes": 1665
+  },
+  {
+    "path": "repl/pytest-final-20261031T113455759523Z.json",
+    "original": "/mnt/raid0/llm/tmp/codex-ni-repl-trace-finish-20261031/pytest-final-20261031T113455759523Z.json",
+    "sha256": "72c941d5bf1d944c9497e3f2ebf75cf3f468a3d655aba7de6641fd93afa1828e",
+    "bytes": 670
+  },
+  {
+    "path": "repl/pytest-final-20261031T113455759523Z.log",
+    "original": "/mnt/raid0/llm/tmp/codex-ni-repl-trace-finish-20261031/pytest-final-20261031T113455759523Z.log",
+    "sha256": "4b8aba63f20dd01f7704712a87c1058102bd56f9291b74d3188af9acdbd6f898",
+    "bytes": 1582
+  },
+  {
+    "path": "repl/pytest-final-r2-20261031T113704942254Z.json",
+    "original": "/mnt/raid0/llm/tmp/codex-ni-repl-trace-finish-20261031/pytest-final-r2-20261031T113704942254Z.json",
+    "sha256": "28f8d60bac7c73cc041210dfd9e6272362778be1b096c47088881d5c90ebb27a",
+    "bytes": 672
+  },
+  {
+    "path": "repl/pytest-final-r2-20261031T113704942254Z.log",
+    "original": "/mnt/raid0/llm/tmp/codex-ni-repl-trace-finish-20261031/pytest-final-r2-20261031T113704942254Z.log",
+    "sha256": "1d36afc09b2c58a71059cf1df687b2b17acf6f8adc06112c60cbad70ffaff5fd",
+    "bytes": 1582
+  },
+  {
+    "path": "repl/pytest-r1-20261031T113005960473Z.json",
+    "original": "/mnt/raid0/llm/tmp/codex-ni-repl-trace-finish-20261031/pytest-r1-20261031T113005960473Z.json",
+    "sha256": "ea21936f8e8842b0448b3794342018a648700b37e45d613d9bcb30860535a917",
+    "bytes": 587
+  },
+  {
+    "path": "repl/pytest-r1-20261031T113005960473Z.log",
+    "original": "/mnt/raid0/llm/tmp/codex-ni-repl-trace-finish-20261031/pytest-r1-20261031T113005960473Z.log",
+    "sha256": "60d0f416be0dea8791ed55f79817938d3eb6fdcef28f8e2158c49c9efb8d476d",
+    "bytes": 94
+  },
+  {
+    "path": "repl/pytest-r2-20261031T113012292890Z.json",
+    "original": "/mnt/raid0/llm/tmp/codex-ni-repl-trace-finish-20261031/pytest-r2-20261031T113012292890Z.json",
+    "sha256": "38234f41c0939ca38eeba06a74568c0ad8d83aaaa89da4636564c54c8d1b6c3d",
+    "bytes": 622
+  },
+  {
+    "path": "repl/pytest-r2-20261031T113012292890Z.log",
+    "original": "/mnt/raid0/llm/tmp/codex-ni-repl-trace-finish-20261031/pytest-r2-20261031T113012292890Z.log",
+    "sha256": "0c0f95e64ca1ca92d60a37c8bb45c426992f134cbb13987403396dbde3e7f77d",
+    "bytes": 1502
+  },
+  {
+    "path": "repl/pytest-r3-20261031T113117695693Z.json",
+    "original": "/mnt/raid0/llm/tmp/codex-ni-repl-trace-finish-20261031/pytest-r3-20261031T113117695693Z.json",
+    "sha256": "abd4e9fbabc0bd078b79b99d008d9f33138b7e76ecffaadcd531762de64a1f8b",
+    "bytes": 665
+  },
+  {
+    "path": "repl/pytest-r3-20261031T113117695693Z.log",
+    "original": "/mnt/raid0/llm/tmp/codex-ni-repl-trace-finish-20261031/pytest-r3-20261031T113117695693Z.log",
+    "sha256": "e5eec39b83343ecf974e31a94c84f20f8427b79892119e71447c14317f96e378",
+    "bytes": 1582
+  },
+  {
+    "path": "repl/pytest-r4-20261031T113326519894Z.json",
+    "original": "/mnt/raid0/llm/tmp/codex-ni-repl-trace-finish-20261031/pytest-r4-20261031T113326519894Z.json",
+    "sha256": "9ea150942fb46994b54441402949e7a267e20bf13f7b19d801fbb91db0cbe1db",
+    "bytes": 667
+  },
+  {
+    "path": "repl/pytest-r4-20261031T113326519894Z.log",
+    "original": "/mnt/raid0/llm/tmp/codex-ni-repl-trace-finish-20261031/pytest-r4-20261031T113326519894Z.log",
+    "sha256": "f365487c27c0c1daebb25454a62bb9c038543687395b3d0b0267c45908b2ffc5",
+    "bytes": 7955
+  },
+  {
+    "path": "repl/pytest-r5-20261031T113400465396Z.json",
+    "original": "/mnt/raid0/llm/tmp/codex-ni-repl-trace-finish-20261031/pytest-r5-20261031T113400465396Z.json",
+    "sha256": "16030acccc258a19aa820421728e362019841e71b41078864fc25a06ed42bcf6",
+    "bytes": 667
+  },
+  {
+    "path": "repl/pytest-r5-20261031T113400465396Z.log",
+    "original": "/mnt/raid0/llm/tmp/codex-ni-repl-trace-finish-20261031/pytest-r5-20261031T113400465396Z.log",
+    "sha256": "80941afa16a8cedfcfcfddd759ec3497e517401921552a9b3df03df2ccdec0d6",
+    "bytes": 1582
+  },
+  {
+    "path": "repl/remote-main-20261031T1144Z.txt",
+    "original": "/mnt/raid0/llm/tmp/codex-ni-repl-trace-finish-20261031/remote-main-20261031T1144Z.txt",
+    "sha256": "a0049c9591a4b7b64c4e8b463ae5f6259fdfcfa3ae1a3fc308c253f1017d4c7f",
+    "bytes": 57
+  },
+  {
+    "path": "shape-keyed-tempcli-proof.txt",
+    "original": "/mnt/raid0/llm/tmp/codex-ni-app-shape-labels-20261031/shape-keyed-tempcli-proof.txt",
+    "sha256": "c8d2cd2867ab395ea0bc8fe0c2bd0410f027c2dcfaf6d98565d4666c24e74d8c",
+    "bytes": 195
+  }
+]

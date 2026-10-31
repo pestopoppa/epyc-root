@@ -1,0 +1,32 @@
+{
+  "pid": 3539406,
+  "birth_stat": "3539406 (taskset) R 3539167 3539406 3539406 0 -1 4194560 192 0 0 0 0 0 0 0 20 0 1 0 156605382 2854912 0 18446744073709551615 <machine-int:0x5767cc377000> <machine-int:0x5767cc379561> <machine-int:0x7fff0595d3b0> 0 0 0 0 0 0 0 0 0 17 179 0 0 0 0 0 <machine-int:0x5767cc37bb50> <machine-int:0x5767cc37c010> <machine-int:0x5767cd442000> <machine-int:0x7fff0595f4b0> <machine-int:0x7fff0595f728> <machine-int:0x7fff0595f728> <machine-int:0x7fff0595ffe7> 0\n",
+  "pid_absent_after_wait": true,
+  "rc": 1,
+  "samples": 105,
+  "peak_tree_rss_bytes": 104431616,
+  "elapsed_s": 5.301363191800192,
+  "cpus": "128-129",
+  "physical_cpus": "32-33",
+  "mutex": "/mnt/raid0/llm/tmp/compute-flags/prep-locks/32-33.lock",
+  "cmd": [
+    "taskset",
+    "-c",
+    "128,129",
+    "/mnt/raid0/llm/epyc-inference-research/.venv/bin/python",
+    "-m",
+    "pytest",
+    "-q",
+    "--tb=short",
+    "--junitxml=/mnt/raid0/llm/tmp/codex-ni-research-root-paths-finish-20261031/20261031T104620.301951Z-basefixtures.xml",
+    "scripts/benchmark/test_belief_capture.py",
+    "scripts/benchmark/tests/test_run_batch_entry.py",
+    "scripts/benchmark/test_laguna_pgpu1_dflash_runner.py",
+    "scripts/benchmark/test_op2_quiet_window_prep.py",
+    "scripts/validate/test_check_evidence_durability.py",
+    "scripts/kernel_rnd/autokernel/loop/test_belief_context.py",
+    "scripts/kernel_rnd/autokernel/loop/test_serving_beliefs.py",
+    "scripts/kernel_rnd/autokernel/loop/test_claim_bootstrap.py"
+  ],
+  "log": "/mnt/raid0/llm/tmp/codex-ni-research-root-paths-finish-20261031/20261031T104620.301951Z-basefixtures.log"
+}

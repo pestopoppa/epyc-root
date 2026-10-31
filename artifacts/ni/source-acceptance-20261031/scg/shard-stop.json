@@ -1,0 +1,12 @@
+{
+  "pid": 3612305,
+  "birth_ticks": "156645569",
+  "command": [
+    "--confcutdir=tests/unit",
+    "tests/unit",
+    "-k",
+    "safety_gate or gate_frontier or baseline or tier_spec or promotion",
+    "--maxfail=1"
+  ],
+  "stop_reason": "actual native predecessor found; replace broader shard with minimal ordered pair"
+}

@@ -1,0 +1,13 @@
+# Prospective final producer boundary
+
+Main accepted the final-boundary design in principle before implementation. Native ROOT strict reader remains unchanged.
+
+Current source read at research4ede8b2 and ROOT2ab2a8f. GitNexus status stale a0a3df0; ObservedComparison/inspect absent (UNKNOWN), finish LOW/1 upstream export. Do not infer low risk from missing graph. Manual current source call proof: only run.measure_for._tripwire calls inspect; direct cpu_compare returns serving.compare through _serving_comparison with no export; longctx_compare returns longctx.Surface.compare with no export; plain bench no serving capture. Six inspect return branches construct ObservedComparison. Runtime path has its own export but never invokes tripwire. Archive.record later durably seals the experiment, exports, then invokes feedback. No final-boundary caller publishes the original initial serving capture first. Constructor is prospective, never a reader/export repair.
+
+Proposed exact boundary: deep snapshot original native and diagnostic evidence; verify original seal equals finish(original, original inputs); only then add same_code_tripwire and seal final snapshot once with original inputs. to_dict returns independent deep copies of a detached private Python snapshot (preserving native bench types/nonfinite diagnostics) without sealing or writes. No performance/input/identity/window/seed/reps changes. New final capture ID intentionally binds added evidence; original nonwrapped IDs unchanged. Full original source digest and experiment capture continue to bind metadata. No grader/protocol change, measurement claims remain observation-only. Old stored rows untouched.
+
+Discovered existing adjacent mutations: GPU record_candidate_serving_profile and longctx.Surface.compare add metadata to original native after its first seal. Verify-first must refuse these, never silently capture their mutations as original observations. Keep numeric experiment outcomes and existing tripwire gates stable; parent reviewing diagnostic refusal representation.
+
+No reindex run: current live q1 correctness and other quarter grants admit bounded offline tests but broad graph rebuild is not admitted. No kernel, API, runtime, live capture or inference operation.
+
+Implemented all three known producer annotations through the same narrow helper. Validation faults preserve old capture and a visible belief_capture_error; no capture created from missing/invalid state. GPU profile observed/unavailable/measurement_invalid and longctx verdict remain diagnostics. Existing original tests retain ordinary assertions without a configured ROOT; additional strict-reader checks are conditional there, while dedicated integration tests explicitly require a named ROOT.
