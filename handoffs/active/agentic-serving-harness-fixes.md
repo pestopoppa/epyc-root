@@ -237,7 +237,7 @@ Client and harness side (ak-ds41-main):
     off; rescue rate and accuracy per suite. `derived_prefill_timeout`'s enable rides B1d (Option A). Declined, not
     filed: enabling `session_compaction_llm_index` — OFF is the intended posture, because the compacted field is
     never rendered into a turn prompt.
-  - [x] **UFH14-B1h — retire `DEFAULT_PREFILL_FLOOR_TPS = 250` (`kv_pool_admission.py:169`) for the measured rate.** ✅ 2026-10-29 [belief: cc]
+  - [x] **UFH14-B1h — retire `DEFAULT_PREFILL_FLOOR_TPS = 250` (`kv_pool_admission.py:169`) for the measured rate.** ✅ 2026-10-29 [belief: cc] [source: epyc-orchestrator@a446ae62c4ff718acab7eb6070f6818db63908e8; test: epyc-orchestrator/tests/unit/test_kv_pool_long_prefill.py]
     (filed 2026-10-04, workspace-ec, from the B1 design note's "other constant to retire next") The long-prefill lease
     expiry should read `serving_params.rate_at(samples, prompt)`, keeping 250 as the floor. Done when the lease
     expiry uses the measured rate with a test, and the env override still wins.
