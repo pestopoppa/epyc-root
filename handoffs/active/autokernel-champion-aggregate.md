@@ -1,5 +1,7 @@
 # AutoKernel — the standing aggregate candidate (champion)
 
+**Scratch**: `/mnt/raid0/llm/tmp/refactor-champion-c6-fold-20261030/` (C6 fold); `/mnt/raid0/llm/tmp/refactor-c6-store-build-prep-20261030/` (C6 build evidence).
+
 **Owner:** operator audit session, 2026-08-27. **Depends on:** INF-06 (campaign), INF-64 (repair track).
 **Operator requirement, 2026-08-27:** *"There should ALWAYS be an aggregate production candidate that
 holds all the experimented tweaks and is ready for promotion gate testing."* And: AutoKernel screens
@@ -1058,4 +1060,11 @@ FAILED-RUN rc=1 reason=nested-device-claim; class=harness; owner action=make the
 
 - [x] **C3-R3-ORIGINAL-B-NATIVE-TRACE** — successor ran the unchanged original B diagnostic on 2026-10-30 (rc 0 at 23:10:32Z); prior R2 failure remains preserved. The carried original L packet has warm/S/P 160 tokens each (warm 200-token prompt); the separate final-image L control and its limits remain above. B measured M: 96 generated tokens, 95 dependent native decode steps, mean union GPU busy **20.974069 ms/step**, 186,691 bound kernel dispatches, versus **4.075865 s observed request wall** (includes prompt and overhead). Kernel dispatch-duration sums per step: `mul_mat_vec_q` type16 false 5.58550 ms, type40 true 3.31148 ms, type16 true 1.52998 ms; complete kernel table and exact hashes in [filing artifact](../../artifacts/compute/results-filing-c3-g12-20261030.json). These are kernel-name attribution, not necessarily GGML op identities: dispatch sums can overlap and must not be added as exclusive wall components. The small difference between total dispatch sum 20.974272 and union 20.974069 ms/step is overlap. 135 dispatches remain unbound across the trace. The measured request's CLOCK_MONOTONIC interval contains 386 own-server PID KFD-positive VRAM samples (22,423,326,720–22,431,715,328 bytes); ROCm dispatch times and native intervals are joined in the observed clock window. The inherited cooperative R13 GPU lock was held at finish; it does not rule out noncooperating co-tenants. One traced request and dependent steps are not independent repeats, profiler overhead is unknown, and no noise floor, performance promotion, finite-feature claim or L/LiLiCorr scientific closure follows. ✅ 2026-10-30 [belief: cc]
 
-- [ ] **C3 R2 claim-contract repair:** qualify a private successor under the actual normal R13 device claim and retain the original failure; run the unchanged full diagnostic after publication.
+- [x] **C3 R2 claim-contract repair:** qualify a private successor under the actual normal R13 device claim and retain the original failure; run the unchanged full diagnostic after publication. ✅ 2026-10-30 — R3 normal and active-cutoff qualification passed under the actual outer R13 lock; the unchanged full diagnostic completed rc0 at 23:10:32Z. Original R2 failure remains above. Canonical diagnostic-only filing: [C3-R3 results](../../artifacts/compute/results-filing-c3-g12-20261030.json), published at `3743a524afb8e6cc8f51bbac070600d1fa6cf774`; qualification receipt `/mnt/raid0/llm/tmp/refactor-c3-native-profile-r3-20261030/R7-BID-TERMINAL.json`. This closes the technical repair, not the scientific parent. [belief: cc]
+
+### C6 preparation checkpoint — 2026-10-30 (refactor)
+
+- [ ] **C6 complete candidate and qualification:** finish the operator-priority source fold from C5 `c72ec82f5`, build CPU/GPU stores at one final SHA, complete the manifest gates and custody, then give ws58 the CAS package; refactor must not CAS. Current source remains experimental and unqualified.
+  - [x] **Read-only C5 custody verification.** ✅ 2026-10-30 — CPU117/117 and GPU118/118 retained SHA entries match; all shared-library aliases resolve to manifested versioned files. Receipt: `artifacts/compute/refactor-c5-custody-20261030.json` (SHA256 `319982f05174621ff588751158d58e8e0bd67b47166c6fa1271b9acea16dd3b5`). No store was changed; no continuous-custody claim. [no-belief: custody/source inventory only]
+
+Source integration, builds and scientific/promotion gates remain open; details in `progress/2026-10/2026-10-30-refactor-c6-preparation.md`.
