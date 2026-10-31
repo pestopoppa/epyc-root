@@ -80,6 +80,7 @@ EXEMPT = {
     ("managed_tooling_check", "TRUSTED_PRODUCER_SHA256"): "producer bytes ship inside each receipt",
     ("managed_tooling_check", "TRUSTED_DRIVER_SHA256"): "driver bytes ship inside each receipt",
     ("strategy_projection_report", "TRUSTED_PRODUCER_SHA256"): "producer bytes ship inside each run dir",
+    ("strategy_projection_report", "LEGACY_TRUSTED_PRODUCER_SHA256"): "historical producer bytes ship inside each run dir and remain bound to their complete reviewed source epoch",
     ("hg5_request_event", "SCHEMA_SHA256"): "schema/producer bytes ship inside each sealed event",
     ("hg5_request_event", "PRODUCER_SHA256"): "producer bytes ship inside each sealed event",
     ("hg5_request_event", "PRODUCER_V2_SHA256"): "producer bytes ship inside each sealed event",
