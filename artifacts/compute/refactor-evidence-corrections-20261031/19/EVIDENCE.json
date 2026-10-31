@@ -1,0 +1,31 @@
+{
+  "index": 19,
+  "task": "Z9",
+  "root_base": "72b592361654bc365d91f988a8d546f599bd28fb",
+  "disposition": "RETAIN_X",
+  "implementation_commit": "d2d485598807f8fe5ab9badbfe539e3857ff1f51",
+  "reason": "Full Z9 primitive exists with native HF import and11 original numerical/interface controls; this is not G18 model/GGUF parity.",
+  "evidence": [
+    {
+      "git_path": "artifacts/compute/refactor-evidence-corrections-20261031/19/public-oracle-tests-final.log",
+      "sha256": "c6bd240dde4a5f8a139835c0259f83c2d283c5eee82ed1813cbb5e3c501d5c18",
+      "bytes": 589,
+      "source": "/mnt/raid0/llm/tmp/refactor-unsupported-seven-v2-20261031/19/files/artifacts/compute/refactor-evidence-corrections-20261031/19/public-oracle-tests-final.log"
+    },
+    {
+      "git_path": "artifacts/compute/refactor-evidence-corrections-20261031/19/z9-artifact.json",
+      "sha256": "7634bc23204f35b1fbd72254d180b6ae3e52fcdd51cb9f05e4a118f1d5f825c0",
+      "bytes": 2145,
+      "source": "/mnt/raid0/llm/tmp/refactor-unsupported-seven-v2-20261031/19/files/artifacts/compute/refactor-evidence-corrections-20261031/19/z9-artifact.json"
+    }
+  ],
+  "task_prose_and_dates_unchanged": true,
+  "tests_rerun": false,
+  "new_code_quota_credit": false,
+  "recovery": {
+    "index": 19,
+    "original_paragraph_sha256": "a0474c898340acb315e0f3fd3351c2fcf54889f5a3e39065db5fb48e8e8bc3cd",
+    "whole_handoff_recovery_byte_identical": true,
+    "original_prose_and_dates_unchanged": true
+  }
+}

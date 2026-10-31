@@ -1,0 +1,3 @@
+...........                                                              [100%]
+11 passed in 2.40s
+{"schema": "hil15-r11-smoke-supervisor/v1", "elapsed_s": 3.4417288249824196, "sampled_peak_tree_rss_bytes": 382423040, "samples": 35, "verified_exited_processes": 0, "verified_exited_threads": 0, "per_process_address_space_limit_bytes": 17179869184, "rss_scope": "sum of sampled resident pages across owned process tree; sampling may miss transients and double-count shared pages", "leader_pid": 1078969, "leader_birth": 143771665, "child_rc": 0, "children_drained": true, "failure": null}

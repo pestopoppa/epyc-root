@@ -1,0 +1,48 @@
+{
+  "schema": "codex3.delivered-source-and-ready.v1",
+  "at": "2026-10-29T23:11:19.833530+00:00",
+  "research_commit": "d2d485598807",
+  "Z9": {
+    "implementation": {
+      "path": "/mnt/raid0/llm/worktrees/codex3-inf30-oracle-20261029/scripts/benchmark/sala_cpu_oracle.py",
+      "sha256": "c046e48be40eaa11aee4a01e765c8ec4235194659ae8f398e6bb8e3c3db78296"
+    },
+    "tests": {
+      "path": "/mnt/raid0/llm/worktrees/codex3-inf30-oracle-20261029/tests/test_sala_cpu_oracle.py",
+      "sha256": "7890e1a9ba15547d1e5792641a3f4297a01bb5580bb0000f2dc81fb15ddd873b"
+    },
+    "documentation": {
+      "path": "/mnt/raid0/llm/worktrees/codex3-inf30-oracle-20261029/docs/reference/sala-cpu-oracle.md",
+      "sha256": "9b620c02400acb4ae821e37d2ca3d1172f4a7ee4b32fa58c433c4eec2c7aa104"
+    },
+    "original_test_log": {
+      "path": "/mnt/raid0/llm/tmp/codex-inf30-z9-20261029/public-oracle-tests-final.log",
+      "sha256": "c6bd240dde4a5f8a139835c0259f83c2d283c5eee82ed1813cbb5e3c501d5c18"
+    },
+    "tests_passed": 11,
+    "native_vendor_source_used": true,
+    "pretrained_model_inference": false,
+    "GGUF_or_Triton_parity": false
+  },
+  "PIP02": {
+    "paddle_relocatable_publication": {
+      "path": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-relocatable-r8-20261029/PUBLISHED-RELOCATABLE.json",
+      "sha256": "19a3fc01ba2ddf108f4542e2359b1cf80b7167a0d863fb7fcc5c5f12a16c80b0"
+    },
+    "odl_relocatable_publication": {
+      "path": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/odl-relocatable-r2/PUBLISHED.json",
+      "sha256": "c1dddb76da1e84a071372627c011f1b8d76e376357ff3db6006209abd290e48b"
+    },
+    "new_manifests": 10,
+    "regions": "any-cpu-quarter",
+    "live_keeper_pid": 257469,
+    "keeper_start": "2026-10-29T22:37:02Z",
+    "scored_full_cohort": false
+  },
+  "EVL34": {
+    "r3_control22": "retained unknown; slow live residency query did not finish inside short native request window",
+    "r4_control23": "not yet exposed; missing local helper imports repaired, exact source/model/declaration preflight in progress",
+    "model_qualification": "not yet established",
+    "pretrained_pilot_started": false
+  }
+}
