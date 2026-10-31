@@ -1,0 +1,56 @@
+{
+  "source_patch_sha256": "5e49ad5875ef0a0da5fc2a2ceeaeff93da0b9b2ee618e69f5d21bdc83b7a187b",
+  "paths": [
+    {
+      "path": "scripts/coordination/filler_run12.sh",
+      "sha256": "1901632ff512120d0599e4e783add3fe80fe88286ad21c4505200df9ed783b9b",
+      "old_sha256": "5602e0de1c49ccdb4b5ea82adb8d45b16dc32ebb4111bed9ccdf2c55ec7d8306"
+    },
+    {
+      "path": "scripts/coordination/loop_metrics_hook.sh",
+      "sha256": "5feda614666be15bd434e67b3f4f89958dd0c76d2122802639de263bf6a11d51",
+      "old_sha256": null
+    },
+    {
+      "path": "scripts/handoffs/loop_metrics.py",
+      "sha256": "efee24b0b95742379376a1d09608fa19191810e9dfa76ce51989b0e81502650b",
+      "old_sha256": null
+    },
+    {
+      "path": "scripts/handoffs/loop_metrics_events.py",
+      "sha256": "f7a65a48f6c32acdc0be7e1afdc4da158350c8f5301d5e36a76875151f7c02f0",
+      "old_sha256": null
+    },
+    {
+      "path": "tests/fixtures/loop5/calendar_admission.sh",
+      "sha256": "76a53ef653a86fd7cb987a51fdc8d9def9f0ea10a48abb2ac76af9cc25573969",
+      "old_sha256": null
+    },
+    {
+      "path": "tests/test_loop_metrics.py",
+      "sha256": "47c473e7d6b55df9ed92f297e39a6eac9c228d0f2bb065d14bbd98f73b8897b9",
+      "old_sha256": null
+    },
+    {
+      "path": "tests/test_loop_metrics_events.py",
+      "sha256": "32c0d0f1c4bff82da6e0cf50422d087017effabd6737a80f99da4890076e60f5",
+      "old_sha256": null
+    }
+  ],
+  "owner_sources": [
+    {
+      "source": "/mnt/raid0/llm/tmp/compute-flags/ws58-calendar-keeper-v7e.sh",
+      "sha256": "5d3646d3982a001c379b3da6f200efcead93de3e147656dbb62fb0f8cd87a11e",
+      "proposed_sha256": "54f4f8defce256b99b5cef45806721d7a31a01eeeba36a9ec0d1bbe2df7baffd"
+    },
+    {
+      "source": "/mnt/raid0/llm/tmp/compute-flags/grant-ws58-quarters-20261031.sh",
+      "sha256": "6a9996bc796ea75f8880893ba5c7d6f2bcc532bee8c59c0b0329dc774dea9fee",
+      "proposed_sha256": "1f9a9a4cf98beb5293f44d7b21806f70e6014bb22c3365b9109b7792b086dfd0"
+    }
+  ],
+  "task_complete": false,
+  "native_or_live_calls": false,
+  "impact": "GNX stale/unindexed UNKNOWN; manual run_one local caller, write_ended outer completion/term/run paths, same-file inner recursive transport; no gate/threshold changes",
+  "source_base": "9972a729942658769505e6ea979ad81576432b68"
+}

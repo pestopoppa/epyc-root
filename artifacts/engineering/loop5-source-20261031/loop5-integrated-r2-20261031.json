@@ -1,0 +1,163 @@
+{
+  "scope": "MODEL_FREE_R6_ONLY",
+  "family": "28-29",
+  "actual_cpus": [
+    124,
+    125
+  ],
+  "grant_snapshot": [
+    {
+      "id": "codex-ni-inf12-gate2-triton36-r13-20261030",
+      "class": "block-correctness",
+      "regions": "mi210_0,184-191"
+    },
+    {
+      "id": "codex3-cs8-lex2-dev-grid-hostfix2-20261031",
+      "class": "block-correctness",
+      "regions": "72-95"
+    },
+    {
+      "id": "yarn-oolong-s2-host256-eligible26-v32-20261031",
+      "class": "block-correctness",
+      "regions": "24-47"
+    },
+    {
+      "id": "codex3-pareval120-k20-gen-20261031",
+      "class": "block-correctness",
+      "regions": "0-23"
+    },
+    {
+      "id": "yarn-oolong-s3-host256-eligible27-v30-20261031",
+      "class": "block-correctness",
+      "regions": "48-71"
+    }
+  ],
+  "returncode": 0,
+  "failure": null,
+  "elapsed_s": 1.9343870009761304,
+  "sampled_peak_tree_rss_bytes": 58269696,
+  "kernel_childset_empty": true,
+  "captured": [
+    {
+      "pid": 1206193,
+      "birth": 159147958,
+      "ppid": 1206188,
+      "uid": 1000
+    },
+    {
+      "pid": 1206194,
+      "birth": 159147959,
+      "ppid": 1206193,
+      "uid": 1000
+    },
+    {
+      "pid": 1206209,
+      "birth": 159147990,
+      "ppid": 1206194,
+      "uid": 1000
+    },
+    {
+      "pid": 1206214,
+      "birth": 159148000,
+      "ppid": 1206194,
+      "uid": 1000
+    },
+    {
+      "pid": 1206219,
+      "birth": 159148019,
+      "ppid": 1206194,
+      "uid": 1000
+    },
+    {
+      "pid": 1206229,
+      "birth": 159148030,
+      "ppid": 1206219,
+      "uid": 1000
+    },
+    {
+      "pid": 1206232,
+      "birth": 159148034,
+      "ppid": 1206194,
+      "uid": 1000
+    },
+    {
+      "pid": 1206240,
+      "birth": 159148041,
+      "ppid": 1206232,
+      "uid": 1000
+    },
+    {
+      "pid": 1206258,
+      "birth": 159148048,
+      "ppid": 1206194,
+      "uid": 1000
+    },
+    {
+      "pid": 1206270,
+      "birth": 159148050,
+      "ppid": 1206258,
+      "uid": 1000
+    },
+    {
+      "pid": 1206289,
+      "birth": 159148063,
+      "ppid": 1206194,
+      "uid": 1000
+    },
+    {
+      "pid": 1206291,
+      "birth": 159148067,
+      "ppid": 1206194,
+      "uid": 1000
+    },
+    {
+      "pid": 1206299,
+      "birth": 159148075,
+      "ppid": 1206291,
+      "uid": 1000
+    },
+    {
+      "pid": 1206304,
+      "birth": 159148081,
+      "ppid": 1206194,
+      "uid": 1000
+    },
+    {
+      "pid": 1206307,
+      "birth": 159148086,
+      "ppid": 1206304,
+      "uid": 1000
+    },
+    {
+      "pid": 1206310,
+      "birth": 159148089,
+      "ppid": 1206194,
+      "uid": 1000
+    },
+    {
+      "pid": 1206336,
+      "birth": 159148097,
+      "ppid": 1206310,
+      "uid": 1000
+    },
+    {
+      "pid": 1206354,
+      "birth": 159148107,
+      "ppid": 1206310,
+      "uid": 1000
+    },
+    {
+      "pid": 1206375,
+      "birth": 159148115,
+      "ppid": 1206194,
+      "uid": 1000
+    },
+    {
+      "pid": 1206393,
+      "birth": 159148119,
+      "ppid": 1206375,
+      "uid": 1000
+    }
+  ],
+  "native_or_GPU_execution": false
+}

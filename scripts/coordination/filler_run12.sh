@@ -135,6 +135,7 @@ snapshot_overrun() {
 }
 
 write_ended() { # rc reason
+  LM_RESULT=$1
   local ov_started=${OV_STARTED:-} ov_owner=${OV_OWNER:-} ov_est=${OV_EST:-} ov_regions=${OV_REGIONS:-}
   # Consume before any I/O: a later TERM/unstarted repeat cannot reuse it.
   OV_STARTED=""; OV_OWNER=""; OV_EST=""; OV_REGIONS=""
@@ -300,6 +301,7 @@ run_one() {
         --port "$PORTS" --workdir "$WORKDIR" --gpu-threads "$GPUTHR" 7>&- &
   fi
   CUR=$!
+  lm_job_dispatched
   OV_STARTED=$(ts)
   [ "$(ps -o pgid= -p $CUR | tr -d ' ')" = "$CUR" ] || log "WARN: $CUR is not a group leader"
   reason=exited
@@ -318,13 +320,30 @@ run_one() {
   STARTED_ONE=1
 }
 
+# Disabled metadata has no new file dependency or EXIT trap.
+lm_attempt_begin() { :; }
+lm_attempt_end() { :; }
+lm_job_dispatched() { :; }
+if [ -n "${LOOP_METRICS_LEDGER:-}" ]; then
+  if [ -n "$(trap -p EXIT)" ]; then
+    printf '%s\n' 'loop metrics: existing EXIT trap preserved; coverage unavailable' >&2
+  elif [ -r "${LOOP_METRICS_HOOK:-$(dirname "$SELF")/loop_metrics_hook.sh}" ]; then
+    source "${LOOP_METRICS_HOOK:-$(dirname "$SELF")/loop_metrics_hook.sh}"
+    lm_start
+    trap lm_close EXIT
+  else
+    printf '%s\n' 'loop metrics: helper unavailable; coverage unavailable' >&2
+  fi
+fi
 log "launcher up pid=$$ class=$CLASS poll=${POLL}s grants=$GRANTS stop=$STOPFILE minwin=${MINWIN}s ports=${PORTS:-none}"
 is_complete && { mark_complete; exit 0; }
 while :; do
   [ -e "$COMPLETE" ] && { log "complete marker present; exiting"; exit 0; }
   if [ ! -e "$GRANT" ]; then sleep_poll "$POLL"; continue; fi
   GRANT_WAIT=""
+  lm_attempt_begin
   run_one; rc=$?
+  lm_attempt_end "$rc"
   [ $rc = 20 ] && exit 0
   if [ "${STARTED_ONE:-0}" = 1 ] && [ $REPEAT = 0 ]; then log "one window done; exiting (no --repeat)"; exit 0; fi
   if [ $rc = 9 ]; then w=$GRANT_WAIT; [ "$w" -gt "$POLL" ] && w=$POLL; sleep_poll "$w"; fi

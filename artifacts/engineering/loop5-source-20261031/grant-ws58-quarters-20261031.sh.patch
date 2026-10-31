@@ -1,0 +1,28 @@
+--- a/grant-ws58-quarters-20261031.sh
++++ b/grant-ws58-quarters-20261031.sh
+@@ -33,6 +33,15 @@
+   return 0; }
+ log "armed"; S0=$(date -u -d "2026-10-31T05:52:00Z" +%s); while [ "$(date -u +%s)" -lt $S0 ]; do sleep 60; done
+ CAP=$(date -u -d '2026-11-01T06:00:00Z' +%s)
++# LOOP-5 optional append-only metadata; scheduling behavior is unchanged.
++if [ -n "${LOOP_METRICS_LEDGER:-}" ] && [ -r "${LOOP_METRICS_HOOK:-}" ] && [ -z "$(trap -p EXIT)" ]; then
++  source "$LOOP_METRICS_HOOK"
++  lm_start calendar-admission
++  trap lm_close EXIT
++else
++  lm_attempt_begin() { :; }
++  lm_admission_result() { :; }
++fi
+ log "start (v1027: successor of the 10-26 writer, cap 10-28T06:00Z)"
+ while [ "$(date -u +%s)" -lt $(( CAP - 600 )) ]; do
+   if h=$(holdfile); then sleep 60; continue; fi
+@@ -50,7 +59,9 @@
+     ps -o pid= -p "$lp" >/dev/null 2>&1 || { log "$id: launcher $lp gone; skip"; echo "$id" >> $D; continue; }
+     ok=1; for q in $(quarters "$regs"); do qfree $q || ok=0; done; [ $ok = 1 ] || continue
+     st=$(date -u +%s); W=$(( CAP - st )); [ $W -gt $win ] && W=$win
++    lm_attempt_begin
+     r=$($F/grant_ok.sh $id $gib --window-s $W --regions $regs); rc=$?
++    lm_admission_result "$rc"
+     [ $rc = 0 ] || { [ $rc = 12 ] || log "$id refused rc=$rc: $r"; continue; }
+     # SMT fold (ws58 10-25): GPU host threads 184-191 are SMT siblings of q3 cores 88-95. While a GPU grant is open,
+     # q3 takes only block-correctness rows (no timing work beside the GPU runner).

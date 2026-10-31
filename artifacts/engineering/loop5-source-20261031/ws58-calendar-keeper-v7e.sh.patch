@@ -1,0 +1,17 @@
+--- a/ws58-calendar-keeper-v7e.sh
++++ b/ws58-calendar-keeper-v7e.sh
+@@ -250,7 +250,14 @@
+ }
+ 
+ # ---------- 4. idle alarm ----------
++# LOOP-5 is explicitly enabled by the owning session at its safe boundary.
++if [ -n "${LOOP_METRICS_LEDGER:-}" ] && [ -r "${LOOP_METRICS_HOOK:-}" ]; then
++  source "$LOOP_METRICS_HOOK"
++else
++  lm_kernel_sample() { :; }
++fi
+ idle_alarm() {
++  lm_kernel_sample
+   local hold st r n last now fired=""
+   hold=$(ls ${F}HOLD_* 2>/dev/null | head -1)
+   st=$($RL status 2>/dev/null)
