@@ -1,0 +1,92 @@
+[
+  {
+    "name": "truncated-buffer",
+    "exit": 2,
+    "diagnostic": "REFUSED raw length"
+  },
+  {
+    "name": "changed-Q-after-capture",
+    "exit": 2,
+    "diagnostic": "REFUSED native captured-output roundtrip mismatch"
+  },
+  {
+    "name": "broken-KV-alias",
+    "exit": 2,
+    "diagnostic": "REFUSED alias mismatch"
+  },
+  {
+    "name": "missing-input-presence",
+    "exit": 2,
+    "diagnostic": "REFUSED map::at"
+  },
+  {
+    "name": "short-magic",
+    "exit": 2,
+    "diagnostic": "REFUSED truncated magic"
+  },
+  {
+    "name": "oversized-stride",
+    "exit": 2,
+    "diagnostic": "REFUSED stride limit"
+  },
+  {
+    "name": "oversized-contiguous-shape",
+    "exit": 2,
+    "diagnostic": "REFUSED bounded span overflow"
+  },
+  {
+    "name": "missing-phase",
+    "exit": 2,
+    "diagnostic": "REFUSED map::at"
+  },
+  {
+    "name": "ask-time-phase",
+    "exit": 2,
+    "diagnostic": "REFUSED unknown schema or unsynchronized capture phase"
+  },
+  {
+    "name": "missing-schema",
+    "exit": 2,
+    "diagnostic": "REFUSED map::at"
+  },
+  {
+    "name": "unknown-schema",
+    "exit": 2,
+    "diagnostic": "REFUSED unknown schema or unsynchronized capture phase"
+  },
+  {
+    "name": "nonbinary-present",
+    "exit": 2,
+    "diagnostic": "REFUSED nonbinary source presence"
+  },
+  {
+    "name": "nonbinary-iqk",
+    "exit": 2,
+    "diagnostic": "REFUSED invalid source threads/iqk"
+  },
+  {
+    "name": "zero-source-threads",
+    "exit": 2,
+    "diagnostic": "REFUSED invalid source threads/iqk"
+  },
+  {
+    "name": "oversized-source-threads",
+    "exit": 2,
+    "diagnostic": "REFUSED invalid source threads/iqk"
+  },
+  {
+    "name": "negative-alias",
+    "exit": 2,
+    "diagnostic": "REFUSED invalid source alias"
+  },
+  {
+    "name": "self-alias",
+    "exit": 2,
+    "diagnostic": "REFUSED invalid source alias"
+  },
+  {
+    "name": "alias-to-absent-input",
+    "exit": 2,
+    "diagnostic": "REFUSED invalid source alias"
+  }
+]
