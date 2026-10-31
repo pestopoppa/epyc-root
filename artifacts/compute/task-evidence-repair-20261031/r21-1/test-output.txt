@@ -1,0 +1,22 @@
+Original retained test output: startup-validation.log
+Original complete file SHA-256: cf0f547fd677f26a185538eb26e0446dfb033dcc7645fdf31e1e3f83734c8144
+....                                                                     [100%]
+4 passed in 6.55s
+
+Original retained test output: startup-mutation-validation.log
+Original complete file SHA-256: 7ff482ccf9c3f30b7ae8455c39f6ff34df8096b620abaf5457a6c817c6624ae5
+FFFF                                                                     [100%]
+=========================== short test summary info ============================
+FAILED scripts/kernel_rnd/autokernel/loop/test_startup_headline.py::test_restart_refresh_is_claimed_before_lanes_and_failure_still_dispatches[False-False]
+FAILED scripts/kernel_rnd/autokernel/loop/test_startup_headline.py::test_restart_refresh_is_claimed_before_lanes_and_failure_still_dispatches[False-True]
+FAILED scripts/kernel_rnd/autokernel/loop/test_startup_headline.py::test_restart_refresh_is_claimed_before_lanes_and_failure_still_dispatches[True-False]
+FAILED scripts/kernel_rnd/autokernel/loop/test_startup_headline.py::test_restart_refresh_is_claimed_before_lanes_and_failure_still_dispatches[True-True]
+4 failed in 6.14s
+startup refresh removal: behavioral regression detected
+
+Original retained test output: publication-validation.log
+Original complete file SHA-256: 103ac1b2a6c4c2559391302a51d28ae7b25b2929c70f4051ce4ba070c100d2a2
+.............................................................. [ 44%]
+........................................................................ [ 97%]
+....                                                                     [100%]
+138 passed, 10 subtests passed in 32.19s

@@ -1,0 +1,62 @@
+{
+  "schema": "epyc.task_evidence_integrity.v1",
+  "task_id": "R21-1",
+  "original_task_first_line": "- [x] **R21-1 \u2014 refresh the champion headline at STARTUP, not only per-advance.** \u2705 2026-10-30",
+  "decision": "keep_checked",
+  "reason": "Four actual-main startup cases cover carryover/fallback and success/failure; mutation removal fails all four. Existing original claim/window boundaries and failure preservation are covered. No measured headline or separately timed startup cost claimed.",
+  "implementation": [
+    {
+      "repo": "epyc-inference-research",
+      "implementation_commit": "bebe42b9a56d9cf6c951fc75a227c8666a194080",
+      "reachable_from_published_origin_main": true,
+      "files": [
+        {
+          "path": "scripts/kernel_rnd/autokernel/loop/run.py",
+          "sha256": "69562418f7df6a7e2858567168efb093fcfdc1d28bc4a99aed8f28c76fadd3d7",
+          "git_url": "https://github.com/pestopoppa/epyc-inference-research/blob/bebe42b9a56d9cf6c951fc75a227c8666a194080/scripts/kernel_rnd/autokernel/loop/run.py"
+        },
+        {
+          "path": "scripts/kernel_rnd/autokernel/loop/test_startup_headline.py",
+          "sha256": "121c2d388a864d9849b487ec18432610d026b1ce4b4499f2cd1520dc5ac61f38",
+          "git_url": "https://github.com/pestopoppa/epyc-inference-research/blob/bebe42b9a56d9cf6c951fc75a227c8666a194080/scripts/kernel_rnd/autokernel/loop/test_startup_headline.py"
+        }
+      ]
+    }
+  ],
+  "original_dates_preserved": true,
+  "evidence_only_hygiene_not_new_code_or_today_quota": true,
+  "no_retest_or_redate": true,
+  "prior_artifacts": [
+    {
+      "path": "/mnt/raid0/llm/worktrees/mains/codex-refactor-01a16fc3/artifacts/compute/refactor-r21-1-startup-headline-20261030.json",
+      "sha256": "a8f76e88b40fdd1c7402089a601503ac5bc5fd045d5eb41452c97ae65e4ad5c6",
+      "bytes": 3187
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/refactor-oab21-metrics-20261030/r21-1-startup-headline/startup-validation.log",
+      "sha256": "cf0f547fd677f26a185538eb26e0446dfb033dcc7645fdf31e1e3f83734c8144",
+      "bytes": 591
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/refactor-oab21-metrics-20261030/r21-1-startup-headline/startup-mutation-validation.log",
+      "sha256": "7ff482ccf9c3f30b7ae8455c39f6ff34df8096b620abaf5457a6c817c6624ae5",
+      "bytes": 1344
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/refactor-oab21-metrics-20261030/r21-1-startup-headline/publication-validation.log",
+      "sha256": "103ac1b2a6c4c2559391302a51d28ae7b25b2929c70f4051ce4ba070c100d2a2",
+      "bytes": 765
+    }
+  ],
+  "retained_test_output": {
+    "path": "artifacts/compute/task-evidence-repair-20261031/r21-1/test-output.txt",
+    "sha256": "f6fb60f76df80762edafdeaece9c664d247b5f564a7c71dba511907196629b4e",
+    "scope": "Original test stdout excerpt; supervisor metadata omitted and trailing whitespace removed; full original hash retained"
+  },
+  "task_text_and_dates_recovery": {
+    "first_line_metadata": "HTML comment only; reopened task changes checkbox only",
+    "visible_evidence": "separate delimited metadata sub-bullet after original paragraph",
+    "original_paragraph_sha256": "974821ec8c70c0a8d390c6016ea425875dfbf4209b68980e39872f0232d9fbb6",
+    "metadata_strip_restores_original_paragraph_byte_identically": true
+  }
+}
