@@ -1,0 +1,28 @@
+{
+  "binding": {
+    "clip_id": "de_de:12482370299689904904.wav",
+    "wav_sha256": "9f131fa124b0380979a25981d3acff392a62dacbfbf8952453c38aad6104613a",
+    "reference_transcript_sha256": "5fbe21c56a9d2bd13a64363bdac2f8e8a8cf5d64ae75844240bd26eaf4ff16e5",
+    "pins": {
+      "source_commit": "db678a031cf4c524bcab2c45a0dc6a7813106e4a",
+      "model_sha256": "d9ec7e2c39da7b4fec3e01e71e82c7f7bbe97741e08c0c054091bf3d520a41d3",
+      "binary_sha256": "460323a6fd74fd16576058e55ffc49594d50dd81b948643fad18c9e265afe353",
+      "transcribe_lib_sha256": "58197839744b81c7db743bda3cec505d55d7fcead53e2665c9f0d246b7c940a1",
+      "source_manifest_sha256": "2ffaa3939c113f16fe3a57acdd0ce81d45bb56179aeb905efae4bf0e946649ee",
+      "manifest_sha256": "2ded1024e8ae191c7e98ca12a42660520184bcc6a9549ccc9edcb2db86255ce7",
+      "reference_sha256": "1f0166e73db49f657d9c72d799f9529d7929a0a279aa47de85317f61b5d54637"
+    }
+  },
+  "clip_id": "de_de:12482370299689904904.wav",
+  "wall_s": 1.9066381438169628,
+  "transcript": "Leider f\u00e4llt das Studium von Verkehrsfl\u00fcssen schwer, da man Fahrerverhalten nicht mit hundertprozentiger Sicherheit voraussagen kann.",
+  "reference_transcript": "Leider f\u00e4llt das Studium von Verkehrsfl\u00fcssen schwer, da man Fahrerverhalten nicht mit hundertprozentiger Sicherheit voraussagen kann.\n",
+  "exact_text_equal": true,
+  "rc": 0,
+  "started_epoch": 1793433550.7083495,
+  "finished_epoch": 1793433552.6149898,
+  "child_pid": 4138598,
+  "child_reaped": true,
+  "stdout_sha256": "a65bf9d629a29fd9a5465f154440a34518320219fd92ea49649018e31228dc7d",
+  "stderr_sha256": "2b8486c052e4005687382e1db19ad58b6395faa63469706445cb24eb1130c480"
+}

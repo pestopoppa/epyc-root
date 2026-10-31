@@ -1,0 +1,7 @@
+2026-10-31T05:56:54Z [codex3-cs8-stt2-transcribe-cpu-20261030] launcher up pid=2379147 class=cpu poll=45s grants=/mnt/raid0/llm/tmp/compute-flags/grants stop=/mnt/raid0/llm/tmp/codex3-cs8-stt2-transcribe-20261030/STOP minwin=900s ports=none
+2026-10-31T07:58:24Z [codex3-cs8-stt2-transcribe-cpu-20261030] START regions=48-71 cpus=48-71 threads=24 gpu=0 end=2026-10-31T08:57Z
+[region-lock] acquiring regions ['q2'] as role='build' (timeout_s=3516.0) …
+[region-lock] held ['q2'] after 0.0s wait; running: /bin/bash /mnt/raid0/llm/tmp/codex3-cs8-stt2-transcribe-20261030/engine/filler_run13.sh --inner --id codex3-cs8-stt2-transcribe-cpu-20261030 --class cpu --cmd taskset -c "$FILLER_CPUS" python3 /mnt/raid0/llm/tmp/codex3-cs8-stt2-transcribe-20261030/job.py --min-window 900 --stop /mnt/raid0/llm/tmp/codex3-cs8-stt2-transcribe-20261030/STOP --port  --workdir /mnt/raid0/llm/tmp/codex3-cs8-stt2-transcribe-20261030 --gpu-threads 184-191
+job rc=0
+2026-10-31T07:59:33Z [codex3-cs8-stt2-transcribe-cpu-20261030] ended rc=0 reason=complete (grant deleted)
+2026-10-31T07:59:33Z [codex3-cs8-stt2-transcribe-cpu-20261030] ALL DONE: wrote /mnt/raid0/llm/tmp/compute-flags/grants/codex3-cs8-stt2-transcribe-cpu-20261030.complete; row status remains scheduler-owned

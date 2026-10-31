@@ -1,0 +1,28 @@
+{
+  "binding": {
+    "clip_id": "en_us:12741024238657315067.wav",
+    "wav_sha256": "240a643fad4f09e281b38527d60d0329d2f4a8aafef953aae827698e9a0e33bb",
+    "reference_transcript_sha256": "9e68b4e67e001aaefbd4f90e32ff01c55d9a1b59da8e8d6cc081d2eb469da8b4",
+    "pins": {
+      "source_commit": "db678a031cf4c524bcab2c45a0dc6a7813106e4a",
+      "model_sha256": "d9ec7e2c39da7b4fec3e01e71e82c7f7bbe97741e08c0c054091bf3d520a41d3",
+      "binary_sha256": "460323a6fd74fd16576058e55ffc49594d50dd81b948643fad18c9e265afe353",
+      "transcribe_lib_sha256": "58197839744b81c7db743bda3cec505d55d7fcead53e2665c9f0d246b7c940a1",
+      "source_manifest_sha256": "2ffaa3939c113f16fe3a57acdd0ce81d45bb56179aeb905efae4bf0e946649ee",
+      "manifest_sha256": "2ded1024e8ae191c7e98ca12a42660520184bcc6a9549ccc9edcb2db86255ce7",
+      "reference_sha256": "1f0166e73db49f657d9c72d799f9529d7929a0a279aa47de85317f61b5d54637"
+    }
+  },
+  "clip_id": "en_us:12741024238657315067.wav",
+  "wall_s": 1.6020584711804986,
+  "transcript": "Unfortunately, studying traffic flow is difficult because driver's behavior cannot be predicted with 100 percent certainty.",
+  "reference_transcript": "Unfortunately, studying traffic flow is difficult because driver's behavior cannot be predicted with 100 percent certainty.\n",
+  "exact_text_equal": true,
+  "rc": 0,
+  "started_epoch": 1793433505.386171,
+  "finished_epoch": 1793433506.9882329,
+  "child_pid": 3069573,
+  "child_reaped": true,
+  "stdout_sha256": "88b04ee08418171ea40a5621fa6056ae758d8eb386e102d1348121e7277ad405",
+  "stderr_sha256": "a2b28d4d6f4407c4301326794ca2868652aec58ebfb7ec98bed1e0ea4775ab32"
+}

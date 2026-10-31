@@ -1,0 +1,12 @@
+audio: /mnt/raid0/llm/tmp/refactor-01a16fc3/inf79-speech-inference-ready/fleurs-select-q2/evidence/attempt-1793136367944484401/de_de/4963712857525084701.wav
+  samples:    157440
+  duration:   9.840 s
+  sample rate 16000 Hz mono float32
+model: /mnt/raid0/llm/models/parakeet-tdt-0.6b-v3-F16.gguf -> ok
+  backend:    CPU
+  name:       Parakeet TDT 0.6B v3
+  license:    cc-by-4.0
+  max audio:  unbounded (whole clip in one pass)
+run: ok
+text: Zegen wurden anscheinend bereits vor ungefähr 10.000 Jahren in Zagreb-Gebirge im Iran domestiziert.
+  realtime:   9x (1126.3 ms for 9.8 s)

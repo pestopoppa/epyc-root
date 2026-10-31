@@ -1,0 +1,7 @@
+rc=0 time=2026-10-31T08:02:03Z reason=complete
+job_id=codex3-kpf182-native-build-both-20261031
+owner=codex3
+step=job-run
+estimated_wall_s=14400
+started=2026-10-31T07:58:32Z
+regions=24-47

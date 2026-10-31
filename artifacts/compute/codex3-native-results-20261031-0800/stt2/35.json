@@ -1,0 +1,28 @@
+{
+  "binding": {
+    "clip_id": "fr_fr:17467158799788389101.wav",
+    "wav_sha256": "bfd0510179d0785501ed8ab9993333495f521651797e30ed0516b6c626beb2f7",
+    "reference_transcript_sha256": "825d2196b893c36a69c906bcc1295bba56a09f273071dcdb722b460779702b8b",
+    "pins": {
+      "source_commit": "db678a031cf4c524bcab2c45a0dc6a7813106e4a",
+      "model_sha256": "d9ec7e2c39da7b4fec3e01e71e82c7f7bbe97741e08c0c054091bf3d520a41d3",
+      "binary_sha256": "460323a6fd74fd16576058e55ffc49594d50dd81b948643fad18c9e265afe353",
+      "transcribe_lib_sha256": "58197839744b81c7db743bda3cec505d55d7fcead53e2665c9f0d246b7c940a1",
+      "source_manifest_sha256": "2ffaa3939c113f16fe3a57acdd0ce81d45bb56179aeb905efae4bf0e946649ee",
+      "manifest_sha256": "2ded1024e8ae191c7e98ca12a42660520184bcc6a9549ccc9edcb2db86255ce7",
+      "reference_sha256": "1f0166e73db49f657d9c72d799f9529d7929a0a279aa47de85317f61b5d54637"
+    }
+  },
+  "clip_id": "fr_fr:17467158799788389101.wav",
+  "wall_s": 1.3016890559811145,
+  "transcript": "Il s'agit de l'un des parcs d'attractions les plus connus en Afrique du Sud et consid\u00e9r\u00e9 comme le fleuron des parcs nationaux sud-africains Sand Parc.",
+  "reference_transcript": "Il s'agit de l'un des parcs d'attractions les plus connus en Afrique du Sud et consid\u00e9r\u00e9 comme le fleuron des parcs nationaux sud-africains Sand Parc.\n",
+  "exact_text_equal": true,
+  "rc": 0,
+  "started_epoch": 1793433566.1879244,
+  "finished_epoch": 1793433567.4896164,
+  "child_pid": 563328,
+  "child_reaped": true,
+  "stdout_sha256": "4c5ca93515a5f69d66e1008925bbc599b9987d2e489e85e0b0c6eecd4322113d",
+  "stderr_sha256": "137e5067f3188ce836a78d9ca90219d86426021a2aa313f19f28d263b5ee3e1f"
+}

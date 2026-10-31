@@ -1,0 +1,12 @@
+audio: /mnt/raid0/llm/tmp/refactor-01a16fc3/inf79-speech-inference-ready/fleurs-select-q2/evidence/attempt-1793136367944484401/fr_fr/17999210160761730950.wav
+  samples:    96000
+  duration:   6.000 s
+  sample rate 16000 Hz mono float32
+model: /mnt/raid0/llm/models/parakeet-tdt-0.6b-v3-F16.gguf -> ok
+  backend:    CPU
+  name:       Parakeet TDT 0.6B v3
+  license:    cc-by-4.0
+  max audio:  unbounded (whole clip in one pass)
+run: ok
+text: Le groupe Aerosmith a annulé les derniers concerts de sa tournée.
+  realtime:   9x (679.6 ms for 6.0 s)

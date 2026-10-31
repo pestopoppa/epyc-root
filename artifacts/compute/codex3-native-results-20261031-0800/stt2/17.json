@@ -1,0 +1,28 @@
+{
+  "binding": {
+    "clip_id": "it_it:4625363240754311860.wav",
+    "wav_sha256": "2d44d0f18729ef1a73c1c15efc6fbbe365e580cf9abb6a1e06cd7ddfacf0de06",
+    "reference_transcript_sha256": "7654608a7aa24fffb4a0526be8827bd5b500cb3279c4ed95681e794c768f7362",
+    "pins": {
+      "source_commit": "db678a031cf4c524bcab2c45a0dc6a7813106e4a",
+      "model_sha256": "d9ec7e2c39da7b4fec3e01e71e82c7f7bbe97741e08c0c054091bf3d520a41d3",
+      "binary_sha256": "460323a6fd74fd16576058e55ffc49594d50dd81b948643fad18c9e265afe353",
+      "transcribe_lib_sha256": "58197839744b81c7db743bda3cec505d55d7fcead53e2665c9f0d246b7c940a1",
+      "source_manifest_sha256": "2ffaa3939c113f16fe3a57acdd0ce81d45bb56179aeb905efae4bf0e946649ee",
+      "manifest_sha256": "2ded1024e8ae191c7e98ca12a42660520184bcc6a9549ccc9edcb2db86255ce7",
+      "reference_sha256": "1f0166e73db49f657d9c72d799f9529d7929a0a279aa47de85317f61b5d54637"
+    }
+  },
+  "clip_id": "it_it:4625363240754311860.wav",
+  "wall_s": 1.8115982860326767,
+  "transcript": "Se non si ha l'abitudine di guidare su strade di campagna, si consiglia di tenere gli occhi ben aperti, in quanto predominano ripide pendenze, stradine anguste e curve strette.",
+  "reference_transcript": "Se non si ha l'abitudine di guidare su strade di campagna, si consiglia di tenere gli occhi ben aperti, in quanto predominano ripide pendenze, stradine anguste e curve strette.\n",
+  "exact_text_equal": true,
+  "rc": 0,
+  "started_epoch": 1793433531.3739927,
+  "finished_epoch": 1793433533.185593,
+  "child_pid": 3454564,
+  "child_reaped": true,
+  "stdout_sha256": "c1b13607574c6158e8f053695aa11aaa7e887c7b7f5af32f3c09d7767017c316",
+  "stderr_sha256": "06cf1a40e68dadf751cb386a50c53b2eca7d190ac3cea3d73b92596b35e1949b"
+}

@@ -1,0 +1,73 @@
+{
+  "status": "READY",
+  "id": "codex3-kpf182-native-build-both-20261031",
+  "owner": "codex3",
+  "priority_rank": 2,
+  "regions": "any-cpu-quarter",
+  "class": "diagnostic",
+  "booking_class": "block-correctness",
+  "min_window_s": 3600,
+  "window_s": 14400,
+  "gib": 32,
+  "launcher": {
+    "path": "/mnt/raid0/llm/tmp/codex3-kpf182-native-20261031/launch.sh",
+    "sha256": "40fa8974c8f70f1f03fdeeee408f0e7fab9e2d97fab86c876dd8512066c28570"
+  },
+  "job": {
+    "path": "/mnt/raid0/llm/tmp/codex3-kpf182-native-20261031/job.sh",
+    "sha256": "2028f7c10177a8982906a432b5d8a223a4f2c6fe1350f79667c3047c54caf034"
+  },
+  "source_manifest": {
+    "path": "/mnt/raid0/llm/tmp/codex3-kpf182-native-20261031/SOURCES.sha256",
+    "sha256": "897969fa1eb059fac300ae7ee763636669b5f6da0734c83bccb54f589e5946ea"
+  },
+  "result_path": "/mnt/raid0/llm/tmp/codex3-kpf182-native-20261031/BUILD-hip-SUCCESS",
+  "launcher_log": "/mnt/raid0/llm/tmp/codex3-kpf182-native-20261031/ws58-launcher.out",
+  "scratch_root": "/mnt/raid0/llm/tmp/codex3-kpf182-native-20261031",
+  "est_output_GiB": 1,
+  "native_output_budget_GiB": 40,
+  "native_output_root": "/mnt/micron/codex3-lanes/kpf182-native-a1f0",
+  "keep": [
+    "KEEP",
+    "*.sh",
+    "*.py",
+    "*.md",
+    "*.json",
+    "*.sha256",
+    "*.log",
+    "*.patch",
+    "BUILD-*"
+  ],
+  "decision_rule": "Build private a1f0 descendant with default-off native KPF182 operation trace on both CPU and gfx90a HIP; require both server executables, trace symbol and same-build linkage. This is model-free prerequisite only; no fork-component hit or minimum inferred, no KPF18.2 completion.",
+  "min_effect": "n/a (model-free build prerequisite)",
+  "enrollment": "n/a: diagnostic",
+  "hold": null,
+  "predeclaration": {
+    "path": "/mnt/raid0/llm/tmp/codex3-kpf182-native-20261031/PREDECLARED.md",
+    "sha256": "6ccf56c0d96d66e03bfb0728a1e06a5935c3fae0bcef187d28b10ef8c294caa5"
+  },
+  "feasibility": "Two serial Ninja j8 builds; prior e332 HIP 455 steps plus exact server build completed within a four-hour window. Estimate, not a measured duration of this candidate. Partial stop drains children and verifies completed CPU digests before resuming.",
+  "full_target_tested": false,
+  "smoke": {
+    "ran_at": "2026-10-31T05:53:09.283350+00:00",
+    "regions": "126-127 SMT, original 30-31 mutex",
+    "model": "n/a: actual CPU and HIP CMake, instrumented server-context object compile/link and HIP acc.cu compile/link; no device execution",
+    "first_request_ok": true,
+    "result_writer_ok": true,
+    "exit_ok": true,
+    "wall_s": 25.566,
+    "log": "/mnt/raid0/llm/tmp/codex3-kpf182-native-20261031/FINAL-NORMAL3.log",
+    "launcher_sha256": "40fa8974c8f70f1f03fdeeee408f0e7fab9e2d97fab86c876dd8512066c28570"
+  },
+  "stop_smoke": {
+    "rc": 75,
+    "partial": "/mnt/raid0/llm/tmp/codex3-kpf182-native-20261031/BUILD-PARTIAL",
+    "compiler_observed": true,
+    "children_drained": true,
+    "wall_s": 24.674,
+    "log": "/mnt/raid0/llm/tmp/codex3-kpf182-native-20261031/FINAL-STOP3.log"
+  },
+  "log_consumer": "/mnt/raid0/llm/tmp/codex3-kpf182-native-20261031/build-guard.py",
+  "log_consumer_sha256": "550958a404371d3e7ef09e73c17eab3685efaf875a0c844527fb1065c342b76f",
+  "completion_cmd": "test -s /mnt/raid0/llm/tmp/codex3-kpf182-native-20261031/BUILD-cpu-SUCCESS && test -s /mnt/raid0/llm/tmp/codex3-kpf182-native-20261031/BUILD-hip-SUCCESS"
+}

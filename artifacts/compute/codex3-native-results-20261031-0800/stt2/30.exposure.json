@@ -1,0 +1,29 @@
+{
+  "binding": {
+    "clip_id": "fr_fr:7105431834829365765.wav",
+    "wav_sha256": "bcc2f1735705d050ede88bd871cee2c968bb73be2a75d3c90560166961e6bf40",
+    "reference_transcript_sha256": "2822eb5deef0bdc7f174b78b5a54b3b458e1c4c6d4459b67b44e6d11739ae99a",
+    "pins": {
+      "source_commit": "db678a031cf4c524bcab2c45a0dc6a7813106e4a",
+      "model_sha256": "d9ec7e2c39da7b4fec3e01e71e82c7f7bbe97741e08c0c054091bf3d520a41d3",
+      "binary_sha256": "460323a6fd74fd16576058e55ffc49594d50dd81b948643fad18c9e265afe353",
+      "transcribe_lib_sha256": "58197839744b81c7db743bda3cec505d55d7fcead53e2665c9f0d246b7c940a1",
+      "source_manifest_sha256": "2ffaa3939c113f16fe3a57acdd0ce81d45bb56179aeb905efae4bf0e946649ee",
+      "manifest_sha256": "2ded1024e8ae191c7e98ca12a42660520184bcc6a9549ccc9edcb2db86255ce7",
+      "reference_sha256": "1f0166e73db49f657d9c72d799f9529d7929a0a279aa47de85317f61b5d54637"
+    }
+  },
+  "args": [
+    "/mnt/raid0/llm/tmp/codex3-cs8-stt2-transcribe-20261030/build/bin/transcribe-cli",
+    "-m",
+    "/mnt/raid0/llm/models/parakeet-tdt-0.6b-v3-F16.gguf",
+    "--backend",
+    "cpu",
+    "--threads",
+    "1",
+    "--timestamps",
+    "none",
+    "/mnt/raid0/llm/tmp/refactor-01a16fc3/inf79-speech-inference-ready/fleurs-select-q2/evidence/attempt-1793136367944484401/fr_fr/7105431834829365765.wav"
+  ],
+  "exposed_epoch": 1793433559.2434988
+}

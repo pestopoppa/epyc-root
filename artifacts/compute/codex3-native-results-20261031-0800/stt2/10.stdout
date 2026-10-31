@@ -1,0 +1,12 @@
+audio: /mnt/raid0/llm/tmp/refactor-01a16fc3/inf79-speech-inference-ready/fleurs-select-q2/evidence/attempt-1793136367944484401/it_it/3299434526375775286.wav
+  samples:    170880
+  duration:   10.680 s
+  sample rate 16000 Hz mono float32
+model: /mnt/raid0/llm/models/parakeet-tdt-0.6b-v3-F16.gguf -> ok
+  backend:    CPU
+  name:       Parakeet TDT 0.6B v3
+  license:    cc-by-4.0
+  max audio:  unbounded (whole clip in one pass)
+run: ok
+text: L'incidente è avvenuto in alta montagna e si ritiene sia stato causato da fuoco nemico.
+  realtime:   9x (1252.9 ms for 10.7 s)

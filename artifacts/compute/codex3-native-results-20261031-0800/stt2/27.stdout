@@ -1,0 +1,12 @@
+audio: /mnt/raid0/llm/tmp/refactor-01a16fc3/inf79-speech-inference-ready/fleurs-select-q2/evidence/attempt-1793136367944484401/de_de/2561524221067958936.wav
+  samples:    136320
+  duration:   8.520 s
+  sample rate 16000 Hz mono float32
+model: /mnt/raid0/llm/models/parakeet-tdt-0.6b-v3-F16.gguf -> ok
+  backend:    CPU
+  name:       Parakeet TDT 0.6B v3
+  license:    cc-by-4.0
+  max audio:  unbounded (whole clip in one pass)
+run: ok
+text: Leider fällt das Studium von Verkehrsflüssen schwer, da man Fahrerverhalten nicht mit hundertprozentiger Sicherheit voraussagen kann.
+  realtime:   8x (1040.8 ms for 8.5 s)

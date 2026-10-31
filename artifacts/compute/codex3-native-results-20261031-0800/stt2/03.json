@@ -1,0 +1,28 @@
+{
+  "binding": {
+    "clip_id": "en_us:10335587906469246566.wav",
+    "wav_sha256": "24c0b5ca0480c351c3accfd9dee364609af9216d89d84a1dcac1bc6e8fdbc1a3",
+    "reference_transcript_sha256": "b54afb2d00b131af1e27233354595d26566e45a88f45105fbbdaefdecec8e557",
+    "pins": {
+      "source_commit": "db678a031cf4c524bcab2c45a0dc6a7813106e4a",
+      "model_sha256": "d9ec7e2c39da7b4fec3e01e71e82c7f7bbe97741e08c0c054091bf3d520a41d3",
+      "binary_sha256": "460323a6fd74fd16576058e55ffc49594d50dd81b948643fad18c9e265afe353",
+      "transcribe_lib_sha256": "58197839744b81c7db743bda3cec505d55d7fcead53e2665c9f0d246b7c940a1",
+      "source_manifest_sha256": "2ffaa3939c113f16fe3a57acdd0ce81d45bb56179aeb905efae4bf0e946649ee",
+      "manifest_sha256": "2ded1024e8ae191c7e98ca12a42660520184bcc6a9549ccc9edcb2db86255ce7",
+      "reference_sha256": "1f0166e73db49f657d9c72d799f9529d7929a0a279aa47de85317f61b5d54637"
+    }
+  },
+  "clip_id": "en_us:10335587906469246566.wav",
+  "wall_s": 1.001723628025502,
+  "transcript": "20th century research has shown that there are two pools of genetic variation hidden and expressed.",
+  "reference_transcript": "20th century research has shown that there are two pools of genetic variation hidden and expressed.\n",
+  "exact_text_equal": true,
+  "rc": 0,
+  "started_epoch": 1793433509.1172504,
+  "finished_epoch": 1793433510.1189775,
+  "child_pid": 3072120,
+  "child_reaped": true,
+  "stdout_sha256": "8171306b6fdf2e1cb53c090b89e7da57417ef9dbc7a4629252ecc28ddc00c122",
+  "stderr_sha256": "707f8e6b5de6970de658c8f25415a3817ab1eb131b5bebd6c2144c8afdc29c88"
+}
