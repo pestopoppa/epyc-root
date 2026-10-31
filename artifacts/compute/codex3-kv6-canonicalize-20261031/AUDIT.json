@@ -1,0 +1,196 @@
+{
+  "schema": "kv6-retained-evidence-audit/v1",
+  "original_commit": "84f6f6f15f713d21098dbad2b153d32f8cc13624",
+  "current_commit": "9ca8511726afddea9c4e0fc2af4a43fb27d2adf4",
+  "exact_function_sha256": "060c526d3f239d08628d3a9dda20a18efbcac55245269baab08ebedc7a5d9a8b",
+  "current_function_sha256": "060c526d3f239d08628d3a9dda20a18efbcac55245269baab08ebedc7a5d9a8b",
+  "original_file_sha256": "8f075d9dd5716abb7838be75779c57c4031663a58eebbfd080efff0f39e929cb",
+  "current_file_sha256": "964a1fd427aeb31adc8b0bb54b42a08c0d6a58d0547d5ea12bcc8bb45dca2536",
+  "prior_raw_log_sha256": "3ab41722ad15fab20a5c4ebacbc07134b2b74a974e6e3d729ac9929393e2ba8d",
+  "prior_harness_sha256": "d063020ca782ff9edb1648b1239c16283e2d07720cbdb5b7ebf75bb196beedfb",
+  "equal_outputs": true,
+  "affinity": [
+    30,
+    31
+  ],
+  "python": "3.13.7 (main, Mar  3 2026, 12:19:54) [GCC 15.2.0]",
+  "mode": "retained wall time per call from shared-host synthetic R6 batches; no process CPU timing or production latency",
+  "rows": [
+    {
+      "chars": 256,
+      "pattern": "plain",
+      "input_sha256": "11565ccb58a6398bc5cdb375b824bb71f11f58e0e7b1510d464337950959805f",
+      "output_sha256": "11565ccb58a6398bc5cdb375b824bb71f11f58e0e7b1510d464337950959805f",
+      "output_chars": 256,
+      "router_projection_sha256": "11565ccb58a6398bc5cdb375b824bb71f11f58e0e7b1510d464337950959805f",
+      "median_wall_ms": 0.00762625,
+      "sample_wall_ms": [
+        0.00748404,
+        0.00762075,
+        0.00764755,
+        0.0076526400000000005,
+        0.00762085,
+        0.00762625,
+        0.00764965,
+        0.00763044,
+        0.00760855
+      ],
+      "calls_per_batch": 100,
+      "batch_count": 9
+    },
+    {
+      "chars": 256,
+      "pattern": "mixed",
+      "input_sha256": "d46d4e78ef88386cc317de913f3aab175d66afa7ca8330b252a9979bece87619",
+      "output_sha256": "53f6dbf2d85f4660f64dc4df1dd5a37cece1aa7fd4b7ffc5ee52477bf13ed3ee",
+      "output_chars": 124,
+      "router_projection_sha256": "53f6dbf2d85f4660f64dc4df1dd5a37cece1aa7fd4b7ffc5ee52477bf13ed3ee",
+      "median_wall_ms": 0.00725915,
+      "sample_wall_ms": [
+        0.00730405,
+        0.007261439999999999,
+        0.00725915,
+        0.007218939999999999,
+        0.00726245,
+        0.00725754,
+        0.00726285,
+        0.00721584,
+        0.007254050000000001
+      ],
+      "calls_per_batch": 100,
+      "batch_count": 9
+    },
+    {
+      "chars": 10000,
+      "pattern": "plain",
+      "input_sha256": "3219ebb7d0fbaacd579b2f75faf1a0da4ad937c4677ecce3f3f19ce190f12206",
+      "output_sha256": "3219ebb7d0fbaacd579b2f75faf1a0da4ad937c4677ecce3f3f19ce190f12206",
+      "output_chars": 10000,
+      "router_projection_sha256": "11565ccb58a6398bc5cdb375b824bb71f11f58e0e7b1510d464337950959805f",
+      "median_wall_ms": 0.27859891999999997,
+      "sample_wall_ms": [
+        0.27867452000000004,
+        0.27849693,
+        0.27869312,
+        0.27858933,
+        0.27859891999999997,
+        0.27871852,
+        0.27866803,
+        0.27851782,
+        0.27856163
+      ],
+      "calls_per_batch": 100,
+      "batch_count": 9
+    },
+    {
+      "chars": 10000,
+      "pattern": "mixed",
+      "input_sha256": "93621b83b9ae38da972fdf54b3fb585991ff7b9b68d107c4e3d36d82df596687",
+      "output_sha256": "fbd000436819a31fa5305e2bd3379970cc7a015d1ebd874bf12767a4efecd3e0",
+      "output_chars": 4461,
+      "router_projection_sha256": "cc19df953b05dea4cb572e135f5c74f6313f4990a53b5756caa3ece2891e3ee5",
+      "median_wall_ms": 0.2418761,
+      "sample_wall_ms": [
+        0.24280279999999999,
+        0.2428606,
+        0.24130448999999998,
+        0.2418468,
+        0.2418761,
+        0.24118899,
+        0.24135079,
+        0.2421933,
+        0.24349421
+      ],
+      "calls_per_batch": 100,
+      "batch_count": 9
+    },
+    {
+      "chars": 100000,
+      "pattern": "plain",
+      "input_sha256": "c9946ed13619250d4c7b74afe44eae51f5b8f59d56e58a4afb2006a397e15f66",
+      "output_sha256": "c9946ed13619250d4c7b74afe44eae51f5b8f59d56e58a4afb2006a397e15f66",
+      "output_chars": 100000,
+      "router_projection_sha256": "11565ccb58a6398bc5cdb375b824bb71f11f58e0e7b1510d464337950959805f",
+      "median_wall_ms": 2.8303235,
+      "sample_wall_ms": [
+        2.7907637999999997,
+        2.7874482,
+        2.7913987999999996,
+        3.2924544,
+        2.8303235,
+        2.829176,
+        2.83306,
+        2.83219955,
+        2.8324285
+      ],
+      "calls_per_batch": 20,
+      "batch_count": 9
+    },
+    {
+      "chars": 100000,
+      "pattern": "mixed",
+      "input_sha256": "1c51ec47afbad1b5af751db315c7ad12f505fe2bdfe82808cf87bea34692c708",
+      "output_sha256": "1871c53f5a449f804d579b5a018e0bca5d4df71bcf4f4367de24c5176d17f521",
+      "output_chars": 44600,
+      "router_projection_sha256": "cc19df953b05dea4cb572e135f5c74f6313f4990a53b5756caa3ece2891e3ee5",
+      "median_wall_ms": 2.41097645,
+      "sample_wall_ms": [
+        2.4076214,
+        2.4097314,
+        2.4138944500000004,
+        2.4101554,
+        2.4072544,
+        2.41097645,
+        2.4160524,
+        2.4114059500000002,
+        2.4126544
+      ],
+      "calls_per_batch": 20,
+      "batch_count": 9
+    },
+    {
+      "chars": 1000000,
+      "pattern": "plain",
+      "input_sha256": "c9fdb70fb74872ce6085a96dfc8d5670ba26a44223ee0bb8d8e1b5275191b124",
+      "output_sha256": "c9fdb70fb74872ce6085a96dfc8d5670ba26a44223ee0bb8d8e1b5275191b124",
+      "output_chars": 1000000,
+      "router_projection_sha256": "11565ccb58a6398bc5cdb375b824bb71f11f58e0e7b1510d464337950959805f",
+      "median_wall_ms": 31.052512333333333,
+      "sample_wall_ms": [
+        39.871703333333336,
+        31.10596933333333,
+        28.398995666666668,
+        31.06111866666667,
+        31.052512333333333,
+        28.375622,
+        28.418339333333332,
+        28.412629,
+        31.132489
+      ],
+      "calls_per_batch": 3,
+      "batch_count": 9
+    },
+    {
+      "chars": 1000000,
+      "pattern": "mixed",
+      "input_sha256": "8a0190f7e4faea3bf01307f61453d394c6c51abf43e58266402ef321b59f1287",
+      "output_sha256": "cd588c133891446570998dd42c87344dde0b72e7836bb3507796a98d91e5c010",
+      "output_chars": 445958,
+      "router_projection_sha256": "cc19df953b05dea4cb572e135f5c74f6313f4990a53b5756caa3ece2891e3ee5",
+      "median_wall_ms": 24.266220333333333,
+      "sample_wall_ms": [
+        26.802129,
+        26.926546666666667,
+        29.37436166666667,
+        24.266220333333333,
+        24.261803333333333,
+        24.24704333333333,
+        24.214173,
+        24.224376666666668,
+        24.272086666666667
+      ],
+      "calls_per_batch": 3,
+      "batch_count": 9
+    }
+  ]
+}

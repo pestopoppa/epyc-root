@@ -1,0 +1,47 @@
+def canonicalize_prompt(prompt: str) -> str:
+    """Normalize a prompt to maximize cache hits.
+
+    Applies transformations that preserve semantic meaning while
+    removing variation that would cause cache misses.
+
+    Transformations:
+    - Strip trailing whitespace
+    - Normalize line endings (CRLF -> LF)
+    - Normalize timestamps to [TIMESTAMP] placeholder
+    - Normalize UUIDs to [UUID] placeholder
+    - Collapse multiple blank lines
+
+    Args:
+        prompt: Raw prompt text.
+
+    Returns:
+        Canonicalized prompt.
+    """
+    # Strip trailing whitespace
+    prompt = prompt.rstrip()
+
+    # Normalize line endings
+    prompt = prompt.replace("\r\n", "\n")
+    prompt = prompt.replace("\r", "\n")
+
+    # Normalize ISO timestamps: 2024-01-15T10:30:00 -> [TIMESTAMP]
+    prompt = re.sub(
+        r"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:Z|[+-]\d{2}:?\d{2})?",
+        "[TIMESTAMP]",
+        prompt,
+    )
+
+    # Normalize date-only: 2024-01-15 -> [DATE]
+    prompt = re.sub(r"\b\d{4}-\d{2}-\d{2}\b", "[DATE]", prompt)
+
+    # Normalize UUIDs: 550e8400-e29b-41d4-a716-446655440000 -> [UUID]
+    prompt = re.sub(
+        r"[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}",
+        "[UUID]",
+        prompt,
+    )
+
+    # Collapse multiple blank lines to single
+    prompt = re.sub(r"\n{3,}", "\n\n", prompt)
+
+    return prompt

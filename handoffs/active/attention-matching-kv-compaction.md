@@ -337,11 +337,12 @@ Evidence: intake-1196#record (KVFlow, dive-overturned), intake-1207 (SGLang Rust
   KVFlow's own eviction-only ablation on an H100; the other 1.18× comes from prefetching we cannot
   port (llama-server slot restore is on the shared task loop and a failed restore is destructive).
   **NOT the RLM tree and NOT the autopilot loop** — neither materialises children in advance.
-- [ ] **KV-6 — Measure `canonicalize_prompt` before optimising anything downstream of it.** It makes
+- [x] **KV-6 — Measure `canonicalize_prompt` before optimising anything downstream of it.** ✅ 2026-10-31 — ORCH `84f6f6f15f713d21098dbad2b153d32f8cc13624`, [native timing and replay](../../artifacts/compute/codex3-kv6-canonicalize-20261031/SHA256SUMS). [belief: cc] It makes
   SEVEN full-length passes (3 string scans + 4 `re.sub`) over prompts of tens of KB and then
-  **discards everything past char 256**. It has NEVER been measured: grepping both prefix-cache
+  **discards everything past char 256**. At the original filing it had not been measured: grepping both prefix-cache
   files for timing primitives returns 3 hits, all docstring prose, zero code. Cheap to instrument,
   and it may dominate the routing cost the rest of this section is trying to improve.
+  ✅ 2026-10-31 [belief: cc] Retained 2026-10-29 shared-host synthetic R6 timing (CPUs 30–31, nine batches per shape, 4,014 timed calls): at 256/10,000/100,000/1,000,000 input characters, plain median wall time per call was 0.0076/0.2786/2.8303/31.0525 ms and mixed date/UUID/newline median was 0.0073/0.2419/2.4110/24.2662 ms. Raw nine-batch distributions and calls are retained; these are not process CPU times, production latency or throughput. Original source file SHA-256 `8f075d9dd5716abb7838be75779c57c4031663a58eebbfd080efff0f39e929cb` differs from current ORCH `9ca85117` file SHA `964a1fd427aeb31adc8b0bb54b42a08c0d6a58d0547d5ea12bcc8bb45dca2536`, but the exact function source SHA `060c526d3f239d08628d3a9dda20a18efbcac55245269baab08ebedc7a5d9a8b` and eight synthetic outputs independently match. The default serving path bypasses this opt-in router; no downstream optimization follows from these timings alone. [Raw and replay evidence](../../artifacts/compute/codex3-kv6-canonicalize-20261031/SHA256SUMS). The existing `VB-INF05-KV6-TIMING-WRITE` remains open; no original measurement warrant was retrofitted. [belief: cc]
 - [ ] **KV-7 — Price the prefix-cache interaction BEFORE adopting any prefix+sliding mask.** The
   intake-864 long-OUTPUT ruling applies; vLLM disables prefix caching under this mask, and
   Appendix A confirms prefill is NOT reduced — so the mask's saving is decode-side only while the
