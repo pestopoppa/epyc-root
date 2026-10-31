@@ -1,0 +1,27 @@
+{
+  "schema": "epyc.zero_inference_preview.v1",
+  "task": "MM-4 \u2014 Run the dry_run payload preview FIRST.",
+  "implementation_repo": "https://github.com/QwenLM/Qwen-MM-Plugins",
+  "implementation_commit": "c459594b80a9f156faaf4e92f2601eb74eba07de",
+  "archive_sha256": "ce036cd8169d268f62bb7c2f46cc8937b1905511a3bfa8d85406561ed05893ae",
+  "preview_path": "artifacts/engineering/mm4-payload-preview-20261031/PREVIEW.json",
+  "preview_sha256": "22eec5d66ae029514b9e29815d8675f46bd7c02f8a177f4de9492e3f34f7078d",
+  "r6_receipt_path": "artifacts/engineering/mm4-payload-preview-20261031/R6-RECEIPT.json",
+  "r6_receipt_sha256": "44b1c41abae20a42e0e7df20237321075a44c377fcaa8fa5d71062793919aca9",
+  "qualification_path": "artifacts/engineering/mm4-payload-preview-20261031/QUALIFICATION.log",
+  "executed_driver_sha256": "878ada8f46896f70bc62dd9a99bf8e44449e8815383ef20e49051ce361da09d0",
+  "qualification": "PASS actual upstream wrapper and handler with socket/subprocess audit guard; no native model/HTTP request",
+  "scope": "Only MM-4 preview; MM-1, all real-tool compatibility and live endpoint/auth/model identity remain open",
+  "source_review": "Images only. Actual vision dry_run returns before OpenAI client call and disables uploads. OCR/grounding lack dry_run and were not invoked. No installation or instruction/skill adoption. Existing interpreter dependencies only.",
+  "helper_attempts": [
+    {
+      "scope": "private helper import failed before upstream call because importlib module was not registered in sys.modules",
+      "log_sha256": "0d09ca3b72c43be223fcc734fb27150cd9ce1611c0aa9c48e3db26883de0100b"
+    },
+    {
+      "scope": "private direct helper did not use upstream exclude_none argument normalization; superseded by actual framework wrapper, not an upstream defect",
+      "log_sha256": "0864ea787256949cd91a23e5dc5381dd5d26d3dfe8c737ac762055390e4d86c8"
+    }
+  ],
+  "public_data": "Synthetic pixel/text only; no key/token values were inherited, read from live config or retained."
+}

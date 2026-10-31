@@ -1,0 +1,60 @@
+{
+  "schema": "epyc.mm4.actual_dry_run.v1",
+  "upstream_commit": "c459594b80a9f156faaf4e92f2601eb74eba07de",
+  "actual_entry": "actual mcp_framework._make_wrapper -> validated model -> _run_handle -> vision_chat.handle(dry_run=True) -> SDK content",
+  "payload": {
+    "base_url": "http://127.0.0.1:8087/v1",
+    "request": {
+      "model": "Qwen3-VL-30B-A3B",
+      "messages": [
+        {
+          "role": "user",
+          "content": [
+            {
+              "type": "image_url",
+              "image_url": {
+                "url": "<base64 image, 114 chars>"
+              }
+            },
+            {
+              "type": "text",
+              "text": "CONTROL_ONLY payload preview; describe this synthetic pixel."
+            }
+          ]
+        }
+      ],
+      "max_tokens": 2048
+    }
+  },
+  "resolved_auth": "EMPTY sentinel; no supplied credential",
+  "credential_presence_in_child": {
+    "DASHSCOPE_API_KEY": false,
+    "OPENAI_API_KEY": false,
+    "ORCAROUTER_API_KEY": false,
+    "OPENROUTER_API_KEY": false,
+    "CHEAPER_INFERENCE_API_KEY": false
+  },
+  "network_guard_negative": [
+    "socket.getaddrinfo"
+  ],
+  "prohibited_attempts_during_preview": [],
+  "imported_upstream_module_sha256": {
+    "mm4_actual_vision_chat": "30bed5e62d43aaf39cc9873b7c3571124fb0e26c6f9de67b74fa6ae8b9f18365",
+    "shared": "5f4191e20f833c967b42ab99d25ec360a687bebcc7147a5aa90cc1d2fd181783",
+    "shared.content": "924450a441959213862b5d817644534712d247d56e353347eb7c6db1eac3bed4",
+    "shared.env": "e30647fc4c67dca33ca5d07312d027cbd06333bb3419fdc046917236f4065811",
+    "shared.api_openai": "ec1adbfdcd072368925fbacf79e6d5f11b4a1240fc815bd0ce40241f86c5ad03",
+    "mcp_framework": "ea03d09d8fc15b43c080c830b345ca7f83e8b8b7e5680cb41284784fca888bdd",
+    "shared.native_mode": "cd1bd22b991ae5cdff45102e76f9ba239a4f307771693d8befcd2d880b22e791",
+    "shared.dashscope_upload": "b834913568a502d7734284f5393ab46cfbd793f49c3b8670aebc785d022c439d",
+    "shared.oss": "f34944d9317ede54dd442a5b637fa9e124f1aa1180913a11c3177ec7e2254c68"
+  },
+  "configuration_file_created": false,
+  "limits": [
+    "No MCP installation or registration",
+    "No HTTP request or model invocation",
+    "No endpoint availability/authentication/server-model identity proven",
+    "OCR/grounding lack dry_run; not invoked",
+    "MM1 remains open"
+  ]
+}
