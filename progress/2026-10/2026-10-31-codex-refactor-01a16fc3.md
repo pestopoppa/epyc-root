@@ -17,3 +17,9 @@ Fresh main-based reader integration: Q4 strict custody reader and raw A2 capture
 ## Evidence-backed code closures
 
 EV-14g published to orchestrator main via source `e60e51887b3956d017af1ed74988e1d9fa795272`: requested/completed evaluation counts survive the real journal path; explicit zero and legacy unknown retain distinct behavior. Focused suite71 passed and required make gates passed. MHS-10 published via source `86f9985e97f010c3a9702b5f923a6d793159ef3c`: standalone formatting, identical type-comment AST, Ruff and260 existing tests passed. Both original boxes now cite source SHA and evidence on the first line. These are two completed code items, not measurement results. [no-belief: source/fixture validation]
+
+## Three further code-queue deliverables
+
+WRAP-4 audit and methodology corrections published in ROOT source `6c7b2bf07e7d894f95b1ca5ab6cd2ec01de424ce`: all seven cited report hashes verified, unsupported clean-window interpretations withdrawn, historical raw observations preserved. KPF18-R4 source audit in that commit names physical KV extent/FA partitioning as a mechanism consistent with both controls; no causal attribution or changed native verdict. Original boxes cite the published artifact paths. [belief: cc]
+
+SEQ-B4 published in orch `bd2f7105a6b04fc9f9cffba0dff861c6e79c1c8d`, main `20b5efd5c7b1e93808c713337079c2ef9327d8a8`: rate-count capture and reader reconstruction corrected,36 focused tests pass, legacy fallback and policy thresholds preserved. Three further completed code-queue items, five recorded this phase; no inference acceptance is inferred. [no-belief: source/fixture validation]
