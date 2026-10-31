@@ -1,0 +1,27 @@
+{
+  "observed_at": "2026-10-31T14:32:52.341347+00:00",
+  "scope": "bounded read-only process/source observation; no alert receipt or autonomous offline delivery proof",
+  "old2062051_present": false,
+  "successor": {
+    "pid": 2323912,
+    "birth_ticks": "157934188",
+    "argv": [
+      "/bin/bash",
+      "/mnt/raid0/llm/worktrees/ws58-loop27/scripts/coordination/filing_watch.sh"
+    ],
+    "uid": 1000
+  },
+  "owner_checkout": "/mnt/raid0/llm/worktrees/ws58-loop27",
+  "owner_checkout_head": "d331a04ad5b32a9aae0ab1434531bebcdb7c35d8",
+  "alarm_sha256": "2af0700721c653749315464be31cd7370e1a86df351ba847f7a4c7a3ff930af7",
+  "owner_report_via_parent": {
+    "monitor_armed_before_swap": true,
+    "max_runtime_minutes": 30,
+    "session_bound": true,
+    "rearmed_at_boundaries": true,
+    "offline_delivery": "read at next boundary, not pushed",
+    "stream_lines": 0,
+    "actual_alert_received": false
+  },
+  "task_state": "OPEN"
+}
