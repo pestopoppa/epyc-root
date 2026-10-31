@@ -55,3 +55,7 @@ This closes the single newly implemented CI task. Next: user-ordered21unsupporte
 ## Tick hygiene 17 — log retention reopened
 
 Reopened the original `(Z) Fix the llama-server log retention hole` box after the operator audit. Orch4cd6622f changes an uncalled legacy launcher; it does not diagnose/fix the production-path gap or supply a relevant retention test. The original task description is preserved, and the source checkpoint remains explicitly partial. Durable correction: `artifacts/engineering/tick-integrity-20261031/log-retention-reopen.json`. No rerun or reconstructed historical window; this is hygiene with zero new-code quota credit. [no-belief: correction of premature completion]
+
+## Prior-work evidence hygiene: REPL-EMB-2.13
+
+REPL-EMB-2.13 citation hygiene: cite implementing APP 23560c8e (2026-10-24), retain original2026-10-31 audit date and bounded 35-test scope, archive original subset log in Git. No new code/quota credit, no full-suite claim or retests. [no-belief: evidence-citation correction]
