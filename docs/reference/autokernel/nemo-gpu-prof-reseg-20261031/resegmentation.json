@@ -1,0 +1,102 @@
+{
+  "schema": "nemo-gpu-prof.reseg.v1",
+  "source": "2026-10-25 retained rocprofv3 traces, HIP graphs ON",
+  "passes": {
+    "L": {
+      "status": "COMPLETE",
+      "source_csv_sha256": "c1bebdff0cfb35e98df39ba3fb729f9114b0f676cf3bf6ef4ba76ce267d8ca94",
+      "source_run_sha256": "e746d105ccfa01e7542d918a9aaf6ed3073b0171775f341979895b988a278a4d",
+      "source_burst_dispatches": 332946,
+      "server_predicted_n": 160,
+      "server_wall_ms_per_generated_token": 56.9829,
+      "boundary_method": "repeated ordered full kernel-name graph fingerprint anchored by k_set_rows/rms_norm/k_get_rows (L) or 40 SSM scans per graph (B)",
+      "fingerprints_by_dispatch_count": {
+        "2065": "4070ef32141057d213c0439f8b09b7a736641d52941c13cd752418e17df2f6cc",
+        "2081": "d5d9ff850d2e69462cee89ce4547df4ca4165e515977ffc611406bf412a184a7"
+      },
+      "complete_steady_graphs": 156,
+      "steady_dispatch_counts": {
+        "2065": 55,
+        "2081": 101
+      },
+      "gpu_kernel_busy_ms_per_token": {
+        "n": 156,
+        "mean_ms": 32.8851,
+        "median_ms": 32.7793,
+        "min_ms": 32.6193,
+        "max_ms": 33.7271
+      },
+      "gpu_elapsed_span_ms_per_token": {
+        "n": 156,
+        "mean_ms": 57.3104,
+        "median_ms": 56.0987,
+        "min_ms": 46.8941,
+        "max_ms": 155.6772
+      },
+      "busy_to_server_wall_ratio": 0.5771,
+      "excluded_graphs": [
+        {
+          "position": 0,
+          "dispatches": 2250,
+          "fingerprint": "dd1ffb025a7b179700c1f6d8168fe92c964bb92cdbd992e4b6435273fb110c64",
+          "busy_ms": 35.0962
+        },
+        {
+          "position": 56,
+          "dispatches": 2257,
+          "fingerprint": "69ea173290a5669493f7a491d658ed23f243d08b2516e0efd2797720c924ecdc",
+          "busy_ms": 34.3583
+        },
+        {
+          "position": 158,
+          "dispatches": 2082,
+          "fingerprint": "05c890388e2a4e2a63a654e461cd8d5b445d506172df911d3c0e2f5a718fa480",
+          "busy_ms": 32.7773
+        }
+      ],
+      "prefill_and_early_dispatches": 2601,
+      "accounting": "GPU kernel busy sums each dispatch End-Start; elapsed graph span and server wall are separate, with host idle and overlap. Results are observed sample descriptive statistics, not a throughput claim or causal hardware counter."
+    },
+    "B": {
+      "status": "COMPLETE",
+      "source_csv_sha256": "4bfb3cdd73c7ff8cda2c8bab783ee9bbd21f46d19fec540b6add518a25e000ad",
+      "source_run_sha256": "3520876cae4b58156ff55f4772dd5c0acf55b3ee8a4019199c532eac05b00b95",
+      "source_burst_dispatches": 179633,
+      "server_predicted_n": 96,
+      "server_wall_ms_per_generated_token": 33.9236,
+      "boundary_method": "repeated ordered full kernel-name graph fingerprint anchored by k_set_rows/rms_norm/k_get_rows (L) or 40 SSM scans per graph (B)",
+      "fingerprints_by_dispatch_count": {
+        "1845": "ea8c887a6af65a262c2fd93c9047fa67c4ded6264fd31e4536f086f241f891a8"
+      },
+      "complete_steady_graphs": 94,
+      "steady_dispatch_counts": {
+        "1845": 94
+      },
+      "gpu_kernel_busy_ms_per_token": {
+        "n": 94,
+        "mean_ms": 20.513,
+        "median_ms": 20.3339,
+        "min_ms": 20.2665,
+        "max_ms": 21.1472
+      },
+      "gpu_elapsed_span_ms_per_token": {
+        "n": 94,
+        "mean_ms": 22.0249,
+        "median_ms": 21.7007,
+        "min_ms": 20.9512,
+        "max_ms": 27.9407
+      },
+      "busy_to_server_wall_ratio": 0.6047,
+      "excluded_graphs": [
+        {
+          "position": 0,
+          "dispatches": 1861,
+          "fingerprint": "a0137f176df3541a14892285284c052b500ba6b04cbcde0b782ed2f3c09aa8c5",
+          "busy_ms": 21.6515
+        }
+      ],
+      "prefill_and_early_dispatches": 4342,
+      "accounting": "GPU kernel busy sums each dispatch End-Start; elapsed graph span and server wall are separate, with host idle and overlap. Results are observed sample descriptive statistics, not a throughput claim or causal hardware counter."
+    }
+  }
+}

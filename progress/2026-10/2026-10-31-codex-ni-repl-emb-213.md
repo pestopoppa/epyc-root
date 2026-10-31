@@ -1,0 +1,3 @@
+# REPL-EMB-2.13 accepted closure — 2026-10-31
+
+Audited the original open side-callsite task against fresh root `4915c24d` and orchestrator `5c1dfea7` main tips. All named lookup and write paths already carry the required side; `q_scorer.py` splits lookup and new-row storage under EG2. A focused flag-on/prefix selection passed 35/35 from an exact source archive (raw log: `/mnt/raid0/llm/tmp/codex-ni-repl-emb213-audit-20261031/test-focused.log`). Closed the original checkbox with `[belief: cc]` and filed `docs/reference/repl-emb-2-13-side-callsite-audit-20261031.md`. No orchestrator code, flag, or running service changed.
