@@ -1,0 +1,17 @@
+{
+  "schema": "r23-71-validation/v1",
+  "root_code_commit": "1108d2206a65089ac634fb05264563a4c80976a9",
+  "orchestrator_source_reference": "f87b7c545",
+  "changed_task": "BULK-K-EMB-1",
+  "old_entry_hash": "sha256:a894d1bad0a8db495b6a81bfb0a382b9fc72db48d10a74a15201fe7f40005184",
+  "new_entry_hash": "sha256:1a8be5c7db3f3153d4c055b3f08481f7fab2216dd02236b31de4f923128ac29c",
+  "entry_schema": {"valid": 52, "invalid": 0},
+  "source_manifest_parity": true,
+  "other_manifest_entries_changed": 0,
+  "bash_syntax_check_rc": 0,
+  "environment_bypass_clear_control": "PASS",
+  "current_source_gate_predicate_controls": "4 PASS",
+  "preexisting_manifest_hash_mismatch": "KOP2-frontdoor-q8-fusion-ab; unchanged",
+  "historical_execution_bundles": "unchanged",
+  "service_or_inference_executed": false
+}

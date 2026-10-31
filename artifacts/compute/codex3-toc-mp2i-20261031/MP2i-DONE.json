@@ -1,0 +1,28 @@
+{
+  "task": "TOC-MP-2i",
+  "status": "DONE",
+  "code_commit": "f61cca823bb714bbcd69c218f32aba913fd6f869",
+  "main_commit": "f87b7c545f847ed2fa48b018664d1de3533a23f6",
+  "remote_verified": true,
+  "default_off": true,
+  "tests": {
+    "record_semantics_and_related": {
+      "passed": 108,
+      "skipped": 1
+    },
+    "final_cleanup_oracles": {
+      "passed": 12
+    },
+    "ruff": "pass",
+    "diff_check": "pass"
+  },
+  "zero_inference": true,
+  "limitations": [
+    "History is complete post-redaction REPL output; capped context bundles and foreign legacy log unsupported",
+    "Task wall is graph-run wall excluding HTTP and queue",
+    "Token count source is marked unverified; scientific runner must prove target tokenizer and reject heuristic fallback"
+  ],
+  "review": "/mnt/raid0/llm/tmp/codex3-toc-mp2i-20261031/REVIEW.md",
+  "mp4": "paused under newer code-queue priority; no scientific run or READY claim",
+  "completed_at": "2026-10-31T09:26:38.808608+00:00"
+}

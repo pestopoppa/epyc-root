@@ -2285,7 +2285,8 @@ production model at pairs=5, ~18% cadence overhead). Six operator decision items
         `scripts/registry/stack_change_pipeline.py update`, matching the pipeline's own five messages and
         `docs/reference/stack-change-launch-runbook.md:16`. One-line fix, in epyc-orchestrator.
         ✅2026-10-06 — MAIN accepted exact text-only correction and existing test expectation, APPmain81663c30; [static source review](../../artifacts/ni08/stack-guard-remediation-source-20261006/README.md). No build/test execution or owner runtime change.
-  - [ ] **R23-71 — a live `--skip-stack-change-gate` sits in benchmark automation.**
+  - [x] **R23-71 — a live `--skip-stack-change-gate` sits in benchmark automation.** ✅ 2026-10-31 — ROOT `1108d2206a65089ac634fb05264563a4c80976a9`, [validation](../../artifacts/compute/codex3-r23-71-stack-gate-20261031/VALIDATION.json). [belief: cc]
+    - The live BULK-K-EMB-1 entry and compiled manifest now run the canonical stack-change gate, remove the registry-compile skip, and clear inherited gate/registry bypass variables for that start. Its manifest entry hash was recomputed; historical execution snapshots remain unchanged. All 52 source entries pass schema/lint, the source and target manifest entry agree, shell syntax and four current-gate predicate controls pass; the unrelated pre-existing KOP2 manifest-hash mismatch is unchanged. No service or inference was started. [belief: cc]
         `coordination/inference-batch/entries/30-bulk-campaign.yaml:297` (and the BULK-K-EMB-1 bundles,
         `manifest.yaml:3076`) start embedders FOR A BENCHMARK with
         `--skip-stack-change-gate --no-compile-registry`. `stack-change-launch-runbook.md:114` forbids exactly
