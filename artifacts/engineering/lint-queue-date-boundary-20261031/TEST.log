@@ -1,0 +1,14 @@
+test_daily_blackout_uses_utc_half_open_endpoints (test_cpu_queue_f8_runner.CpuQueueF8RunnerTests.test_daily_blackout_uses_utc_half_open_endpoints) ... ok
+test_exact_v1_source_is_a_negative_control (test_cpu_queue_f8_runner.CpuQueueF8RunnerTests.test_exact_v1_source_is_a_negative_control) ... ok
+test_half_open_job_and_blackout_endpoints (test_cpu_queue_f8_runner.CpuQueueF8RunnerTests.test_half_open_job_and_blackout_endpoints) ... ok
+test_invalid_arguments_are_refused (test_cpu_queue_f8_runner.CpuQueueF8RunnerTests.test_invalid_arguments_are_refused) ... ok
+test_job_admission_checks_same_day_and_next_day_blackout (test_cpu_queue_f8_runner.CpuQueueF8RunnerTests.test_job_admission_checks_same_day_and_next_day_blackout) ... ok
+test_normal_admission_path_calls_the_tested_predicate (test_cpu_queue_f8_runner.CpuQueueF8RunnerTests.test_normal_admission_path_calls_the_tested_predicate) ... ok
+test_normal_mode_requires_an_explicit_bounded_stop (test_cpu_queue_f8_runner.CpuQueueF8RunnerTests.test_normal_mode_requires_an_explicit_bounded_stop) ... ok
+test_real_entry_rechecks_after_region_lock_wait_before_job_start (test_cpu_queue_f8_runner.CpuQueueF8RunnerTests.test_real_entry_rechecks_after_region_lock_wait_before_job_start) ... ok
+test_test_only_cli_and_sourcing_do_not_initialize_queue (test_cpu_queue_f8_runner.CpuQueueF8RunnerTests.test_test_only_cli_and_sourcing_do_not_initialize_queue) ... ok
+
+----------------------------------------------------------------------
+Ran 9 tests in 0.451s
+
+OK
