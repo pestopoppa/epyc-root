@@ -1,0 +1,12 @@
+test_deep_and_oversize_stdin_ask (test_planner_readonly_gate.GateTest.test_deep_and_oversize_stdin_ask) ... ok
+test_example_config_and_simulated_host_failure_contract (test_planner_readonly_gate.GateTest.test_example_config_and_simulated_host_failure_contract) ... ok
+test_external_verbs_are_real_absolute_commands (test_planner_readonly_gate.GateTest.test_external_verbs_are_real_absolute_commands) ... ok
+test_malformed_payload_asks (test_planner_readonly_gate.GateTest.test_malformed_payload_asks) ... ok
+test_native_seat_boundary (test_planner_readonly_gate.GateTest.test_native_seat_boundary) ... ok
+test_unknown_and_action_inputs_ask (test_planner_readonly_gate.GateTest.test_unknown_and_action_inputs_ask) ... ok
+
+----------------------------------------------------------------------
+Ran 6 tests in 0.988s
+
+OK
+{"schema": "bounded-r11-native-profile-supervisor/v1", "elapsed_s": 1.1159879087936133, "sampled_peak_tree_rss_bytes": 69894144, "samples": 12, "verified_exited_processes": 0, "verified_exited_threads": 0, "per_process_address_space_limit_bytes": null, "rss_scope": "sum of sampled resident pages across owned process tree; sampling may miss transients and double-count shared pages", "leader_pid": 14138, "leader_birth": 158551310, "child_rc": 0, "children_drained": true, "failure": null}

@@ -1,0 +1,19 @@
+Traceback (most recent call last):
+  File "/mnt/raid0/llm/tmp/codex3-s3ach01-20261031/scripts/hooks/planner_readonly_gate.py", line 55, in <module>
+    main()
+  File "/mnt/raid0/llm/tmp/codex3-s3ach01-20261031/scripts/hooks/planner_readonly_gate.py", line 44, in main
+    payload = json.load(sys.stdin)
+              ^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/json/__init__.py", line 293, in load
+    return loads(fp.read(),
+           ^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/json/__init__.py", line 346, in loads
+    return _default_decoder.decode(s)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/json/decoder.py", line 337, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/json/decoder.py", line 353, in raw_decode
+    obj, end = self.scan_once(s, idx)
+               ^^^^^^^^^^^^^^^^^^^^^^
+RecursionError: maximum recursion depth exceeded while decoding a JSON array from a unicode string
