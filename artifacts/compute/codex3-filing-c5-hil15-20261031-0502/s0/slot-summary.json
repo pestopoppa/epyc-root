@@ -1,0 +1,20 @@
+{
+  "manifest_sha256": "70995636d117adef9307865be39b15852307cad6dd0b5bdd7d71b60a1019e99b",
+  "run_pass": false,
+  "run_error": null,
+  "verdict": "OK",
+  "replay_verify": {
+    "filter-s0-15-p2-r0": {
+      "rc": 0,
+      "tail": "clean"
+    }
+  },
+  "join": {
+    "step_bearing_runs": 1,
+    "joined_outcome": 1,
+    "task_runs": 1,
+    "zero_step_recorded_failed": [],
+    "join_ok": true
+  },
+  "auc_status": "insufficient"
+}

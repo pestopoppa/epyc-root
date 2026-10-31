@@ -1,0 +1,30 @@
+{
+  "at": "2026-10-31T05:17:29.647006+00:00",
+  "reason": "same exact HOST chroot engine uses canonical region-lock whose venv interpreter is absent; per-namespace HOST preflight failed",
+  "entries": [
+    {
+      "id": "codex3-cs26-f1-independent-20261031",
+      "armed_at_check": false,
+      "grant_at_check": false,
+      "action": "READY withdrawn; historical controls retained"
+    },
+    {
+      "id": "codex3-cs8-lex2-dev-grid-20261031",
+      "armed_at_check": false,
+      "grant_at_check": false,
+      "action": "READY withdrawn; historical controls retained"
+    },
+    {
+      "id": "codex3-dsc-25592-replay-20261031",
+      "armed_at_check": false,
+      "grant_at_check": false,
+      "action": "READY withdrawn; historical controls retained"
+    },
+    {
+      "id": "codex3-sw2-v9-clamp-20261031",
+      "armed_at_check": false,
+      "grant_at_check": false,
+      "action": "READY withdrawn; historical controls retained"
+    }
+  ]
+}

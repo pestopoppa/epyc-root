@@ -1,0 +1,20 @@
+{
+  "kind": "engineering-only noncohort control",
+  "task_indices": [
+    999999
+  ],
+  "tasks": [
+    {
+      "cases": [
+        {
+          "case_sha256": "08a7bf7c10b0a94252811f0450f67d8c9757df2258aec175cc08d236889ed251",
+          "input": "engineering smoke",
+          "reference_output": "OK",
+          "source_row": 999999
+        }
+      ],
+      "spec": "Return exactly the word OK.",
+      "spec_sha256": "ff5e1460f23eb718365e729dab0db132f435bfdec41f49c57a71359217dc55fd"
+    }
+  ]
+}

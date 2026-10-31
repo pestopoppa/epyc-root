@@ -1,0 +1,2 @@
+2026-10-31T05:01:42Z [codex3-paw-standard-a-resume-20261031] launcher up pid=4160821 class=cpu poll=45s grants=/mnt/raid0/llm/tmp/compute-flags/grants stop=/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/paw-standard-a-continuation/STOP minwin=2400s ports=19966
+2026-10-31T05:01:42Z [codex3-paw-standard-a-resume-20261031] launcher signalled

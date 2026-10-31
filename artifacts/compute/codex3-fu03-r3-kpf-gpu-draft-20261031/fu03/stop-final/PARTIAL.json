@@ -1,0 +1,52 @@
+{
+  "partial": true,
+  "diagnostic_only": true,
+  "full_target_tested": false,
+  "arms": [
+    {
+      "arm": "baseline-1",
+      "argv": [
+        "/mnt/raid0/llm/tmp/lb49-codex-evidence-20261028/build-deterministic-off/bin/llama-cli",
+        "-m",
+        "/mnt/raid0/llm/models/gemma-3-1b-it-Q8_0.gguf",
+        "--device",
+        "none",
+        "-ngl",
+        "0",
+        "-fa",
+        "on",
+        "--perf",
+        "-t",
+        "2",
+        "-tb",
+        "2",
+        "-c",
+        "512",
+        "-n",
+        "8",
+        "--temp",
+        "0",
+        "--seed",
+        "42",
+        "--single-turn",
+        "--no-display-prompt",
+        "-p",
+        "The capital of France is"
+      ],
+      "rc": 0,
+      "wall_s": 26.960181064903736,
+      "log": "/mnt/raid0/llm/tmp/codex3-next-backlog-20261031-0255/r3/stop-final/baseline-1.log",
+      "sha256": "69f277fed949663f759a74931ba5862e929b356e6fe74b54ca423cbe5e76c57c"
+    }
+  ],
+  "models_verified": [
+    {
+      "path": "/mnt/raid0/llm/models/gemma-3-1b-it-Q8_0.gguf",
+      "sha256": "b205840c5dcef55078e37d344677869a714ffd42a4ae448c48dcfb52e4bb10d5",
+      "size": 1069306368
+    }
+  ],
+  "pins_sha256": "6c4e01faedc0ccf2f34db2829917261a4f3e2736be28809c73e65ef3a27fd02a",
+  "unknown_interrupted_arm": "baseline-2",
+  "child_rc": -9
+}

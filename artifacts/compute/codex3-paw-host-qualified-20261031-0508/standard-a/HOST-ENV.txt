@@ -1,0 +1,5 @@
+uid=1000(daniele) gid=1000(daniele) groups=1000(daniele),984(docker),992(render)
+socket uid=0 gid=984 mode=660 /var/run/docker.sock
+b6f5521ba1c355ea6f8943241435f494963b0840388543b2fca1a4062913da8f  /usr/bin/docker
+e50d468e8b0adfb05733f5b87b3cff34829c4a8c1aea50c865aa8bdfe4bb150f  /usr/bin/python3
+server=29.9.2

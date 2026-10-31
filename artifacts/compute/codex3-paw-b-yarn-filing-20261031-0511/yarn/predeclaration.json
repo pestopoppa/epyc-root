@@ -1,0 +1,28 @@
+{
+  "schema": "epyc.yarn_agg_joint_predeclaration.v1",
+  "declared_utc": "2026-10-31T01:45:03.330241+00:00",
+  "joint_future_run_purpose": "One new paired 141-item experiment answers the extension-arm aggregate question and the original 120-item Oolong source-cell question without duplicate GPU requests.",
+  "whole_plan_sha256": "dc8fa414b5e50328d294fe6d4b9a32fe5bea97b98a727808c37ceb5c4f4ade68",
+  "whole_plan_n_items": 141,
+  "original_120_source_plan_sha256": "022ba34ca80ac0d8fa734d7fdf3d9b5e484f4ad2265fba81f31021d87619ff04",
+  "original_120_subset_id_prompt_sha256": "536a5af4058aa512c4217daf9d9c0408cfc8404713fc1f1c73003a1d7ba1bf4d",
+  "original_120_n_items": 120,
+  "subset_selector": {
+    "segment": "new_oolong",
+    "cell": "oolong_synth@131072",
+    "arms": [
+      "A0",
+      "A1"
+    ],
+    "gate": "native_mcnemar"
+  },
+  "whole_plan_rule": "unchanged: native paired one-sided exact McNemar alpha 0.05, RIGHT iff score>=1.0, served prompt_n zone, power target >=10 new discordants; no equivalence claim",
+  "subset_rule": "same existing agg_scoring.net_paired_mcnemar helper, alpha 0.05, RIGHT iff score>=1.0, all exact 120 unique IDs paired and native from server_timings; no missing/error pair admitted; report b,c,mean difference,p,n_discordant,attempted counts and power note; no equivalence claim",
+  "analysis_scopes": [
+    "all 141 new paired items",
+    "exact original-source 120 Oolong items as a separately predeclared subset"
+  ],
+  "prior_scores": "not pooled with either new-run decision; historical extension b=2,c=1 remains a separate observation",
+  "comparability_note": "The 141 plan interleaves 21 extra items after the first 14 original Oolong items and this job uses NUMA membind=3; disclose these execution differences from the original R6 standalone proposal. This is one new joint experiment, not retrograding earlier R6 outputs or claiming cross-launcher identical recipe.",
+  "smoke_scope": "The earlier single-item smoke is a runtime qualification observation and does not contribute to either new-run decision or thresholds."
+}

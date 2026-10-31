@@ -1,0 +1,24 @@
+{
+  "files": {
+    "/mnt/raid0/llm/tmp/codex-ni-gpu-zos-build-prep-20261031/successor/gpu/serial-tier/gpu_gate.py": "c37ec55bc0bba3e497fc0e01a00d1a96201572e1553ba501313d8a4da5a66f68",
+    "/mnt/raid0/llm/tmp/codex-ni-gpu-zos-build-prep-20261031/successor/gpu/serial-tier/analyze_serial.py": "f6de7436c684ca5c6ba24145002cae2571c3a035780a89113e93cf2933a5306a",
+    "/mnt/raid0/llm/tmp/codex-ni-gpu-zos-build-prep-20261031/successor/gpu/serial-tier/cutoff_supervisor.py": "56dc40d8f040c9fab17605436d24fbb5981ada1b1273c399d83502bf892e2ed2",
+    "/mnt/raid0/llm/tmp/codex-ni-gpu-zos-build-prep-20261031/successor/gpu/serial-tier/enroll.py": "636cb4d217a4273c8cec27718a1e20100107d906c4f91212fb4a323a579cd964",
+    "/mnt/raid0/llm/tmp/codex-ni-gpu-zos-build-prep-20261031/successor/gpu/serial-tier/launch.sh": "44025cb3f3fcfb6c4423bc9ec11edcc9c24687f5894d69ea8929aeaede16096a",
+    "/mnt/raid0/llm/tmp/codex-ni-gpu-zos-build-prep-20261031/successor/gpu/serial-tier/prompts.json": "5b2c9febc28cc0c6cb1ea7e998696f927449c687feeb44ed8b3f0c341e079bf6",
+    "/mnt/raid0/llm/tmp/codex-ni-gpu-zos-build-prep-20261031/successor/gpu/serial-tier/GPU-GATE-PREDECLARATION.md": "44f81580ca4868c74c2b6ed6931021e981b904c6c5a213e3706343c6bedda0bc",
+    "/mnt/raid0/llm/tmp/codex-ni-gpu-zos-build-prep-20261031/successor/gpu/serial-tier/SERIAL-FOLLOWUP.json": "717c64a179163844a703f9d507e254db551c37a549b7ed7f1ebd4f2aa842021f",
+    "/mnt/raid0/llm/tmp/codex-ni-gpu-zos-build-prep-20261031/successor/gpu/serial-tier/out/IMAGE-PINS.json": "ad5fd19e714aefff90b2accd14a6a4188a3c3771d8e5dbf0f5bf1bd1d71fbf05",
+    "/mnt/raid0/llm/tmp/codex-ni-gpu-zos-build-prep-20261031/successor/gpu/serial-tier/out/MODEL-PINS.json": "bac60874deb25c0f5fffd7a03de70c0e301428064e8ff39d6ab00fb499410767",
+    "/mnt/raid0/llm/tmp/codex-ni-gpu-zos-build-prep-20261031/successor/gpu/serial-tier/out/RESULT.json": "bf2a19f42ca984cb37d0c9467e26ec3e118620478e336222e11c1213912f9954",
+    "/mnt/raid0/llm/tmp/codex-ni-gpu-zos-build-prep-20261031/successor/SOURCE-PINS.json": "187e7a953e151f208859cc93f7353d6ba7e43189fe58dc18f47b333184aea4dc",
+    "/mnt/raid0/llm/tmp/codex-ni-gpu-zos-build-prep-20261031/successor/out/BUILD-COMPLETE.json": "0fccf3b428970b972c31d3c0d29638db0667e8903608a724330adfc67535f532",
+    "/mnt/raid0/llm/tmp/codex-ni-gpu-zos-build-prep-20261031/successor/helper/filler_run13.sh": "5f970f501851e1f12c6cca75e60eeac0456425f014d0e89273aa55ee0ca817c4",
+    "/mnt/raid0/llm/tmp/codex-ni-gpu-zos-build-prep-20261031/successor/helper/filler_lib.sh": "241e522f4a7d7208e7485834c90d77676434a9bc88fd253575e034ad2934237c",
+    "/mnt/raid0/llm/tmp/codex-ni-gpu-zos-build-prep-20261031/successor/helper/dryrun_check.py": "aa9ed900be5fb7f3efca043bfddb2ac8963964710db0b702c7491729a74f8542",
+    "/mnt/raid0/llm/tmp/codex-ni-gpu-zos-build-prep-20261031/successor/helper/dryrun_disk_policy.json": "a271e93a7a9ac54386352d254e5ad2ab57a5f39fc40daad99106afa919bfa157",
+    "/mnt/raid0/llm/tmp/codex-ni-gpu-zos-build-prep-20261031/successor/gpu/serial-tier/stage.py": "cb630fd056fb6b92bc4f7848a64a9d6796ecfd7ab6a70224074c9fb90e9bcc0c",
+    "/mnt/raid0/llm/tmp/codex-ni-gpu-zos-build-prep-20261031/successor/gpu/serial-tier/qualify_watch.py": "e4ebd937529df9eb30b0f7d245d676593bc7d2bc0f5e5a2717ebeba7722966a2",
+    "/mnt/raid0/llm/tmp/codex-ni-gpu-zos-build-prep-20261031/successor/gpu/serial-tier/SERIAL-SCOPE.md": "bdb9d4d9319ba91e6dc2dc81108c428fa1c3965e9e65784626ae5b183b5722a9"
+  }
+}

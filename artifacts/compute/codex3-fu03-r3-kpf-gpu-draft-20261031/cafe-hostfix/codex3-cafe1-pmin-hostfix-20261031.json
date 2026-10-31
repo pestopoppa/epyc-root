@@ -1,0 +1,67 @@
+{
+  "id": "codex3-cafe1-pmin-hostfix-20261031",
+  "owner": "codex3",
+  "priority_rank": 100,
+  "regions": "0-95",
+  "min_window_s": 12000,
+  "window_s": 14400,
+  "gib": 128,
+  "booking_class": "block-timing-quiet",
+  "class": "decision",
+  "decision_rule": "Champion baseline p-min 0 versus candidate p-min; throughput higher is better. KEEP a p-min only if all 15 matched greedy token outputs are identical, aggregate gain is at least 1 percentage point plus measured within-window A/A floor, and no class loses more than 1 percentage point plus its floor. Incomplete or unknown native data yields UNKNOWN; never mix grants.",
+  "enrollment": "e3809b8d1922c043bf8211ebad0750cac0b42494",
+  "launcher": {
+    "path": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/cafe1-hostfix/launch.sh",
+    "sha256": "1bc11a182674d83be2511bc83f730a39ec297b004dee11ec2c532d8729302c1c"
+  },
+  "job": {
+    "path": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/cafe1-hostfix/worker.py",
+    "sha256": "f5fdb64763c6cbe37e11855b57e43cef88e594d51baaf45749b7b8e2f653a140"
+  },
+  "source_manifest": {
+    "path": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/cafe1-hostfix/SOURCE-SHA256SUMS",
+    "sha256": "71f4f300ce7286cef7719c7001c314e49dbeca069d6678d3466a4c9ae91c0426"
+  },
+  "scratch_root": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/cafe1-hostfix",
+  "keep": [
+    "PLAN.json",
+    "PROMPTS.json",
+    "SOURCE-SHA256SUMS",
+    "INPUT-SOURCE-SHA256SUMS",
+    "RUNTIME-INPUTS.sha256",
+    "FULL-MODEL.sha256",
+    "EARLY.sha256",
+    "ORIGINAL-SOURCE-SHA256SUMS",
+    "REGION-LOCK-INPUTS.sha256",
+    "REGION-LOCK-PYTHON-ALLOW.txt",
+    "region-lock",
+    "*.py",
+    "*.sh",
+    "*.log",
+    "engine/*",
+    "run/*",
+    "smoke-final/*",
+    "smoke-stop-final/*"
+  ],
+  "result_path": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/cafe1-hostfix/run/ANALYSIS.json",
+  "est_output_GiB": 1,
+  "feasibility": "Two actual HOST public-model control requests and drains took 31.718s; the required 35B MTP model, 262k context, 25 fresh full-target server loads and total wall time have not been tested. 14400s is a prospective budget, not a measured completion promise; incomplete remains unknown.",
+  "smoke": {
+    "ran_at": "2026-10-31T05:11:30.920868+00:00",
+    "regions": "R11 CPU 122,123",
+    "model": "public Qwen3 0.6B Q8; spec-type none; no MTP/full target exercised",
+    "first_request_ok": true,
+    "result_writer_ok": true,
+    "exit_ok": true,
+    "wall_s": 31.71754003618844,
+    "peak_sampled_tree_rss_bytes": 1166192640,
+    "launcher_sha256": "1bc11a182674d83be2511bc83f730a39ec297b004dee11ec2c532d8729302c1c",
+    "log": "/mnt/raid0/llm/tmp/compute-flags/ready/codex3-cafe1-pmin-hostfix-20261031.smoke.log",
+    "log_sha256": "182304ee0cbf0096a56262df2378486a4af372190d2cda3e3a95759bdcb679fb"
+  },
+  "hold": null,
+  "log_consumer": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/cafe1-hostfix/log_consumer.py",
+  "repair_of": "codex3-cafe1-pmin-20261031",
+  "host_startup": "0.100s; actual host lock shim and both logs proved",
+  "completion": "One timing grant; terminal incomplete on interrupted exposed sequence, never redraw or combine grants. Complete capture automatically invokes predeclared analysis. Native absent draft counts remain unknown."
+}

@@ -1,0 +1,44 @@
+--- /mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/gpu-leg/scripts/benchmark/kpf18/kpf18_gate.py	2026-10-31 02:53:42.587221363 +0000
++++ /mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/gpu-leg-v2/scripts/benchmark/kpf18/kpf18_gate.py	2026-10-31 04:47:34.196012968 +0000
+@@ -1127,7 +1127,7 @@
+                        "timings": {k: t.get(k) for k in ("prompt_n", "cache_n", "prompt_ms", "predicted_n",
+                                                           "predicted_ms", "predicted_per_second", "draft_n",
+                                                           "draft_n_accepted", "n_fork_tokens", "fork_src_slot",
+-                                                          "fork_src_kind")},
++                                                          "fork_src_kind", "id_task", "id_slot")},
+                        "timings_keys": r.get("timings_keys")})
+         if r.get("http") != 200 or r.get("error"):
+             raise Abort(f"{role}: HTTP {r.get('http')} {r.get('error')}")
+@@ -1697,8 +1697,19 @@
+                 erase_all(ctx)
+                 for i in (0, 1):  # i=1 re-uses slot 0's own cache through its checkpoints: both binaries must agree
+                     P = cat(grp["trunk"], grp["suffixes"][i])
+-                    r = R.row("req", ctx.client.complete(body_for(P, n, 0, fork=None, n_probs=a.n_probs)),
+-                              group=g, suffix=i)
++                    from active_slot_capture import capture as capture_active_slots
++                    sample_path = ctx.out / "active_slots" / f"{R.run_id}-g{g}-s{i}.jsonl"
++                    response, active = capture_active_slots(ctx.client, body_for(P, n, 0, fork=None, n_probs=a.n_probs), 0, sample_path)
++                    active["sha256"] = sha256_file(sample_path) if active["sampler_drained"] else None
++                    try:
++                        post = next((x for x in ctx.client.slots() if x.get("id") == 0), None)
++                        post_error = None
++                    except Exception as exc:
++                        post, post_error = None, repr(exc)
++                    R.extra.setdefault("active_slot_evidence", []).append({"group": g, "suffix": i, "active": active,
++                                                                            "post_completion_slot": post,
++                                                                            "post_completion_slot_error": post_error})
++                    r = R.row("req", response, group=g, suffix=i)
+                     shared[arm][(g, i)] = r
+             ss = ctx.client.slots()
+             shared[arm]["slots_keys"] = sorted({k for s in ss for k in s.keys()})
+@@ -2105,8 +2116,8 @@
+         set_cpu_spec()
+         args.no_device_claim = args.no_device_claim or "CPU mode: no GPU used"
+     if args.public_control:
+-        if args.cmd != "kpf181" or args.kpf181_arms != "A":
+-            ap.error("public control permits kpf181 A only")
++        if args.cmd not in ("kpf181", "item6") or (args.cmd == "kpf181" and args.kpf181_arms != "A"):
++            ap.error("public control permits kpf181 A or item6 only")
+         SPEC.update(min_pairs=8, trunk_range=(512, 512), suffix_range=(32, 32), speed_T=512)
+         SPEED_GROUP = 3
+ 

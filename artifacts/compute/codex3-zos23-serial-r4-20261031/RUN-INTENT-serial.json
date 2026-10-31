@@ -1,0 +1,25 @@
+{
+  "schema": "ni.gpu_zos2_run_intent.v1",
+  "source_pins_sha256": "187e7a953e151f208859cc93f7353d6ba7e43189fe58dc18f47b333184aea4dc",
+  "image_pins_sha256": "ad5fd19e714aefff90b2accd14a6a4188a3c3771d8e5dbf0f5bf1bd1d71fbf05",
+  "model_pins_sha256": "bac60874deb25c0f5fffd7a03de70c0e301428064e8ff39d6ab00fb499410767",
+  "predeclaration_sha256": "44f81580ca4868c74c2b6ed6931021e981b904c6c5a213e3706343c6bedda0bc",
+  "prompt_sha256": "5b2c9febc28cc0c6cb1ea7e998696f927449c687feeb44ed8b3f0c341e079bf6",
+  "launch_record_sha256": "612323d93632856a923b2d163b7486b9e48e87645f41b16e0602260667c33149",
+  "arm_order": [
+    "SA1",
+    "SA2",
+    "SB",
+    "SO"
+  ],
+  "metric": "predicted_per_second",
+  "metric_direction": "higher_is_better",
+  "metric_unit": "decode tokens_per_second",
+  "min_effect_rel": 0.01,
+  "noise_rule": "max absolute same-window A2/A1 and B2/B1 geometric-mean ratios; SHIP requires 2x NF",
+  "validity": "original GPU-ZOS-2.3 \u00a79, including own-PID KFD, graphs, exact tokens and conditional serial/A3B3 tiers",
+  "mode": "serial",
+  "host_cpus": "184-191",
+  "serial_followup_sha256": "717c64a179163844a703f9d507e254db551c37a549b7ed7f1ebd4f2aa842021f",
+  "at": "2026-10-31T05:11:36.139045+00:00"
+}

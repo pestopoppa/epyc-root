@@ -1,0 +1,39 @@
+usage: region-lock run [-h] [--regions REGIONS | --cpu-list CPU_LIST]
+                       [--fold-siblings | --no-fold-siblings]
+                       [--gpu-quiet {exclusive,shared}] [--role ROLE]
+                       [--timeout-s TIMEOUT_S] [--tag TAG] [--no-preflight]
+                       ...
+
+positional arguments:
+  command               -- COMMAND [ARGS...]
+
+options:
+  -h, --help            show this help message and exit
+  --regions REGIONS     comma-separated region ids, e.g. q0,q1,q2,q3
+  --cpu-list CPU_LIST   taskset-style cpu list, e.g. 0-95 (regions derived;
+                        SMT siblings such as 160-183 claim the regions of
+                        their physical cores, here 64-87; see --fold-siblings)
+  --fold-siblings, --no-fold-siblings
+                        with --cpu-list, map SMT sibling CPUs (96-191 on this
+                        host) onto their physical cores' regions, read from
+                        the kernel's thread-sibling topology (default: on).
+                        --no-fold-siblings restores the legacy mapping, which
+                        ignores sibling CPUs entirely. No effect with
+                        --regions.
+  --gpu-quiet {exclusive,shared}
+                        also hold the host-wide gpu-quiet lock: 'exclusive'
+                        for a GPU bench (valid with no regions — GPU benches
+                        should take NO region claim), 'shared' for a CPU
+                        measurement (waits for any exclusive holder). Taken
+                        BEFORE the regions.
+  --role ROLE           attribution label for the per-role lock (default:
+                        bench). Not a real stack role.
+  --timeout-s TIMEOUT_S
+                        per-region acquire timeout; 0 = block indefinitely
+                        (default), with periodic waiting logs from the lock
+                        module. With --gpu-quiet it bounds the whole gpu-
+                        quiet+regions acquisition. Exit 75 on expiry.
+  --tag TAG             opaque tag recorded in the lock payload for
+                        diagnostics
+  --no-preflight        skip the cross-role-flag preflight (deliberate
+                        override; exclusion may be one-sided)

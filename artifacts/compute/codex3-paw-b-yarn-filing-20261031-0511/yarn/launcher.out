@@ -1,0 +1,28 @@
+2026-10-31T02:23:50Z [yarn-agg-1g-power-20261031] launcher up pid=4017464 class=gpu poll=45s grants=/mnt/raid0/llm/tmp/compute-flags/grants stop=/mnt/raid0/llm/tmp/codex-ni-yarn-agg1g-prep-20261031/STOP minwin=2700s ports=18155
+2026-10-31T03:12:35Z [yarn-agg-1g-power-20261031] START regions=mi210_0,184-191 cpus=184-191 threads=8 gpu=1 end=2026-10-31T05:12Z
+[region-lock] acquiring gpu-quiet exclusive as role='build' (timeout_s=7165.0) …
+[region-lock] held gpu-quiet exclusive + regions [] after 0.0s wait; running: /bin/bash /mnt/raid0/llm/tmp/codex-ni-yarn-agg1g-prep-20261031/engine/filler_run13.sh --inner --id yarn-agg-1g-power-20261031 --class gpu --cmd bash /mnt/raid0/llm/tmp/codex-ni-yarn-agg1g-prep-20261031/job.sh --min-window 2700 --stop /mnt/raid0/llm/tmp/codex-ni-yarn-agg1g-prep-20261031/STOP --port 18155 --workdir /mnt/raid0/llm/tmp/codex-ni-yarn-agg1g-prep-20261031 --gpu-threads 184-191
+2026-10-31T03:12:35Z mi210_0 flock held
+PIN_PASS plan=141 model-full template binary versioned-HIP source
+admit: MemAvailable 964 GiB, need 12 GiB
+2026-10-31T03:12:57Z [yarn-agg-1g-power] A0 server pid 2667804 (log /mnt/raid0/llm/tmp/codex-ni-yarn-agg1g-prep-20261031/run/windows/20261031T031256Z/A0.server.log)
+health ok, port 18155 owned by our pid 2667804
+2026-10-31T03:13:02Z [yarn-agg-1g-power] A0: running items until 2026-10-31T04:10:28Z
+{"arm": "A0", "n_ok": 29, "n_err": 0, "n_skipped_deadline": 112, "remaining": 112, "stop_reason": "deadline"}
+2026-10-31T04:07:45Z [yarn-agg-1g-power] server 2667804 dead (verified)
+2026-10-31T04:07:45Z [yarn-agg-1g-power] A0 segment rc=0
+2026-10-31T04:07:45Z [yarn-agg-1g-power] A1 server pid 3490864 (log /mnt/raid0/llm/tmp/codex-ni-yarn-agg1g-prep-20261031/run/windows/20261031T031256Z/A1.server.log)
+health ok, port 18155 owned by our pid 3490864
+2026-10-31T04:07:55Z [yarn-agg-1g-power] A1: running items until 2026-10-31T05:09:15Z
+{"arm": "A1", "n_ok": 25, "n_err": 0, "n_skipped_deadline": 111, "remaining": 111, "stop_reason": "deadline"}
+2026-10-31T05:08:00Z [yarn-agg-1g-power] server 3490864 dead (verified)
+2026-10-31T05:08:00Z [yarn-agg-1g-power] A1 segment rc=0
+{
+ "status": "INTERIM",
+ "verdict": "INTERIM (no verdict until both arms finish the frozen plan)",
+ "plan_sha256": "dc8fa414b5e50328d294fe6d4b9a32fe5bea97b98a727808c37ceb5c4f4ade68"
+}
+partial=true rc75 reason=window-or-resource remaining=223
+job rc=75
+2026-10-31T05:08:03Z [yarn-agg-1g-power-20261031] ended rc=75 reason=job-rc-75:exited (grant deleted)
+2026-10-31T05:10:00Z [yarn-agg-1g-power-20261031] launcher up pid=63953 class=gpu poll=45s grants=/mnt/raid0/llm/tmp/compute-flags/grants stop=/mnt/raid0/llm/tmp/codex-ni-yarn-agg1g-prep-20261031/STOP minwin=2700s ports=18155

@@ -1,0 +1,35 @@
+{
+  "unit": "pip02-score-r29-d2-20261031.service",
+  "pid": 4099482,
+  "ppid": 1,
+  "birth_ticks": "154530581",
+  "process_state": "S",
+  "cmdline": "/bin/bash /mnt/raid0/llm/artifacts/pip02-scorer/d2b95912cedd/pkg/watch.sh ",
+  "captured_at": "2026-10-31T05:00:53.487511+00:00",
+  "systemd_properties": {
+    "RuntimeMaxUSec": "1d",
+    "MainPID": "4099482",
+    "NRestarts": "0",
+    "ExecMainStartTimestamp": "Sat 2026-10-31 05:00:32 UTC",
+    "User": "1000",
+    "Group": "1000",
+    "SupplementaryGroups": "992",
+    "ActiveState": "active",
+    "SubState": "running"
+  },
+  "script_path": "/mnt/raid0/llm/artifacts/pip02-scorer/d2b95912cedd/pkg/watch.sh",
+  "script_mtime_utc": "2026-10-31T04:54:43+00:00",
+  "script_sha256": "6773407a6434b8373aa8cbaf8bfaddb78089078c4ba45bf65ab6071469f48acb",
+  "deployment_manifest_sha256": "5b68b84847a5e7c084d4ffaf763bed48e1dbf29e35c9106a4b5de2eaf59d43f2",
+  "log": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-watch-r29/systemd-service.log",
+  "second_writer_lock_probe_exit": 1,
+  "micron_adapter_read_bytes": 10609,
+  "former_watcher_4006088_dead": true,
+  "pre_r29_watcher_793354_alive": true,
+  "restart_policy": "on-failure",
+  "expiry_timer": {
+    "unit": "pip02-score-r29-d2-expire-20261031.timer",
+    "expected_next_utc": "2026-11-01T04:59:08Z",
+    "action": "systemctl stop pip02-score-r29-d2-20261031.service"
+  }
+}

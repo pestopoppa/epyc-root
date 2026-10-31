@@ -1,0 +1,16 @@
+92cc3dfd7e1119b7bcc83c18f758099c47363073013a896ee76efcd6ad19145a  /mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/libggml-base.so.0.16.0
+3f4edd2fc0f1e78003735be59db987d43c4bc0e6a8f821bc419d7b6f492346c0  /mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/libggml-cpu.so.0.16.0
+87074c95c8709c491e84b2c8b9c0b8fa911b1cd309fbd5536a4947063a96998e  /mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/libggml.so.0.16.0
+bdf5f96d52e188acf09703d63995d78bbd7583053a6f55a1601dc094f1365baf  /mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/libllama-batched-bench-impl.so
+f17b0842acc9854ecb3ac9d1c7512600551c4a6573c9fecc3e030ce5f12640d5  /mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/libllama-bench-impl.so
+8e559212d9d8330c1579f3045c77812ab29f2570b5ddcc89b4f23df6e6c450e4  /mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/libllama-cli-impl.so
+dfd31d4bb51818e5507b9eeaa7766452cab914f02bdbd1e0f18b4c3e9294de09  /mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/libllama-common.so.0.0.10303
+431e25f4acbd06e24176a1fb845941cbc9ddad260296a9a79d6e024c1363af15  /mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/libllama-completion-impl.so
+d4e9ebc0dd17ce6d5c35568082ef63d925a1ceaaff574df64bea3e8c82aebd1f  /mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/libllama-fit-params-impl.so
+85cb8769ef8929d1f802d56ace5b77473d5bedfc6f0ce42c949c5c3ebf8667e1  /mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/libllama-perplexity-impl.so
+a40d13aa037ecafe0f9984795df5cfbcebbc080b4e94e4c20365f9e01ec756c5  /mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/libllama-quantize-impl.so
+64817c163bf7efdd4eb6cd46ca97749199d299949131970a9a49c36dcfd3ef57  /mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/libllama-server-impl.so
+5cdd003d3f441e1efe42e4c06e4434b0195f25ab6317d64aa7e7cf60deaba844  /mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/libllama.so.0.0.10303
+ba6f3ba8797a42d0d0b9927484a2b5d7e1dd8a0694521ff4bf49c9c413d419ab  /mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/libmtmd.so.0.0.10303
+4483bcfc92c5c3bb0005df31e1c668cb565d49f7b40ba94f4df5a126cbbb648c  /mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/llama-server
+c159d1518f16bc42533d9a09f034eb598b670341adc2b08b9a9751614aea71eb  /mnt/raid0/llm/models/Qwen_Qwen3-0.6B-Q8_0.gguf

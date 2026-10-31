@@ -1,0 +1,12 @@
+test_actual_r28_and_fresh_positive (__main__.NativeCatalog.test_actual_r28_and_fresh_positive) ... ok
+test_actual_r29_region_and_bad_catalog_refuse (__main__.NativeCatalog.test_actual_r29_region_and_bad_catalog_refuse) ... ok
+test_changed_capture_id_or_group_or_launcher_refuse (__main__.NativeCatalog.test_changed_capture_id_or_group_or_launcher_refuse) ... ok
+test_fresh_manifest_and_source_map_refuse (__main__.NativeCatalog.test_fresh_manifest_and_source_map_refuse) ... ok
+test_wrong_launcher_and_pool_refuse (__main__.NativeCatalog.test_wrong_launcher_and_pool_refuse) ... ok
+test_wrong_region_capture_hash_refuses (__main__.NativeCatalog.test_wrong_region_capture_hash_refuses) ... ok
+
+----------------------------------------------------------------------
+Ran 6 tests in 4.580s
+
+OK
+{"schema": "bounded-r11-native-profile-supervisor/v1", "elapsed_s": 4.702872049063444, "sampled_peak_tree_rss_bytes": 61911040, "samples": 47, "verified_exited_processes": 0, "verified_exited_threads": 0, "per_process_address_space_limit_bytes": null, "rss_scope": "sum of sampled resident pages across owned process tree; sampling may miss transients and double-count shared pages", "leader_pid": 3921176, "leader_birth": 154471879, "child_rc": 0, "children_drained": true, "failure": null}

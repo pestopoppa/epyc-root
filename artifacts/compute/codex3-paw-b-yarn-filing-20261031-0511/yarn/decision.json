@@ -1,0 +1,422 @@
+{
+ "schema": "epyc.yarn_gate.decision.v1",
+ "status": "INTERIM",
+ "written": "2026-10-31T05:08:00Z",
+ "plan": "native-gate-power-1g",
+ "plan_sha256": "dc8fa414b5e50328d294fe6d4b9a32fe5bea97b98a727808c37ceb5c4f4ade68",
+ "protocol_id": "YARN-AGG-1/native-gate/net-paired-mcnemar/v1",
+ "rule": "Net, paired: inside the native window A1 FAILS iff a one-sided exact McNemar test on the paired discordant items (A0 right / A1 wrong = b, versus A0 wrong / A1 right = c) is significant at alpha = 0.05, i.e. P(X >= b | n = b + c, p = 0.5) <= 0.05; otherwise NOT-FAIL. The point estimate (mean paired score difference, b, c) is always reported beside the verdict.",
+ "alpha": 0.05,
+ "verdict": "INTERIM (no verdict until both arms finish the frozen plan)",
+ "pooled_native": {
+  "verdict": "NOT-FAIL",
+  "n_pairs": 29,
+  "b_a0right_a1wrong": 1,
+  "c_a0wrong_a1right": 6,
+  "p_one_sided": 0.9921875,
+  "alpha": 0.05,
+  "mean_score_diff_a1_minus_a0": 0.21767241379310345,
+  "rule": "Net, paired (one-sided exact McNemar), no absolute slack",
+  "n_discordant": 7,
+  "min_losses_to_fail_given_discordant": 7,
+  "min_losses_to_fail_with_zero_wins": 5,
+  "power_note": "NOT-FAIL = no harm detected at this sample size; this is NOT an equivalence or safety claim (n_discordant=7); underpowered: few disagreements",
+  "interpretation": "NOT-FAIL-underpowered"
+ },
+ "per_cell_native": {
+  "helmet_hotpotqa@128k": {
+   "verdict": "NOT-FAIL",
+   "n_pairs": 1,
+   "b_a0right_a1wrong": 0,
+   "c_a0wrong_a1right": 0,
+   "p_one_sided": 1.0,
+   "alpha": 0.05,
+   "mean_score_diff_a1_minus_a0": 0.0,
+   "rule": "Net, paired (one-sided exact McNemar), no absolute slack",
+   "n_discordant": 0,
+   "min_losses_to_fail_given_discordant": null,
+   "min_losses_to_fail_with_zero_wins": 5,
+   "power_note": "NOT-FAIL = no harm detected at this sample size; this is NOT an equivalence or safety claim (n_discordant=0); underpowered: few disagreements",
+   "interpretation": "NOT-FAIL-underpowered"
+  },
+  "helmet_nq@128k": {
+   "verdict": "NOT-FAIL",
+   "n_pairs": 1,
+   "b_a0right_a1wrong": 0,
+   "c_a0wrong_a1right": 0,
+   "p_one_sided": 1.0,
+   "alpha": 0.05,
+   "mean_score_diff_a1_minus_a0": 0.0,
+   "rule": "Net, paired (one-sided exact McNemar), no absolute slack",
+   "n_discordant": 0,
+   "min_losses_to_fail_given_discordant": null,
+   "min_losses_to_fail_with_zero_wins": 5,
+   "power_note": "NOT-FAIL = no harm detected at this sample size; this is NOT an equivalence or safety claim (n_discordant=0); underpowered: few disagreements",
+   "interpretation": "NOT-FAIL-underpowered"
+  },
+  "oolong_synth@131072": {
+   "verdict": "NOT-FAIL",
+   "n_pairs": 25,
+   "b_a0right_a1wrong": 0,
+   "c_a0wrong_a1right": 5,
+   "p_one_sided": 1.0,
+   "alpha": 0.05,
+   "mean_score_diff_a1_minus_a0": 0.2525,
+   "rule": "Net, paired (one-sided exact McNemar), no absolute slack",
+   "n_discordant": 5,
+   "min_losses_to_fail_given_discordant": 5,
+   "min_losses_to_fail_with_zero_wins": 5,
+   "power_note": "NOT-FAIL = no harm detected at this sample size; this is NOT an equivalence or safety claim (n_discordant=5); underpowered: few disagreements",
+   "interpretation": "NOT-FAIL-underpowered"
+  },
+  "oolong_synth@240k": {
+   "verdict": "NOT-FAIL",
+   "n_pairs": 2,
+   "b_a0right_a1wrong": 1,
+   "c_a0wrong_a1right": 1,
+   "p_one_sided": 0.75,
+   "alpha": 0.05,
+   "mean_score_diff_a1_minus_a0": 0.0,
+   "rule": "Net, paired (one-sided exact McNemar), no absolute slack",
+   "n_discordant": 2,
+   "min_losses_to_fail_given_discordant": null,
+   "min_losses_to_fail_with_zero_wins": 5,
+   "power_note": "NOT-FAIL = no harm detected at this sample size; this is NOT an equivalence or safety claim (n_discordant=2); underpowered: few disagreements",
+   "interpretation": "NOT-FAIL-underpowered"
+  }
+ },
+ "excluded_from_gate": [
+  {
+   "item_id": "ruler_mk_2@240k#0000",
+   "reason": "unpaired or error"
+  }
+ ],
+ "per_arm_cells": {
+  "A0": {
+   "helmet_hotpotqa@128k": {
+    "n": 1,
+    "attempted_rate": 1.0,
+    "no_answer_rate": 0.0,
+    "ci": {
+     "n_items": 1,
+     "n_contexts": 1,
+     "mean": 1.0,
+     "lo": 1.0,
+     "hi": 1.0
+    },
+    "zones": [
+     "native"
+    ],
+    "real_n_median": 131204,
+    "failure_classes": {
+     "wrong": 0,
+     "no_answer_budget": 0,
+     "refusal": 0,
+     "unparsable": 0
+    }
+   },
+   "helmet_nq@128k": {
+    "n": 1,
+    "attempted_rate": 1.0,
+    "no_answer_rate": 0.0,
+    "ci": {
+     "n_items": 1,
+     "n_contexts": 1,
+     "mean": 1.0,
+     "lo": 1.0,
+     "hi": 1.0
+    },
+    "zones": [
+     "native"
+    ],
+    "real_n_median": 127173,
+    "failure_classes": {
+     "wrong": 0,
+     "no_answer_budget": 0,
+     "refusal": 0,
+     "unparsable": 0
+    }
+   },
+   "oolong_synth@131072": {
+    "n": 25,
+    "attempted_rate": 1.0,
+    "no_answer_rate": 0.76,
+    "ci": {
+     "n_items": 25,
+     "n_contexts": 2,
+     "mean": 0.08,
+     "lo": 0.0,
+     "hi": 0.14285714285714285
+    },
+    "zones": [
+     "native"
+    ],
+    "real_n_median": 103338,
+    "failure_classes": {
+     "wrong": 4,
+     "no_answer_budget": 19,
+     "refusal": 0,
+     "unparsable": 0
+    }
+   },
+   "oolong_synth@240k": {
+    "n": 2,
+    "attempted_rate": 1.0,
+    "no_answer_rate": 0.5,
+    "ci": {
+     "n_items": 2,
+     "n_contexts": 1,
+     "mean": 0.5,
+     "lo": 0.5,
+     "hi": 0.5
+    },
+    "zones": [
+     "native"
+    ],
+    "real_n_median": 222434,
+    "failure_classes": {
+     "wrong": 0,
+     "no_answer_budget": 1,
+     "refusal": 0,
+     "unparsable": 0
+    }
+   }
+  },
+  "A1": {
+   "helmet_hotpotqa@128k": {
+    "n": 1,
+    "attempted_rate": 1.0,
+    "no_answer_rate": 0.0,
+    "ci": {
+     "n_items": 1,
+     "n_contexts": 1,
+     "mean": 1.0,
+     "lo": 1.0,
+     "hi": 1.0
+    },
+    "zones": [
+     "native"
+    ],
+    "real_n_median": 131204,
+    "failure_classes": {
+     "wrong": 0,
+     "no_answer_budget": 0,
+     "refusal": 0,
+     "unparsable": 0
+    }
+   },
+   "helmet_nq@128k": {
+    "n": 1,
+    "attempted_rate": 1.0,
+    "no_answer_rate": 0.0,
+    "ci": {
+     "n_items": 1,
+     "n_contexts": 1,
+     "mean": 1.0,
+     "lo": 1.0,
+     "hi": 1.0
+    },
+    "zones": [
+     "native"
+    ],
+    "real_n_median": 127173,
+    "failure_classes": {
+     "wrong": 0,
+     "no_answer_budget": 0,
+     "refusal": 0,
+     "unparsable": 0
+    }
+   },
+   "oolong_synth@131072": {
+    "n": 25,
+    "attempted_rate": 1.0,
+    "no_answer_rate": 0.28,
+    "ci": {
+     "n_items": 25,
+     "n_contexts": 2,
+     "mean": 0.3325,
+     "lo": 0.21428571428571427,
+     "hi": 0.48295454545454547
+    },
+    "zones": [
+     "native"
+    ],
+    "real_n_median": 103338,
+    "failure_classes": {
+     "wrong": 11,
+     "no_answer_budget": 7,
+     "refusal": 0,
+     "unparsable": 0
+    }
+   },
+   "oolong_synth@240k": {
+    "n": 2,
+    "attempted_rate": 1.0,
+    "no_answer_rate": 0.5,
+    "ci": {
+     "n_items": 2,
+     "n_contexts": 1,
+     "mean": 0.5,
+     "lo": 0.5,
+     "hi": 0.5
+    },
+    "zones": [
+     "native"
+    ],
+    "real_n_median": 222434,
+    "failure_classes": {
+     "wrong": 0,
+     "no_answer_budget": 1,
+     "refusal": 0,
+     "unparsable": 0
+    }
+   },
+   "ruler_mk_2@240k": {
+    "n": 1,
+    "attempted_rate": 1.0,
+    "no_answer_rate": 0.0,
+    "ci": {
+     "n_items": 1,
+     "n_contexts": 1,
+     "mean": 0.0,
+     "lo": 0.0,
+     "hi": 0.0
+    },
+    "zones": [
+     "native"
+    ],
+    "real_n_median": 244752,
+    "failure_classes": {
+     "wrong": 1,
+     "no_answer_budget": 0,
+     "refusal": 0,
+     "unparsable": 0
+    }
+   }
+  }
+ },
+ "progress": {
+  "plan": "native-gate-power-1g",
+  "plan_sha256": "dc8fa414b5e50328d294fe6d4b9a32fe5bea97b98a727808c37ceb5c4f4ade68",
+  "arms": {
+   "A0": {
+    "planned": 141,
+    "done": 29,
+    "pending": 112,
+    "est_pending_s": 13191
+   },
+   "A1": {
+    "planned": 141,
+    "done": 30,
+    "pending": 111,
+    "est_pending_s": 7002
+   }
+  },
+  "complete": false,
+  "order": [
+   "A0",
+   "A1"
+  ]
+ },
+ "dropped_segments": [],
+ "results_sha256": {
+  "A0": "c4417bf2d674d5fc935a9e773a06751c39ab7aeb857b2e1e84e88dfcbd779925",
+  "A1": "74b0c30ba4818d5a73ef3d6048a56d6be4b2cf2fc40037ebe0725127eb116a6b"
+ },
+ "identity": {
+  "model": "/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf",
+  "model_size": 29047086048,
+  "model_mtime": 1786727071,
+  "model_head16m_sha256": "1b7305964206168f2d4d0c3c039c4c54134438753f25bec341a43d6def8cece5",
+  "binary": "/mnt/raid0/llm/tmp/codex-ni-gpu-anchor-custody-20261030/private-v10-view/bin/llama-server",
+  "binary_sha256": "2b49713f0e3c022132393bf302dab954a1e2c1974b91c28d01ce2d192abdfa7b",
+  "build_dir": "/mnt/raid0/llm/tmp/codex-ni-gpu-anchor-custody-20261030/private-v10-view/bin",
+  "version": "version: 10303 (ffc1bac82)\nbuilt with GNU 15.2.0 for Linux x86_64",
+  "research_sha": "7e7d5ef7f28f0c0ec45c16b7a90a51750006671f",
+  "schema": "epyc.yarn_agg_1g.identity.v1",
+  "plan_sha256": "dc8fa414b5e50328d294fe6d4b9a32fe5bea97b98a727808c37ceb5c4f4ade68",
+  "model_sha256": "a680f44a06920e5d689774823782006aa3acc8db95750323373b24139b67e348",
+  "binary_path": "/mnt/raid0/llm/tmp/codex-ni-gpu-anchor-custody-20261030/private-v10-view/bin/llama-server",
+  "template_sha256": "1443ea9ab4bb0a2663b1002a5d4baad970e9f0b2f42ca4ec12b4683838284551",
+  "ggml_dso_sha256": "f26a166b8ea3089d19a395ae00afa22e917df8eba71ca6ef4be5235d65ea8079",
+  "source_manifest_sha256": "2bf30b145eacd9b74d18410578b5cac8531ae9b115513aceb6c1641298109ef6",
+  "paired_recipe_sha256": "b0efd84941c27f3e426b8a0714d5dfd9108af3c1f349b654f305ae1be8cfddcd",
+  "archive_root": "/mnt/raid0/llm/tmp/codex-ni-yarn-agg1g-prep-20261031/archive",
+  "source_tree_commit": "7e7d5ef7f28f0c0ec45c16b7a90a51750006671f"
+ },
+ "n_pairs": 29,
+ "b_a0right_a1wrong": 1,
+ "c_a0wrong_a1right": 6,
+ "n_discordant": 7,
+ "min_losses_to_fail_given_discordant": 7,
+ "min_losses_to_fail_with_zero_wins": 5,
+ "power_note": "NOT-FAIL = no harm detected at this sample size; this is NOT an equivalence or safety claim (n_discordant=7); underpowered: few disagreements",
+ "interpretation": "NOT-FAIL-underpowered",
+ "claim_tuple": {
+  "measurement_id": "yarn-gate:native-gate-power-1g:dc8fa414b5e5",
+  "metric": "mean paired score difference A1 - A0 inside the native window (net-paired McNemar gate)",
+  "value": 0.21767241379310345,
+  "unit": "score fraction per item (0-1)",
+  "metric_direction": "higher_better",
+  "category": "quality",
+  "date": "2026-10-31T05:08:00Z",
+  "claim": "A1 (YaRN f2) vs A0 (native RoPE) inside the native window on native-gate-power-1g: INTERIM under the net-paired one-sided McNemar rule (b=1, c=6, p=0.9922, n_pairs=29); NOT-FAIL means no significant net loss, not equivalence",
+  "protocol_id": "YARN-AGG-1/native-gate/net-paired-mcnemar/v1",
+  "reps": 29,
+  "reps_basis": "scored (paired, native zone)",
+  "attestation_path": "/mnt/raid0/llm/tmp/codex-ni-yarn-agg1g-prep-20261031/run/decision.json",
+  "attestation_locator": "pooled_native",
+  "status": "INTERIM",
+  "verdict": "INTERIM (no verdict until both arms finish the frozen plan)",
+  "extra": {
+   "b": 1,
+   "c": 6,
+   "p_one_sided": 0.9921875,
+   "alpha": 0.05,
+   "n_discordant": 7,
+   "interpretation": "NOT-FAIL-underpowered",
+   "plan_sha256": "dc8fa414b5e50328d294fe6d4b9a32fe5bea97b98a727808c37ceb5c4f4ade68",
+   "results_sha256": {
+    "A0": "c4417bf2d674d5fc935a9e773a06751c39ab7aeb857b2e1e84e88dfcbd779925",
+    "A1": "74b0c30ba4818d5a73ef3d6048a56d6be4b2cf2fc40037ebe0725127eb116a6b"
+   },
+   "identity": {
+    "model": "/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf",
+    "model_size": 29047086048,
+    "model_mtime": 1786727071,
+    "model_head16m_sha256": "1b7305964206168f2d4d0c3c039c4c54134438753f25bec341a43d6def8cece5",
+    "binary": "/mnt/raid0/llm/tmp/codex-ni-gpu-anchor-custody-20261030/private-v10-view/bin/llama-server",
+    "binary_sha256": "2b49713f0e3c022132393bf302dab954a1e2c1974b91c28d01ce2d192abdfa7b",
+    "build_dir": "/mnt/raid0/llm/tmp/codex-ni-gpu-anchor-custody-20261030/private-v10-view/bin",
+    "version": "version: 10303 (ffc1bac82)\nbuilt with GNU 15.2.0 for Linux x86_64",
+    "research_sha": "7e7d5ef7f28f0c0ec45c16b7a90a51750006671f",
+    "schema": "epyc.yarn_agg_1g.identity.v1",
+    "plan_sha256": "dc8fa414b5e50328d294fe6d4b9a32fe5bea97b98a727808c37ceb5c4f4ade68",
+    "model_sha256": "a680f44a06920e5d689774823782006aa3acc8db95750323373b24139b67e348",
+    "binary_path": "/mnt/raid0/llm/tmp/codex-ni-gpu-anchor-custody-20261030/private-v10-view/bin/llama-server",
+    "template_sha256": "1443ea9ab4bb0a2663b1002a5d4baad970e9f0b2f42ca4ec12b4683838284551",
+    "ggml_dso_sha256": "f26a166b8ea3089d19a395ae00afa22e917df8eba71ca6ef4be5235d65ea8079",
+    "source_manifest_sha256": "2bf30b145eacd9b74d18410578b5cac8531ae9b115513aceb6c1641298109ef6",
+    "paired_recipe_sha256": "b0efd84941c27f3e426b8a0714d5dfd9108af3c1f349b654f305ae1be8cfddcd",
+    "archive_root": "/mnt/raid0/llm/tmp/codex-ni-yarn-agg1g-prep-20261031/archive",
+    "source_tree_commit": "7e7d5ef7f28f0c0ec45c16b7a90a51750006671f"
+   }
+  }
+ },
+ "belief_emit": {
+  "status": "skipped",
+  "reason": "INTERIM decision: only FINAL decisions project",
+  "excluded": [
+   {
+    "arm": "A1",
+    "group": [
+     "ruler",
+     "niah_multikey_2",
+     "229376-262144",
+     "native"
+    ],
+    "reason": "source pins absent or not uniform in the group"
+   }
+  ]
+ }
+}

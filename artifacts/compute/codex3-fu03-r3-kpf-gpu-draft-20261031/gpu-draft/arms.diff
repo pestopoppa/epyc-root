@@ -1,0 +1,75 @@
+--- /mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/gpu-leg/scripts/benchmark/kpf18/kpf18_arms.py	2026-10-31 02:53:26.698649245 +0000
++++ /mnt/raid0/llm/tmp/codex3-next-gpu-20261031-0240/gpu-leg-v2/scripts/benchmark/kpf18/kpf18_arms.py	2026-10-31 04:49:29.948044441 +0000
+@@ -26,6 +26,7 @@
+ import statistics
+ import threading
+ from typing import Callable
++from active_slot_capture import capture as capture_active_slots
+ 
+ ARM_ITEMS = (181, 182, 183, 184)
+ ARM_CMDS = {"kpf181": [181], "kpf182": [182], "kpf183": [183], "kpf18arms": [181, 182, 183], "kpf18s1": [184]}
+@@ -669,8 +670,15 @@
+                      for s in others for c in checkpoint_set(s)]
+         sets = {s["id"]: [c["n_tokens"] for c in checkpoint_set(s)] for s in others}
+         lcp_best = max(lcp_map.values()) if lcp_map else 0
+-        r = ctx.client.complete(gate.body_for(ids, n_predict, slot, fork=fork, cache=cache, dflash=dflash, ckpt=ckpt,
+-                                              n_probs=n_probs))
++        body = gate.body_for(ids, n_predict, slot, fork=fork, cache=cache, dflash=dflash, ckpt=ckpt, n_probs=n_probs)
++        active = None
++        if R.item == 181:
++            sample_key = hashlib.sha256((arm + "\0" + cell_id + "\0" + role).encode()).hexdigest()[:20]
++            sample_path = ctx.out / "active_slots" / (R.run_id + "-" + sample_key + ".jsonl")
++            r, active = capture_active_slots(ctx.client, body, slot, sample_path)
++            active["sha256"] = gate.sha256_file(sample_path) if active["sampler_drained"] else None
++        else:
++            r = ctx.client.complete(body)
+         common = dict(arm=arm, cell_id=cell_id, role=role, slot=slot, n_task=len(ids), lcp_client=lcp_best,
+                       pred=pred, ckpts_before=ck_before, expected=expected, ckpt_sets_by_slot=sets,
+                       checkpoint_at=ckpt, cache_prompt=cache, fork_requested=fork, dflash_requested=dflash,
+@@ -678,14 +686,23 @@
+         try:
+             R.row(role, r, slot=slot, cell=cell_id, **{k: v for k, v in meta.items() if k not in ("lane",)})
+         except gate.Abort as exc:
+-            R.extra.setdefault("cells", []).append(make_cell(timings=r.get("timings"), n_fork_slot=None,
+-                                                             error=str(exc)[:400], **common))
++            failed = make_cell(timings=r.get("timings"), n_fork_slot=None, error=str(exc)[:400], **common)
++            failed["active_slot_evidence"] = active
++            failed["post_completion_slot"] = None
++            R.extra.setdefault("cells", []).append(failed)
+             raise
+-        after = slot_by_id(ctx.client.slots(), slot) or {}
+-        n_fork_slot = (after.get("fork") or {}).get("n_fork_tokens")
++        try:
++            after = slot_by_id(ctx.client.slots(), slot)
++            post_error = None
++        except Exception as exc:
++            after, post_error = None, repr(exc)
++        n_fork_slot = active["n_fork_tokens"] if active is not None else ((after or {}).get("fork") or {}).get("n_fork_tokens")
+         self.shadow[slot] = list(ids) + list(r.get("tokens") or [])
+         cell = make_cell(timings=r.get("timings"), n_fork_slot=n_fork_slot, **common)
+-        sc = server_components(after)
++        cell["active_slot_evidence"] = active
++        cell["post_completion_slot"] = after
++        cell["post_completion_slot_error"] = post_error
++        sc = server_components(active.get("matched_slot") if active is not None else after)
+         comp = components(pred, lcp_best, len(ids), sc)
+         cell["components"] = comp
+         n_fork = cell["n_fork_tokens"]
+@@ -705,7 +722,7 @@
+ def controls_block(env: Env, item: int) -> dict:
+     return {"manifest": "prompt_set_sha256 + binary_sha256 + argv (read back from /proc and the launch log) are in this "
+                         "record; per-sibling raw cells (n_fork_tokens from timings and from /slots, prediction, "
+-                        "checkpoint sets, errors) are under `cells`",
++                        "checkpoint sets, active task-matched samples, separate post-completion state and errors) are under `cells`",
+             "baseline": f"the fork-off arm (--slot-fork-min-tokens 0) of the same command on the same binary, and "
+                         f"champion tip {CHAMPION_TIP} (item 6 / KPF-18.0b)",
+             "held_out": "lengths or prompts used to SET a rule are never used to judge it (arm D holdout cell; arm C/D "
+@@ -905,7 +922,7 @@
+             ctx.check_boundary()
+             env.erase(1)
+             exp = T if expect == "T" else (0 if expect == "zero" else None)
+-            env.send(R, "sibling", trunk + grp["suffixes"][i], 1, n_predict=1, arm=arm, cell_id=f"g{g}.s{i}", fork=True,
++            env.send(R, "sibling", trunk + grp["suffixes"][i], 1, n_predict=256 if getattr(ctx.args, "public_control", False) else 1, arm=arm, cell_id=f"g{g}.s{i}", fork=True,
+                      expected=exp, group=g, suffix=i)
+         env.erase_all()
+     close_counts(env, R)

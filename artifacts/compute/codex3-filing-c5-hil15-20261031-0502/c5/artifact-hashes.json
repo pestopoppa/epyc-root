@@ -1,0 +1,9 @@
+{
+  "source": "c72ec82f5417bb2937310326120f149b665e8400",
+  "linked_artifacts": {
+    "/mnt/micron/refactor-lanes/llama.cpp-experimental/build-cpu-akx8-r5-20261031/bin/llama-server": "80941e4992f37293813247fb9686c891d1dca38bdc1cbbd01ecddd850c07cde0",
+    "/mnt/micron/refactor-lanes/llama.cpp-experimental/build-cpu-akx8-r5-20261031/bin/libggml-cpu.so": "4b6db300d19c3dcf17fa6cc97d97f00fd17ad37b414daad33adeb0be030e38c2",
+    "/mnt/micron/refactor-lanes/llama.cpp-experimental/build-cpu-akx8-r5-20261031/bin/libllama.so": "6179217cfeabd164c00d2e53ef6a3bd2cc7625165550a145aa633e6f7c550b7a"
+  },
+  "scope": "hashes only; identity, linkage/knob and target-card gates not completed"
+}

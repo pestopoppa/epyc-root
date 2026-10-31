@@ -1,0 +1,99 @@
+{
+  "id": "codex3-paw-standard-a-resume-20261031",
+  "owner": "codex3",
+  "priority_rank": 0,
+  "regions": "any-cpu-quarter",
+  "min_window_s": 2400,
+  "window_s": 36000,
+  "gib": 16,
+  "booking_class": "block-correctness",
+  "class": "diagnostic",
+  "decision_rule": "n/a (standard-arm capability diagnostic; report complete and missing case dispositions and per-task exact match, no threshold or adoption decision)",
+  "enrollment": "n/a: diagnostic; existing PAW source and native writer",
+  "launcher": {
+    "path": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/paw-standard-a-continuation/launch.sh",
+    "sha256": "eaa497fc57db5bbc1e4867fb5732c41d820db82a638a15c9a81f9162e606e8e5"
+  },
+  "job": {
+    "path": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/paw-standard-a-continuation/job.py",
+    "sha256": "8677b8c794ef10431c86b86de63f19ff310f5c59585d77b87f14eb43ff8f39f2"
+  },
+  "source_manifest": {
+    "path": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/paw-standard-a-continuation/SOURCES.sha256",
+    "sha256": "9f34054366c11d68c5d3bf2838a3f026f5ade17b52bc7fa924a6f3c76fae8491"
+  },
+  "scratch_root": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/paw-standard-a-continuation",
+  "keep": [
+    "*.py",
+    "*.sh",
+    "*.sha256",
+    "PAW3-PREDECLARATION.json",
+    "ORIGINAL-STATE.json",
+    "SMOKE-DECLARATION.json",
+    "*.log",
+    "*.out",
+    "engine/*.py",
+    "engine/*.sh",
+    "engine/*.json",
+    "results/**/*.json",
+    "results/**/*.log",
+    "epoch/*.json",
+    "smoke-results/**/*.json",
+    "smoke-results/**/*.log",
+    "smoke-epoch-*/*.json"
+  ],
+  "result_path": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/paw-standard-a-continuation/DONE",
+  "est_output_GiB": 16,
+  "feasibility": "Original full-budget 28628s estimated; seven of eight original programs are reused by hash, with interrupted task 10 attempt preserved and its missing bundle resumed under original checkpoint policy. Same-launcher HOST synthetic normal 95.83s; actual continuation and all 64 evaluations remain unrun.",
+  "smoke": {
+    "ran_at": "2026-10-31T05:03:18.876285+00:00",
+    "regions": "R11 128,129",
+    "model": "original PAW compiler with same pinned Qwen3 0.6B 64-token smoke pseudo-generator; synthetic noncohort spec",
+    "first_request_ok": true,
+    "result_writer_ok": true,
+    "exit_ok": true,
+    "wall_s": 95.82793137291446,
+    "peak_sampled_tree_rss_bytes": 5875798016,
+    "launcher_sha256": "eaa497fc57db5bbc1e4867fb5732c41d820db82a638a15c9a81f9162e606e8e5",
+    "log": "/mnt/raid0/llm/tmp/compute-flags/ready/codex3-paw-standard-a-resume-20261031.smoke.log",
+    "log_sha256": "6d6689e7bfac5f223f7262864a251ba6e2d05eb22ebef11aa7a325b966b898ea"
+  },
+  "hold": null,
+  "log_consumer": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/paw-standard-a-continuation/log_consumer.py",
+  "repair_of": "codex3-paw-standard-a-t1-20261030",
+  "original_declaration_sha256": "25dcf705fd8b8054b591eea20947b7d702bb2044a9757381ec01d428574ce302",
+  "origin_checkpoint_sha256": "473a87778c5780082996e386ad5c2a4bed1617f28563515bd3e00f198b80fc57",
+  "origin_source_sha256": "a517870b0e45a0187a9aa9149f1c1c50dea50c2fcc6653adfc003c16ad2cbcbd",
+  "origin_result_sha256": "4be4abc81e074f2d17e055c50c285c8b8c00d8e3f93508a747925460fe4f22f6",
+  "origin_programs": {
+    "0": {
+      "path": "/mnt/raid0/llm/models/PAW-programs/codex3-paw3-real-1793419509205138714/programs/85a47ebcf6bddf7eea51/bundle.paw",
+      "sha256": "d4197696c41d50f457fae7f923581c25d709d50106d946794fd52a1f97f5dd9f"
+    },
+    "1": {
+      "path": "/mnt/raid0/llm/models/PAW-programs/codex3-paw3-real-1793419509205138714/programs/4dc2d59475df5874e426/bundle.paw",
+      "sha256": "dc1dbc3ddaad64e7b3a2a94fa4bf75383dde86d847b4f7cdb66681b8a2a60f85"
+    },
+    "2": {
+      "path": "/mnt/raid0/llm/models/PAW-programs/codex3-paw3-real-1793419509205138714/programs/e5dd37a28613132e7ac4/bundle.paw",
+      "sha256": "e357e6b7ad9b42b685a4afa5eea6b1e3b1754c18861359a0ebdec68e98eec387"
+    },
+    "3": {
+      "path": "/mnt/raid0/llm/models/PAW-programs/codex3-paw3-real-1793419509205138714/programs/e80005a7bb0f4cf54b53/bundle.paw",
+      "sha256": "4cc1f8cfc8a83bacb4deb065681039a0890d2f8963a4fe9ea85324b0fce4698b"
+    },
+    "7": {
+      "path": "/mnt/raid0/llm/models/PAW-programs/codex3-paw3-real-1793419509205138714/programs/7ff8d39fad6752bdd743/bundle.paw",
+      "sha256": "637ba6be9c2cc1b1a36ad743f6a011a55f52a84e1d0a3c3d32e931bdc3fa8dc6"
+    },
+    "8": {
+      "path": "/mnt/raid0/llm/models/PAW-programs/codex3-paw3-real-1793419509205138714/programs/3b58f1aa6a5d26667cd6/bundle.paw",
+      "sha256": "e425df2e0cb6ec1ff35ba27aa75927d33aac19ef1dbd34da1f1894fcb2cccd64"
+    },
+    "9": {
+      "path": "/mnt/raid0/llm/models/PAW-programs/codex3-paw3-real-1793419509205138714/programs/02582c19d364555f3859/bundle.paw",
+      "sha256": "f15ac72ed9a038cb9c4461fa4e6c388acee7bc531e983f7d2eafbe43308facb5"
+    }
+  },
+  "completion": "Normal R13 --complete-cmd and log consumer; explicit env-i RUS3_DIAGNOSTIC; original seven checkpoints immutable, original prior attempt UNKNOWN; 64 cases unexposed; native STOP rc75/drained; HOST launcher startup proof."
+}

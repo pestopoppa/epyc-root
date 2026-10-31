@@ -1,0 +1,8 @@
+{
+  "id": "codex3-cafe1-pmin-20261031",
+  "at": "2026-10-31T05:10:12.088994+00:00",
+  "armed": false,
+  "grant": false,
+  "reason": "HOST canonical region-lock venv interpreter absent; normal controls did not cover this branch",
+  "action": "READY withdrawn; prior smoke preserved, repair pending"
+}

@@ -1,0 +1,300 @@
+{
+  "cutoff": {
+    "child_rc": 75,
+    "raw_sha256": "0d4aec8253904788e43323a41ec00805bb2e233162de423dd8018d33f3917c3b",
+    "result_sha256": "62f894e89028dcc7102087f4077c04d2cc7154ccb538b8620ab3cabcedaad62f",
+    "run_gate_pid_birth": {
+      "birth": 154593373,
+      "pid": 80668,
+      "state": "R",
+      "uid": 1000
+    },
+    "stop_sent": {
+      "maps": [
+        "/mnt/raid0/llm/kernels/builds/gpu-20261030-729599d69-c6/bin/libggml-hip.so.0.16.0",
+        "/mnt/raid0/llm/kernels/builds/gpu-20261030-729599d69-c6/bin/libggml-hip.so.0.16.0",
+        "/mnt/raid0/llm/kernels/builds/gpu-20261030-729599d69-c6/bin/libggml-hip.so.0.16.0",
+        "/mnt/raid0/llm/kernels/builds/gpu-20261030-729599d69-c6/bin/libggml-hip.so.0.16.0"
+      ],
+      "native": {
+        "birth": 154593514,
+        "pid": 80945,
+        "state": "R",
+        "uid": 1000
+      },
+      "own_vram_bytes": 276185088,
+      "time": 1793423462.065737
+    },
+    "witness": [
+      {
+        "maps": [
+          "/mnt/raid0/llm/kernels/builds/gpu-20261030-729599d69-c6/bin/libggml-hip.so.0.16.0",
+          "/mnt/raid0/llm/kernels/builds/gpu-20261030-729599d69-c6/bin/libggml-hip.so.0.16.0",
+          "/mnt/raid0/llm/kernels/builds/gpu-20261030-729599d69-c6/bin/libggml-hip.so.0.16.0",
+          "/mnt/raid0/llm/kernels/builds/gpu-20261030-729599d69-c6/bin/libggml-hip.so.0.16.0"
+        ],
+        "native": {
+          "birth": 154593514,
+          "pid": 80945,
+          "state": "R",
+          "uid": 1000
+        },
+        "own_vram_bytes": 0,
+        "time": 1793423461.9105465
+      },
+      {
+        "maps": [
+          "/mnt/raid0/llm/kernels/builds/gpu-20261030-729599d69-c6/bin/libggml-hip.so.0.16.0",
+          "/mnt/raid0/llm/kernels/builds/gpu-20261030-729599d69-c6/bin/libggml-hip.so.0.16.0",
+          "/mnt/raid0/llm/kernels/builds/gpu-20261030-729599d69-c6/bin/libggml-hip.so.0.16.0",
+          "/mnt/raid0/llm/kernels/builds/gpu-20261030-729599d69-c6/bin/libggml-hip.so.0.16.0"
+        ],
+        "native": {
+          "birth": 154593514,
+          "pid": 80945,
+          "state": "R",
+          "uid": 1000
+        },
+        "own_vram_bytes": 0,
+        "time": 1793423461.9208941
+      },
+      {
+        "maps": [
+          "/mnt/raid0/llm/kernels/builds/gpu-20261030-729599d69-c6/bin/libggml-hip.so.0.16.0",
+          "/mnt/raid0/llm/kernels/builds/gpu-20261030-729599d69-c6/bin/libggml-hip.so.0.16.0",
+          "/mnt/raid0/llm/kernels/builds/gpu-20261030-729599d69-c6/bin/libggml-hip.so.0.16.0",
+          "/mnt/raid0/llm/kernels/builds/gpu-20261030-729599d69-c6/bin/libggml-hip.so.0.16.0"
+        ],
+        "native": {
+          "birth": 154593514,
+          "pid": 80945,
+          "state": "R",
+          "uid": 1000
+        },
+        "own_vram_bytes": 0,
+        "time": 1793423461.9311707
+      },
+      {
+        "maps": [
+          "/mnt/raid0/llm/kernels/builds/gpu-20261030-729599d69-c6/bin/libggml-hip.so.0.16.0",
+          "/mnt/raid0/llm/kernels/builds/gpu-20261030-729599d69-c6/bin/libggml-hip.so.0.16.0",
+          "/mnt/raid0/llm/kernels/builds/gpu-20261030-729599d69-c6/bin/libggml-hip.so.0.16.0",
+          "/mnt/raid0/llm/kernels/builds/gpu-20261030-729599d69-c6/bin/libggml-hip.so.0.16.0"
+        ],
+        "native": {
+          "birth": 154593514,
+          "pid": 80945,
+          "state": "R",
+          "uid": 1000
+        },
+        "own_vram_bytes": 0,
+        "time": 1793423461.9416218
+      },
+      {
+        "maps": [
+          "/mnt/raid0/llm/kernels/builds/gpu-20261030-729599d69-c6/bin/libggml-hip.so.0.16.0",
+          "/mnt/raid0/llm/kernels/builds/gpu-20261030-729599d69-c6/bin/libggml-hip.so.0.16.0",
+          "/mnt/raid0/llm/kernels/builds/gpu-20261030-729599d69-c6/bin/libggml-hip.so.0.16.0",
+          "/mnt/raid0/llm/kernels/builds/gpu-20261030-729599d69-c6/bin/libggml-hip.so.0.16.0"
+        ],
+        "native": {
+          "birth": 154593514,
+          "pid": 80945,
+          "state": "R",
+          "uid": 1000
+        },
+        "own_vram_bytes": 0,
+        "time": 1793423461.951929
+      },
+      {
+        "maps": [
+          "/mnt/raid0/llm/kernels/builds/gpu-20261030-729599d69-c6/bin/libggml-hip.so.0.16.0",
+          "/mnt/raid0/llm/kernels/builds/gpu-20261030-729599d69-c6/bin/libggml-hip.so.0.16.0",
+          "/mnt/raid0/llm/kernels/builds/gpu-20261030-729599d69-c6/bin/libggml-hip.so.0.16.0",
+          "/mnt/raid0/llm/kernels/builds/gpu-20261030-729599d69-c6/bin/libggml-hip.so.0.16.0"
+        ],
+        "native": {
+          "birth": 154593514,
+          "pid": 80945,
+          "state": "R",
+          "uid": 1000
+        },
+        "own_vram_bytes": 0,
+        "time": 1793423461.9622214
+      },
+      {
+        "maps": [
+          "/mnt/raid0/llm/kernels/builds/gpu-20261030-729599d69-c6/bin/libggml-hip.so.0.16.0",
+          "/mnt/raid0/llm/kernels/builds/gpu-20261030-729599d69-c6/bin/libggml-hip.so.0.16.0",
+          "/mnt/raid0/llm/kernels/builds/gpu-20261030-729599d69-c6/bin/libggml-hip.so.0.16.0",
+          "/mnt/raid0/llm/kernels/builds/gpu-20261030-729599d69-c6/bin/libggml-hip.so.0.16.0"
+        ],
+        "native": {
+          "birth": 154593514,
+          "pid": 80945,
+          "state": "R",
+          "uid": 1000
+        },
+        "own_vram_bytes": 0,
+        "time": 1793423461.9724996
+      },
+      {
+        "maps": [
+          "/mnt/raid0/llm/kernels/builds/gpu-20261030-729599d69-c6/bin/libggml-hip.so.0.16.0",
+          "/mnt/raid0/llm/kernels/builds/gpu-20261030-729599d69-c6/bin/libggml-hip.so.0.16.0",
+          "/mnt/raid0/llm/kernels/builds/gpu-20261030-729599d69-c6/bin/libggml-hip.so.0.16.0",
+          "/mnt/raid0/llm/kernels/builds/gpu-20261030-729599d69-c6/bin/libggml-hip.so.0.16.0"
+        ],
+        "native": {
+          "birth": 154593514,
+          "pid": 80945,
+          "state": "R",
+          "uid": 1000
+        },
+        "own_vram_bytes": 0,
+        "time": 1793423461.9827774
+      },
+      {
+        "maps": [
+          "/mnt/raid0/llm/kernels/builds/gpu-20261030-729599d69-c6/bin/libggml-hip.so.0.16.0",
+          "/mnt/raid0/llm/kernels/builds/gpu-20261030-729599d69-c6/bin/libggml-hip.so.0.16.0",
+          "/mnt/raid0/llm/kernels/builds/gpu-20261030-729599d69-c6/bin/libggml-hip.so.0.16.0",
+          "/mnt/raid0/llm/kernels/builds/gpu-20261030-729599d69-c6/bin/libggml-hip.so.0.16.0"
+        ],
+        "native": {
+          "birth": 154593514,
+          "pid": 80945,
+          "state": "R",
+          "uid": 1000
+        },
+        "own_vram_bytes": 0,
+        "time": 1793423461.993147
+      },
+      {
+        "maps": [
+          "/mnt/raid0/llm/kernels/builds/gpu-20261030-729599d69-c6/bin/libggml-hip.so.0.16.0",
+          "/mnt/raid0/llm/kernels/builds/gpu-20261030-729599d69-c6/bin/libggml-hip.so.0.16.0",
+          "/mnt/raid0/llm/kernels/builds/gpu-20261030-729599d69-c6/bin/libggml-hip.so.0.16.0",
+          "/mnt/raid0/llm/kernels/builds/gpu-20261030-729599d69-c6/bin/libggml-hip.so.0.16.0"
+        ],
+        "native": {
+          "birth": 154593514,
+          "pid": 80945,
+          "state": "R",
+          "uid": 1000
+        },
+        "own_vram_bytes": 0,
+        "time": 1793423462.0035026
+      },
+      {
+        "maps": [
+          "/mnt/raid0/llm/kernels/builds/gpu-20261030-729599d69-c6/bin/libggml-hip.so.0.16.0",
+          "/mnt/raid0/llm/kernels/builds/gpu-20261030-729599d69-c6/bin/libggml-hip.so.0.16.0",
+          "/mnt/raid0/llm/kernels/builds/gpu-20261030-729599d69-c6/bin/libggml-hip.so.0.16.0",
+          "/mnt/raid0/llm/kernels/builds/gpu-20261030-729599d69-c6/bin/libggml-hip.so.0.16.0"
+        ],
+        "native": {
+          "birth": 154593514,
+          "pid": 80945,
+          "state": "R",
+          "uid": 1000
+        },
+        "own_vram_bytes": 0,
+        "time": 1793423462.01386
+      },
+      {
+        "maps": [
+          "/mnt/raid0/llm/kernels/builds/gpu-20261030-729599d69-c6/bin/libggml-hip.so.0.16.0",
+          "/mnt/raid0/llm/kernels/builds/gpu-20261030-729599d69-c6/bin/libggml-hip.so.0.16.0",
+          "/mnt/raid0/llm/kernels/builds/gpu-20261030-729599d69-c6/bin/libggml-hip.so.0.16.0",
+          "/mnt/raid0/llm/kernels/builds/gpu-20261030-729599d69-c6/bin/libggml-hip.so.0.16.0"
+        ],
+        "native": {
+          "birth": 154593514,
+          "pid": 80945,
+          "state": "R",
+          "uid": 1000
+        },
+        "own_vram_bytes": 0,
+        "time": 1793423462.0242145
+      },
+      {
+        "maps": [
+          "/mnt/raid0/llm/kernels/builds/gpu-20261030-729599d69-c6/bin/libggml-hip.so.0.16.0",
+          "/mnt/raid0/llm/kernels/builds/gpu-20261030-729599d69-c6/bin/libggml-hip.so.0.16.0",
+          "/mnt/raid0/llm/kernels/builds/gpu-20261030-729599d69-c6/bin/libggml-hip.so.0.16.0",
+          "/mnt/raid0/llm/kernels/builds/gpu-20261030-729599d69-c6/bin/libggml-hip.so.0.16.0"
+        ],
+        "native": {
+          "birth": 154593514,
+          "pid": 80945,
+          "state": "R",
+          "uid": 1000
+        },
+        "own_vram_bytes": 0,
+        "time": 1793423462.0345771
+      },
+      {
+        "maps": [
+          "/mnt/raid0/llm/kernels/builds/gpu-20261030-729599d69-c6/bin/libggml-hip.so.0.16.0",
+          "/mnt/raid0/llm/kernels/builds/gpu-20261030-729599d69-c6/bin/libggml-hip.so.0.16.0",
+          "/mnt/raid0/llm/kernels/builds/gpu-20261030-729599d69-c6/bin/libggml-hip.so.0.16.0",
+          "/mnt/raid0/llm/kernels/builds/gpu-20261030-729599d69-c6/bin/libggml-hip.so.0.16.0"
+        ],
+        "native": {
+          "birth": 154593514,
+          "pid": 80945,
+          "state": "R",
+          "uid": 1000
+        },
+        "own_vram_bytes": 0,
+        "time": 1793423462.0449286
+      },
+      {
+        "maps": [
+          "/mnt/raid0/llm/kernels/builds/gpu-20261030-729599d69-c6/bin/libggml-hip.so.0.16.0",
+          "/mnt/raid0/llm/kernels/builds/gpu-20261030-729599d69-c6/bin/libggml-hip.so.0.16.0",
+          "/mnt/raid0/llm/kernels/builds/gpu-20261030-729599d69-c6/bin/libggml-hip.so.0.16.0",
+          "/mnt/raid0/llm/kernels/builds/gpu-20261030-729599d69-c6/bin/libggml-hip.so.0.16.0"
+        ],
+        "native": {
+          "birth": 154593514,
+          "pid": 80945,
+          "state": "R",
+          "uid": 1000
+        },
+        "own_vram_bytes": 65740800,
+        "time": 1793423462.0553029
+      },
+      {
+        "maps": [
+          "/mnt/raid0/llm/kernels/builds/gpu-20261030-729599d69-c6/bin/libggml-hip.so.0.16.0",
+          "/mnt/raid0/llm/kernels/builds/gpu-20261030-729599d69-c6/bin/libggml-hip.so.0.16.0",
+          "/mnt/raid0/llm/kernels/builds/gpu-20261030-729599d69-c6/bin/libggml-hip.so.0.16.0",
+          "/mnt/raid0/llm/kernels/builds/gpu-20261030-729599d69-c6/bin/libggml-hip.so.0.16.0"
+        ],
+        "native": {
+          "birth": 154593514,
+          "pid": 80945,
+          "state": "R",
+          "uid": 1000
+        },
+        "own_vram_bytes": 276185088,
+        "time": 1793423462.065737
+      }
+    ]
+  },
+  "full_gak_pass": null,
+  "gpu_execution": true,
+  "normal": {
+    "kfd_reads": 6,
+    "native_cases": 2,
+    "native_sha256": "500341200941edc0d17c06bbe8ed7ae58c4774120a250d0f152070bcde45ea4b",
+    "own_peak_vram_bytes": 339873792,
+    "qualification_sha256": "8f992ab5acc7c2fe15d02984d45cf170b364b702e899359e714c241e4f3736b3",
+    "result_sha256": "30d0729ccebe6d7c37abb4ca0f810d9e9064e7fde7756f67af0f444ff708cec8"
+  },
+  "pre_sha256": "797c91d35053af3a667890ae8c264b5e033e0d7918874451132799bd098e0509",
+  "schema": "c6.gpu_diag_result.v1",
+  "status": "COMPLETE_QUALIFICATION_ONLY"
+}

@@ -1,0 +1,9 @@
+# Original §9.3 serial fallback
+
+The full original gate completed rc0 with 24/24 A1/A2 token mismatches; its C3-filed verdict remains INCONCLUSIVE_SERIAL_REQUIRED. Its RESULT.json and DEBUG-RESULT.json are unchanged in the parent gpu/out directory, with canonical filing on root 6885f5096.
+
+This separate diagnostic runs the original first eight prompts, one request at a time, max_tokens256, in order SA1 SA2 SB SO. Server np4, context393216, DFlash2, graphs, models, sampling, argv and image pins remain the original shape. The excluded warmup is one 64-token request, also one at a time; the previously staged serial code accidentally sent four warmups although its own completion checker required one. No serial throughput threshold or speed decision is added. C5 is the historical registered baseline, not a moving champion alias; exact whole-candidate images and source pins remain mandatory.
+
+Serial A/A and B/O identity plus draft acceptance follow the original rule. An inconclusive serial control remains inconclusive. This tier never authorizes SHIP or changes the original denominator, exclusions, prompts, thresholds, or full-gate verdict. All results are isolated here. Normal smoke performs the first whole-candidate serial counted request; cutoff interrupts the actual SA1 serial job during its first counted request and requires rc75, partial=true, and exact own-PID/KFD drain. A private actual public-poller fixture proves enrollment before any grant, forwarded startup to keeper and scratch logs, the keeper READY→ARMED move, current validator/grant_ok and rejection of the now-dead captured poller. The fixture never edits shared FILLERS or grants.
+
+Feasibility is estimated initially (32 requests×30 s + 4 loads/drains×120 s =1440 s before warmups); the detached qualifier replaces it with observed first-wave/load rates and refuses publication if its conservative full estimate exceeds the 2700 s cap. No native serial throughput has yet been measured.

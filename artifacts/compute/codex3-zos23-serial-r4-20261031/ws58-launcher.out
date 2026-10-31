@@ -1,0 +1,17 @@
+SERIAL-ENROLLMENT PASS source + images + native collector imports; grant required before model
+2026-10-31T03:43:25Z [codex-ni-gpu-zos23-c5-serial-r4-20261031] launcher up pid=3134665 class=gpu poll=45s grants=/mnt/raid0/llm/tmp/compute-flags/grants stop=/mnt/raid0/llm/tmp/codex-ni-gpu-zos-build-prep-20261031/successor/gpu/serial-tier/STOP minwin=1800s ports=18398
+SERIAL-ENROLLMENT PASS source + images + native collector imports; grant required before model
+2026-10-31T03:45:05Z [codex-ni-gpu-zos23-c5-serial-r4-20261031] launcher up pid=3170714 class=gpu poll=45s grants=/mnt/raid0/llm/tmp/compute-flags/grants stop=/mnt/raid0/llm/tmp/codex-ni-gpu-zos-build-prep-20261031/successor/gpu/serial-tier/STOP minwin=1800s ports=18398
+SERIAL-ENROLLMENT PASS source + images + native collector imports; grant required before model
+2026-10-31T05:10:05Z [codex-ni-gpu-zos23-c5-serial-r4-20261031] launcher up pid=65130 class=gpu poll=45s grants=/mnt/raid0/llm/tmp/compute-flags/grants stop=/mnt/raid0/llm/tmp/codex-ni-gpu-zos-build-prep-20261031/successor/gpu/serial-tier/STOP minwin=1800s ports=18398
+2026-10-31T05:11:35Z [codex-ni-gpu-zos23-c5-serial-r4-20261031] diagnostic admission: legacy T1 proof receipt not required
+2026-10-31T05:11:35Z [codex-ni-gpu-zos23-c5-serial-r4-20261031] START regions=mi210_0,184-191 cpus=184-191 threads=8 gpu=1 end=2026-10-31T05:56Z
+[region-lock] acquiring gpu-quiet exclusive as role='bench' (timeout_s=2665.0) …
+[region-lock] held gpu-quiet exclusive + regions [] after 0.0s wait; running: /bin/bash /mnt/raid0/llm/tmp/codex-ni-gpu-zos-build-prep-20261031/successor/helper/filler_run13.sh --inner --id codex-ni-gpu-zos23-c5-serial-r4-20261031 --class gpu --cmd /bin/bash /mnt/raid0/llm/tmp/codex-ni-gpu-zos-build-prep-20261031/successor/gpu/serial-tier/launch.sh --job --min-window 1800 --stop /mnt/raid0/llm/tmp/codex-ni-gpu-zos-build-prep-20261031/successor/gpu/serial-tier/STOP --port 18398 --workdir /mnt/raid0/llm/tmp/codex-ni-gpu-zos-build-prep-20261031/successor/gpu/serial-tier --gpu-threads 184-191
+2026-10-31T05:11:35Z mi210_0 flock held
+DRYRUN_RESOURCES {"affinity": [184, 185, 186, 187, 188, 189, 190, 191], "cgroup": "0::/", "cgroup_memory_max": "max", "process_limit_gib": 64.0, "reserved_ram_gib": 64.0, "rlimits": {"AS": [-1, -1], "DATA": [-1, -1], "NOFILE": [524288, 524288], "RSS": [-1, -1]}}
+RESOURCE_PASS id=codex-ni-gpu-zos23-c5-serial-r4-20261031 scope=normal-grant
+PASS
+job rc=0
+2026-10-31T05:16:54Z [codex-ni-gpu-zos23-c5-serial-r4-20261031] ended rc=0 reason=complete (grant deleted)
+2026-10-31T05:16:54Z [codex-ni-gpu-zos23-c5-serial-r4-20261031] ALL DONE: wrote /mnt/raid0/llm/tmp/compute-flags/grants/codex-ni-gpu-zos23-c5-serial-r4-20261031.complete, row marked COMPLETE; exiting for good

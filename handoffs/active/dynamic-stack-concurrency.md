@@ -362,3 +362,7 @@ the completions route, or any non-OpenAI ingress.
 ### 2026-10-31 #25592 replay preparation
 
 Private multi-turn replay is READY (publication manifest SHA-256 `40370fc8a7f084795cf9f8efa4fb5a5bac2214a5f02f08875b1d4e630c4c790e`). Five actual three-turn sequences are selected and seven predeclared per-store slots remain UNKNOWN. The real launcher public 0.6B control does not exercise the full model, MTP or long contexts; no full-run, rate or gate conclusion follows. The capsule retains only hashes and count metadata for private sessions. [Plan and controls](../../artifacts/compute/codex3-prep-and-kpf-audit-20261031-0443/). [belief: cc]
+
+### 2026-10-31 #25592 HOST lock supersession
+
+At 05:17 the owner withdrew the unarmed `codex3-dsc-25592-replay-20261031` READY after host preflight found its canonical region-lock interpreter absent. Earlier public controls remain historical, but did not qualify the real host branch; no grant or target exposure occurred. A corrected successor is in preparation; five selected sequences and seven unknown slots do not constitute a result. [Retraction receipt](../../artifacts/compute/codex3-fu03-r3-kpf-gpu-draft-20261031/host-lock-retractions.json). [belief: cc]

@@ -562,3 +562,11 @@ Trigger-gated (no checkbox until the trigger fires):
 [Original native audit references](../../artifacts/compute/results-filing-20261030-0320.json).
 
 - **FAILED-RUN `codex3-hil15b-heavy-r8-split-20261030` (owner codex3):** ended 12:36:59Z rc1; engine raised `checkpoint_controller.Refusal: native entry failed; evidence retained` after canary unit 05 returned native rc75/partial (cleanup verified, admission raid_free 161.35 GB at the floor). class=disk-floor/harness (native partial was treated as refusal by entry_rc check; `results-remaining` never created). owner action: codex3 reconcile the entry_rc handling of partial canary, then relaunch; original-denominator bounds (39 accepted; unknown 11/0, 12/2, 16/1, 19/0) unchanged, no verdict. [no-belief: failed run]
+
+### 2026-10-31 CAFE-1 host-qualified successor
+
+The earlier unarmed `codex3-cafe1-pmin-20261031` READY was withdrawn at 05:10: its host region-lock preflight found the orchestrator venv Python absent; the earlier public control did not cover that real host lock branch. Its old model control remains historical. Corrected hostfix READY manifest SHA-256 `7c120e2d1891db71b4f069c92a2a737ac9dd6f30e436610a4b7e377cb90e39b9` includes actual host startup and lock proof plus public Qwen 0.6B normal control (rc0, 31.72 s) and STOP (rc75, drained); `spec-type none` exercises neither MTP nor the 35B full target. The original five-block decision plan, full target feasibility and CAFE scientific gate remain unrun. [Withdrawal and corrected capsule](../../artifacts/compute/codex3-fu03-r3-kpf-gpu-draft-20261031/cafe-hostfix/). [belief: cc]
+
+### 2026-10-31 SW-2 HOST lock supersession
+
+At 05:17 the owner withdrew the unarmed `codex3-sw2-v9-clamp-20261031` READY after host preflight found its canonical region-lock interpreter absent. Earlier small-model controls remain historical but do not qualify that host branch; no grant or target exposure occurred. A corrected successor is in preparation; no current-production, v10 or SW-2 conclusion follows. [Retraction receipt](../../artifacts/compute/codex3-fu03-r3-kpf-gpu-draft-20261031/host-lock-retractions.json). [belief: cc]
