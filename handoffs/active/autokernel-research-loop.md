@@ -5454,8 +5454,8 @@ because the best-CONSTRUCTED ablation in the family now exists and it **cuts aga
       hardening (RVP-C2-8/C2-9) sits on this path and "gated on the ablation" partly means "gated on the
       substrate" — if that stretches past a reasonable horizon, the correct escalation is a decision
       package on interim substrate, NOT a quiet start on the memory build.
-- [ ] **AK-PM-12 — Adopt the execution-gated admission rule as the WRITE-SIDE hook, now, independent of the
-      read side.** `intake-1248#record` §3.5: a candidate enters the library only if re-running the task with
+- [x] **AK-PM-12 — Adopt the execution-gated admission rule as the WRITE-SIDE hook, now, independent of the read side.** ✅ 2026-10-31 RESEARCH `93c217ec5d743da8f81b430630a03ad3638d106a`; [HOST tests](../../artifacts/compute/codex3-ak-pm12-20261031/HOST-TEST.log). [belief: cc]
+      `intake-1248#record` §3.5: a candidate enters the library only if re-running the task with
       it injected yields a measured **>=1.2x** first-turn improvement (`r_verify >= max(beta, alpha*r_1)`,
       alpha=beta=1.2). Train-free, model-agnostic, no RL. Pair it with the two things every paper in the
       family lacks — a **commit binding** and a **`reopen_when` predicate**. Per our own doctrine the write
@@ -5465,6 +5465,7 @@ because the best-CONSTRUCTED ablation in the family now exists and it **cuts aga
       `verify_speedup` **max of 297.3x** and ~35 skill names that are shortcut/elision-flavoured
       (`semantic_shortcut_before_kernelization` at 43.7x). A 297x "verified speedup" on a memory-bound op is
       work elision or a timing artifact, not a kernel optimization.
+      - Prospective native write hook captures bound execution and revalidates receipts at append; missing cap is UNKNOWN. The 108 passing tests use fixture programs and temporary Git repositories. The future evaluator, protocol and upper cap remain explicit configuration; no scientific admission, performance claim, retrieval activation or planning canary is asserted. [belief: cc]
 - [ ] **AK-PM-13 — Bank a SECOND independent isolated-to-end-to-end attenuation datum in §9.4.** The reviewed KForge v1 paper (`intake-1087#06`; `dive-1087/source.txt:L88-L106,L118`) reports isolated MoE-finalize speedups of 1.06x–1.43x across batch sizes and a separate +2.12% whole-workload throughput change against TensorRT-LLM, under a pinned 1500 MHz clock with the autotuner disabled. These use different operations, denominators, and baselines, so they do not establish a universal ~100x attenuation factor. Preserve the existing second-datum task and its zero-compute primary-PR reads: sglang#20778, lmdeploy#4345 and DLBlas#102. The historical notes for `intake-1250#record` recorded SGLang 4.78x isolated versus 0.28%–0.87% end-to-end and LMDeploy 1.36x versus 2.03%–3.00%; preserve these figures only as dated, unverified reported history, with no current scientific warrant and no re-verification by this KForge read. Record each operation, denominator and baseline separately; do not turn either source into a universal attenuation factor.
 - [ ] **AK-PM-14 — Record the AutoKernel HOMONYM and STRIKE the premise that we cite a name without a
       source.** The 2026-08-21 Stage-3 plan asserted that our handoff references an "AutoKernel G15" selector

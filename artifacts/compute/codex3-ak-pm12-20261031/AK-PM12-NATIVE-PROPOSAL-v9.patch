@@ -1,0 +1,664 @@
+--- a/scripts/kernel_rnd/autokernel/journal.py
++++ b/scripts/kernel_rnd/autokernel/journal.py
+@@ -335,7 +335,10 @@
+     "CONSTRAINT_COMPILED", "SEED_COMPILED", "SEED_BLOCKED", "SEED_REOPENED",
+ })
+ 
++KIND_LESSON_ADMISSION_EVALUATED = "LESSON_ADMISSION_EVALUATED"
++
+ NATIVE_KINDS = frozenset({
++    KIND_LESSON_ADMISSION_EVALUATED,
+     KIND_SUPERSEDED, KIND_RETRIEVAL_SUPERSEDED, KIND_TOMBSTONE,
+     KIND_TORN_APPEND_DISCARDED, KIND_OPERATOR_CONTROL_ACK, KIND_VIEW_REBASED,
+     KIND_PROPOSAL_SKIPPED, KIND_STOP_STATE, KIND_PREFLIGHT_ATTESTATION,
+@@ -1157,6 +1160,9 @@
+         raise RetrievalCitationError(
+             f"cited event id(s) do not exist in this journal: {unknown}"
+         )
++    admission_citations = sorted(eid for eid in cited_set if by_id[eid].kind == KIND_LESSON_ADMISSION_EVALUATED)
++    if admission_citations:
++        raise RetrievalCitationError("lesson admission is write-only pending AK-PM-11")
+     withdrawn = sorted(cited_set & withheld)
+     if withdrawn:
+         raise RetrievalCitationError(
+@@ -1166,7 +1172,7 @@
+ 
+     out: list = []
+     for entry in entries:
+-        if entry.event_id in withheld:
++        if entry.event_id in withheld or entry.kind == KIND_LESSON_ADMISSION_EVALUATED:
+             continue
+         payload = dict(entry.payload)
+         if entry.event_id not in cited_set:
+@@ -1191,7 +1197,13 @@
+     out: list = []
+     if not isinstance(payload, Mapping):
+         return ["payload: required mapping"]
+-    if kind == KIND_A2_RUNTIME_EXECUTION:
++    if kind == KIND_LESSON_ADMISSION_EVALUATED:
++        if __package__:
++            from .lesson_admission import violations
++        else:
++            from autokernel.lesson_admission import violations
++        out.extend(violations(payload))
++    elif kind == KIND_A2_RUNTIME_EXECUTION:
+         if __package__:
+             from .loop.a2_execution_state import A2ExecutionStateRefused, validate_transition
+         else:
+@@ -2756,6 +2768,16 @@
+                     f"{kind} payload is invalid: " + "; ".join(violations)
+                 )
+ 
++        if kind == KIND_LESSON_ADMISSION_EVALUATED and payload.get("verification") is not None:
++            if __package__:
++                from .lesson_native import verify_artifacts
++            else:
++                from autokernel.lesson_native import verify_artifacts
++            try:
++                verify_artifacts(payload)
++            except (OSError, ValueError, KeyError, TypeError) as exc:
++                raise ValueError("lesson native artifact verification failed") from exc
++
+         effective_campaign = campaign_id if campaign_id is not None else self.campaign_id
+         payload_campaign = payload.get("campaign_id")
+         if isinstance(payload_campaign, str):
+--- /dev/null
++++ b/scripts/kernel_rnd/autokernel/lesson_admission.py
+@@ -0,0 +1,109 @@
++"""Execution-gated lesson admission; the caller supplies the native rerun.
++
++An ADMITTED receipt is only an admission to the prospective lesson library.
++It is not a measurement warrant or a retrieval/planning canary.
++"""
++from __future__ import annotations
++
++import math
++import re
++from collections.abc import Mapping
++
++KIND = "LESSON_ADMISSION_EVALUATED"
++_KEYS = frozenset({"schema", "task_id", "candidate_id", "commit", "lesson", "reopen_when",
++                   "r1", "upper_cap", "verification", "decision", "reason", "attempt_ref"})
++
++
++def _number(value):
++    if isinstance(value, bool) or not isinstance(value, (int, float)):
++        return False
++    try:
++        return math.isfinite(value) and value > 0
++    except OverflowError:
++        return False
++
++
++def violations(p):
++    if not isinstance(p, Mapping) or set(p) != _KEYS:
++        return ["invalid receipt fields"]
++    errors = []
++    if p["schema"] != "autokernel.lesson_admission.v1":
++        errors.append("invalid schema")
++    for name in ("task_id", "candidate_id", "lesson", "reopen_when"):
++        if not isinstance(p[name], str) or not p[name].strip():
++            errors.append(f"{name} is required")
++    if not isinstance(p["commit"], str) or not re.fullmatch(r"[0-9a-f]{40}", p["commit"]):
++        errors.append("commit must be a full lowercase Git SHA")
++    if not _number(p["r1"]) and not (p["r1"] is None and p["verification"] is None):
++        errors.append("r1 must be finite and positive, or null when verification is unavailable")
++    if p["attempt_ref"] is not None and (not isinstance(p["attempt_ref"], str) or not re.fullmatch(r"/[^#]+#[0-9a-f]{64}", p["attempt_ref"])):
++        errors.append("invalid attempt reference")
++    cap = p["upper_cap"]
++    if cap is not None and not _number(cap):
++        errors.append("upper_cap must be finite and positive or null")
++    verify = p["verification"]
++    if verify is None:
++        expected = ("UNKNOWN", "cap_missing" if cap is None else "verification_unavailable")
++    elif not isinstance(verify, Mapping) or set(verify) != {"task_id", "commit", "r_verify", "run_ref"}:
++        errors.append("invalid verification fields")
++        expected = None
++    elif (verify["task_id"] != p["task_id"] or verify["commit"] != p["commit"]
++          or not isinstance(verify["run_ref"], str) or not re.fullmatch(r'/[^#]+#manifest=[0-9a-f]{64};baseline=[0-9a-f]{64};verification=[0-9a-f]{64}', verify["run_ref"])
++          or not _number(verify["r_verify"])):
++        errors.append("verification must bind the same task and commit with a run reference and finite positive result")
++        expected = None
++    elif cap is None:
++        errors.append("verification cannot run without a configured cap")
++        expected = None
++    elif _number(p["r1"]) and _number(cap):
++        r = verify["r_verify"]
++        if r > cap or p["r1"] > cap:
++            expected = ("REJECTED", "upper_cap_exceeded")
++        elif r < max(1.2, 1.2 * p["r1"]):
++            expected = ("REJECTED", "verification_below_threshold")
++        else:
++            expected = ("ADMITTED", "execution_verified")
++    else:
++        expected = None
++    if expected is not None and (p["decision"], p["reason"]) != expected:
++        errors.append("decision does not match evidence and configured cap")
++    return errors
++
++
++def _evaluate_and_record(journal, *, task_id, candidate_id, commit, lesson, reopen_when,
++                        r1, upper_cap, rerun, attempt_ref=None):
++    """Call the native injected rerun on this task, then fsync its decision.
++
++    The caller owns the rerun implementation and immutable run reference. No
++    rerun occurs if the explicit upper cap is missing or the input is invalid.
++    """
++    p = {"schema": "autokernel.lesson_admission.v1", "task_id": task_id,
++         "candidate_id": candidate_id, "commit": commit, "lesson": lesson,
++         "reopen_when": reopen_when, "r1": r1, "upper_cap": upper_cap,
++         "verification": None, "attempt_ref": None, "decision": "UNKNOWN",
++         "reason": "cap_missing" if upper_cap is None else "verification_unavailable"}
++    issues = violations(p)
++    if issues:
++        raise ValueError("; ".join(issues))
++    if upper_cap is not None:
++        try:
++            result = rerun(task_id=task_id, commit=commit, lesson=lesson)
++        except Exception:  # noqa: BLE001 - a failed native execution must remain UNKNOWN
++            result = None
++        if result is not None:
++            p["verification"] = result
++            if isinstance(result, Mapping) and _number(result.get("r_verify")):
++                if result["r_verify"] > upper_cap or r1 > upper_cap:
++                    p["decision"], p["reason"] = "REJECTED", "upper_cap_exceeded"
++                elif result["r_verify"] < max(1.2, 1.2 * r1):
++                    p["decision"], p["reason"] = "REJECTED", "verification_below_threshold"
++                else:
++                    p["decision"], p["reason"] = "ADMITTED", "execution_verified"
++            issues = violations(p)
++            if issues:
++                # Invalid or mismatched native evidence never enters as verified.
++                p["verification"] = None
++                p["decision"], p["reason"] = "UNKNOWN", "verification_unavailable"
++    if p["decision"] == "UNKNOWN" and attempt_ref is not None:
++        p["attempt_ref"] = attempt_ref()
++    return journal.append(KIND, p)
+--- /dev/null
++++ b/scripts/kernel_rnd/autokernel/lesson_native.py
+@@ -0,0 +1,253 @@
++"""Prospective first-turn lesson verification; no library retrieval or model launch policy."""
++from __future__ import annotations
++
++import hashlib
++import json
++import os
++import subprocess
++from pathlib import Path
++
++from .controller.loop_experiment_runner import _run_process
++from .lesson_admission import _evaluate_and_record, _number, violations
++
++
++def _sha(data):
++    return hashlib.sha256(data).hexdigest()
++
++
++def _write(path, data):
++    with path.open('xb') as handle:
++        handle.write(data)
++        handle.flush()
++        os.fsync(handle.fileno())
++
++
++def _source_proof(source_repo, commit, code_artifacts):
++    repo = Path(source_repo)
++    if not repo.is_absolute() or not repo.is_dir():
++        raise ValueError('source_repo must be an absolute existing directory')
++    def git(*args):
++        return subprocess.run(['git', '-C', str(repo), *args], check=True,
++                              capture_output=True, text=True).stdout
++    head = git('rev-parse', '--verify', 'HEAD').strip()
++    status = git('status', '--porcelain=v1', '--untracked-files=no')
++    artifacts = {}
++    for name, expected in code_artifacts.items():
++        path = Path(name)
++        if not path.is_absolute() or not path.is_file() or path.is_symlink():
++            raise ValueError('evaluator code path must be an absolute regular file')
++        actual = _sha(path.read_bytes())
++        if actual != expected:
++            raise ValueError('evaluator code digest mismatch')
++        artifacts[name] = actual
++    if head != commit or status:
++        raise ValueError(f'source mismatch: observed_head={head}, tracked_clean={not bool(status)}')
++    return {'source_repo': str(repo), 'head': head, 'tracked_clean': True,
++            'code_artifacts': artifacts}
++
++
++def _capture(root, name, argv, prompt, timeout, env, source_repo, commit, code_artifacts):
++    """Capture the existing process executor and the exact first-turn input."""
++    folder = root / name
++    folder.mkdir()
++    prompt_bytes = prompt.encode('utf-8')
++    _write(folder / 'prompt.txt', prompt_bytes)
++    exe = Path(argv[0])
++    exe_sha = _sha(exe.read_bytes())
++    try:
++        source_before = _source_proof(source_repo, commit, code_artifacts)
++    except Exception as exc:
++        _write(folder / 'source-failure.txt', str(exc).encode())
++        raise
++    result = _run_process(argv, folder, env, prompt, timeout, None)
++    _write(folder / 'stdout.txt', result.stdout.encode('utf-8'))
++    _write(folder / 'stderr.txt', result.stderr.encode('utf-8'))
++    try:
++        source_after = _source_proof(source_repo, commit, code_artifacts)
++    except Exception as exc:
++        _write(folder / 'source-failure.txt', str(exc).encode())
++        raise
++    if exe_sha != _sha(exe.read_bytes()):
++        raise ValueError('executable changed during execution')
++    meta = {'argv': list(result.argv), 'executable_sha256': exe_sha,
++            'prompt_sha256': _sha(prompt_bytes),
++            'stdout_sha256': _sha(result.stdout.encode('utf-8')),
++            'stderr_sha256': _sha(result.stderr.encode('utf-8')),
++            'started_at': result.started_at, 'finished_at': result.finished_at,
++            'elapsed_wall_seconds': result.elapsed_wall_seconds,
++            'source_before': source_before, 'source_after': source_after,
++            'returncode': result.returncode, 'timed_out': result.timed_out}
++    _write(folder / 'capture.json', json.dumps(meta, sort_keys=True).encode())
++    if result.returncode != 0 or result.timed_out:
++        raise ValueError('native first-turn execution failed')
++    return folder
++
++
++def _read_capture(folder, expected_prompt, expected_argv, expected_exe_sha, protocol_id, source_repo, commit, code_artifacts):
++    meta = json.loads((folder / 'capture.json').read_text())
++    prompt = (folder / 'prompt.txt').read_bytes()
++    stdout = (folder / 'stdout.txt').read_bytes()
++    stderr = (folder / 'stderr.txt').read_bytes()
++    if (meta['argv'] != list(expected_argv) or meta['executable_sha256'] != expected_exe_sha
++            or meta['returncode'] != 0 or meta['timed_out'] is not False
++            or meta['source_before'] != {'source_repo': source_repo, 'head': commit, 'tracked_clean': True, 'code_artifacts': code_artifacts}
++            or meta['source_after'] != meta['source_before']
++            or prompt != expected_prompt.encode('utf-8')
++            or meta['prompt_sha256'] != _sha(prompt) or meta['stdout_sha256'] != _sha(stdout)
++            or meta['stderr_sha256'] != _sha(stderr)):
++        raise ValueError('native capture binding mismatch')
++    result = json.loads(stdout)
++    if (not isinstance(result, dict)
++            or set(result) != {'baseline_ns', 'candidate_ns', 'correctness', 'protocol_id'}
++            or result['protocol_id'] != protocol_id
++            or result['correctness'] is not True
++            or not _number(result['baseline_ns']) or not _number(result['candidate_ns'])):
++        raise ValueError('native output must contain positive raw durations and correctness=true')
++    speedup = result['baseline_ns'] / result['candidate_ns']
++    if not _number(speedup):
++        raise ValueError('native ratio is non-finite or non-positive')
++    return speedup
++
++
++def produce(journal, *, artifact_root, task_id, task_prompt, candidate_id, commit,
++            lesson, reopen_when, upper_cap, argv, timeout, evaluator_sha256, protocol_id, source_repo=None, code_artifacts=None, environment=None):
++    """Execute baseline and injected same-task first turns and append the receipt.
++
++    argv names the native task execution entry. Its stdout contract is exactly
++    {"baseline_ns": number, "candidate_ns": number, "correctness": true,
++     "protocol_id": selected protocol}.
++    The caller must bind a trustworthy native evaluator; this adapter derives
++    the ratio from its captured raw timings and does not validate its internals.
++    Caller/scheduler owns resource admission.
++    No subprocess is started if cap is absent. The task and lesson are captured
++    before execution; no earlier, unbound result is promoted into this receipt.
++    """
++    preliminary = {'schema': 'autokernel.lesson_admission.v1', 'task_id': task_id,
++        'candidate_id': candidate_id, 'commit': commit, 'lesson': lesson,
++        'reopen_when': reopen_when, 'r1': None, 'upper_cap': upper_cap,
++        'verification': None, 'attempt_ref': None, 'decision': 'UNKNOWN',
++        'reason': 'cap_missing' if upper_cap is None else 'verification_unavailable'}
++    issues = violations(preliminary)
++    if issues:
++        raise ValueError('; '.join(issues))
++    if upper_cap is None:
++        return _evaluate_and_record(journal, task_id=task_id, candidate_id=candidate_id,
++            commit=commit, lesson=lesson, reopen_when=reopen_when, r1=None,
++            upper_cap=None, rerun=lambda **_: None)
++    if not _number(upper_cap):
++        raise ValueError('explicit finite positive upper cap required')
++    if not task_prompt or not lesson or not isinstance(argv, (list, tuple)) or not argv:
++        raise ValueError('task prompt, lesson, and execution argv are required')
++    if not Path(argv[0]).is_absolute():
++        raise ValueError('execution entry must be an absolute path')
++    if not isinstance(source_repo, str) or not isinstance(code_artifacts, dict):
++        raise TypeError('source_repo and evaluator code artifact digest mapping are required')
++    executable_name = Path(argv[0]).name.lower()
++    interpreters = ('python', 'pypy', 'bash', 'sh', 'node', 'perl', 'ruby')
++    if executable_name in {'env', 'timeout', 'stdbuf', 'setsid'}:
++        raise ValueError('ambiguous execution wrapper is not supported')
++    if executable_name.startswith(interpreters) and (len(argv) < 2 or argv[1] not in code_artifacts):
++        raise ValueError('interpreter commands require an explicitly pinned entry script as argv[1]')
++    root = Path(artifact_root)
++    if not root.is_absolute():
++        raise ValueError('artifact root must be absolute')
++    root.mkdir(parents=False, exist_ok=False)
++    baseline_prompt = task_prompt
++    injected_prompt = 'LESSON (injected before the first turn):\n' + lesson + '\n\nTASK:\n' + task_prompt
++    env = dict(os.environ if environment is None else environment)
++    executable_sha = _sha(Path(argv[0]).read_bytes())
++    if not isinstance(protocol_id, str) or not protocol_id.strip():
++        raise ValueError('non-empty protocol is required')
++    manifest = {'task_id': task_id, 'task_prompt': task_prompt, 'candidate_id': candidate_id,
++                'commit': commit, 'lesson': lesson, 'reopen_when': reopen_when,
++                'upper_cap': upper_cap, 'argv': list(argv), 'executable_sha256': executable_sha, 'expected_evaluator_sha256': evaluator_sha256, 'protocol_id': protocol_id,
++                'environment_sha256': _sha(json.dumps(env, sort_keys=True).encode()),
++                'source_repo': source_repo, 'code_artifacts': code_artifacts}
++    manifest_bytes = json.dumps(manifest, sort_keys=True).encode()
++    _write(root / 'manifest.json', manifest_bytes)
++    def seal_attempt():
++        entries = {}
++        for part in ('manifest.json', 'baseline/prompt.txt', 'baseline/stdout.txt',
++                     'baseline/stderr.txt', 'baseline/capture.json', 'baseline/source-failure.txt', 'verification/prompt.txt',
++                     'verification/stdout.txt', 'verification/stderr.txt', 'verification/capture.json', 'verification/source-failure.txt'):
++            path = root / part
++            if path.is_file() and not path.is_symlink():
++                entries[part] = _sha(path.read_bytes())
++        raw = json.dumps(entries, sort_keys=True).encode()
++        target = root / 'attempt.json'
++        _write(target, raw)
++        return f'{target}#{_sha(raw)}'
++    try:
++        if executable_sha != evaluator_sha256:
++            raise ValueError('pinned evaluator SHA mismatch')
++        baseline = _capture(root, 'baseline', argv, baseline_prompt, timeout, env, source_repo, commit, code_artifacts)
++        r1 = _read_capture(baseline, baseline_prompt, argv, executable_sha, protocol_id, source_repo, commit, code_artifacts)
++    except Exception:  # noqa: BLE001 - a failed native execution must remain UNKNOWN
++        return _evaluate_and_record(journal, task_id=task_id, candidate_id=candidate_id,
++            commit=commit, lesson=lesson, reopen_when=reopen_when, r1=None,
++            upper_cap=upper_cap, rerun=lambda **_: None, attempt_ref=seal_attempt)
++    def rerun(**kw):
++        if kw != {'task_id': task_id, 'commit': commit, 'lesson': lesson}:
++            raise ValueError('requested binding differs')
++        verify = _capture(root, 'verification', argv, injected_prompt, timeout, env, source_repo, commit, code_artifacts)
++        result = _read_capture(verify, injected_prompt, argv, executable_sha, protocol_id, source_repo, commit, code_artifacts)
++        if _read_capture(baseline, baseline_prompt, argv, executable_sha, protocol_id, source_repo, commit, code_artifacts) != r1:
++            raise ValueError('baseline changed during verification')
++        if (root / 'manifest.json').read_bytes() != manifest_bytes:
++            raise ValueError('manifest changed during verification')
++        baseline_hash = _sha((baseline / 'capture.json').read_bytes())
++        verify_hash = _sha((verify / 'capture.json').read_bytes())
++        return {'task_id': task_id, 'commit': commit, 'r_verify': result,
++                'run_ref': f'{root}#manifest={_sha(manifest_bytes)};baseline={baseline_hash};verification={verify_hash}'}
++    return _evaluate_and_record(journal, task_id=task_id, candidate_id=candidate_id,
++        commit=commit, lesson=lesson, reopen_when=reopen_when, r1=r1,
++        upper_cap=upper_cap, rerun=rerun, attempt_ref=seal_attempt)
++
++
++def verify_artifacts(payload):
++    """Reopen bound native bytes and rederive the recorded first-turn values."""
++    verification = payload['verification']
++    if not isinstance(verification, dict):
++        raise TypeError('no native verification to check')
++    path, fragment = verification['run_ref'].rsplit('#', 1)
++    pairs = dict(part.split('=', 1) for part in fragment.split(';'))
++    if set(pairs) != {'manifest', 'baseline', 'verification'}:
++        raise ValueError('invalid native reference')
++    root = Path(path)
++    manifest_raw = (root / 'manifest.json').read_bytes()
++    baseline_raw = (root / 'baseline/capture.json').read_bytes()
++    verify_raw = (root / 'verification/capture.json').read_bytes()
++    if any(_sha(data) != pairs[key] for key, data in (
++            ('manifest', manifest_raw), ('baseline', baseline_raw), ('verification', verify_raw))):
++        raise ValueError('native capture digest mismatch')
++    m = json.loads(manifest_raw)
++    for key in ('task_id', 'candidate_id', 'commit', 'lesson', 'reopen_when', 'upper_cap'):
++        if m[key] != payload[key]:
++            raise ValueError('native capture and journal binding mismatch')
++    if m['executable_sha256'] != m['expected_evaluator_sha256']:
++        raise ValueError('captured evaluator differs from configured pin')
++    argv = m['argv']
++    baseline = _read_capture(root / 'baseline', m['task_prompt'], argv, m['executable_sha256'], m['protocol_id'], m['source_repo'], m['commit'], m['code_artifacts'])
++    prompt = 'LESSON (injected before the first turn):\n' + m['lesson'] + '\n\nTASK:\n' + m['task_prompt']
++    actual = _read_capture(root / 'verification', prompt, argv, m['executable_sha256'], m['protocol_id'], m['source_repo'], m['commit'], m['code_artifacts'])
++    if baseline != payload['r1'] or actual != verification['r_verify']:
++        raise ValueError('native values differ from journal')
++    return True
++
++
++def main():
++    import argparse
++
++    from .journal import Journal
++    parser = argparse.ArgumentParser(description=__doc__)
++    parser.add_argument('--config', required=True, help='JSON with producer arguments')
++    parser.add_argument('--journal', required=True, help='existing initialized journal root')
++    args = parser.parse_args()
++    config = json.loads(Path(args.config).read_text())
++    event = produce(Journal(args.journal), **config)
++    print(json.dumps({'event_id': event.event_id, 'decision': event.payload['decision'],
++                      'reason': event.payload['reason']}))
++
++
++if __name__ == '__main__':
++    main()
+--- /dev/null
++++ b/scripts/kernel_rnd/autokernel/test_lesson_admission.py
+@@ -0,0 +1,74 @@
++import tempfile
++import unittest
++from unittest.mock import patch
++
++from autokernel.journal import Journal, RetrievalCitationError
++from autokernel.lesson_admission import KIND, _evaluate_and_record
++
++
++class AdmissionTest(unittest.TestCase):
++    def setUp(self):
++        self.tmp = tempfile.TemporaryDirectory()
++        self.addCleanup(self.tmp.cleanup)
++        self.journal = Journal(self.tmp.name)
++        self.journal.initialize()
++        verifier = patch("autokernel.lesson_native.verify_artifacts", return_value=True)
++        verifier.start()
++        self.addCleanup(verifier.stop)
++        self.args = {"task_id": 'task1', "candidate_id": 'candidate1', "commit": 'a'*40,
++                         "lesson": 'apply X', "reopen_when": 'source changes', "r1": 2.0, "upper_cap": 10.0}
++        self.calls = []
++
++    def run_verify(self, result=2.4, **overrides):
++        def rerun(**kw):
++            self.calls.append(kw)
++            return {"task_id": overrides.get('task_id', kw['task_id']),
++                        "commit": overrides.get('commit', kw['commit']),
++                        "r_verify": result, "run_ref": '/native#manifest='+'b'*64+';baseline='+'c'*64+';verification='+'d'*64}
++        return rerun
++
++    def evaluate(self, runner, **overrides):
++        args = dict(self.args, **overrides)
++        return _evaluate_and_record(self.journal, rerun=runner, **args)
++
++    def test_real_append_and_replay(self):
++        e = self.evaluate(self.run_verify())
++        self.assertEqual(e.payload['decision'], 'ADMITTED')
++        self.assertEqual(self.calls, [{"task_id": 'task1', "commit": 'a'*40, "lesson": 'apply X'}])
++        self.assertEqual(self.journal.scan(validate_payloads=True).entries[0].payload, e.payload)
++
++    def test_threshold_is_relative_to_first_run(self):
++        self.assertEqual(self.evaluate(self.run_verify(2.39)).payload['reason'], 'verification_below_threshold')
++
++    def test_missing_cap_never_runs(self):
++        e = self.evaluate(self.run_verify(), upper_cap=None)
++        self.assertEqual((e.payload['decision'], e.payload['reason']), ('UNKNOWN', 'cap_missing'))
++        self.assertFalse(self.calls)
++
++    def test_cap_mismatch_and_bad_result_fail_closed(self):
++        self.assertEqual(self.evaluate(self.run_verify(11)).payload['reason'], 'upper_cap_exceeded')
++        self.assertEqual(self.evaluate(self.run_verify(task_id='different')).payload['decision'], 'UNKNOWN')
++        self.assertEqual(self.evaluate(self.run_verify(float('nan'))).payload['decision'], 'UNKNOWN')
++
++    def test_direct_tampering_is_refused(self):
++        e = self.evaluate(self.run_verify(1.5))
++        p = dict(e.payload, decision='ADMITTED', reason='execution_verified')
++        with self.assertRaises(ValueError):
++            self.journal.append(KIND, p)
++        for invalid in (float('inf'), float('nan'), True, 10**400):
++            with self.assertRaises(ValueError):
++                self.evaluate(self.run_verify(), upper_cap=invalid)
++
++    def test_admission_remains_out_of_retrieval_even_if_cited(self):
++        e = self.evaluate(self.run_verify())
++        self.assertEqual(self.journal.retrieve(), [])
++        with self.assertRaises(RetrievalCitationError):
++            self.journal.retrieve(cite_event_ids=[e.event_id])
++
++    def test_runner_failure_is_durable_unknown(self):
++        def fail(**kw):
++            raise RuntimeError('native failed')
++        self.assertEqual(self.evaluate(fail).payload['decision'], 'UNKNOWN')
++
++if __name__ == '__main__':
++    unittest.main()
+--- /dev/null
++++ b/scripts/kernel_rnd/autokernel/test_lesson_native.py
+@@ -0,0 +1,152 @@
++import hashlib
++import json
++import subprocess
++import sys
++import tempfile
++import unittest
++from pathlib import Path
++
++from autokernel.journal import Journal
++from autokernel.lesson_native import _read_capture, produce, verify_artifacts
++
++
++class NativeTest(unittest.TestCase):
++    def setUp(self):
++        self.tmp = tempfile.TemporaryDirectory()
++        self.addCleanup(self.tmp.cleanup)
++        self.root = Path(self.tmp.name)
++        self.j = Journal(str(self.root / 'journal'))
++        self.j.initialize()
++        self.repo = self.root / 'repo'
++        self.repo.mkdir()
++        subprocess.run(['git', 'init', '-q', str(self.repo)], check=True)
++        (self.repo / 'source.txt').write_text('initial')
++        subprocess.run(['git', '-C', str(self.repo), 'add', 'source.txt'], check=True)
++        subprocess.run(['git', '-C', str(self.repo), '-c', 'user.name=Test', '-c',
++                        'user.email=test@example.invalid', 'commit', '-qm', 'fixture'], check=True)
++        self.commit = subprocess.check_output(['git', '-C', str(self.repo), 'rev-parse', 'HEAD'], text=True).strip()
++        self.exe = self.root / 'task.py'
++        self.exe.write_text('#!/usr/bin/python3\nimport json,sys\np=sys.stdin.read()\nprint(json.dumps({"baseline_ns":1000,"candidate_ns":400 if p.startswith("LESSON (") else 500,"correctness":True,"protocol_id":"fixture/v1"}))\n')
++        self.exe.chmod(0o755)
++        self.args = {'artifact_root': self.root/'run', 'task_id': 't1', 'task_prompt': 'solve task',
++            'candidate_id': 'c1', 'commit': self.commit, 'lesson': 'try this', 'reopen_when': 'changed',
++            'upper_cap': 10.0, 'argv': [str(self.exe)], 'timeout': 5,
++            'evaluator_sha256': hashlib.sha256(self.exe.read_bytes()).hexdigest(), 'protocol_id': 'fixture/v1',
++            'source_repo': str(self.repo), 'code_artifacts': {}}
++
++    def test_real_first_turn_execution_and_persisted_receipt(self):
++        e = produce(self.j, **self.args)
++        self.assertEqual(e.payload['decision'], 'ADMITTED')
++        self.assertTrue(verify_artifacts(e.payload))
++        self.assertEqual(e.payload['r1'], 2.0)
++        self.assertEqual(e.payload['verification']['r_verify'], 2.5)
++        self.assertEqual((self.root/'run/baseline/prompt.txt').read_text(), 'solve task')
++        self.assertTrue((self.root/'run/verification/prompt.txt').read_text().startswith('LESSON ('))
++        self.assertEqual(self.j.retrieve(), [])
++        self.assertEqual(len(self.j.scan(validate_payloads=True).entries), 1)
++
++    def test_missing_cap_never_executes(self):
++        e = produce(self.j, **dict(self.args, upper_cap=None))
++        self.assertEqual(e.payload['reason'], 'cap_missing')
++        self.assertFalse((self.root/'run').exists())
++
++    def test_capture_tamper_rejected(self):
++        e = produce(self.j, **self.args)
++        folder = self.root/'run/verification'
++        meta = json.loads((folder/'capture.json').read_text())
++        (folder/'stdout.txt').write_text('{"first_turn_speedup": 999}')
++        with self.assertRaises(ValueError):
++            _read_capture(folder, (folder/'prompt.txt').read_text(), [str(self.exe)], meta['executable_sha256'], 'fixture/v1', str(self.repo), self.commit, {})
++        with self.assertRaises(ValueError):
++            self.j.append('LESSON_ADMISSION_EVALUATED', e.payload)
++
++    def test_native_failure_is_journaled_unknown(self):
++        self.exe.write_text("#!/usr/bin/python3\nraise SystemExit(4)\n")
++        self.args["evaluator_sha256"] = hashlib.sha256(self.exe.read_bytes()).hexdigest()
++        e = produce(self.j, **self.args)
++        self.assertEqual((e.payload["decision"], e.payload["reason"]), ("UNKNOWN", "verification_unavailable"))
++        self.assertTrue((self.root / "run/baseline/capture.json").exists())
++        self.assertTrue(e.payload["attempt_ref"].startswith(str(self.root / "run/attempt.json") + "#"))
++        self.assertIn("baseline/capture.json", json.loads((self.root / "run/attempt.json").read_text()))
++
++    def test_invalid_raw_measurement_is_unknown(self):
++        self.exe.write_text("#!/usr/bin/python3\nprint('{\"baseline_ns\": 10, \"candidate_ns\": 0, \"correctness\": true}')\n")
++        self.args["evaluator_sha256"] = hashlib.sha256(self.exe.read_bytes()).hexdigest()
++        e = produce(self.j, **self.args)
++        self.assertEqual(e.payload["decision"], "UNKNOWN")
++
++    def test_cli_runs_the_native_producer_and_journals(self):
++        config = dict(self.args, artifact_root=str(self.root / "cli-run"), argv=[str(self.exe)])
++        path = self.root / "config.json"
++        path.write_text(json.dumps(config))
++        p = subprocess.run([sys.executable, "-m", "autokernel.lesson_native", "--config", str(path), "--journal", str(self.root / "journal")], capture_output=True, text=True, check=True)
++        self.assertEqual(json.loads(p.stdout)["decision"], "ADMITTED")
++        self.assertEqual(len(self.j.read_all()), 1)
++
++    def test_wrong_evaluator_digest_refused_before_execution(self):
++        e = produce(self.j, **dict(self.args, evaluator_sha256="0" * 64))
++        self.assertEqual(e.payload['decision'], 'UNKNOWN')
++        self.assertIn('attempt.json#', e.payload['attempt_ref'])
++        self.assertFalse((self.root / "run/baseline").exists())
++
++    def test_wrong_protocol_fails_closed_with_attempt_receipt(self):
++        e = produce(self.j, **dict(self.args, protocol_id="other/v1"))
++        self.assertEqual(e.payload["decision"], "UNKNOWN")
++        self.assertIn("attempt.json#", e.payload["attempt_ref"])
++
++    def test_replay_uses_captured_source_proof_not_current_tree(self):
++        e = produce(self.j, **self.args)
++        (self.repo / "source.txt").write_text("later change")
++        self.assertTrue(verify_artifacts(e.payload))
++        self.assertEqual(len(self.j.scan(validate_payloads=True).entries), 1)
++
++    def test_wrong_source_commit_is_unknown_and_retains_proof(self):
++        e = produce(self.j, **dict(self.args, commit='f'*40))
++        self.assertEqual(e.payload['decision'], 'UNKNOWN')
++        self.assertTrue((self.root/'run/baseline/source-failure.txt').exists())
++        self.assertIn('baseline/source-failure.txt', json.loads((self.root/'run/attempt.json').read_text()))
++
++    def test_dirty_tracked_source_is_unknown(self):
++        (self.repo/'source.txt').write_text('modified')
++        e = produce(self.j, **self.args)
++        self.assertEqual(e.payload['decision'], 'UNKNOWN')
++
++    def test_source_changed_during_verification_is_unknown(self):
++        self.exe.write_text('#!/usr/bin/python3\nimport json,sys\nfrom pathlib import Path\np=sys.stdin.read()\nif p.startswith("LESSON ("): Path('+repr(str(self.repo / "source.txt"))+').write_text("changed")\nprint(json.dumps({"baseline_ns":1000,"candidate_ns":400,"correctness":True,"protocol_id":"fixture/v1"}))\n')
++        self.exe.chmod(0o755)
++        self.args['evaluator_sha256'] = hashlib.sha256(self.exe.read_bytes()).hexdigest()
++        e = produce(self.j, **self.args)
++        self.assertEqual(e.payload['decision'], 'UNKNOWN')
++        inventory = json.loads((self.root/'run/attempt.json').read_text())
++        self.assertIn('verification/source-failure.txt', inventory)
++        self.assertIn('verification/stdout.txt', inventory)
++
++    def test_interpreter_requires_pinned_entry(self):
++        args = dict(self.args, argv=[sys.executable, str(self.exe)],
++                    evaluator_sha256=hashlib.sha256(Path(sys.executable).read_bytes()).hexdigest())
++        with self.assertRaises(ValueError):
++            produce(self.j, **args)
++        args['code_artifacts'] = {str(self.exe): hashlib.sha256(self.exe.read_bytes()).hexdigest()}
++        self.assertEqual(produce(self.j, **args).payload['decision'], 'ADMITTED')
++
++    def test_code_changed_during_execution_is_unknown(self):
++        self.exe.write_text('#!/usr/bin/python3\nfrom pathlib import Path\nimport json\nPath(__file__).write_text("changed")\nprint(json.dumps({"baseline_ns":1000,"candidate_ns":500,"correctness":True,"protocol_id":"fixture/v1"}))\n')
++        self.exe.chmod(0o755)
++        self.args['argv'] = [sys.executable, str(self.exe)]
++        self.args['evaluator_sha256'] = hashlib.sha256(Path(sys.executable).read_bytes()).hexdigest()
++        self.args['code_artifacts'] = {str(self.exe): hashlib.sha256(self.exe.read_bytes()).hexdigest()}
++        e = produce(self.j, **self.args)
++        self.assertEqual(e.payload['decision'], 'UNKNOWN')
++        self.assertTrue((self.root/'run/baseline/source-failure.txt').exists())
++
++    def test_bad_commit_refused_before_execution(self):
++        with self.assertRaises(ValueError):
++            produce(self.j, **dict(self.args, commit="invalid"))
++        self.assertFalse((self.root / "run").exists())
++
++    def test_no_overwrite_or_second_run(self):
++        produce(self.j, **self.args)
++        with self.assertRaises(FileExistsError):
++            produce(self.j, **self.args)
++
++if __name__ == '__main__': unittest.main()
