@@ -219,6 +219,11 @@ SOURCES: dict[str, Source] = {s.name: s for s in (
            note="native self-hashed per-call serving timings; absent-timing rows emit no claims; "
                 "judge joins retain one row per attempt; no window aggregates",
            task="VB-SERVE-TIMING-1"),
+    Source("usage-provenance", "usage_provenance", _files("usage_provenance.jsonl"),
+           natives="native_rows", task="USAGE-PROV-1",
+           note="explicit source-authored per-call usage declarations only; unannotated v1, estimate, "
+                "pending, censored and unjoined rows remain unknown/refused; cache replay is not a "
+                "new physical observation; no default"),
     Source("exl3-measurement", "exl3", _files("*.measurement.json"),
            natives="measurement_rows", project="project_measurement",
            note="prospective self-hashed EXL3 measurement receipts", task="VB-EXL3-CPU-GFX90A"),
