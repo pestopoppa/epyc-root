@@ -1,0 +1,24 @@
+{
+  "completed_at": "2026-10-31T13:21:00.271508+00:00",
+  "source_commit": "4c55fdd462d1d186963f7aedfb33fc388fdb8986",
+  "main_commit": "c2407be32f1b4e958b0c1ff37c8edb0dfd75aefd",
+  "remote_main_verified": "c2407be32f1b4e958b0c1ff37c8edb0dfd75aefd",
+  "fresh_base": "9c688eacbf8e0299c02136d60363b4f1ad29bad6",
+  "paths": [
+    "docs/chapters/03-repl-environment.md",
+    "docs/chapters/07-memrl-system.md",
+    "src/repl_environment/routing.py",
+    "tests/unit/test_repl_recall_v1.py"
+  ],
+  "patch_sha256": "5de9e19cf056d311b4997586fc7b2541a622fd35b6b58b5f1ca1f9f8fa84a3bc",
+  "canonical_before_after": {
+    "HEAD": "fb9ada636c6b74d3afc98576fdaf68aa9076037c",
+    "index_sha256": "8c730451072b6ca2fa90486f780e03eedf25fe1ea01860920d9a4bce4713bfa2",
+    "tracked_diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "canonical_unchanged": true,
+  "validation": "actual current-main related module8 passed; actual make gates and focused Ruff passed; sampled R6 200MiB/7.86s/drained",
+  "automatic_live_REPL_writer_added": false,
+  "runtime_reload": false,
+  "explicit_external_exploration_writers_preserved": true
+}
