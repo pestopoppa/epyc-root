@@ -197,6 +197,18 @@ scripts/coordination/session_bus.py drain --agent <id>
 
 Act on assignments and nudges; write acks and status to your own outbox.
 
+Mail older than `--stale-after-h` (default 24 hours) is labelled on stderr.
+The adapter also gives each successful spawn a unique `spawn_id` receipt in
+`adapter-ledger.jsonl` and passes it to the child as `SESSION_BUS_SPAWN_ID`.
+`drain` labels messages authored before that exact generation's canonical spawn
+receipt on stderr; `triage` labels them on the `via:` line. These warnings never
+alter message bytes, dispatch, cursor advancement or acknowledgement rules.
+A missing token, legacy receipt, retired identity, or ambiguous/unusable match
+leaves birth `UNKNOWN`; the newest spawn for a roster id is insufficient evidence.
+Unbound legacy/manual sessions stay silent; an explicit token with no valid receipt
+prints an `UNKNOWN` diagnostic.
+A drain before its successful-spawn receipt is written also reports `UNKNOWN`.
+
 ## Routing intent is structural, not prose (2026-07-29)
 
 Routing intent that lives as prose inside `payload` does not survive a context-economy truncation,

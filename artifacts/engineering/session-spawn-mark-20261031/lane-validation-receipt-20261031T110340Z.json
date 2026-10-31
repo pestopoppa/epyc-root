@@ -1,0 +1,15 @@
+{
+  "pid": 3763264,
+  "start_ticks": "156709306",
+  "log": "/mnt/raid0/llm/tmp/codex-ni-root-spawn-mark-20261031/lane-validation-20261031T110339Z.log",
+  "pid_absent_after_wait": true,
+  "rc": 0,
+  "samples": 16,
+  "peak_tree_rss_bytes": 67723264,
+  "elapsed_s": 0.8032452801708132,
+  "cpus": "128,129",
+  "physical_cpus": "32-33",
+  "mutex": "/mnt/raid0/llm/tmp/compute-flags/prep-locks/32-33.lock",
+  "classification": "R6 q1 block-correctness; disjoint q0 block-timing-pairable; no whole-host timing",
+  "manifest_class_mismatch": "q0 manifest says block-correctness; authoritative validate_fillers.py --print-class says block-timing-pairable; no mutation"
+}

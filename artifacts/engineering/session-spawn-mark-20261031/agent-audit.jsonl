@@ -1,0 +1,4 @@
+{"ts":"2026-10-31T11:04:05+00:00","session":"ses_20261031_110405_3799015","level":"INFO","cat":"SESSION_START","msg":"MAIN-approved generation-bound spawn mail warning","details":"new_session=ses_20261031_110405_3799015"}
+{"ts":"2026-10-31T11:04:05+00:00","session":"ses_20261031_110405_3799015","level":"INFO","cat":"TASK_START","msg":"Session spawn mark native drain contract","details":"Exact spawn_id generation correlation; silent legacy absence; warnings preserve all message semantics"}
+{"ts":"2026-10-31T11:04:05+00:00","session":"ses_20261031_110405_3799015","level":"INFO","cat":"TASK_END","msg":"Session spawn mark native drain contract","details":"outcome=success"}
+{"ts":"2026-10-31T11:04:05+00:00","session":"ses_20261031_110405_3799015","level":"INFO","cat":"SESSION_END","msg":"Session complete","details":"188 accepted baseline cases plus 15 focused cases after MAIN-requested silent legacy delta; no runtime changes"}

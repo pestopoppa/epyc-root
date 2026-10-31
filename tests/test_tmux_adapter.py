@@ -1408,9 +1408,22 @@ def test_c30b_a_surviving_window_still_reports_success(
         command = "sleep 300"
         dry_run = False
 
+    commands = []
+    native_tmux = adapter._tmux
+    def capture_tmux(*args):
+        commands.append(args)
+        return native_tmux(*args)
+    monkeypatch.setattr(adapter, "_tmux", capture_tmux)
     assert adapter.cmd_spawn(A()) == 0
     rows = [json.loads(l) for l in adapter.LEDGER.read_text().splitlines() if l.strip()]
     assert [r["kind"] for r in rows] == ["spawn"]
+    import re
+    token = rows[0]["spawn_id"]
+    assert re.fullmatch(r"[0-9a-f]{32}", token)
+    assert f"env SESSION_BUS_SPAWN_ID={token} /bin/bash" in rows[0]["detail"]
+    launches = [args[-1] for args in commands if args[0] == "new-window"]
+    assert len(launches) == 1
+    assert launches[0].startswith(f"env SESSION_BUS_SPAWN_ID={token} /bin/bash")
 
 
 def test_c30b_an_unreadable_window_list_does_not_manufacture_a_failure(

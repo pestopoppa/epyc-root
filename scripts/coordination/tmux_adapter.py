@@ -99,6 +99,7 @@ import shlex
 import subprocess
 import sys
 import time
+import uuid
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -1125,14 +1126,17 @@ def heartbeat(agent: str) -> tuple[dict | None, float | None]:
         return None, None
 
 
-def ledger_rows() -> list[dict]:
-    if not LEDGER.exists():
+def ledger_rows(path: Path | None = None) -> list[dict]:
+    path = LEDGER if path is None else path
+    if not path.exists():
         return []
     out = []
-    for line in LEDGER.read_text(encoding="utf-8").splitlines():
+    for line in path.read_text(encoding="utf-8").splitlines():
         if line.strip():
             try:
-                out.append(json.loads(line))
+                row = json.loads(line)
+                if isinstance(row, dict):
+                    out.append(row)
             except json.JSONDecodeError:
                 continue
     return out
@@ -3069,7 +3073,12 @@ def cmd_spawn(args: argparse.Namespace) -> int:
     # for those three, so SIG_IGN must be set before it starts (fish, tmux's
     # default-shell, does not support `trap '' SIG`, hence the bash guard).
     guard = REPO_ROOT / "scripts" / "coordination" / "opencode_guard.sh"
-    launch = f"/bin/bash {guard} {shlex.quote(launch_cmd)}"
+    # A roster id outlives its sessions. Carry one generation token into the
+    # child and its canonical successful-spawn receipt; never infer birth from
+    # heartbeats, pane text or the most recent historical row for that id.
+    spawn_id = uuid.uuid4().hex
+    launch = (f"env SESSION_BUS_SPAWN_ID={spawn_id} /bin/bash {guard} "
+              f"{shlex.quote(launch_cmd)}")
     rc, out = _tmux("new-window", "-t", session, "-n", window, launch)
     if rc != 0:
         print(f"new-window failed: {out}", file=sys.stderr)
@@ -3096,7 +3105,8 @@ def cmd_spawn(args: argparse.Namespace) -> int:
               f"PLACE — they are correct and a retry reuses them. Nothing is draining them.",
               file=sys.stderr)
         return EX_BLOCKED
-    record("spawn", args.agent, f"window {session}:{window} cmd={launch}")
+    record("spawn", args.agent, f"window {session}:{window} cmd={launch}",
+           spawn_id=spawn_id)
     # VERIFY THE TARGET, do not trust it. The whole point of C25 is that a spawn which
     # believes it succeeded while the endpoint resolves elsewhere is silently
     # undeliverable; saying so here is the difference between a bad spawn and a bad

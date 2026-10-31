@@ -1,0 +1,7 @@
+{
+  "scripts/coordination/session_bus.py": "d3f2cec9380ccfd8036448fdcb1bccbd24f82c8f4632abca1ab1478348d1a8a0",
+  "scripts/coordination/tmux_adapter.py": "a4bf2c829c8bd872a8faf1bd18ce66d79d448aacc38403660b9f707cf3242401",
+  "scripts/coordination/tests/test_session_spawn_mark.py": "3654286ba07e3b113ad50062cef5edbe1b350f1813bdef89f144bf3fbea6013f",
+  "tests/test_tmux_adapter.py": "f4ef72cf448c8c4834d600316c7023254ccafb6f3f9a2c7e5d9ebca4f5af3e12",
+  "coordination/session-bus/BUS_PROTOCOL.md": "ab228cd16b4ce5d961e8259e22e433b0b95e04f6e07f21b386f3b6b9412885c1"
+}

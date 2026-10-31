@@ -44,6 +44,8 @@ from typing import Any, Iterable, Optional
 # below, but it costs nothing to keep and other modules still import the
 # pattern). It must NEVER be used to derive the bus root — see get_bus_root().
 REPO_ROOT = Path(__file__).resolve().parents[2]
+if str(REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT))
 
 
 def get_bus_root() -> Path:
@@ -1252,6 +1254,7 @@ def print_triage(bus_root: Path, agent: str) -> None:
     """
     import hashlib
 
+    spawn = current_session_spawn(bus_root, agent)
     view = routed_view(bus_root, agent)
     pending, acked = view["pending"], view["acked_awaiting_action"]
     fyi = view.get("fyi") or []
@@ -1282,7 +1285,9 @@ def print_triage(bus_root: Path, agent: str) -> None:
         age = message_age_h(entry["row"])
         stale = ("" if age is None or age < DEFAULT_STALE_AFTER_H else
                  f"   [{age / 24:.1f} DAYS OLD — verify the work is not already done]")
-        print(f"via: {' + '.join(entry['sources'])}{undelivered}{stale}")
+        spawn_mark = ("   [PREDATES THIS SESSION'S SPAWN]"
+                      if _predates_spawn(entry["row"], spawn) else "")
+        print(f"via: {' + '.join(entry['sources'])}{undelivered}{stale}{spawn_mark}")
         print(body)
         print(f"--- END ROUTED MESSAGE {index}/{total} id={logical_id(entry['row'])} ---")
 
@@ -1850,6 +1855,66 @@ def message_age_h(row: dict, now: float | None = None) -> float | None:
     return max(0.0, ((time.time() if now is None else now) - authored) / 3600.0)
 
 
+def current_session_spawn(bus_root: Path, agent: str) -> float | None:
+    """Canonical spawn event for THIS generation, never latest-by-roster-id.
+
+    Legacy receipts have only agent/detail/ts and cannot bind a current process.
+    The adapter now carries spawn_id into both the child environment and receipt.
+    Missing, conflicting or malformed evidence stays UNKNOWN. This is a warning
+    aid, never a delivery, dispatch, cursor or acknowledgement gate.
+    """
+    token = os.environ.get("SESSION_BUS_SPAWN_ID")
+    if not token:
+        return None
+    try:
+        if _roster_roles(bus_root).get(agent) in (None, "retired"):
+            return None
+        # Reuse the adapter's native ledger reader; no parallel JSONL format.
+        from scripts.coordination.tmux_adapter import ledger_rows
+        matches = [r for r in ledger_rows(bus_root / "adapter-ledger.jsonl")
+                   if r.get("spawn_id") == token]
+        if len(matches) != 1:
+            return None
+        row = matches[0]
+        if row.get("agent") != agent or row.get("kind") != "spawn":
+            return None
+        stamp = datetime.fromisoformat(row["ts"])
+        if stamp.tzinfo is None:
+            return None
+        return stamp.timestamp()
+    except (OSError, ValueError, TypeError, KeyError, BusError):
+        return None
+
+
+def _predates_spawn(row: dict, spawn: float | None) -> bool:
+    if spawn is None:
+        return False
+    try:
+        stamp = datetime.fromisoformat(row["ts"])
+        return stamp.tzinfo is not None and stamp.timestamp() < spawn
+    except (ValueError, TypeError, KeyError):
+        return False
+
+
+def _print_spawn_mark(rows: list[dict], bus_root: Path, agent: str) -> None:
+    spawn = current_session_spawn(bus_root, agent)
+    if spawn is None:
+        # Legacy/manual sessions have no generation receipt by design. Keep
+        # ordinary drains quiet; an explicitly bound but unusable token is a
+        # configuration fault worth reporting, never a guessed birth.
+        if os.environ.get("SESSION_BUS_SPAWN_ID"):
+            print("session_bus: session spawn UNKNOWN — no unique canonical receipt "
+                  "for this generation", file=sys.stderr)
+        return
+    prior = [row for row in rows if _predates_spawn(row, spawn)]
+    if prior:
+        print(f"!! {len(prior)} message(s) PREDATE THIS SESSION'S SPAWN — "
+              "verify the work is still current before acting.", file=sys.stderr)
+        for row in prior:
+            print(f"   {row.get('kind', '?')} from {row.get('from', '?')} "
+                  f"task={row.get('task_id')} id={row.get('id')}", file=sys.stderr)
+
+
 def daemon_argv(pid: int) -> str | None:
     """argv of `pid`, or None where it cannot be read (no /proc is a portability
     fact, never evidence of death). Separate so a test can isolate identity from
@@ -2176,6 +2241,7 @@ def cmd_drain(args: argparse.Namespace) -> int:
         print(f"-- {len(rows)} message(s); cursor {start} -> {end}"
               f"{' (peek: not advanced)' if args.peek else ''}", file=sys.stderr)
         _print_staleness(rows, args.stale_after_h)
+        _print_spawn_mark(rows, bus_root, args.agent)
     else:
         print(f"(no new messages for {args.agent})")
     # C37: on EVERY drain, including the empty one. "(no new messages)" is precisely
