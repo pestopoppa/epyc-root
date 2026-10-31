@@ -18,5 +18,9 @@
   "/mnt/raid0/llm/tmp/compute-flags/ws58-calendar-keeper-v7d.sh": {
     "sha256": "72f5b8b1a56d05450908a46c0318123302106e2b4b91e4f985ab10fea16e8dce",
     "approval": "operator 2026-10-31: 'Approve: pin + deploy' - keeper v7d = v7c + no expiry + GPU succession from a dead writer + main-loop pid file"
+  },
+  "/mnt/raid0/llm/tmp/compute-flags/ws58-calendar-keeper-v7e.sh": {
+    "sha256": "5d3646d3982a001c379b3da6f200efcead93de3e147656dbb62fb0f8cd87a11e",
+    "approval": "operator 2026-10-31: 'Approve pin + deploy' - keeper v7e = v7d + LOOP-23 reap gate (every id complete + filing-done receipt; REAP_DAYS default 1)"
   }
 }
