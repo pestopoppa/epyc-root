@@ -1,0 +1,44 @@
+{
+  "native_sidecars": {
+    "/workspace/repos/epyc-orchestrator/data/embedder_placement/arms/a0-20260927T1015Z/1-base.belief_measurements.jsonl": "a77ed8b58877125bfc222956c3a5a99c8d652a17994bdaa576ae9052aaa515c1",
+    "/workspace/repos/epyc-orchestrator/data/embedder_placement/arms/a0-20260927T1015Z/2-cand.belief_measurements.jsonl": "bb18498b6edca48ae90611d4eee89ca7439ecb12b9ca58664e67920ea3907ab1",
+    "/workspace/repos/epyc-orchestrator/data/embedder_placement/arms/a0-20260927T1015Z/3-base.belief_measurements.jsonl": "1fe5e28f202138fc080041d1af759835c2fdde8b59477a53c32b6ad9c584582c",
+    "/workspace/repos/epyc-orchestrator/data/embedder_placement/arms/a3-low-duty-20260927T1111Z/1-base.belief_measurements.jsonl": "2f0afb7c5480e888a1b8735d45fc26e579b54be5ed6f9567e75275a862e91460",
+    "/workspace/repos/epyc-orchestrator/data/embedder_placement/arms/a3-low-duty-20260927T1111Z/2-cand.belief_measurements.jsonl": "7f0668530034a72562da524a74374a5080f418e96c31da61e3f81a6e4bdb651c",
+    "/workspace/repos/epyc-orchestrator/data/embedder_placement/arms/a3-low-duty-20260927T1111Z/3-base.belief_measurements.jsonl": "988a8ec702572ea9f2d10f008345366ad2f7ae8e243791bcfb02baf5b6d61e41",
+    "/workspace/repos/epyc-orchestrator/data/embedder_placement/arms/a3-sched-sat-20260927T1039Z/1-base.belief_measurements.jsonl": "737b137a8dcb0ab544a10ead0f6c82f76d1eb5478930dacad822c0f3fe359d25",
+    "/workspace/repos/epyc-orchestrator/data/embedder_placement/arms/a3-sched-sat-20260927T1039Z/2-cand.belief_measurements.jsonl": "4ea47f14ad08b548a5b6f7bdcdb9b113f2634c553e6a46a554e48734cdae89a4",
+    "/workspace/repos/epyc-orchestrator/data/embedder_placement/arms/a3-sched-sat-20260927T1039Z/3-base.belief_measurements.jsonl": "3d5d57d44cf2ae2c52bac89ac12c7318a138c4af93721a088f64e0f0d2a31bba"
+  },
+  "original_nine_discovered": true,
+  "producer_path": "/workspace/repos/epyc-orchestrator/scripts/server/embedder_placement_capture.py",
+  "producer_sha256": "b31ac955456a8ec77779ab1483344b4de0164e1775598052cf0fce0edd3e3251",
+  "pinned_producer_sha256": "b31ac955456a8ec77779ab1483344b4de0164e1775598052cf0fce0edd3e3251",
+  "report": {
+    "source": "embedder-placement-gate",
+    "adapter": "adapters/embedder_placement_gate.py",
+    "adapter_id": "vidya.adapters.embedder_placement_gate/v1",
+    "paths": [
+      "/workspace/repos/epyc-orchestrator/data/embedder_placement/arms/a0-20260927T1015Z/1-base.belief_measurements.jsonl",
+      "/workspace/repos/epyc-orchestrator/data/embedder_placement/arms/a0-20260927T1015Z/2-cand.belief_measurements.jsonl",
+      "/workspace/repos/epyc-orchestrator/data/embedder_placement/arms/a0-20260927T1015Z/3-base.belief_measurements.jsonl",
+      "/workspace/repos/epyc-orchestrator/data/embedder_placement/arms/a3-low-duty-20260927T1111Z/1-base.belief_measurements.jsonl",
+      "/workspace/repos/epyc-orchestrator/data/embedder_placement/arms/a3-low-duty-20260927T1111Z/2-cand.belief_measurements.jsonl",
+      "/workspace/repos/epyc-orchestrator/data/embedder_placement/arms/a3-low-duty-20260927T1111Z/3-base.belief_measurements.jsonl",
+      "/workspace/repos/epyc-orchestrator/data/embedder_placement/arms/a3-sched-sat-20260927T1039Z/1-base.belief_measurements.jsonl",
+      "/workspace/repos/epyc-orchestrator/data/embedder_placement/arms/a3-sched-sat-20260927T1039Z/2-cand.belief_measurements.jsonl",
+      "/workspace/repos/epyc-orchestrator/data/embedder_placement/arms/a3-sched-sat-20260927T1039Z/3-base.belief_measurements.jsonl"
+    ],
+    "units_matched": 9,
+    "units_projected": 9,
+    "declined": [],
+    "refused": [],
+    "missing": [],
+    "rows_projected": 99,
+    "frames_emitted": 297,
+    "dry_run": true
+  },
+  "native_files_unchanged": true,
+  "ledger": null,
+  "ledger_writes": false
+}

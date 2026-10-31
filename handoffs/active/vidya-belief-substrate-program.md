@@ -2150,7 +2150,7 @@ Filed at design time, before any producer exists, per the CLAUDE.md belief-kerne
   `embedder-placement-gate`. Schema and refusals: the source-table row in `scripts/vidya/adapters/README.md`. The
   2026-09-26 Phase-0 files stay retrospective. A G3 re-run must write an `epyc.embedder_placement_g3.v1` record through
   the same `CaptureWindow` (the Phase-0 G3 driver is an out-of-repo tmp script).
-- [x] **VB-UFH12-PLACEMENT-DISC — make `embedder-placement-gate` discovery recurse into `arms/`** (filed
+- [x] **VB-UFH12-PLACEMENT-DISC — make `embedder-placement-gate` discovery recurse into `arms/`** (filed <!-- evidence-integrity: ROOT `6ffee0ec72e1be2b1a04c9f4e9c48945908ae565`; artifact: artifacts/compute/refactor-evidence-corrections-20261031/21/native-audit.json; hygiene, not quota -->
   2026-09-27). The A0 and A3 arm sidecars live at
   `epyc-orchestrator/data/embedder_placement/arms/<run>/<N>-{base,cand}.belief_measurements.jsonl`, nine files. But
   `scripts/vidya/ingest_sources.py`'s `Source("embedder-placement-gate", ...)` globs only `*.belief_measurements.jsonl`
@@ -2162,6 +2162,10 @@ Filed at design time, before any producer exists, per the CLAUDE.md belief-kerne
 - [ ] ❄ FROZEN 2026-09-27 — resume only once TD-28 unfreezes (v11 promoted AND autopilot has trained on the swapped stack AND UFH-13 re-opened; operator ruling 2026-09-29) — **VB-TD-ADVICE — wire the write side of the typed-routing advice A/B** (`typed-decision-plane.md` TD-28):
   arm, typed mode, workload digest, override rate and per-item outcome split. Project, do not grade.
   ❄ FROZEN 2026-09-27 (operator, narrowed plan): its only producer, TD-28, is frozen; wiring a source with no producer is dead code; unfreeze trigger: TD-28 unfreezes. The box stays open: frozen is not done.
+
+  <!-- task-evidence-integrity:start VB-UFH12-PLACEMENT-DISC -->
+  - Evidence metadata (hygiene, not new quota): ROOT `6ffee0ec72e1be2b1a04c9f4e9c48945908ae565`; [original test/artifact](../../artifacts/compute/refactor-evidence-corrections-20261031/21/native-audit.json). Discovery source plus two-level fixture and read-only projection of all9 original sidecars (99 rows/297 frames,zero refusals) satisfy full task; no ledger writes. No tests rerun or historical redating.
+  <!-- task-evidence-integrity:end VB-UFH12-PLACEMENT-DISC -->
 
 
 ## VB-V1-BACKPRESSURE / VB-SEL-LOADAB / VB-SWAP-C / VB-PREFILL-XOVER / VB-GAP-DIST / VB-MT-REPLAY — orchestration prior-art intake sources (filed 2026-09-26, research-intake)
