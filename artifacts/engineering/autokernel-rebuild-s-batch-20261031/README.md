@@ -14,9 +14,17 @@ The same research commit adds bounded native CPU-affinity observations to actual
 
 Orchestrator main is `9e1155a10f809d9c63a818fd95b5e02276d0e43a`. The original test task uses native failed-poll/Event barriers and proves opposite FIFO-on/off order without xfails; the native module passed 24 tests. Restoring the previous fairness assertions yields exactly three FIFO-off failures. Production code and `EPYC_LOCK_FIFO` default remain unchanged (OFF). See `fifo-control/receipt.json`, `review.md`, and both logs.
 
+## G2-CONC-LIB library fix
+
+Research main `e95a9d2e25c3eeedc7a6f997e608d9bd338cbc31` adopts amendment-5 detector v2.1 in the shared full-text `classify`/paired-gate path. The original 19-case fixtures remain; the change is enrolled in `PYTEST_SMOKE`. The accepted package suite passed 87 tests. Stored-stat replay remains v2 and v1 remains frozen. No historical result was regraded and no live reload occurred. Evidence: `g2-conc-lib/receipt.json` and the full validation log.
+
 ## Belief capture follow-up
 
 The existing AutoKernel direct-serving source family is extended prospectively with the captured `cpu_affinity_observation` facts. The existing `VB-AK-LEGACY-SERVING-LIVE` task remains the owner: add reader/tamper/unknown and planning-context-canary coverage for GPU facts, without creating a task split, grade, historical measurement warrant, or a wired-reader claim. Source path remains `scripts/vidya/adapters/README.md`.
+
+## P17.BT-5c retirement note
+
+The original producer-specific P17 pair has no current runtime caller after its earlier retirement, and its only prior evaluation was negative/non-certifying. Record the retirement as a prose finding only; the original checkbox remains unchecked because a future peer-judged experiment requires a new positive producer. This is outside the completion quota.
 
 ## Immutable source evidence
 

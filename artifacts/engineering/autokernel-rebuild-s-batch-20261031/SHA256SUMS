@@ -12,3 +12,7 @@ aad8c7a0fd7677a7cb7b6f75f194bc9f6d74db9a1c1c3b7c63f427a16434b827  artifacts/engi
 67ac695fe33a72bc82509cd60dc639e897c73ca854d61e9dd15fb05079dd794b  artifacts/engineering/autokernel-rebuild-s-batch-20261031/r23-30/baseline-test.log.gz
 8f3979b647ae68012d62cc6824094c891919647133d78e78cc469ca6374100e1  artifacts/engineering/autokernel-rebuild-s-batch-20261031/r23-30/candidate-test.log
 72b385d11528c33c3cb3753fce053e2644286b0776f8adf444bd959e3528fad1  artifacts/engineering/autokernel-rebuild-s-batch-20261031/r23-30/summary.md
+c52a630c04da144bd8cf7a4490a2bdae34d7984707b7b57113b59079d7f29ae8  artifacts/engineering/autokernel-rebuild-s-batch-20261031/g2-conc-lib/lane-validation.log
+b10683607e3016b376aaf116d818df19b3f55c4986bb8cbb7868195c9765e73c  artifacts/engineering/autokernel-rebuild-s-batch-20261031/g2-conc-lib/receipt.json
+77180f89e353a8fd71b355bdcf8facdc3bada71954314b90862013bfa557cfa7  artifacts/engineering/autokernel-rebuild-s-batch-20261031/g2-conc-lib/summary.md
+94be3822e5a4070416da317fcc6a7c88a2a3b1670e2d5d01d010ae7739edf035  artifacts/engineering/autokernel-rebuild-s-batch-20261031/README.md
