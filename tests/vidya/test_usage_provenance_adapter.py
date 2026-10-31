@@ -1,6 +1,12 @@
-"""The native usage writer projects only explicit declarations into planning context."""
+"""Strict reader fixtures plus an opt-in cross-repo writer/planning canary.
+
+The cross-repo test requires ``EPYC_ORCHESTRATOR_ROOT`` to point at the companion orchestrator
+revision that provides ``UsageLedger.begin(measurement_declaration=...)``. The self-contained
+reader fixtures run without that checkout; the writer canary is explicitly skipped when unset.
+"""
 from __future__ import annotations
 
+import copy
 import hashlib
 import importlib
 import json
@@ -41,14 +47,16 @@ TEST_ONLY_DECLARATION = {
 
 def _orchestrator_root() -> Path:
     configured = os.environ.get("EPYC_ORCHESTRATOR_ROOT")
-    return Path(configured or "/workspace/repos/epyc-orchestrator").resolve()
+    if not configured:
+        pytest.skip("set EPYC_ORCHESTRATOR_ROOT to the companion writer revision for this canary")
+    return Path(configured).resolve()
 
 
 def _writer(tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
             declaration: dict | None = TEST_ONLY_DECLARATION):
     orchestrator = _orchestrator_root()
     if not (orchestrator / "src/llm_primitives/usage.py").is_file():
-        pytest.skip("orchestrator source tree is not available for cross-repo writer canary")
+        pytest.fail("EPYC_ORCHESTRATOR_ROOT does not contain the companion writer source")
     sys.path.insert(0, str(orchestrator))
     # Load the two actual writer modules without importing the orchestrator's unrelated API
     # dependency graph (the package __init__ eagerly imports every backend).
@@ -95,12 +103,69 @@ def _writer(tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
     request_id = "usage-provenance-test-" + uuid.uuid4().hex
     backend_id = physical_call(request_id)
     ledger = usage_module.UsageLedger(request_id)
-    call_id = ledger.begin("test_only", measurement_declaration=declaration)
+    source_declaration = copy.deepcopy(declaration)
+    call_id = ledger.begin("test_only", measurement_declaration=source_declaration)
+    if source_declaration is not None:
+        source_declaration["metrics"][0]["claim"] = "mutated after begin"
     ledger.finish(call_id, prompt_tokens=2, completion_tokens=0, cached_tokens=0,
                   provenance="server_reported",
                   source="llama_server:/completion.tokens_predicted",
                   backend_record_id=backend_id, finish_reason="stop")
     return usage_path, call_id, backend_id, usage_module, physical_call
+
+
+def _seal(record: dict) -> dict:
+    body = {key: value for key, value in record.items() if key != "record_sha256"}
+    record["record_sha256"] = hashlib.sha256(json.dumps(
+        body, ensure_ascii=False, sort_keys=True, separators=(",", ":"), allow_nan=False
+    ).encode()).hexdigest()
+    return record
+
+
+def _native_fixtures(tmp_path: Path, declaration: dict | None = TEST_ONLY_DECLARATION):
+    """Self-contained copies of the current real-v1 writer record shape."""
+    tmp_path.mkdir(parents=True, exist_ok=True)
+    usage_path = tmp_path / "usage_provenance.jsonl"
+    serving_path = tmp_path / "serving_calls.jsonl"
+    pid = os.getpid()
+    call_id = uuid.uuid4().hex
+    backend_id = uuid.uuid4().hex
+    request_id = "usage-provenance-fixture-" + uuid.uuid4().hex
+    process = {"orch_commit": "a" * 40, "run_id": uuid.uuid4().hex, "pid": pid,
+               "host": "synthetic-test-host", "started_at": "2026-10-31T00:00:00.000Z"}
+    source_context = {"snapshot_kind": "on_disk_async_snapshot",
+                      "loaded_bytes_attestation": "not_available",
+                      "process_commit_semantics": "synthetic fixture; not loaded-byte proof",
+                      "head_commit_at_capture": process["orch_commit"],
+                      "worktree_state_at_capture": "unknown", "relevant_source_complete": False}
+    physical = _seal({
+        "schema": "epyc.orchestrator.serving_call.v1", "record_id": backend_id,
+        "caller": {"request_id": request_id}, "provenance": process,
+        "server": {"port": 12345, "model_path": SYNTHETIC_MODEL,
+                   "launch_id": "synthetic-test-only"},
+        "result": {"prompt_tokens": 2, "tokens_generated": 0, "cached_prompt_tokens": 0},
+    })
+    serving_path.write_text(json.dumps(physical, sort_keys=True, separators=(",", ":")) + "\n")
+    common = {"call_id": call_id, "role": "test_only", "parent_call_id": None,
+              "prompt_tokens": None, "completion_tokens": None, "cached_tokens": None,
+              "provenance": None, "source": None, "replay_of_call_id": None,
+              "backend_record_id": None, "measurement_declaration": copy.deepcopy(declaration),
+              "finish_reason": None, "error_category": None, "error_sha256": None,
+              "censored": True, "pending": True}
+    begin = {"schema": "epyc.request_call_usage.v1", "request_id": request_id,
+             "event": "begin", "ts_epoch": 1793404800.0, "process": process,
+             "source_context": source_context, "call": common,
+             "persistence": "flushed_append_no_fsync"}
+    settled_call = {**common, "prompt_tokens": 2, "completion_tokens": 0, "cached_tokens": 0,
+                    "provenance": "server_reported",
+                    "source": "llama_server:/completion.tokens_predicted",
+                    "backend_record_id": backend_id, "finish_reason": "stop",
+                    "censored": False, "pending": False}
+    settled = {**begin, "event": "settled", "ts_epoch": 1793404801.0,
+               "call": settled_call}
+    usage_path.write_text("".join(json.dumps(_seal(row), sort_keys=True, separators=(",", ":")) + "\n"
+                                       for row in (begin, settled)))
+    return usage_path, call_id, backend_id
 
 
 class _Sync:
@@ -136,6 +201,7 @@ def test_writer_reader_and_planning_canary_preserve_declaration_and_scope(tmp_pa
     assert claim_tuple.grade(claim)[:2] == ("Judged", "Located")
     assert claim.metric == "test_only_completion_tokens"
     assert claim.value == 0
+    assert claim.claim == TEST_ONLY_DECLARATION["metrics"][0]["claim"]
     assert claim.applicability == TEST_ONLY_DECLARATION["metrics"][0]["applicability"]
     assert claim.extra["logical_replays"][0]["replay_of_call_id"] == original_call_id
 
@@ -169,9 +235,45 @@ def test_writer_reader_and_planning_canary_preserve_declaration_and_scope(tmp_pa
 
 
 def test_unannotated_real_shape_remains_refused(tmp_path, monkeypatch):
-    usage_path, _, _, _, _ = _writer(tmp_path, monkeypatch, declaration=None)
+    usage_path, _, _ = _native_fixtures(tmp_path, declaration=None)
     # Existing v1 writer shape with an absent declaration is intentionally not projectable.
     with pytest.raises(claim_tuple.ProjectionError, match="explicit measurement declaration"):
+        reader.native_rows(usage_path)
+
+
+def _rewrite_self_hashed(path: Path, mutate) -> None:
+    rows = [json.loads(line) for line in path.read_text().splitlines()]
+    for row in rows:
+        mutate(row)
+        row["record_sha256"] = hashlib.sha256(json.dumps(
+            {k: v for k, v in row.items() if k != "record_sha256"},
+            ensure_ascii=False, sort_keys=True, separators=(",", ":"), allow_nan=False
+        ).encode()).hexdigest()
+    path.write_text("".join(json.dumps(row, sort_keys=True, separators=(",", ":")) + "\n"
+                                  for row in rows))
+
+
+def test_process_identity_and_mutated_projection_row_are_rejected(tmp_path):
+    usage_path, _, _ = _native_fixtures(tmp_path)
+    serving_path = usage_path.with_name("serving_calls.jsonl")
+    _rewrite_self_hashed(serving_path, lambda row: row["provenance"].update(run_id="different-run"))
+    with pytest.raises(claim_tuple.ProjectionError, match="no projectable calls"):
+        reader.native_rows(usage_path)
+
+    usage_path, _, _ = _native_fixtures(tmp_path / "second")
+    native = reader.native_rows(usage_path)[0]
+    native["value"] = 7
+    with pytest.raises(claim_tuple.ProjectionError, match="differs from the exact declared call counter"):
+        reader.project(native)
+
+
+def test_boolean_counter_is_not_zero_or_a_valid_native_count(tmp_path):
+    usage_path, _, _ = _native_fixtures(tmp_path)
+    serving_path = usage_path.with_name("serving_calls.jsonl")
+    _rewrite_self_hashed(usage_path, lambda row: row["call"].update(completion_tokens=True)
+                         if row["event"] == "settled" else None)
+    _rewrite_self_hashed(serving_path, lambda row: row["result"].update(tokens_generated=True))
+    with pytest.raises(claim_tuple.ProjectionError, match="nonnegative integer"):
         reader.native_rows(usage_path)
 
 
@@ -180,8 +282,8 @@ def test_unannotated_real_shape_remains_refused(tmp_path, monkeypatch):
     ("category", {"unexpected": "object"}),
     ("protocol_id", None),
 ])
-def test_reader_rejects_invalid_source_declaration(tmp_path, monkeypatch, field, value):
-    usage_path, _, _, _, _ = _writer(tmp_path, monkeypatch)
+def test_reader_rejects_invalid_source_declaration(tmp_path, field, value):
+    usage_path, _, _ = _native_fixtures(tmp_path)
     records = [json.loads(line) for line in usage_path.read_text().splitlines()]
     for record in records:
         declaration = record["call"]["measurement_declaration"]

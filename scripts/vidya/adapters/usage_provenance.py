@@ -127,6 +127,38 @@ def _valid_count(value: Any) -> bool:
     return type(value) is int and value >= 0
 
 
+def _process_identity(value: Any) -> tuple[int, str, str, str, str] | None:
+    if type(value) is not dict:
+        return None
+    pid = value.get("pid")
+    run_id, host, started_at, commit = (value.get(key) for key in
+                                       ("run_id", "host", "started_at", "orch_commit"))
+    if (type(pid) is not int or pid <= 0 or
+            not all(isinstance(field, str) and field.strip()
+                    for field in (run_id, host, started_at, commit)) or
+            not GIT_SHA.fullmatch(commit)):
+        return None
+    return pid, run_id, host, started_at, commit
+
+
+def _verify_file_record(path: Path, expected_file_sha: str, record: dict, *, line: int | None = None) -> None:
+    raw, digest = _read_stable(path)
+    if digest != expected_file_sha:
+        _reject("native file changed after projection")
+    matches = []
+    for number, encoded in enumerate(raw.splitlines(), start=1):
+        if line is not None and number != line:
+            continue
+        try:
+            parsed = json.loads(encoded, object_pairs_hook=_pairs, parse_constant=_no_constant)
+        except (json.JSONDecodeError, UnicodeDecodeError) as exc:
+            _reject("native record no longer parses: " + type(exc).__name__)
+        if parsed == record:
+            matches.append(parsed)
+    if len(matches) != 1 or record.get("record_sha256") != _digest_record(record):
+        _reject("projected native record does not match its self-hashed source line")
+
+
 def _read_serving(path: Path) -> tuple[dict[str, dict], dict[str, str]]:
     records, hashes = _read_records(path, 8)
     by_id = {}
@@ -233,6 +265,9 @@ def native_rows(path) -> list[dict]:
             _reject("begin/settled measurement declaration differs")
         if any(first.get(k) != final.get(k) for k in ("role", "parent_call_id", "call_id")):
             _reject("begin/settled call identity differs")
+        if (_process_identity(begin["process"]) is None or
+                _process_identity(begin["process"]) != _process_identity(settled["process"])):
+            _reject("begin/settled process identity differs or is incomplete")
         if final.get("pending") is not False or final.get("censored") is not False:
             report["censored_or_error"] += 1
             continue
@@ -253,7 +288,8 @@ def native_rows(path) -> list[dict]:
             report["unjoined"] += 1
             continue
         native = joined["record"]
-        if native.get("provenance", {}).get("pid") != record["process"].get("pid"):
+        if (_process_identity(native.get("provenance")) is None or
+                _process_identity(native.get("provenance")) != _process_identity(record["process"])):
             report["unjoined"] += 1
             continue
         caller_request = (native.get("caller") or {}).get("request_id")
@@ -346,6 +382,8 @@ def project(native: dict) -> ClaimTuple:
         "serving_record", "serving_path", "metric", "value", "logical_replays", "read_report", "measurement_id",
     }:
         _reject("projection row shape differs")
+    if type(native["usage_line"]) is not int or native["usage_line"] <= 0:
+        _reject("usage source line is invalid")
     metric = native["metric"]
     if type(metric) is not dict:
         _reject("metric declaration absent")
@@ -359,6 +397,22 @@ def project(native: dict) -> ClaimTuple:
     value = native["value"]
     if not _valid_count(value):
         _reject("native value is not a nonnegative integer")
+    source_field = metric["source_field"]
+    if not _valid_count(call.get(source_field)) or value != call[source_field]:
+        _reject("projected value differs from the exact declared call counter")
+    serving_record = native["serving_record"]
+    if (serving_record.get("record_id") != call.get("backend_record_id") or
+            serving_record.get("schema") != SERVING_SCHEMA or
+            serving_record.get("record_sha256") != _digest_record(serving_record) or
+            _process_identity(serving_record.get("provenance")) !=
+            _process_identity(record.get("process"))):
+        _reject("projected physical serving record does not bind to this process and call")
+    physical_count = (serving_record.get("result") or {}).get(COUNTERS[source_field])
+    if not _valid_count(physical_count) or value != physical_count:
+        _reject("projected value differs from the joined physical counter")
+    _verify_file_record(Path(native["usage_path"]), native["usage_file_sha256"], record,
+                        line=native["usage_line"])
+    _verify_file_record(Path(native["serving_path"]), native["serving_file_sha256"], serving_record)
     if not HEX64.fullmatch(native["usage_file_sha256"]) or not HEX64.fullmatch(native["serving_file_sha256"]):
         _reject("native log digest absent")
     if not GIT_SHA.fullmatch(str(record["process"].get("orch_commit") or "")):
