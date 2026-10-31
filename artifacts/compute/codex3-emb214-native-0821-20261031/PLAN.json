@@ -1,0 +1,11 @@
+{
+ "schema":"repl-emb-2.14.binary-parity.v1",
+ "task":"REPL-EMB-2.14",
+ "cohort":"SAMPLE.json: first 200 unique nonempty prompt strings <=512 Unicode characters in fixed source order, independent of model outputs; sample is not a production-traffic distribution",
+ "model":"/mnt/raid0/llm/models/bge-large-en-v1.5-f16.gguf",
+ "reference":"/mnt/raid0/llm/llama.cpp/build/bin/llama-embedding version 10125",
+ "candidate":"/mnt/raid0/llm/kernels/production/cpu/llama-embedding version 10303",
+ "argv":"-m MODEL -p TEXT -t 8 --embd-output-format json; own binary's ggml LD_LIBRARY_PATH, no pooling override, native TaskEmbedder fallback shape",
+ "rule":"Cosine >= 0.9999 on every one of 200 paired finite nonzero same-dimensional vectors. All absent, failed, interrupted or invalid pairs remain UNKNOWN and count in the denominator; no redraw. No default flip or deployment occurs in this capture.",
+ "scope":"TaskEmbedder source already names the production store in app commit 9d72b8cc; this packet measures prior-v9 versus current-v10 embedding parity only, no EG2 quality or recall claim."
+}
