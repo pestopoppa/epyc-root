@@ -1,4 +1,5 @@
 """VB-AK-PIN-REPIN: the stale-pin check and the append-only re-pin (temp git repos; no inference)."""
+import ast
 import hashlib
 import subprocess
 import sys
@@ -73,6 +74,21 @@ def test_every_pin_constant_in_the_adapters_is_watched_or_exempt():
     unwatched = [p for p in pp.discover_pin_constants() if p not in watched]
     assert unwatched == []  # a new PRODUCER_SHA256 must be added to FILE_PINS or EXEMPT, with its reason
     assert not [k for k in pp.EXEMPT if k in {(m, c) for m, c, *_ in pp.FILE_PINS}]
+
+
+def test_exempt_pin_names_exist_and_explain_their_nonmoving_identity():
+    # A renamed/deleted constant must not leave a silent, stale exemption such
+    # as SUMS_SHA256 after the reader moved to OUTER_CAPTURE_SUMS_SHA256.
+    for (module, constant), reason in pp.EXEMPT.items():
+        tree = ast.parse((pp.HERE / "adapters" / f"{module}.py").read_text())
+        declared = set()
+        for node in tree.body:
+            if isinstance(node, ast.Assign):
+                declared.update(target.id for target in node.targets if isinstance(target, ast.Name))
+            elif isinstance(node, ast.AnnAssign) and isinstance(node.target, ast.Name):
+                declared.add(node.target.id)
+        assert constant in declared, f"stale exemption: {module}.{constant}"
+        assert isinstance(reason, str) and reason.strip(), f"unexplained exemption: {module}.{constant}"
 
 
 def test_file_pins_point_at_constants_that_exist_and_are_hex():

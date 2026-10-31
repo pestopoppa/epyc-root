@@ -67,6 +67,12 @@ FILE_PINS = (
 #: sha256-shaped pin constants that are NOT a moving producer file on a repo main, each with the reason. A new pin
 #: constant that is in neither FILE_PINS nor here fails ``check`` (UNMAPPED): a pin nobody watches goes stale unseen.
 EXEMPT = {
+    ("_pb_hol_m42b", "PRIOR_VERDICT_SHA"): "immutable native prior-verdict anchor, not a moving producer file; "
+                                               "the paired reader checks the recorded path and digest",
+    ("c6_q4_microbench", "OUTER_CAPTURE_MANIFEST_SHA256"): "immutable archived outer-custody manifest; "
+                                                          "the reader re-hashes its exact captured bytes",
+    ("c6_q4_microbench", "OUTER_CAPTURE_SUMS_SHA256"): "immutable archived outer-custody checksum seal; "
+                                                      "the reader re-hashes it and verifies each sealed member",
     ("contextbench_score", "TRUSTED_PRODUCER_SHA256"): "producer bytes ship inside each run dir (producer-source.bin)",
     ("contextbench_score", "TRUSTED_SCORER_SHA256"): "scorer bytes ship inside each run dir",
     ("contextbench_score", "TRUSTED_PACKER_SHA256"): "packer bytes ship inside each run dir",
