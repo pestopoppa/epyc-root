@@ -1,0 +1,17 @@
+# Original runner.sh SHA-256: d7f27ad46b5f6388cea53b04ed7b340ba8399faf2e6fade8d209998cd14250fd
+# Predicate body copied verbatim from its in_blackout function.
+in_blackout(){  # 00:15Z..06:30Z, plus never start a job that would cross 00:15Z
+  local now; now=$(date -u +%s); local d; d=$(date -u +%F)
+  local b0; b0=$(date -u -d "$d 00:15:00" +%s); local b1; b1=$(date -u -d "$d 06:30:00" +%s)
+  local nb0; nb0=$(date -u -d "$d 00:15:00 +1 day" +%s)
+  if [ "$now" -ge "$b0" ] && [ "$now" -lt "$b1" ]; then return 0; fi
+  return 1
+}
+# Admission expression copied verbatim from runner.sh lines 26-27 and wrapped
+# only so this immutable test fixture can execute the original guard directly.
+admission_guard(){
+  local fmax=$1 tnow nb
+  tnow=$(date -u +%s); nb=$(date -u -d "$(date -u +%F) 00:15:00 +1 day" +%s)
+  [ $((tnow + fmax)) -gt "$nb" ] && return 0
+  return 1
+}
