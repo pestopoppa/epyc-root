@@ -1,0 +1,7 @@
+{"schema": "bounded-r11-native-profile-supervisor/v1", "elapsed_s": 0.10908423108048737, "sampled_peak_tree_rss_bytes": 17186816, "samples": 2, "verified_exited_processes": 0, "verified_exited_threads": 0, "per_process_address_space_limit_bytes": null, "rss_scope": "sum of sampled resident pages across owned process tree; sampling may miss transients and double-count shared pages", "leader_pid": 779891, "leader_birth": 158947019, "child_rc": 0, "children_drained": true, "failure": null}
+setUpClass (test_native_writer_integration.NativeWriterCompatibility) ... skipped 'opt-in pinned APP sources are unconfigured; run this file with --source-root/--custody-output or set NIB83_NATIVE_SOURCE_ROOT'
+
+----------------------------------------------------------------------
+Ran 0 tests in 0.000s
+
+OK (skipped=1)

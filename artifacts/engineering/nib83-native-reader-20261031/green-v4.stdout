@@ -1,0 +1,12 @@
+{"schema": "bounded-r11-native-profile-supervisor/v1", "elapsed_s": 0.3064785208553076, "sampled_peak_tree_rss_bytes": 66785280, "samples": 4, "verified_exited_processes": 0, "verified_exited_threads": 0, "per_process_address_space_limit_bytes": null, "rss_scope": "sum of sampled resident pages across owned process tree; sampling may miss transients and double-count shared pages", "leader_pid": 784244, "leader_birth": 158949390, "child_rc": 0, "children_drained": true, "failure": null}
+test_actual_bool_error_and_native_full_era (__main__.NativeWriterCompatibility.test_actual_bool_error_and_native_full_era) ... ok
+test_clean_wrong_answer_is_scored_but_incomplete_row_is_unknown (__main__.NativeWriterCompatibility.test_clean_wrong_answer_is_scored_but_incomplete_row_is_unknown) ... ok
+test_later_registered_era_requires_actual_native_policy (__main__.NativeWriterCompatibility.test_later_registered_era_requires_actual_native_policy) ... ok
+test_native_failure_classes_and_error_status_remain_distinct (__main__.NativeWriterCompatibility.test_native_failure_classes_and_error_status_remain_distinct) ... ok
+test_native_generation_time_does_not_choose_quality_policy (__main__.NativeWriterCompatibility.test_native_generation_time_does_not_choose_quality_policy) ... ok
+test_truncated_error_is_native_detail_and_public_output_has_only_hash (__main__.NativeWriterCompatibility.test_truncated_error_is_native_detail_and_public_output_has_only_hash) ... ok
+
+----------------------------------------------------------------------
+Ran 6 tests in 0.213s
+
+OK

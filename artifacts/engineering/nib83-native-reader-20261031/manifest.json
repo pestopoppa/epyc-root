@@ -1,0 +1,84 @@
+{
+  "files": [
+    {
+      "path": "green-v4-node-custody.json",
+      "sha256": "60662369bcee0a6d078071f23008f6d8c9bf9637f9c0ae68a3bfe876a582f75d",
+      "bytes": 5609
+    },
+    {
+      "path": "green-v4.command.json",
+      "sha256": "98b6905bd87bda2e204193984e9578990c3c70ebc60808c2c2c7666a154b52ba",
+      "bytes": 944
+    },
+    {
+      "path": "green-v4.stdout",
+      "sha256": "ba2e60cb95eb3f47caa1dfc58a8a1f1f1b14a81142c02570cf57879d059e7932",
+      "bytes": 1559
+    },
+    {
+      "path": "legacy-regression-source-pins.json",
+      "sha256": "f57a609a39dec52ec56646da33fbfe292ce33c410db22e76db7d431cc362f5b4",
+      "bytes": 629
+    },
+    {
+      "path": "lint-style-v1.command.json",
+      "sha256": "bba24c10c1e2deb2864be262bd9464f769c58e1ebca9a0c890314ad754122641",
+      "bytes": 1048
+    },
+    {
+      "path": "lint-style-v1.stdout",
+      "sha256": "96ae07efa3f058c849a1be0c16ee74cec20dfa151133a1c894bc2e8f54940772",
+      "bytes": 617
+    },
+    {
+      "path": "ordinary-discovery-v1.command.json",
+      "sha256": "62e49f10db58a6ea77ae0f2538fb627d7362e78b1d589dc6ddd0842f8e18122e",
+      "bytes": 540
+    },
+    {
+      "path": "ordinary-discovery-v1.stdout",
+      "sha256": "405fdf5a8f9de40f50554ceac7fcfe6096a164f706add5d61c8201f6bbde7ebc",
+      "bytes": 812
+    },
+    {
+      "path": "original7-regression-junit.xml",
+      "sha256": "ce20680fb0f4a391aed394329d7124ec44f9af9e6861dae3ad5a17245d43be68",
+      "bytes": 1010
+    },
+    {
+      "path": "original7-regression-once.command.json",
+      "sha256": "612911b9e5139c4a7cabe325c70375f8d2877db8ba59935ca4ae02016baa1167",
+      "bytes": 522
+    },
+    {
+      "path": "original7-regression-once.stdout",
+      "sha256": "a137208d4dba81abe7ac0bd24b3452c6de2711b4712cbd577149a104ed8a4d15",
+      "bytes": 550
+    },
+    {
+      "path": "proof.json",
+      "sha256": "e820efb5db156d9cfcb378304e448c5e7914dc6fcb5bd3ee9ac130e589cbc43a",
+      "bytes": 4164
+    },
+    {
+      "path": "red-v3-node-custody.json",
+      "sha256": "60662369bcee0a6d078071f23008f6d8c9bf9637f9c0ae68a3bfe876a582f75d",
+      "bytes": 5609
+    },
+    {
+      "path": "red-v3.command.json",
+      "sha256": "e2cef3444a766d926cd5e732295900fe705b8c5f0326e8b2ac2e9c71fc9b0cd0",
+      "bytes": 919
+    },
+    {
+      "path": "red-v3.stdout",
+      "sha256": "ad017034972225ee954d10aaf1efdc3d7c7d6b7dd7a026d3e273926468dd9594",
+      "bytes": 5873
+    },
+    {
+      "path": "source-readset.json",
+      "sha256": "78c6edf0936c644b75803e80ac4dd6f1f6d9b03a52b76048115932e2270f52a0",
+      "bytes": 1660
+    }
+  ]
+}

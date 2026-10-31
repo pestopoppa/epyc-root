@@ -1,0 +1,20 @@
+{
+  "argv": [
+    "/usr/bin/taskset",
+    "-c",
+    "124,125",
+    "/usr/bin/python3",
+    "/mnt/raid0/llm/tmp/codex3-ap66-20261031/supervisor-esrch-fix/prep_supervisor.py",
+    "300",
+    "--",
+    "python3",
+    "-c",
+    "from pathlib import Path;import subprocess;root=Path(\"/mnt/raid0/llm/tmp/codex3-nib83-20261031\");reader=root/\"fixture/scripts/ci/nib83_native/postE17_histogram.py\";test=reader.with_name(\"test_native_writer_integration.py\");tail=root/\"native-reader-section.py\";tail.write_text(\"E17_ID =\"+reader.read_text().split(\"E17_ID =\",1)[1]);commands=[[\"/usr/local/bin/ruff\",\"check\",\"--select\",\"F\",str(test)],[\"/usr/local/bin/ruff\",\"check\",\"--select\",\"E9,F63,F7,F82\",str(reader)],[\"/usr/local/bin/ruff\",\"format\",\"--check\",str(test),str(tail)]]\nfor argv in commands:subprocess.run(argv,check=True)\nprint(\"New sections formatted; legacy formatting debt not rewritten\")"
+  ],
+  "cpus": [
+    124,
+    125
+  ],
+  "original_mutex": "/mnt/raid0/llm/tmp/compute-flags/prep-locks/28-29.lock",
+  "rc": 0
+}

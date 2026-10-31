@@ -1,0 +1,96 @@
+{
+  "schema": "nib83.native-reader-compatibility-proof.v1",
+  "status": "PARENT_ACKNOWLEDGED_SOURCE_PUBLICATION_APPROVED",
+  "root_base": "b5d9f418d89fdcc4eda757b760c27b24e01d58a8",
+  "app_native_source_pin": "0c4833bc3b0a38275e0b41433f9be68d6cf9b11f",
+  "scope": "standalone-reader compatibility only; no live classifier, grading, registry, journal, historical regrade or parent acceptance change",
+  "source_files": [
+    {
+      "path": "scripts/ci/nib83_native/postE17_histogram.py",
+      "sha256": "5f329ce5c34c55b41f24aed3887ae70834a3898e4b504871b318f4079e9d6fb1",
+      "bytes": 18132
+    },
+    {
+      "path": "scripts/ci/nib83_native/test_native_writer_integration.py",
+      "sha256": "3d80fb221f254b628385718ea4e0a97fd8a27c5514c9356a7abdb6bad1d2f399",
+      "bytes": 14458
+    }
+  ],
+  "legacy_function_body_ast_unchanged": true,
+  "same_final_integration_source_red_green": true,
+  "red": {
+    "tests": 6,
+    "failures": 5,
+    "errors": 1,
+    "rc": 1,
+    "log": "red-v3.stdout",
+    "meaningful_failure": "actual native Boolean error was projected as missing text; native clean omission dropped scored wrong rows"
+  },
+  "green": {
+    "tests": 6,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "rc": 0,
+    "log": "green-v4.stdout",
+    "supervisor_elapsed_s": 0.3064785208553076,
+    "sampled_owned_tree_rss_bytes": 66785280,
+    "children_drained": true
+  },
+  "original7_regression": {
+    "runs": 1,
+    "tests": 7,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "purpose": "regression only, not requalification or new task credit",
+    "junit": "original7-regression-junit.xml"
+  },
+  "unconfigured_discovery": {
+    "executed_tests": 0,
+    "class_skips": 1,
+    "reason": "explicit opt-in native sources unconfigured; no passed native-control claim",
+    "log": "ordinary-discovery-v1.stdout"
+  },
+  "lint_style": {
+    "status": "PASS",
+    "scope": "Ruff F on new test; E9/F63/F7/F82 on reader; format-check new native sections and test; legacy formatting debt retained",
+    "log": "lint-style-v1.stdout"
+  },
+  "old_immutable_hosted_capture": {
+    "status": "INCOMPATIBLE_WITH_CHANGED_SOURCE_DO_NOT_REUSE",
+    "original_source_map_sha256": "d2207a3a36dce522235df4dbdccc1d3f48f807f68c4f4f941953f64e87e00e08",
+    "expected_helper_sha256": "cf94c699f3f9912defb622534177415ef8c628241489ea88d425add638780a79",
+    "current_helper_sha256": "5f329ce5c34c55b41f24aed3887ae70834a3898e4b504871b318f4079e9d6fb1",
+    "explanation": "old source-map payload verification would refuse changed helper; original capture/readset/JUnit/receipt remain unchanged and are not resealed"
+  },
+  "actual_cohort": {
+    "captured": false,
+    "qualifying_retained_cohort": null,
+    "full_attempt_denominator": null,
+    "platform_error_histogram": null,
+    "candidate_locations_reviewed": 3,
+    "source_only_synthetic_controls": true
+  },
+  "original_task": {
+    "id": "NIB2-83",
+    "status": "OPEN",
+    "quota_credit": false
+  },
+  "source_capture_enrollment": "none; synthetic compatibility fixtures only, no genuine native cohort capture",
+  "gitnexus": {
+    "risk": "LOW",
+    "impacted_symbols": 2,
+    "index_currency": "UNKNOWN/stale"
+  },
+  "normal_canonical_hooks": "required on the exact staged tree by ordinary private-admin git commit; original hook custody remains private",
+  "limitations": [
+    "Native sidecar generation/scoring times do not bind a quality policy; native sidecar cohort remains unbound.",
+    "Native journal policy key is authoritative; full era identities resolve from the explicit canonical APP registry bytes/hash, never era-name ordering.",
+    "Counts describe physical projected rows, not unique attempts or completeness.",
+    "Native error_detail is newline-normalized/capped at200; complete original error text remains unknown.",
+    "Raw histogram output is private0600 and new-file-only; public summary contains aggregate categories and error-text hashes.",
+    "Actual producer AST slice uses stdlib only; explicit canonical YAML registry decoding reuses PyYAML."
+  ],
+  "parent_approved_source_patch_sha256": "1c01c0cb79d296dcf698c0b1a9e6a03df4d62b634bd5c5322e886eb876d57aa0"
+}

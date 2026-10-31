@@ -1,0 +1,17 @@
+[
+  {
+    "path": "scripts/ci/nib83_native/test_histogram_controls.py",
+    "root_pin": "8318ce329242afe3293ba930bda0c7540114a148",
+    "sha256": "8b9f579db81ca4de3180380f5ce9ad1d1210b13e8af347b90042d9cb3525b7cb"
+  },
+  {
+    "path": "scripts/ci/nib83_native/run_controls.py",
+    "root_pin": "8318ce329242afe3293ba930bda0c7540114a148",
+    "sha256": "ef733fc73d992b28127e409379adde4b17adb29cbbf1394e119b794a91d00165"
+  },
+  {
+    "path": "scripts/ci/nib83_native/source-map.json",
+    "root_pin": "8318ce329242afe3293ba930bda0c7540114a148",
+    "sha256": "d2207a3a36dce522235df4dbdccc1d3f48f807f68c4f4f941953f64e87e00e08"
+  }
+]

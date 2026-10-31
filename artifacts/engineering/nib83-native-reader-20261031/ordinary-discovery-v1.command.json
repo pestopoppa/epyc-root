@@ -1,0 +1,26 @@
+{
+  "argv": [
+    "/usr/bin/taskset",
+    "-c",
+    "124,125",
+    "/usr/bin/python3",
+    "/mnt/raid0/llm/tmp/codex3-ap66-20261031/supervisor-esrch-fix/prep_supervisor.py",
+    "300",
+    "--",
+    "/usr/bin/python3",
+    "-m",
+    "unittest",
+    "discover",
+    "-s",
+    "/mnt/raid0/llm/tmp/codex3-nib83-20261031/fixture/scripts/ci/nib83_native",
+    "-p",
+    "test_native_writer_integration.py",
+    "-v"
+  ],
+  "cpus": [
+    124,
+    125
+  ],
+  "original_mutex": "/mnt/raid0/llm/tmp/compute-flags/prep-locks/28-29.lock",
+  "rc": 0
+}
