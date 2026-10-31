@@ -1,0 +1,8 @@
+.........
+----------------------------------------------------------------------
+Ran 9 tests in 16.556s
+
+OK
+synthetic R30 control: exact capture/finish positive and wrong ID/group/launcher/protocol/grant/source/smoke negatives passed; not production evidence
+synthetic R31 tail control: exact capture/finish positive and wrong ID/group/launcher/protocol/grant/source/smoke negatives passed; not production evidence
+synthetic R32 pool1 control: exact capture/finish positive and wrong ID/group/launcher/protocol/grant/source/smoke negatives passed; not production evidence

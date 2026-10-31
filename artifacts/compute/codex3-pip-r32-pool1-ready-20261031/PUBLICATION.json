@@ -1,0 +1,11 @@
+{
+  "at": "2026-10-31T06:37:21.401795+00:00",
+  "id": "codex3-pip02-paddle-relocatable-r32-pool1-20261031",
+  "manifest_sha256": "c94d86f508ea6d6c1f62c49a11e9f0d7c213df8dd3187daef54f16c8e6fccc59",
+  "row_sha256": "5ed2757bfc6abb17c3fcff1d76a9a9619824c8e057357d68d5014498578e2182",
+  "smoke_sha256": "c206a16a2e935a3f9ad7645e7b9700c34adf8268f9a6e8c6b0b2685adb984ae4",
+  "launcher_sha256": "c0433b0cb4e24bbb287996b5a729f63409b156fc3a76827541c2769dd99ca19f",
+  "source_manifest_sha256": "a3a623f2fd382a1af4de60aa29f70b6348a1afe441333b3b86bff967d5108c29",
+  "catalog_research_commit": "3da40c0942c1",
+  "catalog_manifest_sha256": "28acf498ff6762d8b0d3529ca756931eb801bebbc47704df462291b048177259"
+}

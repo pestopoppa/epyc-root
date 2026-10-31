@@ -1,0 +1,8 @@
+Traceback (most recent call last):
+  File "/mnt/micron/codex3-pip-pool1-r32-20261031/pool.py", line 208, in <module>
+    if __name__=='__main__':raise SystemExit(main())
+                                             ^^^^^^
+  File "/mnt/micron/codex3-pip-pool1-r32-20261031/pool.py", line 166, in main
+    if ident!=f'codex3-pip02-paddle-relocatable-r32-pool{x.pool}-20261031' or not grant.is_file():raise RuntimeError('pool identity or real grant missing')
+                                                                                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+RuntimeError: pool identity or real grant missing

@@ -1,0 +1,71 @@
+{
+  "id": "codex3-unlimited-ocr18-paired-20261031",
+  "owner": "codex3",
+  "priority_rank": 40,
+  "regions": "any-cpu-quarter",
+  "min_window_s": 1800,
+  "window_s": 14400,
+  "gib": 16,
+  "booking_class": "block-correctness",
+  "class": "diagnostic",
+  "decision_rule": "Capture both predeclared native default and canonical profiles on all 18 fixed original pages. Preserve every response, length stop, failure and exposed unknown; aggregate only complete 18-page arms using original OmniDocBench scorer. Report native text Edit_dist, TEDS and reading order separately from descriptive aligned reference-markdown CER. No promotion or GPU timing claim.",
+  "enrollment": "e0817fc3e478175d3364cd3eedd342fe2fd2ccfa",
+  "launcher": {
+    "path": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/unlimited-ocr/launch.sh",
+    "sha256": "8ab147401d81eeced99e0c292596bfbcf9c4ef258bb2d2c8777fdf7f05ae74d2"
+  },
+  "job": {
+    "path": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/unlimited-ocr/worker.py",
+    "sha256": "acfed584b845c0d52fba34570feb2f868ef4c43595bc4e4cb9aa66a3ea631141"
+  },
+  "source_manifest": {
+    "path": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/unlimited-ocr/SOURCE-SHA256SUMS",
+    "sha256": "e6c8256dd9ff887fe8340d6375568e44327799900d08270f1bef11f14f69fd47"
+  },
+  "scratch_root": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/unlimited-ocr",
+  "keep": [
+    "TASK-SOURCE.txt",
+    "CORPUS.json",
+    "PLAN.json",
+    "*.sha256",
+    "SOURCE-SHA256SUMS",
+    "*.py",
+    "*.sh",
+    "*.json",
+    "*.log",
+    "*.out",
+    "region-lock",
+    "engine/*.sh",
+    "engine/*.py",
+    "engine/*.json",
+    "python311/bin/*",
+    "python311/lib/python3.11/**",
+    "score-control/gt.json",
+    "score-control/pred/*.md",
+    "run/*.json",
+    "run/records/*.json",
+    "run/predictions/*/*.md",
+    "run/score-*/**",
+    "smoke-final/**",
+    "smoke-stop-final/**"
+  ],
+  "result_path": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/unlimited-ocr/run/TERMINAL.json",
+  "est_output_GiB": 2,
+  "feasibility": "Actual model and both profile HOST controls at short context took 22.866s on two SMT CPUs and used sampled peak 4.793 GiB; all 36 original page requests and full 4096-token target are untested. 14400 seconds and 16 GiB are budgets, not completion guarantees; exposed interruptions stay UNKNOWN without redraw.",
+  "smoke": {
+    "ran_at": "2026-10-31T06:35:41.941673+00:00",
+    "regions": "R11 128,129",
+    "model": "actual Unlimited-OCR outq8 and F16 mmproj; noncohort image, both profiles, short context and 16 output tokens",
+    "first_request_ok": true,
+    "result_writer_ok": true,
+    "exit_ok": true,
+    "wall_s": 22.865670850966126,
+    "peak_sampled_tree_rss_bytes": 5146664960,
+    "launcher_sha256": "8ab147401d81eeced99e0c292596bfbcf9c4ef258bb2d2c8777fdf7f05ae74d2",
+    "log": "/mnt/raid0/llm/tmp/compute-flags/ready/codex3-unlimited-ocr18-paired-20261031.smoke.log",
+    "log_sha256": "9638a41e2b4872cc0f501960a71d08f8450817ce15f73e7779ebe008696d83af"
+  },
+  "hold": null,
+  "log_consumer": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/unlimited-ocr/log_consumer.py",
+  "completion": "Same final HOST launcher, native model execution and scorer reference control; R13 --complete-cmd and RUS3 inside env-i; active native request STOP75 with partial and child drain. Full cohort unrun."
+}

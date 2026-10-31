@@ -1,0 +1,13 @@
+{
+  "unit": "pip02-score-r32-3da4-20261031.service",
+  "pid": 2610796,
+  "birth_ticks": "155106913",
+  "ppid": 1,
+  "source": "/mnt/raid0/llm/artifacts/pip02-scorer/3da40c094",
+  "manifest_sha256": "28acf498ff6762d8b0d3529ca756931eb801bebbc47704df462291b048177259",
+  "log": "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/scoring-shards-20261030/paddle-watch-r32/systemd.log",
+  "start_utc": "2026-10-31T06:36:35Z",
+  "runtime_max": "24h",
+  "restart": "no",
+  "captured_at": "2026-10-31T06:37:19.222747+00:00"
+}

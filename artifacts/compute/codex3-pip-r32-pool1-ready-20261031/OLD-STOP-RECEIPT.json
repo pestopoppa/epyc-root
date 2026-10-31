@@ -1,0 +1,16 @@
+{
+  "at": "2026-10-31T06:31:10.951625+00:00",
+  "id": "codex3-pip02-paddle-relocatable-r22-pool1-20261030",
+  "pid": 2296183,
+  "birth_ticks": 154794873,
+  "action": "Wrote own cooperative STOP-1 to disable obsolete R22 pool1 compute after terminal rc75. No signals or scheduler metadata mutation.",
+  "grant_absent_before_stop": true,
+  "observed_children": [
+    "2570532"
+  ],
+  "poller_liveness": "alive; engine does not exit idle on STOP, but checks STOP before every new worker start",
+  "not_a_completion_or_pid_death_claim": true,
+  "post_stop_native_grant_path": "/mnt/raid0/llm/tmp/compute-flags/grants/codex3-pip02-paddle-relocatable-r22-pool1-20261030.grant",
+  "post_stop_native_grant_absent": true,
+  "pre_stop_check_note": "Initial parent check tested .json; idle/sleep child was observed. Native engine uses .grant. Exact .grant absence independently verified after STOP; no prior .grant absence is inferred from .json."
+}

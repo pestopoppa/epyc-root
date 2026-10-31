@@ -1,0 +1,383 @@
+  0%|                                                                                                                 | 0/1 [00:00<?, ?it/s]Processing yanbaopptmerge_SE05.pdf_7.md:   0%|                                                                        | 0/1 [00:00<?, ?it/s]Processing yanbaopptmerge_SE05.pdf_7.md: 100%|###############################################################| 1/1 [00:00<00:00, 403.53it/s]
+###### Process:  pred_quick_match
+【text_block】
+Edit_dist:
+---------------  -
+ALL_page_avg     0
+edit_whole       0
+edit_sample_avg  0
+---------------  -
+====================================================================================================
+----Anno Attribute---------------
+Edit_dist:
+---------------------------  -
+text_background: white       0
+text_language: text_english  0
+text_rotate: normal          0
+---------------------------  -
+====================================================================================================
+sample_count:
+---------------------------  -
+text_background: white       4
+text_language: text_english  4
+text_rotate: normal          4
+---------------------------  -
+====================================================================================================
+Edit_dist:
+---------------------  -
+ALL                    0
+colorful_backgroud     0
+data_source: PPT2PDF   0
+language: english      0
+layout: single_column  0
+---------------------  -
+====================================================================================================
+TEDS: 0it [00:00, ?it/s]TEDS: 0it [00:00, ?it/s]
+【table】
+TEDS:
+
+====================================================================================================
+TEDS_structure_only:
+
+====================================================================================================
+Edit_dist:
+------------  ---
+ALL_page_avg  nan
+------------  ---
+====================================================================================================
+----Anno Attribute---------------
+sample_count:
+
+====================================================================================================
+【reading_order】
+Edit_dist:
+---------------  -
+ALL_page_avg     0
+edit_whole       0
+edit_sample_avg  0
+---------------  -
+====================================================================================================
+----Anno Attribute---------------
+sample_count:
+
+====================================================================================================
+Edit_dist:
+---------------------  -
+ALL                    0
+colorful_backgroud     0
+data_source: PPT2PDF   0
+language: english      0
+layout: single_column  0
+---------------------  -
+====================================================================================================
+========== RUNTIME_ENVIRONMENT pred_quick_match ==========
+save_name: pred_quick_match
+[system]
+platform: Linux-6.14.0-37-generic-x86_64-with-glibc2.39
+python_version: 3.11.17 (main, Oct 21 2026, 17:46:53) [Clang 23.1.3 ]
+python_executable: /mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/unlimited-ocr/python311/bin/python3.11
+python_prefix: /mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/unlimited-ocr/python311
+conda_env: 
+conda_prefix: 
+libc: glibc 2.39
+uname: Linux Beelzebub 6.14.0-37-generic #37~24.04.1-Ubuntu SMP PREEMPT_DYNAMIC Thu Nov 20 10:25:38 UTC 2 x86_64 x86_64
+os_release: {"BUG_REPORT_URL": "https://bugs.launchpad.net/ubuntu/", "HOME_URL": "https://www.ubuntu.com/", "ID": "ubuntu", "ID_LIKE": "debian", "LOGO": "ubuntu-logo", "NAME": "Ubuntu", "PRETTY_NAME": "Ubuntu 24.04.5 LTS", "PRIVACY_POLICY_URL": "https://www.ubuntu.com/legal/terms-and-policies/privacy-policy", "SUPPORT_URL": "https://help.ubuntu.com/", "UBUNTU_CODENAME": "noble", "VERSION": "24.04.5 LTS (Noble Numbat)", "VERSION_CODENAME": "noble", "VERSION_ID": "24.04"}
+[system_packages]
+package_manager: dpkg-query
+fontconfig: fontconfig=2.15.0-1.1ubuntu2
+ghostscript: ghostscript=10.02.1~dfsg1-0ubuntu7.10
+imagemagick: imagemagick=8:6.9.12.98+dfsg1-5.2build2
+latexml: latexml=
+python3: python3=3.12.3-0ubuntu2.1
+python3-pip: python3-pip=24.0+dfsg-1ubuntu1.3
+python3-setuptools: python3-setuptools=68.1.2-2ubuntu1.2
+python3-wheel: python3-wheel=0.42.0-2
+texlive-base: texlive-base=2023.20240207-1
+texlive-binaries: texlive-binaries=2023.20230311.66589-9build3
+texlive-fonts-recommended: texlive-fonts-recommended=2023.20240207-1
+texlive-lang-chinese: texlive-lang-chinese=
+texlive-lang-cjk: texlive-lang-cjk=
+texlive-latex-base: texlive-latex-base=2023.20240207-1
+texlive-latex-extra: texlive-latex-extra=2023.20240207-1
+texlive-plain-generic: texlive-plain-generic=2023.20240207-1
+[python_packages]
+Levenshtein: 0.25.1
+Pillow: 10.4.0
+PyYAML: 6.0.2
+apted: 1.0.3
+beautifulsoup4: 4.11.1
+evaluate: 0.4.3
+func-timeout: 4.3.5
+loguru: 0.7.2
+lxml: 4.9.1
+matplotlib: 3.7.5
+nltk: 3.9.1
+numpy: 1.24.4
+pandas: 2.0.3
+pip: 26.2.2
+pylatexenc: 2.10
+scipy: 1.10.1
+setuptools: 84.2.0
+tabulate: 0.9.0
+tqdm: 4.67.1
+wheel: unavailable
+[external_tools]
+convert: path=/usr/bin/convert returncode=0 output=Version: ImageMagick 6.9.12-98 Q16 x86_64 18038 https://legacy.imagemagick.org | Copyright: (C) 1999 ImageMagick Studio LLC | License: https://imagemagick.org/script/license.php | Features: Cipher DPC Modules OpenMP(4.5) | Delegates (built-in): bzlib djvu fftw fontconfig freetype heic jbig jng jp2 jpeg lcms lqr ltdl lzma openexr pangocairo png raw tiff webp wmf x xml zlib
+ghostscript: path=/usr/bin/gs returncode=0 output=10.02.1
+identify: path=/usr/bin/identify returncode=0 output=Version: ImageMagick 6.9.12-98 Q16 x86_64 18038 https://legacy.imagemagick.org | Copyright: (C) 1999 ImageMagick Studio LLC | License: https://imagemagick.org/script/license.php | Features: Cipher DPC Modules OpenMP(4.5) | Delegates (built-in): bzlib djvu fftw fontconfig freetype heic jbig jng jp2 jpeg lcms lqr ltdl lzma openexr pangocairo png raw tiff webp wmf x xml zlib
+kpsewhich: path=/usr/bin/kpsewhich returncode=0 output=kpathsea version 6.3.5 | Copyright 2023 Karl Berry & Olaf Weber. | License LGPLv2.1+: GNU Lesser GPL version 2.1 or later <https://gnu.org/licenses/lgpl.html> | This is free software: you are free to change and redistribute it. | There is NO WARRANTY, to the extent permitted by law.
+latexmlc: path=latexmlc returncode=None output=unavailable (FileNotFoundError: [Errno 2] No such file or directory: 'latexmlc')
+magick: path=magick returncode=None output=unavailable (FileNotFoundError: [Errno 2] No such file or directory: 'magick')
+pdflatex: path=/usr/bin/pdflatex returncode=0 output=pdfTeX 3.141592653-2.6-1.40.25 (TeX Live 2023/Debian) | kpathsea version 6.3.5 | Copyright 2023 Han The Thanh (pdfTeX) et al. | There is NO warranty.  Redistribution of this software is | covered by the terms of both the pdfTeX copyright and
+tlmgr: path=/usr/bin/tlmgr returncode=0 output=tlmgr revision 69653 (2024-01-31 22:52:46 +0100) | tlmgr using installation: /usr/share/texlive | TeX Live (https://tug.org/texlive) version 2023
+[texlive]
+cjk_font_family: gkai
+cjk_sty: status=missing path= version=unavailable date= header=
+cjk_font_fd: status=missing path= version=unavailable date= header=
+
+========== END_RUNTIME_ENVIRONMENT pred_quick_match ==========
+========== STAGE_EXECUTION pred_quick_match ==========
+save_name: pred_quick_match
+[page_match]
+workers: 1
+page_count: 1
+quick_match_truncated_timeout_sec: 300
+match_timeout_sec: 420
+fallbacks:
+  - page_timeout: count=0
+  - quick_match_timeout: count=0
+[table.TEDS]
+workers: 8
+timeout_sec: 120.0
+sample_count: 0
+timeout_case_count: 0
+error_case_count: 0
+exception_case_count: 0
+
+========== END_STAGE_EXECUTION pred_quick_match ==========
+========== FINAL_EVAL_RUN_REPORT pred_quick_match ==========
+{
+  "notebook_metric_summary": {
+    "metrics": {
+      "display_formula_CDM": {
+        "notebook_value": null,
+        "page_denominator": null,
+        "raw": null
+      },
+      "reading_order_Edit_dist": {
+        "notebook_value": 0.0,
+        "page_denominator": 1,
+        "raw": 0.0
+      },
+      "table_TEDS": {
+        "notebook_value": null,
+        "page_denominator": 0,
+        "raw": null
+      },
+      "table_TEDS_structure_only": {
+        "notebook_value": null,
+        "page_denominator": 0,
+        "raw": null
+      },
+      "text_block_Edit_dist": {
+        "notebook_value": 0.0,
+        "page_denominator": 1,
+        "raw": 0.0
+      }
+    },
+    "overall_notebook": null,
+    "source": "tools/generate_result_tables.ipynb#cell-2"
+  },
+  "page_denominators": {
+    "reading_order": {
+      "Edit_dist": {
+        "ALL": 1
+      }
+    },
+    "table": {
+      "Edit_dist": {
+        "ALL": 0
+      },
+      "TEDS": {
+        "ALL": 0
+      },
+      "TEDS_structure_only": {
+        "ALL": 0
+      }
+    },
+    "text_block": {
+      "Edit_dist": {
+        "ALL": 1
+      }
+    }
+  },
+  "runtime_environment": {
+    "external_tools": {
+      "convert": {
+        "output": "Version: ImageMagick 6.9.12-98 Q16 x86_64 18038 https://legacy.imagemagick.org | Copyright: (C) 1999 ImageMagick Studio LLC | License: https://imagemagick.org/script/license.php | Features: Cipher DPC Modules OpenMP(4.5) | Delegates (built-in): bzlib djvu fftw fontconfig freetype heic jbig jng jp2 jpeg lcms lqr ltdl lzma openexr pangocairo png raw tiff webp wmf x xml zlib",
+        "path": "/usr/bin/convert",
+        "returncode": 0
+      },
+      "ghostscript": {
+        "output": "10.02.1",
+        "path": "/usr/bin/gs",
+        "returncode": 0
+      },
+      "identify": {
+        "output": "Version: ImageMagick 6.9.12-98 Q16 x86_64 18038 https://legacy.imagemagick.org | Copyright: (C) 1999 ImageMagick Studio LLC | License: https://imagemagick.org/script/license.php | Features: Cipher DPC Modules OpenMP(4.5) | Delegates (built-in): bzlib djvu fftw fontconfig freetype heic jbig jng jp2 jpeg lcms lqr ltdl lzma openexr pangocairo png raw tiff webp wmf x xml zlib",
+        "path": "/usr/bin/identify",
+        "returncode": 0
+      },
+      "kpsewhich": {
+        "output": "kpathsea version 6.3.5 | Copyright 2023 Karl Berry & Olaf Weber. | License LGPLv2.1+: GNU Lesser GPL version 2.1 or later <https://gnu.org/licenses/lgpl.html> | This is free software: you are free to change and redistribute it. | There is NO WARRANTY, to the extent permitted by law.",
+        "path": "/usr/bin/kpsewhich",
+        "returncode": 0
+      },
+      "latexmlc": {
+        "output": "unavailable (FileNotFoundError: [Errno 2] No such file or directory: 'latexmlc')",
+        "path": "latexmlc",
+        "returncode": null
+      },
+      "magick": {
+        "output": "unavailable (FileNotFoundError: [Errno 2] No such file or directory: 'magick')",
+        "path": "magick",
+        "returncode": null
+      },
+      "pdflatex": {
+        "output": "pdfTeX 3.141592653-2.6-1.40.25 (TeX Live 2023/Debian) | kpathsea version 6.3.5 | Copyright 2023 Han The Thanh (pdfTeX) et al. | There is NO warranty.  Redistribution of this software is | covered by the terms of both the pdfTeX copyright and",
+        "path": "/usr/bin/pdflatex",
+        "returncode": 0
+      },
+      "tlmgr": {
+        "output": "tlmgr revision 69653 (2024-01-31 22:52:46 +0100) | tlmgr using installation: /usr/share/texlive | TeX Live (https://tug.org/texlive) version 2023",
+        "path": "/usr/bin/tlmgr",
+        "returncode": 0
+      }
+    },
+    "python_packages": {
+      "Levenshtein": "0.25.1",
+      "Pillow": "10.4.0",
+      "PyYAML": "6.0.2",
+      "apted": "1.0.3",
+      "beautifulsoup4": "4.11.1",
+      "evaluate": "0.4.3",
+      "func-timeout": "4.3.5",
+      "loguru": "0.7.2",
+      "lxml": "4.9.1",
+      "matplotlib": "3.7.5",
+      "nltk": "3.9.1",
+      "numpy": "1.24.4",
+      "pandas": "2.0.3",
+      "pip": "26.2.2",
+      "pylatexenc": "2.10",
+      "scipy": "1.10.1",
+      "setuptools": "84.2.0",
+      "tabulate": "0.9.0",
+      "tqdm": "4.67.1",
+      "wheel": "unavailable"
+    },
+    "system": {
+      "conda_env": "",
+      "conda_prefix": "",
+      "libc": "glibc 2.39",
+      "os_release": {
+        "BUG_REPORT_URL": "https://bugs.launchpad.net/ubuntu/",
+        "HOME_URL": "https://www.ubuntu.com/",
+        "ID": "ubuntu",
+        "ID_LIKE": "debian",
+        "LOGO": "ubuntu-logo",
+        "NAME": "Ubuntu",
+        "PRETTY_NAME": "Ubuntu 24.04.5 LTS",
+        "PRIVACY_POLICY_URL": "https://www.ubuntu.com/legal/terms-and-policies/privacy-policy",
+        "SUPPORT_URL": "https://help.ubuntu.com/",
+        "UBUNTU_CODENAME": "noble",
+        "VERSION": "24.04.5 LTS (Noble Numbat)",
+        "VERSION_CODENAME": "noble",
+        "VERSION_ID": "24.04"
+      },
+      "platform": "Linux-6.14.0-37-generic-x86_64-with-glibc2.39",
+      "python_executable": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/unlimited-ocr/python311/bin/python3.11",
+      "python_prefix": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/unlimited-ocr/python311",
+      "python_version": "3.11.17 (main, Oct 21 2026, 17:46:53) [Clang 23.1.3 ]",
+      "uname": "Linux Beelzebub 6.14.0-37-generic #37~24.04.1-Ubuntu SMP PREEMPT_DYNAMIC Thu Nov 20 10:25:38 UTC 2 x86_64 x86_64"
+    },
+    "system_packages": {
+      "package_manager": "dpkg-query",
+      "tracked_packages": {
+        "fontconfig": "fontconfig=2.15.0-1.1ubuntu2",
+        "ghostscript": "ghostscript=10.02.1~dfsg1-0ubuntu7.10",
+        "imagemagick": "imagemagick=8:6.9.12.98+dfsg1-5.2build2",
+        "latexml": "latexml=",
+        "python3": "python3=3.12.3-0ubuntu2.1",
+        "python3-pip": "python3-pip=24.0+dfsg-1ubuntu1.3",
+        "python3-setuptools": "python3-setuptools=68.1.2-2ubuntu1.2",
+        "python3-wheel": "python3-wheel=0.42.0-2",
+        "texlive-base": "texlive-base=2023.20240207-1",
+        "texlive-binaries": "texlive-binaries=2023.20230311.66589-9build3",
+        "texlive-fonts-recommended": "texlive-fonts-recommended=2023.20240207-1",
+        "texlive-lang-chinese": "texlive-lang-chinese=",
+        "texlive-lang-cjk": "texlive-lang-cjk=",
+        "texlive-latex-base": "texlive-latex-base=2023.20240207-1",
+        "texlive-latex-extra": "texlive-latex-extra=2023.20240207-1",
+        "texlive-plain-generic": "texlive-plain-generic=2023.20240207-1"
+      }
+    },
+    "texlive": {
+      "cjk_font_family": "gkai",
+      "cjk_font_fd": {
+        "date": "",
+        "header": "",
+        "path": "",
+        "status": "missing",
+        "version": "unavailable"
+      },
+      "cjk_sty": {
+        "date": "",
+        "header": "",
+        "path": "",
+        "status": "missing",
+        "version": "unavailable"
+      }
+    }
+  },
+  "save_name": "pred_quick_match",
+  "stage_execution": {
+    "metrics": {
+      "table": {
+        "TEDS": {
+          "error_case_count": 0,
+          "error_cases": [],
+          "exception_case_count": 0,
+          "exception_cases": [],
+          "sample_count": 0,
+          "timeout_case_count": 0,
+          "timeout_cases": [],
+          "timeout_sec": 120.0,
+          "workers": 8
+        }
+      }
+    },
+    "page_match": {
+      "fallbacks": {
+        "page_timeout": {
+          "cases": [],
+          "count": 0
+        },
+        "quick_match_timeout": {
+          "cases": [],
+          "count": 0
+        }
+      },
+      "match_timeout_sec": 420,
+      "page_count": 1,
+      "quick_match_truncated_timeout_sec": 300,
+      "workers": 1
+    }
+  }
+}
+========== END_FINAL_EVAL_RUN_REPORT pred_quick_match ==========
+[final-eval-run-report] saved to ./result/pred_quick_match_run_summary.json
+[runtime-environment-json] saved to ./result/pred_quick_match_runtime_environment.json
+[runtime-environment-log] saved to ./result/pred_quick_match_runtime_environment.log
+[stage-execution-json] saved to ./result/pred_quick_match_stage_execution.json
+[stage-execution-log] saved to ./result/pred_quick_match_stage_execution.log

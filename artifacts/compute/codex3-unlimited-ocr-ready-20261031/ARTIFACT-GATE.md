@@ -1,0 +1,5 @@
+# Unlimited-OCR Q5_K_M output-head artifact gate
+
+The currently referenced default `/mnt/raid0/llm/models/Unlimited-OCR-GGUF/Unlimited-OCR-Q5_K_M-outq8.gguf` has full SHA-256 `b4c9ba49de7364b1e89767a19566cef618304d01cf030a45b0e5416978c926e2`; original input Q5_K_M SHA is `3f3fc21627c8998cc5b9f682d913ad392f84f72d7037ab465f50a1c8c46d02c2`; the F16 mmproj SHA is `4f28c295e1fcf67a97488e356f2b4372da4702b77fdfad0fa138b5821325743c`. Exact HEAD `DEFAULT_MODEL` points to the outq8 path.
+
+HOST read-only GGUF header and all tensor-payload SHA comparisons report 155 tensors: output.weight has the same [1280,129280] shape and changed Q6_K to Q8_0; all 154 remaining tensors match in shape, type, and payload bytes. Outq8 types: Q5_K 95, Q5_1 6, Q6_K 11, Q8_0 7, F32 36. Detailed per-tensor offsets-independent byte hashes and source identities are in TENSOR-AUDIT.json. This satisfies the artifact SHA + tensor audit item; it is not a generation, CER/TEDS, runtime-residency, memory, or production-quality result. Canonical matched profiles and the full original 18-page demo remain unrun.
