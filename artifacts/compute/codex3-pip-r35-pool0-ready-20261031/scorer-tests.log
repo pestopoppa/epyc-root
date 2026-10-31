@@ -1,0 +1,14 @@
+.........
+----------------------------------------------------------------------
+Ran 9 tests in 33.929s
+
+OK
+synthetic R30 control: exact capture/finish positive and wrong ID/group/launcher/protocol/grant/source/smoke negatives passed; not production evidence
+synthetic R31 tail control: exact capture/finish positive and wrong ID/group/launcher/protocol/grant/source/smoke negatives passed; not production evidence
+synthetic R32 pool1 control: exact capture/finish positive and wrong ID/group/launcher/protocol/grant/source/smoke negatives passed; not production evidence
+synthetic R33 pool0 control: exact capture/finish positive and wrong ID/group/launcher/protocol/grant/source/smoke negatives passed; not production evidence
+synthetic R33 last truncated group control: exact capture/finish positive and wrong ID/group/launcher/protocol/grant/source/smoke negatives passed; not production evidence
+synthetic R34 pool0 control: exact capture/finish positive and wrong ID/group/launcher/protocol/grant/source/smoke negatives passed; not production evidence
+synthetic R34 last truncated group control: exact capture/finish positive and wrong ID/group/launcher/protocol/grant/source/smoke negatives passed; not production evidence
+synthetic R35 pool0 control: exact capture/finish positive and wrong ID/group/launcher/protocol/grant/source/smoke negatives passed; not production evidence
+synthetic R35 last truncated group control: exact capture/finish positive and wrong ID/group/launcher/protocol/grant/source/smoke negatives passed; not production evidence

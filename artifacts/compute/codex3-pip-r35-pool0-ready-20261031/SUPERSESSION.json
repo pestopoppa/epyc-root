@@ -1,0 +1,11 @@
+{
+  "at": "2026-10-31T06:54:30.137490+00:00",
+  "old_id": "codex3-pip02-paddle-relocatable-r33-pool0-20261031",
+  "archived_ready": "/mnt/raid0/llm/tmp/compute-flags/ready/withdrawn/codex3-r33-r35-pool0-cutover-20261031/codex3-pip02-paddle-relocatable-r33-pool0-20261031.json",
+  "old_sha256": "ad2b352c68b0659a4618d5209189c044b968757dfdfb9475705bf154dbb595f5",
+  "new_id": "codex3-pip02-paddle-relocatable-r35-pool0-20261031",
+  "armed_absent_after": true,
+  "native_grant_absent_after": true,
+  "reason": "qualified merged successor, no native R33 exposure",
+  "old_controls_retained": true
+}

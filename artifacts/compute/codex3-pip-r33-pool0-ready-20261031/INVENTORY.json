@@ -1,0 +1,1042 @@
+{
+  "schema": "pip02-pool0-never-started-inventory/v1",
+  "created_utc": "2026-10-31T06:38:48.095158+00:00",
+  "scope": "only groups 41,53,89,113,137,149 of original English755 plan; all 85 missing original starts at audit time",
+  "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+  "campaign_sha256": "7df42c37a8df3a4d35133a8adbeb82af834a06a13ecd074c42bbbee1330f2e15",
+  "original_roots": [
+    "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh",
+    "/mnt/micron/codex3-pip-split-r22-20261030/campaigns-fresh",
+    "/mnt/micron/codex3-pip-relocatable-r25-20261030/campaigns-fresh"
+  ],
+  "groups": [
+    41,
+    53,
+    89,
+    113,
+    137,
+    149
+  ],
+  "pages": [
+    {
+      "group": 41,
+      "shard": 41,
+      "page": {
+        "bytes": 517398,
+        "image": "docstructbench_llm-raw-scihub-o.O-s00374-006-0103-8.pdf_11.jpg",
+        "index": 496,
+        "language": "english",
+        "sha256": "0bed0f0421e3f19a0081ff2722833057c67c387a3d46a69aac79b6c9f91626d3",
+        "table_count": 2
+      }
+    },
+    {
+      "group": 41,
+      "shard": 41,
+      "page": {
+        "bytes": 364706,
+        "image": "docstructbench_llm-raw-scihub-o.O-s00395-011-0222-8.pdf_10.jpg",
+        "index": 497,
+        "language": "english",
+        "sha256": "e0157946a35aefbaf846c0ede638dc77e8873fbe5994ea3f0761ebebf386ceb8",
+        "table_count": 0
+      }
+    },
+    {
+      "group": 41,
+      "shard": 41,
+      "page": {
+        "bytes": 471788,
+        "image": "docstructbench_llm-raw-the-eye-o.O-Attitudes_Towards_Rainwater_Harvesting_1999.pdf_5.jpg",
+        "index": 498,
+        "language": "english",
+        "sha256": "2e0e7704f50abc046c7836ecec7ed25dcf92099f7701532d1e7af465088e5784",
+        "table_count": 0
+      }
+    },
+    {
+      "group": 41,
+      "shard": 41,
+      "page": {
+        "bytes": 289590,
+        "image": "docstructbench_dianzishu_zhongwenzaixian-o.O-63710191.pdf_336.jpg",
+        "index": 533,
+        "language": "english",
+        "sha256": "2fbdc1b68386d7120400bfa232c7049f2e83757bb0b1bc1d9ef842d30ddef1c8",
+        "table_count": 2
+      }
+    },
+    {
+      "group": 41,
+      "shard": 41,
+      "page": {
+        "bytes": 867261,
+        "image": "docstructbench_enbook-zlib-o.O-17208435.pdf_105.jpg",
+        "index": 537,
+        "language": "english",
+        "sha256": "8498d0aa3f7e6beb68627bb6848621d7a72f65dc2396837f61cf6cbaec1d8bf7",
+        "table_count": 0
+      }
+    },
+    {
+      "group": 41,
+      "shard": 42,
+      "page": {
+        "bytes": 959813,
+        "image": "docstructbench_enbook-zlib-o.O-17208435.pdf_57.jpg",
+        "index": 538,
+        "language": "english",
+        "sha256": "18fa444cb54bcc896188ca88184b56c84182be6f454cf64368575d33c4c194fc",
+        "table_count": 0
+      }
+    },
+    {
+      "group": 41,
+      "shard": 42,
+      "page": {
+        "bytes": 214138,
+        "image": "docstructbench_enbook-zlib-o.O-17342542.pdf_25.jpg",
+        "index": 539,
+        "language": "english",
+        "sha256": "55b4772479e0bc7dc68561ea54685730d2c08372a2c207035584a40e650afa46",
+        "table_count": 0
+      }
+    },
+    {
+      "group": 41,
+      "shard": 42,
+      "page": {
+        "bytes": 292124,
+        "image": "docstructbench_enbook-zlib-o.O-19221575.pdf_1173.jpg",
+        "index": 540,
+        "language": "english",
+        "sha256": "7a28738dc334089c664e4beeb8182df42f8c9e5ad9099d607f134fbf4a1ed73b",
+        "table_count": 0
+      }
+    },
+    {
+      "group": 41,
+      "shard": 42,
+      "page": {
+        "bytes": 265034,
+        "image": "docstructbench_llm-raw-the-eye-o.O-ST-169-R1-072694.pdf_76.jpg",
+        "index": 541,
+        "language": "english",
+        "sha256": "d305f7866b1db2279b8a36d9cab2f0b3ee57ce02f82f80c108af3dcd4565697c",
+        "table_count": 0
+      }
+    },
+    {
+      "group": 41,
+      "shard": 42,
+      "page": {
+        "bytes": 112758,
+        "image": "docstructbench_llm-raw-the-eye-o.O-TraneGuide.pdf_7.jpg",
+        "index": 542,
+        "language": "english",
+        "sha256": "509bf65fb7c3846e9fb5e38b01164b4c6b7b0a69546666d9d40fc63f072f3558",
+        "table_count": 1
+      }
+    },
+    {
+      "group": 41,
+      "shard": 43,
+      "page": {
+        "bytes": 554926,
+        "image": "docstructbench_llm-raw-the-eye-o.O-chap08.pdf_12.jpg",
+        "index": 543,
+        "language": "english",
+        "sha256": "6dcb7ef3ad68fe67020b9249396c629d5d5981b90b98fe18cd994bc410a3847c",
+        "table_count": 1
+      }
+    },
+    {
+      "group": 41,
+      "shard": 43,
+      "page": {
+        "bytes": 319823,
+        "image": "yanbaopptmerge_293df2702e017fa1e78f6fe9b42d64ce.pdf_928.jpg",
+        "index": 544,
+        "language": "english",
+        "sha256": "0dad0a9f04182717a22e3de894b8e228fa980383a0837285fafea9a5bd0445e5",
+        "table_count": 0
+      }
+    },
+    {
+      "group": 41,
+      "shard": 43,
+      "page": {
+        "bytes": 262018,
+        "image": "yanbaopptmerge_3aa9b6677e17fd012b0a7a230b9f18db.pdf_1327.jpg",
+        "index": 545,
+        "language": "english",
+        "sha256": "58b806bbeaf78051ed6a4b32a54d335dcd32da2ad0e47b762faea63ee178d614",
+        "table_count": 1
+      }
+    },
+    {
+      "group": 41,
+      "shard": 43,
+      "page": {
+        "bytes": 512525,
+        "image": "yanbaopptmerge_593a9a157e4d56a5a57eb14f1d1beec5.pdf_944.jpg",
+        "index": 546,
+        "language": "english",
+        "sha256": "5a159d13496eae147184d9b188c37864c1632a9ce6ee698902ab5a9b7069927d",
+        "table_count": 0
+      }
+    },
+    {
+      "group": 41,
+      "shard": 43,
+      "page": {
+        "bytes": 256264,
+        "image": "yanbaopptmerge_9081a70ff98b3e7d640660a9412c447d.pdf_1287.jpg",
+        "index": 547,
+        "language": "english",
+        "sha256": "d977045fd2d26873c81268f425bb3be86fc3b60ce0d10f12c91336f7940c1489",
+        "table_count": 0
+      }
+    },
+    {
+      "group": 53,
+      "shard": 53,
+      "page": {
+        "bytes": 619688,
+        "image": "docstructbench_llm-raw-scihub-o.O-s0167-8655%2801%2900019-8.pdf_10.jpg",
+        "index": 640,
+        "language": "english",
+        "sha256": "ddcd104f259ef38dc7a122cbc8e06c838061dab85e2a1438b0a200d77780ac9c",
+        "table_count": 1
+      }
+    },
+    {
+      "group": 53,
+      "shard": 53,
+      "page": {
+        "bytes": 594077,
+        "image": "docstructbench_llm-raw-scihub-o.O-s0362-546x%2897%2900070-9.pdf_7.jpg",
+        "index": 641,
+        "language": "english",
+        "sha256": "445a1c7a96fe5b614e90054b7a52e617bcdccf538a82f2068f6097ef7da47aaa",
+        "table_count": 3
+      }
+    },
+    {
+      "group": 53,
+      "shard": 53,
+      "page": {
+        "bytes": 510659,
+        "image": "docstructbench_llm-raw-scihub-o.O-s10555-005-1578-8.pdf_5.jpg",
+        "index": 642,
+        "language": "english",
+        "sha256": "2a35a74a37afc559245027f4fa381d7bce7fdfd05fb4b05a874d47e7f587d946",
+        "table_count": 2
+      }
+    },
+    {
+      "group": 53,
+      "shard": 53,
+      "page": {
+        "bytes": 384866,
+        "image": "docstructbench_llm-raw-scihub-o.O-s10653-010-9369-8.pdf_11.jpg",
+        "index": 643,
+        "language": "english",
+        "sha256": "a9f8d3ac4d33dd3c00382e629e7d4fa9c6946455fae7036dc33cd33fc8c31459",
+        "table_count": 1
+      }
+    },
+    {
+      "group": 53,
+      "shard": 53,
+      "page": {
+        "bytes": 710600,
+        "image": "docstructbench_llm-raw-the-eye-o.O-1%20Excel.pdf_12.jpg",
+        "index": 644,
+        "language": "english",
+        "sha256": "1fb5a2883d8eb6a3cccf2c4355bf45dade440756734e08dd6b1a2a7ff9bb75cd",
+        "table_count": 0
+      }
+    },
+    {
+      "group": 53,
+      "shard": 54,
+      "page": {
+        "bytes": 1244125,
+        "image": "docstructbench_llm-raw-the-eye-o.O-1995_2418.pdf_1.jpg",
+        "index": 645,
+        "language": "english",
+        "sha256": "2e55d95a912e722deec07720955000a860e99d1fdaa6e2138c7e290066391635",
+        "table_count": 1
+      }
+    },
+    {
+      "group": 53,
+      "shard": 54,
+      "page": {
+        "bytes": 440873,
+        "image": "docstructbench_llm-raw-the-eye-o.O-Chapter14.pdf_2.jpg",
+        "index": 646,
+        "language": "english",
+        "sha256": "89be6fd5ec9747a2a56b62a1f4e83a22191f72efa725724fd9e068ff64885697",
+        "table_count": 0
+      }
+    },
+    {
+      "group": 53,
+      "shard": 54,
+      "page": {
+        "bytes": 241144,
+        "image": "docstructbench_llm-raw-the-eye-o.O-Character%20Sheet%20-%20Form%20Fillable.pdf_2.jpg",
+        "index": 647,
+        "language": "english",
+        "sha256": "3ef05df4739a9cc371940d02979e725864c060363ec29db6fd94a9a183eb9337",
+        "table_count": 6
+      }
+    },
+    {
+      "group": 53,
+      "shard": 54,
+      "page": {
+        "bytes": 1082165,
+        "image": "docstructbench_llm-raw-the-eye-o.O-Dragon%20Magazine%20-%20030.pdf_5.jpg",
+        "index": 648,
+        "language": "english",
+        "sha256": "6f3ef81180834ddb3f93c581a17e72991c51213040694bb6743cb7f8597e3c35",
+        "table_count": 0
+      }
+    },
+    {
+      "group": 53,
+      "shard": 54,
+      "page": {
+        "bytes": 679840,
+        "image": "docstructbench_llm-raw-the-eye-o.O-Player%27s%20Options%20-%20Halflings.pdf_11.jpg",
+        "index": 649,
+        "language": "english",
+        "sha256": "75b82f61183e9dd1ce3a2f27135a5e39888f3822a2fb68a15881f4d008526ae6",
+        "table_count": 2
+      }
+    },
+    {
+      "group": 53,
+      "shard": 55,
+      "page": {
+        "bytes": 629165,
+        "image": "docstructbench_llm-raw-the-eye-o.O-Screen%20Printing%20Booklet.pdf_8.jpg",
+        "index": 650,
+        "language": "english",
+        "sha256": "4bfd2d3a0b176c4b069cca34d451780d3fbed2cf46a1428e71652e20730d700b",
+        "table_count": 0
+      }
+    },
+    {
+      "group": 53,
+      "shard": 55,
+      "page": {
+        "bytes": 605330,
+        "image": "docstructbench_llm-raw-the-eye-o.O-Something%27s%20Cooking.pdf_4.jpg",
+        "index": 651,
+        "language": "english",
+        "sha256": "362878d7910186ab3a7570b8ef06709b0ba7a29a718d19821b13a3bd2c0dcf84",
+        "table_count": 0
+      }
+    },
+    {
+      "group": 53,
+      "shard": 55,
+      "page": {
+        "bytes": 495207,
+        "image": "docstructbench_llm-raw-the-eye-o.O-TFT-Traveller.pdf_6.jpg",
+        "index": 652,
+        "language": "english",
+        "sha256": "e8af8ed46edaf6da97c86f0fe4161c16661a52901abd9020b83d5479e31edace",
+        "table_count": 3
+      }
+    },
+    {
+      "group": 53,
+      "shard": 55,
+      "page": {
+        "bytes": 606473,
+        "image": "docstructbench_llm-raw-the-eye-o.O-Team%20Bravo%20-%20System%20Error.pdf_9.jpg",
+        "index": 653,
+        "language": "english",
+        "sha256": "2b7c8c3b12421bcae6561572bd8409b9bb013e8ed8ddc25e33dc23c298748d54",
+        "table_count": 0
+      }
+    },
+    {
+      "group": 53,
+      "shard": 55,
+      "page": {
+        "bytes": 214373,
+        "image": "jiaocaineedrop_2005_QP.pdf_5.jpg",
+        "index": 654,
+        "language": "english",
+        "sha256": "c0f9de66c6ebb07946d16983eca1c0d1ce8873356a20390c15c6614138cb797c",
+        "table_count": 1
+      }
+    },
+    {
+      "group": 89,
+      "shard": 89,
+      "page": {
+        "bytes": 757602,
+        "image": "PPT_13 fallacies LALT2012_page_009.png",
+        "index": 1305,
+        "language": "english",
+        "sha256": "5f925ad0d1c7c0505a933816677b4bce1ab88e90666df7f44258996850d8b957",
+        "table_count": 0
+      }
+    },
+    {
+      "group": 89,
+      "shard": 89,
+      "page": {
+        "bytes": 1324415,
+        "image": "PPT_LEP power point presentation-English-FINAL-10-31-07_page_011.png",
+        "index": 1306,
+        "language": "english",
+        "sha256": "3e1d3a32d5d51db558d2cf55778cc52c167f33617e220c81d4dbdcb32468e1b7",
+        "table_count": 1
+      }
+    },
+    {
+      "group": 89,
+      "shard": 89,
+      "page": {
+        "bytes": 182291,
+        "image": "PPT_all655920_page_002.png",
+        "index": 1307,
+        "language": "english",
+        "sha256": "d9f7abf361c5151b2f790b54d0caa01a307a554dfca91531f06a8593ab9996c0",
+        "table_count": 0
+      }
+    },
+    {
+      "group": 89,
+      "shard": 89,
+      "page": {
+        "bytes": 213662,
+        "image": "PPT_ch7_page_030.png",
+        "index": 1308,
+        "language": "english",
+        "sha256": "b2524115d06a63be4ea25c92c99a6d8280e2a2ee9d32e2be503c4fbab748b429",
+        "table_count": 0
+      }
+    },
+    {
+      "group": 89,
+      "shard": 89,
+      "page": {
+        "bytes": 281851,
+        "image": "PPT_ch7_page_057.png",
+        "index": 1309,
+        "language": "english",
+        "sha256": "46c3ff5de722184fc1c6faaecc600998c7b84035b4588fe3906fbba935c83608",
+        "table_count": 0
+      }
+    },
+    {
+      "group": 89,
+      "shard": 90,
+      "page": {
+        "bytes": 206816,
+        "image": "PPT_english-guidelines-for-humanities-students.zp199743_page_008.png",
+        "index": 1310,
+        "language": "english",
+        "sha256": "7de451dd9f84f95a166a6e89485ae945872ec121b1ad218f9ca1ff778db2a641",
+        "table_count": 0
+      }
+    },
+    {
+      "group": 89,
+      "shard": 90,
+      "page": {
+        "bytes": 134514,
+        "image": "PPT_fundamental_theorem_of_calculus___page_002.png",
+        "index": 1311,
+        "language": "english",
+        "sha256": "40e9ff643768881bf4241f628a19322f08b983378d58330269877b5a393541f9",
+        "table_count": 0
+      }
+    },
+    {
+      "group": 89,
+      "shard": 90,
+      "page": {
+        "bytes": 146950,
+        "image": "PPT_lay_linalg5_01_05_page_003.png",
+        "index": 1312,
+        "language": "english",
+        "sha256": "43d0ff9edeabba376429edc4cbeb53ccbfca6d905a87c39fdc44231402083050",
+        "table_count": 0
+      }
+    },
+    {
+      "group": 89,
+      "shard": 90,
+      "page": {
+        "bytes": 58336,
+        "image": "PPT_session 10_page_022.png",
+        "index": 1313,
+        "language": "english",
+        "sha256": "ef1c255d8af126a18e174db28a8777371e9ad528d73b5275913f8323ba563188",
+        "table_count": 0
+      }
+    },
+    {
+      "group": 89,
+      "shard": 90,
+      "page": {
+        "bytes": 175788,
+        "image": "PPT_BaharMartonosi_page_005.png",
+        "index": 1314,
+        "language": "english",
+        "sha256": "c872bf793a3c235d9f095ee999087456060718ed3b0606f1a4f2f67116df21b9",
+        "table_count": 0
+      }
+    },
+    {
+      "group": 89,
+      "shard": 91,
+      "page": {
+        "bytes": 137056,
+        "image": "PPT_BaharMartonosi_page_002.png",
+        "index": 1315,
+        "language": "english",
+        "sha256": "93c884ca1b1b3b31b1b7004fa0b918c204165a8a43ab73b302ef2a5c550dd400",
+        "table_count": 0
+      }
+    },
+    {
+      "group": 89,
+      "shard": 91,
+      "page": {
+        "bytes": 107936,
+        "image": "PPT_EnglishtoAmericanTransition_page_009.png",
+        "index": 1316,
+        "language": "english",
+        "sha256": "b96dae944c776a720dfb358210354a8e23724381a7f91382f66cdf3815dfae9e",
+        "table_count": 0
+      }
+    },
+    {
+      "group": 89,
+      "shard": 91,
+      "page": {
+        "bytes": 119330,
+        "image": "PPT_ch7_page_028.png",
+        "index": 1317,
+        "language": "english",
+        "sha256": "d9b887eaeb02d75529175e8703ce0c0e4f04180f684030cf6acb29fef519d0d6",
+        "table_count": 0
+      }
+    },
+    {
+      "group": 89,
+      "shard": 91,
+      "page": {
+        "bytes": 117622,
+        "image": "PPT_esea-app101_page_015.png",
+        "index": 1318,
+        "language": "english",
+        "sha256": "cad6af2a56966e5a7631fdc18b9beff6de9a4cd3a31a202cd91b63f90b003768",
+        "table_count": 0
+      }
+    },
+    {
+      "group": 89,
+      "shard": 91,
+      "page": {
+        "bytes": 76241,
+        "image": "PPT_lecture1_page_022.png",
+        "index": 1319,
+        "language": "english",
+        "sha256": "b7bb458322a449f0a0cc77c62efd71e7ab1310402bfe700b9b295afc0fdbb88c",
+        "table_count": 0
+      }
+    },
+    {
+      "group": 113,
+      "shard": 113,
+      "page": {
+        "bytes": 281336,
+        "image": "book_en_\u56fd\u5916\u6570\u5b66\u6559\u6750-\u6570\u8bba-Melvyn B. Nathanson\u2014Elementary Methods in Number Theory_0092.png",
+        "index": 1444,
+        "language": "english",
+        "sha256": "e102e611215a7e23f31a55ef1d15ee403e077704a19063436b999537715bee71",
+        "table_count": 0
+      }
+    },
+    {
+      "group": 113,
+      "shard": 113,
+      "page": {
+        "bytes": 123469,
+        "image": "book_en_A.Concise.Introduction.to.Linear.Algebra,.Geza.Schay,.Birkhauser,.2012_page_065.png",
+        "index": 1445,
+        "language": "english",
+        "sha256": "3fa3c4c54bf4461e4dafd2e811fb2c70fd22a3ace6c1091b37fb580efe1bef20",
+        "table_count": 0
+      }
+    },
+    {
+      "group": 113,
+      "shard": 113,
+      "page": {
+        "bytes": 267515,
+        "image": "book_en_\u56fd\u5916\u6570\u5b66\u6559\u6750-An Excursion through Elementary Mathematics\uff08\u521d\u7b49\u6570\u5b66\u6f2b\u6e38\uff09-An excursion through elementary mathematics, Vol.3 (Caminha Muniz Neto A)_0100.png",
+        "index": 1446,
+        "language": "english",
+        "sha256": "c1eb15f2035dcaaebc6f3b8e7ea3562c90f2ac2c4774a61e6b1fc3cdd4b67c9c",
+        "table_count": 0
+      }
+    },
+    {
+      "group": 113,
+      "shard": 113,
+      "page": {
+        "bytes": 217229,
+        "image": "book_en_\u642c\u4e66\u5320-3299-Swift Data Structure and Algorithms-2016-\u82f1\u6587\u7248_page_142.png",
+        "index": 1447,
+        "language": "english",
+        "sha256": "389230bae3b731bae738f7d05d711c24fd102304c223bb0cf77ac4c40d0b21de",
+        "table_count": 0
+      }
+    },
+    {
+      "group": 113,
+      "shard": 113,
+      "page": {
+        "bytes": 365654,
+        "image": "book_en_\u642c\u4e66\u5320-3396-iPhone The Missing Manual 10th Edition-2017-\u82f1\u6587\u7248_page_126.png",
+        "index": 1448,
+        "language": "english",
+        "sha256": "7a60d84e7e7d9a9c22b2c759a07a0a5fdd0f61755ab134856a32705952d9c774",
+        "table_count": 0
+      }
+    },
+    {
+      "group": 113,
+      "shard": 114,
+      "page": {
+        "bytes": 236389,
+        "image": "book_en_[\u642c\u4e66\u5320#893][Pyomo\u2014Optimization Modeling in Python].2012.\u82f1\u6587\u7248_page_188.png",
+        "index": 1449,
+        "language": "english",
+        "sha256": "1ebda0c9eff4df0b5814053627aa0a218cb3e5615ef79b98a09f2cdbb06e87fa",
+        "table_count": 1
+      }
+    },
+    {
+      "group": 113,
+      "shard": 114,
+      "page": {
+        "bytes": 209022,
+        "image": "book_en_\u56fd\u5916\u6570\u5b66\u6559\u6750-\u6570\u8bba-Melvyn B. Nathanson\u2014Elementary Methods in Number Theory_0363.png",
+        "index": 1450,
+        "language": "english",
+        "sha256": "05a3bacf972e8b399b14248d9ac6a0e912cb90cb6a3d222d3051f159c0ebb866",
+        "table_count": 0
+      }
+    },
+    {
+      "group": 113,
+      "shard": 114,
+      "page": {
+        "bytes": 406329,
+        "image": "book_en_\u56fd\u5916\u6570\u5b66\u6559\u6750-\u975e\u6570\u5b66\u4e13\u4e1a\u6559\u6750-\u7ebf\u6027\u4ee3\u6570-Gilbert Strang\u2014Linear Algebra and Its Applications 4e_0007.png",
+        "index": 1451,
+        "language": "english",
+        "sha256": "6d58f2ee62a255ae9a8322ca75110a064b40dc6fce9b524f4898811976aa7b7f",
+        "table_count": 0
+      }
+    },
+    {
+      "group": 113,
+      "shard": 114,
+      "page": {
+        "bytes": 358174,
+        "image": "book_en_\u56fd\u5916\u6570\u5b66\u6559\u6750-\u975e\u6570\u5b66\u4e13\u4e1a\u6559\u6750-\u7ebf\u6027\u4ee3\u6570-Gilbert Strang\u2014Linear Algebra and Its Applications 4e_0017.png",
+        "index": 1452,
+        "language": "english",
+        "sha256": "2efca2f31729fa6bb0f4ecfd577e5ba3b74250c166ce73fdcd3a226e90554bab",
+        "table_count": 0
+      }
+    },
+    {
+      "group": 113,
+      "shard": 114,
+      "page": {
+        "bytes": 179482,
+        "image": "book_en_\u56fd\u5916\u6570\u5b66\u6559\u6750-\u975e\u6570\u5b66\u4e13\u4e1a\u6559\u6750-\u7ebf\u6027\u4ee3\u6570-Gilbert Strang\u2014Linear Algebra and Its Applications 4e_0085.png",
+        "index": 1453,
+        "language": "english",
+        "sha256": "8d520bcfc80f784822d2d1b5c0d86e2bc641f6f6733a16524c4139959ee05566",
+        "table_count": 0
+      }
+    },
+    {
+      "group": 113,
+      "shard": 115,
+      "page": {
+        "bytes": 205625,
+        "image": "book_en_\u56fd\u5916\u6570\u5b66\u6559\u6750-\u6570\u8bba-Melvyn B. Nathanson\u2014Elementary Methods in Number Theory_0119.png",
+        "index": 1454,
+        "language": "english",
+        "sha256": "a06930c21b3f1d11252b4a31bea5413430a1eb2916a236b9ee9fd3013fad5695",
+        "table_count": 0
+      }
+    },
+    {
+      "group": 113,
+      "shard": 115,
+      "page": {
+        "bytes": 258220,
+        "image": "book_en_\u642c\u4e66\u5320-2253-The Well-Grounded Rubyist 3rd Edition-2019-\u82f1\u6587\u7248_page_194.png",
+        "index": 1455,
+        "language": "english",
+        "sha256": "7cc47183de889416075f177fb9e6ed370ef79a644b6222d50eabb92169fcc953",
+        "table_count": 0
+      }
+    },
+    {
+      "group": 113,
+      "shard": 115,
+      "page": {
+        "bytes": 209299,
+        "image": "book_en_\u642c\u4e66\u5320-3246-Electronics Cookbook-2017-\u82f1\u6587\u7248_page_193.png",
+        "index": 1456,
+        "language": "english",
+        "sha256": "ab50898675d5f91df123afc6b3ba8e9f3248255a6dc2f0879e82cade38ce01e0",
+        "table_count": 0
+      }
+    },
+    {
+      "group": 113,
+      "shard": 115,
+      "page": {
+        "bytes": 322647,
+        "image": "book_en_\u56fd\u5916\u6570\u5b66\u6559\u6750-An Excursion through Elementary Mathematics\uff08\u521d\u7b49\u6570\u5b66\u6f2b\u6e38\uff09-An excursion through elementary mathematics, Vol.3 (Caminha Muniz Neto A)_0119.png",
+        "index": 1457,
+        "language": "english",
+        "sha256": "5566a3a9eb7898abb46f3b02226701e96cabb0d3a7518e86f76aacec7a4b53b9",
+        "table_count": 0
+      }
+    },
+    {
+      "group": 113,
+      "shard": 115,
+      "page": {
+        "bytes": 148516,
+        "image": "book_en_\u56fd\u5916\u6570\u5b66\u6559\u6750-An Excursion through Elementary Mathematics\uff08\u521d\u7b49\u6570\u5b66\u6f2b\u6e38\uff09-An excursion through elementary mathematics, Vol.3 (Caminha Muniz Neto A)_0451.png",
+        "index": 1458,
+        "language": "english",
+        "sha256": "858b3c7acd9cf1637dbe15337c9e795bb98b0fafe308478ad47e8a84fab8f1f2",
+        "table_count": 0
+      }
+    },
+    {
+      "group": 137,
+      "shard": 137,
+      "page": {
+        "bytes": 500647,
+        "image": "exam_paper_en-file-putnam-archive_2009_Solutions_2009s_page_001.png",
+        "index": 1581,
+        "language": "english",
+        "sha256": "db98a66703e33e7dd34256c8aabd064421695f3bef78af64bdb3d1d2b7bea0cc",
+        "table_count": 0
+      }
+    },
+    {
+      "group": 137,
+      "shard": 137,
+      "page": {
+        "bytes": 471082,
+        "image": "exam_paper_en-file-putnam-archive_2011_Problems_2011_page_001.png",
+        "index": 1582,
+        "language": "english",
+        "sha256": "6ca241a5ea416d543a8fdff9d78a11c425ea9ab9856a4220fa1427eedc9d05b5",
+        "table_count": 0
+      }
+    },
+    {
+      "group": 137,
+      "shard": 137,
+      "page": {
+        "bytes": 565134,
+        "image": "exam_paper_en-file-putnam-archive_2012_Solutions_2012s_page_001.png",
+        "index": 1583,
+        "language": "english",
+        "sha256": "c7d957e9c20ae16f8c68d69d59640a43173727d652344ed33b5db50f15fed9ff",
+        "table_count": 0
+      }
+    },
+    {
+      "group": 137,
+      "shard": 137,
+      "page": {
+        "bytes": 593048,
+        "image": "exam_paper_en-file-putnam-archive_2008_Solutions_2008s_page_005.png",
+        "index": 1584,
+        "language": "english",
+        "sha256": "53b26dafe97cfc39b2df09549f2ac01a97c4b53a020b4e7d09b2c9ff143812ed",
+        "table_count": 0
+      }
+    },
+    {
+      "group": 137,
+      "shard": 137,
+      "page": {
+        "bytes": 500658,
+        "image": "exam_paper_en-file-putnam-archive_2010_Solutions_2010s_page_001.png",
+        "index": 1585,
+        "language": "english",
+        "sha256": "82e66f6bfb653ed44545b8cc3613d9cccd7a9384bbecb909df556a9562f669b8",
+        "table_count": 0
+      }
+    },
+    {
+      "group": 137,
+      "shard": 138,
+      "page": {
+        "bytes": 500416,
+        "image": "exam_paper_en-file-putnam-archive_2011_Solutions_2011s_page_003.png",
+        "index": 1586,
+        "language": "english",
+        "sha256": "757de4d69efc00502dc884f1e2da5f016b6951b20bb97f1288291e660e97846f",
+        "table_count": 0
+      }
+    },
+    {
+      "group": 137,
+      "shard": 138,
+      "page": {
+        "bytes": 5010827,
+        "image": "magazine_TheEconomist.2023.12.02_page_028.png",
+        "index": 1587,
+        "language": "english",
+        "sha256": "7d7e9f47a70138a3eaa49ab49006cc24fda048d7298ea4fa19b127805b9e26a7",
+        "table_count": 0
+      }
+    },
+    {
+      "group": 137,
+      "shard": 138,
+      "page": {
+        "bytes": 6695031,
+        "image": "magazine_TheEconomist.2024.03.02_page_025.png",
+        "index": 1588,
+        "language": "english",
+        "sha256": "9a0f121f09882848f76dbd09c0617b6ba859856d4ed7af618ff7ee37b5ea9f37",
+        "table_count": 0
+      }
+    },
+    {
+      "group": 137,
+      "shard": 138,
+      "page": {
+        "bytes": 2562497,
+        "image": "magazine_TheEconomist.2023.11.25_page_006.png",
+        "index": 1589,
+        "language": "english",
+        "sha256": "4b07bb93eeaa79ab72490308aaa38fe27a322c7db189c356c5a9b26f6e252f0e",
+        "table_count": 0
+      }
+    },
+    {
+      "group": 137,
+      "shard": 138,
+      "page": {
+        "bytes": 5397589,
+        "image": "magazine_TheEconomist.2023.11.18_page_071.png",
+        "index": 1590,
+        "language": "english",
+        "sha256": "bcc18202b4bd03c1c9d9fd0ba3d9796d5da80e5789c5e60b6c0cc3db32c6ed36",
+        "table_count": 0
+      }
+    },
+    {
+      "group": 137,
+      "shard": 139,
+      "page": {
+        "bytes": 18175600,
+        "image": "magazine_TheEconomist.2023.12.23_page_024.png",
+        "index": 1591,
+        "language": "english",
+        "sha256": "55053b88d1900f46a3c7ff75521f8c0e83ccabcb5fae854fc14b6b81ef828543",
+        "table_count": 0
+      }
+    },
+    {
+      "group": 137,
+      "shard": 139,
+      "page": {
+        "bytes": 4948757,
+        "image": "magazine_TheEconomist.2023.12.02_page_031.png",
+        "index": 1592,
+        "language": "english",
+        "sha256": "37ab3d001ad36a1caf0ccc4c2730bbd8768050dd9e388372098e5f16e7369125",
+        "table_count": 0
+      }
+    },
+    {
+      "group": 137,
+      "shard": 139,
+      "page": {
+        "bytes": 5081451,
+        "image": "magazine_TheEconomist.2023.12.16_page_026.png",
+        "index": 1593,
+        "language": "english",
+        "sha256": "820ff0ebcaba8b1308ef8c430dec8c61f9f696131a75b594636f7f43bfb7976e",
+        "table_count": 0
+      }
+    },
+    {
+      "group": 137,
+      "shard": 139,
+      "page": {
+        "bytes": 6278242,
+        "image": "magazine_TheEconomist.2024.02.24_page_007.png",
+        "index": 1594,
+        "language": "english",
+        "sha256": "ee7a0f9b313d31d6b9d8eb85cfbcc3f953b02569b43c1a8738e1ce3ccbbf1668",
+        "table_count": 0
+      }
+    },
+    {
+      "group": 137,
+      "shard": 139,
+      "page": {
+        "bytes": 4924041,
+        "image": "magazine_TheEconomist.2024.02.24_page_076.png",
+        "index": 1595,
+        "language": "english",
+        "sha256": "76e50d3cfceb2a6c9ecefb293380d3c8f3221246c4f78f34d3af658a9b15ea58",
+        "table_count": 5
+      }
+    },
+    {
+      "group": 149,
+      "shard": 149,
+      "page": {
+        "bytes": 331304,
+        "image": "PPT_CalculusReview_page_009.png",
+        "index": 1641,
+        "language": "english",
+        "sha256": "271586573b129abdbb6fea1b9266e4a266b90cfaaba1b42e62dff124c1826081",
+        "table_count": 0
+      }
+    },
+    {
+      "group": 149,
+      "shard": 149,
+      "page": {
+        "bytes": 87658,
+        "image": "PPT_CalculusReview_page_033.png",
+        "index": 1642,
+        "language": "english",
+        "sha256": "244cdc43067438180612694466e158212dee2565457b224ba2a84bd2a6a845da",
+        "table_count": 0
+      }
+    },
+    {
+      "group": 149,
+      "shard": 149,
+      "page": {
+        "bytes": 177154,
+        "image": "PPT_StewartCalcET7e_03_02_page_014.png",
+        "index": 1643,
+        "language": "english",
+        "sha256": "68d20780573d33cbb26248823a9c2aa9bed5d51364282c72975a7a7d6b7444c3",
+        "table_count": 0
+      }
+    },
+    {
+      "group": 149,
+      "shard": 149,
+      "page": {
+        "bytes": 124506,
+        "image": "PPT_all655920_page_008.png",
+        "index": 1644,
+        "language": "english",
+        "sha256": "eca90b0daa6bc026aca47557b15be7f357ca89bdb3aefd84e9f671b6e70f5d99",
+        "table_count": 0
+      }
+    },
+    {
+      "group": 149,
+      "shard": 149,
+      "page": {
+        "bytes": 115771,
+        "image": "PPT_lecture1_page_007.png",
+        "index": 1645,
+        "language": "english",
+        "sha256": "95a3151c2c9f5f3d9e36392065ecd1e7ab6cf49ae9c591b698cff7196ab78601",
+        "table_count": 0
+      }
+    },
+    {
+      "group": 149,
+      "shard": 150,
+      "page": {
+        "bytes": 417494,
+        "image": "PPT_B14_Claeys_Consistent Presentation of Images_v2_page_013.png",
+        "index": 1646,
+        "language": "english",
+        "sha256": "ac60ad889038a28314bd9eb8b4f8c90a59c138d19e3846008fa1ae580758cc1b",
+        "table_count": 0
+      }
+    },
+    {
+      "group": 149,
+      "shard": 150,
+      "page": {
+        "bytes": 582974,
+        "image": "PPT_B14_Claeys_Consistent Presentation of Images_v2_page_024.png",
+        "index": 1647,
+        "language": "english",
+        "sha256": "fc04b85b0e0ee1d163d9adb9ad1063adedcd6eaaa7b16feadb291fa134f83a68",
+        "table_count": 0
+      }
+    },
+    {
+      "group": 149,
+      "shard": 150,
+      "page": {
+        "bytes": 144623,
+        "image": "PPT_EnglishtoAmericanTransition_page_005.png",
+        "index": 1648,
+        "language": "english",
+        "sha256": "af0f8a14ee618fe3066deb61bf2301aea07b11e37dde59065e4a3097fdd6c008",
+        "table_count": 0
+      }
+    },
+    {
+      "group": 149,
+      "shard": 150,
+      "page": {
+        "bytes": 586791,
+        "image": "PPT_Keuk Chan Narith_page_019.png",
+        "index": 1649,
+        "language": "english",
+        "sha256": "acf4898f87424c531f9b4bd35ba7edc1745e9faa8a65f95cce610dd892690d1f",
+        "table_count": 0
+      }
+    },
+    {
+      "group": 149,
+      "shard": 150,
+      "page": {
+        "bytes": 148145,
+        "image": "PPT_PresentationSpecification_page_025.png",
+        "index": 1650,
+        "language": "english",
+        "sha256": "e33983f9e8b82565509cf7eea3824129ef12fff8e4cb4f049dcf3738f49ac86f",
+        "table_count": 0
+      }
+    }
+  ]
+}

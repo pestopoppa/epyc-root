@@ -1,0 +1,12 @@
+{
+  "timestamp": "2026-10-31T06:50:16.018777+00:00",
+  "id": "codex3-pip02-paddle-relocatable-r11-g125-20261029",
+  "terminal_sha256": "613cadb9358d98e75c98deddf25941940723b6d85281627b74cc1f1a3d23b214",
+  "armed_sha256": "7c1ba474d3dcfe360da44d71a6664ef915a6e495a2354bf29163685fa3a6d316",
+  "last_rearm_line": "2026-10-30T04:22:49Z REARM-RESULT codex3-pip02-paddle-relocatable-r11-g125-20261029: OK codex3-pip02-paddle-relocatable-r11-g125-20261029 pid=1176173 | admit: validator OK; admit: MemAvailable 991 GiB, need 96 GiB; class=block-correctness launcher=fill",
+  "last_captured_pid": 1176173,
+  "captured_pid_absent": true,
+  "native_grant_absent": true,
+  "no_matching_proc_or_listener": true,
+  "note": "armed metadata retained; no changes to scheduler state"
+}

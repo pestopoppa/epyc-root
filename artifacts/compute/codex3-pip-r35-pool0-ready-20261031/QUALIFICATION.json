@@ -1,0 +1,27 @@
+{
+  "schema": "pip02-pool0-r35-qual/v1",
+  "scope": "exact-byte --smoke through --job native pool path on isolated public controls; real-grant normal branch untested",
+  "source_manifest_sha256": "85ef3757d55b5b9127e24cb4250fae265819317140789425311c299e066c28d6",
+  "source_pins_sha256": "61b0fc0fc8d7aa9c034a002a9501b7442ddbe6f87894d9fa6efdb0b7692c12ad",
+  "launcher_sha256": "19359800db1b0a88f21a23947836b91efc0a5ed080f02163aeab417cb236fab8",
+  "control_source_matches_normal": true,
+  "no_grant_job_refused": true,
+  "normal": {
+    "log": "/mnt/raid0/llm/tmp/codex3-pip-pool0-merged-r35-20261031-0650/SMOKE-normal.log",
+    "sha256": "658f32c05a94dbb6fe849959dc4a129d1f99c505854b0cf227b6d8d886a771bd",
+    "http_200_durable": 5,
+    "wall_s": 67.036835903069,
+    "peak_bytes": 4942237696,
+    "rc": 75,
+    "drained": true
+  },
+  "stop": {
+    "log": "/mnt/raid0/llm/tmp/codex3-pip-pool0-merged-r35-20261031-0650/SMOKE-stop.log",
+    "sha256": "b34a301ba69667d26fb391aa54bf192e7a05b9ae665df2f8e80ec6fdfaa10a05",
+    "wall_s": 20.725141113856807,
+    "peak_bytes": 4864741376,
+    "rc": 75,
+    "drained": true
+  },
+  "created_utc": "2026-10-31T06:53:40.595866+00:00"
+}

@@ -1,0 +1,7 @@
+[32mCreating model: ('PP-DocLayoutV3', '/mnt/raid0/llm/models/PP-DocLayoutV3-paddle3.0.0', None)[0m
+[32mCreating model: ('PaddleOCR-VL-1.6-0.9B', None, None)[0m
+/mnt/raid0/llm/venvs/paddleocr/lib/python3.12/site-packages/paddlex/inference/models/doc_vlm/predictor.py:545: UserWarning: 'llama-cpp-server' does not support `min_pixels`.
+  warnings.warn(
+/mnt/raid0/llm/venvs/paddleocr/lib/python3.12/site-packages/paddlex/inference/models/doc_vlm/predictor.py:558: UserWarning: 'llama-cpp-server' does not support `max_pixels`.
+  warnings.warn(
+{"new_requests": 5, "partial": true, "pool_workers": 1, "results": [{"no_redraw": true, "page": "jiaocaineedrop_jiaocai_needrop_en_3361.jpg", "partial": "request-budget-before-exposure"}, {"complete": 0, "invalid": 0, "missing": 1, "unknown": 0}], "schema": "pip02-paddle-parallel-pages/v1", "shards": [807, 836]}

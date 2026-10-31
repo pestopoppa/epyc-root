@@ -1,0 +1,21 @@
+{
+  "at": "2026-10-31T06:51:31.788572+00:00",
+  "scope": "read-only; simulate removal of exact own unarmed R33 READY only",
+  "source_manifest_sha256": "85ef3757d55b5b9127e24cb4250fae265819317140789425311c299e066c28d6",
+  "r33_ready_sha256": "ad2b352c68b0659a4618d5209189c044b968757dfdfb9475705bf154dbb595f5",
+  "groups": {
+    "5": null,
+    "17": null,
+    "29": null,
+    "41": null,
+    "53": null,
+    "65": null,
+    "77": null,
+    "89": null,
+    "101": null,
+    "113": null,
+    "125": null,
+    "137": null,
+    "149": null
+  }
+}

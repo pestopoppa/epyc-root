@@ -1,0 +1,14 @@
+{
+  "at": "2026-10-31T06:39:04.037452+00:00",
+  "id": "codex3-pip02-paddle-relocatable-r27-pool0-20261030",
+  "pid": 3309771,
+  "birth_ticks": 154139851,
+  "stop": "/mnt/raid0/llm/tmp/codex3-filing-pip-dtap-c6-20261031-0230/repair/pool-0/STOP-0",
+  "engine_sha256": "e940173f539fcae2e814ab4022e3b3cb48eff1fc3d3a7ccdb5de898be5168aeb",
+  "canonical_grant_absent_before_and_after": true,
+  "observed_children": [
+    "2622776"
+  ],
+  "action": "own cooperative STOP; no signals, grants or queue mutation",
+  "poller_liveness": "alive; source checks STOP before worker starts; no completion claim"
+}

@@ -1,0 +1,4 @@
+f27786317203b724c859c9da5d85f56ab1cac07f25ef84dfeaab77bd3fafc46f  /mnt/raid0/llm/epyc-inference-research/data/turn-taking-cs45-v1/manifest/clips.jsonl
+de36dd36e29b31e7f793edd7076781ee4b3dba2d9a2ae8f036995824ab86c78c  /mnt/raid0/llm/epyc-inference-research/data/turn-taking-cs45-v1/manifest/pairs.jsonl
+c126ecdd28529ac0e2ac489c99b5f109d346a6c51476463460524d0ad8fe42fd  /mnt/raid0/llm/epyc-inference-research/data/turn-taking-cs45-v1/manifest/splits.json
+3893e741f796e21342fd0d5a599db9e9eb3050448532689339f2523f19776407  /mnt/raid0/llm/kernels/production/cpu/llama-tokenize
