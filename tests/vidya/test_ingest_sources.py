@@ -302,6 +302,7 @@ def test_every_source_has_an_end_to_end_fixture_or_a_named_exemption():
     # KVQ's exact producer pin and external-repo artifact path are exercised by
     # test_kv_quant_27b_v10_adapter.py, including its CLI source and ledger fold.
     assert set(ingest_sources.SOURCES) == set(BUILDERS) | {
+        "dev-harness-aggregate",  # Actual miners, publisher, CLI and planning: test_dev_harness_aggregate.py.
         "pip02-incremental-teds",  # Prospective writer, strict projection and private CLI: test_pip02_teds.py.
         "kpf261-plan-steps",  # Synthetic refusal: test_kpf261_plan_steps.py; native canary uses pinned external capture.
         # Prospective real native custody, 13 refusal controls and CLI reingest:
@@ -680,7 +681,8 @@ def test_only_new_refuses_to_revive_retracted_evidence(tmp_path, capsys):
     ledger = Ledger(target)
     support = ledger.read_all()[2].frame
     ledger.append({"frame_type": "epyc.vidya/frame/retraction/v1",
-                   "assertion": {"retracts": support["frame_id"]}})
+                   "assertion": {"retracts": support["frame_id"]},
+                   "pubinfo": {"actor": support["pubinfo"]["actor"]}})
     before = target.read_bytes()
     with pytest.raises(ValueError, match="historical claim.*no live evidence"):
         ingest_sources.ingest(ledger, "contention-gate", [path],

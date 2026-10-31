@@ -557,7 +557,7 @@ INF70_CORPUS_ROOT = Path("/mnt/raid0/llm/tmp/inf70")
 # equal to ingest_sources.SOURCES.
 _FILE_SOURCES = (
     "inf34-a2-raw-prefill",
-    "lb49-combined-diagnostic",
+    "dev-harness-aggregate", "lb49-combined-diagnostic",
     "ufh12-irt-paired",
     "ufh12-gs-coverage",
     "rtg57-vkq-comparison", "rtg57-vkq-oracle",

@@ -1,0 +1,41 @@
+{
+  "classification": "capability",
+  "cohort_complete": false,
+  "correctness": "UNRUN",
+  "efficiency_at_k": "UNRUN",
+  "ended_at": "2026-10-31T12:16:21Z",
+  "expected_attempts": 2400,
+  "exposures_at_or_before_segment_cutoff": 52,
+  "exposures_without_cutoff_result": 0,
+  "native_finish_reason_counts": {
+    "length": 48,
+    "stop": 4
+  },
+  "observed_at": "2026-10-31T12:23:25.371740+00:00",
+  "observed_automatic_resume": {
+    "regions": "0-23",
+    "scheduled_end": "2026-10-31T16:17Z",
+    "start": "2026-10-31T12:18:02Z"
+  },
+  "partial": {
+    "partial": true,
+    "reason": "before next sample or insufficient full request/cleanup reserve"
+  },
+  "pass_at_k": "UNRUN",
+  "rc": 75,
+  "record_manifest": "native-record-hashes.json",
+  "recorded_results_at_or_before_segment_cutoff": 52,
+  "run_id": "codex3-pareval120-k20-gen-20261031",
+  "schema": "epyc.pareval.segment-filing.v1",
+  "scope": "Read-only snapshot of completed result files whose mtimes precede first segment end. Native result/response/exposure hash bindings verified; live resumed run may add files after cutoff. UNKNOWN records are retained as originally written and are never redrawn. No native token content copied into this aggregate metadata.",
+  "status_counts": {
+    "UNKNOWN": 47,
+    "ok": 5
+  },
+  "terminal_present_at_observation": false,
+  "timing": "UNRUN",
+  "unknown_reason_counts": {
+    "ValueError('missing content, preserve native response')": 47
+  },
+  "verdict": "PARTIAL; complete-capture rule unmet; no capability or quality acceptance"
+}

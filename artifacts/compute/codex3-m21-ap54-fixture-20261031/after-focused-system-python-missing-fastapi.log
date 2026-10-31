@@ -1,0 +1,6 @@
+ImportError while loading conftest '/mnt/raid0/llm/tmp/codex3-m21-ap54-fixture-20261031/base-snapshot/tests/conftest.py'.
+tests/conftest.py:45: in <module>
+    from src.api.state import AppState
+src/api/__init__.py:21: in <module>
+    from fastapi import FastAPI
+E   ModuleNotFoundError: No module named 'fastapi'

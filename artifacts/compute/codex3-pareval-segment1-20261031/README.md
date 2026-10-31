@@ -1,0 +1,11 @@
+# ParEval generation first-segment filing — 2026-10-31
+
+The generation-only capture rule requires all 120 pinned prompts × 20 independently seeded attempts (2,400 native outcomes). The first segment ended at 12:16:21 UTC with rc75 and a native partial marker. The read-only cutoff manifest contains 52 completed result files: 5 `ok` and 47 `UNKNOWN`. Native responses reported 48 `length` and 4 `stop` finish reasons; all 47 unknowns have empty completion content and retained reasoning text after consuming the 1,024-token budget. This is a native truncation observation, not a code-correctness failure or a post-hoc recovery of reasoning into completion output.
+
+Classification: capability, **partial, no acceptance verdict**. The complete-capture rule is unmet. No correctness, timing, pass@k, efficiency@k, local sequential baseline or SC45 measured tuple is claimed. Existing RVP-C5-6 and SC45 boxes stay open. No new follow-up box is needed: finish the declared remaining capture while preserving every original unknown, then perform the separately declared contained evaluation.
+
+The launcher automatically resumed at 12:18:02 UTC on q0 with a scheduled 16:17 UTC boundary. This artifact snapshots only records with result-file mtimes at or before the first end; it is not a total for the resumed run. Original live files were read without modification. Each native result's declared exposure/response hashes were checked against the actual files. The bounded manifest records paths, hashes and native response shape, without copying generated code or reasoning. Raw files remain in the original packet's `run/` directory, named in the manifest.
+
+`segment-summary.json` records the actual observation timestamp. The source manifest and generation plan are verbatim copies. `filing-due-record.json` preserves the filer queue's first-segment end record; the original grants `.ended` file was already absent at observation after automatic re-arm. No replacement scheduler receipt was fabricated. No scientific threshold or grading rule was introduced.
+
+Belief: committed-conclusion observation only (`[belief: cc]`). SC45's native evaluation projection remains pending its actual measured records; this generation prerequisite has no such records. Wiki candidate: the existing ParEval/C5 methodology page at the next requested compilation sweep.

@@ -935,7 +935,8 @@ the end are deliberate and recorded so they are not re-derived._
   seeds is cacheable and therefore unscoreable. Complements RVP-C2-7. The durable research reducer
   now emits this axis separately from transform variation; closure still requires an operator-approved
   experimental producer commit and a fresh durable-identity replay.
-- [x] **RVP-C2-12 — A hard error on non-contiguous input must be a FAIL, never a skip.** ✅ 2026-10-31 producer `f744cc220e722d1bda93783959471d44f8e118b0`; Research `1403462340acb89c5652a157a9aacb1ebbb5dd6c`; [fixture tests](../../artifacts/compute/codex3-rvp-c2-12-20261031/TEST.log). [no-belief: source and regression verification] The reference
+- [x] **RVP-C2-12 — A hard error on non-contiguous input must be a FAIL, never a skip.** ✅ 2026-08-13 producer `f744cc220e722d1bda93783959471d44f8e118b0`; Research `1403462340acb89c5652a157a9aacb1ebbb5dd6c`; [fixture tests](../../artifacts/compute/codex3-rvp-c2-12-20261031/TEST.log). [no-belief: source and regression verification] The reference
+  - 2026-10-31 prior-work hygiene only, **excluded from today’s code quota**. The work predates today; evidence filing or verification is not a new implementation. See [operator tick audit](../../artifacts/compute/codex3-tick-audit-20261031/tick-audit-20261031.md). [no-belief: quota-accounting correction]
   suite converts these to skips in half its files; a kernel that cannot accept a strided ggml view is
   not correct for llama.cpp, and a skip records that as neither pass nor fail. **2026-08-11 static
   implementation:** under the separate `--autokernel-layouts` flag, the experimental tool marks an
@@ -1201,6 +1202,7 @@ write-side adapter must exist before the first run, never after._
   CAVEAT that must ride with any number: the drivers wrap the timed region in
   `__attribute__((optimize("O0")))` at a fixed `DRIVER_PROBLEM_SIZE`, so absolute figures are **NOT**
   comparable to our llama-bench protocol and must never be quoted beside them.
+  - 2026-10-31, generation first segment (`codex3-pareval120-k20-gen-20261031`, ended 12:16:21 UTC): **capability / PARTIAL, no acceptance verdict** against the predeclared 2,400-attempt capture rule. The cutoff snapshot has 52 completed native result records: 5 `ok`, 47 `UNKNOWN`; all 47 unknowns have empty completion content with a native `length` finish at 1,024 tokens, with original reasoning/response retained and no redraw. Native finish totals are 48 `length` and 4 `stop`. `PARTIAL.json` reports insufficient reserve before the next request; no final `TERMINAL.json` was present. The launcher automatically resumed at 12:18 UTC; this is the first-segment cutoff, not a current running total. Correctness, local sequential baseline, timing, pass@k, efficiency@k and SC45 measured projection remain **UNRUN**; RVP-C5-6 and SC45 remain open. Finish the existing declared capture, preserve all unknowns, then perform its separately declared contained evaluation. [Bounded native hash manifest and scope](../../artifacts/compute/codex3-pareval-segment1-20261031/README.md). [belief: cc]
 - [ ] **RVP-C5-7 — Build the ParEval HIP arm on gfx90a and run its 60 HIP tasks as a smoke corpus.** The AMD
   arm is `hipcc` with **NO `--offload-arch` pin** — it is LESS constrained than that project's own NVIDIA arm,
   which is hard-pinned to `arch=compute_80,code=sm_80` — and it has been executed on AMD hardware by its

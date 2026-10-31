@@ -1,0 +1,8 @@
+APP fetched-base commit: 1fc5eb1ac21aa400bdc6425a06e4cf8dbc0d6806
+Parent commit: 2f5c05013ccc80d549635878f260bddf0c172452
+Commit metadata: "Fix AP54 fake request headers fixture"; tree f293f42c8e3a14b03f20a3bbb17851dd07499dd1
+
+File SHA-256 comparison (private base-snapshot == commit tree):
+- tests/unit/test_ap54_eval_knowledge_fence.py: 4c542aebd5ae84a3708f4d4c7aa81be0f1a27a319d3bbc56a85e2ad89784ca1e
+- tests/unit/test_m21_probe_writeback.py: 5c1721b1c2649eea942c156798d3cc5601703934e90d6447f3ac6a49b0104b05
+- src/backends/prompt_layout.py: d2afe191f4e007aa2f8c74f302e36fde778635c71e9951f510be7fc1bed92fab

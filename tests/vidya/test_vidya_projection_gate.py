@@ -172,7 +172,7 @@ class TestFreshness:
             frame_type="epyc.vidya/frame/retraction/v1",
             assertion={"retracts": base[0]["frame_id"], "claim_id": "c"},
             provenance={"method": "op", "about": base[0]["frame_id"]},
-            actor="op", authority_scope="research-verification", created_at=NOW)
+            actor="test", authority_scope="research-verification", created_at=NOW)
         assert freshness_of(man, fold(base + [retract], as_of=NOW),
                             artifact_text=text)[0] == Freshness.STALE
 

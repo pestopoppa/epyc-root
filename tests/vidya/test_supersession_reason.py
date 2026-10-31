@@ -54,7 +54,7 @@ def _retraction(target, *, claim="c", reason=None):
         frame_type="epyc.vidya/frame/retraction/v1",
         assertion=assertion,
         provenance={"method": "operator-retraction", "about": target["frame_id"]},
-        actor="operator", authority_scope="research-verification", created_at=NOW)
+        actor="test", authority_scope="research-verification", created_at=NOW)
 
 
 # --- the text arrives -------------------------------------------------------------------------
@@ -92,7 +92,7 @@ def test_a_retraction_reason_finds_the_claim_through_the_frame_it_retracted():
         frame_type="epyc.vidya/frame/retraction/v1",
         assertion={"retracts": s["frame_id"], "reason": WHY},   # no claim_id
         provenance={"method": "operator-retraction", "about": s["frame_id"]},
-        actor="operator", authority_scope="research-verification", created_at=NOW)
+        actor="test", authority_scope="research-verification", created_at=NOW)
     assert WHY in fold([s, bare], as_of=NOW).beliefs["c"].supersession_reasons[0]
 
 

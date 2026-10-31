@@ -384,7 +384,7 @@ class TestFold:
             frame_type="epyc.vidya/frame/retraction/v1",
             assertion={"retracts": s1["frame_id"], "claim_id": "clm-1"},
             provenance={"method": "operator-retraction", "about": s1["frame_id"]},
-            actor="operator", authority_scope="research-verification", created_at=NOW)
+            actor="test/stage2", authority_scope="research-verification", created_at=NOW)
         b = fold([s1, s2, retract], as_of=NOW).beliefs["clm-1"]
         # Zero-substitution: the belief survives at the grade of its surviving path.
         assert b.pro == lat.parse_grade("Judged/Located")
@@ -396,7 +396,7 @@ class TestFold:
             frame_type="epyc.vidya/frame/retraction/v1",
             assertion={"retracts": s1["frame_id"], "claim_id": "clm-1"},
             provenance={"method": "operator-retraction", "about": s1["frame_id"]},
-            actor="operator", authority_scope="research-verification", created_at=NOW)
+            actor="test/stage2", authority_scope="research-verification", created_at=NOW)
         b = fold([s1, retract], as_of=NOW).beliefs["clm-1"]
         assert b.pro == lat.BOTTOM
         assert b.verdict(lat.parse_grade("Hinted/Located")) == Verdict.UNKNOWN
