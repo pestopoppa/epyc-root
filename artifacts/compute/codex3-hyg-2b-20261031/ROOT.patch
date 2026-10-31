@@ -1,0 +1,15 @@
+--- a/scripts/hooks/tests/test_commit_hygiene.py
++++ b/scripts/hooks/tests/test_commit_hygiene.py
+@@ -231,6 +231,12 @@
+ git commit -m x -- b"""
+ 
+ HYG4_CASES: list[tuple[str, int, dict, str]] = [
++    ('cd /workspace && git diff --stat -- file.txt && git commit --dry-run -m "probe"', 0, FRESH,
++     "HYG-2b exact: sibling diff pathspec must not block pathless commit"),
++    ('cd /workspace && git add -- file.txt && git commit --dry-run -m "probe"', 0, FRESH,
++     "HYG-2b safe staged-file chain must remain allowed"),
++    ('cd /workspace && git diff --stat -- file.txt && git commit --dry-run -m "probe" -- file.txt', 2, FRESH,
++     "HYG-2b pair: actual commit pathspec in compound command must block"),
+     ("cd /workspace && git commit -q -F /tmp/msg.txt; echo rc=$?; git log --oneline -1", 0, FRESH,
+      "HYG-4: `;` glued to the -F argument"),
+     (_HEREDOC_THEN_LOG, 0, FRESH, "HYG-4: newline after a heredoc ends the commit segment"),
