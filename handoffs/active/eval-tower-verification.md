@@ -832,7 +832,7 @@ justify best-of-N anywhere. Whether the instrument is worth using is decided by 
       sign. Fix the four defects the dive reproduced by execution while porting (hardcoded `dim=1`
       breaking batched input, hardcoded `.float()` breaking float64, in-place mutation of the caller's
       tensor, no sum-to-one validation). [intake-1162] [intake-1169]
-- [ ] **EV-15b — Pin the read-out spec.** Force an assistant prefix, read completion **position 0**,
+- [x] **EV-15b — Pin the read-out spec.** ✅ 2026-10-31 ROOT `b60a0de57f426fd0c155f06c65245b58b28144c9`; [spec](../../docs/design/ev15b-readout-spec-20261031.md), [tests](../../tests/test_ev15b_readout_spec.py). [no-belief: design specification and deterministic math] Force an assistant prefix, read completion **position 0**,
       restrict to the K score-token ids, `exp` then renormalize **over those K only**. Temperature
       **1.0 exactly**: softmaxing the K judgment logits at T=1 is mathematically identical to
       exponentiating the K score-token logprobs and renormalizing, because the full-vocab denominator
@@ -840,6 +840,7 @@ justify best-of-N anywhere. Whether the instrument is worth using is decided by 
       discarded, not redistributed. First implementation is **K=9, single-digit alphabet, no-CoT**:
       single-token in every tokenizer we run, and it sidesteps the token-bias artifact that appears at
       large K. [intake-1162] [intake-1169]
+      - The 1–9 alphabet is the implementation choice, with per-tokenizer/context verification required before use; no actual tokenizer or model was tested. EV-15c/d guards, native scoring and deployment remain open. [no-belief: design specification and deterministic math]
 - [ ] **EV-15c — Guard the two silent failure modes**, both of which return a well-formed logprob array
       containing nothing scoreable and neither of which raises: (i) a thinking model emitting its
       reasoning token at position 0, and (ii) a generation-oriented chat template, which costs ~50% of
