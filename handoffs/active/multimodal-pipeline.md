@@ -340,6 +340,8 @@ Do not rebuild the C++ accelerator — its source is lost and it never worked.
   no throughput or quality figure. On the first on-demand start, in a window that does not overlap a DS41 CPU
   A/B: decode tok/s paired with an MMMU parity slice vs the 63.6% MI210 figure. Wire it as a belief-kernel
   source (VB-SERVING-DF2).
+  - *(2026-10-31, diagnostic preparation only.)* Published `codex-ni-s18-qwenvl-cpu-r1-20261031` at 08:13:04Z (READY SHA-256 `b15927014bdd7eb366985cce390cf834a23b6f327a3f6c3f436f88474de9b0ea`). Preserves the exact 60-item cohort and 512-token/temp.2/seed42 CPU recipe. The 4-token normal smoke completed (221.4304 s, rc0) but parsed `parse_fail`; the 4-token active cutoff returned rc75/partial at 233.1852 s and drained. These runtime-only admissions are not MMMU scores. The exact paired MI210 reference remains 36/60; historical 159/250 is separate. The true t48/60-item measurement and existing VB-SERVING-DF2 projection/canary remain open; no S-18 completion or quality claim. [Preparation capsule](../../artifacts/compute/codex-ni-s18-qwenvl-cpu-r1-20261031/README.md). [no-belief: runtime smoke and admission only]
+  - Scratch custody: `/mnt/raid0/llm/tmp/codex-ni-next-ranked-cpu-prep-20261031/` is KEEP-pinned through the full 60-item measurement and VB-SERVING-DF2 projection/canary.
 - [ ] **S-19 — re-bench `worker_vision`'s contention pairs before it is ever made HOT again** (PACKAGE M-4; filed
   2026-10-03). Its three measured pairs described the old placement (184-191, `-t 8`); the package moved them to
   `unknown_pairs` with reason `placement_withdrawn` (declared withdrawal, NOT a re-measurement; stamp
@@ -1002,7 +1004,7 @@ capability against the resident VL server.
 
 ## Cold-vision refusal bounded source follow-on — 2026-10-07
 
-**Scratch**: `/mnt/raid0/llm/worktrees/ni08-inf41-s20-app-proposal-20261007/`; MAIN custody `/mnt/raid0/llm/tmp/codex-ni06-main-20261006/`.
+**Scratch**: `/mnt/raid0/llm/worktrees/ni08-inf41-s20-app-proposal-20261007/`; MAIN custody `/mnt/raid0/llm/tmp/codex-ni06-main-20261006/`. S18 native source/data/runtime custody: `/mnt/raid0/llm/tmp/codex-ni-next-ranked-cpu-prep-20261031/` (KEEP through the full 60-item measurement and VB-SERVING-DF2 projection/canary).
 
 - [x] **INF41-S20-SOURCE — honor explicit server-only vision policy at the route fallback boundary.** After configured role endpoints fail, refuse through the existing error contract without POSTing the legacy `/vision/analyze` endpoint. Preserve auto/cli/default behavior and healthy-server responses. Verify the actual handler with fake HTTP/OCR boundaries and exact source/case identities. This closes only redundant legacy fallback source behavior; parent S-20 timing diagnosis/bound and live cold-server acceptance remain separate. No service/model/CLI launch or latency claim.
 
