@@ -8,7 +8,7 @@ Native APP controls passed 135/135 targeted routing tests; test proof, command, 
 
 ROOT index regeneration completed: `scripts/handoffs/index_state.py` wrote `.index-state.json` and `.index-graph.json` (178 nodes, 668 edges, 82 dependencies; 132 ready, 41 blocked, 5 no-open). The generated master block was already current after fresh-main integration. `scripts/handoffs/index_state.py --check` exited 0 with 0 problems. Its citation check was clean (63 citations; 25 `ok`, 38 `record`); it emitted existing scratch-root warnings and noted 116 handoffs without a `Scratch` field, which the authoring guide says to add when those handoffs are next touched.
 
-Canonical README freshness ran from this ROOT lane. It reported 2/3 owned READMEs missing under `/mnt/raid0/llm/tmp/`: `epyc-orchestrator` and `epyc-inference-research`. These are the script's warnings; no README was auto-created or changed.
+Canonical README freshness used the prescribed command `python3 /workspace/.claude/skills/project-wiki/scripts/check_readme_freshness.py --root /workspace`; it exited 0 with no output or warnings. No README was changed.
 
 The lane preserved fresh `origin/main` through `5aac848bbbab9065e3d52f8ac9a52c64ebf6637a` (refactor evidence commits `e32f1178` and its merge); they did not conflict with this task. The untracked `scanner-migration/` selected snapshot was left untouched and unstaged. No wiki compilation, pruning, broad tests, API reload, or inference was performed.
 
