@@ -41938,7 +41938,7 @@
   novelty_justification: The parallel-backbone + sequential-correction 'semi-autoregressive' drafter plus a confidence-gated adaptive-verification-depth controller is a distinct mechanism not covered in chapter 10 (which documents EAGLE-3, DFlash, tree speculation) or by our native MTP-1/NEXTN. grep of intake_index.yaml for DSpark returned 0 prior entries. High.
   relevance_justification: 'Bullseye on the active spec-dec-mtp-refresh focus. Two independently transferable ideas: (1) the semi-autoregressive draft head is a candidate alternative to our native MTP heads and directly comparable via the measure-alpha gate (feedback_measure_alpha memory; draft-vs-target-time-analysis.md); (2) the adaptive verification-depth idea generalizes SpecDec++-style adaptive-K work. Deploy caveat lowers only the model, not the method — hence relevance stays high.'
   verdict_justification: 'adopt_patterns: the drafter architecture and adaptive-K controller are worth mining, but as-published DSpark cannot deploy as-is on our stack — the hardware-aware scheduler is keyed on GPU utilization and the whole design targets high-concurrency GPU batching, whereas our CPU decode is bandwidth-bound and effectively concurrency-1, so the scheduler''s central benefit largely evaporates. The parallel-backbone drafting also implies batched matmuls that are GPU-favorable. The transferable core is the semi-autoregressive draft head, which would need training (DeepSpec pipeline) and a GGUF port to reach v6.'
-  notes: 'RE-ENCOUNTERED 2026-09-26 through intake-1825 (arXiv 2609.15627 cites it): the paper now has an arXiv id, 2607.05147, "DSpark: Confidence-Scheduled Speculative Decoding with Semi-Autoregressive Generation" (resolved against arxiv.org/abs 2026-09-26; title differs from the DeepSpec PDF title recorded above). arxiv_id set on this entry by operator decision OD-1 of the intake-1822..1826 Stage-3 plan; no new entry minted (skill Phase 1 step 2b). The PROVENANCE DEGRADED note below predates the arXiv posting. PROVENANCE DEGRADED: the raw PDF (https://raw.githubusercontent.com/deepseek-ai/DeepSpec/main/DSpark_paper.pdf, 705.9KB, application/octet-stream) is FlateDecode-compressed and could not be parsed by WebFetch. The DSpark method above is RECONSTRUCTED from the DeepSpec README + the DeepSeek-V4-Pro-DSpark model card + a targeted WebSearch (multiple press writeups: MarkTechPost, VentureBeat, AcingAI, TechTimes) that consistently report the same mechanism and numbers. arxiv_id=null: no arXiv id exists for DSpark; per task instruction arXiv 2606.21228 is NOT DSpark (it is Sakana ''Fugu'', intake-728) and was NOT used. credibility_score=2 (Med): non-peer-reviewed vendor PDF (+0 venue), <12 months (+1), major lab DeepSeek (+1), production-speedup framing is self-promotional/marketing-flavored (-1), press corroboration exists but all traces back to DeepSeek''s own release rather than independent measurement (+1). Sibling cluster URLs: the DeepSpec repo and the DeepSeek-V4-Pro-DSpark model card (sibling intake ids unknown at write time). ADVERSARIAL ADDENDUM (verifier): credibility_score kept at 2 but it sits at the TOP of the defensible band — the +1 corroboration is now grounded in a single independent DGX-Spark single-stream benchmark (~1.5x over MTP-1) rather than the press-echo the draft cited; that repro both undershoots the headline (low-concurrency end) and measures wall-clock, not the acceptance-length-over-EAGLE-3 metric, so if it is discounted the score drops to 1 (Low/Med boundary). Verdict adopt_patterns and novelty high / relevance high UNCHANGED. Added a provenance/attribution caveat: real title is ''DSpark: Confidence-Scheduled Speculative Decoding with Semi-Autoregressive Generation'' (alphaXiv 2026.dspark / HyperAI), possible PKU co-authorship — a fetchable clean source exists to upgrade provenance. Also flagged the acceptance-length != wall-clock and concurrency-band caveats, which sharpen (do not overturn) the CPU-inertness thesis: the drafter helps at batch-1 on GPU via idle compute we lack, so it is the SCHEDULER, not the drafter, that is high-concurrency-specific.'
+  notes: 'RE-ENCOUNTERED 2026-09-26 through intake-1825 (arXiv 2609.15627 cites it): the paper now has an arXiv id, 2607.05147, "DSpark: Confidence-Scheduled Speculative Decoding with Semi-Autoregressive Generation" (resolved against arxiv.org/abs 2026-09-26; title differs from the DeepSpec PDF title recorded above). arxiv_id set on this entry by operator decision OD-1 of the intake-1822..1826 Stage-3 plan; no new entry minted (skill Phase 1 step 2b). The PROVENANCE DEGRADED note below predates the arXiv posting. PROVENANCE DEGRADED: the raw PDF (https://raw.githubusercontent.com/deepseek-ai/DeepSpec/main/DSpark_paper.pdf, 705.9KB, application/octet-stream) is FlateDecode-compressed and could not be parsed by WebFetch. The DSpark method above is RECONSTRUCTED from the DeepSpec README + the DeepSeek-V4-Pro-DSpark model card + a targeted WebSearch (multiple press writeups: MarkTechPost, VentureBeat, AcingAI, TechTimes) that consistently report the same mechanism and numbers. arxiv_id=null: no arXiv id exists for DSpark; per task instruction arXiv 2606.21228 is NOT DSpark (it is Sakana ''Fugu'', intake-728) and was NOT used. credibility_score=2 (Med): non-peer-reviewed vendor PDF (+0 venue), <12 months (+1), major lab DeepSeek (+1), production-speedup framing is self-promotional/marketing-flavored (-1), press corroboration exists but all traces back to DeepSeek''s own release rather than independent measurement (+1). Sibling cluster URLs: the DeepSpec repo and the DeepSeek-V4-Pro-DSpark model card (sibling intake ids unknown at write time). ADVERSARIAL ADDENDUM (verifier): credibility_score kept at 2 but it sits at the TOP of the defensible band — the +1 corroboration is now grounded in a single independent DGX-Spark single-stream benchmark (~1.5x over MTP-1) rather than the press-echo the draft cited; that repro both undershoots the headline (low-concurrency end) and measures wall-clock, not the acceptance-length-over-EAGLE-3 metric, so if it is discounted the score drops to 1 (Low/Med boundary). Verdict adopt_patterns and novelty high / relevance high UNCHANGED. Added a provenance/attribution caveat: real title is ''DSpark: Confidence-Scheduled Speculative Decoding with Semi-Autoregressive Generation'' (alphaXiv 2026.dspark / HyperAI), possible PKU co-authorship — a fetchable clean source exists to upgrade provenance. Also flagged the acceptance-length != wall-clock and concurrency-band caveats, which sharpen (do not overturn) the CPU-inertness thesis: the drafter helps at batch-1 on GPU via idle compute we lack, so it is the SCHEDULER, not the drafter, that is high-concurrency-specific. RE-ENCOUNTERED 2026-10-31 (ws58 intake): named as "cheng2026dspark" by DCOCO (intake-2561) as a sequential-corrector baseline; matched by title and mechanism via search, not minted as a new entry.'
 - id: intake-739
   arxiv_id: null
   url: https://huggingface.co/deepseek-ai/DeepSeek-V4-Pro-DSpark
@@ -367801,3 +367801,1603 @@
     at the two-wave cap: LongCodeZip, AgentDiet, ACON, observation masking (history/observation compression; owned by the tool-output-compression
     lineage), github.com/Ayanami1314/swe-pruner (would only settle the opt-in rate).'
   depends_on: []
+- id: intake-2545
+  arxiv_id: null
+  url: https://anoma.ly/hex/
+  source_type: blog
+  title: 'Hex: local push-to-talk voice dictation for Mac, Windows and Linux'
+  categories:
+  - tool_implementation
+  - local_inference
+  novelty: low
+  relevance: low
+  discovered_via: input
+  verdict: worth_investigating
+  ingested_date: '2026-10-31'
+  authors:
+  - Anomaly (anoma.ly)
+  key_claims:
+  - Hold-to-talk local dictation that types transcribed text at the cursor.
+  - Ships for macOS (Apple silicon), Windows (x64/ARM64) and Linux packages.
+  - The landing page names no speech model or runtime.
+  techniques:
+  - push-to-talk local speech-to-text
+  - system-wide text injection
+  reported_results: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - conversation-stack.md
+    experiments: []
+    intake_entries: []
+  recommended_actions:
+  - Identify the STT model/runtime from the linked GitHub repo (expansion seed) before scoring for the speech lane.
+  credibility_score: null
+  contradicting_evidence: null
+  referenced_arxiv_ids: []
+  notes: Landing page is a JS app shell; only static text read. Relevance provisional pending the repo check.
+  verification: stage1-unverified
+  handoffs_updated: []
+  handoffs_created: []
+  source_revision: page sha256-12 bf1c17a96957, retrieved 2026-10-31
+  reader_should_conclude: 'Stage-1 unverified: do not cite any figure, metric or mechanism from this entry until a Stage-2 dive promotes
+    it.'
+- id: intake-2546
+  arxiv_id: null
+  url: https://hazyresearch.stanford.edu/blog/2026-10-12-ncm
+  source_type: blog
+  title: 'Next-Concept Modeling: Fast, Parallel Coarse-to-Fine Text Generation'
+  categories:
+  - inference_serving
+  - speculative_decoding
+  - training_distillation
+  novelty: high
+  relevance: medium
+  discovered_via: input
+  verdict: worth_investigating
+  ingested_date: '2026-10-31'
+  authors:
+  - Hermann Kumbong
+  - Ishan S. Khare
+  - Simran Arora
+  - Azalia Mirhoseini
+  - Christopher Re
+  key_claims:
+  - Text is tokenized into a hierarchy of discrete codes and generated one level at a time, all codes of a level in parallel.
+  - Blog claims large wall-clock speedups over diffusion LM baselines at competitive quality, with fewer training tokens.
+  - Quality is reported with BLEU/ROUGE and MBR scaling in addition to generative perplexity.
+  techniques:
+  - multiscale residual text tokenizer
+  - next-level parallel prediction
+  - nested dropout
+  - MBR decoding
+  reported_results: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - dflash2-block-drafter-experimental-build.md
+    - speculative-decoding-mtp-refresh.md
+    experiments: []
+    intake_entries: []
+  recommended_actions:
+  - Read the paper (expansion seed arXiv 2610.14162) and judge whether coarse-to-fine parallel generation has a drafter or non-AR serving
+    role for EPYC.
+  credibility_score: 2
+  contradicting_evidence: null
+  referenced_arxiv_ids: []
+  notes: Blog only; paper linked from the page (2610.14162, observed in page HTML) is an expansion seed.
+  verification: stage1-unverified
+  handoffs_updated: []
+  handoffs_created: []
+  source_revision: blog dated 2026-10-12, page sha256-12 bbe7f330f064, retrieved 2026-10-31
+  reader_should_conclude: 'Stage-1 unverified: do not cite any figure, metric or mechanism from this entry until a Stage-2 dive promotes
+    it.'
+  integration_disposition: awaiting_dive
+  disposition_evidence:
+  - Recommended for a Stage-2 dive in the ws58 2026-10-31 intake (relevance >= medium); operator pre-approved all recommended dives.
+- id: intake-2547
+  arxiv_id: '2610.40325'
+  url: https://arxiv.org/abs/2610.40325
+  source_type: paper
+  title: 'How to Loop Your Transformer: Loop Scaling, Specialization, and Parallel Inference'
+  categories:
+  - inference_serving
+  - training_distillation
+  - hardware_optimization
+  novelty: medium
+  relevance: medium
+  discovered_via: input
+  verdict: worth_investigating
+  ingested_date: '2026-10-31'
+  authors:
+  - Chanakya Ekbote
+  - Artidoro Pagnoni
+  - Devendra Singh Sachan
+  - Shruti Bhosale
+  - Mike Lewis
+  - Maryam Fazel-Zarandi
+  - Shashank Rajput
+  - Sujan Kumar Gonugondla
+  key_claims:
+  - Looping the full transformer is strongest at a fixed parameter budget; looping a middle block is better under a training-FLOP budget.
+  - Loop gains saturate or reverse; loop-specific low-rank adapters help more at more loops.
+  - A modified Parallel Loop Transformer (current-token embedding kept and normalized separately) recovers looping quality while letting
+    loops run concurrently across positions.
+  - 'Stage-1 read: no wall-clock decode latency is reported for the parallel variant.'
+  techniques:
+  - looped transformers
+  - parallel loop transformer
+  - loop-specific LoRA
+  - cross-position loop parallelism
+  reported_results: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - cpu-decode-roofline-program.md
+    experiments: []
+    intake_entries:
+    - intake-332
+    - intake-457
+  recommended_actions:
+  - 'Dive: decide whether looped/parallel-loop decoding changes bytes-per-token on bandwidth-bound CPU decode, and whether any served
+    or candidate model is looped.'
+  credibility_score: 2
+  contradicting_evidence: null
+  referenced_arxiv_ids: []
+  notes: Meta authors; v1 only at fetch time.
+  verification: stage1-unverified
+  handoffs_updated: []
+  handoffs_created: []
+  source_revision: arXiv:2610.40325v1 HTML sha256-12 a9f6928a899e, retrieved 2026-10-31
+  reader_should_conclude: 'Stage-1 unverified: do not cite any figure, metric or mechanism from this entry until a Stage-2 dive promotes
+    it.'
+  integration_disposition: awaiting_dive
+  disposition_evidence:
+  - Recommended for a Stage-2 dive in the ws58 2026-10-31 intake (relevance >= medium); operator pre-approved all recommended dives.
+- id: intake-2548
+  arxiv_id: '2610.38331'
+  url: https://arxiv.org/abs/2610.38331
+  source_type: paper
+  title: Multi-Token Prediction Done Right
+  categories:
+  - speculative_decoding
+  - training_distillation
+  novelty: medium
+  relevance: high
+  discovered_via: input
+  verdict: worth_investigating
+  ingested_date: '2026-10-31'
+  authors:
+  - Jayden Teoh
+  key_claims:
+  - The MTP cross-entropy gradient decomposes into a KL self-distillation term toward the NTP distribution plus a low-SNR residual.
+  - Soft-MTP recovers the KL gradient by straight-through routing of two CE gradients, without vocabulary-sized logit matrices.
+  - Claims better NTP perplexity, self-speculative acceptance and zero-shot accuracy at 167M-1.2B with no added parameters.
+  - 'Stage-1 read: the text summary of spec-decoding gains and the Table 2 per-cell deltas may disagree.'
+  techniques:
+  - multi-token prediction
+  - KL self-distillation
+  - straight-through gradient routing
+  - self-speculative decoding
+  reported_results: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - speculative-decoding-mtp-refresh.md
+    - qwen-mtp-llamacpp-port.md
+    - cpu-decode-roofline-program.md
+    experiments: []
+    intake_entries: []
+  recommended_actions:
+  - 'Dive: verify Table 2 and decide whether Soft-MTP is the objective to use if we train or restore MTP heads (Flash-Next Axis E, drafter
+    training).'
+  credibility_score: 1
+  contradicting_evidence:
+  - 'Bounded search: nothing on Soft-MTP specifically; general MTP-head limits only.'
+  referenced_arxiv_ids: []
+  notes: Single author; companion code intake-2549.
+  verification: stage1-unverified
+  handoffs_updated: []
+  handoffs_created: []
+  source_revision: arXiv:2610.38331v1 HTML sha256-12 60d4b7009aa0, retrieved 2026-10-31
+  reader_should_conclude: 'Stage-1 unverified: do not cite any figure, metric or mechanism from this entry until a Stage-2 dive promotes
+    it.'
+  integration_disposition: awaiting_dive
+  disposition_evidence:
+  - Recommended for a Stage-2 dive in the ws58 2026-10-31 intake (relevance >= medium); operator pre-approved all recommended dives.
+- id: intake-2549
+  arxiv_id: null
+  url: https://github.com/JaydenTeoh/Soft-MTP
+  source_type: repo
+  title: 'Soft-MTP: official code for "Multi-Token Prediction Done Right"'
+  categories:
+  - speculative_decoding
+  - training_distillation
+  novelty: medium
+  relevance: medium
+  discovered_via: input
+  verdict: worth_investigating
+  ingested_date: '2026-10-31'
+  authors:
+  - Jayden Teoh
+  key_claims:
+  - Hard MTP and Soft-MTP share one loss function and differ by a single flag.
+  - Configs for 167M-1.2B NTP models with K=3 MTP heads; checkpoints on an HF collection.
+  - MIT licensed.
+  techniques:
+  - straight-through KL gradient recovery
+  - MTP head training
+  reported_results: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - speculative-decoding-mtp-refresh.md
+    experiments: []
+    intake_entries:
+    - intake-2548
+  recommended_actions:
+  - 'Dive with intake-2548: check the loss implementation and whether it composes with head-only training on a frozen trunk.'
+  credibility_score: null
+  contradicting_evidence: null
+  referenced_arxiv_ids:
+  - '2610.38331'
+  notes: Companion artifact of intake-2548 (distinct source). README links arXiv 2610.38331.
+  verification: stage1-unverified
+  handoffs_updated: []
+  handoffs_created: []
+  source_revision: README sha256-12 ff54852d6c51 (main), retrieved 2026-10-31
+  reader_should_conclude: 'Stage-1 unverified: do not cite any figure, metric or mechanism from this entry until a Stage-2 dive promotes
+    it.'
+  integration_disposition: awaiting_dive
+  disposition_evidence:
+  - Recommended for a Stage-2 dive in the ws58 2026-10-31 intake (relevance >= medium); operator pre-approved all recommended dives.
+- id: intake-2550
+  arxiv_id: null
+  url: https://divagr.com/blog/qwenputer
+  source_type: blog
+  title: 'Qwenputer: a deterministic RISC-V CPU inside Qwen3.5'
+  categories:
+  - memory_augmented
+  - ssm_hybrid
+  - tool_implementation
+  novelty: high
+  relevance: medium
+  discovered_via: input
+  verdict: worth_investigating
+  ingested_date: '2026-10-31'
+  authors:
+  - Divyansh Agrawal
+  key_claims:
+  - A RISC-V RV32IM CPU is compiled into extra layers of Qwen3.5-4B with no training, using Gated DeltaNet state as exact addressable
+    RAM.
+  - The model invokes the CPU through the normal tool-call format; execution happens inside forward passes.
+  - An experimental in-model file store persists across chats.
+  - Author reports base-model text behaviour within noise of the unmodified model.
+  techniques:
+  - weight-compiled CPU
+  - Gated DeltaNet state as exact RAM (one-hot keys)
+  - in-model key-value store
+  reported_results: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - cpu-decode-roofline-program.md
+    experiments: []
+    intake_entries:
+    - intake-1487
+  recommended_actions:
+  - 'Dive: separate the transferable mechanism (exact GDN-state addressing) from the demo; decide if it informs GDN-hybrid serving or
+    memory work.'
+  credibility_score: 1
+  contradicting_evidence: null
+  referenced_arxiv_ids: []
+  notes: Single-author experiment; repo divagr18/qwenputer is an expansion seed. One blog figure is internally inconsistent.
+  verification: stage1-unverified
+  handoffs_updated: []
+  handoffs_created: []
+  source_revision: blog dated 2026-10-22, page sha256-12 3dd5d3cd692c, retrieved 2026-10-31
+  reader_should_conclude: 'Stage-1 unverified: do not cite any figure, metric or mechanism from this entry until a Stage-2 dive promotes
+    it.'
+  integration_disposition: awaiting_dive
+  disposition_evidence:
+  - Recommended for a Stage-2 dive in the ws58 2026-10-31 intake (relevance >= medium); operator pre-approved all recommended dives.
+- id: intake-2551
+  arxiv_id: '2609.40316'
+  url: https://arxiv.org/abs/2609.40316
+  source_type: paper
+  title: Scaling Laws for Looped Mixture of Experts
+  categories:
+  - moe_optimization
+  - training_distillation
+  - inference_serving
+  novelty: medium
+  relevance: medium
+  discovered_via: input
+  verdict: worth_investigating
+  ingested_date: '2026-10-31'
+  authors:
+  - Yanbei Chen
+  - Anirudh Goyal
+  - Raghuraman Krishnamoorthi
+  key_claims:
+  - A scaling law jointly models recurrence, expert sparsity, model size and data.
+  - Claims sparsity and recurrence give separate parameter efficiencies on reasoning.
+  - Test-time recurrence count acts as a quality dial; per-token compute grows with unroll count.
+  techniques:
+  - looped MoE
+  - recurrent depth
+  - test-time recurrence scaling
+  reported_results: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - cpu-decode-roofline-program.md
+    experiments: []
+    intake_entries:
+    - intake-332
+    - intake-341
+  recommended_actions:
+  - 'Dive: check whether looped MoE trades weight bytes for compute in a way that suits bandwidth-bound EPYC decode.'
+  credibility_score: 2
+  contradicting_evidence: null
+  referenced_arxiv_ids: []
+  notes: Meta authors.
+  verification: stage1-unverified
+  handoffs_updated: []
+  handoffs_created: []
+  source_revision: arXiv:2609.40316v1 HTML sha256-12 2d3a03b8421b, retrieved 2026-10-31
+  reader_should_conclude: 'Stage-1 unverified: do not cite any figure, metric or mechanism from this entry until a Stage-2 dive promotes
+    it.'
+  integration_disposition: awaiting_dive
+  disposition_evidence:
+  - Recommended for a Stage-2 dive in the ws58 2026-10-31 intake (relevance >= medium); operator pre-approved all recommended dives.
+- id: intake-2552
+  arxiv_id: null
+  url: https://huggingface.co/LiquidAI/LFM3-Audio-2B
+  source_type: repo
+  title: LFM3-Audio-2B (Liquid AI model card)
+  categories:
+  - multimodal
+  - local_inference
+  - inference_serving
+  novelty: medium
+  relevance: high
+  discovered_via: input
+  verdict: worth_investigating
+  ingested_date: '2026-10-31'
+  authors:
+  - Liquid AI
+  key_claims:
+  - 'About 2B-parameter end-to-end audio model: text or 16 kHz audio in; text, 24 kHz speech or interleaved out; spoken tool calling.'
+  - Card lists a GGUF checkpoint for llama.cpp but does not state whether audio in/out works there.
+  - Vendor benchmark table compares ASR WER, TTS quality, VoiceBench and tool calling against small omni models.
+  - LFM Open License v1.0.
+  techniques:
+  - causal streaming audio encoder
+  - LiquidCodec audio tokenizer
+  - interleaved text+speech generation
+  - spoken tool calling
+  reported_results: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - conversation-stack.md
+    experiments: []
+    intake_entries:
+    - intake-432
+    - intake-1982
+    - intake-2359
+  recommended_actions:
+  - 'Dive: establish the actual llama.cpp audio path and whether it can replace or augment the whisper.cpp + qwentts.cpp cascade on
+    EPYC/MI210.'
+  credibility_score: 1
+  contradicting_evidence:
+  - 'Bounded search: only restatements of the vendor table (benchlm.ai, orcarouter.ai); no independent evaluation.'
+  referenced_arxiv_ids: []
+  notes: All numbers vendor-measured.
+  verification: stage1-unverified
+  handoffs_updated: []
+  handoffs_created: []
+  source_revision: HF README sha256-12 90a0abb9e3e4, retrieved 2026-10-31
+  reader_should_conclude: 'Stage-1 unverified: do not cite any figure, metric or mechanism from this entry until a Stage-2 dive promotes
+    it.'
+  integration_disposition: awaiting_dive
+  disposition_evidence:
+  - Recommended for a Stage-2 dive in the ws58 2026-10-31 intake (relevance >= medium); operator pre-approved all recommended dives.
+- id: intake-2553
+  arxiv_id: null
+  url: https://huggingface.co/LiquidAI/d1-Omni-2B
+  source_type: repo
+  title: d1-Omni-2B (Liquid AI one-pass typed decision model card)
+  categories:
+  - multimodal
+  - routing_intelligence
+  - local_inference
+  novelty: high
+  relevance: high
+  discovered_via: input
+  verdict: worth_investigating
+  ingested_date: '2026-10-31'
+  authors:
+  - Liquid AI
+  key_claims:
+  - Decision model on LFM3-Omni-2B that returns typed answers with probabilities in one forward pass, with no generated tokens.
+  - Inputs include text/JSON state, images, video frames, audio and spoken questions.
+  - Custom Transformers code; the card names no GGUF/llama.cpp path.
+  - Card reports decision-suite scores including JevBench and per-call latencies on datacenter GPUs.
+  techniques:
+  - one-pass typed decision heads
+  - calibrated probabilities
+  - batched questions per pass
+  reported_results: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - routing-intelligence.md
+    experiments: []
+    intake_entries:
+    - intake-1487
+    - intake-1498
+    - intake-1514
+    - intake-1861
+    - intake-1869
+  recommended_actions:
+  - 'Dive: compare with the d1/Jev decision-model lineage already indexed and decide whether an audio/vision decision front end serves
+    orchestrator routing or the speech turn-taking loop.'
+  credibility_score: 1
+  contradicting_evidence: null
+  referenced_arxiv_ids: []
+  notes: Vendor-run boards.
+  verification: stage1-unverified
+  handoffs_updated: []
+  handoffs_created: []
+  source_revision: HF README sha256-12 71eb818049c1, retrieved 2026-10-31
+  reader_should_conclude: 'Stage-1 unverified: do not cite any figure, metric or mechanism from this entry until a Stage-2 dive promotes
+    it.'
+  integration_disposition: awaiting_dive
+  disposition_evidence:
+  - Recommended for a Stage-2 dive in the ws58 2026-10-31 intake (relevance >= medium); operator pre-approved all recommended dives.
+- id: intake-2554
+  arxiv_id: null
+  url: https://huggingface.co/LiquidAI/LFM3-Omni-2B
+  source_type: repo
+  title: LFM3-Omni-2B (Liquid AI model card)
+  categories:
+  - multimodal
+  - local_inference
+  - inference_serving
+  novelty: medium
+  relevance: high
+  discovered_via: input
+  verdict: worth_investigating
+  ingested_date: '2026-10-31'
+  authors:
+  - Liquid AI
+  key_claims:
+  - 'About 2.2B omni model: text, image, video and audio in; text, speech or interleaved out; non-reasoning; 32K context.'
+  - Card lists a llama.cpp GGUF with local CPU/GPU inference including a realtime speech server.
+  - Vendor tables cover omni, vision and audio benchmarks against small omni models.
+  techniques:
+  - single omni model replacing ASR+VLM+LLM+TTS cascade
+  - shared LiquidCodec tokenizer
+  - native-resolution image tokens
+  reported_results: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - conversation-stack.md
+    - multimodal-pipeline.md
+    experiments: []
+    intake_entries:
+    - intake-432
+    - intake-511
+    - intake-1982
+    - intake-2359
+  recommended_actions:
+  - 'Dive: verify the llama.cpp realtime speech-server path and which ggml generation it needs relative to the frozen kernel set.'
+  credibility_score: 1
+  contradicting_evidence:
+  - 'Bounded search: only restatements of the vendor table; no independent evaluation.'
+  referenced_arxiv_ids: []
+  notes: All numbers vendor-measured.
+  verification: stage1-unverified
+  handoffs_updated: []
+  handoffs_created: []
+  source_revision: HF README sha256-12 2574663e12ee, retrieved 2026-10-31
+  reader_should_conclude: 'Stage-1 unverified: do not cite any figure, metric or mechanism from this entry until a Stage-2 dive promotes
+    it.'
+  integration_disposition: awaiting_dive
+  disposition_evidence:
+  - Recommended for a Stage-2 dive in the ws58 2026-10-31 intake (relevance >= medium); operator pre-approved all recommended dives.
+- id: intake-2555
+  arxiv_id: '2609.36800'
+  url: https://arxiv.org/abs/2609.36800
+  source_type: paper
+  title: 'AI as a Compiler: Compiling Triton kernels without the Triton compiler'
+  categories:
+  - hardware_optimization
+  - tool_implementation
+  - autonomous_research
+  novelty: high
+  relevance: high
+  discovered_via: input
+  verdict: worth_investigating
+  ingested_date: '2026-10-31'
+  authors:
+  - Francois Costa
+  - Charly Castes
+  - Thomas Bourgeat
+  - Azalia Mirhoseini
+  key_claims:
+  - An LLM agent lowers Triton kernels directly to PTX with compile, correctness, benchmark and profile feedback.
+  - Reports a range of speedups versus autotuned Triton across common and recent-paper kernels on three NVIDIA GPUs.
+  - Formal (Volta) verification in the loop costs performance on some kernels versus numeric verification.
+  - Volta cannot handle atomics, input-dependent control flow or bit-level manipulation.
+  techniques:
+  - LLM lowering to PTX
+  - feedback-driven kernel search
+  - Volta equivalence verification
+  reported_results: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - autokernel-research-loop.md
+    - agentic-rocm-kernel-authoring.md
+    - rocm-verify-profile-backend.md
+    experiments: []
+    intake_entries: []
+  recommended_actions:
+  - 'Dive: extract the loop design and the verified-vs-numeric gap; map onto the AK candidate gate and gfx90a/x86 targets.'
+  credibility_score: 2
+  contradicting_evidence:
+  - 'Adjacent, not direct: PTXBench (NeurIPS 2026 listing) reports no evaluated LLM consistently matches frontier libraries; RealisticTritonBench
+    (arXiv 2608.12004, title unchecked) reports many generated kernels fail tests.'
+  referenced_arxiv_ids: []
+  notes: Companion repos intake-2556 and intake-2557. A Stage-1 subagent attached 2510.03215 as a reference; absent from the fetched
+    HTML, dropped.
+  verification: stage1-unverified
+  handoffs_updated: []
+  handoffs_created: []
+  source_revision: arXiv:2609.36800v1 HTML sha256-12 4a3bd2eee5d9, retrieved 2026-10-31
+  reader_should_conclude: 'Stage-1 unverified: do not cite any figure, metric or mechanism from this entry until a Stage-2 dive promotes
+    it.'
+  integration_disposition: awaiting_dive
+  disposition_evidence:
+  - Recommended for a Stage-2 dive in the ws58 2026-10-31 intake (relevance >= medium); operator pre-approved all recommended dives.
+- id: intake-2556
+  arxiv_id: null
+  url: https://github.com/francois141/triton_ai_compiler
+  source_type: repo
+  title: Triton AI Compiler (agent client for PTX Gym)
+  categories:
+  - tool_implementation
+  - hardware_optimization
+  - agent_architecture
+  novelty: medium
+  relevance: medium
+  discovered_via: input
+  verdict: worth_investigating
+  ingested_date: '2026-10-31'
+  authors:
+  - francois141
+  key_claims:
+  - Drives an LLM through write-PTX, verify, benchmark and plan-next-edit against a PTX Gym environment.
+  - Starts from Triton-generated PTX and applies small patches; traces saved per run.
+  - Uses Nsight Compute reports for planning when available; per-run cost budget.
+  techniques:
+  - LLM PTX patch search
+  - profile-grounded planning
+  - cost-budgeted agent loop
+  reported_results: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - autokernel-research-loop.md
+    - agentic-rocm-kernel-authoring.md
+    experiments: []
+    intake_entries:
+    - intake-2555
+  recommended_actions:
+  - 'Dive with intake-2555: read the loop and trace layout for AK reuse.'
+  credibility_score: null
+  contradicting_evidence: null
+  referenced_arxiv_ids: []
+  notes: Companion of intake-2555 by its first author; README does not cite the arXiv id. No license in API.
+  verification: stage1-unverified
+  handoffs_updated: []
+  handoffs_created: []
+  source_revision: README sha256-12 e1af8dfdd2a9 (main), retrieved 2026-10-31
+  reader_should_conclude: 'Stage-1 unverified: do not cite any figure, metric or mechanism from this entry until a Stage-2 dive promotes
+    it.'
+  integration_disposition: awaiting_dive
+  disposition_evidence:
+  - Recommended for a Stage-2 dive in the ws58 2026-10-31 intake (relevance >= medium); operator pre-approved all recommended dives.
+- id: intake-2557
+  arxiv_id: null
+  url: https://github.com/francois141/ptx_verifier
+  source_type: repo
+  title: 'Volta Blackwell: experimental PTX race/deadlock and equivalence checker'
+  categories:
+  - tool_implementation
+  - hardware_optimization
+  novelty: medium
+  relevance: medium
+  discovered_via: input
+  verdict: worth_investigating
+  ingested_date: '2026-10-31'
+  authors:
+  - francois141
+  key_claims:
+  - Checks PTX kernels for races and deadlocks and for equivalence to a reference kernel or spec, modelling floats as reals.
+  - States it is not a sound formal verifier.
+  - Executes only CTA 0 and needs static sizes and thread-index-resolvable control flow.
+  - Fork of the Volta verifier (OOPSLA 2026) extended for Blackwell; MIT.
+  techniques:
+  - symbolic PTX execution
+  - race/deadlock checking
+  - kernel equivalence checking
+  reported_results: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - agentic-rocm-kernel-authoring.md
+    - rocm-verify-profile-backend.md
+    experiments: []
+    intake_entries:
+    - intake-2555
+  recommended_actions:
+  - 'Dive: decide what an equivalence/race checker would add to the AK correctness gate on gfx90a and x86.'
+  credibility_score: null
+  contradicting_evidence: null
+  referenced_arxiv_ids:
+  - '2609.36800'
+  notes: README cites arXiv 2609.36800 and doi 10.1145/3839470.
+  verification: stage1-unverified
+  handoffs_updated: []
+  handoffs_created: []
+  source_revision: README sha256-12 a22f14e5f2a4 (master), retrieved 2026-10-31
+  reader_should_conclude: 'Stage-1 unverified: do not cite any figure, metric or mechanism from this entry until a Stage-2 dive promotes
+    it.'
+  integration_disposition: awaiting_dive
+  disposition_evidence:
+  - Recommended for a Stage-2 dive in the ws58 2026-10-31 intake (relevance >= medium); operator pre-approved all recommended dives.
+- id: intake-2558
+  arxiv_id: null
+  url: https://github.com/fabio-rovai/open-ontologies
+  source_type: repo
+  title: 'Open Ontologies: ontology change planning with certificate-checked derivations'
+  categories:
+  - knowledge_management
+  - tool_implementation
+  novelty: medium
+  relevance: medium
+  discovered_via: input
+  verdict: worth_investigating
+  ingested_date: '2026-10-31'
+  authors:
+  - Fabio Rovai
+  key_claims:
+  - Plans an ontology change and reports new consequences, blast radius and risk before apply.
+  - Emits derivation certificates re-checked by a separate Lean-based checker that rejects forged conclusions.
+  - States no guarantee on unsatisfiability answers; exposes MCP tools; MIT.
+  techniques:
+  - plan-before-apply with blast radius
+  - derivation certificates with independent checker
+  - OWL-RL rule inference
+  reported_results: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - vidya-belief-substrate-program.md
+    - internal-kb-rag.md
+    experiments: []
+    intake_entries: []
+  recommended_actions:
+  - 'Dive: test whether the certificate-plus-independent-checker pattern fits belief-kernel derivations or registry/handoff consistency
+    checks.'
+  credibility_score: null
+  contradicting_evidence: null
+  referenced_arxiv_ids: []
+  notes: Stage-1 subagent scored low/not_applicable; main re-scored medium under the operator lens (verification tooling).
+  verification: stage1-unverified
+  handoffs_updated: []
+  handoffs_created: []
+  source_revision: README sha256-12 08b17008cb3f (main), retrieved 2026-10-31
+  reader_should_conclude: 'Stage-1 unverified: do not cite any figure, metric or mechanism from this entry until a Stage-2 dive promotes
+    it.'
+  integration_disposition: awaiting_dive
+  disposition_evidence:
+  - Recommended for a Stage-2 dive in the ws58 2026-10-31 intake (relevance >= medium); operator pre-approved all recommended dives.
+- id: intake-2559
+  arxiv_id: '2510.03215'
+  url: https://arxiv.org/abs/2510.03215
+  source_type: paper
+  title: 'Cache-to-Cache: Direct Semantic Communication Between Large Language Models'
+  categories:
+  - kv_cache
+  - agent_architecture
+  - routing_intelligence
+  novelty: high
+  relevance: medium
+  discovered_via: input
+  verdict: worth_investigating
+  ingested_date: '2026-10-31'
+  authors:
+  - Tianyu Fu
+  - Zihan Min
+  - Hanling Zhang
+  - Jichao Yan
+  - Guohao Dai
+  - Wanli Ouyang
+  - Yu Wang
+  key_claims:
+  - Projects and fuses a sharer model KV cache into a receiver model KV cache through trained fusers with learnable layer gating.
+  - Claims accuracy above each model alone and above text-to-text communication, with lower latency than text handoff.
+  - Fusers are trained per sharer-receiver pair.
+  techniques:
+  - KV-cache projection and fusion
+  - learnable per-layer gating
+  reported_results: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - delegation-context-preassembly.md
+    - routing-intelligence.md
+    experiments: []
+    intake_entries:
+    - intake-352
+    - intake-353
+  recommended_actions:
+  - 'Dive: decide whether cache-level handoff between our role models is feasible in llama.cpp and what it would save over text handoff.'
+  credibility_score: 1
+  contradicting_evidence: null
+  referenced_arxiv_ids: []
+  notes: A Stage-1 subagent attached arXiv 2610.14162 as a reference; impossible for a 2026-03 revision and absent from the HTML, dropped.
+  verification: stage1-unverified
+  handoffs_updated: []
+  handoffs_created: []
+  source_revision: arXiv:2510.03215v2 HTML sha256-12 3a7631811962, retrieved 2026-10-31
+  reader_should_conclude: 'Stage-1 unverified: do not cite any figure, metric or mechanism from this entry until a Stage-2 dive promotes
+    it.'
+  integration_disposition: awaiting_dive
+  disposition_evidence:
+  - Recommended for a Stage-2 dive in the ws58 2026-10-31 intake (relevance >= medium); operator pre-approved all recommended dives.
+- id: intake-2560
+  arxiv_id: null
+  url: https://github.com/two-delta/DCOCO
+  source_type: repo
+  title: 'DCOCO: contextual correction of parallel drafts (vLLM implementation and drafters)'
+  categories:
+  - speculative_decoding
+  - inference_serving
+  novelty: medium
+  relevance: high
+  discovered_via: input
+  verdict: worth_investigating
+  ingested_date: '2026-10-31'
+  authors:
+  - two-delta
+  key_claims:
+  - Implements the DCOCO corrector as a vLLM image with released DFlash-style drafters for Qwen3-8B and Qwen3-4B.
+  - README restates the paper speedup table.
+  techniques:
+  - parallel block drafting
+  - pairwise transition scoring
+  - prefix-first greedy selection
+  reported_results: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - dflash2-block-drafter-experimental-build.md
+    experiments: []
+    intake_entries:
+    - intake-2561
+    - intake-158
+  recommended_actions:
+  - 'Dive with intake-2561: read the corrector implementation to size a llama.cpp port onto the DFlash2 drafter path.'
+  credibility_score: null
+  contradicting_evidence: null
+  referenced_arxiv_ids:
+  - '2610.12570'
+  notes: Companion artifact of intake-2561; arxiv_id deliberately null (companion).
+  verification: stage1-unverified
+  handoffs_updated: []
+  handoffs_created: []
+  source_revision: README sha256-12 90eeb4c3ebb9 (main), retrieved 2026-10-31
+  reader_should_conclude: 'Stage-1 unverified: do not cite any figure, metric or mechanism from this entry until a Stage-2 dive promotes
+    it.'
+  integration_disposition: awaiting_dive
+  disposition_evidence:
+  - Recommended for a Stage-2 dive in the ws58 2026-10-31 intake (relevance >= medium); operator pre-approved all recommended dives.
+- id: intake-2561
+  arxiv_id: '2610.12570'
+  url: https://arxiv.org/abs/2610.12570
+  source_type: paper
+  title: Contextual Correction of Parallel Drafts for Speculative Decoding
+  categories:
+  - speculative_decoding
+  - inference_serving
+  novelty: high
+  relevance: high
+  discovered_via: input
+  verdict: worth_investigating
+  ingested_date: '2026-10-31'
+  authors:
+  - Roy Eisenstadt
+  - Harel Lidar
+  - Tal Gonen
+  - Omer Luxembourg
+  - Itamar Zimerman
+  - Lior Wolf
+  - Eli David
+  - Ilan Naiman
+  key_claims:
+  - Rescores top-K candidates per slot of a parallel (DFlash) draft using the drafter hidden states, in one batched pass.
+  - Selects the draft by a prefix-first greedy walk matching prefix acceptance.
+  - Claims the best average speedup in every evaluated configuration and that sequential correctors fall behind DFlash under concurrency.
+  - Evaluated on vLLM with a single datacenter NVIDIA GPU.
+  techniques:
+  - DFlash block drafting
+  - contextual candidate rescoring
+  - prefix-first greedy selection
+  reported_results: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - dflash2-block-drafter-experimental-build.md
+    - speculative-decoding-mtp-refresh.md
+    experiments: []
+    intake_entries:
+    - intake-158
+  recommended_actions:
+  - 'Dive: measure-first design — top-K coverage of the verifier token on our DFlash2 drafter logits decides whether a corrector is
+    worth porting.'
+  credibility_score: 1
+  contradicting_evidence:
+  - 'Bounded search (provisional): no independent DCOCO replication. Domino (intake-2569) abstract reports gains over DFlash, the opposite
+    premise to DCOCO on sequential correctors. A Google developers blog notes the non-causal DFlash design clashes with paged attention
+    (adjacent).'
+  referenced_arxiv_ids: []
+  notes: Code and drafters in intake-2560.
+  verification: stage1-unverified
+  handoffs_updated: []
+  handoffs_created: []
+  source_revision: arXiv:2610.12570v1 HTML sha256-12 48ad5fcd3cd5, retrieved 2026-10-31
+  reader_should_conclude: 'Stage-1 unverified: do not cite any figure, metric or mechanism from this entry until a Stage-2 dive promotes
+    it.'
+  integration_disposition: awaiting_dive
+  disposition_evidence:
+  - Recommended for a Stage-2 dive in the ws58 2026-10-31 intake (relevance >= medium); operator pre-approved all recommended dives.
+- id: intake-2562
+  arxiv_id: null
+  url: https://github.com/ekzhang/resin
+  source_type: repo
+  title: 'Resin: experimental library for building inference engines'
+  categories:
+  - inference_serving
+  - hardware_optimization
+  - autonomous_research
+  novelty: medium
+  relevance: medium
+  discovered_via: input
+  verdict: worth_investigating
+  ingested_date: '2026-10-31'
+  authors:
+  - Eric Zhang (ekzhang)
+  key_claims:
+  - Rust engine owns scheduling, KV cache and metrics; model forward passes are per-model Python runners behind a frozen batch-plan
+    boundary.
+  - Unified slab cache pool (KV, SWA, recurrent) with prefix cache; lists MTP and DSpark speculative decoding.
+  - Ships agent skills for model bring-up and performance tuning; self-described as not production quality; Apache-2.0.
+  techniques:
+  - engine/runner split
+  - slab KV pool
+  - agent skills for model bring-up
+  reported_results: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - autokernel-research-loop.md
+    - speculative-decoding-mtp-refresh.md
+    experiments: []
+    intake_entries: []
+  recommended_actions:
+  - 'Dive: read the architecture docs and the optimize-performance skill; extract what transfers to AK loops or llama.cpp serving.'
+  credibility_score: null
+  contradicting_evidence: null
+  referenced_arxiv_ids: []
+  notes: Charts external; no numbers in text.
+  verification: stage1-unverified
+  handoffs_updated: []
+  handoffs_created: []
+  source_revision: README sha256-12 c92a8725e8e0 (main), retrieved 2026-10-31
+  reader_should_conclude: 'Stage-1 unverified: do not cite any figure, metric or mechanism from this entry until a Stage-2 dive promotes
+    it.'
+  integration_disposition: awaiting_dive
+  disposition_evidence:
+  - Recommended for a Stage-2 dive in the ws58 2026-10-31 intake (relevance >= medium); operator pre-approved all recommended dives.
+- id: intake-2563
+  arxiv_id: null
+  url: https://github.com/miuuyy/Octopus-SI-OS
+  source_type: repo
+  title: Octopus Superintelligence OS (research preview agent OS)
+  categories:
+  - agent_architecture
+  novelty: medium
+  relevance: low
+  discovered_via: input
+  verdict: worth_investigating
+  ingested_date: '2026-10-31'
+  authors:
+  - miuuyy
+  key_claims:
+  - macOS agent OS with a Rust kernel, agents as JSON descriptions and a ledger of artifacts, grants and refusals.
+  - Authors state models do not take initiative on their own in their runs.
+  - No measurements reported.
+  techniques:
+  - typed capability interfaces
+  - provenance ledger
+  - policy-gated self-modification
+  reported_results: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - agentic-serving-harness-fixes.md
+    experiments: []
+    intake_entries: []
+  recommended_actions:
+  - None beyond architectural context; no measured result.
+  credibility_score: null
+  contradicting_evidence: null
+  referenced_arxiv_ids: []
+  notes: Stage-1 subagent proposed not_applicable; main scored low/worth_investigating (in-domain agent architecture, but no measurement
+    and no stack touchpoint).
+  verification: stage1-unverified
+  handoffs_updated: []
+  handoffs_created: []
+  source_revision: README sha256-12 177892abecdf (main), retrieved 2026-10-31
+  reader_should_conclude: 'Stage-1 unverified: do not cite any figure, metric or mechanism from this entry until a Stage-2 dive promotes
+    it.'
+- id: intake-2564
+  arxiv_id: null
+  url: https://block.xyz/dessa
+  source_type: blog
+  title: 'Dessa: a full-duplex conversation model trained only on speech (Block)'
+  categories:
+  - multimodal
+  - training_distillation
+  novelty: high
+  relevance: medium
+  discovered_via: input
+  verdict: worth_investigating
+  ingested_date: '2026-10-31'
+  authors:
+  - Block Dessa research lab
+  key_claims:
+  - Full-duplex speech-to-speech model trained from scratch on conversation audio only.
+  - Page claims backchanneling, cut-ins, faster-than-real-time and local inference on a high-end laptop.
+  - No paper, weights or benchmark numbers published; waitlist access.
+  techniques:
+  - full-duplex speech-to-speech
+  - audio-only pretraining
+  reported_results: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - conversation-stack.md
+    experiments: []
+    intake_entries:
+    - intake-1982
+    - intake-511
+  recommended_actions:
+  - 'Dive (light): confirm availability and what is technically claimed; compare with full-duplex designs in the conversation-stack
+    lane.'
+  credibility_score: null
+  contradicting_evidence:
+  - Press coverage (TechCrunch and others, restatement) describes a research preview released 2026-10-23 with no API or weights.
+  referenced_arxiv_ids: []
+  notes: Marketing page.
+  verification: stage1-unverified
+  handoffs_updated: []
+  handoffs_created: []
+  source_revision: page sha256-12 c90aedd97f49, retrieved 2026-10-31
+  reader_should_conclude: 'Stage-1 unverified: do not cite any figure, metric or mechanism from this entry until a Stage-2 dive promotes
+    it.'
+  integration_disposition: awaiting_dive
+  disposition_evidence:
+  - Recommended for a Stage-2 dive in the ws58 2026-10-31 intake (relevance >= medium); operator pre-approved all recommended dives.
+- id: intake-2565
+  arxiv_id: null
+  url: https://claude.com/resources/articles/building-agents-when-to-fold-subagents-into-your-main-agent-loop
+  source_type: blog
+  title: 'Building agents: When to fold subagents into your main agent loop'
+  categories:
+  - agent_architecture
+  - tool_implementation
+  - context_management
+  novelty: low
+  relevance: medium
+  discovered_via: input
+  verdict: worth_investigating
+  ingested_date: '2026-10-31'
+  authors:
+  - Anthropic
+  key_claims:
+  - Reports that a single agent loop with skills often beat one-prompt and subagent designs in enterprise deployments.
+  - Recommends folding subagents one at a time into skills and tools, with task-completion evals per fold.
+  - Gives guidance on tool counts and deferred tool loading.
+  techniques:
+  - single agent loop with skills
+  - subagent-to-skill folding with per-fold evals
+  - deferred tool search
+  reported_results: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - routing-intelligence.md
+    - agentic-serving-harness-fixes.md
+    experiments: []
+    intake_entries: []
+  recommended_actions:
+  - 'Dive: map the folding criteria onto the orchestrator REPL/agent loop (roles as subagents vs skills) and its tool count.'
+  credibility_score: null
+  contradicting_evidence:
+  - Bounded search found no independent head-to-head; a cited "single agent with skills" paper id did not resolve to that title and
+    was dropped.
+  referenced_arxiv_ids: []
+  notes: Vendor guidance; anecdotal numbers only.
+  verification: stage1-unverified
+  handoffs_updated: []
+  handoffs_created: []
+  source_revision: page sha256-12 887153d7da03, retrieved 2026-10-31
+  reader_should_conclude: 'Stage-1 unverified: do not cite any figure, metric or mechanism from this entry until a Stage-2 dive promotes
+    it.'
+  integration_disposition: awaiting_dive
+  disposition_evidence:
+  - Recommended for a Stage-2 dive in the ws58 2026-10-31 intake (relevance >= medium); operator pre-approved all recommended dives.
+- id: intake-2566
+  arxiv_id: '2509.09691'
+  url: https://arxiv.org/abs/2509.09691
+  source_type: paper
+  title: 'Wave-Based Semantic Memory with Resonance-Based Retrieval: A Phase-Aware Alternative to Vector Embedding Stores'
+  categories:
+  - search_retrieval
+  - memory_augmented
+  novelty: medium
+  relevance: low
+  discovered_via: input
+  verdict: worth_investigating
+  ingested_date: '2026-10-31'
+  authors:
+  - Aleksandr Listopad
+  key_claims:
+  - Maps embeddings to complex waveforms and scores phase- and amplitude-aware resonance; reduces to an affine cosine for real equal-norm
+    vectors.
+  - Synthetic operator-set retrieval favours resonance over cosine.
+  - Exact scan retrieval on CPU; no training.
+  techniques:
+  - complex-valued embeddings
+  - resonance similarity
+  reported_results: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - internal-kb-rag.md
+    experiments: []
+    intake_entries: []
+  recommended_actions:
+  - 'None: KB retrieval is ColBERT MaxSim; synthetic-only evidence.'
+  credibility_score: 0
+  contradicting_evidence: null
+  referenced_arxiv_ids: []
+  notes: Stage-1 subagent proposed not_applicable; main scored low/worth_investigating (retrieval is in domain; evidence is synthetic
+    and single-machine).
+  verification: stage1-unverified
+  handoffs_updated: []
+  handoffs_created: []
+  source_revision: arXiv:2509.09691v1 HTML sha256-12 184937b681d1, retrieved 2026-10-31
+  reader_should_conclude: 'Stage-1 unverified: do not cite any figure, metric or mechanism from this entry until a Stage-2 dive promotes
+    it.'
+- id: intake-2567
+  arxiv_id: null
+  url: https://bottlecapai.com/post/thinkingcap-qwen3-8-flash-next/
+  source_type: blog
+  title: 'ThinkingCap: Qwen3.8-Flash-Next with less thinking at comparable accuracy (BottleCap AI)'
+  categories:
+  - training_distillation
+  - benchmark_methodology
+  - cost_aware_routing
+  novelty: medium
+  relevance: high
+  discovered_via: input
+  verdict: worth_investigating
+  ingested_date: '2026-10-31'
+  authors:
+  - BottleCap AI
+  key_claims:
+  - Finetune of Qwen3.8-Flash-Next that shortens thinking traces while leaving other behaviour unchanged.
+  - Six-benchmark vendor-run eval reports fewer thinking tokens at slightly lower accuracy, with multi-seed intervals.
+  - Eval ran on vLLM without speculative decoding on datacenter GPUs.
+  techniques:
+  - reasoning-length compression finetune
+  - multi-seed evaluation
+  reported_results: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - cpu-decode-roofline-program.md
+    - architect-model-selection-bench.md
+    experiments: []
+    intake_entries:
+    - intake-892
+  recommended_actions:
+  - 'Dive: verify the table, check the HF card (quant/MTP head) and decide a same-recipe token-count and accuracy probe on our harness.'
+  credibility_score: 0
+  contradicting_evidence:
+  - 'Bounded search: no independent evaluation of ThinkingCap Qwen3.8-Flash-Next found.'
+  referenced_arxiv_ids: []
+  notes: Fourth ThinkingCap release; intake-892 covered the Qwen3.6-27B one.
+  verification: stage1-unverified
+  handoffs_updated: []
+  handoffs_created: []
+  source_revision: blog dated 2026-10-22, page sha256-12 d2d323c0dc50, retrieved 2026-10-31
+  reader_should_conclude: 'Stage-1 unverified: do not cite any figure, metric or mechanism from this entry until a Stage-2 dive promotes
+    it.'
+  integration_disposition: awaiting_dive
+  disposition_evidence:
+  - Recommended for a Stage-2 dive in the ws58 2026-10-31 intake (relevance >= medium); operator pre-approved all recommended dives.
+- id: intake-2568
+  arxiv_id: '2610.14162'
+  url: https://arxiv.org/abs/2610.14162
+  source_type: paper
+  title: 'Next-Concept Modeling: Fast, Parallel Coarse-to-Fine Text Generation'
+  categories:
+  - speculative_decoding
+  - inference_serving
+  - training_distillation
+  novelty: high
+  relevance: medium
+  discovered_via: expansion
+  verdict: worth_investigating
+  ingested_date: '2026-10-31'
+  expanded_from: intake-2546
+  authors:
+  - Hermann Kumbong
+  - Ishan S. Khare
+  - et al.
+  - Simran Arora
+  - Azalia Mirhoseini
+  - Christopher Re
+  key_claims:
+  - A multiscale residual VQ-VAE encodes text into a hierarchy of codes; a transformer generates each level in parallel.
+  - Abstract compares against diffusion LMs at matched scale on LM1B, OpenWebText, XSum and Sudoku.
+  techniques:
+  - residual VQ text tokenizer
+  - next-level parallel generation
+  reported_results: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - speculative-decoding-mtp-refresh.md
+    experiments: []
+    intake_entries:
+    - intake-2546
+  recommended_actions:
+  - Dive with intake-2546.
+  credibility_score: 2
+  contradicting_evidence:
+  - Secondary coverage (aiweekly.co, restatement) notes comparisons are only against small parameter-matched diffusion LMs, not AR models,
+    and the top speedup is a best case.
+  referenced_arxiv_ids: []
+  notes: Observed linked from the intake-2546 blog page; abs title matched. Paper body not read in Stage 1.
+  verification: stage1-unverified
+  handoffs_updated: []
+  handoffs_created: []
+  source_revision: arXiv:2610.14162v1 abs sha256-12 e321d7af8465, retrieved 2026-10-31
+  reader_should_conclude: 'Stage-1 unverified: do not cite any figure, metric or mechanism from this entry until a Stage-2 dive promotes
+    it.'
+  integration_disposition: awaiting_dive
+  disposition_evidence:
+  - Recommended for a Stage-2 dive in the ws58 2026-10-31 intake (relevance >= medium); operator pre-approved all recommended dives.
+- id: intake-2569
+  arxiv_id: '2605.29707'
+  url: https://arxiv.org/abs/2605.29707
+  source_type: paper
+  title: 'Domino: Decoupling Causal Modeling from Autoregressive Drafting in Speculative Decoding'
+  categories:
+  - speculative_decoding
+  - training_distillation
+  novelty: medium
+  relevance: high
+  discovered_via: expansion
+  verdict: worth_investigating
+  ingested_date: '2026-10-31'
+  expanded_from: intake-2561
+  authors:
+  - J. Huang
+  - Y. Zhang
+  - Q. Zhang
+  - H. Lin
+  - et al.
+  key_claims:
+  - A parallel draft backbone drafts a whole block; a lightweight head adds prefix-dependent causal correction.
+  - Uses a base-anchored training curriculum.
+  - Abstract reports speedups on Qwen3 with Transformers and SGLang backends.
+  techniques:
+  - parallel draft backbone
+  - causal correction head
+  - base-anchored curriculum
+  reported_results: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - dflash2-block-drafter-experimental-build.md
+    experiments: []
+    intake_entries:
+    - intake-2561
+    - intake-738
+  recommended_actions:
+  - 'Dive with intake-2561: sequential corrector baseline that DCOCO claims to beat under concurrency.'
+  credibility_score: 1
+  contradicting_evidence: null
+  referenced_arxiv_ids: []
+  notes: Found by WebSearch and matched to the DCOCO-cited "huang2026domino" by mechanism (DCOCO bibliography absent from fetched HTML);
+    abs title matched. Previously named only in a declined-intake note near intake-1773.
+  verification: stage1-unverified
+  handoffs_updated: []
+  handoffs_created: []
+  source_revision: arXiv:2605.29707 abs sha256-12 f5d9b29f63d4, retrieved 2026-10-31
+  reader_should_conclude: 'Stage-1 unverified: do not cite any figure, metric or mechanism from this entry until a Stage-2 dive promotes
+    it.'
+  integration_disposition: awaiting_dive
+  disposition_evidence:
+  - Recommended for a Stage-2 dive in the ws58 2026-10-31 intake (relevance >= medium); operator pre-approved all recommended dives.
+- id: intake-2570
+  arxiv_id: '2511.12638'
+  url: https://arxiv.org/abs/2511.12638
+  source_type: paper
+  title: Equivalence Checking of ML GPU Kernels
+  categories:
+  - hardware_optimization
+  - tool_implementation
+  novelty: high
+  relevance: high
+  discovered_via: expansion
+  verdict: worth_investigating
+  ingested_date: '2026-10-31'
+  expanded_from: intake-2557
+  authors:
+  - Driscoll
+  - Dubey
+  - Wei
+  - Kayal
+  - Sharma
+  - Aiken
+  key_claims:
+  - 'Volta: an equivalence checker for GPU kernels covering convolutions, matmuls and attention.'
+  - Abstract claims soundness and completeness for a defined kernel class.
+  techniques:
+  - GPU kernel equivalence checking
+  - symbolic execution of PTX
+  reported_results: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - autokernel-research-loop.md
+    - agentic-rocm-kernel-authoring.md
+    - rocm-verify-profile-backend.md
+    experiments: []
+    intake_entries:
+    - intake-2557
+    - intake-2555
+  recommended_actions:
+  - 'Dive: decide what a sound equivalence gate would need on gfx90a/x86 and which AK candidate classes it could cover.'
+  credibility_score: 4
+  contradicting_evidence: null
+  referenced_arxiv_ids: []
+  notes: OOPSLA 2026 (PACMPL); doi 10.1145/3839470 cited by intake-2557 README; abs title matched.
+  verification: stage1-unverified
+  handoffs_updated: []
+  handoffs_created: []
+  source_revision: arXiv:2511.12638 abs sha256-12 c015748115d5, retrieved 2026-10-31
+  reader_should_conclude: 'Stage-1 unverified: do not cite any figure, metric or mechanism from this entry until a Stage-2 dive promotes
+    it.'
+  integration_disposition: awaiting_dive
+  disposition_evidence:
+  - Recommended for a Stage-2 dive in the ws58 2026-10-31 intake (relevance >= medium); operator pre-approved all recommended dives.
+- id: intake-2571
+  arxiv_id: '2510.24824'
+  url: https://arxiv.org/abs/2510.24824
+  source_type: paper
+  title: Parallel Loop Transformer for Efficient Test-Time Computation Scaling
+  categories:
+  - inference_serving
+  - kv_cache
+  novelty: medium
+  relevance: medium
+  discovered_via: expansion
+  verdict: worth_investigating
+  ingested_date: '2026-10-31'
+  expanded_from: intake-2547
+  authors:
+  - B. Wu
+  - M. Chen
+  - X. Luo
+  - S. Yan
+  - et al.
+  key_claims:
+  - Cross-loop parallelism computes different loops for different tokens in one pass.
+  - The first loop KV cache is shared across loops; gated sliding-window attention restores accuracy.
+  - Abstract claims looped accuracy at little extra latency or memory.
+  techniques:
+  - cross-loop parallelism
+  - shared first-loop KV
+  - gated sliding-window attention
+  reported_results: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - cpu-decode-roofline-program.md
+    experiments: []
+    intake_entries:
+    - intake-2547
+  recommended_actions:
+  - Dive with intake-2547.
+  credibility_score: 1
+  contradicting_evidence: null
+  referenced_arxiv_ids: []
+  notes: Cited in the intake-2547 bibliography as arXiv:2510.24824; abs title matched.
+  verification: stage1-unverified
+  handoffs_updated: []
+  handoffs_created: []
+  source_revision: arXiv:2510.24824 abs sha256-12 38a76c9bea4b, retrieved 2026-10-31
+  reader_should_conclude: 'Stage-1 unverified: do not cite any figure, metric or mechanism from this entry until a Stage-2 dive promotes
+    it.'
+  integration_disposition: awaiting_dive
+  disposition_evidence:
+  - Recommended for a Stage-2 dive in the ws58 2026-10-31 intake (relevance >= medium); operator pre-approved all recommended dives.
+- id: intake-2572
+  arxiv_id: null
+  url: https://huggingface.co/bottlecapai/ThinkingCap-Qwen3.8-Flash-Next
+  source_type: repo
+  title: 'ThinkingCap: Qwen3.8-Flash-Next (HF model card and weights)'
+  categories:
+  - training_distillation
+  - speculative_decoding
+  - local_inference
+  novelty: medium
+  relevance: high
+  discovered_via: expansion
+  verdict: worth_investigating
+  ingested_date: '2026-10-31'
+  expanded_from: intake-2567
+  authors:
+  - BottleCap AI
+  key_claims:
+  - Finetune of Qwen/Qwen3.8-Flash-Next; card states the base model MTP head is kept.
+  - Card reports MTP acceptance on vLLM for the finetune vs base.
+  - A sibling GGUF repo lists BF16 to IQ4_XS quantizations; Qwen community license.
+  techniques:
+  - MTP-preserving finetune
+  - shorter-thinking post-training
+  reported_results: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - cpu-decode-roofline-program.md
+    - qwen-mtp-llamacpp-port.md
+    - speculative-decoding-mtp-refresh.md
+    experiments: []
+    intake_entries:
+    - intake-2567
+    - intake-892
+  recommended_actions:
+  - 'Dive: verify config (qwen4_exp, MTP layers), whether the GGUFs carry nextn tensors, and fit against the INF-70 Axis-E MTP restoration
+    need.'
+  credibility_score: null
+  contradicting_evidence: null
+  referenced_arxiv_ids: []
+  notes: Card notes an open vLLM issue on MTP acceptance collapse during in-thinking repetition (vendor says not reproduced).
+  verification: stage1-unverified
+  handoffs_updated: []
+  handoffs_created: []
+  source_revision: HF README sha256-12 79302a9d1dd, config.json read, retrieved 2026-10-31
+  reader_should_conclude: 'Stage-1 unverified: do not cite any figure, metric or mechanism from this entry until a Stage-2 dive promotes
+    it.'
+  integration_disposition: awaiting_dive
+  disposition_evidence:
+  - Recommended for a Stage-2 dive in the ws58 2026-10-31 intake (relevance >= medium); operator pre-approved all recommended dives.
+- id: intake-2573
+  arxiv_id: null
+  url: https://github.com/anomalyco/hex
+  source_type: repo
+  title: 'Hex: local-first voice dictation in Rust (transcribe.cpp runtime)'
+  categories:
+  - local_inference
+  - multimodal
+  - inference_serving
+  novelty: medium
+  relevance: medium
+  discovered_via: expansion
+  verdict: worth_investigating
+  ingested_date: '2026-10-31'
+  expanded_from: intake-2545
+  authors:
+  - anomalyco
+  key_claims:
+  - Transcribes on device with user-selected Parakeet or Whisper models.
+  - Depends on a pinned fork of transcribe.cpp (ggml), Vulkan on Windows/Linux and Metal on macOS.
+  - README describes streaming Parakeet with a rolling transcript.
+  techniques:
+  - transcribe.cpp ggml STT
+  - Parakeet streaming
+  - Vulkan STT
+  reported_results: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - conversation-stack.md
+    experiments: []
+    intake_entries:
+    - intake-2545
+  recommended_actions:
+  - 'Dive: decide whether transcribe.cpp Parakeet streaming is a candidate STT against frozen whisper.cpp; check what the index already
+    holds on transcribe.cpp.'
+  credibility_score: null
+  contradicting_evidence: null
+  referenced_arxiv_ids: []
+  notes: Read README, Cargo.toml and AGENTS.md only.
+  verification: stage1-unverified
+  handoffs_updated: []
+  handoffs_created: []
+  source_revision: README sha256-12 6166b62a8a61, retrieved 2026-10-31
+  reader_should_conclude: 'Stage-1 unverified: do not cite any figure, metric or mechanism from this entry until a Stage-2 dive promotes
+    it.'
+  integration_disposition: awaiting_dive
+  disposition_evidence:
+  - Recommended for a Stage-2 dive in the ws58 2026-10-31 intake (relevance >= medium); operator pre-approved all recommended dives.
+- id: intake-2574
+  arxiv_id: null
+  url: https://github.com/divagr18/qwenputer
+  source_type: repo
+  title: 'Qwenputer: a computer compiled into the weights of a language model (code)'
+  categories:
+  - ssm_hybrid
+  - memory_augmented
+  - tool_implementation
+  novelty: high
+  relevance: medium
+  discovered_via: expansion
+  verdict: worth_investigating
+  ingested_date: '2026-10-31'
+  expanded_from: intake-2550
+  authors:
+  - divagr18
+  key_claims:
+  - Eleven compiler-computed layers in front of Qwen3.5-4B implement a CPU; the Gated DeltaNet state is its RAM.
+  - A driver loads firmware into the DeltaNet state and keeps trace tokens out of the Qwen layers.
+  - README reports arithmetic and multi-session recall comparisons against the base model and a Python tool.
+  techniques:
+  - compiled transformer layers
+  - delta-rule state as exact RAM
+  reported_results: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - cpu-decode-roofline-program.md
+    experiments: []
+    intake_entries:
+    - intake-2550
+  recommended_actions:
+  - Dive with intake-2550.
+  credibility_score: null
+  contradicting_evidence: null
+  referenced_arxiv_ids: []
+  notes: License NOASSERTION; README read to about 60%.
+  verification: stage1-unverified
+  handoffs_updated: []
+  handoffs_created: []
+  source_revision: README sha256-12 805627be5052, retrieved 2026-10-31
+  reader_should_conclude: 'Stage-1 unverified: do not cite any figure, metric or mechanism from this entry until a Stage-2 dive promotes
+    it.'
+  integration_disposition: awaiting_dive
+  disposition_evidence:
+  - Recommended for a Stage-2 dive in the ws58 2026-10-31 intake (relevance >= medium); operator pre-approved all recommended dives.
+- id: intake-2575
+  arxiv_id: null
+  url: https://huggingface.co/LiquidAI/LFM3-Audio-2B-GGUF
+  source_type: repo
+  title: 'LFM3-Audio-2B-GGUF (and LFM3-Omni-2B-GGUF): llama.cpp realtime speech path'
+  categories:
+  - multimodal
+  - local_inference
+  - inference_serving
+  novelty: high
+  relevance: high
+  discovered_via: expansion
+  verdict: worth_investigating
+  ingested_date: '2026-10-31'
+  expanded_from: intake-2552
+  authors:
+  - Liquid AI
+  key_claims:
+  - Cards state llama.cpp support from a release far newer than our frozen v10 tree, including realtime voice over a WebSocket API.
+  - Speech output goes through an audio mmproj; quantizations from BF16 to Q4_0.
+  - No llama.cpp PR is linked.
+  techniques:
+  - audio mmproj projector
+  - realtime WebSocket speech server
+  reported_results: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - conversation-stack.md
+    experiments: []
+    intake_entries:
+    - intake-2552
+    - intake-2554
+  recommended_actions:
+  - 'Dive: locate the llama.cpp code for the audio/realtime path and estimate the port onto llama.cpp-experimental; check ggml generation
+    vs the speech kernel set.'
+  credibility_score: null
+  contradicting_evidence: null
+  referenced_arxiv_ids: []
+  notes: Support claim rests on the vendor card only (restatement).
+  verification: stage1-unverified
+  handoffs_updated: []
+  handoffs_created: []
+  source_revision: HF README sha256-12 2b883c966875 (Audio), 9ec858c7e659 (Omni GGUF), retrieved 2026-10-31
+  reader_should_conclude: 'Stage-1 unverified: do not cite any figure, metric or mechanism from this entry until a Stage-2 dive promotes
+    it.'
+  integration_disposition: awaiting_dive
+  disposition_evidence:
+  - Recommended for a Stage-2 dive in the ws58 2026-10-31 intake (relevance >= medium); operator pre-approved all recommended dives.
+- id: intake-2576
+  arxiv_id: null
+  url: https://github.com/thu-nics/C2C
+  source_type: repo
+  title: Cache-to-Cache (C2C) code and fusers
+  categories:
+  - kv_cache
+  - agent_architecture
+  novelty: medium
+  relevance: medium
+  discovered_via: expansion
+  verdict: worth_investigating
+  ingested_date: '2026-10-31'
+  expanded_from: intake-2559
+  authors:
+  - Tianyu Fu
+  - Zihan Min
+  - et al.
+  key_claims:
+  - 'Released fusers cover small model pairs only (largest: Qwen3-8B receiver with Qwen2.5-7B sharer).'
+  - Inference runs through HF transformers with a custom KV-cache index; custom-pair training is supported.
+  - Apache-2.0; README says the paper was accepted at ICLR 2026.
+  techniques:
+  - KV-cache fusion
+  - per-pair learned fusers
+  reported_results: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - delegation-context-preassembly.md
+    experiments: []
+    intake_entries:
+    - intake-2559
+  recommended_actions:
+  - Dive with intake-2559.
+  credibility_score: null
+  contradicting_evidence: null
+  referenced_arxiv_ids:
+  - '2510.03215'
+  notes: Companion artifact of intake-2559; arxiv_id deliberately null.
+  verification: stage1-unverified
+  handoffs_updated: []
+  handoffs_created: []
+  source_revision: README sha256-12 76f0799bc7ad, retrieved 2026-10-31
+  reader_should_conclude: 'Stage-1 unverified: do not cite any figure, metric or mechanism from this entry until a Stage-2 dive promotes
+    it.'
+  integration_disposition: awaiting_dive
+  disposition_evidence:
+  - Recommended for a Stage-2 dive in the ws58 2026-10-31 intake (relevance >= medium); operator pre-approved all recommended dives.
