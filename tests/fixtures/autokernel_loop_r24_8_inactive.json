@@ -1,0 +1,54 @@
+{
+  "abstain_rate": 0.0,
+  "accumulator": null,
+  "actor_health": null,
+  "anchor_commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "anchor_guard": null,
+  "campaign_id": "ak-loop",
+  "champion_head": null,
+  "dispositions": {
+    "kept": 1
+  },
+  "epoch_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+  "generated_at": "2026-10-31T14:14:34.150614Z",
+  "gpu": {},
+  "hotspots": [],
+  "iterations_done": 1,
+  "iterations_planned": 0,
+  "measurements_reached": 1,
+  "model": "fixture-only",
+  "noise_floor_pct": 1.0,
+  "operator_attention": {
+    "alarms": [],
+    "below_zero_streak": 0,
+    "keep_window": 10,
+    "measured_window": 1,
+    "mode": "observe_only",
+    "no_measurement_streak": 0,
+    "no_measurement_threshold": 10,
+    "operator_attention_required": false,
+    "planner_evidence_line": null
+  },
+  "pairs": 5,
+  "recent": [
+    {
+      "effect_fraction": 0.02,
+      "mechanism_id": null,
+      "reason": "",
+      "status": "kept"
+    }
+  ],
+  "schema": "epyc.autokernel.loop_status.v1",
+  "stagnation": {
+    "best_effect_slope_per_measurement": null,
+    "consecutive_measured_nulls": 0,
+    "measured_points": 1,
+    "mode": "observe_only",
+    "target_id": "fixture-only",
+    "window": 20
+  },
+  "stale_after_s": 1800,
+  "state": "running",
+  "step": null,
+  "surface": "tg128"
+}

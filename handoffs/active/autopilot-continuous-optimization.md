@@ -650,6 +650,7 @@ First full smoke run of the trial loop. Four defects, three silent.
       rationales are **retrofittable** from (prompt, chosen, rejected), so logging pair content
       preserves a future offline option that logging ids alone destroys. Our existing P17.BT corpus
       **cannot** be rescued this way — it lacks exactly these fields — which is precisely the point.
+  - 2026-10-31 source audit (codex-ni): this capture belongs at P17.BT-5b's prospective artifact-comparison writer, after P17.BT-5a shows signal. Neither writer exists on orchestrator main `bfa87454f482156b27b6e944af95bde46ddf4441`: `ParetoArchive.bt_tiebreak_topk()` compares numeric objective tuples, while `rubric_scoring.judge_ranking_stability()` derives fractional/tied preferences from scalar scores; neither receives candidate artifact text. These are not binary artifact comparisons to relabel. Research's static external pairwise adapter is a separate benchmark source. Keep this task open, with the content capture required when the P17.BT-5b writer is built; no quota completion or historical backfill. [no-belief: source dependency audit]
 
 **Design fork to decide inside 5a/5b, not before**: `intake-1139` **resets** its feedback buffer on
 every accepted candidate; `intake-1144` **accumulates** and subsamples, treating history as a durable

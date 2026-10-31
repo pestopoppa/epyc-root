@@ -1,0 +1,117 @@
+{
+  "abstain_rate": 0.0,
+  "accumulator": null,
+  "actor_health": null,
+  "anchor_commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "anchor_guard": null,
+  "campaign_id": "ak-loop",
+  "champion_head": null,
+  "dispositions": {
+    "refused_at_formation": 10
+  },
+  "epoch_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+  "generated_at": "2026-10-31T14:14:34.148672Z",
+  "gpu": {},
+  "hotspots": [],
+  "iterations_done": 10,
+  "iterations_planned": 0,
+  "measurements_reached": 0,
+  "model": "fixture-only",
+  "noise_floor_pct": 1.0,
+  "operator_attention": {
+    "alarms": [
+      {
+        "count": 10,
+        "kind": "no_measurement_streak",
+        "refusal_reason_histogram": {
+          "refused_at_formation: no safe edit": 10
+        },
+        "threshold": 10
+      }
+    ],
+    "below_zero_streak": 0,
+    "keep_window": 10,
+    "measured_window": 0,
+    "mode": "observe_only",
+    "no_measurement_streak": 10,
+    "no_measurement_threshold": 10,
+    "operator_attention_required": true,
+    "planner_evidence_line": "R24-8 operator attention (observe-only): no recorded native Comparison for 10 eligible pool iterations (threshold 10); refusal reasons: refused_at_formation: no safe edit \u00d710"
+  },
+  "pairs": 5,
+  "recent": [
+    {
+      "effect_fraction": null,
+      "mechanism_id": null,
+      "reason": "no safe edit",
+      "status": "refused_at_formation"
+    },
+    {
+      "effect_fraction": null,
+      "mechanism_id": null,
+      "reason": "no safe edit",
+      "status": "refused_at_formation"
+    },
+    {
+      "effect_fraction": null,
+      "mechanism_id": null,
+      "reason": "no safe edit",
+      "status": "refused_at_formation"
+    },
+    {
+      "effect_fraction": null,
+      "mechanism_id": null,
+      "reason": "no safe edit",
+      "status": "refused_at_formation"
+    },
+    {
+      "effect_fraction": null,
+      "mechanism_id": null,
+      "reason": "no safe edit",
+      "status": "refused_at_formation"
+    },
+    {
+      "effect_fraction": null,
+      "mechanism_id": null,
+      "reason": "no safe edit",
+      "status": "refused_at_formation"
+    },
+    {
+      "effect_fraction": null,
+      "mechanism_id": null,
+      "reason": "no safe edit",
+      "status": "refused_at_formation"
+    },
+    {
+      "effect_fraction": null,
+      "mechanism_id": null,
+      "reason": "no safe edit",
+      "status": "refused_at_formation"
+    },
+    {
+      "effect_fraction": null,
+      "mechanism_id": null,
+      "reason": "no safe edit",
+      "status": "refused_at_formation"
+    },
+    {
+      "effect_fraction": null,
+      "mechanism_id": null,
+      "reason": "no safe edit",
+      "status": "refused_at_formation"
+    }
+  ],
+  "schema": "epyc.autokernel.loop_status.v1",
+  "stagnation": {
+    "best_effect_slope_per_measurement": null,
+    "consecutive_measured_nulls": 0,
+    "measured_points": 0,
+    "mode": "observe_only",
+    "target_id": "fixture-only",
+    "window": 20
+  },
+  "stale_after_s": 1800,
+  "state": "running",
+  "step": null,
+  "surface": "tg128"
+}

@@ -60,6 +60,9 @@
      `.warn` (0,1,0), so the scoped override is what actually paints it red. */
   .warn{color:#c0392b;font-weight:600}
   header .sub.warn{color:#c0392b;font-weight:600}
+  .operator-attention{margin:8px 0;padding:8px 12px;border:1px solid var(--border);border-radius:6px;color:var(--muted)}
+  .operator-attention.active{border-color:var(--bad);color:var(--bad);font-weight:650}
+  .operator-attention.unknown{border-color:var(--amber);color:var(--amber)}
   nav{display:flex;gap:14px;margin-left:auto;align-items:center;font-size:13px}
   nav a.active{color:var(--text);font-weight:650;border-bottom:2px solid var(--accent);padding-bottom:2px}
   .badge{display:inline-flex;align-items:center;gap:6px;font-size:11px;padding:2px 8px;border-radius:20px;border:1px solid var(--border);color:var(--muted)}
@@ -328,6 +331,9 @@
 
 <main>
   <div id="banner"></div>
+  <div id="operator-attention" class="operator-attention unknown" role="status" aria-live="polite">
+    R24-8 alarm state UNKNOWN — awaiting a loop status report.
+  </div>
 
   <!-- The page opens with THE headline (operator note, 2026-08-31: no scope
        lecture above it — the /kernel-retirement pointer lives in one line in
@@ -1555,6 +1561,40 @@ function renderBanner(d){
     `<div class="bd muted">${esc(spec.note)}</div>` +
     `<div class="ev">evidence: ${esc(d.evidence || "—")}` +
     (d.reader_error ? `<br>reader error: ${esc(d.reader_error)}` : "") + `</div>`;
+}
+
+function renderOperatorAttention(d){
+  const host=document.getElementById("operator-attention");
+  const unknown=message=>{
+    host.className="operator-attention unknown";
+    host.textContent=message;
+  };
+  if(!d.loop){
+    unknown("R24-8 alarm state UNKNOWN — no readable loop report.");
+    return;
+  }
+  const attention=d.loop.operator_attention;
+  if(!attention || attention.mode!=="observe_only" ||
+     typeof attention.operator_attention_required!=="boolean" ||
+     !Array.isArray(attention.alarms)){
+    unknown("R24-8 alarm state UNKNOWN — this producer report does not carry the alarm fields.");
+    return;
+  }
+  const active=attention.operator_attention_required;
+  if(active !== (attention.alarms.length>0)){
+    unknown("R24-8 alarm state UNKNOWN — the producer's alarm flag and alarm list disagree.");
+    return;
+  }
+  if(!active){
+    host.className="operator-attention";
+    host.textContent="No R24-8 operator-attention alarm is active (observe-only warnings).";
+    return;
+  }
+  host.className="operator-attention active";
+  host.textContent=typeof attention.planner_evidence_line==="string" &&
+    attention.planner_evidence_line
+      ? attention.planner_evidence_line
+      : "R24-8 operator attention is active; alarm details were not reported.";
 }
 
 /* THE CHAMPION HEADLINE.
@@ -2810,6 +2850,7 @@ function render(d){
   st.textContent = d.serial ? d.serial.state : L ? (L.state || "—") : d.freshness_state;
   st.className = "state " + esc(L && L.state ? L.state : "");
   renderBanner(d);
+  renderOperatorAttention(d);
   // THE headline first, and unconditionally. It has its own producer and its
   // own envelope: an unreadable LOOP must not take it down, and its own absence
   // — which is the current state — must be drawn rather than hidden.

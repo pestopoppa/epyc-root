@@ -1,0 +1,151 @@
+{
+  "implementation": "991033729e9479249909ea3ae5ddc5d2e18772c2",
+  "rules": {
+    "explicit_null": "known no recorded native Comparison; skip measured window",
+    "keep_statuses": [
+      "kept"
+    ],
+    "keep_window": 10,
+    "legacy_missing_comparison": "unknown; resets known suffix; no row rewrite",
+    "malformed_comparison": "unknown; resets known suffix",
+    "negative_effect": "normalized candidate/anchor rate minus one; negative is worse",
+    "no_measurement_n": 10
+  },
+  "runs": {
+    "18": {
+      "capsule_path": "source-inputs/run18-loop-run.json",
+      "coverage": {
+        "comparison_mapping": 138,
+        "explicit_null": 0,
+        "malformed": 0,
+        "missing_key": 50,
+        "outcomes": 188,
+        "statuses": {
+          "kept": 1,
+          "measured_null": 137,
+          "planner_transient": 33,
+          "refused_at_formation": 13,
+          "superseded": 4
+        }
+      },
+      "final_conservative_projection": {
+        "alarms": [],
+        "below_zero_streak": 1,
+        "keep_window": 10,
+        "measured_window": 1,
+        "mode": "observe_only",
+        "no_measurement_streak": 0,
+        "no_measurement_threshold": 10,
+        "operator_attention_required": false,
+        "planner_evidence_line": null
+      },
+      "first_alarm_crossings": {
+        "below_zero_streak": {
+          "alarm": {
+            "count": 10,
+            "kind": "below_zero_streak",
+            "threshold": 10
+          },
+          "outcome_1based": 68
+        },
+        "no_keep_in_window": {
+          "alarm": {
+            "keeps": 0,
+            "kind": "no_keep_in_window",
+            "measured_candidates": 10,
+            "window": 10
+          },
+          "outcome_1based": 68
+        }
+      },
+      "native_path": "/mnt/raid0/llm/autokernel/loop-memory/run18/loop-run.json",
+      "sha256": "b5a6944fe1e65f3f94170dee646327b3501d7f5ba2dc79223e64c819ca75ae22"
+    },
+    "5-8": {
+      "alternate_paths_reviewed": [
+        {
+          "campaign_id": "legacy-serial",
+          "excluded_reason": "later 2026-09-24 legacy-serial state, not task's 2026-08 runs",
+          "generated_at": "2026-09-24T08:41:37.214230Z",
+          "iterations_done": 0,
+          "path": "/mnt/raid0/llm/autokernel/campaigns/ak-ds41-cpu-decode-20260923/state-run5/loop-status.json",
+          "recent": 0,
+          "sha256": "9aa2469ec3ea578ad3497967df3cbf54b65c09903241d376476165db1775b9a5",
+          "state": "running"
+        },
+        {
+          "campaign_id": "legacy-serial",
+          "excluded_reason": "later 2026-09-24 legacy-serial state, not task's 2026-08 runs",
+          "generated_at": "2026-09-24T09:09:55.686681Z",
+          "iterations_done": 0,
+          "path": "/mnt/raid0/llm/autokernel/campaigns/ak-ds41-cpu-decode-20260923/state-run6/loop-status.json",
+          "recent": 0,
+          "sha256": "7ee0d1912dd0ef73f51101293b01ba781d07e04be17871488416addcecd66a35",
+          "state": "running"
+        },
+        {
+          "campaign_id": "legacy-serial",
+          "excluded_reason": "later 2026-09-24 legacy-serial state, not task's 2026-08 runs",
+          "generated_at": "2026-09-24T10:19:04.441628Z",
+          "iterations_done": 0,
+          "path": "/mnt/raid0/llm/autokernel/campaigns/ak-ds41-cpu-decode-20260923/state-run7/loop-status.json",
+          "recent": 0,
+          "sha256": "1a787b36cd80dc0099d416a3a933ae017abb56c7a844902854202458a6dfd4e4",
+          "state": "running"
+        },
+        {
+          "batch000000_loop_run": {
+            "path": "/mnt/raid0/llm/autokernel/campaigns/ak-ds41-cpu-decode-20260923/state-run8/batches/batch-000000/loop-run.json",
+            "schema": "epyc.autokernel.loop_run.v1",
+            "sha256": "2e0016d6fb39f3e11b5f615b2a960d366ed2c42ebe45eaadaf1d9f0489e03320",
+            "statuses": [
+              "planner_transient"
+            ]
+          },
+          "campaign_id": "legacy-serial",
+          "excluded_reason": "later 2026-09-24 legacy-serial state, not task's 2026-08 runs",
+          "generated_at": "2026-09-24T15:34:23.686593Z",
+          "iterations_done": 0,
+          "path": "/mnt/raid0/llm/autokernel/campaigns/ak-ds41-cpu-decode-20260923/state-run8/loop-status.json",
+          "recent": 0,
+          "sha256": "57606d8de6b1002773019b94f884dafcd183d911049cd523c8d1d102ba905f85",
+          "state": "running"
+        }
+      ],
+      "coverage": "nine total real iterations / zero measurements reported across runs 5-9, not partitioned by run; exact per-run outcomes UNKNOWN",
+      "grouped_native_historical_report": "/workspace/progress/2026-08/2026-08-28.md",
+      "grouped_report_sha256": "124a7cee3ebeeb93848e63e471bde4ea983d4cd777fc1fc53effbbf6fff9c0c0",
+      "requested_historical_source": "/mnt/raid0/llm/autokernel/loop-memory/runN/loop-run.json",
+      "source_files_found": false
+    },
+    "9": {
+      "capsule_path": "source-inputs/run9-loop-run.json",
+      "coverage": {
+        "comparison_mapping": 0,
+        "explicit_null": 0,
+        "malformed": 0,
+        "missing_key": 10,
+        "outcomes": 10,
+        "statuses": {
+          "planner_transient": 1,
+          "refused_at_formation": 9
+        }
+      },
+      "final_conservative_projection": {
+        "alarms": [],
+        "below_zero_streak": 0,
+        "keep_window": 10,
+        "measured_window": 0,
+        "mode": "observe_only",
+        "no_measurement_streak": 0,
+        "no_measurement_threshold": 10,
+        "operator_attention_required": false,
+        "planner_evidence_line": null
+      },
+      "first_alarm_crossings": {},
+      "native_path": "/mnt/raid0/llm/autokernel/loop-memory/run9/loop-run.json",
+      "sha256": "f1fda4d511d94e8ec4a26e669ddd7f2579c70a34c97ae62f905fd55303e8e29b"
+    }
+  },
+  "schema": "epyc.autokernel.r24_8_retrodiction.v1"
+}

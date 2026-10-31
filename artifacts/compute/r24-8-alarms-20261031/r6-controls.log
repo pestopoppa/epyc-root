@@ -1,0 +1,17 @@
+R6_PAIR=32-33 LOCK=/mnt/raid0/llm/tmp/compute-flags/prep-locks/32-33.lock AFFINITY=32,33,128,129 SMT_PAIRS=32↔128,33↔129 VMEM_KIB=8388608 OMP_NUM_THREADS=1
+START name=research-controls wrapper_pid=2302579 test_pid=2302583 birth=Sat Oct 31 14:25:36 2026 rss_vsz_kib=31804 40320 comm=python3
+ABSENCE name=research-controls pid=2302583 confirmed
+EXIT name=research-controls rc=0
+...................................................
+----------------------------------------------------------------------
+Ran 51 tests in 0.034s
+
+OK
+START name=root-render-controls wrapper_pid=2302607 test_pid=2302611 birth=Sat Oct 31 14:25:37 2026 rss_vsz_kib=39924 48600 comm=python3
+ABSENCE name=root-render-controls pid=2302611 confirmed
+EXIT name=root-render-controls rc=0
+...............................................................................
+----------------------------------------------------------------------
+Ran 79 tests in 16.354s
+
+OK

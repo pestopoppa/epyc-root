@@ -1,0 +1,106 @@
+{
+  "schema": "epyc.autokernel.loop_run.v1",
+  "epoch": "6fd67634a9c77badb2ab9d4d0ef0360f347aaae7e93f714c96ba8c059f27f49b",
+  "anchor_commit": "0db32c06e3e550065b78311a6031ef3dd2c4f27c",
+  "surface": "pp512",
+  "pairs": 5,
+  "noise_floor_pct": 0.9726895702124084,
+  "elapsed_s": 8954.1,
+  "iterations": [
+    {
+      "status": "refused_at_formation",
+      "turn_recorded_at": "2026-08-29T01:18:47.799128Z",
+      "mechanism_id": "akm-q4k-dequant-full-wave",
+      "statement": "Launch dequantize_block_q4_K with 64 threads and remap each 16-lane subgroup to one 64-value partition, so every gfx90a wave lane dequantizes four outputs instead of running the current 32-thread half-wave with eight serial outputs per lane. Keep the scalar conversion expressions and output ordering unchanged, avoiding the rejected ggml_cuda_cast relocation and any type-selection or dispatch changes; this targets the 15.06% Q4_K dequantization share.",
+      "falsifier": "Reject if ROCm0 MUL_MAT validation fails, or if rocprof shows no reduction in median dequantize_block_q4_K device time and an alternating n>=5 pp512 A/B does not improve beyond the applicable noise floor.",
+      "target_surface": "ggml/src/ggml-cuda/convert.cu",
+      "target_symbol": "dequantize_block_q4_K",
+      "reason": "build failed | Build fails: dequantize.cuh is also included by cpy.cu, where ggml_cuda_cast is not declared; the new kernel's two ggml_cuda_cast<half> calls produce undeclared-identifier errors. | MUL_MAT failed on ROCm0 | MUL_MAT failed on ROCm0, so the patch does not preserve correctness. | The wave64 shuffle mask is only 0xFFFFFFFF, excluding gfx90a lanes 32-63; therefore the broadcasts serving il=2 and il=3 have undefined results and risk corrupting half the block. The patch also changes the requested unchanged scalar scale-conversion expressions by replacing uint8_t scale/min operands with packed uint32_t mask/shift expressions. | MUL_MAT failed on ROCm0"
+    },
+    {
+      "status": "refused_at_formation",
+      "turn_recorded_at": "2026-08-29T01:18:47.799137Z",
+      "mechanism_id": "akm-f32-f16-packed-convert",
+      "statement": "Specialize the contiguous, aligned convert_unary<float, __half> route to process four elements per thread using one float4 load, two packed f32-to-f16 conversions, and one uint2 store, while retaining the scalar kernel for strided or tail elements. This reduces thread, address-calculation, conversion, and store-instruction counts in the 9.32%-share conversion hotspot without changing type selection or dispatch semantics.",
+      "falsifier": "On pp512, rocprofv3 shows the specialized convert_unary<float, __half> invocations improve by less than 11% or alternating n>=5 prefill pairs fail to exceed the 0.973% enforced floor with test-backend-ops still passing.",
+      "target_surface": "ggml/src/ggml-cuda/convert.cu contiguous F32-to-F16 conversion path",
+      "target_symbol": "convert_unary<float, __half>",
+      "reason": "MUL_MAT failed on ROCm0 | MUL_MAT failed on ROCm0, so the patch does not preserve correctness. | MUL_MAT failed on ROCm0, so the patch does not preserve correctness. | MUL_MAT failed on ROCm0 | MUL_MAT failed on ROCm0"
+    },
+    {
+      "status": "planner_transient",
+      "turn_recorded_at": "2026-08-29T01:18:47.799139Z",
+      "reason": "authoring returned no changed paths"
+    },
+    {
+      "status": "refused_at_formation",
+      "turn_recorded_at": "2026-08-29T01:18:47.799141Z",
+      "mechanism_id": "akm-q4k-dual-block-wave64",
+      "statement": "Launch dequantize_block_q4_K<half> with 64 threads on gfx90a and map each 32-lane half-wave to an independent adjacent Q4_K superblock, preserving the existing per-lane scale decoding and packed f16 stores. This replaces two half-empty wave64 workgroups with one fully occupied wave and amortizes scheduling overhead without shuffles, activation-type changes, or dispatch-table changes.",
+      "falsifier": "After ROCm0 MUL_MAT correctness passes, rocprofv3 shows less than a 6.5% reduction in dequantize_block_q4_K<half> device time, or an alternating n>=5 pp512 A/B shows a prefill gain below the enforced 0.973% floor.",
+      "target_surface": "ggml/src/ggml-cuda/convert.cu Q4_K-to-f16 prefill dequantization path",
+      "target_symbol": "dequantize_block_q4_K<half>",
+      "reason": "MUL_MAT failed on ROCm0 | MUL_MAT failed on ROCm0, so the patch does not preserve correctness. | MUL_MAT failed on ROCm0, so the patch does not preserve correctness. | MUL_MAT failed on ROCm0, so the patch does not preserve correctness. | MUL_MAT failed on ROCm0, so the patch does not preserve correctness. | MUL_MAT failed on ROCm0"
+    },
+    {
+      "status": "refused_at_formation",
+      "turn_recorded_at": "2026-08-29T01:18:47.799144Z",
+      "mechanism_id": "akm-q4k-dequant-vgpr64",
+      "statement": "Apply a gfx90a-specific 8-waves-per-EU constraint to dequantize_block_q4_K so LLVM allocates at most 64 VGPR per wave, increasing latency-hiding occupancy without changing its indexing, loads, scale conversion, arithmetic, or output type.",
+      "falsifier": "Reject if llvm-objdump shows more than 64 VGPR or new scratch spills, MUL_MAT fails, or alternating pp512 A/B with n>=5 shows less than a 6.5% reduction in dequantize_block_q4_K time or no end-to-end gain above the 0.973% floor.",
+      "target_surface": "ggml/src/ggml-cuda/dequantize.cuh",
+      "target_symbol": "dequantize_block_q4_K",
+      "reason": "The mechanism is already present: fattn-wmma-f16.cu defines D_padded = D + 8 and kqs_padded = FATTN_KQ_STRIDE + 8 specifically to reduce shared-memory bank conflicts, with all LDS store/load indexing using those padded strides. For f16, +8 elements is four 32-bit bank words, so the profiled D=128 tile already has a non-power-of-two 68-word row stride. The hypothesis also provides no baseline LDS-conflict measurement showing residual headroom for changing that existing padding. | MUL_MAT failed on ROCm0 | MUL_MAT failed on ROCm0 | MUL_MAT failed on ROCm0 | MUL_MAT failed on ROCm0"
+    },
+    {
+      "status": "refused_at_formation",
+      "turn_recorded_at": "2026-08-29T01:18:47.799147Z",
+      "mechanism_id": "akm-q4k-f16-packed-stores",
+      "statement": "Specialize the ROCm Q4_K-to-f16 dequant path for K_QUANTS_PER_ITERATION==2 in dequantize.cu: retain the existing lane mapping, get_scale_min_k4 extraction, and scalar float arithmetic, but convert each adjacent l=0/1 result independently to half and combine it into one aligned half2 store. This replaces eight 16-bit output stores per lane with four 32-bit stores without changing quant types, dispatch tables, scale expressions, or element ordering, reducing store instructions in the 15.06% dequantize_block_q4_K hotspot.",
+      "falsifier": "Reject if test-backend-ops reports any MUL_MAT failure, llvm-objdump does not show the expected reduction in global-store instructions, or an alternating pp512 A/B run with at least 5 pairs shows less than a 6.5% reduction in dequantize_block_q4_K kernel time, the minimum local improvement needed for its 15.06% share to clear the 0.973% surface floor.",
+      "target_surface": "ggml/src/ggml-cuda/dequantize.cu",
+      "target_symbol": "dequantize_block_q4_K<half>",
+      "reason": "The mechanism does not match the target implementation. K_h_f16 and V_h_f16 are loaded directly from global memory into rocWMMA fragments; the existing padded LDS arrays are KQ (scores/workspace) and VKQ (output accumulator), not K/V tiles. For this specialization, those arrays already reserve about 42.5 KiB of LDS, while one full 256x128 f16 K or V tile is 64 KiB, so full K/V double-buffering cannot fit on gfx90a. The profile establishes the kernel's 10.94% share but provides no memory-stall evidence supporting a smaller inner-fragment pipeline. Refine the hypothesis with a concrete feasible staging geometry and baseline stall/resource evidence. | The 128-token tile is feasible and the LDS/register-array arithmetic matches the implementation, but the occupancy mechanism remains unsupported by baseline evidence. The profile establishes only the kernel's 10.94% share; it does not provide the current VGPR allocation, achieved occupancy, or memory-stall data showing that direct global K/V loads are latency-bound. Without those measurements, reaching <=64 VGPR and gaining from a second resident workgroup is speculative, while halving the tile also doubles outer-loop and synchronization frequency. | The mechanism does not match the current target implementation. dequantize_block_q4_K<half> is defined in ggml/src/ggml-cuda/convert.cu, not dequantize.cu, and the CUDA kernel has no K_QUANTS_PER_ITERATION specialization; it uses a fixed n=4 loop. Therefore the proposed K_QUANTS_PER_ITERATION==2 path does not exist on the champion and cannot produce the claimed store reduction as stated."
+    },
+    {
+      "status": "refused_at_formation",
+      "turn_recorded_at": "2026-08-29T01:18:47.799149Z",
+      "mechanism_id": "akm-q4k-packed-scale-snapshot",
+      "statement": "In dequantize_block_q4_K<__half>, load the 12-byte q4_K scale/min table once as three aligned uint32_t words and extract every scale/min pair from those registers, replacing the repeated byte loads and address calculations inside the fixed four-iteration loop while leaving the existing float scale expressions, q-nibble mapping, and output stores unchanged. This should reduce memory-instruction and integer-address overhead in the 15.06% dequantization hotspot without changing numerical results or dispatch.",
+      "falsifier": "Baseline and patched llvm-objdump show no reduction in scale-table load/address instructions, or alternating n>=5 pp512 measurements show less than a 6.5% reduction in dequantize_block_q4_K<__half> time and no prefill effect above the enforced 0.973% floor.",
+      "target_surface": "ggml/src/ggml-cuda/convert.cu",
+      "target_symbol": "dequantize_block_q4_K<__half>",
+      "reason": "The mechanism mistakes redundant lanes for redundant wave instructions. On gfx90a, get_scale_min_k4 is issued once per wave under lane masks; the eight lanes in each subgroup do not execute eight separate integer instruction streams, and their identical scale addresses are already coalesced/cache-local. Restricting decoding to ir==0 retains the same decode instruction sequence and divergence across il values while adding a predicate and shuffle, so neither the source nor profile supports the claimed >=6.5% kernel-local headroom. | MUL_MAT failed on ROCm0 | MUL_MAT failed on ROCm0 | MUL_MAT failed on ROCm0 | MUL_MAT failed on ROCm0"
+    },
+    {
+      "status": "refused_at_formation",
+      "turn_recorded_at": "2026-08-29T01:18:47.799151Z",
+      "mechanism_id": "akm-q4k-dequant-wave64-mask64",
+      "statement": "Change dequantize_block_q4_K<half> in convert.cu from a half-wave mapping to a 64-lane mapping that assigns each lane half the current output work, using a full 64-bit gfx90a shuffle mask for scale/min broadcasts. Keep the existing scalar scale conversions and per-output arithmetic unchanged, and leave type selection and dispatch tables untouched. Halving the looped unpack-and-store instructions per wave should exceed the 6.46% kernel-local improvement needed for this 15.06% hotspot to clear the pp512 floor.",
+      "falsifier": "Reject if MUL_MAT correctness fails, llvm-objdump does not show fewer looped unpack/store instructions without a VGPR occupancy regression, or at least 5 alternating pp512 pairs show less than 0.973% prefill improvement.",
+      "target_surface": "ggml/src/ggml-cuda/convert.cu",
+      "target_symbol": "dequantize_block_q4_K<half>",
+      "reason": "The profile establishes the target's 9.32% share but does not support the claimed index-arithmetic bottleneck or >=11% kernel-local headroom. More importantly, mapping four adjacent elements to each thread makes each scalar load/store instruction stride across lanes by four elements, degrading wave-level coalescing unless vector accesses are used; vector accesses would introduce the alignment assumptions the statement explicitly excludes. The 1536 divisibility guard does not resolve this mechanism mismatch. | The alignment and float4/8-byte access guards resolve the prior coalescing and unsupported-alignment objection, but the remaining evidence gap is unchanged. A 9.32% wall share requires more than 10.44% kernel-local improvement to clear the 0.973% prefill floor, yet the profile provides no instruction-issue, memory-transaction, or index-arithmetic evidence supporting that headroom in an already coalesced bandwidth conversion kernel. Baseline disassembly or rocprof stall/counter evidence is required before this mechanism is supported. | The specialization is guarded only by GGML_USE_HIP, so it also replaces the kernel on wave32 RDNA targets. There, the 64-thread block is two waves and lanes 32-63 cannot shuffle scale/min values from lanes 0-7; their broadcasts read zero or invalid sources and corrupt half the block. Restrict both specializations to wave64 targets, such as CDNA/gfx90a, while retaining the generic 32-thread path elsewhere. | MUL_MAT failed on ROCm0"
+    },
+    {
+      "status": "refused_at_formation",
+      "turn_recorded_at": "2026-08-29T01:18:47.799153Z",
+      "mechanism_id": "akm-q4k-half2-stores",
+      "statement": "Specialize dequantize_block_q4_K<half> in convert.cu to preserve the existing 32-thread ownership, scale/min decoding, and per-element float-to-half conversion, but bit-pack each adjacent pair of converted halves and issue two aligned 32-bit stores for each four-value nibble plane instead of four 16-bit stores. The existing output offsets are multiples of four half elements, so this requires no new alignment assumption and should reduce the kernel's global-store instruction count from eight to four per lane without changing quantization types, dispatch, or arithmetic results.",
+      "falsifier": "Reject if llvm-objdump shows that the baseline already emits no more 32-bit store instructions than the specialization, or if alternating n>=5 pp512 measurements fail to improve end-to-end prefill by at least 0.973% with identical test-backend-ops results.",
+      "target_surface": "ggml/src/ggml-cuda/convert.cu",
+      "target_symbol": "dequantize_block_q4_K<half>",
+      "reason": "The wave ownership makes the mechanism incomplete. In this specialization, the four waves produce disjoint KQ key-row tiles, but VKQ work is partitioned by value/output rows, so every consumer wave needs normalized scores produced by the other waves. Wave64 shuffles cannot cross wave boundaries, and exchanging only row max/sum through LDS cannot reconstruct those scores. Avoiding the KQ LDS transpose therefore requires either duplicated KQ computation or a new key-partitioned VKQ scheme followed by cross-wave partial-output exchange, with different accumulator/LDS/VGPR geometry; neither is specified or supported by resource evidence. The profile establishes the 10.94% share but not that the stated transformation can deliver the required 8.9% local gain. | The key-partitioned VKQ and cross-wave partial-output reduction now resolve the earlier correctness gap, but the performance mechanism remains unsupported. The profile establishes only a 10.94% time share; it provides no baseline VGPR metadata, achieved residency, or K/V latency-stall evidence showing that the current kernel is occupancy-bound. Nor is there a register-liveness estimate demonstrating that 16 retained score registers, 16 partial-output accumulators, MFMA operands, and softmax state can fit within 64 VGPR. Since the 0.973% end-to-end threshold requires an 8.9% kernel-local gain, the smaller LDS allocation alone does not support the claimed headroom. | MUL_MAT failed on ROCm0 | MUL_MAT failed on ROCm0"
+    },
+    {
+      "status": "refused_at_formation",
+      "turn_recorded_at": "2026-08-29T01:18:47.799156Z",
+      "mechanism_id": "akm-contiguous-convert-linear",
+      "statement": "Add a guarded contiguous-tensor specialization of convert_unary<float, __half> that uses one linear element index and the existing scalar float-to-half conversion, eliminating per-element multidimensional div/mod and stride arithmetic without changing type selection or numerical conversion.",
+      "falsifier": "Reject if test-backend-ops reports any failure, or if rocprof shows less than a 10.44% reduction in convert_unary<float, __half> time and an alternating n>=5 pp512 A/B does not exceed the 0.973% prefill floor.",
+      "target_surface": "ggml/src/ggml-cuda/convert.cu",
+      "target_symbol": "convert_unary<float, __half>",
+      "reason": "MUL_MAT failed on ROCm0 | MUL_MAT failed on ROCm0 | Already measured and rejected: the same gfx90a dual-Q4_K-superblock wave64 mechanism repeatedly caused MUL_MAT failures on ROCm0, so it does not preserve correctness. | The profile establishes the target's 9.32% share, but not the mechanism's required headroom: it provides neither the fraction of convert_unary<float, __half> calls satisfying the proposed contiguous guard nor disassembly/counter evidence that multidimensional div/mod and stride arithmetic account for enough time to deliver the required 10.44% kernel-local reduction. The falsifier is valid, but the performance claim is unsupported by the supplied evidence."
+    }
+  ]
+}

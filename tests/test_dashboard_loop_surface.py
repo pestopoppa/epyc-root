@@ -56,6 +56,8 @@ REGISTRY = REPO / "dashboard/registry.json"
 #: "the loop published no held/busy seconds" over a producer publishing them
 #: every iteration.
 SAMPLE = REPO / "tests/fixtures/autokernel_loop_status_sample.json"
+R24_8_ACTIVE_SAMPLE = REPO / "tests/fixtures/autokernel_loop_r24_8_active.json"
+R24_8_INACTIVE_SAMPLE = REPO / "tests/fixtures/autokernel_loop_r24_8_inactive.json"
 
 
 def recorded(*, age_s: float = 45.0) -> dict:
@@ -688,6 +690,47 @@ class Rendering(_Fixture):
         out = self._render(S.loop_payload())
         self.assertEqual(out["threw"], [])
         self.assertGreater(out["rendered_chars"], 500)
+
+    def test_r24_8_producer_alarm_round_trips_through_api_and_renders(self):
+        producer_body = json.loads(R24_8_ACTIVE_SAMPLE.read_text(encoding="utf-8"))
+        self.write(producer_body)
+        payload = S.loop_payload()
+        self.assertEqual(payload["loop"]["operator_attention"],
+                         producer_body["operator_attention"])
+        rendered = self._render(payload)
+        self.assertEqual(rendered["threw"], [])
+        self.assertEqual(
+            rendered["text_by_id"]["operator-attention"],
+            producer_body["operator_attention"]["planner_evidence_line"])
+        self.assertEqual(rendered["class_by_id"]["operator-attention"],
+                         "operator-attention active")
+
+    def test_r24_8_producer_inactive_and_legacy_unknown_stay_distinct(self):
+        inactive = json.loads(R24_8_INACTIVE_SAMPLE.read_text(encoding="utf-8"))
+        self.write(inactive)
+        inactive_render = self._render(S.loop_payload())
+        self.assertIn("No R24-8 operator-attention alarm is active",
+                      inactive_render["text_by_id"]["operator-attention"])
+        self.assertEqual(inactive_render["class_by_id"]["operator-attention"],
+                         "operator-attention")
+
+        self.write(recorded())  # legacy producer body has no R24-8 field
+        unknown_render = self._render(S.loop_payload())
+        self.assertIn("UNKNOWN", unknown_render["text_by_id"]["operator-attention"])
+        self.assertIn("does not carry the alarm fields",
+                      unknown_render["text_by_id"]["operator-attention"])
+        self.assertEqual(unknown_render["class_by_id"]["operator-attention"],
+                         "operator-attention unknown")
+
+    def test_r24_8_alert_text_uses_text_content(self):
+        producer_body = json.loads(R24_8_ACTIVE_SAMPLE.read_text(encoding="utf-8"))
+        producer_body["operator_attention"]["planner_evidence_line"] = (
+            "<img src=x onerror=alert(1)>")
+        self.write(producer_body)
+        rendered = self._render(S.loop_payload())
+        self.assertEqual(rendered["text_by_id"]["operator-attention"],
+                         "<img src=x onerror=alert(1)>")
+        self.assertEqual(rendered["by_id"]["operator-attention"], "")
 
     def test_every_freshness_state_renders_a_DISTINCT_headline(self):
         """The whole suite in one assertion: four states, four renderings. If any
