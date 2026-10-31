@@ -1,0 +1,72 @@
+{
+  "id": "codex3-repl-emb214-parity-20261031",
+  "owner": "codex3",
+  "priority_rank": 40,
+  "regions": "any-cpu-quarter",
+  "min_window_s": 3600,
+  "window_s": 7200,
+  "gib": 8,
+  "booking_class": "block-correctness",
+  "class": "diagnostic",
+  "decision_rule": "For each of the fixed 200 texts compare native v9/v10 embeddings with cosine >=0.9999; missing, failed, interrupted or invalid pairs remain UNKNOWN and count in the full denominator. Capture only; the already-v10 application default is not modified.",
+  "enrollment": "0000000000000000000000000000000000000000",
+  "launcher": {
+    "path": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/emb214/launch.sh",
+    "sha256": "a87f9df5fb814082ca534f0c4cdcdc34abf139b2dfb1d161afc513ccf1882b65"
+  },
+  "job": {
+    "path": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/emb214/worker.py",
+    "sha256": "a2d882dfe0778160614fae3c9669c3a8903445ad0d9db900ce466bd7d182a394"
+  },
+  "source_manifest": {
+    "path": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/emb214/SOURCE-SHA256SUMS",
+    "sha256": "1da19ebf353d30b54273b0a900fa1b36e388c0b45d10e400e5aefd2300a0e38a"
+  },
+  "scratch_root": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/emb214",
+  "keep": [
+    "TASK-SOURCE.txt",
+    "ORIGINAL-INPUTS.sha256",
+    "SOURCE-INPUTS.sha256",
+    "SOURCE-SHA256SUMS",
+    "SAMPLE.json",
+    "SAMPLE-SELECTION.json",
+    "PLAN.json",
+    "RUNTIME.sha256",
+    "MODEL.sha256",
+    "EARLY.sha256",
+    "REGION-LOCK-INPUTS.sha256",
+    "REGION-LOCK-PYTHON-ALLOW.txt",
+    "region-lock",
+    "runtime-libs/*.so*",
+    "*.py",
+    "*.sh",
+    "*.log",
+    "*.out",
+    "*.json",
+    "engine/*.sh",
+    "engine/*.py",
+    "engine/*.json",
+    "run/*.json",
+    "smoke-final/*.json",
+    "smoke-stop-final/*.json"
+  ],
+  "result_path": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/emb214/run/TERMINAL.json",
+  "est_output_GiB": 1,
+  "feasibility": "HOST 2-text / four-process actual BGE control 0.708s on two SMT CPUs excluding model hash; all 200 texts and full target runtime are untested. 7200s is a budget, not a completion guarantee; missing and exposed interruptions remain UNKNOWN and never redraw.",
+  "smoke": {
+    "ran_at": "2026-10-31T06:14:04.157889+00:00",
+    "regions": "R11 128,129",
+    "model": "actual production BGE-large F16; two non-cohort control texts, both v9/v10 binaries",
+    "first_request_ok": true,
+    "result_writer_ok": true,
+    "exit_ok": true,
+    "wall_s": 0.707861693110317,
+    "peak_sampled_tree_rss_bytes": 770056192,
+    "launcher_sha256": "a87f9df5fb814082ca534f0c4cdcdc34abf139b2dfb1d161afc513ccf1882b65",
+    "log": "/mnt/raid0/llm/tmp/compute-flags/ready/codex3-repl-emb214-parity-20261031.smoke.log",
+    "log_sha256": "a9021f974dd6ad53f3bae8411e10d89f344b51f3bd63f65ea6e14983dc95ef36"
+  },
+  "hold": null,
+  "log_consumer": "/mnt/raid0/llm/tmp/codex3-next-runtime-20261031-0245/emb214/log_consumer.py",
+  "completion": "Same final HOST launcher, actual v9 and v10 embedding processes with pinned own ggml/OpenSSL runtime; R13 --complete-cmd, RUS3 in env-i, normal and STOP75 during native CPU-active child with partial/drained proof. Sample 200 fixed before any run, no redraw or default flip."
+}

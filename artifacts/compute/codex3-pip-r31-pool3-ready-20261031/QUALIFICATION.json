@@ -1,0 +1,29 @@
+{
+  "schema": "pip02-pool3-tail-r31-qual/v1",
+  "scope": "exact-byte --smoke to --job native pool path on isolated public controls; real-grant normal branch untested",
+  "source_manifest_sha256": "d699f671fa09008ef98e324f3d072ce52581052b2f9b697242e80f9830e0d06a",
+  "source_pins_sha256": "c78181f6ebc4d9cfb9337aa76db7656824f27e54cd8740c7c61117a8a662ceed",
+  "launcher_sha256": "5f10c0b6d2965f0de22164b7c38ddc2ce21317350fe700ceaa2eb13c49d76047",
+  "inventory_sha256": "a5c0f7f6dd85d53c08477cb1d90d301c9db55c3515a7dffd66a37666ce56b879",
+  "guard_controls": "60 exact original no-start positives and 60 orphan-region negatives; one out-of-scope negative",
+  "control_source_matches_normal": true,
+  "no_grant_job_refused": true,
+  "normal": {
+    "log": "/mnt/raid0/llm/tmp/codex3-pip-pool3-recovery-20261031-0606/SMOKE-normal.log",
+    "sha256": "5958c0847457dc79faf949e82ee32271af36b20c33395742bfadaae262a395a9",
+    "http_200_durable": 5,
+    "wall_s": 56.6146250651218,
+    "peak_bytes": 5034848256,
+    "rc": 75,
+    "drained": true
+  },
+  "stop": {
+    "log": "/mnt/raid0/llm/tmp/codex3-pip-pool3-recovery-20261031-0606/SMOKE-stop.log",
+    "sha256": "408dccf80f5672dd9eaa6b1b3bee0640b85d9b404dbb5d07dfa63c91ff09563a",
+    "wall_s": 20.728686995105818,
+    "peak_bytes": 4960792576,
+    "rc": 75,
+    "drained": true
+  },
+  "created_utc": "2026-10-31T06:13:29.812653+00:00"
+}

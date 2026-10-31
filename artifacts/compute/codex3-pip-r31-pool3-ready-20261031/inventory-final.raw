@@ -1,0 +1,741 @@
+{
+  "schema": "pip02-pool3-never-started-inventory/v1",
+  "created_utc": "2026-10-31T06:13:33.889224+00:00",
+  "scope": "only groups 110,122,134,146 of original English755 plan; all 60 missing original starts at audit time",
+  "plan_sha256": "63028e74950ba7250f33cbce13f4f0bdd165bba2a075242db4475c26f645ed68",
+  "campaign_sha256": "7df42c37a8df3a4d35133a8adbeb82af834a06a13ecd074c42bbbee1330f2e15",
+  "original_roots": [
+    "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh",
+    "/mnt/micron/codex3-pip-split-r22-20261030/campaigns-fresh",
+    "/mnt/micron/codex3-pip-relocatable-r25-20261030/campaigns-fresh"
+  ],
+  "groups": [
+    110,
+    122,
+    134,
+    146
+  ],
+  "pages": [
+    {
+      "group": 110,
+      "shard": 110,
+      "page": {
+        "bytes": 242298,
+        "image": "book_en_6.Complex.Analysis.-.Elias.M..Stein_page_051.png",
+        "index": 1429,
+        "language": "english",
+        "sha256": "80466ece4ca426e3ed7f8ec478633011d8518bc781d2454d4ac414d1b1a151dd",
+        "table_count": 0
+      }
+    },
+    {
+      "group": 110,
+      "shard": 110,
+      "page": {
+        "bytes": 186616,
+        "image": "book_en_40.Puzzles.and.Problems.in.Probability.and.Mathematical.Statistics,.Schwarz,.Springer,.2008_page_064.png",
+        "index": 1430,
+        "language": "english",
+        "sha256": "d92da80802986b2b754ca15984bc77bb7be59fb1b87e0ed51f037cae0b382f8c",
+        "table_count": 0
+      }
+    },
+    {
+      "group": 110,
+      "shard": 110,
+      "page": {
+        "bytes": 309804,
+        "image": "book_en_5.Advanced.Modern.Algebra.-.J.Rotman.2003_page_572.png",
+        "index": 1431,
+        "language": "english",
+        "sha256": "e72beab845252ecba56ca31288f8c78277f389c91f7cc297053c70ea66940442",
+        "table_count": 0
+      }
+    },
+    {
+      "group": 110,
+      "shard": 110,
+      "page": {
+        "bytes": 183234,
+        "image": "book_en_\u56fd\u5916\u6570\u5b66\u6559\u6750-\u6570\u8bba-Melvyn B. Nathanson\u2014Elementary Methods in Number Theory_0100.png",
+        "index": 1432,
+        "language": "english",
+        "sha256": "d4aae8d95f7ad968edc5fc3579c724f41fbc6434534b6c25a71b38843e25c321",
+        "table_count": 2
+      }
+    },
+    {
+      "group": 110,
+      "shard": 110,
+      "page": {
+        "bytes": 192310,
+        "image": "book_en_\u642c\u4e66\u5320-3299-Swift Data Structure and Algorithms-2016-\u82f1\u6587\u7248_page_066.png",
+        "index": 1433,
+        "language": "english",
+        "sha256": "b44b9eaa0f16787a95389b54815b7e90d062eefdb782de1ffed48bc540bcf893",
+        "table_count": 0
+      }
+    },
+    {
+      "group": 110,
+      "shard": 111,
+      "page": {
+        "bytes": 182350,
+        "image": "book_en_\u56fd\u5916\u6570\u5b66\u6559\u6750-An Excursion through Elementary Mathematics\uff08\u521d\u7b49\u6570\u5b66\u6f2b\u6e38\uff09-An excursion through elementary mathematics, Vol.3 (Caminha Muniz Neto A)_0092.png",
+        "index": 1434,
+        "language": "english",
+        "sha256": "11e2a5702d8dba6a1f1c129677e143e8689c0968e8525f276241dcd64e8ba835",
+        "table_count": 0
+      }
+    },
+    {
+      "group": 110,
+      "shard": 111,
+      "page": {
+        "bytes": 252628,
+        "image": "book_en_5.Advanced.Modern.Algebra.-.J.Rotman.2003_page_887.png",
+        "index": 1435,
+        "language": "english",
+        "sha256": "912bb2a67617cfb58e8bce77fd3e73da320741703a1bd2b61a5097187527197b",
+        "table_count": 0
+      }
+    },
+    {
+      "group": 110,
+      "shard": 111,
+      "page": {
+        "bytes": 679224,
+        "image": "book_en_A.Course.in.Abstract.Harmonic.Analysis.-.Gerald.B.Folland.0849384907_page_119.png",
+        "index": 1436,
+        "language": "english",
+        "sha256": "bb034c909ed75a6dc6e611499c0e61bb446990305d25c703d27beb6b20718d2f",
+        "table_count": 0
+      }
+    },
+    {
+      "group": 110,
+      "shard": 111,
+      "page": {
+        "bytes": 192566,
+        "image": "book_en_\u56fd\u5916\u6570\u5b66\u6559\u6750-\u6570\u8bba-Melvyn B. Nathanson\u2014Elementary Methods in Number Theory_0451.png",
+        "index": 1437,
+        "language": "english",
+        "sha256": "8ea404c4ed4b0bb5b9ba8e700103369ad25a9caf859f51103d6a64cf35e9d25d",
+        "table_count": 0
+      }
+    },
+    {
+      "group": 110,
+      "shard": 111,
+      "page": {
+        "bytes": 288883,
+        "image": "book_en_\u642c\u4e66\u5320-3282-Python Web Scraping 2nd Edition-2017-\u82f1\u6587\u7248_page_195.png",
+        "index": 1438,
+        "language": "english",
+        "sha256": "af0329eb47f19dd1f283e6d5a94f302182c67d15798b0e7d96e203a1853927e1",
+        "table_count": 0
+      }
+    },
+    {
+      "group": 110,
+      "shard": 112,
+      "page": {
+        "bytes": 217149,
+        "image": "book_en_[\u642c\u4e66\u5320#375][High Performance MySQL 3rd Edition].2012.\u82f1\u6587\u7248_page_153.png",
+        "index": 1439,
+        "language": "english",
+        "sha256": "f8dcc7feb65afbc29cabc8d9339da4958e4b6e6d326de5ae2b28efab89825c13",
+        "table_count": 0
+      }
+    },
+    {
+      "group": 110,
+      "shard": 112,
+      "page": {
+        "bytes": 258949,
+        "image": "book_en_[\u642c\u4e66\u5320#893][Pyomo\u2014Optimization Modeling in Python].2012.\u82f1\u6587\u7248_page_016.png",
+        "index": 1440,
+        "language": "english",
+        "sha256": "f0ffc270f3a86664761182bc81ef66bfda6e5aae80f7dcb224c5a38f6cfbfdc0",
+        "table_count": 0
+      }
+    },
+    {
+      "group": 110,
+      "shard": 112,
+      "page": {
+        "bytes": 146002,
+        "image": "book_en_\u56fd\u5916\u6570\u5b66\u6559\u6750-An Excursion through Elementary Mathematics\uff08\u521d\u7b49\u6570\u5b66\u6f2b\u6e38\uff09-An excursion through elementary mathematics, Vol.3 (Caminha Muniz Neto A)_0242.png",
+        "index": 1441,
+        "language": "english",
+        "sha256": "a3d221011483e58bd5e466a85efdc4438b9770aa053be9f80887a3169d2c9ac8",
+        "table_count": 0
+      }
+    },
+    {
+      "group": 110,
+      "shard": 112,
+      "page": {
+        "bytes": 301761,
+        "image": "book_en_\u56fd\u5916\u6570\u5b66\u6559\u6750-\u975e\u6570\u5b66\u4e13\u4e1a\u6559\u6750-\u7ebf\u6027\u4ee3\u6570-Gilbert Strang\u2014Linear Algebra and Its Applications 4e_0092.png",
+        "index": 1442,
+        "language": "english",
+        "sha256": "6345f4e703aa6ad0b03b6279ff1c9a91769cfe030443cccf95aa52153d62070d",
+        "table_count": 0
+      }
+    },
+    {
+      "group": 110,
+      "shard": 112,
+      "page": {
+        "bytes": 328433,
+        "image": "book_en_\u642c\u4e66\u5320-3289-The Successful Software Manager-2019-\u82f1\u6587\u7248_page_241.png",
+        "index": 1443,
+        "language": "english",
+        "sha256": "76a008910896e4ce2acc538831eb69e5d6630160e4593a54f338bd9531ce631d",
+        "table_count": 0
+      }
+    },
+    {
+      "group": 122,
+      "shard": 122,
+      "page": {
+        "bytes": 2533320,
+        "image": "color_textbook_zhonggaokao_\u5c0f\u5b66_13.\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed\uff084-5\u5e74\u7ea7\uff09_\u4eba\u6559\u65b0\u8d77\u70b9\u4e94\u5e74\u7ea7\u82f1\u8bed\u4e0a\u518c_\u8bfe\u672c_\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed5A\u7535\u5b50\u8bfe\u672c_page_006.png",
+        "index": 1494,
+        "language": "english",
+        "sha256": "20e7ec86ca4aaf8c99e540b403dc5276223bbe87a4a473a3fa4f0776da2ca887",
+        "table_count": 1
+      }
+    },
+    {
+      "group": 122,
+      "shard": 122,
+      "page": {
+        "bytes": 2384425,
+        "image": "color_textbook_zhonggaokao_\u5c0f\u5b66_13.\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed\uff084-5\u5e74\u7ea7\uff09_\u4eba\u6559\u65b0\u8d77\u70b9\u4e94\u5e74\u7ea7\u82f1\u8bed\u4e0b\u518c_\u8bfe\u672c_\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed5B\u7535\u5b50\u8bfe\u672c_page_011.png",
+        "index": 1498,
+        "language": "english",
+        "sha256": "d3e3c30b691f7ba43381e83fbbfe5fd6807910e62942d719d0919351f1326e25",
+        "table_count": 1
+      }
+    },
+    {
+      "group": 122,
+      "shard": 122,
+      "page": {
+        "bytes": 319801,
+        "image": "color_textbook_zhonggaokao_\u5c0f\u5b66_KET\u542c\u8bf4\u8bfb\u5199\u9010\u9879\u7a81\u7834_KET\u542c\u8bf4\u8bfb\u5199\u9010\u9879\u7a81\u7834\u4e4b\u8f7b\u677e\u641e\u5b9aKET\u5199\u4f5c25\u5206 \u301010\u8bb2 \u891a\u8fde\u4e00\u3011_\u7b2c04\u8bb2\u7b2c\u56db\u8bfeKET\u5206\u7c7b\u8bcd\u6c47\u8bad\u7ec3\u4e8c_\u7b2c\u56db\u8bfeKET\u5206\u7c7b\u8bcd\u6c47\u8bad\u7ec3\u4e8c_page_003.png",
+        "index": 1500,
+        "language": "english",
+        "sha256": "c3c359458792507d1118ee16c0ceef7cd504dd902111506446ad72173808e591",
+        "table_count": 0
+      }
+    },
+    {
+      "group": 122,
+      "shard": 122,
+      "page": {
+        "bytes": 2095863,
+        "image": "color_textbook_zhonggaokao_\u5c0f\u5b66_13.\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed\uff084-5\u5e74\u7ea7\uff09_\u4eba\u6559\u65b0\u8d77\u70b9\u4e94\u5e74\u7ea7\u82f1\u8bed\u4e0b\u518c_\u8bfe\u672c_\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed5B\u7535\u5b50\u8bfe\u672c_page_027.png",
+        "index": 1501,
+        "language": "english",
+        "sha256": "39aed341a8302e272166b95d450d30723a55ac8a1b30af43ac9d57b5b40f3fd1",
+        "table_count": 0
+      }
+    },
+    {
+      "group": 122,
+      "shard": 122,
+      "page": {
+        "bytes": 2256093,
+        "image": "color_textbook_zhonggaokao_\u5c0f\u5b66_13.\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed\uff084-5\u5e74\u7ea7\uff09_\u4eba\u6559\u65b0\u8d77\u70b9\u4e94\u5e74\u7ea7\u82f1\u8bed\u4e0b\u518c_\u8bfe\u672c_\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed5B\u7535\u5b50\u8bfe\u672c_page_034.png",
+        "index": 1502,
+        "language": "english",
+        "sha256": "4638d29d96ff18d0a13a816a17bceaef23def9552183430d43b65171ea2a5410",
+        "table_count": 0
+      }
+    },
+    {
+      "group": 122,
+      "shard": 123,
+      "page": {
+        "bytes": 2593986,
+        "image": "color_textbook_zhonggaokao_\u5c0f\u5b66_13.\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed\uff084-5\u5e74\u7ea7\uff09_\u4eba\u6559\u65b0\u8d77\u70b9\u4e94\u5e74\u7ea7\u82f1\u8bed\u4e0b\u518c_\u8bfe\u672c_\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed5B\u7535\u5b50\u8bfe\u672c_page_036.png",
+        "index": 1503,
+        "language": "english",
+        "sha256": "6d1a568f177ba5f0d5dfbdd4b467eb30d94a912a3657f887f6acd82fda582f74",
+        "table_count": 1
+      }
+    },
+    {
+      "group": 122,
+      "shard": 123,
+      "page": {
+        "bytes": 2144356,
+        "image": "color_textbook_zhonggaokao_\u5c0f\u5b66_13.\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed\uff084-5\u5e74\u7ea7\uff09_\u4eba\u6559\u65b0\u8d77\u70b9\u56db\u5e74\u7ea7\u82f1\u8bed\u4e0a\u518c_\u8bfe\u672c_\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed4A\u7535\u5b50\u8bfe\u672c_page_091.png",
+        "index": 1504,
+        "language": "english",
+        "sha256": "175d591c6559f87bd62ca3b23aa57866d78656a9ccffbeff8cfd9ffe7a62152f",
+        "table_count": 0
+      }
+    },
+    {
+      "group": 122,
+      "shard": 123,
+      "page": {
+        "bytes": 2446103,
+        "image": "color_textbook_zhonggaokao_\u5c0f\u5b66_13.\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed\uff084-5\u5e74\u7ea7\uff09_\u4eba\u6559\u65b0\u8d77\u70b9\u4e94\u5e74\u7ea7\u82f1\u8bed\u4e0a\u518c_\u8bfe\u672c_\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed5A\u7535\u5b50\u8bfe\u672c_page_056.png",
+        "index": 1506,
+        "language": "english",
+        "sha256": "d4e28a2d7bd0b2609679746932ec04b8ce690bc3fc31c911a05aa74caebd8bf4",
+        "table_count": 1
+      }
+    },
+    {
+      "group": 122,
+      "shard": 123,
+      "page": {
+        "bytes": 607783,
+        "image": "color_textbook_zhonggaokao_\u5c0f\u5b66_KET\u542c\u8bf4\u8bfb\u5199\u9010\u9879\u7a81\u7834_KET\u542c\u8bf4\u8bfb\u5199\u9010\u9879\u7a81\u7834\u4e4b\u8f7b\u677e\u641e\u5b9aKET\u5199\u4f5c25\u5206 \u301010\u8bb2 \u891a\u8fde\u4e00\u3011_\u7b2c10\u8bb2\u7b2c\u5341\u8bfe\u5199\u4f5cPart9\u5c0f\u4f5c\u6587\u7ec3\u4e60_\u7b2c\u5341\u8bfe\u5199\u4f5cPart9\u5c0f\u4f5c\u6587\u7ec3\u4e60_page_010.png",
+        "index": 1507,
+        "language": "english",
+        "sha256": "d4a40c302062790dc348c70625ba54539834b33bbe5218672c7cbfcffd857d2b",
+        "table_count": 0
+      }
+    },
+    {
+      "group": 122,
+      "shard": 123,
+      "page": {
+        "bytes": 2774717,
+        "image": "color_textbook_zhonggaokao_\u5c0f\u5b66_13.\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed\uff084-5\u5e74\u7ea7\uff09_\u4eba\u6559\u65b0\u8d77\u70b9\u4e94\u5e74\u7ea7\u82f1\u8bed\u4e0b\u518c_\u8bfe\u672c_\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed5B\u7535\u5b50\u8bfe\u672c_page_043.png",
+        "index": 1508,
+        "language": "english",
+        "sha256": "84ae7659f112a02aab716699b86f72552ca8d4d6c3c1aea4b366a3331926141e",
+        "table_count": 0
+      }
+    },
+    {
+      "group": 122,
+      "shard": 124,
+      "page": {
+        "bytes": 1479834,
+        "image": "color_textbook_zhonggaokao_\u5c0f\u5b66_13.\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed\uff084-5\u5e74\u7ea7\uff09_\u4eba\u6559\u65b0\u8d77\u70b9\u4e94\u5e74\u7ea7\u82f1\u8bed\u4e0a\u518c_\u8bfe\u672c_\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed5A\u7535\u5b50\u8bfe\u672c_page_010.png",
+        "index": 1510,
+        "language": "english",
+        "sha256": "c3efb22e8fd5a146454f4c699197981e97f8fb7fb171021c29fae06db5807d5c",
+        "table_count": 0
+      }
+    },
+    {
+      "group": 122,
+      "shard": 124,
+      "page": {
+        "bytes": 7571189,
+        "image": "color_textbook_zhonggaokao_\u5c0f\u5b66_13.\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed\uff084-5\u5e74\u7ea7\uff09_\u4eba\u6559\u65b0\u8d77\u70b9\u56db\u5e74\u7ea7\u82f1\u8bed\u4e0b\u518c_\u8bfe\u672c_\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed4B\u7535\u5b50\u8bfe\u672c_page_043.png",
+        "index": 1513,
+        "language": "english",
+        "sha256": "79e2fc174c7b3960706fb6a62af101dd8101c23183459025bc10ff1b98ae0baf",
+        "table_count": 0
+      }
+    },
+    {
+      "group": 122,
+      "shard": 124,
+      "page": {
+        "bytes": 177652,
+        "image": "color_textbook_zhonggaokao_\u5c0f\u5b66_KET\u542c\u8bf4\u8bfb\u5199\u9010\u9879\u7a81\u7834_KET\u542c\u8bf4\u8bfb\u5199\u9010\u9879\u7a81\u7834\u4e4b\u8f7b\u677e\u641e\u5b9aKET\u53e3\u8bed25\u5206\u301010 \u891a\u8fde\u4e00\u3011_\u7b2c02\u8bb2\u7b2c\u4e8c\u8bfe\u53e3\u8bed\u90e8\u5206Part1\u8be6\u89e3_\u7b2c\u4e8c\u8bfe\u53e3\u8bed\u90e8\u5206Part1\u8be6\u89e3_page_002.png",
+        "index": 1514,
+        "language": "english",
+        "sha256": "6be7c4806c8c8d88665f9197bca44be59b3ebf3f52a11dbb24dfa9efb65f288a",
+        "table_count": 0
+      }
+    },
+    {
+      "group": 122,
+      "shard": 124,
+      "page": {
+        "bytes": 2211243,
+        "image": "color_textbook_zhonggaokao_\u5c0f\u5b66_13.\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed\uff084-5\u5e74\u7ea7\uff09_\u4eba\u6559\u65b0\u8d77\u70b9\u56db\u5e74\u7ea7\u82f1\u8bed\u4e0a\u518c_\u8bfe\u672c_\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed4A\u7535\u5b50\u8bfe\u672c_page_072.png",
+        "index": 1515,
+        "language": "english",
+        "sha256": "3bad0b56aa23eacb05488db8ed35e72fa1d88b94a8ad431c56a8ad354144b059",
+        "table_count": 0
+      }
+    },
+    {
+      "group": 122,
+      "shard": 124,
+      "page": {
+        "bytes": 518419,
+        "image": "exam_paper_en-file-putnam-archive_2000_Solutions_2000s_page_002.png",
+        "index": 1517,
+        "language": "english",
+        "sha256": "61e73c27c2f169905b811d3356b18e932d83856d087f9d632866d49592451930",
+        "table_count": 0
+      }
+    },
+    {
+      "group": 134,
+      "shard": 134,
+      "page": {
+        "bytes": 554795,
+        "image": "exam_paper_en-file-putnam-archive_2015_Solutions_2015s_page_005.png",
+        "index": 1565,
+        "language": "english",
+        "sha256": "62a84a3041582db04a1f6997ea4fe83541a0e3be188fe3cb9977a454cedb4306",
+        "table_count": 0
+      }
+    },
+    {
+      "group": 134,
+      "shard": 134,
+      "page": {
+        "bytes": 221648,
+        "image": "exam_paper_en-file-putnam-archive_2003_Solutions_2003s_page_008.png",
+        "index": 1566,
+        "language": "english",
+        "sha256": "e0499b03656b29b6dacab03435517911d82fc33e1be7fa06d63dbfbfa6806f8f",
+        "table_count": 0
+      }
+    },
+    {
+      "group": 134,
+      "shard": 134,
+      "page": {
+        "bytes": 2949374,
+        "image": "exam_paper_2004-2019\u4e0a\u6d77\u9ad8\u8003\u82f1\u8bed\u542c\u529b\u539f\u6587\u548c\u7b54\u6848_page_017.png",
+        "index": 1567,
+        "language": "english",
+        "sha256": "08f6998e6dd6ab570fc1db7845703c70682f46b6d64e4a9c7a62ff6c37a30f72",
+        "table_count": 0
+      }
+    },
+    {
+      "group": 134,
+      "shard": 134,
+      "page": {
+        "bytes": 457258,
+        "image": "exam_paper_en-file-putnam-archive_2002_Solutions_2002s_page_002.png",
+        "index": 1568,
+        "language": "english",
+        "sha256": "0590a39f7e2ffe0d672a118ae517d90a9968bdb12b4810b5dd840d5e5b6af60c",
+        "table_count": 0
+      }
+    },
+    {
+      "group": 134,
+      "shard": 134,
+      "page": {
+        "bytes": 592858,
+        "image": "exam_paper_en-file-putnam-archive_2009_Solutions_2009s_page_003.png",
+        "index": 1569,
+        "language": "english",
+        "sha256": "bfc6bdf631c08d172d18a0f8dc761385e13829a29d95503fdbba521b731da5c9",
+        "table_count": 0
+      }
+    },
+    {
+      "group": 134,
+      "shard": 135,
+      "page": {
+        "bytes": 547263,
+        "image": "exam_paper_en-file-putnam-archive_2011_Solutions_2011s_page_002.png",
+        "index": 1570,
+        "language": "english",
+        "sha256": "1766cb29b6b1a16d4f8f5c0da33c67d08ed51e1f1cbf68f3a493f40526fb5d4a",
+        "table_count": 0
+      }
+    },
+    {
+      "group": 134,
+      "shard": 135,
+      "page": {
+        "bytes": 341226,
+        "image": "exam_paper_en-file-putnam-archive_1994_Problems_1994_page_001.png",
+        "index": 1571,
+        "language": "english",
+        "sha256": "0e900403738a5aa6e50db1bf072d34a6fecf57e04b527cbdd9bac9fcf8850f15",
+        "table_count": 0
+      }
+    },
+    {
+      "group": 134,
+      "shard": 135,
+      "page": {
+        "bytes": 398812,
+        "image": "exam_paper_en-file-putnam-archive_1991_Problems_1991_page_001.png",
+        "index": 1572,
+        "language": "english",
+        "sha256": "aecd0f995c6b453d6dbd4f6cb7f4bf47d2a0ed9d5a6d15af5ddef913c8f440d1",
+        "table_count": 0
+      }
+    },
+    {
+      "group": 134,
+      "shard": 135,
+      "page": {
+        "bytes": 318857,
+        "image": "exam_paper_en-file-putnam-archive_2000_Problems_2000_page_001.png",
+        "index": 1573,
+        "language": "english",
+        "sha256": "ec68cbea73d32d551a3f979e6c87ef258ab38d3f679c4e98f5b99135bc76c21b",
+        "table_count": 0
+      }
+    },
+    {
+      "group": 134,
+      "shard": 135,
+      "page": {
+        "bytes": 541198,
+        "image": "exam_paper_en-file-putnam-archive_2009_Solutions_2009s_page_002.png",
+        "index": 1574,
+        "language": "english",
+        "sha256": "74cac6931fe6e86e26c094f68984f76ba4e0f4f51c3ded4c6fcbe483134507a3",
+        "table_count": 0
+      }
+    },
+    {
+      "group": 134,
+      "shard": 136,
+      "page": {
+        "bytes": 391462,
+        "image": "exam_paper_en-file-putnam-archive_1996_Problems_1996_page_001.png",
+        "index": 1576,
+        "language": "english",
+        "sha256": "5e2237d1e9a02c9874efee5858a8f1c9b0fafbea7ef1e244a9f2c7fe33b30d7a",
+        "table_count": 0
+      }
+    },
+    {
+      "group": 134,
+      "shard": 136,
+      "page": {
+        "bytes": 458633,
+        "image": "exam_paper_en-file-putnam-archive_2001_Solutions_2001s_page_002.png",
+        "index": 1577,
+        "language": "english",
+        "sha256": "197fd72772f4a418dca2cd8c235b4a6eac09399c85b2b0d79b4bcf15bec5284b",
+        "table_count": 0
+      }
+    },
+    {
+      "group": 134,
+      "shard": 136,
+      "page": {
+        "bytes": 512626,
+        "image": "exam_paper_en-file-putnam-archive_2006_Solutions_2006s_page_006.png",
+        "index": 1578,
+        "language": "english",
+        "sha256": "23b39a76fa16b9f35d716f0ee493f2b8f29d71ffb8c92f434ba6339f9a5563c7",
+        "table_count": 0
+      }
+    },
+    {
+      "group": 134,
+      "shard": 136,
+      "page": {
+        "bytes": 529867,
+        "image": "exam_paper_en-file-putnam-archive_2007_Solutions_2007s_page_001.png",
+        "index": 1579,
+        "language": "english",
+        "sha256": "4b6ec25ff6c7019b66c3ab44f362ff9de58b5f78ea5f34b0fcc4675159f6fecb",
+        "table_count": 0
+      }
+    },
+    {
+      "group": 134,
+      "shard": 136,
+      "page": {
+        "bytes": 439204,
+        "image": "exam_paper_en-file-putnam-archive_1999_Solutions_1999s_page_002.png",
+        "index": 1580,
+        "language": "english",
+        "sha256": "e8892bd5331f17866882bd463186cd760b7bc3e0c14ea9f496ce6367d065a035",
+        "table_count": 0
+      }
+    },
+    {
+      "group": 146,
+      "shard": 146,
+      "page": {
+        "bytes": 5465926,
+        "image": "magazine_TheEconomist.2023.12.02_page_056.png",
+        "index": 1626,
+        "language": "english",
+        "sha256": "298c283d4873ecbdd0acc61a17cb276d50c11bc65d14044d4131d9be885d149f",
+        "table_count": 0
+      }
+    },
+    {
+      "group": 146,
+      "shard": 146,
+      "page": {
+        "bytes": 5433033,
+        "image": "magazine_TheEconomist.2024.02.24_page_008.png",
+        "index": 1627,
+        "language": "english",
+        "sha256": "2ed9ef3c5a6c885aa2c9669ad9ea8746e74fe96d15639f0e3aaf54a61ab1131d",
+        "table_count": 0
+      }
+    },
+    {
+      "group": 146,
+      "shard": 146,
+      "page": {
+        "bytes": 5165841,
+        "image": "magazine_TheEconomist.2024.03.09_page_064.png",
+        "index": 1628,
+        "language": "english",
+        "sha256": "e15ecb523faa95dacdc0ead1585d9f7c462ce36fb6541f4a1f385e9f907cebf2",
+        "table_count": 0
+      }
+    },
+    {
+      "group": 146,
+      "shard": 146,
+      "page": {
+        "bytes": 337482,
+        "image": "PPT_1637904769_page_008.png",
+        "index": 1629,
+        "language": "english",
+        "sha256": "840ab1611a71a2883201c921a272b57149e15a615ade494ff83823586e7881f4",
+        "table_count": 0
+      }
+    },
+    {
+      "group": 146,
+      "shard": 146,
+      "page": {
+        "bytes": 746231,
+        "image": "PPT_13 fallacies LALT2012_page_001.png",
+        "index": 1630,
+        "language": "english",
+        "sha256": "8d8818a721a0542c0c851e0a284f2b1c26748ecbed9f9209d031803823b4d4d4",
+        "table_count": 0
+      }
+    },
+    {
+      "group": 146,
+      "shard": 147,
+      "page": {
+        "bytes": 114328,
+        "image": "PPT_11.2013EvaluatingTraineeteacherproficiency_page_029.png",
+        "index": 1631,
+        "language": "english",
+        "sha256": "dbeaf73292b948b705881254a85a853c7bf740ac80b849dc97417e9bd85dcff2",
+        "table_count": 0
+      }
+    },
+    {
+      "group": 146,
+      "shard": 147,
+      "page": {
+        "bytes": 260249,
+        "image": "PPT_8076_MEYER_Chapter_2_-_Language_Change_page_012.png",
+        "index": 1632,
+        "language": "english",
+        "sha256": "f7c9c7cba308d517aa921c2ddfe82b0950d66d924694b8f281bf5073728ddd0f",
+        "table_count": 1
+      }
+    },
+    {
+      "group": 146,
+      "shard": 147,
+      "page": {
+        "bytes": 227221,
+        "image": "PPT_BaharMartonosi_page_006.png",
+        "index": 1633,
+        "language": "english",
+        "sha256": "5643016f758e7a8d8b81aa29f50b4066c37a58dd8a56bb9818164b60fe5d2dd3",
+        "table_count": 0
+      }
+    },
+    {
+      "group": 146,
+      "shard": 147,
+      "page": {
+        "bytes": 1297210,
+        "image": "PPT_LEP power point presentation-English-FINAL-10-31-07_page_004.png",
+        "index": 1634,
+        "language": "english",
+        "sha256": "c1a214fc821eeba1bf33a795ec80a724a54f42151e5892012c24e936276efaf3",
+        "table_count": 0
+      }
+    },
+    {
+      "group": 146,
+      "shard": 147,
+      "page": {
+        "bytes": 1265945,
+        "image": "PPT_LEP power point presentation-English-FINAL-10-31-07_page_008.png",
+        "index": 1635,
+        "language": "english",
+        "sha256": "4988ac9b139062038f1d06eb88832f0cee7a43da72bcce332b50e8b3b232d1fc",
+        "table_count": 0
+      }
+    },
+    {
+      "group": 146,
+      "shard": 148,
+      "page": {
+        "bytes": 1333401,
+        "image": "PPT_LEP power point presentation-English-FINAL-10-31-07_page_010.png",
+        "index": 1636,
+        "language": "english",
+        "sha256": "c3beae0d576da26fba82e8784f10678ecd43685e63baecee767acc2d650034f3",
+        "table_count": 1
+      }
+    },
+    {
+      "group": 146,
+      "shard": 148,
+      "page": {
+        "bytes": 197533,
+        "image": "PPT_PresentationSpecification_page_010.png",
+        "index": 1637,
+        "language": "english",
+        "sha256": "270087ff55290eacb8ef19bc9e37844e022001658f71b77e85525a880fe04be0",
+        "table_count": 2
+      }
+    },
+    {
+      "group": 146,
+      "shard": 148,
+      "page": {
+        "bytes": 367696,
+        "image": "PPT_The Right Moves_page_010.png",
+        "index": 1638,
+        "language": "english",
+        "sha256": "7b9ab4e221ba331764d0684ac849ba31bcf2449924dd40c5c12f4f4e6cafc5f1",
+        "table_count": 0
+      }
+    },
+    {
+      "group": 146,
+      "shard": 148,
+      "page": {
+        "bytes": 114078,
+        "image": "PPT_lay_linalg5_01_05_page_009.png",
+        "index": 1639,
+        "language": "english",
+        "sha256": "b18da2772edcba34e77ce7d707bee7e0315a186ec9b7b20d9c968b29d8c2a09a",
+        "table_count": 0
+      }
+    },
+    {
+      "group": 146,
+      "shard": 148,
+      "page": {
+        "bytes": 327805,
+        "image": "PPT_BaharMartonosi_page_010.png",
+        "index": 1640,
+        "language": "english",
+        "sha256": "880ebc5739d0b8a709ba462d206b642f44ad1f37e9fe4ceaecd01dea2b49d839",
+        "table_count": 0
+      }
+    }
+  ]
+}
+{"schema": "bounded-r11-native-profile-supervisor/v1", "elapsed_s": 0.10465294402092695, "sampled_peak_tree_rss_bytes": 21200896, "samples": 2, "verified_exited_processes": 0, "verified_exited_threads": 0, "per_process_address_space_limit_bytes": null, "rss_scope": "sum of sampled resident pages across owned process tree; sampling may miss transients and double-count shared pages", "leader_pid": 2493039, "leader_birth": 154968706, "child_rc": 0, "children_drained": true, "failure": null}

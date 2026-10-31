@@ -1,0 +1,6 @@
+{
+  "source": "/mnt/raid0/llm/epyc-inference-research/benchmarks/prompts/question_pool.jsonl",
+  "rule": "first 200 unique nonempty prompt strings at most 512 Unicode characters in immutable source file order; selection independent of model output",
+  "n": 200,
+  "sample_sha256": "c4fd1496eff2114646e69437038ffeb3075222c603dc061333f370cf4eaaa0f9"
+}

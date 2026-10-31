@@ -1,0 +1,1747 @@
+{
+  "scope": "read-only native region structural classifier; capture callbacks are exploratory and not provenance proof",
+  "summary": {
+    "14": {
+      "journal": {
+        "complete": 15
+      },
+      "native_region_unverified": {
+        "complete": 15
+      },
+      "unmatched_regions": 0
+    },
+    "26": {
+      "journal": {
+        "complete": 15
+      },
+      "native_region_unverified": {
+        "complete": 15
+      },
+      "unmatched_regions": 0
+    },
+    "38": {
+      "journal": {
+        "complete": 10,
+        "unknown": 5
+      },
+      "native_region_unverified": {
+        "complete": 10,
+        "unknown": 5
+      },
+      "unmatched_regions": 14
+    },
+    "50": {
+      "journal": {
+        "unknown": 4,
+        "complete": 11
+      },
+      "native_region_unverified": {
+        "pending": 4,
+        "complete": 11
+      },
+      "unmatched_regions": 0
+    },
+    "62": {
+      "journal": {
+        "unknown": 12,
+        "complete": 3
+      },
+      "native_region_unverified": {
+        "pending": 12,
+        "complete": 3
+      },
+      "unmatched_regions": 0
+    },
+    "74": {
+      "journal": {
+        "unknown": 12,
+        "missing": 3
+      },
+      "native_region_unverified": {
+        "pending": 15
+      },
+      "unmatched_regions": 0
+    },
+    "86": {
+      "journal": {
+        "complete": 10,
+        "unknown": 5
+      },
+      "native_region_unverified": {
+        "complete": 10,
+        "pending": 5
+      },
+      "unmatched_regions": 0
+    },
+    "98": {
+      "journal": {
+        "unknown": 8,
+        "complete": 7
+      },
+      "native_region_unverified": {
+        "unknown": 5,
+        "complete": 7,
+        "pending": 3
+      },
+      "unmatched_regions": 5
+    },
+    "110": {
+      "journal": {
+        "missing": 15
+      },
+      "native_region_unverified": {
+        "pending": 15
+      },
+      "unmatched_regions": 0
+    },
+    "122": {
+      "journal": {
+        "missing": 15
+      },
+      "native_region_unverified": {
+        "pending": 15
+      },
+      "unmatched_regions": 0
+    },
+    "134": {
+      "journal": {
+        "missing": 15
+      },
+      "native_region_unverified": {
+        "pending": 15
+      },
+      "unmatched_regions": 0
+    },
+    "146": {
+      "journal": {
+        "missing": 15
+      },
+      "native_region_unverified": {
+        "pending": 15
+      },
+      "unmatched_regions": 0
+    }
+  },
+  "pages": [
+    {
+      "group": 14,
+      "shard": 14,
+      "index": 94,
+      "journal_state": "complete",
+      "region_state": "complete",
+      "unknown_region_count": 0,
+      "error": null
+    },
+    {
+      "group": 14,
+      "shard": 14,
+      "index": 95,
+      "journal_state": "complete",
+      "region_state": "complete",
+      "unknown_region_count": 0,
+      "error": null
+    },
+    {
+      "group": 14,
+      "shard": 14,
+      "index": 96,
+      "journal_state": "complete",
+      "region_state": "complete",
+      "unknown_region_count": 0,
+      "error": null
+    },
+    {
+      "group": 14,
+      "shard": 14,
+      "index": 97,
+      "journal_state": "complete",
+      "region_state": "complete",
+      "unknown_region_count": 0,
+      "error": null
+    },
+    {
+      "group": 14,
+      "shard": 14,
+      "index": 98,
+      "journal_state": "complete",
+      "region_state": "complete",
+      "unknown_region_count": 0,
+      "error": null
+    },
+    {
+      "group": 14,
+      "shard": 15,
+      "index": 99,
+      "journal_state": "complete",
+      "region_state": "complete",
+      "unknown_region_count": 0,
+      "error": null
+    },
+    {
+      "group": 14,
+      "shard": 15,
+      "index": 107,
+      "journal_state": "complete",
+      "region_state": "complete",
+      "unknown_region_count": 0,
+      "error": null
+    },
+    {
+      "group": 14,
+      "shard": 15,
+      "index": 119,
+      "journal_state": "complete",
+      "region_state": "complete",
+      "unknown_region_count": 0,
+      "error": null
+    },
+    {
+      "group": 14,
+      "shard": 15,
+      "index": 129,
+      "journal_state": "complete",
+      "region_state": "complete",
+      "unknown_region_count": 0,
+      "error": null
+    },
+    {
+      "group": 14,
+      "shard": 15,
+      "index": 133,
+      "journal_state": "complete",
+      "region_state": "complete",
+      "unknown_region_count": 0,
+      "error": null
+    },
+    {
+      "group": 14,
+      "shard": 16,
+      "index": 136,
+      "journal_state": "complete",
+      "region_state": "complete",
+      "unknown_region_count": 0,
+      "error": null
+    },
+    {
+      "group": 14,
+      "shard": 16,
+      "index": 140,
+      "journal_state": "complete",
+      "region_state": "complete",
+      "unknown_region_count": 0,
+      "error": null
+    },
+    {
+      "group": 14,
+      "shard": 16,
+      "index": 142,
+      "journal_state": "complete",
+      "region_state": "complete",
+      "unknown_region_count": 0,
+      "error": null
+    },
+    {
+      "group": 14,
+      "shard": 16,
+      "index": 148,
+      "journal_state": "complete",
+      "region_state": "complete",
+      "unknown_region_count": 0,
+      "error": null
+    },
+    {
+      "group": 14,
+      "shard": 16,
+      "index": 150,
+      "journal_state": "complete",
+      "region_state": "complete",
+      "unknown_region_count": 0,
+      "error": null
+    },
+    {
+      "group": 26,
+      "shard": 26,
+      "index": 303,
+      "journal_state": "complete",
+      "region_state": "complete",
+      "unknown_region_count": 0,
+      "error": null
+    },
+    {
+      "group": 26,
+      "shard": 26,
+      "index": 304,
+      "journal_state": "complete",
+      "region_state": "complete",
+      "unknown_region_count": 0,
+      "error": null
+    },
+    {
+      "group": 26,
+      "shard": 26,
+      "index": 305,
+      "journal_state": "complete",
+      "region_state": "complete",
+      "unknown_region_count": 0,
+      "error": null
+    },
+    {
+      "group": 26,
+      "shard": 26,
+      "index": 306,
+      "journal_state": "complete",
+      "region_state": "complete",
+      "unknown_region_count": 0,
+      "error": null
+    },
+    {
+      "group": 26,
+      "shard": 26,
+      "index": 310,
+      "journal_state": "complete",
+      "region_state": "complete",
+      "unknown_region_count": 0,
+      "error": null
+    },
+    {
+      "group": 26,
+      "shard": 27,
+      "index": 320,
+      "journal_state": "complete",
+      "region_state": "complete",
+      "unknown_region_count": 0,
+      "error": null
+    },
+    {
+      "group": 26,
+      "shard": 27,
+      "index": 362,
+      "journal_state": "complete",
+      "region_state": "complete",
+      "unknown_region_count": 0,
+      "error": null
+    },
+    {
+      "group": 26,
+      "shard": 27,
+      "index": 372,
+      "journal_state": "complete",
+      "region_state": "complete",
+      "unknown_region_count": 0,
+      "error": null
+    },
+    {
+      "group": 26,
+      "shard": 27,
+      "index": 429,
+      "journal_state": "complete",
+      "region_state": "complete",
+      "unknown_region_count": 0,
+      "error": null
+    },
+    {
+      "group": 26,
+      "shard": 27,
+      "index": 430,
+      "journal_state": "complete",
+      "region_state": "complete",
+      "unknown_region_count": 0,
+      "error": null
+    },
+    {
+      "group": 26,
+      "shard": 28,
+      "index": 431,
+      "journal_state": "complete",
+      "region_state": "complete",
+      "unknown_region_count": 0,
+      "error": null
+    },
+    {
+      "group": 26,
+      "shard": 28,
+      "index": 432,
+      "journal_state": "complete",
+      "region_state": "complete",
+      "unknown_region_count": 0,
+      "error": null
+    },
+    {
+      "group": 26,
+      "shard": 28,
+      "index": 433,
+      "journal_state": "complete",
+      "region_state": "complete",
+      "unknown_region_count": 0,
+      "error": null
+    },
+    {
+      "group": 26,
+      "shard": 28,
+      "index": 434,
+      "journal_state": "complete",
+      "region_state": "complete",
+      "unknown_region_count": 0,
+      "error": null
+    },
+    {
+      "group": 26,
+      "shard": 28,
+      "index": 435,
+      "journal_state": "complete",
+      "region_state": "complete",
+      "unknown_region_count": 0,
+      "error": null
+    },
+    {
+      "group": 38,
+      "shard": 38,
+      "index": 481,
+      "journal_state": "complete",
+      "region_state": "complete",
+      "unknown_region_count": 0,
+      "error": null
+    },
+    {
+      "group": 38,
+      "shard": 38,
+      "index": 482,
+      "journal_state": "complete",
+      "region_state": "complete",
+      "unknown_region_count": 0,
+      "error": null
+    },
+    {
+      "group": 38,
+      "shard": 38,
+      "index": 483,
+      "journal_state": "complete",
+      "region_state": "complete",
+      "unknown_region_count": 0,
+      "error": null
+    },
+    {
+      "group": 38,
+      "shard": 38,
+      "index": 484,
+      "journal_state": "complete",
+      "region_state": "complete",
+      "unknown_region_count": 0,
+      "error": null
+    },
+    {
+      "group": 38,
+      "shard": 38,
+      "index": 485,
+      "journal_state": "complete",
+      "region_state": "complete",
+      "unknown_region_count": 0,
+      "error": null
+    },
+    {
+      "group": 38,
+      "shard": 39,
+      "index": 486,
+      "journal_state": "unknown",
+      "region_state": "unknown",
+      "unknown_region_count": 2,
+      "error": null
+    },
+    {
+      "group": 38,
+      "shard": 39,
+      "index": 487,
+      "journal_state": "unknown",
+      "region_state": "unknown",
+      "unknown_region_count": 3,
+      "error": null
+    },
+    {
+      "group": 38,
+      "shard": 39,
+      "index": 488,
+      "journal_state": "complete",
+      "region_state": "complete",
+      "unknown_region_count": 0,
+      "error": null
+    },
+    {
+      "group": 38,
+      "shard": 39,
+      "index": 489,
+      "journal_state": "unknown",
+      "region_state": "unknown",
+      "unknown_region_count": 3,
+      "error": null
+    },
+    {
+      "group": 38,
+      "shard": 39,
+      "index": 490,
+      "journal_state": "unknown",
+      "region_state": "unknown",
+      "unknown_region_count": 3,
+      "error": null
+    },
+    {
+      "group": 38,
+      "shard": 40,
+      "index": 491,
+      "journal_state": "complete",
+      "region_state": "complete",
+      "unknown_region_count": 0,
+      "error": null
+    },
+    {
+      "group": 38,
+      "shard": 40,
+      "index": 492,
+      "journal_state": "unknown",
+      "region_state": "unknown",
+      "unknown_region_count": 3,
+      "error": null
+    },
+    {
+      "group": 38,
+      "shard": 40,
+      "index": 493,
+      "journal_state": "complete",
+      "region_state": "complete",
+      "unknown_region_count": 0,
+      "error": null
+    },
+    {
+      "group": 38,
+      "shard": 40,
+      "index": 494,
+      "journal_state": "complete",
+      "region_state": "complete",
+      "unknown_region_count": 0,
+      "error": null
+    },
+    {
+      "group": 38,
+      "shard": 40,
+      "index": 495,
+      "journal_state": "complete",
+      "region_state": "complete",
+      "unknown_region_count": 0,
+      "error": null
+    },
+    {
+      "group": 50,
+      "shard": 50,
+      "index": 625,
+      "journal_state": "unknown",
+      "region_state": "pending",
+      "unknown_region_count": 0,
+      "error": null
+    },
+    {
+      "group": 50,
+      "shard": 50,
+      "index": 626,
+      "journal_state": "complete",
+      "region_state": "complete",
+      "unknown_region_count": 0,
+      "error": null
+    },
+    {
+      "group": 50,
+      "shard": 50,
+      "index": 627,
+      "journal_state": "unknown",
+      "region_state": "pending",
+      "unknown_region_count": 0,
+      "error": null
+    },
+    {
+      "group": 50,
+      "shard": 50,
+      "index": 628,
+      "journal_state": "complete",
+      "region_state": "complete",
+      "unknown_region_count": 0,
+      "error": null
+    },
+    {
+      "group": 50,
+      "shard": 50,
+      "index": 629,
+      "journal_state": "complete",
+      "region_state": "complete",
+      "unknown_region_count": 0,
+      "error": null
+    },
+    {
+      "group": 50,
+      "shard": 51,
+      "index": 630,
+      "journal_state": "complete",
+      "region_state": "complete",
+      "unknown_region_count": 0,
+      "error": null
+    },
+    {
+      "group": 50,
+      "shard": 51,
+      "index": 631,
+      "journal_state": "complete",
+      "region_state": "complete",
+      "unknown_region_count": 0,
+      "error": null
+    },
+    {
+      "group": 50,
+      "shard": 51,
+      "index": 632,
+      "journal_state": "complete",
+      "region_state": "complete",
+      "unknown_region_count": 0,
+      "error": null
+    },
+    {
+      "group": 50,
+      "shard": 51,
+      "index": 633,
+      "journal_state": "complete",
+      "region_state": "complete",
+      "unknown_region_count": 0,
+      "error": null
+    },
+    {
+      "group": 50,
+      "shard": 51,
+      "index": 634,
+      "journal_state": "complete",
+      "region_state": "complete",
+      "unknown_region_count": 0,
+      "error": null
+    },
+    {
+      "group": 50,
+      "shard": 52,
+      "index": 635,
+      "journal_state": "unknown",
+      "region_state": "pending",
+      "unknown_region_count": 0,
+      "error": null
+    },
+    {
+      "group": 50,
+      "shard": 52,
+      "index": 636,
+      "journal_state": "complete",
+      "region_state": "complete",
+      "unknown_region_count": 0,
+      "error": null
+    },
+    {
+      "group": 50,
+      "shard": 52,
+      "index": 637,
+      "journal_state": "complete",
+      "region_state": "complete",
+      "unknown_region_count": 0,
+      "error": null
+    },
+    {
+      "group": 50,
+      "shard": 52,
+      "index": 638,
+      "journal_state": "unknown",
+      "region_state": "pending",
+      "unknown_region_count": 0,
+      "error": null
+    },
+    {
+      "group": 50,
+      "shard": 52,
+      "index": 639,
+      "journal_state": "complete",
+      "region_state": "complete",
+      "unknown_region_count": 0,
+      "error": null
+    },
+    {
+      "group": 62,
+      "shard": 62,
+      "index": 757,
+      "journal_state": "unknown",
+      "region_state": "pending",
+      "unknown_region_count": 0,
+      "error": null
+    },
+    {
+      "group": 62,
+      "shard": 62,
+      "index": 759,
+      "journal_state": "unknown",
+      "region_state": "pending",
+      "unknown_region_count": 0,
+      "error": null
+    },
+    {
+      "group": 62,
+      "shard": 62,
+      "index": 808,
+      "journal_state": "unknown",
+      "region_state": "pending",
+      "unknown_region_count": 0,
+      "error": null
+    },
+    {
+      "group": 62,
+      "shard": 62,
+      "index": 815,
+      "journal_state": "unknown",
+      "region_state": "pending",
+      "unknown_region_count": 0,
+      "error": null
+    },
+    {
+      "group": 62,
+      "shard": 62,
+      "index": 831,
+      "journal_state": "unknown",
+      "region_state": "pending",
+      "unknown_region_count": 0,
+      "error": null
+    },
+    {
+      "group": 62,
+      "shard": 63,
+      "index": 853,
+      "journal_state": "unknown",
+      "region_state": "pending",
+      "unknown_region_count": 0,
+      "error": null
+    },
+    {
+      "group": 62,
+      "shard": 63,
+      "index": 862,
+      "journal_state": "unknown",
+      "region_state": "pending",
+      "unknown_region_count": 0,
+      "error": null
+    },
+    {
+      "group": 62,
+      "shard": 63,
+      "index": 865,
+      "journal_state": "unknown",
+      "region_state": "pending",
+      "unknown_region_count": 0,
+      "error": null
+    },
+    {
+      "group": 62,
+      "shard": 63,
+      "index": 866,
+      "journal_state": "unknown",
+      "region_state": "pending",
+      "unknown_region_count": 0,
+      "error": null
+    },
+    {
+      "group": 62,
+      "shard": 63,
+      "index": 867,
+      "journal_state": "unknown",
+      "region_state": "pending",
+      "unknown_region_count": 0,
+      "error": null
+    },
+    {
+      "group": 62,
+      "shard": 64,
+      "index": 868,
+      "journal_state": "unknown",
+      "region_state": "pending",
+      "unknown_region_count": 0,
+      "error": null
+    },
+    {
+      "group": 62,
+      "shard": 64,
+      "index": 872,
+      "journal_state": "unknown",
+      "region_state": "pending",
+      "unknown_region_count": 0,
+      "error": null
+    },
+    {
+      "group": 62,
+      "shard": 64,
+      "index": 873,
+      "journal_state": "complete",
+      "region_state": "complete",
+      "unknown_region_count": 0,
+      "error": null
+    },
+    {
+      "group": 62,
+      "shard": 64,
+      "index": 874,
+      "journal_state": "complete",
+      "region_state": "complete",
+      "unknown_region_count": 0,
+      "error": null
+    },
+    {
+      "group": 62,
+      "shard": 64,
+      "index": 875,
+      "journal_state": "complete",
+      "region_state": "complete",
+      "unknown_region_count": 0,
+      "error": null
+    },
+    {
+      "group": 74,
+      "shard": 74,
+      "index": 1202,
+      "journal_state": "unknown",
+      "region_state": "pending",
+      "unknown_region_count": 0,
+      "error": null
+    },
+    {
+      "group": 74,
+      "shard": 74,
+      "index": 1203,
+      "journal_state": "unknown",
+      "region_state": "pending",
+      "unknown_region_count": 0,
+      "error": null
+    },
+    {
+      "group": 74,
+      "shard": 74,
+      "index": 1204,
+      "journal_state": "unknown",
+      "region_state": "pending",
+      "unknown_region_count": 0,
+      "error": null
+    },
+    {
+      "group": 74,
+      "shard": 74,
+      "index": 1205,
+      "journal_state": "unknown",
+      "region_state": "pending",
+      "unknown_region_count": 0,
+      "error": null
+    },
+    {
+      "group": 74,
+      "shard": 74,
+      "index": 1206,
+      "journal_state": "unknown",
+      "region_state": "pending",
+      "unknown_region_count": 0,
+      "error": null
+    },
+    {
+      "group": 74,
+      "shard": 75,
+      "index": 1207,
+      "journal_state": "unknown",
+      "region_state": "pending",
+      "unknown_region_count": 0,
+      "error": null
+    },
+    {
+      "group": 74,
+      "shard": 75,
+      "index": 1208,
+      "journal_state": "unknown",
+      "region_state": "pending",
+      "unknown_region_count": 0,
+      "error": null
+    },
+    {
+      "group": 74,
+      "shard": 75,
+      "index": 1209,
+      "journal_state": "unknown",
+      "region_state": "pending",
+      "unknown_region_count": 0,
+      "error": null
+    },
+    {
+      "group": 74,
+      "shard": 75,
+      "index": 1210,
+      "journal_state": "unknown",
+      "region_state": "pending",
+      "unknown_region_count": 0,
+      "error": null
+    },
+    {
+      "group": 74,
+      "shard": 75,
+      "index": 1211,
+      "journal_state": "unknown",
+      "region_state": "pending",
+      "unknown_region_count": 0,
+      "error": null
+    },
+    {
+      "group": 74,
+      "shard": 76,
+      "index": 1212,
+      "journal_state": "unknown",
+      "region_state": "pending",
+      "unknown_region_count": 0,
+      "error": null
+    },
+    {
+      "group": 74,
+      "shard": 76,
+      "index": 1213,
+      "journal_state": "unknown",
+      "region_state": "pending",
+      "unknown_region_count": 0,
+      "error": null
+    },
+    {
+      "group": 74,
+      "shard": 76,
+      "index": 1214,
+      "journal_state": "missing",
+      "region_state": "pending",
+      "unknown_region_count": 0,
+      "error": null
+    },
+    {
+      "group": 74,
+      "shard": 76,
+      "index": 1215,
+      "journal_state": "missing",
+      "region_state": "pending",
+      "unknown_region_count": 0,
+      "error": null
+    },
+    {
+      "group": 74,
+      "shard": 76,
+      "index": 1216,
+      "journal_state": "missing",
+      "region_state": "pending",
+      "unknown_region_count": 0,
+      "error": null
+    },
+    {
+      "group": 86,
+      "shard": 86,
+      "index": 1290,
+      "journal_state": "complete",
+      "region_state": "complete",
+      "unknown_region_count": 0,
+      "error": null
+    },
+    {
+      "group": 86,
+      "shard": 86,
+      "index": 1291,
+      "journal_state": "complete",
+      "region_state": "complete",
+      "unknown_region_count": 0,
+      "error": null
+    },
+    {
+      "group": 86,
+      "shard": 86,
+      "index": 1292,
+      "journal_state": "complete",
+      "region_state": "complete",
+      "unknown_region_count": 0,
+      "error": null
+    },
+    {
+      "group": 86,
+      "shard": 86,
+      "index": 1293,
+      "journal_state": "unknown",
+      "region_state": "pending",
+      "unknown_region_count": 0,
+      "error": null
+    },
+    {
+      "group": 86,
+      "shard": 86,
+      "index": 1294,
+      "journal_state": "complete",
+      "region_state": "complete",
+      "unknown_region_count": 0,
+      "error": null
+    },
+    {
+      "group": 86,
+      "shard": 87,
+      "index": 1295,
+      "journal_state": "complete",
+      "region_state": "complete",
+      "unknown_region_count": 0,
+      "error": null
+    },
+    {
+      "group": 86,
+      "shard": 87,
+      "index": 1296,
+      "journal_state": "complete",
+      "region_state": "complete",
+      "unknown_region_count": 0,
+      "error": null
+    },
+    {
+      "group": 86,
+      "shard": 87,
+      "index": 1297,
+      "journal_state": "complete",
+      "region_state": "complete",
+      "unknown_region_count": 0,
+      "error": null
+    },
+    {
+      "group": 86,
+      "shard": 87,
+      "index": 1298,
+      "journal_state": "unknown",
+      "region_state": "pending",
+      "unknown_region_count": 0,
+      "error": null
+    },
+    {
+      "group": 86,
+      "shard": 87,
+      "index": 1299,
+      "journal_state": "complete",
+      "region_state": "complete",
+      "unknown_region_count": 0,
+      "error": null
+    },
+    {
+      "group": 86,
+      "shard": 88,
+      "index": 1300,
+      "journal_state": "complete",
+      "region_state": "complete",
+      "unknown_region_count": 0,
+      "error": null
+    },
+    {
+      "group": 86,
+      "shard": 88,
+      "index": 1301,
+      "journal_state": "complete",
+      "region_state": "complete",
+      "unknown_region_count": 0,
+      "error": null
+    },
+    {
+      "group": 86,
+      "shard": 88,
+      "index": 1302,
+      "journal_state": "unknown",
+      "region_state": "pending",
+      "unknown_region_count": 0,
+      "error": null
+    },
+    {
+      "group": 86,
+      "shard": 88,
+      "index": 1303,
+      "journal_state": "unknown",
+      "region_state": "pending",
+      "unknown_region_count": 0,
+      "error": null
+    },
+    {
+      "group": 86,
+      "shard": 88,
+      "index": 1304,
+      "journal_state": "unknown",
+      "region_state": "pending",
+      "unknown_region_count": 0,
+      "error": null
+    },
+    {
+      "group": 98,
+      "shard": 98,
+      "index": 1350,
+      "journal_state": "unknown",
+      "region_state": "unknown",
+      "unknown_region_count": 1,
+      "error": null
+    },
+    {
+      "group": 98,
+      "shard": 98,
+      "index": 1351,
+      "journal_state": "unknown",
+      "region_state": "unknown",
+      "unknown_region_count": 1,
+      "error": null
+    },
+    {
+      "group": 98,
+      "shard": 98,
+      "index": 1352,
+      "journal_state": "complete",
+      "region_state": "complete",
+      "unknown_region_count": 0,
+      "error": null
+    },
+    {
+      "group": 98,
+      "shard": 98,
+      "index": 1353,
+      "journal_state": "complete",
+      "region_state": "complete",
+      "unknown_region_count": 0,
+      "error": null
+    },
+    {
+      "group": 98,
+      "shard": 98,
+      "index": 1354,
+      "journal_state": "complete",
+      "region_state": "complete",
+      "unknown_region_count": 0,
+      "error": null
+    },
+    {
+      "group": 98,
+      "shard": 99,
+      "index": 1355,
+      "journal_state": "unknown",
+      "region_state": "pending",
+      "unknown_region_count": 0,
+      "error": null
+    },
+    {
+      "group": 98,
+      "shard": 99,
+      "index": 1356,
+      "journal_state": "complete",
+      "region_state": "complete",
+      "unknown_region_count": 0,
+      "error": null
+    },
+    {
+      "group": 98,
+      "shard": 99,
+      "index": 1357,
+      "journal_state": "complete",
+      "region_state": "complete",
+      "unknown_region_count": 0,
+      "error": null
+    },
+    {
+      "group": 98,
+      "shard": 99,
+      "index": 1358,
+      "journal_state": "unknown",
+      "region_state": "unknown",
+      "unknown_region_count": 1,
+      "error": null
+    },
+    {
+      "group": 98,
+      "shard": 99,
+      "index": 1359,
+      "journal_state": "unknown",
+      "region_state": "unknown",
+      "unknown_region_count": 1,
+      "error": null
+    },
+    {
+      "group": 98,
+      "shard": 100,
+      "index": 1360,
+      "journal_state": "complete",
+      "region_state": "complete",
+      "unknown_region_count": 0,
+      "error": null
+    },
+    {
+      "group": 98,
+      "shard": 100,
+      "index": 1361,
+      "journal_state": "complete",
+      "region_state": "complete",
+      "unknown_region_count": 0,
+      "error": null
+    },
+    {
+      "group": 98,
+      "shard": 100,
+      "index": 1362,
+      "journal_state": "unknown",
+      "region_state": "unknown",
+      "unknown_region_count": 1,
+      "error": null
+    },
+    {
+      "group": 98,
+      "shard": 100,
+      "index": 1363,
+      "journal_state": "unknown",
+      "region_state": "pending",
+      "unknown_region_count": 0,
+      "error": null
+    },
+    {
+      "group": 98,
+      "shard": 100,
+      "index": 1364,
+      "journal_state": "unknown",
+      "region_state": "pending",
+      "unknown_region_count": 0,
+      "error": null
+    },
+    {
+      "group": 110,
+      "shard": 110,
+      "index": 1429,
+      "journal_state": "missing",
+      "region_state": "pending",
+      "unknown_region_count": 0,
+      "error": null
+    },
+    {
+      "group": 110,
+      "shard": 110,
+      "index": 1430,
+      "journal_state": "missing",
+      "region_state": "pending",
+      "unknown_region_count": 0,
+      "error": null
+    },
+    {
+      "group": 110,
+      "shard": 110,
+      "index": 1431,
+      "journal_state": "missing",
+      "region_state": "pending",
+      "unknown_region_count": 0,
+      "error": null
+    },
+    {
+      "group": 110,
+      "shard": 110,
+      "index": 1432,
+      "journal_state": "missing",
+      "region_state": "pending",
+      "unknown_region_count": 0,
+      "error": null
+    },
+    {
+      "group": 110,
+      "shard": 110,
+      "index": 1433,
+      "journal_state": "missing",
+      "region_state": "pending",
+      "unknown_region_count": 0,
+      "error": null
+    },
+    {
+      "group": 110,
+      "shard": 111,
+      "index": 1434,
+      "journal_state": "missing",
+      "region_state": "pending",
+      "unknown_region_count": 0,
+      "error": null
+    },
+    {
+      "group": 110,
+      "shard": 111,
+      "index": 1435,
+      "journal_state": "missing",
+      "region_state": "pending",
+      "unknown_region_count": 0,
+      "error": null
+    },
+    {
+      "group": 110,
+      "shard": 111,
+      "index": 1436,
+      "journal_state": "missing",
+      "region_state": "pending",
+      "unknown_region_count": 0,
+      "error": null
+    },
+    {
+      "group": 110,
+      "shard": 111,
+      "index": 1437,
+      "journal_state": "missing",
+      "region_state": "pending",
+      "unknown_region_count": 0,
+      "error": null
+    },
+    {
+      "group": 110,
+      "shard": 111,
+      "index": 1438,
+      "journal_state": "missing",
+      "region_state": "pending",
+      "unknown_region_count": 0,
+      "error": null
+    },
+    {
+      "group": 110,
+      "shard": 112,
+      "index": 1439,
+      "journal_state": "missing",
+      "region_state": "pending",
+      "unknown_region_count": 0,
+      "error": null
+    },
+    {
+      "group": 110,
+      "shard": 112,
+      "index": 1440,
+      "journal_state": "missing",
+      "region_state": "pending",
+      "unknown_region_count": 0,
+      "error": null
+    },
+    {
+      "group": 110,
+      "shard": 112,
+      "index": 1441,
+      "journal_state": "missing",
+      "region_state": "pending",
+      "unknown_region_count": 0,
+      "error": null
+    },
+    {
+      "group": 110,
+      "shard": 112,
+      "index": 1442,
+      "journal_state": "missing",
+      "region_state": "pending",
+      "unknown_region_count": 0,
+      "error": null
+    },
+    {
+      "group": 110,
+      "shard": 112,
+      "index": 1443,
+      "journal_state": "missing",
+      "region_state": "pending",
+      "unknown_region_count": 0,
+      "error": null
+    },
+    {
+      "group": 122,
+      "shard": 122,
+      "index": 1494,
+      "journal_state": "missing",
+      "region_state": "pending",
+      "unknown_region_count": 0,
+      "error": null
+    },
+    {
+      "group": 122,
+      "shard": 122,
+      "index": 1498,
+      "journal_state": "missing",
+      "region_state": "pending",
+      "unknown_region_count": 0,
+      "error": null
+    },
+    {
+      "group": 122,
+      "shard": 122,
+      "index": 1500,
+      "journal_state": "missing",
+      "region_state": "pending",
+      "unknown_region_count": 0,
+      "error": null
+    },
+    {
+      "group": 122,
+      "shard": 122,
+      "index": 1501,
+      "journal_state": "missing",
+      "region_state": "pending",
+      "unknown_region_count": 0,
+      "error": null
+    },
+    {
+      "group": 122,
+      "shard": 122,
+      "index": 1502,
+      "journal_state": "missing",
+      "region_state": "pending",
+      "unknown_region_count": 0,
+      "error": null
+    },
+    {
+      "group": 122,
+      "shard": 123,
+      "index": 1503,
+      "journal_state": "missing",
+      "region_state": "pending",
+      "unknown_region_count": 0,
+      "error": null
+    },
+    {
+      "group": 122,
+      "shard": 123,
+      "index": 1504,
+      "journal_state": "missing",
+      "region_state": "pending",
+      "unknown_region_count": 0,
+      "error": null
+    },
+    {
+      "group": 122,
+      "shard": 123,
+      "index": 1506,
+      "journal_state": "missing",
+      "region_state": "pending",
+      "unknown_region_count": 0,
+      "error": null
+    },
+    {
+      "group": 122,
+      "shard": 123,
+      "index": 1507,
+      "journal_state": "missing",
+      "region_state": "pending",
+      "unknown_region_count": 0,
+      "error": null
+    },
+    {
+      "group": 122,
+      "shard": 123,
+      "index": 1508,
+      "journal_state": "missing",
+      "region_state": "pending",
+      "unknown_region_count": 0,
+      "error": null
+    },
+    {
+      "group": 122,
+      "shard": 124,
+      "index": 1510,
+      "journal_state": "missing",
+      "region_state": "pending",
+      "unknown_region_count": 0,
+      "error": null
+    },
+    {
+      "group": 122,
+      "shard": 124,
+      "index": 1513,
+      "journal_state": "missing",
+      "region_state": "pending",
+      "unknown_region_count": 0,
+      "error": null
+    },
+    {
+      "group": 122,
+      "shard": 124,
+      "index": 1514,
+      "journal_state": "missing",
+      "region_state": "pending",
+      "unknown_region_count": 0,
+      "error": null
+    },
+    {
+      "group": 122,
+      "shard": 124,
+      "index": 1515,
+      "journal_state": "missing",
+      "region_state": "pending",
+      "unknown_region_count": 0,
+      "error": null
+    },
+    {
+      "group": 122,
+      "shard": 124,
+      "index": 1517,
+      "journal_state": "missing",
+      "region_state": "pending",
+      "unknown_region_count": 0,
+      "error": null
+    },
+    {
+      "group": 134,
+      "shard": 134,
+      "index": 1565,
+      "journal_state": "missing",
+      "region_state": "pending",
+      "unknown_region_count": 0,
+      "error": null
+    },
+    {
+      "group": 134,
+      "shard": 134,
+      "index": 1566,
+      "journal_state": "missing",
+      "region_state": "pending",
+      "unknown_region_count": 0,
+      "error": null
+    },
+    {
+      "group": 134,
+      "shard": 134,
+      "index": 1567,
+      "journal_state": "missing",
+      "region_state": "pending",
+      "unknown_region_count": 0,
+      "error": null
+    },
+    {
+      "group": 134,
+      "shard": 134,
+      "index": 1568,
+      "journal_state": "missing",
+      "region_state": "pending",
+      "unknown_region_count": 0,
+      "error": null
+    },
+    {
+      "group": 134,
+      "shard": 134,
+      "index": 1569,
+      "journal_state": "missing",
+      "region_state": "pending",
+      "unknown_region_count": 0,
+      "error": null
+    },
+    {
+      "group": 134,
+      "shard": 135,
+      "index": 1570,
+      "journal_state": "missing",
+      "region_state": "pending",
+      "unknown_region_count": 0,
+      "error": null
+    },
+    {
+      "group": 134,
+      "shard": 135,
+      "index": 1571,
+      "journal_state": "missing",
+      "region_state": "pending",
+      "unknown_region_count": 0,
+      "error": null
+    },
+    {
+      "group": 134,
+      "shard": 135,
+      "index": 1572,
+      "journal_state": "missing",
+      "region_state": "pending",
+      "unknown_region_count": 0,
+      "error": null
+    },
+    {
+      "group": 134,
+      "shard": 135,
+      "index": 1573,
+      "journal_state": "missing",
+      "region_state": "pending",
+      "unknown_region_count": 0,
+      "error": null
+    },
+    {
+      "group": 134,
+      "shard": 135,
+      "index": 1574,
+      "journal_state": "missing",
+      "region_state": "pending",
+      "unknown_region_count": 0,
+      "error": null
+    },
+    {
+      "group": 134,
+      "shard": 136,
+      "index": 1576,
+      "journal_state": "missing",
+      "region_state": "pending",
+      "unknown_region_count": 0,
+      "error": null
+    },
+    {
+      "group": 134,
+      "shard": 136,
+      "index": 1577,
+      "journal_state": "missing",
+      "region_state": "pending",
+      "unknown_region_count": 0,
+      "error": null
+    },
+    {
+      "group": 134,
+      "shard": 136,
+      "index": 1578,
+      "journal_state": "missing",
+      "region_state": "pending",
+      "unknown_region_count": 0,
+      "error": null
+    },
+    {
+      "group": 134,
+      "shard": 136,
+      "index": 1579,
+      "journal_state": "missing",
+      "region_state": "pending",
+      "unknown_region_count": 0,
+      "error": null
+    },
+    {
+      "group": 134,
+      "shard": 136,
+      "index": 1580,
+      "journal_state": "missing",
+      "region_state": "pending",
+      "unknown_region_count": 0,
+      "error": null
+    },
+    {
+      "group": 146,
+      "shard": 146,
+      "index": 1626,
+      "journal_state": "missing",
+      "region_state": "pending",
+      "unknown_region_count": 0,
+      "error": null
+    },
+    {
+      "group": 146,
+      "shard": 146,
+      "index": 1627,
+      "journal_state": "missing",
+      "region_state": "pending",
+      "unknown_region_count": 0,
+      "error": null
+    },
+    {
+      "group": 146,
+      "shard": 146,
+      "index": 1628,
+      "journal_state": "missing",
+      "region_state": "pending",
+      "unknown_region_count": 0,
+      "error": null
+    },
+    {
+      "group": 146,
+      "shard": 146,
+      "index": 1629,
+      "journal_state": "missing",
+      "region_state": "pending",
+      "unknown_region_count": 0,
+      "error": null
+    },
+    {
+      "group": 146,
+      "shard": 146,
+      "index": 1630,
+      "journal_state": "missing",
+      "region_state": "pending",
+      "unknown_region_count": 0,
+      "error": null
+    },
+    {
+      "group": 146,
+      "shard": 147,
+      "index": 1631,
+      "journal_state": "missing",
+      "region_state": "pending",
+      "unknown_region_count": 0,
+      "error": null
+    },
+    {
+      "group": 146,
+      "shard": 147,
+      "index": 1632,
+      "journal_state": "missing",
+      "region_state": "pending",
+      "unknown_region_count": 0,
+      "error": null
+    },
+    {
+      "group": 146,
+      "shard": 147,
+      "index": 1633,
+      "journal_state": "missing",
+      "region_state": "pending",
+      "unknown_region_count": 0,
+      "error": null
+    },
+    {
+      "group": 146,
+      "shard": 147,
+      "index": 1634,
+      "journal_state": "missing",
+      "region_state": "pending",
+      "unknown_region_count": 0,
+      "error": null
+    },
+    {
+      "group": 146,
+      "shard": 147,
+      "index": 1635,
+      "journal_state": "missing",
+      "region_state": "pending",
+      "unknown_region_count": 0,
+      "error": null
+    },
+    {
+      "group": 146,
+      "shard": 148,
+      "index": 1636,
+      "journal_state": "missing",
+      "region_state": "pending",
+      "unknown_region_count": 0,
+      "error": null
+    },
+    {
+      "group": 146,
+      "shard": 148,
+      "index": 1637,
+      "journal_state": "missing",
+      "region_state": "pending",
+      "unknown_region_count": 0,
+      "error": null
+    },
+    {
+      "group": 146,
+      "shard": 148,
+      "index": 1638,
+      "journal_state": "missing",
+      "region_state": "pending",
+      "unknown_region_count": 0,
+      "error": null
+    },
+    {
+      "group": 146,
+      "shard": 148,
+      "index": 1639,
+      "journal_state": "missing",
+      "region_state": "pending",
+      "unknown_region_count": 0,
+      "error": null
+    },
+    {
+      "group": 146,
+      "shard": 148,
+      "index": 1640,
+      "journal_state": "missing",
+      "region_state": "pending",
+      "unknown_region_count": 0,
+      "error": null
+    }
+  ]
+}

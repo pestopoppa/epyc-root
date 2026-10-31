@@ -1,0 +1,5 @@
+# REPL-EMB-2.14 native binary parity preparation
+
+Original fixed 200-text outcome-independent sample is immutable in SAMPLE.json with IDs, source lines, text hashes and catalog digest. The two retained binaries report 10125 (v9) and 10303 (v10), and both use the same production BGE-large F16 model. The v9 HOST binary requires pinned private OpenSSL 3.3; both ggml generations resolve from their own binary directories. Current APP source already points TaskEmbedder to the kernel store (commit 9d72b8cc); this run never changes the default.
+
+The same final HOST launcher completed four actual embedding processes on two non-cohort engineering texts: both 1024-dimensional native vector pairs met the original 0.9999 cosine rule. A separate STOP control observed the exact v9 child PID/birth and positive CPU ticks, then returned rc75 partial and drained. The actual 200-text cohort is unrun. Staged manifest has placeholder enrollment and is not READY until the existing-family source task lands on main.
