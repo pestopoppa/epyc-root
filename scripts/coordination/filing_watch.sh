@@ -41,7 +41,8 @@ PY
     echo "$id" >> "$SEEN"
   done
   alarm_rc=0
-  python3 -I "$ROOT/scripts/coordination/filing_takeover_alarm.py" --flags-root "$F" --bus-root "$BUS" || alarm_rc=$?
+  # The bus uses installed PyYAML/jsonschema; -I suppresses required user-site dependencies.
+  python3 "$ROOT/scripts/coordination/filing_takeover_alarm.py" --flags-root "$F" --bus-root "$BUS" || alarm_rc=$?
   if [ "$alarm_rc" != 0 ]; then echo "$(date -u +%FT%TZ) filing-alarm unknown rc=$alarm_rc" >> "$F/filing-watch.log"; fi
   [ "$ONCE" = 1 ] && exit "$alarm_rc"
   sleep 60

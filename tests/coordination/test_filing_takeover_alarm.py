@@ -225,3 +225,33 @@ def test_actual_dispatcher_relays_service_outbox_once(fixture):
     assert (bus / "outbox/filing-watch.jsonl").read_bytes() == original
     assert not list((bus / "outbox").glob("coordinator*"))
     assert not (bus / "queue.jsonl").exists()
+
+
+def test_watcher_missing_yaml_is_fail_visible_and_does_not_append(fixture, tmp_path):
+    flags, bus = fixture
+    (flags / "grants").mkdir()
+    due(flags)
+    blocked = tmp_path / "missing-dependency"
+    blocked.mkdir()
+    (blocked / "yaml.py").write_text(
+        "raise ModuleNotFoundError('yaml dependency intentionally unavailable')\n"
+    )
+    env = {
+        **os.environ,
+        "FILING_WATCH_FLAGS_ROOT": str(flags),
+        "FILING_WATCH_BUS_ROOT": str(bus),
+        "PATH": str(Path(sys.executable).parent) + ":" + os.environ["PATH"],
+        "PYTHONPATH": str(blocked),
+    }
+    p = subprocess.run(
+        ["/bin/bash", str(ROOT / "scripts/coordination/filing_watch.sh"), "--once"],
+        env=env,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    assert p.returncode != 0
+    assert "yaml dependency intentionally unavailable" in p.stderr
+    assert "filing-alarm unknown rc=" in (flags / "filing-watch.log").read_text()
+    assert messages(bus) == []
+    assert not list(bus.glob("inbox/*")) and not (bus / "queue.jsonl").exists()

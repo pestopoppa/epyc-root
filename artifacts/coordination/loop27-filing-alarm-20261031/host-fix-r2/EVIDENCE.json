@@ -1,0 +1,79 @@
+{
+  "task": "LOOP-27 host interpreter correction",
+  "state": "task OPEN pending owner adoption and actual dispatcher relay",
+  "source_files": [
+    {
+      "path": "scripts/coordination/filing_watch.sh",
+      "sha256": "afb7e6ffc8844d1200abbfa461787d9ba1669eca815d2408eb74d313da013934"
+    },
+    {
+      "path": "tests/coordination/test_filing_takeover_alarm.py",
+      "sha256": "f8757c80357bb845cb7b040e4757cdaf137560b7e43167c842bb20878951b7ae"
+    }
+  ],
+  "support_sources": [
+    {
+      "path": "scripts/coordination/session_bus.py",
+      "sha256": "d3f2cec9380ccfd8036448fdcb1bccbd24f82c8f4632abca1ab1478348d1a8a0"
+    },
+    {
+      "path": "scripts/coordination/session_bus_coordinator.py",
+      "sha256": "522e1499390841930103479627106e5c7338d122191072caacbed09048d3f355"
+    },
+    {
+      "path": "scripts/coordination/row_intake.py",
+      "sha256": "ec9ebd70dc9e5cfee05b6ce1227028c5efbed3b2fdd240983117f43f6a0cd543"
+    },
+    {
+      "path": "coordination/session-bus/session_bus.schema.json",
+      "sha256": "280060ce7d9d1393a33bfc7bcffe29b75740901d2591937e7d2202023fe6426d"
+    }
+  ],
+  "qualification": {
+    "task": "LOOP-27 urgent interpreter correction",
+    "base": "5e58ebd226e64de84ced670c3639ef3cb852d897",
+    "patch_sha256": "a09099bc011f7440e3e668206b7404a6d86eb0bd64319e8f6b10e9e32b9ced25",
+    "source_files": [
+      {
+        "path": "scripts/coordination/filing_watch.sh",
+        "sha256": "afb7e6ffc8844d1200abbfa461787d9ba1669eca815d2408eb74d313da013934"
+      },
+      {
+        "path": "tests/coordination/test_filing_takeover_alarm.py",
+        "sha256": "f8757c80357bb845cb7b040e4757cdaf137560b7e43167c842bb20878951b7ae"
+      }
+    ],
+    "fix": "Remove -I only from alarm entry. Keep stdlib discovery -I. Native bus authoring needs normal host user-site PyYAML; native validator supports absent jsonschema structurally. No venv hardcoding/dependency install.",
+    "negative": "HOST-PUBLISHED-NEGATIVE.log: published actual --once under /usr/bin/python3 3.13.7 fails missing yaml;19 pass1 fail",
+    "positive": "HOST-FINAL-CONTROLS.log: same actual host interpreter/user-site21 pass, includes native watcher and native dispatcher twice plus explicit missing-yaml fail-visible/no write",
+    "actual_runtime": "No live writes, source/PID changes or outbox injections; task stays open pending owner-run successor and working native dispatcher",
+    "published_support_source": "unchanged current-main bus/coordinator source hashes in parent QUALIFICATION.json",
+    "quota_credit": 0,
+    "unchanged_support_files": [
+      {
+        "path": "scripts/coordination/session_bus.py",
+        "sha256": "d3f2cec9380ccfd8036448fdcb1bccbd24f82c8f4632abca1ab1478348d1a8a0"
+      },
+      {
+        "path": "scripts/coordination/session_bus_coordinator.py",
+        "sha256": "522e1499390841930103479627106e5c7338d122191072caacbed09048d3f355"
+      },
+      {
+        "path": "scripts/coordination/row_intake.py",
+        "sha256": "ec9ebd70dc9e5cfee05b6ce1227028c5efbed3b2fdd240983117f43f6a0cd543"
+      },
+      {
+        "path": "coordination/session-bus/session_bus.schema.json",
+        "sha256": "280060ce7d9d1393a33bfc7bcffe29b75740901d2591937e7d2202023fe6426d"
+      }
+    ]
+  },
+  "applied_host_tests": "APPLIED-HOST-CONTROLS.log",
+  "native_bus_or_live_process_changes": false,
+  "quota_credit": 0,
+  "negative_log_presentation": {
+    "note": "Git copy removes trailing whitespace only; original raw retained unchanged",
+    "raw_sha256": "9db429bc4513ca4b03699b167b9e59818f2094a4d09981914fd64661bc84d359",
+    "raw_path": "/mnt/raid0/llm/tmp/refactor-01a16fc3/loop27-filing-alarm-20261031/host-fix-r2/HOST-PUBLISHED-NEGATIVE.log"
+  }
+}

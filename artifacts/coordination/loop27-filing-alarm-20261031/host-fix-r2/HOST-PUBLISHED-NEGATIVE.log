@@ -1,0 +1,33 @@
+..............F.....                                                     [100%]
+=================================== FAILURES ===================================
+_______ test_actual_watcher_once_calls_alarm_and_keeps_existing_producer _______
+
+fixture = (PosixPath('/tmp/pytest-of-node/pytest-11247/test_actual_watcher_once_calls0/flags'), PosixPath('/tmp/pytest-of-node/pytest-11247/test_actual_watcher_once_calls0/bus'))
+
+    def test_actual_watcher_once_calls_alarm_and_keeps_existing_producer(fixture):
+        flags, bus = fixture
+        old = datetime.now(timezone.utc) - timedelta(hours=2)
+        (flags / "filing-due.jsonl").write_text(
+            json.dumps({"id": "old-real-run", "seen_at": old.isoformat()}) + "\n"
+        )
+        (flags / "grants").mkdir()
+        (flags / "grants/new-real-run.ended").write_text("rc=0\n")
+        env = {
+            **os.environ,
+            "FILING_WATCH_FLAGS_ROOT": str(flags),
+            "FILING_WATCH_BUS_ROOT": str(bus),
+            "PATH": str(Path(sys.executable).parent) + ":" + os.environ["PATH"],
+        }
+        argv = ["/bin/bash", str(ROOT / "scripts/coordination/filing_watch.sh"), "--once"]
+        for _ in range(2):
+            p = subprocess.run(argv, env=env, capture_output=True, text=True, check=False)
+>           assert p.returncode == 0, p.stdout + p.stderr
+E           AssertionError: {"status": "unknown", "reason": "could not read config.yaml roster: No module named 'yaml'"}
+E
+E           assert 2 == 0
+E            +  where 2 = CompletedProcess(args=['/bin/bash', '/mnt/raid0/llm/tmp/refactor-01a16fc3/loop27-filing-alarm-20261031/host-baseline/r..., stdout='', stderr='{"status": "unknown", "reason": "could not read config.yaml roster: No module named \'yaml\'"}\n').returncode
+
+host-baseline/root/tests/coordination/test_filing_takeover_alarm.py:170: AssertionError
+=========================== short test summary info ============================
+FAILED host-baseline/root/tests/coordination/test_filing_takeover_alarm.py::test_actual_watcher_once_calls_alarm_and_keeps_existing_producer
+1 failed, 19 passed in 0.29s
