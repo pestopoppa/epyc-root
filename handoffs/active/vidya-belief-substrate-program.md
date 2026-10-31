@@ -2366,6 +2366,7 @@ RI-16's routing `stage_ms` is covered by VB-ROUTE-LAT above, not by a new task.
     correctness check, coherence at production prompt length, acceptance. Must carry the kernel store build id
     (`gpu-20260921-ffc1bac82`), the drafter GGUF sha and the full argv.
   - **Qwen3-VL-30B on CPU** (S-18 in `multimodal-pipeline.md`): decode tok/s and MMMU parity at NUMA_HALF_A `-t 48`.
+    - [ ] Project S18 prospective native512-token/60-item records, with exact denominator, frozen source/model/cohort identity and CPU placement into the existing serving source class; partial/runtime-smoke records must not imply complete MMMU measurement; verify planning-context canary before marking wired. No second grading ladder, no invented retrospective warrant.
   - Also: the measured DFlash2 VRAM components in `/mnt/raid0/llm/tmp/kv-sizing-8083-20261003/DECISION.md` §1.3
     (drafter weights, GDN state per draft depth, KQ-mask slope) are a capacity source for SSU-F3's claim tuple.
   - Add one source-table row per producer in `scripts/vidya/adapters/README.md` (row text prepared for the owning

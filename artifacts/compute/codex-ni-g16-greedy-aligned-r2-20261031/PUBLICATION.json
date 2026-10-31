@@ -1,0 +1,21 @@
+{
+  "status": "READY_PUBLISHED_UNARMED",
+  "id": "codex-ni-g16-greedy-ab-aligned-r2-20261031",
+  "ready": "/mnt/raid0/llm/tmp/compute-flags/ready/codex-ni-g16-greedy-ab-aligned-r2-20261031.json",
+  "ready_sha256": "60b2785db876652ebd6d232ec3c3ed5dff4522ca8872b40e157eb400d65dbbe5",
+  "row": "/mnt/raid0/llm/tmp/compute-flags/ready/codex-ni-g16-greedy-ab-aligned-r2-20261031.row.md",
+  "row_sha256": "7b8aea9830c9e2ab932cabac2df972589f1764d8aa98da79cc615c1c03010052",
+  "published_at": "2026-10-31T07:57:35.660731+00:00",
+  "MAIN_approved_exact_bytes": true,
+  "shared_FILLERS_grants_keeper_mutations": false,
+  "known2048_scientific_verdict": "FAIL_FULL_OUTPUT_BYTE_IDENTITY",
+  "remaining_required_lengths": [
+    8192,
+    16384,
+    24576
+  ],
+  "AA128_prefix_replay": "slot0 unstable in both arms; slot1 stable; no unique GDN causality/statistical estimate",
+  "scope_complete": false,
+  "G16b_triggered": false,
+  "G16_parent_keep_promotion": "OPEN"
+}

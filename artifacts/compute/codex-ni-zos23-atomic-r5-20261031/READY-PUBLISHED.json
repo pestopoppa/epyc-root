@@ -1,0 +1,14 @@
+{
+  "status": "READY_PUBLISHED",
+  "at": "2026-10-31T08:01:51.708231+00:00",
+  "id": "codex-ni-gpu-zos23-c5-concurrent-r5-20261031",
+  "manifest": "/mnt/raid0/llm/tmp/compute-flags/ready/codex-ni-gpu-zos23-c5-concurrent-r5-20261031.json",
+  "launcher_sha256": "9fa51093c6369169242bee827c0683ae820f569b39487a10cdf0bcf7049ae936",
+  "original_parent_complete": false,
+  "ship_authorized": false,
+  "manifest_sha256": "61af3a542f136d7d31b4d401f9a3366b051eace480ba387f69f0b1224880d627",
+  "observed_path": "/mnt/raid0/llm/tmp/compute-flags/ready/codex-ni-gpu-zos23-c5-concurrent-r5-20261031.json",
+  "own_claim_released": true,
+  "c3_notice_flag": "/mnt/raid0/llm/tmp/compute-flags/codex-channels/NI-ZOS23-CONCURRENT-TERMINAL-20261031.flag",
+  "raw_ready_smoke_log": "/mnt/raid0/llm/tmp/compute-flags/ready/codex-ni-gpu-zos23-c5-concurrent-r5-20261031.smoke.log"
+}
