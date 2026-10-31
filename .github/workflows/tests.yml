@@ -78,7 +78,8 @@ jobs:
       - name: Install
         run: |
           python -m pip install --upgrade pip
-          pip install pytest pyyaml numpy httpx
+          # The pinned native privacy preflight imports these through the orchestrator package.
+          pip install pytest pyyaml numpy httpx "pydantic-graph>=1.80.0,<2" "langgraph>=0.2.0" "jsonschema>=4.20"
 
       - name: Belief substrate
         # The vidya adapters and their ladder: pure projection, no hardware.
