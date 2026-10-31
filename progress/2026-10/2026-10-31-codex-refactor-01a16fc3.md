@@ -59,3 +59,7 @@ Reopened the original `(Z) Fix the llama-server log retention hole` box after th
 ## Prior-work evidence hygiene: REPL-EMB-2.13
 
 REPL-EMB-2.13 citation hygiene: cite implementing APP 23560c8e (2026-10-24), retain original2026-10-31 audit date and bounded 35-test scope, archive original subset log in Git. No new code/quota credit, no full-suite claim or retests. [no-belief: evidence-citation correction]
+
+### Prior-work evidence hygiene: Evidence-durability symlink guard
+
+- 2026-10-31 metadata audit for Evidence-durability symlink guard: the 2026-10-30 completion date remains unchanged. Implementing source `epyc-inference-research@a4da03e04331cf7bc2e9af2600d87f3ca4efdaca` is reachable from `origin/main`; `scripts/validate/test_check_evidence_durability.py` exists in the cited commit and covers TestRelativeCitationsGetTheSameGuard. The owning handoff receives only a first-line source/test reference; no test or measurement was rerun. This is prior-work hygiene and is excluded from today's throughput quota. Durable audit: `artifacts/compute/refactor-prior-work-evidence-20261031/13-Evidence-durability-symlink-guar/EVIDENCE.json`. [no-belief: evidence metadata only; no new measurement]

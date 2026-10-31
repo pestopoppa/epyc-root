@@ -203,7 +203,7 @@ First full smoke run of the trial loop. Four defects, three silent.
       neither a retained path nor displayable bytes for that form.
       - The committed fix emits bounded path-only metadata for the first direct image, retains no image bytes, and preserves existing precedence; archives are not expanded. The receipt also records 90 routing tests and Ruff passing; no service deployment or model-quality result is claimed. [no-belief: source and regression verification]
 
-- [x] **Evidence-durability symlink guard covers the form that barely occurs.** ✅ 2026-10-30 [no-belief: source and regression verification]
+- [x] **Evidence-durability symlink guard covers the form that barely occurs.** ✅ 2026-10-30 [no-belief: source and regression verification] [source: epyc-inference-research@a4da03e04331cf7bc2e9af2600d87f3ca4efdaca; test: epyc-inference-research/scripts/validate/test_check_evidence_durability.py]
       `check_evidence_durability.py:306` — `inside_repo = (not absolute) or ...` is unconditionally
       True for relative paths, so `_is_scratch()` is never consulted for them. **416 of 421** registry
       citations are relative, and the remediation playbook tells remediators to use relative paths.
