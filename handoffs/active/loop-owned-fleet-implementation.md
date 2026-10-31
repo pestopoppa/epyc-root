@@ -607,8 +607,8 @@ Zero were bulk-acked. What survived as live work:
   (`tests/coordination/test_monitor_file_reinvoke.py`); M4 + routing-intent suites green.
   The sweep ships in code; the live daemon must be restarted to run it (daemon boundary —
   operator follow-up).
-- [ ] **Screener paraphrase defect: a pool dispatch screened a worker against hand-written
-  `--row-text` instead of the row's verbatim text.** CJ-1c parked `unknown` on a 241-char
+- [x] ✅ 2026-10-31 **Screener paraphrase defect: a pool dispatch screened a worker against hand-written `--row-text` instead of the row's verbatim text.** Evidence: ROOT `3e86fa5eccb6abcb0822f65cd45b29c9d22968fb`; `scripts/coordination/tests/test_worker_row_text_identity.py`, `test_headless_audit_deliverables.py` and `test_worker_runner.py` in that directory (81 pass). [no-belief: dispatch source and regression controls; no daemon reload or retrospective re-screening]
+  Full queued text is passed without truncation; both CLI and assignment-file dispatches refuse resolved-ID paraphrases. A file-only reader without a queue namespace preserves its offline contract. Original incident: CJ-1c parked `unknown` on a 241-char
   paraphrase while the real 452-char row text matches its checkbox verbatim. "The task TEXT is
   the identity" — the dispatch path must pass the row text through byte-for-byte; forbid
   free-hand `--row-text` when the row resolves. (5/5 pilot rows screened `unknown`; at least

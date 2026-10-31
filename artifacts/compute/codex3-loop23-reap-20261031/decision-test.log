@@ -1,0 +1,8 @@
+test_actual_boundary (__main__.Decisions.test_actual_boundary) ... ok
+test_keep_and_vault_guard (__main__.Decisions.test_keep_and_vault_guard) ... ok
+test_root_marker_cannot_replace_receipt (__main__.Decisions.test_root_marker_cannot_replace_receipt) ... ok
+
+----------------------------------------------------------------------
+Ran 3 tests in 0.006s
+
+OK
