@@ -858,7 +858,8 @@ justify best-of-N anywhere. Whether the instrument is worth using is decided by 
       per comparison** — this is how we take the positional-bias-cancellation insight from the pivot
       tournament **without adopting the pivot tournament**, which is separately declined. [intake-1162]
       [intake-804]
-- [ ] **EV-15f — Record the cheaper alternative before building the expensive one.** intake-1171 (V1)
+- [x] ✅ 2026-10-31 **EV-15f — Record the cheaper alternative before building the expensive one.** Evidence: orch `a844520f3cabefe2bbca6aff7231d9bc9eb2e5a0`; `scripts/autopilot/text_rating_readout.py`; `tests/unit/test_text_rating_readout.py` (24 pass). [no-belief: offline text-rating instrument; no judge deployment or comparative measurement claim]
+      The standalone JSON-to-readout CLI implements text ratings, explicit preference/tie, confidence weighting and mandatory paired orders; missing/duplicate pairs refuse before aggregation. EV-15e's broader/logprob consumer and scientific comparison remain open. Original rationale: intake-1171 (V1)
       obtains the same graded, tie-free signal from **text ratings plus margin weighting**
       (`w = max(|r_i − r_j|/9, τ)`, `μ = Σwv/Σw`, τ=0.1) with **no logprob plumbing at all**, in ~20
       lines. Two independent papers, two mechanisms, one lever. Build the text route first and treat

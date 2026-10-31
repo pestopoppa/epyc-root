@@ -20,22 +20,26 @@
 # visible long enough to become one of those.
 set -uo pipefail
 
-ORCH=/mnt/raid0/llm/epyc-orchestrator
-PY="$ORCH/.venv/bin/python"
+ORCH="${ORCH:-/mnt/raid0/llm/epyc-orchestrator}"
+PY="${PYTHON:-$ORCH/.venv/bin/python}"
 NUMA="${NUMA_MODE:-both}"
 OUT="${1:-/mnt/raid0/llm/tmp/stack-change-preflight-$(date -u +%Y%m%dT%H%M%SZ).txt}"
 
 [ -x "$PY" ] || { echo "REFUSING: orchestrator venv missing at $PY" >&2; exit 2; }
+[ -f "$ORCH/scripts/registry/stack_change_pipeline.py" ] || {
+  echo "REFUSING: complete orchestrator checkout missing at $ORCH" >&2; exit 2;
+}
 
 raw="$(mktemp)"; trap 'rm -f "$raw"' EXIT
-"$PY" "$ORCH/scripts/registry/stack_change_pipeline.py" check --numa-mode "$NUMA" > "$raw" 2>&1 || true
+pipeline_rc=0
+"$PY" "$ORCH/scripts/registry/stack_change_pipeline.py" check --repo-root "$ORCH" --numa-mode "$NUMA" > "$raw" 2>&1 || pipeline_rc=$?
 
 # Classify. The patterns come from the errors this actually emitted on
 # 2026-09-22; anything unmatched lands in needs-operator, because an
 # unrecognised violation is exactly the thing a human should look at.
-"$PY" - "$raw" "$OUT" <<'PY'
-import re, sys
-raw, out = sys.argv[1], sys.argv[2]
+"$PY" - "$raw" "$OUT" "$pipeline_rc" <<'PY'
+import re, shutil, sys
+raw, out, pipeline_rc = sys.argv[1], sys.argv[2], int(sys.argv[3])
 lines = [l.rstrip() for l in open(raw) if re.search(r'^\s*(error|warn):', l)]
 TRANSFORM = (
     r'declaration parity', r'numa_ports', r'numa_instances', r'NUMA topology',
@@ -45,6 +49,13 @@ TRANSFORM = (
 )
 MEASURE = (r'quality suite_vector', r'known gap', r'known_global_gaps', r'Missing quality')
 buckets = {'fixable-by-transform': [], 'needs-measurement': [], 'needs-operator': []}
+if pipeline_rc != 0 and not lines:
+    # A traceback or parser/import failure has no canonical violation line.
+    # Retain the full producer output and refuse rather than printing 0 violations.
+    shutil.copyfile(raw, out + '.raw')
+    buckets['needs-operator'].append(
+        f'unclassified pipeline failure (exit {pipeline_rc}); raw diagnostic: {out}.raw'
+    )
 for l in lines:
     t = l.strip()
     if   any(re.search(p, t, re.I) for p in MEASURE):   buckets['needs-measurement'].append(t)
@@ -53,7 +64,7 @@ for l in lines:
 w = open(out, 'w')
 def emit(s=''):
     print(s); w.write(s + '\n')
-emit(f'stack-change preflight — {len(lines)} violation(s)')
+emit(f'stack-change preflight — {sum(map(len, buckets.values()))} violation(s)')
 for k in ('fixable-by-transform', 'needs-measurement', 'needs-operator'):
     v = sorted(set(buckets[k]))
     emit(); emit(f'== {k} ({len(v)})')
@@ -62,7 +73,7 @@ emit(); emit(f'report: {out}')
 w.close()
 # Exit code carries the verdict so a driver can branch without parsing.
 #   0 clean · 3 transform work remains · 4 measurement owed · 5 operator decision
-sys.exit(0 if not lines else
+sys.exit(0 if not any(buckets.values()) else
          3 if buckets['fixable-by-transform'] else
          4 if buckets['needs-measurement'] else 5)
 PY

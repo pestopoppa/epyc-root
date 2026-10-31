@@ -23,3 +23,17 @@ EV-14g published to orchestrator main via source `e60e51887b3956d017af1ed74988e1
 WRAP-4 audit and methodology corrections published in ROOT source `6c7b2bf07e7d894f95b1ca5ab6cd2ec01de424ce`: all seven cited report hashes verified, unsupported clean-window interpretations withdrawn, historical raw observations preserved. KPF18-R4 source audit in that commit names physical KV extent/FA partitioning as a mechanism consistent with both controls; no causal attribution or changed native verdict. Original boxes cite the published artifact paths. [belief: cc]
 
 SEQ-B4 published in orch `bd2f7105a6b04fc9f9cffba0dff861c6e79c1c8d`, main `20b5efd5c7b1e93808c713337079c2ef9327d8a8`: rate-count capture and reader reconstruction corrected,36 focused tests pass, legacy fallback and policy thresholds preserved. Three further completed code-queue items, five recorded this phase; no inference acceptance is inferred. [no-belief: source/fixture validation]
+
+## R18 forensic source checkpoint
+
+R18 CUID forensics source update: Research `14500b87` (main `49e77640`) publishes the optional guarded per-TU recipe-derived replay utility. All141 anchor/candidate CUID pairs independently match the exact compiler Driver→ASTContext/CodeGen double-hash; identical source bytes and source/include-root relocation explain every pair. All282 retained commands prepare;18 wrapper cases and actual two-TU/two-directory dependency-bearing CMake controls pass. The cause is now established, superseding the earlier cause-unproved static-readback caveat. Full three-set symbol identity and `PRODUCTION_RECIPE_IS_VERIFIABLE` remainfalse; no full rebuild, symbol filtering, store mutation or parent completion. [Audit](../../docs/audits/r18-cuid-path-hash-forensics-20261031.md); [raw custody](../../artifacts/compute/refactor-r18-cuid-forensics-source-20261031.json). [no-belief: source/build qualification only]
+
+The original R18 forensic box remains unchecked because its full three-set resolution criterion is not yet met. This checkpoint adds no code-quota tick.
+
+## NI63 and text-rating source closures
+
+NI63 source `d094546ea86d08bfcc18407529c6c7ae0672c525` is published to orchestrator main5775730c: current-source identities are recorded while historical tuples and workload/capacity pins remain unchanged;17 focused cases pass. Close the original S task only; O8 CI parent stays open. This is the sixth completed own code-queue item this phase. [no-belief: source/fixture validation]
+
+EV-15f text-rating readout source `a844520f3cabefe2bbca6aff7231d9bc9eb2e5a0` is published with24 tests: offline JSON instrument, both presentation orders required, no comparative efficacy or deployed judge claim. This completed extra task is outside WORK-refactor-code.md and is not added to the own-queue total. AK-HR-3 two-repo source and post-change store proof are published; required loop-owner review pending, original box remains open. [no-belief: source implementation and controlled fixtures]
+
+KVU-13b source `a61056bb5a518f2685f8706587464f541c5786f1`: complete scratch source list, explicit checkout routing and unknown-error refusal with retained raw diagnostic. Five portable subprocess/copy tests pass in the integrated ROOT lane. This seventh own code-queue closure is included with its source in the same pending promotion; counts become authoritative only after remote main verification. [no-belief: source and fixture validation]

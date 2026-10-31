@@ -106,9 +106,9 @@ Report the edited surfaces, the capacity delta, the recert requirement, and any
 ## Scripts — they assert, they do not advise
 
 ```bash
-scripts/topology_check.py            # shape table, invariants, overlap, phantoms, device parity
-scripts/topology_check.py --intent <yaml>   # also gates n_ctx changes on evidence
-scripts/capacity.sh                  # both legs, per instance; non-zero on a failing or UNGATED leg
+scripts/topology_check.py --orchestrator "$ORCH"            # shape table, invariants, overlap, phantoms, device parity
+scripts/topology_check.py --orchestrator "$ORCH" --intent <yaml>   # also gates n_ctx changes on evidence
+ORCH="$ORCH" scripts/capacity.sh                  # both legs, per instance; non-zero on a failing or UNGATED leg
 scripts/affinity_check.py            # LIVE affinity of every running instance vs its declared shape
 ```
 
