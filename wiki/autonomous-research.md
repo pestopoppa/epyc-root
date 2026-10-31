@@ -4390,3 +4390,9 @@ Sources: [INF-12 Gate2 diagnostic](../progress/2026-10-28-inf12-gate2-triton36-d
 - **Disk pressure, not science, stalled the 10-30 queue.** Free space fell to the 150 GiB floor; roughly 561 git worktrees (471 GiB) from per-task checkouts were the root cause, and cleanup took the disk from 151 to 371 GiB. Many refusals (rc6/rc70/rc75) were scheduler admission or launcher declaration mismatches (e.g., a 3600 s window against a 3600 s minimum plus 300 s guard), pre-native, so they are no outcome grade. Legacy T1 dry-run admission is now off by default in the launcher template. ([source](../progress/2026-10/2026-10-30-workspace-58.md))
 
 Sources: [autopilot-continuous-optimization](../handoffs/active/autopilot-continuous-optimization.md) · [2026-10-30 workspace-58](../progress/2026-10/2026-10-30-workspace-58.md) · [2026-10-30 progress](../progress/2026-10/2026-10-30.md) · [2026-10-30 inference pipeline](../progress/2026-10/2026-10-30-codex3-inference-pipeline.md)
+
+## Compiled Update — 2026-10-31 (evening wiki sweep, workspace-58)
+
+**Confidence: verified** for source/test facts; one-run results are descriptive, not gates.
+
+- AK-PM-12 execution-gated write hook (108 tests, UNKNOWN on missing verification), R24-8 alarms (R24-8 stays OPEN), and AKX-AUTO-5 boundary grace of 8400 s landed. ([akpm12](../progress/2026-10/2026-10-31-akpm12-hyg2b.md), [alarms](../progress/2026-10/2026-10-31-r24-8-alarms.md))

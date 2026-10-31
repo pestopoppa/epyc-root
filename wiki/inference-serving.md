@@ -2987,3 +2987,10 @@ Packet evidence: `/mnt/raid0/llm/tmp/refactor-01a16fc3/ufh14-serving-calls-ready
 - **Harness lesson: outer completion contracts, not native failures, caused most FAILED-RUNs.** Missing `--complete-cmd`, an absent host region-lock interpreter and launchers outside their declared scratch root withdrew or failed many packets (C6, KPF-18.1, FU-03, GNX R4) while native jobs returned rc0; GNX R4's required 37/37 native proof was still accepted. Disk-floor admission (150 GiB + reserve) also refused several FA4/HIL/KPF windows before native work. ([source](../progress/2026-10/2026-10-31-codex3-kpf181-fu03-results.md))
 
 Sources: [gpu-serving-tie-in-program](../handoffs/active/gpu-serving-tie-in-program.md) · [kv-unified-stack-rollout](../handoffs/active/kv-unified-stack-rollout.md) · [heterogeneous-slot-fabric-residency](../handoffs/active/heterogeneous-slot-fabric-residency.md) · [ZOS serial R4](../progress/2026-10/2026-10-31-zos23-serial-r4.md) · [GPU diagnostics](../progress/2026-10/2026-10-31-codex3-gpu-ds41-lex.md) · [numa-topology-cutover-resume](../handoffs/active/numa-topology-cutover-resume-20260730.md)
+
+## Compiled Update — 2026-10-31 (evening wiki sweep, workspace-58)
+
+**Confidence: verified** for source/test facts; one-run results are descriptive, not gates.
+
+- KVU-15d lease-ownership recording (94 tests), M-21 probe tagging, stack-template launch gate (115 tests) and machine-frame transport (fixture frames roughly halved; not a live bandwidth claim) landed as source changes. ([kvu15d](../progress/2026-10/2026-10-31-kvu15d-m21.md), [frames](../progress/2026-10/2026-10-31-codex3-mhs-machine-closures.md))
+- Keeper v7 reaps one day after run completion and filing receipt (LOOP-23). ([progress](../progress/2026-10/2026-10-31-codex3-loop23.md))

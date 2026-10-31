@@ -7290,3 +7290,13 @@ Sources: [delivered routing and scoring progress](../progress/2026-10/2026-10-29
 - **Filing grammar this sweep: a FAILED-RUN is a classified non-result.** Original events are filed with a class (harness, admission, disk-floor, unknown), unknown exposures are kept and never redrawn, a later offline finalization or rerun never rewrites the original rc, and a scoped diagnostic is not extended to the full cohort. Examples: HIL R9 validator bug, S2 r13 rc64 host argument contract, C5 build rc127 on missing `rg` after 315/315 compiled. ([source](../progress/2026-10/2026-10-31-c5-hil15-filings.md))
 
 Sources: [agentic-serving-harness-fixes](../handoffs/active/agentic-serving-harness-fixes.md) · [architect-model-selection-bench](../handoffs/active/architect-model-selection-bench.md) · [scoring-infra-standardization](../handoffs/active/scoring-infra-standardization.md) · [reviewer-model-ablations](../handoffs/active/reviewer-model-ablations.md) · [UFH14 A3A-F1 filing](../progress/2026-10/2026-10-30-codex3-ufh14-a3af1-filing.md) · [WG-LFMI quality prep](../progress/2026-10/2026-10-30-codex-ni-wg-lfmi-quality.md)
+
+## Compiled Update — 2026-10-31 (evening wiki sweep, workspace-58)
+
+**Confidence: verified** for source/test facts; one-run results are descriptive, not gates.
+
+- YaRN aggregate reanalysis (paired one-sided exact McNemar, alpha 0.05): fresh 141 pairs b=7 c=11 p=0.881; original 120 b=5 c=10 p=0.941. Both NOT-FAIL (no harm at this n; not equivalence or adoption). ([progress](../progress/2026-10/2026-10-31-codex-ni-01a16d6b-yarn-r7.md))
+- GPU-ZOS-2.3 atomic concurrent R5: S=+0.725%, NF=2.575% so ATOMIC_DIAGNOSTIC_UNDERPOWERED; no ship. ([progress](../progress/2026-10/2026-10-31-zos23-concurrent-r5-0857.md))
+- WRAP-4: the '184-191 disjoint' premise was false (SMT siblings of 88-95), so earlier 'clean-window' attributions are void; raw rates kept, no corrected CI invented; sync16 NO-GO stands. ([review](../docs/reviews/inf70-wrap4-physical-cores-20261031.md))
+- Killed or failed runs stay UNKNOWN with no redraw (HPR R5 35/36, JetLong HTTP 400 at the slot cap, ParEval seg2 5 ok / 98 UNKNOWN). ([progress](../progress/2026-10/2026-10-31-codex-ni-cpu-prep-audit-wrap.md))
+- LB3.4 retained confirmation: CONFIRMED +21.51 pp (CI +11.83 to +32.26); the post-reload live watch is UNKNOWN. ([progress](../progress/2026-10/2026-10-31-lb34-retained-confirmation.md))

@@ -5465,3 +5465,10 @@ Sources: [workspace-58 filing](../progress/2026-10/2026-10-30-workspace-58.md), 
 - **HIL-15b collections end with unknowns preserved.** HIL-15b heavy units 05-20 exhausted as 44 known / 4 unknown / 0 unexposed of 48 (25 observed passes, descriptive bounds 25-29/48); S0 ended 41 known / 4 unknown of 45 and S2 sits at 18/2/25. The R9 rc1 was a validator bug (it demanded dependency-bearing AUC tables from cases that correctly report n_runs=0), repaired offline. Dependency efficacy, difficulty band and HIL-16a/18a gates remain open. ([source](../handoffs/active/harness-improvement-loop.md))
 
 Sources: [rao-redel-substrate-spike](../handoffs/active/rao-redel-substrate-spike.md) · [paw-compiled-specialists](../handoffs/active/paw-compiled-specialists.md) · [harness-improvement-loop](../handoffs/active/harness-improvement-loop.md) · [EVL34 R11 original](../progress/2026-10/2026-10-30-codex3-evl34-r11-original.md) · [HIL15b R9 finalization](../progress/2026-10/2026-10-30-codex3-hil15b-r9-finalization.md) · [PAW host-qualified](../progress/2026-10/2026-10-31-paw-host-qualified.md)
+
+## Compiled Update — 2026-10-31 (evening wiki sweep, workspace-58)
+
+**Confidence: verified** for source/test facts; one-run results are descriptive, not gates.
+
+- FM-7: read-heavy-main share 0.007% post 10-15 (under the 3% rule), so M1 DECLINED; Claude subagents use 60.7% of tokens with a median 49.9k first-request overhead, Codex 68.0% with 21.8k. ([progress](../progress/2026-10/2026-10-31-fm7.md))
+- FM-8 added .claude/agents explorer/runner/clerk plus a WARN-mode dispatch audit hook; the checkbox stays unticked pending live dispatch checks. ([progress](../progress/2026-10/2026-10-31-fm8.md))

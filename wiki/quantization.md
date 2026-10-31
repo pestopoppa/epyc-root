@@ -1097,3 +1097,9 @@ Sources: [iqk-iquant-enablement](../handoffs/active/iqk-iquant-enablement.md) ·
 - **Two selected C6 GPU MUL_MAT cases are far inside tolerance.** COMPLETE_QUALIFICATION_ONLY: errors 8.0e-15 and 1.8e-14 against tolerance 5e-4 (lower is better) on ROCm0 with own-VRAM residency evidence; this is a qualification smoke, not full G-AK. ([source](../progress/2026-10/2026-10-31-pip-r29-c6-gpu-r2-filings.md))
 
 Sources: [deepseek-v41-flash-evaluation](../handoffs/active/deepseek-v41-flash-evaluation.md) · [C6 Q4 R2](../progress/2026-10/2026-10-31-codex3-c6-q4-r2.md) · [C6 failures/PAW](../progress/2026-10/2026-10-31-c6-full-paw-a-failures.md) · [C6 GPU R2](../progress/2026-10/2026-10-31-pip-r29-c6-gpu-r2-filings.md)
+
+## Compiled Update — 2026-10-31 (evening wiki sweep, workspace-58)
+
+**Confidence: verified** for source/test facts; one-run results are descriptive, not gates.
+
+- CS-22 long-v2: capture 178/178, zero Q8-F32 WER deltas at four contexts; the A1 parent stays open. The Qwen3.6-35B UD-IQ3_XXS candidate was withdrawn by the operator. ([progress](../progress/2026-10/2026-10-31-codex3-results-filing-1633.md))

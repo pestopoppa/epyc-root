@@ -6741,3 +6741,11 @@ Sources: [autokernel-champion-aggregate](../handoffs/active/autokernel-champion-
 - **GPU-ZOS-2.3 atomic transport diagnostic:** independent chat remained 4/4 mismatched. The explicitly changed atomic native prompt-array transport matched 4/4 on two fresh C5 loads at 256 tokens. This does not satisfy the original independent-chat gate; no old timings were reused. `ship_authorized=false`, with the original parent open. At the fixed cutoff, the later full run had no terminal result and is not a verdict or timing result.
 
 Sources: [G16 accepted capsule](../artifacts/compute/codex-ni-g16-greedy-aligned-r2-20261031/README.md); [GPU-ZOS accepted capsule](../artifacts/compute/codex-ni-zos23-atomic-r5-20261031/README.md); [2026-10-31 NI progress](../progress/2026-10/2026-10-31-codex-ni-01a16d6b.md); [G16 handoff](../handoffs/active/log-linear-gated-deltanet-readiness.md); [GPU serving tie-in handoff](../handoffs/active/gpu-serving-tie-in-program.md).
+
+## Compiled Update — 2026-10-31 (evening wiki sweep, workspace-58)
+
+**Confidence: verified** for source/test facts; one-run results are descriptive, not gates.
+
+- R18 CUID forensics: ROCm 6.2 -fuse-cuid=hash hashes input path plus arguments, explaining all 141 changed HIP host names; full R18 identity remains false. ([audit](../docs/audits/r18-cuid-path-hash-forensics-20261031.md))
+- Z10 static audit: the fp16-denormal Q-scale reciprocal overflow is absent from the CUDA/HIP FA Q-quant path at v10 ffc1bac8; static conclusion only. ([audit](../docs/engineering/z10-fp16-denorm-static-audit-20261031.md))
+- C5 and C6 MUL_MAT runs each had 65 failures and 326 unsupported cases; the G-AK verdict is null. ([progress](../progress/2026-10/2026-10-31-codex3.md))

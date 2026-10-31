@@ -1900,3 +1900,9 @@ Sources: [tool-use-eval-contract](../handoffs/active/tool-use-eval-contract.md);
 - **The per-turn thinking budget is wired behind its own flag, default off.** `repl_thinking_budget` (orchestrator `6ed745fa`) carries a request-local budget through graph threads and streaming REPL routes; positive budgets separate completed-response cache keys while off/unset/zero keep byte-identical legacy keys (140 tests). Source closure only: no enablement, reload or measured gain. ([source](../handoffs/active/agentic-serving-harness-fixes.md))
 
 Sources: [typed-decision-plane](../handoffs/active/typed-decision-plane.md) · [eval-tower-verification](../handoffs/active/eval-tower-verification.md) · [repl-turn-efficiency](../handoffs/active/repl-turn-efficiency.md) · [agentic-serving-harness-fixes](../handoffs/active/agentic-serving-harness-fixes.md) · [RTE/T2 source checkpoint](../progress/2026-10/2026-10-30-codex-ni-rte-t2-source-checkpoint.md)
+
+## Compiled Update — 2026-10-31 (evening wiki sweep, workspace-58)
+
+**Confidence: verified** for source/test facts; one-run results are descriptive, not gates.
+
+- TOC-MP-1 pointer custody repaired (47 tests); TOC-MP-2i default-off A/B arms (108 tests). Design finding: the REPL turn prompt carries no history and the 'full log' pointer targets a journal truncated to 200 chars. ([design](../docs/design/toc-mp-ab-design-20261031.md))

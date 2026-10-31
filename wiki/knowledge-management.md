@@ -4245,3 +4245,10 @@ Sources: [repl-embedding-retrieval](../handoffs/active/repl-embedding-retrieval.
 - **Belief-kernel write wiring.** The combined LB4.9 op-case/teacher-forced diagnostic and the KPF plan-steps capture (52 actions over 23 plans) are wired, the latter via a real planner canary; the PIP-02 incremental TEDS writer landed (research `cbd7ee026`, root `ebc48f2d7`). CAFE-1 frontdoor MTP p-min, AK serving profile, speech LEX2/META and G11-G13 retrieval fidelity are enrolled as sources, writer/reader and canary still open, so none is called wired. ([vidya-belief-substrate-program](../handoffs/active/vidya-belief-substrate-program.md); [CAFE source](../progress/2026-10/2026-10-31-codex3-cafe-source-pip.md))
 
 Sources: [non-inference-backlog](../handoffs/active/non-inference-backlog.md) · [refactoring-multirepo-2026-10](../handoffs/active/refactoring-multirepo-2026-10.md) · [vidya-belief-substrate-program](../handoffs/active/vidya-belief-substrate-program.md) · [codex3 lane checkouts](../docs/guides/agent-workflows/codex3-lane-checkouts.md) · [ROOT lane reclassification](../progress/2026-10/2026-10-30-codex-ni-root-lane-reclassification.md)
+
+## Compiled Update — 2026-10-31 (evening wiki sweep, workspace-58)
+
+**Confidence: verified** for source/test facts; one-run results are descriptive, not gates.
+
+- PREFIX-4: all 44 native rows cosine-computable; qd-v1 stores now refuse under the new encoder, so a rebuild is needed. Embedding v9/v10 parity 200/200 cosines >= 0.9999 (prerequisite only). ([colbert](../progress/2026-10/2026-10-31-colbert-prefix4.md), [parity](../progress/2026-10/2026-10-31-codex3.md))
+- REPL-EMB-2.13 audit: all lookups use side=query, writes side=document; no edit needed. ([audit](../docs/reference/repl-emb-2-13-side-callsite-audit-20261031.md))

@@ -1514,3 +1514,9 @@ Sources: [learned-routing-controller](../handoffs/active/learned-routing-control
 - **The scorer's quality prior now uses live-stack records only.** Candidate/benchmark records (a Qwen3.6-35B-A3B record at quality_for_role 0.852) previously reached the live map through both structured and filename-fallback paths; both are now filtered to `live_stack`. A missing live prior still skips the quality-gap dimension. No measurement changed. ([source](../handoffs/active/scoring-infra-standardization.md))
 
 Sources: [2026-10-29 delivered routing and scoring](../progress/2026-10/2026-10-29-codex3-delivered-routing-and-scoring.md) · [scoring-infra-standardization](../handoffs/active/scoring-infra-standardization.md)
+
+## Compiled Update — 2026-10-31 (evening wiki sweep, workspace-58)
+
+**Confidence: verified** for source/test facts; one-run results are descriptive, not gates.
+
+- EV-15b readout spec (nine tokens 1-9, T=1.0, stable softmax; spec only), EV-15d retained-mass guard (70 tests), MHS-12 eval-identity screen (163 controls). ([spec](../docs/design/ev15b-readout-spec-20261031.md))

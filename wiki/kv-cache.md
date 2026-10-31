@@ -1414,3 +1414,9 @@ Sources: [kv-prefix-fork-and-paged-attention](../handoffs/active/kv-prefix-fork-
 - **UFH14-LB5.1 prefix stability confirmed for four templates.** 35b-terse, 27b-embedded, vl-embedded and fn-embedded each passed four original fixtures plus shared trunk under the predeclared all-four rule (CPU template rendering and tokenization only, with loaded-model residency samples); no GPU compute or throughput claim. ([source](../progress/2026-10/2026-10-30-codex3-fa4-lb51-filing.md))
 
 Sources: [kv-prefix-fork-and-paged-attention](../handoffs/active/kv-prefix-fork-and-paged-attention.md) · [kv-unified-stack-rollout](../handoffs/active/kv-unified-stack-rollout.md) · [KPF-18.1 CPU/FU03](../progress/2026-10/2026-10-31-codex3-kpf181-fu03-results.md) · [KPF TD29](../progress/2026-10/2026-10-31-codex3-kpf-td29-results.md) · [KPF GPU first segment](../progress/2026-10/2026-10-31-kpf181-gpu-first-segment.md) · [FA4 R17](../progress/2026-10/2026-10-31-codex-ni-fa4-r17-qualified-ready.md)
+
+## Compiled Update — 2026-10-31 (evening wiki sweep, workspace-58)
+
+**Confidence: verified** for source/test facts; one-run results are descriptive, not gates.
+
+- KV-6 canonicalization timing is descriptive: plain 0.0076 to 31.05 ms across 256 to 1M chars (shared host, non-gate). ([progress](../progress/2026-10/2026-10-31-kv6-canonicalization.md))
