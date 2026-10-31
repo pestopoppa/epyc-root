@@ -1,0 +1,63 @@
+{
+  "schema": "epyc.refactor.xgrammar_preparation.v1",
+  "publication": {
+    "published_utc": "2026-10-31T06:27:28.520392+00:00",
+    "id": "refactor-xgrammar-a2-alternated-profile-r2-20261031",
+    "manifest_sha256": "78776b4e673737b28e4ffd4314a921c4f95018907aa5869cdd3e95b374247067",
+    "row_sha256": "7007fba9ccbc8b381f4a2207dfc65c2b8ac90988c47735266be53c8fad2d88ce",
+    "source_manifest_sha256": "3cc2875691b11bb05e1a3b4dcb090012547ade1caf00d2a92cda819d00a1d95c",
+    "launcher_sha256": "bebe9b54cc68df19186cefdecc1bae42dad8644f756d326c1d9ea8ae2f02d172",
+    "qualification_sha256": "d67c8552d873fbaa5435e8e34fea7becd1ff1c5cf8515b0f7c4f5ef9f3946729",
+    "keeper_owns_arm": true,
+    "native_grade": null,
+    "full_complete": false
+  },
+  "controls": {
+    "normal": {
+      "actual_exit_code": 0,
+      "elapsed_s": 37.71535364096053,
+      "peak_rss_bytes": 286941184,
+      "first_native_pair_and_result_writer": true,
+      "result_sha256": "395a156bc252bb10fcff0bea6dd3f8b34f8fcdd7450d9a76f989bdf9c016465f",
+      "pair_capture_sha256": "c9516cee70840fa020fff3ad1d0861c3a257cb6927a54bba79244cb59ee28a39"
+    },
+    "cutoff": {
+      "actual_exit_code": 75,
+      "elapsed_s": 8.24636451387778,
+      "peak_rss_bytes": 207073280,
+      "first_native_pair_and_result_writer": true,
+      "result_sha256": "3cbbea2b4da8958e9d776089e08b5fbe75ec5d7e44aa27842189a7d9ea5778b9",
+      "pair_capture_sha256": "da6967bd260185e20e08e922c827fb8508a92ffcdd6a61ef3e978f3089249f33"
+    }
+  },
+  "control_only_profile": {
+    "control_only": true,
+    "full_protocol_complete": false,
+    "model": "/mnt/raid0/llm/models/PAW-GPT2-Q8-2553387c/gpt2-q8_0.gguf",
+    "profile": {
+      "data_bytes": 241584296,
+      "exit": 0,
+      "native_profile": {
+        "n_steps": 129000,
+        "reps": 3000,
+        "valid": true
+      },
+      "report_bytes": 480098,
+      "report_exit": 0,
+      "samples": "28K",
+      "stderr_present": true,
+      "usable": true
+    },
+    "scope": "real3000rep nativeJSON/perf/parser control on reducedvocabulary; no fullQwen profile or timing claim"
+  },
+  "scope": "final real launch.sh --smoke hostUID1000/native firstpair/capture/activeCPUcutoff/drain; wholehost8pairs+profiling notrun; no R11 timing,5x,byteparity or serving claim",
+  "official_window_controls_sha256": "c7e4c3a2043842bb88c52a02fe2804590a2d508327634087ef0a60790f5cf0e6",
+  "booking_controls_sha256": "0b4297d1b069a2e4cf636f93f8a8503f5de4bbd9109c645bde89b9bbfc6b3d02",
+  "protected_full_evidence": {
+    "path": "/mnt/raid0/llm/tmp/refactor-01a16fc3/xgrammar-alternated-profile-r2-20261031/QUALIFICATION-PUBLICATION.json",
+    "sha256": "61b11277f249cfeaa396c7252a48cfba7a358ac5179d30f0a932609603aec289"
+  },
+  "scientific_parent_open": true,
+  "native_grade": null,
+  "full_complete": false
+}
