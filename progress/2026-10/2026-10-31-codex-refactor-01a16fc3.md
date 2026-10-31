@@ -71,3 +71,7 @@ REPL-EMB-2.13 citation hygiene: cite implementing APP 23560c8e (2026-10-24), ret
 ### Prior-work evidence hygiene: SG-W3
 
 - 2026-10-31 metadata audit for SG-W3: the 2026-10-29 completion date remains unchanged. Implementing source `epyc-orchestrator@da31e38b6bafc1dbcd91739330d6ef0c4756c923` is reachable from `origin/main`; `tests/unit/test_module_identity.py` exists in the cited commit and covers test_retired_src_safety_gates_are_absent. The owning handoff receives only a first-line source/test reference; no test or measurement was rerun. This is prior-work hygiene and is excluded from today's throughput quota. Durable audit: `artifacts/compute/refactor-prior-work-evidence-20261031/15-SG-W3/EVIDENCE.json`. [no-belief: evidence metadata only; no new measurement]
+
+### Prior-work evidence hygiene: KVU-13c
+
+- 2026-10-31 metadata audit for KVU-13c: the 2026-10-30 completion date remains unchanged. Implementing source `epyc-orchestrator@5f72ca3f2687d26ad7d59ff828f08b696db2e7b1` is reachable from `origin/main`; `tests/unit/test_explicit_serving_capacity.py` exists in the cited commit and covers test_oversized_import_status_and_explicit_pipeline_check; test_oversized_actual_command_refuses_before_service_actions. The owning handoff receives only a first-line source/test reference; no test or measurement was rerun. This is prior-work hygiene and is excluded from today's throughput quota. Durable audit: `artifacts/compute/refactor-prior-work-evidence-20261031/18-KVU-13c/EVIDENCE.json`. [no-belief: evidence metadata only; no new measurement]

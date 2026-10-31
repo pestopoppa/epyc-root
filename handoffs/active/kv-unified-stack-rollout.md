@@ -534,7 +534,7 @@ Completed history through 2026-10-24 (moved verbatim, no open tasks): [kv-unifie
   per package revision 3 §9 also `scripts/server/stack_manifest.py` and `scripts/voice/`).
   Also, `preflight.sh`, `capacity.sh` and `topology_check.py` hardcode the real ORCH path, so they cannot run
   against a scratch clone. Fix both in `.claude/skills/stack-change/`.
-- [x] **KVU-13c — the capacity gate runs at import of `stack_manifest`.** A lineup that fails capacity makes the
+- [x] **KVU-13c — the capacity gate runs at import of `stack_manifest`.** [source: epyc-orchestrator@5f72ca3f2687d26ad7d59ff828f08b696db2e7b1; test: epyc-orchestrator/tests/unit/test_explicit_serving_capacity.py] A lineup that fails capacity makes the
   launcher and the pipeline un-importable, so the tool you would use to fix the lineup cannot load (hit in the
   package scratch, revision 3 §9). Move the gate to an explicit call (pipeline `check` / launcher pre-start) and
   keep import side-effect-free; test: a failing lineup still imports and `check` reports the failure.
