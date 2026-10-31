@@ -1,0 +1,18 @@
+{
+  "index": 5,
+  "task": "NEMO-PROF-RESEG",
+  "root_base": "72b592361654bc365d91f988a8d546f599bd28fb",
+  "disposition": "REOPEN",
+  "implementation_commit": null,
+  "reason": "Reopened: the existing kernel-fingerprint diagnostic does not consume recorded per-token server timestamps or explicit graph-launch markers. The original boundary-source criterion remains unproved; its retained diagnostic and original date remain historical evidence.",
+  "evidence": [],
+  "task_prose_and_dates_unchanged": true,
+  "tests_rerun": false,
+  "new_code_quota_credit": false,
+  "recovery": {
+    "index": 5,
+    "original_paragraph_sha256": "2e4a7a1773a8f4e84f867a100c4caac23e0a483a27a5e760b575c5b9e1610321",
+    "whole_handoff_recovery_byte_identical": true,
+    "original_prose_and_dates_unchanged": true
+  }
+}
