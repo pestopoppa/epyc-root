@@ -1,0 +1,57 @@
+{
+  "schema": "epyc.task_evidence_integrity.v1",
+  "task_id": "R23-66",
+  "original_task_first_line": "      - [x] **R23-66 \u2014 give the unit vocabulary a leaf module so `FLOOR_UNIT` stops repeating the `\"process\"`",
+  "decision": "keep_checked",
+  "reason": "Published leaf constants and actual cold-import tests cover both import orders plus bench-only loading without serving. Existing78 tests/13 subtests pass; constants/reexports and unit semantics are unchanged.",
+  "implementation": [
+    {
+      "repo": "epyc-inference-research",
+      "implementation_commit": "8cb1cfcc3d36ccf4bb5dd06a726e8af0d9f90f3c",
+      "reachable_from_published_origin_main": true,
+      "files": [
+        {
+          "path": "scripts/kernel_rnd/autokernel/loop/floor_units.py",
+          "sha256": "7e99b1ee575eaf5b4efecfd9e4bbf148b0fb1bf23e6b0b05b57105323459a78d",
+          "git_url": "https://github.com/pestopoppa/epyc-inference-research/blob/8cb1cfcc3d36ccf4bb5dd06a726e8af0d9f90f3c/scripts/kernel_rnd/autokernel/loop/floor_units.py"
+        },
+        {
+          "path": "scripts/kernel_rnd/autokernel/loop/bench.py",
+          "sha256": "423197da8c94a98eba17d49e34102b278c670d7d86365b3fc2613be17e38a9a1",
+          "git_url": "https://github.com/pestopoppa/epyc-inference-research/blob/8cb1cfcc3d36ccf4bb5dd06a726e8af0d9f90f3c/scripts/kernel_rnd/autokernel/loop/bench.py"
+        },
+        {
+          "path": "scripts/kernel_rnd/autokernel/loop/serving.py",
+          "sha256": "cf93de104e13bce75b06f4affe6df96e4b92cd92c067c9f92c725508242a5d84",
+          "git_url": "https://github.com/pestopoppa/epyc-inference-research/blob/8cb1cfcc3d36ccf4bb5dd06a726e8af0d9f90f3c/scripts/kernel_rnd/autokernel/loop/serving.py"
+        },
+        {
+          "path": "scripts/kernel_rnd/autokernel/loop/test_floor_units_import.py",
+          "sha256": "41998c75cac53634c093b4d811d261b5eff22190a313370c5380c4a4067ad52b",
+          "git_url": "https://github.com/pestopoppa/epyc-inference-research/blob/8cb1cfcc3d36ccf4bb5dd06a726e8af0d9f90f3c/scripts/kernel_rnd/autokernel/loop/test_floor_units_import.py"
+        }
+      ]
+    }
+  ],
+  "original_dates_preserved": true,
+  "evidence_only_hygiene_not_new_code_or_today_quota": true,
+  "no_retest_or_redate": true,
+  "prior_artifacts": [
+    {
+      "path": "/mnt/raid0/llm/tmp/r23-66-tests-final-20261029.log",
+      "sha256": "4cfd87bf0750b31a65a22dfce56f337e39fe3c818d241e2ac5402f69e5004394",
+      "bytes": 686
+    }
+  ],
+  "retained_test_output": {
+    "path": "artifacts/compute/task-evidence-repair-20261031/r23-66/test-output.txt",
+    "sha256": "b0af95dbe89418d9fc3b07f8b0928f87b653d5307ab74f5f4edf75fc99c65522",
+    "scope": "Original test stdout excerpt; supervisor metadata omitted and trailing whitespace removed; full original hash retained"
+  },
+  "task_text_and_dates_recovery": {
+    "first_line_metadata": "HTML comment only; reopened task changes checkbox only",
+    "visible_evidence": "separate delimited metadata sub-bullet after original paragraph",
+    "original_paragraph_sha256": "c3a5ce1798c95f93367a1802b1eac133fd4ed7f458fbd22b37b6146c6563892e",
+    "metadata_strip_restores_original_paragraph_byte_identically": true
+  }
+}
