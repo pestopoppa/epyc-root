@@ -19,6 +19,34 @@ Do not use when:
 - Running benchmarks or evaluations.
 - Working on orchestrator code.
 
+## Execution model — fan out by stage (token efficiency, binding)
+
+The session running this skill is the INTEGRATOR. It does not fetch or dive sources itself. It
+dispatches 3–5 concurrent subagents per batch, each on the cheapest capable model with effort set
+explicitly, per [Parallel Subagent Fan-Out](../../../agents/shared/OPERATING_CONSTRAINTS.md#parallel-subagent-fan-out--the-default-working-mode-of-every-main)
+and `agents/README.md` → Model Routing:
+
+| Work | Model / effort |
+|---|---|
+| Stage 1 fetch, dedup, metadata; second-reader anchor checks | haiku, low |
+| Stage 2 per-source deep dives; literature-expansion searches | sonnet, medium |
+| A dive needing hard technical judgment (kernel math, speculative-decoding theory) | opus |
+| Stage 3 grounding and the Stage 4 plan | the integrator itself |
+
+Each subagent gets its URLs, the questions, the context paths to read and the output format, and
+returns a concise text summary. Subagents never commit; the integrator owns every write. Report the
+subagent count by model in the Stage 3 plan. (operator 2026-10-31; the first ws58 intake of that day
+ran 8 haiku / 14 sonnet / 3 opus under an explicit brief.)
+
+**Hardware lens (binding).** Ground every recommendation against BOTH devices: the CPU host
+(bandwidth-bound decode) and the MI210 (64 GB HBM, compute-rich, fast decode for small models). A
+cost that rules a technique out on CPU (for example weight bytes per token from looping or
+in-weights compute) is not a decline until its MI210 implication is evaluated, including small
+models at high concurrency and serve-time effort switches. "Vendor-only (e.g. NVIDIA/PTX)" is not a
+decline either: estimate the value and port cost to gfx90a/CPU, and decide on that. Monitor
+triggers whose only blocker is "upstream has not done it" are tasks, not triggers: unwritten code is
+never a blocker. (operator 2026-10-31)
+
 ## Workflow — four stages
 
 Redesigned 2026-07-25 after a session in which the two-stage design (a) let mid-flight operator
