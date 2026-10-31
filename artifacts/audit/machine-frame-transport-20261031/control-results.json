@@ -1,0 +1,12 @@
+{
+  "candidate_native_make_gates_rc": 2,
+  "baseline_gate_output_byte_identical": true,
+  "dashboard_format_debt_identical_after_normalizing_hunk_positions": true,
+  "new_file_format": "2 files already formatted",
+  "ruff": "All checks passed!",
+  "app_functional_controls": 143,
+  "root_functional_controls": 15,
+  "deep_native_route_regression": "650-level native JSONResponse and legacy GET serve; machine GET passes after iterative comparison",
+  "post_format_new_controls": 15,
+  "scope": "source fixtures only; no deployment or live bandwidth claim"
+}

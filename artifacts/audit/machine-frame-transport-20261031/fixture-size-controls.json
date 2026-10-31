@@ -1,0 +1,16 @@
+[
+  {
+    "fixture": "native-local",
+    "schema": "live_telemetry.v1",
+    "full_utf8_bytes": 47526,
+    "machine_utf8_bytes": 24581,
+    "scope": "DETERMINISTIC SOURCE FIXTURE ONLY; not live payload or bandwidth evidence"
+  },
+  {
+    "fixture": "native-host-degraded",
+    "schema": "live_telemetry.host.v1",
+    "full_utf8_bytes": 91652,
+    "machine_utf8_bytes": 46835,
+    "scope": "DETERMINISTIC SOURCE FIXTURE ONLY; not live payload or bandwidth evidence"
+  }
+]

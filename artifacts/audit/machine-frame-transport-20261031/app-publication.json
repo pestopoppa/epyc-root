@@ -1,0 +1,17 @@
+{
+  "repo": "app",
+  "base": "0c4833bc3b0a38275e0b41433f9be68d6cf9b11f",
+  "commit": "ec6f81769020d695b046895d654e36a39595ac81",
+  "tree": "b97654557e924530734d7593d8e6aad0253f6600",
+  "remote_main": "ec6f81769020d695b046895d654e36a39595ac81",
+  "proof_path": "artifacts/audit/machine-frame-transport-20261031/README.md",
+  "canonical_head_and_index_unchanged": true,
+  "private_git_admin": "/mnt/raid0/llm/tmp/codex3-machineframe-20261031/app.git",
+  "private_index": "/mnt/raid0/llm/tmp/codex3-machineframe-20261031/app.git/index",
+  "pii_receipt_sha256": "440db1ecc3fd90bf1fd06f343e069a745778e7ab57fee2c27c0eff1fadb81b20",
+  "pii_selected_inputs_match_commit": true,
+  "normal_precommit_and_extras": "passed",
+  "normal_protected_main_prepush": "passed",
+  "source_readset_changed_on_final_refresh": false,
+  "source_scope": "source and deterministic controls only; no reload or live acceptance"
+}

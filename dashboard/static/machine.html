@@ -506,7 +506,7 @@ function sseHealthy() {
     (Date.now() - lastFrameMs) < Math.max(20000, cadenceMs * 2.5);
 }
 function openStream() {
-  try { es = new EventSource(API + "/dashboard/events/stream"); }
+  try { es = new EventSource(API + "/dashboard/events/stream?view=machine"); }
   catch (e) { es = null; fail("topology", e); return; }
   esOpenedAt = Date.now();
   es.onopen = () => { esRetryAt = 0; };
@@ -529,7 +529,7 @@ function openStream() {
 async function pollSnapshot() {
   if (snapInFlight) return;
   snapInFlight = true;
-  try { applySnapshot(await getJSON(API + "/dashboard/api/snapshot", T_SNAPSHOT), "poll"); }
+  try { applySnapshot(await getJSON(API + "/dashboard/api/snapshot?view=machine", T_SNAPSHOT), "poll"); }
   catch (e) { fail("topology", e); fail("decisions", e); fail("outcomes", e); }
   finally { snapInFlight = false; }
 }

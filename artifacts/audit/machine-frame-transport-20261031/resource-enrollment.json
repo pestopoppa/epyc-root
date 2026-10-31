@@ -1,0 +1,14 @@
+{
+  "task": "Trimmed machine-frame endpoint",
+  "authority": "parent amendment for final verification 2026-10-31",
+  "mutex": "/mnt/raid0/llm/tmp/compute-flags/prep-locks/30-31.lock",
+  "physical_pair": [30, 31],
+  "execution_cpus": [126, 127],
+  "admission": "corrected prep_admission.live before child launch and every two seconds; refuse timing or grant conflict; SMT only with all physical quarters granted",
+  "omp_num_threads": 1,
+  "wall_limit_s": 900,
+  "rss_policy_limit_GiB": 8,
+  "sampled_tree_stop_threshold_GiB": 7,
+  "supervisor": "/mnt/raid0/llm/tmp/codex3-ap66-20261031/supervisor-esrch-fix/prep_supervisor.py",
+  "no_model_or_live_services": true
+}

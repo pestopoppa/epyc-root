@@ -1,0 +1,24 @@
+test_projection_retains_the_renderers_native_inputs_and_freshness (tests.test_dashboard_machine_frame.MachineFrameCallers.test_projection_retains_the_renderers_native_inputs_and_freshness) ... ok
+test_sse_and_fallback_poll_request_machine_view (tests.test_dashboard_machine_frame.MachineFrameCallers.test_sse_and_fallback_poll_request_machine_view) ... ok
+test_no_duplicate_top_level_declarations (tests.test_dashboard_static_js.StaticJsTest.test_no_duplicate_top_level_declarations)
+The exact defect: two top-level `const`/`let`/`class` of one name. ... ok
+test_scripts_parse (tests.test_dashboard_static_js.StaticJsTest.test_scripts_parse)
+Full syntax check of each inline block via ``node --check``. ... ok
+test_there_are_pages_to_check (tests.test_dashboard_static_js.StaticJsTest.test_there_are_pages_to_check)
+A guard that silently has nothing to guard is not a guard. ... ok
+test_top_level_functions_are_not_shadowed (tests.test_dashboard_static_js.StaticJsTest.test_top_level_functions_are_not_shadowed)
+Redeclaring a top-level function is legal but silently changes behaviour. ... ok
+test_new_dashboard_reads_old_server_payload (tests.test_dashboard_machine_provenance.ContentionMetricRollingCompatUnderNode.test_new_dashboard_reads_old_server_payload) ... ok
+test_new_key_wins_when_both_server_versions_are_present (tests.test_dashboard_machine_provenance.ContentionMetricRollingCompatUnderNode.test_new_key_wins_when_both_server_versions_are_present) ... ok
+test_new_zero_value_is_not_replaced_by_nonzero_old_alias (tests.test_dashboard_machine_provenance.ContentionMetricRollingCompatUnderNode.test_new_zero_value_is_not_replaced_by_nonzero_old_alias) ... ok
+test_contention_row_uses_the_nway_non_allow_metric_contract (tests.test_dashboard_machine_provenance.MachinePageProvenanceContract.test_contention_row_uses_the_nway_non_allow_metric_contract) ... ok
+test_manifest_declared_substrate_is_marked_declared (tests.test_dashboard_machine_provenance.MachinePageProvenanceContract.test_manifest_declared_substrate_is_marked_declared) ... ok
+test_measured_prompt_tokens_are_gated_on_server_terminal_source (tests.test_dashboard_machine_provenance.MachinePageProvenanceContract.test_measured_prompt_tokens_are_gated_on_server_terminal_source) ... ok
+test_mid_run_sample_keeps_fraction_and_ambiguity (tests.test_dashboard_machine_provenance.ProgressBitsUnderNode.test_mid_run_sample_keeps_fraction_and_ambiguity) ... ok
+test_no_measurement_and_no_sample_renders_no_token_arrow (tests.test_dashboard_machine_provenance.ProgressBitsUnderNode.test_no_measurement_and_no_sample_renders_no_token_arrow) ... ok
+test_terminal_measured_count_renders_as_tokens_without_fraction (tests.test_dashboard_machine_provenance.ProgressBitsUnderNode.test_terminal_measured_count_renders_as_tokens_without_fraction) ... ok
+
+----------------------------------------------------------------------
+Ran 15 tests in 0.884s
+
+OK
