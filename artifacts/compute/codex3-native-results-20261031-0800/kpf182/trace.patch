@@ -1,0 +1,74 @@
+--- a/tools/server/server-context.cpp
++++ b/tools/server/server-context.cpp
+@@ -20,6 +20,7 @@
+ 
+ #include <algorithm>
+ #include <cstddef>
++#include <cstdlib>
+ #include <cstring>
+ #include <cinttypes>
+ #include <exception>
+@@ -1863,6 +1864,43 @@
+             ckpt = &snap;
+         }
+ 
++        // KPF-18.2 diagnostic: raw operation positions, not inferred component hits.
++        // Disabled unless explicitly requested. Does not change fork selection or state.
++        const char * kpf182_env = std::getenv("KPF182_NATIVE_TRACE");
++        const bool kpf182_trace = kpf182_env && std::strcmp(kpf182_env, "1") == 0;
++        json kpf182_event;
++        if (kpf182_trace) {
++            kpf182_event = {
++                {"schema", "kpf182.native-fork.v1"}, {"task_id", task.id},
++                {"dst_slot", dst.id}, {"src_slot", src.id}, {"kind", c.kind},
++                {"fork_position", p}, {"minimum_hit", nullptr},
++                {"target_hit", nullptr}, {"recurrent_hit", nullptr}, {"drafter_hit", nullptr},
++                {"target_hit_reason", "not independently measured"},
++                {"recurrent_hit_reason", "not independently measured"},
++                {"drafter_hit_reason", ctx_dft ? "not independently measured" : "no draft context"},
++                {"source_token_lcp", src.prompt.tokens.get_common_prefix(task.tokens)},
++                {"src_target_pos_min", llama_memory_seq_pos_min(llama_get_memory(ctx_tgt), src.id)},
++                {"src_target_pos_max", llama_memory_seq_pos_max(llama_get_memory(ctx_tgt), src.id)},
++                {"draft_context_present", ctx_dft != nullptr},
++                {"checkpoint_present", ckpt != nullptr}
++            };
++            if (ctx_dft) {
++                kpf182_event["src_draft_pos_min"] = llama_memory_seq_pos_min(llama_get_memory(ctx_dft), src.id);
++                kpf182_event["src_draft_pos_max"] = llama_memory_seq_pos_max(llama_get_memory(ctx_dft), src.id);
++            } else {
++                kpf182_event["src_draft_pos_min"] = nullptr;
++                kpf182_event["src_draft_pos_max"] = nullptr;
++            }
++            if (ckpt) {
++                kpf182_event["checkpoint_n_tokens"] = ckpt->n_tokens;
++                kpf182_event["checkpoint_pos_min"] = ckpt->pos_min;
++                kpf182_event["checkpoint_pos_max"] = ckpt->pos_max;
++                kpf182_event["checkpoint_target_bytes"] = ckpt->data_tgt.size();
++                kpf182_event["checkpoint_draft_bytes"] = ckpt->data_dft.size();
++                kpf182_event["checkpoint_spec_bytes"] = ckpt->data_spec.size();
++            }
++        }
++
+         // target
+         common_context_seq_rm(ctx_tgt, dst.id, -1, -1);
+         if (slot_fork_mode == SLOT_FORK_KV) {
+@@ -1887,6 +1925,19 @@
+             }
+         }
+ 
++        if (kpf182_trace) {
++            kpf182_event["dst_target_pos_min_after"] = llama_memory_seq_pos_min(llama_get_memory(ctx_tgt), dst.id);
++            kpf182_event["dst_target_pos_max_after"] = llama_memory_seq_pos_max(llama_get_memory(ctx_tgt), dst.id);
++            if (ctx_dft) {
++                kpf182_event["dst_draft_pos_min_after"] = llama_memory_seq_pos_min(llama_get_memory(ctx_dft), dst.id);
++                kpf182_event["dst_draft_pos_max_after"] = llama_memory_seq_pos_max(llama_get_memory(ctx_dft), dst.id);
++            } else {
++                kpf182_event["dst_draft_pos_min_after"] = nullptr;
++                kpf182_event["dst_draft_pos_max_after"] = nullptr;
++            }
++            SRV_INF("KPF182_NATIVE %s\n", kpf182_event.dump().c_str());
++        }
++
+         if (slot_fork_mode == SLOT_FORK_CKPT) {
+             // the drafter's stashed boundary state (e.g. eagle3 g_embd), as the slot's own restore does
+             common_speculative_set_state(spec.get(), dst.id, ckpt->data_spec);

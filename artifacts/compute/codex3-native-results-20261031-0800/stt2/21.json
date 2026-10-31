@@ -1,0 +1,28 @@
+{
+  "binding": {
+    "clip_id": "de_de:10555751885736126606.wav",
+    "wav_sha256": "c9711271724d4b881b6e96eea8be7adb56c1ff632dbd3f75bf8bd1016b9dd215",
+    "reference_transcript_sha256": "52cdafaa80cc2227dc105687992367d01088fd75fa84e6146474c46d30c840da",
+    "pins": {
+      "source_commit": "db678a031cf4c524bcab2c45a0dc6a7813106e4a",
+      "model_sha256": "d9ec7e2c39da7b4fec3e01e71e82c7f7bbe97741e08c0c054091bf3d520a41d3",
+      "binary_sha256": "460323a6fd74fd16576058e55ffc49594d50dd81b948643fad18c9e265afe353",
+      "transcribe_lib_sha256": "58197839744b81c7db743bda3cec505d55d7fcead53e2665c9f0d246b7c940a1",
+      "source_manifest_sha256": "2ffaa3939c113f16fe3a57acdd0ce81d45bb56179aeb905efae4bf0e946649ee",
+      "manifest_sha256": "2ded1024e8ae191c7e98ca12a42660520184bcc6a9549ccc9edcb2db86255ce7",
+      "reference_sha256": "1f0166e73db49f657d9c72d799f9529d7929a0a279aa47de85317f61b5d54637"
+    }
+  },
+  "clip_id": "de_de:10555751885736126606.wav",
+  "wall_s": 1.815870137885213,
+  "transcript": "L\u00f6wenrudel agieren \u00e4hnlich wie Wolfs- oder Hunderudel, Tiere, die den L\u00f6wen aber nicht anderen Gro\u00dfkatzen im Verhalten, \u00fcberraschend \u00e4hneln und ebenso t\u00f6dlich gegen\u00fcber ihrer Beute sind.",
+  "reference_transcript": "L\u00f6wenrudel agieren \u00e4hnlich wie Wolfs- oder Hunderudel, Tiere, die den L\u00f6wen aber nicht anderen Gro\u00dfkatzen im Verhalten, \u00fcberraschend \u00e4hneln und ebenso t\u00f6dlich gegen\u00fcber ihrer Beute sind.\n",
+  "exact_text_equal": true,
+  "rc": 0,
+  "started_epoch": 1793433540.6277022,
+  "finished_epoch": 1793433542.4435751,
+  "child_pid": 3834062,
+  "child_reaped": true,
+  "stdout_sha256": "994795b30187d74f8d9d124e0caa1fa31b44824f338c26b02fc4840f5972b41f",
+  "stderr_sha256": "be91a09f6cf687b72f7c21b7ed69faff3cae014cc43eb930e613e8553741a0df"
+}

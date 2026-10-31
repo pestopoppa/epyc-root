@@ -1,0 +1,25 @@
+-- Installing: /mnt/raid0/llm/tmp/codex3-cs8-stt4-transcribe-20261031/install/lib/cmake/ggml/ggml-config.cmake
+-- Installing: /mnt/raid0/llm/tmp/codex3-cs8-stt4-transcribe-20261031/install/lib/cmake/ggml/ggml-config-version.cmake
+-- Installing: /mnt/raid0/llm/tmp/codex3-cs8-stt4-transcribe-20261031/install/include/transcribe.h
+-- Installing: /mnt/raid0/llm/tmp/codex3-cs8-stt4-transcribe-20261031/install/include/transcribe.abihash
+-- Installing: /mnt/raid0/llm/tmp/codex3-cs8-stt4-transcribe-20261031/install/include/transcribe
+-- Installing: /mnt/raid0/llm/tmp/codex3-cs8-stt4-transcribe-20261031/install/include/transcribe/extensions.h
+-- Installing: /mnt/raid0/llm/tmp/codex3-cs8-stt4-transcribe-20261031/install/include/transcribe/diarize.h
+-- Installing: /mnt/raid0/llm/tmp/codex3-cs8-stt4-transcribe-20261031/install/include/transcribe/vad.h
+-- Installing: /mnt/raid0/llm/tmp/codex3-cs8-stt4-transcribe-20261031/install/include/transcribe/whisper.h
+-- Installing: /mnt/raid0/llm/tmp/codex3-cs8-stt4-transcribe-20261031/install/include/transcribe/sortformer.h
+-- Installing: /mnt/raid0/llm/tmp/codex3-cs8-stt4-transcribe-20261031/install/include/transcribe/langid.h
+-- Installing: /mnt/raid0/llm/tmp/codex3-cs8-stt4-transcribe-20261031/install/include/transcribe/parakeet.h
+-- Installing: /mnt/raid0/llm/tmp/codex3-cs8-stt4-transcribe-20261031/install/include/transcribe/moonshine_streaming.h
+-- Installing: /mnt/raid0/llm/tmp/codex3-cs8-stt4-transcribe-20261031/install/include/transcribe/voxtral_realtime.h
+-- Installing: /mnt/raid0/llm/tmp/codex3-cs8-stt4-transcribe-20261031/install/share/licenses/transcribe/LICENSE.silero_vad
+-- Installing: /mnt/raid0/llm/tmp/codex3-cs8-stt4-transcribe-20261031/install/lib/libtranscribe.so.0.4.0
+-- Installing: /mnt/raid0/llm/tmp/codex3-cs8-stt4-transcribe-20261031/install/lib/libtranscribe.so.0.4
+-- Set non-toolchain portion of runtime path of "/mnt/raid0/llm/tmp/codex3-cs8-stt4-transcribe-20261031/install/lib/libtranscribe.so.0.4.0" to "$ORIGIN"
+-- Installing: /mnt/raid0/llm/tmp/codex3-cs8-stt4-transcribe-20261031/install/lib/libtranscribe.so
+-- Installing: /mnt/raid0/llm/tmp/codex3-cs8-stt4-transcribe-20261031/install/lib/transcribe-link.json
+DRAIN_COMPLETE leader=113578 leader_rc=0 term=0 kill=0 children=0
+DRAIN_COMPLETE leader=119370 leader_rc=0 term=0 kill=0 children=0
+job rc=0
+2026-10-31T08:00:59Z [codex3-cs8-stt4-transcribe-hip-build-20261031] ended rc=0 reason=complete (grant deleted)
+2026-10-31T08:00:59Z [codex3-cs8-stt4-transcribe-hip-build-20261031] ALL DONE: wrote /mnt/raid0/llm/tmp/compute-flags/grants/codex3-cs8-stt4-transcribe-hip-build-20261031.complete; row status remains scheduler-owned

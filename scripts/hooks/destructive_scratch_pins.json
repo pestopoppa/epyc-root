@@ -10,5 +10,9 @@
   "/mnt/raid0/llm/tmp/compute-flags/ws58-calendar-keeper-v7b.sh": {
     "sha256": "e6aa0c784eec9dee919656af802188db36cdd92a30cd6d79003e8d37b5ab6d23",
     "approval": "operator 2026-10-30: keeper v7b = v6 + NI GPU priority packing (revision b, F1 succession fix)"
+  },
+  "/mnt/raid0/llm/tmp/compute-flags/ws58-calendar-keeper-v7c.sh": {
+    "sha256": "1b8f00bec637c5a057b0e00560a475469225eb8d93fd5dca08156d982d4c76c0",
+    "approval": "operator 2026-10-31: 'recover calendar immediately' - keeper v7c = v7b with STOP_AT 2026-11-03T06:00Z only"
   }
 }

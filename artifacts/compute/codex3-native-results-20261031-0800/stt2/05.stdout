@@ -1,0 +1,12 @@
+audio: /mnt/raid0/llm/tmp/refactor-01a16fc3/inf79-speech-inference-ready/fleurs-select-q2/evidence/attempt-1793136367944484401/en_us/17824557748066874904.wav
+  samples:    190400
+  duration:   11.900 s
+  sample rate 16000 Hz mono float32
+model: /mnt/raid0/llm/models/parakeet-tdt-0.6b-v3-F16.gguf -> ok
+  backend:    CPU
+  name:       Parakeet TDT 0.6B v3
+  license:    cc-by-4.0
+  max audio:  unbounded (whole clip in one pass)
+run: ok
+text: Remember that even though music on the main stages may have finished, there may be sections of the festival that will keep playing music until late into the night.
+  realtime:   9x (1392.9 ms for 11.9 s)

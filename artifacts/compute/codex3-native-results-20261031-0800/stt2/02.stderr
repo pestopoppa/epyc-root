@@ -1,0 +1,7 @@
+[info] parakeet: full-attention checkpoint; using local attention [256, 256]
+[info] parakeet: using cpu backend (strict)
+[info] parakeet: weights memory-mapped: 1197.5 MiB in CPU_Mapped
+[info] parakeet: promoted 48 conv pointwise weights from F16 → F32 for CPU backend
+[debug] parakeet@1164: sched buffer CPU -> 25.4 MB (extent 74)
+[debug] decoder: 40 iters, 37 tokens, T_enc=74  enc_proj=0.7 ms  pred=21.7 ms  joint=18.4 ms  conf=2.0 ms  total=42.8 ms  per_iter=1003 us
+[info] timings: load=145.74 ms  mel=1.38 ms  encode=617.12 ms  decode=43.08 ms

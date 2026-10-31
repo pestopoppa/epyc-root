@@ -1,0 +1,28 @@
+{
+  "binding": {
+    "clip_id": "fr_fr:3661632639400662062.wav",
+    "wav_sha256": "afc67da31850ada7a560ba3f2efb0c9cf3f345ce2f1bbc968f5a872e487b7154",
+    "reference_transcript_sha256": "b21cceb0c47bc7ec18cce4512af5e3bc96e52f829bc9fd66e70f38dab5f15d67",
+    "pins": {
+      "source_commit": "db678a031cf4c524bcab2c45a0dc6a7813106e4a",
+      "model_sha256": "d9ec7e2c39da7b4fec3e01e71e82c7f7bbe97741e08c0c054091bf3d520a41d3",
+      "binary_sha256": "460323a6fd74fd16576058e55ffc49594d50dd81b948643fad18c9e265afe353",
+      "transcribe_lib_sha256": "58197839744b81c7db743bda3cec505d55d7fcead53e2665c9f0d246b7c940a1",
+      "source_manifest_sha256": "2ffaa3939c113f16fe3a57acdd0ce81d45bb56179aeb905efae4bf0e946649ee",
+      "manifest_sha256": "2ded1024e8ae191c7e98ca12a42660520184bcc6a9549ccc9edcb2db86255ce7",
+      "reference_sha256": "1f0166e73db49f657d9c72d799f9529d7929a0a279aa47de85317f61b5d54637"
+    }
+  },
+  "clip_id": "fr_fr:3661632639400662062.wav",
+  "wall_s": 1.1019704649224877,
+  "transcript": "Il s'agit de l'un des parcs d'attractions les plus connus en Afrique du Sud et consid\u00e9r\u00e9 comme le fleuron des parcs nationaux sud-africains Samparks.",
+  "reference_transcript": "Il s'agit de l'un des parcs d'attractions les plus connus en Afrique du Sud et consid\u00e9r\u00e9 comme le fleuron des parcs nationaux sud-africains Samparks.\n",
+  "exact_text_equal": true,
+  "rc": 0,
+  "started_epoch": 1793433567.4977236,
+  "finished_epoch": 1793433568.5996964,
+  "child_pid": 625084,
+  "child_reaped": true,
+  "stdout_sha256": "1df049f36769eb6a63ddab1176c4b1a64e3666ed0531dbd002e8538e220af26f",
+  "stderr_sha256": "ba3b25ce48bba2cd9d36ceb711a109fbaf8d90f218bf3b237715a007bfc8f34c"
+}

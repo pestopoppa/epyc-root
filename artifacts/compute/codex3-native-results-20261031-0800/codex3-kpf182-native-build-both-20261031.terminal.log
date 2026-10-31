@@ -1,0 +1,25 @@
+[445/455] Building CXX object tools/mtmd/CMakeFiles/mtmd.dir/models/mobilenetv5.cpp.o
+[446/455] Building CXX object tools/mtmd/CMakeFiles/mtmd.dir/models/youtuvl.cpp.o
+[447/455] Building CXX object tools/mtmd/CMakeFiles/mtmd.dir/clip.cpp.o
+[448/455] Building CXX object tools/mtmd/CMakeFiles/mtmd.dir/models/yasa2.cpp.o
+[449/455] Building CXX object tools/server/CMakeFiles/llama-server-impl.dir/server-models.cpp.o
+[450/455] Building CXX object tools/mtmd/CMakeFiles/mtmd.dir/mtmd-helper.cpp.o
+[451/455] Linking CXX shared library bin/libmtmd.so.0.0.0
+[452/455] Creating library symlink bin/libmtmd.so.0 bin/libmtmd.so
+[453/455] Linking CXX static library tools/server/libserver-context.a
+[454/455] Linking CXX shared library bin/libllama-server-impl.so
+[455/455] Linking CXX executable bin/llama-server
+DRAIN_COMPLETE leader=623968 leader_rc=0 term=0 kill=0 children=0
+STAGE_DONE full-server-build
+STAGE_START BUILD-hip-HELP.log ['/mnt/micron/codex3-lanes/kpf182-native-a1f0/build-hip-full/bin/llama-server', '--help']
+PROCESS_STARTED stage=BUILD-hip-HELP.log pid=3275128 birth=155619343
+DRAIN_COMPLETE leader=3275128 leader_rc=0 term=0 kill=0 children=0
+STAGE_DONE BUILD-hip-HELP.log
+STAGE_START BUILD-hip-LINKAGE.log ['/bin/bash', '/mnt/raid0/llm/tmp/codex3-kpf182-native-20261031/verify_ggml_linkage.sh', '/mnt/micron/codex3-lanes/kpf182-native-a1f0/build-hip-full/bin/llama-server', '/mnt/micron/codex3-lanes/kpf182-native-a1f0/build-hip-full/bin']
+PROCESS_STARTED stage=BUILD-hip-LINKAGE.log pid=3284466 birth=155619359
+DRAIN_COMPLETE leader=3284466 leader_rc=0 term=0 kill=0 children=0
+STAGE_DONE BUILD-hip-LINKAGE.log
+BUILD_COMPLETE flavor=hip source=a1f0-trace no_model_no_device=true
+job rc=0
+2026-10-31T08:02:03Z [codex3-kpf182-native-build-both-20261031] ended rc=0 reason=complete (grant deleted)
+2026-10-31T08:02:03Z [codex3-kpf182-native-build-both-20261031] ALL DONE: wrote /mnt/raid0/llm/tmp/compute-flags/grants/codex3-kpf182-native-build-both-20261031.complete; row status remains scheduler-owned

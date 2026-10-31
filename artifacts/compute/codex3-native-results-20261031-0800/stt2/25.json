@@ -1,0 +1,28 @@
+{
+  "binding": {
+    "clip_id": "de_de:11725654714821576978.wav",
+    "wav_sha256": "d806a1e39ef4b011b1400dbef4f4a196a9bac70e74ef414a896f46f3c15873f7",
+    "reference_transcript_sha256": "7bf7ea1ca96c30e90c3320b3c29712c720c0fe2afd359a34b5fb74df9bf0d7fb",
+    "pins": {
+      "source_commit": "db678a031cf4c524bcab2c45a0dc6a7813106e4a",
+      "model_sha256": "d9ec7e2c39da7b4fec3e01e71e82c7f7bbe97741e08c0c054091bf3d520a41d3",
+      "binary_sha256": "460323a6fd74fd16576058e55ffc49594d50dd81b948643fad18c9e265afe353",
+      "transcribe_lib_sha256": "58197839744b81c7db743bda3cec505d55d7fcead53e2665c9f0d246b7c940a1",
+      "source_manifest_sha256": "2ffaa3939c113f16fe3a57acdd0ce81d45bb56179aeb905efae4bf0e946649ee",
+      "manifest_sha256": "2ded1024e8ae191c7e98ca12a42660520184bcc6a9549ccc9edcb2db86255ce7",
+      "reference_sha256": "1f0166e73db49f657d9c72d799f9529d7929a0a279aa47de85317f61b5d54637"
+    }
+  },
+  "clip_id": "de_de:11725654714821576978.wav",
+  "wall_s": 2.002286136848852,
+  "transcript": "Ziegen wurden anscheinend bereits vor ungef\u00e4hr 10.000 Jahren im Zagros-Gebirge im Iran domestiziert.",
+  "reference_transcript": "Ziegen wurden anscheinend bereits vor ungef\u00e4hr 10.000 Jahren im Zagros-Gebirge im Iran domestiziert.\n",
+  "exact_text_equal": true,
+  "rc": 0,
+  "started_epoch": 1793433548.7021773,
+  "finished_epoch": 1793433550.7044659,
+  "child_pid": 4063760,
+  "child_reaped": true,
+  "stdout_sha256": "19a9930a4385a7b44eeda9ba088b9f8644e0cf547854b84ac529cbca786371e1",
+  "stderr_sha256": "46f867c976f387528718a7e1dd22ad97048a10e147625336ffb673464e12709f"
+}

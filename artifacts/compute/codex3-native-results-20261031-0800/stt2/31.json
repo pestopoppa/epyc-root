@@ -1,0 +1,28 @@
+{
+  "binding": {
+    "clip_id": "fr_fr:8412394508646602569.wav",
+    "wav_sha256": "786fdbfa83243fcfffcc4922fc539972e2f88bae700c02746162faba3221b862",
+    "reference_transcript_sha256": "a7265c130f0a845ddb329e52e6d81e594a76f7dc3741591317e9e28abce6e0ae",
+    "pins": {
+      "source_commit": "db678a031cf4c524bcab2c45a0dc6a7813106e4a",
+      "model_sha256": "d9ec7e2c39da7b4fec3e01e71e82c7f7bbe97741e08c0c054091bf3d520a41d3",
+      "binary_sha256": "460323a6fd74fd16576058e55ffc49594d50dd81b948643fad18c9e265afe353",
+      "transcribe_lib_sha256": "58197839744b81c7db743bda3cec505d55d7fcead53e2665c9f0d246b7c940a1",
+      "source_manifest_sha256": "2ffaa3939c113f16fe3a57acdd0ce81d45bb56179aeb905efae4bf0e946649ee",
+      "manifest_sha256": "2ded1024e8ae191c7e98ca12a42660520184bcc6a9549ccc9edcb2db86255ce7",
+      "reference_sha256": "1f0166e73db49f657d9c72d799f9529d7929a0a279aa47de85317f61b5d54637"
+    }
+  },
+  "clip_id": "fr_fr:8412394508646602569.wav",
+  "wall_s": 2.102923246100545,
+  "transcript": "Les voyageurs \u00e0 destination de pays o\u00f9 les taxes sont \u00e9lev\u00e9es peuvent parfois faire des \u00e9conomies consid\u00e9rables, en particulier sur des produits comme les bassons alcoolis\u00e9s ou le tabac.",
+  "reference_transcript": "Les voyageurs \u00e0 destination de pays o\u00f9 les taxes sont \u00e9lev\u00e9es peuvent parfois faire des \u00e9conomies consid\u00e9rables, en particulier sur des produits comme les bassons alcoolis\u00e9s ou le tabac.\n",
+  "exact_text_equal": true,
+  "rc": 0,
+  "started_epoch": 1793433560.7527692,
+  "finished_epoch": 1793433562.8556957,
+  "child_pid": 318007,
+  "child_reaped": true,
+  "stdout_sha256": "00bba60c808c5e230765d13c4f7edd77d9a65c8f4489b28b8d077cbcec7f1c19",
+  "stderr_sha256": "c4b7390b6cd529f57b336e53ce56aa60a73e54f0bfed6f4354160ac424812ebe"
+}
