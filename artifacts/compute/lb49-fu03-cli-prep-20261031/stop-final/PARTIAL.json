@@ -1,0 +1,8 @@
+{
+  "partial": true,
+  "diagnostic_only": true,
+  "full_target_tested": false,
+  "arms": [],
+  "unknown_interrupted_arm": "baseline-1",
+  "child_rc": -9
+}

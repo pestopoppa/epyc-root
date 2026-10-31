@@ -1,0 +1,69 @@
+{
+  "source": {
+    "head": "c72ec82f5417bb2937310326120f149b665e8400",
+    "staged_tree": "ed058b226ef43a394fb799fda84e7ce2fa36ead3",
+    "diff_sha256": "09362534dd4c7a3af916d9cfba0b3278b7b11ed983b0180d5d2c02d92976178e",
+    "untracked_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "source_pins_sha256": "6c4e01faedc0ccf2f34db2829917261a4f3e2736be28809c73e65ef3a27fd02a",
+  "full_model_shards": [
+    {
+      "path": "/mnt/raid0/llm/models/antirez/deepseek-v4.1-flash-gguf/DeepSeek-V4.1-Flash-1017-MXFP4-experts-00001-of-00009.gguf",
+      "sha256": "636918b09de6253bf41af29f06aac3ceeda220e46379d8a2058ef92c4e433ed8",
+      "size": 49353784544
+    },
+    {
+      "path": "/mnt/raid0/llm/models/antirez/deepseek-v4.1-flash-gguf/DeepSeek-V4.1-Flash-1017-MXFP4-experts-00002-of-00009.gguf",
+      "sha256": "b26d3fc1e6ae1be6c52665542f3c1fee6a33791478f26e6cd90b5a75940a9f96",
+      "size": 49412635712
+    },
+    {
+      "path": "/mnt/raid0/llm/models/antirez/deepseek-v4.1-flash-gguf/DeepSeek-V4.1-Flash-1017-MXFP4-experts-00003-of-00009.gguf",
+      "sha256": "20c7fe7adb0578336d8a5e5f9eed521aeb88e8c119ba46e0916cdaab28931c80",
+      "size": 49582960352
+    },
+    {
+      "path": "/mnt/raid0/llm/models/antirez/deepseek-v4.1-flash-gguf/DeepSeek-V4.1-Flash-1017-MXFP4-experts-00004-of-00009.gguf",
+      "sha256": "67592ba15870c4292a615666adcc2736b53cc345b2cccb1c36710a0a6caf15b4",
+      "size": 49418206432
+    },
+    {
+      "path": "/mnt/raid0/llm/models/antirez/deepseek-v4.1-flash-gguf/DeepSeek-V4.1-Flash-1017-MXFP4-experts-00005-of-00009.gguf",
+      "sha256": "ecd04e0aa71bfab8cfe79ea7fef7f35b6be0b6772455139e2081d6ce1dcc18ed",
+      "size": 49412829632
+    },
+    {
+      "path": "/mnt/raid0/llm/models/antirez/deepseek-v4.1-flash-gguf/DeepSeek-V4.1-Flash-1017-MXFP4-experts-00006-of-00009.gguf",
+      "sha256": "88214e0cc80fbae578b80c114527e6ce725199684e0b6849475c7d00b3d0f54c",
+      "size": 49257603776
+    },
+    {
+      "path": "/mnt/raid0/llm/models/antirez/deepseek-v4.1-flash-gguf/DeepSeek-V4.1-Flash-1017-MXFP4-experts-00007-of-00009.gguf",
+      "sha256": "38939faf3e4258f3ae333f0fa1954ce89515b75ceee90d37bf4ebe5fafe285e6",
+      "size": 2406482112
+    },
+    {
+      "path": "/mnt/raid0/llm/models/antirez/deepseek-v4.1-flash-gguf/DeepSeek-V4.1-Flash-1017-MXFP4-experts-00008-of-00009.gguf",
+      "sha256": "a9d1634da2ac57459a64b10b69ddedfadda7dcde0e71ca6e55bea7c293c4a9f0",
+      "size": 101377628544
+    },
+    {
+      "path": "/mnt/raid0/llm/models/antirez/deepseek-v4.1-flash-gguf/DeepSeek-V4.1-Flash-1017-MXFP4-experts-00009-of-00009.gguf",
+      "sha256": "b9832b355288c005da6ef444d02424464dd27f6ebdefeadbec2244264eb65285",
+      "size": 101380404256
+    }
+  ],
+  "public_control": {
+    "path": "/mnt/raid0/llm/models/gemma-3-1b-it-Q8_0.gguf",
+    "resolved": "/mnt/raid0/llm/models/gemma-3-1b-it-Q8_0.gguf",
+    "size": 1069306368,
+    "sha256": "b205840c5dcef55078e37d344677869a714ffd42a4ae448c48dcfb52e4bb10d5",
+    "identity": [
+      2431,
+      96470145,
+      1069306368,
+      1767866915386267326,
+      1769627064381075183
+    ]
+  }
+}
